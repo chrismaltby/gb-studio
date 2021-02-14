@@ -19,7 +19,7 @@ export interface NavigationState {
 }
 
 export const initialState: NavigationState = {
-  section: "world",
+  section: "sprites",
   id: "",
 };
 

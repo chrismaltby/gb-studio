@@ -40,29 +40,29 @@ const buildOptions = (
   plugin: string | undefined,
   spriteSheets: SpriteSheet[]
 ) => {
-  memo.push({
-    label:
-      l10n("FIELD_SPRITE_ANIMATED_ACTORS") + (plugin ? ` - ${plugin}` : ""),
-    options: spriteSheets.filter(type("actor_animated")).map((spriteSheet) => {
-      return {
-        value: spriteSheet.id,
-        label: spriteSheet.name,
-      };
-    }),
-  });
-  memo.push({
-    label: l10n("FIELD_SPRITE_ACTORS") + (plugin ? ` - ${plugin}` : ""),
-    options: spriteSheets.filter(type("actor")).map((spriteSheet) => {
-      return {
-        value: spriteSheet.id,
-        label: spriteSheet.name,
-      };
-    }),
-  });
+  // memo.push({
+  //   label:
+  //     l10n("FIELD_SPRITE_ANIMATED_ACTORS") + (plugin ? ` - ${plugin}` : ""),
+  //   options: spriteSheets.filter(type("actor_animated")).map((spriteSheet) => {
+  //     return {
+  //       value: spriteSheet.id,
+  //       label: spriteSheet.name,
+  //     };
+  //   }),
+  // });
+  // memo.push({
+  //   label: l10n("FIELD_SPRITE_ACTORS") + (plugin ? ` - ${plugin}` : ""),
+  //   options: spriteSheets.filter(type("actor")).map((spriteSheet) => {
+  //     return {
+  //       value: spriteSheet.id,
+  //       label: spriteSheet.name,
+  //     };
+  //   }),
+  // });
   memo.push({
     label: l10n("FIELD_SPRITES") + (plugin ? ` - ${plugin}` : ""),
     options: spriteSheets
-      .filter((s) => s.type !== "actor_animated" && s.type !== "actor")
+      // .filter((s) => s.type !== "actor_animated" && s.type !== "actor")
       .map((spriteSheet) => {
         return {
           value: spriteSheet.id,

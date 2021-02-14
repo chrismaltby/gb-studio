@@ -3,6 +3,7 @@ import styled from "styled-components";
 import {
   ActorIcon,
   ArrowIcon,
+  SpriteIcon,
   TriggerIcon,
   VariableIcon,
 } from "../icons/Icons";
@@ -16,7 +17,7 @@ interface EntityListItemProps {
     name: string;
     labelColor?: string;
   };
-  type: "scene" | "actor" | "trigger" | "variable";
+  type: "scene" | "actor" | "trigger" | "variable" | "sprite";
   nestLevel?: number;
   collapsed?: boolean;
   collapsable?: boolean;
@@ -112,6 +113,11 @@ export const EntityListItem: FC<EntityListItemProps> = ({
       {type === "variable" && (
         <EnitityIcon>
           <VariableIcon />
+        </EnitityIcon>
+      )}
+      {type === "sprite" && (
+        <EnitityIcon>
+          <SpriteIcon />
         </EnitityIcon>
       )}
       <EnitityLabel>{item.name}</EnitityLabel>

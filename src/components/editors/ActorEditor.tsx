@@ -254,33 +254,33 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
     return <WorldEditor />;
   }
 
-  const showDirectionInput =
-    spriteSheet &&
-    spriteSheet.type !== SPRITE_TYPE_STATIC &&
-    spriteSheet.type !== SPRITE_TYPE_ANIMATED &&
-    actor.spriteType !== SPRITE_TYPE_STATIC;
+  const showDirectionInput = true;
+  // spriteSheet &&
+  // spriteSheet.type !== SPRITE_TYPE_STATIC &&
+  // spriteSheet.type !== SPRITE_TYPE_ANIMATED &&
+  // actor.spriteType !== SPRITE_TYPE_STATIC;
 
   const showFrameInput =
     spriteSheet &&
     spriteSheet.numFrames > 1 &&
     actor.spriteType === SPRITE_TYPE_STATIC;
 
-  const showSpriteTypeSelect =
-    spriteSheet &&
-    spriteSheet.type !== "static" &&
-    spriteSheet.type !== "animated";
+  const showSpriteTypeSelect = false;
+  // spriteSheet &&
+  // spriteSheet.type !== "static" &&
+  // spriteSheet.type !== "animated";
 
-  const showAnimatedCheckbox =
-    actor.animSpeed !== null &&
-    spriteSheet &&
-    spriteSheet.numFrames > 1 &&
-    (actor.spriteType === SPRITE_TYPE_STATIC ||
-      spriteSheet.type !== SPRITE_TYPE_ACTOR);
+  const showAnimatedCheckbox = false;
+  // actor.animSpeed !== null &&
+  // spriteSheet &&
+  // spriteSheet.numFrames > 1 &&
+  // (actor.spriteType === SPRITE_TYPE_STATIC ||
+  //   spriteSheet.type !== SPRITE_TYPE_ACTOR);
 
-  const showAnimSpeed =
-    spriteSheet &&
-    (spriteSheet.type === SPRITE_TYPE_ACTOR_ANIMATED ||
-      (actor.spriteType === SPRITE_TYPE_STATIC && spriteSheet.numFrames > 1));
+  const showAnimSpeed = true;
+  // spriteSheet &&
+  // (spriteSheet.type === SPRITE_TYPE_ACTOR_ANIMATED ||
+  //   (actor.spriteType === SPRITE_TYPE_STATIC && spriteSheet.numFrames > 1));
 
   const showCollisionGroup = !actor.isPinned;
 

@@ -132,6 +132,10 @@ export type SpriteSheet = {
   _v: number;
   metasprites: Metasprite[];
   animations: number[][];
+  boundsX: number;
+  boundsY: number;
+  boundsWidth: number;
+  boundsHeight: number;
 };
 
 export type Scene = {

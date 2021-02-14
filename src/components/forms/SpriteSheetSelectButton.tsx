@@ -140,9 +140,9 @@ const typeLabel = (spriteSheet?: SpriteSheet): string => {
   if (!spriteSheet) {
     return "";
   }
-  if (spriteSheet.type === "actor_animated" || spriteSheet.type === "actor") {
-    return l10n("ACTOR");
-  }
+  // if (spriteSheet.type === "actor_animated" || spriteSheet.type === "actor") {
+  //   return l10n("ACTOR");
+  // }
   return l10n("FIELD_SPRITE");
 };
 

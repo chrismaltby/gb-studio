@@ -31,6 +31,7 @@
     "jsx-a11y/mouse-events-have-key-events": 0,
     "jsx-a11y/no-noninteractive-element-interactions": 0,
     "no-await-in-loop": 0,
+    "import/prefer-default-export": 0,
     "camelcase": ["error", {"allow": ["UNSAFE_componentWillReceiveProps"]}]
   },
   "env": {

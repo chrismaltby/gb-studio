@@ -74,9 +74,9 @@ const MIN_SCENE_Y = 30;
 const MIN_SCENE_WIDTH = 20;
 const MIN_SCENE_HEIGHT = 18;
 
-const inodeToRecentBackground: Dictionary<Background> = {}
-const inodeToRecentSpriteSheet: Dictionary<SpriteSheet> = {}
-const inodeToRecentMusic: Dictionary<Music> = {}
+const inodeToRecentBackground: Dictionary<Background> = {};
+const inodeToRecentSpriteSheet: Dictionary<SpriteSheet> = {};
+const inodeToRecentMusic: Dictionary<Music> = {};
 
 const matchAsset = (assetA: Asset) => (assetB: Asset) => {
   return assetA.filename === assetB.filename && assetA.plugin === assetB.plugin;
@@ -362,7 +362,10 @@ const loadProject: CaseReducer<
   musicAdapter.setAll(state.music, entities.music || {});
   customEventsAdapter.setAll(state.customEvents, entities.customEvents || {});
   variablesAdapter.setAll(state.variables, entities.variables || {});
-  engineFieldValuesAdapter.setAll(state.engineFieldValues, entities.engineFieldValues || {});
+  engineFieldValuesAdapter.setAll(
+    state.engineFieldValues,
+    entities.engineFieldValues || {}
+  );
   fixAllScenesWithModifiedBackgrounds(state);
 };
 
@@ -373,8 +376,9 @@ const loadBackground: CaseReducer<
   }>
 > = (state, action) => {
   const backgrounds = localBackgroundSelectors.selectAll(state);
-  const existingAsset = backgrounds.find(matchAsset(action.payload.data))
-    || inodeToRecentBackground[action.payload.data.inode]
+  const existingAsset =
+    backgrounds.find(matchAsset(action.payload.data)) ||
+    inodeToRecentBackground[action.payload.data.inode];
   const existingId = existingAsset?.id;
 
   if (existingId) {
@@ -412,8 +416,9 @@ const loadSprite: CaseReducer<
   }>
 > = (state, action) => {
   const spriteSheets = localSpriteSheetSelectors.selectAll(state);
-  const existingAsset = spriteSheets.find(matchAsset(action.payload.data))
-    || inodeToRecentSpriteSheet[action.payload.data.inode];
+  const existingAsset =
+    spriteSheets.find(matchAsset(action.payload.data)) ||
+    inodeToRecentSpriteSheet[action.payload.data.inode];
   const existingId = existingAsset?.id;
 
   if (existingId) {
@@ -450,8 +455,9 @@ const loadMusic: CaseReducer<
   }>
 > = (state, action) => {
   const music = localMusicSelectors.selectAll(state);
-  const existingAsset = music.find(matchAsset(action.payload.data))
-    || inodeToRecentMusic[action.payload.data.inode];
+  const existingAsset =
+    music.find(matchAsset(action.payload.data)) ||
+    inodeToRecentMusic[action.payload.data.inode];
   const existingId = existingAsset?.id;
 
   if (existingId) {
@@ -462,8 +468,8 @@ const loadMusic: CaseReducer<
       id: existingId,
       settings: {
         ...existingAsset?.settings,
-        ...action.payload.data.settings
-      }
+        ...action.payload.data.settings,
+      },
     });
   } else {
     musicAdapter.addOne(state.music, action.payload.data);
@@ -583,7 +589,7 @@ const addScene: CaseReducer<
   );
 
   // Generate new ids
-  const idReplacements:Dictionary<string> = {};
+  const idReplacements: Dictionary<string> = {};
   if (action.payload.defaults?.id) {
     idReplacements[action.payload.defaults.id] = action.payload.sceneId;
   }
@@ -610,32 +616,44 @@ const addScene: CaseReducer<
       }
       return {
         ...variable,
-        id: newId
-      }
+        id: newId,
+      };
     });
 
     variablesAdapter.upsertMany(state.variables, newVariables);
   }
 
-  const fixedScene = mapSceneEvents(newScene, (event) => replaceEventActorIds(idReplacements, regenerateEventIds(event)));
+  const fixedScene = mapSceneEvents(newScene, (event) =>
+    replaceEventActorIds(idReplacements, regenerateEventIds(event))
+  );
 
   scenesAdapter.addOne(state.scenes, fixedScene);
 
   if (action.payload.defaults?.actors) {
     for (let actor of action.payload.defaults.actors) {
-      addActorToScene(state, fixedScene, {
-        ...actor,
-        id: idReplacements[actor.id] || uuid(),
-      }, idReplacements);
+      addActorToScene(
+        state,
+        fixedScene,
+        {
+          ...actor,
+          id: idReplacements[actor.id] || uuid(),
+        },
+        idReplacements
+      );
     }
   }
 
   if (action.payload.defaults?.triggers) {
     for (let trigger of action.payload.defaults.triggers) {
-      addTriggerToScene(state, fixedScene, {
-        ...trigger,
-        id: idReplacements[trigger.id] || uuid()
-      }, idReplacements);
+      addTriggerToScene(
+        state,
+        fixedScene,
+        {
+          ...trigger,
+          id: idReplacements[trigger.id] || uuid(),
+        },
+        idReplacements
+      );
     }
   }
 };
@@ -827,8 +845,11 @@ const addActor: CaseReducer<
     const newVariables = action.payload.variables.map((variable) => {
       return {
         ...variable,
-        id: variable.id.replace(action.payload.defaults?.id || "", action.payload.actorId)
-      }
+        id: variable.id.replace(
+          action.payload.defaults?.id || "",
+          action.payload.actorId
+        ),
+      };
     });
     variablesAdapter.upsertMany(state.variables, newVariables);
   }
@@ -864,8 +885,15 @@ const addActor: CaseReducer<
   addActorToScene(state, scene, newActor, {});
 };
 
-const addActorToScene = (state: EntitiesState, scene: Scene, actor: Actor, idReplacements: Dictionary<string>) => {
-  const fixedActor = mapActorEvents(actor, (event) => replaceEventActorIds(idReplacements, regenerateEventIds(event)));
+const addActorToScene = (
+  state: EntitiesState,
+  scene: Scene,
+  actor: Actor,
+  idReplacements: Dictionary<string>
+) => {
+  const fixedActor = mapActorEvents(actor, (event) =>
+    replaceEventActorIds(idReplacements, regenerateEventIds(event))
+  );
 
   // Add to scene
   scene.actors = ([] as string[]).concat(scene.actors, fixedActor.id);
@@ -1132,8 +1160,11 @@ const addTrigger: CaseReducer<
     const newVariables = action.payload.variables.map((variable) => {
       return {
         ...variable,
-        id: variable.id.replace(action.payload.defaults?.id || "", action.payload.triggerId)
-      }
+        id: variable.id.replace(
+          action.payload.defaults?.id || "",
+          action.payload.triggerId
+        ),
+      };
     });
     variablesAdapter.upsertMany(state.variables, newVariables);
   }
@@ -1164,7 +1195,9 @@ const addTriggerToScene = (
   trigger: Trigger,
   idReplacements: Dictionary<string>
 ) => {
-  const fixedTrigger = mapTriggerEvents(trigger, (event) => replaceEventActorIds(idReplacements, regenerateEventIds(event)));
+  const fixedTrigger = mapTriggerEvents(trigger, (event) =>
+    replaceEventActorIds(idReplacements, regenerateEventIds(event))
+  );
 
   // Add to scene
   scene.triggers = ([] as string[]).concat(scene.triggers, fixedTrigger.id);
@@ -1360,6 +1393,27 @@ const removeTriggerAt: CaseReducer<
 
     triggersAdapter.removeOne(state.triggers, removeTriggerId);
   }
+};
+
+/**************************************************************************
+ * Sprite Sheets
+ */
+
+const editSpriteSheet: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ spriteSheetId: string; changes: Partial<SpriteSheet> }>
+> = (state, action) => {
+  const spriteSheet = state.spriteSheets.entities[action.payload.spriteSheetId];
+  let patch = { ...action.payload.changes };
+
+  if (!spriteSheet) {
+    return;
+  }
+
+  spriteSheetsAdapter.updateOne(state.spriteSheets, {
+    id: action.payload.spriteSheetId,
+    changes: patch,
+  });
 };
 
 /**************************************************************************
@@ -1731,11 +1785,12 @@ const editCustomEvent: CaseReducer<
             const letter = String.fromCharCode(
               "A".charCodeAt(0) + parseInt(variable)
             );
-            const newType = variables[variable]?.type === "16bit" ? "16bit" : type;
+            const newType =
+              variables[variable]?.type === "16bit" ? "16bit" : type;
             variables[variable] = {
               id: variable,
               name: oldVariables[variable]?.name || `Variable ${letter}`,
-              type: newType
+              type: newType,
             };
           };
           const variable = args[arg];
@@ -1853,18 +1908,27 @@ const removeCustomEvent: CaseReducer<
 
 /**************************************************************************
  * Engine Field Values
- */ 
+ */
 
-const editEngineFieldValue: CaseReducer<EntitiesState, PayloadAction<{ engineFieldId: string, value: any }>> = (state, action) => {
+const editEngineFieldValue: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ engineFieldId: string; value: any }>
+> = (state, action) => {
   engineFieldValuesAdapter.upsertOne(state.engineFieldValues, {
     id: action.payload.engineFieldId,
-    value: action.payload.value
-  })
-}
+    value: action.payload.value,
+  });
+};
 
-const removeEngineFieldValue: CaseReducer<EntitiesState, PayloadAction<{ engineFieldId: string }>> = (state, action) => {
-  engineFieldValuesAdapter.removeOne(state.engineFieldValues, action.payload.engineFieldId);
-}
+const removeEngineFieldValue: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ engineFieldId: string }>
+> = (state, action) => {
+  engineFieldValuesAdapter.removeOne(
+    state.engineFieldValues,
+    action.payload.engineFieldId
+  );
+};
 
 /**************************************************************************
  * General Assets
@@ -1985,6 +2049,12 @@ const entitiesSlice = createSlice({
     editTriggerEventDestinationPosition,
 
     /**************************************************************************
+     * Sprites
+     */
+
+    editSpriteSheet,
+
+    /**************************************************************************
      * Variables
      */
 
@@ -2033,10 +2103,10 @@ const entitiesSlice = createSlice({
 
     /**************************************************************************
      * Engine Field Values
-     */ 
+     */
 
-     editEngineFieldValue,
-     removeEngineFieldValue,
+    editEngineFieldValue,
+    removeEngineFieldValue,
   },
   extraReducers: (builder) =>
     builder
