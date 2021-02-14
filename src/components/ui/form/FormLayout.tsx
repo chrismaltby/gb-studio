@@ -101,16 +101,19 @@ export const FormField: FC<FormFieldProps> = ({
 );
 
 export const FormSectionTitle = styled.div`
-  height: 36px;
-  line-height: 36px;
-  margin: 0px;
-  font-size: 14px;
-  font-weight: bold;
-  border-top: 1px solid ${(props) => props.theme.colors.sidebar.border};
-  border-bottom: 1px solid ${(props) => props.theme.colors.sidebar.border};
-  text-align: left;
-  padding: 0 10px;
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
+  text-transform: uppercase;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 0px 10px;
+  height: 30px;
+  background-color: ${(props) => props.theme.colors.input.background};
+  color: ${(props) => props.theme.colors.input.text};
+  border-top: 1px solid ${(props) => props.theme.colors.input.border};
+  border-bottom: 1px solid ${(props) => props.theme.colors.input.border};
+
+  > span {
+    flex-grow: 1;
+  }
 `;

@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { DropdownButton } from "../ui/buttons/DropdownButton";
 import { EditableText } from "../ui/form/EditableText";
@@ -8,6 +8,7 @@ import {
   FormField,
   FormHeader,
   FormRow,
+  FormSectionTitle,
 } from "../ui/form/FormLayout";
 import { MenuItem } from "../ui/menu/Menu";
 import l10n from "../../lib/helpers/l10n";
@@ -23,6 +24,9 @@ import { spriteSheetSelectors } from "../../store/features/entities/entitiesStat
 import entitiesActions from "../../store/features/entities/entitiesActions";
 import { RootState } from "../../store/configureStore";
 import castEventValue from "../../lib/helpers/castEventValue";
+import { FlatList } from "../ui/lists/FlatList";
+import { EntityListItem } from "../ui/lists/EntityListItem";
+import { SplitPaneHeader } from "../ui/splitpane/SplitPaneHeader";
 
 interface SpriteEditorProps {
   id: string;
@@ -39,7 +43,43 @@ const options: SpriteImportTypeOption[] = [
   { value: "manual", label: `${l10n("FIELD_MANUAL")}` },
 ];
 
+const animations = [
+  {
+    id: "0",
+    name: "Idle Right",
+  },
+  {
+    id: "1",
+    name: "Idle Left",
+  },
+  {
+    id: "2",
+    name: "Idle Up",
+  },
+  {
+    id: "3",
+    name: "Idle Down",
+  },
+  {
+    id: "4",
+    name: "Moving Right",
+  },
+  {
+    id: "5",
+    name: "Moving Left",
+  },
+  {
+    id: "6",
+    name: "Moving Up",
+  },
+  {
+    id: "7",
+    name: "Moving Down",
+  },
+];
+
 export const SpriteEditor: FC<SpriteEditorProps> = ({ id }) => {
+  const [selectedAnimation, setSelectedAnimation] = useState("0");
   const sprite = useSelector((state: RootState) =>
     spriteSheetSelectors.selectById(state, id)
   );
@@ -70,7 +110,6 @@ export const SpriteEditor: FC<SpriteEditorProps> = ({ id }) => {
   const onChangeField = <T extends keyof SpriteSheet>(key: T) => (
     editValue: SpriteSheet[T]
   ) => {
-    console.log("ON CHANGE FIELD", key, editValue);
     dispatch(
       entitiesActions.editSpriteSheet({
         spriteSheetId: id,
@@ -84,14 +123,6 @@ export const SpriteEditor: FC<SpriteEditorProps> = ({ id }) => {
   if (!sprite) {
     return null;
   }
-
-  // const sprite = {
-  //   name: "",
-  //   boundsX: 0,
-  //   boundsY: 0,
-  //   boundsWidth: 0,
-  //   boundsHeight: 0,
-  // };
 
   return (
     <Sidebar onClick={selectSidebar}>
@@ -135,7 +166,7 @@ export const SpriteEditor: FC<SpriteEditorProps> = ({ id }) => {
           <FormDivider />
 
           <FormRow>
-            <Label>Bounding Box</Label>
+            <Label>Collision Bounding Box</Label>
           </FormRow>
           <FormRow>
             <CoordinateInput
@@ -177,7 +208,17 @@ export const SpriteEditor: FC<SpriteEditorProps> = ({ id }) => {
               onChange={onChangeFieldInput("boundsHeight")}
             />
           </FormRow>
-          <FormDivider />
+
+          <FormSectionTitle> {l10n("FIELD_ANIMATIONS")}</FormSectionTitle>
+
+          <FlatList
+            selectedId={selectedAnimation}
+            items={animations}
+            setSelectedId={setSelectedAnimation}
+            height={200}
+          >
+            {({ item }) => <EntityListItem type="sprite" item={item} />}
+          </FlatList>
         </FormContainer>
       </SidebarColumn>
     </Sidebar>

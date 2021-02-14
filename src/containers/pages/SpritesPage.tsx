@@ -9,7 +9,10 @@ import EditorSidebar from "../../components/editors/EditorSidebar";
 import StatusBar from "../../components/world/StatusBar";
 import useResizable from "../../components/ui/hooks/use-resizable";
 import useWindowSize from "../../components/ui/hooks/use-window-size";
-import { SplitPaneHorizontalDivider } from "../../components/ui/splitpane/SplitPaneDivider";
+import {
+  SplitPaneHorizontalDivider,
+  SplitPaneVerticalDivider,
+} from "../../components/ui/splitpane/SplitPaneDivider";
 import { Navigator } from "../../components/world/Navigator";
 import { RootState } from "../../store/configureStore";
 import editorActions from "../../store/features/editor/editorActions";
@@ -17,6 +20,7 @@ import settingsActions from "../../store/features/settings/settingsActions";
 import { SpriteEditor } from "../../components/sprites/SpriteEditor";
 import { NavigatorSprites } from "../../components/sprites/NavigatorSprites";
 import { spriteSheetSelectors } from "../../store/features/entities/entitiesState";
+import MetaspriteEditor from "../../components/sprites/MetaspriteEditor";
 
 const Wrapper = styled.div`
   display: flex;
@@ -82,6 +86,12 @@ const SpritesPage = () => {
         recalculateLeftColumn();
       }
     },
+  });
+  const [centerPaneHeight, setCenterPaneSize, onResizeCenter] = useResizable({
+    initialSize: 150,
+    direction: "top",
+    minSize: 100,
+    maxSize: 300,
   });
 
   useEffect(() => {
@@ -178,10 +188,15 @@ const SpritesPage = () => {
           color: themeContext.colors.text,
           height: windowHeight - 38,
           position: "relative",
+          display: "flex",
+          flexDirection: "column",
         }}
       >
-        Sprite Editor/Viewer
-        {selectedId}
+        <div style={{ flexGrow: 1 }}>
+          <MetaspriteEditor id={selectedId} />
+        </div>
+        <SplitPaneVerticalDivider onMouseDown={onResizeCenter} />
+        <div style={{ height: centerPaneHeight }}>{selectedId}</div>
       </div>
       <SplitPaneHorizontalDivider onMouseDown={onResizeRight} />
       <div

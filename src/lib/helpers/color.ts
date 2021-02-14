@@ -1,12 +1,13 @@
+/* eslint-disable no-param-reassign */
 const hexStringToDecimal = (str: string) => {
   return parseInt(str, 16);
 };
 
-const clamp = (value:number, min:number, max:number) => {
+const clamp = (value: number, min: number, max: number) => {
   return Math.min(max, Math.max(min, value));
 };
 
-const clamp31 = (value:number) => {
+const clamp31 = (value: number) => {
   return clamp(value, 0, 31);
 };
 
@@ -15,8 +16,10 @@ export const hex2rgb = (hex: string) => {
   const g = Math.floor(hexStringToDecimal(hex.substring(2, 4)));
   const b = Math.floor(hexStringToDecimal(hex.substring(4)));
   return {
-    r, g, b
-  }
+    r,
+    g,
+    b,
+  };
 };
 
 export const hex2GBCrgb = (hex: string) => {
@@ -25,8 +28,10 @@ export const hex2GBCrgb = (hex: string) => {
   const g = Math.floor(hexStringToDecimal(gbcHex.substring(2, 4)));
   const b = Math.floor(hexStringToDecimal(gbcHex.substring(4)));
   return {
-    r, g, b
-  }
+    r,
+    g,
+    b,
+  };
 };
 
 export const hex2GBChex = (hex: string): string => {
@@ -37,7 +42,11 @@ export const hex2GBChex = (hex: string): string => {
 };
 
 /* 5-bit rgb value => GBC representative hex value */
-export const rgb5BitToGBCHex = (red5:number, green5:number, blue5:number) => {
+export const rgb5BitToGBCHex = (
+  red5: number,
+  green5: number,
+  blue5: number
+) => {
   const value = (blue5 << 10) + (green5 << 5) + red5;
   const r = value & 0x1f;
   const g = (value >> 5) & 0x1f;
@@ -49,4 +58,32 @@ export const rgb5BitToGBCHex = (red5:number, green5:number, blue5:number) => {
   )
     .toString(16)
     .padStart(6, "0");
+};
+
+export const indexColour = (g: number) => {
+  if (g < 65) {
+    return 3;
+  }
+  if (g < 130) {
+    return 3;
+  }
+  if (g < 205) {
+    return 1;
+  }
+  return 0;
+};
+
+export const colorizeData = (mutData: Uint8ClampedArray, palette: string[]) => {
+  const paletteRGB = palette.map(hex2GBCrgb);
+  for (let index = 0; index < mutData.length; index += 4) {
+    const colorIndex = indexColour(mutData[index + 1]);
+    const color = paletteRGB[colorIndex];
+    if (mutData[index + 1] === 255) {
+      // Set transparent background on pure green
+      mutData[index + 3] = 0;
+    }
+    mutData[index] = color.r;
+    mutData[index + 1] = color.g;
+    mutData[index + 2] = color.b;
+  }
 };
