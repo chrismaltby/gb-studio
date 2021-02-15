@@ -21,6 +21,7 @@ import { SpriteEditor } from "../../components/sprites/SpriteEditor";
 import { NavigatorSprites } from "../../components/sprites/NavigatorSprites";
 import { spriteSheetSelectors } from "../../store/features/entities/entitiesState";
 import MetaspriteEditor from "../../components/sprites/MetaspriteEditor";
+import SpriteTilePalette from "../../components/sprites/preview/SpriteTilePalette";
 
 const Wrapper = styled.div`
   display: flex;
@@ -88,10 +89,10 @@ const SpritesPage = () => {
     },
   });
   const [centerPaneHeight, setCenterPaneSize, onResizeCenter] = useResizable({
-    initialSize: 150,
+    initialSize: 350,
     direction: "top",
-    minSize: 100,
-    maxSize: 300,
+    minSize: 32,
+    maxSize: windowHeight - 100,
   });
 
   useEffect(() => {
@@ -192,11 +193,13 @@ const SpritesPage = () => {
           flexDirection: "column",
         }}
       >
-        <div style={{ flexGrow: 1 }}>
+        <div style={{ flexGrow: 1, position: "relative" }}>
           <MetaspriteEditor id={selectedId} />
         </div>
         <SplitPaneVerticalDivider onMouseDown={onResizeCenter} />
-        <div style={{ height: centerPaneHeight }}>{selectedId}</div>
+        <div style={{ position: "relative", height: centerPaneHeight }}>
+          <SpriteTilePalette id={selectedId} />
+        </div>
       </div>
       <SplitPaneHorizontalDivider onMouseDown={onResizeRight} />
       <div

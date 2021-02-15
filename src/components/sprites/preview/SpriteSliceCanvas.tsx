@@ -1,4 +1,4 @@
-import React, { createRef, useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { DMG_PALETTE } from "../../../consts";
 import { assetFilename } from "../../../lib/helpers/gbstudio";
@@ -66,17 +66,18 @@ export const SpriteSliceCanvas = ({
       flipY,
       palette: DMG_PALETTE.colors,
     });
-
-    // ctx.fillRect(0, 0, 2, 20);
-    // console.log(spriteSheet);
-
-    // const img = new Image();
-
-    // img.onload = () => {
-    //   ctx.drawImage(img, 0, 0);
-    // };
-    // img.src = filename;
-  }, [canvasRef, spriteSheet, offsetX, offsetY, width, height]);
+  }, [
+    canvasRef,
+    spriteSheet,
+    offsetX,
+    offsetY,
+    width,
+    height,
+    flipX,
+    flipY,
+    projectRoot,
+    workerId,
+  ]);
 
   const onWorkerComplete = (e: any) => {
     if (e.data.id === workerId) {

@@ -112,14 +112,18 @@ export type EngineFieldValue = {
   value: number | string | boolean | undefined;
 };
 
-export type Metasprite = {
-  xOffset: number;
-  yOffset: number;
-  tile: number;
+export type MetaspriteTile = {
+  id: string;
+  x: number;
+  y: number;
+  sliceX: number;
+  sliceY: number;
   palette: number;
-  flipX: boolean;
-  flipY: boolean;
+  flipX?: boolean;
+  flipY?: boolean;
 };
+
+export type Metasprite = MetaspriteTile[];
 
 export type SpriteSheet = {
   id: string;
