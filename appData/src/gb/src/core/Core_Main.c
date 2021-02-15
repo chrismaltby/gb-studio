@@ -2,6 +2,7 @@
 
 #include <gb/cgb.h>
 #include <string.h>
+#include <rand.h>
 
 #include "Actor.h"
 #include "BankManager.h"
@@ -22,6 +23,7 @@
 #include "main.h"
 
 UBYTE game_time = 0;
+UBYTE seededRand = FALSE;
 UINT16 next_state;
 UINT8 delta_time;
 UINT16 current_state;
@@ -188,6 +190,13 @@ int core_start() {
     joy = joypad();
     if ((joy & INPUT_DPAD) != (last_joy & INPUT_DPAD)) {
       recent_joy = joy & ~last_joy;
+    }
+
+    if (seededRand == FALSE) {
+      seededRand = TRUE;
+      if (joy) {
+        initrand((DIV_REG*256)+game_time);
+      }
     }
 
     PUSH_BANK(1);
