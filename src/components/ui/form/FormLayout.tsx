@@ -100,7 +100,11 @@ export const FormField: FC<FormFieldProps> = ({
   </FormFieldWrapper>
 );
 
-export const FormSectionTitle = styled.div`
+export interface FormSectionTitleProps {
+  readonly noTopBorder?: boolean;
+}
+
+export const FormSectionTitle = styled.div<FormSectionTitleProps>`
   display: flex;
   align-items: center;
   text-transform: uppercase;
@@ -108,6 +112,7 @@ export const FormSectionTitle = styled.div`
   font-weight: bold;
   padding: 0px 10px;
   height: 30px;
+  margin-bottom: 10px;
   background-color: ${(props) => props.theme.colors.input.background};
   color: ${(props) => props.theme.colors.input.text};
   border-top: 1px solid ${(props) => props.theme.colors.input.border};
@@ -116,4 +121,11 @@ export const FormSectionTitle = styled.div`
   > span {
     flex-grow: 1;
   }
+
+  ${(props) =>
+    props.noTopBorder
+      ? css`
+          border-top: 0;
+        `
+      : ""}
 `;

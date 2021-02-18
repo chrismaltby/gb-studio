@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { DropdownButton } from "../ui/buttons/DropdownButton";
 import { EditableText } from "../ui/form/EditableText";
@@ -14,22 +14,35 @@ import { MenuItem } from "../ui/menu/Menu";
 import l10n from "../../lib/helpers/l10n";
 import { Sidebar, SidebarColumn } from "../ui/sidebars/Sidebar";
 import {
+  MetaspriteTile,
   SpriteSheet,
   SpriteSheetType,
 } from "../../store/features/entities/entitiesTypes";
 import { CoordinateInput } from "../ui/form/CoordinateInput";
 import { Label } from "../ui/form/Label";
 import { Select } from "../ui/form/Select";
-import { spriteSheetSelectors } from "../../store/features/entities/entitiesState";
+import {
+  metaspriteTileSelectors,
+  spriteSheetSelectors,
+} from "../../store/features/entities/entitiesState";
 import entitiesActions from "../../store/features/entities/entitiesActions";
 import { RootState } from "../../store/configureStore";
 import castEventValue from "../../lib/helpers/castEventValue";
 import { FlatList } from "../ui/lists/FlatList";
 import { EntityListItem } from "../ui/lists/EntityListItem";
-import { SplitPaneHeader } from "../ui/splitpane/SplitPaneHeader";
+import { Button } from "../ui/buttons/Button";
+import {
+  FlipHorizontalIcon,
+  FlipVerticalIcon,
+  SendToFrontIcon,
+  SendToBackIcon,
+} from "../ui/icons/Icons";
+import { FixedSpacer, FlexGrow } from "../ui/spacing/Spacing";
+import { NumberField } from "../ui/form/NumberField";
 
 interface SpriteEditorProps {
   id: string;
+  centerPaneHeight: number;
 }
 
 interface SpriteImportTypeOption {
@@ -43,49 +56,21 @@ const options: SpriteImportTypeOption[] = [
   { value: "manual", label: `${l10n("FIELD_MANUAL")}` },
 ];
 
-const animations = [
-  {
-    id: "0",
-    name: "Idle Right",
-  },
-  {
-    id: "1",
-    name: "Idle Left",
-  },
-  {
-    id: "2",
-    name: "Idle Up",
-  },
-  {
-    id: "3",
-    name: "Idle Down",
-  },
-  {
-    id: "4",
-    name: "Moving Right",
-  },
-  {
-    id: "5",
-    name: "Moving Left",
-  },
-  {
-    id: "6",
-    name: "Moving Up",
-  },
-  {
-    id: "7",
-    name: "Moving Down",
-  },
-];
-
-export const SpriteEditor: FC<SpriteEditorProps> = ({ id }) => {
-  const [selectedAnimation, setSelectedAnimation] = useState("0");
+export const SpriteEditor = ({ id, centerPaneHeight }: SpriteEditorProps) => {
   const sprite = useSelector((state: RootState) =>
     spriteSheetSelectors.selectById(state, id)
   );
   const spriteIndex = useSelector((state: RootState) =>
     spriteSheetSelectors.selectIds(state).indexOf(id)
   );
+  const selectedMetaspriteId = "metasprite-1";
+  const selectedTileIds = useSelector(
+    (state: RootState) => state.editor.selectedMetaspriteTileIds
+  );
+  const metaspriteTile = useSelector((state: RootState) =>
+    metaspriteTileSelectors.selectById(state, selectedTileIds[0])
+  );
+  const selectedTileId = selectedTileIds[0];
 
   const dispatch = useDispatch();
 
@@ -120,6 +105,62 @@ export const SpriteEditor: FC<SpriteEditorProps> = ({ id }) => {
     );
   };
 
+  const onChangeTileFieldInput = <T extends keyof MetaspriteTile>(key: T) => (
+    e:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    const editValue = castEventValue(e);
+    dispatch(
+      entitiesActions.editMetaspriteTile({
+        metaspriteTileId: selectedTileId,
+        changes: {
+          [key]: editValue,
+        },
+      })
+    );
+  };
+
+  const onToggleFlipX = useCallback(() => {
+    dispatch(
+      entitiesActions.editMetaspriteTile({
+        metaspriteTileId: selectedTileId,
+        changes: {
+          flipX: !metaspriteTile?.flipX,
+        },
+      })
+    );
+  }, [selectedTileId, metaspriteTile?.flipX]);
+
+  const onToggleFlipY = useCallback(() => {
+    dispatch(
+      entitiesActions.editMetaspriteTile({
+        metaspriteTileId: selectedTileId,
+        changes: {
+          flipY: !metaspriteTile?.flipY,
+        },
+      })
+    );
+  }, [selectedTileId, metaspriteTile?.flipY]);
+
+  const sendTileToBack = useCallback(() => {
+    dispatch(
+      entitiesActions.sendMetaspriteTileToBack({
+        metaspriteTileId: selectedTileId,
+        metaspriteId: selectedMetaspriteId,
+      })
+    );
+  }, [selectedTileId, selectedMetaspriteId]);
+
+  const sendTileToFront = useCallback(() => {
+    dispatch(
+      entitiesActions.sendMetaspriteTileToFront({
+        metaspriteTileId: selectedTileId,
+        metaspriteId: selectedMetaspriteId,
+      })
+    );
+  }, [selectedTileId, selectedMetaspriteId]);
+
   if (!sprite) {
     return null;
   }
@@ -129,12 +170,22 @@ export const SpriteEditor: FC<SpriteEditorProps> = ({ id }) => {
       <SidebarColumn>
         <FormContainer>
           <FormHeader>
-            <EditableText
-              name="name"
-              placeholder="Sprite"
-              value={sprite?.name || ""}
-              onChange={onChangeFieldInput("name")}
-            />
+            {metaspriteTile ? (
+              <EditableText
+                name="name"
+                placeholder="Sprite"
+                value={"Sprite Tile"}
+                onChange={() => {}}
+              />
+            ) : (
+              <EditableText
+                name="name"
+                placeholder="Sprite"
+                value={sprite?.name || ""}
+                onChange={onChangeFieldInput("name")}
+              />
+            )}
+
             <DropdownButton
               size="small"
               variant="transparent"
@@ -149,76 +200,271 @@ export const SpriteEditor: FC<SpriteEditorProps> = ({ id }) => {
             </DropdownButton>
           </FormHeader>
 
-          <FormRow>
-            <FormField
-              name="type"
-              label={l10n("FIELD_SPRITESHEET_IMPORT_TYPE")}
-            >
-              <Select
-                options={options}
-                onChange={(e: { value: SpriteSheetType }) =>
-                  onChangeField("type")(e.value)
-                }
-              />
-            </FormField>
-          </FormRow>
+          {metaspriteTile && selectedTileIds.length === 1 ? (
+            <>
+              <FormRow>
+                <CoordinateInput
+                  name="x"
+                  coordinate="x"
+                  value={metaspriteTile.x}
+                  placeholder="0"
+                  min={-96}
+                  max={96}
+                  onChange={onChangeTileFieldInput("x")}
+                />
+                <CoordinateInput
+                  name="y"
+                  coordinate="y"
+                  value={metaspriteTile.y}
+                  placeholder="0"
+                  min={-96}
+                  max={96}
+                  onChange={onChangeTileFieldInput("y")}
+                />
+              </FormRow>
 
-          <FormDivider />
+              <FormRow>
+                <Button
+                  onClick={sendTileToFront}
+                  style={{ width: 28, padding: 3 }}
+                >
+                  <SendToFrontIcon />
+                </Button>
+                <Button
+                  onClick={sendTileToBack}
+                  style={{ width: 28, padding: 3 }}
+                >
+                  <SendToBackIcon />
+                </Button>
+                <FlexGrow />
+                <Button
+                  onClick={onToggleFlipX}
+                  variant={metaspriteTile.flipX ? "primary" : "normal"}
+                  style={{ width: 28, padding: 3 }}
+                >
+                  <FlipHorizontalIcon />
+                </Button>
+                <Button
+                  onClick={onToggleFlipY}
+                  variant={metaspriteTile.flipY ? "primary" : "normal"}
+                  style={{ width: 28, padding: 3 }}
+                >
+                  <FlipVerticalIcon />
+                </Button>
+              </FormRow>
 
-          <FormRow>
-            <Label>Collision Bounding Box</Label>
-          </FormRow>
-          <FormRow>
-            <CoordinateInput
-              name="x"
-              coordinate="x"
-              value={sprite.boundsX}
-              placeholder="0"
-              min={-96}
-              max={96}
-              onChange={onChangeFieldInput("boundsX")}
-            />
-            <CoordinateInput
-              name="y"
-              coordinate="y"
-              value={sprite.boundsY}
-              placeholder="0"
-              min={-96}
-              max={96}
-              onChange={onChangeFieldInput("boundsY")}
-            />
-          </FormRow>
-          <FormRow>
-            <CoordinateInput
-              name="x"
-              coordinate="w"
-              value={sprite.boundsWidth}
-              placeholder="0"
-              min={-96}
-              max={96}
-              onChange={onChangeFieldInput("boundsWidth")}
-            />
-            <CoordinateInput
-              name="y"
-              coordinate="h"
-              value={sprite.boundsHeight}
-              placeholder="0"
-              min={-96}
-              max={96}
-              onChange={onChangeFieldInput("boundsHeight")}
-            />
-          </FormRow>
+              <FormDivider />
 
-          <FormSectionTitle> {l10n("FIELD_ANIMATIONS")}</FormSectionTitle>
+              <FormRow>
+                <FormField name="objPalette" label="Obj Palette">
+                  <Select
+                    options={options}
+                    onChange={(e: { value: SpriteSheetType }) =>
+                      onChangeField("type")(e.value)
+                    }
+                  />
+                </FormField>
+              </FormRow>
 
-          <FlatList
-            selectedId={selectedAnimation}
-            items={animations}
-            setSelectedId={setSelectedAnimation}
-            height={200}
-          >
-            {({ item }) => <EntityListItem type="sprite" item={item} />}
-          </FlatList>
+              <FormRow>
+                <FormField name="colorPalette" label="Color Palette">
+                  <Select
+                    options={options}
+                    onChange={(e: { value: SpriteSheetType }) =>
+                      onChangeField("type")(e.value)
+                    }
+                  />
+                </FormField>
+              </FormRow>
+              <FormDivider />
+              <FormRow>
+                <Button>Replace Tile</Button>
+              </FormRow>
+            </>
+          ) : (
+            <>
+              <FormRow>
+                <Label>Sprite Canvas</Label>
+              </FormRow>
+              <FormRow>
+                <CoordinateInput
+                  name="width"
+                  coordinate="w"
+                  value={sprite.width}
+                  placeholder="16"
+                  min={16}
+                  max={160}
+                  step={16}
+                  onChange={onChangeFieldInput("width")}
+                />
+                <CoordinateInput
+                  name="height"
+                  coordinate="h"
+                  value={sprite.height}
+                  placeholder="16"
+                  min={16}
+                  max={144}
+                  step={8}
+                  onChange={onChangeFieldInput("height")}
+                />
+              </FormRow>
+
+              {/* <FormDivider />
+
+              <FormRow>
+                <FormField
+                  name="type"
+                  label={l10n("FIELD_SPRITESHEET_IMPORT_TYPE")}
+                >
+                  <Select
+                    options={options}
+                    onChange={(e: { value: SpriteSheetType }) =>
+                      onChangeField("type")(e.value)
+                    }
+                  />
+                </FormField>
+              </FormRow> */}
+
+              <FormDivider />
+
+              <FormRow>
+                <Label>Collision Bounding Box</Label>
+              </FormRow>
+              <FormRow>
+                <CoordinateInput
+                  name="x"
+                  coordinate="x"
+                  value={sprite.boundsX}
+                  placeholder="0"
+                  min={-96}
+                  max={96}
+                  onChange={onChangeFieldInput("boundsX")}
+                />
+                <CoordinateInput
+                  name="y"
+                  coordinate="y"
+                  value={sprite.boundsY}
+                  placeholder="0"
+                  min={-96}
+                  max={96}
+                  onChange={onChangeFieldInput("boundsY")}
+                />
+              </FormRow>
+              <FormRow>
+                <CoordinateInput
+                  name="x"
+                  coordinate="w"
+                  value={sprite.boundsWidth}
+                  placeholder="0"
+                  min={-96}
+                  max={96}
+                  onChange={onChangeFieldInput("boundsWidth")}
+                />
+                <CoordinateInput
+                  name="y"
+                  coordinate="h"
+                  value={sprite.boundsHeight}
+                  placeholder="0"
+                  min={-96}
+                  max={96}
+                  onChange={onChangeFieldInput("boundsHeight")}
+                />
+              </FormRow>
+              {/* <FormSectionTitle>Import</FormSectionTitle> */}
+
+              <FormSectionTitle>Idle Right</FormSectionTitle>
+              <FormRow>
+                <NumberField
+                  name="x"
+                  label="Animation Speed"
+                  value={sprite.boundsWidth}
+                  placeholder="0"
+                  min={-96}
+                  max={96}
+                  onChange={onChangeFieldInput("boundsWidth")}
+                />
+              </FormRow>
+
+              {/* <FormSectionTitle>Remap Animations</FormSectionTitle>
+              <FormRow>
+                <FormField name="remapIdleRight" label="Idle Right">
+                  <Select
+                    options={options}
+                    onChange={(e: { value: SpriteSheetType }) =>
+                      onChangeField("type")(e.value)
+                    }
+                  />
+                </FormField>
+                <FormField name="remapIdleLeft" label="Idle Left">
+                  <Select
+                    options={options}
+                    onChange={(e: { value: SpriteSheetType }) =>
+                      onChangeField("type")(e.value)
+                    }
+                  />
+                </FormField>
+              </FormRow>
+              <FormRow>
+                <FormField name="remapIdleUp" label="Idle Up">
+                  <Select
+                    options={options}
+                    onChange={(e: { value: SpriteSheetType }) =>
+                      onChangeField("type")(e.value)
+                    }
+                  />
+                </FormField>
+                <FormField name="remapIdleDown" label="Idle Down">
+                  <Select
+                    options={options}
+                    onChange={(e: { value: SpriteSheetType }) =>
+                      onChangeField("type")(e.value)
+                    }
+                  />
+                </FormField>
+              </FormRow> */}
+              {/* <FormDivider />
+              <FormRow>
+                <FormField name="remapMovingRight" label="Moving Right">
+                  <Select
+                    options={options}
+                    onChange={(e: { value: SpriteSheetType }) =>
+                      onChangeField("type")(e.value)
+                    }
+                  />
+                </FormField>
+                <FormField name="remapMovingLeft" label="Moving Left">
+                  <Select
+                    options={options}
+                    onChange={(e: { value: SpriteSheetType }) =>
+                      onChangeField("type")(e.value)
+                    }
+                  />
+                </FormField>
+              </FormRow>
+              <FormRow>
+                <FormField name="remapMovingUp" label="Moving Up">
+                  <Select
+                    options={options}
+                    onChange={(e: { value: SpriteSheetType }) =>
+                      onChangeField("type")(e.value)
+                    }
+                  />
+                </FormField>
+                <FormField name="remapMovingDown" label="Moving Down">
+                  <Select
+                    options={options}
+                    onChange={(e: { value: SpriteSheetType }) =>
+                      onChangeField("type")(e.value)
+                    }
+                  />
+                </FormField>
+              </FormRow> */}
+              <FormDivider />
+              <FormRow>
+                <Button>Autodetect Animation Frames</Button>
+              </FormRow>
+            </>
+          )}
         </FormContainer>
       </SidebarColumn>
     </Sidebar>

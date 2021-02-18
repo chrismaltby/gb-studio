@@ -1,27 +1,35 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import styled, { ThemeContext } from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash/debounce";
-import World from "../../components/world/World";
-import ToolPicker from "../../components/world/ToolPicker";
-import BrushToolbar from "../../components/world/BrushToolbar";
-import EditorSidebar from "../../components/editors/EditorSidebar";
-import StatusBar from "../../components/world/StatusBar";
 import useResizable from "../../components/ui/hooks/use-resizable";
 import useWindowSize from "../../components/ui/hooks/use-window-size";
 import {
   SplitPaneHorizontalDivider,
   SplitPaneVerticalDivider,
 } from "../../components/ui/splitpane/SplitPaneDivider";
-import { Navigator } from "../../components/world/Navigator";
 import { RootState } from "../../store/configureStore";
 import editorActions from "../../store/features/editor/editorActions";
 import settingsActions from "../../store/features/settings/settingsActions";
 import { SpriteEditor } from "../../components/sprites/SpriteEditor";
 import { NavigatorSprites } from "../../components/sprites/NavigatorSprites";
-import { spriteSheetSelectors } from "../../store/features/entities/entitiesState";
+import {
+  spriteAnimationSelectors,
+  spriteSheetSelectors,
+} from "../../store/features/entities/entitiesState";
 import MetaspriteEditor from "../../components/sprites/MetaspriteEditor";
-import SpriteTilePalette from "../../components/sprites/preview/SpriteTilePalette";
+import SpriteTilePalette from "../../components/sprites/SpriteTilePalette";
+import SpriteAnimationTimeline from "../../components/sprites/SpriteAnimationTimeline";
+import { SplitPaneHeader } from "../../components/ui/splitpane/SplitPaneHeader";
+import l10n from "../../lib/helpers/l10n";
+import { getAnimationNames } from "../../components/sprites/helpers";
+import MetaspriteEditorToolsPanel from "../../components/sprites/MetaspriteEditorToolsPanel";
 
 const Wrapper = styled.div`
   display: flex;
@@ -49,9 +57,28 @@ const SpritesPage = () => {
   const spritesLookup = useSelector((state: RootState) =>
     spriteSheetSelectors.selectEntities(state)
   );
-  const navigationId = useSelector((state: RootState) => state.navigation.id);
-
-  const selectedId = spritesLookup[navigationId]?.id || allSprites[0]?.id;
+  const spriteAnimationsLookup = useSelector((state: RootState) =>
+    spriteAnimationSelectors.selectEntities(state)
+  );
+  const navigationId = useSelector(
+    (state: RootState) => state.editor.selectedSpriteSheetId
+  );
+  const animationId = useSelector(
+    (state: RootState) => state.editor.selectedAnimationId
+  );
+  const metaspriteId = useSelector(
+    (state: RootState) => state.editor.selectedMetaspriteId
+  );
+  const selectedSprite = spritesLookup[navigationId] || allSprites[0];
+  const selectedAnimation =
+    spriteAnimationsLookup[animationId] ||
+    spriteAnimationsLookup[selectedSprite.animations?.[0]];
+  const selectedId = selectedSprite.id;
+  const selectedAnimationId = selectedAnimation?.id || "";
+  const selectedMetaspriteId =
+    metaspriteId || selectedAnimation?.frames[0] || "";
+  const selectedAnimationIndex =
+    selectedSprite?.animations?.indexOf(selectedAnimationId) || 0;
 
   const [leftPaneWidth, setLeftPaneSize, startLeftPaneResize] = useResizable({
     initialSize: navigatorSidebarWidth,
@@ -89,11 +116,12 @@ const SpritesPage = () => {
     },
   });
   const [centerPaneHeight, setCenterPaneSize, onResizeCenter] = useResizable({
-    initialSize: 350,
+    initialSize: 231,
     direction: "top",
-    minSize: 32,
+    minSize: 30,
     maxSize: windowHeight - 100,
   });
+  const [animationsOpen, setAnimationsOpen] = useState(true);
 
   useEffect(() => {
     prevWindowWidthRef.current = windowWidth;
@@ -155,6 +183,20 @@ const SpritesPage = () => {
     dispatch(settingsActions.setShowNavigator(false));
   };
 
+  const toggleTilesPane = useCallback(() => {
+    if (centerPaneHeight === 30) {
+      setCenterPaneSize(231);
+    } else {
+      setCenterPaneSize(30);
+    }
+  }, [centerPaneHeight, setCenterPaneSize]);
+
+  const toggleAnimationsPane = useCallback(() => {
+    setAnimationsOpen(!animationsOpen);
+  }, [animationsOpen, setAnimationsOpen]);
+
+  const animationNames = getAnimationNames();
+
   return (
     <Wrapper>
       <div
@@ -175,15 +217,18 @@ const SpritesPage = () => {
             height: "100%",
           }}
         >
-          <NavigatorSprites height={windowHeight - 38} defaultFirst />
+          <NavigatorSprites
+            height={windowHeight - 38}
+            selectedAnimationId={selectedAnimationId}
+            defaultFirst
+          />
         </div>
       </div>
       <SplitPaneHorizontalDivider onMouseDown={startLeftPaneResize} />
       <div
         style={{
-          flexGrow: 1,
+          flex: "1 1 0",
           minWidth: 0,
-          flexShrink: 0,
           overflow: "hidden",
           background: themeContext.colors.document.background,
           color: themeContext.colors.text,
@@ -194,12 +239,39 @@ const SpritesPage = () => {
         }}
       >
         <div style={{ flexGrow: 1, position: "relative" }}>
-          <MetaspriteEditor id={selectedId} />
+          <MetaspriteEditorToolsPanel
+            selectedAnimationId={selectedAnimationId}
+            metaspriteId={selectedMetaspriteId}
+          />
+          <MetaspriteEditor
+            spriteSheetId={selectedId}
+            metaspriteId={selectedMetaspriteId}
+          />
         </div>
         <SplitPaneVerticalDivider onMouseDown={onResizeCenter} />
         <div style={{ position: "relative", height: centerPaneHeight }}>
+          <SplitPaneHeader
+            onToggle={toggleTilesPane}
+            collapsed={centerPaneHeight === 30}
+          >
+            {l10n("FIELD_TILES")}
+          </SplitPaneHeader>
           <SpriteTilePalette id={selectedId} />
         </div>
+        <SplitPaneVerticalDivider />
+        <SplitPaneHeader
+          onToggle={toggleAnimationsPane}
+          collapsed={!animationsOpen}
+        >
+          {l10n("FIELD_FRAMES")}: {animationNames[selectedAnimationIndex]}
+        </SplitPaneHeader>
+        {animationsOpen && (
+          <SpriteAnimationTimeline
+            spriteSheetId={selectedId}
+            animationId={selectedAnimation?.id || ""}
+            metaspriteId={selectedMetaspriteId}
+          />
+        )}
       </div>
       <SplitPaneHorizontalDivider onMouseDown={onResizeRight} />
       <div
@@ -211,7 +283,7 @@ const SpritesPage = () => {
           position: "relative",
         }}
       >
-        <SpriteEditor id={selectedId} />
+        <SpriteEditor id={selectedId} centerPaneHeight={centerPaneHeight} />
       </div>
     </Wrapper>
   );

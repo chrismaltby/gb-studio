@@ -305,6 +305,8 @@
   "FIELD_DEFAULT_MUSIC_EDITOR": "Default Music Editor",
   "FIELD_SYSTEM_DEFAULT": "System Default",
   "FIELD_CHOOSE_APPLICATION": "Choose Application",
+  "FIELD_ANIMATIONS": "Animations",
+  "FIELD_FRAMES": "Frames",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

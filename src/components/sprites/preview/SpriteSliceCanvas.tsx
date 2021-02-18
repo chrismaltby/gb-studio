@@ -39,7 +39,7 @@ export const SpriteSliceCanvas = ({
     return () => {
       worker.removeEventListener("message", onWorkerComplete);
     };
-  }, []);
+  }, [width, height]);
 
   useEffect(() => {
     if (!canvasRef.current || !spriteSheet) {

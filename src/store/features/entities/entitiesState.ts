@@ -65,6 +65,9 @@ import {
   EntityKey,
   MusicSettings,
   EngineFieldValue,
+  Metasprite,
+  MetaspriteTile,
+  SpriteAnimation,
 } from "./entitiesTypes";
 import { normalizeEntities } from "./entitiesHelpers";
 import { clone } from "../../../lib/helpers/clone";
@@ -88,6 +91,9 @@ const sortByFilename = (a: Asset, b: Asset) => {
   return 0;
 };
 
+const swap = <T extends unknown>(x: number, y: number, [...xs]: T[]): T[] =>
+  xs.length > 1 ? (([xs[x], xs[y]] = [xs[y], xs[x]]), xs) : xs;
+
 const actorsAdapter = createEntityAdapter<Actor>();
 const triggersAdapter = createEntityAdapter<Trigger>();
 const scenesAdapter = createEntityAdapter<Scene>();
@@ -97,6 +103,9 @@ const backgroundsAdapter = createEntityAdapter<Background>({
 const spriteSheetsAdapter = createEntityAdapter<SpriteSheet>({
   sortComparer: sortByFilename,
 });
+const metaspritesAdapter = createEntityAdapter<Metasprite>();
+const metaspriteTilesAdapter = createEntityAdapter<MetaspriteTile>();
+const spriteAnimationsAdapter = createEntityAdapter<SpriteAnimation>();
 const palettesAdapter = createEntityAdapter<Palette>();
 const customEventsAdapter = createEntityAdapter<CustomEvent>();
 const musicAdapter = createEntityAdapter<Music>({
@@ -111,6 +120,9 @@ export const initialState: EntitiesState = {
   scenes: scenesAdapter.getInitialState(),
   backgrounds: backgroundsAdapter.getInitialState(),
   spriteSheets: spriteSheetsAdapter.getInitialState(),
+  metasprites: metaspritesAdapter.getInitialState(),
+  metaspriteTiles: metaspriteTilesAdapter.getInitialState(),
+  spriteAnimations: spriteAnimationsAdapter.getInitialState(),
   palettes: palettesAdapter.getInitialState(),
   customEvents: customEventsAdapter.getInitialState(),
   music: musicAdapter.getInitialState(),
@@ -358,6 +370,15 @@ const loadProject: CaseReducer<
   scenesAdapter.setAll(state.scenes, entities.scenes || {});
   backgroundsAdapter.setAll(state.backgrounds, entities.backgrounds || {});
   spriteSheetsAdapter.setAll(state.spriteSheets, entities.spriteSheets || {});
+  metaspritesAdapter.setAll(state.metasprites, entities.metasprites || {});
+  metaspriteTilesAdapter.setAll(
+    state.metaspriteTiles,
+    entities.metaspriteTiles || {}
+  );
+  spriteAnimationsAdapter.setAll(
+    state.spriteAnimations,
+    entities.spriteAnimations || {}
+  );
   palettesAdapter.setAll(state.palettes, entities.palettes || {});
   musicAdapter.setAll(state.music, entities.music || {});
   customEventsAdapter.setAll(state.customEvents, entities.customEvents || {});
@@ -1417,6 +1438,201 @@ const editSpriteSheet: CaseReducer<
 };
 
 /**************************************************************************
+ * Metasprites
+ */
+
+const addMetasprite: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    metaspriteId: string;
+    spriteAnimationId: string;
+  }>
+> = (state, action) => {
+  const spriteAnimation =
+    state.spriteAnimations.entities[action.payload.spriteAnimationId];
+
+  if (!spriteAnimation) {
+    return;
+  }
+
+  const newMetasprite: Metasprite = {
+    id: action.payload.metaspriteId,
+    tiles: [],
+  };
+
+  // Add to sprite animation
+  spriteAnimation.frames = ([] as string[]).concat(
+    spriteAnimation.frames,
+    newMetasprite.id
+  );
+  metaspritesAdapter.addOne(state.metasprites, newMetasprite);
+};
+
+const sendMetaspriteTileToFront: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    metaspriteId: string;
+    metaspriteTileId: string;
+  }>
+> = (state, action) => {
+  const metasprite = state.metasprites.entities[action.payload.metaspriteId];
+
+  if (!metasprite) {
+    return;
+  }
+
+  const newTiles = ([] as string[]).concat(
+    metasprite.tiles.filter(
+      (tileId) => tileId !== action.payload.metaspriteTileId
+    ),
+    action.payload.metaspriteTileId
+  );
+
+  metaspritesAdapter.updateOne(state.metasprites, {
+    id: action.payload.metaspriteId,
+    changes: {
+      tiles: newTiles,
+    },
+  });
+};
+
+const sendMetaspriteTileToBack: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    metaspriteId: string;
+    metaspriteTileId: string;
+  }>
+> = (state, action) => {
+  const metasprite = state.metasprites.entities[action.payload.metaspriteId];
+
+  if (!metasprite) {
+    return;
+  }
+
+  const newTiles = ([] as string[]).concat(
+    action.payload.metaspriteTileId,
+    metasprite.tiles.filter(
+      (tileId) => tileId !== action.payload.metaspriteTileId
+    )
+  );
+
+  metaspritesAdapter.updateOne(state.metasprites, {
+    id: action.payload.metaspriteId,
+    changes: {
+      tiles: newTiles,
+    },
+  });
+};
+
+/**************************************************************************
+ * Metasprite Tiles
+ */
+
+const moveMetaspriteTile: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    metaspriteTileId: string;
+    x: number;
+    y: number;
+  }>
+> = (state, action) => {
+  metaspriteTilesAdapter.updateOne(state.metaspriteTiles, {
+    id: action.payload.metaspriteTileId,
+    changes: {
+      x: action.payload.x,
+      y: action.payload.y,
+    },
+  });
+};
+
+const moveMetaspriteTileRelative: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    metaspriteTileId: string;
+    x: number;
+    y: number;
+  }>
+> = (state, action) => {
+  const metaspriteTile =
+    state.metaspriteTiles.entities[action.payload.metaspriteTileId];
+
+  if (!metaspriteTile) {
+    return;
+  }
+
+  metaspriteTilesAdapter.updateOne(state.metaspriteTiles, {
+    id: action.payload.metaspriteTileId,
+    changes: {
+      x: metaspriteTile.x + action.payload.x,
+      y: metaspriteTile.y + action.payload.y,
+    },
+  });
+};
+
+const editMetaspriteTile: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ metaspriteTileId: string; changes: Partial<MetaspriteTile> }>
+> = (state, action) => {
+  const metaspriteTile =
+    state.metaspriteTiles.entities[action.payload.metaspriteTileId];
+  let patch = { ...action.payload.changes };
+
+  if (!metaspriteTile) {
+    return;
+  }
+
+  metaspriteTilesAdapter.updateOne(state.metaspriteTiles, {
+    id: action.payload.metaspriteTileId,
+    changes: patch,
+  });
+};
+
+const removeMetaspriteTile: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    metaspriteTileId: string;
+  }>
+> = (state, action) => {
+  metaspriteTilesAdapter.removeOne(
+    state.metaspriteTiles,
+    action.payload.metaspriteTileId
+  );
+};
+
+/**************************************************************************
+ * Sprite Animations
+ */
+
+const swapSpriteAnimationFrames: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    spriteAnimationId: string;
+    fromIndex: number;
+    toIndex: number;
+  }>
+> = (state, action) => {
+  const spriteAnimation =
+    state.spriteAnimations.entities[action.payload.spriteAnimationId];
+
+  if (!spriteAnimation) {
+    return;
+  }
+
+  const newFrames = swap(
+    action.payload.fromIndex,
+    action.payload.toIndex,
+    spriteAnimation.frames
+  );
+
+  spriteAnimationsAdapter.updateOne(state.spriteAnimations, {
+    id: action.payload.spriteAnimationId,
+    changes: {
+      frames: newFrames,
+    },
+  });
+};
+
+/**************************************************************************
  * Paint Helpers
  */
 
@@ -2055,6 +2271,40 @@ const entitiesSlice = createSlice({
     editSpriteSheet,
 
     /**************************************************************************
+     * Metasprites
+     */
+
+    addMetasprite: {
+      reducer: addMetasprite,
+      prepare: (payload: { spriteAnimationId: string }) => {
+        return {
+          payload: {
+            ...payload,
+            metaspriteId: uuid(),
+          },
+        };
+      },
+    },
+
+    sendMetaspriteTileToFront,
+    sendMetaspriteTileToBack,
+
+    /**************************************************************************
+     * Metasprite Tiles
+     */
+
+    moveMetaspriteTile,
+    moveMetaspriteTileRelative,
+    editMetaspriteTile,
+    removeMetaspriteTile,
+
+    /**************************************************************************
+     * Sprite Animations
+     */
+
+    swapSpriteAnimationFrames,
+
+    /**************************************************************************
      * Variables
      */
 
@@ -2171,6 +2421,15 @@ export const sceneSelectors = scenesAdapter.getSelectors(
 );
 export const spriteSheetSelectors = spriteSheetsAdapter.getSelectors(
   (state: RootState) => state.project.present.entities.spriteSheets
+);
+export const metaspriteSelectors = metaspritesAdapter.getSelectors(
+  (state: RootState) => state.project.present.entities.metasprites
+);
+export const metaspriteTileSelectors = metaspriteTilesAdapter.getSelectors(
+  (state: RootState) => state.project.present.entities.metaspriteTiles
+);
+export const spriteAnimationSelectors = spriteAnimationsAdapter.getSelectors(
+  (state: RootState) => state.project.present.entities.spriteAnimations
 );
 export const backgroundSelectors = backgroundsAdapter.getSelectors(
   (state: RootState) => state.project.present.entities.backgrounds

@@ -3,8 +3,8 @@ import { colorizeData } from "../../../lib/helpers/color";
 const workerCtx: Worker = self as any;
 
 interface CacheRecord {
-  canvas: OffscreenCanvas;
-  ctx: OffscreenCanvasRenderingContext2D;
+  // canvas: OffscreenCanvas;
+  // ctx: OffscreenCanvasRenderingContext2D;
   img: ImageBitmap;
 }
 
@@ -27,25 +27,22 @@ workerCtx.onmessage = async (evt) => {
 
   if (cache[src]) {
     // Using Cached Data
-    canvas = cache[src].canvas;
-    ctx = cache[src].ctx;
     img = cache[src].img;
   } else {
-    // Fetch New Data
-    canvas = new OffscreenCanvas(width, height);
-    const tmpCtx = canvas.getContext("2d");
-    if (!tmpCtx) {
-      return;
-    }
-    ctx = tmpCtx;
     const imgblob = await fetch(src).then((r) => r.blob());
     img = await createImageBitmap(imgblob);
     cache[src] = {
-      canvas,
-      ctx,
       img,
     };
   }
+
+  // Fetch New Data
+  canvas = new OffscreenCanvas(width, height);
+  const tmpCtx = canvas.getContext("2d");
+  if (!tmpCtx) {
+    return;
+  }
+  ctx = tmpCtx;
 
   // Draw Sprite
   ctx.save();

@@ -7,6 +7,7 @@ export interface ButtonProps {
   readonly size?: "small" | "medium" | "large";
   readonly variant?: "normal" | "primary" | "transparent";
   readonly selected?: boolean;
+  readonly active?: boolean;
   readonly children?: ReactNode;
   readonly theme?: ThemeInterface;
 }
@@ -90,16 +91,29 @@ const primaryStyles = css`
   }
 `;
 
-const transparentStyles = css`
+const transparentStyles = css<ButtonProps>`
   background: transparent;
   border-color: transparent;
 
   :hover {
-    background: rgba(128, 128, 128, 0.3);
+    background: rgba(128, 128, 128, 0.1);
   }
   :active {
-    background: rgba(128, 128, 128, 0.4);
+    background: rgba(128, 128, 128, 0.2);
   }
+
+  ${(props) =>
+    props.active
+      ? css`
+          background: rgba(128, 128, 128, 0.3);
+          :hover {
+            background: rgba(128, 128, 128, 0.3);
+          }
+          :active {
+            background: rgba(128, 128, 128, 0.2);
+          }
+        `
+      : ""}
 `;
 
 Button.defaultProps = {

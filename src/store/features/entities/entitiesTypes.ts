@@ -119,11 +119,20 @@ export type MetaspriteTile = {
   sliceX: number;
   sliceY: number;
   palette: number;
-  flipX?: boolean;
-  flipY?: boolean;
+  flipX: boolean;
+  flipY: boolean;
 };
 
-export type Metasprite = MetaspriteTile[];
+export type Metasprite = {
+  id: string;
+  tiles: string[];
+};
+
+export type SpriteAnimation = {
+  id: string;
+  speed: number;
+  frames: string[];
+};
 
 export type SpriteSheet = {
   id: string;
@@ -134,12 +143,14 @@ export type SpriteSheet = {
   plugin?: string;
   inode: string;
   _v: number;
-  metasprites: Metasprite[];
-  animations: number[][];
+  width: number;
+  height: number;
   boundsX: number;
   boundsY: number;
   boundsWidth: number;
   boundsHeight: number;
+  metasprites: string[];
+  animations: string[];
 };
 
 export type Scene = {
@@ -185,6 +196,9 @@ export interface EntitiesState {
   scenes: EntityState<Scene>;
   backgrounds: EntityState<Background>;
   spriteSheets: EntityState<SpriteSheet>;
+  metasprites: EntityState<Metasprite>;
+  metaspriteTiles: EntityState<MetaspriteTile>;
+  spriteAnimations: EntityState<SpriteAnimation>;
   palettes: EntityState<Palette>;
   customEvents: EntityState<CustomEvent>;
   music: EntityState<Music>;

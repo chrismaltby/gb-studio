@@ -1,4 +1,3 @@
-import { number } from "prop-types";
 import React from "react";
 import styled from "styled-components";
 
@@ -42,7 +41,7 @@ const MetaspriteGrid = ({
           position: "relative",
           width,
           height,
-          transform: ` translate3d(0, 0, 0) scale(${zoom})`,
+          transform: `translate3d(0, 0, 0) scale(${zoom})`,
           transformOrigin: "top left",
         }}
       >

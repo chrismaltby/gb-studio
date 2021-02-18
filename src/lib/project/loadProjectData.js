@@ -64,6 +64,7 @@ const loadProject = async (projectPath) => {
       const oldSprite = oldSpriteByFilename[elemKey(sprite)] || oldSpriteByInode[sprite.inode];
       if (oldSprite) {
         return {
+          ...oldSprite,
           ...sprite,
           id: oldSprite.id,
         };

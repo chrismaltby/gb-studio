@@ -1,58 +1,21 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import styled, { css } from "styled-components";
 import { RootState } from "../../store/configureStore";
+import {
+  metaspriteSelectors,
+  metaspriteTileSelectors,
+} from "../../store/features/entities/entitiesState";
 import { MetaspriteTile } from "../../store/features/entities/entitiesTypes";
 import MetaspriteGrid from "./preview/MetaspriteGrid";
 import { SpriteSliceCanvas } from "./preview/SpriteSliceCanvas";
+import entitiesActions from "../../store/features/entities/entitiesActions";
+import editorActions from "../../store/features/editor/editorActions";
 
 interface MetaspriteEditorProps {
-  id: string;
+  spriteSheetId: string;
+  metaspriteId: string;
 }
-
-const dummyMetasprite: MetaspriteTile[] = [
-  {
-    id: "1",
-    x: 8,
-    y: 24,
-    sliceX: 1,
-    sliceY: 2,
-    palette: 0,
-    flipX: true,
-    flipY: false,
-  },
-
-  {
-    id: "2",
-    x: 16,
-    y: 24,
-    sliceX: 2,
-    sliceY: 2,
-    palette: 0,
-    flipX: false,
-    flipY: false,
-  },
-  {
-    id: "3",
-    x: 8,
-    y: 12,
-    sliceX: 1,
-    sliceY: 15,
-    palette: 0,
-    flipX: false,
-    flipY: false,
-  },
-  {
-    id: "4",
-    x: 16,
-    y: 12,
-    sliceX: 2,
-    sliceY: 15,
-    palette: 0,
-    flipX: false,
-    flipY: false,
-  },
-];
 
 export interface MetaspriteDraggableTileProps {
   selected?: boolean;
@@ -63,65 +26,148 @@ const MetaspriteDraggableTile = styled.div<MetaspriteDraggableTileProps>`
   width: 8px;
   height: 16px;
 
-  :hover {
+  :hover::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
     box-shadow: 0px 0px 0px 1px rgba(255, 0, 0, 0.2);
     z-index: 100;
+    width: 8px;
+    height: 16px;
   }
 
   ${(props) =>
     props.selected
       ? css`
-          && {
+          &&::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
             box-shadow: 0px 0px 0px 1px rgba(255, 0, 0, 0.5);
             z-index: 10;
+            width: 8px;
+            height: 16px;
           }
         `
       : ""}
 `;
 
-const MetaspriteEditor = ({ id }: MetaspriteEditorProps) => {
+interface Position {
+  x: number;
+  y: number;
+}
+
+interface MetaspriteSelection {
+  id: string;
+  origin: Position;
+}
+
+const MetaspriteEditor = ({
+  spriteSheetId,
+  metaspriteId,
+}: MetaspriteEditorProps) => {
+  const dispatch = useDispatch();
+  const gridRef = useRef<HTMLDivElement>(null);
   const canvasWidth = 32;
   const canvasHeight = 40;
   const gridSize = 8;
   const zoom = useSelector((state: RootState) => state.editor.zoomSprite) / 100;
-  const [metasprite, setMetasprite] = useState(dummyMetasprite);
-  const [selectedMetasprite, setSelectedMetasprite] = useState(0);
+  const metasprite = useSelector((state: RootState) =>
+    metaspriteSelectors.selectById(state, metaspriteId)
+  );
+  const metaspriteTileLookup = useSelector((state: RootState) =>
+    metaspriteTileSelectors.selectEntities(state)
+  );
+  const newTiles = useSelector(
+    (state: RootState) => state.editor.spriteTileSelection
+  );
+  const metaspriteTiles =
+    metasprite?.tiles
+      .map((tileId) => metaspriteTileLookup[tileId] as MetaspriteTile)
+      .filter((i) => i) || [];
+  const selectedTileIds = useSelector(
+    (state: RootState) => state.editor.selectedMetaspriteTileIds
+  );
   const [draggingMetasprite, setDraggingMetasprite] = useState(false);
-  const [metaspriteOrigin, setMetaspriteOrigin] = useState({ x: 0, y: 0 });
-  const [dragOrigin, setDragOrigin] = useState({ x: 0, y: 0 });
+  const dragMetasprites = useRef<MetaspriteSelection[]>([]);
+  const [dragOrigin, setDragOrigin] = useState<Position>({ x: 0, y: 0 });
+  const [createOrigin, setCreateOrigin] = useState<Position>({ x: 0, y: 0 });
+  const [isOverEditor, setIsOverEditor] = useState(false);
 
-  const onDragStart = (index: number) => (
+  const onMoveCreateCursor = useCallback(
+    (e: MouseEvent) => {
+      if (gridRef.current && newTiles) {
+        const bounds = gridRef.current.getBoundingClientRect();
+        console.log({
+          x: Math.floor(((e.pageX - bounds.left) / bounds.width) * canvasWidth),
+          y: Math.floor(
+            ((e.pageY - bounds.top) / bounds.height) * canvasHeight
+          ),
+        });
+
+        setCreateOrigin({
+          x: Math.floor(
+            ((e.pageX - bounds.left) / bounds.width) * canvasWidth -
+              newTiles.width * 4
+          ),
+          y: Math.floor(
+            ((e.pageY - bounds.top) / bounds.height) * canvasHeight -
+              newTiles.height * 8
+          ),
+        });
+      }
+    },
+    [setCreateOrigin, gridRef.current, newTiles?.width, newTiles?.height]
+  );
+
+  const onCreateTiles = useCallback(() => {
+    console.log("CREATE");
+  }, []);
+
+  const onDragStart = (tileId: string) => (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => {
-    setSelectedMetasprite(index);
-    setMetaspriteOrigin({ x: metasprite[index].x, y: metasprite[index].y });
-    setDragOrigin({ x: e.pageX, y: e.pageY });
-    setDraggingMetasprite(true);
+    const tile = metaspriteTileLookup[tileId];
+    if (tile) {
+      if (e.shiftKey) {
+        toggleSelectedTileId(tileId);
+      } else {
+        let ids = selectedTileIds;
+        if (!selectedTileIds.includes(tileId)) {
+          setSelectedTileId(tileId);
+          ids = [tileId];
+        }
+        // Store starting positions
+        dragMetasprites.current = ids.map((id) => {
+          return {
+            id,
+            origin: {
+              x: metaspriteTileLookup[id]?.x || 0,
+              y: metaspriteTileLookup[id]?.y || 0,
+            },
+          };
+        });
+        setDragOrigin({ x: e.pageX, y: e.pageY });
+        setDraggingMetasprite(true);
+      }
+    }
   };
 
   const onDrag = useCallback(
     (e: MouseEvent) => {
-      const newMetasprite = metasprite.map((m, index) => {
-        if (index === selectedMetasprite) {
-          return {
-            ...m,
-            x: metaspriteOrigin.x + (e.pageX - dragOrigin.x) / zoom,
-            y: metaspriteOrigin.y + (e.pageY - dragOrigin.y) / zoom,
-          };
-        }
-        return m;
+      dragMetasprites.current.forEach((selection) => {
+        dispatch(
+          entitiesActions.moveMetaspriteTile({
+            metaspriteTileId: selection.id,
+            x: Math.round(selection.origin.x + (e.pageX - dragOrigin.x) / zoom),
+            y: Math.round(selection.origin.y + (e.pageY - dragOrigin.y) / zoom),
+          })
+        );
       });
-      setMetasprite(newMetasprite);
     },
-    [
-      metasprite,
-      selectedMetasprite,
-      metaspriteOrigin.x,
-      metaspriteOrigin.y,
-      dragOrigin.x,
-      dragOrigin.y,
-      zoom,
-    ]
+    [dragMetasprites.current, dragOrigin.x, dragOrigin.y, zoom]
   );
 
   const onDragEnd = (e: MouseEvent) => {
@@ -129,11 +175,22 @@ const MetaspriteEditor = ({ id }: MetaspriteEditorProps) => {
   };
 
   const onDeselect = () => {
-    setSelectedMetasprite(-1);
+    resetSelectedTileIds();
   };
 
   const onKeyDown = useCallback(
     (e: KeyboardEvent) => {
+      if ((e.target as any).nodeName !== "BODY") {
+        return;
+      }
+      if (e.ctrlKey || e.metaKey) {
+        return;
+      }
+      if (selectedTileIds.length === 0) {
+        return;
+      }
+      e.preventDefault();
+
       let nudgeX = 0;
       let nudgeY = 0;
       if (e.key === "ArrowUp") {
@@ -152,62 +209,106 @@ const MetaspriteEditor = ({ id }: MetaspriteEditorProps) => {
       }
 
       if (nudgeX !== 0 || nudgeY !== 0) {
-        setMetasprite((ms) => {
-          return ms.map((m, index) => {
-            if (index === selectedMetasprite) {
-              return {
-                ...m,
-                x: m.x + nudgeX,
-                y: m.y + nudgeY,
-              };
-            }
-            return m;
-          });
-        });
+        nudgeSelectedTiles(nudgeX, nudgeY);
       }
 
       if (e.key === "Escape") {
-        setSelectedMetasprite(-1);
+        resetSelectedTileIds();
       }
 
       if (e.key === "x") {
-        setMetasprite((ms) => {
-          return ms.map((m, index) => {
-            if (index === selectedMetasprite) {
-              return {
-                ...m,
-                flipX: !m.flipX,
-              };
-            }
-            return m;
-          });
-        });
+        flipXSelectedTiles(!metaspriteTileLookup[selectedTileIds[0]]?.flipX);
       }
       if (e.key === "z") {
-        setMetasprite((ms) => {
-          return ms.map((m, index) => {
-            if (index === selectedMetasprite) {
-              return {
-                ...m,
-                flipY: !m.flipY,
-              };
-            }
-            return m;
-          });
-        });
+        flipYSelectedTiles(!metaspriteTileLookup[selectedTileIds[0]]?.flipY);
       }
       if (e.key === "Backspace") {
-        const deleteMetasprite = selectedMetasprite;
-        setMetasprite((ms) => {
-          return ms.filter((m, index) => {
-            return index !== deleteMetasprite;
-          });
-        });
-        setSelectedMetasprite(-1);
+        removeSelectedTiles();
       }
     },
-    [selectedMetasprite]
+    [
+      selectedTileIds,
+      metaspriteTileLookup[selectedTileIds[0]]?.flipX,
+      metaspriteTileLookup[selectedTileIds[0]]?.flipY,
+    ]
   );
+
+  const nudgeSelectedTiles = useCallback(
+    (x: number, y: number) => {
+      selectedTileIds.forEach((id) => {
+        dispatch(
+          entitiesActions.moveMetaspriteTileRelative({
+            metaspriteTileId: id,
+            x: Math.round(x),
+            y: Math.round(y),
+          })
+        );
+      });
+    },
+    [dispatch, selectedTileIds]
+  );
+
+  const flipXSelectedTiles = useCallback(
+    (flipX: boolean) => {
+      selectedTileIds.forEach((id) => {
+        dispatch(
+          entitiesActions.editMetaspriteTile({
+            metaspriteTileId: id,
+            changes: {
+              flipX,
+            },
+          })
+        );
+      });
+    },
+    [dispatch, selectedTileIds]
+  );
+
+  const flipYSelectedTiles = useCallback(
+    (flipY: boolean) => {
+      selectedTileIds.forEach((id) => {
+        dispatch(
+          entitiesActions.editMetaspriteTile({
+            metaspriteTileId: id,
+            changes: {
+              flipY,
+            },
+          })
+        );
+      });
+    },
+    [dispatch, selectedTileIds]
+  );
+
+  const removeSelectedTiles = useCallback(() => {
+    selectedTileIds.forEach((id) => {
+      dispatch(
+        entitiesActions.removeMetaspriteTile({
+          metaspriteTileId: id,
+        })
+      );
+    });
+  }, [dispatch, selectedTileIds]);
+
+  const setSelectedTileId = useCallback((tileId: string) => {
+    dispatch(editorActions.setSelectedMetaspriteTileId(tileId));
+  }, []);
+
+  const toggleSelectedTileId = useCallback((tileId: string) => {
+    dispatch(editorActions.toggleSelectedMetaspriteTileId(tileId));
+  }, []);
+
+  const resetSelectedTileIds = useCallback(() => {
+    dispatch(editorActions.resetSelectedMetaspriteTileIds());
+  }, []);
+
+  const onOverEditor = useCallback(() => {
+    setIsOverEditor(true);
+  }, [setIsOverEditor]);
+
+  const onLeaveEditor = useCallback(() => {
+    setIsOverEditor(false);
+  }, [setIsOverEditor]);
 
   // Keyboard handlers
   useEffect(() => {
@@ -230,68 +331,140 @@ const MetaspriteEditor = ({ id }: MetaspriteEditorProps) => {
     return () => {};
   }, [draggingMetasprite, onDrag]);
 
+  useEffect(() => {
+    if (newTiles) {
+      window.addEventListener("mousemove", onMoveCreateCursor);
+      window.addEventListener("mouseup", onCreateTiles);
+      return () => {
+        window.removeEventListener("mousemove", onMoveCreateCursor);
+        window.removeEventListener("mouseup", onCreateTiles);
+      };
+    }
+    return () => {};
+  }, [newTiles, onMoveCreateCursor, onCreateTiles]);
+
   return (
-    <div
-      style={{
-        overflow: "scroll",
-        position: "absolute",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-      }}
-    >
+    <>
       <div
         style={{
-          display: "flex",
-          height: "100%",
-          justifyContent: "center",
-          alignItems: "center",
-          minWidth: canvasWidth * zoom + 100,
-          minHeight: canvasHeight * zoom + 10,
+          overflow: "auto",
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
         }}
+        onMouseEnter={onOverEditor}
+        onMouseLeave={onLeaveEditor}
       >
         <div
-          onMouseDown={onDeselect}
           style={{
+            display: "flex",
+            height: "100%",
+            justifyContent: "center",
+            alignItems: "center",
+            minWidth: canvasWidth * zoom + 100,
+            minHeight: canvasHeight * zoom + 110,
+          }}
+        >
+          <div
+            onMouseDown={onDeselect}
+            style={{
+              position: "absolute",
+              top: 0,
+              right: 0,
+              bottom: 0,
+              left: 0,
+            }}
+          />
+          <div ref={gridRef} style={{ display: "inline-block" }}>
+            <MetaspriteGrid
+              width={canvasWidth}
+              height={canvasHeight}
+              zoom={zoom}
+              gridSize={gridSize}
+              onClick={onDeselect}
+            >
+              {metaspriteTiles.map((metaspriteTile) => (
+                <MetaspriteDraggableTile
+                  key={metaspriteTile.id}
+                  style={{
+                    left: metaspriteTile.x,
+                    top: metaspriteTile.y,
+                  }}
+                  selected={selectedTileIds.includes(metaspriteTile.id)}
+                  onMouseDown={onDragStart(metaspriteTile.id)}
+                >
+                  <SpriteSliceCanvas
+                    spriteSheetId={spriteSheetId}
+                    offsetX={metaspriteTile.sliceX * 8}
+                    offsetY={metaspriteTile.sliceY * 8}
+                    width={8}
+                    height={16}
+                    flipX={metaspriteTile.flipX}
+                    flipY={metaspriteTile.flipY}
+                  />
+                </MetaspriteDraggableTile>
+              ))}
+              {isOverEditor && newTiles && (
+                <div
+                  style={{
+                    position: "absolute",
+                    left: createOrigin.x,
+                    top: createOrigin.y,
+                    opacity: 0.5,
+                  }}
+                >
+                  <SpriteSliceCanvas
+                    spriteSheetId={spriteSheetId}
+                    offsetX={newTiles.x * 8}
+                    offsetY={newTiles.y * 8}
+                    width={newTiles.width * 8}
+                    height={newTiles.height * 16}
+                    flipX={false}
+                    flipY={false}
+                  />
+                </div>
+              )}
+            </MetaspriteGrid>
+          </div>
+        </div>
+      </div>
+      {/* {newTiles && (
+        <div
+          ref={createRef}
+          style={{
+            overflow: "hidden",
             position: "absolute",
             top: 0,
+            left: 0,
             right: 0,
             bottom: 0,
-            left: 0,
+            pointerEvents: "none",
           }}
-        />
-        <MetaspriteGrid
-          width={canvasWidth}
-          height={canvasHeight}
-          zoom={zoom}
-          gridSize={gridSize}
-          onClick={onDeselect}
         >
-          {metasprite.map((metaspriteTile, metaspriteIndex) => (
-            <MetaspriteDraggableTile
-              key={metaspriteTile.id}
-              style={{
-                left: metaspriteTile.x,
-                top: metaspriteTile.y,
-              }}
-              selected={metaspriteIndex === selectedMetasprite}
-              onMouseDown={onDragStart(metaspriteIndex)}
-            >
-              <SpriteSliceCanvas
-                spriteSheetId={id}
-                offsetX={metaspriteTile.sliceX * 8}
-                offsetY={metaspriteTile.sliceY * 8}
-                width={8}
-                height={16}
-                flipX={metaspriteTile.flipX}
-                flipY={metaspriteTile.flipY}
-              />
-            </MetaspriteDraggableTile>
-          ))}
-        </MetaspriteGrid>
-      </div>
-    </div>
+          <div
+            style={{
+              position: "absolute",
+              left: createOrigin.x,
+              top: createOrigin.y,
+              transform: `translate3d(0, 0, 0) scale(${zoom})`,
+              transformOrigin: "top left",
+            }}
+          >
+            <SpriteSliceCanvas
+              spriteSheetId={spriteSheetId}
+              offsetX={newTiles.x * 8}
+              offsetY={newTiles.y * 8}
+              width={newTiles.width * 8}
+              height={newTiles.height * 16}
+              flipX={false}
+              flipY={false}
+            />
+          </div>
+        </div>
+      )} */}
+    </>
   );
 };
 

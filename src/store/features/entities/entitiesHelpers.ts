@@ -17,7 +17,17 @@ eventSchema.define({
   }
 });
 */
-const spriteSheetsSchema = new schema.Entity("spriteSheets");
+const metaspriteTilesSchema = new schema.Entity("metaspriteTiles");
+const metaspritesSchema = new schema.Entity("metasprites", {
+  tiles: [metaspriteTilesSchema],
+});
+const spriteAnimationsSchema = new schema.Entity("spriteAnimations", {
+  frames: [metaspritesSchema],
+});
+const spriteSheetsSchema = new schema.Entity("spriteSheets", {
+  animations: [spriteAnimationsSchema],
+});
+
 const variablesSchema = new schema.Entity("variables");
 const sceneSchema = new schema.Entity("scenes", {
   actors: [actorSchema],
@@ -36,7 +46,7 @@ const projectSchema = {
   variables: [variablesSchema],
   customEvents: [customEventsSchema],
   palettes: [palettesSchema],
-  engineFieldValues: [engineFieldValuesSchema]
+  engineFieldValues: [engineFieldValuesSchema],
 };
 
 type ProjectSchemaKey = keyof typeof projectSchema;
@@ -64,11 +74,14 @@ export const denormalizeEntities = (
     scenes: state.scenes.entities,
     backgrounds: state.backgrounds.entities,
     spriteSheets: state.spriteSheets.entities,
+    metasprites: state.metasprites.entities,
+    metaspriteTiles: state.metaspriteTiles.entities,
+    spriteAnimations: state.spriteAnimations.entities,
     palettes: state.palettes.entities,
     customEvents: state.customEvents.entities,
     music: state.music.entities,
     variables: state.variables.entities,
-    engineFieldValues: state.engineFieldValues.entities
+    engineFieldValues: state.engineFieldValues.entities,
   };
   return denormalize(input, projectSchema, entities);
 };

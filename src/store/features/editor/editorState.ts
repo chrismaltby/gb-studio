@@ -35,6 +35,13 @@ export type EditorSelectionType =
 
 export type ZoomSection = "world" | "sprites" | "backgrounds" | "ui";
 
+export interface SpriteTileSelection {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
 export interface EditorState {
   tool: Tool;
   actorDefaults?: Partial<Actor>;
@@ -82,6 +89,14 @@ export interface EditorState {
   navigatorSplitSizes: number[];
   profile: boolean;
   focusSceneId: string;
+  selectedSpriteSheetId: string;
+  selectedAnimationId: string;
+  selectedMetaspriteId: string;
+  selectedMetaspriteTileIds: string[];
+  showSpriteGrid: boolean;
+  showOnionSkin: boolean;
+  playSpriteAnimation: boolean;
+  spriteTileSelection?: SpriteTileSelection;
 }
 
 export const initialState: EditorState = {
@@ -128,6 +143,13 @@ export const initialState: EditorState = {
   clipboardVariables: [],
   navigatorSplitSizes: [300, 100, 100],
   focusSceneId: "",
+  selectedSpriteSheetId: "",
+  selectedAnimationId: "",
+  selectedMetaspriteId: "",
+  selectedMetaspriteTileIds: [],
+  showSpriteGrid: true,
+  showOnionSkin: false,
+  playSpriteAnimation: false,
 };
 
 const editorSlice = createSlice({
@@ -461,6 +483,69 @@ const editorSlice = createSlice({
     setFocusSceneId: (state, action: PayloadAction<string>) => {
       state.focusSceneId = action.payload;
     },
+
+    setSelectedSpriteSheetId: (state, action: PayloadAction<string>) => {
+      state.selectedSpriteSheetId = action.payload;
+      state.selectedAnimationId = "";
+      state.selectedMetaspriteId = "";
+      state.selectedMetaspriteTileIds = [];
+      state.playSpriteAnimation = false;
+    },
+
+    setSelectedAnimationId: (state, action: PayloadAction<string>) => {
+      state.selectedAnimationId = action.payload;
+      state.selectedMetaspriteId = "";
+      state.selectedMetaspriteTileIds = [];
+      state.playSpriteAnimation = false;
+    },
+
+    setSelectedMetaspriteId: (state, action: PayloadAction<string>) => {
+      state.selectedMetaspriteId = action.payload;
+      state.selectedMetaspriteTileIds = [];
+    },
+
+    setSelectedMetaspriteTileId: (state, action: PayloadAction<string>) => {
+      state.selectedMetaspriteTileIds = [action.payload];
+      state.playSpriteAnimation = false;
+    },
+
+    resetSelectedMetaspriteTileIds: (state) => {
+      state.selectedMetaspriteTileIds = [];
+      state.playSpriteAnimation = false;
+    },
+
+    toggleSelectedMetaspriteTileId: (state, action: PayloadAction<string>) => {
+      if (state.selectedMetaspriteTileIds.indexOf(action.payload) > -1) {
+        // Don't remove if this is the last selected tile
+        if (state.selectedMetaspriteTileIds.length > 1) {
+          state.selectedMetaspriteTileIds = state.selectedMetaspriteTileIds.filter(
+            (id) => id !== action.payload
+          );
+        }
+      } else {
+        state.selectedMetaspriteTileIds.push(action.payload);
+      }
+      state.playSpriteAnimation = false;
+    },
+
+    setShowOnionSkin: (state, action: PayloadAction<boolean>) => {
+      state.showOnionSkin = action.payload;
+    },
+
+    setShowSpriteGrid: (state, action: PayloadAction<boolean>) => {
+      state.showSpriteGrid = action.payload;
+    },
+
+    setPlaySpriteAnimation: (state, action: PayloadAction<boolean>) => {
+      state.playSpriteAnimation = action.payload;
+    },
+
+    setSpriteTileSelection: (
+      state,
+      action: PayloadAction<SpriteTileSelection>
+    ) => {
+      state.spriteTileSelection = action.payload;
+    },
   },
   extraReducers: (builder) =>
     builder
@@ -480,6 +565,10 @@ const editorSlice = createSlice({
         state.scene = action.payload.sceneId;
         state.entityId = action.payload.triggerId;
         state.worldFocus = true;
+      })
+      .addCase(entitiesActions.addMetasprite, (state, action) => {
+        state.selectedMetaspriteId = action.payload.metaspriteId;
+        state.selectedMetaspriteTileIds = [];
       })
       .addCase(entitiesActions.addCustomEvent, (state, action) => {
         state.type = "customEvent";
