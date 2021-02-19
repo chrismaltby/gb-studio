@@ -297,6 +297,7 @@ const MetaspriteEditor = ({
       if (selectedTileIds.length === 0) {
         if (e.key === "Escape") {
           resetSpriteTileSelection();
+          resetSelectedTileIds();
         }
         return;
       }
@@ -324,6 +325,7 @@ const MetaspriteEditor = ({
       }
 
       if (e.key === "Escape") {
+        resetSpriteTileSelection();
         resetSelectedTileIds();
       }
 
@@ -356,7 +358,7 @@ const MetaspriteEditor = ({
         );
       });
     },
-    [dispatch, selectedTileIds]
+    [dispatch, selectedTileIds, selectedTileIds.length]
   );
 
   const flipXSelectedTiles = useCallback(
