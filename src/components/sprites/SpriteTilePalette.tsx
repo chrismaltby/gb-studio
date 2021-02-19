@@ -182,6 +182,7 @@ const SpriteTilePalette = ({ id }: SpriteTilePaletteProps) => {
           style={{
             width: "100%",
             textAlign: "center",
+            padding: 10,
           }}
         >
           <div
