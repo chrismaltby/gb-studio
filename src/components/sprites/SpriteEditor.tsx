@@ -40,6 +40,7 @@ import {
 } from "../ui/icons/Icons";
 import { FixedSpacer, FlexGrow } from "../ui/spacing/Spacing";
 import { NumberField } from "../ui/form/NumberField";
+import { SidebarHeader } from "../ui/form/SidebarHeader";
 
 interface SpriteEditorProps {
   id: string;
@@ -183,14 +184,13 @@ export const SpriteEditor = ({
       <SidebarColumn>
         <FormContainer>
           <FormHeader>
-            {metaspriteTile ? (
-              <EditableText
-                name="name"
-                placeholder="Sprite"
-                value={"Sprite Tile"}
-                onChange={() => {}}
-              />
-            ) : (
+            {metaspriteTile && selectedTileIds.length === 1 && (
+              <SidebarHeader>Sprite Tile</SidebarHeader>
+            )}
+            {metaspriteTile && selectedTileIds.length > 1 && (
+              <SidebarHeader>Sprite Tiles</SidebarHeader>
+            )}
+            {!metaspriteTile && (
               <EditableText
                 name="name"
                 placeholder="Sprite"
@@ -213,28 +213,30 @@ export const SpriteEditor = ({
             </DropdownButton>
           </FormHeader>
 
-          {metaspriteTile && selectedTileIds.length === 1 ? (
+          {metaspriteTile && (
             <>
-              <FormRow>
-                <CoordinateInput
-                  name="x"
-                  coordinate="x"
-                  value={metaspriteTile.x}
-                  placeholder="0"
-                  min={-96}
-                  max={96}
-                  onChange={onChangeTileFieldInput("x")}
-                />
-                <CoordinateInput
-                  name="y"
-                  coordinate="y"
-                  value={metaspriteTile.y}
-                  placeholder="0"
-                  min={-96}
-                  max={96}
-                  onChange={onChangeTileFieldInput("y")}
-                />
-              </FormRow>
+              {selectedTileIds.length === 1 && (
+                <FormRow>
+                  <CoordinateInput
+                    name="x"
+                    coordinate="x"
+                    value={metaspriteTile.x}
+                    placeholder="0"
+                    min={-96}
+                    max={96}
+                    onChange={onChangeTileFieldInput("x")}
+                  />
+                  <CoordinateInput
+                    name="y"
+                    coordinate="y"
+                    value={metaspriteTile.y}
+                    placeholder="0"
+                    min={-96}
+                    max={96}
+                    onChange={onChangeTileFieldInput("y")}
+                  />
+                </FormRow>
+              )}
 
               <FormRow>
                 <Button
@@ -294,7 +296,9 @@ export const SpriteEditor = ({
                 <Button>Replace Tile</Button>
               </FormRow>
             </>
-          ) : (
+          )}
+
+          {!metaspriteTile && (
             <>
               <FormRow>
                 <Label>Sprite Canvas</Label>
