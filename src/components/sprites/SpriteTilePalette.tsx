@@ -29,10 +29,7 @@ const SpriteTilePalette = ({ id }: SpriteTilePaletteProps) => {
     [dispatch]
   );
 
-  const [hoverTile, setHoverTile] = useState<HoverTile | undefined>({
-    x: 1,
-    y: 2,
-  });
+  const [hoverTile, setHoverTile] = useState<HoverTile | undefined>();
   const [isDragging, setIsDragging] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
