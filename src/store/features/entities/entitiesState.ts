@@ -1468,11 +1468,11 @@ const addMetasprite: CaseReducer<
   metaspritesAdapter.addOne(state.metasprites, newMetasprite);
 };
 
-const sendMetaspriteTileToFront: CaseReducer<
+const sendMetaspriteTilesToFront: CaseReducer<
   EntitiesState,
   PayloadAction<{
     metaspriteId: string;
-    metaspriteTileId: string;
+    metaspriteTileIds: string[];
   }>
 > = (state, action) => {
   const metasprite = state.metasprites.entities[action.payload.metaspriteId];
@@ -1483,9 +1483,9 @@ const sendMetaspriteTileToFront: CaseReducer<
 
   const newTiles = ([] as string[]).concat(
     metasprite.tiles.filter(
-      (tileId) => tileId !== action.payload.metaspriteTileId
+      (tileId) => !action.payload.metaspriteTileIds.includes(tileId)
     ),
-    action.payload.metaspriteTileId
+    action.payload.metaspriteTileIds
   );
 
   metaspritesAdapter.updateOne(state.metasprites, {
@@ -1496,11 +1496,11 @@ const sendMetaspriteTileToFront: CaseReducer<
   });
 };
 
-const sendMetaspriteTileToBack: CaseReducer<
+const sendMetaspriteTilesToBack: CaseReducer<
   EntitiesState,
   PayloadAction<{
     metaspriteId: string;
-    metaspriteTileId: string;
+    metaspriteTileIds: string[];
   }>
 > = (state, action) => {
   const metasprite = state.metasprites.entities[action.payload.metaspriteId];
@@ -1510,9 +1510,9 @@ const sendMetaspriteTileToBack: CaseReducer<
   }
 
   const newTiles = ([] as string[]).concat(
-    action.payload.metaspriteTileId,
+    action.payload.metaspriteTileIds,
     metasprite.tiles.filter(
-      (tileId) => tileId !== action.payload.metaspriteTileId
+      (tileId) => !action.payload.metaspriteTileIds.includes(tileId)
     )
   );
 
@@ -2354,8 +2354,8 @@ const entitiesSlice = createSlice({
       },
     },
 
-    sendMetaspriteTileToFront,
-    sendMetaspriteTileToBack,
+    sendMetaspriteTilesToFront,
+    sendMetaspriteTilesToBack,
     removeMetasprite,
 
     /**************************************************************************

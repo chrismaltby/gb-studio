@@ -151,21 +151,21 @@ export const SpriteEditor = ({
 
   const sendTileToBack = useCallback(() => {
     dispatch(
-      entitiesActions.sendMetaspriteTileToBack({
-        metaspriteTileId: selectedTileId,
+      entitiesActions.sendMetaspriteTilesToBack({
+        metaspriteTileIds: selectedTileIds,
         metaspriteId: metaspriteId,
       })
     );
-  }, [selectedTileId, metaspriteId]);
+  }, [selectedTileIds, metaspriteId]);
 
   const sendTileToFront = useCallback(() => {
     dispatch(
-      entitiesActions.sendMetaspriteTileToFront({
-        metaspriteTileId: selectedTileId,
+      entitiesActions.sendMetaspriteTilesToFront({
+        metaspriteTileIds: selectedTileIds,
         metaspriteId: metaspriteId,
       })
     );
-  }, [selectedTileId, metaspriteId]);
+  }, [selectedTileIds, metaspriteId]);
 
   const showBoundingBox = useCallback(() => {
     dispatch(editorActions.setShowSpriteBoundingBox(true));
