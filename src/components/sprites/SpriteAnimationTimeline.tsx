@@ -1,6 +1,7 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
+import throttle from "lodash/throttle";
 import { RootState } from "../../store/configureStore";
 import { spriteAnimationSelectors } from "../../store/features/entities/entitiesState";
 import entitiesActions from "../../store/features/entities/entitiesActions";
@@ -57,9 +58,13 @@ const SpriteAnimationTimeline = ({
 }: SpriteAnimationTimelineProps) => {
   const dispatch = useDispatch();
 
+  const [hasFocus, setHasFocus] = useState(false);
+
   const animation = useSelector((state: RootState) =>
     spriteAnimationSelectors.selectById(state, animationId)
   );
+
+  const frames = animation?.frames || [];
 
   const onMoveFrames = useCallback(
     (fromIndex: number, toIndex: number) => {
@@ -89,10 +94,57 @@ const SpriteAnimationTimeline = ({
     );
   }, [animationId, dispatch]);
 
-  const frames = animation?.frames || [];
+  const handleKeys = useCallback(
+    (e: KeyboardEvent) => {
+      if (!hasFocus) {
+        return;
+      }
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+        throttledNext.current(frames, metaspriteId || "");
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        throttledPrev.current(frames, metaspriteId || "");
+      } else if (e.key === "Home") {
+        onSetFrame(frames[0]);
+      } else if (e.key === "End") {
+        onSetFrame(frames[frames.length - 1]);
+      }
+    },
+    [hasFocus, frames, metaspriteId]
+  );
+
+  const throttledNext = useRef(
+    throttle((frames: string[], selectedId: string) => {
+      const currentIndex = frames.indexOf(selectedId);
+      const nextIndex = (currentIndex + 1) % frames.length;
+      const nextItem = frames[nextIndex];
+      onSetFrame(nextItem);
+    }, 150)
+  );
+
+  const throttledPrev = useRef(
+    throttle((frames: string[], selectedId: string) => {
+      const currentIndex = frames.indexOf(selectedId);
+      const prevIndex = (frames.length + currentIndex - 1) % frames.length;
+      const prevItem = frames[prevIndex];
+      onSetFrame(prevItem);
+    }, 150)
+  );
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeys);
+    return () => {
+      window.removeEventListener("keydown", handleKeys);
+    };
+  });
 
   return (
-    <Wrapper>
+    <Wrapper
+      tabIndex={0}
+      onFocus={() => setHasFocus(true)}
+      onBlur={() => setHasFocus(false)}
+    >
       <ScrollWrapper>
         {frames.map((frameMetaspriteId, i) => {
           return (

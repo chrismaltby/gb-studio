@@ -490,6 +490,7 @@ const editorSlice = createSlice({
       state.selectedMetaspriteId = "";
       state.selectedMetaspriteTileIds = [];
       state.playSpriteAnimation = false;
+      state.spriteTileSelection = undefined;
     },
 
     setSelectedAnimationId: (state, action: PayloadAction<string>) => {
