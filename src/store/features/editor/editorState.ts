@@ -33,7 +33,7 @@ export type EditorSelectionType =
   | "customEvent"
   | "variable";
 
-export type ZoomSection = "world" | "sprites" | "backgrounds" | "ui";
+export type ZoomSection = "world" | "sprites" | "backgrounds" | "ui" | "spriteTiles";
 
 export interface SpriteTileSelection {
   x: number;
@@ -58,6 +58,7 @@ export interface EditorState {
   zoomSprite: number;
   zoomImage: number;
   zoomUI: number;
+  zoomSpriteTiles: number;
   dragging: string;
   sceneDragging: boolean;
   sceneDragX: number;
@@ -112,6 +113,7 @@ export const initialState: EditorState = {
   zoomSprite: 400,
   zoomImage: 200,
   zoomUI: 200,
+  zoomSpriteTiles: 400,
   dragging: "",
   sceneDragging: false,
   sceneDragX: 0,
@@ -360,6 +362,10 @@ const editorSlice = createSlice({
           state.zoomUI = calculateZoomIn(state.zoomUI);
           break;
         }
+        case "spriteTiles": {
+          state.zoomSpriteTiles = calculateZoomIn(state.zoomSpriteTiles);
+          break;
+        }        
       }
     },
 
@@ -392,6 +398,10 @@ const editorSlice = createSlice({
           state.zoomUI = calculateZoomOut(state.zoomUI);
           break;
         }
+        case "spriteTiles": {
+          state.zoomSpriteTiles = calculateZoomOut(state.zoomSpriteTiles);
+          break;
+        }        
       }
     },
 
@@ -413,6 +423,10 @@ const editorSlice = createSlice({
           state.zoomUI = 100;
           break;
         }
+        case "spriteTiles": {
+          state.zoomSpriteTiles = 400;
+          break;
+        }        
       }
     },
 

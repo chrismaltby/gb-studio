@@ -30,6 +30,7 @@ import { SplitPaneHeader } from "../../components/ui/splitpane/SplitPaneHeader";
 import l10n from "../../lib/helpers/l10n";
 import { getAnimationNames } from "../../components/sprites/helpers";
 import MetaspriteEditorToolsPanel from "../../components/sprites/MetaspriteEditorToolsPanel";
+import { ZoomButton } from "../../components/ui/buttons/ZoomButton";
 
 const Wrapper = styled.div`
   display: flex;
@@ -45,6 +46,7 @@ const SpritesPage = () => {
   const navigatorSidebarWidth = useSelector(
     (state: RootState) => state.editor.navigatorSidebarWidth
   );
+  const tilesZoom = useSelector((state: RootState) => state.editor.zoomSpriteTiles);
   const windowSize = useWindowSize();
   const prevWindowWidthRef = useRef<number>(0);
   const windowWidth = windowSize.width || 0;
@@ -195,6 +197,18 @@ const SpritesPage = () => {
     setAnimationsOpen(!animationsOpen);
   }, [animationsOpen, setAnimationsOpen]);
 
+  const onZoomIn = useCallback(() => {
+      dispatch(editorActions.zoomIn({ section: "spriteTiles" }));
+  }, [dispatch]);
+
+  const onZoomOut = useCallback(() => {
+      dispatch(editorActions.zoomOut({ section: "spriteTiles" }));
+  }, [dispatch]);
+
+  const onZoomReset = useCallback(() => {
+      dispatch(editorActions.zoomReset({ section: "spriteTiles" }));
+  }, [dispatch]);
+
   const animationNames = getAnimationNames();
 
   return (
@@ -254,6 +268,19 @@ const SpritesPage = () => {
           <SplitPaneHeader
             onToggle={toggleTilesPane}
             collapsed={centerPaneHeight === 30}
+            buttons={
+              centerPaneHeight > 30 && <ZoomButton
+                zoom={tilesZoom}
+                size="small"
+                variant="transparent"
+                title={l10n("TOOLBAR_ZOOM_RESET")}
+                titleIn={l10n("TOOLBAR_ZOOM_IN")}
+                titleOut={l10n("TOOLBAR_ZOOM_OUT")}
+                onZoomIn={onZoomIn}
+                onZoomOut={onZoomOut}
+                onZoomReset={onZoomReset}
+              />
+            }
           >
             {l10n("FIELD_TILES")}
           </SplitPaneHeader>

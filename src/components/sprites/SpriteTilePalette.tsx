@@ -17,7 +17,7 @@ interface HoverTile {
 
 const SpriteTilePalette = ({ id }: SpriteTilePaletteProps) => {
   const dispatch = useDispatch();
-  const zoom = useSelector((state: RootState) => state.editor.zoomSprite) / 100;
+  const zoom = useSelector((state: RootState) => state.editor.zoomSpriteTiles) / 100;
   const selectedTiles = useSelector(
     (state: RootState) => state.editor.spriteTileSelection
   );
