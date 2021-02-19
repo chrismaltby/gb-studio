@@ -166,8 +166,9 @@ const MetaspriteEditor = ({
         const bounds = gridRef.current.getBoundingClientRect();
         setCreateOrigin({
           x: Math.floor(
-            -8 +
-              ((e.pageX - bounds.left) / bounds.width) * canvasWidth -
+            ((e.pageX - bounds.left) / bounds.width) * canvasWidth -
+              canvasWidth / 2 +
+              8 -
               newTiles.width * 4
           ),
           y: Math.floor(
@@ -179,7 +180,14 @@ const MetaspriteEditor = ({
         });
       }
     },
-    [setCreateOrigin, gridRef.current, newTiles?.width, newTiles?.height]
+    [
+      setCreateOrigin,
+      gridRef.current,
+      newTiles?.width,
+      newTiles?.height,
+      canvasWidth,
+      canvasHeight,
+    ]
   );
 
   const onCreateTiles = useCallback(
@@ -388,7 +396,7 @@ const MetaspriteEditor = ({
       dispatch(
         entitiesActions.removeMetaspriteTile({
           metaspriteTileId: id,
-          metaspriteId
+          metaspriteId,
         })
       );
     });
