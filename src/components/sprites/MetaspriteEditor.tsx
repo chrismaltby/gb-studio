@@ -388,10 +388,11 @@ const MetaspriteEditor = ({
       dispatch(
         entitiesActions.removeMetaspriteTile({
           metaspriteTileId: id,
+          metaspriteId
         })
       );
     });
-  }, [dispatch, selectedTileIds]);
+  }, [dispatch, selectedTileIds, metaspriteId]);
 
   const setSelectedTileId = useCallback((tileId: string) => {
     dispatch(editorActions.setSelectedMetaspriteTileId(tileId));

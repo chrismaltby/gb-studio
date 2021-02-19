@@ -1538,12 +1538,11 @@ const removeMetasprite: CaseReducer<
     return;
   }
 
-  spriteAnimation.frames = spriteAnimation.frames.filter((frameId) => frameId !== action.payload.metaspriteId);
-
-  metaspritesAdapter.removeOne(
-    state.metasprites,
-    action.payload.metaspriteId
+  spriteAnimation.frames = spriteAnimation.frames.filter(
+    (frameId) => frameId !== action.payload.metaspriteId
   );
+
+  metaspritesAdapter.removeOne(state.metasprites, action.payload.metaspriteId);
 };
 
 /**************************************************************************
@@ -1649,8 +1648,19 @@ const removeMetaspriteTile: CaseReducer<
   EntitiesState,
   PayloadAction<{
     metaspriteTileId: string;
+    metaspriteId: string;
   }>
 > = (state, action) => {
+  const metasprite = state.metasprites.entities[action.payload.metaspriteId];
+
+  if (!metasprite) {
+    return;
+  }
+
+  metasprite.tiles = metasprite.tiles.filter(
+    (tileId) => tileId !== action.payload.metaspriteTileId
+  );
+
   metaspriteTilesAdapter.removeOne(
     state.metaspriteTiles,
     action.payload.metaspriteTileId
