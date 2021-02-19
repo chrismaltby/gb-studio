@@ -33,8 +33,8 @@ export const MetaspriteCanvas = ({
     metaspriteTileSelectors.selectEntities(state)
   );
   const projectRoot = useSelector((state: RootState) => state.document.root);
-  const width = spriteSheet?.width || 0;
-  const height = spriteSheet?.height || 0;
+  const width = spriteSheet?.canvasWidth || 0;
+  const height = spriteSheet?.canvasHeight || 0;
   const tiles = metasprite?.tiles
     ?.map((tileId) => tilesLookup[tileId])
     .filter((i) => i);
