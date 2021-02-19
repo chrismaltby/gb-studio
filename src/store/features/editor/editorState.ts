@@ -606,6 +606,10 @@ const editorSlice = createSlice({
           state.worldFocus = true;
         }
       })
+      .addCase(entitiesActions.removeMetasprite, (state, action) => {
+        state.selectedMetaspriteId = "";
+        state.selectedMetaspriteTileIds = [];
+      })
       // Set to world editor when moving player start position
       .addCase(settingsActions.editPlayerStartAt, (state, action) => {
         state.scene = action.payload.sceneId;

@@ -94,6 +94,15 @@ const SpriteAnimationTimeline = ({
     );
   }, [animationId, dispatch]);
 
+  const onDeleteFrame = useCallback(() => {
+    dispatch(
+      entitiesActions.removeMetasprite({
+        spriteAnimationId: animationId,
+        metaspriteId,
+      })
+    );
+  }, [metaspriteId, animationId, dispatch]);
+
   const handleKeys = useCallback(
     (e: KeyboardEvent) => {
       if (!hasFocus) {
@@ -109,6 +118,8 @@ const SpriteAnimationTimeline = ({
         onSetFrame(frames[0]);
       } else if (e.key === "End") {
         onSetFrame(frames[frames.length - 1]);
+      } else if (e.key === "Backspace") {
+        onDeleteFrame();
       }
     },
     [hasFocus, frames, metaspriteId]

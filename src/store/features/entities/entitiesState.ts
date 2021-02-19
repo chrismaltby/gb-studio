@@ -1524,6 +1524,28 @@ const sendMetaspriteTileToBack: CaseReducer<
   });
 };
 
+const removeMetasprite: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    metaspriteId: string;
+    spriteAnimationId: string;
+  }>
+> = (state, action) => {
+  const spriteAnimation =
+    state.spriteAnimations.entities[action.payload.spriteAnimationId];
+
+  if (!spriteAnimation) {
+    return;
+  }
+
+  spriteAnimation.frames = spriteAnimation.frames.filter((frameId) => frameId !== action.payload.metaspriteId);
+
+  metaspritesAdapter.removeOne(
+    state.metasprites,
+    action.payload.metaspriteId
+  );
+};
+
 /**************************************************************************
  * Metasprite Tiles
  */
@@ -2324,6 +2346,7 @@ const entitiesSlice = createSlice({
 
     sendMetaspriteTileToFront,
     sendMetaspriteTileToBack,
+    removeMetasprite,
 
     /**************************************************************************
      * Metasprite Tiles
