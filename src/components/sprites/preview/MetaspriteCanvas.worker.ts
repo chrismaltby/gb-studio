@@ -66,12 +66,14 @@ workerCtx.onmessage = async (evt) => {
   for (let tile of tiles) {
     ctx.save();
     if (tile.flipX) {
-      ctx.translate(8, 0);
+      ctx.translate(((width-8) / 2), 0);
       ctx.scale(-1, 1);
+      ctx.translate(-((width-8) / 2), 0);
     }
     if (tile.flipY) {
-      ctx.translate(0, 16);
+      ctx.translate(0, height - 8);
       ctx.scale(1, -1);
+      ctx.translate(0, -(height - 8));
     }
     ctx.drawImage(
       imgCanvas,
