@@ -94,6 +94,16 @@ const SpriteBoundingBox = styled.div`
   box-shadow: 0px 0px 0px 1px rgba(255, 0, 0, 0.2) inset;
 `;
 
+const StampTilesWrapper = styled.div`
+  position: absolute;
+  opacity: 0.5;
+  pointer-events: none;
+  box-shadow: 0px 0px 0px 1px rgba(255, 0, 0, 0.5) inset;
+  canvas {
+    display: block;
+  }
+`;
+
 interface Position {
   x: number;
   y: number;
@@ -525,13 +535,10 @@ const MetaspriteEditor = ({
               </MetaspriteDraggableTile>
             ))}
             {isOverEditor && newTiles && (
-              <div
+              <StampTilesWrapper
                 style={{
-                  position: "absolute",
                   left: createOrigin.x,
                   top: -createOrigin.y - 16,
-                  opacity: 0.5,
-                  pointerEvents: "none",
                 }}
               >
                 <SpriteSliceCanvas
@@ -543,7 +550,7 @@ const MetaspriteEditor = ({
                   flipX={false}
                   flipY={false}
                 />
-              </div>
+              </StampTilesWrapper>
             )}
             {showBoundingBox && (
               <SpriteBoundingBox
