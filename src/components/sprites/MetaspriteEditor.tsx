@@ -456,6 +456,10 @@ const MetaspriteEditor = ({
     return () => {};
   }, [newTiles, isOverEditor, onMoveCreateCursor, onCreateTiles]);
 
+  if (!metasprite) {
+    return null;
+  }
+
   return (
     <ScrollWrapper>
       <ContentWrapper
