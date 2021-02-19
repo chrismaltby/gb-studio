@@ -166,78 +166,87 @@ const SpriteTilePalette = ({ id }: SpriteTilePaletteProps) => {
         bottom: 0,
         overflowX: "auto",
         overflowY: "scroll",
+        minWidth: 0,
       }}
     >
       <div
         style={{
           display: "flex",
           width: "100%",
-          justifyContent: "center",
+          minHeight: "100%",
           alignItems: "center",
-          marginTop: 10,
+          justifyContent: "center",
         }}
       >
         <div
-          ref={wrapperRef}
           style={{
-            position: "relative",
-            userSelect: "none",
+            width: "100%",
+            textAlign: "center",
           }}
-          onMouseDown={onDragStart}
-          onMouseMove={onHover}
-          onMouseLeave={onMouseOut}
         >
-          <img
-            style={{
-              imageRendering: "pixelated",
-              minWidth: width * zoom,
-            }}
-            alt={spriteSheet.name}
-            src={filename}
-          />
           <div
+            ref={wrapperRef}
             style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: width * zoom,
-              height: height * zoom,
-              border: `${1 / zoom}px solid #d4d4d4`,
-              backgroundSize: `${8 * zoom}px ${8 * zoom}px`,
-              backgroundImage:
-                zoom >= 8
-                  ? `linear-gradient(to right, 
+              position: "relative",
+              userSelect: "none",
+              display: "inline-block",
+            }}
+            onMouseDown={onDragStart}
+            onMouseMove={onHover}
+            onMouseLeave={onMouseOut}
+          >
+            <img
+              style={{
+                imageRendering: "pixelated",
+                minWidth: width * zoom,
+              }}
+              alt={spriteSheet.name}
+              src={filename}
+            />
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: width * zoom,
+                height: height * zoom,
+                border: `${1 / zoom}px solid #d4d4d4`,
+                backgroundSize: `${8 * zoom}px ${8 * zoom}px`,
+                backgroundImage:
+                  zoom >= 8
+                    ? `linear-gradient(to right, 
           #079f1c 1px, transparent 1px, transparent 7px, #efefef 8px, transparent 8px, transparent 15px, #efefef 16px, transparent 16px, transparent 23px, #efefef 24px, transparent 24px, transparent 31px, #efefef 32px, transparent 32px, transparent 39px, #efefef 40px, transparent 40px, transparent 47px, #efefef 48px, transparent 48px, transparent 55px, #efefef 56px, transparent 56px
           ), linear-gradient(to bottom, 
           #079f1c 1px, transparent 1px, transparent 7px, #efefef 8px, transparent 8px, transparent 15px, #efefef 16px, transparent 16px, transparent 23px, #efefef 24px, transparent 24px, transparent 31px, #efefef 32px, transparent 32px, transparent 39px, #efefef 40px, transparent 40px, transparent 47px, #efefef 48px, transparent 48px, transparent 55px, #efefef 56px, transparent 56px
           )`
-                  : "linear-gradient(to right, rgba(0,220,0,0.5) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,220,0,0.5) 1px, transparent 1px)",
-            }}
-          />
-          {hoverTile && !isDragging && (
-            <div
-              style={{
-                position: "absolute",
-                left: hoverTile.x * 8 * zoom,
-                top: hoverTile.y * 8 * zoom,
-                width: 8 * zoom,
-                height: 16 * zoom,
-                background: "rgba(0,0,0,0.1)",
+                    : "linear-gradient(to right, rgba(0,220,0,0.5) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,220,0,0.5) 1px, transparent 1px)",
               }}
             />
-          )}
-          {selectedTiles && (
-            <div
-              style={{
-                position: "absolute",
-                left: selectedTiles.x * zoom,
-                top: selectedTiles.y * zoom,
-                width: selectedTiles.width * 8 * zoom,
-                height: selectedTiles.height * 16 * zoom,
-                boxShadow: `0px 0px 0px ${zoom}px rgba(255, 0, 0, 0.5)`,
-              }}
-            />
-          )}
+            {hoverTile && !isDragging && (
+              <div
+                style={{
+                  position: "absolute",
+                  left: hoverTile.x * 8 * zoom,
+                  top: hoverTile.y * 8 * zoom,
+                  width: 8 * zoom,
+                  height: 16 * zoom,
+                  background: "rgba(0,0,0,0.1)",
+                }}
+              />
+            )}
+            {selectedTiles && (
+              <div
+                style={{
+                  position: "absolute",
+                  left: selectedTiles.x * zoom,
+                  top: selectedTiles.y * zoom,
+                  width: selectedTiles.width * 8 * zoom,
+                  height: selectedTiles.height * 16 * zoom,
+                  boxShadow: `0px 0px 0px ${zoom}px rgba(255, 0, 0, 0.5)`,
+                }}
+              />
+            )}
+          </div>
         </div>
       </div>
     </div>
