@@ -26,6 +26,7 @@ import {
   spriteSheetSelectors,
 } from "../../store/features/entities/entitiesState";
 import entitiesActions from "../../store/features/entities/entitiesActions";
+import editorActions from "../../store/features/editor/editorActions";
 import { RootState } from "../../store/configureStore";
 import castEventValue from "../../lib/helpers/castEventValue";
 import { FlatList } from "../ui/lists/FlatList";
@@ -164,6 +165,14 @@ export const SpriteEditor = ({
       })
     );
   }, [selectedTileId, metaspriteId]);
+
+  const showBoundingBox = useCallback(() => {
+    dispatch(editorActions.setShowSpriteBoundingBox(true));
+  }, []);
+
+  const hideBoundingBox = useCallback(() => {
+    dispatch(editorActions.setShowSpriteBoundingBox(false));
+  }, []);
 
   if (!sprite) {
     return null;
@@ -331,49 +340,54 @@ export const SpriteEditor = ({
 
               <FormDivider />
 
-              <FormRow>
-                <Label>Collision Bounding Box</Label>
-              </FormRow>
-              <FormRow>
-                <CoordinateInput
-                  name="x"
-                  coordinate="x"
-                  value={sprite.boundsX}
-                  placeholder="0"
-                  min={-96}
-                  max={96}
-                  onChange={onChangeFieldInput("boundsX")}
-                />
-                <CoordinateInput
-                  name="y"
-                  coordinate="y"
-                  value={sprite.boundsY}
-                  placeholder="0"
-                  min={-96}
-                  max={96}
-                  onChange={onChangeFieldInput("boundsY")}
-                />
-              </FormRow>
-              <FormRow>
-                <CoordinateInput
-                  name="x"
-                  coordinate="w"
-                  value={sprite.boundsWidth}
-                  placeholder="0"
-                  min={-96}
-                  max={96}
-                  onChange={onChangeFieldInput("boundsWidth")}
-                />
-                <CoordinateInput
-                  name="y"
-                  coordinate="h"
-                  value={sprite.boundsHeight}
-                  placeholder="0"
-                  min={-96}
-                  max={96}
-                  onChange={onChangeFieldInput("boundsHeight")}
-                />
-              </FormRow>
+              <div
+                onMouseEnter={showBoundingBox}
+                onMouseLeave={hideBoundingBox}
+              >
+                <FormRow>
+                  <Label>Collision Bounding Box</Label>
+                </FormRow>
+                <FormRow>
+                  <CoordinateInput
+                    name="boundsX"
+                    coordinate="x"
+                    value={sprite.boundsX}
+                    placeholder="0"
+                    min={-96}
+                    max={96}
+                    onChange={onChangeFieldInput("boundsX")}
+                  />
+                  <CoordinateInput
+                    name="boundsY"
+                    coordinate="y"
+                    value={sprite.boundsY}
+                    placeholder="0"
+                    min={-96}
+                    max={96}
+                    onChange={onChangeFieldInput("boundsY")}
+                  />
+                </FormRow>
+                <FormRow>
+                  <CoordinateInput
+                    name="boundsWidth"
+                    coordinate="w"
+                    value={sprite.boundsWidth}
+                    placeholder="16"
+                    min={0}
+                    max={128}
+                    onChange={onChangeFieldInput("boundsWidth")}
+                  />
+                  <CoordinateInput
+                    name="boundsHeight"
+                    coordinate="h"
+                    value={sprite.boundsHeight}
+                    placeholder="16"
+                    min={0}
+                    max={128}
+                    onChange={onChangeFieldInput("boundsHeight")}
+                  />
+                </FormRow>
+              </div>
               {/* <FormSectionTitle>Import</FormSectionTitle> */}
 
               <FormSectionTitle>Idle Right</FormSectionTitle>

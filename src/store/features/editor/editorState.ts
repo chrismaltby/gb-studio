@@ -97,6 +97,7 @@ export interface EditorState {
   showOnionSkin: boolean;
   playSpriteAnimation: boolean;
   spriteTileSelection?: SpriteTileSelection;
+  showSpriteBoundingBox: boolean;
 }
 
 export const initialState: EditorState = {
@@ -150,6 +151,7 @@ export const initialState: EditorState = {
   showSpriteGrid: true,
   showOnionSkin: false,
   playSpriteAnimation: false,
+  showSpriteBoundingBox: false,
 };
 
 const editorSlice = createSlice({
@@ -555,6 +557,10 @@ const editorSlice = createSlice({
 
     resetSpriteTileSelection: (state) => {
       state.spriteTileSelection = undefined;
+    },
+
+    setShowSpriteBoundingBox: (state, action: PayloadAction<boolean>) => {
+      state.showSpriteBoundingBox = action.payload;
     },
   },
   extraReducers: (builder) =>

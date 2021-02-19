@@ -9,7 +9,7 @@ import {
   spriteSheetSelectors,
 } from "../../store/features/entities/entitiesState";
 import { MetaspriteTile } from "../../store/features/entities/entitiesTypes";
-import MetaspriteGrid from "./preview/MetaspriteGrid";
+import MetaspriteGrid from "./MetaspriteGrid";
 import { SpriteSliceCanvas } from "./preview/SpriteSliceCanvas";
 import entitiesActions from "../../store/features/entities/entitiesActions";
 import editorActions from "../../store/features/editor/editorActions";
@@ -25,6 +25,35 @@ interface MetaspriteEditorProps {
 export interface MetaspriteDraggableTileProps {
   selected?: boolean;
 }
+
+const ScrollWrapper = styled.div`
+  overflow-y: scroll;
+  overflow-x: auto;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+`;
+
+const ContentWrapper = styled.div`
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+`;
+
+const DocumentWrapper = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+`;
+
+const GridWrapper = styled.div`
+  display: inline-block;
+`;
 
 const MetaspriteDraggableTile = styled.div<MetaspriteDraggableTileProps>`
   position: absolute;
@@ -59,6 +88,12 @@ const MetaspriteDraggableTile = styled.div<MetaspriteDraggableTileProps>`
       : ""}
 `;
 
+const SpriteBoundingBox = styled.div`
+  position: absolute;
+  background: rgba(255, 193, 7, 0.58);
+  box-shadow: 0px 0px 0px 1px rgba(255, 0, 0, 0.2) inset;
+`;
+
 interface Position {
   x: number;
   y: number;
@@ -76,8 +111,6 @@ const MetaspriteEditor = ({
 }: MetaspriteEditorProps) => {
   const dispatch = useDispatch();
   const gridRef = useRef<HTMLDivElement>(null);
-  // const canvasWidth = 32;
-  // const canvasHeight = 40;
   const gridSize = 8;
   const zoom = useSelector((state: RootState) => state.editor.zoomSprite) / 100;
   const showSpriteGrid = useSelector(
@@ -105,6 +138,9 @@ const MetaspriteEditor = ({
   const showOnionSkin = useSelector(
     (state: RootState) => state.editor.showOnionSkin
   );
+  const showBoundingBox = useSelector(
+    (state: RootState) => state.editor.showSpriteBoundingBox
+  );
   const spriteAnimation = useSelector((state: RootState) =>
     spriteAnimationSelectors.selectById(state, animationId)
   );
@@ -119,6 +155,10 @@ const MetaspriteEditor = ({
     frames[(frames.length + (currentIndex - 1)) % frames.length] || "";
   const canvasWidth = spriteSheet?.canvasWidth || 0;
   const canvasHeight = spriteSheet?.canvasHeight || 0;
+  const boundsWidth = spriteSheet?.boundsWidth || 16;
+  const boundsHeight = spriteSheet?.boundsHeight || 16;
+  const boundsX = spriteSheet?.boundsX || 0;
+  const boundsY = spriteSheet?.boundsY || 0;
 
   const onMoveCreateCursor = useCallback(
     (e: MouseEvent) => {
@@ -415,42 +455,16 @@ const MetaspriteEditor = ({
   }, [newTiles, isOverEditor, onMoveCreateCursor, onCreateTiles]);
 
   return (
-    <div
-      style={{
-        overflowY: "scroll",
-        overflowX: "auto",
-        position: "absolute",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-      }}
-    >
-      <div
+    <ScrollWrapper>
+      <ContentWrapper
         style={{
-          display: "flex",
-          height: "100%",
-          justifyContent: "center",
-          alignItems: "center",
           minWidth: canvasWidth * zoom + 100,
           minHeight: canvasHeight * zoom + 110,
         }}
       >
-        <div
-          onMouseDown={!newTiles ? onDeselect : undefined}
-          style={{
-            position: "absolute",
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
-          }}
-        />
-        <div
+        <DocumentWrapper onMouseDown={!newTiles ? onDeselect : undefined} />
+        <GridWrapper
           ref={gridRef}
-          style={{
-            display: "inline-block",
-          }}
           onMouseEnter={onOverEditor}
           onMouseLeave={onLeaveEditor}
         >
@@ -460,7 +474,6 @@ const MetaspriteEditor = ({
             zoom={zoom}
             showGrid={showSpriteGrid}
             gridSize={gridSize}
-            // onClick={!newTiles ? onDeselect : undefined}
             onClick={onDeselect}
           >
             {showOnionSkin && prevMetaspriteId && (
@@ -521,10 +534,20 @@ const MetaspriteEditor = ({
                 />
               </div>
             )}
+            {showBoundingBox && (
+              <SpriteBoundingBox
+                style={{
+                  left: boundsX,
+                  top: -boundsY - boundsHeight,
+                  width: boundsWidth,
+                  height: boundsHeight,
+                }}
+              />
+            )}
           </MetaspriteGrid>
-        </div>
-      </div>
-    </div>
+        </GridWrapper>
+      </ContentWrapper>
+    </ScrollWrapper>
   );
 };
 
