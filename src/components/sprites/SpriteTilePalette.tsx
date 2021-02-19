@@ -48,8 +48,11 @@ const SpriteTilePalette = ({ id }: SpriteTilePaletteProps) => {
     const currentTargetRect = e.currentTarget.getBoundingClientRect();
     const offsetX =
       Math.floor((e.pageX - currentTargetRect.left) / 8 / zoom) * 8;
-    const offsetY =
-      Math.floor((e.pageY - currentTargetRect.top) / 8 / zoom) * 8;
+    const offsetY = Math.min(
+      height - 16,
+      Math.floor((e.pageY - currentTargetRect.top) / 8 / zoom) * 8
+    );
+
     setSelectedTiles({
       x: offsetX,
       y: offsetY,
@@ -65,16 +68,28 @@ const SpriteTilePalette = ({ id }: SpriteTilePaletteProps) => {
         return;
       }
       const currentTargetRect = wrapperRef.current.getBoundingClientRect();
-      const offsetX = Math.floor((e.pageX - currentTargetRect.left) / 8 / zoom);
-      const offsetY = Math.floor((e.pageY - currentTargetRect.top) / 8 / zoom);
+      const offsetX = Math.max(
+        0,
+        Math.min(
+          width / 8 - 1,
+          Math.floor((e.pageX - currentTargetRect.left) / 8 / zoom)
+        )
+      );
+      const offsetY = Math.max(
+        0,
+        Math.min(
+          height / 8 - 2,
+          Math.floor((e.pageY - currentTargetRect.top) / 8 / zoom)
+        )
+      );
 
       const x = Math.min(selectedTiles.x / 8, offsetX) * 8;
       const y = Math.min(selectedTiles.y / 8, offsetY) * 8;
-      const width = Math.max(
+      const selectionWidth = Math.max(
         1,
         offsetX < selectedTiles.x / 8 ? 1 : offsetX - selectedTiles.x / 8 + 1
       );
-      const height = Math.ceil(
+      const selectionHeight = Math.ceil(
         Math.max(
           1,
           offsetY < selectedTiles.y / 8 ? 2 : offsetY - selectedTiles.y / 8 + 1
@@ -83,11 +98,11 @@ const SpriteTilePalette = ({ id }: SpriteTilePaletteProps) => {
       setSelectedTiles({
         x,
         y,
-        width,
-        height,
+        width: selectionWidth,
+        height: selectionHeight,
       });
     },
-    [zoom, selectedTiles, setSelectedTiles]
+    [zoom, height, selectedTiles, setSelectedTiles]
   );
 
   const onDragEnd = (e: MouseEvent) => {
@@ -97,16 +112,24 @@ const SpriteTilePalette = ({ id }: SpriteTilePaletteProps) => {
 
   const onHover = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     const currentTargetRect = e.currentTarget.getBoundingClientRect();
-    const offsetX = Math.floor((e.pageX - currentTargetRect.left) / 8 / zoom);
-    const offsetY = Math.floor((e.pageY - currentTargetRect.top) / 8 / zoom);
-    if (offsetX < 0 || offsetY < 0 || offsetX > 10 || offsetY > 18) {
-      setHoverTile(undefined);
-    } else {
-      setHoverTile({
-        x: offsetX,
-        y: offsetY,
-      });
-    }
+    const offsetX = Math.max(
+      0,
+      Math.min(
+        width / 8 - 1,
+        Math.floor((e.pageX - currentTargetRect.left) / 8 / zoom)
+      )
+    );
+    const offsetY = Math.max(
+      0,
+      Math.min(
+        height / 8 - 2,
+        Math.floor((e.pageY - currentTargetRect.top) / 8 / zoom)
+      )
+    );
+    setHoverTile({
+      x: offsetX,
+      y: offsetY,
+    });
   };
 
   const onMouseOut = () => {
