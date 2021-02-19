@@ -67,6 +67,15 @@ const loadProject = async (projectPath) => {
           ...oldSprite,
           ...sprite,
           id: oldSprite.id,
+          canvasWidth: oldSprite.canvasWidth || 32,
+          canvasHeight: oldSprite.canvasHeight || 32,
+          animations: Array.from(Array(8)).map((_, animationIndex)=>({
+            id: oldSprite.animations && oldSprite.animations[animationIndex] && oldSprite.animations[animationIndex].id || uuid(),
+            frames: oldSprite.animations && oldSprite.animations[animationIndex].frames || [{
+              id: uuid(),
+              tiles: []
+            }]
+          }))
         };
       }
       return sprite;

@@ -40,6 +40,8 @@ const SpriteTilePalette = ({ id }: SpriteTilePaletteProps) => {
     spriteSheetSelectors.selectById(state, id)
   );
   const projectRoot = useSelector((state: RootState) => state.document.root);
+  const width = spriteSheet?.width || 0;
+  const height = spriteSheet?.height || 0;
 
   const onDragStart = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     e.preventDefault();
@@ -167,7 +169,7 @@ const SpriteTilePalette = ({ id }: SpriteTilePaletteProps) => {
           <img
             style={{
               imageRendering: "pixelated",
-              minWidth: 88 * zoom,
+              minWidth: width * zoom,
             }}
             alt={spriteSheet.name}
             src={filename}
@@ -177,8 +179,8 @@ const SpriteTilePalette = ({ id }: SpriteTilePaletteProps) => {
               position: "absolute",
               top: 0,
               left: 0,
-              width: 88 * zoom,
-              height: 200 * zoom,
+              width: width * zoom,
+              height: height * zoom,
               border: `${1 / zoom}px solid #d4d4d4`,
               backgroundSize: `${8 * zoom}px ${8 * zoom}px`,
               backgroundImage:

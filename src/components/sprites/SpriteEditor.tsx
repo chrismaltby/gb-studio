@@ -292,24 +292,24 @@ export const SpriteEditor = ({
               </FormRow>
               <FormRow>
                 <CoordinateInput
-                  name="width"
+                  name="canvasWidth"
                   coordinate="w"
-                  value={sprite.width}
+                  value={sprite.canvasWidth}
                   placeholder="16"
                   min={16}
                   max={160}
                   step={16}
-                  onChange={onChangeFieldInput("width")}
+                  onChange={onChangeFieldInput("canvasWidth")}
                 />
                 <CoordinateInput
-                  name="height"
+                  name="canvasHeight"
                   coordinate="h"
-                  value={sprite.height}
+                  value={sprite.canvasHeight}
                   placeholder="16"
                   min={16}
                   max={144}
                   step={8}
-                  onChange={onChangeFieldInput("height")}
+                  onChange={onChangeFieldInput("canvasHeight")}
                 />
               </FormRow>
 

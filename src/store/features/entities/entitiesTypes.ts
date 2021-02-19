@@ -145,6 +145,8 @@ export type SpriteSheet = {
   _v: number;
   width: number;
   height: number;
+  canvasWidth: number;
+  canvasHeight: number;
   boundsX: number;
   boundsY: number;
   boundsWidth: number;

@@ -117,8 +117,8 @@ const MetaspriteEditor = ({
   const currentIndex = frames.indexOf(metaspriteId);
   const prevMetaspriteId =
     frames[(frames.length + (currentIndex - 1)) % frames.length] || "";
-  const canvasWidth = spriteSheet?.width || 0;
-  const canvasHeight = spriteSheet?.height || 0;
+  const canvasWidth = spriteSheet?.canvasWidth || 0;
+  const canvasHeight = spriteSheet?.canvasHeight || 0;
 
   const onMoveCreateCursor = useCallback(
     (e: MouseEvent) => {

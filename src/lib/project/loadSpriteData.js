@@ -26,6 +26,8 @@ const loadSpriteData = projectRoot => async filename => {
       type: spriteTypeFromNumFrames(numFrames),
       filename: file,
       inode,
+      width: size.width,
+      height: size.height,
       _v: Date.now()
     };
   } catch (e) {
