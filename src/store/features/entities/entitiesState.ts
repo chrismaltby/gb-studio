@@ -1585,44 +1585,42 @@ const addMetaspriteTile: CaseReducer<
   metaspriteTilesAdapter.addOne(state.metaspriteTiles, newMetaspriteTile);
 };
 
-const moveMetaspriteTile: CaseReducer<
+const moveMetaspriteTiles: CaseReducer<
   EntitiesState,
-  PayloadAction<{
-    metaspriteTileId: string;
-    x: number;
-    y: number;
-  }>
+  PayloadAction<
+    {
+      metaspriteTileId: string;
+      x: number;
+      y: number;
+    }[]
+  >
 > = (state, action) => {
-  metaspriteTilesAdapter.updateOne(state.metaspriteTiles, {
-    id: action.payload.metaspriteTileId,
-    changes: {
-      x: action.payload.x,
-      y: action.payload.y,
-    },
+  action.payload.forEach(({ metaspriteTileId, x, y }) => {
+    const tile = state.metaspriteTiles.entities[metaspriteTileId];
+    if (tile) {
+      tile.x = x;
+      tile.y = y;
+    }
   });
 };
 
-const moveMetaspriteTileRelative: CaseReducer<
+const moveMetaspriteTilesRelative: CaseReducer<
   EntitiesState,
   PayloadAction<{
-    metaspriteTileId: string;
+    metaspriteTileIds: string[];
     x: number;
     y: number;
   }>
 > = (state, action) => {
-  const metaspriteTile =
-    state.metaspriteTiles.entities[action.payload.metaspriteTileId];
+  const metaspriteTiles = action.payload.metaspriteTileIds
+    .map((id) => state.metaspriteTiles.entities[id])
+    .filter((i) => i);
 
-  if (!metaspriteTile) {
-    return;
-  }
-
-  metaspriteTilesAdapter.updateOne(state.metaspriteTiles, {
-    id: action.payload.metaspriteTileId,
-    changes: {
-      x: metaspriteTile.x + action.payload.x,
-      y: metaspriteTile.y + action.payload.y,
-    },
+  metaspriteTiles.forEach((tile) => {
+    if (tile) {
+      tile.x += action.payload.x;
+      tile.y += action.payload.y;
+    }
   });
 };
 
@@ -1714,10 +1712,10 @@ const editMetaspriteTile: CaseReducer<
   });
 };
 
-const removeMetaspriteTile: CaseReducer<
+const removeMetaspriteTiles: CaseReducer<
   EntitiesState,
   PayloadAction<{
-    metaspriteTileId: string;
+    metaspriteTileIds: string[];
     metaspriteId: string;
   }>
 > = (state, action) => {
@@ -1728,13 +1726,13 @@ const removeMetaspriteTile: CaseReducer<
   }
 
   metasprite.tiles = metasprite.tiles.filter(
-    (tileId) => tileId !== action.payload.metaspriteTileId
+    (tileId) => !action.payload.metaspriteTileIds.includes(tileId)
   );
 
-  metaspriteTilesAdapter.removeOne(
+  metaspriteTilesAdapter.removeMany(
     state.metaspriteTiles,
-    action.payload.metaspriteTileId
-  );
+    action.payload.metaspriteTileIds
+  )
 };
 
 /**************************************************************************
@@ -2450,12 +2448,12 @@ const entitiesSlice = createSlice({
       },
     },
 
-    moveMetaspriteTile,
-    moveMetaspriteTileRelative,
+    moveMetaspriteTiles,
+    moveMetaspriteTilesRelative,
     flipXMetaspriteTiles,
     flipYMetaspriteTiles,
     editMetaspriteTile,
-    removeMetaspriteTile,
+    removeMetaspriteTiles,
 
     /**************************************************************************
      * Sprite Animations

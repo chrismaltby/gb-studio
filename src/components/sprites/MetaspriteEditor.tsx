@@ -276,15 +276,15 @@ const MetaspriteEditor = ({
 
   const onDrag = useCallback(
     (e: MouseEvent) => {
-      dragMetasprites.current.forEach((selection) => {
-        dispatch(
-          entitiesActions.moveMetaspriteTile({
+      dispatch(
+        entitiesActions.moveMetaspriteTiles(
+          dragMetasprites.current.map((selection) => ({
             metaspriteTileId: selection.id,
             x: Math.round(selection.origin.x + (e.pageX - dragOrigin.x) / zoom),
             y: Math.round(selection.origin.y - (e.pageY - dragOrigin.y) / zoom),
-          })
-        );
-      });
+          }))
+        )
+      );
     },
     [dragMetasprites.current, dragOrigin.x, dragOrigin.y, zoom]
   );
@@ -355,15 +355,13 @@ const MetaspriteEditor = ({
 
   const nudgeSelectedTiles = useCallback(
     (x: number, y: number) => {
-      selectedTileIds.forEach((id) => {
-        dispatch(
-          entitiesActions.moveMetaspriteTileRelative({
-            metaspriteTileId: id,
-            x: Math.round(x),
-            y: Math.round(y),
-          })
-        );
-      });
+      dispatch(
+        entitiesActions.moveMetaspriteTilesRelative({
+          metaspriteTileIds: selectedTileIds,
+          x: Math.round(x),
+          y: Math.round(y),
+        })
+      );
     },
     [dispatch, selectedTileIds, selectedTileIds.length]
   );
@@ -385,14 +383,12 @@ const MetaspriteEditor = ({
   }, [dispatch, selectedTileIds]);
 
   const removeSelectedTiles = useCallback(() => {
-    selectedTileIds.forEach((id) => {
-      dispatch(
-        entitiesActions.removeMetaspriteTile({
-          metaspriteTileId: id,
-          metaspriteId,
-        })
-      );
-    });
+    dispatch(
+      entitiesActions.removeMetaspriteTiles({
+        metaspriteTileIds: selectedTileIds,
+        metaspriteId,
+      })
+    );
   }, [dispatch, selectedTileIds, metaspriteId]);
 
   const setSelectedTileId = useCallback((tileId: string) => {
