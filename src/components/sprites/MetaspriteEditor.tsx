@@ -378,7 +378,7 @@ const MetaspriteEditor = ({
 
   const flipYSelectedTiles = useCallback(() => {
     dispatch(
-      entitiesActions.flipXMetaspriteTiles({
+      entitiesActions.flipYMetaspriteTiles({
         metaspriteTileIds: selectedTileIds,
       })
     );
