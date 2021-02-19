@@ -10,13 +10,6 @@ interface SpriteTilePaletteProps {
   id: string;
 }
 
-interface SelectedTiles {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
-
 interface HoverTile {
   x: number;
   y: number;
@@ -51,8 +44,10 @@ const SpriteTilePalette = ({ id }: SpriteTilePaletteProps) => {
   const onDragStart = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     e.preventDefault();
     const currentTargetRect = e.currentTarget.getBoundingClientRect();
-    const offsetX = Math.floor((e.pageX - currentTargetRect.left) / 8 / zoom);
-    const offsetY = Math.floor((e.pageY - currentTargetRect.top) / 8 / zoom);
+    const offsetX =
+      Math.floor((e.pageX - currentTargetRect.left) / 8 / zoom) * 8;
+    const offsetY =
+      Math.floor((e.pageY - currentTargetRect.top) / 8 / zoom) * 8;
     setSelectedTiles({
       x: offsetX,
       y: offsetY,
@@ -71,16 +66,16 @@ const SpriteTilePalette = ({ id }: SpriteTilePaletteProps) => {
       const offsetX = Math.floor((e.pageX - currentTargetRect.left) / 8 / zoom);
       const offsetY = Math.floor((e.pageY - currentTargetRect.top) / 8 / zoom);
 
-      const x = Math.min(selectedTiles.x, offsetX);
-      const y = Math.min(selectedTiles.y, offsetY);
+      const x = Math.min(selectedTiles.x / 8, offsetX) * 8;
+      const y = Math.min(selectedTiles.y / 8, offsetY) * 8;
       const width = Math.max(
         1,
-        offsetX < selectedTiles.x ? 1 : offsetX - selectedTiles.x + 1
+        offsetX < selectedTiles.x / 8 ? 1 : offsetX - selectedTiles.x / 8 + 1
       );
       const height = Math.ceil(
         Math.max(
           1,
-          offsetY < selectedTiles.y ? 2 : offsetY - selectedTiles.y + 1
+          offsetY < selectedTiles.y / 8 ? 2 : offsetY - selectedTiles.y / 8 + 1
         ) / 2
       );
       setSelectedTiles({
@@ -212,8 +207,8 @@ const SpriteTilePalette = ({ id }: SpriteTilePaletteProps) => {
             <div
               style={{
                 position: "absolute",
-                left: selectedTiles.x * 8 * zoom,
-                top: selectedTiles.y * 8 * zoom,
+                left: selectedTiles.x * zoom,
+                top: selectedTiles.y * zoom,
                 width: selectedTiles.width * 8 * zoom,
                 height: selectedTiles.height * 16 * zoom,
                 boxShadow: `0px 0px 0px ${zoom}px rgba(255, 0, 0, 0.5)`,

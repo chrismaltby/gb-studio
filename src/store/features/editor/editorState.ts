@@ -509,6 +509,11 @@ const editorSlice = createSlice({
       state.playSpriteAnimation = false;
     },
 
+    setSelectedMetaspriteTileIds: (state, action: PayloadAction<string[]>) => {
+      state.selectedMetaspriteTileIds = action.payload;
+      state.playSpriteAnimation = false;
+    },
+
     resetSelectedMetaspriteTileIds: (state) => {
       state.selectedMetaspriteTileIds = [];
       state.playSpriteAnimation = false;
@@ -546,6 +551,10 @@ const editorSlice = createSlice({
     ) => {
       state.spriteTileSelection = action.payload;
     },
+
+    resetSpriteTileSelection: (state) => {
+      state.spriteTileSelection = undefined;
+    },
   },
   extraReducers: (builder) =>
     builder
@@ -569,6 +578,9 @@ const editorSlice = createSlice({
       .addCase(entitiesActions.addMetasprite, (state, action) => {
         state.selectedMetaspriteId = action.payload.metaspriteId;
         state.selectedMetaspriteTileIds = [];
+      })
+      .addCase(entitiesActions.addMetaspriteTile, (state, action) => {
+        state.spriteTileSelection = undefined;
       })
       .addCase(entitiesActions.addCustomEvent, (state, action) => {
         state.type = "customEvent";

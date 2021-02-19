@@ -1528,6 +1528,42 @@ const sendMetaspriteTileToBack: CaseReducer<
  * Metasprite Tiles
  */
 
+const addMetaspriteTile: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    metaspriteTileId: string;
+    metaspriteId: string;
+    x: number;
+    y: number;
+    sliceX: number;
+    sliceY: number;
+  }>
+> = (state, action) => {
+  const metasprite = state.metasprites.entities[action.payload.metaspriteId];
+
+  if (!metasprite) {
+    return;
+  }
+
+  const newMetaspriteTile: MetaspriteTile = {
+    id: action.payload.metaspriteTileId,
+    x: action.payload.x,
+    y: action.payload.y,
+    sliceX: action.payload.sliceX,
+    sliceY: action.payload.sliceY,
+    palette: 0,
+    flipX: false,
+    flipY: false,
+  };
+
+  // Add to metasprite
+  metasprite.tiles = ([] as string[]).concat(
+    metasprite.tiles,
+    newMetaspriteTile.id
+  );
+  metaspriteTilesAdapter.addOne(state.metaspriteTiles, newMetaspriteTile);
+};
+
 const moveMetaspriteTile: CaseReducer<
   EntitiesState,
   PayloadAction<{
@@ -2292,6 +2328,24 @@ const entitiesSlice = createSlice({
     /**************************************************************************
      * Metasprite Tiles
      */
+
+    addMetaspriteTile: {
+      reducer: addMetaspriteTile,
+      prepare: (payload: {
+        metaspriteId: string;
+        x: number;
+        y: number;
+        sliceX: number;
+        sliceY: number;
+      }) => {
+        return {
+          payload: {
+            ...payload,
+            metaspriteTileId: uuid(),
+          },
+        };
+      },
+    },
 
     moveMetaspriteTile,
     moveMetaspriteTileRelative,

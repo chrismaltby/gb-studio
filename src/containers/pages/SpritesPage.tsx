@@ -246,6 +246,7 @@ const SpritesPage = () => {
           <MetaspriteEditor
             spriteSheetId={selectedId}
             metaspriteId={selectedMetaspriteId}
+            animationId={selectedAnimation?.id || ""}
           />
         </div>
         <SplitPaneVerticalDivider onMouseDown={onResizeCenter} />
@@ -283,7 +284,11 @@ const SpritesPage = () => {
           position: "relative",
         }}
       >
-        <SpriteEditor id={selectedId} centerPaneHeight={centerPaneHeight} />
+        <SpriteEditor
+          id={selectedId}
+          metaspriteId={selectedMetaspriteId}
+          centerPaneHeight={centerPaneHeight}
+        />
       </div>
     </Wrapper>
   );

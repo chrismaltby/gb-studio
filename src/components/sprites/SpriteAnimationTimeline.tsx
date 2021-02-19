@@ -100,6 +100,7 @@ const SpriteAnimationTimeline = ({
               key={frameMetaspriteId}
               index={i}
               id={frameMetaspriteId}
+              spriteSheetId={spriteSheetId}
               text={frameMetaspriteId}
               selected={frameMetaspriteId === metaspriteId}
               moveCard={onMoveFrames}

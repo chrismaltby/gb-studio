@@ -42,6 +42,7 @@ import { NumberField } from "../ui/form/NumberField";
 
 interface SpriteEditorProps {
   id: string;
+  metaspriteId: string;
   centerPaneHeight: number;
 }
 
@@ -56,14 +57,17 @@ const options: SpriteImportTypeOption[] = [
   { value: "manual", label: `${l10n("FIELD_MANUAL")}` },
 ];
 
-export const SpriteEditor = ({ id, centerPaneHeight }: SpriteEditorProps) => {
+export const SpriteEditor = ({
+  id,
+  metaspriteId,
+  centerPaneHeight,
+}: SpriteEditorProps) => {
   const sprite = useSelector((state: RootState) =>
     spriteSheetSelectors.selectById(state, id)
   );
   const spriteIndex = useSelector((state: RootState) =>
     spriteSheetSelectors.selectIds(state).indexOf(id)
   );
-  const selectedMetaspriteId = "metasprite-1";
   const selectedTileIds = useSelector(
     (state: RootState) => state.editor.selectedMetaspriteTileIds
   );
@@ -147,19 +151,19 @@ export const SpriteEditor = ({ id, centerPaneHeight }: SpriteEditorProps) => {
     dispatch(
       entitiesActions.sendMetaspriteTileToBack({
         metaspriteTileId: selectedTileId,
-        metaspriteId: selectedMetaspriteId,
+        metaspriteId: metaspriteId,
       })
     );
-  }, [selectedTileId, selectedMetaspriteId]);
+  }, [selectedTileId, metaspriteId]);
 
   const sendTileToFront = useCallback(() => {
     dispatch(
       entitiesActions.sendMetaspriteTileToFront({
         metaspriteTileId: selectedTileId,
-        metaspriteId: selectedMetaspriteId,
+        metaspriteId: metaspriteId,
       })
     );
-  }, [selectedTileId, selectedMetaspriteId]);
+  }, [selectedTileId, metaspriteId]);
 
   if (!sprite) {
     return null;

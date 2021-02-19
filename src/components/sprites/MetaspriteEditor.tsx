@@ -5,16 +5,21 @@ import { RootState } from "../../store/configureStore";
 import {
   metaspriteSelectors,
   metaspriteTileSelectors,
+  spriteAnimationSelectors,
+  spriteSheetSelectors,
 } from "../../store/features/entities/entitiesState";
 import { MetaspriteTile } from "../../store/features/entities/entitiesTypes";
 import MetaspriteGrid from "./preview/MetaspriteGrid";
 import { SpriteSliceCanvas } from "./preview/SpriteSliceCanvas";
 import entitiesActions from "../../store/features/entities/entitiesActions";
 import editorActions from "../../store/features/editor/editorActions";
+import { PayloadAction } from "@reduxjs/toolkit";
+import { MetaspriteCanvas } from "./preview/MetaspriteCanvas";
 
 interface MetaspriteEditorProps {
   spriteSheetId: string;
   metaspriteId: string;
+  animationId: string;
 }
 
 export interface MetaspriteDraggableTileProps {
@@ -31,7 +36,7 @@ const MetaspriteDraggableTile = styled.div<MetaspriteDraggableTileProps>`
     position: absolute;
     top: 0;
     left: 0;
-    box-shadow: 0px 0px 0px 1px rgba(255, 0, 0, 0.2);
+    box-shadow: 0px 0px 0px 1px rgba(255, 0, 0, 0.2) inset;
     z-index: 100;
     width: 8px;
     height: 16px;
@@ -45,7 +50,7 @@ const MetaspriteDraggableTile = styled.div<MetaspriteDraggableTileProps>`
             position: absolute;
             top: 0;
             left: 0;
-            box-shadow: 0px 0px 0px 1px rgba(255, 0, 0, 0.5);
+            box-shadow: 0px 0px 0px 1px rgba(255, 0, 0, 0.5) inset;
             z-index: 10;
             width: 8px;
             height: 16px;
@@ -67,13 +72,20 @@ interface MetaspriteSelection {
 const MetaspriteEditor = ({
   spriteSheetId,
   metaspriteId,
+  animationId,
 }: MetaspriteEditorProps) => {
   const dispatch = useDispatch();
   const gridRef = useRef<HTMLDivElement>(null);
-  const canvasWidth = 32;
-  const canvasHeight = 40;
+  // const canvasWidth = 32;
+  // const canvasHeight = 40;
   const gridSize = 8;
   const zoom = useSelector((state: RootState) => state.editor.zoomSprite) / 100;
+  const showSpriteGrid = useSelector(
+    (state: RootState) => state.editor.showSpriteGrid
+  );
+  const spriteSheet = useSelector((state: RootState) =>
+    spriteSheetSelectors.selectById(state, spriteSheetId)
+  );
   const metasprite = useSelector((state: RootState) =>
     metaspriteSelectors.selectById(state, metaspriteId)
   );
@@ -90,30 +102,38 @@ const MetaspriteEditor = ({
   const selectedTileIds = useSelector(
     (state: RootState) => state.editor.selectedMetaspriteTileIds
   );
+  const showOnionSkin = useSelector(
+    (state: RootState) => state.editor.showOnionSkin
+  );
+  const spriteAnimation = useSelector((state: RootState) =>
+    spriteAnimationSelectors.selectById(state, animationId)
+  );
   const [draggingMetasprite, setDraggingMetasprite] = useState(false);
   const dragMetasprites = useRef<MetaspriteSelection[]>([]);
   const [dragOrigin, setDragOrigin] = useState<Position>({ x: 0, y: 0 });
   const [createOrigin, setCreateOrigin] = useState<Position>({ x: 0, y: 0 });
   const [isOverEditor, setIsOverEditor] = useState(false);
+  const frames = spriteAnimation?.frames || [];
+  const currentIndex = frames.indexOf(metaspriteId);
+  const prevMetaspriteId =
+    frames[(frames.length + (currentIndex - 1)) % frames.length] || "";
+  const canvasWidth = spriteSheet?.width || 0;
+  const canvasHeight = spriteSheet?.height || 0;
 
   const onMoveCreateCursor = useCallback(
     (e: MouseEvent) => {
       if (gridRef.current && newTiles) {
         const bounds = gridRef.current.getBoundingClientRect();
-        console.log({
-          x: Math.floor(((e.pageX - bounds.left) / bounds.width) * canvasWidth),
-          y: Math.floor(
-            ((e.pageY - bounds.top) / bounds.height) * canvasHeight
-          ),
-        });
-
         setCreateOrigin({
           x: Math.floor(
-            ((e.pageX - bounds.left) / bounds.width) * canvasWidth -
+            -8 +
+              ((e.pageX - bounds.left) / bounds.width) * canvasWidth -
               newTiles.width * 4
           ),
           y: Math.floor(
-            ((e.pageY - bounds.top) / bounds.height) * canvasHeight -
+            canvasHeight -
+              16 -
+              ((e.pageY - bounds.top) / bounds.height) * canvasHeight +
               newTiles.height * 8
           ),
         });
@@ -122,9 +142,49 @@ const MetaspriteEditor = ({
     [setCreateOrigin, gridRef.current, newTiles?.width, newTiles?.height]
   );
 
-  const onCreateTiles = useCallback(() => {
-    console.log("CREATE");
-  }, []);
+  const onCreateTiles = useCallback(
+    (e: MouseEvent) => {
+      if (!newTiles) {
+        return;
+      }
+
+      e.preventDefault();
+
+      const newActions: PayloadAction<{
+        metaspriteTileId: string;
+        metaspriteId: string;
+        x: number;
+        y: number;
+        sliceX: number;
+        sliceY: number;
+      }>[] = [];
+
+      for (let tx = 0; tx < newTiles.width; tx++) {
+        for (let ty = 0; ty < newTiles.height; ty++) {
+          newActions.push(
+            entitiesActions.addMetaspriteTile({
+              metaspriteId,
+              x: createOrigin.x + tx * 8,
+              y: createOrigin.y - ty * 16,
+              sliceX: newTiles.x + tx * 8,
+              sliceY: newTiles.y + ty * 16,
+            })
+          );
+        }
+      }
+
+      for (const action of newActions) {
+        dispatch(action);
+      }
+
+      const newIds = newActions.map(
+        (action) => action.payload.metaspriteTileId
+      );
+
+      setSelectedTileIds(newIds);
+    },
+    [createOrigin.x, createOrigin.y, newTiles?.x, newTiles?.y]
+  );
 
   const onDragStart = (tileId: string) => (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>
@@ -162,7 +222,7 @@ const MetaspriteEditor = ({
           entitiesActions.moveMetaspriteTile({
             metaspriteTileId: selection.id,
             x: Math.round(selection.origin.x + (e.pageX - dragOrigin.x) / zoom),
-            y: Math.round(selection.origin.y + (e.pageY - dragOrigin.y) / zoom),
+            y: Math.round(selection.origin.y - (e.pageY - dragOrigin.y) / zoom),
           })
         );
       });
@@ -187,6 +247,9 @@ const MetaspriteEditor = ({
         return;
       }
       if (selectedTileIds.length === 0) {
+        if (e.key === "Escape") {
+          resetSpriteTileSelection();
+        }
         return;
       }
       e.preventDefault();
@@ -194,9 +257,9 @@ const MetaspriteEditor = ({
       let nudgeX = 0;
       let nudgeY = 0;
       if (e.key === "ArrowUp") {
-        nudgeY = -1;
-      } else if (e.key === "ArrowDown") {
         nudgeY = 1;
+      } else if (e.key === "ArrowDown") {
+        nudgeY = -1;
       } else if (e.key === "ArrowLeft") {
         nudgeX = -1;
       } else if (e.key === "ArrowRight") {
@@ -294,12 +357,20 @@ const MetaspriteEditor = ({
     dispatch(editorActions.setSelectedMetaspriteTileId(tileId));
   }, []);
 
+  const setSelectedTileIds = useCallback((tileIds: string[]) => {
+    dispatch(editorActions.setSelectedMetaspriteTileIds(tileIds));
+  }, []);
+
   const toggleSelectedTileId = useCallback((tileId: string) => {
     dispatch(editorActions.toggleSelectedMetaspriteTileId(tileId));
   }, []);
 
   const resetSelectedTileIds = useCallback(() => {
     dispatch(editorActions.resetSelectedMetaspriteTileIds());
+  }, []);
+
+  const resetSpriteTileSelection = useCallback(() => {
+    dispatch(editorActions.resetSpriteTileSelection());
   }, []);
 
   const onOverEditor = useCallback(() => {
@@ -332,7 +403,7 @@ const MetaspriteEditor = ({
   }, [draggingMetasprite, onDrag]);
 
   useEffect(() => {
-    if (newTiles) {
+    if (newTiles && isOverEditor) {
       window.addEventListener("mousemove", onMoveCreateCursor);
       window.addEventListener("mouseup", onCreateTiles);
       return () => {
@@ -341,130 +412,119 @@ const MetaspriteEditor = ({
       };
     }
     return () => {};
-  }, [newTiles, onMoveCreateCursor, onCreateTiles]);
+  }, [newTiles, isOverEditor, onMoveCreateCursor, onCreateTiles]);
 
   return (
-    <>
+    <div
+      style={{
+        overflowY: "scroll",
+        overflowX: "auto",
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+      }}
+    >
       <div
         style={{
-          overflow: "auto",
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
+          display: "flex",
+          height: "100%",
+          justifyContent: "center",
+          alignItems: "center",
+          minWidth: canvasWidth * zoom + 100,
+          minHeight: canvasHeight * zoom + 110,
         }}
-        onMouseEnter={onOverEditor}
-        onMouseLeave={onLeaveEditor}
       >
         <div
+          onMouseDown={!newTiles ? onDeselect : undefined}
           style={{
-            display: "flex",
-            height: "100%",
-            justifyContent: "center",
-            alignItems: "center",
-            minWidth: canvasWidth * zoom + 100,
-            minHeight: canvasHeight * zoom + 110,
-          }}
-        >
-          <div
-            onMouseDown={onDeselect}
-            style={{
-              position: "absolute",
-              top: 0,
-              right: 0,
-              bottom: 0,
-              left: 0,
-            }}
-          />
-          <div ref={gridRef} style={{ display: "inline-block" }}>
-            <MetaspriteGrid
-              width={canvasWidth}
-              height={canvasHeight}
-              zoom={zoom}
-              gridSize={gridSize}
-              onClick={onDeselect}
-            >
-              {metaspriteTiles.map((metaspriteTile) => (
-                <MetaspriteDraggableTile
-                  key={metaspriteTile.id}
-                  style={{
-                    left: metaspriteTile.x,
-                    top: metaspriteTile.y,
-                  }}
-                  selected={selectedTileIds.includes(metaspriteTile.id)}
-                  onMouseDown={onDragStart(metaspriteTile.id)}
-                >
-                  <SpriteSliceCanvas
-                    spriteSheetId={spriteSheetId}
-                    offsetX={metaspriteTile.sliceX * 8}
-                    offsetY={metaspriteTile.sliceY * 8}
-                    width={8}
-                    height={16}
-                    flipX={metaspriteTile.flipX}
-                    flipY={metaspriteTile.flipY}
-                  />
-                </MetaspriteDraggableTile>
-              ))}
-              {isOverEditor && newTiles && (
-                <div
-                  style={{
-                    position: "absolute",
-                    left: createOrigin.x,
-                    top: createOrigin.y,
-                    opacity: 0.5,
-                  }}
-                >
-                  <SpriteSliceCanvas
-                    spriteSheetId={spriteSheetId}
-                    offsetX={newTiles.x * 8}
-                    offsetY={newTiles.y * 8}
-                    width={newTiles.width * 8}
-                    height={newTiles.height * 16}
-                    flipX={false}
-                    flipY={false}
-                  />
-                </div>
-              )}
-            </MetaspriteGrid>
-          </div>
-        </div>
-      </div>
-      {/* {newTiles && (
-        <div
-          ref={createRef}
-          style={{
-            overflow: "hidden",
             position: "absolute",
             top: 0,
-            left: 0,
             right: 0,
             bottom: 0,
-            pointerEvents: "none",
+            left: 0,
           }}
+        />
+        <div
+          ref={gridRef}
+          style={{
+            display: "inline-block",
+          }}
+          onMouseEnter={onOverEditor}
+          onMouseLeave={onLeaveEditor}
         >
-          <div
-            style={{
-              position: "absolute",
-              left: createOrigin.x,
-              top: createOrigin.y,
-              transform: `translate3d(0, 0, 0) scale(${zoom})`,
-              transformOrigin: "top left",
-            }}
+          <MetaspriteGrid
+            width={canvasWidth}
+            height={canvasHeight}
+            zoom={zoom}
+            showGrid={showSpriteGrid}
+            gridSize={gridSize}
+            // onClick={!newTiles ? onDeselect : undefined}
+            onClick={onDeselect}
           >
-            <SpriteSliceCanvas
-              spriteSheetId={spriteSheetId}
-              offsetX={newTiles.x * 8}
-              offsetY={newTiles.y * 8}
-              width={newTiles.width * 8}
-              height={newTiles.height * 16}
-              flipX={false}
-              flipY={false}
-            />
-          </div>
+            {showOnionSkin && prevMetaspriteId && (
+              <div
+                style={{
+                  opacity: 0.5,
+                  position: "absolute",
+                  left: 8 - canvasWidth / 2,
+                  top: -canvasHeight,
+                }}
+              >
+                <MetaspriteCanvas
+                  spriteSheetId={spriteSheetId}
+                  metaspriteId={prevMetaspriteId}
+                />
+              </div>
+            )}
+            {metaspriteTiles.map((metaspriteTile) => (
+              <MetaspriteDraggableTile
+                key={metaspriteTile.id}
+                style={{
+                  left: metaspriteTile.x,
+                  top: -metaspriteTile.y - 16,
+                  pointerEvents: newTiles ? "none" : "auto",
+                }}
+                selected={selectedTileIds.includes(metaspriteTile.id)}
+                onMouseDown={onDragStart(metaspriteTile.id)}
+              >
+                <SpriteSliceCanvas
+                  spriteSheetId={spriteSheetId}
+                  offsetX={metaspriteTile.sliceX}
+                  offsetY={metaspriteTile.sliceY}
+                  width={8}
+                  height={16}
+                  flipX={metaspriteTile.flipX}
+                  flipY={metaspriteTile.flipY}
+                />
+              </MetaspriteDraggableTile>
+            ))}
+            {isOverEditor && newTiles && (
+              <div
+                style={{
+                  position: "absolute",
+                  left: createOrigin.x,
+                  top: -createOrigin.y - 16,
+                  opacity: 0.5,
+                  pointerEvents: "none",
+                }}
+              >
+                <SpriteSliceCanvas
+                  spriteSheetId={spriteSheetId}
+                  offsetX={newTiles.x}
+                  offsetY={newTiles.y}
+                  width={newTiles.width * 8}
+                  height={newTiles.height * 16}
+                  flipX={false}
+                  flipY={false}
+                />
+              </div>
+            )}
+          </MetaspriteGrid>
         </div>
-      )} */}
-    </>
+      </div>
+    </div>
   );
 };
 

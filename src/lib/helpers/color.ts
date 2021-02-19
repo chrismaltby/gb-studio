@@ -87,3 +87,12 @@ export const colorizeData = (mutData: Uint8ClampedArray, palette: string[]) => {
     mutData[index + 2] = color.b;
   }
 };
+
+export const chromaKeyData = (mutData: Uint8ClampedArray) => {
+  for (let index = 0; index < mutData.length; index += 4) {
+    if (mutData[index + 1] === 255) {
+      // Set transparent background on pure green
+      mutData[index + 3] = 0;
+    }
+  }
+};

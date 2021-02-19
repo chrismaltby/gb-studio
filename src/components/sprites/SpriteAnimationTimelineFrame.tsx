@@ -11,6 +11,7 @@ import {
   DragSourceMonitor,
 } from "react-dnd";
 import styled, { css } from "styled-components";
+import { MetaspriteCanvas } from "./preview/MetaspriteCanvas";
 
 interface CardWrapperProps {
   selected: boolean;
@@ -24,6 +25,11 @@ export const CardWrapper = styled.div<CardWrapperProps>`
   height: 50px;
   background-color: #ffffff;
   cursor: move;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2px;
+  box-sizing: border-box;
 
   ${(props) =>
     props.selected
@@ -37,6 +43,11 @@ export const CardWrapper = styled.div<CardWrapperProps>`
           opacity: 0;
         `
       : ""}
+
+  canvas {
+    max-width: 100%;
+    max-height: 100%;
+  }
 `;
 
 const cardSource = {
@@ -67,8 +78,8 @@ const cardTarget = {
     ) as Element).getBoundingClientRect();
     // ).getBoundingClientRect();
 
-    // Get vertical middle
-    const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+    // Get horizontal middle
+    const hoverMiddleX = (hoverBoundingRect.right - hoverBoundingRect.left) / 2;
 
     // Determine mouse position
     const clientOffset = monitor.getClientOffset();
@@ -77,20 +88,20 @@ const cardTarget = {
       return;
     }
 
-    // Get pixels to the top
-    const hoverClientY = clientOffset.y - hoverBoundingRect.top;
+    // Get pixels to the left
+    const hoverClientX = clientOffset.x - hoverBoundingRect.left;
 
     // Only perform the move when the mouse has crossed half of the items height
     // When dragging downwards, only move when the cursor is below 50%
     // When dragging upwards, only move when the cursor is above 50%
 
     // Dragging downwards
-    if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
+    if (dragIndex < hoverIndex && hoverClientX < hoverMiddleX) {
       return;
     }
 
     // Dragging upwards
-    if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
+    if (dragIndex > hoverIndex && hoverClientX > hoverMiddleX) {
       return;
     }
 
@@ -107,6 +118,7 @@ const cardTarget = {
 
 export interface CardProps {
   id: any;
+  spriteSheetId: string;
   text: string;
   index: number;
   selected: boolean;
@@ -132,6 +144,7 @@ export default class Card extends React.Component<CardProps> {
   render() {
     const {
       id,
+      spriteSheetId,
       text,
       selected,
       isDragging,
@@ -146,10 +159,12 @@ export default class Card extends React.Component<CardProps> {
       connectDragSource(
         connectDropTarget(
           <div onClick={() => onSelect(id)}>
-            <CardWrapper
-              selected={selected}
-              isDragging={isDragging}
-            ></CardWrapper>
+            <CardWrapper selected={selected} isDragging={isDragging}>
+              <MetaspriteCanvas
+                metaspriteId={id}
+                spriteSheetId={spriteSheetId}
+              />
+            </CardWrapper>
           </div>
         )
       )
