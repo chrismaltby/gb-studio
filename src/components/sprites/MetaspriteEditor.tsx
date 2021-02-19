@@ -41,6 +41,7 @@ const ContentWrapper = styled.div`
   height: 100%;
   justify-content: center;
   align-items: center;
+  overflow: hidden;
 `;
 
 const DocumentWrapper = styled.div`

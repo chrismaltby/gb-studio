@@ -62,6 +62,16 @@ const MetaspriteGrid = ({
             "none",
         }}
       />
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+          }}
+          onMouseDown={onClick}
+        />      
       <div
         style={{
           position: "relative",
@@ -72,16 +82,7 @@ const MetaspriteGrid = ({
           transformOrigin: "top left",
         }}
       >
-        <div
-          style={{
-            position: "absolute",
-            top: -height,
-            right: 8,
-            bottom: 0,
-            left: -8,
-          }}
-          onMouseDown={onClick}
-        />
+
         {children}
       </div>
     </div>
