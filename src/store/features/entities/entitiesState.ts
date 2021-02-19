@@ -1626,6 +1626,76 @@ const moveMetaspriteTileRelative: CaseReducer<
   });
 };
 
+const flipXMetaspriteTiles: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ metaspriteTileIds: string[] }>
+> = (state, action) => {
+  const metaspriteTiles = action.payload.metaspriteTileIds
+    .map((id) => state.metaspriteTiles.entities[id])
+    .filter((i) => i);
+
+  const leftEdge = metaspriteTiles.reduce((memo, tile) => {
+    if (tile && tile.x < memo) {
+      return tile.x;
+    }
+    return memo;
+  }, Infinity);
+
+  const rightEdge =
+    metaspriteTiles.reduce((memo, tile) => {
+      if (tile && tile.x > memo) {
+        return tile.x;
+      }
+      return memo;
+    }, -Infinity) + 8;
+
+  const mirrorX = leftEdge + (rightEdge - leftEdge) / 2;
+
+  metaspriteTiles.forEach((tile) => {
+    if (tile) {
+      tile.flipX = !tile.flipX;
+      const middleX = tile.x + 4;
+      const flippedMiddleX = mirrorX + (mirrorX - middleX);
+      tile.x = flippedMiddleX - 4;
+    }
+  });
+};
+
+const flipYMetaspriteTiles: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ metaspriteTileIds: string[] }>
+> = (state, action) => {
+  const metaspriteTiles = action.payload.metaspriteTileIds
+    .map((id) => state.metaspriteTiles.entities[id])
+    .filter((i) => i);
+
+  const bottomEdge = metaspriteTiles.reduce((memo, tile) => {
+    if (tile && tile.y < memo) {
+      return tile.y;
+    }
+    return memo;
+  }, Infinity);
+
+  const topEdge =
+    metaspriteTiles.reduce((memo, tile) => {
+      if (tile && tile.y > memo) {
+        return tile.y;
+      }
+      return memo;
+    }, -Infinity) + 16;
+
+  const mirrorY = bottomEdge + (topEdge - bottomEdge) / 2;
+
+  metaspriteTiles.forEach((tile) => {
+    if (tile) {
+      tile.flipY = !tile.flipY;
+      const middleY = tile.y + 8;
+      const flippedMiddleY = mirrorY + (mirrorY - middleY);
+      tile.y = flippedMiddleY - 8;
+    }
+  });
+};
+
 const editMetaspriteTile: CaseReducer<
   EntitiesState,
   PayloadAction<{ metaspriteTileId: string; changes: Partial<MetaspriteTile> }>
@@ -2382,6 +2452,8 @@ const entitiesSlice = createSlice({
 
     moveMetaspriteTile,
     moveMetaspriteTileRelative,
+    flipXMetaspriteTiles,
+    flipYMetaspriteTiles,
     editMetaspriteTile,
     removeMetaspriteTile,
 

@@ -129,25 +129,19 @@ export const SpriteEditor = ({
 
   const onToggleFlipX = useCallback(() => {
     dispatch(
-      entitiesActions.editMetaspriteTile({
-        metaspriteTileId: selectedTileId,
-        changes: {
-          flipX: !metaspriteTile?.flipX,
-        },
+      entitiesActions.flipXMetaspriteTiles({
+        metaspriteTileIds: selectedTileIds,
       })
     );
-  }, [selectedTileId, metaspriteTile?.flipX]);
+  }, [selectedTileIds, metaspriteTile?.flipX]);
 
   const onToggleFlipY = useCallback(() => {
     dispatch(
-      entitiesActions.editMetaspriteTile({
-        metaspriteTileId: selectedTileId,
-        changes: {
-          flipY: !metaspriteTile?.flipY,
-        },
+      entitiesActions.flipYMetaspriteTiles({
+        metaspriteTileIds: selectedTileIds,
       })
     );
-  }, [selectedTileId, metaspriteTile?.flipY]);
+  }, [selectedTileIds, metaspriteTile?.flipY]);
 
   const sendTileToBack = useCallback(() => {
     dispatch(
@@ -254,14 +248,22 @@ export const SpriteEditor = ({
                 <FlexGrow />
                 <Button
                   onClick={onToggleFlipX}
-                  variant={metaspriteTile.flipX ? "primary" : "normal"}
+                  variant={
+                    selectedTileIds.length === 1 && metaspriteTile.flipX
+                      ? "primary"
+                      : "normal"
+                  }
                   style={{ width: 28, padding: 3 }}
                 >
                   <FlipHorizontalIcon />
                 </Button>
                 <Button
                   onClick={onToggleFlipY}
-                  variant={metaspriteTile.flipY ? "primary" : "normal"}
+                  variant={
+                    selectedTileIds.length === 1 && metaspriteTile.flipY
+                      ? "primary"
+                      : "normal"
+                  }
                   style={{ width: 28, padding: 3 }}
                 >
                   <FlipVerticalIcon />

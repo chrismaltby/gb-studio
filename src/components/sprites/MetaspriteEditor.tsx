@@ -341,20 +341,16 @@ const MetaspriteEditor = ({
       }
 
       if (e.key === "x") {
-        flipXSelectedTiles(!metaspriteTileLookup[selectedTileIds[0]]?.flipX);
+        flipXSelectedTiles();
       }
       if (e.key === "z") {
-        flipYSelectedTiles(!metaspriteTileLookup[selectedTileIds[0]]?.flipY);
+        flipYSelectedTiles();
       }
       if (e.key === "Backspace") {
         removeSelectedTiles();
       }
     },
-    [
-      selectedTileIds,
-      metaspriteTileLookup[selectedTileIds[0]]?.flipX,
-      metaspriteTileLookup[selectedTileIds[0]]?.flipY,
-    ]
+    [selectedTileIds]
   );
 
   const nudgeSelectedTiles = useCallback(
@@ -372,37 +368,21 @@ const MetaspriteEditor = ({
     [dispatch, selectedTileIds, selectedTileIds.length]
   );
 
-  const flipXSelectedTiles = useCallback(
-    (flipX: boolean) => {
-      selectedTileIds.forEach((id) => {
-        dispatch(
-          entitiesActions.editMetaspriteTile({
-            metaspriteTileId: id,
-            changes: {
-              flipX,
-            },
-          })
-        );
-      });
-    },
-    [dispatch, selectedTileIds]
-  );
+  const flipXSelectedTiles = useCallback(() => {
+    dispatch(
+      entitiesActions.flipXMetaspriteTiles({
+        metaspriteTileIds: selectedTileIds,
+      })
+    );
+  }, [dispatch, selectedTileIds]);
 
-  const flipYSelectedTiles = useCallback(
-    (flipY: boolean) => {
-      selectedTileIds.forEach((id) => {
-        dispatch(
-          entitiesActions.editMetaspriteTile({
-            metaspriteTileId: id,
-            changes: {
-              flipY,
-            },
-          })
-        );
-      });
-    },
-    [dispatch, selectedTileIds]
-  );
+  const flipYSelectedTiles = useCallback(() => {
+    dispatch(
+      entitiesActions.flipXMetaspriteTiles({
+        metaspriteTileIds: selectedTileIds,
+      })
+    );
+  }, [dispatch, selectedTileIds]);
 
   const removeSelectedTiles = useCallback(() => {
     selectedTileIds.forEach((id) => {
