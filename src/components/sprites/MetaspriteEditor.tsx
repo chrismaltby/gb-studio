@@ -53,6 +53,7 @@ const DocumentWrapper = styled.div`
 `;
 
 const GridWrapper = styled.div`
+  position: relative;
   display: inline-block;
 `;
 
@@ -105,6 +106,12 @@ const StampTilesWrapper = styled.div`
   }
 `;
 
+const Selection = styled.div`
+  position: absolute;
+  background: rgba(128, 128, 128, 0.02);
+  border: 1px solid rgba(128, 128, 128, 0.3);
+`;
+
 interface Position {
   x: number;
   y: number;
@@ -113,6 +120,13 @@ interface Position {
 interface MetaspriteSelection {
   id: string;
   origin: Position;
+}
+
+interface SelectionRect {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
 }
 
 const MetaspriteEditor = ({
@@ -155,6 +169,13 @@ const MetaspriteEditor = ({
   const spriteAnimation = useSelector((state: RootState) =>
     spriteAnimationSelectors.selectById(state, animationId)
   );
+  const [selectionOrigin, setSelectionOrigin] = useState<
+    Position | undefined
+  >();
+  const [selectionRect, setSelectionRect] = useState<
+    SelectionRect | undefined
+  >();
+  const [draggingSelection, setDraggingSelection] = useState(false);
   const [draggingMetasprite, setDraggingMetasprite] = useState(false);
   const dragMetasprites = useRef<MetaspriteSelection[]>([]);
   const [dragOrigin, setDragOrigin] = useState<Position>({ x: 0, y: 0 });
@@ -250,6 +271,7 @@ const MetaspriteEditor = ({
   ) => {
     const tile = metaspriteTileLookup[tileId];
     if (tile) {
+      e.stopPropagation();
       if (e.shiftKey) {
         toggleSelectedTileId(tileId);
       } else {
@@ -291,6 +313,66 @@ const MetaspriteEditor = ({
 
   const onDragEnd = (e: MouseEvent) => {
     setDraggingMetasprite(false);
+  };
+
+  const onSelectStart = useCallback(
+    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      if (gridRef.current && !newTiles) {
+        const bounds = gridRef.current.getBoundingClientRect();
+        const x = e.pageX - bounds.left;
+        const y = e.pageY - bounds.top;
+        setSelectionRect(undefined);
+        setSelectionOrigin({
+          x,
+          y,
+        });
+        setDraggingSelection(true);
+      }
+    },
+    [newTiles]
+  );
+
+  const onDragSelection = useCallback(
+    (e: MouseEvent) => {
+      if (gridRef.current && selectionOrigin) {
+        const bounds = gridRef.current.getBoundingClientRect();
+        const x2 = e.pageX - bounds.left;
+        const y2 = e.pageY - bounds.top;
+
+        const x = Math.min(selectionOrigin.x, x2);
+        const y = Math.min(selectionOrigin.y, y2);
+        const width = Math.abs(selectionOrigin.x - x2);
+        const height = Math.abs(selectionOrigin.y - y2);
+
+        const canvasX1 = x / zoom - (canvasWidth / 2 - 8);
+        const canvasY1 = canvasHeight - 16 - y / zoom;
+        const canvasX2 = (x + width) / zoom - (canvasWidth / 2 - 8);
+        const canvasY2 = canvasHeight - 16 - (y + height) / zoom;
+
+        const intersectingTiles = metaspriteTiles.filter(
+          (tile) =>
+            tile.x + 8 > canvasX1 &&
+            tile.x < canvasX2 &&
+            tile.y - 16 < canvasY1 &&
+            tile.y > canvasY2
+        );
+        const intersectingTileIds = intersectingTiles.map((tile) => tile.id);
+
+        setSelectionRect({
+          x,
+          y,
+          width,
+          height,
+        });
+        setSelectedTileIds(intersectingTileIds);
+      }
+    },
+    [selectionOrigin?.x, selectionOrigin?.y, zoom]
+  );
+
+  const onDragSelectionEnd = (e: MouseEvent) => {
+    setDraggingSelection(false);
+    setSelectionRect(undefined);
   };
 
   const onDeselect = () => {
@@ -441,12 +523,24 @@ const MetaspriteEditor = ({
   }, [draggingMetasprite, onDrag]);
 
   useEffect(() => {
+    if (draggingSelection) {
+      window.addEventListener("mousemove", onDragSelection);
+      window.addEventListener("mouseup", onDragSelectionEnd);
+      return () => {
+        window.removeEventListener("mousemove", onDragSelection);
+        window.removeEventListener("mouseup", onDragSelectionEnd);
+      };
+    }
+    return () => {};
+  }, [draggingSelection, onDragSelection]);
+
+  useEffect(() => {
     if (newTiles && isOverEditor) {
       window.addEventListener("mousemove", onMoveCreateCursor);
-      window.addEventListener("mouseup", onCreateTiles);
+      window.addEventListener("mousedown", onCreateTiles);
       return () => {
         window.removeEventListener("mousemove", onMoveCreateCursor);
-        window.removeEventListener("mouseup", onCreateTiles);
+        window.removeEventListener("mousedown", onCreateTiles);
       };
     }
     return () => {};
@@ -463,6 +557,7 @@ const MetaspriteEditor = ({
           minWidth: canvasWidth * zoom + 100,
           minHeight: canvasHeight * zoom + 110,
         }}
+        onMouseDown={onSelectStart}
       >
         <DocumentWrapper onMouseDown={!newTiles ? onDeselect : undefined} />
         <GridWrapper
@@ -544,6 +639,16 @@ const MetaspriteEditor = ({
               />
             )}
           </MetaspriteGrid>
+          {selectionRect && (
+            <Selection
+              style={{
+                left: selectionRect.x,
+                top: selectionRect.y,
+                width: selectionRect.width,
+                height: selectionRect.height,
+              }}
+            />
+          )}
         </GridWrapper>
       </ContentWrapper>
     </ScrollWrapper>
