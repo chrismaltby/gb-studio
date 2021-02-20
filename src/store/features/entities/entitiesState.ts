@@ -1732,7 +1732,45 @@ const removeMetaspriteTiles: CaseReducer<
   metaspriteTilesAdapter.removeMany(
     state.metaspriteTiles,
     action.payload.metaspriteTileIds
-  )
+  );
+};
+
+const removeMetaspriteTilesOutsideCanvas: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    metaspriteId: string;
+    spriteSheetId: string;
+  }>
+> = (state, action) => {
+  const spriteSheet = state.spriteSheets.entities[action.payload.spriteSheetId];
+  const metasprite = state.metasprites.entities[action.payload.metaspriteId];
+
+  if (!spriteSheet || !metasprite) {
+    return;
+  }
+
+  const minX = -spriteSheet.canvasWidth / 2;
+  const maxX = spriteSheet.canvasWidth / 2 + 8;
+  const minY = -16;
+  const maxY = spriteSheet.canvasHeight;
+
+  const removeMetaspriteTiles = (metasprite.tiles
+    .map((id) => state.metaspriteTiles.entities[id])
+    .filter((i) => !!i) as MetaspriteTile[])
+    .filter(
+      (tile) =>
+        tile.x <= minX || tile.x >= maxX || tile.y <= minY || tile.y >= maxY
+    )
+    .map((tile) => tile.id);
+
+  metasprite.tiles = metasprite.tiles.filter(
+    (tileId) => !removeMetaspriteTiles.includes(tileId)
+  );
+
+  metaspriteTilesAdapter.removeMany(
+    state.metaspriteTiles,
+    removeMetaspriteTiles
+  );
 };
 
 /**************************************************************************
@@ -2454,6 +2492,7 @@ const entitiesSlice = createSlice({
     flipYMetaspriteTiles,
     editMetaspriteTile,
     removeMetaspriteTiles,
+    removeMetaspriteTilesOutsideCanvas,
 
     /**************************************************************************
      * Sprite Animations

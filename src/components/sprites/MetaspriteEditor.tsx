@@ -262,6 +262,7 @@ const MetaspriteEditor = ({
       );
 
       setSelectedTileIds(newIds);
+      removeMetaspriteTilesOutsideCanvas();
     },
     [createOrigin.x, createOrigin.y, newTiles?.x, newTiles?.y]
   );
@@ -313,6 +314,7 @@ const MetaspriteEditor = ({
 
   const onDragEnd = (e: MouseEvent) => {
     setDraggingMetasprite(false);
+    removeMetaspriteTilesOutsideCanvas();
   };
 
   const onSelectStart = useCallback(
@@ -492,6 +494,15 @@ const MetaspriteEditor = ({
   const resetSpriteTileSelection = useCallback(() => {
     dispatch(editorActions.resetSpriteTileSelection());
   }, []);
+
+  const removeMetaspriteTilesOutsideCanvas = useCallback(() => {
+    dispatch(
+      entitiesActions.removeMetaspriteTilesOutsideCanvas({
+        metaspriteId,
+        spriteSheetId,
+      })
+    );
+  }, [metaspriteId, spriteSheetId]);
 
   const onOverEditor = useCallback(() => {
     setIsOverEditor(true);
