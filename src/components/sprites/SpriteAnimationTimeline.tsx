@@ -6,7 +6,7 @@ import { RootState } from "../../store/configureStore";
 import { spriteAnimationSelectors } from "../../store/features/entities/entitiesState";
 import entitiesActions from "../../store/features/entities/entitiesActions";
 import editorActions from "../../store/features/editor/editorActions";
-import { PlusIcon } from "../ui/icons/Icons";
+import { CloneIcon, PlusIcon } from "../ui/icons/Icons";
 import SpriteAnimationTimelineFrame from "./SpriteAnimationTimelineFrame";
 import { FixedSpacer } from "../ui/spacing/Spacing";
 
@@ -59,6 +59,7 @@ const SpriteAnimationTimeline = ({
   const dispatch = useDispatch();
 
   const [hasFocus, setHasFocus] = useState(false);
+  const [cloneFrame, setCloneFrame] = useState(false);
 
   const animation = useSelector((state: RootState) =>
     spriteAnimationSelectors.selectById(state, animationId)
@@ -94,6 +95,15 @@ const SpriteAnimationTimeline = ({
     );
   }, [animationId, dispatch]);
 
+  const onCloneFrame = useCallback(() => {
+    dispatch(
+      entitiesActions.cloneMetasprite({
+        spriteAnimationId: animationId,
+        metaspriteId,
+      })
+    );
+  }, [animationId, metaspriteId, dispatch]);
+
   const onDeleteFrame = useCallback(() => {
     dispatch(
       entitiesActions.removeMetasprite({
@@ -105,6 +115,10 @@ const SpriteAnimationTimeline = ({
 
   const handleKeys = useCallback(
     (e: KeyboardEvent) => {
+      if (e.altKey) {
+        setCloneFrame(true);
+      }
+
       if (!hasFocus) {
         return;
       }
@@ -124,6 +138,12 @@ const SpriteAnimationTimeline = ({
     },
     [hasFocus, frames, metaspriteId]
   );
+
+  const handleKeysUp = useCallback((e: KeyboardEvent) => {
+    if (!e.altKey) {
+      setCloneFrame(false);
+    }
+  }, []);
 
   const throttledNext = useRef(
     throttle((frames: string[], selectedId: string) => {
@@ -145,8 +165,11 @@ const SpriteAnimationTimeline = ({
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeys);
+    window.addEventListener("keyup", handleKeysUp);
+
     return () => {
       window.removeEventListener("keydown", handleKeys);
+      window.removeEventListener("keyup", handleKeysUp);
     };
   });
 
@@ -171,8 +194,8 @@ const SpriteAnimationTimeline = ({
             />
           );
         })}
-        <AddFrameButton onClick={onAddFrame}>
-          <PlusIcon />
+        <AddFrameButton onClick={cloneFrame ? onCloneFrame : onAddFrame}>
+          {cloneFrame ? <CloneIcon /> : <PlusIcon />}
         </AddFrameButton>
         <FixedSpacer width={10} />
       </ScrollWrapper>

@@ -314,7 +314,6 @@ const SpritesPage = () => {
         <SpriteEditor
           id={selectedId}
           metaspriteId={selectedMetaspriteId}
-          centerPaneHeight={centerPaneHeight}
         />
       </div>
     </Wrapper>

@@ -38,14 +38,13 @@ import {
   SendToFrontIcon,
   SendToBackIcon,
 } from "../ui/icons/Icons";
-import { FixedSpacer, FlexGrow } from "../ui/spacing/Spacing";
+import { FlexGrow } from "../ui/spacing/Spacing";
 import { NumberField } from "../ui/form/NumberField";
 import { SidebarHeader } from "../ui/form/SidebarHeader";
 
 interface SpriteEditorProps {
   id: string;
   metaspriteId: string;
-  centerPaneHeight: number;
 }
 
 interface SpriteImportTypeOption {
@@ -62,7 +61,6 @@ const options: SpriteImportTypeOption[] = [
 export const SpriteEditor = ({
   id,
   metaspriteId,
-  centerPaneHeight,
 }: SpriteEditorProps) => {
   const sprite = useSelector((state: RootState) =>
     spriteSheetSelectors.selectById(state, id)

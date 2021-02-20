@@ -33,7 +33,12 @@ export type EditorSelectionType =
   | "customEvent"
   | "variable";
 
-export type ZoomSection = "world" | "sprites" | "backgrounds" | "ui" | "spriteTiles";
+export type ZoomSection =
+  | "world"
+  | "sprites"
+  | "backgrounds"
+  | "ui"
+  | "spriteTiles";
 
 export interface SpriteTileSelection {
   x: number;
@@ -365,7 +370,7 @@ const editorSlice = createSlice({
         case "spriteTiles": {
           state.zoomSpriteTiles = calculateZoomIn(state.zoomSpriteTiles);
           break;
-        }        
+        }
       }
     },
 
@@ -401,7 +406,7 @@ const editorSlice = createSlice({
         case "spriteTiles": {
           state.zoomSpriteTiles = calculateZoomOut(state.zoomSpriteTiles);
           break;
-        }        
+        }
       }
     },
 
@@ -426,7 +431,7 @@ const editorSlice = createSlice({
         case "spriteTiles": {
           state.zoomSpriteTiles = 400;
           break;
-        }        
+        }
       }
     },
 
@@ -598,6 +603,10 @@ const editorSlice = createSlice({
       })
       .addCase(entitiesActions.addMetasprite, (state, action) => {
         state.selectedMetaspriteId = action.payload.metaspriteId;
+        state.selectedMetaspriteTileIds = [];
+      })
+      .addCase(entitiesActions.cloneMetasprite, (state, action) => {
+        state.selectedMetaspriteId = action.payload.newMetaspriteId;
         state.selectedMetaspriteTileIds = [];
       })
       .addCase(entitiesActions.addMetaspriteTile, (state, action) => {

@@ -1468,6 +1468,46 @@ const addMetasprite: CaseReducer<
   metaspritesAdapter.addOne(state.metasprites, newMetasprite);
 };
 
+const cloneMetasprite: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    spriteAnimationId: string;
+    metaspriteId: string;
+    newMetaspriteId: string;
+  }>
+> = (state, action) => {
+  const spriteAnimation =
+    state.spriteAnimations.entities[action.payload.spriteAnimationId];
+  const metasprite = state.metasprites.entities[action.payload.metaspriteId];
+
+  if (!spriteAnimation || !metasprite) {
+    return;
+  }
+
+  const metaspriteTiles = metasprite.tiles
+    .map((id) => state.metaspriteTiles.entities[id])
+    .filter((i) => i) as MetaspriteTile[];
+
+  const newMetaspriteTiles = metaspriteTiles.map((tile) => ({
+    ...tile,
+    id: uuid(),
+  }));
+
+  const newMetasprite = {
+    ...metasprite,
+    id: action.payload.newMetaspriteId,
+    tiles: newMetaspriteTiles.map((tile) => tile.id),
+  };
+
+  // Add to sprite animation
+  spriteAnimation.frames = ([] as string[]).concat(
+    spriteAnimation.frames,
+    newMetasprite.id
+  );
+  metaspritesAdapter.addOne(state.metasprites, newMetasprite);
+  metaspriteTilesAdapter.addMany(state.metaspriteTiles, newMetaspriteTiles);
+};
+
 const sendMetaspriteTilesToFront: CaseReducer<
   EntitiesState,
   PayloadAction<{
@@ -2455,6 +2495,21 @@ const entitiesSlice = createSlice({
           payload: {
             ...payload,
             metaspriteId: uuid(),
+          },
+        };
+      },
+    },
+
+    cloneMetasprite: {
+      reducer: cloneMetasprite,
+      prepare: (payload: {
+        spriteAnimationId: string;
+        metaspriteId: string;
+      }) => {
+        return {
+          payload: {
+            ...payload,
+            newMetaspriteId: uuid(),
           },
         };
       },
