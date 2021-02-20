@@ -2,6 +2,7 @@ import React, { FC } from "react";
 import styled from "styled-components";
 import {
   ActorIcon,
+  AnimationIcon,
   ArrowIcon,
   SpriteIcon,
   TriggerIcon,
@@ -17,7 +18,7 @@ interface EntityListItemProps {
     name: string;
     labelColor?: string;
   };
-  type: "scene" | "actor" | "trigger" | "variable" | "sprite";
+  type: "scene" | "actor" | "trigger" | "variable" | "sprite" | "animation";
   nestLevel?: number;
   collapsed?: boolean;
   collapsable?: boolean;
@@ -120,6 +121,11 @@ export const EntityListItem: FC<EntityListItemProps> = ({
           <SpriteIcon />
         </EnitityIcon>
       )}
+      {type === "animation" && (
+        <EnitityIcon>
+          <AnimationIcon />
+        </EnitityIcon>
+      )}      
       <EnitityLabel>{item.name}</EnitityLabel>
       {item.labelColor && <EntityLabelColor color={item.labelColor} />}
     </EnitityListItem>

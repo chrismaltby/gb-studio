@@ -123,7 +123,7 @@ export const NavigatorSprites = ({
         setSelectedId={setSelectAnimationId}
         height={25 * spriteAnimations.length}
       >
-        {({ item }) => <EntityListItem type="sprite" item={item} />}
+        {({ item }) => <EntityListItem type="animation" item={item} />}
       </FlatList>
     </>
   );
