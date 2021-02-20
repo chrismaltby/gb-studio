@@ -293,10 +293,15 @@ export const SpriteEditor = ({
                   />
                 </FormField>
               </FormRow>
-              <FormDivider />
-              <FormRow>
-                <Button>Replace Tile</Button>
-              </FormRow>
+
+              {selectedTileIds.length === 1 && (
+                <>
+                  <FormDivider />
+                  <FormRow>
+                    <Button>Replace Tile</Button>
+                  </FormRow>
+                </>
+              )}
             </>
           )}
 
