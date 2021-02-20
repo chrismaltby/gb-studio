@@ -591,6 +591,7 @@ const MetaspriteEditor = ({
                   position: "absolute",
                   left: 8 - canvasWidth / 2,
                   top: -canvasHeight,
+                  pointerEvents: "none"
                 }}
               >
                 <MetaspriteCanvas
