@@ -20,13 +20,18 @@ interface MetaspriteEditorProps {
   spriteSheetId: string;
   metaspriteId: string;
   animationId: string;
+  hidden?: boolean;
 }
 
 export interface MetaspriteDraggableTileProps {
   selected?: boolean;
 }
 
-const ScrollWrapper = styled.div`
+interface ScrollWrapperProps {
+  hidden?: boolean;
+}
+
+const ScrollWrapper = styled.div<ScrollWrapperProps>`
   overflow-y: scroll;
   overflow-x: auto;
   position: absolute;
@@ -34,6 +39,13 @@ const ScrollWrapper = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
+
+  ${(props) =>
+    props.hidden
+      ? css`
+          display: none;
+        `
+      : ""}
 `;
 
 const ContentWrapper = styled.div`
@@ -133,6 +145,7 @@ const MetaspriteEditor = ({
   spriteSheetId,
   metaspriteId,
   animationId,
+  hidden,
 }: MetaspriteEditorProps) => {
   const dispatch = useDispatch();
   const gridRef = useRef<HTMLDivElement>(null);
@@ -230,6 +243,10 @@ const MetaspriteEditor = ({
 
       e.preventDefault();
 
+      // Clear focus from animation timeline
+      const el = document.querySelector(":focus") as any;
+      if (el && el.blur) el.blur();
+
       const newActions: PayloadAction<{
         metaspriteTileId: string;
         metaspriteId: string;
@@ -273,6 +290,11 @@ const MetaspriteEditor = ({
     const tile = metaspriteTileLookup[tileId];
     if (tile) {
       e.stopPropagation();
+
+      // Clear focus from animation timeline
+      const el = document.querySelector(":focus") as any;
+      if (el && el.blur) el.blur();
+
       if (e.shiftKey) {
         toggleSelectedTileId(tileId);
       } else {
@@ -514,15 +536,18 @@ const MetaspriteEditor = ({
 
   // Keyboard handlers
   useEffect(() => {
-    window.addEventListener("keydown", onKeyDown);
-    return () => {
-      window.removeEventListener("keydown", onKeyDown);
-    };
-  }, [onKeyDown]);
+    if (!hidden) {
+      window.addEventListener("keydown", onKeyDown);
+      return () => {
+        window.removeEventListener("keydown", onKeyDown);
+      };
+    }
+    return () => {};
+  }, [onKeyDown, hidden]);
 
   // Drag and drop handlers
   useEffect(() => {
-    if (draggingMetasprite) {
+    if (draggingMetasprite && !hidden) {
       window.addEventListener("mousemove", onDrag);
       window.addEventListener("mouseup", onDragEnd);
       return () => {
@@ -531,10 +556,10 @@ const MetaspriteEditor = ({
       };
     }
     return () => {};
-  }, [draggingMetasprite, onDrag]);
+  }, [draggingMetasprite, onDrag, hidden]);
 
   useEffect(() => {
-    if (draggingSelection) {
+    if (draggingSelection && !hidden) {
       window.addEventListener("mousemove", onDragSelection);
       window.addEventListener("mouseup", onDragSelectionEnd);
       return () => {
@@ -543,10 +568,10 @@ const MetaspriteEditor = ({
       };
     }
     return () => {};
-  }, [draggingSelection, onDragSelection]);
+  }, [draggingSelection, onDragSelection, hidden]);
 
   useEffect(() => {
-    if (newTiles && isOverEditor) {
+    if (newTiles && isOverEditor && !hidden) {
       window.addEventListener("mousemove", onMoveCreateCursor);
       window.addEventListener("mousedown", onCreateTiles);
       return () => {
@@ -555,14 +580,14 @@ const MetaspriteEditor = ({
       };
     }
     return () => {};
-  }, [newTiles, isOverEditor, onMoveCreateCursor, onCreateTiles]);
+  }, [newTiles, isOverEditor, hidden, onMoveCreateCursor, onCreateTiles]);
 
   if (!metasprite) {
     return null;
   }
 
   return (
-    <ScrollWrapper>
+    <ScrollWrapper hidden={hidden}>
       <ContentWrapper
         style={{
           minWidth: canvasWidth * zoom + 100,
@@ -591,7 +616,7 @@ const MetaspriteEditor = ({
                   position: "absolute",
                   left: 8 - canvasWidth / 2,
                   top: -canvasHeight,
-                  pointerEvents: "none"
+                  pointerEvents: "none",
                 }}
               >
                 <MetaspriteCanvas

@@ -46,7 +46,9 @@ const SpritesPage = () => {
   const navigatorSidebarWidth = useSelector(
     (state: RootState) => state.editor.navigatorSidebarWidth
   );
-  const tilesZoom = useSelector((state: RootState) => state.editor.zoomSpriteTiles);
+  const tilesZoom = useSelector(
+    (state: RootState) => state.editor.zoomSpriteTiles
+  );
   const windowSize = useWindowSize();
   const prevWindowWidthRef = useRef<number>(0);
   const windowWidth = windowSize.width || 0;
@@ -81,6 +83,7 @@ const SpritesPage = () => {
     metaspriteId || selectedAnimation?.frames[0] || "";
   const selectedAnimationIndex =
     selectedSprite?.animations?.indexOf(selectedAnimationId) || 0;
+  const frames = selectedAnimation?.frames || [];
 
   const [leftPaneWidth, setLeftPaneSize, startLeftPaneResize] = useResizable({
     initialSize: navigatorSidebarWidth,
@@ -198,15 +201,15 @@ const SpritesPage = () => {
   }, [animationsOpen, setAnimationsOpen]);
 
   const onZoomIn = useCallback(() => {
-      dispatch(editorActions.zoomIn({ section: "spriteTiles" }));
+    dispatch(editorActions.zoomIn({ section: "spriteTiles" }));
   }, [dispatch]);
 
   const onZoomOut = useCallback(() => {
-      dispatch(editorActions.zoomOut({ section: "spriteTiles" }));
+    dispatch(editorActions.zoomOut({ section: "spriteTiles" }));
   }, [dispatch]);
 
   const onZoomReset = useCallback(() => {
-      dispatch(editorActions.zoomReset({ section: "spriteTiles" }));
+    dispatch(editorActions.zoomReset({ section: "spriteTiles" }));
   }, [dispatch]);
 
   const animationNames = getAnimationNames();
@@ -257,11 +260,15 @@ const SpritesPage = () => {
             selectedAnimationId={selectedAnimationId}
             metaspriteId={selectedMetaspriteId}
           />
-          <MetaspriteEditor
-            spriteSheetId={selectedId}
-            metaspriteId={selectedMetaspriteId}
-            animationId={selectedAnimation?.id || ""}
-          />
+          {frames.map((frameId) => (
+            <MetaspriteEditor
+              key={frameId}
+              spriteSheetId={selectedId}
+              metaspriteId={frameId}
+              animationId={selectedAnimation?.id || ""}
+              hidden={frameId !== selectedMetaspriteId}
+            />
+          ))}
         </div>
         <SplitPaneVerticalDivider onMouseDown={onResizeCenter} />
         <div style={{ position: "relative", height: centerPaneHeight }}>
@@ -269,17 +276,19 @@ const SpritesPage = () => {
             onToggle={toggleTilesPane}
             collapsed={centerPaneHeight === 30}
             buttons={
-              centerPaneHeight > 30 && <ZoomButton
-                zoom={tilesZoom}
-                size="small"
-                variant="transparent"
-                title={l10n("TOOLBAR_ZOOM_RESET")}
-                titleIn={l10n("TOOLBAR_ZOOM_IN")}
-                titleOut={l10n("TOOLBAR_ZOOM_OUT")}
-                onZoomIn={onZoomIn}
-                onZoomOut={onZoomOut}
-                onZoomReset={onZoomReset}
-              />
+              centerPaneHeight > 30 && (
+                <ZoomButton
+                  zoom={tilesZoom}
+                  size="small"
+                  variant="transparent"
+                  title={l10n("TOOLBAR_ZOOM_RESET")}
+                  titleIn={l10n("TOOLBAR_ZOOM_IN")}
+                  titleOut={l10n("TOOLBAR_ZOOM_OUT")}
+                  onZoomIn={onZoomIn}
+                  onZoomOut={onZoomOut}
+                  onZoomReset={onZoomReset}
+                />
+              )
             }
           >
             {l10n("FIELD_TILES")}
@@ -311,10 +320,7 @@ const SpritesPage = () => {
           position: "relative",
         }}
       >
-        <SpriteEditor
-          id={selectedId}
-          metaspriteId={selectedMetaspriteId}
-        />
+        <SpriteEditor id={selectedId} metaspriteId={selectedMetaspriteId} />
       </div>
     </Wrapper>
   );
