@@ -11,6 +11,8 @@ import {
   ScriptEvent,
   SceneData,
   Variable,
+  MetaspriteTile,
+  Metasprite,
 } from "../entities/entitiesTypes";
 import { RootState } from "../../configureStore";
 import editorActions from "../editor/editorActions";
@@ -22,6 +24,12 @@ const copyTrigger = createAction<Trigger>("clipboard/copyTrigger");
 const copyScene = createAction<Scene>("clipboard/copyScene");
 const copyEvent = createAction<ScriptEvent>("clipboard/copyEvent");
 const copyScript = createAction<ScriptEvent[]>("clipboard/copyScript");
+const copyMetasprites = createAction<{
+  metaspriteIds: string[]
+}>("clipboard/copyMetasprites");
+const copyMetaspriteTiles = createAction<{
+  metaspriteTileIds: string[]
+}>("clipboard/copyMetaspriteTiles");
 const pasteCustomEvents = createAction<void>("clipboard/pasteCustomEvents");
 
 const copySelectedEntity = () => (
@@ -124,6 +132,8 @@ export default {
   copyScene,
   copyEvent,
   copyScript,
+  copyMetasprites,
+  copyMetaspriteTiles,
   copySelectedEntity,
   pasteClipboardEntity,
   pasteClipboardEntityInPlace,

@@ -27,6 +27,7 @@ import {
 } from "../../store/features/entities/entitiesState";
 import entitiesActions from "../../store/features/entities/entitiesActions";
 import editorActions from "../../store/features/editor/editorActions";
+import clipboardActions from "../../store/features/clipboard/clipboardActions";
 import { RootState } from "../../store/configureStore";
 import castEventValue from "../../lib/helpers/castEventValue";
 import { FlatList } from "../ui/lists/FlatList";
@@ -167,6 +168,12 @@ export const SpriteEditor = ({
     dispatch(editorActions.setShowSpriteBoundingBox(false));
   }, []);
 
+  const onCopyTiles = useCallback(() => {
+    dispatch(clipboardActions.copyMetaspriteTiles({
+      metaspriteTileIds: selectedTileIds
+    }))
+  }, [selectedTileIds]);
+
   if (!sprite) {
     return null;
   }
@@ -196,6 +203,11 @@ export const SpriteEditor = ({
               variant="transparent"
               menuDirection="right"
             >
+              {selectedTileIds.length > 0 && 
+                <MenuItem onClick={onCopyTiles}>
+                  {l10n("MENU_SPRITE_TILE_COPY")}
+                </MenuItem>
+              }
               {/* <MenuItem onClick={onCopyVar}>
                 {l10n("MENU_VARIABLE_COPY_EMBED")}
               </MenuItem>

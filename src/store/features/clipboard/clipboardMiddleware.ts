@@ -1,5 +1,6 @@
 import { clipboard } from "electron";
 import uniq from "lodash/uniq";
+import flatten from "lodash/flatten";
 import {
   getCustomEventIdsInEvents,
   getCustomEventIdsInActor,
@@ -12,14 +13,19 @@ import {
   actorSelectors,
   triggerSelectors,
   variableSelectors,
+  metaspriteSelectors,
+  metaspriteTileSelectors,
 } from "../entities/entitiesState";
 import {
   CustomEvent,
+  Metasprite,
+  MetaspriteTile,
 } from "../entities/entitiesTypes";
 import actions from "./clipboardActions";
 import entitiesActions from "../entities/entitiesActions";
 
 import confirmReplaceCustomEvent from "../../../lib/electron/dialog/confirmReplaceCustomEvent";
+import { copy } from "./clipboardHelpers";
 
 const clipboardMiddleware: Middleware<{}, RootState> = (store) => (next) => (
   action
@@ -42,8 +48,7 @@ const clipboardMiddleware: Middleware<{}, RootState> = (store) => (next) => (
           __type: "actor",
           __customEvents:
             usedCustomEvents.length > 0 ? usedCustomEvents : undefined,
-          __variables:
-            usedVariables.length > 0 ? usedVariables : undefined
+          __variables: usedVariables.length > 0 ? usedVariables : undefined,
         },
         null,
         4
@@ -61,7 +66,7 @@ const clipboardMiddleware: Middleware<{}, RootState> = (store) => (next) => (
     const allVariables = variableSelectors.selectAll(state);
     const usedVariables = allVariables.filter((variable) => {
       return variable.id.startsWith(action.payload.id);
-    });      
+    });
     clipboard.writeText(
       JSON.stringify(
         {
@@ -69,8 +74,7 @@ const clipboardMiddleware: Middleware<{}, RootState> = (store) => (next) => (
           __type: "trigger",
           __customEvents:
             usedCustomEvents.length > 0 ? usedCustomEvents : undefined,
-          __variables:
-            usedVariables.length > 0 ? usedVariables : undefined            
+          __variables: usedVariables.length > 0 ? usedVariables : undefined,
         },
         null,
         4
@@ -94,11 +98,15 @@ const clipboardMiddleware: Middleware<{}, RootState> = (store) => (next) => (
       .filter((i) => i);
     const allVariables = variableSelectors.selectAll(state);
 
-    const entityIds = [action.payload.id, ...action.payload.actors, ...action.payload.triggers];
-    console.log({entityIds})
+    const entityIds = [
+      action.payload.id,
+      ...action.payload.actors,
+      ...action.payload.triggers,
+    ];
+    console.log({ entityIds });
     const usedVariables = allVariables.filter((variable) => {
-      return entityIds.find((id) => variable.id.startsWith(id))
-    });   
+      return entityIds.find((id) => variable.id.startsWith(id));
+    });
 
     clipboard.writeText(
       JSON.stringify(
@@ -107,8 +115,7 @@ const clipboardMiddleware: Middleware<{}, RootState> = (store) => (next) => (
           __type: "scene",
           __customEvents:
             usedCustomEvents.length > 0 ? usedCustomEvents : undefined,
-          __variables:
-            usedVariables.length > 0 ? usedVariables : undefined
+          __variables: usedVariables.length > 0 ? usedVariables : undefined,
         },
         null,
         4
@@ -193,6 +200,48 @@ const clipboardMiddleware: Middleware<{}, RootState> = (store) => (next) => (
     }
   } else if (actions.copyText.match(action)) {
     clipboard.writeText(action.payload);
+  } else if (actions.copyMetasprites.match(action)) {
+    const state = store.getState();
+    const metaspritesLookup = metaspriteSelectors.selectEntities(state);
+    const metaspriteTilesLookup = metaspriteTileSelectors.selectEntities(state);
+
+    const metasprites = action.payload.metaspriteIds
+      .map((id) => {
+        return metaspritesLookup[id];
+      })
+      .filter((metasprite): metasprite is Metasprite => !!metasprite);
+
+    const metaspriteTileIds = flatten(
+      metasprites.map((metasprite) => metasprite.tiles)
+    );
+
+    const metaspriteTiles = metaspriteTileIds
+      .map((tileId) => {
+        return metaspriteTilesLookup[tileId];
+      })
+      .filter((tile): tile is MetaspriteTile => !!tile);
+
+    copy({
+      format: "gbstudio.metasprites",
+      data: {
+        metasprites,
+        metaspriteTiles,
+      },
+    });
+  } else if (actions.copyMetaspriteTiles.match(action)) {
+    const state = store.getState();
+    const metaspriteTilesLookup = metaspriteTileSelectors.selectEntities(state);
+    const metaspriteTiles = action.payload.metaspriteTileIds
+      .map((tileId) => {
+        return metaspriteTilesLookup[tileId];
+      })
+      .filter((tile): tile is MetaspriteTile => !!tile);
+    copy({
+      format: "gbstudio.metaspritetiles",
+      data: {
+        metaspriteTiles,
+      },
+    });
   }
 
   next(action);
