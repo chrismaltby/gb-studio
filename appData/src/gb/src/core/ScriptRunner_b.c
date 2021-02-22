@@ -2282,6 +2282,7 @@ void Script_ActorStopUpdate_b() {
   if (actors[active_script_ctx.script_actor].movement_ctx) {
     ScriptCtxPoolReturn(actors[active_script_ctx.script_actor].movement_ctx, active_script_ctx.script_actor);
   }
+  actors[active_script_ctx.script_actor].movement_ctx = 0; //@wtf fixes crash but still will not stop update script from same update script
 }
 
 void Script_ActorSetAnimate_b() {
