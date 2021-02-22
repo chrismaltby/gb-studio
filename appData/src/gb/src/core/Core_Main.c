@@ -193,8 +193,8 @@ int core_start() {
     }
 
     if (seededRand == FALSE) {
-      seededRand = TRUE;
       if (joy) {
+        seededRand = TRUE;
         initrand((DIV_REG*256)+game_time);
       }
     }
