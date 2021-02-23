@@ -42,11 +42,15 @@ import {
 import { FlexGrow } from "../ui/spacing/Spacing";
 import { NumberField } from "../ui/form/NumberField";
 import { SidebarHeader } from "../ui/form/SidebarHeader";
-import { ClipboardTypeMetaspriteTiles } from "../../store/features/clipboard/clipboardTypes";
+import {
+  ClipboardTypeMetasprites,
+  ClipboardTypeMetaspriteTiles,
+} from "../../store/features/clipboard/clipboardTypes";
 
 interface SpriteEditorProps {
   id: string;
   metaspriteId: string;
+  animationId: string;
 }
 
 interface SpriteImportTypeOption {
@@ -60,7 +64,11 @@ const options: SpriteImportTypeOption[] = [
   { value: "manual", label: `${l10n("FIELD_MANUAL")}` },
 ];
 
-export const SpriteEditor = ({ id, metaspriteId }: SpriteEditorProps) => {
+export const SpriteEditor = ({
+  id,
+  metaspriteId,
+  animationId,
+}: SpriteEditorProps) => {
   const sprite = useSelector((state: RootState) =>
     spriteSheetSelectors.selectById(state, id)
   );
@@ -197,6 +205,24 @@ export const SpriteEditor = ({ id, metaspriteId }: SpriteEditorProps) => {
     dispatch(clipboardActions.fetchClipboard());
   }, []);
 
+  const onRemoveSelectedTiles = useCallback(() => {
+    dispatch(
+      entitiesActions.removeMetaspriteTiles({
+        metaspriteTileIds: selectedTileIds,
+        metaspriteId,
+      })
+    );
+  }, [dispatch, selectedTileIds, metaspriteId]);
+
+  const onRemoveMetasprite = useCallback(() => {
+    dispatch(
+      entitiesActions.removeMetasprite({
+        metaspriteId,
+        spriteAnimationId: animationId,
+      })
+    );
+  }, [dispatch, metaspriteId, animationId]);
+
   if (!sprite) {
     return null;
   }
@@ -232,18 +258,29 @@ export const SpriteEditor = ({ id, metaspriteId }: SpriteEditorProps) => {
                   {l10n("MENU_SPRITE_TILE_COPY")}
                 </MenuItem>
               )}
+              <MenuItem onClick={onCopyMetasprite}>
+                {l10n("MENU_SPRITE_COPY")}
+              </MenuItem>
               {clipboardFormat === ClipboardTypeMetaspriteTiles && (
                 <MenuItem onClick={onPasteTiles}>
                   {l10n("MENU_SPRITE_TILE_PASTE")}
                 </MenuItem>
               )}
-
-              {/* <MenuItem onClick={onCopyVar}>
-                {l10n("MENU_VARIABLE_COPY_EMBED")}
-              </MenuItem>
-              <MenuItem onClick={onCopyChar}>
-                {l10n("MENU_VARIABLE_COPY_EMBED_CHAR")}
-              </MenuItem> */}
+              {clipboardFormat === ClipboardTypeMetasprites && (
+                <MenuItem onClick={onPasteMetasprites}>
+                  {l10n("MENU_SPRITE_PASTE")}
+                </MenuItem>
+              )}
+              {selectedTileIds.length > 0 && (
+                <MenuItem onClick={onRemoveSelectedTiles}>
+                  {l10n("MENU_SPRITE_TILE_DELETE")}
+                </MenuItem>
+              )}
+              {selectedTileIds.length === 0 && (
+                <MenuItem onClick={onRemoveMetasprite}>
+                  {l10n("MENU_SPRITE_DELETE")}
+                </MenuItem>
+              )}
             </DropdownButton>
           </FormHeader>
 

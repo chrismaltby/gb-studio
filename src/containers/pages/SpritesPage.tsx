@@ -320,7 +320,11 @@ const SpritesPage = () => {
           position: "relative",
         }}
       >
-        <SpriteEditor id={selectedId} metaspriteId={selectedMetaspriteId} />
+        <SpriteEditor
+          id={selectedId}
+          metaspriteId={selectedMetaspriteId}
+          animationId={selectedAnimation?.id || ""}
+        />
       </div>
     </Wrapper>
   );
