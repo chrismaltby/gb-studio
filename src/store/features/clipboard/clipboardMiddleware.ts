@@ -6,7 +6,7 @@ import {
   getCustomEventIdsInActor,
   getCustomEventIdsInScene,
 } from "../../../lib/helpers/eventSystem";
-import { Middleware, PayloadAction } from "@reduxjs/toolkit";
+import { Dictionary, Middleware, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../configureStore";
 import {
   customEventSelectors,
@@ -277,6 +277,48 @@ const clipboardMiddleware: Middleware<{}, RootState> = (store) => (next) => (
     }
     if (clipboard.format === ClipboardTypeMetasprites) {
       const data = clipboard.data;
+
+      const newActions = data.metasprites.map((metasprite) => {
+        return entitiesActions.addMetasprite({
+          spriteAnimationId: action.payload.spriteAnimationId,
+        });
+      });
+
+      for (const action of newActions) {
+        store.dispatch(action);
+      }
+
+      const newIds = newActions.map((action) => action.payload.metaspriteId);
+
+      const tileIdMetaspriteLookup = data.metasprites.reduce(
+        (memo, metasprite, index) => {
+          for (let tileId of metasprite.tiles) {
+            memo[tileId] = newIds[index];
+          }
+          return memo;
+        },
+        {} as Dictionary<string>
+      );
+
+      const newTileActions = data.metaspriteTiles.map((tile) => {
+        return entitiesActions.addMetaspriteTile({
+          metaspriteId: tileIdMetaspriteLookup[tile.id] || "",
+          x: tile.x,
+          y: tile.y,
+          sliceX: tile.sliceX,
+          sliceY: tile.sliceY,
+        });
+      });
+
+      for (const action of newTileActions) {
+        store.dispatch(action);
+      }
+
+      const newTileIds = newTileActions.map(
+        (action) => action.payload.metaspriteTileId
+      );
+
+      store.dispatch(editorActions.setSelectedMetaspriteTileIds(newTileIds));
     } else if (clipboard.format === ClipboardTypeMetaspriteTiles) {
       const data = clipboard.data;
 
