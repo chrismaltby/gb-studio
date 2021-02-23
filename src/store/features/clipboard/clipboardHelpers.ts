@@ -1,28 +1,13 @@
 import { clipboard } from "electron";
-import { Metasprite, MetaspriteTile } from "../entities/entitiesTypes";
-
-type NarrowClipboardType<T, N> = T extends { format: N } ? T : never;
-
-type ClipboardMetaspriteTiles = {
-  metaspriteTiles: MetaspriteTile[];
-};
-
-type ClipboardMetasprites = {
-  metasprites: Metasprite[];
-  metaspriteTiles: MetaspriteTile[];
-};
-
-type ClipboardType =
-  | {
-      format: "gbstudio.metaspritetiles";
-      data: ClipboardMetaspriteTiles;
-    }
-  | {
-      format: "gbstudio.metasprites";
-      data: ClipboardMetasprites;
-    };
-
-type CopyFormat = ClipboardType["format"];
+import {
+  ClipboardFormat,
+  ClipboardMetasprites,
+  ClipboardMetaspriteTiles,
+  ClipboardType,
+  ClipboardTypeMetasprites,
+  ClipboardTypeMetaspriteTiles,
+  NarrowClipboardType,
+} from "./clipboardTypes";
 
 const isClipboardMetaspriteTiles = (
   input: any
@@ -41,9 +26,9 @@ export const copy = (payload: ClipboardType) => {
   clipboard.writeBuffer(payload.format, buffer);
 };
 
-export const paste = <T extends CopyFormat>(
+export const paste = <T extends ClipboardFormat>(
   format: T
-): NarrowClipboardType<ClipboardType, T>["data"] | undefined => {
+): NarrowClipboardType<ClipboardType, T> | undefined => {
   const buffer = clipboard.readBuffer(format);
 
   let data;
@@ -53,14 +38,20 @@ export const paste = <T extends CopyFormat>(
     return undefined;
   }
 
-  if (format === "gbstudio.metaspritetiles") {
+  if (format === ClipboardTypeMetaspriteTiles) {
     if (isClipboardMetaspriteTiles(data)) {
-      return data;
+      return {
+        format: ClipboardTypeMetaspriteTiles,
+        data,
+      } as NarrowClipboardType<ClipboardType, T>;
     }
     return undefined;
-  } else if (format === "gbstudio.metasprites") {
+  } else if (format === ClipboardTypeMetasprites) {
     if (isClipboardMetasprites(data)) {
-      return data;
+      return {
+        format: ClipboardTypeMetasprites,
+        data,
+      } as NarrowClipboardType<ClipboardType, T>;
     }
     return undefined;
   }

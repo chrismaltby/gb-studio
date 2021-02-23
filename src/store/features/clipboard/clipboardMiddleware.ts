@@ -25,7 +25,14 @@ import actions from "./clipboardActions";
 import entitiesActions from "../entities/entitiesActions";
 
 import confirmReplaceCustomEvent from "../../../lib/electron/dialog/confirmReplaceCustomEvent";
-import { copy } from "./clipboardHelpers";
+import { copy, paste } from "./clipboardHelpers";
+import {
+  ClipboardType,
+  ClipboardTypeMetasprites,
+  ClipboardTypeMetaspriteTiles,
+  ClipboardTypes,
+} from "./clipboardTypes";
+import clipboardActions from "./clipboardActions";
 
 const clipboardMiddleware: Middleware<{}, RootState> = (store) => (next) => (
   action
@@ -103,7 +110,6 @@ const clipboardMiddleware: Middleware<{}, RootState> = (store) => (next) => (
       ...action.payload.actors,
       ...action.payload.triggers,
     ];
-    console.log({ entityIds });
     const usedVariables = allVariables.filter((variable) => {
       return entityIds.find((id) => variable.id.startsWith(id));
     });
@@ -222,7 +228,7 @@ const clipboardMiddleware: Middleware<{}, RootState> = (store) => (next) => (
       .filter((tile): tile is MetaspriteTile => !!tile);
 
     copy({
-      format: "gbstudio.metasprites",
+      format: ClipboardTypeMetasprites,
       data: {
         metasprites,
         metaspriteTiles,
@@ -237,11 +243,31 @@ const clipboardMiddleware: Middleware<{}, RootState> = (store) => (next) => (
       })
       .filter((tile): tile is MetaspriteTile => !!tile);
     copy({
-      format: "gbstudio.metaspritetiles",
+      format: ClipboardTypeMetaspriteTiles,
       data: {
         metaspriteTiles,
       },
     });
+  } else if (actions.pasteMetasprites.match(action)) {
+    const state = store.getState();
+    const data = paste(ClipboardTypeMetasprites);
+  } else if (actions.pasteMetaspriteTiles.match(action)) {
+    const state = store.getState();
+    const data = paste(ClipboardTypeMetaspriteTiles);
+  } else if (actions.fetchClipboard.match(action)) {
+    let res: ClipboardType | undefined = undefined;
+    for (const type of ClipboardTypes) {
+      const data = paste(type);
+      if (data) {
+        res = data;
+        break;
+      }
+    }
+    if (res) {
+      store.dispatch(clipboardActions.setClipboardData(res));
+    } else {
+      store.dispatch(clipboardActions.clearClipboardData());
+    }
   }
 
   next(action);

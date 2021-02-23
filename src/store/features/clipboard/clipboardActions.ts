@@ -1,4 +1,5 @@
 import { createAction, AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
+import { actions } from "./clipboardState";
 import {
   sceneSelectors,
   actorSelectors,
@@ -18,6 +19,7 @@ import { RootState } from "../../configureStore";
 import editorActions from "../editor/editorActions";
 import entitiesActions from "../entities/entitiesActions";
 
+const fetchClipboard = createAction("clipboard/fetch");
 const copyText = createAction<string>("clipboard/copyText");
 const copyActor = createAction<Actor>("clipboard/copyActor");
 const copyTrigger = createAction<Trigger>("clipboard/copyTrigger");
@@ -25,11 +27,15 @@ const copyScene = createAction<Scene>("clipboard/copyScene");
 const copyEvent = createAction<ScriptEvent>("clipboard/copyEvent");
 const copyScript = createAction<ScriptEvent[]>("clipboard/copyScript");
 const copyMetasprites = createAction<{
-  metaspriteIds: string[]
+  metaspriteIds: string[];
 }>("clipboard/copyMetasprites");
 const copyMetaspriteTiles = createAction<{
-  metaspriteTileIds: string[]
+  metaspriteTileIds: string[];
 }>("clipboard/copyMetaspriteTiles");
+const pasteMetasprites = createAction<void>("clipboard/pasteMetasprites");
+const pasteMetaspriteTiles = createAction<void>(
+  "clipboard/pasteMetaspriteTiles"
+);
 const pasteCustomEvents = createAction<void>("clipboard/pasteCustomEvents");
 
 const copySelectedEntity = () => (
@@ -93,7 +99,7 @@ const pasteClipboardEntityInPlace = (clipboardData: any) => (
         x: clipboardScene.x,
         y: clipboardScene.y,
         defaults: clipboardScene,
-        variables: clipboardData.__variables
+        variables: clipboardData.__variables,
       })
     );
   } else if (sceneId && clipboardData.__type === "actor") {
@@ -105,7 +111,7 @@ const pasteClipboardEntityInPlace = (clipboardData: any) => (
         x: clipboardActor.x,
         y: clipboardActor.y,
         defaults: clipboardActor,
-        variables: clipboardData.__variables
+        variables: clipboardData.__variables,
       })
     );
   } else if (sceneId && clipboardData.__type === "trigger") {
@@ -119,13 +125,15 @@ const pasteClipboardEntityInPlace = (clipboardData: any) => (
         width: clipboardTrigger.width,
         height: clipboardTrigger.height,
         defaults: clipboardTrigger,
-        variables: clipboardData.__variables
+        variables: clipboardData.__variables,
       })
     );
   }
 };
 
 export default {
+  ...actions,
+  fetchClipboard,
   copyText,
   copyActor,
   copyTrigger,
@@ -137,5 +145,7 @@ export default {
   copySelectedEntity,
   pasteClipboardEntity,
   pasteClipboardEntityInPlace,
-  pasteCustomEvents
+  pasteCustomEvents,
+  pasteMetasprites,
+  pasteMetaspriteTiles,
 };

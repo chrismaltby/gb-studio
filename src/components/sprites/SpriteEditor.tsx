@@ -42,6 +42,7 @@ import {
 import { FlexGrow } from "../ui/spacing/Spacing";
 import { NumberField } from "../ui/form/NumberField";
 import { SidebarHeader } from "../ui/form/SidebarHeader";
+import { ClipboardTypeMetaspriteTiles } from "../../store/features/clipboard/clipboardTypes";
 
 interface SpriteEditorProps {
   id: string;
@@ -59,10 +60,7 @@ const options: SpriteImportTypeOption[] = [
   { value: "manual", label: `${l10n("FIELD_MANUAL")}` },
 ];
 
-export const SpriteEditor = ({
-  id,
-  metaspriteId,
-}: SpriteEditorProps) => {
+export const SpriteEditor = ({ id, metaspriteId }: SpriteEditorProps) => {
   const sprite = useSelector((state: RootState) =>
     spriteSheetSelectors.selectById(state, id)
   );
@@ -74,6 +72,9 @@ export const SpriteEditor = ({
   );
   const metaspriteTile = useSelector((state: RootState) =>
     metaspriteTileSelectors.selectById(state, selectedTileIds[0])
+  );
+  const clipboardFormat = useSelector(
+    (state: RootState) => state.clipboard.data?.format
   );
   const selectedTileId = selectedTileIds[0];
 
@@ -169,10 +170,32 @@ export const SpriteEditor = ({
   }, []);
 
   const onCopyTiles = useCallback(() => {
-    dispatch(clipboardActions.copyMetaspriteTiles({
-      metaspriteTileIds: selectedTileIds
-    }))
+    dispatch(
+      clipboardActions.copyMetaspriteTiles({
+        metaspriteTileIds: selectedTileIds,
+      })
+    );
   }, [selectedTileIds]);
+
+  const onCopyMetasprite = useCallback(() => {
+    dispatch(
+      clipboardActions.copyMetasprites({
+        metaspriteIds: [metaspriteId],
+      })
+    );
+  }, [metaspriteId]);
+
+  const onPasteTiles = useCallback(() => {
+    dispatch(clipboardActions.pasteMetaspriteTiles());
+  }, []);
+
+  const onPasteMetasprites = useCallback(() => {
+    dispatch(clipboardActions.pasteMetasprites());
+  }, []);
+
+  const onFetchClipboard = useCallback(() => {
+    dispatch(clipboardActions.fetchClipboard());
+  }, []);
 
   if (!sprite) {
     return null;
@@ -202,12 +225,19 @@ export const SpriteEditor = ({
               size="small"
               variant="transparent"
               menuDirection="right"
+              onMouseDown={onFetchClipboard}
             >
-              {selectedTileIds.length > 0 && 
+              {selectedTileIds.length > 0 && (
                 <MenuItem onClick={onCopyTiles}>
                   {l10n("MENU_SPRITE_TILE_COPY")}
                 </MenuItem>
-              }
+              )}
+              {clipboardFormat === ClipboardTypeMetaspriteTiles && (
+                <MenuItem onClick={onPasteTiles}>
+                  {l10n("MENU_SPRITE_TILE_PASTE")}
+                </MenuItem>
+              )}
+
               {/* <MenuItem onClick={onCopyVar}>
                 {l10n("MENU_VARIABLE_COPY_EMBED")}
               </MenuItem>
