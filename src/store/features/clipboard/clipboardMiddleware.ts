@@ -6,7 +6,7 @@ import {
   getCustomEventIdsInActor,
   getCustomEventIdsInScene,
 } from "../../../lib/helpers/eventSystem";
-import { Middleware } from "@reduxjs/toolkit";
+import { Middleware, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../configureStore";
 import {
   customEventSelectors,
@@ -23,7 +23,7 @@ import {
 } from "../entities/entitiesTypes";
 import actions from "./clipboardActions";
 import entitiesActions from "../entities/entitiesActions";
-
+import editorActions from "../editor/editorActions";
 import confirmReplaceCustomEvent from "../../../lib/electron/dialog/confirmReplaceCustomEvent";
 import { copy, paste } from "./clipboardHelpers";
 import {
@@ -267,6 +267,38 @@ const clipboardMiddleware: Middleware<{}, RootState> = (store) => (next) => (
       store.dispatch(clipboardActions.setClipboardData(res));
     } else {
       store.dispatch(clipboardActions.clearClipboardData());
+    }
+  } else if (actions.pasteSprite.match(action)) {
+    const state = store.getState();
+    const clipboard = state.clipboard.data;
+
+    if (!clipboard) {
+      return next(action);
+    }
+    if (clipboard.format === ClipboardTypeMetasprites) {
+      const data = clipboard.data;
+    } else if (clipboard.format === ClipboardTypeMetaspriteTiles) {
+      const data = clipboard.data;
+
+      const newActions = data.metaspriteTiles.map((tile) => {
+        return entitiesActions.addMetaspriteTile({
+          metaspriteId: action.payload.metaspriteId,
+          x: tile.x,
+          y: tile.y,
+          sliceX: tile.sliceX,
+          sliceY: tile.sliceY,
+        });
+      });
+
+      for (const action of newActions) {
+        store.dispatch(action);
+      }
+
+      const newIds = newActions.map(
+        (action) => action.payload.metaspriteTileId
+      );
+
+      store.dispatch(editorActions.setSelectedMetaspriteTileIds(newIds));
     }
   }
 

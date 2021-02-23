@@ -193,12 +193,13 @@ export const SpriteEditor = ({
     );
   }, [metaspriteId]);
 
-  const onPasteTiles = useCallback(() => {
-    dispatch(clipboardActions.pasteMetaspriteTiles());
-  }, []);
-
-  const onPasteMetasprites = useCallback(() => {
-    dispatch(clipboardActions.pasteMetasprites());
+  const onPaste = useCallback(() => {
+    dispatch(
+      clipboardActions.pasteSprite({
+        metaspriteId,
+        spriteAnimationId: animationId,
+      })
+    );
   }, []);
 
   const onFetchClipboard = useCallback(() => {
@@ -262,12 +263,12 @@ export const SpriteEditor = ({
                 {l10n("MENU_SPRITE_COPY")}
               </MenuItem>
               {clipboardFormat === ClipboardTypeMetaspriteTiles && (
-                <MenuItem onClick={onPasteTiles}>
+                <MenuItem onClick={onPaste}>
                   {l10n("MENU_SPRITE_TILE_PASTE")}
                 </MenuItem>
               )}
               {clipboardFormat === ClipboardTypeMetasprites && (
-                <MenuItem onClick={onPasteMetasprites}>
+                <MenuItem onClick={onPaste}>
                   {l10n("MENU_SPRITE_PASTE")}
                 </MenuItem>
               )}

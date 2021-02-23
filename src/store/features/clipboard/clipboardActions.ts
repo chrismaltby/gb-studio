@@ -32,6 +32,10 @@ const copyMetasprites = createAction<{
 const copyMetaspriteTiles = createAction<{
   metaspriteTileIds: string[];
 }>("clipboard/copyMetaspriteTiles");
+const pasteSprite = createAction<{
+  metaspriteId: string;
+  spriteAnimationId: string;
+}>("clipboard/paste");
 const pasteMetasprites = createAction<void>("clipboard/pasteMetasprites");
 const pasteMetaspriteTiles = createAction<void>(
   "clipboard/pasteMetaspriteTiles"
@@ -148,4 +152,5 @@ export default {
   pasteCustomEvents,
   pasteMetasprites,
   pasteMetaspriteTiles,
+  pasteSprite,
 };
