@@ -12,8 +12,6 @@ import {
   ScriptEvent,
   SceneData,
   Variable,
-  MetaspriteTile,
-  Metasprite,
 } from "../entities/entitiesTypes";
 import { RootState } from "../../configureStore";
 import editorActions from "../editor/editorActions";
@@ -36,10 +34,6 @@ const pasteSprite = createAction<{
   metaspriteId: string;
   spriteAnimationId: string;
 }>("clipboard/pasteSprite");
-const pasteMetasprites = createAction<void>("clipboard/pasteMetasprites");
-const pasteMetaspriteTiles = createAction<void>(
-  "clipboard/pasteMetaspriteTiles"
-);
 const pasteCustomEvents = createAction<void>("clipboard/pasteCustomEvents");
 
 const copySelectedEntity = () => (
@@ -150,7 +144,5 @@ export default {
   pasteClipboardEntity,
   pasteClipboardEntityInPlace,
   pasteCustomEvents,
-  pasteMetasprites,
-  pasteMetaspriteTiles,
   pasteSprite,
 };

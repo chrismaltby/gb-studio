@@ -25,12 +25,10 @@ import actions from "./clipboardActions";
 import entitiesActions from "../entities/entitiesActions";
 import editorActions from "../editor/editorActions";
 import confirmReplaceCustomEvent from "../../../lib/electron/dialog/confirmReplaceCustomEvent";
-import { copy, paste } from "./clipboardHelpers";
+import { copy, pasteAny } from "./clipboardHelpers";
 import {
-  ClipboardType,
   ClipboardTypeMetasprites,
   ClipboardTypeMetaspriteTiles,
-  ClipboardTypes,
 } from "./clipboardTypes";
 import clipboardActions from "./clipboardActions";
 
@@ -248,29 +246,15 @@ const clipboardMiddleware: Middleware<{}, RootState> = (store) => (next) => (
         metaspriteTiles,
       },
     });
-  } else if (actions.pasteMetasprites.match(action)) {
-    const state = store.getState();
-    const data = paste(ClipboardTypeMetasprites);
-  } else if (actions.pasteMetaspriteTiles.match(action)) {
-    const state = store.getState();
-    const data = paste(ClipboardTypeMetaspriteTiles);
   } else if (actions.fetchClipboard.match(action)) {
-    let res: ClipboardType | undefined = undefined;
-    for (const type of ClipboardTypes) {
-      const data = paste(type);
-      if (data) {
-        res = data;
-        break;
-      }
-    }
-    if (res) {
-      store.dispatch(clipboardActions.setClipboardData(res));
+    const clipboard = pasteAny();
+    if (clipboard) {
+      store.dispatch(clipboardActions.setClipboardData(clipboard));
     } else {
       store.dispatch(clipboardActions.clearClipboardData());
     }
   } else if (actions.pasteSprite.match(action)) {
-    const state = store.getState();
-    const clipboard = state.clipboard.data;
+    const clipboard = pasteAny();
 
     if (!clipboard) {
       return next(action);

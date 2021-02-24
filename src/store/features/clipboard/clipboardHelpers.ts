@@ -6,6 +6,7 @@ import {
   ClipboardType,
   ClipboardTypeMetasprites,
   ClipboardTypeMetaspriteTiles,
+  ClipboardTypes,
   NarrowClipboardType,
 } from "./clipboardTypes";
 
@@ -54,6 +55,16 @@ export const paste = <T extends ClipboardFormat>(
       } as NarrowClipboardType<ClipboardType, T>;
     }
     return undefined;
+  }
+  return undefined;
+};
+
+export const pasteAny = (): ClipboardType | undefined => {
+  for (const type of ClipboardTypes) {
+    const data = paste(type);
+    if (data) {
+      return data;
+    }
   }
   return undefined;
 };

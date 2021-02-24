@@ -13,6 +13,7 @@ import MetaspriteGrid from "./MetaspriteGrid";
 import { SpriteSliceCanvas } from "./preview/SpriteSliceCanvas";
 import entitiesActions from "../../store/features/entities/entitiesActions";
 import editorActions from "../../store/features/editor/editorActions";
+import clipboardActions from "../../store/features/clipboard/clipboardActions";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { MetaspriteCanvas } from "./preview/MetaspriteCanvas";
 
@@ -526,6 +527,39 @@ const MetaspriteEditor = ({
     );
   }, [metaspriteId, spriteSheetId]);
 
+  const onCopyTiles = useCallback(() => {
+    dispatch(
+      clipboardActions.copyMetaspriteTiles({
+        metaspriteTileIds: selectedTileIds,
+      })
+    );
+  }, [selectedTileIds]);
+
+  const onCopyMetasprite = useCallback(() => {
+    dispatch(
+      clipboardActions.copyMetasprites({
+        metaspriteIds: [metaspriteId],
+      })
+    );
+  }, [metaspriteId]);
+
+  const onCopy = useCallback(() => {
+    if (selectedTileIds.length > 0) {
+      onCopyTiles();
+    } else {
+      onCopyMetasprite();
+    }
+  }, [selectedTileIds]);
+
+  const onPaste = useCallback(() => {
+    dispatch(
+      clipboardActions.pasteSprite({
+        metaspriteId,
+        spriteAnimationId: animationId,
+      })
+    );
+  }, [metaspriteId, animationId]);
+
   const onOverEditor = useCallback(() => {
     setIsOverEditor(true);
   }, [setIsOverEditor]);
@@ -533,6 +567,21 @@ const MetaspriteEditor = ({
   const onLeaveEditor = useCallback(() => {
     setIsOverEditor(false);
   }, [setIsOverEditor]);
+
+  const onSelectAll = useCallback(
+    (e) => {
+      const selection = window.getSelection();
+      console.log({
+        selection,
+      });
+      if (!selection || selection.focusNode) {
+        return;
+      }
+      window.getSelection()?.empty();
+      setSelectedTileIds(metasprite?.tiles || []);
+    },
+    [metasprite?.tiles]
+  );
 
   // Keyboard handlers
   useEffect(() => {
@@ -581,6 +630,30 @@ const MetaspriteEditor = ({
     }
     return () => {};
   }, [newTiles, isOverEditor, hidden, onMoveCreateCursor, onCreateTiles]);
+
+  // Clipboard
+  useEffect(() => {
+    if (!hidden) {
+      window.addEventListener("copy", onCopy);
+      window.addEventListener("paste", onPaste);
+      return () => {
+        window.removeEventListener("copy", onCopy);
+        window.removeEventListener("paste", onPaste);
+      };
+    }
+    return () => {};
+  }, [hidden, selectedTileIds, metaspriteId, animationId]);
+
+  // Selection
+  useEffect(() => {
+    if (!hidden) {
+      document.addEventListener("selectionchange", onSelectAll);
+      return () => {
+        document.removeEventListener("selectionchange", onSelectAll);
+      };
+    }
+    return () => {};
+  }, [hidden, metasprite?.tiles]);
 
   if (!metasprite) {
     return null;

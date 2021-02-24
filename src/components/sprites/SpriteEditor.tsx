@@ -10,7 +10,7 @@ import {
   FormRow,
   FormSectionTitle,
 } from "../ui/form/FormLayout";
-import { MenuItem } from "../ui/menu/Menu";
+import { MenuDivider, MenuItem } from "../ui/menu/Menu";
 import l10n from "../../lib/helpers/l10n";
 import { Sidebar, SidebarColumn } from "../ui/sidebars/Sidebar";
 import {
@@ -71,9 +71,6 @@ export const SpriteEditor = ({
 }: SpriteEditorProps) => {
   const sprite = useSelector((state: RootState) =>
     spriteSheetSelectors.selectById(state, id)
-  );
-  const spriteIndex = useSelector((state: RootState) =>
-    spriteSheetSelectors.selectIds(state).indexOf(id)
   );
   const selectedTileIds = useSelector(
     (state: RootState) => state.editor.selectedMetaspriteTileIds
@@ -200,7 +197,7 @@ export const SpriteEditor = ({
         spriteAnimationId: animationId,
       })
     );
-  }, []);
+  }, [metaspriteId, animationId]);
 
   const onFetchClipboard = useCallback(() => {
     dispatch(clipboardActions.fetchClipboard());
@@ -259,9 +256,11 @@ export const SpriteEditor = ({
                   {l10n("MENU_SPRITE_TILE_COPY")}
                 </MenuItem>
               )}
-              <MenuItem onClick={onCopyMetasprite}>
-                {l10n("MENU_SPRITE_COPY")}
-              </MenuItem>
+              {selectedTileIds.length === 0 && (
+                <MenuItem onClick={onCopyMetasprite}>
+                  {l10n("MENU_SPRITE_COPY")}
+                </MenuItem>
+              )}
               {clipboardFormat === ClipboardTypeMetaspriteTiles && (
                 <MenuItem onClick={onPaste}>
                   {l10n("MENU_SPRITE_TILE_PASTE")}
@@ -272,6 +271,7 @@ export const SpriteEditor = ({
                   {l10n("MENU_SPRITE_PASTE")}
                 </MenuItem>
               )}
+              <MenuDivider />
               {selectedTileIds.length > 0 && (
                 <MenuItem onClick={onRemoveSelectedTiles}>
                   {l10n("MENU_SPRITE_TILE_DELETE")}
