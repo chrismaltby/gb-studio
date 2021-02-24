@@ -10,6 +10,7 @@ export type SpriteAnimationType =
   | "multi"
   | "multi_movement"
   | "platform_player";
+export type ObjPalette = "OBP0" | "OBP1";
 
 export type ScriptEvent = {
   id: string;
@@ -127,6 +128,8 @@ export type MetaspriteTile = {
   palette: number;
   flipX: boolean;
   flipY: boolean;
+  objPalette: ObjPalette;
+  paletteIndex: number;
 };
 
 export type Metasprite = {

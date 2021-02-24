@@ -50,6 +50,7 @@ import { CheckboxField } from "../ui/form/CheckboxField";
 import { AnimationTypeSelect } from "../forms/AnimationTypeSelect";
 import { AnimationSpeedSelect } from "../forms/AnimationSpeedSelect";
 import { getAnimationNameById } from "./helpers";
+import { ObjPaletteSelect } from "../forms/ObjPaletteSelect";
 
 interface SpriteEditorProps {
   id: string;
@@ -121,6 +122,19 @@ export const SpriteEditor = ({
     dispatch(
       entitiesActions.editSpriteAnimation({
         spriteAnimationId: animationId,
+        changes: {
+          [key]: editValue,
+        },
+      })
+    );
+  };
+
+  const onChangeTilesFields = <T extends keyof MetaspriteTile>(key: T) => (
+    editValue: MetaspriteTile[T]
+  ) => {
+    dispatch(
+      entitiesActions.editMetaspriteTiles({
+        metaspriteTileIds: selectedTileIds,
         changes: {
           [key]: editValue,
         },
@@ -363,11 +377,10 @@ export const SpriteEditor = ({
 
               <FormRow>
                 <FormField name="objPalette" label="Obj Palette">
-                  <Select
-                    options={options}
-                    onChange={(e: { value: SpriteSheetType }) =>
-                      onChangeField("type")(e.value)
-                    }
+                  <ObjPaletteSelect
+                    name="objPalette"
+                    value={metaspriteTile.objPalette}
+                    onChange={onChangeTilesFields("objPalette")}
                   />
                 </FormField>
               </FormRow>

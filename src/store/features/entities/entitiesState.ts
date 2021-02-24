@@ -1615,6 +1615,8 @@ const addMetaspriteTile: CaseReducer<
     palette: 0,
     flipX: false,
     flipY: false,
+    objPalette: "OBP0",
+    paletteIndex: 0,
   };
 
   // Add to metasprite
@@ -1750,6 +1752,22 @@ const editMetaspriteTile: CaseReducer<
     id: action.payload.metaspriteTileId,
     changes: patch,
   });
+};
+
+const editMetaspriteTiles: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    metaspriteTileIds: string[];
+    changes: Partial<MetaspriteTile>;
+  }>
+> = (state, action) => {
+  metaspriteTilesAdapter.updateMany(
+    state.metaspriteTiles,
+    action.payload.metaspriteTileIds.map((id) => ({
+      id,
+      changes: action.payload.changes,
+    }))
+  );
 };
 
 const removeMetaspriteTiles: CaseReducer<
@@ -2567,6 +2585,7 @@ const entitiesSlice = createSlice({
     flipXMetaspriteTiles,
     flipYMetaspriteTiles,
     editMetaspriteTile,
+    editMetaspriteTiles,
     removeMetaspriteTiles,
     removeMetaspriteTilesOutsideCanvas,
 
