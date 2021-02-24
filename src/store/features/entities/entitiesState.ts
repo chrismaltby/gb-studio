@@ -1574,7 +1574,7 @@ const removeMetasprite: CaseReducer<
   const spriteAnimation =
     state.spriteAnimations.entities[action.payload.spriteAnimationId];
 
-  if (!spriteAnimation) {
+  if (!spriteAnimation || spriteAnimation.frames.length <= 1) {
     return;
   }
 
@@ -1816,6 +1816,27 @@ const removeMetaspriteTilesOutsideCanvas: CaseReducer<
 /**************************************************************************
  * Sprite Animations
  */
+
+const editSpriteAnimation: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    spriteAnimationId: string;
+    changes: Partial<SpriteAnimation>;
+  }>
+> = (state, action) => {
+  const spriteAnimation =
+    state.spriteAnimations.entities[action.payload.spriteAnimationId];
+  let patch = { ...action.payload.changes };
+
+  if (!spriteAnimation) {
+    return;
+  }
+
+  spriteAnimationsAdapter.updateOne(state.spriteAnimations, {
+    id: action.payload.spriteAnimationId,
+    changes: patch,
+  });
+};
 
 const swapSpriteAnimationFrames: CaseReducer<
   EntitiesState,
@@ -2553,6 +2574,7 @@ const entitiesSlice = createSlice({
      * Sprite Animations
      */
 
+    editSpriteAnimation,
     swapSpriteAnimationFrames,
 
     /**************************************************************************

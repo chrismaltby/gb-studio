@@ -28,7 +28,7 @@ import SpriteTilePalette from "../../components/sprites/SpriteTilePalette";
 import SpriteAnimationTimeline from "../../components/sprites/SpriteAnimationTimeline";
 import { SplitPaneHeader } from "../../components/ui/splitpane/SplitPaneHeader";
 import l10n from "../../lib/helpers/l10n";
-import { getAnimationNames } from "../../components/sprites/helpers";
+import { getAnimationNameById } from "../../components/sprites/helpers";
 import MetaspriteEditorToolsPanel from "../../components/sprites/MetaspriteEditorToolsPanel";
 import { ZoomButton } from "../../components/ui/buttons/ZoomButton";
 
@@ -77,12 +77,10 @@ const SpritesPage = () => {
   const selectedAnimation =
     spriteAnimationsLookup[animationId] ||
     spriteAnimationsLookup[selectedSprite.animations?.[0]];
-  const selectedId = selectedSprite.id;
+  const selectedId = selectedSprite?.id || "";
   const selectedAnimationId = selectedAnimation?.id || "";
   const selectedMetaspriteId =
     metaspriteId || selectedAnimation?.frames[0] || "";
-  const selectedAnimationIndex =
-    selectedSprite?.animations?.indexOf(selectedAnimationId) || 0;
   const frames = selectedAnimation?.frames || [];
 
   const [leftPaneWidth, setLeftPaneSize, startLeftPaneResize] = useResizable({
@@ -212,8 +210,6 @@ const SpritesPage = () => {
     dispatch(editorActions.zoomReset({ section: "spriteTiles" }));
   }, [dispatch]);
 
-  const animationNames = getAnimationNames();
-
   return (
     <Wrapper>
       <div
@@ -300,7 +296,13 @@ const SpritesPage = () => {
           onToggle={toggleAnimationsPane}
           collapsed={!animationsOpen}
         >
-          {l10n("FIELD_FRAMES")}: {animationNames[selectedAnimationIndex]}
+          {l10n("FIELD_FRAMES")}:{" "}
+          {getAnimationNameById(
+            selectedSprite.animationType,
+            selectedSprite.flipLeft,
+            selectedAnimationId,
+            selectedSprite.animations
+          )}
         </SplitPaneHeader>
         {animationsOpen && (
           <SpriteAnimationTimeline

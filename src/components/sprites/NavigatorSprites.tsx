@@ -8,7 +8,10 @@ import { SpriteSheet } from "../../store/features/entities/entitiesTypes";
 import { EntityListItem } from "../ui/lists/EntityListItem";
 import { FormSectionTitle } from "../ui/form/FormLayout";
 import l10n from "../../lib/helpers/l10n";
-import { getAnimationNames } from "./helpers";
+import {
+  filterAnimationsBySpriteType,
+  getAnimationNameByIndex,
+} from "./helpers";
 
 interface NavigatorSpritesProps {
   height: number;
@@ -74,19 +77,30 @@ export const NavigatorSprites = ({
 
   useEffect(() => {
     if (selectedSprite?.animations) {
-      const names = getAnimationNames();
       setSpriteAnimations(
-        names.map((name, itemIndex) => {
+        filterAnimationsBySpriteType(
+          selectedSprite.animations,
+          selectedSprite?.animationType,
+          selectedSprite?.flipLeft
+        ).map((id, index) => {
           return {
-            id: selectedSprite?.animations[itemIndex],
-            name,
+            id,
+            name: getAnimationNameByIndex(
+              selectedSprite?.animationType,
+              selectedSprite?.flipLeft,
+              index
+            ),
           };
         })
       );
     } else {
       setSpriteAnimations([]);
     }
-  }, [selectedSprite?.animations]);
+  }, [
+    selectedSprite?.animations,
+    selectedSprite?.animationType,
+    selectedSprite?.flipLeft,
+  ]);
 
   const setSelectedId = useCallback(
     (id: string) => {

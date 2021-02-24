@@ -4,6 +4,12 @@ export type ActorDirection = "up" | "down" | "left" | "right";
 export type ActorSpriteType = "static" | "actor";
 export type SpriteType = "static" | "animated" | "actor" | "actor_animated";
 export type SpriteSheetType = "classic" | "autodetect" | "manual";
+export type SpriteAnimationType =
+  | "fixed"
+  | "fixed_movement"
+  | "multi"
+  | "multi_movement"
+  | "platform_player";
 
 export type ScriptEvent = {
   id: string;
@@ -130,7 +136,6 @@ export type Metasprite = {
 
 export type SpriteAnimation = {
   id: string;
-  speed: number;
   frames: string[];
 };
 
@@ -145,14 +150,16 @@ export type SpriteSheet = {
   _v: number;
   width: number;
   height: number;
+  animationType: SpriteAnimationType;
+  flipLeft: boolean;
   canvasWidth: number;
   canvasHeight: number;
   boundsX: number;
   boundsY: number;
   boundsWidth: number;
   boundsHeight: number;
-  metasprites: string[];
   animations: string[];
+  animSpeed: number | null;
 };
 
 export type Scene = {

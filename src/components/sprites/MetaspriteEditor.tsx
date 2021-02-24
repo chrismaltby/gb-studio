@@ -571,9 +571,6 @@ const MetaspriteEditor = ({
   const onSelectAll = useCallback(
     (e) => {
       const selection = window.getSelection();
-      console.log({
-        selection,
-      });
       if (!selection || selection.focusNode) {
         return;
       }
