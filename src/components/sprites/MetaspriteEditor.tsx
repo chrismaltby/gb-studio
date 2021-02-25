@@ -714,6 +714,7 @@ const MetaspriteEditor = ({
                   height={16}
                   flipX={metaspriteTile.flipX}
                   flipY={metaspriteTile.flipY}
+                  objPalette={metaspriteTile.objPalette}
                 />
               </MetaspriteDraggableTile>
             ))}
@@ -732,6 +733,7 @@ const MetaspriteEditor = ({
                   height={newTiles.height * 16}
                   flipX={false}
                   flipY={false}
+                  objPalette="OBP0"
                 />
               </StampTilesWrapper>
             )}

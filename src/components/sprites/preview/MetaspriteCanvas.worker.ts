@@ -1,10 +1,11 @@
-import { colorizeData, chromaKeyData } from "../../../lib/helpers/color";
+import { colorizeSpriteData, chromaKeyData } from "../../../lib/helpers/color";
+import { ObjPalette } from "../../../store/features/entities/entitiesTypes";
 
 const workerCtx: Worker = self as any;
 
 interface CacheRecord {
   img: ImageBitmap;
-  imgCanvas: OffscreenCanvas;
+  tilesCanvases: Record<ObjPalette, OffscreenCanvas>;
 }
 
 const cache: Record<string, CacheRecord> = {};
@@ -24,33 +25,54 @@ workerCtx.onmessage = async (evt) => {
   let canvas: OffscreenCanvas;
   let ctx: OffscreenCanvasRenderingContext2D;
   let img: ImageBitmap;
-  let imgCanvas: OffscreenCanvas;
+  let tilesCanvas: OffscreenCanvas;
+  let tilesCanvases: Record<ObjPalette, OffscreenCanvas>;
 
   if (cache[src]) {
     // Using Cached Data
     img = cache[src].img;
-    imgCanvas = cache[src].imgCanvas;
+    tilesCanvases = cache[src].tilesCanvases;
   } else {
     const imgblob = await fetch(src).then((r) => r.blob());
     img = await createImageBitmap(imgblob);
-    imgCanvas = new OffscreenCanvas(img.width, img.height);
-    const imgCanvasCtx = imgCanvas.getContext("2d");
-    if (!imgCanvasCtx) {
+   tilesCanvas = new OffscreenCanvas(img.width, img.height);
+    const tilesCanvasCtx = tilesCanvas.getContext("2d");
+    if (!tilesCanvasCtx) {
       return;
     }
-    imgCanvasCtx.drawImage(img, 0, 0);
+   tilesCanvasCtx.drawImage(img, 0, 0);
     // Remove transparency
-    const tileImageData = imgCanvasCtx.getImageData(
+    const tileImageData = tilesCanvasCtx.getImageData(
       0,
       0,
       img.width,
       img.height
     );
-    chromaKeyData(tileImageData.data);
-    imgCanvasCtx.putImageData(tileImageData, 0, 0);
+    chromaKeyData(tileImageData.data););
+
+    tilesCanvases = {
+      OBP0: new OffscreenCanvas(img.width, img.height),
+      OBP1: new OffscreenCanvas(img.width, img.height),
+    };
+
+    (["OBP0", "OBP1"] as ObjPalette[]).forEach((objPalette) => {
+      const canvas = tilesCanvases[objPalette];
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        return;
+      }
+      const imageDataCopy = new ImageData(
+        new Uint8ClampedArray(tileImageData.data),
+        tileImageData.width,
+        tileImageData.height
+      );
+      colorizeSpriteData(imageDataCopy.data, objPalette, palette);
+      ctx.putImageData(imageDataCopy, 0, 0);
+    });
+
     cache[src] = {
       img,
-      imgCanvas,
+      tilesCanvases,
     };
   }
 
@@ -66,9 +88,9 @@ workerCtx.onmessage = async (evt) => {
   for (let tile of tiles) {
     ctx.save();
     if (tile.flipX) {
-      ctx.translate(((width-8) / 2), 0);
+      ctx.translate((width - 8) / 2, 0);
       ctx.scale(-1, 1);
-      ctx.translate(-((width-8) / 2), 0);
+      ctx.translate(-((width - 8) / 2), 0);
     }
     if (tile.flipY) {
       ctx.translate(0, height - 8);
@@ -76,7 +98,7 @@ workerCtx.onmessage = async (evt) => {
       ctx.translate(0, -(height - 8));
     }
     ctx.drawImage(
-      imgCanvas,
+      tilesCanvases[(tile.objPalette || "OBP0") as ObjPalette],
       tile.sliceX,
       tile.sliceY,
       8,
@@ -88,11 +110,6 @@ workerCtx.onmessage = async (evt) => {
     );
     ctx.restore();
   }
-
-  // Colorize
-  const imageData = ctx.getImageData(0, 0, width, height);
-  colorizeData(imageData.data, palette);
-  ctx.putImageData(imageData, 0, 0);
 
   const canvasImage = canvas.transferToImageBitmap();
   workerCtx.postMessage({ id, canvasImage }, [canvasImage]);

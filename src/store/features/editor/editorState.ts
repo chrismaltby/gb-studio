@@ -104,6 +104,7 @@ export interface EditorState {
   playSpriteAnimation: boolean;
   spriteTileSelection?: SpriteTileSelection;
   showSpriteBoundingBox: boolean;
+  replaceSpriteTileMode: boolean;
 }
 
 export const initialState: EditorState = {
@@ -159,6 +160,7 @@ export const initialState: EditorState = {
   showOnionSkin: false,
   playSpriteAnimation: false,
   showSpriteBoundingBox: false,
+  replaceSpriteTileMode: false,
 };
 
 const editorSlice = createSlice({
@@ -511,6 +513,7 @@ const editorSlice = createSlice({
       state.selectedMetaspriteId = "";
       state.selectedMetaspriteTileIds = [];
       state.playSpriteAnimation = false;
+      state.replaceSpriteTileMode = false;
       state.spriteTileSelection = undefined;
     },
 
@@ -519,26 +522,31 @@ const editorSlice = createSlice({
       state.selectedMetaspriteId = "";
       state.selectedMetaspriteTileIds = [];
       state.playSpriteAnimation = false;
+      state.replaceSpriteTileMode = false;
     },
 
     setSelectedMetaspriteId: (state, action: PayloadAction<string>) => {
       state.selectedMetaspriteId = action.payload;
       state.selectedMetaspriteTileIds = [];
+      state.replaceSpriteTileMode = false;
     },
 
     setSelectedMetaspriteTileId: (state, action: PayloadAction<string>) => {
       state.selectedMetaspriteTileIds = [action.payload];
       state.playSpriteAnimation = false;
+      state.replaceSpriteTileMode = false;
     },
 
     setSelectedMetaspriteTileIds: (state, action: PayloadAction<string[]>) => {
       state.selectedMetaspriteTileIds = action.payload;
       state.playSpriteAnimation = false;
+      state.replaceSpriteTileMode = false;
     },
 
     resetSelectedMetaspriteTileIds: (state) => {
       state.selectedMetaspriteTileIds = [];
       state.playSpriteAnimation = false;
+      state.replaceSpriteTileMode = false;
     },
 
     toggleSelectedMetaspriteTileId: (state, action: PayloadAction<string>) => {
@@ -580,6 +588,10 @@ const editorSlice = createSlice({
 
     setShowSpriteBoundingBox: (state, action: PayloadAction<boolean>) => {
       state.showSpriteBoundingBox = action.payload;
+    },
+
+    setReplaceSpriteTileMode: (state, action: PayloadAction<boolean>) => {
+      state.replaceSpriteTileMode = action.payload;
     },
   },
   extraReducers: (builder) =>

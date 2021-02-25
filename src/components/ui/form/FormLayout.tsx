@@ -72,7 +72,7 @@ const FormFieldWrapper = styled.div<FormFieldWrapperProps>`
       : ""}
 `;
 
-const FormFieldInfo = styled.div`
+export const FormFieldInfo = styled.div`
   opacity: 0.5;
   display: block;
   font-size: 11px;

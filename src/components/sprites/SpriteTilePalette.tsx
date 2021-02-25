@@ -5,6 +5,7 @@ import { RootState } from "../../store/configureStore";
 import { SpriteTileSelection } from "../../store/features/editor/editorState";
 import { spriteSheetSelectors } from "../../store/features/entities/entitiesState";
 import editorActions from "../../store/features/editor/editorActions";
+import entitiesActions from "../../store/features/entities/entitiesActions";
 
 interface SpriteTilePaletteProps {
   id: string;
@@ -17,7 +18,8 @@ interface HoverTile {
 
 const SpriteTilePalette = ({ id }: SpriteTilePaletteProps) => {
   const dispatch = useDispatch();
-  const zoom = useSelector((state: RootState) => state.editor.zoomSpriteTiles) / 100;
+  const zoom =
+    useSelector((state: RootState) => state.editor.zoomSpriteTiles) / 100;
   const selectedTiles = useSelector(
     (state: RootState) => state.editor.spriteTileSelection
   );
@@ -36,12 +38,19 @@ const SpriteTilePalette = ({ id }: SpriteTilePaletteProps) => {
   const spriteSheet = useSelector((state: RootState) =>
     spriteSheetSelectors.selectById(state, id)
   );
+  const selectedTileIds = useSelector(
+    (state: RootState) => state.editor.selectedMetaspriteTileIds
+  );
+  const replaceSpriteTileMode = useSelector(
+    (state: RootState) => state.editor.replaceSpriteTileMode
+  );
   const projectRoot = useSelector((state: RootState) => state.document.root);
   const width = spriteSheet?.width || 0;
   const height = spriteSheet?.height || 0;
 
   const onDragStart = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     e.preventDefault();
+
     const currentTargetRect = e.currentTarget.getBoundingClientRect();
     const offsetX =
       Math.floor((e.pageX - currentTargetRect.left) / 8 / zoom) * 8;
@@ -49,6 +58,11 @@ const SpriteTilePalette = ({ id }: SpriteTilePaletteProps) => {
       height - 16,
       Math.floor((e.pageY - currentTargetRect.top) / 8 / zoom) * 8
     );
+
+    if (replaceSpriteTileMode && selectedTileIds[0]) {
+      onReplace(offsetX, offsetY);
+      return;
+    }
 
     setSelectedTiles({
       x: offsetX,
@@ -132,6 +146,22 @@ const SpriteTilePalette = ({ id }: SpriteTilePaletteProps) => {
   const onMouseOut = () => {
     setHoverTile(undefined);
   };
+
+  const onReplace = useCallback(
+    (sliceX: number, sliceY: number) => {
+      dispatch(
+        entitiesActions.editMetaspriteTile({
+          metaspriteTileId: selectedTileIds[0],
+          changes: {
+            sliceX,
+            sliceY,
+          },
+        })
+      );
+      dispatch(editorActions.setReplaceSpriteTileMode(false));
+    },
+    [dispatch, selectedTileIds]
+  );
 
   // Drag and drop handlers
   useEffect(() => {

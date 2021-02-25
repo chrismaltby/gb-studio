@@ -1,3 +1,5 @@
+import { ObjPalette } from "../../store/features/entities/entitiesTypes";
+
 /* eslint-disable no-param-reassign */
 const hexStringToDecimal = (str: string) => {
   return parseInt(str, 16);
@@ -60,23 +62,27 @@ export const rgb5BitToGBCHex = (
     .padStart(6, "0");
 };
 
-export const indexColour = (g: number) => {
+export const indexSpriteColour = (g: number, objPalette: ObjPalette) => {
   if (g < 65) {
     return 3;
   }
   if (g < 130) {
-    return 3;
+    return objPalette === "OBP1" ? 2 : 3;
   }
   if (g < 205) {
-    return 1;
+    return objPalette === "OBP1" ? 2 : 1;
   }
   return 0;
 };
 
-export const colorizeData = (mutData: Uint8ClampedArray, palette: string[]) => {
+export const colorizeSpriteData = (
+  mutData: Uint8ClampedArray,
+  objPalette: ObjPalette,
+  palette: string[]
+) => {
   const paletteRGB = palette.map(hex2GBCrgb);
   for (let index = 0; index < mutData.length; index += 4) {
-    const colorIndex = indexColour(mutData[index + 1]);
+    const colorIndex = indexSpriteColour(mutData[index + 1], objPalette);
     const color = paletteRGB[colorIndex];
     if (mutData[index + 1] === 255) {
       // Set transparent background on pure green

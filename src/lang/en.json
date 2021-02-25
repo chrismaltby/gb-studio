@@ -325,6 +325,9 @@
   "FIELD_MOVING_DIR": "Moving {direction}",
   "FIELD_JUMPING_DIR": "Jump {direction}",
   "FIELD_CLIMBING": "Climbing",
+  "FIELD_REPLACE_TILE": "Replace Tile",
+  "FIELD_CHOOSE_REPLACEMENT": "Choose Replacement...",
+  "FIELD_CHOOSE_REPLACEMENT_DETAILS": "Choose a replacement tile in the 'Tiles' panel.",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

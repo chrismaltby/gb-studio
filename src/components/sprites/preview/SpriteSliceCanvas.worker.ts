@@ -1,4 +1,4 @@
-import { colorizeData } from "../../../lib/helpers/color";
+import { colorizeSpriteData } from "../../../lib/helpers/color";
 
 const workerCtx: Worker = self as any;
 
@@ -19,6 +19,7 @@ workerCtx.onmessage = async (evt) => {
   const height = evt.data.height;
   const flipX = evt.data.flipX;
   const flipY = evt.data.flipY;
+  const objPalette = evt.data.objPalette;
   const palette = evt.data.palette;
 
   let canvas: OffscreenCanvas;
@@ -59,7 +60,7 @@ workerCtx.onmessage = async (evt) => {
 
   // Colorize
   const imageData = ctx.getImageData(0, 0, width, height);
-  colorizeData(imageData.data, palette);
+  colorizeSpriteData(imageData.data, objPalette, palette);
   ctx.putImageData(imageData, 0, 0);
 
   const canvasImage = canvas.transferToImageBitmap();

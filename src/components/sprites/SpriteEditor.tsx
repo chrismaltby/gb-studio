@@ -6,6 +6,7 @@ import {
   FormContainer,
   FormDivider,
   FormField,
+  FormFieldInfo,
   FormHeader,
   FormRow,
   FormSectionTitle,
@@ -51,6 +52,7 @@ import { AnimationTypeSelect } from "../forms/AnimationTypeSelect";
 import { AnimationSpeedSelect } from "../forms/AnimationSpeedSelect";
 import { getAnimationNameById } from "./helpers";
 import { ObjPaletteSelect } from "../forms/ObjPaletteSelect";
+import { PaletteIndexSelect } from "../forms/PaletteIndexSelect";
 
 interface SpriteEditorProps {
   id: string;
@@ -79,6 +81,9 @@ export const SpriteEditor = ({
   );
   const clipboardFormat = useSelector(
     (state: RootState) => state.clipboard.data?.format
+  );
+  const replaceSpriteTileMode = useSelector(
+    (state: RootState) => state.editor.replaceSpriteTileMode
   );
 
   const selectedTileId = selectedTileIds[0];
@@ -247,6 +252,10 @@ export const SpriteEditor = ({
     );
   }, [dispatch, metaspriteId, animationId]);
 
+  const toggleReplaceMode = useCallback(() => {
+    dispatch(editorActions.setReplaceSpriteTileMode(!replaceSpriteTileMode));
+  }, [replaceSpriteTileMode]);
+
   if (!sprite || !animation) {
     return null;
   }
@@ -386,12 +395,11 @@ export const SpriteEditor = ({
               </FormRow>
 
               <FormRow>
-                <FormField name="colorPalette" label="Color Palette">
-                  <Select
-                    options={options}
-                    onChange={(e: { value: SpriteSheetType }) =>
-                      onChangeField("type")(e.value)
-                    }
+                <FormField name="paletteIndex" label="Color Palette">
+                  <PaletteIndexSelect
+                    name="paletteIndex"
+                    value={metaspriteTile.paletteIndex}
+                    onChange={onChangeTilesFields("paletteIndex")}
                   />
                 </FormField>
               </FormRow>
@@ -400,8 +408,22 @@ export const SpriteEditor = ({
                 <>
                   <FormDivider />
                   <FormRow>
-                    <Button>Replace Tile</Button>
+                    <Button
+                      onClick={toggleReplaceMode}
+                      variant={replaceSpriteTileMode ? "primary" : "normal"}
+                    >
+                      {replaceSpriteTileMode
+                        ? l10n("FIELD_CHOOSE_REPLACEMENT")
+                        : l10n("FIELD_REPLACE_TILE")}
+                    </Button>
                   </FormRow>
+                  {replaceSpriteTileMode && (
+                    <FormRow>
+                      <FormFieldInfo>
+                        {l10n("FIELD_CHOOSE_REPLACEMENT_DETAILS")}
+                      </FormFieldInfo>
+                    </FormRow>
+                  )}
                 </>
               )}
             </>
