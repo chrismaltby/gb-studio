@@ -506,48 +506,48 @@ export const SpriteEditor = ({
                     onChange={onChangeFieldInput("boundsHeight")}
                   />
                 </FormRow>
-                <FormDivider />
-                <FormRow>
-                  <FormField
-                    name="actorAnimSpeed"
-                    label={l10n("FIELD_ANIMATION_SPEED")}
-                  >
-                    <AnimationSpeedSelect
-                      name="actorAnimSpeed"
-                      value={sprite.animSpeed}
-                      onChange={onChangeField("animSpeed")}
-                    />
-                  </FormField>
-                </FormRow>
-                <FormDivider />
-                <FormRow>
-                  <FormField
-                    name="animationType"
-                    label={l10n("FIELD_ANIMATION_TYPE")}
-                  >
-                    <AnimationTypeSelect
-                      name="animationType"
-                      value={sprite.animationType}
-                      onChange={onChangeField("animationType")}
-                    />
-                  </FormField>
-                </FormRow>
-                {sprite.animationType &&
-                  sprite.animationType !== "fixed" &&
-                  sprite.animationType !== "fixed_movement" && (
-                    <FormRow>
-                      <CheckboxField
-                        name="customColorsEnabled"
-                        label={l10n("FIELD_FLIP_RIGHT_TO_CREATE_LEFT")}
-                        checked={!!sprite.flipLeft}
-                        onChange={onChangeFieldInput("flipLeft")}
-                      />
-                    </FormRow>
-                  )}
-                <FormRow>
-                  <Button>{l10n("FIELD_AUTODETECT_ANIMATIONS")}</Button>
-                </FormRow>
               </div>
+              <FormDivider />
+              <FormRow>
+                <FormField
+                  name="actorAnimSpeed"
+                  label={l10n("FIELD_ANIMATION_SPEED")}
+                >
+                  <AnimationSpeedSelect
+                    name="actorAnimSpeed"
+                    value={sprite.animSpeed}
+                    onChange={onChangeField("animSpeed")}
+                  />
+                </FormField>
+              </FormRow>
+              <FormDivider />
+              <FormRow>
+                <FormField
+                  name="animationType"
+                  label={l10n("FIELD_ANIMATION_TYPE")}
+                >
+                  <AnimationTypeSelect
+                    name="animationType"
+                    value={sprite.animationType}
+                    onChange={onChangeField("animationType")}
+                  />
+                </FormField>
+              </FormRow>
+              {sprite.animationType &&
+                sprite.animationType !== "fixed" &&
+                sprite.animationType !== "fixed_movement" && (
+                  <FormRow>
+                    <CheckboxField
+                      name="customColorsEnabled"
+                      label={l10n("FIELD_FLIP_RIGHT_TO_CREATE_LEFT")}
+                      checked={!!sprite.flipLeft}
+                      onChange={onChangeFieldInput("flipLeft")}
+                    />
+                  </FormRow>
+                )}
+              <FormRow>
+                <Button>{l10n("FIELD_AUTODETECT_ANIMATIONS")}</Button>
+              </FormRow>
             </>
           )}
         </FormContainer>
