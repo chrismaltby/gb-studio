@@ -2,7 +2,7 @@
 
 export type Position = { x: number; y: number };
 export type SliceDef = {
-  data: Uint8Array;
+  data: Uint16Array;
   coordinates: {
     x: number;
     y: number;
@@ -28,10 +28,11 @@ export type SpriteTileLocation = TileLocation & {
 
 // imgdata.js -----------------------------------------------------------------
 
-export const imageToData = (img: ImageBitmap): Uint8Array => {
-  const data = new Uint8Array(2 + img.width * img.height);
+export const imageToData = (img: ImageBitmap): Uint16Array => {
+  const data = new Uint16Array(2 + img.width * img.height);
   data[0] = img.width;
   data[1] = img.height;
+
   const canvas = new OffscreenCanvas(img.width, img.height);
   const ctx = canvas.getContext("2d");
   if (!ctx) {
@@ -52,19 +53,20 @@ export const imageToData = (img: ImageBitmap): Uint8Array => {
     }
     ii++;
   }
+
   return data;
 };
 
 const sliceData = (
-  inData: Uint8Array,
+  inData: Uint16Array,
   startX: number,
   startY: number,
   width: number,
   height: number
-): Uint8Array => {
+): Uint16Array => {
   const inWidth = inData[0];
   const inHeight = inData[1];
-  const data = new Uint8Array(2 + width * height);
+  const data = new Uint16Array(2 + width * height);
 
   data[0] = width;
   data[1] = height;
@@ -84,11 +86,11 @@ const sliceData = (
   return data;
 };
 
-const flipX = (inData: Uint8Array): Uint8Array => {
+const flipX = (inData: Uint16Array): Uint16Array => {
   const width = inData[0];
   const height = inData[1];
 
-  const data = new Uint8Array(2 + width * height);
+  const data = new Uint16Array(2 + width * height);
   data[0] = width;
   data[1] = height;
 
@@ -103,11 +105,11 @@ const flipX = (inData: Uint8Array): Uint8Array => {
   return data;
 };
 
-const flipY = (inData: Uint8Array): Uint8Array => {
+const flipY = (inData: Uint16Array): Uint16Array => {
   const width = inData[0];
   const height = inData[1];
 
-  const data = new Uint8Array(2 + width * height);
+  const data = new Uint16Array(2 + width * height);
   data[0] = width;
   data[1] = height;
 
@@ -123,14 +125,14 @@ const flipY = (inData: Uint8Array): Uint8Array => {
 };
 
 const subtractData = (
-  inData: Uint8Array,
-  removeData: Uint8Array,
+  inData: Uint16Array,
+  removeData: Uint16Array,
   offsetX: number,
   offsetY: number
-): Uint8Array => {
+): Uint16Array => {
   const width = removeData[0];
   const height = removeData[1];
-  const data = new Uint8Array(inData);
+  const data = new Uint16Array(inData);
   for (var y = 0; y < height; y++) {
     for (var x = 0; x < width; x++) {
       const i = toIndex(x, y, width);
@@ -146,15 +148,15 @@ const subtractData = (
 };
 
 const fillData = (
-  inData: Uint8Array,
+  inData: Uint16Array,
   startX: number,
   startY: number,
   width: number,
   height: number,
   value: number
-): Uint8Array => {
+): Uint16Array => {
   const inWidth = inData[0];
-  const data = new Uint8Array(inData);
+  const data = new Uint16Array(inData);
   for (var y = startY; y < startY + height; y++) {
     for (var x = startX; x < startX + width; x++) {
       const i = toIndex(x, y, inWidth);
@@ -164,7 +166,7 @@ const fillData = (
   return data;
 };
 
-const isBlankData = (data: Uint8Array): boolean => {
+const isBlankData = (data: Uint16Array): boolean => {
   for (let i = 2; i < data.length; i++) {
     if (data[i] !== 0 && data[i] !== -1) {
       return false;
@@ -173,7 +175,7 @@ const isBlankData = (data: Uint8Array): boolean => {
   return true;
 };
 
-const pixelCount = (data: Uint8Array): number => {
+const pixelCount = (data: Uint16Array): number => {
   let count = 0;
   for (let i = 2; i < data.length; i++) {
     if (data[i] !== 0 && data[i] !== -1) {
@@ -183,8 +185,8 @@ const pixelCount = (data: Uint8Array): number => {
   return count;
 };
 
-const unknownToTransparent = (inData: Uint8Array): Uint8Array => {
-  const data = new Uint8Array(inData);
+const unknownToTransparent = (inData: Uint16Array): Uint16Array => {
+  const data = new Uint16Array(inData);
   for (let i = 2; i < data.length; i++) {
     if (data[i] === -1) {
       data[i] = 0;
@@ -193,7 +195,7 @@ const unknownToTransparent = (inData: Uint8Array): Uint8Array => {
   return data;
 };
 
-const isEquivalent = (dataA: Uint8Array, dataB: Uint8Array): boolean => {
+const isEquivalent = (dataA: Uint16Array, dataB: Uint16Array): boolean => {
   return (
     isEqualSize(dataA, dataB) &&
     (isEqual(dataA, dataB) ||
@@ -203,7 +205,7 @@ const isEquivalent = (dataA: Uint8Array, dataB: Uint8Array): boolean => {
   );
 };
 
-const isContainedWithin = (dataA: Uint8Array, dataB: Uint8Array): boolean => {
+const isContainedWithin = (dataA: Uint16Array, dataB: Uint16Array): boolean => {
   return (
     isEqualSize(dataA, dataB) &&
     (isContained(dataA, dataB) ||
@@ -213,11 +215,11 @@ const isContainedWithin = (dataA: Uint8Array, dataB: Uint8Array): boolean => {
   );
 };
 
-const isEqualSize = (dataA: Uint8Array, dataB: Uint8Array): boolean => {
+const isEqualSize = (dataA: Uint16Array, dataB: Uint16Array): boolean => {
   return dataA[0] === dataB[0] && dataA[1] === dataB[1];
 };
 
-const isEqual = (dataA: Uint8Array, dataB: Uint8Array): boolean => {
+const isEqual = (dataA: Uint16Array, dataB: Uint16Array): boolean => {
   if (dataA.length !== dataB.length) {
     return false;
   }
@@ -229,8 +231,8 @@ const isEqual = (dataA: Uint8Array, dataB: Uint8Array): boolean => {
   return true;
 };
 
-const mergeData = (dataA: Uint8Array, dataB: Uint8Array): Uint8Array => {
-  const data = new Uint8Array(dataA);
+const mergeData = (dataA: Uint16Array, dataB: Uint16Array): Uint16Array => {
+  const data = new Uint16Array(dataA);
   for (let i = 0; i < dataA.length; i++) {
     if (dataA[i] === -1) {
       data[i] = dataB[i];
@@ -239,7 +241,7 @@ const mergeData = (dataA: Uint8Array, dataB: Uint8Array): Uint8Array => {
   return data;
 };
 
-const isStrictEqual = (dataA: Uint8Array, dataB: Uint8Array): boolean => {
+const isStrictEqual = (dataA: Uint16Array, dataB: Uint16Array): boolean => {
   if (dataA.length !== dataB.length) {
     return false;
   }
@@ -251,7 +253,7 @@ const isStrictEqual = (dataA: Uint8Array, dataB: Uint8Array): boolean => {
   return true;
 };
 
-const isContained = (dataA: Uint8Array, dataB: Uint8Array): boolean => {
+const isContained = (dataA: Uint16Array, dataB: Uint16Array): boolean => {
   if (dataA.length !== dataB.length) {
     return false;
   }
@@ -263,7 +265,7 @@ const isContained = (dataA: Uint8Array, dataB: Uint8Array): boolean => {
   return true;
 };
 
-const trimWhitespace = (inData: Uint8Array): SliceDef => {
+const trimWhitespace = (inData: Uint16Array): SliceDef => {
   const width = inData[0];
   const height = inData[1];
   let minX = width;
@@ -297,7 +299,7 @@ const trimWhitespace = (inData: Uint8Array): SliceDef => {
   };
 };
 
-const numPixels = (data: Uint8Array): number => {
+const numPixels = (data: Uint16Array): number => {
   let count = 0;
   for (let i = 2; i < data.length; i++) {
     if (data[i] > 0) {
@@ -307,7 +309,7 @@ const numPixels = (data: Uint8Array): number => {
   return count;
 };
 
-const toArea = (inData: Uint8Array): number => {
+const toArea = (inData: Uint16Array): number => {
   const width = inData[0];
   const height = inData[1];
   let minX = width;
@@ -338,7 +340,7 @@ const toArea = (inData: Uint8Array): number => {
   return sliceW * sliceH;
 };
 
-const toNumTiles = (inData: Uint8Array): number => {
+const toNumTiles = (inData: Uint16Array): number => {
   const width = inData[0];
   const height = inData[1];
   const tileWidth = Math.ceil(width / 8);
@@ -346,7 +348,7 @@ const toNumTiles = (inData: Uint8Array): number => {
   return tileWidth * tileHeight;
 };
 
-const toNumNonEmptyTiles = (inData: Uint8Array): number => {
+const toNumNonEmptyTiles = (inData: Uint16Array): number => {
   let count = 0;
   const tW = 8;
   const tH = 16;
@@ -378,8 +380,8 @@ const toNumNonEmptyTiles = (inData: Uint8Array): number => {
   return count;
 };
 
-const imageToTiles = (inData: Uint8Array): Uint8Array[] => {
-  const tiles: Uint8Array[] = [];
+const imageToTiles = (inData: Uint16Array): Uint16Array[] => {
+  const tiles: Uint16Array[] = [];
   const tW = 8;
   const tH = 16;
   const width = inData[0];
@@ -510,7 +512,6 @@ export const spritesToTiles2 = (
             }
           }
           if (!found) {
-            // console.log("snappedBoxes[si]", snappedBoxes[si])
             locations.push([
               {
                 spriteIndex: si,
@@ -543,7 +544,7 @@ export const spritesToTiles2 = (
 
 // spriteDetection.js ---------------------------------------------------------
 
-export const dataToSprites = (data: Uint8Array): SliceDef[] => {
+export const dataToSprites = (data: Uint16Array): SliceDef[] => {
   const sprites = [];
   const tileSize = 2;
   const tileData = imageToTileData(data, tileSize);
@@ -557,6 +558,7 @@ export const dataToSprites = (data: Uint8Array): SliceDef[] => {
       bottom: (box.bottom + 1) * tileSize,
     };
   });
+
   const snappedBoxes = boxes.map((box) => {
     const boxHeight = box.bottom - box.top;
     const roundedHeight = roundUp16(boxHeight);
@@ -611,14 +613,14 @@ const snapDown8 = (v: number): number => 8 * Math.floor(v / 8);
 const snapUp8 = (v: number): number => 8 * Math.ceil(v / 8);
 const roundUp16 = (x: number): number => Math.ceil(x / 16) * 16;
 
-const imageToTileData = (inData: Uint8Array, tileSize: number) => {
+const imageToTileData = (inData: Uint16Array, tileSize: number) => {
   const width = inData[0];
   const height = inData[1];
 
   const tileWidth = Math.ceil(width / tileSize);
   const tileHeight = Math.ceil(height / tileSize);
 
-  const data = new Uint8Array(tileWidth * tileHeight);
+  const data = new Uint16Array(tileWidth * tileHeight);
   data[0] = tileWidth;
   data[1] = tileHeight;
 
@@ -646,7 +648,7 @@ const imageToTileData = (inData: Uint8Array, tileSize: number) => {
   return data;
 };
 
-const dataToBoundingBoxes = (data: Uint8Array): Bounds[] => {
+const dataToBoundingBoxes = (data: Uint16Array): Bounds[] => {
   const width = data[0];
   const height = data[1];
   const boxes: Bounds[] = [];
@@ -672,7 +674,7 @@ const dataToBoundingBoxes = (data: Uint8Array): Bounds[] => {
 const findBoundingBoxAt = (
   startX: number,
   startY: number,
-  imageData: Uint8Array,
+  imageData: Uint16Array,
   seen: number[] = []
 ): Bounds => {
   const width = imageData[0];
@@ -739,8 +741,8 @@ const uniqWith = <T extends {}>(
 // Sprite Alignment -----------------------------------------------------
 
 const spriteAlignmentOffset = (
-  sprite: Uint8Array,
-  baseSprite: Uint8Array
+  sprite: Uint16Array,
+  baseSprite: Uint16Array
 ): Position => {
   type OffsetSimilarity = { tx: number; ty: number; similarity: number };
 
@@ -799,9 +801,9 @@ export const spriteAlignmentOffsets = (sprites: SliceDef[]): Position[] => {
 // Hints ----------------------------------------------------------------------
 
 const removeHint = (
-  inData: Uint8Array,
-  hintData: Uint8Array
-): { data: Uint8Array; locations: TileLocation[] } => {
+  inData: Uint16Array,
+  hintData: Uint16Array
+): { data: Uint16Array; locations: TileLocation[] } => {
   const width = inData[0];
   const height = inData[1];
   const scanWidth = width;
@@ -811,7 +813,7 @@ const removeHint = (
   const hintDataFXY = flipX(flipY(hintData));
   const locations: TileLocation[] = [];
 
-  let data = new Uint8Array(inData);
+  let data = new Uint16Array(inData);
   for (var y = 0; y <= scanHeight; y++) {
     for (var x = 0; x <= scanWidth; x++) {
       const subImage = sliceData(data, x, y, 8, 16);
@@ -836,7 +838,7 @@ const removeHint = (
   };
 };
 
-export const autoHint2 = (inData: Uint8Array): SliceDef[] => {
+export const autoHint2 = (inData: Uint16Array): SliceDef[] => {
   const hintDefs: SliceDef[] = [];
   const width = inData[0];
   const height = inData[1];
