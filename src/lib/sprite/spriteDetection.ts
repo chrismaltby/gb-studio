@@ -1,7 +1,7 @@
-import { Slice } from "@reduxjs/toolkit";
+// import uniqWith from "lodash/uniqWith";
 
-type Position = { x: number; y: number };
-type SliceDef = {
+export type Position = { x: number; y: number };
+export type SliceDef = {
   data: Uint8Array;
   coordinates: {
     x: number;
@@ -10,11 +10,20 @@ type SliceDef = {
     height: number;
   };
 };
-type Bounds = {
+export type Bounds = {
   left: number;
   right: number;
   top: number;
   bottom: number;
+};
+export type TileLocation = {
+  x: number;
+  y: number;
+  flipX: boolean;
+  flipY: boolean;
+};
+export type SpriteTileLocation = TileLocation & {
+  spriteIndex: number;
 };
 
 // imgdata.js -----------------------------------------------------------------
@@ -391,36 +400,43 @@ const imageToTiles = (inData: Uint8Array): Uint8Array[] => {
 const toIndex = (x: number, y: number, width: number): number =>
   2 + (x + y * width);
 
-/*
-const spritesToTiles2 = (
-  sprites,
-  hints = [],
-  hintTileDefs = [],
-  snappedBoxes = []
-) => {
-  const tiles = [];
-  const locations = [];
-  const tileDefs = [];
+export const spritesToTiles2 = (
+  spriteDefs: SliceDef[],
+  hintDefs: SliceDef[] = []
+): {
+  tileDefs: SliceDef[];
+  spriteTileLocations: SpriteTileLocation[][];
+} => {
+  const locations: SpriteTileLocation[][] = [];
+  const tileDefs: SliceDef[] = [];
   const hintRemovedSprites = [];
 
   // Remove hint tiles
-  for (let si = 0; si < sprites.length; si++) {
-    const sprite = sprites[si];
+  for (let si = 0; si < spriteDefs.length; si++) {
+    const sprite = spriteDefs[si].data;
     let hintRemovedSprite = sprite;
-    for (let ht = 0; ht < hints.length; ht++) {
-      const hintTile = hints[ht];
+    for (let ht = 0; ht < hintDefs.length; ht++) {
+      const hintTile = hintDefs[ht].data;
       // for (const hintTile of hints) {
-      const [dtmp, loc] = removeHint(hintRemovedSprite, hintTile);
+      const { data: dtmp, locations: loc } = removeHint(
+        hintRemovedSprite,
+        hintTile
+      );
       if (!isStrictEqual(dtmp, hintRemovedSprite)) {
-        let loc2 = loc.map(([x, y, flipX, flipY]) => [si, x, y, flipX, flipY]);
-        let tileIndex = tiles.indexOf(hintTile);
+        let loc2: SpriteTileLocation[] = loc.map((tileLocation) => ({
+          ...tileLocation,
+          spriteIndex: si,
+        }));
+        let tileIndex = tileDefs.findIndex((t) => t.data === hintTile);
         if (tileIndex === -1) {
-          tileIndex = tiles.length;
-          tiles.push(hintTile);
-          tileDefs.push(hintTileDefs[ht]);
+          tileIndex = tileDefs.length;
+          tileDefs.push(hintDefs[ht]);
           locations.push(loc2);
         } else {
-          locations[tileIndex] = [].concat(locations[tileIndex], loc2);
+          locations[tileIndex] = ([] as SpriteTileLocation[]).concat(
+            locations[tileIndex],
+            loc2
+          );
         }
         hintRemovedSprite = dtmp;
       }
@@ -438,43 +454,80 @@ const spritesToTiles2 = (
         const slice = sliceData(inData, tx * 8, ty * 16, 8, 16);
         if (!isBlankData(slice)) {
           let found = false;
-          for (let tile of tiles) {
+          for (let tileDef of tileDefs) {
+            const tile = tileDef.data;
             const sliceFX = flipX(slice);
             const sliceFY = flipY(slice);
             const sliceFXY = flipX(flipY(slice));
             if (isEqual(slice, tile)) {
               found = true;
-              const tileIndex = tiles.indexOf(tile);
-              tiles[tileIndex] = mergeData(tile, slice);
-              locations[tileIndex].push([si, tx * 8, ty * 16, false, false]);
+              const tileIndex = tileDefs.findIndex((t) => t.data === tile);
+              tileDefs[tileIndex].data = mergeData(tile, slice);
+              locations[tileIndex].push({
+                spriteIndex: si,
+                x: tx * 8,
+                y: ty * 16,
+                flipX: false,
+                flipY: false,
+              });
               break;
             } else if (isEqual(sliceFX, tile)) {
               found = true;
-              const tileIndex = tiles.indexOf(tile);
-              tiles[tileIndex] = mergeData(tile, sliceFX);
-              locations[tileIndex].push([si, tx * 8, ty * 16, true, false]);
+              const tileIndex = tileDefs.findIndex((t) => t.data === tile);
+              tileDefs[tileIndex].data = mergeData(tile, sliceFX);
+              locations[tileIndex].push({
+                spriteIndex: si,
+                x: tx * 8,
+                y: ty * 16,
+                flipX: true,
+                flipY: false,
+              });
               break;
             } else if (isEqual(sliceFY, tile)) {
               found = true;
-              const tileIndex = tiles.indexOf(tile);
-              tiles[tileIndex] = mergeData(tile, sliceFY);
-              locations[tileIndex].push([si, tx * 8, ty * 16, false, true]);
+              const tileIndex = tileDefs.findIndex((t) => t.data === tile);
+              tileDefs[tileIndex].data = mergeData(tile, sliceFY);
+              locations[tileIndex].push({
+                spriteIndex: si,
+                x: tx * 8,
+                y: ty * 16,
+                flipX: false,
+                flipY: true,
+              });
               break;
             } else if (isEqual(sliceFXY, tile)) {
               found = true;
-              const tileIndex = tiles.indexOf(tile);
-              tiles[tileIndex] = mergeData(tile, sliceFXY);
-              locations[tileIndex].push([si, tx * 8, ty * 16, true, true]);
+              const tileIndex = tileDefs.findIndex((t) => t.data === tile);
+              tileDefs[tileIndex].data = mergeData(tile, sliceFXY);
+              locations[tileIndex].push({
+                spriteIndex: si,
+                x: tx * 8,
+                y: ty * 16,
+                flipX: true,
+                flipY: true,
+              });
               break;
             }
           }
           if (!found) {
             // console.log("snappedBoxes[si]", snappedBoxes[si])
-            tiles.push(slice);
-            locations.push([[si, tx * 8, ty * 16, false, false]]);
+            locations.push([
+              {
+                spriteIndex: si,
+                x: tx * 8,
+                y: ty * 16,
+                flipX: false,
+                flipY: false,
+              },
+            ]);
             tileDefs.push({
-              offsetX: snappedBoxes[si].left + tx * 8,
-              offsetY: snappedBoxes[si].top + ty * 16,
+              data: slice,
+              coordinates: {
+                x: spriteDefs[si].coordinates.x + tx * 8,
+                y: spriteDefs[si].coordinates.y + ty * 16,
+                width: 8,
+                height: 16,
+              },
             });
           }
         }
@@ -482,9 +535,12 @@ const spritesToTiles2 = (
     }
   }
 
-  return [tiles, locations, tileDefs];
+  return {
+    tileDefs,
+    spriteTileLocations: locations,
+  };
 };
-*/
+
 // spriteDetection.js ---------------------------------------------------------
 
 export const dataToSprites = (data: Uint8Array): SliceDef[] => {
@@ -664,10 +720,13 @@ const findBoundingBoxAt = (
 
   return bounds;
 };
-/*
+
 // Helpers ------------------------------------------------------------------
 
-const uniqWith = (arr, comparator) => {
+const uniqWith = <T extends {}>(
+  arr: T[],
+  comparator: (a: T, b: T) => boolean
+) => {
   let uniques = [];
   for (let a of arr) {
     if (uniques.findIndex((u) => comparator(a, u)) === -1) {
@@ -677,32 +736,19 @@ const uniqWith = (arr, comparator) => {
   return uniques;
 };
 
-const uniqWithMerge = (arr, comparator, merge) => {
-  let uniques = [];
-  for (let a of arr) {
-    const foundIndex = uniques.findIndex((u) => comparator(a, u));
-    if (foundIndex === -1) {
-      uniques.push(a);
-    } else {
-      uniques[foundIndex] = merge(uniques[foundIndex], a);
-    }
-  }
-  return uniques;
-};
-
-function roundUp16(x) {
-  return Math.ceil(x / 16) * 16;
-}
-
 // Sprite Alignment -----------------------------------------------------
 
-const spriteAlignmentOffset = (sprite, baseSprite) => {
+const spriteAlignmentOffset = (
+  sprite: Uint8Array,
+  baseSprite: Uint8Array
+): Position => {
+  type OffsetSimilarity = { tx: number; ty: number; similarity: number };
+
   const width = sprite[0];
   const height = sprite[1];
   const baseWidth = baseSprite[0];
   const tileWidth = Math.ceil(width / 8 / 2);
-  const tileHeight = Math.ceil(height / 8 / 2);
-  const offsets = [];
+  const offsets: OffsetSimilarity[] = [];
 
   // For every tile offset
   const ty = 0;
@@ -740,46 +786,22 @@ const spriteAlignmentOffset = (sprite, baseSprite) => {
     };
   }
 
-  return offsets;
+  return {
+    x: 0,
+    y: 0,
+  };
 };
 
-const spriteAlignmentOffsets = (sprites) => {
-  return sprites.map((s) => spriteAlignmentOffset(s, sprites[0]));
+export const spriteAlignmentOffsets = (sprites: SliceDef[]): Position[] => {
+  return sprites.map((s) => spriteAlignmentOffset(s.data, sprites[0].data));
 };
 
 // Hints ----------------------------------------------------------------------
 
-const spritesToTileSlices = (sprites) => {
-  const slices = [];
-  for (let s = 0; s < sprites.length; s++) {
-    const sprite = sprites[s];
-    const spriteWidth = sprite[0];
-    const spriteHeight = sprite[1];
-    for (let y = 0; y <= spriteHeight - 16; y += 16) {
-      for (let x = 0; x <= spriteWidth - 8; x += 8) {
-        const slice = sliceData(sprite, x, y, 8, 16);
-        if (isBlankData(slice)) {
-          continue;
-        }
-        if (pixelCount(slice) < 16) {
-          continue;
-        }
-        slices.push(slice);
-      }
-    }
-  }
-  return slices;
-};
-
-const toTileCount = (inData) => {
-  const width = inData[0];
-  const height = inData[1];
-  const tileWidth = Math.ceil(width / 8);
-  const tileHeight = Math.ceil(height / 8);
-  return tileWidth * tileHeight;
-};
-
-const removeHint = (inData, hintData) => {
+const removeHint = (
+  inData: Uint8Array,
+  hintData: Uint8Array
+): { data: Uint8Array; locations: TileLocation[] } => {
   const width = inData[0];
   const height = inData[1];
   const scanWidth = width;
@@ -787,36 +809,35 @@ const removeHint = (inData, hintData) => {
   const hintDataFX = flipX(hintData);
   const hintDataFY = flipY(hintData);
   const hintDataFXY = flipX(flipY(hintData));
-  const locations = [];
+  const locations: TileLocation[] = [];
 
-  let data = [...inData];
+  let data = new Uint8Array(inData);
   for (var y = 0; y <= scanHeight; y++) {
     for (var x = 0; x <= scanWidth; x++) {
       const subImage = sliceData(data, x, y, 8, 16);
       if (isContained(hintData, subImage)) {
         data = subtractData(data, hintData, x, y);
-        locations.push([x, y, false, false]);
+        locations.push({ x, y, flipX: false, flipY: false });
       } else if (isContained(hintDataFX, subImage)) {
         data = subtractData(data, hintDataFX, x, y);
-        locations.push([x, y, true, false]);
+        locations.push({ x, y, flipX: true, flipY: false });
       } else if (isContained(hintDataFY, subImage)) {
         data = subtractData(data, hintDataFY, x, y);
-        locations.push([x, y, false, true]);
+        locations.push({ x, y, flipX: false, flipY: true });
       } else if (isContained(hintDataFXY, subImage)) {
         data = subtractData(data, hintDataFXY, x, y);
-        locations.push([x, y, true, true]);
+        locations.push({ x, y, flipX: true, flipY: true });
       }
     }
   }
-
-  return [data, locations];
+  return {
+    data,
+    locations,
+  };
 };
 
-///
-
-const autoHint2 = (inData) => {
-  const hints = [];
-  const hintDefs = [];
+export const autoHint2 = (inData: Uint8Array): SliceDef[] => {
+  const hintDefs: SliceDef[] = [];
   const width = inData[0];
   const height = inData[1];
   const tileWidth = Math.ceil(width / 8);
@@ -826,18 +847,19 @@ const autoHint2 = (inData) => {
     for (var x = 0; x <= tileWidth - 2; x++) {
       const sliced = sliceData(inData, x * 8, y * 8, 16, 16);
       const numTiles = toNumNonEmptyTiles(sliced);
-      const [trimmed, trimmedOffset] = trimWhitespace(sliced);
-      const trimmedNumTiles = toNumNonEmptyTiles(trimmed);
+      const trimmed = trimWhitespace(sliced);
+      const trimmedNumTiles = toNumNonEmptyTiles(trimmed.data);
       if (trimmedNumTiles < numTiles) {
-        const hint = sliceData(trimmed, 0, 0, 8, 16);
-        hints.push(hint);
-        hintDefs.push([
-          hint,
-          {
-            offsetX: x * 8 + trimmedOffset.x,
-            offsetY: y * 8 + trimmedOffset.y,
+        const hint = sliceData(trimmed.data, 0, 0, 8, 16);
+        hintDefs.push({
+          data: hint,
+          coordinates: {
+            x: x * 8 + trimmed.coordinates.x,
+            y: y * 8 + trimmed.coordinates.y,
+            width: 8,
+            height: 16,
           },
-        ]);
+        });
       }
     }
   }
@@ -846,26 +868,26 @@ const autoHint2 = (inData) => {
     for (var x = 0; x <= tileWidth - 1; x++) {
       const sliced = sliceData(inData, x * 8, y * 8, 8, 32);
       const numTiles = toNumNonEmptyTiles(sliced);
-      const [trimmed, trimmedOffset] = trimWhitespace(sliced);
-      const trimmedNumTiles = toNumNonEmptyTiles(trimmed);
+      const trimmed = trimWhitespace(sliced);
+      const trimmedNumTiles = toNumNonEmptyTiles(trimmed.data);
       if (trimmedNumTiles < numTiles) {
-        const hint = sliceData(trimmed, 0, 0, 8, 16);
-        hints.push(hint);
-        hintDefs.push([
-          hint,
-          {
-            offsetX: x * 8 + trimmedOffset.x,
-            offsetY: y * 8 + trimmedOffset.y,
+        const hint = sliceData(trimmed.data, 0, 0, 8, 16);
+        hintDefs.push({
+          data: hint,
+          coordinates: {
+            x: x * 8 + trimmed.coordinates.x,
+            y: y * 8 + trimmed.coordinates.y,
+            width: 8,
+            height: 16,
           },
-        ]);
+        });
       }
     }
   }
 
   const uniqDefs = uniqWith(hintDefs, (a, b) => {
-    return isEquivalent(a[0], b[0]);
+    return isEquivalent(a.data, b.data);
   });
 
-  return [uniqDefs.map((a) => a[0]), uniqDefs.map((a) => a[1])];
+  return uniqDefs;
 };
-*/

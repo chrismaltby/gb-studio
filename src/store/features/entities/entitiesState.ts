@@ -71,6 +71,7 @@ import {
 } from "./entitiesTypes";
 import { normalizeEntities } from "./entitiesHelpers";
 import { clone } from "../../../lib/helpers/clone";
+import spriteActions from "../sprite/spriteActions";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
@@ -452,6 +453,39 @@ const loadSprite: CaseReducer<
   } else {
     spriteSheetsAdapter.addOne(state.spriteSheets, action.payload.data);
   }
+};
+
+const loadDetectedSprite: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    spriteSheetId: string;
+    spriteAnimations: SpriteAnimation[];
+    metasprites: Metasprite[];
+    metaspriteTiles: MetaspriteTile[];
+  }>
+> = (state, action) => {
+  const spriteSheet = localSpriteSheetSelectors.selectById(
+    state,
+    action.payload.spriteSheetId
+  );
+
+  if (!spriteSheet) {
+    return;
+  }
+
+  metaspriteTilesAdapter.addMany(
+    state.metaspriteTiles,
+    action.payload.metaspriteTiles
+  );
+
+  metaspritesAdapter.addMany(state.metasprites, action.payload.metasprites);
+
+  spriteAnimationsAdapter.addMany(
+    state.spriteAnimations,
+    action.payload.spriteAnimations
+  );
+
+  spriteSheet.animations = action.payload.spriteAnimations.map((s) => s.id);
 };
 
 const removeSprite: CaseReducer<
@@ -2657,6 +2691,7 @@ const entitiesSlice = createSlice({
       .addCase(projectActions.removeBackground.fulfilled, removeBackground)
       .addCase(projectActions.loadSprite.fulfilled, loadSprite)
       .addCase(projectActions.removeSprite.fulfilled, removeSprite)
+      .addCase(spriteActions.detectSpriteComplete, loadDetectedSprite)
       .addCase(projectActions.loadMusic.fulfilled, loadMusic)
       .addCase(projectActions.removeMusic.fulfilled, removeMusic)
       .addCase(projectActions.reloadAssets, reloadAssets),
