@@ -68,8 +68,12 @@ const spriteMiddleware: Middleware<{}, RootState> = (store) => (next) => (
             }
             const tile: MetaspriteTile = {
               id: uuid(),
-              x: loc.x,
-              y: spriteDef.coordinates.height - loc.y - 16,
+              x: loc.x + alignmentOffsets[si].x,
+              y:
+                spriteDef.coordinates.height -
+                loc.y +
+                alignmentOffsets[si].y -
+                16,
               sliceX: def.coordinates.x,
               sliceY: def.coordinates.y,
               flipX: loc.flipX,
