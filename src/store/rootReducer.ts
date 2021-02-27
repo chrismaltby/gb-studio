@@ -12,6 +12,7 @@ import engine from "./features/engine/engineState";
 import error from "./features/error/errorState";
 import navigation from "./features/navigation/navigationState";
 import clipboard from "./features/clipboard/clipboardState";
+import sprite from "./features/sprite/spriteState";
 
 let lastEntityUndoStateTime = 0;
 const UNDO_THROTTLE = 300;
@@ -24,6 +25,7 @@ const rootReducer = combineReducers({
   document,
   engine,
   clipboard,
+  sprite,
   project: undoable(
     combineReducers({ entities, settings, metadata }),
     {

@@ -9,7 +9,6 @@ import {
   FormFieldInfo,
   FormHeader,
   FormRow,
-  FormSectionTitle,
 } from "../ui/form/FormLayout";
 import { MenuDivider, MenuItem } from "../ui/menu/Menu";
 import l10n from "../../lib/helpers/l10n";
@@ -18,11 +17,9 @@ import {
   MetaspriteTile,
   SpriteAnimation,
   SpriteSheet,
-  SpriteSheetType,
 } from "../../store/features/entities/entitiesTypes";
 import { CoordinateInput } from "../ui/form/CoordinateInput";
 import { Label } from "../ui/form/Label";
-import { Select } from "../ui/form/Select";
 import {
   metaspriteTileSelectors,
   spriteAnimationSelectors,
@@ -30,6 +27,7 @@ import {
 } from "../../store/features/entities/entitiesState";
 import entitiesActions from "../../store/features/entities/entitiesActions";
 import editorActions from "../../store/features/editor/editorActions";
+import spriteActions from "../../store/features/sprite/spriteActions";
 import clipboardActions from "../../store/features/clipboard/clipboardActions";
 import { RootState } from "../../store/configureStore";
 import castEventValue from "../../lib/helpers/castEventValue";
@@ -41,7 +39,6 @@ import {
   SendToBackIcon,
 } from "../ui/icons/Icons";
 import { FlexGrow } from "../ui/spacing/Spacing";
-import { NumberField } from "../ui/form/NumberField";
 import { SidebarHeader } from "../ui/form/SidebarHeader";
 import {
   ClipboardTypeMetasprites,
@@ -50,7 +47,6 @@ import {
 import { CheckboxField } from "../ui/form/CheckboxField";
 import { AnimationTypeSelect } from "../forms/AnimationTypeSelect";
 import { AnimationSpeedSelect } from "../forms/AnimationSpeedSelect";
-import { getAnimationNameById } from "./helpers";
 import { ObjPaletteSelect } from "../forms/ObjPaletteSelect";
 import { PaletteIndexSelect } from "../forms/PaletteIndexSelect";
 
@@ -255,6 +251,14 @@ export const SpriteEditor = ({
   const toggleReplaceMode = useCallback(() => {
     dispatch(editorActions.setReplaceSpriteTileMode(!replaceSpriteTileMode));
   }, [replaceSpriteTileMode]);
+
+  const onAutoDetect = useCallback(() => {
+    dispatch(
+      spriteActions.detectSprite({
+        spriteSheetId: id,
+      })
+    );
+  }, [id]);
 
   if (!sprite || !animation) {
     return null;
@@ -546,7 +550,9 @@ export const SpriteEditor = ({
                   </FormRow>
                 )}
               <FormRow>
-                <Button>{l10n("FIELD_AUTODETECT_ANIMATIONS")}</Button>
+                <Button onClick={onAutoDetect}>
+                  {l10n("FIELD_AUTODETECT_ANIMATIONS")}
+                </Button>
               </FormRow>
             </>
           )}

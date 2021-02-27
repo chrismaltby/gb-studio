@@ -9,6 +9,7 @@ import undoMiddleware from "./features/undo/undoMiddleware";
 import clipboardMiddleware from "./features/clipboard/clipboardMiddleware";
 import projectMiddleware from "./features/project/projectMiddleware";
 import engineMiddleware from "./features/engine/engineMiddleware";
+import spriteMiddleware from "./features/sprite/spriteMiddleware";
 
 export type RootState = ReturnType<typeof rootReducer>;
 
@@ -25,6 +26,7 @@ const store = configureStore({
     electronMiddleware,
     projectMiddleware,
     engineMiddleware,
+    spriteMiddleware,
     buildGameMiddleware,
     musicMiddleware,
     soundFxMiddleware,
