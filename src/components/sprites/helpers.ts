@@ -60,11 +60,8 @@ export const getAnimationNameById = (
   selectedId: string,
   animationIds: string[]
 ) => {
-  const filteredIds = filterAnimationsBySpriteType(
-    animationIds,
-    type,
-    flipLeft
-  );
+  const filteredIds =
+    filterAnimationsBySpriteType(animationIds, type, flipLeft) || [];
   const animationIndex = filteredIds.indexOf(selectedId);
   return getAnimationNameByIndex(type, flipLeft, animationIndex);
 };
