@@ -26,6 +26,14 @@ export type SpriteTileLocation = TileLocation & {
   spriteIndex: number;
 };
 
+enum Color {
+  Transparent = 0,
+  Light = 1,
+  Mid = 2,
+  Dark = 3,
+  Unknown = 255,
+}
+
 // imgdata.js -----------------------------------------------------------------
 
 export const imageToData = (img: ImageBitmap): Uint16Array => {
@@ -43,13 +51,13 @@ export const imageToData = (img: ImageBitmap): Uint16Array => {
   let ii = 2;
   for (let i = 0; i < imageData.data.length; i += 4) {
     if (imageData.data[i + 1] >= 249) {
-      data[ii] = 0;
+      data[ii] = Color.Transparent;
     } else if (imageData.data[i + 1] > 200) {
-      data[ii] = 1;
+      data[ii] = Color.Light;
     } else if (imageData.data[i + 1] > 100) {
-      data[ii] = 2;
+      data[ii] = Color.Mid;
     } else {
-      data[ii] = 3;
+      data[ii] = Color.Dark;
     }
     ii++;
   }
@@ -78,7 +86,7 @@ const sliceData = (
         const i = toIndex(x, y, inWidth);
         data[ii] = inData[i];
       } else {
-        data[ii] = 0;
+        data[ii] = Color.Transparent;
       }
       ii++;
     }
@@ -138,7 +146,7 @@ const subtractData = (
       const i = toIndex(x, y, width);
       const ii = toIndex(x + offsetX, y + offsetY, inData[0]);
       if (removeData[i]) {
-        data[ii] = -1;
+        data[ii] = Color.Unknown;
       } else {
         data[ii] = inData[ii];
       }
@@ -168,7 +176,7 @@ const fillData = (
 
 const isBlankData = (data: Uint16Array): boolean => {
   for (let i = 2; i < data.length; i++) {
-    if (data[i] !== 0 && data[i] !== -1) {
+    if (data[i] !== Color.Transparent && data[i] !== Color.Unknown) {
       return false;
     }
   }
@@ -178,7 +186,7 @@ const isBlankData = (data: Uint16Array): boolean => {
 const pixelCount = (data: Uint16Array): number => {
   let count = 0;
   for (let i = 2; i < data.length; i++) {
-    if (data[i] !== 0 && data[i] !== -1) {
+    if (data[i] !== Color.Transparent && data[i] !== Color.Unknown) {
       count++;
     }
   }
@@ -188,8 +196,8 @@ const pixelCount = (data: Uint16Array): number => {
 const unknownToTransparent = (inData: Uint16Array): Uint16Array => {
   const data = new Uint16Array(inData);
   for (let i = 2; i < data.length; i++) {
-    if (data[i] === -1) {
-      data[i] = 0;
+    if (data[i] === Color.Unknown) {
+      data[i] = Color.Transparent;
     }
   }
   return data;
@@ -224,7 +232,11 @@ const isEqual = (dataA: Uint16Array, dataB: Uint16Array): boolean => {
     return false;
   }
   for (let i = 0; i < dataA.length; i++) {
-    if (dataA[i] !== dataB[i] && dataA[i] !== -1 && dataB[i] !== -1) {
+    if (
+      dataA[i] !== dataB[i] &&
+      dataA[i] !== Color.Unknown &&
+      dataB[i] !== Color.Unknown
+    ) {
       return false;
     }
   }
@@ -234,7 +246,7 @@ const isEqual = (dataA: Uint16Array, dataB: Uint16Array): boolean => {
 const mergeData = (dataA: Uint16Array, dataB: Uint16Array): Uint16Array => {
   const data = new Uint16Array(dataA);
   for (let i = 0; i < dataA.length; i++) {
-    if (dataA[i] === -1) {
+    if (dataA[i] === Color.Unknown) {
       data[i] = dataB[i];
     }
   }

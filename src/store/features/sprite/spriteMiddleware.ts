@@ -86,7 +86,7 @@ const spriteMiddleware: Middleware<{}, RootState> = (store) => (next) => (
               objPalette: "OBP0",
             };
             metaspriteTiles.push(tile);
-            metasprite.tiles.push(tile.id);
+            metasprite.tiles.unshift(tile.id);
           }
         }
 
