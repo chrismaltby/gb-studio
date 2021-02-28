@@ -621,7 +621,7 @@ const imageToTileData = (inData: Uint16Array, tileSize: number) => {
   const tileWidth = Math.ceil(width / tileSize);
   const tileHeight = Math.ceil(height / tileSize);
 
-  const data = new Uint16Array(tileWidth * tileHeight);
+  const data = new Uint16Array(2 + tileWidth * tileHeight);
   data[0] = tileWidth;
   data[1] = tileHeight;
 
