@@ -8,12 +8,15 @@ import {
   SliceDef,
   SpriteTileLocation,
   Position,
+  roundUp16,
+  roundUp8,
 } from "../../../lib/sprite/spriteDetection";
 import uuid from "uuid";
 import {
   Metasprite,
   MetaspriteTile,
   SpriteAnimation,
+  SpriteSheet,
 } from "../entities/entitiesTypes";
 
 const spriteMiddleware: Middleware<{}, RootState> = (store) => (next) => (
@@ -91,12 +94,33 @@ const spriteMiddleware: Middleware<{}, RootState> = (store) => (next) => (
         animations[0].frames.push(metasprite.id);
       }
 
+      const furthestX = Math.max.apply(
+        null,
+        metaspriteTiles.map((tile) => {
+          return tile.x > 0 ? tile.x : 8 - tile.x;
+        })
+      );
+
+      const furthestY =
+        Math.max.apply(
+          null,
+          metaspriteTiles.map((tile) => {
+            return tile.y;
+          })
+        ) + 16;
+
+      const changes: Partial<SpriteSheet> = {
+        canvasWidth: roundUp16(furthestX * 2),
+        canvasHeight: roundUp8(furthestY),
+      };
+
       store.dispatch(
         actions.detectSpriteComplete({
           spriteSheetId: action.payload.spriteSheetId,
           spriteAnimations: animations,
           metasprites,
           metaspriteTiles,
+          changes,
         })
       );
     };

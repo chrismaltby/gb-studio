@@ -611,7 +611,8 @@ export const dataToSprites = (data: Uint16Array): SliceDef[] => {
 
 const snapDown8 = (v: number): number => 8 * Math.floor(v / 8);
 const snapUp8 = (v: number): number => 8 * Math.ceil(v / 8);
-const roundUp16 = (x: number): number => Math.ceil(x / 16) * 16;
+export const roundUp16 = (x: number): number => Math.ceil(x / 16) * 16;
+export const roundUp8 = (x: number): number => Math.ceil(x / 8) * 8;
 
 const imageToTileData = (inData: Uint16Array, tileSize: number) => {
   const width = inData[0];
@@ -783,7 +784,7 @@ const spriteAlignmentOffset = (
 
   if (offsets[0]) {
     return {
-      x: -offsets[0].tx * 8,
+      x: -offsets[0].tx * 8 - snapDown8(baseWidth / 2) + 8,
       y: -offsets[0].ty * 8,
     };
   }

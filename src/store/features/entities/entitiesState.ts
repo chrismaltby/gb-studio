@@ -462,6 +462,7 @@ const loadDetectedSprite: CaseReducer<
     spriteAnimations: SpriteAnimation[];
     metasprites: Metasprite[];
     metaspriteTiles: MetaspriteTile[];
+    changes: Partial<SpriteSheet>;
   }>
 > = (state, action) => {
   const spriteSheet = localSpriteSheetSelectors.selectById(
@@ -485,7 +486,13 @@ const loadDetectedSprite: CaseReducer<
     action.payload.spriteAnimations
   );
 
-  spriteSheet.animations = action.payload.spriteAnimations.map((s) => s.id);
+  spriteSheetsAdapter.updateOne(state.spriteSheets, {
+    id: action.payload.spriteSheetId,
+    changes: {
+      ...action.payload.changes,
+      animations: action.payload.spriteAnimations.map((s) => s.id)
+    }
+  })
 };
 
 const removeSprite: CaseReducer<
