@@ -13,18 +13,19 @@ const loadMusicData = projectRoot => async filename => {
   return {
     id: uuidv4(),
     plugin,
-    name: file.replace(/.mod/i, ""),
+    name: file.replace(/(.mod|.uge)/i, ""),
     filename: file,
     settings: {},
+    type: file.endsWith(".uge") ? "uge" : "mod",
     inode,
     _v: Date.now()
   };
 };
 
 const loadAllMusicData = async projectRoot => {
-  const musicPaths = await globAsync(`${projectRoot}/assets/music/**/@(*.mod|*.MOD)`);
+  const musicPaths = await globAsync(`${projectRoot}/assets/music/**/@(*.mod|*.MOD|*.uge|*.UGE)`);
   const pluginPaths = await globAsync(
-    `${projectRoot}/plugins/*/music/**/@(*.mod|*.MOD)`
+    `${projectRoot}/plugins/*/music/**/@(*.mod|*.MOD|*.uge|*.UGE)`
   );
   const musicData = await Promise.all(
     [].concat(

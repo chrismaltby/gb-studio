@@ -111,6 +111,7 @@ export type Music = {
   filename: string;
   plugin?: string;
   settings: MusicSettings;
+  type?: string,
   inode: string;
   _v: number;
 };

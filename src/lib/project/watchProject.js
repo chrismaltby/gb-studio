@@ -88,7 +88,7 @@ const watchProject = async (
 
   const musicWatcher = chokidar
     .watch(musicRoot, {
-      ignored: /^.*\.(?!(mod|MOD)$)[^.]+$/,
+      ignored: /^.*\.(?!(mod|uge|MOD|UGE)$)[^.]+$/,
       ignoreInitial: true,
       persistent: true,
       awaitWriteFinish: musicAwaitWriteFinish,
@@ -142,7 +142,7 @@ const watchProject = async (
 
   const pluginsWatcher = chokidar
     .watch(pluginsRoot, {
-      ignored: /^.*\.(?!(png|mod|PNG|MOD)$)[^.]+$/,
+      ignored: /^.*\.(?!(png|mod|uge|PNG|MOD|UGE)$)[^.]+$/,
       ignoreInitial: true,
       persistent: true,
       awaitWriteFinish,

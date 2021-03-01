@@ -1,0 +1,80 @@
+// https://raw.githubusercontent.com/untoxa/hUGEBuild/master/include/hUGE_note_table.inc
+
+export default `;; hUGETracker note table.\n
+;; Written by SuperDisk 2019\n
+\n
+;; Gameboy sound frequences are represented as 11 byte periods.\n
+;; this note table was generated from http://www.devrs.com/gb/files/sndtab.html\n
+\n
+dw 44\n
+dw 156\n
+dw 262\n
+dw 363\n
+dw 457\n
+dw 547\n
+dw 631\n
+dw 710\n
+dw 786\n
+dw 854\n
+dw 923\n
+dw 986\n
+dw 1046\n
+dw 1102\n
+dw 1155\n
+dw 1205\n
+dw 1253\n
+dw 1297\n
+dw 1339\n
+dw 1379\n
+dw 1417\n
+dw 1452\n
+dw 1486\n
+dw 1517\n
+dw 1546\n
+dw 1575\n
+dw 1602\n
+dw 1627\n
+dw 1650\n
+dw 1673\n
+dw 1694\n
+dw 1714\n
+dw 1732\n
+dw 1750\n
+dw 1767\n
+dw 1783\n
+dw 1798\n
+dw 1812\n
+dw 1825\n
+dw 1837\n
+dw 1849\n
+dw 1860\n
+dw 1871\n
+dw 1881\n
+dw 1890\n
+dw 1899\n
+dw 1907\n
+dw 1915\n
+dw 1923\n
+dw 1930\n
+dw 1936\n
+dw 1943\n
+dw 1949\n
+dw 1954\n
+dw 1959\n
+dw 1964\n
+dw 1969\n
+dw 1974\n
+dw 1978\n
+dw 1982\n
+dw 1985\n
+dw 1988\n
+dw 1992\n
+dw 1995\n
+dw 1998\n
+dw 2001\n
+dw 2004\n
+dw 2006\n
+dw 2009\n
+dw 2011\n
+dw 2013\n
+dw 2015\n`;

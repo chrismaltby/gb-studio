@@ -108,6 +108,10 @@ export interface EditorState {
   replaceSpriteTileMode: boolean;
   parallaxHoverLayer: number | undefined;
   previewAsSceneId: string;
+  selectedSongId: string;
+  selectedSequence: number;
+  playSong: boolean;
+  playbackState: number[],
 }
 
 export const initialState: EditorState = {
@@ -166,6 +170,10 @@ export const initialState: EditorState = {
   replaceSpriteTileMode: false,
   parallaxHoverLayer: undefined,
   previewAsSceneId: "",
+  selectedSongId: "",
+  selectedSequence: 0,
+  playSong: false,
+  playbackState: [0, 0]
 };
 
 const editorSlice = createSlice({
@@ -612,6 +620,26 @@ const editorSlice = createSlice({
     setPreviewAsSceneId: (state, action: PayloadAction<string>) => {
       state.previewAsSceneId = action.payload;
     },
+    
+    setSelectedSongId: (state, action: PayloadAction<string>) => {
+      state.selectedSongId = action.payload;
+      state.selectedSequence = 0;
+      state.playSong = false;
+      state.playbackState = [0, 0]
+    },
+
+    setSelectedSequence: (state, action:PayloadAction<number>) => {
+      state.selectedSequence = action.payload;
+    },
+
+    setPlaySong: (state, action:PayloadAction<boolean>) => {
+      state.playSong = action.payload;
+    },
+
+    setPlaybackState: (state, action:PayloadAction<number[]>) => {
+      state.playbackState = action.payload;
+    }
+
   },
   extraReducers: (builder) =>
     builder
