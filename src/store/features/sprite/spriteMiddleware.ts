@@ -2,24 +2,9 @@ import { Middleware } from "@reduxjs/toolkit";
 import { RootState } from "../../configureStore";
 import actions from "./spriteActions";
 import { spriteSheetSelectors } from "../entities/entitiesState";
-import { assetFilename } from "../../../lib/helpers/gbstudio";
-import DetectSpriteWorker from "../../../lib/sprite/detectSprite.worker";
-import {
-  SliceDef,
-  SpriteTileLocation,
-  Position,
-  roundUp16,
-  roundUp8,
-} from "../../../lib/sprite/spriteDetection";
-import uuid from "uuid";
-import {
-  Metasprite,
-  MetaspriteTile,
-  SpriteAnimation,
-  SpriteSheet,
-} from "../entities/entitiesTypes";
+import { detect, detectClassic } from "../../../lib/sprite/detect";
 
-const spriteMiddleware: Middleware<{}, RootState> = (store) => (next) => (
+const spriteMiddleware: Middleware<{}, RootState> = (store) => (next) => async (
   action
 ) => {
   if (actions.detectSprite.match(action)) {
@@ -35,95 +20,18 @@ const spriteMiddleware: Middleware<{}, RootState> = (store) => (next) => (
       return next(action);
     }
 
-    const filename = `file://${assetFilename(
-      projectRoot,
-      "sprites",
-      spriteSheet
-    )}?_v=${spriteSheet._v}`;
-
-    const worker = new DetectSpriteWorker();
-    worker.postMessage(filename);
-    worker.onmessage = (res: any) => {
-      const tileDefs: SliceDef[] = res.data.tileDefs;
-      const spriteTileLocations: SpriteTileLocation[][] =
-        res.data.spriteTileLocations;
-      const spriteDefs: SliceDef[] = res.data.spriteDefs;
-      const alignmentOffsets: Position[] = res.data.alignmentOffsets;
-      const animations: SpriteAnimation[] = Array.from(Array(8)).map(() => ({
-        id: uuid(),
-        frames: [],
-      }));
-      const metasprites: Metasprite[] = [];
-      const metaspriteTiles: MetaspriteTile[] = [];
-
-      for (let si = 0; si < spriteDefs.length; si++) {
-        const spriteDef = spriteDefs[si];
-        const metasprite: Metasprite = {
-          id: uuid(),
-          tiles: [],
-        };
-        for (let ti = 0; ti < tileDefs.length; ti++) {
-          for (let li = 0; li < spriteTileLocations[ti].length; li++) {
-            const loc = spriteTileLocations[ti][li];
-            const def = tileDefs[ti];
-            if (loc.spriteIndex !== si) {
-              continue;
-            }
-            const tile: MetaspriteTile = {
-              id: uuid(),
-              x: loc.x + alignmentOffsets[si].x,
-              y:
-                spriteDef.coordinates.height -
-                loc.y +
-                alignmentOffsets[si].y -
-                16,
-              sliceX: def.coordinates.x,
-              sliceY: def.coordinates.y,
-              flipX: loc.flipX,
-              flipY: loc.flipY,
-              palette: 0,
-              paletteIndex: 0,
-              objPalette: "OBP0",
-            };
-            metaspriteTiles.push(tile);
-            metasprite.tiles.unshift(tile.id);
-          }
-        }
-
-        metasprites.push(metasprite);
-        animations[0].frames.push(metasprite.id);
-      }
-
-      const furthestX = Math.max.apply(
-        null,
-        metaspriteTiles.map((tile) => {
-          return tile.x > 0 ? tile.x : 8 - tile.x;
-        })
-      );
-
-      const furthestY =
-        Math.max.apply(
-          null,
-          metaspriteTiles.map((tile) => {
-            return tile.y;
-          })
-        ) + 16;
-
-      const changes: Partial<SpriteSheet> = {
-        canvasWidth: roundUp16(furthestX * 2),
-        canvasHeight: roundUp8(furthestY),
-      };
-
+    if (spriteSheet.height === 16) {
       store.dispatch(
-        actions.detectSpriteComplete({
-          spriteSheetId: action.payload.spriteSheetId,
-          spriteAnimations: animations,
-          metasprites,
-          metaspriteTiles,
-          changes,
-        })
+        actions.detectSpriteComplete(
+          // Classic Sprite Format
+          detectClassic(spriteSheet)
+        )
       );
-    };
+    } else {
+      store.dispatch(
+        actions.detectSpriteComplete(await detect(spriteSheet, projectRoot))
+      );
+    }
   }
 
   return next(action);

@@ -84,7 +84,10 @@ export const colorizeSpriteData = (
   for (let index = 0; index < mutData.length; index += 4) {
     const colorIndex = indexSpriteColour(mutData[index + 1], objPalette);
     const color = paletteRGB[colorIndex];
-    if (mutData[index + 1] === 255) {
+    if (
+      mutData[index + 1] === 255 ||
+      (mutData[index + 2] >= 200 && mutData[index + 1] < 20)
+    ) {
       // Set transparent background on pure green
       mutData[index + 3] = 0;
     }

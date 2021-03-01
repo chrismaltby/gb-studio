@@ -66,46 +66,68 @@ export const getAnimationNameById = (
   return getAnimationNameByIndex(type, flipLeft, animationIndex);
 };
 
+const fixedIndexes = [0];
+const fixedMovementIndexes = [0, 4];
+const multiIndexes = [0, 1, 2, 3];
+const multiFlipIndexes = [0, 2, 3];
+const platformIndexes = [0, 1, 4, 5, 2, 3, 6];
+const platformFlipIndexes = [0, 4, 2, 6];
+const flipIndexes = [0, 2, 3, 4, 6, 7];
+
 export const filterAnimationsBySpriteType = (
   animationIds: string[],
   type: SpriteAnimationType,
   flipLeft: boolean
 ): string[] => {
   if (type === "fixed") {
-    return [animationIds[0]];
+    return fixedIndexes.map((i) => animationIds[i]);
   }
   if (type === "fixed_movement") {
-    return [animationIds[0], animationIds[4]];
+    return fixedMovementIndexes.map((i) => animationIds[i]);
   }
   if (type === "multi" && !flipLeft) {
-    return [animationIds[0], animationIds[1], animationIds[2], animationIds[3]];
+    return multiIndexes.map((i) => animationIds[i]);
   }
   if (type === "multi" && flipLeft) {
-    return [animationIds[0], animationIds[2], animationIds[3]];
+    return multiFlipIndexes.map((i) => animationIds[i]);
   }
   if (type === "platform_player" && !flipLeft) {
-    return [
-      animationIds[0],
-      animationIds[1],
-      animationIds[4],
-      animationIds[5],
-      animationIds[2],
-      animationIds[3],
-      animationIds[6],
-    ];
+    return platformIndexes.map((i) => animationIds[i]);
   }
   if (type === "platform_player" && flipLeft) {
-    return [animationIds[0], animationIds[4], animationIds[2], animationIds[6]];
+    return platformFlipIndexes.map((i) => animationIds[i]);
   }
   if (flipLeft) {
-    return [
-      animationIds[0],
-      animationIds[2],
-      animationIds[3],
-      animationIds[4],
-      animationIds[6],
-      animationIds[7],
-    ];
+    return flipIndexes.map((i) => animationIds[i]);
   }
   return animationIds;
+};
+
+export const animationIndexBySpriteType = (
+  animationIndex: number,
+  type: SpriteAnimationType,
+  flipLeft: boolean
+): number => {
+  if (type === "fixed") {
+    return fixedIndexes[animationIndex % fixedIndexes.length];
+  }
+  if (type === "fixed_movement") {
+    return fixedMovementIndexes[animationIndex % fixedMovementIndexes.length];
+  }
+  if (type === "multi" && !flipLeft) {
+    return multiIndexes[animationIndex % multiIndexes.length];
+  }
+  if (type === "multi" && flipLeft) {
+    return multiFlipIndexes[animationIndex % multiFlipIndexes.length];
+  }
+  if (type === "platform_player" && !flipLeft) {
+    return platformIndexes[animationIndex % platformIndexes.length];
+  }
+  if (type === "platform_player" && flipLeft) {
+    return platformFlipIndexes[animationIndex % platformFlipIndexes.length];
+  }
+  if (flipLeft) {
+    return flipIndexes[animationIndex % flipIndexes.length];
+  }
+  return animationIndex;
 };

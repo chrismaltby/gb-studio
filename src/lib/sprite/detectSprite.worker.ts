@@ -4,6 +4,7 @@ import {
   spriteAlignmentOffsets,
   autoHint2,
   spritesToTiles2,
+  clusterSprites,
 } from "./spriteDetection";
 
 const workerCtx: Worker = self as any;
@@ -20,19 +21,14 @@ workerCtx.onmessage = async (evt) => {
     spriteDefs,
     hintTileDefs
   );
-
-  console.log("d1", d1);
-  console.log("spriteDefs", spriteDefs);
-  console.log("alignmentOffsets", alignmentOffsets);
-  console.log("hintTileDefs", hintTileDefs);
-  console.log("tileDefs", tileDefs);
-  console.log("spriteTileLocations", spriteTileLocations);
+  const spriteClusters = clusterSprites(spriteDefs);
 
   workerCtx.postMessage({
     tileDefs,
     spriteTileLocations,
     spriteDefs,
     alignmentOffsets,
+    spriteClusters,
   });
 };
 

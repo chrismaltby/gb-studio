@@ -1,5 +1,3 @@
-// import uniqWith from "lodash/uniqWith";
-
 export type Position = { x: number; y: number };
 export type SliceDef = {
   data: Uint16Array;
@@ -25,12 +23,18 @@ export type TileLocation = {
 export type SpriteTileLocation = TileLocation & {
   spriteIndex: number;
 };
+export type SpriteCluster = {
+  minY: number;
+  maxY: number;
+  sprites: SliceDef[];
+};
 
 enum Color {
   Transparent = 0,
   Light = 1,
   Mid = 2,
   Dark = 3,
+  Divider = 254,
   Unknown = 255,
 }
 
@@ -50,7 +54,9 @@ export const imageToData = (img: ImageBitmap): Uint16Array => {
   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
   let ii = 2;
   for (let i = 0; i < imageData.data.length; i += 4) {
-    if (imageData.data[i + 1] >= 249) {
+    if (imageData.data[i + 2] >= 200 && imageData.data[i + 1] < 20) {
+      data[ii] = Color.Divider;
+    } else if (imageData.data[i + 1] >= 249) {
       data[ii] = Color.Transparent;
     } else if (imageData.data[i + 1] > 200) {
       data[ii] = Color.Light;
@@ -183,16 +189,6 @@ const isBlankData = (data: Uint16Array): boolean => {
   return true;
 };
 
-const pixelCount = (data: Uint16Array): number => {
-  let count = 0;
-  for (let i = 2; i < data.length; i++) {
-    if (data[i] !== Color.Transparent && data[i] !== Color.Unknown) {
-      count++;
-    }
-  }
-  return count;
-};
-
 const unknownToTransparent = (inData: Uint16Array): Uint16Array => {
   const data = new Uint16Array(inData);
   for (let i = 2; i < data.length; i++) {
@@ -210,16 +206,6 @@ const isEquivalent = (dataA: Uint16Array, dataB: Uint16Array): boolean => {
       isEqual(flipX(dataA), dataB) ||
       isEqual(flipY(dataA), dataB) ||
       isEqual(flipX(flipY(dataA)), dataB))
-  );
-};
-
-const isContainedWithin = (dataA: Uint16Array, dataB: Uint16Array): boolean => {
-  return (
-    isEqualSize(dataA, dataB) &&
-    (isContained(dataA, dataB) ||
-      isContained(flipX(dataA), dataB) ||
-      isContained(flipY(dataA), dataB) ||
-      isContained(flipX(flipY(dataA)), dataB))
   );
 };
 
@@ -287,7 +273,7 @@ const trimWhitespace = (inData: Uint16Array): SliceDef => {
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       const i = toIndex(x, y, width);
-      if (inData[i] > 0) {
+      if (inData[i] > 0 && inData[i] < 10) {
         if (x < minX) {
           minX = x;
         }
@@ -311,55 +297,6 @@ const trimWhitespace = (inData: Uint16Array): SliceDef => {
   };
 };
 
-const numPixels = (data: Uint16Array): number => {
-  let count = 0;
-  for (let i = 2; i < data.length; i++) {
-    if (data[i] > 0) {
-      count++;
-    }
-  }
-  return count;
-};
-
-const toArea = (inData: Uint16Array): number => {
-  const width = inData[0];
-  const height = inData[1];
-  let minX = width;
-  let maxX = 0;
-  let minY = height;
-  let maxY = 0;
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      const i = toIndex(x, y, width);
-      if (inData[i] > 0) {
-        if (x < minX) {
-          minX = x;
-        }
-        if (x > maxX) {
-          maxX = x;
-        }
-        if (y < minY) {
-          minY = y;
-        }
-        if (y > maxY) {
-          maxY = y;
-        }
-      }
-    }
-  }
-  const sliceW = maxX - minX + 1;
-  const sliceH = maxY - minY + 1;
-  return sliceW * sliceH;
-};
-
-const toNumTiles = (inData: Uint16Array): number => {
-  const width = inData[0];
-  const height = inData[1];
-  const tileWidth = Math.ceil(width / 8);
-  const tileHeight = Math.ceil(height / 16);
-  return tileWidth * tileHeight;
-};
-
 const toNumNonEmptyTiles = (inData: Uint16Array): number => {
   let count = 0;
   const tW = 8;
@@ -374,7 +311,7 @@ const toNumNonEmptyTiles = (inData: Uint16Array): number => {
       for (let px = 0; px < tW; px++) {
         for (let py = 0; py < tH; py++) {
           const i = toIndex(tx * tW + px, ty * tH + py, width);
-          if (inData[i] > 0) {
+          if (inData[i] > 0 && inData[i] < 10) {
             tileUsed = true;
             break;
           }
@@ -390,25 +327,6 @@ const toNumNonEmptyTiles = (inData: Uint16Array): number => {
     }
   }
   return count;
-};
-
-const imageToTiles = (inData: Uint16Array): Uint16Array[] => {
-  const tiles: Uint16Array[] = [];
-  const tW = 8;
-  const tH = 16;
-  const width = inData[0];
-  const height = inData[1];
-  const tileWidth = Math.ceil(width / tW);
-  const tileHeight = Math.ceil(height / tH);
-  for (let ty = 0; ty < tileHeight; ty++) {
-    for (let tx = 0; tx < tileWidth; tx++) {
-      const tile = sliceData(inData, tW * tx, tH * ty, tW, tH);
-      if (!isBlankData(tile)) {
-        tiles.push(tile);
-      }
-    }
-  }
-  return tiles;
 };
 
 const toIndex = (x: number, y: number, width: number): number =>
@@ -638,12 +556,16 @@ const imageToTileData = (inData: Uint16Array, tileSize: number) => {
   data[1] = tileHeight;
 
   let ii = 2;
+  let dividerY = Infinity;
   for (let ty = 0; ty < tileHeight; ty++) {
     for (let tx = 0; tx < tileWidth; tx++) {
       let tileUsed = false;
       for (let px = 0; px < tileSize; px++) {
         for (let py = 0; py < tileSize; py++) {
           const i = toIndex(tx * tileSize + px, ty * tileSize + py, width);
+          if (inData[i] === Color.Divider) {
+            dividerY = Math.min(dividerY, ty);
+          }
           if (inData[i] > 0) {
             tileUsed = true;
             break;
@@ -653,11 +575,23 @@ const imageToTileData = (inData: Uint16Array, tileSize: number) => {
           break;
         }
       }
-      //   data.push(tileUsed ? 3 : 0);
-      data[ii] = tileUsed ? 3 : 0;
+      data[ii] = tileUsed ? Color.Dark : Color.Transparent;
       ii++;
     }
   }
+
+  if (dividerY !== Infinity) {
+    // Fill below this line with Transparent
+    return fillData(
+      data,
+      0,
+      dividerY,
+      tileWidth,
+      tileHeight - dividerY,
+      Color.Transparent
+    );
+  }
+
   return data;
 };
 
@@ -900,9 +834,124 @@ export const autoHint2 = (inData: Uint16Array): SliceDef[] => {
     }
   }
 
+  const dividerY = getHintDividerY(inData);
+
+  if (dividerY) {
+    for (let y = dividerY; y < height; y += 16) {
+      for (let x = 0; x < width; x += 8) {
+        const sliced = sliceData(inData, x, y, 8, 16);
+        if (!isBlankData(sliced)) {
+          hintDefs.push({
+            data: sliced,
+            coordinates: {
+              x,
+              y,
+              width: 8,
+              height: 16,
+            },
+          });
+        }
+      }
+    }
+  }
+
   const uniqDefs = uniqWith(hintDefs, (a, b) => {
     return isEquivalent(a.data, b.data);
   });
 
   return uniqDefs;
 };
+
+const getHintDividerY = (inData: Uint16Array): number => {
+  const width = inData[0];
+  const height = inData[1];
+  for (var y = height - 1; y > 0; y--) {
+    for (var x = 0; x <= width - 2; x++) {
+      const i = toIndex(x, y, width);
+      if (inData[i] === Color.Divider) {
+        return roundUp8(y);
+      }
+    }
+  }
+  return 0;
+};
+
+export const clusterSprites = (spriteDefs: SliceDef[]): SpriteCluster[] => {
+  const clusters: SpriteCluster[] = [];
+
+  if (spriteDefs.length === 0) {
+    return clusters;
+  }
+
+  const sortedSpriteDefs = [...spriteDefs].sort((a, b) => {
+    if (a.coordinates.y < b.coordinates.y) {
+      return -1;
+    }
+    if (a.coordinates.y > b.coordinates.y) {
+      return 1;
+    }
+    return 0;
+  });
+
+  for (const spriteDef of sortedSpriteDefs) {
+    let clusterFound = false;
+    for (const cluster of clusters) {
+      if (
+        rangeOverlap(
+          cluster.minY,
+          cluster.maxY,
+          spriteDef.coordinates.y,
+          spriteDef.coordinates.y + spriteDef.coordinates.height
+        )
+      ) {
+        clusterFound = true;
+        cluster.minY = Math.min(cluster.minY, spriteDef.coordinates.y);
+        cluster.maxY = Math.max(
+          cluster.maxY,
+          spriteDef.coordinates.y + spriteDef.coordinates.height
+        );
+        cluster.sprites.push(spriteDef);
+        break;
+      }
+    }
+    if (!clusterFound) {
+      clusters.push({
+        minY: spriteDef.coordinates.y,
+        maxY: spriteDef.coordinates.y + spriteDef.coordinates.height,
+        sprites: [spriteDef],
+      });
+    }
+  }
+
+  // Merge any overlapping clusters
+  const mergedClusters = clusters.reduce((memo, cluster) => {
+    let overlap = false;
+    for (const otherCluster of memo) {
+      if (
+        rangeOverlap(
+          cluster.minY,
+          cluster.maxY,
+          otherCluster.minY,
+          otherCluster.maxY
+        )
+      ) {
+        // Merge
+        otherCluster.minY = Math.min(cluster.minY, otherCluster.minY);
+        otherCluster.maxY = Math.max(cluster.maxY, otherCluster.maxY);
+        otherCluster.sprites = otherCluster.sprites.concat(cluster.sprites);
+        overlap = true;
+        break;
+      }
+    }
+    if (!overlap) {
+      memo.push(cluster);
+    }
+
+    return memo;
+  }, [] as SpriteCluster[]);
+
+  return mergedClusters;
+};
+
+const rangeOverlap = (minA: number, maxA: number, minB: number, maxB: number) =>
+  minA < maxB && maxA > minB;
