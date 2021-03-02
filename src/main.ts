@@ -16,6 +16,9 @@ declare const SPLASH_WINDOW_WEBPACK_ENTRY: string;
 declare const PREFERENCES_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const PREFERENCES_WINDOW_WEBPACK_ENTRY: string;
 
+declare var MUSIC_WINDOW_PRELOAD_WEBPACK_ENTRY: any;
+declare var MUSIC_WINDOW_WEBPACK_ENTRY: any;
+
 type SplashTab = "info" | "new" | "recent";
 
 // Stop app launching during squirrel install
@@ -33,6 +36,7 @@ let splashWindow: any = null;
 let preferencesWindow: any = null;
 let playWindow: any = null;
 let hasCheckedForUpdate = false;
+let musicWindow: any;
 
 const isDevMode = !!process.execPath.match(/[\\/]electron/);
 
@@ -240,6 +244,37 @@ const createPlay = async (url: string) => {
   });
 };
 
+const createMusic = async () => {
+  console.log("CREATE MUSIC WINDOW");
+  if (!musicWindow) {
+    // Create the browser window.
+    musicWindow = new BrowserWindow({
+      show:false,
+      webPreferences: {
+        nodeIntegration: true,
+        nodeIntegrationInWorker: true,
+        webSecurity: process.env.NODE_ENV !== "development",
+        devTools: isDevMode,
+        preload: MUSIC_WINDOW_PRELOAD_WEBPACK_ENTRY,
+      },
+    });
+  }
+
+  // Only show the window in development environment
+  // otherwise keep it as a background process
+  if (isDevMode || process.env.NODE_ENV === "development") {
+    musicWindow.show();
+  }
+
+  musicWindow.setMenu(null);
+  musicWindow.loadURL(`${MUSIC_WINDOW_WEBPACK_ENTRY}`);
+
+  musicWindow.on("closed", () => {
+    musicWindow = null;
+  });
+
+}
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -386,6 +421,26 @@ ipcMain.on("set-menu-plugins", (event, plugins) => {
       };
     })
   );
+});
+
+ipcMain.on("open-music", async () => {
+  createMusic();
+});
+
+ipcMain.on("music-data-send", (event, data) => {
+  console.log("SENDING DATA TO MUSIC WINDOW")
+  console.log(data);
+  if (musicWindow) {
+    musicWindow.webContents.send("music-data", data);
+  }
+});
+
+ipcMain.on("music-data-receive", (event, data) => {
+  console.log("SENDING DATA FROM MUSIC WINDOW")
+  console.log(data);
+  if (mainWindow) {
+    mainWindow.webContents.send("music-data", data);
+  }
 });
 
 menu.on("new", async () => {

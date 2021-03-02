@@ -1,7 +1,8 @@
+import { ipcRenderer } from "electron";
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/configureStore";
-import Player from "./helpers/player";
+// import Player from "./helpers/player";
 
 interface UgePlayerProps {
   song: string,
@@ -13,29 +14,57 @@ export const UgePlayer = ({
   data,
   onPlaybackUpdate
 }: UgePlayerProps) => {
+  console.log("UGE PLAYER START")
 
   useEffect(() => {
-    Player.initPlayer((file: string) => {
-      console.log("COMPLETE");
-    });
+    console.log("OPEN MUSIC")
+    ipcRenderer.send(
+      "open-music"
+    );
   }, []);
-
-  useEffect(() => {
-    if (onPlaybackUpdate) {
-      Player.setOnIntervalCallback(onPlaybackUpdate);
-    }
-  }, [onPlaybackUpdate]);
 
   const play = useSelector(
     (state: RootState) => state.editor.playSong
   );
 
   useEffect(() => {
+    console.log('set playback update');
+
+    ipcRenderer.removeAllListeners("music-data");
+    ipcRenderer.on("music-data", (event: any, d: any) => {
+      switch (d.action) {
+        case "update":
+          if (onPlaybackUpdate) {
+            console.log(d.update);
+            onPlaybackUpdate(d.update);
+          }
+          break;
+        case "log":
+          console.log(d.message);
+          break;
+        default:
+          console.log(`Action ${d.action} not supported`);
+      }
+    })
+  }, [onPlaybackUpdate, play]);
+
+  useEffect(() => {
     console.log(play);
     if (play) {
-      Player.play(data)
+      ipcRenderer.send(
+        "music-data-send",
+        {
+          action: "play",
+          song: data
+        }
+      );
     } else {
-      Player.stop();
+      ipcRenderer.send(
+        "music-data-send",
+        {
+          action: "stop",
+        }
+      );
     }
   }, [play, data])
 

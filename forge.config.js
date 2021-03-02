@@ -84,6 +84,16 @@ module.exports = {
                 "vendor-lodash",
               ],
             },            
+            {
+              html: "./src/music.html",
+              js: "./src/MusicRoot.js",
+              name: "music_window",
+              additionalChunks: [
+                "vendor-react",
+                "vendor-hotloader",
+                "vendor-lodash",
+              ],
+            },            
           ],
         },
       },

@@ -1,20 +1,20 @@
-import React, { FC, useCallback, useState } from "react";
-import { useDispatch } from "react-redux";
+import React, { useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Button } from "../ui/buttons/Button";
 import editorActions from "../../store/features/editor/editorActions";
+import { RootState } from "../../store/configureStore";
 
 interface SequenceEditorProps {
   id: string,
-  data?: any[]
+  data?: number[],
+  playbackState: number[]
 }
 
 export const SequenceEditor = ({
-  id,
   data,
+  playbackState
 }: SequenceEditorProps) => {
-
   const dispatch = useDispatch();
-
   const setSequenceId = useCallback(
     (sequenceId: number) => {
       dispatch(editorActions.setSelectedSequence(sequenceId));
@@ -22,17 +22,26 @@ export const SequenceEditor = ({
     [dispatch]
   );
 
+  const play = useSelector(
+    (state: RootState) => state.editor.playSong
+  );
+
+  if (play && playbackState && playbackState[0] !== -1) {
+    setSequenceId(playbackState[0]);
+  }
+
   return (
     <div>
       {data && data.map(
-      (item) => 
-        <Button
-          variant="transparent"
-          onClick={() => setSequenceId(item)}
-        >
-          {item}
-        </Button>
-    )}
+        (item, i) =>
+          <Button
+            variant="transparent"
+            onClick={() => setSequenceId(i)}
+            active={playbackState[0] === i}
+          >
+            {item}
+          </Button>
+      )}
     </div>
   )
 }

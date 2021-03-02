@@ -1,10 +1,11 @@
-import React, { FC, useCallback, useState } from "react";
+import React from "react";
 import styled, { css } from "styled-components";
+import { PatternCell } from "../../lib/helpers/uge/song/PatternCell";
 
 interface SongRowProps {
   id: string,
   n: number,
-  row: any[],
+  row: PatternCell[],
   selected: boolean
 }
 
@@ -28,7 +29,8 @@ const Wrapper = styled.span<WrapperProps>`
       ? css`
           background-color: ${props.theme.colors.highlight};
         `
-      : ""}
+      : ""
+  }
 `;
 
 const Cell = styled.span`
@@ -36,11 +38,11 @@ const Cell = styled.span`
 `;
 
 const renderCounter = (n: number): string => {
-  return (n)?.toString().padStart(2, "0")||"__";
+  return (n)?.toString().padStart(2, "0") || "__";
 }
 
 const noteName = ["C-", "C#", "D-", "D#", "E-", "F-", "F#", "G-", "G#", "A-", "A#", "B-"]
-const renderNote = (note?: number): string => {
+const renderNote = (note: number | null): string => {
   if (note) {
     const octave = ~~(note / 12) + 3;
     return noteName[note % 12] + octave;
@@ -48,20 +50,19 @@ const renderNote = (note?: number): string => {
   return "...";
 }
 
-const renderInstrument = (instrument?: number): string => {
-  return (instrument)?.toString().padStart(2, "0")||"..";
+const renderInstrument = (instrument: number | null): string => {
+  return (instrument)?.toString().padStart(2, "0") || "..";
 }
 
-const renderEffect = (effectcode?: number): string => {
-  return (effectcode)?.toString(16).toUpperCase()||".";
+const renderEffect = (effectcode: number | null): string => {
+  return (effectcode)?.toString(16).toUpperCase() || ".";
 }
 
-const renderEffectParam = (effectparam?: number): string => {
-  return (effectparam)?.toString(16).toUpperCase().padStart(2, "0")||"..";
+const renderEffectParam = (effectparam: number | null): string => {
+  return (effectparam)?.toString(16).toUpperCase().padStart(2, "0") || "..";
 }
 
-export const SongRow = ({
-  id,
+export const SongRow = React.memo(({
   n,
   row,
   selected
@@ -78,4 +79,4 @@ export const SongRow = ({
       )}
     </div>
   )
-}
+})

@@ -19,27 +19,19 @@ import editorActions from "../../store/features/editor/editorActions";
 import settingsActions from "../../store/features/settings/settingsActions";
 import { NavigatorSongs } from "../../components/music/NavigatorSongs";
 import { SongTracker } from "../../components/music/SongTracker";
-import { SequenceEditor } from "../../components/music/SequenceEditor";
 import {
   musicSelectors,
 } from "../../store/features/entities/entitiesState";
 import { assetFilename } from "../../lib/helpers/gbstudio";
 import { SongEditor } from "../../components/music/SongEditor";
 import SongEditorToolsPanel from "../../components/music/SongEditorToolsPanel";
-import { SplitPaneHeader } from "../../components/ui/splitpane/SplitPaneHeader";
-import l10n from "../../lib/helpers/l10n";
 import { loadUGESong } from "../../lib/helpers/uge/ugeHelper";
-import { UgePlayer } from "../../components/music/UgePlayer";
+import { Song } from "../../lib/helpers/uge/song/Song";
 
 const Wrapper = styled.div`
   display: flex;
   width: 100%;
 `;
-
-let playbackState = [-1,-1];
-const setPlaybackState = (s:number[]) => {
-  playbackState = s;
-}
 
 const MusicPage = () => {
   const dispatch = useDispatch();
@@ -74,14 +66,7 @@ const MusicPage = () => {
 
   const projectRoot = useSelector((state: RootState) => state.document.root);
 
-  const [playbackState2, setPlaybackState2] = useState([-1, -1]);
-  useEffect(() => {
-    setInterval(() => {
-      setPlaybackState2(playbackState);
-    }, 1000);  
-  }, [])
-
-  const [songData, setSongData] = useState<any>(null);
+  const [songData, setSongData] = useState<Song | null>(null);
   useEffect(() => {
     const readSong = async () => {
       const path: string = `${assetFilename(
@@ -114,7 +99,7 @@ const MusicPage = () => {
       recalculateRightColumn();
     },
   });
-  const [centerPaneHeight,, onResizeCenter] = useResizable({
+  const [,] = useResizable({
     initialSize: 231,
     direction: "top",
     minSize: 30,
@@ -205,6 +190,8 @@ const MusicPage = () => {
     dispatch(settingsActions.setShowNavigator(false));
   };
 
+  const [] = useState([-1, -1]);
+
   return (
     <Wrapper>
       <div
@@ -255,25 +242,12 @@ const MusicPage = () => {
         </div>
         <SplitPaneVerticalDivider />
         <div style={{ position: "relative" }}>
-          <SplitPaneHeader
-            onToggle={() => {}}
-            collapsed={false}
-          >
-            {l10n("FIELD_SEQUENCES")}
-          </SplitPaneHeader>
-          <SequenceEditor 
-            id={selectedId} 
-            data={songData?.sequence} 
-          />
-        </div>
-        <SplitPaneVerticalDivider onMouseDown={onResizeCenter} />
-        <div style={{ position: "relative", overflow: "auto", flexGrow: 1,height: centerPaneHeight }}>
-          {/* <SongTracker 
-            id={selectedId} 
+          <SongTracker
+            id={selectedId}
             sequenceId={sequenceId}
-            data={songData} 
-            playbackState={playbackState2}
-          /> */}
+            data={songData}
+            height={windowHeight - 188 + 20}
+          />
         </div>
       </div>
       <SplitPaneHorizontalDivider onMouseDown={onResizeRight} />
@@ -286,13 +260,8 @@ const MusicPage = () => {
           position: "relative",
         }}
       >
-        {/* <SongEditor id={selectedId} data={songData} /> */}
+        <SongEditor id={selectedId} data={songData} />
       </div>
-      <UgePlayer 
-        song={selectedId} 
-        data={songData}
-        // onPlaybackUpdate={setPlaybackState} 
-      />
     </Wrapper>
   );
 };

@@ -8,7 +8,10 @@ let update_handle = null;
 let rom_file = null;
 let muted_channels_mask = 0;
 
-let onIntervalCallback = (sequence, row) => {};
+let current_sequence = -1;
+let current_row = -1;
+
+let onIntervalCallback = (updateData) => { };
 
 const initPlayer = (onInit) => {
   console.log("INIT PLAYER");
@@ -19,13 +22,7 @@ const initPlayer = (onInit) => {
   storage.update("song.asm", "SECTION \"song\", ROM0[$1000]\n_song_descriptor:: ds $8000 - @")
 
   compiler.compile((file, start_address, addr_to_line) => {
-    if (!file) {
-      console.log(`COMPILE ERROR`);
-    } else {
-      console.log(file);
-      console.log(`COMPILE DONE`);
-      rom_file = file;
-    }
+    rom_file = file;
     if (onInit) {
       onInit(file);
     }
@@ -58,22 +55,24 @@ const play = (song) => {
     emulator.step("run");
   }
   interval_handle = setInterval(updateTracker, 10);
-  
-  const updateUI = () => {
-    const current_sequence = emulator.readMem(current_order_addr) / 2;
-    const row = emulator.readMem(row_addr);
-    onIntervalCallback([current_sequence, row]);
-    update_handle = requestAnimationFrame(updateUI);
-  };
 
-  update_handle = requestAnimationFrame(updateUI);
+  const updateUI = () => {
+    const old_row = current_row;
+
+    current_sequence = emulator.readMem(current_order_addr) / 2;
+    current_row = emulator.readMem(row_addr);
+    if (old_row !== current_row) {
+      onIntervalCallback([current_sequence, current_row]);
+    }
+  }
+  update_handle = setInterval(updateUI, 10);
 }
 
 const stop = () => {
   if (interval_handle === null)
     return;
   clearInterval(interval_handle);
-  window.cancelAnimationFrame(update_handle); 
+  window.cancelAnimationFrame(update_handle);
   interval_handle = null;
 }
 
