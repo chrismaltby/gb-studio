@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import SpriteSheetCanvas from "./SpriteSheetCanvas1";
+import SpriteSheetCanvas from "./SpriteSheetCanvas";
 import { framesPerDirection } from "../../lib/helpers/gbstudio";
 import { PaletteShape } from "../../store/stateShape";
 import { getCachedObject } from "../../lib/helpers/cache";
