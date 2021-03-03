@@ -44,6 +44,7 @@ class Actor extends Component {
               direction={direction}
               frame={spriteType === SPRITE_TYPE_STATIC ? frame : 0}
               palette={palette}
+              offsetPosition
             />
           )}
         </div>

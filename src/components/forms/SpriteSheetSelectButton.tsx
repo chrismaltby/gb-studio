@@ -8,6 +8,7 @@ import {
   spriteSheetSelectors,
 } from "../../store/features/entities/entitiesState";
 import {
+  ActorDirection,
   Palette,
   SpriteSheet,
 } from "../../store/features/entities/entitiesTypes";
@@ -19,7 +20,7 @@ import { SpriteSheetSelect } from "./SpriteSheetSelect";
 interface SpriteSheetSelectProps {
   name: string;
   value?: string;
-  direction?: string;
+  direction?: ActorDirection;
   includeInfo?: boolean;
   frame?: number;
   paletteId?: string;
@@ -78,7 +79,8 @@ const Button = styled.button`
   }
 
   canvas {
-    width: 48px;
+    max-width: 48px;
+    max-height: 48px;
     image-rendering: pixelated;
   }
 `;
@@ -247,7 +249,7 @@ export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
           {spriteSheet ? (
             <PreviewWrapper>
               <SpriteSheetCanvas
-                spriteSheetId={value}
+                spriteSheetId={value || ""}
                 direction={direction}
                 frame={frame}
                 palette={palette}

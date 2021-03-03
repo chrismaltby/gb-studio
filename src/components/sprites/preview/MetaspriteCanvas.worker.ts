@@ -84,6 +84,11 @@ workerCtx.onmessage = async (evt) => {
   }
   ctx = tmpCtx;
 
+  if (flipX) {
+    ctx.translate(width, 0);
+    ctx.scale(-1, 1);
+  }
+
   // Draw Tiles
   for (let tile of tiles) {
     ctx.save();

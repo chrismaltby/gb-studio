@@ -7,11 +7,6 @@
   -webkit-transform: translate3d(0, 0, 0);
 }
 
-.Actor canvas {
-  position: relative;
-  top: -8px;
-}
-
 .Actor--Selected {
   background-color: rgba(247, 45, 220, 0.8);
   outline: 1px solid rgba(140, 0, 177, 1);

@@ -13,6 +13,7 @@ import MetaspriteCanvasWorker from "./MetaspriteCanvas.worker";
 interface MetaspriteCanvasProps {
   spriteSheetId: string;
   metaspriteId: string;
+  flipX?: boolean;
 }
 
 const worker = new MetaspriteCanvasWorker();
@@ -20,6 +21,7 @@ const worker = new MetaspriteCanvasWorker();
 export const MetaspriteCanvas = ({
   spriteSheetId,
   metaspriteId,
+  flipX = false,
 }: MetaspriteCanvasProps) => {
   const [workerId] = useState(Math.random());
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
@@ -83,6 +85,7 @@ export const MetaspriteCanvas = ({
       width,
       height,
       tiles,
+      flipX,
       palette: DMG_PALETTE.colors,
     });
   }, [canvasRef, spriteSheet, width, height, tiles, projectRoot, workerId]);

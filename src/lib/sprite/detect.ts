@@ -15,7 +15,7 @@ import {
   SliceDef,
   SpriteCluster,
   SpriteTileLocation,
-} from "./spriteDetection";
+} from "./spriteData";
 
 interface DetectedSprite {
   spriteSheetId: string;

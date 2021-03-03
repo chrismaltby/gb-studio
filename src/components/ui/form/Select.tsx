@@ -137,6 +137,12 @@ const ValuePreview = styled.div`
   justify-content: center;
   width: 22px;
   height: 22px;
+
+  canvas {
+    max-width: 22px;
+    max-height: 22px;
+    image-rendering: auto !important;
+  }
 `;
 
 const OptionLabelWithPreviewWrapper = styled.div`

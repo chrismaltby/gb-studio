@@ -1,6 +1,7 @@
 import { Dictionary } from "@reduxjs/toolkit";
 import flatten from "lodash/flatten";
 import { SPRITE_TYPE_STATIC } from "../../consts";
+import { PrecompiledSpriteSheetData } from "./compileSprites";
 import {
   actorFramesPerDir,
   animSpeedDec,
@@ -575,7 +576,7 @@ export const compileTilesetHeader = (tileset: any, tilesetIndex: number) =>
   );
 
 export const compileSpriteSheet = (
-  spriteSheet: any,
+  spriteSheet: PrecompiledSpriteSheetData,
   spriteSheetIndex: number
 ) =>
   `#pragma bank 255
@@ -585,63 +586,36 @@ export const compileSpriteSheet = (
 
 ${toBankSymbolInit(spriteSheetSymbol(spriteSheetIndex))};
 
-const metasprite_t ${spriteSheetSymbol(spriteSheetIndex)}_metasprite_0[]  = {
-    {0, 0, 0, 0}, {0, 8, 2, 0}, {metasprite_end}
-};
-
-const metasprite_t ${spriteSheetSymbol(spriteSheetIndex)}_metasprite_1[]  = {
-    {0, 0, 4, 0}, {0, 8, 6, 0}, {metasprite_end}
-};
-
-const metasprite_t ${spriteSheetSymbol(spriteSheetIndex)}_metasprite_2[]  = {
-    {0, 0, 8,  0}, {0, 8, 10, 0}, {metasprite_end}
-};
-
-const metasprite_t ${spriteSheetSymbol(spriteSheetIndex)}_metasprite_3[]  = {
-    {0, 0, 12, 0}, {0, 8, 14, 0}, {metasprite_end}
-};
-
-const metasprite_t ${spriteSheetSymbol(spriteSheetIndex)}_metasprite_4[]  = {
-    {0, 0, 16, 0}, {0, 8, 18, 0}, {metasprite_end}
-};
-
-const metasprite_t ${spriteSheetSymbol(spriteSheetIndex)}_metasprite_5[]  = {
-    {0, 0, 20, 0}, {0, 8, 22, 0}, {metasprite_end}
-};
-
-const metasprite_t ${spriteSheetSymbol(spriteSheetIndex)}_metasprite_6[]  = {
-    {0, 0, 18, 32}, {0, 8, 16, 32}, {metasprite_end}
-};
-
-const metasprite_t ${spriteSheetSymbol(spriteSheetIndex)}_metasprite_7[]  = {
-    {0, 0, 22, 32}, {0, 8, 20, 32}, {metasprite_end}
-};
+${spriteSheet.metasprites
+  .map((metasprite, metaspriteIndex) => {
+    return `const metasprite_t ${spriteSheetSymbol(
+      spriteSheetIndex
+    )}_metasprite_${metaspriteIndex}[]  = {
+  ${metasprite
+    .map((tile) => `{ ${tile.y}, ${tile.x}, ${tile.tile}, ${tile.props} }`)
+    .join(", ")},
+  {metasprite_end}
+};`;
+  })
+  .join("\n\n")}
 
 const metasprite_t * const ${spriteSheetSymbol(
     spriteSheetIndex
   )}_metasprites[] = {
-    ${spriteSheetSymbol(spriteSheetIndex)}_metasprite_0,
-    ${spriteSheetSymbol(spriteSheetIndex)}_metasprite_1,
-    ${spriteSheetSymbol(spriteSheetIndex)}_metasprite_2,
-    ${spriteSheetSymbol(spriteSheetIndex)}_metasprite_3,
-    ${spriteSheetSymbol(spriteSheetIndex)}_metasprite_4,
-    ${spriteSheetSymbol(spriteSheetIndex)}_metasprite_5,
-    ${spriteSheetSymbol(spriteSheetIndex)}_metasprite_6,
-    ${spriteSheetSymbol(spriteSheetIndex)}_metasprite_7
+${spriteSheet.metaspritesOrder
+  .map(
+    (index) => `    ${spriteSheetSymbol(spriteSheetIndex)}_metasprite_${index}`
+  )
+  .join(",\n")}
 };
 
 ${SPRITESHEET_TYPE} ${spriteSheetSymbol(spriteSheetIndex)} = {
 ${toStructData(
   {
-    n_tiles: spriteSheet.frames,
-    n_metasprites: 4,
+    n_tiles: spriteSheet.tiles.length,
+    n_metasprites: spriteSheet.metaspritesOrder.length,
     metasprites: `${spriteSheetSymbol(spriteSheetIndex)}_metasprites`,
-    animations: [
-      { start: 0, end: 1 },
-      { start: 0, end: 1 },
-      { start: 0, end: 1 },
-      { start: 0, end: 1 },
-    ],
+    animations: spriteSheet.animationOffsets,
     tiles: spriteSheet.data.map(toHex),
   },
 
@@ -651,7 +625,7 @@ ${toStructData(
 `;
 
 export const compileSpriteSheetHeader = (
-  spriteSheet: any,
+  _spriteSheet: PrecompiledSpriteSheetData,
   spriteSheetIndex: number
 ) =>
   toDataHeader(

@@ -7,6 +7,7 @@ import {
   spriteSheetSelectors,
 } from "../../store/features/entities/entitiesState";
 import {
+  ActorDirection,
   Palette,
   SpriteSheet,
 } from "../../store/features/entities/entitiesTypes";
@@ -24,7 +25,7 @@ import l10n from "../../lib/helpers/l10n";
 interface SpriteSheetSelectProps extends SelectCommonProps {
   name: string;
   value?: string;
-  direction?: string;
+  direction?: ActorDirection;
   frame?: number;
   paletteId?: string;
   onChange?: (newId: string) => void;
@@ -40,39 +41,14 @@ const buildOptions = (
   plugin: string | undefined,
   spriteSheets: SpriteSheet[]
 ) => {
-  // memo.push({
-  //   label:
-  //     l10n("FIELD_SPRITE_ANIMATED_ACTORS") + (plugin ? ` - ${plugin}` : ""),
-  //   options: spriteSheets.filter(type("actor_animated")).map((spriteSheet) => {
-  //     return {
-  //       value: spriteSheet.id,
-  //       label: spriteSheet.name,
-  //     };
-  //   }),
-  // });
-  // memo.push({
-  //   label: l10n("FIELD_SPRITE_ACTORS") + (plugin ? ` - ${plugin}` : ""),
-  //   options: spriteSheets.filter(type("actor")).map((spriteSheet) => {
-  //     return {
-  //       value: spriteSheet.id,
-  //       label: spriteSheet.name,
-  //     };
-  //   }),
-  // });
   memo.push({
     label: l10n("FIELD_SPRITES") + (plugin ? ` - ${plugin}` : ""),
-    options: spriteSheets
-      // .filter((s) => s.type !== "actor_animated" && s.type !== "actor")
-      .map((spriteSheet) => {
-        return {
-          value: spriteSheet.id,
-          label:
-            spriteSheet.name +
-            (spriteSheet.numFrames > 1
-              ? ` (${spriteSheet.numFrames} ${l10n("FIELD_SPRITE_FRAMES")})`
-              : ``),
-        };
-      }),
+    options: spriteSheets.map((spriteSheet) => {
+      return {
+        value: spriteSheet.id,
+        label: spriteSheet.name,
+      };
+    }),
   });
 };
 
@@ -174,7 +150,7 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
           <SingleValueWithPreview
             preview={
               <SpriteSheetCanvas
-                spriteSheetId={value}
+                spriteSheetId={value || ""}
                 direction={direction}
                 frame={frame}
                 palette={palette}

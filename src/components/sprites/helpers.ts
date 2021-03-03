@@ -131,3 +131,84 @@ export const animationIndexBySpriteType = (
   }
   return animationIndex;
 };
+
+export const animationFlipBySpriteType = (
+  animationIndex: number,
+  type: SpriteAnimationType,
+  flipLeft: boolean
+): boolean => {
+  if (type === "fixed") {
+    return false;
+  }
+  if (type === "fixed_movement") {
+    return false;
+  }
+  if (type === "multi" && !flipLeft) {
+    return false;
+  }
+  if (type === "multi" && flipLeft) {
+    return animationIndex === 1;
+  }
+  if (type === "platform_player" && !flipLeft) {
+    return false;
+  }
+  if (type === "platform_player" && flipLeft) {
+    return animationIndex === 1 || animationIndex === 5 || animationIndex === 3;
+  }
+  if (flipLeft) {
+    return animationIndex === 1 || animationIndex === 5;
+  }
+  return false;
+};
+
+export const animationMapBySpriteType = <T, U>(
+  items: T[],
+  type: SpriteAnimationType,
+  flipLeft: boolean,
+  fn: (item: T, flip: boolean) => U
+): U[] => {
+  return Array.from(Array(8)).map((_item, index) => {
+    if (type === "fixed") {
+      // All animations map to 0
+      return fn(items[0], false);
+    }
+    if (type === "fixed_movement") {
+      // Idle maps to 0, Moving maps to 4
+      return fn(index < 4 ? items[0] : items[4], false);
+    }
+    if (type === "multi" && !flipLeft) {
+      // Idle and moving map to first 4
+      return fn(items[index % 4], false);
+    }
+    if (type === "multi" && flipLeft) {
+      // Left facing maps to flipped 0
+      // All other idle and moving map to first 4
+      if (index === 1 || index === 5) {
+        return fn(items[0], true);
+      }
+      return fn(items[index % 4], false);
+    }
+    if (type === "platform_player" && !flipLeft) {
+      // Map all in order
+      return fn(items[index], false);
+    }
+    if (type === "platform_player" && flipLeft) {
+      // Left facing maps to previous animation (right) flipped
+      // others map in order
+      if (index === 1 || index === 5 || index === 3) {
+        return fn(items[index - 1], true);
+      }
+      return fn(items[index], false);
+    }
+    if (flipLeft) {
+      // Left facing maps to previous animation (right) flipped
+      // others map in order
+      if (index === 1 || index === 5) {
+        return fn(items[index - 1], true);
+      }
+      return fn(items[index], false);
+    }
+    // Map all in order
+    return fn(items[index], false);
+  });
+};
