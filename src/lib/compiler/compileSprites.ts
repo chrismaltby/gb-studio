@@ -131,6 +131,8 @@ const compileSprites = async (
           spriteSheet.flipLeft,
           (animation, flip) => {
             return animation.frames.map((frame) => {
+              let currentX = 0;
+              let currentY = 0;
               return frame.tiles
                 .map((tile) => {
                   const optimisedTile = lookup[tile.id];
@@ -140,8 +142,8 @@ const compileSprites = async (
                   if (flip) {
                     const data: SpriteTileData = {
                       tile: optimisedTile.tile,
-                      x: -tile.x,
-                      y: tile.y,
+                      x: 8 - tile.x - currentX,
+                      y: -tile.y - currentY,
                       props: makeProps(
                         tile.objPalette,
                         tile.paletteIndex,
@@ -149,12 +151,14 @@ const compileSprites = async (
                         optimisedTile.flipY
                       ),
                     };
+                    currentX = 8 - tile.x;
+                    currentY = -tile.y;
                     return data;
                   }
                   const data: SpriteTileData = {
                     tile: optimisedTile.tile,
-                    x: tile.x,
-                    y: tile.y,
+                    x: tile.x - currentX,
+                    y: -tile.y - currentY,
                     props: makeProps(
                       tile.objPalette,
                       tile.paletteIndex,
@@ -162,6 +166,8 @@ const compileSprites = async (
                       optimisedTile.flipY
                     ),
                   };
+                  currentX = tile.x;
+                  currentY = -tile.y;
                   return data;
                 })
                 .filter((tile) => tile) as SpriteTileData[];
@@ -195,7 +201,7 @@ const compileSprites = async (
           }
           return {
             start,
-            end: start + uniqIndexes.length,
+            end: start + Math.max(0, uniqIndexes.length - 1),
           };
         });
 
