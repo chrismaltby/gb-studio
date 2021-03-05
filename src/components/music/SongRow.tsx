@@ -10,6 +10,7 @@ interface SongRowProps {
 }
 
 interface WrapperProps {
+  n: number,
   selected: boolean
 }
 
@@ -24,6 +25,13 @@ const Wrapper = styled.span<WrapperProps>`
   margin: 0;
   padding: 4px 8px;
   height: 20px;
+  ${(props) =>
+    props.n % 8 === 0
+      ? css`
+          background-color: ${props.theme.colors.list.activeBackground};
+        `
+      : ""
+  }
   ${(props) =>
     props.selected
       ? css`
@@ -69,9 +77,9 @@ export const SongRow = React.memo(({
 }: SongRowProps) => {
   return (
     <div>
-      <Wrapper selected={selected}><Cell>{renderCounter(n)}</Cell></Wrapper>
+      <Wrapper selected={selected} n={n}><Cell>{renderCounter(n)}</Cell></Wrapper>
       {row.map((cell) =>
-        <Wrapper selected={selected}>
+        <Wrapper selected={selected} n={n}>
           <Cell>{renderNote(cell.note)}</Cell>&nbsp;
           <Cell>{renderInstrument(cell.instrument)}</Cell>&nbsp;
           <Cell>{renderEffect(cell.effectcode)}{renderEffectParam(cell.effectparam)}</Cell>

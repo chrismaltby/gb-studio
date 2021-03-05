@@ -8,13 +8,17 @@ import { Music } from "../../store/features/entities/entitiesTypes";
 import { EntityListItem } from "../ui/lists/EntityListItem";
 import { FormSectionTitle } from "../ui/form/FormLayout";
 import l10n from "../../lib/helpers/l10n";
+import { InstrumentType } from "../../store/features/editor/editorState";
+import { NoiseInstrument } from "../../lib/helpers/uge/song/NoiseInstrument";
+import { WaveInstrument } from "../../lib/helpers/uge/song/WaveInstrument";
+import { DutyInstrument } from "../../lib/helpers/uge/song/DutyInstrument";
 
 interface NavigatorSongsProps {
   height: number;
   defaultFirst?: boolean;
-  instruments: Array<any>;
-  noise: Array<any>;
-  waves: Array<any>;
+  instruments: DutyInstrument[];
+  noises: NoiseInstrument[];
+  waves: WaveInstrument[];
 }
 
 interface NavigatorItem {
@@ -31,11 +35,11 @@ const songToNavigatorItem = (
 });
 
 const instrumentToNavigatorItem = (
-  instrument: any,
+  instrument: DutyInstrument | NoiseInstrument | WaveInstrument,
   instrumentIndex: number,
   defaultName: string,
 ): NavigatorItem => ({
-  id: instrument.index,
+  id: `${instrument.index}`,
   name: instrument.name ? instrument.name : `${defaultName} ${instrumentIndex + 1}`,
 });
 
@@ -56,7 +60,7 @@ export const NavigatorSongs = ({
   defaultFirst,
   instruments,
   waves,
-  noise
+  noises
 }: NavigatorSongsProps) => {
   const [items, setItems] = useState<NavigatorItem[]>([]);
   const allSongs = useSelector((state: RootState) =>
@@ -68,7 +72,7 @@ export const NavigatorSongs = ({
   const navigationId = useSelector(
     (state: RootState) => state.editor.selectedSongId
   );
-  const selectedId = defaultFirst
+  const selectedSongId = defaultFirst
     ? songsLookup[navigationId]?.id || allSongs[0]?.id
     : navigationId;
 
@@ -84,7 +88,7 @@ export const NavigatorSongs = ({
     );
   }, [allSongs]);
 
-  const setSelectedId = useCallback(
+  const setSelectedSongId = useCallback(
     (id: string) => {
       dispatch(editorActions.setSelectedSongId(id));
     },
@@ -117,22 +121,36 @@ export const NavigatorSongs = ({
 
   const [noiseItems, setNoiseItems] = useState<NavigatorItem[]>([]);
   useEffect(() => {
-    if (!noise) return;
+    if (!noises) return;
     setNoiseItems(
-      noise
+      noises
         .map((noise, noiseIndex) =>
           instrumentToNavigatorItem(noise, noiseIndex, "Noise")
         )
         .sort(sortByIndex)
     );
-  }, [noise]);
+  }, [noises]);
+
+  const selectedInstrument = useSelector(
+    (state: RootState) => state.editor.selectedInstrument
+  );
+  const setSelectedInstrument = useCallback(
+    (id: string, type: InstrumentType) => {
+      dispatch(editorActions.setSelectedInstrument({ id, type }))
+    }, 
+    [dispatch]
+  );
+
+  const setSelectedInstrumentWithType = (type: InstrumentType) => (id: string) => {
+    setSelectedInstrument(id, type);
+  }
 
   return (
     <>
       <FlatList
-        selectedId={selectedId}
+        selectedId={selectedSongId}
         items={items}
-        setSelectedId={setSelectedId}
+        setSelectedId={setSelectedSongId}
         height={height - 25 * 15 - 32}
       >
         {({ item }) => <EntityListItem type="animation" item={item} />}
@@ -143,9 +161,9 @@ export const NavigatorSongs = ({
       </FormSectionTitle>
 
       <FlatList
-        selectedId={selectedId}
+        selectedId={selectedInstrument.type === "instrument" ? selectedInstrument.id : ""}
         items={instrumentItems}
-        setSelectedId={setSelectedId}
+        setSelectedId={setSelectedInstrumentWithType("instrument")}
         height={25 * instrumentItems.length}
       >
         {({ item }) => <EntityListItem type="animation" item={item} />}
@@ -156,9 +174,9 @@ export const NavigatorSongs = ({
       </FormSectionTitle>
 
       <FlatList
-        selectedId={selectedId}
+        selectedId={selectedInstrument.type === "wave" ? selectedInstrument.id : ""}
         items={wavesItems}
-        setSelectedId={setSelectedId}
+        setSelectedId={setSelectedInstrumentWithType("wave")}
         height={25 * wavesItems.length}
       >
         {({ item }) => <EntityListItem type="animation" item={item} />}
@@ -169,9 +187,9 @@ export const NavigatorSongs = ({
       </FormSectionTitle>
 
       <FlatList
-        selectedId={selectedId}
+        selectedId={selectedInstrument.type === "noise" ? selectedInstrument.id : ""}
         items={noiseItems}
-        setSelectedId={setSelectedId}
+        setSelectedId={setSelectedInstrumentWithType("noise")}
         height={25 * noiseItems.length}
       >
         {({ item }) => <EntityListItem type="animation" item={item} />}

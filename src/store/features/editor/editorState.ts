@@ -48,6 +48,13 @@ export interface SpriteTileSelection {
   height: number;
 }
 
+export type InstrumentType =  "instrument" | "wave" | "noise";
+
+export interface SelectedInstrument {
+  id: string,
+  type: InstrumentType
+}
+
 export interface EditorState {
   tool: Tool;
   actorDefaults?: Partial<Actor>;
@@ -109,6 +116,7 @@ export interface EditorState {
   parallaxHoverLayer: number | undefined;
   previewAsSceneId: string;
   selectedSongId: string;
+  selectedInstrument: SelectedInstrument;
   selectedSequence: number;
   playSong: boolean;
   playbackState: number[],
@@ -171,6 +179,10 @@ export const initialState: EditorState = {
   parallaxHoverLayer: undefined,
   previewAsSceneId: "",
   selectedSongId: "",
+  selectedInstrument: {
+    id: "0",
+    type: "instrument"
+  },
   selectedSequence: 0,
   playSong: false,
   playbackState: [0, 0]
@@ -623,9 +635,14 @@ const editorSlice = createSlice({
     
     setSelectedSongId: (state, action: PayloadAction<string>) => {
       state.selectedSongId = action.payload;
+      state.selectedInstrument = { id: "0", type: "instrument" };
       state.selectedSequence = 0;
       state.playSong = false;
       state.playbackState = [0, 0]
+    },
+
+    setSelectedInstrument: (state, action: PayloadAction<SelectedInstrument>) => {
+      state.selectedInstrument = action.payload;
     },
 
     setSelectedSequence: (state, action:PayloadAction<number>) => {

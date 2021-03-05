@@ -7,86 +7,84 @@ import {
   FormDivider,
   FormHeader,
   FormRow,
-  FormSectionTitle,
 } from "../ui/form/FormLayout";
-import l10n from "../../lib/helpers/l10n";
 import { Sidebar, SidebarColumn } from "../ui/sidebars/Sidebar";
-import {
-  MetaspriteTile,
-  SpriteSheet,
-  SpriteSheetType,
-} from "../../store/features/entities/entitiesTypes";
-import { CoordinateInput } from "../ui/form/CoordinateInput";
 import { Label } from "../ui/form/Label";
 import {
-  metaspriteTileSelectors,
   musicSelectors,
-  spriteSheetSelectors,
 } from "../../store/features/entities/entitiesState";
-import entitiesActions from "../../store/features/entities/entitiesActions";
 import editorActions from "../../store/features/editor/editorActions";
 import { RootState } from "../../store/configureStore";
-import castEventValue from "../../lib/helpers/castEventValue";
-import { Button } from "../ui/buttons/Button";
-import { NumberField } from "../ui/form/NumberField";
-import { SidebarHeader } from "../ui/form/SidebarHeader";
 import { Input } from "../ui/form/Input";
+import { InstrumentDutyEditor } from "./InstrumentDutyEditor";
+import { InstrumentWaveEditor } from "./InstrumentWaveEditor";
+import { InstrumentNoiseEditor } from "./InstrumentNoiseEditor";
+import { Song } from "../../lib/helpers/uge/song/Song";
+import { DutyInstrument } from "../../lib/helpers/uge/song/DutyInstrument";
+import { NoiseInstrument } from "../../lib/helpers/uge/song/NoiseInstrument";
+import { WaveInstrument } from "../../lib/helpers/uge/song/WaveInstrument";
+import castEventValue from "../../lib/helpers/castEventValue";
+import l10n from "../../lib/helpers/l10n";
 
 interface SongEditorProps {
   id: string;
-  data?: any;
+  data: Song | null;
 }
 
-interface SpriteImportTypeOption {
-  value: SpriteSheetType;
-  label: string;
-}
+const renderInstrumentEditor = (instrumentData: DutyInstrument | NoiseInstrument | WaveInstrument | null) => {
+  if (instrumentData instanceof DutyInstrument) return <InstrumentDutyEditor id={`instrument_${instrumentData?.index}`} instrument={instrumentData} />
 
+  if (instrumentData instanceof NoiseInstrument) return <InstrumentNoiseEditor id={`instrument_${instrumentData?.index}`} instrument={instrumentData} />
+
+  if (instrumentData instanceof WaveInstrument) return <InstrumentWaveEditor id={`instrument_${instrumentData?.index}`} instrument={instrumentData} />
+}
 
 export const SongEditor = ({
   id,
   data,
 }: SongEditorProps) => {
-  const song = useSelector((state: RootState) =>
-    musicSelectors.selectById(state, id)
+  const selectedInstrument = useSelector(
+    (state: RootState) => state.editor.selectedInstrument
   );
-  const selectedTileIds = useSelector(
-    (state: RootState) => state.editor.selectedMetaspriteTileIds
-  );
-  const metaspriteTile = useSelector((state: RootState) =>
-    metaspriteTileSelectors.selectById(state, selectedTileIds[0])
-  );
-  const selectedTileId = selectedTileIds[0];
 
   const dispatch = useDispatch();
 
-  const selectSidebar = () => {};
+  const selectSidebar = () => { };
 
-  const onChangeFieldInput = <T extends keyof SpriteSheet>(key: T) => (
+  const onChangeFieldInput = <T extends keyof Song>(key: T) => (
     e:
       | React.ChangeEvent<HTMLInputElement>
       | React.ChangeEvent<HTMLTextAreaElement>
   ) => {
     const editValue = castEventValue(e);
-    dispatch(
-      entitiesActions.editSpriteSheet({
-        spriteSheetId: id,
-        changes: {
-          [key]: editValue,
-        },
-      })
-    );
+    // dispatch(
+    //   entitiesActions.editSpriteSheet({
+    //     spriteSheetId: id,
+    //     changes: {
+    //       [key]: editValue,
+    //     },
+    //   })
+    // );
   };
 
-  const showBoundingBox = useCallback(() => {
-    dispatch(editorActions.setShowSpriteBoundingBox(true));
-  }, []);
+  let instrumentData: DutyInstrument | NoiseInstrument | WaveInstrument | null = null;
+  if (data) {
+    const selectedInstrumentId = parseInt(selectedInstrument.id);
+    switch (selectedInstrument.type) {
+      case "instrument":
+        instrumentData = data[`duty_instruments`][selectedInstrumentId];
+        break;
+      case "noise":
+        instrumentData = data[`noise_instruments`][selectedInstrumentId];
+        break;
+      case "wave":
+        instrumentData = data[`wave_instruments`][selectedInstrumentId];
+        break;
+    }
+  }
+  console.log(instrumentData);
 
-  const hideBoundingBox = useCallback(() => {
-    dispatch(editorActions.setShowSpriteBoundingBox(false));
-  }, []);
-
-  if (!song) {
+  if (!data || !instrumentData) {
     return null;
   }
 
@@ -117,7 +115,7 @@ export const SongEditor = ({
           </FormHeader>
 
           <FormRow>
-            <Label htmlFor="artist">Artist</Label>
+            <Label htmlFor="artist">{l10n("FIELD_ARTIST")}</Label>
           </FormRow>
           <FormRow>
             <Input
@@ -125,102 +123,43 @@ export const SongEditor = ({
               value={data?.artist}
             />
           </FormRow>
-          {/* <FormRow>
-            <Label>Sprite Canvas</Label>
+          <FormRow>
+            <Label htmlFor="ticks_per_row">{l10n("FIELD_TEMPO")}</Label>
           </FormRow>
           <FormRow>
-            <CoordinateInput
-              name="canvasWidth"
-              coordinate="w"
-              value={sprite.canvasWidth}
-              placeholder="16"
-              min={16}
-              max={160}
-              step={16}
-              onChange={onChangeFieldInput("canvasWidth")}
-            />
-            <CoordinateInput
-              name="canvasHeight"
-              coordinate="h"
-              value={sprite.canvasHeight}
-              placeholder="16"
-              min={16}
-              max={144}
-              step={8}
-              onChange={onChangeFieldInput("canvasHeight")}
+            <Input
+              name="ticks_per_row"
+              type="number"
+              value={data?.ticks_per_row}
+              min={0}
+              max={20}
             />
           </FormRow>
-
           <FormDivider />
-
-          <div
-            onMouseEnter={showBoundingBox}
-            onMouseLeave={hideBoundingBox}
-          >
-            <FormRow>
-              <Label>Collision Bounding Box</Label>
-            </FormRow>
-            <FormRow>
-              <CoordinateInput
-                name="boundsX"
-                coordinate="x"
-                value={sprite.boundsX}
-                placeholder="0"
-                min={-96}
-                max={96}
-                onChange={onChangeFieldInput("boundsX")}
-              />
-              <CoordinateInput
-                name="boundsY"
-                coordinate="y"
-                value={sprite.boundsY}
-                placeholder="0"
-                min={-96}
-                max={96}
-                onChange={onChangeFieldInput("boundsY")}
-              />
-            </FormRow>
-            <FormRow>
-              <CoordinateInput
-                name="boundsWidth"
-                coordinate="w"
-                value={sprite.boundsWidth}
-                placeholder="16"
-                min={0}
-                max={128}
-                onChange={onChangeFieldInput("boundsWidth")}
-              />
-              <CoordinateInput
-                name="boundsHeight"
-                coordinate="h"
-                value={sprite.boundsHeight}
-                placeholder="16"
-                min={0}
-                max={128}
-                onChange={onChangeFieldInput("boundsHeight")}
-              />
-            </FormRow>
-          </div>
-
-          <FormSectionTitle>Idle Right</FormSectionTitle>
-          <FormRow>
-            <NumberField
-              name="x"
-              label="Animation Speed"
-              value={sprite.boundsWidth}
-              placeholder="0"
-              min={-96}
-              max={96}
-              onChange={onChangeFieldInput("boundsWidth")}
+          <FormHeader>
+            <EditableText
+              name="instrumentName"
+              placeholder="Instrument"
+              value={instrumentData ? instrumentData.name : ""}
+              onChange={onChangeFieldInput("name")}
             />
-          </FormRow>
 
-        
-          <FormDivider />
-          <FormRow>
-            <Button>Autodetect Animation Frames</Button>
-          </FormRow> */}
-
+            <DropdownButton
+              size="small"
+              variant="transparent"
+              menuDirection="right"
+            >
+              {/* <MenuItem onClick={onCopyVar}>
+                {l10n("MENU_VARIABLE_COPY_EMBED")}
+              </MenuItem>
+              <MenuItem onClick={onCopyChar}>
+                {l10n("MENU_VARIABLE_COPY_EMBED_CHAR")}
+              </MenuItem> */}
+            </DropdownButton>
+          </FormHeader>
+          {
+            renderInstrumentEditor(instrumentData)
+          }
         </FormContainer>
       </SidebarColumn>
     </Sidebar>

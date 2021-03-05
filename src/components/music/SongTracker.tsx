@@ -18,6 +18,7 @@ interface SongTrackerProps {
 
 const Wrapper = styled.div`
   white-space: nowrap;
+  background: ${(props) => props.theme.colors.sidebar.background};
 `;
 
 export const SongTracker = ({
@@ -37,7 +38,6 @@ export const SongTracker = ({
     list.current.children[playbackState[1]]?.scrollIntoView();
   }
 
-
   return (
     <div>
       <div style={{ position: "relative" }}>
@@ -54,7 +54,7 @@ export const SongTracker = ({
         />
       </div>
       <SplitPaneVerticalDivider />
-      <div style={{ position: "relative", overflow: "auto", flexGrow: 1, height: height }}>
+      <div style={{ position: "relative", overflow: "auto", flexGrow: 1, height }}>
         <Wrapper
           ref={list}
         >

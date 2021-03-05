@@ -216,7 +216,7 @@ const MusicPage = () => {
             height={windowHeight - 38}
             defaultFirst
             instruments={songData ? songData.duty_instruments : []}
-            noise={songData ? songData.noise_instruments : []}
+            noises={songData ? songData.noise_instruments : []}
             waves={songData ? songData.wave_instruments : []}
           />
         </div>
