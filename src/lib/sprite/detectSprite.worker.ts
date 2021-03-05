@@ -1,19 +1,21 @@
+import { imageToIndexedImage } from "../tiles/indexedImage";
 import {
-  imageToIndexedImage,
   indexedImageToSprites,
   spriteAlignmentOffsets,
   autoHint2,
   spritesToTiles2,
   clusterSprites,
+  spriteDataIndexFn,
 } from "./spriteData";
 
-const workerCtx: Worker = self as any;
+declare const self: Worker;
+const workerCtx: Worker = self;
 
 workerCtx.onmessage = async (evt) => {
   const src = evt.data as string;
   const imgblob = await fetch(src).then((r) => r.blob());
   const img = await createImageBitmap(imgblob);
-  const indexedImage = imageToIndexedImage(img);
+  const indexedImage = imageToIndexedImage(img, spriteDataIndexFn);
   const spriteDefs = indexedImageToSprites(indexedImage);
   const alignmentOffsets = spriteAlignmentOffsets(spriteDefs);
   const hintTileDefs = autoHint2(indexedImage);

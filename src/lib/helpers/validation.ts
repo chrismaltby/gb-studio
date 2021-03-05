@@ -1,8 +1,8 @@
 import l10n from "./l10n";
 import { divisibleBy8 } from "./8bit";
 import { assetFilename } from "./gbstudio";
-import ggbgfx from "../compiler/ggbgfx";
 import { Background } from "../../store/features/entities/entitiesTypes";
+import { readFileToTilesDataArray, toTileLookup } from "../tiles/tileData";
 
 const MAX_IMAGE_WIDTH = 2040;
 const MAX_IMAGE_HEIGHT = 2040;
@@ -24,7 +24,8 @@ export const getBackgroundInfo = async (
   let tilesetLength = precalculatedTilesetLength;
   if (!tilesetLength) {
     const filename = assetFilename(projectPath, "backgrounds", background);
-    const tilesetLookup = await ggbgfx.imageToTilesetLookup(filename);
+    const tileData = await readFileToTilesDataArray(filename);
+    const tilesetLookup = toTileLookup(tileData);
     tilesetLength = Object.keys(tilesetLookup).length;
   }
 

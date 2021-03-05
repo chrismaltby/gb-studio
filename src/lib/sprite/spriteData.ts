@@ -1,10 +1,15 @@
 import { MetaspriteTile } from "../../store/features/entities/entitiesTypes";
-
-export type IndexedImage = {
-  width: number;
-  height: number;
-  data: Uint8Array;
-};
+import {
+  cloneIndexedImage,
+  flipIndexedImageX,
+  flipIndexedImageY,
+  ImageIndexFunction,
+  IndexedImage,
+  makeIndexedImage,
+  readFileToIndexedImage,
+  sliceIndexedImage,
+  toIndex,
+} from "../tiles/indexedImage";
 
 export type OptimisedTile = {
   tile: number;
@@ -56,83 +61,19 @@ enum Color {
   Unknown = 255,
 }
 
-export const imageToIndexedImage = (img: ImageBitmap): IndexedImage => {
-  const output: IndexedImage = {
-    width: img.width,
-    height: img.height,
-    data: new Uint8Array(img.width * img.height),
-  };
-
-  const canvas = new OffscreenCanvas(img.width, img.height);
-  const ctx = canvas.getContext("2d");
-  if (!ctx) {
-    return output;
+export const spriteDataIndexFn: ImageIndexFunction = (_r, g, b, _a) => {
+  if (b >= 200 && g < 20) {
+    return Color.Divider;
+  } else if (g >= 249) {
+    return Color.Transparent;
+  } else if (g > 200) {
+    return Color.Light;
+  } else if (g > 100) {
+    return Color.Mid;
+  } else {
+    return Color.Dark;
   }
-  ctx.drawImage(img, 0, 0);
-  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  let ii = 0;
-  for (let i = 0; i < imageData.data.length; i += 4) {
-    if (imageData.data[i + 2] >= 200 && imageData.data[i + 1] < 20) {
-      output.data[ii] = Color.Divider;
-    } else if (imageData.data[i + 1] >= 249) {
-      output.data[ii] = Color.Transparent;
-    } else if (imageData.data[i + 1] > 200) {
-      output.data[ii] = Color.Light;
-    } else if (imageData.data[i + 1] > 100) {
-      output.data[ii] = Color.Mid;
-    } else {
-      output.data[ii] = Color.Dark;
-    }
-    ii++;
-  }
-
-  return output;
 };
-
-const sliceIndexedImage = (
-  inData: IndexedImage,
-  startX: number,
-  startY: number,
-  width: number,
-  height: number
-): IndexedImage => {
-  const output = makeIndexedImage(width, height);
-  const inWidth = inData.width;
-  const inHeight = inData.height;
-
-  let ii = 0;
-  for (let y = startY; y < startY + height; y++) {
-    for (let x = startX; x < startX + width; x++) {
-      if (x < inWidth && y < inHeight && x >= 0 && y >= 0) {
-        const i = toIndex(x, y, inData);
-        output.data[ii] = inData.data[i];
-      } else {
-        output.data[ii] = Color.Transparent;
-      }
-      ii++;
-    }
-  }
-  return output;
-};
-
-const makeIndexedImage = (width: number, height: number): IndexedImage => {
-  return {
-    width,
-    height,
-    data: new Uint8Array(width * height),
-  };
-};
-
-const cloneIndexedImage = (original: IndexedImage): IndexedImage => {
-  return {
-    width: original.width,
-    height: original.height,
-    data: new Uint8Array(original.data),
-  };
-};
-
-const toIndex = (x: number, y: number, image: IndexedImage): number =>
-  x + y * image.width;
 
 const removeIndexedImageMask = (
   inData: IndexedImage,
@@ -176,36 +117,6 @@ const blitIndexedImageData = (
     }
   }
 
-  return output;
-};
-
-const flipIndexedImageX = (inData: IndexedImage): IndexedImage => {
-  const output = makeIndexedImage(inData.width, inData.height);
-  const width = inData.width;
-  const height = inData.height;
-  let ii = 0;
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      const i = toIndex(width - x - 1, y, inData);
-      output.data[ii] = inData.data[i];
-      ii++;
-    }
-  }
-  return output;
-};
-
-const flipIndexedImageY = (inData: IndexedImage): IndexedImage => {
-  const output = makeIndexedImage(inData.width, inData.height);
-  const width = inData.width;
-  const height = inData.height;
-  let ii = 0;
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      const i = toIndex(x, height - y - 1, inData);
-      output.data[ii] = inData.data[i];
-      ii++;
-    }
-  }
   return output;
 };
 
@@ -421,20 +332,24 @@ const isContained = (dataA: IndexedImage, dataB: IndexedImage): boolean => {
 };
 
 export const optimiseTiles = async (
-  src: string,
+  filename: string,
   spriteWidth: number,
   spriteHeight: number,
   metasprites: MetaspriteTile[][]
-) => {
+): Promise<{
+  tiles: IndexedImage[];
+  lookup: Record<string, OptimisedTile | undefined>;
+}> => {
   const tileLookup: Record<string, number> = {};
   const allTiles: IndexedImage[] = [];
   const uniqTiles: IndexedImage[] = [];
   const uniqTileData: IndexedImage[] = [];
   const tileIds: string[] = [];
   const optimisedLookup2: Record<string, OptimisedTile | undefined> = {};
-  const imgblob = await fetch(src).then((r) => r.blob());
-  const img = await createImageBitmap(imgblob);
-  const indexedImage = imageToIndexedImage(img);
+  const indexedImage = await readFileToIndexedImage(
+    filename,
+    spriteDataIndexFn
+  );
 
   for (const myTiles of metasprites) {
     let mask = makeIndexedImage(spriteWidth, spriteHeight);
@@ -884,8 +799,8 @@ export const autoHint2 = (inData: IndexedImage): SliceDef[] => {
     }
   }
   // Merge vertical
-  for (var y = 0; y <= tileHeight - 4; y++) {
-    for (var x = 0; x <= tileWidth - 1; x++) {
+  for (let y = 0; y <= tileHeight - 4; y++) {
+    for (let x = 0; x <= tileWidth - 1; x++) {
       const sliced = sliceIndexedImage(inData, x * 8, y * 8, 8, 32);
       const numTiles = toNumNonEmptyTiles(sliced);
       const trimmed = trimWhitespace(sliced);
@@ -936,8 +851,8 @@ export const autoHint2 = (inData: IndexedImage): SliceDef[] => {
 const getHintDividerY = (inData: IndexedImage): number => {
   const width = inData.width;
   const height = inData.height;
-  for (var y = height - 1; y > 0; y--) {
-    for (var x = 0; x <= width - 2; x++) {
+  for (let y = height - 1; y > 0; y--) {
+    for (let x = 0; x <= width - 2; x++) {
       const i = toIndex(x, y, inData);
       if (inData.data[i] === Color.Divider) {
         return roundUp8(y);
@@ -972,7 +887,7 @@ export const spritesToTiles2 = (
         hintTile
       );
       if (!isIndexedImageStrictEqual(dtmp, hintRemovedSprite)) {
-        let loc2: SpriteTileLocation[] = loc.map((tileLocation) => ({
+        const loc2: SpriteTileLocation[] = loc.map((tileLocation) => ({
           ...tileLocation,
           spriteIndex: si,
         }));
@@ -1003,7 +918,7 @@ export const spritesToTiles2 = (
         const slice = sliceIndexedImage(inData, tx * 8, ty * 16, 8, 16);
         if (!isBlankIndexedImage(slice)) {
           let found = false;
-          for (let tileDef of tileDefs) {
+          for (const tileDef of tileDefs) {
             const tile = tileDef.data;
             const sliceFX = flipIndexedImageX(slice);
             const sliceFY = flipIndexedImageY(slice);
@@ -1204,12 +1119,12 @@ export const roundDown8 = (v: number): number => Math.floor(v / 8) * 8;
 export const roundUp16 = (x: number): number => Math.ceil(x / 16) * 16;
 export const roundUp8 = (x: number): number => Math.ceil(x / 8) * 8;
 
-const uniqWith = <T extends {}>(
+const uniqWith = <T extends unknown>(
   arr: T[],
   comparator: (a: T, b: T) => boolean
 ) => {
-  let uniques = [];
-  for (let a of arr) {
+  const uniques = [];
+  for (const a of arr) {
     if (uniques.findIndex((u) => comparator(a, u)) === -1) {
       uniques.push(a);
     }

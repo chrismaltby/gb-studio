@@ -212,3 +212,16 @@ export const animationMapBySpriteType = <T, U>(
     return fn(items[index], false);
   });
 };
+
+export const toEngineOrder = <T>(arr: T[]): T[] => {
+  return [
+    arr[3], // Down
+    arr[0], // Right
+    arr[2], // Up
+    arr[1], // Left
+    arr[7], // Down Moving
+    arr[4], // Right Moving
+    arr[6], // Up Moving
+    arr[5], // Left Moving
+  ];
+};

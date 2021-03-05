@@ -1,6 +1,8 @@
 import { copy, readJSON, readFile, writeFile } from "fs-extra";
 import Path from "path";
 import os from "os";
+import rimraf from "rimraf";
+import { promisify } from "util";
 import { program } from "commander";
 import { emulatorRoot, engineRoot } from "../consts";
 import { EngineFieldSchema } from "../store/features/engine/engineState";
@@ -8,6 +10,8 @@ import { initPlugins } from "../lib/plugins/plugins";
 import compileData from "../lib/compiler/compileData";
 import ejectBuild from "../lib/compiler/ejectBuild";
 import makeBuild from "../lib/compiler/makeBuild";
+
+const rmdir = promisify(rimraf);
 
 declare var VERSION: any;
 
@@ -73,6 +77,8 @@ const main = async (
       const dataSrcOutPath = Path.join(destination, "src", "data");
       const dataIncludeTmpPath = Path.join(tmpBuildDir, "include", "data");
       const dataIncludeOutPath = Path.join(destination, "include", "data");
+      await rmdir(dataSrcOutPath);
+      await rmdir(dataIncludeOutPath);
       await copy(dataSrcTmpPath, dataSrcOutPath);
       await copy(dataIncludeTmpPath, dataIncludeOutPath);
     } else {

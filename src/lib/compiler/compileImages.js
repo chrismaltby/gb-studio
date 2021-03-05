@@ -1,8 +1,13 @@
 import { assetFilename } from "../helpers/gbstudio";
 import getFileModifiedTime from "../helpers/fs/getModifiedTime";
 import { getBackgroundInfo } from "../helpers/validation";
-
-const ggbgfx = require("./ggbgfx");
+import {
+  mergeTileLookups,
+  readFileToTilesDataArray,
+  tileLookupToTileData,
+  tilesAndLookupToTilemap,
+  toTileLookup,
+} from "../tiles/tileData";
 
 const MAX_SIZE = 9999999999;
 const MAX_TILESET_TILES = 16 * 12;
@@ -15,6 +20,7 @@ let lastOutputIds = "";
 const compileImages = async (imgs, projectPath, tmpPath, { warnings }) => {
   const tilesetLookups = [];
   const tilesetIndexes = [];
+  const imgTiles = [];
   const output = {
     tilesets: {},
     tilemaps: {},
@@ -30,27 +36,38 @@ const compileImages = async (imgs, projectPath, tmpPath, { warnings }) => {
 
     const imageModifiedTime = await getFileModifiedTime(filename);
 
-    if(imageBuildCache[img.id] && imageBuildCache[img.id].timestamp >= imageModifiedTime) {
+    if (
+      imageBuildCache[img.id] &&
+      imageBuildCache[img.id].timestamp >= imageModifiedTime
+    ) {
       tilesetLookup = imageBuildCache[img.id].data;
+      imgTiles.push(imageBuildCache[img.id].tileData);
     } else {
-      tilesetLookup = await ggbgfx.imageToTilesetLookup(filename);
+      const tileData = await readFileToTilesDataArray(filename);
+      tilesetLookup = toTileLookup(tileData);
       imageBuildCache[img.id] = {
         data: tilesetLookup,
-        timestamp: imageModifiedTime
-      }
+        tileData,
+        timestamp: imageModifiedTime,
+      };
+      imgTiles.push(tileData);
       uncachedCount++;
     }
 
     const tilesetLength = Object.keys(tilesetLookup).length;
     tilesetIndexes[i] = i;
 
-    const backgroundInfo = await getBackgroundInfo(img, projectPath, tilesetLength);
+    const backgroundInfo = await getBackgroundInfo(
+      img,
+      projectPath,
+      tilesetLength
+    );
     const backgroundWarnings = backgroundInfo.warnings;
     if (backgroundWarnings.length > 0) {
       backgroundWarnings.forEach((warning) => {
-        warnings(`${img.filename}: ${warning}`)
-      })
-    }    
+        warnings(`${img.filename}: ${warning}`);
+      });
+    }
 
     tilesetLookups.push(tilesetLookup);
   }
@@ -59,7 +76,7 @@ const compileImages = async (imgs, projectPath, tmpPath, { warnings }) => {
   // no need to recalculate image tiles and tile lookups,
   // just reuse last compile
   const ids = imgs.map((img) => img.id).join();
-  if(uncachedCount === 0 && ids === lastOutputIds) {
+  if (uncachedCount === 0 && ids === lastOutputIds) {
     return lastOutput;
   }
 
@@ -70,10 +87,11 @@ const compileImages = async (imgs, projectPath, tmpPath, { warnings }) => {
     let minIndex = null;
 
     for (let j = i + 1; j < imgs.length; j++) {
-      const mergedLookup = await ggbgfx.mergeTileLookups([
+      const mergedLookup = mergeTileLookups([
         tilesetLookups[i],
         tilesetLookups[j],
       ]);
+
       const mergedLength = Object.keys(mergedLookup).length;
       const diffLength =
         Object.keys(mergedLookup).length -
@@ -116,19 +134,14 @@ const compileImages = async (imgs, projectPath, tmpPath, { warnings }) => {
   // Output lookups to files
   for (let i = 0; i < imgs.length; i++) {
     if (tilesetLookups[i]) {
-      await ggbgfx.tileLookupToImage(
-        tilesetLookups[i],
-        `${tmpPath}/tileset_${i}.png`
-      );
-
-      output.tilesets[i] = ggbgfx.tilesLookupToTilesIntArray(tilesetLookups[i]);
+      output.tilesets[i] = tileLookupToTileData(tilesetLookups[i]);
     }
   }
 
   for (let i = 0; i < imgs.length; i++) {
-    const tilemap = await ggbgfx.imageAndTilesetToTilemapIntArray(
-      assetFilename(projectPath, "backgrounds", imgs[i]),
-      `${tmpPath}/tileset_${tilesetIndexes[i]}.png`
+    const tilemap = tilesAndLookupToTilemap(
+      imgTiles[i],
+      tilesetLookups[tilesetIndexes[i]]
     );
     output.tilemaps[imgs[i].id] = tilemap;
     output.tilemapsTileset[imgs[i].id] = tilesetIndexes[i];

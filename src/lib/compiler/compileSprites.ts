@@ -4,14 +4,17 @@ import getFileModifiedTime from "../helpers/fs/getModifiedTime";
 import {
   optimiseTiles,
   indexedImageTo2bppSpriteData,
-  IndexedImage,
 } from "../sprite/spriteData";
-import { animationMapBySpriteType } from "../../components/sprites/helpers";
+import {
+  animationMapBySpriteType,
+  toEngineOrder,
+} from "../../components/sprites/helpers";
 import {
   MetaspriteTile,
   ObjPalette,
   SpriteAnimationType,
 } from "../../store/features/entities/entitiesTypes";
+import { IndexedImage } from "../tiles/indexedImage";
 
 const S_PALETTE = 0x10;
 const S_FLIPX = 0x20;
@@ -82,13 +85,12 @@ const compileSprites = async (
   spriteSheets: SpriteSheetData[],
   projectRoot: string,
   { warnings }: CompileSpriteOptions
-) => {
+): Promise<PrecompiledSpriteSheetData[]> => {
   const spriteData = await promiseLimit(
     10,
     spriteSheets.map((spriteSheet) => {
       return async () => {
         const filename = assetFilename(projectRoot, "sprites", spriteSheet);
-        const filepath = `file://${filename}?_v=${spriteSheet._v}`;
 
         const metasprites = spriteSheet.animations
           .map((animation) => {
@@ -97,82 +99,63 @@ const compileSprites = async (
           .flat();
 
         const { tiles, lookup } = await optimiseTiles(
-          filepath,
+          filename,
           spriteSheet.canvasWidth,
           spriteSheet.canvasHeight,
           metasprites
         );
 
-        const metaspriteDefs = metasprites.map((tiles) => {
-          return tiles
-            .map((tile) => {
-              const optimisedTile = lookup[tile.id];
-              if (!optimisedTile) {
-                return null;
-              }
-              return {
-                tile: optimisedTile.tile,
-                x: tile.x,
-                y: tile.y,
-                attrs: makeProps(
-                  tile.objPalette,
-                  tile.paletteIndex,
-                  optimisedTile.flipX,
-                  optimisedTile.flipY
-                ),
-              };
-            })
-            .filter((tile) => tile);
-        });
-
-        const animationDefs: SpriteTileData[][][] = animationMapBySpriteType(
-          spriteSheet.animations,
-          spriteSheet.animationType,
-          spriteSheet.flipLeft,
-          (animation, flip) => {
-            return animation.frames.map((frame) => {
-              let currentX = 0;
-              let currentY = 0;
-              return frame.tiles
-                .map((tile) => {
-                  const optimisedTile = lookup[tile.id];
-                  if (!optimisedTile) {
-                    return null;
-                  }
-                  if (flip) {
+        const animationDefs: SpriteTileData[][][] = toEngineOrder(
+          animationMapBySpriteType(
+            spriteSheet.animations,
+            spriteSheet.animationType,
+            spriteSheet.flipLeft,
+            (animation, flip) => {
+              return animation.frames.map((frame) => {
+                let currentX = 0;
+                let currentY = 0;
+                return [...frame.tiles]
+                  .reverse()
+                  .map((tile) => {
+                    const optimisedTile = lookup[tile.id];
+                    if (!optimisedTile) {
+                      return null;
+                    }
+                    if (flip) {
+                      const data: SpriteTileData = {
+                        tile: optimisedTile.tile,
+                        x: 8 - tile.x - currentX,
+                        y: -tile.y - currentY,
+                        props: makeProps(
+                          tile.objPalette,
+                          tile.paletteIndex,
+                          !optimisedTile.flipX,
+                          optimisedTile.flipY
+                        ),
+                      };
+                      currentX = 8 - tile.x;
+                      currentY = -tile.y;
+                      return data;
+                    }
                     const data: SpriteTileData = {
                       tile: optimisedTile.tile,
-                      x: 8 - tile.x - currentX,
+                      x: tile.x - currentX,
                       y: -tile.y - currentY,
                       props: makeProps(
                         tile.objPalette,
                         tile.paletteIndex,
-                        !optimisedTile.flipX,
+                        optimisedTile.flipX,
                         optimisedTile.flipY
                       ),
                     };
-                    currentX = 8 - tile.x;
+                    currentX = tile.x;
                     currentY = -tile.y;
                     return data;
-                  }
-                  const data: SpriteTileData = {
-                    tile: optimisedTile.tile,
-                    x: tile.x - currentX,
-                    y: -tile.y - currentY,
-                    props: makeProps(
-                      tile.objPalette,
-                      tile.paletteIndex,
-                      optimisedTile.flipX,
-                      optimisedTile.flipY
-                    ),
-                  };
-                  currentX = tile.x;
-                  currentY = -tile.y;
-                  return data;
-                })
-                .filter((tile) => tile) as SpriteTileData[];
-            });
-          }
+                  })
+                  .filter((tile) => tile) as SpriteTileData[];
+              });
+            }
+          )
         );
 
         // const uniqFrames: SpriteTileData[][] = [];
@@ -197,19 +180,13 @@ const compileSprites = async (
             start = matchIndex;
           } else {
             start = orderedFrames.length;
-            orderedFrames.push.apply(orderedFrames, uniqIndexes);
+            orderedFrames.push(...uniqIndexes);
           }
           return {
             start,
             end: start + Math.max(0, uniqIndexes.length - 1),
           };
         });
-
-        console.log("metaspriteDefs", metaspriteDefs);
-        console.log("animationDefs", animationDefs);
-        console.log("animations", animationOffsets);
-        console.log("orderedFrames", orderedFrames);
-        console.log("uniqFrames", uniqFrames);
 
         const data = Array.from(
           tiles

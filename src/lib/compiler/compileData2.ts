@@ -11,6 +11,14 @@ import {
   spriteTypeDec,
 } from "./helpers";
 
+interface PrecompiledBackground {
+  name: string;
+  width: number;
+  height: number;
+  tilesetIndex: number;
+  data: Uint8Array;
+}
+
 export const BACKGROUND_TYPE = "const struct background_t";
 export const SPRITESHEET_TYPE = "const struct spritesheet_t";
 export const TILESET_TYPE = "const struct tileset_t";
@@ -557,18 +565,21 @@ export const compileSceneColorsHeader = (scene: any, sceneIndex: number) =>
     `// Scene: ${sceneName(scene, sceneIndex)}\n// Colors`
   );
 
-export const compileTileset = (tileset: any, tilesetIndex: number) =>
+export const compileTileset = (tileset: Uint8Array, tilesetIndex: number) =>
   toStructDataFile(
     TILESET_TYPE,
     tilesetSymbol(tilesetIndex),
     `// Tileset: ${tilesetIndex}`,
     {
       n_tiles: Math.ceil(tileset.length / 16),
-      tiles: tileset.map(toHex),
+      tiles: Array.from(tileset).map(toHex),
     }
   );
 
-export const compileTilesetHeader = (tileset: any, tilesetIndex: number) =>
+export const compileTilesetHeader = (
+  tileset: Uint8Array,
+  tilesetIndex: number
+) =>
   toDataHeader(
     TILESET_TYPE,
     tilesetSymbol(tilesetIndex),
@@ -634,7 +645,10 @@ export const compileSpriteSheetHeader = (
     `// SpriteSheet: ${spriteSheetIndex}`
   );
 
-export const compileBackground = (background: any, backgroundIndex: number) =>
+export const compileBackground = (
+  background: PrecompiledBackground,
+  backgroundIndex: number
+) =>
   toStructDataFile(
     BACKGROUND_TYPE,
     backgroundSymbol(backgroundIndex),
@@ -643,7 +657,7 @@ export const compileBackground = (background: any, backgroundIndex: number) =>
       width: background.width,
       height: background.height,
       tileset: toFarPtr(tilesetSymbol(background.tilesetIndex)),
-      tiles: background.data.map(toHex),
+      tiles: Array.from(background.data).map(toHex),
     },
     [tilesetSymbol(background.tilesetIndex)]
   );
@@ -674,22 +688,40 @@ export const compilePaletteHeader = (palette: any, paletteIndex: number) =>
     `// Palette: ${paletteIndex}`
   );
 
-export const compileFontImage = (data: any) =>
-  toArrayDataFile(DATA_TYPE, "font_image", `// Font`, data.map(toHex), 16);
+export const compileFontImage = (data: Uint8Array) =>
+  toArrayDataFile(
+    DATA_TYPE,
+    "font_image",
+    `// Font`,
+    Array.from(data).map(toHex),
+    16
+  );
 
-export const compileFontImageHeader = (data: any) =>
+export const compileFontImageHeader = (data: Uint8Array) =>
   toArrayDataHeader(DATA_TYPE, "font_image", `// Font`);
 
-export const compileFrameImage = (data: any) =>
-  toArrayDataFile(DATA_TYPE, "frame_image", `// Frame`, data.map(toHex), 16);
+export const compileFrameImage = (data: Uint8Array) =>
+  toArrayDataFile(
+    DATA_TYPE,
+    "frame_image",
+    `// Frame`,
+    Array.from(data).map(toHex),
+    16
+  );
 
-export const compileFrameImageHeader = (data: any) =>
+export const compileFrameImageHeader = (data: Uint8Array) =>
   toArrayDataHeader(DATA_TYPE, "frame_image", `// Frame`);
 
-export const compileCursorImage = (data: any) =>
-  toArrayDataFile(DATA_TYPE, "cursor_image", `// Cursor`, data.map(toHex), 16);
+export const compileCursorImage = (data: Uint8Array) =>
+  toArrayDataFile(
+    DATA_TYPE,
+    "cursor_image",
+    `// Cursor`,
+    Array.from(data).map(toHex),
+    16
+  );
 
-export const compileCursorImageHeader = (data: any) =>
+export const compileCursorImageHeader = (data: Uint8Array) =>
   toArrayDataHeader(DATA_TYPE, "cursor_image", `// Cursor`);
 
 export const compileScriptHeader = (scriptName: string) =>

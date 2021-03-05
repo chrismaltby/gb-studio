@@ -1,9 +1,10 @@
 {
-  "extends": ["eslint-config-airbnb", "react-app", "prettier"],
-  "parser": "babel-eslint",
+  "extends": ["plugin:@typescript-eslint/recommended", "react-app", "prettier"],
+  "parser": "@typescript-eslint/parser",
   "plugins": ["babel"],
   "parserOptions": {
-    "ecmaVersion": 2018
+    "ecmaVersion": 2020,
+    "sourceType": "module"
   },
   "settings": {
     "import/resolver": {
@@ -32,6 +33,8 @@
     "jsx-a11y/no-noninteractive-element-interactions": 0,
     "no-await-in-loop": 0,
     "import/prefer-default-export": 0,
+    "@typescript-eslint/explicit-module-boundary-types": 0,
+    "@typescript-eslint/no-empty-function": 0,
     "camelcase": ["error", {"allow": ["UNSAFE_componentWillReceiveProps"]}]
   },
   "env": {

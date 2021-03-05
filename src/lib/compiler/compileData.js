@@ -8,11 +8,9 @@ import {
 } from "../helpers/eventSystem";
 import compileImages from "./compileImages";
 import { indexBy } from "../helpers/array";
-import ggbgfx from "./ggbgfx";
 import {
   hi,
   lo,
-  decHex16,
   convertHexTo15BitDec,
 } from "../helpers/8bit";
 import compileEntityEvents from "./compileEntityEvents";
@@ -71,6 +69,7 @@ import {
   compileGameGlobalsInclude,
 } from "./compileData2";
 import compileSGBImage from "./sgb";
+import { readFileToTilesData } from "../tiles/tileData";
 
 const indexById = indexBy("id");
 
@@ -202,6 +201,7 @@ const compile = async (
         warnings,
         loop,
         lock,
+        init: scriptTypeCode === "init",
         engineFields: precompiledEngineFields,
         output: [],
       });
@@ -436,7 +436,7 @@ const compile = async (
     (customColorsEnabled ? `#include "data/${paletteSymbol(0)}.h"\n` : "") +
     `\n` +
     `const INT16 start_scene_x = ${((startX || 0) * 8 * 16)};\n` +
-    `const INT16 start_scene_y = ${((startY || 0) * 8 * 16)};\n` +
+    `const INT16 start_scene_y = ${(((startY+1) || 0) * 8 * 16)};\n` +
     `const direction_e start_scene_dir = ${startDirectionX};\n` +
     `const far_ptr_t start_scene = ${toFarPtr(sceneSymbol(startSceneIndex))};\n` +
     (customColorsEnabled ? `const far_ptr_t start_player_palette = ${toFarPtr(paletteSymbol(0))};\n` : "") +
@@ -896,9 +896,9 @@ export const precompileUIImages = async (
     warnings,
   });
 
-  const frameTiles = await ggbgfx.imageToTilesDataIntArray(framePath);
-  const fontTiles = await ggbgfx.imageToTilesDataIntArray(fontPath);
-  const cursorTiles = await ggbgfx.imageToTilesDataIntArray(cursorPath);
+  const frameTiles = await readFileToTilesData(framePath);
+  const fontTiles = await readFileToTilesData(fontPath);
+  const cursorTiles = await readFileToTilesData(cursorPath);
 
   return { frameTiles, fontTiles, cursorTiles };
 };

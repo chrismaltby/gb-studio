@@ -222,6 +222,8 @@ const buildGameMiddleware: Middleware<{}, RootState> = (store) => (
         const dataSrcOutPath = Path.join(exportRoot, "src", "data");
         const dataIncludeTmpPath = Path.join(outputRoot, "include", "data");
         const dataIncludeOutPath = Path.join(exportRoot, "include", "data");
+        await rmdir(dataSrcOutPath);
+        await rmdir(dataIncludeOutPath);
         await copy(dataSrcTmpPath, dataSrcOutPath);
         await copy(dataIncludeTmpPath, dataIncludeOutPath);
       } else {

@@ -15,7 +15,8 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
     entityIndex,
     warnings,
     loop,
-    lock
+    lock,
+    init,
   } = options;
 
   const location = {
@@ -34,6 +35,10 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
   };
 
   const compileEventsWithScriptBuilder = (scriptBuilder, subInput = []) => {
+    if (init) {
+      scriptBuilder.fadeIn();
+    }
+
     // eslint-disable-next-line global-require
     const events = require("../events").default;
     for (let i = 0; i < subInput.length; i++) {
@@ -87,13 +92,13 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
         );
       }
     }
-  }
+  };
 
   const helpers = {
     ...options,
     compileEvents: (scriptBuilder, childInput) => {
       compileEventsWithScriptBuilder(scriptBuilder, childInput);
-    }
+    },
   };
 
   const scriptBuilder = new ScriptBuilder(output, helpers);
@@ -105,7 +110,7 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
   }
 
   compileEventsWithScriptBuilder(scriptBuilder, input);
-  
+
   try {
     if (!branch) {
       if (loop && input.length > 1) {
@@ -131,14 +136,11 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
     return scriptBuilder.toScriptString(scriptName, lock);
   } catch (e) {
     throw new Error(
-      `Compiling failed with error "${e}". ${JSON.stringify(
-        location
-      )}`
+      `Compiling failed with error "${e}". ${JSON.stringify(location)}`
     );
   }
 
   return "";
-
 };
 
 export default compileEntityEvents;

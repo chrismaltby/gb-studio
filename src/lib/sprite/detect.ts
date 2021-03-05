@@ -36,7 +36,7 @@ export const detect = (
   )}?_v=${spriteSheet._v}`;
 
   return new Promise((resolve, reject) => {
-    let failedTimer = setTimeout(() => reject("Detect timeout"), 5000);
+    const failedTimer = setTimeout(() => reject("Detect timeout"), 5000);
     const worker = new DetectSpriteWorker();
     worker.postMessage(filename);
     worker.onmessage = (res: any) => {
