@@ -33,6 +33,19 @@ export type ImageIndexFunction = (
 ) => number;
 
 /**
+ * A wrapper for a slice of an image giving the sliced data and coordinates where the slice was taken
+ */
+export type SliceDef = {
+  data: IndexedImage;
+  coordinates: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
+};
+
+/**
  * Load the given PNG image filename into an IndexedImage using the supplied index function.
  *
  * @param filename A local filename which is read using the NodeJS readFile method
@@ -252,6 +265,72 @@ export const flipIndexedImageY = (inData: IndexedImage): IndexedImage => {
     }
   }
   return output;
+};
+
+export const trimIndexedImage = (
+  inData: IndexedImage,
+  trimValue: number
+): SliceDef => {
+  const width = inData.width;
+  const height = inData.height;
+  let minX = width;
+  let maxX = 0;
+  let minY = height;
+  let maxY = 0;
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const i = toIndex(x, y, inData);
+      if (inData.data[i] !== trimValue) {
+        if (x < minX) {
+          minX = x;
+        }
+        if (x > maxX) {
+          maxX = x;
+        }
+        if (y < minY) {
+          minY = y;
+        }
+        if (y > maxY) {
+          maxY = y;
+        }
+      }
+    }
+  }
+  const sliceW = Math.max(0, maxX - minX + 1);
+  const sliceH = Math.max(0, maxY - minY + 1);
+  return {
+    data: sliceIndexedImage(inData, minX, minY, sliceW, sliceH),
+    coordinates: { x: minX, y: minY, width: sliceW, height: sliceH },
+  };
+};
+
+export const trimIndexedImageHorizontal = (
+  inData: IndexedImage,
+  trimValue: number
+): SliceDef => {
+  const width = inData.width;
+  const height = inData.height;
+  let minX = width;
+  let maxX = 0;
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const i = toIndex(x, y, inData);
+      if (inData.data[i] !== trimValue) {
+        if (x < minX) {
+          minX = x;
+        }
+        if (x > maxX) {
+          maxX = x;
+        }
+      }
+    }
+  }
+  const sliceW = Math.max(0, maxX - minX + 1);
+  const sliceH = inData.height;
+  return {
+    data: sliceIndexedImage(inData, minX, 0, sliceW, sliceH),
+    coordinates: { x: minX, y: 0, width: sliceW, height: sliceH },
+  };
 };
 
 const bin2 = (value: Color) => value.toString(2).padStart(2, "0");
