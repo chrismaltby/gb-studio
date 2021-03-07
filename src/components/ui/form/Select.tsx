@@ -156,6 +156,10 @@ const OptionLabelWithPreviewWrapper = styled.div`
 const OptionLabelPreview = styled.div`
   height: 1px;
   margin-right: 2px;
+
+  svg {
+    max-width: 14px;
+  }
 `;
 
 const OptionLabelPreviewOffset = styled.div`
@@ -192,6 +196,10 @@ const SingleValueWithPreviewWrapper = styled.div`
 const SingleValuePreview = styled.div`
   height: 1px;
   margin-right: 2px;
+
+  svg {
+    max-width: 14px;
+  }
 `;
 
 const SingleValuePreviewOffset = styled.div`

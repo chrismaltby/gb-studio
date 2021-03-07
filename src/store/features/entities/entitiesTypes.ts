@@ -67,6 +67,17 @@ export type Background = {
   _v: number;
 };
 
+export type Font = {
+  id: string;
+  name: string;
+  filename: string;
+  width: number;
+  height: number;
+  plugin?: string;
+  inode: string;
+  _v: number;
+};
+
 export type MusicSettings = {
   disableSpeedConversion?: boolean;
 };
@@ -199,6 +210,7 @@ export type ProjectEntitiesData = {
   palettes: Palette[];
   customEvents: CustomEvent[];
   music: Music[];
+  fonts: Font[];
   variables: Variable[];
 };
 
@@ -214,6 +226,7 @@ export interface EntitiesState {
   palettes: EntityState<Palette>;
   customEvents: EntityState<CustomEvent>;
   music: EntityState<Music>;
+  fonts: EntityState<Font>;
   variables: EntityState<Variable>;
   engineFieldValues: EntityState<EngineFieldValue>;
 }

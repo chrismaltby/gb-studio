@@ -1,6 +1,7 @@
 import { Dictionary } from "@reduxjs/toolkit";
 import flatten from "lodash/flatten";
 import { SPRITE_TYPE_STATIC } from "../../consts";
+import { FontData } from "../fonts/fontData";
 import { PrecompiledSpriteSheetData } from "./compileSprites";
 import {
   actorFramesPerDir,
@@ -27,6 +28,9 @@ export const ACTOR_TYPE = "const struct actor_t";
 export const SCENE_TYPE = "const struct scene_t";
 export const DATA_TYPE = "const unsigned char";
 export const FARPTR_TYPE = "const far_ptr_t";
+export const FONT_FLAG_RECODE_7BIT = "RECODE_7BIT";
+export const FONT_FLAG_FONT_VWF = "FONT_VWF";
+export const FONT_FLAG_FONT_VWF_1BIT = "FONT_VWF_1BIT";
 
 const INDENT_SPACES = 4;
 
@@ -110,6 +114,11 @@ export const spriteSheetSymbol = (spriteSheetIndex: number): string =>
 
 export const paletteSymbol = (paletteIndex: number): string =>
   `palette_${paletteIndex}`;
+
+export const fontSymbol = (fontIndex: number): string => `font_${fontIndex}`;
+
+const toFlags = (flags: string[]): string =>
+  flags.length > 0 ? flags.join("| ") : "0";
 
 const toDataHeader = (type: string, symbol: string, comment: string) =>
   includeGuard(
@@ -688,17 +697,47 @@ export const compilePaletteHeader = (palette: any, paletteIndex: number) =>
     `// Palette: ${paletteIndex}`
   );
 
-export const compileFontImage = (data: Uint8Array) =>
-  toArrayDataFile(
-    DATA_TYPE,
-    "font_image",
-    `// Font`,
-    Array.from(data).map(toHex),
-    16
-  );
+export const compileFont = (
+  font: FontData,
+  fontIndex: number
+) => `#pragma bank 255
+// Font: ${font.name}
+  
+#include "gbs_types.h"
 
-export const compileFontImageHeader = (data: Uint8Array) =>
-  toArrayDataHeader(DATA_TYPE, "font_image", `// Font`);
+static const UBYTE ${fontSymbol(fontIndex)}_table[] = {
+${chunk(Array.from(font.table.map(toHex)), 16)
+  .map((r) => " ".repeat(INDENT_SPACES) + r.join(", "))
+  .join(",\n")}
+};
+
+static const UBYTE ${fontSymbol(fontIndex)}_widths[] = {
+${chunk(Array.from(font.widths), 16)
+  .map((r) => " ".repeat(INDENT_SPACES) + r.join(", "))
+  .join(",\n")}
+};
+
+static const UBYTE ${fontSymbol(fontIndex)}_bitmaps[] = {
+${chunk(Array.from(Array.from(font.data).map(toHex)), 16)
+  .map((r) => " ".repeat(INDENT_SPACES) + r.join(", "))
+  .join(",\n")}
+};
+
+${toBankSymbolInit(fontSymbol(fontIndex))};
+const font_desc_t ${fontSymbol(fontIndex)} = {
+  ${toFlags([
+    ...(font.table.length <= 128 ? [FONT_FLAG_RECODE_7BIT] : []),
+    ...(font.isVariableWidth ? [FONT_FLAG_FONT_VWF] : []),
+    ...(font.is1Bit && font.isVariableWidth ? [FONT_FLAG_FONT_VWF_1BIT] : []),
+  ])}, 
+  ${fontSymbol(fontIndex)}_table,
+  ${fontSymbol(fontIndex)}_widths,
+  ${fontSymbol(fontIndex)}_bitmaps
+};
+`;
+
+export const compileFontHeader = (data: FontData, fontIndex: number) =>
+  toArrayDataHeader(DATA_TYPE, fontSymbol(fontIndex), `// Font`);
 
 export const compileFrameImage = (data: Uint8Array) =>
   toArrayDataFile(

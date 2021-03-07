@@ -30,6 +30,7 @@ import {
 } from "./helpers";
 import compileSprites from "./compileSprites";
 import compileAvatars from "./compileAvatars";
+import compileFonts from "./compileFonts";
 import { precompileEngineFields } from "../helpers/engineFields";
 import {
   compileBackground,
@@ -53,8 +54,8 @@ import {
   paletteSymbol,
   compilePalette,
   compilePaletteHeader,
-  compileFontImage,
-  compileFontImageHeader,
+  compileFont,
+  compileFontHeader,
   compileFrameImage,
   compileFrameImageHeader,
   compileCursorImage,
@@ -88,6 +89,7 @@ export const EVENT_MSG_PRE_AVATARS = "Preparing avatars...";
 export const EVENT_MSG_PRE_SCENES = "Preparing scenes...";
 export const EVENT_MSG_PRE_EVENTS = "Preparing events...";
 export const EVENT_MSG_PRE_MUSIC = "Preparing music...";
+export const EVENT_MSG_PRE_FONTS = "Preparing fonts...";
 
 export const EVENT_MSG_PRE_COMPLETE = "Preparation complete";
 export const EVENT_MSG_COMPILING_EVENTS = "Compiling events...";
@@ -120,8 +122,6 @@ const compile = async (
   const precompiledEngineFields = precompileEngineFields(engineFields);
 
   // Add UI data
-  output["font_image.c"] = compileFontImage(precompiled.fontTiles);
-  output["font_image.h"] = compileFontImageHeader(precompiled.fontTiles);
   output["frame_image.c"] = compileFrameImage(precompiled.frameTiles);
   output["frame_image.h"] = compileFrameImageHeader(precompiled.frameTiles);
   output["cursor_image.c"] = compileCursorImage(precompiled.cursorTiles);
@@ -186,6 +186,7 @@ const compile = async (
         sceneIndex,
         scenes: precompiled.sceneData,
         music: precompiled.usedMusic,
+        fonts: precompiled.usedFonts,
         sprites: precompiled.usedSprites,
         avatars: precompiled.usedAvatars,
         backgrounds: precompiled.usedBackgrounds,
@@ -304,6 +305,12 @@ const compile = async (
   precompiled.usedSprites.forEach((sprite, spriteIndex) => {
     output[`spritesheet_${spriteIndex}.c`] = compileSpriteSheet(sprite, spriteIndex);
     output[`spritesheet_${spriteIndex}.h`] = compileSpriteSheetHeader(sprite, spriteIndex);
+  });
+
+  // Add font data
+  precompiled.usedFonts.forEach((font, fontIndex) => {
+    output[`font_${fontIndex}.c`] = compileFont(font, fontIndex);
+    output[`font_${fontIndex}.h`] = compileFontHeader(font, fontIndex);
   });
 
   // // Add avatar data
@@ -520,6 +527,17 @@ const precompile = async (
     projectData.music
   );
 
+  progress(EVENT_MSG_PRE_FONTS);
+  const { usedFonts } = await precompileFonts(
+    projectData.fonts,
+    projectData.scenes,
+    projectData.settings.defaultFontId,
+    projectRoot,
+    {
+      warnings,
+    }
+  )
+
   progress(EVENT_MSG_PRE_SCENES);
   const sceneData = precompileScenes(
     projectData.scenes,
@@ -551,6 +569,7 @@ const precompile = async (
     backgroundData,
     usedSprites,
     usedMusic,
+    usedFonts,
     sceneData,
     fontTiles,
     frameTiles,
@@ -1010,6 +1029,29 @@ export const precompileMusic = (scenes, music) => {
       };
     });
   return { usedMusic };
+};
+
+export const precompileFonts = async (fonts, scenes, defaultFontId, projectRoot, { warnings } = {}) => {
+  const usedFontIds = [defaultFontId || fonts[0].id];
+  walkScenesEvents(scenes, (cmd) => {
+    if (
+      cmd.args && (cmd.args.fontId !== undefined)
+    ) {
+      const fontId = cmd.args.fontId || fonts[0].id;
+      // If never seen this font before add it to the list
+      if (usedFontIds.indexOf(fontId) === -1) {
+        usedFontIds.push(fontId);
+      }
+    }
+  });
+  const usedFonts = fonts
+    .filter((font) => {
+      return usedFontIds.indexOf(font.id) > -1;
+    })
+
+  const fontData = await compileFonts(usedFonts, projectRoot, { warnings });
+
+  return { usedFonts: fontData };
 };
 
 export const precompileScenes = (

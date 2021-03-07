@@ -68,6 +68,7 @@ import {
   Metasprite,
   MetaspriteTile,
   SpriteAnimation,
+  Font,
 } from "./entitiesTypes";
 import { normalizeEntities } from "./entitiesHelpers";
 import { clone } from "../../../lib/helpers/clone";
@@ -112,6 +113,9 @@ const customEventsAdapter = createEntityAdapter<CustomEvent>();
 const musicAdapter = createEntityAdapter<Music>({
   sortComparer: sortByFilename,
 });
+const fontsAdapter = createEntityAdapter<Font>({
+  sortComparer: sortByFilename,
+});
 const variablesAdapter = createEntityAdapter<Variable>();
 const engineFieldValuesAdapter = createEntityAdapter<EngineFieldValue>();
 
@@ -127,6 +131,7 @@ export const initialState: EntitiesState = {
   palettes: palettesAdapter.getInitialState(),
   customEvents: customEventsAdapter.getInitialState(),
   music: musicAdapter.getInitialState(),
+  fonts: fontsAdapter.getInitialState(),
   variables: variablesAdapter.getInitialState(),
   engineFieldValues: engineFieldValuesAdapter.getInitialState(),
 };
@@ -382,6 +387,7 @@ const loadProject: CaseReducer<
   );
   palettesAdapter.setAll(state.palettes, entities.palettes || {});
   musicAdapter.setAll(state.music, entities.music || {});
+  fontsAdapter.setAll(state.fonts, entities.fonts || {});
   customEventsAdapter.setAll(state.customEvents, entities.customEvents || {});
   variablesAdapter.setAll(state.variables, entities.variables || {});
   engineFieldValuesAdapter.setAll(
@@ -490,9 +496,9 @@ const loadDetectedSprite: CaseReducer<
     id: action.payload.spriteSheetId,
     changes: {
       ...action.payload.changes,
-      animations: action.payload.spriteAnimations.map((s) => s.id)
-    }
-  })
+      animations: action.payload.spriteAnimations.map((s) => s.id),
+    },
+  });
 };
 
 const removeSprite: CaseReducer<
@@ -2776,6 +2782,9 @@ export const customEventSelectors = customEventsAdapter.getSelectors(
 );
 export const musicSelectors = musicAdapter.getSelectors(
   (state: RootState) => state.project.present.entities.music
+);
+export const fontSelectors = fontsAdapter.getSelectors(
+  (state: RootState) => state.project.present.entities.fonts
 );
 export const variableSelectors = variablesAdapter.getSelectors(
   (state: RootState) => state.project.present.entities.variables

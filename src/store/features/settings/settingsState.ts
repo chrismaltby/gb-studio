@@ -26,6 +26,7 @@ export type SettingsState = {
   playerPaletteId: string;
   navigatorSplitSizes: number[];
   showNavigator: boolean;
+  defaultFontId: string;
 };
 
 export const initialState: SettingsState = {
@@ -56,6 +57,7 @@ export const initialState: SettingsState = {
   playerPaletteId: "",
   navigatorSplitSizes: [300, 100, 100],
   showNavigator: true,
+  defaultFontId: ""
 };
 
 const settingsSlice = createSlice({

@@ -328,6 +328,7 @@
   "FIELD_REPLACE_TILE": "Replace Tile",
   "FIELD_CHOOSE_REPLACEMENT": "Choose Replacement...",
   "FIELD_CHOOSE_REPLACEMENT_DETAILS": "Choose a replacement tile in the 'Tiles' panel.",
+  "FIELD_DEFAULT_FONT": "Default Font",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

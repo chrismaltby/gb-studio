@@ -36,6 +36,7 @@ import {
   SettingRowLabel,
 } from "../../components/ui/form/SettingRow";
 import { SearchableCard } from "../../components/ui/cards/SearchableCard";
+import { FontSelect } from "../../components/forms/FontSelect";
 
 const SettingsPage: FC = () => {
   const dispatch = useDispatch();
@@ -75,6 +76,7 @@ const SettingsPage: FC = () => {
     defaultUIPaletteId,
     defaultSpritePaletteId,
     defaultBackgroundPaletteIds,
+    defaultFontId,
   } = settings;
 
   const onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -133,6 +135,9 @@ const SettingsPage: FC = () => {
             </SettingsSearchWrapper>
             <SettingsMenuItem onClick={onMenuItem("settingsColor")}>
               {l10n("SETTINGS_GBC")}
+            </SettingsMenuItem>
+            <SettingsMenuItem onClick={onMenuItem("settingsColor")}>
+              {l10n("MENU_UI_ELEMENTS")}
             </SettingsMenuItem>
             {groupedFields.map((group) => (
               <SettingsMenuItem
@@ -261,6 +266,27 @@ const SettingsPage: FC = () => {
               )}
             </>
           )}
+        </SearchableCard>
+
+        <SearchableCard
+          searchTerm={searchTerm}
+          searchMatches={[l10n("FIELD_DEFAULT_FONT")]}
+        >
+          <CardAnchor id="settingsControls" />
+          <CardHeading>{l10n("MENU_UI_ELEMENTS")}</CardHeading>
+          <SearchableSettingRow
+            searchTerm={searchTerm}
+            searchMatches={[l10n("FIELD_DEFAULT_FONT")]}
+          >
+            <SettingRowLabel>{l10n("FIELD_DEFAULT_FONT")}</SettingRowLabel>
+            <SettingRowInput>
+              <FontSelect
+                name="defaultFont"
+                value={defaultFontId || ""}
+                onChange={onEditSetting("defaultFontId")}
+              />
+            </SettingRowInput>
+          </SearchableSettingRow>
         </SearchableCard>
 
         <EngineFieldsEditor searchTerm={searchTerm} />

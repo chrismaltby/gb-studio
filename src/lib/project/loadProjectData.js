@@ -4,6 +4,7 @@ import uuid from "uuid/v4";
 import loadAllBackgroundData from "./loadBackgroundData";
 import loadAllSpriteData from "./loadSpriteData";
 import loadAllMusicData from "./loadMusicData";
+import loadAllFontData from "./loadFontData";
 import migrateProject from "./migrateProject";
 import { indexByFn, indexBy } from "../helpers/array";
 import { setDefault } from "../helpers/setDefault";
@@ -32,10 +33,11 @@ const loadProject = async (projectPath) => {
 
   const projectRoot = path.dirname(projectPath);
 
-  const [backgrounds, sprites, music] = await Promise.all([
+  const [backgrounds, sprites, music, fonts] = await Promise.all([
     loadAllBackgroundData(projectRoot),
     loadAllSpriteData(projectRoot),
     loadAllMusicData(projectRoot),
+    loadAllFontData(projectRoot),
   ]);
 
   // Merge stored backgrounds data with file system data
@@ -44,7 +46,9 @@ const loadProject = async (projectPath) => {
 
   const fixedBackgroundIds = backgrounds
     .map((background) => {
-      const oldBackground = oldBackgroundByFilename[elemKey(background)] || oldBackgroundByInode[background.inode];
+      const oldBackground =
+        oldBackgroundByFilename[elemKey(background)] ||
+        oldBackgroundByInode[background.inode];
       if (oldBackground) {
         return {
           ...background,
@@ -61,7 +65,8 @@ const loadProject = async (projectPath) => {
 
   const fixedSpriteIds = sprites
     .map((sprite) => {
-      const oldSprite = oldSpriteByFilename[elemKey(sprite)] || oldSpriteByInode[sprite.inode];
+      const oldSprite =
+        oldSpriteByFilename[elemKey(sprite)] || oldSpriteByInode[sprite.inode];
       if (oldSprite) {
         return {
           ...oldSprite,
@@ -69,13 +74,20 @@ const loadProject = async (projectPath) => {
           id: oldSprite.id,
           canvasWidth: oldSprite.canvasWidth || 32,
           canvasHeight: oldSprite.canvasHeight || 32,
-          animations: Array.from(Array(8)).map((_, animationIndex)=>({
-            id: oldSprite.animations && oldSprite.animations[animationIndex] && oldSprite.animations[animationIndex].id || uuid(),
-            frames: oldSprite.animations && oldSprite.animations[animationIndex].frames || [{
-              id: uuid(),
-              tiles: []
-            }]
-          }))
+          animations: Array.from(Array(8)).map((_, animationIndex) => ({
+            id:
+              (oldSprite.animations &&
+                oldSprite.animations[animationIndex] &&
+                oldSprite.animations[animationIndex].id) ||
+              uuid(),
+            frames: (oldSprite.animations &&
+              oldSprite.animations[animationIndex].frames) || [
+              {
+                id: uuid(),
+                tiles: [],
+              },
+            ],
+          })),
         };
       }
       return sprite;
@@ -88,17 +100,36 @@ const loadProject = async (projectPath) => {
 
   const fixedMusicIds = music
     .map((track) => {
-      const oldTrack = oldMusicByFilename[elemKey(track)] || oldMusicByInode[track.inode];
+      const oldTrack =
+        oldMusicByFilename[elemKey(track)] || oldMusicByInode[track.inode];
       if (oldTrack) {
         return {
           ...track,
           id: oldTrack.id,
           settings: {
-            ...oldTrack.settings
-          }
+            ...oldTrack.settings,
+          },
         };
       }
       return track;
+    })
+    .sort(sortByName);
+
+  // Merge stored fonts data with file system data
+  const oldFontByFilename = indexByFilename(json.fonts || []);
+  const oldFontByInode = indexByInode(json.fonts || []);
+
+  const fixedFontIds = fonts
+    .map((font) => {
+      const oldFont =
+        oldFontByFilename[elemKey(font)] || oldFontByInode[font.inode];
+      if (oldFont) {
+        return {
+          ...font,
+          id: oldFont.id,
+        };
+      }
+      return font;
     })
     .sort(sortByName);
 
@@ -185,17 +216,18 @@ const loadProject = async (projectPath) => {
     }
   }
 
-  const fixedEngineFieldValues = (json.engineFieldValues || []);
+  const fixedEngineFieldValues = json.engineFieldValues || [];
 
   return {
     ...json,
     backgrounds: fixedBackgroundIds,
     spriteSheets: fixedSpriteIds,
     music: fixedMusicIds,
+    fonts: fixedFontIds,
     scenes: fixedScenes,
     customEvents: fixedCustomEvents,
     palettes: fixedPalettes,
-    engineFieldValues: fixedEngineFieldValues
+    engineFieldValues: fixedEngineFieldValues,
   };
 };
 

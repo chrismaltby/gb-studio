@@ -1,3 +1,4 @@
+import Path from "path";
 import {
   ImageIndexFunction,
   IndexedImage,
@@ -7,7 +8,8 @@ import {
   trimIndexedImageHorizontal,
 } from "../tiles/indexedImage";
 
-interface FontData {
+export interface FontData {
+  name: string;
   table: number[];
   widths: number[];
   data: Uint8Array;
@@ -36,6 +38,7 @@ const FIRST_CHAR = 32;
 export const readFileToFontData = async (
   filename: string
 ): Promise<FontData> => {
+  const name = Path.basename(filename);
   const image = await readFileToIndexedImage(filename, fontDataIndexFn);
   const tileWidth = Math.floor(image.width / TILE_SIZE);
   const tileHeight = Math.floor(image.height / TILE_SIZE);
@@ -93,6 +96,7 @@ export const readFileToFontData = async (
   const data = charLookupToTileData(uniqueTilesLookup);
 
   return {
+    name,
     table,
     widths,
     data,
