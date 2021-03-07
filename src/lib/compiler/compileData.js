@@ -71,6 +71,7 @@ import {
 } from "./compileData2";
 import compileSGBImage from "./sgb";
 import { readFileToTilesData } from "../tiles/tileData";
+import l10n from "../helpers/l10n";
 
 const indexById = indexBy("id");
 
@@ -493,7 +494,6 @@ const precompile = async (
 
   progress(EVENT_MSG_PRE_UI_IMAGES);
   const {
-    fontTiles,
     frameTiles,
     cursorTiles,
   } = await precompileUIImages(projectRoot, tmpPath, {
@@ -571,7 +571,6 @@ const precompile = async (
     usedMusic,
     usedFonts,
     sceneData,
-    fontTiles,
     frameTiles,
     cursorTiles,
     usedAvatars,
@@ -902,10 +901,6 @@ export const precompileUIImages = async (
   tmpPath,
   { warnings }
 ) => {
-  const fontPath = await ensureProjectAsset("assets/ui/ascii.png", {
-    projectRoot,
-    warnings,
-  });
   const framePath = await ensureProjectAsset("assets/ui/frame.png", {
     projectRoot,
     warnings,
@@ -916,10 +911,9 @@ export const precompileUIImages = async (
   });
 
   const frameTiles = await readFileToTilesData(framePath);
-  const fontTiles = await readFileToTilesData(fontPath);
   const cursorTiles = await readFileToTilesData(cursorPath);
 
-  return { frameTiles, fontTiles, cursorTiles };
+  return { frameTiles, cursorTiles };
 };
 
 export const precompileSprites = async (
@@ -1032,7 +1026,16 @@ export const precompileMusic = (scenes, music) => {
 };
 
 export const precompileFonts = async (fonts, scenes, defaultFontId, projectRoot, { warnings } = {}) => {
-  const usedFontIds = [defaultFontId || fonts[0].id];
+  const defaultFont = fonts.find((font) => font.id === defaultFontId) || fonts[0];
+  if (!defaultFont) {
+    await ensureProjectAsset("assets/fonts/gbs-mono.png", {
+      projectRoot,
+    });
+    throw new Error(l10n("ERROR_MISSING_FONTS"))
+  }
+
+  const usedFontIds = [defaultFont.id];
+
   walkScenesEvents(scenes, (cmd) => {
     if (
       cmd.args && (cmd.args.fontId !== undefined)
@@ -1146,7 +1149,7 @@ const ensureProjectAsset = async (relativePath, { projectRoot, warnings }) => {
       overwrite: false,
       errorOnExist: true,
     });
-    warnings(
+    warnings && warnings(
       `${relativePath} was missing, copying default file to project assets`
     );
   } catch (e) {

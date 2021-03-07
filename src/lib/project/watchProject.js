@@ -8,14 +8,17 @@ const watchProject = async (
     onAddBackground = () => {},
     onAddUI = () => {},
     onAddMusic = () => {},
+    onAddFont = () => {},
     onChangedSprite = () => {},
     onChangedBackground = () => {},
     onChangedUI = () => {},
     onChangedMusic = () => {},
+    onChangedFont = () => {},
     onRemoveSprite = () => {},
     onRemoveBackground = () => {},
     onRemoveUI = () => {},
     onRemoveMusic = () => {},
+    onRemoveFont = () => {},
     onChangedEngineSchema = () => {},
   }
 ) => {
@@ -23,21 +26,22 @@ const watchProject = async (
   const spritesRoot = `${projectRoot}/assets/sprites`;
   const backgroundsRoot = `${projectRoot}/assets/backgrounds`;
   const musicRoot = `${projectRoot}/assets/music`;
+  const fontsRoot = `${projectRoot}/assets/fonts`;
   const uiRoot = `${projectRoot}/assets/ui`;
   const pluginsRoot = `${projectRoot}/plugins`;
   const engineSchema = `${projectRoot}/assets/engine/engine.json`;
 
   const awaitWriteFinish = {
     stabilityThreshold: 1000,
-    pollInterval: 100
+    pollInterval: 100,
   };
 
   const musicAwaitWriteFinish = {
     stabilityThreshold: 5000,
-    pollInterval: 100
+    pollInterval: 100,
   };
 
-  const pluginSubfolder = filename => {
+  const pluginSubfolder = (filename) => {
     return Path.relative(pluginsRoot, filename).split(Path.sep)[1];
   };
 
@@ -46,7 +50,7 @@ const watchProject = async (
       ignored: /^.*\.(?!(png|PNG)$)[^.]+$/,
       ignoreInitial: true,
       persistent: true,
-      awaitWriteFinish
+      awaitWriteFinish,
     })
     .on("add", onAddSprite)
     .on("change", onChangedSprite)
@@ -57,7 +61,7 @@ const watchProject = async (
       ignored: /^.*\.(?!(png|PNG)$)[^.]+$/,
       ignoreInitial: true,
       persistent: true,
-      awaitWriteFinish
+      awaitWriteFinish,
     })
     .on("add", onAddBackground)
     .on("change", onChangedBackground)
@@ -68,7 +72,7 @@ const watchProject = async (
       ignored: /^.*\.(?!png$)[^.]+$/,
       ignoreInitial: true,
       persistent: true,
-      awaitWriteFinish
+      awaitWriteFinish,
     })
     .on("add", onAddUI)
     .on("change", onChangedUI)
@@ -79,30 +83,41 @@ const watchProject = async (
       ignored: /^.*\.(?!(mod|MOD)$)[^.]+$/,
       ignoreInitial: true,
       persistent: true,
-      awaitWriteFinish: musicAwaitWriteFinish
+      awaitWriteFinish: musicAwaitWriteFinish,
     })
     .on("add", onAddMusic)
     .on("change", onChangedMusic)
     .on("unlink", onRemoveMusic);
 
+  const fontsWatcher = chokidar
+    .watch(fontsRoot, {
+      ignored: /^.*\.(?!(png|PNG)$)[^.]+$/,
+      ignoreInitial: true,
+      persistent: true,
+      awaitWriteFinish,
+    })
+    .on("add", onAddFont)
+    .on("change", onChangedFont)
+    .on("unlink", onRemoveFont);
+
   const engineSchemaWatcher = chokidar
     .watch(engineSchema, {
       ignoreInitial: true,
       persistent: true,
-      awaitWriteFinish
+      awaitWriteFinish,
     })
     .on("add", onChangedEngineSchema)
     .on("change", onChangedEngineSchema)
-    .on("unlink", onChangedEngineSchema);    
-    
+    .on("unlink", onChangedEngineSchema);
+
   const pluginsWatcher = chokidar
     .watch(pluginsRoot, {
       ignored: /^.*\.(?!(png|mod|PNG|MOD)$)[^.]+$/,
       ignoreInitial: true,
       persistent: true,
-      awaitWriteFinish
+      awaitWriteFinish,
     })
-    .on("add", filename => {
+    .on("add", (filename) => {
       const subfolder = pluginSubfolder(filename);
       if (subfolder === "backgrounds") {
         onAddBackground(filename);
@@ -110,9 +125,11 @@ const watchProject = async (
         onAddSprite(filename);
       } else if (subfolder === "music") {
         onAddMusic(filename);
+      } else if (subfolder === "fonts") {
+        onAddFonts(filename);
       }
     })
-    .on("change", filename => {
+    .on("change", (filename) => {
       const subfolder = pluginSubfolder(filename);
       if (subfolder === "backgrounds") {
         onChangedBackground(filename);
@@ -120,9 +137,11 @@ const watchProject = async (
         onChangedSprite(filename);
       } else if (subfolder === "music") {
         onChangedMusic(filename);
+      } else if (subfolder === "fonts") {
+        onChangedFont(filename);
       }
     })
-    .on("unlink", filename => {
+    .on("unlink", (filename) => {
       const subfolder = pluginSubfolder(filename);
       if (subfolder === "backgrounds") {
         onRemoveBackground(filename);
@@ -130,6 +149,8 @@ const watchProject = async (
         onRemoveSprite(filename);
       } else if (subfolder === "music") {
         onRemoveMusic(filename);
+      } else if (subfolder === "fonts") {
+        onRemoveFont(filename);
       }
     });
 
@@ -138,6 +159,7 @@ const watchProject = async (
     backgroundWatcher.close();
     uiWatcher.close();
     musicWatcher.close();
+    fontsWatcher.close();
     engineSchemaWatcher.close();
     pluginsWatcher.close();
   };

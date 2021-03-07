@@ -82,6 +82,7 @@ const MIN_SCENE_HEIGHT = 18;
 const inodeToRecentBackground: Dictionary<Background> = {};
 const inodeToRecentSpriteSheet: Dictionary<SpriteSheet> = {};
 const inodeToRecentMusic: Dictionary<Music> = {};
+const inodeToRecentFont: Dictionary<Font> = {};
 
 const matchAsset = (assetA: Asset) => (assetB: Asset) => {
   return assetA.filename === assetB.filename && assetA.plugin === assetB.plugin;
@@ -574,6 +575,45 @@ const removeMusic: CaseReducer<
   if (existingAsset) {
     inodeToRecentMusic[existingAsset.inode] = clone(existingAsset);
     musicAdapter.removeOne(state.music, existingAsset.id);
+  }
+};
+
+const loadFont: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    data: Font;
+  }>
+> = (state, action) => {
+  const fonts = localFontSelectors.selectAll(state);
+  const existingAsset =
+    fonts.find(matchAsset(action.payload.data)) ||
+    inodeToRecentFont[action.payload.data.inode];
+  const existingId = existingAsset?.id;
+
+  if (existingId) {
+    delete inodeToRecentFont[action.payload.data.inode];
+    fontsAdapter.upsertOne(state.fonts, {
+      ...existingAsset,
+      ...action.payload.data,
+      id: existingId,
+    });
+  } else {
+    fontsAdapter.addOne(state.fonts, action.payload.data);
+  }
+};
+
+const removeFont: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    filename: string;
+    plugin: string | undefined;
+  }>
+> = (state, action) => {
+  const fonts = localFontSelectors.selectAll(state);
+  const existingAsset = fonts.find(matchAsset(action.payload));
+  if (existingAsset) {
+    inodeToRecentFont[existingAsset.inode] = clone(existingAsset);
+    fontsAdapter.removeOne(state.fonts, existingAsset.id);
   }
 };
 
@@ -2707,6 +2747,8 @@ const entitiesSlice = createSlice({
       .addCase(spriteActions.detectSpriteComplete, loadDetectedSprite)
       .addCase(projectActions.loadMusic.fulfilled, loadMusic)
       .addCase(projectActions.removeMusic.fulfilled, removeMusic)
+      .addCase(projectActions.loadFont.fulfilled, loadFont)
+      .addCase(projectActions.removeFont.fulfilled, removeFont)
       .addCase(projectActions.reloadAssets, reloadAssets),
 });
 
@@ -2744,6 +2786,9 @@ const localPaletteSelectors = palettesAdapter.getSelectors(
 );
 const localMusicSelectors = musicAdapter.getSelectors(
   (state: EntitiesState) => state.music
+);
+const localFontSelectors = fontsAdapter.getSelectors(
+  (state: EntitiesState) => state.fonts
 );
 const localCustomEventSelectors = customEventsAdapter.getSelectors(
   (state: EntitiesState) => state.customEvents

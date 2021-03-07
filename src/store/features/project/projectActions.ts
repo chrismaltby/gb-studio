@@ -220,7 +220,7 @@ const removeFont = createAsyncThunk<
 >("project/removeFont", async (filename, thunkApi) => {
   const state = thunkApi.getState() as RootState;
   const projectRoot = state.document && state.document.root;
-  const { file, plugin } = parseAssetPath(filename, projectRoot, "font");
+  const { file, plugin } = parseAssetPath(filename, projectRoot, "fonts");
   return {
     filename: file,
     plugin,
