@@ -106,7 +106,7 @@ export const readFileToFontData = async (
 };
 
 export const fontDataIndexFn: ImageIndexFunction = (r, g, b, a) => {
-  if (g > 249) {
+  if (g > 249 || (r > 249 && b > 249)) {
     return Color.Transparent;
   }
   if (g < 65) {
