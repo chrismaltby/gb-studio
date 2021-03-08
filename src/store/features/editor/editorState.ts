@@ -118,7 +118,6 @@ export interface EditorState {
   selectedSongId: string;
   selectedInstrument: SelectedInstrument;
   selectedSequence: number;
-  playSong: boolean;
   playbackState: number[],
 }
 
@@ -184,7 +183,6 @@ export const initialState: EditorState = {
     type: "instrument"
   },
   selectedSequence: 0,
-  playSong: false,
   playbackState: [0, 0]
 };
 
@@ -637,7 +635,6 @@ const editorSlice = createSlice({
       state.selectedSongId = action.payload;
       state.selectedInstrument = { id: "0", type: "instrument" };
       state.selectedSequence = 0;
-      state.playSong = false;
       state.playbackState = [0, 0]
     },
 
@@ -647,10 +644,6 @@ const editorSlice = createSlice({
 
     setSelectedSequence: (state, action:PayloadAction<number>) => {
       state.selectedSequence = action.payload;
-    },
-
-    setPlaySong: (state, action:PayloadAction<boolean>) => {
-      state.playSong = action.payload;
     },
 
     setPlaybackState: (state, action:PayloadAction<number[]>) => {

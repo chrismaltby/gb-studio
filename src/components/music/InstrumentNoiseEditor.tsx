@@ -1,14 +1,13 @@
 import React from "react";
+import { useDispatch } from "react-redux";
 import castEventValue from "../../lib/helpers/castEventValue";
 import l10n from "../../lib/helpers/l10n";
-import { NoiseInstrument } from "../../lib/helpers/uge/song/NoiseInstrument";
-import { Checkbox } from "../ui/form/Checkbox";
+import trackerActions from "../../store/features/tracker/trackerActions";
+import { NoiseInstrument } from "../../store/features/tracker/trackerTypes";
 import { CheckboxField } from "../ui/form/CheckboxField";
-import { FormDivider, FormField, FormRow } from "../ui/form/FormLayout";
-import { Label } from "../ui/form/Label";
-import { Select } from "../ui/form/Select";
-import { Slider } from "../ui/form/Slider";
+import { FormDivider, FormRow } from "../ui/form/FormLayout";
 import { SliderField } from "../ui/form/SliderField";
+import { InstrumentLengthForm } from "./InstrumentLengthForm";
 
 interface InstrumentNoiseEditorProps {
   id: string;
@@ -18,44 +17,49 @@ interface InstrumentNoiseEditorProps {
 export const InstrumentNoiseEditor = ({
   instrument
 }: InstrumentNoiseEditorProps) => {
+  const dispatch = useDispatch();
 
-  if (!instrument) return <>EMPTY</>;
+  if (!instrument) return <></>;
+
+  const onChangeField = <T extends keyof NoiseInstrument>(key: T) => (
+    editValue: NoiseInstrument[T]
+  ) => {
+    dispatch(
+      trackerActions.editNoiseInstrument({
+        instrumentId: instrument.index,
+        changes: {
+          [key]: editValue,
+        },
+      })
+    );
+  };
 
   const onChangeFieldInput = <T extends keyof NoiseInstrument>(key: T) => (
     e:
       | React.ChangeEvent<HTMLInputElement>
       | React.ChangeEvent<HTMLTextAreaElement>
   ) => {
-    // dispatch(
-    //   entitiesActions.editSpriteSheet({
-    //     spriteSheetId: id,
-    //     changes: {
-    //       [key]: editValue,
-    //     },
-    //   })
-    // );
+    const editValue = castEventValue(e);
+
+    console.log(key, e);
+
+    dispatch(
+      trackerActions.editNoiseInstrument({
+        instrumentId: instrument.index,
+        changes: {
+          [key]: editValue,
+        },
+      })
+    );
   };
 
   return (
     <>
-      <FormRow>
-        <CheckboxField
-          label={l10n("FIELD_LENGTH")}
-          name="length"
-          checked={!!instrument.length}
-          onChange={onChangeFieldInput("length")}
-        />
-      </FormRow>
-      <FormRow>
-        <SliderField
-          name="length"
-          value={instrument.length || 0}
-          min={0}
-          max={63}
-        // onChange={onChangeFieldInput("length")}
-        />
-      </FormRow>
-
+      <InstrumentLengthForm
+        value={instrument.length || 0}
+        onChange={onChangeField("length")}
+      />
+      
       <FormDivider />
 
       <FormRow>
@@ -65,7 +69,9 @@ export const InstrumentNoiseEditor = ({
           value={instrument.initial_volume || 0}
           min={0}
           max={15}
-        // onChange={onChangeFieldInput("initial_volume")}
+          onChange={(value) => {
+            onChangeField("initial_volume")(value || 0);
+          }}
         />
       </FormRow>
 
@@ -76,7 +82,9 @@ export const InstrumentNoiseEditor = ({
           value={instrument.volume_sweep_change || 0}
           min={-7}
           max={7}
-        // onChange={onChangeFieldInput("volume_sweep_change")}
+          onChange={(value) => {
+            onChangeField("volume_sweep_change")(value || 0);
+          }}
         />
       </FormRow>
 
@@ -89,7 +97,9 @@ export const InstrumentNoiseEditor = ({
           value={instrument.shift_clock_mask || 0}
           min={0}
           max={15}
-        // onChange={onChangeFieldInput("shift_clock_mask")}
+          onChange={(value) => {
+            onChangeField("shift_clock_mask")(value || 0);
+          }}
         />
       </FormRow>
 
@@ -100,7 +110,9 @@ export const InstrumentNoiseEditor = ({
           value={instrument.dividing_ratio || 0}
           min={0}
           max={7}
-        // onChange={onChangeFieldInput("dividing_ratio")}
+          onChange={(value) => {
+            onChangeField("dividing_ratio")(value || 0);
+          }}
         />
       </FormRow>
       <FormRow>

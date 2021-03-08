@@ -23,7 +23,7 @@ export const SequenceEditor = ({
   );
 
   const play = useSelector(
-    (state: RootState) => state.editor.playSong
+    (state: RootState) => state.tracker.playing
   );
 
   if (play && playbackState && playbackState[0] !== -1) {

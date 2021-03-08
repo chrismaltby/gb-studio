@@ -1,14 +1,13 @@
 import React from "react";
+import { useDispatch } from "react-redux";
 import castEventValue from "../../lib/helpers/castEventValue";
 import l10n from "../../lib/helpers/l10n";
-import { DutyInstrument } from "../../lib/helpers/uge/song/DutyInstrument";
-import { Checkbox } from "../ui/form/Checkbox";
-import { CheckboxField } from "../ui/form/CheckboxField";
+import trackerActions from "../../store/features/tracker/trackerActions";
+import { DutyInstrument } from "../../store/features/tracker/trackerTypes";
 import { FormDivider, FormField, FormRow } from "../ui/form/FormLayout";
-import { Label } from "../ui/form/Label";
 import { Select } from "../ui/form/Select";
-import { Slider } from "../ui/form/Slider";
 import { SliderField } from "../ui/form/SliderField";
+import { InstrumentLengthForm } from "./InstrumentLengthForm";
 
 const dutyOptions = [
   {
@@ -72,47 +71,52 @@ interface InstrumentDutyEditorProps {
 export const InstrumentDutyEditor = ({
   instrument
 }: InstrumentDutyEditorProps) => {
+  const dispatch = useDispatch();
 
-  if (!instrument) return <>EMPTY</>;
+  if (!instrument) return <></>;
 
   const selectedDuty = dutyOptions.find((i) => parseInt(i.value, 10) === instrument.duty_cycle);
 
   const selectedSweepTime = sweepTimeOptions.find((i) => parseInt(i.value, 10) === instrument.frequency_sweep_time);
+
+  const onChangeField = <T extends keyof DutyInstrument>(key: T) => (
+    editValue: DutyInstrument[T]
+  ) => {
+    dispatch(
+      trackerActions.editDutyInstrument({
+        instrumentId: instrument.index,
+        changes: {
+          [key]: editValue,
+        },
+      })
+    );
+  };
 
   const onChangeFieldInput = <T extends keyof DutyInstrument>(key: T) => (
     e:
       | React.ChangeEvent<HTMLInputElement>
       | React.ChangeEvent<HTMLTextAreaElement>
   ) => {
-    // dispatch(
-    //   entitiesActions.editSpriteSheet({
-    //     spriteSheetId: id,
-    //     changes: {
-    //       [key]: editValue,
-    //     },
-    //   })
-    // );
+    const editValue = castEventValue(e);
+
+    console.log(key, e);
+
+    dispatch(
+      trackerActions.editDutyInstrument({
+        instrumentId: instrument.index,
+        changes: {
+          [key]: editValue,
+        },
+      })
+    );
   };
 
   return (
     <>
-      <FormRow>
-        <CheckboxField
-          label={l10n("FIELD_LENGTH")}
-          name="length"
-          checked={!!instrument.length}
-          onChange={onChangeFieldInput("length")}
-        />
-      </FormRow>
-      <FormRow>
-        <SliderField
-          name="length"
-          value={instrument.length || 0}
-          min={0}
-          max={63}
-        // onChange={onChangeFieldInput("length")}
-        />
-      </FormRow>
+      <InstrumentLengthForm
+        value={instrument.length || 0}
+        onChange={onChangeField("length")}
+      />
 
       <FormDivider />
 
@@ -123,19 +127,23 @@ export const InstrumentDutyEditor = ({
           value={instrument.initial_volume || 0}
           min={0}
           max={15}
-        // onChange={onChangeFieldInput("initial_volume")}
+          onChange={(value) => {
+            onChangeField("initial_volume")(value || 0);
+          }}
         />
       </FormRow>
 
       <FormRow>
         <SliderField
           name="volume_sweep_change"
-          label={l10n("FIELD_SWEEP_CHANGE")}
+          label={l10n("FIELD_VOLUME_SWEEP_CHANGE")}
 
           value={instrument.volume_sweep_change || 0}
           min={-7}
           max={7}
-        // onChange={onChangeFieldInput("volume_sweep_change")}
+          onChange={(value) => {
+            onChangeField("volume_sweep_change")(value || 0);
+          }}
         />
       </FormRow>
 
@@ -162,15 +170,17 @@ export const InstrumentDutyEditor = ({
             value={instrument.frequency_sweep_shift || 0}
             min={-7}
             max={7}
-          // onChange={onChangeFieldInput("frequency_sweep_shift")}
-          />
+            onChange={(value) => {
+              onChangeField("frequency_sweep_shift")(value || 0);
+            }}
+            />
         </FormRow>
 
         <FormDivider />
 
         <FormRow>
           <FormField
-            name="frequency_sweep_shift"
+            name="duty_cycle"
             label={l10n("FIELD_DUTY")}
           >
             <Select
@@ -181,7 +191,6 @@ export const InstrumentDutyEditor = ({
             />
           </FormField>
         </FormRow>
-
     </>
   );
 }

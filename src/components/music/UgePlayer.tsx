@@ -15,7 +15,6 @@ export const UgePlayer = ({
   data,
   onPlaybackUpdate
 }: UgePlayerProps) => {
-  console.log("UGE PLAYER START")
 
   useEffect(() => {
     console.log("OPEN MUSIC")
@@ -25,7 +24,7 @@ export const UgePlayer = ({
   }, []);
 
   const play = useSelector(
-    (state: RootState) => state.editor.playSong
+    (state: RootState) => state.tracker.playing
   );
 
   useEffect(() => {

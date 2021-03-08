@@ -18,7 +18,7 @@ interface EntityListItemProps {
     name: string;
     labelColor?: string;
   };
-  type: "scene" | "actor" | "trigger" | "variable" | "sprite" | "animation";
+  type: "scene" | "actor" | "trigger" | "variable" | "sprite" | "animation" | "song" | "instrument" | "wave" | "noise";
   nestLevel?: number;
   collapsed?: boolean;
   collapsable?: boolean;

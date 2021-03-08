@@ -13,6 +13,7 @@ import error from "./features/error/errorState";
 import navigation from "./features/navigation/navigationState";
 import clipboard from "./features/clipboard/clipboardState";
 import sprite from "./features/sprite/spriteState";
+import tracker from "./features/tracker/trackerState";
 
 let lastEntityUndoStateTime = 0;
 const UNDO_THROTTLE = 300;
@@ -26,6 +27,7 @@ const rootReducer = combineReducers({
   engine,
   clipboard,
   sprite,
+  tracker,
   project: undoable(
     combineReducers({ entities, settings, metadata }),
     {

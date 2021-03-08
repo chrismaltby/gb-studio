@@ -1,9 +1,8 @@
 /* eslint-disable camelcase */
-import { DutyInstrument } from "./song/DutyInstrument";
-import { NoiseInstrument } from "./song/NoiseInstrument";
+// import { DutyInstrument } from "./song/DutyInstrument";
+import { DutyInstrument, NoiseInstrument, WaveInstrument } from "../../../store/features/tracker/trackerTypes";
 import { PatternCell } from "./song/PatternCell";
 import { Song } from "./song/Song";
-import { WaveInstrument } from "./song/WaveInstrument";
 
 interface InstrumentMap {
   [index: number]: number
@@ -86,10 +85,10 @@ export const loadUGESong = (data: ArrayBuffer): (Song | null) => {
       length = 64 - length;
       if (length === 64) length = 0;
 
-      const instr = new DutyInstrument(name);
-      if (length_enabled)
-        instr.length = length;
+      const instr = {} as DutyInstrument;// new DutyInstrument(name);
+      if (length_enabled) instr.length = length;
 
+      instr.name = name;
       instr.duty_cycle = duty;
       instr.initial_volume = initial_volume;
       instr.volume_sweep_change = volume_sweep_amount;
@@ -98,12 +97,12 @@ export const loadUGESong = (data: ArrayBuffer): (Song | null) => {
       instr.frequency_sweep_shift = freq_sweep_shift;
 
       duty_instrument_mapping[(n % 15) + 1] = song.duty_instruments.length;
-      song.addInstrument(instr);
+      song.addDutyInstrument(instr);
     } else if (type === 1) {
       length = 256 - length;
       if (length === 256) length = 0;
 
-      const instr = new WaveInstrument(name);
+      const instr = {} as WaveInstrument;
       if (length_enabled)
         instr.length = length;
 
@@ -111,12 +110,12 @@ export const loadUGESong = (data: ArrayBuffer): (Song | null) => {
       instr.wave_index = wave_waveform_index;
 
       wave_instrument_mapping[(n % 15) + 1] = song.wave_instruments.length;
-      song.addInstrument(instr);
+      song.addWaveInstrument(instr);
     } else if (type === 2) {
       length = 64 - length;
       if (length === 64) length = 0;
 
-      const instr = new NoiseInstrument(name);
+      const instr = {} as NoiseInstrument;
       if (length_enabled)
         instr.length = length;
 
@@ -128,7 +127,7 @@ export const loadUGESong = (data: ArrayBuffer): (Song | null) => {
       instr.bit_count = noise_counter_step ? 7 : 15;
 
       noise_instrument_mapping[(n % 15) + 1] = song.noise_instruments.length;
-      song.addInstrument(instr);
+      song.addNoiseInstrument(instr);
     } else {
       console.log(n, name, type);
     }
@@ -209,24 +208,24 @@ export const loadUGESong = (data: ArrayBuffer): (Song | null) => {
   }
 
   // TODO: Remove unused instruments, unused waves, and deduplicate patterns.
-  for (let idx = 0; idx < song.duty_instruments.length;) {
-    if (!song.usesInstrument("duty", idx))
-      song.removeInstrument("duty", idx);
-    else
-      idx += 1;
-  }
-  for (let idx = 0; idx < song.wave_instruments.length;) {
-    if (!song.usesInstrument("wave", idx))
-      song.removeInstrument("wave", idx);
-    else
-      idx += 1;
-  }
-  for (let idx = 0; idx < song.noise_instruments.length;) {
-    if (!song.usesInstrument("noise", idx))
-      song.removeInstrument("noise", idx);
-    else
-      idx += 1;
-  }
+  // for (let idx = 0; idx < song.duty_instruments.length;) {
+  //   if (!song.usesInstrument("duty", idx))
+  //     song.removeInstrument("duty", idx);
+  //   else
+  //     idx += 1;
+  // }
+  // for (let idx = 0; idx < song.wave_instruments.length;) {
+  //   if (!song.usesInstrument("wave", idx))
+  //     song.removeInstrument("wave", idx);
+  //   else
+  //     idx += 1;
+  // }
+  // for (let idx = 0; idx < song.noise_instruments.length;) {
+  //   if (!song.usesInstrument("noise", idx))
+  //     song.removeInstrument("noise", idx);
+  //   else
+  //     idx += 1;
+  // }
 
   console.log(song);
   return song;

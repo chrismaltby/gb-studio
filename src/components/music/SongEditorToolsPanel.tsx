@@ -10,7 +10,7 @@ import {
 import FloatingPanel, {
   FloatingPanelDivider,
 } from "../ui/panels/FloatingPanel";
-import editorActions from "../../store/features/editor/editorActions";
+import trackerActions from "../../store/features/tracker/trackerActions";
 import { Button } from "../ui/buttons/Button";
 
 interface SongEditorToolsPanelProps {
@@ -30,11 +30,15 @@ const SongEditorToolsPanel = ({
   const dispatch = useDispatch();
 
   const play = useSelector(
-    (state: RootState) => state.editor.playSong
+    (state: RootState) => state.tracker.playing
   );
 
   const togglePlay = useCallback(() => {
-    dispatch(editorActions.setPlaySong(!play));
+    if (!play) {
+      dispatch(trackerActions.playTracker());
+    } else {
+      dispatch(trackerActions.pauseTracker());
+    }
   }, [dispatch, play]);
 
   return (

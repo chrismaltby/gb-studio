@@ -26,7 +26,7 @@ import { assetFilename } from "../../lib/helpers/gbstudio";
 import { SongEditor } from "../../components/music/SongEditor";
 import SongEditorToolsPanel from "../../components/music/SongEditorToolsPanel";
 import { loadUGESong } from "../../lib/helpers/uge/ugeHelper";
-import { Song } from "../../lib/helpers/uge/song/Song";
+import trackerActions from "../../store/features/tracker/trackerActions";
 
 const Wrapper = styled.div`
   display: flex;
@@ -66,7 +66,9 @@ const MusicPage = () => {
 
   const projectRoot = useSelector((state: RootState) => state.document.root);
 
-  const [songData, setSongData] = useState<Song | null>(null);
+  const song = useSelector((state: RootState) => 
+    state.tracker.song
+  );
   useEffect(() => {
     const readSong = async () => {
       const path: string = `${assetFilename(
@@ -76,7 +78,10 @@ const MusicPage = () => {
       )}`
       const data = await readFile(path);
       const song = loadUGESong(new Uint8Array(data).buffer);
-      setSongData(song);
+      // setSongData(song);
+      if (song) {
+        dispatch(trackerActions.loadSong(song));
+      }
     };
     readSong();
   }, [projectRoot, selectedSong]);
@@ -215,9 +220,9 @@ const MusicPage = () => {
           <NavigatorSongs
             height={windowHeight - 38}
             defaultFirst
-            instruments={songData ? songData.duty_instruments : []}
-            noises={songData ? songData.noise_instruments : []}
-            waves={songData ? songData.wave_instruments : []}
+            instruments={song.duty_instruments}
+            noises={song.noise_instruments}
+            waves={song.wave_instruments}
           />
         </div>
       </div>
@@ -245,7 +250,7 @@ const MusicPage = () => {
           <SongTracker
             id={selectedId}
             sequenceId={sequenceId}
-            data={songData}
+            data={song}
             height={windowHeight - 188 + 20}
           />
         </div>
@@ -260,7 +265,7 @@ const MusicPage = () => {
           position: "relative",
         }}
       >
-        <SongEditor id={selectedId} data={songData} />
+        <SongEditor id={selectedId} />
       </div>
     </Wrapper>
   );

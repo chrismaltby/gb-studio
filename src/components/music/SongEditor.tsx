@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { DropdownButton } from "../ui/buttons/DropdownButton";
 import { EditableText } from "../ui/form/EditableText";
@@ -10,44 +10,41 @@ import {
 } from "../ui/form/FormLayout";
 import { Sidebar, SidebarColumn } from "../ui/sidebars/Sidebar";
 import { Label } from "../ui/form/Label";
-import {
-  musicSelectors,
-} from "../../store/features/entities/entitiesState";
-import editorActions from "../../store/features/editor/editorActions";
 import { RootState } from "../../store/configureStore";
 import { Input } from "../ui/form/Input";
 import { InstrumentDutyEditor } from "./InstrumentDutyEditor";
 import { InstrumentWaveEditor } from "./InstrumentWaveEditor";
 import { InstrumentNoiseEditor } from "./InstrumentNoiseEditor";
 import { Song } from "../../lib/helpers/uge/song/Song";
-import { DutyInstrument } from "../../lib/helpers/uge/song/DutyInstrument";
-import { NoiseInstrument } from "../../lib/helpers/uge/song/NoiseInstrument";
-import { WaveInstrument } from "../../lib/helpers/uge/song/WaveInstrument";
 import castEventValue from "../../lib/helpers/castEventValue";
 import l10n from "../../lib/helpers/l10n";
+import { DutyInstrument, NoiseInstrument, WaveInstrument } from "../../store/features/tracker/trackerTypes";
+import trackerActions from "../../store/features/tracker/trackerActions";
 
 interface SongEditorProps {
   id: string;
-  data: Song | null;
 }
 
-const renderInstrumentEditor = (instrumentData: DutyInstrument | NoiseInstrument | WaveInstrument | null) => {
-  if (instrumentData instanceof DutyInstrument) return <InstrumentDutyEditor id={`instrument_${instrumentData?.index}`} instrument={instrumentData} />
+const renderInstrumentEditor = (type: string, instrumentData: DutyInstrument | NoiseInstrument | WaveInstrument | null) => {
+  if (type === "instrument") return <InstrumentDutyEditor id={`instrument_${instrumentData?.index}`} instrument={instrumentData as DutyInstrument} />
 
-  if (instrumentData instanceof NoiseInstrument) return <InstrumentNoiseEditor id={`instrument_${instrumentData?.index}`} instrument={instrumentData} />
+  if (type === "noise") return <InstrumentNoiseEditor id={`instrument_${instrumentData?.index}`} instrument={instrumentData as NoiseInstrument} />
 
-  if (instrumentData instanceof WaveInstrument) return <InstrumentWaveEditor id={`instrument_${instrumentData?.index}`} instrument={instrumentData} />
+  if (type === "wave") return <InstrumentWaveEditor id={`instrument_${instrumentData?.index}`} instrument={instrumentData as WaveInstrument} />
 }
 
 export const SongEditor = ({
-  id,
-  data,
+  id
 }: SongEditorProps) => {
+  const dispatch = useDispatch();
   const selectedInstrument = useSelector(
     (state: RootState) => state.editor.selectedInstrument
   );
 
-  const dispatch = useDispatch();
+  const song = useSelector((state: RootState) => 
+    state.tracker.song
+  );
+  console.log("SONG", song)
 
   const selectSidebar = () => { };
 
@@ -56,35 +53,34 @@ export const SongEditor = ({
       | React.ChangeEvent<HTMLInputElement>
       | React.ChangeEvent<HTMLTextAreaElement>
   ) => {
-    const editValue = castEventValue(e);
-    // dispatch(
-    //   entitiesActions.editSpriteSheet({
-    //     spriteSheetId: id,
-    //     changes: {
-    //       [key]: editValue,
-    //     },
-    //   })
-    // );
+      const editValue = castEventValue(e);
+    dispatch(
+      trackerActions.editSong({
+        changes: {
+          [key]: editValue,
+        },
+      })
+    );
   };
 
   let instrumentData: DutyInstrument | NoiseInstrument | WaveInstrument | null = null;
-  if (data) {
+  if (song) {
     const selectedInstrumentId = parseInt(selectedInstrument.id);
     switch (selectedInstrument.type) {
       case "instrument":
-        instrumentData = data[`duty_instruments`][selectedInstrumentId];
+        instrumentData = song.duty_instruments[selectedInstrumentId];
         break;
       case "noise":
-        instrumentData = data[`noise_instruments`][selectedInstrumentId];
+        instrumentData = song.noise_instruments[selectedInstrumentId];
         break;
       case "wave":
-        instrumentData = data[`wave_instruments`][selectedInstrumentId];
+        instrumentData = song.wave_instruments[selectedInstrumentId];
         break;
     }
   }
   console.log(instrumentData);
 
-  if (!data || !instrumentData) {
+  if (!song || !instrumentData) {
     return null;
   }
 
@@ -96,7 +92,7 @@ export const SongEditor = ({
             <EditableText
               name="name"
               placeholder="Song"
-              value={data?.name || ""}
+              value={song?.name || ""}
               onChange={onChangeFieldInput("name")}
             />
 
@@ -120,7 +116,8 @@ export const SongEditor = ({
           <FormRow>
             <Input
               name="artist"
-              value={data?.artist}
+              value={song?.artist}
+              onChange={onChangeFieldInput("artist")}
             />
           </FormRow>
           <FormRow>
@@ -130,7 +127,7 @@ export const SongEditor = ({
             <Input
               name="ticks_per_row"
               type="number"
-              value={data?.ticks_per_row}
+              value={song?.ticks_per_row}
               min={0}
               max={20}
             />
@@ -158,7 +155,7 @@ export const SongEditor = ({
             </DropdownButton>
           </FormHeader>
           {
-            renderInstrumentEditor(instrumentData)
+            renderInstrumentEditor(selectedInstrument.type, instrumentData)
           }
         </FormContainer>
       </SidebarColumn>

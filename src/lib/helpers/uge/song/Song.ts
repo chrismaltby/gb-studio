@@ -1,7 +1,5 @@
-import { DutyInstrument } from "./DutyInstrument";
-import { NoiseInstrument } from "./NoiseInstrument";
+import { DutyInstrument, NoiseInstrument, WaveInstrument } from "../../../../store/features/tracker/trackerTypes";
 import { PatternCell } from "./PatternCell";
-import { WaveInstrument } from "./WaveInstrument";
 
 export class Song {
     name: string;
@@ -32,14 +30,20 @@ export class Song {
         this.sequence = [];
     }
 
-    addInstrument(instrument: DutyInstrument | WaveInstrument | NoiseInstrument) {
-        let list = [];
-        if (instrument instanceof DutyInstrument)
-            list = this.duty_instruments;
-        if (instrument instanceof WaveInstrument)
-            list = this.wave_instruments;
-        if (instrument instanceof NoiseInstrument)
-            list = this.noise_instruments;
+    addDutyInstrument(instrument: DutyInstrument) {
+        const list = this.duty_instruments;
+        instrument.index = list.length;
+        list.push(instrument);
+    }
+
+    addWaveInstrument(instrument: WaveInstrument) {
+        const list = this.wave_instruments;
+        instrument.index = list.length;
+        list.push(instrument);
+    }
+
+    addNoiseInstrument(instrument: NoiseInstrument) {
+        const list = this.noise_instruments;
         instrument.index = list.length;
         list.push(instrument);
     }
@@ -124,22 +128,26 @@ export function createDefaultSong() {
 
     for (const [sweep_value, sweep_name] of sweeps) {
         for (const [duty_value, duty_name] of duties) {
-            const i: DutyInstrument = new DutyInstrument(`Duty ${duty_name}${sweep_name}`);
-            i.duty_cycle = duty_value;
-            i.volume_sweep_change = sweep_value;
-            song.addInstrument(i);
+            const i = {
+               name: `Duty ${duty_name}${sweep_name}`,
+               duty_cycle: duty_value,
+               volume_sweep_change: sweep_value 
+            } as DutyInstrument;
+            song.addDutyInstrument(i);
         }
     }
 
     const waves: [number, string][] = [[0, "Square wave 12.5%"], [1, "Square wave 25%"], [2, "Square wave 50%"], [3, "Square wave 75%"], [4, "Sawtooth wave"], [5, "Triangle wave"], [6, "Sine wave"], [7, "Toothy"], [8, "Triangle Toothy"], [9, "Pointy"], [10, "Strange"]];
 
     for (const [wave_index, wave_name] of waves) {
-        const i: WaveInstrument = new WaveInstrument(`${wave_name}`);
-        i.wave_index = wave_index;
-        song.addInstrument(i);
+        const i = {
+            name: `${wave_name}`,
+            wave_index: wave_index
+        } as WaveInstrument;
+        song.addWaveInstrument(i);
     }
 
-    song.addInstrument(new NoiseInstrument("Noise"));
+    song.addNoiseInstrument({ name: "Noise" } as NoiseInstrument);
 
     song.waves.push(new Uint8Array([0x0, 0x0, 0x0, 0x0, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf]));
     song.waves.push(new Uint8Array([0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf]));
