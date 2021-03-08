@@ -34,10 +34,11 @@ export const cacheObjData = async (buildRoot, tmpPath, env) => {
       fileName.indexOf("bank_") !== 0 &&
       fileName.indexOf("music_bank_") !== 0
     ) {
-        
       const matchingSrc = srcFiles.find(
-        (file) =>
-          file.endsWith(`${fileName}.c`) || file.endsWith(`${fileName}.s`)
+        (file) => {
+          const baseName = Path.basename(file);
+          return baseName === `${fileName}.c` || baseName === `${fileName}.s`
+        }
       );
 
       if (matchingSrc) {

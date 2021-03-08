@@ -1,5 +1,10 @@
 /** @file stdio.h
     Basic file/console input output functions.
+
+    Including stdio.h will use a large number of the
+    background tiles for font characters. If stdio.h
+    is not included then that space will be available
+    for use with other tiles instead.
  */
 #ifndef STDIO_INCLUDE
 #define STDIO_INCLUDE
@@ -21,6 +26,9 @@ void putchar(char c);
     Does not return the number of characters printed.
 
     Currently supported:
+    \li \%hx (char as hex)
+    \li \%hu (unsigned char)
+    \li \%hd (signed char)
     \li \%c (character)
     \li \%u (unsigned int)
     \li \%d (signed int)

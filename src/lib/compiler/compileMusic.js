@@ -28,6 +28,8 @@ const compileMusic = async ({
   const cacheRoot = Path.normalize(`${tmpPath}/_gbscache/music`);
   const buildToolsVersion = await readFile(`${buildToolsPath}/tools_version`, "utf8");
 
+  return;
+
   await ensureDir(`${buildRoot}/src/music`);
   await ensureDir(cacheRoot);
 

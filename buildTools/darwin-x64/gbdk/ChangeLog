@@ -1,3 +1,13 @@
+gbdk3-4.0.2
+    - Updated documentation
+    - Library was improved
+        - Linking with stdio.h does not require that much rom now
+        - Default font is changed to the smaller one (102 characters), that leaves space for user tiles
+        - Fixed broken support for multiplying longs
+        - Multiple minor improvements
+    - New bankpack feature, allows automatic bank allocation for data and code, see banks_autobank example, feature is in beta state, use with care
+    - Lcc improvements
+
 gbdk3-4.0.1
     - Updated documentation
     - IHX is checked for correctness before the makebin stage. That allows to warn about overwriting the same ROM addresses (SDCC toolchain does not check this anymore). 

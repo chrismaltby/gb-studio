@@ -121,6 +121,7 @@
 	.endif
 
 	.globl  __current_bank
+	.globl	__shadow_OAM_base
 	
 	;; Global variables
 	.globl	.mode

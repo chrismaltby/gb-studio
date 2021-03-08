@@ -1,5 +1,7 @@
 /** @file gb/sgb.h
     Super Gameboy definitions.
+
+    See the example SGB project for additional details.
 */
 #ifndef _SGB_H
 #define _SGB_H

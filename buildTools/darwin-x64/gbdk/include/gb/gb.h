@@ -4,7 +4,7 @@
 #ifndef _GB_H
 #define _GB_H
 
-#define __GBDK_VERSION 400
+#define __GBDK_VERSION 402
 
 #include <types.h>
 #include <gb/hardware.h>
@@ -277,7 +277,10 @@ void mode(UINT8 m) NONBANKED;
 */
 UINT8 get_mode(void) NONBANKED __preserves_regs(b, c);
 
-/** GB type (GB, PGB, CGB) */
+/** GB CPU type
+
+    @see DMG_TYPE, MGB_TYPE, CGB_TYPE, cpu_fast(), cpu_slow()
+*/
 extern UINT8 _cpu;
 
 /** Hardware Model: Original GB or Super GB. @see _cpu
@@ -342,12 +345,12 @@ extern volatile UINT8 _io_out;
 
 
 /** Tracks current active ROM bank @see SWITCH_ROM_MBC1(), SWITCH_ROM_MBC5()
-    This variable is updated automatically when you call SWITCH_ROM_MBC1 or 
+    This variable is updated automatically when you call SWITCH_ROM_MBC1 or
     SWITCH_ROM_MBC5, or call a BANKED function.
 */
 __REG _current_bank;
 
-/** Makes MBC1 and other compatible MBCs to switch the active ROM bank
+/** Makes MBC1 and other compatible MBCs switch the active ROM bank
     @param b   ROM bank to switch to
 */
 #define SWITCH_ROM_MBC1(b) \
@@ -375,7 +378,7 @@ __REG _current_bank;
 #define SWITCH_4_32_MODE_MBC1 \
   *(unsigned char *)0x6000 = 0x01
 
-/** Makes MBC5 to switch the active ROM bank; only 4M roms are supported, @see SWITCH_ROM_MBC5_8M()
+/** Makes MBC5 switch to the active ROM bank; only 4M roms are supported, @see SWITCH_ROM_MBC5_8M()
     @param b   ROM bank to switch to
 
     Note the order used here. Writing the other way around on a MBC1 always selects bank 1
@@ -470,7 +473,7 @@ typedef struct {
     @param joypads	pointer to joypads_t structure to be initialized
 
     Only required for @ref joypad_ex, not required for calls to regular @ref joypad()
-    Returns number of joypads avaliable
+    @returns number of joypads avaliable
     @see joypad_ex(), joypads_t
 */
 UINT8 joypad_init(UINT8 npads, joypads_t * joypads);
@@ -631,19 +634,21 @@ void set_bkg_data(UINT8 first_tile,
     @param first_tile  Index of the first Tile to write
     @param nb_tiles    Number of Tiles to write
     @param data        Pointer to (1bpp) source Tile Pattern data
+    @param color       Color
 
     Similar to @ref set_bkg_data, except source data is 1 bit-per-pixel
     which gets expanded into 2 bits-per-pixel.
 
     For a given bit that represent a pixel:
     \li 0 will be expanded into color 0
-    \li 1 will be expanded into color 3
+    \li 1 will be expanded into color 1, 2 or 3 depending on color argument
 
     @see SHOW_BKG, HIDE_BKG, set_bkg_tiles
 */
 void set_bkg_1bit_data(UINT8 first_tile,
          UINT8 nb_tiles,
-         unsigned char *data) NONBANKED __preserves_regs(b, c);
+         unsigned char *data,
+         UINT8 color) NONBANKED __preserves_regs(b, c);
 
 
 /** Copies from Background / Window VRAM Tile Pattern data into a buffer
@@ -978,6 +983,9 @@ typedef struct OAM_item_t {
 */
 extern volatile struct OAM_item_t shadow_OAM[];
 
+/** MSB of shadow_OAM address is used by OAM DMA copying routine
+*/
+__REG _shadow_OAM_base;
 
 /** Sets sprite number __nb__ to display tile number __tile__.
 

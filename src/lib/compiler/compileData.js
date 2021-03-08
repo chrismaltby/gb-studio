@@ -8,11 +8,7 @@ import {
 } from "../helpers/eventSystem";
 import compileImages from "./compileImages";
 import { indexBy } from "../helpers/array";
-import {
-  hi,
-  lo,
-  convertHexTo15BitDec,
-} from "../helpers/8bit";
+import { hi, lo, convertHexTo15BitDec } from "../helpers/8bit";
 import compileEntityEvents from "./compileEntityEvents";
 import {
   EVENT_TEXT,
@@ -20,14 +16,17 @@ import {
   EVENT_END,
   EVENT_PLAYER_SET_SPRITE,
   EVENT_PALETTE_SET_BACKGROUND,
-  EVENT_PALETTE_SET_UI
+  EVENT_PALETTE_SET_UI,
 } from "./eventTypes";
-import { projectTemplatesRoot, MAX_ACTORS, MAX_TRIGGERS, DMG_PALETTE, TMP_VAR_1, TMP_VAR_2 } from "../../consts";
 import {
-  dirToXDec,
-  dirToYDec,
-  animSpeedDec,
-} from "./helpers";
+  projectTemplatesRoot,
+  MAX_ACTORS,
+  MAX_TRIGGERS,
+  DMG_PALETTE,
+  TMP_VAR_1,
+  TMP_VAR_2,
+} from "../../consts";
+import { dirToXDec, dirToYDec, animSpeedDec } from "./helpers";
 import compileSprites from "./compileSprites";
 import compileAvatars from "./compileAvatars";
 import compileFonts from "./compileFonts";
@@ -68,6 +67,7 @@ import {
   sceneSymbol,
   compileScriptHeader,
   compileGameGlobalsInclude,
+  fontSymbol,
 } from "./compileData2";
 import compileSGBImage from "./sgb";
 import { readFileToTilesData } from "../tiles/tileData";
@@ -127,7 +127,12 @@ const compile = async (
   output["frame_image.h"] = compileFrameImageHeader(precompiled.frameTiles);
   output["cursor_image.c"] = compileCursorImage(precompiled.cursorTiles);
   output["cursor_image.h"] = compileCursorImageHeader(precompiled.cursorTiles);
-  output["border.c"] = await compileSGBImage(Path.join(projectRoot, "assets/sgb/sgb.png"))
+
+  const sgbPath = await ensureProjectAsset("assets/sgb/border.png", {
+    projectRoot,
+    warnings,
+  });
+  output["border.c"] = await compileSGBImage(sgbPath);
 
   progress(EVENT_MSG_COMPILING_EVENTS);
   // Hacky small wait to allow console to update before event loop is blocked
@@ -147,7 +152,7 @@ const compile = async (
       entityIndex,
       loop,
       lock,
-      scriptType,
+      scriptType
     ) => {
       let entityCode = "";
       let scriptTypeCode = "interact";
@@ -159,24 +164,23 @@ const compile = async (
           hit1Script: "hit1",
           hit2Script: "hit2",
           hit3Script: "hit3",
-        }
+        };
         entityCode = `a${entityIndex}`;
         scriptTypeCode = scriptLookup[scriptType] || scriptTypeCode;
-      }
-      else if (entityType === "trigger") {
+      } else if (entityType === "trigger") {
         entityCode = `t${entityIndex}`;
         scriptTypeCode = "interact";
-      }  else if (entityType === "scene") {
+      } else if (entityType === "scene") {
         const scriptLookup = {
           script: "init",
           playerHit1Script: "p_hit1",
           playerHit2Script: "p_hit2",
           playerHit3Script: "p_hit3",
-        }        
+        };
         scriptTypeCode = scriptLookup[scriptType] || scriptTypeCode;
-      }       
-            
-      const scriptName = `script_s${sceneIndex}${entityCode}_${scriptTypeCode}`
+      }
+
+      const scriptName = `script_s${sceneIndex}${entityCode}_${scriptTypeCode}`;
 
       if (script.length < 2) {
         return null;
@@ -208,15 +212,12 @@ const compile = async (
         output: [],
       });
 
-
       output[`${scriptName}.s`] = compiledScript;
       output[`${scriptName}.h`] = compileScriptHeader(scriptName);
       return scriptName;
     };
 
     const bankSceneEvents = (scene, sceneIndex) => {
-
-      
       // // Compile start scripts for actors
       // scene.actors.forEach((actor, actorIndex) => {
       //   const actorStartScript = (actor.startScript || []).filter(
@@ -243,14 +244,17 @@ const compile = async (
         true,
         "script"
       );
-
     };
 
-    const bankEntityEvents = (entityType, entityScriptField = "script") => (entity, entityIndex) => {
-      if(!entity[entityScriptField] || entity[entityScriptField].length <= 1) {
+    const bankEntityEvents = (entityType, entityScriptField = "script") => (
+      entity,
+      entityIndex
+    ) => {
+      if (!entity[entityScriptField] || entity[entityScriptField].length <= 1) {
         return null;
       }
-      const lockScript = entityScriptField === "script" && !entity.collisionGroup;
+      const lockScript =
+        entityScriptField === "script" && !entity.collisionGroup;
       return compileScript(
         entity[entityScriptField],
         entityType,
@@ -268,44 +272,69 @@ const compile = async (
       playerHit2: bankEntityEvents("scene", "playerHit2Script")(scene),
       playerHit3: bankEntityEvents("scene", "playerHit3Script")(scene),
       actors: scene.actors.map(bankEntityEvents("actor")),
-      actorsMovement: scene.actors.map(bankEntityEvents("actor","updateScript")),
-      actorsHit1: scene.actors.map(bankEntityEvents("actor","hit1Script")),
-      actorsHit2: scene.actors.map(bankEntityEvents("actor","hit2Script")),
-      actorsHit3: scene.actors.map(bankEntityEvents("actor","hit3Script")),
+      actorsMovement: scene.actors.map(
+        bankEntityEvents("actor", "updateScript")
+      ),
+      actorsHit1: scene.actors.map(bankEntityEvents("actor", "hit1Script")),
+      actorsHit2: scene.actors.map(bankEntityEvents("actor", "hit2Script")),
+      actorsHit3: scene.actors.map(bankEntityEvents("actor", "hit3Script")),
       triggers: scene.triggers.map(bankEntityEvents("trigger")),
     };
   });
 
   precompiled.usedTilesets.forEach((tileset, tilesetIndex) => {
     output[`tileset_${tilesetIndex}.c`] = compileTileset(tileset, tilesetIndex);
-    output[`tileset_${tilesetIndex}.h`] = compileTilesetHeader(tileset, tilesetIndex);
+    output[`tileset_${tilesetIndex}.h`] = compileTilesetHeader(
+      tileset,
+      tilesetIndex
+    );
   });
-  
+
   // Add palette data
   precompiled.usedPalettes.forEach((palette, paletteIndex) => {
-    const paletteData = palette.length > 0 ? palette.reduce((memo, colors) => {
-      return memo.concat(
-        colors.reduce((colorMemo, color) => {
-          const colorVal = convertHexTo15BitDec(color);
-          return colorMemo.concat([lo(colorVal), hi(colorVal)]);
-        }, [])
-      );
-    }, []) : [0];
-    output[`${paletteSymbol(paletteIndex)}.c`] = compilePalette(paletteData, paletteIndex);
-    output[`${paletteSymbol(paletteIndex)}.h`] = compilePaletteHeader(paletteData, paletteIndex);
-    
+    const paletteData =
+      palette.length > 0
+        ? palette.reduce((memo, colors) => {
+            return memo.concat(
+              colors.reduce((colorMemo, color) => {
+                const colorVal = convertHexTo15BitDec(color);
+                return colorMemo.concat([lo(colorVal), hi(colorVal)]);
+              }, [])
+            );
+          }, [])
+        : [0];
+    output[`${paletteSymbol(paletteIndex)}.c`] = compilePalette(
+      paletteData,
+      paletteIndex
+    );
+    output[`${paletteSymbol(paletteIndex)}.h`] = compilePaletteHeader(
+      paletteData,
+      paletteIndex
+    );
   });
 
   // Add background map data
   precompiled.usedBackgrounds.forEach((background, backgroundIndex) => {
-    output[`background_${backgroundIndex}.c`] = compileBackground(background, backgroundIndex);
-    output[`background_${backgroundIndex}.h`] = compileBackgroundHeader(background, backgroundIndex);
+    output[`background_${backgroundIndex}.c`] = compileBackground(
+      background,
+      backgroundIndex
+    );
+    output[`background_${backgroundIndex}.h`] = compileBackgroundHeader(
+      background,
+      backgroundIndex
+    );
   });
 
   // Add sprite data
   precompiled.usedSprites.forEach((sprite, spriteIndex) => {
-    output[`spritesheet_${spriteIndex}.c`] = compileSpriteSheet(sprite, spriteIndex);
-    output[`spritesheet_${spriteIndex}.h`] = compileSpriteSheetHeader(sprite, spriteIndex);
+    output[`spritesheet_${spriteIndex}.c`] = compileSpriteSheet(
+      sprite,
+      spriteIndex
+    );
+    output[`spritesheet_${spriteIndex}.h`] = compileSpriteSheetHeader(
+      sprite,
+      spriteIndex
+    );
   });
 
   // Add font data
@@ -339,26 +368,67 @@ const compile = async (
       });
     const bgPalette = precompiled.scenePaletteIndexes[scene.id] || 0;
     const actorsPalette = precompiled.sceneActorPaletteIndexes[scene.id] || 0;
-  
-    output[`scene_${sceneIndex}.c`] = compileScene(scene, sceneIndex, { bgPalette, actorsPalette, color: customColorsEnabled, eventPtrs });
+
+    output[`scene_${sceneIndex}.c`] = compileScene(scene, sceneIndex, {
+      bgPalette,
+      actorsPalette,
+      color: customColorsEnabled,
+      eventPtrs,
+    });
     output[`scene_${sceneIndex}.h`] = compileSceneHeader(scene, sceneIndex);
-    output[`scene_${sceneIndex}_collisions.c`] = compileSceneCollisions(scene, sceneIndex, collisions);
-    output[`scene_${sceneIndex}_collisions.h`] = compileSceneCollisionsHeader(scene, sceneIndex);
-    output[`scene_${sceneIndex}_colors.c`] = compileSceneColors(scene, sceneIndex, tileColors);
-    output[`scene_${sceneIndex}_colors.h`] = compileSceneColorsHeader(scene, sceneIndex);
+    output[`scene_${sceneIndex}_collisions.c`] = compileSceneCollisions(
+      scene,
+      sceneIndex,
+      collisions
+    );
+    output[`scene_${sceneIndex}_collisions.h`] = compileSceneCollisionsHeader(
+      scene,
+      sceneIndex
+    );
+    output[`scene_${sceneIndex}_colors.c`] = compileSceneColors(
+      scene,
+      sceneIndex,
+      tileColors
+    );
+    output[`scene_${sceneIndex}_colors.h`] = compileSceneColorsHeader(
+      scene,
+      sceneIndex
+    );
 
     if (scene.actors.length > 0) {
-      output[`scene_${sceneIndex}_actors.h`] = compileSceneActorsHeader(scene, sceneIndex);
-      output[`scene_${sceneIndex}_actors.c`] = compileSceneActors(scene, sceneIndex, precompiled.usedSprites, precompiled.actorPaletteIndexes, { eventPtrs });
+      output[`scene_${sceneIndex}_actors.h`] = compileSceneActorsHeader(
+        scene,
+        sceneIndex
+      );
+      output[`scene_${sceneIndex}_actors.c`] = compileSceneActors(
+        scene,
+        sceneIndex,
+        precompiled.usedSprites,
+        precompiled.actorPaletteIndexes,
+        { eventPtrs }
+      );
     }
     if (scene.triggers.length > 0) {
-      output[`scene_${sceneIndex}_triggers.h`] = compileSceneTriggersHeader(scene, sceneIndex);
-      output[`scene_${sceneIndex}_triggers.c`] = compileSceneTriggers(scene, sceneIndex, { eventPtrs });
+      output[`scene_${sceneIndex}_triggers.h`] = compileSceneTriggersHeader(
+        scene,
+        sceneIndex
+      );
+      output[`scene_${sceneIndex}_triggers.c`] = compileSceneTriggers(
+        scene,
+        sceneIndex,
+        { eventPtrs }
+      );
     }
     if (scene.sprites.length > 0) {
-      output[`scene_${sceneIndex}_sprites.h`] = compileSceneSpritesHeader(scene, sceneIndex);
-      output[`scene_${sceneIndex}_sprites.c`] = compileSceneSprites(scene, sceneIndex);
-    }    
+      output[`scene_${sceneIndex}_sprites.h`] = compileSceneSpritesHeader(
+        scene,
+        sceneIndex
+      );
+      output[`scene_${sceneIndex}_sprites.c`] = compileSceneSprites(
+        scene,
+        sceneIndex
+      );
+    }
   });
 
   let startSceneIndex = precompiled.sceneData.findIndex(
@@ -412,27 +482,32 @@ const compile = async (
   // rounding to nearest 50 vars to prevent frequent
   // changes to data_ptrs.h which would invalidate build cache
   const variablesLen = Math.max(
-    (Math.ceil(precompiled.variables.length / 50) * 50) + 50
-  , 500);
+    Math.ceil(precompiled.variables.length / 50) * 50 + 50,
+    500
+  );
 
-  output['game_globals.i'] = compileGameGlobalsInclude(variableAliasLookup);
+  output["game_globals.i"] = compileGameGlobalsInclude(variableAliasLookup);
 
   output[`data_bootstrap.h`] =
     `#ifndef DATA_PTRS_H\n#define DATA_PTRS_H\n\n` +
     `#include "bankdata.h"\n` +
     `#include "gbs_types.h"\n\n` +
     `#define NUM_VARIABLES ${variablesLen}\n` +
-    `#define TMP_VAR_1 ${precompiled.variables.indexOf(TMP_VAR_1)}\n` + 
-    `#define TMP_VAR_2 ${precompiled.variables.indexOf(TMP_VAR_2)}\n\n` + 
+    `#define TMP_VAR_1 ${precompiled.variables.indexOf(TMP_VAR_1)}\n` +
+    `#define TMP_VAR_2 ${precompiled.variables.indexOf(TMP_VAR_2)}\n\n` +
     `extern const INT16 start_scene_x;\n` +
     `extern const INT16 start_scene_y;\n` +
     `extern const direction_e start_scene_dir;\n` +
     `extern const far_ptr_t start_scene;\n` +
-    (customColorsEnabled ? `extern const far_ptr_t start_player_palette;\n` : "") +
+    (customColorsEnabled
+      ? `extern const far_ptr_t start_player_palette;\n`
+      : "") +
     `extern const UBYTE start_player_move_speed;\n` +
     `extern const UBYTE start_player_anim_tick;\n\n` +
+    `extern const far_ptr_t ui_fonts[];\n\n` +
     `// Engine fields\n` +
-    compileEngineFields(engineFields, projectData.engineFieldValues, true) + '\n' +
+    compileEngineFields(engineFields, projectData.engineFieldValues, true) +
+    "\n" +
     `${music
       .map((track, index) => {
         return `extern const unsigned int ${track.dataName}_Data[];`;
@@ -442,15 +517,30 @@ const compile = async (
     `#include "data/data_bootstrap.h"\n` +
     `#include "data/${sceneSymbol(startSceneIndex)}.h"\n` +
     (customColorsEnabled ? `#include "data/${paletteSymbol(0)}.h"\n` : "") +
-    `\n` +
-    `const INT16 start_scene_x = ${((startX || 0) * 8 * 16)};\n` +
-    `const INT16 start_scene_y = ${(((startY+1) || 0) * 8 * 16)};\n` +
+    precompiled.usedFonts
+      .map((_, fontIndex) => `#include "data/${fontSymbol(fontIndex)}.h"`)
+      .join(",\n") +
+    `\n\n` +
+    `const INT16 start_scene_x = ${(startX || 0) * 8 * 16};\n` +
+    `const INT16 start_scene_y = ${(startY + 1 || 0) * 8 * 16};\n` +
     `const direction_e start_scene_dir = ${startDirectionX};\n` +
-    `const far_ptr_t start_scene = ${toFarPtr(sceneSymbol(startSceneIndex))};\n` +
-    (customColorsEnabled ? `const far_ptr_t start_player_palette = ${toFarPtr(paletteSymbol(0))};\n` : "") +
+    `const far_ptr_t start_scene = ${toFarPtr(
+      sceneSymbol(startSceneIndex)
+    )};\n` +
+    (customColorsEnabled
+      ? `const far_ptr_t start_player_palette = ${toFarPtr(
+          paletteSymbol(0)
+        )};\n`
+      : "") +
     `const UBYTE start_player_move_speed = ${animSpeedDec(startMoveSpeed)};\n` +
     `const UBYTE start_player_anim_tick = ${animSpeedDec(startAnimSpeed)};\n` +
-    compileEngineFields(engineFields, projectData.engineFieldValues) + '\n' +
+    `const far_ptr_t ui_fonts[] = {\n` +
+    precompiled.usedFonts
+      .map((_, fontIndex) => "  " + toFarPtr(fontSymbol(fontIndex)))
+      .join(",\n") +
+    `\n};\n` +
+    compileEngineFields(engineFields, projectData.engineFieldValues) +
+    "\n" +
     `unsigned char script_variables[${variablesLen}] = { 0 };\n`;
 
   const maxDataBank = 255;
@@ -493,12 +583,13 @@ const precompile = async (
   );
 
   progress(EVENT_MSG_PRE_UI_IMAGES);
-  const {
-    frameTiles,
-    cursorTiles,
-  } = await precompileUIImages(projectRoot, tmpPath, {
-    warnings,
-  });
+  const { frameTiles, cursorTiles } = await precompileUIImages(
+    projectRoot,
+    tmpPath,
+    {
+      warnings,
+    }
+  );
 
   progress(EVENT_MSG_PRE_SPRITES);
   const { usedSprites } = await precompileSprites(
@@ -536,7 +627,7 @@ const precompile = async (
     {
       warnings,
     }
-  )
+  );
 
   progress(EVENT_MSG_PRE_SCENES);
   const sceneData = precompileScenes(
@@ -548,14 +639,20 @@ const precompile = async (
     }
   );
 
-  const { usedPalettes, scenePaletteIndexes, sceneActorPaletteIndexes, actorPaletteIndexes, eventPaletteIndexes } = await precompilePalettes(
+  const {
+    usedPalettes,
+    scenePaletteIndexes,
+    sceneActorPaletteIndexes,
+    actorPaletteIndexes,
+    eventPaletteIndexes,
+  } = await precompilePalettes(
     projectData.scenes,
     projectData.settings,
     projectData.palettes,
     {
       warnings,
-    }    
-  )
+    }
+  );
 
   progress(EVENT_MSG_PRE_COMPLETE);
 
@@ -578,22 +675,31 @@ const precompile = async (
     scenePaletteIndexes,
     sceneActorPaletteIndexes,
     actorPaletteIndexes,
-    eventPaletteIndexes
+    eventPaletteIndexes,
   };
 };
 
-export const compileEngineFields = (engineFields, engineFieldValues, header) => {
+export const compileEngineFields = (
+  engineFields,
+  engineFieldValues,
+  header
+) => {
   let fieldDef = "";
   if (engineFields.length > 0) {
-    for(const engineField of engineFields) {
+    for (const engineField of engineFields) {
       const prop = engineFieldValues.find((p) => p.id === engineField.key);
       const customValue = prop && prop.value;
-      const value = customValue !== undefined ? Number(customValue) : Number(engineField.defaultValue);
-      fieldDef += `${header ? "extern " : ""}${engineField.cType} ${engineField.key}${!header && value !== undefined ? ` = ${value}` : ""};\n`
+      const value =
+        customValue !== undefined
+          ? Number(customValue)
+          : Number(engineField.defaultValue);
+      fieldDef += `${header ? "extern " : ""}${engineField.cType} ${
+        engineField.key
+      }${!header && value !== undefined ? ` = ${value}` : ""};\n`;
     }
   }
   return fieldDef;
-}
+};
 
 export const precompileVariables = (scenes) => {
   const variables = [];
@@ -705,7 +811,12 @@ export const precompileBackgrounds = async (
   };
 };
 
-export const precompilePalettes = async (scenes, settings, palettes, { warnings } = {}) => {
+export const precompilePalettes = async (
+  scenes,
+  settings,
+  palettes,
+  { warnings } = {}
+) => {
   const usedPalettes = [];
   const usedPalettesCache = {};
   const scenePaletteIndexes = {};
@@ -714,25 +825,27 @@ export const precompilePalettes = async (scenes, settings, palettes, { warnings 
   const actorPaletteIndexes = {};
   const MAX_ACTOR_PALETTES = 7;
 
-  if(settings.customColorsEnabled) {
-
+  if (settings.customColorsEnabled) {
     const palettesLookup = indexById(palettes);
-    const defaultBackgroundPaletteIds = settings.defaultBackgroundPaletteIds || [];
+    const defaultBackgroundPaletteIds =
+      settings.defaultBackgroundPaletteIds || [];
     const defaultSpritePaletteId = settings.defaultSpritePaletteId;
     const defaultUIPaletteId = settings.defaultUIPaletteId;
 
     const getPalette = (id, fallbackId) => {
-      if(id === "dmg") {
+      if (id === "dmg") {
         return DMG_PALETTE;
       }
-      return palettesLookup[id]
-        || palettesLookup[fallbackId]
-        || DMG_PALETTE;
-    }    
+      return palettesLookup[id] || palettesLookup[fallbackId] || DMG_PALETTE;
+    };
 
     // Player palettes
 
-    const playerPalette = [[].concat(getPalette(settings.playerPaletteId, defaultSpritePaletteId).colors)];
+    const playerPalette = [
+      [].concat(
+        getPalette(settings.playerPaletteId, defaultSpritePaletteId).colors
+      ),
+    ];
     playerPalette[0][2] = playerPalette[0][1];
     playerPalette[0][1] = playerPalette[0][0];
     const playerPaletteKey = JSON.stringify(playerPalette);
@@ -742,9 +855,7 @@ export const precompilePalettes = async (scenes, settings, palettes, { warnings 
 
     // UI palettes
 
-    const uiPalette = [
-      getPalette(defaultUIPaletteId)
-    ].map((p) => p.colors);
+    const uiPalette = [getPalette(defaultUIPaletteId)].map((p) => p.colors);
     const uiPaletteKey = JSON.stringify(uiPalette);
     const uiPaletteIndex = usedPalettes.length;
     usedPalettes.push(uiPalette);
@@ -752,21 +863,39 @@ export const precompilePalettes = async (scenes, settings, palettes, { warnings 
 
     // Scene palettes
 
-    for(let i=0; i<scenes.length; i++) {
+    for (let i = 0; i < scenes.length; i++) {
       const scene = scenes[i];
       const sceneBackgroundPaletteIds = scene.paletteIds || [];
 
       const scenePalette = [
-        getPalette(sceneBackgroundPaletteIds[0], defaultBackgroundPaletteIds[0]),
-        getPalette(sceneBackgroundPaletteIds[1], defaultBackgroundPaletteIds[1]),
-        getPalette(sceneBackgroundPaletteIds[2], defaultBackgroundPaletteIds[2]),
-        getPalette(sceneBackgroundPaletteIds[3], defaultBackgroundPaletteIds[3]),
-        getPalette(sceneBackgroundPaletteIds[4], defaultBackgroundPaletteIds[4]),
-        getPalette(sceneBackgroundPaletteIds[5], defaultBackgroundPaletteIds[5]),
+        getPalette(
+          sceneBackgroundPaletteIds[0],
+          defaultBackgroundPaletteIds[0]
+        ),
+        getPalette(
+          sceneBackgroundPaletteIds[1],
+          defaultBackgroundPaletteIds[1]
+        ),
+        getPalette(
+          sceneBackgroundPaletteIds[2],
+          defaultBackgroundPaletteIds[2]
+        ),
+        getPalette(
+          sceneBackgroundPaletteIds[3],
+          defaultBackgroundPaletteIds[3]
+        ),
+        getPalette(
+          sceneBackgroundPaletteIds[4],
+          defaultBackgroundPaletteIds[4]
+        ),
+        getPalette(
+          sceneBackgroundPaletteIds[5],
+          defaultBackgroundPaletteIds[5]
+        ),
       ].map((p) => p.colors);
 
       const scenePaletteKey = JSON.stringify(scenePalette);
-      if(usedPalettesCache[scenePaletteKey] === undefined) {
+      if (usedPalettesCache[scenePaletteKey] === undefined) {
         // New palette
         const paletteIndex = usedPalettes.length;
         usedPalettes.push(scenePalette);
@@ -778,30 +907,34 @@ export const precompilePalettes = async (scenes, settings, palettes, { warnings 
       }
 
       // Actor Palettes ---
-       
+
       const sceneActorPalettes = [];
       const sceneActorPalettesCache = {};
 
       // Determine palettes used for each actor in scene
-      for(let a=0; a<scene.actors.length; a++) {
+      for (let a = 0; a < scene.actors.length; a++) {
         const actor = scene.actors[a];
 
-        const actorPalette = [].concat(getPalette(actor.paletteId, defaultSpritePaletteId).colors);
+        const actorPalette = [].concat(
+          getPalette(actor.paletteId, defaultSpritePaletteId).colors
+        );
         actorPalette[2] = actorPalette[1];
         actorPalette[1] = actorPalette[0];
         const actorPaletteKey = JSON.stringify(actorPalette);
 
-        if(sceneActorPalettesCache[actorPaletteKey] === undefined) {
+        if (sceneActorPalettesCache[actorPaletteKey] === undefined) {
           const paletteIndex = sceneActorPalettes.length;
           sceneActorPalettes.push(actorPalette);
           sceneActorPalettesCache[actorPaletteKey] = paletteIndex;
 
-          if(sceneActorPalettes.length > MAX_ACTOR_PALETTES) {
+          if (sceneActorPalettes.length > MAX_ACTOR_PALETTES) {
             warnings(
               `Scene #${i + 1} ${
                 scene.name ? `'${scene.name}'` : ""
-              } contains too many unique actor color palettes (${sceneActorPalettes.length} when limit is ${MAX_ACTOR_PALETTES}) some actors may not appear correctly}.`              
-            )
+              } contains too many unique actor color palettes (${
+                sceneActorPalettes.length
+              } when limit is ${MAX_ACTOR_PALETTES}) some actors may not appear correctly}.`
+            );
           }
         }
       }
@@ -810,41 +943,50 @@ export const precompilePalettes = async (scenes, settings, palettes, { warnings 
       // used in a different order in another scene
       // Crop to only allow 7 sprites palettes per scene
       const sortedSceneActorPalettes = sceneActorPalettes
-      .slice(0, MAX_ACTOR_PALETTES)
-      .sort((a, b) => {
-        if(a[0] < b[0]) {
-          return -1;
-        }
-        if (a[0] > b[0]) {
-          return 1;
-        }
-        return 0;
-      });
+        .slice(0, MAX_ACTOR_PALETTES)
+        .sort((a, b) => {
+          if (a[0] < b[0]) {
+            return -1;
+          }
+          if (a[0] > b[0]) {
+            return 1;
+          }
+          return 0;
+        });
 
       // Check if sorted sprite palette has already been used already
       const sortedActorPaletteKey = JSON.stringify(sortedSceneActorPalettes);
-      if(usedPalettesCache[sortedActorPaletteKey] === undefined) {
+      if (usedPalettesCache[sortedActorPaletteKey] === undefined) {
         // New palette
         const paletteIndex = usedPalettes.length;
         usedPalettes.push(sortedSceneActorPalettes);
         usedPalettesCache[sortedActorPaletteKey] = paletteIndex;
         sceneActorPaletteIndexes[scene.id] = paletteIndex;
       } else {
-        sceneActorPaletteIndexes[scene.id] = usedPalettesCache[sortedActorPaletteKey];
+        sceneActorPaletteIndexes[scene.id] =
+          usedPalettesCache[sortedActorPaletteKey];
       }
 
-      const sceneUsedActorPalette = usedPalettes[sceneActorPaletteIndexes[scene.id]];
-      const sceneUsedActorPaletteKeys = sceneUsedActorPalette.map(JSON.stringify);
+      const sceneUsedActorPalette =
+        usedPalettes[sceneActorPaletteIndexes[scene.id]];
+      const sceneUsedActorPaletteKeys = sceneUsedActorPalette.map(
+        JSON.stringify
+      );
 
       // Determine correct palette index in scene for each actor
       //  based on the sorted and cropped color palette
-      for(let a=0; a<scene.actors.length; a++) {
+      for (let a = 0; a < scene.actors.length; a++) {
         const actor = scene.actors[a];
-        const actorPalette = [].concat(getPalette(actor.paletteId, defaultSpritePaletteId).colors);
+        const actorPalette = [].concat(
+          getPalette(actor.paletteId, defaultSpritePaletteId).colors
+        );
         actorPalette[2] = actorPalette[1];
         actorPalette[1] = actorPalette[0];
         const actorPaletteKey = JSON.stringify(actorPalette);
-        const actorPaletteIndex = Math.max(0, sceneUsedActorPaletteKeys.indexOf(actorPaletteKey));
+        const actorPaletteIndex = Math.max(
+          0,
+          sceneUsedActorPaletteKeys.indexOf(actorPaletteKey)
+        );
         actorPaletteIndexes[actor.id] = actorPaletteIndex;
       }
     }
@@ -852,8 +994,7 @@ export const precompilePalettes = async (scenes, settings, palettes, { warnings 
     // Event palettes
 
     walkScenesEvents(scenes, (event) => {
-      if(event.args && event.command === EVENT_PALETTE_SET_BACKGROUND) {
-
+      if (event.args && event.command === EVENT_PALETTE_SET_BACKGROUND) {
         const eventPalette = [
           getPalette(event.args.palette0, defaultBackgroundPaletteIds[0]),
           getPalette(event.args.palette1, defaultBackgroundPaletteIds[1]),
@@ -864,7 +1005,7 @@ export const precompilePalettes = async (scenes, settings, palettes, { warnings 
         ].map((p) => p.colors);
 
         const eventPaletteKey = JSON.stringify(eventPalette);
-        if(usedPalettesCache[eventPaletteKey] === undefined) {
+        if (usedPalettesCache[eventPaletteKey] === undefined) {
           // New palette
           const paletteIndex = usedPalettes.length;
           usedPalettes.push(eventPalette);
@@ -876,10 +1017,10 @@ export const precompilePalettes = async (scenes, settings, palettes, { warnings 
         }
       } else if (event.args && event.command === EVENT_PALETTE_SET_UI) {
         const eventPalette = [
-          getPalette(event.args.palette, defaultUIPaletteId)
+          getPalette(event.args.palette, defaultUIPaletteId),
         ].map((p) => p.colors);
         const eventPaletteKey = JSON.stringify(eventPalette);
-        if(usedPalettesCache[eventPaletteKey] === undefined) {
+        if (usedPalettesCache[eventPaletteKey] === undefined) {
           // New palette
           const paletteIndex = usedPalettes.length;
           usedPalettes.push(eventPalette);
@@ -890,11 +1031,17 @@ export const precompilePalettes = async (scenes, settings, palettes, { warnings 
           eventPaletteIndexes[event.id] = usedPalettesCache[eventPaletteKey];
         }
       }
-    })
+    });
   }
 
-  return { usedPalettes, scenePaletteIndexes, sceneActorPaletteIndexes, actorPaletteIndexes, eventPaletteIndexes };
-}
+  return {
+    usedPalettes,
+    scenePaletteIndexes,
+    sceneActorPaletteIndexes,
+    actorPaletteIndexes,
+    eventPaletteIndexes,
+  };
+};
 
 export const precompileUIImages = async (
   projectRoot,
@@ -927,42 +1074,58 @@ export const precompileSprites = async (
   const usedSpriteLookup = {};
   const spriteLookup = indexById(spriteSheets);
 
-  if(playerSpriteSheetId) {
+  if (playerSpriteSheetId) {
     const spriteSheet = spriteLookup[playerSpriteSheetId];
     if (!spriteSheet) {
-      warnings(`Player Sprite Sheet isn't set. Please, make sure to select a Sprite Sheet in the Project editor.`);
+      warnings(
+        `Player Sprite Sheet isn't set. Please, make sure to select a Sprite Sheet in the Project editor.`
+      );
     }
     usedSprites.push(spriteSheet);
-    usedSpriteLookup[playerSpriteSheetId] = spriteSheet;    
+    usedSpriteLookup[playerSpriteSheetId] = spriteSheet;
   }
 
   walkScenesEvents(scenes, (event) => {
-    if(event.args) {
-      if(event.args.spriteSheetId && !usedSpriteLookup[event.args.spriteSheetId] && spriteLookup[event.args.spriteSheetId]) {
+    if (event.args) {
+      if (
+        event.args.spriteSheetId &&
+        !usedSpriteLookup[event.args.spriteSheetId] &&
+        spriteLookup[event.args.spriteSheetId]
+      ) {
         const spriteSheet = spriteLookup[event.args.spriteSheetId];
         usedSprites.push(spriteSheet);
         usedSpriteLookup[event.args.spriteSheetId] = spriteSheet;
-      } else if(event.args.avatarId && !usedSpriteLookup[event.args.avatarId] && spriteLookup[event.args.avatarId]) {
+      } else if (
+        event.args.avatarId &&
+        !usedSpriteLookup[event.args.avatarId] &&
+        spriteLookup[event.args.avatarId]
+      ) {
         const spriteSheet = spriteLookup[event.args.avatarId];
         usedSprites.push(spriteSheet);
         usedSpriteLookup[event.args.avatarId] = spriteSheet;
       }
     }
   });
-  
-  for(let i=0; i<scenes.length; i++) {
+
+  for (let i = 0; i < scenes.length; i++) {
     const scene = scenes[i];
-    for(let a=0; a<scene.actors.length; a++) {
+    for (let a = 0; a < scene.actors.length; a++) {
       const actor = scene.actors[a];
-      if(actor.spriteSheetId && !usedSpriteLookup[actor.spriteSheetId] && spriteLookup[actor.spriteSheetId]) {
+      if (
+        actor.spriteSheetId &&
+        !usedSpriteLookup[actor.spriteSheetId] &&
+        spriteLookup[actor.spriteSheetId]
+      ) {
         const spriteSheet = spriteLookup[actor.spriteSheetId];
         usedSprites.push(spriteSheet);
-        usedSpriteLookup[actor.spriteSheetId] = spriteSheet;        
+        usedSpriteLookup[actor.spriteSheetId] = spriteSheet;
       }
     }
   }
 
-  const spriteData = await compileSprites(usedSprites, projectRoot, { warnings });
+  const spriteData = await compileSprites(usedSprites, projectRoot, {
+    warnings,
+  });
 
   return {
     usedSprites: spriteData,
@@ -981,8 +1144,12 @@ export const precompileAvatars = async (
   const avatarLookup = indexById(spriteSheets);
 
   walkScenesEvents(scenes, (event) => {
-    if(event.args) {
-      if(event.args.avatarId && !usedAvatarLookup[event.args.avatarId] && avatarLookup[event.args.avatarId]) {
+    if (event.args) {
+      if (
+        event.args.avatarId &&
+        !usedAvatarLookup[event.args.avatarId] &&
+        avatarLookup[event.args.avatarId]
+      ) {
         const spriteSheet = avatarLookup[event.args.avatarId];
         usedAvatars.push(spriteSheet);
         usedAvatarLookup[event.args.avatarId] = spriteSheet;
@@ -990,7 +1157,9 @@ export const precompileAvatars = async (
     }
   });
 
-  const avatarData = await compileAvatars(usedAvatars, projectRoot, { warnings });
+  const avatarData = await compileAvatars(usedAvatars, projectRoot, {
+    warnings,
+  });
 
   return {
     usedAvatars: avatarData,
@@ -1025,21 +1194,26 @@ export const precompileMusic = (scenes, music) => {
   return { usedMusic };
 };
 
-export const precompileFonts = async (fonts, scenes, defaultFontId, projectRoot, { warnings } = {}) => {
-  const defaultFont = fonts.find((font) => font.id === defaultFontId) || fonts[0];
+export const precompileFonts = async (
+  fonts,
+  scenes,
+  defaultFontId,
+  projectRoot,
+  { warnings } = {}
+) => {
+  const defaultFont =
+    fonts.find((font) => font.id === defaultFontId) || fonts[0];
   if (!defaultFont) {
     await ensureProjectAsset("assets/fonts/gbs-mono.png", {
       projectRoot,
     });
-    throw new Error(l10n("ERROR_MISSING_FONTS"))
+    throw new Error(l10n("ERROR_MISSING_FONTS"));
   }
 
   const usedFontIds = [defaultFont.id];
 
   walkScenesEvents(scenes, (cmd) => {
-    if (
-      cmd.args && (cmd.args.fontId !== undefined)
-    ) {
+    if (cmd.args && cmd.args.fontId !== undefined) {
       const fontId = cmd.args.fontId || fonts[0].id;
       // If never seen this font before add it to the list
       if (usedFontIds.indexOf(fontId) === -1) {
@@ -1047,10 +1221,9 @@ export const precompileFonts = async (fonts, scenes, defaultFontId, projectRoot,
       }
     }
   });
-  const usedFonts = fonts
-    .filter((font) => {
-      return usedFontIds.indexOf(font.id) > -1;
-    })
+  const usedFonts = fonts.filter((font) => {
+    return usedFontIds.indexOf(font.id) > -1;
+  });
 
   const fontData = await compileFonts(usedFonts, projectRoot, { warnings });
 
@@ -1103,8 +1276,13 @@ export const precompileScenes = (
     const eventSpriteIds = [];
 
     walkSceneEvents(scene, (event) => {
-      if(event.args && event.args.spriteSheetId && event.command !== EVENT_PLAYER_SET_SPRITE && !event.args.__comment) {
-        eventSpriteIds.push(event.args.spriteSheetId)
+      if (
+        event.args &&
+        event.args.spriteSheetId &&
+        event.command !== EVENT_PLAYER_SET_SPRITE &&
+        !event.args.__comment
+      ) {
+        eventSpriteIds.push(event.args.spriteSheetId);
       }
     });
 
@@ -1149,9 +1327,10 @@ const ensureProjectAsset = async (relativePath, { projectRoot, warnings }) => {
       overwrite: false,
       errorOnExist: true,
     });
-    warnings && warnings(
-      `${relativePath} was missing, copying default file to project assets`
-    );
+    warnings &&
+      warnings(
+        `${relativePath} was missing, copying default file to project assets`
+      );
   } catch (e) {
     // Don't need to catch this, if it failed then the file already exists
     // and we can safely continue.

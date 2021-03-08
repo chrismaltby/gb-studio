@@ -163,6 +163,7 @@ const makeBuild = async ({
           data.name.toUpperCase()
         );
         await cacheObjData(buildRoot, tmpPath, env);
+        await fs.unlink(`${buildRoot}/${makeScriptFile}`);
         resolve();
       } else reject(code);
     });

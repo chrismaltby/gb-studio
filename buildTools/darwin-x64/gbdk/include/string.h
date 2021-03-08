@@ -17,7 +17,7 @@
 
     @return 			A pointer to dest
 */
-char *strcpy(char *dest, const char *src) NONBANKED;
+char *strcpy(char *dest, const char *src) NONBANKED __preserves_regs(b, c);
 
 /** Compares strings
 
@@ -29,7 +29,7 @@ char *strcpy(char *dest, const char *src) NONBANKED;
     \li 0 if __s1__ == __s2__
     \li < 0 if __s1__ < __s2__
 */
-int strcmp(const char *s1, const char *s2) NONBANKED;
+int strcmp(const char *s1, const char *s2) NONBANKED __preserves_regs(b, c);
 
 /** Copies n bytes from memory area src to memory area dest.
 
@@ -39,7 +39,7 @@ int strcmp(const char *s1, const char *s2) NONBANKED;
     @param src			Buffer to copy from
     @param len			Number of Bytes to copy
 */
-void *memcpy(void *dest, const void *src, size_t len) NONBANKED;
+void *memcpy(void *dest, const void *src, size_t len) NONBANKED __preserves_regs(b, c);
 
 /** Fills the memory region __s__ with __n__ bytes using value __c__
 
@@ -47,7 +47,7 @@ void *memcpy(void *dest, const void *src, size_t len) NONBANKED;
     @param c         char value to fill with (truncated from int)
     @param n         Number of bytes to fill
 */
-void *memset (void *s, int c, size_t n);
+void *memset (void *s, int c, size_t n) NONBANKED __preserves_regs(b, c);
 
 /** Reverses the characters in a string
 
@@ -59,7 +59,7 @@ void *memset (void *s, int c, size_t n);
 
     Returns: Pointer to __s__
 */
-char *reverse(char *s);
+char *reverse(char *s) __preserves_regs(b, c);
 
 /** Concatenate Strings. Appends string __s2__ to the end of string __s1__
 
@@ -80,7 +80,7 @@ char *strcat(char *s1, const char *s2) NONBANKED;
 
     Returns: Length of string not including the terminating `\0' character.
 */
-int strlen(const char *s) NONBANKED;
+int strlen(const char *s) NONBANKED __preserves_regs(b, c);
 
 /**Concatenate at most __n__ characters from string __s2__ onto the end of __s1__.
 
