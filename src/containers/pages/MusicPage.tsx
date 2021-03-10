@@ -251,7 +251,7 @@ const MusicPage = () => {
             id={selectedId}
             sequenceId={sequenceId}
             data={song}
-            height={windowHeight - 188 + 20}
+            height={windowHeight - 100}
           />
         </div>
       </div>

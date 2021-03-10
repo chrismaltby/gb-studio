@@ -3,7 +3,7 @@ import styled from "styled-components";
 import l10n from "../../lib/helpers/l10n";
 import { PatternCell } from "../../lib/helpers/uge/song/PatternCell";
 import { Song } from "../../lib/helpers/uge/song/Song";
-import { SplitPaneVerticalDivider } from "../ui/splitpane/SplitPaneDivider";
+import { SplitPaneHorizontalDivider, SplitPaneVerticalDivider } from "../ui/splitpane/SplitPaneDivider";
 import { SplitPaneHeader } from "../ui/splitpane/SplitPaneHeader";
 import { SequenceEditor } from "./SequenceEditor";
 import { SongRow } from "./SongRow";
@@ -28,7 +28,6 @@ export const SongTracker = ({
   height
 }: SongTrackerProps) => {
   const [playbackState, setPlaybackState] = useState([-1, -1]);
-  console.log(playbackState);
 
   const list = useRef<HTMLInputElement>(null);
 
@@ -39,22 +38,25 @@ export const SongTracker = ({
   }
 
   return (
-    <div>
+    <div style={{
+      display: "flex",
+      width: "100%",
+    }}>
       <div style={{ position: "relative" }}>
-        <SplitPaneHeader
-          onToggle={() => { }}
-          collapsed={false}
-        >
-          {l10n("FIELD_SEQUENCES")}
-        </SplitPaneHeader>
         <SequenceEditor
           id={id}
           data={data?.sequence}
           playbackState={playbackState}
+          height={height}
         />
       </div>
-      <SplitPaneVerticalDivider />
-      <div style={{ position: "relative", overflow: "auto", flexGrow: 1, height }}>
+      <SplitPaneHorizontalDivider />
+      <div style={{ 
+          position: "relative", 
+          overflow: "auto", 
+          flexGrow: 1, 
+          height 
+        }}>
         <Wrapper
           ref={list}
         >

@@ -7,12 +7,14 @@ import { RootState } from "../../store/configureStore";
 interface SequenceEditorProps {
   id: string,
   data?: number[],
-  playbackState: number[]
+  playbackState: number[],
+  height: number
 }
 
 export const SequenceEditor = ({
   data,
-  playbackState
+  playbackState,
+  height
 }: SequenceEditorProps) => {
   const dispatch = useDispatch();
   const setSequenceId = useCallback(
@@ -31,9 +33,12 @@ export const SequenceEditor = ({
   }
 
   return (
-    <div>
+    <div style={{
+      height
+    }}>
       {data && data.map(
         (item, i) =>
+          <div>
           <Button
             variant="transparent"
             onClick={() => setSequenceId(i)}
@@ -41,6 +46,7 @@ export const SequenceEditor = ({
           >
             {item}
           </Button>
+        </div>
       )}
     </div>
   )
