@@ -4,18 +4,17 @@ const fields = [
   {
     key: "actorId",
     type: "actor",
-    defaultValue: "$self$"
-  }
+    defaultValue: "$self$",
+  },
 ];
 
 const compile = (input, helpers) => {
-  const { actorSetActive, actorHide } = helpers;
-  actorSetActive(input.actorId);
-  actorHide();
+  const { actorHide } = helpers;
+  actorHide(input.actorId);
 };
 
 module.exports = {
   id,
   fields,
-  compile
+  compile,
 };

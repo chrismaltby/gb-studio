@@ -578,6 +578,11 @@ class ScriptBuilder {
     this._addCmd("VM_ACTOR_ACTIVATE", addr);
   };
 
+  _actorDeactivate = (addr: string) => {
+    this.includeActor = true;
+    this._addCmd("VM_ACTOR_DEACTIVATE", addr);
+  };
+
   _actorMoveTo = (addr: string) => {
     this._addCmd("VM_ACTOR_MOVE_TO", addr);
   };
@@ -588,6 +593,10 @@ class ScriptBuilder {
 
   _actorSetDirection = (addr: string, asmDir: string) => {
     this._addCmd("VM_ACTOR_SET_DIR", addr, asmDir);
+  };
+
+  _actorSetHidden = (addr: string, hidden: boolean) => {
+    this._addCmd("VM_ACTOR_SET_HIDDEN", addr, hidden ? 1 : 0);
   };
 
   _loadText = (numInputs: number) => {
@@ -770,16 +779,30 @@ class ScriptBuilder {
     console.error("actorPush not implemented");
   };
 
-  actorShow = () => {
+  actorShow = (id: string) => {
+    const { scene, entity } = this.options;
+    const newIndex =
+      id === "$self$" && entity
+        ? getActorIndex(entity.id, scene)
+        : getActorIndex(id, scene);
     this._addComment("Actor Show");
-    this._addComment("NOT IMPLEMENTED");
-    console.error("actorShow not implemented");
+    this.actorIndex = newIndex;
+    this._setConst("ACTOR", this.actorIndex);
+    this._actorSetHidden("ACTOR", false);
+    this._actorActivate("ACTOR");
   };
 
-  actorHide = () => {
+  actorHide = (id: string) => {
+    const { scene, entity } = this.options;
+    const newIndex =
+      id === "$self$" && entity
+        ? getActorIndex(entity.id, scene)
+        : getActorIndex(id, scene);
     this._addComment("Actor Hide");
-    this._addComment("NOT IMPLEMENTED");
-    console.error("actorHide not implemented");
+    this.actorIndex = newIndex;
+    this._setConst("ACTOR", this.actorIndex);
+    this._actorSetHidden("ACTOR", true);
+    this._actorDeactivate("ACTOR");
   };
 
   actorSetCollisions = (enabled: boolean) => {

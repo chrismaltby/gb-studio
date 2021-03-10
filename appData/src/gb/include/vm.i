@@ -398,6 +398,11 @@ OP_VM_ACTOR_GET_POS     = 0x3A
         .db OP_VM_ACTOR_GET_POS, #>IDX, #<IDX
 .endm
 
+OP_VM_ACTOR_SET_HIDDEN     = 0x3B
+.macro VM_ACTOR_SET_HIDDEN ACTOR, HIDDEN
+        .db OP_VM_ACTOR_SET_HIDDEN, #<HIDDEN, #>ACTOR, #<ACTOR
+.endm
+
 ; --- UI ------------------------------------------
 
 OP_VM_LOAD_TEXT         = 0x40

@@ -186,3 +186,10 @@ void vm_actor_replace_tile(SCRIPT_CTX * THIS, INT16 idx, UBYTE target_tile, UBYT
     actor_t * actor = actors + *n_actor;
     SetBankedSpriteData(actor->base_tile + target_tile, length, tileset->tiles + (start_tile << 4), tileset_bank);
 }
+
+void vm_actor_set_hidden(SCRIPT_CTX * THIS, INT16 idx, UBYTE hidden) __banked {    
+    actor_t *actor;
+    UBYTE * n_actor = VM_REF_TO_PTR(idx);
+    actor = actors + *n_actor;
+    actor->hidden = hidden;
+}

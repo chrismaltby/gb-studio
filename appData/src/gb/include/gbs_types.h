@@ -43,6 +43,7 @@ typedef struct actor_t
   bounding_box_t bounds;
   UINT8 base_tile;
   UINT8 pinned;
+  UINT8 hidden;  
   UINT8 frame;
   UINT8 frame_start;
   UINT8 frame_end;
