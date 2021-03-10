@@ -21,6 +21,13 @@ extern UBYTE sprites_len;
 extern UBYTE actors_len;
 extern LCD_isr_e scene_LCD_type;
 
+#define SCENE_STACK_SIZE 8
+
+extern scene_stack_item_t scene_stack[SCENE_STACK_SIZE];
+extern scene_stack_item_t * scene_stack_ptr;
+
+void load_init() __banked;
+
 void load_tiles(const tileset_t* tiles, UBYTE bank) __banked;
 void load_image(const background_t *background, UBYTE bank) __banked;
 void load_palette(const UBYTE *data_ptr, UBYTE bank) __banked;

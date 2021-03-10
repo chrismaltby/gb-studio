@@ -1,12 +1,12 @@
         .include        "global.s"
 
-		.globl _vwf_current_rotate, _vwf_current_mask, _vwf_inverse_map
+        .globl _vwf_current_rotate, _vwf_current_mask, _vwf_inverse_map
 
-		.area _CODE
+        .area _CODE
 
 ; used from __nonbanked code, so should be nonbanked too, because bank is random
 _ui_time_masks::
-		.db #0x00, #0x00, #0x00, #0x01, #0x03, #0x07, #0x0f, #0x1f
+        .db #0x00, #0x00, #0x00, #0x01, #0x03, #0x07, #0x0f, #0x1f
 
 ; void ui_print_shift_char(void * dest, const void * src, UBYTE bank);
 
@@ -37,12 +37,12 @@ _ui_print_shift_char::
         xor c
         ld c, a
         inc de
+
         ld a, (de)
         ld b, a
         ld a, (_vwf_inverse_map)
         xor b
         ld b, a
-
         inc de
 
         ld a, (_vwf_current_rotate)

@@ -4,17 +4,17 @@ const id = "EVENT_SAVE_DATA";
 
 const fields = [
   {
-    label: l10n("FIELD_SAVE_DATA")
-  }
+    label: l10n("FIELD_SAVE_DATA"),
+  },
 ];
 
 const compile = (input, helpers) => {
   const { dataSave } = helpers;
-  dataSave();
+  dataSave(0);
 };
 
 module.exports = {
   id,
   fields,
-  compile
+  compile,
 };

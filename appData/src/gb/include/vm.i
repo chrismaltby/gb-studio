@@ -598,6 +598,18 @@ OP_VM_WAVE_PLAY         = 0x66
         .db OP_VM_WAVE_PLAY, #>SIZE, #<SIZE, #>ADDR, #<ADDR, #<BANK, #<FRAMES
 .endm
 
+; --- SCENES -------------------------------
+
+OP_VM_SCENE_PUSH        = 0x68
+.macro VM_SCENE_PUSH
+        .db OP_VM_SCENE_PUSH
+.endm
+
+OP_VM_SCENE_POP         = 0x69
+.macro VM_SCENE_POP
+        .db OP_VM_SCENE_POP
+.endm
+
 ; --- CAMERA -------------------------------
 
 OP_VM_CAMERA_MOVE_TO     = 0x70

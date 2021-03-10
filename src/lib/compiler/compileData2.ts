@@ -613,8 +613,7 @@ ${spriteSheet.metasprites
     )}_metasprite_${metaspriteIndex}[]  = {
   ${metasprite
     .map((tile) => `{ ${tile.y}, ${tile.x}, ${tile.tile}, ${tile.props} }`)
-    .join(", ")},
-  {metasprite_end}
+    .join(", ")}${metasprite.length > 0 ? ",\n" : ""}{metasprite_end}
 };`;
   })
   .join("\n\n")}

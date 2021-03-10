@@ -7,6 +7,7 @@
 #include "ui.h"
 #include "input.h"
 #include "gbs_types.h"
+#include "bankdata.h"
 
 #define VM_ARG_TEXT_IN_SPEED -1
 #define VM_ARG_TEXT_OUT_SPEED -2
@@ -21,63 +22,57 @@ void vm_load_text(UWORD dummy0, UWORD dummy1, SCRIPT_CTX * THIS, UBYTE nargs) __
     UBYTE _save = _current_bank;
     SWITCH_ROM_MBC1(THIS->bank);
     
-    const UBYTE * args = THIS->PC;
+    const INT16 * args = (INT16 *)THIS->PC;
+    const unsigned char * s = THIS->PC + (nargs << 1);
     unsigned char * d = ui_text_data; 
-    const unsigned char * s = args + (nargs << 1);
     INT16 idx;
 
+    text_line_count = 1;
     while (*s) {
         if (*s == '%') {
-            s++;
-            switch (*s) {
+            idx = *args;
+            if (idx < 0) idx = *(THIS->stack_ptr + idx); else idx = script_memory[idx];
+            switch (*++s) {
                 // variable value
                 case 'd':
-                    idx = *((INT16 *)args);
-                    if (idx < 0) idx = *(THIS->stack_ptr + idx); else idx = script_memory[idx];
                     d += strlen(itoa(idx, d));
                     s++;
-                    args += 2u;
+                    args++;
                     continue;
                 // char from variable
                 case 'c':
-                    idx = *((INT16 *)args);
-                    if (idx < 0) idx = *(THIS->stack_ptr + idx); else idx = script_memory[idx];
                     *d++ = (unsigned char)idx;
+                    if ((unsigned char)idx == '\n') text_line_count++;
                     s++;
-                    args += 2u;
+                    args++;
                     continue;
                 // text tempo from variable
                 case 't':
-                    idx = *((INT16 *)args);
-                    if (idx < 0) idx = *(THIS->stack_ptr + idx); else idx = script_memory[idx];
                     *d++ = 0x01u;
                     *d++ = (unsigned char)idx + 0x02u;
                     s++;
-                    args += 2u;
+                    args++;
                     continue;
                 // font index from variable
                 case 'f':
-                    idx = *((INT16 *)args);
-                    if (idx < 0) idx = *(THIS->stack_ptr + idx); else idx = script_memory[idx];
                     *d++ = 0x02u;
                     *d++ = (unsigned char)idx + 0x01u;
                     s++;
-                    args += 2u;
+                    args++;
                     continue;
+                // excape % symbol
                 case '%':
                     break;
                 default:
                     s--;
             }
+
         }
-        *d++ = *s++;
+        *d = *s++;
+        if (*d == '\n') text_line_count++;
+        *d++;
     }
     *d = 0, s++;
-
-    // count newlines (no wrapping)
-    text_line_count = 1;
-    for (UBYTE * i = ui_text_data; (*i); i++)
-        if (*i == '\n') text_line_count++;
 
     SWITCH_ROM_MBC1(_save);
     THIS->PC = s;
@@ -192,5 +187,6 @@ void vm_load_cursor(SCRIPT_CTX * THIS, UBYTE bank, UBYTE * offset) __banked {
 
 void vm_set_font(SCRIPT_CTX * THIS, UBYTE bank, UBYTE * offset) __banked {
     THIS;
-    font_image_ptr.bank = bank; font_image_ptr.ptr = offset;
+    vwf_current_font_bank = bank;
+    MemcpyBanked(&vwf_current_font_desc, offset, sizeof(font_desc_t), bank);
 }

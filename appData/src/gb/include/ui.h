@@ -3,6 +3,7 @@
 
 #include <gb/gb.h>
 
+#include "gbs_types.h"
 #include "bankdata.h"
 
 #define MENU_ENABLE 1
@@ -59,7 +60,8 @@ extern UBYTE text_bkg_fill;
 
 extern unsigned char ui_text_data[TEXT_MAX_LENGTH];
 
-extern far_ptr_t font_image_ptr;
+extern font_desc_t vwf_current_font_desc;
+extern UBYTE vwf_current_font_bank;
 
 void ui_init() __banked;
 void ui_update() __nonbanked;  // critical path, __nonbanked for speed

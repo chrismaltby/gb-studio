@@ -197,6 +197,7 @@ const toASMDir = (direction: string) => {
   } else if (direction === "down") {
     return ".DIR_DOWN";
   }
+  return ".DIR_DOWN";
 };
 
 const toScriptOperator = (
@@ -472,6 +473,10 @@ class ScriptBuilder {
     this._addCmd(`    IMPORT_FAR_PTR_DATA`, `_${farPtr}`);
   };
 
+  _saveSlot = (slot: number) => {
+    this._addCmd(`    .SAVE_SLOT ${slot}`);
+  };
+
   _dw = (...data: Array<string | number>) => {
     this._addCmd(`.dw ${data.join(", ")}`);
   };
@@ -666,6 +671,18 @@ class ScriptBuilder {
     this._addCmd("VM_INPUT_WAIT", mask);
   };
 
+  _isDataSaved = (variable: string | number, slot: number) => {
+    this._addCmd("VM_DATA_IS_SAVED", variable, slot);
+  };
+
+  _scenePush = () => {
+    this._addCmd("VM_SCENE_PUSH");
+  };
+
+  _scenePop = () => {
+    this._addCmd("VM_SCENE_POP");
+  };
+
   _fadeIn = (speed: number) => {
     this._addCmd("VM_FADE_IN", speed);
   };
@@ -750,21 +767,37 @@ class ScriptBuilder {
   actorPush = (continueUntilCollision = false) => {
     this._addComment("Actor Push");
     this._addComment("NOT IMPLEMENTED");
+    console.error("actorPush not implemented");
   };
 
   actorShow = () => {
     this._addComment("Actor Show");
     this._addComment("NOT IMPLEMENTED");
+    console.error("actorShow not implemented");
   };
 
   actorHide = () => {
     this._addComment("Actor Hide");
     this._addComment("NOT IMPLEMENTED");
+    console.error("actorHide not implemented");
   };
 
   actorSetCollisions = (enabled: boolean) => {
     this._addComment("Actor Set Collisions");
     this._addComment("NOT IMPLEMENTED");
+    console.error("actorSetCollisions not implemented");
+  };
+
+  actorSetDirection = (direction: string) => {
+    this._actorSetDirection("ACTOR", toASMDir(direction));
+  };
+
+  actorEmote = (emoteId = 0) => {
+    this._addComment("Actor Emote");
+
+    // const output = this.output;
+    // output.push(cmd(ACTOR_EMOTE));
+    // output.push(emoteId);
   };
 
   // --------------------------------------------------------------------------
@@ -948,6 +981,38 @@ class ScriptBuilder {
     this._inputWait(inputDec(input));
   };
 
+  inputScriptSet = (input: string, persist: boolean, script: any) => {
+    console.error("inputScriptSet not implemented");
+
+    // const output = this.output;
+    // const { compileEvents, banked } = this.options;
+
+    // const subScript = [];
+    // if (typeof script === "function") {
+    //   this.output = subScript;
+    //   script();
+    //   this.output = output;
+    // } else {
+    //   compileEvents(script, subScript, false);
+    // }
+    // const bankPtr = banked.push(subScript);
+
+    // output.push(cmd(SET_INPUT_SCRIPT));
+    // output.push(inputDec(input));
+    // output.push(persist ? 1 : 0);
+    // output.push(bankPtr.bank);
+    // output.push(hi(bankPtr.offset));
+    // output.push(lo(bankPtr.offset));
+  };
+
+  inputScriptRemove = (input: string) => {
+    console.error("inputScriptRemove not implemented");
+
+    // const output = this.output;
+    // output.push(cmd(REMOVE_INPUT_SCRIPT));
+    // output.push(inputDec(input));
+  };
+
   // --------------------------------------------------------------------------
   // Scenes
 
@@ -975,6 +1040,27 @@ class ScriptBuilder {
       this._raiseException("EXCEPTION_CHANGE_SCENE", 3);
       this._importFarPtrData(`scene_${sceneIndex}`);
     }
+  };
+
+  scenePushState = () => {
+    this._addComment("Push Scene State");
+    this._scenePush();
+  };
+
+  scenePopState = (fadeSpeed = 2) => {
+    this._addComment("Pop Scene State");
+    this._fadeOut(fadeSpeed);
+    this._scenePop();
+  };
+
+  scenePopAllState = (fadeSpeed = 2) => {
+    this._addComment("Pop All Scene State");
+    console.error("scenePopAllState not implemented");
+  };
+
+  sceneResetState = () => {
+    this._addComment("Reset Scene State Stack");
+    console.error("sceneResetState not implemented");
   };
 
   // --------------------------------------------------------------------------
@@ -1362,6 +1448,19 @@ class ScriptBuilder {
   };
 
   // --------------------------------------------------------------------------
+  // Music
+
+  musicPlay = (musicId: string, loop = false) => {
+    console.error("musicPlay not implemented");
+    // throw new Error("musicPlay not implemented");
+  };
+
+  musicStop = () => {
+    console.error("musicStop not implemented");
+    // throw new Error("musicStop not implemented");
+  };
+
+  // --------------------------------------------------------------------------
   // Labels
 
   getNextLabel = (): string => {
@@ -1375,6 +1474,27 @@ class ScriptBuilder {
 
   labelGoto = (name: string) => {
     this._jump(name);
+  };
+
+  // --------------------------------------------------------------------------
+  // Data
+
+  dataLoad = (slot: number) => {
+    this._addComment(`Load Data from Slot ${slot}`);
+    this._raiseException("EXCEPTION_LOAD", 1);
+    this._saveSlot(slot);
+  };
+
+  dataSave = (slot: number) => {
+    this._addComment(`Save Data to Slot ${slot}`);
+    this._raiseException("EXCEPTION_SAVE", 1);
+    this._saveSlot(slot);
+  };
+
+  dataClear = (slot: number) => {
+    this._addComment(`Clear Data in Slot ${slot}`);
+    console.error("dataClear not implemented");
+    // throw new Error("dataClear not implemented");
   };
 
   // --------------------------------------------------------------------------
@@ -1490,6 +1610,25 @@ class ScriptBuilder {
     this._label(falseLabel);
     this._compilePath(falsePath);
     this._label(endLabel);
+  };
+
+  ifDataSaved = (
+    slot: number,
+    truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
+    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+  ) => {
+    const trueLabel = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+    this._addComment(`If Variable True`);
+    this._stackPushConst(0);
+    this._isDataSaved(".ARG0", slot);
+    this._ifConst(".EQ", ".ARG0", 1, trueLabel, 0);
+    this._compilePath(falsePath);
+    this._jump(endLabel);
+    this._label(trueLabel);
+    this._compilePath(truePath);
+    this._label(endLabel);
+    this._stackPop(1);
   };
 
   caseVariableValue = (

@@ -512,7 +512,7 @@ const compile = async (
       .map((track, index) => {
         return `extern const unsigned int ${track.dataName}_Data[];`;
       })
-      .join(`\n`)}#endif\n`;
+      .join(`\n`)}\n\n#endif\n`;
   output[`data_bootstrap.c`] =
     `#include "data/data_bootstrap.h"\n` +
     `#include "data/${sceneSymbol(startSceneIndex)}.h"\n` +

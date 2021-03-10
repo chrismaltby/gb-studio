@@ -68,12 +68,14 @@ UBYTE vwf_current_mask;
 UBYTE vwf_current_rotate;
 UBYTE vwf_inverse_map;
 
-far_ptr_t font_image_ptr;
+font_desc_t vwf_current_font_desc;
+UBYTE vwf_current_font_bank;
 
 extern const UBYTE ui_time_masks[];
 
 void ui_init() __banked {
-    font_image_ptr              = ui_fonts[0];
+    vwf_current_font_bank = ui_fonts[0].bank;
+    MemcpyBanked(&vwf_current_font_desc, ui_fonts[0].ptr, sizeof(font_desc_t), vwf_current_font_bank);
 
     text_in_speed               = 1;
     text_out_speed              = 1;
@@ -132,24 +134,21 @@ static void ui_print_reset(UBYTE tile) {
 
 void ui_print_shift_char(void * dest, const void * src, UBYTE bank) __nonbanked;
 
-static UBYTE ui_print_render(const font_desc_t * font, const UBYTE font_bank, const unsigned char ch) {
-    font_desc_t font_desc;
-    MemcpyBanked(&font_desc, font, sizeof(font_desc_t), font_bank);
-
-    UBYTE letter = ReadBankedUBYTE(font_desc.recode_table + (ch & ((font_desc.attr & RECODE_7BIT) ? 0x7fu : 0xffu)), font_bank);
-    const UBYTE * bitmap = font_desc.bitmaps + letter * 16u;
-    if (font_desc.attr & FONT_VWF) {
-        vwf_inverse_map = (font_desc.attr & FONT_VWF_1BIT) ? text_bkg_fill : 0;
-        UBYTE width = ReadBankedUBYTE(font_desc.widths + letter, font_bank);
+static UBYTE ui_print_render(const unsigned char ch) {
+    UBYTE letter = ReadBankedUBYTE(vwf_current_font_desc.recode_table + (ch & ((vwf_current_font_desc.attr & RECODE_7BIT) ? 0x7fu : 0xffu)), vwf_current_font_bank);
+    const UBYTE * bitmap = vwf_current_font_desc.bitmaps + letter * 16u;
+    if (vwf_current_font_desc.attr & FONT_VWF) {
+        vwf_inverse_map = (vwf_current_font_desc.attr & FONT_VWF_1BIT) ? text_bkg_fill : 0;
+        UBYTE width = ReadBankedUBYTE(vwf_current_font_desc.widths + letter, vwf_current_font_bank);
         UBYTE dx = (8u - vwf_current_offset);
         vwf_current_mask = (0xffu << dx) | (0xffu >> (vwf_current_offset + width));
 
         vwf_current_rotate = vwf_current_offset;
-        ui_print_shift_char(vwf_tile_data, bitmap, font_bank);
+        ui_print_shift_char(vwf_tile_data, bitmap, vwf_current_font_bank);
         if ((UBYTE)(vwf_current_offset + width) > 8u) {
             vwf_current_rotate = dx | 0x80u;
             vwf_current_mask = 0xffu >> (width - dx);
-            ui_print_shift_char(vwf_tile_data + 16u, bitmap, font_bank);
+            ui_print_shift_char(vwf_tile_data + 16u, bitmap, vwf_current_font_bank);
         }
         vwf_current_offset += width;
 
@@ -164,13 +163,13 @@ static UBYTE ui_print_render(const font_desc_t * font, const UBYTE font_bank, co
         } 
         return FALSE;
     } else {
-        SetBankedBkgData(ui_current_tile++, 1, bitmap, font_bank);
+        SetBankedBkgData(ui_current_tile++, 1, bitmap, vwf_current_font_bank);
         vwf_current_offset = 0;
         return TRUE;
     }
 }
 
-static void ui_draw_text_buffer_char() {
+static void ui_draw_text_buffer_char() __banked {
     if ((text_ff_joypad) && (INPUT_A_OR_B_PRESSED)) text_ff = TRUE;
 
     if ((!text_ff) && (text_wait != 0)) {
@@ -213,8 +212,14 @@ static void ui_draw_text_buffer_char() {
             current_text_speed = ui_time_masks[*++ui_text_ptr] & 0x1fu;
             break;
         case 0x02:
-            font_image_ptr = ui_fonts[*++ui_text_ptr - 0x01u];
+            //font_image_ptr = ui_fonts[*++ui_text_ptr - 0x01u];
+            ++ui_text_ptr;
+            MemcpyBanked(&vwf_current_font_desc, ui_fonts[*ui_text_ptr - 0x01u].ptr, sizeof(font_desc_t), ui_fonts[*ui_text_ptr - 0x01u].bank);
             break;
+        case 0x03:
+            ui_dest_ptr = ui_dest_base = GetWinAddr() + *++ui_text_ptr * 32 + *++ui_text_ptr;
+            if (vwf_current_offset) ui_print_reset(ui_current_tile + 1u);
+            break; 
         case '\n':
             ui_line_no++;
             if (menu_enabled && (menu_layout == MENU_LAYOUT_2_COLUMN) && (ui_line_no == 4u)) {
@@ -226,7 +231,7 @@ static void ui_draw_text_buffer_char() {
             if (vwf_current_offset) ui_print_reset(ui_current_tile + 1u);
             break; 
         default:
-            if (ui_print_render(font_image_ptr.ptr, font_image_ptr.bank, *ui_text_ptr)) {
+            if (ui_print_render(*ui_text_ptr)) {
                 SetTile(ui_dest_ptr++, ui_current_tile - 1);
             }
             if (vwf_current_offset) SetTile(ui_dest_ptr, ui_current_tile);
@@ -236,20 +241,19 @@ static void ui_draw_text_buffer_char() {
 }
 
 void ui_update() __nonbanked {
-    UBYTE interval, is_moving = FALSE;
+    UBYTE is_moving = FALSE;
 
     if (game_time & ui_time_masks[win_speed]) return;
 
-    interval = (win_speed == 1) ? 2 : 1;
-
     // y should always move first
     if (win_pos_y != win_dest_pos_y) {
+        UBYTE interval = (win_speed == 1) ? 2 : 1;
         // move window up/down
         if (win_pos_y < win_dest_pos_y) win_pos_y += interval; else win_pos_y -= interval;
         is_moving = TRUE;
     }
-
     if (win_pos_x != win_dest_pos_x) {
+        UBYTE interval = (win_speed == 1) ? 2 : 1;
         // move window left/right
         if (win_pos_x < win_dest_pos_x) win_pos_x += interval; else win_pos_x -= interval;
         is_moving = TRUE;

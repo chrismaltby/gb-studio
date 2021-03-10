@@ -34,13 +34,22 @@ UBYTE image_tile_height;
 UINT16 image_width;
 UINT16 image_height;
 UBYTE sprites_len;
-UBYTE actors_len = 0;
+UBYTE actors_len;
 UBYTE projectiles_len;
-UBYTE player_sprite_len = 0;
+UBYTE player_sprite_len;
 scene_type_e scene_type;
 LCD_isr_e scene_LCD_type;
 
 const far_ptr_t spritesheet_none_far = TO_FAR_PTR_T(spritesheet_none);
+
+scene_stack_item_t scene_stack[SCENE_STACK_SIZE];
+scene_stack_item_t * scene_stack_ptr;
+
+void load_init() __banked {
+    actors_len = 0;
+    player_sprite_len = 0;
+    scene_stack_ptr = scene_stack;
+}
 
 void load_tiles(const tileset_t* tiles, UBYTE bank) __banked {
     UWORD ntiles = ReadBankedUWORD(&(tiles->n_tiles), bank);

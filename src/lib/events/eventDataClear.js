@@ -4,17 +4,17 @@ const id = "EVENT_CLEAR_DATA";
 
 const fields = [
   {
-    label: l10n("FIELD_CLEAR_DATA")
-  }
+    label: l10n("FIELD_CLEAR_DATA"),
+  },
 ];
 
 const compile = (input, helpers) => {
   const { dataClear } = helpers;
-  dataClear();
+  dataClear(0);
 };
 
 module.exports = {
   id,
   fields,
-  compile
+  compile,
 };

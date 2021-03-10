@@ -8,6 +8,7 @@
 #include "vm_math.h"
 #include "vm_rtc.h"
 #include "vm_projectiles.h"
+#include "vm_scene.h"
 
 // here we define all VM instructions: their handlers and parameter lengths in bytes
 // this array must be nonbanked as well as STEP_VM()
@@ -124,8 +125,8 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_music_routine,          4}, // 0x65
     {vm_wave_play,              6}, // 0x66
     {0, 0},
-    {0, 0},
-    {0, 0},
+    {vm_scene_push,             0}, // 0x68
+    {vm_scene_pop,              0}, // 0x69
     {0, 0},
     {0, 0},
     {0, 0},
