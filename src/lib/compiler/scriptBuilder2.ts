@@ -40,6 +40,9 @@ import {
 import { Dictionary } from "@reduxjs/toolkit";
 import { spriteSheetSymbol } from "./compileData2";
 import { EngineFieldSchema } from "../../store/features/engine/engineState";
+import { FunctionSymbol, OperatorSymbol, Token } from "../rpn/types";
+import tokenize from "../rpn/tokenizer";
+import shuntingYard from "../rpn/shuntingYard";
 
 type ScriptOutput = string[];
 
@@ -103,7 +106,9 @@ type ScriptBuilderRPNOperation =
   | ".B_OR"
   | ".B_XOR"
   | ".B_NOT"
-  | ".ABS";
+  | ".ABS"
+  | ".MIN"
+  | ".MAX";
 
 type ScriptBuilderOverlayMoveSpeed =
   | number
@@ -192,6 +197,51 @@ const toASMDir = (direction: string) => {
   } else if (direction === "down") {
     return ".DIR_DOWN";
   }
+};
+
+const toScriptOperator = (
+  operator: OperatorSymbol
+): ScriptBuilderRPNOperation => {
+  switch (operator) {
+    case "+":
+      return ".ADD";
+    case "-":
+    case "u":
+      return ".SUB";
+    case "/":
+      return ".DIV";
+    case "*":
+      return ".MUL";
+    case "%":
+      return ".MOD";
+    case "&":
+      return ".B_AND";
+    case "|":
+      return ".B_OR";
+    case "^":
+      return ".B_XOR";
+    case "~":
+      return ".B_NOT";
+  }
+  assertUnreachable(operator);
+};
+
+const funToScriptOperator = (
+  fun: FunctionSymbol
+): ScriptBuilderRPNOperation => {
+  switch (fun) {
+    case "min":
+      return ".MIN";
+    case "max":
+      return ".MAX";
+    case "abs":
+      return ".ABS";
+  }
+  assertUnreachable(fun);
+};
+
+const assertUnreachable = (x: never): never => {
+  throw new Error("Didn't expect to get here");
 };
 
 // ------------------------
@@ -1202,6 +1252,42 @@ class ScriptBuilder {
       .stop();
     this._set(variableAlias, ".ARG0");
     this._stackPop(1);
+  };
+
+  variableEvaluateExpression = (variable: string, expression: string) => {
+    const variableAlias = this.getVariableAlias(variable);
+    const tokens = tokenize(expression);
+    const rpnTokens = shuntingYard(tokens);
+    if (rpnTokens.length > 0) {
+      this._addComment(
+        `Variable ${variableAlias} = ${expression
+          .replace(/\s+/g, "")
+          .replace(/\n/g, "")
+          .replace(/(\$L[0-9]\$|\$T[0-1]\$|\$[0-9]+\$)/g, (symbol) => {
+            return this.getVariableAlias(symbol.replace(/\$/g, ""));
+          })}`
+      );
+      let rpn = this._rpn();
+      let token = rpnTokens.shift();
+      while (token) {
+        if (token.type === "VAL") {
+          rpn = rpn.int16(token.value);
+        } else if (token.type === "VAR") {
+          const ref = this.getVariableAlias(token.symbol.replace(/\$/g, ""));
+          rpn = rpn.ref(ref);
+        } else if (token.type === "FUN") {
+          const op = funToScriptOperator(token.function);
+          rpn = rpn.operator(op);
+        } else if (token.type === "OP") {
+          const op = toScriptOperator(token.operator);
+          rpn = rpn.operator(op);
+        }
+        token = rpnTokens.shift();
+      }
+      rpn.stop();
+      this._set(variableAlias, ".ARG0");
+      this._stackPop(1);
+    }
   };
 
   // --------------------------------------------------------------------------

@@ -46,7 +46,6 @@ const Wrapper = styled.div`
 
 const Select = styled(DefaultSelect)`
   .CustomSelect__control {
-    padding-left: 22px;
   }
 `;
 
@@ -87,7 +86,6 @@ const VariableSizeIndicator = styled.div`
 
 const VariableRenameInput = styled(Input)`
   &&&& {
-    padding-left: 25px;
     padding-right: 32px;
     height: 28px;
   }
@@ -409,14 +407,6 @@ export const VariableSelect: FC<VariableSelectProps> = ({
           )}
         />
       )}
-      <VariableSizeIndicator
-        onClick={onClickType}
-        onMouseEnter={onMouseEnterType}
-        onMouseLeave={onMouseLeaveType}
-      >
-        {type === "8bit" && <Bits8Icon />}
-        {type === "16bit" && <Bits16Icon />}
-      </VariableSizeIndicator>
       {canRename &&
         (renameVisible ? (
           <VariableRenameCompleteButton
