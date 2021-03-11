@@ -12,6 +12,7 @@ const fields = [
   {
     label: "=",
     width: "50%",
+    lineHeight: "23px",
   },
   {
     key: "expression",

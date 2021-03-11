@@ -146,9 +146,19 @@ class ScriptEventFormField extends Component {
     }
 
     return (
-      <FormField halfWidth={field.width === "50%"} alignCheckbox={field.alignCheckbox}>
+      <FormField
+        halfWidth={field.width === "50%"}
+        alignCheckbox={field.alignCheckbox}
+      >
         {label && field.type !== "checkbox" && field.type !== "group" && (
-          <label htmlFor={genKey(eventId, field.key)}>{label}</label>
+          <label
+            htmlFor={genKey(eventId, field.key)}
+            style={
+              field.lineHeight ? { lineHeight: field.lineHeight } : undefined
+            }
+          >
+            {label}
+          </label>
         )}
         {inputField}
       </FormField>
