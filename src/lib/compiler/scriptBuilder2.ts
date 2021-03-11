@@ -355,6 +355,10 @@ class ScriptBuilder {
     this.output.push(`        ; ${comment}`);
   };
 
+  private _addNL = () => {
+    this.output.push(``);
+  };
+
   private _addCmd = (cmd: string, ...args: Array<string | number>) => {
     this.output.push(this._padCmd(cmd, args.join(", "), 8, 24));
   };
@@ -785,6 +789,7 @@ class ScriptBuilder {
     this.actorIndex = newIndex;
     this._setConst("ACTOR", this.actorIndex);
     this._actorActivate("ACTOR");
+    this._addNL();
     // }
   };
 
@@ -802,6 +807,7 @@ class ScriptBuilder {
     this._setConst("^/(ACTOR + 4)/", moveTypeDec(moveType));
     this._actorMoveTo("ACTOR");
     this._assertStackNeutral(stackPtr);
+    this._addNL();
   };
 
   actorMoveRelative = (
@@ -827,19 +833,21 @@ class ScriptBuilder {
     this._setConst("^/(ACTOR + 3)/", useCollisions ? 1 : 0);
     this._setConst("^/(ACTOR + 4)/", moveTypeDec(moveType));
     this._actorMoveTo("ACTOR");
-
     this._assertStackNeutral(stackPtr);
+    this._addNL();
   };
 
   actorSetPosition = (x = 0, y = 0) => {
     this._addComment("Actor Set Position");
     this._addComment("NOT IMPLEMENTED");
+    this._addNL();
   };
 
   actorPush = (continueUntilCollision = false) => {
     this._addComment("Actor Push");
     this._addComment("NOT IMPLEMENTED");
     console.error("actorPush not implemented");
+    this._addNL();
   };
 
   actorShow = (id: string) => {
@@ -853,6 +861,7 @@ class ScriptBuilder {
     this._setConst("ACTOR", this.actorIndex);
     this._actorSetHidden("ACTOR", false);
     this._actorActivate("ACTOR");
+    this._addNL();
   };
 
   actorHide = (id: string) => {
@@ -866,16 +875,20 @@ class ScriptBuilder {
     this._setConst("ACTOR", this.actorIndex);
     this._actorSetHidden("ACTOR", true);
     this._actorDeactivate("ACTOR");
+    this._addNL();
   };
 
   actorSetCollisions = (enabled: boolean) => {
     this._addComment("Actor Set Collisions");
     this._addComment("NOT IMPLEMENTED");
     console.error("actorSetCollisions not implemented");
+    this._addNL();
   };
 
   actorSetDirection = (direction: string) => {
+    this._addComment("Actor Set Direction");
     this._actorSetDirection("ACTOR", toASMDir(direction));
+    this._addNL();
   };
 
   actorEmote = (emoteId = 0) => {
@@ -884,6 +897,7 @@ class ScriptBuilder {
     // const output = this.output;
     // output.push(cmd(ACTOR_EMOTE));
     // output.push(emoteId);
+    this._addNL();
   };
 
   // --------------------------------------------------------------------------
@@ -895,6 +909,7 @@ class ScriptBuilder {
     this._stackPushConst(1);
     this._invoke("wait_frames", 1, 1);
     this._assertStackNeutral(stackPtr);
+    this._addNL();
   };
 
   wait = (frames: number) => {
@@ -903,6 +918,7 @@ class ScriptBuilder {
     this._stackPushConst(frames);
     this._invoke("wait_frames", 1, 1);
     this._assertStackNeutral(stackPtr);
+    this._addNL();
   };
 
   // --------------------------------------------------------------------------
@@ -963,6 +979,7 @@ class ScriptBuilder {
         this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
       }
     });
+    this._addNL();
   };
 
   textSetAnimSpeed = (
@@ -976,6 +993,7 @@ class ScriptBuilder {
     this._setConstUInt8("text_draw_speed", textSpeedDec(textSpeed));
     this._setConstUInt8("text_out_speed", speedOut);
     this._setConstUInt8("text_in_speed", speedIn);
+    this._addNL();
   };
 
   textChoice = (
@@ -996,6 +1014,7 @@ class ScriptBuilder {
     this._choice(variableAlias, [".UI_MENU_LAST_0", ".UI_MENU_CANCEL_B"]);
     this._overlayMoveTo(0, 18, ".OVERLAY_TEXT_OUT_SPEED");
     this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
+    this._addNL();
   };
 
   textMenu = (
@@ -1041,22 +1060,26 @@ class ScriptBuilder {
     if (layout === "menu") {
       this._overlayMoveTo(0, 18, 0);
     }
+    this._addNL();
   };
 
   overlayShow = (color = "white", x = 0, y = 0) => {
     this._addComment("Overlay Show");
     this._overlayShow(x, y, color === "white" ? 1 : 0);
+    this._addNL();
   };
 
   overlayHide = () => {
     this._addComment("Overlay Hide");
     this._overlayHide();
+    this._addNL();
   };
 
   overlayMoveTo = (x = 0, y = 18, speed = 0) => {
     this._addComment("Overlay Move To");
     this._overlayMoveTo(x, y, speed);
     this._overlayWait(true, [".UI_WAIT_WINDOW"]);
+    this._addNL();
   };
 
   // --------------------------------------------------------------------------
@@ -1065,6 +1088,7 @@ class ScriptBuilder {
   inputAwait = (input: string[]) => {
     this._addComment("Wait For Input");
     this._inputWait(inputDec(input));
+    this._addNL();
   };
 
   inputScriptSet = (input: string, persist: boolean, script: any) => {
@@ -1089,6 +1113,7 @@ class ScriptBuilder {
     // output.push(bankPtr.bank);
     // output.push(hi(bankPtr.offset));
     // output.push(lo(bankPtr.offset));
+    this._addNL();
   };
 
   inputScriptRemove = (input: string) => {
@@ -1097,6 +1122,7 @@ class ScriptBuilder {
     // const output = this.output;
     // output.push(cmd(REMOVE_INPUT_SCRIPT));
     // output.push(inputDec(input));
+    this._addNL();
   };
 
   // --------------------------------------------------------------------------
@@ -1125,28 +1151,33 @@ class ScriptBuilder {
       }
       this._raiseException("EXCEPTION_CHANGE_SCENE", 3);
       this._importFarPtrData(`scene_${sceneIndex}`);
+      this._addNL();
     }
   };
 
   scenePushState = () => {
     this._addComment("Push Scene State");
     this._scenePush();
+    this._addNL();
   };
 
   scenePopState = (fadeSpeed = 2) => {
     this._addComment("Pop Scene State");
     this._fadeOut(fadeSpeed);
     this._scenePop();
+    this._addNL();
   };
 
   scenePopAllState = (fadeSpeed = 2) => {
     this._addComment("Pop All Scene State");
     console.error("scenePopAllState not implemented");
+    this._addNL();
   };
 
   sceneResetState = () => {
     this._addComment("Reset Scene State Stack");
     console.error("sceneResetState not implemented");
+    this._addNL();
   };
 
   // --------------------------------------------------------------------------
@@ -1219,6 +1250,7 @@ class ScriptBuilder {
       .stop();
     this._set(variableAlias, ".ARG0");
     this._stackPop(1);
+    this._addNL();
   };
 
   variableDec = (variable: string) => {
@@ -1231,24 +1263,28 @@ class ScriptBuilder {
       .stop();
     this._set(variableAlias, ".ARG0");
     this._stackPop(1);
+    this._addNL();
   };
 
   variableSetToTrue = (variable: string) => {
     const variableAlias = this.getVariableAlias(variable);
     this._addComment("Variable Set To True");
     this._setConst(variableAlias, 1);
+    this._addNL();
   };
 
   variableSetToFalse = (variable: string) => {
     const variableAlias = this.getVariableAlias(variable);
     this._addComment("Variable Set To False");
     this._setConst(variableAlias, 0);
+    this._addNL();
   };
 
   variableSetToValue = (variable: string, value: number) => {
     const variableAlias = this.getVariableAlias(variable);
     this._addComment("Variable Set To Value");
     this._setConst(variableAlias, value);
+    this._addNL();
   };
 
   variableCopy = (setVariable: string, otherVariable: string) => {
@@ -1256,6 +1292,7 @@ class ScriptBuilder {
     const variableAliasB = this.getVariableAlias(otherVariable);
     this._addComment("Variable Copy");
     this._set(variableAliasA, variableAliasB);
+    this._addNL();
   };
 
   variableSetToRandom = (variable: string, min: number, range: number) => {
@@ -1263,6 +1300,7 @@ class ScriptBuilder {
     this._addComment("Variable Set To Random");
     this._randomize();
     this._rand(variableAlias, min, range);
+    this._addNL();
   };
 
   variablesOperation = (
@@ -1298,6 +1336,7 @@ class ScriptBuilder {
 
     this._set(variableAliasA, ".ARG0");
     this._stackPop(1);
+    this._addNL();
   };
 
   variableValueOperation = (
@@ -1332,6 +1371,7 @@ class ScriptBuilder {
 
     this._set(variableAliasA, ".ARG0");
     this._stackPop(1);
+    this._addNL();
   };
 
   variableRandomOperation = (
@@ -1370,6 +1410,7 @@ class ScriptBuilder {
 
     this._set(variableAlias, ".ARG0");
     this._stackPop(2);
+    this._addNL();
   };
 
   variablesAdd = (
@@ -1410,6 +1451,7 @@ class ScriptBuilder {
       .stop();
     this._set(variableAlias, ".ARG0");
     this._stackPop(1);
+    this._addNL();
   };
 
   variableClearFlags = (variable: string, flags: number) => {
@@ -1424,6 +1466,7 @@ class ScriptBuilder {
       .stop();
     this._set(variableAlias, ".ARG0");
     this._stackPop(1);
+    this._addNL();
   };
 
   variableEvaluateExpression = (variable: string, expression: string) => {
@@ -1436,6 +1479,7 @@ class ScriptBuilder {
     this._stackPushEvaluatedExpression(expression);
     this._set(variableAlias, ".ARG0");
     this._stackPop(1);
+    this._addNL();
   };
 
   // --------------------------------------------------------------------------
@@ -1463,6 +1507,7 @@ class ScriptBuilder {
       } else {
         this._setConstUInt8(key, numberValue);
       }
+      this._addNL();
     }
   };
 
@@ -1478,6 +1523,7 @@ class ScriptBuilder {
       } else {
         this._setUInt8(key, variableAlias);
       }
+      this._addNL();
     }
   };
 
@@ -1493,6 +1539,7 @@ class ScriptBuilder {
       } else {
         this._getUInt8(variableAlias, key);
       }
+      this._addNL();
     }
   };
 
@@ -1502,11 +1549,13 @@ class ScriptBuilder {
   fadeIn = (speed = 1) => {
     this._addComment(`Fade In`);
     this._fadeIn(speed);
+    this._addNL();
   };
 
   fadeOut = (speed = 1) => {
     this._addComment(`Fade Out`);
     this._fadeOut(speed);
+    this._addNL();
   };
 
   // --------------------------------------------------------------------------
@@ -1515,11 +1564,13 @@ class ScriptBuilder {
   musicPlay = (musicId: string, loop = false) => {
     console.error("musicPlay not implemented");
     // throw new Error("musicPlay not implemented");
+    this._addNL();
   };
 
   musicStop = () => {
     console.error("musicStop not implemented");
     // throw new Error("musicStop not implemented");
+    this._addNL();
   };
 
   // --------------------------------------------------------------------------
@@ -1545,18 +1596,21 @@ class ScriptBuilder {
     this._addComment(`Load Data from Slot ${slot}`);
     this._raiseException("EXCEPTION_LOAD", 1);
     this._saveSlot(slot);
+    this._addNL();
   };
 
   dataSave = (slot: number) => {
     this._addComment(`Save Data to Slot ${slot}`);
     this._raiseException("EXCEPTION_SAVE", 1);
     this._saveSlot(slot);
+    this._addNL();
   };
 
   dataClear = (slot: number) => {
     this._addComment(`Clear Data in Slot ${slot}`);
     console.error("dataClear not implemented");
     // throw new Error("dataClear not implemented");
+    this._addNL();
   };
 
   // --------------------------------------------------------------------------
@@ -1577,6 +1631,7 @@ class ScriptBuilder {
     this._label(trueLabel);
     this._compilePath(truePath);
     this._label(endLabel);
+    this._addNL();
   };
 
   ifVariableTrue = (
@@ -1594,6 +1649,7 @@ class ScriptBuilder {
     this._label(trueLabel);
     this._compilePath(truePath);
     this._label(endLabel);
+    this._addNL();
   };
 
   ifVariableValue = (
@@ -1613,6 +1669,7 @@ class ScriptBuilder {
     this._label(trueLabel);
     this._compilePath(truePath);
     this._label(endLabel);
+    this._addNL();
   };
 
   ifVariableCompare = (
@@ -1633,6 +1690,7 @@ class ScriptBuilder {
     this._label(trueLabel);
     this._compilePath(truePath);
     this._label(endLabel);
+    this._addNL();
   };
 
   ifVariableBitwiseValue = (
@@ -1657,6 +1715,7 @@ class ScriptBuilder {
     this._label(trueLabel);
     this._compilePath(truePath);
     this._label(endLabel);
+    this._addNL();
   };
 
   ifColorSupported = (truePath = [], falsePath = []) => {
@@ -1671,6 +1730,7 @@ class ScriptBuilder {
     this._label(falseLabel);
     this._compilePath(falsePath);
     this._label(endLabel);
+    this._addNL();
   };
 
   ifActorAtPosition = (
@@ -1689,6 +1749,7 @@ class ScriptBuilder {
     this._label(falseLabel);
     this._compilePath(falsePath);
     this._label(endLabel);
+    this._addNL();
   };
 
   ifDataSaved = (
@@ -1701,13 +1762,13 @@ class ScriptBuilder {
     this._addComment(`If Variable True`);
     this._stackPushConst(0);
     this._isDataSaved(".ARG0", slot);
-    this._ifConst(".EQ", ".ARG0", 1, trueLabel, 0);
+    this._ifConst(".EQ", ".ARG0", 1, trueLabel, 1);
     this._compilePath(falsePath);
     this._jump(endLabel);
     this._label(trueLabel);
     this._compilePath(truePath);
     this._label(endLabel);
-    this._stackPop(1);
+    this._addNL();
   };
 
   caseVariableValue = (
@@ -1736,6 +1797,7 @@ class ScriptBuilder {
       this._compilePath(falsePath);
       this._label(endLabel);
     }
+    this._addNL();
   };
 
   _compilePath = (path: ScriptEvent[] | ScriptBuilderPathFunction = []) => {
