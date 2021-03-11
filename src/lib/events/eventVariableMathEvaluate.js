@@ -25,7 +25,7 @@ const fields = [
 
 const compile = (input, helpers) => {
   const { variableEvaluateExpression } = helpers;
-  variableEvaluateExpression(input.variable, input.expression);
+  variableEvaluateExpression(input.variable, input.expression || "0");
 };
 
 module.exports = {

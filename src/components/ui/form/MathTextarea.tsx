@@ -23,6 +23,99 @@ const functionSymbols = [
   },
 ];
 
+const functionSearch = (search: string) => {
+  return functionSymbols.filter((item) => item.display.indexOf(search) === 0);
+};
+
+const operatorSymbols = [
+  {
+    id: "==",
+    display: "==",
+  },
+  {
+    id: "!=",
+    display: "!=",
+  },
+  {
+    id: "<=",
+    display: "<=",
+  },
+  {
+    id: "<",
+    display: "<",
+  },
+  {
+    id: ">=",
+    display: ">=",
+  },
+  {
+    id: ">",
+    display: ">",
+  },
+  {
+    id: "&&",
+    display: "&&",
+  },
+  {
+    id: "||",
+    display: "||",
+  },
+  {
+    id: "|",
+    display: "|",
+  },
+  {
+    id: "&",
+    display: "&",
+  },
+  {
+    id: "^",
+    display: "^",
+  },
+  {
+    id: "~",
+    display: "~",
+  },
+  {
+    id: "*",
+    display: "*",
+  },
+  {
+    id: "/",
+    display: "/",
+  },
+  {
+    id: "%",
+    display: "%",
+  },
+  {
+    id: "+",
+    display: "+",
+  },
+  {
+    id: "-",
+    display: "-",
+  },
+];
+
+const operatorSearch = (search: string) => {
+  return operatorSymbols.filter((item) => item.display.indexOf(search) === 0);
+};
+
+const operatorRegex = new RegExp(
+  "(" +
+    operatorSymbols
+      .map((op) =>
+        op.id
+          .replace(/\|/g, "\\|")
+          .replace(/\^/g, "\\^")
+          .replace(/\*/g, "\\*")
+          .replace(/\+/g, "\\+")
+      )
+      .join("|") +
+    ")"
+);
+
 const MathTextareaWrapper = styled.div`
   position: relative;
   display: inline-block;
@@ -126,6 +219,10 @@ const MathTextareaWrapper = styled.div`
   }
 
   .Mentions__TokenFun {
+    color: ${(props) => props.theme.colors.token.character};
+  }
+
+  .Mentions__TokenOp {
     color: ${(props) => props.theme.colors.token.speed};
   }
 `;
@@ -182,7 +279,9 @@ export const MathTextarea: FC<MathTextareaProps> = ({
     debounce((val) => {
       try {
         const tokens = tokenize(val);
-        shuntingYard(tokens);
+        if (tokens.length > 0) {
+          shuntingYard(tokens);
+        }
         setError("");
       } catch (e) {
         console.error(e.message);
@@ -215,10 +314,17 @@ export const MathTextarea: FC<MathTextareaProps> = ({
         />
         <Mention
           className="Mentions__TokenFun"
-          trigger={/((m|a)[a-z]*)$/}
-          data={functionSymbols}
+          trigger={/((m|a|mi|ma|ab)*)$/}
+          data={functionSearch}
           markup="__id__)"
-          regex={/(min|max|abs)/}
+          regex={/(min|max|abs)\(/}
+        />
+        <Mention
+          className="Mentions__TokenOp"
+          trigger={/±$^/}
+          data={operatorSearch}
+          markup="__id__"
+          regex={operatorRegex}
         />
       </MentionsInput>
       {error.length > 0 && <MathError>{error}</MathError>}

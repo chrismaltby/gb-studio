@@ -9,6 +9,14 @@ export const operatorSymbols = [
   "^",
   "~",
   "u",
+  "==",
+  "!=",
+  "<",
+  "<=",
+  ">",
+  ">=",
+  "&&",
+  "||",
 ] as const;
 export type OperatorSymbol = typeof operatorSymbols[number];
 

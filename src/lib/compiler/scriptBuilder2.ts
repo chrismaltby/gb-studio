@@ -108,7 +108,8 @@ type ScriptBuilderRPNOperation =
   | ".B_NOT"
   | ".ABS"
   | ".MIN"
-  | ".MAX";
+  | ".MAX"
+  | ScriptBuilderComparisonOperator;
 
 type ScriptBuilderOverlayMoveSpeed =
   | number
@@ -223,6 +224,22 @@ const toScriptOperator = (
       return ".B_XOR";
     case "~":
       return ".B_NOT";
+    case "==":
+      return ".EQ";
+    case "!=":
+      return ".NE";
+    case "<":
+      return ".LT";
+    case "<=":
+      return ".LTE";
+    case ">":
+      return ".GT";
+    case ">=":
+      return ".GTE";
+    case "&&":
+      return ".AND";
+    case "||":
+      return ".OR";
   }
   assertUnreachable(operator);
 };
@@ -390,6 +407,42 @@ class ScriptBuilder {
     }
   };
 
+  private _stackPushEvaluatedExpression = (expression: string) => {
+    const tokens = tokenize(expression);
+    const rpnTokens = shuntingYard(tokens);
+    if (rpnTokens.length > 0) {
+      let rpn = this._rpn();
+      let token = rpnTokens.shift();
+      while (token) {
+        if (token.type === "VAL") {
+          rpn = rpn.int16(token.value);
+        } else if (token.type === "VAR") {
+          const ref = this.getVariableAlias(token.symbol.replace(/\$/g, ""));
+          rpn = rpn.ref(ref);
+        } else if (token.type === "FUN") {
+          const op = funToScriptOperator(token.function);
+          rpn = rpn.operator(op);
+        } else if (token.type === "OP") {
+          const op = toScriptOperator(token.operator);
+          rpn = rpn.operator(op);
+        }
+        token = rpnTokens.shift();
+      }
+      rpn.stop();
+    } else {
+      this._stackPushConst(0);
+    }
+  };
+
+  private _expressionToHumanReadable = (expression: string) => {
+    return expression
+      .replace(/\s+/g, "")
+      .replace(/\n/g, "")
+      .replace(/(\$L[0-9]\$|\$T[0-1]\$|\$[0-9]+\$)/g, (symbol) => {
+        return this.getVariableAlias(symbol.replace(/\$/g, ""));
+      });
+  };
+
   // --------------------------------------------------------------------------
   // Low Level GB Studio Assembly Operations
 
@@ -527,7 +580,9 @@ class ScriptBuilder {
       },
       operator: (op: ScriptBuilderRPNOperation) => {
         rpnCmd(".R_OPERATOR", op);
-        stack.pop();
+        if (op !== ".ABS") {
+          stack.pop();
+        }
         return rpn;
       },
       stop: () => {
@@ -1365,38 +1420,14 @@ class ScriptBuilder {
 
   variableEvaluateExpression = (variable: string, expression: string) => {
     const variableAlias = this.getVariableAlias(variable);
-    const tokens = tokenize(expression);
-    const rpnTokens = shuntingYard(tokens);
-    if (rpnTokens.length > 0) {
-      this._addComment(
-        `Variable ${variableAlias} = ${expression
-          .replace(/\s+/g, "")
-          .replace(/\n/g, "")
-          .replace(/(\$L[0-9]\$|\$T[0-1]\$|\$[0-9]+\$)/g, (symbol) => {
-            return this.getVariableAlias(symbol.replace(/\$/g, ""));
-          })}`
-      );
-      let rpn = this._rpn();
-      let token = rpnTokens.shift();
-      while (token) {
-        if (token.type === "VAL") {
-          rpn = rpn.int16(token.value);
-        } else if (token.type === "VAR") {
-          const ref = this.getVariableAlias(token.symbol.replace(/\$/g, ""));
-          rpn = rpn.ref(ref);
-        } else if (token.type === "FUN") {
-          const op = funToScriptOperator(token.function);
-          rpn = rpn.operator(op);
-        } else if (token.type === "OP") {
-          const op = toScriptOperator(token.operator);
-          rpn = rpn.operator(op);
-        }
-        token = rpnTokens.shift();
-      }
-      rpn.stop();
-      this._set(variableAlias, ".ARG0");
-      this._stackPop(1);
-    }
+    this._addComment(
+      `Variable ${variableAlias} = ${this._expressionToHumanReadable(
+        expression
+      )}`
+    );
+    this._stackPushEvaluatedExpression(expression);
+    this._set(variableAlias, ".ARG0");
+    this._stackPop(1);
   };
 
   // --------------------------------------------------------------------------
@@ -1522,6 +1553,23 @@ class ScriptBuilder {
 
   // --------------------------------------------------------------------------
   // Control Flow
+
+  ifExpression = (
+    expression: string,
+    truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
+    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+  ) => {
+    const trueLabel = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+    this._addComment(`If ${this._expressionToHumanReadable(expression)}`);
+    this._stackPushEvaluatedExpression(expression);
+    this._ifConst(".GT", ".ARG0", 0, trueLabel, 1);
+    this._compilePath(falsePath);
+    this._jump(endLabel);
+    this._label(trueLabel);
+    this._compilePath(truePath);
+    this._label(endLabel);
+  };
 
   ifVariableTrue = (
     variable: string,

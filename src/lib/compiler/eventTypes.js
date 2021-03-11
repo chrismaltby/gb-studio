@@ -19,6 +19,7 @@ export const EVENT_SAVE_DATA = "EVENT_SAVE_DATA";
 export const EVENT_CLEAR_DATA = "EVENT_CLEAR_DATA";
 
 // Conditional
+export const EVENT_IF_EXPRESSION = "EVENT_IF_EXPRESSION";
 export const EVENT_IF_TRUE = "EVENT_IF_TRUE";
 export const EVENT_IF_FALSE = "EVENT_IF_FALSE";
 export const EVENT_IF_VALUE = "EVENT_IF_VALUE";

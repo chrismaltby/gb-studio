@@ -9,7 +9,21 @@ import {
 } from "./types";
 
 export const isNumeric = (str: string) => {
-  return !isNaN(Number(str)) && isFinite(Number(str));
+  return (
+    str.toLowerCase() === "true" ||
+    str.toLowerCase() === "false" ||
+    (!isNaN(Number(str)) && isFinite(Number(str)))
+  );
+};
+
+export const toNumber = (str: string) => {
+  if (str.toLowerCase() === "true") {
+    return 1;
+  }
+  if (str.toLowerCase() === "false") {
+    return 0;
+  }
+  return Number(str);
 };
 
 export const isOperatorSymbol = (x: string): x is OperatorSymbol => {
@@ -30,21 +44,34 @@ export const getPrecedence = (token: Token): number => {
   }
   if (token.type === "OP") {
     switch (token.operator) {
+      case "u":
       case "~":
-        return 1;
-      case "+":
-      case "-":
-        return 2;
+        return 14;
       case "*":
       case "/":
       case "%":
+        return 12;
+      case "+":
+      case "-":
+        return 11;
+      case "<":
+      case ">":
+      case ">=":
+      case "<=":
+        return 9;
+      case "==":
+      case "!=":
+        return 8;
       case "&":
-        return 3;
+        return 7;
       case "^":
-        return 4;
+        return 6;
       case "|":
-      case "u":
         return 5;
+      case "&&":
+        return 4;
+      case "||":
+        return 3;
     }
     assertUnreachable(token.operator);
   }

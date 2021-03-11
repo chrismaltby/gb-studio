@@ -1,6 +1,7 @@
 import {
   isFunctionSymbol,
   isNumeric,
+  toNumber,
   isOperatorSymbol,
   isVariable,
 } from "./helpers";
@@ -11,13 +12,13 @@ const identity = <T>(i: T): T => i;
 const tokenizer = (input: string): Token[] => {
   return (input
     .replace(/\s+/g, "")
-    .split(/([\+\-\*\/\^%&|~@\(\),])/)
+    .split(/(==|!=|>=|>|<=|<|&&|\|\||[\+\-\*\/\^%&|~@\(\),])/)
     .filter(identity)
     .map((token) => {
       if (isNumeric(token)) {
         return {
           type: "VAL",
-          value: Number(token),
+          value: toNumber(token),
         };
       }
       if (isFunctionSymbol(token)) {

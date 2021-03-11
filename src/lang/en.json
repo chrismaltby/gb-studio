@@ -454,6 +454,7 @@
   "EVENT_ENGINE_FIELD_SET": "Engine: Field Update",
   "EVENT_ENGINE_FIELD_STORE": "Engine: Store Field In Variable",
   "EVENT_VARIABLE_MATH_EVALUATE": "Variable: Math Evaluate Expression",
+  "EVENT_IF_EXPRESSION": "If Expression",
 
   "// 10": "Menu -----------------------------------------------------",
 
