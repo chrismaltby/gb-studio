@@ -12,8 +12,9 @@ import { Button } from "../ui/buttons/Button";
 import { DotsIcon } from "../ui/icons/Icons";
 import { FixedSpacer, FlexGrow } from "../ui/spacing/Spacing";
 import { AppSelect } from "../ui/form/AppSelect";
+import { remote } from "electron";
 
-const { dialog } = require("electron").remote;
+const { dialog } = remote;
 
 const Preferences = () => {
   const pathError = "";

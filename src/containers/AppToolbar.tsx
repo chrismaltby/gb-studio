@@ -1,7 +1,6 @@
-import React, { Component, FC, useCallback, useEffect, useState } from "react";
-import PropTypes from "prop-types";
+import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
-import { connect, useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash/debounce";
 import l10n from "../lib/helpers/l10n";
 import { zoomForSection } from "../lib/helpers/gbstudio";
@@ -19,12 +18,9 @@ import { FixedSpacer, FlexGrow } from "../components/ui/spacing/Spacing";
 import { SearchInput } from "../components/ui/form/SearchInput";
 import { Button } from "../components/ui/buttons/Button";
 import {
-  ColumnLeftIcon,
-  ColumnRightIcon,
   ExportIcon,
   FolderIcon,
   LoadingIcon,
-  NavigationIcon,
   PlayIcon,
 } from "../components/ui/icons/Icons";
 import { RootState } from "../store/configureStore";
@@ -81,7 +77,8 @@ const AppToolbar: FC = () => {
   const windowFocus = useWindowFocus();
   const windowSize = useWindowSize();
   const smallZoom = (windowSize.width || 0) < 900;
-  const showTitle = (process.platform === "darwin") && ((windowSize.width || 0) > 800);
+  const showTitle =
+    process.platform === "darwin" && (windowSize.width || 0) > 800;
 
   const onRun = useCallback(() => {
     dispatch(buildGameActions.buildGame({ buildType: "web" }));
@@ -105,33 +102,34 @@ const AppToolbar: FC = () => {
     if (showZoom) {
       dispatch(editorActions.zoomIn({ section: section as ZoomSection }));
     }
-  }, [dispatch, section]);
+  }, [dispatch, section, showZoom]);
 
   const onZoomOut = useCallback(() => {
     if (showZoom) {
       dispatch(editorActions.zoomOut({ section: section as ZoomSection }));
     }
-  }, [dispatch, section]);
+  }, [dispatch, section, showZoom]);
 
   const onZoomReset = useCallback(() => {
     if (showZoom) {
       dispatch(editorActions.zoomReset({ section: section as ZoomSection }));
     }
-  }, [dispatch, section]);
+  }, [dispatch, section, showZoom]);
+
+  const onChangeSearchTermDebounced = useMemo(
+    () =>
+      debounce((searchTerm: string) => {
+        dispatch(editorActions.editSearchTerm(searchTerm));
+      }, 300),
+    [dispatch]
+  );
 
   const onChangeSearchTerm = useCallback(
     (e) => {
       setSearchTerm(e.currentTarget.value);
       onChangeSearchTermDebounced(e.currentTarget.value);
     },
-    [dispatch]
-  );
-
-  const onChangeSearchTermDebounced = useCallback(
-    debounce((searchTerm: string) => {
-      dispatch(editorActions.editSearchTerm(searchTerm));
-    }, 300),
-    [dispatch]
+    [onChangeSearchTermDebounced]
   );
 
   useEffect(() => {
@@ -151,7 +149,9 @@ const AppToolbar: FC = () => {
   return (
     <Toolbar focus={windowFocus}>
       <Helmet>
-        <title>{`GB Studio - ${(name || "Untitled")}${modified ? ` (${l10n("TOOLBAR_MODIFIED")})` : ''}`}</title>
+        <title>{`GB Studio - ${name || "Untitled"}${
+          modified ? ` (${l10n("TOOLBAR_MODIFIED")})` : ""
+        }`}</title>
       </Helmet>
       <DropdownButton
         label={
@@ -186,7 +186,7 @@ const AppToolbar: FC = () => {
           onZoomOut={onZoomOut}
           onZoomReset={onZoomReset}
         />
-      )} 
+      )}
       <FlexGrow />
       {showTitle && (
         <ToolbarText>

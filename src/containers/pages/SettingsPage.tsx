@@ -116,7 +116,7 @@ const SettingsPage: FC = () => {
         ],
       });
     },
-    [defaultBackgroundPaletteIds]
+    [defaultBackgroundPaletteIds, editSettings]
   );
 
   return (

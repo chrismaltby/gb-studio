@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import styled, { ThemeContext } from "styled-components";
 import World from "../../components/world/World";
 import ToolPicker from "../../components/world/ToolPicker";
