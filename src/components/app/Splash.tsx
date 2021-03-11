@@ -63,7 +63,7 @@ type TemplateInfo = {
 };
 
 const splashTabs = ["new", "recent"] as const;
-type SplashTab = typeof splashTabs[number];
+type SplashTabSection = typeof splashTabs[number];
 
 const templates: TemplateInfo[] = [
   {
@@ -109,9 +109,9 @@ const setLastUsedTab = (tab: string) => {
   settings.set("__lastUsedSplashTab", tab);
 };
 
-const toSplashTab = (tab: string): SplashTab => {
-  if (splashTabs.indexOf(tab as any) > -1) {
-    return tab as SplashTab;
+const toSplashTab = (tab: string): SplashTabSection => {
+  if (splashTabs.indexOf((tab as unknown) as SplashTabSection) > -1) {
+    return tab as SplashTabSection;
   }
   return "new";
 };
@@ -122,7 +122,7 @@ export default () => {
   const initialTab = toSplashTab(forceTab || getLastUsedTab());
 
   const [templateId, setTemplateId] = useState("gbs2");
-  const [section, setSection] = useState<SplashTab>(initialTab);
+  const [section, setSection] = useState<SplashTabSection>(initialTab);
   const [openCredits, setOpenCredits] = useState(false);
   const [recentProjects, setRecentProjects] = useState<ProjectInfo[]>([]);
   const [name, setName] = useState<string>(l10n("SPLASH_DEFAULT_PROJECT_NAME"));
@@ -149,7 +149,7 @@ export default () => {
     });
   }, []);
 
-  const onSetTab = (tab: SplashTab) => () => {
+  const onSetTab = (tab: SplashTabSection) => () => {
     setSection(tab);
     setLastUsedTab(tab);
   };
@@ -236,7 +236,7 @@ export default () => {
       <SplashWrapper focus={windowFocus}>
         <SplashSidebar>
           <SplashLogo>
-            <img src={logoFile} />
+            <img src={logoFile} alt="GB Studio" />
             <SplashEasterEggButton onClick={() => setOpenCredits(true)} />
           </SplashLogo>
           <SplashAppTitle />

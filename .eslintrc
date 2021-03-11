@@ -35,7 +35,9 @@
     "import/prefer-default-export": 0,
     "@typescript-eslint/explicit-module-boundary-types": 0,
     "@typescript-eslint/no-empty-function": 0,
-    "camelcase": ["error", {"allow": ["UNSAFE_componentWillReceiveProps"]}]
+    "camelcase": ["error", {"allow": ["UNSAFE_componentWillReceiveProps"]}],
+    "no-use-before-define": "off",
+    "@typescript-eslint/no-use-before-define": ["error"] 
   },
   "env": {
     "browser": true,
