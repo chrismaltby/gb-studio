@@ -23,7 +23,7 @@
 #include "main.h"
 
 UBYTE game_time = 0;
-UBYTE seededRand = FALSE;
+UBYTE seedRand = 2;
 UINT16 next_state;
 UINT8 delta_time;
 UINT16 current_state;
@@ -192,10 +192,19 @@ int core_start() {
       recent_joy = joy & ~last_joy;
     }
 
-    if (seededRand == FALSE) {
-      if (joy) {
-        seededRand = TRUE;
-        initrand((DIV_REG*256)+game_time);
+    if (seedRand) {
+      if(seedRand == 2){
+        // Seed on first button press
+        if (joy) {
+          seedRand--;
+          initrand((DIV_REG*256)+game_time);
+        }
+      } else {
+        // Seed on first button release
+          if (!joy) {
+          seedRand = FALSE;
+          initrand((DIV_REG*256)+game_time);
+        }
       }
     }
 
