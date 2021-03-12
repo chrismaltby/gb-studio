@@ -63,6 +63,7 @@ const migrateProject = project => {
     if (release === "6") {
       data = migrateFrom200r6To200r7Events(data);
       data = migrateFrom200r6To200r7Actors(data);
+      data = migrateFrom200r6To200r7Scenes(data);
       release = "7";      
     }    
   }
@@ -964,7 +965,7 @@ const migrateFrom200r6To200r7Events = data => {
 };
 
 /*
- * Version 2.0.0 r6 switches
+ * Version 2.0.0 r7 switches
  * - movement to be stored as pixels per frame
  * - animation speed to be stored as tick mask
  */
@@ -981,6 +982,42 @@ const migrateFrom200r6To200r7Actors = data => {
             animSpeed: migrateAnimSpeedr6r7(actor.animSpeed)
           };
         })
+      };
+    })
+  };
+};
+
+/*
+ * Version 2.0.0 r7 switches scene type to be a string enum
+ */
+const migrateFrom200r6To200r7Scenes = data => {
+  const migrateSceneType = (type) => {
+    if (type === "0") {
+      return "TOPDOWN";
+    }
+    if (type === "1") {
+      return "PLATFORM"
+    }
+    if (type === "2") {
+      return "ADVENTURE"
+    } 
+    if (type === "3") {
+      return "SHMUP"
+    }  
+    if (type === "4") {
+      return "POINTNCLICK"
+    }           
+    if (type === "5") {
+      return "LOGO"
+    }   
+    return "TOPDOWN";                 
+  }
+  return {
+    ...data,
+    scenes: data.scenes.map(scene => {
+      return {
+        ...scene,
+        type: migrateSceneType(scene.type)
       };
     })
   };

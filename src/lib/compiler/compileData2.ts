@@ -328,8 +328,7 @@ export const compileScene = (
     {
       width: scene.width,
       height: scene.height,
-      // type: scene.type ? parseInt(scene.type, 10) : 0,
-      type: "SCENE_TYPE_TOPDOWN",
+      type: `SCENE_TYPE_${scene.type}`,
       background: toFarPtr(backgroundSymbol(scene.backgroundIndex)),
       collisions: toFarPtr(sceneCollisionsSymbol(sceneIndex)),
       colors: color ? toFarPtr(sceneColorsSymbol(sceneIndex)) : undefined,
