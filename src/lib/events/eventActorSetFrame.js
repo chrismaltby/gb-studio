@@ -6,7 +6,7 @@ const fields = [
   {
     key: "actorId",
     type: "actor",
-    defaultValue: "$self$"
+    defaultValue: "$self$",
   },
   {
     key: "frame",
@@ -19,16 +19,21 @@ const fields = [
     defaultValue: {
       number: 0,
       variable: "LAST_VARIABLE",
-      property: "$self$:frame"
+      property: "$self$:frame",
     },
   },
-
 ];
 
 const compile = (input, helpers) => {
-  const { actorSetActive, actorSetFrame, actorSetFrameToVariable, variableFromUnion, temporaryEntityVariable } = helpers;
+  const {
+    actorSetActive,
+    actorSetFrame,
+    actorSetFrameToVariable,
+    variableFromUnion,
+    temporaryEntityVariable,
+  } = helpers;
   actorSetActive(input.actorId);
-  if(input.frame.type === "number") {
+  if (input.frame.type === "number") {
     actorSetFrame(input.frame.value);
   } else {
     const frameVar = variableFromUnion(input.frame, temporaryEntityVariable(0));
@@ -39,5 +44,6 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   fields,
-  compile
+  compile,
+  allowedBeforeInitFade: true,
 };

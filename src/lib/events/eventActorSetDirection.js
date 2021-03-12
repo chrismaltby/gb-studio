@@ -75,34 +75,9 @@ const compile = (input, helpers) => {
   }
 };
 
-// function changeDirection(direction, input, helpers) {
-//   const {
-//     getActorById,
-//     actorSetDirection,
-//     actorSetFrame,
-//     actorSetFlip,
-//     sprites,
-//   } = helpers;
-
-//   const actor = getActorById(input.actorId);
-
-//   actorSetDirection(direction);
-
-//   if (actor && actor.spriteType === "static") {
-//     const spriteSheet = getSprite(actor.spriteSheetId, sprites);
-//     const numFrames = spriteSheet ? spriteSheet.numFrames : 0;
-//     const isActorSheet = numFrames === 3 || numFrames === 6;
-//     if (isActorSheet) {
-//       const frame = directionToFrame(direction, numFrames);
-//       const flip = direction === "left";
-//       actorSetFrame(frame);
-//       actorSetFlip(flip);
-//     }
-//   }
-// }
-
 module.exports = {
   id,
   fields,
   compile,
+  allowedBeforeInitFade: true,
 };

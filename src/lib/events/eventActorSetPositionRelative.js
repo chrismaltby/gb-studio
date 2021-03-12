@@ -6,7 +6,7 @@ const fields = [
   {
     key: "actorId",
     type: "actor",
-    defaultValue: "$self$"
+    defaultValue: "$self$",
   },
   {
     key: "x",
@@ -15,7 +15,7 @@ const fields = [
     min: -31,
     max: 31,
     width: "50%",
-    defaultValue: 0
+    defaultValue: 0,
   },
   {
     key: "y",
@@ -24,8 +24,8 @@ const fields = [
     min: -31,
     max: 31,
     width: "50%",
-    defaultValue: 0
-  }
+    defaultValue: 0,
+  },
 ];
 
 const compile = (input, helpers) => {
@@ -37,5 +37,6 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   fields,
-  compile
+  compile,
+  allowedBeforeInitFade: true,
 };

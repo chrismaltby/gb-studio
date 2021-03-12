@@ -83,5 +83,6 @@ function changeDirection(direction, input, helpers) {
 module.exports = {
   id,
   fields,
-  compile
+  compile,
+  allowedBeforeInitFade: true,
 };

@@ -4,8 +4,8 @@ const fields = [
   {
     key: "variable",
     type: "variable",
-    defaultValue: "LAST_VARIABLE"
-  }
+    defaultValue: "LAST_VARIABLE",
+  },
 ];
 
 const compile = (input, helpers) => {
@@ -16,5 +16,6 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   fields,
-  compile
+  compile,
+  allowedBeforeInitFade: true,
 };

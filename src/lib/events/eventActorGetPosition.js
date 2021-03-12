@@ -6,20 +6,20 @@ const fields = [
   {
     key: "actorId",
     type: "actor",
-    defaultValue: "$self$"
+    defaultValue: "$self$",
   },
   {
     key: "vectorX",
     type: "variable",
     label: l10n("FIELD_X"),
-    defaultValue: "LAST_VARIABLE"
+    defaultValue: "LAST_VARIABLE",
   },
   {
     key: "vectorY",
     type: "variable",
     label: l10n("FIELD_Y"),
-    defaultValue: "LAST_VARIABLE"
-  }
+    defaultValue: "LAST_VARIABLE",
+  },
 ];
 
 const compile = (input, helpers) => {
@@ -31,5 +31,6 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   fields,
-  compile
+  compile,
+  allowedBeforeInitFade: true,
 };

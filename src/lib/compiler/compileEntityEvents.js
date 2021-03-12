@@ -34,10 +34,14 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
     }),
   };
 
-  const compileEventsWithScriptBuilder = (scriptBuilder, subInput = []) => {
-    if (init) {
-      scriptBuilder.fadeIn();
-    }
+  let globalHasInit = false;
+
+  const compileEventsWithScriptBuilder = (
+    scriptBuilder,
+    subInput = [],
+    isBranch = false
+  ) => {
+    let hasInit = false;
 
     // eslint-disable-next-line global-require
     const events = require("../events").default;
@@ -49,24 +53,13 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
         continue;
       }
       if (events[command]) {
-        // @todo - move this to compileData
-        // if (command === "EVENT_PLAYER_SET_SPRITE") {
-        //   if (input[i].args && input[i].args.spriteSheetId) {
-        //     const sprite = options.sprites.find(
-        //       (s) => s.id === input[i].args.spriteSheetId
-        //     );
-        //     if (sprite && sprite.numFrames > 6) {
-        //       warnings(
-        //         `Used "Set Player Sprite Sheet" event with a sprite sheet containing more than 6 frames. This may cause graphics corruption. ${JSON.stringify(
-        //           {
-        //             ...location,
-        //             filename: sprite.filename,
-        //           }
-        //         )}`
-        //       );
-        //     }
-        //   }
-        // }
+        if (init && !hasInit && !events[command].allowedBeforeInitFade) {
+          // Found an event that cannot happen before init fade in
+          scriptBuilder.nextFrameAwait();
+          scriptBuilder.fadeIn();
+          hasInit = true;
+          globalHasInit = true;
+        }
         try {
           events[command].compile(
             { ...subInput[i].args, ...subInput[i].children },
@@ -76,6 +69,13 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
               event: subInput[i],
             }
           );
+          if (!isBranch && !hasInit && globalHasInit) {
+            // A branch caused a fade in, but hasn't faded in globally yet
+            // Need to force fade in case one path of branch didn't already fade
+            scriptBuilder.nextFrameAwait();
+            scriptBuilder.fadeIn();
+            hasInit = true;
+          }
         } catch (e) {
           console.error(e);
           throw new Error(
@@ -97,7 +97,7 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
   const helpers = {
     ...options,
     compileEvents: (scriptBuilder, childInput) => {
-      compileEventsWithScriptBuilder(scriptBuilder, childInput);
+      compileEventsWithScriptBuilder(scriptBuilder, childInput, true);
     },
   };
 
@@ -109,7 +109,7 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
     scriptBuilder.labelDefine(loopId);
   }
 
-  compileEventsWithScriptBuilder(scriptBuilder, input);
+  compileEventsWithScriptBuilder(scriptBuilder, input, branch);
 
   try {
     if (!branch) {
@@ -117,6 +117,15 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
         scriptBuilder.nextFrameAwait();
         scriptBuilder.labelGoto(loopId);
       }
+
+      if (init && !globalHasInit) {
+        // No part of script caused a fade in so do this
+        // before ending the script
+        scriptBuilder.nextFrameAwait();
+        scriptBuilder.fadeIn();
+        globalHasInit = true;
+      }
+
       scriptBuilder.scriptEnd();
 
       if (scriptBuilder.byteSize > 16383) {

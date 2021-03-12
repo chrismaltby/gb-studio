@@ -6,7 +6,7 @@ const fields = [
   {
     key: "actorId",
     type: "actor",
-    defaultValue: "$self$"
+    defaultValue: "$self$",
   },
   {
     key: "x",
@@ -20,7 +20,7 @@ const fields = [
     defaultValue: {
       number: 0,
       variable: "LAST_VARIABLE",
-      property: "$self$:xpos"
+      property: "$self$:xpos",
     },
   },
   {
@@ -35,15 +35,21 @@ const fields = [
     defaultValue: {
       number: 0,
       variable: "LAST_VARIABLE",
-      property: "$self$:xpos"
-    },   
+      property: "$self$:xpos",
+    },
   },
 ];
 
 const compile = (input, helpers) => {
-  const { actorSetActive, actorSetPosition, actorSetPositionToVariables, variableFromUnion, temporaryEntityVariable } = helpers;
+  const {
+    actorSetActive,
+    actorSetPosition,
+    actorSetPositionToVariables,
+    variableFromUnion,
+    temporaryEntityVariable,
+  } = helpers;
   actorSetActive(input.actorId);
-  if(input.x.type === "number" && input.y.type === "number") {
+  if (input.x.type === "number" && input.y.type === "number") {
     // If all inputs are numbers use fixed implementation
     actorSetPosition(input.x.value, input.y.value);
   } else {
@@ -57,5 +63,6 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   fields,
-  compile
+  compile,
+  allowedBeforeInitFade: true,
 };

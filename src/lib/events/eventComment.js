@@ -9,8 +9,8 @@ const fields = [
     maxPerLine: 50,
     placeholder: l10n("FIELD_TEXT_PLACEHOLDER"),
     multiple: false,
-    defaultValue: ""
-  }
+    defaultValue: "",
+  },
 ];
 
 const compile = (input, helpers) => {};
@@ -18,5 +18,6 @@ const compile = (input, helpers) => {};
 module.exports = {
   id,
   fields,
-  compile
+  compile,
+  allowedBeforeInitFade: true,
 };

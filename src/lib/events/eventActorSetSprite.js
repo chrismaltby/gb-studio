@@ -14,11 +14,16 @@ const fields = [
 ];
 
 const compile = (input, helpers) => {
-  const { actorSetActive, actorSetSprite, playerSetSprite, getActorById } = helpers;
-  if(!getActorById(input.actorId)) {
+  const {
+    actorSetActive,
+    actorSetSprite,
+    playerSetSprite,
+    getActorById,
+  } = helpers;
+  if (!getActorById(input.actorId)) {
     playerSetSprite(input.spriteSheetId);
   } else {
-    actorSetActive(input.actorId); 
+    actorSetActive(input.actorId);
     actorSetSprite(input.spriteSheetId);
   }
 };
@@ -27,4 +32,5 @@ module.exports = {
   id,
   fields,
   compile,
+  allowedBeforeInitFade: true,
 };

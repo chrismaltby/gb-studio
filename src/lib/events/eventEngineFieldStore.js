@@ -9,10 +9,10 @@ const fields = [
       if (newArgs.engineFieldKey !== prevArgs.engineFieldKey) {
         return {
           engineFieldKey: newArgs.engineFieldKey,
-          value: undefined
-        }
+          value: undefined,
+        };
       }
-    }
+    },
   },
 ];
 
@@ -24,5 +24,6 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   fields,
-  compile
+  compile,
+  allowedBeforeInitFade: true,
 };

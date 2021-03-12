@@ -4,13 +4,13 @@ const fields = [
   {
     key: "actorId",
     type: "actor",
-    defaultValue: "$self$"
+    defaultValue: "$self$",
   },
   {
     key: "speed",
     type: "moveSpeed",
-    defaultValue: 1
-  }
+    defaultValue: 1,
+  },
 ];
 
 const compile = (input, helpers) => {
@@ -22,5 +22,6 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   fields,
-  compile
+  compile,
+  allowedBeforeInitFade: true,
 };

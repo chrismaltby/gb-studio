@@ -88,6 +88,9 @@ void fade_init() __banked {
 }
 
 void fade_in() __banked {
+    if (fade_timer == 5) {
+        return;
+    }
     fade_frame = 0;
     fade_direction = FADE_IN;
     fade_running = TRUE;
@@ -101,6 +104,9 @@ void fade_in() __banked {
 }
 
 void fade_out() __banked {
+    if (fade_timer == 0) {
+        return;
+    }    
     fade_frame = 0;
     fade_direction = FADE_OUT;
     fade_running = TRUE;

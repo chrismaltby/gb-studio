@@ -6,14 +6,14 @@ const fields = [
   {
     key: "actorId",
     type: "actor",
-    defaultValue: "$self$"
+    defaultValue: "$self$",
   },
   {
-      key: "animate",
-      type: "checkbox",
-      label: l10n("FIELD_ANIMATE_WHEN_STATIONARY"),
-      defaultValue: true
-  }
+    key: "animate",
+    type: "checkbox",
+    label: l10n("FIELD_ANIMATE_WHEN_STATIONARY"),
+    defaultValue: true,
+  },
 ];
 
 const compile = (input, helpers) => {
@@ -25,5 +25,6 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   fields,
-  compile
+  compile,
+  allowedBeforeInitFade: true,
 };
