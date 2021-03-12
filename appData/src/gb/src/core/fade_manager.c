@@ -12,6 +12,9 @@
 #endif
 #include "data/data_bootstrap.h"
 
+#define FADED_OUT_FRAME 0
+#define FADED_IN_FRAME 5
+
 UBYTE fade_running;
 UBYTE fade_frames_per_step;
 UBYTE fade_black = 0;
@@ -85,16 +88,24 @@ static void ApplyPaletteChangeDMG(UBYTE index) {
 
 void fade_init() __banked {
     fade_frames_per_step = fade_speeds[2];
+    fade_timer = FADED_OUT_FRAME;
+    fade_running = FALSE;
+#ifdef CGB
+    if (_cpu == CGB_TYPE) {
+        ApplyPaletteChangeColor(fade_timer);
+    } else
+#endif
+        ApplyPaletteChangeDMG(fade_timer);    
 }
 
 void fade_in() __banked {
-    if (fade_timer == 5) {
+    if (fade_timer == FADED_IN_FRAME) {
         return;
     }
     fade_frame = 0;
     fade_direction = FADE_IN;
     fade_running = TRUE;
-    fade_timer = 0;
+    fade_timer = FADED_OUT_FRAME;
 #ifdef CGB
     if (_cpu == CGB_TYPE) {
         ApplyPaletteChangeColor(fade_timer);
@@ -104,13 +115,13 @@ void fade_in() __banked {
 }
 
 void fade_out() __banked {
-    if (fade_timer == 0) {
+    if (fade_timer == FADED_OUT_FRAME) {
         return;
     }    
     fade_frame = 0;
     fade_direction = FADE_OUT;
     fade_running = TRUE;
-    fade_timer = 5;
+    fade_timer = FADED_IN_FRAME;
 #ifdef CGB
     if (_cpu == CGB_TYPE) {
         ApplyPaletteChangeColor(fade_timer);
@@ -124,12 +135,12 @@ void fade_update() __banked {
         if ((fade_frame & fade_frames_per_step) == 0) {
             if (fade_direction == FADE_IN) {
                 fade_timer++;
-                if (fade_timer == 5) {
+                if (fade_timer == FADED_IN_FRAME) {
                     fade_running = FALSE;
                 }
             } else {
                 fade_timer--;
-                if (fade_timer == 0) {
+                if (fade_timer == FADED_OUT_FRAME) {
                     fade_running = FALSE;
                 }
             }

@@ -58,6 +58,10 @@ export default async (
   };
 
   for (const file of buildFiles) {
+    if (file.indexOf("GBT_PLAYER") !== -1) {
+      continue;
+    }
+
     const objFile = `${file
       .replace(/src.*\//, "obj/")
       .replace(/\.[cs]$/, "")}.o`;
