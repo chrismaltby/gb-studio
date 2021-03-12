@@ -21,6 +21,11 @@ interface OptionLabelWithPreviewProps {
   children: ReactNode;
 }
 
+interface OptionLabelWithInfoProps {
+  info: ReactNode;
+  children: ReactNode;
+}
+
 interface SingleValueWithPreviewProps {
   preview: ReactNode;
   children: ReactNode;
@@ -166,6 +171,21 @@ const OptionLabelPreviewOffset = styled.div`
   transform: translate(-3px, -10px);
 `;
 
+const OptionLabelWithInfoWrapper = styled.div`
+  display: flex;
+  white-space: nowrap;
+  align-items: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`;
+
+const OptionLabelInfo = styled.div`
+  flex-grow: 1;
+  text-align: right;
+  opacity: 0.5;
+  font-size: 0.8em;
+`;
+
 export const OptionLabelWithPreview: FC<OptionLabelWithPreviewProps> = ({
   preview,
   children,
@@ -178,6 +198,16 @@ export const OptionLabelWithPreview: FC<OptionLabelWithPreviewProps> = ({
     </OptionLabelPreview>
     {children}
   </OptionLabelWithPreviewWrapper>
+);
+
+export const OptionLabelWithInfo: FC<OptionLabelWithInfoProps> = ({
+  info,
+  children,
+}) => (
+  <OptionLabelWithInfoWrapper>
+    {children}
+    <OptionLabelInfo>{info}</OptionLabelInfo>
+  </OptionLabelWithInfoWrapper>
 );
 
 const SingleValueWithPreviewWrapper = styled.div`

@@ -654,6 +654,10 @@ class ScriptBuilder {
     this._addCmd("VM_ACTOR_MOVE_TO", addr);
   };
 
+  _actorGetPosition = (addr: string) => {
+    this._addCmd("VM_ACTOR_GET_POS", addr);
+  };
+
   _actorSetPosition = (addr: string) => {
     this._addCmd("VM_ACTOR_SET_POS", addr);
   };
@@ -802,7 +806,7 @@ class ScriptBuilder {
     const stackPtr = this.stackPtr;
     this._addComment("Actor Move To");
     this._setConst("^/(ACTOR + 1)/", x * 8 * 16);
-    this._setConst("^/(ACTOR + 2)/", y * 8 * 16);
+    this._setConst("^/(ACTOR + 2)/", (y + 1) * 8 * 16);
     this._setConst("^/(ACTOR + 3)/", useCollisions ? 1 : 0);
     this._setConst("^/(ACTOR + 4)/", moveTypeDec(moveType));
     this._actorMoveTo("ACTOR");
@@ -811,13 +815,14 @@ class ScriptBuilder {
   };
 
   actorMoveRelative = (
-    x: number = 0,
-    y: number = 0,
-    useCollisions: boolean = false,
+    x = 0,
+    y = 0,
+    useCollisions = false,
     moveType: ScriptBuilderMoveType
   ) => {
     const stackPtr = this.stackPtr;
     this._addComment("Actor Move Relative");
+    this._actorGetPosition("ACTOR");
     this._rpn() //
       .ref("^/(ACTOR + 1)/")
       .int16(x * 8 * 16)
@@ -1143,7 +1148,7 @@ class ScriptBuilder {
       this._fadeOut(fadeSpeed);
       this._setConst("ACTOR", 0);
       this._setConst("^/(ACTOR + 1)/", x * 8 * 16);
-      this._setConst("^/(ACTOR + 2)/", y * 8 * 16);
+      this._setConst("^/(ACTOR + 2)/", (y + 1) * 8 * 16);
       this._actorSetPosition("ACTOR");
       const asmDir = toASMDir(direction);
       if (asmDir) {

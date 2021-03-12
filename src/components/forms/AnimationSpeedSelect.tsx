@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 import l10n from "../../lib/helpers/l10n";
-import { Select } from "../ui/form/Select";
+import { OptionLabelWithInfo, Select } from "../ui/form/Select";
 
 interface AnimationSpeedSelectProps {
   name: string;
@@ -9,17 +9,19 @@ interface AnimationSpeedSelectProps {
 }
 
 interface AnimationSpeedOption {
-  value: number | null;
+  value: number;
   label: string;
 }
 
 const options: AnimationSpeedOption[] = [
-  { value: null, label: "None" },
-  { value: 0, label: `${l10n("FIELD_SPEED")} 0 (${l10n("FIELD_SLOWER")})` },
-  { value: 1, label: `${l10n("FIELD_SPEED")} 1` },
-  { value: 2, label: `${l10n("FIELD_SPEED")} 2` },
-  { value: 3, label: `${l10n("FIELD_SPEED")} 3` },
-  { value: 4, label: `${l10n("FIELD_SPEED")} 4 ${l10n("FIELD_FASTER")}` },
+  { value: 127, label: `${l10n("FIELD_SPEED")} 1` },
+  { value: 63, label: `${l10n("FIELD_SPEED")} 2` },
+  { value: 31, label: `${l10n("FIELD_SPEED")} 3` },
+  { value: 15, label: `${l10n("FIELD_SPEED")} 4` },
+  { value: 7, label: `${l10n("FIELD_SPEED")} 5` },
+  { value: 3, label: `${l10n("FIELD_SPEED")} 6` },
+  { value: 1, label: `${l10n("FIELD_SPEED")} 7` },
+  { value: 0, label: `${l10n("FIELD_SPEED")} 8` },
 ];
 
 export const AnimationSpeedSelect: FC<AnimationSpeedSelectProps> = ({
@@ -33,6 +35,30 @@ export const AnimationSpeedSelect: FC<AnimationSpeedSelectProps> = ({
       name={name}
       value={currentValue}
       options={options}
+      formatOptionLabel={(
+        option: AnimationSpeedOption,
+        { context }: { context: "menu" | "value" }
+      ) => {
+        return (
+          <OptionLabelWithInfo
+            info={
+              context === "menu"
+                ? `${String(
+                    Math.round((60 / (option.value + 1)) * 100) / 100
+                  )} ${l10n("FIELD_FRAMES_PER_SECOND_SHORT")}`
+                : ""
+            }
+          >
+            {option.label}{" "}
+            {option.value === 127 && context === "menu"
+              ? `(${l10n("FIELD_SLOWER")})`
+              : ""}
+            {option.value === 0 && context === "menu"
+              ? `(${l10n("FIELD_FASTER")})`
+              : ""}
+          </OptionLabelWithInfo>
+        );
+      }}
       onChange={(newValue: AnimationSpeedOption) => {
         onChange?.(newValue.value);
       }}

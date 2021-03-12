@@ -60,6 +60,11 @@ const migrateProject = project => {
       data = migrateFrom200r5To200r6Actors(data);
       release = "6";      
     }
+    if (release === "6") {
+      data = migrateFrom200r6To200r7Events(data);
+      data = migrateFrom200r6To200r7Actors(data);
+      release = "7";      
+    }    
   }
 
   if (process.env.NODE_ENV !== "production") {
@@ -869,6 +874,111 @@ const migrateFrom200r5To200r6Actors = data => {
                 ? actor.collisionGroup[0]
                 : actor.collisionGroup
             ) || ""
+          };
+        })
+      };
+    })
+  };
+};
+
+const migrateMoveSpeedr6r7 = (original) => {
+  if (original === 0) {
+    return 0.5;
+  }
+  return original || 1;
+}
+const migrateAnimSpeedr6r7 = (original) => {
+  if (original === 4) {
+    return 0;
+  }
+  if (original === 3) {
+    return 15;
+  } 
+  if (original === 2) {
+    return 31;
+  }  
+  if (original === 1) {
+    return 63;
+  }     
+  if (original === 0) {
+    return 127;
+  }                
+  return 15;
+}
+
+/*
+* Version 2.0.0 r7 now uses pixel per frame and animation speed mask values
+* rather than arbitrary speed values for anim/move speeds
+*/
+export const migrateFrom200r6To200r7Event = (event) => {
+ const migrateMeta = generateMigrateMeta(event);
+
+ if (event.args && event.command === "EVENT_ACTOR_SET_ANIMATION_SPEED") {
+   return migrateMeta({
+     ...event,
+     args: {
+       ...event.args,
+       speed: migrateAnimSpeedr6r7(event.args.speed)
+     },
+   });
+ }
+ if (event.args && event.command === "EVENT_ACTOR_SET_MOVEMENT_SPEED") {
+   return migrateMeta({
+     ...event,
+     args: {
+       ...event.args,
+       speed: migrateMoveSpeedr6r7(event.args.speed)
+     },
+   });
+ }  
+ if (event.args && event.command === "EVENT_LAUNCH_PROJECTILE") {
+   let speed = event.args.speed;
+   if (speed === "" || speed === undefined) {
+     speed = 2;
+   }
+   else {
+     speed = parseInt(speed, 10);
+   }
+   return migrateMeta({
+     ...event,
+     args: {
+       ...event.args,
+       speed
+     },
+   });
+ }    
+ return event;
+};
+
+const migrateFrom200r6To200r7Events = data => {
+ return {
+   ...data,
+   scenes: mapScenesEvents(data.scenes, migrateFrom200r6To200r7Event),
+   customEvents: (data.customEvents || []).map((customEvent) => {
+     return {
+       ...customEvent,
+       script: mapEvents(customEvent.script, migrateFrom200r6To200r7Event)
+     }
+   })
+ };
+};
+
+/*
+ * Version 2.0.0 r6 switches
+ * - movement to be stored as pixels per frame
+ * - animation speed to be stored as tick mask
+ */
+const migrateFrom200r6To200r7Actors = data => {
+  return {
+    ...data,
+    scenes: data.scenes.map(scene => {
+      return {
+        ...scene,
+        actors: scene.actors.map(actor => {
+          return {
+            ...actor,
+            moveSpeed: migrateMoveSpeedr6r7(actor.moveSpeed),
+            animSpeed: migrateAnimSpeedr6r7(actor.animSpeed)
           };
         })
       };

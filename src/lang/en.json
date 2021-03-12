@@ -329,6 +329,10 @@
   "FIELD_CHOOSE_REPLACEMENT": "Choose Replacement...",
   "FIELD_CHOOSE_REPLACEMENT_DETAILS": "Choose a replacement tile in the 'Tiles' panel.",
   "FIELD_DEFAULT_FONT": "Default Font",
+  "FIELD_PIXELS_PER_FRAME": "Pixels Per Frame",
+  "FIELD_PIXELS_PER_FRAME_SHORT": "PPF",
+  "FIELD_FRAMES_PER_SECOND_SHORT": "FPS",
+  "FIELD_CUSTOM_SPEED": "Custom Speed",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

@@ -444,8 +444,8 @@ const compile = async (
     startX,
     startY,
     startDirection,
-    startMoveSpeed = "1",
-    startAnimSpeed = "3",
+    startMoveSpeed = 1,
+    startAnimSpeed = 15,
   } = projectData.settings;
 
   const musicBanks = [];
@@ -532,8 +532,8 @@ const compile = async (
           paletteSymbol(0)
         )};\n`
       : "") +
-    `const UBYTE start_player_move_speed = ${animSpeedDec(startMoveSpeed)};\n` +
-    `const UBYTE start_player_anim_tick = ${animSpeedDec(startAnimSpeed)};\n` +
+    `const UBYTE start_player_move_speed = ${Math.round(startMoveSpeed * 16)};\n` +
+    `const UBYTE start_player_anim_tick = ${startAnimSpeed};\n` +
     `const far_ptr_t ui_fonts[] = {\n` +
     precompiled.usedFonts
       .map((_, fontIndex) => "  " + toFarPtr(fontSymbol(fontIndex)))
