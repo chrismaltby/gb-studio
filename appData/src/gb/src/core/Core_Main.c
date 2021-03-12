@@ -284,6 +284,8 @@ int core_start() {
     // Force Clear Emote
     move_sprite(0, 0, 0);
     move_sprite(1, 0, 0);
+    // Force Clear invoke stack
+    script_stack_ptr = 0;
     // Force all palettes to update on switch
     #ifdef CGB
       palette_update_mask = 0x3F;
