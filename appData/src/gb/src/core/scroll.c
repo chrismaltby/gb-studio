@@ -14,7 +14,6 @@
 #ifdef CGB
     #include "palette.h"
 #endif
-#include "data/data_bootstrap.h"
 
 // put submap of a large map to screen
 void set_bkg_submap(UINT8 x, UINT8 y, UINT8 w, UINT8 h, const unsigned char *map, UINT8 map_w);

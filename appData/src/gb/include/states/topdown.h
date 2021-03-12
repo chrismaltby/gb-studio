@@ -6,4 +6,6 @@
 void topdown_init() __banked;
 void topdown_update() __banked;
 
+extern UBYTE topdown_grid;
+
 #endif

@@ -10,7 +10,6 @@
 #ifdef CGB
     #include "palette.h"
 #endif
-#include "data/data_bootstrap.h"
 
 #define FADED_OUT_FRAME 0
 #define FADED_IN_FRAME 5
@@ -19,6 +18,7 @@ UBYTE fade_running;
 UBYTE fade_frames_per_step;
 UBYTE fade_black = 0;
 UBYTE fade_timer = 0;
+UBYTE fade_style;
 
 const UBYTE fade_speeds[] = {0x0, 0x1, 0x3, 0x7, 0xF, 0x1F, 0x3F};
 

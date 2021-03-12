@@ -11,7 +11,8 @@
 #include "trigger.h"
 #include "math.h"
 #include "vm.h"
-#include "data/data_bootstrap.h"
+
+UBYTE topdown_grid;
 
 void topdown_init() __banked {
     camera_offset_x = 0;

@@ -13,6 +13,7 @@ extern UBYTE fade_running;
 extern UBYTE fade_frames_per_step;
 extern UBYTE fade_black;
 extern UBYTE fade_timer;
+extern UBYTE fade_style;
 
 /**
  * Initialise fade variables

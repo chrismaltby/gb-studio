@@ -512,7 +512,9 @@ const compile = async (
       .map((track, index) => {
         return `extern const unsigned int ${track.dataName}_Data[];`;
       })
-      .join(`\n`)}\n\n#endif\n`;
+      .join(`\n`)}\n\n` +
+    `void bootstrap_init() __banked;\n\n` +
+    `#endif\n`;
   output[`data_bootstrap.c`] =
     `#include "data/data_bootstrap.h"\n` +
     `#include "data/${sceneSymbol(startSceneIndex)}.h"\n` +
@@ -532,16 +534,19 @@ const compile = async (
           paletteSymbol(0)
         )};\n`
       : "") +
-    `const UBYTE start_player_move_speed = ${Math.round(startMoveSpeed * 16)};\n` +
+    `const UBYTE start_player_move_speed = ${Math.round(
+      startMoveSpeed * 16
+    )};\n` +
     `const UBYTE start_player_anim_tick = ${startAnimSpeed};\n` +
     `const far_ptr_t ui_fonts[] = {\n` +
     precompiled.usedFonts
       .map((_, fontIndex) => "  " + toFarPtr(fontSymbol(fontIndex)))
       .join(",\n") +
     `\n};\n` +
-    compileEngineFields(engineFields, projectData.engineFieldValues) +
     "\n" +
-    `unsigned char script_variables[${variablesLen}] = { 0 };\n`;
+    `void bootstrap_init() __banked {\n` +
+    compileEngineFields(engineFields, projectData.engineFieldValues) +
+    `}\n`;
 
   const maxDataBank = 255;
 
@@ -693,7 +698,7 @@ export const compileEngineFields = (
         customValue !== undefined
           ? Number(customValue)
           : Number(engineField.defaultValue);
-      fieldDef += `${header ? "extern " : ""}${engineField.cType} ${
+      fieldDef += `${header ? `extern ${engineField.cType} ` : "    "}${
         engineField.key
       }${!header && value !== undefined ? ` = ${value}` : ""};\n`;
     }

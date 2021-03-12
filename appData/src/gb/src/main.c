@@ -36,6 +36,7 @@ extern const UBYTE bootstrap_script[];
 
 void engine_reset() {
     // cleanup core stuff
+    bootstrap_init();
     load_init();
     sound_init();
     parallax_init();

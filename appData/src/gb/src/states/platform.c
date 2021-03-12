@@ -11,15 +11,25 @@
 #include "scroll.h"
 #include "trigger.h"
 #include "vm.h"
-#include "data/data_bootstrap.h"
 
 #define PLATFORM_CAMERA_DEADZONE_X 4
 #define PLATFORM_CAMERA_DEADZONE_Y 16
 
-UBYTE grounded = FALSE;
-UBYTE on_ladder = FALSE;
-WORD pl_vel_x = 0;
-WORD pl_vel_y = 0;
+UBYTE grounded;
+UBYTE on_ladder;
+WORD pl_vel_x;
+WORD pl_vel_y;
+WORD plat_min_vel;
+WORD plat_walk_vel;
+WORD plat_climb_vel;
+WORD plat_run_vel;
+WORD plat_walk_acc;
+WORD plat_run_acc;
+WORD plat_dec;
+WORD plat_jump_vel;
+WORD plat_grav;
+WORD plat_hold_grav;
+WORD plat_max_fall_vel;
 
 void platform_init() __banked {
     UBYTE tile_x, tile_y;
