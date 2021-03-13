@@ -134,7 +134,8 @@ class Scene extends Component {
       showEntities,
       showCollisions,
       labelOffsetLeft,
-      labelOffsetRight
+      labelOffsetRight,
+      parallaxHoverLayer
     } = this.props;
 
     const {
@@ -168,17 +169,18 @@ class Scene extends Component {
           onMouseDown={this.onStartDrag}
           style={{
             paddingLeft: labelOffsetLeft,
-            paddingRight: labelOffsetRight
+            paddingRight: labelOffsetRight,
           }}
         >
-          <div className={cx("Scene__Label", {
+          <div
+            className={cx("Scene__Label", {
               "Scene__Label--Red": labelColor === "red",
               "Scene__Label--Orange": labelColor === "orange",
               "Scene__Label--Yellow": labelColor === "yellow",
               "Scene__Label--Green": labelColor === "green",
               "Scene__Label--Blue": labelColor === "blue",
               "Scene__Label--Purple": labelColor === "purple",
-              "Scene__Label--Gray": labelColor === "gray"
+              "Scene__Label--Gray": labelColor === "gray",
             })}
           >
             {sceneName}
@@ -208,12 +210,61 @@ class Scene extends Component {
               palettes={palettes}
             />
           )}
+
           {showCollisions && (
             <div className="Scene__Collisions">
               <SceneCollisions
                 width={width}
                 height={height}
                 collisions={collisions}
+              />
+            </div>
+          )}
+          {selected && parallaxHoverLayer !== undefined && scene.parallax && (
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                zIndex: 100,
+              }}
+            >
+              {scene.parallax.map(
+                (layer, layerIndex) =>
+                  layerIndex !== scene.parallax.length - 1 && (
+                    <div
+                      key={layerIndex}
+                      style={{
+                        background:
+                          parallaxHoverLayer === layerIndex
+                            ? `rgba(0,255,255,0.7)`
+                            : `rgba(0,255,255,0.2)`,
+                        height: (layer.height || 1) * 8,
+                        borderBottom: "2px solid rgb(0,200,200)",
+                        boxSizing: "border-box",
+                      }}
+                    />
+                  )
+              )}
+              <div
+                style={{
+                  background:
+                    parallaxHoverLayer === scene.parallax.length - 1
+                      ? `rgba(0,255,255,0.7)`
+                      : `rgba(0,255,255,0.2)`,
+                  height:
+                    8 *
+                    (scene.height -
+                      scene.parallax.reduce(
+                        (memo, layer, layerIndex) =>
+                          memo + layerIndex < scene.parallax.length - 1
+                            ? layer.height || 1
+                            : 0,
+                        0
+                      )),
+                  boxSizing: "border-box",
+                }}
               />
             </div>
           )}
@@ -242,7 +293,7 @@ class Scene extends Component {
             onMouseDown={this.onStartDrag}
             style={{
               paddingLeft: labelOffsetLeft,
-              paddingRight: labelOffsetRight
+              paddingRight: labelOffsetRight,
             }}
           >
             <SceneInfo id={id} />
@@ -286,7 +337,7 @@ Scene.defaultProps = {
 };
 
 function mapStateToProps(state, props) {
-  const { scene: sceneId, dragging: editorDragging, showLayers } = state.editor;
+  const { scene: sceneId, dragging: editorDragging, showLayers, parallaxHoverLayer } = state.editor;
 
   const actorsLookup = actorSelectors.selectEntities(state);
   const triggersLookup = triggerSelectors.selectEntities(state);
@@ -403,7 +454,8 @@ function mapStateToProps(state, props) {
     showEntities,
     showCollisions,
     labelOffsetLeft,
-    labelOffsetRight
+    labelOffsetRight,
+    parallaxHoverLayer
   };
 }
 

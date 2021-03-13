@@ -105,6 +105,7 @@ export interface EditorState {
   spriteTileSelection?: SpriteTileSelection;
   showSpriteBoundingBox: boolean;
   replaceSpriteTileMode: boolean;
+  parallaxHoverLayer: number | undefined;
 }
 
 export const initialState: EditorState = {
@@ -161,6 +162,7 @@ export const initialState: EditorState = {
   playSpriteAnimation: false,
   showSpriteBoundingBox: false,
   replaceSpriteTileMode: false,
+  parallaxHoverLayer: 0,
 };
 
 const editorSlice = createSlice({
@@ -592,6 +594,10 @@ const editorSlice = createSlice({
 
     setReplaceSpriteTileMode: (state, action: PayloadAction<boolean>) => {
       state.replaceSpriteTileMode = action.payload;
+    },
+
+    setParallaxHoverLayer: (state, action: PayloadAction<number|undefined>) => {
+      state.parallaxHoverLayer = action.payload;
     },
   },
   extraReducers: (builder) =>

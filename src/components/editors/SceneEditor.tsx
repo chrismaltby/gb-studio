@@ -19,6 +19,7 @@ import {
   FormDivider,
   FormField,
   FormHeader,
+  FormLink,
   FormRow,
   FormSectionTitle,
 } from "../ui/form/FormLayout";
@@ -42,6 +43,7 @@ import { TabBar } from "../ui/tabs/Tabs";
 import { Label } from "../ui/form/Label";
 import { Button } from "../ui/buttons/Button";
 import { LockIcon, LockOpenIcon } from "../ui/icons/Icons";
+import ParallaxSelect, { defaultValues as parallaxDefaultValues } from "../forms/ParallaxSelect";
 
 interface SceneEditorProps {
   id: string;
@@ -84,6 +86,9 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
   );
   const [clipboardData, setClipboardData] = useState<any>(null);
   const [notesOpen, setNotesOpen] = useState<boolean>(!!scene?.notes);
+  const [showParallaxSettings, setShowParallaxSettings] = useState<boolean>(
+    (scene?.parallax?.length || 0) > 0
+  );
   const colorsEnabled = useSelector(
     (state: RootState) => state.project.present.settings.customColorsEnabled
   );
@@ -217,6 +222,18 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
 
   const onToggleLockScriptEditor = () => {
     dispatch(editorActions.setLockScriptEditor(!lockScriptEditor));
+  };
+
+  const onShowParallaxSettings = () => {
+    setShowParallaxSettings(true);
+    dispatch(
+      entitiesActions.editScene({
+        sceneId: id,
+        changes: {
+          parallax: parallaxDefaultValues.slice(-2)
+        },
+      })
+    );
   };
 
   if (!scene) {
@@ -395,6 +412,23 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
 
             <FormRow>
               <BackgroundWarnings id={scene.backgroundId} />
+            </FormRow>
+
+            <FormRow>
+              {showParallaxSettings ? (
+                <FormField name="parallax" label={l10n("FIELD_PARALLAX")}>
+                  <ParallaxSelect
+                    name="parallax"
+                    value={scene.parallax}
+                    sceneHeight={scene.height}
+                    onChange={onChangeField("parallax")}
+                  />
+                </FormField>
+              ) : (
+                <FormLink onClick={onShowParallaxSettings}>
+                  {l10n("FIELD_PARALLAX_ENABLE")}
+                </FormLink>
+              )}
             </FormRow>
 
             <FormDivider />

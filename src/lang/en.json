@@ -333,6 +333,12 @@
   "FIELD_PIXELS_PER_FRAME_SHORT": "PPF",
   "FIELD_FRAMES_PER_SECOND_SHORT": "FPS",
   "FIELD_CUSTOM_SPEED": "Custom Speed",
+  "FIELD_PARALLAX": "Parallax",
+  "FIELD_PARALLAX_ENABLE": "Enable Parallax",
+  "FIELD_PARALLAX_NONE": "No Parallax",
+  "FIELD_LAYER": "Layer",
+  "FIELD_LAYERS": "Layers",
+  "FIELD_FIXED_POSITION": "Fixed Position",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

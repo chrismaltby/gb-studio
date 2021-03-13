@@ -176,6 +176,11 @@ export type SpriteSheet = {
   animSpeed: number | null;
 };
 
+export type SceneParallaxLayer = {
+  height: number;
+  speed: number;
+};
+
 export type Scene = {
   id: string;
   type: string;
@@ -192,6 +197,7 @@ export type Scene = {
   tileColors: number[];
   actors: string[];
   triggers: string[];
+  parallax?: SceneParallaxLayer[];
   script: ScriptEvent[];
   playerHit1Script: ScriptEvent[];
   playerHit2Script: ScriptEvent[];

@@ -1,6 +1,7 @@
 import { Dictionary } from "@reduxjs/toolkit";
 import flatten from "lodash/flatten";
 import { SPRITE_TYPE_STATIC } from "../../consts";
+import { SceneParallaxLayer } from "../../store/features/entities/entitiesTypes";
 import { FontData } from "../fonts/fontData";
 import { PrecompiledSpriteSheetData } from "./compileSprites";
 import {
@@ -305,6 +306,25 @@ ${data}
 };`;
 };
 
+export const compileParallax = (
+  parallax: SceneParallaxLayer[] | undefined
+): string[] | undefined => {
+  if (parallax) {
+    let row = 0;
+    return parallax.map((layer, layerIndex) => {
+      if (layerIndex === parallax.length - 1) {
+        return `PARALLAX_STEP(${row}, 0, ${layer.speed})`;
+      }
+      const str = `PARALLAX_STEP(${row}, ${row + layer.height}, ${
+        layer.speed
+      })`;
+      row += layer.height;
+      return str;
+    });
+  }
+  return undefined;
+};
+
 export const compileScene = (
   scene: any,
   sceneIndex: number,
@@ -333,6 +353,7 @@ export const compileScene = (
       collisions: toFarPtr(sceneCollisionsSymbol(sceneIndex)),
       colors: color ? toFarPtr(sceneColorsSymbol(sceneIndex)) : undefined,
       palette: color ? toFarPtr(paletteSymbol(bgPalette)) : undefined,
+      parallax_rows: compileParallax(scene.parallax),
       sprite_palette: color
         ? toFarPtr(paletteSymbol(actorsPalette))
         : undefined,

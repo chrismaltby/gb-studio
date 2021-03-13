@@ -68,6 +68,10 @@ const darkheme: ThemeInterface = {
     sidebar: {
       background: "#222222",
       border: "#000000",
+      well: {
+        background: "#333333",
+        hoverBackground: "#505252",
+      },
     },
     document: {
       background: "#444444",

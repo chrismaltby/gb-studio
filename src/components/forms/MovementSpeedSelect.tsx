@@ -34,7 +34,6 @@ export const MovementSpeedSelect: FC<MovementSpeedSelectProps> = ({
   const [isCustom, setIsCustom] = useState(false);
 
   useEffect(() => {
-    console.log({ value });
     const current = options.find((o) => o.value === value);
     setCurrentValue(current);
     if (value === 0 || !current) {

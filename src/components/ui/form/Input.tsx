@@ -29,6 +29,10 @@ export const Input = styled.input<InputProps>`
     background: ${(props) => props.theme.colors.input.activeBackground};
   }
 
+  :disabled {
+    opacity: 0.5;
+  }
+
   ${(props) => (props.displaySize === "small" ? smallStyles : "")}
   ${(props) => (props.displaySize === "large" ? largeStyles : "")}
 `;

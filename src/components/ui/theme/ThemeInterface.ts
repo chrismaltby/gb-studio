@@ -65,6 +65,10 @@ export interface ThemeInterface {
     sidebar: {
       background: string;
       border: string;
+      well: {
+        background: string;
+        hoverBackground: string;
+      };
     };
     document: {
       background: string;

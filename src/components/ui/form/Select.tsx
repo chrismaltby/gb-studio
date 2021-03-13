@@ -131,6 +131,10 @@ export const Select = styled(WindowedSelect).attrs((props) => ({
     background: ${(props) => props.theme.colors.menu.activeBackground};
   }
 
+  &.CustomSelect--is-disabled {
+    opacity: 0.5;
+  }
+
   input:focus {
     box-shadow: none !important;
   }

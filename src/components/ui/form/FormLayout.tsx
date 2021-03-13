@@ -129,3 +129,20 @@ export const FormSectionTitle = styled.div<FormSectionTitleProps>`
         `
       : ""}
 `;
+
+export const FormLink = styled.div`
+  font-size: 11px;
+  text-decoration: underline;
+  border-radius: 4px;
+  padding: 5px;
+  margin-left: -5px;
+  margin-right: -5px;
+  margin-top: -5px;
+
+  :hover {
+    background: rgba(128, 128, 128, 0.1);
+  }
+  :active {
+    background: rgba(128, 128, 128, 0.2);
+  }
+`;
