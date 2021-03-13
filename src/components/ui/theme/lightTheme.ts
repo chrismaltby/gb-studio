@@ -82,6 +82,16 @@ const lightTheme: ThemeInterface = {
       selectedBackground: "#dddddd",
       activeBackground: "#eaeaea",
     },
+    tracker: {
+      background: "#222222",
+      activeBackground: "#333333",
+      border: "#000000",
+      text: "#b7babb",
+      note: "#008894",
+      instrument: "#fcb800",
+      effectCode: "#e76f51",
+      effectParam: "#f4a261",
+    }
   },
   borderRadius: 4,
 };

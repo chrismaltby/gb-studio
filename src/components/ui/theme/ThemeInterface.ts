@@ -79,6 +79,16 @@ export interface ThemeInterface {
       selectedBackground: string;
       activeBackground: string;
     };
+    tracker: {
+      background: string;
+      activeBackground: string;
+      border: string;
+      text: string;
+      note: string;
+      instrument: string;
+      effectCode: string;
+      effectParam: string;
+    }
   };
   borderRadius: number;
 }

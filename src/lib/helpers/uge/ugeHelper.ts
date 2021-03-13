@@ -1,5 +1,7 @@
 /* eslint-disable camelcase */
 // import { DutyInstrument } from "./song/DutyInstrument";
+import { writeFileSync } from "fs-extra";
+import storage from "../../../components/music/helpers/storage";
 import { DutyInstrument, NoiseInstrument, WaveInstrument } from "../../../store/features/tracker/trackerTypes";
 import { PatternCell } from "./song/PatternCell";
 import { Song } from "./song/Song";
@@ -229,4 +231,143 @@ export const loadUGESong = (data: ArrayBuffer): (Song | null) => {
 
   console.log(song);
   return song;
+}
+
+export const saveUGESong = (song: Song) => {
+  const buffer = new ArrayBuffer(1024 * 1024);
+  const view = new DataView(buffer);
+  let idx = 0;
+
+  function addUint8(value: number) {
+    view.setUint8(idx, value);
+    idx += 1;
+  }
+  function addUint32(value: number) {
+    view.setUint32(idx, value, true);
+    idx += 4;
+  }
+  function addShortString(s: string) {
+    view.setUint8(idx, s.length);
+    idx += 1;
+    let te = new TextEncoder()
+    te.encodeInto(s, new Uint8Array(buffer, idx, idx + 255));
+    idx += 255;
+  }
+  function addDutyInstrument(type: number, i: DutyInstrument) {
+    addUint32(type);
+
+    addShortString(i.name || "");
+    addUint32(i.length ? i.length : 0);
+    addUint8(i.length === null ? 0 : 1);
+    addUint8(i.initial_volume);
+    addUint32(i.volume_sweep_change < 0 ? 1 : 0);
+    addUint8(i.volume_sweep_change != 0 ? 8 - Math.abs(i.volume_sweep_change) : 0);
+
+    addUint32(i.frequency_sweep_time);
+    addUint32(i.frequency_sweep_shift < 0 ? 1 : 0);
+    addUint32(i.frequency_sweep_shift);
+
+    addUint8(i.duty_cycle);
+
+    addUint32(0);
+    addUint32(0);
+
+    addUint32(0);
+    addUint32(0);
+    addUint32(0);
+  }
+
+  function addWaveInstrument(type: number, i: WaveInstrument) {
+    addUint32(type);
+
+    addShortString(i.name || "");
+    addUint32(i.length ? i.length : 0);
+    addUint8(i.length === null ? 0 : 1);
+    addUint8(0);
+    addUint32(0);
+    addUint8(0);
+
+    addUint32(0);
+    addUint32(0);
+    addUint32(0);
+
+    addUint8(0);
+
+    addUint32(i.volume);
+    addUint32(i.wave_index);
+
+    addUint32(0);
+    addUint32(0);
+    addUint32(0);
+  }
+
+  function addNoiseInstrument(type: number, i: NoiseInstrument) {
+    addUint32(type);
+
+    addShortString(i.name || "");
+    addUint32(i.length ? i.length : 0);
+    addUint8(i.length === null ? 0 : 1);
+    addUint8(i.initial_volume);
+    addUint32(i.volume_sweep_change < 0 ? 1 : 0);
+    addUint8(i.volume_sweep_change != 0 ? 8 - Math.abs(i.volume_sweep_change) : 0);
+
+    addUint32(0);
+    addUint32(0);
+    addUint32(0);
+
+    addUint8(0);
+
+    addUint32(0);
+    addUint32(0);
+
+    addUint32(0);
+    addUint32(i.dividing_ratio);
+    addUint32(i.bit_count == 7 ? 1 : 0);
+  }
+
+  addUint32(3); // version
+  addShortString(song.name);
+  addShortString(song.artist);
+  addShortString(song.comment);
+
+  for (let n = 0; n < 15; n++) {
+    addDutyInstrument(0, song.duty_instruments[n]);
+  }
+  for (let n = 0; n < 15; n++) {
+    addWaveInstrument(1, song.wave_instruments[n]);
+  }
+  for (let n = 0; n < 15; n++) {
+    addNoiseInstrument(2, song.noise_instruments[n]);
+  }
+  for (let n = 0; n < 16; n++) {
+    for (let m = 0; m < 32; m++) {
+      addUint8(song.waves[n] ? song.waves[n][m] : 0);
+    }
+  }
+  addUint32(song.ticks_per_row);
+
+  addUint32(song.patterns.length * 4);
+  for (let pattern of song.patterns) {
+    for (let track = 0; track < 4; track++) {
+      for (let m = 0; m < 64; m++) {
+        const t = pattern[m][track];
+        addUint32(t.note === null ? 90 : t.note);
+        addUint32(t.instrument === null ? 0 : t.instrument + 1);
+        addUint32(t.effectcode === null ? 0 : t.effectcode);
+        addUint8(t.effectparam === null ? 0 : t.effectparam);
+      }
+    }
+  }
+  for (let track = 0; track < 4; track++) {
+    addUint32(song.sequence.length + 1); //amount of "orders" in a uge file has an off-by-one
+    for (let i of song.sequence) {
+      addUint32(i * 4 + track);
+    }
+    addUint32(0); // add the off-by-one error
+  }
+  for (let n = 0; n < 16; n++) {
+    addUint32(0); //Add empty routines
+  }
+
+  // downloadBlob(new Blob([buffer.slice(0, idx)]), "song.uge");
 }

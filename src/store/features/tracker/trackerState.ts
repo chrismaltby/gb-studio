@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { PatternCell } from "../../../lib/helpers/uge/song/PatternCell";
 import { createDefaultSong, Song } from "../../../lib/helpers/uge/song/Song";
 import { DutyInstrument, NoiseInstrument, WaveInstrument } from "./trackerTypes";
 
@@ -91,6 +92,26 @@ const trackerSlice = createSlice({
       {
         ...state.song,
         noise_instruments: instruments
+      }
+    },
+    editPatternCell: (state, _action: PayloadAction<{ patternId: number, cellId: number, changes: Partial<PatternCell>}>) => {
+      const patternId = _action.payload.patternId;
+      const rowId = Math.floor(_action.payload.cellId / 16);
+      const colId = Math.floor(_action.payload.cellId / 4) % 4
+      const cellId = _action.payload.cellId % 16 % 4;
+      const patternCell = state.song.patterns[patternId][rowId][colId];
+      let patch = { ..._action.payload.changes }
+
+      const patterns = [...state.song.patterns];
+      patterns[patternId][rowId][colId] = {
+        ...patternCell,
+        ...patch
+      };
+
+      state.song = 
+      {
+        ...state.song,
+        patterns: patterns
       }
     }
   },
