@@ -26,7 +26,7 @@ import {
   TMP_VAR_1,
   TMP_VAR_2,
 } from "../../consts";
-import { dirToXDec, dirToYDec, animSpeedDec } from "./helpers";
+import { dirToXDec, dirToYDec, dirEnum } from "./helpers";
 import compileSprites from "./compileSprites";
 import compileAvatars from "./compileAvatars";
 import compileFonts from "./compileFonts";
@@ -475,9 +475,6 @@ const compile = async (
     );
   }
 
-  const startDirectionX = dirToXDec(startDirection);
-  const startDirectionY = dirToYDec(startDirection);
-
   // Set variables len to be slightly higher than needed
   // rounding to nearest 50 vars to prevent frequent
   // changes to data_ptrs.h which would invalidate build cache
@@ -525,7 +522,7 @@ const compile = async (
     `\n\n` +
     `const INT16 start_scene_x = ${(startX || 0) * 8 * 16};\n` +
     `const INT16 start_scene_y = ${(startY + 1 || 0) * 8 * 16};\n` +
-    `const direction_e start_scene_dir = ${startDirectionX};\n` +
+    `const direction_e start_scene_dir = ${dirEnum(startDirection)};\n` +
     `const far_ptr_t start_scene = ${toFarPtr(
       sceneSymbol(startSceneIndex)
     )};\n` +

@@ -7,6 +7,13 @@ const DIR_LOOKUP = {
   up: 8,
 };
 
+const DIR_ENUM_LOOKUP = {
+  down: "DIR_DOWN",
+  left: "DIR_LEFT",
+  right: "DIR_RIGHT",
+  up: "DIR_UP",
+};
+
 const MOVEMENT_LOOKUP = {
   static: 1,
   playerInput: 2,
@@ -65,6 +72,8 @@ export const nameToCName = (name) => {
     .replace(/ /g, "_")
     .replace(/[^A-Za-z0-9_]/g, "");
 };
+
+export const dirEnum = (dir) => DIR_ENUM_LOOKUP[dir] || "DIR_DOWN";
 
 export const dirDec = (dir) => DIR_LOOKUP[dir] || 1;
 
