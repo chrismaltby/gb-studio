@@ -9,6 +9,7 @@ import {
   animSpeedDec,
   collisionGroupDec,
   dirDec,
+  dirEnum,
   moveSpeedDec,
   spriteTypeDec,
 } from "./helpers";
@@ -459,7 +460,7 @@ export const compileSceneActors = (
           top: -16,
           bottom: 0,
         },
-        dir: "DIR_DOWN",
+        dir: dirEnum(actor.direction),
         sprite: toFarPtr(spriteSheetSymbol(spriteIndex)),
         palette: actorPaletteIndexes[actor.id] || 0,
         move_speed: Math.round(actor.moveSpeed * 16),
