@@ -18,14 +18,14 @@ interface ParallaxSpeedOption {
 const options: ParallaxSpeedOption[] = [
   { value: 128, label: `${l10n("FIELD_FIXED_POSITION")}` },
   { value: 0, label: `${l10n("FIELD_SPEED")} 1` },
-  { value: 1, label: `${l10n("FIELD_SPEED")} 1/2` },
-  { value: 2, label: `${l10n("FIELD_SPEED")} 1/4` },
-  { value: 3, label: `${l10n("FIELD_SPEED")} 1/8` },
-  { value: 4, label: `${l10n("FIELD_SPEED")} 1/16` },
-  { value: 5, label: `${l10n("FIELD_SPEED")} 1/32` },
-  { value: 6, label: `${l10n("FIELD_SPEED")} 1/64` },
-  { value: 7, label: `${l10n("FIELD_SPEED")} 1/128` },
-  { value: 8, label: `${l10n("FIELD_SPEED")} 1/256` },
+  { value: 1, label: `${l10n("FIELD_SPEED")} ½` },
+  { value: 2, label: `${l10n("FIELD_SPEED")} ¼` },
+  { value: 3, label: `${l10n("FIELD_SPEED")} ⅛` },
+  { value: 4, label: `${l10n("FIELD_SPEED")} ¹⁄₁₆` },
+  { value: 5, label: `${l10n("FIELD_SPEED")} ¹⁄₃₂` },
+  { value: 6, label: `${l10n("FIELD_SPEED")} ¹⁄₆₄` },
+  { value: 7, label: `${l10n("FIELD_SPEED")} ¹⁄₁₂₈` },
+  { value: 8, label: `${l10n("FIELD_SPEED")} ¹⁄₂₅₆` },
 ];
 
 export const ParallaxSpeedSelect: FC<ParallaxSpeedSelectProps> = ({
