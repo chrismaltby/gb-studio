@@ -36,6 +36,7 @@ const LayersWrapper = styled.div`
   margin-top: 10px;
   margin-bottom: -10px;
   padding-bottom: 0;
+  box-shadow: ${(props) => props.theme.colors.sidebar.well.boxShadow};
 `;
 
 const LayerWrapper = styled.div`

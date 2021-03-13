@@ -70,6 +70,7 @@ const darkheme: ThemeInterface = {
       border: "#000000",
       well: {
         background: "#333333",
+        boxShadow: "-1px 0px 2px 1px rgba(0, 0, 0, 0.5) inset",
         hoverBackground: "#505252",
       },
     },

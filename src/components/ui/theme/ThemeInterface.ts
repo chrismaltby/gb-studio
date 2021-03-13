@@ -67,6 +67,7 @@ export interface ThemeInterface {
       border: string;
       well: {
         background: string;
+        boxShadow: string;
         hoverBackground: string;
       };
     };
