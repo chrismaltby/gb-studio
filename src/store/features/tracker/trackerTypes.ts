@@ -26,11 +26,11 @@ export type DutyInstrument = {
 };
 
 export type WaveInstrument = {
+  index: number,
   name: any,
   length: number | null,
   volume: number,
   wave_index: number,
-  index: number,
 };
 
 export type NoiseInstrument = {

@@ -1,12 +1,12 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import castEventValue from "../../lib/helpers/castEventValue";
 import l10n from "../../lib/helpers/l10n";
 import trackerActions from "../../store/features/tracker/trackerActions";
 import { WaveInstrument } from "../../store/features/tracker/trackerTypes";
 import { FormDivider, FormField, FormRow } from "../ui/form/FormLayout";
 import { Select } from "../ui/form/Select";
 import { InstrumentLengthForm } from "./InstrumentLengthForm";
+import { WaveEditorForm as WaveEditorForm } from "./WaveEditorForm";
 
 const volumeOptions = [
   {
@@ -54,15 +54,10 @@ export const InstrumentWaveEditor = ({
     );
   };
 
-  const onChangeFieldInput = <T extends keyof WaveInstrument>(key: T) => (
-    e:
-      | React.ChangeEvent<HTMLInputElement>
-      | React.ChangeEvent<HTMLTextAreaElement>
+  const onChangeFieldSelect = <T extends keyof WaveInstrument>(key: T) => (
+    e: { value: string, label: string }
   ) => {
-    const editValue = castEventValue(e);
-
-    console.log(key, e);
-
+    const editValue = e.value;
     dispatch(
       trackerActions.editWaveInstrument({
         instrumentId: instrument.index,
@@ -91,10 +86,15 @@ export const InstrumentWaveEditor = ({
             name="volume"
             value={selectedVolume}
             options={volumeOptions}
-            onChange={onChangeFieldInput("volume")}
+            onChange={onChangeFieldSelect("volume")}
           />
         </FormField>
       </FormRow>
+
+      <WaveEditorForm
+        waveId={instrument.wave_index}
+        onChange={onChangeFieldSelect("wave_index")}
+      />
 
     </>
   );
