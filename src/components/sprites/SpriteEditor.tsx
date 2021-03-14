@@ -103,6 +103,7 @@ export const SpriteEditor = ({
       | React.ChangeEvent<HTMLTextAreaElement>
   ) => {
     const editValue = castEventValue(e);
+    onModifySprite();
     dispatch(
       entitiesActions.editSpriteSheet({
         spriteSheetId: id,
@@ -116,6 +117,7 @@ export const SpriteEditor = ({
   const onChangeField = <T extends keyof SpriteSheet>(key: T) => (
     editValue: SpriteSheet[T]
   ) => {
+    onModifySprite();
     dispatch(
       entitiesActions.editSpriteSheet({
         spriteSheetId: id,
@@ -129,6 +131,7 @@ export const SpriteEditor = ({
   const onChangeAnimationField = <T extends keyof SpriteAnimation>(key: T) => (
     editValue: SpriteAnimation[T]
   ) => {
+    onModifySprite();
     dispatch(
       entitiesActions.editSpriteAnimation({
         spriteAnimationId: animationId,
@@ -142,6 +145,7 @@ export const SpriteEditor = ({
   const onChangeTilesFields = <T extends keyof MetaspriteTile>(key: T) => (
     editValue: MetaspriteTile[T]
   ) => {
+    onModifySprite();
     dispatch(
       entitiesActions.editMetaspriteTiles({
         metaspriteTileIds: selectedTileIds,
@@ -158,6 +162,7 @@ export const SpriteEditor = ({
       | React.ChangeEvent<HTMLTextAreaElement>
   ) => {
     const editValue = castEventValue(e);
+    onModifySprite();
     dispatch(
       entitiesActions.editMetaspriteTile({
         metaspriteTileId: selectedTileId,
@@ -169,6 +174,7 @@ export const SpriteEditor = ({
   };
 
   const onToggleFlipX = useCallback(() => {
+    onModifySprite();
     dispatch(
       entitiesActions.flipXMetaspriteTiles({
         metaspriteTileIds: selectedTileIds,
@@ -177,6 +183,7 @@ export const SpriteEditor = ({
   }, [selectedTileIds, metaspriteTile?.flipX]);
 
   const onToggleFlipY = useCallback(() => {
+    onModifySprite();
     dispatch(
       entitiesActions.flipYMetaspriteTiles({
         metaspriteTileIds: selectedTileIds,
@@ -185,6 +192,7 @@ export const SpriteEditor = ({
   }, [selectedTileIds, metaspriteTile?.flipY]);
 
   const sendTileToBack = useCallback(() => {
+    onModifySprite();
     dispatch(
       entitiesActions.sendMetaspriteTilesToBack({
         metaspriteTileIds: selectedTileIds,
@@ -194,6 +202,7 @@ export const SpriteEditor = ({
   }, [selectedTileIds, metaspriteId]);
 
   const sendTileToFront = useCallback(() => {
+    onModifySprite();
     dispatch(
       entitiesActions.sendMetaspriteTilesToFront({
         metaspriteTileIds: selectedTileIds,
@@ -227,6 +236,7 @@ export const SpriteEditor = ({
   }, [metaspriteId]);
 
   const onPaste = useCallback(() => {
+    onModifySprite();
     dispatch(
       clipboardActions.pasteSprite({
         metaspriteId,
@@ -240,6 +250,7 @@ export const SpriteEditor = ({
   }, []);
 
   const onRemoveSelectedTiles = useCallback(() => {
+    onModifySprite();
     dispatch(
       entitiesActions.removeMetaspriteTiles({
         metaspriteTileIds: selectedTileIds,
@@ -249,6 +260,7 @@ export const SpriteEditor = ({
   }, [dispatch, selectedTileIds, metaspriteId]);
 
   const onRemoveMetasprite = useCallback(() => {
+    onModifySprite();
     dispatch(
       entitiesActions.removeMetasprite({
         metaspriteId,
@@ -261,23 +273,38 @@ export const SpriteEditor = ({
     dispatch(editorActions.setReplaceSpriteTileMode(!replaceSpriteTileMode));
   }, [replaceSpriteTileMode]);
 
+  const autoDetect = sprite?.autoDetect;
+
+  const onModifySprite = useCallback(() => {
+    if (autoDetect) {
+      dispatch(
+        entitiesActions.editSpriteSheet({
+          spriteSheetId: id,
+          changes: {
+            autoDetect: false,
+          },
+        })
+      );
+    }
+  }, [dispatch, autoDetect, id]);
+
   const onAutoDetect = useCallback(() => {
     dispatch(
       entitiesActions.editSpriteSheet({
         spriteSheetId: id,
         changes: {
-          autoDetect: !sprite?.autoDetect,
+          autoDetect: !autoDetect,
         },
       })
     );
-    if (!sprite?.autoDetect) {
+    if (!autoDetect) {
       dispatch(
         spriteActions.detectSprite({
           spriteSheetId: id,
         })
       );
     }
-  }, [id, sprite?.autoDetect]);
+  }, [dispatch, id, autoDetect]);
 
   if (!sprite || !animation) {
     return null;
