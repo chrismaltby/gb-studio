@@ -88,9 +88,9 @@ const darkheme: ThemeInterface = {
       border: "#000000",
       text: "#b7babb",
       note: "#008894",
-      instrument: "#fcb800",
-      effectCode: "#e76f51",
-      effectParam: "#f4a261",
+      instrument: "#738bd7",
+      effectCode: "#f45d22",
+      effectParam: "#ffad1f",
     }
   },
   borderRadius: 4,
