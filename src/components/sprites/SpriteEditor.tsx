@@ -37,6 +37,7 @@ import {
   FlipVerticalIcon,
   SendToFrontIcon,
   SendToBackIcon,
+  CheckIcon,
 } from "../ui/icons/Icons";
 import { FlexGrow } from "../ui/spacing/Spacing";
 import { SidebarHeader } from "../ui/form/SidebarHeader";
@@ -49,6 +50,7 @@ import { AnimationTypeSelect } from "../forms/AnimationTypeSelect";
 import { AnimationSpeedSelect } from "../forms/AnimationSpeedSelect";
 import { ObjPaletteSelect } from "../forms/ObjPaletteSelect";
 import { PaletteIndexSelect } from "../forms/PaletteIndexSelect";
+import styled from "styled-components";
 
 interface SpriteEditorProps {
   id: string;
@@ -56,7 +58,14 @@ interface SpriteEditorProps {
   animationId: string;
 }
 
-const options = [] as any[];
+const ButtonIcon = styled.div`
+  width: 12px;
+  display: inline-flex;
+  justifycontent: center;
+  alignitems: center;
+  marginleft: -5px;
+  marginright: 5px;
+`;
 
 export const SpriteEditor = ({
   id,
@@ -254,11 +263,21 @@ export const SpriteEditor = ({
 
   const onAutoDetect = useCallback(() => {
     dispatch(
-      spriteActions.detectSprite({
+      entitiesActions.editSpriteSheet({
         spriteSheetId: id,
+        changes: {
+          autoDetect: !sprite?.autoDetect,
+        },
       })
     );
-  }, [id]);
+    if (!sprite?.autoDetect) {
+      dispatch(
+        spriteActions.detectSprite({
+          spriteSheetId: id,
+        })
+      );
+    }
+  }, [id, sprite?.autoDetect]);
 
   if (!sprite || !animation) {
     return null;
@@ -514,19 +533,6 @@ export const SpriteEditor = ({
               <FormDivider />
               <FormRow>
                 <FormField
-                  name="actorAnimSpeed"
-                  label={l10n("FIELD_ANIMATION_SPEED")}
-                >
-                  <AnimationSpeedSelect
-                    name="actorAnimSpeed"
-                    value={sprite.animSpeed}
-                    onChange={onChangeField("animSpeed")}
-                  />
-                </FormField>
-              </FormRow>
-              <FormDivider />
-              <FormRow>
-                <FormField
                   name="animationType"
                   label={l10n("FIELD_ANIMATION_TYPE")}
                 >
@@ -550,7 +556,15 @@ export const SpriteEditor = ({
                   </FormRow>
                 )}
               <FormRow>
-                <Button onClick={onAutoDetect}>
+                <Button
+                  onClick={onAutoDetect}
+                  variant={sprite.autoDetect ? "primary" : "normal"}
+                >
+                  {sprite.autoDetect && (
+                    <ButtonIcon>
+                      <CheckIcon />
+                    </ButtonIcon>
+                  )}
                   {l10n("FIELD_AUTODETECT_ANIMATIONS")}
                 </Button>
               </FormRow>

@@ -1,6 +1,7 @@
 import { Middleware } from "@reduxjs/toolkit";
 import { RootState } from "../../configureStore";
 import actions from "./spriteActions";
+import projectActions from "../project/projectActions";
 import { spriteSheetSelectors } from "../entities/entitiesState";
 import { detect, detectClassic } from "../../../lib/sprite/detect";
 
@@ -34,7 +35,38 @@ const spriteMiddleware: Middleware<{}, RootState> = (store) => (next) => async (
     }
   }
 
-  return next(action);
+  next(action);
+
+  if (projectActions.loadProject.fulfilled.match(action)) {
+    const state = store.getState();
+    const spriteSheets = spriteSheetSelectors.selectAll(state);
+    for (const spriteSheet of spriteSheets) {
+      if (
+        !spriteSheet.animations ||
+        spriteSheet.animations.length === 0 ||
+        spriteSheet.autoDetect
+      ) {
+        store.dispatch(actions.detectSprite({ spriteSheetId: spriteSheet.id }));
+      }
+    }
+  }
+
+  if (projectActions.loadSprite.fulfilled.match(action)) {
+    const state = store.getState();
+    const spriteSheet = spriteSheetSelectors.selectById(
+      state,
+      action.payload.data.id
+    );
+    if (spriteSheet) {
+      if (
+        !spriteSheet.animations ||
+        spriteSheet.animations.length === 0 ||
+        spriteSheet.autoDetect
+      ) {
+        store.dispatch(actions.detectSprite({ spriteSheetId: spriteSheet.id }));
+      }
+    }
+  }
 };
 
 export default spriteMiddleware;

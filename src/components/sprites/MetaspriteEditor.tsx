@@ -244,6 +244,8 @@ const MetaspriteEditor = ({
 
       e.preventDefault();
 
+      onModifySprite();
+
       // Clear focus from animation timeline
       const el = document.querySelector(":focus") as any;
       if (el && el.blur) el.blur();
@@ -336,6 +338,7 @@ const MetaspriteEditor = ({
   );
 
   const onDragEnd = (e: MouseEvent) => {
+    onModifySprite();
     setDraggingMetasprite(false);
     removeMetaspriteTilesOutsideCanvas();
   };
@@ -396,6 +399,7 @@ const MetaspriteEditor = ({
   );
 
   const onDragSelectionEnd = (e: MouseEvent) => {
+    onModifySprite();
     setDraggingSelection(false);
     setSelectionRect(undefined);
   };
@@ -462,6 +466,7 @@ const MetaspriteEditor = ({
 
   const nudgeSelectedTiles = useCallback(
     (x: number, y: number) => {
+      onModifySprite();
       dispatch(
         entitiesActions.moveMetaspriteTilesRelative({
           metaspriteTileIds: selectedTileIds,
@@ -474,6 +479,7 @@ const MetaspriteEditor = ({
   );
 
   const flipXSelectedTiles = useCallback(() => {
+    onModifySprite();
     dispatch(
       entitiesActions.flipXMetaspriteTiles({
         metaspriteTileIds: selectedTileIds,
@@ -482,6 +488,7 @@ const MetaspriteEditor = ({
   }, [dispatch, selectedTileIds]);
 
   const flipYSelectedTiles = useCallback(() => {
+    onModifySprite();
     dispatch(
       entitiesActions.flipYMetaspriteTiles({
         metaspriteTileIds: selectedTileIds,
@@ -490,6 +497,7 @@ const MetaspriteEditor = ({
   }, [dispatch, selectedTileIds]);
 
   const removeSelectedTiles = useCallback(() => {
+    onModifySprite();
     dispatch(
       entitiesActions.removeMetaspriteTiles({
         metaspriteTileIds: selectedTileIds,
@@ -552,6 +560,7 @@ const MetaspriteEditor = ({
   }, [selectedTileIds]);
 
   const onPaste = useCallback(() => {
+    onModifySprite();
     dispatch(
       clipboardActions.pasteSprite({
         metaspriteId,
@@ -579,6 +588,21 @@ const MetaspriteEditor = ({
     },
     [metasprite?.tiles]
   );
+
+  const autoDetect = spriteSheet?.autoDetect;
+
+  const onModifySprite = useCallback(() => {
+    if (autoDetect) {
+      dispatch(
+        entitiesActions.editSpriteSheet({
+          spriteSheetId,
+          changes: {
+            autoDetect: false,
+          },
+        })
+      );
+    }
+  }, [dispatch, autoDetect, spriteSheetId]);
 
   // Keyboard handlers
   useEffect(() => {

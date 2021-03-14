@@ -88,6 +88,8 @@ const loadProject = async (projectPath) => {
               },
             ],
           })),
+          autoDetect:
+            oldSprite?.autoDetect !== undefined ? oldSprite.autoDetect : true,
         };
       }
       return sprite;

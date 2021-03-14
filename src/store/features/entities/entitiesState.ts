@@ -10,7 +10,6 @@ import {
   EntityId,
   Dictionary,
 } from "@reduxjs/toolkit";
-import { normalize, denormalize, schema } from "normalizr";
 import {
   SPRITE_TYPE_STATIC,
   SPRITE_TYPE_ACTOR,
@@ -70,7 +69,12 @@ import {
   SpriteAnimation,
   Font,
 } from "./entitiesTypes";
-import { normalizeEntities } from "./entitiesHelpers";
+import {
+  normalizeEntities,
+  sortByFilename,
+  swap,
+  matchAsset,
+} from "./entitiesHelpers";
 import { clone } from "../../../lib/helpers/clone";
 import spriteActions from "../sprite/spriteActions";
 
@@ -80,22 +84,8 @@ const MIN_SCENE_WIDTH = 20;
 const MIN_SCENE_HEIGHT = 18;
 
 const inodeToRecentBackground: Dictionary<Background> = {};
-const inodeToRecentSpriteSheet: Dictionary<SpriteSheet> = {};
 const inodeToRecentMusic: Dictionary<Music> = {};
 const inodeToRecentFont: Dictionary<Font> = {};
-
-const matchAsset = (assetA: Asset) => (assetB: Asset) => {
-  return assetA.filename === assetB.filename && assetA.plugin === assetB.plugin;
-};
-
-const sortByFilename = (a: Asset, b: Asset) => {
-  if (a.filename > b.filename) return 1;
-  if (a.filename < b.filename) return -1;
-  return 0;
-};
-
-const swap = <T extends unknown>(x: number, y: number, [...xs]: T[]): T[] =>
-  xs.length > 1 ? (([xs[x], xs[y]] = [xs[y], xs[x]]), xs) : xs;
 
 const actorsAdapter = createEntityAdapter<Actor>();
 const triggersAdapter = createEntityAdapter<Trigger>();
@@ -444,22 +434,7 @@ const loadSprite: CaseReducer<
     data: SpriteSheet;
   }>
 > = (state, action) => {
-  const spriteSheets = localSpriteSheetSelectors.selectAll(state);
-  const existingAsset =
-    spriteSheets.find(matchAsset(action.payload.data)) ||
-    inodeToRecentSpriteSheet[action.payload.data.inode];
-  const existingId = existingAsset?.id;
-
-  if (existingId) {
-    delete inodeToRecentSpriteSheet[action.payload.data.inode];
-    spriteSheetsAdapter.upsertOne(state.spriteSheets, {
-      ...existingAsset,
-      ...action.payload.data,
-      id: existingId,
-    });
-  } else {
-    spriteSheetsAdapter.addOne(state.spriteSheets, action.payload.data);
-  }
+  spriteSheetsAdapter.upsertOne(state.spriteSheets, action.payload.data);
 };
 
 const loadDetectedSprite: CaseReducer<
@@ -512,7 +487,6 @@ const removeSprite: CaseReducer<
   const spriteSheets = localSpriteSheetSelectors.selectAll(state);
   const existingAsset = spriteSheets.find(matchAsset(action.payload));
   if (existingAsset) {
-    inodeToRecentSpriteSheet[existingAsset.inode] = clone(existingAsset);
     spriteSheetsAdapter.removeOne(state.spriteSheets, existingAsset.id);
   }
 };

@@ -174,6 +174,7 @@ export type SpriteSheet = {
   boundsHeight: number;
   animations: string[];
   animSpeed: number | null;
+  autoDetect: boolean;
 };
 
 export type SceneParallaxLayer = {

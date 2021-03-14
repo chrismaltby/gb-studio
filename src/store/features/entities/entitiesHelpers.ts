@@ -1,5 +1,10 @@
 import { normalize, denormalize, schema } from "normalizr";
-import { ProjectEntitiesData, EntitiesState, EntityKey } from "./entitiesTypes";
+import {
+  ProjectEntitiesData,
+  EntitiesState,
+  EntityKey,
+  Asset,
+} from "./entitiesTypes";
 import { EntityId, Dictionary } from "@reduxjs/toolkit";
 
 const backgroundSchema = new schema.Entity("backgrounds");
@@ -89,3 +94,19 @@ export const denormalizeEntities = (
   };
   return denormalize(input, projectSchema, entities);
 };
+
+export const matchAsset = (assetA: Asset) => (assetB: Asset) => {
+  return assetA.filename === assetB.filename && assetA.plugin === assetB.plugin;
+};
+
+export const sortByFilename = (a: Asset, b: Asset) => {
+  if (a.filename > b.filename) return 1;
+  if (a.filename < b.filename) return -1;
+  return 0;
+};
+
+export const swap = <T extends unknown>(
+  x: number,
+  y: number,
+  [...xs]: T[]
+): T[] => (xs.length > 1 ? (([xs[x], xs[y]] = [xs[y], xs[x]]), xs) : xs);
