@@ -162,7 +162,7 @@ export const initialState: EditorState = {
   playSpriteAnimation: false,
   showSpriteBoundingBox: false,
   replaceSpriteTileMode: false,
-  parallaxHoverLayer: 0,
+  parallaxHoverLayer: undefined,
 };
 
 const editorSlice = createSlice({
