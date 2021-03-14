@@ -122,6 +122,18 @@ export const detect = (
         }
       }
 
+      // Create blank metasprite for empty animations
+      for (const animation of animations) {
+        if (animation.frames.length === 0) {
+          const metasprite: Metasprite = {
+            id: uuid(),
+            tiles: [],
+          };
+          animation.frames.push(metasprite.id);
+          metasprites.push(metasprite);
+        }
+      }
+
       const furthestX = Math.max.apply(
         null,
         metaspriteTiles.map((tile) => {
@@ -224,6 +236,18 @@ export const detectClassic = (spriteSheet: SpriteSheet): DetectedSprite => {
   } else {
     for (let i = 0; i < metasprites.length; i++) {
       animations[0].frames.push(metasprites[i].id);
+    }
+  }
+
+  // Create blank metasprite for empty animations
+  for (const animation of animations) {
+    if (animation.frames.length === 0) {
+      const metasprite: Metasprite = {
+        id: uuid(),
+        tiles: [],
+      };
+      animation.frames.push(metasprite.id);
+      metasprites.push(metasprite);
     }
   }
 
