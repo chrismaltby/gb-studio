@@ -27,10 +27,20 @@ import { SongEditor } from "../../components/music/SongEditor";
 import SongEditorToolsPanel from "../../components/music/SongEditorToolsPanel";
 import { loadUGESong } from "../../lib/helpers/uge/ugeHelper";
 import trackerActions from "../../store/features/tracker/trackerActions";
+import MusicViewer from "../../components/assets/MusicViewer";
+import { Song } from "../../lib/helpers/uge/song/Song";
 
 const Wrapper = styled.div`
   display: flex;
   width: 100%;
+`;
+
+const ModViewerWrapper = styled.div`
+  position: relative;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  display: grid;
 `;
 
 const MusicPage = () => {
@@ -83,7 +93,11 @@ const MusicPage = () => {
         dispatch(trackerActions.loadSong(song));
       }
     };
-    readSong();
+    if (selectedSong.type === "uge") {
+      readSong();
+    } else {
+      dispatch(trackerActions.loadSong(new Song()));
+    }
   }, [projectRoot, selectedSong]);
 
   const [leftPaneWidth, setLeftPaneSize, startLeftPaneResize] = useResizable({
@@ -227,46 +241,54 @@ const MusicPage = () => {
         </div>
       </div>
       <SplitPaneHorizontalDivider onMouseDown={startLeftPaneResize} />
-      <div
-        style={{
-          flex: "1 1 0",
-          minWidth: 0,
-          overflow: "hidden",
-          background: themeContext.colors.document.background,
-          color: themeContext.colors.text,
-          height: windowHeight - 38,
-          position: "relative",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        <div style={{ position: "relative", height: "60px" }}>
-          <SongEditorToolsPanel
-            selectedSongId={selectedId}
-          />
+      {(selectedSong.type === "uge") ? (
+        <>
+        <div
+          style={{
+            flex: "1 1 0",
+            minWidth: 0,
+            overflow: "hidden",
+            background: themeContext.colors.document.background,
+            color: themeContext.colors.text,
+            height: windowHeight - 38,
+            position: "relative",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <div style={{ position: "relative", height: "60px" }}>
+            <SongEditorToolsPanel
+              selectedSongId={selectedId}
+            />
+          </div>
+          <SplitPaneVerticalDivider />
+          <div style={{ position: "relative" }}>
+            <SongTracker
+              id={selectedId}
+              sequenceId={sequenceId}
+              data={song}
+              height={windowHeight - 100}
+            />
+          </div>
         </div>
-        <SplitPaneVerticalDivider />
-        <div style={{ position: "relative" }}>
-          <SongTracker
-            id={selectedId}
-            sequenceId={sequenceId}
-            data={song}
-            height={windowHeight - 100}
-          />
+        <SplitPaneHorizontalDivider onMouseDown={onResizeRight} />
+        <div
+          style={{
+            width: rightPaneWidth,
+            background: themeContext.colors.sidebar.background,
+            height: "100%",
+            overflow: "hidden",
+            position: "relative",
+          }}
+        >
+          <SongEditor id={selectedId} />
         </div>
-      </div>
-      <SplitPaneHorizontalDivider onMouseDown={onResizeRight} />
-      <div
-        style={{
-          width: rightPaneWidth,
-          background: themeContext.colors.sidebar.background,
-          height: "100%",
-          overflow: "hidden",
-          position: "relative",
-        }}
-      >
-        <SongEditor id={selectedId} />
-      </div>
+        </>
+      ) : (
+        <ModViewerWrapper>
+          <MusicViewer file={selectedSong} />
+        </ModViewerWrapper>
+      )}
     </Wrapper>
   );
 };

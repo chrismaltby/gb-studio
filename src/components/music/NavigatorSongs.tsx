@@ -84,6 +84,8 @@ export const NavigatorSongs = ({
     ? songsLookup[navigationId]?.id || allSongs[0]?.id
     : navigationId;
 
+  const selectedSong = songsLookup[selectedSongId];
+
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -164,9 +166,11 @@ export const NavigatorSongs = ({
     direction: "vertical",
   });
 
+  const showInstruments = selectedSong && selectedSong.type === "uge";
+
   return (
     <>
-      <Pane style={{ height: splitSizes[0] }}>
+      <Pane style={{ height: showInstruments ? splitSizes[0] : height }}>
         <SplitPaneHeader
           onToggle={() => togglePane(0)}
           collapsed={Math.floor(splitSizes[0]) <= COLLAPSED_SIZE}
@@ -187,94 +191,98 @@ export const NavigatorSongs = ({
           selectedId={selectedSongId}
           items={items}
           setSelectedId={setSelectedSongId}
-          height={splitSizes[0] - 30}
+          height={(showInstruments ? splitSizes[0] : height) - 30}
         >
           {({ item }) => <EntityListItem type="song" item={item} />}
         </FlatList>
       </Pane>
-      <SplitPaneVerticalDivider onMouseDown={onDragStart(0)} />
-      <Pane style={{ height: splitSizes[1] }}>
-        <SplitPaneHeader
-          onToggle={() => togglePane(1)}
-          collapsed={Math.floor(splitSizes[1]) <= COLLAPSED_SIZE}
-          buttons={
-            <Button
-              variant="transparent"
-              size="small"
-              title={l10n("TOOL_ADD_DUTY_INSTRUMENT_LABEL")}
-              onClick={() => { }}
-            >
-              <PlusIcon />
-            </Button>
-          }
-        >
-          {l10n("FIELD_INSTRUMENTS")} ({instrumentItems.length}/15)
-        </SplitPaneHeader>
-        <FlatList
-          selectedId={selectedInstrument.type === "instrument" ? selectedInstrument.id : ""}
-          items={instrumentItems}
-          setSelectedId={setSelectedInstrumentWithType("instrument")}
-          height={splitSizes[1] - 30}
-        >
-          {({ item }) => <EntityListItem type="instrument" item={item} />}
-        </FlatList>
-      </Pane>
-      <SplitPaneVerticalDivider onMouseDown={onDragStart(1)} />
-      <Pane style={{ height: splitSizes[2] }}>
+      {showInstruments && (
+        <>
+        <SplitPaneVerticalDivider onMouseDown={onDragStart(0)} />
+        <Pane style={{ height: splitSizes[1] }}>
+          <SplitPaneHeader
+            onToggle={() => togglePane(1)}
+            collapsed={Math.floor(splitSizes[1]) <= COLLAPSED_SIZE}
+            buttons={
+              <Button
+                variant="transparent"
+                size="small"
+                title={l10n("TOOL_ADD_DUTY_INSTRUMENT_LABEL")}
+                onClick={() => { }}
+              >
+                <PlusIcon />
+              </Button>
+            }
+          >
+            {l10n("FIELD_INSTRUMENTS")} ({instrumentItems.length}/15)
+          </SplitPaneHeader>
+          <FlatList
+            selectedId={selectedInstrument.type === "instrument" ? selectedInstrument.id : ""}
+            items={instrumentItems}
+            setSelectedId={setSelectedInstrumentWithType("instrument")}
+            height={splitSizes[1] - 30}
+          >
+            {({ item }) => <EntityListItem type="instrument" item={item} />}
+          </FlatList>
+        </Pane>
+        <SplitPaneVerticalDivider onMouseDown={onDragStart(1)} />
+        <Pane style={{ height: splitSizes[2] }}>
 
-        <SplitPaneHeader
-          onToggle={() => togglePane(2)}
-          collapsed={Math.floor(splitSizes[2]) <= COLLAPSED_SIZE}
-          buttons={
-            <Button
-              variant="transparent"
-              size="small"
-              title={l10n("TOOL_ADD_WAVE_INSTRUMENT_LABEL")}
-              onClick={() => { }}
-            >
-              <PlusIcon />
-            </Button>
-          }
-        >
-          {l10n("FIELD_WAVES")} ({wavesItems.length}/15)
-        </SplitPaneHeader>
-        <FlatList
-          selectedId={selectedInstrument.type === "wave" ? selectedInstrument.id : ""}
-          items={wavesItems}
-          setSelectedId={setSelectedInstrumentWithType("wave")}
-          height={splitSizes[2] - 30}
-        >
-          {({ item }) => <EntityListItem type="wave" item={item} />}
-        </FlatList>
-      </Pane>
-      <SplitPaneVerticalDivider onMouseDown={onDragStart(2)} />
+          <SplitPaneHeader
+            onToggle={() => togglePane(2)}
+            collapsed={Math.floor(splitSizes[2]) <= COLLAPSED_SIZE}
+            buttons={
+              <Button
+                variant="transparent"
+                size="small"
+                title={l10n("TOOL_ADD_WAVE_INSTRUMENT_LABEL")}
+                onClick={() => { }}
+              >
+                <PlusIcon />
+              </Button>
+            }
+          >
+            {l10n("FIELD_WAVES")} ({wavesItems.length}/15)
+          </SplitPaneHeader>
+          <FlatList
+            selectedId={selectedInstrument.type === "wave" ? selectedInstrument.id : ""}
+            items={wavesItems}
+            setSelectedId={setSelectedInstrumentWithType("wave")}
+            height={splitSizes[2] - 30}
+          >
+            {({ item }) => <EntityListItem type="wave" item={item} />}
+          </FlatList>
+        </Pane>
+        <SplitPaneVerticalDivider onMouseDown={onDragStart(2)} />
 
-      <Pane style={{ height: splitSizes[3] }}>
-        <SplitPaneHeader
-          onToggle={() => togglePane(3)}
-          collapsed={Math.floor(splitSizes[3]) <= COLLAPSED_SIZE}
-          buttons={
-            <Button
-              variant="transparent"
-              size="small"
-              title={l10n("TOOL_ADD_NOISE_INSTRUMENT_LABEL")}
-              onClick={() => { }}
-            >
-              <PlusIcon />
-            </Button>
-          }
-        >
-          {l10n("FIELD_NOISE")} ({noiseItems.length}/15)
-        </SplitPaneHeader>
-        <FlatList
-          selectedId={selectedInstrument.type === "noise" ? selectedInstrument.id : ""}
-          items={noiseItems}
-          setSelectedId={setSelectedInstrumentWithType("noise")}
-          height={splitSizes[3] - 30}
-        >
-          {({ item }) => <EntityListItem type="noise" item={item} />}
-        </FlatList>
-      </Pane>
+        <Pane style={{ height: splitSizes[3] }}>
+          <SplitPaneHeader
+            onToggle={() => togglePane(3)}
+            collapsed={Math.floor(splitSizes[3]) <= COLLAPSED_SIZE}
+            buttons={
+              <Button
+                variant="transparent"
+                size="small"
+                title={l10n("TOOL_ADD_NOISE_INSTRUMENT_LABEL")}
+                onClick={() => { }}
+              >
+                <PlusIcon />
+              </Button>
+            }
+          >
+            {l10n("FIELD_NOISE")} ({noiseItems.length}/15)
+          </SplitPaneHeader>
+          <FlatList
+            selectedId={selectedInstrument.type === "noise" ? selectedInstrument.id : ""}
+            items={noiseItems}
+            setSelectedId={setSelectedInstrumentWithType("noise")}
+            height={splitSizes[3] - 30}
+          >
+            {({ item }) => <EntityListItem type="noise" item={item} />}
+          </FlatList>
+        </Pane>
+        </>
+      )}
     </>
   );
 };

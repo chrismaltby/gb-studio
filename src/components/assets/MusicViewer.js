@@ -4,7 +4,6 @@ import { connect } from "react-redux";
 import Button from "../library/Button";
 import { PlayIcon, PauseIcon } from "../library/Icons";
 import l10n from "../../lib/helpers/l10n";
-import { assetFilename } from "../../lib/helpers/gbstudio";
 import musicActions from "../../store/features/music/musicActions";
 import electronActions from "../../store/features/electron/electronActions";
 import entitiesActions from "../../store/features/entities/entitiesActions";
@@ -62,7 +61,7 @@ class MusicViewer extends Component {
   render() {
     const { file, playing, sidebarWidth } = this.props;
     return (
-      <div className="MusicViewer" style={{ right: sidebarWidth }}>
+      <div className="MusicViewer">
         {file && (
           <div className="MusicViewer__Content">
             {playing ? (
@@ -70,10 +69,10 @@ class MusicViewer extends Component {
                 <PauseIcon />
               </Button>
             ) : (
-              <Button large transparent onClick={this.onPlay}>
-                <PlayIcon />
-              </Button>
-            )}
+                <Button large transparent onClick={this.onPlay}>
+                  <PlayIcon />
+                </Button>
+              )}
             <div className="MusicViewer__Filename">{file.filename}</div>
             <div className="MusicViewer__Settings">
               <div className="FormField">
