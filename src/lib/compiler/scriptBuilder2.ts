@@ -127,11 +127,6 @@ type VariablesLookup = { [name: string]: Variable | undefined };
 
 // - Helpers --------------
 
-const delimiters = ['"', "'", "`", "|"].concat(
-  // Printable ascii characters from 0 to z
-  Array.from(Array(75)).map((_, a) => String.fromCharCode(a + 48))
-);
-
 const getActorIndex = (actorId: string, scene: ScriptBuilderScene) => {
   return scene.actors.findIndex((a) => a.id === actorId) + 1;
 };
@@ -528,8 +523,22 @@ class ScriptBuilder {
   _string = (str: string) => {
     // .asciz can use any printable paired character as delimiter
     // try to match a character not already used in the string
-    const delimiter = delimiters.find((d) => str.indexOf(d) === -1);
-    this._addCmd(`.asciz ${delimiter}${str.replace(/\n/g, "\\n")}${delimiter}`);
+    const prepareString = (inStr: string) => {
+      let output = "";
+      const nlStr = inStr.replace(/\n/g, "\\n");
+      for (let i = 0; i < nlStr.length; i++) {
+        const code = nlStr.charCodeAt(i);
+        console.log(code);
+        if (code > 127 || code === 34) {
+          output += "\\" + (code & 0xff).toString(8).padStart(3, "0");
+        } else {
+          output += String.fromCharCode(code);
+        }
+      }
+      return output;
+    };
+
+    this._addCmd(`.asciz "${prepareString(str)}"`);
   };
 
   _importFarPtrData = (farPtr: string) => {
