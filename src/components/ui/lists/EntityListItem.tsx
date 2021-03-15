@@ -7,6 +7,10 @@ import {
   SpriteIcon,
   TriggerIcon,
   VariableIcon,
+  NoiseIcon,
+  DutyIcon,
+  WaveIcon,
+  SongIcon,
 } from "../icons/Icons";
 
 interface EntityListItemWrapperProps {
@@ -125,7 +129,29 @@ export const EntityListItem: FC<EntityListItemProps> = ({
         <EnitityIcon>
           <AnimationIcon />
         </EnitityIcon>
-      )}      
+      )}
+      {type === "song" && (
+        <EnitityIcon>
+          <SongIcon />
+        </EnitityIcon>
+      )}
+      {type === "instrument" && (
+        <EnitityIcon>
+          <DutyIcon />
+        </EnitityIcon>
+      )}
+      {type === "wave" && (
+        <EnitityIcon>
+          <WaveIcon />
+        </EnitityIcon>
+        
+      )}
+      {type === "noise" && (
+        <EnitityIcon>
+          <NoiseIcon />
+        </EnitityIcon>
+        
+      )}
       <EnitityLabel>{item.name}</EnitityLabel>
       {item.labelColor && <EntityLabelColor color={item.labelColor} />}
     </EnitityListItem>

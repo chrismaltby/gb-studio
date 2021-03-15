@@ -3,13 +3,13 @@ import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { PatternCell } from "../../lib/helpers/uge/song/PatternCell";
 import { Song } from "../../lib/helpers/uge/song/Song";
-import instrument from "../../lib/vendor/scriptracker/instrument";
 import { RootState } from "../../store/configureStore";
 import trackerActions from "../../store/features/tracker/trackerActions";
 import { SplitPaneHorizontalDivider } from "../ui/splitpane/SplitPaneDivider";
 import { SequenceEditor } from "./SequenceEditor";
 import { SongRow } from "./SongRow";
 import { UgePlayer } from "./UgePlayer";
+import scrollIntoView from 'scroll-into-view-if-needed';
 
 interface SongTrackerProps {
   id: string,
@@ -36,20 +36,33 @@ export const SongTracker = ({
   sequenceId,
   height
 }: SongTrackerProps) => {
+  const dispatch = useDispatch();
+
   const [playbackState, setPlaybackState] = useState([-1, -1]);
   const playing = useSelector(
     (state: RootState) => state.tracker.playing
   );
-
-  const dispatch = useDispatch();
-
-  const list = useRef<HTMLInputElement>(null);
-  if (playing && list && list.current) {
-    list.current.children[playbackState[1]]?.scrollIntoView();
-  }
-
   const patternId = data?.sequence[sequenceId] || 0;
   const [selectedCell, setSelectedCell] = useState<number | undefined>();
+
+  const list = useRef<HTMLInputElement>(null);
+  if (list && list.current) {
+    if (playing) {
+      list.current.children[playbackState[1]]?.scrollIntoView();
+    } else if (selectedCell) {
+      scrollIntoView(
+        list.current.children[Math.floor(selectedCell / ROW_SIZE)],
+        {
+          scrollMode: 'if-needed',
+          block: 'nearest' 
+        }
+      );
+    }
+  }
+
+  useEffect(() => {
+    setPlaybackState([-1, -1]);
+  }, [playing])
 
   const editPatternCell = (type: keyof PatternCell) => (value: number | null) => {
     if (selectedCell === undefined) {
