@@ -268,6 +268,10 @@ const MetaspriteEditor = ({
               y: createOrigin.y - ty * 16,
               sliceX: newTiles.x + tx * 8,
               sliceY: newTiles.y + ty * 16,
+              flipX: false,
+              flipY: false,
+              objPalette: "OBP0",
+              paletteIndex: 0,
             })
           );
         }

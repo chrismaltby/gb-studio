@@ -68,6 +68,7 @@ import {
   MetaspriteTile,
   SpriteAnimation,
   Font,
+  ObjPalette,
 } from "./entitiesTypes";
 import {
   normalizeEntities,
@@ -1659,6 +1660,10 @@ const addMetaspriteTile: CaseReducer<
     y: number;
     sliceX: number;
     sliceY: number;
+    flipX: boolean;
+    flipY: boolean;
+    objPalette: ObjPalette;
+    paletteIndex: number;
   }>
 > = (state, action) => {
   const metasprite = state.metasprites.entities[action.payload.metaspriteId];
@@ -1674,10 +1679,10 @@ const addMetaspriteTile: CaseReducer<
     sliceX: action.payload.sliceX,
     sliceY: action.payload.sliceY,
     palette: 0,
-    flipX: false,
-    flipY: false,
-    objPalette: "OBP0",
-    paletteIndex: 0,
+    flipX: action.payload.flipX,
+    flipY: action.payload.flipY,
+    objPalette: action.payload.objPalette,
+    paletteIndex: action.payload.paletteIndex,
   };
 
   // Add to metasprite
@@ -2631,6 +2636,10 @@ const entitiesSlice = createSlice({
         y: number;
         sliceX: number;
         sliceY: number;
+        flipX: boolean;
+        flipY: boolean;
+        objPalette: ObjPalette;
+        paletteIndex: number;
       }) => {
         return {
           payload: {
