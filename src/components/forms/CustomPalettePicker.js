@@ -239,7 +239,7 @@ class CustomPalettePicker extends Component {
       editHex = blackHex;
     }
 
-    this.setState({ selectedColor: colorIndex, currentCustomHex: "" });
+    this.setState({ selectedColor: colorIndex, currentCustomHex: "#"+hexToGBCHex(editHex).toLowerCase()});
     this.applyHexToState(editHex);
   };
 

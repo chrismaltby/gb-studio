@@ -123,7 +123,7 @@ void UIShowAvatar(UBYTE avatar_index) {
 
 void UIShowChoice(UWORD flag_index, UBYTE bank, UWORD bank_offset) {
   UIShowMenu_b(flag_index, bank, bank_offset, 0,
-               MENU_CANCEL_ON_B_PRESSED | MENU_CANCEL_ON_LAST_OPTION);
+               /*MENU_CANCEL_ON_B_PRESSED | */MENU_CANCEL_ON_LAST_OPTION);
 }
 
 void UIShowMenu(UWORD flag_index,
@@ -147,6 +147,9 @@ void UIMoveTo(UBYTE x, UBYTE y, UBYTE speed) {
   if (speed == 0) {
     win_pos_x = x;
     win_pos_y = y;
+    if (y == MENU_CLOSED_Y) {
+      win_speed = 0xFF;
+    }
   } else {
     win_speed = speed;
   }
