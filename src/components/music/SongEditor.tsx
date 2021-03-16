@@ -25,12 +25,23 @@ interface SongEditorProps {
   id: string;
 }
 
-const renderInstrumentEditor = (type: string, instrumentData: DutyInstrument | NoiseInstrument | WaveInstrument | null) => {
+type Instrument = DutyInstrument | NoiseInstrument | WaveInstrument;
+
+const renderInstrumentEditor = (type: string, instrumentData: Instrument | null) => {
   if (type === "instrument") return <InstrumentDutyEditor id={`instrument_${instrumentData?.index}`} instrument={instrumentData as DutyInstrument} />
 
   if (type === "noise") return <InstrumentNoiseEditor id={`instrument_${instrumentData?.index}`} instrument={instrumentData as NoiseInstrument} />
 
   if (type === "wave") return <InstrumentWaveEditor id={`instrument_${instrumentData?.index}`} instrument={instrumentData as WaveInstrument} />
+}
+
+const instrumentName = (instrument: Instrument, type: string) => {
+  let typeName = "Instrument";
+  if (type === "instrument") typeName = "Duty";
+  if (type === "wave") typeName = "Wave";
+  if (type === "noise") typeName = "Noise";
+  
+  return instrument.name ? instrument.name : `${typeName} ${instrument.index + 1}`;
 }
 
 export const SongEditor = ({
@@ -63,7 +74,31 @@ export const SongEditor = ({
     );
   };
 
-  let instrumentData: DutyInstrument | NoiseInstrument | WaveInstrument | null = null;
+  const onChangeInstrumentName = (type: string) => (
+    e:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    const editValue = castEventValue(e);
+
+    let action;
+    if (type === "instrument") action = trackerActions.editDutyInstrument;
+    if (type === "wave") action = trackerActions.editWaveInstrument;
+    if (type === "noise") action = trackerActions.editWaveInstrument;
+    
+    if (!action || !instrumentData) return
+
+    dispatch(
+      action({
+        instrumentId: instrumentData.index,
+        changes: {
+          name: editValue,
+        },
+      })
+    );
+  };
+
+  let instrumentData: Instrument | null = null;
   if (song) {
     const selectedInstrumentId = parseInt(selectedInstrument.id);
     switch (selectedInstrument.type) {
@@ -130,15 +165,16 @@ export const SongEditor = ({
               value={song?.ticks_per_row}
               min={0}
               max={20}
+              onChange={onChangeFieldInput("ticks_per_row")}
             />
           </FormRow>
           <FormDivider />
           <FormHeader>
             <EditableText
               name="instrumentName"
-              placeholder="Instrument"
-              value={instrumentData ? instrumentData.name : ""}
-              onChange={onChangeFieldInput("name")}
+              placeholder={instrumentName(instrumentData, selectedInstrument.type)}
+              value={instrumentData.name || ""}
+              onChange={onChangeInstrumentName(selectedInstrument.type)}
             />
 
             <DropdownButton

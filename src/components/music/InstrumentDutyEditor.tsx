@@ -92,15 +92,10 @@ export const InstrumentDutyEditor = ({
     );
   };
 
-  const onChangeFieldInput = <T extends keyof DutyInstrument>(key: T) => (
-    e:
-      | React.ChangeEvent<HTMLInputElement>
-      | React.ChangeEvent<HTMLTextAreaElement>
+  const onChangeFieldSelect = <T extends keyof DutyInstrument>(key: T) => (
+    e: { value: string, label: string }
   ) => {
-    const editValue = castEventValue(e);
-
-    console.log(key, e);
-
+    const editValue = e.value;
     dispatch(
       trackerActions.editDutyInstrument({
         instrumentId: instrument.index,
@@ -158,7 +153,7 @@ export const InstrumentDutyEditor = ({
             name="frequency_sweep_time"
             value={selectedSweepTime}
             options={sweepTimeOptions}
-            onChange={onChangeFieldInput("frequency_sweep_time")}
+            onChange={onChangeFieldSelect("frequency_sweep_time")}
           />
         </FormField>
       </FormRow>
@@ -187,7 +182,7 @@ export const InstrumentDutyEditor = ({
               name="duty_cycle"
               value={selectedDuty}
               options={dutyOptions}
-              onChange={onChangeFieldInput("duty_cycle")}
+              onChange={onChangeFieldSelect("duty_cycle")}
             />
           </FormField>
         </FormRow>
