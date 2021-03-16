@@ -40,9 +40,6 @@ export const InstrumentNoiseEditor = ({
       | React.ChangeEvent<HTMLTextAreaElement>
   ) => {
     const editValue = castEventValue(e);
-
-    console.log(key, e);
-
     dispatch(
       trackerActions.editNoiseInstrument({
         instrumentId: instrument.index,

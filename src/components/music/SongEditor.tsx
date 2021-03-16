@@ -113,7 +113,6 @@ export const SongEditor = ({
         break;
     }
   }
-  console.log(instrumentData);
 
   if (!song || !instrumentData) {
     return null;

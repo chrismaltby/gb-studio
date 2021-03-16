@@ -28,7 +28,6 @@ let Module;
 createBinjgb({
   locateFile: locateFile(createBinjgbModule)
 }).then((module) => {
-  console.log(module);
   Module = module;
 });
 

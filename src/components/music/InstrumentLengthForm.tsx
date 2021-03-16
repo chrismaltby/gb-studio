@@ -23,7 +23,6 @@ export const InstrumentLengthForm = ({
           checked={!!value}
           onChange={(e) => {
             const value = e.target.checked;
-            console.log(e.target.checked);
             if (!value) {
               onChange(null);
             } else {

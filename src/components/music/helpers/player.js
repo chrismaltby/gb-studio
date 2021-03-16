@@ -14,8 +14,6 @@ let current_row = -1;
 let onIntervalCallback = (updateData) => { };
 
 const initPlayer = (onInit) => {
-  console.log("INIT PLAYER");
-
   compiler.setLogCallback(console.log);
   compiler.setLinkOptions(['-t', '-w']);
 
@@ -179,8 +177,6 @@ const updateRom = (song) => {
       buf[order_addr++] = pattern_addr[song.sequence[n]] >> 8;
     }
   }
-  console.log(addr - compiler.getRomSymbols().indexOf("_song_descriptor"));
-
   emulator.updateRom(rom_file);
 }
 

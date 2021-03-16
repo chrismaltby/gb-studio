@@ -245,7 +245,6 @@ const createPlay = async (url: string) => {
 };
 
 const createMusic = async () => {
-  console.log("CREATE MUSIC WINDOW");
   if (!musicWindow) {
     // Create the browser window.
     musicWindow = new BrowserWindow({
@@ -428,16 +427,12 @@ ipcMain.on("open-music", async () => {
 });
 
 ipcMain.on("music-data-send", (event, data) => {
-  console.log("SENDING DATA TO MUSIC WINDOW")
-  console.log(data);
   if (musicWindow) {
     musicWindow.webContents.send("music-data", data);
   }
 });
 
 ipcMain.on("music-data-receive", (event, data) => {
-  console.log("SENDING DATA FROM MUSIC WINDOW")
-  console.log(data);
   if (mainWindow) {
     mainWindow.webContents.send("music-data", data);
   }

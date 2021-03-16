@@ -27,12 +27,10 @@ const trackerSlice = createSlice({
       state.playing = false;
     },
     editSong: (state, _action: PayloadAction<{ changes: Partial<Song> }>) => {
-      console.log(_action.payload);
       state.song = {
         ...state.song,
         ..._action.payload.changes
       }
-      console.log(state.song)
     },
     editDutyInstrument: (state, _action: PayloadAction<{ instrumentId: number, changes: Partial<DutyInstrument>}>) => {
       const instrument = state.song.duty_instruments[_action.payload.instrumentId];

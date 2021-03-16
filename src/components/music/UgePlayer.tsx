@@ -17,7 +17,6 @@ export const UgePlayer = ({
 }: UgePlayerProps) => {
 
   useEffect(() => {
-    console.log("OPEN MUSIC")
     ipcRenderer.send(
       "open-music"
     );
@@ -28,19 +27,15 @@ export const UgePlayer = ({
   );
 
   useEffect(() => {
-    console.log('set playback update');
-
     ipcRenderer.removeAllListeners("music-data");
     ipcRenderer.on("music-data", (event, d) => {
       switch (d.action) {
         case "update":
           if (onPlaybackUpdate) {
-            console.log(d.update);
             onPlaybackUpdate(d.update);
           }
           break;
         case "log":
-          console.log(d.message);
           break;
         default:
           console.log(`Action ${d.action} not supported`);
@@ -49,7 +44,6 @@ export const UgePlayer = ({
   }, [onPlaybackUpdate, play]);
 
   useEffect(() => {
-    console.log(play);
     if (play) {
       ipcRenderer.send(
         "music-data-send",

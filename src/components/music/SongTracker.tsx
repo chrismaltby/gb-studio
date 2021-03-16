@@ -68,7 +68,6 @@ export const SongTracker = ({
     if (selectedCell === undefined) {
       return;
     }
-    console.log(value);
     dispatch(
       trackerActions.editPatternCell({
         patternId: patternId,
@@ -132,8 +131,6 @@ export const SongTracker = ({
     let newValue = value;
     const el = document.querySelector(`[data-cellid="${selectedCell}"]`) as any;
 
-    console.log(value);
-    console.log(el.innerText)
     if (value !== null && el.innerText !== "..") {
       newValue = 16 * parseInt(el.innerText[1], 16) + value;
     } 
@@ -157,10 +154,7 @@ export const SongTracker = ({
         return;
       }
 
-      console.log(selectedCell, e.key);
-
       let tmpSelectedCell = selectedCell;
-      // console.log(e.key);
 
       if (e.key === "ArrowLeft") {
         e.preventDefault();
@@ -189,8 +183,6 @@ export const SongTracker = ({
       setSelectedCell((tmpSelectedCell % NUM_CELLS + NUM_CELLS) % NUM_CELLS);
 
       if (selectedCell % 4 === 0) {
-        console.log("note")
-
         if (e.key === "q") editNoteCell(0);
         if (e.key === "w") editNoteCell(1);
         if (e.key === "e") editNoteCell(2);
@@ -230,8 +222,6 @@ export const SongTracker = ({
         if (e.code === "Delete" || e.code === "Backspace") editNoteCell(null);
       }
       if ((selectedCell - 1) % 4 === 0) {
-        console.log("instrument");
-
         if (e.key === "0") editInstrumentCell(0);
         if (e.key === "1") editInstrumentCell(1);
         if (e.key === "2") editInstrumentCell(2);
@@ -243,11 +233,8 @@ export const SongTracker = ({
         if (e.key === "8") editInstrumentCell(8);
         if (e.key === "9") editInstrumentCell(9);
         if (e.code === "Delete" || e.code === "Backspace") editInstrumentCell(null);
-
       }
       if ((selectedCell - 2) % 4 === 0) {
-        console.log("effect code")
-
         if (e.key === "0") editEffectCodeCell(0);
         if (e.key === "1") editEffectCodeCell(1);
         if (e.key === "2") editEffectCodeCell(2);
@@ -267,8 +254,6 @@ export const SongTracker = ({
         if (e.code === "Delete" || e.code === "Backspace") editEffectCodeCell(null);
       }
       if ((selectedCell - 3) % 4 === 0) {
-        console.log("effect param")
-
         if (e.key === "0") editEffectParamCell(0);
         if (e.key === "1") editEffectParamCell(1);
         if (e.key === "2") editEffectParamCell(2);
@@ -310,7 +295,6 @@ export const SongTracker = ({
   });
 
   const onFocus = (e: React.FocusEvent<HTMLDivElement>) => {
-    console.log(e);
     if (!selectedCell) {
       setSelectedCell(0);
     }
