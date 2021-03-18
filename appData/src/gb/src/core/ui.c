@@ -34,9 +34,6 @@ UBYTE win_speed;
 UBYTE text_drawn;
 UBYTE current_text_speed;
 UBYTE text_wait;
-UBYTE text_line_count;
-
-UBYTE avatar_enabled;
 
 UBYTE text_in_speed;
 UBYTE text_out_speed;
@@ -60,11 +57,13 @@ UBYTE vwf_inverse_map;
 
 font_desc_t vwf_current_font_desc;
 UBYTE vwf_current_font_bank;
+UBYTE vwf_current_font_idx;
 
 extern const UBYTE ui_time_masks[];
 
 void ui_init() __banked {
-    vwf_current_font_bank = ui_fonts[0].bank;
+    vwf_current_font_idx        = 0;
+    vwf_current_font_bank       = ui_fonts[0].bank;
     MemcpyBanked(&vwf_current_font_desc, ui_fonts[0].ptr, sizeof(font_desc_t), vwf_current_font_bank);
 
     text_in_speed               = 1;
@@ -79,7 +78,6 @@ void ui_init() __banked {
 
     ui_set_pos(0, MENU_CLOSED_Y);
 
-    avatar_enabled              = 0;
     win_speed                   = 1;
     text_drawn                  = TRUE;
     text_draw_speed             = 1;
@@ -98,15 +96,15 @@ void ui_load_tiles() __banked {
 }
 
 void ui_draw_frame(UBYTE x, UBYTE y, UBYTE width, UBYTE height) __banked {
-    set_win_tile_xy (x,         y,                                 ui_frame_tl_tiles);
-    fill_win_rect   (x + 1,     y,              width - 1, 1,      ui_frame_t_tiles );   // top
-    set_win_tile_xy (x + width, y,                                 ui_frame_tr_tiles);
-    fill_win_rect   (x,         y + 1,          1,         height, ui_frame_l_tiles );   // left
-    fill_win_rect   (x + width, y + 1,          1,         height, ui_frame_r_tiles );   // right
-    set_win_tile_xy (x,         y + height + 1,                    ui_frame_bl_tiles);
-    fill_win_rect   (x + 1,     y + height + 1, width - 1, 1,      ui_frame_b_tiles );   // bottom
-    set_win_tile_xy (x + width, y + height + 1,                    ui_frame_br_tiles);
-    fill_win_rect   (x + 1,     y + 1,          width - 1, height, ui_frame_bg_tiles);  // background
+    set_win_tile_xy (x,               y,                                         ui_frame_tl_tiles);
+    fill_win_rect   (x + 1u,          y,               width - 2u, 1u,           ui_frame_t_tiles );   // top
+    set_win_tile_xy (x + width - 1u,  y,                                         ui_frame_tr_tiles);
+    fill_win_rect   (x,               y + 1u,          1u,         height - 2u,  ui_frame_l_tiles );   // left
+    fill_win_rect   (x + width - 1u,  y + 1u,          1u,         height - 2u,  ui_frame_r_tiles );   // right
+    set_win_tile_xy (x,               y + height - 1u,                           ui_frame_bl_tiles);
+    fill_win_rect   (x + 1u,          y + height - 1u, width - 2u, 1u,           ui_frame_b_tiles );   // bottom
+    set_win_tile_xy (x + width - 1u,  y + height - 1u,                           ui_frame_br_tiles);
+    fill_win_rect   (x + 1u,          y + 1u,          width - 2u, height - 2u,  ui_frame_bg_tiles);  // background
 }
 
 void ui_print_reset(UBYTE tile) {
@@ -153,6 +151,8 @@ UBYTE ui_print_render(const unsigned char ch) {
 }
 
 void ui_draw_text_buffer_char() __banked {
+    static UBYTE current_font_idx, current_text_bkg_fill;
+
     if ((text_ff_joypad) && (INPUT_A_OR_B_PRESSED)) text_ff = TRUE;
 
     if ((!text_ff) && (text_wait)) {
@@ -161,31 +161,40 @@ void ui_draw_text_buffer_char() __banked {
     }
 
     if (ui_text_ptr == 0) {
+        // save font and color global properties
+        current_font_idx = vwf_current_font_idx;
+        current_text_bkg_fill = text_bkg_fill;
         // reset to first line
         // current char pointer
         ui_text_ptr = ui_text_data;
         // VRAM destination
         ui_dest_base = GetWinAddr() + 32 + 1; // gotoxy(1,1)
         // with and initial pos correction
-        if (avatar_enabled) ui_dest_base += AVATAR_WIDTH;
         // initialize current pointer with corrected base value
         ui_dest_ptr = ui_dest_base;
         // tileno destination
-        ui_print_reset(((avatar_enabled) ? (UBYTE)(TEXT_BUFFER_START + 4) : TEXT_BUFFER_START));
+        ui_print_reset(TEXT_BUFFER_START);
     }
 
     switch (*ui_text_ptr) {
-        case 0x00:
+        case 0x00: {
             ui_text_ptr = 0; 
             text_drawn = TRUE;
+            if (vwf_current_font_idx != current_font_idx) {
+                const far_ptr_t * font = ui_fonts + vwf_current_font_idx;
+                MemcpyBanked(&vwf_current_font_desc, font->ptr, sizeof(font_desc_t), vwf_current_font_bank = font->bank);
+            }
+            text_bkg_fill = current_text_bkg_fill;
             return;
+        }
         case 0x01:
             // set text speed
             current_text_speed = ui_time_masks[*++ui_text_ptr] & 0x1fu;
             break;
         case 0x02: {
             // set current font
-            const far_ptr_t * font = ui_fonts + (*(++ui_text_ptr) - 1u);
+            current_font_idx = *(++ui_text_ptr) - 1u;
+            const far_ptr_t * font = ui_fonts + current_font_idx;
             MemcpyBanked(&vwf_current_font_desc, font->ptr, sizeof(font_desc_t), vwf_current_font_bank = font->bank);
             break;
         }
@@ -204,6 +213,15 @@ void ui_draw_text_buffer_char() __banked {
             if (vwf_current_offset) ui_print_reset(ui_current_tile + 1u);
             break;
         }
+        case 0x06:
+            // wait for key press (parameter is a mask)
+            if ((joy & *++ui_text_ptr) && (joy && !last_joy)) break;
+            ui_text_ptr--;
+            return;
+        case 0x07:
+            // set text color
+            text_bkg_fill = (*++ui_text_ptr & 1u) ? TEXT_BKG_FILL_W : TEXT_BKG_FILL_B;
+            break;
         case '\n':
             ui_dest_ptr = ui_dest_base += 32u;
             if (vwf_current_offset) ui_print_reset(ui_current_tile + 1u);
@@ -211,6 +229,7 @@ void ui_draw_text_buffer_char() __banked {
         case 0x05:
             // escape symbol
             ui_text_ptr++; 
+            // fall down to default
         default:
             if (ui_print_render(*ui_text_ptr)) {
                 SetTile(ui_dest_ptr++, ui_current_tile - 1u);
@@ -245,7 +264,7 @@ void ui_update() __nonbanked {
     // all drawn - nothing to do
     if (text_drawn) return;
     // too fast - wait
-    if ((!INPUT_A_OR_B_PRESSED) && game_time & current_text_speed) return;
+    if ((!INPUT_A_OR_B_PRESSED) && (game_time & current_text_speed)) return;
     // render next char
     do {
         ui_draw_text_buffer_char();
@@ -331,10 +350,4 @@ void ui_run_modal(UBYTE wait_flags) __banked {
         wait_vbl_done();
         input_update();
     } while (fail);    
-}
-
-void ui_draw_avatar(spritesheet_t *avatar, UBYTE avatar_bank) __banked {
-    UBYTE *avatar_ui_ptr = GetWinAddr() + 32 + 1;
-    SetBankedBkgData(TEXT_BUFFER_START, AVATAR_TILE_SIZE, avatar->tiles, avatar_bank);
-    set_win_tiles(1, 1, 2, 2, avatar_tiles);
 }

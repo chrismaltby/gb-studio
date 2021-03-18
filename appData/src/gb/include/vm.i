@@ -421,8 +421,8 @@ OP_VM_LOAD_TEXT         = 0x40
 .endm
 
 OP_VM_DISPLAY_TEXT      = 0x41
-.macro VM_DISPLAY_TEXT AVATAR_BANK, AVATAR, OPTIONS
-        .db OP_VM_DISPLAY_TEXT, #<OPTIONS, #>AVATAR, #<AVATAR, #<AVATAR_BANK
+.macro VM_DISPLAY_TEXT
+        .db OP_VM_DISPLAY_TEXT
 .endm
 
 OP_VM_OVERLAY_SETPOS    = 0x42
@@ -458,13 +458,14 @@ OP_VM_OVERLAY_MOVE_TO   = 0x45
 OP_VM_OVERLAY_SHOW      = 0x46
 .UI_COLOR_BLACK         = 0
 .UI_COLOR_WHITE         = 1
-.macro VM_OVERLAY_SHOW X, Y, COLOR
-        .db OP_VM_OVERLAY_SHOW, #<COLOR, #<Y, #<X
+.UI_DRAW_FRAME          = 1
+.macro VM_OVERLAY_SHOW X, Y, COLOR, OPTIONS
+        .db OP_VM_OVERLAY_SHOW, #<OPTIONS, #<COLOR, #<Y, #<X
 .endm
 
 OP_VM_OVERLAY_CLEAR     = 0x47
-.macro VM_OVERLAY_CLEAR COLOR
-        .db OP_VM_OVERLAY_CLEAR, #<COLOR
+.macro VM_OVERLAY_CLEAR X, Y, W, H, COLOR, OPTIONS
+        .db OP_VM_OVERLAY_CLEAR, #<OPTIONS, #<COLOR, #<H, #<W, #<Y, #<X 
 .endm
 
 OP_VM_CHOICE            = 0x48
@@ -489,8 +490,8 @@ OP_VM_LOAD_CURSOR       = 0x4A
 .endm
 
 OP_VM_SET_FONT          = 0x4B
-.macro VM_SET_FONT BANK, ADDR
-        .db OP_VM_SET_FONT, #>ADDR, #<ADDR, #<BANK
+.macro VM_SET_FONT FONT_INDEX
+        .db OP_VM_SET_FONT, #<FONT_INDEX
 .endm
 
 ; --- GAMEBOY ------------------------------------------

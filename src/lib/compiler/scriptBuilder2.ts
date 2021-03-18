@@ -123,6 +123,8 @@ type ScriptBuilderTextLayout =
   | ".UI_ENABLE_MENU_ONECOL"
   | ".UI_ENABLE_MENU_TWOCOL";
 
+type ScriptBuilderUIColor = 0 | ".UI_COLOR_WHITE" | ".UI_COLOR_BLACK";
+
 type ScriptBuilderPathFunction = () => void;
 
 type VariablesLookup = { [name: string]: Variable | undefined };
@@ -730,19 +732,8 @@ class ScriptBuilder {
     this._string(text);
   };
 
-  _displayText = (avatar?: number, layout: ScriptBuilderTextLayout = 0) => {
-    if (avatar) {
-      const avatarSymbol = spriteSheetSymbol(avatar);
-      this._addBankedDataDependency(avatarSymbol);
-      this._addCmd(
-        "VM_DISPLAY_TEXT",
-        `___bank_${avatarSymbol}`,
-        `_${avatarSymbol}`,
-        layout
-      );
-    } else {
-      this._addCmd("VM_DISPLAY_TEXT", 0, 0, layout);
-    }
+  _displayText = () => {
+    this._addCmd("VM_DISPLAY_TEXT");
   };
 
   _choice = (
@@ -766,6 +757,25 @@ class ScriptBuilder {
 
   _overlayShow = (x: number, y: number, color: number) => {
     this._addCmd("VM_OVERLAY_SHOW", x, y, color);
+  };
+
+  _overlayClear = (
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    color: ScriptBuilderUIColor,
+    drawFrame: boolean
+  ) => {
+    this._addCmd(
+      "VM_OVERLAY_CLEAR",
+      x,
+      y,
+      width,
+      height,
+      color,
+      drawFrame ? ".UI_DRAW_FRAME" : 0
+    );
   };
 
   _overlayHide = () => {
@@ -982,7 +992,8 @@ class ScriptBuilder {
     );
 
     const maxNumLines = Math.max.apply(null, initialNumLines);
-    const textBoxY = 18 - maxNumLines - 2;
+    const textBoxHeight = maxNumLines + 2;
+    const textBoxY = 18 - textBoxHeight;
 
     // Add additional newlines so all textboxes in a
     // sequence have the same height
@@ -998,15 +1009,11 @@ class ScriptBuilder {
     this._addComment("Text Dialogue");
     paddedInput.forEach((text, textIndex) => {
       this._loadStructuredText(text);
+      this._overlayClear(0, 0, 20, textBoxHeight, ".UI_COLOR_WHITE", true);
       if (textIndex === 0) {
         this._overlayMoveTo(0, textBoxY, ".OVERLAY_TEXT_IN_SPEED");
       }
-      if (avatarId) {
-        const avatarIndex = getSpriteIndex(avatarId, sprites);
-        this._displayText(avatarIndex);
-      } else {
-        this._displayText();
-      }
+      this._displayText();
       this._overlayWait(true, [
         ".UI_WAIT_WINDOW",
         ".UI_WAIT_TEXT",
@@ -1094,6 +1101,7 @@ class ScriptBuilder {
 
     this._addComment("Text Menu");
     this._loadStructuredText(menuText);
+    this._overlayClear(0, 0, 20 - x, height + 2, ".UI_COLOR_WHITE", true);
     if (layout === "menu") {
       this._overlayMoveTo(10, 18, 0);
     }
