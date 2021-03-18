@@ -890,7 +890,7 @@ const migrateMoveSpeedr6r7 = (original) => {
 }
 const migrateAnimSpeedr6r7 = (original) => {
   if (original === 4) {
-    return 0;
+    return 7;
   }
   if (original === 3) {
     return 15;
@@ -972,6 +972,11 @@ const migrateFrom200r6To200r7Events = data => {
 const migrateFrom200r6To200r7Actors = data => {
   return {
     ...data,
+    settings: {
+      ...data.settings,
+      startMoveSpeed: migrateMoveSpeedr6r7(data.settings.startMoveSpeed),
+      startAnimSpeed: migrateAnimSpeedr6r7(data.settings.startAnimSpeed),
+    },    
     scenes: data.scenes.map(scene => {
       return {
         ...scene,
