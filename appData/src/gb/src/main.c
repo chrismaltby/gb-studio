@@ -152,7 +152,7 @@ void process_VM() {
                     LYC_REG = 0u;
                 }
 
-                actor_set_anim_idle(&PLAYER);
+                player_init();
                 state_init();
                 toggle_shadow_OAM();
                 camera_update();

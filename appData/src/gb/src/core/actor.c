@@ -51,6 +51,11 @@ void actors_init() __banked {
     memset(actors, 0, sizeof(actors));
 }
 
+void player_init() __banked {
+    actor_set_anim_idle(&PLAYER);
+    PLAYER.hidden = FALSE;
+}
+
 void actors_update() __nonbanked {
     UBYTE _save = _current_bank;
     static actor_t *actor;

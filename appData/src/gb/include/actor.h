@@ -71,5 +71,6 @@ void actors_handle_player_collision() __banked;
 UBYTE check_collision_in_direction(UBYTE start_x, UBYTE start_y, UBYTE end_tile, col_check_dir_e check_dir) __banked;
 void activate_actors_in_row(UBYTE x, UBYTE y) __banked;
 void activate_actors_in_col(UBYTE x, UBYTE y) __banked;
+void player_init() __banked;
 
 #endif
