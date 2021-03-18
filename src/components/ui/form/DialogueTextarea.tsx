@@ -5,6 +5,7 @@ import { NamedVariable } from "../../../lib/helpers/variables";
 import keyBy from "lodash/keyBy";
 import { Dictionary } from "@reduxjs/toolkit";
 import { totalLength } from "../../../lib/helpers/trimlines";
+import { Font } from "../../../store/features/entities/entitiesTypes";
 
 const speedCodes = [
   {
@@ -153,14 +154,13 @@ const DialogueTextareaWrapper = styled.div`
     border-radius: 5px;
     color: ${(props) => props.theme.colors.token.text};
   }
-`;
 
-const CharacterCount = styled.div`
-  position: absolute;
-  top: 3px;
-  right: 5px;
-  opacity: 0.5;
-  font-size: 11px;
+  .Mentions__TokenFont {
+    background: ${(props) => props.theme.colors.token.character};
+    box-shadow: 0 0 0px 1px ${(props) => props.theme.colors.token.character};
+    border-radius: 5px;
+    color: ${(props) => props.theme.colors.token.text};
+  }
 `;
 
 const searchVariables = (variables: NamedVariable[], wrapper: string) => (
@@ -185,6 +185,7 @@ export interface DialogueTextareaProps {
   value: string;
   placeholder?: string;
   variables: NamedVariable[];
+  fonts: Font[];
   maxlength?: number;
   onChange: (newValue: string) => void;
 }
@@ -194,16 +195,30 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
   value,
   onChange,
   variables,
+  fonts,
   maxlength,
   placeholder,
 }) => {
   const [variablesLookup, setVariablesLookup] = useState<
     Dictionary<NamedVariable>
   >({});
+  const [fontItems, setFontItems] = useState<SuggestionDataItem[]>([]);
+  const [fontsLookup, setFontsLookup] = useState<
+    Dictionary<SuggestionDataItem>
+  >({});
 
   useEffect(() => {
     setVariablesLookup(keyBy(variables, "code"));
   }, [variables]);
+
+  useEffect(() => {
+    const items = fonts.map((f) => ({
+      id: `F:${f.id}`,
+      display: `Font:${f.name}`,
+    }));
+    setFontItems(items);
+    setFontsLookup(keyBy(items, "id"));
+  }, [fonts]);
 
   return (
     <DialogueTextareaWrapper>
@@ -237,7 +252,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
         />
         <Mention
           className="Mentions__TokenSpeed"
-          trigger="!S"
+          trigger={/(!([A-Za-z0-9]+))$/}
           data={speedCodes}
           markup="!__id__!"
           regex={/!(S[0-5]+)!/}
@@ -245,12 +260,17 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
             "!" + (speedCodeLookup[speedCode]?.display || "")
           }
         />
+        <Mention
+          className="Mentions__TokenFont"
+          trigger={/(!([A-Za-z0-9]+))$/}
+          data={fontItems}
+          markup="!__id__!"
+          regex={/!(F:[0-9a-f-]+)!/}
+          displayTransform={(fontCode) =>
+            "!" + (fontsLookup[fontCode]?.display || "")
+          }
+        />
       </MentionsInput>
-      {maxlength && (
-        <CharacterCount>
-          {totalLength(value)} / {maxlength}
-        </CharacterCount>
-      )}
     </DialogueTextareaWrapper>
   );
 };

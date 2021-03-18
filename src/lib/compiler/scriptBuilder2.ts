@@ -23,7 +23,7 @@ import {
   spriteTypeDec,
   textSpeedDec,
 } from "./helpers";
-import { hi, lo } from "../helpers/8bit";
+import { hi, lo, decOct } from "../helpers/8bit";
 import trimlines from "../helpers/trimlines";
 import { SPRITE_TYPE_ACTOR } from "../../consts";
 import { is16BitCType } from "../helpers/engineFields";
@@ -43,6 +43,7 @@ import { EngineFieldSchema } from "../../store/features/engine/engineState";
 import { FunctionSymbol, OperatorSymbol, Token } from "../rpn/types";
 import tokenize from "../rpn/tokenizer";
 import shuntingYard from "../rpn/shuntingYard";
+import { PrecompiledFontData } from "./compileFonts";
 
 type ScriptOutput = string[];
 
@@ -70,6 +71,7 @@ interface ScriptBuilderOptions {
   variableAliasLookup: Dictionary<string>;
   scenes: ScriptBuilderScene[];
   sprites: ScriptBuilderEntity[];
+  fonts: PrecompiledFontData[];
   entity?: ScriptBuilderEntity;
   engineFields: Dictionary<EngineFieldSchema>;
   compileEvents: (self: ScriptBuilder, events: ScriptEvent[]) => void;
@@ -294,6 +296,7 @@ class ScriptBuilder {
       engineFields: options.engineFields || {},
       scenes: options.scenes || [],
       sprites: options.sprites || [],
+      fonts: options.fonts || [],
       compileEvents: options.compileEvents || ((_self, _e) => {}),
     };
     this.dependencies = [];
@@ -447,6 +450,15 @@ class ScriptBuilder {
       });
   };
 
+  private _getFontIndex = (fontId: string) => {
+    const { fonts } = this.options;
+    const index = fonts.findIndex((f) => f.id === fontId);
+    if (index === -1) {
+      return 0;
+    }
+    return index;
+  };
+
   // --------------------------------------------------------------------------
   // Low Level GB Studio Assembly Operations
 
@@ -528,7 +540,6 @@ class ScriptBuilder {
       const nlStr = inStr.replace(/\n/g, "\\n");
       for (let i = 0; i < nlStr.length; i++) {
         const code = nlStr.charCodeAt(i);
-        console.log(code);
         if (code > 127 || code === 34) {
           output += "\\" + (code & 0xff).toString(8).padStart(3, "0");
         } else {
@@ -690,6 +701,10 @@ class ScriptBuilder {
       text.match(/(\$L[0-9]\$|\$T[0-1]\$|\$[0-9]+\$)/g) || []
     ).map((s) => s.replace(/\$/g, ""));
 
+    const inlineFonts = (text.match(/(!F:[0-9a-f-]+!)/g) || []).map((id) =>
+      id.substring(3).replace(/!$/, "")
+    );
+
     const usedVariableAliases = inlineVariables.map((variable) =>
       this.getVariableAlias(variable.replace(/^0/g, ""))
     );
@@ -701,6 +716,11 @@ class ScriptBuilder {
 
     inlineVariables.forEach((code) => {
       text = text.replace(`$${code}$`, "%d");
+    });
+
+    inlineFonts.forEach((fontId, i) => {
+      const fontIndex = this._getFontIndex(fontId);
+      text = text.replace(`!F:${fontId}!`, `\\002\\${decOct(fontIndex + 1)}`);
     });
 
     this._loadText(usedVariableAliases.length);
@@ -725,8 +745,23 @@ class ScriptBuilder {
     }
   };
 
-  _choice = (variable: string | number, options: ScriptBuilderChoiceFlag[]) => {
-    this._addCmd("VM_CHOICE", variable, unionFlags(options));
+  _choice = (
+    variable: string | number,
+    options: ScriptBuilderChoiceFlag[],
+    numItems: number
+  ) => {
+    this._addCmd("VM_CHOICE", variable, unionFlags(options), numItems);
+  };
+
+  _menuItem = (
+    x: number,
+    y: number,
+    left: number,
+    right: number,
+    up: number,
+    down: number
+  ) => {
+    this._addCmd("    .MENUITEM", x, y, left, right, up, down);
   };
 
   _overlayShow = (x: number, y: number, color: number) => {
@@ -941,19 +976,8 @@ class ScriptBuilder {
   textDialogue = (inputText: string | string[] = " ", avatarId?: string) => {
     const { sprites } = this.options;
     const input: string[] = Array.isArray(inputText) ? inputText : [inputText];
-    const maxPerLine = avatarId ? 16 : 18;
 
-    const trimmedInput = input.map((textBlock) => {
-      let text = textBlock;
-      text = trimlines(textBlock, maxPerLine);
-      const lineCount = text.split("\n").length;
-      if (lineCount === 1) {
-        text += "\n";
-      }
-      return text;
-    });
-
-    const initialNumLines = trimmedInput.map(
+    const initialNumLines = input.map(
       (textBlock) => textBlock.split("\n").length
     );
 
@@ -962,7 +986,7 @@ class ScriptBuilder {
 
     // Add additional newlines so all textboxes in a
     // sequence have the same height
-    const paddedInput = trimmedInput.map((textBlock) => {
+    const paddedInput = input.map((textBlock) => {
       let text = textBlock;
       const numLines = text.split("\n").length;
       if (numLines < maxNumLines) {
@@ -1016,16 +1040,18 @@ class ScriptBuilder {
   ) => {
     const trueText = trimlines(args.trueText || "", 17, 1) || "Choice A";
     const falseText = trimlines(args.falseText || "", 17, 1) || "Choice B";
-    const choiceText = `\\020${trueText}\n${falseText}`;
+    const choiceText = `\\001\\001 ${trueText}\n ${falseText}`;
     const variableAlias = this.getVariableAlias(setVariable);
     const numLines = choiceText.split("\n").length;
 
     this._addComment("Text Multiple Choice");
     this._loadStructuredText(choiceText);
     this._overlayMoveTo(0, 18 - numLines - 2, ".OVERLAY_TEXT_IN_SPEED");
-    this._displayText(undefined, ".UI_ENABLE_MENU_ONECOL");
+    this._displayText();
     this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
-    this._choice(variableAlias, [".UI_MENU_LAST_0", ".UI_MENU_CANCEL_B"]);
+    this._choice(variableAlias, [".UI_MENU_LAST_0", ".UI_MENU_CANCEL_B"], 2);
+    this._menuItem(1, 1, 0, 0, 0, 2);
+    this._menuItem(1, 2, 0, 0, 1, 0);
     this._overlayMoveTo(0, 18, ".OVERLAY_TEXT_OUT_SPEED");
     this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
     this._addNL();
@@ -1039,19 +1065,25 @@ class ScriptBuilder {
     cancelOnB: boolean = false
   ) => {
     const variableAlias = this.getVariableAlias(setVariable);
+    const optionsText = options.map(
+      (option, index) =>
+        " " + (trimlines(option || "", 6, 1) || `Item ${index + 1}`)
+    );
+    const height =
+      layout === "menu" ? options.length : Math.min(options.length, 4);
     const menuText =
-      "\\020" +
-      options
-        .map(
-          (option, index) =>
-            trimlines(option || "", 6, 1) || `Item ${index + 1}`
-        )
-        .join("\n");
-    const numLines = menuText.split("\n").length;
-    const height = layout === "menu" ? numLines : Math.min(numLines, 4);
+      "\\001\\001" +
+      (layout === "menu"
+        ? optionsText.join("\n")
+        : Array.from(Array(height))
+            .map(
+              (_, i) =>
+                optionsText[i].padEnd(9, " ") +
+                (optionsText[i + 4] ? optionsText[i + 4] : "")
+            )
+            .join("\n"));
+    const numLines = options.length;
     const x = layout === "menu" ? 10 : 0;
-    const layoutFlag =
-      layout === "menu" ? ".UI_ENABLE_MENU_ONECOL" : ".UI_ENABLE_MENU_TWOCOL";
     const choiceFlags: ScriptBuilderChoiceFlag[] = [];
     if (cancelOnLastOption) {
       choiceFlags.push(".UI_MENU_LAST_0");
@@ -1066,9 +1098,44 @@ class ScriptBuilder {
       this._overlayMoveTo(10, 18, 0);
     }
     this._overlayMoveTo(x, 18 - height - 2, ".OVERLAY_TEXT_IN_SPEED");
-    this._displayText(undefined, layoutFlag);
+    this._displayText();
     this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
-    this._choice(variableAlias, choiceFlags);
+    this._choice(variableAlias, choiceFlags, numLines);
+
+    const clampedMenuIndex = (index: number) => {
+      if (index < 0) {
+        return 0;
+      }
+      if (index > options.length - 1) {
+        return 0;
+      }
+      return index + 1;
+    };
+
+    if (layout === "menu") {
+      for (let i = 0; i < options.length; i++) {
+        this._menuItem(
+          1,
+          1 + i,
+          1,
+          options.length,
+          clampedMenuIndex(i - 1),
+          clampedMenuIndex(i + 1)
+        );
+      }
+    } else {
+      for (let i = 0; i < options.length; i++) {
+        this._menuItem(
+          i < 4 ? 1 : 10,
+          1 + (i % 4),
+          clampedMenuIndex(i - 4) || 1,
+          clampedMenuIndex(i + 4) || options.length,
+          clampedMenuIndex(i - 1),
+          clampedMenuIndex(i + 1)
+        );
+      }
+    }
+
     this._overlayMoveTo(x, 18, ".OVERLAY_TEXT_OUT_SPEED");
     this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
     if (layout === "menu") {

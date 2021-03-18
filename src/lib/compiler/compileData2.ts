@@ -30,7 +30,8 @@ export const ACTOR_TYPE = "const struct actor_t";
 export const SCENE_TYPE = "const struct scene_t";
 export const DATA_TYPE = "const unsigned char";
 export const FARPTR_TYPE = "const far_ptr_t";
-export const FONT_FLAG_RECODE_7BIT = "RECODE_7BIT";
+export const FONT_FLAG_FONT_RECODE = "FONT_RECODE";
+export const FONT_FLAG_FONT_RECODE_SIZE_7BIT = "FONT_RECODE_SIZE_7BIT";
 export const FONT_FLAG_FONT_VWF = "FONT_VWF";
 export const FONT_FLAG_FONT_VWF_1BIT = "FONT_VWF_1BIT";
 
@@ -120,7 +121,7 @@ export const paletteSymbol = (paletteIndex: number): string =>
 export const fontSymbol = (fontIndex: number): string => `font_${fontIndex}`;
 
 const toFlags = (flags: string[]): string =>
-  flags.length > 0 ? flags.join("| ") : "0";
+  flags.length > 0 ? flags.join(" | ") : "0";
 
 const toDataHeader = (type: string, symbol: string, comment: string) =>
   includeGuard(
@@ -731,13 +732,17 @@ ${chunk(Array.from(font.table.map(toHex)), 16)
   .join(",\n")}
 };
 
-static const UBYTE ${fontSymbol(fontIndex)}_widths[] = {
+${
+  font.isVariableWidth
+    ? `static const UBYTE ${fontSymbol(fontIndex)}_widths[] = {
 ${chunk(Array.from(font.widths), 16)
   .map((r) => " ".repeat(INDENT_SPACES) + r.join(", "))
   .join(",\n")}
 };
 
-static const UBYTE ${fontSymbol(fontIndex)}_bitmaps[] = {
+`
+    : ""
+}static const UBYTE ${fontSymbol(fontIndex)}_bitmaps[] = {
 ${chunk(Array.from(Array.from(font.data).map(toHex)), 16)
   .map((r) => " ".repeat(INDENT_SPACES) + r.join(", "))
   .join(",\n")}
@@ -745,14 +750,15 @@ ${chunk(Array.from(Array.from(font.data).map(toHex)), 16)
 
 ${toBankSymbolInit(fontSymbol(fontIndex))};
 const font_desc_t ${fontSymbol(fontIndex)} = {
-  ${toFlags([
-    ...(font.table.length <= 128 ? [FONT_FLAG_RECODE_7BIT] : []),
-    ...(font.isVariableWidth ? [FONT_FLAG_FONT_VWF] : []),
-    ...(font.is1Bit && font.isVariableWidth ? [FONT_FLAG_FONT_VWF_1BIT] : []),
-  ])}, 
-  ${fontSymbol(fontIndex)}_table,
-  ${fontSymbol(fontIndex)}_widths,
-  ${fontSymbol(fontIndex)}_bitmaps
+    ${toFlags([
+      ...(true ? [FONT_FLAG_FONT_RECODE] : []),
+      ...(font.isVariableWidth ? [FONT_FLAG_FONT_VWF] : []),
+      ...(font.is1Bit && font.isVariableWidth ? [FONT_FLAG_FONT_VWF_1BIT] : []),
+    ])}, 
+    ${font.table.length <= 128 ? FONT_FLAG_FONT_RECODE_SIZE_7BIT : `0xFF`},
+    ${fontSymbol(fontIndex)}_table,
+    ${font.isVariableWidth ? `${fontSymbol(fontIndex)}_widths` : "NULL"},
+    ${fontSymbol(fontIndex)}_bitmaps
 };
 `;
 

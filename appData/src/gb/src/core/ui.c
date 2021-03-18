@@ -38,19 +38,12 @@ UBYTE text_line_count;
 
 UBYTE avatar_enabled;
 
-UBYTE menu_enabled;
-UBYTE menu_index;
-UBYTE menu_item_count;
-
 UBYTE text_in_speed;
 UBYTE text_out_speed;
 UBYTE text_draw_speed;
 UBYTE text_ff_joypad;
 UBYTE text_ff; 
 UBYTE text_bkg_fill;
-UBYTE menu_layout;
-UBYTE menu_cancel_on_last_option;
-UBYTE menu_cancel_on_b;
 
 unsigned char ui_text_data[TEXT_MAX_LENGTH];
 
@@ -58,9 +51,6 @@ unsigned char ui_text_data[TEXT_MAX_LENGTH];
 static UBYTE * ui_text_ptr;
 static UBYTE * ui_dest_ptr;
 static UBYTE * ui_dest_base;
-static UBYTE ui_text_width;
-static UBYTE ui_width_left;
-static UBYTE ui_line_no;
 static UBYTE ui_current_tile;
 static UBYTE vwf_current_offset;
 static UBYTE vwf_tile_data[16 * 2];
@@ -82,21 +72,14 @@ void ui_init() __banked {
     text_draw_speed             = 1;
     text_ff_joypad              = 1;
     text_bkg_fill               = TEXT_BKG_FILL_W;
-    menu_layout                 = MENU_LAYOUT_1_COLUMN;
-    menu_cancel_on_last_option  = 0;
-    menu_cancel_on_b            = 0;
 
     ui_text_ptr                 = 0;
     ui_dest_ptr                 = 0;
     ui_dest_base                = 0;
-    ui_text_width               = 0;
-    ui_width_left               = 0;
-    ui_line_no                  = 0;
 
     ui_set_pos(0, MENU_CLOSED_Y);
 
     avatar_enabled              = 0;
-    menu_enabled                = 0;
     win_speed                   = 1;
     text_drawn                  = TRUE;
     text_draw_speed             = 1;
@@ -126,7 +109,7 @@ void ui_draw_frame(UBYTE x, UBYTE y, UBYTE width, UBYTE height) __banked {
     fill_win_rect   (x + 1,     y + 1,          width - 1, height, ui_frame_bg_tiles);  // background
 }
 
-static void ui_print_reset(UBYTE tile) {
+void ui_print_reset(UBYTE tile) {
     ui_current_tile = tile;
     vwf_current_offset = 0;
     memset(vwf_tile_data, text_bkg_fill, sizeof(vwf_tile_data));
@@ -134,11 +117,11 @@ static void ui_print_reset(UBYTE tile) {
 
 void ui_print_shift_char(void * dest, const void * src, UBYTE bank) __nonbanked;
 
-static UBYTE ui_print_render(const unsigned char ch) {
-    UBYTE letter = ReadBankedUBYTE(vwf_current_font_desc.recode_table + (ch & ((vwf_current_font_desc.attr & RECODE_7BIT) ? 0x7fu : 0xffu)), vwf_current_font_bank);
+UBYTE ui_print_render(const unsigned char ch) {
+    UBYTE letter = (vwf_current_font_desc.attr & FONT_RECODE) ? ReadBankedUBYTE(vwf_current_font_desc.recode_table + (ch & vwf_current_font_desc.mask), vwf_current_font_bank) : ch;
     const UBYTE * bitmap = vwf_current_font_desc.bitmaps + letter * 16u;
     if (vwf_current_font_desc.attr & FONT_VWF) {
-        vwf_inverse_map = (vwf_current_font_desc.attr & FONT_VWF_1BIT) ? text_bkg_fill : 0;
+        vwf_inverse_map = (vwf_current_font_desc.attr & FONT_VWF_1BIT) ? text_bkg_fill : 0u;
         UBYTE width = ReadBankedUBYTE(vwf_current_font_desc.widths + letter, vwf_current_font_bank);
         UBYTE dx = (8u - vwf_current_offset);
         vwf_current_mask = (0xffu << dx) | (0xffu >> (vwf_current_offset + width));
@@ -164,41 +147,29 @@ static UBYTE ui_print_render(const unsigned char ch) {
         return FALSE;
     } else {
         SetBankedBkgData(ui_current_tile++, 1, bitmap, vwf_current_font_bank);
-        vwf_current_offset = 0;
+        vwf_current_offset = 0u;
         return TRUE;
     }
 }
 
-static void ui_draw_text_buffer_char() __banked {
+void ui_draw_text_buffer_char() __banked {
     if ((text_ff_joypad) && (INPUT_A_OR_B_PRESSED)) text_ff = TRUE;
 
-    if ((!text_ff) && (text_wait != 0)) {
+    if ((!text_ff) && (text_wait)) {
         text_wait--;
         return;
     }
 
     if (ui_text_ptr == 0) {
         // reset to first line
-        ui_line_no = 0;
         // current char pointer
         ui_text_ptr = ui_text_data;
         // VRAM destination
-        ui_dest_base = GetWinAddr() + 32 + 1; // current width of window in tiles
-        // text width
-        ui_text_width = 18;
+        ui_dest_base = GetWinAddr() + 32 + 1; // gotoxy(1,1)
         // with and initial pos correction
-        if (avatar_enabled) { 
-            ui_text_width -= AVATAR_WIDTH;
-            ui_dest_base += AVATAR_WIDTH;
-        }
-        if (menu_enabled) {
-            ui_text_width -= SELECTOR_WIDTH;
-            ui_dest_base += SELECTOR_WIDTH;
-        }
+        if (avatar_enabled) ui_dest_base += AVATAR_WIDTH;
         // initialize current pointer with corrected base value
         ui_dest_ptr = ui_dest_base;
-        // character counter
-        ui_width_left = ui_text_width;
         // tileno destination
         ui_print_reset(((avatar_enabled) ? (UBYTE)(TEXT_BUFFER_START + 4) : TEXT_BUFFER_START));
     }
@@ -209,30 +180,40 @@ static void ui_draw_text_buffer_char() __banked {
             text_drawn = TRUE;
             return;
         case 0x01:
+            // set text speed
             current_text_speed = ui_time_masks[*++ui_text_ptr] & 0x1fu;
             break;
-        case 0x02:
-            //font_image_ptr = ui_fonts[*++ui_text_ptr - 0x01u];
-            ++ui_text_ptr;
-            MemcpyBanked(&vwf_current_font_desc, ui_fonts[*ui_text_ptr - 0x01u].ptr, sizeof(font_desc_t), ui_fonts[*ui_text_ptr - 0x01u].bank);
+        case 0x02: {
+            // set current font
+            const far_ptr_t * font = ui_fonts + (*(++ui_text_ptr) - 1u);
+            MemcpyBanked(&vwf_current_font_desc, font->ptr, sizeof(font_desc_t), vwf_current_font_bank = font->bank);
             break;
+        }
         case 0x03:
-            ui_dest_ptr = ui_dest_base = GetWinAddr() + *++ui_text_ptr * 32 + *++ui_text_ptr;
+            // gotoxy 
+            ui_dest_ptr = ui_dest_base = GetWinAddr() + (*++ui_text_ptr - 1u) + (*++ui_text_ptr - 1u) * 32u;
             if (vwf_current_offset) ui_print_reset(ui_current_tile + 1u);
-            break; 
+            break;
+        case 0x04: {
+            // relative gotoxy
+            BYTE dx = (BYTE)(*++ui_text_ptr);
+            if (dx > 0) dx--;
+            BYTE dy = (BYTE)(*++ui_text_ptr);
+            if (dy > 0) dy--;
+            ui_dest_base = ui_dest_ptr += dx + dy * 32u;
+            if (vwf_current_offset) ui_print_reset(ui_current_tile + 1u);
+            break;
+        }
         case '\n':
-            ui_line_no++;
-            if (menu_enabled && (menu_layout == MENU_LAYOUT_2_COLUMN) && (ui_line_no == 4u)) {
-                ui_dest_base = GetWinAddr() + 32 + 1 + 9;
-                ui_dest_ptr = ui_dest_base;
-            } else {
-                ui_dest_ptr = ui_dest_base += 32;
-            }
+            ui_dest_ptr = ui_dest_base += 32u;
             if (vwf_current_offset) ui_print_reset(ui_current_tile + 1u);
-            break; 
+            break;
+        case 0x05:
+            // escape symbol
+            ui_text_ptr++; 
         default:
             if (ui_print_render(*ui_text_ptr)) {
-                SetTile(ui_dest_ptr++, ui_current_tile - 1);
+                SetTile(ui_dest_ptr++, ui_current_tile - 1u);
             }
             if (vwf_current_offset) SetTile(ui_dest_ptr, ui_current_tile);
             break;
@@ -247,13 +228,13 @@ void ui_update() __nonbanked {
 
     // y should always move first
     if (win_pos_y != win_dest_pos_y) {
-        UBYTE interval = (win_speed == 1) ? 2 : 1;
+        UBYTE interval = (win_speed == 1u) ? 2u : 1u;
         // move window up/down
         if (win_pos_y < win_dest_pos_y) win_pos_y += interval; else win_pos_y -= interval;
         is_moving = TRUE;
     }
     if (win_pos_x != win_dest_pos_x) {
-        UBYTE interval = (win_speed == 1) ? 2 : 1;
+        UBYTE interval = (win_speed == 1u) ? 2u : 1u;
         // move window left/right
         if (win_pos_x < win_dest_pos_x) win_pos_x += interval; else win_pos_x -= interval;
         is_moving = TRUE;
@@ -271,27 +252,14 @@ void ui_update() __nonbanked {
     } while (((text_ff) || (current_text_speed == 0)) && (!text_drawn));
 }
 
-static void ui_draw_menu_cursor() {
-    UBYTE x = (avatar_enabled) ? 3 : 1;
-    if (menu_layout == MENU_LAYOUT_2_COLUMN) {
-        UBYTE height = MIN(4, menu_item_count);
-        fill_win_rect(x, 1, 1, height, ui_bg_tile);
-        fill_win_rect(9, 1, 1, height, ui_bg_tile);
-        if (menu_index >= 4) x = 9;
-        set_win_tile_xy(x, (menu_index%4) + 1, ui_cursor_tile);
-    } else {
-        fill_win_rect(x, 1, 1, menu_item_count, ui_bg_tile);
-        set_win_tile_xy(x, menu_index + 1, ui_cursor_tile);
-    }
-}
-
-UBYTE ui_run_menu() __banked {
-    // no menu items
-    if (menu_item_count == 0) return 0;
-    // run menu
-    menu_index = 0;
-    ui_draw_menu_cursor();
-    while (1) {
+UBYTE ui_run_menu(menu_item_t * start_item, UBYTE bank, UBYTE options, UBYTE count) __banked {
+    menu_item_t current_menu_item;
+    UBYTE current_index = 1u, next_index = 0u;
+    // copy first menu item
+    MemcpyBanked(&current_menu_item, start_item, sizeof(menu_item_t), bank);
+    // draw menu cursor
+    set_win_tile_xy(current_menu_item.X, current_menu_item.Y, ui_cursor_tile);
+    while (TRUE) {
         input_update();
         ui_update();
         
@@ -304,48 +272,51 @@ UBYTE ui_run_menu() __banked {
         wait_vbl_done();
 
         if (INPUT_UP_PRESSED) {
-            if (menu_index != 0) menu_index--;
+            next_index = current_menu_item.iU;
         } else if (INPUT_DOWN_PRESSED) {
-            if (menu_index != menu_item_count - 1) menu_index++;
+            next_index = current_menu_item.iD;
         } else if (INPUT_LEFT_PRESSED) {
-            if (menu_layout == MENU_LAYOUT_2_COLUMN) {
-                menu_index = MAX(menu_index - 4, 0);
-            } else {
-                menu_index = 0;
-            }
+            next_index = current_menu_item.iL;
         } else if (INPUT_RIGHT_PRESSED) {
-            if (menu_layout == MENU_LAYOUT_2_COLUMN) {
-                menu_index = MIN(menu_index + 4, menu_item_count - 1);
-            } else {
-                menu_index = menu_item_count - 1;
-            }
+            next_index = current_menu_item.iR;
         } else if (INPUT_A_PRESSED) {
-            return ((menu_cancel_on_last_option) && (menu_index == menu_item_count - 1)) ? 0 : menu_index + 1;
-        } else if ((INPUT_B_PRESSED) && (menu_cancel_on_b))  {
-            return 0;
+            return ((current_index == count) && (options & MENU_CANCEL_LAST)) ? 0u : current_index;
+        } else if ((INPUT_B_PRESSED) && (options & MENU_CANCEL_B))  {
+            return 0u;
         } else {
             continue;
         }
 
-        ui_draw_menu_cursor();
+        if (!next_index) continue;
+
+        // update current index
+        current_index = next_index;
+        // erase old cursor
+        set_win_tile_xy(current_menu_item.X, current_menu_item.Y, ui_bg_tile);
+        // read menu data
+        MemcpyBanked(&current_menu_item, start_item + next_index - 1u, sizeof(menu_item_t), bank);
+        // put new cursor
+        set_win_tile_xy(current_menu_item.X, current_menu_item.Y, ui_cursor_tile);
+        // reset next index
+        next_index = 0;
     };
 }
 
 void ui_run_modal(UBYTE wait_flags) __banked {
     UBYTE fail;
     do {
-        fail = 0;
+        fail = FALSE;
     
         if (wait_flags & UI_WAIT_WINDOW)
-            if ((win_pos_x != win_dest_pos_x) || (win_pos_y != win_dest_pos_y)) fail = 1;
+            if ((win_pos_x != win_dest_pos_x) || (win_pos_y != win_dest_pos_y)) fail = TRUE;
         if (wait_flags & UI_WAIT_TEXT)
-            if (!text_drawn) fail = 1;
+            if (!text_drawn) fail = TRUE;
         if (wait_flags & UI_WAIT_BTN_A)
-            if (!INPUT_A_PRESSED) fail = 1;
+            if (!INPUT_A_PRESSED) fail = TRUE;
         if (wait_flags & UI_WAIT_BTN_B)
-            if (!INPUT_B_PRESSED) fail = 1;
+            if (!INPUT_B_PRESSED) fail = TRUE;
         if (wait_flags & UI_WAIT_BTN_ANY)
-            if (!INPUT_ANY_PRESSED) fail = 1;
+            if (!INPUT_ANY_PRESSED) fail = TRUE;
 
         if (!fail) return;
         

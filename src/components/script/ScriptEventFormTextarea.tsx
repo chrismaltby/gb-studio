@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { DialogueTextarea } from "../ui/form/DialogueTextarea";
 import {
   customEventSelectors,
+  fontSelectors,
   variableSelectors,
 } from "../../store/features/entities/entitiesState";
 import { RootState } from "../../store/configureStore";
@@ -30,6 +31,10 @@ const ScriptEventFormTextArea: FC<ScriptEventFormTextAreaProps> = ({
   entityId,
 }) => {
   const [variables, setVariables] = useState<NamedVariable[]>([]);
+  const fonts = useSelector((state: RootState) =>
+    fontSelectors.selectAll(state)
+  );
+
   const editorType = useSelector((state: RootState) => state.editor.type);
   const variablesLookup = useSelector((state: RootState) =>
     variableSelectors.selectEntities(state)
@@ -55,6 +60,7 @@ const ScriptEventFormTextArea: FC<ScriptEventFormTextAreaProps> = ({
       value={value || ""}
       onChange={onChange}
       variables={variables}
+      fonts={fonts}
       placeholder={placeholder}
       maxlength={maxlength}
     />

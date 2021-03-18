@@ -7,6 +7,7 @@
 #include <rand.h>
 
 #include "vm.h"
+#include "math.h"
 
 // instructions global registry
 extern const SCRIPT_CMD script_cmds[];
@@ -122,13 +123,13 @@ UBYTE wait_frames(void * THIS, UBYTE start, UWORD * stack_frame) __banked {
     // we allocate one local variable (just write ahead of VM stack pointer, we have no interrupts, our local variables won't get spoiled)
     if (start) *((SCRIPT_CTX *)THIS)->stack_ptr = sys_time;
     // check wait condition
-    return (((UWORD)sys_time - *((SCRIPT_CTX *)THIS)->stack_ptr) < stack_frame[0]) ? ((SCRIPT_CTX *)THIS)->waitable = 1, 0 : 1;
+    return (((UWORD)sys_time - *((SCRIPT_CTX *)THIS)->stack_ptr) < stack_frame[0]) ? ((SCRIPT_CTX *)THIS)->waitable = TRUE, (UBYTE)FALSE : (UBYTE)TRUE;
 }
 // calls C handler until it returns true; callee cleanups stack
 void vm_invoke(SCRIPT_CTX * THIS, UBYTE bank, UBYTE * fn, UBYTE nparams, INT16 idx) __banked {
     UWORD * stack_frame = (idx < 0) ? THIS->stack_ptr + idx : script_memory + idx;
     // update function pointer
-    UBYTE start = ((THIS->update_fn != fn) || (THIS->update_fn_bank != bank)) ? THIS->update_fn = fn, THIS->update_fn_bank = bank, 1 : 0;
+    UBYTE start = ((THIS->update_fn != fn) || (THIS->update_fn_bank != bank)) ? THIS->update_fn = fn, THIS->update_fn_bank = bank, (UBYTE)TRUE : (UBYTE)FALSE;
     // call handler
     if (FAR_CALL_EX(fn, bank, SCRIPT_UPDATE_FN, THIS, start, stack_frame)) {
         if (nparams) THIS->stack_ptr -= nparams;
@@ -163,7 +164,7 @@ void vm_beginthread(UWORD dummy0, UWORD dummy1, SCRIPT_CTX * THIS, UBYTE bank, U
 void vm_join(SCRIPT_CTX * THIS, INT16 idx) __banked {
     UWORD * A;
     if (idx < 0) A = THIS->stack_ptr + idx; else A = script_memory + idx;
-    if (!(*A >> 8)) THIS->PC -= (INSTRUCTION_SIZE + sizeof(idx)), THIS->waitable = 1;
+    if (!(*A >> 8)) THIS->PC -= (INSTRUCTION_SIZE + sizeof(idx)), THIS->waitable = TRUE;
 }
 // 
 void vm_terminate(SCRIPT_CTX * THIS, INT16 idx) __banked {
@@ -179,7 +180,7 @@ void vm_if(SCRIPT_CTX * THIS, UBYTE condition, INT16 idxA, INT16 idxB, UBYTE * p
     INT16 A, B;
     if (idxA < 0) A = *(THIS->stack_ptr + idxA); else A = script_memory[idxA];
     if (idxB < 0) B = *(THIS->stack_ptr + idxB); else B = script_memory[idxB];
-    UBYTE res = 0;
+    UBYTE res = FALSE;
     switch (condition) {
         case VM_OP_EQ: res = (A == B); break;
         case VM_OP_LT: res = (A <  B); break;
@@ -197,7 +198,7 @@ void vm_if(SCRIPT_CTX * THIS, UBYTE condition, INT16 idxA, INT16 idxB, UBYTE * p
 void vm_if_const(SCRIPT_CTX * THIS, UBYTE condition, INT16 idxA, INT16 B, UBYTE * pc, UBYTE n) __banked {
     INT16 A;
     if (idxA < 0) A = *(THIS->stack_ptr + idxA); else A = script_memory[idxA];
-    UBYTE res = 0;
+    UBYTE res = FALSE;
     switch (condition) {
         case VM_OP_EQ: res = (A == B); break;
         case VM_OP_LT: res = (A <  B); break;
@@ -250,7 +251,7 @@ void vm_rpn(UWORD dummy0, UWORD dummy1, SCRIPT_CTX * THIS) __nonbanked {
     SWITCH_ROM_MBC1(THIS->bank);        // then switch to bytecode bank
 
     ARGS = THIS->stack_ptr;
-    while (1) {
+    while (TRUE) {
         INT8 op = *(THIS->PC++);
         if (op < 0) {
             switch (op) {
@@ -294,6 +295,7 @@ void vm_rpn(UWORD dummy0, UWORD dummy1, SCRIPT_CTX * THIS) __nonbanked {
                 case VM_OP_NE:  *A = (*A  !=  *B); break;
                 case VM_OP_AND: *A = ((bool)(*A)  &&  (bool)(*B)); break;
                 case VM_OP_OR:  *A = ((bool)(*A)  ||  (bool)(*B)); break;
+                case VM_OP_NOT: *B = !(*B); continue;
                 // bit
                 case '&': *A = *A  &  *B; break;
                 case '|': *A = *A  |  *B; break;
@@ -304,6 +306,7 @@ void vm_rpn(UWORD dummy0, UWORD dummy1, SCRIPT_CTX * THIS) __nonbanked {
                 // unary
                 case '@': *B = abs(*B); continue;
                 case '~': *B = ~(*B);   continue;
+                case 'Q': *B = isqrt((UWORD)*B); continue;
                 // terminator
                 default:
                     SWITCH_ROM_MBC1(_save);         // restore bank
@@ -364,7 +367,7 @@ void vm_debug(UWORD dummy0, UWORD dummy1, SCRIPT_CTX * THIS, UBYTE nargs) __nonb
 
 // puts context into a waitable state
 void vm_idle(SCRIPT_CTX * THIS) __banked {
-    THIS->waitable = 1;
+    THIS->waitable = TRUE;
 }
 
 // gets unsigned int8 from RAM by address
@@ -626,7 +629,7 @@ SCRIPT_CTX * script_execute(UBYTE bank, UBYTE * pc, UWORD * handle, INT8 nargs, 
         tmp->hthread = handle;
         if (handle) *handle = tmp->ID;
         // clear termination flag
-        tmp->terminated = 0;
+        tmp->terminated = FALSE;
         // clear lock count
         tmp->lock_count = 0;
         // clear flags
@@ -653,11 +656,11 @@ UBYTE script_terminate(UBYTE ID) __banked {
     ctx = first_ctx; 
     while (ctx) {
         if (ctx->ID == ID) {
-            ctx->terminated = 1;
-            return 1;
+            ctx->terminated = TRUE;
+            return TRUE;
         } else ctx = ctx->next;
     }
-    return 0;
+    return FALSE;
 }
 
 // process all contexts
@@ -667,12 +670,12 @@ UBYTE script_runner_update() __nonbanked {
     static UBYTE waitable;
     static UBYTE counter;
     old_ctx = 0, ctx = first_ctx;
-    waitable = 1;
+    waitable = TRUE;
     counter = INSTRUCTIONS_PER_QUANT;
     while (ctx) {
         vm_exception_code = EXCEPTION_CODE_NONE;
-        ctx->waitable = 0;
-        if ((ctx->terminated) || (!VM_STEP(ctx))) {
+        ctx->waitable = FALSE;
+        if ((ctx->terminated != FALSE) || (!VM_STEP(ctx))) {
             // update lock state
             vm_lock_state -= ctx->lock_count;
             // update handle if present

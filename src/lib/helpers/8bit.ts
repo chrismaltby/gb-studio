@@ -16,6 +16,9 @@ export const decHex16 = (dec: number) =>
 export const decHex16Val = (dec: number) =>
   wrap16Bit(dec).toString(16).padStart(4, "0").toUpperCase();
 
+export const decOct = (dec: number) =>
+  wrap8Bit(dec).toString(8).padStart(3, "0");
+
 export const hexDec = (hex: string) => parseInt(hex, 16);
 
 export const hi = (longNum: number) => wrap16Bit(longNum) >> 8;

@@ -16,8 +16,8 @@
 
 UBYTE fade_running;
 UBYTE fade_frames_per_step;
-UBYTE fade_black = 0;
-UBYTE fade_timer = 0;
+UBYTE fade_black;
+UBYTE fade_timer;
 UBYTE fade_style;
 
 const UBYTE fade_speeds[] = {0x0, 0x1, 0x3, 0x7, 0xF, 0x1F, 0x3F};
@@ -90,6 +90,8 @@ void fade_init() __banked {
     fade_frames_per_step = fade_speeds[2];
     fade_timer = FADED_OUT_FRAME;
     fade_running = FALSE;
+    fade_black = 0;
+    fade_style = 0;
 #ifdef CGB
     if (_cpu == CGB_TYPE) {
         ApplyPaletteChangeColor(fade_timer);

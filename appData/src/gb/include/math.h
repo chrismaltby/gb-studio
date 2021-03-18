@@ -104,4 +104,6 @@ inline void point_translate_angle_to_delta(point16_t *point, UBYTE angle, UBYTE 
     point->y = ((COS(angle) * (speed)) >> 7);
 }
 
+UBYTE isqrt(UWORD x) __nonbanked;
+
 #endif

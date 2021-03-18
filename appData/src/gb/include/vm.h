@@ -61,6 +61,7 @@ typedef struct SCRIPT_CTX {
 #define VM_OP_NE  6
 #define VM_OP_AND 7
 #define VM_OP_OR  8
+#define VM_OP_NOT 9
 
 // shared context memory
 extern UWORD script_memory[MAX_GLOBAL_VARS + (SCRIPT_MAX_CONTEXTS * CONTEXT_STACK_SIZE)];  // maximum stack depth is 16 words

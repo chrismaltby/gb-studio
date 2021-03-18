@@ -26,3 +26,19 @@ const point8_t dir_lookup[4] = {
     { .x =  0, .y = -1 },
     { .x = -1, .y =  0 }
 };
+
+UBYTE isqrt(UWORD x) __nonbanked {
+    UWORD m, y, b;
+    m = 0x4000;
+    y = 0;
+    while (m != 0) {
+        b = y | m;
+        y >>= 1;
+        if (x >= b) {
+            x -= b;
+            y |= m;
+        }
+        m >>= 2;
+    }
+    return (UBYTE)y;
+}

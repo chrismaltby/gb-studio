@@ -89,18 +89,10 @@ void vm_display_text(SCRIPT_CTX * THIS, UBYTE avatar_bank, spritesheet_t *avatar
     current_text_speed = text_draw_speed;
     
     avatar_enabled = (avatar != 0);
-    menu_enabled = (options & MENU_ENABLE);
-    menu_layout = (options & MENU_LAYOUT) >> 1;
-    menu_item_count = (menu_enabled) ? text_line_count : 0;
 
     INT8 width = 20 - (win_dest_pos_x >> 3);
     if (width > 2) {
-        // don't draw if too small 
-        if (menu_enabled && menu_layout == MENU_LAYOUT_2_COLUMN && menu_item_count > 4) {
-            ui_draw_frame(0, 0, width - 1, 4);
-        } else {
-            ui_draw_frame(0, 0, width - 1, text_line_count);
-        }
+        ui_draw_frame(0, 0, width - 1, text_line_count);
         if (avatar_enabled) {
             ui_draw_avatar(avatar, avatar_bank);
         }
@@ -168,11 +160,10 @@ void vm_overlay_show(SCRIPT_CTX * THIS, UBYTE pos_x, UBYTE pos_y, UBYTE color) _
     ui_set_pos(pos_x << 3, pos_y << 3);
 }
 
-void vm_choice(SCRIPT_CTX * THIS, INT16 idx, UBYTE options) __banked {
+void vm_choice(SCRIPT_CTX * THIS, INT16 idx, UBYTE options, UBYTE count) __banked {
     INT16 * v = VM_REF_TO_PTR(idx);
-    menu_cancel_on_last_option = (options & MENU_CANCEL_LAST);
-    menu_cancel_on_b = (options & MENU_CANCEL_B);    
-    *v = ui_run_menu();
+    *v = (count) ? ui_run_menu((menu_item_t *)(THIS->PC), THIS->bank, options, count) : 0;
+    THIS->PC += sizeof(menu_item_t) * count;
 }
 
 void vm_load_frame(SCRIPT_CTX * THIS, UBYTE bank, UBYTE * offset) __banked {

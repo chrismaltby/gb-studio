@@ -58,7 +58,7 @@ release:
 	@echo "RELEASE mode ON"
 	
 debug:
-	$(eval CFLAGS += -Wf--debug -Wl-m -Wl-w -Wl-y -DVM_DEBUG_OUTPUT)
+	$(eval CFLAGS += -Wf--fverbose-asm -Wf--debug -Wl-m -Wl-w -Wl-y -DVM_DEBUG_OUTPUT)
 	$(eval CFLAGS += -Wf--nolospre -Wf--nogcse)
 	$(eval LFLAGS += -Wf--debug -Wl-m -Wl-w -Wl-y)
 	@echo "DEBUG mode ON"

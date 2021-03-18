@@ -72,6 +72,7 @@ import {
 import compileSGBImage from "./sgb";
 import { readFileToTilesData } from "../tiles/tileData";
 import l10n from "../helpers/l10n";
+import { compileScriptEngineInit } from "./compileBootstrap";
 
 const indexById = indexBy("id");
 
@@ -484,14 +485,20 @@ const compile = async (
   );
 
   output["game_globals.i"] = compileGameGlobalsInclude(variableAliasLookup);
-
+  output[`script_engine_init.s`] = compileScriptEngineInit({
+    startX,
+    startY,
+    startDirection,
+    startSceneIndex,
+    startMoveSpeed,
+    startAnimSpeed,
+    fonts: precompiled.usedFonts,
+    isCGB: customColorsEnabled,
+  });
   output[`data_bootstrap.h`] =
     `#ifndef DATA_PTRS_H\n#define DATA_PTRS_H\n\n` +
     `#include "bankdata.h"\n` +
     `#include "gbs_types.h"\n\n` +
-    `#define NUM_VARIABLES ${variablesLen}\n` +
-    `#define TMP_VAR_1 ${precompiled.variables.indexOf(TMP_VAR_1)}\n` +
-    `#define TMP_VAR_2 ${precompiled.variables.indexOf(TMP_VAR_2)}\n\n` +
     `extern const INT16 start_scene_x;\n` +
     `extern const INT16 start_scene_y;\n` +
     `extern const direction_e start_scene_dir;\n` +
@@ -502,48 +509,48 @@ const compile = async (
     `extern const UBYTE start_player_move_speed;\n` +
     `extern const UBYTE start_player_anim_tick;\n\n` +
     `extern const far_ptr_t ui_fonts[];\n\n` +
-    `// Engine fields\n` +
-    compileEngineFields(engineFields, projectData.engineFieldValues, true) +
-    "\n" +
-    `${music
-      .map((track, index) => {
-        return `extern const unsigned int ${track.dataName}_Data[];`;
-      })
-      .join(`\n`)}\n\n` +
+    // `// Engine fields\n` +
+    // compileEngineFields(engineFields, projectData.engineFieldValues, true) +
+    // "\n" +
+    // `${music
+    //   .map((track, index) => {
+    //     return `extern const unsigned int ${track.dataName}_Data[];`;
+    //   })
+    //   .join(`\n`)}\n\n` +
     `void bootstrap_init() __banked;\n\n` +
     `#endif\n`;
-  output[`data_bootstrap.c`] =
-    `#include "data/data_bootstrap.h"\n` +
-    `#include "data/${sceneSymbol(startSceneIndex)}.h"\n` +
-    (customColorsEnabled ? `#include "data/${paletteSymbol(0)}.h"\n` : "") +
-    precompiled.usedFonts
-      .map((_, fontIndex) => `#include "data/${fontSymbol(fontIndex)}.h"`)
-      .join(",\n") +
-    `\n\n` +
-    `const INT16 start_scene_x = ${(startX || 0) * 8 * 16};\n` +
-    `const INT16 start_scene_y = ${(startY + 1 || 0) * 8 * 16};\n` +
-    `const direction_e start_scene_dir = ${dirEnum(startDirection)};\n` +
-    `const far_ptr_t start_scene = ${toFarPtr(
-      sceneSymbol(startSceneIndex)
-    )};\n` +
-    (customColorsEnabled
-      ? `const far_ptr_t start_player_palette = ${toFarPtr(
-          paletteSymbol(0)
-        )};\n`
-      : "") +
-    `const UBYTE start_player_move_speed = ${Math.round(
-      startMoveSpeed * 16
-    )};\n` +
-    `const UBYTE start_player_anim_tick = ${startAnimSpeed};\n` +
-    `const far_ptr_t ui_fonts[] = {\n` +
-    precompiled.usedFonts
-      .map((_, fontIndex) => "  " + toFarPtr(fontSymbol(fontIndex)))
-      .join(",\n") +
-    `\n};\n` +
-    "\n" +
-    `void bootstrap_init() __banked {\n` +
-    compileEngineFields(engineFields, projectData.engineFieldValues) +
-    `}\n`;
+  // output[`data_bootstrap.c`] =
+  //   `#include "data/data_bootstrap.h"\n` +
+  //   `#include "data/${sceneSymbol(startSceneIndex)}.h"\n` +
+  //   (customColorsEnabled ? `#include "data/${paletteSymbol(0)}.h"\n` : "") +
+  //   precompiled.usedFonts
+  //     .map((_, fontIndex) => `#include "data/${fontSymbol(fontIndex)}.h"`)
+  //     .join(",\n") +
+  //   `\n\n` +
+  //   `const INT16 start_scene_x = ${(startX || 0) * 8 * 16};\n` +
+  //   `const INT16 start_scene_y = ${(startY + 1 || 0) * 8 * 16};\n` +
+  //   `const direction_e start_scene_dir = ${dirEnum(startDirection)};\n` +
+  //   `const far_ptr_t start_scene = ${toFarPtr(
+  //     sceneSymbol(startSceneIndex)
+  //   )};\n` +
+  //   (customColorsEnabled
+  //     ? `const far_ptr_t start_player_palette = ${toFarPtr(
+  //         paletteSymbol(0)
+  //       )};\n`
+  //     : "") +
+  //   `const UBYTE start_player_move_speed = ${Math.round(
+  //     startMoveSpeed * 16
+  //   )};\n` +
+  //   `const UBYTE start_player_anim_tick = ${startAnimSpeed};\n` +
+  //   `const far_ptr_t ui_fonts[] = {\n` +
+  //   precompiled.usedFonts
+  //     .map((_, fontIndex) => "  " + toFarPtr(fontSymbol(fontIndex)))
+  //     .join(",\n") +
+  //   `\n};\n` +
+  //   "\n" +
+  //   `void bootstrap_init() __banked {\n` +
+  //   compileEngineFields(engineFields, projectData.engineFieldValues) +
+  //   `}\n`;
 
   const maxDataBank = 255;
 
@@ -1205,6 +1212,7 @@ export const precompileFonts = async (
 ) => {
   const defaultFont =
     fonts.find((font) => font.id === defaultFontId) || fonts[0];
+
   if (!defaultFont) {
     await ensureProjectAsset("assets/fonts/gbs-mono.png", {
       projectRoot,
@@ -1214,18 +1222,30 @@ export const precompileFonts = async (
 
   const usedFontIds = [defaultFont.id];
 
+  const addFont = (id) => {
+    // If never seen this font before add it to the list
+    if (usedFontIds.indexOf(id) === -1) {
+      usedFontIds.push(id);
+    }
+  };
+
   walkScenesEvents(scenes, (cmd) => {
     if (cmd.args && cmd.args.fontId !== undefined) {
-      const fontId = cmd.args.fontId || fonts[0].id;
-      // If never seen this font before add it to the list
-      if (usedFontIds.indexOf(fontId) === -1) {
-        usedFontIds.push(fontId);
-      }
+      addFont(cmd.args.fontId || fonts[0].id);
+    }
+    if (cmd.args && cmd.args.text !== undefined) {
+      // Add fonts referenced in text
+      (String(cmd.args.text).match(/(!F:[0-9a-f-]+!)/g) || [])
+        .map((id) => id.substring(3).replace(/!$/, ""))
+        .forEach(addFont);
     }
   });
-  const usedFonts = fonts.filter((font) => {
-    return usedFontIds.indexOf(font.id) > -1;
-  });
+
+  const usedFonts = [defaultFont].concat(
+    fonts.filter((font) => {
+      return font.id !== defaultFont && usedFontIds.indexOf(font.id) > -1;
+    })
+  );
 
   const fontData = await compileFonts(usedFonts, projectRoot, { warnings });
 

@@ -44,12 +44,6 @@ extern UBYTE text_drawn;
 extern UBYTE text_wait;
 extern UBYTE text_line_count;
 
-extern UBYTE avatar_enabled;
-extern UBYTE menu_enabled;
-extern UBYTE menu_item_count;
-extern UBYTE menu_layout;
-extern UBYTE menu_cancel_on_last_option;
-extern UBYTE menu_cancel_on_b;
 extern UBYTE current_text_speed;
 extern UBYTE text_in_speed;
 extern UBYTE text_out_speed;
@@ -57,6 +51,10 @@ extern UBYTE text_draw_speed;
 extern UBYTE text_ff_joypad;
 extern UBYTE text_ff;
 extern UBYTE text_bkg_fill;
+
+// --- obsolete ---------------
+extern UBYTE avatar_enabled;
+// ----------------------------
 
 extern unsigned char ui_text_data[TEXT_MAX_LENGTH];
 
@@ -87,7 +85,7 @@ inline void ui_move_to(UBYTE x, UBYTE y, UBYTE speed) {
     if (speed == 0) win_pos_y = y, win_pos_x = x; else win_speed = speed;
 }
 
-UBYTE ui_run_menu() __banked;
+UBYTE ui_run_menu(menu_item_t * start_item, UBYTE bank, UBYTE options, UBYTE count) __banked;
 
 inline void ui_load_frame_tiles(const UBYTE * offset, UBYTE bank) {
     SetBankedBkgData(192, 9, offset, bank);
