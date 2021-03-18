@@ -756,7 +756,7 @@ class ScriptBuilder {
   };
 
   _overlayShow = (x: number, y: number, color: number) => {
-    this._addCmd("VM_OVERLAY_SHOW", x, y, color);
+    this._addCmd("VM_OVERLAY_SHOW", x, y, color, 0);
   };
 
   _overlayClear = (
@@ -1053,6 +1053,7 @@ class ScriptBuilder {
 
     this._addComment("Text Multiple Choice");
     this._loadStructuredText(choiceText);
+    this._overlayClear(0, 0, 20, numLines + 2, ".UI_COLOR_WHITE", true);
     this._overlayMoveTo(0, 18 - numLines - 2, ".OVERLAY_TEXT_IN_SPEED");
     this._displayText();
     this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
