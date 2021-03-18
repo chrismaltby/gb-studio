@@ -43,7 +43,9 @@ import { TabBar } from "../ui/tabs/Tabs";
 import { Label } from "../ui/form/Label";
 import { Button } from "../ui/buttons/Button";
 import { LockIcon, LockOpenIcon } from "../ui/icons/Icons";
-import ParallaxSelect, { defaultValues as parallaxDefaultValues } from "../forms/ParallaxSelect";
+import ParallaxSelect, {
+  defaultValues as parallaxDefaultValues,
+} from "../forms/ParallaxSelect";
 
 interface SceneEditorProps {
   id: string;
@@ -230,7 +232,7 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
       entitiesActions.editScene({
         sceneId: id,
         changes: {
-          parallax: parallaxDefaultValues.slice(-2)
+          parallax: parallaxDefaultValues.slice(-2),
         },
       })
     );
@@ -377,6 +379,7 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
                   name="backgroundId"
                   value={scene.backgroundId}
                   onChange={onChangeField("backgroundId")}
+                  is360={scene.type === "LOGO"}
                   includeInfo
                 />
               </FormField>

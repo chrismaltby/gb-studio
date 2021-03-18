@@ -5,6 +5,7 @@ import {
   mergeTileLookups,
   readFileToTilesDataArray,
   tileLookupToTileData,
+  tileArrayToTileData,
   tilesAndLookupToTilemap,
   toTileLookup,
 } from "../tiles/tileData";
@@ -17,7 +18,13 @@ const imageBuildCache = {};
 let lastOutput = null;
 let lastOutputIds = "";
 
-const compileImages = async (imgs, projectPath, tmpPath, { warnings }) => {
+const compileImages = async (
+  imgs,
+  generate360Ids,
+  projectPath,
+  tmpPath,
+  { warnings }
+) => {
   const tilesetLookups = [];
   const tilesetIndexes = [];
   const imgTiles = [];
@@ -31,6 +38,7 @@ const compileImages = async (imgs, projectPath, tmpPath, { warnings }) => {
   // Build lookups
   for (let i = 0; i < imgs.length; i++) {
     const img = imgs[i];
+
     const filename = assetFilename(projectPath, "backgrounds", img);
     let tilesetLookup;
 
@@ -59,6 +67,7 @@ const compileImages = async (imgs, projectPath, tmpPath, { warnings }) => {
 
     const backgroundInfo = await getBackgroundInfo(
       img,
+      generate360Ids.includes(img.id),
       projectPath,
       tilesetLength
     );
@@ -69,6 +78,11 @@ const compileImages = async (imgs, projectPath, tmpPath, { warnings }) => {
       });
     }
 
+    if (generate360Ids.includes(img.id)) {
+      // Skip lookups for 360 images (generated later)
+      tilesetLookups.push(null);
+      continue;
+    }
     tilesetLookups.push(tilesetLookup);
   }
 
@@ -82,11 +96,18 @@ const compileImages = async (imgs, projectPath, tmpPath, { warnings }) => {
 
   // Find smallest overlapping lookups
   for (let i = 0; i < imgs.length - 1; i++) {
+    if (!tilesetLookups[i]) {
+      continue;
+    }
     let minDiffLength = MAX_SIZE;
     let minLookup = null;
     let minIndex = null;
 
     for (let j = i + 1; j < imgs.length; j++) {
+      if (!tilesetLookups[j]) {
+        continue;
+      }
+
       const mergedLookup = mergeTileLookups([
         tilesetLookups[i],
         tilesetLookups[j],
@@ -133,18 +154,27 @@ const compileImages = async (imgs, projectPath, tmpPath, { warnings }) => {
 
   // Output lookups to files
   for (let i = 0; i < imgs.length; i++) {
-    if (tilesetLookups[i]) {
+    if (generate360Ids.includes(imgs[i].id)) {
+      // Generate 360 tiles
+      output.tilesets[i] = tileArrayToTileData(imgTiles[i]);
+    } else if (tilesetLookups[i]) {
       output.tilesets[i] = tileLookupToTileData(tilesetLookups[i]);
     }
   }
 
   for (let i = 0; i < imgs.length; i++) {
-    const tilemap = tilesAndLookupToTilemap(
-      imgTiles[i],
-      tilesetLookups[tilesetIndexes[i]]
-    );
-    output.tilemaps[imgs[i].id] = tilemap;
-    output.tilemapsTileset[imgs[i].id] = tilesetIndexes[i];
+    if (generate360Ids.includes(imgs[i].id)) {
+      // Generate 360 tilemap
+      output.tilemaps[imgs[i].id] = Array.from(Array(360)).map((_, i) => i);
+      output.tilemapsTileset[imgs[i].id] = i;
+    } else {
+      const tilemap = tilesAndLookupToTilemap(
+        imgTiles[i],
+        tilesetLookups[tilesetIndexes[i]]
+      );
+      output.tilemaps[imgs[i].id] = tilemap;
+      output.tilemapsTileset[imgs[i].id] = tilesetIndexes[i];
+    }
   }
 
   lastOutput = output;

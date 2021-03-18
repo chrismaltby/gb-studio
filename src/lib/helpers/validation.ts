@@ -16,6 +16,7 @@ interface BackgroundInfo {
 
 export const getBackgroundInfo = async (
   background: Background,
+  is360: boolean,
   projectPath: string,
   precalculatedTilesetLength?: number
 ): Promise<BackgroundInfo> => {
@@ -64,11 +65,25 @@ export const getBackgroundInfo = async (
   ) {
     warnings.push(l10n("WARNING_BACKGROUND_NOT_MULTIPLE_OF_8"));
   }
-  if (tilesetLength > MAX_TILESET_TILES) {
+  if (tilesetLength > MAX_TILESET_TILES && !is360) {
     warnings.push(
       l10n("WARNING_BACKGROUND_TOO_MANY_TILES", {
         tilesetLength,
         maxTilesetLength: MAX_TILESET_TILES,
+      })
+    );
+  }
+
+  console.log({ is360, background });
+
+  if (
+    is360 &&
+    (background.imageWidth !== 160 || background.imageHeight !== 144)
+  ) {
+    warnings.push(
+      l10n("WARNING_LOGO_WRONG_SIZE", {
+        width: background.imageWidth,
+        height: background.imageHeight,
       })
     );
   }

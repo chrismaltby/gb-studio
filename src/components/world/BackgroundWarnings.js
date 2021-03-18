@@ -6,18 +6,6 @@ import warningsActions from "../../store/features/warnings/warningsActions";
 import { backgroundSelectors } from "../../store/features/entities/entitiesState";
 
 class BackgroundWarnings extends Component {
-  componentDidMount() {
-    const { checkBackgroundWarnings, id } = this.props;
-    checkBackgroundWarnings(id);
-  }
-
-  componentDidUpdate(prevProps) {
-    const { modifiedTimestamp, checkBackgroundWarnings, id } = this.props;
-    if (id !== prevProps.id || modifiedTimestamp !== prevProps.modifiedTimestamp) {
-      checkBackgroundWarnings(id);
-    }
-  }
-
   render() {
     const { warnings } = this.props;
 
@@ -43,7 +31,7 @@ class BackgroundWarnings extends Component {
 // };
 
 BackgroundWarnings.defaultProps = {
-  modifiedTimestamp: 0
+  modifiedTimestamp: 0,
 };
 
 function mapStateToProps(state, props) {
@@ -55,12 +43,12 @@ function mapStateToProps(state, props) {
   const modifiedTimestamp = background && background._v;
   return {
     warnings,
-    modifiedTimestamp
+    modifiedTimestamp,
   };
 }
 
 const mapDispatchToProps = {
-  checkBackgroundWarnings: warningsActions.checkBackgroundWarnings
+  checkBackgroundWarnings: warningsActions.checkBackgroundWarnings,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(BackgroundWarnings);

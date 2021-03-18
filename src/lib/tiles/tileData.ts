@@ -109,7 +109,10 @@ export const mergeTileLookups = (tileLookups: TileLookup[]): TileLookup => {
 };
 
 export const tileLookupToTileData = (lookup: TileLookup): Uint8Array => {
-  const tiles = Object.values(lookup);
+  return tileArrayToTileData(Object.values(lookup));
+};
+
+export const tileArrayToTileData = (tiles: Uint8Array[]): Uint8Array => {
   const size = tiles.reduce((memo, tile) => memo + tile.length, 0);
   const output = new Uint8Array(size);
   let index = 0;

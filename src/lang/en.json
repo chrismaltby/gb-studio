@@ -576,6 +576,7 @@
   "WARNING_FRAMES_LIMIT": "This scene is over available limits and may have rendering issues. Try reducing number of actors in scene or use static and non animated sprites where possible. Stay within limits to prevent tile data overwriting sprite data",
   "WARNING_ACTORS_LIMIT": "This scene contains too many actors, some actors will not be visible during gameplay",
   "WARNING_TRIGGERS_LIMIT": "This scene contains too many triggers, some triggers will not be included during gameplay",
+  "WARNING_LOGO_WRONG_SIZE": "Logo scenes must be 160px x 144px",
 
   "// 12": "Errors -------------------------------------------------------",
 

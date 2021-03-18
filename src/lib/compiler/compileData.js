@@ -787,15 +787,27 @@ export const precompileBackgrounds = async (
       eventImageIds.indexOf(background.id) > -1 ||
       scenes.find((scene) => scene.backgroundId === background.id)
   );
+
+  // List of ids to generate 360 tiles
+  const generate360Ids = usedBackgrounds
+    .filter((background) =>
+      scenes.find(
+        (scene) => scene.backgroundId === background.id && scene.type === "LOGO"
+      )
+    )
+    .map((background) => background.id);
+
   const backgroundLookup = indexById(usedBackgrounds);
   const backgroundData = await compileImages(
     usedBackgrounds,
+    generate360Ids,
     projectRoot,
     tmpPath,
     {
       warnings,
     }
   );
+
   const usedTilesets = [];
   const usedTilesetLookup = {};
   Object.keys(backgroundData.tilesets).forEach((tileKey) => {

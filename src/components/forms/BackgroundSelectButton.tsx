@@ -20,6 +20,7 @@ import { BackgroundSelect } from "./BackgroundSelect";
 interface BackgroundSelectProps {
   name: string;
   value?: string;
+  is360: boolean;
   includeInfo?: boolean;
   onChange?: (newId: string) => void;
 }
@@ -148,6 +149,7 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
   name,
   value,
   onChange,
+  is360,
   includeInfo,
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -165,9 +167,14 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
 
   useEffect(() => {
     if (value) {
-      dispatch(warningsActions.checkBackgroundWarnings(value));
+      dispatch(
+        warningsActions.checkBackgroundWarnings({
+          backgroundId: value,
+          is360,
+        })
+      );
     }
-  }, [value]);
+  }, [value, is360]);
 
   useEffect(() => {
     if (buttonFocus) {
@@ -268,7 +275,7 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
                 <SpriteInfoField>{l10n("FIELD_SIZE")}:</SpriteInfoField>
                 {background?.width}x{background?.height}
               </SpriteInfoRow>
-              <SpriteInfoRow error={numTiles > 192}>
+              <SpriteInfoRow error={numTiles > 192 && !is360}>
                 <SpriteInfoField>{l10n("FIELD_TILES")}:</SpriteInfoField>
                 {numTiles}
               </SpriteInfoRow>

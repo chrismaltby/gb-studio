@@ -10,21 +10,29 @@ const warningsMiddleware: Middleware<{}, RootState> = (store) => (next) => (
   if (actions.checkBackgroundWarnings.match(action)) {
     const state = store.getState();
     const backgroundsLookup = backgroundSelectors.selectEntities(state);
-    const background = backgroundsLookup[action.payload];
+    const background = backgroundsLookup[action.payload.backgroundId];
     const projectRoot = state.document.root;
 
     if (background) {
-      const cachedWarnings = state.warnings.backgrounds[action.payload];
-      if (!cachedWarnings || cachedWarnings.timestamp < background._v) {
-        getBackgroundInfo(background, projectRoot).then((info) => {
-          store.dispatch(
-            actions.setBackgroundWarnings({
-              id: action.payload,
-              warnings: info.warnings,
-              numTiles: info.numTiles,
-            })
-          );
-        });
+      const cachedWarnings =
+        state.warnings.backgrounds[action.payload.backgroundId];
+      if (
+        !cachedWarnings ||
+        cachedWarnings.timestamp < background._v ||
+        cachedWarnings.is360 !== action.payload.is360
+      ) {
+        getBackgroundInfo(background, action.payload.is360, projectRoot).then(
+          (info) => {
+            store.dispatch(
+              actions.setBackgroundWarnings({
+                id: action.payload.backgroundId,
+                is360: action.payload.is360,
+                warnings: info.warnings,
+                numTiles: info.numTiles,
+              })
+            );
+          }
+        );
       }
     }
   }
