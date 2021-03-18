@@ -6,22 +6,22 @@ const fields = [
   {
     key: "vectorX",
     type: "variable",
-    defaultValue: "LAST_VARIABLE"
+    defaultValue: "LAST_VARIABLE",
   },
   {
     key: "operator",
     type: "operator",
     width: "50%",
-    defaultValue: "=="
+    defaultValue: "==",
   },
   {
     key: "vectorY",
     type: "variable",
-    defaultValue: "LAST_VARIABLE"
+    defaultValue: "LAST_VARIABLE",
   },
   {
     key: "true",
-    type: "events"
+    type: "events",
   },
   {
     key: "__collapseElse",
@@ -31,24 +31,24 @@ const fields = [
     conditions: [
       {
         key: "__disableElse",
-        ne: true
-      }
-    ]
+        ne: true,
+      },
+    ],
   },
   {
     key: "false",
     conditions: [
       {
         key: "__collapseElse",
-        ne: true
+        ne: true,
       },
       {
         key: "__disableElse",
-        ne: true
-      }
+        ne: true,
+      },
     ],
-    type: "events"
-  }
+    type: "events",
+  },
 ];
 
 const compile = (input, helpers) => {
@@ -60,7 +60,7 @@ const compile = (input, helpers) => {
     ">": ".GT",
     "<=": ".LTE",
     ">=": ".GTE",
-  }
+  };
   const operation = operationLookup[input.operator];
 
   const truePath = input.true;
@@ -77,5 +77,6 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   fields,
-  compile
+  compile,
+  allowedBeforeInitFade: true,
 };

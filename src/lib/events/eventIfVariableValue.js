@@ -6,13 +6,13 @@ const fields = [
   {
     key: "variable",
     type: "variable",
-    defaultValue: "LAST_VARIABLE"
+    defaultValue: "LAST_VARIABLE",
   },
   {
     key: "operator",
     type: "operator",
     width: "50%",
-    defaultValue: "=="
+    defaultValue: "==",
   },
   {
     key: "comparator",
@@ -20,11 +20,11 @@ const fields = [
     min: 0,
     max: 255,
     width: "50%",
-    defaultValue: "0"
+    defaultValue: "0",
   },
   {
     key: "true",
-    type: "events"
+    type: "events",
   },
   {
     key: "__collapseElse",
@@ -34,24 +34,24 @@ const fields = [
     conditions: [
       {
         key: "__disableElse",
-        ne: true
-      }
-    ]
+        ne: true,
+      },
+    ],
   },
   {
     key: "false",
     conditions: [
       {
         key: "__collapseElse",
-        ne: true
+        ne: true,
       },
       {
         key: "__disableElse",
-        ne: true
-      }
+        ne: true,
+      },
     ],
-    type: "events"
-  }
+    type: "events",
+  },
 ];
 
 const compile = (input, helpers) => {
@@ -63,7 +63,7 @@ const compile = (input, helpers) => {
     ">": ".GT",
     "<=": ".LTE",
     ">=": ".GTE",
-  }
+  };
   const operation = operationLookup[input.operator];
 
   const truePath = input.true;
@@ -80,5 +80,6 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   fields,
-  compile
+  compile,
+  allowedBeforeInitFade: true,
 };

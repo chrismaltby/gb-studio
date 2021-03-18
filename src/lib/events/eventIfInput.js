@@ -7,11 +7,11 @@ const fields = [
     key: "input",
     label: l10n("FIELD_ANY_OF"),
     type: "input",
-    defaultValue: ["a", "b"]
+    defaultValue: ["a", "b"],
   },
   {
     key: "true",
-    type: "events"
+    type: "events",
   },
   {
     key: "__collapseElse",
@@ -21,24 +21,24 @@ const fields = [
     conditions: [
       {
         key: "__disableElse",
-        ne: true
-      }
-    ]
+        ne: true,
+      },
+    ],
   },
   {
     key: "false",
     conditions: [
       {
         key: "__collapseElse",
-        ne: true
+        ne: true,
       },
       {
         key: "__disableElse",
-        ne: true
-      }
+        ne: true,
+      },
     ],
-    type: "events"
-  }
+    type: "events",
+  },
 ];
 
 const compile = (input, helpers) => {
@@ -51,5 +51,6 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   fields,
-  compile
+  compile,
+  allowedBeforeInitFade: true,
 };

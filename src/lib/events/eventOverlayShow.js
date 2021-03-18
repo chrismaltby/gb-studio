@@ -6,7 +6,7 @@ const fields = [
   {
     key: "color",
     type: "overlayColor",
-    defaultValue: "black"
+    defaultValue: "black",
   },
   {
     key: "x",
@@ -15,7 +15,7 @@ const fields = [
     min: 0,
     max: 20,
     defaultValue: 0,
-    width: "50%"
+    width: "50%",
   },
   {
     key: "y",
@@ -24,8 +24,8 @@ const fields = [
     min: 0,
     max: 18,
     defaultValue: 0,
-    width: "50%"
-  }
+    width: "50%",
+  },
 ];
 
 const compile = (input, helpers) => {
@@ -36,5 +36,6 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   fields,
-  compile
+  compile,
+  allowedBeforeInitFade: true,
 };

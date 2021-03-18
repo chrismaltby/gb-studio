@@ -6,7 +6,7 @@ const fields = [
   {
     key: "variable",
     type: "variable",
-    defaultValue: "LAST_VARIABLE"
+    defaultValue: "LAST_VARIABLE",
   },
   {
     key: "flag",
@@ -19,13 +19,13 @@ const fields = [
       [4, l10n("FIELD_FLAG_5")],
       [5, l10n("FIELD_FLAG_6")],
       [6, l10n("FIELD_FLAG_7")],
-      [7, l10n("FIELD_FLAG_8")]
+      [7, l10n("FIELD_FLAG_8")],
     ],
-    defaultValue: 1
+    defaultValue: 1,
   },
   {
     key: "true",
-    type: "events"
+    type: "events",
   },
   {
     key: "__collapseElse",
@@ -35,38 +35,37 @@ const fields = [
     conditions: [
       {
         key: "__disableElse",
-        ne: true
-      }
-    ]
+        ne: true,
+      },
+    ],
   },
   {
     key: "false",
     conditions: [
       {
         key: "__collapseElse",
-        ne: true
+        ne: true,
       },
       {
         key: "__disableElse",
-        ne: true
-      }
+        ne: true,
+      },
     ],
-    type: "events"
-  }
+    type: "events",
+  },
 ];
 
 const compile = (input, helpers) => {
-  const {
-    ifVariableBitwiseValue,
-  } = helpers;
+  const { ifVariableBitwiseValue } = helpers;
   const truePath = input.true;
   const falsePath = input.__disableElse ? [] : input.false;
-  const flags =  2 ** input.flag;
+  const flags = 2 ** input.flag;
   ifVariableBitwiseValue(input.variable, ".B_AND", flags, truePath, falsePath);
 };
 
 module.exports = {
   id,
   fields,
-  compile
+  compile,
+  allowedBeforeInitFade: true,
 };
