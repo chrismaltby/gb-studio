@@ -124,6 +124,12 @@ export const NoiseIcon = () => (
   </svg>
 );
 
+export const SaveIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <path xmlns="http://www.w3.org/2000/svg" d="M14 3h2.997v5h-2.997v-5zm9 1v20h-22v-24h17.997l4.003 4zm-17 5h12v-7h-12v7zm14 4h-16v9h16v-9z" />
+  </svg>
+);
+
 export const CloneIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24">
     <path d="M18 6v-6h-18v18h6v6h18v-18h-6zm-12 10h-4v-14h14v4h-10v10zm16 6h-14v-14h14v14zm-3-8h-3v-3h-2v3h-3v2h3v3h2v-3h3v-2z" />

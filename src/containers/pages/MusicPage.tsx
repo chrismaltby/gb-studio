@@ -258,7 +258,7 @@ const MusicPage = () => {
         >
           <div style={{ position: "relative", height: "60px" }}>
             <SongEditorToolsPanel
-              selectedSongId={selectedId}
+              selectedSong={selectedSong}
             />
           </div>
           <SplitPaneVerticalDivider />

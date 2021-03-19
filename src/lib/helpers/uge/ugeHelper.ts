@@ -1,7 +1,5 @@
 /* eslint-disable camelcase */
 // import { DutyInstrument } from "./song/DutyInstrument";
-import { writeFileSync } from "fs-extra";
-import storage from "../../../components/music/helpers/storage";
 import { DutyInstrument, NoiseInstrument, WaveInstrument } from "../../../store/features/tracker/trackerTypes";
 import { PatternCell } from "./song/PatternCell";
 import { Song } from "./song/Song";
@@ -11,6 +9,7 @@ interface InstrumentMap {
 }
 
 export const loadUGESong = (data: ArrayBuffer): (Song | null) => {
+  console.log(data);
   const song = new Song();
 
   // TODO: Sanity checks on data.
@@ -233,7 +232,7 @@ export const loadUGESong = (data: ArrayBuffer): (Song | null) => {
   return song;
 }
 
-export const saveUGESong = (song: Song) => {
+export const saveUGESong = (song: Song): ArrayBuffer => {
   const buffer = new ArrayBuffer(1024 * 1024);
   const view = new DataView(buffer);
   let idx = 0;
@@ -331,13 +330,13 @@ export const saveUGESong = (song: Song) => {
   addShortString(song.comment);
 
   for (let n = 0; n < 15; n++) {
-    addDutyInstrument(0, song.duty_instruments[n]);
+    addDutyInstrument(0, song.duty_instruments[n] || {});
   }
   for (let n = 0; n < 15; n++) {
-    addWaveInstrument(1, song.wave_instruments[n]);
+    addWaveInstrument(1, song.wave_instruments[n] || {});
   }
   for (let n = 0; n < 15; n++) {
-    addNoiseInstrument(2, song.noise_instruments[n]);
+    addNoiseInstrument(2, song.noise_instruments[n] || {});
   }
   for (let n = 0; n < 16; n++) {
     for (let m = 0; m < 32; m++) {
@@ -369,5 +368,6 @@ export const saveUGESong = (song: Song) => {
     addUint32(0); //Add empty routines
   }
 
-  // downloadBlob(new Blob([buffer.slice(0, idx)]), "song.uge");
+  console.log(buffer.slice(0, idx));
+  return buffer.slice(0, idx);
 }

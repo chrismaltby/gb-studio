@@ -3,18 +3,22 @@ import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { RootState } from "../../store/configureStore";
 import {
-  EyeOpenIcon,
   PlayIcon,
   PauseIcon,
+  SaveIcon,
 } from "../ui/icons/Icons";
 import FloatingPanel, {
   FloatingPanelDivider,
 } from "../ui/panels/FloatingPanel";
 import trackerActions from "../../store/features/tracker/trackerActions";
 import { Button } from "../ui/buttons/Button";
+import { Music } from "../../store/features/entities/entitiesTypes";
+import { saveUGESong } from "../../lib/helpers/uge/ugeHelper";
+import { assetFilename } from "../../lib/helpers/gbstudio";
+import { writeFileWithBackup } from "../../lib/helpers/fs/writeFileWithBackup";
 
 interface SongEditorToolsPanelProps {
-  selectedSongId: string;
+  selectedSong: Music;
 }
 
 const Wrapper = styled(FloatingPanel)`
@@ -25,12 +29,17 @@ const Wrapper = styled(FloatingPanel)`
 `;
 
 const SongEditorToolsPanel = ({
-  selectedSongId
+  selectedSong
 }: SongEditorToolsPanelProps) => {
   const dispatch = useDispatch();
+  const projectRoot = useSelector((state: RootState) => state.document.root);
 
   const play = useSelector(
     (state: RootState) => state.tracker.playing
+  );
+
+  const song = useSelector(
+    (state: RootState) => state.tracker.song
   );
 
   const togglePlay = useCallback(() => {
@@ -41,14 +50,25 @@ const SongEditorToolsPanel = ({
     }
   }, [dispatch, play]);
 
+  const saveSong = useCallback(() => {
+    const buffer = saveUGESong(song);
+    const path: string = `${assetFilename(
+      projectRoot,
+      "music",
+      selectedSong
+    )}`
+
+    writeFileWithBackup(path, new Uint8Array(buffer), "utf8", () => {});
+  }, [song]);
+
   return (
     <Wrapper>
-      <Button variant="transparent" onClick={togglePlay}>
-        {play ? <PauseIcon /> : <PlayIcon />}
+      <Button variant="transparent" onClick={saveSong}>
+        <SaveIcon />
       </Button>
       <FloatingPanelDivider />
-      <Button variant="transparent">
-        <EyeOpenIcon />
+      <Button variant="transparent" onClick={togglePlay}>
+        {play ? <PauseIcon /> : <PlayIcon />}
       </Button>
     </Wrapper>
   );
