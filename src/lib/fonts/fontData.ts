@@ -82,7 +82,9 @@ export const readFileToFontData = async (
   const charKeys: string[] = [];
   for (const char of chars) {
     const key = hashChar(char.data);
-    uniqueTilesLookup[key] = char;
+    if (!uniqueTilesLookup[key]) {
+      uniqueTilesLookup[key] = char;
+    }
     charKeys.push(key);
   }
   const uniqueTileKeys = Object.keys(uniqueTilesLookup);
