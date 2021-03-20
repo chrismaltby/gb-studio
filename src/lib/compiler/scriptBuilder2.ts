@@ -2651,7 +2651,7 @@ ${
 }
 .area _CODE_255
 
-${this.includeActor ? "ACTOR = -4" : ""}
+${this.includeActor ? "ACTOR = -5" : ""}
 
 ___bank_${name} = 255
 .globl ___bank_${name}
@@ -2660,6 +2660,8 @@ _${name}::
 ${lock ? this._padCmd("VM_LOCK", "", 8, 24) + "\n\n" : ""}${
       this.includeActor
         ? "        ; Local Actor\n" +
+          this._padCmd("VM_PUSH_CONST", "0", 8, 24) +
+          "\n" +
           this._padCmd("VM_PUSH_CONST", "0", 8, 24) +
           "\n" +
           this._padCmd("VM_PUSH_CONST", "0", 8, 24) +
