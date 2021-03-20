@@ -46,6 +46,7 @@ import { LockIcon, LockOpenIcon } from "../ui/icons/Icons";
 import ParallaxSelect, {
   defaultValues as parallaxDefaultValues,
 } from "../forms/ParallaxSelect";
+import { SpriteSheetSelectButton } from "../forms/SpriteSheetSelectButton";
 
 interface SceneEditorProps {
   id: string;
@@ -109,6 +110,9 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
   const defaultBackgroundPaletteIds = useSelector(
     (state: RootState) =>
       state.project.present.settings.defaultBackgroundPaletteIds || []
+  );
+  const defaultPlayerSprites = useSelector(
+    (state: RootState) => state.project.present.settings.defaultPlayerSprites
   );
   const tabs = Object.keys(defaultTabs);
   const secondaryTabs = Object.keys(hitTabs);
@@ -442,6 +446,27 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
                   name="type"
                   value={scene.type}
                   onChange={onChangeField("type")}
+                />
+              </FormField>
+            </FormRow>
+
+            <FormRow>
+              <FormField
+                name="playerSpriteSheetId"
+                label={l10n("FIELD_PLAYER_SPRITE_SHEET")}
+              >
+                <SpriteSheetSelectButton
+                  name="playerSpriteSheetId"
+                  value={
+                    scene.playerSpriteSheetId ||
+                    defaultPlayerSprites[scene.type]
+                  }
+                  direction={isStartingScene ? startDirection : "down"}
+                  paletteId={undefined}
+                  onChange={onChangeField("playerSpriteSheetId")}
+                  includeInfo
+                  optional
+                  optionalLabel={l10n("FIELD_SCENE_TYPE_DEFAULT")}
                 />
               </FormField>
             </FormRow>

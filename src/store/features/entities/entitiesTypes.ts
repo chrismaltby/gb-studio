@@ -199,6 +199,7 @@ export type Scene = {
   actors: string[];
   triggers: string[];
   parallax?: SceneParallaxLayer[];
+  playerSpriteSheetId?: string;
   script: ScriptEvent[];
   playerHit1Script: ScriptEvent[];
   playerHit2Script: ScriptEvent[];

@@ -7,7 +7,6 @@ type ShowConnectionsSetting = "all" | "selected" | true | false;
 
 export type SettingsState = {
   startSceneId: string;
-  playerSpriteSheetId: string;
   startX: number;
   startY: number;
   startMoveSpeed: number;
@@ -27,11 +26,11 @@ export type SettingsState = {
   navigatorSplitSizes: number[];
   showNavigator: boolean;
   defaultFontId: string;
+  defaultPlayerSprites: Record<string, string>;
 };
 
 export const initialState: SettingsState = {
   startSceneId: "",
-  playerSpriteSheetId: "",
   startX: 0,
   startY: 0,
   startMoveSpeed: 1,
@@ -57,7 +56,8 @@ export const initialState: SettingsState = {
   playerPaletteId: "",
   navigatorSplitSizes: [300, 100, 100],
   showNavigator: true,
-  defaultFontId: ""
+  defaultFontId: "",
+  defaultPlayerSprites: {},
 };
 
 const settingsSlice = createSlice({
@@ -78,6 +78,17 @@ const settingsSlice = createSlice({
       state.startSceneId = action.payload.sceneId;
       state.startX = action.payload.x;
       state.startY = action.payload.y;
+    },
+
+    setSceneTypeDefaultPlayerSprite: (
+      state,
+      action: PayloadAction<{
+        sceneType: string;
+        spriteSheetId: string;
+      }>
+    ) => {
+      state.defaultPlayerSprites[action.payload.sceneType] =
+        action.payload.spriteSheetId;
     },
 
     setShowNavigator: (state, action: PayloadAction<boolean>) => {

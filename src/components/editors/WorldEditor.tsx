@@ -176,40 +176,6 @@ export const WorldEditor: FC = () => {
           <FormDivider />
 
           <FormRow>
-            <FormField
-              name="playerSpriteSheetId"
-              label={l10n("FIELD_PLAYER_SPRITE_SHEET")}
-            >
-              <SpriteSheetSelectButton
-                name="playerSpriteSheetId"
-                value={settings.playerSpriteSheetId}
-                direction={settings.startDirection}
-                paletteId={
-                  colorsEnabled
-                    ? settings.playerPaletteId || defaultSpritePaletteId
-                    : undefined
-                }
-                onChange={onChangeSettingsInput("playerSpriteSheetId")}
-                includeInfo
-              />
-            </FormField>
-
-            {colorsEnabled && (
-              <div style={{ marginTop: 18 }}>
-                <PaletteSelectButton
-                  name="actorPalette"
-                  type="sprite"
-                  value={settings.playerPaletteId}
-                  onChange={onChangeSettingsInput("playerPaletteId")}
-                  optional
-                  optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
-                  optionalDefaultPaletteId={defaultSpritePaletteId}
-                />
-              </div>
-            )}
-          </FormRow>
-
-          <FormRow>
             <FormField name="startScene" label={l10n("SIDEBAR_STARTING_SCENE")}>
               <SceneSelect
                 name="startScene"

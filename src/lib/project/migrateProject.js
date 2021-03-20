@@ -64,6 +64,7 @@ const migrateProject = project => {
       data = migrateFrom200r6To200r7Events(data);
       data = migrateFrom200r6To200r7Actors(data);
       data = migrateFrom200r6To200r7Scenes(data);
+      data = migrateFrom200r6To200r7Settings(data);
       release = "7";      
     }    
   }
@@ -1025,6 +1026,26 @@ const migrateFrom200r6To200r7Scenes = data => {
         type: migrateSceneType(scene.type)
       };
     })
+  };
+};
+
+/*
+ * Version 2.0.0 r7 moves default player sprite to be per scene type
+ */
+const migrateFrom200r6To200r7Settings = (data) => {
+  return {
+    ...data,
+    settings: {
+      ...data.settings,
+      defaultPlayerSprites: {
+        TOPDOWN: data.settings.playerSpriteSheetId,
+        PLATFORM: data.settings.playerSpriteSheetId,
+        ADVENTURE: data.settings.playerSpriteSheetId,
+        SHMUP: data.settings.playerSpriteSheetId,
+        POINTNCLICK: data.settings.playerSpriteSheetId,
+        LOGO: data.settings.playerSpriteSheetId,
+      },
+    },
   };
 };
 

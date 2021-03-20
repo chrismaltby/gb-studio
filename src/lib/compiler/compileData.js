@@ -462,28 +462,6 @@ const compile = async (
     };
   });
 
-  let playerSpriteIndex = precompiled.usedSprites.findIndex(
-    (s) => s.id === projectData.settings.playerSpriteSheetId
-  );
-  if (playerSpriteIndex < 0) {
-    playerSpriteIndex = precompiled.usedSprites.findIndex(
-      (s) => s.type === "actor_animated"
-    );
-  }
-  if (playerSpriteIndex < 0) {
-    throw new Error(
-      "Player sprite hasn't been set, add it from the Game World."
-    );
-  }
-
-  // Set variables len to be slightly higher than needed
-  // rounding to nearest 50 vars to prevent frequent
-  // changes to data_ptrs.h which would invalidate build cache
-  const variablesLen = Math.max(
-    Math.ceil(precompiled.variables.length / 50) * 50 + 50,
-    500
-  );
-
   output["game_globals.i"] = compileGameGlobalsInclude(variableAliasLookup);
   output[`script_engine_init.s`] = compileScriptEngineInit({
     startX,
@@ -604,7 +582,7 @@ const precompile = async (
   const { usedSprites } = await precompileSprites(
     projectData.spriteSheets,
     projectData.scenes,
-    projectData.settings.playerSpriteSheetId,
+    projectData.settings.defaultPlayerSprites,
     projectRoot,
     {
       warnings,
@@ -641,6 +619,7 @@ const precompile = async (
   progress(EVENT_MSG_PRE_SCENES);
   const sceneData = precompileScenes(
     projectData.scenes,
+    projectData.settings.defaultPlayerSprites,
     usedBackgrounds,
     usedSprites,
     {
@@ -1087,7 +1066,7 @@ export const precompileUIImages = async (
 export const precompileSprites = async (
   spriteSheets,
   scenes,
-  playerSpriteSheetId,
+  defaultPlayerSprites,
   projectRoot,
   { warnings } = {}
 ) => {
@@ -1095,52 +1074,29 @@ export const precompileSprites = async (
   const usedSpriteLookup = {};
   const spriteLookup = indexById(spriteSheets);
 
-  if (playerSpriteSheetId) {
-    const spriteSheet = spriteLookup[playerSpriteSheetId];
-    if (!spriteSheet) {
-      warnings(
-        `Player Sprite Sheet isn't set. Please, make sure to select a Sprite Sheet in the Project editor.`
-      );
+  const addSprite = (spriteSheetId) => {
+    if (!usedSpriteLookup[spriteSheetId] && spriteLookup[spriteSheetId]) {
+      const spriteSheet = spriteLookup[spriteSheetId];
+      usedSprites.push(spriteSheet);
+      usedSpriteLookup[spriteSheetId] = spriteSheet;
     }
-    usedSprites.push(spriteSheet);
-    usedSpriteLookup[playerSpriteSheetId] = spriteSheet;
-  }
+  };
 
   walkScenesEvents(scenes, (event) => {
     if (event.args) {
-      if (
-        event.args.spriteSheetId &&
-        !usedSpriteLookup[event.args.spriteSheetId] &&
-        spriteLookup[event.args.spriteSheetId]
-      ) {
-        const spriteSheet = spriteLookup[event.args.spriteSheetId];
-        usedSprites.push(spriteSheet);
-        usedSpriteLookup[event.args.spriteSheetId] = spriteSheet;
-      } else if (
-        event.args.avatarId &&
-        !usedSpriteLookup[event.args.avatarId] &&
-        spriteLookup[event.args.avatarId]
-      ) {
-        const spriteSheet = spriteLookup[event.args.avatarId];
-        usedSprites.push(spriteSheet);
-        usedSpriteLookup[event.args.avatarId] = spriteSheet;
+      if (event.args.spriteSheetId) {
+        addSprite(event.args.spriteSheetId);
       }
     }
   });
 
   for (let i = 0; i < scenes.length; i++) {
     const scene = scenes[i];
+    addSprite(scene.playerSpriteSheetId);
+    addSprite(defaultPlayerSprites[scene.type]);
     for (let a = 0; a < scene.actors.length; a++) {
       const actor = scene.actors[a];
-      if (
-        actor.spriteSheetId &&
-        !usedSpriteLookup[actor.spriteSheetId] &&
-        spriteLookup[actor.spriteSheetId]
-      ) {
-        const spriteSheet = spriteLookup[actor.spriteSheetId];
-        usedSprites.push(spriteSheet);
-        usedSpriteLookup[actor.spriteSheetId] = spriteSheet;
-      }
+      addSprite(actor.spriteSheetId);
     }
   }
 
@@ -1266,6 +1222,7 @@ export const precompileFonts = async (
 
 export const precompileScenes = (
   scenes,
+  defaultPlayerSprites,
   usedBackgrounds,
   usedSprites,
   { warnings } = {}
@@ -1308,6 +1265,21 @@ export const precompileScenes = (
 
     const actorSpriteIds = actors.map((a) => a.spriteSheetId);
     const eventSpriteIds = [];
+    const playerSpriteSheetId = scene.playerSpriteSheetId
+      ? scene.playerSpriteSheetId
+      : defaultPlayerSprites[scene.type];
+
+    const playerSpriteIndex = usedSprites.findIndex(
+      (s) => s.id === playerSpriteSheetId
+    );
+
+    if (playerSpriteIndex === -1) {
+      warnings(
+        l10n("WARNING_NO_PLAYER_SET_FOR_SCENE_TYPE", { type: scene.type })
+      );
+    }
+
+    console.log("here", playerSpriteSheetId);
 
     walkSceneEvents(scene, (event) => {
       if (
@@ -1320,7 +1292,11 @@ export const precompileScenes = (
       }
     });
 
-    const sceneSpriteIds = [].concat(actorSpriteIds, eventSpriteIds);
+    const sceneSpriteIds = [].concat(
+      playerSpriteSheetId,
+      actorSpriteIds,
+      eventSpriteIds
+    );
 
     return {
       ...scene,
@@ -1344,6 +1320,7 @@ export const precompileScenes = (
           trigger.script[0].command !== EVENT_END
         );
       }),
+      playerSpriteIndex,
       actorsData: [],
       triggersData: [],
     };

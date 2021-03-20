@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import { Dictionary } from "@reduxjs/toolkit";
 import flatten from "lodash/flatten";
 import { SPRITE_TYPE_STATIC } from "../../consts";
@@ -359,7 +360,7 @@ export const compileScene = (
       sprite_palette: color
         ? toFarPtr(paletteSymbol(actorsPalette))
         : undefined,
-      player_sprite: toFarPtr(spriteSheetSymbol(0)),
+      player_sprite: toFarPtr(spriteSheetSymbol(scene.playerSpriteIndex)),
       n_actors: scene.actors.length,
       n_triggers: scene.triggers.length,
       n_sprites: scene.sprites.length,
@@ -387,10 +388,10 @@ export const compileScene = (
       color ? sceneColorsSymbol(sceneIndex) : [],
       color ? paletteSymbol(bgPalette) : [],
       color ? paletteSymbol(actorsPalette) : [],
+      spriteSheetSymbol(scene.playerSpriteIndex),
       scene.actors.length ? sceneActorsSymbol(sceneIndex) : [],
       scene.triggers.length > 0 ? sceneTriggersSymbol(sceneIndex) : [],
       scene.sprites.length > 0 ? sceneSpritesSymbol(sceneIndex) : [],
-      spriteSheetSymbol(0),
       maybeScriptDependency(eventPtrs[sceneIndex].start),
       maybeScriptDependency(eventPtrs[sceneIndex].playerHit1),
       maybeScriptDependency(eventPtrs[sceneIndex].playerHit2),

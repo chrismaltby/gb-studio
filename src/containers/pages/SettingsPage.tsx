@@ -37,6 +37,8 @@ import {
 } from "../../components/ui/form/SettingRow";
 import { SearchableCard } from "../../components/ui/cards/SearchableCard";
 import { FontSelect } from "../../components/forms/FontSelect";
+import { options as sceneTypes } from "../../components/forms/SceneTypeSelect";
+import { SpriteSheetSelect } from "../../components/forms/SpriteSheetSelect";
 
 const SettingsPage: FC = () => {
   const dispatch = useDispatch();
@@ -77,6 +79,7 @@ const SettingsPage: FC = () => {
     defaultSpritePaletteId,
     defaultBackgroundPaletteIds,
     defaultFontId,
+    defaultPlayerSprites,
   } = settings;
 
   const onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -119,6 +122,19 @@ const SettingsPage: FC = () => {
     [defaultBackgroundPaletteIds, editSettings]
   );
 
+  const onEditDefaultPlayerSprites = useCallback(
+    (sceneType: string, spriteSheetId: string) => {
+      console.log("onEditDefaultPlayerSprites", sceneType, spriteSheetId);
+      dispatch(
+        settingsActions.setSceneTypeDefaultPlayerSprite({
+          sceneType,
+          spriteSheetId,
+        })
+      );
+    },
+    [dispatch]
+  );
+
   return (
     <SettingsPageWrapper>
       {showMenu && (
@@ -136,7 +152,10 @@ const SettingsPage: FC = () => {
             <SettingsMenuItem onClick={onMenuItem("settingsColor")}>
               {l10n("SETTINGS_GBC")}
             </SettingsMenuItem>
-            <SettingsMenuItem onClick={onMenuItem("settingsColor")}>
+            <SettingsMenuItem onClick={onMenuItem("settingsPlayer")}>
+              {l10n("SETTINGS_PLAYER_DEFAULT_SPRITES")}
+            </SettingsMenuItem>
+            <SettingsMenuItem onClick={onMenuItem("settingsUI")}>
               {l10n("MENU_UI_ELEMENTS")}
             </SettingsMenuItem>
             {groupedFields.map((group) => (
@@ -270,10 +289,39 @@ const SettingsPage: FC = () => {
 
         <SearchableCard
           searchTerm={searchTerm}
+          searchMatches={[l10n("SETTINGS_PLAYER_DEFAULT_SPRITES")]}
+        >
+          <CardAnchor id="settingsPlayer" />
+          <CardHeading>{l10n("SETTINGS_PLAYER_DEFAULT_SPRITES")}</CardHeading>
+          {sceneTypes.map((sceneType) => (
+            <SearchableSettingRow
+              key={sceneType.value}
+              searchTerm={searchTerm}
+              searchMatches={[sceneType.label]}
+            >
+              <SettingRowLabel>{sceneType.label}</SettingRowLabel>
+              <SettingRowInput>
+                <SpriteSheetSelect
+                  name={`defaultPlayerSprite__${sceneType.value}`}
+                  value={defaultPlayerSprites[sceneType.value] || ""}
+                  optional
+                  optionalLabel={l10n("FIELD_NONE")}
+                  onChange={(value) =>
+                    onEditDefaultPlayerSprites(sceneType.value, value)
+                  }
+                />
+              </SettingRowInput>
+            </SearchableSettingRow>
+          ))}
+        </SearchableCard>
+
+        <SearchableCard
+          searchTerm={searchTerm}
           searchMatches={[l10n("FIELD_DEFAULT_FONT")]}
         >
-          <CardAnchor id="settingsControls" />
+          <CardAnchor id="settingsUI" />
           <CardHeading>{l10n("MENU_UI_ELEMENTS")}</CardHeading>
+
           <SearchableSettingRow
             searchTerm={searchTerm}
             searchMatches={[l10n("FIELD_DEFAULT_FONT")]}
