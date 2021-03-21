@@ -1,36 +1,10 @@
-import {
-  getActor,
-  getSpriteIndex,
-  getMusicIndex,
-  compileConditional,
-  getSpriteOffset,
-  getSprite,
-  getSpriteSceneIndex,
-} from "../events/helpers";
-import {
-  dirDec,
-  operatorDec,
-  inputDec,
-  moveSpeedDec,
-  animSpeedDec,
-  collisionMaskDec,
-  paletteMaskDec,
-  collisionGroupDec,
-  actorRelativeDec,
-  moveTypeDec,
-  heightDec,
-  actorFramesPerDir,
-  spriteTypeDec,
-  textSpeedDec,
-} from "./helpers";
-import { hi, lo, decOct } from "../helpers/8bit";
+import { inputDec, textSpeedDec } from "./helpers";
+import { decOct } from "../helpers/8bit";
 import trimlines from "../helpers/trimlines";
-import { SPRITE_TYPE_ACTOR } from "../../consts";
 import { is16BitCType } from "../helpers/engineFields";
 import {
   globalVariableName,
   localVariableName,
-  nextVariable,
   tempVariableName,
 } from "../helpers/variables";
 import {
@@ -38,9 +12,8 @@ import {
   Variable,
 } from "../../store/features/entities/entitiesTypes";
 import { Dictionary } from "@reduxjs/toolkit";
-import { spriteSheetSymbol } from "./compileData2";
 import { EngineFieldSchema } from "../../store/features/engine/engineState";
-import { FunctionSymbol, OperatorSymbol, Token } from "../rpn/types";
+import { FunctionSymbol, OperatorSymbol } from "../rpn/types";
 import tokenize from "../rpn/tokenizer";
 import shuntingYard from "../rpn/shuntingYard";
 import { PrecompiledFontData } from "./compileFonts";
@@ -362,11 +335,17 @@ class ScriptBuilder {
     this.output.push(``);
   };
 
-  private _addCmd = (cmd: string, ...args: Array<string | number>) => {
+  private _addCmd = (
+    cmd: string,
+    ...args: Array<ScriptBuilderStackVariable>
+  ) => {
     this.output.push(this._padCmd(cmd, args.join(", "), 8, 24));
   };
 
-  private _prettyFormatCmd = (cmd: string, args: Array<string | number>) => {
+  private _prettyFormatCmd = (
+    cmd: string,
+    args: Array<ScriptBuilderStackVariable>
+  ) => {
     if (args.length > 0) {
       return `        ${cmd.padEnd(
         Math.max(24, cmd.length + 1),
@@ -501,20 +480,26 @@ class ScriptBuilder {
     this._addCmd("VM_POP", num);
   };
 
-  _set = (location: string | number, value: string | number) => {
+  _set = (
+    location: ScriptBuilderStackVariable,
+    value: ScriptBuilderStackVariable
+  ) => {
     this._addCmd("VM_SET", location, value);
   };
 
-  _setConst = (location: string | number, value: string | number) => {
+  _setConst = (
+    location: ScriptBuilderStackVariable,
+    value: ScriptBuilderStackVariable
+  ) => {
     this._addCmd("VM_SET_CONST", location, value);
   };
 
-  _setUInt8 = (cVariable: string, location: string | number) => {
+  _setUInt8 = (cVariable: string, location: ScriptBuilderStackVariable) => {
     this._addDependency(cVariable);
     this._addCmd("VM_SET_UINT8", `_${cVariable}`, location);
   };
 
-  _setUInt16 = (cVariable: string, location: string | number) => {
+  _setUInt16 = (cVariable: string, location: ScriptBuilderStackVariable) => {
     this._addDependency(cVariable);
     this._addCmd("VM_SET_UINT16", `_${cVariable}`, location);
   };
@@ -529,11 +514,11 @@ class ScriptBuilder {
     this._addCmd("VM_SET_CONST_INT16", `_${cVariable}`, value);
   };
 
-  _getUInt8 = (location: string | number, cVariable: string) => {
+  _getUInt8 = (location: ScriptBuilderStackVariable, cVariable: string) => {
     this._addCmd("VM_GET_UINT8", location, `_${cVariable}`);
   };
 
-  _getUInt16 = (location: string | number, cVariable: string) => {
+  _getUInt16 = (location: ScriptBuilderStackVariable, cVariable: string) => {
     this._addCmd("VM_GET_UINT16", location, `_${cVariable}`);
   };
 
@@ -552,7 +537,7 @@ class ScriptBuilder {
     this._addCmd(`    .SAVE_SLOT ${slot}`);
   };
 
-  _dw = (...data: Array<string | number>) => {
+  _dw = (...data: Array<ScriptBuilderStackVariable>) => {
     this._addCmd(`.dw ${data.join(", ")}`);
   };
 
@@ -572,7 +557,11 @@ class ScriptBuilder {
     this._addCmd("VM_RANDOMIZE");
   };
 
-  _rand = (location: string | number, min: number, range: number) => {
+  _rand = (
+    location: ScriptBuilderStackVariable,
+    min: number,
+    range: number
+  ) => {
     this._addCmd("VM_RAND", location, min, range);
   };
 
@@ -580,7 +569,10 @@ class ScriptBuilder {
     const output: string[] = [];
     const stack: number[] = [];
 
-    const rpnCmd = (cmd: string, ...args: Array<string | number>) => {
+    const rpnCmd = (
+      cmd: string,
+      ...args: Array<ScriptBuilderStackVariable>
+    ) => {
       output.push(this._padCmd(cmd, args.join(", "), 12, 12));
     };
 
@@ -624,8 +616,8 @@ class ScriptBuilder {
 
   _if = (
     operator: ScriptBuilderComparisonOperator,
-    variableA: string | number,
-    variableB: string | number,
+    variableA: ScriptBuilderStackVariable,
+    variableB: ScriptBuilderStackVariable,
     label: string,
     popNum: number
   ) => {
@@ -638,8 +630,8 @@ class ScriptBuilder {
 
   _ifConst = (
     operator: ScriptBuilderComparisonOperator,
-    variable: string | number,
-    value: string | number,
+    variable: ScriptBuilderStackVariable,
+    value: ScriptBuilderStackVariable,
     label: string,
     popNum: number
   ) => {
@@ -729,7 +721,7 @@ class ScriptBuilder {
   };
 
   _choice = (
-    variable: string | number,
+    variable: ScriptBuilderStackVariable,
     options: ScriptBuilderChoiceFlag[],
     numItems: number
   ) => {
@@ -797,7 +789,7 @@ class ScriptBuilder {
     this._addCmd("VM_INPUT_WAIT", mask);
   };
 
-  _isDataSaved = (variable: string | number, slot: number) => {
+  _isDataSaved = (variable: ScriptBuilderStackVariable, slot: number) => {
     this._addCmd("VM_DATA_IS_SAVED", variable, slot);
   };
 
@@ -1651,7 +1643,10 @@ class ScriptBuilder {
   // --------------------------------------------------------------------------
   // Engine Fields
 
-  engineFieldSetToValue = (key: string, value: string | number | boolean) => {
+  engineFieldSetToValue = (
+    key: string,
+    value: ScriptBuilderStackVariable | boolean
+  ) => {
     const { engineFields } = this.options;
     const engineField = engineFields[key];
     if (engineField !== undefined) {
@@ -1992,26 +1987,7 @@ class ScriptBuilder {
     compileEvents(this, path);
   };
 
-  // actorMoveTo = (x = 0, y = 0, useCollisions = false, moveType) => {
-  //   const output = this.output;
-  //   output.push(cmd(ACTOR_MOVE_TO));
-  //   output.push(x);
-  //   output.push(y);
-  //   output.push(useCollisions ? 1 : 0);
-  //   output.push(moveTypeDec(moveType));
-  // };
-
   /*
-  actorMoveRelative = (x = 0, y = 0, useCollisions = false, moveType) => {
-    const output = this.output;
-    output.push(cmd(ACTOR_MOVE_RELATIVE));
-    output.push(Math.abs(x));
-    output.push(x < 0 ? 1 : 0);
-    output.push(Math.abs(y));
-    output.push(y < 0 ? 1 : 0);
-    output.push(useCollisions ? 1 : 0);
-    output.push(moveTypeDec(moveType));
-  };
 
   actorMoveToVariables = (
     variableX,
@@ -2416,17 +2392,6 @@ class ScriptBuilder {
       output,
     });
   };
-
-  ifDataSaved = (truePath = [], falsePath = []) => {
-    const output = this.output;
-    output.push(cmd(IF_SAVED_DATA));
-    compileConditional(truePath, falsePath, {
-      ...this.options,
-      output,
-    });
-  };
-
-
 
   // Input
 
