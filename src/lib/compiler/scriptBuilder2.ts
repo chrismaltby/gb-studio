@@ -904,7 +904,9 @@ class ScriptBuilder {
 
   actorSetPosition = (x = 0, y = 0) => {
     this._addComment("Actor Set Position");
-    this._addComment("NOT IMPLEMENTED");
+    this._setConst("^/(ACTOR + 1)/", x * 8 * 16);
+    this._setConst("^/(ACTOR + 2)/", (y + 1) * 8 * 16);
+    this._actorSetPosition("ACTOR");
     this._addNL();
   };
 
