@@ -93,11 +93,6 @@ type ScriptBuilderOverlayMoveSpeed =
   | ".OVERLAY_TEXT_IN_SPEED"
   | ".OVERLAY_TEXT_OUT_SPEED";
 
-type ScriptBuilderTextLayout =
-  | 0
-  | ".UI_ENABLE_MENU_ONECOL"
-  | ".UI_ENABLE_MENU_TWOCOL";
-
 type ScriptBuilderUIColor = 0 | ".UI_COLOR_WHITE" | ".UI_COLOR_BLACK";
 
 type ScriptBuilderPathFunction = () => void;
