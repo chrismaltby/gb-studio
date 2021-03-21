@@ -75,7 +75,7 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_actor_replace_tile,     8}, // 0x39
     {vm_actor_get_pos,          2}, // 0x3A
     {vm_actor_set_hidden,       3}, // 0x3B
-    {0, 0},
+    {vm_actor_get_dir,          4}, // 0x3C
     {0, 0},
     {0, 0},
     {0, 0},

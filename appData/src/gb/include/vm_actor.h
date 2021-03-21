@@ -16,5 +16,6 @@ void vm_actor_set_spritesheet(SCRIPT_CTX * THIS, INT16 idx, UBYTE spritesheet_ba
 void vm_actor_replace_tile(SCRIPT_CTX * THIS, INT16 idx, UBYTE target_tile, UBYTE tileset_bank, const tileset_t * tileset, UBYTE start_tile, UBYTE length) __banked;
 void vm_actor_get_pos(SCRIPT_CTX * THIS, INT16 idx) __banked;
 void vm_actor_set_hidden(SCRIPT_CTX * THIS, INT16 idx, UBYTE hidden) __banked;
+void vm_actor_get_dir(SCRIPT_CTX * THIS, INT16 idx, INT16 dest) __banked;
 
 #endif

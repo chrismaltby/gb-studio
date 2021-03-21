@@ -684,6 +684,10 @@ class ScriptBuilder {
     this._addCmd("VM_ACTOR_SET_POS", addr);
   };
 
+  _actorGetDirection = (addr: string, dest: string) => {
+    this._addCmd("VM_ACTOR_GET_DIR", addr, dest);
+  };
+
   _actorSetDirection = (addr: string, asmDir: string) => {
     this._addCmd("VM_ACTOR_SET_DIR", addr, asmDir);
   };
@@ -861,8 +865,15 @@ class ScriptBuilder {
     this._addComment("Actor Move To");
     this._setConst("^/(ACTOR + 1)/", x * 8 * 16);
     this._setConst("^/(ACTOR + 2)/", (y + 1) * 8 * 16);
-    this._setConst("^/(ACTOR + 3)/", useCollisions ? 1 : 0);
-    this._setConst("^/(ACTOR + 4)/", moveTypeDec(moveType));
+    this._setConst(
+      "^/(ACTOR + 3)/",
+      unionFlags(
+        ([] as string[]).concat(
+          useCollisions ? ".ACTOR_ATTR_CHECK_COLL" : [],
+          moveType === "horizontal" ? ".ACTOR_ATTR_H_FIRST" : []
+        )
+      )
+    );
     this._actorMoveTo("ACTOR");
     this._assertStackNeutral(stackPtr);
     this._addNL();
@@ -889,8 +900,15 @@ class ScriptBuilder {
     this._set("^/(ACTOR + 1 - 2)/", ".ARG1");
     this._set("^/(ACTOR + 2 - 2)/", ".ARG0");
     this._stackPop(2);
-    this._setConst("^/(ACTOR + 3)/", useCollisions ? 1 : 0);
-    this._setConst("^/(ACTOR + 4)/", moveTypeDec(moveType));
+    this._setConst(
+      "^/(ACTOR + 3)/",
+      unionFlags(
+        ([] as string[]).concat(
+          useCollisions ? ".ACTOR_ATTR_CHECK_COLL" : [],
+          moveType === "horizontal" ? ".ACTOR_ATTR_H_FIRST" : []
+        )
+      )
+    );
     this._actorMoveTo("ACTOR");
     this._assertStackNeutral(stackPtr);
     this._addNL();
@@ -903,9 +921,77 @@ class ScriptBuilder {
   };
 
   actorPush = (continueUntilCollision = false) => {
+    const stackPtr = this.stackPtr;
+    const upLabel = this.getNextLabel();
+    const leftLabel = this.getNextLabel();
+    const rightLabel = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+
+    const offset = continueUntilCollision ? 128 * 100 : 128 * 2;
+
     this._addComment("Actor Push");
-    this._addComment("NOT IMPLEMENTED");
-    console.error("actorPush not implemented");
+    this._setConst("ACTOR", 0);
+    this._stackPushConst(3);
+    this._actorGetDirection("^/(ACTOR - 1)/", ".ARG0");
+    this._setConst("^/(ACTOR - 1)/", this.actorIndex);
+    this._actorGetPosition("^/(ACTOR - 1)/");
+    this._ifConst(".EQ", ".ARG0", ".DIR_UP", upLabel, 0);
+    this._ifConst(".EQ", ".ARG0", ".DIR_LEFT", leftLabel, 0);
+    this._ifConst(".EQ", ".ARG0", ".DIR_RIGHT", rightLabel, 0);
+
+    // Down
+    this._rpn() //
+      .ref("^/(ACTOR + 2 - 1)/")
+      .int16(offset)
+      .operator(".ADD")
+      .stop();
+    this._set("^/(ACTOR + 2 - 2)/", ".ARG0");
+    this._stackPop(1);
+    this._jump(endLabel);
+
+    // Up
+    this._label(upLabel);
+    this._rpn() //
+      .ref("^/(ACTOR + 2 - 1)/")
+      .int16(offset)
+      .operator(".SUB")
+      .int16(0)
+      .operator(".MAX")
+      .stop();
+    this._set("^/(ACTOR + 2 - 2)/", ".ARG0");
+    this._stackPop(1);
+    this._jump(endLabel);
+
+    // Left
+    this._label(leftLabel);
+    this._rpn() //
+      .ref("^/(ACTOR + 1 - 1)/")
+      .int16(offset)
+      .operator(".SUB")
+      .int16(0)
+      .operator(".MAX")
+      .stop();
+    this._set("^/(ACTOR + 1 - 2)/", ".ARG0");
+    this._stackPop(1);
+    this._jump(endLabel);
+
+    // Right
+    this._label(rightLabel);
+    this._rpn() //
+      .ref("^/(ACTOR + 1 - 1)/")
+      .int16(offset)
+      .operator(".ADD")
+      .stop();
+    this._set("^/(ACTOR + 1 - 2)/", ".ARG0");
+    this._stackPop(1);
+
+    // End
+    this._label(endLabel);
+    this._stackPop(1);
+    this._setConst("^/(ACTOR + 3)/", ".ACTOR_ATTR_CHECK_COLL");
+    this._actorMoveTo("ACTOR");
+
+    this._assertStackNeutral(stackPtr);
     this._addNL();
   };
 
@@ -2651,7 +2737,7 @@ ${
 }
 .area _CODE_255
 
-${this.includeActor ? "ACTOR = -5" : ""}
+${this.includeActor ? "ACTOR = -4" : ""}
 
 ___bank_${name} = 255
 .globl ___bank_${name}
@@ -2660,8 +2746,6 @@ _${name}::
 ${lock ? this._padCmd("VM_LOCK", "", 8, 24) + "\n\n" : ""}${
       this.includeActor
         ? "        ; Local Actor\n" +
-          this._padCmd("VM_PUSH_CONST", "0", 8, 24) +
-          "\n" +
           this._padCmd("VM_PUSH_CONST", "0", 8, 24) +
           "\n" +
           this._padCmd("VM_PUSH_CONST", "0", 8, 24) +

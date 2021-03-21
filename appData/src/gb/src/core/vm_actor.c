@@ -140,6 +140,17 @@ void vm_actor_get_pos(SCRIPT_CTX * THIS, INT16 idx) __banked {
     params->Y = actor->pos.y;
 }
 
+void vm_actor_get_dir(SCRIPT_CTX * THIS, INT16 idx, INT16 dest) __banked {
+    UWORD * A;
+    actor_t *actor;
+    
+    act_set_pos_t * params = VM_REF_TO_PTR(idx);
+    actor = actors + (UBYTE)(params->ID);
+
+    if (idx < 0) A = THIS->stack_ptr + dest; else A = script_memory + dest;
+    *A = actor->dir;
+}
+
 void vm_actor_emote(SCRIPT_CTX * THIS, INT16 idx, UBYTE emote_sprite_bank, spritesheet_t *emote_sprite) __banked {
 
     // on first call load emote sprite 

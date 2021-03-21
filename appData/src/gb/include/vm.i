@@ -413,6 +413,11 @@ OP_VM_ACTOR_SET_HIDDEN     = 0x3B
         .db OP_VM_ACTOR_SET_HIDDEN, #<HIDDEN, #>ACTOR, #<ACTOR
 .endm
 
+OP_VM_ACTOR_GET_DIR     = 0x3C
+.macro VM_ACTOR_GET_DIR IDX, DEST
+        .db OP_VM_ACTOR_GET_DIR, #>DEST, #<DEST, #>IDX, #<IDX
+.endm
+
 ; --- UI ------------------------------------------
 
 OP_VM_LOAD_TEXT         = 0x40
