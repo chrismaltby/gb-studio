@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { PatternCell } from "../../lib/helpers/uge/song/PatternCell";
 import { Song } from "../../lib/helpers/uge/song/Song";
 import { RootState } from "../../store/configureStore";
@@ -24,10 +24,46 @@ const NUM_CELLS = ROW_SIZE * 64;
 
 const SongGrid = styled.div`
   white-space: nowrap;
-  background: ${(props) => props.theme.colors.tracker.background};
   border-width: 0 0 0 1px;
   border-color: ${(props) => props.theme.colors.sidebar.border};
   border-style: solid;
+`;
+
+const SongGridHeader = styled.div`
+  display: flex;
+  position: -webkit-sticky;
+  position: absolute;
+  top: 0;
+  left: 46px;
+  z-index: 1;
+  white-space: nowrap;
+  background: #222222;
+  border-width: 0 0 1px 1px;
+  border-color: #000000;
+  border-style: solid;
+`;
+
+interface SongGridHeaderCellProps {
+  size?: "normal" | "small";
+}
+const SongGridHeaderCell = styled.span<SongGridHeaderCellProps>`
+  display: inline-block;
+  align-items: center;
+  font-size: 14px;
+  font-weight: bold;
+  color: ${(props) => props.theme.colors.tracker.text};
+  background: ${(props) => props.theme.colors.tracker.background};
+  border-width: 0 1px 0 0;
+  border-color: ${(props) => props.theme.colors.tracker.border};
+  border-style: solid;
+  margin: 0;
+  padding: 4px 8px;
+  height: 20px;
+  ${(props) => 
+    props.size === "small" 
+      ? css`width: 30px;` 
+      : css`width: 116px;`
+  }
 `;
 
 export const SongTracker = ({
@@ -311,7 +347,7 @@ export const SongTracker = ({
         width: "100%",
       }}
     >
-      <div style={{ position: "relative" }}>
+      <div style={{ position: "relative", width:"45px" }}>
         <SequenceEditor
           id={id}
           data={data?.sequence}
@@ -320,11 +356,19 @@ export const SongTracker = ({
         />
       </div>
       <SplitPaneHorizontalDivider />
+      <SongGridHeader>
+        <SongGridHeaderCell size="small"></SongGridHeaderCell>
+        <SongGridHeaderCell>Duty 1</SongGridHeaderCell>
+        <SongGridHeaderCell>Duty 2</SongGridHeaderCell>
+        <SongGridHeaderCell>Wave</SongGridHeaderCell>
+        <SongGridHeaderCell>Noise</SongGridHeaderCell>
+      </SongGridHeader>
       <div style={{
         position: "relative",
-        overflow: "auto",
+        overflow: "hidden auto",
         flexGrow: 1,
-        height
+        height: height - 29,
+        marginTop: "29px"
       }}>
         <SongGrid
           ref={list}

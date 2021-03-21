@@ -16,6 +16,7 @@ interface WrapperProps {
   n: number,
   isSelected: boolean
   isPlaying: boolean
+  size?: "normal" | "small"
 }
 
 const Wrapper = styled.span<WrapperProps>`
@@ -30,6 +31,12 @@ const Wrapper = styled.span<WrapperProps>`
   margin: 0;
   padding: 4px 8px;
   height: 20px;
+  ${(props) => 
+    props.size === "small" 
+      ? css`width: 30px;` 
+      : css`width: 116px;`
+  }
+  background-color: ${(props) => props.theme.colors.tracker.background};
   ${(props) =>
     props.n % 8 === 0
       ? css`
@@ -94,7 +101,7 @@ const renderNote = (note: number | null): string => {
     return "...";
   }
   const octave = ~~(note / 12) + 3;
-  return noteName[note % 12] + octave;
+  return `${noteName[note % 12]}${octave}`;
 }
 
 const renderInstrument = (instrument: number | null): string => {
@@ -119,7 +126,7 @@ export const SongRow = React.memo(({
 }: SongRowProps) => {
   return (
     <div>
-      <Wrapper isPlaying={isPlaying} isSelected={isSelected} n={n}>
+      <Wrapper isPlaying={isPlaying} isSelected={isSelected} n={n} size="small">
         <Cell id={`cell_${n}`}>{renderCounter(n)}</Cell>
       </Wrapper>
       {row.map((cell, i) => {
