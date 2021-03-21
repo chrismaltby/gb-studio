@@ -26,6 +26,7 @@ export type SettingsState = {
   navigatorSplitSizes: number[];
   showNavigator: boolean;
   defaultFontId: string;
+  defaultCharacterEncoding: string;
   defaultPlayerSprites: Record<string, string>;
 };
 
@@ -57,6 +58,7 @@ export const initialState: SettingsState = {
   navigatorSplitSizes: [300, 100, 100],
   showNavigator: true,
   defaultFontId: "",
+  defaultCharacterEncoding: "",
   defaultPlayerSprites: {},
 };
 

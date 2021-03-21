@@ -340,6 +340,7 @@
   "FIELD_LAYERS": "Layers",
   "FIELD_FIXED_POSITION": "Fixed Position",
   "FIELD_SCENE_TYPE_DEFAULT": "Scene Type Default",
+  "FIELD_CHARACTER_ENCODING": "Character Encoding",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

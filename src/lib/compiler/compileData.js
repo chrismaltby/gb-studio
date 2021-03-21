@@ -201,6 +201,7 @@ const compile = async (
         variablesLookup,
         variableAliasLookup,
         eventPaletteIndexes: precompiled.eventPaletteIndexes,
+        characterEncoding: projectData.settings.defaultCharacterEncoding,
         labels: {},
         entityType,
         entityIndex,

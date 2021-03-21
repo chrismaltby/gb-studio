@@ -39,6 +39,7 @@ import { SearchableCard } from "../../components/ui/cards/SearchableCard";
 import { FontSelect } from "../../components/forms/FontSelect";
 import { options as sceneTypes } from "../../components/forms/SceneTypeSelect";
 import { SpriteSheetSelect } from "../../components/forms/SpriteSheetSelect";
+import { CharacterEncodingSelect } from "../../components/forms/CharacterEncodingSelect";
 
 const SettingsPage: FC = () => {
   const dispatch = useDispatch();
@@ -79,6 +80,7 @@ const SettingsPage: FC = () => {
     defaultSpritePaletteId,
     defaultBackgroundPaletteIds,
     defaultFontId,
+    defaultCharacterEncoding,
     defaultPlayerSprites,
   } = settings;
 
@@ -317,7 +319,10 @@ const SettingsPage: FC = () => {
 
         <SearchableCard
           searchTerm={searchTerm}
-          searchMatches={[l10n("FIELD_DEFAULT_FONT")]}
+          searchMatches={[
+            l10n("FIELD_DEFAULT_FONT"),
+            l10n("FIELD_CHARACTER_ENCODING"),
+          ]}
         >
           <CardAnchor id="settingsUI" />
           <CardHeading>{l10n("MENU_UI_ELEMENTS")}</CardHeading>
@@ -332,6 +337,22 @@ const SettingsPage: FC = () => {
                 name="defaultFont"
                 value={defaultFontId || ""}
                 onChange={onEditSetting("defaultFontId")}
+              />
+            </SettingRowInput>
+          </SearchableSettingRow>
+
+          <SearchableSettingRow
+            searchTerm={searchTerm}
+            searchMatches={[l10n("FIELD_CHARACTER_ENCODING")]}
+          >
+            <SettingRowLabel>
+              {l10n("FIELD_CHARACTER_ENCODING")}
+            </SettingRowLabel>
+            <SettingRowInput>
+              <CharacterEncodingSelect
+                name="defaultCharacterEncoding"
+                value={defaultCharacterEncoding || ""}
+                onChange={onEditSetting("defaultCharacterEncoding")}
               />
             </SettingRowInput>
           </SearchableSettingRow>

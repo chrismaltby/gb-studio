@@ -44,6 +44,7 @@ import { FunctionSymbol, OperatorSymbol, Token } from "../rpn/types";
 import tokenize from "../rpn/tokenizer";
 import shuntingYard from "../rpn/shuntingYard";
 import { PrecompiledFontData } from "./compileFonts";
+import { encodeString } from "../helpers/encodings";
 
 type ScriptOutput = string[];
 
@@ -72,6 +73,7 @@ interface ScriptBuilderOptions {
   scenes: ScriptBuilderScene[];
   sprites: ScriptBuilderEntity[];
   fonts: PrecompiledFontData[];
+  characterEncoding: string;
   entity?: ScriptBuilderEntity;
   engineFields: Dictionary<EngineFieldSchema>;
   compileEvents: (self: ScriptBuilder, events: ScriptEvent[]) => void;
@@ -299,6 +301,7 @@ class ScriptBuilder {
       scenes: options.scenes || [],
       sprites: options.sprites || [],
       fonts: options.fonts || [],
+      characterEncoding: options.characterEncoding || "",
       compileEvents: options.compileEvents || ((_self, _e) => {}),
     };
     this.dependencies = [];
@@ -535,23 +538,8 @@ class ScriptBuilder {
   };
 
   _string = (str: string) => {
-    // .asciz can use any printable paired character as delimiter
-    // try to match a character not already used in the string
-    const prepareString = (inStr: string) => {
-      let output = "";
-      const nlStr = inStr.replace(/\n/g, "\\n");
-      for (let i = 0; i < nlStr.length; i++) {
-        const code = nlStr.charCodeAt(i);
-        if (code > 127 || code === 34) {
-          output += "\\" + (code & 0xff).toString(8).padStart(3, "0");
-        } else {
-          output += String.fromCharCode(code);
-        }
-      }
-      return output;
-    };
-
-    this._addCmd(`.asciz "${prepareString(str)}"`);
+    const { characterEncoding } = this.options;
+    this._addCmd(`.asciz "${encodeString(str, characterEncoding)}"`);
   };
 
   _importFarPtrData = (farPtr: string) => {
