@@ -1898,8 +1898,17 @@ class ScriptBuilder {
     const falseLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
     this._addComment(`If Actor At Position`);
-    this._addComment("NOT IMPLEMENTED - JUMPING TO FALSE PATH");
-    this._jump(falseLabel);
+    this._actorGetPosition("ACTOR");
+    this._rpn()
+      .ref("^/(ACTOR + 1)/")
+      .int16(x * 8 * 16)
+      .operator(".EQ")
+      .ref("^/(ACTOR + 2)/")
+      .int16((y + 1) * 8 * 16)
+      .operator(".EQ")
+      .operator(".AND")
+      .stop();
+    this._ifConst(".EQ", ".ARG0", 0, falseLabel, 1);
     this._compilePath(truePath);
     this._jump(endLabel);
     this._label(falseLabel);
