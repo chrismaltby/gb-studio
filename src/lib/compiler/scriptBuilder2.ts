@@ -8,6 +8,7 @@ import {
   tempVariableName,
 } from "../helpers/variables";
 import {
+  ActorDirection,
   ScriptEvent,
   Variable,
 } from "../../store/features/entities/entitiesTypes";
@@ -908,7 +909,7 @@ class ScriptBuilder {
 
     this._addComment("Actor Push");
     this._setConst("ACTOR", 0);
-    this._stackPushConst(3);
+    this._stackPushConst(0);
     this._actorGetDirection("^/(ACTOR - 1)/", ".ARG0");
     this._setConst("^/(ACTOR - 1)/", this.actorIndex);
     this._actorGetPosition("^/(ACTOR - 1)/");
@@ -1007,7 +1008,7 @@ class ScriptBuilder {
     this._addNL();
   };
 
-  actorSetDirection = (direction: string) => {
+  actorSetDirection = (direction: ActorDirection) => {
     this._addComment("Actor Set Direction");
     this._actorSetDirection("ACTOR", toASMDir(direction));
     this._addNL();
@@ -1285,7 +1286,7 @@ class ScriptBuilder {
     sceneId: string,
     x: number = 0,
     y: number = 0,
-    direction: string = "down",
+    direction: ActorDirection = "down",
     fadeSpeed: number = 2
   ) => {
     this.includeActor = true;
@@ -1909,6 +1910,25 @@ class ScriptBuilder {
       .operator(".AND")
       .stop();
     this._ifConst(".EQ", ".ARG0", 0, falseLabel, 1);
+    this._compilePath(truePath);
+    this._jump(endLabel);
+    this._label(falseLabel);
+    this._compilePath(falsePath);
+    this._label(endLabel);
+    this._addNL();
+  };
+
+  ifActorDirection = (
+    direction: ActorDirection,
+    truePath = [],
+    falsePath = []
+  ) => {
+    const falseLabel = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+    this._addComment(`If Actor Facing Direction`);
+    this._stackPushConst(0);
+    this._actorGetDirection("^/(ACTOR - 1)/", ".ARG0");
+    this._ifConst(".NE", ".ARG0", toASMDir(direction), falseLabel, 1);
     this._compilePath(truePath);
     this._jump(endLabel);
     this._label(falseLabel);
