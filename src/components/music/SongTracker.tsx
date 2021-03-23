@@ -85,7 +85,7 @@ export const SongTracker = ({
   if (list && list.current) {
     if (playing) {
       list.current.children[playbackState[1]]?.scrollIntoView();
-    } else if (selectedCell) {
+    } else if (selectedCell !== undefined) {
       scrollIntoView(
         list.current.children[Math.floor(selectedCell / ROW_SIZE)],
         {
@@ -100,80 +100,6 @@ export const SongTracker = ({
     setPlaybackState([-1, -1]);
   }, [playing])
 
-  const editPatternCell = (type: keyof PatternCell) => (value: number | null) => {
-    if (selectedCell === undefined) {
-      return;
-    }
-    dispatch(
-      trackerActions.editPatternCell({
-        patternId: patternId,
-        cellId: selectedCell,
-        changes: {
-          [type]: value,
-        },
-      })
-    );
-  };
-
-  const editNoteCell = (value: number | null) => {
-    if (selectedCell === undefined) {
-      return;
-    }
-    editPatternCell("note")(value);
-    if (value !== null) {
-      setSelectedCell(selectedCell + ROW_SIZE);
-    }
-  }
-
-  const editInstrumentCell = (value: number | null) => {
-    if (selectedCell === undefined) {
-      return;
-    }
-    const el = document.querySelector(`[data-cellid="${selectedCell}"]`) as any;
-    let newValue = value;
-    if (value !== null && el.innerText !== ".." && el.innerText !== "15") {
-      newValue = 10 * el.innerText[1] + value;
-      if (newValue > 15) newValue = 15;
-    }     
-    editPatternCell("instrument")(newValue);
-  }
-
-  const editEffectCodeCell = (value: number | null) => {
-    if (selectedCell === undefined) {
-      return;
-    }
-    const effectParamCell = document.querySelector(`[data-cellid="${selectedCell + 1}"]`) as any;
-
-    if (effectParamCell.innerText === "..") {
-      dispatch(
-        trackerActions.editPatternCell({
-          patternId: patternId,
-          cellId: selectedCell,
-          changes: {
-            effectcode: value,
-            effectparam: 0
-          },
-        })
-      );  
-    } else {
-      editPatternCell("effectcode")(value);
-    }
-  }
-
-  const editEffectParamCell = (value: number | null) => {
-    if (selectedCell === undefined) {
-      return;
-    }
-    let newValue = value;
-    const el = document.querySelector(`[data-cellid="${selectedCell}"]`) as any;
-
-    if (value !== null && el.innerText !== "..") {
-      newValue = 16 * parseInt(el.innerText[1], 16) + value;
-    } 
-  
-    editPatternCell("effectparam")(newValue);
-  }
-
   const handleMouseDown = useCallback((e: any) => {
     const cellId = e.target.dataset["cellid"];
     if (!!cellId) {
@@ -186,6 +112,81 @@ export const SongTracker = ({
 
   const handleKeys = useCallback(
     (e: KeyboardEvent) => {
+      
+      const editPatternCell = (type: keyof PatternCell) => (value: number | null) => {
+        if (selectedCell === undefined) {
+          return;
+        }
+        dispatch(
+          trackerActions.editPatternCell({
+            patternId: patternId,
+            cellId: selectedCell,
+            changes: {
+              [type]: value,
+            },
+          })
+        );
+      };
+    
+      const editNoteCell = (value: number | null) => {
+        if (selectedCell === undefined) {
+          return;
+        }
+        editPatternCell("note")(value);
+        if (value !== null) {
+          setSelectedCell(selectedCell + ROW_SIZE);
+        }
+      }
+    
+      const editInstrumentCell = (value: number | null) => {
+        if (selectedCell === undefined) {
+          return;
+        }
+        const el = document.querySelector(`[data-cellid="${selectedCell}"]`) as HTMLElement;
+        let newValue = value;
+        if (value !== null && el.innerText !== ".." && el.innerText !== "15") {
+          newValue = 10 * parseInt(el.innerText[1]) + value;
+          if (newValue > 15) newValue = 15;
+        }     
+        editPatternCell("instrument")(newValue);
+      }
+    
+      const editEffectCodeCell = (value: number | null) => {
+        if (selectedCell === undefined) {
+          return;
+        }
+        const effectParamCell = document.querySelector(`[data-cellid="${selectedCell + 1}"]`) as HTMLElement;
+    
+        if (effectParamCell.innerText === "..") {
+          dispatch(
+            trackerActions.editPatternCell({
+              patternId: patternId,
+              cellId: selectedCell,
+              changes: {
+                effectcode: value,
+                effectparam: 0
+              },
+            })
+          );  
+        } else {
+          editPatternCell("effectcode")(value);
+        }
+      }
+    
+      const editEffectParamCell = (value: number | null) => {
+        if (selectedCell === undefined) {
+          return;
+        }
+        let newValue = value;
+        const el = document.querySelector(`[data-cellid="${selectedCell}"]`) as HTMLElement;
+    
+        if (value !== null && el.innerText !== "..") {
+          newValue = 16 * parseInt(el.innerText[1], 16) + value;
+        } 
+      
+        editPatternCell("effectparam")(newValue);
+      }
+
       if (selectedCell === undefined) {
         return;
       }
@@ -309,7 +310,7 @@ export const SongTracker = ({
         if (e.code === "Delete" || e.code === "Backspace") editEffectParamCell(null);
       }
 
-    }, [selectedCell]);
+    }, [dispatch, patternId, selectedCell]);
 
   const handleKeysUp = useCallback(
     (e: KeyboardEvent) => {
@@ -377,7 +378,7 @@ export const SongTracker = ({
           onBlur={onBlur}
         >
           {data?.patterns[patternId]?.map((row: PatternCell[], i: number) => {
-            const isSelected = !!selectedCell && Math.floor(selectedCell / ROW_SIZE) === i;
+            const isSelected = selectedCell !== undefined && Math.floor(selectedCell / ROW_SIZE) === i;
             return (<SongRow
               id={`__${i}`}
               n={i}
