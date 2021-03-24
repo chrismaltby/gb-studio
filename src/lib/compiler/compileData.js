@@ -187,6 +187,8 @@ const compile = async (
         return null;
       }
 
+      const additionalScripts = [];
+
       const compiledScript = compileEntityEvents(scriptName, script, {
         scene,
         sceneIndex,
@@ -212,10 +214,54 @@ const compile = async (
         init: scriptTypeCode === "init",
         engineFields: precompiledEngineFields,
         output: [],
+        additionalScripts,
       });
 
       output[`${scriptName}.s`] = compiledScript;
       output[`${scriptName}.h`] = compileScriptHeader(scriptName);
+
+      while (additionalScripts) {
+        const additional = additionalScripts.pop();
+        if (!additional) {
+          break;
+        }
+        const compiledSubScript = compileEntityEvents(
+          additional.symbol,
+          additional.script,
+          {
+            scene,
+            sceneIndex,
+            scenes: precompiled.sceneData,
+            music: precompiled.usedMusic,
+            fonts: precompiled.usedFonts,
+            sprites: precompiled.usedSprites,
+            avatars: precompiled.usedAvatars,
+            backgrounds: precompiled.usedBackgrounds,
+            strings: precompiled.strings,
+            variables: precompiled.variables,
+            variablesLookup,
+            variableAliasLookup,
+            eventPaletteIndexes: precompiled.eventPaletteIndexes,
+            characterEncoding: projectData.settings.defaultCharacterEncoding,
+            labels: {},
+            entityType,
+            entityIndex,
+            entity,
+            warnings,
+            loop: false,
+            lock: false,
+            init: false,
+            engineFields: precompiledEngineFields,
+            output: [],
+            additionalScripts,
+          }
+        );
+        output[`${additional.symbol}.s`] = compiledSubScript;
+        output[`${additional.symbol}.h`] = compileScriptHeader(
+          additional.symbol
+        );
+      }
+
       return scriptName;
     };
 

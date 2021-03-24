@@ -50,6 +50,10 @@ interface ScriptBuilderOptions {
   characterEncoding: string;
   entity?: ScriptBuilderEntity;
   engineFields: Dictionary<EngineFieldSchema>;
+  additionalScripts: {
+    symbol: string;
+    script: ScriptEvent[] | ScriptBuilderPathFunction;
+  }[];
   compileEvents: (self: ScriptBuilder, events: ScriptEvent[]) => void;
 }
 
@@ -271,6 +275,7 @@ class ScriptBuilder {
       sprites: options.sprites || [],
       fonts: options.fonts || [],
       characterEncoding: options.characterEncoding || "",
+      additionalScripts: options.additionalScripts || [],
       compileEvents: options.compileEvents || ((_self, _e) => {}),
     };
     this.dependencies = [];
@@ -785,6 +790,23 @@ class ScriptBuilder {
     this._addCmd("VM_INPUT_WAIT", mask);
   };
 
+  _inputContextPrepare = (symbol: string, context: number) => {
+    this._addCmd(
+      "VM_CONTEXT_PREPARE",
+      context,
+      `___bank_${symbol}`,
+      `_${symbol}`
+    );
+  };
+
+  _inputContextAttach = (buttonMask: number, context: number) => {
+    this._addCmd("VM_INPUT_ATTACH", buttonMask, context);
+  };
+
+  _inputContextDetach = (buttonMask: number) => {
+    this._addCmd("VM_INPUT_DETACH", buttonMask);
+  };
+
   _isDataSaved = (variable: ScriptBuilderStackVariable, slot: number) => {
     this._addCmd("VM_DATA_IS_SAVED", variable, slot);
   };
@@ -1245,33 +1267,20 @@ class ScriptBuilder {
     this._addNL();
   };
 
-  inputScriptSet = (input: string, persist: boolean, script: any) => {
-    console.error("inputScriptSet not implemented");
-
-    // const output = this.output;
-    // const { compileEvents, banked } = this.options;
-
-    // const subScript = [];
-    // if (typeof script === "function") {
-    //   this.output = subScript;
-    //   script();
-    //   this.output = output;
-    // } else {
-    //   compileEvents(script, subScript, false);
-    // }
-    // const bankPtr = banked.push(subScript);
-
-    // output.push(cmd(SET_INPUT_SCRIPT));
-    // output.push(inputDec(input));
-    // output.push(persist ? 1 : 0);
-    // output.push(bankPtr.bank);
-    // output.push(hi(bankPtr.offset));
-    // output.push(lo(bankPtr.offset));
+  inputScriptSet = (
+    input: string,
+    persist: boolean,
+    script: ScriptEvent[] | ScriptBuilderPathFunction = []
+  ) => {
+    const scriptRef = this._compileSubScript("input", script);
+    this._inputContextPrepare(scriptRef, 1);
+    this._inputContextAttach(inputDec(input), 1);
     this._addNL();
   };
 
   inputScriptRemove = (input: string) => {
     console.error("inputScriptRemove not implemented");
+    this._inputContextDetach(inputDec(input));
 
     // const output = this.output;
     // output.push(cmd(REMOVE_INPUT_SCRIPT));
@@ -1992,6 +2001,18 @@ class ScriptBuilder {
     } else if (path) {
       compileEvents(this, path);
     }
+  };
+
+  _compileSubScript = (
+    type: "input" | "timer",
+    script: ScriptEvent[] | ScriptBuilderPathFunction = []
+  ) => {
+    const symbol = `script_${type}_${this.options.additionalScripts.length}`;
+    this.options.additionalScripts.push({
+      symbol,
+      script,
+    });
+    return symbol;
   };
 
   lock = () => {

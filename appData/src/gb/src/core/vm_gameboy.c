@@ -44,6 +44,14 @@ void vm_input_attach(SCRIPT_CTX * THIS, UBYTE mask, UBYTE slot) __banked {
     }
 }
 
+void vm_input_detach(SCRIPT_CTX * THIS, UBYTE mask) __banked {
+    THIS;
+    UBYTE * current_slot = input_slots;
+    for (UBYTE tmp = mask; (tmp); tmp = tmp >> 1, current_slot++) {
+        if (tmp & 1) *current_slot = 0;
+    }
+}
+
 void vm_input_get(SCRIPT_CTX * THIS, INT16 idx) __banked { 
     INT16 * A;
     if (idx < 0) A = THIS->stack_ptr + idx; else A = script_memory + idx;

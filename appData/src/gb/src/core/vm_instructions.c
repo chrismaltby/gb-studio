@@ -114,7 +114,7 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_poll,                   5}, // 0x5C
     {vm_set_sprite_mode,        1}, // 0x5D
     {vm_replace_tile_xy,        7}, // 0x5E
-    {0, 0},
+    {vm_input_detach,           1}, // 0x5F
 
     // music and sound instructions section
     {vm_music_play,             4}, // 0x60

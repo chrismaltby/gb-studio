@@ -581,6 +581,11 @@ OP_VM_REPLACE_TILE_XY   = 0x5E
         .db OP_VM_REPLACE_TILE_XY, #>START_IDX, #<START_IDX, #>TILEDATA, #<TILEDATA, #<TILEDATA_BANK, #<Y, #<X
 .endm
 
+OP_VM_INPUT_DETACH      = 0x5F
+.macro VM_INPUT_DETACH MASK
+        .db OP_VM_INPUT_DETACH, #<MASK
+.endm
+
 ; --- MUSIC AND SOUND -------------------------------
 
 OP_VM_MUSIC_PLAY        = 0x60
