@@ -250,7 +250,6 @@ class ScriptBuilder {
   dependencies: string[];
   nextLabel: number;
   actorIndex: number;
-  stack: number[];
   stackPtr: number;
   labelStackSize: Dictionary<number>;
   includeActor: boolean;
@@ -283,7 +282,6 @@ class ScriptBuilder {
     this.actorIndex = options.entity
       ? getActorIndex(options.entity.id, options.scene)
       : 0;
-    this.stack = [];
     this.stackPtr = 0;
     this.labelStackSize = {};
     this.includeActor = false;
@@ -471,8 +469,8 @@ class ScriptBuilder {
     this.stackPtr -= popNum;
   };
 
-  _stackPushConst = (value: number) => {
-    this.stack[this.stackPtr++] = value;
+  _stackPushConst = (value: number | string) => {
+    this.stackPtr++;
     this._addCmd("VM_PUSH_CONST", value);
   };
 
@@ -605,9 +603,6 @@ class ScriptBuilder {
         this._addCmd("VM_RPN");
         output.forEach((cmd: string) => {
           this.output.push(cmd);
-        });
-        stack.forEach((value: number) => {
-          this.stack[this.stackPtr++] = value;
         });
       },
     };
@@ -1256,6 +1251,27 @@ class ScriptBuilder {
     this._overlayMoveTo(x, y, speed);
     this._overlayWait(true, [".UI_WAIT_WINDOW"]);
     this._addNL();
+  };
+
+  // --------------------------------------------------------------------------
+  // Camera
+
+  cameraShake = (
+    shouldShakeX: boolean,
+    shouldShakeY: boolean,
+    frames: number
+  ) => {
+    this._addComment("Camera Shake");
+    this._stackPushConst(frames);
+    this._stackPushConst(
+      unionFlags(
+        ([] as string[]).concat(
+          shouldShakeX ? ".CAMERA_SHAKE_X" : [],
+          shouldShakeY ? ".CAMERA_SHAKE_Y" : []
+        )
+      )
+    );
+    this._invoke("camera_shake_frames", 2, 2);
   };
 
   // --------------------------------------------------------------------------
