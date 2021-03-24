@@ -2,6 +2,68 @@
 
         .globl _vwf_current_rotate, _vwf_current_mask, _vwf_inverse_map
 
+        .area _BSS
+
+        .area _CODE_1
+
+_ui_print_make_mask_lr::
+        ldhl sp, #2
+
+        ld a, (hl+)
+        or a
+        ld de, #0xffff
+        ret z
+
+        ld e, a
+        ld a, d         ; 0xff
+1$:
+        srl a
+        dec e
+        jr nz, 1$
+
+        ld e, (hl)
+        inc e
+        jr 2$
+3$:
+        scf
+        rra
+        rr d
+2$:
+        dec e
+        jr nz, 3$
+
+        ld e, a
+        ret
+
+_ui_print_make_mask_rl::
+        ldhl sp, #2
+
+        ld a, (hl+)
+        or a
+        ld de, #0xffff
+        ret z
+
+        ld e, a
+        ld a, d         ; 0xff
+1$:
+        sla a
+        dec e
+        jr nz, 1$
+
+        ld e, (hl)
+        inc e
+        jr 2$
+3$:
+        scf
+        rla
+        rl d
+2$:
+        dec e
+        jr nz, 3$
+
+        ld e, a
+        ret
+
         .area _CODE
 
 ; used from __nonbanked code, so should be nonbanked too, because bank is random
@@ -83,12 +145,20 @@ _ui_print_shift_char::
 1$:
         ld a, (_vwf_current_mask)
         and (hl)
-        or c
+        ld (hl), a
+        ld a, (_vwf_current_mask)
+        cpl
+        and c
+        or (hl)
         ld (hl+), a
 
         ld a, (_vwf_current_mask)
         and (hl)
-        or b
+        ld (hl), a
+        ld a, (_vwf_current_mask)
+        cpl
+        and b
+        or (hl)
         ld (hl+), a
 
         pop af

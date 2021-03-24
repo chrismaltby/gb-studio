@@ -15,21 +15,14 @@
 
 void ui_draw_frame(UBYTE x, UBYTE y, UBYTE width, UBYTE height) __banked;
 
-static UBYTE itoa_fmt(INT16 v, UBYTE * d, UBYTE dlen) __banked {
-    if (dlen) {
-        UBYTE buf[7];
-        UBYTE *ss = buf;
-        UBYTE len = strlen(itoa(v, buf));
-        UBYTE res_len = (len > dlen) ? len : dlen;
-        if (*ss == '-') *d++ = *ss++, len--, dlen--;
-        if (dlen > len) {
-            for (UBYTE i = dlen - len; i != 0; i--) *d++ = '0';
-        }
-        for (UBYTE i = 0; i != len; i++) *d++ = *ss++;
-        return res_len;
-    } else {
-        return strlen(itoa(v, d));
-    }
+extern UBYTE _itoa_fmt_len;
+UBYTE itoa_fmt(INT16 v, UBYTE * d) __banked __preserves_regs(b, c);
+
+inline UBYTE itoa_format(INT16 v, UBYTE * d, UBYTE dlen) {
+    _itoa_fmt_len = dlen;
+    UBYTE len = itoa_fmt(v, d);
+    if (vwf_direction != UI_PRINT_LEFTTORIGHT) reverse(d);
+    return len;
 }
 
 // renders UI text into buffer
@@ -51,50 +44,44 @@ void vm_load_text(UWORD dummy0, UWORD dummy1, SCRIPT_CTX * THIS, UBYTE nargs) __
             switch (*++s) {
                 // variable value of fixed width, zero padded
                 case 'D': 
-                    d += itoa_fmt(idx, d, *++s - '0');
-                    s++;
-                    args++;
-                    continue;
+                    d += itoa_format(idx, d, *++s - '0');
+                    break;
                 // variable value
                 case 'd':
-                    d += itoa_fmt(idx, d, 0);
-                    s++;
-                    args++;
-                    continue;
+                    d += itoa_format(idx, d, 0);
+                    break;
                 // char from variable
                 case 'c':
                     *d++ = (unsigned char)idx;
-                    s++;
-                    args++;
-                    continue;
+                    break;
                 // text tempo from variable
                 case 't':
                     *d++ = 0x01u;
                     *d++ = (unsigned char)idx + 0x02u;
-                    s++;
-                    args++;
-                    continue;
+                    break;
                 // font index from variable
                 case 'f':
                     *d++ = 0x02u;
                     *d++ = (unsigned char)idx + 0x01u;
-                    s++;
-                    args++;
-                    continue;
+                    break;
                 // excape % symbol
                 case '%':
-                    break;
+                    s++;
                 default:
                     s--;
+                    *d++ = *s++;
+                    continue;
             }
-
+        } else {
+            *d++ = *s++;
+            continue;
         }
-        *d++ = *s++;
+        s++; args++;
     }
-    *d = 0, s++;
+    *d = 0;
 
     SWITCH_ROM_MBC1(_save);
-    THIS->PC = s;
+    THIS->PC = s + 1;
 }
 
 // start displaying text
@@ -191,4 +178,9 @@ void vm_set_font(SCRIPT_CTX * THIS, UBYTE font_index) __banked {
     THIS;
     vwf_current_font_bank = ui_fonts[font_index].bank;
     MemcpyBanked(&vwf_current_font_desc, ui_fonts[font_index].ptr, sizeof(font_desc_t), vwf_current_font_bank);
+}
+
+void vm_set_print_dir(SCRIPT_CTX * THIS, UBYTE print_dir) __banked {
+    THIS;
+    vwf_direction = print_dir & 1;
 }

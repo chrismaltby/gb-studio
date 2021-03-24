@@ -3,6 +3,9 @@
 
 #include "vm.h"
 
+#define CAMERA_SHAKE_X 1
+#define CAMERA_SHAKE_Y 2
+
 void vm_camera_move_to(SCRIPT_CTX * THIS, INT16 idx, UBYTE speed, UBYTE after_lock_camera) __banked;
 void vm_camera_set_pos(SCRIPT_CTX * THIS, INT16 idx) __banked;
 

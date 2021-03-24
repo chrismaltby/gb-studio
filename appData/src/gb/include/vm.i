@@ -499,6 +499,13 @@ OP_VM_SET_FONT          = 0x4B
         .db OP_VM_SET_FONT, #<FONT_INDEX
 .endm
 
+OP_VM_SET_PRINT_DIR     = 0x4C
+.UI_PRINT_LEFTTORIGHT   = 0
+.UI_PRINT_RIGHTTOLEFT   = 1
+.macro VM_SET_PRINT_DIR DIRECTION
+        .db OP_VM_SET_PRINT_DIR, #<DIRECTION
+.endm
+
 ; --- GAMEBOY ------------------------------------------
 
 OP_VM_SHOW_SPRITES      = 0x50
@@ -648,6 +655,9 @@ OP_VM_CAMERA_SET_POS     = 0x71
 .macro VM_CAMERA_SET_POS IDX
         .db OP_VM_CAMERA_SET_POS, #>IDX, #<IDX
 .endm
+
+.CAMERA_SHAKE_X          = 1
+.CAMERA_SHAKE_Y          = 2
 
 ; --- RTC ----------------------------------
 

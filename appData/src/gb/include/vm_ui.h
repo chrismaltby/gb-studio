@@ -17,5 +17,6 @@ void vm_choice(SCRIPT_CTX * THIS, INT16 idx, UBYTE options) __banked;
 void vm_load_frame(SCRIPT_CTX * THIS, UBYTE bank, UBYTE * offset) __banked;
 void vm_load_cursor(SCRIPT_CTX * THIS, UBYTE bank, UBYTE * offset) __banked;
 void vm_set_font(SCRIPT_CTX * THIS, UBYTE bank, UBYTE * offset) __banked;
+void vm_set_print_dir(SCRIPT_CTX * THIS, UBYTE print_dir) __banked;
 
 #endif

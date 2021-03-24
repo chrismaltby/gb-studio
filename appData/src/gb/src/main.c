@@ -36,6 +36,7 @@ extern const UBYTE bootstrap_script[];
 
 void engine_reset() {
     // cleanup core stuff
+    input_init();
     load_init();
     sound_init();
     parallax_init();
@@ -151,6 +152,7 @@ void process_VM() {
                     }
                     LYC_REG = 0u;
                 }
+                if (!hide_sprites) SHOW_SPRITES;    // show sprites back if we switched LCD ISR while sprites were hidden 
 
                 player_init();
                 state_init();

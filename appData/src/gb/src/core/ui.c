@@ -8,6 +8,7 @@
 #include "data/frame_image.h"
 #include "data/cursor_image.h"
 #include "bankdata.h"
+#include "camera.h"
 #include "scroll.h"
 #include "input.h"
 #include "math.h"
@@ -24,8 +25,6 @@
 #define ui_frame_l_tiles  0xC3u
 #define ui_frame_r_tiles  0xC5u
 #define ui_frame_bg_tiles 0xC4u
-
-const unsigned char avatar_tiles[4] = {TEXT_BUFFER_START, TEXT_BUFFER_START + 2U, TEXT_BUFFER_START + 1U, TEXT_BUFFER_START + 3U};
 
 UBYTE win_pos_x, win_dest_pos_x;
 UBYTE win_pos_y, win_dest_pos_y;
@@ -54,6 +53,7 @@ static UBYTE vwf_tile_data[16 * 2];
 UBYTE vwf_current_mask;
 UBYTE vwf_current_rotate;
 UBYTE vwf_inverse_map;
+UBYTE vwf_direction;
 
 font_desc_t vwf_current_font_desc;
 UBYTE vwf_current_font_bank;
@@ -62,6 +62,7 @@ UBYTE vwf_current_font_idx;
 extern const UBYTE ui_time_masks[];
 
 void ui_init() __banked {
+    vwf_direction               = UI_PRINT_LEFTTORIGHT;
     vwf_current_font_idx        = 0;
     vwf_current_font_bank       = ui_fonts[0].bank;
     MemcpyBanked(&vwf_current_font_desc, ui_fonts[0].ptr, sizeof(font_desc_t), vwf_current_font_bank);
@@ -114,6 +115,8 @@ void ui_print_reset(UBYTE tile) {
 }
 
 void ui_print_shift_char(void * dest, const void * src, UBYTE bank) __nonbanked;
+UWORD ui_print_make_mask_lr(UBYTE width, UBYTE ofs);
+UWORD ui_print_make_mask_rl(UBYTE width, UBYTE ofs);
 
 UBYTE ui_print_render(const unsigned char ch) {
     UBYTE letter = (vwf_current_font_desc.attr & FONT_RECODE) ? ReadBankedUBYTE(vwf_current_font_desc.recode_table + (ch & vwf_current_font_desc.mask), vwf_current_font_bank) : ch;
@@ -121,15 +124,29 @@ UBYTE ui_print_render(const unsigned char ch) {
     if (vwf_current_font_desc.attr & FONT_VWF) {
         vwf_inverse_map = (vwf_current_font_desc.attr & FONT_VWF_1BIT) ? text_bkg_fill : 0u;
         UBYTE width = ReadBankedUBYTE(vwf_current_font_desc.widths + letter, vwf_current_font_bank);
-        UBYTE dx = (8u - vwf_current_offset);
-        vwf_current_mask = (0xffu << dx) | (0xffu >> (vwf_current_offset + width));
+        if (vwf_direction == UI_PRINT_LEFTTORIGHT) {
+            vwf_current_rotate = vwf_current_offset;
+            UWORD masks = ui_print_make_mask_lr(width, vwf_current_offset);
+            vwf_current_mask = (UBYTE)masks;
+            ui_print_shift_char(vwf_tile_data, bitmap, vwf_current_font_bank);
 
-        vwf_current_rotate = vwf_current_offset;
-        ui_print_shift_char(vwf_tile_data, bitmap, vwf_current_font_bank);
-        if ((UBYTE)(vwf_current_offset + width) > 8u) {
-            vwf_current_rotate = dx | 0x80u;
-            vwf_current_mask = 0xffu >> (width - dx);
-            ui_print_shift_char(vwf_tile_data + 16u, bitmap, vwf_current_font_bank);
+            if ((UBYTE)(vwf_current_offset + width) > 8u) {
+                vwf_current_rotate = (8u - vwf_current_offset) | 0x80u;
+                vwf_current_mask = (UBYTE)(masks >> 8u);
+                ui_print_shift_char(vwf_tile_data + 16u, bitmap, vwf_current_font_bank);
+            }
+        } else {
+            UBYTE dx = (8u - vwf_current_offset);      
+            vwf_current_rotate =  (width < dx) ? (dx - width) : (width - dx) | 0x80u;
+            UWORD masks = ui_print_make_mask_rl(width, vwf_current_offset);
+            vwf_current_mask = (UBYTE)masks;
+            ui_print_shift_char(vwf_tile_data, bitmap, vwf_current_font_bank);
+
+            if ((UBYTE)(vwf_current_offset + width) > 8u) {
+                vwf_current_rotate = 16u - (UBYTE)(vwf_current_offset + width);
+                vwf_current_mask = (UBYTE)(masks >> 8u);
+                ui_print_shift_char(vwf_tile_data + 16u, bitmap, vwf_current_font_bank);
+            }
         }
         vwf_current_offset += width;
 
@@ -151,7 +168,7 @@ UBYTE ui_print_render(const unsigned char ch) {
 }
 
 void ui_draw_text_buffer_char() __banked {
-    static UBYTE current_font_idx, current_text_bkg_fill;
+    static UBYTE current_font_idx, current_text_bkg_fill, current_vwf_direction, current_text_ff_joypad;
 
     if ((text_ff_joypad) && (INPUT_A_OR_B_PRESSED)) text_ff = TRUE;
 
@@ -164,11 +181,14 @@ void ui_draw_text_buffer_char() __banked {
         // save font and color global properties
         current_font_idx = vwf_current_font_idx;
         current_text_bkg_fill = text_bkg_fill;
+        current_vwf_direction = vwf_direction;
+        current_text_ff_joypad = text_ff_joypad;
         // reset to first line
         // current char pointer
         ui_text_ptr = ui_text_data;
         // VRAM destination
         ui_dest_base = GetWinAddr() + 32 + 1; // gotoxy(1,1)
+        if (vwf_direction == UI_PRINT_RIGHTTOLEFT) ui_dest_base += 17;
         // with and initial pos correction
         // initialize current pointer with corrected base value
         ui_dest_ptr = ui_dest_base;
@@ -185,6 +205,8 @@ void ui_draw_text_buffer_char() __banked {
                 MemcpyBanked(&vwf_current_font_desc, font->ptr, sizeof(font_desc_t), vwf_current_font_bank = font->bank);
             }
             text_bkg_fill = current_text_bkg_fill;
+            vwf_direction = current_vwf_direction;
+            text_ff_joypad = current_text_ff_joypad;
             return;
         }
         case 0x01:
@@ -214,15 +236,34 @@ void ui_draw_text_buffer_char() __banked {
             break;
         }
         case 0x06:
+            // wait for input cancels fast forward
+            if (text_ff) {
+                text_ff = FALSE;
+                text_ff_joypad = FALSE;
+                INPUT_RESET;
+            }
+            // if high speed then skip waiting
+            if (current_text_speed == 0) {
+                ui_text_ptr++;
+                break;
+            } 
             // wait for key press (parameter is a mask)
-            if ((joy & *++ui_text_ptr) && (joy && !last_joy)) break;
+            if ((joy & ~last_joy) & *++ui_text_ptr) {
+                text_ff_joypad = current_text_ff_joypad;
+                break;
+            }
             ui_text_ptr--;
             return;
         case 0x07:
             // set text color
             text_bkg_fill = (*++ui_text_ptr & 1u) ? TEXT_BKG_FILL_W : TEXT_BKG_FILL_B;
             break;
+        case 0x08:
+            // text direction (left-to-right or right-to-left)
+            vwf_direction = (*++ui_text_ptr & 1u) ? UI_PRINT_LEFTTORIGHT : UI_PRINT_RIGHTTOLEFT;
+            break;
         case '\n':
+            // carriage return
             ui_dest_ptr = ui_dest_base += 32u;
             if (vwf_current_offset) ui_print_reset(ui_current_tile + 1u);
             break;
@@ -232,7 +273,8 @@ void ui_draw_text_buffer_char() __banked {
             // fall down to default
         default:
             if (ui_print_render(*ui_text_ptr)) {
-                SetTile(ui_dest_ptr++, ui_current_tile - 1u);
+                SetTile(ui_dest_ptr, ui_current_tile - 1u);
+                if (vwf_direction == UI_PRINT_LEFTTORIGHT)  ui_dest_ptr++; else ui_dest_ptr--;
             }
             if (vwf_current_offset) SetTile(ui_dest_ptr, ui_current_tile);
             break;
@@ -283,6 +325,8 @@ UBYTE ui_run_menu(menu_item_t * start_item, UBYTE bank, UBYTE options, UBYTE cou
         ui_update();
         
         toggle_shadow_OAM();
+        camera_update();
+        scroll_update();
         actors_update();
         projectiles_render();
         activate_shadow_OAM();
@@ -342,6 +386,8 @@ void ui_run_modal(UBYTE wait_flags) __banked {
         ui_update();
 
         toggle_shadow_OAM();
+        camera_update();
+        scroll_update();
         actors_update();
         projectiles_render();
         activate_shadow_OAM();

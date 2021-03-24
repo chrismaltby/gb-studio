@@ -46,6 +46,10 @@ extern UBYTE text_bkg_fill;
 
 extern unsigned char ui_text_data[TEXT_MAX_LENGTH];
 
+#define UI_PRINT_LEFTTORIGHT 0
+#define UI_PRINT_RIGHTTOLEFT 1
+
+extern UBYTE vwf_direction;
 extern font_desc_t vwf_current_font_desc;
 extern UBYTE vwf_current_font_bank;
 
