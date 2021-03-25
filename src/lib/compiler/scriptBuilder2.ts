@@ -604,6 +604,9 @@ class ScriptBuilder {
         output.forEach((cmd: string) => {
           this.output.push(cmd);
         });
+        stack.forEach((value: number) => {
+          this.stackPtr++;
+        });
       },
     };
 
