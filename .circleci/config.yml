@@ -149,6 +149,7 @@ workflows:
                 - develop
                 - master
                 - v2beta
+                - uge-tracker
       - "make:win32":
           requires:
             - checkout
@@ -158,6 +159,7 @@ workflows:
                 - develop
                 - master
                 - v2beta
+                - uge-tracker
       - "make:win64":
           requires:
             - checkout
@@ -167,6 +169,7 @@ workflows:
                 - develop
                 - master
                 - v2beta
+                - uge-tracker
       - "make:linux":
           requires:
             - checkout
@@ -176,6 +179,7 @@ workflows:
                 - develop
                 - master
                 - v2beta
+                - uge-tracker
       - "upload_artifacts":
           requires:
             - "make:mac"
@@ -188,3 +192,4 @@ workflows:
                 - develop
                 - master
                 - v2beta
+                - uge-tracker
