@@ -1258,7 +1258,7 @@ export const precompileFonts = async (
 
   const usedFonts = [defaultFont].concat(
     fonts.filter((font) => {
-      return font.id !== defaultFont && usedFontIds.indexOf(font.id) > -1;
+      return font.id !== defaultFont.id && usedFontIds.indexOf(font.id) > -1;
     })
   );
 
