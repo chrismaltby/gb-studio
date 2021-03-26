@@ -406,6 +406,34 @@ export const compileSceneHeader = (scene: any, sceneIndex: number) =>
     `// Scene: ${sceneName(scene, sceneIndex)}`
   );
 
+export const compileBounds = ({
+  boundsX,
+  boundsY,
+  boundsWidth,
+  boundsHeight,
+}: {
+  boundsX?: number;
+  boundsY?: number;
+  boundsWidth?: number;
+  boundsHeight?: number;
+}): {
+  left: number;
+  bottom: number;
+  right: number;
+  top: number;
+} => {
+  const bX = boundsX || 0;
+  const bY = boundsY || 0;
+  const bW = boundsWidth || 16;
+  const bH = boundsHeight || 16;
+  return {
+    left: bX,
+    bottom: -bY,
+    right: bX + bW,
+    top: -(bY + bH),
+  };
+};
+
 export const compileSceneActors = (
   scene: any,
   sceneIndex: number,
@@ -456,12 +484,7 @@ export const compileSceneActors = (
           x: `${actor.x * 8} * 16`,
           y: `${(actor.y + 1) * 8} * 16`,
         },
-        bounds: {
-          left: 2,
-          right: 16,
-          top: -16,
-          bottom: 0,
-        },
+        bounds: compileBounds(sprite),
         dir: dirEnum(actor.direction),
         sprite: toFarPtr(spriteSheetSymbol(spriteIndex)),
         palette: actorPaletteIndexes[actor.id] || 0,
