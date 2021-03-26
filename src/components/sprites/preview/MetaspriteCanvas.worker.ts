@@ -48,7 +48,7 @@ workerCtx.onmessage = async (evt) => {
       img.width,
       img.height
     );
-    chromaKeyData(tileImageData.data););
+    chromaKeyData(tileImageData.data);
 
     tilesCanvases = {
       OBP0: new OffscreenCanvas(img.width, img.height),
