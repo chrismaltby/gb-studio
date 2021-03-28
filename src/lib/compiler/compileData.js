@@ -519,6 +519,8 @@ const compile = async (
     startAnimSpeed,
     fonts: precompiled.usedFonts,
     isCGB: customColorsEnabled,
+    engineFields,
+    engineFieldValues: projectData.engineFieldValues,
   });
   output[`data_bootstrap.h`] =
     `#ifndef DATA_PTRS_H\n#define DATA_PTRS_H\n\n` +

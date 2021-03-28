@@ -428,9 +428,9 @@ export const compileBounds = ({
   const bH = boundsHeight || 16;
   return {
     left: bX,
-    bottom: -bY,
-    right: bX + bW,
-    top: -(bY + bH),
+    bottom: 7 - bY,
+    right: bX + bW - 1,
+    top: 8 - (bY + bH),
   };
 };
 
@@ -482,7 +482,7 @@ export const compileSceneActors = (
         __comment: actorName(actor, actorIndex),
         pos: {
           x: `${actor.x * 8} * 16`,
-          y: `${(actor.y + 1) * 8} * 16`,
+          y: `${actor.y * 8} * 16`,
         },
         bounds: compileBounds(sprite),
         dir: dirEnum(actor.direction),
