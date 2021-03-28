@@ -1,5 +1,7 @@
 #pragma bank 2
 
+#include <rand.h>
+
 #include "vm.h"
 #include "vm_camera.h"
 
@@ -65,16 +67,17 @@ void vm_camera_set_pos(SCRIPT_CTX * THIS, INT16 idx) __banked {
 
 // VM_INVOKE handler
 UBYTE camera_shake_frames(void * THIS, UBYTE start, UWORD * stack_frame) __banked {
-    // we allocate one local variable (just write ahead of VM stack pointer, we have no interrupts, our local variables won't get spoiled)
-    if (start) *((SCRIPT_CTX *)THIS)->stack_ptr = stack_frame[0];
-    // check wait condition
-    if ((*((SCRIPT_CTX *)THIS)->stack_ptr)--) {
-        BYTE shake_value = *((SCRIPT_CTX *)THIS)->stack_ptr; 
+    if (start) *((SCRIPT_CTX *)THIS)->stack_ptr = sys_time;
+    if (((UWORD)sys_time - *((SCRIPT_CTX *)THIS)->stack_ptr) < stack_frame[0]) {
         if (stack_frame[1] & CAMERA_SHAKE_X) {
-            scroll_offset_x = (BYTE)(shake_value & 0x5) * 2 - 5;
+            BYTE value = rand() & 0x0f;
+            if (value > 10) value -= 10;
+            scroll_offset_x = value - 5;
         }
         if (stack_frame[1] & CAMERA_SHAKE_Y) {
-            scroll_offset_y = (BYTE)(shake_value & 0xA) - 5;
+            BYTE value = rand() & 0x0f;
+            if (value > 10) value -= 10;
+            scroll_offset_y = value - 5;
         }
         ((SCRIPT_CTX *)THIS)->waitable = TRUE; 
         return FALSE;

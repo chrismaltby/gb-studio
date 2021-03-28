@@ -1,4 +1,4 @@
-#pragma bank 1
+#pragma bank 3
 
 #ifdef CGB
     #include <gb/gb.h>
@@ -7,12 +7,10 @@
 #endif
 
 #include "fade_manager.h"
-#ifdef CGB
-    #include "palette.h"
-#endif
+#include "palette.h"
 
-#define FADED_OUT_FRAME 0
-#define FADED_IN_FRAME 5
+#define FADED_OUT_FRAME 5
+#define FADED_IN_FRAME 0
 
 UBYTE fade_running;
 UBYTE fade_frames_per_step;
@@ -25,64 +23,213 @@ const UBYTE fade_speeds[] = {0x0, 0x1, 0x3, 0x7, 0xF, 0x1F, 0x3F};
 static UBYTE fade_frame;
 static FADE_DIRECTION fade_direction;
 
-static const UBYTE obj0_fade_vals[] = {0x00, 0x00, 0x40, 0x80, 0x90, 0xD0, 0xD0};
-static const UBYTE obj1_fade_vals[] = {0x00, 0x00, 0x40, 0x90, 0xA4, 0xE4, 0xE4};
-static const UBYTE bgp_fade_vals[] =  {0x00, 0x00, 0x40, 0x90, 0xA4, 0xE4, 0xE4};
-
-static const UBYTE obj0_fade_black_vals[] = {0xFF, 0xFF, 0xF8, 0xE4, 0xD4, 0xD0, 0xD0};
-static const UBYTE obj1_fade_black_vals[] = {0xFF, 0xFF, 0xFE, 0xE9, 0xE5, 0xE4, 0xE4};
-static const UBYTE bgp_fade_black_vals[] = {0xFF, 0xFF, 0xFE, 0xE9, 0xE5, 0xE4, 0xE4};
-
 #ifdef CGB
-static UWORD UpdateColorBlack(UINT8 i, UWORD col) {
-    return RGB2((PAL_RED(col) >> 5 - i),  (PAL_GREEN(col) >> 5 - i), (PAL_BLUE(col) >> 5 - i));
+
+void CGBFadeToWhiteStep(UWORD *pal, UBYTE reg, UBYTE step) __naked {
+    pal; reg; step;
+__asm
+        ldhl sp, #5
+        ld a, (hl-)
+        ld b, a
+
+        ld a, (hl-)
+        ld c, a
+        ld a, #0x80
+        ldh (c), a
+        inc c
+
+        ld a, (hl-)
+        ld l, (hl)
+        ld h, a
+
+        ld de, #0x0000
+        ld a, b
+        or a
+        jr z, 2$
+0$:
+        sla e
+        rl d
+        set 0, e
+        set 5, e
+        set 2, d
+        dec b
+        jr nz, 0$
+2$:
+        ld b, #(8 * 4)
+1$:
+        ldh a, (_STAT_REG)
+        and #0x02
+        jr nz, 1$
+        ld a, (hl+)
+        or e
+        ldh (c), a
+
+3$:
+        ldh a, (_STAT_REG)
+        and #0x02
+        jr nz, 3$
+        ld a, (hl+)
+        or d
+        ldh (c), a
+
+        dec b
+        jr nz, 1$
+
+        ret   
+__endasm;
 }
 
-static void ApplyPaletteChangeColor(UBYTE index) {
-    UINT8 c;
-    UWORD paletteWhite;
-    UWORD* col = BkgPalette;
+void CGBFadeToBlackStep(UWORD *pal, UBYTE reg, UBYTE step) __naked {
+    pal; reg; step;
+__asm
+        ldhl sp, #5
+        ld a, (hl-)
+        ld b, a
 
-    if (index == 5) {
-        set_bkg_palette(0, 8, BkgPalette);
-        set_sprite_palette(0, 8, SprPalette);
-        return;
-    }
+        ld a, (hl-)
+        ld c, a
+        ld a, #0x80
+        ldh (c), a
+        inc c
 
+        ld a, (hl-)
+        ld l, (hl)
+        ld h, a
+
+        ld de, #0x7fff
+        ld a, b
+        or a
+        jr z, 2$
+0$:
+        res 4, e
+        res 1, d
+        srl d
+        rr e
+        res 4, e
+        res 1, d
+        dec b
+        jr nz, 0$
+2$:
+        ld b, #(8 * 4)
+1$:
+        ldh a, (_STAT_REG)
+        and #0x02
+        jr nz, 1$
+        ld a, (hl+)
+        and e
+        ldh (c), a
+
+3$:
+        ldh a, (_STAT_REG)
+        and #0x02
+        jr nz, 3$
+        ld a, (hl+)
+        and d
+        ldh (c), a
+
+        dec b
+        jr nz, 1$
+
+        ret   
+__endasm;
+}
+
+void ApplyPaletteChangeColor(UBYTE index) {
     if (fade_style) {
-        for (c = 0; c != 32; ++c, ++col) {
-            BkgPaletteBuffer[c] = UpdateColorBlack(index, *col);
-        }
-        col = SprPalette;
-        for (c = 0; c != 32; c++, ++col) {
-            SprPaletteBuffer[c] = UpdateColorBlack(index, *col);
-        }
-    } else { 
-        paletteWhite = RGB2((0x1F >> index), (0x1F >> index), (0x1F >> index));
-        for (c = 0; c != 32; ++c, ++col) {
-            BkgPaletteBuffer[c] = (UWORD)*col | paletteWhite;
-        }
-        col = SprPalette;
-        for (c = 0; c != 32; ++c, ++col) {
-            SprPaletteBuffer[c] = (UWORD)*col | paletteWhite;
-        }
+        CGBFadeToBlackStep(BkgPalette, (UBYTE)(&BCPS_REG), index);
+        CGBFadeToBlackStep(SprPalette, (UBYTE)(&OCPS_REG), index);
+    } else {
+        CGBFadeToWhiteStep(BkgPalette, (UBYTE)(&BCPS_REG), index);
+        CGBFadeToWhiteStep(SprPalette, (UBYTE)(&OCPS_REG), index);
     }
-
-    set_bkg_palette(0, 8, BkgPaletteBuffer);
-    set_sprite_palette(0, 8, SprPaletteBuffer);
 }
 #endif
 
-static void ApplyPaletteChangeDMG(UBYTE index) {
+UBYTE DMGFadeToWhiteStep(UBYTE pal, UBYTE step) __naked {
+    pal; step;
+__asm
+        ldhl    SP, #3
+        ld      A, (HL-)
+        ld      E, (HL)
+        or      A
+        ret     Z
+        
+        ld      D, A
+1$: 
+        ld      H, #4
+2$:
+        ld      A, E
+        and     #3
+        jr      Z, 3$
+        dec     A         
+3$:
+        srl     A
+        rr      L
+        srl     A
+        rr      L
+        
+        srl     E
+        srl     E
+
+        dec     H
+        jr      NZ, 2$
+
+        ld      E, L
+
+        dec     D
+        jr      NZ, 1$
+        ret   
+__endasm;
+}
+
+UBYTE DMGFadeToBlackStep(UBYTE pal, UBYTE step) __naked {
+    pal; step;
+__asm
+        ldhl    SP, #3
+        ld      A, (HL-)
+        ld      E, (HL)
+        or      A
+        ret     Z
+        
+        ld      D, A
+1$: 
+        ld      H, #4
+2$:
+        ld      A, E
+        and     #3
+        cp      #3
+        jr      Z, 3$
+        inc     A         
+3$:
+        srl     A
+        rr      L
+        srl     A
+        rr      L
+        
+        srl     E
+        srl     E
+
+        dec     H
+        jr      NZ, 2$
+
+        ld      E, L
+
+        dec     D
+        jr      NZ, 1$
+        ret   
+__endasm;
+}
+
+void ApplyPaletteChangeDMG(UBYTE index) {
+    if (index > 4) index = 4;
     if (!fade_style) {
-        OBP0_REG = obj0_fade_vals[index];
-        OBP1_REG = obj1_fade_vals[index];
-        BGP_REG = bgp_fade_vals[index];
-    }
-    else {
-        OBP0_REG = obj0_fade_black_vals[index];
-        OBP1_REG = obj1_fade_black_vals[index];
-        BGP_REG = bgp_fade_black_vals[index];
+        BGP_REG = DMGFadeToWhiteStep((UBYTE)BkgPalette[0], index); 
+        OBP0_REG = DMGFadeToWhiteStep((UBYTE)SprPalette[0], index); 
+        OBP1_REG = DMGFadeToWhiteStep((UBYTE)SprPalette[4], index); 
+    } else {
+        BGP_REG = DMGFadeToBlackStep((UBYTE)BkgPalette[0], index); 
+        OBP0_REG = DMGFadeToBlackStep((UBYTE)SprPalette[0], index); 
+        OBP1_REG = DMGFadeToBlackStep((UBYTE)SprPalette[4], index); 
     }
 }
 
@@ -95,9 +242,10 @@ void fade_init() __banked {
 #ifdef CGB
     if (_cpu == CGB_TYPE) {
         ApplyPaletteChangeColor(fade_timer);
-    } else
+        return;
+    }
 #endif
-        ApplyPaletteChangeDMG(fade_timer);    
+    ApplyPaletteChangeDMG(FADED_OUT_FRAME);    
 }
 
 void fade_in() __banked {
@@ -110,10 +258,11 @@ void fade_in() __banked {
     fade_timer = FADED_OUT_FRAME;
 #ifdef CGB
     if (_cpu == CGB_TYPE) {
-        ApplyPaletteChangeColor(fade_timer);
-    } else
+        ApplyPaletteChangeColor(FADED_OUT_FRAME);
+        return;
+    }
 #endif
-        ApplyPaletteChangeDMG(fade_timer);
+    ApplyPaletteChangeDMG(FADED_OUT_FRAME);
 }
 
 void fade_out() __banked {
@@ -127,33 +276,30 @@ void fade_out() __banked {
 #ifdef CGB
     if (_cpu == CGB_TYPE) {
         ApplyPaletteChangeColor(fade_timer);
-    } else
+        return;
+    }
 #endif
-        ApplyPaletteChangeDMG(fade_timer);
+        ApplyPaletteChangeDMG(FADED_IN_FRAME);
 }
 
 void fade_update() __banked {
     if (fade_running) {
-        if ((fade_frame & fade_frames_per_step) == 0) {
+        if ((fade_frame++ & fade_frames_per_step) == 0) {
             if (fade_direction == FADE_IN) {
-                fade_timer++;
-                if (fade_timer == FADED_IN_FRAME) {
-                    fade_running = FALSE;
-                }
+                if (fade_timer > FADED_IN_FRAME) fade_timer--;
+                if (fade_timer == FADED_IN_FRAME) fade_running = FALSE;
             } else {
-                fade_timer--;
-                if (fade_timer == FADED_OUT_FRAME) {
-                    fade_running = FALSE;
-                }
+                if (fade_timer < FADED_OUT_FRAME) fade_timer++;
+                if (fade_timer == FADED_OUT_FRAME) fade_running = FALSE;
             }
 #ifdef CGB
             if (_cpu == CGB_TYPE) {
                 ApplyPaletteChangeColor(fade_timer);
-            } else
+                return;
+            }
 #endif
-                ApplyPaletteChangeDMG(fade_timer);
+            ApplyPaletteChangeDMG(fade_timer);
         }
-        fade_frame++;
     }
 }
 
@@ -161,9 +307,10 @@ void fade_applypalettechange() __banked {
 #ifdef CGB
     if (_cpu == CGB_TYPE) {
         ApplyPaletteChangeColor(fade_timer);
-    } else
+        return;
+    }
 #endif
-        ApplyPaletteChangeDMG(fade_timer);
+    ApplyPaletteChangeDMG(fade_timer);
 }
 
 void fade_setspeed(UBYTE speed) __banked {

@@ -20,3 +20,8 @@ __pycache__
 /test/*.asm
 /test/*.lst
 *.gb
+/examples/*/obj
+/examples/*/build
+/test/*/obj
+/test/*/build
+/test/*/*.bmp

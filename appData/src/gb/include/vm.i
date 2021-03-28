@@ -687,9 +687,30 @@ OP_VM_RTC_START          = 0x7B
         .db OP_VM_RTC_START, #<START
 .endm
 
+; --- COLOR ---------------------------------------
+
+OP_VM_LOAD_PALETTE       = 0x7C
+.PALETTE_COMMIT          = 1
+.PALETTE_BKG             = 2
+.PALETTE_SPRITE          = 4
+.macro .DMG_PAL COL1, COL2, COL3, COL4
+        .dw #((COL1 & 0x03) | ((COL2 & 0x03) << 2) | ((COL2 & 0x03) << 4) | ((COL4 & 0x03) << 6))
+        .dw 0,0,0 
+.endm
+.macro .CGB_PAL R1,G1,B1 R2,G2,B2 R3,G3,B3 R4,G4,B4
+        .dw #((R1 & 0x1F) | ((G1 & 0x1F) << 5) | ((B1 & 0x1F) << 10))
+        .dw #((R2 & 0x1F) | ((G2 & 0x1F) << 5) | ((B2 & 0x1F) << 10))
+        .dw #((R3 & 0x1F) | ((G3 & 0x1F) << 5) | ((B3 & 0x1F) << 10))
+        .dw #((R4 & 0x1F) | ((G4 & 0x1F) << 5) | ((B4 & 0x1F) << 10))
+.endm
+
+.macro VM_LOAD_PALETTE MASK, OPTIONS
+        .db OP_VM_LOAD_PALETTE, #<OPTIONS, #<MASK
+.endm
+
 ; --- PROJECTILES ---------------------------------
 
-OP_VM_PROJECTILE_LAUNCH     = 0x80
+OP_VM_PROJECTILE_LAUNCH  = 0x80
 .macro VM_PROJECTILE_LAUNCH TYPE, IDX
         .db OP_VM_PROJECTILE_LAUNCH, #>IDX, #<IDX, #<TYPE
 .endm

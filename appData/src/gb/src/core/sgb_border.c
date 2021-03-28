@@ -1,4 +1,4 @@
-#pragma bank 1
+#pragma bank 3
 
 #include <gb/gb.h>
 #include <gb/sgb.h>

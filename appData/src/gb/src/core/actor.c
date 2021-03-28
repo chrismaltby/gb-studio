@@ -80,9 +80,9 @@ void actors_update() __nonbanked {
 
     while (actor) {
         if (actor->pinned) 
-            screen_x = (actor->pos.x >> 4) + 8, screen_y = (actor->pos.y >> 4);
+            screen_x = (actor->pos.x >> 4) + 8, screen_y = (actor->pos.y >> 4) + 8;
         else 
-            screen_x = (actor->pos.x >> 4) - draw_scroll_x + 8, screen_y = (actor->pos.y >> 4) - draw_scroll_y;
+            screen_x = (actor->pos.x >> 4) - draw_scroll_x + 8, screen_y = (actor->pos.y >> 4) - draw_scroll_y + 8;
 
         if (
             // Offscreen horizontally

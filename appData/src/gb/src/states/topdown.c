@@ -23,7 +23,7 @@ void topdown_init() __banked {
     if (topdown_grid == 16) {
         // Snap to 16px grid
         PLAYER.pos.x = ((PLAYER.pos.x >> 8) << 8);
-        PLAYER.pos.y = 8 + ((PLAYER.pos.y >> 8) << 8);
+        PLAYER.pos.y = ((PLAYER.pos.y >> 8) << 8) + 128;
     } else {
         PLAYER.pos.x = ((PLAYER.pos.x >> 7) << 7);
         PLAYER.pos.y = ((PLAYER.pos.y >> 7) << 7);

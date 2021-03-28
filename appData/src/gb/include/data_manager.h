@@ -28,16 +28,16 @@ extern scene_stack_item_t * scene_stack_ptr;
 
 void load_init() __banked;
 
-void load_tiles(const tileset_t* tiles, UBYTE bank) __banked;
-void load_image(const background_t *background, UBYTE bank) __banked;
-void load_palette(const UBYTE *data_ptr, UBYTE bank) __banked;
-void load_ui_palette(const UBYTE *data_ptr, UBYTE bank) __banked;
-void load_sprite_palette(const UBYTE *data_ptr, UBYTE bank) __banked;
-void load_player_palette(const UBYTE *data_ptr, UBYTE bank) __banked;
-UBYTE load_sprite(UBYTE sprite_offset, const spritesheet_t *sprite, UBYTE bank) __banked;
-UBYTE load_scene(const scene_t *scene, UBYTE bank, UBYTE init_data) __banked;
+void load_tiles(const tileset_t * tiles, UBYTE bank) __banked;
+void load_image(const background_t * background, UBYTE bank) __banked;
+void load_palette(const UWORD * data_ptr, UBYTE bank) __banked;
+void load_ui_palette(const UWORD * data_ptr, UBYTE bank) __banked;
+void load_sprite_palette(const UWORD * data_ptr, UBYTE bank) __banked;
+void load_player_palette(const UWORD * data_ptr, UBYTE bank) __banked;
+UBYTE load_sprite(UBYTE sprite_offset, const spritesheet_t * sprite, UBYTE bank) __banked;
+UBYTE load_scene(const scene_t * scene, UBYTE bank, UBYTE init_data) __banked;
 void load_player() __banked;
-void load_emote(const spritesheet_t *sprite, UBYTE bank) __banked;
-void load_animations(const spritesheet_t *sprite, UBYTE bank, animation_t res_animations[4]) __banked;
+void load_emote(const spritesheet_t * sprite, UBYTE bank) __banked;
+void load_animations(const spritesheet_t * sprite, UBYTE bank, animation_t res_animations[4]) __banked;
 
 #endif

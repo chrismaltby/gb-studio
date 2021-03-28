@@ -9,6 +9,7 @@
 #include "vm_rtc.h"
 #include "vm_projectiles.h"
 #include "vm_scene.h"
+#include "vm_palette.h"
 
 // here we define all VM instructions: their handlers and parameter lengths in bytes
 // this array must be nonbanked as well as STEP_VM()
@@ -143,11 +144,13 @@ const SCRIPT_CMD script_cmds[] = {
     {0, 0},
     {0, 0},
     {0, 0},
+    // RTC instructions section
     {vm_rtc_latch,              0}, // 0x78
     {vm_rtc_get,                3}, // 0x79
     {vm_rtc_set,                3}, // 0x7A
     {vm_rtc_start,              1}, // 0x7B
-    {0, 0},
+    // color instrunctions section
+    {vm_load_palette,           2}, // 0x7C
     {0, 0},
     {0, 0},
     {0, 0},

@@ -24,9 +24,7 @@
     #include "sgb_border.h"
     #include "data/border.h"
 #endif
-#ifdef CGB
-    #include "palette.h"
-#endif
+#include "palette.h"
 #include "parallax.h"
 #include "shadow.h"
 #include "data/data_bootstrap.h"
@@ -186,9 +184,7 @@ void main() {
 #endif
 
     display_off();
-#ifdef CGB
     palette_init();
-#endif
 
     LCDC_REG = 0x67;
 
