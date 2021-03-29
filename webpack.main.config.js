@@ -21,7 +21,7 @@ module.exports = {
   },
   plugins: mainPlugins,
   resolve: {
-    extensions: [".wasm", ".js", ".ts", ".jsx", ".tsx", ".css"]
+    extensions: [".js", ".ts", ".jsx", ".tsx", ".wasm", ".css"]
   },
   externals: {
     "about-window": "about-window"

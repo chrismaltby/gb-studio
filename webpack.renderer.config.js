@@ -56,7 +56,7 @@ module.exports = {
   },
   plugins: rendererPlugins,
   resolve: {
-    extensions: [".js", ".ts", ".jsx", ".tsx", ".css"],
+    extensions: [".js", ".ts", ".jsx", ".tsx", ".wasm", ".css"],
     alias: {
       "react-dom": "@hot-loader/react-dom",
     },
