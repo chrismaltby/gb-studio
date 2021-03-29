@@ -87,7 +87,11 @@ export const loadUGESong = (data: ArrayBuffer): (Song | null) => {
       if (length === 64) length = 0;
 
       const instr = {} as DutyInstrument;// new DutyInstrument(name);
-      if (length_enabled) instr.length = length;
+      if (length_enabled) {
+        instr.length = length;
+      } else {
+        instr.length = null;
+      }
 
       instr.name = name;
       instr.duty_cycle = duty;
@@ -104,9 +108,13 @@ export const loadUGESong = (data: ArrayBuffer): (Song | null) => {
       if (length === 256) length = 0;
 
       const instr = {} as WaveInstrument;
-      if (length_enabled)
+      if (length_enabled) {
         instr.length = length;
+      } else {
+        instr.length = null;
+      }
 
+      instr.name = name;
       instr.volume = wave_output_level;
       instr.wave_index = wave_waveform_index;
 
@@ -117,9 +125,13 @@ export const loadUGESong = (data: ArrayBuffer): (Song | null) => {
       if (length === 64) length = 0;
 
       const instr = {} as NoiseInstrument;
-      if (length_enabled)
+      if (length_enabled) {
         instr.length = length;
+      } else {
+        instr.length = null;
+      }
 
+      instr.name = name;
       instr.initial_volume = initial_volume;
       instr.volume_sweep_change = volume_sweep_amount;
 

@@ -105,7 +105,8 @@ const renderNote = (note: number | null): string => {
 }
 
 const renderInstrument = (instrument: number | null): string => {
-  return (instrument)?.toString().padStart(2, "0") || "..";
+  if (instrument === null) return "..";
+  return (instrument + 1).toString().padStart(2, "0") || "..";
 }
 
 const renderEffect = (effectcode: number | null): string => {
