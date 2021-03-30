@@ -860,7 +860,7 @@ class ScriptBuilder {
     const stackPtr = this.stackPtr;
     this._addComment("Actor Move To");
     this._setConst("^/(ACTOR + 1)/", x * 8 * 16);
-    this._setConst("^/(ACTOR + 2)/", (y + 1) * 8 * 16);
+    this._setConst("^/(ACTOR + 2)/", y * 8 * 16);
     this._setConst(
       "^/(ACTOR + 3)/",
       unionFlags(
@@ -913,7 +913,7 @@ class ScriptBuilder {
   actorSetPosition = (x = 0, y = 0) => {
     this._addComment("Actor Set Position");
     this._setConst("^/(ACTOR + 1)/", x * 8 * 16);
-    this._setConst("^/(ACTOR + 2)/", (y + 1) * 8 * 16);
+    this._setConst("^/(ACTOR + 2)/", y * 8 * 16);
     this._actorSetPosition("ACTOR");
     this._addNL();
   };
@@ -1325,7 +1325,7 @@ class ScriptBuilder {
       this._fadeOut(fadeSpeed);
       this._setConst("ACTOR", 0);
       this._setConst("^/(ACTOR + 1)/", x * 8 * 16);
-      this._setConst("^/(ACTOR + 2)/", (y + 1) * 8 * 16);
+      this._setConst("^/(ACTOR + 2)/", y * 8 * 16);
       this._actorSetPosition("ACTOR");
       const asmDir = toASMDir(direction);
       if (asmDir) {
@@ -1933,7 +1933,7 @@ class ScriptBuilder {
       .int16(x * 8 * 16)
       .operator(".EQ")
       .ref("^/(ACTOR + 2)/")
-      .int16((y + 1) * 8 * 16)
+      .int16(y * 8 * 16)
       .operator(".EQ")
       .operator(".AND")
       .stop();
