@@ -20,6 +20,9 @@ export const UgePlayer = ({
     ipcRenderer.send(
       "open-music"
     );
+    return function close() {
+      ipcRenderer.send("close-music");
+    }
   }, []);
 
   const play = useSelector(

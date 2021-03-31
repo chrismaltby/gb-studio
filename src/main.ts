@@ -201,6 +201,10 @@ const createWindow = async (projectPath: string) => {
   mainWindow.on("closed", () => {
     mainWindow = null;
     menu.buildMenu([]);
+
+    if (musicWindow) {
+      musicWindow.destroy();
+    }
   });
 };
 
@@ -424,6 +428,12 @@ ipcMain.on("set-menu-plugins", (event, plugins) => {
 
 ipcMain.on("open-music", async () => {
   createMusic();
+});
+
+ipcMain.on("close-music", async () => {
+  if (musicWindow) {
+    musicWindow.destroy();
+  }
 });
 
 ipcMain.on("music-data-send", (event, data) => {
