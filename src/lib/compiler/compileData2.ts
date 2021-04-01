@@ -4,6 +4,7 @@ import flatten from "lodash/flatten";
 import { SPRITE_TYPE_STATIC } from "../../consts";
 import { SceneParallaxLayer } from "../../store/features/entities/entitiesTypes";
 import { FontData } from "../fonts/fontData";
+import { hexDec } from "../helpers/8bit";
 import { PrecompiledSpriteSheetData } from "./compileSprites";
 import {
   actorFramesPerDir,
@@ -29,6 +30,7 @@ export const TILESET_TYPE = "const struct tileset_t";
 export const TRIGGER_TYPE = "const struct trigger_t";
 export const ACTOR_TYPE = "const struct actor_t";
 export const SCENE_TYPE = "const struct scene_t";
+export const PALETTE_TYPE = "const struct palette_t";
 export const DATA_TYPE = "const unsigned char";
 export const FARPTR_TYPE = "const far_ptr_t";
 export const FONT_FLAG_FONT_RECODE = "FONT_RECODE";
@@ -355,11 +357,9 @@ export const compileScene = (
       background: toFarPtr(backgroundSymbol(scene.backgroundIndex)),
       collisions: toFarPtr(sceneCollisionsSymbol(sceneIndex)),
       colors: color ? toFarPtr(sceneColorsSymbol(sceneIndex)) : undefined,
-      palette: color ? toFarPtr(paletteSymbol(bgPalette)) : undefined,
       parallax_rows: compileParallax(scene.parallax),
-      sprite_palette: color
-        ? toFarPtr(paletteSymbol(actorsPalette))
-        : undefined,
+      palette: toFarPtr(paletteSymbol(bgPalette)),
+      sprite_palette: toFarPtr(paletteSymbol(actorsPalette)),
       player_sprite: toFarPtr(spriteSheetSymbol(scene.playerSpriteIndex)),
       n_actors: scene.actors.length,
       n_triggers: scene.triggers.length,
@@ -386,8 +386,8 @@ export const compileScene = (
       backgroundSymbol(scene.backgroundIndex),
       sceneCollisionsSymbol(sceneIndex),
       color ? sceneColorsSymbol(sceneIndex) : [],
-      color ? paletteSymbol(bgPalette) : [],
-      color ? paletteSymbol(actorsPalette) : [],
+      paletteSymbol(bgPalette),
+      paletteSymbol(actorsPalette),
       spriteSheetSymbol(scene.playerSpriteIndex),
       scene.actors.length ? sceneActorsSymbol(sceneIndex) : [],
       scene.triggers.length > 0 ? sceneTriggersSymbol(sceneIndex) : [],
@@ -438,7 +438,6 @@ export const compileSceneActors = (
   scene: any,
   sceneIndex: number,
   sprites: any[],
-  actorPaletteIndexes: any,
   { eventPtrs }: { eventPtrs: any }
 ) => {
   const mapSpritesLookup: Dictionary<any> = {};
@@ -487,7 +486,6 @@ export const compileSceneActors = (
         bounds: compileBounds(sprite),
         dir: dirEnum(actor.direction),
         sprite: toFarPtr(spriteSheetSymbol(spriteIndex)),
-        palette: actorPaletteIndexes[actor.id] || 0,
         move_speed: Math.round(actor.moveSpeed * 16),
         anim_tick: actor.animSpeed,
         pinned: actor.isPinned ? "TRUE" : "FALSE",
@@ -726,18 +724,47 @@ export const compileBackgroundHeader = (
     `// Background: ${backgroundIndex}`
   );
 
-export const compilePalette = (palette: any, paletteIndex: number) =>
-  toArrayDataFile(
-    DATA_TYPE,
-    paletteSymbol(paletteIndex),
-    `// Palette: ${paletteIndex}`,
-    palette.map(toHex),
-    8
-  );
+export const compileColor = (hex: string): string => {
+  const r = Math.floor(hexDec(hex.substring(0, 2)) * (32 / 256));
+  const g = Math.floor(hexDec(hex.substring(2, 4)) * (32 / 256));
+  const b = Math.max(1, Math.floor(hexDec(hex.substring(4, 6)) * (32 / 256)));
+  return `RGB(${r}, ${g}, ${b})`;
+};
+
+export const compilePalette = (
+  palette: any,
+  paletteIndex: number
+) => `#pragma bank 255
+
+// Palette: ${paletteIndex}
+
+#include "gbs_types.h"
+
+${toBankSymbolInit(paletteSymbol(paletteIndex))};
+
+${PALETTE_TYPE} ${paletteSymbol(paletteIndex)} = {
+    .mask = 0xFF,
+    .palette = {
+        DMG_PALETTE(${palette.dmg.join(", ")}),
+    }${
+      palette.colors
+        ? `,
+    .cgb_palette = {
+${palette.colors
+  .map(
+    (paletteColors: string[]) =>
+      `        CGB_PALETTE(${paletteColors.map(compileColor).join(", ")})`
+  )
+  .join(",\n")}
+    }`
+        : ""
+    }
+};
+`;
 
 export const compilePaletteHeader = (palette: any, paletteIndex: number) =>
   toDataHeader(
-    DATA_TYPE,
+    PALETTE_TYPE,
     paletteSymbol(paletteIndex),
     `// Palette: ${paletteIndex}`
   );
@@ -746,6 +773,7 @@ export const compileFont = (
   font: FontData,
   fontIndex: number
 ) => `#pragma bank 255
+
 // Font: ${font.name}
   
 #include "gbs_types.h"

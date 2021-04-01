@@ -74,8 +74,6 @@ export const getBackgroundInfo = async (
     );
   }
 
-  console.log({ is360, background });
-
   if (
     is360 &&
     (background.imageWidth !== 160 || background.imageHeight !== 144)

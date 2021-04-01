@@ -340,23 +340,12 @@ const compile = async (
 
   // Add palette data
   precompiled.usedPalettes.forEach((palette, paletteIndex) => {
-    const paletteData =
-      palette.length > 0
-        ? palette.reduce((memo, colors) => {
-            return memo.concat(
-              colors.reduce((colorMemo, color) => {
-                const colorVal = convertHexTo15BitDec(color);
-                return colorMemo.concat([lo(colorVal), hi(colorVal)]);
-              }, [])
-            );
-          }, [])
-        : [0];
     output[`${paletteSymbol(paletteIndex)}.c`] = compilePalette(
-      paletteData,
+      palette,
       paletteIndex
     );
     output[`${paletteSymbol(paletteIndex)}.h`] = compilePaletteHeader(
-      paletteData,
+      palette,
       paletteIndex
     );
   });
@@ -452,7 +441,6 @@ const compile = async (
         scene,
         sceneIndex,
         precompiled.usedSprites,
-        precompiled.actorPaletteIndexes,
         { eventPtrs }
       );
     }
@@ -530,9 +518,6 @@ const compile = async (
     `extern const INT16 start_scene_y;\n` +
     `extern const direction_e start_scene_dir;\n` +
     `extern const far_ptr_t start_scene;\n` +
-    (customColorsEnabled
-      ? `extern const far_ptr_t start_player_palette;\n`
-      : "") +
     `extern const UBYTE start_player_move_speed;\n` +
     `extern const UBYTE start_player_anim_tick;\n\n` +
     `extern const far_ptr_t ui_fonts[];\n\n` +
@@ -872,215 +857,109 @@ export const precompilePalettes = async (
   const sceneActorPaletteIndexes = {};
   const eventPaletteIndexes = {};
   const actorPaletteIndexes = {};
-  const MAX_ACTOR_PALETTES = 7;
 
-  if (settings.customColorsEnabled) {
-    const palettesLookup = indexById(palettes);
-    const defaultBackgroundPaletteIds =
-      settings.defaultBackgroundPaletteIds || [];
-    const defaultSpritePaletteId = settings.defaultSpritePaletteId;
-    const defaultUIPaletteId = settings.defaultUIPaletteId;
+  const palettesLookup = indexById(palettes);
+  const defaultBackgroundPaletteIds =
+    settings.defaultBackgroundPaletteIds || [];
+  const defaultSpritePaletteIds = settings.defaultSpritePaletteIds || [];
+  const defaultUIPaletteId = settings.defaultUIPaletteId;
 
-    const getPalette = (id, fallbackId) => {
-      if (id === "dmg") {
-        return DMG_PALETTE;
-      }
-      return palettesLookup[id] || palettesLookup[fallbackId] || DMG_PALETTE;
+  const getPalette = (id, fallbackId) => {
+    if (id === "dmg") {
+      return DMG_PALETTE;
+    }
+    return palettesLookup[id] || palettesLookup[fallbackId] || DMG_PALETTE;
+  };
+
+  // Background palettes
+
+  for (let i = 0; i < scenes.length; i++) {
+    const scene = scenes[i];
+    const sceneBackgroundPaletteIds = scene.paletteIds || [];
+
+    const scenePalette = {
+      dmg: ["DMG_WHITE", "DMG_LITE_GRAY", "DMG_DARK_GRAY", "DMG_BLACK"],
+      colors:
+        settings.customColorsEnabled &&
+        [
+          getPalette(
+            sceneBackgroundPaletteIds[0],
+            defaultBackgroundPaletteIds[0]
+          ),
+          getPalette(
+            sceneBackgroundPaletteIds[1],
+            defaultBackgroundPaletteIds[1]
+          ),
+          getPalette(
+            sceneBackgroundPaletteIds[2],
+            defaultBackgroundPaletteIds[2]
+          ),
+          getPalette(
+            sceneBackgroundPaletteIds[3],
+            defaultBackgroundPaletteIds[3]
+          ),
+          getPalette(
+            sceneBackgroundPaletteIds[4],
+            defaultBackgroundPaletteIds[4]
+          ),
+          getPalette(
+            sceneBackgroundPaletteIds[5],
+            defaultBackgroundPaletteIds[5]
+          ),
+          getPalette(
+            sceneBackgroundPaletteIds[6],
+            defaultBackgroundPaletteIds[6]
+          ),
+          getPalette(defaultUIPaletteId),
+        ].map((p) => p.colors),
     };
 
-    // Player palettes
-
-    const playerPalette = [
-      [].concat(
-        getPalette(settings.playerPaletteId, defaultSpritePaletteId).colors
-      ),
-    ];
-    playerPalette[0][2] = playerPalette[0][1];
-    playerPalette[0][1] = playerPalette[0][0];
-    const playerPaletteKey = JSON.stringify(playerPalette);
-    const playerPaletteIndex = usedPalettes.length;
-    usedPalettes.push(playerPalette);
-    usedPalettesCache[playerPaletteKey] = playerPaletteIndex;
-
-    // UI palettes
-
-    const uiPalette = [getPalette(defaultUIPaletteId)].map((p) => p.colors);
-    const uiPaletteKey = JSON.stringify(uiPalette);
-    const uiPaletteIndex = usedPalettes.length;
-    usedPalettes.push(uiPalette);
-    usedPalettesCache[uiPaletteKey] = uiPaletteIndex;
-
-    // Scene palettes
-
-    for (let i = 0; i < scenes.length; i++) {
-      const scene = scenes[i];
-      const sceneBackgroundPaletteIds = scene.paletteIds || [];
-
-      const scenePalette = [
-        getPalette(
-          sceneBackgroundPaletteIds[0],
-          defaultBackgroundPaletteIds[0]
-        ),
-        getPalette(
-          sceneBackgroundPaletteIds[1],
-          defaultBackgroundPaletteIds[1]
-        ),
-        getPalette(
-          sceneBackgroundPaletteIds[2],
-          defaultBackgroundPaletteIds[2]
-        ),
-        getPalette(
-          sceneBackgroundPaletteIds[3],
-          defaultBackgroundPaletteIds[3]
-        ),
-        getPalette(
-          sceneBackgroundPaletteIds[4],
-          defaultBackgroundPaletteIds[4]
-        ),
-        getPalette(
-          sceneBackgroundPaletteIds[5],
-          defaultBackgroundPaletteIds[5]
-        ),
-      ].map((p) => p.colors);
-
-      const scenePaletteKey = JSON.stringify(scenePalette);
-      if (usedPalettesCache[scenePaletteKey] === undefined) {
-        // New palette
-        const paletteIndex = usedPalettes.length;
-        usedPalettes.push(scenePalette);
-        usedPalettesCache[scenePaletteKey] = paletteIndex;
-        scenePaletteIndexes[scene.id] = paletteIndex;
-      } else {
-        // Already used palette
-        scenePaletteIndexes[scene.id] = usedPalettesCache[scenePaletteKey];
-      }
-
-      // Actor Palettes ---
-
-      const sceneActorPalettes = [];
-      const sceneActorPalettesCache = {};
-
-      // Determine palettes used for each actor in scene
-      for (let a = 0; a < scene.actors.length; a++) {
-        const actor = scene.actors[a];
-
-        const actorPalette = [].concat(
-          getPalette(actor.paletteId, defaultSpritePaletteId).colors
-        );
-        actorPalette[2] = actorPalette[1];
-        actorPalette[1] = actorPalette[0];
-        const actorPaletteKey = JSON.stringify(actorPalette);
-
-        if (sceneActorPalettesCache[actorPaletteKey] === undefined) {
-          const paletteIndex = sceneActorPalettes.length;
-          sceneActorPalettes.push(actorPalette);
-          sceneActorPalettesCache[actorPaletteKey] = paletteIndex;
-
-          if (sceneActorPalettes.length > MAX_ACTOR_PALETTES) {
-            warnings(
-              `Scene #${i + 1} ${
-                scene.name ? `'${scene.name}'` : ""
-              } contains too many unique actor color palettes (${
-                sceneActorPalettes.length
-              } when limit is ${MAX_ACTOR_PALETTES}) some actors may not appear correctly}.`
-            );
-          }
-        }
-      }
-
-      // Sort actor palettes to make it easier to reuse sprite palettes
-      // used in a different order in another scene
-      // Crop to only allow 7 sprites palettes per scene
-      const sortedSceneActorPalettes = sceneActorPalettes
-        .slice(0, MAX_ACTOR_PALETTES)
-        .sort((a, b) => {
-          if (a[0] < b[0]) {
-            return -1;
-          }
-          if (a[0] > b[0]) {
-            return 1;
-          }
-          return 0;
-        });
-
-      // Check if sorted sprite palette has already been used already
-      const sortedActorPaletteKey = JSON.stringify(sortedSceneActorPalettes);
-      if (usedPalettesCache[sortedActorPaletteKey] === undefined) {
-        // New palette
-        const paletteIndex = usedPalettes.length;
-        usedPalettes.push(sortedSceneActorPalettes);
-        usedPalettesCache[sortedActorPaletteKey] = paletteIndex;
-        sceneActorPaletteIndexes[scene.id] = paletteIndex;
-      } else {
-        sceneActorPaletteIndexes[scene.id] =
-          usedPalettesCache[sortedActorPaletteKey];
-      }
-
-      const sceneUsedActorPalette =
-        usedPalettes[sceneActorPaletteIndexes[scene.id]];
-      const sceneUsedActorPaletteKeys = sceneUsedActorPalette.map(
-        JSON.stringify
-      );
-
-      // Determine correct palette index in scene for each actor
-      //  based on the sorted and cropped color palette
-      for (let a = 0; a < scene.actors.length; a++) {
-        const actor = scene.actors[a];
-        const actorPalette = [].concat(
-          getPalette(actor.paletteId, defaultSpritePaletteId).colors
-        );
-        actorPalette[2] = actorPalette[1];
-        actorPalette[1] = actorPalette[0];
-        const actorPaletteKey = JSON.stringify(actorPalette);
-        const actorPaletteIndex = Math.max(
-          0,
-          sceneUsedActorPaletteKeys.indexOf(actorPaletteKey)
-        );
-        actorPaletteIndexes[actor.id] = actorPaletteIndex;
-      }
+    const scenePaletteKey = JSON.stringify(scenePalette);
+    if (usedPalettesCache[scenePaletteKey] === undefined) {
+      // New palette
+      const paletteIndex = usedPalettes.length;
+      usedPalettes.push(scenePalette);
+      usedPalettesCache[scenePaletteKey] = paletteIndex;
+      scenePaletteIndexes[scene.id] = paletteIndex;
+    } else {
+      // Already used palette
+      scenePaletteIndexes[scene.id] = usedPalettesCache[scenePaletteKey];
     }
+  }
 
-    // Event palettes
+  // Actor palettes
 
-    walkScenesEvents(scenes, (event) => {
-      if (event.args && event.command === EVENT_PALETTE_SET_BACKGROUND) {
-        const eventPalette = [
-          getPalette(event.args.palette0, defaultBackgroundPaletteIds[0]),
-          getPalette(event.args.palette1, defaultBackgroundPaletteIds[1]),
-          getPalette(event.args.palette2, defaultBackgroundPaletteIds[2]),
-          getPalette(event.args.palette3, defaultBackgroundPaletteIds[3]),
-          getPalette(event.args.palette4, defaultBackgroundPaletteIds[4]),
-          getPalette(event.args.palette5, defaultBackgroundPaletteIds[5]),
-        ].map((p) => p.colors);
+  for (let i = 0; i < scenes.length; i++) {
+    const scene = scenes[i];
+    const sceneSpritePaletteIds = scene.spritePaletteIds || [];
 
-        const eventPaletteKey = JSON.stringify(eventPalette);
-        if (usedPalettesCache[eventPaletteKey] === undefined) {
-          // New palette
-          const paletteIndex = usedPalettes.length;
-          usedPalettes.push(eventPalette);
-          usedPalettesCache[eventPaletteKey] = paletteIndex;
-          eventPaletteIndexes[event.id] = paletteIndex;
-        } else {
-          // Already used palette
-          eventPaletteIndexes[event.id] = usedPalettesCache[eventPaletteKey];
-        }
-      } else if (event.args && event.command === EVENT_PALETTE_SET_UI) {
-        const eventPalette = [
-          getPalette(event.args.palette, defaultUIPaletteId),
-        ].map((p) => p.colors);
-        const eventPaletteKey = JSON.stringify(eventPalette);
-        if (usedPalettesCache[eventPaletteKey] === undefined) {
-          // New palette
-          const paletteIndex = usedPalettes.length;
-          usedPalettes.push(eventPalette);
-          usedPalettesCache[eventPaletteKey] = paletteIndex;
-          eventPaletteIndexes[event.id] = paletteIndex;
-        } else {
-          // Already used palette
-          eventPaletteIndexes[event.id] = usedPalettesCache[eventPaletteKey];
-        }
-      }
-    });
+    const actorsPalette = {
+      dmg: ["DMG_WHITE", "DMG_WHITE", "DMG_LITE_GRAY", "DMG_BLACK"],
+      colors:
+        settings.customColorsEnabled &&
+        [
+          getPalette(sceneSpritePaletteIds[0], defaultSpritePaletteIds[0]),
+          getPalette(sceneSpritePaletteIds[1], defaultSpritePaletteIds[1]),
+          getPalette(sceneSpritePaletteIds[2], defaultSpritePaletteIds[2]),
+          getPalette(sceneSpritePaletteIds[3], defaultSpritePaletteIds[3]),
+          getPalette(sceneSpritePaletteIds[4], defaultSpritePaletteIds[4]),
+          getPalette(sceneSpritePaletteIds[5], defaultSpritePaletteIds[5]),
+          getPalette(sceneSpritePaletteIds[6], defaultSpritePaletteIds[6]),
+          getPalette(sceneSpritePaletteIds[7], defaultSpritePaletteIds[7]),
+        ].map((p) => p.colors),
+    };
+
+    const actorsPaletteKey = JSON.stringify(actorsPalette);
+    if (usedPalettesCache[actorsPaletteKey] === undefined) {
+      // New palette
+      const paletteIndex = usedPalettes.length;
+      usedPalettes.push(actorsPalette);
+      usedPalettesCache[actorsPaletteKey] = paletteIndex;
+      sceneActorPaletteIndexes[scene.id] = paletteIndex;
+    } else {
+      // Already used palette
+      sceneActorPaletteIndexes[scene.id] = usedPalettesCache[actorsPaletteKey];
+    }
   }
 
   return {
@@ -1327,8 +1206,6 @@ export const precompileScenes = (
         l10n("WARNING_NO_PLAYER_SET_FOR_SCENE_TYPE", { type: scene.type })
       );
     }
-
-    console.log("here", playerSpriteSheetId);
 
     walkSceneEvents(scene, (event) => {
       if (
