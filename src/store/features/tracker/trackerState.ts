@@ -35,7 +35,7 @@ const trackerSlice = createSlice({
     },
     editDutyInstrument: (state, _action: PayloadAction<{ instrumentId: number, changes: Partial<DutyInstrument>}>) => {
       const instrument = state.song.duty_instruments[_action.payload.instrumentId];
-      let patch = { ..._action.payload.changes }
+      const patch = { ..._action.payload.changes }
 
       if (!instrument) {
         return;
@@ -55,7 +55,7 @@ const trackerSlice = createSlice({
     },
     editWaveInstrument: (state, _action: PayloadAction<{ instrumentId: number, changes: Partial<WaveInstrument>}>) => {
       const instrument = state.song.wave_instruments[_action.payload.instrumentId];
-      let patch = { ..._action.payload.changes }
+      const patch = { ..._action.payload.changes }
 
       if (!instrument) {
         return;
@@ -75,7 +75,7 @@ const trackerSlice = createSlice({
     },
     editNoiseInstrument: (state, _action: PayloadAction<{ instrumentId: number, changes: Partial<NoiseInstrument>}>) => {
       const instrument = state.song.noise_instruments[_action.payload.instrumentId];
-      let patch = { ..._action.payload.changes }
+      const patch = { ..._action.payload.changes }
 
       if (!instrument) {
         return;
@@ -99,7 +99,14 @@ const trackerSlice = createSlice({
       const colId = Math.floor(_action.payload.cellId / 4) % 4
       const cellId = _action.payload.cellId % 16 % 4;
       const patternCell = state.song.patterns[patternId][rowId][colId];
-      const patch = { ..._action.payload.changes }
+
+      let patch = { ..._action.payload.changes }
+      if (patch.effectcode && patch.effectcode !== null && patternCell.effectparam === null) {
+        patch = {
+          ...patch,
+          effectparam: 0
+        }
+      }
 
       const patterns = [...state.song.patterns];
       patterns[patternId][rowId][colId] = {

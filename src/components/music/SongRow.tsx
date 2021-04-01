@@ -117,14 +117,14 @@ const renderEffectParam = (effectparam: number | null): string => {
   return (effectparam)?.toString(16).toUpperCase().padStart(2, "0") || "..";
 }
 
-export const SongRow = React.memo(({
+const SongRowFwd = React.forwardRef<HTMLSpanElement, SongRowProps>(({
   n,
   row,
   startCellId,
   selectedCell,
   isPlaying,
   isSelected
-}: SongRowProps) => {
+}: SongRowProps, ref) => {
   return (
     <div>
       <Wrapper isPlaying={isPlaying} isSelected={isSelected} n={n} size="small">
@@ -136,6 +136,7 @@ export const SongRow = React.memo(({
             <NoteCell 
               id={`cell_${n}_${i}_1`} 
               selected={selectedCell === startCellId} 
+              ref={selectedCell === startCellId ? ref : null} 
               data-cellid={startCellId} 
             >
               {renderNote(cell.note)}
@@ -143,6 +144,7 @@ export const SongRow = React.memo(({
             <InstrumentCell 
               id={`cell_${n}_${i}_2`} 
               selected={selectedCell === startCellId + 1} 
+              ref={selectedCell === startCellId + 1 ? ref : null} 
               data-cellid={startCellId + 1} 
             >
               {renderInstrument(cell.instrument)}
@@ -150,6 +152,7 @@ export const SongRow = React.memo(({
             <EffectCodeCell 
               id={`cell_${n}_${i}_3`} 
               selected={selectedCell === startCellId + 2} 
+              ref={selectedCell === startCellId + 2 ? ref : null} 
               data-cellid={startCellId + 2}
               style={{
                 paddingRight: 1
@@ -160,6 +163,7 @@ export const SongRow = React.memo(({
             <EffectParamCell 
               id={`cell_${n}_${i}_4`} 
               selected={selectedCell === startCellId + 3} 
+              ref={selectedCell === startCellId + 3 ? ref : null} 
               data-cellid={startCellId + 3}
               style={{
                 paddingLeft: 1
@@ -175,4 +179,6 @@ export const SongRow = React.memo(({
     )}
     </div>
   )
-})
+});
+
+export const SongRow = React.memo(SongRowFwd);

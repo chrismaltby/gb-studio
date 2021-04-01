@@ -14,7 +14,7 @@ import scrollIntoView from 'scroll-into-view-if-needed';
 interface SongTrackerProps {
   id: string,
   sequenceId: number,
-  data: Song | null,
+  song: Song | null,
   height: number
 }
 
@@ -68,7 +68,7 @@ const SongGridHeaderCell = styled.span<SongGridHeaderCellProps>`
 
 export const SongTracker = ({
   id,
-  data,
+  song,
   sequenceId,
   height
 }: SongTrackerProps) => {
@@ -78,27 +78,36 @@ export const SongTracker = ({
   const playing = useSelector(
     (state: RootState) => state.tracker.playing
   );
-  const patternId = data?.sequence[sequenceId] || 0;
+  const patternId = song?.sequence[sequenceId] || 0;
   const [selectedCell, setSelectedCell] = useState<number | undefined>();
 
-  const list = useRef<HTMLInputElement>(null);
-  if (list && list.current) {
-    if (playing) {
-      list.current.children[playbackState[1]]?.scrollIntoView();
-    } else if (selectedCell !== undefined) {
-      scrollIntoView(
-        list.current.children[Math.floor(selectedCell / ROW_SIZE)],
-        {
-          scrollMode: 'if-needed',
-          block: 'nearest' 
-        }
-      );
+  const playingRowRef = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    if (playingRowRef && playingRowRef.current) {
+      if (playing) {
+        playingRowRef.current.scrollIntoView();
+      }
     }
-  }
+  }, [playing, playbackState]);
+
+  const selectedCellRef = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    if (selectedCellRef && selectedCellRef.current) {
+      if (!playing) {
+        scrollIntoView(
+          selectedCellRef.current.parentElement as Element,
+          {
+            scrollMode: 'if-needed',
+            block: 'nearest' 
+          }
+        );
+      }
+    }  
+  }, [playing, selectedCell]);
 
   useEffect(() => {
     setPlaybackState([-1, -1]);
-  }, [playing])
+  }, [playing, song])
 
   const handleMouseDown = useCallback((e: any) => {
     const cellId = e.target.dataset["cellid"];
@@ -109,10 +118,8 @@ export const SongTracker = ({
     }
   }, []);
 
-
   const handleKeys = useCallback(
     (e: KeyboardEvent) => {
-      
       const editPatternCell = (type: keyof PatternCell) => (value: number | null) => {
         if (selectedCell === undefined) {
           return;
@@ -139,52 +146,30 @@ export const SongTracker = ({
       }
     
       const editInstrumentCell = (value: number | null) => {
-        if (selectedCell === undefined) {
-          return;
+        if (selectedCellRef && selectedCellRef.current) {
+          const el = selectedCellRef.current;
+          let newValue = value;
+          if (value !== null && el.innerText !== ".." && el.innerText !== "15") {
+            newValue = 10 * parseInt(el.innerText[1]) + value;
+            if (newValue > 15) newValue = 15;
+          }     
+          editPatternCell("instrument")(newValue === null ? null : newValue - 1);
         }
-        const el = document.querySelector(`[data-cellid="${selectedCell}"]`) as HTMLElement;
-        let newValue = value;
-        if (value !== null && el.innerText !== ".." && el.innerText !== "15") {
-          newValue = 10 * parseInt(el.innerText[1]) + value;
-          if (newValue > 15) newValue = 15;
-        }     
-        editPatternCell("instrument")(newValue);
       }
     
       const editEffectCodeCell = (value: number | null) => {
-        if (selectedCell === undefined) {
-          return;
-        }
-        const effectParamCell = document.querySelector(`[data-cellid="${selectedCell + 1}"]`) as HTMLElement;
-    
-        if (effectParamCell.innerText === "..") {
-          dispatch(
-            trackerActions.editPatternCell({
-              patternId: patternId,
-              cellId: selectedCell,
-              changes: {
-                effectcode: value,
-                effectparam: 0
-              },
-            })
-          );  
-        } else {
-          editPatternCell("effectcode")(value);
-        }
+        editPatternCell("effectcode")(value);
       }
     
       const editEffectParamCell = (value: number | null) => {
-        if (selectedCell === undefined) {
-          return;
+        if (selectedCellRef && selectedCellRef.current) {
+          const el = selectedCellRef.current;
+          let newValue = value;
+          if (value !== null && el.innerText !== "..") {
+            newValue = 16 * parseInt(el.innerText[1], 16) + value;
+          } 
+          editPatternCell("effectparam")(newValue);
         }
-        let newValue = value;
-        const el = document.querySelector(`[data-cellid="${selectedCell}"]`) as HTMLElement;
-    
-        if (value !== null && el.innerText !== "..") {
-          newValue = 16 * parseInt(el.innerText[1], 16) + value;
-        } 
-      
-        editPatternCell("effectparam")(newValue);
       }
 
       if (selectedCell === undefined) {
@@ -351,7 +336,7 @@ export const SongTracker = ({
       <div style={{ position: "relative", width:"45px" }}>
         <SequenceEditor
           id={id}
-          data={data?.sequence}
+          data={song?.sequence}
           playbackState={playbackState}
           height={height}
         />
@@ -372,29 +357,32 @@ export const SongTracker = ({
         marginTop: "29px"
       }}>
         <SongGrid
-          ref={list}
           tabIndex={0}
           onFocus={onFocus}
           onBlur={onBlur}
         >
-          {data?.patterns[patternId]?.map((row: PatternCell[], i: number) => {
+          {song?.patterns[patternId]?.map((row: PatternCell[], i: number) => {
             const isSelected = selectedCell !== undefined && Math.floor(selectedCell / ROW_SIZE) === i;
-            return (<SongRow
-              id={`__${i}`}
-              n={i}
-              row={row}
-              startCellId={i * ROW_SIZE}
-              selectedCell={isSelected ? selectedCell : undefined}
-              isSelected={isSelected}
-              isPlaying={playbackState[1] === i}
-            />)
+            return (
+            <span ref={playbackState[1] === i ? playingRowRef : null}>
+              <SongRow
+                id={`__${i}`}
+                n={i}
+                row={row}
+                startCellId={i * ROW_SIZE}
+                selectedCell={isSelected ? selectedCell : undefined}
+                isSelected={isSelected}
+                isPlaying={playbackState[1] === i}
+                ref={selectedCellRef}
+              />
+            </span>)
             }
           )}
         </SongGrid>
       </div>
       <UgePlayer
         song={id}
-        data={data}
+        data={song}
         onPlaybackUpdate={setPlaybackState}
       />
     </div>

@@ -81,7 +81,7 @@ const MusicPage = () => {
   );
   useEffect(() => {
     const readSong = async () => {
-      const path: string = `${assetFilename(
+      const path = `${assetFilename(
         projectRoot,
         "music",
         selectedSong
@@ -98,7 +98,7 @@ const MusicPage = () => {
     } else {
       dispatch(trackerActions.loadSong(new Song()));
     }
-  }, [projectRoot, selectedSong]);
+  }, [dispatch, projectRoot, selectedSong]);
 
   const [leftPaneWidth, setLeftPaneSize, startLeftPaneResize] = useResizable({
     initialSize: navigatorSidebarWidth,
@@ -266,7 +266,7 @@ const MusicPage = () => {
             <SongTracker
               id={selectedId}
               sequenceId={sequenceId}
-              data={song}
+              song={song}
               height={windowHeight - 100}
             />
           </div>

@@ -260,7 +260,7 @@ export const saveUGESong = (song: Song): ArrayBuffer => {
   function addShortString(s: string) {
     view.setUint8(idx, s.length);
     idx += 1;
-    let te = new TextEncoder()
+    const te = new TextEncoder()
     te.encodeInto(s, new Uint8Array(buffer, idx, idx + 255));
     idx += 255;
   }
@@ -272,7 +272,7 @@ export const saveUGESong = (song: Song): ArrayBuffer => {
     addUint8(i.length === null ? 0 : 1);
     addUint8(i.initial_volume);
     addUint32(i.volume_sweep_change < 0 ? 1 : 0);
-    addUint8(i.volume_sweep_change != 0 ? 8 - Math.abs(i.volume_sweep_change) : 0);
+    addUint8(i.volume_sweep_change !== 0 ? 8 - Math.abs(i.volume_sweep_change) : 0);
 
     addUint32(i.frequency_sweep_time);
     addUint32(i.frequency_sweep_shift < 0 ? 1 : 0);
@@ -320,7 +320,7 @@ export const saveUGESong = (song: Song): ArrayBuffer => {
     addUint8(i.length === null ? 0 : 1);
     addUint8(i.initial_volume);
     addUint32(i.volume_sweep_change < 0 ? 1 : 0);
-    addUint8(i.volume_sweep_change != 0 ? 8 - Math.abs(i.volume_sweep_change) : 0);
+    addUint8(i.volume_sweep_change !== 0 ? 8 - Math.abs(i.volume_sweep_change) : 0);
 
     addUint32(0);
     addUint32(0);
@@ -333,7 +333,7 @@ export const saveUGESong = (song: Song): ArrayBuffer => {
 
     addUint32(0);
     addUint32(i.dividing_ratio);
-    addUint32(i.bit_count == 7 ? 1 : 0);
+    addUint32(i.bit_count === 7 ? 1 : 0);
   }
 
   addUint32(3); // version
@@ -358,7 +358,7 @@ export const saveUGESong = (song: Song): ArrayBuffer => {
   addUint32(song.ticks_per_row);
 
   addUint32(song.patterns.length * 4);
-  for (let pattern of song.patterns) {
+  for (const pattern of song.patterns) {
     for (let track = 0; track < 4; track++) {
       for (let m = 0; m < 64; m++) {
         const t = pattern[m][track];
@@ -371,7 +371,7 @@ export const saveUGESong = (song: Song): ArrayBuffer => {
   }
   for (let track = 0; track < 4; track++) {
     addUint32(song.sequence.length + 1); //amount of "orders" in a uge file has an off-by-one
-    for (let i of song.sequence) {
+    for (const i of song.sequence) {
       addUint32(i * 4 + track);
     }
     addUint32(0); // add the off-by-one error
