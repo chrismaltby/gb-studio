@@ -1,4 +1,6 @@
+/* eslint-disable camelcase */
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { number } from "prop-types";
 import { PatternCell } from "../../../lib/helpers/uge/song/PatternCell";
 import { createDefaultSong, Song } from "../../../lib/helpers/uge/song/Song";
 import editorActions from "../editor/editorActions";
@@ -7,12 +9,18 @@ import { DutyInstrument, NoiseInstrument, WaveInstrument } from "./trackerTypes"
 export interface TrackerState {
   playing: boolean;
   song: Song;
+  octaveOffset: number;
+  editStep: number;
 }
 
 export const initialState: TrackerState = {
   playing: false,
-  song: createDefaultSong()
+  song: createDefaultSong(),
+  octaveOffset: 0,
+  editStep: 1,
 };
+
+const NUM_NOTES = 72;
 
 const trackerSlice = createSlice({
   name: "tracker",
@@ -97,7 +105,6 @@ const trackerSlice = createSlice({
       const patternId = _action.payload.patternId;
       const rowId = Math.floor(_action.payload.cellId / 16);
       const colId = Math.floor(_action.payload.cellId / 4) % 4
-      const cellId = _action.payload.cellId % 16 % 4;
       const patternCell = state.song.patterns[patternId][rowId][colId];
 
       let patch = { ..._action.payload.changes }
@@ -119,7 +126,33 @@ const trackerSlice = createSlice({
         ...state.song,
         patterns: patterns
       }
-    }
+    },
+    transposeNoteCell: (state, _action: PayloadAction<{ patternId: number, cellId: number, transpose: number}>) => {
+      const patternId = _action.payload.patternId;
+      const rowId = Math.floor(_action.payload.cellId / 16);
+      const colId = Math.floor(_action.payload.cellId / 4) % 4
+      const patternCell = state.song.patterns[patternId][rowId][colId];
+
+      const newNote = patternCell.note === null ? 0 : patternCell.note + _action.payload.transpose;
+
+      const patterns = [...state.song.patterns];
+      patterns[patternId][rowId][colId] = {
+        ...patternCell,
+        note: (newNote % NUM_NOTES + NUM_NOTES) % NUM_NOTES
+      };
+
+      state.song = 
+      {
+        ...state.song,
+        patterns: patterns
+      }
+    },
+    setOctaveOffset: (state, _action: PayloadAction<number>) => {
+      state.octaveOffset = _action.payload;
+    },
+    setEditStep: (state, _action: PayloadAction<number>) => {
+      state.editStep = _action.payload;
+    },
   },
   extraReducers: (builder) =>
     builder

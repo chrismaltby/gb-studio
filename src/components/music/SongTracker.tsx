@@ -78,6 +78,13 @@ export const SongTracker = ({
   const playing = useSelector(
     (state: RootState) => state.tracker.playing
   );
+  const editStep = useSelector(
+    (state: RootState) => state.tracker.editStep
+  );
+  const octaveOffset = useSelector(
+    (state: RootState) => state.tracker.octaveOffset
+  );
+
   const patternId = song?.sequence[sequenceId] || 0;
   const [selectedCell, setSelectedCell] = useState<number | undefined>();
 
@@ -135,13 +142,26 @@ export const SongTracker = ({
         );
       };
     
+      const transposeNoteCell = (value: number) => {
+        if (selectedCell === undefined) {
+          return;
+        }
+        dispatch(
+          trackerActions.transposeNoteCell({
+            patternId: patternId,
+            cellId: selectedCell,
+            transpose: value
+          })
+        );
+      };
+    
       const editNoteCell = (value: number | null) => {
         if (selectedCell === undefined) {
           return;
         }
-        editPatternCell("note")(value);
+        editPatternCell("note")(value === null ? null : value + octaveOffset * 12);
         if (value !== null) {
-          setSelectedCell(selectedCell + ROW_SIZE);
+          setSelectedCell(selectedCell + ROW_SIZE * editStep);
         }
       }
     
@@ -205,6 +225,18 @@ export const SongTracker = ({
       setSelectedCell((tmpSelectedCell % NUM_CELLS + NUM_CELLS) % NUM_CELLS);
 
       if (selectedCell % 4 === 0) {
+
+        if (e.ctrlKey) {
+          console.log(e.ctrlKey, e.shiftKey, e.key);
+          if (e.shiftKey) {
+            if (e.key === "Q") return transposeNoteCell(12);
+            if (e.key === "A") return transposeNoteCell(-12);  
+          } else {
+            if (e.key === "q") return transposeNoteCell(1);
+            if (e.key === "a") return transposeNoteCell(-1);
+          }
+        }
+
         if (e.key === "q") editNoteCell(0);
         if (e.key === "w") editNoteCell(1);
         if (e.key === "e") editNoteCell(2);
@@ -295,7 +327,7 @@ export const SongTracker = ({
         if (e.code === "Delete" || e.code === "Backspace") editEffectParamCell(null);
       }
 
-    }, [dispatch, patternId, selectedCell]);
+    }, [dispatch, editStep, octaveOffset, patternId, selectedCell]);
 
   const handleKeysUp = useCallback(
     (e: KeyboardEvent) => {
