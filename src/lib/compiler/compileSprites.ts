@@ -51,6 +51,7 @@ interface AnimationOffset {
 export type PrecompiledSpriteSheetData = SpriteSheetData & {
   data: number[];
   tiles: IndexedImage[];
+  tilesetIndex: number;
   metasprites: SpriteTileData[][];
   animationOffsets: AnimationOffset[];
   metaspritesOrder: number[];
@@ -198,6 +199,7 @@ const compileSprites = async (
           ...spriteSheet,
           data,
           tiles,
+          tilesetIndex: 0,
           metasprites: uniqFrames,
           animationOffsets,
           metaspritesOrder: orderedFrames,

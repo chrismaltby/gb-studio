@@ -65,6 +65,7 @@ export const denormalizeProject = (project: {
   );
 };
 
+const inodeToRecentBackground: Dictionary<Background> = {};
 const inodeToRecentSpriteSheet: Dictionary<SpriteSheet> = {};
 
 const openProject = createAction<string>("project/openProject");
@@ -98,6 +99,26 @@ const loadBackground = createAsyncThunk<{ data: Background }, string>(
 
     if (!data) {
       throw new Error("Unable to load background");
+    }
+
+    const backgrounds = state.project.present.entities.backgrounds.ids.map(
+      (id) => state.project.present.entities.backgrounds.entities[id]
+    ) as Background[];
+
+    const existingAsset =
+      backgrounds.find(matchAsset(data)) || inodeToRecentBackground[data.inode];
+
+    const existingId = existingAsset?.id;
+
+    if (existingId) {
+      delete inodeToRecentBackground[data.inode];
+      return {
+        data: {
+          ...existingAsset,
+          ...data,
+          id: existingId,
+        },
+      };
     }
 
     return {

@@ -144,9 +144,12 @@ class Scene extends Component {
       triggers = [],
       collisions = [],
       actors = [],
-      tileColors,
       labelColor
     } = scene;
+
+    const { 
+      tileColors
+    } = image;
 
     if (!visible) {
       return null;

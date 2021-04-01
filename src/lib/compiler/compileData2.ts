@@ -20,8 +20,10 @@ interface PrecompiledBackground {
   name: string;
   width: number;
   height: number;
-  tilesetIndex: number;
   data: Uint8Array;
+  tilesetIndex: number;
+  tilemapIndex: number;
+  tilemapAttrIndex: number;
 }
 
 export const BACKGROUND_TYPE = "const struct background_t";
@@ -111,6 +113,12 @@ const toBankSymbolInit = (symbol: string): string =>
 
 const backgroundSymbol = (backgroundIndex: number): string =>
   `background_${backgroundIndex}`;
+
+const tilemapSymbol = (tilemapIndex: number): string =>
+  `tilemap_${tilemapIndex}`;
+
+const tilemapAttrSymbol = (tilemapAttrIndex: number): string =>
+  `tilemap_attr_${tilemapAttrIndex}`;
 
 const tilesetSymbol = (tilesetIndex: number): string =>
   `tileset_${tilesetIndex}`;
@@ -647,6 +655,7 @@ export const compileSpriteSheet = (
 // SpriteSheet: ${spriteSheet.name}
   
 #include "gbs_types.h"
+#include "data/${tilesetSymbol(spriteSheet.tilesetIndex)}.h"
 
 ${toBankSymbolInit(spriteSheetSymbol(spriteSheetIndex))};
 
@@ -680,6 +689,8 @@ ${toStructData(
     metasprites: `${spriteSheetSymbol(spriteSheetIndex)}_metasprites`,
     animations: spriteSheet.animationOffsets,
     tiles: spriteSheet.data.map(toHex),
+    tileset: toFarPtr(tilesetSymbol(spriteSheet.tilesetIndex)),
+    cgb_tileset: "{ NULL, NULL }",
   },
 
   INDENT_SPACES
@@ -710,8 +721,20 @@ export const compileBackground = (
       height: background.height,
       tileset: toFarPtr(tilesetSymbol(background.tilesetIndex)),
       tiles: Array.from(background.data).map(toHex),
+      cgb_tileset: "{ NULL, NULL }",
+      tilemap: toFarPtr(tilemapSymbol(background.tilemapIndex)),
+      cgb_tilemap_attr:
+        background.tilemapAttrIndex !== undefined
+          ? toFarPtr(tilemapAttrSymbol(background.tilemapAttrIndex))
+          : "{ NULL, NULL }",
     },
-    [tilesetSymbol(background.tilesetIndex)]
+    ([] as string[]).concat(
+      tilesetSymbol(background.tilesetIndex),
+      tilemapSymbol(background.tilemapIndex),
+      background.tilemapAttrIndex !== undefined
+        ? tilemapAttrSymbol(background.tilemapAttrIndex)
+        : []
+    )
   );
 
 export const compileBackgroundHeader = (
@@ -722,6 +745,44 @@ export const compileBackgroundHeader = (
     BACKGROUND_TYPE,
     backgroundSymbol(backgroundIndex),
     `// Background: ${backgroundIndex}`
+  );
+
+export const compileTilemap = (tilemap: number[], tilemapIndex: number) =>
+  toArrayDataFile(
+    DATA_TYPE,
+    tilemapSymbol(tilemapIndex),
+    `// Tilemap ${tilemapIndex}`,
+    Array.from(tilemap).map(toHex),
+    16
+  );
+
+export const compileTilemapHeader = (tilemap: number[], tilemapIndex: number) =>
+  toArrayDataHeader(
+    DATA_TYPE,
+    tilemapSymbol(tilemapIndex),
+    `// Tilemap ${tilemapIndex}`
+  );
+
+export const compileTilemapAttr = (
+  tilemapAttr: number[],
+  tilemapAttrIndex: number
+) =>
+  toArrayDataFile(
+    DATA_TYPE,
+    tilemapAttrSymbol(tilemapAttrIndex),
+    `// Tilemap Attr ${tilemapAttrIndex}`,
+    Array.from(tilemapAttr).map(toHex),
+    16
+  );
+
+export const compileTilemapAttrHeader = (
+  tilemapAttr: number[],
+  tilemapAttrIndex: number
+) =>
+  toArrayDataHeader(
+    DATA_TYPE,
+    tilemapAttrSymbol(tilemapAttrIndex),
+    `// Tilemap Attr ${tilemapAttrIndex}`
   );
 
 export const compileColor = (hex: string): string => {

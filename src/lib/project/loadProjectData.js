@@ -53,6 +53,10 @@ const loadProject = async (projectPath) => {
         return {
           ...background,
           id: oldBackground.id,
+          tileColors:
+            oldBackground?.tileColors !== undefined
+              ? oldBackground.tileColors
+              : [],
         };
       }
       return background;

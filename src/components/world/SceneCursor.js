@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import cx from "classnames";
 import { connect } from "react-redux";
 import { PlusIcon, ResizeIcon, CloseIcon, BrickIcon, PaintIcon } from "../library/Icons";
-import { sceneSelectors } from "../../store/features/entities/entitiesState";
+import { backgroundSelectors, sceneSelectors } from "../../store/features/entities/entitiesState";
 import editorActions from "../../store/features/editor/editorActions";
 import settingsActions from "../../store/features/settings/settingsActions";
 import entitiesActions from "../../store/features/entities/entitiesActions";
@@ -74,6 +74,7 @@ class SceneCursor extends Component {
       addActor,
       addTrigger,
       sceneId,
+      backgroundId,
       scene,
       actorDefaults,
       triggerDefaults,
@@ -159,16 +160,16 @@ class SceneCursor extends Component {
       }
 
       if(selectedBrush === BRUSH_FILL) {
-        paintColor({ brush: selectedBrush, sceneId, x, y, paletteIndex: selectedPalette });
+        paintColor({ brush: selectedBrush, backgroundId, x, y, paletteIndex: selectedPalette });
       } else {
         if(this.drawLine && this.startX !== undefined && this.startY !== undefined) {
-          paintColor({ brush: selectedBrush, sceneId, x: this.startX, y: this.startY, endX: x, endY: y, paletteIndex: selectedPalette, drawLine: true });
+          paintColor({ brush: selectedBrush, backgroundId, x: this.startX, y: this.startY, endX: x, endY: y, paletteIndex: selectedPalette, drawLine: true });
           this.startX = x;
           this.startY = y;
         } else {
           this.startX = x;
           this.startY = y;          
-          paintColor({ brush: selectedBrush, sceneId, x, y, paletteIndex: selectedPalette });
+          paintColor({ brush: selectedBrush, backgroundId, x, y, paletteIndex: selectedPalette });
         }
         window.addEventListener("mousemove", this.onColorsMove);
         window.addEventListener("mouseup", this.onColorsStop);
@@ -284,7 +285,7 @@ class SceneCursor extends Component {
       x,
       y,
       enabled,
-      sceneId,
+      backgroundId,
       selectedPalette,
       selectedBrush,
       paintColor
@@ -308,7 +309,7 @@ class SceneCursor extends Component {
           this.lockX = true;
           x1 = this.startX;
         }
-        paintColor({ brush: selectedBrush, sceneId, x: this.startX, y: this.startY, endX: x1, endY: y1, paletteIndex: selectedPalette, drawLine: true });          
+        paintColor({ brush: selectedBrush, backgroundId, x: this.startX, y: this.startY, endX: x1, endY: y1, paletteIndex: selectedPalette, drawLine: true });          
         this.startX = x1;
         this.startY = y1;
       } else {
@@ -318,7 +319,7 @@ class SceneCursor extends Component {
         }
         const x1 = x;
         const y1 = y;
-        paintColor({ brush: selectedBrush, sceneId, x: this.startX, y: this.startY, endX: x1, endY: y1, paletteIndex: selectedPalette, drawLine: true });
+        paintColor({ brush: selectedBrush, backgroundId, x: this.startX, y: this.startY, endX: x1, endY: y1, paletteIndex: selectedPalette, drawLine: true });
         this.startX = x1;
         this.startY = y1;
       }
@@ -414,13 +415,18 @@ function mapStateToProps(state, props) {
   const showCollisions = state.project.present.settings.showCollisions;
   const scenesLookup = sceneSelectors.selectEntities(state);
   const scene = scenesLookup[props.sceneId];
+  let backgroundId = "";
 
   let hoverPalette = -1;
   const hoverScene = sceneSelectors.selectById(state, state.editor.hover.sceneId);
   if (hoverScene) {
-    hoverPalette = Array.isArray(scene.tileColors)
-      ? scene.tileColors[x + y * scene.width]
-      : 0;
+    const background = backgroundSelectors.selectById(state, hoverScene.backgroundId);
+    if (background) {
+      backgroundId = background.id;
+      hoverPalette = Array.isArray(background.tileColors)
+        ? background.tileColors[x + y * scene.width]
+        : 0;
+    }
   }
 
   return {
@@ -436,6 +442,7 @@ function mapStateToProps(state, props) {
     entityId,
     showCollisions,
     scene,
+    backgroundId,
     showLayers,
     hoverPalette
   };

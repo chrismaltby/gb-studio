@@ -607,7 +607,6 @@ const fixAllScenesWithModifiedBackgrounds = (state: EntitiesState) => {
       scene.width = background ? background.width : 32;
       scene.height = background ? background.height : 32;
       scene.collisions = [];
-      scene.tileColors = [];
     }
   }
 };
@@ -655,7 +654,6 @@ const addScene: CaseReducer<
       type: "TOPDOWN",
       paletteIds: [],
       collisions: [],
-      tileColors: [],
       script: [],
       playerHit1Script: [],
       playerHit2Script: [],
@@ -780,7 +778,6 @@ const editScene: CaseReducer<
     if (background) {
       if (otherScene) {
         patch.collisions = otherScene.collisions;
-        patch.tileColors = otherScene.tileColors;
       } else if (
         oldBackground &&
         background &&
@@ -788,11 +785,9 @@ const editScene: CaseReducer<
       ) {
         const collisionsSize = Math.ceil(background.width * background.height);
         patch.collisions = scene.collisions.slice(0, collisionsSize);
-        patch.tileColors = [];
       } else if (background) {
         const collisionsSize = Math.ceil(background.width * background.height);
         patch.collisions = [];
-        patch.tileColors = [];
         for (let i = 0; i < collisionsSize; i++) {
           patch.collisions[i] = 0;
         }
@@ -2061,7 +2056,7 @@ const paintColor: CaseReducer<
   EntitiesState,
   PayloadAction<
     {
-      sceneId: string;
+      backgroundId: string;
       x: number;
       y: number;
       paletteIndex: number;
@@ -2069,13 +2064,9 @@ const paintColor: CaseReducer<
     } & ({ drawLine: false } | { drawLine: true; endX: number; endY: number })
   >
 > = (state, action) => {
-  const scene = localSceneSelectors.selectById(state, action.payload.sceneId);
-  if (!scene) {
-    return;
-  }
   const background = localBackgroundSelectors.selectById(
     state,
-    scene.backgroundId
+    action.payload.backgroundId
   );
   if (!background) {
     return;
@@ -2084,7 +2075,7 @@ const paintColor: CaseReducer<
   const brush = action.payload.brush;
   const drawSize = brush === "16px" ? 2 : 1;
   const tileColorsSize = Math.ceil(background.width * background.height);
-  const tileColors = (scene.tileColors || []).slice(0, tileColorsSize);
+  const tileColors = (background.tileColors || []).slice(0, tileColorsSize);
 
   if (tileColors.length < tileColorsSize) {
     for (let i = tileColors.length; i < tileColorsSize; i++) {
@@ -2140,8 +2131,8 @@ const paintColor: CaseReducer<
     );
   }
 
-  scenesAdapter.updateOne(state.scenes, {
-    id: action.payload.sceneId,
+  backgroundsAdapter.updateOne(state.backgrounds, {
+    id: action.payload.backgroundId,
     changes: {
       tileColors,
     },

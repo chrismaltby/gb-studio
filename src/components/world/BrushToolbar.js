@@ -33,7 +33,7 @@ import PaletteSelect from "../forms/PaletteSelectOld";
 import { FormField } from "../library/Forms";
 import { getCachedObject } from "../../lib/helpers/cache";
 import editorActions from "../../store/features/editor/editorActions";
-import { paletteSelectors, sceneSelectors } from "../../store/features/entities/entitiesState";
+import { backgroundSelectors, paletteSelectors, sceneSelectors } from "../../store/features/entities/entitiesState";
 import { getSettings } from "../../store/features/settings/settingsState";
 import settingsActions from "../../store/features/settings/settingsActions";
 import navigationActions from "../../store/features/navigation/navigationActions";
@@ -405,10 +405,13 @@ function mapStateToProps(state) {
   const scene = sceneSelectors.selectById(state, state.editor.hover.sceneId);
 
   if (scene) {
+    const background = backgroundSelectors.selectById(state, scene.backgroundId);
     const { x, y } = state.editor.hover;
-    highlightPalette = Array.isArray(scene.tileColors)
-      ? scene.tileColors[x + y * scene.width]
-      : 0;
+    if (background) {
+      highlightPalette = Array.isArray(scene.tileColors)
+        ? scene.tileColors[x + y * scene.width]
+        : 0;
+    }
   }
 
   const defaultBackgroundPaletteIds =

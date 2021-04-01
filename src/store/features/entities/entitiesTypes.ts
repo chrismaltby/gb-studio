@@ -62,6 +62,7 @@ export type Background = {
   height: number;
   imageWidth: number;
   imageHeight: number;
+  tileColors: number[];
   plugin?: string;
   inode: string;
   _v: number;
@@ -195,7 +196,6 @@ export type Scene = {
   backgroundId: string;
   paletteIds: string[];
   collisions: number[];
-  tileColors: number[];
   actors: string[];
   triggers: string[];
   parallax?: SceneParallaxLayer[];
