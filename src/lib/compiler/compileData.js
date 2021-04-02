@@ -48,8 +48,6 @@ import {
   compileSceneSpritesHeader,
   compileSceneCollisions,
   compileSceneCollisionsHeader,
-  compileSceneColors,
-  compileSceneColorsHeader,
   compileSpriteSheet,
   compileSpriteSheetHeader,
   compileTileset,
@@ -420,12 +418,6 @@ const compile = async (
       .map((_, index) => {
         return (scene.collisions && scene.collisions[index]) || 0;
       });
-    const tileColorsLength = Math.ceil(sceneImage.width * sceneImage.height);
-    const tileColors = Array(tileColorsLength)
-      .fill(0)
-      .map((_, index) => {
-        return (scene.tileColors && scene.tileColors[index]) || 0;
-      });
     const bgPalette = precompiled.scenePaletteIndexes[scene.id] || 0;
     const actorsPalette = precompiled.sceneActorPaletteIndexes[scene.id] || 0;
 
@@ -442,15 +434,6 @@ const compile = async (
       collisions
     );
     output[`scene_${sceneIndex}_collisions.h`] = compileSceneCollisionsHeader(
-      scene,
-      sceneIndex
-    );
-    output[`scene_${sceneIndex}_colors.c`] = compileSceneColors(
-      scene,
-      sceneIndex,
-      tileColors
-    );
-    output[`scene_${sceneIndex}_colors.h`] = compileSceneColorsHeader(
       scene,
       sceneIndex
     );

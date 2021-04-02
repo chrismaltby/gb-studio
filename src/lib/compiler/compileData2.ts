@@ -171,9 +171,6 @@ export const sceneSpritesSymbol = (sceneIndex: number): string =>
 export const sceneCollisionsSymbol = (sceneIndex: number): string =>
   `scene_${sceneIndex}_collisions`;
 
-export const sceneColorsSymbol = (sceneIndex: number): string =>
-  `scene_${sceneIndex}_colors`;
-
 export const scriptSymbol = (sceneIndex: number): string =>
   `script_${sceneIndex}`;
 
@@ -364,7 +361,6 @@ export const compileScene = (
       type: `SCENE_TYPE_${scene.type}`,
       background: toFarPtr(backgroundSymbol(scene.backgroundIndex)),
       collisions: toFarPtr(sceneCollisionsSymbol(sceneIndex)),
-      colors: color ? toFarPtr(sceneColorsSymbol(sceneIndex)) : undefined,
       parallax_rows: compileParallax(scene.parallax),
       palette: toFarPtr(paletteSymbol(bgPalette)),
       sprite_palette: toFarPtr(paletteSymbol(actorsPalette)),
@@ -393,7 +389,6 @@ export const compileScene = (
     ([] as string[]).concat(
       backgroundSymbol(scene.backgroundIndex),
       sceneCollisionsSymbol(sceneIndex),
-      color ? sceneColorsSymbol(sceneIndex) : [],
       paletteSymbol(bgPalette),
       paletteSymbol(actorsPalette),
       spriteSheetSymbol(scene.playerSpriteIndex),
@@ -604,26 +599,6 @@ export const compileSceneCollisionsHeader = (scene: any, sceneIndex: number) =>
     DATA_TYPE,
     sceneCollisionsSymbol(sceneIndex),
     `// Scene: ${sceneName(scene, sceneIndex)}\n// Collisions`
-  );
-
-export const compileSceneColors = (
-  scene: any,
-  sceneIndex: number,
-  colors: number[]
-) =>
-  toArrayDataFile(
-    DATA_TYPE,
-    sceneColorsSymbol(sceneIndex),
-    `// Scene: ${sceneName(scene, sceneIndex)}\n// Colors`,
-    colors.map(toHex),
-    scene.width
-  );
-
-export const compileSceneColorsHeader = (scene: any, sceneIndex: number) =>
-  toArrayDataHeader(
-    DATA_TYPE,
-    sceneColorsSymbol(sceneIndex),
-    `// Scene: ${sceneName(scene, sceneIndex)}\n// Colors`
   );
 
 export const compileTileset = (tileset: Uint8Array, tilesetIndex: number) =>
