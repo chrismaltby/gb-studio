@@ -684,11 +684,9 @@ ${spriteSheet.metaspritesOrder
 ${SPRITESHEET_TYPE} ${spriteSheetSymbol(spriteSheetIndex)} = {
 ${toStructData(
   {
-    n_tiles: spriteSheet.tiles.length,
     n_metasprites: spriteSheet.metaspritesOrder.length,
     metasprites: `${spriteSheetSymbol(spriteSheetIndex)}_metasprites`,
     animations: spriteSheet.animationOffsets,
-    tiles: spriteSheet.data.map(toHex),
     tileset: toFarPtr(tilesetSymbol(spriteSheet.tilesetIndex)),
     cgb_tileset: "{ NULL, NULL }",
   },
@@ -720,7 +718,6 @@ export const compileBackground = (
       width: background.width,
       height: background.height,
       tileset: toFarPtr(tilesetSymbol(background.tilesetIndex)),
-      tiles: Array.from(background.data).map(toHex),
       cgb_tileset: "{ NULL, NULL }",
       tilemap: toFarPtr(tilemapSymbol(background.tilemapIndex)),
       cgb_tilemap_attr:
