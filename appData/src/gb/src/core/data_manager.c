@@ -2,6 +2,7 @@
 
 #include <string.h>
 
+#include "system.h"
 #include "vm.h"
 #include "data_manager.h"
 #include "linked_list.h"
@@ -11,9 +12,7 @@
 #include "trigger.h"
 #include "camera.h"
 #include "ui.h"
-#ifdef CGB
-    #include "palette.h"
-#endif
+#include "palette.h"
 #include "data/spritesheet_none.h"
 #include "data/data_bootstrap.h"
 
@@ -23,12 +22,16 @@
 #define EMOTE_SPRITE_SIZE       4
 
 far_ptr_t current_scene;
+
 UBYTE image_bank;
-UBYTE image_attr_bank;
-UBYTE collision_bank;
 unsigned char* image_ptr;
+
+UBYTE image_attr_bank;
 unsigned char* image_attr_ptr;
+
+UBYTE collision_bank;
 unsigned char* collision_ptr;
+
 UBYTE image_tile_width;
 UBYTE image_tile_height;
 UINT16 image_width;
@@ -51,7 +54,8 @@ void load_init() __banked {
     scene_stack_ptr = scene_stack;
 }
 
-void load_tiles(const tileset_t* tiles, UBYTE bank) __banked {
+void load_bkg_tileset(const tileset_t* tiles, UBYTE bank) __banked {
+    if ((!bank) || (!tiles)) return;    
     UWORD ntiles = ReadBankedUWORD(&(tiles->n_tiles), bank);
     UBYTE bkg_tiles, sprite_tiles;
     if (ntiles > 256) {
@@ -63,12 +67,16 @@ void load_tiles(const tileset_t* tiles, UBYTE bank) __banked {
     if (sprite_tiles) SetBankedSpriteData(0, sprite_tiles, tiles->tiles + (256 * 16), bank);
 }
 
-void load_image(const background_t* background, UBYTE bank) __banked {
+void load_background(const background_t* background, UBYTE bank) __banked {
     background_t bkg;
     MemcpyBanked(&bkg, background, sizeof(bkg), bank);
 
-    image_bank = bank;
-    image_ptr = background->tiles;
+    image_bank = bkg.tilemap.bank;
+    image_ptr = bkg.tilemap.ptr;
+
+    image_attr_bank = bkg.cgb_tilemap_attr.bank;
+    image_attr_ptr = bkg.cgb_tilemap_attr.ptr;
+
     image_tile_width = bkg.width;
     image_tile_height = bkg.height;
     image_width = image_tile_width * 8;
@@ -76,12 +84,37 @@ void load_image(const background_t* background, UBYTE bank) __banked {
     image_height = image_tile_height * 8;
     scroll_y_max = image_height - ((UINT16)SCREENHEIGHT);
 
-    load_tiles(bkg.tileset.ptr, bkg.tileset.bank);
+    load_bkg_tileset(bkg.tileset.ptr, bkg.tileset.bank);
+#ifdef CGB
+    if ((_is_CGB) && (bkg.cgb_tileset.ptr)) {
+        VBK_REG = 1;
+        load_bkg_tileset(bkg.cgb_tileset.ptr, bkg.cgb_tileset.bank);
+        VBK_REG = 0;
+    }
+#endif
 }
 
-UBYTE load_sprite(UBYTE sprite_offset, const spritesheet_t *sprite, UBYTE bank) __banked {
-    UBYTE n_tiles = ReadBankedUBYTE(&(sprite->n_tiles), bank);
-    SetBankedSpriteData(sprite_offset, n_tiles, sprite->tiles, bank);
+inline UBYTE load_sprite_tileset(UBYTE base_tile, const tileset_t * tileset, UBYTE bank) {
+    UBYTE n_tiles = ReadBankedUBYTE(&(tileset->n_tiles), bank);
+    SetBankedSpriteData(base_tile, n_tiles, tileset->tiles, bank);
+    return n_tiles;
+}
+
+UBYTE load_sprite(UBYTE sprite_offset, const spritesheet_t * sprite, UBYTE bank) __banked {
+    far_ptr_t data; 
+    ReadBankedFarPtr(&data, &sprite->tileset, bank);
+    UBYTE n_tiles = load_sprite_tileset(sprite_offset, data.ptr, data.bank);
+#ifdef CGB
+    if (_is_CGB) {
+        ReadBankedFarPtr(&data, &sprite->cgb_tileset, bank);
+        if (data.ptr) {
+            VBK_REG = 1;
+            UBYTE n_cgb_tiles = load_sprite_tileset(sprite_offset, data.ptr, data.bank);
+            VBK_REG = 0;
+            if (n_cgb_tiles > n_tiles) return n_cgb_tiles;
+        }
+    }
+#endif
     return n_tiles;
 }
 
@@ -89,32 +122,36 @@ void load_animations(const spritesheet_t *sprite, UBYTE bank, animation_t * res_
     MemcpyBanked(res_animations, sprite->animations, sizeof(sprite->animations), bank);
 }
 
-#ifdef CGB
-void load_palette(const UWORD * palette, UBYTE bank) __banked {
-    if (palette_update_mask == 0x3f) {
-        MemcpyBanked(BkgPalette, palette, sizeof(BkgPalette), bank);
-        return;
-    }
-    UWORD * dest = BkgPalette;
-    for (UBYTE i = palette_update_mask; (i); i >>= 1, dest += 4) {
+UBYTE do_load_palette(palette_entry_t * dest, const palette_t * palette, UBYTE bank) __banked {
+    UBYTE mask = ReadBankedUBYTE(&palette->mask, bank);
+    palette_entry_t * sour = palette->cgb_palette; 
+    for (UBYTE i = mask; (i); i >>= 1, dest++) {
         if ((i & 1) == 0) continue;
-        MemcpyBanked(dest, palette, 8, bank);
-        palette += 4; 
+        MemcpyBanked(dest, sour, sizeof(palette_entry_t), bank);
+        sour++; 
     }
+    return mask;
 }
 
-void load_ui_palette(const UWORD * data_ptr, UBYTE bank) __banked {
-    MemcpyBanked(BkgPalette + UI_PALETTE_OFFSET, data_ptr, 8, bank);
-}
-
-void load_sprite_palette(const UWORD * data_ptr, UBYTE bank) __banked {
-    MemcpyBanked(SprPalette, data_ptr, 56, bank);
-}
-
-void load_player_palette(const UWORD * data_ptr, UBYTE bank) __banked {
-    MemcpyBanked(SprPalette + PLAYER_PALETTE_OFFSET, data_ptr, 8, bank);
-}
+inline void load_bkg_palette(const palette_t * palette, UBYTE bank) {
+    UBYTE mask = do_load_palette(BkgPalette, palette, bank);
+    DMG_palette[0] = ReadBankedUBYTE(palette->palette, bank);
+#ifdef SGB
+    if (_is_SGB) {
+        UBYTE sgb_palettes = SGB_PALETTES_NONE;
+        if (mask & 0b00110000) sgb_palettes |= SGB_PALETTES_01;
+        if (mask & 0b11000000) sgb_palettes |= SGB_PALETTES_23;
+        SGBTransferPalettes(sgb_palettes);
+    }
 #endif
+}
+
+inline void load_sprite_palette(const palette_t * palette, UBYTE bank) {
+    do_load_palette(SprPalette, palette, bank);
+    UWORD data = ReadBankedUWORD(palette->palette, bank);
+    DMG_palette[1] = (UBYTE)data;
+    DMG_palette[2] = (UBYTE)(data >> 8);
+}
 
 UBYTE get_farptr_index(const far_ptr_t * list, UBYTE bank, UBYTE count, far_ptr_t * item) {
     far_ptr_t v;
@@ -146,16 +183,11 @@ UBYTE load_scene(const scene_t * scene, UBYTE bank, UBYTE init_data) __banked {
     collision_bank = scn.collisions.bank;
     collision_ptr = scn.collisions.ptr;
 
-    image_attr_bank = scn.colors.bank;
-    image_attr_ptr = scn.colors.ptr;
-
     // Load background + tiles
-    load_image(scn.background.ptr, scn.background.bank);
-#ifdef CGB
-    load_palette(scn.palette.ptr, scn.palette.bank);
+    load_background(scn.background.ptr, scn.background.bank);
+
+    load_bkg_palette(scn.palette.ptr, scn.palette.bank);
     load_sprite_palette(scn.sprite_palette.ptr, scn.sprite_palette.bank);
-    load_player_palette(start_player_palette.ptr, start_player_palette.bank);
-#endif
 
     // Copy parallax settings
     memcpy(&parallax_rows, &scn.parallax_rows, sizeof(parallax_rows));
@@ -277,9 +309,6 @@ void load_player() __banked {
     PLAYER.pos.x = start_scene_x;
     PLAYER.pos.y = start_scene_y;
     PLAYER.dir = start_scene_dir;
-#ifdef CGB
-    PLAYER.palette = PLAYER_PALETTE;
-#endif
     PLAYER.move_speed = start_player_move_speed;
     PLAYER.anim_tick = start_player_anim_tick;
     PLAYER.frame = 0;
@@ -295,7 +324,9 @@ void load_player() __banked {
 }
 
 void load_emote(const spritesheet_t *sprite, UBYTE bank) __banked {
-    SetBankedSpriteData(EMOTE_SPRITE, EMOTE_SPRITE_SIZE, sprite->tiles, bank);
+    far_ptr_t data; 
+    ReadBankedFarPtr(&data, &sprite->tileset, bank);
+    SetBankedSpriteData(EMOTE_SPRITE, EMOTE_SPRITE_SIZE, data.ptr, data.bank);
     set_sprite_prop(0, 0);
     set_sprite_prop(1, 0);
     set_sprite_tile(0, EMOTE_SPRITE);

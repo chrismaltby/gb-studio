@@ -68,7 +68,7 @@ void SetBankedWinTiles(UINT8 x, UINT8 y, UINT8 w, UINT8 h, const unsigned char *
  * @param ptr memory address of data within bank
  * @param bank bank to read from
  */
-void ReadBankedFarPtr(far_ptr_t * dest, const unsigned char *ptr, UBYTE bank) __preserves_regs(b, c);
+void ReadBankedFarPtr(far_ptr_t * dest, const void *ptr, UBYTE bank) __preserves_regs(b, c);
 
 /**
  * Read UWORD from banked memory location (non-reentrant!)
@@ -77,7 +77,7 @@ void ReadBankedFarPtr(far_ptr_t * dest, const unsigned char *ptr, UBYTE bank) __
  * @param bank bank to read from
  * @return value stored in banked location
  */
-UWORD ReadBankedUWORD(const unsigned char *ptr, UBYTE bank) __preserves_regs(b, c);
+UWORD ReadBankedUWORD(const void *ptr, UBYTE bank) __preserves_regs(b, c);
 
 /**
  * Read UBYTE from banked memory location (non-reentrant!)
@@ -86,7 +86,7 @@ UWORD ReadBankedUWORD(const unsigned char *ptr, UBYTE bank) __preserves_regs(b, 
  * @param bank bank to read from
  * @return value stored in banked location
  */
-inline UBYTE ReadBankedUBYTE(const unsigned char *ptr, UBYTE bank) {
+inline UBYTE ReadBankedUBYTE(const void *ptr, UBYTE bank) {
     return (UBYTE)ReadBankedUWORD(ptr, bank);
 } 
 

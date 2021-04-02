@@ -10,7 +10,7 @@ void vm_input_wait(SCRIPT_CTX * THIS, UBYTE mask) __banked;
 void vm_context_prepare(SCRIPT_CTX * THIS, UBYTE slot, UBYTE bank, UBYTE * pc) __banked;
 void vm_input_attach(SCRIPT_CTX * THIS, UBYTE mask, UBYTE slot) __banked;
 void vm_input_detach(SCRIPT_CTX * THIS, UBYTE mask) __banked;
-void vm_input_get(SCRIPT_CTX * THIS, INT16 idx) __banked;
+void vm_input_get(SCRIPT_CTX * THIS, INT16 idx, UBYTE joyid) __banked;
 void vm_fade_in(SCRIPT_CTX * THIS, UBYTE is_modal) __banked; 
 void vm_fade_out(SCRIPT_CTX * THIS, UBYTE is_modal) __banked; 
 void vm_timer_prepare(SCRIPT_CTX * THIS, UBYTE timer, UBYTE bank, UBYTE * pc) __banked;

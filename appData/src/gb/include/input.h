@@ -3,6 +3,11 @@
 
 #include <gb/gb.h>
 
+#ifdef SGB
+    #define MAX_JOYPADS 2
+#endif
+#define joy (joypads.joy0)
+
 /* TRUE if any button is being held */
 #define INPUT_ANY (joy)
 
@@ -84,7 +89,7 @@
 
 #define INPUT_DPAD 0xF
 
-extern UBYTE joy;
+extern joypads_t joypads;
 extern UBYTE last_joy;
 extern UBYTE recent_joy;
 

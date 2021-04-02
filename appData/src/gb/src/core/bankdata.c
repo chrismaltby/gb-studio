@@ -98,7 +98,7 @@ __asm
 __endasm;  
 }
 
-void ReadBankedFarPtr(far_ptr_t * dest, const unsigned char *ptr, UBYTE bank) __preserves_regs(b, c) __naked {
+void ReadBankedFarPtr(far_ptr_t * dest, const void *ptr, UBYTE bank) __preserves_regs(b, c) __naked {
   dest; ptr; bank;
 __asm
     ldh a, (__current_bank)
@@ -133,7 +133,7 @@ __asm
 __endasm;  
 }
 
-UWORD ReadBankedUWORD(const unsigned char *ptr, UBYTE bank) __preserves_regs(b, c) __naked {
+UWORD ReadBankedUWORD(const void *ptr, UBYTE bank) __preserves_regs(b, c) __naked {
   ptr; bank;
 __asm
     ldh a, (__current_bank)

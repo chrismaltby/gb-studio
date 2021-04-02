@@ -365,6 +365,13 @@ void vm_debug(UWORD dummy0, UWORD dummy1, SCRIPT_CTX * THIS, UBYTE nargs) __nonb
     THIS->PC = s;
 }
 
+void vm_test_terminate(SCRIPT_CTX * THIS) __banked {
+    THIS;
+__asm
+        ld b, b
+__endasm;
+}
+
 // puts context into a waitable state
 void vm_idle(SCRIPT_CTX * THIS) __banked {
     THIS->waitable = TRUE;
@@ -634,6 +641,8 @@ SCRIPT_CTX * script_execute(UBYTE bank, UBYTE * pc, UWORD * handle, INT8 nargs, 
         tmp->lock_count = 0;
         // clear flags
         tmp->flags = 0;
+        // Clear update fn
+        tmp->update_fn_bank = 0;
         // add context to active list
         tmp->next = first_ctx, first_ctx = tmp;
         // push threadlocals

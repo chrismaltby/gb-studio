@@ -52,10 +52,10 @@ void vm_input_detach(SCRIPT_CTX * THIS, UBYTE mask) __banked {
     }
 }
 
-void vm_input_get(SCRIPT_CTX * THIS, INT16 idx) __banked { 
+void vm_input_get(SCRIPT_CTX * THIS, INT16 idx, UBYTE joyid) __banked { 
     INT16 * A;
     if (idx < 0) A = THIS->stack_ptr + idx; else A = script_memory + idx;
-    *A = joy;
+    *A = joypads.joypads[joyid];
 }
 
 void vm_fade_in(SCRIPT_CTX * THIS, UBYTE is_modal) __banked {

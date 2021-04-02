@@ -49,7 +49,6 @@ typedef struct actor_t
   UINT8 frame_end;
   UINT8 anim_tick;
   UINT8 move_speed;
-  UINT8 palette;
   UINT8 animation;
   animation_t animations[8];
   far_ptr_t sprite;
@@ -75,7 +74,9 @@ typedef struct scene_t {
     scene_type_e type;
     UINT8 n_actors, n_triggers, n_projectiles, n_sprites;
     far_ptr_t player_sprite;
-    far_ptr_t background, collisions, colors, palette, sprite_palette;
+    far_ptr_t background, collisions; 
+    far_ptr_t colors;               // TODO: remove 
+    far_ptr_t palette, sprite_palette;
     far_ptr_t script_init, script_p_hit1, script_p_hit2, script_p_hit3;
     far_ptr_t sprites;
     far_ptr_t actors;
@@ -87,7 +88,10 @@ typedef struct scene_t {
 typedef struct background_t {
     UINT8 width, height;
     far_ptr_t tileset;
-    UINT8 tiles[];
+    far_ptr_t cgb_tileset;
+    far_ptr_t tilemap;              // far pointer to array of bytes with map
+    far_ptr_t cgb_tilemap_attr;     // far pointer to array of bytes with CGB attributes (may be NULL)
+    UINT8 tiles[];                  // TODO: remove
 } background_t;
 
 typedef struct tileset_t {
@@ -96,11 +100,13 @@ typedef struct tileset_t {
 } tileset_t;
 
 typedef struct spritesheet_t {
-    UINT8 n_tiles;
+    UINT8 n_tiles;                  // TODO: remove
     UINT8 n_metasprites;
     metasprite_t * const *metasprites;
     animation_t animations[8];
-    UINT8 tiles[];
+    far_ptr_t tileset;              // far pointer to sprite tileset
+    far_ptr_t cgb_tileset;          // far pointer to additional CGB tileset (may be NULL)
+    UINT8 tiles[];                  // TODO: remove
 } spritesheet_t;
 
 typedef struct projectile_def_t
@@ -148,5 +154,24 @@ typedef struct menu_item_t {
     UBYTE X, Y;
     UBYTE iL, iR, iU, iD;
 } menu_item_t;
+
+#define DMG_BLACK 0x03
+#define DMG_DARK_GRAY 0x02
+#define DMG_LITE_GRAY 0x01
+#define DMG_WHITE 0x00
+#define DMG_PALETTE(C0, C1, C2, C3) ((UBYTE)((((C3) & 0x03) << 6) | (((C2) & 0x03) << 4) | (((C1) & 0x03) << 2) | ((C0) & 0x03)))
+
+#define CGB_PALETTE(C0, C1, C2, C3) {C0, C1, C2, C3}
+#define CGB_COLOR(R, G, B) ((UWORD)(((R) & 0x1f) | (((G) & 0x1f) << 5) | (((B) & 0x1f) << 10)))
+
+typedef struct palette_entry_t { 
+    UWORD c0, c1, c2, c3;
+} palette_entry_t;
+
+typedef struct palette_t {
+    UBYTE mask;
+    UBYTE palette[2];
+    palette_entry_t cgb_palette[];
+} palette_t;
 
 #endif

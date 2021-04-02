@@ -1,11 +1,11 @@
 #pragma bank 3
 
+#include <gb/gb.h>
 #ifdef CGB
-    #include <gb/gb.h>
     #include <gb/cgb.h>
-    #include <string.h>
 #endif
 
+#include "system.h"
 #include "fade_manager.h"
 #include "palette.h"
 
@@ -25,7 +25,7 @@ static FADE_DIRECTION fade_direction;
 
 #ifdef CGB
 
-void CGBFadeToWhiteStep(UWORD *pal, UBYTE reg, UBYTE step) __naked {
+void CGBFadeToWhiteStep(const palette_entry_t * pal, UBYTE reg, UBYTE step) __naked {
     pal; reg; step;
 __asm
         ldhl sp, #5
@@ -79,7 +79,7 @@ __asm
 __endasm;
 }
 
-void CGBFadeToBlackStep(UWORD *pal, UBYTE reg, UBYTE step) __naked {
+void CGBFadeToBlackStep(const palette_entry_t * pal, UBYTE reg, UBYTE step) __naked {
     pal; reg; step;
 __asm
         ldhl sp, #5
@@ -223,13 +223,13 @@ __endasm;
 void ApplyPaletteChangeDMG(UBYTE index) {
     if (index > 4) index = 4;
     if (!fade_style) {
-        BGP_REG = DMGFadeToWhiteStep((UBYTE)BkgPalette[0], index); 
-        OBP0_REG = DMGFadeToWhiteStep((UBYTE)SprPalette[0], index); 
-        OBP1_REG = DMGFadeToWhiteStep((UBYTE)SprPalette[4], index); 
+        BGP_REG = DMGFadeToWhiteStep(DMG_palette[0], index); 
+        OBP0_REG = DMGFadeToWhiteStep(DMG_palette[1], index); 
+        OBP1_REG = DMGFadeToWhiteStep(DMG_palette[2], index); 
     } else {
-        BGP_REG = DMGFadeToBlackStep((UBYTE)BkgPalette[0], index); 
-        OBP0_REG = DMGFadeToBlackStep((UBYTE)SprPalette[0], index); 
-        OBP1_REG = DMGFadeToBlackStep((UBYTE)SprPalette[4], index); 
+        BGP_REG = DMGFadeToBlackStep(DMG_palette[0], index); 
+        OBP0_REG = DMGFadeToBlackStep(DMG_palette[1], index); 
+        OBP1_REG = DMGFadeToBlackStep(DMG_palette[2], index); 
     }
 }
 
@@ -240,7 +240,7 @@ void fade_init() __banked {
     fade_black = 0;
     fade_style = 0;
 #ifdef CGB
-    if (_cpu == CGB_TYPE) {
+    if (_is_CGB) {
         ApplyPaletteChangeColor(fade_timer);
         return;
     }
@@ -257,7 +257,7 @@ void fade_in() __banked {
     fade_running = TRUE;
     fade_timer = FADED_OUT_FRAME;
 #ifdef CGB
-    if (_cpu == CGB_TYPE) {
+    if (_is_CGB) {
         ApplyPaletteChangeColor(FADED_OUT_FRAME);
         return;
     }
@@ -274,7 +274,7 @@ void fade_out() __banked {
     fade_running = TRUE;
     fade_timer = FADED_IN_FRAME;
 #ifdef CGB
-    if (_cpu == CGB_TYPE) {
+    if (_is_CGB) {
         ApplyPaletteChangeColor(fade_timer);
         return;
     }
@@ -293,7 +293,7 @@ void fade_update() __banked {
                 if (fade_timer == FADED_OUT_FRAME) fade_running = FALSE;
             }
 #ifdef CGB
-            if (_cpu == CGB_TYPE) {
+            if (_is_CGB) {
                 ApplyPaletteChangeColor(fade_timer);
                 return;
             }
@@ -305,7 +305,7 @@ void fade_update() __banked {
 
 void fade_applypalettechange() __banked {
 #ifdef CGB
-    if (_cpu == CGB_TYPE) {
+    if (_is_CGB) {
         ApplyPaletteChangeColor(fade_timer);
         return;
     }

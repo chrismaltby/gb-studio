@@ -9,15 +9,18 @@
 #define MENU_CANCEL_LAST 1
 #define MENU_CANCEL_B 2
 
-#define TEXT_BUFFER_START 0xCCU
+#define TEXT_BUFFER_START 0xCCu
+#define TEXT_BUFFER_START_BANK1 0xC0u
+#define TEXT_BUFFER_LEN ((UBYTE)(0x100 - TEXT_BUFFER_START))
 #define TEXT_BKG_FILL_W 0x00u
 #define TEXT_BKG_FILL_B 0xffu
-#define TEXT_MAX_LENGTH 220
+#define TEXT_MAX_LENGTH 255
+
+#define UI_PALETTE 0
 
 #define MENU_OPEN_Y 112
 #define WIN_LEFT_X 7
 #define MENU_CLOSED_Y (MAXWNDPOSY + 1U)
-#define TEXT_BUFFER_START 0xCCU
 #define MENU_LAYOUT_INITIAL_X 88
 #define MENU_CANCEL_ON_LAST_OPTION 0x01U
 #define MENU_CANCEL_ON_B_PRESSED 0x02U
@@ -52,6 +55,7 @@ extern unsigned char ui_text_data[TEXT_MAX_LENGTH];
 extern UBYTE vwf_direction;
 extern font_desc_t vwf_current_font_desc;
 extern UBYTE vwf_current_font_bank;
+extern UBYTE vwf_tile_data[];
 
 void ui_init() __banked;
 void ui_update() __nonbanked;  // critical path, __nonbanked for speed

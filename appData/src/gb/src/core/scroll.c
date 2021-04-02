@@ -4,6 +4,7 @@
 
 #include <string.h>
 
+#include "system.h"
 #include "actor.h"
 #include "camera.h"
 #include "data_manager.h"
@@ -177,7 +178,7 @@ void scroll_render_rows(INT16 scroll_x, INT16 scroll_y, BYTE row_offset, BYTE n_
     } else if (!fade_timer == 0) {
         // Immediately set all palettes black while screen renders.
 #ifdef CGB
-        if (_cpu == CGB_TYPE) {
+        if (_is_CGB) {
             CGBZeroPalette((UBYTE)(&BCPS_REG));
             CGBZeroPalette((UBYTE)(&OCPS_REG));
         } else
@@ -242,7 +243,7 @@ void scroll_load_pending_row() __nonbanked {
     UBYTE width = MIN(pending_w_i, PENDING_BATCH_SIZE);
 
 #ifdef CGB
-    if (_cpu == CGB_TYPE) {  // Color Row Load
+    if (_is_CGB) {  // Color Row Load
         SWITCH_ROM_MBC1(image_attr_bank);
         VBK_REG = 1;
         set_bkg_submap(pending_w_x, pending_w_y, width, 1, image_attr_ptr, image_tile_width);
@@ -264,7 +265,7 @@ void scroll_load_row(UBYTE x, UBYTE y) __nonbanked {
     UINT8 _save = _current_bank;
 
 #ifdef CGB
-    if (_cpu == CGB_TYPE) {  // Color Column Load
+    if (_is_CGB) {  // Color Column Load
         VBK_REG = 1;
         SWITCH_ROM_MBC1(image_attr_bank);
         set_bkg_submap(x, y, SCREEN_TILE_REFRES_W, 1, image_attr_ptr, image_tile_width);
@@ -282,7 +283,7 @@ void scroll_load_col(UBYTE x, UBYTE y, UBYTE height) __nonbanked {
     UINT8 _save = _current_bank;
  
 #ifdef CGB
-    if (_cpu == CGB_TYPE) {  // Color Column Load
+    if (_is_CGB) {  // Color Column Load
         SWITCH_ROM_MBC1(image_attr_bank);
         VBK_REG = 1;
         set_bkg_submap(x, y, 1, height, image_attr_ptr, image_tile_width);
@@ -302,7 +303,7 @@ void scroll_load_pending_col() __nonbanked {
 
     SWITCH_ROM_MBC1(image_bank);
 #ifdef CGB
-    if (_cpu == CGB_TYPE) {  // Color Column Load
+    if (_is_CGB) {  // Color Column Load
         SWITCH_ROM_MBC1(image_attr_bank);
         VBK_REG = 1;
         set_bkg_submap(pending_h_x, pending_h_y, 1, height, image_attr_ptr, image_tile_width);

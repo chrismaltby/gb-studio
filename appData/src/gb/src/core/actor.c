@@ -20,6 +20,8 @@
 #define EMOTE_BOUNCE_FRAMES        15
 #define EMOTE_TILE                 124
 
+#define BANK_EMOTE_METASPRITE 1
+
 const BYTE emote_offsets[] = {2, 1, 0, -1, -2, -3, -4, -5, -6, -5, -4, -3, -2, -1, 0};
 
 const metasprite_t emote_metasprite[]  = {
@@ -64,6 +66,7 @@ void actors_update() __nonbanked {
     actor = &PLAYER;
 
     if (emote_actor) {
+        SWITCH_ROM_MBC1(BANK_EMOTE_METASPRITE); // bank of emote_offsets[] and emote_metasprite[]
         screen_x = (emote_actor->pos.x >> 4) - scroll_x + 8;
         screen_y = (emote_actor->pos.y >> 4) - scroll_y - 16;   
         if (emote_timer < EMOTE_BOUNCE_FRAMES) {

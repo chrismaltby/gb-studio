@@ -1,10 +1,28 @@
         .include        "global.s"
 
-        .globl _vwf_current_rotate, _vwf_current_mask, _vwf_inverse_map
+        .globl _vwf_current_rotate, _vwf_current_mask, _vwf_inverse_map, _vwf_tile_data
 
         .area _BSS
 
         .area _CODE_1
+
+_ui_swap_tiles::
+        ld hl, #_vwf_tile_data
+        ld de, #(_vwf_tile_data + 16)
+        ld a, (_text_bkg_fill)
+        ld b, a
+        ld c, #2
+1$:
+        .rept 8
+            ld a, (de)
+            ld (hl+), a
+            ld a, b
+            ld (de), a
+            inc de
+        .endm
+        dec c
+        jr nz, 1$
+        ret
 
 _ui_print_make_mask_lr::
         ldhl sp, #2

@@ -107,12 +107,25 @@ _hide_hardware_sprites::
         ld      h, a
         ld      l, d
 
-        xor     a
-1$:
-        ld      (hl), a
+        ld      a, e
+        ld      e, b            ; b is 0
+
+        rra                     ; carry is never set here, because of ret c above
+        jr      nc, 1$
+
+        ld      (hl), e
         add     hl, bc
 
-        dec     e
+        ret     z               ; z is not affected by add hl, bc
+
+1$:
+        ld      (hl), e
+        add     hl, bc
+
+        ld      (hl), e
+        add     hl, bc
+
+        dec     a
         jr      nz, 1$
 
         ret

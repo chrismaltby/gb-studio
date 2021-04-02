@@ -10,6 +10,7 @@
 #include "vm_projectiles.h"
 #include "vm_scene.h"
 #include "vm_palette.h"
+#include "vm_sgb.h"
 
 // here we define all VM instructions: their handlers and parameter lengths in bytes
 // this array must be nonbanked as well as STEP_VM()
@@ -56,7 +57,7 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_raise,                  2}, // 0x27
     {vm_set_indirect,           4}, // 0x28
     {vm_get_indirect,           4}, // 0x29
-    {0, 0},
+    {vm_test_terminate,         0}, // 0x2A
     {0, 0},
     {vm_sin_scale,              5}, // 0x2C 
     {vm_cos_scale,              5}, // 0x2D
@@ -104,7 +105,7 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_hide_sprites,           0}, // 0x51
     {vm_input_wait,             1}, // 0x52
     {vm_input_attach,           2}, // 0x53
-    {vm_input_get,              2}, // 0x54
+    {vm_input_get,              3}, // 0x54
     {vm_context_prepare,        4}, // 0x55
     {vm_fade_in,                1}, // 0x56
     {vm_fade_out,               1}, // 0x57
@@ -152,7 +153,8 @@ const SCRIPT_CMD script_cmds[] = {
     // color instrunctions section
     {vm_load_palette,           2}, // 0x7C
     {0, 0},
-    {0, 0},
+    // SGB instructions section
+    {vm_sgb_transfer,           0}, // 0x7E
     {0, 0},
 
     // projectiles instructions section

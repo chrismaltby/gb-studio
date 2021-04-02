@@ -2,6 +2,8 @@
 
 #include <gb/cgb.h>
 
+#include "system.h"
+#include "gbs_types.h"
 #include "vm_palette.h"
 
 #include "vm.h"
@@ -9,38 +11,58 @@
 
 void vm_load_palette(SCRIPT_CTX * THIS, UBYTE mask, UBYTE options) __banked {
     UBYTE bank = THIS->bank;
-    const UWORD * sour = (const UWORD *)THIS->PC;
-    UWORD * dest = BkgPalette;
-    for (UBYTE i = mask, nb = 0; (i != 0); dest += 4, nb++, i >>= 1) {
+    #ifdef SGB
+        UBYTE sgb_changes = SGB_PALETTES_NONE;
+    #endif
+    const palette_entry_t * sour = (const palette_entry_t *)THIS->PC;
+    palette_entry_t * dest = (options & PALETTE_BKG) ? BkgPalette : SprPalette;
+    for (UBYTE i = mask, nb = 0; (i != 0); dest++, nb++, i >>= 1) {
         if ((i & 1) == 0) continue;
-        MemcpyBanked(dest, sour, sizeof(UWORD) * 4, bank);
+        if ((_is_CGB) || (nb > 1)) {
+            MemcpyBanked(dest, sour, sizeof(palette_entry_t), bank);
+        } else {
+            UBYTE DMGPal;
+            switch (nb) {
+                case 0: 
+                    DMGPal = ReadBankedUBYTE((void *)sour, bank);
+                    if (options & PALETTE_BKG) {
+                        DMG_palette[0] = DMGPal;
+                        if (options & PALETTE_COMMIT) BGP_REG = DMGPal;
+                    }
+                    if (options & PALETTE_SPRITE) {
+                        DMG_palette[1] = DMGPal;
+                        if (options & PALETTE_COMMIT) OBP0_REG = DMGPal;
+                    }
+                    break;
+                case 1:
+                    if (options & PALETTE_SPRITE) {
+                        DMGPal = ReadBankedUBYTE((void *)sour, bank);
+                        DMG_palette[2] = DMGPal;
+                        if (options & PALETTE_COMMIT) OBP1_REG = DMGPal;
+                    }
+                    break;
+            }
+        }
         if (options & PALETTE_COMMIT) {
             #ifdef CGB
-                if (_cpu == CGB_TYPE) { 
-                    if (options & PALETTE_BKG) set_bkg_palette(nb, 1, dest);
-                    if (options & PALETTE_SPRITE) set_sprite_palette(nb, 1, dest); 
-                    sour += 4;
+                if (_is_CGB) { 
+                    if (options & PALETTE_BKG) set_bkg_palette(nb, 1, (void *)dest);
+                    if (options & PALETTE_SPRITE) set_sprite_palette(nb, 1, (void *)dest); 
+                    sour++;
                     continue;
                 }
             #endif
             #ifdef SGB
-                // TODO: check and apply SGB palettes here
-            #endif
-            if (options & PALETTE_BKG) {
-                if (nb == 0) BGP_REG = *((UBYTE *)dest);
-            }
-            if (options & PALETTE_SPRITE) {
-                switch (nb) {
-                    case 0:
-                        OBP0_REG = *((UBYTE *)dest);
-                        break;
-                    case 1:
-                        OBP1_REG = *((UBYTE *)dest);
-                        break;
+                if (options & PALETTE_BKG) {
+                    if ((nb == 4) || (nb == 5)) sgb_changes |= SGB_PALETTES_01;
+                    if ((nb == 6) || (nb == 7)) sgb_changes |= SGB_PALETTES_23;
                 }
-            } 
+            #endif
         } 
-        sour += 4; 
+        sour++; 
     }
+    #ifdef SGB
+        if ((sgb_changes) && (_is_SGB)) SGBTransferPalettes(sgb_changes);
+    #endif
     THIS->PC = (UBYTE *)sour;
 }

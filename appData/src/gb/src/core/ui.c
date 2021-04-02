@@ -2,6 +2,7 @@
 
 #include <string.h>
 
+#include "system.h"
 #include "ui.h"
 #include "game_time.h"
 #include "data/data_bootstrap.h"
@@ -49,7 +50,7 @@ static UBYTE * ui_dest_ptr;
 static UBYTE * ui_dest_base;
 static UBYTE ui_current_tile;
 static UBYTE vwf_current_offset;
-static UBYTE vwf_tile_data[16 * 2];
+UBYTE vwf_tile_data[16 * 2];
 UBYTE vwf_current_mask;
 UBYTE vwf_current_rotate;
 UBYTE vwf_inverse_map;
@@ -108,6 +109,37 @@ void ui_draw_frame(UBYTE x, UBYTE y, UBYTE width, UBYTE height) __banked {
     fill_win_rect   (x + 1u,          y + 1u,          width - 2u, height - 2u,  ui_frame_bg_tiles);  // background
 }
 
+inline void ui_load_tile(const UBYTE * tiledata, UBYTE bank) {
+    UBYTE no;
+    if (ui_current_tile > (TEXT_BUFFER_LEN - 1)) {
+        no = ui_current_tile - TEXT_BUFFER_LEN + TEXT_BUFFER_START_BANK1;
+#ifdef CGB
+        if (_is_CGB) VBK_REG = 1;
+#endif
+    } else {
+        no = ui_current_tile + TEXT_BUFFER_START; 
+    }
+    SetBankedBkgData(no, 1, tiledata, bank);
+#ifdef CGB
+    VBK_REG = 0;
+#endif
+}
+inline void ui_load_wram_tile(const UBYTE * tiledata) {
+    UBYTE no;
+    if (ui_current_tile > (TEXT_BUFFER_LEN - 1)) {
+        no = ui_current_tile - TEXT_BUFFER_LEN + TEXT_BUFFER_START_BANK1;
+#ifdef CGB
+        if (_is_CGB) VBK_REG = 1;
+#endif
+    } else {
+        no = ui_current_tile + TEXT_BUFFER_START; 
+    }
+    set_bkg_data(no, 1, tiledata);
+#ifdef CGB
+    VBK_REG = 0;
+#endif
+}
+
 void ui_print_reset(UBYTE tile) {
     ui_current_tile = tile;
     vwf_current_offset = 0;
@@ -117,6 +149,7 @@ void ui_print_reset(UBYTE tile) {
 void ui_print_shift_char(void * dest, const void * src, UBYTE bank) __nonbanked;
 UWORD ui_print_make_mask_lr(UBYTE width, UBYTE ofs);
 UWORD ui_print_make_mask_rl(UBYTE width, UBYTE ofs);
+void ui_swap_tiles();
 
 UBYTE ui_print_render(const unsigned char ch) {
     UBYTE letter = (vwf_current_font_desc.attr & FONT_RECODE) ? ReadBankedUBYTE(vwf_current_font_desc.recode_table + (ch & vwf_current_font_desc.mask), vwf_current_font_bank) : ch;
@@ -150,21 +183,45 @@ UBYTE ui_print_render(const unsigned char ch) {
         }
         vwf_current_offset += width;
 
-        set_bkg_data(ui_current_tile, 1, vwf_tile_data);
+        ui_load_wram_tile(vwf_tile_data);
         if (vwf_current_offset > 7u) {
-            memcpy(vwf_tile_data, vwf_tile_data + 16u, 16);
-            memset(vwf_tile_data + 16u, text_bkg_fill, 16);
+            ui_swap_tiles();
             vwf_current_offset -= 8u;
             ui_current_tile++;
-            if (vwf_current_offset) set_bkg_data(ui_current_tile, 1, vwf_tile_data);
+            if (vwf_current_offset) ui_load_wram_tile(vwf_tile_data);
             return TRUE;
         } 
         return FALSE;
     } else {
-        SetBankedBkgData(ui_current_tile++, 1, bitmap, vwf_current_font_bank);
+        ui_load_tile(bitmap, vwf_current_font_bank);
+        ui_current_tile++;
         vwf_current_offset = 0u;
         return TRUE;
     }
+}
+
+inline void ui_set_tile(UBYTE * addr, UBYTE current_tile) {
+    UBYTE no;
+    if (current_tile > (TEXT_BUFFER_LEN - 1)) {
+        no = current_tile - TEXT_BUFFER_LEN + TEXT_BUFFER_START_BANK1;
+#ifdef CGB
+        if (_is_CGB) {
+            VBK_REG = 1;
+            SetTile(addr, (UI_PALETTE & 0x07u) | 0x08u);
+            VBK_REG = 0;
+        }
+#endif
+    } else {
+#ifdef CGB
+        if (_is_CGB) {
+            VBK_REG = 1;
+            SetTile(addr, UI_PALETTE & 0x07u);
+            VBK_REG = 0;
+        }
+#endif
+        no = current_tile + TEXT_BUFFER_START; 
+    }
+    SetTile(addr, no);
 }
 
 void ui_draw_text_buffer_char() __banked {
@@ -193,7 +250,7 @@ void ui_draw_text_buffer_char() __banked {
         // initialize current pointer with corrected base value
         ui_dest_ptr = ui_dest_base;
         // tileno destination
-        ui_print_reset(TEXT_BUFFER_START);
+        ui_print_reset(0);
     }
 
     switch (*ui_text_ptr) {
@@ -273,10 +330,10 @@ void ui_draw_text_buffer_char() __banked {
             // fall down to default
         default:
             if (ui_print_render(*ui_text_ptr)) {
-                SetTile(ui_dest_ptr, ui_current_tile - 1u);
+                ui_set_tile(ui_dest_ptr, ui_current_tile - 1u);
                 if (vwf_direction == UI_PRINT_LEFTTORIGHT)  ui_dest_ptr++; else ui_dest_ptr--;
             }
-            if (vwf_current_offset) SetTile(ui_dest_ptr, ui_current_tile);
+            if (vwf_current_offset) ui_set_tile(ui_dest_ptr, ui_current_tile);
             break;
     }
     ui_text_ptr++;
