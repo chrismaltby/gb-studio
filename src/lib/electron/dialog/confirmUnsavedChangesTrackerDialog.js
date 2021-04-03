@@ -2,7 +2,7 @@ import electron from "electron";
 
 const dialog = electron.remote ? electron.remote.dialog : electron.dialog;
 
-export default () => {
+export default (name) => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const l10n = require("../../helpers/l10n").default;
   const dialogOptions = {
@@ -15,7 +15,7 @@ export default () => {
     defaultId: 0,
     cancelId: 1,
     title: l10n("DIALOG_TRACKER_CHANGES_NOT_SAVED"),
-    message: l10n("DIALOG_TRACKER_CHANGES_NOT_SAVED"),
+    message: l10n("DIALOG_TRACKER_CHANGES_NOT_SAVED", { name: name }),
     detail: l10n("DIALOG_TRACKER_CHANGES_NOT_SAVED_DESCRIPTION")
   };
 

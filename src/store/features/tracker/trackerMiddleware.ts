@@ -17,11 +17,11 @@ const trackerMiddleware: ThunkMiddleware<RootState> = (store) => (next) => (
     (editorActions.setSelectedSongId.match(action) && action.payload !== state.editor.selectedSongId)) {
     if (state.tracker.modified) {
       // Display confirmation and stop action if 
-      const option = confirmUnsavedChangesTrackerDialog();
+      const songsLookup = musicSelectors.selectEntities(state);
+      const selectedSong = songsLookup[state.editor.selectedSongId];
+      const option = confirmUnsavedChangesTrackerDialog(selectedSong?.name);
       switch (option) {
         case 0: // Save and continue
-          const songsLookup = musicSelectors.selectEntities(state)
-          const selectedSong = songsLookup[state.editor.selectedSongId];
           const path = `${assetFilename(
             state.document.root,
             "music",

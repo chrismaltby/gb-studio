@@ -223,7 +223,7 @@ export const NavigatorSongs = ({
               </Button>
             }
           >
-            {l10n("FIELD_INSTRUMENTS")} ({instrumentItems.length}/15)
+            {l10n("FIELD_DUTY_INSTRUMENTS")} ({instrumentItems.length}/15)
           </SplitPaneHeader>
           <FlatList
             selectedId={selectedInstrument.type === "instrument" ? selectedInstrument.id : ""}
@@ -251,7 +251,7 @@ export const NavigatorSongs = ({
               </Button>
             }
           >
-            {l10n("FIELD_WAVES")} ({wavesItems.length}/15)
+            {l10n("FIELD_WAVE_INSTRUMENTS")} ({wavesItems.length}/15)
           </SplitPaneHeader>
           <FlatList
             selectedId={selectedInstrument.type === "wave" ? selectedInstrument.id : ""}
@@ -279,7 +279,7 @@ export const NavigatorSongs = ({
               </Button>
             }
           >
-            {l10n("FIELD_NOISE")} ({noiseItems.length}/15)
+            {l10n("FIELD_NOISE_INSTRUMENTS")} ({noiseItems.length}/15)
           </SplitPaneHeader>
           <FlatList
             selectedId={selectedInstrument.type === "noise" ? selectedInstrument.id : ""}
