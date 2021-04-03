@@ -3,6 +3,7 @@ import React, {
   useEffect,
   useRef,
   useState,
+  useCallback,
 } from "react";
 import styled, { ThemeContext } from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
@@ -64,11 +65,21 @@ const MusicPage = () => {
   const songsLookup = useSelector((state: RootState) =>
     musicSelectors.selectEntities(state)
   );
-  const navigationId = useSelector(
+  const selectedSongId = useSelector(
     (state: RootState) => state.editor.selectedSongId
   );
-  const selectedSong = songsLookup[navigationId] || allSongs[0];
+  const setSelectedSongId = useCallback(
+    (id: string) => {
+      dispatch(editorActions.setSelectedSongId(id));
+    },
+    [dispatch]
+  );
+
+  const selectedSong = songsLookup[selectedSongId] || allSongs[0];
   const selectedId = selectedSong.id;
+  if (selectedId !== selectedSongId) {
+    setSelectedSongId(selectedId);
+  }
 
   const sequenceId = useSelector(
     (state: RootState) => state.editor.selectedSequence
@@ -78,6 +89,9 @@ const MusicPage = () => {
 
   const song = useSelector((state: RootState) => 
     state.tracker.song
+  );
+  const modified = useSelector((state: RootState) => 
+    state.tracker.modified
   );
   useEffect(() => {
     const readSong = async () => {
@@ -237,6 +251,7 @@ const MusicPage = () => {
             instruments={song.duty_instruments}
             noises={song.noise_instruments}
             waves={song.wave_instruments}
+            modified={modified}
           />
         </div>
       </div>

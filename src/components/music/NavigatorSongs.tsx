@@ -22,6 +22,7 @@ interface NavigatorSongsProps {
   instruments: DutyInstrument[];
   noises: NoiseInstrument[];
   waves: WaveInstrument[];
+  modified: boolean;
 }
 
 interface NavigatorItem {
@@ -35,11 +36,18 @@ const Pane = styled.div`
 
 const songToNavigatorItem = (
   song: Music,
-  songIndex: number
-): NavigatorItem => ({
-  id: song.id,
-  name: song.name ? song.name : `Song ${songIndex + 1}`,
-});
+  songIndex: number,
+  selectedSongId: string,
+  modified: boolean,
+): NavigatorItem => {
+  function nameIfModified(name: string) {
+    return (song.id === selectedSongId && modified) ? `${name} (*)` : name;
+  }
+  return ({
+    id: song.id,
+    name: nameIfModified(song.name ? song.name : `Song ${songIndex + 1}`),
+  });
+};
 
 const instrumentToNavigatorItem = (
   instrument: DutyInstrument | NoiseInstrument | WaveInstrument,
@@ -68,7 +76,8 @@ export const NavigatorSongs = ({
   defaultFirst,
   instruments,
   waves,
-  noises
+  noises,
+  modified
 }: NavigatorSongsProps) => {
   const [items, setItems] = useState<NavigatorItem[]>([]);
   const allSongs = useSelector((state: RootState) =>
@@ -92,11 +101,11 @@ export const NavigatorSongs = ({
     setItems(
       allSongs
         .map((song, songIndex) =>
-          songToNavigatorItem(song, songIndex)
+          songToNavigatorItem(song, songIndex, selectedSongId, modified)
         )
         .sort(sortByName)
     );
-  }, [allSongs]);
+  }, [allSongs, modified, selectedSongId]);
 
   const setSelectedSongId = useCallback(
     (id: string) => {

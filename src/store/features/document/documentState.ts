@@ -53,8 +53,7 @@ const documentSlice = createSlice({
           action.type.startsWith("entities/") ||
           action.type.startsWith("metadata/") ||
           action.type.startsWith("settings/") ||
-          action.type.startsWith("sprite/detect/fulfilled") ||
-          action.type.startsWith("tracker/edit"),
+          action.type.startsWith("sprite/detect/fulfilled"),
         (state, _action) => {
           state.modified = true;
         }

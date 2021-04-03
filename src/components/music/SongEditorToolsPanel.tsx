@@ -13,9 +13,8 @@ import FloatingPanel, {
 import trackerActions from "../../store/features/tracker/trackerActions";
 import { Button } from "../ui/buttons/Button";
 import { Music } from "../../store/features/entities/entitiesTypes";
-import { saveUGESong } from "../../lib/helpers/uge/ugeHelper";
 import { assetFilename } from "../../lib/helpers/gbstudio";
-import { writeFileWithBackup } from "../../lib/helpers/fs/writeFileWithBackup";
+import { saveSongFile } from "../../store/features/tracker/trackerState";
 
 interface SongEditorToolsPanelProps {
   selectedSong: Music;
@@ -38,8 +37,8 @@ const SongEditorToolsPanel = ({
     (state: RootState) => state.tracker.playing
   );
 
-  const song = useSelector(
-    (state: RootState) => state.tracker.song
+  const modified = useSelector(
+    (state: RootState) => state.tracker.modified
   );
 
   const togglePlay = useCallback(() => {
@@ -51,19 +50,19 @@ const SongEditorToolsPanel = ({
   }, [dispatch, play]);
 
   const saveSong = useCallback(() => {
-    const buffer = saveUGESong(song);
-    const path: string = `${assetFilename(
-      projectRoot,
-      "music",
-      selectedSong
-    )}`
-
-    writeFileWithBackup(path, new Uint8Array(buffer), "utf8", () => {});
-  }, [song]);
+    if (modified) {
+      const path = `${assetFilename(
+        projectRoot,
+        "music",
+        selectedSong
+      )}`
+      dispatch(saveSongFile(path));
+    }
+  }, [dispatch, modified, projectRoot, selectedSong]);
 
   return (
     <Wrapper>
-      <Button variant="transparent" onClick={saveSong}>
+      <Button variant="transparent" disabled={!modified} onClick={saveSong}>
         <SaveIcon />
       </Button>
       <FloatingPanelDivider />

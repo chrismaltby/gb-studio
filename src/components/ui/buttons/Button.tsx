@@ -10,6 +10,7 @@ export interface ButtonProps {
   readonly active?: boolean;
   readonly children?: ReactNode;
   readonly theme?: ThemeInterface;
+  readonly disabled?: boolean;
 }
 
 export const Button = styled.button<ButtonProps>`
@@ -32,6 +33,7 @@ export const Button = styled.button<ButtonProps>`
     max-width: 100%;
     max-height: 100%;
     fill: ${(props) => props.theme.colors.button.text};
+    opacity: ${(props) => props.disabled ? 0.3 : 1};
   }
 
   ${(props) => (props.size === "small" ? smallStyles : "")}
@@ -95,12 +97,17 @@ const transparentStyles = css<ButtonProps>`
   background: transparent;
   border-color: transparent;
 
-  :hover {
-    background: rgba(128, 128, 128, 0.1);
-  }
-  :active {
-    background: rgba(128, 128, 128, 0.2);
-  }
+  ${(props) =>
+    !props.disabled 
+      ? css`
+        :hover {
+          background: rgba(128, 128, 128, 0.1);
+        }
+        :active {
+          background: rgba(128, 128, 128, 0.2);
+        }
+      `
+    : ""}
 
   ${(props) =>
     props.active

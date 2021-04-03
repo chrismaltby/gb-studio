@@ -1,9 +1,12 @@
 /* eslint-disable camelcase */
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { number } from "prop-types";
+import { AnyAction, createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { writeFileWithBackupAsync } from "../../../lib/helpers/fs/writeFileWithBackup";
 import { PatternCell } from "../../../lib/helpers/uge/song/PatternCell";
 import { createDefaultSong, Song } from "../../../lib/helpers/uge/song/Song";
+import { saveUGESong } from "../../../lib/helpers/uge/ugeHelper";
+import { RootState } from "../../configureStore";
 import editorActions from "../editor/editorActions";
+import editorState from "../editor/editorState";
 import { DutyInstrument, NoiseInstrument, WaveInstrument } from "./trackerTypes";
 
 export interface TrackerState {
@@ -11,6 +14,7 @@ export interface TrackerState {
   song: Song;
   octaveOffset: number;
   editStep: number;
+  modified: boolean;
 }
 
 export const initialState: TrackerState = {
@@ -18,7 +22,36 @@ export const initialState: TrackerState = {
   song: createDefaultSong(),
   octaveOffset: 0,
   editStep: 1,
+  modified: false,
 };
+
+export const saveSongFile = createAsyncThunk<void, string | undefined>(
+  "tracker/saveSong",
+  async (path, thunkApi) => {
+    const state = thunkApi.getState() as RootState;
+
+    // if (!state.document.loaded) {
+    //   throw new Error("Cannot save project that has not finished loading");
+    // }
+    // if (saving) {
+    //   throw new Error("Cannot save project while already saving");
+    // }
+    // if (!newPath && !state.document.modified) {
+    //   throw new Error("Cannot save unmodified project");
+    // }
+
+    // saving = true;
+
+    try {
+      const buffer = saveUGESong(state.tracker.song); 
+      await writeFileWithBackupAsync(path, new Uint8Array(buffer), "utf8");
+    } catch (e) {
+      console.error(e);
+    }
+
+    // saving = false;
+  }
+);
 
 const NUM_NOTES = 72;
 
@@ -28,6 +61,7 @@ const trackerSlice = createSlice({
   reducers: {
     loadSong: (state, _action: PayloadAction<Song>) => {
       state.song = _action.payload;
+      state.modified = false;
     },
     playTracker: (state, _action: PayloadAction<void>) => {
       state.playing = true;
@@ -159,6 +193,17 @@ const trackerSlice = createSlice({
       .addCase(editorActions.setSelectedSongId, (state, action) => {
         state.playing = false;
       })
+      .addCase(saveSongFile.fulfilled, (state, action) => {
+        state.modified = false;
+      })
+      .addMatcher(
+        (action: AnyAction): action is AnyAction =>
+          action.type.startsWith("tracker/edit") ||
+          action.type.startsWith("tracker/transpose"),
+        (state, _action) => {
+          state.modified = true;
+        }
+      )
 });
 
 export const { actions, reducer } = trackerSlice;

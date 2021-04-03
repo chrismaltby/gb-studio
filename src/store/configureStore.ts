@@ -11,6 +11,7 @@ import projectMiddleware from "./features/project/projectMiddleware";
 import engineMiddleware from "./features/engine/engineMiddleware";
 import spriteMiddleware from "./features/sprite/spriteMiddleware";
 import throttleMiddleware from "./features/throttle/throttleMiddleware";
+import trackerMiddleware from "./features/tracker/trackerMiddleware";
 
 export type RootState = ReturnType<typeof rootReducer>;
 
@@ -35,7 +36,8 @@ const store = configureStore({
     warningsMiddleware,
     undoMiddleware,
     clipboardMiddleware,
-  ]),
+    trackerMiddleware,
+  ])
 });
 
 export type AppDispatch = typeof store.dispatch;
