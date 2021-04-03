@@ -1,6 +1,6 @@
 import openAboutWindow from "about-window";
 import settings from "electron-settings";
-import { app, Menu, shell } from "electron";
+import { app, ipcRenderer, Menu, shell } from "electron";
 import { assetsRoot } from "./consts";
 import l10n, { locales } from "./lib/helpers/l10n";
 
@@ -391,7 +391,13 @@ const buildMenu = async (plugins = []) => {
       submenu: [
         { role: "reload" },
         { role: "forcereload" },
-        { role: "toggledevtools" }
+        { role: "toggledevtools" },
+        { 
+          label: l10n("MENU_OPEN_MUSIC_PROCESS_WINDOW"),
+          click: () => {
+            notifyListeners("openMusic");
+          } 
+        }
       ]
     });
   }
@@ -501,7 +507,8 @@ const listeners = {
   exportProjectSrc: [],
   exportProjectData: [],
   pasteInPlace: [],
-  preferences: []
+  preferences: [],
+  openMusic: [],
 };
 
 const notifyListeners = (event, ...data) => {

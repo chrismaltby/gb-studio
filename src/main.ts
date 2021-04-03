@@ -248,11 +248,13 @@ const createPlay = async (url: string) => {
   });
 };
 
-const createMusic = async () => {
+const createMusic = async (open?: boolean) => {
   if (!musicWindow) {
     // Create the browser window.
     musicWindow = new BrowserWindow({
       show:false,
+      width: 330,
+      height: 330,
       webPreferences: {
         nodeIntegration: true,
         nodeIntegrationInWorker: true,
@@ -265,7 +267,11 @@ const createMusic = async () => {
 
   // Only show the window in development environment
   // otherwise keep it as a background process
-  if (isDevMode || process.env.NODE_ENV === "development") {
+  if (open 
+    // Only show the window in development environment
+    // otherwise keep it as a background process
+    // || isDevMode || process.env.NODE_ENV === "development") 
+  ) {
     musicWindow.show();
   }
 
@@ -514,6 +520,17 @@ menu.on("pasteInPlace", () => {
 
 menu.on("checkUpdates", () => {
   checkForUpdate(true);
+});
+
+menu.on("openMusic", () => {
+  if (musicWindow) {
+    musicWindow.show();
+  } else {
+    dialog.showErrorBox(
+      "No music process running", 
+      "Have you selected a song?"
+    );
+  }
 });
 
 menu.on("preferences", () => {
