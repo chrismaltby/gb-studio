@@ -49,7 +49,7 @@ void actor_set_frames(actor_t *actor, UBYTE frame_start, UBYTE frame_end) __bank
 actor_t *actor_at_tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip) __banked;
 actor_t *actor_in_front_of_player(UBYTE grid_size, UBYTE inc_noclip) __banked;
 actor_t *actor_overlapping_player(UBYTE inc_noclip) __banked;
-actor_t *actor_overlapping_bb(bounding_box_t *bb, upoint16_t *offset, UBYTE inc_noclip) __banked;
+actor_t *actor_overlapping_bb(bounding_box_t *bb, upoint16_t *offset, actor_t *ignore, UBYTE inc_noclip) __banked;
 void actor_set_anim_idle(actor_t *actor) __banked;
 void actor_set_anim_moving(actor_t *actor) __banked;
 void actor_set_dir(actor_t *actor, direction_e dir, UBYTE moving) __banked;
@@ -68,7 +68,7 @@ inline void player_register_collision_with(actor_t *actor) {
     player_collision_actor = actor;
 }
 void actors_handle_player_collision() __banked;
-UBYTE check_collision_in_direction(UBYTE start_x, UBYTE start_y, UBYTE end_tile, col_check_dir_e check_dir) __banked;
+UWORD check_collision_in_direction(UWORD start_x, UWORD start_y, bounding_box_t *bounds, UWORD end_pos, col_check_dir_e check_dir) __banked;
 void activate_actors_in_row(UBYTE x, UBYTE y) __banked;
 void activate_actors_in_col(UBYTE x, UBYTE y) __banked;
 void player_init() __banked;

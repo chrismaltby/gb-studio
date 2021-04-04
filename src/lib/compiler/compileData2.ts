@@ -339,12 +339,10 @@ export const compileScene = (
   scene: any,
   sceneIndex: number,
   {
-    color,
     bgPalette,
     actorsPalette,
     eventPtrs,
   }: {
-    color: boolean;
     bgPalette: number;
     actorsPalette: number;
     eventPtrs: any;
@@ -683,7 +681,12 @@ export const compileSpriteSheetHeader = (
 
 export const compileBackground = (
   background: PrecompiledBackground,
-  backgroundIndex: number
+  backgroundIndex: number,
+  {
+    color,
+  }: {
+    color: boolean;
+  }
 ) =>
   toStructDataFile(
     BACKGROUND_TYPE,
@@ -695,17 +698,14 @@ export const compileBackground = (
       tileset: toFarPtr(tilesetSymbol(background.tilesetIndex)),
       cgb_tileset: "{ NULL, NULL }",
       tilemap: toFarPtr(tilemapSymbol(background.tilemapIndex)),
-      cgb_tilemap_attr:
-        background.tilemapAttrIndex !== undefined
-          ? toFarPtr(tilemapAttrSymbol(background.tilemapAttrIndex))
-          : "{ NULL, NULL }",
+      cgb_tilemap_attr: color
+        ? toFarPtr(tilemapAttrSymbol(background.tilemapAttrIndex))
+        : "{ NULL, NULL }",
     },
     ([] as string[]).concat(
       tilesetSymbol(background.tilesetIndex),
       tilemapSymbol(background.tilemapIndex),
-      background.tilemapAttrIndex !== undefined
-        ? tilemapAttrSymbol(background.tilemapAttrIndex)
-        : []
+      color ? tilemapAttrSymbol(background.tilemapAttrIndex) : []
     )
   );
 

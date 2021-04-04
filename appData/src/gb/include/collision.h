@@ -68,13 +68,4 @@ inline UBYTE tile_at(UBYTE tx, UBYTE ty) {
     return COLLISION_ALL;
 }
 
-/**
- * Return collision tile value at given tile x,y coordinate. (check 2 tiles wide, 2 tiles high)
- *
- * @param tx Left tile
- * @param ty Top tile
- * @return Tile value, 0 if no collisions, COLLISION_ALL if out of bounds
- */
-UBYTE tile_at_2x2(UBYTE tx, UBYTE ty);
-
 #endif

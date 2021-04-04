@@ -94,6 +94,11 @@ inline void point_translate_dir(upoint16_t *point, direction_e dir, UBYTE speed)
     point->y += (WORD)(dir_lookup[dir].y * speed);
 }
 
+inline void point_translate_dir_word(upoint16_t *point, direction_e dir, UWORD speed) {
+    point->x += (WORD)(dir_lookup[dir].x * speed);
+    point->y += (WORD)(dir_lookup[dir].y * speed);
+}
+
 inline void point_translate_angle(upoint16_t *point, UBYTE angle, UBYTE speed) {
     point->x += ((SIN(angle) * (speed)) >> 7);
     point->y -= ((COS(angle) * (speed)) >> 7);

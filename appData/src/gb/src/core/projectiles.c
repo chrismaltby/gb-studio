@@ -62,7 +62,7 @@ void projectiles_update() __nonbanked {
         projectile->pos.x += projectile->delta_pos.x;
         projectile->pos.y -= projectile->delta_pos.y;
 
-        actor_t *hit_actor = actor_overlapping_bb(&projectile->def.bounds, &projectile->pos, FALSE);
+        actor_t *hit_actor = actor_overlapping_bb(&projectile->def.bounds, &projectile->pos, NULL, FALSE);
         if (hit_actor) {
             // Hit! - Fire collision script here
             if (hit_actor->script.bank) {

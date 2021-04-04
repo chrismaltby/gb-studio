@@ -102,11 +102,11 @@ inline UBYTE load_sprite_tileset(UBYTE base_tile, const tileset_t * tileset, UBY
 
 UBYTE load_sprite(UBYTE sprite_offset, const spritesheet_t * sprite, UBYTE bank) __banked {
     far_ptr_t data; 
-    ReadBankedFarPtr(&data, &sprite->tileset, bank);
+    ReadBankedFarPtr(&data, (void *)&sprite->tileset, bank);
     UBYTE n_tiles = load_sprite_tileset(sprite_offset, data.ptr, data.bank);
 #ifdef CGB
     if (_is_CGB) {
-        ReadBankedFarPtr(&data, &sprite->cgb_tileset, bank);
+        ReadBankedFarPtr(&data, (void *)&sprite->cgb_tileset, bank);
         if (data.ptr) {
             VBK_REG = 1;
             UBYTE n_cgb_tiles = load_sprite_tileset(sprite_offset, data.ptr, data.bank);
@@ -218,14 +218,12 @@ UBYTE load_scene(const scene_t * scene, UBYTE bank, UBYTE init_data) __banked {
     // Load sprites
     if (sprites_len != 0) {
         far_ptr_t * scene_sprite_ptrs = scn.sprites.ptr;
+        far_ptr_t tmp_ptr;
         for (i = 0; i != sprites_len; i++) {
             if (i == MAX_SCENE_SPRITES) break;
-
-            far_ptr_t tmp_ptr;
             ReadBankedFarPtr(&tmp_ptr, (void *)scene_sprite_ptrs, scn.sprites.bank);
-            UBYTE allocated_tiles = load_sprite(tile_allocation_hiwater, tmp_ptr.ptr, tmp_ptr.bank);
             base_tiles[i] = tile_allocation_hiwater;
-            tile_allocation_hiwater += allocated_tiles;
+            tile_allocation_hiwater += load_sprite(tile_allocation_hiwater, tmp_ptr.ptr, tmp_ptr.bank);
             scene_sprite_ptrs++;
         }
     }
@@ -325,10 +323,6 @@ void load_player() __banked {
 
 void load_emote(const spritesheet_t *sprite, UBYTE bank) __banked {
     far_ptr_t data; 
-    ReadBankedFarPtr(&data, &sprite->tileset, bank);
-    SetBankedSpriteData(EMOTE_SPRITE, EMOTE_SPRITE_SIZE, data.ptr, data.bank);
-    set_sprite_prop(0, 0);
-    set_sprite_prop(1, 0);
-    set_sprite_tile(0, EMOTE_SPRITE);
-    set_sprite_tile(1, EMOTE_SPRITE + 2);
+    ReadBankedFarPtr(&data, (void *)&sprite->tileset, bank);
+    SetBankedSpriteData(EMOTE_SPRITE, EMOTE_SPRITE_SIZE, ((tileset_t *)data.ptr)->tiles, data.bank);
 }

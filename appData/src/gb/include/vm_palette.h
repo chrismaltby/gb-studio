@@ -6,9 +6,9 @@
 #include "vm.h"
 #include "palette.h"
 
-#define PALETTE_COMMIT 1
-#define PALETTE_BKG    2
-#define PALETTE_SPRITE 4
+#define PALETTE_COMMIT 1u
+#define PALETTE_BKG    2u
+#define PALETTE_SPRITE 4u
 
 void vm_load_palette(SCRIPT_CTX * THIS, UBYTE mask, UBYTE options) __banked;
 

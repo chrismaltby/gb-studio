@@ -14,8 +14,9 @@ void vm_load_palette(SCRIPT_CTX * THIS, UBYTE mask, UBYTE options) __banked {
     #ifdef SGB
         UBYTE sgb_changes = SGB_PALETTES_NONE;
     #endif
+    UBYTE is_commit = (options & PALETTE_COMMIT), is_bkg = (options & PALETTE_BKG), is_spr = (options & PALETTE_SPRITE); 
     const palette_entry_t * sour = (const palette_entry_t *)THIS->PC;
-    palette_entry_t * dest = (options & PALETTE_BKG) ? BkgPalette : SprPalette;
+    palette_entry_t * dest = (is_bkg) ? BkgPalette : SprPalette;
     for (UBYTE i = mask, nb = 0; (i != 0); dest++, nb++, i >>= 1) {
         if ((i & 1) == 0) continue;
         if ((_is_CGB) || (nb > 1)) {
@@ -25,35 +26,35 @@ void vm_load_palette(SCRIPT_CTX * THIS, UBYTE mask, UBYTE options) __banked {
             switch (nb) {
                 case 0: 
                     DMGPal = ReadBankedUBYTE((void *)sour, bank);
-                    if (options & PALETTE_BKG) {
+                    if (is_bkg) {
                         DMG_palette[0] = DMGPal;
-                        if (options & PALETTE_COMMIT) BGP_REG = DMGPal;
+                        if (is_commit) BGP_REG = DMGPal;
                     }
-                    if (options & PALETTE_SPRITE) {
+                    if (is_spr) {
                         DMG_palette[1] = DMGPal;
-                        if (options & PALETTE_COMMIT) OBP0_REG = DMGPal;
+                        if (is_commit) OBP0_REG = DMGPal;
                     }
                     break;
                 case 1:
-                    if (options & PALETTE_SPRITE) {
+                    if (is_spr) {
                         DMGPal = ReadBankedUBYTE((void *)sour, bank);
                         DMG_palette[2] = DMGPal;
-                        if (options & PALETTE_COMMIT) OBP1_REG = DMGPal;
+                        if (is_commit) OBP1_REG = DMGPal;
                     }
                     break;
             }
         }
-        if (options & PALETTE_COMMIT) {
+        if (is_commit) {
             #ifdef CGB
                 if (_is_CGB) { 
-                    if (options & PALETTE_BKG) set_bkg_palette(nb, 1, (void *)dest);
-                    if (options & PALETTE_SPRITE) set_sprite_palette(nb, 1, (void *)dest); 
+                    if (is_bkg) set_bkg_palette(nb, 1, (void *)dest);
+                    if (is_spr) set_sprite_palette(nb, 1, (void *)dest); 
                     sour++;
                     continue;
                 }
             #endif
             #ifdef SGB
-                if (options & PALETTE_BKG) {
+                if (is_bkg) {
                     if ((nb == 4) || (nb == 5)) sgb_changes |= SGB_PALETTES_01;
                     if ((nb == 6) || (nb == 7)) sgb_changes |= SGB_PALETTES_23;
                 }

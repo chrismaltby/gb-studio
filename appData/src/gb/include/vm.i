@@ -7,7 +7,8 @@
 EXCEPTION_RESET	        = 1
 EXCEPTION_CHANGE_SCENE	= 2
 EXCEPTION_SAVE          = 3
-EXCEPTION_LOAD          = 4;
+EXCEPTION_LOAD          = 4
+EXCEPTION_TERMINATE     = 5
 
 ; aliases
 .ARG0 = -1

@@ -41,23 +41,23 @@ void vm_actor_move_to(SCRIPT_CTX * THIS, INT16 idx) __banked {
                 // Check for horizontal collision
                 if (actor->pos.x != params->X) {
                     UBYTE check_dir = (actor->pos.x > params->X) ? CHECK_DIR_LEFT : CHECK_DIR_RIGHT;
-                    params->X = check_collision_in_direction((actor->pos.x >> 7), (actor->pos.y >> 7), (params->X >> 7), check_dir) << 7;
+                    params->X = check_collision_in_direction(actor->pos.x, actor->pos.y, &actor->bounds, params->X, check_dir);
                 }
                 // Check for vertical collision
                 if (actor->pos.y != params->Y) {
                     UBYTE check_dir = (actor->pos.y > params->Y) ? CHECK_DIR_UP : CHECK_DIR_DOWN;
-                    params->Y = check_collision_in_direction((params->X >> 7), (actor->pos.y >> 7), (params->Y >> 7), check_dir) << 7;
+                    params->Y = check_collision_in_direction(params->X, actor->pos.y, &actor->bounds, params->Y, check_dir);
                 }
             } else {
                 // Check for vertical collision
                 if (actor->pos.y != params->Y) {
                     UBYTE check_dir = (actor->pos.y > params->Y) ? CHECK_DIR_UP : CHECK_DIR_DOWN;
-                    params->Y = check_collision_in_direction((actor->pos.x >> 7), (actor->pos.y >> 7), (params->Y >> 7), check_dir) << 7;
+                    params->Y = check_collision_in_direction(actor->pos.x, actor->pos.y, &actor->bounds, params->Y, check_dir);
                 }
                 // Check for horizontal collision
                 if (actor->pos.x != params->X) {
                     UBYTE check_dir = (actor->pos.x > params->X) ? CHECK_DIR_LEFT : CHECK_DIR_RIGHT;
-                    params->X = check_collision_in_direction((actor->pos.x >> 7), (params->Y >> 7), (params->X >> 7), check_dir) << 7;
+                    params->X = check_collision_in_direction(actor->pos.x, params->Y, &actor->bounds, params->X, check_dir);
                 }
             }
         }
@@ -94,6 +94,14 @@ void vm_actor_move_to(SCRIPT_CTX * THIS, INT16 idx) __banked {
 
     // Move actor
     point_translate_dir(&actor->pos, actor->dir, actor->move_speed);
+
+    // Check for actor collision
+    if (actor_overlapping_bb(&actor->bounds, &actor->pos, actor, FALSE)) {
+        point_translate_dir(&actor->pos, FLIPPED_DIR(actor->dir), actor->move_speed);   
+        THIS->flags = 0;
+        actor_set_anim_idle(actor);
+        return;
+    }
 
     THIS->PC -= (INSTRUCTION_SIZE + sizeof(idx));
     return;

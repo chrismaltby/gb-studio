@@ -254,80 +254,12 @@ actor_t *actor_at_tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip) __banked {
     return NULL;
 }
 
-actor_t *actor_at_3x3_tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip) __banked {
-    for (actor_t *actor = actors_active_head; (actor); actor = actor->next) {
-        if ((!inc_noclip && !actor->collision_enabled))
-            continue;
-
-        UBYTE a_tx = (actor->pos.x >> 7), a_ty = (actor->pos.y >> 7);
-        if ((ty == a_ty || ty == a_ty - 1 || ty == a_ty - 2) && (tx == a_tx || tx == a_tx - 1 || tx == a_tx - 2)) return actor;
-    }
-    return NULL;
-}
-
-actor_t *actor_at_1x3_tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip) __banked {
-    for (actor_t *actor = actors_active_head; (actor); actor = actor->next) {
-        if ((!inc_noclip && !actor->collision_enabled))
-            continue;
-
-        UBYTE a_tx = (actor->pos.x >> 7), a_ty = (actor->pos.y >> 7);
-        if ((ty == a_ty || ty == a_ty - 1 || ty == a_ty - 2) && (tx == a_tx)) return actor;
-    }
-    return NULL;
-}
-
-actor_t *actor_at_3x1_tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip) __banked {
-    for (actor_t *actor = actors_active_head; (actor); actor = actor->next) {
-        if ((!inc_noclip && !actor->collision_enabled)) 
-            continue;
-
-        UBYTE a_tx = (actor->pos.x >> 7), a_ty = (actor->pos.y >> 7);
-        if ((ty == a_ty) && (tx == a_tx || tx == a_tx - 1 || tx == a_tx - 2)) return actor;
-    }
-    return NULL;
-}
-
-actor_t *actor_at_1x2_tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip) __banked {
-    for (actor_t *actor = actors_active_head; (actor); actor = actor->next) {
-        if ((!inc_noclip && !actor->collision_enabled))
-            continue;
-
-        UBYTE a_tx = (actor->pos.x >> 7), a_ty = (actor->pos.y >> 7);
-        if ((ty == a_ty || ty == a_ty - 1) && (tx == a_tx)) return actor;
-    }
-    return NULL;
-}
-
 actor_t *actor_in_front_of_player(UBYTE grid_size, UBYTE inc_noclip) __banked {
-    UBYTE tile_x = (PLAYER.pos.x >> 7), tile_y = (PLAYER.pos.y >> 7);
-
-    if (grid_size == 16) {
-        if (PLAYER.dir == DIR_UP) {
-            return actor_at_3x3_tile(tile_x - 1, tile_y - 3, inc_noclip);
-        } else if (PLAYER.dir == DIR_DOWN) {
-            return actor_at_3x3_tile(tile_x - 1, tile_y + 1, inc_noclip);
-        } else {
-            if (PLAYER.dir == DIR_LEFT) {
-                return actor_at_3x3_tile(tile_x - 3, tile_y - 1, inc_noclip);
-            } else if (PLAYER.dir == DIR_RIGHT) {
-                return actor_at_3x3_tile(tile_x + 1, tile_y - 1, inc_noclip);
-            }
-        }
-    } else {
-        if (PLAYER.dir == DIR_UP) {
-            return actor_at_3x1_tile(tile_x - 1, tile_y - 1, inc_noclip);
-        } else if (PLAYER.dir == DIR_DOWN) {
-            return actor_at_3x1_tile(tile_x - 1, tile_y + 2, inc_noclip);
-        } else {
-            if (PLAYER.dir == DIR_LEFT) {
-                return actor_at_1x2_tile(tile_x - 2, tile_y, inc_noclip);
-            } else if (PLAYER.dir == DIR_RIGHT) {
-                return actor_at_1x2_tile(tile_x + 2, tile_y, inc_noclip);
-            }
-        }
-    }
-
-    return NULL;
+    upoint16_t offset;
+    offset.x = PLAYER.pos.x;
+    offset.y = PLAYER.pos.y;
+    point_translate_dir_word(&offset, PLAYER.dir, grid_size << 4);
+    return actor_overlapping_bb(&PLAYER.bounds, &offset, &PLAYER, inc_noclip);
 }
 
 actor_t *actor_overlapping_player(UBYTE inc_noclip) __banked {
@@ -349,11 +281,11 @@ actor_t *actor_overlapping_player(UBYTE inc_noclip) __banked {
     return NULL;
 }
 
-actor_t *actor_overlapping_bb(bounding_box_t *bb, upoint16_t *offset, UBYTE inc_noclip) __banked {
+actor_t *actor_overlapping_bb(bounding_box_t *bb, upoint16_t *offset, actor_t *ignore, UBYTE inc_noclip) __banked {
     actor_t *actor = &PLAYER;
 
     while (actor) {
-        if (!inc_noclip && !actor->collision_enabled) {
+        if (actor == ignore || (!inc_noclip && !actor->collision_enabled)) {
             actor = actor->prev;
             continue;
         };
@@ -408,49 +340,73 @@ void actors_handle_player_collision() __banked {
     player_collision_actor = NULL; 
 }
 
-UBYTE check_collision_in_direction(UBYTE start_x, UBYTE start_y, UBYTE end_tile, col_check_dir_e check_dir) __banked {
+UWORD check_collision_in_direction(UWORD start_x, UWORD start_y, bounding_box_t *bounds, UWORD end_pos, col_check_dir_e check_dir) __banked {
+    UBYTE tx1, ty1, tx2, ty2, tt;
     switch (check_dir) {
         case CHECK_DIR_LEFT:  // Check left
-            while (start_x != end_tile) {
-                    if (tile_at_2x2(start_x - 1, start_y - 1) ||                    // Tile left
-                        actor_at_1x3_tile(start_x - 2, start_y - 1, FALSE) != NULL  // Actor left
-                    ) {
-                        return start_x;
+            tx1 = (((start_x >> 4) + bounds->left) >> 3);
+            tx2 = (((end_pos >> 4) + bounds->left) >> 3) - 1;
+            ty1 = (((start_y >> 4) + bounds->top) >> 3);
+            ty2 = (((start_y >> 4) + bounds->bottom) >> 3) + 1;
+            while (tx1 != tx2) {
+                tt = ty1;
+                while (tt != ty2) {
+                    if (tile_at(tx1, tt) & COLLISION_RIGHT) {
+                        return ((tx1 + 1) << 7) - (bounds->left << 4);
                     }
-                    start_x--;
+                    tt++;
+                }
+                tx1--;
             }
-            return end_tile;
+            return end_pos;
         case CHECK_DIR_RIGHT:  // Check right
-            while (start_x != end_tile) {
-                if (tile_at_2x2(start_x + 1, start_y - 1) ||                    // Tile right
-                    actor_at_1x3_tile(start_x + 2, start_y - 1, FALSE) != NULL  // Actor right
-                ) {
-                    return start_x;
+            tx1 = (((start_x >> 4) + bounds->right) >> 3);
+            tx2 = (((end_pos >> 4) + bounds->right) >> 3) + 1;
+            ty1 = (((start_y >> 4) + bounds->top) >> 3);
+            ty2 = (((start_y >> 4) + bounds->bottom) >> 3) + 1;
+            while (tx1 != tx2) {
+                tt = ty1;
+                while (tt != ty2) {
+                    if (tile_at(tx1, tt) & COLLISION_LEFT) {
+                        return (tx1 << 7) - ((bounds->right + 1) << 4);
+                    }
+                    tt++;
                 }
-                start_x++;
+                tx1++;
             }
-            return end_tile;
+            return end_pos;
         case CHECK_DIR_UP:  // Check up
-            while (start_y != end_tile) {
-                if (tile_at_2x2(start_x, start_y - 2) ||                          // Tile up
-                    (actor_at_3x1_tile(start_x - 1, start_y - 2, FALSE) != NULL)  // Actor up
-                ) {
-                return start_y;
+            ty1 = (((start_y >> 4) + bounds->top) >> 3);
+            ty2 = (((end_pos >> 4) + bounds->top) >> 3) - 1;
+            tx1 = (((start_x >> 4) + bounds->left) >> 3);
+            tx2 = (((start_x >> 4) + bounds->right) >> 3) + 1;
+            while (ty1 != ty2) {
+                tt = tx1;
+                while (tt != tx2) {
+                    if (tile_at(tt, ty1) & COLLISION_BOTTOM) {
+                        return ((ty1 + 1) << 7) - ((bounds->top) << 4);
+                    }
+                    tt++;
                 }
-                start_y--;
+                ty1--;
             }
-            return end_tile;
+            return end_pos;
         case CHECK_DIR_DOWN:  // Check down
-            while (start_y != end_tile) {
-                if (tile_at_2x2(start_x, start_y) ||                               // Tile down
-                    actor_at_3x1_tile(start_x - 1, start_y + 1, FALSE) != NULL ||  // Actor down 1 tile
-                    actor_at_3x1_tile(start_x - 1, start_y + 2, FALSE) != NULL     // Actor down 2 tiles
-                ) {
-                return start_y;
+            ty1 = (((start_y >> 4) + bounds->bottom) >> 3);
+            ty2 = (((end_pos >> 4) + bounds->bottom) >> 3) + 1;
+            tx1 = (((start_x >> 4) + bounds->left) >> 3);
+            tx2 = (((start_x >> 4) + bounds->right) >> 3) + 1;
+            while (ty1 != ty2) {
+                tt = tx1;
+                while (tt != tx2) {
+                    if (tile_at(tt, ty1) & COLLISION_TOP) {
+                        return ((ty1) << 7) - ((bounds->bottom + 1) << 4);
+                    }
+                    tt++;
                 }
-                start_y++;
+                ty1++;
             }
-            return end_tile;
+            return end_pos;
     }
-    return end_tile;
+    return end_pos;
 }

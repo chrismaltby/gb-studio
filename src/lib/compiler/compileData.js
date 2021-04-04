@@ -98,6 +98,13 @@ export const EVENT_MSG_PRE_FONTS = "Preparing fonts...";
 export const EVENT_MSG_PRE_COMPLETE = "Preparation complete";
 export const EVENT_MSG_COMPILING_EVENTS = "Compiling events...";
 
+const padArrayEnd = (arr, len, padding) => {
+  if (arr.length > len) {
+    return arr.slice(0, len);
+  }
+  return arr.concat(Array(len - arr.length).fill(padding));
+};
+
 const compile = async (
   projectData,
   {
@@ -356,7 +363,10 @@ const compile = async (
   precompiled.usedBackgrounds.forEach((background, backgroundIndex) => {
     output[`background_${backgroundIndex}.c`] = compileBackground(
       background,
-      backgroundIndex
+      backgroundIndex,
+      {
+        color: customColorsEnabled,
+      }
     );
     output[`background_${backgroundIndex}.h`] = compileBackgroundHeader(
       background,
@@ -372,16 +382,18 @@ const compile = async (
     );
   });
 
-  precompiled.usedTilemapAttrs.forEach((tilemapAttr, tilemapAttrIndex) => {
-    output[`tilemap_attr_${tilemapAttrIndex}.c`] = compileTilemapAttr(
-      tilemapAttr,
-      tilemapAttrIndex
-    );
-    output[`tilemap_attr_${tilemapAttrIndex}.h`] = compileTilemapAttrHeader(
-      tilemapAttr,
-      tilemapAttrIndex
-    );
-  });
+  if (customColorsEnabled) {
+    precompiled.usedTilemapAttrs.forEach((tilemapAttr, tilemapAttrIndex) => {
+      output[`tilemap_attr_${tilemapAttrIndex}.c`] = compileTilemapAttr(
+        tilemapAttr,
+        tilemapAttrIndex
+      );
+      output[`tilemap_attr_${tilemapAttrIndex}.h`] = compileTilemapAttrHeader(
+        tilemapAttr,
+        tilemapAttrIndex
+      );
+    });
+  }
 
   // Add sprite data
   precompiled.usedSprites.forEach((sprite, spriteIndex) => {
@@ -860,7 +872,11 @@ export const precompileBackgrounds = async (
     }
 
     // Determine tilemap attrs
-    const tilemapAttr = background.tileColors;
+    const tilemapAttr = padArrayEnd(
+      background.tileColors || [],
+      tilemap.length,
+      0
+    );
     const tilemapAttrKey = JSON.stringify(tilemapAttr);
     let tilemapAttrIndex = 0;
     if (usedTilemapAttrsCache[tilemapAttrKey] === undefined) {
