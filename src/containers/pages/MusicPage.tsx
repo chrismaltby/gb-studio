@@ -8,7 +8,6 @@ import React, {
 import styled, { ThemeContext } from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash/debounce";
-import { readFile } from "fs-extra";
 import useResizable from "../../components/ui/hooks/use-resizable";
 import useWindowSize from "../../components/ui/hooks/use-window-size";
 import {
@@ -26,10 +25,8 @@ import {
 import { assetFilename } from "../../lib/helpers/gbstudio";
 import { SongEditor } from "../../components/music/SongEditor";
 import SongEditorToolsPanel from "../../components/music/SongEditorToolsPanel";
-import { loadUGESong } from "../../lib/helpers/uge/ugeHelper";
-import trackerActions from "../../store/features/tracker/trackerActions";
 import MusicViewer from "../../components/assets/MusicViewer";
-import { Song } from "../../lib/helpers/uge/song/Song";
+import { loadSongFile } from "../../store/features/tracker/trackerState";
 
 const Wrapper = styled.div`
   display: flex;
@@ -42,6 +39,37 @@ const ModViewerWrapper = styled.div`
   align-items: center;
   justify-content: center;
   display: grid;
+`;
+
+const ErrorWrapper = styled.div`
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  background: ${(props) => props.theme.colors.document.background};
+  color: ${(props) => props.theme.colors.text };
+  position: relative;
+  display: flex;
+`;
+
+const ErrorMessage = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+`;
+
+const ErrorTitle = styled.div`
+  font-size: 14px;
+  font-weight: bold;
+`;
+
+const ErrorDescription = styled.div`
+  padding-top: 5px;
 `;
 
 const MusicPage = () => {
@@ -93,25 +121,21 @@ const MusicPage = () => {
   const modified = useSelector((state: RootState) => 
     state.tracker.modified
   );
+  const status = useSelector((state: RootState) => 
+    state.tracker.status
+  );
+  const error = useSelector((state: RootState) => 
+    state.tracker.error
+  );
   useEffect(() => {
-    const readSong = async () => {
+    if (selectedSong.type === "uge") {
       const path = `${assetFilename(
         projectRoot,
         "music",
         selectedSong
-      )}`
-      const data = await readFile(path);
-      const song = loadUGESong(new Uint8Array(data).buffer);
-      // setSongData(song);
-      if (song) {
-        dispatch(trackerActions.loadSong(song));
-      }
-    };
-    if (selectedSong.type === "uge") {
-      readSong();
-    } else {
-      dispatch(trackerActions.loadSong(new Song()));
-    }
+      )}`;
+      dispatch(loadSongFile(path));
+    } 
   }, [dispatch, projectRoot, selectedSong]);
 
   const [leftPaneWidth, setLeftPaneSize, startLeftPaneResize] = useResizable({
@@ -257,7 +281,16 @@ const MusicPage = () => {
       </div>
       <SplitPaneHorizontalDivider onMouseDown={startLeftPaneResize} />
       {(selectedSong.type === "uge") ? (
-        <>
+        (status === "error") ? (
+          <ErrorWrapper style={{height: windowHeight - 38}}>
+            <ErrorMessage>
+              <ErrorTitle>Can't load the song</ErrorTitle>
+              <ErrorDescription>{error}</ErrorDescription>              
+            </ErrorMessage>
+          </ErrorWrapper>
+        ) 
+        :
+        (<>
         <div
           style={{
             flex: "1 1 0",
@@ -299,7 +332,7 @@ const MusicPage = () => {
           <SongEditor id={selectedId} />
         </div>
         </>
-      ) : (
+      )) : (
         <ModViewerWrapper>
           <MusicViewer file={selectedSong} />
         </ModViewerWrapper>

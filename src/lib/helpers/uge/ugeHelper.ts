@@ -17,7 +17,9 @@ export const loadUGESong = (data: ArrayBuffer): (Song | null) => {
   let offset = 0;
   const version = new Uint32Array(data.slice(offset, offset + 4))[0];
   console.log(`uge version: ${version}`);
-  if (version < 0 || version > 3) return null;
+  if (version < 0 || version > 3) {
+    throw new Error(`UGE version ${version} is not supported by GB Studio`);
+  }
 
   const uint8data = new Uint8Array(data);
   offset += 4;
@@ -156,7 +158,9 @@ export const loadUGESong = (data: ArrayBuffer): (Song | null) => {
   offset += 4;
 
   const pattern_count = new Uint32Array(data.slice(offset, offset + 4))[0];
-  if (offset + pattern_count * 13 * 64 > data.byteLength) return null;
+  if (offset + pattern_count * 13 * 64 > data.byteLength) {
+    throw new Error(`Song has too many patterns (${pattern_count})`);
+  }
   offset += 4;
   const patterns = []
   for (let n = 0; n < pattern_count; n++) {

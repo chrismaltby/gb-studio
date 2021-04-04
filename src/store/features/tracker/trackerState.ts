@@ -1,15 +1,17 @@
 /* eslint-disable camelcase */
 import { AnyAction, createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { readFile } from "fs-extra";
 import { writeFileWithBackupAsync } from "../../../lib/helpers/fs/writeFileWithBackup";
 import { PatternCell } from "../../../lib/helpers/uge/song/PatternCell";
 import { createDefaultSong, Song } from "../../../lib/helpers/uge/song/Song";
-import { saveUGESong } from "../../../lib/helpers/uge/ugeHelper";
+import { loadUGESong, saveUGESong } from "../../../lib/helpers/uge/ugeHelper";
 import { RootState } from "../../configureStore";
 import editorActions from "../editor/editorActions";
-import editorState from "../editor/editorState";
 import { DutyInstrument, NoiseInstrument, WaveInstrument } from "./trackerTypes";
 
 export interface TrackerState {
+  status: "loading" | "error" | "loaded" | null,
+  error?: string;
   playing: boolean;
   song: Song;
   octaveOffset: number;
@@ -18,12 +20,24 @@ export interface TrackerState {
 }
 
 export const initialState: TrackerState = {
+  status: null,
+  error: "",
   playing: false,
   song: createDefaultSong(),
   octaveOffset: 0,
   editStep: 1,
   modified: false,
 };
+
+export const loadSongFile = createAsyncThunk<Song | null, string>(
+  "tracker/loadSong",
+  async (path, thunkApi): Promise<Song | null> => {
+    const data = await readFile(path);
+    const song = loadUGESong(new Uint8Array(data).buffer);
+    
+    return song;
+  }
+);
 
 export const saveSongFile = createAsyncThunk<void, string | undefined>(
   "tracker/saveSong",
@@ -36,20 +50,12 @@ export const saveSongFile = createAsyncThunk<void, string | undefined>(
     // if (saving) {
     //   throw new Error("Cannot save project while already saving");
     // }
-    // if (!newPath && !state.document.modified) {
-    //   throw new Error("Cannot save unmodified project");
-    // }
-
-    // saving = true;
-
-    try {
-      const buffer = saveUGESong(state.tracker.song); 
-      await writeFileWithBackupAsync(path, new Uint8Array(buffer), "utf8");
-    } catch (e) {
-      console.error(e);
+    if (!path && !state.tracker.modified) {
+      throw new Error("Cannot save unmodified song");
     }
 
-    // saving = false;
+    const buffer = saveUGESong(state.tracker.song); 
+    await writeFileWithBackupAsync(path, new Uint8Array(buffer), "utf8");
   }
 );
 
@@ -89,8 +95,7 @@ const trackerSlice = createSlice({
         ...patch 
       } as DutyInstrument;
 
-      state.song = 
-      {
+      state.song = {
         ...state.song,
         duty_instruments: instruments
       }
@@ -109,8 +114,7 @@ const trackerSlice = createSlice({
         ...patch 
       } as WaveInstrument;
 
-      state.song = 
-      {
+      state.song = {
         ...state.song,
         wave_instruments: instruments
       }
@@ -129,8 +133,7 @@ const trackerSlice = createSlice({
         ...patch 
       } as NoiseInstrument;
 
-      state.song = 
-      {
+      state.song = {
         ...state.song,
         noise_instruments: instruments
       }
@@ -155,8 +158,7 @@ const trackerSlice = createSlice({
         ...patch
       };
 
-      state.song = 
-      {
+      state.song = {
         ...state.song,
         patterns: patterns
       }
@@ -175,8 +177,7 @@ const trackerSlice = createSlice({
         note: (newNote % NUM_NOTES + NUM_NOTES) % NUM_NOTES
       };
 
-      state.song = 
-      {
+      state.song = {
         ...state.song,
         patterns: patterns
       }
@@ -192,6 +193,21 @@ const trackerSlice = createSlice({
     builder
       .addCase(editorActions.setSelectedSongId, (state, action) => {
         state.playing = false;
+      })
+      .addCase(loadSongFile.pending, (state, action) => {
+        state.status = "loading";
+      })
+      .addCase(loadSongFile.rejected, (state, action) => {
+        state.status = "error";
+        state.song = new Song();
+        state.error = action.error.message;
+      })
+      .addCase(loadSongFile.fulfilled, (state, action) => {
+        if (action.payload) {
+          state.song = action.payload;
+          state.status = "loaded";
+          state.modified = false;  
+        }
       })
       .addCase(saveSongFile.fulfilled, (state, action) => {
         state.modified = false;
