@@ -3,8 +3,8 @@ const id = "EVENT_GROUP";
 const fields = [
   {
     key: "true",
-    type: "events"
-  }
+    type: "events",
+  },
 ];
 
 const compile = (input, helpers) => {
@@ -15,5 +15,6 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   fields,
-  compile
+  compile,
+  allowedBeforeInitFade: true,
 };
