@@ -96,8 +96,7 @@ void vm_invoke(SCRIPT_CTX * THIS, UBYTE bank, UBYTE * fn, UBYTE nparams, INT16 i
 void vm_beginthread(UWORD dummy0, UWORD dummy1, SCRIPT_CTX * THIS, UBYTE bank, UBYTE * pc, INT16 idx, UBYTE nargs) __nonbanked;
 void vm_if(SCRIPT_CTX * THIS, UBYTE condition, INT16 idxA, INT16 idxB, UBYTE * pc, UBYTE n) __banked;
 void vm_if_const(SCRIPT_CTX * THIS, UBYTE condition, INT16 idxA, INT16 B, UBYTE * pc, UBYTE n) __banked;
-void vm_debug(UWORD dummy0, UWORD dummy1, SCRIPT_CTX * THIS, UBYTE nargs) __nonbanked;
-void vm_test_terminate(SCRIPT_CTX * THIS) __banked;
+void vm_test_terminate(SCRIPT_CTX * THIS, UBYTE flags) __banked;
 void vm_pushvalue(SCRIPT_CTX * THIS, INT16 idx) __banked;
 void vm_reserve(SCRIPT_CTX * THIS, INT8 ofs) __banked;
 void vm_set(SCRIPT_CTX * THIS, INT16 idxA, INT16 idxB) __banked;

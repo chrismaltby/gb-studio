@@ -317,56 +317,9 @@ void vm_rpn(UWORD dummy0, UWORD dummy1, SCRIPT_CTX * THIS) __nonbanked {
     }
 }
 
-#ifdef VM_DEBUG_OUTPUT
-// text buffer
-unsigned char display_text[80];
-#endif
-
-// prints debug string into the text buffer then outputs to screen
-void vm_debug(UWORD dummy0, UWORD dummy1, SCRIPT_CTX * THIS, UBYTE nargs) __nonbanked {
-    dummy0; dummy1; // suppress warnings
-
-    UBYTE _save = _current_bank;
-    SWITCH_ROM_MBC1(THIS->bank);
-    
-    const UBYTE * args = THIS->PC;
-    const unsigned char * s = args + (nargs << 1);
-     
-#ifdef VM_DEBUG_OUTPUT
-    unsigned char * d = display_text; 
-    INT16 idx;
-    while (*s) {
-        if (*s == '%') {
-            s++;
-            switch (*s) {
-                case 'd':
-                    idx = *((INT16 *)args);
-                    if (idx < 0) idx = *(THIS->stack_ptr + idx); else idx = script_memory[idx];
-                    d += strlen(itoa(idx, d));
-                    s++;
-                    args += 2;
-                    continue;
-                case '%':
-                    break;
-                default:
-                    s--;
-            }
-        }
-        *d++ = *s++;
-    }
-    *d = 0, s++;
-
-    puts(display_text);
-#else
-    s += strlen(s) + 1;
-#endif
-
-    SWITCH_ROM_MBC1(_save);
-    THIS->PC = s;
-}
-
-void vm_test_terminate(SCRIPT_CTX * THIS) __banked {
+void vm_test_terminate(SCRIPT_CTX * THIS, UBYTE flags) __banked {
     THIS;
+    if (flags & 1) wait_vbl_done();
 __asm
         ld b, b
 __endasm;

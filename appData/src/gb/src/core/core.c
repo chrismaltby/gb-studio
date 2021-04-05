@@ -94,12 +94,6 @@ void process_VM() {
             case RUNNER_EXCEPTION: {
                 UBYTE fade_in = TRUE;
                 switch (vm_exception_code) {
-                    case EXCEPTION_TERMINATE: {
-                        wait_vbl_done();
-                        // reset everything
-                        core_reset_hook();
-                        return;
-                    }
                     case EXCEPTION_RESET: {
                         // remove previous LCD ISR's
                         remove_LCD_ISRs();

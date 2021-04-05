@@ -8,7 +8,6 @@ EXCEPTION_RESET	        = 1
 EXCEPTION_CHANGE_SCENE	= 2
 EXCEPTION_SAVE          = 3
 EXCEPTION_LOAD          = 4
-EXCEPTION_TERMINATE     = 5
 
 ; aliases
 .ARG0 = -1
@@ -134,12 +133,6 @@ OP_VM_IF           = 0x0F
 .OR                = 8
 .macro VM_IF CONDITION, IDXA, IDXB, LABEL, N
         .db OP_VM_IF, #<N, #>LABEL, #<LABEL, #>IDXB, #<IDXB, #>IDXA, #<IDXA, #<CONDITION
-.endm
-
-; printf()
-OP_VM_DEBUG        = 0x10
-.macro VM_DEBUG ARG0
-        .db OP_VM_DEBUG, #<ARG0
 .endm
 
 ; pushes a value on VM stack or a global onto VM stack
@@ -334,8 +327,9 @@ OP_VM_GET_INDIRECT    = 0x29
 .endm
 
 OP_VM_TEST_TERMINATE  = 0x2A
-.macro VM_TEST_TERMINATE
-        .db OP_VM_TEST_TERMINATE
+.TEST_WAIT_VBL        = 1
+.macro VM_TEST_TERMINATE FLAGS
+        .db OP_VM_TEST_TERMINATE, #<FLAGS
 .endm
 
 

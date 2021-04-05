@@ -31,7 +31,7 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_invoke,                 6}, // 0x0D
     {vm_beginthread,            6}, // 0x0E
     {vm_if,                     8}, // 0x0F
-    {vm_debug,                  1}, // 0x10
+    {0,                         0}, 
     {vm_pushvalue,              2}, // 0x11
     {vm_reserve,                1}, // 0x12
     {vm_set,                    4}, // 0x13
@@ -57,7 +57,7 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_raise,                  2}, // 0x27
     {vm_set_indirect,           4}, // 0x28
     {vm_get_indirect,           4}, // 0x29
-    {vm_test_terminate,         0}, // 0x2A
+    {vm_test_terminate,         1}, // 0x2A
     {0, 0},
     {vm_sin_scale,              5}, // 0x2C 
     {vm_cos_scale,              5}, // 0x2D
