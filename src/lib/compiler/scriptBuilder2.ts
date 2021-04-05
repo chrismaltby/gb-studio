@@ -2046,6 +2046,14 @@ class ScriptBuilder {
     this._stop();
   };
 
+  appendRaw = (code: string) => {
+    const lines = code.split("\n");
+    lines.forEach((line) => {
+      this._addCmd(line);
+    });
+    this._addNL();
+  };
+
   compileEvents = (path: ScriptEvent[]) => {
     const { compileEvents } = this.options;
     compileEvents(this, path);

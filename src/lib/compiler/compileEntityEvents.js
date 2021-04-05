@@ -1,3 +1,4 @@
+import { EVENT_FADE_IN } from "./eventTypes";
 import ScriptBuilder from "./scriptBuilder2";
 // import { isVariableField, isPropertyField } from "../helpers/eventSystem";
 
@@ -56,7 +57,9 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
         if (init && !hasInit && !events[command].allowedBeforeInitFade) {
           // Found an event that cannot happen before init fade in
           scriptBuilder.nextFrameAwait();
-          scriptBuilder.fadeIn();
+          if (command !== EVENT_FADE_IN) {
+            scriptBuilder.fadeIn();
+          }
           hasInit = true;
           globalHasInit = true;
         }
