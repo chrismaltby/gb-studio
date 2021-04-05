@@ -41,5 +41,6 @@ export type NoiseInstrument = {
   volume_sweep_change: number,
   shift_clock_mask: number,
   dividing_ratio: number,
-  bit_count: number,
+  bit_count: 7 | 15,
+  noise_macro: Int8Array[],
 };

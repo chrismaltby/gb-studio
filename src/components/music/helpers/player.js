@@ -129,23 +129,23 @@ const updateRom = (song) => {
   for (let n = 0; n < song.noise_instruments.length; n++) {
     const instr = song.noise_instruments[n];
 
-    let param0 = (instr.initial_volume << 4) | (instr.volume_sweep_change > 0 ? 0x08 : 0x00);
+    let nr42 = (instr.initial_volume << 4) | (instr.volume_sweep_change > 0 ? 0x08 : 0x00);
     if (instr.volume_sweep_change !== 0)
-      param0 |= 8 - Math.abs(instr.volume_sweep_change);
+      nr42 |= 8 - Math.abs(instr.volume_sweep_change);
     let param1 = (instr.length !== null ? 64 - instr.length : 0) & 0x3f;
     if (instr.length !== null)
       param1 |= 0x40;
     if (instr.bit_count === 7)
       param1 |= 0x80;
 
-    buf[addr + n * 8 + 0] = param0;
+    buf[addr + n * 8 + 0] = nr42;
     buf[addr + n * 8 + 1] = param1;
-    buf[addr + n * 8 + 2] = 0;
-    buf[addr + n * 8 + 3] = 0;
-    buf[addr + n * 8 + 4] = 0;
-    buf[addr + n * 8 + 5] = 0;
-    buf[addr + n * 8 + 6] = 0;
-    buf[addr + n * 8 + 7] = 0;
+    buf[addr + n * 8 + 2] = instr.noise_macro ? instr.noise_macro[0] : 0;
+    buf[addr + n * 8 + 3] = instr.noise_macro ? instr.noise_macro[1] : 0;
+    buf[addr + n * 8 + 4] = instr.noise_macro ? instr.noise_macro[2] : 0;
+    buf[addr + n * 8 + 5] = instr.noise_macro ? instr.noise_macro[3] : 0;
+    buf[addr + n * 8 + 6] = instr.noise_macro ? instr.noise_macro[4] : 0;
+    buf[addr + n * 8 + 7] = instr.noise_macro ? instr.noise_macro[5] : 0;
   }
   addAddr(16 * 8);
   buf[header_idx + 0] = 0;

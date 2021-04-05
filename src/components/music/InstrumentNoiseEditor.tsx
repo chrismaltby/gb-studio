@@ -112,12 +112,19 @@ export const InstrumentNoiseEditor = ({
           }}
         />
       </FormRow>
+
+      <FormDivider />
+
       <FormRow>
         <CheckboxField
           name="length"
           label={l10n("FIELD_BIT_COUNT")}
-          checked={!!instrument.bit_count}
-          onChange={onChangeFieldInput("bit_count")}
+          checked={instrument.bit_count === 7}
+          onChange={(e) => {
+            const v = castEventValue(e);
+            const value = v ? 7 : 15;
+            onChangeField("bit_count")(value);
+          }}
         />
       </FormRow>
 

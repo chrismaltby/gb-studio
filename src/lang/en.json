@@ -377,7 +377,7 @@
   "FIELD_WAVEFORM": "Waveform",
   "FIELD_SHIFT_CLOCK_MASK": "Shift Clock Mask",
   "FIELD_DIVIDING_RATIO": "Dividing Ratio",
-  "FIELD_BIT_COUNT": "Bit Count",
+  "FIELD_BIT_COUNT": "7 bit Counter",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

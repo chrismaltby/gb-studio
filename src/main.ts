@@ -270,7 +270,7 @@ const createMusic = async (open?: boolean) => {
   if (open 
     // Only show the window in development environment
     // otherwise keep it as a background process
-    // || isDevMode || process.env.NODE_ENV === "development") 
+    // || isDevMode || process.env.NODE_ENV === "development" 
   ) {
     musicWindow.show();
   }

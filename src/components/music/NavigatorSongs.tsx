@@ -45,7 +45,7 @@ const songToNavigatorItem = (
   }
   return ({
     id: song.id,
-    name: nameIfModified(song.name ? song.name : `Song ${songIndex + 1}`),
+    name: nameIfModified(song.filename ? song.filename : `Song ${songIndex + 1}`),
   });
 };
 

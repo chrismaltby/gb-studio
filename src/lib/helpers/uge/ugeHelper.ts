@@ -1,5 +1,4 @@
 /* eslint-disable camelcase */
-// import { DutyInstrument } from "./song/DutyInstrument";
 import { DutyInstrument, NoiseInstrument, WaveInstrument } from "../../../store/features/tracker/trackerTypes";
 import { PatternCell } from "./song/PatternCell";
 import { Song } from "./song/Song";
@@ -17,7 +16,7 @@ export const loadUGESong = (data: ArrayBuffer): (Song | null) => {
   let offset = 0;
   const version = new Uint32Array(data.slice(offset, offset + 4))[0];
   console.log(`uge version: ${version}`);
-  if (version < 0 || version > 3) {
+  if (version < 0 || version > 5) {
     throw new Error(`UGE version ${version} is not supported by GB Studio`);
   }
 
@@ -82,13 +81,19 @@ export const loadUGESong = (data: ArrayBuffer): (Song | null) => {
     offset += 4;
     const noise_dividing_ratio = new Uint32Array(data.slice(offset, offset + 4))[0];
     offset += 4;
-    // TODO: Unreleased V4 format has some kind of "noise macro" after this data, most likely 6 bytes or integers.
+    const noise_macro = [];
+    if (version >= 4) {
+      for (let n = 0; n < 6; n++) {
+        noise_macro.push(new Int8Array(data.slice(offset, offset + 4)));
+        offset += 1;
+      }
+    }
 
     if (type === 0) {
       length = 64 - length;
       if (length === 64) length = 0;
 
-      const instr = {} as DutyInstrument;// new DutyInstrument(name);
+      const instr = {} as DutyInstrument;
       if (length_enabled) {
         instr.length = length;
       } else {
@@ -140,6 +145,9 @@ export const loadUGESong = (data: ArrayBuffer): (Song | null) => {
       instr.shift_clock_mask = noise_shift_clock_frequency;
       instr.dividing_ratio = noise_dividing_ratio;
       instr.bit_count = noise_counter_step ? 7 : 15;
+      if (version >= 4) {
+        instr.noise_macro = noise_macro;
+      }
 
       noise_instrument_mapping[(n % 15) + 1] = song.noise_instruments.length;
       song.addNoiseInstrument(instr);
@@ -336,8 +344,8 @@ export const saveUGESong = (song: Song): ArrayBuffer => {
     addUint32(0);
 
     addUint32(0);
-    addUint32(i.dividing_ratio);
     addUint32(i.bit_count === 7 ? 1 : 0);
+    addUint32(i.dividing_ratio);
   }
 
   addUint32(3); // version
