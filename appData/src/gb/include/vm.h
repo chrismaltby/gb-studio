@@ -73,6 +73,8 @@ extern SCRIPT_CTX * first_ctx, * free_ctxs;
 
 // lock state 
 extern UBYTE vm_lock_state;
+// loaded state
+extern UBYTE vm_loaded_state;
 // exception flag and parameters
 extern UBYTE vm_exception_code;
 extern UBYTE vm_exception_params_length;
@@ -96,7 +98,6 @@ void vm_invoke(SCRIPT_CTX * THIS, UBYTE bank, UBYTE * fn, UBYTE nparams, INT16 i
 void vm_beginthread(UWORD dummy0, UWORD dummy1, SCRIPT_CTX * THIS, UBYTE bank, UBYTE * pc, INT16 idx, UBYTE nargs) __nonbanked;
 void vm_if(SCRIPT_CTX * THIS, UBYTE condition, INT16 idxA, INT16 idxB, UBYTE * pc, UBYTE n) __banked;
 void vm_if_const(SCRIPT_CTX * THIS, UBYTE condition, INT16 idxA, INT16 B, UBYTE * pc, UBYTE n) __banked;
-void vm_test_terminate(SCRIPT_CTX * THIS, UBYTE flags) __banked;
 void vm_pushvalue(SCRIPT_CTX * THIS, INT16 idx) __banked;
 void vm_reserve(SCRIPT_CTX * THIS, INT8 ofs) __banked;
 void vm_set(SCRIPT_CTX * THIS, INT16 idxA, INT16 idxB) __banked;
@@ -121,6 +122,8 @@ void vm_unlock(SCRIPT_CTX * THIS) __banked;
 void vm_raise(SCRIPT_CTX * THIS, UBYTE code, UBYTE size) __banked;
 void vm_set_indirect(SCRIPT_CTX * THIS, INT16 idxA, INT16 idxB) __banked;
 void vm_get_indirect(SCRIPT_CTX * THIS, INT16 idxA, INT16 idxB) __banked;
+void vm_test_terminate(SCRIPT_CTX * THIS, UBYTE flags) __banked;
+void vm_poll_loaded(SCRIPT_CTX * THIS, INT16 idx) __banked;
 
 // return zero if script end
 // bank with VM code must be active

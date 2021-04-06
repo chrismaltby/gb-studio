@@ -23,6 +23,7 @@
 #include "vm_exceptions.h"
 #include "states_caller.h"
 #include "load_save.h"
+#include "sio.h"
 #ifdef SGB
     #include "sgb_border.h"
     #include "data/border.h"
@@ -39,6 +40,7 @@ extern void core_reset_hook();
 
 void core_reset() __banked {
     // cleanup core stuff
+    SIO_init();
     input_init();
     load_init();
     sound_init();
@@ -131,7 +133,7 @@ void process_VM() {
                         // remove previous LCD ISR's
                         remove_LCD_ISRs();
                         // load game state from SRAM
-                        data_load(ReadBankedUBYTE(vm_exception_params_offset, vm_exception_params_bank));
+                        vm_loaded_state = data_load(ReadBankedUBYTE(vm_exception_params_offset, vm_exception_params_bank));
                         fade_in = !(load_scene(current_scene.ptr, current_scene.bank, FALSE));
                         break;
                     }
@@ -219,7 +221,7 @@ void core_run() __banked {
             TMA_REG = 0xC0u;
         #endif
         TAC_REG = 0x07u;
-        IE_REG |= (TIM_IFLAG | LCD_IFLAG);
+        IE_REG |= (TIM_IFLAG | LCD_IFLAG | SIO_IFLAG);
     }
     DISPLAY_ON;
 

@@ -18,7 +18,9 @@ SCRIPT_CTX CTXS[SCRIPT_MAX_CONTEXTS];
 SCRIPT_CTX * first_ctx, * free_ctxs;
 
 // lock state 
-UBYTE vm_lock_state = 0;
+UBYTE vm_lock_state;
+// loaded state
+UBYTE vm_loaded_state;
 // exception flsg
 UBYTE vm_exception_code;
 UBYTE vm_exception_params_length;
@@ -436,6 +438,13 @@ void vm_get_indirect(SCRIPT_CTX * THIS, INT16 idxA, INT16 idxB) __banked {
     // assign
     *A = *B;
 }
+// returns "loaded" flag and reset it 
+void vm_poll_loaded(SCRIPT_CTX * THIS, INT16 idx) __banked {
+    UWORD * A;
+    if (idx < 0) A = THIS->stack_ptr + idx; else A = script_memory + idx;
+    *A = vm_loaded_state;
+    vm_loaded_state = FALSE;
+}
 
 // executes one step in the passed context
 // return zero if script end
@@ -574,6 +583,7 @@ void script_runner_init(UBYTE reset) __banked {
         nxt = tmp--;
     }
     vm_lock_state = 0;
+    vm_loaded_state = FALSE;
 }
 
 // execute a script in the new allocated context

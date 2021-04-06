@@ -332,6 +332,11 @@ OP_VM_TEST_TERMINATE  = 0x2A
         .db OP_VM_TEST_TERMINATE, #<FLAGS
 .endm
 
+OP_VM_POLL_LOADED     = 0x2B
+.macro VM_POLL_LOADED IDX
+        .db OP_VM_POLL_LOADED, #>IDX, #<IDX
+.endm
+
 
 ; --- engine-specific instructions ------------------------------------------
 
@@ -648,6 +653,21 @@ OP_VM_SCENE_PUSH        = 0x68
 OP_VM_SCENE_POP         = 0x69
 .macro VM_SCENE_POP
         .db OP_VM_SCENE_POP
+.endm
+
+; --- SIO ----------------------------------
+
+OP_VM_SIO_SET_MODE      = 0x6C
+.SIO_MODE_NONE          = 0
+.SIO_MODE_MASTER        = 1
+.SIO_MODE_SLAVE         = 2
+.macro VM_SIO_SET_MODE MODE
+        .db OP_VM_SIO_SET_MODE, #<MODE
+.endm
+
+OP_VM_SIO_EXCHANGE      = 0x6D
+.macro VM_SIO_EXCHANGE SOUR, DEST, SIZE
+        .db OP_VM_SIO_EXCHANGE, #<(SIZE << 1), #>DEST, #<DEST, #>SOUR, #<SOUR
 .endm
 
 ; --- CAMERA -------------------------------
