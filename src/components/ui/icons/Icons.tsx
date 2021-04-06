@@ -124,9 +124,15 @@ export const NoiseIcon = () => (
   </svg>
 );
 
+export const AudioOnIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <path d="M9 18h-7v-12h7v12zm2-12v12l11 6v-24l-11 6z"/>
+  </svg>
+);
+
 export const SaveIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24">
-    <path xmlns="http://www.w3.org/2000/svg" d="M14 3h2.997v5h-2.997v-5zm9 1v20h-22v-24h17.997l4.003 4zm-17 5h12v-7h-12v7zm14 4h-16v9h16v-9z" />
+    <path d="M14 3h2.997v5h-2.997v-5zm9 1v20h-22v-24h17.997l4.003 4zm-17 5h12v-7h-12v7zm14 4h-16v9h16v-9z" />
   </svg>
 );
 

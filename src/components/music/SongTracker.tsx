@@ -10,6 +10,7 @@ import { SequenceEditor } from "./SequenceEditor";
 import { SongRow } from "./SongRow";
 import { UgePlayer } from "./UgePlayer";
 import scrollIntoView from 'scroll-into-view-if-needed';
+import { SongGridHeaderCell } from "./SongGridHeaderCell";
 
 interface SongTrackerProps {
   id: string,
@@ -41,29 +42,6 @@ const SongGridHeader = styled.div`
   border-width: 0 0 1px 1px;
   border-color: #000000;
   border-style: solid;
-`;
-
-interface SongGridHeaderCellProps {
-  size?: "normal" | "small";
-}
-const SongGridHeaderCell = styled.span<SongGridHeaderCellProps>`
-  display: inline-block;
-  align-items: center;
-  font-size: 14px;
-  font-weight: bold;
-  color: ${(props) => props.theme.colors.tracker.text};
-  background: ${(props) => props.theme.colors.tracker.background};
-  border-width: 0 1px 0 0;
-  border-color: ${(props) => props.theme.colors.tracker.border};
-  border-style: solid;
-  margin: 0;
-  padding: 4px 8px;
-  height: 20px;
-  ${(props) => 
-    props.size === "small" 
-      ? css`width: 30px;` 
-      : css`width: 116px;`
-  }
 `;
 
 export const SongTracker = ({
@@ -376,10 +354,10 @@ export const SongTracker = ({
       <SplitPaneHorizontalDivider />
       <SongGridHeader>
         <SongGridHeaderCell size="small"></SongGridHeaderCell>
-        <SongGridHeaderCell>Duty 1</SongGridHeaderCell>
-        <SongGridHeaderCell>Duty 2</SongGridHeaderCell>
-        <SongGridHeaderCell>Wave</SongGridHeaderCell>
-        <SongGridHeaderCell>Noise</SongGridHeaderCell>
+        <SongGridHeaderCell channel={0}>Duty 1</SongGridHeaderCell>
+        <SongGridHeaderCell channel={1}>Duty 2</SongGridHeaderCell>
+        <SongGridHeaderCell channel={2}>Wave</SongGridHeaderCell>
+        <SongGridHeaderCell channel={3}>Noise</SongGridHeaderCell>
       </SongGridHeader>
       <div style={{
         position: "relative",

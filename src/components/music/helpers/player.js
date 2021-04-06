@@ -28,14 +28,7 @@ const initPlayer = (onInit) => {
 }
 
 const toggleMute = (channel) => {
-  const mask = 1 << channel;
-  if (muted_channels_mask & mask) {
-    muted_channels_mask &= ~mask;
-    return false;
-  }
-  muted_channels_mask |= mask;
-  emulator.writeMem(0xFF12 + channel * 5, 0)
-  return true;
+  return emulator.toggleChannel(channel);
 }
 
 const play = (song) => {
