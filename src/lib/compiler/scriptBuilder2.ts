@@ -536,6 +536,10 @@ class ScriptBuilder {
     this._addCmd(`    .SAVE_SLOT ${slot}`);
   };
 
+  _pollLoaded = (location: ScriptBuilderStackVariable) => {
+    this._addCmd("VM_POLL_LOADED", location);
+  };
+
   _dw = (...data: Array<ScriptBuilderStackVariable>) => {
     this._addCmd(`.dw ${data.join(", ")}`);
   };
@@ -1784,10 +1788,20 @@ class ScriptBuilder {
     this._addNL();
   };
 
-  dataSave = (slot: number) => {
+  dataSave = (
+    slot: number,
+    onSavePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+  ) => {
+    const loadedLabel = this.getNextLabel();
     this._addComment(`Save Data to Slot ${slot}`);
     this._raiseException("EXCEPTION_SAVE", 1);
     this._saveSlot(slot);
+    this._stackPushConst(0);
+    this._pollLoaded(".ARG0");
+    this._ifConst(".EQ", ".ARG0", 1, loadedLabel, 1);
+    this._addNL();
+    this._compilePath(onSavePath);
+    this._label(loadedLabel);
     this._addNL();
   };
 

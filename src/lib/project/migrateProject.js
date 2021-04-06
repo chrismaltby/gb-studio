@@ -4,6 +4,8 @@ import { mapScenesEvents, mapEvents } from "../helpers/eventSystem";
 import generateRandomWalkScript from "../movement/generateRandomWalkScript";
 import generateRandomLookScript from "../movement/generateRandomLookScript";
 import { COLLISION_ALL } from "../../consts";
+import { EVENT_END } from "../compiler/eventTypes";
+import uuid from "uuid";
 
 const indexById = indexBy("id");
 
@@ -910,7 +912,8 @@ const migrateAnimSpeedr6r7 = (original) => {
 
 /*
 * Version 2.0.0 r7 now uses pixel per frame and animation speed mask values
-* rather than arbitrary speed values for anim/move speeds
+* rather than arbitrary speed values for anim/move speeds.
+* Save event also now includes an OnSave script.
 */
 export const migrateFrom200r6To200r7Event = (event) => {
  const migrateMeta = generateMigrateMeta(event);
@@ -949,6 +952,20 @@ export const migrateFrom200r6To200r7Event = (event) => {
      },
    });
  }    
+
+ if (event.args && event.command === "EVENT_SAVE_DATA") {
+    return migrateMeta({
+      ...event,
+      children: {
+        true: [
+          {
+            id: uuid(),
+            command: EVENT_END,
+          },
+        ],
+      },
+    });
+ }
  return event;
 };
 
