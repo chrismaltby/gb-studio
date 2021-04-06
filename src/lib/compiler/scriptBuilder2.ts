@@ -540,6 +540,20 @@ class ScriptBuilder {
     this._addCmd("VM_POLL_LOADED", location);
   };
 
+  _sioSetMode = (
+    mode: ".SIO_MODE_MASTER" | ".SIO_MODE_SLAVE" | ".SIO_MODE_NONE"
+  ) => {
+    this._addCmd("VM_SIO_SET_MODE", mode);
+  };
+
+  _sioExchange = (
+    sendVariable: string,
+    receiveVariable: string,
+    packetSize: number
+  ) => {
+    this._addCmd("VM_SIO_EXCHANGE", sendVariable, receiveVariable, packetSize);
+  };
+
   _dw = (...data: Array<ScriptBuilderStackVariable>) => {
     this._addCmd(`.dw ${data.join(", ")}`);
   };
@@ -1810,6 +1824,27 @@ class ScriptBuilder {
     console.error("dataClear not implemented");
     // throw new Error("dataClear not implemented");
     this._addNL();
+  };
+
+  // --------------------------------------------------------------------------
+  // Link Cable
+
+  linkHost = () => {
+    this._sioSetMode(".SIO_MODE_MASTER");
+  };
+
+  linkJoin = () => {
+    this._sioSetMode(".SIO_MODE_SLAVE");
+  };
+
+  linkTransfer = (
+    sendVariable: string,
+    receiveVariable: string,
+    packetSize: number
+  ) => {
+    const sendAlias = this.getVariableAlias(sendVariable);
+    const receiveAlias = this.getVariableAlias(receiveVariable);
+    this._sioExchange(sendAlias, receiveAlias, packetSize);
   };
 
   // --------------------------------------------------------------------------

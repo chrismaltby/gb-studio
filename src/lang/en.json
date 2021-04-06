@@ -342,6 +342,9 @@
   "FIELD_SCENE_TYPE_DEFAULT": "Scene Type Default",
   "FIELD_CHARACTER_ENCODING": "Character Encoding",
   "FIELD_ON_SAVE": "On Save",
+  "FIELD_SEND_VARIABLE": "Send Variable",
+  "FIELD_RECEIVE_VARIABLE": "Receive Variable",
+  "FIELD_PACKET_SIZE": "Packet Size",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
