@@ -38,9 +38,9 @@ const SongGridHeader = styled.div`
   left: 46px;
   z-index: 1;
   white-space: nowrap;
-  background: #222222;
+  background: ${(props) => props.theme.colors.tracker.background};
   border-width: 0 0 1px 1px;
-  border-color: #000000;
+  border-color: ${(props) => props.theme.colors.tracker.border};
   border-style: solid;
 `;
 
@@ -62,6 +62,9 @@ export const SongTracker = ({
   const octaveOffset = useSelector(
     (state: RootState) => state.tracker.octaveOffset
   );
+
+  const [channelStatus, setChannelStatus] = useState([false, false, false, false]);
+  console.log(channelStatus);
 
   const patternId = song?.sequence[sequenceId] || 0;
   const [selectedCell, setSelectedCell] = useState<number | undefined>();
@@ -354,10 +357,10 @@ export const SongTracker = ({
       <SplitPaneHorizontalDivider />
       <SongGridHeader>
         <SongGridHeaderCell size="small"></SongGridHeaderCell>
-        <SongGridHeaderCell channel={0}>Duty 1</SongGridHeaderCell>
-        <SongGridHeaderCell channel={1}>Duty 2</SongGridHeaderCell>
-        <SongGridHeaderCell channel={2}>Wave</SongGridHeaderCell>
-        <SongGridHeaderCell channel={3}>Noise</SongGridHeaderCell>
+        <SongGridHeaderCell channel={0} muted={channelStatus[0]}>Duty 1</SongGridHeaderCell>
+        <SongGridHeaderCell channel={1} muted={channelStatus[1]}>Duty 2</SongGridHeaderCell>
+        <SongGridHeaderCell channel={2} muted={channelStatus[2]}>Wave</SongGridHeaderCell>
+        <SongGridHeaderCell channel={3} muted={channelStatus[3]}>Noise</SongGridHeaderCell>
       </SongGridHeader>
       <div style={{
         position: "relative",
@@ -394,6 +397,7 @@ export const SongTracker = ({
         song={id}
         data={song}
         onPlaybackUpdate={setPlaybackState}
+        onChannelStatusUpdate={setChannelStatus}
       />
     </div>
   )

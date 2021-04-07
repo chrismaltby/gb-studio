@@ -6,10 +6,11 @@ import emulator from "./emulator";
 let interval_handle = null;
 let update_handle = null;
 let rom_file = null;
-let muted_channels_mask = 0;
 
 let current_sequence = -1;
 let current_row = -1;
+
+const channels = [false, false, false, false];
 
 let onIntervalCallback = (updateData) => { };
 
@@ -26,9 +27,9 @@ const initPlayer = (onInit) => {
     }
   });
 }
-
-const toggleMute = (channel) => {
-  return emulator.toggleChannel(channel);
+const setChannel = (channel, muted) => {
+  channels[channel] = emulator.setChannel(channel, muted);
+  return channels;
 }
 
 const play = (song) => {
@@ -37,12 +38,15 @@ const play = (song) => {
 
   const current_order_addr = compiler.getRamSymbols().findIndex((v) => { return v === "current_order" });
   const row_addr = compiler.getRamSymbols().findIndex((v) => { return v === "row" });
-  const mute_addr = compiler.getRamSymbols().findIndex((v) => { return v === "mute_channels" });
 
   emulator.init(null, rom_file);
+  
+  emulator.setChannel(0, channels[0]);
+  emulator.setChannel(1, channels[1]);
+  emulator.setChannel(2, channels[2]);
+  emulator.setChannel(3, channels[3]);
 
   const updateTracker = () => {
-    emulator.writeMem(mute_addr, muted_channels_mask)
     emulator.step("run");
   }
   interval_handle = setInterval(updateTracker, 10);
@@ -177,7 +181,7 @@ export default {
   initPlayer,
   play,
   stop,
-  toggleMute,
+  setChannel,
   updateRom,
   setOnIntervalCallback: (cb) => {
     onIntervalCallback = cb

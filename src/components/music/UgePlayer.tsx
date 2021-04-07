@@ -8,14 +8,15 @@ import { RootState } from "../../store/configureStore";
 interface UgePlayerProps {
   song: string,
   data: Song | null,
-  onPlaybackUpdate?: Function
+  onPlaybackUpdate?: Function,
+  onChannelStatusUpdate?: Function,
 }
 
 export const UgePlayer = ({
   data,
-  onPlaybackUpdate
+  onPlaybackUpdate,
+  onChannelStatusUpdate,
 }: UgePlayerProps) => {
-
   useEffect(() => {
     ipcRenderer.send(
       "open-music"
@@ -38,6 +39,11 @@ export const UgePlayer = ({
             onPlaybackUpdate(d.update);
           }
           break;
+        case "muted":
+          const message = d.message;
+          if (onChannelStatusUpdate) {
+            onChannelStatusUpdate(message.channels);
+          }
         case "log":
           break;
         default:

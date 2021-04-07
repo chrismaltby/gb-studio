@@ -236,10 +236,10 @@ const setKeyPad = (key, down) => {
     Module._set_joyp_start(emu, down);
 }
 
-const toggleChannel = (channel) => {
+const setChannel = (channel, muted) => {
   if (!isAvailable())
-    return;
-  return Module._toggle_audio_channel(emu, channel);
+    return muted;
+  return Module._set_audio_channel_mute(emu, channel, muted);
 }
 
 const setSerialCallback = (callback) => {
@@ -279,5 +279,5 @@ export default {
   readMem,
   step,
   updateRom,
-  toggleChannel,
+  setChannel,
 }

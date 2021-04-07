@@ -35,11 +35,13 @@ ipcRenderer.on("music-data", (event, d) => {
     case "stop":
       player.stop();
       break;
-    case "toggle-mute":
-      const isChannelMuted = player.toggleMute(d.channel);
+    case "set-mute":
+      const channels = player.setChannel(d.channel, d.muted);
       ipcRenderer.send("music-data-receive", {
         action: "muted",
-        message: isChannelMuted
+        message: {
+          channels
+        }
       })
       break;
     default:

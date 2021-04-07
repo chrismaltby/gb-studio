@@ -130,6 +130,12 @@ export const AudioOnIcon = () => (
   </svg>
 );
 
+export const AudioOffIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <path d="M22 1.269l-18.455 22.731-1.545-1.269 3.841-4.731h-1.827v-10h4.986v6.091l2.014-2.463v-3.628l5.365-2.981 4.076-5.019 1.545 1.269zm-10.986 15.926v.805l8.986 5v-16.873l-8.986 11.068z"/>
+  </svg>
+);
+
 export const SaveIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24">
     <path d="M14 3h2.997v5h-2.997v-5zm9 1v20h-22v-24h17.997l4.003 4zm-17 5h12v-7h-12v7zm14 4h-16v9h16v-9z" />
