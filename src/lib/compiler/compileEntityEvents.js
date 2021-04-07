@@ -54,9 +54,18 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
         continue;
       }
       if (events[command]) {
-        if (init && !hasInit && !events[command].allowedBeforeInitFade) {
+        if (
+          init &&
+          !hasInit &&
+          !globalHasInit &&
+          !events[command].allowedBeforeInitFade
+        ) {
           // Found an event that cannot happen before init fade in
-          scriptBuilder.nextFrameAwait();
+          if (i > 0 || isBranch) {
+            // Force await the next frame if not the first command
+            // at top level so that actors update before fade in occurs
+            scriptBuilder.nextFrameAwait();
+          }
           if (command !== EVENT_FADE_IN) {
             scriptBuilder.fadeIn();
           }
