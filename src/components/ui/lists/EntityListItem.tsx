@@ -22,7 +22,7 @@ interface EntityListItemProps {
     name: string;
     labelColor?: string;
   };
-  type: "scene" | "actor" | "trigger" | "variable" | "sprite" | "animation" | "song" | "instrument" | "wave" | "noise";
+  type: "scene" | "actor" | "trigger" | "variable" | "sprite" | "animation" | "song" | "duty" | "wave" | "noise";
   nestLevel?: number;
   collapsed?: boolean;
   collapsable?: boolean;
@@ -135,7 +135,7 @@ export const EntityListItem: FC<EntityListItemProps> = ({
           <SongIcon />
         </EnitityIcon>
       )}
-      {type === "instrument" && (
+      {type === "duty" && (
         <EnitityIcon>
           <DutyIcon />
         </EnitityIcon>

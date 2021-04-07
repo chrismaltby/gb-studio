@@ -28,7 +28,7 @@ interface SongEditorProps {
 type Instrument = DutyInstrument | NoiseInstrument | WaveInstrument;
 
 const renderInstrumentEditor = (type: string, instrumentData: Instrument | null) => {
-  if (type === "instrument") return <InstrumentDutyEditor id={`instrument_${instrumentData?.index}`} instrument={instrumentData as DutyInstrument} />
+  if (type === "duty") return <InstrumentDutyEditor id={`instrument_${instrumentData?.index}`} instrument={instrumentData as DutyInstrument} />
 
   if (type === "noise") return <InstrumentNoiseEditor id={`instrument_${instrumentData?.index}`} instrument={instrumentData as NoiseInstrument} />
 
@@ -37,7 +37,7 @@ const renderInstrumentEditor = (type: string, instrumentData: Instrument | null)
 
 const instrumentName = (instrument: Instrument, type: string) => {
   let typeName = "Instrument";
-  if (type === "instrument") typeName = "Duty";
+  if (type === "duty") typeName = "Duty";
   if (type === "wave") typeName = "Wave";
   if (type === "noise") typeName = "Noise";
   
@@ -82,7 +82,7 @@ export const SongEditor = ({
     const editValue = castEventValue(e);
 
     let action;
-    if (type === "instrument") action = trackerActions.editDutyInstrument;
+    if (type === "duty") action = trackerActions.editDutyInstrument;
     if (type === "wave") action = trackerActions.editWaveInstrument;
     if (type === "noise") action = trackerActions.editWaveInstrument;
     
@@ -102,7 +102,7 @@ export const SongEditor = ({
   if (song) {
     const selectedInstrumentId = parseInt(selectedInstrument.id);
     switch (selectedInstrument.type) {
-      case "instrument":
+      case "duty":
         instrumentData = song.duty_instruments[selectedInstrumentId];
         break;
       case "noise":

@@ -48,7 +48,7 @@ export interface SpriteTileSelection {
   height: number;
 }
 
-export type InstrumentType =  "instrument" | "wave" | "noise";
+export type InstrumentType =  "duty" | "wave" | "noise";
 
 export interface SelectedInstrument {
   id: string,
@@ -180,7 +180,7 @@ export const initialState: EditorState = {
   selectedSongId: "",
   selectedInstrument: {
     id: "0",
-    type: "instrument"
+    type: "duty"
   },
   selectedSequence: 0,
   playbackState: [0, 0]
@@ -633,7 +633,7 @@ const editorSlice = createSlice({
     
     setSelectedSongId: (state, action: PayloadAction<string>) => {
       state.selectedSongId = action.payload;
-      state.selectedInstrument = { id: "0", type: "instrument" };
+      state.selectedInstrument = { id: "0", type: "duty" };
       state.selectedSequence = 0;
       state.playbackState = [0, 0]
     },

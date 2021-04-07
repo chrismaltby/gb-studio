@@ -16,6 +16,8 @@ import useSplitPane from "../ui/hooks/use-split-pane";
 import styled from "styled-components";
 import { SplitPaneVerticalDivider } from "../ui/splitpane/SplitPaneDivider";
 
+const COLLAPSED_SIZE = 30;
+
 interface NavigatorSongsProps {
   height: number;
   defaultFirst?: boolean;
@@ -28,6 +30,14 @@ interface NavigatorSongsProps {
 interface NavigatorItem {
   id: string;
   name: string;
+};
+
+interface InstrumentNavigatorItem {
+  id: string;
+  name: string;
+  instrumentId?: string;
+  type: InstrumentType;
+  isGroup: boolean;
 }
 
 const Pane = styled.div`
@@ -49,13 +59,16 @@ const songToNavigatorItem = (
   });
 };
 
-const instrumentToNavigatorItem = (
+const instrumentToNavigatorItem = (type: InstrumentType) => (
   instrument: DutyInstrument | NoiseInstrument | WaveInstrument,
   instrumentIndex: number,
   defaultName: string,
-): NavigatorItem => ({
-  id: `${instrument.index}`,
+): InstrumentNavigatorItem => ({
+  id: `${type}_${instrument.index}`,
   name: instrument.name ? instrument.name : `${defaultName} ${instrumentIndex + 1}`,
+  type,
+  instrumentId: `${instrument.index}`,
+  isGroup: false,
 });
 
 const collator = new Intl.Collator(undefined, {
@@ -70,7 +83,6 @@ const sortByIndex = (a: NavigatorItem, b: NavigatorItem) => {
   return collator.compare(a.id, b.id);
 };
 
-const COLLAPSED_SIZE = 30;
 export const NavigatorSongs = ({
   height,
   defaultFirst,
@@ -79,6 +91,8 @@ export const NavigatorSongs = ({
   noises,
   modified
 }: NavigatorSongsProps) => {
+  const dispatch = useDispatch();
+
   const [items, setItems] = useState<NavigatorItem[]>([]);
   const allSongs = useSelector((state: RootState) =>
     musicSelectors.selectAll(state)
@@ -94,8 +108,6 @@ export const NavigatorSongs = ({
     : navigationId;
 
   const selectedSong = songsLookup[selectedSongId];
-
-  const dispatch = useDispatch();
 
   useEffect(() => {
     setItems(
@@ -114,41 +126,55 @@ export const NavigatorSongs = ({
     [dispatch]
   );
 
-  const [instrumentItems, setInstrumentItems] = useState<NavigatorItem[]>([]);
-  useEffect(() => {
-    if (!instruments) return;
-    setInstrumentItems(
-      instruments
-        .map((instrument, instrumentIndex) =>
-          instrumentToNavigatorItem(instrument, instrumentIndex, "Duty")
-        )
-        .sort(sortByIndex)
-    );
-  }, [instruments]);
+  const [openInstrumentGroupIds, setOpenInstrumentGroupIds] = useState<InstrumentType[]>([]);
 
-  const [wavesItems, setWavesItems] = useState<NavigatorItem[]>([]);
-  useEffect(() => {
-    if (!waves) return;
-    setWavesItems(
-      waves
-        .map((wave, waveIndex) =>
-          instrumentToNavigatorItem(wave, waveIndex, "Wave")
-        )
-        .sort(sortByIndex)
-    );
-  }, [waves]);
+  const toggleInstrumentOpen = (id: InstrumentType) => () => {
+    if (isOpen(id)) {
+      closeInstrumentGroup(id);
+    } else {
+      openInstrumentGroup(id);
+    }
+  };
 
-  const [noiseItems, setNoiseItems] = useState<NavigatorItem[]>([]);
+  const openInstrumentGroup = (id: InstrumentType) => {
+    setOpenInstrumentGroupIds((value) => ([] as InstrumentType[]).concat(value, id));
+  };
+
+  const closeInstrumentGroup = (id: InstrumentType) => {
+    setOpenInstrumentGroupIds((value) => value.filter((s) => s !== id));
+  };
+
+  const isOpen = (id: InstrumentType) => {
+    return openInstrumentGroupIds.includes(id);
+  };
+
+  const [instrumentItems, setInstrumentItems] = useState<InstrumentNavigatorItem[]>([]);
   useEffect(() => {
-    if (!noises) return;
-    setNoiseItems(
-      noises
-        .map((noise, noiseIndex) =>
-          instrumentToNavigatorItem(noise, noiseIndex, "Noise")
-        )
-        .sort(sortByIndex)
-    );
-  }, [noises]);
+    const items: InstrumentNavigatorItem[] = [];
+    setInstrumentItems(items.concat(
+      [{ name: "Duty", id: "duty_group", type: "duty", isGroup: true }],
+      isOpen("duty") ?
+        instruments
+          .map((instrument, i) =>
+            instrumentToNavigatorItem("duty")(instrument, i, "Duty")
+          )
+          .sort(sortByIndex) : [],
+      [{ name: "Waves", id: "wave_group", type: "wave", isGroup: true }],
+      isOpen("wave") ?
+        waves
+          .map((wave, i) =>
+            instrumentToNavigatorItem("wave")(wave, i, "Wave")
+          )
+          .sort(sortByIndex) : [],
+      [{ name: "Noise", id: "noise_group", type: "noise", isGroup: true }],
+      isOpen("noise") ?
+        noises
+          .map((noise, i) =>
+            instrumentToNavigatorItem("noise")(noise, i, "Noise")
+          )
+          .sort(sortByIndex) : [],
+    ))
+  }, [instruments, waves, noises, openInstrumentGroupIds]);
 
   const selectedInstrument = useSelector(
     (state: RootState) => state.editor.selectedInstrument
@@ -160,26 +186,28 @@ export const NavigatorSongs = ({
     [dispatch]
   );
 
-  const setSelectedInstrumentWithType = (type: InstrumentType) => (id: string) => {
-    setSelectedInstrument(id, type);
+  const setSelectedInstrumentWithType = (id: string, item: InstrumentNavigatorItem) => {
+    if (!item.isGroup && item.instrumentId !== undefined) {
+      setSelectedInstrument(item.instrumentId, item.type);
+    }
   }
 
-  const [splitSizes, setSplitSizes] = useState([100, 100, 100, 100])
+  const [splitSizes, setSplitSizes] = useState([100, 200])
   const [onDragStart, togglePane] = useSplitPane({
     sizes: splitSizes,
     setSizes: setSplitSizes,
-    minSizes: [COLLAPSED_SIZE, COLLAPSED_SIZE, COLLAPSED_SIZE, COLLAPSED_SIZE],
+    minSizes: [COLLAPSED_SIZE, COLLAPSED_SIZE],
     collapsedSize: COLLAPSED_SIZE,
     reopenSize: 200,
     maxTotal: height,
     direction: "vertical",
   });
 
-  const showInstruments = selectedSong && selectedSong.type === "uge";
+  const showInstrumentList = selectedSong && selectedSong.type === "uge";
 
   return (
     <>
-      <Pane style={{ height: showInstruments ? splitSizes[0] : height }}>
+      <Pane style={{ height: showInstrumentList ? splitSizes[0] : height }}>
         <SplitPaneHeader
           onToggle={() => togglePane(0)}
           collapsed={Math.floor(splitSizes[0]) <= COLLAPSED_SIZE}
@@ -200,96 +228,48 @@ export const NavigatorSongs = ({
           selectedId={selectedSongId}
           items={items}
           setSelectedId={setSelectedSongId}
-          height={(showInstruments ? splitSizes[0] : height) - 30}
+          height={(showInstrumentList ? splitSizes[0] : height) - 30}
         >
           {({ item }) => <EntityListItem type="song" item={item} />}
         </FlatList>
       </Pane>
-      {showInstruments && (
+      {showInstrumentList && (
         <>
-        <SplitPaneVerticalDivider onMouseDown={onDragStart(0)} />
-        <Pane style={{ height: splitSizes[1] }}>
-          <SplitPaneHeader
-            onToggle={() => togglePane(1)}
-            collapsed={Math.floor(splitSizes[1]) <= COLLAPSED_SIZE}
-            buttons={
-              <Button
-                variant="transparent"
-                size="small"
-                title={l10n("TOOL_ADD_DUTY_INSTRUMENT_LABEL")}
-                onClick={() => { }}
-              >
-                <PlusIcon />
-              </Button>
-            }
-          >
-            {l10n("FIELD_DUTY_INSTRUMENTS")} ({instrumentItems.length}/15)
-          </SplitPaneHeader>
-          <FlatList
-            selectedId={selectedInstrument.type === "instrument" ? selectedInstrument.id : ""}
-            items={instrumentItems}
-            setSelectedId={setSelectedInstrumentWithType("instrument")}
-            height={splitSizes[1] - 30}
-          >
-            {({ item }) => <EntityListItem type="instrument" item={item} />}
-          </FlatList>
-        </Pane>
-        <SplitPaneVerticalDivider onMouseDown={onDragStart(1)} />
-        <Pane style={{ height: splitSizes[2] }}>
-
-          <SplitPaneHeader
-            onToggle={() => togglePane(2)}
-            collapsed={Math.floor(splitSizes[2]) <= COLLAPSED_SIZE}
-            buttons={
-              <Button
-                variant="transparent"
-                size="small"
-                title={l10n("TOOL_ADD_WAVE_INSTRUMENT_LABEL")}
-                onClick={() => { }}
-              >
-                <PlusIcon />
-              </Button>
-            }
-          >
-            {l10n("FIELD_WAVE_INSTRUMENTS")} ({wavesItems.length}/15)
-          </SplitPaneHeader>
-          <FlatList
-            selectedId={selectedInstrument.type === "wave" ? selectedInstrument.id : ""}
-            items={wavesItems}
-            setSelectedId={setSelectedInstrumentWithType("wave")}
-            height={splitSizes[2] - 30}
-          >
-            {({ item }) => <EntityListItem type="wave" item={item} />}
-          </FlatList>
-        </Pane>
-        <SplitPaneVerticalDivider onMouseDown={onDragStart(2)} />
-
-        <Pane style={{ height: splitSizes[3] }}>
-          <SplitPaneHeader
-            onToggle={() => togglePane(3)}
-            collapsed={Math.floor(splitSizes[3]) <= COLLAPSED_SIZE}
-            buttons={
-              <Button
-                variant="transparent"
-                size="small"
-                title={l10n("TOOL_ADD_NOISE_INSTRUMENT_LABEL")}
-                onClick={() => { }}
-              >
-                <PlusIcon />
-              </Button>
-            }
-          >
-            {l10n("FIELD_NOISE_INSTRUMENTS")} ({noiseItems.length}/15)
-          </SplitPaneHeader>
-          <FlatList
-            selectedId={selectedInstrument.type === "noise" ? selectedInstrument.id : ""}
-            items={noiseItems}
-            setSelectedId={setSelectedInstrumentWithType("noise")}
-            height={splitSizes[3] - 30}
-          >
-            {({ item }) => <EntityListItem type="noise" item={item} />}
-          </FlatList>
-        </Pane>
+          <SplitPaneVerticalDivider onMouseDown={onDragStart(0)} />
+          <Pane style={{ height: splitSizes[1] }}>
+            <SplitPaneHeader
+              onToggle={() => togglePane(1)}
+              collapsed={Math.floor(splitSizes[1]) <= COLLAPSED_SIZE}
+            >
+              {l10n("FIELD_INSTRUMENTS")}
+            </SplitPaneHeader>
+            <FlatList
+              selectedId={`${selectedInstrument.type}_${selectedInstrument.id}`}
+              items={instrumentItems}
+              setSelectedId={setSelectedInstrumentWithType}
+              height={splitSizes[1] - 30}
+              onKeyDown={(e: KeyboardEvent) => {
+                if (e.key === "ArrowRight") {
+                  openInstrumentGroup(selectedInstrument.type);
+                } else if (e.key === "ArrowLeft") {
+                  closeInstrumentGroup(selectedInstrument.type);
+                }
+              }}
+            >
+              {({ selected, item }) =>
+                item.isGroup ? (
+                  <EntityListItem
+                    item={item}
+                    type="song"
+                    collapsable={true}
+                    collapsed={!isOpen(item.type)}
+                    onToggleCollapse={toggleInstrumentOpen(item.type)}
+                  />
+                ) : (
+                  <EntityListItem item={item} type={item.type} nestLevel={1} />
+                )}
+            </FlatList>
+          </Pane>
         </>
       )}
     </>
