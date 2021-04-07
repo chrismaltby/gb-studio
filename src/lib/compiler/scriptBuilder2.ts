@@ -1830,11 +1830,11 @@ class ScriptBuilder {
   // Link Cable
 
   linkHost = () => {
-    this._sioSetMode(".SIO_MODE_MASTER");
+    this._sioSetMode(".SIO_MODE_SLAVE");
   };
 
   linkJoin = () => {
-    this._sioSetMode(".SIO_MODE_SLAVE");
+    this._sioSetMode(".SIO_MODE_MASTER");
   };
 
   linkTransfer = (
