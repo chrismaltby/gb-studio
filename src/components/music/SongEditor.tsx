@@ -114,7 +114,7 @@ export const SongEditor = ({
     }
   }
 
-  if (!song || !instrumentData) {
+  if (!song) {
     return null;
   }
 
@@ -167,31 +167,35 @@ export const SongEditor = ({
               onChange={onChangeFieldInput("ticks_per_row")}
             />
           </FormRow>
-          <FormDivider />
-          <FormHeader>
-            <EditableText
-              name="instrumentName"
-              placeholder={instrumentName(instrumentData, selectedInstrument.type)}
-              value={instrumentData.name || ""}
-              onChange={onChangeInstrumentName(selectedInstrument.type)}
-            />
+          { instrumentData ?
+          <>
+            <FormDivider />
+            <FormHeader>
+              <EditableText
+                name="instrumentName"
+                placeholder={instrumentName(instrumentData, selectedInstrument.type)}
+                value={instrumentData.name || ""}
+                onChange={onChangeInstrumentName(selectedInstrument.type)}
+              />
 
-            <DropdownButton
-              size="small"
-              variant="transparent"
-              menuDirection="right"
-            >
-              {/* <MenuItem onClick={onCopyVar}>
-                {l10n("MENU_VARIABLE_COPY_EMBED")}
-              </MenuItem>
-              <MenuItem onClick={onCopyChar}>
-                {l10n("MENU_VARIABLE_COPY_EMBED_CHAR")}
-              </MenuItem> */}
-            </DropdownButton>
-          </FormHeader>
-          {
-            renderInstrumentEditor(selectedInstrument.type, instrumentData)
-          }
+              <DropdownButton
+                size="small"
+                variant="transparent"
+                menuDirection="right"
+              >
+                {/* <MenuItem onClick={onCopyVar}>
+                  {l10n("MENU_VARIABLE_COPY_EMBED")}
+                </MenuItem>
+                <MenuItem onClick={onCopyChar}>
+                  {l10n("MENU_VARIABLE_COPY_EMBED_CHAR")}
+                </MenuItem> */}
+              </DropdownButton>
+            </FormHeader>
+            {
+              renderInstrumentEditor(selectedInstrument.type, instrumentData)
+            }
+          </>
+          : "" }
         </FormContainer>
       </SidebarColumn>
     </Sidebar>

@@ -21,9 +21,9 @@ const COLLAPSED_SIZE = 30;
 interface NavigatorSongsProps {
   height: number;
   defaultFirst?: boolean;
-  instruments: DutyInstrument[];
-  noises: NoiseInstrument[];
-  waves: WaveInstrument[];
+  dutyInstruments: DutyInstrument[];
+  noiseInstruments: NoiseInstrument[];
+  waveInstruments: WaveInstrument[];
   modified: boolean;
 }
 
@@ -35,7 +35,7 @@ interface NavigatorItem {
 interface InstrumentNavigatorItem {
   id: string;
   name: string;
-  instrumentId?: string;
+  instrumentId: string;
   type: InstrumentType;
   isGroup: boolean;
 }
@@ -63,13 +63,18 @@ const instrumentToNavigatorItem = (type: InstrumentType) => (
   instrument: DutyInstrument | NoiseInstrument | WaveInstrument,
   instrumentIndex: number,
   defaultName: string,
-): InstrumentNavigatorItem => ({
-  id: `${type}_${instrument.index}`,
-  name: instrument.name ? instrument.name : `${defaultName} ${instrumentIndex + 1}`,
-  type,
-  instrumentId: `${instrument.index}`,
-  isGroup: false,
-});
+): InstrumentNavigatorItem => {
+  
+  const name = instrument.name ? instrument.name : `${defaultName} ${instrumentIndex + 1}`;
+
+  return ({
+    id: `${type}_${instrument.index}`,
+    name: `${(instrument.index + 1).toString().padStart(2, "0")}: ${name}`,
+    type,
+    instrumentId: `${instrument.index}`,
+    isGroup: false,
+  });
+};
 
 const collator = new Intl.Collator(undefined, {
   numeric: true,
@@ -86,9 +91,9 @@ const sortByIndex = (a: NavigatorItem, b: NavigatorItem) => {
 export const NavigatorSongs = ({
   height,
   defaultFirst,
-  instruments,
-  waves,
-  noises,
+  dutyInstruments,
+  waveInstruments,
+  noiseInstruments,
   modified
 }: NavigatorSongsProps) => {
   const dispatch = useDispatch();
@@ -152,45 +157,39 @@ export const NavigatorSongs = ({
   useEffect(() => {
     const items: InstrumentNavigatorItem[] = [];
     setInstrumentItems(items.concat(
-      [{ name: "Duty", id: "duty_group", type: "duty", isGroup: true }],
+      [{ name: "Duty", id: "duty_group", instrumentId: "group", type: "duty", isGroup: true }],
       isOpen("duty") ?
-        instruments
-          .map((instrument, i) =>
-            instrumentToNavigatorItem("duty")(instrument, i, "Duty")
+        dutyInstruments
+          .map((duty, i) =>
+            instrumentToNavigatorItem("duty")(duty, i, "Duty")
           )
           .sort(sortByIndex) : [],
-      [{ name: "Waves", id: "wave_group", type: "wave", isGroup: true }],
+      [{ name: "Waves", id: "wave_group", instrumentId: "group", type: "wave", isGroup: true }],
       isOpen("wave") ?
-        waves
+        waveInstruments
           .map((wave, i) =>
             instrumentToNavigatorItem("wave")(wave, i, "Wave")
           )
           .sort(sortByIndex) : [],
-      [{ name: "Noise", id: "noise_group", type: "noise", isGroup: true }],
+      [{ name: "Noise", id: "noise_group", instrumentId: "group", type: "noise", isGroup: true }],
       isOpen("noise") ?
-        noises
+        noiseInstruments
           .map((noise, i) =>
             instrumentToNavigatorItem("noise")(noise, i, "Noise")
           )
           .sort(sortByIndex) : [],
     ))
-  }, [instruments, waves, noises, openInstrumentGroupIds]);
+  }, [dutyInstruments, waveInstruments, noiseInstruments, openInstrumentGroupIds]);
 
   const selectedInstrument = useSelector(
     (state: RootState) => state.editor.selectedInstrument
   );
   const setSelectedInstrument = useCallback(
-    (id: string, type: InstrumentType) => {
-      dispatch(editorActions.setSelectedInstrument({ id, type }))
+    (id: string, item: InstrumentNavigatorItem) => {
+      dispatch(editorActions.setSelectedInstrument({ id: item.instrumentId, type: item.type }))
     },
     [dispatch]
   );
-
-  const setSelectedInstrumentWithType = (id: string, item: InstrumentNavigatorItem) => {
-    if (!item.isGroup && item.instrumentId !== undefined) {
-      setSelectedInstrument(item.instrumentId, item.type);
-    }
-  }
 
   const [splitSizes, setSplitSizes] = useState([100, 200])
   const [onDragStart, togglePane] = useSplitPane({
@@ -246,7 +245,7 @@ export const NavigatorSongs = ({
             <FlatList
               selectedId={`${selectedInstrument.type}_${selectedInstrument.id}`}
               items={instrumentItems}
-              setSelectedId={setSelectedInstrumentWithType}
+              setSelectedId={setSelectedInstrument}
               height={splitSizes[1] - 30}
               onKeyDown={(e: KeyboardEvent) => {
                 if (e.key === "ArrowRight") {

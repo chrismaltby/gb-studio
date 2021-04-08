@@ -272,9 +272,9 @@ const MusicPage = () => {
           <NavigatorSongs
             height={windowHeight - 38}
             defaultFirst
-            instruments={song.duty_instruments}
-            noises={song.noise_instruments}
-            waves={song.wave_instruments}
+            dutyInstruments={song.duty_instruments}
+            waveInstruments={song.wave_instruments}
+            noiseInstruments={song.noise_instruments}
             modified={modified}
           />
         </div>
