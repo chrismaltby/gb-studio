@@ -147,17 +147,14 @@ const compileModTracks = async (
   );
 
   for (const track of tracks) {
-    output[`GBT_PLAYER/${track.dataName}_Data.c`] = await compileModTrack(
-      track,
-      {
-        projectRoot,
-        buildToolsPath,
-        buildToolsVersion,
-        cacheRoot,
-        progress,
-        warnings,
-      }
-    );
+    output[`music/${track.dataName}_Data.c`] = await compileModTrack(track, {
+      projectRoot,
+      buildToolsPath,
+      buildToolsVersion,
+      cacheRoot,
+      progress,
+      warnings,
+    });
   }
 };
 
@@ -191,17 +188,14 @@ const compileUgeTracks = async (
   );
 
   for (const track of tracks) {
-    output[`HUGE_TRACKER/${track.dataName}_Data.c`] = await compileUgeTrack(
-      track,
-      {
-        projectRoot,
-        buildToolsPath,
-        buildToolsVersion,
-        cacheRoot,
-        progress,
-        warnings,
-      }
-    );
+    output[`music/${track.dataName}_Data.c`] = await compileUgeTrack(track, {
+      projectRoot,
+      buildToolsPath,
+      buildToolsVersion,
+      cacheRoot,
+      progress,
+      warnings,
+    });
   }
 };
 
