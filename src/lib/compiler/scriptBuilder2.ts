@@ -19,6 +19,7 @@ import tokenize from "../rpn/tokenizer";
 import shuntingYard from "../rpn/shuntingYard";
 import { PrecompiledFontData } from "./compileFonts";
 import { encodeString } from "../helpers/encodings";
+import { PrecompiledMusicTrack } from "./compileMusic";
 
 type ScriptOutput = string[];
 
@@ -47,6 +48,7 @@ interface ScriptBuilderOptions {
   scenes: ScriptBuilderScene[];
   sprites: ScriptBuilderEntity[];
   fonts: PrecompiledFontData[];
+  music: PrecompiledMusicTrack[];
   characterEncoding: string;
   entity?: ScriptBuilderEntity;
   engineFields: Dictionary<EngineFieldSchema>;
@@ -273,6 +275,7 @@ class ScriptBuilder {
       scenes: options.scenes || [],
       sprites: options.sprites || [],
       fonts: options.fonts || [],
+      music: options.music || [],
       characterEncoding: options.characterEncoding || "",
       additionalScripts: options.additionalScripts || [],
       compileEvents: options.compileEvents || ((_self, _e) => {}),
@@ -841,6 +844,19 @@ class ScriptBuilder {
 
   _fadeOut = (speed: number) => {
     this._addCmd("VM_FADE_OUT", speed);
+  };
+
+  _musicPlay = (symbol: string, loop: boolean) => {
+    this._addCmd(
+      "VM_MUSIC_PLAY",
+      `___bank_${symbol}`,
+      `_${symbol}`,
+      loop ? ".MUSIC_LOOP" : ".MUSIC_NO_LOOP"
+    );
+  };
+
+  _musicStop = () => {
+    this._addCmd("VM_MUSIC_STOP");
   };
 
   _stop = () => {
@@ -1765,14 +1781,18 @@ class ScriptBuilder {
   // Music
 
   musicPlay = (musicId: string, loop = false) => {
-    console.error("musicPlay not implemented");
-    // throw new Error("musicPlay not implemented");
+    this._addComment(`Music Play`);
+    const { music } = this.options;
+    const track = music.find((t) => t.id === musicId);
+    if (track) {
+      this._musicPlay(`${track.dataName}_Data`, loop);
+    }
     this._addNL();
   };
 
   musicStop = () => {
-    console.error("musicStop not implemented");
-    // throw new Error("musicStop not implemented");
+    this._addComment(`Music Stop`);
+    this._musicStop();
     this._addNL();
   };
 
@@ -2580,26 +2600,6 @@ class ScriptBuilder {
     output.push(shouldShakeX ? 1 : 0);
     output.push(shouldShakeY ? 1 : 0);
     output.push(frames);
-  };
-
-
-
-  // Music
-
-  musicPlay = (musicId, loop = false) => {
-    const output = this.output;
-    const { music } = this.options;
-    const musicIndex = getMusicIndex(musicId, music);
-    if (musicIndex >= 0) {
-      output.push(cmd(MUSIC_PLAY));
-      output.push(musicIndex);
-      output.push(loop ? 1 : 0); // Loop track
-    }
-  };
-
-  musicStop = () => {
-    const output = this.output;
-    output.push(cmd(MUSIC_STOP));
   };
 
   // Sound

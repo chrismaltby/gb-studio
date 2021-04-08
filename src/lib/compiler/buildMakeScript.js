@@ -8,7 +8,7 @@ const globAsync = promisify(glob);
 
 export default async (
   buildRoot,
-  { CART_TYPE, CART_SIZE, customColorsEnabled, profile, platform }
+  { CART_TYPE, customColorsEnabled, musicDriver, profile, platform }
 ) => {
   const cmds = platform === "win32" ? [""] : ["#!/bin/bash", "set -e"];
   const objFiles = [];
@@ -21,12 +21,19 @@ export default async (
     platform === "win32"
       ? `..\\_gbstools\\gbspack\\gbspack`
       : `../_gbstools/gbspack/gbspack`;
-  let CFLAGS = `-Iinclude -Wa-Iinclude -Wa-I../_gbstools/gbdk/lib/small/asxxxx -Wl-a -DHUGE_TRACKER -DSGB -c`;
-  let LFLAGS = ` -Wl-yt${CART_TYPE} -Wl-ya4 -Wl-j -Wl-m -Wl-w -Wl-klib -Wl-lhUGEDriver.lib -Wl-g_shadow_OAM2=0xDF00 -Wl-g.STACK=0xDF00 -Wi-e -Wm-ys`;
+  let CFLAGS = `-Iinclude -Wa-Iinclude -Wa-I../_gbstools/gbdk/lib/small/asxxxx -Wl-a -DSGB -c`;
+  let LFLAGS = ` -Wl-yt${CART_TYPE} -Wl-ya4 -Wl-j -Wl-m -Wl-w -Wl-klib -Wl-g_shadow_OAM2=0xDF00 -Wl-g.STACK=0xDF00 -Wi-e -Wm-ys`;
 
   if (customColorsEnabled) {
     CFLAGS += " -DCGB";
     LFLAGS += " -Wm-yC";
+  }
+
+  if (musicDriver === "huge") {
+    CFLAGS += " -DHUGE_TRACKER";
+    LFLAGS += " -Wl-lhUGEDriver.lib";
+  } else {
+    CFLAGS += " -DGBT_PLAYER";
   }
 
   if (profile) {
@@ -58,7 +65,10 @@ export default async (
   };
 
   for (const file of buildFiles) {
-    if (file.indexOf("GBT_PLAYER") !== -1) {
+    if (musicDriver === "huge" && file.indexOf("GBT_PLAYER") !== -1) {
+      continue;
+    }
+    if (musicDriver !== "huge" && file.indexOf("HUGE_TRACKER") !== -1) {
       continue;
     }
 
@@ -78,25 +88,10 @@ export default async (
   getValue(
     `${l10n("COMPILER_PACKING")}`,
     "CART_SIZE",
-    `${PACK} -f 255 -e rel -c ${objFiles
-      // .filter(
-      //   // (f) => f.indexOf("gbt_player") === -1
-      //   // f.indexOf("font_image") > -1 ||
-      //   // f.indexOf("frame_image") > -1 ||
-      //   // f.indexOf("cursor_image") > -1 ||
-      //   // f.indexOf("emotes_image") > -1 ||
-      //   // f.indexOf("tileset_") > -1 ||
-      //   // f.indexOf("palette_") > -1 ||
-      //   // f.indexOf("background_") > -1 ||
-      //   // f.indexOf("spritesheet_") > -1 ||
-      //   // f.indexOf("avatar_") > -1 ||
-      //   // f.indexOf("scene_") > -1
-      // )
-      .join(" ")}`
+    `${PACK} -f 255 -e rel -c ${objFiles.join(" ")}`
   );
 
-
-  if(platform === "win32") {
+  if (platform === "win32") {
     addCommand(
       l10n("COMPILER_CALCULATING_START_SAVE"),
       `SET /A "START_SAVE = CART_SIZE - 4"`

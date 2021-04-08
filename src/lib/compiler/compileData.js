@@ -75,6 +75,7 @@ import compileSGBImage from "./sgb";
 import { readFileToTilesData } from "../tiles/tileData";
 import l10n from "../helpers/l10n";
 import { compileScriptEngineInit } from "./compileBootstrap";
+import { compileMusicTracks, compileMusicHeader } from "./compileMusic";
 
 const indexById = indexBy("id");
 
@@ -502,17 +503,15 @@ const compile = async (
     startAnimSpeed = 15,
   } = projectData.settings;
 
-  const musicBanks = [];
-  for (let i = 0; i < NUM_MUSIC_BANKS; i++) {
-    musicBanks[i] = 255;
-  }
-
-  const music = precompiled.usedMusic.map((track, index) => {
-    const bank = musicBanks[index % musicBanks.length];
-    return {
-      ...track,
-      bank,
-    };
+  // Add music data
+  output["music_data.h"] = compileMusicHeader(precompiled.usedMusic);
+  await compileMusicTracks(precompiled.usedMusic, {
+    engine: "gbt",
+    output,
+    tmpPath,
+    projectRoot,
+    progress,
+    warnings,
   });
 
   output["game_globals.i"] = compileGameGlobalsInclude(variableAliasLookup);
@@ -539,56 +538,11 @@ const compile = async (
     `extern const UBYTE start_player_move_speed;\n` +
     `extern const UBYTE start_player_anim_tick;\n\n` +
     `extern const far_ptr_t ui_fonts[];\n\n` +
-    // `// Engine fields\n` +
-    // compileEngineFields(engineFields, projectData.engineFieldValues, true) +
-    // "\n" +
-    // `${music
-    //   .map((track, index) => {
-    //     return `extern const unsigned int ${track.dataName}_Data[];`;
-    //   })
-    //   .join(`\n`)}\n\n` +
     `void bootstrap_init() __banked;\n\n` +
     `#endif\n`;
-  // output[`data_bootstrap.c`] =
-  //   `#include "data/data_bootstrap.h"\n` +
-  //   `#include "data/${sceneSymbol(startSceneIndex)}.h"\n` +
-  //   (customColorsEnabled ? `#include "data/${paletteSymbol(0)}.h"\n` : "") +
-  //   precompiled.usedFonts
-  //     .map((_, fontIndex) => `#include "data/${fontSymbol(fontIndex)}.h"`)
-  //     .join(",\n") +
-  //   `\n\n` +
-  //   `const INT16 start_scene_x = ${(startX || 0) * 8 * 16};\n` +
-  //   `const INT16 start_scene_y = ${(startY + 1 || 0) * 8 * 16};\n` +
-  //   `const direction_e start_scene_dir = ${dirEnum(startDirection)};\n` +
-  //   `const far_ptr_t start_scene = ${toFarPtr(
-  //     sceneSymbol(startSceneIndex)
-  //   )};\n` +
-  //   (customColorsEnabled
-  //     ? `const far_ptr_t start_player_palette = ${toFarPtr(
-  //         paletteSymbol(0)
-  //       )};\n`
-  //     : "") +
-  //   `const UBYTE start_player_move_speed = ${Math.round(
-  //     startMoveSpeed * 16
-  //   )};\n` +
-  //   `const UBYTE start_player_anim_tick = ${startAnimSpeed};\n` +
-  //   `const far_ptr_t ui_fonts[] = {\n` +
-  //   precompiled.usedFonts
-  //     .map((_, fontIndex) => "  " + toFarPtr(fontSymbol(fontIndex)))
-  //     .join(",\n") +
-  //   `\n};\n` +
-  //   "\n" +
-  //   `void bootstrap_init() __banked {\n` +
-  //   compileEngineFields(engineFields, projectData.engineFieldValues) +
-  //   `}\n`;
-
-  const maxDataBank = 255;
 
   return {
     files: output,
-    music,
-    maxDataBank,
-    musicBanks,
   };
 };
 
@@ -1184,7 +1138,7 @@ export const precompileMusic = (scenes, music) => {
     .map((track, index) => {
       return {
         ...track,
-        dataName: `music_track_` + (index + 101) + "_",
+        dataName: `music_track_${index}_`,
       };
     });
   return { usedMusic };

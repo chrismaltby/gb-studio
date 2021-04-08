@@ -25,13 +25,6 @@ const setROMTitle = async (filename, title) => {
   await fs.writeFile(filename, await patchROM(romData));
 };
 
-const convertHexTo15BitRGB = (hex) => {
-  const r = Math.floor(hexDec(hex.substring(0, 2)) * (32 / 256));
-  const g = Math.floor(hexDec(hex.substring(2, 4)) * (32 / 256));
-  const b = Math.max(1, Math.floor(hexDec(hex.substring(4, 6)) * (32 / 256)));
-  return `RGB(${r}, ${g}, ${b})`;
-};
-
 const patchROM = (romData) => {
   let checksum = 0;
   let headerChecksum = 0;
@@ -60,12 +53,10 @@ const makeBuild = async ({
   buildRoot = "/tmp",
   tmpPath = "/tmp",
   data = {},
-  cartSize = 64,
   profile = false,
   progress = (_msg) => {},
   warnings = (_msg) => {},
 } = {}) => {
-    
   const env = Object.create(process.env);
   const { settings } = data;
 
@@ -75,7 +66,6 @@ const makeBuild = async ({
   env.GBDKDIR = `${buildToolsPath}/gbdk/`;
 
   env.CART_TYPE = parseInt(settings.cartType || "1B", 16);
-  env.CART_SIZE = cartSize;
   env.TMP = tmpPath;
   env.TEMP = tmpPath;
   if (settings.customColorsEnabled) {
@@ -84,12 +74,24 @@ const makeBuild = async ({
   if (profile) {
     env.PROFILE = true;
   }
+  if (settings.musicDriver === "huge") {
+    env.MUSIC_DRIVER = "HUGE_TRACKER";
+  } else {
+    env.MUSIC_DRIVER = "GBT_PLAYER";
+  }
 
   // Modify BankManager.h to set MBC1 memory controller
   if (isMBC1(settings.cartType)) {
-    let bankHeader = await fs.readFile(`${buildRoot}/include/BankManager.h`, "utf8");
+    let bankHeader = await fs.readFile(
+      `${buildRoot}/include/BankManager.h`,
+      "utf8"
+    );
     bankHeader = bankHeader.replace(/_MBC5/g, "_MBC1");
-    await fs.writeFile(`${buildRoot}/include/BankManager.h`, bankHeader, "utf8");
+    await fs.writeFile(
+      `${buildRoot}/include/BankManager.h`,
+      bankHeader,
+      "utf8"
+    );
   }
 
   // Remove GBC Rombyte Offset from Makefile (OSX/Linux) if custom colors and fast CPU are not enabled
@@ -105,19 +107,20 @@ const makeBuild = async ({
 
   await fetchCachedObjData(buildRoot, tmpPath, env);
 
-  const makeScriptFile = process.platform === "win32" ? "make.bat" : "make.sh"
-  
+  const makeScriptFile = process.platform === "win32" ? "make.bat" : "make.sh";
+
   const makeScript = await buildMakeScript(buildRoot, {
     CART_TYPE: env.CART_TYPE,
     CART_SIZE: env.CART_SIZE,
     customColorsEnabled: settings.customColorsEnabled,
     gbcFastCPUEnabled: settings.gbcFastCPUEnabled,
     profile,
-    platform: process.platform
+    platform: process.platform,
   });
   await fs.writeFile(`${buildRoot}/${makeScriptFile}`, makeScript);
 
-  const command = process.platform === "win32" ? makeScriptFile : `/bin/sh ${makeScriptFile}`;
+  const command =
+    process.platform === "win32" ? makeScriptFile : `/bin/sh ${makeScriptFile}`;
   const args = ["rom"];
 
   const options = {
@@ -151,7 +154,7 @@ const makeBuild = async ({
       lines.forEach((line, lineIndex) => {
         if (line.length === 0 && lineIndex === lines.length - 1) {
           return;
-        }        
+        }
         warnings(line);
       });
     });
