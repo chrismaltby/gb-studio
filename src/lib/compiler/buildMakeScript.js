@@ -34,6 +34,7 @@ export default async (
     LFLAGS += " -Wl-lhUGEDriver.lib";
   } else {
     CFLAGS += " -DGBT_PLAYER";
+    LFLAGS += " -Wl-lgbt_player.lib";
   }
 
   if (profile) {
@@ -88,7 +89,7 @@ export default async (
   getValue(
     `${l10n("COMPILER_PACKING")}`,
     "CART_SIZE",
-    `${PACK} -f 255 -e rel -c ${objFiles.join(" ")}`
+    `${PACK} -f 255 -b 4 -e rel -c ${objFiles.join(" ")}`
   );
 
   if (platform === "win32") {

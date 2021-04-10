@@ -2,6 +2,7 @@
 
 #include "vm_gameboy.h"
 
+#include "system.h"
 #include "vm.h"
 
 #include "metasprite.h"

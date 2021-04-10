@@ -5,6 +5,7 @@
 *.cfg
 *.map
 *.sym
+*.o
 __pycache__
 /profile/*.txt
 @usage.bat
@@ -25,3 +26,4 @@ __pycache__
 /test/*/obj
 /test/*/build
 /test/*/*.bmp
+/third-party/*/build

@@ -11,22 +11,17 @@ GBSPACK = $(TOP)../gbspack/gbspack
 TEST_CHK = python $(CURDIR)/$(TEST_FW)/unit_checker.py
 GBS_CLI = node $(TOP)../gb-studio/out/cli/gb-studio-cli.js
 
-CART_SIZE = 16
-#CART_MBC = 0x1B
-CART_MBC = 0x10
 
 ROM_BUILD_DIR = build
 OBJDIR = obj
 REL_OBJDIR = obj/_rel
 
-#MUSIC_DRIVER = GBT_PLAYER
-MUSIC_DRIVER = HUGE_TRACKER
 
-CFLAGS = -I$(TOP)include -Wa-I$(TOP)include -Wa-I$(GBDKLIB) -D$(MUSIC_DRIVER)
+CFLAGS = -I$(TOP)include -Wa-I$(TOP)include -Wa-I$(GBDKLIB)
 
 LFLAGS_NBANKS += -Wl-yo$(CART_SIZE) -Wl-ya4 -Wl-j -Wl-m -Wl-w
 
-LFLAGS = -Wl-yt$(CART_MBC) $(LFLAGS_NBANKS) -Wl-klib -Wl-l$(TOP)lib/hUGEDriver.lib -Wl-g_shadow_OAM2=0xDF00 -Wl-g.STACK=0xDF00 -Wi-e
+LFLAGS = -Wl-yt$(CART_MBC) $(LFLAGS_NBANKS) -Wl-klib -Wl-g_shadow_OAM2=0xDF00 -Wl-g.STACK=0xDF00 -Wi-e
 
 PACKFLAGS = -b 4 -f 255 -e rel -c
 
@@ -49,22 +44,20 @@ ACORE = $(foreach dir,$(TOP)src/core,$(notdir $(wildcard $(dir)/*.s)))
 CCORE = $(foreach dir,$(TOP)src/core,$(notdir $(wildcard $(dir)/*.c))) 
 CSTATES = $(foreach dir,$(TOP)src/states,$(notdir $(wildcard $(dir)/*.c))) 
 ASTATES = $(foreach dir,$(TOP)src/states,$(notdir $(wildcard $(dir)/*.s))) 
-MDRVR = $(foreach dir,$(TOP)src/core/$(MUSIC_DRIVER),$(notdir $(wildcard $(dir)/*.s)))
 
 ENGINE_OBJS = $(CSRC:%.c=$(TOP)$(OBJDIR)/%.o) \
 	$(ASRC:%.s=$(TOP)$(OBJDIR)/%.o) \
 	$(ACORE:%.s=$(TOP)$(OBJDIR)/%.o) \
 	$(CCORE:%.c=$(TOP)$(OBJDIR)/%.o) \
-	$(MDRVR:%.s=$(TOP)$(OBJDIR)/%.o) \
 	$(CSTATES:%.c=$(TOP)$(OBJDIR)/%.o) \
 	$(ASTATES:%.s=$(TOP)$(OBJDIR)/%.o)
 
 OBJS = $(ENGINE_OBJS)
 REL_OBJS = $(OBJS:$(OBJDIR)/%.o=$(REL_OBJDIR)/%.rel)
 
-all: directories $(TARGET) symbols
+all: settings directories $(TARGET) symbols
 
-.PHONY: clean release debug color super profile test directories
+.PHONY: directories clean release debug profile DMG CGB SGB MBC3 MBC5 hUGE GBT test
 .SECONDARY: $(OBJS) 
 
 release:
@@ -77,25 +70,46 @@ debug:
 	$(eval LFLAGS += -Wf--debug -Wl-m -Wl-w -Wl-y)
 	@echo "DEBUG mode ON"
 
-color:
-	$(eval CFLAGS += -DCGB)
-	$(eval LFLAGS += -Wm-yC)
-	@echo "COLOR mode ON"
-
-super:
-	$(eval CFLAGS += -DSGB)
-	$(eval LFLAGS += -Wm-ys)
-	@echo "SUPER mode ON"
-
 profile:
 	$(eval CFLAGS += -Wf--profile)
 	@echo "PROFILE mode ON"
+
+DMG:
+	@echo "DMG mode ON"
+
+CGB:
+	$(eval CFLAGS += -DCGB)
+	$(eval LFLAGS += -Wm-yC)
+	@echo "CGB mode ON"
+
+SGB:
+	$(eval CFLAGS += -DSGB)
+	$(eval LFLAGS += -Wm-ys)
+	@echo "SGB mode ON"
 
 batteryless:
 	$(eval PACKFLAGS += -a 4)
 	$(eval BATTERYLESS = 1)
 	$(eval CFLAGS += -DBATTERYLESS)
 	@echo "BETTERYLESS SAVE ON"
+
+MBC3:
+	$(eval CART_MBC = 0x10)
+	@echo "Using MBC3"
+MBC5:
+	$(eval CART_MBC = 0x1B)
+	@echo "Using MBC5"
+
+hUGE:
+	$(eval MUSIC_DRIVER = HUGE_TRACKER)
+	$(eval CFLAGS += -DHUGE_TRACKER)
+	$(eval LFLAGS += -Wl-l$(TOP)lib/hUGEDriver.lib)
+	@echo "Enable hUGETracker"
+GBT:
+	$(eval MUSIC_DRIVER = GBT_PLAYER)
+	$(eval CFLAGS += -DGBT_PLAYER)
+	$(eval LFLAGS += -Wl-l$(TOP)lib/gbt_player.lib)
+	@echo "Enable GBTPlayer"
 
 directories: $(ROM_BUILD_DIR) $(OBJDIR) $(REL_OBJDIR)
 
@@ -115,7 +129,7 @@ $(TOP)$(OBJDIR)/%.o:	$(TOP)src/core/%.c
 $(TOP)$(OBJDIR)/%.o:	$(TOP)src/core/%.s
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-$(TOP)$(OBJDIR)/%.o:	$(TOP)src/core/$(MUSIC_DRIVER)/%.s
+$(TOP)$(OBJDIR)/%.o:	$(TOP)src/core/GBT_PLAYER/%.s
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 $(TOP)$(OBJDIR)/%.o:	$(TOP)src/states/%.c
@@ -144,6 +158,7 @@ $(ROM_BUILD_DIR)/%.gb:	$(REL_OBJDIR)/.rel
 
 clean:
 	@echo "CLEANUP..."
+	rm -rf $(TOP)$(OBJDIR)
 	rm -rf $(OBJDIR)
 	rm -rf $(ROM_BUILD_DIR)
 	rm -f $(TEST_DIR)/*/capture.bmp	
