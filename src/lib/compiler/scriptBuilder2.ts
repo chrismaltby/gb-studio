@@ -9,6 +9,7 @@ import {
 } from "../helpers/variables";
 import {
   ActorDirection,
+  CustomEvent,
   ScriptEvent,
   Variable,
 } from "../../store/features/entities/entitiesTypes";
@@ -49,6 +50,7 @@ interface ScriptBuilderOptions {
   sprites: ScriptBuilderEntity[];
   fonts: PrecompiledFontData[];
   music: PrecompiledMusicTrack[];
+  customEvents: CustomEvent[];
   characterEncoding: string;
   entity?: ScriptBuilderEntity;
   engineFields: Dictionary<EngineFieldSchema>;
@@ -276,6 +278,7 @@ class ScriptBuilder {
       sprites: options.sprites || [],
       fonts: options.fonts || [],
       music: options.music || [],
+      customEvents: options.customEvents || [],
       characterEncoding: options.characterEncoding || "",
       additionalScripts: options.additionalScripts || [],
       compileEvents: options.compileEvents || ((_self, _e) => {}),
@@ -859,6 +862,14 @@ class ScriptBuilder {
     this._addCmd("VM_MUSIC_STOP");
   };
 
+  _callFar = (symbol: string) => {
+    this._addCmd("VM_CALL_FAR", `___bank_${symbol}`, `_${symbol}`);
+  };
+
+  _returnFar = () => {
+    this._addCmd("VM_RET_FAR");
+  };
+
   _stop = () => {
     this._assertStackNeutral();
     this._addComment("Stop Script");
@@ -1339,6 +1350,30 @@ class ScriptBuilder {
     // output.push(cmd(REMOVE_INPUT_SCRIPT));
     // output.push(inputDec(input));
     this._addNL();
+  };
+
+  // --------------------------------------------------------------------------
+  // Call Script
+
+  callScript = (scriptId: string, input: unknown) => {
+    const { customEvents } = this.options;
+    const customEvent = customEvents.find((ce) => ce.id === scriptId);
+
+    if (!customEvent) {
+      console.warn("Script not found", scriptId);
+      return;
+    }
+
+    const scriptRef = this._compileSubScript("custom", customEvent.script);
+
+    this._addComment(`Call Script: ${customEvent.name}`);
+    this._callFar(scriptRef);
+
+    this._addNL();
+  };
+
+  returnFar = () => {
+    this._returnFar();
   };
 
   // --------------------------------------------------------------------------
@@ -2092,7 +2127,7 @@ class ScriptBuilder {
   };
 
   _compileSubScript = (
-    type: "input" | "timer",
+    type: "input" | "timer" | "custom",
     script: ScriptEvent[] | ScriptBuilderPathFunction = []
   ) => {
     const symbol = `script_${type}_${this.options.additionalScripts.length}`;

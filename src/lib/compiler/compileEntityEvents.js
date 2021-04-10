@@ -37,6 +37,8 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
 
   let globalHasInit = false;
 
+  const isCustomScript = scriptName.indexOf("custom") > -1;
+
   const compileEventsWithScriptBuilder = (
     scriptBuilder,
     subInput = [],
@@ -138,7 +140,11 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
         globalHasInit = true;
       }
 
-      scriptBuilder.scriptEnd();
+      if (isCustomScript) {
+        scriptBuilder.returnFar();
+      } else {
+        scriptBuilder.scriptEnd();
+      }
 
       if (scriptBuilder.byteSize > 16383) {
         warnings(
