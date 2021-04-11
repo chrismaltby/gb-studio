@@ -14,18 +14,9 @@ const fields = [
 ];
 
 const compile = (input, helpers) => {
-  const {
-    actorSetActive,
-    actorSetSprite,
-    playerSetSprite,
-    getActorById,
-  } = helpers;
-  if (!getActorById(input.actorId)) {
-    playerSetSprite(input.spriteSheetId);
-  } else {
-    actorSetActive(input.actorId);
-    actorSetSprite(input.spriteSheetId);
-  }
+  const { actorSetActive, actorSetSprite } = helpers;
+  actorSetActive(input.actorId);
+  actorSetSprite(input.spriteSheetId);
 };
 
 module.exports = {

@@ -21,6 +21,7 @@ import shuntingYard from "../rpn/shuntingYard";
 import { PrecompiledFontData } from "./compileFonts";
 import { encodeString } from "../helpers/encodings";
 import { PrecompiledMusicTrack } from "./compileMusic";
+import { spriteSheetSymbol } from "./compileData2";
 
 type ScriptOutput = string[];
 
@@ -699,6 +700,15 @@ class ScriptBuilder {
     this._addCmd("VM_ACTOR_SET_HIDDEN", addr, hidden ? 1 : 0);
   };
 
+  _actorSetSpritesheet = (addr: string, symbol: string) => {
+    this._addCmd(
+      "VM_ACTOR_SET_SPRITESHEET",
+      addr,
+      `___bank_${symbol}`,
+      `_${symbol}`
+    );
+  };
+
   _loadText = (numInputs: number) => {
     this._addCmd("VM_LOAD_TEXT", `${numInputs}`);
   };
@@ -1086,6 +1096,14 @@ class ScriptBuilder {
     // output.push(cmd(ACTOR_EMOTE));
     // output.push(emoteId);
     this._addNL();
+  };
+
+  actorSetSprite = (spriteSheetId: string) => {
+    const { sprites } = this.options;
+    const spriteIndex = sprites.findIndex((s) => s.id === spriteSheetId);
+    if (spriteIndex > -1) {
+      this._actorSetSpritesheet("ACTOR", spriteSheetSymbol(spriteIndex));
+    }
   };
 
   // --------------------------------------------------------------------------
