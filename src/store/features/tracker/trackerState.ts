@@ -163,6 +163,15 @@ const trackerSlice = createSlice({
         patterns: patterns
       }
     },
+    editSequence: (state, _action: PayloadAction<{ sequenceIndex: number, sequenceId: number }>) => {
+      const newSequence = state.song.sequence;
+      newSequence[_action.payload.sequenceIndex] = _action.payload.sequenceId;
+
+      state.song = {
+        ...state.song,
+        sequence: newSequence
+      }
+    },
     transposeNoteCell: (state, _action: PayloadAction<{ patternId: number, cellId: number, transpose: number}>) => {
       const patternId = _action.payload.patternId;
       const rowId = Math.floor(_action.payload.cellId / 16);
@@ -198,6 +207,7 @@ const trackerSlice = createSlice({
         state.status = "loading";
       })
       .addCase(loadSongFile.rejected, (state, action) => {
+        console.error(action.error);
         state.status = "error";
         state.song = new Song();
         state.error = action.error.message;

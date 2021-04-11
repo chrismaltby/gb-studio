@@ -35,7 +35,7 @@ const SongGridHeader = styled.div`
   position: -webkit-sticky;
   position: absolute;
   top: 0;
-  left: 46px;
+  left: 86px;
   z-index: 1;
   white-space: nowrap;
   background: ${(props) => props.theme.colors.tracker.background};
@@ -346,10 +346,11 @@ export const SongTracker = ({
         width: "100%",
       }}
     >
-      <div style={{ position: "relative", width:"45px" }}>
+      <div style={{ position: "relative", minWidth: "85px" }}>
         <SequenceEditor
           id={id}
-          data={song?.sequence}
+          sequence={song?.sequence}
+          patterns={song?.patterns.length}
           playbackState={playbackState}
           height={height}
         />

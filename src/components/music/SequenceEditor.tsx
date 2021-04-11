@@ -1,22 +1,72 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Button } from "../ui/buttons/Button";
 import editorActions from "../../store/features/editor/editorActions";
 import { RootState } from "../../store/configureStore";
+import styled, { css } from "styled-components";
+import { Select } from "../ui/form/Select";
+// import { PlusIcon } from "../library/Icons";
+import trackerActions from "../../store/features/tracker/trackerActions";
 
+interface SequenceOption {
+  value: number;
+  label: string;
+}
 interface SequenceEditorProps {
   id: string,
-  data?: number[],
+  sequence?: number[],
+  patterns?: number,
   playbackState: number[],
   height: number
 }
 
+interface SequenceItemProps {
+  active: boolean,
+  selected: boolean,
+}
+
+const SequenceItem = styled.div<SequenceItemProps>`
+  border: 1px solid ${(props) => props.theme.colors.tracker.border};
+  background-color: ${(props) => props.theme.colors.tracker.background};
+  color: ${(props) => props.theme.colors.input.text};
+  padding: 4px;
+  margin: 6px;
+
+  ${(props) =>
+    props.selected
+      ? css`
+          box-shadow: 0 0 0px 4px ${(props) => props.theme.colors.highlight};
+        `
+      : ""}
+`;
+
+const AddSequenceButton = styled.button`
+  background: ${(props) => props.theme.colors.button.nestedBackground};
+  width: 50px;
+  height: 50px;
+  border: 0;
+  border-radius: 4px;
+  svg {
+    fill: ${(props) => props.theme.colors.button.text};
+  }
+  :hover {
+    background: ${(props) => props.theme.colors.button.nestedActiveBackground};
+  }
+`;
+
 export const SequenceEditor = ({
-  data,
+  sequence,
+  patterns,
   playbackState,
   height
 }: SequenceEditorProps) => {
   const dispatch = useDispatch();
+
+  const [hasFocus, setHasFocus] = useState(false);
+  const [selectHasFocus, setSelectHasFocus] = useState(false);
+
+  const sequenceId = useSelector(
+    (state: RootState) => state.editor.selectedSequence
+  );
   const setSequenceId = useCallback(
     (sequenceId: number) => {
       dispatch(editorActions.setSelectedSequence(sequenceId));
@@ -32,22 +82,75 @@ export const SequenceEditor = ({
     setSequenceId(playbackState[0]);
   }
 
+  const sequenceOptions:SequenceOption[] = Array.from(Array(patterns||0).keys()).map((i) => ({
+    value: i,
+    label: `${i}`.padStart(2, "0")
+  }));
+
+  const editSequence = useCallback((index: number, newValue: SequenceOption) => {
+    dispatch(trackerActions.editSequence({
+      sequenceIndex: index,
+      sequenceId: newValue.value
+    }));
+  }, [dispatch]);
+
+  const handleKeys = useCallback(
+    (e: KeyboardEvent) => {
+      if (!hasFocus || selectHasFocus) {
+        return;
+      }
+      if (e.key === "ArrowUp") {
+        e.preventDefault();
+        setSequenceId(sequenceId - 1);
+      } else if (e.key === "ArrowDown") {
+        e.preventDefault();
+        setSequenceId(sequenceId + 1);
+      }
+    },
+    [hasFocus, selectHasFocus, sequenceId]
+  );
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeys);
+    // window.addEventListener("keyup", handleKeysUp);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeys);
+      // window.removeEventListener("keyup", handleKeysUp);
+    };
+  });
+
   return (
-    <div style={{
-      height
-    }}>
-      {data && data.map(
+    <div 
+      tabIndex={0}
+      style={{height, overflow: "hidden scroll"}}
+      onFocus={() => setHasFocus(true)}
+      onBlur={() => setHasFocus(false)}
+    >
+      {sequence && sequence.map(
         (item, i) =>
           <div>
-          <Button
-            variant="transparent"
+          <SequenceItem
             onClick={() => setSequenceId(i)}
+            selected={i === sequenceId}
             active={playbackState[0] === i}
           >
-            {item}
-          </Button>
+            <div style={{padding: "0 0 2px 2px"}}>{i}:</div> 
+            <Select
+              value={sequenceOptions.find((i) => i.value === item)}
+              options={sequenceOptions}
+              onFocus={() => setSelectHasFocus(true)}
+              onBlur={() => setSelectHasFocus(false)}
+              onChange={(newValue: SequenceOption) => {
+                editSequence(i, newValue);
+              }}
+            />   
+          </SequenceItem>
         </div>
       )}
+      {/* <AddSequenceButton>
+        <PlusIcon/>
+      </AddSequenceButton> */}
     </div>
   )
 }

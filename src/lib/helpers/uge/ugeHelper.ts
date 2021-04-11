@@ -222,7 +222,7 @@ export const loadUGESong = (data: ArrayBuffer): (Song | null) => {
     song.patterns.push(pattern);
     let added = false;
     for (let idx = 0; idx < song.patterns.length - 1; idx++) {
-      if (song.patternEqual(idx, song.patterns.length - 1)) {
+      if (comparePatterns(song.patterns[idx], song.patterns[song.patterns.length - 1])) {
         song.sequence.push(idx);
         song.patterns.pop()
         added = true;
@@ -394,4 +394,17 @@ export const saveUGESong = (song: Song): ArrayBuffer => {
 
   console.log(buffer.slice(0, idx));
   return buffer.slice(0, idx);
+}
+
+const comparePatterns = function(a: PatternCell[][], b: PatternCell[][]) {
+  if (a.length != b.length) return false;
+  for (let idx = 0; idx < a.length; idx++) {
+    for (let col = 0; col < 4; col++) {
+      if (a[idx][col].note != b[idx][col].note) return false;
+      if (a[idx][col].instrument != b[idx][col].instrument) return false;
+      if (a[idx][col].effectcode != b[idx][col].effectcode) return false;
+      if (a[idx][col].effectparam != b[idx][col].effectparam) return false;
+    }
+  }
+  return true;
 }

@@ -100,21 +100,6 @@ export class Song {
         this.patterns.push(pattern);
         return this.patterns.length - 1;
     }
-
-    patternEqual(idx0: number, idx1: number) {
-        const a: PatternCell[][] = this.patterns[idx0];
-        const b: PatternCell[][] = this.patterns[idx1];
-        if (a.length != b.length) return false;
-        for (let idx = 0; idx < a.length; idx++) {
-            for (let col = 0; col < 4; col++) {
-                if (a[idx][col].note != b[idx][col].note) return false;
-                if (a[idx][col].instrument != b[idx][col].instrument) return false;
-                if (a[idx][col].effectcode != b[idx][col].effectcode) return false;
-                if (a[idx][col].effectparam != b[idx][col].effectparam) return false;
-            }
-        }
-        return true;
-    }
 }
 
 export function createDefaultSong() {
