@@ -11,6 +11,10 @@
     Note: Using drawing.h will cause it's custom VBL and LCD ISRs
     (`drawing_vbl` and `drawing_lcd`) to be installed.
 
+    The valid coordinate ranges are from (x,y) 0,0 to 159,143.
+    There is no built-in clipping, so drawing outside valid
+    coordinates will likely produce undesired results (wrapping/etc).
+
     ----
 
     __Important note for the drawing API :__

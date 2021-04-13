@@ -431,7 +431,7 @@ void delay(UINT16 d) NONBANKED;
 */
 UINT8 joypad(void) NONBANKED __preserves_regs(b, c, h, l);
 
-/** Waits until all the buttons given in mask are pressed.
+/** Waits until at least one of the buttons given in mask are pressed.
 
     @param mask Bitmask indicating which buttons to wait for
 
@@ -523,7 +523,7 @@ void reset(void) NONBANKED;
 
     Warning: If the VBL interrupt is disabled, this function will
     never return. If the screen is off this function returns
-    immediatly.
+    immediately.
 */
 void wait_vbl_done(void) NONBANKED __preserves_regs(b, c, d, e, h, l);
 
@@ -553,7 +553,7 @@ void hiramcpy(UINT8 dst,
 #define DISPLAY_ON \
   LCDC_REG|=0x80U
 
-/** Turns the display off immediatly.
+/** Turns the display off immediately.
     @see display_off, DISPLAY_ON
 */
 #define DISPLAY_OFF \
@@ -609,6 +609,21 @@ void hiramcpy(UINT8 dst,
 
 
 
+/**
+ * Set byte in vram at given memory location
+ * 
+ * @param addr address to write to
+ * @param v value
+ */
+void set_vram_byte(UBYTE * addr, UINT8 v) __preserves_regs(b, c);
+
+
+/**
+ * Get address of X,Y tile of background map
+ */
+UINT8 * get_bkg_xy_addr(UINT8 x, UINT8 y) __preserves_regs(b, c);
+
+
 /** Sets VRAM Tile Pattern data for the Background / Window
 
     @param first_tile  Index of the first tile to write
@@ -626,7 +641,7 @@ void hiramcpy(UINT8 dst,
 */
 void set_bkg_data(UINT8 first_tile,
          UINT8 nb_tiles,
-         unsigned char *data) NONBANKED __preserves_regs(b, c);
+         const unsigned char *data) NONBANKED __preserves_regs(b, c);
 
 
 /** Sets VRAM Tile Pattern data for the Background / Window using 1bpp source data
@@ -647,7 +662,7 @@ void set_bkg_data(UINT8 first_tile,
 */
 void set_bkg_1bit_data(UINT8 first_tile,
          UINT8 nb_tiles,
-         unsigned char *data,
+         const unsigned char *data,
          UINT8 color) NONBANKED __preserves_regs(b, c);
 
 
@@ -670,18 +685,26 @@ void get_bkg_data(UINT8 first_tile,
          unsigned char *data) NONBANKED __preserves_regs(b, c);
 
 
-/** Sets a rectangular region of Tile Map entries for the Background layer.
+/** Sets a rectangular region of Background Tile Map.
 
     @param x      X Start position in Background Map tile coordinates. Range 0 - 31
     @param y      Y Start position in Background Map tile coordinates. Range 0 - 31
-    @param w      Width of area to set in tiles. Range 0 - 31
-    @param h      Height of area to set in tiles.   Range 0 - 31
-    @param tiles  Pointer to source Tile Map data
+    @param w      Width of area to set in tiles. Range 1 - 32
+    @param h      Height of area to set in tiles. Range 1 - 32
+    @param tiles  Pointer to source tile map data
 
-    Entries are copied from __tiles__ to the Background Tile Map starting at
+    Entries are copied from map at __tiles__ to the Background Tile Map starting at
     __x__, __y__ writing across for __w__ tiles and down for __h__ tiles.
 
-    One byte per Tile map entry.
+    Use @ref set_bkg_submap() instead when:
+    \li Source map is wider than 32 tiles.
+    \li Writing a width that does not match the source map width __and__ more 
+    than one row high at a time.
+
+    One byte per source tile map entry.
+
+    Writes that exceed coordinate 31 on the x or y axis will wrap around to 
+    the Left and Top edges.
 
     Note: Patterns 128-255 overlap with patterns 128-255 of the sprite Tile Pattern table.
 
@@ -712,13 +735,44 @@ void get_bkg_data(UINT8 first_tile,
               assigned.
 
     @see SHOW_BKG
-    @see set_bkg_data
+    @see set_bkg_data, set_bkg_submap
 */
 void set_bkg_tiles(UINT8 x,
           UINT8 y,
           UINT8 w,
           UINT8 h,
-          unsigned char *tiles) NONBANKED __preserves_regs(b, c);
+          const unsigned char *tiles) NONBANKED __preserves_regs(b, c);
+
+
+/** Sets a rectangular area of the Background Tile Map using a sub-region 
+    from a source tile map. Useful for scrolling implementations of maps 
+    larger than 32 x 32 tiles.
+
+    @param x      X Start position in Background Map tile coordinates. Range 0 - 31
+    @param y      Y Start position in Background Map tile coordinates. Range 0 - 31
+    @param w      Width of area to set in tiles. Range 1 - 255
+    @param h      Height of area to set in tiles. Range 1 - 255
+    @param map    Pointer to source tile map data
+    @param map_w  Width of source tile map in tiles. Range 1 - 255
+
+    Entries are copied from __map__ to the Background Tile Map starting at
+    __x__, __y__ writing across for __w__ tiles and down for __h__ tiles, 
+    using __map_w__ as the rowstride for the source tile map.
+
+    Use this instead of @ref set_bkg_tiles when the source map is wider than
+    32 tiles or when writing a width that does not match the source map width. 
+
+    One byte per source tile map entry.
+
+    Writes that exceed coordinate 31 on the x or y axis will wrap around to 
+    the Left and Top edges.    
+
+    See @ref set_bkg_tiles for setting CGB attribute maps with @ref VBK_REG.
+
+    @see SHOW_BKG
+    @see set_bkg_data, set_bkg_tiles, set_win_submap
+*/
+void set_bkg_submap(UINT8 x, UINT8 y, UINT8 w, UINT8 h, const unsigned char *map, UINT8 map_w);
 
 
 /** Copies a rectangular region of Background Tile Map entries into a buffer.
@@ -742,6 +796,17 @@ void get_bkg_tiles(UINT8 x,
           UINT8 w,
           UINT8 h,
           unsigned char *tiles) NONBANKED __preserves_regs(b, c);
+
+
+/**
+ * Set single tile t on background layer at x,y
+ * @param x X-coordinate
+ * @param y Y-coordinate
+ * @param t tile index
+ * @return returns the address of tile, so you may use faster set_vram_byte() later
+ */ 
+UINT8 * set_bkg_tile_xy(UBYTE x, UBYTE y, UBYTE t) __preserves_regs(b, c);
+
 
 
 /** Moves the Background Layer to the position specified in __x__ and __y__ in pixels.
@@ -777,6 +842,11 @@ inline void scroll_bkg(INT8 x, INT8 y) {
 
 
 
+/**
+ * Get address of X,Y tile of window map
+ */
+UINT8 * get_win_xy_addr(UINT8 x, UINT8 y) __preserves_regs(b, c);
+
 /** Sets VRAM Tile Pattern data for the Window / Background
 
     @param first_tile  Index of the first tile to write
@@ -792,7 +862,7 @@ inline void scroll_bkg(INT8 x, INT8 y) {
 */
 void set_win_data(UINT8 first_tile,
           UINT8 nb_tiles,
-          unsigned char *data) NONBANKED __preserves_regs(b, c);
+          const unsigned char *data) NONBANKED __preserves_regs(b, c);
 
 
 /** Sets VRAM Tile Pattern data for the Window / Background using 1bpp source data
@@ -808,7 +878,7 @@ void set_win_data(UINT8 first_tile,
 */
 void set_win_1bit_data(UINT8 first_tile,
           UINT8 nb_tiles,
-          unsigned char *data) NONBANKED __preserves_regs(b, c);
+          const unsigned char *data) NONBANKED __preserves_regs(b, c);
 
 
 /** Copies from Window / Background VRAM Tile Pattern data into a buffer
@@ -827,18 +897,26 @@ void get_win_data(UINT8 first_tile,
           unsigned char *data) NONBANKED __preserves_regs(b, c);
 
 
-/** Sets a rectangular region of Tile Map entries for the Window layer.
+/** Sets a rectangular region of the Window Tile Map.
 
     @param x      X Start position in Window Map tile coordinates. Range 0 - 31
     @param y      Y Start position in Window Map tile coordinates. Range 0 - 31
-    @param w      Width of area to set in tiles. Range 0 - 31
-    @param h      Height of area to set in tiles.	Range 0 - 31
-    @param tiles   Pointer to source Tile Map data
+    @param w      Width of area to set in tiles. Range 1 - 32
+    @param h      Height of area to set in tiles. Range 1 - 32
+    @param tiles  Pointer to source tile map data
 
-    Entries are copied from __tiles__ to the background Tile Map starting at
+    Entries are copied from map at __tiles__ to the Window Tile Map starting at
     __x__, __y__ writing across for __w__ tiles and down for __h__ tiles.
 
-    One byte per Tile Map entry.
+    Use @ref set_win_submap() instead when:
+    \li Source map is wider than 32 tiles.
+    \li Writing a width that does not match the source map width __and__ more 
+    than one row high at a time.
+
+    One byte per source tile map entry.
+
+    Writes that exceed coordinate 31 on the x or y axis will wrap around to 
+    the Left and Top edges.
 
     Note: Patterns 128-255 overlap with patterns 128-255 of the sprite Tile Pattern table.
 
@@ -846,14 +924,48 @@ void get_win_data(UINT8 first_tile,
     \li VBK_REG=0 Tile Numbers are written
     \li VBK_REG=1 Tile Attributes are written
 
-    @see set_bkg_tiles For more details about GBC Tile Attributes
-    @see SHOW_WIN, HIDE_WIN
+    For more details about GBC Tile Attributes see @ref set_bkg_tiles.
+
+    @see SHOW_WIN, HIDE_WIN, set_win_submap, set_bkg_tiles, set_bkg_data
 */
 void set_win_tiles(UINT8 x,
           UINT8 y,
           UINT8 w,
           UINT8 h,
-          unsigned char *tiles) NONBANKED __preserves_regs(b, c);
+          const unsigned char *tiles) NONBANKED __preserves_regs(b, c);
+
+
+/** Sets a rectangular area of the Window Tile Map using a sub-region 
+    from a source tile map.
+
+    @param x      X Start position in Window Map tile coordinates. Range 0 - 31
+    @param y      Y Start position in Wimdpw Map tile coordinates. Range 0 - 31
+    @param w      Width of area to set in tiles. Range 1 - 255
+    @param h      Height of area to set in tiles. Range 1 - 255
+    @param map    Pointer to source tile map data
+    @param map_w  Width of source tile map in tiles. Range 1 - 255
+
+    Entries are copied from __map__ to the Window Tile Map starting at
+    __x__, __y__ writing across for __w__ tiles and down for __h__ tiles, 
+    using __map_w__ as the rowstride for the source tile map.
+
+    Use this instead of @ref set_win_tiles when the source map is wider than
+    32 tiles or when writing a width that does not match the source map width. 
+
+    One byte per source tile map entry.
+
+    Writes that exceed coordinate 31 on the x or y axis will wrap around to 
+    the Left and Top edges.
+
+    GBC only: @ref VBK_REG determines whether Tile Numbers or Tile Attributes get set.
+    \li VBK_REG=0 Tile Numbers are written
+    \li VBK_REG=1 Tile Attributes are written
+
+    See @ref set_bkg_tiles for details about CGB attribute maps with @ref VBK_REG.
+
+    @see SHOW_WIN, HIDE_WIN, set_win_tiles, set_bkg_submap, set_bkg_tiles, set_bkg_data
+**/
+void set_win_submap(UINT8 x, UINT8 y, UINT8 w, UINT8 h, const unsigned char *map, UINT8 map_w);
 
 
 /** Copies a rectangular region of Window Tile Map entries into a buffer.
@@ -876,6 +988,16 @@ void get_win_tiles(UINT8 x,
           UINT8 w,
           UINT8 h,
           unsigned char *tiles) NONBANKED __preserves_regs(b, c);
+
+
+/**
+ * Set single tile t on window layer at x,y
+ * @param x X-coordinate
+ * @param y Y-coordinate
+ * @param t tile index
+ * @return returns the address of tile, so you may use faster set_vram_byte() later
+ */ 
+UINT8 * set_win_tile_xy(UBYTE x, UBYTE y, UBYTE t) __preserves_regs(b, c);
 
 
 /** Moves the Window to the __x__, __y__ position on the screen.
@@ -926,7 +1048,7 @@ inline void scroll_win(INT8 x, INT8 y) {
 */
 void set_sprite_data(UINT8 first_tile,
           UINT8 nb_tiles,
-          unsigned char *data) NONBANKED __preserves_regs(b, c);
+          const unsigned char *data) NONBANKED __preserves_regs(b, c);
 
 
 /** Sets VRAM Tile Pattern data for Sprites using 1bpp source data
@@ -946,7 +1068,7 @@ void set_sprite_data(UINT8 first_tile,
 */
 void set_sprite_1bit_data(UINT8 first_tile,
           UINT8 nb_tiles,
-          unsigned char *data) NONBANKED __preserves_regs(b, c);
+          const unsigned char *data) NONBANKED __preserves_regs(b, c);
 
 
 /** Copies from Sprite VRAM Tile Pattern data into a buffer
@@ -987,7 +1109,23 @@ extern volatile struct OAM_item_t shadow_OAM[];
 */
 __REG _shadow_OAM_base;
 
-/** Sets sprite number __nb__ to display tile number __tile__.
+/** Disable OAM DMA copy each VBlank
+*/
+#define DISABLE_OAM_DMA \
+    _shadow_OAM_base = 0
+
+/** Enable OAM DMA copy each VBlank and set it to transfer default shadow_OAM array
+*/
+#define ENABLE_OAM_DMA \
+    _shadow_OAM_base = (UBYTE)((UWORD)&shadow_OAM >> 8)
+
+/** Enable OAM DMA copy each VBlank and set it to transfer any 256-byte aligned array
+*/
+inline void SET_SHADOW_OAM_ADDRESS(void * address) {
+    _shadow_OAM_base = (UBYTE)((UWORD)address >> 8);
+}
+
+/** Sets sprite number __nb__in the OAM to display tile number __tile__.
 
     @param nb    Sprite number, range 0 - 39
     @param tile  Selects a tile (0 - 255) from memory at 8000h - 8FFFh
@@ -1008,7 +1146,7 @@ inline void set_sprite_tile(UINT8 nb, UINT8 tile) {
 }
 
 
-/** Returns the tile number of sprite number __nb__.
+/** Returns the tile number of sprite number __nb__ in the OAM.
 
 @param nb    Sprite number, range 0 - 39
 
@@ -1098,6 +1236,14 @@ inline void scroll_sprite(UINT8 nb, INT8 x, INT8 y) {
 }
 
 
+/** Hides sprite number __nb__ by moving it to zero position by Y.
+
+    @param nb  Sprite number, range 0 - 39
+ */
+inline void hide_sprite(UINT8 nb) {
+    shadow_OAM[nb].y = 0;
+}
+
 
 
 /** Copies Tile Pattern data to an address in VRAM
@@ -1113,7 +1259,7 @@ inline void scroll_sprite(UINT8 nb, INT8 x, INT8 y) {
     \li VBK_REG=1 indicates the second
 */
 void set_data(unsigned char *vram_addr,
-          unsigned char *data,
+          const unsigned char *data,
           UINT16 len) NONBANKED __preserves_regs(b, c);
 
 
@@ -1138,15 +1284,15 @@ void get_data(unsigned char *data,
 
     @param x         X Start position in Map tile coordinates. Range 0 - 31
     @param y         Y Start position in Map tile coordinates. Range 0 - 31
-    @param w         Width of area to set in tiles. Range 0 - 31
-    @param h         Height of area to set in tiles.   Range 0 - 31
+    @param w         Width of area to set in tiles. Range 1 - 32
+    @param h         Height of area to set in tiles.   Range 1 - 32
     @param vram_addr Pointer to destination VRAM Address
     @param tiles     Pointer to source Tile Map data
 
     Entries are copied from __tiles__ to Tile Map at address vram_addr starting at
     __x__, __y__ writing across for __w__ tiles and down for __h__ tiles.
 
-    One byte per Tile map entry.
+    One byte per source tile map entry.
 
     There are two 32x32 Tile Maps in VRAM at addresses 9800h-9BFFh and 9C00h-9FFFh.
 
@@ -1159,7 +1305,7 @@ void set_tiles(UINT8 x,
           UINT8 w,
           UINT8 h,
           unsigned char *vram_addr,
-          unsigned char *tiles) NONBANKED __preserves_regs(b, c);
+          const unsigned char *tiles) NONBANKED __preserves_regs(b, c);
 
 
 /** Copies a rectangular region of Tile Map entries from a given VRAM Address into a buffer.

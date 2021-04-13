@@ -1,11 +1,23 @@
-CC	= ../../../bin/lcc -Wa-l -Wl-m
+LCC	= ../../../bin/lcc -Wa-l -Wl-m
+BANKPACK  = ../../../bin/bankpack
 
-CFLAGS	= -DGBDK_2_COMPAT
+# CFLAGS	=
 
 BINS	    = autobanks.gb
 CSOURCES   := $(wildcard *.c)
 ASMSOURCES := $(wildcard *.s)
+
+# Compiling will produce .o files
 OBJS       = $(CSOURCES:%.c=%.o) $(ASMSOURCES:%.c=%.o)
+
+# Process: .c and .s files -> .o -> (bankpack) -> .rel -> (linker) ... -> .gb
+#
+# In this makefile autobanked .o files get converted to .rel files (-ext=.rel)
+# which will be passed to the linker instead of .o files.
+#
+# This allows correct packing every time, even
+# for source files that don't get re-compiled.
+OBJS_AUTOBANKED = $(CSOURCES:%.c=%.rel) $(ASMSOURCES:%.c=%.rel)
 
 all:	$(BINS)
 
@@ -14,26 +26,31 @@ make.bat: Makefile
 	@make -sn | sed y/\\//\\\\/ | grep -v make >> make.bat
 
 %.o:	%.c
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(LCC) $(CFLAGS) -c -o $@ $<
 
 %.o:	%.s
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(LCC) $(CFLAGS) -c -o $@ $<
 
 %.s:	%.c
-	$(CC) $(CFLAGS) -S -o $@ $<
+	$(LCC) $(CFLAGS) -S -o $@ $<
 
-# Link the compiled object files into a autobanks.gb ROM file
-# -autobank : turns on auto banking
-# -Wb-v     : prints out assigned bank info
-# -Wl-yo4   : Use 4 ROM banks
-# -Wl-ya4   : Use 4 RAM banks
-# -Wl-yt19  : Use MBC5 cartridge type
+# Auto-bank the .o files into .rel files
+# (called with $(OBJS), which is .o files)
+# -v        : prints out assigned bank info
+# -ext=.rel : set output extension for autobanked files to .rel
+#
+# Link the compiled object files into a autobanks.gb ROM file 
+# (called with $(OBJS_AUTOBANKED), which is .rel files)
+# -Wl-yo4      : Use 4 ROM banks
+# -Wl-ya4      : Use 4 RAM banks
+# -Wl-yt19     : Use MBC5 cartridge type
 $(BINS):	$(OBJS)
-	$(CC) $(CFLAGS) -autobank -Wb-v -Wl-yt19 -Wl-yo4 -Wl-ya4 -o $(BINS) $(OBJS)
+	$(BANKPACK) -ext=.rel -v -yt19 $(OBJS)
+	$(LCC) $(CFLAGS) -Wl-yt19 -Wl-yo4 -Wl-ya4 -o $(BINS) $(OBJS_AUTOBANKED)
 #	./romusage autobanks.map -g
 
 clean:
-	rm -f *.o *.lst *.map *.gb *.ihx *.sym *.cdb *.adb *.asm
+	rm -f *.o *.lst *.map *.gb *.ihx *.sym *.cdb *.adb *.asm *.rel
 
 
 # For lcc linker option: -Wl-ytN where N is one of the numbers below

@@ -41,6 +41,10 @@ int strcmp(const char *s1, const char *s2) NONBANKED __preserves_regs(b, c);
 */
 void *memcpy(void *dest, const void *src, size_t len) NONBANKED __preserves_regs(b, c);
 
+/** Copies n bytes from memory area src to memory area dest, areas may overlap
+ */
+void *memmove (void *dest, const void *src, size_t n);
+
 /** Fills the memory region __s__ with __n__ bytes using value __c__
 
     @param s         Buffer to fill

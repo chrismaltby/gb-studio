@@ -1,5 +1,5 @@
 XL3
-H 1E areas 25 global symbols
+H 1E areas 24 global symbols
 M Runtime
 S _main Ref000000
 S .refresh_OAM Ref000000
@@ -63,7 +63,6 @@ S .mode Def000001
 S .sys_time Def000002
 S .int_0x40 Def000004
 A _HEAP size 0 flags 0 addr 0
-S _malloc_heap_start Def000000
 A _HRAM size 0 flags 8 addr 0
 A _HRAM11 size 3 flags 8 addr FF90
 S __shadow_OAM_base Def00FF92
@@ -328,5 +327,3 @@ T 5F 00 00
 R 00 00 13 00
 T 5F 00 00 C5 F8 04 2A 4F 46 CD 20 00 C1 C9
 R 00 00 13 00 00 0A 13 00
-T 00 00 00
-R 00 00 1B 00

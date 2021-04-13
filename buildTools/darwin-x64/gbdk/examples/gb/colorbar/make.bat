@@ -1,3 +1,3 @@
 REM Automatically generated from Makefile
-..\..\..\bin\lcc -Wa-l -Wl-m -DGBDK_2_COMPAT -c -o colorbar.o colorbar.c
-..\..\..\bin\lcc -Wa-l -Wl-m -DGBDK_2_COMPAT -Wm-yC -o colorbar.gb colorbar.o
+..\..\..\bin\lcc -Wa-l -Wl-m  -c -o colorbar.o colorbar.c
+..\..\..\bin\lcc -Wa-l -Wl-m  -Wm-yC -o colorbar.gb colorbar.o

@@ -1,4 +1,15 @@
-gbdk3-4.0.2
+gbdk-4.0.3
+    - Updated documentation, including the PDF version
+    - Library was improved
+        - Metasprites support (see example)
+        - GBCompress decompressor included (see example)
+        - Large map scrolling helper functions (see example)
+        - Multiple minor improvements
+    - New tools
+        - png2mtspr converts png images into metasprite structs
+        - gbcompress compression utility, compatible with GBTD/GBMB
+
+gbdk-4.0.2
     - Updated documentation
     - Library was improved
         - Linking with stdio.h does not require that much rom now
@@ -8,7 +19,7 @@ gbdk3-4.0.2
     - New bankpack feature, allows automatic bank allocation for data and code, see banks_autobank example, feature is in beta state, use with care
     - Lcc improvements
 
-gbdk3-4.0.1
+gbdk-4.0.1
     - Updated documentation
     - IHX is checked for correctness before the makebin stage. That allows to warn about overwriting the same ROM addresses (SDCC toolchain does not check this anymore). 
     - Library was improved
@@ -22,7 +33,7 @@ gbdk3-4.0.1
     - Reorganized examples: each example is in separate folder now, that simplifies understanding.
     - Lcc improvements
     
-gbdk3-4.0
+gbdk-4.0
     - GBDK now requires SDCC 4.0.3 or higher, that has fully working toolchain. Old link-gbz80 linker is not used anymore, sdldgb and makebin are used to link objects and produce binary roms; maccer tool is no longer needed either
         - SDCC 4.0.3 has much better code generator which produces smaller and faster code. Code is twice faster
         - SOURCE LEVEL DEBUGGING is possible now! Native toolchain produces *.CDB files that contain detailed debug info. Look for EMULICIOUS extension for vs.code. It supports breakpoints, watches, inspection of local variables, and more!
@@ -43,12 +54,12 @@ gbdk3-4.0
         - it works with the latest version of sdcc
         - quoted paths with spaces are working now
 
-gbdk3-3.2
+gbdk-3.2
     - support for BCD numbers
     - support for far pointers, that allow to call functions in other banks by pointer
     - some useful parts of native SDCC library are merged into GBDK (stdint, limits, stdbool, setjmp, stdatomic and so on) 
 
-gbdk3-3.1
+gbdk-3.1
     - Banked functions are working! 
         - Check this [post](https://gbdev.gg8.se/forums/viewtopic.php?id=700) for more info
         - Check the examples/gb/banked code for basic usage
@@ -60,7 +71,7 @@ gbdk3-3.1
         - Basic support including <gb/bgb_emu.h> and using the macros BGB_PROFILE_BEGIN and BGB_PROFILE_END. More info in this [post](https://gbdev.gg8.se/forums/viewtopic.php?id=703)
         - For full profiling [check this repo](https://github.com/untoxa/bgb_profiling_toolkit/blob/master/readme.md) and this [post](https://gbdev.gg8.se/forums/viewtopic.php?id=710) 
 
-gbdk3-3.00
+gbdk-3.00
     Updated SDCC to v4.0
     The new linker is not working so the old version is still there
     There is an issue with sdagb compiling drawing.s (the JP in 
@@ -69,13 +80,13 @@ gbdk3-3.00
     Because of this, all .s files in libc have been assembled 
     with the old as-gbz80 and that's why it is still included
 
-gbdk3-2.96
+gbdk-2.96
     * Many changes.  Code generated is now much more reliable and
     passes all of sdcc's regression suite.  Added support for large
     sets of local variables (>127 bytes).  Added full 32 bit long
     support.  Still no floating pt support.
 
-gbdk3-2.95-3
+gbdk-2.95-3
     * Stopped lcc with sdcc from leaking .cdb files all across
       /tmp.
     * Optimised < and > for 16 bit varibles.
@@ -83,7 +94,7 @@ gbdk3-2.95-3
       initalised arrays takes 31% of the time (well, at least
       samptest.c does :)
     
-gbdk3-2.95-2
+gbdk-2.95-2
     * Added model switching support
        --model-medium uses near (16 bit) pointers for data, and
        banked calls for anything not declared as 'nonbanked'
@@ -97,7 +108,7 @@ gbdk3-2.95-2
     * Turned on the optimisations in flex.  Large constant arrays
       like tile data should compile a bit faster.
     
-gbdk3-2.95
+gbdk-2.95
     * Fixed 'a >> c' for c = [9..15]
     * Fixed 'a << c' for c = [9..15]
     * no$gmb doesn't support labels of > 32 chars.  The linker now
@@ -128,7 +139,7 @@ gbdk3-2.95
     a go :)
     * Ran a spell checker across the README and ChangeLog
 
-gbdk3-2.94
+gbdk-2.94
     * Fixed 
         #define BLAH  7  // Unterminated ' error
       in sdcpp
@@ -153,7 +164,7 @@ gbdk3-2.94
     seperatly.
     * Two dimensional arrays seem to be broken.
 
-gbdk3-2.93
+gbdk-2.93
     * Added multi-bank support into the compiler - The old -Wf-boxx
     and -Wf-baxx options now work
     * Has preliminary support for generating rgbds and ISAS compatible
@@ -171,7 +182,7 @@ gbdk3-2.93
     something appropriate as 'volatile' to stop the value being
     cached.  See dscan.c/bombs() for an example.
   
-gbdk3-2.92-2:
+gbdk-2.92-2:
     * win32 only.  Takes care of some of the install bugs, including:
        - Now auto detects where it is installed.
         This can be overridden using set GBDKDIR=...
@@ -184,7 +195,7 @@ gbdk3-2.92-2:
        - I've reverted to using WORD for signed 16 bit etc.
         GBDK_2_COMPAT is no longer required.
 
-gbdk3-2.92:
+gbdk-2.92:
     * All the examples now work (with a little bit of patching :)
     * Fixed problem with registers being cached instead of being
     marked volatile.
