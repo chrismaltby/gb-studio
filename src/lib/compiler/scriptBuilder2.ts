@@ -700,6 +700,18 @@ class ScriptBuilder {
     this._addCmd("VM_ACTOR_SET_HIDDEN", addr, hidden ? 1 : 0);
   };
 
+  _actorSetAnimTick = (addr: string, tick: number) => {
+    this._addCmd("VM_ACTOR_SET_ANIM_TICK", addr, tick);
+  };
+
+  _actorSetMoveSpeed = (addr: string, speed: number) => {
+    this._addCmd("VM_ACTOR_SET_MOVE_SPEED", addr, speed);
+  };
+
+  _actorSetCollisionsEnabled = (addr: string, enabled: boolean) => {
+    this._addCmd("VM_ACTOR_SET_COLL_ENABLED", addr, enabled ? 1 : 0);
+  };
+
   _actorSetSpritesheet = (addr: string, symbol: string) => {
     this._addCmd(
       "VM_ACTOR_SET_SPRITESHEET",
@@ -1102,8 +1114,22 @@ class ScriptBuilder {
     const { sprites } = this.options;
     const spriteIndex = sprites.findIndex((s) => s.id === spriteSheetId);
     if (spriteIndex > -1) {
+      this._addComment("Actor Set Spritesheet");
       this._actorSetSpritesheet("ACTOR", spriteSheetSymbol(spriteIndex));
+      this._addNL();
     }
+  };
+
+  actorSetMovementSpeed = (speed = 1) => {
+    this._addComment("Actor Set Movement Speed");
+    this._actorSetMoveSpeed("ACTOR", Math.round(speed * 16));
+    this._addNL();
+  };
+
+  actorSetAnimationSpeed = (speed = 3) => {
+    this._addComment("Actor Set Animation Tick");
+    this._actorSetAnimTick("ACTOR", speed);
+    this._addNL();
   };
 
   // --------------------------------------------------------------------------
