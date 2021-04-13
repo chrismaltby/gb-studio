@@ -221,7 +221,7 @@ UBYTE load_scene(const scene_t * scene, UBYTE bank, UBYTE init_data) __banked {
         far_ptr_t tmp_ptr;
         for (i = 0; i != sprites_len; i++) {
             if (i == MAX_SCENE_SPRITES) break;
-            ReadBankedFarPtr(&tmp_ptr, (void *)scene_sprite_ptrs, scn.sprites.bank);
+            ReadBankedFarPtr(&tmp_ptr, (UBYTE *)scene_sprite_ptrs, scn.sprites.bank);
             base_tiles[i] = tile_allocation_hiwater;
             tile_allocation_hiwater += load_sprite(tile_allocation_hiwater, tmp_ptr.ptr, tmp_ptr.bank);
             scene_sprite_ptrs++;
@@ -252,9 +252,15 @@ UBYTE load_scene(const scene_t * scene, UBYTE bank, UBYTE init_data) __banked {
             actor_t * actor = actors + 1;
             MemcpyBanked(actor, scn.actors.ptr, sizeof(actor_t) * (actors_len - 1), scn.actors.bank);
             for (i = actors_len - 1; i != 0; i--, actor++) {
-                // resolve and set base_tile for each actor
-                UBYTE idx = get_farptr_index(scn.sprites.ptr, scn.sprites.bank, sprites_len, &actor->sprite);
-                actor->base_tile = (idx < sprites_len) ? base_tiles[idx] : 0;
+                if (actor->exclusive_sprite) {
+                    // exclusive sprites allocated separately to avoid overwriting if modified
+                    actor->base_tile = tile_allocation_hiwater;
+                    tile_allocation_hiwater = load_sprite(tile_allocation_hiwater, actor->sprite.ptr, actor->sprite.bank);
+                } else {
+                    // resolve and set base_tile for each actor
+                    UBYTE idx = get_farptr_index(scn.sprites.ptr, scn.sprites.bank, sprites_len, &actor->sprite);
+                    actor->base_tile = (idx < sprites_len) ? base_tiles[idx] : 0;
+                }
                 load_animations((void *)actor->sprite.ptr, actor->sprite.bank, actor->animations);
                 // add to inactive list by default 
                 actor->enabled = FALSE;

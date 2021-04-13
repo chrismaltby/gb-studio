@@ -1,4 +1,5 @@
     .module     vm_ui_a
+    .include    "global.s"
 
     .area   _BSS
 
@@ -207,3 +208,4 @@ _itoa_fmt::
     ld      (BC), A     ; write trailing #0
 
     ret
+    

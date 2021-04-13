@@ -3,9 +3,11 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "system.h"
 #include "vm.h"
 #include "ui.h"
 #include "input.h"
+#include "scroll.h"
 #include "gbs_types.h"
 #include "bankdata.h"
 #include "data/data_bootstrap.h"
@@ -140,14 +142,31 @@ void vm_overlay_move_to(SCRIPT_CTX * THIS, UBYTE pos_x, UBYTE pos_y, BYTE speed)
     ui_move_to(pos_x << 3, pos_y << 3, speed);
 }
 
+// set autoscroll parameters
+void vm_overlay_set_scroll(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE w, UBYTE h, UBYTE color) __banked {
+    THIS;
+    text_scroll_addr = GetWinAddr() + (y << 5) + x;
+    text_scroll_width = w; text_scroll_height = h;
+    text_scroll_fill = (color) ? ui_while_tile : ui_black_tile;
+}
+
 // clears overlay window
 void vm_overlay_clear(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE w, UBYTE h, UBYTE color, UBYTE options) __banked {
     THIS;
     text_bkg_fill = (color) ? TEXT_BKG_FILL_W : TEXT_BKG_FILL_B;
     if (options & UI_DRAW_FRAME) {
         ui_draw_frame(x, y, w, h);
+        if (options & UI_AUTOSCROLL) vm_overlay_set_scroll(THIS, x + 1, y + 1, w - 2, h - 2, color);
     } else {
+#ifdef CGB
+        if (_is_CGB) {
+            VBK_REG = 1;
+            fill_win_rect(x, y, w, h, (UI_PALETTE & 0x07u));        
+            VBK_REG = 0;
+        }
+#endif    
         fill_win_rect(x, y, w, h, ((color) ? ui_while_tile : ui_black_tile));
+        if (options & UI_AUTOSCROLL) vm_overlay_set_scroll(THIS, x, y, w, h, color);
     }
 }
 
@@ -183,4 +202,17 @@ void vm_set_font(SCRIPT_CTX * THIS, UBYTE font_index) __banked {
 void vm_set_print_dir(SCRIPT_CTX * THIS, UBYTE print_dir) __banked {
     THIS;
     vwf_direction = print_dir & 1;
+}
+
+void vm_overlay_scroll(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE w, UBYTE h, UBYTE color) __banked {
+    THIS;
+    UBYTE * base_addr = GetWinAddr() + (y << 5) + x;
+    scroll_rect(base_addr, w, h, ((color) ? ui_while_tile : ui_black_tile));
+#ifdef CGB
+    if (_is_CGB) {
+        VBK_REG = 1;
+        scroll_rect(base_addr, w, h, (UI_PALETTE & 0x07u));
+        VBK_REG = 0;
+    }
+#endif
 }

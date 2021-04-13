@@ -57,6 +57,11 @@ extern font_desc_t vwf_current_font_desc;
 extern UBYTE vwf_current_font_bank;
 extern UBYTE vwf_tile_data[];
 
+extern UBYTE * text_scroll_addr;
+extern UBYTE text_scroll_width, text_scroll_height;
+extern UBYTE text_scroll_fill;
+
+
 void ui_init() __banked;
 void ui_update() __nonbanked;  // critical path, __nonbanked for speed
 
@@ -69,6 +74,7 @@ void ui_load_tiles() __banked;
 #define UI_WAIT_BTN_ANY 16
 
 #define UI_DRAW_FRAME   1
+#define UI_AUTOSCROLL   2
 
 void ui_run_modal(UBYTE wait_flags) __banked;  // process UI until closed
 

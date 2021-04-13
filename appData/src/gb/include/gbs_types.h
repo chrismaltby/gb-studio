@@ -50,6 +50,7 @@ typedef struct actor_t
   UINT8 anim_tick;
   UINT8 move_speed;
   UINT8 animation;
+  UINT8 exclusive_sprite;
   animation_t animations[8];
   far_ptr_t sprite;
   far_ptr_t script, script_update, script_hit1, script_hit2, script_hit3;

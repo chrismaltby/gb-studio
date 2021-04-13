@@ -212,3 +212,24 @@ void vm_actor_set_hidden(SCRIPT_CTX * THIS, INT16 idx, UBYTE hidden) __banked {
     actor = actors + *n_actor;
     actor->hidden = hidden;
 }
+
+void vm_actor_set_anim_tick(SCRIPT_CTX * THIS, INT16 idx, UBYTE tick) __banked {
+    actor_t *actor;
+    UBYTE * n_actor = VM_REF_TO_PTR(idx);
+    actor = actors + *n_actor;
+    actor->anim_tick = tick;
+}
+
+void vm_actor_set_move_speed(SCRIPT_CTX * THIS, INT16 idx, UBYTE speed) __banked {
+    actor_t *actor;
+    UBYTE * n_actor = VM_REF_TO_PTR(idx);
+    actor = actors + *n_actor;
+    actor->move_speed = speed;
+}
+
+void vm_actor_set_coll_enabled(SCRIPT_CTX * THIS, INT16 idx, UBYTE enabled) __banked {
+    actor_t *actor;
+    UBYTE * n_actor = VM_REF_TO_PTR(idx);
+    actor = actors + *n_actor;
+    actor->collision_enabled = enabled;
+}

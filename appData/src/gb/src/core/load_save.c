@@ -1,4 +1,4 @@
-#pragma bank 1
+#pragma bank 3
 
 #include <string.h>
 

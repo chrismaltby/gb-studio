@@ -74,4 +74,13 @@ UBYTE * set_win_tile_xy(UBYTE x, UBYTE y, UBYTE t) __preserves_regs(b, c);
  */ 
 UBYTE * set_bkg_tile_xy(UBYTE x, UBYTE y, UBYTE t) __preserves_regs(b, c);
 
+/**
+ * Scrolls rectangle area of VRAM filemap by base address 1 row up
+ * @param base_addr address of top-left corner
+ * @param w width of the area
+ * @param h height of the area
+ * @param fill tile id to fill the bottom row 
+ */
+void scroll_rect(UBYTE * base_addr, UBYTE w, UBYTE h, UBYTE fill) __banked __preserves_regs(b, c);
+
 #endif

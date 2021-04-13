@@ -27,7 +27,7 @@ test:
 	rm -rf $(OBJDIR)
 	@for test in $(TESTS) ; do \
 		echo "# $$test"; \
-		$(MAKE) -C $$test test; \
+		$(MAKE) -C $$test settings test; \
 		echo ""; \
 	done
 

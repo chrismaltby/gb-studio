@@ -17,5 +17,8 @@ void vm_actor_replace_tile(SCRIPT_CTX * THIS, INT16 idx, UBYTE target_tile, UBYT
 void vm_actor_get_pos(SCRIPT_CTX * THIS, INT16 idx) __banked;
 void vm_actor_set_hidden(SCRIPT_CTX * THIS, INT16 idx, UBYTE hidden) __banked;
 void vm_actor_get_dir(SCRIPT_CTX * THIS, INT16 idx, INT16 dest) __banked;
+void vm_actor_set_anim_tick(SCRIPT_CTX * THIS, INT16 idx, UBYTE speed) __banked;
+void vm_actor_set_move_speed(SCRIPT_CTX * THIS, INT16 idx, UBYTE speed) __banked;
+void vm_actor_set_coll_enabled(SCRIPT_CTX * THIS, INT16 idx, UBYTE enabled) __banked;
 
 #endif

@@ -30,6 +30,7 @@ EMUFLAGS = \
 	-set "Color1=A0A0A0" \
 	-set "Color2=585858" \
 	-set "Color3=101010" \
+	-set "DebugWRAMbreak=0" \
 	-set "DebugSrcBrk=1" \
 	-hf -stateonexit \
 	-screenonexit ./capture.bmp

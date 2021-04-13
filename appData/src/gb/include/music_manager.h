@@ -7,7 +7,7 @@
 
 #ifdef GBT_PLAYER
     #undef HUGE_TRACKER 
-    #define TRACK_T unsigned char
+    #define TRACK_T UBYTE
     #include "gbt_player.h"
 #endif
 #ifdef HUGE_TRACKER

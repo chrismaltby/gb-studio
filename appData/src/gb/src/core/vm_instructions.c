@@ -79,9 +79,9 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_actor_get_pos,          2}, // 0x3A
     {vm_actor_set_hidden,       3}, // 0x3B
     {vm_actor_get_dir,          4}, // 0x3C
-    {0, 0},
-    {0, 0},
-    {0, 0},
+    {vm_actor_set_anim_tick,    3}, // 0x3D
+    {vm_actor_set_move_speed,   3}, // 0x3E
+    {vm_actor_set_coll_enabled, 3}, // 0x3F
 
     // user interface instructions section
     {vm_load_text,              1}, // 0x40
@@ -97,8 +97,8 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_load_cursor,            3}, // 0x4A
     {vm_set_font,               1}, // 0x4B
     {vm_set_print_dir,          1}, // 0x4C
-    {0, 0},
-    {0, 0},
+    {vm_overlay_scroll,         5}, // 0x4D
+    {vm_overlay_set_scroll,     5}, // 0x4E
     {0, 0},
 
     // gameboy features instructions section

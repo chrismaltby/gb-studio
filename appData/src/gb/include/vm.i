@@ -147,7 +147,7 @@ OP_VM_RESERVE      = 0x12
         .db OP_VM_RESERVE, #<ARG0
 .endm
 
-; assignes a value on VM stack or a global to a value on VM stack ar a global 
+; assignes a value on VM stack or a global to a value on VM stack or a global 
 OP_VM_SET         = 0x13
 .macro VM_SET IDXA, IDXB
         .db OP_VM_SET, #>IDXB, #<IDXB, #>IDXA, #<IDXA
@@ -425,6 +425,21 @@ OP_VM_ACTOR_GET_DIR     = 0x3C
         .db OP_VM_ACTOR_GET_DIR, #>DEST, #<DEST, #>IDX, #<IDX
 .endm
 
+OP_VM_ACTOR_SET_ANIM_TICK     = 0x3D
+.macro VM_ACTOR_SET_ANIM_TICK ACTOR, TICK
+        .db OP_VM_ACTOR_SET_ANIM_TICK, #<TICK, #>ACTOR, #<ACTOR
+.endm
+
+OP_VM_ACTOR_SET_MOVE_SPEED     = 0x3E
+.macro VM_ACTOR_SET_MOVE_SPEED ACTOR, SPEED
+        .db OP_VM_ACTOR_SET_MOVE_SPEED, #<SPEED, #>ACTOR, #<ACTOR
+.endm
+
+OP_VM_ACTOR_SET_COLL_ENABLED     = 0x3F
+.macro VM_ACTOR_SET_COLL_ENABLED ACTOR, ENABLED
+        .db OP_VM_ACTOR_SET_COLL_ENABLED, #<ENABLED, #>ACTOR, #<ACTOR
+.endm
+
 ; --- UI ------------------------------------------
 
 OP_VM_LOAD_TEXT         = 0x40
@@ -471,6 +486,7 @@ OP_VM_OVERLAY_SHOW      = 0x46
 .UI_COLOR_BLACK         = 0
 .UI_COLOR_WHITE         = 1
 .UI_DRAW_FRAME          = 1
+.UI_AUTO_SCROLL         = 2
 .macro VM_OVERLAY_SHOW X, Y, COLOR, OPTIONS
         .db OP_VM_OVERLAY_SHOW, #<OPTIONS, #<COLOR, #<Y, #<X
 .endm
@@ -511,6 +527,16 @@ OP_VM_SET_PRINT_DIR     = 0x4C
 .UI_PRINT_RIGHTTOLEFT   = 1
 .macro VM_SET_PRINT_DIR DIRECTION
         .db OP_VM_SET_PRINT_DIR, #<DIRECTION
+.endm
+
+OP_VM_OVERLAY_SCROLL    = 0x4D
+.macro VM_OVERLAY_SCROLL X, Y, W, H, COLOR
+        .db OP_VM_OVERLAY_SCROLL, #<COLOR, #<H, #<W, #<Y, #<X 
+.endm
+
+OP_VM_OVERLAY_SET_SCROLL = 0x4E
+.macro VM_OVERLAY_SET_SCROLL X, Y, W, H, COLOR
+        .db OP_VM_OVERLAY_SET_SCROLL, #<COLOR, #<H, #<W, #<Y, #<X 
 .endm
 
 ; --- GAMEBOY ------------------------------------------
