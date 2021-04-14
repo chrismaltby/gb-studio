@@ -871,6 +871,14 @@ class ScriptBuilder {
     this._addCmd("VM_FADE_OUT", speed);
   };
 
+  _cameraMoveTo = (addr: string, speed: number, lock: boolean) => {
+    this._addCmd("VM_CAMERA_MOVE_TO", addr, speed, lock ? 1 : 0);
+  };
+
+  _cameraSetPos = (addr: string) => {
+    this._addCmd("VM_CAMERA_SET_POS", addr);
+  };
+
   _musicPlay = (symbol: string, loop: boolean) => {
     this._addCmd(
       "VM_MUSIC_PLAY",
@@ -1346,6 +1354,37 @@ class ScriptBuilder {
 
   // --------------------------------------------------------------------------
   // Camera
+
+  cameraMoveTo = (x = 0, y = 0, speed = 0) => {
+    this._addComment("Camera Move To");
+    this._stackPushConst(Math.round(x * 8));
+    this._stackPushConst(Math.round(y * 8));
+    if (speed === 0) {
+      this._cameraSetPos(".ARG1");
+    } else {
+      this._cameraMoveTo(".ARG1", speed, false);
+    }
+    this._stackPop(2);
+  };
+
+  cameraLock = (speed = 0) => {
+    this._addComment("Camera Lock");
+    this._setConst("ACTOR", 0);
+    this._actorGetPosition("ACTOR");
+    this._rpn() //
+      .ref("^/(ACTOR + 1)/")
+      .int16(16)
+      .operator(".DIV")
+      .ref("^/(ACTOR + 2)/")
+      .int16(16)
+      .operator(".DIV")
+      .stop();
+
+    this._set("^/(ACTOR + 1 - 2)/", ".ARG1");
+    this._set("^/(ACTOR + 2 - 2)/", ".ARG0");
+    this._cameraMoveTo(".ARG1", speed, true);
+    this._stackPop(2);
+  };
 
   cameraShake = (
     shouldShakeX: boolean,
