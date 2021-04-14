@@ -606,7 +606,7 @@ export const compileTileset = (tileset: Uint8Array, tilesetIndex: number) =>
     `// Tileset: ${tilesetIndex}`,
     {
       n_tiles: Math.ceil(tileset.length / 16),
-      tiles: Array.from(tileset).map(toHex),
+      tiles: Array.from(tileset.length > 0 ? tileset : [0]).map(toHex),
     }
   );
 
