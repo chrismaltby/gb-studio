@@ -1090,8 +1090,7 @@ class ScriptBuilder {
 
   actorSetCollisions = (enabled: boolean) => {
     this._addComment("Actor Set Collisions");
-    this._addComment("NOT IMPLEMENTED");
-    console.error("actorSetCollisions not implemented");
+    this._actorSetCollisionsEnabled("ACTOR", enabled);
     this._addNL();
   };
 
