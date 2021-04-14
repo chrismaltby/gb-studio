@@ -7,14 +7,19 @@ import l10n from "../../lib/helpers/l10n";
 import { SidebarHeading } from "./Sidebar";
 import castEventValue from "../../lib/helpers/castEventValue";
 import { CustomEventShape } from "../../store/stateShape";
-import { DropdownButton } from "../library/Button";
-import { MenuItem } from "../library/Menu";
+import { DropdownButton } from "../ui/buttons/DropdownButton";
+import { MenuItem } from "../ui/menu/Menu";
 import { WorldEditor } from "./WorldEditor";
 import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
 import { customEventSelectors } from "../../store/features/entities/entitiesState";
 import editorActions from "../../store/features/editor/editorActions";
 import entitiesActions from "../../store/features/entities/entitiesActions";
 import { SidebarMultiColumnAuto, SidebarColumn } from "../ui/sidebars/Sidebar";
+import { FormContainer, FormHeader } from "../ui/form/FormLayout";
+import { EditableText } from "../ui/form/EditableText";
+
+const customEventName = (customEvent, customEventIndex) =>
+  customEvent.name ? customEvent.name : `Script ${customEventIndex + 1}`;
 
 class CustomEventEditor extends Component {
   constructor() {
@@ -70,33 +75,24 @@ class CustomEventEditor extends Component {
     return (
       <SidebarMultiColumnAuto onClick={selectSidebar}>
         <SidebarColumn>
-          <SidebarHeading
-            title={l10n("CUSTOM_EVENT")}
-            buttons={
+          <FormContainer>
+          <FormHeader>
+              <EditableText
+                name="name"
+                placeholder={customEventName(customEvent, index)}
+                value={customEvent.name || ""}
+                onChange={this.onEdit("name")}
+              />
               <DropdownButton
-                small
-                transparent
-                right
-                onMouseDown={this.readClipboard}
+                size="small"
+                variant="transparent"
+                menuDirection="right"
               >
                 <MenuItem onClick={this.onRemove()}>
                   {l10n("MENU_DELETE_CUSTOM_EVENT")}
                 </MenuItem>
               </DropdownButton>
-            }
-          />
-          <div>
-            <FormField>
-              <label htmlFor="customEventName">
-                {l10n("FIELD_NAME")}
-                <input
-                  id="customEventName"
-                  value={customEvent.name || ""}
-                  placeholder={`Custom Event ${index + 1}`}
-                  onChange={this.onEdit("name")}
-                />
-              </label>
-            </FormField>
+            </FormHeader>
             <FormField>
               <label htmlFor="customEventDescription">
                 {l10n("FIELD_DESCRIPTION")}
@@ -110,8 +106,8 @@ class CustomEventEditor extends Component {
                   onChange={this.onEdit("description")}
                 />
               </label>
-            </FormField>
-          </div>
+            </FormField>            
+          </FormContainer>
           <div>
             <SidebarHeading title={l10n("SIDEBAR_PARAMETERS")} />
             <FormField>

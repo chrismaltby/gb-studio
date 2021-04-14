@@ -7,6 +7,7 @@ import editorActions from "../../store/features/editor/editorActions";
 import { CustomEvent } from "../../store/features/entities/entitiesTypes";
 import styled from "styled-components";
 import { CodeIcon } from "../library/Icons";
+import l10n from "../../lib/helpers/l10n";
 
 interface NavigatorCustomEventsProps {
   height: number;
@@ -24,7 +25,7 @@ const customEventToNavigatorItem = (
   id: customEvent.id,
   name: customEvent.name
     ? customEvent.name
-    : `Custom Event ${customEventIndex + 1}`,
+    : `${l10n("CUSTOM_EVENT")} ${customEventIndex + 1}`,
 });
 
 const collator = new Intl.Collator(undefined, {
