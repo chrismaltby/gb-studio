@@ -11,6 +11,8 @@ import {
   CustomEvent,
   EntitiesState,
   Font,
+  Avatar,
+  Emote,
 } from "../entities/entitiesTypes";
 import type { RootState } from "../../configureStore";
 import loadProjectData from "../../../lib/project/loadProjectData";
@@ -25,6 +27,8 @@ import { MetadataState } from "../metadata/metadataState";
 import parseAssetPath from "../../../lib/helpers/path/parseAssetPath";
 import { denormalizeEntities } from "../entities/entitiesHelpers";
 import { matchAsset } from "../entities/entitiesHelpers";
+import { loadAvatarData } from "../../../lib/project/loadAvatarData";
+import { loadEmoteData } from "../../../lib/project/loadEmoteData";
 
 let saving = false;
 
@@ -41,6 +45,8 @@ export type ProjectData = {
   customEvents: CustomEvent[];
   music: Music[];
   fonts: Font[];
+  avatars: Avatar[];
+  emotes: Emote[];
   variables: Variable[];
   settings: SettingsState;
 };
@@ -294,6 +300,80 @@ const removeFont = createAsyncThunk<
 });
 
 /**************************************************************************
+ * Avatars
+ */
+
+const loadAvatar = createAsyncThunk<{ data: Font }, string>(
+  "project/loadAvatar",
+  async (filename, thunkApi) => {
+    const state = thunkApi.getState() as RootState;
+
+    const projectRoot = state.document && state.document.root;
+    const data = (await loadAvatarData(projectRoot)(filename)) as
+      | Avatar
+      | undefined;
+
+    if (!data) {
+      throw new Error("Unable to load avatar");
+    }
+
+    return {
+      data,
+    };
+  }
+);
+
+const removeAvatar = createAsyncThunk<
+  { filename: string; plugin: string | undefined },
+  string
+>("project/removeAvatar", async (filename, thunkApi) => {
+  const state = thunkApi.getState() as RootState;
+  const projectRoot = state.document && state.document.root;
+  const { file, plugin } = parseAssetPath(filename, projectRoot, "avatars");
+  return {
+    filename: file,
+    plugin,
+  };
+});
+
+/**************************************************************************
+ * Emotes
+ */
+
+const loadEmote = createAsyncThunk<{ data: Font }, string>(
+  "project/loadEmote",
+  async (filename, thunkApi) => {
+    const state = thunkApi.getState() as RootState;
+
+    const projectRoot = state.document && state.document.root;
+    const data = (await loadEmoteData(projectRoot)(filename)) as
+      | Emote
+      | undefined;
+
+    if (!data) {
+      throw new Error("Unable to load emote");
+    }
+
+    return {
+      data,
+    };
+  }
+);
+
+const removeEmote = createAsyncThunk<
+  { filename: string; plugin: string | undefined },
+  string
+>("project/removeEmote", async (filename, thunkApi) => {
+  const state = thunkApi.getState() as RootState;
+  const projectRoot = state.document && state.document.root;
+  const { file, plugin } = parseAssetPath(filename, projectRoot, "emotes");
+  return {
+    filename: file,
+    plugin,
+  };
+});
+
+/**************************************************************************
  * UI
  */
 
@@ -362,6 +442,10 @@ export default {
   removeMusic,
   loadFont,
   removeFont,
+  loadAvatar,
+  removeAvatar,
+  loadEmote,
+  removeEmote,
   loadUI,
   reloadAssets,
   saveProject,

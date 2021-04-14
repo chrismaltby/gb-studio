@@ -79,6 +79,28 @@ export type Font = {
   _v: number;
 };
 
+export type Avatar = {
+  id: string;
+  name: string;
+  filename: string;
+  width: number;
+  height: number;
+  plugin?: string;
+  inode: string;
+  _v: number;
+};
+
+export type Emote = {
+  id: string;
+  name: string;
+  filename: string;
+  width: number;
+  height: number;
+  plugin?: string;
+  inode: string;
+  _v: number;
+};
+
 export type MusicSettings = {
   disableSpeedConversion?: boolean;
 };
@@ -220,6 +242,8 @@ export type ProjectEntitiesData = {
   customEvents: CustomEvent[];
   music: Music[];
   fonts: Font[];
+  avatars: Avatar[];
+  emotes: Emote[];
   variables: Variable[];
 };
 
@@ -236,6 +260,8 @@ export interface EntitiesState {
   customEvents: EntityState<CustomEvent>;
   music: EntityState<Music>;
   fonts: EntityState<Font>;
+  avatars: EntityState<Avatar>;
+  emotes: EntityState<Emote>;
   variables: EntityState<Variable>;
   engineFieldValues: EntityState<EngineFieldValue>;
 }

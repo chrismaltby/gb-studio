@@ -5,6 +5,8 @@ import loadAllBackgroundData from "./loadBackgroundData";
 import loadAllSpriteData from "./loadSpriteData";
 import loadAllMusicData from "./loadMusicData";
 import loadAllFontData from "./loadFontData";
+import loadAllAvatarData from "./loadAvatarData";
+import loadAllEmoteData from "./loadEmoteData";
 import migrateProject from "./migrateProject";
 import { indexByFn, indexBy } from "../helpers/array";
 import { setDefault } from "../helpers/setDefault";
@@ -33,11 +35,20 @@ const loadProject = async (projectPath) => {
 
   const projectRoot = path.dirname(projectPath);
 
-  const [backgrounds, sprites, music, fonts] = await Promise.all([
+  const [
+    backgrounds,
+    sprites,
+    music,
+    fonts,
+    avatars,
+    emotes,
+  ] = await Promise.all([
     loadAllBackgroundData(projectRoot),
     loadAllSpriteData(projectRoot),
     loadAllMusicData(projectRoot),
     loadAllFontData(projectRoot),
+    loadAllAvatarData(projectRoot),
+    loadAllEmoteData(projectRoot),
   ]);
 
   // Merge stored backgrounds data with file system data
@@ -146,6 +157,42 @@ const loadProject = async (projectPath) => {
     })
     .sort(sortByName);
 
+  // Merge stored avatars data with file system data
+  const oldAvatarByFilename = indexByFilename(json.avatars || []);
+  const oldAvatarByInode = indexByInode(json.avatars || []);
+
+  const fixedAvatarIds = avatars
+    .map((avatar) => {
+      const oldAvatar =
+        oldAvatarByFilename[elemKey(avatar)] || oldAvatarByInode[avatar.inode];
+      if (oldAvatar) {
+        return {
+          ...avatar,
+          id: oldAvatar.id,
+        };
+      }
+      return avatar;
+    })
+    .sort(sortByName);
+
+  // Merge stored emotes data with file system data
+  const oldEmoteByFilename = indexByFilename(json.emotes || []);
+  const oldEmoteByInode = indexByInode(json.emotes || []);
+
+  const fixedEmoteIds = emotes
+    .map((emote) => {
+      const oldEmote =
+        oldEmoteByFilename[elemKey(emote)] || oldEmoteByInode[emote.inode];
+      if (oldEmote) {
+        return {
+          ...emote,
+          id: oldEmote.id,
+        };
+      }
+      return emote;
+    })
+    .sort(sortByName);
+
   const addMissingEntityId = (entity) => {
     if (!entity.id) {
       return {
@@ -238,6 +285,8 @@ const loadProject = async (projectPath) => {
       spriteSheets: fixedSpriteIds,
       music: fixedMusicIds,
       fonts: fixedFontIds,
+      avatars: fixedAvatarIds,
+      emotes: fixedEmoteIds,
       scenes: fixedScenes,
       customEvents: fixedCustomEvents,
       palettes: fixedPalettes,

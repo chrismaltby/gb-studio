@@ -10,6 +10,8 @@ import { EntityId, Dictionary } from "@reduxjs/toolkit";
 const backgroundSchema = new schema.Entity("backgrounds");
 const musicSchema = new schema.Entity("music");
 const fontSchema = new schema.Entity("fonts");
+const avatarSchema = new schema.Entity("avatars");
+const emoteSchema = new schema.Entity("emotes");
 const actorSchema = new schema.Entity("actors");
 const triggerSchema = new schema.Entity("triggers");
 /*
@@ -49,6 +51,8 @@ const projectSchema = {
   backgrounds: [backgroundSchema],
   music: [musicSchema],
   fonts: [fontSchema],
+  avatars: [avatarSchema],
+  emotes: [emoteSchema],
   spriteSheets: [spriteSheetsSchema],
   variables: [variablesSchema],
   customEvents: [customEventsSchema],
@@ -73,6 +77,8 @@ export const denormalizeEntities = (
     customEvents: state.customEvents.ids,
     music: state.music.ids,
     fonts: state.fonts.ids,
+    avatars: state.avatars.ids,
+    emotes: state.emotes.ids,
     variables: state.variables.ids,
     engineFieldValues: state.engineFieldValues.ids,
   };
@@ -89,6 +95,8 @@ export const denormalizeEntities = (
     customEvents: state.customEvents.entities,
     music: state.music.entities,
     fonts: state.fonts.entities,
+    avatars: state.avatars.entities,
+    emotes: state.emotes.entities,
     variables: state.variables.entities,
     engineFieldValues: state.engineFieldValues.entities,
   };
