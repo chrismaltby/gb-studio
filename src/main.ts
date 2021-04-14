@@ -6,19 +6,15 @@ import { stat } from "fs-extra";
 import menu from "./menu";
 import { checkForUpdate } from "./lib/helpers/updateChecker";
 import switchLanguageDialog from "./lib/electron/dialog/switchLanguageDialog";
-import rimraf from "rimraf";
-import { promisify } from "util";
 import l10n, { locales } from "./lib/helpers/l10n";
 import initElectronL10n from "./lib/helpers/initElectronL10n";
 
-declare var MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: any;
-declare var MAIN_WINDOW_WEBPACK_ENTRY: any;
-
-declare var SPLASH_WINDOW_PRELOAD_WEBPACK_ENTRY: any;
-declare var SPLASH_WINDOW_WEBPACK_ENTRY: any;
-
-declare var PREFERENCES_WINDOW_PRELOAD_WEBPACK_ENTRY: any;
-declare var PREFERENCES_WINDOW_WEBPACK_ENTRY: any;
+declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
+declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
+declare const SPLASH_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
+declare const SPLASH_WINDOW_WEBPACK_ENTRY: string;
+declare const PREFERENCES_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
+declare const PREFERENCES_WINDOW_WEBPACK_ENTRY: string;
 
 type SplashTab = "info" | "new" | "recent";
 
@@ -41,20 +37,6 @@ let hasCheckedForUpdate = false;
 const isDevMode = !!process.execPath.match(/[\\/]electron/);
 
 const validProjectExt = [".json", ".gbsproj"];
-
-// Allow images and json outside of application package to be loaded in production build
-// addBypassChecker(filePath => {
-//   return (
-//     // filePath.indexOf(app.getAppPath()) === -1 ||
-//     filePath.indexOf("/dist/") > -1 ||
-//     filePath.indexOf("build/web") > -1 ||
-//     /.mod/.test(filePath) ||
-//     /.jpg/.test(filePath) ||
-//     /.json/.test(filePath) ||
-//     /.png/.test(filePath) ||
-//     /.mem/.test(filePath)
-//   );
-// });
 
 const createSplash = async (forceTab?: SplashTab) => {
   // Create the browser window.
