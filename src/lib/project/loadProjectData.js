@@ -66,12 +66,18 @@ const loadProject = async (projectPath) => {
   // Merge stored sprite data with file system data
   const oldSpriteByFilename = indexByFilename(json.spriteSheets || []);
   const oldSpriteByInode = indexByInode(json.spriteSheets || []);
+  const modifiedSpriteIds = [];
 
   const fixedSpriteIds = sprites
     .map((sprite) => {
       const oldSprite =
         oldSpriteByFilename[elemKey(sprite)] || oldSpriteByInode[sprite.inode];
       if (oldSprite) {
+        const autoDetect =
+          oldSprite?.autoDetect !== undefined ? oldSprite.autoDetect : true;
+        if (autoDetect && oldSprite.checksum !== sprite.checksum) {
+          modifiedSpriteIds.push(oldSprite.id);
+        }
         return {
           ...oldSprite,
           ...sprite,
@@ -92,9 +98,10 @@ const loadProject = async (projectPath) => {
               },
             ],
           })),
-          autoDetect:
-            oldSprite?.autoDetect !== undefined ? oldSprite.autoDetect : true,
+          autoDetect,
         };
+      } else {
+        modifiedSpriteIds.push(sprite.id);
       }
       return sprite;
     })
@@ -225,15 +232,18 @@ const loadProject = async (projectPath) => {
   const fixedEngineFieldValues = json.engineFieldValues || [];
 
   return {
-    ...json,
-    backgrounds: fixedBackgroundIds,
-    spriteSheets: fixedSpriteIds,
-    music: fixedMusicIds,
-    fonts: fixedFontIds,
-    scenes: fixedScenes,
-    customEvents: fixedCustomEvents,
-    palettes: fixedPalettes,
-    engineFieldValues: fixedEngineFieldValues,
+    data: {
+      ...json,
+      backgrounds: fixedBackgroundIds,
+      spriteSheets: fixedSpriteIds,
+      music: fixedMusicIds,
+      fonts: fixedFontIds,
+      scenes: fixedScenes,
+      customEvents: fixedCustomEvents,
+      palettes: fixedPalettes,
+      engineFieldValues: fixedEngineFieldValues,
+    },
+    modifiedSpriteIds,
   };
 };
 

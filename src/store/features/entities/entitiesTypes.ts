@@ -162,6 +162,7 @@ export type SpriteSheet = {
   numFrames: number;
   plugin?: string;
   inode: string;
+  checksum: string;
   _v: number;
   width: number;
   height: number;

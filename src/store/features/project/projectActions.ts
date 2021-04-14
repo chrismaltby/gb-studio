@@ -72,14 +72,18 @@ const openProject = createAction<string>("project/openProject");
 const closeProject = createAction<void>("project/closeProject");
 
 const loadProject = createAsyncThunk<
-  { data: ProjectData; path: string },
+  { data: ProjectData; path: string; modifiedSpriteIds: string[] },
   string
 >("project/loadProject", async (path) => {
-  const data = (await loadProjectData(path)) as ProjectData;
+  const { data, modifiedSpriteIds } = (await loadProjectData(path)) as {
+    data: ProjectData;
+    modifiedSpriteIds: string[];
+  };
 
   return {
     data,
     path,
+    modifiedSpriteIds,
   };
 });
 

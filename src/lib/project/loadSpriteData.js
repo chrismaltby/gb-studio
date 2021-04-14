@@ -5,6 +5,7 @@ import sizeOf from "image-size";
 import { stat } from "fs-extra";
 import parseAssetPath from "../helpers/path/parseAssetPath";
 import { spriteTypeFromNumFrames } from "../helpers/gbstudio";
+import { checksumFile } from "../helpers/checksum";
 
 const FRAME_SIZE = 16;
 
@@ -17,6 +18,7 @@ const loadSpriteData = (projectRoot) => async (filename) => {
     const size = await sizeOfAsync(filename);
     const fileStat = await stat(filename, { bigint: true });
     const inode = fileStat.ino.toString();
+    const checksum = await checksumFile(filename);
     const numFrames = size.width / FRAME_SIZE;
     return {
       id: uuidv4(),
@@ -26,6 +28,7 @@ const loadSpriteData = (projectRoot) => async (filename) => {
       type: spriteTypeFromNumFrames(numFrames),
       filename: file,
       inode,
+      checksum,
       width: size.width,
       height: size.height,
       autoDetect: true,

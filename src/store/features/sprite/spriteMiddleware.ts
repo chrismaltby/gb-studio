@@ -38,16 +38,8 @@ const spriteMiddleware: Middleware<{}, RootState> = (store) => (next) => async (
   next(action);
 
   if (projectActions.loadProject.fulfilled.match(action)) {
-    const state = store.getState();
-    const spriteSheets = spriteSheetSelectors.selectAll(state);
-    for (const spriteSheet of spriteSheets) {
-      if (
-        !spriteSheet.animations ||
-        spriteSheet.animations.length === 0 ||
-        spriteSheet.autoDetect
-      ) {
-        store.dispatch(actions.detectSprite({ spriteSheetId: spriteSheet.id }));
-      }
+    for (const spriteSheetId of action.payload.modifiedSpriteIds) {
+      store.dispatch(actions.detectSprite({ spriteSheetId }));
     }
   }
 
