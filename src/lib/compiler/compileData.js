@@ -70,12 +70,15 @@ import {
   compileScriptHeader,
   compileGameGlobalsInclude,
   fontSymbol,
+  compileAvatarFontHeader,
+  compileAvatarFont,
 } from "./compileData2";
 import compileSGBImage from "./sgb";
 import { readFileToTilesData } from "../tiles/tileData";
 import l10n from "../helpers/l10n";
 import { compileScriptEngineInit } from "./compileBootstrap";
 import { compileMusicTracks, compileMusicHeader } from "./compileMusic";
+import { chunk } from "../helpers/array2";
 
 const indexById = indexBy("id");
 
@@ -416,13 +419,18 @@ const compile = async (
     output[`font_${fontIndex}.h`] = compileFontHeader(font, fontIndex);
   });
 
-  // // Add avatar data
-  // precompiled.usedAvatars.forEach((avatar, avatarIndex) => {
-  //   output[`avatar_${avatarIndex}.c`] = dataArrayToC(`avatar_${avatarIndex}`, [].concat(
-  //     avatar.frames,
-  //     avatar.data
-  //   ));
-  // });
+  // Add avatar data
+  const avatarFontSize = 16;
+  const avatarFonts = chunk(precompiled.usedAvatars, avatarFontSize);
+  avatarFonts.forEach((avatarFont, avatarFontIndex) => {
+    output[`avatar_font_${avatarFontIndex}.c`] = compileAvatarFont(
+      avatarFont,
+      avatarFontIndex
+    );
+    output[`avatar_font_${avatarFontIndex}.h`] = compileAvatarFontHeader(
+      avatarFontIndex
+    );
+  });
 
   // Add scene data
   precompiled.sceneData.forEach((scene, sceneIndex) => {
@@ -525,6 +533,7 @@ const compile = async (
     startMoveSpeed,
     startAnimSpeed,
     fonts: precompiled.usedFonts,
+    avatarFonts,
     isCGB: customColorsEnabled,
     engineFields,
     engineFieldValues: projectData.engineFieldValues,
@@ -602,7 +611,7 @@ const precompile = async (
 
   progress(EVENT_MSG_PRE_AVATARS);
   const { usedAvatars } = await precompileAvatars(
-    projectData.spriteSheets,
+    projectData.avatars,
     projectData.scenes,
     projectRoot,
     {
@@ -1086,14 +1095,14 @@ export const precompileSprites = async (
 };
 
 export const precompileAvatars = async (
-  spriteSheets,
+  avatars,
   scenes,
   projectRoot,
   { warnings } = {}
 ) => {
   const usedAvatars = [];
   const usedAvatarLookup = {};
-  const avatarLookup = indexById(spriteSheets);
+  const avatarLookup = indexById(avatars);
 
   walkScenesEvents(scenes, (event) => {
     if (event.args) {
@@ -1102,9 +1111,9 @@ export const precompileAvatars = async (
         !usedAvatarLookup[event.args.avatarId] &&
         avatarLookup[event.args.avatarId]
       ) {
-        const spriteSheet = avatarLookup[event.args.avatarId];
-        usedAvatars.push(spriteSheet);
-        usedAvatarLookup[event.args.avatarId] = spriteSheet;
+        const avatar = avatarLookup[event.args.avatarId];
+        usedAvatars.push(avatar);
+        usedAvatarLookup[event.args.avatarId] = avatar;
       }
     }
   });

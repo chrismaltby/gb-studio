@@ -12,12 +12,11 @@ const fields = [
   },
   {
     key: "avatarId",
-    type: "sprite",
+    type: "avatar",
     toggleLabel: l10n("FIELD_ADD_TEXT_AVATAR"),
     label: l10n("FIELD_TEXT_AVATAR"),
     defaultValue: "",
     optional: true,
-    filter: (sprite) => sprite.numFrames === 1,
   },
 ];
 

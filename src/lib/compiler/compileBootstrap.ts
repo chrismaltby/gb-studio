@@ -4,7 +4,7 @@ import {
   Font,
   EngineFieldValue,
 } from "../../store/features/entities/entitiesTypes";
-import { fontSymbol, sceneSymbol } from "./compileData2";
+import { avatarFontSymbol, fontSymbol, sceneSymbol } from "./compileData2";
 import { dirEnum } from "./helpers";
 
 interface InitialState {
@@ -15,6 +15,7 @@ interface InitialState {
   startMoveSpeed: number;
   startAnimSpeed: number;
   fonts: Font[];
+  avatarFonts: undefined[];
   isCGB: boolean;
   engineFields: EngineFieldSchema[];
   engineFieldValues: EngineFieldValue[];
@@ -28,6 +29,7 @@ export const compileScriptEngineInit = ({
   startMoveSpeed,
   startAnimSpeed,
   fonts,
+  avatarFonts,
   isCGB,
   engineFields,
   engineFieldValues,
@@ -53,6 +55,12 @@ _ui_fonts::
 ${fonts
   .map(
     (_, fontIndex) => `        IMPORT_FAR_PTR_DATA _${fontSymbol(fontIndex)}`
+  )
+  .join("\n")}
+${avatarFonts
+  .map(
+    (_, avatarFontIndex) =>
+      `        IMPORT_FAR_PTR_DATA _${avatarFontSymbol(avatarFontIndex)}`
   )
   .join("\n")}
 

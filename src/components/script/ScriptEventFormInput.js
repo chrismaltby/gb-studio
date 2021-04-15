@@ -33,6 +33,7 @@ import { SliderField } from "../ui/form/SliderField";
 import { CheckboxField } from "../ui/form/CheckboxField";
 import { Input } from "../ui/form/Input";
 import { Select } from "../ui/form/Select";
+import { AvatarSelect } from "../forms/AvatarSelect";
 
 const argValue = (arg) => {
   if(arg && arg.value !== undefined) {
@@ -310,6 +311,11 @@ class ScriptEventFormInput extends Component {
         <EmoteSelect id={id} value={String(value)} onChange={this.onChange} />
       );
     }
+    if (type === "avatar") {
+      return (
+        <AvatarSelect id={id} value={String(value)} onChange={this.onChange} />
+      );
+    } 
     if (type === "operator") {
       return <OperatorSelect id={id} value={value} onChange={this.onChange} />;
     }

@@ -51,6 +51,8 @@ interface ScriptBuilderOptions {
   sprites: ScriptBuilderEntity[];
   fonts: PrecompiledFontData[];
   music: PrecompiledMusicTrack[];
+  avatars: ScriptBuilderEntity[];
+  emotes: ScriptBuilderEntity[];
   customEvents: CustomEvent[];
   characterEncoding: string;
   entity?: ScriptBuilderEntity;
@@ -242,6 +244,18 @@ const funToScriptOperator = (
   assertUnreachable(fun);
 };
 
+const textCodeSetSpeed = (speed: number): string => {
+  return `\\001\\${decOct(speed + 1)}`;
+};
+
+const textCodeSetFont = (fontIndex: number): string => {
+  return `\\002\\${decOct(fontIndex + 1)}`;
+};
+
+const textCodeGotoRel = (x: number, y: number): string => {
+  return `\\004\\${decOct(x)}\\${decOct(y)}`;
+};
+
 const assertUnreachable = (x: never): never => {
   throw new Error("Didn't expect to get here");
 };
@@ -279,6 +293,8 @@ class ScriptBuilder {
       sprites: options.sprites || [],
       fonts: options.fonts || [],
       music: options.music || [],
+      avatars: options.avatars || [],
+      emotes: options.emotes || [],
       customEvents: options.customEvents || [],
       characterEncoding: options.characterEncoding || "",
       additionalScripts: options.additionalScripts || [],
@@ -725,7 +741,7 @@ class ScriptBuilder {
     this._addCmd("VM_LOAD_TEXT", `${numInputs}`);
   };
 
-  _loadStructuredText = (inputText: string) => {
+  _loadStructuredText = (inputText: string, avatarIndex?: number) => {
     let text = inputText;
 
     const inlineVariables = (
@@ -758,6 +774,23 @@ class ScriptBuilder {
     if (usedVariableAliases.length > 0) {
       this._dw(...usedVariableAliases);
     }
+
+    if (avatarIndex !== undefined) {
+      const { fonts } = this.options;
+      const avatarFontSize = 16;
+      const fontIndex = fonts.length + Math.floor(avatarIndex / avatarFontSize);
+      const baseCharCode = ((avatarIndex * 4) % (avatarFontSize * 4)) + 64;
+      text = `${textCodeSetSpeed(0)}${textCodeSetFont(
+        fontIndex
+      )}${String.fromCharCode(baseCharCode)}${String.fromCharCode(
+        baseCharCode + 1
+      )}\\n${String.fromCharCode(baseCharCode + 2)}${String.fromCharCode(
+        baseCharCode + 3
+      )}${textCodeSetSpeed(2)}${textCodeGotoRel(1, -1)}${textCodeSetFont(
+        0
+      )}${text}`;
+    }
+
     this._string(text);
   };
 
@@ -1171,7 +1204,7 @@ class ScriptBuilder {
       (textBlock) => textBlock.split("\n").length
     );
 
-    const maxNumLines = Math.max.apply(null, initialNumLines);
+    const maxNumLines = Math.max(2, Math.max.apply(null, initialNumLines));
     const textBoxHeight = maxNumLines + 2;
     const textBoxY = 18 - textBoxHeight;
 
@@ -1188,7 +1221,16 @@ class ScriptBuilder {
 
     this._addComment("Text Dialogue");
     paddedInput.forEach((text, textIndex) => {
-      this._loadStructuredText(text);
+      let avatarIndex = undefined;
+      if (avatarId) {
+        const { avatars } = this.options;
+        avatarIndex = avatars.findIndex((a) => a.id === avatarId);
+        if (avatarIndex < 0) {
+          avatarIndex = undefined;
+        }
+      }
+
+      this._loadStructuredText(text, avatarIndex);
       this._overlayClear(0, 0, 20, textBoxHeight, ".UI_COLOR_WHITE", true);
       if (textIndex === 0) {
         this._overlayMoveTo(0, textBoxY, ".OVERLAY_TEXT_IN_SPEED");

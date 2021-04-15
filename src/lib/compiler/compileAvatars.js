@@ -8,20 +8,20 @@ const avatarBuildCache = {};
 const compileAvatars = async (avatars, projectRoot, { warnings }) => {
   const avatarData = await promiseLimit(
     10,
-    avatars.map((spriteSheet) => {
+    avatars.map((avatar) => {
       return async () => {
-        const filename = assetFilename(projectRoot, "sprites", spriteSheet);
+        const filename = assetFilename(projectRoot, "avatars", avatar);
         const modifiedTime = await getFileModifiedTime(filename);
         let data;
 
         if (
-          avatarBuildCache[spriteSheet.id] &&
-          avatarBuildCache[spriteSheet.id].timestamp >= modifiedTime
+          avatarBuildCache[avatar.id] &&
+          avatarBuildCache[avatar.id].timestamp >= modifiedTime
         ) {
-          data = avatarBuildCache[spriteSheet.id].data;
+          data = avatarBuildCache[avatar.id].data;
         } else {
           data = await readFileToTilesData(filename);
-          avatarBuildCache[spriteSheet.id] = {
+          avatarBuildCache[avatar.id] = {
             data,
             timestamp: modifiedTime,
           };
@@ -31,12 +31,12 @@ const compileAvatars = async (avatars, projectRoot, { warnings }) => {
         const frames = Math.ceil(size / 64);
         if (Math.ceil(size / 64) !== Math.floor(size / 64)) {
           warnings(
-            `Avatar '${spriteSheet.filename}' has invalid dimensions and may not appear correctly. Must be 16px tall and a multiple of 16px wide.`
+            `Avatar '${avatar.filename}' has invalid dimensions and may not appear correctly. Must be 16px tall and a multiple of 16px wide.`
           );
         }
 
         return {
-          ...spriteSheet,
+          ...avatar,
           data,
           size,
           frames,

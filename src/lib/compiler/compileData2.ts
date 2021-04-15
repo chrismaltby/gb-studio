@@ -26,6 +26,10 @@ interface PrecompiledBackground {
   tilemapAttrIndex: number;
 }
 
+interface AvatarData {
+  data: Uint8Array;
+}
+
 export const BACKGROUND_TYPE = "const struct background_t";
 export const SPRITESHEET_TYPE = "const struct spritesheet_t";
 export const TILESET_TYPE = "const struct tileset_t";
@@ -130,6 +134,12 @@ export const paletteSymbol = (paletteIndex: number): string =>
   `palette_${paletteIndex}`;
 
 export const fontSymbol = (fontIndex: number): string => `font_${fontIndex}`;
+
+export const avatarFontSymbol = (avatarFontIndex: number): string =>
+  `avatar_font_${avatarFontIndex}`;
+
+export const emoteSymbol = (emoteIndex: number): string =>
+  `emote_${emoteIndex}`;
 
 const toFlags = (flags: string[]): string =>
   flags.length > 0 ? flags.join(" | ") : "0";
@@ -849,6 +859,47 @@ const font_desc_t ${fontSymbol(fontIndex)} = {
 
 export const compileFontHeader = (data: FontData, fontIndex: number) =>
   toArrayDataHeader(DATA_TYPE, fontSymbol(fontIndex), `// Font`);
+
+export const compileAvatarFont = (
+  avatars: AvatarData[],
+  avatarFontIndex: number
+) => `#pragma bank 255
+  
+// Avatar Font ${avatarFontIndex}
+  
+#include "gbs_types.h"
+
+static const UBYTE ${avatarFontSymbol(avatarFontIndex)}_table[] = {
+${chunk(
+  Array.from(Array(4 * avatars.length)).map((_, i) => toHex(i)),
+  16
+)
+  .map((r) => " ".repeat(INDENT_SPACES) + r.join(", "))
+  .join(",\n")}
+};
+
+static const UBYTE ${avatarFontSymbol(avatarFontIndex)}_bitmaps[] = {
+${chunk(avatars.map((a) => Array.from(a.data).map(toHex)).flat(), 16)
+  .map((r) => " ".repeat(INDENT_SPACES) + r.join(", "))
+  .join(",\n")}
+};
+  
+${toBankSymbolInit(avatarFontSymbol(avatarFontIndex))};
+const font_desc_t ${avatarFontSymbol(avatarFontIndex)} = {
+    ${toFlags([FONT_FLAG_FONT_RECODE])}, 
+    0x3F,
+    ${avatarFontSymbol(avatarFontIndex)}_table,
+    NULL,
+    ${avatarFontSymbol(avatarFontIndex)}_bitmaps
+};
+`;
+
+export const compileAvatarFontHeader = (avatarFontIndex: number) =>
+  toArrayDataHeader(
+    DATA_TYPE,
+    avatarFontSymbol(avatarFontIndex),
+    `// Avatar Font ${avatarFontIndex}`
+  );
 
 export const compileFrameImage = (data: Uint8Array) =>
   toArrayDataFile(
