@@ -424,7 +424,7 @@ function mapStateToProps(state, props) {
     if (background) {
       backgroundId = background.id;
       hoverPalette = Array.isArray(background.tileColors)
-        ? background.tileColors[x + y * scene.width]
+        ? background.tileColors[x + y * scene.width] || 0
         : 0;
     }
   }

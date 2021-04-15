@@ -159,7 +159,7 @@ ScriptEventForm.propTypes = {
   onChange: PropTypes.func.isRequired,
   renderEvents: PropTypes.func.isRequired,
   customEvents: PropTypes.objectOf(CustomEventShape),
-  engineFields: PropTypes.objectOf(EngineFieldShape)
+  engineFields: PropTypes.arrayOf(EngineFieldShape)
 };
 
 ScriptEventForm.defaultProps = {

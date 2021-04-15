@@ -154,6 +154,7 @@ export const TabBar = <T extends string>({
       <Tabs overflowActiveTab={overflowActiveTab}>
         {tabKeys.map((tab, index) => (
           <Tab
+            key={values[tab]}
             selected={value !== undefined ? tab === value : index === 0}
             variant={variant}
             onClick={onClickTab(tab)}
