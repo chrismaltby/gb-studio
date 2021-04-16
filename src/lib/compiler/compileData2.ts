@@ -30,6 +30,10 @@ interface AvatarData {
   data: Uint8Array;
 }
 
+interface EmoteData {
+  data: Uint8Array;
+}
+
 export const BACKGROUND_TYPE = "const struct background_t";
 export const SPRITESHEET_TYPE = "const struct spritesheet_t";
 export const TILESET_TYPE = "const struct tileset_t";
@@ -912,6 +916,22 @@ export const compileFrameImage = (data: Uint8Array) =>
 
 export const compileFrameImageHeader = (data: Uint8Array) =>
   toArrayDataHeader(DATA_TYPE, "frame_image", `// Frame`);
+
+export const compileEmote = (emote: EmoteData, emoteIndex: number) =>
+  toArrayDataFile(
+    DATA_TYPE,
+    emoteSymbol(emoteIndex),
+    `// Emote ${emoteIndex}`,
+    Array.from(emote.data).map(toHex),
+    16
+  );
+
+export const compileEmoteHeader = (emote: EmoteData, emoteIndex: number) =>
+  toArrayDataHeader(
+    DATA_TYPE,
+    emoteSymbol(emoteIndex),
+    `// Emote ${emoteIndex}`
+  );
 
 export const compileCursorImage = (data: Uint8Array) =>
   toArrayDataFile(

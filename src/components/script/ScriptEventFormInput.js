@@ -13,7 +13,6 @@ import { AnimationSpeedSelect } from "../forms/AnimationSpeedSelect";
 import { MovementSpeedSelect } from "../forms/MovementSpeedSelect";
 import PaletteSelect from "../forms/PaletteSelectOld";
 import ActorSelect from "../forms/ActorSelect";
-import EmoteSelect from "../forms/EmoteSelect";
 import OverlayColorSelect from "../forms/OverlayColorSelect";
 import MusicSelect from "../forms/MusicSelect";
 import SoundEffectSelect from "../forms/SoundEffectSelect";
@@ -34,6 +33,7 @@ import { CheckboxField } from "../ui/form/CheckboxField";
 import { Input } from "../ui/form/Input";
 import { Select } from "../ui/form/Select";
 import { AvatarSelect } from "../forms/AvatarSelect";
+import { EmoteSelect } from "../forms/EmoteSelect";
 
 const argValue = (arg) => {
   if(arg && arg.value !== undefined) {

@@ -21,7 +21,7 @@ import shuntingYard from "../rpn/shuntingYard";
 import { PrecompiledFontData } from "./compileFonts";
 import { encodeString } from "../helpers/encodings";
 import { PrecompiledMusicTrack } from "./compileMusic";
-import { spriteSheetSymbol } from "./compileData2";
+import { emoteSymbol, spriteSheetSymbol } from "./compileData2";
 
 type ScriptOutput = string[];
 
@@ -737,6 +737,10 @@ class ScriptBuilder {
     );
   };
 
+  _actorEmote = (addr: string, symbol: string) => {
+    this._addCmd("VM_ACTOR_EMOTE", addr, `___bank_${symbol}`, `_${symbol}`);
+  };
+
   _loadText = (numInputs: number) => {
     this._addCmd("VM_LOAD_TEXT", `${numInputs}`);
   };
@@ -1141,13 +1145,14 @@ class ScriptBuilder {
     this._addNL();
   };
 
-  actorEmote = (emoteId = 0) => {
-    this._addComment("Actor Emote");
-
-    // const output = this.output;
-    // output.push(cmd(ACTOR_EMOTE));
-    // output.push(emoteId);
-    this._addNL();
+  actorEmote = (emoteId: string) => {
+    const { emotes } = this.options;
+    const emoteIndex = emotes.findIndex((e) => e.id === emoteId);
+    if (emoteIndex > -1) {
+      this._addComment("Actor Emote");
+      this._actorEmote("ACTOR", emoteSymbol(emoteIndex));
+      this._addNL();
+    }
   };
 
   actorSetSprite = (spriteSheetId: string) => {

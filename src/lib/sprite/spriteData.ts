@@ -11,6 +11,8 @@ import {
   toIndex,
 } from "../tiles/indexedImage";
 
+const TILE_SIZE = 8;
+
 export type OptimisedTile = {
   tile: number;
   flipX: boolean;
@@ -1110,6 +1112,38 @@ export const indexedImageTo2bppSpriteData = (
     i++;
   }
 
+  return output;
+};
+
+/**
+ * Read an image filename into a GB 2bpp data array
+ * @param filename Tiles image filename
+ * @returns Uint8Array of 2bpp tile data
+ */
+export const readFileToSpriteTilesData = async (
+  filename: string
+): Promise<Uint8Array> => {
+  const img = await readFileToIndexedImage(filename, spriteDataIndexFn);
+  const xTiles = Math.floor(img.width / TILE_SIZE);
+  const yTiles = Math.floor(img.height / TILE_SIZE);
+  const size = xTiles * yTiles * 16;
+  const output = new Uint8Array(size);
+  let index = 0;
+  for (let txi = 0; txi < xTiles; txi++) {
+    for (let tyi = 0; tyi < yTiles; tyi++) {
+      const tileData = indexedImageTo2bppSpriteData(
+        sliceIndexedImage(
+          img,
+          txi * TILE_SIZE,
+          tyi * TILE_SIZE,
+          TILE_SIZE,
+          TILE_SIZE
+        )
+      );
+      output.set(tileData, index);
+      index += tileData.length;
+    }
+  }
   return output;
 };
 

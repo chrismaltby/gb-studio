@@ -327,8 +327,6 @@ void load_player() __banked {
     PLAYER.bounds.bottom = 7;
 }
 
-void load_emote(const spritesheet_t *sprite, UBYTE bank) __banked {
-    far_ptr_t data; 
-    ReadBankedFarPtr(&data, (void *)&sprite->tileset, bank);
-    SetBankedSpriteData(EMOTE_SPRITE, EMOTE_SPRITE_SIZE, ((tileset_t *)data.ptr)->tiles, data.bank);
+void load_emote(const unsigned char *tiles, UBYTE bank) __banked {
+    SetBankedSpriteData(EMOTE_SPRITE, EMOTE_SPRITE_SIZE, tiles + 0, bank);
 }

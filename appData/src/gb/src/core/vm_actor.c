@@ -159,7 +159,7 @@ void vm_actor_get_dir(SCRIPT_CTX * THIS, INT16 idx, INT16 dest) __banked {
     *A = actor->dir;
 }
 
-void vm_actor_emote(SCRIPT_CTX * THIS, INT16 idx, UBYTE emote_sprite_bank, spritesheet_t *emote_sprite) __banked {
+void vm_actor_emote(SCRIPT_CTX * THIS, INT16 idx, UBYTE emote_tiles_bank, const unsigned char *emote_tiles) __banked {
 
     // on first call load emote sprite 
     if (THIS->flags == 0) {
@@ -167,7 +167,7 @@ void vm_actor_emote(SCRIPT_CTX * THIS, INT16 idx, UBYTE emote_sprite_bank, sprit
         THIS->flags = 1;
         emote_actor = actors + *n_actor;
         emote_timer = 1;
-        load_emote(emote_sprite, emote_sprite_bank);
+        load_emote(emote_tiles, emote_tiles_bank);
     }
 
     if (emote_timer == EMOTE_TOTAL_FRAMES) {
@@ -177,7 +177,7 @@ void vm_actor_emote(SCRIPT_CTX * THIS, INT16 idx, UBYTE emote_sprite_bank, sprit
     } else {
         THIS->waitable = 1;
         emote_timer++;
-        THIS->PC -= (INSTRUCTION_SIZE + sizeof(idx) + sizeof(emote_sprite_bank) + sizeof(emote_sprite));
+        THIS->PC -= (INSTRUCTION_SIZE + sizeof(idx) + sizeof(emote_tiles_bank) + sizeof(emote_tiles));
     }
 }
 

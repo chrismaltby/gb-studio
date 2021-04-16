@@ -29,6 +29,7 @@ import {
 import { dirToXDec, dirToYDec, dirEnum } from "./helpers";
 import compileSprites from "./compileSprites";
 import compileAvatars from "./compileAvatars";
+import compileEmotes from "./compileEmotes";
 import compileFonts from "./compileFonts";
 import { precompileEngineFields } from "../helpers/engineFields";
 import {
@@ -72,6 +73,8 @@ import {
   fontSymbol,
   compileAvatarFontHeader,
   compileAvatarFont,
+  compileEmoteHeader,
+  compileEmote,
 } from "./compileData2";
 import compileSGBImage from "./sgb";
 import { readFileToTilesData } from "../tiles/tileData";
@@ -94,6 +97,7 @@ export const EVENT_MSG_PRE_IMAGES = "Preparing images...";
 export const EVENT_MSG_PRE_UI_IMAGES = "Preparing ui...";
 export const EVENT_MSG_PRE_SPRITES = "Preparing sprites...";
 export const EVENT_MSG_PRE_AVATARS = "Preparing avatars...";
+export const EVENT_MSG_PRE_EMOTES = "Preparing emotes...";
 export const EVENT_MSG_PRE_SCENES = "Preparing scenes...";
 export const EVENT_MSG_PRE_EVENTS = "Preparing events...";
 export const EVENT_MSG_PRE_MUSIC = "Preparing music...";
@@ -210,6 +214,7 @@ const compile = async (
         fonts: precompiled.usedFonts,
         sprites: precompiled.usedSprites,
         avatars: precompiled.usedAvatars,
+        emotes: precompiled.usedEmotes,
         backgrounds: precompiled.usedBackgrounds,
         strings: precompiled.strings,
         variables: precompiled.variables,
@@ -250,6 +255,7 @@ const compile = async (
             fonts: precompiled.usedFonts,
             sprites: precompiled.usedSprites,
             avatars: precompiled.usedAvatars,
+            emotes: precompiled.usedEmotes,
             backgrounds: precompiled.usedBackgrounds,
             strings: precompiled.strings,
             variables: precompiled.variables,
@@ -430,6 +436,12 @@ const compile = async (
     output[`avatar_font_${avatarFontIndex}.h`] = compileAvatarFontHeader(
       avatarFontIndex
     );
+  });
+
+  // Add emote data
+  precompiled.usedEmotes.forEach((emote, emoteIndex) => {
+    output[`emote_${emoteIndex}.c`] = compileEmote(emote, emoteIndex);
+    output[`emote_${emoteIndex}.h`] = compileEmoteHeader(emote, emoteIndex);
   });
 
   // Add scene data
@@ -619,6 +631,16 @@ const precompile = async (
     }
   );
 
+  progress(EVENT_MSG_PRE_EMOTES);
+  const { usedEmotes } = await precompileEmotes(
+    projectData.emotes,
+    projectData.scenes,
+    projectRoot,
+    {
+      warnings,
+    }
+  );
+
   progress(EVENT_MSG_PRE_MUSIC);
   const { usedMusic } = await precompileMusic(
     projectData.scenes,
@@ -681,6 +703,7 @@ const precompile = async (
     frameTiles,
     cursorTiles,
     usedAvatars,
+    usedEmotes,
     usedPalettes,
     scenePaletteIndexes,
     sceneActorPaletteIndexes,
@@ -1125,6 +1148,40 @@ export const precompileAvatars = async (
   return {
     usedAvatars: avatarData,
     avatarLookup,
+  };
+};
+
+export const precompileEmotes = async (
+  emotes,
+  scenes,
+  projectRoot,
+  { warnings } = {}
+) => {
+  const usedEmotes = [];
+  const usedEmoteLookup = {};
+  const emoteLookup = indexById(emotes);
+
+  walkScenesEvents(scenes, (event) => {
+    if (event.args) {
+      if (
+        event.args.emoteId &&
+        !usedEmoteLookup[event.args.emoteId] &&
+        emoteLookup[event.args.emoteId]
+      ) {
+        const emote = emoteLookup[event.args.emoteId];
+        usedEmotes.push(emote);
+        usedEmoteLookup[event.args.emoteId] = emote;
+      }
+    }
+  });
+
+  const emoteData = await compileEmotes(usedEmotes, projectRoot, {
+    warnings,
+  });
+
+  return {
+    usedEmotes: emoteData,
+    emoteLookup,
   };
 };
 
