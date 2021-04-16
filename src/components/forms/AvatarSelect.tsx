@@ -10,6 +10,7 @@ import {
   SingleValueWithPreview,
   SelectCommonProps,
 } from "../ui/form/Select";
+import { AvatarCanvas } from "../world/AvatarCanvas";
 
 interface AvatarSelectProps extends SelectCommonProps {
   name: string;
@@ -109,14 +110,18 @@ export const AvatarSelect: FC<AvatarSelectProps> = ({
       onChange={onSelectChange}
       formatOptionLabel={(option: AvatarOption) => {
         return (
-          <OptionLabelWithPreview preview={<div>...</div>}>
+          <OptionLabelWithPreview
+            preview={<AvatarCanvas avatarId={option.value} />}
+          >
             {option.label}
           </OptionLabelWithPreview>
         );
       }}
       components={{
         SingleValue: () => (
-          <SingleValueWithPreview preview={<div>...</div>}>
+          <SingleValueWithPreview
+            preview={<AvatarCanvas avatarId={value || ""} />}
+          >
             {currentValue?.label}
           </SingleValueWithPreview>
         ),

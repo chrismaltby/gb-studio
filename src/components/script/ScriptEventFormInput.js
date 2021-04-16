@@ -313,7 +313,7 @@ class ScriptEventFormInput extends Component {
     }
     if (type === "avatar") {
       return (
-        <AvatarSelect id={id} value={String(value)} onChange={this.onChange} />
+        <AvatarSelect id={id} value={String(value)} onChange={this.onChange} optional={field.optional} />
       );
     } 
     if (type === "operator") {

@@ -67,4 +67,10 @@ workerCtx.onmessage = async (evt) => {
   workerCtx.postMessage({ id, canvasImage }, [canvasImage]);
 };
 
-export {};
+// -----------------------------------------------------------------
+
+export default class W extends Worker {
+  constructor() {
+    super("");
+  }
+}

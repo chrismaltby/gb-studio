@@ -10,6 +10,7 @@ import {
   SingleValueWithPreview,
   SelectCommonProps,
 } from "../ui/form/Select";
+import { EmoteCanvas } from "../world/EmoteCanvas";
 
 interface EmoteSelectProps extends SelectCommonProps {
   name: string;
@@ -101,14 +102,18 @@ export const EmoteSelect: FC<EmoteSelectProps> = ({
       onChange={onSelectChange}
       formatOptionLabel={(option: EmoteOption) => {
         return (
-          <OptionLabelWithPreview preview={<div>...</div>}>
+          <OptionLabelWithPreview
+            preview={<EmoteCanvas emoteId={option.value} />}
+          >
             {option.label}
           </OptionLabelWithPreview>
         );
       }}
       components={{
         SingleValue: () => (
-          <SingleValueWithPreview preview={<div>...</div>}>
+          <SingleValueWithPreview
+            preview={<EmoteCanvas emoteId={value || ""} />}
+          >
             {currentValue?.label}
           </SingleValueWithPreview>
         ),
