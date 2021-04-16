@@ -352,6 +352,13 @@ OP_VM_COS_SCALE         = 0x2D
         .db OP_VM_COS_SCALE, #<SCALE, #>IDX_ANGLE, #<IDX_ANGLE, #>IDX, #<IDX
 .endm
 
+; --- LOAD/SAVE --------------------------------------
+
+OP_VM_SAVE_PEEK         = 0x2E
+.macro VM_SAVE_PEEK RES, DEST, SOUR, COUNT, SLOT
+        .db OP_VM_SAVE_PEEK, #<SLOT, #<COUNT, #>SOUR, #<SOUR, #>DEST, #<DEST, #>RES, #<RES
+.endm
+
 ; --- ACTOR ------------------------------------------
 
 OP_VM_ACTOR_MOVE_TO     = 0x30

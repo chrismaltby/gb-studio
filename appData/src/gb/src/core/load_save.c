@@ -25,11 +25,8 @@ typedef struct save_point_t {
 #define SAVEPOINTS_END {0, 0}
 
 const save_point_t save_points[] = {
-    // scene
-    SAVEPOINT(current_scene),
-    // actors
-    SAVEPOINT(actors),
-    SAVEPOINT(actors_active_head), SAVEPOINT(actors_inactive_head), SAVEPOINT(player_moving), SAVEPOINT(player_collision_actor),
+    // variables (must be first, need for peeking)
+    SAVEPOINT(script_memory),
     // VM contexts
     SAVEPOINT(CTXS),
     SAVEPOINT(first_ctx), SAVEPOINT(free_ctxs), SAVEPOINT(vm_lock_state),
@@ -39,6 +36,11 @@ const save_point_t save_points[] = {
     SAVEPOINT(timer_events), SAVEPOINT(timer_values),
     // music events
     SAVEPOINT(music_events),
+    // scene
+    SAVEPOINT(current_scene),
+    // actors
+    SAVEPOINT(actors),
+    SAVEPOINT(actors_active_head), SAVEPOINT(actors_inactive_head), SAVEPOINT(player_moving), SAVEPOINT(player_collision_actor),
     // terminator
     SAVEPOINTS_END
 };
@@ -94,5 +96,17 @@ UBYTE data_load(UBYTE slot) __banked {
         save_data += point->size;  
     }   
 
+    return TRUE;
+}
+
+UBYTE data_peek(UBYTE slot, UINT16 idx, UBYTE count, UINT16 * dest) __banked {
+    if (!data_is_saved(slot)) return FALSE;
+    // if zero length block is requested then just check that save exist
+    if (count) {
+        SWITCH_RAM_MBC5(0);
+        UINT16 * save_data = (UBYTE *)0xA000 + (save_blob_size * slot) + sizeof(signature);
+        // get variable (VM memory always go first)
+        memcpy(dest, save_data + idx, count << 1);
+    }
     return TRUE;
 }

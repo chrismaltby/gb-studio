@@ -13,28 +13,7 @@
 #define SGB_SCR_FREEZE 1
 #define SGB_SCR_UNFREEZE 0
 
-#define SGB_TRANSFER(A,B) map_buf[0]=(A),map_buf[1]=(B),sgb_transfer(map_buf)
-
-void transfer_tiles(unsigned char * data, size_t size, UBYTE bank) {
-    UBYTE ntiles;
-    unsigned char map_buf[20];
-    memset(map_buf, 0, sizeof(map_buf));
-    if (size > 256 * 32) ntiles = 0; else ntiles = size >> 5;
-    
-    if ((!ntiles) || (ntiles > 128U)) { 
-        SetBankedBkgData(0, 0, data, bank); 
-        if (ntiles) ntiles -= 128U; 
-        data += (128 * 32);
-    } else { 
-        SetBankedBkgData(0, ntiles << 1, data, bank); 
-        SGB_TRANSFER((SGB_CHR_TRN << 3) | 1, SGB_CHR_BLOCK0);
-        return;
-    }
-    SGB_TRANSFER((SGB_CHR_TRN << 3) | 1, SGB_CHR_BLOCK0);
-
-    SetBankedBkgData(0, ntiles << 1, data, bank); 
-    SGB_TRANSFER((SGB_CHR_TRN << 3) | 1, SGB_CHR_BLOCK1);
-}
+#define SGB_TRANSFER(A,B) map_buf[0]=(A),map_buf[1]=(B),sgb_transfer(map_buf) 
 
 void set_sgb_border(unsigned char * tiledata, size_t tiledata_size, UBYTE tiledata_bank,
                     unsigned char * tilemap,  size_t tilemap_size,  UBYTE tilemap_bank,
@@ -55,11 +34,26 @@ void set_sgb_border(unsigned char * tiledata, size_t tiledata_size, UBYTE tileda
     UBYTE i = 0U;
     for (UBYTE y = 0; y != 14U; ++y) {
         UBYTE * dout = map_buf;
-        for(UBYTE x = 0U; x != 20U; ++x, *dout++ = i++);
+        for (UBYTE x = 0U; x != 20U; ++x) {
+            *dout++ = i++;
+        }
         set_bkg_tiles(0, y, 20, 1, map_buf);
     }
+    memset(map_buf, 0, sizeof(map_buf));
 
-    transfer_tiles(tiledata, tiledata_size, tiledata_bank);
+    // transfer tile data
+    UBYTE ntiles = (tiledata_size > 256 * 32) ? 0 : tiledata_size >> 5;
+    if ((!ntiles) || (ntiles > 128U)) { 
+        SetBankedBkgData(0, 0, tiledata, tiledata_bank); 
+        SGB_TRANSFER((SGB_CHR_TRN << 3) | 1, SGB_CHR_BLOCK0);
+        if (ntiles) ntiles -= 128U; 
+        tiledata += (128 * 32);
+        SetBankedBkgData(0, ntiles << 1, tiledata, tiledata_bank); 
+        SGB_TRANSFER((SGB_CHR_TRN << 3) | 1, SGB_CHR_BLOCK1);
+    } else { 
+        SetBankedBkgData(0, ntiles << 1, tiledata, tiledata_bank); 
+        SGB_TRANSFER((SGB_CHR_TRN << 3) | 1, SGB_CHR_BLOCK0);
+    }
 
     // transfer map and palettes
     SetBankedBkgData(0, (UBYTE)(tilemap_size >> 4), tilemap, tilemap_bank);

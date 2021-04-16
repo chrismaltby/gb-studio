@@ -12,6 +12,7 @@
 #include "vm_palette.h"
 #include "vm_sgb.h"
 #include "vm_sio.h"
+#include "vm_load_save.h"
 
 // here we define all VM instructions: their handlers and parameter lengths in bytes
 // this array must be nonbanked as well as STEP_VM()
@@ -62,7 +63,7 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_poll_loaded,            2}, // 0x2B
     {vm_sin_scale,              5}, // 0x2C 
     {vm_cos_scale,              5}, // 0x2D
-    {0, 0},
+    {vm_save_peek,              8}, // 0x2E
     {0, 0},
 
     // actor instructions section
