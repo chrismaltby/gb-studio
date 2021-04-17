@@ -15,7 +15,7 @@ interface SequenceEditorProps {
   id: string,
   sequence?: number[],
   patterns?: number,
-  playbackState: number[],
+  playingSequence: number,
   height: number
 }
 
@@ -53,10 +53,10 @@ const AddSequenceButton = styled.button`
   }
 `;
 
-export const SequenceEditor = ({
+export const SequenceEditorFwd = ({
   sequence,
   patterns,
-  playbackState,
+  playingSequence,
   height
 }: SequenceEditorProps) => {
   const dispatch = useDispatch();
@@ -78,8 +78,8 @@ export const SequenceEditor = ({
     (state: RootState) => state.tracker.playing
   );
 
-  if (play && playbackState && playbackState[0] !== -1) {
-    setSequenceId(playbackState[0]);
+  if (play && playingSequence !== -1) {
+    setSequenceId(playingSequence);
   }
 
   const sequenceOptions:SequenceOption[] = Array.from(Array(patterns||0).keys()).map((i) => ({
@@ -133,7 +133,7 @@ export const SequenceEditor = ({
           <SequenceItem
             onClick={() => setSequenceId(i)}
             selected={i === sequenceId}
-            active={playbackState[0] === i}
+            active={playingSequence === i}
           >
             <div style={{padding: "0 0 2px 2px"}}>{i}:</div> 
             <Select
@@ -154,3 +154,5 @@ export const SequenceEditor = ({
     </div>
   )
 }
+
+export const SequenceEditor = React.memo(SequenceEditorFwd);

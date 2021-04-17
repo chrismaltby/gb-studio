@@ -351,7 +351,7 @@ export const SongTracker = ({
           id={id}
           sequence={song?.sequence}
           patterns={song?.patterns.length}
-          playbackState={playbackState}
+          playingSequence={playbackState[0]}
           height={height}
         />
       </div>
