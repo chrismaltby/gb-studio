@@ -4,8 +4,8 @@ const id = "EVENT_MUSIC_STOP";
 
 const fields = [
   {
-    label: l10n("FIELD_STOP_MUSIC")
-  }
+    label: l10n("FIELD_STOP_MUSIC"),
+  },
 ];
 
 const compile = (input, helpers) => {
@@ -16,5 +16,6 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   fields,
-  compile
+  compile,
+  allowedBeforeInitFade: true,
 };

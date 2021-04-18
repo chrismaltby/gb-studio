@@ -6,14 +6,14 @@ const fields = [
   {
     key: "musicId",
     type: "music",
-    defaultValue: "LAST_MUSIC"
+    defaultValue: "LAST_MUSIC",
   },
   {
     key: "loop",
     label: l10n("FIELD_LOOP"),
     type: "checkbox",
-    defaultValue: true
-  }
+    defaultValue: true,
+  },
 ];
 
 const compile = (input, helpers) => {
@@ -24,5 +24,6 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   fields,
-  compile
+  compile,
+  allowedBeforeInitFade: true,
 };
