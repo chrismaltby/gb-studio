@@ -66,6 +66,7 @@ const NoValue = styled.div`
 `;
 
 export const PaletteSelectButton: FC<PaletteSelectProps> = ({
+  name,
   value,
   type,
   onChange,
@@ -169,6 +170,7 @@ export const PaletteSelectButton: FC<PaletteSelectProps> = ({
         onClick={openMenu}
         onFocus={onButtonFocus}
         onBlur={onButtonBlur}
+        title={palette.name}
       >
         {palette ? (
           <PaletteBlock type={type} colors={palette?.colors || []} size={22} />
