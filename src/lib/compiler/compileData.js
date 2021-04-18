@@ -1364,7 +1364,6 @@ export const precompileScenes = (
     });
 
     const sceneSpriteIds = [].concat(
-      playerSpriteSheetId,
       actorSpriteIds,
       eventSpriteIds
     );
