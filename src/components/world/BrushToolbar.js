@@ -106,6 +106,8 @@ class BrushToolbar extends Component {
       this.setSelectedPalette(4)(e);
     } else if (e.code === "Digit6") {
       this.setSelectedPalette(5)(e);
+    } else if (e.code === "Digit7") {
+      this.setSelectedPalette(6)(e);      
     } else if (e.code === "Digit8") {
       this.setBrush(BRUSH_8PX)(e);
     } else if (e.code === "Digit9") {
