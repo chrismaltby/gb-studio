@@ -1,3 +1,4 @@
+import { DMG_PALETTE } from "../../../consts";
 import { colorizeSpriteData, chromaKeyData } from "../../../lib/helpers/color";
 import { ObjPalette } from "../../../store/features/entities/entitiesTypes";
 
@@ -21,26 +22,28 @@ workerCtx.onmessage = async (evt) => {
   const flipX = evt.data.flipX;
   const flipY = evt.data.flipY;
   const palette = evt.data.palette;
+  const palettes: [string, string, string, string][] = evt.data.palettes;
+  const key = JSON.stringify({ src, palettes });
 
   let canvas: OffscreenCanvas;
   let ctx: OffscreenCanvasRenderingContext2D;
   let img: ImageBitmap;
   let tilesCanvas: OffscreenCanvas;
-  let tilesCanvases: Record<ObjPalette, OffscreenCanvas>;
+  let tilesCanvases: Record<ObjPalette | number, OffscreenCanvas>;
 
-  if (cache[src]) {
+  if (cache[key]) {
     // Using Cached Data
-    img = cache[src].img;
-    tilesCanvases = cache[src].tilesCanvases;
+    img = cache[key].img;
+    tilesCanvases = cache[key].tilesCanvases;
   } else {
     const imgblob = await fetch(src).then((r) => r.blob());
     img = await createImageBitmap(imgblob);
-   tilesCanvas = new OffscreenCanvas(img.width, img.height);
+    tilesCanvas = new OffscreenCanvas(img.width, img.height);
     const tilesCanvasCtx = tilesCanvas.getContext("2d");
     if (!tilesCanvasCtx) {
       return;
     }
-   tilesCanvasCtx.drawImage(img, 0, 0);
+    tilesCanvasCtx.drawImage(img, 0, 0);
     // Remove transparency
     const tileImageData = tilesCanvasCtx.getImageData(
       0,
@@ -70,7 +73,26 @@ workerCtx.onmessage = async (evt) => {
       ctx.putImageData(imageDataCopy, 0, 0);
     });
 
-    cache[src] = {
+    if (palettes) {
+      [0, 1, 2, 3, 4, 5, 6, 7].forEach((i) => {
+        tilesCanvases[i] = new OffscreenCanvas(img.width, img.height);
+        const colors = palettes[i] || DMG_PALETTE.colors;
+        const canvas = tilesCanvases[i];
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          return;
+        }
+        const imageDataCopy = new ImageData(
+          new Uint8ClampedArray(tileImageData.data),
+          tileImageData.width,
+          tileImageData.height
+        );
+        colorizeSpriteData(imageDataCopy.data, null, colors);
+        ctx.putImageData(imageDataCopy, 0, 0);
+      });
+    }
+
+    cache[key] = {
       img,
       tilesCanvases,
     };
@@ -90,7 +112,7 @@ workerCtx.onmessage = async (evt) => {
   }
 
   // Draw Tiles
-  for (let tile of tiles) {
+  for (const tile of tiles) {
     ctx.save();
     if (tile.flipX) {
       ctx.translate((width - 8) / 2, 0);
@@ -102,8 +124,16 @@ workerCtx.onmessage = async (evt) => {
       ctx.scale(1, -1);
       ctx.translate(0, -(height - 8));
     }
+    const coloredCanvas =
+      (palettes && tilesCanvases[tile.paletteIndex]) ||
+      tilesCanvases[(tile.objPalette || "OBP0") as ObjPalette];
+
+    if (!coloredCanvas) {
+      continue;
+    }
+
     ctx.drawImage(
-      tilesCanvases[(tile.objPalette || "OBP0") as ObjPalette],
+      coloredCanvas,
       tile.sliceX,
       tile.sliceY,
       8,

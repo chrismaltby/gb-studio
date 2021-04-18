@@ -79,6 +79,7 @@ const SettingsPage: FC = () => {
     defaultUIPaletteId,
     defaultSpritePaletteId,
     defaultBackgroundPaletteIds,
+    defaultSpritePaletteIds,
     defaultFontId,
     defaultCharacterEncoding,
     defaultPlayerSprites,
@@ -118,10 +119,33 @@ const SettingsPage: FC = () => {
           paletteIds[3],
           paletteIds[4],
           paletteIds[5],
+          paletteIds[6],
         ],
       });
     },
     [defaultBackgroundPaletteIds, editSettings]
+  );
+
+  const onEditSpritePaletteId = useCallback(
+    (index: number, e: any) => {
+      const paletteIds = defaultSpritePaletteIds
+        ? [...defaultSpritePaletteIds]
+        : [];
+      paletteIds[index] = castEventValue(e);
+      editSettings({
+        defaultSpritePaletteIds: [
+          paletteIds[0],
+          paletteIds[1],
+          paletteIds[2],
+          paletteIds[3],
+          paletteIds[4],
+          paletteIds[5],
+          paletteIds[6],
+          paletteIds[7],
+        ],
+      });
+    },
+    [defaultSpritePaletteIds, editSettings]
   );
 
   const onEditDefaultPlayerSprites = useCallback(
@@ -215,12 +239,12 @@ const SettingsPage: FC = () => {
                 <SettingRowLabel>Default Background Palettes</SettingRowLabel>
                 <SettingRowInput>
                   <div key={JSON.stringify(defaultBackgroundPaletteIds)}>
-                    {[0, 1, 2, 3, 4, 5].map((index) => (
+                    {[0, 1, 2, 3, 4, 5, 6].map((index) => (
                       <FormField
                         key={index}
                         style={{
                           padding: 0,
-                          paddingBottom: index === 5 ? 0 : 3,
+                          paddingBottom: index === 6 ? 0 : 3,
                         }}
                       >
                         <PaletteSelect
@@ -240,25 +264,40 @@ const SettingsPage: FC = () => {
                   </div>
                 </SettingRowInput>
               </SearchableSettingRow>
+
               <SearchableSettingRow
                 searchTerm={searchTerm}
-                searchMatches={["Default Sprite Palette"]}
+                searchMatches={["Default Sprite Palettes"]}
               >
-                <SettingRowLabel>Default Sprite Palette</SettingRowLabel>
+                <SettingRowLabel>Default Sprite Palettes</SettingRowLabel>
                 <SettingRowInput>
-                  <FormField
-                    style={{
-                      padding: 0,
-                    }}
-                  >
-                    <PaletteSelect
-                      id="scenePalette"
-                      value={defaultSpritePaletteId || ""}
-                      onChange={onEditSetting("defaultSpritePaletteId")}
-                    />
-                  </FormField>
+                  <div key={JSON.stringify(defaultSpritePaletteIds)}>
+                    {[0, 1, 2, 3, 4, 5, 6, 7].map((index) => (
+                      <FormField
+                        key={index}
+                        style={{
+                          padding: 0,
+                          paddingBottom: index === 7 ? 0 : 3,
+                        }}
+                      >
+                        <PaletteSelect
+                          id="scenePalette"
+                          prefix={`${index + 1}: `}
+                          value={
+                            (defaultSpritePaletteIds &&
+                              defaultSpritePaletteIds[index]) ||
+                            ""
+                          }
+                          onChange={(e: string) => {
+                            onEditSpritePaletteId(index, e);
+                          }}
+                        />
+                      </FormField>
+                    ))}
+                  </div>
                 </SettingRowInput>
               </SearchableSettingRow>
+
               <SearchableSettingRow
                 searchTerm={searchTerm}
                 searchMatches={["Default UI Palette"]}

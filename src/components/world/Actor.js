@@ -25,7 +25,7 @@ class Actor extends Component {
   };
 
   render() {
-    const { actor, selected, showSprite, palette } = this.props;
+    const { actor, selected, showSprite, palette, palettes } = this.props;
     const { x, y, spriteSheetId, direction, spriteType, frame } = actor;
     return (
       <>
@@ -44,6 +44,7 @@ class Actor extends Component {
               direction={direction}
               frame={spriteType === SPRITE_TYPE_STATIC ? frame : 0}
               palette={palette}
+              palettes={palettes}
               offsetPosition
             />
           )}

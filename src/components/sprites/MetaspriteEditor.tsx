@@ -5,6 +5,8 @@ import { RootState } from "../../store/configureStore";
 import {
   metaspriteSelectors,
   metaspriteTileSelectors,
+  paletteSelectors,
+  sceneSelectors,
   spriteAnimationSelectors,
   spriteSheetSelectors,
 } from "../../store/features/entities/entitiesState";
@@ -155,6 +157,9 @@ const MetaspriteEditor = ({
   const showSpriteGrid = useSelector(
     (state: RootState) => state.editor.showSpriteGrid
   );
+  const colorsEnabled = useSelector(
+    (state: RootState) => state.project.present.settings.customColorsEnabled
+  );
   const spriteSheet = useSelector((state: RootState) =>
     spriteSheetSelectors.selectById(state, spriteSheetId)
   );
@@ -189,6 +194,18 @@ const MetaspriteEditor = ({
   const [selectionRect, setSelectionRect] = useState<
     SelectionRect | undefined
   >();
+  const previewAsSceneId = useSelector(
+    (state: RootState) => state.editor.previewAsSceneId
+  );
+  const scene = useSelector((state: RootState) =>
+    sceneSelectors.selectById(state, previewAsSceneId)
+  );
+  const palettesLookup = useSelector((state: RootState) =>
+    paletteSelectors.selectEntities(state)
+  );
+  const defaultSpritePaletteIds = useSelector(
+    (state: RootState) => state.project.present.settings.defaultSpritePaletteIds
+  );
   const [draggingSelection, setDraggingSelection] = useState(false);
   const [draggingMetasprite, setDraggingMetasprite] = useState(false);
   const dragMetasprites = useRef<MetaspriteSelection[]>([]);
@@ -680,6 +697,24 @@ const MetaspriteEditor = ({
     return () => {};
   }, [hidden, metasprite?.tiles]);
 
+  const getTilePalette = useCallback(
+    (metaspriteTile: MetaspriteTile) => {
+      if (!colorsEnabled) {
+        return undefined;
+      }
+      if (!scene) {
+        return palettesLookup[
+          defaultSpritePaletteIds[metaspriteTile.paletteIndex]
+        ];
+      }
+      return palettesLookup[
+        scene.spritePaletteIds?.[metaspriteTile.paletteIndex] ||
+          defaultSpritePaletteIds[metaspriteTile.paletteIndex]
+      ];
+    },
+    [scene, defaultSpritePaletteIds, palettesLookup, colorsEnabled]
+  );
+
   if (!metasprite) {
     return null;
   }
@@ -743,6 +778,7 @@ const MetaspriteEditor = ({
                   flipX={metaspriteTile.flipX}
                   flipY={metaspriteTile.flipY}
                   objPalette={metaspriteTile.objPalette}
+                  palette={getTilePalette(metaspriteTile)}
                 />
               </MetaspriteDraggableTile>
             ))}

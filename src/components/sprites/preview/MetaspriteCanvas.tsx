@@ -8,12 +8,17 @@ import {
   metaspriteTileSelectors,
   spriteSheetSelectors,
 } from "../../../store/features/entities/entitiesState";
+import {
+  MetaspriteTile,
+  Palette,
+} from "../../../store/features/entities/entitiesTypes";
 import MetaspriteCanvasWorker from "./MetaspriteCanvas.worker";
 
 interface MetaspriteCanvasProps {
   spriteSheetId: string;
   metaspriteId: string;
   flipX?: boolean;
+  palettes?: Palette[];
 }
 
 const worker = new MetaspriteCanvasWorker();
@@ -22,8 +27,13 @@ export const MetaspriteCanvas = ({
   spriteSheetId,
   metaspriteId,
   flipX = false,
+  palettes,
 }: MetaspriteCanvasProps) => {
   const [workerId] = useState(Math.random());
+  const [tiles, setTiles] = useState<MetaspriteTile[]>([]);
+  const [paletteColors, setPaletteColors] = useState<
+    [string, string, string, string][] | null
+  >(null);
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const spriteSheet = useSelector((state: RootState) =>
     spriteSheetSelectors.selectById(state, spriteSheetId)
@@ -37,9 +47,20 @@ export const MetaspriteCanvas = ({
   const projectRoot = useSelector((state: RootState) => state.document.root);
   const width = spriteSheet?.canvasWidth || 0;
   const height = spriteSheet?.canvasHeight || 0;
-  const tiles = metasprite?.tiles
-    ?.map((tileId) => tilesLookup[tileId])
-    .filter((i) => i);
+
+  // Cache metasprite tiles
+  useEffect(() => {
+    const tiles =
+      (metasprite?.tiles
+        ?.map((tileId) => tilesLookup[tileId])
+        .filter((i) => i) as MetaspriteTile[]) || [];
+    setTiles(tiles);
+  }, [metasprite, tilesLookup]);
+
+  // Cache scene palettes
+  useEffect(() => {
+    setPaletteColors(palettes ? palettes.map((p) => p.colors) : null);
+  }, [palettes]);
 
   const onWorkerComplete = useCallback((e: any) => {
     if (e.data.id === workerId) {
@@ -87,8 +108,19 @@ export const MetaspriteCanvas = ({
       tiles,
       flipX,
       palette: DMG_PALETTE.colors,
+      palettes: paletteColors,
     });
-  }, [canvasRef, spriteSheet, width, height, tiles, projectRoot, workerId]);
+  }, [
+    canvasRef,
+    spriteSheet,
+    paletteColors,
+    tiles,
+    width,
+    height,
+    flipX,
+    projectRoot,
+    workerId,
+  ]);
 
   return (
     <canvas

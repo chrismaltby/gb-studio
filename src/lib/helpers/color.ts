@@ -77,12 +77,15 @@ export const indexSpriteColour = (g: number, objPalette: ObjPalette) => {
 
 export const colorizeSpriteData = (
   mutData: Uint8ClampedArray,
-  objPalette: ObjPalette,
+  objPalette: ObjPalette | null,
   palette: string[]
 ) => {
   const paletteRGB = palette.map(hex2GBCrgb);
   for (let index = 0; index < mutData.length; index += 4) {
-    const colorIndex = indexSpriteColour(mutData[index + 1], objPalette);
+    const colorIndex = indexSpriteColour(
+      mutData[index + 1],
+      objPalette || "OBP0"
+    );
     const color = paletteRGB[colorIndex];
     if (
       mutData[index + 1] === 255 ||

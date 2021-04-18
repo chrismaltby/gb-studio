@@ -4,7 +4,10 @@ import { DMG_PALETTE } from "../../../consts";
 import { assetFilename } from "../../../lib/helpers/gbstudio";
 import { RootState } from "../../../store/configureStore";
 import { spriteSheetSelectors } from "../../../store/features/entities/entitiesState";
-import { ObjPalette } from "../../../store/features/entities/entitiesTypes";
+import {
+  ObjPalette,
+  Palette,
+} from "../../../store/features/entities/entitiesTypes";
 import SpriteSliceCanvasWorker from "./SpriteSliceCanvas.worker";
 
 interface SpriteSliceCanvasProps {
@@ -16,6 +19,7 @@ interface SpriteSliceCanvasProps {
   flipX?: boolean;
   flipY?: boolean;
   objPalette: ObjPalette;
+  palette?: Palette;
 }
 
 const worker = new SpriteSliceCanvasWorker();
@@ -29,6 +33,7 @@ export const SpriteSliceCanvas = ({
   flipX,
   flipY,
   objPalette,
+  palette,
 }: SpriteSliceCanvasProps) => {
   const [workerId] = useState(Math.random());
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
@@ -67,8 +72,8 @@ export const SpriteSliceCanvas = ({
       height,
       flipX,
       flipY,
-      objPalette,
-      palette: DMG_PALETTE.colors,
+      objPalette: palette ? "OBP0" : objPalette,
+      palette: (palette || DMG_PALETTE).colors,
     });
   }, [
     canvasRef,
@@ -80,6 +85,7 @@ export const SpriteSliceCanvas = ({
     flipX,
     flipY,
     objPalette,
+    palette,
     projectRoot,
     workerId,
   ]);

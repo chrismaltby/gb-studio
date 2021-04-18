@@ -218,6 +218,7 @@ export type Scene = {
   height: number;
   backgroundId: string;
   paletteIds: string[];
+  spritePaletteIds: string[];
   collisions: number[];
   actors: string[];
   triggers: string[];

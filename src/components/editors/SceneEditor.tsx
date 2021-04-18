@@ -47,6 +47,7 @@ import ParallaxSelect, {
   defaultValues as parallaxDefaultValues,
 } from "../forms/ParallaxSelect";
 import { SpriteSheetSelectButton } from "../forms/SpriteSheetSelectButton";
+import styled from "styled-components";
 
 interface SceneEditorProps {
   id: string;
@@ -65,6 +66,20 @@ interface ScriptHandlers {
     hit3: ScriptHandler;
   };
 }
+
+const PaletteButtons = styled.div`
+  display: flex;
+  width: 100%;
+  box-sizing: border-box;
+
+  & > * {
+    margin-right: 5px;
+  }
+
+  & > *:last-child {
+    margin-right: 0px;
+  }
+`;
 
 const defaultTabs = {
   start: l10n("SIDEBAR_ON_INIT"),
@@ -110,6 +125,10 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
   const defaultBackgroundPaletteIds = useSelector(
     (state: RootState) =>
       state.project.present.settings.defaultBackgroundPaletteIds || []
+  );
+  const defaultSpritePaletteIds = useSelector(
+    (state: RootState) =>
+      state.project.present.settings.defaultSpritePaletteIds || []
   );
   const defaultPlayerSprites = useSelector(
     (state: RootState) => state.project.present.settings.defaultPlayerSprites
@@ -262,6 +281,14 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
     onChangeField("paletteIds")(paletteIds);
   };
 
+  const onEditSpritePaletteId = (index: number) => (paletteId: string) => {
+    const spritePaletteIds = scene.spritePaletteIds
+      ? [...scene.spritePaletteIds]
+      : [];
+    spritePaletteIds[index] = paletteId;
+    onChangeField("spritePaletteIds")(spritePaletteIds);
+  };
+
   const scripts = {
     start: {
       value: scene.script,
@@ -387,34 +414,6 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
                   includeInfo
                 />
               </FormField>
-              {colorsEnabled && (
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr 1fr 1fr",
-                    gridTemplateRows: "1fr 1fr",
-                    gap: 5,
-                    marginTop: 18,
-                    flexShrink: 0,
-                  }}
-                >
-                  {[0, 1, 2, 3, 4, 5].map((index) => (
-                    <PaletteSelectButton
-                      key={index}
-                      name={`scenePalette${index}`}
-                      value={
-                        (scene.paletteIds && scene.paletteIds[index]) || ""
-                      }
-                      onChange={onEditPaletteId(index)}
-                      optional
-                      optionalDefaultPaletteId={
-                        defaultBackgroundPaletteIds[index] || ""
-                      }
-                      optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
-                    />
-                  ))}
-                </div>
-              )}
             </FormRow>
 
             <FormRow>
@@ -439,6 +438,65 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
             </FormRow>
 
             <FormDivider />
+
+            {colorsEnabled && (
+              <>
+                <FormRow>
+                  <FormField
+                    name="playerSpriteSheetId"
+                    label={l10n("FIELD_SCENE_BACKGROUND_PALETTES")}
+                  >
+                    <PaletteButtons>
+                      {[0, 1, 2, 3, 4, 5, 6].map((index) => (
+                        <PaletteSelectButton
+                          key={index}
+                          name={`scenePalette${index}`}
+                          value={
+                            (scene.paletteIds && scene.paletteIds[index]) || ""
+                          }
+                          onChange={onEditPaletteId(index)}
+                          optional
+                          optionalDefaultPaletteId={
+                            defaultBackgroundPaletteIds[index] || ""
+                          }
+                          optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
+                        />
+                      ))}
+                    </PaletteButtons>
+                  </FormField>
+                </FormRow>
+
+                <FormRow>
+                  <FormField
+                    name="playerSpriteSheetId"
+                    label={l10n("FIELD_SCENE_SPRITE_PALETTES")}
+                  >
+                    <PaletteButtons>
+                      {[0, 1, 2, 3, 4, 5, 6, 7].map((index) => (
+                        <PaletteSelectButton
+                          key={index}
+                          name={`scenePalette${index}`}
+                          type="sprite"
+                          value={
+                            (scene.spritePaletteIds &&
+                              scene.spritePaletteIds[index]) ||
+                            ""
+                          }
+                          onChange={onEditSpritePaletteId(index)}
+                          optional
+                          optionalDefaultPaletteId={
+                            defaultSpritePaletteIds[index] || ""
+                          }
+                          optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
+                        />
+                      ))}
+                    </PaletteButtons>
+                  </FormField>
+                </FormRow>
+
+                <FormDivider />
+              </>
+            )}
 
             <FormRow>
               <FormField name="type" label={l10n("FIELD_TYPE")}>

@@ -106,6 +106,7 @@ export interface EditorState {
   showSpriteBoundingBox: boolean;
   replaceSpriteTileMode: boolean;
   parallaxHoverLayer: number | undefined;
+  previewAsSceneId: string;
 }
 
 export const initialState: EditorState = {
@@ -163,6 +164,7 @@ export const initialState: EditorState = {
   showSpriteBoundingBox: false,
   replaceSpriteTileMode: false,
   parallaxHoverLayer: undefined,
+  previewAsSceneId: "",
 };
 
 const editorSlice = createSlice({
@@ -241,6 +243,7 @@ const editorSlice = createSlice({
     selectScene: (state, action: PayloadAction<{ sceneId: string }>) => {
       state.type = "scene";
       state.scene = action.payload.sceneId;
+      state.previewAsSceneId = action.payload.sceneId;
       state.worldFocus = true;
     },
 
@@ -265,6 +268,7 @@ const editorSlice = createSlice({
     ) => {
       state.type = "actor";
       state.scene = action.payload.sceneId;
+      state.previewAsSceneId = action.payload.sceneId;
       state.entityId = action.payload.actorId;
       state.worldFocus = true;
       state.tool = "select";
@@ -276,6 +280,7 @@ const editorSlice = createSlice({
     ) => {
       state.type = "trigger";
       state.scene = action.payload.sceneId;
+      state.previewAsSceneId = action.payload.sceneId;
       state.entityId = action.payload.triggerId;
       state.worldFocus = true;
       state.tool = "select";
@@ -596,8 +601,15 @@ const editorSlice = createSlice({
       state.replaceSpriteTileMode = action.payload;
     },
 
-    setParallaxHoverLayer: (state, action: PayloadAction<number|undefined>) => {
+    setParallaxHoverLayer: (
+      state,
+      action: PayloadAction<number | undefined>
+    ) => {
       state.parallaxHoverLayer = action.payload;
+    },
+
+    setPreviewAsSceneId: (state, action: PayloadAction<string>) => {
+      state.previewAsSceneId = action.payload;
     },
   },
   extraReducers: (builder) =>

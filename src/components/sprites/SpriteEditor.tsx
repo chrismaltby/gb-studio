@@ -72,6 +72,9 @@ export const SpriteEditor = ({
   metaspriteId,
   animationId,
 }: SpriteEditorProps) => {
+  const colorsEnabled = useSelector(
+    (state: RootState) => state.project.present.settings.customColorsEnabled
+  );
   const sprite = useSelector((state: RootState) =>
     spriteSheetSelectors.selectById(state, id)
   );
@@ -444,15 +447,17 @@ export const SpriteEditor = ({
                 </FormField>
               </FormRow>
 
-              <FormRow>
-                <FormField name="paletteIndex" label="Color Palette">
-                  <PaletteIndexSelect
-                    name="paletteIndex"
-                    value={metaspriteTile.paletteIndex}
-                    onChange={onChangeTilesFields("paletteIndex")}
-                  />
-                </FormField>
-              </FormRow>
+              {colorsEnabled && (
+                <FormRow>
+                  <FormField name="paletteIndex" label="Color Palette">
+                    <PaletteIndexSelect
+                      name="paletteIndex"
+                      value={metaspriteTile.paletteIndex}
+                      onChange={onChangeTilesFields("paletteIndex")}
+                    />
+                  </FormField>
+                </FormRow>
+              )}
 
               {selectedTileIds.length === 1 && (
                 <>

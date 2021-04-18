@@ -16,7 +16,7 @@
 #define TEXT_BKG_FILL_B 0xffu
 #define TEXT_MAX_LENGTH 255
 
-#define UI_PALETTE 0
+#define UI_PALETTE 7
 
 #define MENU_OPEN_Y 112
 #define WIN_LEFT_X 7

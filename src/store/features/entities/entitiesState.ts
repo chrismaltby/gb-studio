@@ -745,6 +745,7 @@ const addScene: CaseReducer<
       height: Math.max(MIN_SCENE_HEIGHT, background?.height || 0),
       type: "TOPDOWN",
       paletteIds: [],
+      spritePaletteIds: [],
       collisions: [],
       script: [],
       playerHit1Script: [],

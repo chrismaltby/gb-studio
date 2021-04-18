@@ -39,6 +39,8 @@ export interface SelectCommonProps {
   controlShouldRenderValue?: boolean;
   isClearable?: boolean;
   onBlur?: () => void;
+  maxMenuHeight?: number;
+  menuPlacement?: "auto" | "bottom" | "top";
   menuPortalTarget?: HTMLElement | null;
   components?: any;
 }

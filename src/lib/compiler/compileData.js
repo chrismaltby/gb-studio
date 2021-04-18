@@ -922,6 +922,14 @@ export const precompilePalettes = async (
     return palettesLookup[id] || palettesLookup[fallbackId] || DMG_PALETTE;
   };
 
+  const getSpritePalette = (id, fallbackId) => {
+    const p = getPalette(id, fallbackId);
+    return {
+      ...p,
+      colors: [p.colors[0], p.colors[0], p.colors[1], p.colors[3]],
+    };
+  };
+
   // Background palettes
 
   for (let i = 0; i < scenes.length; i++) {
@@ -989,14 +997,38 @@ export const precompilePalettes = async (
       colors:
         settings.customColorsEnabled &&
         [
-          getPalette(sceneSpritePaletteIds[0], defaultSpritePaletteIds[0]),
-          getPalette(sceneSpritePaletteIds[1], defaultSpritePaletteIds[1]),
-          getPalette(sceneSpritePaletteIds[2], defaultSpritePaletteIds[2]),
-          getPalette(sceneSpritePaletteIds[3], defaultSpritePaletteIds[3]),
-          getPalette(sceneSpritePaletteIds[4], defaultSpritePaletteIds[4]),
-          getPalette(sceneSpritePaletteIds[5], defaultSpritePaletteIds[5]),
-          getPalette(sceneSpritePaletteIds[6], defaultSpritePaletteIds[6]),
-          getPalette(sceneSpritePaletteIds[7], defaultSpritePaletteIds[7]),
+          getSpritePalette(
+            sceneSpritePaletteIds[0],
+            defaultSpritePaletteIds[0]
+          ),
+          getSpritePalette(
+            sceneSpritePaletteIds[1],
+            defaultSpritePaletteIds[1]
+          ),
+          getSpritePalette(
+            sceneSpritePaletteIds[2],
+            defaultSpritePaletteIds[2]
+          ),
+          getSpritePalette(
+            sceneSpritePaletteIds[3],
+            defaultSpritePaletteIds[3]
+          ),
+          getSpritePalette(
+            sceneSpritePaletteIds[4],
+            defaultSpritePaletteIds[4]
+          ),
+          getSpritePalette(
+            sceneSpritePaletteIds[5],
+            defaultSpritePaletteIds[5]
+          ),
+          getSpritePalette(
+            sceneSpritePaletteIds[6],
+            defaultSpritePaletteIds[6]
+          ),
+          getSpritePalette(
+            sceneSpritePaletteIds[7],
+            defaultSpritePaletteIds[7]
+          ),
         ].map((p) => p.colors),
     };
 

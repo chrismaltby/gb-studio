@@ -446,20 +446,6 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
                   includeInfo
                 />
               </FormField>
-
-              {colorsEnabled && (
-                <div style={{ marginTop: 18 }}>
-                  <PaletteSelectButton
-                    name="actorPalette"
-                    type="sprite"
-                    value={actor.paletteId}
-                    onChange={onChangeField("paletteId")}
-                    optional
-                    optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
-                    optionalDefaultPaletteId={defaultSpritePaletteId}
-                  />
-                </div>
-              )}
             </FormRow>
             <FormRow>
               {showDirectionInput && (

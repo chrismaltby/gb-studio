@@ -38,6 +38,8 @@ const dmgPalettes = [
   DMG_PALETTE,
   DMG_PALETTE,
   DMG_PALETTE,
+  DMG_PALETTE,
+  DMG_PALETTE,
 ];
 
 class Scene extends Component {
@@ -130,6 +132,7 @@ class Scene extends Component {
       selected,
       hovered,
       palettes,
+      spritePalettes,
       sceneFiltered,
       showEntities,
       showCollisions,
@@ -282,7 +285,7 @@ class Scene extends Component {
             ))}
           {showEntities &&
             actors.map((actorId) => (
-              <Actor key={actorId} id={actorId} sceneId={id} />
+              <Actor key={actorId} id={actorId} sceneId={id} palettes={spritePalettes} />
             ))}
           {event && (
             <div className="Scene__EventHelper">
@@ -435,8 +438,35 @@ function mapStateToProps(state, props) {
         getPalette(3),
         getPalette(4),
         getPalette(5),
+        getPalette(6),
       ])
     : dmgPalettes;
+
+  const defaultSpritePaletteIds =
+    settings.defaultSpritePaletteIds || [];
+  const sceneSpritePaletteIds = scene.spritePaletteIds || [];
+
+  const getSpritePalette = (paletteIndex) => {
+    if(sceneSpritePaletteIds[paletteIndex] === "dmg") {
+      return DMG_PALETTE;
+    }
+    return palettesLookup[sceneSpritePaletteIds[paletteIndex]]
+      || palettesLookup[defaultSpritePaletteIds[paletteIndex]]
+      || DMG_PALETTE;
+  }
+
+  const spritePalettes = gbcEnabled
+    ? getCachedObject([
+        getSpritePalette(0),
+        getSpritePalette(1),
+        getSpritePalette(2),
+        getSpritePalette(3),
+        getSpritePalette(4),
+        getSpritePalette(5),
+        getSpritePalette(6),
+        getSpritePalette(7),
+      ])
+    : null;
 
   return {
     scene,
@@ -454,6 +484,7 @@ function mapStateToProps(state, props) {
     sceneName,
     sceneFiltered,
     palettes,
+    spritePalettes,
     showEntities,
     showCollisions,
     labelOffsetLeft,

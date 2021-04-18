@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { RootState } from "../../store/configureStore";
 import {
+  sceneSelectors,
   spriteAnimationSelectors,
   spriteSheetSelectors,
 } from "../../store/features/entities/entitiesState";
@@ -17,6 +18,7 @@ interface SpriteSheetCanvasProps {
   direction?: ActorDirection;
   frame?: number;
   palette?: Palette;
+  palettes?: Palette[];
   offsetPosition?: boolean;
 }
 
@@ -30,12 +32,13 @@ const SpriteSheetCanvas = ({
   spriteSheetId,
   direction = "down",
   frame = 0,
-  palette,
+  palettes,
   offsetPosition,
 }: SpriteSheetCanvasProps) => {
   const sprite = useSelector((state: RootState) =>
     spriteSheetSelectors.selectById(state, spriteSheetId)
   );
+
   const animations = sprite?.animations || [];
 
   // Determine animation to use based on type
@@ -81,6 +84,7 @@ const SpriteSheetCanvas = ({
       <MetaspriteCanvas
         spriteSheetId={spriteSheetId}
         metaspriteId={metaspriteId}
+        palettes={palettes}
         flipX={flipX}
       />
     </Wrapper>

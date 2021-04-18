@@ -1,6 +1,19 @@
-import React, { FC } from "react";
+import React, { FC, useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { DMG_PALETTE } from "../../consts";
 import l10n from "../../lib/helpers/l10n";
-import { Select } from "../ui/form/Select";
+import { RootState } from "../../store/configureStore";
+import {
+  paletteSelectors,
+  sceneSelectors,
+} from "../../store/features/entities/entitiesState";
+import { Palette } from "../../store/features/entities/entitiesTypes";
+import PaletteBlock from "../library/PaletteBlock";
+import {
+  OptionLabelWithPreview,
+  Select,
+  SingleValueWithPreview,
+} from "../ui/form/Select";
 
 interface PaletteIndexSelectProps {
   name: string;
@@ -11,19 +24,50 @@ interface PaletteIndexSelectProps {
 interface PaletteIndexOption {
   value: number;
   label: string;
+  palette?: Palette;
 }
-
-const options: PaletteIndexOption[] = Array.from(Array(8)).map((_, index) => ({
-  value: index,
-  label: l10n("TOOL_PALETTE_N", { number: index + 1 }),
-}));
 
 export const PaletteIndexSelect: FC<PaletteIndexSelectProps> = ({
   name,
   value,
   onChange,
 }) => {
-  const currentValue = options.find((o) => o.value === value);
+  const [options, setOptions] = useState<PaletteIndexOption[]>([]);
+  const [currentValue, setCurrentValue] = useState<PaletteIndexOption>();
+
+  const previewAsSceneId = useSelector(
+    (state: RootState) => state.editor.previewAsSceneId
+  );
+  const scene = useSelector((state: RootState) =>
+    sceneSelectors.selectById(state, previewAsSceneId)
+  );
+  const palettesLookup = useSelector((state: RootState) =>
+    paletteSelectors.selectEntities(state)
+  );
+  const defaultSpritePaletteIds = useSelector(
+    (state: RootState) => state.project.present.settings.defaultSpritePaletteIds
+  );
+
+  useEffect(() => {
+    setOptions(
+      Array.from(Array(8)).map((_, index) => ({
+        value: index,
+        label: l10n("TOOL_PALETTE_N", { number: index + 1 }),
+        palette:
+          palettesLookup[
+            scene
+              ? scene.spritePaletteIds?.[index] ||
+                defaultSpritePaletteIds[index]
+              : defaultSpritePaletteIds[index]
+          ],
+      }))
+    );
+  }, [scene, palettesLookup, defaultSpritePaletteIds]);
+
+  useEffect(() => {
+    setCurrentValue(options.find((o) => o.value === value));
+  }, [value, options]);
+
   return (
     <Select
       name={name}
@@ -31,6 +75,36 @@ export const PaletteIndexSelect: FC<PaletteIndexSelectProps> = ({
       options={options}
       onChange={(newValue: PaletteIndexOption) => {
         onChange?.(newValue.value);
+      }}
+      formatOptionLabel={(option: PaletteIndexOption) => {
+        return (
+          <OptionLabelWithPreview
+            preview={
+              <PaletteBlock
+                type="sprite"
+                colors={option.palette?.colors || DMG_PALETTE.colors}
+                size={20}
+              />
+            }
+          >
+            {option.label}
+          </OptionLabelWithPreview>
+        );
+      }}
+      components={{
+        SingleValue: () => (
+          <SingleValueWithPreview
+            preview={
+              <PaletteBlock
+                type="sprite"
+                colors={currentValue?.palette?.colors || DMG_PALETTE.colors}
+                size={20}
+              />
+            }
+          >
+            {currentValue?.label}
+          </SingleValueWithPreview>
+        ),
       }}
     />
   );

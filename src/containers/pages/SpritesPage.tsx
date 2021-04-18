@@ -31,6 +31,7 @@ import l10n from "../../lib/helpers/l10n";
 import { getAnimationNameById } from "../../components/sprites/helpers";
 import MetaspriteEditorToolsPanel from "../../components/sprites/MetaspriteEditorToolsPanel";
 import { ZoomButton } from "../../components/ui/buttons/ZoomButton";
+import MetaspriteEditorPreviewSettings from "../../components/sprites/MetaspriteEditorPreviewSettings";
 
 const Wrapper = styled.div`
   display: flex;
@@ -72,6 +73,9 @@ const SpritesPage = () => {
   );
   const metaspriteId = useSelector(
     (state: RootState) => state.editor.selectedMetaspriteId
+  );
+  const colorsEnabled = useSelector(
+    (state: RootState) => state.project.present.settings.customColorsEnabled
   );
   const selectedSprite = spritesLookup[navigationId] || allSprites[0];
   const selectedAnimation =
@@ -265,6 +269,7 @@ const SpritesPage = () => {
               hidden={frameId !== selectedMetaspriteId}
             />
           ))}
+          {colorsEnabled && <MetaspriteEditorPreviewSettings />}
         </div>
         <SplitPaneVerticalDivider onMouseDown={onResizeCenter} />
         <div style={{ position: "relative", height: centerPaneHeight }}>

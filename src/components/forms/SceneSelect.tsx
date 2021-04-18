@@ -20,6 +20,8 @@ import editorActions from "../../store/features/editor/editorActions";
 interface SceneSelectProps extends SelectCommonProps {
   name: string;
   value?: string;
+  optional?: boolean;
+  optionalLabel?: string;
   onChange?: (newId: string) => void;
 }
 
@@ -53,6 +55,8 @@ const sceneToSceneOption = (scene: Scene, sceneIndex: number): SceneOption => ({
 export const SceneSelect: FC<SceneSelectProps> = ({
   value,
   onChange,
+  optional,
+  optionalLabel,
   ...selectProps
 }) => {
   const scenes = useSelector((state: RootState) =>
@@ -76,6 +80,22 @@ export const SceneSelect: FC<SceneSelectProps> = ({
   useEffect(() => {
     setOptions(scenes.map(sceneToSceneOption).sort(sortByLabel));
   }, [scenes]);
+
+  useEffect(() => {
+    setOptions(
+      ([] as SceneOption[]).concat(
+        optional
+          ? ([
+              {
+                value: "",
+                label: optionalLabel || "None",
+              },
+            ] as SceneOption[])
+          : ([] as SceneOption[]),
+        scenes.map(sceneToSceneOption).sort(sortByLabel)
+      )
+    );
+  }, [scenes, optional, optionalLabel]);
 
   useEffect(() => {
     setCurrentScene(scenes.find((v) => v.id === value));

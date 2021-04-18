@@ -74,7 +74,7 @@ export const RelativePortal: FC<RelativePortalProps> = ({
             position: "fixed",
             left: x,
             top: y,
-            zIndex: 1,
+            zIndex: 1000,
           }}
         >
           <div style={pinStyles[pin]}>{children}</div>

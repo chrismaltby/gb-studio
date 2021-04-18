@@ -19,7 +19,25 @@ export type SettingsState = {
   zoom: number;
   customColorsEnabled: boolean;
   customHead: string;
-  defaultBackgroundPaletteIds: [string, string, string, string, string, string];
+  defaultBackgroundPaletteIds: [
+    string,
+    string,
+    string,
+    string,
+    string,
+    string,
+    string
+  ];
+  defaultSpritePaletteIds: [
+    string,
+    string,
+    string,
+    string,
+    string,
+    string,
+    string,
+    string
+  ];
   defaultSpritePaletteId: string;
   defaultUIPaletteId: string;
   playerPaletteId: string;
@@ -51,6 +69,17 @@ export const initialState: SettingsState = {
     "default-bg-4",
     "default-bg-5",
     "default-bg-6",
+    "default-bg-7",
+  ],
+  defaultSpritePaletteIds: [
+    "default-sprite-1",
+    "default-sprite-2",
+    "default-sprite-3",
+    "default-sprite-4",
+    "default-sprite-5",
+    "default-sprite-6",
+    "default-sprite-7",
+    "default-sprite-8",
   ],
   defaultSpritePaletteId: "default-sprite",
   defaultUIPaletteId: "default-ui",
