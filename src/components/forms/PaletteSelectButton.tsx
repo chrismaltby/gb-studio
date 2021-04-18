@@ -15,6 +15,7 @@ type PaletteSelectProps = {
   value?: string;
   type?: "tile" | "sprite";
   onChange?: (newId: string) => void;
+  slotNumber?: number;
   optional?: boolean;
   optionalLabel?: string;
   optionalDefaultPaletteId?: string;
@@ -69,6 +70,7 @@ export const PaletteSelectButton: FC<PaletteSelectProps> = ({
   name,
   value,
   type,
+  slotNumber,
   onChange,
   optional,
   optionalLabel,
@@ -170,7 +172,7 @@ export const PaletteSelectButton: FC<PaletteSelectProps> = ({
         onClick={openMenu}
         onFocus={onButtonFocus}
         onBlur={onButtonBlur}
-        title={palette.name}
+        title={slotNumber ? `${slotNumber}: ${palette.name}` : palette.name}
       >
         {palette ? (
           <PaletteBlock type={type} colors={palette?.colors || []} size={22} />

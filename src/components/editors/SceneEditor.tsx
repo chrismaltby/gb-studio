@@ -455,6 +455,7 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
                             (scene.paletteIds && scene.paletteIds[index]) || ""
                           }
                           onChange={onEditPaletteId(index)}
+                          slotNumber={index + 1}
                           optional
                           optionalDefaultPaletteId={
                             defaultBackgroundPaletteIds[index] || ""
@@ -482,6 +483,7 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
                               scene.spritePaletteIds[index]) ||
                             ""
                           }
+                          slotNumber={index + 1}
                           onChange={onEditSpritePaletteId(index)}
                           optional
                           optionalDefaultPaletteId={
