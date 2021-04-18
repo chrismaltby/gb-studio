@@ -73,7 +73,7 @@ const PaletteButtons = styled.div`
   box-sizing: border-box;
 
   & > * {
-    margin-right: 5px;
+    margin-right: 3px;
   }
 
   & > *:last-child {
