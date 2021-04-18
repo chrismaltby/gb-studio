@@ -1030,6 +1030,28 @@ class ScriptBuilder {
     this._addNL();
   };
 
+  actorGetPosition = (variableX: string, variableY: string) => {
+    const variableXAlias = this.getVariableAlias(variableX);
+    const variableYAlias = this.getVariableAlias(variableY);
+
+    this._addComment(`Store Position In Variables`);
+    this._actorGetPosition("ACTOR");
+
+    this._rpn() //
+      .ref("^/(ACTOR + 1)/")
+      .int16(8 * 16)
+      .operator(".DIV")
+      .ref("^/(ACTOR + 2)/")
+      .int16(8 * 16)
+      .operator(".DIV")
+      .stop();
+
+    this._set(variableXAlias, ".ARG1");
+    this._set(variableYAlias, ".ARG0");
+    this._stackPop(2);
+    this._addNL();
+  };
+
   actorPush = (continueUntilCollision = false) => {
     const stackPtr = this.stackPtr;
     const upLabel = this.getNextLabel();
@@ -2327,12 +2349,6 @@ class ScriptBuilder {
     const output = this.output;
     this.vectorsLoad(variableX, variableY);
     output.push(cmd(ACTOR_SET_POSITION_TO_VALUE));
-  };
-
-  actorGetPosition = (variableX, variableY) => {
-    const output = this.output;
-    this.vectorsLoad(variableX, variableY);
-    output.push(cmd(ACTOR_GET_POSITION));
   };
 
   actorSetDirection = (direction = "down") => {
