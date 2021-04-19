@@ -98,6 +98,11 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
             )}`
           );
         }
+      } else if (command === "INTERNAL_SET_CONTEXT") {
+        const args = subInput[i].args;
+        scriptBuilder.options.entity = args.entity;
+        scriptBuilder.options.entityType = args.entityType;
+        scriptBuilder.options.entityId = args.entityId;
       } else if (command !== "EVENT_END") {
         warnings(
           `No compiler for command "${command}". Are you missing a plugin? ${JSON.stringify(
@@ -145,19 +150,6 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
       } else {
         scriptBuilder.scriptEnd();
       }
-
-      if (scriptBuilder.byteSize > 16383) {
-        warnings(
-          `This script is too big for 1 bank, was ${
-            output.length
-          } bytes, must be under 16384.
-          ${JSON.stringify(location)}
-          `
-        );
-        warnings(
-          "Try splitting this script across multiple actors with *Actor invoke*."
-        );
-      }
     }
 
     return scriptBuilder.toScriptString(scriptName, lock);
@@ -166,8 +158,6 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
       `Compiling failed with error "${e}". ${JSON.stringify(location)}`
     );
   }
-
-  return "";
 };
 
 export default compileEntityEvents;

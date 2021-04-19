@@ -287,25 +287,39 @@ const compile = async (
     };
 
     const bankSceneEvents = (scene, sceneIndex) => {
-      // // Compile start scripts for actors
-      // scene.actors.forEach((actor, actorIndex) => {
-      //   const actorStartScript = (actor.startScript || []).filter(
-      //     (event) => event.command !== EVENT_END
-      //   );
-      //   compileScript(
-      //     actorStartScript,
-      //     "actor",
-      //     actor,
-      //     actorIndex,
-      //     false,
-      //     compiledSceneScript
-      //   );
-      //   compiledSceneScript.splice(-1);
-      // });
+      // Merge start scripts for actors with scene start script
+      const initScript = []
+        .concat(
+          scene.actors.map((actor) => {
+            return [].concat(
+              {
+                command: "INTERNAL_SET_CONTEXT",
+                args: {
+                  entity: actor,
+                  entityType: "actor",
+                  entityId: actor.id,
+                },
+              },
+              (actor.startScript || []).filter(
+                (event) => event.command !== EVENT_END
+              )
+            );
+          }),
+          {
+            command: "INTERNAL_SET_CONTEXT",
+            args: {
+              entity: scene,
+              entityType: "scene",
+              entityId: scene.id,
+            },
+          },
+          [scene.script] || []
+        )
+        .flat();
 
       // Compile scene start script
       return compileScript(
-        scene.script,
+        initScript,
         "scene",
         scene,
         sceneIndex,
@@ -1363,10 +1377,7 @@ export const precompileScenes = (
       }
     });
 
-    const sceneSpriteIds = [].concat(
-      actorSpriteIds,
-      eventSpriteIds
-    );
+    const sceneSpriteIds = [].concat(actorSpriteIds, eventSpriteIds);
 
     return {
       ...scene,
