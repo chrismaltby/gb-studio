@@ -61,8 +61,10 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_get_indirect,           4}, // 0x29
     {vm_test_terminate,         1}, // 0x2A
     {vm_poll_loaded,            2}, // 0x2B
+    // trigonometry instructions section
     {vm_sin_scale,              5}, // 0x2C 
     {vm_cos_scale,              5}, // 0x2D
+    // load/save instrunctions section
     {vm_save_peek,              8}, // 0x2E
     {0, 0},
 
@@ -113,7 +115,7 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_fade_out,               1}, // 0x57
     {vm_timer_prepare,          4}, // 0x58
     {vm_timer_set,              2}, // 0x59
-    {vm_data_is_saved,          3}, // 0x5A
+    {vm_get_tile_xy,            6}, // 0x5A
     {vm_replace_tile,           8}, // 0x5B
     {vm_poll,                   5}, // 0x5C
     {vm_set_sprite_mode,        1}, // 0x5D

@@ -888,8 +888,14 @@ class ScriptBuilder {
     this._addCmd("VM_INPUT_DETACH", buttonMask);
   };
 
-  _isDataSaved = (variable: ScriptBuilderStackVariable, slot: number) => {
-    this._addCmd("VM_DATA_IS_SAVED", variable, slot);
+  _savePeek = (
+    successDest: ScriptBuilderStackVariable,
+    dest: ScriptBuilderStackVariable,
+    offset: number,
+    count: number,
+    slot: number
+  ) => {
+    this._addCmd("VM_SAVE_PEEK", successDest, dest, offset, count, slot);
   };
 
   _scenePush = () => {
@@ -2229,7 +2235,7 @@ class ScriptBuilder {
     const endLabel = this.getNextLabel();
     this._addComment(`If Variable True`);
     this._stackPushConst(0);
-    this._isDataSaved(".ARG0", slot);
+    this._savePeek(".ARG0", 0, 0, 0, slot);
     this._ifConst(".EQ", ".ARG0", 1, trueLabel, 1);
     this._compilePath(falsePath);
     this._jump(endLabel);

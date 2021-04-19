@@ -83,17 +83,42 @@ void vm_timer_set(SCRIPT_CTX * THIS, UBYTE timer, UBYTE value) __banked {
     timer_value->remains = value;
 }
 
-void vm_data_is_saved(SCRIPT_CTX * THIS, INT16 idx, UBYTE slot) __banked {
-    INT16 * A;
-    if (idx < 0) A = THIS->stack_ptr + idx; else A = script_memory + idx;
-    *A = data_is_saved(slot);
+void vm_get_tile_xy(SCRIPT_CTX * THIS, INT16 idx_tile, INT16 idx_x, INT16 idx_y) __banked {
+    THIS;
+
+    INT16 * res;
+    if (idx_tile < 0) res = THIS->stack_ptr + idx_tile; else res = script_memory + idx_tile;
+    
+    INT16 *X, *Y;
+    if (idx_x < 0) X = THIS->stack_ptr + idx_x; else X = script_memory + idx_x;
+    if (idx_y < 0) Y = THIS->stack_ptr + idx_y; else Y = script_memory + idx_y;
+
+    UWORD ofs = (image_tile_width * ((UBYTE)*Y)) + ((UBYTE)*X);
+    UBYTE target_tile = ReadBankedUBYTE(image_ptr + ofs, image_bank);
+#ifdef CGB
+    if (_is_CGB) {
+        UBYTE tartet_attr = ReadBankedUBYTE(image_attr_ptr + ofs, image_attr_bank);
+        *res = (((UWORD)tartet_attr) << 8) | target_tile;
+        return;
+    }
+#endif
+    *res = target_tile;
 }
 
-void vm_replace_tile(SCRIPT_CTX * THIS, UBYTE target_tile, UBYTE tileset_bank, const tileset_t * tileset, INT16 idx_start_tile, INT16 idx_length) __banked {
+
+void vm_replace_tile(SCRIPT_CTX * THIS, INT16 idx_target_tile, UBYTE tileset_bank, const tileset_t * tileset, INT16 idx_start_tile, UBYTE length) __banked {
     INT16 * A, * B;
     if (idx_start_tile < 0) A = THIS->stack_ptr + idx_start_tile; else A = script_memory + idx_start_tile;
-    if (idx_length < 0) B = THIS->stack_ptr + idx_length; else B = script_memory + idx_length;
-    SetBankedBkgData(target_tile, *B, tileset->tiles + (*A << 4), tileset_bank);
+    if (idx_target_tile < 0) B = THIS->stack_ptr + idx_target_tile; else B = script_memory + idx_target_tile;
+#ifdef CGB
+    if (_is_CGB) {
+        if (*B & 0x0800) VBK_REG = 1;
+    }
+#endif
+    SetBankedBkgData((UBYTE)(*B), length, tileset->tiles + (*A << 4), tileset_bank);
+#ifdef CGB
+    VBK_REG = 0;
+#endif
 }
 
 void vm_poll(SCRIPT_CTX * THIS, INT16 idx, INT16 res, UBYTE event_mask) __banked {
