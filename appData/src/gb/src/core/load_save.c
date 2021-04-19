@@ -99,6 +99,16 @@ UBYTE data_load(UBYTE slot) __banked {
     return TRUE;
 }
 
+void data_clear(UBYTE slot) __banked {
+    SWITCH_RAM_MBC5(0);
+    UBYTE * save_data = (UBYTE *)0xA000 + (save_blob_size * slot);
+    *((UINT32 *)save_data) = 0;
+    
+#ifdef BATTERYLESS
+    save_sram(1);
+#endif
+}
+
 UBYTE data_peek(UBYTE slot, UINT16 idx, UBYTE count, UINT16 * dest) __banked {
     if (!data_is_saved(slot)) return FALSE;
     // if zero length block is requested then just check that save exist

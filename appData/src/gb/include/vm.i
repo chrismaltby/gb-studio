@@ -362,6 +362,11 @@ OP_VM_SAVE_PEEK         = 0x2E
         .db OP_VM_SAVE_PEEK, #<SLOT, #<COUNT, #>SOUR, #<SOUR, #>DEST, #<DEST, #>RES, #<RES
 .endm
 
+OP_VM_SAVE_CLEAR         = 0x2F
+.macro VM_SAVE_CLEAR SLOT
+        .db OP_VM_SAVE_CLEAR, #<SLOT
+.endm
+
 ; --- ACTOR ------------------------------------------
 
 OP_VM_ACTOR_MOVE_TO     = 0x30

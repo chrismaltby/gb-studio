@@ -66,7 +66,7 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_cos_scale,              5}, // 0x2D
     // load/save instrunctions section
     {vm_save_peek,              8}, // 0x2E
-    {0, 0},
+    {vm_save_clear,             1}, // 0x2F
 
     // actor instructions section
     {vm_actor_move_to,          2}, // 0x30

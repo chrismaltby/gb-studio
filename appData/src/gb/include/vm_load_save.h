@@ -5,6 +5,9 @@
 
 #include "vm.h"
 
+// sets signature of save slot to zero
+void vm_save_clear(SCRIPT_CTX * THIS, UBYTE slot) __banked;
+
 // copies count global variables from save slot starting from idxC (positive index only) and further into VM memory starting from idxB and further
 // result of the operation is stored into idxA
 void vm_save_peek(SCRIPT_CTX * THIS, INT16 idxA, INT16 idxB, INT16 idxC, UBYTE count, UBYTE slot) __banked;

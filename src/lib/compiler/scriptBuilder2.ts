@@ -898,6 +898,10 @@ class ScriptBuilder {
     this._addCmd("VM_SAVE_PEEK", successDest, dest, offset, count, slot);
   };
 
+  _saveClear = (slot: number) => {
+    this._addCmd("VM_SAVE_CLEAR", slot);
+  };
+
   _scenePush = () => {
     this._addCmd("VM_SCENE_PUSH");
   };
@@ -2033,8 +2037,7 @@ class ScriptBuilder {
 
   dataClear = (slot: number) => {
     this._addComment(`Clear Data in Slot ${slot}`);
-    console.error("dataClear not implemented");
-    // throw new Error("dataClear not implemented");
+    this._saveClear(slot);
     this._addNL();
   };
 
