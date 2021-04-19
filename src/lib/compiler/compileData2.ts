@@ -505,7 +505,7 @@ export const compileSceneActors = (
         anim_tick: actor.animSpeed,
         pinned: actor.isPinned ? "TRUE" : "FALSE",
         collision_group: toASMCollisionGroup(actor.collisionGroup),
-        collision_enabled: "TRUE",
+        collision_enabled: actor.isPinned ? "FALSE" : "TRUE",
         script: maybeScriptFarPtr(events.actors[actorIndex]),
         script_update: maybeScriptFarPtr(events.actorsMovement[actorIndex]),
         script_hit1: maybeScriptFarPtr(events.actorsHit1[actorIndex]),
