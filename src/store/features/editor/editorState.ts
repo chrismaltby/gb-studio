@@ -13,6 +13,7 @@ import navigationActions from "../navigation/navigationActions";
 import projectActions from "../project/projectActions";
 import settingsActions from "../settings/settingsActions";
 import entitiesActions from "../entities/entitiesActions";
+import spriteActions from "../sprite/spriteActions";
 
 export type Tool =
   | "triggers"
@@ -695,6 +696,11 @@ const editorSlice = createSlice({
             action.payload.data.settings?.navigatorSplitSizes ||
             state.navigatorSplitSizes;
         }
+      })
+      .addCase(spriteActions.detectSpriteComplete, (state, action) => {
+        state.selectedAnimationId = action.payload.spriteAnimations[0].id;
+        state.selectedMetaspriteId =
+          action.payload.spriteAnimations[0].frames[0];
       })
       // When UI changes increment UI version number
       .addMatcher(

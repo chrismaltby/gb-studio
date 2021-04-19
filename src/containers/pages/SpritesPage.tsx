@@ -86,6 +86,16 @@ const SpritesPage = () => {
   const selectedMetaspriteId =
     metaspriteId || selectedAnimation?.frames[0] || "";
   const frames = selectedAnimation?.frames || [];
+  const selectedFrame = frames.indexOf(selectedMetaspriteId);
+
+  // If selected frame not found jump to last frame in animation
+  useEffect(() => {
+    if (selectedFrame === -1 && frames.length > 0) {
+      dispatch(
+        editorActions.setSelectedMetaspriteId(frames[frames.length - 1])
+      );
+    }
+  }, [dispatch, frames, selectedFrame]);
 
   const [leftPaneWidth, setLeftPaneSize, startLeftPaneResize] = useResizable({
     initialSize: navigatorSidebarWidth,
