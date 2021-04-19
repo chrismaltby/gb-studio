@@ -116,6 +116,7 @@ const makeBuild = async ({
     gbcFastCPUEnabled: settings.gbcFastCPUEnabled,
     profile,
     platform: process.platform,
+    musicDriver: settings.musicDriver,
   });
   await fs.writeFile(`${buildRoot}/${makeScriptFile}`, makeScript);
 

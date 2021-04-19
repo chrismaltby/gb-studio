@@ -4,6 +4,7 @@ import { checksumFile, checksumString } from "../helpers/checksum";
 import { assetFilename } from "../helpers/gbstudio";
 import { readFile, ensureDir, pathExists, writeFile, unlink } from "fs-extra";
 import ensureBuildTools from "./ensureBuildTools";
+import { exportToC, loadUGESong } from "../helpers/uge/ugeHelper";
 
 export interface PrecompiledMusicTrack {
   id: string;
@@ -170,7 +171,15 @@ const compileUgeTrack = async (
     warnings = (_msg) => {},
   }: CompileHugeTrackOptions
 ): Promise<string> => {
-  return "// Not implemented";
+
+  const ugePath = assetFilename(projectRoot, "music", track);
+  const data = await readFile(ugePath);
+  const song = loadUGESong(new Uint8Array(data).buffer);
+  if (song) {
+    return exportToC(song, track.dataName);
+  } else {
+    return "// No song found";
+  }
 };
 
 const compileUgeTracks = async (

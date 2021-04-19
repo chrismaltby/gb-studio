@@ -41,6 +41,7 @@ import { options as sceneTypes } from "../../components/forms/SceneTypeSelect";
 import { SpriteSheetSelect } from "../../components/forms/SpriteSheetSelect";
 import { CharacterEncodingSelect } from "../../components/forms/CharacterEncodingSelect";
 import { ColorAnimationText } from "../../components/settings/ColorAnimationText";
+import { MusicDriverSelect } from "../../components/forms/MusicDriverSelect";
 
 const SettingsPage: FC = () => {
   const dispatch = useDispatch();
@@ -84,6 +85,7 @@ const SettingsPage: FC = () => {
     defaultFontId,
     defaultCharacterEncoding,
     defaultPlayerSprites,
+    musicDriver,
   } = settings;
 
   const onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -185,6 +187,9 @@ const SettingsPage: FC = () => {
             </SettingsMenuItem>
             <SettingsMenuItem onClick={onMenuItem("settingsUI")}>
               {l10n("MENU_UI_ELEMENTS")}
+            </SettingsMenuItem>
+            <SettingsMenuItem onClick={onMenuItem("settingsMusic")}>
+              {l10n("SETTINGS_MUSIC_DRIVER")}
             </SettingsMenuItem>
             {groupedFields.map((group) => (
               <SettingsMenuItem
@@ -380,6 +385,30 @@ const SettingsPage: FC = () => {
                 name="defaultCharacterEncoding"
                 value={defaultCharacterEncoding || ""}
                 onChange={onEditSetting("defaultCharacterEncoding")}
+              />
+            </SettingRowInput>
+          </SearchableSettingRow>
+        </SearchableCard>
+
+        <SearchableCard
+          searchTerm={searchTerm}
+          searchMatches={[
+            l10n("SETTINGS_MUSIC_DRIVER")
+          ]}
+        >
+          <CardAnchor id="settingsMusic" />
+          <CardHeading>{l10n("SETTINGS_MUSIC_DRIVER")}</CardHeading>
+
+          <SearchableSettingRow
+            searchTerm={searchTerm}
+            searchMatches={[l10n("SETTINGS_MUSIC_DRIVER")]}
+          >
+            <SettingRowLabel>{l10n("SETTINGS_MUSIC_DRIVER")}</SettingRowLabel>
+            <SettingRowInput>
+              <MusicDriverSelect
+                name="musicDriver"
+                value={musicDriver || ""}
+                onChange={onEditSetting("musicDriver")}
               />
             </SettingRowInput>
           </SearchableSettingRow>

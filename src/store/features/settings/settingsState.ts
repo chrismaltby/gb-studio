@@ -47,6 +47,7 @@ export type SettingsState = {
   defaultFontId: string;
   defaultCharacterEncoding: string;
   defaultPlayerSprites: Record<string, string>;
+  musicDriver: string;
 };
 
 export const initialState: SettingsState = {
@@ -91,6 +92,7 @@ export const initialState: SettingsState = {
   defaultFontId: "",
   defaultCharacterEncoding: "",
   defaultPlayerSprites: {},
+  musicDriver: "gbt",
 };
 
 const settingsSlice = createSlice({

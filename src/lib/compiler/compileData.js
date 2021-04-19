@@ -503,12 +503,13 @@ const compile = async (
     startDirection,
     startMoveSpeed = 1,
     startAnimSpeed = 15,
+    musicDriver,
   } = projectData.settings;
 
   // Add music data
   output["music_data.h"] = compileMusicHeader(precompiled.usedMusic);
   await compileMusicTracks(precompiled.usedMusic, {
-    engine: "gbt",
+    engine: musicDriver,
     output,
     tmpPath,
     projectRoot,

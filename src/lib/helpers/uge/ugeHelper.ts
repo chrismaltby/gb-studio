@@ -396,15 +396,168 @@ export const saveUGESong = (song: Song): ArrayBuffer => {
   return buffer.slice(0, idx);
 }
 
-const comparePatterns = function(a: PatternCell[][], b: PatternCell[][]) {
-  if (a.length != b.length) return false;
+const comparePatterns = function (a: PatternCell[][], b: PatternCell[][]) {
+  if (a.length !== b.length) return false;
   for (let idx = 0; idx < a.length; idx++) {
     for (let col = 0; col < 4; col++) {
-      if (a[idx][col].note != b[idx][col].note) return false;
-      if (a[idx][col].instrument != b[idx][col].instrument) return false;
-      if (a[idx][col].effectcode != b[idx][col].effectcode) return false;
-      if (a[idx][col].effectparam != b[idx][col].effectparam) return false;
+      if (!patternEqual(a[idx], b[idx])) return false;
+      if (a[idx][col].instrument !== b[idx][col].instrument) return false;
     }
   }
   return true;
 }
+
+const patternEqual = function (a: PatternCell[], b: PatternCell[]) {
+  if (a.length !== b.length) return false;
+  for (let idx = 0; idx < a.length; idx++) {
+    if (a[idx].note !== b[idx].note) return false;
+    if (a[idx].instrument !== b[idx].note) return false;
+    if (a[idx].effectcode !== b[idx].effectcode) return false;
+    if (a[idx].effectparam !== b[idx].effectparam) return false;
+  }
+  return true;
+}
+
+export const exportToC = (song: Song, trackName: string): string => {
+  const decHex = (n: number) => {
+    return "0x" + n.toString(16).toUpperCase().padStart(2, "0");
+  };
+  
+  const findPattern = function (pattern: PatternCell[]) {
+    for (let idx = 0; idx < patterns.length; idx++) {
+      if (patternEqual(pattern, patterns[idx]))
+        return idx;
+    }
+    return null;
+  }
+
+  const getSequenceMappingFor = function (track: number) {
+    return song.sequence.map((n) => `song_pattern_${pattern_map[`${n}, ${track}`]}`).join(", ")
+  }
+
+  const formatPatternCell = function (cell: PatternCell) {
+    const note = (cell.note !== null ? cell.note : "___");
+    let instrument = 0;
+    let effect_code = 0;
+    let effect_param = 0;
+    if (cell.instrument !== null)
+      instrument = cell.instrument + 1;
+    if (cell.effectcode !== null) {
+      effect_code = cell.effectcode;
+      effect_param = cell.effectparam || 0;
+    }
+    return `${note}, ${decHex((instrument << 4) | effect_code)}, ${decHex(effect_param)}`;
+  }
+
+  const formatDutyInstrument = function (instr: DutyInstrument) {
+    const nr10 = (instr.frequency_sweep_time << 4) | (instr.frequency_sweep_shift < 0 ? 0x08 : 0x00) | Math.abs(instr.frequency_sweep_shift);
+    const nr11 = (instr.duty_cycle << 6) | ((instr.length !== null ? 64 - instr.length : 0) & 0x3f);
+    let nr12 = (instr.initial_volume << 4) | (instr.volume_sweep_change > 0 ? 0x08 : 0x00);
+    if (instr.volume_sweep_change !== 0) {
+      nr12 |= 8 - Math.abs(instr.volume_sweep_change);
+    }
+    const nr14 = 0x80 | (instr.length !== null ? 0x40 : 0);
+    return `${decHex(nr10)}, ${decHex(nr11)}, ${decHex(nr12)}, ${decHex(nr14)}`;
+  }
+
+  const formatWaveInstrument = function (instr: WaveInstrument) {
+    const nr31 = (instr.length !== null ? instr.length : 0) & 0xff;
+    const nr32 = (instr.volume << 5);
+    const wave_nr = instr.wave_index;
+    const nr34 = 0x80 | (instr.length !== null ? 0x40 : 0);
+    return `${decHex(nr31)}, ${decHex(nr32)}, ${decHex(wave_nr)}, ${decHex(nr34)}`;
+  }
+
+  const formatNoiseInstrument = function (instr: NoiseInstrument) {
+    let param0 = (instr.initial_volume << 4) | (instr.volume_sweep_change > 0 ? 0x08 : 0x00);
+    if (instr.volume_sweep_change !== 0)
+      param0 |= 8 - Math.abs(instr.volume_sweep_change);
+    let param1 = (instr.length !== null ? 64 - instr.length : 0) & 0x3f;
+    if (instr.length !== null)
+      param1 |= 0x40;
+    if (instr.bit_count === 7)
+      param1 |= 0x80;
+
+    return `${decHex(param0)}, ${decHex(param1)}, 0, 0, 0, 0, 0, 0`;
+  }
+
+  const formatWave = function (wave: Uint8Array) {
+    return Array.from(Array(16).keys(), (n) => decHex((wave[n * 2] << 4) | (wave[n * 2 + 1]))).join(", ");
+  }
+
+  // Load patterns
+  const patterns: PatternCell[][] = [];
+  const pattern_map: { [key: string]: number } = {};
+
+  for (let n = 0; n < song.patterns.length; n++) {
+    const source_pattern = song.patterns[n];
+    for (let track = 0; track < 4; track++) {
+      const target_pattern = []
+      for (let m = 0; m < source_pattern.length; m++) {
+        target_pattern.push(source_pattern[m][track]);
+      }
+
+      const idx = findPattern(target_pattern);
+      if (idx !== null) {
+        pattern_map[`${n}, ${track}`] = idx;
+      } else {
+        pattern_map[`${n}, ${track}`] = patterns.length;
+        patterns.push(target_pattern);
+      }
+    }
+  }
+
+  let data = `#pragma bank 255
+
+#include "hUGEDriver.h"
+#include <stddef.h>
+
+static const unsigned char order_cnt = ${song.sequence.length * 2};
+`;
+
+  for (let idx = 0; idx < patterns.length; idx++) {
+    data += `static const unsigned char song_pattern_${idx}[] = {\n`
+    for (let cell of patterns[idx]) {
+      data += `    ${formatPatternCell(cell)},\n`
+    }
+    data += '};\n'
+  }
+  for (let track = 0; track < 4; track++)
+    data += `static const unsigned char* const order${track + 1}[] = {${getSequenceMappingFor(track)}};\n`;
+  data += "static const unsigned char duty_instruments[] = {\n";
+  for (let instr of song.duty_instruments) {
+    data += `    ${formatDutyInstrument(instr)},\n`;
+  }
+  data += "};\n";
+  data += "static const unsigned char wave_instruments[] = {\n";
+  for (let instr of song.wave_instruments) {
+    data += `    ${formatWaveInstrument(instr)},\n`;
+  }
+  data += "};\n";
+  data += "static const unsigned char noise_instruments[] = {\n";
+  for (let instr of song.noise_instruments) {
+    data += `    ${formatNoiseInstrument(instr)},\n`;
+  }
+  data += "};\n";
+  //data += "static const unsigned char routines[] = {\n";
+  //TODO
+  //data += "};\n";
+  data += "static const unsigned char waves[] = {\n";
+  for (let wave of song.waves) {
+    data += `    ${formatWave(wave)},\n`;
+  }
+  data += "};\n";
+
+  data += `
+const void __at(255) __bank_${trackName}_Data;
+const hUGESong_t ${trackName}_Data = {
+    ${song.ticks_per_row},
+    &order_cnt,
+    order1, order2, order3, order4,
+    duty_instruments, wave_instruments, noise_instruments,
+    NULL,
+    waves
+};
+`
+  return data;
+};
