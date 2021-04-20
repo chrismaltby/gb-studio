@@ -112,6 +112,24 @@ type ScriptBuilderOverlayMoveSpeed =
 
 type ScriptBuilderUIColor = 0 | ".UI_COLOR_WHITE" | ".UI_COLOR_BLACK";
 
+type ScriptBuilderUnionValue =
+  | {
+      type: "number";
+      value: number;
+    }
+  | {
+      type: "property";
+      value: string;
+    }
+  | {
+      type: "direction";
+      value: string;
+    }
+  | {
+      type: "variable";
+      value: string;
+    };
+
 type ScriptBuilderPathFunction = () => void;
 
 type VariablesLookup = { [name: string]: Variable | undefined };
@@ -699,42 +717,52 @@ class ScriptBuilder {
   };
 
   _actorMoveTo = (addr: string) => {
+    this.includeActor = true;
     this._addCmd("VM_ACTOR_MOVE_TO", addr);
   };
 
   _actorGetPosition = (addr: string) => {
+    this.includeActor = true;
     this._addCmd("VM_ACTOR_GET_POS", addr);
   };
 
   _actorSetPosition = (addr: string) => {
+    this.includeActor = true;
     this._addCmd("VM_ACTOR_SET_POS", addr);
   };
 
   _actorGetDirection = (addr: string, dest: string) => {
+    this.includeActor = true;
     this._addCmd("VM_ACTOR_GET_DIR", addr, dest);
   };
 
   _actorSetDirection = (addr: string, asmDir: string) => {
+    this.includeActor = true;
     this._addCmd("VM_ACTOR_SET_DIR", addr, asmDir);
   };
 
   _actorSetHidden = (addr: string, hidden: boolean) => {
+    this.includeActor = true;
     this._addCmd("VM_ACTOR_SET_HIDDEN", addr, hidden ? 1 : 0);
   };
 
   _actorSetAnimTick = (addr: string, tick: number) => {
+    this.includeActor = true;
     this._addCmd("VM_ACTOR_SET_ANIM_TICK", addr, tick);
   };
 
   _actorSetMoveSpeed = (addr: string, speed: number) => {
+    this.includeActor = true;
     this._addCmd("VM_ACTOR_SET_MOVE_SPEED", addr, speed);
   };
 
   _actorSetCollisionsEnabled = (addr: string, enabled: boolean) => {
+    this.includeActor = true;
     this._addCmd("VM_ACTOR_SET_COLL_ENABLED", addr, enabled ? 1 : 0);
   };
 
   _actorSetSpritesheet = (addr: string, symbol: string) => {
+    this.includeActor = true;
     this._addCmd(
       "VM_ACTOR_SET_SPRITESHEET",
       addr,
@@ -744,6 +772,7 @@ class ScriptBuilder {
   };
 
   _actorEmote = (addr: string, symbol: string) => {
+    this.includeActor = true;
     this._addCmd("VM_ACTOR_EMOTE", addr, `___bank_${symbol}`, `_${symbol}`);
   };
 
@@ -1041,6 +1070,45 @@ class ScriptBuilder {
     this._addNL();
   };
 
+  actorMoveToVariables = (
+    variableX: string,
+    variableY: string,
+    useCollisions: boolean,
+    moveType: ScriptBuilderMoveType
+  ) => {
+    const variableXAlias = this.getVariableAlias(variableX);
+    const variableYAlias = this.getVariableAlias(variableY);
+
+    const stackPtr = this.stackPtr;
+    this._addComment("Actor Move To Variables");
+
+    this._rpn() //
+      .ref(variableXAlias)
+      .int16(8 * 16)
+      .operator(".MUL")
+      .ref(variableYAlias)
+      .int16(8 * 16)
+      .operator(".MUL")
+      .stop();
+
+    this._set("^/(ACTOR + 1 - 2)/", ".ARG1");
+    this._set("^/(ACTOR + 2 - 2)/", ".ARG0");
+    this._stackPop(2);
+
+    this._setConst(
+      "^/(ACTOR + 3)/",
+      unionFlags(
+        ([] as string[]).concat(
+          useCollisions ? ".ACTOR_ATTR_CHECK_COLL" : [],
+          moveType === "horizontal" ? ".ACTOR_ATTR_H_FIRST" : []
+        )
+      )
+    );
+    this._actorMoveTo("ACTOR");
+    this._assertStackNeutral(stackPtr);
+    this._addNL();
+  };
+
   actorMoveRelative = (
     x = 0,
     y = 0,
@@ -1103,6 +1171,47 @@ class ScriptBuilder {
     this._set(variableXAlias, ".ARG1");
     this._set(variableYAlias, ".ARG0");
     this._stackPop(2);
+    this._addNL();
+  };
+
+  actorGetPositionX = (variableX: string) => {
+    const variableXAlias = this.getVariableAlias(variableX);
+
+    this._addComment(`Store X Position In Variable`);
+    this._actorGetPosition("ACTOR");
+
+    this._rpn() //
+      .ref("^/(ACTOR + 1)/")
+      .int16(8 * 16)
+      .operator(".DIV")
+      .stop();
+
+    this._set(variableXAlias, ".ARG0");
+    this._stackPop(1);
+    this._addNL();
+  };
+
+  actorGetPositionY = (variableY: string) => {
+    const variableYAlias = this.getVariableAlias(variableY);
+
+    this._addComment(`Store Y Position In Variable`);
+    this._actorGetPosition("ACTOR");
+
+    this._rpn() //
+      .ref("^/(ACTOR + 2)/")
+      .int16(8 * 16)
+      .operator(".DIV")
+      .stop();
+
+    this._set(variableYAlias, ".ARG0");
+    this._stackPop(1);
+    this._addNL();
+  };
+
+  actorGetDirection = (variable: string) => {
+    const variableAlias = this.getVariableAlias(variable);
+    this._addComment(`Store Direction In Variable`);
+    this._actorGetDirection("ACTOR", variableAlias);
     this._addNL();
   };
 
@@ -1218,6 +1327,37 @@ class ScriptBuilder {
   actorSetDirection = (direction: ActorDirection) => {
     this._addComment("Actor Set Direction");
     this._actorSetDirection("ACTOR", toASMDir(direction));
+    this._addNL();
+  };
+
+  actorSetDirectionToVariable = (variable: string) => {
+    const variableAlias = this.getVariableAlias(variable);
+
+    const leftLabel = this.getNextLabel();
+    const rightLabel = this.getNextLabel();
+    const upLabel = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+
+    this._addComment("Actor Set Direction To Variable");
+    this._ifConst(".EQ", variableAlias, ".DIR_LEFT", leftLabel, 0);
+    this._ifConst(".EQ", variableAlias, ".DIR_RIGHT", rightLabel, 0);
+    this._ifConst(".EQ", variableAlias, ".DIR_UP", upLabel, 0);
+    // Down
+    this._actorSetDirection("ACTOR", ".DIR_DOWN");
+    this._jump(endLabel);
+    // Left
+    this._label(leftLabel);
+    this._actorSetDirection("ACTOR", ".DIR_LEFT");
+    this._jump(endLabel);
+    // Right
+    this._label(rightLabel);
+    this._actorSetDirection("ACTOR", ".DIR_RIGHT");
+    this._jump(endLabel);
+    // Up
+    this._label(upLabel);
+    this._actorSetDirection("ACTOR", ".DIR_UP");
+
+    this._label(endLabel);
     this._addNL();
   };
 
@@ -1736,7 +1876,7 @@ class ScriptBuilder {
     this._addNL();
   };
 
-  variableSetToValue = (variable: string, value: number) => {
+  variableSetToValue = (variable: string, value: number | string) => {
     const variableAlias = this.getVariableAlias(variable);
     this._addComment("Variable Set To Value");
     this._setConst(variableAlias, value);
@@ -1936,6 +2076,64 @@ class ScriptBuilder {
     this._set(variableAlias, ".ARG0");
     this._stackPop(1);
     this._addNL();
+  };
+
+  variableSetToProperty = (variable: string, property: string) => {
+    const { scene, entity } = this.options;
+    const actorValue = property && property.replace(/:.*/, "");
+    const propertyValue = property && property.replace(/.*:/, "");
+    const actorIndex =
+      actorValue === "$self$" && entity
+        ? getActorIndex(entity.id, scene)
+        : getActorIndex(actorValue, scene);
+    this._setConst("ACTOR", actorIndex);
+    if (propertyValue === "xpos") {
+      this.actorGetPositionX(variable);
+    } else if (propertyValue === "ypos") {
+      this.actorGetPositionY(variable);
+    } else if (propertyValue === "direction") {
+      this.actorGetDirection(variable);
+    } else {
+      throw new Error(`Unsupported property type "${propertyValue}"`);
+    }
+  };
+
+  variableFromUnion = (
+    unionValue: ScriptBuilderUnionValue,
+    defaultVariable: string
+  ) => {
+    if (unionValue.type === "variable") {
+      return unionValue.value;
+    }
+    this.variableSetToUnionValue(defaultVariable, unionValue);
+    return defaultVariable;
+  };
+
+  variableSetToUnionValue = (
+    variable: string,
+    unionValue: ScriptBuilderUnionValue
+  ) => {
+    if (unionValue.type === "number") {
+      this.variableSetToValue(variable, unionValue.value);
+      return variable;
+    }
+    if (unionValue.type === "direction") {
+      this.variableSetToValue(variable, toASMDir(unionValue.value));
+      return variable;
+    }
+    if (unionValue.type === "property") {
+      this.variableSetToProperty(variable, unionValue.value);
+      return variable;
+    }
+    if (unionValue.type === "variable") {
+      this.variableCopy(variable, unionValue.value);
+      return variable;
+    }
+    throw new Error(`Union type "${unionValue}" unknown.`);
+  };
+
+  temporaryEntityVariable = (index: number) => {
+    return `T${index}`;
   };
 
   // --------------------------------------------------------------------------

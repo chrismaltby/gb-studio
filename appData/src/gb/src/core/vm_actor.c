@@ -155,7 +155,7 @@ void vm_actor_get_dir(SCRIPT_CTX * THIS, INT16 idx, INT16 dest) __banked {
     act_set_pos_t * params = VM_REF_TO_PTR(idx);
     actor = actors + (UBYTE)(params->ID);
 
-    if (idx < 0) A = THIS->stack_ptr + dest; else A = script_memory + dest;
+    if (dest < 0) A = THIS->stack_ptr + dest; else A = script_memory + dest;
     *A = actor->dir;
 }
 

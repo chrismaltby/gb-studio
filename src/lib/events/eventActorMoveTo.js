@@ -20,7 +20,7 @@ const fields = [
     defaultValue: {
       number: 0,
       variable: "LAST_VARIABLE",
-      property: "$self$:xpos"
+      property: "$self$:xpos",
     },
   },
   {
@@ -35,8 +35,8 @@ const fields = [
     defaultValue: {
       number: 0,
       variable: "LAST_VARIABLE",
-      property: "$self$:xpos"
-    },   
+      property: "$self$:xpos",
+    },
   },
   {
     key: "moveType",
@@ -45,33 +45,44 @@ const fields = [
     options: [
       ["horizontal", "↔ " + l10n("FIELD_HORIZONTAL_FIRST")],
       ["vertical", "↕ " + l10n("FIELD_VERTICAL_FIRST")],
-      ["diagonal", "⤡ " + l10n("FIELD_DIAGONAL")]
+      ["diagonal", "⤡ " + l10n("FIELD_DIAGONAL")],
     ],
     defaultValue: "horizontal",
     width: "50%",
-  },    
+  },
   {
     key: "useCollisions",
     label: l10n("FIELD_USE_COLLISIONS"),
     width: "50%",
     alignCheckbox: true,
     type: "checkbox",
-    defaultValue: false
-  }
+    defaultValue: false,
+  },
 ];
 
 const compile = (input, helpers) => {
-  const { actorSetActive, actorMoveTo, actorMoveToVariables, variableFromUnion, temporaryEntityVariable } = helpers;
+  const {
+    actorSetActive,
+    actorMoveTo,
+    actorMoveToVariables,
+    variableFromUnion,
+    temporaryEntityVariable,
+  } = helpers;
 
-  actorSetActive(input.actorId);
-  
-  if(input.x.type === "number" && input.y.type === "number") {
+  if (input.x.type === "number" && input.y.type === "number") {
     // If all inputs are numbers use fixed implementation
-    actorMoveTo(input.x.value, input.y.value, input.useCollisions, input.moveType);
+    actorSetActive(input.actorId);
+    actorMoveTo(
+      input.x.value,
+      input.y.value,
+      input.useCollisions,
+      input.moveType
+    );
   } else {
     // If any value is not a number transfer values into variables and use variable implementation
     const xVar = variableFromUnion(input.x, temporaryEntityVariable(0));
     const yVar = variableFromUnion(input.y, temporaryEntityVariable(1));
+    actorSetActive(input.actorId);
     actorMoveToVariables(xVar, yVar, input.useCollisions, input.moveType);
   }
 };
@@ -79,5 +90,5 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   fields,
-  compile
+  compile,
 };

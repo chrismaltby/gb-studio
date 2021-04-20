@@ -1,6 +1,3 @@
-const getSprite = require("./helpers").getSprite;
-const directionToFrame = require("../helpers/gbstudio").directionToFrame;
-
 const id = "EVENT_ACTOR_SET_DIRECTION";
 
 const fields = [
@@ -26,52 +23,24 @@ const compile = (input, helpers) => {
   const {
     actorSetActive,
     actorSetDirection,
-    ifVariableValue,
+    actorSetDirectionToVariable,
     variableFromUnion,
     temporaryEntityVariable,
   } = helpers;
 
-  actorSetActive(input.actorId);
-
   if (input.direction.type === "direction") {
+    actorSetActive(input.actorId);
     actorSetDirection(input.direction.value);
-
-    // changeDirection(input.direction.value, input, helpers)
   } else if (typeof input.direction === "string") {
-    // changeDirection(input.direction, input, helpers)
+    actorSetActive(input.actorId);
+    actorSetDirection(input.direction);
   } else {
-    // const dirVar = variableFromUnion(input.direction, temporaryEntityVariable(0));
-    // ifVariableValue(
-    //   dirVar,
-    //   "==",
-    //   1,
-    //   () => {
-    //     changeDirection("down", input, helpers);
-    //   },
-    //   () => {
-    //     ifVariableValue(
-    //       dirVar,
-    //       "==",
-    //       2,
-    //       () => {
-    //         changeDirection("left", input, helpers);
-    //       },
-    //       () => {
-    //         ifVariableValue(
-    //           dirVar,
-    //           "==",
-    //           4,
-    //           () => {
-    //             changeDirection("right", input, helpers);
-    //           },
-    //           () => {
-    //             changeDirection("up", input, helpers);
-    //           }
-    //         );
-    //       }
-    //     );
-    //   }
-    // );
+    const dirVar = variableFromUnion(
+      input.direction,
+      temporaryEntityVariable(0)
+    );
+    actorSetActive(input.actorId);
+    actorSetDirectionToVariable(dirVar);
   }
 };
 

@@ -14,33 +14,9 @@ const fields = [
 ];
 
 const compile = (input, helpers) => {
-  const { actorSetActive, ifActorDirection, variableSetToValue } = helpers;
+  const { actorSetActive, actorGetDirection } = helpers;
   actorSetActive(input.actorId);
-  ifActorDirection(
-    "down",
-    () => {
-      variableSetToValue(input.direction, 1);
-    },
-    () => {
-      ifActorDirection(
-        "left",
-        () => {
-          variableSetToValue(input.direction, 2);
-        },
-        () => {
-          ifActorDirection(
-            "right",
-            () => {
-              variableSetToValue(input.direction, 4);
-            },
-            () => {
-              variableSetToValue(input.direction, 8);
-            }
-          );
-        }
-      );
-    }
-  );
+  actorGetDirection(input.direction);
 };
 
 module.exports = {
