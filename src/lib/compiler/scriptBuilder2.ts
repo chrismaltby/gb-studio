@@ -1,5 +1,5 @@
 import { inputDec, textSpeedDec } from "./helpers";
-import { decOct } from "../helpers/8bit";
+import { decOct, hexDec } from "../helpers/8bit";
 import trimlines from "../helpers/trimlines";
 import { is16BitCType } from "../helpers/engineFields";
 import {
@@ -10,6 +10,7 @@ import {
 import {
   ActorDirection,
   CustomEvent,
+  Palette,
   ScriptEvent,
   Variable,
 } from "../../store/features/entities/entitiesTypes";
@@ -22,6 +23,7 @@ import { PrecompiledFontData } from "./compileFonts";
 import { encodeString } from "../helpers/encodings";
 import { PrecompiledMusicTrack } from "./compileMusic";
 import { emoteSymbol, spriteSheetSymbol } from "./compileData2";
+import { DMG_PALETTE } from "../../consts";
 
 type ScriptOutput = string[];
 
@@ -53,6 +55,7 @@ interface ScriptBuilderOptions {
   music: PrecompiledMusicTrack[];
   avatars: ScriptBuilderEntity[];
   emotes: ScriptBuilderEntity[];
+  palettes: Palette[];
   customEvents: CustomEvent[];
   characterEncoding: string;
   entity?: ScriptBuilderEntity;
@@ -82,6 +85,8 @@ type ScriptBuilderOverlayWaitFlag =
   | ".UI_WAIT_BTN_A"
   | ".UI_WAIT_BTN_B"
   | ".UI_WAIT_BTN_ANY";
+
+type ScriptBuilderPaletteType = ".PALETTE_BKG" | ".PALETTE_SPRITE";
 
 type ScriptBuilderChoiceFlag = ".UI_MENU_LAST_0" | ".UI_MENU_CANCEL_B";
 
@@ -295,6 +300,7 @@ class ScriptBuilder {
       music: options.music || [],
       avatars: options.avatars || [],
       emotes: options.emotes || [],
+      palettes: options.palettes || [],
       customEvents: options.customEvents || [],
       characterEncoding: options.characterEncoding || "",
       additionalScripts: options.additionalScripts || [],
@@ -937,6 +943,44 @@ class ScriptBuilder {
 
   _musicStop = () => {
     this._addCmd("VM_MUSIC_STOP");
+  };
+
+  _paletteLoad = (
+    mask: number,
+    type: ScriptBuilderPaletteType,
+    commit: boolean
+  ) => {
+    this._addCmd(
+      "VM_LOAD_PALETTE",
+      mask,
+      unionFlags(([] as string[]).concat(type, commit ? ".PALETTE_COMMIT" : []))
+    );
+  };
+
+  _paletteDMG = (
+    color1: number,
+    color2: number,
+    color3: number,
+    color4: number
+  ) => {
+    this._addCmd(".DMG_PAL", color1, color2, color3, color4);
+  };
+
+  _paletteColor = (
+    r1: number,
+    g1: number,
+    b1: number,
+    r2: number,
+    g2: number,
+    b2: number,
+    r3: number,
+    g3: number,
+    b3: number,
+    r4: number,
+    g4: number,
+    b4: number
+  ) => {
+    this._addCmd(".CGB_PAL", r1, g1, b1, r2, g2, b2, r3, g3, b3, r4, g4, b4);
   };
 
   _callFar = (symbol: string) => {
@@ -1990,6 +2034,89 @@ class ScriptBuilder {
     this._addComment(`Music Stop`);
     this._musicStop();
     this._addNL();
+  };
+
+  // --------------------------------------------------------------------------
+  // Palettes
+
+  paletteSetBackground = (paletteIds: string[]) => {
+    const { palettes } = this.options;
+    let mask = 0;
+    const writePalettes: Palette[] = [];
+    for (let i = 0; i < paletteIds.length; i++) {
+      const paletteId = paletteIds[i];
+      if (paletteId === "keep") {
+        continue;
+      }
+      mask += 1 << i;
+      writePalettes.push(
+        palettes.find((p) => p.id === paletteId) || (DMG_PALETTE as Palette)
+      );
+    }
+
+    if (mask === 0) {
+      return;
+    }
+
+    this._paletteLoad(mask, ".PALETTE_BKG", true);
+
+    const parseR = (hex: string) =>
+      Math.floor(hexDec(hex.substring(0, 2)) * (32 / 256));
+    const parseG = (hex: string) =>
+      Math.floor(hexDec(hex.substring(2, 4)) * (32 / 256));
+    const parseB = (hex: string) =>
+      Math.max(1, Math.floor(hexDec(hex.substring(4, 6)) * (32 / 256)));
+
+    for (const palette of writePalettes) {
+      const colors = palette.colors;
+      this._paletteColor(
+        parseR(colors[0]),
+        parseG(colors[0]),
+        parseB(colors[0]),
+        parseR(colors[1]),
+        parseG(colors[1]),
+        parseB(colors[1]),
+        parseR(colors[2]),
+        parseG(colors[2]),
+        parseB(colors[2]),
+        parseR(colors[3]),
+        parseG(colors[3]),
+        parseB(colors[3])
+      );
+    }
+  };
+
+  paletteSetUI = (paletteId: string) => {
+    const { palettes } = this.options;
+    const palette =
+      palettes.find((p) => p.id === paletteId) || (DMG_PALETTE as Palette);
+
+    const UI_MASK = 128;
+    this._paletteLoad(UI_MASK, ".PALETTE_BKG", true);
+
+    const parseR = (hex: string) =>
+      Math.floor(hexDec(hex.substring(0, 2)) * (32 / 256));
+    const parseG = (hex: string) =>
+      Math.floor(hexDec(hex.substring(2, 4)) * (32 / 256));
+    const parseB = (hex: string) =>
+      Math.max(1, Math.floor(hexDec(hex.substring(4, 6)) * (32 / 256)));
+
+    const colors = palette.colors;
+
+    this._paletteColor(
+      parseR(colors[0]),
+      parseG(colors[0]),
+      parseB(colors[0]),
+      parseR(colors[1]),
+      parseG(colors[1]),
+      parseB(colors[1]),
+      parseR(colors[2]),
+      parseG(colors[2]),
+      parseB(colors[2]),
+      parseR(colors[3]),
+      parseG(colors[3]),
+      parseB(colors[3])
+    );
   };
 
   // --------------------------------------------------------------------------

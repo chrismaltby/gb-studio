@@ -7,7 +7,7 @@ const fields = [
     defaultValue: "",
     paletteType: "background",
     paletteIndex: 0,
-    canKeep: true
+    canKeep: true,
   },
   {
     key: "palette1",
@@ -15,7 +15,7 @@ const fields = [
     defaultValue: "",
     paletteType: "background",
     paletteIndex: 1,
-    canKeep: true
+    canKeep: true,
   },
   {
     key: "palette2",
@@ -23,7 +23,7 @@ const fields = [
     defaultValue: "",
     paletteType: "background",
     paletteIndex: 2,
-    canKeep: true
+    canKeep: true,
   },
   {
     key: "palette3",
@@ -31,7 +31,7 @@ const fields = [
     defaultValue: "",
     paletteType: "background",
     paletteIndex: 3,
-    canKeep: true
+    canKeep: true,
   },
   {
     key: "palette4",
@@ -39,7 +39,7 @@ const fields = [
     defaultValue: "",
     paletteType: "background",
     paletteIndex: 4,
-    canKeep: true    
+    canKeep: true,
   },
   {
     key: "palette5",
@@ -47,14 +47,29 @@ const fields = [
     defaultValue: "",
     paletteType: "background",
     paletteIndex: 5,
-    canKeep: true
+    canKeep: true,
+  },
+  {
+    key: "palette6",
+    type: "palette",
+    defaultValue: "",
+    paletteType: "background",
+    paletteIndex: 6,
+    canKeep: true,
   },
 ];
 
 const compile = (input, helpers) => {
-  const { paletteSetBackground, event } = helpers;
-  const mask = [0,1,2,3,4,5].map((i) => input[`palette${i}`] !== "keep")
-  paletteSetBackground(event.id, mask);
+  const { paletteSetBackground } = helpers;
+  paletteSetBackground([
+    input.palette0,
+    input.palette1,
+    input.palette2,
+    input.palette3,
+    input.palette4,
+    input.palette5,
+    input.palette6,
+  ]);
 };
 
 module.exports = {

@@ -5,13 +5,13 @@ const fields = [
     key: "palette",
     type: "palette",
     defaultValue: "",
-    paletteType: "ui"
-  }
+    paletteType: "ui",
+  },
 ];
 
 const compile = (input, helpers) => {
-  const { paletteSetUI, event } = helpers;
-  paletteSetUI(event.id);
+  const { paletteSetUI } = helpers;
+  paletteSetUI(input.palette);
 };
 
 module.exports = {
