@@ -6,30 +6,15 @@ const fields = [
   {
     key: "input",
     type: "input",
-    defaultValue: ["b"]
+    defaultValue: ["b"],
   },
-  {
-    key: "persist",
-    label: l10n("FIELD_PERSIST_BETWEEN_SCENES"),
-    type: "checkbox",
-    defaultValue: false
-  },
-  {
-    label: l10n("FIELD_PERSIST_BETWEEN_SCENES_WARNING"),
-    conditions: [
-      {
-        key: "persist",
-        eq: true
-      }
-    ]
-  },  
   {
     key: "__scriptTabs",
     type: "tabs",
     defaultValue: "press",
     values: {
       press: l10n("FIELD_ON_PRESS"),
-    }
+    },
   },
   {
     key: "true",
@@ -37,10 +22,10 @@ const fields = [
     conditions: [
       {
         key: "__scriptTabs",
-        in: [undefined, "press"]
-      }
-    ]
-  }
+        in: [undefined, "press"],
+      },
+    ],
+  },
 ];
 
 const compile = (input, helpers) => {
@@ -51,5 +36,5 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   fields,
-  compile
+  compile,
 };

@@ -1681,19 +1681,21 @@ class ScriptBuilder {
     persist: boolean,
     script: ScriptEvent[] | ScriptBuilderPathFunction = []
   ) => {
+    this._addComment(`Input Script Attach`);
     const scriptRef = this._compileSubScript("input", script);
-    this._inputContextPrepare(scriptRef, 1);
-    this._inputContextAttach(inputDec(input), 1);
+    const inputValue = inputDec(input);
+    let ctx = inputValue.toString(2).padStart(8, "0").indexOf("1");
+    if (ctx === -1) {
+      ctx = 0;
+    }
+    this._inputContextPrepare(scriptRef, ctx + 1);
+    this._inputContextAttach(inputValue, ctx + 1);
     this._addNL();
   };
 
   inputScriptRemove = (input: string) => {
-    console.error("inputScriptRemove not implemented");
+    this._addComment(`Input Script Remove`);
     this._inputContextDetach(inputDec(input));
-
-    // const output = this.output;
-    // output.push(cmd(REMOVE_INPUT_SCRIPT));
-    // output.push(inputDec(input));
     this._addNL();
   };
 
