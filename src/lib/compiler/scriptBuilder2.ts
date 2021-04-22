@@ -923,6 +923,27 @@ class ScriptBuilder {
     this._addCmd("VM_INPUT_DETACH", buttonMask);
   };
 
+  _timerContextPrepare = (symbol: string, context: number) => {
+    this._addCmd(
+      "VM_TIMER_PREPARE",
+      context,
+      `___bank_${symbol}`,
+      `_${symbol}`
+    );
+  };
+
+  _timerStart = (context: number, interval: number) => {
+    this._addCmd("VM_TIMER_SET", context, interval);
+  };
+
+  _timerStop = (context: number) => {
+    this._addCmd("VM_TIMER_STOP", context);
+  };
+
+  _timerReset = (context: number) => {
+    this._addCmd("VM_TIMER_RESET", context);
+  };
+
   _savePeek = (
     successDest: ScriptBuilderStackVariable,
     dest: ScriptBuilderStackVariable,
@@ -1697,6 +1718,41 @@ class ScriptBuilder {
     this._addComment(`Input Script Remove`);
     this._inputContextDetach(inputDec(input));
     this._addNL();
+  };
+
+  // --------------------------------------------------------------------------
+  // Timer
+
+  timerScriptSet = (
+    duration = 10.0,
+    script: ScriptEvent[] | ScriptBuilderPathFunction = []
+  ) => {
+    this._addComment(`Timer Start`);
+    const scriptRef = this._compileSubScript("timer", script);
+    const ctx = 1;
+    const TIMER_CYCLES = 16;
+    let durationTicks = ((60 * duration) / TIMER_CYCLES + 0.5) | 0;
+    if (durationTicks <= 0) {
+      durationTicks = 1;
+    }
+    if (durationTicks >= 256) {
+      durationTicks = 255;
+    }
+    this._timerContextPrepare(scriptRef, ctx);
+    this._timerStart(ctx, durationTicks);
+    this._addNL();
+  };
+
+  timerRestart = () => {
+    this._addComment(`Timer Restart`);
+    const ctx = 1;
+    this._timerReset(ctx);
+  };
+
+  timerDisable = () => {
+    this._addComment(`Timer Disable`);
+    const ctx = 1;
+    this._timerStop(ctx);
   };
 
   // --------------------------------------------------------------------------
@@ -3172,49 +3228,6 @@ class ScriptBuilder {
     output.push(cmd(CLEAR_DATA));
   };
 
-  // Timer Script
-
-  timerScriptSet = (duration = 10.0, script) => {
-    const output = this.output;
-    const { compileEvents, banked } = this.options;
-
-    // convert the duration from seconds to timer ticks
-    const TIMER_CYCLES = 16;
-    let durationTicks = ((60 * duration) / TIMER_CYCLES + 0.5) | 0;
-    if (durationTicks <= 0) {
-      durationTicks = 1;
-    }
-    if (durationTicks >= 256) {
-      durationTicks = 255;
-    }
-
-    // compile event script
-    const subScript = [];
-    if (typeof script === "function") {
-      this.output = subScript;
-      script();
-      this.output = output;
-    } else {
-      compileEvents(script, subScript, false);
-    }
-    const bankPtr = banked.push(subScript);
-
-    output.push(cmd(SET_TIMER_SCRIPT));
-    output.push(durationTicks);
-    output.push(bankPtr.bank);
-    output.push(hi(bankPtr.offset));
-    output.push(lo(bankPtr.offset));
-  };
-
-  timerRestart = () => {
-    const output = this.output;
-    output.push(cmd(TIMER_RESTART));
-  };
-
-  timerDisable = () => {
-    const output = this.output;
-    output.push(cmd(TIMER_DISABLE));
-  };
 
   // Device
 

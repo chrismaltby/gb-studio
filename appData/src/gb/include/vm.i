@@ -609,14 +609,28 @@ OP_VM_FADE_OUT          = 0x57
         .db OP_VM_FADE_OUT, #<IS_MODAL
 .endm
 
+; Load script into timer context
 OP_VM_TIMER_PREPARE     = 0x58
 .macro VM_TIMER_PREPARE TIMER, BANK, ADDR
         .db OP_VM_TIMER_PREPARE, #>ADDR, #<ADDR, #<BANK, #<TIMER
 .endm
 
+; Start a timer calling once every interval*16 frames
 OP_VM_TIMER_SET         = 0x59
 .macro VM_TIMER_SET TIMER, INTERVAL
         .db OP_VM_TIMER_SET, #<INTERVAL, #<TIMER 
+.endm
+
+; Stop a timer
+OP_VM_TIMER_STOP         = 0x72
+.macro VM_TIMER_STOP TIMER
+        .db OP_VM_TIMER_STOP, #<TIMER 
+.endm
+
+; Reset a timers countdown to 0
+OP_VM_TIMER_RESET         = 0x73
+.macro VM_TIMER_RESET TIMER
+        .db OP_VM_TIMER_RESET, #<TIMER 
 .endm
 
 OP_VM_GET_TILE_XY       = 0x5A

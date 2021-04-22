@@ -82,6 +82,18 @@ void vm_timer_set(SCRIPT_CTX * THIS, UBYTE timer, UBYTE value) __banked {
     timer_value->remains = value;
 }
 
+void vm_timer_stop(SCRIPT_CTX * THIS, UBYTE timer) __banked {
+    THIS;
+    timer_time_t * timer_value = &timer_values[(timer - 1) & 3];
+    timer_value->value = 0;
+}
+
+void vm_timer_reset(SCRIPT_CTX * THIS, UBYTE timer) __banked {
+    THIS;
+    timer_time_t * timer_value = &timer_values[(timer - 1) & 3];
+    timer_value->remains = timer_value->value;
+}
+
 void vm_get_tile_xy(SCRIPT_CTX * THIS, INT16 idx_tile, INT16 idx_x, INT16 idx_y) __banked {
     THIS;
 
