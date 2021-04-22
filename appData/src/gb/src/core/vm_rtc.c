@@ -11,14 +11,12 @@ void vm_rtc_latch() __banked {
 }
 
 void vm_rtc_get(SCRIPT_CTX * THIS, INT16 idx, UBYTE what) __banked {
-    INT16 * res;
-    if (idx < 0) res = THIS->stack_ptr + idx; else res = script_memory + idx;
+    INT16 * res = VM_REF_TO_PTR(idx);
     *res = RTC_GET((rtc_dateparts_e)((what & 0x03) + RTC_VALUE_SEC));
 }
 
 void vm_rtc_set(SCRIPT_CTX * THIS, INT16 idx, UBYTE what) __banked {
-    INT16 * res;
-    if (idx < 0) res = THIS->stack_ptr + idx; else res = script_memory + idx;
+    INT16 * res = VM_REF_TO_PTR(idx);
     RTC_SET((rtc_dateparts_e)((what & 0x03) + RTC_VALUE_SEC), (UWORD)*res);
 }
 

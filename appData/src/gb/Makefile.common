@@ -102,12 +102,10 @@ MBC5:
 	@echo "Using MBC5"
 
 hUGE:
-	$(eval MUSIC_DRIVER = HUGE_TRACKER)
 	$(eval CFLAGS += -DHUGE_TRACKER)
 	$(eval LFLAGS += -Wl-l$(TOP)lib/hUGEDriver.lib)
 	@echo "Enable hUGETracker"
 GBT:
-	$(eval MUSIC_DRIVER = GBT_PLAYER)
 	$(eval CFLAGS += -DGBT_PLAYER)
 	$(eval LFLAGS += -Wl-l$(TOP)lib/gbt_player.lib)
 	@echo "Enable GBTPlayer"

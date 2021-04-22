@@ -41,8 +41,7 @@ void vm_load_text(UWORD dummy0, UWORD dummy1, SCRIPT_CTX * THIS, UBYTE nargs) __
 
     while (*s) {
         if (*s == '%') {
-            idx = *args;
-            if (idx < 0) idx = *(THIS->stack_ptr + idx); else idx = script_memory[idx];
+            idx = *((INT16 *)VM_REF_TO_PTR(*args));
             switch (*++s) {
                 // variable value of fixed width, zero padded
                 case 'D': 

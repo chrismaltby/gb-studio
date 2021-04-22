@@ -40,7 +40,7 @@ void vm_sio_exchange(SCRIPT_CTX * THIS, INT16 idxA, INT16 idxB, UBYTE len) __ban
 
                 link_packet_sent = link_packet_received = FALSE;
 
-                if (idxA < 0) data = THIS->stack_ptr + idxA; else data = script_memory + idxA;
+                data = VM_REF_TO_PTR(idxA);
                 memcpy(link_packet, data, len);
                 SIO_send_async(len, link_packet);
 
@@ -52,7 +52,7 @@ void vm_sio_exchange(SCRIPT_CTX * THIS, INT16 idxA, INT16 idxB, UBYTE len) __ban
             } else if ((exchange_state & PACKET_RECV_DONE) == 0) {
                 if (len > LINK_MAX_PACKET_LENGTH) len = LINK_MAX_PACKET_LENGTH;
 
-                if (idxB < 0) data = THIS->stack_ptr + idxB; else data = script_memory + idxB;
+                data = VM_REF_TO_PTR(idxB);
                 memcpy(data, link_packet, len);
                 exchange_state |= PACKET_RECV_DONE;
             }
@@ -66,14 +66,14 @@ void vm_sio_exchange(SCRIPT_CTX * THIS, INT16 idxA, INT16 idxB, UBYTE len) __ban
                 if (link_packet_received) { 
                     if (len > LINK_MAX_PACKET_LENGTH) len = LINK_MAX_PACKET_LENGTH;
 
-                    if (idxB < 0) data = THIS->stack_ptr + idxB; else data = script_memory + idxB;
+                    data = VM_REF_TO_PTR(idxB);
                     memcpy(data, link_packet, len);
                     exchange_state |= PACKET_RECV_DONE;
                 }
             } else if ((exchange_state & PACKET_SEND_INIT) == 0) {
                 if (len > LINK_MAX_PACKET_LENGTH) len = LINK_MAX_PACKET_LENGTH;
 
-                if (idxA < 0) data = THIS->stack_ptr + idxA; else data = script_memory + idxA;
+                data = VM_REF_TO_PTR(idxA);
                 memcpy(link_packet, data, len);
                 SIO_send_async(len, link_packet);
 

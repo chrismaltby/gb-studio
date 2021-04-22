@@ -286,11 +286,13 @@ OP_VM_SET_CONST_INT16 = 0x22
         .db OP_VM_SET_CONST_INT16, #>V, #<V, #>ADDR, #<ADDR
 .endm
 
+; Initializes RNG seed
 OP_VM_RANDOMIZE       = 0x23
 .macro VM_RANDOMIZE
         .db OP_VM_RANDOMIZE
 .endm
 
+; Returns random value between MIN and MIN+LIMIT
 OP_VM_RAND            = 0x24
 .macro VM_RAND IDX, MIN, LIMIT
         .db OP_VM_RAND 
@@ -299,16 +301,19 @@ OP_VM_RAND            = 0x24
         .db #>LIMIT, #<LIMIT, #>MIN, #<MIN, #>IDX, #<IDX
 .endm
 
+; Locks VM
 OP_VM_LOCK            = 0x25
 .macro VM_LOCK
         .db OP_VM_LOCK
 .endm
 
+; Unlocks VM
 OP_VM_UNLOCK          = 0x26
 .macro VM_UNLOCK
         .db OP_VM_UNLOCK
 .endm
 
+; Raises VM exception
 OP_VM_RAISE           = 0x27
 .macro VM_RAISE CODE, SIZE
         .db OP_VM_RAISE, #<SIZE, #<CODE
@@ -326,12 +331,14 @@ OP_VM_GET_INDIRECT    = 0x29
         .db OP_VM_GET_INDIRECT, #>IDXB, #<IDXB, #>IDXA, #<IDXA
 .endm
 
+; Terminates unit-testing immediately
 OP_VM_TEST_TERMINATE  = 0x2A
 .TEST_WAIT_VBL        = 1
 .macro VM_TEST_TERMINATE FLAGS
         .db OP_VM_TEST_TERMINATE, #<FLAGS
 .endm
 
+; Checks that VM state was restored and reset the restore flag
 OP_VM_POLL_LOADED     = 0x2B
 .macro VM_POLL_LOADED IDX
         .db OP_VM_POLL_LOADED, #>IDX, #<IDX
@@ -357,11 +364,13 @@ OP_VM_COS_SCALE         = 0x2D
 .macro .SAVE_SLOT SLOT
         .db #<SLOT
 .endm
+; Reads count variables from save slot into dest and puts result of the operation into res
 OP_VM_SAVE_PEEK         = 0x2E
 .macro VM_SAVE_PEEK RES, DEST, SOUR, COUNT, SLOT
         .db OP_VM_SAVE_PEEK, #<SLOT, #<COUNT, #>SOUR, #<SOUR, #>DEST, #<DEST, #>RES, #<RES
 .endm
 
+; Erases data in save slot
 OP_VM_SAVE_CLEAR         = 0x2F
 .macro VM_SAVE_CLEAR SLOT
         .db OP_VM_SAVE_CLEAR, #<SLOT
@@ -644,6 +653,7 @@ OP_VM_INPUT_DETACH      = 0x5F
 
 ; --- MUSIC AND SOUND -------------------------------
 
+; Starts playing of music track
 OP_VM_MUSIC_PLAY        = 0x60
 .MUSIC_NO_LOOP          = 0
 .MUSIC_LOOP             = 1
@@ -651,31 +661,37 @@ OP_VM_MUSIC_PLAY        = 0x60
         .db OP_VM_MUSIC_PLAY, #<LOOP, #>TRACK, #<TRACK, #<TRACK_BANK
 .endm
 
+; Stops playing of music track
 OP_VM_MUSIC_STOP        = 0x61
 .macro VM_MUSIC_STOP
         .db OP_VM_MUSIC_STOP
 .endm
 
+; Mutes/unmutes channels by mask
 OP_VM_MUSIC_MUTE        = 0x62
 .macro VM_MUSIC_MUTE MASK
         .db OP_VM_MUSIC_MUTE, #<MASK
 .endm
 
+; Sets master volume
 OP_VM_SOUND_MASTERVOL   = 0x63
 .macro VM_SOUND_MASTERVOL VOL
         .db OP_VM_SOUND_MASTERVOL, #<VOL
 .endm
 
+; Plays sound effect
 OP_VM_SOUND_PLAY        = 0x64
 .macro VM_SOUND_PLAY FRAMES, CH, ?A, ?B, ?C, ?D, ?E
         .db OP_VM_SOUND_PLAY, #<E, #<D, #<C, #<B, #<A, #<CH, #<FRAMES
 .endm
 
+; Attach script to music event
 OP_VM_MUSIC_ROUTINE     = 0x65
 .macro VM_MUSIC_ROUTINE ROUTINE, BANK, ADDR
         .db OP_VM_MUSIC_ROUTINE, #>ADDR, #<ADDR, #<BANK, #<ROUTINE
 .endm
 
+; Plays waveform record
 OP_VM_WAVE_PLAY         = 0x66
 .macro VM_WAVE_PLAY FRAMES, BANK, ADDR, SIZE
         .db OP_VM_WAVE_PLAY, #>SIZE, #<SIZE, #>ADDR, #<ADDR, #<BANK, #<FRAMES
@@ -725,11 +741,13 @@ OP_VM_CAMERA_SET_POS     = 0x71
 
 ; --- RTC ----------------------------------
 
+; Latch RTC value for access
 OP_VM_RTC_LATCH          = 0x78
 .macro VM_RTC_LATCH
         .db OP_VM_RTC_LATCH
 .endm
 
+; Read RTC value
 OP_VM_RTC_GET            = 0x79
 .RTC_SECONDS             = 0x00
 .RTC_MINUTES             = 0x01
@@ -739,11 +757,13 @@ OP_VM_RTC_GET            = 0x79
         .db OP_VM_RTC_GET, #<WHAT, #>IDX, #<IDX
 .endm
 
+; Write RTC value
 OP_VM_RTC_SET            = 0x7A
 .macro VM_RTC_SET IDX, WHAT
         .db OP_VM_RTC_SET, #<WHAT, #>IDX, #<IDX
 .endm
 
+; Start or stop RTC
 OP_VM_RTC_START          = 0x7B
 .RTC_STOP                = 0
 .RTC_START               = 1
@@ -774,6 +794,7 @@ OP_VM_LOAD_PALETTE       = 0x7C
 
 ; --- SGB -----------------------------------------
 
+; transfers SGB packet(s)
 OP_VM_SGB_TRANSFER       = 0x7E
 .macro VM_SGB_TRANSFER 
         .db OP_VM_SGB_TRANSFER
