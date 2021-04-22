@@ -5,17 +5,19 @@ import { connect } from "react-redux";
 import SpriteSheetCanvas from "./SpriteSheetCanvas";
 import { ActorShape, PaletteShape } from "../../store/stateShape";
 import { getCachedObject } from "../../lib/helpers/cache";
-import { DMG_PALETTE, SPRITE_TYPE_STATIC } from "../../consts";
+import { DMG_PALETTE, MIDDLE_MOUSE, SPRITE_TYPE_STATIC } from "../../consts";
 import { actorSelectors, paletteSelectors } from "../../store/features/entities/entitiesState";
 import editorActions from "../../store/features/editor/editorActions";
 import { getSettings } from "../../store/features/settings/settingsState";
 
 class Actor extends Component {
   onMouseDown = (e) => {
-    const { actor, sceneId, dragActorStart, setTool } = this.props;
-    dragActorStart({sceneId, actorId:actor.id});
-    setTool({tool:"select"});
-    window.addEventListener("mouseup", this.onMouseUp);
+    const { actor, sceneId, dragActorStart, setTool, editable } = this.props;
+    if (editable && e.nativeEvent.which !== MIDDLE_MOUSE) {
+      dragActorStart({sceneId, actorId:actor.id});
+      setTool({tool:"select"});
+      window.addEventListener("mouseup", this.onMouseUp);
+    }
   };
 
   onMouseUp = (e) => {
@@ -63,6 +65,7 @@ Actor.propTypes = {
   dragActorStart: PropTypes.func.isRequired,
   dragActorStop: PropTypes.func.isRequired,
   setTool: PropTypes.func.isRequired,
+  editable: PropTypes.bool.isRequired,
 };
 
 Actor.defaultProps = {

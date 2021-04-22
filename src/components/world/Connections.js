@@ -11,6 +11,7 @@ import {
 } from "../../store/stateShape";
 import { sceneSelectors, actorSelectors, triggerSelectors } from "../../store/features/entities/entitiesState";
 import editorActions from "../../store/features/editor/editorActions";
+import { MIDDLE_MOUSE } from "../../consts";
 
 const scriptMapTransition = (walkEventsFn) => (script) => {
   const sceneTransitions = [];
@@ -70,11 +71,14 @@ const calculateTransitionCoords = ({
 
 class Connections extends Component {
   onDragPlayerStart = (e) => {
-    e.stopPropagation();
-    e.preventDefault();
-    const { dragPlayerStart } = this.props;
-    dragPlayerStart();
-    window.addEventListener("mouseup", this.onDragPlayerStop);
+    const { editable } = this.props;
+    if (editable && e.nativeEvent.which !== MIDDLE_MOUSE) {
+      e.stopPropagation();
+      e.preventDefault();
+      const { dragPlayerStart } = this.props;
+      dragPlayerStart();
+      window.addEventListener("mouseup", this.onDragPlayerStop);
+    }
   };
 
   onDragPlayerStop = (e) => {
@@ -84,11 +88,14 @@ class Connections extends Component {
   };
 
   onDragDestinationStart = (eventId, sceneId, selectionType, id) => (e) => {
-    e.stopPropagation();
-    e.preventDefault();
-    const { dragDestinationStart } = this.props;
-    dragDestinationStart({eventId, sceneId, selectionType, entityId: id});
-    window.addEventListener("mouseup", this.onDragDestinationStop);
+    const { editable } = this.props;
+    if (editable && e.nativeEvent.which !== MIDDLE_MOUSE) {    
+      e.stopPropagation();
+      e.preventDefault();
+      const { dragDestinationStart } = this.props;
+      dragDestinationStart({eventId, sceneId, selectionType, entityId: id});
+      window.addEventListener("mouseup", this.onDragDestinationStop);
+    }
   };
 
   onDragDestinationStop = (e) => {
@@ -316,6 +323,7 @@ Connections.propTypes = {
   dragDestinationStop: PropTypes.func.isRequired,
   selectedSceneId: PropTypes.string,
   showConnections: PropTypes.oneOf(["all", "selected", true]),
+  editable: PropTypes.bool.isRequired,
 };
 
 Connections.defaultProps = {

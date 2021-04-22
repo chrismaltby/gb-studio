@@ -138,7 +138,8 @@ class Scene extends Component {
       showCollisions,
       labelOffsetLeft,
       labelOffsetRight,
-      parallaxHoverLayer
+      parallaxHoverLayer,
+      editable
     } = this.props;
 
     const {
@@ -274,18 +275,18 @@ class Scene extends Component {
               />
             </div>
           )}
-          <SceneCursor
+          {editable && <SceneCursor
             sceneId={id}
             enabled={hovered}
             sceneFiltered={sceneFiltered}
-          />
+          />}
           {showEntities &&
             triggers.map((triggerId) => (
-              <Trigger key={triggerId} id={triggerId} sceneId={id} />
+              <Trigger key={triggerId} id={triggerId} sceneId={id} editable={editable} />
             ))}
           {showEntities &&
             actors.map((actorId) => (
-              <Actor key={actorId} id={actorId} sceneId={id} palettes={spritePalettes} />
+              <Actor key={actorId} id={actorId} sceneId={id} palettes={spritePalettes} editable={editable} />
             ))}
           {event && (
             <div className="Scene__EventHelper">
@@ -333,7 +334,8 @@ Scene.propTypes = {
   sceneName: PropTypes.string.isRequired,
   sceneFiltered: PropTypes.bool.isRequired,
   labelOffsetLeft: PropTypes.number.isRequired,
-  labelOffsetRight: PropTypes.number.isRequired
+  labelOffsetRight: PropTypes.number.isRequired,
+  editable: PropTypes.bool.isRequired,
 };
 
 Scene.defaultProps = {

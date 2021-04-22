@@ -4,13 +4,16 @@ import cx from "classnames";
 import { connect } from "react-redux";
 import editorActions from "../../store/features/editor/editorActions";
 import { triggerSelectors } from "../../store/features/entities/entitiesState";
+import { MIDDLE_MOUSE } from "../../consts";
 
 class Trigger extends Component {
   onMouseDown = e => {
-    const { id, sceneId, dragTriggerStart, setTool } = this.props;
-    dragTriggerStart({sceneId, triggerId:id});
-    setTool({tool:"select"});
-    window.addEventListener("mouseup", this.onMouseUp);
+    const { id, sceneId, dragTriggerStart, setTool, editable } = this.props;
+    if (editable && e.nativeEvent.which !== MIDDLE_MOUSE) {
+      dragTriggerStart({sceneId, triggerId:id});
+      setTool({tool:"select"});
+      window.addEventListener("mouseup", this.onMouseUp);
+    }
   };
 
   onMouseUp = e => {
@@ -46,7 +49,8 @@ Trigger.propTypes = {
   sceneId: PropTypes.string.isRequired,
   setTool: PropTypes.func.isRequired,
   dragTriggerStart: PropTypes.func.isRequired,
-  dragTriggerStop: PropTypes.func.isRequired
+  dragTriggerStop: PropTypes.func.isRequired,
+  editable: PropTypes.bool.isRequired,
 };
 
 Trigger.defaultProps = {

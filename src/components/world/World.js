@@ -19,7 +19,8 @@ class World extends Component {
     this.state = {
       hover: false,
       hoverX: 0,
-      hoverY: 0 
+      hoverY: 0,
+      dragMode: false
     };
     this.worldDragging = false;
     this.scrollRef = React.createRef();
@@ -32,6 +33,7 @@ class World extends Component {
     window.addEventListener("copy", this.onCopy);
     window.addEventListener("paste", this.onPaste);
     window.addEventListener("keydown", this.onKeyDown);
+    window.addEventListener("keyup", this.onKeyUp);
     window.addEventListener("mouseup", this.onMouseUp);
     window.addEventListener("mousewheel", this.onMouseWheel, { passive: false });
     window.addEventListener("resize", this.onWindowResize);
@@ -102,6 +104,7 @@ class World extends Component {
     window.removeEventListener("copy", this.onCopy);
     window.removeEventListener("paste", this.onPaste);
     window.removeEventListener("keydown", this.onKeyDown);
+    window.removeEventListener("keyup", this.onKeyUp);
     window.removeEventListener("click", this.onClick);
     window.removeEventListener("mouseup", this.onMouseUp);
     window.removeEventListener("mousewheel", this.onMouseWheel);
@@ -137,11 +140,27 @@ class World extends Component {
     if (e.ctrlKey || e.shiftKey || e.metaKey) {
       return;
     }
+    if (e.code === "Space" || e.key === "Alt") {
+      this.setState({ dragMode: true });
+      e.preventDefault();
+    }
     const { removeSelectedEntity, focus } = this.props;
     if (focus && (e.key === "Backspace" || e.key === "Delete")) {
       removeSelectedEntity();
     }
   };
+
+  onKeyUp = e => {
+    if (e.target.nodeName !== "BODY") {
+      return;
+    }
+    if (e.ctrlKey || e.shiftKey || e.metaKey) {
+      return;
+    }
+    if (e.code === "Space" || e.key === "Alt") {
+      this.setState({ dragMode: false });
+    }
+  };  
 
   onMouseUp = e => {
     const { selectWorld } = this.props;
@@ -206,7 +225,8 @@ class World extends Component {
   };
 
   startWorldDragIfAltOrMiddleClick = e => {
-    if (e.altKey || e.nativeEvent.which === MIDDLE_MOUSE) {
+    const { dragMode } = this.state;
+    if (dragMode || e.nativeEvent.which === MIDDLE_MOUSE) {
       this.worldDragging = true;
       e.stopPropagation();
     }
@@ -253,7 +273,7 @@ class World extends Component {
       sidebarWidth,
       loaded
     } = this.props;
-    const { hover, hoverX, hoverY } = this.state;
+    const { hover, hoverX, hoverY, dragMode } = this.state;
 
     const worldStyle = { right: sidebarWidth };
     
@@ -266,6 +286,9 @@ class World extends Component {
         onMouseLeave={this.onMouseLeave}
         onMouseDown={this.startWorldDragIfAltOrMiddleClick}
         onScroll={this.onScroll}
+        style={dragMode ? {
+          cursor: "grab"
+        } : undefined}
       >
         <div ref={this.scrollContentsRef} className="World__Content">
           <div
@@ -282,14 +305,16 @@ class World extends Component {
               key={sceneId}
               id={sceneId}
               index={index}
+              editable={!dragMode}
             />
           ))}
 
-          {showConnections&& (
+          {showConnections && (
             <Connections
               width={scrollWidth}
               height={scrollHeight}
               zoomRatio={zoomRatio}
+              editable={!dragMode}
             />
           )}
 
