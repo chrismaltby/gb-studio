@@ -1641,8 +1641,10 @@ class ScriptBuilder {
 
   cameraMoveTo = (x = 0, y = 0, speed = 0) => {
     this._addComment("Camera Move To");
-    this._stackPushConst(Math.round(x * 8));
-    this._stackPushConst(Math.round(y * 8));
+    const xOffset = 80;
+    const yOffset = 72;
+    this._stackPushConst(xOffset + Math.round(x * 8));
+    this._stackPushConst(yOffset + Math.round(y * 8));
     if (speed === 0) {
       this._cameraSetPos(".ARG1");
     } else {
@@ -1666,7 +1668,13 @@ class ScriptBuilder {
 
     this._set("^/(ACTOR + 1 - 2)/", ".ARG1");
     this._set("^/(ACTOR + 2 - 2)/", ".ARG0");
-    this._cameraMoveTo(".ARG1", speed, true);
+    if (speed === 0) {
+      this._cameraSetPos(".ARG1");
+      this._cameraMoveTo(".ARG1", speed, true);
+    } else {
+      this._cameraMoveTo(".ARG1", speed, true);
+    }
+
     this._stackPop(2);
   };
 

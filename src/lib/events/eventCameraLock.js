@@ -4,17 +4,17 @@ const fields = [
   {
     key: "speed",
     type: "cameraSpeed",
-    defaultValue: "0"
-  }
+    defaultValue: 0,
+  },
 ];
 
 const compile = (input, helpers) => {
   const { cameraLock } = helpers;
-  cameraLock(input.speed);
+  cameraLock(Number(input.speed));
 };
 
 module.exports = {
   id,
   fields,
-  compile
+  compile,
 };

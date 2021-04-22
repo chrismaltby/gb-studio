@@ -10,7 +10,7 @@ const fields = [
     min: 0,
     max: 255,
     width: "50%",
-    defaultValue: 0
+    defaultValue: 0,
   },
   {
     key: "y",
@@ -19,22 +19,22 @@ const fields = [
     min: 0,
     max: 255,
     width: "50%",
-    defaultValue: 0
+    defaultValue: 0,
   },
   {
     key: "speed",
     type: "cameraSpeed",
-    defaultValue: "0"
-  }
+    defaultValue: 0,
+  },
 ];
 
 const compile = (input, helpers) => {
   const { cameraMoveTo } = helpers;
-  cameraMoveTo(input.x, input.y, input.speed);
+  cameraMoveTo(input.x, input.y, Number(input.speed));
 };
 
 module.exports = {
   id,
   fields,
-  compile
+  compile,
 };
