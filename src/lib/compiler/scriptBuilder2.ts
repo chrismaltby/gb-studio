@@ -1684,12 +1684,12 @@ class ScriptBuilder {
     this._addComment(`Input Script Attach`);
     const scriptRef = this._compileSubScript("input", script);
     const inputValue = inputDec(input);
-    let ctx = inputValue.toString(2).padStart(8, "0").indexOf("1");
-    if (ctx === -1) {
-      ctx = 0;
+    let ctx = inputValue.toString(2).padStart(8, "0").indexOf("1") + 1;
+    if (ctx <= 0) {
+      ctx = 1;
     }
-    this._inputContextPrepare(scriptRef, ctx + 1);
-    this._inputContextAttach(inputValue, ctx + 1);
+    this._inputContextPrepare(scriptRef, ctx);
+    this._inputContextAttach(inputValue, ctx);
     this._addNL();
   };
 
