@@ -32,4 +32,5 @@ module.exports = {
   id,
   fields,
   compile,
+  allowedBeforeInitFade: true,
 };
