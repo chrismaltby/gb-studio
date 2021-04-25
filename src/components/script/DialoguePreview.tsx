@@ -194,7 +194,7 @@ export const DialoguePreview: FC<DialoguePreviewProps> = ({
   const [frameImage, setFrameImage] = useState<HTMLImageElement>();
   const [avatarImage, setAvatarImage] = useState<HTMLCanvasElement>();
   const [fontsData, setFontsData] = useState<Record<string, FontData>>({});
-
+  const [drawn, setDrawn] = useState<boolean>(false);
   const ref = useRef<HTMLCanvasElement>(null);
 
   const frameAsset = {
@@ -305,6 +305,7 @@ export const DialoguePreview: FC<DialoguePreviewProps> = ({
           drawText(ctx, text, 8, 8, fontsData, defaultFontId);
         }
       }
+      setDrawn(true);
     }
   }, [ref, text, avatarId, frameImage, avatarImage, fontsData, defaultFontId]);
 
@@ -318,6 +319,7 @@ export const DialoguePreview: FC<DialoguePreviewProps> = ({
         imageRendering: "pixelated",
         boxShadow: "5px 5px 10px 0px rgba(0,0,0,0.5)",
         borderRadius: 4,
+        opacity: drawn ? 1 : 0,
       }}
     />
   );

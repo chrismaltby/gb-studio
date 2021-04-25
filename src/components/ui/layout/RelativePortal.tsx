@@ -15,6 +15,7 @@ export interface RelativePortalProps {
   offsetX?: number;
   offsetY?: number;
   pin?: PinDirection;
+  zIndex?: number;
 }
 
 const pinStyles: Record<PinDirection, CSSProperties> = {
@@ -45,6 +46,7 @@ export const RelativePortal: FC<RelativePortalProps> = ({
   offsetX = 0,
   offsetY = 0,
   pin = "top-left",
+  zIndex,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [x, setX] = useState(0);
@@ -63,18 +65,18 @@ export const RelativePortal: FC<RelativePortalProps> = ({
     return () => {
       clearInterval(timer);
     };
-  }, [ref]);
+  }, [ref, offsetX, offsetY]);
 
   return (
     <>
-      <div ref={ref} />
+      <div ref={ref} style={{ zIndex: zIndex }} />
       <Portal>
         <div
           style={{
             position: "fixed",
             left: x,
             top: y,
-            zIndex: 1000,
+            zIndex,
           }}
         >
           <div style={pinStyles[pin]}>{children}</div>

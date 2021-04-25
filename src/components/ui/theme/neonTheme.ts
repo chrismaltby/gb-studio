@@ -20,8 +20,9 @@ const darkheme: ThemeInterface = {
     token: {
       variable: "#9ccc65",
       character: "#ffd54f",
-      speed: "#90caf9",
-      text: "#000000",
+      operator: "#90caf9",
+      code: "#90caf9",
+      function: "#ffd54f",
     },
     toolbar: {
       background: "linear-gradient(to bottom, #630d86 0%, #271738 100%)",

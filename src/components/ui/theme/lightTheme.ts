@@ -19,9 +19,10 @@ const lightTheme: ThemeInterface = {
     },
     token: {
       variable: "#9ccc65",
-      character: "#ffd54f",
-      speed: "#90caf9",
-      text: "#000000",
+      character: "#90caf9",
+      operator: "#90caf9",
+      code: "#aaaaaa",
+      function: "#aaaaaa",
     },
     toolbar: {
       background: "linear-gradient(to bottom, #e8e7e8 0%, #d1d0d1 100%)",

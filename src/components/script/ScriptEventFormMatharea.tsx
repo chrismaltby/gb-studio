@@ -50,6 +50,7 @@ const ScriptEventFormMathArea: FC<ScriptEventFormMathAreaProps> = ({
   return (
     <MathTextarea
       id={id}
+      entityId={entityId}
       value={value || ""}
       onChange={onChange}
       variables={variables}

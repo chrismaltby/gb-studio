@@ -347,6 +347,8 @@
   "FIELD_PACKET_SIZE": "Packet Size",
   "FIELD_SCENE_BACKGROUND_PALETTES": "Background Palettes",
   "FIELD_SCENE_SPRITE_PALETTES": "Sprite Palettes",
+  "FIELD_CHARACTER": "Character",
+  "FIELD_FONT": "Font",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

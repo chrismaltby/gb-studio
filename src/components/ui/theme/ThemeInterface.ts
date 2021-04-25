@@ -18,8 +18,9 @@ export interface ThemeInterface {
     token: {
       variable: string;
       character: string;
-      speed: string;
-      text: string;
+      code: string;
+      function: string;
+      operator: string;
     };
     toolbar: {
       background: string;

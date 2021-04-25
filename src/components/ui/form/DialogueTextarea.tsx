@@ -1,36 +1,47 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import { MentionsInput, Mention, SuggestionDataItem } from "react-mentions";
+import { MentionsInput, SuggestionDataItem } from "react-mentions";
 import { NamedVariable } from "../../../lib/helpers/variables";
 import keyBy from "lodash/keyBy";
 import { Dictionary } from "@reduxjs/toolkit";
-import { totalLength } from "../../../lib/helpers/trimlines";
 import { Font } from "../../../store/features/entities/entitiesTypes";
+import CustomMention from "./CustomMention";
+import { RelativePortal } from "../layout/RelativePortal";
+import { FontSelect } from "../../forms/FontSelect";
+import { VariableSelect } from "../../forms/VariableSelect";
+import { EditorSelectionType } from "../../../store/features/editor/editorState";
+import { TextSpeedSelect } from "../../forms/TextSpeedSelect";
+import { SelectMenu, selectMenuStyleProps } from "./Select";
+import l10n from "../../../lib/helpers/l10n";
+
+const varRegex = /\$([VLT0-9][0-9]*)\$/g;
+const charRegex = /#([VLT0-9][0-9]*)#/g;
+const speedRegex = /!(S[0-5]+)!/g;
 
 const speedCodes = [
   {
     id: "S0",
-    display: "Speed\u00a00",
+    display: `${l10n("FIELD_SPEED")}\u00a00`,
   },
   {
     id: "S1",
-    display: "Speed\u00a01",
+    display: `${l10n("FIELD_SPEED")}\u00a01`,
   },
   {
     id: "S2",
-    display: "Speed\u00a02",
+    display: `${l10n("FIELD_SPEED")}\u00a02`,
   },
   {
     id: "S3",
-    display: "Speed\u00a03",
+    display: `${l10n("FIELD_SPEED")}\u00a03`,
   },
   {
     id: "S4",
-    display: "Speed\u00a04",
+    display: `${l10n("FIELD_SPEED")}\u00a04`,
   },
   {
     id: "S5",
-    display: "Speed\u00a05",
+    display: `${l10n("FIELD_SPEED")}\u00a05`,
   },
 ];
 
@@ -89,12 +100,13 @@ const DialogueTextareaWrapper = styled.div`
     :focus {
       border: 1px solid ${(props) => props.theme.colors.highlight};
       background: ${(props) => props.theme.colors.input.activeBackground};
+      z-index: 0;
     }
   }
 
   .MentionsInput__suggestions {
     background-color: transparent !important;
-    z-index: 10000 !important;
+    z-index: 100 !important;
   }
 
   .MentionsInput__suggestions__list {
@@ -135,31 +147,55 @@ const DialogueTextareaWrapper = styled.div`
   }
 
   .Mentions__TokenVar {
-    background: ${(props) => props.theme.colors.token.variable};
-    box-shadow: 0 0 0px 1px ${(props) => props.theme.colors.token.variable};
-    border-radius: 5px;
-    color: ${(props) => props.theme.colors.token.text};
+    position: relative;
+    z-index: 1;
+    cursor: pointer;
+    border-radius: 4px;
+    color: ${(props) => props.theme.colors.token.variable};
+
+    :hover {
+      background: ${(props) => props.theme.colors.token.variable};
+      color: ${(props) => props.theme.colors.input.background};
+    }
   }
 
   .Mentions__TokenChar {
-    background: ${(props) => props.theme.colors.token.character};
-    box-shadow: 0 0 0px 1px ${(props) => props.theme.colors.token.character};
-    border-radius: 5px;
-    color: ${(props) => props.theme.colors.token.text};
+    position: relative;
+    z-index: 1;
+    cursor: pointer;
+    border-radius: 4px;
+    color: ${(props) => props.theme.colors.token.character};
+
+    :hover {
+      background: ${(props) => props.theme.colors.token.character};
+      color: ${(props) => props.theme.colors.input.background};
+    }
   }
 
   .Mentions__TokenSpeed {
-    background: ${(props) => props.theme.colors.token.speed};
-    box-shadow: 0 0 0px 1px ${(props) => props.theme.colors.token.speed};
-    border-radius: 5px;
-    color: ${(props) => props.theme.colors.token.text};
+    position: relative;
+    z-index: 1;
+    cursor: pointer;
+    border-radius: 4px;
+    color: ${(props) => props.theme.colors.token.code};
+
+    :hover {
+      background: ${(props) => props.theme.colors.token.code};
+      color: ${(props) => props.theme.colors.input.background};
+    }
   }
 
   .Mentions__TokenFont {
-    background: ${(props) => props.theme.colors.token.character};
-    box-shadow: 0 0 0px 1px ${(props) => props.theme.colors.token.character};
-    border-radius: 5px;
-    color: ${(props) => props.theme.colors.token.text};
+    position: relative;
+    z-index: 1;
+    cursor: pointer;
+    border-radius: 4px;
+    color: ${(props) => props.theme.colors.token.code};
+
+    :hover {
+      background: ${(props) => props.theme.colors.token.code};
+      color: ${(props) => props.theme.colors.input.background};
+    }
   }
 `;
 
@@ -176,7 +212,7 @@ const searchVariables = (variables: NamedVariable[], wrapper: string) => (
     .slice(0, 5)
     .map((v) => ({
       id: v.code,
-      display: `${wrapper}${v.code}${wrapper} : ${v.name}`,
+      display: `${wrapper}${v.name}`,
     }));
 };
 
@@ -185,10 +221,22 @@ export interface DialogueTextareaProps {
   value: string;
   placeholder?: string;
   variables: NamedVariable[];
+  editorType: EditorSelectionType;
+  entityId: string;
   fonts: Font[];
   maxlength?: number;
   onChange: (newValue: string) => void;
 }
+
+type EditModeOptions =
+  | {
+      type: "font" | "speed" | "var" | "char";
+      id: string;
+      index: number;
+      x: number;
+      y: number;
+    }
+  | undefined;
 
 export const DialogueTextarea: FC<DialogueTextareaProps> = ({
   id,
@@ -196,16 +244,20 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
   onChange,
   variables,
   fonts,
+  editorType,
+  entityId,
   maxlength,
   placeholder,
 }) => {
   const [variablesLookup, setVariablesLookup] = useState<
     Dictionary<NamedVariable>
   >({});
+  const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const [fontItems, setFontItems] = useState<SuggestionDataItem[]>([]);
   const [fontsLookup, setFontsLookup] = useState<
     Dictionary<SuggestionDataItem>
   >({});
+  const [editMode, setEditMode] = useState<EditModeOptions>();
 
   useEffect(() => {
     setVariablesLookup(keyBy(variables, "code"));
@@ -214,61 +266,245 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
   useEffect(() => {
     const items = fonts.map((f) => ({
       id: `F:${f.id}`,
-      display: `Font:${f.name}`,
+      display: `${l10n("FIELD_FONT")}: ${f.name}`,
     }));
     setFontItems(items);
     setFontsLookup(keyBy(items, "id"));
   }, [fonts]);
 
+  const handleCopy = useCallback((e: ClipboardEvent) => {
+    if (e.target !== inputRef.current) {
+      return;
+    }
+    // Override clipboard text
+    // e.clipboardData?.setData("text/plain", "Replacement Text");
+    // e.clipboardData?.setData("text/react-mentions", "Replacement Formatted Text");
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener("copy", handleCopy);
+    return () => {
+      document.removeEventListener("copy", handleCopy);
+    };
+  }, []);
+
   return (
     <DialogueTextareaWrapper>
+      {editMode && (
+        <RelativePortal
+          offsetX={editMode.x}
+          offsetY={editMode.y}
+          pin="bottom-right"
+          zIndex={10000}
+        >
+          <SelectMenu>
+            {editMode.type === "font" && (
+              <FontSelect
+                name="replaceFont"
+                value={editMode.id}
+                onChange={(newId) => {
+                  let matches = 0;
+                  const newValue = value.replace(
+                    /!(F:[0-9a-f-]+)!/g,
+                    (match) => {
+                      if (matches === editMode.index) {
+                        matches++;
+                        return `!F:${newId}!`;
+                      }
+                      matches++;
+                      return match;
+                    }
+                  );
+                  onChange(newValue);
+                  setEditMode(undefined);
+                }}
+                onBlur={() => {
+                  setEditMode(undefined);
+                }}
+                {...selectMenuStyleProps}
+              />
+            )}
+            {(editMode.type === "var" || editMode.type === "char") && (
+              <VariableSelect
+                name="replaceVar"
+                value={editMode.id}
+                type="8bit"
+                allowRename={false}
+                entityId={entityId}
+                onChange={(newId) => {
+                  let matches = 0;
+                  const newValue = value.replace(
+                    editMode.type === "var" ? varRegex : charRegex,
+                    (match) => {
+                      if (matches === editMode.index) {
+                        matches++;
+                        return editMode.type === "var"
+                          ? `$${newId.padStart(2, "0")}$`
+                          : `#${newId.padStart(2, "0")}#`;
+                      }
+                      matches++;
+                      return match;
+                    }
+                  );
+                  onChange(newValue);
+                  setEditMode(undefined);
+                }}
+                onBlur={() => {
+                  setEditMode(undefined);
+                }}
+                {...selectMenuStyleProps}
+              />
+            )}
+            {editMode.type === "speed" && (
+              <TextSpeedSelect
+                name="replaceSpeed"
+                value={parseInt(editMode.id || "0", 10)}
+                onChange={(newId) => {
+                  let matches = 0;
+                  const newValue = value.replace(speedRegex, (match) => {
+                    if (matches === editMode.index) {
+                      matches++;
+                      return `!S${newId}!`;
+                    }
+                    matches++;
+                    return match;
+                  });
+                  onChange(newValue);
+                  setEditMode(undefined);
+                }}
+                onBlur={() => {
+                  setEditMode(undefined);
+                }}
+                {...selectMenuStyleProps}
+              />
+            )}
+          </SelectMenu>
+        </RelativePortal>
+      )}
       <MentionsInput
         id={id}
         className="MentionsInput"
         value={value}
         placeholder={placeholder}
         allowSuggestionsAboveCursor={true}
-        onChange={(e: any) => onChange(e.target.value)}
+        onChange={(e: { target: { value: string } }) =>
+          onChange(e.target.value)
+        }
+        inputRef={inputRef}
       >
-        <Mention
+        <CustomMention
           className="Mentions__TokenVar"
           trigger={/(\$([A-Za-z0-9]+))$/}
           markup="$__id__$"
           data={searchVariables(variables, "$")}
           regex={/\$([VLT0-9][0-9]*)\$/}
-          displayTransform={(variable) =>
+          displayTransform={(variable: string) =>
             "$" + (variablesLookup[variable]?.name || variable + "$")
           }
+          hoverTransform={(variable) =>
+            `${l10n("FIELD_VARIABLE")}: ${
+              variablesLookup[variable]?.name || variable
+            }`
+          }
+          onClick={(e, id, index) => {
+            const input = inputRef.current;
+            if (!input) {
+              return;
+            }
+            const rect = input.getBoundingClientRect();
+            const rect2 = e.currentTarget.getBoundingClientRect();
+            setEditMode({
+              type: "var",
+              id: id.replace(/^0/, ""),
+              index,
+              x: rect2.left - rect.left,
+              y: rect2.top - rect.top,
+            });
+          }}
         />
-        <Mention
+        <CustomMention
           className="Mentions__TokenChar"
           trigger={/(#([A-Za-z0-9]+))$/}
           markup="#__id__#"
           data={searchVariables(variables, "#")}
           regex={/#([VLT0-9][0-9]*)#/}
-          displayTransform={(variable) =>
+          displayTransform={(variable: string) =>
             "#" + (variablesLookup[variable]?.name || variable + "#")
           }
+          hoverTransform={(variable) =>
+            `${l10n("FIELD_CHARACTER")}: ${
+              variablesLookup[variable]?.name || variable
+            }`
+          }
+          onClick={(e, id, index) => {
+            const input = inputRef.current;
+            if (!input) {
+              return;
+            }
+            const rect = input.getBoundingClientRect();
+            const rect2 = e.currentTarget.getBoundingClientRect();
+            setEditMode({
+              type: "char",
+              id: id.replace(/^0/, ""),
+              index,
+              x: rect2.left - rect.left,
+              y: rect2.top - rect.top,
+            });
+          }}
         />
-        <Mention
+        <CustomMention
           className="Mentions__TokenSpeed"
           trigger={/(!([A-Za-z0-9]+))$/}
           data={speedCodes}
           markup="!__id__!"
           regex={/!(S[0-5]+)!/}
-          displayTransform={(speedCode) =>
-            "!" + (speedCodeLookup[speedCode]?.display || "")
+          displayTransform={(speedCode: string) => "Ｓ"}
+          hoverTransform={(speedCode) =>
+            speedCodeLookup[speedCode]?.display || ""
           }
+          onClick={(e, id, index) => {
+            const input = inputRef.current;
+            if (!input) {
+              return;
+            }
+            const rect = input.getBoundingClientRect();
+            const rect2 = e.currentTarget.getBoundingClientRect();
+            const speedId = id.replace(/^S/, "");
+            setEditMode({
+              type: "speed",
+              id: speedId,
+              index,
+              x: rect2.left - rect.left,
+              y: rect2.top - rect.top,
+            });
+          }}
         />
-        <Mention
+        <CustomMention
           className="Mentions__TokenFont"
           trigger={/(!([A-Za-z0-9]+))$/}
           data={fontItems}
           markup="!__id__!"
           regex={/!(F:[0-9a-f-]+)!/}
-          displayTransform={(fontCode) =>
-            "!" + (fontsLookup[fontCode]?.display || "")
-          }
+          displayTransform={(fontCode) => {
+            return "Ｆ";
+          }}
+          hoverTransform={(fontCode) => fontsLookup[fontCode]?.display || ""}
+          onClick={(e, id, index) => {
+            const input = inputRef.current;
+            if (!input) {
+              return;
+            }
+            const rect = input.getBoundingClientRect();
+            const rect2 = e.currentTarget.getBoundingClientRect();
+            const fontId = id.replace(/.*:/, "");
+            setEditMode({
+              type: "font",
+              id: fontId,
+              index,
+              x: rect2.left - rect.left,
+              y: rect2.top - rect.top,
+            });
+          }}
         />
       </MentionsInput>
     </DialogueTextareaWrapper>

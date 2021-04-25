@@ -1,12 +1,19 @@
 import React, { FC, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { MentionsInput, Mention, SuggestionDataItem } from "react-mentions";
+import CustomMention from "./CustomMention";
 import { NamedVariable } from "../../../lib/helpers/variables";
 import keyBy from "lodash/keyBy";
 import { Dictionary } from "@reduxjs/toolkit";
 import debounce from "lodash/debounce";
 import tokenize from "../../../lib/rpn/tokenizer";
 import shuntingYard from "../../../lib/rpn/shuntingYard";
+import { RelativePortal } from "../layout/RelativePortal";
+import { SelectMenu, selectMenuStyleProps } from "./Select";
+import { VariableSelect } from "../../forms/VariableSelect";
+import l10n from "../../../lib/helpers/l10n";
+
+const varRegex = /\$([VLT0-9][0-9]*)\$/g;
 
 const functionSymbols = [
   {
@@ -169,6 +176,7 @@ const MathTextareaWrapper = styled.div`
     :focus {
       border: 1px solid ${(props) => props.theme.colors.highlight};
       background: ${(props) => props.theme.colors.input.activeBackground};
+      z-index: 0;
     }
   }
 
@@ -215,15 +223,24 @@ const MathTextareaWrapper = styled.div`
   }
 
   .Mentions__TokenVar {
+    position: relative;
+    z-index: 1;
+    cursor: pointer;
+    border-radius: 4px;
     color: ${(props) => props.theme.colors.token.variable};
+
+    :hover {
+      background: ${(props) => props.theme.colors.token.variable};
+      color: ${(props) => props.theme.colors.input.background};
+    }
   }
 
   .Mentions__TokenFun {
-    color: ${(props) => props.theme.colors.token.character};
+    color: ${(props) => props.theme.colors.token.function};
   }
 
   .Mentions__TokenOp {
-    color: ${(props) => props.theme.colors.token.speed};
+    color: ${(props) => props.theme.colors.token.operator};
   }
 `;
 
@@ -253,22 +270,35 @@ const searchVariables = (variables: NamedVariable[], wrapper: string) => (
 export interface MathTextareaProps {
   id?: string;
   value: string;
+  entityId: string;
   placeholder?: string;
   variables: NamedVariable[];
   onChange: (newValue: string) => void;
 }
 
+type EditModeOptions =
+  | {
+      type: "var";
+      id: string;
+      index: number;
+      x: number;
+      y: number;
+    }
+  | undefined;
+
 export const MathTextarea: FC<MathTextareaProps> = ({
   id,
   value,
   onChange,
+  entityId,
   variables,
   placeholder,
 }) => {
+  const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const [variablesLookup, setVariablesLookup] = useState<
     Dictionary<NamedVariable>
   >({});
-
+  const [editMode, setEditMode] = useState<EditModeOptions>();
   const [error, setError] = useState<string>("");
 
   useEffect(() => {
@@ -294,15 +324,55 @@ export const MathTextarea: FC<MathTextareaProps> = ({
 
   return (
     <MathTextareaWrapper>
+      {editMode && (
+        <RelativePortal
+          offsetX={editMode.x}
+          offsetY={editMode.y}
+          pin="bottom-right"
+          zIndex={10000}
+        >
+          <SelectMenu>
+            {editMode.type === "var" && (
+              <VariableSelect
+                name="replaceVar"
+                value={editMode.id}
+                type="8bit"
+                allowRename={false}
+                entityId={entityId}
+                onChange={(newId) => {
+                  let matches = 0;
+                  const newValue = value.replace(varRegex, (match) => {
+                    if (matches === editMode.index) {
+                      matches++;
+                      return editMode.type === "var"
+                        ? `$${newId.padStart(2, "0")}$`
+                        : `#${newId.padStart(2, "0")}#`;
+                    }
+                    matches++;
+                    return match;
+                  });
+                  onChange(newValue);
+                  setEditMode(undefined);
+                }}
+                onBlur={() => {
+                  setEditMode(undefined);
+                }}
+                {...selectMenuStyleProps}
+              />
+            )}
+          </SelectMenu>
+        </RelativePortal>
+      )}
       <MentionsInput
         id={id}
+        inputRef={inputRef}
         className="MentionsInput"
         value={value}
         placeholder={placeholder}
         allowSuggestionsAboveCursor={true}
         onChange={(e: any) => onChange(e.target.value)}
       >
-        <Mention
+        <CustomMention
           className="Mentions__TokenVar"
           trigger={/(\$([A-Za-z0-9]+))$/}
           markup="$__id__$"
@@ -311,13 +381,33 @@ export const MathTextarea: FC<MathTextareaProps> = ({
           displayTransform={(variable) =>
             "$" + (variablesLookup[variable]?.name || variable + "$")
           }
+          hoverTransform={(variable) =>
+            `${l10n("FIELD_VARIABLE")}: ${
+              variablesLookup[variable]?.name || variable
+            }`
+          }
+          onClick={(e, id, index) => {
+            const input = inputRef.current;
+            if (!input) {
+              return;
+            }
+            const rect = input.getBoundingClientRect();
+            const rect2 = e.currentTarget.getBoundingClientRect();
+            setEditMode({
+              type: "var",
+              id: id.replace(/^0/, ""),
+              index,
+              x: rect2.left - rect.left,
+              y: rect2.top - rect.top,
+            });
+          }}
         />
         <Mention
           className="Mentions__TokenFun"
-          trigger={/((m|a|mi|ma|ab)*)$/}
+          trigger={/((m|mi|ma|ab)*)$/}
           data={functionSearch}
           markup="__id__)"
-          regex={/(min|max|abs)\(/}
+          regex={/(min|max|abs)/}
         />
         <Mention
           className="Mentions__TokenOp"

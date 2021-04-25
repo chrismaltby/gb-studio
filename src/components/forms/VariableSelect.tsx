@@ -1,5 +1,5 @@
 import React, { useState, useEffect, FC } from "react";
-import { Select as DefaultSelect, Option, OptGroup } from "../ui/form/Select";
+import { Select as DefaultSelect, Option, OptGroup, SelectCommonProps } from "../ui/form/Select";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
@@ -31,8 +31,9 @@ import { keyBy } from "lodash";
 import { EditorSelectionType } from "../../store/features/editor/editorState";
 import editorActions from "../../store/features/editor/editorActions";
 
-interface VariableSelectProps {
+interface VariableSelectProps extends SelectCommonProps {
   id?: string;
+  name: string;
   value?: string;
   type: "8bit" | "16bit";
   entityId: string;
@@ -167,7 +168,7 @@ export const VariableToken = styled.span`
   background: ${(props) => props.theme.colors.token.variable};
   box-shadow: 0 0 0px 1px ${(props) => props.theme.colors.token.variable};
   border-radius: 5px;
-  color: ${(props) => props.theme.colors.token.text};
+  color: ${(props) => props.theme.colors.input.background};
 `;
 
 const formatOptionLabel = (
@@ -200,6 +201,7 @@ export const VariableSelect: FC<VariableSelectProps> = ({
   onChange,
   entityId,
   allowRename,
+  ...selectProps  
 }) => {
   const [tooltipVisible, setTooltipVisible] = useDelayedState(false);
   const [renameVisible, setRenameVisible] = useState(false);
@@ -223,7 +225,7 @@ export const VariableSelect: FC<VariableSelectProps> = ({
 
   const valueIsLocal = value && value.startsWith("L");
   const valueIsTemp = value && value.startsWith("T");
-  const canRename = !valueIsTemp && editorType !== "customEvent";
+  const canRename = allowRename && (!valueIsTemp && editorType !== "customEvent");
 
   useEffect(() => {
     const variables = namedVariablesByContext(
@@ -405,6 +407,7 @@ export const VariableSelect: FC<VariableSelectProps> = ({
             editorType,
             namedVariablesLookup
           )}
+          {...selectProps}
         />
       )}
       {canRename &&
