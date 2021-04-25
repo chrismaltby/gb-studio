@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useCallback, useState } from "react";
 import { clipboard } from "electron";
 import { useDispatch, useSelector } from "react-redux";
 import ScriptEditor from "../script/ScriptEditor";
@@ -48,6 +48,7 @@ import ParallaxSelect, {
 } from "../forms/ParallaxSelect";
 import { SpriteSheetSelectButton } from "../forms/SpriteSheetSelectButton";
 import styled from "styled-components";
+import { ClipboardTypePaletteIds } from "../../store/features/clipboard/clipboardTypes";
 
 interface SceneEditorProps {
   id: string;
@@ -103,6 +104,9 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
     sceneSelectors.selectIds(state).indexOf(id)
   );
   const [clipboardData, setClipboardData] = useState<any>(null);
+  const clipboardFormat = useSelector(
+    (state: RootState) => state.clipboard.data?.format
+  );
   const [notesOpen, setNotesOpen] = useState<boolean>(!!scene?.notes);
   const [showParallaxSettings, setShowParallaxSettings] = useState<boolean>(
     (scene?.parallax?.length || 0) > 0
@@ -234,6 +238,7 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
   };
 
   const readClipboard = () => {
+    onFetchClipboard();
     try {
       setClipboardData(JSON.parse(clipboard.readText()));
     } catch (err) {
@@ -260,6 +265,54 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
       })
     );
   };
+
+  const onFetchClipboard = useCallback(() => {
+    dispatch(clipboardActions.fetchClipboard());
+  }, []);
+
+  const onCopyBackgroundPaletteIds = useCallback(() => {
+    if (scene) {
+      const paletteIds = Array.from(Array(8).keys()).map(
+        (n) => scene.paletteIds[n] || defaultBackgroundPaletteIds[n] || ""
+      );
+      dispatch(
+        clipboardActions.copyPaletteIds({
+          paletteIds,
+        })
+      );
+    }
+  }, [dispatch, scene, defaultBackgroundPaletteIds]);
+
+  const onCopySpritePaletteIds = useCallback(() => {
+    if (scene) {
+      const paletteIds = Array.from(Array(8).keys()).map(
+        (n) => scene.spritePaletteIds[n] || defaultSpritePaletteIds[n] || ""
+      );
+      dispatch(
+        clipboardActions.copyPaletteIds({
+          paletteIds,
+        })
+      );
+    }
+  }, [dispatch, scene, defaultSpritePaletteIds]);
+
+  const onPasteBackgroundPaletteIds = useCallback(() => {
+    dispatch(
+      clipboardActions.pastePaletteIds({
+        sceneId: id,
+        type: "background",
+      })
+    );
+  }, [dispatch, id]);
+
+  const onPasteSpritePaletteIds = useCallback(() => {
+    dispatch(
+      clipboardActions.pastePaletteIds({
+        sceneId: id,
+        type: "sprite",
+      })
+    );
+  }, [dispatch, id]);
 
   if (!scene) {
     return <WorldEditor />;
@@ -388,6 +441,29 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
                   </MenuItem>
                 )}
                 <MenuDivider />
+                {colorsEnabled && (
+                  <MenuItem onClick={onCopyBackgroundPaletteIds}>
+                    {l10n("FIELD_COPY_BACKGROUND_PALETTES")}
+                  </MenuItem>
+                )}
+                {colorsEnabled && (
+                  <MenuItem onClick={onCopySpritePaletteIds}>
+                    {l10n("FIELD_COPY_SPRITE_PALETTES")}
+                  </MenuItem>
+                )}
+                {colorsEnabled &&
+                  clipboardFormat === ClipboardTypePaletteIds && (
+                    <MenuItem onClick={onPasteBackgroundPaletteIds}>
+                      {l10n("FIELD_PASTE_BACKGROUND_PALETTES")}
+                    </MenuItem>
+                  )}
+                {colorsEnabled &&
+                  clipboardFormat === ClipboardTypePaletteIds && (
+                    <MenuItem onClick={onPasteSpritePaletteIds}>
+                      {l10n("FIELD_PASTE_SPRITE_PALETTES")}
+                    </MenuItem>
+                  )}
+                {colorsEnabled && <MenuDivider />}
                 <MenuItem onClick={onRemove}>
                   {l10n("MENU_DELETE_SCENE")}
                 </MenuItem>

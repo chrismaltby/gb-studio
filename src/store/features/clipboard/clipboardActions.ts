@@ -30,11 +30,18 @@ const copyMetasprites = createAction<{
 const copyMetaspriteTiles = createAction<{
   metaspriteTileIds: string[];
 }>("clipboard/copyMetaspriteTiles");
+const copyPaletteIds = createAction<{
+  paletteIds: string[];
+}>("clipboard/copyPaletteIds");
 const pasteSprite = createAction<{
   metaspriteId: string;
   spriteAnimationId: string;
 }>("clipboard/pasteSprite");
 const pasteCustomEvents = createAction<void>("clipboard/pasteCustomEvents");
+const pastePaletteIds = createAction<{
+  sceneId: string;
+  type: "background" | "sprite";
+}>("clipboard/pastePaletteIds");
 
 const copySelectedEntity = () => (
   dispatch: ThunkDispatch<RootState, unknown, AnyAction>,
@@ -141,8 +148,10 @@ export default {
   copyMetasprites,
   copyMetaspriteTiles,
   copySelectedEntity,
+  copyPaletteIds,
   pasteClipboardEntity,
   pasteClipboardEntityInPlace,
   pasteCustomEvents,
   pasteSprite,
+  pastePaletteIds,
 };

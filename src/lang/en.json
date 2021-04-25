@@ -349,6 +349,10 @@
   "FIELD_SCENE_SPRITE_PALETTES": "Sprite Palettes",
   "FIELD_CHARACTER": "Character",
   "FIELD_FONT": "Font",
+  "FIELD_COPY_BACKGROUND_PALETTES": "Copy Background Palettes",
+  "FIELD_COPY_SPRITE_PALETTES": "Copy Sprite Palettes",
+  "FIELD_PASTE_BACKGROUND_PALETTES": "Paste Background Palettes",
+  "FIELD_PASTE_SPRITE_PALETTES": "Paste Sprite Palettes",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

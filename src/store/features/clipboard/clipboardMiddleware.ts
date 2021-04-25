@@ -29,6 +29,7 @@ import { copy, pasteAny } from "./clipboardHelpers";
 import {
   ClipboardTypeMetasprites,
   ClipboardTypeMetaspriteTiles,
+  ClipboardTypePaletteIds,
 } from "./clipboardTypes";
 import clipboardActions from "./clipboardActions";
 
@@ -333,6 +334,42 @@ const clipboardMiddleware: Middleware<{}, RootState> = (store) => (next) => (
       );
 
       store.dispatch(editorActions.setSelectedMetaspriteTileIds(newIds));
+    }
+  } else if (actions.copyPaletteIds.match(action)) {
+    copy({
+      format: ClipboardTypePaletteIds,
+      data: {
+        paletteIds: action.payload.paletteIds,
+      },
+    });
+  } else if (actions.pastePaletteIds.match(action)) {
+    const clipboard = pasteAny();
+
+    if (!clipboard) {
+      return next(action);
+    }
+
+    if (clipboard.format === ClipboardTypePaletteIds) {
+      const data = clipboard.data;
+      if (action.payload.type === "background") {
+        store.dispatch(
+          entitiesActions.editScene({
+            sceneId: action.payload.sceneId,
+            changes: {
+              paletteIds: data.paletteIds,
+            },
+          })
+        );
+      } else {
+        store.dispatch(
+          entitiesActions.editScene({
+            sceneId: action.payload.sceneId,
+            changes: {
+              spritePaletteIds: data.paletteIds,
+            },
+          })
+        );
+      }
     }
   }
 

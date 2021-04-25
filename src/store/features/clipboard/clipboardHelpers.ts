@@ -3,9 +3,11 @@ import {
   ClipboardFormat,
   ClipboardMetasprites,
   ClipboardMetaspriteTiles,
+  ClipboardPaletteIds,
   ClipboardType,
   ClipboardTypeMetasprites,
   ClipboardTypeMetaspriteTiles,
+  ClipboardTypePaletteIds,
   ClipboardTypes,
   NarrowClipboardType,
 } from "./clipboardTypes";
@@ -20,6 +22,10 @@ const isClipboardMetasprites = (input: any): input is ClipboardMetasprites => {
   return (
     Array.isArray(input?.metasprites) && Array.isArray(input?.metaspriteTiles)
   );
+};
+
+const isClipboardPaletteIds = (input: any): input is ClipboardPaletteIds => {
+  return Array.isArray(input?.paletteIds);
 };
 
 export const copy = (payload: ClipboardType) => {
@@ -55,6 +61,13 @@ export const paste = <T extends ClipboardFormat>(
       } as NarrowClipboardType<ClipboardType, T>;
     }
     return undefined;
+  } else if (format === ClipboardTypePaletteIds) {
+    if (isClipboardPaletteIds(data)) {
+      return {
+        format: ClipboardTypePaletteIds,
+        data,
+      } as NarrowClipboardType<ClipboardType, T>;
+    }
   }
   return undefined;
 };
