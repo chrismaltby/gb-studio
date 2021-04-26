@@ -25,8 +25,8 @@ make.bat: Makefile
 	@make -sn | sed y/\\//\\\\/ | grep -v make >> make.bat
 
 # Compile and link all source files in a single call to LCC
-$(BINS):	$(CSOURCES) $(ADMSOURCES)
-	$(LCC) -o $@ $(CSOURCES) $(ADMSOURCES)
+$(BINS):	$(CSOURCES) $(ASMSOURCES)
+	$(LCC) -o $@ $(CSOURCES) $(ASMSOURCES)
 
 clean:
 	rm -f *.o *.lst *.map *.gb *.ihx *.sym *.cdb *.adb *.asm

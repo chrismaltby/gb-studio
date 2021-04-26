@@ -17,6 +17,9 @@
 	.LEFT		= 0x02
 	.RIGHT		= 0x01
 
+	.P14		= 0x10
+	.P15		= 0x20
+
 	.SCREENWIDTH	= 0xA0
 	.SCREENHEIGHT	= 0x90
 	.MINWNDPOSX	= 0x07

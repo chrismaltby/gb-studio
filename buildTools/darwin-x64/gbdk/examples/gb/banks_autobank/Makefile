@@ -1,7 +1,8 @@
 LCC	= ../../../bin/lcc -Wa-l -Wl-m
 BANKPACK  = ../../../bin/bankpack
 
-# CFLAGS	=
+# uncomment for lcc verbose output
+# CFLAGS	= -v
 
 BINS	    = autobanks.gb
 CSOURCES   := $(wildcard *.c)
@@ -9,15 +10,6 @@ ASMSOURCES := $(wildcard *.s)
 
 # Compiling will produce .o files
 OBJS       = $(CSOURCES:%.c=%.o) $(ASMSOURCES:%.c=%.o)
-
-# Process: .c and .s files -> .o -> (bankpack) -> .rel -> (linker) ... -> .gb
-#
-# In this makefile autobanked .o files get converted to .rel files (-ext=.rel)
-# which will be passed to the linker instead of .o files.
-#
-# This allows correct packing every time, even
-# for source files that don't get re-compiled.
-OBJS_AUTOBANKED = $(CSOURCES:%.c=%.rel) $(ASMSOURCES:%.c=%.rel)
 
 all:	$(BINS)
 
@@ -34,20 +26,24 @@ make.bat: Makefile
 %.s:	%.c
 	$(LCC) $(CFLAGS) -S -o $@ $<
 
-# Auto-bank the .o files into .rel files
-# (called with $(OBJS), which is .o files)
-# -v        : prints out assigned bank info
-# -ext=.rel : set output extension for autobanked files to .rel
+# Process: .c and .s files -> .o -> (bankpack) -> .rel -> (linker) ... -> .gb
 #
-# Link the compiled object files into a autobanks.gb ROM file 
-# (called with $(OBJS_AUTOBANKED), which is .rel files)
-# -Wl-yo4      : Use 4 ROM banks
+# -autobank    : Tells lcc to call bankpack for the compiled object (.o) files before linking
+# -Wb-ext=.rel : Set output extension for autobanked files to .rel
+# -Wb-v        : Prints out assigned autobank info (optional)
+# -Wl-yoA      : Have makebin automatically calculate required number of ROM banks (otherwise use -Wl-yo4 in this example)
 # -Wl-ya4      : Use 4 RAM banks
 # -Wl-yt19     : Use MBC5 cartridge type
 $(BINS):	$(OBJS)
-	$(BANKPACK) -ext=.rel -v -yt19 $(OBJS)
-	$(LCC) $(CFLAGS) -Wl-yt19 -Wl-yo4 -Wl-ya4 -o $(BINS) $(OBJS_AUTOBANKED)
-#	./romusage autobanks.map -g
+	$(LCC) $(CFLAGS) -autobank -Wb-ext=.rel -Wb-v -Wl-yt19 -Wl-yoA -Wl-ya4 -o $(BINS) $(OBJS)
+
+
+# It's also possible to do all the compiling, autobanking and linking in a single call to lcc
+# with none of the other makefile "targets" above. You can try this target out by using "make onepass".
+# Notice that the input files are the .c and .asm sources instead of the compiled object files.
+onepass:
+		$(LCC) $(CFLAGS) -autobank -Wb-ext=.rel -Wb-v -Wl-yt19 -Wl-yoA -Wl-ya4 -o $(BINS) $(CSOURCES) $(ASMSOURCES)
+
 
 clean:
 	rm -f *.o *.lst *.map *.gb *.ihx *.sym *.cdb *.adb *.asm *.rel

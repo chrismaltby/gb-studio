@@ -1,6 +1,6 @@
 /** @file gb/metasprites.h
     
-    Metasprite support
+    # Metasprite support
 
     A metasprite is a larger sprite made up from a 
     collection of smaller individual hardware sprites.
@@ -20,6 +20,24 @@
     or multiple frames of graphics into metasprite
     structured data for use with the ...metasprite...()
     functions.
+
+    @anchor metasprite_and_sprite_properties
+    # Metasprites and sprite properties (including cgb palette)
+
+    When the move_metasprite_*() functions are called they
+    update all properties for the affected sprites in the
+    Shadow OAM. This means any existing property flags set
+    for a sprite (CGB palette, BG/WIN priority, Tile VRAM Bank)
+    will get overwritten.
+
+    How to use sprite property flags with metasprites: 
+    - Metsaprite structures can be copied into RAM so their
+      property flags can be modified at runtime.
+    - The metasprite structures can have the property flags
+      modified before compilation (such as with `-sp <props>`
+      in the @ref utility_png2mtspr "png2mtspr" tool).
+    - Update properties for the affected sprites after calling
+      a move_metasprite_*() function.
 */
 
 #ifndef _METASPRITES_H_INCLUDE
@@ -73,6 +91,9 @@ static void __hide_metasprite(UINT8 id);
     \li __current_metasprite = metasprite; 
     \li __current_base_tile = base_tile;
 
+    Note: Overwrites OAM sprite properties (such as CGB Palette), see
+          @ref metasprite_and_sprite_properties "Metasprites and sprite properties".
+
     @return Number of hardware sprites used to draw this metasprite
  */
 inline UBYTE move_metasprite(const metasprite_t * metasprite, UINT8 base_tile, UINT8 base_sprite, UINT8 x, UINT8 y) {
@@ -94,6 +115,9 @@ inline UBYTE move_metasprite(const metasprite_t * metasprite, UINT8 base_tile, U
     Sets:
     \li __current_metasprite = metasprite; 
     \li __current_base_tile = base_tile;
+
+    Note: Overwrites OAM sprite properties (such as CGB palette), see
+          @ref metasprite_and_sprite_properties "Metasprites and sprite properties".
 
     @return Number of hardware sprites used to draw this metasprite
 
@@ -120,6 +144,9 @@ inline UBYTE move_metasprite_vflip(const metasprite_t * metasprite, UINT8 base_t
     \li __current_metasprite = metasprite; 
     \li __current_base_tile = base_tile;
 
+    Note: Overwrites OAM sprite properties (such as CGB palette), see
+          @ref metasprite_and_sprite_properties "Metasprites and sprite properties".
+
     @return Number of hardware sprites used to draw this metasprite
 
     @see move_metasprite()
@@ -144,6 +171,9 @@ inline UBYTE move_metasprite_hflip(const metasprite_t * metasprite, UINT8 base_t
     \li __current_metasprite = metasprite; 
     \li __current_base_tile = base_tile;
 
+    Note: Overwrites OAM sprite properties (such as CGB palette), see
+          @ref metasprite_and_sprite_properties "Metasprites and sprite properties".
+
     @return Number of hardware sprites used to draw this metasprite
 
     @see move_metasprite()
@@ -160,7 +190,7 @@ inline UBYTE move_metasprite_hvflip(const metasprite_t * metasprite, UINT8 base_
     @param base_sprite   Number of hardware sprite to start with
 
     Sets:
-    \li __current_metasprite = metasprite; 
+    \li __current_metasprite = metasprite;
 
  **/
 inline void hide_metasprite(const metasprite_t * metasprite, UINT8 base_sprite) {

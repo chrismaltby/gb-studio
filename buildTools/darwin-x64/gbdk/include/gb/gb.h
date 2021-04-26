@@ -484,7 +484,7 @@ UINT8 joypad_init(UINT8 npads, joypads_t * joypads);
 
     @see joypad_init(), joypads_t
 */
-void joypad_ex(joypads_t * joypads);
+void joypad_ex(joypads_t * joypads) __preserves_regs(b, c);
 
 
 
@@ -616,6 +616,14 @@ void hiramcpy(UINT8 dst,
  * @param v value
  */
 void set_vram_byte(UBYTE * addr, UINT8 v) __preserves_regs(b, c);
+
+/**
+ * Get byte from vram at given memory location
+ * 
+ * @param addr address to read from
+ * @return read value
+ */
+UINT8 get_vram_byte(UBYTE * addr) __preserves_regs(b, c);
 
 
 /**
@@ -808,6 +816,14 @@ void get_bkg_tiles(UINT8 x,
 UINT8 * set_bkg_tile_xy(UBYTE x, UBYTE y, UBYTE t) __preserves_regs(b, c);
 
 
+/**
+ * Get single tile t on background layer at x,y
+ * @param x X-coordinate
+ * @param y Y-coordinate
+ * @return returns tile index
+ */ 
+UINT8 get_bkg_tile_xy(UBYTE x, UBYTE y) __preserves_regs(b, c);
+
 
 /** Moves the Background Layer to the position specified in __x__ and __y__ in pixels.
 
@@ -998,6 +1014,15 @@ void get_win_tiles(UINT8 x,
  * @return returns the address of tile, so you may use faster set_vram_byte() later
  */ 
 UINT8 * set_win_tile_xy(UBYTE x, UBYTE y, UBYTE t) __preserves_regs(b, c);
+
+
+/**
+ * Get single tile t on window layer at x,y
+ * @param x X-coordinate
+ * @param y Y-coordinate
+ * @return returns the tile index
+ */ 
+UINT8 get_win_tile_xy(UBYTE x, UBYTE y) __preserves_regs(b, c);
 
 
 /** Moves the Window to the __x__, __y__ position on the screen.

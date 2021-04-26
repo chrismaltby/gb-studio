@@ -1,5 +1,5 @@
 Updated version of the original Sound Sample that merges 
-in changes made at: https://github.com/Zal0/GBSoundDemo
+in changes made at: https://github.com/gbdk-2020/GBSoundDemo
 
 Keys:
 - Select: change current channel menu

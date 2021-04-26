@@ -34,7 +34,7 @@
 
 
 /** Returns a non-null value if running on Super GameBoy */
-UINT8 sgb_check(void);
+UINT8 sgb_check(void) __preserves_regs(b, c);
 
 /** Transfer a SGB packet
 
@@ -48,15 +48,6 @@ UINT8 sgb_check(void);
 
     @see sgb_check()
 */
-void sgb_transfer(unsigned char * packet);
-
-/** Transfer a SGB packet without the 60 ms / 4 frame delay at the end
-    (the delay time is required between consecutive SGB packets)
-
-    @param packet    Pointer to buffer with SGB packet data.
-
-    @see sgb_transfer()
-*/
-void sgb_transfer_nowait(unsigned char * packet);
+void sgb_transfer(unsigned char * packet) __preserves_regs(b, c);
 
 #endif /* _SGB_H */
