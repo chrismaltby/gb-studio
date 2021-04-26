@@ -146,6 +146,10 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
       }
 
       if (isCustomScript) {
+        if (scriptBuilder.includeActor) {
+          scriptBuilder.stackPtr += 4;
+          scriptBuilder._stackPop(4);
+        }
         scriptBuilder.returnFar();
       } else {
         scriptBuilder.scriptEnd();

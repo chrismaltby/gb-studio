@@ -214,8 +214,14 @@ void vm_if_const(SCRIPT_CTX * THIS, UBYTE condition, INT16 idxA, INT16 B, UBYTE 
 }
 // pushes value from VM stack onto VM stack
 // if idx >= 0 then idx is absolute, else idx is relative to VM stack pointer
-void vm_pushvalue(SCRIPT_CTX * THIS, INT16 idx) __banked {
-    if (idx < 0) *(THIS->stack_ptr) = *(THIS->stack_ptr + idx); else *(THIS->stack_ptr) = script_memory[idx];
+void vm_push_value(SCRIPT_CTX * THIS, INT16 idx) __banked {
+    *(THIS->stack_ptr) = *((idx < 0) ? (THIS->stack_ptr + idx) : (script_memory + idx));
+    THIS->stack_ptr++;
+}
+// pushes a value on VM stack or a global indirectly from an index in the variable on VM stack or in a global onto VM stack
+void vm_push_value_ind(SCRIPT_CTX * THIS, INT16 idx) __banked {
+    idx = *((idx < 0) ? (THIS->stack_ptr + idx) : (script_memory + idx));
+    *(THIS->stack_ptr) = *((idx < 0) ? (THIS->stack_ptr + idx) : (script_memory + idx));
     THIS->stack_ptr++;
 }
 // manipulates VM stack pointer
@@ -257,6 +263,13 @@ void vm_rpn(UWORD dummy0, UWORD dummy1, SCRIPT_CTX * THIS) __nonbanked {
         INT8 op = *(THIS->PC++);
         if (op < 0) {
             switch (op) {
+                // indirect reference
+                case -4:
+                    idx = *((INT16 *)(THIS->PC)); 
+                    idx = *((idx < 0) ? ARGS + idx : script_memory + idx);
+                    *(THIS->stack_ptr) = *((idx < 0) ? ARGS + idx : script_memory + idx);
+                    THIS->PC += 2;
+                    break;
                 // reference
                 case -3:
                     idx = *((INT16 *)(THIS->PC)); 

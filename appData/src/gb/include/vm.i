@@ -135,6 +135,12 @@ OP_VM_IF           = 0x0F
         .db OP_VM_IF, #<N, #>LABEL, #<LABEL, #>IDXB, #<IDXB, #>IDXA, #<IDXA, #<CONDITION
 .endm
 
+; pushes a value on VM stack or a global indirectly from an index in the variable on VM stack or in a global onto VM stack
+OP_VM_PUSH_VALUE_IND = 0x10
+.macro VM_PUSH_VALUE_IND ARG0
+        .db OP_VM_PUSH_VALUE_IND, #>ARG0, #<ARG0
+.endm
+
 ; pushes a value on VM stack or a global onto VM stack
 OP_VM_PUSH_VALUE   = 0x11
 .macro VM_PUSH_VALUE ARG0
@@ -195,6 +201,10 @@ OP_VM_RPN          = 0x15
 .endm
 .macro .R_REF ARG0
         .db -3
+        .dw #ARG0
+.endm
+.macro .R_REF_IND ARG0
+        .db -4
         .dw #ARG0
 .endm
 .macro .R_OPERATOR ARG0
@@ -709,6 +719,12 @@ OP_VM_MUSIC_ROUTINE     = 0x65
 OP_VM_WAVE_PLAY         = 0x66
 .macro VM_WAVE_PLAY FRAMES, BANK, ADDR, SIZE
         .db OP_VM_WAVE_PLAY, #>SIZE, #<SIZE, #>ADDR, #<ADDR, #<BANK, #<FRAMES
+.endm
+
+; Sets music playback position
+OP_VM_MUSIC_SETPOS      = 0x67
+.macro VM_MUSIC_SETPOS PATTERN, ROW
+        .db OP_VM_MUSIC_SETPOS, #<ROW, #<PATTERN
 .endm
 
 ; --- SCENES -------------------------------

@@ -47,16 +47,17 @@ __asm
         inc hl                  ; skip tile_start
         inc hl                  ; skip tile_height
 
+        ld d, h
         ld a, l   
-        ld (#_parallax_row), a
-        ld a, h
-        ld (#_parallax_row + 1), a
+        ld hl,#_parallax_row 
+        ld (hl+), a
+        ld (hl), d
         ret
 3$:
+        ld hl,#_parallax_row 
         ld a, #<_parallax_rows
-        ld (#_parallax_row), a
-        ld a, #>_parallax_rows
-        ld (#_parallax_row + 1), a
+        ld (hl+), a
+        ld (hl), #>_parallax_rows
         ret
 __endasm;
 }

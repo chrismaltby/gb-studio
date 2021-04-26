@@ -123,12 +123,9 @@ $(REL_OBJDIR):
 	mkdir -p $(REL_OBJDIR)
 
 $(TOP)$(OBJDIR)/%.o:	$(TOP)src/core/%.c
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) $(filter -Wf-ba%, $(subst .d,-Wf-ba,$(suffix $(<:%.c=%)))) -c -o $@ $<
 
 $(TOP)$(OBJDIR)/%.o:	$(TOP)src/core/%.s
-	$(CC) $(CFLAGS) -c -o $@ $<
-
-$(TOP)$(OBJDIR)/%.o:	$(TOP)src/core/GBT_PLAYER/%.s
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 $(TOP)$(OBJDIR)/%.o:	$(TOP)src/states/%.c

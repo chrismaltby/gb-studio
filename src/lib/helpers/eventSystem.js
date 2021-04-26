@@ -389,6 +389,13 @@ const isVariableField = (cmd, fieldName, args) => {
   )
 };
 
+const isActorField = (cmd, fieldName, args) => {
+  const field = getField(cmd, fieldName, args);
+  return (
+    field && (field.type === "actor")
+  )
+};
+
 const isPropertyField = (cmd, fieldName, fieldValue) => {
   const events = require("../events").default;
   const event = events[cmd];
@@ -457,6 +464,7 @@ export {
   eventHasArg,
   getField,
   isVariableField,
+  isActorField,
   isPropertyField,
   getCustomEventIdsInEvents,
   getCustomEventIdsInScene,

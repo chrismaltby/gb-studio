@@ -24,6 +24,12 @@ import { encodeString } from "../helpers/encodings";
 import { PrecompiledMusicTrack } from "./compileMusic";
 import { emoteSymbol, spriteSheetSymbol } from "./compileData2";
 import { DMG_PALETTE } from "../../consts";
+import {
+  isPropertyField,
+  isVariableField,
+  isActorField,
+  mapEvents,
+} from "../helpers/eventSystem";
 
 type ScriptOutput = string[];
 
@@ -40,6 +46,11 @@ interface ScriptBuilderScene {
 type ScriptBuilderEntityType = "scene" | "actor" | "trigger";
 
 type ScriptBuilderStackVariable = string | number;
+
+interface ScriptBuilderFunctionArgLookup {
+  actor: Dictionary<string>;
+  variable: Dictionary<string>;
+}
 
 interface ScriptBuilderOptions {
   scene: ScriptBuilderScene;
@@ -62,8 +73,11 @@ interface ScriptBuilderOptions {
   engineFields: Dictionary<EngineFieldSchema>;
   additionalScripts: {
     symbol: string;
+    key: string;
     script: ScriptEvent[] | ScriptBuilderPathFunction;
+    options: Partial<ScriptBuilderOptions>;
   }[];
+  argLookup: ScriptBuilderFunctionArgLookup;
   compileEvents: (self: ScriptBuilder, events: ScriptEvent[]) => void;
 }
 
@@ -137,7 +151,7 @@ type VariablesLookup = { [name: string]: Variable | undefined };
 // - Helpers --------------
 
 const getActorIndex = (actorId: string, scene: ScriptBuilderScene) => {
-  return scene.actors.findIndex((a) => a.id === actorId) + 1;
+  return (scene.actors || []).findIndex((a) => a.id === actorId) + 1;
 };
 
 export const getVariableIndex = (variable: string, variables: string[]) => {
@@ -163,7 +177,7 @@ export const getVariableId = (
   } else if (isVariableTemp(variable)) {
     return variable;
   }
-  return String(parseInt(variable));
+  return String(parseInt(variable || "0"));
 };
 
 export const toVariableNumber = (variable: string) => {
@@ -186,7 +200,7 @@ const buildOverlayWaitCondition = (flags: ScriptBuilderOverlayWaitFlag[]) => {
   return unionFlags(flags, ".UI_WAIT_NONE");
 };
 
-const unionFlags = (flags: string[], defaultValue: string = "0") => {
+const unionFlags = (flags: string[], defaultValue = "0") => {
   if (flags.length === 0) {
     return defaultValue;
   }
@@ -322,6 +336,7 @@ class ScriptBuilder {
       customEvents: options.customEvents || [],
       characterEncoding: options.characterEncoding || "",
       additionalScripts: options.additionalScripts || [],
+      argLookup: options.argLookup || { actor: {}, variable: {} },
       compileEvents: options.compileEvents || ((_self, _e) => {}),
     };
     this.dependencies = [];
@@ -419,7 +434,7 @@ class ScriptBuilder {
     }
   };
 
-  private _assertStackNeutral = (expected: number = 0) => {
+  private _assertStackNeutral = (expected = 0) => {
     if (this.stackPtr !== expected) {
       const diff = this.stackPtr - expected;
       if (this.stackPtr > expected) {
@@ -455,7 +470,7 @@ class ScriptBuilder {
           rpn = rpn.int16(token.value);
         } else if (token.type === "VAR") {
           const ref = this.getVariableAlias(token.symbol.replace(/\$/g, ""));
-          rpn = rpn.ref(ref);
+          rpn = rpn.refVariable(ref);
         } else if (token.type === "FUN") {
           const op = funToScriptOperator(token.function);
           rpn = rpn.operator(op);
@@ -516,9 +531,19 @@ class ScriptBuilder {
     this.stackPtr -= popNum;
   };
 
-  _stackPushConst = (value: number | string) => {
+  _stackPushConst = (value: number | string, comment?: string) => {
     this.stackPtr++;
-    this._addCmd("VM_PUSH_CONST", value);
+    this._addCmd("VM_PUSH_CONST", value + (comment ? ` ; ${comment}` : ""));
+  };
+
+  _stackPush = (location: string) => {
+    this.stackPtr++;
+    this._addCmd("VM_PUSH_VALUE", location);
+  };
+
+  _stackPushInd = (location: ScriptBuilderStackVariable) => {
+    this.stackPtr++;
+    this._addCmd("VM_PUSH_VALUE_IND", location);
   };
 
   _stackPop = (num: number) => {
@@ -540,32 +565,140 @@ class ScriptBuilder {
     this._addCmd("VM_SET_CONST", location, value);
   };
 
-  _setUInt8 = (cVariable: string, location: ScriptBuilderStackVariable) => {
-    this._addDependency(cVariable);
-    this._addCmd("VM_SET_UINT8", `_${cVariable}`, location);
+  _setInd = (
+    location: ScriptBuilderStackVariable,
+    value: ScriptBuilderStackVariable
+  ) => {
+    this._addCmd("VM_SET_INDIRECT", location, value);
   };
 
-  _setUInt16 = (cVariable: string, location: ScriptBuilderStackVariable) => {
-    this._addDependency(cVariable);
-    this._addCmd("VM_SET_UINT16", `_${cVariable}`, location);
+  _setVariable = (variable: string, value: ScriptBuilderStackVariable) => {
+    const variableAlias = this.getVariableAlias(variable);
+    if (this._isArg(variableAlias)) {
+      this._setInd(this._stackOffset(variableAlias), value);
+    } else {
+      this._set(variableAlias, value);
+    }
   };
 
-  _setConstUInt8 = (cVariable: string, value: number) => {
+  _setVariableToVariable = (variableA: string, variableB: string) => {
+    const variableAliasA = this.getVariableAlias(variableA);
+    const variableAliasB = this.getVariableAlias(variableB);
+
+    let dest = variableAliasB;
+
+    if (this._isArg(variableAliasB)) {
+      this._stackPushInd(this._stackOffset(variableAliasB));
+      dest = ".ARG0";
+    }
+
+    if (this._isArg(variableAliasA)) {
+      this._setInd(this._stackOffset(variableAliasA), dest);
+    } else {
+      this._set(variableAliasA, dest);
+    }
+
+    if (this._isArg(variableAliasB)) {
+      this._stackPop(1);
+    }
+  };
+
+  _setVariableConst = (variable: string, value: ScriptBuilderStackVariable) => {
+    const variableAlias = this.getVariableAlias(variable);
+    if (this._isArg(variableAlias)) {
+      this._stackPushConst(value);
+      this._setInd(this._stackOffset(variableAlias), ".ARG0");
+      this._stackPop(1);
+    } else {
+      this._setConst(variableAlias, value);
+    }
+  };
+
+  _getInd = (
+    location: ScriptBuilderStackVariable,
+    value: ScriptBuilderStackVariable
+  ) => {
+    this._addCmd("VM_GET_INDIRECT", location, value);
+  };
+
+  _setMemInt8 = (cVariable: string, location: ScriptBuilderStackVariable) => {
+    this._addDependency(cVariable);
+    this._addCmd("VM_SET_INT8", `_${cVariable}`, location);
+  };
+
+  _setMemInt16 = (cVariable: string, location: ScriptBuilderStackVariable) => {
+    this._addDependency(cVariable);
+    this._addCmd("VM_SET_INT16", `_${cVariable}`, location);
+  };
+
+  _setMemInt8ToVariable = (cVariable: string, variable: string) => {
+    const variableAlias = this.getVariableAlias(variable);
+    this._addDependency(cVariable);
+    if (this._isArg(variableAlias)) {
+      this._stackPushInd(this._stackOffset(variableAlias));
+      this._setMemInt8(cVariable, ".ARG0");
+      this._stackPop(1);
+    } else {
+      this._setMemInt8(cVariable, variableAlias);
+    }
+  };
+
+  _setMemInt16ToVariable = (cVariable: string, variable: string) => {
+    const variableAlias = this.getVariableAlias(variable);
+    this._addDependency(cVariable);
+    if (this._isArg(variableAlias)) {
+      this._stackPushInd(this._stackOffset(variableAlias));
+      this._setMemInt16(cVariable, ".ARG0");
+      this._stackPop(1);
+    } else {
+      this._setMemInt16(cVariable, variableAlias);
+    }
+  };
+
+  _setConstMemInt8 = (cVariable: string, value: number) => {
     this._addDependency(cVariable);
     this._addCmd("VM_SET_CONST_INT8", `_${cVariable}`, value);
   };
 
-  _setConstUInt16 = (cVariable: string, value: number) => {
+  _setConstMemInt16 = (cVariable: string, value: number) => {
     this._addDependency(cVariable);
     this._addCmd("VM_SET_CONST_INT16", `_${cVariable}`, value);
   };
 
-  _getUInt8 = (location: ScriptBuilderStackVariable, cVariable: string) => {
+  _getMemUInt8 = (location: ScriptBuilderStackVariable, cVariable: string) => {
     this._addCmd("VM_GET_UINT8", location, `_${cVariable}`);
   };
 
-  _getUInt16 = (location: ScriptBuilderStackVariable, cVariable: string) => {
-    this._addCmd("VM_GET_UINT16", location, `_${cVariable}`);
+  _getMemInt8 = (location: ScriptBuilderStackVariable, cVariable: string) => {
+    this._addCmd("VM_GET_INT8", location, `_${cVariable}`);
+  };
+
+  _getMemInt16 = (location: ScriptBuilderStackVariable, cVariable: string) => {
+    this._addCmd("VM_GET_INT16", location, `_${cVariable}`);
+  };
+
+  _setVariableMemInt8 = (variable: string, cVariable: string) => {
+    const variableAlias = this.getVariableAlias(variable);
+    if (this._isArg(variableAlias)) {
+      this._stackPushConst(0);
+      this._getMemInt8(".ARG0", cVariable);
+      this._setInd(this._stackOffset(variableAlias), ".ARG0");
+      this._stackPop(1);
+    } else {
+      this._getMemInt8(variableAlias, cVariable);
+    }
+  };
+
+  _setVariableMemInt16 = (variable: string, cVariable: string) => {
+    const variableAlias = this.getVariableAlias(variable);
+    if (this._isArg(variableAlias)) {
+      this._stackPushConst(0);
+      this._getMemInt16(".ARG0", cVariable);
+      this._setInd(this._stackOffset(variableAlias), ".ARG0");
+      this._stackPop(1);
+    } else {
+      this._getMemInt16(variableAlias, cVariable);
+    }
   };
 
   _string = (str: string) => {
@@ -601,6 +734,40 @@ class ScriptBuilder {
     this._addCmd("VM_SIO_EXCHANGE", sendVariable, receiveVariable, packetSize);
   };
 
+  _sioExchangeVariables = (
+    variableA: string,
+    variableB: string,
+    packetSize: number
+  ) => {
+    const variableAliasA = this.getVariableAlias(variableA);
+    const variableAliasB = this.getVariableAlias(variableB);
+
+    let pop = 0;
+    let dest = variableAliasB;
+
+    if (this._isArg(variableAliasB)) {
+      pop++;
+      this._stackPushConst(0);
+      dest = this._isArg(variableAliasA) ? ".ARG1" : ".ARG0";
+    }
+
+    if (this._isArg(variableAliasA)) {
+      pop++;
+      this._stackPushInd(this._stackOffset(variableAliasA));
+      this._sioExchange(".ARG0", dest, packetSize);
+    } else {
+      this._sioExchange(variableAliasA, dest, packetSize);
+    }
+
+    if (this._isArg(variableAliasB)) {
+      this._setInd(this._stackOffset(variableAliasB), dest);
+    }
+
+    if (pop > 0) {
+      this._stackPop(pop);
+    }
+  };
+
   _dw = (...data: Array<ScriptBuilderStackVariable>) => {
     this._addCmd(`.dw ${data.join(", ")}`);
   };
@@ -629,6 +796,18 @@ class ScriptBuilder {
     this._addCmd("VM_RAND", location, min, range);
   };
 
+  _randVariable = (variable: string, min: number, range: number) => {
+    const variableAlias = this.getVariableAlias(variable);
+    if (this._isArg(variableAlias)) {
+      this._stackPushConst(0);
+      this._addCmd("VM_RAND", ".ARG0", min, range);
+      this._setInd(this._stackOffset(variableAlias), ".ARG0");
+      this._stackPop(1);
+    } else {
+      this._addCmd("VM_RAND", variableAlias, min, range);
+    }
+  };
+
   _rpn = () => {
     const output: string[] = [];
     const stack: number[] = [];
@@ -641,10 +820,23 @@ class ScriptBuilder {
     };
 
     const rpn = {
-      ref: (variable: string) => {
+      ref: (variable: ScriptBuilderStackVariable) => {
         rpnCmd(".R_REF ", variable);
         stack.push(0);
         return rpn;
+      },
+      refInd: (variable: ScriptBuilderStackVariable) => {
+        rpnCmd(".R_REF_IND ", variable);
+        stack.push(0);
+        return rpn;
+      },
+      refVariable: (variable: string) => {
+        const variableAlias = this.getVariableAlias(variable);
+        if (this._isArg(variableAlias)) {
+          return rpn.refInd(this._stackOffset(variableAlias));
+        } else {
+          return rpn.ref(variableAlias);
+        }
       },
       int8: (value: number) => {
         rpnCmd(".R_INT8", value);
@@ -706,6 +898,49 @@ class ScriptBuilder {
     this.stackPtr -= popNum;
   };
 
+  _ifVariableConst = (
+    operator: ScriptBuilderComparisonOperator,
+    variable: string,
+    value: ScriptBuilderStackVariable,
+    label: string,
+    popNum: number
+  ) => {
+    const variableAlias = this.getVariableAlias(variable);
+    if (this._isArg(variableAlias)) {
+      this._stackPushInd(this._stackOffset(variableAlias));
+      this._ifConst(operator, ".ARG0", value, label, popNum + 1);
+    } else {
+      this._ifConst(operator, variableAlias, value, label, popNum);
+    }
+  };
+
+  _ifVariableCmpVariable = (
+    operator: ScriptBuilderComparisonOperator,
+    variableA: string,
+    variableB: string,
+    label: string,
+    popNum: number
+  ) => {
+    const variableAliasA = this.getVariableAlias(variableA);
+    const variableAliasB = this.getVariableAlias(variableB);
+
+    let dest = variableAliasB;
+    let pop = popNum;
+
+    if (this._isArg(variableAliasB)) {
+      this._stackPushInd(this._stackOffset(variableAliasB));
+      dest = this._isArg(variableAliasA) ? ".ARG1" : ".ARG0";
+      pop += 1;
+    }
+
+    if (this._isArg(variableAliasA)) {
+      this._stackPushInd(this._stackOffset(variableAliasA));
+      this._if(operator, ".ARG0", dest, label, pop + 1);
+    } else {
+      this._if(operator, variableAliasA, dest, label, pop);
+    }
+  };
+
   _actorActivate = (addr: string) => {
     this.includeActor = true;
     this._addCmd("VM_ACTOR_ACTIVATE", addr);
@@ -734,6 +969,18 @@ class ScriptBuilder {
   _actorGetDirection = (addr: string, dest: string) => {
     this.includeActor = true;
     this._addCmd("VM_ACTOR_GET_DIR", addr, dest);
+  };
+
+  _actorGetDirectionToVariable = (addr: string, variable: string) => {
+    const variableAlias = this.getVariableAlias(variable);
+    if (this._isArg(variableAlias)) {
+      this._stackPushConst(0);
+      this._actorGetDirection("^/(ACTOR - 1)/", ".ARG0");
+      this._setInd(this._stackOffset(variableAlias), ".ARG0");
+      this._stackPop(1);
+    } else {
+      this._actorGetDirection(addr, variableAlias);
+    }
   };
 
   _actorSetDirection = (addr: string, asmDir: string) => {
@@ -784,16 +1031,26 @@ class ScriptBuilder {
     let text = inputText;
 
     const inlineVariables = (
-      text.match(/(\$L[0-9]\$|\$T[0-1]\$|\$[0-9]+\$)/g) || []
+      text.match(/(\$L[0-9]\$|\$T[0-1]\$|\$V[0-9]\$|\$[0-9]+\$)/g) || []
     ).map((s) => s.replace(/\$/g, ""));
 
     const inlineFonts = (text.match(/(!F:[0-9a-f-]+!)/g) || []).map((id) =>
       id.substring(3).replace(/!$/, "")
     );
 
-    const usedVariableAliases = inlineVariables.map((variable) =>
-      this.getVariableAlias(variable.replace(/^0/g, ""))
-    );
+    const indirectVars: string[] = [];
+    const usedVariableAliases = inlineVariables.map((variable) => {
+      if (variable.match(/^V[0-9]$/)) {
+        const key = variable.replace(/V/, "");
+        const arg = this.options.argLookup.variable[key];
+        if (!arg) {
+          throw new Error("Cant find arg");
+        }
+        indirectVars.unshift(arg);
+        return `.ARG${indirectVars.length - 1}`;
+      }
+      return this.getVariableAlias(variable.replace(/^0/g, ""));
+    });
 
     // Replace speed codes
     text = text.replace(/!S([0-5])!/g, (_match, value: string) => {
@@ -808,6 +1065,12 @@ class ScriptBuilder {
       const fontIndex = this._getFontIndex(fontId);
       text = text.replace(`!F:${fontId}!`, `\\002\\${decOct(fontIndex + 1)}`);
     });
+
+    if (indirectVars.length > 0) {
+      for (const indirectVar of indirectVars) {
+        this._stackPushInd(this._stackOffset(indirectVar));
+      }
+    }
 
     this._loadText(usedVariableAliases.length);
     if (usedVariableAliases.length > 0) {
@@ -831,6 +1094,10 @@ class ScriptBuilder {
     }
 
     this._string(text);
+
+    if (indirectVars.length > 0) {
+      this._stackPop(indirectVars.length);
+    }
   };
 
   _displayText = () => {
@@ -1047,24 +1314,41 @@ class ScriptBuilder {
     this._addCmd("VM_STOP");
   };
 
+  _isArg = (variable: ScriptBuilderStackVariable) => {
+    return typeof variable === "string" && variable.startsWith(".ARG");
+  };
+
+  _stackOffset = (variable: ScriptBuilderStackVariable, wrap = true) => {
+    if (!this._isArg(variable)) {
+      return variable;
+    }
+    const calc = `[[${variable}::${this.stackPtr}]]`;
+
+    if (wrap) {
+      return `^/(${calc})/`;
+    }
+    return calc;
+  };
+
   // --------------------------------------------------------------------------
   // Actors
 
+  actorSetById = (id: string) => {
+    const newIndex = this.getActorIndex(id);
+    if (typeof newIndex === "number") {
+      this.actorIndex = newIndex;
+      this._setConst("ACTOR", this.actorIndex);
+    } else {
+      this.actorIndex = -1;
+      this._set("ACTOR", this._stackOffset(newIndex));
+    }
+  };
+
   actorSetActive = (id: string) => {
-    const { scene, entity } = this.options;
-    const newIndex =
-      id === "$self$" && entity
-        ? getActorIndex(entity.id, scene)
-        : getActorIndex(id, scene);
-    // if (newIndex !== this.actorIndex) {
-
     this._addComment("Actor Set Active");
-
-    this.actorIndex = newIndex;
-    this._setConst("ACTOR", this.actorIndex);
+    this.actorSetById(id);
     this._actorActivate("ACTOR");
     this._addNL();
-    // }
   };
 
   actorMoveTo = (
@@ -1097,17 +1381,14 @@ class ScriptBuilder {
     useCollisions: boolean,
     moveType: ScriptBuilderMoveType
   ) => {
-    const variableXAlias = this.getVariableAlias(variableX);
-    const variableYAlias = this.getVariableAlias(variableY);
-
     const stackPtr = this.stackPtr;
     this._addComment("Actor Move To Variables");
 
     this._rpn() //
-      .ref(variableXAlias)
+      .refVariable(variableX)
       .int16(8 * 16)
       .operator(".MUL")
-      .ref(variableYAlias)
+      .refVariable(variableY)
       .int16(8 * 16)
       .operator(".MUL")
       .stop();
@@ -1174,9 +1455,6 @@ class ScriptBuilder {
   };
 
   actorGetPosition = (variableX: string, variableY: string) => {
-    const variableXAlias = this.getVariableAlias(variableX);
-    const variableYAlias = this.getVariableAlias(variableY);
-
     this._addComment(`Store Position In Variables`);
     this._actorGetPosition("ACTOR");
 
@@ -1189,15 +1467,13 @@ class ScriptBuilder {
       .operator(".DIV")
       .stop();
 
-    this._set(variableXAlias, ".ARG1");
-    this._set(variableYAlias, ".ARG0");
+    this._setVariable(variableX, ".ARG1");
+    this._setVariable(variableY, ".ARG0");
     this._stackPop(2);
     this._addNL();
   };
 
   actorGetPositionX = (variableX: string) => {
-    const variableXAlias = this.getVariableAlias(variableX);
-
     this._addComment(`Store X Position In Variable`);
     this._actorGetPosition("ACTOR");
 
@@ -1207,14 +1483,12 @@ class ScriptBuilder {
       .operator(".DIV")
       .stop();
 
-    this._set(variableXAlias, ".ARG0");
+    this._setVariable(variableX, ".ARG0");
     this._stackPop(1);
     this._addNL();
   };
 
   actorGetPositionY = (variableY: string) => {
-    const variableYAlias = this.getVariableAlias(variableY);
-
     this._addComment(`Store Y Position In Variable`);
     this._actorGetPosition("ACTOR");
 
@@ -1224,15 +1498,14 @@ class ScriptBuilder {
       .operator(".DIV")
       .stop();
 
-    this._set(variableYAlias, ".ARG0");
+    this._setVariable(variableY, ".ARG0");
     this._stackPop(1);
     this._addNL();
   };
 
   actorGetDirection = (variable: string) => {
-    const variableAlias = this.getVariableAlias(variable);
     this._addComment(`Store Direction In Variable`);
-    this._actorGetDirection("ACTOR", variableAlias);
+    this._actorGetDirectionToVariable("ACTOR", variable);
     this._addNL();
   };
 
@@ -1312,28 +1585,16 @@ class ScriptBuilder {
   };
 
   actorShow = (id: string) => {
-    const { scene, entity } = this.options;
-    const newIndex =
-      id === "$self$" && entity
-        ? getActorIndex(entity.id, scene)
-        : getActorIndex(id, scene);
     this._addComment("Actor Show");
-    this.actorIndex = newIndex;
-    this._setConst("ACTOR", this.actorIndex);
+    this.actorSetById(id);
     this._actorSetHidden("ACTOR", false);
     this._actorActivate("ACTOR");
     this._addNL();
   };
 
   actorHide = (id: string) => {
-    const { scene, entity } = this.options;
-    const newIndex =
-      id === "$self$" && entity
-        ? getActorIndex(entity.id, scene)
-        : getActorIndex(id, scene);
     this._addComment("Actor Hide");
-    this.actorIndex = newIndex;
-    this._setConst("ACTOR", this.actorIndex);
+    this.actorSetById(id);
     this._actorSetHidden("ACTOR", true);
     this._actorDeactivate("ACTOR");
     this._addNL();
@@ -1352,17 +1613,15 @@ class ScriptBuilder {
   };
 
   actorSetDirectionToVariable = (variable: string) => {
-    const variableAlias = this.getVariableAlias(variable);
-
     const leftLabel = this.getNextLabel();
     const rightLabel = this.getNextLabel();
     const upLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
 
     this._addComment("Actor Set Direction To Variable");
-    this._ifConst(".EQ", variableAlias, ".DIR_LEFT", leftLabel, 0);
-    this._ifConst(".EQ", variableAlias, ".DIR_RIGHT", rightLabel, 0);
-    this._ifConst(".EQ", variableAlias, ".DIR_UP", upLabel, 0);
+    this._ifVariableConst(".EQ", variable, ".DIR_LEFT", leftLabel, 0);
+    this._ifVariableConst(".EQ", variable, ".DIR_RIGHT", rightLabel, 0);
+    this._ifVariableConst(".EQ", variable, ".DIR_UP", upLabel, 0);
     // Down
     this._actorSetDirection("ACTOR", ".DIR_DOWN");
     this._jump(endLabel);
@@ -1494,47 +1753,60 @@ class ScriptBuilder {
   textSetAnimSpeed = (
     speedIn: number,
     speedOut: number,
-    textSpeed: number = 1,
-    allowFastForward: boolean = true
+    textSpeed = 1,
+    allowFastForward = true
   ) => {
     this._addComment("Text Set Animation Speed");
-    this._setConstUInt8("text_ff_joypad", allowFastForward ? 1 : 0);
-    this._setConstUInt8("text_draw_speed", textSpeedDec(textSpeed));
-    this._setConstUInt8("text_out_speed", speedOut);
-    this._setConstUInt8("text_in_speed", speedIn);
+    this._setConstMemInt8("text_ff_joypad", allowFastForward ? 1 : 0);
+    this._setConstMemInt8("text_draw_speed", textSpeedDec(textSpeed));
+    this._setConstMemInt8("text_out_speed", speedOut);
+    this._setConstMemInt8("text_in_speed", speedIn);
     this._addNL();
   };
 
   textChoice = (
-    setVariable: string,
+    variable: string,
     args: { trueText: string; falseText: string }
   ) => {
+    const variableAlias = this.getVariableAlias(variable);
     const trueText = trimlines(args.trueText || "", 17, 1) || "Choice A";
     const falseText = trimlines(args.falseText || "", 17, 1) || "Choice B";
     const choiceText = `\\001\\001 ${trueText}\n ${falseText}`;
-    const variableAlias = this.getVariableAlias(setVariable);
     const numLines = choiceText.split("\n").length;
 
     this._addComment("Text Multiple Choice");
+
+    let dest = variableAlias;
+    if (this._isArg(variableAlias)) {
+      dest = ".ARG0";
+      this._stackPushConst(0);
+    }
+
     this._loadStructuredText(choiceText);
     this._overlayClear(0, 0, 20, numLines + 2, ".UI_COLOR_WHITE", true);
     this._overlayMoveTo(0, 18 - numLines - 2, ".OVERLAY_TEXT_IN_SPEED");
     this._displayText();
     this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
-    this._choice(variableAlias, [".UI_MENU_LAST_0", ".UI_MENU_CANCEL_B"], 2);
+    this._choice(dest, [".UI_MENU_LAST_0", ".UI_MENU_CANCEL_B"], 2);
     this._menuItem(1, 1, 0, 0, 0, 2);
     this._menuItem(1, 2, 0, 0, 1, 0);
     this._overlayMoveTo(0, 18, ".OVERLAY_TEXT_OUT_SPEED");
     this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
+
+    if (this._isArg(variableAlias)) {
+      this._setInd(this._stackOffset(variableAlias), ".ARG0");
+      this._stackPop(1);
+    }
+
     this._addNL();
   };
 
   textMenu = (
     setVariable: string,
     options: string[],
-    layout: string = "menu",
-    cancelOnLastOption: boolean = false,
-    cancelOnB: boolean = false
+    layout = "menu",
+    cancelOnLastOption = false,
+    cancelOnB = false
   ) => {
     const variableAlias = this.getVariableAlias(setVariable);
     const optionsText = options.map(
@@ -1565,6 +1837,13 @@ class ScriptBuilder {
     }
 
     this._addComment("Text Menu");
+
+    let dest = variableAlias;
+    if (this._isArg(variableAlias)) {
+      dest = ".ARG0";
+      this._stackPushConst(0);
+    }
+
     this._loadStructuredText(menuText);
     this._overlayClear(0, 0, 20 - x, height + 2, ".UI_COLOR_WHITE", true);
     if (layout === "menu") {
@@ -1573,7 +1852,7 @@ class ScriptBuilder {
     this._overlayMoveTo(x, 18 - height - 2, ".OVERLAY_TEXT_IN_SPEED");
     this._displayText();
     this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
-    this._choice(variableAlias, choiceFlags, numLines);
+    this._choice(dest, choiceFlags, numLines);
 
     const clampedMenuIndex = (index: number) => {
       if (index < 0) {
@@ -1614,6 +1893,12 @@ class ScriptBuilder {
     if (layout === "menu") {
       this._overlayMoveTo(0, 18, 0);
     }
+
+    if (this._isArg(variableAlias)) {
+      this._setInd(this._stackOffset(variableAlias), ".ARG0");
+      this._stackPop(1);
+    }
+
     this._addNL();
   };
 
@@ -1766,7 +2051,7 @@ class ScriptBuilder {
   // --------------------------------------------------------------------------
   // Call Script
 
-  callScript = (scriptId: string, input: unknown) => {
+  callScript = (scriptId: string, input: Dictionary<string>) => {
     const { customEvents } = this.options;
     const customEvent = customEvents.find((ce) => ce.id === scriptId);
 
@@ -1775,10 +2060,116 @@ class ScriptBuilder {
       return;
     }
 
-    const scriptRef = this._compileSubScript("custom", customEvent.script);
-
     this._addComment(`Call Script: ${customEvent.name}`);
+
+    const argLookup: {
+      actor: Dictionary<string>;
+      variable: Dictionary<string>;
+    } = {
+      actor: {},
+      variable: {},
+    };
+
+    // Push args
+    const actorArgs = Object.values(customEvent.actors);
+    const variableArgs = Object.values(customEvent.variables);
+    const argsLen = actorArgs.length + variableArgs.length;
+
+    let numArgs = argsLen - 1;
+    const registerArg = (type: "actor" | "variable", value: string) => {
+      if (!argLookup[type][value]) {
+        const newArg = `.ARG${numArgs + 2}`;
+        argLookup[type][value] = newArg;
+        numArgs--;
+      }
+      return argLookup[type][value];
+    };
+
+    const getArg = (type: "actor" | "variable", value: string) => {
+      if (!argLookup[type][value]) {
+        throw new Error("Unknown arg " + type + " " + value);
+      }
+      return argLookup[type][value];
+    };
+
+    if (actorArgs) {
+      for (const actorArg of actorArgs.reverse()) {
+        if (actorArg) {
+          const actorValue = input?.[`$actor[${actorArg.id}]$`] || "";
+          const actorIndex = this.getActorIndex(actorValue);
+          const arg = registerArg("actor", actorArg.id);
+          this._stackPushConst(actorIndex, `Actor ${arg}`);
+        }
+      }
+    }
+
+    if (variableArgs) {
+      for (const variableArg of variableArgs.reverse()) {
+        if (variableArg) {
+          const variableValue = input?.[`$variable[${variableArg.id}]$`] || "";
+          const variableAlias = this.getVariableAlias(variableValue);
+          const arg = registerArg("variable", variableArg.id);
+          this._stackPushConst(variableAlias, `Variable ${arg}`);
+        }
+      }
+    }
+
+    const script = mapEvents(
+      customEvent.script,
+      (event: ScriptEvent): ScriptEvent => {
+        if (!event.args || event.args.__comment) return event;
+        // Clone event
+        const e = {
+          ...event,
+          args: { ...event.args },
+        };
+        Object.keys(e.args).forEach((arg) => {
+          const argValue = e.args[arg];
+          // Update variable fields
+          if (isVariableField(e.command, arg, e.args)) {
+            if (argValue !== null && argValue.type === "variable") {
+              e.args[arg] = {
+                ...argValue,
+                value: getArg("variable", argValue.value),
+              };
+            } else {
+              e.args[arg] = getArg("variable", argValue);
+            }
+          }
+          // Update property fields
+          if (isPropertyField(e.command, arg, argValue)) {
+            const replacePropertyValueActor = (p: string) => {
+              const actorValue = p.replace(/:.*/, "");
+              if (actorValue === "player") {
+                return p;
+              }
+              // const newActorValue = input[`$actor[${actorValue}]$`];
+              const newActorValue = getArg("actor", actorValue);
+              return p.replace(/.*:/, `${newActorValue}:`);
+            };
+            if (argValue !== null && argValue.type === "property") {
+              e.args[arg] = {
+                ...argValue,
+                value: replacePropertyValueActor(argValue.value),
+              };
+            } else {
+              e.args[arg] = replacePropertyValueActor(argValue);
+            }
+          }
+          // Update actor fields
+          if (isActorField(e.command, arg, e.args)) {
+            e.args[arg] = getArg("actor", argValue); // input[`$variable[${argValue}]$`];
+          }
+        });
+
+        return e;
+      }
+    );
+
+    const scriptRef = this._compileSubScript("custom", script, { argLookup });
+
     this._callFar(scriptRef);
+    this._stackPop(argsLen);
 
     this._addNL();
   };
@@ -1792,10 +2183,10 @@ class ScriptBuilder {
 
   sceneSwitch = (
     sceneId: string,
-    x: number = 0,
-    y: number = 0,
+    x = 0,
+    y = 0,
     direction: ActorDirection = "down",
-    fadeSpeed: number = 2
+    fadeSpeed = 2
   ) => {
     this.includeActor = true;
     this._addComment("Load Scene");
@@ -1834,20 +2225,44 @@ class ScriptBuilder {
     this._addComment("Pop All Scene State");
     console.error("scenePopAllState not implemented");
     this._addNL();
+    throw new Error("scenePopAllState not implemented");
   };
 
   sceneResetState = () => {
     this._addComment("Reset Scene State Stack");
     console.error("sceneResetState not implemented");
     this._addNL();
+    throw new Error("sceneResetState not implemented");
   };
 
   // --------------------------------------------------------------------------
   // Variables
 
+  getActorIndex = (id: string): string | number => {
+    if (this._isArg(id)) {
+      return id;
+    }
+    const { entity, scene } = this.options;
+    const newIndex =
+      id === "$self$" && entity
+        ? getActorIndex(entity.id, scene)
+        : getActorIndex(id, scene);
+    return newIndex;
+  };
+
   getVariableAlias = (variable = "0"): string => {
-    if (variable.startsWith(".")) {
+    if (this._isArg(variable)) {
       return variable;
+    }
+
+    // Lookup args if in V0-9 format
+    if (variable.match(/^V[0-9]$/)) {
+      const key = variable.replace(/V/, "");
+      const arg = this.options.argLookup.variable[key];
+      if (!arg) {
+        throw new Error("Cant find arg: " + arg);
+      }
+      return arg;
     }
 
     const {
@@ -1858,10 +2273,11 @@ class ScriptBuilder {
       variablesLookup,
       variableAliasLookup,
     } = this.options;
+
     const id = getVariableId(variable, entity);
 
     // If already got an alias use that
-    const existingAlias = variableAliasLookup[id];
+    const existingAlias = variableAliasLookup[id || "0"];
     if (existingAlias) {
       return existingAlias;
     }
@@ -1881,11 +2297,11 @@ class ScriptBuilder {
       const num = toVariableNumber(variable);
       name = tempVariableName(num);
     } else {
-      const num = toVariableNumber(variable);
+      const num = toVariableNumber(variable || "0");
       name = globalVariableName(num, variablesLookup);
     }
 
-    let alias = "VAR_" + toASMVar(name);
+    const alias = "VAR_" + toASMVar(name);
     let newAlias = alias;
     let counter = 1;
 
@@ -1903,65 +2319,57 @@ class ScriptBuilder {
   };
 
   variableInc = (variable: string) => {
-    const variableAlias = this.getVariableAlias(variable);
     this._addComment("Variable Increment By 1");
     this._rpn() //
-      .ref(variableAlias)
+      .refVariable(variable)
       .int8(1)
       .operator(".ADD")
       .stop();
-    this._set(variableAlias, ".ARG0");
+    this._setVariable(variable, ".ARG0");
     this._stackPop(1);
     this._addNL();
   };
 
   variableDec = (variable: string) => {
-    const variableAlias = this.getVariableAlias(variable);
     this._addComment("Variable Decrement By 1");
     this._rpn() //
-      .ref(variableAlias)
+      .refVariable(variable)
       .int8(1)
       .operator(".SUB")
       .stop();
-    this._set(variableAlias, ".ARG0");
+    this._setVariable(variable, ".ARG0");
     this._stackPop(1);
     this._addNL();
   };
 
   variableSetToTrue = (variable: string) => {
-    const variableAlias = this.getVariableAlias(variable);
     this._addComment("Variable Set To True");
-    this._setConst(variableAlias, 1);
+    this._setVariableConst(variable, 1);
     this._addNL();
   };
 
   variableSetToFalse = (variable: string) => {
-    const variableAlias = this.getVariableAlias(variable);
     this._addComment("Variable Set To False");
-    this._setConst(variableAlias, 0);
+    this._setVariableConst(variable, 0);
     this._addNL();
   };
 
   variableSetToValue = (variable: string, value: number | string) => {
-    const variableAlias = this.getVariableAlias(variable);
     this._addComment("Variable Set To Value");
-    this._setConst(variableAlias, value);
+    this._setVariableConst(variable, value);
     this._addNL();
   };
 
   variableCopy = (setVariable: string, otherVariable: string) => {
-    const variableAliasA = this.getVariableAlias(setVariable);
-    const variableAliasB = this.getVariableAlias(otherVariable);
     this._addComment("Variable Copy");
-    this._set(variableAliasA, variableAliasB);
+    this._setVariableToVariable(setVariable, otherVariable);
     this._addNL();
   };
 
   variableSetToRandom = (variable: string, min: number, range: number) => {
-    const variableAlias = this.getVariableAlias(variable);
     this._addComment("Variable Set To Random");
     this._randomize();
-    this._rand(variableAlias, min, range);
+    this._randVariable(variable, min, range);
     this._addNL();
   };
 
@@ -1971,14 +2379,12 @@ class ScriptBuilder {
     otherVariable: string,
     clamp: boolean
   ) => {
-    const variableAliasA = this.getVariableAlias(setVariable);
-    const variableAliasB = this.getVariableAlias(otherVariable);
     const clampLabel = clamp ? this.getNextLabel() : "";
 
     this._addComment(`Variables ${operation}`);
     this._rpn() //
-      .ref(variableAliasA)
-      .ref(variableAliasB)
+      .refVariable(setVariable)
+      .refVariable(otherVariable)
       .operator(operation)
       .stop();
 
@@ -1996,7 +2402,7 @@ class ScriptBuilder {
       }
     }
 
-    this._set(variableAliasA, ".ARG0");
+    this._setVariable(setVariable, ".ARG0");
     this._stackPop(1);
     this._addNL();
   };
@@ -2007,12 +2413,11 @@ class ScriptBuilder {
     value: number,
     clamp: boolean
   ) => {
-    const variableAliasA = this.getVariableAlias(setVariable);
     const clampLabel = clamp ? this.getNextLabel() : "";
 
     this._addComment(`Variables ${operation} Value`);
     this._rpn() //
-      .ref(variableAliasA)
+      .refVariable(setVariable)
       .int8(value)
       .operator(operation)
       .stop();
@@ -2031,7 +2436,7 @@ class ScriptBuilder {
       }
     }
 
-    this._set(variableAliasA, ".ARG0");
+    this._setVariable(setVariable, ".ARG0");
     this._stackPop(1);
     this._addNL();
   };
@@ -2043,7 +2448,6 @@ class ScriptBuilder {
     range: number,
     clamp: boolean
   ) => {
-    const variableAlias = this.getVariableAlias(variable);
     const clampLabel = clamp ? this.getNextLabel() : "";
 
     this._addComment(`Variables ${operation} Random`);
@@ -2051,7 +2455,7 @@ class ScriptBuilder {
     this._randomize();
     this._rand(".ARG0", min, range);
     this._rpn() //
-      .ref(variableAlias)
+      .refVariable(variable)
       .ref(".ARG1")
       .operator(operation)
       .stop();
@@ -2070,7 +2474,7 @@ class ScriptBuilder {
       }
     }
 
-    this._set(variableAlias, ".ARG0");
+    this._setVariable(variable, ".ARG0");
     this._stackPop(2);
     this._addNL();
   };
@@ -2104,55 +2508,45 @@ class ScriptBuilder {
   };
 
   variableAddFlags = (variable: string, flags: number) => {
-    const variableAlias = this.getVariableAlias(variable);
     this._addComment(`Variable Add Flags`);
     this._rpn() //
-      .ref(variableAlias)
+      .refVariable(variable)
       .int8(flags)
       .operator(".B_OR")
       .stop();
-    this._set(variableAlias, ".ARG0");
+    this._setVariable(variable, ".ARG0");
     this._stackPop(1);
     this._addNL();
   };
 
   variableClearFlags = (variable: string, flags: number) => {
-    const variableAlias = this.getVariableAlias(variable);
     this._addComment(`Variable Clear Flags`);
     this._rpn() //
-      .ref(variableAlias)
+      .refVariable(variable)
       .int8(-1)
       .int8(flags)
       .operator(".B_XOR")
       .operator(".B_AND")
       .stop();
-    this._set(variableAlias, ".ARG0");
+    this._setVariable(variable, ".ARG0");
     this._stackPop(1);
     this._addNL();
   };
 
   variableEvaluateExpression = (variable: string, expression: string) => {
-    const variableAlias = this.getVariableAlias(variable);
     this._addComment(
-      `Variable ${variableAlias} = ${this._expressionToHumanReadable(
-        expression
-      )}`
+      `Variable ${variable} = ${this._expressionToHumanReadable(expression)}`
     );
     this._stackPushEvaluatedExpression(expression);
-    this._set(variableAlias, ".ARG0");
+    this._setVariable(variable, ".ARG0");
     this._stackPop(1);
     this._addNL();
   };
 
   variableSetToProperty = (variable: string, property: string) => {
-    const { scene, entity } = this.options;
     const actorValue = property && property.replace(/:.*/, "");
     const propertyValue = property && property.replace(/.*:/, "");
-    const actorIndex =
-      actorValue === "$self$" && entity
-        ? getActorIndex(entity.id, scene)
-        : getActorIndex(actorValue, scene);
-    this._setConst("ACTOR", actorIndex);
+    this.actorSetById(actorValue);
     if (propertyValue === "xpos") {
       this.actorGetPositionX(variable);
     } else if (propertyValue === "ypos") {
@@ -2226,9 +2620,9 @@ class ScriptBuilder {
       const numberValue = Number(newValue);
       this._addComment(`Engine Field Set To Value`);
       if (is16BitCType(cType)) {
-        this._setConstUInt16(key, numberValue);
+        this._setConstMemInt16(key, numberValue);
       } else {
-        this._setConstUInt8(key, numberValue);
+        this._setConstMemInt8(key, numberValue);
       }
       this._addNL();
     }
@@ -2238,13 +2632,12 @@ class ScriptBuilder {
     const { engineFields } = this.options;
     const engineField = engineFields[key];
     if (engineField !== undefined) {
-      const variableAlias = this.getVariableAlias(variable);
       const cType = engineField.cType;
       this._addComment(`Engine Field Set To Variable`);
       if (is16BitCType(cType)) {
-        this._setUInt16(key, variableAlias);
+        this._setMemInt16ToVariable(key, variable);
       } else {
-        this._setUInt8(key, variableAlias);
+        this._setMemInt8ToVariable(key, variable);
       }
       this._addNL();
     }
@@ -2254,13 +2647,12 @@ class ScriptBuilder {
     const { engineFields } = this.options;
     const engineField = engineFields[key];
     if (engineField !== undefined) {
-      const variableAlias = this.getVariableAlias(variable);
       const cType = engineField.cType;
       this._addComment(`Engine Field Store In Variable`);
       if (is16BitCType(cType)) {
-        this._getUInt16(variableAlias, key);
+        this._setVariableMemInt16(variable, key);
       } else {
-        this._getUInt8(variableAlias, key);
+        this._setVariableMemInt8(variable, key);
       }
       this._addNL();
     }
@@ -2448,9 +2840,7 @@ class ScriptBuilder {
     receiveVariable: string,
     packetSize: number
   ) => {
-    const sendAlias = this.getVariableAlias(sendVariable);
-    const receiveAlias = this.getVariableAlias(receiveVariable);
-    this._sioExchange(sendAlias, receiveAlias, packetSize);
+    this._sioExchangeVariables(sendVariable, receiveVariable, packetSize);
   };
 
   // --------------------------------------------------------------------------
@@ -2479,11 +2869,10 @@ class ScriptBuilder {
     truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
     falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
   ) => {
-    const variableAlias = this.getVariableAlias(variable);
     const trueLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
     this._addComment(`If Variable True`);
-    this._ifConst(".EQ", variableAlias, 1, trueLabel, 0);
+    this._ifVariableConst(".GT", variable, 0, trueLabel, 0);
     this._compilePath(falsePath);
     this._jump(endLabel);
     this._label(trueLabel);
@@ -2499,11 +2888,10 @@ class ScriptBuilder {
     truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
     falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
   ) => {
-    const variableAlias = this.getVariableAlias(variable);
     const trueLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
     this._addComment(`If Variable ${operator} Value`);
-    this._ifConst(operator, variableAlias, value, trueLabel, 0);
+    this._ifVariableConst(operator, variable, value, trueLabel, 0);
     this._compilePath(falsePath);
     this._jump(endLabel);
     this._label(trueLabel);
@@ -2519,12 +2907,10 @@ class ScriptBuilder {
     truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
     falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
   ) => {
-    const variableAliasA = this.getVariableAlias(variableA);
-    const variableAliasB = this.getVariableAlias(variableB);
     const trueLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
     this._addComment(`If Variable ${operator} Variable`);
-    this._if(operator, variableAliasA, variableAliasB, trueLabel, 0);
+    this._ifVariableCmpVariable(operator, variableA, variableB, trueLabel, 0);
     this._compilePath(falsePath);
     this._jump(endLabel);
     this._label(trueLabel);
@@ -2540,12 +2926,11 @@ class ScriptBuilder {
     truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
     falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
   ) => {
-    const variableAlias = this.getVariableAlias(variable);
     const trueLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
     this._addComment(`If Variable ${operator} Value`);
     this._rpn() //
-      .ref(variableAlias)
+      .refVariable(variable)
       .int8(flags)
       .operator(operator)
       .stop();
@@ -2563,7 +2948,7 @@ class ScriptBuilder {
     const endLabel = this.getNextLabel();
     this._addComment(`If Color Supported`);
     this._stackPushConst(0);
-    this._getUInt8(".ARG0", "_cpu");
+    this._getMemUInt8(".ARG0", "_cpu");
     this._ifConst(".NE", ".ARG0", "0x11", falseLabel, 1);
     this._compilePath(truePath);
     this._jump(endLabel);
@@ -2644,7 +3029,6 @@ class ScriptBuilder {
     cases: { [key: string]: ScriptEvent[] | ScriptBuilderPathFunction } = {},
     falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
   ) => {
-    const variableAlias = this.getVariableAlias(variable);
     const caseKeys = Object.keys(cases);
     const numCases = caseKeys.length;
 
@@ -2656,7 +3040,7 @@ class ScriptBuilder {
       const endLabel = this.getNextLabel();
       for (let i = 0; i < numCases; i++) {
         this._addComment(`case ${caseKeys[i]}:`);
-        this._ifConst(".NE", variableAlias, caseKeys[i], caseLabels[i], 0);
+        this._ifVariableConst(".NE", variable, caseKeys[i], caseLabels[i], 0);
         this._compilePath(cases[caseKeys[i]]);
         this._jump(endLabel);
         this._label(caseLabels[i]);
@@ -2679,12 +3063,25 @@ class ScriptBuilder {
 
   _compileSubScript = (
     type: "input" | "timer" | "custom",
-    script: ScriptEvent[] | ScriptBuilderPathFunction = []
+    script: ScriptEvent[] | ScriptBuilderPathFunction = [],
+    options?: Partial<ScriptBuilderOptions>
   ) => {
+    const key = `${type}__${JSON.stringify(script)}__${JSON.stringify(
+      options
+    )}`;
     const symbol = `script_${type}_${this.options.additionalScripts.length}`;
+    const existing = this.options.additionalScripts.find((s) => s.key === key);
+    if (existing) {
+      return existing.symbol;
+    }
     this.options.additionalScripts.push({
       symbol,
       script,
+      key,
+      options: {
+        ...this.options,
+        ...options,
+      },
     });
     return symbol;
   };
@@ -3368,7 +3765,20 @@ ${lock ? this._padCmd("VM_LOCK", "", 8, 24) + "\n\n" : ""}${
           this._padCmd("VM_PUSH_CONST", "0", 8, 24) +
           "\n\n"
         : ""
-    }${this.output.join("\n")}
+    }${this.output
+      .join("\n")
+      .replace(
+        /\[\[(\.[A-Z0-9_]+)::([0-9]+)\]\]/g,
+        (_, match1: string, match2: string) => {
+          const offset = parseInt(match2, 10) + (this.includeActor ? 4 : 0);
+          if (offset !== 0) {
+            return `${match1} - ${
+              parseInt(match2, 10) + (this.includeActor ? 4 : 0)
+            }`;
+          }
+          return match1;
+        }
+      )}
 `;
   };
 }

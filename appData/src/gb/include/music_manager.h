@@ -45,6 +45,21 @@ void music_play(const TRACK_T *track, UBYTE bank, UBYTE loop) __nonbanked;
  */
 void music_stop() __banked;
 
+/**
+ * Sets music playback position
+ * 
+ * @param pattern pattern number
+ * @param row wor number within pattern (not used)
+ */
+inline void music_setpos(UBYTE pattern, UBYTE row) {
+#ifdef HUGE_TRACKER
+    row;
+    hUGE_set_position(pattern);
+#else 
+    pattern; row;
+#endif
+}
+
 /** 
  * Mutes channels by mask
  * 

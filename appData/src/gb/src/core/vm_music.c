@@ -27,6 +27,11 @@ void vm_music_routine(SCRIPT_CTX * THIS, UBYTE routine, UBYTE bank, UBYTE * pc) 
     event->script_addr = pc;
 }
 
+void vm_music_setpos(SCRIPT_CTX * THIS, UBYTE pattern, UBYTE row) __banked {
+    THIS;
+    music_setpos(pattern, row);
+}
+
 void vm_sound_mastervol(SCRIPT_CTX * THIS, UBYTE volume) __banked {
     THIS;
     NR50_REG = volume;

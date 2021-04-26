@@ -33,8 +33,8 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_invoke,                 6}, // 0x0D
     {vm_beginthread,            6}, // 0x0E
     {vm_if,                     8}, // 0x0F
-    {0,                         0}, 
-    {vm_pushvalue,              2}, // 0x11
+    {vm_push_value_ind,         2}, // 0x11 
+    {vm_push_value,             2}, // 0x11
     {vm_reserve,                1}, // 0x12
     {vm_set,                    4}, // 0x13
     {vm_set_const,              4}, // 0x14
@@ -130,7 +130,7 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_sound_play,             7}, // 0x64
     {vm_music_routine,          4}, // 0x65
     {vm_wave_play,              6}, // 0x66
-    {0, 0},
+    {vm_music_setpos,           2}, // 0x67
     {vm_scene_push,             0}, // 0x68
     {vm_scene_pop,              0}, // 0x69
     {0, 0},

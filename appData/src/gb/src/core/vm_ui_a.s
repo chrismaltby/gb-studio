@@ -43,15 +43,13 @@ _itoa_fmt::
     ld      HL, #__itoa_fmt_len
     ld      A, (HL)
     or      A
-    jr      NZ, 1$
+    jr      Z, 1$
     dec     (HL)
 1$:
     ld      A, #'-'
     ld      (BC), A
     inc     BC
-    add     SP, #2
-    push    BC
-    
+
     call    .utoa_fmt
 2$:
     ld      H, B
