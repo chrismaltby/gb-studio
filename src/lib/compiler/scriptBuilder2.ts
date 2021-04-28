@@ -2169,7 +2169,9 @@ class ScriptBuilder {
     const scriptRef = this._compileSubScript("custom", script, { argLookup });
 
     this._callFar(scriptRef);
-    this._stackPop(argsLen);
+    if (argsLen > 0) {
+      this._stackPop(argsLen);
+    }
 
     this._addNL();
   };
