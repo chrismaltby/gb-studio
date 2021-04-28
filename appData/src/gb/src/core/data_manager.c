@@ -122,6 +122,10 @@ void load_animations(const spritesheet_t *sprite, UBYTE bank, animation_t * res_
     MemcpyBanked(res_animations, sprite->animations, sizeof(sprite->animations), bank);
 }
 
+void load_bounds(const spritesheet_t *sprite, UBYTE bank, bounding_box_t * res_bounds) __banked {
+    MemcpyBanked(res_bounds, &sprite->bounds, sizeof(sprite->bounds), bank);
+}
+
 UBYTE do_load_palette(palette_entry_t * dest, const palette_t * palette, UBYTE bank) __banked {
     UBYTE mask = ReadBankedUBYTE(&palette->mask, bank);
     palette_entry_t * sour = palette->cgb_palette; 
@@ -206,6 +210,7 @@ UBYTE load_scene(const scene_t * scene, UBYTE bank, UBYTE init_data) __banked {
         PLAYER.sprite = scn.player_sprite;
         tile_allocation_hiwater = load_sprite(PLAYER.base_tile, scn.player_sprite.ptr, scn.player_sprite.bank);
         load_animations(scn.player_sprite.ptr, scn.player_sprite.bank, PLAYER.animations);
+        load_bounds(scn.player_sprite.ptr, scn.player_sprite.bank, &PLAYER.bounds);
     } else {
         // no player on logo, but still some little amount of actors may be present
         tile_allocation_hiwater = 0x68;
@@ -321,10 +326,6 @@ void load_player() __banked {
     PLAYER.pinned = FALSE;    
     PLAYER.collision_group = 0;
     PLAYER.collision_enabled = TRUE;
-    PLAYER.bounds.left = 0;
-    PLAYER.bounds.right = 15;
-    PLAYER.bounds.top = -8;
-    PLAYER.bounds.bottom = 7;
 }
 
 void load_emote(const unsigned char *tiles, UBYTE bank) __banked {

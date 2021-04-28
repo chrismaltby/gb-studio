@@ -197,6 +197,7 @@ void vm_actor_set_spritesheet(SCRIPT_CTX * THIS, INT16 idx, UBYTE spritesheet_ba
     actor->sprite.bank = spritesheet_bank;
     actor->sprite.ptr = (void *)spritesheet;
     load_animations(spritesheet, spritesheet_bank, actor->animations);
+    load_bounds(spritesheet, spritesheet_bank, &actor->bounds);
     actor_reset_anim(actor);
 }
 
