@@ -674,6 +674,7 @@ ${toStructData(
     n_metasprites: spriteSheet.metaspritesOrder.length,
     metasprites: `${spriteSheetSymbol(spriteSheetIndex)}_metasprites`,
     animations: spriteSheet.animationOffsets,
+    bounds: compileBounds(spriteSheet),
     tileset: toFarPtr(tilesetSymbol(spriteSheet.tilesetIndex)),
     cgb_tileset: "{ NULL, NULL }",
   },

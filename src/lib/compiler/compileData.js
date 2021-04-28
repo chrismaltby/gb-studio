@@ -245,6 +245,10 @@ const compile = async (
       const initScript = []
         .concat(
           scene.actors.map((actor) => {
+            const actorStartScript = actor.startScript || [];
+            if (actorStartScript.length < 2) {
+              return [];
+            }
             return [].concat(
               {
                 command: "INTERNAL_SET_CONTEXT",
@@ -254,19 +258,19 @@ const compile = async (
                   entityId: actor.id,
                 },
               },
-              (actor.startScript || []).filter(
-                (event) => event.command !== EVENT_END
-              )
+              actorStartScript.filter((event) => event.command !== EVENT_END)
             );
           }),
-          {
-            command: "INTERNAL_SET_CONTEXT",
-            args: {
-              entity: scene,
-              entityType: "scene",
-              entityId: scene.id,
-            },
-          },
+          scene.script.length >= 2
+            ? {
+                command: "INTERNAL_SET_CONTEXT",
+                args: {
+                  entity: scene,
+                  entityType: "scene",
+                  entityId: scene.id,
+                },
+              }
+            : [],
           [scene.script] || []
         )
         .flat();
@@ -611,7 +615,7 @@ const precompile = async (
 
   progress(EVENT_MSG_PRE_AVATARS);
   const { usedAvatars } = await precompileAvatars(
-    projectData.avatars,
+    projectData.avatars || [],
     projectData.scenes,
     projectRoot,
     {
@@ -621,7 +625,7 @@ const precompile = async (
 
   progress(EVENT_MSG_PRE_EMOTES);
   const { usedEmotes } = await precompileEmotes(
-    projectData.emotes,
+    projectData.emotes || [],
     projectData.scenes,
     projectRoot,
     {

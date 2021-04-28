@@ -40,6 +40,10 @@ interface SpriteSheetData {
   animationType: SpriteAnimationType;
   flipLeft: boolean;
   animations: SpriteSheetAnimationData[];
+  boundsX: number;
+  boundsY: number;
+  boundsWidth: number;
+  boundsHeight: number;
   _v: string;
 }
 

@@ -993,6 +993,17 @@ class ScriptBuilder {
     this._addCmd("VM_ACTOR_SET_HIDDEN", addr, hidden ? 1 : 0);
   };
 
+  _actorSetBounds = (
+    addr: string,
+    left: number,
+    right: number,
+    top: number,
+    bottom: number
+  ) => {
+    this.includeActor = true;
+    this._addCmd("VM_ACTOR_SET_BOUNDS", addr, left, right, top, bottom);
+  };
+
   _actorSetAnimTick = (addr: string, tick: number) => {
     this.includeActor = true;
     this._addCmd("VM_ACTOR_SET_ANIM_TICK", addr, tick);
@@ -1600,6 +1611,17 @@ class ScriptBuilder {
     this._addNL();
   };
 
+  actorSetBounds = (
+    left: number,
+    right: number,
+    top: number,
+    bottom: number
+  ) => {
+    this._addComment("Actor Set Bounds");
+    this._actorSetBounds("ACTOR", left, right, top, bottom);
+    this._addNL();
+  };
+
   actorSetCollisions = (enabled: boolean) => {
     this._addComment("Actor Set Collisions");
     this._actorSetCollisionsEnabled("ACTOR", enabled);
@@ -1661,6 +1683,17 @@ class ScriptBuilder {
     }
   };
 
+  playerSetSprite = (spriteSheetId: string) => {
+    const { sprites } = this.options;
+    const spriteIndex = sprites.findIndex((s) => s.id === spriteSheetId);
+    if (spriteIndex > -1) {
+      this._addComment("Player Set Spritesheet");
+      this._setConst("ACTOR", 0);
+      this._actorSetSpritesheet("ACTOR", spriteSheetSymbol(spriteIndex));
+      this._addNL();
+    }
+  };
+
   actorSetMovementSpeed = (speed = 1) => {
     this._addComment("Actor Set Movement Speed");
     this._actorSetMoveSpeed("ACTOR", Math.round(speed * 16));
@@ -1671,6 +1704,46 @@ class ScriptBuilder {
     this._addComment("Actor Set Animation Tick");
     this._actorSetAnimTick("ACTOR", speed);
     this._addNL();
+  };
+
+  actorSetFrame = (frame = 0) => {
+    console.error("actorSetFrame not implemented");
+  };
+
+  actorSetFrameToVariable = (variable: string) => {
+    console.error("actorSetFrameToVariable not implemented");
+  };
+
+  actorSetAnimate = (enabled: boolean) => {
+    console.error("actorSetAnimate not implemented");
+  };
+
+  actorStopUpdate = () => {
+    console.error("actorStopUpdate not implemented");
+  };
+
+  // --------------------------------------------------------------------------
+  // Weapons
+
+  weaponAttack = (
+    spriteSheetId: string,
+    offset = 10,
+    collisionGroup: string,
+    collisionMask: string
+  ) => {
+    console.error("weaponAttack not implemented");
+  };
+
+  launchProjectile = (
+    spriteSheetId: string,
+    x: string,
+    y: string,
+    dirVariable: string,
+    speed: string,
+    collisionGroup: string,
+    collisionMask: string
+  ) => {
+    console.error("launchProjectile not implemented");
   };
 
   // --------------------------------------------------------------------------
@@ -2060,6 +2133,10 @@ class ScriptBuilder {
       return;
     }
 
+    console.log({
+      customEvent,
+    });
+
     this._addComment(`Call Script: ${customEvent.name}`);
 
     const argLookup: {
@@ -2086,7 +2163,16 @@ class ScriptBuilder {
     };
 
     const getArg = (type: "actor" | "variable", value: string) => {
+      if (type === "actor" && value === "player") {
+        return value;
+      }
       if (!argLookup[type][value]) {
+        console.log({
+          customEvent,
+          type,
+          value,
+          argLookup,
+        });
         throw new Error("Unknown arg " + type + " " + value);
       }
       return argLookup[type][value];
@@ -2695,6 +2781,25 @@ class ScriptBuilder {
   };
 
   // --------------------------------------------------------------------------
+  // Sound
+
+  soundStartTone = (period = 1600, toneFrames = 30) => {
+    console.error("soundStartTone not implemented ");
+  };
+
+  soundStopTone = () => {
+    console.error("soundStopTone not implemented ");
+  };
+
+  soundPlayBeep = (pitch = 4) => {
+    console.error("soundPlayBeep not implemented ");
+  };
+
+  soundPlayCrash = () => {
+    console.error("soundPlayCrash not implemented ");
+  };
+
+  // --------------------------------------------------------------------------
   // Palettes
 
   paletteSetBackground = (paletteIds: string[]) => {
@@ -3024,6 +3129,23 @@ class ScriptBuilder {
     this._compilePath(truePath);
     this._label(endLabel);
     this._addNL();
+  };
+
+  ifInput = (
+    input: string,
+    truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
+    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+  ) => {
+    console.error("ifInput not implemented ");
+  };
+
+  ifActorRelativeToActor = (
+    operation: string,
+    otherId: string,
+    truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
+    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+  ) => {
+    console.error("ifActorRelativeToActor not implemented ");
   };
 
   caseVariableValue = (
