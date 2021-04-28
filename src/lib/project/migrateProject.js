@@ -65,6 +65,7 @@ const migrateProject = project => {
     if (release === "6") {
       data = migrateFrom200r6To200r7Events(data);
       data = migrateFrom200r6To200r7Actors(data);
+      data = migrateFrom200r6To200r7Backgrounds(data);
       data = migrateFrom200r6To200r7Scenes(data);
       data = migrateFrom200r6To200r7Settings(data);
       release = "7";      
@@ -1009,6 +1010,24 @@ const migrateFrom200r6To200r7Actors = data => {
     })
   };
 };
+
+/*
+ * Version 2.0.0 r7 moves image color data into background entity rather than scene
+ */
+const migrateFrom200r6To200r7Backgrounds = data => {
+  return {
+    ...data,
+    backgrounds: data.backgrounds.map(background => {
+      // Find an existing scene using this background and copy the tile colors used
+      const scene = data.scenes.find((scene) => scene.backgroundId === background.id);
+      const tileColors = (scene && scene.tileColors) || [];
+      return {
+        ...background,
+        tileColors
+      };
+    })
+  };
+}
 
 /*
  * Version 2.0.0 r7 switches scene type to be a string enum
