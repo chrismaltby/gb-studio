@@ -219,7 +219,6 @@ const unsigned char SGB_border_pal[]={
 const void __at(sizeof(SGB_border_chr)) __size_SGB_border_chr;
 const void __at(sizeof(SGB_border_map)) __size_SGB_border_map;
 const void __at(sizeof(SGB_border_pal)) __size_SGB_border_pal;
-
 `;
 };
 
