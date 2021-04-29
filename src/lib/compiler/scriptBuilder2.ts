@@ -670,11 +670,19 @@ class ScriptBuilder {
   };
 
   _getMemInt8 = (location: ScriptBuilderStackVariable, cVariable: string) => {
-    this._addCmd("VM_GET_INT8", location, `_${cVariable}`);
+    this._addCmd(
+      "VM_GET_INT8",
+      location,
+      cVariable.startsWith("^") ? cVariable : `_${cVariable}`
+    );
   };
 
   _getMemInt16 = (location: ScriptBuilderStackVariable, cVariable: string) => {
-    this._addCmd("VM_GET_INT16", location, `_${cVariable}`);
+    this._addCmd(
+      "VM_GET_INT16",
+      location,
+      cVariable.startsWith("^") ? cVariable : `_${cVariable}`
+    );
   };
 
   _setVariableMemInt8 = (variable: string, cVariable: string) => {
@@ -3220,7 +3228,23 @@ class ScriptBuilder {
     truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
     falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
   ) => {
-    console.error("ifInput not implemented ");
+    const trueLabel = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+    this._addComment(`If Input`);
+    this._stackPushConst(0);
+    this._getMemInt8(".ARG0", "^/(_joypads + 1)/");
+    this._rpn() //
+      .ref(".ARG0")
+      .int8(inputDec(input))
+      .operator(".B_AND")
+      .stop();
+    this._ifConst(".NE", ".ARG0", 0, trueLabel, 2);
+    this._compilePath(falsePath);
+    this._jump(endLabel);
+    this._label(trueLabel);
+    this._compilePath(truePath);
+    this._label(endLabel);
+    this._addNL();
   };
 
   ifActorRelativeToActor = (
