@@ -536,7 +536,7 @@ class ScriptBuilder {
     this._addCmd("VM_PUSH_CONST", value + (comment ? ` ; ${comment}` : ""));
   };
 
-  _stackPush = (location: string) => {
+  _stackPush = (location: ScriptBuilderStackVariable) => {
     this.stackPtr++;
     this._addCmd("VM_PUSH_VALUE", location);
   };
@@ -1397,6 +1397,17 @@ class ScriptBuilder {
     } else {
       this.actorIndex = -1;
       this._set("ACTOR", this._stackOffset(newIndex));
+    }
+  };
+
+  actorPushById = (id: string) => {
+    const newIndex = this.getActorIndex(id);
+    if (typeof newIndex === "number") {
+      this.actorIndex = newIndex;
+      this._stackPushConst(this.actorIndex);
+    } else {
+      this.actorIndex = -1;
+      this._stackPush(this._stackOffset(newIndex));
     }
   };
 
@@ -3213,12 +3224,53 @@ class ScriptBuilder {
   };
 
   ifActorRelativeToActor = (
-    operation: string,
+    operation: "up" | "down" | "left" | "right",
     otherId: string,
     truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
     falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
   ) => {
-    console.error("ifActorRelativeToActor not implemented ");
+    const falseLabel = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+    this._addComment(`If Actor Relative To Actor`);
+    this._actorGetPosition("ACTOR");
+    this.actorPushById(otherId);
+    this._stackPushConst(0);
+    this._stackPushConst(0);
+    this._actorGetPosition(".ARG2");
+    if (operation === "left") {
+      this._rpn() //
+        .ref("^/(ACTOR + 1 - 3)/") // X1
+        .ref(".ARG1") // X2
+        .operator(".LT")
+        .stop();
+    } else if (operation === "right") {
+      this._rpn() //
+        .ref("^/(ACTOR + 1 - 3)/") // X1
+        .ref(".ARG1") // X2
+        .operator(".GT")
+        .stop();
+    } else if (operation === "up") {
+      this._rpn() //
+        .ref("^/(ACTOR + 2 - 3)/") // Y1
+        .ref(".ARG0") // Y2
+        .operator(".LT")
+        .stop();
+    } else if (operation === "down") {
+      this._rpn() //
+        .ref("^/(ACTOR + 2 - 3)/") // Y1
+        .ref(".ARG0") // Y2
+        .operator(".GT")
+        .stop();
+    } else {
+      this._stackPushConst(0);
+    }
+    this._ifConst(".EQ", ".ARG0", 0, falseLabel, 4);
+    this._compilePath(truePath);
+    this._jump(endLabel);
+    this._label(falseLabel);
+    this._compilePath(falsePath);
+    this._label(endLabel);
+    this._addNL();
   };
 
   caseVariableValue = (
