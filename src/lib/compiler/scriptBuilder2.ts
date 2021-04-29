@@ -2395,7 +2395,7 @@ class ScriptBuilder {
     }
     const { entity, scene } = this.options;
     const newIndex =
-      id === "$self$" && entity
+      (id === "" || id === "$self$") && entity
         ? getActorIndex(entity.id, scene)
         : getActorIndex(id, scene);
     return newIndex;
