@@ -354,6 +354,15 @@ OP_VM_POLL_LOADED     = 0x2B
         .db OP_VM_POLL_LOADED, #>IDX, #<IDX
 .endm
 
+OP_VM_MEMSET          = 0x76
+.macro VM_MEMSET DEST, VALUE, COUNT
+        .db OP_VM_MEMSET, #>COUNT, #<COUNT, #>VALUE, #<VALUE, #>DEST, #<DEST
+.endm
+
+OP_VM_MEMCPY          = 0x77
+.macro VM_MEMCPY DEST, SOUR, COUNT
+        .db OP_VM_MEMCPY, #>COUNT, #<COUNT, #>SOUR, #<SOUR, #>DEST, #<DEST
+.endm
 
 ; --- engine-specific instructions ------------------------------------------
 
@@ -737,6 +746,16 @@ OP_VM_SCENE_PUSH        = 0x68
 OP_VM_SCENE_POP         = 0x69
 .macro VM_SCENE_POP
         .db OP_VM_SCENE_POP
+.endm
+
+OP_VM_SCENE_POP_ALL     = 0x6A
+.macro VM_SCENE_POP_ALL
+        .db OP_VM_SCENE_POP_ALL
+.endm
+
+OP_VM_SCENE_STACK_RESET = 0x6B
+.macro VM_SCENE_STACK_RESET
+        .db OP_VM_SCENE_STACK_RESET
 .endm
 
 ; --- SIO ----------------------------------

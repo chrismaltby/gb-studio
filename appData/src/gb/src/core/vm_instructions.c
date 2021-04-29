@@ -133,8 +133,10 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_music_setpos,           2}, // 0x67
     {vm_scene_push,             0}, // 0x68
     {vm_scene_pop,              0}, // 0x69
-    {0, 0},
-    {0, 0},
+    {vm_scene_pop_all,          0}, // 0x6A
+    {vm_scene_stack_reset,      0}, // 0x6B
+
+    // SIO transfers
     {vm_sio_set_mode,           1}, // 0x6C
     {vm_sio_exchange,           5}, // 0x6D
     {0, 0},
@@ -147,8 +149,9 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_timer_reset,            1}, // 0x73
     {0, 0},
     {0, 0},
-    {0, 0},
-    {0, 0},
+    // variable manipulation
+    {vm_memset,                 6}, // 0x76
+    {vm_memcpy,                 6}, // 0x77
     // RTC instructions section
     {vm_rtc_latch,              0}, // 0x78
     {vm_rtc_get,                3}, // 0x79

@@ -125,6 +125,8 @@ void vm_set_indirect(SCRIPT_CTX * THIS, INT16 idxA, INT16 idxB) __banked;
 void vm_get_indirect(SCRIPT_CTX * THIS, INT16 idxA, INT16 idxB) __banked;
 void vm_test_terminate(SCRIPT_CTX * THIS, UBYTE flags) __banked;
 void vm_poll_loaded(SCRIPT_CTX * THIS, INT16 idx) __banked;
+void vm_memset(SCRIPT_CTX * THIS, INT16 idx, INT16 value, INT16 count) __banked;
+void vm_memcpy(SCRIPT_CTX * THIS, INT16 idxA, INT16 idxB, INT16 count) __banked;
 
 // return zero if script end
 // bank with VM code must be active

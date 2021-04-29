@@ -458,6 +458,14 @@ void vm_poll_loaded(SCRIPT_CTX * THIS, INT16 idx) __banked {
     *A = vm_loaded_state;
     vm_loaded_state = FALSE;
 }
+// memset for VM variables
+void vm_memset(SCRIPT_CTX * THIS, INT16 idx, INT16 value, INT16 count) __banked {
+    memset(VM_REF_TO_PTR(idx), value, count << 1);
+}
+// memcpy for VM variables
+void vm_memcpy(SCRIPT_CTX * THIS, INT16 idxA, INT16 idxB, INT16 count) __banked {
+    memcpy(VM_REF_TO_PTR(idxA), VM_REF_TO_PTR(idxB), count << 1);
+}
 
 // executes one step in the passed context
 // return zero if script end
