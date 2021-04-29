@@ -1260,6 +1260,14 @@ class ScriptBuilder {
     this._addCmd("VM_SCENE_POP");
   };
 
+  _scenePopAll = () => {
+    this._addCmd("VM_SCENE_POP_ALL");
+  };
+
+  _sceneStackReset = () => {
+    this._addCmd("VM_SCENE_STACK_RESET");
+  };
+
   _fadeIn = (speed: number) => {
     this._addCmd("VM_FADE_IN", speed);
   };
@@ -2348,16 +2356,15 @@ class ScriptBuilder {
 
   scenePopAllState = (fadeSpeed = 2) => {
     this._addComment("Pop All Scene State");
-    console.error("scenePopAllState not implemented");
+    this._fadeOut(fadeSpeed);
+    this._scenePopAll();
     this._addNL();
-    throw new Error("scenePopAllState not implemented");
   };
 
   sceneResetState = () => {
     this._addComment("Reset Scene State Stack");
-    console.error("sceneResetState not implemented");
+    this._sceneStackReset();
     this._addNL();
-    throw new Error("sceneResetState not implemented");
   };
 
   // --------------------------------------------------------------------------
