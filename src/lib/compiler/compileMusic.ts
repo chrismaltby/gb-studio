@@ -76,7 +76,7 @@ const compileModTrack = async (
   const outputFile = "output.c";
   const tmpFilePath = `${cacheRoot}/${outputFile}`;
 
-  const args = [`"${modPath}"`, track.dataName, "255"];
+  const args = [`"${modPath}"`, "MUSICTRACKNAME", "255"];
 
   if (track.settings.disableSpeedConversion) {
     args.push("-speed");
@@ -147,7 +147,7 @@ const compileModTracks = async (
   );
 
   for (const track of tracks) {
-    output[`music/${track.dataName}_Data.c`] = await compileModTrack(track, {
+    const fileData = await compileModTrack(track, {
       projectRoot,
       buildToolsPath,
       buildToolsVersion,
@@ -155,6 +155,10 @@ const compileModTracks = async (
       progress,
       warnings,
     });
+    output[`music/${track.dataName}_Data.c`] = fileData.replace(
+      /MUSICTRACKNAME/g,
+      track.dataName
+    );
   }
 };
 
