@@ -951,9 +951,13 @@ export const compileScriptHeader = (scriptName: string) =>
 
 export const compileGameGlobalsInclude = (
   variableAliasLookup: Dictionary<string>
-) =>
-  (Object.values(variableAliasLookup) as string[])
-    .map((string, stringIndex) => {
-      return `${string} = ${stringIndex}\n`;
-    })
-    .join("");
+) => {
+  const variables = Object.values(variableAliasLookup) as string[];
+  return (
+    variables
+      .map((string, stringIndex) => {
+        return `${string} = ${stringIndex}\n`;
+      })
+      .join("") + `MAX_GLOBAL_VARS = ${variables.length}\n`
+  );
+};

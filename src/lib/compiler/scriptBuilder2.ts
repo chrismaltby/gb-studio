@@ -701,6 +701,22 @@ class ScriptBuilder {
     }
   };
 
+  _memSet = (
+    dest: ScriptBuilderStackVariable,
+    value: number,
+    count: ScriptBuilderStackVariable
+  ) => {
+    this._addCmd("VM_MEMSET", dest, value, count);
+  };
+
+  _memCpy = (
+    dest: ScriptBuilderStackVariable,
+    source: ScriptBuilderStackVariable,
+    count: ScriptBuilderStackVariable
+  ) => {
+    this._addCmd("VM_MEMCPY", dest, source, count);
+  };
+
   _string = (str: string) => {
     const { characterEncoding } = this.options;
     this._addCmd(`.asciz "${encodeString(str, characterEncoding)}"`);
@@ -2706,7 +2722,8 @@ class ScriptBuilder {
   };
 
   variablesReset = () => {
-    console.error("variablesReset not implemented ");
+    this._addComment("Variables Reset");
+    this._memSet(0, 0, "MAX_GLOBAL_VARS");
   };
 
   // --------------------------------------------------------------------------
