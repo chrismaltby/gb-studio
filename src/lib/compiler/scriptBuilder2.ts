@@ -2684,6 +2684,10 @@ class ScriptBuilder {
     return `T${index}`;
   };
 
+  variablesReset = () => {
+    console.error("variablesReset not implemented ");
+  };
+
   // --------------------------------------------------------------------------
   // Engine Fields
 
@@ -3237,19 +3241,6 @@ class ScriptBuilder {
 
   /*
 
-  actorMoveToVariables = (
-    variableX,
-    variableY,
-    useCollisions = false,
-    moveType
-  ) => {
-    const output = this.output;
-    this.vectorsLoad(variableX, variableY);
-    output.push(cmd(ACTOR_MOVE_TO_VALUE));
-    output.push(useCollisions ? 1 : 0);
-    output.push(moveTypeDec(moveType));
-  };
-
   actorSetPosition = (x = 0, y = 0) => {
     const output = this.output;
     output.push(cmd(ACTOR_SET_POSITION));
@@ -3270,24 +3261,6 @@ class ScriptBuilder {
     const output = this.output;
     this.vectorsLoad(variableX, variableY);
     output.push(cmd(ACTOR_SET_POSITION_TO_VALUE));
-  };
-
-  actorSetDirection = (direction = "down") => {
-    const output = this.output;
-    output.push(cmd(ACTOR_SET_DIRECTION));
-    output.push(dirDec(direction));
-  };
-
-  actorSetMovementSpeed = (speed = 1) => {
-    const output = this.output;
-    output.push(cmd(ACTOR_SET_MOVE_SPEED));
-    output.push(moveSpeedDec(speed));
-  };
-
-  actorSetAnimationSpeed = (speed = 3) => {
-    const output = this.output;
-    output.push(cmd(ACTOR_SET_ANIM_SPEED));
-    output.push(animSpeedDec(speed));
   };
 
   actorSetFrame = (frame = 0) => {
@@ -3311,42 +3284,14 @@ class ScriptBuilder {
     output.push(flip ? 1 : 0);
   };
 
-  actorPush = (continueUntilCollision = false) => {
-    const output = this.output;
-    output.push(cmd(ACTOR_PUSH));
-    output.push(continueUntilCollision ? 1 : 0);
-  };
-
-  actorEmote = (emoteId = 0) => {
-    const output = this.output;
-    output.push(cmd(ACTOR_EMOTE));
-    output.push(emoteId);
-  };
-
   actorInvoke = () => {
     const output = this.output;
     output.push(cmd(ACTOR_INVOKE));
   };
 
-  actorShow = () => {
-    const output = this.output;
-    output.push(cmd(ACTOR_SHOW));
-  };
-
-  actorHide = () => {
-    const output = this.output;
-    output.push(cmd(ACTOR_HIDE));
-  };
-
   actorStopUpdate = () => {
     const output = this.output;
     output.push(cmd(ACTOR_STOP_UPDATE));
-  };
-
-  actorSetCollisions = (enabled) => {
-    const output = this.output;
-    output.push(cmd(ACTOR_SET_COLLISIONS));
-    output.push(enabled ? 1 : 0);
   };
 
   actorSetAnimate = (enabled) => {
@@ -3355,27 +3300,7 @@ class ScriptBuilder {
     output.push(enabled ? 1 : 0);
   };
 
-  actorSetSprite = (spriteSheetId) => {
-    const output = this.output;
-    const { sprites, scene } = this.options;
-    const spriteOffset = getSpriteOffset(spriteSheetId, sprites, scene);
-    const sprite = getSprite(spriteSheetId, sprites);
-    output.push(cmd(ACTOR_SET_SPRITE));
-    output.push(spriteOffset);
-    output.push(sprite.frames);
-  };
-
   // Player
-
-  playerSetSprite = (spriteSheetId, persist) => {
-    const output = this.output;
-    const { sprites } = this.options;
-    const spriteIndex = getSpriteIndex(spriteSheetId, sprites);
-    output.push(cmd(PLAYER_SET_SPRITE));
-    output.push(hi(spriteIndex));
-    output.push(lo(spriteIndex));
-    output.push(persist ? 1 : 0);
-  };
 
   playerBounce = (height) => {
     const output = this.output;
@@ -3501,118 +3426,9 @@ class ScriptBuilder {
 
   /*
 
-  variablesReset = () => {
-    const output = this.output;
-    output.push(cmd(RESET_VARIABLES));
-  };
 
-
-
-  temporaryEntityVariable = (index) => {
-    const { entity } = this.options;
-    return `${entity.id}__${index}`;
-  };
-
-  variableFromUnion = (unionValue, defaultVariable) => {
-    if (unionValue.type === "variable") {
-      return unionValue.value;
-    }
-    this.variableSetToUnionValue(defaultVariable, unionValue);
-    return defaultVariable;
-  };
-
-  variableSetToUnionValue = (variable, unionValue) => {
-    if (unionValue.type === "number") {
-      this.variableSetToValue(variable, unionValue.value);
-      return variable;
-    }
-    if (unionValue.type === "direction") {
-      this.variableSetToValue(variable, dirDec(unionValue.value));
-      return variable;
-    }
-    if (unionValue.type === "property") {
-      this.variableSetToProperty(variable, unionValue.value);
-      return variable;
-    }
-    if (unionValue.type === "variable") {
-      this.variableCopy(variable, unionValue.value);
-      return variable;
-    }
-    throw new Error(`Union type "${unionValue.type}" unknown.`);
-  };
-
-  // Scenes
-
-  sceneSwitch = (sceneId, x = 0, y = 0, direction = "down", fadeSpeed = 2) => {
-    const output = this.output;
-    const { scenes } = this.options;
-    const sceneIndex = scenes.findIndex((s) => s.id === sceneId);
-    if (sceneIndex > -1) {
-      output.push(cmd(SWITCH_SCENE));
-      output.push(hi(sceneIndex));
-      output.push(lo(sceneIndex));
-      output.push(x);
-      output.push(y);
-      output.push(dirDec(direction));
-      output.push(fadeSpeed);
-      this.scriptEnd();
-    }
-  };
-
-  scenePushState = () => {
-    const output = this.output;
-    output.push(cmd(SCENE_PUSH_STATE));
-  };
-
-  scenePopState = (fadeSpeed = 2) => {
-    const output = this.output;
-    output.push(cmd(SCENE_POP_STATE));
-    output.push(fadeSpeed);
-  };
-
-  scenePopAllState = (fadeSpeed = 2) => {
-    const output = this.output;
-    output.push(cmd(SCENE_POP_ALL_STATE));
-    output.push(fadeSpeed);
-  };
-
-  sceneResetState = () => {
-    const output = this.output;
-    output.push(cmd(SCENE_STATE_RESET));
-  };
 
   // Control Flow
-
-  ifInput = (input, truePath = [], falsePath = []) => {
-    const output = this.output;
-    output.push(cmd(IF_INPUT));
-    output.push(inputDec(input));
-    compileConditional(truePath, falsePath, {
-      ...this.options,
-      output,
-    });
-  };
-
-  ifActorAtPosition = (x, y, truePath = [], falsePath = []) => {
-    const output = this.output;
-    output.push(cmd(IF_ACTOR_AT_POSITION));
-    output.push(x || 0);
-    output.push(y || 0);
-    compileConditional(truePath, falsePath, {
-      ...this.options,
-      output,
-    });
-  };
-
-  ifActorDirection = (direction, truePath = [], falsePath = []) => {
-    const output = this.output;
-    output.push(cmd(IF_ACTOR_DIRECTION));
-    output.push(dirDec(direction));
-    compileConditional(truePath, falsePath, {
-      ...this.options,
-      output,
-    });
-  };
 
   ifActorRelativeToActor = (
     operation,
@@ -3633,74 +3449,6 @@ class ScriptBuilder {
       ...this.options,
       output,
     });
-  };
-
-  // Input
-
-  inputAwait = (input) => {
-    const output = this.output;
-    output.push(cmd(AWAIT_INPUT));
-    output.push(inputDec(input));
-  };
-
-  inputScriptSet = (input, persist, script) => {
-    const output = this.output;
-    const { compileEvents, banked } = this.options;
-
-    const subScript = [];
-    if (typeof script === "function") {
-      this.output = subScript;
-      script();
-      this.output = output;
-    } else {
-      compileEvents(script, subScript, false);
-    }
-    const bankPtr = banked.push(subScript);
-
-    output.push(cmd(SET_INPUT_SCRIPT));
-    output.push(inputDec(input));
-    output.push(persist ? 1 : 0);
-    output.push(bankPtr.bank);
-    output.push(hi(bankPtr.offset));
-    output.push(lo(bankPtr.offset));
-  };
-
-  inputScriptRemove = (input) => {
-    const output = this.output;
-    output.push(cmd(REMOVE_INPUT_SCRIPT));
-    output.push(inputDec(input));
-  };
-
-  // Camera
-
-  cameraMoveTo = (x = 0, y = 0, speed = 0) => {
-    const output = this.output;
-    const { scene } = this.options;
-    output.push(cmd(CAMERA_MOVE_TO));
-    // Limit camera move to be within scene bounds
-    const camX = Math.min(x, scene.width - 20);
-    const camY = Math.min(y, scene.height - 18);
-    output.push(camX);
-    output.push(camY);
-    // Direct speed in binary, first bits 0000 to 1111 are "&" compared with binary time
-    // Speed 0 = 0 instant, Speed 1 = 32 0x20 move every frame, Speed 2 = 33 0x21
-    const speedFlag = speed > 0 ? 32 + (1 << (speed - 1)) - 1 : 0;
-    output.push(speedFlag);
-  };
-
-  cameraLock = (speed = 0) => {
-    const output = this.output;
-    const speedFlag = speed > 0 ? 32 + (1 << (speed - 1)) - 1 : 0;
-    output.push(cmd(CAMERA_LOCK));
-    output.push(speedFlag);
-  };
-
-  cameraShake = (shouldShakeX, shouldShakeY, frames) => {
-    const output = this.output;
-    output.push(cmd(CAMERA_SHAKE));
-    output.push(shouldShakeX ? 1 : 0);
-    output.push(shouldShakeY ? 1 : 0);
-    output.push(frames);
   };
 
   // Sound
@@ -3738,23 +3486,6 @@ class ScriptBuilder {
   soundPlayCrash = () => {
     const output = this.output;
     output.push(cmd(SOUND_PLAY_CRASH));
-  };
-
-  // Data
-
-  dataLoad = () => {
-    const output = this.output;
-    output.push(cmd(LOAD_DATA));
-  };
-
-  dataSave = () => {
-    const output = this.output;
-    output.push(cmd(SAVE_DATA));
-  };
-
-  dataClear = () => {
-    const output = this.output;
-    output.push(cmd(CLEAR_DATA));
   };
 
 
