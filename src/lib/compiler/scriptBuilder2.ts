@@ -1,5 +1,5 @@
 import { inputDec, textSpeedDec } from "./helpers";
-import { decOct, hexDec } from "../helpers/8bit";
+import { decHex, decOct, hexDec } from "../helpers/8bit";
 import trimlines from "../helpers/trimlines";
 import { is16BitCType } from "../helpers/engineFields";
 import {
@@ -1271,6 +1271,27 @@ class ScriptBuilder {
 
   _musicStop = () => {
     this._addCmd("VM_MUSIC_STOP");
+  };
+
+  _soundPlay = (
+    frames: number,
+    channel: number,
+    a: number,
+    b: number,
+    c: number,
+    d: number,
+    e: number
+  ) => {
+    this._addCmd(
+      "VM_SOUND_PLAY",
+      frames,
+      channel,
+      decHex(a),
+      decHex(b),
+      decHex(c),
+      decHex(d),
+      decHex(e)
+    );
   };
 
   _paletteLoad = (
@@ -2788,19 +2809,43 @@ class ScriptBuilder {
   // Sound
 
   soundStartTone = (period = 1600, toneFrames = 30) => {
-    console.error("soundStartTone not implemented ");
-  };
-
-  soundStopTone = () => {
-    console.error("soundStopTone not implemented ");
+    this._addComment("Sound Play Tone");
+    this._soundPlay(
+      toneFrames,
+      1,
+      0x00,
+      (0x0 << 6) | 0x01,
+      (0x0f << 4) | 0x00,
+      period & 0x00ff,
+      0x80 | ((period & 0x0700) >> 8)
+    );
   };
 
   soundPlayBeep = (pitch = 4) => {
-    console.error("soundPlayBeep not implemented ");
+    this._addComment("Sound Play Beep");
+    let pitchValue = pitch - 1;
+    if (pitchValue < 0) {
+      pitchValue = 0;
+    }
+    if (pitchValue >= 8) {
+      pitchValue = 7;
+    }
+    pitchValue = pitchValue & 0x07;
+
+    this._soundPlay(
+      30,
+      4,
+      0x01,
+      (0x0f << 4) | 0x02,
+      0x20 | 0x08 | pitchValue,
+      0x80 | 0x40,
+      0x00
+    );
   };
 
   soundPlayCrash = () => {
-    console.error("soundPlayCrash not implemented ");
+    this._addComment("Sound Play Crash");
+    this._soundPlay(30, 4, 0x01, (0x0f << 4) | 0x02, 0x13, 0x80, 0x00);
   };
 
   // --------------------------------------------------------------------------
@@ -3461,11 +3506,6 @@ class ScriptBuilder {
     output.push(hi(period));
     output.push(lo(period));
     output.push(lo(toneFrames));
-  };
-
-  soundStopTone = () => {
-    const output = this.output;
-    output.push(cmd(SOUND_STOP_TONE));
   };
 
   soundPlayBeep = (pitch = 4) => {
