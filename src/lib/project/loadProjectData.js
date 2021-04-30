@@ -64,6 +64,7 @@ const loadProject = async (projectPath) => {
         return {
           ...background,
           id: oldBackground.id,
+          _v: oldBackground._v,
           tileColors:
             oldBackground?.tileColors !== undefined
               ? oldBackground.tileColors
@@ -93,6 +94,7 @@ const loadProject = async (projectPath) => {
           ...oldSprite,
           ...sprite,
           id: oldSprite.id,
+          _v: oldSprite._v,
           canvasWidth: oldSprite.canvasWidth || 32,
           canvasHeight: oldSprite.canvasHeight || 32,
           animations: Array.from(Array(8)).map((_, animationIndex) => ({
@@ -130,6 +132,7 @@ const loadProject = async (projectPath) => {
         return {
           ...track,
           id: oldTrack.id,
+          _v: oldTrack._v,
           settings: {
             ...oldTrack.settings,
           },
@@ -151,6 +154,7 @@ const loadProject = async (projectPath) => {
         return {
           ...font,
           id: oldFont.id,
+          _v: oldFont._v,
         };
       }
       return font;
@@ -169,6 +173,7 @@ const loadProject = async (projectPath) => {
         return {
           ...avatar,
           id: oldAvatar.id,
+          _v: oldAvatar._v,
         };
       }
       return avatar;
@@ -187,6 +192,7 @@ const loadProject = async (projectPath) => {
         return {
           ...emote,
           id: oldEmote.id,
+          _v: oldEmote._v,
         };
       }
       return emote;
