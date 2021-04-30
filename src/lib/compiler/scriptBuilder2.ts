@@ -1786,6 +1786,18 @@ class ScriptBuilder {
     console.error("actorStopUpdate not implemented");
   };
 
+  playerBounce = (height: "low" | "medium" | "high") => {
+    this._addComment("Player Bounce");
+    let value = -0x4000;
+    if (height === "low") {
+      value = -0x2000;
+    } else if (height === "high") {
+      value = -0x6000;
+    }
+    this._setConstMemInt16("pl_vel_y", value);
+    this._addNL();
+  };
+
   // --------------------------------------------------------------------------
   // Weapons
 
