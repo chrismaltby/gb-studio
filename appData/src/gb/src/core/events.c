@@ -28,7 +28,7 @@ void events_update() __nonbanked {
             if (*slot == 0) continue;
             script_event_t * event = &input_events[*slot - 1u];
             if (!event->script_addr) continue;
-            if ((event->handle == 0) || ((event->handle & 0x8000) != 0))
+            if ((event->handle == 0) || ((event->handle & SCRIPT_TERMINATED) != 0))
                 script_execute(event->script_bank, event->script_addr, &event->handle, 1, (int)key);
         }
     }
@@ -50,7 +50,7 @@ void timers_update() __nonbanked {
             if (timer_values[i].remains == 0) {                
                 script_event_t * event = &timer_events[i];
                 if (!event->script_addr) continue;
-                if ((event->handle == 0) || ((event->handle & 0x8000) != 0)) {
+                if ((event->handle == 0) || ((event->handle & SCRIPT_TERMINATED) != 0)) {
                     script_execute(event->script_bank, event->script_addr, &event->handle, 0, 0);
                     timer_values[i].remains = timer_values[i].value;
                 }

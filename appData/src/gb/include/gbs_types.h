@@ -54,7 +54,7 @@ typedef struct actor_t
   animation_t animations[8];
   far_ptr_t sprite;
   far_ptr_t script, script_update, script_hit1, script_hit2, script_hit3;
-  UBYTE ctx_id;
+  UWORD hscript_update;
 
   // Collisions
   collision_group_e collision_group;

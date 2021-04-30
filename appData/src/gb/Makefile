@@ -21,6 +21,7 @@ examples:
 	done
 
 test:
+	rm -f $(TEST_DIR)/test.rpt
 	rm -f $(TEST_DIR)/*/capture.bmp	
 	rm -rf $(TEST_DIR)/*/obj
 	rm -rf $(TEST_DIR)/*/build

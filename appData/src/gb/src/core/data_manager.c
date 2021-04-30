@@ -1,4 +1,4 @@
-#pragma bank 1
+#pragma bank 4
 
 #include <string.h>
 
@@ -234,7 +234,7 @@ UBYTE load_scene(const scene_t * scene, UBYTE bank, UBYTE init_data) __banked {
     }
 
     if (init_data) {
-        camera_init();
+        camera_reset();
 
         // Copy scene player hit scripts to player actor
         memcpy(&PLAYER.script_hit1, &scn.script_p_hit1, sizeof(far_ptr_t));
@@ -300,7 +300,7 @@ UBYTE load_scene(const scene_t * scene, UBYTE bank, UBYTE init_data) __banked {
         MemcpyBanked(&triggers, scn.triggers.ptr, sizeof(trigger_t) * triggers_len, scn.triggers.bank);
     }
 
-    scroll_init();
+    scroll_reset();
 
     // Reset last trigger
     last_trigger_tx = 0xFF;

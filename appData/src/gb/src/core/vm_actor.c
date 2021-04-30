@@ -35,6 +35,11 @@ void vm_actor_move_to(SCRIPT_CTX * THIS, INT16 idx) __banked {
 
     if (THIS->flags == 0) {
         THIS->flags = 1;
+
+        // Snap to nearest pixel before moving
+        actor->pos.x = ((actor->pos.x >> 4) << 4);
+        actor->pos.y = ((actor->pos.y >> 4) << 4);
+
         // Check for collisions in path
         if (params->ATTR & ACTOR_ATTR_CHECK_COLL) {
             if (params->ATTR & ACTOR_ATTR_H_FIRST) {
@@ -103,6 +108,17 @@ void vm_actor_move_to(SCRIPT_CTX * THIS, INT16 idx) __banked {
         return;
     }
 
+    // Check if overshot destination
+    if (new_dir == DIR_DOWN &&  (actor->pos.y > params->Y)) {
+        actor->pos.y = params->Y;
+    } else if (new_dir == DIR_UP &&  (actor->pos.y < params->Y)) {
+        actor->pos.y = params->Y;
+    } else if (new_dir == DIR_LEFT &&  (actor->pos.x < params->X)) {
+        actor->pos.x = params->X;
+    } else if (new_dir == DIR_RIGHT &&  (actor->pos.x > params->X)) {
+        actor->pos.x = params->X;
+    }
+
     THIS->PC -= (INSTRUCTION_SIZE + sizeof(idx));
     return;
 }
@@ -115,6 +131,17 @@ void vm_actor_activate(SCRIPT_CTX * THIS, INT16 idx) __banked {
 void vm_actor_deactivate(SCRIPT_CTX * THIS, INT16 idx) __banked {    
     UBYTE * n_actor = VM_REF_TO_PTR(idx);
     deactivate_actor(actors + *n_actor);
+}
+
+void vm_actor_terminate_update(SCRIPT_CTX * THIS, INT16 idx) __banked {
+    actor_t *actor;
+
+    act_set_pos_t * params = VM_REF_TO_PTR(idx);
+    actor = actors + (UBYTE)(params->ID);
+
+    if ((actor->hscript_update & SCRIPT_TERMINATED) == 0) {
+        script_terminate(actor->hscript_update);
+    }
 }
 
 void vm_actor_set_dir(SCRIPT_CTX * THIS, INT16 idx, direction_e dir) __banked {

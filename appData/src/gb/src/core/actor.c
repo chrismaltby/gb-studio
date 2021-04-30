@@ -151,9 +151,8 @@ void deactivate_actor(actor_t *actor) __banked {
     actor->enabled = FALSE;
     DL_REMOVE_ITEM(actors_active_head, actor);
     DL_PUSH_HEAD(actors_inactive_head, actor);
-    if (actor->ctx_id) {
-        script_terminate(actor->ctx_id);
-        actor->ctx_id = 0;
+    if ((actor->hscript_update & SCRIPT_TERMINATED) == 0) {
+        script_terminate(actor->hscript_update);
     }
 }
 
@@ -175,9 +174,9 @@ void activate_actor(actor_t *actor) __banked {
     actor_set_anim_idle(actor);
     DL_REMOVE_ITEM(actors_inactive_head, actor);
     DL_PUSH_HEAD(actors_active_head, actor);
+    actor->hscript_update = SCRIPT_TERMINATED;
     if (actor->script_update.bank) {
-        SCRIPT_CTX *ctx = script_execute(actor->script_update.bank, actor->script_update.ptr, 0, 0);
-        actor->ctx_id = ctx->ID;
+        script_execute(actor->script_update.bank, actor->script_update.ptr, &(actor->hscript_update), 0);
     }
 }
 

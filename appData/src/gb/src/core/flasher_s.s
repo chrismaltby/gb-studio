@@ -6,7 +6,7 @@
 .MBC1_ROM_PAGE          = 0x2000
 .MBC1_RAM_PAGE          = 0x4000
 
-        .area   _CODE_1
+        .area   _CODE_4
 
 .macro .wb addr, val
         ld a, val

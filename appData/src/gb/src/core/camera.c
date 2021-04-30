@@ -1,18 +1,28 @@
-#pragma bank 3
+#pragma bank 1
 
 #include "camera.h"
 
 #include "actor.h"
 
-INT16 camera_x = 0;
-INT16 camera_y = 0;
-BYTE camera_offset_x = 0;
-BYTE camera_offset_y = 0;
-BYTE camera_deadzone_x = 0;
-BYTE camera_deadzone_y = 0;
-UBYTE camera_settings = 0;
+INT16 camera_x;
+INT16 camera_y;
+BYTE camera_offset_x;
+BYTE camera_offset_y;
+BYTE camera_deadzone_x;
+BYTE camera_deadzone_y;
+UBYTE camera_settings;
 
 void camera_init() __banked {
+    camera_x = 0;
+    camera_y = 0;
+    camera_offset_x = 0;
+    camera_offset_y = 0;
+    camera_deadzone_x = 0;
+    camera_deadzone_y = 0;
+    camera_settings = 0;
+}
+
+void camera_reset() __banked {
     camera_settings = CAMERA_LOCK_FLAG;
     camera_deadzone_x = 0;
     camera_deadzone_y = 0;

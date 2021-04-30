@@ -649,8 +649,11 @@ UBYTE script_terminate(UBYTE ID) __banked {
     ctx = first_ctx; 
     while (ctx) {
         if (ctx->ID == ID) {
-            ctx->terminated = TRUE;
-            return TRUE;
+            if (ctx->hthread) {
+                *(ctx->hthread) |= SCRIPT_TERMINATED;
+                ctx->hthread = 0; 
+            } 
+            return ctx->terminated = TRUE;
         } else ctx = ctx->next;
     }
     return FALSE;
@@ -672,7 +675,7 @@ UBYTE script_runner_update() __nonbanked {
             // update lock state
             vm_lock_state -= ctx->lock_count;
             // update handle if present
-            if (ctx->hthread) *(ctx->hthread) |= 0x8000;
+            if (ctx->hthread) *(ctx->hthread) |= SCRIPT_TERMINATED;
             // script is finished, remove from linked list
             if (old_ctx) old_ctx->next = ctx->next; else first_ctx = ctx->next;
             // add terminated context to free contexts list

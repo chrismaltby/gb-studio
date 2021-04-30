@@ -483,6 +483,11 @@ OP_VM_ACTOR_SET_COLL_ENABLED     = 0x3F
         .db OP_VM_ACTOR_SET_COLL_ENABLED, #<ENABLED, #>ACTOR, #<ACTOR
 .endm
 
+OP_VM_ACTOR_TERMINATE_UPDATE  = 0x74
+.macro VM_ACTOR_TERMINATE_UPDATE ACTOR
+        .db OP_VM_ACTOR_TERMINATE_UPDATE, #>ACTOR, #<ACTOR
+.endm
+
 ; --- UI ------------------------------------------
 
 OP_VM_LOAD_TEXT         = 0x40
@@ -715,7 +720,8 @@ OP_VM_SOUND_MASTERVOL   = 0x63
 ; Plays sound effect
 OP_VM_SOUND_PLAY        = 0x64
 .macro VM_SOUND_PLAY FRAMES, CH, ?A, ?B, ?C, ?D, ?E
-        .db OP_VM_SOUND_PLAY, #<E, #<D, #<C, #<B, #<A, #<CH, #<FRAMES
+        .db OP_VM_SOUND_PLAY, #<CH, #<FRAMES
+        .db #<A, #<B, #<C, #<D, #<E    
 .endm
 
 ; Attach script to music event

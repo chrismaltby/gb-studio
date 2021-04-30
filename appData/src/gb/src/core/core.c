@@ -45,8 +45,9 @@ void core_reset() __banked {
     load_init();
     sound_init();
     parallax_init();
-    scroll_reset();
+    scroll_init();
     fade_init();
+    camera_init();
     actors_init();
     ui_init();
     events_init(FALSE);

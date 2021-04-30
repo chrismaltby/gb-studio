@@ -37,11 +37,9 @@ void vm_sound_mastervol(SCRIPT_CTX * THIS, UBYTE volume) __banked {
     NR50_REG = volume;
 }
 
-void vm_sound_play(SCRIPT_CTX * THIS, UBYTE frames, UBYTE channel, ...) __banked {
-    THIS;
-    va_list va;
-    va_start(va, channel);              // actually, always 5 parameters are passed as varargs
-    sound_play(frames, channel, va);
+void vm_sound_play(SCRIPT_CTX * THIS, UBYTE frames, UBYTE channel) __banked {
+    sound_play(frames, channel, THIS->bank, THIS->PC);
+    THIS->PC += ((channel == 3) ? 0x15 : 5); // skip regs and waveform, if playing on ch3
 }
 
 void vm_wave_play(SCRIPT_CTX * THIS, UBYTE frames, UBYTE bank, UBYTE * sample, UWORD size) __banked {

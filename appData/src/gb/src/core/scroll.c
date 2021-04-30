@@ -1,4 +1,4 @@
-#pragma bank 3
+#pragma bank 1
 
 #include "scroll.h"
 
@@ -41,17 +41,17 @@ UBYTE pending_w_i;
 INT16 current_row, new_row;
 INT16 current_col, new_col;
 
-void scroll_reset() __banked {
+void scroll_init() __banked {
     draw_scroll_x   = 0;
     draw_scroll_y   = 0;
     scroll_x_max    = 0;
     scroll_y_max    = 0;
     scroll_offset_x = 0;
     scroll_offset_y = 0;
-    scroll_init();
+    scroll_reset();
 }
 
-void scroll_init() __banked {
+void scroll_reset() __banked {
     pending_w_i     = 0;
     pending_h_i     = 0;
     scroll_x        = 0x7FFF;

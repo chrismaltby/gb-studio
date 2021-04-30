@@ -51,6 +51,8 @@ typedef struct SCRIPT_CTX {
 #define MAX_GLOBAL_VARS 32
 // quant size
 #define INSTRUCTIONS_PER_QUANT 0x10
+// termination flag
+#define SCRIPT_TERMINATED 0x8000
 
 // logical operators
 #define VM_OP_EQ  1

@@ -127,7 +127,7 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_music_stop,             0}, // 0x61
     {vm_music_mute,             1}, // 0x62
     {vm_sound_mastervol,        1}, // 0x63
-    {vm_sound_play,             7}, // 0x64
+    {vm_sound_play,             2}, // 0x64
     {vm_music_routine,          4}, // 0x65
     {vm_wave_play,              6}, // 0x66
     {vm_music_setpos,           2}, // 0x67
@@ -147,7 +147,7 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_camera_set_pos,         2}, // 0x71
     {vm_timer_stop,             1}, // 0x72
     {vm_timer_reset,            1}, // 0x73
-    {0, 0},
+    {vm_actor_terminate_update, 2}, // 0x74
     {0, 0},
     // variable manipulation
     {vm_memset,                 6}, // 0x76

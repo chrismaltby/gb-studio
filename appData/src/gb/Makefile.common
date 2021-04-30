@@ -19,11 +19,12 @@ REL_OBJDIR = obj/_rel
 
 CFLAGS = -I$(TOP)include -Wa-I$(TOP)include -Wa-I$(GBDKLIB)
 
-LFLAGS_NBANKS += -Wl-yo$(CART_SIZE) -Wl-ya4 -Wl-j -Wl-m -Wl-w
+LFLAGS_NBANKS += -Wl-yo$(CART_SIZE) -Wl-ya4
+LFLAGS_SYMBOLS = -Wl-j -Wl-m -Wl-w -Wm-yS
 
-LFLAGS = -Wl-yt$(CART_MBC) $(LFLAGS_NBANKS) -Wl-klib -Wl-g_shadow_OAM2=0xDF00 -Wl-g.STACK=0xDF00 -Wi-e
+LFLAGS = -Wl-yt$(CART_MBC) $(LFLAGS_NBANKS) $(LFLAGS_SYMBOLS) -Wl-klib -Wl-g_shadow_OAM2=0xDF00 -Wl-g.STACK=0xDF00 -Wi-e
 
-PACKFLAGS = -b 4 -f 255 -e rel -c
+PACKFLAGS = -b 5 -f 255 -e rel -c
 
 EMUFLAGS = \
 	-set "Color0=E8E8E8" \
@@ -56,7 +57,7 @@ ENGINE_OBJS = $(CSRC:%.c=$(TOP)$(OBJDIR)/%.o) \
 OBJS = $(ENGINE_OBJS)
 REL_OBJS = $(OBJS:$(OBJDIR)/%.o=$(REL_OBJDIR)/%.rel)
 
-all: settings directories $(TARGET) symbols
+all: settings directories $(TARGET)
 
 .PHONY: directories clean release debug profile DMG CGB SGB MBC3 MBC5 hUGE GBT test
 .SECONDARY: $(OBJS) 
@@ -164,6 +165,3 @@ clean:
 	rm -rf $(EXAMPLES_DIR)/*/build
 
 rom: directories $(TARGET)
-
-symbols:
-	python $(TOP)utils/noi2sym.py $(patsubst %.gb,%.noi,$(TARGET)) >$(patsubst %.gb,%.sym,$(TARGET))

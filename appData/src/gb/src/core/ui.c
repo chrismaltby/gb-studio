@@ -409,6 +409,14 @@ UBYTE ui_run_menu(menu_item_t * start_item, UBYTE bank, UBYTE options, UBYTE cou
     // copy first menu item
     MemcpyBanked(&current_menu_item, start_item, sizeof(menu_item_t), bank);
     // draw menu cursor
+    
+#ifdef CGB
+    if (_is_CGB) {
+        VBK_REG = 1;
+        set_win_tile_xy(current_menu_item.X, current_menu_item.Y, (UI_PALETTE & 0x07u));        
+        VBK_REG = 0;
+    }
+#endif
     set_win_tile_xy(current_menu_item.X, current_menu_item.Y, ui_cursor_tile);
     while (TRUE) {
         input_update();
@@ -445,10 +453,24 @@ UBYTE ui_run_menu(menu_item_t * start_item, UBYTE bank, UBYTE options, UBYTE cou
         // update current index
         current_index = next_index;
         // erase old cursor
+#ifdef CGB
+        if (_is_CGB) {
+            VBK_REG = 1;
+            set_win_tile_xy(current_menu_item.X, current_menu_item.Y, (UI_PALETTE & 0x07u));        
+            VBK_REG = 0;
+        }
+#endif
         set_win_tile_xy(current_menu_item.X, current_menu_item.Y, ui_bg_tile);
         // read menu data
         MemcpyBanked(&current_menu_item, start_item + next_index - 1u, sizeof(menu_item_t), bank);
         // put new cursor
+#ifdef CGB
+        if (_is_CGB) {
+            VBK_REG = 1;
+            set_win_tile_xy(current_menu_item.X, current_menu_item.Y, (UI_PALETTE & 0x07u));        
+            VBK_REG = 0;
+        }
+#endif
         set_win_tile_xy(current_menu_item.X, current_menu_item.Y, ui_cursor_tile);
         // reset next index
         next_index = 0;

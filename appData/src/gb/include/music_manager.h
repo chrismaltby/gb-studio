@@ -89,7 +89,7 @@ UBYTE music_events_poll() __banked;
  * @param channel sound channel
  * @param data data to be written to sound registers
  */
-void sound_play(UBYTE frames, UBYTE channel, UBYTE * data) __banked;
+void sound_play(UBYTE frames, UBYTE channel,  UBYTE bank, const UBYTE * data) __banked;
 
 /**
  * Plays waveform on channel 3
