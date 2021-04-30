@@ -1058,6 +1058,10 @@ class ScriptBuilder {
     this._addCmd("VM_ACTOR_EMOTE", addr, `___bank_${symbol}`, `_${symbol}`);
   };
 
+  _actorTerminateUpdate = (addr: string) => {
+    this._addCmd("VM_ACTOR_TERMINATE_UPDATE", addr);
+  };
+
   _loadText = (numInputs: number) => {
     this._addCmd("VM_LOAD_TEXT", `${numInputs}`);
   };
@@ -1783,7 +1787,9 @@ class ScriptBuilder {
   };
 
   actorStopUpdate = () => {
-    console.error("actorStopUpdate not implemented");
+    this._addComment("Actor Stop Update Script");
+    this._actorTerminateUpdate("ACTOR");
+    this._addNL();
   };
 
   playerBounce = (height: "low" | "medium" | "high") => {
