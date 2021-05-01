@@ -88,6 +88,9 @@ export interface ThemeInterface {
       instrument: string;
       effectCode: string;
       effectParam: string;
+      rollCell: {
+        border: string;
+      }
     }
   };
   borderRadius: number;

@@ -26,12 +26,16 @@ const Wrapper = styled.div<WrapperProps>`
     width: ${props.cols * props.size}px;
     height: ${props.rows * props.size}px;
     background-image: 
-      linear-gradient(${props.theme.colors.tracker.text} 1px, transparent 1px), 
-      linear-gradient(90deg, ${props.theme.colors.tracker.text} 1px, transparent 1px);
-    border-bottom: 1px solid ${props.theme.colors.tracker.text};
-    border-right: 1px solid ${props.theme.colors.tracker.text};
-    background-size: ${props.size}px ${props.size}px;
-  `}
+      linear-gradient(90deg, ${props.theme.colors.tracker.rollCell.border} 1px, transparent 1px),
+      linear-gradient(${props.theme.colors.tracker.rollCell.border} 1px, transparent 1px), 
+      linear-gradient(90deg, ${props.theme.colors.tracker.rollCell.border} 2px, transparent 1px);    
+    border-bottom: 1px solid ${props.theme.colors.tracker.rollCell.border};
+    border-right: 2px solid ${props.theme.colors.tracker.rollCell.border};
+    background-size: 
+      ${props.size}px ${props.size}px,
+      ${props.size}px ${props.size}px,
+      ${props.size * 8}px ${props.size * 4}px;
+    `}
 `;
 
 interface NoteProps {
