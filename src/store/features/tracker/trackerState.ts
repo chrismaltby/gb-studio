@@ -17,6 +17,9 @@ export interface TrackerState {
   octaveOffset: number;
   editStep: number;
   modified: boolean;
+  view: "tracker" | "roll",
+  tool: "pencil" | "eraser" | null,
+  defaultInstruments: [number, number, number, number]
 }
 
 export const initialState: TrackerState = {
@@ -27,6 +30,9 @@ export const initialState: TrackerState = {
   octaveOffset: 0,
   editStep: 1,
   modified: false,
+  view: "roll",
+  tool: "pencil",
+  defaultInstruments: [0, 0, 0, 0]
 };
 
 export const loadSongFile = createAsyncThunk<Song | null, string>(
@@ -74,6 +80,15 @@ const trackerSlice = createSlice({
     },
     pauseTracker: (state, _action: PayloadAction<void>) => {
       state.playing = false;
+    },
+    toggleView: (state, _action: PayloadAction<"tracker" | "roll">) => {
+      state.view = _action.payload;
+    },
+    setTool: (state, _action: PayloadAction<"pencil" | "eraser" | null>) => {
+      state.tool = _action.payload;
+    },
+    setDefaultInstruments: (state, _action: PayloadAction<[number, number, number, number]>) => {
+      state.defaultInstruments = _action.payload;
     },
     editSong: (state, _action: PayloadAction<{ changes: Partial<Song> }>) => {
       state.song = {
@@ -138,10 +153,10 @@ const trackerSlice = createSlice({
         noise_instruments: instruments
       }
     },
-    editPatternCell: (state, _action: PayloadAction<{ patternId: number, cellId: number, changes: Partial<PatternCell>}>) => {
+    editPatternCell: (state, _action: PayloadAction<{ patternId: number, cell: [number, number], changes: Partial<PatternCell>}>) => {
       const patternId = _action.payload.patternId;
-      const rowId = Math.floor(_action.payload.cellId / 16);
-      const colId = Math.floor(_action.payload.cellId / 4) % 4
+      const rowId = _action.payload.cell[0]; 
+      const colId = _action.payload.cell[1]; 
       const patternCell = state.song.patterns[patternId][rowId][colId];
 
       let patch = { ..._action.payload.changes }

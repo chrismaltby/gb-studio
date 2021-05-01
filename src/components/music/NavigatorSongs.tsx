@@ -15,6 +15,7 @@ import { SplitPaneHeader } from "../ui/splitpane/SplitPaneHeader";
 import useSplitPane from "../ui/hooks/use-split-pane";
 import styled from "styled-components";
 import { SplitPaneVerticalDivider } from "../ui/splitpane/SplitPaneDivider";
+import { instrumentColors } from "./InstrumentSelect";
 
 const COLLAPSED_SIZE = 30;
 
@@ -38,6 +39,7 @@ interface InstrumentNavigatorItem {
   instrumentId: string;
   type: InstrumentType;
   isGroup: boolean;
+  labelColor?: string;
 }
 
 const Pane = styled.div`
@@ -64,7 +66,6 @@ const instrumentToNavigatorItem = (type: InstrumentType) => (
   instrumentIndex: number,
   defaultName: string,
 ): InstrumentNavigatorItem => {
-  
   const name = instrument.name ? instrument.name : `${defaultName} ${instrumentIndex + 1}`;
 
   return ({
@@ -73,6 +74,7 @@ const instrumentToNavigatorItem = (type: InstrumentType) => (
     type,
     instrumentId: `${instrument.index}`,
     isGroup: false,
+    labelColor: instrumentColors[instrument.index],
   });
 };
 
@@ -149,9 +151,9 @@ export const NavigatorSongs = ({
     setOpenInstrumentGroupIds((value) => value.filter((s) => s !== id));
   };
 
-  const isOpen = (id: InstrumentType) => {
+  const isOpen = useCallback((id: InstrumentType) => {
     return openInstrumentGroupIds.includes(id);
-  };
+  }, [openInstrumentGroupIds]);
 
   const [instrumentItems, setInstrumentItems] = useState<InstrumentNavigatorItem[]>([]);
   useEffect(() => {
@@ -179,7 +181,7 @@ export const NavigatorSongs = ({
           )
           .sort(sortByIndex) : [],
     ))
-  }, [dutyInstruments, waveInstruments, noiseInstruments, openInstrumentGroupIds]);
+  }, [dutyInstruments, waveInstruments, noiseInstruments, openInstrumentGroupIds, isOpen]);
 
   const selectedInstrument = useSelector(
     (state: RootState) => state.editor.selectedInstrument

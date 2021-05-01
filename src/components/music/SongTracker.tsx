@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import { PatternCell } from "../../lib/helpers/uge/song/PatternCell";
 import { Song } from "../../lib/helpers/uge/song/Song";
 import { RootState } from "../../store/configureStore";
@@ -115,7 +115,10 @@ export const SongTracker = ({
         dispatch(
           trackerActions.editPatternCell({
             patternId: patternId,
-            cellId: selectedCell,
+            cell: [
+              Math.floor(selectedCell / 16),
+              Math.floor(selectedCell / 4) % 4
+            ],
             changes: {
               [type]: value,
             },

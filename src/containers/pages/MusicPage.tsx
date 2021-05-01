@@ -25,8 +25,10 @@ import {
 import { assetFilename } from "../../lib/helpers/gbstudio";
 import { SongEditor } from "../../components/music/SongEditor";
 import SongEditorToolsPanel from "../../components/music/SongEditorToolsPanel";
+import SongEditorRightToolsPanel from "../../components/music/SongEditorRightToolsPanel";
 import MusicViewer from "../../components/assets/MusicViewer";
 import { loadSongFile } from "../../store/features/tracker/trackerState";
+import { SongPianoRoll } from "../../components/music/SongPianoRoll";
 
 const Wrapper = styled.div`
   display: flex;
@@ -249,6 +251,10 @@ const MusicPage = () => {
 
   const [] = useState([-1, -1]);
 
+  const view = useSelector(
+    (state: RootState) => state.tracker.view
+  );
+
   return (
     <Wrapper>
       <div
@@ -308,15 +314,25 @@ const MusicPage = () => {
             <SongEditorToolsPanel
               selectedSong={selectedSong}
             />
+            <SongEditorRightToolsPanel />
           </div>
           <SplitPaneVerticalDivider />
           <div style={{ position: "relative" }}>
-            <SongTracker
-              id={selectedId}
-              sequenceId={sequenceId}
-              song={song}
-              height={windowHeight - 100}
-            />
+            {(view === "tracker") ? 
+              <SongTracker
+                id={selectedId}
+                sequenceId={sequenceId}
+                song={song}
+                height={windowHeight - 100}
+              />
+            :
+              <SongPianoRoll
+                id={selectedId}
+                sequenceId={sequenceId}
+                song={song}
+                height={windowHeight - 100}
+              />
+            }
           </div>
         </div>
         <SplitPaneHorizontalDivider onMouseDown={onResizeRight} />

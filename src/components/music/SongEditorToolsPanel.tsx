@@ -6,6 +6,10 @@ import {
   PlayIcon,
   PauseIcon,
   SaveIcon,
+  PencilIcon,
+  EraserIcon,
+  NoiseIcon,
+  SongIcon,
 } from "../ui/icons/Icons";
 import FloatingPanel, {
   FloatingPanelDivider,
@@ -41,6 +45,14 @@ const SongEditorToolsPanel = ({
     (state: RootState) => state.tracker.modified
   );
 
+  const view = useSelector(
+    (state: RootState) => state.tracker.view
+  );
+
+  const tool = useSelector(
+    (state: RootState) => state.tracker.tool
+  );
+
   const togglePlay = useCallback(() => {
     if (!play) {
       dispatch(trackerActions.playTracker());
@@ -48,6 +60,18 @@ const SongEditorToolsPanel = ({
       dispatch(trackerActions.pauseTracker());
     }
   }, [dispatch, play]);
+
+  const toggleView = useCallback(() => {
+    if (view === "tracker") {
+      dispatch(trackerActions.toggleView("roll"));
+    } else {
+      dispatch(trackerActions.toggleView("tracker"));
+    }
+  }, [dispatch, view]);
+
+  const setTool = useCallback((tool: "pencil" | "eraser" | null) => {
+    dispatch(trackerActions.setTool(tool));
+  }, [dispatch]);
 
   const saveSong = useCallback(() => {
     if (modified) {
@@ -69,6 +93,28 @@ const SongEditorToolsPanel = ({
       <Button variant="transparent" onClick={togglePlay}>
         {play ? <PauseIcon /> : <PlayIcon />}
       </Button>
+      <FloatingPanelDivider />
+      <Button variant="transparent" onClick={toggleView}>
+        {view === "roll" ? <NoiseIcon /> : <SongIcon />}
+      </Button>
+      {view === "roll" ?
+      <>
+        <Button 
+          variant="transparent"
+          onClick={() => setTool("pencil")}
+          active={tool === "pencil"}
+        >
+          <PencilIcon />
+        </Button>
+        <Button 
+          variant="transparent"
+          onClick={() => setTool("eraser")}
+          active={tool === "eraser"}
+        >
+          <EraserIcon />
+        </Button>
+      </>
+      : ""}
     </Wrapper>
   );
 };

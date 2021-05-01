@@ -115,6 +115,42 @@ const GlobalStyle = createGlobalStyle`
   .label--gray {
     background: #9e9e9e;
   }
+
+  .label--cyan {
+    background: #00bcd4;
+  }
+
+  .label--red-alt {
+    background: #b71c1c;
+  }
+
+  .label--orange-alt {
+    background: #e65100;
+  }
+
+  .label--yellow-alt {
+    background: #f57f17;
+  }
+
+  .label--green-alt {
+    background: #1b5e20;
+  }
+
+  .label--blue-alt {
+    background: #0d47a1;
+  }
+
+  .label--purple-alt {
+    background: #4a148c;
+  }
+
+  .label--gray-alt {
+    background: #424242;
+  }
+
+  .label-cyan-alt {
+    background: #006064;
+  }
 `;
 
 export default GlobalStyle;
