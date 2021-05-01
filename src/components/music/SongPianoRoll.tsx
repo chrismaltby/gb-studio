@@ -5,11 +5,13 @@ import { PatternCell } from "../../lib/helpers/uge/song/PatternCell";
 import { Song } from "../../lib/helpers/uge/song/Song";
 import { RootState } from "../../store/configureStore";
 import trackerActions from "../../store/features/tracker/trackerActions";
-import { SplitPaneHorizontalDivider } from "../ui/splitpane/SplitPaneDivider";
+import { SplitPaneVerticalDivider } from "../ui/splitpane/SplitPaneDivider";
 import { SequenceEditor } from "./SequenceEditor";
 import { UgePlayer } from "./UgePlayer";
 import scrollIntoView from 'scroll-into-view-if-needed';
 import { instrumentColors } from "./InstrumentSelect";
+import { SplitPaneHeader } from "../ui/splitpane/SplitPaneHeader";
+import l10n from "../../lib/helpers/l10n";
 
 const CELL_SIZE = 16;
 
@@ -154,95 +156,118 @@ export const SongPianoRoll = ({
     }
   }, [tool, defaultInstruments, octaveOffset, dispatch, patternId]);
 
+  const [patternsPanelOpen, setPatternsPanelOpen] = useState(true);
+  const togglePatternsPanel = useCallback(() => {
+    setPatternsPanelOpen(!patternsPanelOpen);
+  }, [patternsPanelOpen, setPatternsPanelOpen]);
+
   return (
     <div
       style={{
         display: "flex",
         width: "100%",
+        flexDirection: "column",
+        height: height,
       }}
     >
-      <div style={{ position: "relative", minWidth: "85px" }}>
-        <SequenceEditor
-          id={id}
-          sequence={song?.sequence}
-          patterns={song?.patterns.length}
-          playingSequence={playbackState[0]}
-          height={height}
-        />
-      </div>
-      <SplitPaneHorizontalDivider />
       <div style={{
         position: "relative",
-        overflow: "auto",
         flexGrow: 1,
-        height: height,
-      }}>
-        <SongGrid
-          tabIndex={0}
-          onMouseDown={(e) => { handleMouseDown(e.nativeEvent) }}
-        >
-          <div 
-            ref={playingRowRef}
-            style={{
-              width: CELL_SIZE - 1,
-              border: "1px solid red",
-              position: "absolute",
-              transform: `translateX(${20 + playbackState[1] * CELL_SIZE}px)`,
-              top: 0,
-              bottom: 0,
-              background: "red",
-            }}
-          ></div>
-
-        {Array(4).fill("").map((_, i) => 
-          <RollChannel
-            data-channel={i}
-            rows={12}
-            cols={64}
-            size={CELL_SIZE}
+        overflow: "hidden"
+      }}
+      >
+        <div style={{
+          position: "relative",
+          overflow: "auto",
+          height: "100%",
+        }}>
+          <SongGrid
+            tabIndex={0}
+            onMouseDown={(e) => { handleMouseDown(e.nativeEvent) }}
           >
-            {song?.patterns[patternId]?.map((column: PatternCell[], columnIdx: number) => {
-              const cell = column[i];
-              const octave = cell.note === null ? 0 : ~~(cell.note / 12) + 3;
+            <div 
+              ref={playingRowRef}
+              style={{
+                width: CELL_SIZE - 1,
+                border: "1px solid red",
+                position: "absolute",
+                transform: `translateX(${20 + playbackState[1] * CELL_SIZE}px)`,
+                top: 0,
+                bottom: 0,
+                background: "red",
+              }}
+            ></div>
 
-              if (cell.note !== null) {
-                return (
-                  <>
-                    <Note 
-                      key={`note_${columnIdx}_${i}`}
-                      onMouseDown={removeNote(i, columnIdx)}
-                      size={CELL_SIZE}
-                      className={cell.instrument !== null ? `label--${instrumentColors[cell.instrument]}` : ""}
-                      style={{ 
-                        left: `${columnIdx * CELL_SIZE}px`,
-                        bottom: `${((cell.note % 12) * CELL_SIZE) - 1}px`, 
-                      }}
-                    >
-                      {(cell.effectcode)?.toString(16).toUpperCase()}
-                    </Note>
-                    {(octave !== (3 + octaveOffset)) ? 
-                      <Note
-                        key={`note_octave_${columnIdx}_${i}`}
+          {Array(4).fill("").map((_, i) => 
+            <RollChannel
+              data-channel={i}
+              rows={12}
+              cols={64}
+              size={CELL_SIZE}
+            >
+              {song?.patterns[patternId]?.map((column: PatternCell[], columnIdx: number) => {
+                const cell = column[i];
+                const octave = cell.note === null ? 0 : ~~(cell.note / 12) + 3;
+
+                if (cell.note !== null) {
+                  return (
+                    <>
+                      <Note 
+                        key={`note_${columnIdx}_${i}`}
+                        onMouseDown={removeNote(i, columnIdx)}
                         size={CELL_SIZE}
+                        className={cell.instrument !== null ? `label--${instrumentColors[cell.instrument]}` : ""}
                         style={{ 
-                          borderWidth: 0,
-                          left: `${columnIdx * CELL_SIZE + 1}px`,
-                          bottom: `${octave < (3 + octaveOffset) ? `-${CELL_SIZE}px` : ""}`, 
-                          top: `${octave > (3 + octaveOffset) ? `-${CELL_SIZE}px` : ""}`, 
+                          left: `${columnIdx * CELL_SIZE}px`,
+                          bottom: `${((cell.note % 12) * CELL_SIZE) - 1}px`, 
                         }}
                       >
-                        {octave}
+                        {(cell.effectcode)?.toString(16).toUpperCase()}
                       </Note>
-                    : "" }
-                  </>
-                )
-              }
-              return "";
-            })}
-          </RollChannel>
-        )}
-        </SongGrid>
+                      {(octave !== (3 + octaveOffset)) ? 
+                        <Note
+                          key={`note_octave_${columnIdx}_${i}`}
+                          size={CELL_SIZE}
+                          style={{ 
+                            borderWidth: 0,
+                            left: `${columnIdx * CELL_SIZE + 1}px`,
+                            bottom: `${octave < (3 + octaveOffset) ? `-${CELL_SIZE}px` : ""}`, 
+                            top: `${octave > (3 + octaveOffset) ? `-${CELL_SIZE}px` : ""}`, 
+                          }}
+                        >
+                          {octave}
+                        </Note>
+                      : "" }
+                    </>
+                  )
+                }
+                return "";
+              })}
+            </RollChannel>
+          )}
+          </SongGrid>
+        </div>
       </div>
+      <SplitPaneVerticalDivider />
+      <SplitPaneHeader
+        onToggle={togglePatternsPanel}
+        collapsed={!patternsPanelOpen}
+      >
+        {l10n("FIELD_PATTERNS")}
+      </SplitPaneHeader>
+      {patternsPanelOpen && (
+        <div style={{ 
+          position: "relative"
+        }}>
+          <SequenceEditor
+            id={id}
+            direction="horizontal"
+            sequence={song?.sequence}
+            patterns={song?.patterns.length}
+            playingSequence={playbackState[0]}
+          />
+        </div>
+      )}
       <UgePlayer
         song={id}
         data={song}

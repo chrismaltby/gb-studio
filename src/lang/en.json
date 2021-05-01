@@ -363,6 +363,7 @@
   "FIELD_PREVIEW_AS_DEFAULT": "Preview Using Default Colors",
   "FIELD_SONGS": "Songs",
   "FIELD_INSTRUMENTS": "Instruments",
+  "FIELD_PATTERNS": "Patterns",
   "FIELD_ARTIST": "Artist",
   "FIELD_TEMPO": "Tempo",
   "FIELD_LENGTH": "Length",

@@ -16,7 +16,8 @@ interface SequenceEditorProps {
   sequence?: number[],
   patterns?: number,
   playingSequence: number,
-  height: number
+  height?: number,
+  direction?: "vertical" | "horizontal"
 }
 
 interface SequenceItemProps {
@@ -30,6 +31,7 @@ const SequenceItem = styled.div<SequenceItemProps>`
   color: ${(props) => props.theme.colors.input.text};
   padding: 4px;
   margin: 6px;
+  min-width: 50px;
 
   ${(props) =>
     props.selected
@@ -57,7 +59,8 @@ export const SequenceEditorFwd = ({
   sequence,
   patterns,
   playingSequence,
-  height
+  height,
+  direction,
 }: SequenceEditorProps) => {
   const dispatch = useDispatch();
 
@@ -107,7 +110,7 @@ export const SequenceEditorFwd = ({
         setSequenceId(sequenceId + 1);
       }
     },
-    [hasFocus, selectHasFocus, sequenceId]
+    [hasFocus, selectHasFocus, sequenceId, setSequenceId]
   );
 
   useEffect(() => {
@@ -123,13 +126,18 @@ export const SequenceEditorFwd = ({
   return (
     <div 
       tabIndex={0}
-      style={{height, overflow: "hidden scroll"}}
+      style={{
+        height, 
+        display: "flex",
+        flexDirection: direction === "horizontal" ? "row" : "column",
+        overflow: direction === "horizontal" ? "auto hidden" : "hidden scroll",
+      }}
       onFocus={() => setHasFocus(true)}
       onBlur={() => setHasFocus(false)}
     >
       {sequence && sequence.map(
         (item, i) =>
-          <div>
+        <div>
           <SequenceItem
             onClick={() => setSequenceId(i)}
             selected={i === sequenceId}

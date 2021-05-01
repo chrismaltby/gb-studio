@@ -315,14 +315,15 @@ const MusicPageUge = () => {
             <SongEditorRightToolsPanel />
           </div>
           <SplitPaneVerticalDivider />
-          <div style={{ position: "relative" }}>
             {(view === "tracker") ? 
-              <SongTracker
-                id={selectedId}
-                sequenceId={sequenceId}
-                song={song}
-                height={windowHeight - 100}
-              />
+              <div style={{ position: "relative" }}>
+                <SongTracker
+                  id={selectedId}
+                  sequenceId={sequenceId}
+                  song={song}
+                  height={windowHeight - 100}
+                />
+              </div>
             :
               <SongPianoRoll
                 id={selectedId}
@@ -331,7 +332,6 @@ const MusicPageUge = () => {
                 height={windowHeight - 100}
               />
             }
-          </div>
         </div>
         <SplitPaneHorizontalDivider onMouseDown={onResizeRight} />
         <div

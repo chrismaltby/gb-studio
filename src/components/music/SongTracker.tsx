@@ -35,7 +35,7 @@ const SongGridHeader = styled.div`
   position: -webkit-sticky;
   position: absolute;
   top: 0;
-  left: 86px;
+  left: 90px;
   z-index: 1;
   white-space: nowrap;
   background: ${(props) => props.theme.colors.tracker.background};
