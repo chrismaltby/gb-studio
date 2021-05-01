@@ -27,7 +27,7 @@ export const instrumentColors = [
   "cyan-alt",
 ];
 
-const instruments = Array(14).fill("").map((_, i) => ({
+const instruments = Array(15).fill("").map((_, i) => ({
   id: `${i}`,
   name: `Instrument ${i + 1}`
 }));

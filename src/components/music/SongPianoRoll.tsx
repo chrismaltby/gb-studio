@@ -31,6 +31,15 @@ const SongGrid = styled.div`
   position: relative;
 `;
 
+const RollPlaybackTracker = styled.div`              
+  width: ${CELL_SIZE - 1}px;
+  border: 1px solid ${(props) => props.theme.colors.highlight};
+  background: ${(props) => props.theme.colors.highlight};
+  position: absolute;
+  top: 0;
+  bottom: 0;
+`;
+
 export const SongPianoRoll = ({
   id,
   song,
@@ -95,18 +104,12 @@ export const SongPianoRoll = ({
           <SongGrid
             tabIndex={0}
           >
-            <div 
+            <RollPlaybackTracker 
               ref={playingRowRef}
               style={{
-                width: CELL_SIZE - 1,
-                border: "1px solid red",
-                position: "absolute",
                 transform: `translateX(${20 + playbackState[1] * CELL_SIZE}px)`,
-                top: 0,
-                bottom: 0,
-                background: "red",
               }}
-            ></div>
+            />
 
           {Array(4).fill("").map((_, i) => 
             <RollChannel 
