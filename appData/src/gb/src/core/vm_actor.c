@@ -23,6 +23,11 @@ typedef struct act_set_pos_t {
     INT16 X, Y;
 } act_set_pos_t;
 
+typedef struct act_set_frame_t {
+    INT16 ID;
+    INT16 FRAME;
+} act_set_frame_t;
+
 void vm_actor_move_to(SCRIPT_CTX * THIS, INT16 idx) __banked {
     actor_t *actor;
     direction_e new_dir = DIR_DOWN;
@@ -260,4 +265,13 @@ void vm_actor_set_coll_enabled(SCRIPT_CTX * THIS, INT16 idx, UBYTE enabled) __ba
     UBYTE * n_actor = VM_REF_TO_PTR(idx);
     actor = actors + *n_actor;
     actor->collision_enabled = enabled;
+}
+
+void vm_actor_set_anim_frame(SCRIPT_CTX * THIS, INT16 idx) __banked {
+    actor_t *actor;
+
+    act_set_frame_t * params = VM_REF_TO_PTR(idx);
+    actor = actors + params->ID;
+
+    actor_set_frame_offset(actor, params->FRAME);
 }

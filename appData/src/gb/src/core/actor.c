@@ -19,6 +19,7 @@
 
 #define EMOTE_BOUNCE_FRAMES        15
 #define EMOTE_TILE                 124
+#define ANIM_PAUSED                255
 
 #define BANK_EMOTE_METASPRITE 1
 
@@ -108,7 +109,7 @@ void actors_update() __nonbanked {
         }
 
         // Check reached animation tick frame
-        if ((game_time & actor->anim_tick) == 0) {
+        if ((actor->anim_tick != ANIM_PAUSED) && (game_time & actor->anim_tick) == 0) {
             actor->frame++;
             // Check reached end of animation
             if (actor->frame == actor->frame_end) {
@@ -223,6 +224,10 @@ void actor_set_frames(actor_t *actor, UBYTE frame_start, UBYTE frame_end) __bank
         actor->frame_start = frame_start;
         actor->frame_end = frame_end;
     }
+}
+
+void actor_set_frame_offset(actor_t *actor, UBYTE frame_offset) __banked {
+    actor->frame = actor->frame_start + (frame_offset % (actor->frame_end - actor->frame_start));
 }
 
 void actor_set_anim_idle(actor_t *actor) __banked {

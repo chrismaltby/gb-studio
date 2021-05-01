@@ -488,6 +488,11 @@ OP_VM_ACTOR_TERMINATE_UPDATE  = 0x74
         .db OP_VM_ACTOR_TERMINATE_UPDATE, #>ACTOR, #<ACTOR
 .endm
 
+OP_VM_ACTOR_SET_ANIM_FRAME     = 0x75
+.macro VM_ACTOR_SET_ANIM_FRAME ACTOR
+        .db OP_VM_ACTOR_SET_ANIM_FRAME, #>ACTOR, #<ACTOR
+.endm
+
 ; --- UI ------------------------------------------
 
 OP_VM_LOAD_TEXT         = 0x40

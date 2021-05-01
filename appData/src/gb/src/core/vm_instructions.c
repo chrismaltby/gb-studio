@@ -148,7 +148,7 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_timer_stop,             1}, // 0x72
     {vm_timer_reset,            1}, // 0x73
     {vm_actor_terminate_update, 2}, // 0x74
-    {0, 0},
+    {vm_actor_set_anim_frame,   2}, // 0x75
     // variable manipulation
     {vm_memset,                 6}, // 0x76
     {vm_memcpy,                 6}, // 0x77

@@ -581,6 +581,17 @@ class ScriptBuilder {
     }
   };
 
+  _setToVariable = (location: ScriptBuilderStackVariable, variable: string) => {
+    const variableAlias = this.getVariableAlias(variable);
+    if (this._isArg(variableAlias)) {
+      this._stackPushInd(this._stackOffset(variableAlias));
+      this._set(location, ".ARG0");
+      this._stackPop(1);
+    } else {
+      this._set(location, variableAlias);
+    }
+  };
+
   _setVariableToVariable = (variableA: string, variableB: string) => {
     const variableAliasA = this.getVariableAlias(variableA);
     const variableAliasB = this.getVariableAlias(variableB);
@@ -1031,6 +1042,11 @@ class ScriptBuilder {
   _actorSetAnimTick = (addr: string, tick: number) => {
     this.includeActor = true;
     this._addCmd("VM_ACTOR_SET_ANIM_TICK", addr, tick);
+  };
+
+  _actorSetAnimFrame = (addr: string) => {
+    this.includeActor = true;
+    this._addCmd("VM_ACTOR_SET_ANIM_FRAME", addr);
   };
 
   _actorSetMoveSpeed = (addr: string, speed: number) => {
@@ -1775,11 +1791,18 @@ class ScriptBuilder {
   };
 
   actorSetFrame = (frame = 0) => {
-    console.error("actorSetFrame not implemented");
+    this._addComment("Actor Set Animation Frame");
+    this._setConst("^/(ACTOR + 1)/", frame);
+    this._actorSetAnimFrame("ACTOR");
+    this._addNL();
   };
 
   actorSetFrameToVariable = (variable: string) => {
     console.error("actorSetFrameToVariable not implemented");
+    this._addComment("Actor Set Animation Frame To Variable");
+    this._setToVariable("^/(ACTOR + 1)/", variable);
+    this._actorSetAnimFrame("ACTOR");
+    this._addNL();
   };
 
   actorSetAnimate = (enabled: boolean) => {

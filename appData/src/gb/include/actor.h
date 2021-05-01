@@ -46,6 +46,7 @@ void actors_update() __nonbanked;
 void deactivate_actor(actor_t *actor) __banked;
 void activate_actor(actor_t *actor) __banked;
 void actor_set_frames(actor_t *actor, UBYTE frame_start, UBYTE frame_end) __banked;
+void actor_set_frame_offset(actor_t *actor, UBYTE frame_offset) __banked;
 actor_t *actor_at_tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip) __banked;
 actor_t *actor_in_front_of_player(UBYTE grid_size, UBYTE inc_noclip) __banked;
 actor_t *actor_overlapping_player(UBYTE inc_noclip) __banked;

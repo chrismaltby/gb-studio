@@ -4,7 +4,7 @@ const fields = [
   {
     key: "variable",
     type: "variable",
-    defaultValue: "LAST_VARIABLE"
+    defaultValue: "LAST_VARIABLE",
   },
   {
     key: "value",
@@ -16,17 +16,17 @@ const fields = [
     defaultValue: {
       number: 0,
       variable: "LAST_VARIABLE",
-      property: "$self$:xpos"
+      property: "$self$:xpos",
     },
-  }
+  },
 ];
 
 const compile = (input, helpers) => {
   const { variableSetToUnionValue } = helpers;
 
-  if(input.value.type === "number") {
+  if (input.value.type === "number") {
     const value = parseInt(input.value.value, 10);
-    if (value > 1)  {
+    if (value > 1) {
       const { variableSetToValue } = helpers;
       variableSetToValue(input.variable, value);
     } else if (value === 1) {
@@ -44,5 +44,6 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   fields,
-  compile
+  compile,
+  allowedBeforeInitFade: true,
 };

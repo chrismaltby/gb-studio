@@ -14,6 +14,7 @@ interface AnimationSpeedOption {
 }
 
 const options: AnimationSpeedOption[] = [
+  { value: 255, label: `${l10n("FIELD_NONE")}` },
   { value: 127, label: `${l10n("FIELD_SPEED")} 1` },
   { value: 63, label: `${l10n("FIELD_SPEED")} 2` },
   { value: 31, label: `${l10n("FIELD_SPEED")} 3` },
@@ -42,7 +43,7 @@ export const AnimationSpeedSelect: FC<AnimationSpeedSelectProps> = ({
         return (
           <OptionLabelWithInfo
             info={
-              context === "menu"
+              context === "menu" && option.value !== 255
                 ? `${String(
                     Math.round((60 / (option.value + 1)) * 100) / 100
                   )} ${l10n("FIELD_FRAMES_PER_SECOND_SHORT")}`
