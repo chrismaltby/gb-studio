@@ -1,4 +1,5 @@
 import React, { FC, useEffect, useState } from "react";
+import { MusicDriverSetting } from "../../store/features/settings/settingsState";
 import {
   Option,
   Select,
@@ -7,7 +8,7 @@ import {
 
 interface MusicDriverSelectProps extends SelectCommonProps {
   name: string;
-  value?: string;
+  value?: MusicDriverSetting;
   onChange?: (newId: string) => void;
 }
 

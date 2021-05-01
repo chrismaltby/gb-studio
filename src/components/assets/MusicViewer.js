@@ -61,7 +61,7 @@ class MusicViewer extends Component {
   render() {
     const { file, playing, sidebarWidth } = this.props;
     return (
-      <div className="MusicViewer">
+      <div className="MusicViewer" style={{ right: sidebarWidth }}>
         {file && (
           <div className="MusicViewer__Content">
             {playing ? (
@@ -69,10 +69,10 @@ class MusicViewer extends Component {
                 <PauseIcon />
               </Button>
             ) : (
-                <Button large transparent onClick={this.onPlay}>
-                  <PlayIcon />
-                </Button>
-              )}
+              <Button large transparent onClick={this.onPlay}>
+                <PlayIcon />
+              </Button>
+            )}
             <div className="MusicViewer__Filename">{file.filename}</div>
             <div className="MusicViewer__Settings">
               <div className="FormField">

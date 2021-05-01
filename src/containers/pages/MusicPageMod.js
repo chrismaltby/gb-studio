@@ -6,7 +6,7 @@ import MusicViewer from "../../components/assets/MusicViewer";
 import { musicSelectors } from "../../store/features/entities/entitiesState";
 import electronActions from "../../store/features/electron/electronActions";
 
-class MusicPage extends Component {
+class MusicPageMod extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -34,7 +34,7 @@ class MusicPage extends Component {
 
     return (
       <div>
-        {file && file.type === "mod" ? <MusicViewer file={file} /> : <div/>}
+        {file && <MusicViewer file={file} />}
         <FilesSidebar
           files={filesList}
           selectedFile={file}
@@ -49,7 +49,7 @@ class MusicPage extends Component {
   }
 }
 
-MusicPage.propTypes = {
+MusicPageMod.propTypes = {
   id: PropTypes.string,
   files: PropTypes.arrayOf(
     PropTypes.shape({
@@ -63,13 +63,14 @@ MusicPage.propTypes = {
   openHelp: PropTypes.func.isRequired
 };
 
-MusicPage.defaultProps = {
+MusicPageMod.defaultProps = {
   id: ""
 };
 
 function mapStateToProps(state) {
   const { id } = state.navigation;
-  const files = musicSelectors.selectAll(state);
+  const files = musicSelectors.selectAll(state)
+    .filter((s) => s.type && s.type === "mod");
   return {
     files,
     id
@@ -83,4 +84,4 @@ const mapDispatchToProps = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(MusicPage);
+)(MusicPageMod);

@@ -4,6 +4,7 @@ import { ActorDirection } from "../entities/entitiesTypes";
 import projectActions from "../project/projectActions";
 
 type ShowConnectionsSetting = "all" | "selected" | true | false;
+export type MusicDriverSetting = "huge" | "gbt";
 
 export type SettingsState = {
   startSceneId: string;
@@ -47,7 +48,7 @@ export type SettingsState = {
   defaultFontId: string;
   defaultCharacterEncoding: string;
   defaultPlayerSprites: Record<string, string>;
-  musicDriver: string;
+  musicDriver: MusicDriverSetting;
 };
 
 export const initialState: SettingsState = {

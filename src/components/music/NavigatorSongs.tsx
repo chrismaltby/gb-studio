@@ -119,6 +119,7 @@ export const NavigatorSongs = ({
   useEffect(() => {
     setItems(
       allSongs
+        .filter((s) => s.type && s.type === "uge")
         .map((song, songIndex) =>
           songToNavigatorItem(song, songIndex, selectedSongId, modified)
         )
