@@ -119,7 +119,7 @@ const compileModTrack = async (
 
   const output = (await readFile(tmpFilePath, "utf8")).replace(
     /#pragma bank=255/,
-    `#pragma bank 255\n\nconst void __at(255) __bank_${track.dataName}_Data;\n`
+    `#pragma bank 255\n\nconst void __at(255) __bank_MUSICTRACKNAME_Data;\n`
   );
 
   await writeFile(cachedFilePath, output);
