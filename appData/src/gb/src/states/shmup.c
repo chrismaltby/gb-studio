@@ -8,156 +8,175 @@
 #include "game_time.h"
 #include "input.h"
 #include "trigger.h"
+#include "vm.h"
 
 #define SHOOTER_HURT_IFRAMES 10
 
-UBYTE shooter_horizontal = 0;
-BYTE shooter_direction = 0;
-UBYTE shooter_reached_end = 0;
+UINT8 shooter_scroll_speed = 16;
+UBYTE shooter_reached_end;
+UWORD shooter_dest;
+direction_e shooter_direction;
 
 void shmup_init() __banked {
 
-/*
-  // @todo
-  // Shooter needs rewrite to remove dir_x, dir_y references
+    camera_offset_x = 0;
+    camera_offset_y = 0;
+    camera_deadzone_x = 0;
+    camera_deadzone_y = 0;
 
-  camera_offset_x = 0;
-  camera_offset_y = 0;
-  camera_deadzone_x = 0;
-  camera_deadzone_y = 0;
+    shooter_direction = PLAYER.dir;
 
-  if (PLAYER.dir_x < 0) {
-    // Right to left scrolling
-    camera_offset_x = 56;
-    shooter_horizontal = 1;
-    shooter_direction = -1;
-    // Set dir x to face right so sprite doesn't flip
-    // Up to you to provide left facing ship sprite
-    PLAYER.dir_x = 1;
-  } else if (PLAYER.dir_x > 0) {
-    // Left to right scrolling
-    camera_offset_x = -56;
-    shooter_horizontal = 1;
-    shooter_direction = 1;
-  } else if (PLAYER.dir_y < 0) {
-    // Bottom to top scrolling
-    camera_offset_y = 56;
-    shooter_horizontal = 0;
-    shooter_direction = -1;
-  } else {
-    // Top to bottom scrolling
-    camera_offset_y = -40;
-    shooter_horizontal = 0;
-    shooter_direction = 1;
-  }
+    if (shooter_direction == DIR_LEFT) {
+        // Right to left scrolling
+        camera_offset_x = 48;
+        shooter_dest = (SCREEN_WIDTH_HALF + 48) << 4;
+    } else if (shooter_direction == DIR_RIGHT) {
+        // Left to right scrolling
+        camera_offset_x = -64;
+        shooter_dest = (image_width - SCREEN_WIDTH_HALF - 64) << 4;
+    } else if (shooter_direction == DIR_UP) {
+        // Bottom to top scrolling
+        camera_offset_y = 48;
+        shooter_dest = (SCREEN_WIDTH_HALF + 40) << 4;
+    } else {
+        // Top to bottom scrolling
+        camera_offset_y = -48;
+        shooter_dest = (image_height - SCREEN_WIDTH_HALF - 40) << 4;
+    }
 
-  shooter_reached_end = FALSE;
-
-  */
+    shooter_reached_end = FALSE;
 }
 
 void shmup_update() __banked {
-  UBYTE tile_x, tile_y, hit_actor;
+    actor_t *hit_actor;
+    UBYTE tile_start, tile_end;
+    direction_e new_dir = DIR_NONE;
+    player_moving = FALSE;
 
-  /*
-  tile_x = DIV_8(PLAYER.pos.x);
-  tile_y = DIV_8(PLAYER.pos.y);
-
-  // Check for trigger collisions
-  if (trigger_activate_at(tile_x, tile_y, FALSE)) {
-    return;
-  };
-
-  if (shooter_horizontal) {
-    // Check input to set player movement
-    if (INPUT_RECENT_UP && (PLAYER.pos.y > 8) &&
-        !(tile_at(tile_x, tile_y - 1) & COLLISION_BOTTOM)) {
-      PLAYER.dir_y = -1;
-      PLAYER.dir_x = 0;
-    } else if (INPUT_RECENT_DOWN && (PLAYER.pos.y < (image_height - 8)) &&
-               !(tile_at(tile_x, tile_y + 1) & COLLISION_TOP)) {
-      PLAYER.dir_y = 1;
-      PLAYER.dir_x = 0;
+    if (IS_DIR_HORIZONTAL(shooter_direction)) {
+        if (INPUT_UP) {
+            player_moving = TRUE;
+            new_dir = DIR_UP;
+        } else if (INPUT_DOWN) {
+            player_moving = TRUE;
+            new_dir = DIR_DOWN;
+        } else {
+            new_dir = shooter_direction;
+        }
     } else {
-      PLAYER.dir_y = 0;
-      PLAYER.dir_x = 1;
+        if (INPUT_LEFT) {
+            player_moving = TRUE;
+            PLAYER.dir = DIR_LEFT;
+        } else if (INPUT_RIGHT) {
+            player_moving = TRUE;
+            PLAYER.dir = DIR_RIGHT;
+        } else {
+            PLAYER.dir = shooter_direction;
+        }
     }
 
-    // if (INPUT_UP_PRESSED || INPUT_DOWN_PRESSED) {
-    //   // Rerender on first frame direction changed
-    //   PLAYER.rerender = TRUE;
-    // }
-
-    // Check if player has reached end of scene
-    if (shooter_direction == 1) {
-      // Left to right
-      if ((PLAYER.pos.x > image_width - SCREEN_WIDTH_HALF - 64)) {
-        shooter_reached_end = TRUE;
-      }
-    } else {
-      // Right to left
-      if ((PLAYER.pos.x < SCREEN_WIDTH_HALF + 48)) {
-        shooter_reached_end = TRUE;
-      }
+    // Set animation if direction has changed
+    if (new_dir != PLAYER.dir) {
+        actor_set_dir(&PLAYER, new_dir, player_moving);
     }
 
-    // Move player - Horizontal Scenes
-    if (shooter_reached_end) {
-      // Reached end of scene only move vertically
-      point_translate_dir(&PLAYER.pos, 0, PLAYER.dir_y, PLAYER.move_speed);
-    } else {
-      point_translate_dir(&PLAYER.pos, shooter_direction, PLAYER.dir_y, PLAYER.move_speed);
+    // Move player from input
+    if (player_moving) {
+        upoint16_t new_pos;
+        new_pos.x = PLAYER.pos.x;
+        new_pos.y = PLAYER.pos.y;
+        point_translate_dir(&new_pos, PLAYER.dir, PLAYER.move_speed);
+
+        // Check for tile collisions
+        if (IS_DIR_HORIZONTAL(shooter_direction)) {
+            // Step Y
+            tile_start = (((PLAYER.pos.x >> 4) + PLAYER.bounds.left)  >> 3);
+            tile_end   = (((PLAYER.pos.x >> 4) + PLAYER.bounds.right) >> 3) + 1;
+            if (PLAYER.dir == DIR_DOWN) {
+                UBYTE tile_y = ((new_pos.y >> 4) + PLAYER.bounds.bottom) >> 3;
+                while (tile_start != tile_end) {
+                    if (tile_at(tile_start, tile_y) & COLLISION_TOP) {
+                        new_pos.y = ((((tile_y) << 3) - PLAYER.bounds.bottom) << 4) - 1;
+                        break;
+                    }
+                    tile_start++;
+                }
+                PLAYER.pos.y = new_pos.y;
+            } else {
+                UBYTE tile_y = (((new_pos.y >> 4) + PLAYER.bounds.top) >> 3);
+                while (tile_start != tile_end) {
+                    if (tile_at(tile_start, tile_y) & COLLISION_BOTTOM) {
+                        new_pos.y = ((((UBYTE)(tile_y + 1) << 3) - PLAYER.bounds.top) << 4) + 1;
+                        break;
+                    }
+                    tile_start++;
+                }
+                PLAYER.pos.y = new_pos.y;
+            }
+        } else {
+            // Step X
+            tile_start = (((PLAYER.pos.y >> 4) + PLAYER.bounds.top)    >> 3);
+            tile_end   = (((PLAYER.pos.y >> 4) + PLAYER.bounds.bottom) >> 3) + 1;
+            if (PLAYER.dir == DIR_RIGHT) {
+                UBYTE tile_x = ((new_pos.x >> 4) + PLAYER.bounds.right) >> 3;
+                while (tile_start != tile_end) {
+                    if (tile_at(tile_x, tile_start) & COLLISION_LEFT) {
+                        new_pos.x = (((tile_x << 3) - PLAYER.bounds.right) << 4) - 1;           
+                        break;
+                    }
+                    tile_start++;
+                }
+                PLAYER.pos.x = MIN((image_width - 16) << 4, new_pos.x);
+            } else {
+                UBYTE tile_x = ((new_pos.x >> 4) + PLAYER.bounds.left) >> 3;
+                while (tile_start != tile_end) {
+                    if (tile_at(tile_x, tile_start) & COLLISION_RIGHT) {
+                        new_pos.x = ((((tile_x + 1) << 3) - PLAYER.bounds.left) << 4) + 1;         
+                        break;
+                    }
+                    tile_start++;
+                }
+                PLAYER.pos.x = MAX(0, (WORD)new_pos.x);
+            }
+        }
     }
 
-  } else {
-    // Check input to set player movement
-    if (INPUT_RECENT_LEFT && (PLAYER.pos.x > 0) && !(tile_at(tile_x, tile_y) & COLLISION_RIGHT)) {
-      PLAYER.dir_x = -1;
-      PLAYER.dir_y = 0;
-    } else if (INPUT_RECENT_RIGHT && (PLAYER.pos.x < image_width - 16) &&
-               !(tile_at(tile_x + 2, tile_y) & COLLISION_LEFT)) {
-      PLAYER.dir_x = 1;
-      PLAYER.dir_y = 0;
-    } else {
-      PLAYER.dir_x = 0;
-      PLAYER.dir_y = shooter_direction;
+    // Auto scroll background
+    if (!shooter_reached_end) {
+        point_translate_dir(&PLAYER.pos, shooter_direction, shooter_scroll_speed);
+
+        // Check if reached end of screen
+        if ((shooter_direction == DIR_RIGHT) && (PLAYER.pos.x > shooter_dest)) {
+            shooter_reached_end = TRUE;
+            PLAYER.pos.x = shooter_dest;
+        } else if ((shooter_direction == DIR_LEFT) && (PLAYER.pos.x < shooter_dest)) {
+            shooter_reached_end = TRUE;
+            PLAYER.pos.x = shooter_dest;
+        } else if ((shooter_direction == DIR_DOWN) && (PLAYER.pos.y > shooter_dest)) {
+            shooter_reached_end = TRUE;
+            PLAYER.pos.y = shooter_dest;
+        } else if ((shooter_direction == DIR_UP) && (PLAYER.pos.y < shooter_dest)) {
+            shooter_reached_end = TRUE;
+            PLAYER.pos.y = shooter_dest;
+        }
     }
 
-    // if (INPUT_LEFT_PRESSED || INPUT_RIGHT_PRESSED) {
-    //   // Rerender on first frame direction changed
-    //   PLAYER.rerender = TRUE;
-    // }
-
-    if (shooter_direction == 1) {
-      // Top to bottom
-      if ((PLAYER.pos.y > image_height - SCREEN_WIDTH_HALF - 40)) {
-        shooter_reached_end = TRUE;
-      }
-    } else {
-      // Bottom to top
-      if ((PLAYER.pos.y < SCREEN_WIDTH_HALF + 40)) {
-        shooter_reached_end = TRUE;
-      }
+    // Check for trigger collisions
+    if (trigger_activate_at_intersection(&PLAYER.bounds, &PLAYER.pos, FALSE)) {
+        // Landed on a trigger
+        return;
     }
 
-    // Move player - Vertical Scenes
-    if (shooter_reached_end) {
-      point_translate_dir(&PLAYER.pos, PLAYER.dir_x, 0, PLAYER.move_speed);
-    } else {
-      point_translate_dir(&PLAYER.pos, PLAYER.dir_x, shooter_direction, PLAYER.move_speed);
+    // Check for actor collisions
+    hit_actor = actor_overlapping_player(FALSE);
+    if (hit_actor != NULL && hit_actor->collision_group) {
+        player_register_collision_with(hit_actor);
+    } else if (INPUT_A_PRESSED) {
+        if (!hit_actor) {
+            hit_actor = actor_in_front_of_player(8, TRUE);
+        }
+        if (hit_actor && !hit_actor->collision_group && hit_actor->script.bank) {
+            script_execute(hit_actor->script.bank, hit_actor->script.ptr, 0, 0);
+        }
     }
-  }
-
-  // Actor Collisions
-  hit_actor = ActorOverlapsPlayer(FALSE);
-  if (hit_actor && hit_actor != NO_ACTOR_COLLISON && player_iframes == 0) {
-    if (actors[hit_actor].collision_group) {
-      PLAYER.hit_actor = 0;
-      PLAYER.hit_actor = hit_actor;
-    } else {
-      player_iframes = SHOOTER_HURT_IFRAMES;
-      ScriptStartBg(&actors[hit_actor].events_ptr, hit_actor);
-    }
-  }  
-  */
 }

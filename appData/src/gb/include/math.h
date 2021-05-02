@@ -63,6 +63,8 @@
 #define ANGLE_315DEG    224
 
 #define FLIPPED_DIR(dir) MOD_4((dir) + 2)
+#define IS_DIR_HORIZONTAL(dir) ((dir)&01)
+#define IS_DIR_VERTICAL(dir) (!((dir)&01))
 
 #define N_DIRECTIONS    4
 
