@@ -57,7 +57,8 @@ export default async (
   const getValue = (label, variable, cmd) => {
     if (platform === "win32") {
       cmds.push(`@echo ${label}`);
-      cmds.push(`FOR /F "tokens=*" %%g IN ('${cmd}') do (SET ${variable}=%%g)`);
+      cmds.push(`@${cmd}>${variable}`);
+      cmds.push(`@SET /P ${variable}=<${variable}`);
     } else {
       cmds.push(`echo "${label}"`);
       cmds.push(`${variable}=$(${cmd})`);
@@ -80,7 +81,7 @@ export default async (
     if (!(await pathExists(objFile))) {
       addCommand(
         `${l10n("COMPILER_COMPILING")}: ${Path.relative(buildRoot, file)}`,
-        `${CC} ${CFLAGS} -c -o ${objFile} ${file}`
+        `${CC} ${CFLAGS} -c -o ${Path.relative(buildRoot, objFile)} ${Path.relative(buildRoot, file)}`
       );
     }
     objFiles.push(objFile);
@@ -89,7 +90,7 @@ export default async (
   getValue(
     `${l10n("COMPILER_PACKING")}`,
     "CART_SIZE",
-    `${PACK} -f 255 -b 4 -e rel -c ${objFiles.join(" ")}`
+    `${PACK} -f 255 -b 4 -e rel -c ${objFiles.map((o)=>Path.relative(buildRoot, o)).join(" ")}`
   );
 
   if (platform === "win32") {
@@ -100,14 +101,14 @@ export default async (
     addCommand(
       `${l10n("COMPILER_LINKING")}: game.gb`,
       `${CC} ${LFLAGS} -Wl-yo%CART_SIZE% -Wl-g__start_save=%START_SAVE% -o build/rom/game.gb ${objFiles
-        .map((file) => file.replace(/\.o$/, ".rel"))
+        .map((file) => Path.relative(buildRoot, file).replace(/\.o$/, ".rel"))
         .join(" ")}`
     );
   } else {
     addCommand(
       `${l10n("COMPILER_LINKING")}: game.gb`,
       `${CC} ${LFLAGS} -Wl-yo\${CART_SIZE} -Wl-g__start_save=\${CART_SIZE-4} -o build/rom/game.gb ${objFiles
-        .map((file) => file.replace(/\.o$/, ".rel"))
+        .map((file) => Path.relative(buildRoot, file).replace(/\.o$/, ".rel"))
         .join(" ")}`
     );
   }

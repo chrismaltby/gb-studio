@@ -1,11 +1,33 @@
 /** @file gb/cgb.h
-    Support for Color GameBoy.
+    Support for the Color GameBoy (CGB).
+
+    __Enabling CGB features__
+
+    To unlock and use CGB features and registers you need to
+    change byte 0143h in the cartridge header.  Otherwise, the CGB
+    will operate in monochrome "Non CGB" compatibility mode.
+    \li Use a value of __80h__ for games that support CGB and monochrome gameboys
+        \n (with Lcc: __-Wm-yc__, or makebin directly: __-yc__)
+    \li Use a value of __C0h__ for CGB only games.
+        \n (with Lcc: __-Wm-yC__, or makebin directly: __-yC__)
+
+    See the Pan Docs for more information CGB features.
 */
 
 #ifndef _CGB_H
 #define _CGB_H
 
-/** Macro to create a palette entry out of the color components.
+#include <types.h>
+
+/** Macro to create a CGB palette color entry out of the color components.
+
+    @param r   Red Component, range 0 - 31 (31 brightest)
+    @param g   Green Component, range 0 - 31 (31 brightest)
+    @param b   Blue Component, range 0 - 31 (31 brightest)
+
+    The resulting format is BGR 15bpp.
+
+    @see set_bkg_palette(), set_sprite_palette()
  */
 #define RGB(r, g, b) \
   ((((UINT16)(b) & 0x1f) << 10) | (((UINT16)(g) & 0x1f) << 5) | (((UINT16)(r) & 0x1f) << 0))
@@ -34,49 +56,106 @@
 #define RGB_ORANGE     RGB(30, 20,  0)
 #define RGB_TEAL       RGB(15, 15,  0)
 
-/** Set bkg palette(s).
+/** Set CGB background palette(s).
+
+    @param first_palette  Index of the first palette to write (0-7)
+    @param nb_palettes    Number of palettes to write (1-8, max depends on first_palette)
+    @param rgb_data       Pointer to source palette data
+
+    Writes __nb_palettes__ to background palette data starting
+    at __first_palette__, Palette data is sourced from __rgb_data__.
+
+    \li Each Palette is 8 bytes in size: 4 colors x 2 bytes per palette color entry.
+    \li Each color (4 per palette) is packed as BGR 15bpp format (1:5:5:5, MSBit [15] is unused).
+    \li Each component (R, G, B) may have values from 0 - 31 (5 bits), 31 is brightest.
+
+    @see RGB(), set_bkg_palette_entry()
  */
 void
 set_bkg_palette(UINT8 first_palette,
                 UINT8 nb_palettes,
                 UINT16 *rgb_data) NONBANKED;
 
-/** Set sprite palette(s).
+/** Set CGB sprite palette(s).
+
+    @param first_palette  Index of the first palette to write (0-7)
+    @param nb_palettes    Number of palettes to write (1-8, max depends on first_palette)
+    @param rgb_data       Pointer to source palette data
+
+    Writes __nb_palettes__ to sprite palette data starting
+    at __first_palette__, Palette data is sourced from __rgb_data__.
+
+    \li Each Palette is 8 bytes in size: 4 colors x 2 bytes per palette color entry.
+    \li Each color (4 per palette) is packed as BGR 15bpp format (1:5:5:5, MSBit [15] is unused).
+    \li Each component (R, G, B) may have values from 0 - 31 (5 bits), 31 is brightest.
+
+    @see RGB(), set_sprite_palette_entry()
  */
 void
 set_sprite_palette(UINT8 first_palette,
                    UINT8 nb_palettes,
                    UINT16 *rgb_data) NONBANKED;
 
-/** Set a bkg palette entry.
+/** Sets a single color in the specified CGB background palette.
+
+    @param palette  Index of the palette to modify (0-7)
+    @param entry    Index of color in palette to modify (0-3)
+    @param rgb_data New color data in BGR 15bpp format.
+
+    @see set_bkg_palette(), RGB()
  */
+
 void
 set_bkg_palette_entry(UINT8 palette,
                       UINT8 entry,
                       UINT16 rgb_data);
 
-/** Set a sprite palette entry.
+/** Sets a single color in the specified CGB sprite palette.
+
+    @param palette  Index of the palette to modify (0-7)
+    @param entry    Index of color in palette to modify (0-3)
+    @param rgb_data New color data in BGR 15bpp format.
+
+    @see set_sprite_palette(), RGB()
  */
 void
 set_sprite_palette_entry(UINT8 palette,
                          UINT8 entry,
                          UINT16 rgb_data);
 
-/** Set CPU speed to slow operation.
-    Make sure interrupts are disabled before call.
+/** Set CPU speed to slow (Normal Speed) operation.
 
-    @see cpu_fast
+    Interrupts are temporarily disabled and then re-enabled during this call.
+
+    In this mode the CGB operates at the same speed as the DMG/Pocket/SGB models.
+
+    \li You can check to see if @ref _cpu == @ref CGB_TYPE before using this function.
+
+    @see cpu_fast()
  */
 void cpu_slow(void);
 
-/** Set CPU speed to fast operation.
-    Make sure interrupts are disabled before call.
+/** Set CPU speed to fast (CGB Double Speed) operation.
 
-    @see cpu_slow
+    On startup the CGB operates in Normal Speed Mode and can be switched
+    into Double speed mode (faster processing but also higher power consumption).
+    See the Pan Docs for more information about which hardware features
+    operate faster and which remain at Normal Speed.
+
+    \li Interrupts are temporarily disabled and then re-enabled during this call.
+    \li You can check to see if @ref _cpu == @ref CGB_TYPE before using this function.
+
+    @see cpu_slow(), _cpu
 */
 void cpu_fast(void);
 
-/** Set defaults compatible with normal GameBoy.
+/** Set defaults compatible with the normal GameBoy models.
+
+    The default/first CGB palettes for sprites and backgrounds are
+    set to a similar default appearance as on the DMG/Pocket/SGB models.
+    (White, Light Gray, Dark Gray, Black)
+
+    \li You can check to see if @ref _cpu == @ref CGB_TYPE before using this function.
  */
 void cgb_compatibility(void);
 

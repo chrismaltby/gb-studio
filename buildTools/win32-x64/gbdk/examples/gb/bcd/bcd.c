@@ -16,21 +16,21 @@ void main() {
     font_init();
     font_set(font_load(font_spect));
 
-    len = bcd2text(&bcd, 0x11, buf);
+    len = bcd2text(&bcd, 0x10, buf);
     set_bkg_tiles(5, 5, len, 1, buf);
 
     bcd_add(&bcd, &bcd2);
 
-    len = bcd2text(&bcd, 0x11, buf);
+    len = bcd2text(&bcd, 0x10, buf);
     set_bkg_tiles(5, 6, len, 1, buf);
 
     bcd_sub(&bcd, &bcd3);
 
-    len = bcd2text(&bcd, 0x11, buf);
+    len = bcd2text(&bcd, 0x10, buf);
     set_bkg_tiles(5, 7, len, 1, buf);
 
     uint2bcd(12345, &bcd);
 
-    len = bcd2text(&bcd, 0x11, buf);
+    len = bcd2text(&bcd, 0x10, buf);
     set_bkg_tiles(5, 8, len, 1, buf);
 }

@@ -20,8 +20,8 @@ unsigned char __at _inc_hiram hiram_buffer[];
 
 // those are function pointer variables, we can initialize them right here
 typedef void (*inc_t)(void);
-inc_t inc_ram_var   = (inc_t)&ram_buffer;
-inc_t inc_hiram_var = (inc_t)&hiram_buffer;
+inc_t inc_ram_var   = (inc_t)ram_buffer;
+inc_t inc_hiram_var = (inc_t)hiram_buffer;
 
 // those are defined by passing parameters to the linker, they must be located at the same 
 // addresses where ram_buffer and hiram_buffer are located

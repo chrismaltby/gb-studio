@@ -1,7 +1,7 @@
 CC	= ../../../bin/lcc
 
 all:
-	$(CC) -Wm-ys -o border.gb border.c sgb_border.c
+	$(CC) -Wm-ys -o border.gb border.c sgb_border.c border_data.c
 
 make.bat: Makefile
 	@echo "REM Automatically generated from Makefile" > make.bat

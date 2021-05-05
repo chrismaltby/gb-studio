@@ -1,7 +1,8 @@
 /** @file gb/malloc.h
 
-    Header for a simple implementation of malloc().  This library
-    may currently be broken.
+    Header for a simple implementation of malloc().
+
+    @todo: This library may currently be broken.
 */
 #ifndef __SYS_MALLOC_H
 #define __SYS_MALLOC_H
@@ -15,7 +16,7 @@
 #define MALLOC_FREE	1
 #define MALLOC_USED	2
 
-/** Magic number of a header.  Gives us some chance of 
+/** Magic number of a header.  Gives us some chance of
     surviving if the list is corrupted*/
 #define MALLOC_MAGIC	123
 

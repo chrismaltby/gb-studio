@@ -3,6 +3,12 @@
 
 #include <asm/types.h>
 
+/** @file bcd.h
+    Support for working with BCD (Binary Coded Decimal)
+
+    See the example BCD project for additional details.
+*/
+
 // macro for creating BCD constants
 #define BCD_HEX(v) ((BCD)(v))
 

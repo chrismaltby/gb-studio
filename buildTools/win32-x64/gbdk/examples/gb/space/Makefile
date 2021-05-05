@@ -1,4 +1,6 @@
-CC	= ../../../bin/lcc -Wa-l -Wl-m -Wl-j
+GBDK	= ../../..
+LIB	= $(GBDK)/lib/small/asxxxx/
+CC	= $(GBDK)/bin/lcc -Wa-I$(LIB) -Wa-l -Wl-m -Wl-j
 
 BINS	= space.gb
 

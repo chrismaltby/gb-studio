@@ -1,6 +1,6 @@
 CC	= ../../../bin/lcc -Wa-l -Wl-m
 
-CFLAGS	= -DGBDK_2_COMPAT
+# CFLAGS	=
 
 BINS	= colorbar.gb
 
