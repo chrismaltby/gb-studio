@@ -20,7 +20,7 @@ export const InstrumentLengthForm = ({
         <CheckboxField
           label={l10n("FIELD_LENGTH")}
           name="length"
-          checked={!!value}
+          checked={value !== null}
           onChange={(e) => {
             const value = e.target.checked;
             if (!value) {

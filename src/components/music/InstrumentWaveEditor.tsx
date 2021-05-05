@@ -71,7 +71,7 @@ export const InstrumentWaveEditor = ({
   return (
     <>
       <InstrumentLengthForm
-        value={instrument.length || 0}
+        value={instrument.length}
         onChange={onChangeField("length")}
       />
 
