@@ -19,7 +19,8 @@ export interface TrackerState {
   modified: boolean;
   view: "tracker" | "roll",
   tool: "pencil" | "eraser" | null,
-  defaultInstruments: [number, number, number, number]
+  defaultInstruments: [number, number, number, number],
+  visibleChannels: number[],
 }
 
 export const initialState: TrackerState = {
@@ -32,7 +33,8 @@ export const initialState: TrackerState = {
   modified: false,
   view: "roll",
   tool: "pencil",
-  defaultInstruments: [0, 0, 0, 0]
+  defaultInstruments: [0, 0, 0, 0],
+  visibleChannels: [0],
 };
 
 export const loadSongFile = createAsyncThunk<Song | null, string>(
@@ -89,6 +91,9 @@ const trackerSlice = createSlice({
     },
     setDefaultInstruments: (state, _action: PayloadAction<[number, number, number, number]>) => {
       state.defaultInstruments = _action.payload;
+    },
+    setVisibleChannels: (state, _action: PayloadAction<number[]>) => {
+      state.visibleChannels = _action.payload;
     },
     editSong: (state, _action: PayloadAction<{ changes: Partial<Song> }>) => {
       state.song = {

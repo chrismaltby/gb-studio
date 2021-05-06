@@ -21,20 +21,22 @@ interface WrapperProps {
 
 const Wrapper = styled.div<WrapperProps>`
   position: relative;
-  margin: 20px;
+  margin: 0 20px;
   ${(props) => css`
     width: ${props.cols * props.size}px;
     height: ${props.rows * props.size}px;
     background-image: 
       linear-gradient(90deg, ${props.theme.colors.tracker.rollCell.border} 1px, transparent 1px),
       linear-gradient(${props.theme.colors.tracker.rollCell.border} 1px, transparent 1px), 
-      linear-gradient(90deg, ${props.theme.colors.tracker.rollCell.border} 2px, transparent 1px);    
+      linear-gradient(90deg, ${props.theme.colors.tracker.rollCell.border} 2px, transparent 1px),   
+      linear-gradient(${props.theme.colors.tracker.rollCell.border} 2px, transparent 1px);    
     border-bottom: 1px solid ${props.theme.colors.tracker.rollCell.border};
     border-right: 2px solid ${props.theme.colors.tracker.rollCell.border};
     background-size: 
       ${props.size}px ${props.size}px,
       ${props.size}px ${props.size}px,
-      ${props.size * 8}px ${props.size * 4}px;
+      ${props.size * 8}px ${props.size * 12}px,
+      ${props.size * 8}px ${props.size * 12}px;
     `}
 `;
 
@@ -44,7 +46,6 @@ interface NoteProps {
 
 const Note = styled.div<NoteProps>`
   position: absolute;
-  width: ${(props) => `${props.size - 1}px`};
   height: ${(props) => `${props.size - 1}px`};
   border: 1px solid black;
   text-align: center;
@@ -59,9 +60,6 @@ export const RollChannelFwd = ({
 }: RollChannelProps) => {
   const dispatch = useDispatch();
 
-  const octaveOffset = useSelector(
-    (state: RootState) => state.tracker.octaveOffset
-  );
   const tool = useSelector(
     (state: RootState) => state.tracker.tool
   );
@@ -96,10 +94,10 @@ export const RollChannelFwd = ({
     const cell = e.target.dataset["channel"];
     if (cell !== undefined && tool === "pencil" && e.button === 0) {
       const col = Math.floor(e.offsetX / cellSize);
-      const note = 11 - Math.floor(e.offsetY / cellSize);
+      const note = ((12 * 6) - 1) - Math.floor(e.offsetY / cellSize);
       const changes = {
         "instrument": defaultInstruments[cell],
-        "note": note + octaveOffset * 12,
+        "note": note,
       };
       dispatch(
         trackerActions.editPatternCell({
@@ -109,19 +107,18 @@ export const RollChannelFwd = ({
         })
       );
     }
-  }, [tool, cellSize, defaultInstruments, octaveOffset, dispatch, patternId]);
+  }, [tool, cellSize, defaultInstruments, dispatch, patternId]);
 
   return (
     <Wrapper
       data-channel={channelId}
-      rows={12}
+      rows={12 * 6}
       cols={64}
       size={cellSize}
       onMouseDown={(e) => { handleMouseDown(e.nativeEvent) }}
     >
       {patterns?.map((column: PatternCell[], columnIdx: number) => {
         const cell = column[channelId];
-        const octave = cell.note === null ? 0 : ~~(cell.note / 12) + 3;
 
         if (cell.note !== null) {
           return (
@@ -133,25 +130,40 @@ export const RollChannelFwd = ({
                 className={cell.instrument !== null ? `label--${instrumentColors[cell.instrument]}` : ""}
                 style={{
                   left: `${columnIdx * cellSize}px`,
-                  bottom: `${((cell.note % 12) * cellSize) - 1}px`,
+                  width: cellSize,
+                  bottom: `${((cell.note % (12 * 6)) * cellSize) - 1}px`,
                 }}
               >
                 {(cell.effectcode)?.toString(16).toUpperCase()}
               </Note>
-              {(octave !== (3 + octaveOffset)) ?
-                <Note
-                  key={`note_octave_${columnIdx}_${channelId}`}
-                  size={cellSize}
-                  style={{
-                    borderWidth: 0,
-                    left: `${columnIdx * cellSize + 1}px`,
-                    bottom: `${octave < (3 + octaveOffset) ? `-${cellSize}px` : ""}`,
-                    top: `${octave > (3 + octaveOffset) ? `-${cellSize}px` : ""}`,
-                  }}
-                >
-                  {octave}
-                </Note>
-                : ""}
+              {(cell.effectcode === 0) ?
+                <>
+                  <Note
+                    data-param={((cell.effectparam||0) >> 4)}
+                    key={`note_arpeggio_${columnIdx}_${channelId}`}
+                    size={cellSize}
+                    className={cell.instrument !== null ? `label--${instrumentColors[cell.instrument]}` : ""}
+                    style={{
+                      opacity: 0.4,
+                      left: `${columnIdx * cellSize}px`,
+                      width: cellSize,
+                      bottom: `${(((cell.note + ((cell.effectparam||0) >> 4)) % (12 * 6)) * cellSize) - 1}px`,
+                    }}
+                  ></Note>
+                  <Note 
+                    data-param={((cell.effectparam||0) & 0xF)}
+                    key={`note_arpeggio_${columnIdx}_${channelId}`}
+                    size={cellSize}
+                    className={cell.instrument !== null ? `label--${instrumentColors[cell.instrument]}` : ""}
+                    style={{
+                      opacity: 0.4,
+                      left: `${columnIdx * cellSize}px`,
+                      width: cellSize,
+                      bottom: `${(((cell.note + ((cell.effectparam||0) & 0xF)) % (12 * 6)) * cellSize) - 1}px`,
+                    }}
+                  ></Note>
+                </>
+              : ""}
             </>
           )
         }

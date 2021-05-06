@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { RootState } from "../../store/configureStore";
 import trackerActions from "../../store/features/tracker/trackerActions";
+import { CheckboxField } from "../ui/form/CheckboxField";
 import { FormField } from "../ui/form/FormLayout";
 import { Select } from "../ui/form/Select";
 import { InstrumentSelect } from "./InstrumentSelect";
@@ -47,10 +48,41 @@ const SongEditorRightToolsPanel = () => {
     ));
   }, [dispatch]);
 
+  const visibleChannels = useSelector(
+    (state: RootState) => state.tracker.visibleChannels
+  );
+
+  const setVisibleChannels = useCallback((channel: number) => () => {
+    const newVisibleChannels = [channel];
+    dispatch(trackerActions.setVisibleChannels(newVisibleChannels));
+  }, [dispatch])
+
   return (
     <Wrapper>
-      <FormField name="defaultInstrument" label="Instrument">
+      <FormField name="visibleChannels">
+        <CheckboxField name="channelDuty1" 
+          label="Duty 1" 
+          onChange={setVisibleChannels(0)} 
+          checked={visibleChannels.indexOf(0) > -1}
+        /> 
+        <CheckboxField name="channelDuty2" 
+        label="Duty 2"
+        onChange={setVisibleChannels(1)} 
+        checked={visibleChannels.indexOf(1) > -1}
+      /> 
+      </FormField>
+      <FormField name="visibleChannels">
+        <CheckboxField name="channelWave" label="Wave"        
+        onChange={setVisibleChannels(2)} 
+        checked={visibleChannels.indexOf(2) > -1}
+        /> 
+        <CheckboxField name="channelNoise" label="Noise"        
+          onChange={setVisibleChannels(3)} 
+          checked={visibleChannels.indexOf(3) > -1}
+        /> 
+      </FormField>
 
+      <FormField name="defaultInstrument" label="Instrument">
         <InstrumentSelect
           name="instrument"
           value={`${defaultInstruments[0]}`}
@@ -58,7 +90,6 @@ const SongEditorRightToolsPanel = () => {
             setDefaultInstruments(parseInt(newValue))
           }}
         />
-
       </FormField>
 
       <FormField name="octave" label="Base Octave">

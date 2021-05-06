@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useSelector } from "react-redux";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { Song } from "../../lib/helpers/uge/song/Song";
 import { RootState } from "../../store/configureStore";
 import { SplitPaneVerticalDivider } from "../ui/splitpane/SplitPaneDivider";
@@ -11,7 +11,7 @@ import { SplitPaneHeader } from "../ui/splitpane/SplitPaneHeader";
 import l10n from "../../lib/helpers/l10n";
 import { RollChannel } from "./RollChannel";
 
-const CELL_SIZE = 16;
+const CELL_SIZE = 14;
 
 interface SongPianoRollProps {
   id: string,
@@ -20,19 +20,51 @@ interface SongPianoRollProps {
   height: number
 }
 
+const Piano = styled.div`
+  position: sticky; 
+  left: 0;
+  min-width: 30px;
+  background: white;
+  height: ${CELL_SIZE * 12 * 6}px;
+  z-index: 2;
+`;
+
+const PianoKey = styled.div<{ color: "white" | "black" }>`
+  position: ${(props) => props.color === "black" ? "relative" : ""};
+  height: ${CELL_SIZE}px;
+  width: ${(props) => props.color === "black" ? "85%" : "100%"};
+  background: ${(props) => props.color === "black" ? "black" : "white"};
+  border-radius: 0 2px 2px 0;
+  box-shadow: ${(props) => props.color === "black" ? "#868686c4 0px 2px 3px 0px" : ""};
+  ${(props) => (
+    props.color === "black" ? css`
+    &&::after {
+      content: "";
+      position: absolute;
+      right: -4px;
+      width: calc(100% + 4px);
+      height: ${CELL_SIZE + CELL_SIZE/2}px;
+      box-shadow: inset #d4d4d488 -2px -2px 1px 0px;
+      top: 7px;
+    }
+    ` : ""
+  )}
+`;
+
 const SongGrid = styled.div`
   font-family: monospace;
   white-space: nowrap;
   border-width: 0 0 0 1px;
   border-color: ${(props) => props.theme.colors.sidebar.border};
   border-style: solid;
-  display: flex;
-  flex-direction: column;
   position: relative;
+  z-index: 1;
 `;
 
 const RollPlaybackTracker = styled.div`              
+  z-index: 0;
   width: ${CELL_SIZE - 1}px;
+  height: ${CELL_SIZE * 12 * 6}px;
   border: 1px solid ${(props) => props.theme.colors.highlight};
   background: ${(props) => props.theme.colors.highlight};
   position: absolute;
@@ -81,6 +113,10 @@ export const SongPianoRoll = ({
     setPatternsPanelOpen(!patternsPanelOpen);
   }, [patternsPanelOpen, setPatternsPanelOpen]);
 
+  const visibleChannels = useSelector(
+    (state: RootState) => state.tracker.visibleChannels
+  );
+
   return (
     <div
       style={{
@@ -97,10 +133,30 @@ export const SongPianoRoll = ({
       }}
       >
         <div style={{
+          display: "flex",
           position: "relative",
           overflow: "auto",
           height: "100%",
+          zIndex: 1,
         }}>
+          <Piano>
+            {Array(6).fill("").map((_, i) => 
+              <>
+                <PianoKey color="white"></PianoKey>
+                <PianoKey color="black"></PianoKey>
+                <PianoKey color="white"></PianoKey>
+                <PianoKey color="black"></PianoKey>
+                <PianoKey color="white"></PianoKey>
+                <PianoKey color="black"></PianoKey>
+                <PianoKey color="white"></PianoKey>
+                <PianoKey color="white"></PianoKey>
+                <PianoKey color="black"></PianoKey>
+                <PianoKey color="white"></PianoKey>
+                <PianoKey color="black"></PianoKey>
+                <PianoKey color="white">C{8 - i}</PianoKey>
+              </>
+            )}
+          </Piano>
           <SongGrid
             tabIndex={0}
           >
@@ -110,15 +166,14 @@ export const SongPianoRoll = ({
                 transform: `translateX(${20 + playbackState[1] * CELL_SIZE}px)`,
               }}
             />
-
-          {Array(4).fill("").map((_, i) => 
-            <RollChannel 
-              channelId={i}
-              patternId={patternId}
-              patterns={song?.patterns[patternId]}
-              cellSize={CELL_SIZE}
-            />
-          )}
+            {visibleChannels.map((i) => 
+              <RollChannel 
+                channelId={i}
+                patternId={patternId}
+                patterns={song?.patterns[patternId]}
+                cellSize={CELL_SIZE}
+              />
+            )}
           </SongGrid>
         </div>
       </div>
