@@ -12,7 +12,6 @@ interface SequenceOption {
   label: string;
 }
 interface SequenceEditorProps {
-  id: string,
   sequence?: number[],
   patterns?: number,
   playingSequence: number,

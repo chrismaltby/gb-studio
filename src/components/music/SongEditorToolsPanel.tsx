@@ -21,7 +21,7 @@ import { assetFilename } from "../../lib/helpers/gbstudio";
 import { saveSongFile } from "../../store/features/tracker/trackerState";
 
 interface SongEditorToolsPanelProps {
-  selectedSong: Music;
+  selectedSong?: Music;
 }
 
 const Wrapper = styled(FloatingPanel)`
@@ -74,7 +74,7 @@ const SongEditorToolsPanel = ({
   }, [dispatch]);
 
   const saveSong = useCallback(() => {
-    if (modified) {
+    if (selectedSong && modified) {
       const path = `${assetFilename(
         projectRoot,
         "music",
@@ -86,7 +86,7 @@ const SongEditorToolsPanel = ({
 
   return (
     <Wrapper>
-      <Button variant="transparent" disabled={!modified} onClick={saveSong}>
+      <Button variant="transparent" disabled={!selectedSong || !modified} onClick={saveSong}>
         <SaveIcon />
       </Button>
       <FloatingPanelDivider />

@@ -14,7 +14,6 @@ import { RollChannel } from "./RollChannel";
 const CELL_SIZE = 14;
 
 interface SongPianoRollProps {
-  id: string,
   sequenceId: number,
   song: Song | null,
   height: number
@@ -73,7 +72,6 @@ const RollPlaybackTracker = styled.div`
 `;
 
 export const SongPianoRoll = ({
-  id,
   song,
   sequenceId,
   height
@@ -189,7 +187,6 @@ export const SongPianoRoll = ({
           position: "relative"
         }}>
           <SequenceEditor
-            id={id}
             direction="horizontal"
             sequence={song?.sequence}
             patterns={song?.patterns.length}
@@ -198,7 +195,6 @@ export const SongPianoRoll = ({
         </div>
       )}
       <UgePlayer
-        song={id}
         data={song}
         onPlaybackUpdate={setPlaybackState}
         onChannelStatusUpdate={setChannelStatus}

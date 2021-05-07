@@ -1,9 +1,9 @@
 import React, {
+  useCallback,
   useContext,
   useEffect,
   useRef,
   useState,
-  useCallback,
 } from "react";
 import styled, { ThemeContext } from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
@@ -28,21 +28,14 @@ import SongEditorToolsPanel from "../../components/music/SongEditorToolsPanel";
 import SongEditorRightToolsPanel from "../../components/music/SongEditorRightToolsPanel";
 import { loadSongFile } from "../../store/features/tracker/trackerState";
 import { SongPianoRoll } from "../../components/music/SongPianoRoll";
+import { Music } from "../../store/features/entities/entitiesTypes";
 
 const Wrapper = styled.div`
   display: flex;
   width: 100%;
 `;
 
-const ModViewerWrapper = styled.div`
-  position: relative;
-  width: 100%;
-  align-items: center;
-  justify-content: center;
-  display: grid;
-`;
-
-const ErrorWrapper = styled.div`
+const ContentWrapper = styled.div`
   flex: 1 1 0;
   min-width: 0;
   overflow: hidden;
@@ -52,7 +45,7 @@ const ErrorWrapper = styled.div`
   display: flex;
 `;
 
-const ErrorMessage = styled.div`
+const ContentMessage = styled.div`
   position: absolute;
   top: 0;
   left: 0;
@@ -97,18 +90,11 @@ const MusicPageUge = () => {
   const selectedSongId = useSelector(
     (state: RootState) => state.editor.selectedSongId
   );
-  const setSelectedSongId = useCallback(
-    (id: string) => {
-      dispatch(editorActions.setSelectedSongId(id));
-    },
-    [dispatch]
-  );
 
-  const selectedSong = songsLookup[selectedSongId] || allSongs[0];
-  const selectedId = selectedSong.id;
-  if (selectedId !== selectedSongId) {
-    setSelectedSongId(selectedId);
-  }
+  const [selectedSong, setSelectedSong] = useState<Music | undefined>();
+  useEffect(() => {
+    setSelectedSong(songsLookup[selectedSongId] || allSongs.filter((s) => s.type && s.type === "uge")[0])
+  }, [selectedSongId, allSongs, songsLookup])
 
   const sequenceId = useSelector(
     (state: RootState) => state.editor.selectedSequence
@@ -129,7 +115,7 @@ const MusicPageUge = () => {
     state.tracker.error
   );
   useEffect(() => {
-    if (selectedSong.type === "uge") {
+    if (selectedSong && selectedSong.type === "uge") {
       const path = `${assetFilename(
         projectRoot,
         "music",
@@ -248,11 +234,33 @@ const MusicPageUge = () => {
     dispatch(settingsActions.setShowNavigator(false));
   };
 
-  const [] = useState([-1, -1]);
-
   const view = useSelector(
     (state: RootState) => state.tracker.view
   );
+
+  const renderGridView = useCallback(() => {
+    if (!song) {
+      return;
+    } else if (view === "tracker") {
+      return (
+        <div style={{ position: "relative" }}>
+          <SongTracker
+            sequenceId={sequenceId}
+            song={song}
+            height={windowHeight - 100}
+          />
+        </div>
+      );
+    } else {
+      return (
+        <SongPianoRoll
+          sequenceId={sequenceId}
+          song={song}
+          height={windowHeight - 100}
+        />
+      );
+    }
+  }, [sequenceId, song, view, windowHeight])
 
   return (
     <Wrapper>
@@ -277,77 +285,63 @@ const MusicPageUge = () => {
           <NavigatorSongs
             height={windowHeight - 38}
             defaultFirst
-            dutyInstruments={song.duty_instruments}
-            waveInstruments={song.wave_instruments}
-            noiseInstruments={song.noise_instruments}
+            dutyInstruments={song?.duty_instruments}
+            waveInstruments={song?.wave_instruments}
+            noiseInstruments={song?.noise_instruments}
             modified={modified}
           />
         </div>
       </div>
       <SplitPaneHorizontalDivider onMouseDown={startLeftPaneResize} />
-      {(status === "error") ? (
-          <ErrorWrapper style={{height: windowHeight - 38}}>
-            <ErrorMessage>
+        {(status === "error") ? 
+          <ContentWrapper style={{height: windowHeight - 38}}>
+            <ContentMessage>
               <ErrorTitle>Can't load the song</ErrorTitle>
               <ErrorDescription>{error}</ErrorDescription>              
-            </ErrorMessage>
-          </ErrorWrapper>
-        ) 
-        :
-        (<>
-        <div
-          style={{
-            flex: "1 1 0",
-            minWidth: 0,
-            overflow: "hidden",
-            background: themeContext.colors.document.background,
-            color: themeContext.colors.text,
-            height: windowHeight - 38,
-            position: "relative",
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <div style={{ position: "relative", height: "60px" }}>
-            <SongEditorToolsPanel
-              selectedSong={selectedSong}
-            />
-            <SongEditorRightToolsPanel />
-          </div>
-          <SplitPaneVerticalDivider />
-            {(view === "tracker") ? 
-              <div style={{ position: "relative" }}>
-                <SongTracker
-                  id={selectedId}
-                  sequenceId={sequenceId}
-                  song={song}
-                  height={windowHeight - 100}
-                />
+            </ContentMessage>
+          </ContentWrapper>
+        : ((song !== undefined) ? 
+          <>
+            <div
+              style={{
+                flex: "1 1 0",
+                minWidth: 0,
+                overflow: "hidden",
+                background: themeContext.colors.document.background,
+                color: themeContext.colors.text,
+                height: windowHeight - 38,
+                position: "relative",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <div style={{ position: "relative", height: "60px" }}>
+                <SongEditorToolsPanel selectedSong={selectedSong} />
+                <SongEditorRightToolsPanel />
               </div>
-            :
-              <SongPianoRoll
-                id={selectedId}
-                sequenceId={sequenceId}
-                song={song}
-                height={windowHeight - 100}
-              />
-            }
-        </div>
-        <SplitPaneHorizontalDivider onMouseDown={onResizeRight} />
-        <div
-          style={{
-            width: rightPaneWidth,
-            background: themeContext.colors.sidebar.background,
-            height: "100%",
-            overflow: "hidden",
-            position: "relative",
-          }}
-        >
-          <SongEditor id={selectedId} />
-        </div>
-        </>
-      )
-    }
+              <SplitPaneVerticalDivider />
+                {renderGridView()}
+            </div>
+            <SplitPaneHorizontalDivider onMouseDown={onResizeRight} />
+            <div
+              style={{
+                width: rightPaneWidth,
+                background: themeContext.colors.sidebar.background,
+                height: "100%",
+                overflow: "hidden",
+                position: "relative",
+              }}
+            >
+              <SongEditor />
+            </div>
+          </>
+        : 
+          <ContentWrapper style={{height: windowHeight - 38}}>
+            <ContentMessage>
+              No song loaded            
+            </ContentMessage>
+          </ContentWrapper>
+        )}
     </Wrapper>
   );
 };

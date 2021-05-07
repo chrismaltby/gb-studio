@@ -6,7 +6,6 @@ import { RootState } from "../../store/configureStore";
 // import Player from "./helpers/player";
 
 interface UgePlayerProps {
-  song: string,
   data: Song | null,
   onPlaybackUpdate?: Function,
   onChannelStatusUpdate?: Function,

@@ -21,10 +21,6 @@ import l10n from "../../lib/helpers/l10n";
 import { DutyInstrument, NoiseInstrument, WaveInstrument } from "../../store/features/tracker/trackerTypes";
 import trackerActions from "../../store/features/tracker/trackerActions";
 
-interface SongEditorProps {
-  id: string;
-}
-
 type Instrument = DutyInstrument | NoiseInstrument | WaveInstrument;
 
 const renderInstrumentEditor = (type: string, instrumentData: Instrument | null) => {
@@ -44,9 +40,7 @@ const instrumentName = (instrument: Instrument, type: string) => {
   return instrument.name ? instrument.name : `${typeName} ${instrument.index + 1}`;
 }
 
-export const SongEditor = ({
-  id
-}: SongEditorProps) => {
+export const SongEditor = () => {
   const dispatch = useDispatch();
   const selectedInstrument = useSelector(
     (state: RootState) => state.editor.selectedInstrument

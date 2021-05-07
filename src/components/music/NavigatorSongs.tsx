@@ -16,22 +16,23 @@ import useSplitPane from "../ui/hooks/use-split-pane";
 import styled from "styled-components";
 import { SplitPaneVerticalDivider } from "../ui/splitpane/SplitPaneDivider";
 import { instrumentColors } from "./InstrumentSelect";
+import { NoSongsMessage } from "./NoSongsMessage";
 
 const COLLAPSED_SIZE = 30;
 
 interface NavigatorSongsProps {
   height: number;
   defaultFirst?: boolean;
-  dutyInstruments: DutyInstrument[];
-  noiseInstruments: NoiseInstrument[];
-  waveInstruments: WaveInstrument[];
+  dutyInstruments?: DutyInstrument[];
+  noiseInstruments?: NoiseInstrument[];
+  waveInstruments?: WaveInstrument[];
   modified: boolean;
 }
 
 interface NavigatorItem {
   id: string;
   name: string;
-};
+}
 
 interface InstrumentNavigatorItem {
   id: string;
@@ -44,6 +45,14 @@ interface InstrumentNavigatorItem {
 
 const Pane = styled.div`
   overflow: hidden;
+`;
+
+const EmptyState = styled.div`
+  display: flex;
+  text-align: center;
+  flex-direction: column;
+  height: 100%;
+  padding: 36px 12px;
 `;
 
 const songToNavigatorItem = (
@@ -90,6 +99,10 @@ const sortByIndex = (a: NavigatorItem, b: NavigatorItem) => {
   return collator.compare(a.id, b.id);
 };
 
+const ugeFilter = (s: Music) => {
+  return s.type && s.type === "uge";
+};
+
 export const NavigatorSongs = ({
   height,
   defaultFirst,
@@ -111,28 +124,29 @@ export const NavigatorSongs = ({
     (state: RootState) => state.editor.selectedSongId
   );
   const selectedSongId = defaultFirst
-    ? songsLookup[navigationId]?.id || allSongs[0]?.id
+    ? songsLookup[navigationId]?.id || allSongs.filter(ugeFilter)[0]?.id
     : navigationId;
-
-  const selectedSong = songsLookup[selectedSongId];
-
-  useEffect(() => {
-    setItems(
-      allSongs
-        .filter((s) => s.type && s.type === "uge")
-        .map((song, songIndex) =>
-          songToNavigatorItem(song, songIndex, selectedSongId, modified)
-        )
-        .sort(sortByName)
-    );
-  }, [allSongs, modified, selectedSongId]);
-
+  
   const setSelectedSongId = useCallback(
     (id: string) => {
       dispatch(editorActions.setSelectedSongId(id));
     },
     [dispatch]
   );
+  
+  const selectedSong = songsLookup[selectedSongId];
+
+  useEffect(() => {
+    console.log("Set items", selectedSongId, allSongs, modified);
+    setItems(
+      allSongs
+        .filter(ugeFilter)
+        .map((song, songIndex) =>
+          songToNavigatorItem(song, songIndex, selectedSongId, modified)
+        )
+        .sort(sortByName)
+    );
+  }, [selectedSongId, allSongs, modified]);
 
   const [openInstrumentGroupIds, setOpenInstrumentGroupIds] = useState<InstrumentType[]>([]);
 
@@ -162,21 +176,21 @@ export const NavigatorSongs = ({
     setInstrumentItems(items.concat(
       [{ name: "Duty", id: "duty_group", instrumentId: "group", type: "duty", isGroup: true }],
       isOpen("duty") ?
-        dutyInstruments
+        (dutyInstruments||[])
           .map((duty, i) =>
             instrumentToNavigatorItem("duty")(duty, i, "Duty")
           )
           .sort(sortByIndex) : [],
       [{ name: "Waves", id: "wave_group", instrumentId: "group", type: "wave", isGroup: true }],
       isOpen("wave") ?
-        waveInstruments
+        (waveInstruments||[])
           .map((wave, i) =>
             instrumentToNavigatorItem("wave")(wave, i, "Wave")
           )
           .sort(sortByIndex) : [],
       [{ name: "Noise", id: "noise_group", instrumentId: "group", type: "noise", isGroup: true }],
       isOpen("noise") ?
-        noiseInstruments
+        (noiseInstruments||[])
           .map((noise, i) =>
             instrumentToNavigatorItem("noise")(noise, i, "Noise")
           )
@@ -226,14 +240,20 @@ export const NavigatorSongs = ({
         >
           {l10n("FIELD_SONGS")}
         </SplitPaneHeader>
-        <FlatList
-          selectedId={selectedSongId}
-          items={items}
-          setSelectedId={setSelectedSongId}
-          height={(showInstrumentList ? splitSizes[0] : height) - 30}
-        >
-          {({ item }) => <EntityListItem type="song" item={item} />}
-        </FlatList>
+        {items.length > 0 ?
+          <FlatList
+            selectedId={selectedSongId}
+            items={items}
+            setSelectedId={setSelectedSongId}
+            height={(showInstrumentList ? splitSizes[0] : height) - 30}
+          >
+            {({ item }) => <EntityListItem type="song" item={item} />}
+          </FlatList>
+          : 
+          <EmptyState>
+            <NoSongsMessage />
+          </EmptyState>
+        }
       </Pane>
       {showInstrumentList && (
         <>

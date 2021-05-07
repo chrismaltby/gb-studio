@@ -20,19 +20,22 @@ export const WaveEditorForm = ({
     state.tracker.song
   );
 
-  const waveOptions = song.waves.map((wave: Uint8Array, i: number) => ({
+  const waveOptions = song?.waves.map((wave: Uint8Array, i: number) => ({
     value: i,
     label: `Waveform ${i}`
   }));
-  const selectedWave = waveOptions.find((wave) => wave.value === waveId);
+  const selectedWave = waveOptions?.find((wave) => wave.value === waveId);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
+    if (!song) {
+      return;
+    }
     const canvas = canvasRef.current;
     if (!canvas) {
       return;
     }
-
+  
     const drawWidth = canvas.width - 10;
     const drawHeight = canvas.height - 10;
     const ctx = canvas.getContext("2d");

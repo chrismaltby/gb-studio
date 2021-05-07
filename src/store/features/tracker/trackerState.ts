@@ -3,7 +3,7 @@ import { AnyAction, createAsyncThunk, createSlice, PayloadAction } from "@reduxj
 import { readFile } from "fs-extra";
 import { writeFileWithBackupAsync } from "../../../lib/helpers/fs/writeFileWithBackup";
 import { PatternCell } from "../../../lib/helpers/uge/song/PatternCell";
-import { createDefaultSong, Song } from "../../../lib/helpers/uge/song/Song";
+import { Song } from "../../../lib/helpers/uge/song/Song";
 import { loadUGESong, saveUGESong } from "../../../lib/helpers/uge/ugeHelper";
 import { RootState } from "../../configureStore";
 import editorActions from "../editor/editorActions";
@@ -13,7 +13,7 @@ export interface TrackerState {
   status: "loading" | "error" | "loaded" | null,
   error?: string;
   playing: boolean;
-  song: Song;
+  song?: Song;
   octaveOffset: number;
   editStep: number;
   modified: boolean;
@@ -27,7 +27,7 @@ export const initialState: TrackerState = {
   status: null,
   error: "",
   playing: false,
-  song: createDefaultSong(),
+  // song: null,
   octaveOffset: 0,
   editStep: 1,
   modified: false,
@@ -60,6 +60,9 @@ export const saveSongFile = createAsyncThunk<void, string | undefined>(
     // }
     if (!path && !state.tracker.modified) {
       throw new Error("Cannot save unmodified song");
+    }
+    if (!state.tracker.song) {
+      throw new Error("No song selected");
     }
 
     const buffer = saveUGESong(state.tracker.song); 
@@ -96,12 +99,17 @@ const trackerSlice = createSlice({
       state.visibleChannels = _action.payload;
     },
     editSong: (state, _action: PayloadAction<{ changes: Partial<Song> }>) => {
-      state.song = {
-        ...state.song,
-        ..._action.payload.changes
+      if (state.song) {
+        state.song = {
+          ...state.song,
+          ..._action.payload.changes
+        }
       }
     },
     editDutyInstrument: (state, _action: PayloadAction<{ instrumentId: number, changes: Partial<DutyInstrument>}>) => {
+      if (!state.song) {
+        return;
+      }
       const instrument = state.song.duty_instruments[_action.payload.instrumentId];
       const patch = { ..._action.payload.changes }
 
@@ -121,6 +129,10 @@ const trackerSlice = createSlice({
       }
     },
     editWaveInstrument: (state, _action: PayloadAction<{ instrumentId: number, changes: Partial<WaveInstrument>}>) => {
+      if (!state.song) {
+        return;
+      }
+
       const instrument = state.song.wave_instruments[_action.payload.instrumentId];
       const patch = { ..._action.payload.changes }
 
@@ -140,6 +152,10 @@ const trackerSlice = createSlice({
       }
     },
     editNoiseInstrument: (state, _action: PayloadAction<{ instrumentId: number, changes: Partial<NoiseInstrument>}>) => {
+      if (!state.song) {
+        return;
+      }
+
       const instrument = state.song.noise_instruments[_action.payload.instrumentId];
       const patch = { ..._action.payload.changes }
 
@@ -159,6 +175,10 @@ const trackerSlice = createSlice({
       }
     },
     editPatternCell: (state, _action: PayloadAction<{ patternId: number, cell: [number, number], changes: Partial<PatternCell>}>) => {
+      if (!state.song) {
+        return;
+      }
+
       const patternId = _action.payload.patternId;
       const rowId = _action.payload.cell[0]; 
       const colId = _action.payload.cell[1]; 
@@ -184,6 +204,10 @@ const trackerSlice = createSlice({
       }
     },
     editSequence: (state, _action: PayloadAction<{ sequenceIndex: number, sequenceId: number }>) => {
+      if (!state.song) {
+        return;
+      }
+
       const newSequence = state.song.sequence;
       newSequence[_action.payload.sequenceIndex] = _action.payload.sequenceId;
 
@@ -193,6 +217,10 @@ const trackerSlice = createSlice({
       }
     },
     transposeNoteCell: (state, _action: PayloadAction<{ patternId: number, cellId: number, transpose: number}>) => {
+      if (!state.song) {
+        return;
+      }
+      
       const patternId = _action.payload.patternId;
       const rowId = Math.floor(_action.payload.cellId / 16);
       const colId = Math.floor(_action.payload.cellId / 4) % 4

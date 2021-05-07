@@ -14,7 +14,7 @@ interface MusicDriverSelectProps extends SelectCommonProps {
 
 const musicDriverOptions = [
   {
-    label: "hUGE",
+    label: "hUGEDriver",
     value: "huge",
   },
   {

@@ -13,7 +13,6 @@ import scrollIntoView from 'scroll-into-view-if-needed';
 import { SongGridHeaderCell } from "./SongGridHeaderCell";
 
 interface SongTrackerProps {
-  id: string,
   sequenceId: number,
   song: Song | null,
   height: number
@@ -45,7 +44,6 @@ const SongGridHeader = styled.div`
 `;
 
 export const SongTracker = ({
-  id,
   song,
   sequenceId,
   height
@@ -351,7 +349,6 @@ export const SongTracker = ({
     >
       <div style={{ position: "relative", minWidth: "85px" }}>
         <SequenceEditor
-          id={id}
           sequence={song?.sequence}
           patterns={song?.patterns.length}
           playingSequence={playbackState[0]}
@@ -398,7 +395,6 @@ export const SongTracker = ({
         </SongGrid>
       </div>
       <UgePlayer
-        song={id}
         data={song}
         onPlaybackUpdate={setPlaybackState}
         onChannelStatusUpdate={setChannelStatus}
