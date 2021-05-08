@@ -39,7 +39,7 @@ inline void SIO_send_async(UBYTE len, const UBYTE * data) {
     link_packet_snd_len = len;
     link_packet_snd_ptr = data;
     link_byte_sent = FALSE;
-    SIO_send_byte(link_packet_snd_len);
+    SIO_send_byte(len);
     link_packet_sent = (link_packet_snd_len == 0);
 }
 

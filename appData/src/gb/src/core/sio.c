@@ -1,4 +1,4 @@
-#pragma bank 3
+#pragma bank 4
 
 #include <gb/gb.h>
 #include "sio.h"
@@ -11,6 +11,7 @@ UBYTE link_operation_mode;
 
 UBYTE link_packet[LINK_MAX_PACKET_LENGTH];
 extern UBYTE link_byte_sent;
+extern UBYTE link_next_mode;
 
 UBYTE link_packet_len;
 UBYTE * link_packet_ptr;
@@ -47,15 +48,14 @@ UBYTE SIO_update() __nonbanked {
     }
 
     if (link_byte_sent) {
-        if (link_packet_snd_len) {
+        if (link_packet_snd_len != 0) {
             link_byte_sent = FALSE;
+            if (link_packet_snd_len == 1) link_next_mode = IO_RECEIVING;
             SIO_send_byte(*link_packet_snd_ptr++);
             link_packet_snd_len--;
-            if (link_packet_snd_len == 0) {
-                SIO_receive();
-                link_packet_sent = TRUE;
-            };
-        };
+        } else {
+            link_packet_sent = TRUE;
+        }
     }
     return TRUE;
 }

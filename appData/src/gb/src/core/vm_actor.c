@@ -275,3 +275,12 @@ void vm_actor_set_anim_frame(SCRIPT_CTX * THIS, INT16 idx) __banked {
 
     actor_set_frame_offset(actor, params->FRAME);
 }
+
+void vm_actor_get_anim_frame(SCRIPT_CTX * THIS, INT16 idx) __banked {
+    actor_t *actor;
+
+    act_set_frame_t * params = VM_REF_TO_PTR(idx);
+    actor = actors + params->ID;
+
+    params->FRAME = actor_get_frame_offset(actor);
+}

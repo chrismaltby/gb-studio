@@ -1,4 +1,4 @@
-#pragma bank 3
+#pragma bank 4
 
 #include <gb/gb.h>
 #include <string.h>
@@ -184,6 +184,7 @@ void core_run() __banked {
 
     data_init();
 #ifdef SGB
+    for (UBYTE i = 4; i != 0; i--) wait_vbl_done(); // this delay is required for PAL SNES
     _is_SGB = sgb_check();
     if (_is_SGB) set_sgb_border(SGB_border_chr, SIZE(SGB_border_chr), BANK(SGB_border_chr),
                                 SGB_border_map, SIZE(SGB_border_map), BANK(SGB_border_map), 

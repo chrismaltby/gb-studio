@@ -230,6 +230,10 @@ void actor_set_frame_offset(actor_t *actor, UBYTE frame_offset) __banked {
     actor->frame = actor->frame_start + (frame_offset % (actor->frame_end - actor->frame_start));
 }
 
+UBYTE actor_get_frame_offset(actor_t *actor) __banked {
+    return actor->frame - actor->frame_start;
+}
+
 void actor_set_anim_idle(actor_t *actor) __banked {
     actor_set_anim(actor, actor->dir);
 }

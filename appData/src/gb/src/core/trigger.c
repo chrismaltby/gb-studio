@@ -1,4 +1,4 @@
-#pragma bank 3
+#pragma bank 4
 
 #include "trigger.h"
 #include "vm.h"

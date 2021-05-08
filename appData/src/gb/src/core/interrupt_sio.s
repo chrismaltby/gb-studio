@@ -1,6 +1,6 @@
         .include "global.s"
 
-        .globl  _SIO_status
+        .globl  _on_SIO_receive
 
         .area   _HEADER_SIO (ABS)
 
@@ -17,6 +17,9 @@ _SIO_status::
 
 _link_byte_sent::
         .ds     0x01            ; byte sent
+
+_link_next_mode::
+        .ds     0x01
 
 .end_sio_globals:
 
@@ -44,23 +47,27 @@ _link_byte_sent::
         push bc
         push de
 
-        ld  a, (_SIO_status)    ; get status
+        ld c, #.SB
+
+        xor a
+        ldh (.SC),a             ; use external clock
+
+        ld  hl, #_SIO_status
+        ld  a, (hl)             ; get status
 
         cp  #.IO_RECEIVING
         jr  nz, 1$
 
         ;; receiving data
-        ldh a, (.SB)            ; get data byte
+        ldh a, (c)              ; get data byte
         push af
         inc sp
 
-        ld  a, #.IO_IDLE
-        ld  (_SIO_status),a     ; store status
+        ld  (hl), #.IO_IDLE
 
-        xor a
-        ldh (.SC),a             ; use external clock
         ld  a,#.DT_IDLE
-        ldh (.SB),a             ; reply with idle byte
+        ldh (c),a               ; reply with idle byte
+
         ld  a,#0x80
         ldh (.SC),a             ; enable transfer with external clock
 
@@ -69,34 +76,41 @@ _link_byte_sent::
         jr  5$
 
 1$:
-        cp  # .IO_SENDING
-        jr  nz, 4$
+        cp  #.IO_SENDING
+        jr  nz, 5$
 
-        ldh a, (.SB)             ; get data byte
+        ldh a, (c)              ; get data byte
         cp  #.DT_RECEIVING
-        ld  a, #.IO_IDLE
+
+        ld  (hl), #.IO_IDLE
+
         jr  z, 3$
-        ld  a, #.IO_ERROR
 
+        ld  (hl), #.IO_ERROR    ; store status
+        jr  6$
 3$:
-        ld  (_SIO_status), a    ; store status
+        ld  a, (_link_next_mode)
+        cp  #.IO_RECEIVING
+        jr  nz, 6$
 
-        xor a
-        ldh (.SC),a             ; use external clock
-        ld  a,#.DT_IDLE
-        ldh (.SB),a             ; reply with idle byte
+        ld  (hl), a             ; a == .IO_RECEIVING
+        ld  a, #.DT_RECEIVING
+
+        jr  4$
+
+6$:
+        ld  a, #.DT_IDLE
+4$:
+        ldh (c), a              ; reply with idle byte
+
         ld  a,#0x80
         ldh (.SC),a             ; enable transfer with external clock
+
+        ld  a, #.IO_IDLE        ; next mode is idle by default
+        ld  (_link_next_mode), a
 
         ld  a, #1
         ld  (_link_byte_sent), a; link_byte_sent = TRUE 
-
-        jr  5$
-        
-4$:
-        ld  a,#0x80
-        ldh (.SC),a             ; enable transfer with external clock
-
 5$:
         pop de
         pop bc

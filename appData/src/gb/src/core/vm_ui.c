@@ -10,6 +10,7 @@
 #include "scroll.h"
 #include "gbs_types.h"
 #include "bankdata.h"
+#include "data_manager.h"
 #include "data/data_bootstrap.h"
 
 #define VM_ARG_TEXT_IN_SPEED -1
@@ -214,4 +215,19 @@ void vm_overlay_scroll(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE w, UBYTE h, UB
         VBK_REG = 0;
     }
 #endif
+}
+
+void set_xy_win_submap(const UBYTE * source, UBYTE bank, UBYTE width, UBYTE x, UBYTE y, UBYTE w, UBYTE h);
+
+void vm_overlay_set_submap(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE w, UBYTE h, UBYTE scene_x, UBYTE scene_y) __banked {
+    THIS;
+    UWORD offset = (scene_y * image_tile_width) + scene_x;
+#ifdef CGB
+    if (_is_CGB) {
+        VBK_REG = 1;
+        set_xy_win_submap(image_attr_ptr + offset, image_bank, image_tile_width, x, y, w, h);
+        VBK_REG = 0;
+    }
+#endif
+    set_xy_win_submap(image_ptr + offset, image_bank, image_tile_width, x, y, w, h);
 }

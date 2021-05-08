@@ -493,6 +493,11 @@ OP_VM_ACTOR_SET_ANIM_FRAME     = 0x75
         .db OP_VM_ACTOR_SET_ANIM_FRAME, #>ACTOR, #<ACTOR
 .endm
 
+OP_VM_ACTOR_GET_ANIM_FRAME     = 0x83
+.macro VM_ACTOR_GET_ANIM_FRAME ACTOR
+        .db OP_VM_ACTOR_GET_ANIM_FRAME, #>ACTOR, #<ACTOR
+.endm
+
 ; --- UI ------------------------------------------
 
 OP_VM_LOAD_TEXT         = 0x40
@@ -590,6 +595,11 @@ OP_VM_OVERLAY_SCROLL    = 0x4D
 OP_VM_OVERLAY_SET_SCROLL = 0x4E
 .macro VM_OVERLAY_SET_SCROLL X, Y, W, H, COLOR
         .db OP_VM_OVERLAY_SET_SCROLL, #<COLOR, #<H, #<W, #<Y, #<X 
+.endm
+
+OP_VM_OVERLAY_SET_SUBMAP = 0x4F
+.macro VM_OVERLAY_SET_SUBMAP X, Y, W, H, SX, SY
+        .db OP_VM_OVERLAY_SET_SUBMAP, #<SY, #<SX, #<H, #<W, #<Y, #<X 
 .endm
 
 ; --- GAMEBOY ------------------------------------------

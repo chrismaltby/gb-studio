@@ -52,6 +52,43 @@ _set_bkg_submap::
 
         jr      .set_xy_bkg_submap
 
+_set_xy_win_submap::
+        ldhl    sp, #2
+        ld      a, (hl+)
+        ld      c, a
+        ld      a, (hl+)
+        ld      b, a
+
+        ldh     a, (__current_bank)
+        push    af
+        ld      a, (hl+)
+        ldh	(__current_bank),a
+        ld      (#0x2000), a
+
+        ld      a, (hl+)
+        inc     hl
+        inc     hl
+        sub     (hl)
+        ld      (.image_tile_width), a
+        dec     hl
+        dec     hl
+
+        ld      a, (hl+)
+        ld      e, a
+        ld      a, (hl+)
+        ld      d, a
+
+        ld      a, (hl+)
+        ld      l, (hl)
+        ld      h, a
+
+        call    .set_xy_win_submap
+        
+        pop     af
+        ldh	(__current_bank),a
+        ld      (#0x2000), a
+        ret
+
         ;; set window tile table from bc at xy = de of size wh = hl
 .set_xy_win_submap::
         push    hl              ; store wh

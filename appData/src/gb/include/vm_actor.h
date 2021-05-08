@@ -22,5 +22,6 @@ void vm_actor_set_move_speed(SCRIPT_CTX * THIS, INT16 idx, UBYTE speed) __banked
 void vm_actor_set_coll_enabled(SCRIPT_CTX * THIS, INT16 idx, UBYTE enabled) __banked;
 void vm_actor_terminate_update(SCRIPT_CTX * THIS, INT16 idx) __banked;
 void vm_actor_set_anim_frame(SCRIPT_CTX * THIS, INT16 idx) __banked;
+void vm_actor_get_anim_frame(SCRIPT_CTX * THIS, INT16 idx) __banked;
 
 #endif
