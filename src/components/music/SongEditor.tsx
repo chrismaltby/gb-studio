@@ -47,7 +47,7 @@ export const SongEditor = () => {
   );
 
   const song = useSelector((state: RootState) => 
-    state.tracker.song
+    state.tracker.present.song
   );
   console.log("SONG", song)
 

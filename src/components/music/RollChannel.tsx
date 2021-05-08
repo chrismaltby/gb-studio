@@ -61,10 +61,10 @@ export const RollChannelFwd = ({
   const dispatch = useDispatch();
 
   const tool = useSelector(
-    (state: RootState) => state.tracker.tool
+    (state: RootState) => state.tracker.present.tool
   );
   const defaultInstruments = useSelector(
-    (state: RootState) => state.tracker.defaultInstruments
+    (state: RootState) => state.tracker.present.defaultInstruments
   );
 
   const removeNote = useCallback((channel: number, column: number) => (e: any) => {

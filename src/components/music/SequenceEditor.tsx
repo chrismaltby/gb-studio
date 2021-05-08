@@ -77,7 +77,7 @@ export const SequenceEditorFwd = ({
   );
 
   const play = useSelector(
-    (state: RootState) => state.tracker.playing
+    (state: RootState) => state.tracker.present.playing
   );
 
   if (play && playingSequence !== -1) {

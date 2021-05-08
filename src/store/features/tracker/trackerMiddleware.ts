@@ -15,7 +15,7 @@ const trackerMiddleware: ThunkMiddleware<RootState> = (store) => (next) => (
   if (
     (navigationActions.setSection.match(action) && action.payload !== "music") ||
     (editorActions.setSelectedSongId.match(action) && action.payload !== state.editor.selectedSongId)) {
-    if (state.tracker.modified) {
+    if (state.tracker.present.modified) {
       // Display confirmation and stop action if 
       const songsLookup = musicSelectors.selectEntities(state);
       const selectedSong = songsLookup[state.editor.selectedSongId];

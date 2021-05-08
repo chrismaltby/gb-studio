@@ -31,7 +31,7 @@ const SongEditorRightToolsPanel = () => {
   const dispatch = useDispatch();
 
   const octaveOffset = useSelector(
-    (state: RootState) => state.tracker.octaveOffset
+    (state: RootState) => state.tracker.present.octaveOffset
   );
 
   const setOctaveOffset = useCallback((offset: number) => {
@@ -39,7 +39,7 @@ const SongEditorRightToolsPanel = () => {
   }, [dispatch]);
 
   const defaultInstruments = useSelector(
-    (state: RootState) => state.tracker.defaultInstruments
+    (state: RootState) => state.tracker.present.defaultInstruments
   );
 
   const setDefaultInstruments = useCallback((instrument: number) => {
@@ -49,7 +49,7 @@ const SongEditorRightToolsPanel = () => {
   }, [dispatch]);
 
   const visibleChannels = useSelector(
-    (state: RootState) => state.tracker.visibleChannels
+    (state: RootState) => state.tracker.present.visibleChannels
   );
 
   const setVisibleChannels = useCallback((channel: number) => () => {

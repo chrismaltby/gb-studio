@@ -58,14 +58,14 @@ export const saveSongFile = createAsyncThunk<void, string | undefined>(
     // if (saving) {
     //   throw new Error("Cannot save project while already saving");
     // }
-    if (!path && !state.tracker.modified) {
+    if (!path && !state.tracker.present.modified) {
       throw new Error("Cannot save unmodified song");
     }
-    if (!state.tracker.song) {
+    if (!state.tracker.present.song) {
       throw new Error("No song selected");
     }
 
-    const buffer = saveUGESong(state.tracker.song); 
+    const buffer = saveUGESong(state.tracker.present.song); 
     await writeFileWithBackupAsync(path, new Uint8Array(buffer), "utf8");
   }
 );

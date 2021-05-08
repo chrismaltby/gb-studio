@@ -17,7 +17,7 @@ export const WaveEditorForm = ({
 }: WaveEditorFormProps) => {
 
   const song = useSelector((state: RootState) =>
-    state.tracker.song
+    state.tracker.present.song
   );
 
   const waveOptions = song?.waves.map((wave: Uint8Array, i: number) => ({

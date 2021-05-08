@@ -29,6 +29,7 @@ import SongEditorRightToolsPanel from "../../components/music/SongEditorRightToo
 import { loadSongFile } from "../../store/features/tracker/trackerState";
 import { SongPianoRoll } from "../../components/music/SongPianoRoll";
 import { Music } from "../../store/features/entities/entitiesTypes";
+import l10n from "../../lib/helpers/l10n";
 
 const Wrapper = styled.div`
   display: flex;
@@ -103,19 +104,20 @@ const MusicPageUge = () => {
   const projectRoot = useSelector((state: RootState) => state.document.root);
 
   const song = useSelector((state: RootState) => 
-    state.tracker.song
+    state.tracker.present.song
   );
   const modified = useSelector((state: RootState) => 
-    state.tracker.modified
+    state.tracker.present.modified
   );
   const status = useSelector((state: RootState) => 
-    state.tracker.status
+    state.tracker.present.status
   );
   const error = useSelector((state: RootState) => 
-    state.tracker.error
+    state.tracker.present.error
   );
   useEffect(() => {
     if (selectedSong && selectedSong.type === "uge") {
+      dispatch({ type: '@@TRACKER_INIT' });
       const path = `${assetFilename(
         projectRoot,
         "music",
@@ -235,7 +237,7 @@ const MusicPageUge = () => {
   };
 
   const view = useSelector(
-    (state: RootState) => state.tracker.view
+    (state: RootState) => state.tracker.present.view
   );
 
   const renderGridView = useCallback(() => {
@@ -338,7 +340,7 @@ const MusicPageUge = () => {
         : 
           <ContentWrapper style={{height: windowHeight - 38}}>
             <ContentMessage>
-              No song loaded            
+              { (status === "loading") ? l10n("FIELD_LOADING") : "No song loaded" }            
             </ContentMessage>
           </ContentWrapper>
         )}

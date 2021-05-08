@@ -27,7 +27,20 @@ const rootReducer = combineReducers({
   engine,
   clipboard,
   sprite,
-  tracker,
+  tracker: undoable(tracker, 
+    {
+      limit: 20,
+      initTypes: ['@@TRACKER_INIT'],
+      filter: (_action, currentState, previousHistory) => {
+        return (
+          _action.type.startsWith("tracker/loadSong/fulfilled") ||
+          _action.type.startsWith("tracker/edit") ||
+          _action.type.startsWith("tracker/transpose")
+        )
+      },
+      ignoreInitialState: true,
+    }
+  ),
   project: undoable(
     combineReducers({ entities, settings, metadata }),
     {

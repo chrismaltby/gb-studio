@@ -52,13 +52,13 @@ export const SongTracker = ({
 
   const [playbackState, setPlaybackState] = useState([-1, -1]);
   const playing = useSelector(
-    (state: RootState) => state.tracker.playing
+    (state: RootState) => state.tracker.present.playing
   );
   const editStep = useSelector(
-    (state: RootState) => state.tracker.editStep
+    (state: RootState) => state.tracker.present.editStep
   );
   const octaveOffset = useSelector(
-    (state: RootState) => state.tracker.octaveOffset
+    (state: RootState) => state.tracker.present.octaveOffset
   );
 
   const [channelStatus, setChannelStatus] = useState([false, false, false, false]);

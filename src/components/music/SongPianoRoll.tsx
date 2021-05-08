@@ -78,7 +78,7 @@ export const SongPianoRoll = ({
 }: SongPianoRollProps) => {
   const [playbackState, setPlaybackState] = useState([-1, -1]);
   const playing = useSelector(
-    (state: RootState) => state.tracker.playing
+    (state: RootState) => state.tracker.present.playing
   );
 
   const [channelStatus, setChannelStatus] = useState([false, false, false, false]);
@@ -112,7 +112,7 @@ export const SongPianoRoll = ({
   }, [patternsPanelOpen, setPatternsPanelOpen]);
 
   const visibleChannels = useSelector(
-    (state: RootState) => state.tracker.visibleChannels
+    (state: RootState) => state.tracker.present.visibleChannels
   );
 
   return (

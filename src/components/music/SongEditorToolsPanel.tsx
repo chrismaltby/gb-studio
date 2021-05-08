@@ -38,19 +38,19 @@ const SongEditorToolsPanel = ({
   const projectRoot = useSelector((state: RootState) => state.document.root);
 
   const play = useSelector(
-    (state: RootState) => state.tracker.playing
+    (state: RootState) => state.tracker.present.playing
   );
 
   const modified = useSelector(
-    (state: RootState) => state.tracker.modified
+    (state: RootState) => state.tracker.present.modified
   );
 
   const view = useSelector(
-    (state: RootState) => state.tracker.view
+    (state: RootState) => state.tracker.present.view
   );
 
   const tool = useSelector(
-    (state: RootState) => state.tracker.tool
+    (state: RootState) => state.tracker.present.tool
   );
 
   const togglePlay = useCallback(() => {

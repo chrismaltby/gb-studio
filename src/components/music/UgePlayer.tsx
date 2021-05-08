@@ -26,7 +26,7 @@ export const UgePlayer = ({
   }, []);
 
   const play = useSelector(
-    (state: RootState) => state.tracker.playing
+    (state: RootState) => state.tracker.present.playing
   );
 
   useEffect(() => {
