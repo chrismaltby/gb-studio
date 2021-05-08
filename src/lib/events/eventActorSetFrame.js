@@ -32,11 +32,12 @@ const compile = (input, helpers) => {
     variableFromUnion,
     temporaryEntityVariable,
   } = helpers;
-  actorSetActive(input.actorId);
   if (input.frame.type === "number") {
+    actorSetActive(input.actorId);
     actorSetFrame(input.frame.value);
   } else {
     const frameVar = variableFromUnion(input.frame, temporaryEntityVariable(0));
+    actorSetActive(input.actorId);
     actorSetFrameToVariable(frameVar);
   }
 };
