@@ -1798,7 +1798,6 @@ class ScriptBuilder {
   };
 
   actorSetFrameToVariable = (variable: string) => {
-    console.error("actorSetFrameToVariable not implemented");
     this._addComment("Actor Set Animation Frame To Variable");
     this._setToVariable("^/(ACTOR + 1)/", variable);
     this._actorSetAnimFrame("ACTOR");
