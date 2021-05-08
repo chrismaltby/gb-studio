@@ -1049,6 +1049,11 @@ class ScriptBuilder {
     this._addCmd("VM_ACTOR_SET_ANIM_FRAME", addr);
   };
 
+  _actorGetAnimFrame = (addr: string) => {
+    this.includeActor = true;
+    this._addCmd("VM_ACTOR_GET_ANIM_FRAME", addr);
+  };
+
   _actorSetMoveSpeed = (addr: string, speed: number) => {
     this.includeActor = true;
     this._addCmd("VM_ACTOR_SET_MOVE_SPEED", addr, speed);
@@ -1601,6 +1606,13 @@ class ScriptBuilder {
   actorGetDirection = (variable: string) => {
     this._addComment(`Store Direction In Variable`);
     this._actorGetDirectionToVariable("ACTOR", variable);
+    this._addNL();
+  };
+
+  actorGetAnimFrame = (variable: string) => {
+    this._addComment(`Store Frame In Variable`);
+    this._actorGetAnimFrame("ACTOR");
+    this._setVariable(variable, "^/(ACTOR + 1)/");
     this._addNL();
   };
 
@@ -2744,6 +2756,8 @@ class ScriptBuilder {
       this.actorGetPositionY(variable);
     } else if (propertyValue === "direction") {
       this.actorGetDirection(variable);
+    } else if (propertyValue === "frame") {
+      this.actorGetAnimFrame(variable);
     } else {
       throw new Error(`Unsupported property type "${propertyValue}"`);
     }

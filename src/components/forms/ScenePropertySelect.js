@@ -15,8 +15,6 @@ const properties = {
   xpos: l10n("FIELD_X_POSITION"),
   ypos: l10n("FIELD_Y_POSITION"),
   direction: l10n("FIELD_DIRECTION"),
-  moveSpeed: l10n("FIELD_MOVEMENT_SPEED"),
-  animSpeed: l10n("FIELD_ANIMATION_SPEED"),
   frame: l10n("FIELD_ANIMATION_FRAME"),
 };
 
