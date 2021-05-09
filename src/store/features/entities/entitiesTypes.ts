@@ -164,6 +164,7 @@ export type MetaspriteTile = {
   flipY: boolean;
   objPalette: ObjPalette;
   paletteIndex: number;
+  priority: boolean;
 };
 
 export type Metasprite = {

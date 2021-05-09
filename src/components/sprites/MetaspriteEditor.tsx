@@ -289,6 +289,7 @@ const MetaspriteEditor = ({
               flipY: false,
               objPalette: "OBP0",
               paletteIndex: 0,
+              priority: false,
             })
           );
         }

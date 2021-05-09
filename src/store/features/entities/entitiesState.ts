@@ -1752,6 +1752,7 @@ const addMetaspriteTile: CaseReducer<
     flipY: boolean;
     objPalette: ObjPalette;
     paletteIndex: number;
+    priority: boolean;
   }>
 > = (state, action) => {
   const metasprite = state.metasprites.entities[action.payload.metaspriteId];
@@ -1771,6 +1772,7 @@ const addMetaspriteTile: CaseReducer<
     flipY: action.payload.flipY,
     objPalette: action.payload.objPalette,
     paletteIndex: action.payload.paletteIndex,
+    priority: action.payload.priority,
   };
 
   // Add to metasprite
@@ -2724,6 +2726,7 @@ const entitiesSlice = createSlice({
         flipY: boolean;
         objPalette: ObjPalette;
         paletteIndex: number;
+        priority: boolean;
       }) => {
         return {
           payload: {

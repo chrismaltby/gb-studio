@@ -354,6 +354,7 @@
   "FIELD_PASTE_BACKGROUND_PALETTES": "Paste Background Palettes",
   "FIELD_PASTE_SPRITE_PALETTES": "Paste Sprite Palettes",
   "FIELD_INSTANT": "Instant",
+  "FIELD_DISPLAY_BEHIND_BACKGROUND": "Display behind background layer",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

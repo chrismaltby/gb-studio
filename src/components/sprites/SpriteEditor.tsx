@@ -459,6 +459,15 @@ export const SpriteEditor = ({
                 </FormRow>
               )}
 
+              <FormRow>
+                <CheckboxField
+                  name="priority"
+                  label={l10n("FIELD_DISPLAY_BEHIND_BACKGROUND")}
+                  checked={metaspriteTile.priority}
+                  onChange={onChangeTileFieldInput("priority")}
+                />
+              </FormRow>
+
               {selectedTileIds.length === 1 && (
                 <>
                   <FormDivider />

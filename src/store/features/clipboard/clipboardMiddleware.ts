@@ -296,6 +296,7 @@ const clipboardMiddleware: Middleware<{}, RootState> = (store) => (next) => (
           flipY: tile.flipY,
           objPalette: tile.objPalette,
           paletteIndex: tile.paletteIndex,
+          priority: tile.priority,
         });
       });
 
@@ -322,6 +323,7 @@ const clipboardMiddleware: Middleware<{}, RootState> = (store) => (next) => (
           flipY: tile.flipY,
           objPalette: tile.objPalette,
           paletteIndex: tile.paletteIndex,
+          priority: tile.priority,
         });
       });
 

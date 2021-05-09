@@ -19,6 +19,7 @@ import { IndexedImage } from "../tiles/indexedImage";
 const S_PALETTE = 0x10;
 const S_FLIPX = 0x20;
 const S_FLIPY = 0x40;
+const S_PRIORITY = 0x80;
 const S_GBC_PALETTE_MASK = 0x7;
 
 interface SpriteSheetFrameData {
@@ -76,12 +77,14 @@ const makeProps = (
   objPalette: ObjPalette,
   paletteIndex: number,
   flipX: boolean,
-  flipY: boolean
+  flipY: boolean,
+  priority: boolean
 ): number => {
   return (
     (objPalette === "OBP1" ? S_PALETTE : 0) +
     (flipX ? S_FLIPX : 0) +
     (flipY ? S_FLIPY : 0) +
+    (priority ? S_PRIORITY : 0) +
     (paletteIndex & S_GBC_PALETTE_MASK)
   );
 };
@@ -135,7 +138,8 @@ const compileSprites = async (
                           tile.objPalette,
                           tile.paletteIndex,
                           !optimisedTile.flipX,
-                          optimisedTile.flipY
+                          optimisedTile.flipY,
+                          tile.priority
                         ),
                       };
                       currentX = 8 - tile.x;
@@ -150,7 +154,8 @@ const compileSprites = async (
                         tile.objPalette,
                         tile.paletteIndex,
                         optimisedTile.flipX,
-                        optimisedTile.flipY
+                        optimisedTile.flipY,
+                        tile.priority
                       ),
                     };
                     currentX = tile.x;

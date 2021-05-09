@@ -109,6 +109,7 @@ export const detect = (
                 palette: 0,
                 paletteIndex: 0,
                 objPalette: "OBP0",
+                priority: false,
               };
               metaspriteTiles.push(tile);
               metasprite.tiles.unshift(tile.id);
@@ -191,6 +192,7 @@ export const detectClassic = (spriteSheet: SpriteSheet): DetectedSprite => {
       palette: 0,
       paletteIndex: 0,
       objPalette: "OBP0",
+      priority: false,
     };
     const tileRight: MetaspriteTile = {
       id: uuid(),
@@ -203,6 +205,7 @@ export const detectClassic = (spriteSheet: SpriteSheet): DetectedSprite => {
       palette: 0,
       paletteIndex: 0,
       objPalette: "OBP0",
+      priority: false,
     };
     const metasprite: Metasprite = {
       id: uuid(),
