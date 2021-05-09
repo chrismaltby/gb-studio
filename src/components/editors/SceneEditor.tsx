@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import ScriptEditor from "../script/ScriptEditor";
 import castEventValue from "../../lib/helpers/castEventValue";
 import l10n from "../../lib/helpers/l10n";
-import { SidebarTabs } from "./Sidebar";
 import { WorldEditor } from "./WorldEditor";
 import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
 import BackgroundWarnings from "../world/BackgroundWarnings";
@@ -19,9 +18,7 @@ import {
   FormDivider,
   FormField,
   FormHeader,
-  FormLink,
   FormRow,
-  FormSectionTitle,
 } from "../ui/form/FormLayout";
 import { EditableText } from "../ui/form/EditableText";
 import { RootState } from "../../store/configureStore";
@@ -42,13 +39,14 @@ import { SettingsState } from "../../store/features/settings/settingsState";
 import { TabBar } from "../ui/tabs/Tabs";
 import { Label } from "../ui/form/Label";
 import { Button } from "../ui/buttons/Button";
-import { LockIcon, LockOpenIcon } from "../ui/icons/Icons";
+import { LockIcon, LockOpenIcon, ParallaxIcon } from "../ui/icons/Icons";
 import ParallaxSelect, {
   defaultValues as parallaxDefaultValues,
 } from "../forms/ParallaxSelect";
 import { SpriteSheetSelectButton } from "../forms/SpriteSheetSelectButton";
 import styled from "styled-components";
 import { ClipboardTypePaletteIds } from "../../store/features/clipboard/clipboardTypes";
+import { SCREEN_WIDTH } from "../../consts";
 
 interface SceneEditorProps {
   id: string;
@@ -108,9 +106,6 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
     (state: RootState) => state.clipboard.data?.format
   );
   const [notesOpen, setNotesOpen] = useState<boolean>(!!scene?.notes);
-  const [showParallaxSettings, setShowParallaxSettings] = useState<boolean>(
-    (scene?.parallax?.length || 0) > 0
-  );
   const colorsEnabled = useSelector(
     (state: RootState) => state.project.present.settings.customColorsEnabled
   );
@@ -254,13 +249,14 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
     dispatch(editorActions.setLockScriptEditor(!lockScriptEditor));
   };
 
-  const onShowParallaxSettings = () => {
-    setShowParallaxSettings(true);
+  const onToggleParallaxSettings = () => {
     dispatch(
       entitiesActions.editScene({
         sceneId: id,
         changes: {
-          parallax: parallaxDefaultValues.slice(-2),
+          parallax: scene?.parallax
+            ? undefined
+            : parallaxDefaultValues.slice(-2),
         },
       })
     );
@@ -381,6 +377,9 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
     </Button>
   );
 
+  const showParallaxButton = scene.width && scene.width > SCREEN_WIDTH;
+  const showParallaxOptions = showParallaxButton && scene.parallax;
+
   return (
     <SidebarMultiColumnAuto onClick={selectSidebar}>
       {!lockScriptEditor && (
@@ -482,13 +481,29 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
 
             <FormRow>
               <FormField name="backgroundId" label={l10n("FIELD_BACKGROUND")}>
-                <BackgroundSelectButton
-                  name="backgroundId"
-                  value={scene.backgroundId}
-                  onChange={onChangeField("backgroundId")}
-                  is360={scene.type === "LOGO"}
-                  includeInfo
-                />
+                <div style={{ display: "flex" }}>
+                  <BackgroundSelectButton
+                    name="backgroundId"
+                    value={scene.backgroundId}
+                    onChange={onChangeField("backgroundId")}
+                    is360={scene.type === "LOGO"}
+                    includeInfo
+                  />
+                  {showParallaxButton && (
+                    <Button
+                      style={{
+                        padding: "5px 0",
+                        minWidth: 28,
+                        marginLeft: 10,
+                      }}
+                      variant={scene?.parallax ? "primary" : undefined}
+                      onClick={onToggleParallaxSettings}
+                      title={l10n("FIELD_PARALLAX")}
+                    >
+                      <ParallaxIcon />
+                    </Button>
+                  )}
+                </div>
               </FormField>
             </FormRow>
 
@@ -496,8 +511,8 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
               <BackgroundWarnings id={scene.backgroundId} />
             </FormRow>
 
-            <FormRow>
-              {showParallaxSettings ? (
+            {showParallaxOptions && (
+              <FormRow>
                 <FormField name="parallax" label={l10n("FIELD_PARALLAX")}>
                   <ParallaxSelect
                     name="parallax"
@@ -506,12 +521,8 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
                     onChange={onChangeField("parallax")}
                   />
                 </FormField>
-              ) : (
-                <FormLink onClick={onShowParallaxSettings}>
-                  {l10n("FIELD_PARALLAX_ENABLE")}
-                </FormLink>
-              )}
-            </FormRow>
+              </FormRow>
+            )}
 
             <FormDivider />
 

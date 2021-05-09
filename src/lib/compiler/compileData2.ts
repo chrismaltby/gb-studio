@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import { Dictionary } from "@reduxjs/toolkit";
 import flatten from "lodash/flatten";
-import { SPRITE_TYPE_STATIC } from "../../consts";
+import { SCREEN_WIDTH, SPRITE_TYPE_STATIC } from "../../consts";
 import { SceneParallaxLayer } from "../../store/features/entities/entitiesTypes";
 import { FontData } from "../fonts/fontData";
 import { hexDec } from "../helpers/8bit";
@@ -373,7 +373,10 @@ export const compileScene = (
       type: `SCENE_TYPE_${scene.type}`,
       background: toFarPtr(backgroundSymbol(scene.backgroundIndex)),
       collisions: toFarPtr(sceneCollisionsSymbol(sceneIndex)),
-      parallax_rows: compileParallax(scene.parallax),
+      parallax_rows:
+        scene.width > SCREEN_WIDTH
+          ? compileParallax(scene.parallax)
+          : undefined,
       palette: toFarPtr(paletteSymbol(bgPalette)),
       sprite_palette: toFarPtr(paletteSymbol(actorsPalette)),
       player_sprite: toFarPtr(spriteSheetSymbol(scene.playerSpriteIndex)),

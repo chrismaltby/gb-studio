@@ -425,6 +425,12 @@ export const Bits16Icon = () => (
   </svg>
 );
 
+export const ParallaxIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <path d="M4 17.162l-2 .838v-12.972l12-5.028v2.507l-10 4.19v10.465zm18-11.162l-12 5.028v12.972l12-5.028v-12.972zm-14 3.697l10-4.19v-2.507l-12 5.028v12.972l2-.838v-10.465z" />
+  </svg>
+);
+
 export const SadIcon = () => (
   <svg width="1096" height="974" viewBox="0 0 1096 974" version="1.1">
     <defs>
