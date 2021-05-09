@@ -120,6 +120,7 @@ const SettingsPage: FC = () => {
           paletteIds[4],
           paletteIds[5],
           paletteIds[6],
+          paletteIds[7],
         ],
       });
     },
@@ -239,17 +240,17 @@ const SettingsPage: FC = () => {
                 <SettingRowLabel>Default Background Palettes</SettingRowLabel>
                 <SettingRowInput>
                   <div key={JSON.stringify(defaultBackgroundPaletteIds)}>
-                    {[0, 1, 2, 3, 4, 5, 6].map((index) => (
+                    {[0, 1, 2, 3, 4, 5, 6, 7].map((index) => (
                       <FormField
                         key={index}
                         style={{
                           padding: 0,
-                          paddingBottom: index === 6 ? 0 : 3,
+                          paddingBottom: index === 7 ? 0 : 3,
                         }}
                       >
                         <PaletteSelect
                           id="scenePalette"
-                          prefix={`${index + 1}: `}
+                          prefix={`${index + 1}${index === 7 ? " / UI" : ""}: `}
                           value={
                             (defaultBackgroundPaletteIds &&
                               defaultBackgroundPaletteIds[index]) ||
@@ -282,7 +283,9 @@ const SettingsPage: FC = () => {
                       >
                         <PaletteSelect
                           id="scenePalette"
-                          prefix={`${index + 1}: `}
+                          prefix={`${index + 1}${
+                            index === 7 ? ` / ${l10n("FIELD_EMOTE")}` : ""
+                          }: `}
                           value={
                             (defaultSpritePaletteIds &&
                               defaultSpritePaletteIds[index]) ||
@@ -295,26 +298,6 @@ const SettingsPage: FC = () => {
                       </FormField>
                     ))}
                   </div>
-                </SettingRowInput>
-              </SearchableSettingRow>
-
-              <SearchableSettingRow
-                searchTerm={searchTerm}
-                searchMatches={["Default UI Palette"]}
-              >
-                <SettingRowLabel>Default UI Palette</SettingRowLabel>
-                <SettingRowInput>
-                  <FormField
-                    style={{
-                      padding: 0,
-                    }}
-                  >
-                    <PaletteSelect
-                      id="scenePalette"
-                      value={defaultUIPaletteId || ""}
-                      onChange={onEditSetting("defaultUIPaletteId")}
-                    />
-                  </FormField>
                 </SettingRowInput>
               </SearchableSettingRow>
               {!searchTerm && (

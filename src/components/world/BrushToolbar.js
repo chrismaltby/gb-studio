@@ -39,7 +39,7 @@ import settingsActions from "../../store/features/settings/settingsActions";
 import navigationActions from "../../store/features/navigation/navigationActions";
 import entitiesActions from "../../store/features/entities/entitiesActions";
 
-const paletteIndexes = [0, 1, 2, 3, 4, 5, 6];
+const paletteIndexes = [0, 1, 2, 3, 4, 5, 6, 7];
 const validTools = [TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER];
 const tileTypes = [{
   key: "solid",
@@ -441,6 +441,7 @@ function mapStateToProps(state) {
     getPalette(4),
     getPalette(5),
     getPalette(6),
+    getPalette(7),
   ]);
   
   return {

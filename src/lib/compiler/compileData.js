@@ -218,6 +218,7 @@ const compile = async (
         variables: precompiled.variables,
         customEvents: projectData.customEvents,
         palettes: projectData.palettes,
+        settings: projectData.settings,
         variablesLookup,
         variableAliasLookup,
         eventPaletteIndexes: precompiled.eventPaletteIndexes,
@@ -961,7 +962,10 @@ export const precompilePalettes = async (
             sceneBackgroundPaletteIds[6],
             defaultBackgroundPaletteIds[6]
           ),
-          getPalette(defaultUIPaletteId),
+          getPalette(
+            sceneBackgroundPaletteIds[7],
+            defaultBackgroundPaletteIds[7]
+          ),
         ].map((p) => p.colors),
     };
 

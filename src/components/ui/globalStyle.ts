@@ -9,7 +9,14 @@ const GlobalStyle = createGlobalStyle`
     Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     font-size: 13px;
     user-select: none;
-    caret-color: ${props => props.theme.colors.highlight};
+    caret-color: ${(props) => props.theme.colors.highlight};
+  }
+
+  #MenuPortal {
+    z-index: 10000;
+    position: absolute;
+    top: 0;
+    bottom: 0;
   }
 
   * {
@@ -18,7 +25,7 @@ const GlobalStyle = createGlobalStyle`
 
   :focus {
     outline: none;
-    box-shadow: 0 0 0px 2px ${props => props.theme.colors.highlight};
+    box-shadow: 0 0 0px 2px ${(props) => props.theme.colors.highlight};
     z-index: 10000;
   }
 

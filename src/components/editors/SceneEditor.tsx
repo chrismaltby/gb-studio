@@ -534,7 +534,7 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
                     label={l10n("FIELD_SCENE_BACKGROUND_PALETTES")}
                   >
                     <PaletteButtons>
-                      {[0, 1, 2, 3, 4, 5, 6].map((index) => (
+                      {[0, 1, 2, 3, 4, 5, 6, 7].map((index) => (
                         <PaletteSelectButton
                           key={index}
                           name={`scenePalette${index}`}

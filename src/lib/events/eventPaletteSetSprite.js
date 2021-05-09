@@ -1,11 +1,11 @@
-const id = "EVENT_PALETTE_SET_BACKGROUND";
+const id = "EVENT_PALETTE_SET_SPRITE";
 
 const fields = [
   {
     key: "palette0",
     type: "palette",
     defaultValue: "keep",
-    paletteType: "background",
+    paletteType: "sprite",
     paletteIndex: 0,
     canKeep: true,
   },
@@ -13,7 +13,7 @@ const fields = [
     key: "palette1",
     type: "palette",
     defaultValue: "keep",
-    paletteType: "background",
+    paletteType: "sprite",
     paletteIndex: 1,
     canKeep: true,
   },
@@ -21,7 +21,7 @@ const fields = [
     key: "palette2",
     type: "palette",
     defaultValue: "keep",
-    paletteType: "background",
+    paletteType: "sprite",
     paletteIndex: 2,
     canKeep: true,
   },
@@ -29,7 +29,7 @@ const fields = [
     key: "palette3",
     type: "palette",
     defaultValue: "keep",
-    paletteType: "background",
+    paletteType: "sprite",
     paletteIndex: 3,
     canKeep: true,
   },
@@ -37,7 +37,7 @@ const fields = [
     key: "palette4",
     type: "palette",
     defaultValue: "keep",
-    paletteType: "background",
+    paletteType: "sprite",
     paletteIndex: 4,
     canKeep: true,
   },
@@ -45,7 +45,7 @@ const fields = [
     key: "palette5",
     type: "palette",
     defaultValue: "keep",
-    paletteType: "background",
+    paletteType: "sprite",
     paletteIndex: 5,
     canKeep: true,
   },
@@ -53,7 +53,7 @@ const fields = [
     key: "palette6",
     type: "palette",
     defaultValue: "keep",
-    paletteType: "background",
+    paletteType: "sprite",
     paletteIndex: 6,
     canKeep: true,
   },
@@ -61,15 +61,15 @@ const fields = [
     key: "palette7",
     type: "palette",
     defaultValue: "keep",
-    paletteType: "background",
+    paletteType: "sprite",
     paletteIndex: 7,
     canKeep: true,
   },
 ];
 
 const compile = (input, helpers) => {
-  const { paletteSetBackground } = helpers;
-  paletteSetBackground([
+  const { paletteSetSprite } = helpers;
+  paletteSetSprite([
     input.palette0,
     input.palette1,
     input.palette2,

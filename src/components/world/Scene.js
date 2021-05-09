@@ -441,6 +441,7 @@ function mapStateToProps(state, props) {
         getPalette(4),
         getPalette(5),
         getPalette(6),
+        getPalette(7),
       ])
     : dmgPalettes;
 

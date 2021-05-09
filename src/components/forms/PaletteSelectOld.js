@@ -24,7 +24,7 @@ class PaletteSelect extends Component {
   }
 
   renderDropdownIndicator = props => {
-    const { palettes, value, optionalDefaultPaletteId } = this.props;
+    const { palettes, value, optionalDefaultPaletteId, type } = this.props;
     const currentValue = value === "" ? optionalDefaultPaletteId : value;
     const current = currentValue === DMG_PALETTE.id
       ? DMG_PALETTE
@@ -35,7 +35,7 @@ class PaletteSelect extends Component {
     return (
       <components.DropdownIndicator {...props}>
         {current && value !== "keep" ? (
-          <PaletteBlock colors={current.colors} size={16} />
+          <PaletteBlock colors={current.colors} size={16} type={type} />
         ) : (
           <div style={{width: 16, height: 16}} />
         )}
@@ -44,7 +44,7 @@ class PaletteSelect extends Component {
   };
 
   renderOption = props => {
-    const { palettes, optionalDefaultPaletteId } = this.props;
+    const { palettes, optionalDefaultPaletteId, type } = this.props;
     const { value, label } = props;
     const currentValue = value === "" ? optionalDefaultPaletteId : value;
     const current = currentValue === DMG_PALETTE.id
@@ -57,7 +57,7 @@ class PaletteSelect extends Component {
         <div style={{ display: "flex" }}>
           <div style={{ flexGrow: 1 }}>{label}</div>
           {current && value !== "keep" ? (
-            <PaletteBlock colors={current.colors} size={16} />
+            <PaletteBlock colors={current.colors} size={16} type={type} />
           ) : (
             <div style={{width: 16, height: 16}} />
           )}
@@ -160,7 +160,8 @@ PaletteSelect.propTypes = {
   optionalLabel: PropTypes.string,
   canKeep: PropTypes.bool,
   keepLabel: PropTypes.string,
-  prefix: PropTypes.string
+  prefix: PropTypes.string,
+  type: PropTypes.string,
 };
 
 PaletteSelect.defaultProps = {
@@ -174,6 +175,7 @@ PaletteSelect.defaultProps = {
   canKeep: false,
   keepLabel: "Keep",
   prefix: "",
+  type: "tile",
 };
 
 function mapStateToProps(state) {

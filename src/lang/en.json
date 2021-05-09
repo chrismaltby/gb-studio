@@ -355,6 +355,7 @@
   "FIELD_PASTE_SPRITE_PALETTES": "Paste Sprite Palettes",
   "FIELD_INSTANT": "Instant",
   "FIELD_DISPLAY_BEHIND_BACKGROUND": "Display behind background layer",
+  "FIELD_EMOTE": "Emote",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -471,7 +472,7 @@
   "EVENT_ACTOR_SET_SPRITE": "Actor: Set Sprite Sheet",
   "EVENT_PLAYER_BOUNCE": "Actor: Player Bounce",
   "EVENT_WEAPON_ATTACK": "Item: Attack",
-  "EVENT_PALETTE_SET_BACKGROUND": "Palette: Set Background Palette",
+  "EVENT_PALETTE_SET_BACKGROUND": "Palette: Set Background Palettes",
   "EVENT_PALETTE_SET_UI": "Palette: Set UI Palette",
   "EVENT_ACTOR_STOP_UPDATE": "Actor: Stop \"On Update\" Script",
   "EVENT_ACTOR_SET_ANIMATE": "Actor: Set Animate While Stationary",
@@ -481,6 +482,8 @@
   "EVENT_ENGINE_FIELD_STORE": "Engine: Store Field In Variable",
   "EVENT_VARIABLE_MATH_EVALUATE": "Variable: Math Evaluate Expression",
   "EVENT_IF_EXPRESSION": "If Expression",
+  "EVENT_PALETTE_SET_SPRITE": "Palette: Set Sprite Palettes",
+  "EVENT_PALETTE_SET_EMOTE": "Palette: Set Emote Palette",
 
   "// 10": "Menu -----------------------------------------------------",
 

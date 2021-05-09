@@ -16,6 +16,10 @@ import {
 } from "../../store/features/entities/entitiesTypes";
 import { Dictionary } from "@reduxjs/toolkit";
 import { EngineFieldSchema } from "../../store/features/engine/engineState";
+import {
+  initialState as initialSettingsState,
+  SettingsState,
+} from "../../store/features/settings/settingsState";
 import { FunctionSymbol, OperatorSymbol } from "../rpn/types";
 import tokenize from "../rpn/tokenizer";
 import shuntingYard from "../rpn/shuntingYard";
@@ -71,6 +75,7 @@ interface ScriptBuilderOptions {
   characterEncoding: string;
   entity?: ScriptBuilderEntity;
   engineFields: Dictionary<EngineFieldSchema>;
+  settings: SettingsState;
   additionalScripts: {
     symbol: string;
     key: string;
@@ -152,6 +157,21 @@ type VariablesLookup = { [name: string]: Variable | undefined };
 
 const getActorIndex = (actorId: string, scene: ScriptBuilderScene) => {
   return (scene.actors || []).findIndex((a) => a.id === actorId) + 1;
+};
+
+const getPalette = (
+  palettes: Palette[],
+  id: string,
+  fallbackId: string
+): Palette => {
+  if (id === "dmg") {
+    return DMG_PALETTE as Palette;
+  }
+  return (
+    palettes.find((p) => p.id === id) ||
+    palettes.find((p) => p.id === fallbackId) ||
+    (DMG_PALETTE as Palette)
+  );
 };
 
 export const getVariableIndex = (variable: string, variables: string[]) => {
@@ -338,6 +358,7 @@ class ScriptBuilder {
       additionalScripts: options.additionalScripts || [],
       argLookup: options.argLookup || { actor: {}, variable: {} },
       compileEvents: options.compileEvents || ((_self, _e) => {}),
+      settings: options.settings || initialSettingsState,
     };
     this.dependencies = [];
     this.nextLabel = 1;
@@ -2949,18 +2970,18 @@ class ScriptBuilder {
   // Palettes
 
   paletteSetBackground = (paletteIds: string[]) => {
-    const { palettes } = this.options;
+    const { palettes, settings } = this.options;
+
     let mask = 0;
     const writePalettes: Palette[] = [];
     for (let i = 0; i < paletteIds.length; i++) {
       const paletteId = paletteIds[i];
+      const defaultPaletteId = settings.defaultBackgroundPaletteIds[i];
       if (paletteId === "keep") {
         continue;
       }
       mask += 1 << i;
-      writePalettes.push(
-        palettes.find((p) => p.id === paletteId) || (DMG_PALETTE as Palette)
-      );
+      writePalettes.push(getPalette(palettes, paletteId, defaultPaletteId));
     }
 
     if (mask === 0) {
@@ -2995,10 +3016,58 @@ class ScriptBuilder {
     }
   };
 
+  paletteSetSprite = (paletteIds: string[]) => {
+    const { palettes, settings } = this.options;
+
+    let mask = 0;
+    const writePalettes: Palette[] = [];
+    for (let i = 0; i < paletteIds.length; i++) {
+      const paletteId = paletteIds[i];
+      const defaultPaletteId = settings.defaultSpritePaletteIds[i];
+      if (paletteId === "keep") {
+        continue;
+      }
+      mask += 1 << i;
+      writePalettes.push(getPalette(palettes, paletteId, defaultPaletteId));
+    }
+
+    if (mask === 0) {
+      return;
+    }
+
+    this._paletteLoad(mask, ".PALETTE_SPRITE", true);
+
+    const parseR = (hex: string) =>
+      Math.floor(hexDec(hex.substring(0, 2)) * (32 / 256));
+    const parseG = (hex: string) =>
+      Math.floor(hexDec(hex.substring(2, 4)) * (32 / 256));
+    const parseB = (hex: string) =>
+      Math.max(1, Math.floor(hexDec(hex.substring(4, 6)) * (32 / 256)));
+
+    for (const palette of writePalettes) {
+      const colors = palette.colors;
+      this._paletteColor(
+        parseR(colors[0]),
+        parseG(colors[0]),
+        parseB(colors[0]),
+        parseR(colors[0]),
+        parseG(colors[0]),
+        parseB(colors[0]),
+        parseR(colors[1]),
+        parseG(colors[1]),
+        parseB(colors[1]),
+        parseR(colors[3]),
+        parseG(colors[3]),
+        parseB(colors[3])
+      );
+    }
+  };
+
   paletteSetUI = (paletteId: string) => {
-    const { palettes } = this.options;
-    const palette =
-      palettes.find((p) => p.id === paletteId) || (DMG_PALETTE as Palette);
+    const { palettes, settings } = this.options;
+    const defaultPaletteId = settings.defaultBackgroundPaletteIds[7];
+
+    const palette = getPalette(palettes, paletteId, defaultPaletteId);
 
     const UI_MASK = 128;
     this._paletteLoad(UI_MASK, ".PALETTE_BKG", true);
@@ -3022,6 +3091,40 @@ class ScriptBuilder {
       parseR(colors[2]),
       parseG(colors[2]),
       parseB(colors[2]),
+      parseR(colors[3]),
+      parseG(colors[3]),
+      parseB(colors[3])
+    );
+  };
+
+  paletteSetEmote = (paletteId: string) => {
+    const { palettes, settings } = this.options;
+    const defaultPaletteId = settings.defaultSpritePaletteIds[7];
+
+    const palette = getPalette(palettes, paletteId, defaultPaletteId);
+
+    const UI_MASK = 128;
+    this._paletteLoad(UI_MASK, ".PALETTE_SPRITE", true);
+
+    const parseR = (hex: string) =>
+      Math.floor(hexDec(hex.substring(0, 2)) * (32 / 256));
+    const parseG = (hex: string) =>
+      Math.floor(hexDec(hex.substring(2, 4)) * (32 / 256));
+    const parseB = (hex: string) =>
+      Math.max(1, Math.floor(hexDec(hex.substring(4, 6)) * (32 / 256)));
+
+    const colors = palette.colors;
+
+    this._paletteColor(
+      parseR(colors[0]),
+      parseG(colors[0]),
+      parseB(colors[0]),
+      parseR(colors[0]),
+      parseG(colors[0]),
+      parseB(colors[0]),
+      parseR(colors[1]),
+      parseG(colors[1]),
+      parseB(colors[1]),
       parseR(colors[3]),
       parseG(colors[3]),
       parseB(colors[3])

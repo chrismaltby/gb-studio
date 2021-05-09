@@ -91,7 +91,7 @@ class ScriptEventFormInput extends Component {
   }  
 
   render() {
-    const { type, id, value, defaultValue, args, field, entityId, allowRename, scope, defaultBackgroundPaletteIds, defaultUIPaletteId } = this.props;
+    const { type, id, value, defaultValue, args, field, entityId, allowRename, scope, defaultBackgroundPaletteIds, defaultSpritePaletteIds } = this.props;
 
     if (type === "textarea") {
       return (
@@ -206,8 +206,9 @@ class ScriptEventFormInput extends Component {
             optionalDefaultPaletteId={
               defaultBackgroundPaletteIds[field.paletteIndex] || ""
             }
-            canKeep
+            canKeep={field.canKeep}
             keepLabel={l10n("FIELD_DONT_MODIFY")}
+            type={field.paletteType}
           />
         );
       }
@@ -220,11 +221,27 @@ class ScriptEventFormInput extends Component {
             optional
             optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
             optionalDefaultPaletteId={
-              defaultUIPaletteId || ""
+              defaultBackgroundPaletteIds[7] || ""
             }
+            type="background"
           />
         );
-      }      
+      }   
+      if (field.paletteType === "emote") {
+        return (
+          <PaletteSelect
+            id={id}
+            value={value}
+            onChange={this.onChange}
+            optional
+            optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
+            optionalDefaultPaletteId={
+              defaultSpritePaletteIds[7] || ""
+            }
+            type="sprite"
+          />
+        );
+      }            
       return (
         <PaletteSelect
           id={id}
@@ -232,6 +249,12 @@ class ScriptEventFormInput extends Component {
           onChange={this.onChange}
           optional
           optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
+          optionalDefaultPaletteId={
+            defaultSpritePaletteIds[field.paletteIndex] || ""
+          }          
+          canKeep={field.canKeep}
+          keepLabel={l10n("FIELD_DONT_MODIFY")}
+          type={field.paletteType}
         />
       );
     }
@@ -401,6 +424,7 @@ ScriptEventFormInput.propTypes = {
   onChange: PropTypes.func.isRequired,
   scope: PropTypes.string.isRequired,
   defaultBackgroundPaletteIds: PropTypes.arrayOf(PropTypes.string).isRequired,
+  defaultSpritePaletteIds: PropTypes.arrayOf(PropTypes.string).isRequired,
   defaultUIPaletteId: PropTypes.string.isRequired
 };
 
@@ -421,10 +445,13 @@ function mapStateToProps(state) {
   const settings = state.project.present.settings;
   const defaultBackgroundPaletteIds =
     settings.defaultBackgroundPaletteIds || [];
+  const defaultSpritePaletteIds =
+    settings.defaultSpritePaletteIds || [];    
   const defaultUIPaletteId = settings.defaultUIPaletteId || "";
   return {
     scope,
     defaultBackgroundPaletteIds,
+    defaultSpritePaletteIds,
     defaultUIPaletteId
   };
 }

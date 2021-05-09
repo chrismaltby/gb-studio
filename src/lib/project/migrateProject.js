@@ -3,7 +3,7 @@ import { indexBy } from "../helpers/array";
 import { mapScenesEvents, mapEvents } from "../helpers/eventSystem";
 import generateRandomWalkScript from "../movement/generateRandomWalkScript";
 import generateRandomLookScript from "../movement/generateRandomLookScript";
-import { COLLISION_ALL } from "../../consts";
+import { COLLISION_ALL, DMG_PALETTE } from "../../consts";
 import { EVENT_END } from "../compiler/eventTypes";
 import uuid from "uuid";
 
@@ -1066,7 +1066,8 @@ const migrateFrom200r6To200r7Scenes = data => {
 };
 
 /*
- * Version 2.0.0 r7 moves default player sprite to be per scene type
+ * Version 2.0.0 r7 moves default player sprite to be per scene type.
+ * UI Palette merged into defaultBackgroundPaletteIds.
  */
 const migrateFrom200r6To200r7Settings = (data) => {
   return {
@@ -1081,6 +1082,26 @@ const migrateFrom200r6To200r7Settings = (data) => {
         POINTNCLICK: data.settings.playerSpriteSheetId,
         LOGO: data.settings.playerSpriteSheetId,
       },
+      defaultBackgroundPaletteIds: [
+        data.settings.defaultBackgroundPaletteIds[0] || DMG_PALETTE.id,
+        data.settings.defaultBackgroundPaletteIds[1] || DMG_PALETTE.id,
+        data.settings.defaultBackgroundPaletteIds[2] || DMG_PALETTE.id,
+        data.settings.defaultBackgroundPaletteIds[3] || DMG_PALETTE.id,
+        data.settings.defaultBackgroundPaletteIds[4] || DMG_PALETTE.id,
+        data.settings.defaultBackgroundPaletteIds[5] || DMG_PALETTE.id,
+        data.settings.defaultBackgroundPaletteIds[6] || DMG_PALETTE.id,
+        data.settings.defaultUIPaletteId || DMG_PALETTE.id
+      ],
+      defaultSpritePaletteIds: [
+        data.settings.defaultSpritePaletteId || DMG_PALETTE.id,
+        data.settings.defaultSpritePaletteId || DMG_PALETTE.id,
+        data.settings.defaultSpritePaletteId || DMG_PALETTE.id,
+        data.settings.defaultSpritePaletteId || DMG_PALETTE.id,
+        data.settings.defaultSpritePaletteId || DMG_PALETTE.id,
+        data.settings.defaultSpritePaletteId || DMG_PALETTE.id,
+        data.settings.defaultSpritePaletteId || DMG_PALETTE.id,
+        data.settings.defaultSpritePaletteId || DMG_PALETTE.id,
+      ]      
     },
   };
 };

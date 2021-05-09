@@ -26,6 +26,7 @@ export type SettingsState = {
     string,
     string,
     string,
+    string,
     string
   ];
   defaultSpritePaletteIds: [
@@ -70,6 +71,7 @@ export const initialState: SettingsState = {
     "default-bg-5",
     "default-bg-6",
     "default-bg-7",
+    "default-ui",
   ],
   defaultSpritePaletteIds: [
     "default-sprite-1",
