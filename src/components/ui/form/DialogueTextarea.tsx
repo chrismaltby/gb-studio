@@ -21,7 +21,7 @@ const speedRegex = /!(S[0-5]+)!/g;
 const speedCodes = [
   {
     id: "S0",
-    display: `${l10n("FIELD_SPEED")}\u00a00`,
+    display: `${l10n("FIELD_INSTANT")}`,
   },
   {
     id: "S1",

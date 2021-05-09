@@ -14,7 +14,7 @@ interface TextSpeedOption {
 }
 
 const options: TextSpeedOption[] = [
-  { value: 0, label: `${l10n("FIELD_SPEED")} 0` },
+  { value: 0, label: `${l10n("FIELD_INSTANT")}` },
   { value: 1, label: `${l10n("FIELD_SPEED")} 1` },
   { value: 2, label: `${l10n("FIELD_SPEED")} 2` },
   { value: 3, label: `${l10n("FIELD_SPEED")} 3` },

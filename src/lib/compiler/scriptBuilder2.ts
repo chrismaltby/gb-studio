@@ -1114,7 +1114,7 @@ class ScriptBuilder {
 
     // Replace speed codes
     text = text.replace(/!S([0-5])!/g, (_match, value: string) => {
-      return `\\02${value}`;
+      return `\\001\\${decOct(Number(value) + 2)}`;
     });
 
     inlineVariables.forEach((code) => {
