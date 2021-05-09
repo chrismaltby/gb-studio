@@ -356,6 +356,7 @@
   "FIELD_INSTANT": "Instant",
   "FIELD_DISPLAY_BEHIND_BACKGROUND": "Display behind background layer",
   "FIELD_EMOTE": "Emote",
+  "FIELD_SCROLL_SPEED": "Scroll Speed",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

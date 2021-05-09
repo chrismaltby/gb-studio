@@ -112,6 +112,16 @@
       "max": 24560
     },
     {
+      "key": "shooter_scroll_speed",
+      "label": "FIELD_SCROLL_SPEED",
+      "group": "GAMETYPE_SHMUP",
+      "type": "slider",
+      "cType": "UBYTE",
+      "defaultValue": 16,
+      "min": 0,
+      "max": 64
+    },    
+    {
       "key": "topdown_grid",
       "label": "FIELD_GRID_SIZE",
       "group": "GAMETYPE_TOP_DOWN",
