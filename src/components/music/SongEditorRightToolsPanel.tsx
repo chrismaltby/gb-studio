@@ -52,32 +52,40 @@ const SongEditorRightToolsPanel = () => {
     (state: RootState) => state.tracker.present.visibleChannels
   );
 
-  const setVisibleChannels = useCallback((channel: number) => () => {
-    const newVisibleChannels = [channel];
+  const toggleVisibleChannel = useCallback((channel: number) => () => {
+    const newVisibleChannels = [...visibleChannels];
+    const index = visibleChannels.indexOf(channel);
+    if (index > -1) {
+      newVisibleChannels.splice(index, 1);
+    } else {
+      newVisibleChannels.push(channel);
+    }
     dispatch(trackerActions.setVisibleChannels(newVisibleChannels));
-  }, [dispatch])
+  }, [dispatch, visibleChannels])
 
   return (
     <Wrapper>
       <FormField name="visibleChannels">
         <CheckboxField name="channelDuty1" 
           label="Duty 1" 
-          onChange={setVisibleChannels(0)} 
+          onChange={toggleVisibleChannel(0)} 
           checked={visibleChannels.indexOf(0) > -1}
         /> 
         <CheckboxField name="channelDuty2" 
-        label="Duty 2"
-        onChange={setVisibleChannels(1)} 
-        checked={visibleChannels.indexOf(1) > -1}
+          label="Duty 2"
+          onChange={toggleVisibleChannel(1)} 
+          checked={visibleChannels.indexOf(1) > -1}
       /> 
       </FormField>
       <FormField name="visibleChannels">
-        <CheckboxField name="channelWave" label="Wave"        
-        onChange={setVisibleChannels(2)} 
-        checked={visibleChannels.indexOf(2) > -1}
+        <CheckboxField name="channelWave" 
+          label="Wave"        
+          onChange={toggleVisibleChannel(2)} 
+          checked={visibleChannels.indexOf(2) > -1}
         /> 
-        <CheckboxField name="channelNoise" label="Noise"        
-          onChange={setVisibleChannels(3)} 
+        <CheckboxField name="channelNoise" 
+          label="Noise"        
+          onChange={toggleVisibleChannel(3)} 
           checked={visibleChannels.indexOf(3) > -1}
         /> 
       </FormField>

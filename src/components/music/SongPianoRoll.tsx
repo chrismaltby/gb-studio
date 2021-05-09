@@ -10,6 +10,7 @@ import scrollIntoView from 'scroll-into-view-if-needed';
 import { SplitPaneHeader } from "../ui/splitpane/SplitPaneHeader";
 import l10n from "../../lib/helpers/l10n";
 import { RollChannel } from "./RollChannel";
+import { RollChannelGrid } from "./RollChannelGrid";
 
 const CELL_SIZE = 14;
 
@@ -115,6 +116,8 @@ export const SongPianoRoll = ({
     (state: RootState) => state.tracker.present.visibleChannels
   );
 
+  const v = [...visibleChannels].reverse();
+  
   return (
     <div
       style={{
@@ -164,9 +167,11 @@ export const SongPianoRoll = ({
                 transform: `translateX(${20 + playbackState[1] * CELL_SIZE}px)`,
               }}
             />
-            {visibleChannels.map((i) => 
+            <RollChannelGrid cellSize={CELL_SIZE} />
+            {v.map((i) => 
               <RollChannel 
                 channelId={i}
+                active={visibleChannels[0] === i}
                 patternId={patternId}
                 patterns={song?.patterns[patternId]}
                 cellSize={CELL_SIZE}

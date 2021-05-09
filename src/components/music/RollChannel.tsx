@@ -8,6 +8,7 @@ import { instrumentColors } from "./InstrumentSelect";
 
 interface RollChannelProps {
   channelId: number,
+  active?: boolean,
   patternId: number,
   patterns?: PatternCell[][],
   cellSize: number
@@ -17,27 +18,18 @@ interface WrapperProps {
   rows: number,
   cols: number,
   size: number,
+  active?: boolean,
 }
 
 const Wrapper = styled.div<WrapperProps>`
-  position: relative;
+  position: absolute;
+  top: 0;
   margin: 0 20px;
   ${(props) => css`
     width: ${props.cols * props.size}px;
     height: ${props.rows * props.size}px;
-    background-image: 
-      linear-gradient(90deg, ${props.theme.colors.tracker.rollCell.border} 1px, transparent 1px),
-      linear-gradient(${props.theme.colors.tracker.rollCell.border} 1px, transparent 1px), 
-      linear-gradient(90deg, ${props.theme.colors.tracker.rollCell.border} 2px, transparent 1px),   
-      linear-gradient(${props.theme.colors.tracker.rollCell.border} 2px, transparent 1px);    
-    border-bottom: 1px solid ${props.theme.colors.tracker.rollCell.border};
-    border-right: 2px solid ${props.theme.colors.tracker.rollCell.border};
-    background-size: 
-      ${props.size}px ${props.size}px,
-      ${props.size}px ${props.size}px,
-      ${props.size * 8}px ${props.size * 12}px,
-      ${props.size * 8}px ${props.size * 12}px;
-    `}
+    opacity: ${props.active ? 1 : 0.3};
+  `}
 `;
 
 interface NoteProps {
@@ -54,6 +46,7 @@ const Note = styled.div<NoteProps>`
 
 export const RollChannelFwd = ({
   channelId,
+  active,
   patternId,
   patterns,
   cellSize
@@ -112,6 +105,7 @@ export const RollChannelFwd = ({
   return (
     <Wrapper
       data-channel={channelId}
+      active={active}
       rows={12 * 6}
       cols={64}
       size={cellSize}
@@ -140,7 +134,7 @@ export const RollChannelFwd = ({
                 <>
                   <Note
                     data-param={((cell.effectparam||0) >> 4)}
-                    key={`note_arpeggio_${columnIdx}_${channelId}`}
+                    key={`note_arpeggio_${columnIdx}_${channelId}_1`}
                     size={cellSize}
                     className={cell.instrument !== null ? `label--${instrumentColors[cell.instrument]}` : ""}
                     style={{
@@ -152,7 +146,7 @@ export const RollChannelFwd = ({
                   ></Note>
                   <Note 
                     data-param={((cell.effectparam||0) & 0xF)}
-                    key={`note_arpeggio_${columnIdx}_${channelId}`}
+                    key={`note_arpeggio_${columnIdx}_${channelId}_2`}
                     size={cellSize}
                     className={cell.instrument !== null ? `label--${instrumentColors[cell.instrument]}` : ""}
                     style={{
