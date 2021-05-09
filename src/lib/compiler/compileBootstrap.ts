@@ -80,7 +80,10 @@ _script_engine_init::
 ${engineFields
   .map((engineField) => {
     const engineValue = engineFieldValues.find((v) => v.id === engineField.key);
-    const value = engineValue ? engineValue.value : engineField.defaultValue;
+    const value =
+      engineValue && engineValue.value !== undefined
+        ? engineValue.value
+        : engineField.defaultValue;
     return `        VM_SET_CONST_INT16      _${engineField.key}, ${value}`;
   })
   .join("\n")}
