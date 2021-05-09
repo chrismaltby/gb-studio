@@ -160,16 +160,16 @@ class SceneCursor extends Component {
       }
 
       if(selectedBrush === BRUSH_FILL) {
-        paintColor({ brush: selectedBrush, backgroundId, x, y, paletteIndex: selectedPalette });
+        paintColor({ brush: selectedBrush, sceneId, backgroundId, x, y, paletteIndex: selectedPalette });
       } else {
         if(this.drawLine && this.startX !== undefined && this.startY !== undefined) {
-          paintColor({ brush: selectedBrush, backgroundId, x: this.startX, y: this.startY, endX: x, endY: y, paletteIndex: selectedPalette, drawLine: true });
+          paintColor({ brush: selectedBrush, sceneId, backgroundId, x: this.startX, y: this.startY, endX: x, endY: y, paletteIndex: selectedPalette, drawLine: true });
           this.startX = x;
           this.startY = y;
         } else {
           this.startX = x;
           this.startY = y;          
-          paintColor({ brush: selectedBrush, backgroundId, x, y, paletteIndex: selectedPalette });
+          paintColor({ brush: selectedBrush, sceneId, backgroundId, x, y, paletteIndex: selectedPalette });
         }
         window.addEventListener("mousemove", this.onColorsMove);
         window.addEventListener("mouseup", this.onColorsStop);
@@ -285,6 +285,7 @@ class SceneCursor extends Component {
       x,
       y,
       enabled,
+      sceneId,
       backgroundId,
       selectedPalette,
       selectedBrush,
@@ -309,7 +310,7 @@ class SceneCursor extends Component {
           this.lockX = true;
           x1 = this.startX;
         }
-        paintColor({ brush: selectedBrush, backgroundId, x: this.startX, y: this.startY, endX: x1, endY: y1, paletteIndex: selectedPalette, drawLine: true });          
+        paintColor({ brush: selectedBrush, sceneId, backgroundId, x: this.startX, y: this.startY, endX: x1, endY: y1, paletteIndex: selectedPalette, drawLine: true });          
         this.startX = x1;
         this.startY = y1;
       } else {
@@ -319,7 +320,7 @@ class SceneCursor extends Component {
         }
         const x1 = x;
         const y1 = y;
-        paintColor({ brush: selectedBrush, backgroundId, x: this.startX, y: this.startY, endX: x1, endY: y1, paletteIndex: selectedPalette, drawLine: true });
+        paintColor({ brush: selectedBrush, sceneId, backgroundId, x: this.startX, y: this.startY, endX: x1, endY: y1, paletteIndex: selectedPalette, drawLine: true });
         this.startX = x1;
         this.startY = y1;
       }

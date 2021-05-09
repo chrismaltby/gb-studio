@@ -2152,6 +2152,7 @@ const paintColor: CaseReducer<
   PayloadAction<
     {
       backgroundId: string;
+      sceneId: string;
       x: number;
       y: number;
       paletteIndex: number;
