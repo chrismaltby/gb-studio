@@ -1423,6 +1423,7 @@ class ScriptBuilder {
   // Actors
 
   actorSetById = (id: string) => {
+    this.includeActor = true;
     const newIndex = this.getActorIndex(id);
     if (typeof newIndex === "number") {
       this.actorIndex = newIndex;
@@ -1447,7 +1448,6 @@ class ScriptBuilder {
   actorSetActive = (id: string) => {
     this._addComment("Actor Set Active");
     this.actorSetById(id);
-    this._actorActivate("ACTOR");
     this._addNL();
   };
 
