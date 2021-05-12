@@ -124,6 +124,7 @@ const compile = async (
   } = {}
 ) => {
   const output = {};
+  const symbols = {};
 
   if (projectData.scenes.length === 0) {
     throw new Error(
@@ -161,7 +162,7 @@ const compile = async (
   const variableAliasLookup = {};
 
   // Add event data
-  const additionalScripts = [];
+  const additionalScripts = {};
   const eventPtrs = precompiled.sceneData.map((scene, sceneIndex) => {
     const compileScript = (
       script,
@@ -234,6 +235,7 @@ const compile = async (
         engineFields: precompiledEngineFields,
         output: [],
         additionalScripts,
+        symbols,
       });
 
       output[`${scriptName}.s`] = compiledScript;
@@ -324,25 +326,10 @@ const compile = async (
     };
   });
 
-  while (additionalScripts) {
-    const additional = additionalScripts.pop();
-    if (!additional) {
-      break;
-    }
-    const compiledSubScript = compileEntityEvents(
-      additional.symbol,
-      additional.script,
-      {
-        ...additional.options,
-        output: [],
-        loop: false,
-        lock: false,
-        init: false,
-      }
-    );
-    output[`${additional.symbol}.s`] = compiledSubScript;
+  Object.values(additionalScripts).forEach((additional) => {
+    output[`${additional.symbol}.s`] = additional.compiledScript;
     output[`${additional.symbol}.h`] = compileScriptHeader(additional.symbol);
-  }
+  });
 
   precompiled.usedTilesets.forEach((tileset, tilesetIndex) => {
     output[`tileset_${tilesetIndex}.c`] = compileTileset(tileset, tilesetIndex);

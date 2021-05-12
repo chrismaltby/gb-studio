@@ -18,6 +18,7 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
     loop,
     lock,
     init,
+    isFunction,
   } = options;
 
   const location = {
@@ -36,8 +37,6 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
   };
 
   let globalHasInit = false;
-
-  const isCustomScript = scriptName.indexOf("custom") > -1;
 
   const compileEventsWithScriptBuilder = (
     scriptBuilder,
@@ -145,7 +144,7 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
         globalHasInit = true;
       }
 
-      if (isCustomScript) {
+      if (isFunction) {
         if (scriptBuilder.includeActor) {
           scriptBuilder.stackPtr += 4;
           scriptBuilder._stackPop(4);

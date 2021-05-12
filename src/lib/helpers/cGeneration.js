@@ -45,3 +45,14 @@ export const objectIntArray = (data) => {
   }
   return output;
 };
+
+export const toCSymbol = (value) => {
+  let output = value
+    .replace(/ /g, "_")
+    .replace(/[^a-zA-Z0-9_]/g, "")
+    .toLowerCase();
+  if (!value[0].match(/[a-zA-Z_]/)) {
+    output = "v" + output;
+  }
+  return output;
+};

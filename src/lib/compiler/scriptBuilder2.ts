@@ -34,6 +34,8 @@ import {
   isActorField,
   mapEvents,
 } from "../helpers/eventSystem";
+import compileEntityEvents from "./compileEntityEvents";
+import { toCSymbol } from "../helpers/cGeneration";
 
 type ScriptOutput = string[];
 
@@ -76,12 +78,11 @@ interface ScriptBuilderOptions {
   entity?: ScriptBuilderEntity;
   engineFields: Dictionary<EngineFieldSchema>;
   settings: SettingsState;
-  additionalScripts: {
+  additionalScripts: Dictionary<{
     symbol: string;
-    key: string;
-    script: ScriptEvent[] | ScriptBuilderPathFunction;
-    options: Partial<ScriptBuilderOptions>;
-  }[];
+    compiledScript: string;
+  }>;
+  symbols: Dictionary<string>;
   argLookup: ScriptBuilderFunctionArgLookup;
   compileEvents: (self: ScriptBuilder, events: ScriptEvent[]) => void;
 }
@@ -355,7 +356,8 @@ class ScriptBuilder {
       palettes: options.palettes || [],
       customEvents: options.customEvents || [],
       characterEncoding: options.characterEncoding || "",
-      additionalScripts: options.additionalScripts || [],
+      additionalScripts: options.additionalScripts || {},
+      symbols: options.symbols || {},
       argLookup: options.argLookup || { actor: {}, variable: {} },
       compileEvents: options.compileEvents || ((_self, _e) => {}),
       settings: options.settings || initialSettingsState,
@@ -2200,11 +2202,7 @@ class ScriptBuilder {
     this._addNL();
   };
 
-  inputScriptSet = (
-    input: string,
-    persist: boolean,
-    script: ScriptEvent[] | ScriptBuilderPathFunction = []
-  ) => {
+  inputScriptSet = (input: string, persist: boolean, script: ScriptEvent[]) => {
     this._addComment(`Input Script Attach`);
     const scriptRef = this._compileSubScript("input", script);
     const inputValue = inputDec(input);
@@ -2226,10 +2224,7 @@ class ScriptBuilder {
   // --------------------------------------------------------------------------
   // Timer
 
-  timerScriptSet = (
-    duration = 10.0,
-    script: ScriptEvent[] | ScriptBuilderPathFunction = []
-  ) => {
+  timerScriptSet = (duration = 10.0, script: ScriptEvent[]) => {
     this._addComment(`Timer Start`);
     const scriptRef = this._compileSubScript("timer", script);
     const ctx = 1;
@@ -2270,10 +2265,6 @@ class ScriptBuilder {
       return;
     }
 
-    console.log({
-      customEvent,
-    });
-
     this._addComment(`Call Script: ${customEvent.name}`);
 
     const argLookup: {
@@ -2304,12 +2295,6 @@ class ScriptBuilder {
         return value;
       }
       if (!argLookup[type][value]) {
-        console.log({
-          customEvent,
-          type,
-          value,
-          argLookup,
-        });
         throw new Error("Unknown arg " + type + " " + value);
       }
       return argLookup[type][value];
@@ -2389,7 +2374,12 @@ class ScriptBuilder {
       }
     );
 
-    const scriptRef = this._compileSubScript("custom", script, { argLookup });
+    const scriptRef = this._compileSubScript(
+      "custom",
+      script,
+      customEvent.name,
+      { argLookup }
+    );
 
     this._callFar(scriptRef);
     if (argsLen > 0) {
@@ -3491,28 +3481,56 @@ class ScriptBuilder {
     }
   };
 
+  _getAvailableSymbol = (name: string) => {
+    const { symbols } = this.options;
+    if (!symbols[name]) {
+      symbols[name] = name;
+      return name;
+    }
+    let counter = 0;
+    while (true) {
+      const newName = `${name.replace(/_[0-9]+$/, "")}_${counter}`;
+      if (!symbols[newName]) {
+        symbols[newName] = newName;
+        return newName;
+      }
+      counter++;
+    }
+  };
+
+  _deregisterSymbol = (symbol: string) => {
+    const { symbols } = this.options;
+    delete symbols[symbol];
+  };
+
   _compileSubScript = (
     type: "input" | "timer" | "custom",
-    script: ScriptEvent[] | ScriptBuilderPathFunction = [],
+    script: ScriptEvent[],
+    name?: string,
     options?: Partial<ScriptBuilderOptions>
   ) => {
-    const key = `${type}__${JSON.stringify(script)}__${JSON.stringify(
-      options
-    )}`;
-    const symbol = `script_${type}_${this.options.additionalScripts.length}`;
-    const existing = this.options.additionalScripts.find((s) => s.key === key);
+    const symbol = this._getAvailableSymbol(
+      name ? `script_${toCSymbol(name)}` : `script_${type}_0`
+    );
+    const compiledSubScript = compileEntityEvents(symbol, script, {
+      ...this.options,
+      ...options,
+      output: [],
+      loop: false,
+      lock: false,
+      init: false,
+      isFunction: type === "custom",
+    });
+    const key = compiledSubScript.replace(new RegExp(symbol, "g"), type);
+    const existing = this.options.additionalScripts[key];
     if (existing) {
+      this._deregisterSymbol(symbol);
       return existing.symbol;
     }
-    this.options.additionalScripts.push({
+    this.options.additionalScripts[key] = {
       symbol,
-      script,
-      key,
-      options: {
-        ...this.options,
-        ...options,
-      },
-    });
+      compiledScript: compiledSubScript,
+    };
     return symbol;
   };
 
