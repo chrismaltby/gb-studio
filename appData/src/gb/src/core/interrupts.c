@@ -48,4 +48,5 @@ void VBL_isr() __nonbanked {
     } else {
         HIDE_WIN;
     }
+    scroll_shadow_update();
 }

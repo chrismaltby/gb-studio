@@ -103,7 +103,7 @@ UBYTE scroll_viewport(parallax_row_t * port) {
             shift_scroll_x = draw_scroll_x >> port->shift;
         }
 
-        port->scx = shift_scroll_x;
+        port->shadow_scx = shift_scroll_x;
         UBYTE shift_col = shift_scroll_x >> 3;
 
         // If column is +/- 1 just render next column
@@ -121,7 +121,7 @@ UBYTE scroll_viewport(parallax_row_t * port) {
         }     
     } else {
         // No Parallax
-        port->scx = draw_scroll_x;
+        port->shadow_scx = draw_scroll_x;
 
         // If column is +/- 1 just render next column
         if (current_col == new_col - 1) {

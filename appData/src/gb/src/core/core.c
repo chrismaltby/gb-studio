@@ -84,12 +84,13 @@ void process_VM() {
                 actors_update();
                 projectiles_update();                                   // update and render projectiles
 
-                activate_shadow_OAM();
-
                 ui_update();
                 actors_handle_player_collision();
 
                 game_time++;
+
+                activate_shadow_OAM();
+
                 wait_vbl_done();
                 break;
             }

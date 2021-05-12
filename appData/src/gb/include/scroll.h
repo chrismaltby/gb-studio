@@ -3,6 +3,8 @@
 
 #include <gb/gb.h>
 
+#include "parallax.h"
+
 #define SCROLL_BANK 1
 #define SCREEN_TILES_W 20  // 160 >> 3 = 20
 #define SCREEN_TILES_H 18  // 144 >> 3 = 18
@@ -82,5 +84,15 @@ UBYTE * set_bkg_tile_xy(UBYTE x, UBYTE y, UBYTE t) __preserves_regs(b, c);
  * @param fill tile id to fill the bottom row 
  */
 void scroll_rect(UBYTE * base_addr, UBYTE w, UBYTE h, UBYTE fill) __banked __preserves_regs(b, c);
+
+/**
+ * copies scroll position variables into double buffered copies
+ * which are used for actual scrolling next frame
+ */
+inline void scroll_shadow_update() {
+    parallax_rows[0].scx = parallax_rows[0].shadow_scx;
+    parallax_rows[1].scx = parallax_rows[1].shadow_scx;
+    parallax_rows[2].scx = parallax_rows[2].shadow_scx;
+}
 
 #endif

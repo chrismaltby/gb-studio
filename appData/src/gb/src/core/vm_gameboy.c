@@ -164,15 +164,21 @@ void vm_replace_tile_xy(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE tileset_bank,
     UWORD ofs = (image_tile_width * y) + x;
     UBYTE target_tile = ReadBankedUBYTE(image_ptr + ofs, image_bank);
 
-    if ((scene_type == SCENE_TYPE_LOGO) && (y > 9u)) {
-        SetBankedSpriteData(target_tile, 1, tileset->tiles + (start_tile << 4), tileset_bank);
+    if (scene_type == SCENE_TYPE_LOGO) {
+        if (target_tile < 128) {
+            ofs = ((y > 9) ? 0x8000 : 0x9000) + (target_tile << 4);
+        } else {
+            ofs = 0x8800 + ((target_tile - 128) << 4);
+        }
+        MemcpyVRAMBanked((void *)ofs, tileset->tiles + (start_tile << 4), 16, tileset_bank);   
         return;
-    }  
+    } 
 
 #ifdef CGB
+    UBYTE target_attr;
     if (_is_CGB) {
-        UBYTE tartet_attr = ReadBankedUBYTE(image_attr_ptr + ofs, image_attr_bank);
-        if (tartet_attr & 0x08) VBK_REG = 1;
+        UBYTE target_attr = ReadBankedUBYTE(image_attr_ptr + ofs, image_attr_bank);
+        if (target_attr & 0x08) VBK_REG = 1;
     }
 #endif
     SetBankedBkgData(target_tile, 1, tileset->tiles + (start_tile << 4), tileset_bank);

@@ -43,9 +43,9 @@ __asm
         ldh a, (#_LYC_REG)
         or a
         jr z, 3$
-        inc hl                  ; skip shift
-        inc hl                  ; skip tile_start
-        inc hl                  ; skip tile_height
+
+        ld  de, #4
+        add  hl, de             ; skip shift, tile_start, tile_height, shadow_scx 
 
         ld d, h
         ld a, l   

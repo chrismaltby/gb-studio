@@ -12,6 +12,7 @@ typedef struct parallax_row_t {
     INT8  shift;    // shift of scroll position within the world
     UBYTE start_tile;
     UBYTE tile_height;
+    UBYTE shadow_scx;
 } parallax_row_t;
 
 extern parallax_row_t parallax_rows[3];
