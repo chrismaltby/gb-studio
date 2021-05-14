@@ -91,7 +91,12 @@ class Scene extends Component {
   };
 
   onStartDrag = (e) => {
-    const { id, selectScene } = this.props;
+    const { id, selectScene, editable } = this.props;
+
+    if (!editable) {
+      return;
+    }
+
     this.lastPageX = e.pageX;
     this.lastPageY = e.pageY;
 
