@@ -346,7 +346,7 @@ export const compileParallax = (
       return str;
     });
   }
-  return undefined;
+  return [`PARALLAX_STEP(0,0,0)`];
 };
 
 export const compileScene = (
@@ -373,10 +373,9 @@ export const compileScene = (
       type: `SCENE_TYPE_${scene.type}`,
       background: toFarPtr(backgroundSymbol(scene.backgroundIndex)),
       collisions: toFarPtr(sceneCollisionsSymbol(sceneIndex)),
-      parallax_rows:
-        scene.width > SCREEN_WIDTH
-          ? compileParallax(scene.parallax)
-          : undefined,
+      parallax_rows: compileParallax(
+        scene.width > SCREEN_WIDTH ? scene.parallax : undefined
+      ),
       palette: toFarPtr(paletteSymbol(bgPalette)),
       sprite_palette: toFarPtr(paletteSymbol(actorsPalette)),
       player_sprite: toFarPtr(spriteSheetSymbol(scene.playerSpriteIndex)),
