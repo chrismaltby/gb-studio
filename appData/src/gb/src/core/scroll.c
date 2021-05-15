@@ -56,6 +56,8 @@ void scroll_reset() __banked {
     pending_h_i     = 0;
     scroll_x        = 0x7FFF;
     scroll_y        = 0x7FFF;
+
+    game_time       = 0; // was in scroll_render_rows() - that is insane, here is not the best place either 
 }
 
 void scroll_update() __banked {
@@ -92,8 +94,8 @@ void scroll_update() __banked {
 }
 
 UBYTE scroll_viewport(parallax_row_t * port) {
-    if (port->shift) {
-        // Parallax
+    if (port->next_y) {
+        // one of upper parallax slices
         UINT16 shift_scroll_x;
         if (port->shift == 127) {
             shift_scroll_x = 0;
@@ -103,7 +105,7 @@ UBYTE scroll_viewport(parallax_row_t * port) {
             shift_scroll_x = draw_scroll_x >> port->shift;
         }
 
-        port->shadow_scx = shift_scroll_x;
+        port->shadow_scx = shift_scroll_x;        
         UBYTE shift_col = shift_scroll_x >> 3;
 
         // If column is +/- 1 just render next column
@@ -118,9 +120,10 @@ UBYTE scroll_viewport(parallax_row_t * port) {
         } else if (current_col != new_col) {
             // If column differs by more than 1 render entire viewport
             scroll_render_rows(shift_scroll_x, 0, port->start_tile, port->tile_height);
-        }     
+        }  
+        return FALSE;   
     } else {
-        // No Parallax
+        // last parallax slice OR no parallax
         port->shadow_scx = draw_scroll_x;
 
         // If column is +/- 1 just render next column
@@ -140,8 +143,8 @@ UBYTE scroll_viewport(parallax_row_t * port) {
             activate_actors_in_col(x, full_y);
         } else if (current_col != new_col) {
             // If column differs by more than 1 render entire screen
-            scroll_render_rows(draw_scroll_x, draw_scroll_y, -SCREEN_PAD_TOP, SCREEN_TILE_REFRES_H);
-            return !(port->next_y);
+            scroll_render_rows(draw_scroll_x, draw_scroll_y, ((scene_LCD_type == LCD_parallax) ? port->start_tile : -SCREEN_PAD_TOP), SCREEN_TILE_REFRES_H);
+            return TRUE;
         }
 
         // If row is +/- 1 just render next row
@@ -159,20 +162,21 @@ UBYTE scroll_viewport(parallax_row_t * port) {
             activate_actors_in_row(x, y);
         } else if (current_row != new_row) {
             // If row differs by more than 1 render entire screen
-            scroll_render_rows(draw_scroll_x, draw_scroll_y, -SCREEN_PAD_TOP, SCREEN_TILE_REFRES_H);
-            return !(port->next_y);
+            scroll_render_rows(draw_scroll_x, draw_scroll_y, ((scene_LCD_type == LCD_parallax) ? port->start_tile : -SCREEN_PAD_TOP), SCREEN_TILE_REFRES_H);
+            return TRUE;
         }
 
         if (IS_FRAME_2) {
             if (pending_h_i) scroll_load_pending_col();
             if (pending_w_i) scroll_load_pending_row();
         }
-    }
 
-    return !(port->next_y);
+        return TRUE;
+    }
 }
 
-void scroll_render_rows(INT16 scroll_x, INT16 scroll_y, BYTE row_offset, BYTE n_rows) {
+void scroll_repaint() __banked {
+    // this looks overcomplicated, what's this for?!
     if (!fade_style) {
         DISPLAY_OFF;
     } else if (!fade_timer == 0) {
@@ -186,6 +190,18 @@ void scroll_render_rows(INT16 scroll_x, INT16 scroll_y, BYTE row_offset, BYTE n_
         OBP0_REG = 0xFF, BGP_REG = 0xFF;
     }
 
+    scroll_reset();
+    scroll_update();
+
+    DISPLAY_ON;
+
+    if (!fade_timer == 0) {
+        // Screen palate to nornmal if not fading
+        fade_applypalettechange();
+    }
+}
+
+void scroll_render_rows(INT16 scroll_x, INT16 scroll_y, BYTE row_offset, BYTE n_rows) {
     // Clear pending rows/ columns
     pending_w_i = 0;
     pending_h_i = 0;
@@ -196,15 +212,6 @@ void scroll_render_rows(INT16 scroll_x, INT16 scroll_y, BYTE row_offset, BYTE n_
     for (BYTE i = 0; i != n_rows && y != image_tile_height; ++i, y++) {
         scroll_load_row(x, y);
         activate_actors_in_row(x, y);
-    }
-
-    game_time = 0;
-
-    DISPLAY_ON;
-
-    if (!fade_timer == 0) {
-        // Screen palate to nornmal if not fading
-        fade_applypalettechange();
     }
 }
 
@@ -274,7 +281,7 @@ void scroll_load_row(UBYTE x, UBYTE y) __nonbanked {
 #endif
     // DMG Row Load
     SWITCH_ROM_MBC1(image_bank);
-    set_bkg_submap(x, y, SCREEN_TILE_REFRES_W, 1, image_ptr, image_tile_width);
+    set_bkg_submap(x, y, MIN(SCREEN_TILE_REFRES_W, image_tile_width), 1, image_ptr, image_tile_width);
 
     SWITCH_ROM_MBC1(_save);
 }

@@ -43,6 +43,11 @@ void scroll_init() __banked;
 void scroll_update() __banked;
 
 /**
+ * Resets scroll and update the whole screen 
+ */
+void scroll_repaint() __banked;
+
+/**
  * Set vram tile at memory location to a value
  * 
  * @param r address of tile to write to

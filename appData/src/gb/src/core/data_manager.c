@@ -195,8 +195,7 @@ UBYTE load_scene(const scene_t * scene, UBYTE bank, UBYTE init_data) __banked {
 
     // Copy parallax settings
     memcpy(&parallax_rows, &scn.parallax_rows, sizeof(parallax_rows));
-    if (scn.parallax_rows[0].tile_height == 0) {
-        scn.parallax_rows[0].tile_height = PARALLAX_MAX_HEIGHT;
+    if (scn.parallax_rows[0].next_y == 0) {
         scene_LCD_type = (scene_type == SCENE_TYPE_LOGO) ? LCD_fullscreen : LCD_simple;
     } else {
         scene_LCD_type = LCD_parallax;

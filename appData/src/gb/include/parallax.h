@@ -4,7 +4,7 @@
 #include <gb/gb.h>
 
 #define PARALLAX_MAX_HEIGHT 20
-#define PARALLAX_STEP(start, end, shift)  {0, (end)?(((end) << 3) - 1):0, (shift), (start), (end)?((end)-(start)):(PARALLAX_MAX_HEIGHT-(start))}
+#define PARALLAX_STEP(start, end, shift)  {0, (end)?(((end) << 3) - 1):0, (shift), (start), (end)?((end)-(start)):(PARALLAX_MAX_HEIGHT-(start)), 0}
 
 typedef struct parallax_row_t {
     UBYTE scx;      // x scroll position for current slice

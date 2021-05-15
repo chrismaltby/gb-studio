@@ -21,6 +21,18 @@ EXCEPTION_LOAD          = 4
 .ARG8 = -9
 .ARG9 = -10
 
+.PARAM0 = .ARG2
+.PARAM1 = .ARG3
+.PARAM2 = .ARG4
+.PARAM3 = .ARG5
+.PARAM4 = .ARG6
+.PARAM5 = .ARG7
+.PARAM6 = .ARG8
+.PARAM7 = .ARG9
+.PARAM8 = -11
+.PARAM9 = -12
+
+
 ; stops execution of context
 OP_VM_STOP         = 0x00
 .macro VM_STOP

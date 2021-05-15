@@ -224,6 +224,7 @@ UBYTE ui_print_render(const unsigned char ch) {
         } 
         return FALSE;
     } else {
+        if (vwf_current_offset) ui_next_tile();
         ui_load_tile(bitmap, vwf_current_font_bank);
         ui_next_tile();
         vwf_current_offset = 0u;
@@ -294,7 +295,11 @@ void ui_draw_text_buffer_char() __banked {
             // set current font
             current_font_idx = *(++ui_text_ptr) - 1u;
             const far_ptr_t * font = ui_fonts + current_font_idx;
+            UBYTE old_flags = vwf_current_font_desc.attr;
             MemcpyBanked(&vwf_current_font_desc, font->ptr, sizeof(font_desc_t), vwf_current_font_bank = font->bank);
+            if ((vwf_current_offset) && ((old_flags & FONT_VWF) != 0) && ((vwf_current_font_desc.attr & FONT_VWF) == 0)) {
+                ui_dest_ptr++;
+            }
             break;
         }
         case 0x03:

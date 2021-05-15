@@ -175,10 +175,8 @@ void vm_replace_tile_xy(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE tileset_bank,
     } 
 
 #ifdef CGB
-    UBYTE target_attr;
     if (_is_CGB) {
-        UBYTE target_attr = ReadBankedUBYTE(image_attr_ptr + ofs, image_attr_bank);
-        if (target_attr & 0x08) VBK_REG = 1;
+        if (ReadBankedUBYTE(image_attr_ptr + ofs, image_attr_bank) & 0x08) VBK_REG = 1;
     }
 #endif
     SetBankedBkgData(target_tile, 1, tileset->tiles + (start_tile << 4), tileset_bank);

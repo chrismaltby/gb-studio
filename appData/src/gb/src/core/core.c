@@ -165,7 +165,7 @@ void process_VM() {
                 state_init();
                 toggle_shadow_OAM();
                 camera_update();
-                scroll_update();
+                scroll_repaint();
                 actors_update();
 
                 activate_shadow_OAM();
