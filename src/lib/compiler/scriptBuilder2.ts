@@ -318,6 +318,8 @@ const assertUnreachable = (x: never): never => {
   throw new Error("Didn't expect to get here");
 };
 
+const MAX_DIALOGUE_LINES = 5;
+
 // ------------------------
 
 class ScriptBuilder {
@@ -1110,7 +1112,11 @@ class ScriptBuilder {
     this._addCmd("VM_LOAD_TEXT", `${numInputs}`);
   };
 
-  _loadStructuredText = (inputText: string, avatarIndex?: number) => {
+  _loadStructuredText = (
+    inputText: string,
+    avatarIndex?: number,
+    scrollHeight?: number
+  ) => {
     let text = inputText;
 
     const inlineVariables = (
@@ -1148,6 +1154,18 @@ class ScriptBuilder {
       const fontIndex = this._getFontIndex(fontId);
       text = text.replace(`!F:${fontId}!`, `\\002\\${decOct(fontIndex + 1)}`);
     });
+
+    // Replace newlines with scroll code if larger than max dialogue size
+    if (scrollHeight) {
+      let numNewlines = 0;
+      text = text.replace(/\n/g, (newline) => {
+        numNewlines++;
+        if (numNewlines > scrollHeight - 1) {
+          return "\\r";
+        }
+        return newline;
+      });
+    }
 
     if (indirectVars.length > 0) {
       for (const indirectVar of indirectVars) {
@@ -1225,7 +1243,7 @@ class ScriptBuilder {
       width,
       height,
       color,
-      drawFrame ? ".UI_DRAW_FRAME" : 0
+      unionFlags([".UI_AUTO_SCROLL"].concat(drawFrame ? ".UI_DRAW_FRAME" : []))
     );
   };
 
@@ -1918,22 +1936,11 @@ class ScriptBuilder {
     );
 
     const maxNumLines = Math.max(2, Math.max.apply(null, initialNumLines));
-    const textBoxHeight = maxNumLines + 2;
+    const textBoxHeight = Math.min(maxNumLines, MAX_DIALOGUE_LINES) + 2;
     const textBoxY = 18 - textBoxHeight;
 
-    // Add additional newlines so all textboxes in a
-    // sequence have the same height
-    const paddedInput = input.map((textBlock) => {
-      let text = textBlock;
-      const numLines = text.split("\n").length;
-      if (numLines < maxNumLines) {
-        text += new Array(maxNumLines - numLines + 1).join("\n");
-      }
-      return text;
-    });
-
     this._addComment("Text Dialogue");
-    paddedInput.forEach((text, textIndex) => {
+    input.forEach((text, textIndex) => {
       let avatarIndex = undefined;
       if (avatarId) {
         const { avatars } = this.options;
@@ -1943,7 +1950,7 @@ class ScriptBuilder {
         }
       }
 
-      this._loadStructuredText(text, avatarIndex);
+      this._loadStructuredText(text, avatarIndex, MAX_DIALOGUE_LINES);
       this._overlayClear(0, 0, 20, textBoxHeight, ".UI_COLOR_WHITE", true);
       if (textIndex === 0) {
         this._overlayMoveTo(0, textBoxY, ".OVERLAY_TEXT_IN_SPEED");
@@ -1954,7 +1961,7 @@ class ScriptBuilder {
         ".UI_WAIT_TEXT",
         ".UI_WAIT_BTN_A",
       ]);
-      if (textIndex === paddedInput.length - 1) {
+      if (textIndex === input.length - 1) {
         this._overlayMoveTo(0, 18, ".OVERLAY_TEXT_OUT_SPEED");
         this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
       }
