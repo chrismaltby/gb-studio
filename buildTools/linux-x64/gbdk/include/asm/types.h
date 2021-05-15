@@ -26,6 +26,7 @@
 #endif
 
 /** TRUE or FALSE.
+    @anchor file_asm_types_h
  */
 typedef INT8		BOOLEAN;
 

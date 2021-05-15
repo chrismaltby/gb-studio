@@ -4,6 +4,14 @@
 #include <gb/gb.h>
 #include <gb/drawing.h>
 
+void linetest(UBYTE x, UBYTE y, UBYTE w) {
+    color(DKGREY,WHITE,SOLID);
+	for (int i = -w; i <= w; i++) line(x,y,x+i,y-w);
+	for (int i = -w; i <= w; i++) line(x,y,x+w,y+i);
+	for (int i = -w; i <= w; i++) line(x,y,x+i,y+w);
+	for (int i = -w; i <= w; i++) line(x,y,x-w,y+i);	
+}
+
 void main(void)
 {
     UBYTE  a,b,c,d,e;
@@ -33,6 +41,9 @@ void main(void)
     color(BLACK,LTGREY,SOLID);
     box(0,130,40,143,M_NOFILL);
     box(50,130,90,143,M_FILL);
+
+
+	linetest(130, 100, 20);
 
     /* Scroll the screen using the hardest method imaginable :) */
     for (c=0; c<=143; c++) {
