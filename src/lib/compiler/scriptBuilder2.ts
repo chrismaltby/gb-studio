@@ -310,6 +310,10 @@ const textCodeSetFont = (fontIndex: number): string => {
   return `\\002\\${decOct(fontIndex + 1)}`;
 };
 
+const textCodeGoto = (x: number, y: number): string => {
+  return `\\003\\${decOct(x)}\\${decOct(y)}`;
+};
+
 const textCodeGotoRel = (x: number, y: number): string => {
   return `\\004\\${decOct(x)}\\${decOct(y)}`;
 };
@@ -2029,21 +2033,22 @@ class ScriptBuilder {
   ) => {
     const variableAlias = this.getVariableAlias(setVariable);
     const optionsText = options.map(
-      (option, index) =>
-        " " + (trimlines(option || "", 6, 1) || `Item ${index + 1}`)
+      (option, index) => trimlines(option || "", 6, 1) || `Item ${index + 1}`
     );
     const height =
       layout === "menu" ? options.length : Math.min(options.length, 4);
     const menuText =
-      "\\001\\001" +
+      textCodeSetSpeed(0) +
+      textCodeGoto(3, 2) +
       (layout === "menu"
         ? optionsText.join("\n")
-        : Array.from(Array(height))
-            .map(
-              (_, i) =>
-                optionsText[i].padEnd(9, " ") +
-                (optionsText[i + 4] ? optionsText[i + 4] : "")
-            )
+        : optionsText
+            .map((text, i) => {
+              if (i === 4) {
+                return textCodeGoto(12, 2) + text;
+              }
+              return text;
+            })
             .join("\n"));
     const numLines = options.length;
     const x = layout === "menu" ? 10 : 0;
