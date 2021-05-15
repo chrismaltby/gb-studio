@@ -51,6 +51,12 @@ class App extends Component {
   };
 
   onDragOver = (e) => {
+    // Don't activate dropzone unless dragging a file
+    const types = e.dataTransfer.types;
+    if (!types || types.indexOf("Files") === -1) {
+      return;
+    }
+
     e.preventDefault();
     e.stopPropagation();
     clearTimeout(this.dragLeaveTimer);
