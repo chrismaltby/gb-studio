@@ -682,6 +682,8 @@
   "DIALOG_ENABLE_COLOR": "Enable Color",
   "DIALOG_REPLACE_CUSTOM_EVENT": "Replace Script \"{name}\"?",
   "DIALOG_REPLACE_CUSTOM_EVENT_DESCRIPTION": "The pasted script contains a modified version of an existing script. Would you like to replace the script with the version on your clipboard or keep your existing script?",
+  "DIALOG_IMPORT_ASSET": "Import asset?",
+  "DIALOG_IMPORT_ASSET_DESCRIPTION": "File asset type can not be automatically determined, where would you like to add this asset",
 
   "// 16": "Settings ----------------------------------------------------",
 

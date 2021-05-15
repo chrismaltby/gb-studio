@@ -63,10 +63,10 @@ enum Color {
   Unknown = 255,
 }
 
-export const spriteDataIndexFn: ImageIndexFunction = (_r, g, b, _a) => {
+export const spriteDataIndexFn: ImageIndexFunction = (r, g, b, _a) => {
   if (b >= 200 && g < 20) {
     return Color.Divider;
-  } else if (g >= 249) {
+  } else if ((g > 249 && r < 180 && b < 20) || (r > 249 && b > 249)) {
     return Color.Transparent;
   } else if (g > 200) {
     return Color.Light;

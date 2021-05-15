@@ -64,7 +64,7 @@
     "fs-extra": "^7.0.1",
     "gbdkjs": "^2.1.4",
     "glob": "^7.1.4",
-    "image-size": "^0.7.1",
+    "image-size": "^1.0.0",
     "json-loader": "^0.5.7",
     "lodash": "^4.17.14",
     "normalizr": "^3.4.0",

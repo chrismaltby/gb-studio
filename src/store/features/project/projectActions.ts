@@ -381,6 +381,12 @@ const loadUI = createAction("project/loadUI");
 const reloadAssets = createAction("project/reloadAssets");
 
 /**************************************************************************
+ * Asset Files
+ */
+
+const addFileToProject = createAction<string>("project/addFile");
+
+/**************************************************************************
  * Save
  */
 
@@ -447,6 +453,7 @@ export default {
   loadEmote,
   removeEmote,
   loadUI,
+  addFileToProject,
   reloadAssets,
   saveProject,
 };

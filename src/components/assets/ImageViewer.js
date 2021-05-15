@@ -78,18 +78,18 @@ class ImageViewer extends Component {
 }
 
 ImageViewer.propTypes = {
-  projectRoot: PropTypes.string.isRequired,
-  folder: PropTypes.string.isRequired,
+  // projectRoot: PropTypes.string.isRequired,
+  // folder: PropTypes.string.isRequired,
   file: PropTypes.shape({
     id: PropTypes.string.isRequired,
     filename: PropTypes.string.isRequired
   }),
-  section: PropTypes.string.isRequired,
-  zoom: PropTypes.number.isRequired,
-  sidebarWidth: PropTypes.number.isRequired,
-  zoomIn: PropTypes.func.isRequired,
-  zoomOut: PropTypes.func.isRequired,
-  openFile: PropTypes.func.isRequired,
+  // section: PropTypes.string.isRequired,
+  // zoom: PropTypes.number.isRequired,
+  // sidebarWidth: PropTypes.number.isRequired,
+  // zoomIn: PropTypes.func.isRequired,
+  // zoomOut: PropTypes.func.isRequired,
+  // openFile: PropTypes.func.isRequired,
 };
 
 ImageViewer.defaultProps = {

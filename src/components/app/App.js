@@ -16,12 +16,16 @@ import SettingsPage from "../../containers/pages/SettingsPage";
 import l10n from "../../lib/helpers/l10n";
 import { ErrorShape } from "../../store/stateShape";
 import LoadingPane from "../library/LoadingPane";
+import { DropZone } from "../ui/upload/DropZone";
+import projectActions from "../../store/features/project/projectActions";
 
 class App extends Component {
   constructor() {
     super();
+    this.dragLeaveTimer = 0;
     this.state = {
       blur: false,
+      draggingOver: false,
     };
   }
 
@@ -29,6 +33,9 @@ class App extends Component {
     window.addEventListener("blur", this.onBlur);
     window.addEventListener("focus", this.onFocus);
     window.addEventListener("resize", this.onFocus);
+    window.addEventListener("dragover", this.onDragOver);
+    window.addEventListener("dragleave", this.onDragLeave);
+    window.addEventListener("drop", this.onDrop);
   }
 
   onBlur = () => {
@@ -43,9 +50,37 @@ class App extends Component {
     }
   };
 
+  onDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    clearTimeout(this.dragLeaveTimer);
+    const { draggingOver } = this.state;
+    if (!draggingOver) {
+      this.setState({ draggingOver: true });
+    }
+  };
+
+  onDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    clearTimeout(this.dragLeaveTimer);
+    this.dragLeaveTimer = setTimeout(() => {
+      this.setState({ draggingOver: false });
+    }, 100);
+  };
+
+  onDrop = (e) => {
+    const { addFileToProject } = this.props;
+    this.setState({ draggingOver: false });
+    for (let i = 0; i < e.dataTransfer.files.length; i++) {
+      const file = e.dataTransfer.files[i];
+      addFileToProject(file.path);
+    }
+  };
+
   render() {
     const { section, loaded, error } = this.props;
-    const { blur } = this.state;
+    const { blur, draggingOver } = this.state;
 
     if (error.visible) {
       return <GlobalError error={error} />;
@@ -72,6 +107,7 @@ class App extends Component {
             {section === "dialogue" && <DialoguePage />}
             {section === "build" && <BuildPage />}
             {section === "settings" && <SettingsPage />}
+            {draggingOver && <DropZone />}
           </div>
         )}
       </div>
@@ -86,7 +122,7 @@ App.propTypes = {
     "sprites",
     "ui",
     "music",
-    "palettes",    
+    "palettes",
     "dialogue",
     "build",
     "settings",
@@ -103,4 +139,8 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps)(App);
+const mapDispatchToProps = {
+  addFileToProject: projectActions.addFileToProject,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
