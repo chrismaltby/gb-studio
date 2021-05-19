@@ -44,16 +44,19 @@ const compileImages = async (
 
     const imageModifiedTime = await getFileModifiedTime(filename);
 
+    const is360 = generate360Ids.includes(img.id);
+    const cacheKey = `${img.id}${is360 ? "_360" : ""}`;
+
     if (
-      imageBuildCache[img.id] &&
-      imageBuildCache[img.id].timestamp >= imageModifiedTime
+      imageBuildCache[cacheKey] &&
+      imageBuildCache[cacheKey].timestamp >= imageModifiedTime
     ) {
-      tilesetLookup = imageBuildCache[img.id].data;
-      imgTiles.push(imageBuildCache[img.id].tileData);
+      tilesetLookup = imageBuildCache[cacheKey].data;
+      imgTiles.push(imageBuildCache[cacheKey].tileData);
     } else {
       const tileData = await readFileToTilesDataArray(filename);
       tilesetLookup = toTileLookup(tileData);
-      imageBuildCache[img.id] = {
+      imageBuildCache[cacheKey] = {
         data: tilesetLookup,
         tileData,
         timestamp: imageModifiedTime,
@@ -67,7 +70,7 @@ const compileImages = async (
 
     const backgroundInfo = await getBackgroundInfo(
       img,
-      generate360Ids.includes(img.id),
+      is360,
       projectPath,
       tilesetLength
     );
@@ -78,7 +81,7 @@ const compileImages = async (
       });
     }
 
-    if (generate360Ids.includes(img.id)) {
+    if (is360) {
       // Skip lookups for 360 images (generated later)
       tilesetLookups.push(null);
       continue;
