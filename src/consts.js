@@ -5,9 +5,9 @@ const isCli = __dirname.indexOf("out/cli") > -1;
 
 let rootDir = __dirname.substr(0, __dirname.lastIndexOf("node_modules"));
 if (isDist) {
-  rootDir = __dirname.substr(0, __dirname.lastIndexOf(".webpack")); 
+  rootDir = __dirname.substr(0, __dirname.lastIndexOf(".webpack"));
 } else if (isCli) {
-  rootDir = __dirname.substr(0, __dirname.lastIndexOf("out/cli")); 
+  rootDir = __dirname.substr(0, __dirname.lastIndexOf("out/cli"));
 } else if (process.env.NODE_ENV === "test") {
   rootDir = path.normalize(`${__dirname}/../`);
 }
@@ -24,6 +24,7 @@ const MAX_ACTORS = 30;
 const MAX_ACTORS_SMALL = 10;
 const MAX_TRIGGERS = 30;
 const MAX_FRAMES = 25;
+const MAX_SPRITE_TILES = 64;
 const SCREEN_WIDTH = 20;
 const SCREEN_HEIGHT = 18;
 const MAX_ONSCREEN = 10;
@@ -51,9 +52,9 @@ export const COLLISION_TOP = 0x1;
 export const COLLISION_BOTTOM = 0x2;
 export const COLLISION_LEFT = 0x4;
 export const COLLISION_RIGHT = 0x8;
-export const COLLISION_ALL = 0xF;
+export const COLLISION_ALL = 0xf;
 export const TILE_PROP_LADDER = 0x10;
-export const TILE_PROPS = 0xF0;
+export const TILE_PROPS = 0xf0;
 
 export const DRAG_PLAYER = "DRAG_PLAYER";
 export const DRAG_DESTINATION = "DRAG_DESTINATION";
@@ -63,7 +64,7 @@ export const DRAG_TRIGGER = "DRAG_TRIGGER";
 export const DMG_PALETTE = {
   id: "dmg",
   name: "DMG (GB Default)",
-  colors: [ "E8F8E0", "B0F088", "509878", "202850" ]
+  colors: ["E8F8E0", "B0F088", "509878", "202850"],
 };
 
 export const TMP_VAR_1 = "T0";
@@ -81,8 +82,9 @@ export {
   MAX_ACTORS_SMALL,
   MAX_TRIGGERS,
   MAX_FRAMES,
+  MAX_SPRITE_TILES,
   MAX_ONSCREEN,
   SCREEN_WIDTH,
   SCREEN_HEIGHT,
-  MIDDLE_MOUSE
+  MIDDLE_MOUSE,
 };

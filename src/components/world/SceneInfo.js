@@ -4,7 +4,15 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import cx from "classnames";
 import debounce from "lodash/debounce";
-import { MAX_ACTORS, MAX_ACTORS_SMALL, MAX_FRAMES, MAX_TRIGGERS, MAX_ONSCREEN, SCREEN_WIDTH, SCREEN_HEIGHT } from "../../consts";
+import {
+  MAX_ACTORS,
+  MAX_ACTORS_SMALL,
+  MAX_SPRITE_TILES,
+  MAX_TRIGGERS,
+  MAX_ONSCREEN,
+  SCREEN_WIDTH,
+  SCREEN_HEIGHT,
+} from "../../consts";
 import {
   SceneShape,
   ActorShape,
@@ -13,14 +21,19 @@ import {
 } from "../../store/stateShape";
 import { walkSceneEvents } from "../../lib/helpers/eventSystem";
 import { EVENT_PLAYER_SET_SPRITE } from "../../lib/compiler/eventTypes";
-import { sceneSelectors, actorSelectors, triggerSelectors, spriteSheetSelectors } from "../../store/features/entities/entitiesState";
+import {
+  sceneSelectors,
+  actorSelectors,
+  triggerSelectors,
+  spriteSheetSelectors,
+} from "../../store/features/entities/entitiesState";
 import clamp from "../../lib/helpers/clamp";
 import l10n from "../../lib/helpers/l10n";
 
 const Portal = (props) => {
   const root = document.getElementById("MenuPortal");
   return ReactDOM.createPortal(props.children, root);
-}
+};
 
 class SceneInfo extends Component {
   constructor(props) {
@@ -28,12 +41,12 @@ class SceneInfo extends Component {
     this.state = {
       loaded: false,
       actorCount: 0,
-      frameCount: 0,
+      tileCount: 0,
       triggerCount: 0,
       warnings: [],
       tooltipType: "",
       tooltipX: 100,
-      tooltipY: 100
+      tooltipY: 100,
     };
     this.tooltipTimer = null;
     this.debouncedRecalculateCounts = debounce(this.recalculateCounts, 100);
@@ -49,12 +62,14 @@ class SceneInfo extends Component {
       actorsLookup,
       triggersLookup,
       spriteSheetsLookup,
+      defaultPlayerSprites,
     } = this.props;
     if (
       prevProps.scene !== scene ||
       prevProps.actorsLookup !== actorsLookup ||
       prevProps.triggersLookup !== triggersLookup ||
-      prevProps.spriteSheetsLookup !== spriteSheetsLookup
+      prevProps.spriteSheetsLookup !== spriteSheetsLookup ||
+      prevProps.defaultPlayerSprites !== defaultPlayerSprites
     ) {
       this.debouncedRecalculateCounts();
     }
@@ -70,6 +85,7 @@ class SceneInfo extends Component {
       actorsLookup,
       triggersLookup,
       spriteSheetsLookup,
+      defaultPlayerSprites,
     } = this.props;
 
     const warnings = [];
@@ -82,6 +98,16 @@ class SceneInfo extends Component {
       triggers: scene.triggers.map((id) => triggersLookup[id]),
     };
 
+    const addSprite = (id, force = false) => {
+      const spriteSheet = spriteSheetsLookup[id];
+      if (
+        spriteSheet &&
+        (force || usedSpriteSheets.indexOf(spriteSheet) === -1)
+      ) {
+        usedSpriteSheets.push(spriteSheet);
+      }
+    };
+
     // Find used sprite sheets in events
     walkSceneEvents(fullScene, (event) => {
       if (
@@ -90,23 +116,26 @@ class SceneInfo extends Component {
         event.command !== EVENT_PLAYER_SET_SPRITE &&
         !event.args.__comment
       ) {
-        const spriteSheet = spriteSheetsLookup[event.args.spriteSheetId];
-        if (usedSpriteSheets.indexOf(spriteSheet) === -1) {
-          usedSpriteSheets.push(spriteSheet);
-        }
+        addSprite(event.args.spriteSheetId);
       }
     });
 
     // Find used sprite sheets from scene actors
     fullScene.actors.forEach((actor) => {
-      const spriteSheet = spriteSheetsLookup[actor.spriteSheetId];
-      if (usedSpriteSheets.indexOf(spriteSheet) === -1) {
-        usedSpriteSheets.push(spriteSheet);
-      }
+      addSprite(actor.spriteSheetId);
     });
 
-    const frameCount = usedSpriteSheets.reduce((memo, spriteSheet) => {
-      return memo + (spriteSheet ? spriteSheet.numFrames : 0);
+    // Add player
+    if (scene.playerSpriteSheetId) {
+      addSprite(scene.playerSpriteSheetId, true);
+    } else {
+      addSprite(defaultPlayerSprites[scene.type || "TOPDOWN"], true);
+    }
+
+    const tileCount = usedSpriteSheets.reduce((memo, spriteSheet) => {
+      return (
+        memo + (spriteSheet && spriteSheet.numTiles ? spriteSheet.numTiles : 0)
+      );
     }, 0);
 
     function checkScreenAt(x, y) {
@@ -128,7 +157,7 @@ class SceneInfo extends Component {
     const checkScreenCache = {};
     function cachedCheckScreenAt(checkX, checkY) {
       const x = clamp(checkX, 0, fullScene.width - SCREEN_WIDTH);
-      const y = clamp(checkY, 0, fullScene.height - SCREEN_HEIGHT);   
+      const y = clamp(checkY, 0, fullScene.height - SCREEN_HEIGHT);
       const key = `${x}_${y}`;
       if (checkScreenCache[key] === undefined) {
         checkScreenCache[key] = checkScreenAt(x, y);
@@ -137,18 +166,28 @@ class SceneInfo extends Component {
     }
 
     function checkForTooCloseActors() {
-      for (let i=fullScene.actors.length-1; i>0; i--) {
+      for (let i = fullScene.actors.length - 1; i > 0; i--) {
         const actor = fullScene.actors[i];
         const actorX = clamp(actor.x, 0, 255);
         const actorY = clamp(actor.y, 0, 255);
-        for(let x=actorX - SCREEN_WIDTH; x<actorX + SCREEN_WIDTH; x++) {
-          for(let y=actorY - SCREEN_HEIGHT; y<actorY + SCREEN_HEIGHT; y++) {
+        for (let x = actorX - SCREEN_WIDTH; x < actorX + SCREEN_WIDTH; x++) {
+          for (
+            let y = actorY - SCREEN_HEIGHT;
+            y < actorY + SCREEN_HEIGHT;
+            y++
+          ) {
             const near = cachedCheckScreenAt(x, y);
             if (near > MAX_ONSCREEN) {
-              const actorName = actor.name || `Actor ${i + 1}`
-              warnings.push(l10n("WARNING_TOO_MANY_ONSCREEN_ACTORS", { actorName }));
-              warnings.push(l10n("WARNING_ONSCREEN_ACTORS_LIMIT", { maxOnscreen: MAX_ONSCREEN }));
-              return;              
+              const actorName = actor.name || `Actor ${i + 1}`;
+              warnings.push(
+                l10n("WARNING_TOO_MANY_ONSCREEN_ACTORS", { actorName })
+              );
+              warnings.push(
+                l10n("WARNING_ONSCREEN_ACTORS_LIMIT", {
+                  maxOnscreen: MAX_ONSCREEN,
+                })
+              );
+              return;
             }
           }
         }
@@ -157,9 +196,10 @@ class SceneInfo extends Component {
 
     checkForTooCloseActors();
 
-    const maxActors = (scene.width <= SCREEN_WIDTH && scene.height <= SCREEN_HEIGHT)
-      ? MAX_ACTORS_SMALL
-      : MAX_ACTORS;
+    const maxActors =
+      scene.width <= SCREEN_WIDTH && scene.height <= SCREEN_HEIGHT
+        ? MAX_ACTORS_SMALL
+        : MAX_ACTORS;
 
     if (scene.actors.length > maxActors) {
       warnings.push(l10n("WARNING_ACTORS_LIMIT"));
@@ -169,18 +209,18 @@ class SceneInfo extends Component {
       loaded: true,
       actorCount: scene.actors.length,
       triggerCount: scene.triggers.length,
-      frameCount,
-      warnings
+      tileCount,
+      warnings,
     });
   };
 
   onHoverOn = (type) => (e) => {
     this.openTooltip(type, e, 500);
-  }
+  };
 
   onOpenTooltip = (type) => (e) => {
     this.openTooltip(type, e, 0);
-  }  
+  };
 
   openTooltip = (type, e, delay) => {
     clearTimeout(this.tooltipTimer);
@@ -188,34 +228,47 @@ class SceneInfo extends Component {
     const tooltip = document.getElementById(`scene_info_${type}`);
     tooltip.style.display = "block";
     const tooltipHeight = tooltip.clientHeight;
-    tooltip.style.removeProperty("display");    
+    tooltip.style.removeProperty("display");
     this.tooltipTimer = setTimeout(() => {
       this.setState({
         tooltipType: type,
         tooltipX: Math.max(50, rect.left),
-        tooltipY: Math.min(window.innerHeight - tooltipHeight - 50, window.innerHeight - rect.top + 5)
-      })
+        tooltipY: Math.min(
+          window.innerHeight - tooltipHeight - 50,
+          window.innerHeight - rect.top + 5
+        ),
+      });
     }, delay);
-  }
+  };
 
   onHoverOff = (e) => {
     clearTimeout(this.tooltipTimer);
     this.setState({
       tooltipType: "",
-    })    
-  }
+    });
+  };
 
   render() {
-    const { loaded, actorCount, frameCount, triggerCount, warnings, tooltipType, tooltipX, tooltipY } = this.state;
+    const {
+      loaded,
+      actorCount,
+      tileCount,
+      triggerCount,
+      warnings,
+      tooltipType,
+      tooltipX,
+      tooltipY,
+    } = this.state;
     const { scene } = this.props;
 
     if (!loaded) {
       return null;
     }
 
-    const maxActors = (scene.width <= SCREEN_WIDTH && scene.height <= SCREEN_HEIGHT)
-      ? MAX_ACTORS_SMALL
-      : MAX_ACTORS;
+    const maxActors =
+      scene.width <= SCREEN_WIDTH && scene.height <= SCREEN_HEIGHT
+        ? MAX_ACTORS_SMALL
+        : MAX_ACTORS;
 
     const actorWarning = warnings.length > 0;
     const actorError = actorCount > maxActors;
@@ -247,13 +300,17 @@ class SceneInfo extends Component {
             >
               <div>{l10n("FIELD_NUM_ACTORS_LABEL")}</div>
               <div>{l10n("FIELD_ACTORS_COUNT", { actorCount, maxActors })}</div>
-              {warnings.length > 0 && <div className="Scene__TooltipTitle">{l10n("FIELD_WARNING")}</div>}
+              {warnings.length > 0 && (
+                <div className="Scene__TooltipTitle">
+                  {l10n("FIELD_WARNING")}
+                </div>
+              )}
               {warnings.length > 0 &&
                 warnings.map((warning) => (
                   <div key={warning} className="Scene__Info--Error">
                     {warning}
                   </div>
-              ))}              
+                ))}
             </div>
           </Portal>
         </span>
@@ -261,15 +318,15 @@ class SceneInfo extends Component {
         {"\u00A0 \u00A0"}
         <span
           className={cx("Scene__InfoButton", {
-            "Scene__Info--Warning": frameCount === MAX_FRAMES,
-            "Scene__Info--Error": frameCount > MAX_FRAMES,
+            "Scene__Info--Warning": tileCount === MAX_SPRITE_TILES,
+            "Scene__Info--Error": tileCount > MAX_SPRITE_TILES,
           })}
           onMouseEnter={this.onHoverOn("frames")}
           onClick={this.onOpenTooltip("frames")}
           onMouseLeave={this.onHoverOff}
           aria-describedby="scene_info_frames"
         >
-          F: {frameCount}/{MAX_FRAMES}
+          S: {tileCount}/{MAX_SPRITE_TILES}
         </span>
         <Portal>
           <div
@@ -283,10 +340,19 @@ class SceneInfo extends Component {
               bottom: tooltipY,
             }}
           >
-            <div>{l10n("FIELD_NUM_FRAMES_LABEL")}</div>
-            <div>{l10n("FIELD_FRAMES_COUNT", {frameCount, maxFrames: MAX_FRAMES})}</div>
-            {frameCount > MAX_FRAMES && <div className="Scene__TooltipTitle">{l10n("FIELD_WARNING")}</div>}
-            {frameCount > MAX_FRAMES && <div>{l10n("WARNING_FRAMES_LIMIT")}</div>}
+            <div>{l10n("FIELD_NUM_SPRITE_TILES_LABEL")}</div>
+            <div>
+              {l10n("FIELD_SPRITE_TILES_COUNT", {
+                tileCount,
+                maxTiles: MAX_SPRITE_TILES,
+              })}
+            </div>
+            {tileCount > MAX_SPRITE_TILES && (
+              <div className="Scene__TooltipTitle">{l10n("FIELD_WARNING")}</div>
+            )}
+            {tileCount > MAX_SPRITE_TILES && (
+              <div>{l10n("WARNING_SPRITE_TILES_LIMIT")}</div>
+            )}
           </div>
         </Portal>
         {"\u00A0 \u00A0"}
@@ -297,7 +363,7 @@ class SceneInfo extends Component {
           })}
           onMouseEnter={this.onHoverOn("triggers")}
           onClick={this.onOpenTooltip("triggers")}
-          onMouseLeave={this.onHoverOff}          
+          onMouseLeave={this.onHoverOff}
           aria-describedby="scene_info_triggers"
         >
           T: {triggerCount}/{MAX_TRIGGERS}
@@ -315,9 +381,18 @@ class SceneInfo extends Component {
             }}
           >
             <div>{l10n("FIELD_NUM_TRIGGERS_LABEL")}</div>
-            <div>{l10n("FIELD_TRIGGERS_COUNT", { triggerCount, maxTriggers: MAX_TRIGGERS })}</div>
-            {triggerCount > MAX_TRIGGERS && <div className="Scene__TooltipTitle">{l10n("FIELD_WARNING")}</div>}
-            {triggerCount > MAX_TRIGGERS && <div>{l10n("WARNING_TRIGGERS_LIMIT")}</div>}
+            <div>
+              {l10n("FIELD_TRIGGERS_COUNT", {
+                triggerCount,
+                maxTriggers: MAX_TRIGGERS,
+              })}
+            </div>
+            {triggerCount > MAX_TRIGGERS && (
+              <div className="Scene__TooltipTitle">{l10n("FIELD_WARNING")}</div>
+            )}
+            {triggerCount > MAX_TRIGGERS && (
+              <div>{l10n("WARNING_TRIGGERS_LIMIT")}</div>
+            )}
           </div>
         </Portal>
       </>
@@ -337,12 +412,14 @@ function mapStateToProps(state, props) {
   const triggersLookup = triggerSelectors.selectEntities(state);
   const spriteSheetsLookup = spriteSheetSelectors.selectEntities(state);
   const scene = sceneSelectors.selectById(state, props.id);
+  const { defaultPlayerSprites } = state.project.present.settings;
 
   return {
     scene,
     actorsLookup,
     triggersLookup,
     spriteSheetsLookup,
+    defaultPlayerSprites,
   };
 }
 

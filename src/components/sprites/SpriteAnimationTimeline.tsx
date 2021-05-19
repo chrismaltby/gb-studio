@@ -71,6 +71,7 @@ const SpriteAnimationTimeline = ({
     (fromIndex: number, toIndex: number) => {
       dispatch(
         entitiesActions.swapSpriteAnimationFrames({
+          spriteSheetId,
           spriteAnimationId: animationId,
           fromIndex,
           toIndex,
@@ -90,6 +91,7 @@ const SpriteAnimationTimeline = ({
   const onAddFrame = useCallback(() => {
     dispatch(
       entitiesActions.addMetasprite({
+        spriteSheetId,
         spriteAnimationId: animationId,
       })
     );
@@ -98,6 +100,7 @@ const SpriteAnimationTimeline = ({
   const onCloneFrame = useCallback(() => {
     dispatch(
       entitiesActions.cloneMetasprite({
+        spriteSheetId,
         spriteAnimationId: animationId,
         metaspriteId,
       })
@@ -107,6 +110,7 @@ const SpriteAnimationTimeline = ({
   const onDeleteFrame = useCallback(() => {
     dispatch(
       entitiesActions.removeMetasprite({
+        spriteSheetId,
         spriteAnimationId: animationId,
         metaspriteId,
       })

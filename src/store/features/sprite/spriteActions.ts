@@ -17,7 +17,16 @@ const detectSpriteComplete = createAction<{
   changes: Partial<SpriteSheet>;
 }>("sprite/detect/fulfilled");
 
+const compileSprite = createAction(
+  "sprite/compile",
+  (payload: { spriteSheetId: string }) => ({
+    payload,
+    meta: { throttle: 2000, key: payload.spriteSheetId },
+  })
+);
+
 export default {
   detectSprite,
   detectSpriteComplete,
+  compileSprite,
 };

@@ -266,10 +266,8 @@ export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
                 {typeLabel(spriteSheet)}
               </SpriteInfoRow>
               <SpriteInfoRow>
-                <SpriteInfoField>
-                  {l10n("FIELD_SPRITE_FRAMES")}:
-                </SpriteInfoField>
-                {spriteSheet?.numFrames}
+                <SpriteInfoField>{l10n("FIELD_TILES")}:</SpriteInfoField>
+                {spriteSheet?.numTiles}
               </SpriteInfoRow>
             </SpriteInfo>
           )}

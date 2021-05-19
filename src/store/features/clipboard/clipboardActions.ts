@@ -34,6 +34,7 @@ const copyPaletteIds = createAction<{
   paletteIds: string[];
 }>("clipboard/copyPaletteIds");
 const pasteSprite = createAction<{
+  spriteSheetId: string;
   metaspriteId: string;
   spriteAnimationId: string;
 }>("clipboard/pasteSprite");
@@ -43,98 +44,102 @@ const pastePaletteIds = createAction<{
   type: "background" | "sprite";
 }>("clipboard/pastePaletteIds");
 
-const copySelectedEntity = () => (
-  dispatch: ThunkDispatch<RootState, unknown, AnyAction>,
-  getState: () => RootState
-) => {
-  const state = getState();
-  const { scene: sceneId, entityId, type: editorType } = state.editor;
-  if (editorType === "scene") {
-    const scene = sceneSelectors.selectById(state, sceneId);
-    if (scene) {
-      dispatch(copyScene(scene));
+const copySelectedEntity =
+  () =>
+  (
+    dispatch: ThunkDispatch<RootState, unknown, AnyAction>,
+    getState: () => RootState
+  ) => {
+    const state = getState();
+    const { scene: sceneId, entityId, type: editorType } = state.editor;
+    if (editorType === "scene") {
+      const scene = sceneSelectors.selectById(state, sceneId);
+      if (scene) {
+        dispatch(copyScene(scene));
+      }
+    } else if (editorType === "actor") {
+      const actor = actorSelectors.selectById(state, entityId);
+      if (actor) {
+        dispatch(copyActor(actor));
+      }
+    } else if (editorType === "trigger") {
+      const trigger = triggerSelectors.selectById(state, entityId);
+      if (trigger) {
+        dispatch(copyTrigger(trigger));
+      }
     }
-  } else if (editorType === "actor") {
-    const actor = actorSelectors.selectById(state, entityId);
-    if (actor) {
-      dispatch(copyActor(actor));
+  };
+
+const pasteClipboardEntity =
+  (clipboardData: any) =>
+  (dispatch: ThunkDispatch<RootState, unknown, AnyAction>) => {
+    if (clipboardData.__type === "scene") {
+      const clipboardScene = clipboardData.scene as Partial<SceneData>;
+      dispatch(pasteCustomEvents());
+      dispatch(editorActions.setSceneDefaults(clipboardScene));
+    } else if (clipboardData.__type === "actor") {
+      const clipboardActor = clipboardData.actor as Partial<Actor>;
+      dispatch(pasteCustomEvents());
+      dispatch(editorActions.setActorDefaults(clipboardActor));
+    } else if (clipboardData.__type === "trigger") {
+      const clipboardTrigger = clipboardData.trigger as Partial<Trigger>;
+      dispatch(pasteCustomEvents());
+      dispatch(editorActions.setTriggerDefaults(clipboardTrigger));
     }
-  } else if (editorType === "trigger") {
-    const trigger = triggerSelectors.selectById(state, entityId);
-    if (trigger) {
-      dispatch(copyTrigger(trigger));
+    if (clipboardData.__variables) {
+      const clipboardVariables = clipboardData.__variables as Variable[];
+      dispatch(editorActions.setClipboardVariables(clipboardVariables));
     }
-  }
-};
+  };
 
-const pasteClipboardEntity = (clipboardData: any) => (
-  dispatch: ThunkDispatch<RootState, unknown, AnyAction>
-) => {
-  if (clipboardData.__type === "scene") {
-    const clipboardScene = clipboardData.scene as Partial<SceneData>;
-    dispatch(pasteCustomEvents());
-    dispatch(editorActions.setSceneDefaults(clipboardScene));
-  } else if (clipboardData.__type === "actor") {
-    const clipboardActor = clipboardData.actor as Partial<Actor>;
-    dispatch(pasteCustomEvents());
-    dispatch(editorActions.setActorDefaults(clipboardActor));
-  } else if (clipboardData.__type === "trigger") {
-    const clipboardTrigger = clipboardData.trigger as Partial<Trigger>;
-    dispatch(pasteCustomEvents());
-    dispatch(editorActions.setTriggerDefaults(clipboardTrigger));
-  }
-  if (clipboardData.__variables) {
-    const clipboardVariables = clipboardData.__variables as Variable[];
-    dispatch(editorActions.setClipboardVariables(clipboardVariables));
-  }
-};
+const pasteClipboardEntityInPlace =
+  (clipboardData: any) =>
+  (
+    dispatch: ThunkDispatch<RootState, unknown, AnyAction>,
+    getState: () => RootState
+  ) => {
+    const state = getState();
+    const { scene: sceneId } = state.editor;
 
-const pasteClipboardEntityInPlace = (clipboardData: any) => (
-  dispatch: ThunkDispatch<RootState, unknown, AnyAction>,
-  getState: () => RootState
-) => {
-  const state = getState();
-  const { scene: sceneId } = state.editor;
-
-  if (clipboardData.__type === "scene") {
-    const clipboardScene = clipboardData.scene;
-    dispatch(pasteCustomEvents());
-    dispatch(
-      entitiesActions.addScene({
-        x: clipboardScene.x,
-        y: clipboardScene.y,
-        defaults: clipboardScene,
-        variables: clipboardData.__variables,
-      })
-    );
-  } else if (sceneId && clipboardData.__type === "actor") {
-    const clipboardActor = clipboardData.actor;
-    dispatch(pasteCustomEvents());
-    dispatch(
-      entitiesActions.addActor({
-        sceneId,
-        x: clipboardActor.x,
-        y: clipboardActor.y,
-        defaults: clipboardActor,
-        variables: clipboardData.__variables,
-      })
-    );
-  } else if (sceneId && clipboardData.__type === "trigger") {
-    const clipboardTrigger = clipboardData.trigger;
-    dispatch(pasteCustomEvents());
-    dispatch(
-      entitiesActions.addTrigger({
-        sceneId,
-        x: clipboardTrigger.x,
-        y: clipboardTrigger.y,
-        width: clipboardTrigger.width,
-        height: clipboardTrigger.height,
-        defaults: clipboardTrigger,
-        variables: clipboardData.__variables,
-      })
-    );
-  }
-};
+    if (clipboardData.__type === "scene") {
+      const clipboardScene = clipboardData.scene;
+      dispatch(pasteCustomEvents());
+      dispatch(
+        entitiesActions.addScene({
+          x: clipboardScene.x,
+          y: clipboardScene.y,
+          defaults: clipboardScene,
+          variables: clipboardData.__variables,
+        })
+      );
+    } else if (sceneId && clipboardData.__type === "actor") {
+      const clipboardActor = clipboardData.actor;
+      dispatch(pasteCustomEvents());
+      dispatch(
+        entitiesActions.addActor({
+          sceneId,
+          x: clipboardActor.x,
+          y: clipboardActor.y,
+          defaults: clipboardActor,
+          variables: clipboardData.__variables,
+        })
+      );
+    } else if (sceneId && clipboardData.__type === "trigger") {
+      const clipboardTrigger = clipboardData.trigger;
+      dispatch(pasteCustomEvents());
+      dispatch(
+        entitiesActions.addTrigger({
+          sceneId,
+          x: clipboardTrigger.x,
+          y: clipboardTrigger.y,
+          width: clipboardTrigger.width,
+          height: clipboardTrigger.height,
+          defaults: clipboardTrigger,
+          variables: clipboardData.__variables,
+        })
+      );
+    }
+  };
 
 export default {
   ...actions,

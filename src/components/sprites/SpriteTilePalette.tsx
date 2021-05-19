@@ -151,6 +151,7 @@ const SpriteTilePalette = ({ id }: SpriteTilePaletteProps) => {
     (sliceX: number, sliceY: number) => {
       dispatch(
         entitiesActions.editMetaspriteTile({
+          spriteSheetId: id,
           metaspriteTileId: selectedTileIds[0],
           changes: {
             sliceX,

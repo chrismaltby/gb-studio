@@ -10,6 +10,7 @@ import clipboardMiddleware from "./features/clipboard/clipboardMiddleware";
 import projectMiddleware from "./features/project/projectMiddleware";
 import engineMiddleware from "./features/engine/engineMiddleware";
 import spriteMiddleware from "./features/sprite/spriteMiddleware";
+import throttleMiddleware from "./features/throttle/throttleMiddleware";
 
 export type RootState = ReturnType<typeof rootReducer>;
 
@@ -23,6 +24,7 @@ const store = configureStore({
     serializableCheck: false,
     immutableCheck: false,
   }).concat([
+    throttleMiddleware,
     electronMiddleware,
     projectMiddleware,
     engineMiddleware,

@@ -26,6 +26,7 @@ import { Button } from "../ui/buttons/Button";
 import { SceneSelect } from "../forms/SceneSelect";
 import { SelectMenu, selectMenuStyleProps } from "../ui/form/Select";
 import { RelativePortal } from "../ui/layout/RelativePortal";
+import { sceneName } from "../../lib/compiler/compileData2";
 
 const Wrapper = styled.div`
   position: absolute;
@@ -68,6 +69,10 @@ const MetaspriteEditorPreviewSettings = () => {
   const scene = useSelector((state: RootState) =>
     sceneSelectors.selectById(state, value)
   );
+  const scenes = useSelector((state: RootState) =>
+    sceneSelectors.selectIds(state)
+  );
+  const sceneIndex = scenes.indexOf(value);
 
   useEffect(() => {
     if (buttonFocus) {
@@ -166,7 +171,12 @@ const MetaspriteEditorPreviewSettings = () => {
         onFocus={onButtonFocus}
         onBlur={onButtonBlur}
       >
-        ▲ {scene ? `Preview as ${scene.name}` : `Preview Using Default Colors`}
+        ▲{" "}
+        {scene
+          ? l10n("FIELD_PREVIEW_AS_SCENE", {
+              sceneName: sceneName(scene, sceneIndex),
+            })
+          : l10n("FIELD_PREVIEW_AS_DEFAULT")}
       </Pill>
     </Wrapper>
   );

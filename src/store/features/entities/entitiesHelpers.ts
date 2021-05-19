@@ -4,8 +4,13 @@ import {
   EntitiesState,
   EntityKey,
   Asset,
+  SpriteSheet,
+  Metasprite,
+  MetaspriteTile,
+  SpriteAnimation,
 } from "./entitiesTypes";
 import { EntityId, Dictionary } from "@reduxjs/toolkit";
+import { SpriteSheetData } from "../../../lib/compiler/compileSprites";
 
 const backgroundSchema = new schema.Entity("backgrounds");
 const musicSchema = new schema.Entity("music");
@@ -101,6 +106,25 @@ export const denormalizeEntities = (
     engineFieldValues: state.engineFieldValues.entities,
   };
   return denormalize(input, projectSchema, entities);
+};
+
+export const denormalizeSprite = ({
+  sprite,
+  metasprites,
+  metaspriteTiles,
+  spriteAnimations,
+}: {
+  sprite: SpriteSheet;
+  metasprites: Dictionary<Metasprite>;
+  metaspriteTiles: Dictionary<MetaspriteTile>;
+  spriteAnimations: Dictionary<SpriteAnimation>;
+}): SpriteSheetData => {
+  const entities = {
+    metasprites,
+    metaspriteTiles,
+    spriteAnimations,
+  };
+  return denormalize(sprite, spriteSheetsSchema, entities);
 };
 
 export const matchAsset = (assetA: Asset) => (assetB: Asset) => {

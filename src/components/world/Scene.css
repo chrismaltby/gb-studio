@@ -133,6 +133,7 @@
   line-height: normal;
   font-weight: normal;
   padding: 5px 10px;
+  min-width: 180px;
   max-width: 230px;
   transform: translateX(-10px);  
   z-index: 10000;

@@ -100,104 +100,106 @@ export const SpriteEditor = ({
 
   const selectSidebar = () => {};
 
-  const onChangeFieldInput = <T extends keyof SpriteSheet>(key: T) => (
-    e:
-      | React.ChangeEvent<HTMLInputElement>
-      | React.ChangeEvent<HTMLTextAreaElement>
-  ) => {
-    const editValue = castEventValue(e);
-    onModifySprite();
-    dispatch(
-      entitiesActions.editSpriteSheet({
-        spriteSheetId: id,
-        changes: {
-          [key]: editValue,
-        },
-      })
-    );
-  };
+  const onChangeFieldInput =
+    <T extends keyof SpriteSheet>(key: T) =>
+    (
+      e:
+        | React.ChangeEvent<HTMLInputElement>
+        | React.ChangeEvent<HTMLTextAreaElement>
+    ) => {
+      const editValue = castEventValue(e);
+      dispatch(
+        entitiesActions.editSpriteSheet({
+          spriteSheetId: id,
+          changes: {
+            [key]: editValue,
+          },
+        })
+      );
+    };
 
-  const onChangeField = <T extends keyof SpriteSheet>(key: T) => (
-    editValue: SpriteSheet[T]
-  ) => {
-    onModifySprite();
-    dispatch(
-      entitiesActions.editSpriteSheet({
-        spriteSheetId: id,
-        changes: {
-          [key]: editValue,
-        },
-      })
-    );
-  };
+  const onChangeField =
+    <T extends keyof SpriteSheet>(key: T) =>
+    (editValue: SpriteSheet[T]) => {
+      dispatch(
+        entitiesActions.editSpriteSheet({
+          spriteSheetId: id,
+          changes: {
+            [key]: editValue,
+          },
+        })
+      );
+    };
 
-  const onChangeAnimationField = <T extends keyof SpriteAnimation>(key: T) => (
-    editValue: SpriteAnimation[T]
-  ) => {
-    onModifySprite();
-    dispatch(
-      entitiesActions.editSpriteAnimation({
-        spriteAnimationId: animationId,
-        changes: {
-          [key]: editValue,
-        },
-      })
-    );
-  };
+  const onChangeAnimationField =
+    <T extends keyof SpriteAnimation>(key: T) =>
+    (editValue: SpriteAnimation[T]) => {
+      dispatch(
+        entitiesActions.editSpriteAnimation({
+          spriteSheetId: id,
+          spriteAnimationId: animationId,
+          changes: {
+            [key]: editValue,
+          },
+        })
+      );
+    };
 
-  const onChangeTilesFields = <T extends keyof MetaspriteTile>(key: T) => (
-    editValue: MetaspriteTile[T]
-  ) => {
-    onModifySprite();
-    dispatch(
-      entitiesActions.editMetaspriteTiles({
-        metaspriteTileIds: selectedTileIds,
-        changes: {
-          [key]: editValue,
-        },
-      })
-    );
-  };
+  const onChangeTilesFields =
+    <T extends keyof MetaspriteTile>(key: T) =>
+    (editValue: MetaspriteTile[T]) => {
+      dispatch(
+        entitiesActions.editMetaspriteTiles({
+          spriteSheetId: id,
+          metaspriteTileIds: selectedTileIds,
+          changes: {
+            [key]: editValue,
+          },
+        })
+      );
+    };
 
-  const onChangeTileFieldInput = <T extends keyof MetaspriteTile>(key: T) => (
-    e:
-      | React.ChangeEvent<HTMLInputElement>
-      | React.ChangeEvent<HTMLTextAreaElement>
-  ) => {
-    const editValue = castEventValue(e);
-    onModifySprite();
-    dispatch(
-      entitiesActions.editMetaspriteTile({
-        metaspriteTileId: selectedTileId,
-        changes: {
-          [key]: editValue,
-        },
-      })
-    );
-  };
+  const onChangeTileFieldInput =
+    <T extends keyof MetaspriteTile>(key: T) =>
+    (
+      e:
+        | React.ChangeEvent<HTMLInputElement>
+        | React.ChangeEvent<HTMLTextAreaElement>
+    ) => {
+      const editValue = castEventValue(e);
+      dispatch(
+        entitiesActions.editMetaspriteTile({
+          spriteSheetId: id,
+          metaspriteTileId: selectedTileId,
+          changes: {
+            [key]: editValue,
+          },
+        })
+      );
+    };
 
   const onToggleFlipX = useCallback(() => {
-    onModifySprite();
     dispatch(
       entitiesActions.flipXMetaspriteTiles({
+        spriteSheetId: id,
         metaspriteTileIds: selectedTileIds,
       })
     );
   }, [selectedTileIds, metaspriteTile?.flipX]);
 
   const onToggleFlipY = useCallback(() => {
-    onModifySprite();
     dispatch(
       entitiesActions.flipYMetaspriteTiles({
+        spriteSheetId: id,
         metaspriteTileIds: selectedTileIds,
       })
     );
   }, [selectedTileIds, metaspriteTile?.flipY]);
 
   const sendTileToBack = useCallback(() => {
-    onModifySprite();
     dispatch(
       entitiesActions.sendMetaspriteTilesToBack({
+        spriteSheetId: id,
         metaspriteTileIds: selectedTileIds,
         metaspriteId: metaspriteId,
       })
@@ -205,9 +207,9 @@ export const SpriteEditor = ({
   }, [selectedTileIds, metaspriteId]);
 
   const sendTileToFront = useCallback(() => {
-    onModifySprite();
     dispatch(
       entitiesActions.sendMetaspriteTilesToFront({
+        spriteSheetId: id,
         metaspriteTileIds: selectedTileIds,
         metaspriteId: metaspriteId,
       })
@@ -239,9 +241,9 @@ export const SpriteEditor = ({
   }, [metaspriteId]);
 
   const onPaste = useCallback(() => {
-    onModifySprite();
     dispatch(
       clipboardActions.pasteSprite({
+        spriteSheetId: id,
         metaspriteId,
         spriteAnimationId: animationId,
       })
@@ -253,9 +255,9 @@ export const SpriteEditor = ({
   }, []);
 
   const onRemoveSelectedTiles = useCallback(() => {
-    onModifySprite();
     dispatch(
       entitiesActions.removeMetaspriteTiles({
+        spriteSheetId: id,
         metaspriteTileIds: selectedTileIds,
         metaspriteId,
       })
@@ -263,9 +265,9 @@ export const SpriteEditor = ({
   }, [dispatch, selectedTileIds, metaspriteId]);
 
   const onRemoveMetasprite = useCallback(() => {
-    onModifySprite();
     dispatch(
       entitiesActions.removeMetasprite({
+        spriteSheetId: id,
         metaspriteId,
         spriteAnimationId: animationId,
       })
@@ -277,19 +279,6 @@ export const SpriteEditor = ({
   }, [replaceSpriteTileMode]);
 
   const autoDetect = sprite?.autoDetect;
-
-  const onModifySprite = useCallback(() => {
-    if (autoDetect) {
-      dispatch(
-        entitiesActions.editSpriteSheet({
-          spriteSheetId: id,
-          changes: {
-            autoDetect: false,
-          },
-        })
-      );
-    }
-  }, [dispatch, autoDetect, id]);
 
   const onAutoDetect = useCallback(() => {
     dispatch(

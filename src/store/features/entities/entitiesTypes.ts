@@ -183,6 +183,7 @@ export type SpriteSheet = {
   filename: string;
   type: SpriteSheetType;
   numFrames: number;
+  numTiles: number;
   plugin?: string;
   inode: string;
   checksum: string;

@@ -32,6 +32,7 @@ import { getAnimationNameById } from "../../components/sprites/helpers";
 import MetaspriteEditorToolsPanel from "../../components/sprites/MetaspriteEditorToolsPanel";
 import { ZoomButton } from "../../components/ui/buttons/ZoomButton";
 import MetaspriteEditorPreviewSettings from "../../components/sprites/MetaspriteEditorPreviewSettings";
+import spriteActions from "../../store/features/sprite/spriteActions";
 
 const Wrapper = styled.div`
   display: flex;
@@ -146,6 +147,10 @@ const SpritesPage = () => {
   const prevWidth = prevWindowWidthRef.current;
 
   useEffect(() => {
+    dispatch(spriteActions.compileSprite({ spriteSheetId: selectedId }));
+  }, [dispatch, selectedId]);
+
+  useEffect(() => {
     if (windowWidth !== prevWidth) {
       const panelsTotalWidth =
         leftPaneWidth + rightPaneWidth + minCenterPaneWidth;
@@ -171,10 +176,10 @@ const SpritesPage = () => {
     }, 100)
   );
 
-  useEffect(() => debouncedStoreWidths.current(leftPaneWidth, rightPaneWidth), [
-    leftPaneWidth,
-    rightPaneWidth,
-  ]);
+  useEffect(
+    () => debouncedStoreWidths.current(leftPaneWidth, rightPaneWidth),
+    [leftPaneWidth, rightPaneWidth]
+  );
 
   const recalculateLeftColumn = () => {
     const newWidth = Math.min(
@@ -302,7 +307,7 @@ const SpritesPage = () => {
               )
             }
           >
-            {l10n("FIELD_TILES")}
+            {l10n("FIELD_TILES")} ({selectedSprite.numTiles} unique)
           </SplitPaneHeader>
           <SpriteTilePalette id={selectedId} />
         </div>

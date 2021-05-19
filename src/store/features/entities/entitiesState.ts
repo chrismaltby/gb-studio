@@ -140,71 +140,73 @@ export const initialState: EntitiesState = {
   engineFieldValues: engineFieldValuesAdapter.getInitialState(),
 };
 
-const moveSelectedEntity = ({
-  sceneId,
-  x,
-  y,
-}: {
-  sceneId: string;
-  x: number;
-  y: number;
-}) => (
-  dispatch: ThunkDispatch<RootState, unknown, AnyAction>,
-  getState: () => RootState
-) => {
-  const state = getState();
-  const { dragging, scene, eventId, entityId, type: editorType } = state.editor;
-  if (dragging === DRAG_PLAYER) {
-    dispatch(settingsActions.editPlayerStartAt({ sceneId, x, y }));
-  } else if (dragging === DRAG_DESTINATION) {
-    dispatch(
-      editDestinationPosition(
-        eventId,
-        scene,
-        editorType,
-        entityId,
-        sceneId,
-        x,
-        y
-      )
-    );
-  } else if (dragging === DRAG_ACTOR) {
-    dispatch(
-      actions.moveActor({
-        actorId: entityId,
-        sceneId: scene,
-        newSceneId: sceneId,
-        x,
-        y,
-      })
-    );
-  } else if (dragging === DRAG_TRIGGER) {
-    dispatch(
-      actions.moveTrigger({
-        sceneId: scene,
-        triggerId: entityId,
-        newSceneId: sceneId,
-        x,
-        y,
-      })
-    );
-  }
-};
+const moveSelectedEntity =
+  ({ sceneId, x, y }: { sceneId: string; x: number; y: number }) =>
+  (
+    dispatch: ThunkDispatch<RootState, unknown, AnyAction>,
+    getState: () => RootState
+  ) => {
+    const state = getState();
+    const {
+      dragging,
+      scene,
+      eventId,
+      entityId,
+      type: editorType,
+    } = state.editor;
+    if (dragging === DRAG_PLAYER) {
+      dispatch(settingsActions.editPlayerStartAt({ sceneId, x, y }));
+    } else if (dragging === DRAG_DESTINATION) {
+      dispatch(
+        editDestinationPosition(
+          eventId,
+          scene,
+          editorType,
+          entityId,
+          sceneId,
+          x,
+          y
+        )
+      );
+    } else if (dragging === DRAG_ACTOR) {
+      dispatch(
+        actions.moveActor({
+          actorId: entityId,
+          sceneId: scene,
+          newSceneId: sceneId,
+          x,
+          y,
+        })
+      );
+    } else if (dragging === DRAG_TRIGGER) {
+      dispatch(
+        actions.moveTrigger({
+          sceneId: scene,
+          triggerId: entityId,
+          newSceneId: sceneId,
+          x,
+          y,
+        })
+      );
+    }
+  };
 
-const removeSelectedEntity = () => (
-  dispatch: ThunkDispatch<RootState, unknown, AnyAction>,
-  getState: () => RootState
-) => {
-  const state = getState();
-  const { scene, entityId, type: editorType } = state.editor;
-  if (editorType === "scene") {
-    dispatch(actions.removeScene({ sceneId: scene }));
-  } else if (editorType === "trigger") {
-    dispatch(actions.removeTrigger({ sceneId: scene, triggerId: entityId }));
-  } else if (editorType === "actor") {
-    dispatch(actions.removeActor({ sceneId: scene, actorId: entityId }));
-  }
-};
+const removeSelectedEntity =
+  () =>
+  (
+    dispatch: ThunkDispatch<RootState, unknown, AnyAction>,
+    getState: () => RootState
+  ) => {
+    const state = getState();
+    const { scene, entityId, type: editorType } = state.editor;
+    if (editorType === "scene") {
+      dispatch(actions.removeScene({ sceneId: scene }));
+    } else if (editorType === "trigger") {
+      dispatch(actions.removeTrigger({ sceneId: scene, triggerId: entityId }));
+    } else if (editorType === "actor") {
+      dispatch(actions.removeActor({ sceneId: scene, actorId: entityId }));
+    }
+  };
 
 const editDestinationPosition = (
   eventId: string,
@@ -1663,6 +1665,7 @@ const sendMetaspriteTilesToFront: CaseReducer<
   PayloadAction<{
     metaspriteId: string;
     metaspriteTileIds: string[];
+    spriteSheetId: string;
   }>
 > = (state, action) => {
   const metasprite = state.metasprites.entities[action.payload.metaspriteId];
@@ -1691,6 +1694,7 @@ const sendMetaspriteTilesToBack: CaseReducer<
   PayloadAction<{
     metaspriteId: string;
     metaspriteTileIds: string[];
+    spriteSheetId: string;
   }>
 > = (state, action) => {
   const metasprite = state.metasprites.entities[action.payload.metaspriteId];
@@ -1719,6 +1723,7 @@ const removeMetasprite: CaseReducer<
   PayloadAction<{
     metaspriteId: string;
     spriteAnimationId: string;
+    spriteSheetId: string;
   }>
 > = (state, action) => {
   const spriteAnimation =
@@ -1785,15 +1790,16 @@ const addMetaspriteTile: CaseReducer<
 
 const moveMetaspriteTiles: CaseReducer<
   EntitiesState,
-  PayloadAction<
-    {
+  PayloadAction<{
+    spriteSheetId: string;
+    metaspriteTiles: {
       metaspriteTileId: string;
       x: number;
       y: number;
-    }[]
-  >
+    }[];
+  }>
 > = (state, action) => {
-  action.payload.forEach(({ metaspriteTileId, x, y }) => {
+  action.payload.metaspriteTiles.forEach(({ metaspriteTileId, x, y }) => {
     const tile = state.metaspriteTiles.entities[metaspriteTileId];
     if (tile) {
       tile.x = x;
@@ -1805,6 +1811,7 @@ const moveMetaspriteTiles: CaseReducer<
 const moveMetaspriteTilesRelative: CaseReducer<
   EntitiesState,
   PayloadAction<{
+    spriteSheetId: string;
     metaspriteTileIds: string[];
     x: number;
     y: number;
@@ -1824,7 +1831,7 @@ const moveMetaspriteTilesRelative: CaseReducer<
 
 const flipXMetaspriteTiles: CaseReducer<
   EntitiesState,
-  PayloadAction<{ metaspriteTileIds: string[] }>
+  PayloadAction<{ spriteSheetId: string; metaspriteTileIds: string[] }>
 > = (state, action) => {
   const metaspriteTiles = action.payload.metaspriteTileIds
     .map((id) => state.metaspriteTiles.entities[id])
@@ -1859,7 +1866,7 @@ const flipXMetaspriteTiles: CaseReducer<
 
 const flipYMetaspriteTiles: CaseReducer<
   EntitiesState,
-  PayloadAction<{ metaspriteTileIds: string[] }>
+  PayloadAction<{ spriteSheetId: string; metaspriteTileIds: string[] }>
 > = (state, action) => {
   const metaspriteTiles = action.payload.metaspriteTileIds
     .map((id) => state.metaspriteTiles.entities[id])
@@ -1894,7 +1901,11 @@ const flipYMetaspriteTiles: CaseReducer<
 
 const editMetaspriteTile: CaseReducer<
   EntitiesState,
-  PayloadAction<{ metaspriteTileId: string; changes: Partial<MetaspriteTile> }>
+  PayloadAction<{
+    spriteSheetId: string;
+    metaspriteTileId: string;
+    changes: Partial<MetaspriteTile>;
+  }>
 > = (state, action) => {
   const metaspriteTile =
     state.metaspriteTiles.entities[action.payload.metaspriteTileId];
@@ -1913,6 +1924,7 @@ const editMetaspriteTile: CaseReducer<
 const editMetaspriteTiles: CaseReducer<
   EntitiesState,
   PayloadAction<{
+    spriteSheetId: string;
     metaspriteTileIds: string[];
     changes: Partial<MetaspriteTile>;
   }>
@@ -1929,6 +1941,7 @@ const editMetaspriteTiles: CaseReducer<
 const removeMetaspriteTiles: CaseReducer<
   EntitiesState,
   PayloadAction<{
+    spriteSheetId: string;
     metaspriteTileIds: string[];
     metaspriteId: string;
   }>
@@ -1968,9 +1981,11 @@ const removeMetaspriteTilesOutsideCanvas: CaseReducer<
   const minY = -16;
   const maxY = spriteSheet.canvasHeight;
 
-  const removeMetaspriteTiles = (metasprite.tiles
-    .map((id) => state.metaspriteTiles.entities[id])
-    .filter((i) => !!i) as MetaspriteTile[])
+  const removeMetaspriteTiles = (
+    metasprite.tiles
+      .map((id) => state.metaspriteTiles.entities[id])
+      .filter((i) => !!i) as MetaspriteTile[]
+  )
     .filter(
       (tile) =>
         tile.x <= minX || tile.x >= maxX || tile.y <= minY || tile.y >= maxY
@@ -1994,6 +2009,7 @@ const removeMetaspriteTilesOutsideCanvas: CaseReducer<
 const editSpriteAnimation: CaseReducer<
   EntitiesState,
   PayloadAction<{
+    spriteSheetId: string;
     spriteAnimationId: string;
     changes: Partial<SpriteAnimation>;
   }>
@@ -2015,6 +2031,7 @@ const editSpriteAnimation: CaseReducer<
 const swapSpriteAnimationFrames: CaseReducer<
   EntitiesState,
   PayloadAction<{
+    spriteSheetId: string;
     spriteAnimationId: string;
     fromIndex: number;
     toIndex: number;
@@ -2682,7 +2699,10 @@ const entitiesSlice = createSlice({
 
     addMetasprite: {
       reducer: addMetasprite,
-      prepare: (payload: { spriteAnimationId: string }) => {
+      prepare: (payload: {
+        spriteAnimationId: string;
+        spriteSheetId: string;
+      }) => {
         return {
           payload: {
             ...payload,
@@ -2695,6 +2715,7 @@ const entitiesSlice = createSlice({
     cloneMetasprite: {
       reducer: cloneMetasprite,
       prepare: (payload: {
+        spriteSheetId: string;
         spriteAnimationId: string;
         metaspriteId: string;
       }) => {
@@ -2718,6 +2739,7 @@ const entitiesSlice = createSlice({
     addMetaspriteTile: {
       reducer: addMetaspriteTile,
       prepare: (payload: {
+        spriteSheetId: string;
         metaspriteId: string;
         x: number;
         y: number;
