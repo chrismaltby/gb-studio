@@ -40,6 +40,7 @@ import { FontSelect } from "../../components/forms/FontSelect";
 import { options as sceneTypes } from "../../components/forms/SceneTypeSelect";
 import { SpriteSheetSelect } from "../../components/forms/SpriteSheetSelect";
 import { CharacterEncodingSelect } from "../../components/forms/CharacterEncodingSelect";
+import { ColorAnimationText } from "../../components/settings/ColorAnimationText";
 
 const SettingsPage: FC = () => {
   const dispatch = useDispatch();
@@ -216,7 +217,11 @@ const SettingsPage: FC = () => {
           ]}
         >
           <CardAnchor id="settingsColor" />
-          <CardHeading>{l10n("SETTINGS_GBC")}</CardHeading>
+          <CardHeading>
+            <ColorAnimationText>
+              {l10n("SETTINGS_GBC")}
+            </ColorAnimationText>
+          </CardHeading>
           <SearchableSettingRow
             searchTerm={searchTerm}
             searchMatches={[l10n("FIELD_EXPORT_IN_COLOR")]}
