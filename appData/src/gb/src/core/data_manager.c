@@ -17,6 +17,7 @@
 #include "data/data_bootstrap.h"
 
 #define MAX_SCENE_SPRITES       128
+#define ALLOC_BKG_TILES_TOWARDS_SPR
 
 #define EMOTE_SPRITE            124
 #define EMOTE_SPRITE_SIZE       4
@@ -57,14 +58,38 @@ void load_init() __banked {
 void load_bkg_tileset(const tileset_t* tiles, UBYTE bank) __banked {
     if ((!bank) || (!tiles)) return;    
     UWORD ntiles = ReadBankedUWORD(&(tiles->n_tiles), bank);
-    UBYTE bkg_tiles, sprite_tiles;
-    if (ntiles > 256) {
-        bkg_tiles = 0; sprite_tiles = ntiles - 256; 
-    } else {
-        bkg_tiles = ntiles; sprite_tiles = 0;
+
+    // load first background chunk, align to zero tile
+    UBYTE * data = tiles->tiles;
+    if (ntiles < 128) {
+        SetBankedBkgData(0, ntiles, data, bank);
+        return;    
     }
-    SetBankedBkgData(0, bkg_tiles, tiles->tiles, bank);
-    if (sprite_tiles) SetBankedSpriteData(0, sprite_tiles, tiles->tiles + (256 * 16), bank);
+    SetBankedBkgData(0, 128, data, bank);
+    ntiles -= 128; data += 128 * 16;
+
+    // load second background chunk
+    if (ntiles < 128) {
+        if (ntiles < 65) {
+            #ifdef ALLOC_BKG_TILES_TOWARDS_SPR
+                // new allocation style, align to 192-th tile
+                SetBankedBkgData(192 - ntiles, ntiles, data, bank);
+            #else
+                // old allocation style, align to 128-th tile
+                SetBankedBkgData(128, ntiles, data, bank);
+            #endif
+        } else {
+            // if greater than 64 allow overflow into UI, align to 128-th tile
+            SetBankedBkgData(128, ntiles, data, bank);
+        }
+        return;
+    }
+    SetBankedBkgData(128, 128, data, bank);
+    ntiles -= 128; data += 128 * 16; 
+    
+    // if more than 256 - then it's a 360-tile logo, load rest to sprite area
+    if (!ntiles) return;
+    SetBankedSpriteData(0, ntiles, data, bank);
 }
 
 void load_background(const background_t* background, UBYTE bank) __banked {

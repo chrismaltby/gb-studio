@@ -11,6 +11,7 @@ GBSPACK = $(TOP)../gbspack/gbspack
 TEST_CHK = python $(CURDIR)/$(TEST_FW)/unit_checker.py
 GBS_CLI = node $(TOP)../gb-studio/out/cli/gb-studio-cli.js
 
+ROMTITLE = "GBSTUDIO"
 
 ROM_BUILD_DIR = build
 OBJDIR = obj
@@ -151,7 +152,7 @@ $(REL_OBJDIR)/.rel:	$(OBJS)
 	touch $(REL_OBJDIR)/.rel
 
 $(ROM_BUILD_DIR)/%.gb:	$(REL_OBJDIR)/.rel
-	$(CC) $(LFLAGS) -o $@ $(REL_OBJS)
+	$(CC) -Wm-yn$(ROMTITLE) $(LFLAGS) -o $@ $(REL_OBJS)
 
 clean:
 	@echo "CLEANUP..."
