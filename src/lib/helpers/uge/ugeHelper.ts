@@ -288,7 +288,7 @@ export const saveUGESong = (song: Song): ArrayBuffer => {
 
     addUint32(i.frequency_sweep_time);
     addUint32(i.frequency_sweep_shift < 0 ? 1 : 0);
-    addUint32(i.frequency_sweep_shift);
+    addUint32(Math.abs(i.frequency_sweep_shift));
 
     addUint8(i.duty_cycle);
 
