@@ -3,6 +3,8 @@ import { DutyInstrument, NoiseInstrument, WaveInstrument } from "../../../store/
 import { PatternCell } from "./song/PatternCell";
 import { Song } from "./song/Song";
 
+const noteConsts = ["C_3","Cs3","D_3","Ds3","E_3","F_3","Fs3","G_3","Gs3","A_3","As3","B_3","C_4","Cs4","D_4","Ds4","E_4","F_4","Fs4","G_4","Gs4","A_4","As4","B_4","C_5","Cs5","D_5","Ds5","E_5","F_5","Fs5","G_5","Gs5","A_5","As5","B_5","C_6","Cs6","D_6","Ds6","E_6","F_6","Fs6","G_6","Gs6","A_6","As6","B_6","C_7","Cs7","D_7","Ds7","E_7","F_7","Fs7","G_7","Gs7","A_7","As7","B_7","C_8","Cs8","D_8","Ds8","E_8","F_8","Fs8","G_8","Gs8","A_8","As8","B_8"];
+
 interface InstrumentMap {
   [index: number]: number
 }
@@ -419,8 +421,8 @@ const patternEqual = function (a: PatternCell[], b: PatternCell[]) {
 }
 
 export const exportToC = (song: Song, trackName: string): string => {
-  const decHex = (n: number) => {
-    return "0x" + n.toString(16).toUpperCase().padStart(2, "0");
+  const decHex = (n: number, maxLength = 2) => {
+    return "0x" + n.toString(16).toUpperCase().padStart(maxLength, "0");
   };
   
   const findPattern = function (pattern: PatternCell[]) {
@@ -436,7 +438,7 @@ export const exportToC = (song: Song, trackName: string): string => {
   }
 
   const formatPatternCell = function (cell: PatternCell) {
-    const note = (cell.note !== null ? cell.note : "___");
+    const note = (cell.note !== null ? noteConsts[cell.note] : "___");
     let instrument = 0;
     let effect_code = 0;
     let effect_param = 0;
@@ -446,7 +448,7 @@ export const exportToC = (song: Song, trackName: string): string => {
       effect_code = cell.effectcode;
       effect_param = cell.effectparam || 0;
     }
-    return `${note}, ${decHex((instrument << 4) | effect_code)}, ${decHex(effect_param)}`;
+    return `DN(${note}, ${instrument}, ${decHex((effect_code << 8) | effect_param, 3)})`;
   }
 
   const formatDutyInstrument = function (instr: DutyInstrument) {
