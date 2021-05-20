@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { useDispatch } from "react-redux";
+import l10n from "../../lib/helpers/l10n";
 
 import settingsActions from "../../store/features/settings/settingsActions";
 import { SettingsState } from "../../store/features/settings/settingsState";
@@ -18,25 +19,24 @@ export const NoSongsMessage = () => {
 
   return (
     <>
-      <h2>No songs found</h2>
+      <h2>{l10n("MESSAGE_NO_SONGS_FOUND")}</h2>
       <p>
-        Please add .uge files to the project <i>assets/music</i> folder.
+        {l10n("MESSAGE_ADD_UGE_FILES")}
       </p>
       <p 
         onClick={() => setShowMessage(!showMessage)}
         style={{ textDecoration: "underline", cursor: "pointer" }}
       >
-        What about .mod files?
+       {l10n("MESSAGE_WHAT_ABOUT_MOD")}
       </p>
       { showMessage ? 
         <>
           <p>
-            Your project is currently configured to use <strong>hUGEDriver</strong> as its music driver. 
+            {l10n("MESSAGE_USE_MOD_FILES")}
           </p>
-          <p>  
-            If you want to use .mod files instead, you can enable <strong>GBT Player</strong>. You can change this later in 'Settings'.
-          </p>  
-          <Button onClick={() => editSettings({ musicDriver: "gbt" })}>Enable GBT Player</Button>
+          <Button onClick={() => editSettings({ musicDriver: "gbt" })}>
+            {l10n("MESSAGE_ENABLE_GBT")}
+          </Button>
         </>
       : "" }
     </>
