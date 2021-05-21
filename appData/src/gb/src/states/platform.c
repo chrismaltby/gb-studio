@@ -116,6 +116,8 @@ void platform_update() __banked {
         }
         PLAYER.pos.y += (pl_vel_y >> 8);
     } else {
+
+        // Horizontal Movement
         if (INPUT_LEFT) {
             if (INPUT_B) {
                 pl_vel_x -= plat_run_acc;
@@ -132,7 +134,22 @@ void platform_update() __banked {
                 pl_vel_x += plat_walk_acc;
                 pl_vel_x = CLAMP(pl_vel_x, plat_min_vel, plat_walk_vel);
             }
-        } else if (INPUT_UP) {
+        } else if (grounded) {
+            if (pl_vel_x < 0) {
+                pl_vel_x += plat_dec;
+                if (pl_vel_x > 0) {
+                    pl_vel_x = 0;
+                }
+            } else if (pl_vel_x > 0) {
+                pl_vel_x -= plat_dec;
+                if (pl_vel_x < 0) {
+                    pl_vel_x = 0;
+                }
+            }
+        }
+
+        // Vertical Movement
+        if (INPUT_UP) {
             // Grab upwards ladder
             UBYTE tile_x_mid = ((PLAYER.pos.x >> 4) + PLAYER.bounds.left + p_half_width) >> 3;
             UBYTE tile_y   = (((PLAYER.pos.y >> 4) + PLAYER.bounds.top) >> 3);
@@ -149,18 +166,6 @@ void platform_update() __banked {
                 PLAYER.pos.x = (((tile_x_mid << 3) + 4 - (PLAYER.bounds.left + p_half_width) << 4));
                 on_ladder = TRUE;
                 pl_vel_x = 0;
-            }
-        } else if (grounded) {
-            if (pl_vel_x < 0) {
-                pl_vel_x += plat_dec;
-                if (pl_vel_x > 0) {
-                    pl_vel_x = 0;
-                }
-            } else if (pl_vel_x > 0) {
-                pl_vel_x -= plat_dec;
-                if (pl_vel_x < 0) {
-                    pl_vel_x = 0;
-                }
             }
         }
 
