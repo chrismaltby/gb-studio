@@ -245,6 +245,16 @@ const toASMDir = (direction: string) => {
   return ".DIR_DOWN";
 };
 
+const toASMMoveFlags = (moveType: string, useCollisions: boolean) => {
+  return unionFlags(
+    ([] as string[]).concat(
+      useCollisions ? ".ACTOR_ATTR_CHECK_COLL" : [],
+      moveType === "horizontal" ? ".ACTOR_ATTR_H_FIRST" : [],
+      moveType === "diagonal" ? ".ACTOR_ATTR_DIAGONAL" : []
+    )
+  );
+};
+
 const toScriptOperator = (
   operator: OperatorSymbol
 ): ScriptBuilderRPNOperation => {
@@ -1506,15 +1516,7 @@ class ScriptBuilder {
     this._addComment("Actor Move To");
     this._setConst("^/(ACTOR + 1)/", x * 8 * 16);
     this._setConst("^/(ACTOR + 2)/", y * 8 * 16);
-    this._setConst(
-      "^/(ACTOR + 3)/",
-      unionFlags(
-        ([] as string[]).concat(
-          useCollisions ? ".ACTOR_ATTR_CHECK_COLL" : [],
-          moveType === "horizontal" ? ".ACTOR_ATTR_H_FIRST" : []
-        )
-      )
-    );
+    this._setConst("^/(ACTOR + 3)/", toASMMoveFlags(moveType, useCollisions));
     this._actorMoveTo("ACTOR");
     this._assertStackNeutral(stackPtr);
     this._addNL();
@@ -1542,15 +1544,7 @@ class ScriptBuilder {
     this._set("^/(ACTOR + 2 - 2)/", ".ARG0");
     this._stackPop(2);
 
-    this._setConst(
-      "^/(ACTOR + 3)/",
-      unionFlags(
-        ([] as string[]).concat(
-          useCollisions ? ".ACTOR_ATTR_CHECK_COLL" : [],
-          moveType === "horizontal" ? ".ACTOR_ATTR_H_FIRST" : []
-        )
-      )
-    );
+    this._setConst("^/(ACTOR + 3)/", toASMMoveFlags(moveType, useCollisions));
     this._actorMoveTo("ACTOR");
     this._assertStackNeutral(stackPtr);
     this._addNL();
@@ -1577,15 +1571,7 @@ class ScriptBuilder {
     this._set("^/(ACTOR + 1 - 2)/", ".ARG1");
     this._set("^/(ACTOR + 2 - 2)/", ".ARG0");
     this._stackPop(2);
-    this._setConst(
-      "^/(ACTOR + 3)/",
-      unionFlags(
-        ([] as string[]).concat(
-          useCollisions ? ".ACTOR_ATTR_CHECK_COLL" : [],
-          moveType === "horizontal" ? ".ACTOR_ATTR_H_FIRST" : []
-        )
-      )
-    );
+    this._setConst("^/(ACTOR + 3)/", toASMMoveFlags(moveType, useCollisions));
     this._actorMoveTo("ACTOR");
     this._assertStackNeutral(stackPtr);
     this._addNL();
