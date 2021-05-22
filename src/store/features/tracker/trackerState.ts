@@ -21,6 +21,7 @@ export interface TrackerState {
   tool: "pencil" | "eraser" | null,
   defaultInstruments: [number, number, number, number],
   visibleChannels: number[],
+  hoverNote: number | null;
 }
 
 export const initialState: TrackerState = {
@@ -35,6 +36,7 @@ export const initialState: TrackerState = {
   tool: "pencil",
   defaultInstruments: [0, 0, 0, 0],
   visibleChannels: [0],
+  hoverNote: null
 };
 
 export const loadSongFile = createAsyncThunk<Song | null, string>(
@@ -88,6 +90,9 @@ const trackerSlice = createSlice({
     },
     toggleView: (state, _action: PayloadAction<"tracker" | "roll">) => {
       state.view = _action.payload;
+    },
+    setHoverNote: (state, action: PayloadAction<number | null>) => {
+      state.hoverNote = action.payload;
     },
     setTool: (state, _action: PayloadAction<"pencil" | "eraser" | null>) => {
       state.tool = _action.payload;

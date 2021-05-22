@@ -59,6 +59,9 @@ export const RollChannelFwd = ({
   const defaultInstruments = useSelector(
     (state: RootState) => state.tracker.present.defaultInstruments
   );
+  const hoverNote = useSelector(
+    (state: RootState) => state.tracker.present.hoverNote
+  );
 
   const removeNote = useCallback((channel: number, column: number) => (e: any) => {
     if (e.button === 2 || tool === "eraser" && e.button === 0) {
@@ -102,6 +105,23 @@ export const RollChannelFwd = ({
     }
   }, [tool, cellSize, defaultInstruments, dispatch, patternId]);
 
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    const note = ((12 * 6) - 1) - Math.floor(e.offsetY / cellSize);
+    if (note !== hoverNote) {
+      dispatch(
+        trackerActions.setHoverNote(note)
+      );
+    }
+  }, [hoverNote, cellSize, dispatch]);
+
+  const handleMouseLeave = useCallback((e: MouseEvent) => {
+    if (hoverNote) {
+      dispatch(
+        trackerActions.setHoverNote(null)
+      );
+    }
+  }, [hoverNote, dispatch]);
+
   return (
     <Wrapper
       data-channel={channelId}
@@ -110,6 +130,8 @@ export const RollChannelFwd = ({
       cols={64}
       size={cellSize}
       onMouseDown={(e) => { handleMouseDown(e.nativeEvent) }}
+      onMouseMove={(e) => { handleMouseMove(e.nativeEvent) }}
+      onMouseLeave={(e) => { handleMouseLeave(e.nativeEvent) }}
     >
       {patterns?.map((column: PatternCell[], columnIdx: number) => {
         const cell = column[channelId];
