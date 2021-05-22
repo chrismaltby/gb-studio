@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.2]
+
+### Fixed
+
+- Various bug fixes for release of Dragonborne
+
 ## [1.2.1]
 
 ### Added
@@ -29,7 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.2.0]
 
-# Added
+### Added
 
 - Add OnInit script to each actor.
 - Add preview in dropdowns for scenes, actors and sprite sheets.
