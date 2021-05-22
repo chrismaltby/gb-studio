@@ -207,7 +207,7 @@ export const SongPianoRoll = ({
             {v.map((i) => 
               <RollChannel 
                 channelId={i}
-                active={visibleChannels[0] === MAX_NOTE - i}
+                active={visibleChannels[0] === i}
                 patternId={patternId}
                 patterns={song?.patterns[patternId]}
                 cellSize={CELL_SIZE}
