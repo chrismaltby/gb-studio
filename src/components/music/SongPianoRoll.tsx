@@ -21,7 +21,7 @@ interface SongPianoRollProps {
   height: number
 }
 
-interface PionoKeyProps {
+interface PianoKeyProps {
   color: "white" | "black";
   tall?: boolean;
   highlight?: boolean;
@@ -62,7 +62,7 @@ const highlightStyle = css`
   }
 `;
 
-const PianoKey = styled.div<PionoKeyProps>`
+const PianoKey = styled.div<PianoKeyProps>`
   box-sizing: border-box;
   display: flex;
   align-items: flex-end;
