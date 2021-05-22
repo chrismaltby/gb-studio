@@ -5,11 +5,15 @@ import { RootState } from "../../store/configureStore";
 import { Select, Option, OptGroup } from "../ui/form/Select";
 import l10n from "../../lib/helpers/l10n";
 import { useGroupedEngineFields } from "../settings/useGroupedEngineFields";
+import { EngineFieldSchema } from "../../store/features/engine/engineState";
 
 interface EngineFieldSelectProps {
   value?: string;
   onChange?: (newValue: string) => void;
 }
+
+const notDefine = (engineField: EngineFieldSchema) =>
+  engineField.cType !== "define";
 
 const EngineFieldSelect: React.FC<EngineFieldSelectProps> = ({
   value,
@@ -23,7 +27,7 @@ const EngineFieldSelect: React.FC<EngineFieldSelectProps> = ({
     setOptions(
       groupedFields.map((g) => ({
         label: l10n(g.name),
-        options: g.fields.map((f) => ({
+        options: g.fields.filter(notDefine).map((f) => ({
           value: f.key,
           label: l10n(f.label),
         })),

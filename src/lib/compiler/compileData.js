@@ -534,6 +534,24 @@ const compile = async (
     `#ifndef DATA_PTRS_H\n#define DATA_PTRS_H\n\n` +
     `#include "bankdata.h"\n` +
     `#include "gbs_types.h"\n\n` +
+    // Add define fields from engineFields
+    engineFields
+      .filter(
+        // Add define types without explict file set to data/data_bootstrap.h
+        (engineField) => engineField.cType === "define" && !engineField.file
+      )
+      .map((engineField, defineIndex, defineFields) => {
+        const engineValue = projectData.engineFieldValues.find(
+          (v) => v.id === engineField.key
+        );
+        const value =
+          engineValue && engineValue.value !== undefined
+            ? engineValue.value
+            : engineField.defaultValue;
+        return `#define ${engineField.key} ${value}${
+          defineIndex === defineFields.length - 1 ? "\n\n" : "\n"
+        }`;
+      }) +
     `extern const INT16 start_scene_x;\n` +
     `extern const INT16 start_scene_y;\n` +
     `extern const direction_e start_scene_dir;\n` +

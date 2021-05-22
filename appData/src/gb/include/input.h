@@ -65,6 +65,9 @@
 /* TRUE on first frame that down is pressed on dpad  */
 #define INPUT_DOWN_PRESSED ((joy & J_DOWN) && !(last_joy & J_DOWN))
 
+/* TRUE on first frame that button is pressed */
+#define INPUT_PRESSED(btn) ((joy & btn) && !(last_joy & btn)) 
+
 /* TRUE on first frame that A button is pressed */
 #define INPUT_A_PRESSED ((joy & J_A) && !(last_joy & J_A))
 

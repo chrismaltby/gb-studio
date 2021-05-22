@@ -12,6 +12,10 @@
 #include "trigger.h"
 #include "vm.h"
 
+#define INPUT_PLATFORM_JUMP        INPUT_A
+#define INPUT_PLATFORM_RUN         INPUT_B
+#define INPUT_PLATFORM_INTERACT    INPUT_A
+
 #define PLATFORM_CAMERA_DEADZONE_X 4
 #define PLATFORM_CAMERA_DEADZONE_Y 16
 
@@ -119,7 +123,7 @@ void platform_update() __banked {
 
         // Horizontal Movement
         if (INPUT_LEFT) {
-            if (INPUT_B) {
+            if (INPUT_PLATFORM_RUN) {
                 pl_vel_x -= plat_run_acc;
                 pl_vel_x = CLAMP(pl_vel_x, -plat_run_vel, -plat_min_vel);
             } else {
@@ -127,7 +131,7 @@ void platform_update() __banked {
                 pl_vel_x = CLAMP(pl_vel_x, -plat_walk_vel, -plat_min_vel);
             } 
         } else if (INPUT_RIGHT) {
-            if (INPUT_B) {
+            if (INPUT_PLATFORM_RUN) {
                 pl_vel_x += plat_run_acc;
                 pl_vel_x = CLAMP(pl_vel_x, plat_min_vel, plat_run_vel);
             } else {
@@ -170,7 +174,7 @@ void platform_update() __banked {
         }
 
         // Gravity
-        if (INPUT_A && pl_vel_y < 0) {
+        if (INPUT_PLATFORM_JUMP && pl_vel_y < 0) {
             pl_vel_y += plat_hold_grav;
         } else {
             pl_vel_y += plat_grav;
@@ -255,7 +259,7 @@ void platform_update() __banked {
     if (hit_actor != NULL && hit_actor->collision_group) {
         player_register_collision_with(hit_actor);
         can_jump = FALSE;
-    } else if (INPUT_A_PRESSED) {
+    } else if (INPUT_PRESSED(INPUT_PLATFORM_INTERACT)) {
         if (!hit_actor) {
             hit_actor = actor_in_front_of_player(8, TRUE);
         }
@@ -266,7 +270,7 @@ void platform_update() __banked {
     }
 
     // Jump
-    if (INPUT_A_PRESSED && grounded && can_jump) {
+    if (INPUT_PRESSED(INPUT_PLATFORM_JUMP) && grounded && can_jump) {
         pl_vel_y = -plat_jump_vel;
         grounded = FALSE;
     }

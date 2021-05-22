@@ -21,6 +21,9 @@ interface InitialState {
   engineFieldValues: EngineFieldValue[];
 }
 
+const notDefine = (engineField: EngineFieldSchema) =>
+  engineField.cType !== "define";
+
 export const compileScriptEngineInit = ({
   startX,
   startY,
@@ -71,6 +74,7 @@ ___bank_script_engine_init = 255
 .globl ___bank_script_engine_init
 
 ${engineFields
+  .filter(notDefine)
   .map((engineField) => {
     return `.globl _${engineField.key}`;
   })
@@ -78,6 +82,7 @@ ${engineFields
 
 _script_engine_init::
 ${engineFields
+  .filter(notDefine)
   .map((engineField) => {
     const engineValue = engineFieldValues.find((v) => v.id === engineField.key);
     const value =

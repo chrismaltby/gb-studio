@@ -1,6 +1,48 @@
 {
-  "version": "2.0.0-e18",
+  "version": "3.0.0-e0",
   "fields": [
+    {
+      "key": "INPUT_PLATFORM_JUMP",
+      "label": "FIELD_INPUT_JUMP",
+      "group": "GAMETYPE_PLATFORMER",
+      "type": "select",
+      "options": [
+        ["INPUT_A", "A"],
+        ["INPUT_B", "B"],
+        ["INPUT_UP", "FIELD_DIRECTION_UP"]
+      ],
+      "cType": "define",
+      "file": "src/states/platform.c",
+      "defaultValue": "INPUT_A"
+    },
+    {
+      "key": "INPUT_PLATFORM_RUN",
+      "label": "FIELD_INPUT_RUN",
+      "group": "GAMETYPE_PLATFORMER",
+      "type": "select",
+      "options": [
+        ["INPUT_A", "A"],
+        ["INPUT_B", "B"]
+      ],
+      "cType": "define",
+      "file": "src/states/platform.c",
+      "defaultValue": "INPUT_B"
+    }, 
+    {
+      "key": "INPUT_PLATFORM_INTERACT",
+      "label": "FIELD_INPUT_INTERACT",
+      "group": "GAMETYPE_PLATFORMER",
+      "type": "select",
+      "options": [
+        ["INPUT_A", "A"],
+        ["INPUT_B", "B"],
+        ["INPUT_UP", "FIELD_DIRECTION_UP"],
+        ["INPUT_DOWN", "FIELD_DIRECTION_DOWN"]        
+      ],
+      "cType": "define",
+      "file": "src/states/platform.c",
+      "defaultValue": "INPUT_A"
+    },        
     {
       "key": "plat_min_vel",
       "label": "FIELD_MIN_VEL",
@@ -120,6 +162,19 @@
       "defaultValue": 16,
       "min": 0,
       "max": 64
+    },
+    {
+      "key": "INPUT_TOPDOWN_INTERACT",
+      "label": "FIELD_INPUT_INTERACT",
+      "group": "GAMETYPE_TOP_DOWN",
+      "type": "select",
+      "options": [
+        ["INPUT_A", "A"],
+        ["INPUT_B", "B"]
+      ],
+      "cType": "define",
+      "file": "src/states/topdown.c",
+      "defaultValue": "INPUT_A"
     },    
     {
       "key": "topdown_grid",

@@ -127,8 +127,7 @@ export const EngineFieldInput: FC<EngineFieldInputProps> = ({
     );
   }
   if (field.type === "select") {
-    const theValue =
-      typeof value === "number" ? value : Number(field.defaultValue);
+    const theValue = value !== undefined ? value : field.defaultValue;
     const options = (field.options || []).map(([value, label]) => ({
       value,
       label: l10n(label),

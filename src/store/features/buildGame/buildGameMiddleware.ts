@@ -209,6 +209,8 @@ const buildGameMiddleware: Middleware<{}, RootState> = (store) => (
       // Export compiled data to a folder
       await ejectBuild({
         projectRoot,
+        projectData: project,
+        engineFields,
         outputRoot,
         compiledData,
         progress,

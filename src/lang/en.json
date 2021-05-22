@@ -361,7 +361,10 @@
   "FIELD_SCROLL_SPEED": "Scroll Speed",
   "FIELD_PREVIEW_AS_SCENE": "Preview as {sceneName}",
   "FIELD_PREVIEW_AS_DEFAULT": "Preview Using Default Colors",
-
+  "FIELD_INPUT_JUMP": "Jump Button",
+  "FIELD_INPUT_RUN": "Run Button",
+  "FIELD_INPUT_INTERACT": "Interact Button",
+    
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
   "ASSET_EDIT": "Edit",

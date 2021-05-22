@@ -2,7 +2,11 @@ import glob from "glob";
 import Path from "path";
 import { promisify } from "util";
 import { ensureDir, copyFile, pathExists } from "fs-extra";
-import { checksumFile, mergeChecksums, checksumString } from "../helpers/checksum";
+import {
+  checksumFile,
+  mergeChecksums,
+  checksumString,
+} from "../helpers/checksum";
 
 const globAsync = promisify(glob);
 
@@ -19,8 +23,9 @@ export const cacheObjData = async (buildRoot, tmpPath, env) => {
   const objFiles = await globAsync(`${buildObjRoot}/*.o`);
   const srcFiles = await globAsync(`${buildSrcRoot}/**/*.{c,s}`);
   const includeFiles = await globAsync(`${buildIncludeRoot}/**/*.h`, {
-    ignore: `${buildIncludeRoot}/data/*.h`
+    ignore: `${buildIncludeRoot}/data/*.h`,
   });
+  includeFiles.push(`${buildIncludeRoot}/data/data_bootstrap.h`);
 
   const includeChecksums = await Promise.all(includeFiles.map(checksumFile));
   const includeChecksum = mergeChecksums(includeChecksums);
@@ -34,16 +39,16 @@ export const cacheObjData = async (buildRoot, tmpPath, env) => {
       fileName.indexOf("bank_") !== 0 &&
       fileName.indexOf("music_bank_") !== 0
     ) {
-      const matchingSrc = srcFiles.find(
-        (file) => {
-          const baseName = Path.basename(file);
-          return baseName === `${fileName}.c` || baseName === `${fileName}.s`
-        }
-      );
+      const matchingSrc = srcFiles.find((file) => {
+        const baseName = Path.basename(file);
+        return baseName === `${fileName}.c` || baseName === `${fileName}.s`;
+      });
 
       if (matchingSrc) {
         const checksum = await checksumFile(matchingSrc);
-        const cacheFilename = checksumString(`${envChecksum}_${includeChecksum}_${checksum}`);
+        const cacheFilename = checksumString(
+          `${envChecksum}_${includeChecksum}_${checksum}`
+        );
         const outFile = `${cacheRoot}/${cacheFilename}`;
         await copyFile(objFilePath, outFile);
       }
@@ -59,8 +64,9 @@ export const fetchCachedObjData = async (buildRoot, tmpPath, env) => {
 
   const srcFiles = await globAsync(`${buildSrcRoot}/**/*.{c,s}`);
   const includeFiles = await globAsync(`${buildIncludeRoot}/**/*.h`, {
-    ignore: `${buildIncludeRoot}/data/*.h`
+    ignore: `${buildIncludeRoot}/data/*.h`,
   });
+  includeFiles.push(`${buildIncludeRoot}/data/data_bootstrap.h`);
 
   const includeChecksums = await Promise.all(includeFiles.map(checksumFile));
   const includeChecksum = mergeChecksums(includeChecksums);
@@ -71,7 +77,9 @@ export const fetchCachedObjData = async (buildRoot, tmpPath, env) => {
     const srcFilePath = srcFiles[i];
     const fileName = Path.basename(srcFilePath).replace(/\.(s|c)$/, "");
     const checksum = await checksumFile(srcFilePath);
-    const cacheFilename = checksumString(`${envChecksum}_${includeChecksum}_${checksum}`);
+    const cacheFilename = checksumString(
+      `${envChecksum}_${includeChecksum}_${checksum}`
+    );
     const cacheFile = `${cacheRoot}/${cacheFilename}`;
 
     if (await pathExists(cacheFile)) {
