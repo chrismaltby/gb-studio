@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 import { AnyAction, createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { readFile } from "fs-extra";
+import cloneDeep from "lodash/cloneDeep";
 import { writeFileWithBackupAsync } from "../../../lib/helpers/fs/writeFileWithBackup";
 import { PatternCell } from "../../../lib/helpers/uge/song/PatternCell";
 import { Song } from "../../../lib/helpers/uge/song/Song";
@@ -197,7 +198,7 @@ const trackerSlice = createSlice({
         }
       }
 
-      const patterns = [...state.song.patterns];
+      const patterns = cloneDeep(state.song.patterns);
       patterns[patternId][rowId][colId] = {
         ...patternCell,
         ...patch
