@@ -6,6 +6,7 @@ import styled, { css } from "styled-components";
 import { Select } from "../ui/form/Select";
 // import { PlusIcon } from "../library/Icons";
 import trackerActions from "../../store/features/tracker/trackerActions";
+import trackerDocumentActions from "../../store/features/trackerDocument/trackerDocumentActions";
 
 interface SequenceOption {
   value: number;
@@ -77,7 +78,7 @@ export const SequenceEditorFwd = ({
   );
 
   const play = useSelector(
-    (state: RootState) => state.tracker.present.playing
+    (state: RootState) => state.tracker.playing
   );
 
   if (play && playingSequence !== -1) {
@@ -90,7 +91,7 @@ export const SequenceEditorFwd = ({
   }));
 
   const editSequence = useCallback((index: number, newValue: SequenceOption) => {
-    dispatch(trackerActions.editSequence({
+    dispatch(trackerDocumentActions.editSequence({
       sequenceIndex: index,
       sequenceId: newValue.value
     }));

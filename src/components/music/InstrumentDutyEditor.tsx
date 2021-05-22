@@ -1,9 +1,8 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import castEventValue from "../../lib/helpers/castEventValue";
 import l10n from "../../lib/helpers/l10n";
-import trackerActions from "../../store/features/tracker/trackerActions";
-import { DutyInstrument } from "../../store/features/tracker/trackerTypes";
+import trackerDocumentActions from "../../store/features/trackerDocument/trackerDocumentActions";
+import { DutyInstrument } from "../../store/features/trackerDocument/trackerDocumentTypes";
 import { FormDivider, FormField, FormRow } from "../ui/form/FormLayout";
 import { Select } from "../ui/form/Select";
 import { SliderField } from "../ui/form/SliderField";
@@ -83,7 +82,7 @@ export const InstrumentDutyEditor = ({
     editValue: DutyInstrument[T]
   ) => {
     dispatch(
-      trackerActions.editDutyInstrument({
+      trackerDocumentActions.editDutyInstrument({
         instrumentId: instrument.index,
         changes: {
           [key]: editValue,
@@ -97,7 +96,7 @@ export const InstrumentDutyEditor = ({
   ) => {
     const editValue = e.value;
     dispatch(
-      trackerActions.editDutyInstrument({
+      trackerDocumentActions.editDutyInstrument({
         instrumentId: instrument.index,
         changes: {
           [key]: editValue,

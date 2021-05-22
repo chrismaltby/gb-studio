@@ -4,6 +4,8 @@ import styled, { css } from "styled-components";
 import { PatternCell } from "../../lib/helpers/uge/song/PatternCell";
 import { RootState } from "../../store/configureStore";
 import trackerActions from "../../store/features/tracker/trackerActions";
+import trackerDocumentActions from "../../store/features/trackerDocument/trackerDocumentActions";
+
 import { instrumentColors } from "./InstrumentSelect";
 
 interface RollChannelProps {
@@ -54,19 +56,19 @@ export const RollChannelFwd = ({
   const dispatch = useDispatch();
 
   const tool = useSelector(
-    (state: RootState) => state.tracker.present.tool
+    (state: RootState) => state.tracker.tool
   );
   const defaultInstruments = useSelector(
-    (state: RootState) => state.tracker.present.defaultInstruments
+    (state: RootState) => state.tracker.defaultInstruments
   );
   const hoverNote = useSelector(
-    (state: RootState) => state.tracker.present.hoverNote
+    (state: RootState) => state.tracker.hoverNote
   );
 
   const removeNote = useCallback((channel: number, column: number) => (e: any) => {
     if (e.button === 2 || tool === "eraser" && e.button === 0) {
       dispatch(
-        trackerActions.editPatternCell({
+        trackerDocumentActions.editPatternCell({
           patternId: patternId,
           cell: [column, channel],
           changes: {
@@ -77,7 +79,7 @@ export const RollChannelFwd = ({
       );
     } else if (tool === "pencil" && e.button === 0) {
       dispatch(
-        trackerActions.editPatternCell({
+        trackerDocumentActions.editPatternCell({
           patternId: patternId,
           cell: [column, channel],
           changes: { "instrument": defaultInstruments[channel] },
@@ -96,7 +98,7 @@ export const RollChannelFwd = ({
         "note": note,
       };
       dispatch(
-        trackerActions.editPatternCell({
+        trackerDocumentActions.editPatternCell({
           patternId: patternId,
           cell: [col, cell],
           changes: changes,

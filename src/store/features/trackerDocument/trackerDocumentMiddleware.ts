@@ -5,7 +5,7 @@ import { RootState } from "../../configureStore";
 import editorActions from "../editor/editorActions";
 import { musicSelectors } from "../entities/entitiesState";
 import navigationActions from "../navigation/navigationActions";
-import { saveSongFile } from "./trackerState";
+import { saveSongFile } from "./trackerDocumentState";
 
 const trackerMiddleware: ThunkMiddleware<RootState> = (store) => (next) => (
   action
@@ -15,7 +15,7 @@ const trackerMiddleware: ThunkMiddleware<RootState> = (store) => (next) => (
   if (
     (navigationActions.setSection.match(action) && action.payload !== "music") ||
     (editorActions.setSelectedSongId.match(action) && action.payload !== state.editor.selectedSongId)) {
-    if (state.tracker.present.modified) {
+    if (state.trackerDocument.present.modified) {
       // Display confirmation and stop action if 
       const songsLookup = musicSelectors.selectEntities(state);
       const selectedSong = songsLookup[state.editor.selectedSongId];

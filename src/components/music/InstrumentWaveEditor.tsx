@@ -1,8 +1,8 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 import l10n from "../../lib/helpers/l10n";
-import trackerActions from "../../store/features/tracker/trackerActions";
-import { WaveInstrument } from "../../store/features/tracker/trackerTypes";
+import trackerDocumentActions from "../../store/features/trackerDocument/trackerDocumentActions";
+import { WaveInstrument } from "../../store/features/trackerDocument/trackerDocumentTypes";
 import { FormDivider, FormField, FormRow } from "../ui/form/FormLayout";
 import { Select } from "../ui/form/Select";
 import { InstrumentLengthForm } from "./InstrumentLengthForm";
@@ -45,7 +45,7 @@ export const InstrumentWaveEditor = ({
     editValue: WaveInstrument[T]
   ) => {
     dispatch(
-      trackerActions.editWaveInstrument({
+      trackerDocumentActions.editWaveInstrument({
         instrumentId: instrument.index,
         changes: {
           [key]: editValue,
@@ -59,7 +59,7 @@ export const InstrumentWaveEditor = ({
   ) => {
     const editValue = e.value;
     dispatch(
-      trackerActions.editWaveInstrument({
+      trackerDocumentActions.editWaveInstrument({
         instrumentId: instrument.index,
         changes: {
           [key]: editValue,

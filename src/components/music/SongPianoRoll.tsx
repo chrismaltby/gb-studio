@@ -112,10 +112,10 @@ export const SongPianoRoll = ({
 }: SongPianoRollProps) => {
   const [playbackState, setPlaybackState] = useState([-1, -1]);
   const playing = useSelector(
-    (state: RootState) => state.tracker.present.playing
+    (state: RootState) => state.tracker.playing
   );
   const hoverNote = useSelector(
-    (state: RootState) => state.tracker.present.hoverNote
+    (state: RootState) => state.tracker.hoverNote
   );
 
   const [channelStatus, setChannelStatus] = useState([false, false, false, false]);
@@ -149,7 +149,7 @@ export const SongPianoRoll = ({
   }, [patternsPanelOpen, setPatternsPanelOpen]);
 
   const visibleChannels = useSelector(
-    (state: RootState) => state.tracker.present.visibleChannels
+    (state: RootState) => state.tracker.visibleChannels
   );
 
   const v = [...visibleChannels].reverse();

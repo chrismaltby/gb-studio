@@ -26,7 +26,7 @@ import { assetFilename } from "../../lib/helpers/gbstudio";
 import { SongEditor } from "../../components/music/SongEditor";
 import SongEditorToolsPanel from "../../components/music/SongEditorToolsPanel";
 import SongEditorRightToolsPanel from "../../components/music/SongEditorRightToolsPanel";
-import { loadSongFile } from "../../store/features/tracker/trackerState";
+import { loadSongFile } from "../../store/features/trackerDocument/trackerDocumentState";
 import { SongPianoRoll } from "../../components/music/SongPianoRoll";
 import { Music } from "../../store/features/entities/entitiesTypes";
 import l10n from "../../lib/helpers/l10n";
@@ -104,16 +104,16 @@ const MusicPageUge = () => {
   const projectRoot = useSelector((state: RootState) => state.document.root);
 
   const song = useSelector((state: RootState) => 
-    state.tracker.present.song
+    state.trackerDocument.present.song
   );
   const modified = useSelector((state: RootState) => 
-    state.tracker.present.modified
+    state.trackerDocument.present.modified
   );
   const status = useSelector((state: RootState) => 
-    state.tracker.present.status
+    state.trackerDocument.present.status
   );
   const error = useSelector((state: RootState) => 
-    state.tracker.present.error
+    state.trackerDocument.present.error
   );
   useEffect(() => {
     if (selectedSong && selectedSong.type === "uge") {
@@ -237,7 +237,7 @@ const MusicPageUge = () => {
   };
 
   const view = useSelector(
-    (state: RootState) => state.tracker.present.view
+    (state: RootState) => state.tracker.view
   );
 
   const renderGridView = useCallback(() => {

@@ -18,7 +18,7 @@ import trackerActions from "../../store/features/tracker/trackerActions";
 import { Button } from "../ui/buttons/Button";
 import { Music } from "../../store/features/entities/entitiesTypes";
 import { assetFilename } from "../../lib/helpers/gbstudio";
-import { saveSongFile } from "../../store/features/tracker/trackerState";
+import { saveSongFile } from "../../store/features/trackerDocument/trackerDocumentState";
 
 interface SongEditorToolsPanelProps {
   selectedSong?: Music;
@@ -38,19 +38,19 @@ const SongEditorToolsPanel = ({
   const projectRoot = useSelector((state: RootState) => state.document.root);
 
   const play = useSelector(
-    (state: RootState) => state.tracker.present.playing
+    (state: RootState) => state.tracker.playing
   );
 
   const modified = useSelector(
-    (state: RootState) => state.tracker.present.modified
+    (state: RootState) => state.trackerDocument.present.modified
   );
 
   const view = useSelector(
-    (state: RootState) => state.tracker.present.view
+    (state: RootState) => state.tracker.view
   );
 
   const tool = useSelector(
-    (state: RootState) => state.tracker.present.tool
+    (state: RootState) => state.tracker.tool
   );
 
   const togglePlay = useCallback(() => {

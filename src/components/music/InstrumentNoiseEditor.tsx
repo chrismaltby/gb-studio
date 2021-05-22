@@ -2,8 +2,8 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import castEventValue from "../../lib/helpers/castEventValue";
 import l10n from "../../lib/helpers/l10n";
-import trackerActions from "../../store/features/tracker/trackerActions";
-import { NoiseInstrument } from "../../store/features/tracker/trackerTypes";
+import trackerDocumentActions from "../../store/features/trackerDocument/trackerDocumentActions";
+import { NoiseInstrument } from "../../store/features/trackerDocument/trackerDocumentTypes";
 import { CheckboxField } from "../ui/form/CheckboxField";
 import { FormDivider, FormRow } from "../ui/form/FormLayout";
 import { SliderField } from "../ui/form/SliderField";
@@ -25,7 +25,7 @@ export const InstrumentNoiseEditor = ({
     editValue: NoiseInstrument[T]
   ) => {
     dispatch(
-      trackerActions.editNoiseInstrument({
+      trackerDocumentActions.editNoiseInstrument({
         instrumentId: instrument.index,
         changes: {
           [key]: editValue,
@@ -41,7 +41,7 @@ export const InstrumentNoiseEditor = ({
   ) => {
     const editValue = castEventValue(e);
     dispatch(
-      trackerActions.editNoiseInstrument({
+      trackerDocumentActions.editNoiseInstrument({
         instrumentId: instrument.index,
         changes: {
           [key]: editValue,

@@ -5,6 +5,7 @@ import { PatternCell } from "../../lib/helpers/uge/song/PatternCell";
 import { Song } from "../../lib/helpers/uge/song/Song";
 import { RootState } from "../../store/configureStore";
 import trackerActions from "../../store/features/tracker/trackerActions";
+import trackerDocumentActions from "../../store/features/trackerDocument/trackerDocumentActions";
 import { SplitPaneHorizontalDivider } from "../ui/splitpane/SplitPaneDivider";
 import { SequenceEditor } from "./SequenceEditor";
 import { SongRow } from "./SongRow";
@@ -52,13 +53,13 @@ export const SongTracker = ({
 
   const [playbackState, setPlaybackState] = useState([-1, -1]);
   const playing = useSelector(
-    (state: RootState) => state.tracker.present.playing
+    (state: RootState) => state.tracker.playing
   );
   const editStep = useSelector(
-    (state: RootState) => state.tracker.present.editStep
+    (state: RootState) => state.tracker.editStep
   );
   const octaveOffset = useSelector(
-    (state: RootState) => state.tracker.present.octaveOffset
+    (state: RootState) => state.tracker.octaveOffset
   );
 
   const [channelStatus, setChannelStatus] = useState([false, false, false, false]);
@@ -111,7 +112,7 @@ export const SongTracker = ({
           return;
         }
         dispatch(
-          trackerActions.editPatternCell({
+          trackerDocumentActions.editPatternCell({
             patternId: patternId,
             cell: [
               Math.floor(selectedCell / 16),
@@ -129,7 +130,7 @@ export const SongTracker = ({
           return;
         }
         dispatch(
-          trackerActions.transposeNoteCell({
+          trackerDocumentActions.transposeNoteCell({
             patternId: patternId,
             cellId: selectedCell,
             transpose: value

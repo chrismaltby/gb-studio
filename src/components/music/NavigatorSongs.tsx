@@ -8,7 +8,7 @@ import { Music } from "../../store/features/entities/entitiesTypes";
 import { EntityListItem } from "../ui/lists/EntityListItem";
 import l10n from "../../lib/helpers/l10n";
 import { InstrumentType } from "../../store/features/editor/editorState";
-import { DutyInstrument, NoiseInstrument, WaveInstrument } from "../../store/features/tracker/trackerTypes";
+import { DutyInstrument, NoiseInstrument, WaveInstrument } from "../../store/features/trackerDocument/trackerDocumentTypes";
 import { Button } from "../ui/buttons/Button";
 import { PlusIcon } from "../library/Icons";
 import { SplitPaneHeader } from "../ui/splitpane/SplitPaneHeader";

@@ -18,8 +18,9 @@ import { InstrumentNoiseEditor } from "./InstrumentNoiseEditor";
 import { Song } from "../../lib/helpers/uge/song/Song";
 import castEventValue from "../../lib/helpers/castEventValue";
 import l10n from "../../lib/helpers/l10n";
-import { DutyInstrument, NoiseInstrument, WaveInstrument } from "../../store/features/tracker/trackerTypes";
+import { DutyInstrument, NoiseInstrument, WaveInstrument } from "../../store/features/trackerDocument/trackerDocumentTypes";
 import trackerActions from "../../store/features/tracker/trackerActions";
+import trackerDocumentActions from "../../store/features/trackerDocument/trackerDocumentActions";
 
 type Instrument = DutyInstrument | NoiseInstrument | WaveInstrument;
 
@@ -47,7 +48,7 @@ export const SongEditor = () => {
   );
 
   const song = useSelector((state: RootState) => 
-    state.tracker.present.song
+    state.trackerDocument.present.song
   );
   console.log("SONG", song)
 
@@ -60,7 +61,7 @@ export const SongEditor = () => {
   ) => {
       const editValue = castEventValue(e);
     dispatch(
-      trackerActions.editSong({
+      trackerDocumentActions.editSong({
         changes: {
           [key]: editValue,
         },
@@ -76,9 +77,9 @@ export const SongEditor = () => {
     const editValue = castEventValue(e);
 
     let action;
-    if (type === "duty") action = trackerActions.editDutyInstrument;
-    if (type === "wave") action = trackerActions.editWaveInstrument;
-    if (type === "noise") action = trackerActions.editWaveInstrument;
+    if (type === "duty") action = trackerDocumentActions.editDutyInstrument;
+    if (type === "wave") action = trackerDocumentActions.editWaveInstrument;
+    if (type === "noise") action = trackerDocumentActions.editWaveInstrument;
     
     if (!action || !instrumentData) return
 

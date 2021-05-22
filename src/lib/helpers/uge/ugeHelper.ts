@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import { DutyInstrument, NoiseInstrument, WaveInstrument } from "../../../store/features/tracker/trackerTypes";
+import { DutyInstrument, NoiseInstrument, WaveInstrument } from "../../../store/features/trackerDocument/trackerDocumentTypes";
 import { PatternCell } from "./song/PatternCell";
 import { Song } from "./song/Song";
 

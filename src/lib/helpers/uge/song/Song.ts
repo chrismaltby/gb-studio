@@ -1,4 +1,4 @@
-import { DutyInstrument, NoiseInstrument, WaveInstrument } from "../../../../store/features/tracker/trackerTypes";
+import { DutyInstrument, NoiseInstrument, WaveInstrument } from "../../../../store/features/trackerDocument/trackerDocumentTypes";
 import { PatternCell } from "./PatternCell";
 
 export class Song {
