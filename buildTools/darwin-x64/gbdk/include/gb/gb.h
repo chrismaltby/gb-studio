@@ -427,6 +427,11 @@ void delay(UINT16 d) NONBANKED;
 /** Reads and returns the current state of the joypad.
     Follows Nintendo's guidelines for reading the pad.
     Return value is an OR of J_*
+
+    When testing for multiple different buttons, it's
+    best to read the joypad state *once* into a variable
+    and then test using that variable.
+
     @see J_START, J_SELECT, J_A, J_B, J_UP, J_DOWN, J_LEFT, J_RIGHT
 */
 UINT8 joypad(void) NONBANKED __preserves_regs(b, c, h, l);
@@ -1332,6 +1337,17 @@ void set_tiles(UINT8 x,
           unsigned char *vram_addr,
           const unsigned char *tiles) NONBANKED __preserves_regs(b, c);
 
+/** Sets VRAM Tile Pattern data starting from given base address
+
+    @param first_tile  Index of the first tile to write
+    @param nb_tiles    Number of tiles to write
+    @param data        Pointer to (2 bpp) source Tile Pattern data.
+	@param base        MSB of the destination address in VRAM (usually 0x80 or 0x90 which gives 0x8000 or 0x9000)
+*/
+void set_tile_data(UINT8 first_tile,
+          UINT8 nb_tiles,
+          const unsigned char *data,
+		  UINT8 base) NONBANKED __preserves_regs(b, c);
 
 /** Copies a rectangular region of Tile Map entries from a given VRAM Address into a buffer.
 
@@ -1339,8 +1355,8 @@ void set_tiles(UINT8 x,
     @param y         Y Start position in Background Map tile coordinates. Range 0 - 31
     @param w         Width of area to copy in tiles. Range 0 - 31
     @param h         Height of area to copy in tiles. Range 0 - 31
-    @param tiles     Pointer to destination buffer for Tile Map data
     @param vram_addr Pointer to source VRAM Address
+    @param tiles     Pointer to destination buffer for Tile Map data
 
     Entries are copied into __tiles__ from the Background Tile Map starting at
     __x__, __y__ reading across for __w__ tiles and down for __h__ tiles.
@@ -1355,8 +1371,8 @@ void get_tiles(UINT8 x,
           UINT8 y,
           UINT8 w,
           UINT8 h,
-          unsigned char *tiles,
-          unsigned char *vram_addr) NONBANKED __preserves_regs(b, c);
+		  unsigned char *vram_addr,
+          unsigned char *tiles) NONBANKED __preserves_regs(b, c);
 
 
 

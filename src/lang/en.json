@@ -732,5 +732,6 @@
   "// 20": "Compiler -----------------------------------------------------",
 
   "COMPILER_COMPILING": "Compiling",
-  "COMPILER_LINKING": "Linking"
+  "COMPILER_LINKING": "Linking",
+  "COMPILER_PACKING": "Packing Data"
 }

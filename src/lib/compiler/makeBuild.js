@@ -1,53 +1,14 @@
-import childProcess from "child_process";
 import fs from "fs-extra";
-import { buildToolsRoot } from "../../consts";
-import copy from "../helpers/fsCopy";
-import buildMakeScript from "./buildMakeScript";
-import { hexDec } from "../helpers/8bit";
+import buildMakeScript, {
+  buildLinkFile,
+  buildLinkFlags,
+  buildPackFile,
+} from "./buildMakeScript";
 import { isMBC1 } from "./helpers";
 import { cacheObjData, fetchCachedObjData } from "./objCache";
 import ensureBuildTools from "./ensureBuildTools";
-
-const HEADER_TITLE = 0x134;
-const HEADER_CHECKSUM = 0x14d;
-const GLOBAL_CHECKSUM = 0x14e;
-
-const filterLogs = (str) => {
-  return str.replace(/.*:\\.*>/g, "").replace(/.*:\\.*music/g, "");
-};
-
-const setROMTitle = async (filename, title) => {
-  const romData = await fs.readFile(filename);
-  for (let i = 0; i < 15; i++) {
-    const charCode = title.charCodeAt(i) < 256 ? title.charCodeAt(i) || 0 : 0;
-    romData[HEADER_TITLE + i] = charCode;
-  }
-  await fs.writeFile(filename, await patchROM(romData));
-};
-
-const patchROM = (romData) => {
-  let checksum = 0;
-  let headerChecksum = 0;
-  const view = new DataView(romData.buffer);
-
-  // Recalculate header checksum
-  for (let i = HEADER_TITLE; i < HEADER_CHECKSUM; i++) {
-    headerChecksum = headerChecksum - view.getUint8(i) - 1;
-  }
-
-  view.setUint8(HEADER_CHECKSUM, headerChecksum);
-
-  // Recalculate cart checksum
-  for (let i = 0; i < romData.length; i++) {
-    if (i !== GLOBAL_CHECKSUM && i !== GLOBAL_CHECKSUM + 1) {
-      checksum += view.getUint8(i);
-    }
-  }
-
-  view.setUint16(GLOBAL_CHECKSUM, checksum, false);
-
-  return romData;
-};
+import spawn from "../helpers/cli/spawn";
+import l10n from "../helpers/l10n";
 
 const makeBuild = async ({
   buildRoot = "/tmp",
@@ -94,18 +55,10 @@ const makeBuild = async ({
     );
   }
 
-  // Remove GBC Rombyte Offset from Makefile (OSX/Linux) if custom colors and fast CPU are not enabled
-  if (
-    process.platform !== "win32" &&
-    !settings.customColorsEnabled &&
-    !settings.gbcFastCPUEnabled
-  ) {
-    let makeFile = await fs.readFile(`${buildRoot}/Makefile`, "utf8");
-    makeFile = makeFile.replace("-Wm-yC", "");
-    await fs.writeFile(`${buildRoot}/Makefile`, makeFile, "utf8");
-  }
-
+  // Populate /obj with cached data
   await fetchCachedObjData(buildRoot, tmpPath, env);
+
+  // Compile Source Files
 
   const makeScriptFile = process.platform === "win32" ? "make.bat" : "make.sh";
 
@@ -114,6 +67,7 @@ const makeBuild = async ({
     CART_SIZE: env.CART_SIZE,
     customColorsEnabled: settings.customColorsEnabled,
     gbcFastCPUEnabled: settings.gbcFastCPUEnabled,
+    musicDriver: settings.musicDriver,
     profile,
     platform: process.platform,
   });
@@ -129,48 +83,54 @@ const makeBuild = async ({
     shell: true,
   };
 
-  return new Promise((resolve, reject) => {
-    const child = childProcess.spawn(command, args, options, {
-      encoding: "utf8",
-    });
-
-    child.on("error", (err) => {
-      warnings(err.toString());
-    });
-
-    child.stdout.on("data", (childData) => {
-      const lines = childData.toString().split("\n");
-      lines.forEach((line, lineIndex) => {
-        if (line.length === 0 && lineIndex === lines.length - 1) {
-          return;
-        }
-        const output = filterLogs(line);
-        progress(output);
-      });
-    });
-
-    child.stderr.on("data", (childData) => {
-      const lines = childData.toString().split("\n");
-      lines.forEach((line, lineIndex) => {
-        if (line.length === 0 && lineIndex === lines.length - 1) {
-          return;
-        }
-        warnings(line);
-      });
-    });
-
-    child.on("close", async (code) => {
-      if (code === 0) {
-        await setROMTitle(
-          `${buildRoot}/build/rom/game.gb`,
-          data.name.toUpperCase()
-        );
-        await cacheObjData(buildRoot, tmpPath, env);
-        await fs.unlink(`${buildRoot}/${makeScriptFile}`);
-        resolve();
-      } else reject(code);
-    });
+  await spawn(command, args, options, {
+    onLog: (msg) => progress(msg),
+    onError: (msg) => warnings(msg),
   });
+
+  await fs.unlink(`${buildRoot}/${makeScriptFile}`);
+
+  // GBSPack ---
+
+  progress(`${l10n("COMPILER_PACKING")}...`);
+  const packFile = await buildPackFile(buildRoot);
+  const packFilePath = `${buildRoot}/obj/packfile.pk`;
+  await fs.writeFile(packFilePath, packFile);
+
+  const packCommand = `../_gbstools/gbspack/gbspack`;
+  const packArgs = ["-b", 5, "-f", 255, "-e", "rel", "-c", "-i", packFilePath];
+  const cartSize = await spawn(packCommand, packArgs, options, {
+    onError: (msg) => warnings(msg),
+  });
+
+  // Link ROM ---
+
+  progress(`${l10n("COMPILER_LINKING")}...`);
+  const linkFile = await buildLinkFile(buildRoot, parseInt(cartSize, 10));
+  const linkFilePath = `${buildRoot}/obj/linkfile.lk`;
+  await fs.writeFile(linkFilePath, linkFile);
+
+  const linkCommand = `../_gbstools/gbdk/bin/lcc`;
+  const linkArgs = buildLinkFlags(
+    linkFilePath,
+    data.name || "GBStudio",
+    env.CART_TYPE,
+    settings.customColorsEnabled,
+    settings.musicDriver
+  );
+
+  await spawn(linkCommand, linkArgs, options, {
+    onLog: (msg) => progress(msg),
+    onError: (msg) => {
+      if (msg.indexOf("Converted build") > -1) {
+        return;
+      }
+      warnings(msg);
+    },
+  });
+
+  // Store /obj in cache
+  await cacheObjData(buildRoot, tmpPath, env);
 };
 
 export default makeBuild;
