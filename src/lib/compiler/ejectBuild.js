@@ -6,6 +6,11 @@ import { engineRoot } from "../../consts";
 import copy from "../helpers/fsCopy";
 import ejectEngineChangelog from "../project/ejectEngineChangelog";
 import l10n from "../helpers/l10n";
+import {
+  buildMakeDotBuildFile,
+  makefileInjectToolsPath,
+} from "./buildMakeScript";
+import ensureBuildTools from "./ensureBuildTools";
 
 const rmdir = promisify(rimraf);
 
@@ -23,6 +28,7 @@ const ejectBuild = async ({
   projectData,
   outputRoot = "/tmp",
   projectRoot = "/tmp",
+  tmpPath = "/tmp",
   compiledData,
   progress = (_msg) => {},
   warnings = (_msg) => {},
@@ -30,6 +36,8 @@ const ejectBuild = async ({
   const corePath = `${engineRoot}/${projectType}`;
   const localCorePath = `${projectRoot}/assets/engine`;
   const expectedEngineMetaPath = `${corePath}/engine.json`;
+  const buildToolsPath = await ensureBuildTools(tmpPath);
+  const { settings } = projectData;
 
   progress(`Unlink ${Path.basename(outputRoot)}`);
   await rmdir(outputRoot);
@@ -138,6 +146,14 @@ const ejectBuild = async ({
       );
     }
   }
+
+  // Generate Makefile
+  await makefileInjectToolsPath(`${outputRoot}/Makefile`, buildToolsPath);
+  const makeDotBuildFile = buildMakeDotBuildFile(
+    settings.customColorsEnabled,
+    settings.musicDriver
+  );
+  await fs.writeFile(`${outputRoot}/Makefile.build`, makeDotBuildFile);
 };
 
 export default ejectBuild;

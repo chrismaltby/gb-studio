@@ -1,6 +1,6 @@
 import glob from "glob";
 import { promisify } from "util";
-import { pathExists } from "fs-extra";
+import { pathExists, readFile, writeFile } from "fs-extra";
 import Path from "path";
 import l10n from "../helpers/l10n";
 
@@ -140,5 +140,30 @@ export const buildLinkFlags = (
         ["-Wl-lgbt_player.lib"],
     // Output
     ["-o", "build/rom/game.gb", `-Wl-f${linkFile}`]
+  );
+};
+
+export const makefileInjectToolsPath = async (filename, buildToolsPath) => {
+  const makefile = await readFile(filename, "utf8");
+  const updatedMakefile = makefile.replace(
+    /GBSTOOLS_DIR =.*/,
+    `GBSTOOLS_DIR = ${Path.normalize(buildToolsPath)}`
+  );
+  await writeFile(filename, updatedMakefile);
+};
+
+export const buildMakeDotBuildFile = (
+  color = false,
+  musicDriver = "gbtplayer"
+) => {
+  return (
+    `settings: ` +
+    []
+      .concat(
+        color ? ["CGB"] : [],
+        musicDriver === "huge" ? ["hUGE"] : ["GBT"],
+        "MBC5"
+      )
+      .join(" ")
   );
 };

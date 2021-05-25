@@ -197,11 +197,13 @@ const buildGameMiddleware: Middleware<{}, RootState> = (store) => (
         (module) => module.default
       );
 
+      const tmpPath = getTmp();
+
       // Compile project data
       const compiledData = await compileData(project, {
         projectRoot,
         engineFields,
-        tmpPath: getTmp(),
+        tmpPath,
         progress,
         warnings,
       });
@@ -209,6 +211,7 @@ const buildGameMiddleware: Middleware<{}, RootState> = (store) => (
       // Export compiled data to a folder
       await ejectBuild({
         projectRoot,
+        tmpPath,
         projectData: project,
         engineFields,
         outputRoot,

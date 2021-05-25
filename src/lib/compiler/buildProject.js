@@ -29,6 +29,7 @@ const buildProject = async (
   });
   await ejectBuild({
     projectRoot,
+    tmpPath,
     projectData: data,
     engineFields,
     outputRoot,
