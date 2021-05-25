@@ -97,7 +97,9 @@ const makeBuild = async ({
   const packFilePath = `${buildRoot}/obj/packfile.pk`;
   await fs.writeFile(packFilePath, packFile);
 
-  const packCommand = `../_gbstools/gbspack/gbspack`;
+  const packCommand = process.platform === "win32"
+      ? `..\\_gbstools\\gbspack\\gbspack.exe`
+      : `../_gbstools/gbspack/gbspack`;
   const packArgs = ["-b", 5, "-f", 255, "-e", "rel", "-c", "-i", packFilePath];
   const cartSize = await spawn(packCommand, packArgs, options, {
     onError: (msg) => warnings(msg),
@@ -110,7 +112,9 @@ const makeBuild = async ({
   const linkFilePath = `${buildRoot}/obj/linkfile.lk`;
   await fs.writeFile(linkFilePath, linkFile);
 
-  const linkCommand = `../_gbstools/gbdk/bin/lcc`;
+  const linkCommand = process.platform === "win32"
+      ? `..\\_gbstools\\gbdk\\bin\\lcc.exe`
+      : `../_gbstools/gbdk/bin/lcc`;  
   const linkArgs = buildLinkFlags(
     linkFilePath,
     data.name || "GBStudio",
