@@ -16,7 +16,6 @@ interface InitialState {
   startAnimSpeed: number;
   fonts: Font[];
   avatarFonts: undefined[];
-  isCGB: boolean;
   engineFields: EngineFieldSchema[];
   engineFieldValues: EngineFieldValue[];
 }
@@ -33,7 +32,6 @@ export const compileScriptEngineInit = ({
   startAnimSpeed,
   fonts,
   avatarFonts,
-  isCGB,
   engineFields,
   engineFieldValues,
 }: InitialState) => `.include "vm.i"

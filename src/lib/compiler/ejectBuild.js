@@ -151,6 +151,7 @@ const ejectBuild = async ({
   await makefileInjectToolsPath(`${outputRoot}/Makefile`, buildToolsPath);
   const makeDotBuildFile = buildMakeDotBuildFile(
     settings.customColorsEnabled,
+    settings.sgbEnabled,
     settings.musicDriver
   );
   await fs.writeFile(`${outputRoot}/Makefile.build`, makeDotBuildFile);

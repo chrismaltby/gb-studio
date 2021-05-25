@@ -32,6 +32,10 @@ const makeBuild = async ({
   if (settings.customColorsEnabled) {
     env.COLOR = true;
   }
+  if (settings.sgbEnabled) {
+    env.SGB = true;
+  }
+  env.MUSIC_DRIVER = settings.musicDriver;
   if (profile) {
     env.PROFILE = true;
   }
@@ -66,6 +70,7 @@ const makeBuild = async ({
     CART_TYPE: env.CART_TYPE,
     CART_SIZE: env.CART_SIZE,
     customColorsEnabled: settings.customColorsEnabled,
+    sgb: settings.sgbEnabled,
     gbcFastCPUEnabled: settings.gbcFastCPUEnabled,
     musicDriver: settings.musicDriver,
     profile,
@@ -97,7 +102,8 @@ const makeBuild = async ({
   const packFilePath = `${buildRoot}/obj/packfile.pk`;
   await fs.writeFile(packFilePath, packFile);
 
-  const packCommand = process.platform === "win32"
+  const packCommand =
+    process.platform === "win32"
       ? `..\\_gbstools\\gbspack\\gbspack.exe`
       : `../_gbstools/gbspack/gbspack`;
   const packArgs = ["-b", 5, "-f", 255, "-e", "rel", "-c", "-i", packFilePath];
@@ -112,14 +118,16 @@ const makeBuild = async ({
   const linkFilePath = `${buildRoot}/obj/linkfile.lk`;
   await fs.writeFile(linkFilePath, linkFile);
 
-  const linkCommand = process.platform === "win32"
+  const linkCommand =
+    process.platform === "win32"
       ? `..\\_gbstools\\gbdk\\bin\\lcc.exe`
-      : `../_gbstools/gbdk/bin/lcc`;  
+      : `../_gbstools/gbdk/bin/lcc`;
   const linkArgs = buildLinkFlags(
     linkFilePath,
     data.name || "GBStudio",
     env.CART_TYPE,
     settings.customColorsEnabled,
+    settings.sgbEnabled,
     settings.musicDriver
   );
 

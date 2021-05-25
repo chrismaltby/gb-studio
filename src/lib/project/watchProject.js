@@ -36,6 +36,7 @@ const watchProject = async (
   const avatarsRoot = `${projectRoot}/assets/avatars`;
   const emotesRoot = `${projectRoot}/assets/emotes`;
   const uiRoot = `${projectRoot}/assets/ui`;
+  const sgbRoot = `${projectRoot}/assets/sgb`;
   const pluginsRoot = `${projectRoot}/plugins`;
   const engineSchema = `${projectRoot}/assets/engine/engine.json`;
 
@@ -77,6 +78,17 @@ const watchProject = async (
 
   const uiWatcher = chokidar
     .watch(uiRoot, {
+      ignored: /^.*\.(?!png$)[^.]+$/,
+      ignoreInitial: true,
+      persistent: true,
+      awaitWriteFinish,
+    })
+    .on("add", onAddUI)
+    .on("change", onChangedUI)
+    .on("unlink", onRemoveUI);
+
+  const sgbWatcher = chokidar
+    .watch(sgbRoot, {
       ignored: /^.*\.(?!png$)[^.]+$/,
       ignoreInitial: true,
       persistent: true,
@@ -200,6 +212,7 @@ const watchProject = async (
     spriteWatcher.close();
     backgroundWatcher.close();
     uiWatcher.close();
+    sgbWatcher.close();
     musicWatcher.close();
     fontsWatcher.close();
     avatarsWatcher.close();

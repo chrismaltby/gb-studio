@@ -8,7 +8,7 @@ const globAsync = promisify(glob);
 
 export default async (
   buildRoot,
-  { customColorsEnabled, musicDriver, profile, platform }
+  { customColorsEnabled, sgb, musicDriver, profile, platform }
 ) => {
   const cmds = platform === "win32" ? [""] : ["#!/bin/bash", "set -e"];
   const objFiles = [];
@@ -17,10 +17,14 @@ export default async (
     platform === "win32"
       ? `..\\_gbstools\\gbdk\\bin\\lcc`
       : `../_gbstools/gbdk/bin/lcc`;
-  let CFLAGS = `-Iinclude -Wa-Iinclude -Wa-I../_gbstools/gbdk/lib/small/asxxxx -Wl-a -DSGB -c`;
+  let CFLAGS = `-Iinclude -Wa-Iinclude -Wa-I../_gbstools/gbdk/lib/small/asxxxx -Wl-a -c`;
 
   if (customColorsEnabled) {
     CFLAGS += " -DCGB";
+  }
+
+  if (sgb) {
+    CFLAGS += " -DSGB";
   }
 
   if (musicDriver === "huge") {
@@ -109,6 +113,7 @@ export const buildLinkFlags = (
   name = "GBSTUDIO",
   cartType,
   color = false,
+  sgb = false,
   musicDriver = "gbtplayer"
 ) => {
   const validName = name
@@ -133,6 +138,8 @@ export const buildLinkFlags = (
     ],
     // Color
     color ? ["-Wm-yC"] : [],
+    // SGB
+    sgb ? ["-Wm-ys"] : [],
     musicDriver === "huge"
       ? // hugetracker
         ["-Wl-lhUGEDriver.lib"]
@@ -154,6 +161,7 @@ export const makefileInjectToolsPath = async (filename, buildToolsPath) => {
 
 export const buildMakeDotBuildFile = (
   color = false,
+  sgb = false,
   musicDriver = "gbtplayer"
 ) => {
   return (
@@ -161,6 +169,7 @@ export const buildMakeDotBuildFile = (
     []
       .concat(
         color ? ["CGB"] : [],
+        sgb ? ["SGB"] : [],
         musicDriver === "huge" ? ["hUGE"] : ["GBT"],
         "MBC5"
       )
