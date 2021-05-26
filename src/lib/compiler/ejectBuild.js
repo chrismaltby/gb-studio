@@ -149,11 +149,13 @@ const ejectBuild = async ({
 
   // Generate Makefile
   await makefileInjectToolsPath(`${outputRoot}/Makefile`, buildToolsPath);
-  const makeDotBuildFile = buildMakeDotBuildFile(
-    settings.customColorsEnabled,
-    settings.sgbEnabled,
-    settings.musicDriver
-  );
+  const makeDotBuildFile = buildMakeDotBuildFile({
+    cartType: settings.cartType,
+    color: settings.customColorsEnabled,
+    sgb: settings.sgbEnabled,
+    batteryless: settings.batterylessEnabled,
+    musicDriver: settings.musicDriver,
+  });
   await fs.writeFile(`${outputRoot}/Makefile.build`, makeDotBuildFile);
 };
 

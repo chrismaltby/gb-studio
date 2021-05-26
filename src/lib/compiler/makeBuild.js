@@ -3,6 +3,7 @@ import buildMakeScript, {
   buildLinkFile,
   buildLinkFlags,
   buildPackFile,
+  buildPackFlags,
 } from "./buildMakeScript";
 import { isMBC1 } from "./helpers";
 import { cacheObjData, fetchCachedObjData } from "./objCache";
@@ -26,7 +27,7 @@ const makeBuild = async ({
   env.PATH = [`${buildToolsPath}/gbdk/bin`, env.PATH].join(":");
   env.GBDKDIR = `${buildToolsPath}/gbdk/`;
 
-  env.CART_TYPE = parseInt(settings.cartType || "1B", 16);
+  env.CART_TYPE = settings.cartType || "mbc5";
   env.TMP = tmpPath;
   env.TEMP = tmpPath;
   if (settings.customColorsEnabled) {
@@ -34,6 +35,9 @@ const makeBuild = async ({
   }
   if (settings.sgbEnabled) {
     env.SGB = true;
+  }
+  if (settings.batterylessEnabled) {
+    env.BATTERYLESS = true;
   }
   env.MUSIC_DRIVER = settings.musicDriver;
   if (profile) {
@@ -43,20 +47,6 @@ const makeBuild = async ({
     env.MUSIC_DRIVER = "HUGE_TRACKER";
   } else {
     env.MUSIC_DRIVER = "GBT_PLAYER";
-  }
-
-  // Modify BankManager.h to set MBC1 memory controller
-  if (isMBC1(settings.cartType)) {
-    let bankHeader = await fs.readFile(
-      `${buildRoot}/include/BankManager.h`,
-      "utf8"
-    );
-    bankHeader = bankHeader.replace(/_MBC5/g, "_MBC1");
-    await fs.writeFile(
-      `${buildRoot}/include/BankManager.h`,
-      bankHeader,
-      "utf8"
-    );
   }
 
   // Populate /obj with cached data
@@ -73,6 +63,7 @@ const makeBuild = async ({
     sgb: settings.sgbEnabled,
     gbcFastCPUEnabled: settings.gbcFastCPUEnabled,
     musicDriver: settings.musicDriver,
+    batteryless: settings.batterylessEnabled,
     profile,
     platform: process.platform,
   });
@@ -106,7 +97,7 @@ const makeBuild = async ({
     process.platform === "win32"
       ? `..\\_gbstools\\gbspack\\gbspack.exe`
       : `../_gbstools/gbspack/gbspack`;
-  const packArgs = ["-b", 5, "-f", 255, "-e", "rel", "-c", "-i", packFilePath];
+  const packArgs = buildPackFlags(packFilePath, settings.batterylessEnabled);
   const cartSize = await spawn(packCommand, packArgs, options, {
     onError: (msg) => warnings(msg),
   });
@@ -125,7 +116,7 @@ const makeBuild = async ({
   const linkArgs = buildLinkFlags(
     linkFilePath,
     data.name || "GBStudio",
-    env.CART_TYPE,
+    settings.cartType,
     settings.customColorsEnabled,
     settings.sgbEnabled,
     settings.musicDriver

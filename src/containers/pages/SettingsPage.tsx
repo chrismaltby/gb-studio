@@ -5,7 +5,6 @@ import { FormField } from "../../components/library/Forms";
 import l10n from "../../lib/helpers/l10n";
 import castEventValue from "../../lib/helpers/castEventValue";
 import CustomControlsPicker from "../../components/forms/CustomControlsPicker";
-import CartPicker from "../../components/forms/CartPicker";
 import { PaletteSelect } from "../../components/forms/PaletteSelect";
 import { Button } from "../../components/ui/buttons/Button";
 import { SettingsState } from "../../store/features/settings/settingsState";
@@ -45,6 +44,7 @@ import { ColorAnimationText } from "../../components/settings/ColorAnimationText
 import { FormInfo } from "../../components/ui/form/FormInfo";
 import { SGBBorderPreview } from "../../components/forms/sgb/SGBBorderPreview";
 import electronActions from "../../store/features/electron/electronActions";
+import CartSettingsEditor from "../../components/settings/CartSettingsEditor";
 
 const SettingsPage: FC = () => {
   const dispatch = useDispatch();
@@ -526,7 +526,7 @@ const SettingsPage: FC = () => {
         >
           <CardAnchor id="settingsCartType" />
           <CardHeading>{l10n("SETTINGS_CART_TYPE")}</CardHeading>
-          <CartPicker searchTerm={searchTerm} />
+          <CartSettingsEditor searchTerm={searchTerm} />
         </SearchableCard>
 
         <SearchableCard

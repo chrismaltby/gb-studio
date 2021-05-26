@@ -8,7 +8,7 @@ const globAsync = promisify(glob);
 
 export default async (
   buildRoot,
-  { customColorsEnabled, sgb, musicDriver, profile, platform }
+  { customColorsEnabled, sgb, musicDriver, profile, platform, batteryless }
 ) => {
   const cmds = platform === "win32" ? [""] : ["#!/bin/bash", "set -e"];
   const objFiles = [];
@@ -31,6 +31,10 @@ export default async (
     CFLAGS += " -DHUGE_TRACKER";
   } else {
     CFLAGS += " -DGBT_PLAYER";
+  }
+
+  if (batteryless) {
+    CFLAGS += " -DBATTERYLESS";
   }
 
   if (profile) {
@@ -108,6 +112,17 @@ export const buildLinkFile = async (buildRoot, cartSize) => {
   return output.join("\n");
 };
 
+export const buildPackFlags = (packFilePath, batteryless = false) => {
+  return [].concat(
+    // General
+    ["-b", 5, "-f", 255, "-e", "rel", "-c"],
+    // Batteryless
+    batteryless ? ["-a 4"] : [],
+    // Input
+    ["-i", packFilePath]
+  );
+};
+
 export const buildLinkFlags = (
   linkFile,
   name = "GBSTUDIO",
@@ -120,10 +135,11 @@ export const buildLinkFlags = (
     .toUpperCase()
     .replace(/[^A-Z]*/g, "")
     .substring(0, 15);
+  const cart = cartType === "mbc3" ? "0x10" : "0x1B";
   return [].concat(
     // General
     [
-      `-Wl-yt${cartType}`,
+      `-Wl-yt${cart}`,
       "-Wm-yoA",
       "-Wm-ya4",
       "-Wl-j",
@@ -159,19 +175,22 @@ export const makefileInjectToolsPath = async (filename, buildToolsPath) => {
   await writeFile(filename, updatedMakefile);
 };
 
-export const buildMakeDotBuildFile = (
+export const buildMakeDotBuildFile = ({
+  cartType = "mbc5",
   color = false,
   sgb = false,
-  musicDriver = "gbtplayer"
-) => {
+  batteryless = false,
+  musicDriver = "gbtplayer",
+}) => {
   return (
     `settings: ` +
     []
       .concat(
-        color ? ["CGB"] : [],
+        color ? ["CGB"] : ["DMG"],
         sgb ? ["SGB"] : [],
         musicDriver === "huge" ? ["hUGE"] : ["GBT"],
-        "MBC5"
+        cartType === "mbc3" ? ["MBC3"] : ["MBC5"],
+        batteryless ? ["batteryless"] : []
       )
       .join(" ")
   );

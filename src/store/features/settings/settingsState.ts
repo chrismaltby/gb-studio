@@ -4,6 +4,7 @@ import { ActorDirection } from "../entities/entitiesTypes";
 import projectActions from "../project/projectActions";
 
 type ShowConnectionsSetting = "all" | "selected" | true | false;
+export type CartType = "mbc5" | "mbc3";
 
 export type SettingsState = {
   startSceneId: string;
@@ -48,6 +49,8 @@ export type SettingsState = {
   defaultFontId: string;
   defaultCharacterEncoding: string;
   defaultPlayerSprites: Record<string, string>;
+  cartType: CartType;
+  batterylessEnabled: boolean;
 };
 
 export const initialState: SettingsState = {
@@ -93,6 +96,8 @@ export const initialState: SettingsState = {
   defaultFontId: "",
   defaultCharacterEncoding: "",
   defaultPlayerSprites: {},
+  cartType: "mbc5",
+  batterylessEnabled: false,
 };
 
 const settingsSlice = createSlice({
