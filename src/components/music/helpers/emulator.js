@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
-import createBinjgb from "../../../../appData/wasm/binjgb/binjgb";
-import createBinjgbModule from "../../../../appData/wasm/binjgb/binjgb.wasm";
+import Binjgb from "../../../../appData/wasm/binjgb/binjgb";
+import BinjgbModule from "../../../../appData/wasm/binjgb/binjgb.wasm";
 
 let emu;
 let rom_ptr;
@@ -25,8 +25,8 @@ const locateFile = (module) => (path) => {
 };
 
 let Module;
-createBinjgb({
-  locateFile: locateFile(createBinjgbModule)
+Binjgb({
+  locateFile: locateFile(BinjgbModule)
 }).then((module) => {
   Module = module;
 });
