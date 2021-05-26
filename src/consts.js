@@ -15,6 +15,7 @@ if (isDist) {
 const engineRoot = path.normalize(`${rootDir}/appData/src`);
 const buildToolsRoot = path.normalize(`${rootDir}/buildTools`);
 const emulatorRoot = path.normalize(`${rootDir}/appData/js-emulator`);
+const binjgbRoot = path.normalize(`${rootDir}/appData/wasm/binjgb`);
 const projectTemplatesRoot = path.normalize(`${rootDir}/appData/templates`);
 const localesRoot = path.normalize(`${rootDir}/src/lang`);
 const eventsRoot = path.normalize(`${rootDir}/src/lib/events`);
@@ -74,6 +75,7 @@ export {
   engineRoot,
   buildToolsRoot,
   emulatorRoot,
+  binjgbRoot,
   projectTemplatesRoot,
   localesRoot,
   eventsRoot,
