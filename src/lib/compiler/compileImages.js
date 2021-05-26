@@ -117,11 +117,18 @@ const compileImages = async (
       ]);
 
       const mergedLength = Object.keys(mergedLookup).length;
-      const diffLength =
-        Object.keys(mergedLookup).length -
-        Object.keys(tilesetLookups[j]).length;
+      const aLength = Object.keys(tilesetLookups[i]).length;
+      const bLength = Object.keys(tilesetLookups[j]).length;
 
-      if (mergedLength <= MAX_TILESET_TILES && diffLength < minDiffLength) {
+      const diffLength = mergedLength - Math.max(aLength, bLength);
+
+      const maxAllowedDiff = Math.min(aLength, bLength) / 2;
+
+      if (
+        mergedLength <= MAX_TILESET_TILES &&
+        diffLength < minDiffLength &&
+        diffLength < maxAllowedDiff
+      ) {
         minLookup = mergedLookup;
         minIndex = j;
         minDiffLength = diffLength;

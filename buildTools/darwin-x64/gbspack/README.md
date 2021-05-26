@@ -14,7 +14,7 @@ gbspack -b 6 scene5_init.o scene6_init.o etc...
 
 ## Options
 
-- `--bank` Set the initial bank to pack code into (default 6)
+- `--bank` Set the initial bank to pack code into (default 1)
 
 - `--output` Set the output path to write modified object files (defaults to updating in place)
 
@@ -25,6 +25,10 @@ gbspack -b 6 scene5_init.o scene6_init.o etc...
 - `--print-cart` Print minimum cartridge size for allocated data
 
 - `--mbc1` Use MBC1 hardware (skip banks 0x20, 0x40 and 0x60)
+
+- `--filter` Only repack files from specified bank (default repack all banks)
+
+- `--additional` Reserve N additional banks at end of cart for batteryless saving (default 0)
 
 ## Input files
 

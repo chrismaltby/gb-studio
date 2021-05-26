@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import styled, { css } from "styled-components";
 import { Label } from "./Label";
 
@@ -138,6 +138,7 @@ export const FormLink = styled.div`
   margin-left: -5px;
   margin-right: -5px;
   margin-top: -5px;
+  margin-bottom: -5px;
 
   :hover {
     background: rgba(128, 128, 128, 0.1);
@@ -146,3 +147,28 @@ export const FormLink = styled.div`
     background: rgba(128, 128, 128, 0.2);
   }
 `;
+
+export interface ToggleableFormFieldProps {
+  readonly enabled: boolean;
+  readonly disabledLabel: string;
+}
+
+export const ToggleableFormField: FC<
+  ToggleableFormFieldProps & FormFieldProps
+> = ({ enabled, disabledLabel, name, label, info, variant, children }) => {
+  const [isEnabled, setIsEnabled] = useState(enabled);
+
+  if (!isEnabled) {
+    return (
+      <div>
+        <FormLink onClick={() => setIsEnabled(true)}>{disabledLabel}</FormLink>
+      </div>
+    );
+  }
+
+  return (
+    <FormField name={name} label={label} info={info} variant={variant}>
+      {children}
+    </FormField>
+  );
+};

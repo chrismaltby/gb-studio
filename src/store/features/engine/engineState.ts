@@ -3,7 +3,7 @@ import { fields } from "../../../lib/events/eventActorCollisionsDisable";
 
 export type EngineFieldType = "number" | "slider" | "checkbox" | "select";
 
-export type EngineFieldCType = "UBYTE" | "UWORD" | "BYTE" | "WORD";
+export type EngineFieldCType = "UBYTE" | "UWORD" | "BYTE" | "WORD" | "define";
 
 export type EngineFieldSchema = {
   key: string;

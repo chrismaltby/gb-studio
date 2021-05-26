@@ -79,9 +79,9 @@ const Button = styled.button`
   }
 
   canvas {
-    max-width: 48px;
-    max-height: 48px;
-    image-rendering: pixelated;
+    height: 48px;
+    width: 48px;
+    object-fit: contain;
   }
 `;
 

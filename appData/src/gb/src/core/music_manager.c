@@ -259,7 +259,7 @@ const UINT8 channel_masks[] = {0, 0x0e, 0x0d, 0x0b, 0x07};
 void wave_play(UBYTE frames, UBYTE bank, UBYTE * sample, UWORD size) __banked {
     if (tone_frames) return;                        // exit if sound is already playing.
     if (frames == 0) return;                        // exit if length in frames is zero
-    music_mute(channel_mask & channel_masks[2]);
+    music_mute(channel_mask & channel_masks[3]);
     set_sample(bank, sample, size);
     sound_channel = 3;
     tone_frames = frames;

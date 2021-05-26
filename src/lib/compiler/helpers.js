@@ -152,8 +152,6 @@ export const actorFramesPerDir = (spriteType, numFrames) => {
   return numFrames;
 };
 
-export const isMBC1 = (cartType) => cartType === "03" || cartType === "02";
-
 export const replaceInvalidCustomEventVariables = (variable) => {
   const getValidVariableIndex = (v) => {
     const variableIndex = parseInt(String(v).replace(/^L|^T/, ""), 10);

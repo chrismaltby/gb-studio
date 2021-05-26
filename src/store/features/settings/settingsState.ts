@@ -4,6 +4,7 @@ import { ActorDirection } from "../entities/entitiesTypes";
 import projectActions from "../project/projectActions";
 
 type ShowConnectionsSetting = "all" | "selected" | true | false;
+export type CartType = "mbc5" | "mbc3";
 export type MusicDriverSetting = "huge" | "gbt";
 
 export type SettingsState = {
@@ -19,6 +20,7 @@ export type SettingsState = {
   worldScrollY: number;
   zoom: number;
   customColorsEnabled: boolean;
+  sgbEnabled: boolean;
   customHead: string;
   defaultBackgroundPaletteIds: [
     string,
@@ -48,6 +50,8 @@ export type SettingsState = {
   defaultFontId: string;
   defaultCharacterEncoding: string;
   defaultPlayerSprites: Record<string, string>;
+  cartType: CartType;
+  batterylessEnabled: boolean;
   musicDriver: MusicDriverSetting;
 };
 
@@ -64,6 +68,7 @@ export const initialState: SettingsState = {
   worldScrollY: 0,
   zoom: 100,
   customColorsEnabled: false,
+  sgbEnabled: false,
   customHead: "",
   defaultBackgroundPaletteIds: [
     "default-bg-1",
@@ -93,6 +98,8 @@ export const initialState: SettingsState = {
   defaultFontId: "",
   defaultCharacterEncoding: "",
   defaultPlayerSprites: {},
+  cartType: "mbc5",
+  batterylessEnabled: false,
   musicDriver: "gbt",
 };
 
