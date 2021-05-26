@@ -6,7 +6,7 @@ import l10n from "../../lib/helpers/l10n";
 import castEventValue from "../../lib/helpers/castEventValue";
 import CustomControlsPicker from "../../components/forms/CustomControlsPicker";
 import CartPicker from "../../components/forms/CartPicker";
-import PaletteSelect from "../../components/forms/PaletteSelectOld";
+import { PaletteSelect } from "../../components/forms/PaletteSelect";
 import { Button } from "../../components/ui/buttons/Button";
 import { SettingsState } from "../../store/features/settings/settingsState";
 import settingsActions from "../../store/features/settings/settingsActions";
@@ -258,7 +258,7 @@ const SettingsPage: FC = () => {
               >
                 <SettingRowLabel>Default Background Palettes</SettingRowLabel>
                 <SettingRowInput>
-                  <div key={JSON.stringify(defaultBackgroundPaletteIds)}>
+                  <div>
                     {[0, 1, 2, 3, 4, 5, 6, 7].map((index) => (
                       <FormField
                         key={index}
@@ -268,8 +268,8 @@ const SettingsPage: FC = () => {
                         }}
                       >
                         <PaletteSelect
-                          id="scenePalette"
-                          prefix={`${index + 1}${index === 7 ? " / UI" : ""}: `}
+                          name={`scenePalette${index}`}
+                          prefix={`${index + 1}:`}
                           value={
                             (defaultBackgroundPaletteIds &&
                               defaultBackgroundPaletteIds[index]) ||
@@ -279,6 +279,12 @@ const SettingsPage: FC = () => {
                             onEditPaletteId(index, e);
                           }}
                         />
+                        {sgbEnabled && index === 4 && (
+                          <FormInfo>{l10n("FIELD_SGB_PALETTE_NOTE")}</FormInfo>
+                        )}
+                        {index === 7 && (
+                          <FormInfo>{l10n("FIELD_UI_PALETTE_NOTE")}</FormInfo>
+                        )}
                       </FormField>
                     ))}
                   </div>
@@ -301,10 +307,8 @@ const SettingsPage: FC = () => {
                         }}
                       >
                         <PaletteSelect
-                          id="scenePalette"
-                          prefix={`${index + 1}${
-                            index === 7 ? ` / ${l10n("FIELD_EMOTE")}` : ""
-                          }: `}
+                          name={`spritePalette${index}`}
+                          prefix={`${index + 1}:`}
                           value={
                             (defaultSpritePaletteIds &&
                               defaultSpritePaletteIds[index]) ||
@@ -314,6 +318,11 @@ const SettingsPage: FC = () => {
                             onEditSpritePaletteId(index, e);
                           }}
                         />
+                        {index === 7 && (
+                          <FormInfo>
+                            {l10n("FIELD_EMOTE_PALETTE_NOTE")}
+                          </FormInfo>
+                        )}
                       </FormField>
                     ))}
                   </div>
@@ -372,7 +381,7 @@ const SettingsPage: FC = () => {
                       }}
                     >
                       <PaletteSelect
-                        id="scenePalette"
+                        name="scenePalette"
                         value={
                           (defaultBackgroundPaletteIds &&
                             defaultBackgroundPaletteIds[4]) ||
@@ -383,9 +392,7 @@ const SettingsPage: FC = () => {
                         }}
                       />
                       {customColorsEnabled && (
-                        <FormInfo>
-                          {l10n("FIELD_DEFAULT_PALETTE_NOTE")}
-                        </FormInfo>
+                        <FormInfo>{l10n("FIELD_SGB_PALETTE_NOTE")}</FormInfo>
                       )}
                     </FormField>
                   </div>

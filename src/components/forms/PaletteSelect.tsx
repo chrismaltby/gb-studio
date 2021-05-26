@@ -1,5 +1,6 @@
 import React, { FC, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import styled from "styled-components";
 import { DMG_PALETTE } from "../../consts";
 import { RootState } from "../../store/configureStore";
 import { paletteSelectors } from "../../store/features/entities/entitiesState";
@@ -15,6 +16,7 @@ import {
 
 interface PaletteSelectProps extends SelectCommonProps {
   name: string;
+  prefix?: string;
   value?: string;
   type?: "tile" | "sprite";
   onChange?: (newId: string) => void;
@@ -27,8 +29,16 @@ interface PaletteOption extends Option {
   palette: Palette;
 }
 
+const PaletteSelectPrefix = styled.div`
+  min-width: 10px;
+  padding-right: 5px;
+  font-weight: bold;
+`;
+
 export const PaletteSelect: FC<PaletteSelectProps> = ({
+  name,
   value,
+  prefix,
   type,
   onChange,
   optional,
@@ -85,8 +95,20 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
         label: optionalLabel || "None",
         palette: optionalPalette as Palette,
       });
+    } else {
+      setCurrentValue({
+        value: "",
+        label: DMG_PALETTE.name,
+        palette: DMG_PALETTE as Palette,
+      });
     }
-  }, [currentPalette]);
+  }, [
+    currentPalette,
+    optionalDefaultPaletteId,
+    optional,
+    optionalLabel,
+    palettes,
+  ]);
 
   const onSelectChange = (newValue: Option) => {
     onChange?.(newValue.value);
@@ -123,6 +145,7 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
               />
             }
           >
+            {prefix && <PaletteSelectPrefix>{prefix}</PaletteSelectPrefix>}
             {currentValue?.label}
           </SingleValueWithPreview>
         ),
