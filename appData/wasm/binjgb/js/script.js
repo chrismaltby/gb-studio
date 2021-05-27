@@ -27,7 +27,7 @@ const REWIND_FRAMES_PER_BASE_STATE = 45;
 const REWIND_BUFFER_CAPACITY = 4 * 1024 * 1024;
 const REWIND_FACTOR = 1.5;
 const REWIND_UPDATE_MS = 16;
-const BUILTIN_PALETTES = 83;  // See builtin-palettes.def.
+const BUILTIN_PALETTES = 62;  // See builtin-palettes.def.
 const GAMEPAD_POLLING_INTERVAL = 1000 / 60 / 4; // When activated, poll for gamepad input about ~4 times per gameboy frame (~240 times second)
 const GAMEPAD_KEYMAP_STANDARD_STR = "standard"; // Try to use "standard" HTML5 mapping config if available
 
@@ -35,6 +35,15 @@ const $ = document.querySelector.bind(document);
 let emulator = null;
 
 const binjgbPromise = Binjgb();
+
+const sgbEnabled = window.location.href.includes("sgb=true");
+if (sgbEnabled) {
+  $('canvas').width = SGB_SCREEN_WIDTH;
+  $('canvas').height = SGB_SCREEN_HEIGHT;  
+} else {
+  $('canvas').width = SCREEN_WIDTH;
+  $('canvas').height = SCREEN_HEIGHT;    
+}
 
 // Extract stuff from the vue.js implementation in demo.js.
 class VM {
@@ -46,7 +55,7 @@ class VM {
     this.pal = 0;
     this.canvas = {
       show: true,
-      useSgbBorder: true,
+      useSgbBorder: sgbEnabled,
       scale: 3,
     };
     this.rewind = {
@@ -96,7 +105,7 @@ const vm = new VM();
   let romBuffer = await response.arrayBuffer();
   const extRam = new Uint8Array(JSON.parse(localStorage.getItem('extram')));
   Emulator.start(await binjgbPromise, romBuffer, extRam);
-  emulator.setBuiltinPalette(vm.pal);
+  emulator.setBuiltinPalette(BUILTIN_PALETTES);
 })();
 
 function makeWasmBuffer(module, ptr, size) {

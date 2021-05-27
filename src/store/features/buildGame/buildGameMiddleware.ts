@@ -39,6 +39,8 @@ const buildGameMiddleware: Middleware<{}, RootState> = (store) => (
     try {
       const projectRoot = state.document && state.document.root;
       const project = denormalizeProject(state.project.present);
+      const colorEnabled = state.project.present.settings.customColorsEnabled;
+      const sgbEnabled = state.project.present.settings.sgbEnabled;
       const outputRoot = Path.normalize(`${getTmp()}/${buildUUID}`);
       const engineFields = state.engine.fields;
 
@@ -96,7 +98,8 @@ const buildGameMiddleware: Middleware<{}, RootState> = (store) => (
 
         ipcRenderer.send(
           "open-play",
-          `file://${outputRoot}/build/web/index.html`
+          `file://${outputRoot}/build/web/index.html`,
+          sgbEnabled && !colorEnabled
         );
       }
 

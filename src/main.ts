@@ -35,6 +35,7 @@ let mainWindow: any = null;
 let splashWindow: any = null;
 let preferencesWindow: any = null;
 let playWindow: any = null;
+let playWindowSgb = false;
 let hasCheckedForUpdate = false;
 let musicWindow: any;
 
@@ -222,12 +223,17 @@ const openHelp = async (helpPage: string) => {
   }
 };
 
-const createPlay = async (url: string) => {
+const createPlay = async (url: string, sgb: boolean) => {
+  if (playWindow && sgb !== playWindowSgb) {
+    playWindow.close();
+    playWindow = null;
+  }
+
   if (!playWindow) {
     // Create the browser window.
     playWindow = new BrowserWindow({
-      width: 512,
-      height: 448,
+      width: sgb ? 512 : 480,
+      height: sgb ? 448 : 432,
       fullscreenable: false,
       autoHideMenuBar: true,
       useContentSize: true,
@@ -236,12 +242,13 @@ const createPlay = async (url: string) => {
         webSecurity: process.env.NODE_ENV !== "development",
       },
     });
+    playWindowSgb = sgb;
   } else {
     playWindow.show();
   }
 
   playWindow.setMenu(null);
-  playWindow.loadURL(`${url}?audio=true`);
+  playWindow.loadURL(`${url}?audio=true&sgb=${sgb ? "true" : "false"}`);
 
   playWindow.on("closed", () => {
     playWindow = null;
@@ -369,8 +376,8 @@ ipcMain.on("open-help", async (event, helpPage) => {
   openHelp(helpPage);
 });
 
-ipcMain.on("open-play", async (event, url) => {
-  createPlay(url);
+ipcMain.on("open-play", async (event, url, sgb) => {
+  createPlay(url, sgb);
 });
 
 ipcMain.on("document-modified", () => {
