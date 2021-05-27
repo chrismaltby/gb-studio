@@ -883,6 +883,13 @@ OP_VM_SGB_TRANSFER       = 0x7E
         .db OP_VM_SGB_TRANSFER
 .endm
 
+; --- RUMBLE --------------------------------------
+
+OP_VM_RUMBLE             = 0x7F
+.macro VM_RUMBLE ENABLE
+        .db OP_VM_RUMBLE, #<ENABLE
+.endm
+
 ; --- PROJECTILES ---------------------------------
 
 OP_VM_PROJECTILE_LAUNCH  = 0x80

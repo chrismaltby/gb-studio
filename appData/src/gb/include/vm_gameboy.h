@@ -27,4 +27,8 @@ void vm_poll(SCRIPT_CTX * THIS, INT16 idx, INT16 res, UBYTE event_mask) __banked
 void vm_set_sprite_mode(SCRIPT_CTX * THIS, UBYTE mode) __banked;
 void vm_replace_tile_xy(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE tileset_bank, const tileset_t * tileset, INT16 idx_start_tile) __banked;
 
+#define RUMBLE_ENABLE 0x20u
+
+void vm_rumble(SCRIPT_CTX * THIS, UBYTE enable) __banked;
+
 #endif

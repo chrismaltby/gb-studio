@@ -53,9 +53,17 @@ void vm_actor_move_to(SCRIPT_CTX * THIS, INT16 idx) __banked {
         if (CHK_FLAG(params->ATTR, ACTOR_ATTR_DIAGONAL)) {
             SET_FLAG(THIS->flags, MOVE_ALLOW_H | MOVE_ALLOW_V);
         } if (CHK_FLAG(params->ATTR, ACTOR_ATTR_H_FIRST)) {
-            SET_FLAG(THIS->flags, MOVE_ALLOW_H);
+            if (actor->pos.x != params->X) {
+                SET_FLAG(THIS->flags, MOVE_ALLOW_H);
+            } else {
+                SET_FLAG(THIS->flags, MOVE_ALLOW_V);
+            }            
         } else {
-            SET_FLAG(THIS->flags, MOVE_ALLOW_V);
+            if (actor->pos.y != params->Y) {
+                SET_FLAG(THIS->flags, MOVE_ALLOW_V);
+            } else {
+                SET_FLAG(THIS->flags, MOVE_ALLOW_H);
+            }
         }
 
         // Check for collisions in path

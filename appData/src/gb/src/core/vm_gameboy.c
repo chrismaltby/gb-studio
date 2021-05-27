@@ -184,3 +184,8 @@ void vm_replace_tile_xy(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE tileset_bank,
     VBK_REG = 0;
 #endif
 }
+
+void vm_rumble(SCRIPT_CTX * THIS, UBYTE enable) __banked {
+    THIS;
+    if (enable) *(UBYTE *)0x4000 |= RUMBLE_ENABLE; else *(UBYTE *)0x4000 &= (~RUMBLE_ENABLE);
+}
