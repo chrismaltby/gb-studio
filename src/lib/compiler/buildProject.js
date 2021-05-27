@@ -2,7 +2,7 @@ import fs from "fs-extra";
 import compile from "./compileData";
 import ejectBuild from "./ejectBuild";
 import makeBuild from "./makeBuild";
-import { emulatorRoot } from "../../consts";
+import { binjgbRoot, emulatorRoot } from "../../consts";
 import copy from "../helpers/fsCopy";
 
 const MAX_BANKS = 512; // GBDK supports max of 512 banks
@@ -47,11 +47,20 @@ const buildProject = async (
     warnings,
   });
   if (buildType === "web") {
-    await copy(emulatorRoot, `${outputRoot}/build/web`);
-    await copy(
-      `${outputRoot}/build/rom/game.gb`,
-      `${outputRoot}/build/web/rom/game.gb`
-    );
+
+    if (true) {
+      await copy(binjgbRoot, `${outputRoot}/build/web`)
+      await copy(
+        `${outputRoot}/build/rom/game.gb`,
+        `${outputRoot}/build/web/rom/game.gb`
+      );
+    } else {
+      await copy(emulatorRoot, `${outputRoot}/build/web`);
+      await copy(
+        `${outputRoot}/build/rom/game.gb`,
+        `${outputRoot}/build/web/rom/game.gb`
+      );
+    }
     const sanitize = (s) => String(s || "").replace(/["<>]/g, "");
     const projectName = sanitize(data.name);
     const author = sanitize(data.author);
