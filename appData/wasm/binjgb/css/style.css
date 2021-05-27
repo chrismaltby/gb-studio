@@ -222,7 +222,7 @@ body {
   #game canvas {
     margin-top: 0px;
     width: 100%;
-    max-width: 480px;
+    max-width: 512px;
     border: 0px;
     border-radius: 0px;
   }

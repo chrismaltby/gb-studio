@@ -226,8 +226,8 @@ const createPlay = async (url: string) => {
   if (!playWindow) {
     // Create the browser window.
     playWindow = new BrowserWindow({
-      width: 480,
-      height: 432,
+      width: 512,
+      height: 448,
       fullscreenable: false,
       autoHideMenuBar: true,
       useContentSize: true,
