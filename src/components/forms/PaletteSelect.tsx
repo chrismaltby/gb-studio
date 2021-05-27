@@ -1,5 +1,6 @@
 import React, { FC, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import styled from "styled-components";
 import { DMG_PALETTE } from "../../consts";
 import { RootState } from "../../store/configureStore";
 import { paletteSelectors } from "../../store/features/entities/entitiesState";
@@ -15,25 +16,38 @@ import {
 
 interface PaletteSelectProps extends SelectCommonProps {
   name: string;
+  prefix?: string;
   value?: string;
   type?: "tile" | "sprite";
   onChange?: (newId: string) => void;
   optional?: boolean;
   optionalLabel?: string;
   optionalDefaultPaletteId?: string;
+  canKeep?: boolean;
+  keepLabel?: string;
 }
 
 interface PaletteOption extends Option {
-  palette: Palette;
+  palette?: Palette;
 }
 
+const PaletteSelectPrefix = styled.div`
+  min-width: 13px;
+  padding-right: 2px;
+  font-weight: bold;
+`;
+
 export const PaletteSelect: FC<PaletteSelectProps> = ({
+  name,
   value,
+  prefix,
   type,
   onChange,
   optional,
   optionalLabel,
   optionalDefaultPaletteId,
+  canKeep,
+  keepLabel,
   ...selectProps
 }) => {
   const palettes = useSelector((state: RootState) =>
@@ -46,6 +60,14 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
   useEffect(() => {
     setOptions(
       ([] as PaletteOption[]).concat(
+        canKeep
+          ? ([
+              {
+                value: "keep",
+                label: keepLabel || "Keep",
+              },
+            ] as PaletteOption[])
+          : [],
         optional
           ? ([
               {
@@ -64,14 +86,27 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
         }))
       )
     );
-  }, [palettes]);
+  }, [
+    palettes,
+    canKeep,
+    keepLabel,
+    optional,
+    optionalDefaultPaletteId,
+    optionalLabel,
+  ]);
 
   useEffect(() => {
     setCurrentPalette(palettes.find((v) => v.id === value));
   }, [palettes, value]);
 
   useEffect(() => {
-    if (currentPalette) {
+    console.log({ canKeep, value });
+    if (canKeep && value === "keep") {
+      setCurrentValue({
+        value: "keep",
+        label: keepLabel || "Keep",
+      });
+    } else if (currentPalette) {
       setCurrentValue({
         value: currentPalette.id,
         label: `${currentPalette.name}`,
@@ -85,8 +120,23 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
         label: optionalLabel || "None",
         palette: optionalPalette as Palette,
       });
+    } else {
+      setCurrentValue({
+        value: "",
+        label: DMG_PALETTE.name,
+        palette: DMG_PALETTE as Palette,
+      });
     }
-  }, [currentPalette]);
+  }, [
+    currentPalette,
+    optionalDefaultPaletteId,
+    optional,
+    optionalLabel,
+    palettes,
+    canKeep,
+    keepLabel,
+    value,
+  ]);
 
   const onSelectChange = (newValue: Option) => {
     onChange?.(newValue.value);
@@ -103,7 +153,7 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
             preview={
               <PaletteBlock
                 type={type}
-                colors={option.palette.colors || []}
+                colors={option?.palette?.colors || []}
                 size={20}
               />
             }
@@ -118,11 +168,12 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
             preview={
               <PaletteBlock
                 type={type}
-                colors={currentValue?.palette.colors || []}
+                colors={currentValue?.palette?.colors || []}
                 size={20}
               />
             }
           >
+            {prefix && <PaletteSelectPrefix>{prefix}</PaletteSelectPrefix>}
             {currentValue?.label}
           </SingleValueWithPreview>
         ),

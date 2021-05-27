@@ -20,7 +20,7 @@ REL_OBJDIR = obj/_rel
 
 CFLAGS = -I$(TOP)include -Wa-I$(TOP)include -Wa-I$(GBDKLIB)
 
-LFLAGS_NBANKS += -Wl-yo$(CART_SIZE) -Wl-ya4
+LFLAGS_NBANKS += -Wm-yoA -Wm-ya4
 LFLAGS_SYMBOLS = -Wl-j -Wl-m -Wl-w -Wm-yS
 
 LFLAGS = -Wl-yt$(CART_MBC) $(LFLAGS_NBANKS) $(LFLAGS_SYMBOLS) -Wl-klib -Wl-g_shadow_OAM2=0xDF00 -Wl-g.STACK=0xDF00 -Wi-e
@@ -145,14 +145,19 @@ $(TOP)$(OBJDIR)/%.o:	$(TOP)src/%.s
 $(TOP)$(OBJDIR)/test_main.o: $(TOP)test/framework/test_main.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-$(REL_OBJDIR)/.rel:	$(OBJS)
+$(REL_OBJDIR)/linkfile.lk:	$(OBJS)
 	mkdir -p $(REL_OBJDIR)
-	$(eval CART_SIZE=$(shell $(GBSPACK) $(PACKFLAGS) -o $(REL_OBJDIR) $(OBJS)))
-	$(eval LFLAGS += -Wl-g__start_save=$(shell expr $(CART_SIZE) - 4 ))
-	touch $(REL_OBJDIR)/.rel
 
-$(ROM_BUILD_DIR)/%.gb:	$(REL_OBJDIR)/.rel
-	$(CC) -Wm-yn$(ROMTITLE) $(LFLAGS) -o $@ $(REL_OBJS)
+	$(shell rm -f $(REL_OBJDIR)/packfile.pk) 
+	$(foreach O,$(OBJS),$(shell echo $O >>$(REL_OBJDIR)/packfile.pk))
+	$(eval CART_SIZE=$(shell $(GBSPACK) $(PACKFLAGS) -o $(REL_OBJDIR) -i $(REL_OBJDIR)/packfile.pk))
+
+	$(shell echo -g __start_save=$(shell expr $(CART_SIZE) - 4 ) >$@)
+	$(shell echo $(GBDKLIB)/gb/crt0.o >>$@)
+	$(foreach O,$(REL_OBJS),$(shell echo $O >>$@))
+
+$(ROM_BUILD_DIR)/%.gb:	$(REL_OBJDIR)/linkfile.lk
+	$(CC) -v $(LFLAGS) -Wm-yn$(ROMTITLE) -o $@ -Wl-f$<
 
 clean:
 	@echo "CLEANUP..."

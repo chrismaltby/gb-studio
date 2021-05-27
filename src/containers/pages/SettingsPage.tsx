@@ -1,11 +1,11 @@
 import React, { FC, useCallback, useLayoutEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import Path from "path";
 import { FormField } from "../../components/library/Forms";
 import l10n from "../../lib/helpers/l10n";
 import castEventValue from "../../lib/helpers/castEventValue";
 import CustomControlsPicker from "../../components/forms/CustomControlsPicker";
-import CartPicker from "../../components/forms/CartPicker";
-import PaletteSelect from "../../components/forms/PaletteSelectOld";
+import { PaletteSelect } from "../../components/forms/PaletteSelect";
 import { Button } from "../../components/ui/buttons/Button";
 import { SettingsState } from "../../store/features/settings/settingsState";
 import settingsActions from "../../store/features/settings/settingsActions";
@@ -42,9 +42,14 @@ import { SpriteSheetSelect } from "../../components/forms/SpriteSheetSelect";
 import { CharacterEncodingSelect } from "../../components/forms/CharacterEncodingSelect";
 import { ColorAnimationText } from "../../components/settings/ColorAnimationText";
 import { MusicDriverSelect } from "../../components/forms/MusicDriverSelect";
+import { FormInfo } from "../../components/ui/form/FormInfo";
+import { SGBBorderPreview } from "../../components/forms/sgb/SGBBorderPreview";
+import electronActions from "../../store/features/electron/electronActions";
+import CartSettingsEditor from "../../components/settings/CartSettingsEditor";
 
 const SettingsPage: FC = () => {
   const dispatch = useDispatch();
+  const projectRoot = useSelector((state: RootState) => state.document.root);
   const settings = useSelector(
     (state: RootState) => state.project.present.settings
   );
@@ -77,9 +82,8 @@ const SettingsPage: FC = () => {
 
   const {
     customColorsEnabled,
+    sgbEnabled,
     customHead,
-    defaultUIPaletteId,
-    defaultSpritePaletteId,
     defaultBackgroundPaletteIds,
     defaultSpritePaletteIds,
     defaultFontId,
@@ -165,6 +169,15 @@ const SettingsPage: FC = () => {
     [dispatch]
   );
 
+  const openSGBBorder = useCallback(() => {
+    dispatch(
+      electronActions.openFile({
+        filename: Path.join(projectRoot, "assets", "sgb", "border.png"),
+        type: "image",
+      })
+    );
+  }, [dispatch, projectRoot]);
+
   return (
     <SettingsPageWrapper>
       {showMenu && (
@@ -181,6 +194,9 @@ const SettingsPage: FC = () => {
             </SettingsSearchWrapper>
             <SettingsMenuItem onClick={onMenuItem("settingsColor")}>
               {l10n("SETTINGS_GBC")}
+            </SettingsMenuItem>
+            <SettingsMenuItem onClick={onMenuItem("settingsSuper")}>
+              {l10n("SETTINGS_SGB")}
             </SettingsMenuItem>
             <SettingsMenuItem onClick={onMenuItem("settingsPlayer")}>
               {l10n("SETTINGS_PLAYER_DEFAULT_SPRITES")}
@@ -223,9 +239,7 @@ const SettingsPage: FC = () => {
         >
           <CardAnchor id="settingsColor" />
           <CardHeading>
-            <ColorAnimationText>
-              {l10n("SETTINGS_GBC")}
-            </ColorAnimationText>
+            <ColorAnimationText>{l10n("SETTINGS_GBC")}</ColorAnimationText>
           </CardHeading>
           <SearchableSettingRow
             searchTerm={searchTerm}
@@ -249,7 +263,7 @@ const SettingsPage: FC = () => {
               >
                 <SettingRowLabel>Default Background Palettes</SettingRowLabel>
                 <SettingRowInput>
-                  <div key={JSON.stringify(defaultBackgroundPaletteIds)}>
+                  <div>
                     {[0, 1, 2, 3, 4, 5, 6, 7].map((index) => (
                       <FormField
                         key={index}
@@ -259,8 +273,8 @@ const SettingsPage: FC = () => {
                         }}
                       >
                         <PaletteSelect
-                          id="scenePalette"
-                          prefix={`${index + 1}${index === 7 ? " / UI" : ""}: `}
+                          name={`scenePalette${index}`}
+                          prefix={`${index + 1}:`}
                           value={
                             (defaultBackgroundPaletteIds &&
                               defaultBackgroundPaletteIds[index]) ||
@@ -270,6 +284,12 @@ const SettingsPage: FC = () => {
                             onEditPaletteId(index, e);
                           }}
                         />
+                        {sgbEnabled && index === 4 && (
+                          <FormInfo>{l10n("FIELD_SGB_PALETTE_NOTE")}</FormInfo>
+                        )}
+                        {index === 7 && (
+                          <FormInfo>{l10n("FIELD_UI_PALETTE_NOTE")}</FormInfo>
+                        )}
                       </FormField>
                     ))}
                   </div>
@@ -292,10 +312,8 @@ const SettingsPage: FC = () => {
                         }}
                       >
                         <PaletteSelect
-                          id="scenePalette"
-                          prefix={`${index + 1}${
-                            index === 7 ? ` / ${l10n("FIELD_EMOTE")}` : ""
-                          }: `}
+                          name={`spritePalette${index}`}
+                          prefix={`${index + 1}:`}
                           value={
                             (defaultSpritePaletteIds &&
                               defaultSpritePaletteIds[index]) ||
@@ -305,6 +323,11 @@ const SettingsPage: FC = () => {
                             onEditSpritePaletteId(index, e);
                           }}
                         />
+                        {index === 7 && (
+                          <FormInfo>
+                            {l10n("FIELD_EMOTE_PALETTE_NOTE")}
+                          </FormInfo>
+                        )}
                       </FormField>
                     ))}
                   </div>
@@ -317,6 +340,98 @@ const SettingsPage: FC = () => {
                   </Button>
                 </CardButtons>
               )}
+            </>
+          )}
+        </SearchableCard>
+
+        <SearchableCard
+          searchTerm={searchTerm}
+          searchMatches={[
+            "SGB",
+            l10n("FIELD_ENABLE_SGB"),
+            l10n("FIELD_BORDER_IMAGE"),
+          ]}
+        >
+          <CardAnchor id="settingsColor" />
+          <CardHeading>{l10n("SETTINGS_SGB")}</CardHeading>
+          <SearchableSettingRow
+            searchTerm={searchTerm}
+            searchMatches={["SGB", l10n("FIELD_ENABLE_SGB")]}
+          >
+            <SettingRowLabel>{l10n("FIELD_ENABLE_SGB")}</SettingRowLabel>
+            <SettingRowInput>
+              <Checkbox
+                id="sgbEnabled"
+                name="sgbEnabled"
+                checked={sgbEnabled}
+                onChange={onEditSetting("sgbEnabled")}
+              />
+            </SettingRowInput>
+          </SearchableSettingRow>
+
+          {sgbEnabled && (
+            <>
+              <SearchableSettingRow
+                searchTerm={searchTerm}
+                searchMatches={[l10n("FIELD_DEFAULT_PALETTE")]}
+              >
+                <SettingRowLabel>
+                  {l10n("FIELD_DEFAULT_PALETTE")}
+                </SettingRowLabel>
+                <SettingRowInput>
+                  <div>
+                    <FormField
+                      style={{
+                        padding: 0,
+                      }}
+                    >
+                      <PaletteSelect
+                        name="scenePalette"
+                        value={
+                          (defaultBackgroundPaletteIds &&
+                            defaultBackgroundPaletteIds[4]) ||
+                          ""
+                        }
+                        onChange={(e: string) => {
+                          onEditPaletteId(4, e);
+                        }}
+                      />
+                      {customColorsEnabled && (
+                        <FormInfo>{l10n("FIELD_SGB_PALETTE_NOTE")}</FormInfo>
+                      )}
+                    </FormField>
+                  </div>
+                </SettingRowInput>
+              </SearchableSettingRow>
+
+              <SearchableSettingRow
+                searchTerm={searchTerm}
+                searchMatches={[l10n("FIELD_BORDER_IMAGE")]}
+              >
+                <SettingRowLabel>
+                  {l10n("FIELD_BORDER_IMAGE")}
+                  <FormInfo>
+                    {l10n("FIELD_UPDATE_BY_EDITING")}
+                    <br />
+                    /assets/sgb/border.png
+                  </FormInfo>
+                </SettingRowLabel>
+                <SettingRowInput>
+                  <div>
+                    <FormField
+                      style={{
+                        padding: 0,
+                      }}
+                    >
+                      <SGBBorderPreview
+                        onClick={() => {
+                          openSGBBorder();
+                        }}
+                      />
+                    </FormField>
+                  </div>
+                </SettingRowInput>
+              </SearchableSettingRow>
             </>
           )}
         </SearchableCard>
@@ -392,9 +507,7 @@ const SettingsPage: FC = () => {
 
         <SearchableCard
           searchTerm={searchTerm}
-          searchMatches={[
-            l10n("SETTINGS_MUSIC_DRIVER")
-          ]}
+          searchMatches={[l10n("SETTINGS_MUSIC_DRIVER")]}
         >
           <CardAnchor id="settingsMusic" />
           <CardHeading>{l10n("SETTINGS_MUSIC_DRIVER")}</CardHeading>
@@ -440,7 +553,7 @@ const SettingsPage: FC = () => {
         >
           <CardAnchor id="settingsCartType" />
           <CardHeading>{l10n("SETTINGS_CART_TYPE")}</CardHeading>
-          <CartPicker searchTerm={searchTerm} />
+          <CartSettingsEditor searchTerm={searchTerm} />
         </SearchableCard>
 
         <SearchableCard

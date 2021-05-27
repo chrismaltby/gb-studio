@@ -1,9 +1,9 @@
-# GB Studio 2 Beta
+# GB Studio
 
 
 [![CircleCI](https://circleci.com/gh/chrismaltby/gb-studio/tree/develop.svg?style=shield)](https://circleci.com/gh/chrismaltby/gb-studio/tree/develop)
 
-Copyright (c) 2020 Chris Maltby, released under the [MIT license](https://opensource.org/licenses/MIT).
+Copyright (c) 2021 Chris Maltby, released under the [MIT license](https://opensource.org/licenses/MIT).
 
 Twitter: [@maltby](https://www.twitter.com/maltby) 
 
@@ -17,25 +17,6 @@ For more information see the [GB Studio](https://www.gbstudio.dev) site
 ![GB Studio](gbstudio.gif)
 
 GB Studio consists of an [Electron](https://electronjs.org/) game builder application and a C based game engine using [GBDK](http://gbdk.sourceforge.net/), music is provided by [GBT Player](https://github.com/AntonioND/gbt-player)
-
-## Beta builds
-
-These builds reflects the latest changes from the `v2beta` branch and are updated automatically. It is recommended to make a backup of your project before using any of these versions.
-
-#### macOS
-
-[![MacOS](https://img.shields.io/static/v1.svg?label=&message=64%20bit&color=blue&logo=apple&style=for-the-badge&logoColor=white)](https://circleci.com/api/v1.1/project/github/chrismaltby/gb-studio/latest/artifacts/0/builds/gb-studio-v2beta-darwin_x86_64.zip?branch=v2beta&filter=successful)
-
-#### Linux
-
-[![DEB](https://img.shields.io/static/v1.svg?label=&message=deb&color=blue&logo=Ubuntu&style=for-the-badge&logoColor=white)](https://circleci.com/api/v1.1/project/github/chrismaltby/gb-studio/latest/artifacts/0/builds/gb-studio-v2beta-linux_x86_64.deb?branch=v2beta&filter=successful)
-[![RPM](https://img.shields.io/static/v1.svg?label=&message=RPM&color=blue&logo=linux&style=for-the-badge&logoColor=white)](https://circleci.com/api/v1.1/project/github/chrismaltby/gb-studio/latest/artifacts/0/builds/gb-studio-v2beta-linux_x86_64.rpm?branch=v2beta&filter=successful)
-
-#### Windows
-
-[![Windows_x86_64](https://img.shields.io/static/v1.svg?label=&message=64%20bit&color=blue&logo=windows&style=for-the-badge&logoColor=white)](https://circleci.com/api/v1.1/project/github/chrismaltby/gb-studio/latest/artifacts/0/builds/gb-studio-v2beta-windows_x86_64.zip?branch=v2beta&filter=successful)
-[![Windows_x86](https://img.shields.io/static/v1.svg?label=&message=32%20bit&color=blue&logo=windows&style=for-the-badge&logoColor=white)](https://circleci.com/api/v1.1/project/github/chrismaltby/gb-studio/latest/artifacts/0/builds/gb-studio-v2beta-windows_x86.zip?branch=v2beta&filter=successful)
-
 
 ## Installation
 
@@ -61,7 +42,7 @@ Install GB Studio from source as above then
 > yarn link
 # From any folder you can now run gb-studio-cli
 > gb-studio-cli -V
-2.0.0-beta5
+3.0.0
 > gb-studio-cli --help
 ```
 
@@ -100,7 +81,7 @@ Pull the latest code and run make:cli again, yarn link is only needed for the fi
 
 ## Documentation
 
-Documentation is not yet available for the v2 beta, for previous builds refer to the following:
+Documentation is not yet available for version 3.0, for previous builds refer to the following:
 
 [GB Studio Documentation](https://www.gbstudio.dev/docs)
 

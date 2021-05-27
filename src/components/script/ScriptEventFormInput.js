@@ -1,9 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import SceneSelect from "../forms/SceneSelectOld";
 import { BackgroundSelect } from "../forms/BackgroundSelect";
-import SpriteSheetSelect from "../forms/SpriteSheetSelectOld";
 import { VariableSelect } from "../forms/VariableSelect";
 import DirectionPicker from "../forms/DirectionPicker";
 import InputPicker from "../forms/InputPicker";
@@ -11,7 +9,6 @@ import FadeSpeedSelect from "../forms/FadeSpeedSelect";
 import CameraSpeedSelect from "../forms/CameraSpeedSelect";
 import { AnimationSpeedSelect } from "../forms/AnimationSpeedSelect";
 import { MovementSpeedSelect } from "../forms/MovementSpeedSelect";
-import PaletteSelect from "../forms/PaletteSelectOld";
 import ActorSelect from "../forms/ActorSelect";
 import OverlayColorSelect from "../forms/OverlayColorSelect";
 import MusicSelect from "../forms/MusicSelect";
@@ -25,7 +22,10 @@ import { MenuItem } from "../library/Menu";
 import { ConnectIcon, CheckIcon, BlankIcon } from "../library/Icons";
 import PropertySelect from "../forms/PropertySelect";
 import CollisionMaskPicker from "../forms/CollisionMaskPicker";
-import { EventValueShape, EventDefaultValueShape } from "../../store/stateShape";
+import {
+  EventValueShape,
+  EventDefaultValueShape,
+} from "../../store/stateShape";
 import l10n from "../../lib/helpers/l10n";
 import EngineFieldSelect from "../forms/EngineFieldSelect";
 import { SliderField } from "../ui/form/SliderField";
@@ -34,19 +34,22 @@ import { Input } from "../ui/form/Input";
 import { Select } from "../ui/form/Select";
 import { AvatarSelect } from "../forms/AvatarSelect";
 import { EmoteSelect } from "../forms/EmoteSelect";
+import { PaletteSelect } from "../forms/PaletteSelect";
+import { SceneSelect } from "../forms/SceneSelect";
+import { SpriteSheetSelect } from "../forms/SpriteSheetSelect";
 
 const argValue = (arg) => {
-  if(arg && arg.value !== undefined) {
-    if(arg.type === "variable" || arg.type === "property") {
+  if (arg && arg.value !== undefined) {
+    if (arg.type === "variable" || arg.type === "property") {
       return undefined;
     }
     return arg.value;
   }
   return arg;
-}
+};
 
 class ScriptEventFormInput extends Component {
-  onChange = e => {
+  onChange = (e) => {
     const { onChange, field, value, index, args, type } = this.props;
     const { updateFn } = field;
     let newValue = e && e.currentTarget ? castEventValue(e) : e;
@@ -56,24 +59,27 @@ class ScriptEventFormInput extends Component {
     }
     if (type === "select") {
       newValue = newValue.value;
-    }  
+    }
     if (updateFn) {
       newValue = updateFn(newValue, field, args);
     }
     onChange(newValue, index);
   };
 
-  onChangeUnionValue = newValue => {
+  onChangeUnionValue = (newValue) => {
     const { onChange, value, index } = this.props;
-    onChange({
-      ...value,
-      value: newValue
-    }, index);
+    onChange(
+      {
+        ...value,
+        value: newValue,
+      },
+      index
+    );
   };
 
-  onChangeUnionType = newType => e => {
+  onChangeUnionType = (newType) => (e) => {
     const { onChange, value, index, field, scope } = this.props;
-    if(newType !== value.type) {
+    if (newType !== value.type) {
       let replaceValue = null;
       const defaultValue = field.defaultValue[newType];
 
@@ -83,15 +89,30 @@ class ScriptEventFormInput extends Component {
         replaceValue = defaultValue;
       }
 
-      onChange({
-        type: newType,
-        value: replaceValue
-      }, index);
+      onChange(
+        {
+          type: newType,
+          value: replaceValue,
+        },
+        index
+      );
     }
-  }  
+  };
 
   render() {
-    const { type, id, value, defaultValue, args, field, entityId, allowRename, scope, defaultBackgroundPaletteIds, defaultSpritePaletteIds } = this.props;
+    const {
+      type,
+      id,
+      value,
+      defaultValue,
+      args,
+      field,
+      entityId,
+      allowRename,
+      scope,
+      defaultBackgroundPaletteIds,
+      defaultSpritePaletteIds,
+    } = this.props;
 
     if (type === "textarea") {
       return (
@@ -117,7 +138,7 @@ class ScriptEventFormInput extends Component {
           entityId={entityId}
         />
       );
-    }    
+    }
     if (type === "text") {
       return (
         <Input
@@ -157,22 +178,24 @@ class ScriptEventFormInput extends Component {
           onChange={this.onChange}
         />
       );
-    }    
+    }
     if (type === "checkbox") {
-      return <CheckboxField
-        id={id}
-        name={id}
-        label={field.checkboxLabel || field.label}
-        type="checkbox"
-        className="Checkbox"
-        checked={typeof value === "boolean" ? value : defaultValue || false}
-        onChange={this.onChange}
-      />
+      return (
+        <CheckboxField
+          id={id}
+          name={id}
+          label={field.checkboxLabel || field.label}
+          type="checkbox"
+          className="Checkbox"
+          checked={typeof value === "boolean" ? value : defaultValue || false}
+          onChange={this.onChange}
+        />
+      );
     }
     if (type === "select") {
       const options = field.options.map(([value, label]) => ({
         value,
-        label: l10n(label)
+        label: l10n(label),
       }));
       const currentValue = options.find((o) => o.value === value) || options[0];
       return (
@@ -220,13 +243,11 @@ class ScriptEventFormInput extends Component {
             onChange={this.onChange}
             optional
             optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
-            optionalDefaultPaletteId={
-              defaultBackgroundPaletteIds[7] || ""
-            }
+            optionalDefaultPaletteId={defaultBackgroundPaletteIds[7] || ""}
             type="background"
           />
         );
-      }   
+      }
       if (field.paletteType === "emote") {
         return (
           <PaletteSelect
@@ -235,13 +256,11 @@ class ScriptEventFormInput extends Component {
             onChange={this.onChange}
             optional
             optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
-            optionalDefaultPaletteId={
-              defaultSpritePaletteIds[7] || ""
-            }
+            optionalDefaultPaletteId={defaultSpritePaletteIds[7] || ""}
             type="sprite"
           />
         );
-      }            
+      }
       return (
         <PaletteSelect
           id={id}
@@ -251,7 +270,7 @@ class ScriptEventFormInput extends Component {
           optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
           optionalDefaultPaletteId={
             defaultSpritePaletteIds[field.paletteIndex] || ""
-          }          
+          }
           canKeep={field.canKeep}
           keepLabel={l10n("FIELD_DONT_MODIFY")}
           type={field.paletteType}
@@ -285,8 +304,15 @@ class ScriptEventFormInput extends Component {
       return <DirectionPicker id={id} value={value} onChange={this.onChange} />;
     }
     if (type === "collisionMask") {
-      return <CollisionMaskPicker id={id} value={value} onChange={this.onChange} includePlayer={field.includePlayer} />;
-    }    
+      return (
+        <CollisionMaskPicker
+          id={id}
+          value={value}
+          onChange={this.onChange}
+          includePlayer={field.includePlayer}
+        />
+      );
+    }
     if (type === "input") {
       return <InputPicker id={id} value={value} onChange={this.onChange} />;
     }
@@ -336,9 +362,14 @@ class ScriptEventFormInput extends Component {
     }
     if (type === "avatar") {
       return (
-        <AvatarSelect id={id} value={String(value)} onChange={this.onChange} optional={field.optional} />
+        <AvatarSelect
+          id={id}
+          value={String(value)}
+          onChange={this.onChange}
+          optional={field.optional}
+        />
       );
-    } 
+    }
     if (type === "operator") {
       return <OperatorSelect id={id} value={value} onChange={this.onChange} />;
     }
@@ -358,27 +389,19 @@ class ScriptEventFormInput extends Component {
       );
     }
     if (type === "engineField") {
-      return <EngineFieldSelect
-        id={id}
-        value={value}
-        onChange={this.onChange}
-      />
+      return (
+        <EngineFieldSelect id={id} value={value} onChange={this.onChange} />
+      );
     }
     if (type === "property") {
-      return (
-        <PropertySelect
-          id={id}
-          value={value}
-          onChange={this.onChange}
-        />
-      );
-    }   
+      return <PropertySelect id={id} value={value} onChange={this.onChange} />;
+    }
     if (type === "union") {
-      const currentType = (value && value.type) || (field.defaultType);
+      const currentType = (value && value.type) || field.defaultType;
       const currentValue = value ? value.value : undefined;
       return (
-        <div style={{display: "flex", alignItems:"center"}}>
-          <div style={{flexGrow:1, marginRight: 2}}>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <div style={{ flexGrow: 1, marginRight: 2 }}>
             <ScriptEventFormInput
               id={id}
               entityId={entityId}
@@ -398,11 +421,11 @@ class ScriptEventFormInput extends Component {
             showArrow={false}
             label={<ConnectIcon connected={currentType !== "number"} />}
           >
-            {field.types.map((type) =>
+            {field.types.map((type) => (
               <MenuItem key={type} onClick={this.onChangeUnionType(type)}>
                 {type === currentType ? <CheckIcon /> : <BlankIcon />} {type}
               </MenuItem>
-            )}
+            ))}
           </DropdownButton>
         </div>
       );
@@ -425,7 +448,7 @@ ScriptEventFormInput.propTypes = {
   scope: PropTypes.string.isRequired,
   defaultBackgroundPaletteIds: PropTypes.arrayOf(PropTypes.string).isRequired,
   defaultSpritePaletteIds: PropTypes.arrayOf(PropTypes.string).isRequired,
-  defaultUIPaletteId: PropTypes.string.isRequired
+  defaultUIPaletteId: PropTypes.string.isRequired,
 };
 
 ScriptEventFormInput.defaultProps = {
@@ -439,20 +462,17 @@ ScriptEventFormInput.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  const scope = state.editor.type === "customEvent"
-    ? "customEvent"
-    : "global";
+  const scope = state.editor.type === "customEvent" ? "customEvent" : "global";
   const settings = state.project.present.settings;
   const defaultBackgroundPaletteIds =
     settings.defaultBackgroundPaletteIds || [];
-  const defaultSpritePaletteIds =
-    settings.defaultSpritePaletteIds || [];    
+  const defaultSpritePaletteIds = settings.defaultSpritePaletteIds || [];
   const defaultUIPaletteId = settings.defaultUIPaletteId || "";
   return {
     scope,
     defaultBackgroundPaletteIds,
     defaultSpritePaletteIds,
-    defaultUIPaletteId
+    defaultUIPaletteId,
   };
 }
 

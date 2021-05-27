@@ -1,6 +1,6 @@
 import glob from "glob";
 import { promisify } from "util";
-import { pathExists } from "fs-extra";
+import { pathExists, readFile, writeFile } from "fs-extra";
 import Path from "path";
 import l10n from "../helpers/l10n";
 
@@ -8,7 +8,7 @@ const globAsync = promisify(glob);
 
 export default async (
   buildRoot,
-  { CART_TYPE, customColorsEnabled, musicDriver, profile, platform }
+  { customColorsEnabled, sgb, musicDriver, profile, platform, batteryless }
 ) => {
   const cmds = platform === "win32" ? [""] : ["#!/bin/bash", "set -e"];
   const objFiles = [];
@@ -17,24 +17,24 @@ export default async (
     platform === "win32"
       ? `..\\_gbstools\\gbdk\\bin\\lcc`
       : `../_gbstools/gbdk/bin/lcc`;
-  const PACK =
-    platform === "win32"
-      ? `..\\_gbstools\\gbspack\\gbspack`
-      : `../_gbstools/gbspack/gbspack`;
-  let CFLAGS = `-Iinclude -Wa-Iinclude -Wa-I../_gbstools/gbdk/lib/small/asxxxx -Wl-a -DSGB -c`;
-  let LFLAGS = ` -Wl-yt${CART_TYPE} -Wl-ya4 -Wl-j -Wl-m -Wl-w -Wl-klib -Wl-g_shadow_OAM2=0xDF00 -Wl-g.STACK=0xDF00 -Wi-e -Wm-ys`;
+  let CFLAGS = `-Iinclude -Wa-Iinclude -Wa-I../_gbstools/gbdk/lib/small/asxxxx -Wl-a -c`;
 
   if (customColorsEnabled) {
     CFLAGS += " -DCGB";
-    LFLAGS += " -Wm-yC";
+  }
+
+  if (sgb) {
+    CFLAGS += " -DSGB";
   }
 
   if (musicDriver === "huge") {
     CFLAGS += " -DHUGE_TRACKER";
-    LFLAGS += " -Wl-lhUGEDriver.lib";
   } else {
     CFLAGS += " -DGBT_PLAYER";
-    LFLAGS += " -Wl-lgbt_player.lib";
+  }
+
+  if (batteryless) {
+    CFLAGS += " -DBATTERYLESS";
   }
 
   if (profile) {
@@ -54,18 +54,6 @@ export default async (
     }
   };
 
-  const getValue = (label, variable, cmd) => {
-    if (platform === "win32") {
-      cmds.push(`@echo ${label}`);
-      cmds.push(`@${cmd}>${variable}`);
-      cmds.push(`@SET /P ${variable}=<${variable}`);
-    } else {
-      cmds.push(`echo "${label}"`);
-      cmds.push(`${variable}=$(${cmd})`);
-      cmds.push(`echo "VALUE of ${variable} WAS $${variable}"`);
-    }
-  };
-
   for (const file of buildFiles) {
     if (musicDriver === "huge" && file.indexOf("GBT_PLAYER") !== -1) {
       continue;
@@ -81,37 +69,129 @@ export default async (
     if (!(await pathExists(objFile))) {
       addCommand(
         `${l10n("COMPILER_COMPILING")}: ${Path.relative(buildRoot, file)}`,
-        `${CC} ${CFLAGS} -c -o ${Path.relative(buildRoot, objFile)} ${Path.relative(buildRoot, file)}`
+        `${CC} ${CFLAGS} -c -o ${Path.relative(
+          buildRoot,
+          objFile
+        )} ${Path.relative(buildRoot, file)}`
       );
     }
     objFiles.push(objFile);
   }
 
-  getValue(
-    `${l10n("COMPILER_PACKING")}`,
-    "CART_SIZE",
-    `${PACK} -f 255 -b 4 -e rel -c ${objFiles.map((o)=>Path.relative(buildRoot, o)).join(" ")}`
-  );
-
-  if (platform === "win32") {
-    addCommand(
-      l10n("COMPILER_CALCULATING_START_SAVE"),
-      `SET /A "START_SAVE = CART_SIZE - 4"`
-    );
-    addCommand(
-      `${l10n("COMPILER_LINKING")}: game.gb`,
-      `${CC} ${LFLAGS} -Wl-yo%CART_SIZE% -Wl-g__start_save=%START_SAVE% -o build/rom/game.gb ${objFiles
-        .map((file) => Path.relative(buildRoot, file).replace(/\.o$/, ".rel"))
-        .join(" ")}`
-    );
-  } else {
-    addCommand(
-      `${l10n("COMPILER_LINKING")}: game.gb`,
-      `${CC} ${LFLAGS} -Wl-yo\${CART_SIZE} -Wl-g__start_save=\${CART_SIZE-4} -o build/rom/game.gb ${objFiles
-        .map((file) => Path.relative(buildRoot, file).replace(/\.o$/, ".rel"))
-        .join(" ")}`
-    );
-  }
-
   return cmds.join("\n");
+};
+
+export const buildPackFile = async (buildRoot) => {
+  const output = [];
+  const srcRoot = `${buildRoot}/src/**/*.@(c|s)`;
+  const buildFiles = await globAsync(srcRoot);
+  for (const file of buildFiles) {
+    const objFile = `${file
+      .replace(/src.*\//, "obj/")
+      .replace(/\.[cs]$/, "")}.o`;
+
+    output.push(objFile);
+  }
+  return output.join("\n");
+};
+
+export const buildLinkFile = async (buildRoot, cartSize) => {
+  const output = [
+    `-g __start_save=${cartSize - 4}`,
+    "../_gbstools/gbdk/lib/small/asxxxx/gb/crt0.o",
+  ];
+  const srcRoot = `${buildRoot}/src/**/*.@(c|s)`;
+  const buildFiles = await globAsync(srcRoot);
+  for (const file of buildFiles) {
+    const objFile = `${file
+      .replace(/src.*\//, "obj/")
+      .replace(/\.[cs]$/, "")}.rel`;
+
+    output.push(objFile);
+  }
+  return output.join("\n");
+};
+
+export const buildPackFlags = (packFilePath, batteryless = false) => {
+  return [].concat(
+    // General
+    ["-b", 5, "-f", 255, "-e", "rel", "-c"],
+    // Batteryless
+    batteryless ? ["-a 4"] : [],
+    // Input
+    ["-i", packFilePath]
+  );
+};
+
+export const buildLinkFlags = (
+  linkFile,
+  name = "GBSTUDIO",
+  cartType,
+  color = false,
+  sgb = false,
+  musicDriver = "gbtplayer"
+) => {
+  const validName = name
+    .toUpperCase()
+    .replace(/[^A-Z]*/g, "")
+    .substring(0, 15);
+  const cart = cartType === "mbc3" ? "0x10" : "0x1B";
+  return [].concat(
+    // General
+    [
+      `-Wl-yt${cart}`,
+      "-Wm-yoA",
+      "-Wm-ya4",
+      "-Wl-j",
+      "-Wl-m",
+      "-Wl-w",
+      "-Wm-yS",
+      "-Wl-klib",
+      "-Wl-g_shadow_OAM2=0xDF00",
+      "-Wl-g.STACK=0xDF00",
+      "-Wi-e",
+      `-Wm-yn"${validName}"`,
+    ],
+    // Color
+    color ? ["-Wm-yC"] : [],
+    // SGB
+    sgb ? ["-Wm-ys"] : [],
+    musicDriver === "huge"
+      ? // hugetracker
+        ["-Wl-lhUGEDriver.lib"]
+      : // gbtplayer
+        ["-Wl-lgbt_player.lib"],
+    // Output
+    ["-o", "build/rom/game.gb", `-Wl-f${linkFile}`]
+  );
+};
+
+export const makefileInjectToolsPath = async (filename, buildToolsPath) => {
+  const makefile = await readFile(filename, "utf8");
+  const updatedMakefile = makefile.replace(
+    /GBSTOOLS_DIR =.*/,
+    `GBSTOOLS_DIR = ${Path.normalize(buildToolsPath)}`
+  );
+  await writeFile(filename, updatedMakefile);
+};
+
+export const buildMakeDotBuildFile = ({
+  cartType = "mbc5",
+  color = false,
+  sgb = false,
+  batteryless = false,
+  musicDriver = "gbtplayer",
+}) => {
+  return (
+    `settings: ` +
+    []
+      .concat(
+        color ? ["CGB"] : ["DMG"],
+        sgb ? ["SGB"] : [],
+        musicDriver === "huge" ? ["hUGE"] : ["GBT"],
+        cartType === "mbc3" ? ["MBC3"] : ["MBC5"],
+        batteryless ? ["batteryless"] : []
+      )
+      .join(" ")
+  );
 };

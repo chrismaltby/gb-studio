@@ -138,6 +138,8 @@ const compile = async (
   });
 
   const customColorsEnabled = projectData.settings.customColorsEnabled;
+  const isSGB = projectData.settings.sgbEnabled;
+  const isColor = customColorsEnabled || isSGB;
 
   const precompiledEngineFields = precompileEngineFields(engineFields);
 
@@ -147,11 +149,13 @@ const compile = async (
   output["cursor_image.c"] = compileCursorImage(precompiled.cursorTiles);
   output["cursor_image.h"] = compileCursorImageHeader(precompiled.cursorTiles);
 
-  const sgbPath = await ensureProjectAsset("assets/sgb/border.png", {
-    projectRoot,
-    warnings,
-  });
-  output["border.c"] = await compileSGBImage(sgbPath);
+  if (isSGB) {
+    const sgbPath = await ensureProjectAsset("assets/sgb/border.png", {
+      projectRoot,
+      warnings,
+    });
+    output["border.c"] = await compileSGBImage(sgbPath);
+  }
 
   progress(EVENT_MSG_COMPILING_EVENTS);
   // Hacky small wait to allow console to update before event loop is blocked
@@ -290,25 +294,27 @@ const compile = async (
       );
     };
 
-    const bankEntityEvents = (entityType, entityScriptField = "script") => (
-      entity,
-      entityIndex
-    ) => {
-      if (!entity[entityScriptField] || entity[entityScriptField].length <= 1) {
-        return null;
-      }
-      const lockScript =
-        entityScriptField === "script" && !entity.collisionGroup;
-      return compileScript(
-        entity[entityScriptField],
-        entityType,
-        entity,
-        entityIndex,
-        entityScriptField === "updateScript",
-        lockScript,
-        entityScriptField
-      );
-    };
+    const bankEntityEvents =
+      (entityType, entityScriptField = "script") =>
+      (entity, entityIndex) => {
+        if (
+          !entity[entityScriptField] ||
+          entity[entityScriptField].length <= 1
+        ) {
+          return null;
+        }
+        const lockScript =
+          entityScriptField === "script" && !entity.collisionGroup;
+        return compileScript(
+          entity[entityScriptField],
+          entityType,
+          entity,
+          entityIndex,
+          entityScriptField === "updateScript",
+          lockScript,
+          entityScriptField
+        );
+      };
 
     return {
       start: bankSceneEvents(scene, sceneIndex),
@@ -413,9 +419,8 @@ const compile = async (
       avatarFont,
       avatarFontIndex
     );
-    output[`avatar_font_${avatarFontIndex}.h`] = compileAvatarFontHeader(
-      avatarFontIndex
-    );
+    output[`avatar_font_${avatarFontIndex}.h`] =
+      compileAvatarFontHeader(avatarFontIndex);
   });
 
   // Add emote data
@@ -439,7 +444,7 @@ const compile = async (
     output[`scene_${sceneIndex}.c`] = compileScene(scene, sceneIndex, {
       bgPalette,
       actorsPalette,
-      color: customColorsEnabled,
+      color: isColor,
       eventPtrs,
     });
     output[`scene_${sceneIndex}.h`] = compileSceneHeader(scene, sceneIndex);
@@ -527,7 +532,6 @@ const compile = async (
     startAnimSpeed,
     fonts: precompiled.usedFonts,
     avatarFonts,
-    isCGB: customColorsEnabled,
     engineFields,
     engineFieldValues: projectData.engineFieldValues,
   });
@@ -535,6 +539,24 @@ const compile = async (
     `#ifndef DATA_PTRS_H\n#define DATA_PTRS_H\n\n` +
     `#include "bankdata.h"\n` +
     `#include "gbs_types.h"\n\n` +
+    // Add define fields from engineFields
+    engineFields
+      .filter(
+        // Add define types without explict file set to data/data_bootstrap.h
+        (engineField) => engineField.cType === "define" && !engineField.file
+      )
+      .map((engineField, defineIndex, defineFields) => {
+        const engineValue = projectData.engineFieldValues.find(
+          (v) => v.id === engineField.key
+        );
+        const value =
+          engineValue && engineValue.value !== undefined
+            ? engineValue.value
+            : engineField.defaultValue;
+        return `#define ${engineField.key} ${value}${
+          defineIndex === defineFields.length - 1 ? "\n\n" : "\n"
+        }`;
+      }) +
     `extern const INT16 start_scene_x;\n` +
     `extern const INT16 start_scene_y;\n` +
     `extern const direction_e start_scene_dir;\n` +
@@ -890,11 +912,12 @@ export const precompilePalettes = async (
   const eventPaletteIndexes = {};
   const actorPaletteIndexes = {};
 
+  const isColor = settings.customColorsEnabled || settings.sgbEnabled;
+
   const palettesLookup = indexById(palettes);
   const defaultBackgroundPaletteIds =
     settings.defaultBackgroundPaletteIds || [];
   const defaultSpritePaletteIds = settings.defaultSpritePaletteIds || [];
-  const defaultUIPaletteId = settings.defaultUIPaletteId;
 
   const getPalette = (id, fallbackId) => {
     if (id === "dmg") {
@@ -920,7 +943,7 @@ export const precompilePalettes = async (
     const scenePalette = {
       dmg: ["DMG_WHITE", "DMG_LITE_GRAY", "DMG_DARK_GRAY", "DMG_BLACK"],
       colors:
-        settings.customColorsEnabled &&
+        isColor &&
         [
           getPalette(
             sceneBackgroundPaletteIds[0],
@@ -979,7 +1002,7 @@ export const precompilePalettes = async (
     const actorsPalette = {
       dmg: ["DMG_WHITE", "DMG_WHITE", "DMG_LITE_GRAY", "DMG_BLACK"],
       colors:
-        settings.customColorsEnabled &&
+        isColor &&
         [
           getSpritePalette(
             sceneSpritePaletteIds[0],

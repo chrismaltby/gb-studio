@@ -5,6 +5,7 @@ import projectActions from "../project/projectActions";
 
 type ShowConnectionsSetting = "all" | "selected" | true | false;
 export type MusicDriverSetting = "huge" | "gbt";
+export type CartType = "mbc5" | "mbc3";
 
 export type SettingsState = {
   startSceneId: string;
@@ -19,6 +20,7 @@ export type SettingsState = {
   worldScrollY: number;
   zoom: number;
   customColorsEnabled: boolean;
+  sgbEnabled: boolean;
   customHead: string;
   defaultBackgroundPaletteIds: [
     string,
@@ -49,6 +51,8 @@ export type SettingsState = {
   defaultCharacterEncoding: string;
   defaultPlayerSprites: Record<string, string>;
   musicDriver: MusicDriverSetting;
+  cartType: CartType;
+  batterylessEnabled: boolean;
 };
 
 export const initialState: SettingsState = {
@@ -64,6 +68,7 @@ export const initialState: SettingsState = {
   worldScrollY: 0,
   zoom: 100,
   customColorsEnabled: false,
+  sgbEnabled: false,
   customHead: "",
   defaultBackgroundPaletteIds: [
     "default-bg-1",
@@ -94,6 +99,8 @@ export const initialState: SettingsState = {
   defaultCharacterEncoding: "",
   defaultPlayerSprites: {},
   musicDriver: "gbt",
+  cartType: "mbc5",
+  batterylessEnabled: false,
 };
 
 const settingsSlice = createSlice({

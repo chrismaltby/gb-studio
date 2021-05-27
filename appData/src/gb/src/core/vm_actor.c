@@ -7,9 +7,14 @@
 #include "data_manager.h"
 #include "scroll.h"
 #include "math.h"
+#include "macro.h"
 #include "metasprite.h"
 
 #define EMOTE_TOTAL_FRAMES         60
+#define MOVE_INACTIVE              0
+#define MOVE_ACTIVE                1
+#define MOVE_ALLOW_H               2
+#define MOVE_ALLOW_V               4
 
 typedef struct act_move_to_t {
     UBYTE ID;
@@ -39,15 +44,23 @@ void vm_actor_move_to(SCRIPT_CTX * THIS, INT16 idx) __banked {
     actor = actors + params->ID;
 
     if (THIS->flags == 0) {
-        THIS->flags = 1;
+        THIS->flags = MOVE_ACTIVE;
 
         // Snap to nearest pixel before moving
         actor->pos.x = ((actor->pos.x >> 4) << 4);
         actor->pos.y = ((actor->pos.y >> 4) << 4);
 
+        if (CHK_FLAG(params->ATTR, ACTOR_ATTR_DIAGONAL)) {
+            SET_FLAG(THIS->flags, MOVE_ALLOW_H | MOVE_ALLOW_V);
+        } if (CHK_FLAG(params->ATTR, ACTOR_ATTR_H_FIRST)) {
+            SET_FLAG(THIS->flags, MOVE_ALLOW_H);
+        } else {
+            SET_FLAG(THIS->flags, MOVE_ALLOW_V);
+        }
+
         // Check for collisions in path
-        if (params->ATTR & ACTOR_ATTR_CHECK_COLL) {
-            if (params->ATTR & ACTOR_ATTR_H_FIRST) {
+        if (CHK_FLAG(params->ATTR, ACTOR_ATTR_CHECK_COLL)) {
+            if (CHK_FLAG(params->ATTR, ACTOR_ATTR_H_FIRST)) {
                 // Check for horizontal collision
                 if (actor->pos.x != params->X) {
                     UBYTE check_dir = (actor->pos.x > params->X) ? CHECK_DIR_LEFT : CHECK_DIR_RIGHT;
@@ -75,53 +88,64 @@ void vm_actor_move_to(SCRIPT_CTX * THIS, INT16 idx) __banked {
 
     // Actor reached destination
     if ((actor->pos.x == params->X) && (actor->pos.y == params->Y)) {
-        THIS->flags = 0;
+        THIS->flags = MOVE_INACTIVE;
         actor_set_anim_idle(actor);
         return;
     }
 
-    // Actor not at horizontal destination
-    if ((actor->pos.x != params->X) &&
-        ((params->ATTR & ACTOR_ATTR_H_FIRST) || (actor->pos.y == params->Y))) {
+    // Move in X Axis
+    if (CHK_FLAG(THIS->flags, MOVE_ALLOW_H) && (actor->pos.x != params->X)) {
         if (actor->pos.x < params->X) {
             new_dir = DIR_RIGHT;
         } else if (actor->pos.x > params->X) {
             new_dir = DIR_LEFT;
         }
-    } else {
-        // Actor not at vertical destination
+        
+        // Move actor
+        point_translate_dir(&actor->pos, new_dir, actor->move_speed);
+
+        // Check if overshot destination
+        if (new_dir == DIR_LEFT &&  (actor->pos.x < params->X)) {
+            actor->pos.x = params->X;
+        } else if (new_dir == DIR_RIGHT && (actor->pos.x > params->X)) {
+            actor->pos.x = params->X;
+        }
+
+        // Reached Horizontal Destination
+        if (actor->pos.x == params->X) {
+            SET_FLAG(THIS->flags, MOVE_ALLOW_V);
+            CLR_FLAG(THIS->flags, MOVE_ALLOW_H);
+        }        
+    }
+
+    // Move in Y Axis
+    if (CHK_FLAG(THIS->flags, MOVE_ALLOW_V) && (actor->pos.y != params->Y)) {
         if (actor->pos.y < params->Y) {
             new_dir = DIR_DOWN;
         } else if (actor->pos.y > params->Y) {
             new_dir = DIR_UP;
+        }
+        
+        // Move actor
+        point_translate_dir(&actor->pos, new_dir, actor->move_speed);
+
+        // Check if overshot destination
+        if (new_dir == DIR_UP && (actor->pos.y < params->Y)) {
+            actor->pos.y = params->Y;
+        } else if (new_dir == DIR_DOWN &&  (actor->pos.y > params->Y)) {
+            actor->pos.y = params->Y;
+        }
+
+        // Reached Vertical Destination
+        if (actor->pos.y == params->Y) {
+            SET_FLAG(THIS->flags, MOVE_ALLOW_H);
+            CLR_FLAG(THIS->flags, MOVE_ALLOW_V);
         }
     }
 
     // If changed direction, trigger actor rerender
     if (actor->dir != new_dir) {
         actor_set_dir(actor, new_dir, TRUE);        
-    }
-
-    // Move actor
-    point_translate_dir(&actor->pos, actor->dir, actor->move_speed);
-
-    // Check for actor collision
-    if (actor_overlapping_bb(&actor->bounds, &actor->pos, actor, FALSE)) {
-        point_translate_dir(&actor->pos, FLIPPED_DIR(actor->dir), actor->move_speed);   
-        THIS->flags = 0;
-        actor_set_anim_idle(actor);
-        return;
-    }
-
-    // Check if overshot destination
-    if (new_dir == DIR_DOWN &&  (actor->pos.y > params->Y)) {
-        actor->pos.y = params->Y;
-    } else if (new_dir == DIR_UP &&  (actor->pos.y < params->Y)) {
-        actor->pos.y = params->Y;
-    } else if (new_dir == DIR_LEFT &&  (actor->pos.x < params->X)) {
-        actor->pos.x = params->X;
-    } else if (new_dir == DIR_RIGHT &&  (actor->pos.x > params->X)) {
-        actor->pos.x = params->X;
     }
 
     THIS->PC -= (INSTRUCTION_SIZE + sizeof(idx));

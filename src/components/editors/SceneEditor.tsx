@@ -168,47 +168,51 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
     dispatch(editorActions.setScriptTabSecondary(mode));
   };
 
-  const onChangeField = <T extends keyof Scene>(key: T) => (
-    editValue: Scene[T]
-  ) => {
-    dispatch(
-      entitiesActions.editScene({
-        sceneId: id,
-        changes: {
-          [key]: editValue,
-        },
-      })
-    );
-  };
+  const onChangeField =
+    <T extends keyof Scene>(key: T) =>
+    (editValue: Scene[T]) => {
+      dispatch(
+        entitiesActions.editScene({
+          sceneId: id,
+          changes: {
+            [key]: editValue,
+          },
+        })
+      );
+    };
 
-  const onChangeFieldInput = (key: keyof Scene) => (
-    e:
-      | React.ChangeEvent<HTMLInputElement>
-      | React.ChangeEvent<HTMLTextAreaElement>
-  ) => {
-    const editValue = castEventValue(e);
-    dispatch(
-      entitiesActions.editScene({
-        sceneId: id,
-        changes: {
-          [key]: editValue,
-        },
-      })
-    );
-  };
+  const onChangeFieldInput =
+    (key: keyof Scene) =>
+    (
+      e:
+        | React.ChangeEvent<HTMLInputElement>
+        | React.ChangeEvent<HTMLTextAreaElement>
+    ) => {
+      const editValue = castEventValue(e);
+      dispatch(
+        entitiesActions.editScene({
+          sceneId: id,
+          changes: {
+            [key]: editValue,
+          },
+        })
+      );
+    };
 
-  const onChangeSettingFieldInput = (key: keyof SettingsState) => (
-    e:
-      | React.ChangeEvent<HTMLInputElement>
-      | React.ChangeEvent<HTMLTextAreaElement>
-  ) => {
-    const editValue = castEventValue(e);
-    dispatch(
-      settingsActions.editSettings({
-        [key]: editValue,
-      })
-    );
-  };
+  const onChangeSettingFieldInput =
+    (key: keyof SettingsState) =>
+    (
+      e:
+        | React.ChangeEvent<HTMLInputElement>
+        | React.ChangeEvent<HTMLTextAreaElement>
+    ) => {
+      const editValue = castEventValue(e);
+      dispatch(
+        settingsActions.editSettings({
+          [key]: editValue,
+        })
+      );
+    };
 
   const selectSidebar = () => {
     dispatch(editorActions.selectSidebar());
@@ -480,6 +484,16 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
             )}
 
             <FormRow>
+              <FormField name="type" label={l10n("FIELD_TYPE")}>
+                <SceneTypeSelect
+                  name="type"
+                  value={scene.type}
+                  onChange={onChangeField("type")}
+                />
+              </FormField>
+            </FormRow>
+
+            <FormRow>
               <FormField name="backgroundId" label={l10n("FIELD_BACKGROUND")}>
                 <div style={{ display: "flex" }}>
                   <BackgroundSelectButton
@@ -586,16 +600,6 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
                 <FormDivider />
               </>
             )}
-
-            <FormRow>
-              <FormField name="type" label={l10n("FIELD_TYPE")}>
-                <SceneTypeSelect
-                  name="type"
-                  value={scene.type}
-                  onChange={onChangeField("type")}
-                />
-              </FormField>
-            </FormRow>
 
             <FormRow>
               <FormField

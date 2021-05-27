@@ -29,7 +29,6 @@ import PaletteBlock from "../library/PaletteBlock";
 import { PaletteShape } from "../../store/stateShape";
 import Modal, { ModalFade, ModalContent } from "../library/Modal";
 import Button from "../library/Button";
-import PaletteSelect from "../forms/PaletteSelectOld";
 import { FormField } from "../library/Forms";
 import { getCachedObject } from "../../lib/helpers/cache";
 import editorActions from "../../store/features/editor/editorActions";
@@ -38,6 +37,7 @@ import { getSettings } from "../../store/features/settings/settingsState";
 import settingsActions from "../../store/features/settings/settingsActions";
 import navigationActions from "../../store/features/navigation/navigationActions";
 import entitiesActions from "../../store/features/entities/entitiesActions";
+import { PaletteSelect } from "../forms/PaletteSelect";
 
 const paletteIndexes = [0, 1, 2, 3, 4, 5, 6, 7];
 const validTools = [TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER];

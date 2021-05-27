@@ -10,6 +10,7 @@
 
 #define ACTOR_ATTR_H_FIRST    0x01
 #define ACTOR_ATTR_CHECK_COLL 0x02
+#define ACTOR_ATTR_DIAGONAL   0x04
 
 #define PLAYER                actors[0]
 #define ON_8PX_GRID(A)        ( MOD_8((A).x >> 4) == 0 &&  MOD_8((A).y >> 4) == 0)

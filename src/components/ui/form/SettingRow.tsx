@@ -22,9 +22,12 @@ export const SettingRow = styled.div`
 
 export const SettingRowLabel = styled.label`
   width: 300px;
-  height: 28px;
+  min-height: 28px;
+  padding: 5px 0px;
+  box-sizing: border-box;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  justify-content: center;
   font-size: ${(props) => props.theme.typography.fontSize};
 `;
 

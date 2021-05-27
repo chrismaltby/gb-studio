@@ -64,6 +64,8 @@ const main = async (
   // Export compiled data to a folder
   await ejectBuild({
     projectRoot,
+    projectData: project,
+    engineFields,
     outputRoot: tmpBuildDir,
     compiledData,
     progress,

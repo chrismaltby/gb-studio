@@ -12,6 +12,8 @@
 #include "math.h"
 #include "vm.h"
 
+#define INPUT_TOPDOWN_INTERACT INPUT_A
+
 UBYTE topdown_grid;
 
 void topdown_init() __banked {
@@ -134,7 +136,7 @@ void topdown_update() __banked {
             }
         }
 
-        if (INPUT_A_PRESSED) {
+        if (INPUT_PRESSED(INPUT_TOPDOWN_INTERACT)) {
             hit_actor = actor_in_front_of_player(topdown_grid, TRUE);
             if (hit_actor != NULL && !hit_actor->collision_group) {
                 actor_set_dir(hit_actor, FLIPPED_DIR(PLAYER.dir), FALSE);

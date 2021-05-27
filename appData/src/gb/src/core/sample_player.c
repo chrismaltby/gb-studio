@@ -22,6 +22,7 @@ void sample_play_isr() __nonbanked __naked {
         ldh a, (#__current_bank) ; save bank and switch
         ld e, a
         ld a, (#_play_bank)
+        ldh (#__current_bank), a
         ld (#0x2000), a
 
         xor a
@@ -51,6 +52,7 @@ _wave_addr = _wave_addr + 1
         ldh (_NR34_REG),a       
 
         ld a, e                 ; restore bank
+        ldh (#__current_bank), a
         ld (#0x2000), a
 
         ld a, l                 ; save current position

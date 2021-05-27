@@ -21,6 +21,23 @@
     structured data for use with the ...metasprite...()
     functions.
 
+    # Metasprites composed of variable numbers of sprites
+
+    When using png2mtspr, it's common for the output of
+    different frames to be composed of different numbers
+    of hardware sprites (since it's trying to create each
+    frame as efficiently as possible). Due to that, it's
+    good practice to clear out (hide) unused sprites in the
+    shadow_OAM that have been set by previous frames.
+
+    \code
+    // Example:
+    // Hide rest of the hardware sprites, because amount
+    // of sprites differ between animation frames.
+    // (where hiwater == last hardware sprite used + 1)
+    for (UBYTE i = hiwater; i < 40; i++) shadow_OAM[i].y = 0;
+    \endcode
+
     @anchor metasprite_and_sprite_properties
     # Metasprites and sprite properties (including cgb palette)
 
