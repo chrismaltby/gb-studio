@@ -15,6 +15,7 @@ const buildProject = async (
     tmpPath = "/tmp",
     profile = false,
     engineFields = [],
+    exportBuild = false,
     outputRoot = "/tmp/testing",
     progress = (_msg) => {},
     warnings = (_msg) => {},
@@ -48,7 +49,7 @@ const buildProject = async (
   });
   if (buildType === "web") {
 
-    if (true) {
+    if (!exportBuild) {
       await copy(binjgbRoot, `${outputRoot}/build/web`)
       await copy(
         `${outputRoot}/build/rom/game.gb`,

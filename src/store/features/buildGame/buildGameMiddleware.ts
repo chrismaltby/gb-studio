@@ -55,6 +55,7 @@ const buildGameMiddleware: Middleware<{}, RootState> = (store) => (
         buildType,
         outputRoot,
         engineFields,
+        exportBuild,
         tmpPath: getTmp(),
         profile: state.editor.profile,
         progress: (message) => {
