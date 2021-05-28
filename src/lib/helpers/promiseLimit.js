@@ -7,14 +7,6 @@ function promiseLimit(n, list) {
     if (list.length === 0) {
       return resolve([]);
     }
-    head.forEach((x) => {
-      const res = x();
-      resolved.push(res);
-      res.then((y) => {
-        runNext();
-        return y;
-      });
-    });
     function runNext() {
       if (processed === tail.length) {
         resolve(Promise.all(resolved));
@@ -28,6 +20,14 @@ function promiseLimit(n, list) {
         processed++;
       }
     }
+    head.forEach((x) => {
+      const res = x();
+      resolved.push(res);
+      res.then((y) => {
+        runNext();
+        return y;
+      });
+    });
   });
 }
 

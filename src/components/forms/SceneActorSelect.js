@@ -61,7 +61,7 @@ const DropdownIndicatorWithData = (direction, frame) =>
 
 // Option -------------------------------------------------------------------
 
-const Option = ({ label, value, actor, direction, frame, ...props }) => {
+const Option = ({ label, actor, direction, frame, ...props }) => {
   if (!actor) {
     return <components.Option {...props} />;
   }

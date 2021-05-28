@@ -1,11 +1,10 @@
 import electron from "electron";
+import l10n from "../../helpers/l10n";
 
 const dialog = electron.remote ? electron.remote.dialog : electron.dialog;
 const win = electron.remote?.getCurrentWindow();
 
 export default () => {
-  // eslint-disable-next-line global-require
-  const l10n = require("../../helpers/l10n").default;
   const dialogOptions = {
     type: "info",
     buttons: [l10n("DIALOG_ENABLE_COLOR"), l10n("DIALOG_CANCEL")],

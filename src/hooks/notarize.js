@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const { notarize } = require("electron-notarize");
 
 // Path from here to your build app executable:

@@ -135,7 +135,7 @@ class BrushToolbar extends Component {
     }
   };
 
-  onMouseUp = (e) => {
+  onMouseUp = (_e) => {
     if (this.timeout) {
       clearTimeout(this.timeout);
     }
@@ -183,14 +183,14 @@ class BrushToolbar extends Component {
     }
   };
 
-  startReplacePalette = (paletteIndex) => (e) => {
+  startReplacePalette = (paletteIndex) => (_e) => {
     if (this.timeout) {
       clearTimeout(this.timeout);
     }
     this.timeout = setTimeout(this.openReplacePalette(paletteIndex), 300);
   };
 
-  openReplacePalette = (paletteIndex) => (e) => {
+  openReplacePalette = (paletteIndex) => (_e) => {
     this.setState({
       modalColorIndex: paletteIndex,
     });
@@ -222,13 +222,13 @@ class BrushToolbar extends Component {
     this.closePaletteModal();
   };
 
-  closePaletteModal = (e) => {
+  closePaletteModal = (_e) => {
     this.setState({
       modalColorIndex: -1,
     });
   };
 
-  toggleShowLayers = (e) => {
+  toggleShowLayers = (_e) => {
     const { setShowLayers, showLayers } = this.props;
     setShowLayers({ showLayers: !showLayers });
   };

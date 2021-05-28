@@ -65,15 +65,7 @@ class SceneCursor extends Component {
       return;
     }
     if (e.code === "KeyP") {
-      const {
-        x,
-        y,
-        enabled,
-        sceneId,
-        editPlayerStartAt,
-        setTool,
-        selectWorld,
-      } = this.props;
+      const { x, y, enabled, sceneId, editPlayerStartAt, setTool } = this.props;
       if (enabled) {
         editPlayerStartAt({ sceneId, x, y });
         setTool({ tool: TOOL_SELECT });
@@ -345,7 +337,7 @@ class SceneCursor extends Component {
     }
   };
 
-  onResizeTrigger = (e) => {
+  onResizeTrigger = (_e) => {
     const { x, y, sceneId, entityId, resizeTrigger } = this.props;
     if (entityId && (this.currentX !== x || this.currentY !== y)) {
       resizeTrigger({
@@ -361,7 +353,7 @@ class SceneCursor extends Component {
     }
   };
 
-  onResizeTriggerStop = (e) => {
+  onResizeTriggerStop = (_e) => {
     const { setTool } = this.props;
     setTool({ tool: "select" });
     this.setState({ resize: false });
@@ -369,7 +361,7 @@ class SceneCursor extends Component {
     window.removeEventListener("mouseup", this.onResizeTriggerStop);
   };
 
-  onCollisionsMove = (e) => {
+  onCollisionsMove = (_e) => {
     const { x, y, enabled, sceneId, selectedBrush, paintCollision } =
       this.props;
     if (enabled && (this.currentX !== x || this.currentY !== y)) {
@@ -430,12 +422,12 @@ class SceneCursor extends Component {
     }
   };
 
-  onCollisionsStop = (e) => {
+  onCollisionsStop = (_e) => {
     window.removeEventListener("mousemove", this.onCollisionsMove);
     window.removeEventListener("mouseup", this.onCollisionsStop);
   };
 
-  onColorsMove = (e) => {
+  onColorsMove = (_e) => {
     const {
       x,
       y,
@@ -504,7 +496,7 @@ class SceneCursor extends Component {
     }
   };
 
-  onColorsStop = (e) => {
+  onColorsStop = (_e) => {
     window.removeEventListener("mousemove", this.onColorsMove);
     window.removeEventListener("mouseup", this.onColorsStop);
   };

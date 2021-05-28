@@ -1,12 +1,10 @@
 import electron from "electron";
 import { AssetFolder } from "../../project/assets";
+import l10n from "../../helpers/l10n";
 
 const dialog = electron.remote ? electron.remote.dialog : electron.dialog;
 
 export default (folders: AssetFolder[]): AssetFolder | undefined => {
-  // eslint-disable-next-line global-require
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const l10n = require("../../helpers/l10n").default;
   const cancelId = folders.length;
   const dialogOptions = {
     type: "info",

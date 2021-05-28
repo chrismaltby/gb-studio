@@ -6,7 +6,7 @@ const speeds = [1, 2, 3, 4, 5, 6];
 
 class FadeSpeedSelect extends Component {
   render() {
-    const { allowNone, dispatch, ...rest } = this.props;
+    const { allowNone, ...rest } = this.props;
     return (
       <select {...rest}>
         {allowNone && <option value={0}>Instant</option>}
@@ -24,12 +24,10 @@ class FadeSpeedSelect extends Component {
 
 FadeSpeedSelect.propTypes = {
   allowNone: PropTypes.bool,
-  dispatch: PropTypes.func,
 };
 
 FadeSpeedSelect.defaultProps = {
   allowNone: false,
-  dispatch: undefined,
 };
 
 export default FadeSpeedSelect;

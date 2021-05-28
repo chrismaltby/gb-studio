@@ -4,6 +4,48 @@ import cx from "classnames";
 import { TriangleIcon } from "../library/Icons";
 import l10n from "../../lib/helpers/l10n";
 
+const renderButton = (id, value, onChange) => (input) =>
+  (
+    <label htmlFor={`${id}_${input.key}`} key={input.key} title={input.title}>
+      <input
+        id={`${id}_${input.key}`}
+        type="checkbox"
+        checked={
+          Array.isArray(value)
+            ? value.indexOf && value.indexOf(input.key) > -1
+            : value === input.key
+        }
+        onChange={() => {
+          if (Array.isArray(value)) {
+            if (value.indexOf(input.key) > -1) {
+              if (value.length > 1) {
+                onChange(value.filter((i) => i !== input.key));
+              }
+            } else {
+              onChange([].concat(value, input.key));
+            }
+          } else {
+            onChange(input.key);
+          }
+        }}
+      />
+      <div
+        key={input.key}
+        className={cx(
+          "InputPicker__Button",
+          `InputPicker__Button--${input.name}`,
+          {
+            "InputPicker__Button--Active": Array.isArray(value)
+              ? value.indexOf && value.indexOf(input.key) > -1
+              : value === input.key,
+          }
+        )}
+      >
+        {input.label}
+      </div>
+    </label>
+  );
+
 class InputPicker extends Component {
   render() {
     const { id, value, onChange } = this.props;
@@ -78,48 +120,6 @@ class InputPicker extends Component {
     );
   }
 }
-
-const renderButton = (id, value, onChange) => (input) =>
-  (
-    <label htmlFor={`${id}_${input.key}`} key={input.key} title={input.title}>
-      <input
-        id={`${id}_${input.key}`}
-        type="checkbox"
-        checked={
-          Array.isArray(value)
-            ? value.indexOf && value.indexOf(input.key) > -1
-            : value === input.key
-        }
-        onChange={() => {
-          if (Array.isArray(value)) {
-            if (value.indexOf(input.key) > -1) {
-              if (value.length > 1) {
-                onChange(value.filter((i) => i !== input.key));
-              }
-            } else {
-              onChange([].concat(value, input.key));
-            }
-          } else {
-            onChange(input.key);
-          }
-        }}
-      />
-      <div
-        key={input.key}
-        className={cx(
-          "InputPicker__Button",
-          `InputPicker__Button--${input.name}`,
-          {
-            "InputPicker__Button--Active": Array.isArray(value)
-              ? value.indexOf && value.indexOf(input.key) > -1
-              : value === input.key,
-          }
-        )}
-      >
-        {input.label}
-      </div>
-    </label>
-  );
 
 InputPicker.propTypes = {
   id: PropTypes.string,

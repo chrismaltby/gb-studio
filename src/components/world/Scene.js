@@ -90,7 +90,7 @@ class Scene extends Component {
     }
   };
 
-  onMouseLeave = (e) => {
+  onMouseLeave = (_e) => {
     const { sceneHover } = this.props;
     sceneHover({ sceneId: "", x: this.lastTX, y: this.lastTY });
   };
@@ -124,7 +124,7 @@ class Scene extends Component {
     }
   };
 
-  onEndDrag = (e) => {
+  onEndDrag = (_e) => {
     this.dragging = false;
   };
 

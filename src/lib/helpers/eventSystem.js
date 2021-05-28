@@ -297,6 +297,7 @@ const regenerateEventIds = (event) => {
 };
 
 const replaceEventActorIds = (replacementIds, event) => {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const events = require("../events").default;
   const eventSchema = events[event.command];
 
@@ -365,6 +366,7 @@ const getField = (cmd, fieldName, args) => {
     default: events,
     engineFieldUpdateEvents,
     engineFieldStoreEvents,
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
   } = require("../events");
 
   let event = events[cmd];
@@ -407,6 +409,7 @@ const isActorField = (cmd, fieldName, args) => {
 };
 
 const isPropertyField = (cmd, fieldName, fieldValue) => {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const events = require("../events").default;
   const event = events[cmd];
   if (!event) return false;

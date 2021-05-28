@@ -1,5 +1,4 @@
 import { copy } from "fs-extra";
-import Path from "path";
 import keyBy from "lodash/keyBy";
 import {
   walkScenesEvents,
@@ -8,25 +7,19 @@ import {
 } from "../helpers/eventSystem";
 import compileImages from "./compileImages";
 import { indexBy } from "../helpers/array";
-import { hi, lo, convertHexTo15BitDec } from "../helpers/8bit";
 import compileEntityEvents from "./compileEntityEvents";
 import {
   EVENT_TEXT,
   EVENT_MUSIC_PLAY,
   EVENT_END,
   EVENT_PLAYER_SET_SPRITE,
-  EVENT_PALETTE_SET_BACKGROUND,
-  EVENT_PALETTE_SET_UI,
 } from "./eventTypes";
 import {
   projectTemplatesRoot,
   MAX_ACTORS,
   MAX_TRIGGERS,
   DMG_PALETTE,
-  TMP_VAR_1,
-  TMP_VAR_2,
 } from "../../consts";
-import { dirToXDec, dirToYDec, dirEnum } from "./helpers";
 import compileSprites from "./compileSprites";
 import compileAvatars from "./compileAvatars";
 import compileEmotes from "./compileEmotes";
@@ -62,15 +55,8 @@ import {
   compileFrameImageHeader,
   compileCursorImage,
   compileCursorImageHeader,
-  compileEmotesImage,
-  compileEmotesImageHeader,
-  dataArrayToC,
-  toFarPtr,
-  spriteSheetSymbol,
-  sceneSymbol,
   compileScriptHeader,
   compileGameGlobalsInclude,
-  fontSymbol,
   compileAvatarFontHeader,
   compileAvatarFont,
   compileEmoteHeader,
@@ -84,8 +70,6 @@ import { compileMusicTracks, compileMusicHeader } from "./compileMusic";
 import { chunk } from "../helpers/array2";
 
 const indexById = indexBy("id");
-
-const NUM_MUSIC_BANKS = 30; // To calculate usable banks if MBC1
 
 export const EVENT_START_DATA_COMPILE = "EVENT_START_DATA_COMPILE";
 export const EVENT_DATA_COMPILE_PROGRESS = "EVENT_DATA_COMPILE_PROGRESS";
@@ -737,7 +721,7 @@ export const compileEngineFields = (
   return fieldDef;
 };
 
-export const precompileVariables = (scenes) => {
+export const precompileVariables = () => {
   const variables = [];
 
   // for (let i = 0; i < 100; i++) {

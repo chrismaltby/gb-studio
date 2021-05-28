@@ -208,7 +208,7 @@ class ScriptEditor extends Component {
     selectScriptEvent({ eventId: id });
   };
 
-  onLeave = (id) => {
+  onLeave = (_id) => {
     const { selectScriptEvent } = this.props;
     selectScriptEvent({ eventId: "" });
   };

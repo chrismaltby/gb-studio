@@ -77,7 +77,7 @@ class ScriptEventFormInput extends Component {
     );
   };
 
-  onChangeUnionType = (newType) => (e) => {
+  onChangeUnionType = (newType) => (_e) => {
     const { onChange, value, index, field, scope } = this.props;
     if (newType !== value.type) {
       let replaceValue = null;

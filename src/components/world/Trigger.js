@@ -16,7 +16,7 @@ class Trigger extends Component {
     }
   };
 
-  onMouseUp = (e) => {
+  onMouseUp = (_e) => {
     const { dragTriggerStop } = this.props;
     dragTriggerStop();
     window.removeEventListener("mouseup", this.onMouseUp);

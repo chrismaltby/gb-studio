@@ -35,7 +35,7 @@ class ScriptEventFormField extends Component {
     );
   };
 
-  onAddValue = (valueIndex) => (e) => {
+  onAddValue = (valueIndex) => (_e) => {
     const { onChange, field, value } = this.props;
     const { key } = field;
     return onChange(
@@ -51,7 +51,7 @@ class ScriptEventFormField extends Component {
     );
   };
 
-  onRemoveValue = (valueIndex) => (e) => {
+  onRemoveValue = (valueIndex) => (_e) => {
     const { onChange, field, value } = this.props;
     const { key } = field;
     return onChange(
@@ -67,7 +67,10 @@ class ScriptEventFormField extends Component {
 
     let label = field.label;
     if (label && label.replace) {
-      label = label.replace(/\$\$([^$]*)\$\$/g, (match, key) => args[key] || 0);
+      label = label.replace(
+        /\$\$([^$]*)\$\$/g,
+        (_match, key) => args[key] || 0
+      );
     }
 
     if (field.type === "collapsable") {

@@ -13,7 +13,7 @@ const fields = [
   },
 ];
 
-const compile = (input, helpers) => {};
+const compile = () => {};
 
 module.exports = {
   id,

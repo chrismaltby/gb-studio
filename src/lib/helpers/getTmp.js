@@ -6,6 +6,7 @@ export default (create = true) => {
   let tmpPath = os.tmpdir();
   if (isElectron()) {
     // eslint-disable-next-line global-require
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const settings = require("electron-settings");
     if (settings.get("tmpDir")) {
       tmpPath = settings.get("tmpDir");

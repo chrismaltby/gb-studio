@@ -3,6 +3,7 @@ import semverValid from "semver/functions/valid";
 import semverGt from "semver/functions/gt";
 import Octokit from "@octokit/rest";
 import settings from "electron-settings";
+import l10n from "./l10n";
 
 const github = new Octokit();
 const oneHour = 60 * 60 * 1000;
@@ -49,8 +50,6 @@ export const needsUpdate = async () => {
 };
 
 export const checkForUpdate = async (force) => {
-  // eslint-disable-next-line global-require
-  const l10n = require("./l10n").default;
   if (force) {
     // If manually checking for updates using menu, clear previous settings
     settings.set("dontCheckForUpdates", false);

@@ -1,8 +1,4 @@
-import {
-  SPRITE_TYPE_STATIC,
-  SPRITE_TYPE_ACTOR_ANIMATED,
-  SPRITE_TYPE_ACTOR,
-} from "../../consts";
+import { SPRITE_TYPE_STATIC } from "../../consts";
 
 const DIR_LOOKUP = {
   down: 1,

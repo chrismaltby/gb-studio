@@ -5,8 +5,6 @@ import makeBuild from "./makeBuild";
 import { binjgbRoot, emulatorRoot } from "../../consts";
 import copy from "../helpers/fsCopy";
 
-const MAX_BANKS = 512; // GBDK supports max of 512 banks
-
 const buildProject = async (
   data,
   {

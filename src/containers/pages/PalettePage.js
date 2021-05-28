@@ -28,13 +28,13 @@ class PalettePage extends Component {
     });
   };
 
-  onStartEdit = (e) => {
+  onStartEdit = (_e) => {
     this.setState({
       edit: true,
     });
   };
 
-  onFinishEdit = (e) => {
+  onFinishEdit = (_e) => {
     const palette = this.getCurrentPalette();
     if (!palette.name) {
       this.onEdit("name")("Palette");

@@ -96,7 +96,7 @@ ImageViewer.defaultProps = {
   file: {},
 };
 
-function mapStateToProps(state, ownProps) {
+function mapStateToProps(state, _ownProps) {
   const { section } = state.navigation;
   const folder = section;
   const zoom = zoomForSection(section, state.editor);

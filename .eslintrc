@@ -35,13 +35,20 @@
     "import/prefer-default-export": 0,
     "@typescript-eslint/explicit-module-boundary-types": 0,
     "@typescript-eslint/no-empty-function": 0,
-    "camelcase": ["error", {"allow": ["UNSAFE_componentWillReceiveProps"]}],
+    "camelcase": ["error", {"allow": ["UNSAFE_componentWillReceiveProps", "icon_path", "bug_link_text"]}],
     "no-use-before-define": "off",
-    "@typescript-eslint/no-use-before-define": ["error"] 
+    "@typescript-eslint/no-use-before-define": ["error"],
+    "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+    "no-unused-vars": "off"
   },
   "env": {
     "browser": true,
     "node": true,
     "es6": true
+  },
+  "globals": {
+    "__non_webpack_require__": true,
+    "COMMITHASH": true,
+    "VERSION": true
   }
 }

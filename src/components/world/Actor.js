@@ -23,7 +23,7 @@ class Actor extends Component {
     }
   };
 
-  onMouseUp = (e) => {
+  onMouseUp = (_e) => {
     const { dragActorStop } = this.props;
     dragActorStop();
     window.removeEventListener("mouseup", this.onMouseUp);

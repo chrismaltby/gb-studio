@@ -1,9 +1,11 @@
+/* eslint-disable import/no-unresolved */
+/* eslint-disable import/no-webpack-loader-syntax */
 import settings from "electron-settings";
-import { ipcRenderer } from "electron";
+import { ipcRenderer, remote } from "electron";
 import darkTheme from "!!raw-loader!../../styles/theme-dark.css";
 import lightTheme from "!!raw-loader!../../styles/theme.css";
 
-const { nativeTheme } = require("electron").remote;
+const { nativeTheme } = remote;
 
 const updateMyAppTheme = () => {
   const settingsTheme = settings.get("theme");

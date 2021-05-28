@@ -6,11 +6,11 @@ const speeds = [1, 2, 3, 4, 5];
 
 class CameraSpeedSelect extends Component {
   render() {
-    const { allowNone, dispatch, ...rest } = this.props;
+    const { allowNone, ...rest } = this.props;
     return (
       <select {...rest}>
         {allowNone && <option value={0}>Instant</option>}
-        {speeds.map((speed, index) => (
+        {speeds.map((speed) => (
           <option key={speed} value={speed}>
             Speed {speed} {speed === 1 ? `(${l10n("FIELD_FASTER")})` : ""}
             {speed === 5 ? `(${l10n("FIELD_SLOWER")})` : ""}
@@ -23,12 +23,10 @@ class CameraSpeedSelect extends Component {
 
 CameraSpeedSelect.propTypes = {
   allowNone: PropTypes.bool,
-  dispatch: PropTypes.func,
 };
 
 CameraSpeedSelect.defaultProps = {
   allowNone: false,
-  dispatch: undefined,
 };
 
 export default CameraSpeedSelect;

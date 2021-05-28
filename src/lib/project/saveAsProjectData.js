@@ -1,5 +1,5 @@
 import Path from "path";
-import { copy, move } from "fs-extra";
+import { copy } from "fs-extra";
 import { writeFileAndFlushAsync } from "../helpers/fs/writeFileAndFlush";
 
 const saveAsProjectData = async (projectPath, newProjectPath, project) => {

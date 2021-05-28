@@ -85,7 +85,7 @@ GlobalError.propTypes = {
   openHelp: PropTypes.func.isRequired,
 };
 
-function mapStateToProps(state, props) {
+function mapStateToProps(_state) {
   return {};
 }
 

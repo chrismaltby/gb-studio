@@ -28,6 +28,7 @@ class SceneCollisions extends Component {
   draw = () => {
     const { collisions, width, height } = this.props;
     if (this.canvas.current) {
+      // eslint-disable-next-line no-self-assign
       this.canvas.current.width = this.canvas.current.width; // Clear canvas
       const ctx = this.canvas.current.getContext("2d");
 

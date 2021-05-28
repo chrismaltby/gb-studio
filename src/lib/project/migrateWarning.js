@@ -4,6 +4,7 @@ import settings from "electron-settings";
 import semverValid from "semver/functions/valid";
 import semverGt from "semver/functions/gt";
 import { LATEST_PROJECT_VERSION } from "./migrateProject";
+import l10n from "../helpers/l10n";
 
 const dialog = remote && remote.dialog;
 
@@ -22,9 +23,6 @@ export const fromFuture = (currentVersion) => {
 };
 
 export default async (projectPath) => {
-  // eslint-disable-next-line global-require
-  const l10n = require("../helpers/l10n").default;
-
   const project = await fs.readJson(projectPath);
   let currentVersion = project._version || "1.0.0";
   if (currentVersion === "1") {

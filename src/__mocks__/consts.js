@@ -1,4 +1,4 @@
-const path = require("path");
+import path from "path";
 
 const rootDir = path.normalize(`${__dirname}/../../`);
 const engineRoot = path.normalize(`${rootDir}/appData/src`);

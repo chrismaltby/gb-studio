@@ -3,6 +3,7 @@ function handleFirstTab(e) {
     document.body.classList.add("user-is-tabbing");
 
     window.removeEventListener("keydown", handleFirstTab);
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
     window.addEventListener("mousedown", handleMouseDownOnce);
   }
 }

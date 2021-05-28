@@ -5,7 +5,6 @@ import buildMakeScript, {
   buildPackFile,
   buildPackFlags,
 } from "./buildMakeScript";
-import { isMBC1 } from "./helpers";
 import { cacheObjData, fetchCachedObjData } from "./objCache";
 import ensureBuildTools from "./ensureBuildTools";
 import spawn from "../helpers/cli/spawn";
@@ -66,7 +65,6 @@ const makeBuild = async ({
     batteryless: settings.batterylessEnabled,
     profile,
     platform: process.platform,
-    musicDriver: settings.musicDriver,
   });
   await fs.writeFile(`${buildRoot}/${makeScriptFile}`, makeScript);
 

@@ -1,12 +1,56 @@
 import openAboutWindow from "about-window";
 import settings from "electron-settings";
-import { app, ipcRenderer, Menu, shell } from "electron";
+import { app, Menu, shell } from "electron";
 import { assetsRoot } from "./consts";
 import l10n, { locales } from "./lib/helpers/l10n";
 
 const isDevMode = process.execPath.match(/[\\/]electron/);
 
 let menu;
+
+const listeners = {
+  new: [],
+  open: [],
+  project: [],
+  save: [],
+  saveAs: [],
+  checkUpdates: [],
+  undo: [],
+  redo: [],
+  section: [],
+  zoom: [],
+  reloadAssets: [],
+  updateSetting: [],
+  run: [],
+  build: [],
+  ejectEngine: [],
+  exportProjectSrc: [],
+  exportProjectData: [],
+  pasteInPlace: [],
+  preferences: [],
+  openMusic: [],
+};
+
+const notifyListeners = (event, ...data) => {
+  for (const fn of listeners[event]) {
+    fn(...data);
+  }
+};
+
+const on = (event, fn) => {
+  listeners[event].push(fn);
+};
+
+const off = (event, fn) => {
+  listeners[event] = listeners[event].filter((f) => f !== fn);
+};
+
+const openAbout = () => {
+  return openAboutWindow({
+    icon_path: `${assetsRoot}/app/icon/app_icon.png`,
+    bug_link_text: `Report bug (git: ${COMMITHASH})`,
+  });
+};
 
 const buildMenu = async (plugins = []) => {
   const template = [
@@ -488,50 +532,6 @@ const buildMenu = async (plugins = []) => {
 
   menu = Menu.buildFromTemplate(template);
   Menu.setApplicationMenu(menu);
-};
-
-const listeners = {
-  new: [],
-  open: [],
-  project: [],
-  save: [],
-  saveAs: [],
-  checkUpdates: [],
-  undo: [],
-  redo: [],
-  section: [],
-  zoom: [],
-  reloadAssets: [],
-  updateSetting: [],
-  run: [],
-  build: [],
-  ejectEngine: [],
-  exportProjectSrc: [],
-  exportProjectData: [],
-  pasteInPlace: [],
-  preferences: [],
-  openMusic: [],
-};
-
-const notifyListeners = (event, ...data) => {
-  for (const fn of listeners[event]) {
-    fn(...data);
-  }
-};
-
-const on = (event, fn) => {
-  listeners[event].push(fn);
-};
-
-const off = (event, fn) => {
-  listeners[event] = listeners[event].filter((f) => f !== fn);
-};
-
-const openAbout = () => {
-  return openAboutWindow({
-    icon_path: `${assetsRoot}/app/icon/app_icon.png`,
-    bug_link_text: `Report bug (git: ${COMMITHASH})`,
-  });
 };
 
 export default {

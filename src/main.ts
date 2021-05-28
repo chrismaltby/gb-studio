@@ -15,9 +15,8 @@ declare const SPLASH_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const SPLASH_WINDOW_WEBPACK_ENTRY: string;
 declare const PREFERENCES_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const PREFERENCES_WINDOW_WEBPACK_ENTRY: string;
-
-declare var MUSIC_WINDOW_PRELOAD_WEBPACK_ENTRY: any;
-declare var MUSIC_WINDOW_WEBPACK_ENTRY: any;
+declare const MUSIC_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
+declare const MUSIC_WINDOW_WEBPACK_ENTRY: string;
 
 type SplashTab = "info" | "new" | "recent";
 
@@ -32,12 +31,13 @@ app.allowRendererProcessReuse = false;
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: any = null;
-let splashWindow: any = null;
-let preferencesWindow: any = null;
-let playWindow: any = null;
+let splashWindow: BrowserWindow | null = null;
+let preferencesWindow: BrowserWindow | null = null;
+let playWindow: BrowserWindow | null = null;
+let musicWindow: BrowserWindow | null;
+
 let playWindowSgb = false;
 let hasCheckedForUpdate = false;
-let musicWindow: any;
 
 const isDevMode = !!process.execPath.match(/[\\/]electron/);
 
@@ -67,7 +67,7 @@ const createSplash = async (forceTab?: SplashTab) => {
 
   splashWindow.webContents.on("did-finish-load", () => {
     setTimeout(() => {
-      splashWindow.show();
+      splashWindow?.show();
       if (!hasCheckedForUpdate) {
         hasCheckedForUpdate = true;
         checkForUpdate();
@@ -80,7 +80,7 @@ const createSplash = async (forceTab?: SplashTab) => {
   });
 };
 
-const createPreferences = async (forceTab?: SplashTab) => {
+const createPreferences = async () => {
   // Create the browser window.
   preferencesWindow = new BrowserWindow({
     width: 600,
@@ -102,7 +102,7 @@ const createPreferences = async (forceTab?: SplashTab) => {
 
   preferencesWindow.webContents.on("did-finish-load", () => {
     setTimeout(() => {
-      preferencesWindow.show();
+      preferencesWindow?.show();
     }, 40);
   });
 
@@ -168,7 +168,7 @@ const createWindow = async (projectPath: string) => {
     mainWindow.webContents.send("leave-full-screen");
   });
 
-  mainWindow.on("page-title-updated", (e: any, title: string) => {
+  mainWindow.on("page-title-updated", (_e: any, title: string) => {
     mainWindow.name = title;
   });
 
@@ -318,7 +318,7 @@ app.on("ready", async () => {
   }
 });
 
-app.on("open-file", async (e, projectPath) => {
+app.on("open-file", async (_e, projectPath) => {
   await app.whenReady();
   openProject(projectPath);
 });
@@ -340,12 +340,12 @@ app.on("activate", () => {
   }
 });
 
-ipcMain.on("open-project", async (event, arg) => {
+ipcMain.on("open-project", async (_event, arg) => {
   const { projectPath } = arg;
   openProject(projectPath);
 });
 
-ipcMain.on("check-full-screen", async (event, arg) => {
+ipcMain.on("check-full-screen", async (_event, _arg) => {
   if (mainWindow) {
     if (mainWindow.isFullScreen()) {
       mainWindow.webContents.send("enter-full-screen");
@@ -355,11 +355,11 @@ ipcMain.on("check-full-screen", async (event, arg) => {
   }
 });
 
-ipcMain.on("open-project-picker", async (event, arg) => {
+ipcMain.on("open-project-picker", async (_event, _arg) => {
   openProjectPicker();
 });
 
-ipcMain.on("request-recent-projects", async (event) => {
+ipcMain.on("request-recent-projects", async (_event) => {
   splashWindow &&
     splashWindow.webContents.send(
       "recent-projects",
@@ -367,16 +367,16 @@ ipcMain.on("request-recent-projects", async (event) => {
     );
 });
 
-ipcMain.on("clear-recent-projects", async (event) => {
+ipcMain.on("clear-recent-projects", async (_event) => {
   settings.set("recentProjects", []);
   app.clearRecentDocuments();
 });
 
-ipcMain.on("open-help", async (event, helpPage) => {
+ipcMain.on("open-help", async (_event, helpPage) => {
   openHelp(helpPage);
 });
 
-ipcMain.on("open-play", async (event, url, sgb) => {
+ipcMain.on("open-play", async (_event, url, sgb) => {
   createPlay(url, sgb);
 });
 
@@ -390,7 +390,7 @@ ipcMain.on("document-unmodified", () => {
   mainWindow.documentEdited = false; // For Windows
 });
 
-ipcMain.on("project-loaded", (event, settings) => {
+ipcMain.on("project-loaded", (_event, settings) => {
   const { showCollisions, showConnections, showNavigator } = settings;
   menu.ref().getMenuItemById("showCollisions").checked = showCollisions;
   menu.ref().getMenuItemById("showConnectionsAll").checked =
@@ -402,11 +402,11 @@ ipcMain.on("project-loaded", (event, settings) => {
   menu.ref().getMenuItemById("showNavigator").checked = showNavigator;
 });
 
-ipcMain.on("set-show-navigator", (event, showNavigator) => {
+ipcMain.on("set-show-navigator", (_event, showNavigator) => {
   menu.ref().getMenuItemById("showNavigator").checked = showNavigator;
 });
 
-ipcMain.on("set-menu-plugins", (event, plugins) => {
+ipcMain.on("set-menu-plugins", (_event, plugins) => {
   const distinct = <T>(value: T, index: number, self: T[]) =>
     self.indexOf(value) === index;
 
@@ -449,13 +449,13 @@ ipcMain.on("close-music", async () => {
   }
 });
 
-ipcMain.on("music-data-send", (event, data) => {
+ipcMain.on("music-data-send", (_event, data) => {
   if (musicWindow) {
     musicWindow.webContents.send("music-data", data);
   }
 });
 
-ipcMain.on("music-data-receive", (event, data) => {
+ipcMain.on("music-data-receive", (_event, data) => {
   if (mainWindow) {
     mainWindow.webContents.send("music-data", data);
   }
@@ -548,7 +548,7 @@ menu.on("preferences", () => {
   }
 });
 
-menu.on("updateSetting", (setting: string, value: any) => {
+menu.on("updateSetting", (setting: string, value: string | boolean) => {
   settings.set(setting, value);
   if (setting === "theme") {
     menu.ref().getMenuItemById("themeDefault").checked = value === undefined;
@@ -558,7 +558,7 @@ menu.on("updateSetting", (setting: string, value: any) => {
     mainWindow && mainWindow.webContents.send("update-theme", value);
   } else if (setting === "locale") {
     menu.ref().getMenuItemById("localeDefault").checked = value === undefined;
-    for (let locale of locales) {
+    for (const locale of locales) {
       menu.ref().getMenuItemById(`locale-${locale}`).checked = value === locale;
     }
     switchLanguageDialog();
@@ -676,8 +676,6 @@ const saveAsProjectPicker = async () => {
 };
 
 const saveAsProject = async (saveAsPath: string) => {
-  const l10n = require("./lib/helpers/l10n").default;
-
   const projectName = Path.parse(saveAsPath).name;
   const projectDir = Path.join(Path.dirname(saveAsPath), projectName);
   const projectPath = Path.join(projectDir, Path.basename(saveAsPath));

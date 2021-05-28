@@ -31,12 +31,12 @@ class BuildPage extends Component {
     clearConsole();
   };
 
-  onRun = (e) => {
+  onRun = (_e) => {
     const { buildGame } = this.props;
     buildGame();
   };
 
-  onBuild = (buildType) => (e) => {
+  onBuild = (buildType) => (_e) => {
     const { buildGame } = this.props;
     buildGame({ buildType, exportBuild: true });
   };

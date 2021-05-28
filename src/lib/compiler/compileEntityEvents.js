@@ -1,6 +1,5 @@
 import { EVENT_FADE_IN } from "./eventTypes";
 import ScriptBuilder from "./scriptBuilder2";
-// import { isVariableField, isPropertyField } from "../helpers/eventSystem";
 
 const STRING_NOT_FOUND = "STRING_NOT_FOUND";
 const VARIABLE_NOT_FOUND = "VARIABLE_NOT_FOUND";
@@ -46,6 +45,7 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
     let hasInit = false;
 
     // eslint-disable-next-line global-require
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const events = require("../events").default;
     for (let i = 0; i < subInput.length; i++) {
       const command = subInput[i].command;

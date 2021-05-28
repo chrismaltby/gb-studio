@@ -6,7 +6,7 @@ import CustomEventActorSelect from "./CustomEventActorSelect";
 import SceneActorSelect from "./SceneActorSelect";
 
 class ActorSelect extends Component {
-  shouldComponentUpdate(nextProps, nextState) {
+  shouldComponentUpdate(nextProps) {
     rerenderCheck("ActorSelect", this.props, {}, nextProps, {});
     return true;
   }

@@ -68,16 +68,8 @@ export class DropdownButton extends Component {
   };
 
   render() {
-    const {
-      children,
-      label,
-      showArrow,
-      transparent,
-      small,
-      large,
-      right,
-      ...props
-    } = this.props;
+    const { children, label, showArrow, transparent, small, large, ...props } =
+      this.props;
     const { open, menuDirection } = this.state;
     return (
       <div ref={this.buttonEl} className="DropdownButton" {...props}>
@@ -112,7 +104,6 @@ DropdownButton.propTypes = {
   transparent: PropTypes.bool,
   small: PropTypes.bool,
   large: PropTypes.bool,
-  right: PropTypes.bool,
 };
 
 DropdownButton.defaultProps = {
@@ -122,5 +113,4 @@ DropdownButton.defaultProps = {
   transparent: false,
   small: false,
   large: false,
-  right: false,
 };

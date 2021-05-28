@@ -126,13 +126,10 @@ import {
   actorRelativeDec,
   moveTypeDec,
   heightDec,
-  actorFramesPerDir,
-  spriteTypeDec,
   textSpeedDec,
 } from "./helpers";
 import { hi, lo } from "../helpers/8bit";
 import trimlines from "../helpers/trimlines";
-import { SPRITE_TYPE_ACTOR } from "../../consts";
 import { is16BitCType } from "../helpers/engineFields";
 import { nextVariable } from "../helpers/variables";
 
@@ -1380,7 +1377,6 @@ class ScriptBuilder {
   };
 
   getActorById = (id) => {
-    const output = this.output;
     const { scene, entity } = this.options;
     return id === "$self$" ? getActor(entity.id, scene) : getActor(id, scene);
   };

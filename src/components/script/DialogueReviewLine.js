@@ -6,7 +6,7 @@ import trimlines, { textNumLines } from "../../lib/helpers/trimlines";
 import l10n from "../../lib/helpers/l10n";
 import { SceneShape, ActorShape, EventShape } from "../../store/stateShape";
 
-const DialogueReviewLine = ({ dialogueLine, onChange, ...props }) => {
+const DialogueReviewLine = ({ dialogueLine, onChange }) => {
   const maxPerLine = dialogueLine.line.args.avatarId ? 16 : 18;
   return (
     <div>
@@ -17,7 +17,7 @@ const DialogueReviewLine = ({ dialogueLine, onChange, ...props }) => {
               {dialogueLine.entityName} — {dialogueLine.sceneName} [
               {(text || "")
                 .split("\n")
-                .map((line, index, lines) => `${line.length}`)
+                .map((line, _index, _lines) => `${line.length}`)
                 .join(", ")}
               ]
             </p>
@@ -47,7 +47,7 @@ const DialogueReviewLine = ({ dialogueLine, onChange, ...props }) => {
             {dialogueLine.entityName} — {dialogueLine.sceneName} [
             {(dialogueLine.line.args.text || "")
               .split("\n")
-              .map((line, index, lines) => `${line.length}`)
+              .map((line, _index, _lines) => `${line.length}`)
               .join(", ")}
             ]
           </p>

@@ -241,7 +241,7 @@ class SceneInfo extends Component {
     }, delay);
   };
 
-  onHoverOff = (e) => {
+  onHoverOff = (_e) => {
     clearTimeout(this.tooltipTimer);
     this.setState({
       tooltipType: "",

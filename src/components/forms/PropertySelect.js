@@ -6,7 +6,7 @@ import CustomEventPropertySelect from "./CustomEventPropertySelect";
 import ScenePropertySelect from "./ScenePropertySelect";
 
 class PropertySelect extends Component {
-  shouldComponentUpdate(nextProps, nextState) {
+  shouldComponentUpdate(nextProps) {
     rerenderCheck("PropertySelect", this.props, {}, nextProps, {});
     return true;
   }

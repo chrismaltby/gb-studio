@@ -49,7 +49,7 @@ class AddCommandButton extends Component {
     this.setState({ pasteMode: e.altKey || e.ctrlKey });
   };
 
-  onBlur = (e) => {
+  onBlur = (_e) => {
     this.setState({ pasteMode: false });
   };
 
@@ -139,7 +139,7 @@ class AddCommandButton extends Component {
     }
   };
 
-  onKeyUp = (e) => {
+  onKeyUp = (_e) => {
     const { selectedIndex } = this.state;
     const actionsList = this.filteredList();
     this.setState({

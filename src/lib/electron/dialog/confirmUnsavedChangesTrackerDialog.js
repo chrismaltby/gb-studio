@@ -1,10 +1,9 @@
 import electron from "electron";
+import l10n from "../../helpers/l10n";
 
 const dialog = electron.remote ? electron.remote.dialog : electron.dialog;
 
 export default (name) => {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const l10n = require("../../helpers/l10n").default;
   const dialogOptions = {
     type: "info",
     buttons: [

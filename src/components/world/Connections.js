@@ -32,7 +32,6 @@ const calculateTransitionCoords = ({
   event,
   scene,
   destScene,
-  entityIndex,
   entityId,
   entityX = 0,
   entityY = 0,
@@ -85,7 +84,7 @@ class Connections extends Component {
     }
   };
 
-  onDragPlayerStop = (e) => {
+  onDragPlayerStop = (_e) => {
     const { dragPlayerStop } = this.props;
     dragPlayerStop();
     window.removeEventListener("mouseup", this.onDragPlayerStop);
@@ -102,7 +101,7 @@ class Connections extends Component {
     }
   };
 
-  onDragDestinationStop = (e) => {
+  onDragDestinationStop = (_e) => {
     const { dragDestinationStop } = this.props;
     dragDestinationStop();
     window.removeEventListener("mouseup", this.onDragDestinationStop);

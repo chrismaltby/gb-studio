@@ -7,18 +7,14 @@ import events, {
   engineFieldUpdateEvents,
   engineFieldStoreEvents,
 } from "../../lib/events";
-import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 import { CustomEventShape, EngineFieldShape } from "../../store/stateShape";
 import ScriptEventFormField from "./ScriptEventFormField";
 import { customEventSelectors } from "../../store/features/entities/entitiesState";
 import { SidebarTabs } from "../editors/Sidebar";
-import { clampToCType, is16BitCType } from "../../lib/helpers/engineFields";
 import {
   EVENT_ENGINE_FIELD_STORE,
   EVENT_ENGINE_FIELD_SET,
 } from "../../lib/compiler/eventTypes";
-import l10n from "../../lib/helpers/l10n";
-import { setDefault } from "../../lib/helpers/setDefault";
 
 const genKey = (id, key, index) => `${id}_${key}_${index || 0}`;
 
@@ -101,7 +97,7 @@ class ScriptEventForm extends Component {
 
   renderFields = (fields) => {
     const { id, value, renderEvents, onChange, entityId } = this.props;
-    return fields.map((field, index) => {
+    return fields.map((field) => {
       if (field.hide) {
         return null;
       }

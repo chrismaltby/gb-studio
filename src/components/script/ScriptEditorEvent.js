@@ -49,7 +49,7 @@ const cardSource = {
 };
 
 const cardTarget = {
-  canDrop(props, monitor) {
+  canDrop(_props, monitor) {
     return monitor.isOver({ shallow: true });
   },
   drop(props) {
@@ -104,7 +104,7 @@ class ScriptEditorEvent extends Component {
     }
   };
 
-  onPasteValues = (e) => {
+  onPasteValues = (_e) => {
     const { id, onEdit, action } = this.props;
     const { clipboardEvent } = this.state;
     if (!clipboardEvent || Array.isArray(clipboardEvent)) {
@@ -127,7 +127,7 @@ class ScriptEditorEvent extends Component {
     onEdit(id, newArgs);
   };
 
-  onPasteEvent = (before) => (e) => {
+  onPasteEvent = (before) => (_e) => {
     const { id, onPaste } = this.props;
     const clipboardEvent = this.readClipboard();
     if (clipboardEvent) {
@@ -159,7 +159,7 @@ class ScriptEditorEvent extends Component {
     });
   };
 
-  readClipboard = (e) => {
+  readClipboard = (_e) => {
     try {
       const clipboardData = JSON.parse(clipboard.readText());
       if (clipboardData.__type === "event") {
@@ -178,7 +178,7 @@ class ScriptEditorEvent extends Component {
     }
   };
 
-  editCustomEvent = (e) => {
+  editCustomEvent = (_e) => {
     const { onSelectCustomEvent, action } = this.props;
     if (action.args.customEventId) {
       onSelectCustomEvent(action.args.customEventId);

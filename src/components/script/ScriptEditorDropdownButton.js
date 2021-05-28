@@ -38,7 +38,7 @@ class ScriptEditorDropdownButton extends Component {
     copyScript(value);
   };
 
-  onRemoveScript = (e) => {
+  onRemoveScript = (_e) => {
     this.onChange([
       {
         id: uuid(),
@@ -47,7 +47,7 @@ class ScriptEditorDropdownButton extends Component {
     ]);
   };
 
-  onReplaceScript = (e) => {
+  onReplaceScript = (_e) => {
     const { clipboardEvent } = this.state;
     if (clipboardEvent) {
       const { pasteCustomEvents } = this.props;
@@ -85,7 +85,7 @@ class ScriptEditorDropdownButton extends Component {
     }
   };
 
-  readClipboard = (e) => {
+  readClipboard = (_e) => {
     try {
       const clipboardData = JSON.parse(clipboard.readText());
       if (clipboardData.__type === "event") {
@@ -158,7 +158,7 @@ ScriptEditorDropdownButton.defaultProps = Object.create(
   }
 );
 
-function mapStateToProps(state, props) {
+function mapStateToProps(_state, props) {
   return {
     value: props.value && props.value.length > 0 ? props.value : undefined,
   };

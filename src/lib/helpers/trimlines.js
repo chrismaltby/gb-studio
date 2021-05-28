@@ -1,3 +1,4 @@
+/* eslint-disable no-control-regex */
 const LINE_MAX = 4;
 const LINE_MIN = 2;
 const CHARS_PER_LINE = 18;

@@ -226,7 +226,7 @@ class CustomPalettePicker extends Component {
     }
   };
 
-  onColorSelect = (colorIndex) => (e) => {
+  onColorSelect = (colorIndex) => (_e) => {
     const { whiteHex, lightHex, darkHex, blackHex } = this.state;
     let editHex;
     if (colorIndex === 0) {

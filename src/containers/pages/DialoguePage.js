@@ -22,7 +22,7 @@ class DialoguePage extends Component {
     };
   }
 
-  onToggleScene = (sceneId) => (e) => {
+  onToggleScene = (sceneId) => (_e) => {
     const { openScenes } = this.state;
     if (openScenes.includes(sceneId)) {
       this.setState({

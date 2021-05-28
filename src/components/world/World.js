@@ -240,7 +240,7 @@ class World extends Component {
     }
   };
 
-  startWorldDrag = (e) => {
+  startWorldDrag = (_e) => {
     this.worldDragging = true;
     this.dragDistance.x = 0;
     this.dragDistance.y = 0;
@@ -254,11 +254,11 @@ class World extends Component {
     }
   };
 
-  onMouseEnter = (e) => {
+  onMouseEnter = (_e) => {
     this.mouseOver = true;
   };
 
-  onMouseLeave = (e) => {
+  onMouseLeave = (_e) => {
     this.mouseOver = false;
   };
 
@@ -274,12 +274,12 @@ class World extends Component {
     scrollWorld({ x: left, y: top });
   }, 50);
 
-  onWindowResize = (e) => {
+  onWindowResize = (_e) => {
     const { resizeWorldView } = this.props;
     resizeWorldView({ width: window.innerWidth, height: window.innerHeight });
   };
 
-  onAddScene = (e) => {
+  onAddScene = (_e) => {
     const { addScene, setTool, sceneDefaults, clipboardVariables } = this.props;
     const { hoverX, hoverY } = this.state;
     addScene({
@@ -300,12 +300,9 @@ class World extends Component {
       tool,
       showConnections,
       zoomRatio,
-      sidebarWidth,
       loaded,
     } = this.props;
     const { hover, hoverX, hoverY, dragMode } = this.state;
-
-    const worldStyle = { right: sidebarWidth };
 
     return (
       <div

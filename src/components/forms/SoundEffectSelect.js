@@ -127,7 +127,7 @@ SoundEffectSelect.defaultProps = {
   duration: 0.5,
 };
 
-function mapStateToProps(state) {
+function mapStateToProps(_state) {
   return {};
 }
 

@@ -1,6 +1,6 @@
 import Path from "path";
 import { ActionCreators } from "redux-undo";
-import { ipcRenderer, clipboard, remote } from "electron";
+import { ipcRenderer, clipboard } from "electron";
 import settings from "electron-settings";
 import debounce from "lodash/debounce";
 import mapValues from "lodash/mapValues";
@@ -29,7 +29,7 @@ const actions = {
   ...clipboardActions,
 };
 
-const vmActions = mapValues(actions, (fn, key) => {
+const vmActions = mapValues(actions, (_fn, key) => {
   // Strip proxy object from VM2 output
   return (payload) => actions[key](JSON.parse(JSON.stringify(payload)));
 });
@@ -63,8 +63,8 @@ watchProject(projectPath, {
   onRemoveFont: (f) => store.dispatch(projectActions.removeFont(f)),
   onRemoveAvatar: (f) => store.dispatch(projectActions.removeAvatar(f)),
   onRemoveEmote: (f) => store.dispatch(projectActions.removeEmote(f)),
-  onChangedUI: (f) => store.dispatch(projectActions.loadUI()),
-  onChangedEngineSchema: (f) =>
+  onChangedUI: (_f) => store.dispatch(projectActions.loadUI()),
+  onChangedEngineSchema: (_f) =>
     store.dispatch(engineActions.scanEngine(projectPath)),
 });
 
@@ -164,17 +164,17 @@ const onEjectEngine = () => {
   store.dispatch(buildGameActions.ejectEngine());
 };
 
-const onExportProject = (event, exportType) => {
+const onExportProject = (_event, exportType) => {
   store.dispatch(buildGameActions.exportProject(exportType));
 };
 
-const onPluginRun = (event, pluginId) => {
+const onPluginRun = (_event, pluginId) => {
   if (plugins.menu[pluginId] && plugins.menu[pluginId].run) {
     plugins.menu[pluginId].run(store, vmActions);
   }
 };
 
-const onPasteInPlace = (event) => {
+const onPasteInPlace = (_event) => {
   try {
     const clipboardData = JSON.parse(clipboard.readText());
     store.dispatch(clipboardActions.pasteClipboardEntityInPlace(clipboardData));

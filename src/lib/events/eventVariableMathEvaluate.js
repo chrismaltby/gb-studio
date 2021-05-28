@@ -1,5 +1,3 @@
-const l10n = require("../helpers/l10n").default;
-
 const id = "EVENT_VARIABLE_MATH_EVALUATE";
 
 const fields = [

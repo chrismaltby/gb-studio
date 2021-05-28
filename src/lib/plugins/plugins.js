@@ -5,6 +5,7 @@ import chokidar from "chokidar";
 import EventEmitter from "events";
 import { ipcRenderer } from "electron";
 
+// eslint-disable-next-line no-undef
 const VM2 = __non_webpack_require__("vm2");
 const NodeVM = VM2.NodeVM;
 
