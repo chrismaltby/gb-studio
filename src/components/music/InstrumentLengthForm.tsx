@@ -5,15 +5,14 @@ import { FormRow } from "../ui/form/FormLayout";
 import { SliderField } from "../ui/form/SliderField";
 
 interface InstrumentLengthFormProps {
-  value: number | null,
-  onChange: (value: number | null) => void
-};
+  value: number | null;
+  onChange: (value: number | null) => void;
+}
 
 export const InstrumentLengthForm = ({
   value,
-  onChange
+  onChange,
 }: InstrumentLengthFormProps) => {
-
   return (
     <>
       <FormRow>
@@ -28,7 +27,8 @@ export const InstrumentLengthForm = ({
             } else {
               onChange(32);
             }
-          }} />
+          }}
+        />
       </FormRow>
       <FormRow>
         <SliderField
@@ -38,8 +38,9 @@ export const InstrumentLengthForm = ({
           max={63}
           onChange={(value) => {
             onChange(value || 0);
-          }} />
+          }}
+        />
       </FormRow>
     </>
-  )
-}
+  );
+};

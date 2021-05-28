@@ -11,7 +11,10 @@ let firstBuild = true;
 const ensureBuildTools = async (tmpPath) => {
   const buildToolsPath = `${buildToolsRoot}/${process.platform}-${process.arch}`;
   const expectedBuildToolsVersionPath = `${buildToolsPath}/tools_version`;
-  const expectedToolsVersion = await fs.readFile(expectedBuildToolsVersionPath, "utf8");
+  const expectedToolsVersion = await fs.readFile(
+    expectedBuildToolsVersionPath,
+    "utf8"
+  );
 
   const tmpBuildToolsPath = `${tmpPath}/_gbstools`;
   const tmpBuildToolsVersionPath = `${tmpPath}/_gbstools/tools_version`;
@@ -21,12 +24,12 @@ const ensureBuildTools = async (tmpPath) => {
     await copy(buildToolsPath, tmpBuildToolsPath, {
       overwrite: true,
       mode: 0o755,
-    });    
+    });
     firstBuild = false;
   } else {
     try {
       const toolsVersion = await fs.readFile(tmpBuildToolsVersionPath, "utf8");
-      if(toolsVersion !== expectedToolsVersion) {
+      if (toolsVersion !== expectedToolsVersion) {
         throw new Error("Incorrect tools version found");
       }
     } catch (e) {

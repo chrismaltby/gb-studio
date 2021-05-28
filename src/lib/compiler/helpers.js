@@ -1,4 +1,8 @@
-import { SPRITE_TYPE_STATIC, SPRITE_TYPE_ACTOR_ANIMATED, SPRITE_TYPE_ACTOR } from "../../consts";
+import {
+  SPRITE_TYPE_STATIC,
+  SPRITE_TYPE_ACTOR_ANIMATED,
+  SPRITE_TYPE_ACTOR,
+} from "../../consts";
 
 const DIR_LOOKUP = {
   down: 1,
@@ -25,7 +29,7 @@ const MOVEMENT_LOOKUP = {
 
 const MOVEMENT_SPEED_LOOKUP = [0, 1, 2, 4, 8];
 
-const TEXT_SPEED_LOOKUP = [0x0, 0x1, 0x3, 0x7, 0xF, 0x1F];
+const TEXT_SPEED_LOOKUP = [0x0, 0x1, 0x3, 0x7, 0xf, 0x1f];
 
 const OPERATOR_LOOKUP = {
   "==": 1,
@@ -118,7 +122,7 @@ export const animSpeedDec = (animSpeed) => {
     return 3;
   }
   return animSpeed;
-}
+};
 
 export const operatorDec = (operator) => OPERATOR_LOOKUP[operator] || 1;
 
@@ -158,21 +162,25 @@ export const replaceInvalidCustomEventVariables = (variable) => {
     if (variableIndex >= 10 || isNaN(variableIndex)) {
       return "0";
     }
-    return String(variableIndex);  
-  }
+    return String(variableIndex);
+  };
 
   // Support the case for "union" values
   if (variable && variable.type === "variable") {
     return {
       ...variable,
-      value: getValidVariableIndex(variable.value)
-    }
+      value: getValidVariableIndex(variable.value),
+    };
   }
   return getValidVariableIndex(variable);
 };
 
 export const replaceInvalidCustomEventActors = (actor) => {
-  if (actor.indexOf("-") > -1 || parseInt(actor, 10) >= 10 || actor === "$self$") {
+  if (
+    actor.indexOf("-") > -1 ||
+    parseInt(actor, 10) >= 10 ||
+    actor === "$self$"
+  ) {
     return "0";
   }
   return actor;
@@ -182,20 +190,20 @@ export const replaceInvalidCustomEventProperties = (property) => {
   const getValidPropertyValue = (p) => {
     const actorValue = p.replace(/:.*/, "");
     return p.replace(/.*:/, `${replaceInvalidCustomEventActors(actorValue)}:`);
-  }
+  };
 
   // Support the case for "union" values
   if (property !== null && property.type === "property") {
     return {
       ...property,
-      value: getValidPropertyValue(property.value)
-    }
+      value: getValidPropertyValue(property.value),
+    };
   }
   return getValidPropertyValue(property);
-}
+};
 
 export const collisionGroupDec = (group) => {
-  if(group === "player") {
+  if (group === "player") {
     return 1;
   }
   if (group === "1") {
@@ -208,16 +216,16 @@ export const collisionGroupDec = (group) => {
     return 8;
   }
   return 0;
-}
+};
 
 export const collisionMaskDec = (mask) => {
-  if(!Array.isArray(mask)) {
+  if (!Array.isArray(mask)) {
     return 0;
   }
   return mask.reduce((memo, group) => {
     return memo | collisionGroupDec(group);
   }, 0);
-}
+};
 
 export const actorRelativeDec = (operation) => {
   if (operation === "up") {
@@ -233,7 +241,7 @@ export const actorRelativeDec = (operation) => {
     return 3;
   }
   return 0;
-}
+};
 
 export const moveTypeDec = (type) => {
   if (type === "horizontal") {
@@ -246,7 +254,7 @@ export const moveTypeDec = (type) => {
     return 2;
   }
   return 0;
-}
+};
 
 export const heightDec = (type) => {
   if (type === "low") {
@@ -259,11 +267,10 @@ export const heightDec = (type) => {
     return 2;
   }
   return 1;
-}
+};
 
-export const textSpeedDec = (speed) => TEXT_SPEED_LOOKUP[speed] !== undefined
-  ? TEXT_SPEED_LOOKUP[speed]
-  : 0x1;
+export const textSpeedDec = (speed) =>
+  TEXT_SPEED_LOOKUP[speed] !== undefined ? TEXT_SPEED_LOOKUP[speed] : 0x1;
 
 export const paletteMaskDec = (mask) => {
   return mask.reduce((memo, value, index) => {
@@ -272,4 +279,4 @@ export const paletteMaskDec = (mask) => {
     }
     return memo + Math.pow(2, index);
   }, 0);
-}
+};

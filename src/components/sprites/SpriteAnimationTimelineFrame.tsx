@@ -73,9 +73,9 @@ const cardTarget = {
     }
 
     // Determine rectangle on screen
-    const hoverBoundingRect = (findDOMNode(
-      component
-    ) as Element).getBoundingClientRect();
+    const hoverBoundingRect = (
+      findDOMNode(component) as Element
+    ).getBoundingClientRect();
     // ).getBoundingClientRect();
 
     // Get horizontal middle

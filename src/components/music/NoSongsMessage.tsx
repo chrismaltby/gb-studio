@@ -20,26 +20,23 @@ export const NoSongsMessage = () => {
   return (
     <>
       <h2>{l10n("MESSAGE_NO_SONGS_FOUND")}</h2>
-      <p>
-        {l10n("MESSAGE_ADD_UGE_FILES")}
-      </p>
-      <p 
+      <p>{l10n("MESSAGE_ADD_UGE_FILES")}</p>
+      <p
         onClick={() => setShowMessage(!showMessage)}
         style={{ textDecoration: "underline", cursor: "pointer" }}
       >
-       {l10n("MESSAGE_WHAT_ABOUT_MOD")}
+        {l10n("MESSAGE_WHAT_ABOUT_MOD")}
       </p>
-      { showMessage ? 
+      {showMessage ? (
         <>
-          <p>
-            {l10n("MESSAGE_USE_MOD_FILES")}
-          </p>
+          <p>{l10n("MESSAGE_USE_MOD_FILES")}</p>
           <Button onClick={() => editSettings({ musicDriver: "gbt" })}>
             {l10n("MESSAGE_ENABLE_GBT")}
           </Button>
         </>
-      : "" }
+      ) : (
+        ""
+      )}
     </>
-  )
-}
-
+  );
+};

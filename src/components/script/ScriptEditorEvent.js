@@ -11,7 +11,7 @@ import ScriptEventForm from "./ScriptEventForm";
 import {
   EVENT_END,
   EVENT_CALL_CUSTOM_EVENT,
-  EVENT_COMMENT
+  EVENT_COMMENT,
 } from "../../lib/compiler/eventTypes";
 import { DropdownButton } from "../library/Button";
 import { MenuItem, MenuDivider } from "../library/Menu";
@@ -23,14 +23,14 @@ import { ScriptEditorEventHelper } from "./ScriptEditorEventHelper";
 const COMMENT_PREFIX = "//";
 
 const ItemTypes = {
-  CARD: "card"
+  CARD: "card",
 };
 
 const cardSource = {
   beginDrag(props) {
     return {
       id: props.id,
-      path: props.path
+      path: props.path,
     };
   },
 
@@ -45,7 +45,7 @@ const cardSource = {
     if (item && target) {
       props.moveActions(item.id, target.id);
     }
-  }
+  },
 };
 
 const cardTarget = {
@@ -55,9 +55,9 @@ const cardTarget = {
   drop(props) {
     return {
       id: props.id,
-      end: props.end
+      end: props.end,
     };
-  }
+  },
 };
 
 class ScriptEditorEvent extends Component {
@@ -65,46 +65,46 @@ class ScriptEditorEvent extends Component {
     super();
     this.state = {
       rename: false,
-      clipboardEvent: null
+      clipboardEvent: null,
     };
   }
 
   toggleOpen = () => {
     const { id, action, onEdit } = this.props;
     onEdit(id, {
-      __collapse: !action.args.__collapse
+      __collapse: !action.args.__collapse,
     });
   };
 
   toggleComment = () => {
     const { id, action, onEdit } = this.props;
     onEdit(id, {
-      __comment: !action.args.__comment
+      __comment: !action.args.__comment,
     });
   };
 
   toggleElse = () => {
     const { id, action, onEdit } = this.props;
     onEdit(id, {
-      __disableElse: !action.args.__disableElse
+      __disableElse: !action.args.__disableElse,
     });
   };
 
   toggleRename = () => {
-    this.setState(prevState => {
+    this.setState((prevState) => {
       return {
-        rename: !prevState.rename
+        rename: !prevState.rename,
       };
     });
   };
 
-  submitOnEnter = e => {
+  submitOnEnter = (e) => {
     if (e.key === "Enter") {
       this.toggleRename();
     }
   };
 
-  onPasteValues = e => {
+  onPasteValues = (e) => {
     const { id, onEdit, action } = this.props;
     const { clipboardEvent } = this.state;
     if (!clipboardEvent || Array.isArray(clipboardEvent)) {
@@ -117,7 +117,7 @@ class ScriptEditorEvent extends Component {
         if (action.args && action.args[key] !== undefined) {
           return {
             ...memo,
-            [key]: clipboardEvent.args[key]
+            [key]: clipboardEvent.args[key],
           };
         }
         return memo;
@@ -127,7 +127,7 @@ class ScriptEditorEvent extends Component {
     onEdit(id, newArgs);
   };
 
-  onPasteEvent = before => e => {
+  onPasteEvent = (before) => (e) => {
     const { id, onPaste } = this.props;
     const clipboardEvent = this.readClipboard();
     if (clipboardEvent) {
@@ -140,23 +140,26 @@ class ScriptEditorEvent extends Component {
     if (postUpdate) {
       return onEdit(
         id,
-        postUpdate({
-          ...action.args,
-          ...newValue
-        }, action.args)
+        postUpdate(
+          {
+            ...action.args,
+            ...newValue,
+          },
+          action.args
+        )
       );
     }
     return onEdit(id, newValue);
   };
 
-  onEditLabel = e => {
+  onEditLabel = (e) => {
     const { onEdit, id } = this.props;
     onEdit(id, {
-      __label: e.currentTarget.value
+      __label: e.currentTarget.value,
     });
   };
 
-  readClipboard = e => {
+  readClipboard = (e) => {
     try {
       const clipboardData = JSON.parse(clipboard.readText());
       if (clipboardData.__type === "event") {
@@ -175,7 +178,7 @@ class ScriptEditorEvent extends Component {
     }
   };
 
-  editCustomEvent = e => {
+  editCustomEvent = (e) => {
     const { onSelectCustomEvent, action } = this.props;
     if (action.args.customEventId) {
       onSelectCustomEvent(action.args.customEventId);
@@ -201,7 +204,7 @@ class ScriptEditorEvent extends Component {
       onPaste,
       onSelectCustomEvent,
       onMouseEnter,
-      onMouseLeave
+      onMouseLeave,
     } = this.props;
     const { rename, clipboardEvent } = this.state;
     const { command } = action;
@@ -211,7 +214,7 @@ class ScriptEditorEvent extends Component {
         <div
           className={cx("ScriptEditorEvent", "ScriptEditorEvent--Add", {
             "ScriptEditorEvent--Dragging": isDragging,
-            "ScriptEditorEvent--Over": isOverCurrent
+            "ScriptEditorEvent--Over": isOverCurrent,
           })}
         >
           <AddCommandButton
@@ -231,9 +234,10 @@ class ScriptEditorEvent extends Component {
     const disabledElse = action.args && action.args.__disableElse;
 
     const localisedCommand = l10n(command);
-    const defaultCommandName = localisedCommand !== command
-      ? localisedCommand
-      : (events[command] && events[command].name) || command;
+    const defaultCommandName =
+      localisedCommand !== command
+        ? localisedCommand
+        : (events[command] && events[command].name) || command;
 
     const eventName = action.args.__name || defaultCommandName;
 
@@ -251,7 +255,7 @@ class ScriptEditorEvent extends Component {
             "ScriptEditorEvent--Over": isOverCurrent,
             "ScriptEditorEvent--Conditional":
               childKeys.length > 0 && command !== EVENT_CALL_CUSTOM_EVENT,
-            "ScriptEditorEvent--Commented": commented
+            "ScriptEditorEvent--Commented": commented,
           })}
         >
           <div
@@ -263,7 +267,7 @@ class ScriptEditorEvent extends Component {
               <div
                 className={cx("ScriptEditorEvent__Command", {
                   "ScriptEditorEvent__Command--Open": open,
-                  EventComment: isComment || commented
+                  EventComment: isComment || commented,
                 })}
                 onClick={this.toggleOpen}
               >
@@ -291,7 +295,7 @@ class ScriptEditorEvent extends Component {
                   <MenuItem key="0" onClick={this.editCustomEvent}>
                     {l10n("MENU_EDIT_CUSTOM_EVENT")}
                   </MenuItem>,
-                  <MenuDivider key="1" />
+                  <MenuDivider key="1" />,
                 ]}
                 <MenuItem onClick={this.toggleRename}>
                   {l10n("MENU_RENAME_EVENT")}
@@ -367,16 +371,16 @@ class ScriptEditorEvent extends Component {
                 command={command}
                 value={action.args}
                 onChange={this.onEdit}
-                renderEvents={key => (
+                renderEvents={(key) => (
                   <div className="ScriptEditorEvent__Children" key={key}>
                     {(
                       action.children[key] || [
                         {
                           id: uuid(),
-                          command: EVENT_END
-                        }
+                          command: EVENT_END,
+                        },
                       ]
-                    ).map(childAction => (
+                    ).map((childAction) => (
                       <ScriptEditorEventDnD
                         key={childAction.id}
                         id={childAction.id}
@@ -402,7 +406,7 @@ class ScriptEditorEvent extends Component {
                   </div>
                 )}
               />
-            )}       
+            )}
           </div>
         </div>
       )
@@ -428,7 +432,7 @@ ScriptEditorEvent.propTypes = {
   onMouseEnter: PropTypes.func.isRequired,
   connectDragSource: PropTypes.func.isRequired,
   connectDragPreview: PropTypes.func.isRequired,
-  connectDropTarget: PropTypes.func.isRequired
+  connectDropTarget: PropTypes.func.isRequired,
 };
 
 const ScriptEditorEventDnD = DropTarget(
@@ -437,13 +441,13 @@ const ScriptEditorEventDnD = DropTarget(
   (dndConnect, monitor) => ({
     connectDropTarget: dndConnect.dropTarget(),
     isOver: monitor.isOver(),
-    isOverCurrent: monitor.isOver({ shallow: true })
+    isOverCurrent: monitor.isOver({ shallow: true }),
   })
 )(
   DragSource(ItemTypes.CARD, cardSource, (dndConnect, monitor) => ({
     connectDragSource: dndConnect.dragSource(),
     connectDragPreview: dndConnect.dragPreview(),
-    isDragging: monitor.isDragging()
+    isDragging: monitor.isDragging(),
   }))(ScriptEditorEvent)
 );
 

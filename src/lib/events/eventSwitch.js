@@ -7,7 +7,7 @@ const fields = [].concat(
     {
       key: "variable",
       type: "variable",
-      defaultValue: "LAST_VARIABLE"
+      defaultValue: "LAST_VARIABLE",
     },
     {
       key: "choices",
@@ -15,8 +15,8 @@ const fields = [].concat(
       type: "number",
       min: 1,
       max: 16,
-      defaultValue: 2
-    }
+      defaultValue: 2,
+    },
   ],
   Array(16)
     .fill()
@@ -27,11 +27,11 @@ const fields = [].concat(
         conditions: [
           {
             key: "choices",
-            gt: i
-          }
+            gt: i,
+          },
         ],
         type: "collapsable",
-        defaultValue: false
+        defaultValue: false,
       });
       arr.push({
         key: `value${i}`,
@@ -39,31 +39,31 @@ const fields = [].concat(
         conditions: [
           {
             key: `__collapseCase${i}`,
-            ne: true
+            ne: true,
           },
           {
             key: "choices",
-            gt: i
-          }
+            gt: i,
+          },
         ],
         type: "number",
         min: 0,
         max: 255,
-        defaultValue: i + 1
+        defaultValue: i + 1,
       });
       arr.push({
         key: `true${i}`,
         conditions: [
           {
             key: `__collapseCase${i}`,
-            ne: true
+            ne: true,
           },
           {
             key: "choices",
-            gt: i
-          }
+            gt: i,
+          },
         ],
-        type: "events"
+        type: "events",
       });
       return arr;
     }, []),
@@ -76,24 +76,24 @@ const fields = [].concat(
       conditions: [
         {
           key: "__disableElse",
-          ne: true
-        }
-      ]
+          ne: true,
+        },
+      ],
     },
     {
       key: "false",
       conditions: [
         {
           key: "__collapseElse",
-          ne: true
+          ne: true,
         },
         {
           key: "__disableElse",
-          ne: true
-        }
+          ne: true,
+        },
       ],
-      type: "events"
-    }
+      type: "events",
+    },
   ]
 );
 
@@ -109,7 +109,7 @@ const compile = (input, helpers) => {
       if (!memo[key]) {
         return {
           ...memo,
-          [key]: input[`true${i}`]
+          [key]: input[`true${i}`],
         };
       }
       return memo;
@@ -121,5 +121,5 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   fields,
-  compile
+  compile,
 };

@@ -65,7 +65,7 @@
   "SIDEBAR_ON_UPDATE": "Aquando Update",
 
   "// 6": "Descrições ----------------------------------------------",
-  "FIELD_NAME": "Nome",  
+  "FIELD_NAME": "Nome",
   "FIELD_DESCRIPTION": "Descrição",
   "FIELD_AUTHOR": "Autor",
   "FIELD_NOTES": "Notas",
@@ -508,7 +508,7 @@
   "DIALOG_DONT_SAVE": "Não Guardar",
   "DIALOG_OK": "OK",
   "DIALOG_CANCEL": "Cancelar",
-  "DIALOG_DELETE": "Eliminar",  
+  "DIALOG_DELETE": "Eliminar",
   "DIALOG_REPLACE": "Substituir",
   "DIALOG_KEEP": "Manter",
   "DIALOG_UPDATE_AVAILABLE": "Update disponível",
@@ -572,5 +572,4 @@
   "GAMETYPE_ADVENTURE": "Adventure",
   "GAMETYPE_SHMUP": "Shoot Em' Up",
   "GAMETYPE_POINT_N_CLICK": "Point and Click"
-  
 }

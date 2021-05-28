@@ -3,20 +3,20 @@ import styled, { css } from "styled-components";
 import { PatternCell } from "../../lib/helpers/uge/song/PatternCell";
 
 interface SongRowProps {
-  id: string,
-  n: number,
-  row: PatternCell[],
-  startCellId: number,
-  selectedCell: number | undefined,
-  isSelected: boolean
-  isPlaying: boolean
+  id: string;
+  n: number;
+  row: PatternCell[];
+  startCellId: number;
+  selectedCell: number | undefined;
+  isSelected: boolean;
+  isPlaying: boolean;
 }
 
 interface WrapperProps {
-  n: number,
-  isSelected: boolean
-  isPlaying: boolean
-  size?: "normal" | "small"
+  n: number;
+  isSelected: boolean;
+  isPlaying: boolean;
+  size?: "normal" | "small";
 }
 
 const Wrapper = styled.span<WrapperProps>`
@@ -31,33 +31,33 @@ const Wrapper = styled.span<WrapperProps>`
   margin: 0;
   padding: 4px 8px;
   height: 20px;
-  ${(props) => 
-    props.size === "small" 
-      ? css`width: 30px;` 
-      : css`width: 116px;`
-  }
+  ${(props) =>
+    props.size === "small"
+      ? css`
+          width: 30px;
+        `
+      : css`
+          width: 116px;
+        `}
   background-color: ${(props) => props.theme.colors.tracker.background};
   ${(props) =>
     props.n % 8 === 0
       ? css`
           background-color: ${props.theme.colors.tracker.activeBackground};
         `
-      : ""
-  }
+      : ""}
   ${(props) =>
     props.isPlaying
       ? css`
           background-color: ${props.theme.colors.highlight};
         `
-      : ""
-  }
+      : ""}
   ${(props) =>
     props.isSelected
       ? css`
           background-color: ${props.theme.colors.tracker.activeBackground};
         `
-      : ""
-  }
+      : ""}
 `;
 
 const Cell = styled.span<{ selected?: boolean }>`
@@ -69,116 +69,130 @@ const Cell = styled.span<{ selected?: boolean }>`
   ${(props) =>
     props.selected
       ? css`
-        background-color: white;
-      `
-      : ""
-  }
+          background-color: white;
+        `
+      : ""}
 `;
 
 const NoteCell = styled(Cell)`
   color: ${(props) => props.theme.colors.tracker.note};
-`
+`;
 
 const InstrumentCell = styled(Cell)`
   color: ${(props) => props.theme.colors.tracker.instrument};
-`
+`;
 
 const EffectCodeCell = styled(Cell)`
   color: ${(props) => props.theme.colors.tracker.effectCode};
-`
+`;
 
 const EffectParamCell = styled(Cell)`
   color: ${(props) => props.theme.colors.tracker.effectParam};
-`
+`;
 
 const renderCounter = (n: number): string => {
-  return (n)?.toString().padStart(2, "0") || "__";
-}
+  return n?.toString().padStart(2, "0") || "__";
+};
 
-const noteName = ["C-", "C#", "D-", "D#", "E-", "F-", "F#", "G-", "G#", "A-", "A#", "B-"]
+const noteName = [
+  "C-",
+  "C#",
+  "D-",
+  "D#",
+  "E-",
+  "F-",
+  "F#",
+  "G-",
+  "G#",
+  "A-",
+  "A#",
+  "B-",
+];
 const renderNote = (note: number | null): string => {
   if (note === null) {
     return "...";
   }
   const octave = ~~(note / 12) + 3;
   return `${noteName[note % 12]}${octave}`;
-}
+};
 
 const renderInstrument = (instrument: number | null): string => {
   if (instrument === null) return "..";
   return (instrument + 1).toString().padStart(2, "0") || "..";
-}
+};
 
 const renderEffect = (effectcode: number | null): string => {
-  return (effectcode)?.toString(16).toUpperCase() || ".";
-}
+  return effectcode?.toString(16).toUpperCase() || ".";
+};
 
 const renderEffectParam = (effectparam: number | null): string => {
-  return (effectparam)?.toString(16).toUpperCase().padStart(2, "0") || "..";
-}
+  return effectparam?.toString(16).toUpperCase().padStart(2, "0") || "..";
+};
 
-const SongRowFwd = React.forwardRef<HTMLSpanElement, SongRowProps>(({
-  n,
-  row,
-  startCellId,
-  selectedCell,
-  isPlaying,
-  isSelected
-}: SongRowProps, ref) => {
-  return (
-    <div>
-      <Wrapper isPlaying={isPlaying} isSelected={isSelected} n={n} size="small">
-        <Cell id={`cell_${n}`}>{renderCounter(n)}</Cell>
-      </Wrapper>
-      {row.map((cell, i) => {
-        const ret = (
-          <Wrapper isPlaying={isPlaying} isSelected={isSelected} n={n}>
-            <NoteCell 
-              id={`cell_${n}_${i}_1`} 
-              selected={selectedCell === startCellId} 
-              ref={selectedCell === startCellId ? ref : null} 
-              data-cellid={startCellId} 
-            >
-              {renderNote(cell.note)}
-            </NoteCell>
-            <InstrumentCell 
-              id={`cell_${n}_${i}_2`} 
-              selected={selectedCell === startCellId + 1} 
-              ref={selectedCell === startCellId + 1 ? ref : null} 
-              data-cellid={startCellId + 1} 
-            >
-              {renderInstrument(cell.instrument)}
-            </InstrumentCell>
-            <EffectCodeCell 
-              id={`cell_${n}_${i}_3`} 
-              selected={selectedCell === startCellId + 2} 
-              ref={selectedCell === startCellId + 2 ? ref : null} 
-              data-cellid={startCellId + 2}
-              style={{
-                paddingRight: 1
-              }}
-            >
-              {renderEffect(cell.effectcode)}
-            </EffectCodeCell>
-            <EffectParamCell 
-              id={`cell_${n}_${i}_4`} 
-              selected={selectedCell === startCellId + 3} 
-              ref={selectedCell === startCellId + 3 ? ref : null} 
-              data-cellid={startCellId + 3}
-              style={{
-                paddingLeft: 1
-              }}
-            >
-              {renderEffectParam(cell.effectparam)}
-            </EffectParamCell>
-          </Wrapper>
-        )
-        startCellId += 4;
-        return ret;
-      }
-    )}
-    </div>
-  )
-});
+const SongRowFwd = React.forwardRef<HTMLSpanElement, SongRowProps>(
+  (
+    { n, row, startCellId, selectedCell, isPlaying, isSelected }: SongRowProps,
+    ref
+  ) => {
+    return (
+      <div>
+        <Wrapper
+          isPlaying={isPlaying}
+          isSelected={isSelected}
+          n={n}
+          size="small"
+        >
+          <Cell id={`cell_${n}`}>{renderCounter(n)}</Cell>
+        </Wrapper>
+        {row.map((cell, i) => {
+          const ret = (
+            <Wrapper isPlaying={isPlaying} isSelected={isSelected} n={n}>
+              <NoteCell
+                id={`cell_${n}_${i}_1`}
+                selected={selectedCell === startCellId}
+                ref={selectedCell === startCellId ? ref : null}
+                data-cellid={startCellId}
+              >
+                {renderNote(cell.note)}
+              </NoteCell>
+              <InstrumentCell
+                id={`cell_${n}_${i}_2`}
+                selected={selectedCell === startCellId + 1}
+                ref={selectedCell === startCellId + 1 ? ref : null}
+                data-cellid={startCellId + 1}
+              >
+                {renderInstrument(cell.instrument)}
+              </InstrumentCell>
+              <EffectCodeCell
+                id={`cell_${n}_${i}_3`}
+                selected={selectedCell === startCellId + 2}
+                ref={selectedCell === startCellId + 2 ? ref : null}
+                data-cellid={startCellId + 2}
+                style={{
+                  paddingRight: 1,
+                }}
+              >
+                {renderEffect(cell.effectcode)}
+              </EffectCodeCell>
+              <EffectParamCell
+                id={`cell_${n}_${i}_4`}
+                selected={selectedCell === startCellId + 3}
+                ref={selectedCell === startCellId + 3 ? ref : null}
+                data-cellid={startCellId + 3}
+                style={{
+                  paddingLeft: 1,
+                }}
+              >
+                {renderEffectParam(cell.effectparam)}
+              </EffectParamCell>
+            </Wrapper>
+          );
+          startCellId += 4;
+          return ret;
+        })}
+      </div>
+    );
+  }
+);
 
 export const SongRow = React.memo(SongRowFwd);

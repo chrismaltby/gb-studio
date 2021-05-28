@@ -11,62 +11,64 @@ import { WaveEditorForm as WaveEditorForm } from "./WaveEditorForm";
 const volumeOptions = [
   {
     value: "0",
-    label: "Mute"
+    label: "Mute",
   },
   {
     value: "1",
-    label: "100%"
+    label: "100%",
   },
   {
     value: "2",
-    label: "50%"
+    label: "50%",
   },
   {
     value: "3",
-    label: "25%"
-  }
+    label: "25%",
+  },
 ];
 
 interface InstrumentWaveEditorProps {
   id: string;
-  instrument?: WaveInstrument
+  instrument?: WaveInstrument;
 }
 
 export const InstrumentWaveEditor = ({
-  instrument
+  instrument,
 }: InstrumentWaveEditorProps) => {
   const dispatch = useDispatch();
 
   if (!instrument) return <></>;
 
-  const selectedVolume = volumeOptions.find((i) => parseInt(i.value, 10) === instrument.volume);
+  const selectedVolume = volumeOptions.find(
+    (i) => parseInt(i.value, 10) === instrument.volume
+  );
 
-  const onChangeField = <T extends keyof WaveInstrument>(key: T) => (
-    editValue: WaveInstrument[T]
-  ) => {
-    dispatch(
-      trackerDocumentActions.editWaveInstrument({
-        instrumentId: instrument.index,
-        changes: {
-          [key]: editValue,
-        },
-      })
-    );
-  };
+  const onChangeField =
+    <T extends keyof WaveInstrument>(key: T) =>
+    (editValue: WaveInstrument[T]) => {
+      dispatch(
+        trackerDocumentActions.editWaveInstrument({
+          instrumentId: instrument.index,
+          changes: {
+            [key]: editValue,
+          },
+        })
+      );
+    };
 
-  const onChangeFieldSelect = <T extends keyof WaveInstrument>(key: T) => (
-    e: { value: string, label: string }
-  ) => {
-    const editValue = e.value;
-    dispatch(
-      trackerDocumentActions.editWaveInstrument({
-        instrumentId: instrument.index,
-        changes: {
-          [key]: editValue,
-        },
-      })
-    );
-  };
+  const onChangeFieldSelect =
+    <T extends keyof WaveInstrument>(key: T) =>
+    (e: { value: string; label: string }) => {
+      const editValue = e.value;
+      dispatch(
+        trackerDocumentActions.editWaveInstrument({
+          instrumentId: instrument.index,
+          changes: {
+            [key]: editValue,
+          },
+        })
+      );
+    };
 
   return (
     <>
@@ -75,13 +77,10 @@ export const InstrumentWaveEditor = ({
         onChange={onChangeField("length")}
       />
 
-      <FormDivider/>
+      <FormDivider />
 
       <FormRow>
-        <FormField
-          name="volume"
-          label={l10n("FIELD_VOLUME")}
-        >
+        <FormField name="volume" label={l10n("FIELD_VOLUME")}>
           <Select
             name="volume"
             value={selectedVolume}
@@ -95,7 +94,6 @@ export const InstrumentWaveEditor = ({
         waveId={instrument.wave_index}
         onChange={onChangeFieldSelect("wave_index")}
       />
-
     </>
   );
-}
+};

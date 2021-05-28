@@ -11,44 +11,46 @@ import { InstrumentLengthForm } from "./InstrumentLengthForm";
 
 interface InstrumentNoiseEditorProps {
   id: string;
-  instrument?: NoiseInstrument
+  instrument?: NoiseInstrument;
 }
 
 export const InstrumentNoiseEditor = ({
-  instrument
+  instrument,
 }: InstrumentNoiseEditorProps) => {
   const dispatch = useDispatch();
 
   if (!instrument) return <></>;
 
-  const onChangeField = <T extends keyof NoiseInstrument>(key: T) => (
-    editValue: NoiseInstrument[T]
-  ) => {
-    dispatch(
-      trackerDocumentActions.editNoiseInstrument({
-        instrumentId: instrument.index,
-        changes: {
-          [key]: editValue,
-        },
-      })
-    );
-  };
+  const onChangeField =
+    <T extends keyof NoiseInstrument>(key: T) =>
+    (editValue: NoiseInstrument[T]) => {
+      dispatch(
+        trackerDocumentActions.editNoiseInstrument({
+          instrumentId: instrument.index,
+          changes: {
+            [key]: editValue,
+          },
+        })
+      );
+    };
 
-  const onChangeFieldInput = <T extends keyof NoiseInstrument>(key: T) => (
-    e:
-      | React.ChangeEvent<HTMLInputElement>
-      | React.ChangeEvent<HTMLTextAreaElement>
-  ) => {
-    const editValue = castEventValue(e);
-    dispatch(
-      trackerDocumentActions.editNoiseInstrument({
-        instrumentId: instrument.index,
-        changes: {
-          [key]: editValue,
-        },
-      })
-    );
-  };
+  const onChangeFieldInput =
+    <T extends keyof NoiseInstrument>(key: T) =>
+    (
+      e:
+        | React.ChangeEvent<HTMLInputElement>
+        | React.ChangeEvent<HTMLTextAreaElement>
+    ) => {
+      const editValue = castEventValue(e);
+      dispatch(
+        trackerDocumentActions.editNoiseInstrument({
+          instrumentId: instrument.index,
+          changes: {
+            [key]: editValue,
+          },
+        })
+      );
+    };
 
   return (
     <>
@@ -56,7 +58,7 @@ export const InstrumentNoiseEditor = ({
         value={instrument.length}
         onChange={onChangeField("length")}
       />
-      
+
       <FormDivider />
 
       <FormRow>
@@ -127,7 +129,6 @@ export const InstrumentNoiseEditor = ({
           }}
         />
       </FormRow>
-
     </>
   );
-}
+};

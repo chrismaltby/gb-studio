@@ -18,35 +18,35 @@ const buildMenu = async (plugins = []) => {
           accelerator: "CommandOrControl+N",
           click: () => {
             notifyListeners("new");
-          }
+          },
         },
         {
           label: l10n("MENU_OPEN"),
           accelerator: "CommandOrControl+O",
           click: () => {
             notifyListeners("open");
-          }
+          },
         },
         {
           label: l10n("MENU_SWITCH_PROJECT"),
           accelerator: "CommandOrControl+P",
           click: () => {
             notifyListeners("project");
-          }
+          },
         },
         {
           label: l10n("MENU_SAVE"),
           accelerator: "CommandOrControl+S",
           click: () => {
             notifyListeners("save");
-          }
+          },
         },
         {
           label: l10n("MENU_SAVE_AS"),
           accelerator: "CommandOrControl+Alt+S",
           click: () => {
             notifyListeners("saveAs");
-          }
+          },
         },
 
         { type: "separator" },
@@ -55,11 +55,11 @@ const buildMenu = async (plugins = []) => {
           accelerator: "CommandOrControl+Shift+R",
           click: () => {
             notifyListeners("reloadAssets");
-          }
+          },
         },
         { type: "separator" },
-        { role: "close" }
-      ]
+        { role: "close" },
+      ],
     },
     {
       label: l10n("MENU_EDIT"),
@@ -69,14 +69,14 @@ const buildMenu = async (plugins = []) => {
           accelerator: "CommandOrControl+Z",
           click: () => {
             notifyListeners("undo");
-          }
+          },
         },
         {
           label: l10n("MENU_REDO"),
           accelerator: "CommandOrControl+Shift+Z",
           click: () => {
             notifyListeners("redo");
-          }
+          },
         },
         { type: "separator" },
         { role: "cut" },
@@ -87,11 +87,11 @@ const buildMenu = async (plugins = []) => {
           accelerator: "Shift+CommandOrControl+V",
           click: () => {
             notifyListeners("pasteInPlace");
-          }
+          },
         },
         { role: "delete" },
         { role: "selectall" },
-      ]
+      ],
     },
     {
       label: l10n("MENU_GAME"),
@@ -101,7 +101,7 @@ const buildMenu = async (plugins = []) => {
           accelerator: "CommandOrControl+B",
           click: () => {
             notifyListeners("run");
-          }
+          },
         },
         {
           label: l10n("MENU_EXPORT_AS"),
@@ -111,7 +111,7 @@ const buildMenu = async (plugins = []) => {
               accelerator: "CommandOrControl+Shift+B",
               click() {
                 notifyListeners("build", "rom");
-              }
+              },
             },
             {
               label: l10n("MENU_EXPORT_WEB"),
@@ -144,7 +144,7 @@ const buildMenu = async (plugins = []) => {
               click() {
                 notifyListeners("exportProjectData");
               },
-            },            
+            },
           ],
         },
       ],
@@ -157,63 +157,63 @@ const buildMenu = async (plugins = []) => {
           accelerator: "CommandOrControl+1",
           click: () => {
             notifyListeners("section", "world");
-          }
+          },
         },
         {
           label: l10n("MENU_SPRITES"),
           accelerator: "CommandOrControl+2",
           click: () => {
             notifyListeners("section", "sprites");
-          }
+          },
         },
         {
           label: l10n("MENU_BACKGROUNDS"),
           accelerator: "CommandOrControl+3",
           click: () => {
             notifyListeners("section", "backgrounds");
-          }
+          },
         },
         {
           label: l10n("MENU_UI_ELEMENTS"),
           accelerator: "CommandOrControl+4",
           click: () => {
             notifyListeners("section", "ui");
-          }
+          },
         },
         {
           label: l10n("MENU_MUSIC"),
           accelerator: "CommandOrControl+5",
           click: () => {
             notifyListeners("section", "music");
-          }
+          },
         },
         {
           label: l10n("MENU_PALETTES"),
           accelerator: "CommandOrControl+6",
           click: () => {
             notifyListeners("section", "palettes");
-          }
+          },
         },
         {
           label: l10n("MENU_DIALOGUE_REVIEW"),
           accelerator: "CommandOrControl+7",
           click: () => {
             notifyListeners("section", "dialogue");
-          }
+          },
         },
         {
           label: l10n("MENU_BUILD_AND_RUN"),
           accelerator: "CommandOrControl+8",
           click: () => {
             notifyListeners("section", "build");
-          }
+          },
         },
         {
           label: l10n("MENU_SETTINGS"),
           accelerator: "CommandOrControl+9",
           click: () => {
             notifyListeners("section", "settings");
-          }
+          },
         },
         { type: "separator" },
         {
@@ -226,7 +226,7 @@ const buildMenu = async (plugins = []) => {
               checked: settings.get("theme") === undefined,
               click() {
                 notifyListeners("updateSetting", "theme", undefined);
-              }
+              },
             },
             { type: "separator" },
             {
@@ -236,7 +236,7 @@ const buildMenu = async (plugins = []) => {
               checked: settings.get("theme") === "light",
               click() {
                 notifyListeners("updateSetting", "theme", "light");
-              }
+              },
             },
             {
               id: "themeDark",
@@ -245,9 +245,9 @@ const buildMenu = async (plugins = []) => {
               checked: settings.get("theme") === "dark",
               click() {
                 notifyListeners("updateSetting", "theme", "dark");
-              }
-            }
-          ]
+              },
+            },
+          ],
         },
         {
           label: l10n("MENU_LANGUAGE"),
@@ -260,11 +260,11 @@ const buildMenu = async (plugins = []) => {
                 checked: settings.get("locale") === undefined,
                 click() {
                   notifyListeners("updateSetting", "locale", undefined);
-                }
+                },
               },
-              { type: "separator" }
+              { type: "separator" },
             ],
-            locales.map(locale => {
+            locales.map((locale) => {
               return {
                 id: `locale-${locale}`,
                 label: locale,
@@ -272,10 +272,10 @@ const buildMenu = async (plugins = []) => {
                 checked: settings.get("locale") === locale,
                 click() {
                   notifyListeners("updateSetting", "locale", locale);
-                }
+                },
               };
             })
-          )
+          ),
         },
         { type: "separator" },
         {
@@ -283,9 +283,9 @@ const buildMenu = async (plugins = []) => {
           label: l10n("MENU_SHOW_COLLISIONS"),
           type: "checkbox",
           checked: true,
-          click: item => {
+          click: (item) => {
             notifyListeners("updateSetting", "showCollisions", item.checked);
-          }
+          },
         },
         {
           label: l10n("MENU_SHOW_CONNECTIONS"),
@@ -297,16 +297,18 @@ const buildMenu = async (plugins = []) => {
               checked: settings.get("showConnections") === "all",
               click() {
                 notifyListeners("updateSetting", "showConnections", "all");
-              }
+              },
             },
             {
               id: "showConnectionsSelected",
               label: l10n("MENU_SHOW_CONNECTIONS_SELECTED"),
               type: "checkbox",
-              checked: settings.get("showConnections") === "selected" || settings.get("showConnections") === true,
+              checked:
+                settings.get("showConnections") === "selected" ||
+                settings.get("showConnections") === true,
               click() {
                 notifyListeners("updateSetting", "showConnections", "selected");
-              }
+              },
             },
             { type: "separator" },
             {
@@ -316,18 +318,18 @@ const buildMenu = async (plugins = []) => {
               checked: settings.get("showConnections") === false,
               click() {
                 notifyListeners("updateSetting", "showConnections", false);
-              }
-            }
-          ]
+              },
+            },
+          ],
         },
         {
           id: "showNavigator",
           label: l10n("MENU_SHOW_NAVIGATOR"),
           checked: settings.get("showNavigator") !== false,
           type: "checkbox",
-          click: item => {
+          click: (item) => {
             notifyListeners("updateSetting", "showNavigator", item.checked);
-          }
+          },
         },
         { type: "separator" },
         {
@@ -335,27 +337,27 @@ const buildMenu = async (plugins = []) => {
           accelerator: "CommandOrControl+0",
           click: () => {
             notifyListeners("zoom", "reset");
-          }
+          },
         },
         {
           label: l10n("MENU_ZOOM_IN"),
           accelerator: "CommandOrControl+=",
           click: () => {
             notifyListeners("zoom", "in");
-          }
+          },
         },
         {
           label: l10n("MENU_ZOOM_OUT"),
           accelerator: "CommandOrControl+-",
           click: () => {
             notifyListeners("zoom", "out");
-          }
-        }
-      ]
+          },
+        },
+      ],
     },
     {
       role: "window",
-      submenu: [{ role: "minimize" }]
+      submenu: [{ role: "minimize" }],
     },
     {
       role: "help",
@@ -364,23 +366,23 @@ const buildMenu = async (plugins = []) => {
           label: l10n("MENU_DOCUMENTATION"),
           click() {
             shell.openExternal("https://www.gbstudio.dev/docs/");
-          }
+          },
         },
         {
           label: l10n("MENU_LEARN_MORE"),
           click() {
             shell.openExternal("https://www.gbstudio.dev");
-          }
-        }
-      ]
-    }
+          },
+        },
+      ],
+    },
   ];
 
   if (plugins && plugins.length > 0) {
     template.splice(3, 0, {
       id: "plugins",
       label: l10n("MENU_PLUGINS"),
-      submenu: plugins
+      submenu: plugins,
     });
   }
 
@@ -392,13 +394,13 @@ const buildMenu = async (plugins = []) => {
         { role: "reload" },
         { role: "forcereload" },
         { role: "toggledevtools" },
-        { 
+        {
           label: l10n("MENU_OPEN_MUSIC_PROCESS_WINDOW"),
           click: () => {
             notifyListeners("openMusic");
-          } 
-        }
-      ]
+          },
+        },
+      ],
     });
   }
 
@@ -410,21 +412,21 @@ const buildMenu = async (plugins = []) => {
           label: l10n("MENU_ABOUT"),
           click() {
             openAbout();
-          }
+          },
         },
         {
           label: l10n("MENU_CHECK_FOR_UPDATES"),
           click: () => {
             notifyListeners("checkUpdates");
-          }
-        },        
+          },
+        },
         { type: "separator" },
         {
           label: l10n("MENU_PREFERENCES"),
           accelerator: "CommandOrControl+,",
           click: () => {
             notifyListeners("preferences");
-          }
+          },
         },
         { type: "separator" },
         { role: "services" },
@@ -433,8 +435,8 @@ const buildMenu = async (plugins = []) => {
         { role: "hideothers" },
         { role: "unhide" },
         { type: "separator" },
-        { role: "quit" }
-      ]
+        { role: "quit" },
+      ],
     });
 
     // Edit menu
@@ -442,7 +444,7 @@ const buildMenu = async (plugins = []) => {
       { type: "separator" },
       {
         label: l10n("MENU_SPEECH"),
-        submenu: [{ role: "startspeaking" }, { role: "stopspeaking" }]
+        submenu: [{ role: "startspeaking" }, { role: "stopspeaking" }],
       }
     );
 
@@ -451,7 +453,7 @@ const buildMenu = async (plugins = []) => {
       { role: "minimize" },
       { role: "zoom" },
       { type: "separator" },
-      { role: "front" }
+      { role: "front" },
     ];
   } else {
     // About menu item for Windows / Linux
@@ -461,13 +463,13 @@ const buildMenu = async (plugins = []) => {
         label: l10n("MENU_ABOUT"),
         click() {
           openAbout();
-        }
+        },
       },
       {
         label: l10n("MENU_CHECK_FOR_UPDATES"),
         click: () => {
           notifyListeners("checkUpdates");
-        }
+        },
       }
     );
 
@@ -479,7 +481,7 @@ const buildMenu = async (plugins = []) => {
         accelerator: "CommandOrControl+,",
         click: () => {
           notifyListeners("preferences");
-        }
+        },
       }
     );
   }
@@ -522,13 +524,13 @@ const on = (event, fn) => {
 };
 
 const off = (event, fn) => {
-  listeners[event] = listeners[event].filter(f => f !== fn);
+  listeners[event] = listeners[event].filter((f) => f !== fn);
 };
 
 const openAbout = () => {
   return openAboutWindow({
     icon_path: `${assetsRoot}/app/icon/app_icon.png`,
-    bug_link_text: `Report bug (git: ${COMMITHASH})`
+    bug_link_text: `Report bug (git: ${COMMITHASH})`,
   });
 };
 
@@ -536,7 +538,7 @@ export default {
   on,
   off,
   ref: () => menu,
-  buildMenu: plugins => {
+  buildMenu: (plugins) => {
     buildMenu(plugins);
-  }
+  },
 };

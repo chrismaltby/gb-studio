@@ -31,11 +31,13 @@ const copyFile = async (src, dest, options = {}) => {
   await new Promise((resolve, reject) => {
     const inputStream = fs.createReadStream(src);
     const outputStream = fs.createWriteStream(dest, { mode });
-    inputStream.once('error', (err) => {
+    inputStream.once("error", (err) => {
       outputStream.close();
       reject(new Error(`Could not write file ${dest}`));
     });
-    inputStream.once('end', () => { resolve(); });
+    inputStream.once("end", () => {
+      resolve();
+    });
     inputStream.pipe(outputStream);
   });
 };

@@ -1,8 +1,8 @@
 export class PatternCell {
-  note: number | null
-  instrument: number | null
-  effectcode: number | null
-  effectparam: number | null
+  note: number | null;
+  instrument: number | null;
+  effectcode: number | null;
+  effectparam: number | null;
 
   constructor() {
     this.note = null;

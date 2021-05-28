@@ -9,7 +9,6 @@ import editorActions from "../../store/features/editor/editorActions";
 import electronActions from "../../store/features/electron/electronActions";
 
 class ImageViewer extends Component {
-
   componentDidMount() {
     window.addEventListener("mousewheel", this.onMouseWheel);
   }
@@ -18,14 +17,14 @@ class ImageViewer extends Component {
     window.removeEventListener("mousewheel", this.onMouseWheel);
   }
 
-  onMouseWheel = e => {
+  onMouseWheel = (e) => {
     const { zoomIn, zoomOut, section } = this.props;
     if (e.ctrlKey) {
       e.preventDefault();
       if (e.wheelDelta > 0) {
-        zoomIn({section, delta:e.deltaY * 0.5});
+        zoomIn({ section, delta: e.deltaY * 0.5 });
       } else {
-        zoomOut({section, delta:e.deltaY * 0.5});
+        zoomOut({ section, delta: e.deltaY * 0.5 });
       }
     }
   };
@@ -34,7 +33,7 @@ class ImageViewer extends Component {
     const { projectRoot, file, folder, openFile } = this.props;
     openFile({
       filename: `${projectRoot}/assets/${folder}/${file.filename}`,
-      type: "image"
+      type: "image",
     });
   };
 
@@ -50,11 +49,9 @@ class ImageViewer extends Component {
             >
               <img
                 alt=""
-                src={`file://${assetFilename(
-                  projectRoot,
-                  folder,
-                  file
-                )}?_v=${file._v || 0}`}
+                src={`file://${assetFilename(projectRoot, folder, file)}?_v=${
+                  file._v || 0
+                }`}
               />
             </div>
           )}
@@ -68,7 +65,10 @@ class ImageViewer extends Component {
           </div>
         )}
         {file && folder === "backgrounds" && (
-          <div className="ImageViewer__Warning" style={{ right: sidebarWidth + 10 }}>
+          <div
+            className="ImageViewer__Warning"
+            style={{ right: sidebarWidth + 10 }}
+          >
             <BackgroundWarnings id={file.id} />
           </div>
         )}
@@ -82,7 +82,7 @@ ImageViewer.propTypes = {
   // folder: PropTypes.string.isRequired,
   file: PropTypes.shape({
     id: PropTypes.string.isRequired,
-    filename: PropTypes.string.isRequired
+    filename: PropTypes.string.isRequired,
   }),
   // section: PropTypes.string.isRequired,
   // zoom: PropTypes.number.isRequired,
@@ -93,7 +93,7 @@ ImageViewer.propTypes = {
 };
 
 ImageViewer.defaultProps = {
-  file: {}
+  file: {},
 };
 
 function mapStateToProps(state, ownProps) {
@@ -106,17 +106,14 @@ function mapStateToProps(state, ownProps) {
     folder,
     section,
     zoom: (zoom || 100) / 100,
-    sidebarWidth
+    sidebarWidth,
   };
 }
 
 const mapDispatchToProps = {
   openFile: electronActions.openFile,
   zoomIn: editorActions.zoomIn,
-  zoomOut: editorActions.zoomOut
+  zoomOut: editorActions.zoomOut,
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ImageViewer);
+export default connect(mapStateToProps, mapDispatchToProps)(ImageViewer);

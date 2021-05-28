@@ -101,7 +101,7 @@ import {
   ENGINE_FIELD_UPDATE_VAR,
   ENGINE_FIELD_UPDATE_VAR_WORD,
   ENGINE_FIELD_STORE,
-  ENGINE_FIELD_STORE_WORD
+  ENGINE_FIELD_STORE_WORD,
 } from "../events/scriptCommands";
 import {
   getActorIndex,
@@ -173,7 +173,12 @@ class ScriptBuilder {
     output.push(moveTypeDec(moveType));
   };
 
-  actorMoveToVariables = (variableX, variableY, useCollisions = false, moveType) => {
+  actorMoveToVariables = (
+    variableX,
+    variableY,
+    useCollisions = false,
+    moveType
+  ) => {
     const output = this.output;
     this.vectorsLoad(variableX, variableY);
     output.push(cmd(ACTOR_MOVE_TO_VALUE));
@@ -278,7 +283,7 @@ class ScriptBuilder {
   actorStopUpdate = () => {
     const output = this.output;
     output.push(cmd(ACTOR_STOP_UPDATE));
-  };  
+  };
 
   actorSetCollisions = (enabled) => {
     const output = this.output;
@@ -290,7 +295,7 @@ class ScriptBuilder {
     const output = this.output;
     output.push(cmd(ACTOR_SET_ANIMATE));
     output.push(enabled ? 1 : 0);
-  }
+  };
 
   actorSetSprite = (spriteSheetId) => {
     const output = this.output;
@@ -318,7 +323,7 @@ class ScriptBuilder {
     const output = this.output;
     output.push(cmd(PLAYER_BOUNCE));
     output.push(heightDec(height));
-  }
+  };
 
   // Sprites
 
@@ -334,18 +339,33 @@ class ScriptBuilder {
 
   // Weapons
 
-  weaponAttack = (spriteSheetId, offset = 10, collisionGroup, collisionMask) => {
+  weaponAttack = (
+    spriteSheetId,
+    offset = 10,
+    collisionGroup,
+    collisionMask
+  ) => {
     const output = this.output;
     const { sprites, scene } = this.options;
     const spriteSceneIndex = getSpriteSceneIndex(spriteSheetId, sprites, scene);
-    
+
     output.push(cmd(WEAPON_ATTACK));
     output.push(spriteSceneIndex);
     output.push(offset);
-    output.push(((collisionMaskDec(collisionMask)) << 4) + collisionGroupDec(collisionGroup));
-  }
+    output.push(
+      (collisionMaskDec(collisionMask) << 4) + collisionGroupDec(collisionGroup)
+    );
+  };
 
-  launchProjectile = (spriteSheetId, x, y, dirVariable, speed, collisionGroup, collisionMask) => {
+  launchProjectile = (
+    spriteSheetId,
+    x,
+    y,
+    dirVariable,
+    speed,
+    collisionGroup,
+    collisionMask
+  ) => {
     const output = this.output;
     const { sprites, variables, scene } = this.options;
     const spriteSceneIndex = getSpriteSceneIndex(spriteSheetId, sprites, scene);
@@ -356,8 +376,10 @@ class ScriptBuilder {
     output.push(hi(dirVariableIndex));
     output.push(lo(dirVariableIndex));
     output.push(moveSpeedDec(speed));
-    output.push(((collisionMaskDec(collisionMask)) << 4) + collisionGroupDec(collisionGroup));
-  }
+    output.push(
+      (collisionMaskDec(collisionMask) << 4) + collisionGroupDec(collisionGroup)
+    );
+  };
 
   // Palette
 
@@ -369,7 +391,7 @@ class ScriptBuilder {
     output.push(paletteMaskDec(mask));
     output.push(hi(paletteIndex));
     output.push(lo(paletteIndex));
-  }
+  };
 
   paletteSetActor = (eventId) => {
     const output = this.output;
@@ -378,7 +400,7 @@ class ScriptBuilder {
     output.push(cmd(PALETTE_SET_ACTOR));
     output.push(hi(paletteIndex));
     output.push(lo(paletteIndex));
-  }
+  };
 
   paletteSetUI = (eventId) => {
     const output = this.output;
@@ -387,7 +409,7 @@ class ScriptBuilder {
     output.push(cmd(PALETTE_SET_UI));
     output.push(hi(paletteIndex));
     output.push(lo(paletteIndex));
-  }  
+  };
 
   // Text
 
@@ -423,7 +445,7 @@ class ScriptBuilder {
     const output = this.output;
     const { strings, variables, event } = this.options;
 
-    const trueText = trimlines(args.trueText || "", 17, 1)  || "Choice A";
+    const trueText = trimlines(args.trueText || "", 17, 1) || "Choice A";
     const falseText = trimlines(args.falseText || "", 17, 1) || "Choice B";
     const choiceText = `${trueText}\n${falseText}`;
 
@@ -452,7 +474,9 @@ class ScriptBuilder {
     const output = this.output;
     const { strings, variables, event } = this.options;
     const menuText = options
-      .map((option, index) => trimlines(option || "", 6, 1) || `Item ${index + 1}`)
+      .map(
+        (option, index) => trimlines(option || "", 6, 1) || `Item ${index + 1}`
+      )
       .join("\n");
     const text = this.replaceVariables(menuText, variables, event);
     let stringIndex = strings.indexOf(text);
@@ -495,7 +519,12 @@ class ScriptBuilder {
     output.push(2);
   };
 
-  textSetAnimSpeed = (speedIn, speedOut, textSpeed = 1, allowFastForward = true) => {
+  textSetAnimSpeed = (
+    speedIn,
+    speedOut,
+    textSpeed = 1,
+    allowFastForward = true
+  ) => {
     const output = this.output;
     output.push(cmd(TEXT_SET_ANIM_SPEED));
     output.push(speedIn);
@@ -546,27 +575,27 @@ class ScriptBuilder {
     const output = this.output;
     const { variables, scene, entity } = this.options;
     const variableIndex = this.getVariableIndex(variable, variables);
-    const actorValue = property && property.replace(/:.*/,"");
-    const propertyValue = property && property.replace(/.*:/,"");
+    const actorValue = property && property.replace(/:.*/, "");
+    const propertyValue = property && property.replace(/.*:/, "");
     const actorIndex =
       actorValue === "$self$"
         ? getActorIndex(entity.id, scene)
-        : getActorIndex(actorValue, scene);    
+        : getActorIndex(actorValue, scene);
     const properties = [
       "xpos",
       "ypos",
       "direction",
       "moveSpeed",
       "animSpeed",
-      "frame"
-    ]
+      "frame",
+    ];
     const propertyIndex = properties.indexOf(propertyValue);
     output.push(cmd(SET_PROPERTY));
     output.push(hi(variableIndex));
     output.push(lo(variableIndex));
     output.push(Math.max(0, propertyIndex));
-    output.push(actorIndex);    
-  }
+    output.push(actorIndex);
+  };
 
   variableCopy = (setVariable, otherVariable) => {
     const output = this.output;
@@ -674,36 +703,36 @@ class ScriptBuilder {
 
   temporaryEntityVariable = (index) => {
     const { entity } = this.options;
-    return  `${entity.id}__${index}`;    
-  }
+    return `${entity.id}__${index}`;
+  };
 
   variableFromUnion = (unionValue, defaultVariable) => {
-    if(unionValue.type === "variable") {
+    if (unionValue.type === "variable") {
       return unionValue.value;
     }
     this.variableSetToUnionValue(defaultVariable, unionValue);
     return defaultVariable;
-  }
+  };
 
   variableSetToUnionValue = (variable, unionValue) => {
-    if(unionValue.type === "number"){
+    if (unionValue.type === "number") {
       this.variableSetToValue(variable, unionValue.value);
       return variable;
     }
-    if(unionValue.type === "direction"){
+    if (unionValue.type === "direction") {
       this.variableSetToValue(variable, dirDec(unionValue.value));
       return variable;
-    }    
-    if(unionValue.type === "property"){
+    }
+    if (unionValue.type === "property") {
       this.variableSetToProperty(variable, unionValue.value);
       return variable;
     }
-    if(unionValue.type === "variable") {
+    if (unionValue.type === "variable") {
       this.variableCopy(variable, unionValue.value);
       return variable;
     }
-    throw new Error(`Union type "${unionValue.type}" unknown.`);    
-  }
+    throw new Error(`Union type "${unionValue.type}" unknown.`);
+  };
 
   // Engine Fields
 
@@ -715,18 +744,18 @@ class ScriptBuilder {
       const cType = engineField.field.cType;
       let newValue = value;
       if (newValue === "" || newValue === undefined) {
-        newValue = engineField.field.defaultValue || 0
-      }      
+        newValue = engineField.field.defaultValue || 0;
+      }
       if (newValue === true) {
         newValue = 1;
       }
       if (newValue === false) {
         newValue = 0;
-      }      
+      }
       if (is16BitCType(cType)) {
         if (newValue < 0) {
           // Convert negative to two's complement
-          newValue = 0xFFFF & ~(-newValue-1);
+          newValue = 0xffff & ~(-newValue - 1);
         }
         output.push(cmd(ENGINE_FIELD_UPDATE_WORD));
         output.push(hi(engineField.offset));
@@ -736,15 +765,15 @@ class ScriptBuilder {
       } else {
         if (newValue < 0) {
           // Convert negative to two's complement
-          newValue = 0xFF & ~(-newValue-1);
-        }        
+          newValue = 0xff & ~(-newValue - 1);
+        }
         output.push(cmd(ENGINE_FIELD_UPDATE));
         output.push(hi(engineField.offset));
         output.push(lo(engineField.offset));
         output.push(newValue);
       }
     }
-  }
+  };
 
   engineFieldSetToVariable = (key, variable) => {
     const output = this.output;
@@ -755,7 +784,7 @@ class ScriptBuilder {
       if (is16BitCType(cType)) {
         const loVariable = nextVariable(variable);
         const hiIndex = this.getVariableIndex(variable, variables);
-        const loIndex = this.getVariableIndex(loVariable, variables); 
+        const loIndex = this.getVariableIndex(loVariable, variables);
         output.push(cmd(ENGINE_FIELD_UPDATE_VAR_WORD));
         output.push(hi(engineField.offset));
         output.push(lo(engineField.offset));
@@ -772,7 +801,7 @@ class ScriptBuilder {
         output.push(lo(variableIndex));
       }
     }
-  }  
+  };
 
   engineFieldStoreInVariable = (key, variable) => {
     const output = this.output;
@@ -800,7 +829,7 @@ class ScriptBuilder {
         output.push(lo(variableIndex));
       }
     }
-  }    
+  };
 
   // Scenes
 
@@ -1026,7 +1055,12 @@ class ScriptBuilder {
     });
   };
 
-  ifActorRelativeToActor = (operation, otherId, truePath = [], falsePath = []) => {
+  ifActorRelativeToActor = (
+    operation,
+    otherId,
+    truePath = [],
+    falsePath = []
+  ) => {
     const output = this.output;
     const { scene, entity } = this.options;
     const otherIndex =
@@ -1039,8 +1073,8 @@ class ScriptBuilder {
     compileConditional(truePath, falsePath, {
       ...this.options,
       output,
-    }); 
-  }
+    });
+  };
 
   ifDataSaved = (truePath = [], falsePath = []) => {
     const output = this.output;
@@ -1106,7 +1140,7 @@ class ScriptBuilder {
 
     output.push(cmd(SET_INPUT_SCRIPT));
     output.push(inputDec(input));
-    output.push(persist ? 1 : 0);    
+    output.push(persist ? 1 : 0);
     output.push(bankPtr.bank);
     output.push(hi(bankPtr.offset));
     output.push(lo(bankPtr.offset));
@@ -1307,8 +1341,7 @@ class ScriptBuilder {
       ...this.options,
       output,
     });
-
-  }
+  };
 
   // Helpers
 
@@ -1354,7 +1387,8 @@ class ScriptBuilder {
 
   replaceVariables = (string, variables, event) => {
     const getVariableSymbol = (index) => `$${String(index).padStart(2, "0")}$`;
-    const getVariableCharSymbol = (index) => `#${String(index).padStart(2, "0")}#`;
+    const getVariableCharSymbol = (index) =>
+      `#${String(index).padStart(2, "0")}#`;
 
     return (
       string
@@ -1372,7 +1406,7 @@ class ScriptBuilder {
         .replace(/\$(T[0-9])\$/g, (match, tempVariable) => {
           const index = this.getVariableIndex(tempVariable, variables);
           return getVariableSymbol(index);
-        })   
+        })
         // Replace Custom Event variables
         .replace(/\$V([0-9])\$/g, (match, customVariable) => {
           const mappedVariable = event.args[`$variable[${customVariable}]$`];
@@ -1393,13 +1427,13 @@ class ScriptBuilder {
         .replace(/#(T[0-9])#/g, (match, tempVariable) => {
           const index = this.getVariableIndex(tempVariable, variables);
           return getVariableCharSymbol(index);
-        })   
+        })
         // Replace Custom Event variable characters
         .replace(/#V([0-9])#/g, (match, customVariable) => {
           const mappedVariable = event.args[`$variable[${customVariable}]$`];
           const index = this.getVariableIndex(mappedVariable, variables);
           return getVariableCharSymbol(index);
-        })        
+        })
     );
   };
 }

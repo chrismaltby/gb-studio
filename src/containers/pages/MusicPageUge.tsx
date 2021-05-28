@@ -12,16 +12,14 @@ import useResizable from "../../components/ui/hooks/use-resizable";
 import useWindowSize from "../../components/ui/hooks/use-window-size";
 import {
   SplitPaneHorizontalDivider,
-  SplitPaneVerticalDivider
+  SplitPaneVerticalDivider,
 } from "../../components/ui/splitpane/SplitPaneDivider";
 import { RootState } from "../../store/configureStore";
 import editorActions from "../../store/features/editor/editorActions";
 import settingsActions from "../../store/features/settings/settingsActions";
 import { NavigatorSongs } from "../../components/music/NavigatorSongs";
 import { SongTracker } from "../../components/music/SongTracker";
-import {
-  musicSelectors,
-} from "../../store/features/entities/entitiesState";
+import { musicSelectors } from "../../store/features/entities/entitiesState";
 import { assetFilename } from "../../lib/helpers/gbstudio";
 import { SongEditor } from "../../components/music/SongEditor";
 import SongEditorToolsPanel from "../../components/music/SongEditorToolsPanel";
@@ -41,7 +39,7 @@ const ContentWrapper = styled.div`
   min-width: 0;
   overflow: hidden;
   background: ${(props) => props.theme.colors.document.background};
-  color: ${(props) => props.theme.colors.text };
+  color: ${(props) => props.theme.colors.text};
   position: relative;
   display: flex;
 `;
@@ -94,8 +92,11 @@ const MusicPageUge = () => {
 
   const [selectedSong, setSelectedSong] = useState<Music | undefined>();
   useEffect(() => {
-    setSelectedSong(songsLookup[selectedSongId] || allSongs.filter((s) => s.type && s.type === "uge")[0])
-  }, [selectedSongId, allSongs, songsLookup])
+    setSelectedSong(
+      songsLookup[selectedSongId] ||
+        allSongs.filter((s) => s.type && s.type === "uge")[0]
+    );
+  }, [selectedSongId, allSongs, songsLookup]);
 
   const sequenceId = useSelector(
     (state: RootState) => state.editor.selectedSequence
@@ -103,28 +104,24 @@ const MusicPageUge = () => {
 
   const projectRoot = useSelector((state: RootState) => state.document.root);
 
-  const song = useSelector((state: RootState) => 
-    state.trackerDocument.present.song
+  const song = useSelector(
+    (state: RootState) => state.trackerDocument.present.song
   );
-  const modified = useSelector((state: RootState) => 
-    state.trackerDocument.present.modified
+  const modified = useSelector(
+    (state: RootState) => state.trackerDocument.present.modified
   );
-  const status = useSelector((state: RootState) => 
-    state.trackerDocument.present.status
+  const status = useSelector(
+    (state: RootState) => state.trackerDocument.present.status
   );
-  const error = useSelector((state: RootState) => 
-    state.trackerDocument.present.error
+  const error = useSelector(
+    (state: RootState) => state.trackerDocument.present.error
   );
   useEffect(() => {
     if (selectedSong && selectedSong.type === "uge") {
-      dispatch({ type: '@@TRACKER_INIT' });
-      const path = `${assetFilename(
-        projectRoot,
-        "music",
-        selectedSong
-      )}`;
+      dispatch({ type: "@@TRACKER_INIT" });
+      const path = `${assetFilename(projectRoot, "music", selectedSong)}`;
       dispatch(loadSongFile(path));
-    } 
+    }
   }, [dispatch, projectRoot, selectedSong]);
 
   const [leftPaneWidth, setLeftPaneSize, startLeftPaneResize] = useResizable({
@@ -207,10 +204,10 @@ const MusicPageUge = () => {
     }, 100)
   );
 
-  useEffect(() => debouncedStoreWidths.current(leftPaneWidth, rightPaneWidth), [
-    leftPaneWidth,
-    rightPaneWidth,
-  ]);
+  useEffect(
+    () => debouncedStoreWidths.current(leftPaneWidth, rightPaneWidth),
+    [leftPaneWidth, rightPaneWidth]
+  );
 
   const recalculateLeftColumn = () => {
     const newWidth = Math.min(
@@ -236,9 +233,7 @@ const MusicPageUge = () => {
     dispatch(settingsActions.setShowNavigator(false));
   };
 
-  const view = useSelector(
-    (state: RootState) => state.tracker.view
-  );
+  const view = useSelector((state: RootState) => state.tracker.view);
 
   const renderGridView = useCallback(() => {
     if (!song) {
@@ -262,7 +257,7 @@ const MusicPageUge = () => {
         />
       );
     }
-  }, [sequenceId, song, view, windowHeight])
+  }, [sequenceId, song, view, windowHeight]);
 
   return (
     <Wrapper>
@@ -295,55 +290,55 @@ const MusicPageUge = () => {
         </div>
       </div>
       <SplitPaneHorizontalDivider onMouseDown={startLeftPaneResize} />
-        {(status === "error") ? 
-          <ContentWrapper style={{height: windowHeight - 38}}>
-            <ContentMessage>
-              <ErrorTitle>Can't load the song</ErrorTitle>
-              <ErrorDescription>{error}</ErrorDescription>              
-            </ContentMessage>
-          </ContentWrapper>
-        : ((song !== undefined) ? 
-          <>
-            <div
-              style={{
-                flex: "1 1 0",
-                minWidth: 0,
-                overflow: "hidden",
-                background: themeContext.colors.document.background,
-                color: themeContext.colors.text,
-                height: windowHeight - 38,
-                position: "relative",
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <div style={{ position: "relative", height: "60px" }}>
-                <SongEditorToolsPanel selectedSong={selectedSong} />
-                <SongEditorRightToolsPanel />
-              </div>
-              <SplitPaneVerticalDivider />
-                {renderGridView()}
+      {status === "error" ? (
+        <ContentWrapper style={{ height: windowHeight - 38 }}>
+          <ContentMessage>
+            <ErrorTitle>Can't load the song</ErrorTitle>
+            <ErrorDescription>{error}</ErrorDescription>
+          </ContentMessage>
+        </ContentWrapper>
+      ) : song !== undefined ? (
+        <>
+          <div
+            style={{
+              flex: "1 1 0",
+              minWidth: 0,
+              overflow: "hidden",
+              background: themeContext.colors.document.background,
+              color: themeContext.colors.text,
+              height: windowHeight - 38,
+              position: "relative",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <div style={{ position: "relative", height: "60px" }}>
+              <SongEditorToolsPanel selectedSong={selectedSong} />
+              <SongEditorRightToolsPanel />
             </div>
-            <SplitPaneHorizontalDivider onMouseDown={onResizeRight} />
-            <div
-              style={{
-                width: rightPaneWidth,
-                background: themeContext.colors.sidebar.background,
-                height: "100%",
-                overflow: "hidden",
-                position: "relative",
-              }}
-            >
-              <SongEditor />
-            </div>
-          </>
-        : 
-          <ContentWrapper style={{height: windowHeight - 38}}>
-            <ContentMessage>
-              { (status === "loading") ? l10n("FIELD_LOADING") : "No song loaded" }            
-            </ContentMessage>
-          </ContentWrapper>
-        )}
+            <SplitPaneVerticalDivider />
+            {renderGridView()}
+          </div>
+          <SplitPaneHorizontalDivider onMouseDown={onResizeRight} />
+          <div
+            style={{
+              width: rightPaneWidth,
+              background: themeContext.colors.sidebar.background,
+              height: "100%",
+              overflow: "hidden",
+              position: "relative",
+            }}
+          >
+            <SongEditor />
+          </div>
+        </>
+      ) : (
+        <ContentWrapper style={{ height: windowHeight - 38 }}>
+          <ContentMessage>
+            {status === "loading" ? l10n("FIELD_LOADING") : "No song loaded"}
+          </ContentMessage>
+        </ContentWrapper>
+      )}
     </Wrapper>
   );
 };

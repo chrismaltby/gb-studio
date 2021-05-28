@@ -15,7 +15,7 @@ class ScriptEditorDropdownButton extends Component {
   constructor() {
     super();
     this.state = {
-      clipboardEvent: null
+      clipboardEvent: null,
     };
   }
 
@@ -160,13 +160,16 @@ ScriptEditorDropdownButton.defaultProps = Object.create(
 
 function mapStateToProps(state, props) {
   return {
-    value: props.value && props.value.length > 0 ? props.value : undefined
+    value: props.value && props.value.length > 0 ? props.value : undefined,
   };
 }
 
 const mapDispatchToProps = {
   copyScript: clipboardActions.copyScript,
-  pasteCustomEvents: clipboardActions.pasteCustomEvents
+  pasteCustomEvents: clipboardActions.pasteCustomEvents,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ScriptEditorDropdownButton);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ScriptEditorDropdownButton);

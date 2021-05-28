@@ -10,20 +10,20 @@ import soundfxActions from "../../store/features/soundfx/soundfxActions";
 const options = [
   {
     label: l10n("FIELD_EFFECT_BEEP"),
-    value: "beep"
+    value: "beep",
   },
   {
     label: l10n("FIELD_EFFECT_TONE"),
-    value: "tone"
+    value: "tone",
   },
   {
     label: l10n("FIELD_EFFECT_CRASH"),
-    value: "crash"
-  }
+    value: "crash",
+  },
 ];
 
 class SoundEffectSelect extends Component {
-  onPlay = type => {
+  onPlay = (type) => {
     const {
       value,
       playSoundFxBeep,
@@ -31,25 +31,25 @@ class SoundEffectSelect extends Component {
       playSoundFxCrash,
       pitch,
       frequency,
-      duration
+      duration,
     } = this.props;
     const playType = type || value;
     if (playType === "beep") {
-      playSoundFxBeep({pitch});
+      playSoundFxBeep({ pitch });
     } else if (playType === "tone") {
-      playSoundFxTone({frequency, duration});
+      playSoundFxTone({ frequency, duration });
     } else if (playType === "crash") {
       playSoundFxCrash();
     }
   };
 
-  renderDropdownIndicator = props => {
+  renderDropdownIndicator = (props) => {
     return (
       <components.DropdownIndicator {...props}>
         <Button
           small
           transparent
-          onMouseDown={e => {
+          onMouseDown={(e) => {
             e.stopPropagation();
             e.preventDefault();
             this.onPlay();
@@ -61,7 +61,7 @@ class SoundEffectSelect extends Component {
     );
   };
 
-  renderOption = props => {
+  renderOption = (props) => {
     const { value, label } = props;
     return (
       <components.Option {...props}>
@@ -70,7 +70,7 @@ class SoundEffectSelect extends Component {
           <Button
             small
             transparent
-            onClick={e => {
+            onClick={(e) => {
               e.stopPropagation();
               e.preventDefault();
               this.onPlay(value);
@@ -92,13 +92,13 @@ class SoundEffectSelect extends Component {
         className="ReactSelectContainer"
         classNamePrefix="ReactSelect"
         options={options}
-        value={options.find(o => o.value === value)}
-        onChange={data => {
+        value={options.find((o) => o.value === value)}
+        onChange={(data) => {
           onChange(data.value);
         }}
         components={{
           DropdownIndicator: this.renderDropdownIndicator,
-          Option: this.renderOption
+          Option: this.renderOption,
         }}
         menuPlacement="auto"
         blurInputOnSelect
@@ -116,7 +116,7 @@ SoundEffectSelect.propTypes = {
   duration: PropTypes.number,
   playSoundFxBeep: PropTypes.func.isRequired,
   playSoundFxTone: PropTypes.func.isRequired,
-  playSoundFxCrash: PropTypes.func.isRequired
+  playSoundFxCrash: PropTypes.func.isRequired,
 };
 
 SoundEffectSelect.defaultProps = {
@@ -124,7 +124,7 @@ SoundEffectSelect.defaultProps = {
   value: "",
   pitch: 4,
   frequency: 200,
-  duration: 0.5
+  duration: 0.5,
 };
 
 function mapStateToProps(state) {
@@ -134,10 +134,7 @@ function mapStateToProps(state) {
 const mapDispatchToProps = {
   playSoundFxBeep: soundfxActions.playSoundFxBeep,
   playSoundFxTone: soundfxActions.playSoundFxTone,
-  playSoundFxCrash: soundfxActions.playSoundFxCrash
+  playSoundFxCrash: soundfxActions.playSoundFxCrash,
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(SoundEffectSelect);
+export default connect(mapStateToProps, mapDispatchToProps)(SoundEffectSelect);

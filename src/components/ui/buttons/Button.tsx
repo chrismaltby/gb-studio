@@ -33,7 +33,7 @@ export const Button = styled.button<ButtonProps>`
     max-width: 100%;
     max-height: 100%;
     fill: ${(props) => props.theme.colors.button.text};
-    opacity: ${(props) => props.disabled ? 0.3 : 1};
+    opacity: ${(props) => (props.disabled ? 0.3 : 1)};
   }
 
   ${(props) => (props.size === "small" ? smallStyles : "")}
@@ -98,16 +98,16 @@ const transparentStyles = css<ButtonProps>`
   border-color: transparent;
 
   ${(props) =>
-    !props.disabled 
+    !props.disabled
       ? css`
-        :hover {
-          background: rgba(128, 128, 128, 0.1);
-        }
-        :active {
-          background: rgba(128, 128, 128, 0.2);
-        }
-      `
-    : ""}
+          :hover {
+            background: rgba(128, 128, 128, 0.1);
+          }
+          :active {
+            background: rgba(128, 128, 128, 0.2);
+          }
+        `
+      : ""}
 
   ${(props) =>
     props.active

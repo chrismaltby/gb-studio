@@ -6,7 +6,7 @@ const fields = [
   {
     key: "vectorX",
     type: "variable",
-    defaultValue: "LAST_VARIABLE"
+    defaultValue: "LAST_VARIABLE",
   },
   {
     key: "operation",
@@ -17,10 +17,10 @@ const fields = [
       ["sub", l10n("FIELD_SUB_VALUE")],
       ["mul", l10n("FIELD_MUL_VARIABLE")],
       ["div", l10n("FIELD_DIV_VARIABLE")],
-      ["mod", l10n("FIELD_MOD_VARIABLE")]
+      ["mod", l10n("FIELD_MOD_VARIABLE")],
     ],
     defaultValue: "set",
-    width: "50%"
+    width: "50%",
   },
   {
     key: "other",
@@ -30,10 +30,10 @@ const fields = [
       ["false", l10n("FIELD_FALSE")],
       ["var", l10n("FIELD_VARIABLE")],
       ["val", l10n("FIELD_VALUE")],
-      ["rnd", l10n("FIELD_RANDOM")]
+      ["rnd", l10n("FIELD_RANDOM")],
     ],
     defaultValue: "true",
-    width: "50%"
+    width: "50%",
   },
   {
     key: "vectorY",
@@ -41,10 +41,10 @@ const fields = [
     conditions: [
       {
         key: "other",
-        eq: "var"
-      }
+        eq: "var",
+      },
     ],
-    defaultValue: "LAST_VARIABLE"
+    defaultValue: "LAST_VARIABLE",
   },
   {
     key: "value",
@@ -52,12 +52,12 @@ const fields = [
     conditions: [
       {
         key: "other",
-        eq: "val"
-      }
+        eq: "val",
+      },
     ],
     min: 0,
     max: 255,
-    defaultValue: "0"
+    defaultValue: "0",
   },
   {
     key: "minValue",
@@ -65,14 +65,14 @@ const fields = [
     conditions: [
       {
         key: "other",
-        eq: "rnd"
-      }
+        eq: "rnd",
+      },
     ],
     min: 0,
     max: 255,
     label: l10n("FIELD_MIN_VALUE"),
     defaultValue: "0",
-    width: "50%"
+    width: "50%",
   },
   {
     key: "maxValue",
@@ -80,14 +80,14 @@ const fields = [
     conditions: [
       {
         key: "other",
-        eq: "rnd"
-      }
+        eq: "rnd",
+      },
     ],
     min: 0,
     max: 255,
     label: l10n("FIELD_MAX_VALUE"),
     defaultValue: "255",
-    width: "50%"
+    width: "50%",
   },
   {
     key: "clamp",
@@ -97,7 +97,7 @@ const fields = [
       {
         key: "operation",
         in: ["add", "sub"],
-      }
+      },
     ],
     defaultValue: false,
   },
@@ -108,7 +108,7 @@ const fields = [
       {
         key: "operation",
         in: ["mul"],
-      }
+      },
     ],
   },
   {
@@ -118,11 +118,11 @@ const fields = [
       {
         key: "operation",
         in: ["add", "sub"],
-      },      
+      },
       {
         key: "clamp",
-        ne: true
-      }
+        ne: true,
+      },
     ],
   },
 ];
@@ -141,12 +141,12 @@ const compile = (input, helpers) => {
   const min = input.minValue || 0;
   const range = Math.min(254, Math.max(0, (input.maxValue || 0) - min)) + 1;
   const operationLookup = {
-    "add": ".ADD",
-    "sub": ".SUB",
-    "mul": ".MUL",
-    "div": ".DIV",
-    "mod": ".MOD",
-  }
+    add: ".ADD",
+    sub: ".SUB",
+    mul: ".MUL",
+    div: ".DIV",
+    mod: ".MOD",
+  };
 
   if (input.other === "true") {
     value = 1;
@@ -165,17 +165,23 @@ const compile = (input, helpers) => {
   } else {
     const operation = operationLookup[input.operation];
     if (input.other === "var") {
-      variablesOperation(input.vectorX, operation, input.vectorY, input.clamp)
+      variablesOperation(input.vectorX, operation, input.vectorY, input.clamp);
     } else if (input.other === "rnd") {
-      variableRandomOperation(input.vectorX, operation, min, range, input.clamp)
+      variableRandomOperation(
+        input.vectorX,
+        operation,
+        min,
+        range,
+        input.clamp
+      );
     } else if (value !== 0) {
-      variableValueOperation(input.vectorX, operation, value, input.clamp)
+      variableValueOperation(input.vectorX, operation, value, input.clamp);
     }
-  } 
+  }
 };
 
 module.exports = {
   id,
   fields,
-  compile
+  compile,
 };

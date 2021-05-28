@@ -11,7 +11,7 @@ class GlobalError extends Component {
   constructor() {
     super();
     this.state = {
-      viewTrace: false
+      viewTrace: false,
     };
   }
 
@@ -39,7 +39,7 @@ class GlobalError extends Component {
               </p>
             )}
             <div className="GlobalError__StackTrace">
-              {stackTrace.split("\n").map(line => (
+              {stackTrace.split("\n").map((line) => (
                 <div>{line}</div>
               ))}
             </div>
@@ -82,7 +82,7 @@ class GlobalError extends Component {
 
 GlobalError.propTypes = {
   error: ErrorShape.isRequired,
-  openHelp: PropTypes.func.isRequired
+  openHelp: PropTypes.func.isRequired,
 };
 
 function mapStateToProps(state, props) {
@@ -90,10 +90,7 @@ function mapStateToProps(state, props) {
 }
 
 const mapDispatchToProps = {
-  openHelp: electronActions.openHelp
+  openHelp: electronActions.openHelp,
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(GlobalError);
+export default connect(mapStateToProps, mapDispatchToProps)(GlobalError);

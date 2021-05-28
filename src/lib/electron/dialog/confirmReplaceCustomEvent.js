@@ -12,7 +12,7 @@ export default (name) => {
     cancelId: 1,
     title: l10n("DIALOG_REPLACE_CUSTOM_EVENT", { name }),
     message: l10n("DIALOG_REPLACE_CUSTOM_EVENT", { name }),
-    detail: l10n("DIALOG_REPLACE_CUSTOM_EVENT_DESCRIPTION")
+    detail: l10n("DIALOG_REPLACE_CUSTOM_EVENT_DESCRIPTION"),
   };
 
   return dialog.showMessageBoxSync(dialogOptions);

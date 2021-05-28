@@ -259,7 +259,7 @@ const createMusic = async (open?: boolean) => {
   if (!musicWindow) {
     // Create the browser window.
     musicWindow = new BrowserWindow({
-      show:false,
+      show: false,
       width: 330,
       height: 330,
       webPreferences: {
@@ -274,10 +274,11 @@ const createMusic = async (open?: boolean) => {
 
   // Only show the window in development environment
   // otherwise keep it as a background process
-  if (open 
+  if (
+    open
     // Only show the window in development environment
     // otherwise keep it as a background process
-    // || isDevMode || process.env.NODE_ENV === "development" 
+    // || isDevMode || process.env.NODE_ENV === "development"
   ) {
     musicWindow.show();
   }
@@ -288,8 +289,7 @@ const createMusic = async (open?: boolean) => {
   musicWindow.on("closed", () => {
     musicWindow = null;
   });
-
-}
+};
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -534,7 +534,7 @@ menu.on("openMusic", () => {
     musicWindow.show();
   } else {
     dialog.showErrorBox(
-      "No music process running", 
+      "No music process running",
       "Have you selected a song?"
     );
   }

@@ -23,7 +23,7 @@ import {
   COLLISION_LEFT,
   COLLISION_RIGHT,
   COLLISION_ALL,
-  TILE_PROP_LADDER
+  TILE_PROP_LADDER,
 } from "../../consts";
 import PaletteBlock from "../library/PaletteBlock";
 import { PaletteShape } from "../../store/stateShape";
@@ -32,7 +32,11 @@ import Button from "../library/Button";
 import { FormField } from "../library/Forms";
 import { getCachedObject } from "../../lib/helpers/cache";
 import editorActions from "../../store/features/editor/editorActions";
-import { backgroundSelectors, paletteSelectors, sceneSelectors } from "../../store/features/entities/entitiesState";
+import {
+  backgroundSelectors,
+  paletteSelectors,
+  sceneSelectors,
+} from "../../store/features/entities/entitiesState";
 import { getSettings } from "../../store/features/settings/settingsState";
 import settingsActions from "../../store/features/settings/settingsActions";
 import navigationActions from "../../store/features/navigation/navigationActions";
@@ -41,33 +45,45 @@ import { PaletteSelect } from "../forms/PaletteSelect";
 
 const paletteIndexes = [0, 1, 2, 3, 4, 5, 6, 7];
 const validTools = [TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER];
-const tileTypes = [{
-  key: "solid",
-  name: "Solid",
-  flag: COLLISION_ALL,
-},{
-  key: "top",
-  name: "Collision Top",
-  flag: COLLISION_TOP,
-},{
-  key: "bottom", 
-  name: "Collision Bottom",
-  flag: COLLISION_BOTTOM,
-},{
-  key: "left",
-  name: "Collision Left",
-  flag: COLLISION_LEFT,
-},{
-  key: "right",
-  name: "Collision Right",
-  flag: COLLISION_RIGHT,
-},{
-  key: "ladder",
-  name: "Ladder",
-  flag: TILE_PROP_LADDER
-}];
+const tileTypes = [
+  {
+    key: "solid",
+    name: "Solid",
+    flag: COLLISION_ALL,
+  },
+  {
+    key: "top",
+    name: "Collision Top",
+    flag: COLLISION_TOP,
+  },
+  {
+    key: "bottom",
+    name: "Collision Bottom",
+    flag: COLLISION_BOTTOM,
+  },
+  {
+    key: "left",
+    name: "Collision Left",
+    flag: COLLISION_LEFT,
+  },
+  {
+    key: "right",
+    name: "Collision Right",
+    flag: COLLISION_RIGHT,
+  },
+  {
+    key: "ladder",
+    name: "Ladder",
+    flag: TILE_PROP_LADDER,
+  },
+];
 
-const collisionDirectionFlags = [COLLISION_TOP, COLLISION_BOTTOM, COLLISION_LEFT, COLLISION_RIGHT];
+const collisionDirectionFlags = [
+  COLLISION_TOP,
+  COLLISION_BOTTOM,
+  COLLISION_LEFT,
+  COLLISION_RIGHT,
+];
 
 class BrushToolbar extends Component {
   constructor(props) {
@@ -107,7 +123,7 @@ class BrushToolbar extends Component {
     } else if (e.code === "Digit6") {
       this.setSelectedPalette(5)(e);
     } else if (e.code === "Digit7") {
-      this.setSelectedPalette(6)(e);      
+      this.setSelectedPalette(6)(e);
     } else if (e.code === "Digit8") {
       this.setBrush(BRUSH_8PX)(e);
     } else if (e.code === "Digit9") {
@@ -128,25 +144,41 @@ class BrushToolbar extends Component {
   setBrush = (brush) => (e) => {
     e.stopPropagation();
     const { setBrush } = this.props;
-    setBrush({brush});
+    setBrush({ brush });
   };
 
   setSelectedPalette = (index) => (e) => {
-    const { setSelectedPalette, setSelectedTileType, showPalettes, showTileTypes } = this.props;
-    if(showPalettes){
-      setSelectedPalette({paletteIndex:index});
+    const {
+      setSelectedPalette,
+      setSelectedTileType,
+      showPalettes,
+      showTileTypes,
+    } = this.props;
+    if (showPalettes) {
+      setSelectedPalette({ paletteIndex: index });
     }
     if (showTileTypes && tileTypes[index]) {
       const { selectedTileType } = this.props;
 
-      if (e.shiftKey && collisionDirectionFlags.includes(tileTypes[index].flag)) {
-        if (selectedTileType !== tileTypes[index].flag && selectedTileType & tileTypes[index].flag) {
-          setSelectedTileType({tileType:selectedTileType & COLLISION_ALL & ~tileTypes[index].flag});
+      if (
+        e.shiftKey &&
+        collisionDirectionFlags.includes(tileTypes[index].flag)
+      ) {
+        if (
+          selectedTileType !== tileTypes[index].flag &&
+          selectedTileType & tileTypes[index].flag
+        ) {
+          setSelectedTileType({
+            tileType: selectedTileType & COLLISION_ALL & ~tileTypes[index].flag,
+          });
         } else {
-          setSelectedTileType({tileType:selectedTileType & COLLISION_ALL | tileTypes[index].flag});
+          setSelectedTileType({
+            tileType:
+              (selectedTileType & COLLISION_ALL) | tileTypes[index].flag,
+          });
         }
       } else {
-        setSelectedTileType({tileType:tileTypes[index].flag});
+        setSelectedTileType({ tileType: tileTypes[index].flag });
       }
     }
   };
@@ -176,9 +208,12 @@ class BrushToolbar extends Component {
     if (sceneId) {
       const newIds = [].concat(sceneBackgroundPaletteIds);
       newIds[modalColorIndex] = newPalette;
-      editScene({sceneId, changes:{
-        paletteIds: newIds,
-      }});
+      editScene({
+        sceneId,
+        changes: {
+          paletteIds: newIds,
+        },
+      });
     } else {
       const newIds = [].concat(defaultBackgroundPaletteIds);
       newIds[modalColorIndex] = newPalette;
@@ -195,7 +230,7 @@ class BrushToolbar extends Component {
 
   toggleShowLayers = (e) => {
     const { setShowLayers, showLayers } = this.props;
-    setShowLayers({showLayers: !showLayers});
+    setShowLayers({ showLayers: !showLayers });
   };
 
   render() {
@@ -270,7 +305,7 @@ class BrushToolbar extends Component {
               </div>
             ))}
           {showPalettes && <div className="BrushToolbar__Divider" />}
-          {showTileTypes &&
+          {showTileTypes && (
             <>
               {tileTypes.slice(0, 5).map((tileType, tileTypeIndex) => (
                 <div
@@ -278,13 +313,19 @@ class BrushToolbar extends Component {
                   onClick={this.setSelectedPalette(tileTypeIndex)}
                   className={cx("BrushToolbar__Item", {
                     "BrushToolbar__Item--Selected":
-                    tileType.flag === COLLISION_ALL
-                      ? selectedTileType === tileType.flag
-                      : selectedTileType !== COLLISION_ALL && selectedTileType & tileType.flag,
+                      tileType.flag === COLLISION_ALL
+                        ? selectedTileType === tileType.flag
+                        : selectedTileType !== COLLISION_ALL &&
+                          selectedTileType & tileType.flag,
                   })}
                   title={`${tileType.name} (${tileTypeIndex + 1})`}
                 >
-                  <div className={cx("BrushToolbar__Tile", `BrushToolbar__Tile--${tileType.key}`)} />
+                  <div
+                    className={cx(
+                      "BrushToolbar__Tile",
+                      `BrushToolbar__Tile--${tileType.key}`
+                    )}
+                  />
                 </div>
               ))}
               <div className="BrushToolbar__Divider" />
@@ -294,18 +335,24 @@ class BrushToolbar extends Component {
                   onClick={this.setSelectedPalette(tileTypeIndex + 5)}
                   className={cx("BrushToolbar__Item", {
                     "BrushToolbar__Item--Selected":
-                    tileType.flag === COLLISION_ALL
-                      ? selectedTileType === tileType.flag
-                      : selectedTileType !== COLLISION_ALL && selectedTileType & tileType.flag,
+                      tileType.flag === COLLISION_ALL
+                        ? selectedTileType === tileType.flag
+                        : selectedTileType !== COLLISION_ALL &&
+                          selectedTileType & tileType.flag,
                   })}
                   title={`${tileType.name} (${tileTypeIndex + 5 + 1})`}
                 >
-                  <div className={cx("BrushToolbar__Tile", `BrushToolbar__Tile--${tileType.key}`)} />
+                  <div
+                    className={cx(
+                      "BrushToolbar__Tile",
+                      `BrushToolbar__Tile--${tileType.key}`
+                    )}
+                  />
                 </div>
-              ))}   
+              ))}
               <div className="BrushToolbar__Divider" />
             </>
-          }  
+          )}
           <div
             onClick={this.toggleShowLayers}
             className={cx("BrushToolbar__Item", {
@@ -329,7 +376,9 @@ class BrushToolbar extends Component {
             >
               <FormField>
                 <PaletteSelect
-                  value={(scenePaletteIds && scenePaletteIds[modalColorIndex]) || ""}
+                  value={
+                    (scenePaletteIds && scenePaletteIds[modalColorIndex]) || ""
+                  }
                   optional
                   optionalDefaultPaletteId={
                     defaultBackgroundPaletteIds[modalColorIndex] || ""
@@ -378,20 +427,23 @@ BrushToolbar.propTypes = {
   setBrush: PropTypes.func.isRequired,
   setShowLayers: PropTypes.func.isRequired,
   palettes: PropTypes.arrayOf(PaletteShape).isRequired,
-  defaultBackgroundPaletteIds: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
-  sceneBackgroundPaletteIds: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
+  defaultBackgroundPaletteIds: PropTypes.arrayOf(PropTypes.string.isRequired)
+    .isRequired,
+  sceneBackgroundPaletteIds: PropTypes.arrayOf(PropTypes.string.isRequired)
+    .isRequired,
   setSection: PropTypes.func.isRequired,
   setNavigationId: PropTypes.func.isRequired,
   editProjectSettings: PropTypes.func.isRequired,
-  editScene: PropTypes.func.isRequired
+  editScene: PropTypes.func.isRequired,
 };
 
 BrushToolbar.defaultProps = {
-  sceneId: null
+  sceneId: null,
 };
 
 function mapStateToProps(state) {
-  const { selectedPalette, selectedTileType, selectedBrush, showLayers } = state.editor;
+  const { selectedPalette, selectedTileType, selectedBrush, showLayers } =
+    state.editor;
   const selectedTool = state.editor.tool;
   const visible = validTools.includes(selectedTool);
   const showPalettes = selectedTool === TOOL_COLORS;
@@ -407,7 +459,10 @@ function mapStateToProps(state) {
   const scene = sceneSelectors.selectById(state, state.editor.hover.sceneId);
 
   if (scene) {
-    const background = backgroundSelectors.selectById(state, scene.backgroundId);
+    const background = backgroundSelectors.selectById(
+      state,
+      scene.backgroundId
+    );
     const { x, y } = state.editor.hover;
     if (background) {
       highlightPalette = Array.isArray(scene.tileColors)
@@ -422,16 +477,19 @@ function mapStateToProps(state) {
   const sceneBackgroundPaletteIds =
     (scenesLookup[sceneId] && scenesLookup[sceneId].paletteIds) || [];
 
-  const scenePaletteIds = scenesLookup[sceneId] && scenesLookup[sceneId].paletteIds;
+  const scenePaletteIds =
+    scenesLookup[sceneId] && scenesLookup[sceneId].paletteIds;
 
   const getPalette = (paletteIndex) => {
-    if(sceneBackgroundPaletteIds[paletteIndex] === "dmg") {
+    if (sceneBackgroundPaletteIds[paletteIndex] === "dmg") {
       return DMG_PALETTE;
     }
-    return palettesLookup[sceneBackgroundPaletteIds[paletteIndex]]
-      || palettesLookup[defaultBackgroundPaletteIds[paletteIndex]]
-      || DMG_PALETTE;
-  }
+    return (
+      palettesLookup[sceneBackgroundPaletteIds[paletteIndex]] ||
+      palettesLookup[defaultBackgroundPaletteIds[paletteIndex]] ||
+      DMG_PALETTE
+    );
+  };
 
   const palettes = getCachedObject([
     getPalette(0),
@@ -443,7 +501,7 @@ function mapStateToProps(state) {
     getPalette(6),
     getPalette(7),
   ]);
-  
+
   return {
     selectedPalette,
     selectedTileType,

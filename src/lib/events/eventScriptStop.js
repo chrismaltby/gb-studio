@@ -4,8 +4,8 @@ const id = "EVENT_STOP";
 
 const fields = [
   {
-    label: l10n("FIELD_STOP_SCRIPT")
-  }
+    label: l10n("FIELD_STOP_SCRIPT"),
+  },
 ];
 
 const compile = (input, helpers) => {
@@ -16,5 +16,5 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   fields,
-  compile
+  compile,
 };

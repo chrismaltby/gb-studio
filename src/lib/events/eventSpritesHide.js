@@ -4,8 +4,8 @@ const id = "EVENT_HIDE_SPRITES";
 
 const fields = [
   {
-    label: l10n("FIELD_HIDE_SPRITES")
-  }
+    label: l10n("FIELD_HIDE_SPRITES"),
+  },
 ];
 
 const compile = (input, helpers) => {
@@ -16,5 +16,5 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   fields,
-  compile
+  compile,
 };

@@ -15,7 +15,7 @@ class FilesSidebar extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      dragging: false
+      dragging: false,
     };
     this.dragHandler = React.createRef();
   }
@@ -32,7 +32,7 @@ class FilesSidebar extends Component {
 
   onMouseDown = () => {
     this.setState({
-      dragging: true
+      dragging: true,
     });
   };
 
@@ -40,12 +40,12 @@ class FilesSidebar extends Component {
     const { dragging } = this.state;
     if (dragging) {
       this.setState({
-        dragging: false
+        dragging: false,
       });
     }
   };
 
-  onMouseMove = event => {
+  onMouseMove = (event) => {
     const { resizeFilesSidebar } = this.props;
     const { dragging } = this.state;
     if (dragging) {
@@ -53,19 +53,19 @@ class FilesSidebar extends Component {
     }
   };
 
-  onSearch = e => {
+  onSearch = (e) => {
     const { onSearch } = this.props;
     onSearch(e.currentTarget.value);
   };
 
-  renderFile = file => {
+  renderFile = (file) => {
     const { selectedFile, setNavigationId } = this.props;
     return (
       <div
         key={file.id}
         onClick={() => setNavigationId(file.id)}
         className={cx("FilesSidebar__ListItem", {
-          "FilesSidebar__ListItem--Active": file.id === selectedFile.id
+          "FilesSidebar__ListItem--Active": file.id === selectedFile.id,
         })}
       >
         {file.name}
@@ -102,7 +102,7 @@ class FilesSidebar extends Component {
           </div>
           {Object.keys(groupedFiles)
             .sort()
-            .map(plugin => {
+            .map((plugin) => {
               if (!plugin) {
                 return groupedFiles[plugin].map(this.renderFile);
               }
@@ -127,39 +127,36 @@ FilesSidebar.propTypes = {
   files: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired
+      name: PropTypes.string.isRequired,
     })
   ).isRequired,
   selectedFile: PropTypes.shape({
     id: PropTypes.string,
-    name: PropTypes.string
+    name: PropTypes.string,
   }),
   onAdd: PropTypes.func,
-  query: PropTypes.string.isRequired
+  query: PropTypes.string.isRequired,
 };
 
 FilesSidebar.defaultProps = {
   width: 300,
   selectedFile: {
     id: "",
-    name: ""
+    name: "",
   },
-  onAdd: undefined
+  onAdd: undefined,
 };
 
 function mapStateToProps(state) {
   const { filesSidebarWidth: width } = state.editor;
   return {
-    width
+    width,
   };
 }
 
 const mapDispatchToProps = {
   setNavigationId: navigationActions.setNavigationId,
-  resizeFilesSidebar: editorActions.resizeFilesSidebar
+  resizeFilesSidebar: editorActions.resizeFilesSidebar,
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(FilesSidebar);
+export default connect(mapStateToProps, mapDispatchToProps)(FilesSidebar);

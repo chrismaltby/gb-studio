@@ -11,6 +11,6 @@ export default (filename, projectRoot, assetFolder) => {
   return {
     relativePath,
     plugin,
-    file
+    file,
   };
 };

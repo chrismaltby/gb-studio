@@ -11,7 +11,7 @@ export default () => {
     defaultId: 0,
     title: l10n("DIALOG_LANGUAGE_CHANGES_NEED_RESTART"),
     message: l10n("DIALOG_LANGUAGE_CHANGES_NEED_RESTART"),
-    detail: l10n("DIALOG_LANGUAGE_SAVE_AND_RESTART")
+    detail: l10n("DIALOG_LANGUAGE_SAVE_AND_RESTART"),
   };
 
   dialog.showMessageBoxSync(dialogOptions);

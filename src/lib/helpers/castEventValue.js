@@ -1,4 +1,4 @@
-export default event => {
+export default (event) => {
   const el = event && event.currentTarget;
   let value = el ? el.value : event;
   if (value !== undefined && el && el.type === "number") {

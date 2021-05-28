@@ -73,14 +73,8 @@ class PaletteSidebar extends Component {
   };
 
   render() {
-    const {
-      onAdd,
-      width,
-      palettes,
-      selectedPalette,
-      setNavigationId,
-      query,
-    } = this.props;
+    const { onAdd, width, palettes, selectedPalette, setNavigationId, query } =
+      this.props;
 
     const defaultPalettes = palettes.filter((p) => p.defaultColors);
     const customPalettes = palettes.filter((p) => !p.defaultColors);
@@ -119,7 +113,9 @@ class PaletteSidebar extends Component {
 
           {defaultPalettes.length > 0 && (
             <div className="PaletteSidebar__Group">
-              <div className="PaletteSidebar__GroupHeading">{l10n("FIELD_DEFAULT")}</div>
+              <div className="PaletteSidebar__GroupHeading">
+                {l10n("FIELD_DEFAULT")}
+              </div>
 
               {defaultPalettes.map(
                 (palette) =>
@@ -146,7 +142,9 @@ class PaletteSidebar extends Component {
 
           {customPalettes.length > 0 && (
             <div className="PaletteSidebar__Group">
-              <div className="PaletteSidebar__GroupHeading">{l10n("FIELD_CUSTOM")}</div>
+              <div className="PaletteSidebar__GroupHeading">
+                {l10n("FIELD_CUSTOM")}
+              </div>
 
               {customPalettes.map(
                 (palette) =>

@@ -21,41 +21,40 @@ interface EngineData {
   fields?: EngineFieldSchema[];
 }
 
-const engineMiddleware: Middleware<{}, RootState> = (store) => (next) => async (
-  action
-) => {
-  if (actions.scanEngine.match(action)) {
-    const defaultEngineJsonPath = Path.join(engineRoot, "gb", "engine.json");
-    const localEngineJsonPath = Path.join(
-      Path.dirname(action.payload),
-      "assets",
-      "engine",
-      "engine.json"
-    );
+const engineMiddleware: Middleware<{}, RootState> =
+  (store) => (next) => async (action) => {
+    if (actions.scanEngine.match(action)) {
+      const defaultEngineJsonPath = Path.join(engineRoot, "gb", "engine.json");
+      const localEngineJsonPath = Path.join(
+        Path.dirname(action.payload),
+        "assets",
+        "engine",
+        "engine.json"
+      );
 
-    let defaultEngine: EngineData = {};
-    let localEngine: EngineData = {};
+      let defaultEngine: EngineData = {};
+      let localEngine: EngineData = {};
 
-    try {
-      localEngine = await readJSON(localEngineJsonPath);
-    } catch (e) {
-      defaultEngine = await readJSON(defaultEngineJsonPath);
+      try {
+        localEngine = await readJSON(localEngineJsonPath);
+      } catch (e) {
+        defaultEngine = await readJSON(defaultEngineJsonPath);
+      }
+
+      let fields: EngineFieldSchema[] = [];
+
+      if (localEngine && localEngine.fields) {
+        fields = localEngine.fields;
+      } else if (defaultEngine && defaultEngine.fields) {
+        fields = defaultEngine.fields;
+      }
+
+      updateEngineFieldEvents(fields);
+
+      store.dispatch(actions.setEngineFields(fields));
     }
-
-    let fields: EngineFieldSchema[] = [];
-
-    if (localEngine && localEngine.fields) {
-      fields = localEngine.fields;
-    } else if (defaultEngine && defaultEngine.fields) {
-      fields = defaultEngine.fields;
-    }
-
-    updateEngineFieldEvents(fields);
-
-    store.dispatch(actions.setEngineFields(fields));
-  }
-  next(action);
-};
+    next(action);
+  };
 
 const updateEngineFieldEvents = (engineFields: EngineFieldSchema[]) => {
   const fieldUpdateHandler = events[EVENT_ENGINE_FIELD_SET];

@@ -6,7 +6,7 @@ export const C_DATA_INVALID = "C_DATA_INVALID";
 
 const validCIdentifier = /[a-zA-Z_][a-zA-Z0-9]*/;
 
-export const cIntArrayExternDeclaration = name => {
+export const cIntArrayExternDeclaration = (name) => {
   if (!name || !name.match(validCIdentifier)) {
     throw C_NAME_INVALID;
   }
@@ -34,10 +34,10 @@ export const objectIntArray = (data) => {
     throw C_DATA_EMPTY;
   }
   let output = "";
-  for(let i=0; i<data.length; i+=14) {
+  for (let i = 0; i < data.length; i += 14) {
     output += "T " + decHexVal(i) + " " + decHexVal(i >> 8);
-    for(let j=0; j<14; j++) {
-      if(data[i + j] !== undefined) {
+    for (let j = 0; j < 14; j++) {
+      if (data[i + j] !== undefined) {
         output += " " + decHexVal(data[i + j]);
       }
     }

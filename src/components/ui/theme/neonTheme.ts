@@ -93,9 +93,9 @@ const darkheme: ThemeInterface = {
       effectCode: "#e76f51",
       effectParam: "#f4a261",
       rollCell: {
-        border: "#b7babb44"
-      }
-    }
+        border: "#b7babb44",
+      },
+    },
   },
   borderRadius: 4,
 };

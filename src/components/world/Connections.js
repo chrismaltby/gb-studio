@@ -3,13 +3,17 @@ import PropTypes from "prop-types";
 import cx from "classnames";
 import { connect } from "react-redux";
 import { EVENT_SWITCH_SCENE } from "../../lib/compiler/eventTypes";
-import { walkActorEvents, walkTriggerEvents, walkSceneSpecificEvents } from "../../lib/helpers/eventSystem";
 import {
-  SceneShape,
-  ActorShape,
-  TriggerShape,
-} from "../../store/stateShape";
-import { sceneSelectors, actorSelectors, triggerSelectors } from "../../store/features/entities/entitiesState";
+  walkActorEvents,
+  walkTriggerEvents,
+  walkSceneSpecificEvents,
+} from "../../lib/helpers/eventSystem";
+import { SceneShape, ActorShape, TriggerShape } from "../../store/stateShape";
+import {
+  sceneSelectors,
+  actorSelectors,
+  triggerSelectors,
+} from "../../store/features/entities/entitiesState";
 import editorActions from "../../store/features/editor/editorActions";
 import { MIDDLE_MOUSE } from "../../consts";
 
@@ -89,11 +93,11 @@ class Connections extends Component {
 
   onDragDestinationStart = (eventId, sceneId, selectionType, id) => (e) => {
     const { editable } = this.props;
-    if (editable && e.nativeEvent.which !== MIDDLE_MOUSE) {    
+    if (editable && e.nativeEvent.which !== MIDDLE_MOUSE) {
       e.stopPropagation();
       e.preventDefault();
       const { dragDestinationStart } = this.props;
-      dragDestinationStart({eventId, sceneId, selectionType, entityId: id});
+      dragDestinationStart({ eventId, sceneId, selectionType, entityId: id });
       window.addEventListener("mouseup", this.onDragDestinationStop);
     }
   };
@@ -116,8 +120,20 @@ class Connections extends Component {
     </g>
   );
 
-  renderMarker = ({ x, y, direction, onMouseDown, eventId, sceneId, className }) => (
-    <g key={`m_${sceneId}_${eventId}`} className={className} onMouseDown={onMouseDown}>
+  renderMarker = ({
+    x,
+    y,
+    direction,
+    onMouseDown,
+    eventId,
+    sceneId,
+    className,
+  }) => (
+    <g
+      key={`m_${sceneId}_${eventId}`}
+      className={className}
+      onMouseDown={onMouseDown}
+    >
       <rect x={x - 4} y={y - 4} rx={4} ry={4} width={16} height={8} />
       {direction === "up" && (
         <polygon
@@ -236,7 +252,9 @@ class Connections extends Component {
       });
 
       // Scene Event Transitions
-      const sceneTransitionEvents = scriptMapTransition(walkSceneSpecificEvents)(scene);
+      const sceneTransitionEvents = scriptMapTransition(
+        walkSceneSpecificEvents
+      )(scene);
       sceneTransitionEvents.forEach((event) => {
         if (
           showConnections === "all" ||
@@ -340,13 +358,8 @@ function mapStateToProps(state) {
   const actorsLookup = actorSelectors.selectEntities(state);
   const triggersLookup = triggerSelectors.selectEntities(state);
 
-  const {
-    showConnections,
-    startSceneId,
-    startX,
-    startY,
-    startDirection,
-  } = state.project.present.settings;
+  const { showConnections, startSceneId, startX, startY, startDirection } =
+    state.project.present.settings;
   const { scene: selectedSceneId } = state.editor;
   const startScene = scenesLookup[startSceneId] || scenes[0];
   const { dragging } = state.editor;

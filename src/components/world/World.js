@@ -6,9 +6,18 @@ import throttle from "lodash/throttle";
 import Scene from "./Scene";
 import WorldHelp from "./WorldHelp";
 import Connections from "./Connections";
-import { MIDDLE_MOUSE, TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER } from "../../consts";
+import {
+  MIDDLE_MOUSE,
+  TOOL_COLORS,
+  TOOL_COLLISIONS,
+  TOOL_ERASER,
+} from "../../consts";
 import { SceneShape, VariableShape } from "../../store/stateShape";
-import { sceneSelectors, getMaxSceneRight, getMaxSceneBottom } from "../../store/features/entities/entitiesState";
+import {
+  sceneSelectors,
+  getMaxSceneRight,
+  getMaxSceneBottom,
+} from "../../store/features/entities/entitiesState";
 import editorActions from "../../store/features/editor/editorActions";
 import clipboardActions from "../../store/features/clipboard/clipboardActions";
 import entitiesActions from "../../store/features/entities/entitiesActions";
@@ -20,13 +29,13 @@ class World extends Component {
       hover: false,
       hoverX: 0,
       hoverY: 0,
-      dragMode: false
+      dragMode: false,
     };
     this.worldDragging = false;
     this.scrollRef = React.createRef();
     this.worldRef = React.createRef();
     this.scrollContentsRef = React.createRef();
-    this.dragDistance = { x:0, y:0 };
+    this.dragDistance = { x: 0, y: 0 };
   }
 
   componentDidMount() {
@@ -35,7 +44,9 @@ class World extends Component {
     window.addEventListener("keydown", this.onKeyDown);
     window.addEventListener("keyup", this.onKeyUp);
     window.addEventListener("mouseup", this.onMouseUp);
-    window.addEventListener("mousewheel", this.onMouseWheel, { passive: false });
+    window.addEventListener("mousewheel", this.onMouseWheel, {
+      passive: false,
+    });
     window.addEventListener("resize", this.onWindowResize);
 
     const viewContents = this.scrollContentsRef.current;
@@ -52,11 +63,12 @@ class World extends Component {
     }
 
     const { resizeWorldView } = this.props;
-    resizeWorldView({width: window.innerWidth, height: window.innerHeight});
+    resizeWorldView({ width: window.innerWidth, height: window.innerHeight });
   }
 
   componentDidUpdate(prevProps) {
-    const { zoomRatio, scrollX, scrollY, loaded, onlyMatchingScene } = this.props;
+    const { zoomRatio, scrollX, scrollY, loaded, onlyMatchingScene } =
+      this.props;
     if (zoomRatio !== prevProps.zoomRatio) {
       const view = this.scrollRef.current;
       const viewContents = this.scrollContentsRef.current;
@@ -76,7 +88,7 @@ class World extends Component {
       viewContents.style.transform = `scale(${zoomRatio})`;
       view.scroll({
         top: newScrollY,
-        left: newScrollX
+        left: newScrollX,
       });
     }
 
@@ -85,18 +97,25 @@ class World extends Component {
       scroll.scrollTo(scrollX, scrollY);
     }
 
-    if(onlyMatchingScene && (onlyMatchingScene !== prevProps.onlyMatchingScene)) {
+    if (
+      onlyMatchingScene &&
+      onlyMatchingScene !== prevProps.onlyMatchingScene
+    ) {
       const view = this.scrollRef.current;
       const viewContents = this.scrollContentsRef.current;
       const halfViewWidth = 0.5 * view.clientWidth;
       const halfViewHeight = 0.5 * view.clientHeight;
-      const newScrollX = ((onlyMatchingScene.x + (onlyMatchingScene.width * 8 * 0.5)) * zoomRatio) - halfViewWidth;
-      const newScrollY = ((onlyMatchingScene.y + (onlyMatchingScene.height * 8 * 0.5)) * zoomRatio) - halfViewHeight;
+      const newScrollX =
+        (onlyMatchingScene.x + onlyMatchingScene.width * 8 * 0.5) * zoomRatio -
+        halfViewWidth;
+      const newScrollY =
+        (onlyMatchingScene.y + onlyMatchingScene.height * 8 * 0.5) * zoomRatio -
+        halfViewHeight;
       viewContents.style.transform = `scale(${zoomRatio})`;
       view.scroll({
         top: newScrollY,
-        left: newScrollX
-      });      
+        left: newScrollX,
+      });
     }
   }
 
@@ -110,7 +129,7 @@ class World extends Component {
     window.removeEventListener("mousewheel", this.onMouseWheel);
   }
 
-  onCopy = e => {
+  onCopy = (e) => {
     if (e.target.nodeName !== "BODY") {
       return;
     }
@@ -119,7 +138,7 @@ class World extends Component {
     copySelectedEntity();
   };
 
-  onPaste = e => {
+  onPaste = (e) => {
     if (e.target.nodeName !== "BODY") {
       return;
     }
@@ -133,7 +152,7 @@ class World extends Component {
     }
   };
 
-  onKeyDown = e => {
+  onKeyDown = (e) => {
     if (e.target.nodeName !== "BODY") {
       return;
     }
@@ -150,7 +169,7 @@ class World extends Component {
     }
   };
 
-  onKeyUp = e => {
+  onKeyUp = (e) => {
     if (e.target.nodeName !== "BODY") {
       return;
     }
@@ -160,12 +179,15 @@ class World extends Component {
     if (e.code === "Space" || e.key === "Alt") {
       this.setState({ dragMode: false });
     }
-  };  
+  };
 
-  onMouseUp = e => {
+  onMouseUp = (e) => {
     const { selectWorld } = this.props;
-    if(this.worldDragging) {
-      if(Math.abs(this.dragDistance.x) < 20 && Math.abs(this.dragDistance.y) < 20) {
+    if (this.worldDragging) {
+      if (
+        Math.abs(this.dragDistance.x) < 20 &&
+        Math.abs(this.dragDistance.y) < 20
+      ) {
         if (e.target === this.worldRef.current) {
           selectWorld();
         }
@@ -174,13 +196,13 @@ class World extends Component {
     this.worldDragging = false;
   };
 
-  onMouseMove = e => {
+  onMouseMove = (e) => {
     const { tool } = this.props;
     if (this.worldDragging) {
       e.currentTarget.scrollLeft -= e.movementX;
       e.currentTarget.scrollTop -= e.movementY;
       this.dragDistance.x -= e.movementX;
-      this.dragDistance.y -= e.movementY;      
+      this.dragDistance.y -= e.movementY;
     } else {
       const boundingRect = e.currentTarget.getBoundingClientRect();
       const x = e.pageX + e.currentTarget.scrollLeft - boundingRect.x;
@@ -194,20 +216,20 @@ class World extends Component {
         this.setState({
           hover: true,
           hoverX: x / zoomRatio - 128,
-          hoverY: y / zoomRatio - 128
+          hoverY: y / zoomRatio - 128,
         });
       }
     }
   };
 
-  onMouseWheel = e => {
+  onMouseWheel = (e) => {
     const { zoomIn, zoomOut } = this.props;
     if (e.ctrlKey && !this.blockWheelZoom) {
       e.preventDefault();
       if (e.wheelDelta > 0) {
-        zoomIn({section: "world", delta: e.deltaY * 0.5});
+        zoomIn({ section: "world", delta: e.deltaY * 0.5 });
       } else {
-        zoomOut({section: "world", delta: e.deltaY * 0.5});
+        zoomOut({ section: "world", delta: e.deltaY * 0.5 });
       }
     } else {
       // Don't allow mousehwheel zoom while scrolling
@@ -218,13 +240,13 @@ class World extends Component {
     }
   };
 
-  startWorldDrag = e => {
+  startWorldDrag = (e) => {
     this.worldDragging = true;
     this.dragDistance.x = 0;
     this.dragDistance.y = 0;
   };
 
-  startWorldDragIfAltOrMiddleClick = e => {
+  startWorldDragIfAltOrMiddleClick = (e) => {
     const { dragMode } = this.state;
     if (dragMode || e.nativeEvent.which === MIDDLE_MOUSE) {
       this.worldDragging = true;
@@ -232,33 +254,41 @@ class World extends Component {
     }
   };
 
-  onMouseEnter = e => {
+  onMouseEnter = (e) => {
     this.mouseOver = true;
   };
 
-  onMouseLeave = e => {
+  onMouseLeave = (e) => {
     this.mouseOver = false;
   };
 
-  onScroll = e => {
-    this.onScrollThrottled(e.currentTarget.scrollLeft, e.currentTarget.scrollTop);
-  }
+  onScroll = (e) => {
+    this.onScrollThrottled(
+      e.currentTarget.scrollLeft,
+      e.currentTarget.scrollTop
+    );
+  };
 
   onScrollThrottled = throttle((left, top) => {
     const { scrollWorld } = this.props;
-    scrollWorld({x:left, y:top});
+    scrollWorld({ x: left, y: top });
   }, 50);
 
-  onWindowResize = e => {
+  onWindowResize = (e) => {
     const { resizeWorldView } = this.props;
-    resizeWorldView({width: window.innerWidth, height: window.innerHeight});
-  }
+    resizeWorldView({ width: window.innerWidth, height: window.innerHeight });
+  };
 
-  onAddScene = e => {
+  onAddScene = (e) => {
     const { addScene, setTool, sceneDefaults, clipboardVariables } = this.props;
     const { hoverX, hoverY } = this.state;
-    addScene({x: hoverX, y: hoverY, defaults: sceneDefaults, variables: clipboardVariables});
-    setTool({tool:"select"});
+    addScene({
+      x: hoverX,
+      y: hoverY,
+      defaults: sceneDefaults,
+      variables: clipboardVariables,
+    });
+    setTool({ tool: "select" });
     this.setState({ hover: false });
   };
 
@@ -271,12 +301,12 @@ class World extends Component {
       showConnections,
       zoomRatio,
       sidebarWidth,
-      loaded
+      loaded,
     } = this.props;
     const { hover, hoverX, hoverY, dragMode } = this.state;
 
     const worldStyle = { right: sidebarWidth };
-    
+
     return (
       <div
         ref={this.scrollRef}
@@ -286,9 +316,13 @@ class World extends Component {
         onMouseLeave={this.onMouseLeave}
         onMouseDown={this.startWorldDragIfAltOrMiddleClick}
         onScroll={this.onScroll}
-        style={dragMode ? {
-          cursor: "grab"
-        } : undefined}
+        style={
+          dragMode
+            ? {
+                cursor: "grab",
+              }
+            : undefined
+        }
       >
         <div ref={this.scrollContentsRef} className="World__Content">
           <div
@@ -357,31 +391,29 @@ World.propTypes = {
   copySelectedEntity: PropTypes.func.isRequired,
   pasteClipboardEntity: PropTypes.func.isRequired,
   scrollWorld: PropTypes.func.isRequired,
-  onlyMatchingScene: SceneShape
+  onlyMatchingScene: SceneShape,
 };
 
 World.defaultProps = {
   sceneDefaults: null,
-  onlyMatchingScene: null
+  onlyMatchingScene: null,
 };
 
 function mapStateToProps(state) {
   const loaded = state.document.loaded;
-  const scenes = sceneSelectors.selectIds(state)
+  const scenes = sceneSelectors.selectIds(state);
   const scenesLookup = sceneSelectors.selectEntities(state);
 
-  const {
-    showConnections
-  } = state.project.present.settings;
+  const { showConnections } = state.project.present.settings;
   const {
     worldScrollX: scrollX,
     worldScrollY: scrollY,
     showLayers,
     sceneDefaults,
     clipboardVariables,
-    focusSceneId
+    focusSceneId,
   } = state.editor;
-  
+
   const { worldSidebarWidth: sidebarWidth } = state.editor;
 
   const viewportWidth = window.innerWidth - sidebarWidth - 17;
@@ -394,15 +426,20 @@ function mapStateToProps(state) {
 
   const searchTerm = state.editor.searchTerm;
 
-  const matchingScenes = searchTerm ? 
-    scenes.filter((scene, sceneIndex) => {
-      const sceneName = scenesLookup[scene].name || `Scene ${sceneIndex + 1}`;
-      return searchTerm === scene || sceneName.toUpperCase().indexOf(searchTerm.toUpperCase()) !== -1;
-    })
+  const matchingScenes = searchTerm
+    ? scenes.filter((scene, sceneIndex) => {
+        const sceneName = scenesLookup[scene].name || `Scene ${sceneIndex + 1}`;
+        return (
+          searchTerm === scene ||
+          sceneName.toUpperCase().indexOf(searchTerm.toUpperCase()) !== -1
+        );
+      })
     : [];
 
-  const onlyMatchingScene = (matchingScenes.length === 1
-    && scenesLookup[matchingScenes[0]]) || scenesLookup[focusSceneId] || null;
+  const onlyMatchingScene =
+    (matchingScenes.length === 1 && scenesLookup[matchingScenes[0]]) ||
+    scenesLookup[focusSceneId] ||
+    null;
 
   const { tool } = state.editor;
 
@@ -416,11 +453,16 @@ function mapStateToProps(state) {
     sceneDefaults,
     clipboardVariables,
     zoomRatio: (state.editor.zoom || 100) / 100,
-    showConnections: (!!showConnections) && (showLayers || (tool !== TOOL_COLORS && tool !== TOOL_COLLISIONS && tool !== TOOL_ERASER)),
+    showConnections:
+      !!showConnections &&
+      (showLayers ||
+        (tool !== TOOL_COLORS &&
+          tool !== TOOL_COLLISIONS &&
+          tool !== TOOL_ERASER)),
     sidebarWidth,
     loaded,
     focus,
-    onlyMatchingScene
+    onlyMatchingScene,
   };
 }
 
@@ -437,7 +479,4 @@ const mapDispatchToProps = {
   resizeWorldView: editorActions.resizeWorldView,
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(World);
+export default connect(mapStateToProps, mapDispatchToProps)(World);

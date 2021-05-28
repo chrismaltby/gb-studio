@@ -105,10 +105,8 @@ export const checkForUpdate = async (force) => {
         checkboxChecked: false,
       };
 
-      const {
-        response: buttonIndex,
-        checkboxChecked,
-      } = await dialog.showMessageBox(dialogOptions);
+      const { response: buttonIndex, checkboxChecked } =
+        await dialog.showMessageBox(dialogOptions);
 
       if (checkboxChecked) {
         // Ignore all updates until manually check for updates

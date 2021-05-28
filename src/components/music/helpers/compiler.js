@@ -28,7 +28,7 @@ const line_nr_regex = /([\w.]+)[\w.:~]*\(([0-9]+)\)/gi;
   https://github.com/webpack/webpack/issues/7352
 */
 const locateFile = (module) => (path) => {
-  if(path.endsWith('.wasm')) {
+  if (path.endsWith(".wasm")) {
     return module;
   }
   return path;
@@ -39,10 +39,13 @@ function logFunction(str) {
     log_callback(str);
   }
 
-  if (str.startsWith("error: ") || str.startsWith("ERROR: ") || str.startsWith("warning: ")) {
+  if (
+    str.startsWith("error: ") ||
+    str.startsWith("ERROR: ") ||
+    str.startsWith("warning: ")
+  ) {
     let type = "error";
-    if (str.startsWith("warning: "))
-      type = "warning";
+    if (str.startsWith("warning: ")) type = "warning";
 
     const line_nr_match = str.matchAll(line_nr_regex);
     for (const m of line_nr_match) {
@@ -53,16 +56,15 @@ function logFunction(str) {
 }
 
 function trigger() {
-  if (typeof (start_delay_timer) != "undefined") {
+  if (typeof start_delay_timer != "undefined") {
     clearTimeout(start_delay_timer);
   }
   start_delay_timer = setTimeout(startCompile, 500);
 }
 
 function startCompile() {
-  if (log_callback) 
-    log_callback(null);
-  
+  if (log_callback) log_callback(null);
+
   error_list = [];
   rom_symbols = [];
   ram_symbols = [];
@@ -90,54 +92,54 @@ function runRgbAsm(target) {
   logFunction(`Running: rgbasm ${target} -o ${target}.o -Wall`);
   let objFile;
   return createRgbAsm({
-    'locateFile': locateFile(createRgbAsmModule),
-    'arguments': [target, '-o', 'output.o', '-Wall'],
-    'preRun': (m) => {
+    locateFile: locateFile(createRgbAsmModule),
+    arguments: [target, "-o", "output.o", "-Wall"],
+    preRun: (m) => {
       const FS = m.FS;
       for (const [key, value] of Object.entries(storage.getFiles())) {
         FS.writeFile(key, value);
       }
     },
-    'print': logFunction, 
-    'printErr': logFunction,
-    'quit': () => {
+    print: logFunction,
+    printErr: logFunction,
+    quit: () => {
       throw new Error("Compilation failed");
-    }
+    },
   }).then((m) => {
-    if (repeat) { 
+    if (repeat) {
       throw new Error();
     }
     const FS = m.FS;
-    objFile = FS.readFile("output.o"); 
+    objFile = FS.readFile("output.o");
     return objFile;
   });
 }
 
 function runRgbLink(obj_files) {
   const files = Object.keys(obj_files);
-  const args = ['-o', 'output.gb', '--map', 'output.map'].concat(link_options);
+  const args = ["-o", "output.gb", "--map", "output.map"].concat(link_options);
   files.forEach((name) => {
     args.push(`${name}.o`);
   });
   logFunction(`Running: ${args.join(" ")}`);
   return createRgbLink({
-    'locateFile': locateFile(createRgbLinkModule),
-    'arguments': args,
-    'preRun': (m) => {
-    const FS = m.FS;
+    locateFile: locateFile(createRgbLinkModule),
+    arguments: args,
+    preRun: (m) => {
+      const FS = m.FS;
       files.forEach((name) => {
         FS.writeFile(`${name}.o`, obj_files[name]);
       });
     },
-    'print': logFunction, 
-    'printErr': logFunction,
+    print: logFunction,
+    printErr: logFunction,
   }).then((m) => {
-    if (repeat) { 
+    if (repeat) {
       throw new Error();
     }
     const FS = m.FS;
-    const rom_file = FS.readFile("output.gb"); 
-    const map_file = FS.readFile("output.map", { 'encoding': 'utf8' }); 
+    const rom_file = FS.readFile("output.gb");
+    const map_file = FS.readFile("output.map", { encoding: "utf8" });
 
     return [rom_file, map_file];
     // buildDone(rom_file, map_file);
@@ -147,14 +149,14 @@ function runRgbLink(obj_files) {
 function runRgbFix(input_rom_file, map_file) {
   logFunction("Running: rgbfix -v output.gb -p 0xff");
   return createRgbFix({
-    'locateFile': locateFile(createRgbFixModule),
-    'arguments': ['-v', 'output.gb', '-p', '0xff'],
-    'preRun': (m) => {
+    locateFile: locateFile(createRgbFixModule),
+    arguments: ["-v", "output.gb", "-p", "0xff"],
+    preRun: (m) => {
       const FS = m.FS;
       FS.writeFile("output.gb", input_rom_file);
     },
-    'print': logFunction, 
-    'printErr': logFunction,
+    print: logFunction,
+    printErr: logFunction,
   }).then((m) => {
     const FS = m.FS;
     return [FS.readFile("output.gb"), map_file];
@@ -190,7 +192,7 @@ function buildDone(rom_file, map_file) {
     let bank_nr = 0;
     for (const line of map_file.split("\n")) {
       let m;
-      if (m = sym_re.exec(line)) {
+      if ((m = sym_re.exec(line))) {
         let addr = parseInt(m[1], 16);
         let sym = m[2];
 
@@ -199,9 +201,13 @@ function buildDone(rom_file, map_file) {
           let file = sym.substr(sym.indexOf("_") + 1);
           file = file.substr(file.indexOf("_") + 1);
           const line_nr = parseInt(sym.split("_")[1], 16);
-          addr = (addr & 0x3FFF) | (bank_nr << 14);
+          addr = (addr & 0x3fff) | (bank_nr << 14);
           addr_to_line[addr] = [file, line_nr];
-        } else if (sym === "emustart" || sym === "emuStart" || sym === "emu_start") {
+        } else if (
+          sym === "emustart" ||
+          sym === "emuStart" ||
+          sym === "emu_start"
+        ) {
           start_address = addr;
         } else if (addr < 0x8000) {
           addr = (addr & 0x3fff) | (bank_nr << 14);
@@ -209,7 +215,7 @@ function buildDone(rom_file, map_file) {
         } else {
           ram_symbols[addr] = sym;
         }
-      } else if (m = section_re.exec(line)) {
+      } else if ((m = section_re.exec(line))) {
         let start_addr = parseInt(m[1], 16);
         let end_addr = parseInt(m[2], 16) + 1;
         if (start_addr < 0x8000) {
@@ -221,17 +227,20 @@ function buildDone(rom_file, map_file) {
           ram_symbols[start_addr] = null;
           ram_symbols[end_addr] = null;
         }
-      } else if (m = section_type_bank_re.exec(line)) {
+      } else if ((m = section_type_bank_re.exec(line))) {
         section_type = m[1];
         bank_nr = parseInt(m[2], 0);
-      } else if (m = slack_re.exec(line)) {
+      } else if ((m = slack_re.exec(line))) {
         const space = parseInt(m[1], 16);
         let total = 0x4000;
-        if (section_type.startsWith("WRAM"))
-          total = 0x1000;
-        else if (section_type.startsWith("HRAM"))
-          total = 127;
-        logFunction(`Space left: ${section_type}[${bank_nr}]: ${space}  (${(space / total * 100).toFixed(1)}%)`);
+        if (section_type.startsWith("WRAM")) total = 0x1000;
+        else if (section_type.startsWith("HRAM")) total = 127;
+        logFunction(
+          `Space left: ${section_type}[${bank_nr}]: ${space}  (${(
+            (space / total) *
+            100
+          ).toFixed(1)}%)`
+        );
       }
     }
     logFunction("Build done");
@@ -257,5 +266,5 @@ export default {
   getRamSymbols: () => ram_symbols,
   setLinkOptions: (options) => {
     link_options = options;
-  }
-}
+  },
+};

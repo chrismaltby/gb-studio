@@ -33,7 +33,7 @@ const missing = Object.keys(en).reduce((memo, key) => {
 if (missing.length > 0) {
   console.log("Missing translations for:");
   console.log("");
-  missing.forEach(key => {
+  missing.forEach((key) => {
     console.log(`  "${key}": "${en[key]}",`);
   });
   console.log("");

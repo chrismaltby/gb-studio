@@ -4,43 +4,45 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import uuid from "uuid/v4";
 import debounce from "lodash/debounce";
-import {
-  EVENT_END
-} from "../../lib/compiler/eventTypes";
+import { EVENT_END } from "../../lib/compiler/eventTypes";
 import {
   patchEvents,
   prependEvent,
   filterEvents,
   findEvent,
   appendEvent,
-  regenerateEventIds
+  regenerateEventIds,
 } from "../../lib/helpers/eventSystem";
 import events from "../../lib/events";
 import ScriptEditorEvent from "./ScriptEditorEvent";
 import l10n from "../../lib/helpers/l10n";
-import { sceneSelectors, spriteSheetSelectors, musicSelectors } from "../../store/features/entities/entitiesState";
+import {
+  sceneSelectors,
+  spriteSheetSelectors,
+  musicSelectors,
+} from "../../store/features/entities/entitiesState";
 import editorActions from "../../store/features/editor/editorActions";
 import clipboardActions from "../../store/features/clipboard/clipboardActions";
 
 class ScriptEditor extends Component {
-
   constructor() {
     super();
-    this.timer = null;  
+    this.timer = null;
     this.scriptBottomRef = React.createRef();
     this.state = {
       clipboardEvent: null,
-      limit: 10
+      limit: 10,
     };
     this.debouncedLoadMore = debounce(this.loadMore, 10);
   }
 
   componentDidMount() {
     this.timer = setInterval(() => {
-      if(this.scriptBottomRef.current) {
-        const bottomBoundingRect = this.scriptBottomRef.current.getBoundingClientRect();
-        if(bottomBoundingRect.top <= window.innerHeight + 100) {  
-          this.debouncedLoadMore();    
+      if (this.scriptBottomRef.current) {
+        const bottomBoundingRect =
+          this.scriptBottomRef.current.getBoundingClientRect();
+        if (bottomBoundingRect.top <= window.innerHeight + 100) {
+          this.debouncedLoadMore();
         }
       }
     }, 100);
@@ -50,7 +52,9 @@ class ScriptEditor extends Component {
     const { value } = this.props;
     const { clipboardEvent, limit } = this.state;
     return (
-      nextProps.value !== value || nextState.clipboardEvent !== clipboardEvent || nextState.limit !== limit
+      nextProps.value !== value ||
+      nextState.clipboardEvent !== clipboardEvent ||
+      nextState.limit !== limit
     );
   }
 
@@ -63,10 +67,10 @@ class ScriptEditor extends Component {
     const { value } = this.props;
     if (limit < value.length) {
       this.setState({ limit: limit + 10 });
-    }    
+    }
   };
 
-  onChange = newValue => {
+  onChange = (newValue) => {
     const { onChange } = this.props;
     onChange(newValue);
   };
@@ -76,91 +80,101 @@ class ScriptEditor extends Component {
     if (a === b) {
       return;
     }
-    const input = prependEvent(filterEvents(root, (e) => e.id !== a), b, findEvent(root, a));
-    this.onChange(input);
-  };
-
-  onAdd = id => (command, defaults = {}, defaultChildren = {}) => {
-    const { musicIds, sceneIds, actorIds, spriteSheetIds, scope } = this.props;
-    const { value: root } = this.props;
-    const eventFields = events[command].fields;
-    const defaultArgs = eventFields
-      ? eventFields.reduce(
-          (memo, field) => {
-            let replaceValue = null;
-            let defaultValue = field.defaultValue;
-            if(field.type === "union") {
-              defaultValue = field.defaultValue[field.defaultType];
-            }
-            if (defaultValue === "LAST_SCENE") {
-              replaceValue = sceneIds[sceneIds.length - 1];
-            } else if (defaultValue === "LAST_VARIABLE") {
-              replaceValue = scope === "customEvents" ? "0" : "L0";
-            } else if (defaultValue === "LAST_MUSIC") {
-              replaceValue = musicIds[0];
-            } else if (defaultValue === "LAST_SPRITE") {
-              replaceValue = spriteSheetIds[0];
-            } else if (defaultValue === "LAST_ACTOR") {
-              replaceValue =
-                actorIds.length > 0 ? actorIds[actorIds.length - 1] : "player";
-            } else if (field.type === "events") {
-              replaceValue = undefined;
-            } else if (
-              defaultValue !== undefined &&
-              !defaults[field.key]
-            ) {
-              replaceValue = defaultValue;
-            }
-            if(field.type === "union") {
-              replaceValue = {
-                type: field.defaultType,
-                value: replaceValue
-              }
-            }
-            if (replaceValue !== null) {
-              return {
-                ...memo,
-                [field.key]: replaceValue
-              };
-            }
-            return memo;
-          },
-          { ...defaults }
-        )
-      : { ...defaults };
-
-    const childFields = eventFields.filter(field => field.type === "events");
-    const children = childFields.reduce((memo, field) => {
-      const childScript = defaultChildren[field.key]
-        ? defaultChildren[field.key]
-        : [
-            {
-              id: uuid(),
-              command: EVENT_END
-            }
-          ];
-      return {
-        ...memo,
-        [field.key]: childScript
-      };
-    }, {});
-
     const input = prependEvent(
-      root,
-      id,
-      JSON.parse(JSON.stringify({
-        id: uuid(),
-          command,
-          args: defaultArgs,
-        ...childFields.length > 0 && {
-          children
-        }
-      }))
+      filterEvents(root, (e) => e.id !== a),
+      b,
+      findEvent(root, a)
     );
     this.onChange(input);
   };
 
-  onRemove = id => () => {
+  onAdd =
+    (id) =>
+    (command, defaults = {}, defaultChildren = {}) => {
+      const { musicIds, sceneIds, actorIds, spriteSheetIds, scope } =
+        this.props;
+      const { value: root } = this.props;
+      const eventFields = events[command].fields;
+      const defaultArgs = eventFields
+        ? eventFields.reduce(
+            (memo, field) => {
+              let replaceValue = null;
+              let defaultValue = field.defaultValue;
+              if (field.type === "union") {
+                defaultValue = field.defaultValue[field.defaultType];
+              }
+              if (defaultValue === "LAST_SCENE") {
+                replaceValue = sceneIds[sceneIds.length - 1];
+              } else if (defaultValue === "LAST_VARIABLE") {
+                replaceValue = scope === "customEvents" ? "0" : "L0";
+              } else if (defaultValue === "LAST_MUSIC") {
+                replaceValue = musicIds[0];
+              } else if (defaultValue === "LAST_SPRITE") {
+                replaceValue = spriteSheetIds[0];
+              } else if (defaultValue === "LAST_ACTOR") {
+                replaceValue =
+                  actorIds.length > 0
+                    ? actorIds[actorIds.length - 1]
+                    : "player";
+              } else if (field.type === "events") {
+                replaceValue = undefined;
+              } else if (defaultValue !== undefined && !defaults[field.key]) {
+                replaceValue = defaultValue;
+              }
+              if (field.type === "union") {
+                replaceValue = {
+                  type: field.defaultType,
+                  value: replaceValue,
+                };
+              }
+              if (replaceValue !== null) {
+                return {
+                  ...memo,
+                  [field.key]: replaceValue,
+                };
+              }
+              return memo;
+            },
+            { ...defaults }
+          )
+        : { ...defaults };
+
+      const childFields = eventFields.filter(
+        (field) => field.type === "events"
+      );
+      const children = childFields.reduce((memo, field) => {
+        const childScript = defaultChildren[field.key]
+          ? defaultChildren[field.key]
+          : [
+              {
+                id: uuid(),
+                command: EVENT_END,
+              },
+            ];
+        return {
+          ...memo,
+          [field.key]: childScript,
+        };
+      }, {});
+
+      const input = prependEvent(
+        root,
+        id,
+        JSON.parse(
+          JSON.stringify({
+            id: uuid(),
+            command,
+            args: defaultArgs,
+            ...(childFields.length > 0 && {
+              children,
+            }),
+          })
+        )
+      );
+      this.onChange(input);
+    };
+
+  onRemove = (id) => () => {
     const { value } = this.props;
     const input = filterEvents(value, (e) => e.id !== id);
     this.onChange(input);
@@ -172,7 +186,7 @@ class ScriptEditor extends Component {
     this.onChange(input);
   };
 
-  onCopy = event => () => {
+  onCopy = (event) => () => {
     const { copyEvent } = this.props;
     copyEvent(event);
   };
@@ -185,23 +199,23 @@ class ScriptEditor extends Component {
     const input = before
       ? prependEvent(value, id, newEvent)
       : appendEvent(value, id, newEvent);
-    pasteCustomEvents(); 
+    pasteCustomEvents();
     this.onChange(input);
   };
 
-  onEnter = id => {
+  onEnter = (id) => {
     const { selectScriptEvent } = this.props;
-    selectScriptEvent({eventId: id});
+    selectScriptEvent({ eventId: id });
   };
 
-  onLeave = id => {
+  onLeave = (id) => {
     const { selectScriptEvent } = this.props;
-    selectScriptEvent({eventId: ""});
+    selectScriptEvent({ eventId: "" });
   };
 
-  onSelectCustomEvent = id => {
+  onSelectCustomEvent = (id) => {
     const { selectCustomEvent } = this.props;
-    selectCustomEvent({customEventId: id});
+    selectCustomEvent({ customEventId: id });
   };
 
   render() {
@@ -210,7 +224,7 @@ class ScriptEditor extends Component {
 
     return (
       <div className="ScriptEditor">
-        {value.slice(0, limit).map(action => (
+        {value.slice(0, limit).map((action) => (
           <ScriptEditorEvent
             key={action.id}
             id={action.id}
@@ -228,11 +242,9 @@ class ScriptEditor extends Component {
             onMouseLeave={this.onLeave}
           />
         ))}
-        {limit < value.length &&
-          <div className="ScriptEditor__Loading">
-            {l10n("FIELD_LOADING")}
-          </div>
-        }
+        {limit < value.length && (
+          <div className="ScriptEditor__Loading">{l10n("FIELD_LOADING")}</div>
+        )}
         <div ref={this.scriptBottomRef} />
       </div>
     );
@@ -252,12 +264,12 @@ ScriptEditor.propTypes = {
   selectCustomEvent: PropTypes.func.isRequired,
   entityId: PropTypes.string.isRequired,
   scope: PropTypes.string.isRequired,
-  pasteCustomEvents: PropTypes.func.isRequired
+  pasteCustomEvents: PropTypes.func.isRequired,
 };
 
 ScriptEditor.defaultProps = Object.create(
   {
-    title: ""
+    title: "",
   },
   {
     value: {
@@ -265,10 +277,10 @@ ScriptEditor.defaultProps = Object.create(
       get: () => [
         {
           id: uuid(),
-          command: EVENT_END
-        }
-      ]
-    }
+          command: EVENT_END,
+        },
+      ],
+    },
   }
 );
 
@@ -285,7 +297,7 @@ function mapStateToProps(state, props) {
     musicIds,
     spriteSheetIds,
     value: props.value && props.value.length > 0 ? props.value : undefined,
-    scope
+    scope,
   };
 }
 
@@ -293,7 +305,7 @@ const mapDispatchToProps = {
   selectScriptEvent: editorActions.selectScriptEvent,
   copyEvent: clipboardActions.copyEvent,
   selectCustomEvent: editorActions.selectCustomEvent,
-  pasteCustomEvents: clipboardActions.pasteCustomEvents
+  pasteCustomEvents: clipboardActions.pasteCustomEvents,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ScriptEditor);

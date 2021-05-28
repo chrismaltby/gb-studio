@@ -5,7 +5,7 @@ import { Button } from "../ui/buttons/Button";
 import { AudioOffIcon, AudioOnIcon } from "../ui/icons/Icons";
 
 interface SongGridHeaderCellProps {
-  channel?: number,
+  channel?: number;
   size?: "normal" | "small";
   children?: React.ReactNode;
   muted?: boolean;
@@ -27,11 +27,14 @@ const Wrapper = styled.span<WrapperProps>`
   margin: 0;
   padding: 4px 4px 4px 2px;
   height: 20px;
-  ${(props) => 
-    props.size === "small" 
-      ? css`width: 40px;` 
-      : css`width: 126px;`
-  }
+  ${(props) =>
+    props.size === "small"
+      ? css`
+          width: 40px;
+        `
+      : css`
+          width: 126px;
+        `}
 `;
 
 export const SongGridHeaderCell = ({
@@ -40,32 +43,26 @@ export const SongGridHeaderCell = ({
   channel,
   muted,
 }: SongGridHeaderCellProps) => {
-
   const setMute = useCallback(() => {
-    ipcRenderer.send(
-      "music-data-send",
-      {
-        action: "set-mute",
-        channel: channel,
-        muted: !muted,
-      }
-    );
+    ipcRenderer.send("music-data-send", {
+      action: "set-mute",
+      channel: channel,
+      muted: !muted,
+    });
   }, [muted, channel]);
 
   return (
     <Wrapper size={size}>
-      {channel !== undefined ?
-        <Button 
-          variant="transparent"
-          size="small" 
-          onClick={setMute}
-        >
-          {muted ? <AudioOffIcon /> : <AudioOnIcon /> }
-        </Button> 
-        : 
+      {channel !== undefined ? (
+        <Button variant="transparent" size="small" onClick={setMute}>
+          {muted ? <AudioOffIcon /> : <AudioOnIcon />}
+        </Button>
+      ) : (
         ""
-      }
-      <span style={{ "paddingLeft": 10 }} onClick={setMute}>{children}</span>
+      )}
+      <span style={{ paddingLeft: 10 }} onClick={setMute}>
+        {children}
+      </span>
     </Wrapper>
-  )
+  );
 };

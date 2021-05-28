@@ -193,7 +193,7 @@ export const toStructData = <T extends {}>(
   indent: number = 0,
   perLine: number = 16
 ): string => {
-  const keys = (Object.keys(object) as unknown) as [keyof T];
+  const keys = Object.keys(object) as unknown as [keyof T];
   return keys
     .map((key) => {
       if (object[key] === undefined) {
@@ -204,7 +204,7 @@ export const toStructData = <T extends {}>(
       }
       if (Array.isArray(object[key])) {
         return `${" ".repeat(indent)}.${key} = {
-${chunk((object[key] as unknown) as any[], perLine)
+${chunk(object[key] as unknown as any[], perLine)
   .map(
     (r) =>
       " ".repeat(indent * 2) +

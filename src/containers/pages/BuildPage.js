@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import Button, {
   ButtonToolbar,
   ButtonToolbarSpacer,
-  ButtonToolbarFixedSpacer
+  ButtonToolbarFixedSpacer,
 } from "../../components/library/Button";
 import PageContent from "../../components/library/PageContent";
 import l10n from "../../lib/helpers/l10n";
@@ -31,12 +31,12 @@ class BuildPage extends Component {
     clearConsole();
   };
 
-  onRun = e => {
+  onRun = (e) => {
     const { buildGame } = this.props;
     buildGame();
   };
 
-  onBuild = buildType => e => {
+  onBuild = (buildType) => (e) => {
     const { buildGame } = this.props;
     buildGame({ buildType, exportBuild: true });
   };
@@ -44,12 +44,12 @@ class BuildPage extends Component {
   onDeleteCache = () => {
     const { deleteBuildCache } = this.props;
     deleteBuildCache();
-  }
+  };
 
   onToggleProfiling = () => {
     const { setProfiling, profile } = this.props;
     setProfiling(!profile);
-  }
+  };
 
   scrollToBottom = () => {
     const scrollEl = this.scrollRef.current;
@@ -61,9 +61,7 @@ class BuildPage extends Component {
 
     // Only show the latest 100 lines during build
     // show full output on complete
-    const outputLines = status === "complete"
-      ? output
-      : output.slice(-100);
+    const outputLines = status === "complete" ? output : output.slice(-100);
 
     return (
       <div
@@ -151,13 +149,13 @@ BuildPage.propTypes = {
   output: PropTypes.arrayOf(
     PropTypes.shape({
       type: PropTypes.string.isRequired,
-      text: PropTypes.string.isRequired
+      text: PropTypes.string.isRequired,
     })
   ).isRequired,
   warnings: PropTypes.arrayOf(
     PropTypes.shape({
       type: PropTypes.string.isRequired,
-      text: PropTypes.string.isRequired
+      text: PropTypes.string.isRequired,
     })
   ).isRequired,
   buildGame: PropTypes.func.isRequired,
@@ -171,7 +169,7 @@ function mapStateToProps(state) {
     status: state.console.status,
     output: state.console.output,
     warnings: state.console.warnings,
-    profile: state.editor.profile
+    profile: state.editor.profile,
   };
 }
 
@@ -182,7 +180,4 @@ const mapDispatchToProps = {
   setProfiling: editorActions.setProfiling,
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(BuildPage);
+export default connect(mapStateToProps, mapDispatchToProps)(BuildPage);

@@ -11,7 +11,7 @@ import {
 import { Menu, MenuItem, MenuOverlay } from "../library/Menu";
 import l10n from "../../lib/helpers/l10n";
 import { Tool } from "../../store/features/editor/editorState";
-import editorActions from "../../store/features/editor/editorActions"
+import editorActions from "../../store/features/editor/editorActions";
 
 type ToolPickerProps = {
   selected: Tool;
@@ -25,8 +25,10 @@ interface ToolPickerActionProps {
   setTool: (args: { tool: Tool }) => void;
 }
 
-class ToolPicker extends Component<ToolPickerProps & ToolPickerActionProps, ToolPickerState> {
-  
+class ToolPicker extends Component<
+  ToolPickerProps & ToolPickerActionProps,
+  ToolPickerState
+> {
   state = {
     add: false,
   };
@@ -83,14 +85,16 @@ class ToolPicker extends Component<ToolPickerProps & ToolPickerActionProps, Tool
     });
   };
 
-  setTool = (tool: Tool) => (e: React.MouseEvent<HTMLDivElement, MouseEvent> | KeyboardEvent) => {
-    e.stopPropagation();
-    const { setTool } = this.props;
-    setTool({ tool });
-    this.setState({
-      add: false,
-    });
-  };
+  setTool =
+    (tool: Tool) =>
+    (e: React.MouseEvent<HTMLDivElement, MouseEvent> | KeyboardEvent) => {
+      e.stopPropagation();
+      const { setTool } = this.props;
+      setTool({ tool });
+      this.setState({
+        add: false,
+      });
+    };
 
   render() {
     const { add } = this.state;
@@ -179,7 +183,7 @@ class ToolPicker extends Component<ToolPickerProps & ToolPickerActionProps, Tool
 
 function mapStateToProps(state: any): ToolPickerProps {
   return {
-    selected: state.editor.tool
+    selected: state.editor.tool,
   };
 }
 
@@ -187,4 +191,4 @@ const mapDispatchToProps = {
   setTool: editorActions.setTool,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ToolPicker)
+export default connect(mapStateToProps, mapDispatchToProps)(ToolPicker);

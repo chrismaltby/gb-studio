@@ -446,7 +446,7 @@
   "DIALOG_DELETE_CUSTOM_EVENT": "Delete Custom Event \"{name}\"?",
   "DIALOG_DELETE_CUSTOM_EVENT_USED": "{count} utilizzi di questo evento verranno rimossi.\n\nTrovati in: {sceneNames}",
   "DIALOG_DELETE_CUSTOM_EVENT_USED_SINGLAR": "{count} utilizzi di questo evento verranno rimossi.\n\nTrovati in: {sceneNames}",
-  
+
   "// 16": "Settings ----------------------------------------------------",
 
   "SETTINGS": "Impostazione",

@@ -8,9 +8,9 @@ import { customEventSelectors } from "../../store/features/entities/entitiesStat
 import { getSettings } from "../../store/features/settings/settingsState";
 // import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 
-const allCustomEventActors = Array.from(Array(10).keys()).map(i => ({
+const allCustomEventActors = Array.from(Array(10).keys()).map((i) => ({
   id: String(i),
-  name: `Actor ${String.fromCharCode("A".charCodeAt(0) + i)}`
+  name: `Actor ${String.fromCharCode("A".charCodeAt(0) + i)}`,
 }));
 
 class CustomEventActorSelect extends Component {
@@ -23,14 +23,14 @@ class CustomEventActorSelect extends Component {
     const { playerSpriteSheetId } = this.props;
     return {
       name: "Player",
-      spriteSheetId: playerSpriteSheetId
+      spriteSheetId: playerSpriteSheetId,
     };
   };
 
-  renderDropdownIndicator = props => {
+  renderDropdownIndicator = (props) => {
     const { value, direction, frame } = this.props;
     const actor =
-      allCustomEventActors.find(a => a.id === value) || this.defaultValue();
+      allCustomEventActors.find((a) => a.id === value) || this.defaultValue();
     if (!actor || (actor && !actor.spriteSheetId)) {
       return <components.DropdownIndicator {...props} />;
     }
@@ -42,11 +42,11 @@ class CustomEventActorSelect extends Component {
     );
   };
 
-  renderOption = props => {
+  renderOption = (props) => {
     const { direction, frame } = this.props;
     const { label, value } = props;
     const actor =
-      allCustomEventActors.find(a => a.id === value) || this.defaultValue();
+      allCustomEventActors.find((a) => a.id === value) || this.defaultValue();
     if (!actor || (actor && !actor.spriteSheetId)) {
       return <components.Option {...props} />;
     }
@@ -66,16 +66,16 @@ class CustomEventActorSelect extends Component {
     return [].concat(
       {
         value: "player",
-        label: "Player"
+        label: "Player",
       },
       allCustomEventActors.map((actor, index) => {
-        const namedActor = actors.find(a => a.id === actor.id);
+        const namedActor = actors.find((a) => a.id === actor.id);
         return {
           value: String(actor.id),
           label: namedActor
             ? namedActor.name
             : actor.name || `Actor ${index + 1}`,
-          spriteSheetId: actor.spriteSheetId
+          spriteSheetId: actor.spriteSheetId,
         };
       })
     );
@@ -86,9 +86,9 @@ class CustomEventActorSelect extends Component {
 
     const defaultValue = {
       name: "Player",
-      spriteSheetId: playerSpriteSheetId
+      spriteSheetId: playerSpriteSheetId,
     };
-    const current = actors.find(a => a.id === value) || defaultValue;
+    const current = actors.find((a) => a.id === value) || defaultValue;
     const currentIndex = allCustomEventActors.indexOf(current);
     const options = this.getOptions();
 
@@ -101,15 +101,15 @@ class CustomEventActorSelect extends Component {
         value={
           current && {
             label: current.name || `Actor ${currentIndex + 1}`,
-            value
+            value,
           }
         }
-        onChange={data => {
+        onChange={(data) => {
           onChange(data.value);
         }}
         components={{
           DropdownIndicator: this.renderDropdownIndicator,
-          Option: this.renderOption
+          Option: this.renderOption,
         }}
         menuPlacement="auto"
         blurInputOnSelect
@@ -125,7 +125,7 @@ CustomEventActorSelect.propTypes = {
   playerSpriteSheetId: PropTypes.string,
   actors: PropTypes.arrayOf(ActorShape).isRequired,
   direction: PropTypes.string,
-  frame: PropTypes.number
+  frame: PropTypes.number,
 };
 
 CustomEventActorSelect.defaultProps = {
@@ -133,18 +133,18 @@ CustomEventActorSelect.defaultProps = {
   value: "",
   playerSpriteSheetId: "",
   frame: undefined,
-  direction: undefined
+  direction: undefined,
 };
 
 function mapStateToProps(state) {
   const customEventId = state.editor.entityId;
   const customEvent = customEventSelectors.selectById(state, customEventId);
   const actors = customEvent ? Object.values(customEvent.actors) : [];
-  const settings = getSettings(state);  
+  const settings = getSettings(state);
   const playerSpriteSheetId = settings.playerSpriteSheetId;
   return {
     actors,
-    playerSpriteSheetId
+    playerSpriteSheetId,
   };
 }
 

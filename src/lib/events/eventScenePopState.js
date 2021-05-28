@@ -4,15 +4,15 @@ const id = "EVENT_SCENE_POP_STATE";
 
 const fields = [
   {
-    label: l10n("FIELD_SCENE_POP_STATE_DESCRIPTION")
+    label: l10n("FIELD_SCENE_POP_STATE_DESCRIPTION"),
   },
   {
     key: "fadeSpeed",
     label: l10n("FIELD_FADE_SPEED"),
     type: "fadeSpeed",
     defaultValue: "2",
-    width: "50%"
-  }
+    width: "50%",
+  },
 ];
 
 const compile = (input, helpers) => {
@@ -24,5 +24,5 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   fields,
-  compile
+  compile,
 };

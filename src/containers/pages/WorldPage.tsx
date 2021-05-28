@@ -105,10 +105,10 @@ const WorldPage = () => {
     }, 100)
   );
 
-  useEffect(() => debouncedStoreWidths.current(leftPaneWidth, rightPaneWidth), [
-    leftPaneWidth,
-    rightPaneWidth,
-  ]);
+  useEffect(
+    () => debouncedStoreWidths.current(leftPaneWidth, rightPaneWidth),
+    [leftPaneWidth, rightPaneWidth]
+  );
 
   const recalculateLeftColumn = () => {
     const newWidth = Math.min(

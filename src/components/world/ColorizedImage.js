@@ -42,7 +42,11 @@ class ColorizedImage extends Component {
 
   componentDidUpdate(prevProps) {
     const { src, tiles, palettes } = this.props;
-    if (src !== prevProps.src || tiles !== prevProps.tiles || palettes !== prevProps.palettes) {
+    if (
+      src !== prevProps.src ||
+      tiles !== prevProps.tiles ||
+      palettes !== prevProps.palettes
+    ) {
       this.debouncedDraw();
     }
   }
@@ -87,12 +91,12 @@ ColorizedImage.propTypes = {
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
   tiles: PropTypes.arrayOf(PropTypes.number),
-  palettes: PropTypes.arrayOf(PaletteShape)
+  palettes: PropTypes.arrayOf(PaletteShape),
 };
 
 ColorizedImage.defaultProps = {
   tiles: [],
-  palettes: dmgPalettes
+  palettes: dmgPalettes,
 };
 
 export default ColorizedImage;

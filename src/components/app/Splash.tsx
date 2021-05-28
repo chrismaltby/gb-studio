@@ -110,7 +110,7 @@ const setLastUsedTab = (tab: string) => {
 };
 
 const toSplashTab = (tab: string): SplashTabSection => {
-  if (splashTabs.indexOf((tab as unknown) as SplashTabSection) > -1) {
+  if (splashTabs.indexOf(tab as unknown as SplashTabSection) > -1) {
     return tab as SplashTabSection;
   }
   return "new";

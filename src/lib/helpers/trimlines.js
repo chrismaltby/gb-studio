@@ -52,7 +52,6 @@ const trimlines = (
     string
       .split("\n")
       .map((line, lineIndex) => {
-
         // Include whole line if under limits
         if (lineLength(line) <= maxCharsPerLine) {
           return line;

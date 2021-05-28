@@ -6,20 +6,20 @@ import {
   EVENT_ACTOR_SET_POSITION,
   EVENT_OVERLAY_SHOW,
   EVENT_OVERLAY_MOVE_TO,
-  EVENT_IF_ACTOR_AT_POSITION
+  EVENT_IF_ACTOR_AT_POSITION,
 } from "../../lib/compiler/eventTypes";
 
 const TILE_SIZE = 8;
 
 const argValue = (arg) => {
-  if(arg && arg.value) {
-    if(arg.type === "variable" || arg.type === "property") {
+  if (arg && arg.value) {
+    if (arg.type === "variable" || arg.type === "property") {
       return undefined;
     }
     return arg.value;
   }
   return arg;
-}
+};
 
 class EventHelper extends Component {
   render() {
@@ -28,16 +28,16 @@ class EventHelper extends Component {
     if (event.command === EVENT_CAMERA_MOVE_TO) {
       const x = argValue(event.args.x);
       const y = argValue(event.args.y);
-      if(x === undefined && y === undefined) {
-        return <div />
-      }      
+      if (x === undefined && y === undefined) {
+        return <div />;
+      }
       return (
         <div className="EventHelper">
           <div
             className="EventHelper__CameraPos"
             style={{
               left: (x || 0) * TILE_SIZE,
-              top: (y || 0) * TILE_SIZE
+              top: (y || 0) * TILE_SIZE,
             }}
           />
         </div>
@@ -50,9 +50,9 @@ class EventHelper extends Component {
       event.command === EVENT_IF_ACTOR_AT_POSITION
     ) {
       const x = argValue(event.args.x);
-      const y = argValue(event.args.y);      
-      if(x === undefined && y === undefined) {
-        return <div />
+      const y = argValue(event.args.y);
+      if (x === undefined && y === undefined) {
+        return <div />;
       }
       return (
         <div className="EventHelper">
@@ -60,7 +60,7 @@ class EventHelper extends Component {
             className="EventHelper__PosMarker"
             style={{
               left: (x || 0) * TILE_SIZE,
-              top: (y || 0) * TILE_SIZE
+              top: (y || 0) * TILE_SIZE,
             }}
           />
         </div>
@@ -72,11 +72,11 @@ class EventHelper extends Component {
       event.command === EVENT_OVERLAY_MOVE_TO
     ) {
       const x = argValue(event.args.x);
-      const y = argValue(event.args.y);    
+      const y = argValue(event.args.y);
       const color = argValue(event.args.color);
-      if(x === undefined && y === undefined) {
-        return <div />
-      }      
+      if (x === undefined && y === undefined) {
+        return <div />;
+      }
       return (
         <div className="EventHelper">
           <div
@@ -84,7 +84,7 @@ class EventHelper extends Component {
             style={{
               left: (x || 0) * TILE_SIZE,
               top: (y || 0) * TILE_SIZE,
-              background: color === "white" ? "#e0f8cf" : "#081820"
+              background: color === "white" ? "#e0f8cf" : "#081820",
             }}
           />
         </div>
@@ -98,12 +98,12 @@ class EventHelper extends Component {
 EventHelper.propTypes = {
   event: PropTypes.shape({
     command: PropTypes.string,
-    args: PropTypes.shape({})
-  })
+    args: PropTypes.shape({}),
+  }),
 };
 
 EventHelper.defaultProps = {
-  event: {}
+  event: {},
 };
 
 export default EventHelper;

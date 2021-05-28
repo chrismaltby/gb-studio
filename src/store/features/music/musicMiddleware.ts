@@ -29,7 +29,10 @@ function onSongLoaded(player: ScripTracker) {
 
 function play(filename: string, settings: MusicSettings) {
   if (modPlayer) {
-    modPlayer.loadModule(`file://${filename}`, !!settings.disableSpeedConversion);
+    modPlayer.loadModule(
+      `file://${filename}`,
+      !!settings.disableSpeedConversion
+    );
   }
 }
 
@@ -39,30 +42,29 @@ function pause() {
   }
 }
 
-const musicMiddleware: Middleware<{}, RootState> = (store) => (next) => (
-  action
-) => {
-  if (actions.playMusic.match(action)) {
-    const state = store.getState();
-    const track = musicSelectors.selectById(state, action.payload.musicId)
-    if (track) {
-      const projectRoot = state.document.root;
-      const filename = assetFilename(projectRoot, "music", track);
-      play(filename, track.settings);
+const musicMiddleware: Middleware<{}, RootState> =
+  (store) => (next) => (action) => {
+    if (actions.playMusic.match(action)) {
+      const state = store.getState();
+      const track = musicSelectors.selectById(state, action.payload.musicId);
+      if (track) {
+        const projectRoot = state.document.root;
+        const filename = assetFilename(projectRoot, "music", track);
+        play(filename, track.settings);
+      }
+    } else if (actions.pauseMusic.match(action)) {
+      pause();
+    } else if (
+      soundfxActions.playSoundFxBeep.match(action) ||
+      soundfxActions.playSoundFxTone.match(action) ||
+      soundfxActions.playSoundFxCrash.match(action) ||
+      navigationActions.setSection.match(action) ||
+      navigationActions.setNavigationId.match(action)
+    ) {
+      store.dispatch(actions.pauseMusic());
     }
-  } else if (actions.pauseMusic.match(action)) {
-    pause();
-  } else if (
-    soundfxActions.playSoundFxBeep.match(action) ||
-    soundfxActions.playSoundFxTone.match(action) ||
-    soundfxActions.playSoundFxCrash.match(action) ||
-    navigationActions.setSection.match(action) ||
-    navigationActions.setNavigationId.match(action)
-  ) {
-    store.dispatch(actions.pauseMusic());
-  }
 
-  return next(action);
-};
+    return next(action);
+  };
 
 export default musicMiddleware;

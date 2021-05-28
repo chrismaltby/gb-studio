@@ -53,18 +53,24 @@ class PalettePage extends Component {
   onEdit = (key) => (e) => {
     const { editPalette } = this.props;
     const palette = this.getCurrentPalette();
-    editPalette({paletteId: palette.id, changes: {
-      [key]: castEventValue(e),
-    }});
+    editPalette({
+      paletteId: palette.id,
+      changes: {
+        [key]: castEventValue(e),
+      },
+    });
   };
 
   onReset = () => {
     const { editPalette } = this.props;
     const palette = this.getCurrentPalette();
-    editPalette({paletteId: palette.id, changes: {
-      colors: palette.defaultColors || [] 
-    }});
-  }
+    editPalette({
+      paletteId: palette.id,
+      changes: {
+        colors: palette.defaultColors || [],
+      },
+    });
+  };
 
   onRemove = () => {
     const { removePalette } = this.props;
@@ -135,7 +141,7 @@ class PalettePage extends Component {
             {palette && palette.id && (
               <div key={palette.id} style={{ paddingRight: sidebarWidth }}>
                 <CustomPalettePicker id={palette.id} paletteId={palette.id} />
-                <div style={{marginTop: 30}}>
+                <div style={{ marginTop: 30 }}>
                   {palette.defaultColors ? (
                     <Button onClick={this.onReset}>Reset Palette</Button>
                   ) : (

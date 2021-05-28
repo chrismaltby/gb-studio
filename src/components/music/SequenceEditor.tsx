@@ -13,16 +13,16 @@ interface SequenceOption {
   label: string;
 }
 interface SequenceEditorProps {
-  sequence?: number[],
-  patterns?: number,
-  playingSequence: number,
-  height?: number,
-  direction?: "vertical" | "horizontal"
+  sequence?: number[];
+  patterns?: number;
+  playingSequence: number;
+  height?: number;
+  direction?: "vertical" | "horizontal";
 }
 
 interface SequenceItemProps {
-  active: boolean,
-  selected: boolean,
+  active: boolean;
+  selected: boolean;
 }
 
 const SequenceItem = styled.div<SequenceItemProps>`
@@ -77,25 +77,30 @@ export const SequenceEditorFwd = ({
     [dispatch]
   );
 
-  const play = useSelector(
-    (state: RootState) => state.tracker.playing
-  );
+  const play = useSelector((state: RootState) => state.tracker.playing);
 
   if (play && playingSequence !== -1) {
     setSequenceId(playingSequence);
   }
 
-  const sequenceOptions:SequenceOption[] = Array.from(Array(patterns||0).keys()).map((i) => ({
+  const sequenceOptions: SequenceOption[] = Array.from(
+    Array(patterns || 0).keys()
+  ).map((i) => ({
     value: i,
-    label: `${i}`.padStart(2, "0")
+    label: `${i}`.padStart(2, "0"),
   }));
 
-  const editSequence = useCallback((index: number, newValue: SequenceOption) => {
-    dispatch(trackerDocumentActions.editSequence({
-      sequenceIndex: index,
-      sequenceId: newValue.value
-    }));
-  }, [dispatch]);
+  const editSequence = useCallback(
+    (index: number, newValue: SequenceOption) => {
+      dispatch(
+        trackerDocumentActions.editSequence({
+          sequenceIndex: index,
+          sequenceId: newValue.value,
+        })
+      );
+    },
+    [dispatch]
+  );
 
   const handleKeys = useCallback(
     (e: KeyboardEvent) => {
@@ -124,10 +129,10 @@ export const SequenceEditorFwd = ({
   });
 
   return (
-    <div 
+    <div
       tabIndex={0}
       style={{
-        height, 
+        height,
         display: "flex",
         flexDirection: direction === "horizontal" ? "row" : "column",
         overflow: direction === "horizontal" ? "auto hidden" : "hidden scroll",
@@ -135,32 +140,32 @@ export const SequenceEditorFwd = ({
       onFocus={() => setHasFocus(true)}
       onBlur={() => setHasFocus(false)}
     >
-      {sequence && sequence.map(
-        (item, i) =>
-        <div>
-          <SequenceItem
-            onClick={() => setSequenceId(i)}
-            selected={i === sequenceId}
-            active={playingSequence === i}
-          >
-            <div style={{padding: "0 0 2px 2px"}}>{i}:</div> 
-            <Select
-              value={sequenceOptions.find((i) => i.value === item)}
-              options={sequenceOptions}
-              onFocus={() => setSelectHasFocus(true)}
-              onBlur={() => setSelectHasFocus(false)}
-              onChange={(newValue: SequenceOption) => {
-                editSequence(i, newValue);
-              }}
-            />   
-          </SequenceItem>
-        </div>
-      )}
+      {sequence &&
+        sequence.map((item, i) => (
+          <div>
+            <SequenceItem
+              onClick={() => setSequenceId(i)}
+              selected={i === sequenceId}
+              active={playingSequence === i}
+            >
+              <div style={{ padding: "0 0 2px 2px" }}>{i}:</div>
+              <Select
+                value={sequenceOptions.find((i) => i.value === item)}
+                options={sequenceOptions}
+                onFocus={() => setSelectHasFocus(true)}
+                onBlur={() => setSelectHasFocus(false)}
+                onChange={(newValue: SequenceOption) => {
+                  editSequence(i, newValue);
+                }}
+              />
+            </SequenceItem>
+          </div>
+        ))}
       {/* <AddSequenceButton>
         <PlusIcon/>
       </AddSequenceButton> */}
     </div>
-  )
-}
+  );
+};
 
 export const SequenceEditor = React.memo(SequenceEditorFwd);

@@ -10,7 +10,6 @@ import ScriptEventFormInput from "./ScriptEventFormInput";
 const genKey = (id, key, index) => `${id}_${key}_${index || 0}`;
 
 class ScriptEventFormField extends Component {
-
   onChange = (newValue, valueIndex) => {
     const { field, value, onChange } = this.props;
     const { key } = field;
@@ -23,20 +22,20 @@ class ScriptEventFormField extends Component {
               return v;
             }
             return newValue;
-          })
+          }),
         },
         field.postUpdate
       );
     }
     return onChange(
       {
-        [key]: newValue
+        [key]: newValue,
       },
       field.postUpdate
     );
   };
 
-  onAddValue = valueIndex => e => {
+  onAddValue = (valueIndex) => (e) => {
     const { onChange, field, value } = this.props;
     const { key } = field;
     return onChange(
@@ -46,18 +45,18 @@ class ScriptEventFormField extends Component {
           value.slice(0, valueIndex + 1),
           field.defaultValue,
           value.slice(valueIndex + 1)
-        )
+        ),
       },
       field.postUpdate
     );
   };
 
-  onRemoveValue = valueIndex => e => {
+  onRemoveValue = (valueIndex) => (e) => {
     const { onChange, field, value } = this.props;
     const { key } = field;
     return onChange(
       {
-        [key]: value.filter((_v, i) => i !== valueIndex)
+        [key]: value.filter((_v, i) => i !== valueIndex),
       },
       field.postUpdate
     );
@@ -75,7 +74,7 @@ class ScriptEventFormField extends Component {
       return (
         <div
           className={cx("ScriptEditorEvent__Else", {
-            "ScriptEditorEvent__Else--Open": !value
+            "ScriptEditorEvent__Else--Open": !value,
           })}
           onClick={() => this.onChange(!value)}
         >
@@ -192,7 +191,7 @@ ScriptEventFormField.propTypes = {
 
 ScriptEventFormField.defaultProps = {
   value: "",
-  args: {}
+  args: {},
 };
 
 export default ScriptEventFormField;

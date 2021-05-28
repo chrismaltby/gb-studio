@@ -6,7 +6,7 @@ const BACKUP_EXTENSION = "bak";
 const TMP_EXTENSION = "new";
 
 export const backupFile = (path, callback) => {
-  access(path, constants.F_OK, err => {
+  access(path, constants.F_OK, (err) => {
     if (!err) {
       return copyFile(path, `${path}.${BACKUP_EXTENSION}`, callback);
     }
@@ -19,7 +19,7 @@ export const writeFileWithBackup = (path, data, options, callback) => {
     callback = options;
     options = null;
   }
-  return backupFile(path, backupError => {
+  return backupFile(path, (backupError) => {
     if (backupError) {
       return callback(backupError);
     }
@@ -27,7 +27,7 @@ export const writeFileWithBackup = (path, data, options, callback) => {
       `${path}.${TMP_EXTENSION}`,
       data,
       options,
-      writeError => {
+      (writeError) => {
         if (writeError) {
           return callback(writeError);
         }
@@ -40,7 +40,7 @@ export const writeFileWithBackup = (path, data, options, callback) => {
 
 export const writeFileWithBackupAsync = (path, data, options) => {
   return new Promise((resolve, reject) => {
-    writeFileWithBackup(path, data, options, err => {
+    writeFileWithBackup(path, data, options, (err) => {
       if (err) {
         return reject(err);
       }

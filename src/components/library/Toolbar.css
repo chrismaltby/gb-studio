@@ -173,7 +173,7 @@
 }
 
 /* Screen width <= 720px */
-@media (max-width:720px) {
+@media (max-width: 720px) {
   .Toolbar__DropdownButton .Toolbar__DropdownButton__Triangle {
     margin-left: -2px;
   }
@@ -184,11 +184,11 @@
 }
 
 /* Screen width >= 720px */
-@media (min-width:720px) {
+@media (min-width: 720px) {
   .Toolbar__DropdownButton .Toolbar__DropdownButton__Triangle {
     margin-left: 5px;
   }
-  
+
   .Toolbar__FixedSpacer {
     width: 20px;
   }

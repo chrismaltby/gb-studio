@@ -10,8 +10,8 @@ const fields = [
     min: 0,
     max: 10,
     step: 0.1,
-    defaultValue: 0.5
-  }
+    defaultValue: 0.5,
+  },
 ];
 
 const compile = (input, helpers) => {
@@ -28,5 +28,5 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   fields,
-  compile
+  compile,
 };

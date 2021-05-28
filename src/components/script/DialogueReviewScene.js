@@ -9,7 +9,11 @@ import { walkEvents, patchEvents } from "../../lib/helpers/eventSystem";
 import { EVENT_TEXT } from "../../lib/compiler/eventTypes";
 import DialogueReviewLine from "./DialogueReviewLine";
 import Button from "../library/Button";
-import { sceneSelectors, actorSelectors, triggerSelectors } from "../../store/features/entities/entitiesState";
+import {
+  sceneSelectors,
+  actorSelectors,
+  triggerSelectors,
+} from "../../store/features/entities/entitiesState";
 import navigationActions from "../../store/features/navigation/navigationActions";
 import editorActions from "../../store/features/editor/editorActions";
 import entitiesActions from "../../store/features/entities/entitiesActions";
@@ -21,17 +25,28 @@ class DialogueReviewScene extends Component {
       text: value,
     });
     if (type === "scene") {
-      editScene({sceneId, changes: {
-        script: newData,
-      }});
+      editScene({
+        sceneId,
+        changes: {
+          script: newData,
+        },
+      });
     } else if (type === "actor") {
-      editActor({sceneId, actorId: entityIndex, changes: {
-        script: newData,
-      }});
+      editActor({
+        sceneId,
+        actorId: entityIndex,
+        changes: {
+          script: newData,
+        },
+      });
     } else if (type === "trigger") {
-      editTrigger({sceneId, triggerId: entityIndex, changes: {
-        script: newData,
-      }});
+      editTrigger({
+        sceneId,
+        triggerId: entityIndex,
+        changes: {
+          script: newData,
+        },
+      });
     }
   };
 
@@ -105,7 +120,7 @@ DialogueReviewScene.propTypes = {
   ).isRequired,
   onToggle: PropTypes.func.isRequired,
   setSection: PropTypes.func.isRequired,
-  editSearchTerm: PropTypes.func.isRequired
+  editSearchTerm: PropTypes.func.isRequired,
 };
 
 function mapStateToProps(state, props) {

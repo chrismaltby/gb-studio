@@ -27,42 +27,51 @@ class CustomEventEditor extends Component {
     this.state = {};
   }
 
-  onEditVariableName = key => e => {
+  onEditVariableName = (key) => (e) => {
     const { editCustomEvent, customEvent } = this.props;
-    editCustomEvent({customEventId: customEvent.id, changes: {
-      variables: {
-        ...customEvent.variables,
-        [key]: {
-          ...customEvent.variables[key],
-          name: castEventValue(e)
-        }
-      }
-    }});
+    editCustomEvent({
+      customEventId: customEvent.id,
+      changes: {
+        variables: {
+          ...customEvent.variables,
+          [key]: {
+            ...customEvent.variables[key],
+            name: castEventValue(e),
+          },
+        },
+      },
+    });
   };
 
-  onEditActorName = key => e => {
+  onEditActorName = (key) => (e) => {
     const { editCustomEvent, customEvent } = this.props;
-    editCustomEvent({customEventId: customEvent.id, changes: {
-      actors: {
-        ...customEvent.actors,
-        [key]: {
-          ...customEvent.actors[key],
-          name: castEventValue(e)
-        }
-      }
-    }});
+    editCustomEvent({
+      customEventId: customEvent.id,
+      changes: {
+        actors: {
+          ...customEvent.actors,
+          [key]: {
+            ...customEvent.actors[key],
+            name: castEventValue(e),
+          },
+        },
+      },
+    });
   };
 
-  onEdit = key => e => {
+  onEdit = (key) => (e) => {
     const { editCustomEvent, customEvent } = this.props;
-    editCustomEvent({customEventId: customEvent.id, changes: {
-      [key]: castEventValue(e)
-    }});
+    editCustomEvent({
+      customEventId: customEvent.id,
+      changes: {
+        [key]: castEventValue(e),
+      },
+    });
   };
- 
+
   onRemove = () => () => {
     const { removeCustomEvent, customEvent } = this.props;
-    removeCustomEvent({customEventId: customEvent.id});
+    removeCustomEvent({ customEventId: customEvent.id });
   };
 
   render() {
@@ -76,7 +85,7 @@ class CustomEventEditor extends Component {
       <SidebarMultiColumnAuto onClick={selectSidebar}>
         <SidebarColumn>
           <FormContainer>
-          <FormHeader>
+            <FormHeader>
               <EditableText
                 name="name"
                 placeholder={customEventName(customEvent, index)}
@@ -106,7 +115,7 @@ class CustomEventEditor extends Component {
                   onChange={this.onEdit("description")}
                 />
               </label>
-            </FormField>            
+            </FormField>
           </FormContainer>
           <div>
             <SidebarHeading title={l10n("SIDEBAR_PARAMETERS")} />
@@ -151,7 +160,7 @@ class CustomEventEditor extends Component {
             <SidebarHeading
               title={l10n("SIDEBAR_CUSTOM_EVENT_SCRIPT")}
               buttons={
-                <ScriptEditorDropdownButton 
+                <ScriptEditorDropdownButton
                   value={customEvent.script}
                   onChange={this.onEdit("script")}
                 />
@@ -177,30 +186,27 @@ CustomEventEditor.propTypes = {
   editCustomEvent: PropTypes.func.isRequired,
   removeCustomEvent: PropTypes.func.isRequired,
   selectSidebar: PropTypes.func.isRequired,
-  index: PropTypes.number.isRequired
+  index: PropTypes.number.isRequired,
 };
 
 CustomEventEditor.defaultProps = {
-  customEvent: null
+  customEvent: null,
 };
 
 function mapStateToProps(state, props) {
   const customEvents = customEventSelectors.selectAll(state);
   const customEvent = customEventSelectors.selectById(state, props.id);
-  const index = customEvents.findIndex(p => p.id === props.id);
+  const index = customEvents.findIndex((p) => p.id === props.id);
   return {
     customEvent,
-    index
+    index,
   };
 }
 
 const mapDispatchToProps = {
   editCustomEvent: entitiesActions.editCustomEvent,
   removeCustomEvent: entitiesActions.removeCustomEvent,
-  selectSidebar: editorActions.selectSidebar
+  selectSidebar: editorActions.selectSidebar,
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(CustomEventEditor);
+export default connect(mapStateToProps, mapDispatchToProps)(CustomEventEditor);

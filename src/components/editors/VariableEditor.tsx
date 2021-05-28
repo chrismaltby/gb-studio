@@ -87,24 +87,23 @@ const actorName = (actor: Actor, actorIndex: number) =>
 const triggerName = (trigger: Trigger, triggerIndex: number) =>
   trigger.name ? trigger.name : `Trigger ${triggerIndex + 1}`;
 
-const onVariableEventContainingId = (
-  id: string,
-  callback: (event: ScriptEvent) => void
-) => (event: ScriptEvent) => {
-  if (event.args) {
-    for (let arg in event.args) {
-      if (isVariableField(event.command, arg, event.args)) {
-        const argValue = event.args[arg];
-        if (
-          argValue === id ||
-          (argValue?.type === "variable" && argValue?.value === id)
-        ) {
-          callback(event);
+const onVariableEventContainingId =
+  (id: string, callback: (event: ScriptEvent) => void) =>
+  (event: ScriptEvent) => {
+    if (event.args) {
+      for (let arg in event.args) {
+        if (isVariableField(event.command, arg, event.args)) {
+          const argValue = event.args[arg];
+          if (
+            argValue === id ||
+            (argValue?.type === "variable" && argValue?.value === id)
+          ) {
+            callback(event);
+          }
         }
       }
     }
-  }
-};
+  };
 
 const UsesWrapper = styled.div`
   position: absolute;

@@ -32,7 +32,9 @@
   border-left: 1px solid var(--sidebar-border-color);
 }
 
-.ScriptEditorEvent__Children .ScriptEditorEvent:first-child > .ScriptEditorEvent__Content {
+.ScriptEditorEvent__Children
+  .ScriptEditorEvent:first-child
+  > .ScriptEditorEvent__Content {
   border-top: 1px solid var(--sidebar-border-color);
 }
 
@@ -46,7 +48,9 @@
   color: var(--script-command-text-color);
 }
 
-.ScriptEditorEvent:nth-child(odd) > .ScriptEditorEvent__Content > .ScriptEditorEvent__Command {
+.ScriptEditorEvent:nth-child(odd)
+  > .ScriptEditorEvent__Content
+  > .ScriptEditorEvent__Command {
   background: var(--script-command-bg-color-alt);
 }
 
@@ -70,15 +74,21 @@
 
 /* Conditional Level 1 */
 
-.ScriptEditorEvent--Conditional > .ScriptEditorEvent__Content > .ScriptEventForm {
+.ScriptEditorEvent--Conditional
+  > .ScriptEditorEvent__Content
+  > .ScriptEventForm {
   border-left: 10px solid var(--conditional-level1);
 }
 
-.ScriptEditorEvent--Conditional > .ScriptEditorEvent__Content > .ScriptEditorEvent__Command {
+.ScriptEditorEvent--Conditional
+  > .ScriptEditorEvent__Content
+  > .ScriptEditorEvent__Command {
   background: var(--conditional-level1);
 }
 
-.ScriptEditorEvent--Conditional .ScriptEditorEvent__Content .ScriptEditorEvent__Else {
+.ScriptEditorEvent--Conditional
+  .ScriptEditorEvent__Content
+  .ScriptEditorEvent__Else {
   background: var(--conditional-level1);
 }
 
@@ -94,11 +104,16 @@
   background: var(--conditional-level1-alt);
 }
 
-.ScriptEditorEvent--Conditional:nth-child(odd) .ScriptEditorEvent__Content .ScriptEditorEvent__Else {
+.ScriptEditorEvent--Conditional:nth-child(odd)
+  .ScriptEditorEvent__Content
+  .ScriptEditorEvent__Else {
   background: var(--conditional-level1-alt);
 }
 
-.ScriptEditorEvent--Conditional .ScriptEditorEvent__Content .FormField + .ScriptEditorEvent__Else {
+.ScriptEditorEvent--Conditional
+  .ScriptEditorEvent__Content
+  .FormField
+  + .ScriptEditorEvent__Else {
   margin-top: 10px;
 }
 
@@ -651,7 +666,9 @@
   padding-top: 0;
 }
 
-.ScriptEditorEvent--Conditional > .ScriptEditorEvent__Content > .ScriptEditorEvent__Children {
+.ScriptEditorEvent--Conditional
+  > .ScriptEditorEvent__Content
+  > .ScriptEditorEvent__Children {
   margin-left: 10px;
   margin-bottom: 10px;
   border-bottom: 1px solid var(--sidebar-border-color);
@@ -680,7 +697,7 @@
   width: 100%;
   box-sizing: border-box;
   height: auto;
-  font-family: 'Courier New', Courier, monospace;
+  font-family: "Courier New", Courier, monospace;
 }
 
 .ScriptEditorEvent__FormRow {

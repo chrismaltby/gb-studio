@@ -250,22 +250,22 @@ const MathError = styled.div`
   color: red;
 `;
 
-const searchVariables = (variables: NamedVariable[], wrapper: string) => (
-  query: string
-): SuggestionDataItem[] => {
-  const upperSearch = query.toUpperCase();
-  return variables
-    .filter(
-      (v) =>
-        v.code.indexOf(upperSearch) > -1 ||
-        v.name.toUpperCase().indexOf(upperSearch) > -1
-    )
-    .slice(0, 5)
-    .map((v) => ({
-      id: v.code,
-      display: `$${v.name}`,
-    }));
-};
+const searchVariables =
+  (variables: NamedVariable[], wrapper: string) =>
+  (query: string): SuggestionDataItem[] => {
+    const upperSearch = query.toUpperCase();
+    return variables
+      .filter(
+        (v) =>
+          v.code.indexOf(upperSearch) > -1 ||
+          v.name.toUpperCase().indexOf(upperSearch) > -1
+      )
+      .slice(0, 5)
+      .map((v) => ({
+        id: v.code,
+        display: `$${v.name}`,
+      }));
+  };
 
 export interface MathTextareaProps {
   id?: string;

@@ -9,9 +9,7 @@ const MusicPage = () => {
     (state: RootState) => state.project.present.settings
   );
 
-  return (
-    settings.musicDriver === "huge" ? <MusicPageUge /> : <MusicPageMod />
-  )
+  return settings.musicDriver === "huge" ? <MusicPageUge /> : <MusicPageMod />;
 };
 
 export default MusicPage;

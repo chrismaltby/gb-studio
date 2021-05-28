@@ -29,36 +29,31 @@ const rootReducer = combineReducers({
   clipboard,
   sprite,
   tracker,
-  trackerDocument: undoable(trackerDocument, 
-    {
-      limit: 20,
-      initTypes: ['@@TRACKER_INIT'],
-      filter: (_action, currentState, previousHistory) => {
-        return (
-          _action.type.startsWith("tracker/loadSong/fulfilled") ||
-          _action.type.startsWith("tracker/edit") ||
-          _action.type.startsWith("tracker/transpose")
-        )
-      },
-      ignoreInitialState: true,
-    }
-  ),
-  project: undoable(
-    combineReducers({ entities, settings, metadata }),
-    {
-      limit: 20,
-      filter: (_action, currentState, previousHistory) => {
-        const shouldStoreUndo =
-          currentState !== previousHistory.present &&
-          Date.now() > lastEntityUndoStateTime + UNDO_THROTTLE;
-        if (shouldStoreUndo) {
-          lastEntityUndoStateTime = Date.now();
-        }
-        return shouldStoreUndo;
-      },
-      initTypes: ["@@redux/INIT", "@@INIT"],
-    }
-  ),
+  trackerDocument: undoable(trackerDocument, {
+    limit: 20,
+    initTypes: ["@@TRACKER_INIT"],
+    filter: (_action, currentState, previousHistory) => {
+      return (
+        _action.type.startsWith("tracker/loadSong/fulfilled") ||
+        _action.type.startsWith("tracker/edit") ||
+        _action.type.startsWith("tracker/transpose")
+      );
+    },
+    ignoreInitialState: true,
+  }),
+  project: undoable(combineReducers({ entities, settings, metadata }), {
+    limit: 20,
+    filter: (_action, currentState, previousHistory) => {
+      const shouldStoreUndo =
+        currentState !== previousHistory.present &&
+        Date.now() > lastEntityUndoStateTime + UNDO_THROTTLE;
+      if (shouldStoreUndo) {
+        lastEntityUndoStateTime = Date.now();
+      }
+      return shouldStoreUndo;
+    },
+    initTypes: ["@@redux/INIT", "@@INIT"],
+  }),
   error,
   warnings,
 });

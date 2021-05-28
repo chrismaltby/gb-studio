@@ -35,21 +35,15 @@ const loadProject = async (projectPath) => {
 
   const projectRoot = path.dirname(projectPath);
 
-  const [
-    backgrounds,
-    sprites,
-    music,
-    fonts,
-    avatars,
-    emotes,
-  ] = await Promise.all([
-    loadAllBackgroundData(projectRoot),
-    loadAllSpriteData(projectRoot),
-    loadAllMusicData(projectRoot),
-    loadAllFontData(projectRoot),
-    loadAllAvatarData(projectRoot),
-    loadAllEmoteData(projectRoot),
-  ]);
+  const [backgrounds, sprites, music, fonts, avatars, emotes] =
+    await Promise.all([
+      loadAllBackgroundData(projectRoot),
+      loadAllSpriteData(projectRoot),
+      loadAllMusicData(projectRoot),
+      loadAllFontData(projectRoot),
+      loadAllAvatarData(projectRoot),
+      loadAllEmoteData(projectRoot),
+    ]);
 
   // Merge stored backgrounds data with file system data
   const oldBackgroundByFilename = indexByFilename(json.backgrounds || []);

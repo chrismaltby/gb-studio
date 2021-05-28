@@ -36,13 +36,13 @@ class EditorSidebar extends Component {
 EditorSidebar.propTypes = {
   type: PropTypes.string,
   entityId: PropTypes.string,
-  sceneId: PropTypes.string
+  sceneId: PropTypes.string,
 };
 
 EditorSidebar.defaultProps = {
   type: "",
   entityId: "",
-  sceneId: ""
+  sceneId: "",
 };
 
 function mapStateToProps(state) {
@@ -52,7 +52,4 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = {};
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(EditorSidebar);
+export default connect(mapStateToProps, mapDispatchToProps)(EditorSidebar);

@@ -7,22 +7,18 @@ import { RootState } from "../../store/configureStore";
 import { FormRow, FormField } from "../ui/form/FormLayout";
 
 interface WaveEditorFormProps {
-  waveId: number,
+  waveId: number;
   onChange: (value: ValueType<any>, actionMeta: ActionMeta<any>) => void;
 }
 
-export const WaveEditorForm = ({
-  waveId,
-  onChange
-}: WaveEditorFormProps) => {
-
-  const song = useSelector((state: RootState) =>
-    state.trackerDocument.present.song
+export const WaveEditorForm = ({ waveId, onChange }: WaveEditorFormProps) => {
+  const song = useSelector(
+    (state: RootState) => state.trackerDocument.present.song
   );
 
   const waveOptions = song?.waves.map((wave: Uint8Array, i: number) => ({
     value: i,
-    label: `Waveform ${i}`
+    label: `Waveform ${i}`,
   }));
   const selectedWave = waveOptions?.find((wave) => wave.value === waveId);
 
@@ -35,7 +31,7 @@ export const WaveEditorForm = ({
     if (!canvas) {
       return;
     }
-  
+
     const drawWidth = canvas.width - 10;
     const drawHeight = canvas.height - 10;
     const ctx = canvas.getContext("2d");
@@ -47,7 +43,6 @@ export const WaveEditorForm = ({
     canvas.width = canvas.clientWidth;
 
     if (ctx) {
-
       const pointLength = drawWidth / (song.waves[waveId].length - 1);
       const pointHeight = drawHeight / 15;
 
@@ -64,10 +59,7 @@ export const WaveEditorForm = ({
   return (
     <>
       <FormRow>
-        <FormField
-          name="wave_index"
-          label={l10n("FIELD_WAVEFORM")}
-        >
+        <FormField name="wave_index" label={l10n("FIELD_WAVEFORM")}>
           <Select
             name="wave_index"
             value={selectedWave}
@@ -75,7 +67,6 @@ export const WaveEditorForm = ({
             onChange={onChange}
           />
         </FormField>
-
       </FormRow>
       <FormRow>
         <canvas
@@ -91,4 +82,4 @@ export const WaveEditorForm = ({
       </FormRow>
     </>
   );
-}
+};

@@ -178,7 +178,7 @@ class CustomControlsPicker extends Component {
           <Button onClick={this.onRestoreDefault}>
             {l10n("FIELD_RESTORE_DEFAULT")}
           </Button>
-        </CardButtons>        
+        </CardButtons>
       </>
     );
   }
@@ -198,11 +198,11 @@ CustomControlsPicker.propTypes = {
     customControlsSelect: CustomControlPropType,
   }).isRequired,
   editProjectSettings: PropTypes.func.isRequired,
-  searchTerm: PropTypes.string
+  searchTerm: PropTypes.string,
 };
 
 CustomControlsPicker.defaultProps = {
-  searchTerm: ""
+  searchTerm: "",
 };
 
 function mapStateToProps(state) {

@@ -10,9 +10,9 @@ import { customEventSelectors } from "../../store/features/entities/entitiesStat
 
 const menuPortalEl = document.getElementById("MenuPortal");
 
-const allCustomEventActors = Array.from(Array(10).keys()).map(i => ({
+const allCustomEventActors = Array.from(Array(10).keys()).map((i) => ({
   id: String(i),
-  name: `Actor ${String.fromCharCode("A".charCodeAt(0) + i)}`
+  name: `Actor ${String.fromCharCode("A".charCodeAt(0) + i)}`,
 }));
 
 const properties = {
@@ -56,7 +56,7 @@ const GroupWithData = connect((state, ownProps) => {
     data: { actorId },
   } = ownProps;
   const actor =
-    actorsLookup[actorId] || 
+    actorsLookup[actorId] ||
     allCustomEventActors[actorId] ||
     getCachedObject({
       id: "player",
@@ -79,20 +79,20 @@ const GroupWithData = connect((state, ownProps) => {
 // Select -------------------------------------------------------------------
 
 class CustomEventPropertySelect extends Component {
-
   defaultValue = () => {
     const { playerSpriteSheetId } = this.props;
     return {
       name: "Player",
-      spriteSheetId: playerSpriteSheetId
+      spriteSheetId: playerSpriteSheetId,
     };
   };
 
-  renderDropdownIndicator = props => {
+  renderDropdownIndicator = (props) => {
     const { value } = this.props;
     const actorValue = value && value.replace(/:.*/, "");
     const actor =
-      allCustomEventActors.find(a => a.id === actorValue) || this.defaultValue();
+      allCustomEventActors.find((a) => a.id === actorValue) ||
+      this.defaultValue();
     if (!actor || (actor && !actor.spriteSheetId)) {
       return <components.DropdownIndicator {...props} />;
     }
@@ -104,13 +104,7 @@ class CustomEventPropertySelect extends Component {
   };
 
   render() {
-    const {
-      actorIds,
-      id,
-      label,
-      value,
-      onChange,
-    } = this.props;
+    const { actorIds, id, label, value, onChange } = this.props;
 
     const generateActorOptions = (id) => {
       return Object.keys(properties).map((property) => ({
@@ -185,7 +179,8 @@ function mapStateToProps(state, ownProps) {
 
   const actorId = actorValue;
   const actor =
-    actorsLookup[actorId] || allCustomEventActors[actorId] ||
+    actorsLookup[actorId] ||
+    allCustomEventActors[actorId] ||
     getCachedObject({
       id: "player",
     });
@@ -200,7 +195,7 @@ function mapStateToProps(state, ownProps) {
   return {
     label,
     actorIds,
-    playerSpriteSheetId
+    playerSpriteSheetId,
   };
 }
 

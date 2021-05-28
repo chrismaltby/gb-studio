@@ -107,14 +107,18 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
         isOpen(scene.scene.id)
           ? [
               scene.item,
-              ...(scene.scene.actors
-                .map((actorId) => actorsLookup[actorId])
-                .filter((i) => i) as Actor[])
+              ...(
+                scene.scene.actors
+                  .map((actorId) => actorsLookup[actorId])
+                  .filter((i) => i) as Actor[]
+              )
                 .map((actor) => actorToNavigatorItem(actor, scene.scene))
                 .sort(sortByName),
-              ...(scene.scene.triggers
-                .map((triggerId) => triggersLookup[triggerId])
-                .filter((i) => i) as Trigger[])
+              ...(
+                scene.scene.triggers
+                  .map((triggerId) => triggersLookup[triggerId])
+                  .filter((i) => i) as Trigger[]
+              )
                 .map((trigger) => triggerToNavigatorItem(trigger, scene.scene))
                 .sort(sortByName),
             ]

@@ -4,7 +4,7 @@ const id = "EVENT_SET_TIMER_SCRIPT";
 
 const fields = [
   {
-    label: l10n("FIELD_SET_TIMER")
+    label: l10n("FIELD_SET_TIMER"),
   },
   {
     key: "duration",
@@ -13,7 +13,7 @@ const fields = [
     min: 0.25,
     max: 60,
     step: 0.25,
-    defaultValue: 10.0
+    defaultValue: 10.0,
   },
   {
     key: "__scriptTabs",
@@ -21,7 +21,7 @@ const fields = [
     defaultValue: "end",
     values: {
       end: l10n("FIELD_ON_TIMER_END"),
-    }
+    },
   },
   {
     key: "script",
@@ -29,20 +29,20 @@ const fields = [
     conditions: [
       {
         key: "__scriptTabs",
-        in: [undefined, "end"]
-      }
-    ]
-  }
+        in: [undefined, "end"],
+      },
+    ],
+  },
 ];
 
 const compile = (input, helpers) => {
   const { timerScriptSet } = helpers;
-  let duration = (typeof input.duration === "number") ? input.duration : 10.0;
+  let duration = typeof input.duration === "number" ? input.duration : 10.0;
   timerScriptSet(duration, input.script);
 };
 
 module.exports = {
   id,
   fields,
-  compile
+  compile,
 };

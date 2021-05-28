@@ -7,21 +7,21 @@ import { LATEST_PROJECT_VERSION } from "./migrateProject";
 
 const dialog = remote && remote.dialog;
 
-export const needsUpdate = currentVersion => {
+export const needsUpdate = (currentVersion) => {
   if (semverValid(currentVersion) && semverValid(LATEST_PROJECT_VERSION)) {
     return semverGt(LATEST_PROJECT_VERSION, currentVersion);
   }
   return false;
 };
 
-export const fromFuture = currentVersion => {
+export const fromFuture = (currentVersion) => {
   if (semverValid(currentVersion) && semverValid(LATEST_PROJECT_VERSION)) {
     return semverGt(currentVersion, LATEST_PROJECT_VERSION);
   }
   return false;
 };
 
-export default async projectPath => {
+export default async (projectPath) => {
   // eslint-disable-next-line global-require
   const l10n = require("../helpers/l10n").default;
 
@@ -37,7 +37,7 @@ export default async projectPath => {
       buttons: [
         l10n("DIALOG_DOWNLOAD"),
         l10n("DIALOG_OPEN_ANYWAY"),
-        l10n("DIALOG_CANCEL")
+        l10n("DIALOG_CANCEL"),
       ],
       defaultId: 0,
       cancelId: 1,
@@ -45,10 +45,12 @@ export default async projectPath => {
       message: l10n("DIALOG_FUTURE"),
       detail: l10n("DIALOG_FUTURE_DESCRIPTION", {
         currentVersion,
-        version: LATEST_PROJECT_VERSION
-      })
+        version: LATEST_PROJECT_VERSION,
+      }),
     };
-    const { response: updateButtonIndex } = await dialog.showMessageBox(dialogOptions);
+    const { response: updateButtonIndex } = await dialog.showMessageBox(
+      dialogOptions
+    );
     if (updateButtonIndex === 0) {
       await shell.openExternal("https://www.gbstudio.dev/download/");
       return false;
@@ -67,9 +69,9 @@ export default async projectPath => {
     type: "info",
     buttons: [
       l10n("DIALOG_MIGRATE", {
-        version: LATEST_PROJECT_VERSION
+        version: LATEST_PROJECT_VERSION,
       }),
-      l10n("DIALOG_CANCEL")
+      l10n("DIALOG_CANCEL"),
     ],
     defaultId: 0,
     cancelId: 1,
@@ -77,11 +79,12 @@ export default async projectPath => {
     message: l10n("DIALOG_PROJECT_NEED_MIGRATION"),
     detail: l10n("DIALOG_MIGRATION_DESCRIPTION", {
       currentVersion,
-      version: LATEST_PROJECT_VERSION
-    })
+      version: LATEST_PROJECT_VERSION,
+    }),
   };
 
-  const {response: buttonIndex, checkboxChecked} = await dialog.showMessageBox(dialogOptions);
+  const { response: buttonIndex, checkboxChecked } =
+    await dialog.showMessageBox(dialogOptions);
 
   if (checkboxChecked) {
     // Ignore all updates until manually check for updates

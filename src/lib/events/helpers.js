@@ -1,20 +1,20 @@
 import { commandIndex as cmd, JUMP } from "./scriptCommands";
 
 export const getActorIndex = (actorId, scene) => {
-  return scene.actors.findIndex(a => a.id === actorId) + 1;
+  return scene.actors.findIndex((a) => a.id === actorId) + 1;
 };
 
 export const getActor = (actorId, scene) => {
-  return scene.actors.find(a => a.id === actorId);
+  return scene.actors.find((a) => a.id === actorId);
 };
 
 export const getMusicIndex = (musicId, music) => {
-  const musicIndex = music.findIndex(track => track.id === musicId);
+  const musicIndex = music.findIndex((track) => track.id === musicId);
   return musicIndex;
 };
 
 export const getSpriteIndex = (spriteId, sprites) => {
-  const spriteIndex = sprites.findIndex(sprite => sprite.id === spriteId);
+  const spriteIndex = sprites.findIndex((sprite) => sprite.id === spriteId);
   if (spriteIndex === -1) {
     return 0;
   }
@@ -22,15 +22,15 @@ export const getSpriteIndex = (spriteId, sprites) => {
 };
 
 export const getSprite = (spriteId, sprites) => {
-  return sprites.find(sprite => sprite.id === spriteId);
+  return sprites.find((sprite) => sprite.id === spriteId);
 };
 
 export const getSpriteOffset = (spriteId, sprites, scene) => {
   const spriteIndex = getSpriteIndex(spriteId, sprites);
 
   let spriteOffset = 6;
-  for(let i=0; i<scene.sprites.length; i++) {
-    if(scene.sprites[i] === spriteIndex) {
+  for (let i = 0; i < scene.sprites.length; i++) {
+    if (scene.sprites[i] === spriteIndex) {
       break;
     }
     const sprite = sprites[scene.sprites[i]];
@@ -38,12 +38,12 @@ export const getSpriteOffset = (spriteId, sprites, scene) => {
   }
 
   return spriteOffset;
-}
+};
 
 export const getSpriteSceneIndex = (spriteId, sprites, scene) => {
   const spriteIndex = getSpriteIndex(spriteId, sprites);
   return scene.sprites.indexOf(spriteIndex) + 1;
-}
+};
 
 export const getVariableIndex = (variable, variables) => {
   const normalisedVariable = String(variable)

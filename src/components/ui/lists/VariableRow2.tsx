@@ -29,7 +29,7 @@ export const VariableRow: React.FC<VariableRowProps> = ({ item }) => {
         <span style={{ color: "#999" }}>$00$</span> {item.name}
       </div>
       <ListItemButton
-        onClick={e => {
+        onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
         }}

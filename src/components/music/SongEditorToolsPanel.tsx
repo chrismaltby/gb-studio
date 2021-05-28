@@ -31,27 +31,19 @@ const Wrapper = styled(FloatingPanel)`
   z-index: 10;
 `;
 
-const SongEditorToolsPanel = ({
-  selectedSong
-}: SongEditorToolsPanelProps) => {
+const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
   const dispatch = useDispatch();
   const projectRoot = useSelector((state: RootState) => state.document.root);
 
-  const play = useSelector(
-    (state: RootState) => state.tracker.playing
-  );
+  const play = useSelector((state: RootState) => state.tracker.playing);
 
   const modified = useSelector(
     (state: RootState) => state.trackerDocument.present.modified
   );
 
-  const view = useSelector(
-    (state: RootState) => state.tracker.view
-  );
+  const view = useSelector((state: RootState) => state.tracker.view);
 
-  const tool = useSelector(
-    (state: RootState) => state.tracker.tool
-  );
+  const tool = useSelector((state: RootState) => state.tracker.tool);
 
   const togglePlay = useCallback(() => {
     if (!play) {
@@ -69,24 +61,27 @@ const SongEditorToolsPanel = ({
     }
   }, [dispatch, view]);
 
-  const setTool = useCallback((tool: "pencil" | "eraser" | null) => {
-    dispatch(trackerActions.setTool(tool));
-  }, [dispatch]);
+  const setTool = useCallback(
+    (tool: "pencil" | "eraser" | null) => {
+      dispatch(trackerActions.setTool(tool));
+    },
+    [dispatch]
+  );
 
   const saveSong = useCallback(() => {
     if (selectedSong && modified) {
-      const path = `${assetFilename(
-        projectRoot,
-        "music",
-        selectedSong
-      )}`
+      const path = `${assetFilename(projectRoot, "music", selectedSong)}`;
       dispatch(saveSongFile(path));
     }
   }, [dispatch, modified, projectRoot, selectedSong]);
 
   return (
     <Wrapper>
-      <Button variant="transparent" disabled={!selectedSong || !modified} onClick={saveSong}>
+      <Button
+        variant="transparent"
+        disabled={!selectedSong || !modified}
+        onClick={saveSong}
+      >
         <SaveIcon />
       </Button>
       <FloatingPanelDivider />
@@ -97,24 +92,26 @@ const SongEditorToolsPanel = ({
       <Button variant="transparent" onClick={toggleView}>
         {view === "roll" ? <NoiseIcon /> : <SongIcon />}
       </Button>
-      {view === "roll" ?
-      <>
-        <Button 
-          variant="transparent"
-          onClick={() => setTool("pencil")}
-          active={tool === "pencil"}
-        >
-          <PencilIcon />
-        </Button>
-        <Button 
-          variant="transparent"
-          onClick={() => setTool("eraser")}
-          active={tool === "eraser"}
-        >
-          <EraserIcon />
-        </Button>
-      </>
-      : ""}
+      {view === "roll" ? (
+        <>
+          <Button
+            variant="transparent"
+            onClick={() => setTool("pencil")}
+            active={tool === "pencil"}
+          >
+            <PencilIcon />
+          </Button>
+          <Button
+            variant="transparent"
+            onClick={() => setTool("eraser")}
+            active={tool === "eraser"}
+          >
+            <EraserIcon />
+          </Button>
+        </>
+      ) : (
+        ""
+      )}
     </Wrapper>
   );
 };

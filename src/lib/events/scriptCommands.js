@@ -226,7 +226,7 @@ export const scriptCommands = [
   ENGINE_FIELD_STORE_WORD,
 ];
 
-export const commandIndex = key => {
+export const commandIndex = (key) => {
   const index = scriptCommands.indexOf(key);
   if (index < 0) {
     throw new Error(`Invalid command ${key}.`);

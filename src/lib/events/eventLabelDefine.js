@@ -6,8 +6,8 @@ const fields = [
   {
     key: "label",
     label: l10n("FIELD_LABEL"),
-    type: "text"
-  }
+    type: "text",
+  },
 ];
 
 const compile = (input, helpers) => {
@@ -18,5 +18,5 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   fields,
-  compile
+  compile,
 };

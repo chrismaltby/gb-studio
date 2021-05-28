@@ -11,23 +11,23 @@ class DirectionPicker extends Component {
       {
         key: "left",
         name: "Left",
-        title: l10n("FIELD_DIRECTION_LEFT")
+        title: l10n("FIELD_DIRECTION_LEFT"),
       },
       {
         key: "up",
         name: "Up",
-        title: l10n("FIELD_DIRECTION_UP")
+        title: l10n("FIELD_DIRECTION_UP"),
       },
       {
         key: "down",
         name: "Down",
-        title: l10n("FIELD_DIRECTION_DOWN")
+        title: l10n("FIELD_DIRECTION_DOWN"),
       },
       {
         key: "right",
         name: "Right",
-        title: l10n("FIELD_DIRECTION_RIGHT")
-      }
+        title: l10n("FIELD_DIRECTION_RIGHT"),
+      },
     ];
 
     return (
@@ -49,7 +49,7 @@ class DirectionPicker extends Component {
                 "DirectionPicker__Button",
                 `DirectionPicker__Button--${direction.name}`,
                 {
-                  "DirectionPicker__Button--Active": value === direction.key
+                  "DirectionPicker__Button--Active": value === direction.key,
                 }
               )}
             >
@@ -65,12 +65,12 @@ class DirectionPicker extends Component {
 DirectionPicker.propTypes = {
   id: PropTypes.string,
   value: PropTypes.string,
-  onChange: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired,
 };
 
 DirectionPicker.defaultProps = {
   id: undefined,
-  value: ""
+  value: "",
 };
 
 export default DirectionPicker;

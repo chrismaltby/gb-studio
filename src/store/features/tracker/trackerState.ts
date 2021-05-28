@@ -10,10 +10,10 @@ export interface TrackerState {
   octaveOffset: number;
   editStep: number;
   // modified: boolean;
-  view: "tracker" | "roll",
-  tool: "pencil" | "eraser" | null,
-  defaultInstruments: [number, number, number, number],
-  visibleChannels: number[],
+  view: "tracker" | "roll";
+  tool: "pencil" | "eraser" | null;
+  defaultInstruments: [number, number, number, number];
+  visibleChannels: number[];
   hoverNote: number | null;
 }
 
@@ -29,7 +29,7 @@ export const initialState: TrackerState = {
   tool: "pencil",
   defaultInstruments: [0, 0, 0, 0],
   visibleChannels: [0],
-  hoverNote: null
+  hoverNote: null,
 };
 
 const trackerSlice = createSlice({
@@ -51,7 +51,10 @@ const trackerSlice = createSlice({
     setTool: (state, _action: PayloadAction<"pencil" | "eraser" | null>) => {
       state.tool = _action.payload;
     },
-    setDefaultInstruments: (state, _action: PayloadAction<[number, number, number, number]>) => {
+    setDefaultInstruments: (
+      state,
+      _action: PayloadAction<[number, number, number, number]>
+    ) => {
       state.defaultInstruments = _action.payload;
     },
     setVisibleChannels: (state, _action: PayloadAction<number[]>) => {
@@ -65,10 +68,9 @@ const trackerSlice = createSlice({
     },
   },
   extraReducers: (builder) =>
-    builder
-      .addCase(editorActions.setSelectedSongId, (state, action) => {
-        state.playing = false;
-      })
+    builder.addCase(editorActions.setSelectedSongId, (state, action) => {
+      state.playing = false;
+    }),
 });
 
 export const { actions, reducer } = trackerSlice;

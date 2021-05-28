@@ -12,14 +12,14 @@ const localesPath = `${localesRoot}/*.json`;
 
 export const locales = glob
   .sync(localesPath)
-  .map(path => Path.basename(path, ".json"));
+  .map((path) => Path.basename(path, ".json"));
 
 const app = electron.app || (electron.remote && electron.remote.app);
 const settingsLocale = app && settings.get("locale");
 const systemLocale = app ? app.getLocale() : "en";
 const appLocale = settingsLocale || systemLocale;
 
-export const languageOverrides = locale => {
+export const languageOverrides = (locale) => {
   if (locale && locale !== "en") {
     try {
       return __non_webpack_require__(`${localesRoot}/${locale}.json`);
@@ -47,7 +47,7 @@ export const languageOverrides = locale => {
 export const defaultTranslationFn = (overrides, defaultLang) => (memo, key) => {
   return {
     ...memo,
-    [key]: overrides[key] || defaultLang[key]
+    [key]: overrides[key] || defaultLang[key],
   };
 };
 
@@ -62,7 +62,7 @@ export const defaultTranslationFn = (overrides, defaultLang) => (memo, key) => {
 export const debugTranslationFn = (memo, key) => {
   return {
     ...memo,
-    [key]: key
+    [key]: key,
   };
 };
 
@@ -74,10 +74,10 @@ export const debugTranslationFn = (memo, key) => {
  * Allows debugging which keys haven't yet been translated for the current
  * language.
  */
-export const showMissingKeysTranslationFn = overrides => (memo, key) => {
+export const showMissingKeysTranslationFn = (overrides) => (memo, key) => {
   return {
     ...memo,
-    [key]: overrides[key] || key
+    [key]: overrides[key] || key,
   };
 };
 
@@ -103,20 +103,22 @@ const translations = Object.keys(en).reduce(
 
 export const replaceParams = (string, params) => {
   let outputString = string;
-  Object.keys(params).forEach(param => {
+  Object.keys(params).forEach((param) => {
     const pattern = new RegExp(`{${param}}`, "g");
     outputString = outputString.replace(pattern, params[param]);
   });
   return outputString;
 };
 
-export const makeTranslator = l10nStrings => (key, params = null) => {
-  // console.log("LOCALISE", key, l10nStrings[key], l10nStrings);
-  const l10nString = l10nStrings[key] || key;
-  if (params) {
-    return replaceParams(l10nString, params);
-  }
-  return l10nString;
-};
+export const makeTranslator =
+  (l10nStrings) =>
+  (key, params = null) => {
+    // console.log("LOCALISE", key, l10nStrings[key], l10nStrings);
+    const l10nString = l10nStrings[key] || key;
+    if (params) {
+      return replaceParams(l10nString, params);
+    }
+    return l10nString;
+  };
 
 export default makeTranslator(translations);

@@ -6,7 +6,7 @@ const fields = [
   {
     key: "type",
     type: "soundEffect",
-    defaultValue: "beep"
+    defaultValue: "beep",
   },
   {
     key: "pitch",
@@ -15,13 +15,13 @@ const fields = [
     conditions: [
       {
         key: "type",
-        eq: "beep"
-      }
+        eq: "beep",
+      },
     ],
     min: 1,
     max: 8,
     step: 1,
-    defaultValue: 4
+    defaultValue: 4,
   },
   {
     key: "frequency",
@@ -30,13 +30,13 @@ const fields = [
     conditions: [
       {
         key: "type",
-        eq: "tone"
-      }
+        eq: "tone",
+      },
     ],
     min: 0,
     max: 20000,
     step: 1,
-    defaultValue: 200
+    defaultValue: 200,
   },
   {
     key: "duration",
@@ -45,23 +45,18 @@ const fields = [
     min: 0,
     max: 4.25,
     step: 0.01,
-    defaultValue: 0.5
+    defaultValue: 0.5,
   },
   {
     key: "wait",
     type: "checkbox",
     label: l10n("FIELD_WAIT_UNTIL_FINISHED"),
-    defaultValue: true
-  }
+    defaultValue: true,
+  },
 ];
 
 const compile = (input, helpers) => {
-  const {
-    soundPlayBeep,
-    soundStartTone,
-    soundPlayCrash,
-    wait
-  } = helpers;
+  const { soundPlayBeep, soundStartTone, soundPlayCrash, wait } = helpers;
 
   let seconds = typeof input.duration === "number" ? input.duration : 0.5;
 
@@ -84,18 +79,17 @@ const compile = (input, helpers) => {
   }
 
   // Convert seconds into frames (60fps)
-  if(input.wait) {
+  if (input.wait) {
     while (seconds > 0) {
       const time = Math.min(seconds, 1);
       wait(Math.ceil(60 * time));
       seconds -= time;
     }
   }
-
 };
 
 module.exports = {
   id,
   fields,
-  compile
+  compile,
 };

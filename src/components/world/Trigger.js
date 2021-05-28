@@ -7,16 +7,16 @@ import { triggerSelectors } from "../../store/features/entities/entitiesState";
 import { MIDDLE_MOUSE } from "../../consts";
 
 class Trigger extends Component {
-  onMouseDown = e => {
+  onMouseDown = (e) => {
     const { id, sceneId, dragTriggerStart, setTool, editable } = this.props;
     if (editable && e.nativeEvent.which !== MIDDLE_MOUSE) {
-      dragTriggerStart({sceneId, triggerId:id});
-      setTool({tool:"select"});
+      dragTriggerStart({ sceneId, triggerId: id });
+      setTool({ tool: "select" });
       window.addEventListener("mouseup", this.onMouseUp);
     }
   };
 
-  onMouseUp = e => {
+  onMouseUp = (e) => {
     const { dragTriggerStop } = this.props;
     dragTriggerStop();
     window.removeEventListener("mouseup", this.onMouseUp);
@@ -32,7 +32,7 @@ class Trigger extends Component {
           top: y * 8,
           left: x * 8,
           width: Math.max(width, 1) * 8,
-          height: Math.max(height, 1) * 8
+          height: Math.max(height, 1) * 8,
         }}
       />
     );
@@ -54,7 +54,7 @@ Trigger.propTypes = {
 };
 
 Trigger.defaultProps = {
-  selected: false
+  selected: false,
 };
 
 function mapStateToProps(state, props) {
@@ -72,17 +72,14 @@ function mapStateToProps(state, props) {
     y: y || 0,
     width: width || 1,
     height: height || 1,
-    selected
+    selected,
   };
 }
 
 const mapDispatchToProps = {
   dragTriggerStart: editorActions.dragTriggerStart,
   dragTriggerStop: editorActions.dragTriggerStop,
-  setTool: editorActions.setTool
+  setTool: editorActions.setTool,
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Trigger);
+export default connect(mapStateToProps, mapDispatchToProps)(Trigger);

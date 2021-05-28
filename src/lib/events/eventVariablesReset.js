@@ -4,8 +4,8 @@ const id = "EVENT_RESET_VARIABLES";
 
 const fields = [
   {
-    label: l10n("FIELD_RESET_VARIABLES")
-  }
+    label: l10n("FIELD_RESET_VARIABLES"),
+  },
 ];
 
 const compile = (input, helpers) => {
@@ -16,5 +16,5 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   fields,
-  compile
+  compile,
 };

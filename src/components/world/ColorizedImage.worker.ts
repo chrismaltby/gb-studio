@@ -28,7 +28,9 @@ workerCtx.onmessage = async (evt) => {
   const src = evt.data.src;
   const tiles = evt.data.tiles;
   const palettes = evt.data.palettes;
-  const palettesRGB = palettes.map((colors:string[]) => colors.map(hex2GBCrgb));
+  const palettesRGB = palettes.map((colors: string[]) =>
+    colors.map(hex2GBCrgb)
+  );
 
   let canvas: OffscreenCanvas;
   let ctx: OffscreenCanvasRenderingContext2D;
@@ -100,4 +102,4 @@ workerCtx.onmessage = async (evt) => {
   workerCtx.postMessage({ id, width, height, canvasImage }, [canvasImage]);
 };
 
-export { }
+export {};

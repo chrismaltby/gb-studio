@@ -171,7 +171,6 @@ const compileUgeTrack = async (
     warnings = (_msg) => {},
   }: CompileHugeTrackOptions
 ): Promise<string> => {
-
   const ugePath = assetFilename(projectRoot, "music", track);
   const data = await readFile(ugePath);
   const song = loadUGESong(new Uint8Array(data).buffer);

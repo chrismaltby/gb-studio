@@ -90,8 +90,8 @@ export interface ThemeInterface {
       effectParam: string;
       rollCell: {
         border: string;
-      }
-    }
+      };
+    };
   };
   borderRadius: number;
 }

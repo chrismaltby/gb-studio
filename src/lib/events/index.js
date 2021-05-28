@@ -26,9 +26,9 @@ const vm = new NodeVM({
       "../helpers/gbstudio": gbStudioHelpers,
       "../helpers/eventSystem": eventSystemHelpers,
       "../compiler/compileEntityEvents": compileEntityEvents,
-      "../helpers/trimlines": trimLines
-    }
-  }
+      "../helpers/trimlines": trimLines,
+    },
+  },
 });
 
 const eventHandlers = {
@@ -40,21 +40,21 @@ const eventHandlers = {
     }
     return {
       ...memo,
-      [handler.id]: handler
+      [handler.id]: handler,
     };
   }, {}),
-  ...plugins.events
+  ...plugins.events,
 };
 
-pluginEmitter.on("update-event", plugin => {
+pluginEmitter.on("update-event", (plugin) => {
   eventHandlers[plugin.id] = plugin;
 });
 
-pluginEmitter.on("add-event", plugin => {
+pluginEmitter.on("add-event", (plugin) => {
   eventHandlers[plugin.id] = plugin;
 });
 
-pluginEmitter.on("remove-event", plugin => {
+pluginEmitter.on("remove-event", (plugin) => {
   delete eventHandlers[plugin.id];
 });
 
@@ -63,7 +63,4 @@ const engineFieldStoreEvents = {};
 
 export default eventHandlers;
 
-export {
-  engineFieldUpdateEvents,
-  engineFieldStoreEvents
-}
+export { engineFieldUpdateEvents, engineFieldStoreEvents };

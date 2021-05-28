@@ -25,7 +25,13 @@ import {
 } from "../../consts";
 import { getCachedObject } from "../../lib/helpers/cache";
 import SceneInfo from "./SceneInfo";
-import { sceneSelectors, actorSelectors, triggerSelectors, backgroundSelectors, paletteSelectors } from "../../store/features/entities/entitiesState";
+import {
+  sceneSelectors,
+  actorSelectors,
+  triggerSelectors,
+  backgroundSelectors,
+  paletteSelectors,
+} from "../../store/features/entities/entitiesState";
 import editorActions from "../../store/features/editor/editorActions";
 import entitiesActions from "../../store/features/entities/entitiesActions";
 
@@ -76,8 +82,8 @@ class Scene extends Component {
 
     if (tX !== this.lastTX || tY !== this.lastTY || !hovered) {
       if (tX >= 0 && tY >= 0 && tX < width && tY < height) {
-        sceneHover({sceneId: id, x: tX, y: tY});
-        moveSelectedEntity({sceneId: id, x: tX, y: tY});
+        sceneHover({ sceneId: id, x: tX, y: tY });
+        moveSelectedEntity({ sceneId: id, x: tX, y: tY });
       }
       this.lastTX = tX;
       this.lastTY = tY;
@@ -86,8 +92,7 @@ class Scene extends Component {
 
   onMouseLeave = (e) => {
     const { sceneHover } = this.props;
-    sceneHover({sceneId: "", x: this.lastTX, y: this.lastTY});
-
+    sceneHover({ sceneId: "", x: this.lastTX, y: this.lastTY });
   };
 
   onStartDrag = (e) => {
@@ -115,7 +120,7 @@ class Scene extends Component {
       this.lastPageX = e.pageX;
       this.lastPageY = e.pageY;
 
-      moveScene({sceneId: id, x: x + dragDeltaX, y: y + dragDeltaY});
+      moveScene({ sceneId: id, x: x + dragDeltaX, y: y + dragDeltaY });
     }
   };
 
@@ -144,7 +149,7 @@ class Scene extends Component {
       labelOffsetLeft,
       labelOffsetRight,
       parallaxHoverLayer,
-      editable
+      editable,
     } = this.props;
 
     const {
@@ -153,12 +158,10 @@ class Scene extends Component {
       triggers = [],
       collisions = [],
       actors = [],
-      labelColor
+      labelColor,
     } = scene;
 
-    const { 
-      tileColors
-    } = image;
+    const { tileColors } = image;
 
     if (!visible) {
       return null;
@@ -280,18 +283,31 @@ class Scene extends Component {
               />
             </div>
           )}
-          {editable && <SceneCursor
-            sceneId={id}
-            enabled={hovered}
-            sceneFiltered={sceneFiltered}
-          />}
+          {editable && (
+            <SceneCursor
+              sceneId={id}
+              enabled={hovered}
+              sceneFiltered={sceneFiltered}
+            />
+          )}
           {showEntities &&
             triggers.map((triggerId) => (
-              <Trigger key={triggerId} id={triggerId} sceneId={id} editable={editable} />
+              <Trigger
+                key={triggerId}
+                id={triggerId}
+                sceneId={id}
+                editable={editable}
+              />
             ))}
           {showEntities &&
             actors.map((actorId) => (
-              <Actor key={actorId} id={actorId} sceneId={id} palettes={spritePalettes} editable={editable} />
+              <Actor
+                key={actorId}
+                id={actorId}
+                sceneId={id}
+                palettes={spritePalettes}
+                editable={editable}
+              />
             ))}
           {event && (
             <div className="Scene__EventHelper">
@@ -350,7 +366,12 @@ Scene.defaultProps = {
 };
 
 function mapStateToProps(state, props) {
-  const { scene: sceneId, dragging: editorDragging, showLayers, parallaxHoverLayer } = state.editor;
+  const {
+    scene: sceneId,
+    dragging: editorDragging,
+    showLayers,
+    parallaxHoverLayer,
+  } = state.editor;
 
   const actorsLookup = actorSelectors.selectEntities(state);
   const triggersLookup = triggerSelectors.selectEntities(state);
@@ -380,13 +401,8 @@ function mapStateToProps(state, props) {
 
   const { worldSidebarWidth: sidebarWidth } = state.editor;
 
-  const {
-    worldScrollX,
-    worldScrollY,
-    worldViewWidth,
-    worldViewHeight,
-    zoom,
-  } = state.editor;
+  const { worldScrollX, worldScrollY, worldViewWidth, worldViewHeight, zoom } =
+    state.editor;
   const zoomRatio = zoom / 100;
 
   const viewBoundsX = worldScrollX / zoomRatio;
@@ -400,9 +416,19 @@ function mapStateToProps(state, props) {
     scene.y + scene.height * 8 + 50 > viewBoundsY &&
     scene.y < viewBoundsY + viewBoundsHeight;
 
-  const offsetLabels = (scene.width * 8) > viewBoundsWidth / 2;
-  const labelOffsetLeft = offsetLabels ? Math.min(Math.max(0, viewBoundsX - scene.x + 10), (scene.width * 8) - 100) : 0;
-  const labelOffsetRight = offsetLabels ? Math.min(Math.max(0, (scene.x + (scene.width * 8) - 10) - (viewBoundsX + viewBoundsWidth)), (scene.width * 8) - 100) : 0;
+  const offsetLabels = scene.width * 8 > viewBoundsWidth / 2;
+  const labelOffsetLeft = offsetLabels
+    ? Math.min(Math.max(0, viewBoundsX - scene.x + 10), scene.width * 8 - 100)
+    : 0;
+  const labelOffsetRight = offsetLabels
+    ? Math.min(
+        Math.max(
+          0,
+          scene.x + scene.width * 8 - 10 - (viewBoundsX + viewBoundsWidth)
+        ),
+        scene.width * 8 - 100
+      )
+    : 0;
 
   const searchTerm = state.editor.searchTerm;
   const sceneName = scene.name || `Scene ${props.index + 1}`;
@@ -429,13 +455,15 @@ function mapStateToProps(state, props) {
   const sceneBackgroundPaletteIds = scene.paletteIds || [];
 
   const getPalette = (paletteIndex) => {
-    if(sceneBackgroundPaletteIds[paletteIndex] === "dmg") {
+    if (sceneBackgroundPaletteIds[paletteIndex] === "dmg") {
       return DMG_PALETTE;
     }
-    return palettesLookup[sceneBackgroundPaletteIds[paletteIndex]]
-      || palettesLookup[defaultBackgroundPaletteIds[paletteIndex]]
-      || DMG_PALETTE;
-  }
+    return (
+      palettesLookup[sceneBackgroundPaletteIds[paletteIndex]] ||
+      palettesLookup[defaultBackgroundPaletteIds[paletteIndex]] ||
+      DMG_PALETTE
+    );
+  };
 
   const palettes = gbcEnabled
     ? getCachedObject([
@@ -450,18 +478,19 @@ function mapStateToProps(state, props) {
       ])
     : dmgPalettes;
 
-  const defaultSpritePaletteIds =
-    settings.defaultSpritePaletteIds || [];
+  const defaultSpritePaletteIds = settings.defaultSpritePaletteIds || [];
   const sceneSpritePaletteIds = scene.spritePaletteIds || [];
 
   const getSpritePalette = (paletteIndex) => {
-    if(sceneSpritePaletteIds[paletteIndex] === "dmg") {
+    if (sceneSpritePaletteIds[paletteIndex] === "dmg") {
       return DMG_PALETTE;
     }
-    return palettesLookup[sceneSpritePaletteIds[paletteIndex]]
-      || palettesLookup[defaultSpritePaletteIds[paletteIndex]]
-      || DMG_PALETTE;
-  }
+    return (
+      palettesLookup[sceneSpritePaletteIds[paletteIndex]] ||
+      palettesLookup[defaultSpritePaletteIds[paletteIndex]] ||
+      DMG_PALETTE
+    );
+  };
 
   const spritePalettes = gbcEnabled
     ? getCachedObject([
@@ -497,7 +526,7 @@ function mapStateToProps(state, props) {
     showCollisions,
     labelOffsetLeft,
     labelOffsetRight,
-    parallaxHoverLayer
+    parallaxHoverLayer,
   };
 }
 

@@ -2,7 +2,10 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import l10n from "../../lib/helpers/l10n";
-import { sceneSelectors, actorSelectors } from "../../store/features/entities/entitiesState";
+import {
+  sceneSelectors,
+  actorSelectors,
+} from "../../store/features/entities/entitiesState";
 
 class StatusBar extends Component {
   render() {
@@ -42,14 +45,14 @@ StatusBar.propTypes = {
   sceneName: PropTypes.string,
   x: PropTypes.number,
   y: PropTypes.number,
-  actor: PropTypes.string
+  actor: PropTypes.string,
 };
 
 StatusBar.defaultProps = {
   sceneName: undefined,
   x: undefined,
   y: undefined,
-  actor: undefined
+  actor: undefined,
 };
 
 function mapStateToProps(state) {
@@ -60,7 +63,7 @@ function mapStateToProps(state) {
     sceneName: scene && scene.name,
     actor: actor && actor.name,
     x,
-    y
+    y,
   };
 }
 

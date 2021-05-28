@@ -1,5 +1,10 @@
 import React, { useState, useEffect, FC } from "react";
-import { Select as DefaultSelect, Option, OptGroup, SelectCommonProps } from "../ui/form/Select";
+import {
+  Select as DefaultSelect,
+  Option,
+  OptGroup,
+  SelectCommonProps,
+} from "../ui/form/Select";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
@@ -171,29 +176,31 @@ export const VariableToken = styled.span`
   color: ${(props) => props.theme.colors.input.background};
 `;
 
-const formatOptionLabel = (
-  type: "8bit" | "16bit",
-  editorType: EditorSelectionType,
-  namedVariablesLookup: Dictionary<NamedVariable>
-) => (option: Option) => {
-  let otherVariable = "";
-  if (type === "16bit") {
-    if (editorType === "customEvent") {
-      otherVariable = `${option.label}+1`;
-    } else {
-      otherVariable =
-        namedVariablesLookup[nextVariable(option.value)]?.name || "";
+const formatOptionLabel =
+  (
+    type: "8bit" | "16bit",
+    editorType: EditorSelectionType,
+    namedVariablesLookup: Dictionary<NamedVariable>
+  ) =>
+  (option: Option) => {
+    let otherVariable = "";
+    if (type === "16bit") {
+      if (editorType === "customEvent") {
+        otherVariable = `${option.label}+1`;
+      } else {
+        otherVariable =
+          namedVariablesLookup[nextVariable(option.value)]?.name || "";
+      }
     }
-  }
-  return (
-    <>
-      {option.label}
-      {type === "16bit" && otherVariable && (
-        <OtherVariable> & {otherVariable}</OtherVariable>
-      )}
-    </>
-  );
-};
+    return (
+      <>
+        {option.label}
+        {type === "16bit" && otherVariable && (
+          <OtherVariable> & {otherVariable}</OtherVariable>
+        )}
+      </>
+    );
+  };
 
 export const VariableSelect: FC<VariableSelectProps> = ({
   value,
@@ -201,7 +208,7 @@ export const VariableSelect: FC<VariableSelectProps> = ({
   onChange,
   entityId,
   allowRename,
-  ...selectProps  
+  ...selectProps
 }) => {
   const [tooltipVisible, setTooltipVisible] = useDelayedState(false);
   const [renameVisible, setRenameVisible] = useState(false);
@@ -225,7 +232,7 @@ export const VariableSelect: FC<VariableSelectProps> = ({
 
   const valueIsLocal = value && value.startsWith("L");
   const valueIsTemp = value && value.startsWith("T");
-  const canRename = allowRename && (!valueIsTemp && editorType !== "customEvent");
+  const canRename = allowRename && !valueIsTemp && editorType !== "customEvent";
 
   useEffect(() => {
     const variables = namedVariablesByContext(

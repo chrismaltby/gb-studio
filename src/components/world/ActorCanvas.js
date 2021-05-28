@@ -6,7 +6,10 @@ import { framesPerDirection } from "../../lib/helpers/gbstudio";
 import { PaletteShape } from "../../store/stateShape";
 import { getCachedObject } from "../../lib/helpers/cache";
 import { DMG_PALETTE, SPRITE_TYPE_STATIC } from "../../consts";
-import { spriteSheetSelectors, paletteSelectors } from "../../store/features/entities/entitiesState";
+import {
+  spriteSheetSelectors,
+  paletteSelectors,
+} from "../../store/features/entities/entitiesState";
 import { getSettings } from "../../store/features/settings/settingsState";
 
 const ActorCanvas = ({
@@ -51,17 +54,12 @@ ActorCanvas.defaultProps = {
   frame: undefined,
   totalFrames: 1,
   palette: undefined,
-  spriteType: SPRITE_TYPE_STATIC
+  spriteType: SPRITE_TYPE_STATIC,
 };
 
 function mapStateToProps(state, props) {
-  const {
-    spriteSheetId,
-    spriteType,
-    direction,
-    frame,
-    paletteId,
-  } = props.actor;
+  const { spriteSheetId, spriteType, direction, frame, paletteId } =
+    props.actor;
 
   const spriteSheet = spriteSheetSelectors.selectById(state, spriteSheetId);
   const spriteFrames = spriteSheet ? spriteSheet.numFrames : 0;

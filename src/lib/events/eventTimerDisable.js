@@ -4,8 +4,8 @@ const id = "EVENT_TIMER_DISABLE";
 
 const fields = [
   {
-    label: l10n("FIELD_TIMER_DISABLE")
-  }
+    label: l10n("FIELD_TIMER_DISABLE"),
+  },
 ];
 
 const compile = (input, helpers) => {
@@ -16,5 +16,5 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   fields,
-  compile
+  compile,
 };

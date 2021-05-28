@@ -10,7 +10,7 @@ const TILE_SIZE = 8;
 const globAsync = promisify(glob);
 const sizeOfAsync = promisify(sizeOf);
 
-const loadBackgroundData = projectRoot => async filename => {
+const loadBackgroundData = (projectRoot) => async (filename) => {
   const { file, plugin } = parseAssetPath(filename, projectRoot, "backgrounds");
   try {
     const size = await sizeOfAsync(filename);
@@ -26,7 +26,7 @@ const loadBackgroundData = projectRoot => async filename => {
       imageHeight: size.height,
       filename: file,
       inode,
-      _v: Date.now()
+      _v: Date.now(),
     };
   } catch (e) {
     console.error(e);
@@ -34,7 +34,7 @@ const loadBackgroundData = projectRoot => async filename => {
   }
 };
 
-const loadAllBackgroundData = async projectRoot => {
+const loadAllBackgroundData = async (projectRoot) => {
   const imagePaths = await globAsync(
     `${projectRoot}/assets/backgrounds/**/@(*.png|*.PNG)`
   );
@@ -48,7 +48,7 @@ const loadAllBackgroundData = async projectRoot => {
         pluginPaths.map(loadBackgroundData(projectRoot))
       )
     )
-  ).filter(i => i);
+  ).filter((i) => i);
   return imageData;
 };
 

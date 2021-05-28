@@ -20,14 +20,14 @@ export const writeFileAndFlush = (path, data, options, callback) => {
     }
 
     // It is valid to pass a fd handle to fs.writeFile() and this will keep the handle open!
-    return writeFile(fd, data, options.encoding, writeError => {
+    return writeFile(fd, data, options.encoding, (writeError) => {
       if (writeError) {
         return close(fd, () => callback(writeError)); // still need to close the handle on error!
       }
 
       // Flush contents (not metadata) of the file to disk
-      return fdatasync(fd, syncError => {
-        return close(fd, closeError => callback(syncError || closeError)); // make sure to carry over the fdatasync error if any!
+      return fdatasync(fd, (syncError) => {
+        return close(fd, (closeError) => callback(syncError || closeError)); // make sure to carry over the fdatasync error if any!
       });
     });
   });
@@ -35,7 +35,7 @@ export const writeFileAndFlush = (path, data, options, callback) => {
 
 export const writeFileAndFlushAsync = (path, data, options) => {
   return new Promise((resolve, reject) => {
-    writeFileAndFlush(path, data, options, err => {
+    writeFileAndFlush(path, data, options, (err) => {
       if (err) {
         return reject(err);
       }

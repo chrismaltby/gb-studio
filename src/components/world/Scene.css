@@ -5,7 +5,7 @@
   text-align: center;
   border-radius: 4px;
   transition: background 0.3s ease-in-out;
-  transform: translate3d(0,0,0);
+  transform: translate3d(0, 0, 0);
   backface-visibility: hidden;
 }
 
@@ -14,7 +14,7 @@
 }
 
 .Scene--Filtered:after {
-  content:"";
+  content: "";
   background-color: var(--main-bg-color);
   border-radius: 4px;
   opacity: 0.8;
@@ -86,8 +86,9 @@
   color: #888;
   opacity: 0;
   font-size: 11px;
-  transition: opacity 0.3s ease-in-out, padding-left 0.1s ease-in-out, padding-right 0.1s ease-in-out;
-  transition-delay: 0.3s;  
+  transition: opacity 0.3s ease-in-out, padding-left 0.1s ease-in-out,
+    padding-right 0.1s ease-in-out;
+  transition-delay: 0.3s;
   line-height: 12px;
   padding: 10px 20px;
 }
@@ -99,7 +100,7 @@
 }
 
 .Scene__InfoButton:hover {
-  background-color: rgba(128,128,128,0.2);
+  background-color: rgba(128, 128, 128, 0.2);
 }
 
 .Scene__InfoButton.Scene__Info--Warning {
@@ -135,7 +136,7 @@
   padding: 5px 10px;
   min-width: 180px;
   max-width: 230px;
-  transform: translateX(-10px);  
+  transform: translateX(-10px);
   z-index: 10000;
 }
 
@@ -150,8 +151,8 @@
 .Scene__Tooltip .Scene__TooltipTitle {
   font-weight: bold;
   text-transform: uppercase;
-  color: rgba(128,128,128);
-  margin-top: 10px;  
+  color: rgba(128, 128, 128);
+  margin-top: 10px;
 }
 
 .Scene__Image {

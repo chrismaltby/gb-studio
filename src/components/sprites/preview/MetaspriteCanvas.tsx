@@ -31,9 +31,8 @@ export const MetaspriteCanvas = ({
 }: MetaspriteCanvasProps) => {
   const [workerId] = useState(Math.random());
   const [tiles, setTiles] = useState<MetaspriteTile[]>([]);
-  const [paletteColors, setPaletteColors] = useState<
-    [string, string, string, string][] | null
-  >(null);
+  const [paletteColors, setPaletteColors] =
+    useState<[string, string, string, string][] | null>(null);
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const spriteSheet = useSelector((state: RootState) =>
     spriteSheetSelectors.selectById(state, spriteSheetId)

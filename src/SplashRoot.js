@@ -10,7 +10,7 @@ import "./styles/App.css";
 initElectronL10n();
 
 window.addEventListener("error", (error) => {
-  if(error.message.indexOf("dead code elimination") > -1) {
+  if (error.message.indexOf("dead code elimination") > -1) {
     return true;
   }
   error.stopPropagation();
@@ -22,13 +22,18 @@ window.addEventListener("error", (error) => {
         ${error.filename}L:${error.lineno}C:${error.colno}
       </p>     
       <div class="GlobalError__StackTrace">
-        ${error.error && error.error.stack && error.error.stack.split("\n").map(line => (
-          `<div>${line}</div>`
-        )).join("")}
+        ${
+          error.error &&
+          error.error.stack &&
+          error.error.stack
+            .split("\n")
+            .map((line) => `<div>${line}</div>`)
+            .join("")
+        }
       </div>
     </div>       
     </div>
-  </div>`
+  </div>`;
   return false;
 });
 

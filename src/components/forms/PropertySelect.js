@@ -26,24 +26,24 @@ PropertySelect.propTypes = {
   onChange: PropTypes.func.isRequired,
   direction: PropTypes.string,
   frame: PropTypes.number,
-  scope: PropTypes.string.isRequired
+  scope: PropTypes.string.isRequired,
 };
 
 PropertySelect.defaultProps = {
   id: "",
   value: "",
   frame: undefined,
-  direction: undefined
+  direction: undefined,
 };
 
 function mapStateToProps(state) {
   if (state.editor.type === "customEvent") {
     return {
-      scope: "customEvent"
+      scope: "customEvent",
     };
   }
   return {
-    scope: "scene"
+    scope: "scene",
   };
 }
 

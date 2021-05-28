@@ -34,9 +34,8 @@ export const ParallaxSpeedSelect: FC<ParallaxSpeedSelectProps> = ({
   disabled,
   onChange,
 }) => {
-  const [currentValue, setCurrentValue] = useState<
-    ParallaxSpeedOption | undefined
-  >();
+  const [currentValue, setCurrentValue] =
+    useState<ParallaxSpeedOption | undefined>();
 
   useEffect(() => {
     const current = options.find((o) => o.value === value);

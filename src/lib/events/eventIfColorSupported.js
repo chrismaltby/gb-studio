@@ -4,11 +4,11 @@ const id = "EVENT_IF_COLOR_SUPPORTED";
 
 const fields = [
   {
-    label: l10n("FIELD_IF_COLOR_SUPPORTED")
+    label: l10n("FIELD_IF_COLOR_SUPPORTED"),
   },
   {
     key: "true",
-    type: "events"
+    type: "events",
   },
   {
     key: "__collapseElse",
@@ -18,24 +18,24 @@ const fields = [
     conditions: [
       {
         key: "__disableElse",
-        ne: true
-      }
-    ]
+        ne: true,
+      },
+    ],
   },
   {
     key: "false",
     conditions: [
       {
         key: "__collapseElse",
-        ne: true
+        ne: true,
       },
       {
         key: "__disableElse",
-        ne: true
-      }
+        ne: true,
+      },
     ],
-    type: "events"
-  }
+    type: "events",
+  },
 ];
 
 const compile = (input, helpers) => {
@@ -48,5 +48,5 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   fields,
-  compile
+  compile,
 };

@@ -11,7 +11,7 @@ const fields = [
     min: 0,
     max: 10,
     step: 0.1,
-    defaultValue: 0.5
+    defaultValue: 0.5,
   },
   {
     key: "shakeDirection",
@@ -21,10 +21,10 @@ const fields = [
     options: [
       ["horizontal", "↔ " + l10n("FIELD_HORIZONTAL")],
       ["vertical", "↕ " + l10n("FIELD_VERTICAL")],
-      ["diagonal", "⤡ " + l10n("FIELD_DIAGONAL")]
+      ["diagonal", "⤡ " + l10n("FIELD_DIAGONAL")],
     ],
-    defaultValue: "horizontal"
-  }
+    defaultValue: "horizontal",
+  },
 ];
 
 const compile = (input, helpers) => {
@@ -34,21 +34,21 @@ const compile = (input, helpers) => {
   let shouldShakeX = true;
   let shouldShakeY = false;
   switch (shakeDirection) {
-  	case "horizontal":
-  		shouldShakeX = true;
-  		shouldShakeY = false;
-  		break;
-  	case "vertical":
-  		shouldShakeX = false;
-  		shouldShakeY = true;
-  		break;
-  	case "diagonal":
-  		shouldShakeX = true;
-  		shouldShakeY = true;
-  		break;
-  	default:
-  		shouldShakeX = true;
-  		shouldShakeY = false;
+    case "horizontal":
+      shouldShakeX = true;
+      shouldShakeY = false;
+      break;
+    case "vertical":
+      shouldShakeX = false;
+      shouldShakeY = true;
+      break;
+    case "diagonal":
+      shouldShakeX = true;
+      shouldShakeY = true;
+      break;
+    default:
+      shouldShakeX = true;
+      shouldShakeY = false;
   }
   // Convert seconds into frames (60fps)
   while (seconds > 0) {
@@ -61,5 +61,5 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   fields,
-  compile
+  compile,
 };

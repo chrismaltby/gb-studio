@@ -1,24 +1,29 @@
 import uuid from "uuid/v4";
-import { EVENT_CALL_CUSTOM_EVENT, EVENT_ENGINE_FIELD_SET, EVENT_ENGINE_FIELD_STORE } from "../compiler/eventTypes";
+import {
+  EVENT_CALL_CUSTOM_EVENT,
+  EVENT_ENGINE_FIELD_SET,
+  EVENT_ENGINE_FIELD_STORE,
+} from "../compiler/eventTypes";
 // import events from "../../lib/events";
 
 const mapValues = (obj, fn) =>
   Object.entries(obj).reduce((memo, [key, value]) => {
     return {
       ...memo,
-      [key]: fn(value, key, obj)
+      [key]: fn(value, key, obj),
     };
   }, {});
 
 const mapEvents = (events = [], callback) => {
-  return events.map(event => {
+  return events.map((event) => {
     if (event.children) {
       const newEvent = callback(event);
       return {
         ...newEvent,
-        children: mapValues(newEvent.children || event.children, childEvents =>
-          mapEvents(childEvents, callback)
-        )
+        children: mapValues(
+          newEvent.children || event.children,
+          (childEvents) => mapEvents(childEvents, callback)
+        ),
       };
     }
     return callback(event);
@@ -26,7 +31,7 @@ const mapEvents = (events = [], callback) => {
 };
 
 const mapScenesEvents = (scenes, callback) => {
-  return scenes.map(scene => {
+  return scenes.map((scene) => {
     return mapSceneEvents(scene, callback);
   });
 };
@@ -37,23 +42,23 @@ const mapSceneEvents = (scene, callback) => {
     script: mapEvents(scene.script, callback),
     playerHit1Script: mapEvents(scene.playerHit1Script, callback),
     playerHit2Script: mapEvents(scene.playerHit2Script, callback),
-    playerHit3Script: mapEvents(scene.playerHit3Script, callback),    
-    actors: scene.actors.map(actor => {
+    playerHit3Script: mapEvents(scene.playerHit3Script, callback),
+    actors: scene.actors.map((actor) => {
       return {
         ...actor,
         script: mapEvents(actor.script, callback),
         startScript: mapEvents(actor.startScript, callback),
         hit1Script: mapEvents(actor.hit1Script, callback),
         hit2Script: mapEvents(actor.hit2Script, callback),
-        hit3Script: mapEvents(actor.hit3Script, callback)
+        hit3Script: mapEvents(actor.hit3Script, callback),
       };
     }),
-    triggers: scene.triggers.map(trigger => {
+    triggers: scene.triggers.map((trigger) => {
       return {
         ...trigger,
-        script: mapEvents(trigger.script, callback)
+        script: mapEvents(trigger.script, callback),
       };
-    })
+    }),
   };
 };
 
@@ -61,7 +66,7 @@ const walkEvents = (events = [], callback) => {
   for (let i = 0; i < events.length; i++) {
     callback(events[i]);
     if (events[i].children) {
-      Object.keys(events[i].children).forEach(key => {
+      Object.keys(events[i].children).forEach((key) => {
         walkEvents(events[i].children[key], callback);
       });
     }
@@ -71,7 +76,7 @@ const walkEvents = (events = [], callback) => {
 const walkEventsDepthFirst = (events = [], callback) => {
   for (let i = 0; i < events.length; i++) {
     if (events[i].children) {
-      Object.keys(events[i].children).forEach(key => {
+      Object.keys(events[i].children).forEach((key) => {
         walkEvents(events[i].children[key], callback);
       });
     }
@@ -80,17 +85,17 @@ const walkEventsDepthFirst = (events = [], callback) => {
 };
 
 const walkScenesEvents = (scenes, callback) => {
-  scenes.forEach(scene => {
+  scenes.forEach((scene) => {
     walkSceneEvents(scene, callback);
   });
 };
 
 const walkSceneEvents = (scene, callback) => {
   walkSceneSpecificEvents(scene, callback);
-  scene.actors.forEach(actor => {
+  scene.actors.forEach((actor) => {
     walkActorEvents(actor, callback);
   });
-  scene.triggers.forEach(trigger => {
+  scene.triggers.forEach((trigger) => {
     walkEvents(trigger.script, callback);
   });
 };
@@ -109,11 +114,11 @@ const walkActorEvents = (actor, callback) => {
   walkEvents(actor.hit1Script, callback);
   walkEvents(actor.hit2Script, callback);
   walkEvents(actor.hit3Script, callback);
-}
+};
 
 const walkTriggerEvents = (trigger, callback) => {
   walkEvents(trigger.script, callback);
-}
+};
 
 const normalizedWalkSceneEvents = (
   scene,
@@ -126,7 +131,7 @@ const normalizedWalkSceneEvents = (
   walkEvents(scene.playerHit2Script, callback);
   walkEvents(scene.playerHit3Script, callback);
 
-  scene.actors.forEach(actorId => {
+  scene.actors.forEach((actorId) => {
     const actor = actorsLookup[actorId];
     walkEvents(actor.script, callback);
     walkEvents(actor.startScript, callback);
@@ -135,7 +140,7 @@ const normalizedWalkSceneEvents = (
     walkEvents(actor.hit2Script, callback);
     walkEvents(actor.hit3Script, callback);
   });
-  scene.triggers.forEach(triggerId => {
+  scene.triggers.forEach((triggerId) => {
     walkEvents(triggersLookup[triggerId].script, callback);
   });
 };
@@ -150,7 +155,7 @@ const normalizedFindSceneEvent = (
   let fn = callback;
   if (typeof fn === "string") {
     const id = fn;
-    fn = walkEvent => {
+    fn = (walkEvent) => {
       return walkEvent.id === id;
     };
   }
@@ -159,7 +164,7 @@ const normalizedFindSceneEvent = (
       scene,
       actorsLookup,
       triggersLookup,
-      walkEvent => {
+      (walkEvent) => {
         if (fn(walkEvent)) {
           event = walkEvent;
           throw new Error("FOUND_EVENT");
@@ -180,12 +185,12 @@ const findSceneEvent = (scene, callback) => {
   let fn = callback;
   if (typeof fn === "string") {
     const id = fn;
-    fn = walkEvent => {
+    fn = (walkEvent) => {
       return walkEvent.id === id;
     };
   }
   try {
-    walkSceneEvents(scene, walkEvent => {
+    walkSceneEvents(scene, (walkEvent) => {
       if (fn(walkEvent)) {
         event = walkEvent;
         throw new Error("FOUND_EVENT");
@@ -208,15 +213,15 @@ const patchEvents = (data, id, patch) => {
         {},
         o,
         o.children && {
-          children: mapValues(o.children, childEvents =>
+          children: mapValues(o.children, (childEvents) =>
             patchEvents(childEvents, id, patch)
-          )
+          ),
         },
         o.id === id && {
           args: {
             ...o.args,
-            ...patch
-          }
+            ...patch,
+          },
         }
       )
     );
@@ -232,9 +237,9 @@ const prependEvent = (data, id, newData) => {
         {},
         o,
         o.children && {
-          children: mapValues(o.children, childEvents =>
+          children: mapValues(o.children, (childEvents) =>
             prependEvent(childEvents, id, newData)
-          )
+          ),
         }
       )
     );
@@ -249,9 +254,9 @@ const appendEvent = (data, id, newData) => {
         {},
         o,
         o.children && {
-          children: mapValues(o.children, childEvents =>
+          children: mapValues(o.children, (childEvents) =>
             appendEvent(childEvents, id, newData)
-          )
+          ),
         }
       ),
       o.id === id ? newData : []
@@ -259,34 +264,34 @@ const appendEvent = (data, id, newData) => {
   }, []);
 };
 
-const removeEventIds = event => {
+const removeEventIds = (event) => {
   return Object.assign(
     {},
     event,
     {
-      id: undefined
+      id: undefined,
     },
     event.children && {
-      children: mapValues(event.children, childEvents =>
+      children: mapValues(event.children, (childEvents) =>
         childEvents.map(removeEventIds)
-      )
+      ),
     }
   );
 };
 
-const regenerateEventIds = event => {
+const regenerateEventIds = (event) => {
   return Object.assign(
     {},
     event,
     {
       id: uuid(),
       __type: undefined,
-      __customEvents: undefined
+      __customEvents: undefined,
     },
     event.children && {
-      children: mapValues(event.children, childEvents =>
+      children: mapValues(event.children, (childEvents) =>
         childEvents.map(regenerateEventIds)
-      )
+      ),
     }
   );
 };
@@ -312,10 +317,10 @@ const replaceEventActorIds = (replacementIds, event) => {
     ...event,
     args: {
       ...event.args,
-      ...patchArgs
-    }
-  }
-}
+      ...patchArgs,
+    },
+  };
+};
 
 const filterEvents = (data, fn) => {
   return data.reduce((memo, o) => {
@@ -324,7 +329,7 @@ const filterEvents = (data, fn) => {
         ...o,
         children:
           o.children &&
-          mapValues(o.children, childEvents => filterEvents(childEvents, fn))
+          mapValues(o.children, (childEvents) => filterEvents(childEvents, fn)),
       });
     }
     return memo;
@@ -364,10 +369,17 @@ const getField = (cmd, fieldName, args) => {
 
   let event = events[cmd];
 
-  if (cmd === EVENT_ENGINE_FIELD_SET && args.engineFieldKey && engineFieldUpdateEvents[args.engineFieldKey]) {
+  if (
+    cmd === EVENT_ENGINE_FIELD_SET &&
+    args.engineFieldKey &&
+    engineFieldUpdateEvents[args.engineFieldKey]
+  ) {
     event = engineFieldUpdateEvents[args.engineFieldKey];
-  }
-  else if (cmd === EVENT_ENGINE_FIELD_STORE && args.engineFieldKey && engineFieldStoreEvents[args.engineFieldKey]) {
+  } else if (
+    cmd === EVENT_ENGINE_FIELD_STORE &&
+    args.engineFieldKey &&
+    engineFieldStoreEvents[args.engineFieldKey]
+  ) {
     event = engineFieldStoreEvents[args.engineFieldKey];
   }
 
@@ -378,35 +390,32 @@ const getField = (cmd, fieldName, args) => {
   return field;
 };
 
-
 const isVariableField = (cmd, fieldName, args) => {
   const field = getField(cmd, fieldName, args);
   return (
-    field && (
-      field.type === "variable" ||
-      (field.type === "union" && args[fieldName] && args[fieldName].type === "variable")
-    )
-  )
+    field &&
+    (field.type === "variable" ||
+      (field.type === "union" &&
+        args[fieldName] &&
+        args[fieldName].type === "variable"))
+  );
 };
 
 const isActorField = (cmd, fieldName, args) => {
   const field = getField(cmd, fieldName, args);
-  return (
-    field && (field.type === "actor")
-  )
+  return field && field.type === "actor";
 };
 
 const isPropertyField = (cmd, fieldName, fieldValue) => {
   const events = require("../events").default;
   const event = events[cmd];
   if (!event) return false;
-  const field = event.fields.find((f) => f.key === fieldName)
+  const field = event.fields.find((f) => f.key === fieldName);
   return (
-    field && (
-      field.type === "property" ||
-      (field.type === "union" && fieldValue.type === "property")
-    )
-  )
+    field &&
+    (field.type === "property" ||
+      (field.type === "union" && fieldValue.type === "property"))
+  );
 };
 
 const getCustomEventIdsInEvents = (events) => {
@@ -417,7 +426,7 @@ const getCustomEventIdsInEvents = (events) => {
     }
   });
   return customEventIds;
-}
+};
 
 const getCustomEventIdsInScene = (scene) => {
   const customEventIds = [];
@@ -427,7 +436,7 @@ const getCustomEventIdsInScene = (scene) => {
     }
   });
   return customEventIds;
-}
+};
 
 const getCustomEventIdsInActor = (actor) => {
   const customEventIds = [];
@@ -437,7 +446,7 @@ const getCustomEventIdsInActor = (actor) => {
     }
   });
   return customEventIds;
-}
+};
 
 export {
   mapEvents,
@@ -468,5 +477,5 @@ export {
   isPropertyField,
   getCustomEventIdsInEvents,
   getCustomEventIdsInScene,
-  getCustomEventIdsInActor
+  getCustomEventIdsInActor,
 };

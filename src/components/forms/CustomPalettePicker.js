@@ -329,24 +329,36 @@ class CustomPalettePicker extends Component {
     const { editPalette, paletteId } = this.props;
     if (selectedColor === 0) {
       this.setState({ whiteHex: newHex });
-      editPalette({paletteId, changes: {
-        colors: [newHex, lightHex, darkHex, blackHex],
-      }});
+      editPalette({
+        paletteId,
+        changes: {
+          colors: [newHex, lightHex, darkHex, blackHex],
+        },
+      });
     } else if (selectedColor === 1) {
       this.setState({ lightHex: newHex });
-      editPalette({paletteId, changes: {
-        colors: [whiteHex, newHex, darkHex, blackHex],
-      }});
+      editPalette({
+        paletteId,
+        changes: {
+          colors: [whiteHex, newHex, darkHex, blackHex],
+        },
+      });
     } else if (selectedColor === 2) {
       this.setState({ darkHex: newHex });
-      editPalette({paletteId, changes: {
-        colors: [whiteHex, lightHex, newHex, blackHex],
-      }});
+      editPalette({
+        paletteId,
+        changes: {
+          colors: [whiteHex, lightHex, newHex, blackHex],
+        },
+      });
     } else if (selectedColor === 3) {
       this.setState({ blackHex: newHex });
-      editPalette({paletteId, changes: {
-        colors: [whiteHex, lightHex, darkHex, newHex],
-      }});
+      editPalette({
+        paletteId,
+        changes: {
+          colors: [whiteHex, lightHex, darkHex, newHex],
+        },
+      });
     }
   };
 
@@ -364,9 +376,12 @@ class CustomPalettePicker extends Component {
         currentCustomHex: "",
       },
       () => {
-        editPalette({paletteId, changes: {
-          colors: [DEFAULT_WHITE, DEFAULT_LIGHT, DEFAULT_DARK, DEFAULT_BLACK],
-        }});
+        editPalette({
+          paletteId,
+          changes: {
+            colors: [DEFAULT_WHITE, DEFAULT_LIGHT, DEFAULT_DARK, DEFAULT_BLACK],
+          },
+        });
       }
     );
   };
@@ -639,7 +654,7 @@ CustomPalettePicker.defaultProps = {
 
 function mapStateToProps(state, props) {
   const { paletteId } = props;
-  const palette = paletteSelectors.selectById(state, paletteId)
+  const palette = paletteSelectors.selectById(state, paletteId);
   return {
     palette,
   };

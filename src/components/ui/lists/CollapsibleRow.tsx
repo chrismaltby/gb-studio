@@ -8,13 +8,13 @@ export interface CollapsibleRowProps {
 }
 
 const CollapseButton = styled.span`
-  color: ${props => props.theme.colors.text};
+  color: ${(props) => props.theme.colors.text};
   margin-right: 5px;
   svg {
     width: 8px;
     height: 8px;
     transform: rotate(90deg);
-    fill: ${props => props.theme.colors.text};
+    fill: ${(props) => props.theme.colors.text};
   }
 `;
 

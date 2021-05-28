@@ -7,8 +7,8 @@ const fields = [
     key: "input",
     label: l10n("FIELD_ANY_OF"),
     type: "input",
-    defaultValue: ["a", "b"]
-  }
+    defaultValue: ["a", "b"],
+  },
 ];
 
 const compile = (input, helpers) => {
@@ -19,5 +19,5 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   fields,
-  compile
+  compile,
 };

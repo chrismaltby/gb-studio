@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 const shallowCheck = (old, next) =>
-  Object.keys(old).filter(key => old[key] !== next[key]);
+  Object.keys(old).filter((key) => old[key] !== next[key]);
 
 const rerenderCheck = (label, oldProps, oldState, nextProps, nextState) => {
   const propChanges = shallowCheck(oldProps, nextProps);

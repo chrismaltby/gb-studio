@@ -93,8 +93,8 @@ const darkheme: ThemeInterface = {
       effectParam: "#ffad1f",
       rollCell: {
         border: "#b7babb44",
-      }
-    }
+      },
+    },
   },
   borderRadius: 4,
 };

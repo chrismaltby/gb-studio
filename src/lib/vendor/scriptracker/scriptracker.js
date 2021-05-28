@@ -17,7 +17,7 @@ var Effects = require("./effects");
  * Date:			2013-02-14
  * Last updated:	2016-01-25
  */
-var ScripTracker = function() {
+var ScripTracker = function () {
   this.module = null; // Module file that is playing.
   this.pattern = null; // The current pattern being played.
   this.orderIndex = 0; // Index in the order table of the module.
@@ -33,12 +33,79 @@ var ScripTracker = function() {
   this.sampleStepping = 0; // Base sample step based on 125 / 6.
   this.isPlaying = false; // Is the player currently playing?
   this.notePeriodsGB = [
-    44, 156, 262, 363, 457, 547, 631, 710, 786, 854, 923, 986, // C3 to B3
-  1046,1102,1155,1205,1253,1297,1339,1379,1417,1452,1486,1517, // C4 to B4
-  1546,1575,1602,1627,1650,1673,1694,1714,1732,1750,1767,1783, // C5 to B5
-  1798,1812,1825,1837,1849,1860,1871,1881,1890,1899,1907,1915, // C6 to B6
-  1923,1930,1936,1943,1949,1954,1959,1964,1969,1974,1978,1982, // C7 to B7
-  1985,1988,1992,1995,1998,2001,2004,2006,2009,2011,2013,2015];// C8 to B8
+    44,
+    156,
+    262,
+    363,
+    457,
+    547,
+    631,
+    710,
+    786,
+    854,
+    923,
+    986, // C3 to B3
+    1046,
+    1102,
+    1155,
+    1205,
+    1253,
+    1297,
+    1339,
+    1379,
+    1417,
+    1452,
+    1486,
+    1517, // C4 to B4
+    1546,
+    1575,
+    1602,
+    1627,
+    1650,
+    1673,
+    1694,
+    1714,
+    1732,
+    1750,
+    1767,
+    1783, // C5 to B5
+    1798,
+    1812,
+    1825,
+    1837,
+    1849,
+    1860,
+    1871,
+    1881,
+    1890,
+    1899,
+    1907,
+    1915, // C6 to B6
+    1923,
+    1930,
+    1936,
+    1943,
+    1949,
+    1954,
+    1959,
+    1964,
+    1969,
+    1974,
+    1978,
+    1982, // C7 to B7
+    1985,
+    1988,
+    1992,
+    1995,
+    1998,
+    2001,
+    2004,
+    2006,
+    2009,
+    2011,
+    2013,
+    2015,
+  ]; // C8 to B8
 
   this.masterVolume = 0.6; // The master volume multiplier.
   this.masterVolSlide = 0; // Master volume delta per tick.
@@ -62,7 +129,7 @@ var ScripTracker = function() {
     NEW_ROW: [],
     NEW_ORDER: [],
     INSTRUMENT: [],
-    EFFECT: []
+    EFFECT: [],
   };
 
   if (typeof AudioContext !== "undefined") {
@@ -88,7 +155,7 @@ var ScripTracker = function() {
   this.audioSource.start(0);
 };
 
-ScripTracker.prototype.fillBuffer = function(audioProcessingEvent) {
+ScripTracker.prototype.fillBuffer = function (audioProcessingEvent) {
   if (!this.isPlaying || !this.module) return;
 
   var outputBuffer = audioProcessingEvent.outputBuffer;
@@ -195,7 +262,7 @@ ScripTracker.prototype.fillBuffer = function(audioProcessingEvent) {
   }
 };
 
-ScripTracker.prototype.processTick = function() {
+ScripTracker.prototype.processTick = function () {
   if (this.currentTick === 0) {
     if (this.currentRow === 0) {
       this.dispatchEvent(ScripTracker.Events.order, this);
@@ -214,7 +281,10 @@ ScripTracker.prototype.processTick = function() {
     if (this.currentTick === 0) {
       // Change instrument and retrigger current note.
       // but only if the instrument changed or has a note
-      if ((instrIndex !== 0) && ((instrIndex != registers.instrument) || (note != 0) || (c > 2)) ) {
+      if (
+        instrIndex !== 0 &&
+        (instrIndex != registers.instrument || note != 0 || c > 2)
+      ) {
         registers.instrument = instrIndex;
         this.dispatchEvent(
           ScripTracker.Events.instrument,
@@ -243,7 +313,7 @@ ScripTracker.prototype.processTick = function() {
           registers.envelopePos = 0; // Reset volume envelope.
           registers.noteReleased = false; // Reset decay.
 
-          // Set channel panning (for MOD use predefined panning). Removed for GBT. 
+          // Set channel panning (for MOD use predefined panning). Removed for GBT.
           // if (this.module.type !== "mod" && registers.sample.sample) {
           //   registers.panning.pan = registers.sample.sample.panning;
           // }
@@ -277,9 +347,8 @@ ScripTracker.prototype.processTick = function() {
 
           // Update sample frequency according to new note if we have a sample loaded.
           if (registers.sample.sample !== null) {
-            registers.period =  //replace with gb lookup
-                this.notePeriodsGB[note];
-            var freq = ((131072*1.8)/(2048-registers.period));//131072/(2048
+            registers.period = this.notePeriodsGB[note]; //replace with gb lookup
+            var freq = (131072 * 1.8) / (2048 - registers.period); //131072/(2048
 
             registers.sample.position = registers.sample.restart; // Restart sample from restart position (can be changed by sample offset efect!).
             //registers.volume.sampleVolume = registers.sample.sample.volume; // Reset sample volume. Disabled for GBT
@@ -311,14 +380,18 @@ ScripTracker.prototype.processTick = function() {
         // Change channel volume.
         //registers.volume.channelVolume = volume / 64;
         //registers.volume.sampleVolume = registers.volume.channelVolumeSet;
-        console.log(registers.volume.channelVolume,registers.volume.channelVolumeSet);
+        console.log(
+          registers.volume.channelVolume,
+          registers.volume.channelVolumeSet
+        );
       } else if (note < 97 && instrIndex !== 0) {
         //if (registers.volume.channelVolumeSlide !== 0) {
-          registers.volume.channelVolumeSlide = registers.volume.channelVolumeSlideSet; // note = trigger
-          registers.volume.channelVolume = registers.volume.channelVolumeSet; 
-          //registers.volume.sampleVolume = registers.volume.channelVolumeSet;
-          //console.log("Channel:",c,"volSet:",registers.volume.channelVolumeSet);
-          //Changed for GBT, Volume set to channelSet on new notes, even when using envelope.
+        registers.volume.channelVolumeSlide =
+          registers.volume.channelVolumeSlideSet; // note = trigger
+        registers.volume.channelVolume = registers.volume.channelVolumeSet;
+        //registers.volume.sampleVolume = registers.volume.channelVolumeSet;
+        //console.log("Channel:",c,"volSet:",registers.volume.channelVolumeSet);
+        //Changed for GBT, Volume set to channelSet on new notes, even when using envelope.
         //}
       }
 
@@ -347,14 +420,17 @@ ScripTracker.prototype.processTick = function() {
     effect.handler(registers, effectParam, this.currentTick, c, this);
     //Copy of Volume slide to process every tick, Compatability with GBT
     if (registers.volume.channelVolumeSlide !== 0) {
-        // Normal volume slide.
-        var slide = registers.volume.channelVolumeSlide / 256;
-        registers.volume.channelVolume = Math.max(0.0, Math.min(registers.volume.channelVolume + slide, 1.0));
+      // Normal volume slide.
+      var slide = registers.volume.channelVolumeSlide / 256;
+      registers.volume.channelVolume = Math.max(
+        0.0,
+        Math.min(registers.volume.channelVolume + slide, 1.0)
+      );
     }
   }
 };
 
-ScripTracker.prototype.processRowEnd = function() {
+ScripTracker.prototype.processRowEnd = function () {
   // If an order jump is encountered jump to row 1 of the order at the given index.
   if (this.orderJump !== -1 && !this.patternLoop) {
     this.currentRow = -1;
@@ -443,7 +519,7 @@ ScripTracker.prototype.processRowEnd = function() {
   }
 };
 
-ScripTracker.prototype.resetPlayback = function() {
+ScripTracker.prototype.resetPlayback = function () {
   for (var c = 0; c < this.channelRegisters.length; c++) {
     this.channelRegisters[c].reset();
   }
@@ -484,20 +560,16 @@ ScripTracker.prototype.resetPlayback = function() {
  *
  * mod - A ScripTracker Module object generated by any of the loaders (e.g. ModLoader, S3mLoader, XmLoader).
  */
-ScripTracker.prototype.loadModule = function(url, disableSpeedConversion) {
+ScripTracker.prototype.loadModule = function (url, disableSpeedConversion) {
   if (this.isPlaying) this.stop();
   this.module = null;
 
   this.speedConversion = !disableSpeedConversion;
 
-  var fileExt = url
-    .split(".")
-    .pop()
-    .toLowerCase()
-    .replace(/\?.*/, "");
+  var fileExt = url.split(".").pop().toLowerCase().replace(/\?.*/, "");
   var req = new XMLHttpRequest();
 
-  req.onload = function(loadEvent) {
+  req.onload = function (loadEvent) {
     console.log("REQ LOAD", loadEvent);
     var data = req.response;
     if (data) {
@@ -511,7 +583,7 @@ ScripTracker.prototype.loadModule = function(url, disableSpeedConversion) {
   req.send();
 };
 
-ScripTracker.prototype.loadRaw = function(data, fileExt) {
+ScripTracker.prototype.loadRaw = function (data, fileExt) {
   console.log("fileExt:" + fileExt);
   switch (fileExt) {
     case "mod":
@@ -544,7 +616,7 @@ ScripTracker.prototype.loadRaw = function(data, fileExt) {
 /**
  * Start playback if player is stopped and a module is loaded.
  */
-ScripTracker.prototype.play = function() {
+ScripTracker.prototype.play = function () {
   if (!this.isPlaying && this.module != null) {
     this.dispatchEvent(ScripTracker.Events.play, this);
     this.isPlaying = true;
@@ -558,7 +630,7 @@ ScripTracker.prototype.play = function() {
 /**
  * Stop playback after the current row has been processed.
  */
-ScripTracker.prototype.stop = function() {
+ScripTracker.prototype.stop = function () {
   this.audioScriptNode.disconnect(this.audioContext.destination);
   this.audioSource.disconnect(this.audioScriptNode);
   this.isPlaying = false;
@@ -568,7 +640,7 @@ ScripTracker.prototype.stop = function() {
 /**
  * Jump to the previous order.
  */
-ScripTracker.prototype.prevOrder = function() {
+ScripTracker.prototype.prevOrder = function () {
   if (
     this.module != null &&
     this.orderIndex - 1 >= 0 &&
@@ -583,7 +655,7 @@ ScripTracker.prototype.prevOrder = function() {
 /**
  * Jump to the top of the next order.
  */
-ScripTracker.prototype.nextOrder = function() {
+ScripTracker.prototype.nextOrder = function () {
   if (this.module != null && this.orderIndex < this.module.orders.length - 1) {
     this.orderIndex++;
     this.pattern = this.module.patterns[this.module.orders[this.orderIndex]];
@@ -594,7 +666,7 @@ ScripTracker.prototype.nextOrder = function() {
 /**
  * Restart the current module.
  */
-ScripTracker.prototype.rewind = function() {
+ScripTracker.prototype.rewind = function () {
   // Get first pattern if a module is loaded.
   if (this.module != null) {
     this.orderIndex = 0;
@@ -606,7 +678,7 @@ ScripTracker.prototype.rewind = function() {
 /**
  * Restart the current order form row 0.
  */
-ScripTracker.prototype.restartOrder = function() {
+ScripTracker.prototype.restartOrder = function () {
   if (this.module != null) {
     this.currentRow = 0;
     this.currentTick = 0;
@@ -625,7 +697,7 @@ ScripTracker.prototype.restartOrder = function() {
  *
  * channel - Index of the channel to check.
  */
-ScripTracker.prototype.isMuted = function(channel) {
+ScripTracker.prototype.isMuted = function (channel) {
   if (channel < this.channelRegisters.length) {
     return this.channelRegisters[channel].isMuted;
   } else {
@@ -636,7 +708,7 @@ ScripTracker.prototype.isMuted = function(channel) {
 /**
  * Is pattern looping activated?
  */
-ScripTracker.prototype.isPatternLoop = function() {
+ScripTracker.prototype.isPatternLoop = function () {
   return this.patternLoop;
 };
 
@@ -646,7 +718,7 @@ ScripTracker.prototype.isPatternLoop = function() {
  * channel - Index of the channel to toggle mute.
  * mute    - Mate state of the given channel.
  */
-ScripTracker.prototype.setMute = function(channel, mute) {
+ScripTracker.prototype.setMute = function (channel, mute) {
   if (channel < this.channelRegisters.length) {
     this.channelRegisters[channel].isMuted = mute;
   }
@@ -657,63 +729,63 @@ ScripTracker.prototype.setMute = function(channel, mute) {
  *
  * loop - Sets or clears the pattern loop.
  */
-ScripTracker.prototype.setPatternLoop = function(loop) {
+ScripTracker.prototype.setPatternLoop = function (loop) {
   this.patternLoop = loop;
 };
 
 /**
  * Get the name of the currently loaded module.
  */
-ScripTracker.prototype.getSongName = function() {
+ScripTracker.prototype.getSongName = function () {
   return this.module.name;
 };
 
 /**
  * Get the currently active order number .
  */
-ScripTracker.prototype.getCurrentOrder = function() {
+ScripTracker.prototype.getCurrentOrder = function () {
   return this.orderIndex + 1;
 };
 
 /**
  * Get the index of the currently active pattern.
  */
-ScripTracker.prototype.getCurrentPattern = function() {
+ScripTracker.prototype.getCurrentPattern = function () {
   return this.module.orders[this.orderIndex];
 };
 
 /**
  * Get the song length as the number of orders.
  */
-ScripTracker.prototype.getSongLength = function() {
+ScripTracker.prototype.getSongLength = function () {
   return this.module.songLength;
 };
 
 /**
  * Get the current BPM of the song.
  */
-ScripTracker.prototype.getCurrentBPM = function() {
+ScripTracker.prototype.getCurrentBPM = function () {
   return this.bpm;
 };
 
 /**
  * Get the current number of ticks per row.
  */
-ScripTracker.prototype.getCurrentTicks = function() {
+ScripTracker.prototype.getCurrentTicks = function () {
   return this.ticksPerRow;
 };
 
 /**
  * Get the currently active row of the pattern.
  */
-ScripTracker.prototype.getCurrentRow = function() {
+ScripTracker.prototype.getCurrentRow = function () {
   return this.currentRow;
 };
 
 /**
  * Get the number of rows in the current pattern.
  */
-ScripTracker.prototype.getPatternRows = function() {
+ScripTracker.prototype.getPatternRows = function () {
   return this.pattern.rows;
 };
 
@@ -722,11 +794,10 @@ ScripTracker.prototype.getPatternRows = function() {
  *
  * channel - Channel index to get the volume.
  */
-ScripTracker.prototype.getChannelVolume = function(channel) {
+ScripTracker.prototype.getChannelVolume = function (channel) {
   return (
     //this.channelRegisters[channel].volume.sampleVolume * // Disabled for GBT
-    this.channelRegisters[channel].volume.channelVolume *
-    this.masterVolume
+    this.channelRegisters[channel].volume.channelVolume * this.masterVolume
   );
 };
 
@@ -736,7 +807,7 @@ ScripTracker.prototype.getChannelVolume = function(channel) {
  *
  * channel - Channel index to get instrument name.
  */
-ScripTracker.prototype.getChannelInstrument = function(channel) {
+ScripTracker.prototype.getChannelInstrument = function (channel) {
   var registers = this.channelRegisters[channel];
   if (registers.sample.sample && registers.sample.step > 0) {
     return registers.sample.sample.name;
@@ -751,33 +822,33 @@ ScripTracker.prototype.getChannelInstrument = function(channel) {
  * channel - Channel index
  * row     - Row number it get info of.
  */
-ScripTracker.prototype.getNoteInfo = function(channel, row) {
+ScripTracker.prototype.getNoteInfo = function (channel, row) {
   return this.pattern.toText(row, channel, this.module.type);
 };
 
-ScripTracker.prototype.getSampleRate = function() {
+ScripTracker.prototype.getSampleRate = function () {
   return this.sampleRate;
 };
 
-ScripTracker.prototype.getCurrentNote = function(channel) {
+ScripTracker.prototype.getCurrentNote = function (channel) {
   return this.pattern.note[this.currentRow][channel];
 };
 
-ScripTracker.prototype.getMasterVolume = function() {
+ScripTracker.prototype.getMasterVolume = function () {
   return this.masterVolume;
 };
 
-ScripTracker.prototype.setMasterVolume = function(value) {
+ScripTracker.prototype.setMasterVolume = function (value) {
   this.masterVolume = value;
 };
 
-ScripTracker.prototype.on = function(event, handler) {
+ScripTracker.prototype.on = function (event, handler) {
   switch (event) {
     case ScripTracker.Events.instrument:
     case ScripTracker.Events.effect:
       this.eventHandlers[event].push({
         handler: arguments[2],
-        param: arguments[1]
+        param: arguments[1],
       });
       break;
 
@@ -787,7 +858,7 @@ ScripTracker.prototype.on = function(event, handler) {
   }
 };
 
-ScripTracker.prototype.off = function(event, handler) {
+ScripTracker.prototype.off = function (event, handler) {
   var handlers = this.eventHandlers[event];
 
   switch (event) {
@@ -816,7 +887,7 @@ ScripTracker.prototype.off = function(event, handler) {
   }
 };
 
-ScripTracker.prototype.dispatchEvent = function(
+ScripTracker.prototype.dispatchEvent = function (
   event,
   player,
   channel,
@@ -902,7 +973,7 @@ ScripTracker.Events = {
   order: "NEW_ORDER",
   instrument: "INSTRUMENT",
   effect: "EFFECT",
-  error: "ERROR"
+  error: "ERROR",
 };
 
 if (window) {

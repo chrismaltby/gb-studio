@@ -369,7 +369,7 @@
   "EVENT_PALETTE_SET_UI": "Palette: UI-Palette festlegen",
   "EVENT_ACTOR_STOP_UPDATE": "Darsteller: Stoppt \"Zur Aktualisierung\" Skript",
   "EVENT_ACTOR_SET_ANIMATE": "Darsteller: Animieren im stillstand einstellen",
-  
+
   "// 10": "Menu -----------------------------------------------------",
 
   "MENU_FILE": "Datei",
@@ -459,7 +459,7 @@
   "WARNING_BACKGROUND_TOO_TALL": "Hintergrund ist zu hoch, war {height}Pixel hoch, wenn Maximum {maxHeight}Pixel ist",
   "WARNING_BACKGROUND_TOO_MANY_PIXELS": "Der Hintergrund enthält zu viele Pixel, {numPixels} ({width}Pixel * {height}Pixel), wenn das Maximum {maxPixels} ist",
   "WARNING_BACKGROUND_TOO_MANY_TILES": "Der Hintergrund enthält zu viele eindeutige 8x8Pixel-Kacheln  ({tilesetLength}, wobei die Grenze {maxTilesetLength} ist) was bedeutet, dass er möglicherweise nicht korrekt angezeigt wird. Ziehen Sie in Betracht, die Detailmenge in diesem Bild zu reduzieren.",
-  
+
   "// 12": "Errors -------------------------------------------------------",
 
   "ERROR_PLEASE_ENTER_PROJECT_NAME": "Bitte geben Sie einen Projektnamen ein",
@@ -570,5 +570,4 @@
   "GAMETYPE_ADVENTURE": "Adventure",
   "GAMETYPE_SHMUP": "Shoot Em' Up",
   "GAMETYPE_POINT_N_CLICK": "Point and Click"
-
 }

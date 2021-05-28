@@ -51,34 +51,36 @@ export const TriggerEditor: FC<TriggerEditorProps> = ({ id, sceneId }) => {
 
   const dispatch = useDispatch();
 
-  const onChangeField = <T extends keyof Trigger>(key: T) => (
-    editValue: Trigger[T]
-  ) => {
-    dispatch(
-      entitiesActions.editTrigger({
-        triggerId: id,
-        changes: {
-          [key]: editValue,
-        },
-      })
-    );
-  };
+  const onChangeField =
+    <T extends keyof Trigger>(key: T) =>
+    (editValue: Trigger[T]) => {
+      dispatch(
+        entitiesActions.editTrigger({
+          triggerId: id,
+          changes: {
+            [key]: editValue,
+          },
+        })
+      );
+    };
 
-  const onChangeFieldInput = (key: keyof Trigger) => (
-    e:
-      | React.ChangeEvent<HTMLInputElement>
-      | React.ChangeEvent<HTMLTextAreaElement>
-  ) => {
-    const editValue = castEventValue(e);
-    dispatch(
-      entitiesActions.editTrigger({
-        triggerId: id,
-        changes: {
-          [key]: editValue,
-        },
-      })
-    );
-  };
+  const onChangeFieldInput =
+    (key: keyof Trigger) =>
+    (
+      e:
+        | React.ChangeEvent<HTMLInputElement>
+        | React.ChangeEvent<HTMLTextAreaElement>
+    ) => {
+      const editValue = castEventValue(e);
+      dispatch(
+        entitiesActions.editTrigger({
+          triggerId: id,
+          changes: {
+            [key]: editValue,
+          },
+        })
+      );
+    };
 
   const selectSidebar = () => {
     dispatch(editorActions.selectSidebar());

@@ -6,7 +6,7 @@ const fields = [
   {
     key: "actorId",
     type: "actor",
-    defaultValue: "$self$"
+    defaultValue: "$self$",
   },
   {
     key: "x",
@@ -15,7 +15,7 @@ const fields = [
     min: -31,
     max: 31,
     width: "50%",
-    defaultValue: 0
+    defaultValue: 0,
   },
   {
     key: "y",
@@ -24,7 +24,7 @@ const fields = [
     min: -31,
     max: 31,
     width: "50%",
-    defaultValue: 0
+    defaultValue: 0,
   },
   {
     key: "moveType",
@@ -33,19 +33,19 @@ const fields = [
     options: [
       ["horizontal", "↔ " + l10n("FIELD_HORIZONTAL_FIRST")],
       ["vertical", "↕ " + l10n("FIELD_VERTICAL_FIRST")],
-      ["diagonal", "⤡ " + l10n("FIELD_DIAGONAL")]
+      ["diagonal", "⤡ " + l10n("FIELD_DIAGONAL")],
     ],
     defaultValue: "horizontal",
     width: "50%",
-  },    
+  },
   {
     key: "useCollisions",
     label: l10n("FIELD_USE_COLLISIONS"),
     width: "50%",
     alignCheckbox: true,
     type: "checkbox",
-    defaultValue: false
-  } 
+    defaultValue: false,
+  },
 ];
 
 const compile = (input, helpers) => {
@@ -57,5 +57,5 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   fields,
-  compile
+  compile,
 };

@@ -12,22 +12,22 @@ const lightThemeWin: ThemeInterface = {
       border: "#dddddd",
     },
     button: {
-      ...lightTheme.colors.button,      
+      ...lightTheme.colors.button,
       toolbar: {
         ...lightTheme.colors.button.toolbar,
         border: "#bbbbbb",
-        borderTop: "#bbbbbb"
+        borderTop: "#bbbbbb",
       },
       background: "#fafafa",
       border: "#bbbbbb",
-      borderTop: "#bbbbbb"
+      borderTop: "#bbbbbb",
     },
     menu: {
       ...lightTheme.colors.menu,
-      boxShadow: "2px 2px 2px rgba(0,0,0,0.3), 0px 0px 1px rgba(128,128,128,1)"
-    }
+      boxShadow: "2px 2px 2px rgba(0,0,0,0.3), 0px 0px 1px rgba(128,128,128,1)",
+    },
   },
-  borderRadius: 1
-}
+  borderRadius: 1,
+};
 
 export default lightThemeWin;

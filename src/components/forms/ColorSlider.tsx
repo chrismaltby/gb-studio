@@ -6,7 +6,7 @@ type ColorSliderProps = {
   handleColor: string;
   colorAtValue: (value: number) => string;
   onChange: (value: number) => void;
-}
+};
 
 class ColorSlider extends Component<ColorSliderProps> {
   target: HTMLElement | undefined;
@@ -14,7 +14,7 @@ class ColorSlider extends Component<ColorSliderProps> {
   onMouseDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     const { onChange } = this.props;
     if (!(e.currentTarget instanceof HTMLElement)) {
-      return
+      return;
     }
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -45,25 +45,20 @@ class ColorSlider extends Component<ColorSliderProps> {
     const stepValues = Array.from(Array(steps).keys());
 
     return (
-      <div
-        className="ColorSlider"
-        onMouseDown={this.onMouseDown}
-      >
-        {
-          stepValues.map((stepIndex) => {
-            const normalisedValue = stepIndex / (stepValues.length - 1);
-            const color = colorAtValue(normalisedValue);
-            return (
-              <div
-                key={stepIndex}
-                className="ColorSlider__Color"
-                style={{
-                  backgroundColor: color,
-                }}
-              />
-            );
-          })
-        }
+      <div className="ColorSlider" onMouseDown={this.onMouseDown}>
+        {stepValues.map((stepIndex) => {
+          const normalisedValue = stepIndex / (stepValues.length - 1);
+          const color = colorAtValue(normalisedValue);
+          return (
+            <div
+              key={stepIndex}
+              className="ColorSlider__Color"
+              style={{
+                backgroundColor: color,
+              }}
+            />
+          );
+        })}
         <div
           className="ColorSlider__Handle"
           style={{
@@ -71,7 +66,7 @@ class ColorSlider extends Component<ColorSliderProps> {
             backgroundColor: handleColor,
           }}
         />
-      </div >
+      </div>
     );
   }
 }

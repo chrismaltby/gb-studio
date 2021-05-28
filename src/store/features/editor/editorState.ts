@@ -48,11 +48,11 @@ export interface SpriteTileSelection {
   height: number;
 }
 
-export type InstrumentType =  "duty" | "wave" | "noise";
+export type InstrumentType = "duty" | "wave" | "noise";
 
 export interface SelectedInstrument {
-  id: string,
-  type: InstrumentType
+  id: string;
+  type: InstrumentType;
 }
 
 export interface EditorState {
@@ -118,7 +118,7 @@ export interface EditorState {
   selectedSongId: string;
   selectedInstrument: SelectedInstrument;
   selectedSequence: number;
-  playbackState: number[],
+  playbackState: number[];
 }
 
 export const initialState: EditorState = {
@@ -180,10 +180,10 @@ export const initialState: EditorState = {
   selectedSongId: "",
   selectedInstrument: {
     id: "0",
-    type: "duty"
+    type: "duty",
   },
   selectedSequence: 0,
-  playbackState: [0, 0]
+  playbackState: [0, 0],
 };
 
 const editorSlice = createSlice({
@@ -579,9 +579,10 @@ const editorSlice = createSlice({
       if (state.selectedMetaspriteTileIds.indexOf(action.payload) > -1) {
         // Don't remove if this is the last selected tile
         if (state.selectedMetaspriteTileIds.length > 1) {
-          state.selectedMetaspriteTileIds = state.selectedMetaspriteTileIds.filter(
-            (id) => id !== action.payload
-          );
+          state.selectedMetaspriteTileIds =
+            state.selectedMetaspriteTileIds.filter(
+              (id) => id !== action.payload
+            );
         }
       } else {
         state.selectedMetaspriteTileIds.push(action.payload);
@@ -630,26 +631,28 @@ const editorSlice = createSlice({
     setPreviewAsSceneId: (state, action: PayloadAction<string>) => {
       state.previewAsSceneId = action.payload;
     },
-    
+
     setSelectedSongId: (state, action: PayloadAction<string>) => {
       state.selectedSongId = action.payload;
       state.selectedInstrument = { id: "0", type: "duty" };
       state.selectedSequence = 0;
-      state.playbackState = [0, 0]
+      state.playbackState = [0, 0];
     },
 
-    setSelectedInstrument: (state, action: PayloadAction<SelectedInstrument>) => {
+    setSelectedInstrument: (
+      state,
+      action: PayloadAction<SelectedInstrument>
+    ) => {
       state.selectedInstrument = action.payload;
     },
 
-    setSelectedSequence: (state, action:PayloadAction<number>) => {
+    setSelectedSequence: (state, action: PayloadAction<number>) => {
       state.selectedSequence = action.payload;
     },
 
-    setPlaybackState: (state, action:PayloadAction<number[]>) => {
+    setPlaybackState: (state, action: PayloadAction<number[]>) => {
       state.playbackState = action.payload;
-    }
-
+    },
   },
   extraReducers: (builder) =>
     builder

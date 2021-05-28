@@ -3,14 +3,20 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import events, { engineFieldUpdateEvents, engineFieldStoreEvents } from "../../lib/events";
+import events, {
+  engineFieldUpdateEvents,
+  engineFieldStoreEvents,
+} from "../../lib/events";
 import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 import { CustomEventShape, EngineFieldShape } from "../../store/stateShape";
 import ScriptEventFormField from "./ScriptEventFormField";
 import { customEventSelectors } from "../../store/features/entities/entitiesState";
 import { SidebarTabs } from "../editors/Sidebar";
 import { clampToCType, is16BitCType } from "../../lib/helpers/engineFields";
-import { EVENT_ENGINE_FIELD_STORE, EVENT_ENGINE_FIELD_SET } from "../../lib/compiler/eventTypes";
+import {
+  EVENT_ENGINE_FIELD_STORE,
+  EVENT_ENGINE_FIELD_SET,
+} from "../../lib/compiler/eventTypes";
 import l10n from "../../lib/helpers/l10n";
 import { setDefault } from "../../lib/helpers/setDefault";
 
@@ -32,52 +38,68 @@ class ScriptEventForm extends Component {
             {
               label: customEvent.description
                 .split("\n")
-                .map((text, index) => <div key={index}>{text || <div>&nbsp;</div>}</div>)
-            }
+                .map((text, index) => (
+                  <div key={index}>{text || <div>&nbsp;</div>}</div>
+                )),
+            },
           ]
         : [];
       const usedVariables =
-        Object.values(customEvent.variables).map(v => {
+        Object.values(customEvent.variables).map((v) => {
           return {
             label: `${v.name}`,
             defaultValue: "LAST_VARIABLE",
             key: `$variable[${v.id}]$`,
             type: "variable",
-            variableType: v.type
+            variableType: v.type,
           };
         }) || [];
       const usedActors =
-        Object.values(customEvent.actors).map(a => {
+        Object.values(customEvent.actors).map((a) => {
           return {
             label: `${a.name}`,
             defaultValue: "player",
             key: `$actor[${a.id}]$`,
-            type: "actor"
+            type: "actor",
           };
         }) || [];
 
       return [].concat(description, eventCommands, usedVariables, usedActors);
     }
-    
-    if ((command === EVENT_ENGINE_FIELD_SET || command === EVENT_ENGINE_FIELD_STORE) && value.engineFieldKey) {
-      const engineField = engineFields.find((e) => e.key === value.engineFieldKey);
+
+    if (
+      (command === EVENT_ENGINE_FIELD_SET ||
+        command === EVENT_ENGINE_FIELD_STORE) &&
+      value.engineFieldKey
+    ) {
+      const engineField = engineFields.find(
+        (e) => e.key === value.engineFieldKey
+      );
       if (engineField) {
         if (command === EVENT_ENGINE_FIELD_SET) {
-          return engineFieldUpdateEvents[engineField.key] && engineFieldUpdateEvents[engineField.key].fields || [];
+          return (
+            (engineFieldUpdateEvents[engineField.key] &&
+              engineFieldUpdateEvents[engineField.key].fields) ||
+            []
+          );
         }
         if (command === EVENT_ENGINE_FIELD_STORE) {
-          return engineFieldStoreEvents[engineField.key] && engineFieldStoreEvents[engineField.key].fields || [];
-        }   
+          return (
+            (engineFieldStoreEvents[engineField.key] &&
+              engineFieldStoreEvents[engineField.key].fields) ||
+            []
+          );
+        }
       } else {
         return [].concat(eventCommands, {
-          label: `Unknown field "${value.engineFieldKey}"`
-        })
+          label: `Unknown field "${value.engineFieldKey}"`,
+        });
       }
     }
     return eventCommands;
   }
 
-  renderFields = fields => {
+  renderFields = (fields) => {
     const { id, value, renderEvents, onChange, entityId } = this.props;
     return fields.map((field, index) => {
       if (field.hide) {
@@ -119,9 +141,9 @@ class ScriptEventForm extends Component {
                 newValue[field.key] = v;
                 onChange(newValue);
               }}
-            />                    
+            />
           </div>
-        )
+        );
       }
 
       const fieldValue = field.multiple
@@ -154,18 +176,18 @@ ScriptEventForm.propTypes = {
   command: PropTypes.string.isRequired,
   value: PropTypes.shape({
     customEventId: PropTypes.string,
-    engineFieldKey: PropTypes.string
+    engineFieldKey: PropTypes.string,
   }),
   onChange: PropTypes.func.isRequired,
   renderEvents: PropTypes.func.isRequired,
   customEvents: PropTypes.objectOf(CustomEventShape),
-  engineFields: PropTypes.arrayOf(EngineFieldShape)
+  engineFields: PropTypes.arrayOf(EngineFieldShape),
 };
 
 ScriptEventForm.defaultProps = {
   value: {},
   customEvents: [],
-  engineFields: []
+  engineFields: [],
 };
 
 function mapStateToProps(state) {
@@ -173,7 +195,7 @@ function mapStateToProps(state) {
   const engineFields = state.engine.fields;
   return {
     customEvents,
-    engineFields
+    engineFields,
   };
 }
 

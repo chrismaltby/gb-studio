@@ -4,8 +4,8 @@ const fields = [
   {
     key: "speed",
     type: "fadeSpeed",
-    defaultValue: "2"
-  }
+    defaultValue: "2",
+  },
 ];
 
 const compile = (input, helpers) => {
@@ -16,5 +16,5 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   fields,
-  compile
+  compile,
 };

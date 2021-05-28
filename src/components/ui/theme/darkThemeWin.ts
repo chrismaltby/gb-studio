@@ -13,24 +13,24 @@ const darkThemeWin: ThemeInterface = {
       border: "#000000",
     },
     button: {
-      ...darkTheme.colors.button,      
+      ...darkTheme.colors.button,
       toolbar: {
         ...darkTheme.colors.button.toolbar,
         border: "#333333",
-        borderTop: "#333333"
+        borderTop: "#333333",
       },
       background: "#6a6d6e",
       border: "#333333",
-      borderTop: "#333333"
+      borderTop: "#333333",
     },
     menu: {
       ...darkTheme.colors.menu,
       background: "#292a2d",
       hoverBackground: "#4b4c4f",
-      boxShadow: "2px 2px 2px rgba(0,0,0,0.3), 0px 0px 1px rgba(128,128,128,1)"
-    }
+      boxShadow: "2px 2px 2px rgba(0,0,0,0.3), 0px 0px 1px rgba(128,128,128,1)",
+    },
   },
-  borderRadius: 1
-}
+  borderRadius: 1,
+};
 
 export default darkThemeWin;

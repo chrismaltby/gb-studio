@@ -13,10 +13,10 @@ import { musicSelectors } from "../../store/features/entities/entitiesState";
 const groupByPlugin = groupBy("plugin");
 
 class MusicSelect extends Component {
-  onPlay = id => {
+  onPlay = (id) => {
     const { music, value, play } = this.props;
     const playId = id || value;
-    const file = music.find(track => track.id === playId) || music[0];
+    const file = music.find((track) => track.id === playId) || music[0];
     if (file) {
       play({ musicId: file.id });
     }
@@ -27,7 +27,7 @@ class MusicSelect extends Component {
     pause();
   };
 
-  renderDropdownIndicator = props => {
+  renderDropdownIndicator = (props) => {
     const { playing } = this.props;
     return (
       <components.DropdownIndicator {...props}>
@@ -35,7 +35,7 @@ class MusicSelect extends Component {
           <Button
             small
             transparent
-            onMouseDown={e => {
+            onMouseDown={(e) => {
               e.stopPropagation();
               e.preventDefault();
               this.onPause();
@@ -47,7 +47,7 @@ class MusicSelect extends Component {
           <Button
             small
             transparent
-            onMouseDown={e => {
+            onMouseDown={(e) => {
               e.stopPropagation();
               e.preventDefault();
               this.onPlay();
@@ -60,7 +60,7 @@ class MusicSelect extends Component {
     );
   };
 
-  renderOption = props => {
+  renderOption = (props) => {
     const { value, label } = props;
     return (
       <components.Option {...props}>
@@ -69,7 +69,7 @@ class MusicSelect extends Component {
           <Button
             small
             transparent
-            onClick={e => {
+            onClick={(e) => {
               e.stopPropagation();
               e.preventDefault();
               this.onPlay(value);
@@ -84,7 +84,7 @@ class MusicSelect extends Component {
 
   render() {
     const { music, id, value, onChange } = this.props;
-    const current = music.find(m => m.id === value);
+    const current = music.find((m) => m.id === value);
     const groupedMusic = groupByPlugin(music);
     const options = Object.keys(groupedMusic)
       .sort()
@@ -92,22 +92,22 @@ class MusicSelect extends Component {
         if (!plugin) {
           return [].concat(
             memo,
-            groupedMusic[plugin].map(track => {
+            groupedMusic[plugin].map((track) => {
               return {
                 label: track.name,
-                value: track.id
+                value: track.id,
               };
             })
           );
         }
         memo.push({
           label: plugin,
-          options: groupedMusic[plugin].map(track => {
+          options: groupedMusic[plugin].map((track) => {
             return {
               label: track.name,
-              value: track.id
+              value: track.id,
             };
-          })
+          }),
         });
         return memo;
       }, []);
@@ -119,13 +119,13 @@ class MusicSelect extends Component {
         classNamePrefix="ReactSelect"
         options={options}
         value={{ label: current ? current.name : "", value }}
-        onChange={data => {
+        onChange={(data) => {
           this.onPause();
           onChange(data.value);
         }}
         components={{
           DropdownIndicator: this.renderDropdownIndicator,
-          Option: this.renderOption
+          Option: this.renderOption,
         }}
         menuPlacement="auto"
         blurInputOnSelect
@@ -142,28 +142,25 @@ MusicSelect.propTypes = {
   projectRoot: PropTypes.string.isRequired,
   playing: PropTypes.bool.isRequired,
   play: PropTypes.func.isRequired,
-  pause: PropTypes.func.isRequired
+  pause: PropTypes.func.isRequired,
 };
 
 MusicSelect.defaultProps = {
   id: undefined,
-  value: ""
+  value: "",
 };
 
 function mapStateToProps(state) {
   return {
     music: musicSelectors.selectAll(state),
     projectRoot: state.document.root,
-    playing: state.music.playing
+    playing: state.music.playing,
   };
 }
 
 const mapDispatchToProps = {
   play: musicActions.playMusic,
-  pause: musicActions.pauseMusic
+  pause: musicActions.pauseMusic,
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(MusicSelect);
+export default connect(mapStateToProps, mapDispatchToProps)(MusicSelect);

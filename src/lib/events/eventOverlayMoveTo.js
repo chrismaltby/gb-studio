@@ -10,7 +10,7 @@ const fields = [
     min: 0,
     max: 20,
     defaultValue: 0,
-    width: "50%"
+    width: "50%",
   },
   {
     key: "y",
@@ -19,13 +19,13 @@ const fields = [
     min: 0,
     max: 18,
     defaultValue: 0,
-    width: "50%"
+    width: "50%",
   },
   {
     key: "speed",
     type: "cameraSpeed",
-    defaultValue: "0"
-  }
+    defaultValue: "0",
+  },
 ];
 
 const compile = (input, helpers) => {
@@ -36,6 +36,5 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   fields,
-  compile
+  compile,
 };
-

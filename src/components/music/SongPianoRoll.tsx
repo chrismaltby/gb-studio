@@ -6,7 +6,7 @@ import { RootState } from "../../store/configureStore";
 import { SplitPaneVerticalDivider } from "../ui/splitpane/SplitPaneDivider";
 import { SequenceEditor } from "./SequenceEditor";
 import { UgePlayer } from "./UgePlayer";
-import scrollIntoView from 'scroll-into-view-if-needed';
+import scrollIntoView from "scroll-into-view-if-needed";
 import { SplitPaneHeader } from "../ui/splitpane/SplitPaneHeader";
 import l10n from "../../lib/helpers/l10n";
 import { RollChannel } from "./RollChannel";
@@ -16,9 +16,9 @@ const CELL_SIZE = 14;
 const MAX_NOTE = 71;
 
 interface SongPianoRollProps {
-  sequenceId: number,
-  song: Song | null,
-  height: number
+  sequenceId: number;
+  song: Song | null;
+  height: number;
 }
 
 interface PianoKeyProps {
@@ -28,7 +28,7 @@ interface PianoKeyProps {
 }
 
 const Piano = styled.div`
-  position: sticky; 
+  position: sticky;
   left: 0;
   min-width: 30px;
   background: white;
@@ -40,7 +40,12 @@ const blackKeyStyle = css`
   height: ${CELL_SIZE}px;
   width: 85%;
   background: linear-gradient(45deg, #636363, black);
-  background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(99,99,99,1) 90%, rgba(0,0,0,1) 98%);
+  background: linear-gradient(
+    90deg,
+    rgba(2, 0, 36, 1) 0%,
+    rgba(99, 99, 99, 1) 90%,
+    rgba(0, 0, 0, 1) 98%
+  );
   border-bottom: none;
   border-radius: 0 2px 2px 0;
   box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 3px 0px;
@@ -57,7 +62,7 @@ const highlightStyle = css`
     left: 0px;
     bottom: 0px;
     right: 0px;
-    background:linear-gradient(90deg, #607D8B 0%,#B0BEC5);
+    background: linear-gradient(90deg, #607d8b 0%, #b0bec5);
     opacity: 0.5;
   }
 `;
@@ -75,10 +80,10 @@ const PianoKey = styled.div<PianoKeyProps>`
   height: ${(props) => (props.tall ? 2 : 1.5) * CELL_SIZE}px;
   width: 100%;
   background: white;
-  border-bottom: 1px solid #CFD8DC;
-  box-shadow: rgba(0,0,0,0.1) -2px 0px 2px 0px inset;
-  ${(props) => props.color === "black" ? blackKeyStyle : ""}
-  ${(props) => props.highlight ? highlightStyle : ""}
+  border-bottom: 1px solid #cfd8dc;
+  box-shadow: rgba(0, 0, 0, 0.1) -2px 0px 2px 0px inset;
+  ${(props) => (props.color === "black" ? blackKeyStyle : "")}
+  ${(props) => (props.highlight ? highlightStyle : "")}
   :hover {
     ${highlightStyle};
   }
@@ -94,7 +99,7 @@ const SongGrid = styled.div`
   z-index: 1;
 `;
 
-const RollPlaybackTracker = styled.div`              
+const RollPlaybackTracker = styled.div`
   z-index: 0;
   width: ${CELL_SIZE - 1}px;
   height: ${CELL_SIZE * 12 * 6}px;
@@ -108,17 +113,18 @@ const RollPlaybackTracker = styled.div`
 export const SongPianoRoll = ({
   song,
   sequenceId,
-  height
+  height,
 }: SongPianoRollProps) => {
   const [playbackState, setPlaybackState] = useState([-1, -1]);
-  const playing = useSelector(
-    (state: RootState) => state.tracker.playing
-  );
-  const hoverNote = useSelector(
-    (state: RootState) => state.tracker.hoverNote
-  );
+  const playing = useSelector((state: RootState) => state.tracker.playing);
+  const hoverNote = useSelector((state: RootState) => state.tracker.hoverNote);
 
-  const [channelStatus, setChannelStatus] = useState([false, false, false, false]);
+  const [channelStatus, setChannelStatus] = useState([
+    false,
+    false,
+    false,
+    false,
+  ]);
   console.log(channelStatus);
 
   const patternId = song?.sequence[sequenceId] || 0;
@@ -127,21 +133,18 @@ export const SongPianoRoll = ({
   useEffect(() => {
     if (playingRowRef && playingRowRef.current) {
       if (playing) {
-        scrollIntoView(
-          playingRowRef.current,
-          {
-            scrollMode: 'if-needed',
-            block: 'nearest',
-            inline: 'end',
-          }
-        );
+        scrollIntoView(playingRowRef.current, {
+          scrollMode: "if-needed",
+          block: "nearest",
+          inline: "end",
+        });
       }
     }
   }, [playing, playbackState]);
 
   useEffect(() => {
     setPlaybackState([-1, -1]);
-  }, [playing, song])
+  }, [playing, song]);
 
   const [patternsPanelOpen, setPatternsPanelOpen] = useState(true);
   const togglePatternsPanel = useCallback(() => {
@@ -153,7 +156,7 @@ export const SongPianoRoll = ({
   );
 
   const v = [...visibleChannels].reverse();
-  
+
   return (
     <div
       style={{
@@ -163,56 +166,100 @@ export const SongPianoRoll = ({
         height: height,
       }}
     >
-      <div style={{
-        position: "relative",
-        flexGrow: 1,
-        overflow: "hidden"
-      }}
-      >
-        <div style={{
-          display: "flex",
+      <div
+        style={{
           position: "relative",
-          overflow: "auto",
-          height: "100%",
-          zIndex: 1,
-        }}>
+          flexGrow: 1,
+          overflow: "hidden",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            position: "relative",
+            overflow: "auto",
+            height: "100%",
+            zIndex: 1,
+          }}
+        >
           <Piano>
-            {Array(6).fill("").map((_, i) => 
-              <>
-                <PianoKey color="white" highlight={hoverNote === MAX_NOTE - (i * 12)}></PianoKey>
-                <PianoKey color="black" highlight={hoverNote === MAX_NOTE - ((i * 12) + 1)}></PianoKey>
-                <PianoKey color="white" highlight={hoverNote === MAX_NOTE - ((i * 12) + 2)} tall></PianoKey>
-                <PianoKey color="black" highlight={hoverNote === MAX_NOTE - ((i * 12) + 3)}></PianoKey>
-                <PianoKey color="white" highlight={hoverNote === MAX_NOTE - ((i * 12) + 4)} tall></PianoKey>
-                <PianoKey color="black" highlight={hoverNote === MAX_NOTE - ((i * 12) + 5)}></PianoKey>
-                <PianoKey color="white" highlight={hoverNote === MAX_NOTE - ((i * 12) + 6)}></PianoKey>
-                <PianoKey color="white" highlight={hoverNote === MAX_NOTE - ((i * 12) + 7)}></PianoKey>
-                <PianoKey color="black" highlight={hoverNote === MAX_NOTE - ((i * 12) + 8)}></PianoKey>
-                <PianoKey color="white" highlight={hoverNote === MAX_NOTE - ((i * 12) + 9)} tall></PianoKey>
-                <PianoKey color="black" highlight={hoverNote === MAX_NOTE - ((i * 12) + 10)}></PianoKey>
-                <PianoKey color="white" highlight={hoverNote === MAX_NOTE - ((i * 12) + 11)}>C{8 - i}</PianoKey>
-              </>
-            )}
+            {Array(6)
+              .fill("")
+              .map((_, i) => (
+                <>
+                  <PianoKey
+                    color="white"
+                    highlight={hoverNote === MAX_NOTE - i * 12}
+                  ></PianoKey>
+                  <PianoKey
+                    color="black"
+                    highlight={hoverNote === MAX_NOTE - (i * 12 + 1)}
+                  ></PianoKey>
+                  <PianoKey
+                    color="white"
+                    highlight={hoverNote === MAX_NOTE - (i * 12 + 2)}
+                    tall
+                  ></PianoKey>
+                  <PianoKey
+                    color="black"
+                    highlight={hoverNote === MAX_NOTE - (i * 12 + 3)}
+                  ></PianoKey>
+                  <PianoKey
+                    color="white"
+                    highlight={hoverNote === MAX_NOTE - (i * 12 + 4)}
+                    tall
+                  ></PianoKey>
+                  <PianoKey
+                    color="black"
+                    highlight={hoverNote === MAX_NOTE - (i * 12 + 5)}
+                  ></PianoKey>
+                  <PianoKey
+                    color="white"
+                    highlight={hoverNote === MAX_NOTE - (i * 12 + 6)}
+                  ></PianoKey>
+                  <PianoKey
+                    color="white"
+                    highlight={hoverNote === MAX_NOTE - (i * 12 + 7)}
+                  ></PianoKey>
+                  <PianoKey
+                    color="black"
+                    highlight={hoverNote === MAX_NOTE - (i * 12 + 8)}
+                  ></PianoKey>
+                  <PianoKey
+                    color="white"
+                    highlight={hoverNote === MAX_NOTE - (i * 12 + 9)}
+                    tall
+                  ></PianoKey>
+                  <PianoKey
+                    color="black"
+                    highlight={hoverNote === MAX_NOTE - (i * 12 + 10)}
+                  ></PianoKey>
+                  <PianoKey
+                    color="white"
+                    highlight={hoverNote === MAX_NOTE - (i * 12 + 11)}
+                  >
+                    C{8 - i}
+                  </PianoKey>
+                </>
+              ))}
           </Piano>
-          <SongGrid
-            tabIndex={0}
-          >
-            <RollPlaybackTracker 
+          <SongGrid tabIndex={0}>
+            <RollPlaybackTracker
               ref={playingRowRef}
               style={{
                 transform: `translateX(${20 + playbackState[1] * CELL_SIZE}px)`,
               }}
             />
             <RollChannelGrid cellSize={CELL_SIZE} />
-            {v.map((i) => 
-              <RollChannel 
+            {v.map((i) => (
+              <RollChannel
                 channelId={i}
                 active={visibleChannels[0] === i}
                 patternId={patternId}
                 patterns={song?.patterns[patternId]}
                 cellSize={CELL_SIZE}
               />
-            )}
+            ))}
           </SongGrid>
         </div>
       </div>
@@ -224,9 +271,11 @@ export const SongPianoRoll = ({
         {l10n("FIELD_PATTERNS")}
       </SplitPaneHeader>
       {patternsPanelOpen && (
-        <div style={{ 
-          position: "relative"
-        }}>
+        <div
+          style={{
+            position: "relative",
+          }}
+        >
           <SequenceEditor
             direction="horizontal"
             sequence={song?.sequence}
@@ -241,5 +290,5 @@ export const SongPianoRoll = ({
         onChannelStatusUpdate={setChannelStatus}
       />
     </div>
-  )
-}
+  );
+};

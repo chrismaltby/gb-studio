@@ -37,7 +37,7 @@ const store = configureStore({
     undoMiddleware,
     clipboardMiddleware,
     trackerDocumentMiddleware,
-  ])
+  ]),
 });
 
 export type AppDispatch = typeof store.dispatch;

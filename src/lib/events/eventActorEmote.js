@@ -4,13 +4,13 @@ const fields = [
   {
     key: "actorId",
     type: "actor",
-    defaultValue: "$self$"
+    defaultValue: "$self$",
   },
   {
     key: "emoteId",
     type: "emote",
-    defaultValue: 0
-  }
+    defaultValue: 0,
+  },
 ];
 
 const compile = (input, helpers) => {
@@ -22,5 +22,5 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   fields,
-  compile
+  compile,
 };

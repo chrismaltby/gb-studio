@@ -1,5 +1,10 @@
 /* eslint-disable camelcase */
-import { AnyAction, createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import {
+  AnyAction,
+  createAsyncThunk,
+  createSlice,
+  PayloadAction,
+} from "@reduxjs/toolkit";
 import { readFile } from "fs-extra";
 import cloneDeep from "lodash/cloneDeep";
 import { writeFileWithBackupAsync } from "../../../lib/helpers/fs/writeFileWithBackup";
@@ -7,7 +12,11 @@ import { PatternCell } from "../../../lib/helpers/uge/song/PatternCell";
 import { Song } from "../../../lib/helpers/uge/song/Song";
 import { loadUGESong, saveUGESong } from "../../../lib/helpers/uge/ugeHelper";
 import { RootState } from "../../configureStore";
-import { DutyInstrument, NoiseInstrument, WaveInstrument } from "./trackerDocumentTypes";
+import {
+  DutyInstrument,
+  NoiseInstrument,
+  WaveInstrument,
+} from "./trackerDocumentTypes";
 
 export interface TrackerDocumentState {
   status: "loading" | "error" | "loaded" | null;
@@ -27,7 +36,7 @@ export const loadSongFile = createAsyncThunk<Song | null, string>(
   async (path, thunkApi): Promise<Song | null> => {
     const data = await readFile(path);
     const song = loadUGESong(new Uint8Array(data).buffer);
-    
+
     return song;
   }
 );
@@ -50,7 +59,7 @@ export const saveSongFile = createAsyncThunk<void, string | undefined>(
       throw new Error("No song selected");
     }
 
-    const buffer = saveUGESong(state.trackerDocument.present.song); 
+    const buffer = saveUGESong(state.trackerDocument.present.song);
     await writeFileWithBackupAsync(path, new Uint8Array(buffer), "utf8");
   }
 );
@@ -69,108 +78,143 @@ const trackerSlice = createSlice({
       if (state.song) {
         state.song = {
           ...state.song,
-          ..._action.payload.changes
-        }
+          ..._action.payload.changes,
+        };
       }
     },
-    editDutyInstrument: (state, _action: PayloadAction<{ instrumentId: number, changes: Partial<DutyInstrument>}>) => {
+    editDutyInstrument: (
+      state,
+      _action: PayloadAction<{
+        instrumentId: number;
+        changes: Partial<DutyInstrument>;
+      }>
+    ) => {
       if (!state.song) {
         return;
       }
-      const instrument = state.song.duty_instruments[_action.payload.instrumentId];
-      const patch = { ..._action.payload.changes }
+      const instrument =
+        state.song.duty_instruments[_action.payload.instrumentId];
+      const patch = { ..._action.payload.changes };
 
       if (!instrument) {
         return;
       }
 
       const instruments = [...state.song.duty_instruments];
-      instruments[_action.payload.instrumentId] = { 
+      instruments[_action.payload.instrumentId] = {
         ...instrument,
-        ...patch 
+        ...patch,
       } as DutyInstrument;
 
       state.song = {
         ...state.song,
-        duty_instruments: instruments
-      }
+        duty_instruments: instruments,
+      };
     },
-    editWaveInstrument: (state, _action: PayloadAction<{ instrumentId: number, changes: Partial<WaveInstrument>}>) => {
+    editWaveInstrument: (
+      state,
+      _action: PayloadAction<{
+        instrumentId: number;
+        changes: Partial<WaveInstrument>;
+      }>
+    ) => {
       if (!state.song) {
         return;
       }
 
-      const instrument = state.song.wave_instruments[_action.payload.instrumentId];
-      const patch = { ..._action.payload.changes }
+      const instrument =
+        state.song.wave_instruments[_action.payload.instrumentId];
+      const patch = { ..._action.payload.changes };
 
       if (!instrument) {
         return;
       }
 
       const instruments = [...state.song.wave_instruments];
-      instruments[_action.payload.instrumentId] = { 
+      instruments[_action.payload.instrumentId] = {
         ...instrument,
-        ...patch 
+        ...patch,
       } as WaveInstrument;
 
       state.song = {
         ...state.song,
-        wave_instruments: instruments
-      }
+        wave_instruments: instruments,
+      };
     },
-    editNoiseInstrument: (state, _action: PayloadAction<{ instrumentId: number, changes: Partial<NoiseInstrument>}>) => {
+    editNoiseInstrument: (
+      state,
+      _action: PayloadAction<{
+        instrumentId: number;
+        changes: Partial<NoiseInstrument>;
+      }>
+    ) => {
       if (!state.song) {
         return;
       }
 
-      const instrument = state.song.noise_instruments[_action.payload.instrumentId];
-      const patch = { ..._action.payload.changes }
+      const instrument =
+        state.song.noise_instruments[_action.payload.instrumentId];
+      const patch = { ..._action.payload.changes };
 
       if (!instrument) {
         return;
       }
 
       const instruments = [...state.song.noise_instruments];
-      instruments[_action.payload.instrumentId] = { 
+      instruments[_action.payload.instrumentId] = {
         ...instrument,
-        ...patch 
+        ...patch,
       } as NoiseInstrument;
 
       state.song = {
         ...state.song,
-        noise_instruments: instruments
-      }
+        noise_instruments: instruments,
+      };
     },
-    editPatternCell: (state, _action: PayloadAction<{ patternId: number, cell: [number, number], changes: Partial<PatternCell>}>) => {
+    editPatternCell: (
+      state,
+      _action: PayloadAction<{
+        patternId: number;
+        cell: [number, number];
+        changes: Partial<PatternCell>;
+      }>
+    ) => {
       if (!state.song) {
         return;
       }
 
       const patternId = _action.payload.patternId;
-      const rowId = _action.payload.cell[0]; 
-      const colId = _action.payload.cell[1]; 
+      const rowId = _action.payload.cell[0];
+      const colId = _action.payload.cell[1];
       const patternCell = state.song.patterns[patternId][rowId][colId];
 
-      let patch = { ..._action.payload.changes }
-      if (patch.effectcode && patch.effectcode !== null && patternCell.effectparam === null) {
+      let patch = { ..._action.payload.changes };
+      if (
+        patch.effectcode &&
+        patch.effectcode !== null &&
+        patternCell.effectparam === null
+      ) {
         patch = {
           ...patch,
-          effectparam: 0
-        }
+          effectparam: 0,
+        };
       }
 
       const patterns = cloneDeep(state.song.patterns);
       patterns[patternId][rowId][colId] = {
         ...patternCell,
-        ...patch
+        ...patch,
       };
 
       state.song = {
         ...state.song,
-        patterns: patterns
-      }
+        patterns: patterns,
+      };
     },
-    editSequence: (state, _action: PayloadAction<{ sequenceIndex: number, sequenceId: number }>) => {
+    editSequence: (
+      state,
+      _action: PayloadAction<{ sequenceIndex: number; sequenceId: number }>
+    ) => {
       if (!state.song) {
         return;
       }
@@ -180,31 +224,41 @@ const trackerSlice = createSlice({
 
       state.song = {
         ...state.song,
-        sequence: newSequence
-      }
+        sequence: newSequence,
+      };
     },
-    transposeNoteCell: (state, _action: PayloadAction<{ patternId: number, cellId: number, transpose: number}>) => {
+    transposeNoteCell: (
+      state,
+      _action: PayloadAction<{
+        patternId: number;
+        cellId: number;
+        transpose: number;
+      }>
+    ) => {
       if (!state.song) {
         return;
       }
-      
+
       const patternId = _action.payload.patternId;
       const rowId = Math.floor(_action.payload.cellId / 16);
-      const colId = Math.floor(_action.payload.cellId / 4) % 4
+      const colId = Math.floor(_action.payload.cellId / 4) % 4;
       const patternCell = state.song.patterns[patternId][rowId][colId];
 
-      const newNote = patternCell.note === null ? 0 : patternCell.note + _action.payload.transpose;
+      const newNote =
+        patternCell.note === null
+          ? 0
+          : patternCell.note + _action.payload.transpose;
 
       const patterns = [...state.song.patterns];
       patterns[patternId][rowId][colId] = {
         ...patternCell,
-        note: (newNote % NUM_NOTES + NUM_NOTES) % NUM_NOTES
+        note: ((newNote % NUM_NOTES) + NUM_NOTES) % NUM_NOTES,
       };
 
       state.song = {
         ...state.song,
-        patterns: patterns
-      }
+        patterns: patterns,
+      };
     },
   },
   extraReducers: (builder) =>
@@ -222,7 +276,7 @@ const trackerSlice = createSlice({
         if (action.payload) {
           state.song = action.payload;
           state.status = "loaded";
-          state.modified = false;  
+          state.modified = false;
         }
       })
       .addCase(saveSongFile.fulfilled, (state, action) => {
@@ -235,7 +289,7 @@ const trackerSlice = createSlice({
         (state, _action) => {
           state.modified = true;
         }
-      )
+      ),
 });
 
 export const { actions, reducer } = trackerSlice;

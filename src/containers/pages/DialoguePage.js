@@ -8,7 +8,11 @@ import { EVENT_TEXT } from "../../lib/compiler/eventTypes";
 import l10n from "../../lib/helpers/l10n";
 import { SceneShape, ActorShape, EventShape } from "../../store/stateShape";
 import DialogueReviewScene from "../../components/script/DialogueReviewScene";
-import { sceneSelectors, actorSelectors, triggerSelectors } from "../../store/features/entities/entitiesState";
+import {
+  sceneSelectors,
+  actorSelectors,
+  triggerSelectors,
+} from "../../store/features/entities/entitiesState";
 
 class DialoguePage extends Component {
   constructor(props) {
@@ -80,7 +84,14 @@ class DialoguePage extends Component {
     }, 0);
 
     return (
-      <div style={{ width: "100%", display:"flex", flexDirection: "column", overflow: "auto" }}>
+      <div
+        style={{
+          width: "100%",
+          display: "flex",
+          flexDirection: "column",
+          overflow: "auto",
+        }}
+      >
         <PageHeader>
           <h1>{l10n("DIALOGUE_REVIEW")}</h1>
           <p>

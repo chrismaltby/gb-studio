@@ -75,13 +75,8 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = ({
     return isValidElement<MenuItemProps>(child) && child.type === MenuItem;
   }) as ReactElement[];
 
-  const {
-    buttonProps,
-    itemProps,
-    isOpen,
-    setIsOpen,
-    moveFocus,
-  } = useDropdownMenu(menuItemChildren.length);
+  const { buttonProps, itemProps, isOpen, setIsOpen, moveFocus } =
+    useDropdownMenu(menuItemChildren.length);
 
   const childrenWithProps = childArray.map((child) => {
     if (!isValidElement<MenuItemProps>(child) || child.type !== MenuItem) {

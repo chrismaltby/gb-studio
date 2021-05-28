@@ -2,7 +2,7 @@
 import Path from "path";
 import { SPRITE_TYPE_STATIC } from "../../consts";
 
-export const spriteTypeFromNumFrames = numFrames => {
+export const spriteTypeFromNumFrames = (numFrames) => {
   if (numFrames === 6) {
     return "actor_animated";
   }
@@ -61,8 +61,15 @@ export const zoomForSection = (section, editor) => {
 };
 
 export const assetFilename = (projectRoot, assetType, asset) => {
-  return (asset.plugin
-    ? Path.join(projectRoot, "plugins", asset.plugin, assetType, asset.filename)
-    : Path.join(projectRoot, "assets", assetType, asset.filename)
+  return (
+    asset.plugin
+      ? Path.join(
+          projectRoot,
+          "plugins",
+          asset.plugin,
+          assetType,
+          asset.filename
+        )
+      : Path.join(projectRoot, "assets", assetType, asset.filename)
   ).replace(/\\/g, "/");
 };

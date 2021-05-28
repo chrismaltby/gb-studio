@@ -93,8 +93,8 @@ const lightTheme: ThemeInterface = {
       effectParam: "#ffad1f",
       rollCell: {
         border: "#3b3a3b66",
-      }
-    }
+      },
+    },
   },
   borderRadius: 4,
 };

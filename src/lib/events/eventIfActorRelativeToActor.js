@@ -6,7 +6,7 @@ const fields = [
   {
     key: "actorId",
     type: "actor",
-    defaultValue: "player"
+    defaultValue: "player",
   },
   {
     key: "operation",
@@ -15,19 +15,19 @@ const fields = [
       ["up", l10n("FIELD_IS_ABOVE")],
       ["down", l10n("FIELD_IS_BELOW")],
       ["left", l10n("FIELD_IS_LEFT_OF")],
-      ["right", l10n("FIELD_IS_RIGHT_OF")]
+      ["right", l10n("FIELD_IS_RIGHT_OF")],
     ],
     defaultValue: "up",
-    width: "50%"
-  },  
+    width: "50%",
+  },
   {
     key: "otherActorId",
     type: "actor",
-    defaultValue: "$self$"
+    defaultValue: "$self$",
   },
   {
     key: "true",
-    type: "events"
+    type: "events",
   },
   {
     key: "__collapseElse",
@@ -37,24 +37,24 @@ const fields = [
     conditions: [
       {
         key: "__disableElse",
-        ne: true
-      }
-    ]
+        ne: true,
+      },
+    ],
   },
   {
     key: "false",
     conditions: [
       {
         key: "__collapseElse",
-        ne: true
+        ne: true,
       },
       {
         key: "__disableElse",
-        ne: true
-      }
+        ne: true,
+      },
     ],
-    type: "events"
-  }
+    type: "events",
+  },
 ];
 
 const compile = (input, helpers) => {
@@ -62,11 +62,16 @@ const compile = (input, helpers) => {
   const truePath = input.true;
   const falsePath = input.__disableElse ? [] : input.false;
   actorSetActive(input.actorId);
-  ifActorRelativeToActor(input.operation, input.otherActorId, truePath, falsePath);
+  ifActorRelativeToActor(
+    input.operation,
+    input.otherActorId,
+    truePath,
+    falsePath
+  );
 };
 
 module.exports = {
   id,
   fields,
-  compile
+  compile,
 };

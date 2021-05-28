@@ -8,7 +8,11 @@ import { Music } from "../../store/features/entities/entitiesTypes";
 import { EntityListItem } from "../ui/lists/EntityListItem";
 import l10n from "../../lib/helpers/l10n";
 import { InstrumentType } from "../../store/features/editor/editorState";
-import { DutyInstrument, NoiseInstrument, WaveInstrument } from "../../store/features/trackerDocument/trackerDocumentTypes";
+import {
+  DutyInstrument,
+  NoiseInstrument,
+  WaveInstrument,
+} from "../../store/features/trackerDocument/trackerDocumentTypes";
 import { Button } from "../ui/buttons/Button";
 import { PlusIcon } from "../library/Icons";
 import { SplitPaneHeader } from "../ui/splitpane/SplitPaneHeader";
@@ -59,33 +63,39 @@ const songToNavigatorItem = (
   song: Music,
   songIndex: number,
   selectedSongId: string,
-  modified: boolean,
+  modified: boolean
 ): NavigatorItem => {
   function nameIfModified(name: string) {
-    return (song.id === selectedSongId && modified) ? `${name} (*)` : name;
+    return song.id === selectedSongId && modified ? `${name} (*)` : name;
   }
-  return ({
+  return {
     id: song.id,
-    name: nameIfModified(song.filename ? song.filename : `Song ${songIndex + 1}`),
-  });
+    name: nameIfModified(
+      song.filename ? song.filename : `Song ${songIndex + 1}`
+    ),
+  };
 };
 
-const instrumentToNavigatorItem = (type: InstrumentType) => (
-  instrument: DutyInstrument | NoiseInstrument | WaveInstrument,
-  instrumentIndex: number,
-  defaultName: string,
-): InstrumentNavigatorItem => {
-  const name = instrument.name ? instrument.name : `${defaultName} ${instrumentIndex + 1}`;
+const instrumentToNavigatorItem =
+  (type: InstrumentType) =>
+  (
+    instrument: DutyInstrument | NoiseInstrument | WaveInstrument,
+    instrumentIndex: number,
+    defaultName: string
+  ): InstrumentNavigatorItem => {
+    const name = instrument.name
+      ? instrument.name
+      : `${defaultName} ${instrumentIndex + 1}`;
 
-  return ({
-    id: `${type}_${instrument.index}`,
-    name: `${(instrument.index + 1).toString().padStart(2, "0")}: ${name}`,
-    type,
-    instrumentId: `${instrument.index}`,
-    isGroup: false,
-    labelColor: instrumentColors[instrument.index],
-  });
-};
+    return {
+      id: `${type}_${instrument.index}`,
+      name: `${(instrument.index + 1).toString().padStart(2, "0")}: ${name}`,
+      type,
+      instrumentId: `${instrument.index}`,
+      isGroup: false,
+      labelColor: instrumentColors[instrument.index],
+    };
+  };
 
 const collator = new Intl.Collator(undefined, {
   numeric: true,
@@ -109,7 +119,7 @@ export const NavigatorSongs = ({
   dutyInstruments,
   waveInstruments,
   noiseInstruments,
-  modified
+  modified,
 }: NavigatorSongsProps) => {
   const dispatch = useDispatch();
 
@@ -126,14 +136,14 @@ export const NavigatorSongs = ({
   const selectedSongId = defaultFirst
     ? songsLookup[navigationId]?.id || allSongs.filter(ugeFilter)[0]?.id
     : navigationId;
-  
+
   const setSelectedSongId = useCallback(
     (id: string) => {
       dispatch(editorActions.setSelectedSongId(id));
     },
     [dispatch]
   );
-  
+
   const selectedSong = songsLookup[selectedSongId];
 
   useEffect(() => {
@@ -148,7 +158,9 @@ export const NavigatorSongs = ({
     );
   }, [selectedSongId, allSongs, modified]);
 
-  const [openInstrumentGroupIds, setOpenInstrumentGroupIds] = useState<InstrumentType[]>([]);
+  const [openInstrumentGroupIds, setOpenInstrumentGroupIds] = useState<
+    InstrumentType[]
+  >([]);
 
   const toggleInstrumentOpen = (id: InstrumentType) => () => {
     if (isOpen(id)) {
@@ -159,56 +171,103 @@ export const NavigatorSongs = ({
   };
 
   const openInstrumentGroup = (id: InstrumentType) => {
-    setOpenInstrumentGroupIds((value) => ([] as InstrumentType[]).concat(value, id));
+    setOpenInstrumentGroupIds((value) =>
+      ([] as InstrumentType[]).concat(value, id)
+    );
   };
 
   const closeInstrumentGroup = (id: InstrumentType) => {
     setOpenInstrumentGroupIds((value) => value.filter((s) => s !== id));
   };
 
-  const isOpen = useCallback((id: InstrumentType) => {
-    return openInstrumentGroupIds.includes(id);
-  }, [openInstrumentGroupIds]);
+  const isOpen = useCallback(
+    (id: InstrumentType) => {
+      return openInstrumentGroupIds.includes(id);
+    },
+    [openInstrumentGroupIds]
+  );
 
-  const [instrumentItems, setInstrumentItems] = useState<InstrumentNavigatorItem[]>([]);
+  const [instrumentItems, setInstrumentItems] = useState<
+    InstrumentNavigatorItem[]
+  >([]);
   useEffect(() => {
     const items: InstrumentNavigatorItem[] = [];
-    setInstrumentItems(items.concat(
-      [{ name: "Duty", id: "duty_group", instrumentId: "group", type: "duty", isGroup: true }],
-      isOpen("duty") ?
-        (dutyInstruments||[])
-          .map((duty, i) =>
-            instrumentToNavigatorItem("duty")(duty, i, "Duty")
-          )
-          .sort(sortByIndex) : [],
-      [{ name: "Waves", id: "wave_group", instrumentId: "group", type: "wave", isGroup: true }],
-      isOpen("wave") ?
-        (waveInstruments||[])
-          .map((wave, i) =>
-            instrumentToNavigatorItem("wave")(wave, i, "Wave")
-          )
-          .sort(sortByIndex) : [],
-      [{ name: "Noise", id: "noise_group", instrumentId: "group", type: "noise", isGroup: true }],
-      isOpen("noise") ?
-        (noiseInstruments||[])
-          .map((noise, i) =>
-            instrumentToNavigatorItem("noise")(noise, i, "Noise")
-          )
-          .sort(sortByIndex) : [],
-    ))
-  }, [dutyInstruments, waveInstruments, noiseInstruments, openInstrumentGroupIds, isOpen]);
+    setInstrumentItems(
+      items.concat(
+        [
+          {
+            name: "Duty",
+            id: "duty_group",
+            instrumentId: "group",
+            type: "duty",
+            isGroup: true,
+          },
+        ],
+        isOpen("duty")
+          ? (dutyInstruments || [])
+              .map((duty, i) =>
+                instrumentToNavigatorItem("duty")(duty, i, "Duty")
+              )
+              .sort(sortByIndex)
+          : [],
+        [
+          {
+            name: "Waves",
+            id: "wave_group",
+            instrumentId: "group",
+            type: "wave",
+            isGroup: true,
+          },
+        ],
+        isOpen("wave")
+          ? (waveInstruments || [])
+              .map((wave, i) =>
+                instrumentToNavigatorItem("wave")(wave, i, "Wave")
+              )
+              .sort(sortByIndex)
+          : [],
+        [
+          {
+            name: "Noise",
+            id: "noise_group",
+            instrumentId: "group",
+            type: "noise",
+            isGroup: true,
+          },
+        ],
+        isOpen("noise")
+          ? (noiseInstruments || [])
+              .map((noise, i) =>
+                instrumentToNavigatorItem("noise")(noise, i, "Noise")
+              )
+              .sort(sortByIndex)
+          : []
+      )
+    );
+  }, [
+    dutyInstruments,
+    waveInstruments,
+    noiseInstruments,
+    openInstrumentGroupIds,
+    isOpen,
+  ]);
 
   const selectedInstrument = useSelector(
     (state: RootState) => state.editor.selectedInstrument
   );
   const setSelectedInstrument = useCallback(
     (id: string, item: InstrumentNavigatorItem) => {
-      dispatch(editorActions.setSelectedInstrument({ id: item.instrumentId, type: item.type }))
+      dispatch(
+        editorActions.setSelectedInstrument({
+          id: item.instrumentId,
+          type: item.type,
+        })
+      );
     },
     [dispatch]
   );
 
-  const [splitSizes, setSplitSizes] = useState([100, 200])
+  const [splitSizes, setSplitSizes] = useState([100, 200]);
   const [onDragStart, togglePane] = useSplitPane({
     sizes: splitSizes,
     setSizes: setSplitSizes,
@@ -232,7 +291,7 @@ export const NavigatorSongs = ({
               variant="transparent"
               size="small"
               title={l10n("TOOL_ADD_SONG_LABEL")}
-              onClick={() => { }}
+              onClick={() => {}}
             >
               <PlusIcon />
             </Button>
@@ -240,7 +299,7 @@ export const NavigatorSongs = ({
         >
           {l10n("FIELD_SONGS")}
         </SplitPaneHeader>
-        {items.length > 0 ?
+        {items.length > 0 ? (
           <FlatList
             selectedId={selectedSongId}
             items={items}
@@ -249,11 +308,11 @@ export const NavigatorSongs = ({
           >
             {({ item }) => <EntityListItem type="song" item={item} />}
           </FlatList>
-          : 
+        ) : (
           <EmptyState>
             <NoSongsMessage />
           </EmptyState>
-        }
+        )}
       </Pane>
       {showInstrumentList && (
         <>
@@ -289,7 +348,8 @@ export const NavigatorSongs = ({
                   />
                 ) : (
                   <EntityListItem item={item} type={item.type} nestLevel={1} />
-                )}
+                )
+              }
             </FlatList>
           </Pane>
         </>

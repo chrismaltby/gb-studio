@@ -4,7 +4,8 @@
   position: fixed;
   z-index: 1001;
   min-width: 200px;
-  box-shadow: 0 0 0 1px rgba(150, 150, 150, 0.3), 0 4px 11px hsla(0, 0%, 0%, 0.1);
+  box-shadow: 0 0 0 1px rgba(150, 150, 150, 0.3),
+    0 4px 11px hsla(0, 0%, 0%, 0.1);
 }
 
 .ModalFade {
@@ -18,5 +19,5 @@
 }
 
 .ModalContent {
-    padding: 10px;
+  padding: 10px;
 }

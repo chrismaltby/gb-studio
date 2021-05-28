@@ -10,7 +10,7 @@ class FadeSpeedSelect extends Component {
     return (
       <select {...rest}>
         {allowNone && <option value={0}>Instant</option>}
-        {speeds.map(speed => (
+        {speeds.map((speed) => (
           <option key={speed} value={speed}>
             {l10n("FIELD_SPEED")} {speed}{" "}
             {speed === 1 ? `(${l10n("FIELD_FASTER")})` : ""}
@@ -24,12 +24,12 @@ class FadeSpeedSelect extends Component {
 
 FadeSpeedSelect.propTypes = {
   allowNone: PropTypes.bool,
-  dispatch: PropTypes.func
+  dispatch: PropTypes.func,
 };
 
 FadeSpeedSelect.defaultProps = {
   allowNone: false,
-  dispatch: undefined
+  dispatch: undefined,
 };
 
 export default FadeSpeedSelect;

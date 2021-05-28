@@ -22,7 +22,17 @@ interface EntityListItemProps {
     name: string;
     labelColor?: string;
   };
-  type: "scene" | "actor" | "trigger" | "variable" | "sprite" | "animation" | "song" | "duty" | "wave" | "noise";
+  type:
+    | "scene"
+    | "actor"
+    | "trigger"
+    | "variable"
+    | "sprite"
+    | "animation"
+    | "song"
+    | "duty"
+    | "wave"
+    | "noise";
   nestLevel?: number;
   collapsed?: boolean;
   collapsable?: boolean;
@@ -144,13 +154,11 @@ export const EntityListItem: FC<EntityListItemProps> = ({
         <EnitityIcon>
           <WaveIcon />
         </EnitityIcon>
-        
       )}
       {type === "noise" && (
         <EnitityIcon>
           <NoiseIcon />
         </EnitityIcon>
-        
       )}
       <EnitityLabel>{item.name}</EnitityLabel>
       {item.labelColor && <EntityLabelColor color={item.labelColor} />}

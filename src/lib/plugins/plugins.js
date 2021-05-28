@@ -73,7 +73,9 @@ const initPlugins = (projectRoot) => {
     };
   }, {});
 
-  Object.values(plugins.events).forEach((plugin) => pluginEmitter.emit("add-event", plugin));
+  Object.values(plugins.events).forEach((plugin) =>
+    pluginEmitter.emit("add-event", plugin)
+  );
 
   plugins.menu = pluginMenuHandlerPaths.reduce((memo, path) => {
     const plugin = loadPlugin(projectRoot, path);

@@ -30,8 +30,8 @@ module.exports = () => {
     appBundleId: "dev.gbstudio.gbstudio",
     appPath: buildOutput,
     appleId: process.env.APPLE_ID,
-    appleIdPassword: process.env.APPLE_ID_PASSWORD
-  }).catch(e => {
+    appleIdPassword: process.env.APPLE_ID_PASSWORD,
+  }).catch((e) => {
     console.error(e);
     throw e;
   });

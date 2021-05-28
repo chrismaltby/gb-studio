@@ -46,35 +46,34 @@ function pause() {
   }
 }
 
-const soundfxMiddleware: Middleware<{}, RootState> = (store) => (next) => (
-  action
-) => {
-  if (actions.playSoundFxBeep.match(action)) {
-    pause();
-    play(`effect_beep_${action.payload.pitch}.mp3`);
-  } else if (actions.playSoundFxTone.match(action)) {
-    pause();
-    oscillator = playTone(
-      action.payload.frequency,
-      action.payload.duration * 1000
-    );
-  } else if (actions.playSoundFxCrash.match(action)) {
-    play("effect_crash.mp3");
-  } else if (actions.pauseSoundFx.match(action)) {
-    pause();
-  } else if (
-    musicActions.playMusic.match(action) ||
-    musicActions.pauseMusic.match(action)
-  ) {
-    pause();
-  } else if (
-    navigationActions.setSection.match(action) ||
-    navigationActions.setNavigationId.match(action)
-  ) {
-    pause();
-  }
+const soundfxMiddleware: Middleware<{}, RootState> =
+  (store) => (next) => (action) => {
+    if (actions.playSoundFxBeep.match(action)) {
+      pause();
+      play(`effect_beep_${action.payload.pitch}.mp3`);
+    } else if (actions.playSoundFxTone.match(action)) {
+      pause();
+      oscillator = playTone(
+        action.payload.frequency,
+        action.payload.duration * 1000
+      );
+    } else if (actions.playSoundFxCrash.match(action)) {
+      play("effect_crash.mp3");
+    } else if (actions.pauseSoundFx.match(action)) {
+      pause();
+    } else if (
+      musicActions.playMusic.match(action) ||
+      musicActions.pauseMusic.match(action)
+    ) {
+      pause();
+    } else if (
+      navigationActions.setSection.match(action) ||
+      navigationActions.setNavigationId.match(action)
+    ) {
+      pause();
+    }
 
-  return next(action);
-};
+    return next(action);
+  };
 
 export default soundfxMiddleware;

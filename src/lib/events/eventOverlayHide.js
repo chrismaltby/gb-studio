@@ -4,8 +4,8 @@ const id = "EVENT_OVERLAY_HIDE";
 
 const fields = [
   {
-    label: l10n("FIELD_OVERLAY_HIDE")
-  }
+    label: l10n("FIELD_OVERLAY_HIDE"),
+  },
 ];
 
 const compile = (input, helpers) => {
@@ -16,5 +16,5 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   fields,
-  compile
+  compile,
 };

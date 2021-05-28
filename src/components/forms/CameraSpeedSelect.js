@@ -23,12 +23,12 @@ class CameraSpeedSelect extends Component {
 
 CameraSpeedSelect.propTypes = {
   allowNone: PropTypes.bool,
-  dispatch: PropTypes.func
+  dispatch: PropTypes.func,
 };
 
 CameraSpeedSelect.defaultProps = {
   allowNone: false,
-  dispatch: undefined
+  dispatch: undefined,
 };
 
 export default CameraSpeedSelect;

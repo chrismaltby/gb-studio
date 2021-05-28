@@ -9,13 +9,13 @@ class UIPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      query: ""
+      query: "",
     };
   }
 
-  onSearch = query => {
+  onSearch = (query) => {
     this.setState({
-      query
+      query,
     });
   };
 
@@ -24,12 +24,12 @@ class UIPage extends Component {
     const { query } = this.state;
 
     const filesList = query
-      ? files.filter(f => {
+      ? files.filter((f) => {
           return f.name.toUpperCase().indexOf(query.toUpperCase()) > -1;
         })
       : files;
 
-    const file = filesList.find(f => f.id === id) || filesList[0];
+    const file = filesList.find((f) => f.id === id) || filesList[0];
 
     return (
       <div>
@@ -55,14 +55,14 @@ UIPage.propTypes = {
       id: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,
       filename: PropTypes.string.isRequired,
-      _v: PropTypes.number.isRequired
+      _v: PropTypes.number.isRequired,
     })
   ).isRequired,
-  openHelp: PropTypes.func.isRequired
+  openHelp: PropTypes.func.isRequired,
 };
 
 UIPage.defaultProps = {
-  id: ""
+  id: "",
 };
 
 function mapStateToProps(state) {
@@ -75,39 +75,36 @@ function mapStateToProps(state) {
           id: "ascii",
           name: "ASCII Extended",
           filename: `ascii.png`,
-          _v: uiVersion
+          _v: uiVersion,
         },
         {
           id: "frame",
           name: "Window Frame",
           filename: `frame.png`,
-          _v: uiVersion
+          _v: uiVersion,
         },
         {
           id: "cursor",
           name: "Cursor",
           filename: `cursor.png`,
-          _v: uiVersion
+          _v: uiVersion,
         },
         {
           id: "emotes",
           name: "Emotes",
           filename: `emotes.png`,
-          _v: uiVersion
-        }
+          _v: uiVersion,
+        },
       ]
     : [];
   return {
     files,
-    id
+    id,
   };
 }
 
 const mapDispatchToProps = {
-  openHelp: electronActions.openHelp
+  openHelp: electronActions.openHelp,
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(UIPage);
+export default connect(mapStateToProps, mapDispatchToProps)(UIPage);

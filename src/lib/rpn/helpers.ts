@@ -27,11 +27,11 @@ export const toNumber = (str: string) => {
 };
 
 export const isOperatorSymbol = (x: string): x is OperatorSymbol => {
-  return ((operatorSymbols as unknown) as string[]).indexOf(x) > -1;
+  return (operatorSymbols as unknown as string[]).indexOf(x) > -1;
 };
 
 export const isFunctionSymbol = (x: string): x is FunctionSymbol => {
-  return ((functionSymbols as unknown) as string[]).indexOf(x) > -1;
+  return (functionSymbols as unknown as string[]).indexOf(x) > -1;
 };
 
 export const isVariable = (token: string): boolean => {

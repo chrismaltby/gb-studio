@@ -18,13 +18,21 @@ const LabelButton = ({ color, onClick }) => (
 );
 
 LabelButton.propTypes = {
-    color: PropTypes.oneOf(["red","orange","yellow","green","blue","purple","gray"]),
-    onClick: PropTypes.func
+  color: PropTypes.oneOf([
+    "red",
+    "orange",
+    "yellow",
+    "green",
+    "blue",
+    "purple",
+    "gray",
+  ]),
+  onClick: PropTypes.func,
 };
 
 LabelButton.defaultProps = {
-    color: undefined,
-    onClick: undefined
+  color: undefined,
+  onClick: undefined,
 };
 
 export default LabelButton;

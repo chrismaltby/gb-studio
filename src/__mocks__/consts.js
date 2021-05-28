@@ -23,5 +23,5 @@ export {
   assetsRoot,
   MAX_ACTORS,
   MAX_TRIGGERS,
-  MIDDLE_MOUSE
+  MIDDLE_MOUSE,
 };

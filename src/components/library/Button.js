@@ -9,7 +9,7 @@ const Button = ({ transparent, small, large, ...props }) => (
     className={cx("Button", {
       "Button--Transparent": transparent,
       "Button--Small": small,
-      "Button--Large": large
+      "Button--Large": large,
     })}
     {...props}
   />
@@ -18,26 +18,26 @@ const Button = ({ transparent, small, large, ...props }) => (
 Button.propTypes = {
   transparent: PropTypes.bool,
   small: PropTypes.bool,
-  large: PropTypes.bool
+  large: PropTypes.bool,
 };
 
 Button.defaultProps = {
   transparent: false,
   small: false,
-  large: false
+  large: false,
 };
 
 export default Button;
 
-export const ButtonToolbar = props => (
+export const ButtonToolbar = (props) => (
   <div className="ButtonToolbar" {...props} />
 );
 
-export const ButtonToolbarSpacer = props => (
+export const ButtonToolbarSpacer = (props) => (
   <div className="ButtonToolbar__Spacer" {...props} />
 );
 
-export const ButtonToolbarFixedSpacer = props => (
+export const ButtonToolbarFixedSpacer = (props) => (
   <div className="ButtonToolbar__FixedSpacer" {...props} />
 );
 
@@ -47,22 +47,22 @@ export class DropdownButton extends Component {
     this.buttonEl = React.createRef();
     this.state = {
       menuDirection: "down",
-      open: false
+      open: false,
     };
   }
 
   toggleOpen = () => {
-    this.setState(prevState => {
+    this.setState((prevState) => {
       let menuDirection = "down";
-      if(!prevState.open && this.buttonEl.current) {
+      if (!prevState.open && this.buttonEl.current) {
         const boundingRect = this.buttonEl.current.getBoundingClientRect();
-        if(boundingRect.bottom > window.innerHeight - 150) {
+        if (boundingRect.bottom > window.innerHeight - 150) {
           menuDirection = "up";
         }
       }
       return {
         open: !prevState.open,
-        menuDirection
+        menuDirection,
       };
     });
   };
@@ -112,7 +112,7 @@ DropdownButton.propTypes = {
   transparent: PropTypes.bool,
   small: PropTypes.bool,
   large: PropTypes.bool,
-  right: PropTypes.bool
+  right: PropTypes.bool,
 };
 
 DropdownButton.defaultProps = {
@@ -122,5 +122,5 @@ DropdownButton.defaultProps = {
   transparent: false,
   small: false,
   large: false,
-  right: false
+  right: false,
 };

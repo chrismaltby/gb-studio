@@ -27,10 +27,12 @@ export const instrumentColors = [
   "cyan-alt",
 ];
 
-const instruments = Array(15).fill("").map((_, i) => ({
-  id: `${i}`,
-  name: `Instrument ${i + 1}`
-}));
+const instruments = Array(15)
+  .fill("")
+  .map((_, i) => ({
+    id: `${i}`,
+    name: `Instrument ${i + 1}`,
+  }));
 
 interface LabelColorProps {
   color: string;
@@ -61,13 +63,14 @@ export const InstrumentSelect: FC<InstrumentSelectProps> = ({
   ...selectProps
 }) => {
   const [options, setOptions] = useState<Option[]>([]);
-  const [currentInstrument, setCurrentInstrument] = useState<{ id: string, name: string }>();
+  const [currentInstrument, setCurrentInstrument] =
+    useState<{ id: string; name: string }>();
   const [currentValue, setCurrentValue] = useState<Option>();
 
   useEffect(() => {
     setOptions(
       ([] as Option[]).concat(
-        ([] as Option[]),
+        [] as Option[],
         instruments.map((instrument) => ({
           value: instrument.id,
           label: instrument.name,
@@ -109,7 +112,9 @@ export const InstrumentSelect: FC<InstrumentSelectProps> = ({
       formatOptionLabel={(option: Option) => {
         return (
           <OptionLabelWithPreview
-            preview={<LabelColor color={instrumentColors[parseInt(option.value)]} />}
+            preview={
+              <LabelColor color={instrumentColors[parseInt(option.value)]} />
+            }
           >
             {option.label}
           </OptionLabelWithPreview>
@@ -118,7 +123,9 @@ export const InstrumentSelect: FC<InstrumentSelectProps> = ({
       components={{
         SingleValue: () => (
           <SingleValueWithPreview
-            preview={<LabelColor color={instrumentColors[parseInt(value || "")]} />}
+            preview={
+              <LabelColor color={instrumentColors[parseInt(value || "")]} />
+            }
           >
             {currentValue?.label}
           </SingleValueWithPreview>

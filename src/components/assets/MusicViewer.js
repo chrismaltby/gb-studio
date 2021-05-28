@@ -21,7 +21,7 @@ class MusicViewer extends Component {
     const { projectRoot, file, openFile } = this.props;
     openFile({
       filename: `${projectRoot}/assets/music/${file.filename}`,
-      type: "music"
+      type: "music",
     });
   };
 
@@ -37,7 +37,7 @@ class MusicViewer extends Component {
     pause();
   };
 
-  onKeyDown = e => {
+  onKeyDown = (e) => {
     const { playing } = this.props;
     if (e.key === "Enter") {
       if (playing) {
@@ -81,7 +81,10 @@ class MusicViewer extends Component {
                     id="disableSpeedConversion"
                     type="checkbox"
                     onChange={this.onChangeSpeedConversion}
-                    checked={(file.settings && file.settings.disableSpeedConversion) || false}
+                    checked={
+                      (file.settings && file.settings.disableSpeedConversion) ||
+                      false
+                    }
                   />
                   <div className="FormCheckbox" />
                   {l10n("FIELD_MUSIC_DISABLE_SPEED_CONVERSION")}
@@ -121,7 +124,7 @@ MusicViewer.propTypes = {
 };
 
 MusicViewer.defaultProps = {
-  file: {}
+  file: {},
 };
 
 function mapStateToProps(state) {
@@ -129,7 +132,7 @@ function mapStateToProps(state) {
   return {
     projectRoot: state.document && state.document.root,
     playing: state.music.playing,
-    sidebarWidth
+    sidebarWidth,
   };
 }
 
@@ -140,7 +143,4 @@ const mapDispatchToProps = {
   editMusicSettings: entitiesActions.editMusicSettings,
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(MusicViewer);
+export default connect(mapStateToProps, mapDispatchToProps)(MusicViewer);

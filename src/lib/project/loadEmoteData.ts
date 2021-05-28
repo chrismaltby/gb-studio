@@ -32,29 +32,29 @@ const sizeOfAsync = (
   });
 };
 
-const loadEmoteData = (projectRoot: string) => async (
-  filename: string
-): Promise<EmoteAssetData | null> => {
-  const { file, plugin } = parseAssetPath(filename, projectRoot, "emotes");
-  try {
-    const size = await sizeOfAsync(filename);
-    const fileStat = await statAsync(filename, { bigint: true });
-    const inode = fileStat.ino.toString();
-    return {
-      id: uuid(),
-      plugin,
-      name: file.replace(/.png/i, ""),
-      width: size.width,
-      height: size.height,
-      filename: file,
-      inode,
-      _v: Date.now(),
-    };
-  } catch (e) {
-    console.error(e);
-    return null;
-  }
-};
+const loadEmoteData =
+  (projectRoot: string) =>
+  async (filename: string): Promise<EmoteAssetData | null> => {
+    const { file, plugin } = parseAssetPath(filename, projectRoot, "emotes");
+    try {
+      const size = await sizeOfAsync(filename);
+      const fileStat = await statAsync(filename, { bigint: true });
+      const inode = fileStat.ino.toString();
+      return {
+        id: uuid(),
+        plugin,
+        name: file.replace(/.png/i, ""),
+        width: size.width,
+        height: size.height,
+        filename: file,
+        inode,
+        _v: Date.now(),
+      };
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  };
 
 const loadAllEmoteData = async (
   projectRoot: string

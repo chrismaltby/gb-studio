@@ -4,11 +4,18 @@ import { connect } from "react-redux";
 import cx from "classnames";
 import editorActions from "../../store/features/editor/editorActions";
 
-const SidebarTabs = ({ values, value, onChange, buttons, secondary, small }) => (
-  <div className={cx("SidebarTabs", 
-    {
+const SidebarTabs = ({
+  values,
+  value,
+  onChange,
+  buttons,
+  secondary,
+  small,
+}) => (
+  <div
+    className={cx("SidebarTabs", {
       "SidebarTabs--Secondary": secondary,
-      "SidebarTabs--Small": small
+      "SidebarTabs--Small": small,
     })}
   >
     <div className="SidebarTabs__Container">
@@ -16,7 +23,7 @@ const SidebarTabs = ({ values, value, onChange, buttons, secondary, small }) => 
         <div
           key={key}
           className={cx("SidebarTabs__Tab", {
-            "SidebarTabs__Tab--Active": value ? key === value : index === 0
+            "SidebarTabs__Tab--Active": value ? key === value : index === 0,
           })}
           onClick={() => onChange(key)}
         >
@@ -35,7 +42,7 @@ SidebarTabs.propTypes = {
   onChange: PropTypes.func,
   buttons: PropTypes.node,
   secondary: PropTypes.bool,
-  small: PropTypes.bool
+  small: PropTypes.bool,
 };
 
 SidebarTabs.defaultProps = {
@@ -43,7 +50,7 @@ SidebarTabs.defaultProps = {
   value: null,
   secondary: false,
   small: false,
-  onChange: () => {}
+  onChange: () => {},
 };
 
 const SidebarHeading = ({ title, buttons }) => (
@@ -56,15 +63,15 @@ const SidebarHeading = ({ title, buttons }) => (
 
 SidebarHeading.propTypes = {
   title: PropTypes.string,
-  buttons: PropTypes.node
+  buttons: PropTypes.node,
 };
 
 SidebarHeading.defaultProps = {
   title: "",
-  buttons: null
+  buttons: null,
 };
 
-const SidebarColumn = props => <div className="SidebarColumn" {...props} />;
+const SidebarColumn = (props) => <div className="SidebarColumn" {...props} />;
 
 class Sidebar extends Component {
   constructor(props) {
@@ -85,7 +92,7 @@ class Sidebar extends Component {
 
   onMouseDown = () => {
     this.setState({
-      dragging: true
+      dragging: true,
     });
   };
 
@@ -93,12 +100,12 @@ class Sidebar extends Component {
     const { dragging } = this.state;
     if (dragging) {
       this.setState({
-        dragging: false
+        dragging: false,
       });
     }
   };
 
-  onMouseMove = event => {
+  onMouseMove = (event) => {
     const { resizeWorldSidebar } = this.props;
     const { dragging } = this.state;
     if (dragging) {
@@ -112,7 +119,7 @@ class Sidebar extends Component {
       <div
         className={cx("Sidebar", {
           "Sidebar--Open": true,
-          "Sidebar--TwoColumn": width >= 500
+          "Sidebar--TwoColumn": width >= 500,
         })}
         onMouseDown={onMouseDown}
       >
@@ -122,9 +129,7 @@ class Sidebar extends Component {
           onMouseDown={this.onMouseDown}
           onMouseUp={this.onMouseUp}
         />
-        <div className="Sidebar__Content">
-          {children}
-        </div>
+        <div className="Sidebar__Content">{children}</div>
       </div>
     );
   }
@@ -134,23 +139,23 @@ Sidebar.propTypes = {
   width: PropTypes.number.isRequired,
   resizeWorldSidebar: PropTypes.func.isRequired,
   children: PropTypes.node,
-  onMouseDown: PropTypes.func
+  onMouseDown: PropTypes.func,
 };
 
 Sidebar.defaultProps = {
   children: null,
-  onMouseDown: undefined
+  onMouseDown: undefined,
 };
 
 function mapStateToProps(state) {
   const { worldSidebarWidth: width } = state.editor;
   return {
-    width
+    width,
   };
 }
 
 const mapDispatchToProps = {
-  resizeWorldSidebar: editorActions.resizeWorldSidebar
+  resizeWorldSidebar: editorActions.resizeWorldSidebar,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Sidebar);

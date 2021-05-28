@@ -9,7 +9,7 @@ import {
   EventsOnlyForActors,
   EventsHidden,
   EVENT_TEXT,
-  EVENT_CALL_CUSTOM_EVENT
+  EVENT_CALL_CUSTOM_EVENT,
 } from "../../lib/compiler/eventTypes";
 import l10n from "../../lib/helpers/l10n";
 import trimlines from "../../lib/helpers/trimlines";
@@ -25,7 +25,7 @@ class AddCommandButton extends Component {
       query: "",
       selectedIndex: 0,
       open: false,
-      pasteMode: false
+      pasteMode: false,
     };
     this.timeout = null;
   }
@@ -42,14 +42,14 @@ class AddCommandButton extends Component {
     window.removeEventListener("blur", this.onBlur);
   }
 
-  detectPasteMode = e => {
+  detectPasteMode = (e) => {
     if (e.target.nodeName !== "BODY") {
       return;
     }
     this.setState({ pasteMode: e.altKey || e.ctrlKey });
   };
 
-  onBlur = e => {
+  onBlur = (e) => {
     this.setState({ pasteMode: false });
   };
 
@@ -61,28 +61,28 @@ class AddCommandButton extends Component {
     }
     this.setState({
       open: true,
-      query: ""
+      query: "",
     });
   };
 
   onClose = () => {
     this.timeout = setTimeout(() => {
       this.setState({
-        open: false
+        open: false,
       });
     }, 500);
   };
 
-  onAdd = action => () => {
+  onAdd = (action) => () => {
     const { onAdd } = this.props;
     clearTimeout(this.timeout);
     const fullList = this.fullList();
-    const index = fullList.findIndex(event => event.key === action);
+    const index = fullList.findIndex((event) => event.key === action);
     onAdd(fullList[index].id, fullList[index].args, fullList[index].children);
     this.setState({
       open: false,
       query: "",
-      selectedIndex: index
+      selectedIndex: index,
     });
   };
 
@@ -94,23 +94,23 @@ class AddCommandButton extends Component {
     this.setState({
       open: false,
       query: "",
-      selectedIndex: 0
+      selectedIndex: 0,
     });
   };
 
-  onHover = actionIndex => () => {
+  onHover = (actionIndex) => () => {
     this.setState({
-      selectedIndex: actionIndex
+      selectedIndex: actionIndex,
     });
   };
 
-  onSearch = e => {
+  onSearch = (e) => {
     this.setState({
-      query: e.currentTarget.value
+      query: e.currentTarget.value,
     });
   };
 
-  onKeyDown = e => {
+  onKeyDown = (e) => {
     const { selectedIndex, query } = this.state;
     const actionsList = this.filteredList();
     if (e.key === "Enter") {
@@ -121,11 +121,11 @@ class AddCommandButton extends Component {
       }
     } else if (e.key === "Escape") {
       this.setState({
-        open: false
+        open: false,
       });
     } else if (e.key === "ArrowDown") {
       this.setState({
-        selectedIndex: Math.min(actionsList.length - 1, selectedIndex + 1)
+        selectedIndex: Math.min(actionsList.length - 1, selectedIndex + 1),
       });
     } else if (e.key === "ArrowUp") {
       this.setState({ selectedIndex: Math.max(0, selectedIndex - 1) });
@@ -134,19 +134,19 @@ class AddCommandButton extends Component {
         selectedIndex: Math.max(
           0,
           Math.min(actionsList.length - 1, selectedIndex)
-        )
+        ),
       });
     }
   };
 
-  onKeyUp = e => {
+  onKeyUp = (e) => {
     const { selectedIndex } = this.state;
     const actionsList = this.filteredList();
     this.setState({
       selectedIndex: Math.max(
         0,
         Math.min(actionsList.length - 1, selectedIndex)
-      )
+      ),
     });
   };
 
@@ -166,40 +166,39 @@ class AddCommandButton extends Component {
           ...templateEventCallCustomEvent,
           args: {
             customEventId: customEvent.id,
-            __name: customEventName
+            __name: customEventName,
           },
           children: {
-            script: customEvent.script
+            script: customEvent.script,
           },
           name,
           searchName,
-          key: `EVENT_CALL_CUSTOM_EVENT_${index}`
+          key: `EVENT_CALL_CUSTOM_EVENT_${index}`,
         };
       });
     }
 
     return [
       ...Object.keys(events)
-        .filter(key => {
+        .filter((key) => {
           return (
             EventsHidden.indexOf(key) === -1 &&
             (type === "actor" || EventsOnlyForActors.indexOf(key) === -1)
           );
         })
-        .map(key => {
+        .map((key) => {
           const localisedKey = l10n(key);
-          const name = localisedKey !== key
-            ? localisedKey
-            : events[key].name || key;
+          const name =
+            localisedKey !== key ? localisedKey : events[key].name || key;
           const searchName = `${name.toUpperCase()} ${key.toUpperCase()}`;
           return {
             ...events[key],
             name,
             searchName,
-            key
+            key,
           };
         }),
-      ...callCustomEventEvents
+      ...callCustomEventEvents,
     ];
   };
 
@@ -214,7 +213,7 @@ class AddCommandButton extends Component {
     const queryWords = query.toUpperCase().split(" ");
 
     return fullList
-      .filter(event => {
+      .filter((event) => {
         // Split filter into words so they can be in any order
         // and have words between matches
         return queryWords.reduce((memo, word) => {
@@ -266,12 +265,12 @@ class AddCommandButton extends Component {
                   active={selectedIndex === actionIndex}
                   options={{
                     behavior: "instant",
-                    block: "nearest"
+                    block: "nearest",
                   }}
                   key={action.key}
                   className={cx("AddCommandButton__ListItem", {
                     "AddCommandButton__ListItem--Selected":
-                      selectedIndex === actionIndex
+                      selectedIndex === actionIndex,
                   })}
                   onClick={this.onAdd(action.key)}
                   onMouseEnter={this.onHover(actionIndex)}
@@ -312,13 +311,13 @@ AddCommandButton.propTypes = {
   onAdd: PropTypes.func.isRequired,
   onPaste: PropTypes.func.isRequired,
   type: PropTypes.string.isRequired,
-  customEvents: PropTypes.arrayOf(CustomEventShape).isRequired
+  customEvents: PropTypes.arrayOf(CustomEventShape).isRequired,
 };
 
 function mapStateToProps(state) {
   const customEvents = customEventSelectors.selectAll(state);
   return {
-    customEvents
+    customEvents,
   };
 }
 

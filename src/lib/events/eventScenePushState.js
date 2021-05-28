@@ -4,8 +4,8 @@ const id = "EVENT_SCENE_PUSH_STATE";
 
 const fields = [
   {
-    label: l10n("FIELD_SCENE_PUSH_STATE_DESCRIPTION")
-  }
+    label: l10n("FIELD_SCENE_PUSH_STATE_DESCRIPTION"),
+  },
 ];
 
 const compile = (input, helpers) => {
@@ -16,5 +16,5 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   fields,
-  compile
+  compile,
 };

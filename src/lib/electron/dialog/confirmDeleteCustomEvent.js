@@ -17,7 +17,7 @@ export default (name, sceneNames, count) => {
         ? "DIALOG_DELETE_CUSTOM_EVENT_USED_SINGLAR"
         : "DIALOG_DELETE_CUSTOM_EVENT_USED",
       { count, sceneNames: sceneNames.join(", ") }
-    )
+    ),
   };
 
   return dialog.showMessageBoxSync(dialogOptions);

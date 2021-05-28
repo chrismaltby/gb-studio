@@ -28,9 +28,8 @@ export const MovementSpeedSelect: FC<MovementSpeedSelectProps> = ({
   value = 1,
   onChange,
 }) => {
-  const [currentValue, setCurrentValue] = useState<
-    MovementSpeedOption | undefined
-  >();
+  const [currentValue, setCurrentValue] =
+    useState<MovementSpeedOption | undefined>();
   const [isCustom, setIsCustom] = useState(false);
 
   useEffect(() => {

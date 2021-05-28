@@ -6,9 +6,9 @@ import { RootState } from "../../store/configureStore";
 // import Player from "./helpers/player";
 
 interface UgePlayerProps {
-  data: Song | null,
-  onPlaybackUpdate?: Function,
-  onChannelStatusUpdate?: Function,
+  data: Song | null;
+  onPlaybackUpdate?: Function;
+  onChannelStatusUpdate?: Function;
 }
 
 export const UgePlayer = ({
@@ -17,17 +17,13 @@ export const UgePlayer = ({
   onChannelStatusUpdate,
 }: UgePlayerProps) => {
   useEffect(() => {
-    ipcRenderer.send(
-      "open-music"
-    );
+    ipcRenderer.send("open-music");
     return function close() {
       ipcRenderer.send("close-music");
-    }
+    };
   }, []);
 
-  const play = useSelector(
-    (state: RootState) => state.tracker.playing
-  );
+  const play = useSelector((state: RootState) => state.tracker.playing);
 
   useEffect(() => {
     ipcRenderer.removeAllListeners("music-data");
@@ -48,29 +44,21 @@ export const UgePlayer = ({
         default:
           console.log(`Action ${d.action} not supported`);
       }
-    })
+    });
   }, [onPlaybackUpdate, play]);
 
   useEffect(() => {
     if (play) {
-      ipcRenderer.send(
-        "music-data-send",
-        {
-          action: "play",
-          song: data
-        }
-      );
+      ipcRenderer.send("music-data-send", {
+        action: "play",
+        song: data,
+      });
     } else {
-      ipcRenderer.send(
-        "music-data-send",
-        {
-          action: "stop",
-        }
-      );
+      ipcRenderer.send("music-data-send", {
+        action: "stop",
+      });
     }
-  }, [play, data])
+  }, [play, data]);
 
-  return (
-    <div />
-  )
-}
+  return <div />;
+};

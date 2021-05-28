@@ -171,34 +171,36 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
     dispatch(editorActions.setScriptTabSecondary(mode));
   };
 
-  const onChangeField = <T extends keyof Actor>(key: T) => (
-    editValue: Actor[T]
-  ) => {
-    dispatch(
-      entitiesActions.editActor({
-        actorId: id,
-        changes: {
-          [key]: editValue,
-        },
-      })
-    );
-  };
+  const onChangeField =
+    <T extends keyof Actor>(key: T) =>
+    (editValue: Actor[T]) => {
+      dispatch(
+        entitiesActions.editActor({
+          actorId: id,
+          changes: {
+            [key]: editValue,
+          },
+        })
+      );
+    };
 
-  const onChangeFieldInput = (key: keyof Actor) => (
-    e:
-      | React.ChangeEvent<HTMLInputElement>
-      | React.ChangeEvent<HTMLTextAreaElement>
-  ) => {
-    const editValue = castEventValue(e);
-    dispatch(
-      entitiesActions.editActor({
-        actorId: id,
-        changes: {
-          [key]: editValue,
-        },
-      })
-    );
-  };
+  const onChangeFieldInput =
+    (key: keyof Actor) =>
+    (
+      e:
+        | React.ChangeEvent<HTMLInputElement>
+        | React.ChangeEvent<HTMLTextAreaElement>
+    ) => {
+      const editValue = castEventValue(e);
+      dispatch(
+        entitiesActions.editActor({
+          actorId: id,
+          changes: {
+            [key]: editValue,
+          },
+        })
+      );
+    };
 
   const onToggleField = (key: KeysMatching<Actor, boolean>) => () => {
     const currentValue = !!actor?.[key];

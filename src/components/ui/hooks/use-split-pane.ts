@@ -88,22 +88,22 @@ const useSplitPane = ({
     }
   };
 
-  const onDragStart = (index: number) => (
-    e: React.MouseEvent<HTMLElement, MouseEvent>
-  ) => {
-    startAbsSizes.current = toSplitAbs(sizes);
-    setIsResizing(true);
-    setResizeIndex(index);
-    if (direction === "horizontal") {
-      startOffset.current = e.pageX;
-    } else {
-      startOffset.current = e.pageY;
-    }
-  };
+  const onDragStart =
+    (index: number) => (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+      startAbsSizes.current = toSplitAbs(sizes);
+      setIsResizing(true);
+      setResizeIndex(index);
+      if (direction === "horizontal") {
+        startOffset.current = e.pageX;
+      } else {
+        startOffset.current = e.pageY;
+      }
+    };
 
   const resetSizes = (newSizes: number[]) => {
-    const numCollapsed = newSizes.filter((size) => size === collapsedSize)
-      .length;
+    const numCollapsed = newSizes.filter(
+      (size) => size === collapsedSize
+    ).length;
     if (numCollapsed === newSizes.length) {
       // If all panes collapsed open last pane fully
       setSizes(

@@ -28,7 +28,7 @@ const DialogueReviewLine = ({ dialogueLine, onChange, ...props }) => {
               rows={textNumLines(text)}
               value={text}
               placeholder={l10n("FIELD_TEXT_PLACEHOLDER")}
-              onChange={e => {
+              onChange={(e) => {
                 onChange(
                   dialogueLine.line.args.text.map((value, valueIndex) => {
                     if (valueIndex === textIndex) {
@@ -58,7 +58,7 @@ const DialogueReviewLine = ({ dialogueLine, onChange, ...props }) => {
             rows={textNumLines(dialogueLine.line.args.text)}
             value={dialogueLine.line.args.text}
             placeholder={l10n("FIELD_TEXT_PLACEHOLDER")}
-            onChange={e => {
+            onChange={(e) => {
               onChange(trimlines(e.currentTarget.value, maxPerLine));
             }}
           />
@@ -74,9 +74,9 @@ DialogueReviewLine.propTypes = {
     actor: ActorShape,
     entityName: PropTypes.string,
     entityIndex: PropTypes.number,
-    line: EventShape
+    line: EventShape,
   }).isRequired,
-  onChange: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired,
 };
 
 export default DialogueReviewLine;

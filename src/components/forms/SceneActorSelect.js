@@ -4,11 +4,12 @@ import { connect } from "react-redux";
 import Select, { components } from "react-select";
 import ActorCanvas from "../world/ActorCanvas";
 import { ActorShape } from "../../store/stateShape";
-import {
-  getSettings,
-} from "../../store/features/settings/settingsState";
+import { getSettings } from "../../store/features/settings/settingsState";
 import { getCachedObject, createCacheFunction } from "../../lib/helpers/cache";
-import { actorSelectors, getSceneActorIds } from "../../store/features/entities/entitiesState";
+import {
+  actorSelectors,
+  getSceneActorIds,
+} from "../../store/features/entities/entitiesState";
 
 const menuPortalEl = document.getElementById("MenuPortal");
 
@@ -115,14 +116,8 @@ const OptionWithData = connect((state, ownProps) => {
 
 class SceneActorSelect extends Component {
   render() {
-    const {
-      selectedIndex,
-      options,
-      id,
-      onChange,
-      direction,
-      frame,
-    } = this.props;
+    const { selectedIndex, options, id, onChange, direction, frame } =
+      this.props;
 
     const selectedOption = options[selectedIndex] || options[0];
 
@@ -137,10 +132,7 @@ class SceneActorSelect extends Component {
           onChange(data.value);
         }}
         components={{
-          DropdownIndicator: DropdownIndicatorWithData(
-            direction,
-            frame
-          ),
+          DropdownIndicator: DropdownIndicatorWithData(direction, frame),
           Option: OptionWithData,
         }}
         menuPlacement="auto"
@@ -163,7 +155,7 @@ SceneActorSelect.propTypes = {
   direction: PropTypes.string,
   frame: PropTypes.number,
   options: PropTypes.arrayOf(OptionShape.isRequired).isRequired,
-  selectedIndex: PropTypes.number.isRequired,  
+  selectedIndex: PropTypes.number.isRequired,
 };
 
 SceneActorSelect.defaultProps = {
@@ -181,7 +173,9 @@ function mapStateToProps(state, ownProps) {
 
   const selfIndex = actorIds.indexOf(contextEntityId);
   const selfActor = actorsLookup[contextEntityId];
-  const selfActorName = selfActor ? selfActor.name || `Actor ${selfIndex + 1}` : "";
+  const selfActorName = selfActor
+    ? selfActor.name || `Actor ${selfIndex + 1}`
+    : "";
 
   const options = cachedObj(
     [].concat(
@@ -195,7 +189,7 @@ function mapStateToProps(state, ownProps) {
       {
         value: "player",
         label: "Player",
-        id: "player"
+        id: "player",
       },
       actorIds.map((actorId, actorIndex) => {
         const actor = actorsLookup[actorId];
@@ -203,7 +197,7 @@ function mapStateToProps(state, ownProps) {
         return {
           value: actorId,
           label,
-          id: actorId
+          id: actorId,
         };
       })
     )

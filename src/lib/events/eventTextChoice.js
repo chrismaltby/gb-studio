@@ -11,7 +11,7 @@ const fields = [
   {
     key: "variable",
     type: "variable",
-    defaultValue: "LAST_VARIABLE"
+    defaultValue: "LAST_VARIABLE",
   },
   {
     key: "trueText",
@@ -19,7 +19,7 @@ const fields = [
     type: "text",
     updateFn: trimChoiceItem,
     defaultValue: "",
-    placeholder: l10n("FIELD_CHOICE_A")
+    placeholder: l10n("FIELD_CHOICE_A"),
   },
   {
     key: "falseText",
@@ -27,8 +27,8 @@ const fields = [
     type: "text",
     updateFn: trimChoiceItem,
     defaultValue: "",
-    placeholder: l10n("FIELD_CHOICE_B")
-  }
+    placeholder: l10n("FIELD_CHOICE_B"),
+  },
 ];
 
 const compile = (input, helpers) => {
@@ -40,5 +40,5 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   fields,
-  compile
+  compile,
 };

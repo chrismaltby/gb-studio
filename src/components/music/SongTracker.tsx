@@ -10,13 +10,13 @@ import { SplitPaneHorizontalDivider } from "../ui/splitpane/SplitPaneDivider";
 import { SequenceEditor } from "./SequenceEditor";
 import { SongRow } from "./SongRow";
 import { UgePlayer } from "./UgePlayer";
-import scrollIntoView from 'scroll-into-view-if-needed';
+import scrollIntoView from "scroll-into-view-if-needed";
 import { SongGridHeaderCell } from "./SongGridHeaderCell";
 
 interface SongTrackerProps {
-  sequenceId: number,
-  song: Song | null,
-  height: number
+  sequenceId: number;
+  song: Song | null;
+  height: number;
 }
 
 const COLUMN_CELLS = 4;
@@ -44,25 +44,22 @@ const SongGridHeader = styled.div`
   border-style: solid;
 `;
 
-export const SongTracker = ({
-  song,
-  sequenceId,
-  height
-}: SongTrackerProps) => {
+export const SongTracker = ({ song, sequenceId, height }: SongTrackerProps) => {
   const dispatch = useDispatch();
 
   const [playbackState, setPlaybackState] = useState([-1, -1]);
-  const playing = useSelector(
-    (state: RootState) => state.tracker.playing
-  );
-  const editStep = useSelector(
-    (state: RootState) => state.tracker.editStep
-  );
+  const playing = useSelector((state: RootState) => state.tracker.playing);
+  const editStep = useSelector((state: RootState) => state.tracker.editStep);
   const octaveOffset = useSelector(
     (state: RootState) => state.tracker.octaveOffset
   );
 
-  const [channelStatus, setChannelStatus] = useState([false, false, false, false]);
+  const [channelStatus, setChannelStatus] = useState([
+    false,
+    false,
+    false,
+    false,
+  ]);
   console.log(channelStatus);
 
   const patternId = song?.sequence[sequenceId] || 0;
@@ -81,20 +78,17 @@ export const SongTracker = ({
   useEffect(() => {
     if (selectedCellRef && selectedCellRef.current) {
       if (!playing) {
-        scrollIntoView(
-          selectedCellRef.current.parentElement as Element,
-          {
-            scrollMode: 'if-needed',
-            block: 'nearest' 
-          }
-        );
+        scrollIntoView(selectedCellRef.current.parentElement as Element, {
+          scrollMode: "if-needed",
+          block: "nearest",
+        });
       }
-    }  
+    }
   }, [playing, selectedCell]);
 
   useEffect(() => {
     setPlaybackState([-1, -1]);
-  }, [playing, song])
+  }, [playing, song]);
 
   const handleMouseDown = useCallback((e: any) => {
     const cellId = e.target.dataset["cellid"];
@@ -107,24 +101,25 @@ export const SongTracker = ({
 
   const handleKeys = useCallback(
     (e: KeyboardEvent) => {
-      const editPatternCell = (type: keyof PatternCell) => (value: number | null) => {
-        if (selectedCell === undefined) {
-          return;
-        }
-        dispatch(
-          trackerDocumentActions.editPatternCell({
-            patternId: patternId,
-            cell: [
-              Math.floor(selectedCell / 16),
-              Math.floor(selectedCell / 4) % 4
-            ],
-            changes: {
-              [type]: value,
-            },
-          })
-        );
-      };
-    
+      const editPatternCell =
+        (type: keyof PatternCell) => (value: number | null) => {
+          if (selectedCell === undefined) {
+            return;
+          }
+          dispatch(
+            trackerDocumentActions.editPatternCell({
+              patternId: patternId,
+              cell: [
+                Math.floor(selectedCell / 16),
+                Math.floor(selectedCell / 4) % 4,
+              ],
+              changes: {
+                [type]: value,
+              },
+            })
+          );
+        };
+
       const transposeNoteCell = (value: number) => {
         if (selectedCell === undefined) {
           return;
@@ -133,47 +128,55 @@ export const SongTracker = ({
           trackerDocumentActions.transposeNoteCell({
             patternId: patternId,
             cellId: selectedCell,
-            transpose: value
+            transpose: value,
           })
         );
       };
-    
+
       const editNoteCell = (value: number | null) => {
         if (selectedCell === undefined) {
           return;
         }
-        editPatternCell("note")(value === null ? null : value + octaveOffset * 12);
+        editPatternCell("note")(
+          value === null ? null : value + octaveOffset * 12
+        );
         if (value !== null) {
           setSelectedCell(selectedCell + ROW_SIZE * editStep);
         }
-      }
-    
+      };
+
       const editInstrumentCell = (value: number | null) => {
         if (selectedCellRef && selectedCellRef.current) {
           const el = selectedCellRef.current;
           let newValue = value;
-          if (value !== null && el.innerText !== ".." && el.innerText !== "15") {
+          if (
+            value !== null &&
+            el.innerText !== ".." &&
+            el.innerText !== "15"
+          ) {
             newValue = 10 * parseInt(el.innerText[1]) + value;
             if (newValue > 15) newValue = 15;
-          }     
-          editPatternCell("instrument")(newValue === null ? null : newValue - 1);
+          }
+          editPatternCell("instrument")(
+            newValue === null ? null : newValue - 1
+          );
         }
-      }
-    
+      };
+
       const editEffectCodeCell = (value: number | null) => {
         editPatternCell("effectcode")(value);
-      }
-    
+      };
+
       const editEffectParamCell = (value: number | null) => {
         if (selectedCellRef && selectedCellRef.current) {
           const el = selectedCellRef.current;
           let newValue = value;
           if (value !== null && el.innerText !== "..") {
             newValue = 16 * parseInt(el.innerText[1], 16) + value;
-          } 
+          }
           editPatternCell("effectparam")(newValue);
         }
-      }
+      };
 
       if (selectedCell === undefined) {
         return;
@@ -205,15 +208,14 @@ export const SongTracker = ({
           tmpSelectedCell += 4;
         }
       }
-      setSelectedCell((tmpSelectedCell % NUM_CELLS + NUM_CELLS) % NUM_CELLS);
+      setSelectedCell(((tmpSelectedCell % NUM_CELLS) + NUM_CELLS) % NUM_CELLS);
 
       if (selectedCell % 4 === 0) {
-
         if (e.ctrlKey) {
           console.log(e.ctrlKey, e.shiftKey, e.key);
           if (e.shiftKey) {
             if (e.key === "Q") return transposeNoteCell(12);
-            if (e.key === "A") return transposeNoteCell(-12);  
+            if (e.key === "A") return transposeNoteCell(-12);
           } else {
             if (e.key === "q") return transposeNoteCell(1);
             if (e.key === "a") return transposeNoteCell(-1);
@@ -269,7 +271,8 @@ export const SongTracker = ({
         if (e.key === "7") editInstrumentCell(7);
         if (e.key === "8") editInstrumentCell(8);
         if (e.key === "9") editInstrumentCell(9);
-        if (e.code === "Delete" || e.code === "Backspace") editInstrumentCell(null);
+        if (e.code === "Delete" || e.code === "Backspace")
+          editInstrumentCell(null);
       }
       if ((selectedCell - 2) % 4 === 0) {
         if (e.key === "0") editEffectCodeCell(0);
@@ -288,7 +291,8 @@ export const SongTracker = ({
         if (e.key === "d") editEffectCodeCell(13);
         if (e.key === "e") editEffectCodeCell(14);
         if (e.key === "f") editEffectCodeCell(15);
-        if (e.code === "Delete" || e.code === "Backspace") editEffectCodeCell(null);
+        if (e.code === "Delete" || e.code === "Backspace")
+          editEffectCodeCell(null);
       }
       if ((selectedCell - 3) % 4 === 0) {
         if (e.key === "0") editEffectParamCell(0);
@@ -307,17 +311,21 @@ export const SongTracker = ({
         if (e.key === "d") editEffectParamCell(13);
         if (e.key === "e") editEffectParamCell(14);
         if (e.key === "f") editEffectParamCell(15);
-        if (e.code === "Delete" || e.code === "Backspace") editEffectParamCell(null);
+        if (e.code === "Delete" || e.code === "Backspace")
+          editEffectParamCell(null);
       }
-
-    }, [dispatch, editStep, octaveOffset, patternId, selectedCell]);
+    },
+    [dispatch, editStep, octaveOffset, patternId, selectedCell]
+  );
 
   const handleKeysUp = useCallback(
     (e: KeyboardEvent) => {
       if (selectedCell) {
         // console.log(e.key);
       }
-    }, [selectedCell]);
+    },
+    [selectedCell]
+  );
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeys);
@@ -335,11 +343,11 @@ export const SongTracker = ({
     if (!selectedCell) {
       setSelectedCell(0);
     }
-  }
+  };
 
   const onBlur = (e: React.FocusEvent<HTMLDivElement>) => {
     setSelectedCell(undefined);
-  }
+  };
 
   return (
     <div
@@ -359,40 +367,48 @@ export const SongTracker = ({
       <SplitPaneHorizontalDivider />
       <SongGridHeader>
         <SongGridHeaderCell size="small"></SongGridHeaderCell>
-        <SongGridHeaderCell channel={0} muted={channelStatus[0]}>Duty 1</SongGridHeaderCell>
-        <SongGridHeaderCell channel={1} muted={channelStatus[1]}>Duty 2</SongGridHeaderCell>
-        <SongGridHeaderCell channel={2} muted={channelStatus[2]}>Wave</SongGridHeaderCell>
-        <SongGridHeaderCell channel={3} muted={channelStatus[3]}>Noise</SongGridHeaderCell>
+        <SongGridHeaderCell channel={0} muted={channelStatus[0]}>
+          Duty 1
+        </SongGridHeaderCell>
+        <SongGridHeaderCell channel={1} muted={channelStatus[1]}>
+          Duty 2
+        </SongGridHeaderCell>
+        <SongGridHeaderCell channel={2} muted={channelStatus[2]}>
+          Wave
+        </SongGridHeaderCell>
+        <SongGridHeaderCell channel={3} muted={channelStatus[3]}>
+          Noise
+        </SongGridHeaderCell>
       </SongGridHeader>
-      <div style={{
-        position: "relative",
-        overflow: "hidden auto",
-        flexGrow: 1,
-        height: height - 29,
-        marginTop: "29px"
-      }}>
-        <SongGrid
-          tabIndex={0}
-          onFocus={onFocus}
-          onBlur={onBlur}
-        >
+      <div
+        style={{
+          position: "relative",
+          overflow: "hidden auto",
+          flexGrow: 1,
+          height: height - 29,
+          marginTop: "29px",
+        }}
+      >
+        <SongGrid tabIndex={0} onFocus={onFocus} onBlur={onBlur}>
           {song?.patterns[patternId]?.map((row: PatternCell[], i: number) => {
-            const isSelected = selectedCell !== undefined && Math.floor(selectedCell / ROW_SIZE) === i;
+            const isSelected =
+              selectedCell !== undefined &&
+              Math.floor(selectedCell / ROW_SIZE) === i;
             return (
-            <span ref={playbackState[1] === i ? playingRowRef : null}>
-              <SongRow
-                id={`__${i}`}
-                n={i}
-                row={row}
-                startCellId={i * ROW_SIZE}
-                selectedCell={isSelected ? selectedCell : undefined}
-                isSelected={isSelected}
-                isPlaying={playbackState[1] === i}
-                ref={selectedCellRef}
-              />
-            </span>)
-            }
-          )}
+              <span ref={playbackState[1] === i ? playingRowRef : null}>
+                <SongRow
+                  id={`__${i}`}
+                  n={i}
+                  row={row}
+                  startCellId={i * ROW_SIZE}
+                  selectedCell={isSelected ? selectedCell : undefined}
+                  isSelected={isSelected}
+                  isPlaying={playbackState[1] === i}
+                  ref={selectedCellRef}
+                />
+              </span>
+            );
+          })}
         </SongGrid>
       </div>
       <UgePlayer
@@ -401,5 +417,5 @@ export const SongTracker = ({
         onChannelStatusUpdate={setChannelStatus}
       />
     </div>
-  )
-}
+  );
+};

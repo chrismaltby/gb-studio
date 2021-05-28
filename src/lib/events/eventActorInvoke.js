@@ -4,13 +4,13 @@ const id = "EVENT_ACTOR_INVOKE";
 
 const fields = [
   {
-    label: l10n("FIELD_ACTOR_INVOKE")
+    label: l10n("FIELD_ACTOR_INVOKE"),
   },
   {
     key: "actorId",
     type: "actor",
-    defaultValue: "$self$"
-  }
+    defaultValue: "$self$",
+  },
 ];
 
 const compile = (input, helpers) => {
@@ -22,5 +22,5 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   fields,
-  compile
+  compile,
 };

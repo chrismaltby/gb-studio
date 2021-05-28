@@ -4,7 +4,7 @@ function promiseLimit(n, list) {
   const resolved = [];
   let processed = 0;
   return new Promise((resolve) => {
-    if(list.length === 0) {
+    if (list.length === 0) {
       return resolve([]);
     }
     head.forEach((x) => {

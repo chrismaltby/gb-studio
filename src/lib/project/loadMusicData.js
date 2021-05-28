@@ -6,7 +6,7 @@ import parseAssetPath from "../helpers/path/parseAssetPath";
 
 const globAsync = promisify(glob);
 
-const loadMusicData = projectRoot => async filename => {
+const loadMusicData = (projectRoot) => async (filename) => {
   const { file, plugin } = parseAssetPath(filename, projectRoot, "music");
   const fileStat = await stat(filename, { bigint: true });
   const inode = fileStat.ino.toString();
@@ -18,12 +18,14 @@ const loadMusicData = projectRoot => async filename => {
     settings: {},
     type: file.endsWith(".uge") ? "uge" : "mod",
     inode,
-    _v: Date.now()
+    _v: Date.now(),
   };
 };
 
-const loadAllMusicData = async projectRoot => {
-  const musicPaths = await globAsync(`${projectRoot}/assets/music/**/@(*.mod|*.MOD|*.uge|*.UGE)`);
+const loadAllMusicData = async (projectRoot) => {
+  const musicPaths = await globAsync(
+    `${projectRoot}/assets/music/**/@(*.mod|*.MOD|*.uge|*.UGE)`
+  );
   const pluginPaths = await globAsync(
     `${projectRoot}/plugins/*/music/**/@(*.mod|*.MOD|*.uge|*.UGE)`
   );

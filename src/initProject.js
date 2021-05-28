@@ -64,7 +64,8 @@ watchProject(projectPath, {
   onRemoveAvatar: (f) => store.dispatch(projectActions.removeAvatar(f)),
   onRemoveEmote: (f) => store.dispatch(projectActions.removeEmote(f)),
   onChangedUI: (f) => store.dispatch(projectActions.loadUI()),
-  onChangedEngineSchema: (f) => store.dispatch(engineActions.scanEngine(projectPath))
+  onChangedEngineSchema: (f) =>
+    store.dispatch(engineActions.scanEngine(projectPath)),
 });
 
 window.ActionCreators = ActionCreators;

@@ -1,10 +1,6 @@
 import React, { FC, useEffect, useState } from "react";
 import { MusicDriverSetting } from "../../store/features/settings/settingsState";
-import {
-  Option,
-  Select,
-  SelectCommonProps,
-} from "../ui/form/Select";
+import { Option, Select, SelectCommonProps } from "../ui/form/Select";
 
 interface MusicDriverSelectProps extends SelectCommonProps {
   name: string;
@@ -20,17 +16,19 @@ const musicDriverOptions = [
   {
     label: "GBT Player",
     value: "gbt",
-  }
+  },
 ];
 
 export const MusicDriverSelect: FC<MusicDriverSelectProps> = ({
   value,
-  onChange
+  onChange,
 }) => {
   const [currentValue, setCurrentValue] = useState<Option>();
 
   useEffect(() => {
-    const currentMusicDriver = musicDriverOptions.find((e) => e.value === value);
+    const currentMusicDriver = musicDriverOptions.find(
+      (e) => e.value === value
+    );
     if (currentMusicDriver) {
       setCurrentValue(currentMusicDriver);
     }

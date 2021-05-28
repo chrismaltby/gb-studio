@@ -10,13 +10,13 @@ class MusicPageMod extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      query: ""
+      query: "",
     };
   }
 
-  onSearch = query => {
+  onSearch = (query) => {
     this.setState({
-      query
+      query,
     });
   };
 
@@ -25,12 +25,12 @@ class MusicPageMod extends Component {
     const { query } = this.state;
 
     const filesList = query
-      ? files.filter(f => {
+      ? files.filter((f) => {
           return f.name.toUpperCase().indexOf(query.toUpperCase()) > -1;
         })
       : files;
 
-    const file = filesList.find(f => f.id === id) || filesList[0];
+    const file = filesList.find((f) => f.id === id) || filesList[0];
 
     return (
       <div>
@@ -60,28 +60,26 @@ MusicPageMod.propTypes = {
       }),
     })
   ).isRequired,
-  openHelp: PropTypes.func.isRequired
+  openHelp: PropTypes.func.isRequired,
 };
 
 MusicPageMod.defaultProps = {
-  id: ""
+  id: "",
 };
 
 function mapStateToProps(state) {
   const { id } = state.navigation;
-  const files = musicSelectors.selectAll(state)
+  const files = musicSelectors
+    .selectAll(state)
     .filter((s) => s.type && s.type === "mod");
   return {
     files,
-    id
+    id,
   };
 }
 
 const mapDispatchToProps = {
-  openHelp: electronActions.openHelp
+  openHelp: electronActions.openHelp,
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(MusicPageMod);
+export default connect(mapStateToProps, mapDispatchToProps)(MusicPageMod);

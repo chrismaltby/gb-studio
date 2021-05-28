@@ -7,8 +7,8 @@ const fields = [
     key: "continue",
     label: l10n("FIELD_SLIDE_UNTIL_COLLISION"),
     type: "checkbox",
-    defaultValue: false
-  }
+    defaultValue: false,
+  },
 ];
 
 const compile = (input, helpers) => {
@@ -22,5 +22,5 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   fields,
-  compile
+  compile,
 };

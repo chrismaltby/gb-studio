@@ -15,7 +15,7 @@ const fields = [
     label: l10n("FIELD_SOURCE"),
     defaultValue: "$self$",
     width: "50%",
-  },  
+  },
   {
     key: "offset",
     type: "number",
@@ -24,34 +24,42 @@ const fields = [
     min: 0,
     max: 64,
     width: "50%",
-  },    
+  },
   {
     key: "collisionGroup",
     label: l10n("FIELD_COLLISION_GROUP"),
     type: "collisionMask",
-    width: "50%",    
+    width: "50%",
     includePlayer: false,
-    defaultValue: "3"
+    defaultValue: "3",
   },
   {
     key: "collisionMask",
     label: l10n("FIELD_COLLIDE_WITH"),
     type: "collisionMask",
-    width: "50%",    
+    width: "50%",
     includePlayer: true,
-    defaultValue: ["1"]
-  }    
+    defaultValue: ["1"],
+  },
 ];
 
 const compile = (input, helpers) => {
   const { weaponAttack, actorSetActive } = helpers;
-  const offset = input.offset === "" || input.offset === undefined || input.offset === null ? 10 : input.offset;
+  const offset =
+    input.offset === "" || input.offset === undefined || input.offset === null
+      ? 10
+      : input.offset;
   actorSetActive(input.actorId);
-  weaponAttack(input.spriteSheetId, offset, input.collisionGroup, input.collisionMask);
+  weaponAttack(
+    input.spriteSheetId,
+    offset,
+    input.collisionGroup,
+    input.collisionMask
+  );
 };
 
 module.exports = {
   id,
   fields,
-  compile
+  compile,
 };

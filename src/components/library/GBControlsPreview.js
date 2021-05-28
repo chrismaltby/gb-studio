@@ -7,14 +7,14 @@ const buttons = ["a", "b", "start", "select"];
 export default ({ onSelect, selected }) => (
   <div className="GBControlsPreview">
     <div className="GBControlsPreview__DPad">
-      {directions.map(direction => (
+      {directions.map((direction) => (
         <div
           key={direction}
           className={cx(
             "GBControlsPreview__DPadButton",
             `GBControlsPreview__DPadButton--${direction}`,
             {
-              "GBControlsPreview__DPadButton--Selected": direction === selected
+              "GBControlsPreview__DPadButton--Selected": direction === selected,
             }
           )}
           onClick={() => onSelect(direction)}
@@ -22,7 +22,7 @@ export default ({ onSelect, selected }) => (
       ))}
     </div>
     <div className="GBControlsPreview__Buttons">
-      {buttons.map(button => (
+      {buttons.map((button) => (
         <div
           key={button}
           className={cx(

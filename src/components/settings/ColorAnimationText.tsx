@@ -20,33 +20,40 @@ const colorAnimation = keyframes`
   }
 `;
 
-const Wrapper = styled.span<{ animate: boolean}>`
+const Wrapper = styled.span<{ animate: boolean }>`
   {
-  ${(props) => props.animate ? css`
-    background-image: linear-gradient(
-      100deg, 
-      blue 20%, 
-      green 20%, green 40%, 
-      fuchsia 40%, fuchsia 60%, 
-      red 60%, red 80%, 
-      orange 80%, orange 100%
-    );
-    background-repeat: no-repeat;
-    -webkit-background-clip: text;
-    color: transparent;
-    animation: ${colorAnimation} 2s linear;
-  `: ""
-  }
+  ${(props) =>
+    props.animate
+      ? css`
+          background-image: linear-gradient(
+            100deg,
+            blue 20%,
+            green 20%,
+            green 40%,
+            fuchsia 40%,
+            fuchsia 60%,
+            red 60%,
+            red 80%,
+            orange 80%,
+            orange 100%
+          );
+          background-repeat: no-repeat;
+          -webkit-background-clip: text;
+          color: transparent;
+          animation: ${colorAnimation} 2s linear;
+        `
+      : ""}
 `;
 
 export const ColorAnimationText: FC = (props) => {
   const [animate, setAnimate] = useState(false);
   return (
-    <Wrapper 
+    <Wrapper
       onClick={() => setAnimate(!animate)}
       onAnimationEnd={() => setAnimate(false)}
-      animate={animate}>
+      animate={animate}
+    >
       {props.children}
     </Wrapper>
   );
-}
+};

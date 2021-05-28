@@ -6,7 +6,7 @@ const fields = [
   {
     key: "sceneId",
     type: "scene",
-    defaultValue: "LAST_SCENE"
+    defaultValue: "LAST_SCENE",
   },
   {
     key: "x",
@@ -15,7 +15,7 @@ const fields = [
     min: 0,
     max: 255,
     defaultValue: 0,
-    width: "50%"
+    width: "50%",
   },
   {
     key: "y",
@@ -24,22 +24,22 @@ const fields = [
     min: 0,
     max: 255,
     defaultValue: 0,
-    width: "50%"
+    width: "50%",
   },
   {
     key: "direction",
     label: l10n("FIELD_DIRECTION"),
     type: "direction",
     width: "50%",
-    defaultValue: ""
+    defaultValue: "",
   },
   {
     key: "fadeSpeed",
     label: l10n("FIELD_FADE_SPEED"),
     type: "fadeSpeed",
     defaultValue: "2",
-    width: "50%"
-  }
+    width: "50%",
+  },
 ];
 
 const compile = (input, helpers) => {
@@ -56,5 +56,5 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   fields,
-  compile
+  compile,
 };
