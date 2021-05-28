@@ -25,14 +25,20 @@ test("Should use default variable name with not renamed", () => {
     },
   };
 
-  const store = ({
+  const store = {
     getState: () => state,
     dispatch: () => {},
     subscribe: () => {},
-  } as unknown) as Store<RootState, AnyAction>;
+  } as unknown as Store<RootState, AnyAction>;
 
   render(
-    <VariableSelect type="8bit" entityId="" value="0" onChange={() => {}} />,
+    <VariableSelect
+      name="test"
+      type="8bit"
+      entityId=""
+      value="0"
+      onChange={() => {}}
+    />,
     store,
     {}
   );
@@ -65,14 +71,15 @@ test("Should use default custom event variable name with not renamed", () => {
     },
   };
 
-  const store = ({
+  const store = {
     getState: () => state,
     dispatch: () => {},
     subscribe: () => {},
-  } as unknown) as Store<RootState, AnyAction>;
+  } as unknown as Store<RootState, AnyAction>;
 
   render(
     <VariableSelect
+      name="test"
       type="8bit"
       entityId="customEvent1"
       value="0"
@@ -110,14 +117,20 @@ test("Should use renamed variable", () => {
     },
   };
 
-  const store = ({
+  const store = {
     getState: () => state,
     dispatch: () => {},
     subscribe: () => {},
-  } as unknown) as Store<RootState, AnyAction>;
+  } as unknown as Store<RootState, AnyAction>;
 
   render(
-    <VariableSelect type="8bit" entityId="" value="0" onChange={() => {}} />,
+    <VariableSelect
+      name="test"
+      type="8bit"
+      entityId=""
+      value="0"
+      onChange={() => {}}
+    />,
     store,
     {}
   );
@@ -155,14 +168,15 @@ test("Should use renamed variable for custom event", () => {
     },
   };
 
-  const store = ({
+  const store = {
     getState: () => state,
     dispatch: () => {},
     subscribe: () => {},
-  } as unknown) as Store<RootState, AnyAction>;
+  } as unknown as Store<RootState, AnyAction>;
 
   render(
     <VariableSelect
+      name="test"
       type="8bit"
       entityId="customEvent1"
       value="0"
@@ -201,14 +215,21 @@ test("Should be able to rename variable", async () => {
   };
   const dispatch = jest.fn();
 
-  const store = ({
+  const store = {
     getState: () => state,
     dispatch,
     subscribe: () => {},
-  } as unknown) as Store<RootState, AnyAction>;
+  } as unknown as Store<RootState, AnyAction>;
 
   render(
-    <VariableSelect type="8bit" entityId="" value="0" onChange={() => {}} />,
+    <VariableSelect
+      name="test"
+      type="8bit"
+      entityId=""
+      value="0"
+      onChange={() => {}}
+      allowRename
+    />,
     store,
     {}
   );
@@ -261,14 +282,21 @@ test("Should cancel rename when Escape is pressed", async () => {
   };
   const dispatch = jest.fn();
 
-  const store = ({
+  const store = {
     getState: () => state,
     dispatch,
     subscribe: () => {},
-  } as unknown) as Store<RootState, AnyAction>;
+  } as unknown as Store<RootState, AnyAction>;
 
   render(
-    <VariableSelect type="8bit" entityId="" value="0" onChange={() => {}} />,
+    <VariableSelect
+      name="test"
+      type="8bit"
+      entityId=""
+      value="0"
+      onChange={() => {}}
+      allowRename
+    />,
     store,
     {}
   );
@@ -317,14 +345,21 @@ test("Should complete rename when Escape is pressed", async () => {
   };
   const dispatch = jest.fn();
 
-  const store = ({
+  const store = {
     getState: () => state,
     dispatch,
     subscribe: () => {},
-  } as unknown) as Store<RootState, AnyAction>;
+  } as unknown as Store<RootState, AnyAction>;
 
   render(
-    <VariableSelect type="8bit" entityId="" value="0" onChange={() => {}} />,
+    <VariableSelect
+      name="test"
+      type="8bit"
+      entityId=""
+      value="0"
+      onChange={() => {}}
+      allowRename
+    />,
     store,
     {}
   );
