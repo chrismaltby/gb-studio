@@ -1,5 +1,6 @@
 import reducer, {
-  initialState, getMetadata,
+  initialState,
+  getMetadata,
 } from "../../../../src/store/features/metadata/metadataState";
 import projectActions from "../../../../src/store/features/project/projectActions";
 import actions from "../../../../src/store/features/metadata/metadataActions";
@@ -18,6 +19,7 @@ test("Should change the path and root to new path and root and set loaded to tru
         author: "Chris",
       },
       path: "new_test_root/project_copy.gbsproj",
+      modifiedSpriteIds: [],
     },
     "randomid",
     "new_test_root/project_copy.gbsproj"
@@ -50,10 +52,10 @@ test("Should be able to select metadata from root state", () => {
         metadata: {
           ...initialState,
           name: "Selected Project",
-          author: "GB Studio"
-        }
-      }
-    }
+          author: "GB Studio",
+        },
+      },
+    },
   };
   expect(getMetadata(state).name).toBe("Selected Project");
   expect(getMetadata(state).author).toBe("GB Studio");

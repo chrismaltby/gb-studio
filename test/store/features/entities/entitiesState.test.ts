@@ -46,6 +46,7 @@ test("Should fix scene widths if backgrounds has been removed since save", () =>
     {
       data: loadData,
       path: "project.gbsproj",
+      modifiedSpriteIds: [],
     },
     "randomid",
     "project.gbsproj"
@@ -85,6 +86,7 @@ test("Should fix scene widths if backgrounds have changed dimensions since save"
     {
       data: loadData,
       path: "project.gbsproj",
+      modifiedSpriteIds: [],
     },
     "randomid",
     "project.gbsproj"
@@ -124,6 +126,7 @@ test("Should keep scene widths if backgrounds have NOT changed dimensions since 
     {
       data: loadData,
       path: "project.gbsproj",
+      modifiedSpriteIds: [],
     },
     "randomid",
     "project.gbsproj"
@@ -440,7 +443,7 @@ test("Should be able to add a scene", () => {
 });
 
 test("Should be able to add a scene with defaults and variables", () => {
-  jest.mock('../../../../src/consts')
+  jest.mock("../../../../src/consts");
 
   const state: EntitiesState = {
     ...initialState,
@@ -452,32 +455,41 @@ test("Should be able to add a scene with defaults and variables", () => {
     defaults: {
       id: "scene1",
       name: "Clipboard Scene Name",
-      actors: [{
-        ...dummyActor,
-        id: "actor1",
-        name: "Clipboard Actor",
-        x: 5,
-        y: 3
-      }],
-      triggers: [{
-        ...dummyTrigger,
-        id: "trigger1",
-        script: [{
-          id: "event1",
-          command: "EVENT_ACTOR_MOVE_TO",
-          args: {
-            actorId: "actor1"
-          }
-        }]
-      }]
+      actors: [
+        {
+          ...dummyActor,
+          id: "actor1",
+          name: "Clipboard Actor",
+          x: 5,
+          y: 3,
+        },
+      ],
+      triggers: [
+        {
+          ...dummyTrigger,
+          id: "trigger1",
+          script: [
+            {
+              id: "event1",
+              command: "EVENT_ACTOR_MOVE_TO",
+              args: {
+                actorId: "actor1",
+              },
+            },
+          ],
+        },
+      ],
     },
-    variables: [{
-      id: "trigger1__L0",
-      name: "Clipboard Trigger Var Name"
-    },{
-      id: "scene1__L0",
-      name: "Clipboard Scene Var Name"
-    }]
+    variables: [
+      {
+        id: "trigger1__L0",
+        name: "Clipboard Trigger Var Name",
+      },
+      {
+        id: "scene1__L0",
+        name: "Clipboard Scene Var Name",
+      },
+    ],
   });
 
   const newState = reducer(state, action);
@@ -486,9 +498,16 @@ test("Should be able to add a scene with defaults and variables", () => {
   expect(newState.actors.ids.length).toBe(1);
   expect(newState.triggers.ids.length).toBe(1);
   expect(newState.variables.ids.length).toBe(2);
-  expect(newState.variables.entities[`${newState.triggers.ids[0]}__L0`]?.name).toBe("Clipboard Trigger Var Name");
-  expect(newState.variables.entities[`${newState.scenes.ids[0]}__L0`]?.name).toBe("Clipboard Scene Var Name");
-  expect(newState.triggers.entities[newState.triggers.ids[0]]?.script[0]?.args?.actorId).toBe(newState.actors.ids[0]);
+  expect(
+    newState.variables.entities[`${newState.triggers.ids[0]}__L0`]?.name
+  ).toBe("Clipboard Trigger Var Name");
+  expect(
+    newState.variables.entities[`${newState.scenes.ids[0]}__L0`]?.name
+  ).toBe("Clipboard Scene Var Name");
+  expect(
+    newState.triggers.entities[newState.triggers.ids[0]]?.script[0]?.args
+      ?.actorId
+  ).toBe(newState.actors.ids[0]);
 });
 
 test("Should be able to move a scene", () => {
@@ -518,61 +537,6 @@ test("Should be able to move a scene", () => {
   expect(newState.scenes.entities["scene1"]?.y).toBe(520);
 });
 
-test("Should use collisions and colors from other scene if switched to use same background", () => {
-  const state: EntitiesState = {
-    ...initialState,
-    scenes: {
-      entities: {
-        scene1: {
-          ...dummyScene,
-          id: "scene1",
-          backgroundId: "bg1",
-          actors: [],
-          triggers: [],
-          collisions: [1, 2, 3],
-          tileColors: [4, 5, 6],
-        },
-        scene2: {
-          ...dummyScene,
-          id: "scene2",
-          backgroundId: "bg2",
-          actors: [],
-          triggers: [],
-          collisions: [],
-          tileColors: [],
-        },
-      },
-      ids: ["scene1", "scene2"],
-    },
-    backgrounds: {
-      entities: {
-        bg1: {
-          ...dummyBackground,
-          id: "bg1",
-        },
-        bg2: {
-          ...dummyBackground,
-          id: "bg2",
-        },
-      },
-      ids: ["bg1", "bg2"],
-    },
-  };
-
-  const action = actions.editScene({
-    sceneId: "scene2",
-    changes: {
-      backgroundId: "bg1",
-    },
-  });
-
-  expect(state.scenes.entities["scene2"]?.collisions).toEqual([]);
-  expect(state.scenes.entities["scene2"]?.tileColors).toEqual([]);
-  const newState = reducer(state, action);
-  expect(newState.scenes.entities["scene2"]?.collisions).toEqual([1, 2, 3]);
-  expect(newState.scenes.entities["scene2"]?.tileColors).toEqual([4, 5, 6]);
-});
-
 test("Should update scene dimensions to match new background", () => {
   const state: EntitiesState = {
     ...initialState,
@@ -587,7 +551,6 @@ test("Should update scene dimensions to match new background", () => {
           actors: [],
           triggers: [],
           collisions: [1, 2, 3],
-          tileColors: [4, 5, 6],
         },
       },
       ids: ["scene1"],
@@ -598,13 +561,13 @@ test("Should update scene dimensions to match new background", () => {
           ...dummyBackground,
           id: "bg1",
           width: 20,
-          height: 18
+          height: 18,
         },
         bg2: {
           ...dummyBackground,
           id: "bg2",
           width: 32,
-          height: 28
+          height: 28,
         },
       },
       ids: ["bg1", "bg2"],
@@ -623,7 +586,7 @@ test("Should update scene dimensions to match new background", () => {
   expect(newState.scenes.entities["scene1"]?.height).toEqual(28);
 });
 
-test("Should keep collisions but discard colors if switched to use different background of same width", () => {
+test("Should discard collisions if switched to use different background of different width", () => {
   const state: EntitiesState = {
     ...initialState,
     scenes: {
@@ -635,53 +598,6 @@ test("Should keep collisions but discard colors if switched to use different bac
           actors: [],
           triggers: [],
           collisions: [1, 2, 3],
-          tileColors: [4, 5, 6],
-        },
-      },
-      ids: ["scene1"],
-    },
-    backgrounds: {
-      entities: {
-        bg1: {
-          ...dummyBackground,
-          id: "bg1",
-          width: 3,
-        },
-        bg2: {
-          ...dummyBackground,
-          id: "bg2",
-          width: 3,
-        },
-      },
-      ids: ["bg1", "bg2"],
-    },
-  };
-
-  const action = actions.editScene({
-    sceneId: "scene1",
-    changes: {
-      backgroundId: "bg2",
-    },
-  });
-
-  const newState = reducer(state, action);
-  expect(newState.scenes.entities["scene1"]?.collisions).toEqual([1, 2, 3]);
-  expect(newState.scenes.entities["scene1"]?.tileColors).toEqual([]);
-});
-
-test("Should discard collisions and colors if switched to use different background of different width", () => {
-  const state: EntitiesState = {
-    ...initialState,
-    scenes: {
-      entities: {
-        scene1: {
-          ...dummyScene,
-          id: "scene1",
-          backgroundId: "bg1",
-          actors: [],
-          triggers: [],
-          collisions: [1, 2, 3],
-          tileColors: [4, 5, 6],
         },
       },
       ids: ["scene1"],
@@ -713,16 +629,8 @@ test("Should discard collisions and colors if switched to use different backgrou
 
   const newState = reducer(state, action);
   expect(newState.scenes.entities["scene1"]?.collisions).toEqual([
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
+    0, 0, 0, 0, 0, 0, 0, 0,
   ]);
-  expect(newState.scenes.entities["scene1"]?.tileColors).toEqual([]);
 });
 
 test("Should be able to remove a scene", () => {
@@ -792,7 +700,7 @@ test("Should be able to flood fill collisions", () => {
 
   const newState = reducer(state, action);
 
-  const expectedCols = Array.from(Array(50)).map((i) => 2);
+  const expectedCols = Array.from(Array(50)).map((_i) => 2);
 
   expect(newState.scenes.entities["scene1"]?.collisions.length).toBe(50);
   expect(newState.scenes.entities["scene1"]?.collisions).toEqual(expectedCols);
@@ -1033,8 +941,12 @@ test("Should be able to add an actor to a scene with default values and variable
   const newActorId = action.payload.actorId;
 
   expect(newState.scenes.entities["scene1"]?.actors).toEqual([newActorId]);
-  expect(newState.actors.entities[newActorId]?.name).toBe("Clipboard Actor Name");
-  expect(newState.variables.entities[`${newActorId}__L0`]?.name).toBe("Clipboard Variable Name");
+  expect(newState.actors.entities[newActorId]?.name).toBe(
+    "Clipboard Actor Name"
+  );
+  expect(newState.variables.entities[`${newActorId}__L0`]?.name).toBe(
+    "Clipboard Variable Name"
+  );
 });
 
 test("Should be able to move an actor with a scene", () => {
@@ -1197,12 +1109,14 @@ test("Should be able to add a trigger to a scene with defaults and variables", (
     height: 2,
     defaults: {
       id: "trigger1",
-      name: "Clipboard Trigger"
+      name: "Clipboard Trigger",
     },
-    variables: [{
-      id: "trigger1__L0",
-      name: "Clipboard Variable Name"
-    }]
+    variables: [
+      {
+        id: "trigger1__L0",
+        name: "Clipboard Variable Name",
+      },
+    ],
   });
 
   const newState = reducer(state, action);
@@ -1212,7 +1126,9 @@ test("Should be able to add a trigger to a scene with defaults and variables", (
   expect(newState.triggers.ids.length).toBe(1);
   expect(newState.variables.ids.length).toBe(1);
   expect(newState.triggers.entities[newTriggerId]?.id).not.toBe("trigger1");
-  expect(newState.variables.entities[`${newTriggerId}__L0`]?.name).toBe("Clipboard Variable Name");
+  expect(newState.variables.entities[`${newTriggerId}__L0`]?.name).toBe(
+    "Clipboard Variable Name"
+  );
 });
 
 test("Should be able to move a trigger with a scene", () => {
@@ -1643,14 +1559,16 @@ test("Editing a custom event name should propagate to instances of the event", (
           id: "scene1",
           actors: [],
           triggers: [],
-          script: [{
-            id: "customevent1",
-            command: "EVENT_CALL_CUSTOM_EVENT",
-            args: {
-              customEventId: "customevent1",
-              __name: "Previous Name"
-            }
-          }]
+          script: [
+            {
+              id: "customevent1",
+              command: "EVENT_CALL_CUSTOM_EVENT",
+              args: {
+                customEventId: "customevent1",
+                __name: "Previous Name",
+              },
+            },
+          ],
         },
       },
       ids: ["scene1"],
@@ -1660,23 +1578,25 @@ test("Editing a custom event name should propagate to instances of the event", (
         customevent1: {
           ...dummyCustomEvent,
           id: "customevent1",
-          name: "Previous Name"
-        }
+          name: "Previous Name",
+        },
       },
-      ids: ["customevent1"]
-    }
+      ids: ["customevent1"],
+    },
   };
 
   const action = actions.editCustomEvent({
     customEventId: "customevent1",
     changes: {
-      name: "New Name"
-    }
+      name: "New Name",
+    },
   });
 
   const newState = reducer(state, action);
   expect(newState.customEvents.entities["customevent1"]?.name).toBe("New Name");
-  expect(newState.scenes.entities["scene1"]?.script?.[0]?.args?.__name).toBe("New Name");
+  expect(newState.scenes.entities["scene1"]?.script?.[0]?.args?.__name).toBe(
+    "New Name"
+  );
 });
 
 test("Edits to custom event description should not affect event instance names", () => {
@@ -1689,14 +1609,16 @@ test("Edits to custom event description should not affect event instance names",
           id: "scene1",
           actors: [],
           triggers: [],
-          script: [{
-            id: "customevent1",
-            command: "EVENT_CALL_CUSTOM_EVENT",
-            args: {
-              customEventId: "customevent1",
-              __name: "Event Name"
-            }
-          }]
+          script: [
+            {
+              id: "customevent1",
+              command: "EVENT_CALL_CUSTOM_EVENT",
+              args: {
+                customEventId: "customevent1",
+                __name: "Event Name",
+              },
+            },
+          ],
         },
       },
       ids: ["scene1"],
@@ -1707,23 +1629,27 @@ test("Edits to custom event description should not affect event instance names",
           ...dummyCustomEvent,
           id: "customevent1",
           name: "Event Name",
-          description: "Old Description"
-        }
+          description: "Old Description",
+        },
       },
-      ids: ["customevent1"]
-    }
+      ids: ["customevent1"],
+    },
   };
 
   const action = actions.editCustomEvent({
     customEventId: "customevent1",
     changes: {
-      description: "New Description"
-    }
+      description: "New Description",
+    },
   });
 
   const newState = reducer(state, action);
-  expect(newState.customEvents.entities["customevent1"]?.description).toBe("New Description");
-  expect(newState.scenes.entities["scene1"]?.script?.[0]?.args?.__name).toBe("Event Name");
+  expect(newState.customEvents.entities["customevent1"]?.description).toBe(
+    "New Description"
+  );
+  expect(newState.scenes.entities["scene1"]?.script?.[0]?.args?.__name).toBe(
+    "Event Name"
+  );
 });
 
 test("Edits to custom event script should not affect event instance names", () => {
@@ -1736,14 +1662,16 @@ test("Edits to custom event script should not affect event instance names", () =
           id: "scene1",
           actors: [],
           triggers: [],
-          script: [{
-            id: "customevent1",
-            command: "EVENT_CALL_CUSTOM_EVENT",
-            args: {
-              customEventId: "customevent1",
-              __name: "Event Name"
-            }
-          }]
+          script: [
+            {
+              id: "customevent1",
+              command: "EVENT_CALL_CUSTOM_EVENT",
+              args: {
+                customEventId: "customevent1",
+                __name: "Event Name",
+              },
+            },
+          ],
         },
       },
       ids: ["scene1"],
@@ -1754,26 +1682,30 @@ test("Edits to custom event script should not affect event instance names", () =
           ...dummyCustomEvent,
           id: "customevent1",
           name: "Event Name",
-          description: "Old Description"
-        }
+          description: "Old Description",
+        },
       },
-      ids: ["customevent1"]
-    }
+      ids: ["customevent1"],
+    },
   };
 
   const action = actions.editCustomEvent({
     customEventId: "customevent1",
     changes: {
-      script: [{
-        id: "event66",
-        command: "EVENT_TEXT",
-        args: {
-          text: "Hello there"
-        }
-      }]
-    }
+      script: [
+        {
+          id: "event66",
+          command: "EVENT_TEXT",
+          args: {
+            text: "Hello there",
+          },
+        },
+      ],
+    },
   });
 
   const newState = reducer(state, action);
-  expect(newState.scenes.entities["scene1"]?.script?.[0]?.args?.__name).toBe("Event Name");
+  expect(newState.scenes.entities["scene1"]?.script?.[0]?.args?.__name).toBe(
+    "Event Name"
+  );
 });

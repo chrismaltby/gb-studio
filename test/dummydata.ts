@@ -21,6 +21,10 @@ import { initialState as initialDocumentState } from "../src/store/features/docu
 import { initialState as initialErrorState } from "../src/store/features/error/errorState";
 import { initialState as initialWarningsState } from "../src/store/features/warnings/warningsState";
 import { initialState as initialEngineState } from "../src/store/features/engine/engineState";
+import { initialState as initialClipboardState } from "../src/store/features/clipboard/clipboardState";
+import { initialState as initialSpriteState } from "../src/store/features/sprite/spriteState";
+import { initialState as initialTrackerState } from "../src/store/features/tracker/trackerState";
+import { initialState as initialTrackerDocumentState } from "../src/store/features/trackerDocument/trackerDocumentState";
 
 export const dummyScene: SceneData = {
   id: "",
@@ -32,8 +36,8 @@ export const dummyScene: SceneData = {
   height: 18,
   type: "0",
   paletteIds: [],
+  spritePaletteIds: [],
   collisions: [0],
-  tileColors: [0],
   actors: [],
   triggers: [],
   script: [],
@@ -89,6 +93,7 @@ export const dummyBackground: Background = {
   height: 1,
   imageWidth: 1,
   imageHeight: 1,
+  tileColors: [0],
   inode: "0",
   _v: 0,
 };
@@ -98,7 +103,22 @@ export const dummySpriteSheet: SpriteSheet = {
   name: "",
   filename: "",
   numFrames: 1,
-  type: "static",
+  numTiles: 1,
+  checksum: "",
+  type: "classic",
+  width: 16,
+  height: 16,
+  animationType: "multi_movement",
+  flipLeft: true,
+  canvasWidth: 32,
+  canvasHeight: 32,
+  boundsX: 0,
+  boundsY: 0,
+  boundsWidth: 16,
+  boundsHeight: 16,
+  animations: [],
+  animSpeed: 4,
+  autoDetect: false,
   inode: "1",
   _v: 0,
 };
@@ -134,11 +154,13 @@ export const dummyProjectData: ProjectData = {
   customEvents: [],
   variables: [],
   music: [],
+  fonts: [],
+  avatars: [],
+  emotes: [],
   settings: {
     startSceneId: "",
     startX: 0,
     startY: 0,
-    playerSpriteSheetId: "",
     startMoveSpeed: 1,
     startAnimSpeed: 3,
     startDirection: "down",
@@ -149,12 +171,20 @@ export const dummyProjectData: ProjectData = {
     worldScrollY: 0,
     zoom: 100,
     customColorsEnabled: false,
-    defaultBackgroundPaletteIds: ["", "", "", "", "", ""],
+    sgbEnabled: false,
+    defaultBackgroundPaletteIds: ["", "", "", "", "", "", "", ""],
+    defaultSpritePaletteIds: ["", "", "", "", "", "", "", ""],
     defaultSpritePaletteId: "",
     defaultUIPaletteId: "",
     customHead: "",
     navigatorSplitSizes: [300, 100, 100],
     showNavigator: true,
+    defaultFontId: "",
+    defaultCharacterEncoding: "",
+    defaultPlayerSprites: {},
+    musicDriver: "huge",
+    cartType: "mbc5",
+    batterylessEnabled: false,
   },
 };
 
@@ -182,6 +212,22 @@ export const dummyRootState: RootState = {
   },
   engine: {
     ...initialEngineState,
+  },
+  clipboard: {
+    ...initialClipboardState,
+  },
+  sprite: {
+    ...initialSpriteState,
+  },
+  tracker: {
+    ...initialTrackerState,
+  },
+  trackerDocument: {
+    past: [],
+    future: [],
+    present: {
+      ...initialTrackerDocumentState,
+    },
   },
   project: {
     past: [],

@@ -7,16 +7,17 @@ import projectActions from "../../../../src/store/features/project/projectAction
 import { ActionCreators } from "redux-undo";
 
 test("Should trigger undo clear history after successful project load", async () => {
-  const store = ({
+  const store = {
     getState: () => ({}),
     dispatch: jest.fn(),
-  } as unknown) as MiddlewareAPI<Dispatch<AnyAction>, RootState>;
+  } as unknown as MiddlewareAPI<Dispatch<AnyAction>, RootState>;
 
   const next = jest.fn();
   const action = projectActions.loadProject.fulfilled(
     {
       data: { ...dummyProjectData },
       path: "project.gbsproj",
+      modifiedSpriteIds: [],
     },
     "randomid",
     "project.gbsproj"
@@ -30,10 +31,10 @@ test("Should trigger undo clear history after successful project load", async ()
 });
 
 test("Should not trigger undo clear history after successful project save", async () => {
-  const store = ({
+  const store = {
     getState: () => ({}),
     dispatch: jest.fn(),
-  } as unknown) as MiddlewareAPI<Dispatch<AnyAction>, RootState>;
+  } as unknown as MiddlewareAPI<Dispatch<AnyAction>, RootState>;
 
   const next = jest.fn();
   const action = projectActions.saveProject.fulfilled(
