@@ -5,7 +5,7 @@ import { Cancelable } from "lodash";
 
 const throttled: Dictionary<Dispatch<AnyAction> & Cancelable> = {};
 
-const throttleMiddleware: Middleware<{}, RootState> =
+const throttleMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => async (action) => {
     const time = (action.meta && action.meta.throttle) as number | undefined;
     if (!time) return next(action);

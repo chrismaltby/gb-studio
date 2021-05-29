@@ -6,15 +6,7 @@ import { SceneParallaxLayer } from "store/features/entities/entitiesTypes";
 import { FontData } from "../fonts/fontData";
 import { hexDec } from "../helpers/8bit";
 import { PrecompiledSpriteSheetData } from "./compileSprites";
-import {
-  actorFramesPerDir,
-  animSpeedDec,
-  collisionGroupDec,
-  dirDec,
-  dirEnum,
-  moveSpeedDec,
-  spriteTypeDec,
-} from "./helpers";
+import { actorFramesPerDir, dirEnum } from "./helpers";
 
 interface PrecompiledBackground {
   name: string;

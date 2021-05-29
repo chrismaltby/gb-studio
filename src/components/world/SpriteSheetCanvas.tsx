@@ -3,7 +3,6 @@ import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { RootState } from "store/configureStore";
 import {
-  sceneSelectors,
   spriteAnimationSelectors,
   spriteSheetSelectors,
 } from "store/features/entities/entitiesState";

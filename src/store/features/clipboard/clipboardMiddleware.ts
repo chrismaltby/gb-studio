@@ -6,7 +6,12 @@ import {
   getCustomEventIdsInActor,
   getCustomEventIdsInScene,
 } from "lib/helpers/eventSystem";
-import { Dictionary, Middleware, PayloadAction } from "@reduxjs/toolkit";
+import {
+  Dictionary,
+  Dispatch,
+  Middleware,
+  PayloadAction,
+} from "@reduxjs/toolkit";
 import { RootState } from "store/configureStore";
 import {
   customEventSelectors,
@@ -33,7 +38,7 @@ import {
 } from "./clipboardTypes";
 import clipboardActions from "./clipboardActions";
 
-const clipboardMiddleware: Middleware<{}, RootState> =
+const clipboardMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => (action) => {
     if (actions.copyActor.match(action)) {
       const state = store.getState();

@@ -41,7 +41,7 @@ const navigationSlice = createSlice({
         state.id = action.payload.paletteId;
       })
       // Switch to build screen on any errors
-      .addCase(consoleActions.stdErr, (state, action) => {
+      .addCase(consoleActions.stdErr, (state, _action) => {
         state.section = "build";
       }),
 });

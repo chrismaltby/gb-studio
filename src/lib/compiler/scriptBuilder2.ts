@@ -328,7 +328,7 @@ const textCodeGotoRel = (x: number, y: number): string => {
   return `\\004\\${decOct(x)}\\${decOct(y)}`;
 };
 
-const assertUnreachable = (x: never): never => {
+const assertUnreachable = (_x: never): never => {
   throw new Error("Didn't expect to get here");
 };
 
@@ -935,7 +935,7 @@ class ScriptBuilder {
         output.forEach((cmd: string) => {
           this.output.push(cmd);
         });
-        stack.forEach((value: number) => {
+        stack.forEach((_value: number) => {
           this.stackPtr++;
         });
       },
@@ -1164,7 +1164,7 @@ class ScriptBuilder {
       text = text.replace(`$${code}$`, "%d");
     });
 
-    inlineFonts.forEach((fontId, i) => {
+    inlineFonts.forEach((fontId) => {
       const fontIndex = this._getFontIndex(fontId);
       text = text.replace(`!F:${fontId}!`, `\\002\\${decOct(fontIndex + 1)}`);
     });
@@ -1847,7 +1847,7 @@ class ScriptBuilder {
     this._addNL();
   };
 
-  actorSetAnimate = (enabled: boolean) => {
+  actorSetAnimate = (_enabled: boolean) => {
     console.error("actorSetAnimate not implemented");
   };
 
@@ -1918,7 +1918,6 @@ class ScriptBuilder {
   // UI
 
   textDialogue = (inputText: string | string[] = " ", avatarId?: string) => {
-    const { sprites } = this.options;
     const input: string[] = Array.isArray(inputText) ? inputText : [inputText];
 
     const initialNumLines = input.map(

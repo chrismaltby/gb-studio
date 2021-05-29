@@ -1,7 +1,6 @@
 import { ipcRenderer, remote } from "electron";
 import settings from "electron-settings";
 import uniq from "lodash/uniq";
-import Path from "path";
 import confirmDeleteCustomEvent from "lib/electron/dialog/confirmDeleteCustomEvent";
 import confirmEnableColorDialog from "lib/electron/dialog/confirmEnableColorDialog";
 import {
@@ -15,7 +14,7 @@ import l10n from "lib/helpers/l10n";
 import editorActions from "../editor/editorActions";
 import { getSettings } from "../settings/settingsState";
 import settingsActions from "../settings/settingsActions";
-import { Middleware } from "@reduxjs/toolkit";
+import { Dispatch, Middleware } from "@reduxjs/toolkit";
 import { RootState } from "store/configureStore";
 import projectActions from "../project/projectActions";
 import {
@@ -30,7 +29,7 @@ import { Dictionary } from "lodash";
 import actions from "./electronActions";
 import open from "open";
 
-const electronMiddleware: Middleware<{}, RootState> =
+const electronMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => (action) => {
     if (actions.openHelp.match(action)) {
       ipcRenderer.send("open-help", action.payload);

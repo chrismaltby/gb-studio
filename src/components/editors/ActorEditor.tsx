@@ -29,18 +29,10 @@ import { LockIcon, LockOpenIcon, PinIcon } from "ui/icons/Icons";
 import castEventValue from "lib/helpers/castEventValue";
 import { CheckboxField } from "ui/form/CheckboxField";
 import DirectionPicker from "../forms/DirectionPicker";
-import { PaletteSelectButton } from "../forms/PaletteSelectButton";
-import {
-  DMG_PALETTE,
-  SPRITE_TYPE_ACTOR,
-  SPRITE_TYPE_ACTOR_ANIMATED,
-  SPRITE_TYPE_ANIMATED,
-  SPRITE_TYPE_STATIC,
-} from "../../consts";
+import { DMG_PALETTE, SPRITE_TYPE_STATIC } from "../../consts";
 import { SpriteSheetSelectButton } from "../forms/SpriteSheetSelectButton";
 import { WorldEditor } from "./WorldEditor";
 import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
-import { SidebarTabs } from "./Sidebar";
 import ScriptEditor from "../script/ScriptEditor";
 import { NumberField } from "ui/form/NumberField";
 import { SpriteTypeSelect } from "../forms/SpriteTypeSelect";

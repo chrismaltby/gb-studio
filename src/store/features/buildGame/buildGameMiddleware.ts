@@ -1,5 +1,5 @@
 import { ipcRenderer, remote } from "electron";
-import { Middleware } from "@reduxjs/toolkit";
+import { Dispatch, Middleware } from "@reduxjs/toolkit";
 import Path from "path";
 import rimraf from "rimraf";
 import { promisify } from "util";
@@ -19,7 +19,7 @@ const rmdir = promisify(rimraf);
 
 const buildUUID = "_gbsbuild";
 
-const buildGameMiddleware: Middleware<{}, RootState> =
+const buildGameMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => async (action) => {
     if (actions.buildGame.match(action)) {
       const state = store.getState();

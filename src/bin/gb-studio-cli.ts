@@ -13,7 +13,7 @@ import makeBuild from "lib/compiler/makeBuild";
 
 const rmdir = promisify(rimraf);
 
-declare let VERSION: any;
+declare const VERSION: string;
 
 interface EngineData {
   fields?: EngineFieldSchema[];

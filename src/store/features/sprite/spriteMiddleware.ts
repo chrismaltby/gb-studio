@@ -1,4 +1,4 @@
-import { Middleware } from "@reduxjs/toolkit";
+import { Dispatch, Middleware } from "@reduxjs/toolkit";
 import { RootState } from "store/configureStore";
 import actions from "./spriteActions";
 import projectActions from "../project/projectActions";
@@ -13,7 +13,7 @@ import { detect, detectClassic } from "lib/sprite/detect";
 import { compileSprite } from "lib/compiler/compileSprites";
 import { denormalizeSprite } from "../entities/entitiesHelpers";
 
-const spriteMiddleware: Middleware<{}, RootState> =
+const spriteMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => async (action) => {
     if (actions.detectSprite.match(action)) {
       const state = store.getState();

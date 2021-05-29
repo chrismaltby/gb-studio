@@ -1,4 +1,4 @@
-import { Middleware } from "@reduxjs/toolkit";
+import { Dispatch, Middleware } from "@reduxjs/toolkit";
 import Path from "path";
 import { RootState } from "store/configureStore";
 import migrateWarning from "lib/project/migrateWarning";
@@ -7,7 +7,7 @@ import { AssetFolder, potentialAssetFolders } from "lib/project/assets";
 import { copyFile } from "fs-extra";
 import confirmAssetFolder from "lib/electron/dialog/confirmAssetFolder";
 
-const projectMiddleware: Middleware<{}, RootState> =
+const projectMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => async (action) => {
     if (actions.openProject.match(action)) {
       const shouldOpenProject = await migrateWarning(action.payload);

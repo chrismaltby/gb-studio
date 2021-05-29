@@ -1,4 +1,4 @@
-import { Middleware } from "@reduxjs/toolkit";
+import { Dispatch, Middleware } from "@reduxjs/toolkit";
 import Path from "path";
 import { readJSON } from "fs-extra";
 import { RootState } from "store/configureStore";
@@ -21,7 +21,7 @@ interface EngineData {
   fields?: EngineFieldSchema[];
 }
 
-const engineMiddleware: Middleware<{}, RootState> =
+const engineMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => async (action) => {
     if (actions.scanEngine.match(action)) {
       const defaultEngineJsonPath = Path.join(engineRoot, "gb", "engine.json");

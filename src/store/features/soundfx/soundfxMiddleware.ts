@@ -6,7 +6,7 @@ import {
   decodeAudioData,
 } from "lib/soundfx/soundfx";
 import { assetsRoot } from "../../../consts";
-import { Middleware } from "@reduxjs/toolkit";
+import { Dispatch, Middleware } from "@reduxjs/toolkit";
 import { RootState } from "store/configureStore";
 import musicActions from "../music/musicActions";
 import navigationActions from "../navigation/navigationActions";
@@ -46,7 +46,7 @@ function pause() {
   }
 }
 
-const soundfxMiddleware: Middleware<{}, RootState> =
+const soundfxMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => (action) => {
     if (actions.playSoundFxBeep.match(action)) {
       pause();

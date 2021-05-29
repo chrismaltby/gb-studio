@@ -1,10 +1,10 @@
-import { Middleware, Action } from "@reduxjs/toolkit";
+import { Middleware, Action, Dispatch } from "@reduxjs/toolkit";
 import { getBackgroundInfo } from "lib/helpers/validation";
 import actions from "./warningsActions";
 import { RootState } from "store/configureStore";
 import { backgroundSelectors } from "../entities/entitiesState";
 
-const warningsMiddleware: Middleware<{}, RootState> =
+const warningsMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => (action: Action) => {
     if (actions.checkBackgroundWarnings.match(action)) {
       const state = store.getState();

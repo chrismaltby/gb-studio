@@ -1,4 +1,4 @@
-import { Middleware } from "@reduxjs/toolkit";
+import { Dispatch, Middleware } from "@reduxjs/toolkit";
 import ScripTracker from "lib/vendor/scriptracker/scriptracker";
 import { RootState } from "store/configureStore";
 import soundfxActions from "../soundfx/soundfxActions";
@@ -42,7 +42,7 @@ function pause() {
   }
 }
 
-const musicMiddleware: Middleware<{}, RootState> =
+const musicMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => (action) => {
     if (actions.playMusic.match(action)) {
       const state = store.getState();
