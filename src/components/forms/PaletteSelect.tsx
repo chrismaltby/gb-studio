@@ -144,6 +144,7 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
 
   return (
     <Select
+      name={name}
       value={currentValue}
       options={options}
       onChange={onSelectChange}

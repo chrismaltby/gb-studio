@@ -4,12 +4,8 @@ import styled, { css } from "styled-components";
 import { assetFilename } from "lib/helpers/gbstudio";
 import l10n from "lib/helpers/l10n";
 import { RootState } from "store/configureStore";
-import {
-  paletteSelectors,
-  backgroundSelectors,
-} from "store/features/entities/entitiesState";
+import { backgroundSelectors } from "store/features/entities/entitiesState";
 import warningsActions from "store/features/warnings/warningsActions";
-import { Palette, Background } from "store/features/entities/entitiesTypes";
 import { SelectMenu, selectMenuStyleProps } from "ui/form/Select";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import { BackgroundSelect } from "./BackgroundSelect";
@@ -171,7 +167,7 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
         })
       );
     }
-  }, [value, is360]);
+  }, [dispatch, value, is360]);
 
   useEffect(() => {
     if (buttonFocus) {

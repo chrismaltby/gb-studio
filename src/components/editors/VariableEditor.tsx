@@ -31,7 +31,6 @@ import {
   Trigger,
 } from "store/features/entities/entitiesTypes";
 import l10n from "lib/helpers/l10n";
-import events from "lib/events";
 import { Sidebar, SidebarColumn } from "ui/sidebars/Sidebar";
 import { FlatList } from "ui/lists/FlatList";
 import { EntityListItem } from "ui/lists/EntityListItem";
@@ -70,13 +69,6 @@ type VariableUse = {
       sceneIndex: number;
     }
 );
-
-const eventName = (event: ScriptEvent) => {
-  const localisedCommand = l10n(event.command);
-  return localisedCommand !== event.command
-    ? localisedCommand
-    : events[event.command]?.name || event.command;
-};
 
 const sceneName = (scene: Scene, sceneIndex: number) =>
   scene.name ? scene.name : `Scene ${sceneIndex + 1}`;
@@ -309,7 +301,7 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
               items={variableUses}
               height={height - 30}
               setSelectedId={setSelectedId}
-              children={({ selected, item }) =>
+              children={({ item }) =>
                 item.type === "scene" ? (
                   <EntityListItem item={item} type={item.type} />
                 ) : (

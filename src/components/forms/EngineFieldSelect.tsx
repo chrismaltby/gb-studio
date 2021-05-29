@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 import { RootState } from "store/configureStore";

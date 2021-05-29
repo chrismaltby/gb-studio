@@ -8,7 +8,6 @@ import {
 } from "store/features/entities/entitiesState";
 import {
   ActorDirection,
-  Palette,
   SpriteSheet,
 } from "store/features/entities/entitiesTypes";
 import {
@@ -33,8 +32,6 @@ interface SpriteSheetSelectProps extends SelectCommonProps {
   optional?: boolean;
   optionalLabel?: string;
 }
-
-const type = (t: string) => (s: SpriteSheet) => s.type === t;
 
 const buildOptions = (
   memo: OptGroup[],
@@ -100,7 +97,7 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
     );
 
     setOptions(options);
-  }, [spriteSheets, optional]);
+  }, [spriteSheets, optional, filter, optionalLabel]);
 
   useEffect(() => {
     setCurrentSpriteSheet(spriteSheets.find((v) => v.id === value));
@@ -118,7 +115,7 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
         label: optionalLabel || "None",
       });
     }
-  }, [currentSpriteSheet]);
+  }, [currentSpriteSheet, optional, optionalLabel]);
 
   const onSelectChange = (newValue: Option) => {
     onChange?.(newValue.value);

@@ -35,7 +35,7 @@ class ColorSlider extends Component<ColorSliderProps> {
     }
   };
 
-  onMouseUp = (e: MouseEvent) => {
+  onMouseUp = (_e: MouseEvent) => {
     window.removeEventListener("mousemove", this.onMouseMove);
     window.removeEventListener("mouseup", this.onMouseUp);
   };

@@ -265,7 +265,7 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
 
   const onFetchClipboard = useCallback(() => {
     dispatch(clipboardActions.fetchClipboard());
-  }, []);
+  }, [dispatch]);
 
   const onCopyBackgroundPaletteIds = useCallback(() => {
     if (scene) {
