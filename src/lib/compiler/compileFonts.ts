@@ -4,14 +4,9 @@ import { FontData, readFileToFontData } from "../fonts/fontData";
 
 export type PrecompiledFontData = FontAssetData & FontData;
 
-type CompileFontOptions = {
-  warnings: (msg: string) => void;
-};
-
 const compileFonts = async (
   fonts: FontAssetData[],
-  projectRoot: string,
-  { warnings }: CompileFontOptions
+  projectRoot: string
 ): Promise<PrecompiledFontData[]> => {
   const compiled: PrecompiledFontData[] = [];
   for (const font of fonts) {

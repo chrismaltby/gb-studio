@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled, { css } from "styled-components";
 import { RootState } from "store/configureStore";
@@ -18,7 +24,6 @@ import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { MetaspriteCanvas } from "./preview/MetaspriteCanvas";
-import spriteActions from "store/features/sprite/spriteActions";
 
 interface MetaspriteEditorProps {
   spriteSheetId: string;
@@ -34,6 +39,10 @@ export interface MetaspriteDraggableTileProps {
 interface ScrollWrapperProps {
   hidden?: boolean;
 }
+
+type BlurableDOMElement = {
+  blur: () => void;
+};
 
 const ScrollWrapper = styled.div<ScrollWrapperProps>`
   overflow-y: scroll;
@@ -173,10 +182,13 @@ const MetaspriteEditor = ({
   const newTiles = useSelector(
     (state: RootState) => state.editor.spriteTileSelection
   );
-  const metaspriteTiles =
-    metasprite?.tiles
-      .map((tileId) => metaspriteTileLookup[tileId] as MetaspriteTile)
-      .filter((i) => i) || [];
+  const metaspriteTiles = useMemo(
+    () =>
+      metasprite?.tiles
+        .map((tileId) => metaspriteTileLookup[tileId] as MetaspriteTile)
+        .filter((i) => i) || [],
+    [metasprite?.tiles, metaspriteTileLookup]
+  );
   const selectedTileIds = useSelector(
     (state: RootState) => state.editor.selectedMetaspriteTileIds
   );
@@ -222,6 +234,86 @@ const MetaspriteEditor = ({
   const boundsX = spriteSheet?.boundsX || 0;
   const boundsY = spriteSheet?.boundsY || 0;
 
+  const setSelectedTileId = useCallback(
+    (tileId: string) => {
+      dispatch(editorActions.setSelectedMetaspriteTileId(tileId));
+    },
+    [dispatch]
+  );
+
+  const setSelectedTileIds = useCallback(
+    (tileIds: string[]) => {
+      dispatch(editorActions.setSelectedMetaspriteTileIds(tileIds));
+    },
+    [dispatch]
+  );
+
+  const toggleSelectedTileId = useCallback(
+    (tileId: string) => {
+      dispatch(editorActions.toggleSelectedMetaspriteTileId(tileId));
+    },
+    [dispatch]
+  );
+
+  const resetSelectedTileIds = useCallback(() => {
+    dispatch(editorActions.resetSelectedMetaspriteTileIds());
+  }, [dispatch]);
+
+  const resetSpriteTileSelection = useCallback(() => {
+    dispatch(editorActions.resetSpriteTileSelection());
+  }, [dispatch]);
+
+  const flipXSelectedTiles = useCallback(() => {
+    dispatch(
+      entitiesActions.flipXMetaspriteTiles({
+        spriteSheetId,
+        metaspriteTileIds: selectedTileIds,
+      })
+    );
+  }, [dispatch, selectedTileIds, spriteSheetId]);
+
+  const flipYSelectedTiles = useCallback(() => {
+    dispatch(
+      entitiesActions.flipYMetaspriteTiles({
+        spriteSheetId,
+        metaspriteTileIds: selectedTileIds,
+      })
+    );
+  }, [dispatch, selectedTileIds, spriteSheetId]);
+
+  const removeSelectedTiles = useCallback(() => {
+    dispatch(
+      entitiesActions.removeMetaspriteTiles({
+        spriteSheetId,
+        metaspriteTileIds: selectedTileIds,
+        metaspriteId,
+      })
+    );
+  }, [dispatch, spriteSheetId, selectedTileIds, metaspriteId]);
+
+  const removeMetaspriteTilesOutsideCanvas = useCallback(() => {
+    dispatch(
+      entitiesActions.removeMetaspriteTilesOutsideCanvas({
+        metaspriteId,
+        spriteSheetId,
+      })
+    );
+  }, [dispatch, metaspriteId, spriteSheetId]);
+
+  const nudgeSelectedTiles = useCallback(
+    (x: number, y: number) => {
+      dispatch(
+        entitiesActions.moveMetaspriteTilesRelative({
+          spriteSheetId,
+          metaspriteTileIds: selectedTileIds,
+          x: Math.round(x),
+          y: Math.round(y),
+        })
+      );
+    },
+    [dispatch, selectedTileIds, spriteSheetId]
+  );
+
   const onMoveCreateCursor = useCallback(
     (e: MouseEvent) => {
       if (gridRef.current && newTiles) {
@@ -242,14 +334,7 @@ const MetaspriteEditor = ({
         });
       }
     },
-    [
-      setCreateOrigin,
-      gridRef.current,
-      newTiles?.width,
-      newTiles?.height,
-      canvasWidth,
-      canvasHeight,
-    ]
+    [newTiles, canvasWidth, canvasHeight]
   );
 
   const onCreateTiles = useCallback(
@@ -261,7 +346,9 @@ const MetaspriteEditor = ({
       e.preventDefault();
 
       // Clear focus from animation timeline
-      const el = document.querySelector(":focus") as any;
+      const el = document.querySelector(":focus") as unknown as
+        | BlurableDOMElement
+        | undefined;
       if (el && el.blur) el.blur();
 
       const newActions: PayloadAction<{
@@ -304,7 +391,16 @@ const MetaspriteEditor = ({
       setSelectedTileIds(newIds);
       removeMetaspriteTilesOutsideCanvas();
     },
-    [createOrigin.x, createOrigin.y, newTiles?.x, newTiles?.y]
+    [
+      createOrigin.x,
+      createOrigin.y,
+      dispatch,
+      metaspriteId,
+      newTiles,
+      removeMetaspriteTilesOutsideCanvas,
+      setSelectedTileIds,
+      spriteSheetId,
+    ]
   );
 
   const onDragStart =
@@ -314,7 +410,9 @@ const MetaspriteEditor = ({
         e.stopPropagation();
 
         // Clear focus from animation timeline
-        const el = document.querySelector(":focus") as any;
+        const el = document.querySelector(":focus") as unknown as
+          | BlurableDOMElement
+          | undefined;
         if (el && el.blur) el.blur();
 
         if (e.shiftKey) {
@@ -354,15 +452,18 @@ const MetaspriteEditor = ({
         })
       );
     },
-    [dragMetasprites.current, dragOrigin.x, dragOrigin.y, zoom]
+    [dispatch, dragOrigin.x, dragOrigin.y, spriteSheetId, zoom]
   );
 
-  const onDragEnd = (e: MouseEvent) => {
-    setDraggingMetasprite(false);
-    if (e.pageX !== dragOrigin.x || e.pageY !== dragOrigin.y) {
-      removeMetaspriteTilesOutsideCanvas();
-    }
-  };
+  const onDragEnd = useCallback(
+    (e: MouseEvent) => {
+      setDraggingMetasprite(false);
+      if (e.pageX !== dragOrigin.x || e.pageY !== dragOrigin.y) {
+        removeMetaspriteTilesOutsideCanvas();
+      }
+    },
+    [dragOrigin.x, dragOrigin.y, removeMetaspriteTilesOutsideCanvas]
+  );
 
   const onSelectStart = useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -416,10 +517,17 @@ const MetaspriteEditor = ({
         setSelectedTileIds(intersectingTileIds);
       }
     },
-    [selectionOrigin?.x, selectionOrigin?.y, zoom]
+    [
+      canvasHeight,
+      canvasWidth,
+      metaspriteTiles,
+      selectionOrigin,
+      setSelectedTileIds,
+      zoom,
+    ]
   );
 
-  const onDragSelectionEnd = (e: MouseEvent) => {
+  const onDragSelectionEnd = (_e: MouseEvent) => {
     setDraggingSelection(false);
     setSelectionRect(undefined);
   };
@@ -430,7 +538,7 @@ const MetaspriteEditor = ({
 
   const onKeyDown = useCallback(
     (e: KeyboardEvent) => {
-      if ((e.target as any).nodeName !== "BODY") {
+      if ((e.target as HTMLElement)?.nodeName !== "BODY") {
         return;
       }
       if (e.ctrlKey || e.metaKey) {
@@ -481,79 +589,16 @@ const MetaspriteEditor = ({
         removeSelectedTiles();
       }
     },
-    [selectedTileIds]
+    [
+      flipXSelectedTiles,
+      flipYSelectedTiles,
+      nudgeSelectedTiles,
+      removeSelectedTiles,
+      resetSelectedTileIds,
+      resetSpriteTileSelection,
+      selectedTileIds.length,
+    ]
   );
-
-  const nudgeSelectedTiles = useCallback(
-    (x: number, y: number) => {
-      dispatch(
-        entitiesActions.moveMetaspriteTilesRelative({
-          spriteSheetId,
-          metaspriteTileIds: selectedTileIds,
-          x: Math.round(x),
-          y: Math.round(y),
-        })
-      );
-    },
-    [dispatch, selectedTileIds, selectedTileIds.length]
-  );
-
-  const flipXSelectedTiles = useCallback(() => {
-    dispatch(
-      entitiesActions.flipXMetaspriteTiles({
-        spriteSheetId,
-        metaspriteTileIds: selectedTileIds,
-      })
-    );
-  }, [dispatch, selectedTileIds]);
-
-  const flipYSelectedTiles = useCallback(() => {
-    dispatch(
-      entitiesActions.flipYMetaspriteTiles({
-        spriteSheetId,
-        metaspriteTileIds: selectedTileIds,
-      })
-    );
-  }, [dispatch, selectedTileIds]);
-
-  const removeSelectedTiles = useCallback(() => {
-    dispatch(
-      entitiesActions.removeMetaspriteTiles({
-        spriteSheetId,
-        metaspriteTileIds: selectedTileIds,
-        metaspriteId,
-      })
-    );
-  }, [dispatch, selectedTileIds, metaspriteId]);
-
-  const setSelectedTileId = useCallback((tileId: string) => {
-    dispatch(editorActions.setSelectedMetaspriteTileId(tileId));
-  }, []);
-
-  const setSelectedTileIds = useCallback((tileIds: string[]) => {
-    dispatch(editorActions.setSelectedMetaspriteTileIds(tileIds));
-  }, []);
-
-  const toggleSelectedTileId = useCallback((tileId: string) => {
-    dispatch(editorActions.toggleSelectedMetaspriteTileId(tileId));
-  }, []);
-
-  const resetSelectedTileIds = useCallback(() => {
-    dispatch(editorActions.resetSelectedMetaspriteTileIds());
-  }, []);
-
-  const resetSpriteTileSelection = useCallback(() => {
-    dispatch(editorActions.resetSpriteTileSelection());
-  }, []);
-
-  const removeMetaspriteTilesOutsideCanvas = useCallback(() => {
-    dispatch(
-      entitiesActions.removeMetaspriteTilesOutsideCanvas({
-        metaspriteId,
-        spriteSheetId,
-      })
-    );
-  }, [metaspriteId, spriteSheetId]);
 
   const onCopyTiles = useCallback(() => {
     dispatch(
@@ -561,7 +606,7 @@ const MetaspriteEditor = ({
         metaspriteTileIds: selectedTileIds,
       })
     );
-  }, [selectedTileIds]);
+  }, [dispatch, selectedTileIds]);
 
   const onCopyMetasprite = useCallback(() => {
     dispatch(
@@ -569,7 +614,7 @@ const MetaspriteEditor = ({
         metaspriteIds: [metaspriteId],
       })
     );
-  }, [metaspriteId]);
+  }, [dispatch, metaspriteId]);
 
   const onCopy = useCallback(() => {
     if (selectedTileIds.length > 0) {
@@ -577,7 +622,7 @@ const MetaspriteEditor = ({
     } else {
       onCopyMetasprite();
     }
-  }, [selectedTileIds]);
+  }, [onCopyMetasprite, onCopyTiles, selectedTileIds.length]);
 
   const onPaste = useCallback(() => {
     dispatch(
@@ -587,7 +632,7 @@ const MetaspriteEditor = ({
         spriteAnimationId: animationId,
       })
     );
-  }, [metaspriteId, animationId]);
+  }, [dispatch, spriteSheetId, metaspriteId, animationId]);
 
   const onOverEditor = useCallback(() => {
     setIsOverEditor(true);
@@ -598,7 +643,7 @@ const MetaspriteEditor = ({
   }, [setIsOverEditor]);
 
   const onSelectAll = useCallback(
-    (e) => {
+    (_e) => {
       const selection = window.getSelection();
       if (!selection || selection.focusNode) {
         return;
@@ -606,10 +651,8 @@ const MetaspriteEditor = ({
       window.getSelection()?.empty();
       setSelectedTileIds(metasprite?.tiles || []);
     },
-    [metasprite?.tiles]
+    [metasprite?.tiles, setSelectedTileIds]
   );
-
-  const autoDetect = spriteSheet?.autoDetect;
 
   // Keyboard handlers
   useEffect(() => {
@@ -633,7 +676,7 @@ const MetaspriteEditor = ({
       };
     }
     return () => {};
-  }, [draggingMetasprite, onDrag, hidden]);
+  }, [draggingMetasprite, onDrag, hidden, onDragEnd]);
 
   useEffect(() => {
     if (draggingSelection && !hidden) {
@@ -670,7 +713,7 @@ const MetaspriteEditor = ({
       };
     }
     return () => {};
-  }, [hidden, selectedTileIds, metaspriteId, animationId]);
+  }, [hidden, selectedTileIds, metaspriteId, animationId, onCopy, onPaste]);
 
   // Selection
   useEffect(() => {
@@ -681,7 +724,7 @@ const MetaspriteEditor = ({
       };
     }
     return () => {};
-  }, [hidden, metasprite?.tiles]);
+  }, [hidden, metasprite?.tiles, onSelectAll]);
 
   const getTilePalette = useCallback(
     (metaspriteTile: MetaspriteTile) => {

@@ -6,7 +6,6 @@ import {
   SelectCommonProps,
 } from "ui/form/Select";
 import styled from "styled-components";
-import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
 import {
   customEventSelectors,
@@ -19,10 +18,7 @@ import {
   namedVariablesByContext,
   nextVariable,
 } from "lib/helpers/variables";
-import { RelativePortal } from "ui/layout/RelativePortal";
-import { Tooltip } from "ui/tooltips/Tooltip";
-import { Bits16Icon, Bits8Icon, CheckIcon, PencilIcon } from "ui/icons/Icons";
-import useDelayedState from "ui/hooks/use-delayed-state";
+import { CheckIcon, PencilIcon } from "ui/icons/Icons";
 import { Input } from "ui/form/Input";
 import entitiesActions from "store/features/entities/entitiesActions";
 import l10n from "lib/helpers/l10n";
@@ -52,37 +48,6 @@ const Select = styled(DefaultSelect)`
 
 const OtherVariable = styled.span`
   opacity: 0.5;
-`;
-
-const VariableSizeIndicator = styled.div`
-  position: absolute;
-  top: 1px;
-  left: 1px;
-  width: 24px;
-  height: 26px;
-  background-color: ${(props) => props.theme.colors.input.border};
-  border-top-left-radius: ${(props) =>
-    Math.max(0, props.theme.borderRadius - 1)}px;
-  border-bottom-left-radius: ${(props) =>
-    Math.max(0, props.theme.borderRadius - 1)}px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  line-height: 10px;
-  font-size: 12px;
-  font-weight: bold;
-  opacity: 0.8;
-
-  :hover {
-    opacity: 1;
-  }
-
-  svg {
-    width: 20px;
-    height: 20px;
-    fill: ${(props) => props.theme.colors.input.text};
-  }
 `;
 
 const VariableRenameInput = styled(Input)`
@@ -205,7 +170,6 @@ export const VariableSelect: FC<VariableSelectProps> = ({
   allowRename,
   ...selectProps
 }) => {
-  const [tooltipVisible, setTooltipVisible] = useDelayedState(false);
   const [renameVisible, setRenameVisible] = useState(false);
   const [editValue, setEditValue] = useState("");
   const [renameId, setRenameId] = useState("");
@@ -257,7 +221,7 @@ export const VariableSelect: FC<VariableSelectProps> = ({
     });
     setVariables(variables);
     setOptions(groupedOptions);
-  }, [entityId, variablesLookup, editorType, customEvent]);
+  }, [entityId, variablesLookup, editorType, customEvent, type]);
 
   useEffect(() => {
     setCurrentVariable(variables.find((v) => v.id === value));
@@ -271,18 +235,6 @@ export const VariableSelect: FC<VariableSelectProps> = ({
       });
     }
   }, [currentVariable]);
-
-  const onClickType = () => {
-    setTooltipVisible(true);
-  };
-
-  const onMouseEnterType = () => {
-    setTooltipVisible(true, 500);
-  };
-
-  const onMouseLeaveType = () => {
-    setTooltipVisible(false);
-  };
 
   const onRenameStart = () => {
     if (currentValue) {
@@ -359,34 +311,6 @@ export const VariableSelect: FC<VariableSelectProps> = ({
 
   return (
     <Wrapper onClick={onJumpToVariable}>
-      {tooltipVisible && (
-        <RelativePortal pin="top-right" offsetX={80} offsetY={33}>
-          {type === "8bit" && (
-            <Tooltip style={{ width: 120 }}>
-              {l10n("FIELD_8BIT_DESCRIPTION")}
-            </Tooltip>
-          )}
-          {type === "16bit" && (
-            <Tooltip style={{ width: 250, maxWidth: 250 }}>
-              <p>{l10n("FIELD_16BIT_DESCRIPTION")}</p>
-              <p>{l10n("FIELD_16BIT_CALCULATION")}:</p>
-              {currentValue && (
-                <p>
-                  (<VariableToken>${currentValue.label}</VariableToken> * 256) +{" "}
-                  <VariableToken>
-                    $
-                    {editorType === "customEvent"
-                      ? `${currentValue.label}+1`
-                      : namedVariablesLookup[nextVariable(currentValue.value)]
-                          ?.name}
-                  </VariableToken>
-                </p>
-              )}
-            </Tooltip>
-          )}
-        </RelativePortal>
-      )}
-
       {renameVisible ? (
         <VariableRenameInput
           key={renameId}

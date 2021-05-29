@@ -99,14 +99,16 @@ const SettingsPage: FC = () => {
     }
   };
 
-  const onEditSetting = (id: string) => (e: any) => {
-    editSettings({
-      [id]: castEventValue(e),
-    });
-  };
+  const onEditSetting =
+    (id: string) =>
+    (e: string | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      editSettings({
+        [id]: castEventValue(e),
+      });
+    };
 
   const onEditPaletteId = useCallback(
-    (index: number, e: any) => {
+    (index: number, e: string) => {
       const paletteIds = defaultBackgroundPaletteIds
         ? [...defaultBackgroundPaletteIds]
         : [];
@@ -128,7 +130,7 @@ const SettingsPage: FC = () => {
   );
 
   const onEditSpritePaletteId = useCallback(
-    (index: number, e: any) => {
+    (index: number, e: string) => {
       const paletteIds = defaultSpritePaletteIds
         ? [...defaultSpritePaletteIds]
         : [];

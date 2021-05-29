@@ -47,7 +47,7 @@ function pause() {
 }
 
 const soundfxMiddleware: Middleware<Dispatch, RootState> =
-  (store) => (next) => (action) => {
+  (_store) => (next) => (action) => {
     if (actions.playSoundFxBeep.match(action)) {
       pause();
       play(`effect_beep_${action.payload.pitch}.mp3`);

@@ -107,7 +107,7 @@ export const SceneSelect: FC<SceneSelectProps> = ({
         sceneToSceneOption(currentScene, scenes.indexOf(currentScene))
       );
     }
-  }, [currentScene]);
+  }, [currentScene, scenes]);
 
   const onSelectChange = (newValue: Option) => {
     onChange?.(newValue.value);

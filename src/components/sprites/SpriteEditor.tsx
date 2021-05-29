@@ -15,7 +15,6 @@ import l10n from "lib/helpers/l10n";
 import { Sidebar, SidebarColumn } from "ui/sidebars/Sidebar";
 import {
   MetaspriteTile,
-  SpriteAnimation,
   SpriteSheet,
 } from "store/features/entities/entitiesTypes";
 import { CoordinateInput } from "ui/form/CoordinateInput";
@@ -47,7 +46,6 @@ import {
 } from "store/features/clipboard/clipboardTypes";
 import { CheckboxField } from "ui/form/CheckboxField";
 import { AnimationTypeSelect } from "../forms/AnimationTypeSelect";
-import { AnimationSpeedSelect } from "../forms/AnimationSpeedSelect";
 import { ObjPaletteSelect } from "../forms/ObjPaletteSelect";
 import { PaletteIndexSelect } from "../forms/PaletteIndexSelect";
 import styled from "styled-components";
@@ -131,20 +129,6 @@ export const SpriteEditor = ({
       );
     };
 
-  const onChangeAnimationField =
-    <T extends keyof SpriteAnimation>(key: T) =>
-    (editValue: SpriteAnimation[T]) => {
-      dispatch(
-        entitiesActions.editSpriteAnimation({
-          spriteSheetId: id,
-          spriteAnimationId: animationId,
-          changes: {
-            [key]: editValue,
-          },
-        })
-      );
-    };
-
   const onChangeTilesFields =
     <T extends keyof MetaspriteTile>(key: T) =>
     (editValue: MetaspriteTile[T]) => {
@@ -185,7 +169,7 @@ export const SpriteEditor = ({
         metaspriteTileIds: selectedTileIds,
       })
     );
-  }, [selectedTileIds, metaspriteTile?.flipX]);
+  }, [dispatch, id, selectedTileIds]);
 
   const onToggleFlipY = useCallback(() => {
     dispatch(
@@ -194,7 +178,7 @@ export const SpriteEditor = ({
         metaspriteTileIds: selectedTileIds,
       })
     );
-  }, [selectedTileIds, metaspriteTile?.flipY]);
+  }, [dispatch, id, selectedTileIds]);
 
   const sendTileToBack = useCallback(() => {
     dispatch(
@@ -204,7 +188,7 @@ export const SpriteEditor = ({
         metaspriteId: metaspriteId,
       })
     );
-  }, [selectedTileIds, metaspriteId]);
+  }, [dispatch, id, selectedTileIds, metaspriteId]);
 
   const sendTileToFront = useCallback(() => {
     dispatch(
@@ -214,15 +198,15 @@ export const SpriteEditor = ({
         metaspriteId: metaspriteId,
       })
     );
-  }, [selectedTileIds, metaspriteId]);
+  }, [dispatch, id, selectedTileIds, metaspriteId]);
 
   const showBoundingBox = useCallback(() => {
     dispatch(editorActions.setShowSpriteBoundingBox(true));
-  }, []);
+  }, [dispatch]);
 
   const hideBoundingBox = useCallback(() => {
     dispatch(editorActions.setShowSpriteBoundingBox(false));
-  }, []);
+  }, [dispatch]);
 
   const onCopyTiles = useCallback(() => {
     dispatch(
@@ -230,7 +214,7 @@ export const SpriteEditor = ({
         metaspriteTileIds: selectedTileIds,
       })
     );
-  }, [selectedTileIds]);
+  }, [dispatch, selectedTileIds]);
 
   const onCopyMetasprite = useCallback(() => {
     dispatch(
@@ -238,7 +222,7 @@ export const SpriteEditor = ({
         metaspriteIds: [metaspriteId],
       })
     );
-  }, [metaspriteId]);
+  }, [dispatch, metaspriteId]);
 
   const onPaste = useCallback(() => {
     dispatch(
@@ -248,11 +232,11 @@ export const SpriteEditor = ({
         spriteAnimationId: animationId,
       })
     );
-  }, [metaspriteId, animationId]);
+  }, [dispatch, id, metaspriteId, animationId]);
 
   const onFetchClipboard = useCallback(() => {
     dispatch(clipboardActions.fetchClipboard());
-  }, []);
+  }, [dispatch]);
 
   const onRemoveSelectedTiles = useCallback(() => {
     dispatch(
@@ -262,7 +246,7 @@ export const SpriteEditor = ({
         metaspriteId,
       })
     );
-  }, [dispatch, selectedTileIds, metaspriteId]);
+  }, [dispatch, id, selectedTileIds, metaspriteId]);
 
   const onRemoveMetasprite = useCallback(() => {
     dispatch(
@@ -272,11 +256,11 @@ export const SpriteEditor = ({
         spriteAnimationId: animationId,
       })
     );
-  }, [dispatch, metaspriteId, animationId]);
+  }, [dispatch, id, metaspriteId, animationId]);
 
   const toggleReplaceMode = useCallback(() => {
     dispatch(editorActions.setReplaceSpriteTileMode(!replaceSpriteTileMode));
-  }, [replaceSpriteTileMode]);
+  }, [dispatch, replaceSpriteTileMode]);
 
   const autoDetect = sprite?.autoDetect;
 

@@ -693,7 +693,7 @@ export const precompileFonts = async (
     })
   );
 
-  const fontData = await compileFonts(usedFonts, projectRoot, { warnings });
+  const fontData = await compileFonts(usedFonts, projectRoot);
 
   return { usedFonts: fontData };
 };

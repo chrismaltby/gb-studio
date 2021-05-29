@@ -2,6 +2,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -86,7 +87,10 @@ const SpritesPage = () => {
   const selectedAnimationId = selectedAnimation?.id || "";
   const selectedMetaspriteId =
     metaspriteId || selectedAnimation?.frames[0] || "";
-  const frames = selectedAnimation?.frames || [];
+  const frames = useMemo(
+    () => selectedAnimation?.frames || [],
+    [selectedAnimation?.frames]
+  );
   const selectedFrame = frames.indexOf(selectedMetaspriteId);
 
   // If selected frame not found jump to last frame in animation
@@ -103,7 +107,7 @@ const SpritesPage = () => {
     direction: "right",
     minSize: 50,
     maxSize: Math.max(101, windowWidth - minCenterPaneWidth - 200),
-    onResize: (v) => {
+    onResize: (_v) => {
       recalculateRightColumn();
     },
     onResizeComplete: (v) => {
@@ -121,7 +125,7 @@ const SpritesPage = () => {
     direction: "left",
     minSize: 280,
     maxSize: Math.max(281, windowWidth - minCenterPaneWidth - 100),
-    onResize: (v) => {
+    onResize: (_v) => {
       recalculateLeftColumn();
     },
     onResizeComplete: (width) => {

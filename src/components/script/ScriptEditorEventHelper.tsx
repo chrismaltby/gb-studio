@@ -1,5 +1,4 @@
-import React, { FC, useLayoutEffect, useRef, useState } from "react";
-import ReactDOM from "react-dom";
+import React, { FC } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "store/configureStore";
 import { ScriptEvent } from "store/features/entities/entitiesTypes";

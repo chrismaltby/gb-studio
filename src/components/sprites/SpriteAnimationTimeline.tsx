@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import throttle from "lodash/throttle";
@@ -65,7 +71,7 @@ const SpriteAnimationTimeline = ({
     spriteAnimationSelectors.selectById(state, animationId)
   );
 
-  const frames = animation?.frames || [];
+  const frames = useMemo(() => animation?.frames || [], [animation?.frames]);
 
   const onMoveFrames = useCallback(
     (fromIndex: number, toIndex: number) => {
@@ -78,7 +84,7 @@ const SpriteAnimationTimeline = ({
         })
       );
     },
-    [animationId, dispatch]
+    [animationId, dispatch, spriteSheetId]
   );
 
   const onSetFrame = useCallback(
@@ -95,7 +101,7 @@ const SpriteAnimationTimeline = ({
         spriteAnimationId: animationId,
       })
     );
-  }, [animationId, dispatch]);
+  }, [animationId, dispatch, spriteSheetId]);
 
   const onCloneFrame = useCallback(() => {
     dispatch(
@@ -105,7 +111,7 @@ const SpriteAnimationTimeline = ({
         metaspriteId,
       })
     );
-  }, [animationId, metaspriteId, dispatch]);
+  }, [dispatch, spriteSheetId, animationId, metaspriteId]);
 
   const onDeleteFrame = useCallback(() => {
     dispatch(
@@ -115,7 +121,7 @@ const SpriteAnimationTimeline = ({
         metaspriteId,
       })
     );
-  }, [metaspriteId, animationId, dispatch]);
+  }, [dispatch, spriteSheetId, animationId, metaspriteId]);
 
   const handleKeys = useCallback(
     (e: KeyboardEvent) => {
@@ -140,7 +146,7 @@ const SpriteAnimationTimeline = ({
         onDeleteFrame();
       }
     },
-    [hasFocus, frames, metaspriteId]
+    [hasFocus, frames, metaspriteId, onSetFrame, onDeleteFrame]
   );
 
   const handleKeysUp = useCallback((e: KeyboardEvent) => {

@@ -9,7 +9,6 @@ import {
 } from "store/features/entities/entitiesState";
 import {
   ActorDirection,
-  Palette,
   SpriteSheet,
 } from "store/features/entities/entitiesTypes";
 import { SelectMenu, selectMenuStyleProps } from "ui/form/Select";
