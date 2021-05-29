@@ -11,79 +11,6 @@ const indexById = indexBy("id");
 
 export const LATEST_PROJECT_VERSION = "2.0.0";
 
-const migrateProject = (project) => {
-  let data = { ...project };
-  let version = project._version || "1.0.0";
-  let release = project._release || "1";
-
-  if (version === "1") {
-    version = "1.0.0";
-  }
-
-  // Migrate from 1.0.0 to 1.1.0
-  if (version === "1.0.0") {
-    data = migrateFrom1To110Scenes(data);
-    data = migrateFrom1To110Actors(data);
-    data = migrateFrom1To110Collisions(data);
-    version = "1.1.0";
-  }
-  if (version === "1.1.0") {
-    data = migrateFrom110To120Events(data);
-    version = "1.2.0";
-  }
-  if (version === "1.2.0") {
-    data = migrateFrom120To200Scenes(data);
-    data = migrateFrom120To200Actors(data);
-    data = migrateFrom120To200Events(data);
-    data = migrateFrom120To200Collisions(data);
-    version = "2.0.0";
-    release = "2";
-  }
-  if (version === "2.0.0") {
-    if (release === "1") {
-      data = migrateFrom200r1To200r2Events(data);
-      release = "2";
-    }
-    if (release === "2") {
-      data = migrateFrom200r2To200r3Events(data);
-      release = "3";
-    }
-    if (release === "3") {
-      data = migrateFrom200r3To200r4EngineFieldValues(data);
-      data = migrateFrom200r3To200r4Events(data);
-      release = "4";
-    }
-    if (release === "4") {
-      data = migrateFrom200r4To200r5Events(data);
-      data = migrateFrom200r4To200r5Actors(data);
-      release = "5";
-    }
-    if (release === "5") {
-      data = migrateFrom200r5To200r6Actors(data);
-      release = "6";
-    }
-    if (release === "6") {
-      data = migrateFrom200r6To200r7Events(data);
-      data = migrateFrom200r6To200r7Actors(data);
-      data = migrateFrom200r6To200r7Backgrounds(data);
-      data = migrateFrom200r6To200r7Scenes(data);
-      data = migrateFrom200r6To200r7Settings(data);
-      release = "7";
-    }
-  }
-
-  if (process.env.NODE_ENV !== "production") {
-    if (version === "2.0.0") {
-      data = migrateFrom120To200Collisions(data);
-    }
-  }
-
-  data._version = version;
-  data._release = release;
-
-  return data;
-};
-
 /*
  * Helper function to make sure that all migrated functions
  * include the original metadata such as label text and comment status
@@ -1101,6 +1028,79 @@ const migrateFrom200r6To200r7Settings = (data) => {
       ],
     },
   };
+};
+
+const migrateProject = (project) => {
+  let data = { ...project };
+  let version = project._version || "1.0.0";
+  let release = project._release || "1";
+
+  if (version === "1") {
+    version = "1.0.0";
+  }
+
+  // Migrate from 1.0.0 to 1.1.0
+  if (version === "1.0.0") {
+    data = migrateFrom1To110Scenes(data);
+    data = migrateFrom1To110Actors(data);
+    data = migrateFrom1To110Collisions(data);
+    version = "1.1.0";
+  }
+  if (version === "1.1.0") {
+    data = migrateFrom110To120Events(data);
+    version = "1.2.0";
+  }
+  if (version === "1.2.0") {
+    data = migrateFrom120To200Scenes(data);
+    data = migrateFrom120To200Actors(data);
+    data = migrateFrom120To200Events(data);
+    data = migrateFrom120To200Collisions(data);
+    version = "2.0.0";
+    release = "2";
+  }
+  if (version === "2.0.0") {
+    if (release === "1") {
+      data = migrateFrom200r1To200r2Events(data);
+      release = "2";
+    }
+    if (release === "2") {
+      data = migrateFrom200r2To200r3Events(data);
+      release = "3";
+    }
+    if (release === "3") {
+      data = migrateFrom200r3To200r4EngineFieldValues(data);
+      data = migrateFrom200r3To200r4Events(data);
+      release = "4";
+    }
+    if (release === "4") {
+      data = migrateFrom200r4To200r5Events(data);
+      data = migrateFrom200r4To200r5Actors(data);
+      release = "5";
+    }
+    if (release === "5") {
+      data = migrateFrom200r5To200r6Actors(data);
+      release = "6";
+    }
+    if (release === "6") {
+      data = migrateFrom200r6To200r7Events(data);
+      data = migrateFrom200r6To200r7Actors(data);
+      data = migrateFrom200r6To200r7Backgrounds(data);
+      data = migrateFrom200r6To200r7Scenes(data);
+      data = migrateFrom200r6To200r7Settings(data);
+      release = "7";
+    }
+  }
+
+  if (process.env.NODE_ENV !== "production") {
+    if (version === "2.0.0") {
+      data = migrateFrom120To200Collisions(data);
+    }
+  }
+
+  data._version = version;
+  data._release = release;
+
+  return data;
 };
 
 export default migrateProject;

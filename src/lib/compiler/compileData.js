@@ -97,607 +97,26 @@ const padArrayEnd = (arr, len, padding) => {
   return arr.concat(Array(len - arr.length).fill(padding));
 };
 
-const compile = async (
-  projectData,
-  {
-    projectRoot = "/tmp",
-    engineFields = [],
-    tmpPath = "/tmp",
-    progress = (_msg) => {},
-    warnings = (_msg) => {},
-  } = {}
-) => {
-  const output = {};
-  const symbols = {};
-
-  if (projectData.scenes.length === 0) {
-    throw new Error(
-      "No scenes are included in your project. Add some scenes in the Game World editor and try again."
-    );
-  }
-
-  const precompiled = await precompile(projectData, projectRoot, tmpPath, {
-    progress,
-    warnings,
-  });
-
-  const customColorsEnabled = projectData.settings.customColorsEnabled;
-  const isSGB = projectData.settings.sgbEnabled;
-  const isColor = customColorsEnabled || isSGB;
-
-  const precompiledEngineFields = precompileEngineFields(engineFields);
-
-  // Add UI data
-  output["frame_image.c"] = compileFrameImage(precompiled.frameTiles);
-  output["frame_image.h"] = compileFrameImageHeader(precompiled.frameTiles);
-  output["cursor_image.c"] = compileCursorImage(precompiled.cursorTiles);
-  output["cursor_image.h"] = compileCursorImageHeader(precompiled.cursorTiles);
-
-  if (isSGB) {
-    const sgbPath = await ensureProjectAsset("assets/sgb/border.png", {
-      projectRoot,
-      warnings,
+const ensureProjectAsset = async (relativePath, { projectRoot, warnings }) => {
+  const projectPath = `${projectRoot}/${relativePath}`;
+  const defaultPath = `${projectTemplatesRoot}/gbhtml/${relativePath}`;
+  try {
+    await copy(defaultPath, projectPath, {
+      overwrite: false,
+      errorOnExist: true,
     });
-    output["border.c"] = await compileSGBImage(sgbPath);
+    warnings &&
+      warnings(
+        `${relativePath} was missing, copying default file to project assets`
+      );
+  } catch (e) {
+    // Don't need to catch this, if it failed then the file already exists
+    // and we can safely continue.
   }
-
-  progress(EVENT_MSG_COMPILING_EVENTS);
-  // Hacky small wait to allow console to update before event loop is blocked
-  // Can maybe move some of the compilation into workers to prevent this
-  await new Promise((resolve) => setTimeout(resolve, 20));
-
-  const variablesLookup = keyBy(projectData.variables, "id");
-  const variableAliasLookup = {};
-
-  // Add event data
-  const additionalScripts = {};
-  const eventPtrs = precompiled.sceneData.map((scene, sceneIndex) => {
-    const compileScript = (
-      script,
-      entityType,
-      entity,
-      entityIndex,
-      loop,
-      lock,
-      scriptType
-    ) => {
-      let entityCode = "";
-      let scriptTypeCode = "interact";
-
-      if (entityType === "actor") {
-        const scriptLookup = {
-          script: "interact",
-          updateScript: "update",
-          hit1Script: "hit1",
-          hit2Script: "hit2",
-          hit3Script: "hit3",
-        };
-        entityCode = `a${entityIndex}`;
-        scriptTypeCode = scriptLookup[scriptType] || scriptTypeCode;
-      } else if (entityType === "trigger") {
-        entityCode = `t${entityIndex}`;
-        scriptTypeCode = "interact";
-      } else if (entityType === "scene") {
-        const scriptLookup = {
-          script: "init",
-          playerHit1Script: "p_hit1",
-          playerHit2Script: "p_hit2",
-          playerHit3Script: "p_hit3",
-        };
-        scriptTypeCode = scriptLookup[scriptType] || scriptTypeCode;
-      }
-
-      const scriptName = `script_s${sceneIndex}${entityCode}_${scriptTypeCode}`;
-
-      if (script.length < 2) {
-        return null;
-      }
-
-      const compiledScript = compileEntityEvents(scriptName, script, {
-        scene,
-        sceneIndex,
-        scenes: precompiled.sceneData,
-        music: precompiled.usedMusic,
-        fonts: precompiled.usedFonts,
-        sprites: precompiled.usedSprites,
-        avatars: precompiled.usedAvatars,
-        emotes: precompiled.usedEmotes,
-        backgrounds: precompiled.usedBackgrounds,
-        strings: precompiled.strings,
-        variables: precompiled.variables,
-        customEvents: projectData.customEvents,
-        palettes: projectData.palettes,
-        settings: projectData.settings,
-        variablesLookup,
-        variableAliasLookup,
-        eventPaletteIndexes: precompiled.eventPaletteIndexes,
-        characterEncoding: projectData.settings.defaultCharacterEncoding,
-        labels: {},
-        entityType,
-        entityIndex,
-        entity,
-        warnings,
-        loop,
-        lock,
-        init: scriptTypeCode === "init",
-        engineFields: precompiledEngineFields,
-        output: [],
-        additionalScripts,
-        symbols,
-      });
-
-      output[`${scriptName}.s`] = compiledScript;
-      output[`${scriptName}.h`] = compileScriptHeader(scriptName);
-      return scriptName;
-    };
-
-    const bankSceneEvents = (scene, sceneIndex) => {
-      // Merge start scripts for actors with scene start script
-      const initScript = []
-        .concat(
-          scene.actors.map((actor) => {
-            const actorStartScript = actor.startScript || [];
-            if (actorStartScript.length < 2) {
-              return [];
-            }
-            return [].concat(
-              {
-                command: "INTERNAL_SET_CONTEXT",
-                args: {
-                  entity: actor,
-                  entityType: "actor",
-                  entityId: actor.id,
-                },
-              },
-              actorStartScript.filter((event) => event.command !== EVENT_END)
-            );
-          }),
-          scene.script.length >= 2
-            ? {
-                command: "INTERNAL_SET_CONTEXT",
-                args: {
-                  entity: scene,
-                  entityType: "scene",
-                  entityId: scene.id,
-                },
-              }
-            : [],
-          [scene.script] || []
-        )
-        .flat();
-
-      // Compile scene start script
-      return compileScript(
-        initScript,
-        "scene",
-        scene,
-        sceneIndex,
-        false,
-        true,
-        "script"
-      );
-    };
-
-    const bankEntityEvents =
-      (entityType, entityScriptField = "script") =>
-      (entity, entityIndex) => {
-        if (
-          !entity[entityScriptField] ||
-          entity[entityScriptField].length <= 1
-        ) {
-          return null;
-        }
-        const lockScript =
-          entityScriptField === "script" && !entity.collisionGroup;
-        return compileScript(
-          entity[entityScriptField],
-          entityType,
-          entity,
-          entityIndex,
-          entityScriptField === "updateScript",
-          lockScript,
-          entityScriptField
-        );
-      };
-
-    return {
-      start: bankSceneEvents(scene, sceneIndex),
-      playerHit1: bankEntityEvents("scene", "playerHit1Script")(scene),
-      playerHit2: bankEntityEvents("scene", "playerHit2Script")(scene),
-      playerHit3: bankEntityEvents("scene", "playerHit3Script")(scene),
-      actors: scene.actors.map(bankEntityEvents("actor")),
-      actorsMovement: scene.actors.map(
-        bankEntityEvents("actor", "updateScript")
-      ),
-      actorsHit1: scene.actors.map(bankEntityEvents("actor", "hit1Script")),
-      actorsHit2: scene.actors.map(bankEntityEvents("actor", "hit2Script")),
-      actorsHit3: scene.actors.map(bankEntityEvents("actor", "hit3Script")),
-      triggers: scene.triggers.map(bankEntityEvents("trigger")),
-    };
-  });
-
-  Object.values(additionalScripts).forEach((additional) => {
-    output[`${additional.symbol}.s`] = additional.compiledScript;
-    output[`${additional.symbol}.h`] = compileScriptHeader(additional.symbol);
-  });
-
-  precompiled.usedTilesets.forEach((tileset, tilesetIndex) => {
-    output[`tileset_${tilesetIndex}.c`] = compileTileset(tileset, tilesetIndex);
-    output[`tileset_${tilesetIndex}.h`] = compileTilesetHeader(
-      tileset,
-      tilesetIndex
-    );
-  });
-
-  // Add palette data
-  precompiled.usedPalettes.forEach((palette, paletteIndex) => {
-    output[`${paletteSymbol(paletteIndex)}.c`] = compilePalette(
-      palette,
-      paletteIndex
-    );
-    output[`${paletteSymbol(paletteIndex)}.h`] = compilePaletteHeader(
-      palette,
-      paletteIndex
-    );
-  });
-
-  // Add background map data
-  precompiled.usedBackgrounds.forEach((background, backgroundIndex) => {
-    output[`background_${backgroundIndex}.c`] = compileBackground(
-      background,
-      backgroundIndex,
-      {
-        color: customColorsEnabled,
-      }
-    );
-    output[`background_${backgroundIndex}.h`] = compileBackgroundHeader(
-      background,
-      backgroundIndex
-    );
-  });
-
-  precompiled.usedTilemaps.forEach((tilemap, tilemapIndex) => {
-    output[`tilemap_${tilemapIndex}.c`] = compileTilemap(tilemap, tilemapIndex);
-    output[`tilemap_${tilemapIndex}.h`] = compileTilemapHeader(
-      tilemap,
-      tilemapIndex
-    );
-  });
-
-  if (customColorsEnabled) {
-    precompiled.usedTilemapAttrs.forEach((tilemapAttr, tilemapAttrIndex) => {
-      output[`tilemap_attr_${tilemapAttrIndex}.c`] = compileTilemapAttr(
-        tilemapAttr,
-        tilemapAttrIndex
-      );
-      output[`tilemap_attr_${tilemapAttrIndex}.h`] = compileTilemapAttrHeader(
-        tilemapAttr,
-        tilemapAttrIndex
-      );
-    });
-  }
-
-  // Add sprite data
-  precompiled.usedSprites.forEach((sprite, spriteIndex) => {
-    output[`spritesheet_${spriteIndex}.c`] = compileSpriteSheet(
-      sprite,
-      spriteIndex
-    );
-    output[`spritesheet_${spriteIndex}.h`] = compileSpriteSheetHeader(
-      sprite,
-      spriteIndex
-    );
-  });
-
-  // Add font data
-  precompiled.usedFonts.forEach((font, fontIndex) => {
-    output[`font_${fontIndex}.c`] = compileFont(font, fontIndex);
-    output[`font_${fontIndex}.h`] = compileFontHeader(font, fontIndex);
-  });
-
-  // Add avatar data
-  const avatarFontSize = 16;
-  const avatarFonts = chunk(precompiled.usedAvatars, avatarFontSize);
-  avatarFonts.forEach((avatarFont, avatarFontIndex) => {
-    output[`avatar_font_${avatarFontIndex}.c`] = compileAvatarFont(
-      avatarFont,
-      avatarFontIndex
-    );
-    output[`avatar_font_${avatarFontIndex}.h`] =
-      compileAvatarFontHeader(avatarFontIndex);
-  });
-
-  // Add emote data
-  precompiled.usedEmotes.forEach((emote, emoteIndex) => {
-    output[`emote_${emoteIndex}.c`] = compileEmote(emote, emoteIndex);
-    output[`emote_${emoteIndex}.h`] = compileEmoteHeader(emote, emoteIndex);
-  });
-
-  // Add scene data
-  precompiled.sceneData.forEach((scene, sceneIndex) => {
-    const sceneImage = precompiled.usedBackgrounds[scene.backgroundIndex];
-    const collisionsLength = Math.ceil(sceneImage.width * sceneImage.height);
-    const collisions = Array(collisionsLength)
-      .fill(0)
-      .map((_, index) => {
-        return (scene.collisions && scene.collisions[index]) || 0;
-      });
-    const bgPalette = precompiled.scenePaletteIndexes[scene.id] || 0;
-    const actorsPalette = precompiled.sceneActorPaletteIndexes[scene.id] || 0;
-
-    output[`scene_${sceneIndex}.c`] = compileScene(scene, sceneIndex, {
-      bgPalette,
-      actorsPalette,
-      color: isColor,
-      eventPtrs,
-    });
-    output[`scene_${sceneIndex}.h`] = compileSceneHeader(scene, sceneIndex);
-    output[`scene_${sceneIndex}_collisions.c`] = compileSceneCollisions(
-      scene,
-      sceneIndex,
-      collisions
-    );
-    output[`scene_${sceneIndex}_collisions.h`] = compileSceneCollisionsHeader(
-      scene,
-      sceneIndex
-    );
-
-    if (scene.actors.length > 0) {
-      output[`scene_${sceneIndex}_actors.h`] = compileSceneActorsHeader(
-        scene,
-        sceneIndex
-      );
-      output[`scene_${sceneIndex}_actors.c`] = compileSceneActors(
-        scene,
-        sceneIndex,
-        precompiled.usedSprites,
-        { eventPtrs }
-      );
-    }
-    if (scene.triggers.length > 0) {
-      output[`scene_${sceneIndex}_triggers.h`] = compileSceneTriggersHeader(
-        scene,
-        sceneIndex
-      );
-      output[`scene_${sceneIndex}_triggers.c`] = compileSceneTriggers(
-        scene,
-        sceneIndex,
-        { eventPtrs }
-      );
-    }
-    if (scene.sprites.length > 0) {
-      output[`scene_${sceneIndex}_sprites.h`] = compileSceneSpritesHeader(
-        scene,
-        sceneIndex
-      );
-      output[`scene_${sceneIndex}_sprites.c`] = compileSceneSprites(
-        scene,
-        sceneIndex
-      );
-    }
-  });
-
-  let startSceneIndex = precompiled.sceneData.findIndex(
-    (m) => m.id === projectData.settings.startSceneId
-  );
-
-  // If starting scene is not found just use first scene
-  if (startSceneIndex < 0) {
-    startSceneIndex = 0;
-  }
-
-  const {
-    startX,
-    startY,
-    startDirection,
-    startMoveSpeed = 1,
-    startAnimSpeed = 15,
-    musicDriver,
-  } = projectData.settings;
-
-  // Add music data
-  output["music_data.h"] = compileMusicHeader(precompiled.usedMusic);
-  await compileMusicTracks(precompiled.usedMusic, {
-    engine: musicDriver,
-    output,
-    tmpPath,
-    projectRoot,
-    progress,
-    warnings,
-  });
-
-  output["game_globals.i"] = compileGameGlobalsInclude(variableAliasLookup);
-  output[`script_engine_init.s`] = compileScriptEngineInit({
-    startX,
-    startY,
-    startDirection,
-    startSceneIndex,
-    startMoveSpeed,
-    startAnimSpeed,
-    fonts: precompiled.usedFonts,
-    avatarFonts,
-    engineFields,
-    engineFieldValues: projectData.engineFieldValues,
-  });
-  output[`data_bootstrap.h`] =
-    `#ifndef DATA_PTRS_H\n#define DATA_PTRS_H\n\n` +
-    `#include "bankdata.h"\n` +
-    `#include "gbs_types.h"\n\n` +
-    // Add define fields from engineFields
-    engineFields
-      .filter(
-        // Add define types without explict file set to data/data_bootstrap.h
-        (engineField) => engineField.cType === "define" && !engineField.file
-      )
-      .map((engineField, defineIndex, defineFields) => {
-        const engineValue = projectData.engineFieldValues.find(
-          (v) => v.id === engineField.key
-        );
-        const value =
-          engineValue && engineValue.value !== undefined
-            ? engineValue.value
-            : engineField.defaultValue;
-        return `#define ${engineField.key} ${value}${
-          defineIndex === defineFields.length - 1 ? "\n\n" : "\n"
-        }`;
-      }) +
-    `extern const INT16 start_scene_x;\n` +
-    `extern const INT16 start_scene_y;\n` +
-    `extern const direction_e start_scene_dir;\n` +
-    `extern const far_ptr_t start_scene;\n` +
-    `extern const UBYTE start_player_move_speed;\n` +
-    `extern const UBYTE start_player_anim_tick;\n\n` +
-    `extern const far_ptr_t ui_fonts[];\n\n` +
-    `void bootstrap_init() __banked;\n\n` +
-    `#endif\n`;
-
-  return {
-    files: output,
-  };
+  return `${projectPath}`;
 };
 
 // #region precompile
-
-const precompile = async (
-  projectData,
-  projectRoot,
-  tmpPath,
-  { progress, warnings }
-) => {
-  progress(EVENT_MSG_PRE_VARIABLES);
-  const variables = precompileVariables(projectData.scenes);
-
-  progress(EVENT_MSG_PRE_STRINGS);
-  const strings = precompileStrings(projectData.scenes);
-
-  progress(EVENT_MSG_PRE_IMAGES);
-  const {
-    usedBackgrounds,
-    backgroundLookup,
-    backgroundData,
-    usedTilesets,
-    usedTilesetLookup,
-    usedTilemaps,
-    usedTilemapAttrs,
-  } = await precompileBackgrounds(
-    projectData.backgrounds,
-    projectData.scenes,
-    projectRoot,
-    tmpPath,
-    { warnings }
-  );
-
-  progress(EVENT_MSG_PRE_UI_IMAGES);
-  const { frameTiles, cursorTiles } = await precompileUIImages(
-    projectRoot,
-    tmpPath,
-    {
-      warnings,
-    }
-  );
-
-  progress(EVENT_MSG_PRE_SPRITES);
-  const { usedSprites } = await precompileSprites(
-    projectData.spriteSheets,
-    projectData.scenes,
-    projectData.settings.defaultPlayerSprites,
-    projectRoot,
-    usedTilesets,
-    {
-      warnings,
-    }
-  );
-
-  progress(EVENT_MSG_PRE_AVATARS);
-  const { usedAvatars } = await precompileAvatars(
-    projectData.avatars || [],
-    projectData.scenes,
-    projectRoot,
-    {
-      warnings,
-    }
-  );
-
-  progress(EVENT_MSG_PRE_EMOTES);
-  const { usedEmotes } = await precompileEmotes(
-    projectData.emotes || [],
-    projectData.scenes,
-    projectRoot,
-    {
-      warnings,
-    }
-  );
-
-  progress(EVENT_MSG_PRE_MUSIC);
-  const { usedMusic } = await precompileMusic(
-    projectData.scenes,
-    projectData.music
-  );
-
-  progress(EVENT_MSG_PRE_FONTS);
-  const { usedFonts } = await precompileFonts(
-    projectData.fonts,
-    projectData.scenes,
-    projectData.settings.defaultFontId,
-    projectRoot,
-    {
-      warnings,
-    }
-  );
-
-  progress(EVENT_MSG_PRE_SCENES);
-  const sceneData = precompileScenes(
-    projectData.scenes,
-    projectData.settings.defaultPlayerSprites,
-    usedBackgrounds,
-    usedSprites,
-    {
-      warnings,
-    }
-  );
-
-  const {
-    usedPalettes,
-    scenePaletteIndexes,
-    sceneActorPaletteIndexes,
-    actorPaletteIndexes,
-    eventPaletteIndexes,
-  } = await precompilePalettes(
-    projectData.scenes,
-    projectData.settings,
-    projectData.palettes,
-    {
-      warnings,
-    }
-  );
-
-  progress(EVENT_MSG_PRE_COMPLETE);
-
-  return {
-    variables,
-    strings,
-    usedBackgrounds,
-    backgroundLookup,
-    usedTilesets,
-    usedTilesetLookup,
-    usedTilemaps,
-    usedTilemapAttrs,
-    backgroundData,
-    usedSprites,
-    usedMusic,
-    usedFonts,
-    sceneData,
-    frameTiles,
-    cursorTiles,
-    usedAvatars,
-    usedEmotes,
-    usedPalettes,
-    scenePaletteIndexes,
-    sceneActorPaletteIndexes,
-    actorPaletteIndexes,
-    eventPaletteIndexes,
-  };
-};
 
 export const compileEngineFields = (
   engineFields,
@@ -883,12 +302,7 @@ export const precompileBackgrounds = async (
   };
 };
 
-export const precompilePalettes = async (
-  scenes,
-  settings,
-  palettes,
-  { warnings } = {}
-) => {
+export const precompilePalettes = async (scenes, settings, palettes) => {
   const usedPalettes = [];
   const usedPalettesCache = {};
   const scenePaletteIndexes = {};
@@ -1386,25 +800,606 @@ export const precompileScenes = (
   return scenesData;
 };
 
+const precompile = async (
+  projectData,
+  projectRoot,
+  tmpPath,
+  { progress, warnings }
+) => {
+  progress(EVENT_MSG_PRE_VARIABLES);
+  const variables = precompileVariables(projectData.scenes);
+
+  progress(EVENT_MSG_PRE_STRINGS);
+  const strings = precompileStrings(projectData.scenes);
+
+  progress(EVENT_MSG_PRE_IMAGES);
+  const {
+    usedBackgrounds,
+    backgroundLookup,
+    backgroundData,
+    usedTilesets,
+    usedTilesetLookup,
+    usedTilemaps,
+    usedTilemapAttrs,
+  } = await precompileBackgrounds(
+    projectData.backgrounds,
+    projectData.scenes,
+    projectRoot,
+    tmpPath,
+    { warnings }
+  );
+
+  progress(EVENT_MSG_PRE_UI_IMAGES);
+  const { frameTiles, cursorTiles } = await precompileUIImages(
+    projectRoot,
+    tmpPath,
+    {
+      warnings,
+    }
+  );
+
+  progress(EVENT_MSG_PRE_SPRITES);
+  const { usedSprites } = await precompileSprites(
+    projectData.spriteSheets,
+    projectData.scenes,
+    projectData.settings.defaultPlayerSprites,
+    projectRoot,
+    usedTilesets,
+    {
+      warnings,
+    }
+  );
+
+  progress(EVENT_MSG_PRE_AVATARS);
+  const { usedAvatars } = await precompileAvatars(
+    projectData.avatars || [],
+    projectData.scenes,
+    projectRoot,
+    {
+      warnings,
+    }
+  );
+
+  progress(EVENT_MSG_PRE_EMOTES);
+  const { usedEmotes } = await precompileEmotes(
+    projectData.emotes || [],
+    projectData.scenes,
+    projectRoot,
+    {
+      warnings,
+    }
+  );
+
+  progress(EVENT_MSG_PRE_MUSIC);
+  const { usedMusic } = await precompileMusic(
+    projectData.scenes,
+    projectData.music
+  );
+
+  progress(EVENT_MSG_PRE_FONTS);
+  const { usedFonts } = await precompileFonts(
+    projectData.fonts,
+    projectData.scenes,
+    projectData.settings.defaultFontId,
+    projectRoot,
+    {
+      warnings,
+    }
+  );
+
+  progress(EVENT_MSG_PRE_SCENES);
+  const sceneData = precompileScenes(
+    projectData.scenes,
+    projectData.settings.defaultPlayerSprites,
+    usedBackgrounds,
+    usedSprites,
+    {
+      warnings,
+    }
+  );
+
+  const {
+    usedPalettes,
+    scenePaletteIndexes,
+    sceneActorPaletteIndexes,
+    actorPaletteIndexes,
+    eventPaletteIndexes,
+  } = await precompilePalettes(
+    projectData.scenes,
+    projectData.settings,
+    projectData.palettes,
+    {
+      warnings,
+    }
+  );
+
+  progress(EVENT_MSG_PRE_COMPLETE);
+
+  return {
+    variables,
+    strings,
+    usedBackgrounds,
+    backgroundLookup,
+    usedTilesets,
+    usedTilesetLookup,
+    usedTilemaps,
+    usedTilemapAttrs,
+    backgroundData,
+    usedSprites,
+    usedMusic,
+    usedFonts,
+    sceneData,
+    frameTiles,
+    cursorTiles,
+    usedAvatars,
+    usedEmotes,
+    usedPalettes,
+    scenePaletteIndexes,
+    sceneActorPaletteIndexes,
+    actorPaletteIndexes,
+    eventPaletteIndexes,
+  };
+};
+
 // #endregion
 
-const ensureProjectAsset = async (relativePath, { projectRoot, warnings }) => {
-  const projectPath = `${projectRoot}/${relativePath}`;
-  const defaultPath = `${projectTemplatesRoot}/gbhtml/${relativePath}`;
-  try {
-    await copy(defaultPath, projectPath, {
-      overwrite: false,
-      errorOnExist: true,
-    });
-    warnings &&
-      warnings(
-        `${relativePath} was missing, copying default file to project assets`
-      );
-  } catch (e) {
-    // Don't need to catch this, if it failed then the file already exists
-    // and we can safely continue.
+const compile = async (
+  projectData,
+  {
+    projectRoot = "/tmp",
+    engineFields = [],
+    tmpPath = "/tmp",
+    progress = (_msg) => {},
+    warnings = (_msg) => {},
+  } = {}
+) => {
+  const output = {};
+  const symbols = {};
+
+  if (projectData.scenes.length === 0) {
+    throw new Error(
+      "No scenes are included in your project. Add some scenes in the Game World editor and try again."
+    );
   }
-  return `${projectPath}`;
+
+  const precompiled = await precompile(projectData, projectRoot, tmpPath, {
+    progress,
+    warnings,
+  });
+
+  const customColorsEnabled = projectData.settings.customColorsEnabled;
+  const isSGB = projectData.settings.sgbEnabled;
+  const isColor = customColorsEnabled || isSGB;
+
+  const precompiledEngineFields = precompileEngineFields(engineFields);
+
+  // Add UI data
+  output["frame_image.c"] = compileFrameImage(precompiled.frameTiles);
+  output["frame_image.h"] = compileFrameImageHeader(precompiled.frameTiles);
+  output["cursor_image.c"] = compileCursorImage(precompiled.cursorTiles);
+  output["cursor_image.h"] = compileCursorImageHeader(precompiled.cursorTiles);
+
+  if (isSGB) {
+    const sgbPath = await ensureProjectAsset("assets/sgb/border.png", {
+      projectRoot,
+      warnings,
+    });
+    output["border.c"] = await compileSGBImage(sgbPath);
+  }
+
+  progress(EVENT_MSG_COMPILING_EVENTS);
+  // Hacky small wait to allow console to update before event loop is blocked
+  // Can maybe move some of the compilation into workers to prevent this
+  await new Promise((resolve) => setTimeout(resolve, 20));
+
+  const variablesLookup = keyBy(projectData.variables, "id");
+  const variableAliasLookup = {};
+
+  // Add event data
+  const additionalScripts = {};
+  const eventPtrs = precompiled.sceneData.map((scene, sceneIndex) => {
+    const compileScript = (
+      script,
+      entityType,
+      entity,
+      entityIndex,
+      loop,
+      lock,
+      scriptType
+    ) => {
+      let entityCode = "";
+      let scriptTypeCode = "interact";
+
+      if (entityType === "actor") {
+        const scriptLookup = {
+          script: "interact",
+          updateScript: "update",
+          hit1Script: "hit1",
+          hit2Script: "hit2",
+          hit3Script: "hit3",
+        };
+        entityCode = `a${entityIndex}`;
+        scriptTypeCode = scriptLookup[scriptType] || scriptTypeCode;
+      } else if (entityType === "trigger") {
+        entityCode = `t${entityIndex}`;
+        scriptTypeCode = "interact";
+      } else if (entityType === "scene") {
+        const scriptLookup = {
+          script: "init",
+          playerHit1Script: "p_hit1",
+          playerHit2Script: "p_hit2",
+          playerHit3Script: "p_hit3",
+        };
+        scriptTypeCode = scriptLookup[scriptType] || scriptTypeCode;
+      }
+
+      const scriptName = `script_s${sceneIndex}${entityCode}_${scriptTypeCode}`;
+
+      if (script.length < 2) {
+        return null;
+      }
+
+      const compiledScript = compileEntityEvents(scriptName, script, {
+        scene,
+        sceneIndex,
+        scenes: precompiled.sceneData,
+        music: precompiled.usedMusic,
+        fonts: precompiled.usedFonts,
+        sprites: precompiled.usedSprites,
+        avatars: precompiled.usedAvatars,
+        emotes: precompiled.usedEmotes,
+        backgrounds: precompiled.usedBackgrounds,
+        strings: precompiled.strings,
+        variables: precompiled.variables,
+        customEvents: projectData.customEvents,
+        palettes: projectData.palettes,
+        settings: projectData.settings,
+        variablesLookup,
+        variableAliasLookup,
+        eventPaletteIndexes: precompiled.eventPaletteIndexes,
+        characterEncoding: projectData.settings.defaultCharacterEncoding,
+        labels: {},
+        entityType,
+        entityIndex,
+        entity,
+        warnings,
+        loop,
+        lock,
+        init: scriptTypeCode === "init",
+        engineFields: precompiledEngineFields,
+        output: [],
+        additionalScripts,
+        symbols,
+      });
+
+      output[`${scriptName}.s`] = compiledScript;
+      output[`${scriptName}.h`] = compileScriptHeader(scriptName);
+      return scriptName;
+    };
+
+    const bankSceneEvents = (scene, sceneIndex) => {
+      // Merge start scripts for actors with scene start script
+      const initScript = []
+        .concat(
+          scene.actors.map((actor) => {
+            const actorStartScript = actor.startScript || [];
+            if (actorStartScript.length < 2) {
+              return [];
+            }
+            return [].concat(
+              {
+                command: "INTERNAL_SET_CONTEXT",
+                args: {
+                  entity: actor,
+                  entityType: "actor",
+                  entityId: actor.id,
+                },
+              },
+              actorStartScript.filter((event) => event.command !== EVENT_END)
+            );
+          }),
+          scene.script.length >= 2
+            ? {
+                command: "INTERNAL_SET_CONTEXT",
+                args: {
+                  entity: scene,
+                  entityType: "scene",
+                  entityId: scene.id,
+                },
+              }
+            : [],
+          [scene.script] || []
+        )
+        .flat();
+
+      // Compile scene start script
+      return compileScript(
+        initScript,
+        "scene",
+        scene,
+        sceneIndex,
+        false,
+        true,
+        "script"
+      );
+    };
+
+    const bankEntityEvents =
+      (entityType, entityScriptField = "script") =>
+      (entity, entityIndex) => {
+        if (
+          !entity[entityScriptField] ||
+          entity[entityScriptField].length <= 1
+        ) {
+          return null;
+        }
+        const lockScript =
+          entityScriptField === "script" && !entity.collisionGroup;
+        return compileScript(
+          entity[entityScriptField],
+          entityType,
+          entity,
+          entityIndex,
+          entityScriptField === "updateScript",
+          lockScript,
+          entityScriptField
+        );
+      };
+
+    return {
+      start: bankSceneEvents(scene, sceneIndex),
+      playerHit1: bankEntityEvents("scene", "playerHit1Script")(scene),
+      playerHit2: bankEntityEvents("scene", "playerHit2Script")(scene),
+      playerHit3: bankEntityEvents("scene", "playerHit3Script")(scene),
+      actors: scene.actors.map(bankEntityEvents("actor")),
+      actorsMovement: scene.actors.map(
+        bankEntityEvents("actor", "updateScript")
+      ),
+      actorsHit1: scene.actors.map(bankEntityEvents("actor", "hit1Script")),
+      actorsHit2: scene.actors.map(bankEntityEvents("actor", "hit2Script")),
+      actorsHit3: scene.actors.map(bankEntityEvents("actor", "hit3Script")),
+      triggers: scene.triggers.map(bankEntityEvents("trigger")),
+    };
+  });
+
+  Object.values(additionalScripts).forEach((additional) => {
+    output[`${additional.symbol}.s`] = additional.compiledScript;
+    output[`${additional.symbol}.h`] = compileScriptHeader(additional.symbol);
+  });
+
+  precompiled.usedTilesets.forEach((tileset, tilesetIndex) => {
+    output[`tileset_${tilesetIndex}.c`] = compileTileset(tileset, tilesetIndex);
+    output[`tileset_${tilesetIndex}.h`] = compileTilesetHeader(
+      tileset,
+      tilesetIndex
+    );
+  });
+
+  // Add palette data
+  precompiled.usedPalettes.forEach((palette, paletteIndex) => {
+    output[`${paletteSymbol(paletteIndex)}.c`] = compilePalette(
+      palette,
+      paletteIndex
+    );
+    output[`${paletteSymbol(paletteIndex)}.h`] = compilePaletteHeader(
+      palette,
+      paletteIndex
+    );
+  });
+
+  // Add background map data
+  precompiled.usedBackgrounds.forEach((background, backgroundIndex) => {
+    output[`background_${backgroundIndex}.c`] = compileBackground(
+      background,
+      backgroundIndex,
+      {
+        color: customColorsEnabled,
+      }
+    );
+    output[`background_${backgroundIndex}.h`] = compileBackgroundHeader(
+      background,
+      backgroundIndex
+    );
+  });
+
+  precompiled.usedTilemaps.forEach((tilemap, tilemapIndex) => {
+    output[`tilemap_${tilemapIndex}.c`] = compileTilemap(tilemap, tilemapIndex);
+    output[`tilemap_${tilemapIndex}.h`] = compileTilemapHeader(
+      tilemap,
+      tilemapIndex
+    );
+  });
+
+  if (customColorsEnabled) {
+    precompiled.usedTilemapAttrs.forEach((tilemapAttr, tilemapAttrIndex) => {
+      output[`tilemap_attr_${tilemapAttrIndex}.c`] = compileTilemapAttr(
+        tilemapAttr,
+        tilemapAttrIndex
+      );
+      output[`tilemap_attr_${tilemapAttrIndex}.h`] = compileTilemapAttrHeader(
+        tilemapAttr,
+        tilemapAttrIndex
+      );
+    });
+  }
+
+  // Add sprite data
+  precompiled.usedSprites.forEach((sprite, spriteIndex) => {
+    output[`spritesheet_${spriteIndex}.c`] = compileSpriteSheet(
+      sprite,
+      spriteIndex
+    );
+    output[`spritesheet_${spriteIndex}.h`] = compileSpriteSheetHeader(
+      sprite,
+      spriteIndex
+    );
+  });
+
+  // Add font data
+  precompiled.usedFonts.forEach((font, fontIndex) => {
+    output[`font_${fontIndex}.c`] = compileFont(font, fontIndex);
+    output[`font_${fontIndex}.h`] = compileFontHeader(font, fontIndex);
+  });
+
+  // Add avatar data
+  const avatarFontSize = 16;
+  const avatarFonts = chunk(precompiled.usedAvatars, avatarFontSize);
+  avatarFonts.forEach((avatarFont, avatarFontIndex) => {
+    output[`avatar_font_${avatarFontIndex}.c`] = compileAvatarFont(
+      avatarFont,
+      avatarFontIndex
+    );
+    output[`avatar_font_${avatarFontIndex}.h`] =
+      compileAvatarFontHeader(avatarFontIndex);
+  });
+
+  // Add emote data
+  precompiled.usedEmotes.forEach((emote, emoteIndex) => {
+    output[`emote_${emoteIndex}.c`] = compileEmote(emote, emoteIndex);
+    output[`emote_${emoteIndex}.h`] = compileEmoteHeader(emote, emoteIndex);
+  });
+
+  // Add scene data
+  precompiled.sceneData.forEach((scene, sceneIndex) => {
+    const sceneImage = precompiled.usedBackgrounds[scene.backgroundIndex];
+    const collisionsLength = Math.ceil(sceneImage.width * sceneImage.height);
+    const collisions = Array(collisionsLength)
+      .fill(0)
+      .map((_, index) => {
+        return (scene.collisions && scene.collisions[index]) || 0;
+      });
+    const bgPalette = precompiled.scenePaletteIndexes[scene.id] || 0;
+    const actorsPalette = precompiled.sceneActorPaletteIndexes[scene.id] || 0;
+
+    output[`scene_${sceneIndex}.c`] = compileScene(scene, sceneIndex, {
+      bgPalette,
+      actorsPalette,
+      color: isColor,
+      eventPtrs,
+    });
+    output[`scene_${sceneIndex}.h`] = compileSceneHeader(scene, sceneIndex);
+    output[`scene_${sceneIndex}_collisions.c`] = compileSceneCollisions(
+      scene,
+      sceneIndex,
+      collisions
+    );
+    output[`scene_${sceneIndex}_collisions.h`] = compileSceneCollisionsHeader(
+      scene,
+      sceneIndex
+    );
+
+    if (scene.actors.length > 0) {
+      output[`scene_${sceneIndex}_actors.h`] = compileSceneActorsHeader(
+        scene,
+        sceneIndex
+      );
+      output[`scene_${sceneIndex}_actors.c`] = compileSceneActors(
+        scene,
+        sceneIndex,
+        precompiled.usedSprites,
+        { eventPtrs }
+      );
+    }
+    if (scene.triggers.length > 0) {
+      output[`scene_${sceneIndex}_triggers.h`] = compileSceneTriggersHeader(
+        scene,
+        sceneIndex
+      );
+      output[`scene_${sceneIndex}_triggers.c`] = compileSceneTriggers(
+        scene,
+        sceneIndex,
+        { eventPtrs }
+      );
+    }
+    if (scene.sprites.length > 0) {
+      output[`scene_${sceneIndex}_sprites.h`] = compileSceneSpritesHeader(
+        scene,
+        sceneIndex
+      );
+      output[`scene_${sceneIndex}_sprites.c`] = compileSceneSprites(
+        scene,
+        sceneIndex
+      );
+    }
+  });
+
+  let startSceneIndex = precompiled.sceneData.findIndex(
+    (m) => m.id === projectData.settings.startSceneId
+  );
+
+  // If starting scene is not found just use first scene
+  if (startSceneIndex < 0) {
+    startSceneIndex = 0;
+  }
+
+  const {
+    startX,
+    startY,
+    startDirection,
+    startMoveSpeed = 1,
+    startAnimSpeed = 15,
+    musicDriver,
+  } = projectData.settings;
+
+  // Add music data
+  output["music_data.h"] = compileMusicHeader(precompiled.usedMusic);
+  await compileMusicTracks(precompiled.usedMusic, {
+    engine: musicDriver,
+    output,
+    tmpPath,
+    projectRoot,
+    progress,
+    warnings,
+  });
+
+  output["game_globals.i"] = compileGameGlobalsInclude(variableAliasLookup);
+  output[`script_engine_init.s`] = compileScriptEngineInit({
+    startX,
+    startY,
+    startDirection,
+    startSceneIndex,
+    startMoveSpeed,
+    startAnimSpeed,
+    fonts: precompiled.usedFonts,
+    avatarFonts,
+    engineFields,
+    engineFieldValues: projectData.engineFieldValues,
+  });
+  output[`data_bootstrap.h`] =
+    `#ifndef DATA_PTRS_H\n#define DATA_PTRS_H\n\n` +
+    `#include "bankdata.h"\n` +
+    `#include "gbs_types.h"\n\n` +
+    // Add define fields from engineFields
+    engineFields
+      .filter(
+        // Add define types without explict file set to data/data_bootstrap.h
+        (engineField) => engineField.cType === "define" && !engineField.file
+      )
+      .map((engineField, defineIndex, defineFields) => {
+        const engineValue = projectData.engineFieldValues.find(
+          (v) => v.id === engineField.key
+        );
+        const value =
+          engineValue && engineValue.value !== undefined
+            ? engineValue.value
+            : engineField.defaultValue;
+        return `#define ${engineField.key} ${value}${
+          defineIndex === defineFields.length - 1 ? "\n\n" : "\n"
+        }`;
+      }) +
+    `extern const INT16 start_scene_x;\n` +
+    `extern const INT16 start_scene_y;\n` +
+    `extern const direction_e start_scene_dir;\n` +
+    `extern const far_ptr_t start_scene;\n` +
+    `extern const UBYTE start_player_move_speed;\n` +
+    `extern const UBYTE start_player_anim_tick;\n\n` +
+    `extern const far_ptr_t ui_fonts[];\n\n` +
+    `void bootstrap_init() __banked;\n\n` +
+    `#endif\n`;
+
+  return {
+    files: output,
+  };
 };
 
 export default compile;

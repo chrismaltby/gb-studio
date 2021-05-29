@@ -381,6 +381,7 @@ class ScriptEditorEvent extends Component {
                         },
                       ]
                     ).map((childAction) => (
+                      // eslint-disable-next-line @typescript-eslint/no-use-before-define
                       <ScriptEditorEventDnD
                         key={childAction.id}
                         id={childAction.id}

@@ -30,12 +30,6 @@ const mapEvents = (events = [], callback) => {
   });
 };
 
-const mapScenesEvents = (scenes, callback) => {
-  return scenes.map((scene) => {
-    return mapSceneEvents(scene, callback);
-  });
-};
-
 const mapSceneEvents = (scene, callback) => {
   return {
     ...scene,
@@ -62,6 +56,12 @@ const mapSceneEvents = (scene, callback) => {
   };
 };
 
+const mapScenesEvents = (scenes, callback) => {
+  return scenes.map((scene) => {
+    return mapSceneEvents(scene, callback);
+  });
+};
+
 const walkEvents = (events = [], callback) => {
   for (let i = 0; i < events.length; i++) {
     callback(events[i]);
@@ -84,22 +84,6 @@ const walkEventsDepthFirst = (events = [], callback) => {
   }
 };
 
-const walkScenesEvents = (scenes, callback) => {
-  scenes.forEach((scene) => {
-    walkSceneEvents(scene, callback);
-  });
-};
-
-const walkSceneEvents = (scene, callback) => {
-  walkSceneSpecificEvents(scene, callback);
-  scene.actors.forEach((actor) => {
-    walkActorEvents(actor, callback);
-  });
-  scene.triggers.forEach((trigger) => {
-    walkEvents(trigger.script, callback);
-  });
-};
-
 const walkSceneSpecificEvents = (scene, callback) => {
   walkEvents(scene.script, callback);
   walkEvents(scene.playerHit1Script, callback);
@@ -118,6 +102,22 @@ const walkActorEvents = (actor, callback) => {
 
 const walkTriggerEvents = (trigger, callback) => {
   walkEvents(trigger.script, callback);
+};
+
+const walkSceneEvents = (scene, callback) => {
+  walkSceneSpecificEvents(scene, callback);
+  scene.actors.forEach((actor) => {
+    walkActorEvents(actor, callback);
+  });
+  scene.triggers.forEach((trigger) => {
+    walkEvents(trigger.script, callback);
+  });
+};
+
+const walkScenesEvents = (scenes, callback) => {
+  scenes.forEach((scene) => {
+    walkSceneEvents(scene, callback);
+  });
 };
 
 const normalizedWalkSceneEvents = (
