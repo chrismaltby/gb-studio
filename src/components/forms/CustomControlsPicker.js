@@ -131,7 +131,7 @@ class CustomControlsPicker extends Component {
       <>
         {directions.map((direction) => (
           <SearchableSettingRow
-            key={direction.id}
+            key={direction.key}
             searchTerm={searchTerm}
             searchMatches={[direction.label]}
           >

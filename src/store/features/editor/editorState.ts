@@ -681,7 +681,7 @@ const editorSlice = createSlice({
         state.selectedMetaspriteId = action.payload.newMetaspriteId;
         state.selectedMetaspriteTileIds = [];
       })
-      .addCase(entitiesActions.addMetaspriteTile, (state, action) => {
+      .addCase(entitiesActions.addMetaspriteTile, (state, _action) => {
         state.spriteTileSelection = undefined;
       })
       .addCase(entitiesActions.addCustomEvent, (state, action) => {
@@ -701,7 +701,7 @@ const editorSlice = createSlice({
           state.worldFocus = true;
         }
       })
-      .addCase(entitiesActions.removeMetasprite, (state, action) => {
+      .addCase(entitiesActions.removeMetasprite, (state, _action) => {
         state.selectedMetaspriteId = "";
         state.selectedMetaspriteTileIds = [];
       })
@@ -712,7 +712,7 @@ const editorSlice = createSlice({
         state.worldFocus = true;
       })
       // Force React Select dropdowns to reload with new name
-      .addCase(entitiesActions.renameVariable, (state, action) => {
+      .addCase(entitiesActions.renameVariable, (state, _action) => {
         state.variableVersion = state.variableVersion + 1;
       })
       // Remove world focus when switching section

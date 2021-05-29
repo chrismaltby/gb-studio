@@ -165,11 +165,7 @@ const compileModTracks = async (
 
 const compileUgeTrack = async (
   track: PrecompiledMusicTrack,
-  {
-    projectRoot,
-    progress = (_msg) => {},
-    warnings = (_msg) => {},
-  }: CompileHugeTrackOptions
+  { projectRoot }: CompileHugeTrackOptions
 ): Promise<string> => {
   const ugePath = assetFilename(projectRoot, "music", track);
   const data = await readFile(ugePath);

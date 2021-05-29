@@ -1,12 +1,12 @@
 /* eslint-disable camelcase */
 import { Dictionary } from "@reduxjs/toolkit";
 import flatten from "lodash/flatten";
-import { SCREEN_WIDTH, SPRITE_TYPE_STATIC } from "../../consts";
+import { SCREEN_WIDTH } from "../../consts";
 import { SceneParallaxLayer } from "store/features/entities/entitiesTypes";
 import { FontData } from "../fonts/fontData";
 import { hexDec } from "../helpers/8bit";
 import { PrecompiledSpriteSheetData } from "./compileSprites";
-import { actorFramesPerDir, dirEnum } from "./helpers";
+import { dirEnum } from "./helpers";
 
 interface PrecompiledBackground {
   name: string;
@@ -180,7 +180,7 @@ export const sceneCollisionsSymbol = (sceneIndex: number): string =>
 export const scriptSymbol = (sceneIndex: number): string =>
   `script_${sceneIndex}`;
 
-export const toStructData = <T extends {}>(
+export const toStructData = <T extends Record<string, unknown>>(
   object: T,
   indent = 0,
   perLine = 16
@@ -220,7 +220,11 @@ ${" ".repeat(indent)}}`;
       }
       if (object[key] instanceof Object) {
         return `${" ".repeat(indent)}.${key} = {
-${toStructData(object[key], indent + INDENT_SPACES, perLine)}
+${toStructData(
+  object[key] as Record<string, unknown>,
+  indent + INDENT_SPACES,
+  perLine
+)}
 ${" ".repeat(indent)}}`;
       }
       return `${" ".repeat(indent)}.${key} = ${object[key]}`;
@@ -229,7 +233,7 @@ ${" ".repeat(indent)}}`;
     .join(",\n");
 };
 
-export const toStructDataFile = <T extends {}>(
+export const toStructDataFile = <T extends Record<string, unknown>>(
   type: string,
   symbol: string,
   comment: string,
@@ -254,7 +258,7 @@ ${toStructData(object, INDENT_SPACES)}
 };
 `;
 
-export const toStructArrayDataFile = <T extends {}>(
+export const toStructArrayDataFile = <T extends Record<string, unknown>>(
   type: string,
   symbol: string,
   comment: string,
@@ -449,26 +453,6 @@ export const compileSceneActors = (
   sprites: any[],
   { eventPtrs }: { eventPtrs: any }
 ) => {
-  const mapSpritesLookup: Dictionary<any> = {};
-  let mapSpritesIndex = 6;
-
-  const getSpriteOffset = (id: string) => {
-    if (mapSpritesLookup[id]) {
-      return mapSpritesLookup[id];
-    }
-    const lookup = mapSpritesIndex;
-    mapSpritesLookup[id] = lookup;
-    const sprite = sprites.find((s) => s.id === id);
-
-    if (!sprite) {
-      return 0;
-    }
-
-    // console.log(sprites);
-    mapSpritesIndex += sprite.size / 64;
-    return lookup;
-  };
-
   const events = eventPtrs[sceneIndex];
 
   return toStructArrayDataFile(
@@ -481,11 +465,6 @@ export const compileSceneActors = (
         (s) => s.id === actor.spriteSheetId
       );
       if (!sprite) return [];
-      const spriteFrames = sprite.frames;
-      const spriteOffset = getSpriteOffset(actor.spriteSheetId);
-      const actorFrames = actorFramesPerDir(actor.spriteType, spriteFrames);
-      const initialFrame =
-        actor.spriteType === SPRITE_TYPE_STATIC ? actor.frame % actorFrames : 0;
       return {
         __comment: actorName(actor, actorIndex),
         pos: {
@@ -510,7 +489,6 @@ export const compileSceneActors = (
     // Dependencies
     flatten(
       scene.actors.map((actor: any, actorIndex: number) => {
-        const sprite = sprites.find((s) => s.id === actor.spriteSheetId);
         const spriteIndex = sprites.findIndex(
           (s) => s.id === actor.spriteSheetId
         );
@@ -909,7 +887,7 @@ export const compileFrameImage = (data: Uint8Array) =>
     16
   );
 
-export const compileFrameImageHeader = (data: Uint8Array) =>
+export const compileFrameImageHeader = (_data: Uint8Array) =>
   toArrayDataHeader(DATA_TYPE, "frame_image", `// Frame`);
 
 export const compileEmote = (emote: EmoteData, emoteIndex: number) =>
@@ -937,7 +915,7 @@ export const compileCursorImage = (data: Uint8Array) =>
     16
   );
 
-export const compileCursorImageHeader = (data: Uint8Array) =>
+export const compileCursorImageHeader = (_data: Uint8Array) =>
   toArrayDataHeader(DATA_TYPE, "cursor_image", `// Cursor`);
 
 export const compileScriptHeader = (scriptName: string) =>

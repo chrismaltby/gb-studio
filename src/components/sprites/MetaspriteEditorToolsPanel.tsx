@@ -1,10 +1,9 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { RootState } from "store/configureStore";
 import { spriteAnimationSelectors } from "store/features/entities/entitiesState";
 import {
-  EyeOpenIcon,
   PlayIcon,
   OnionSkinIcon,
   PrevIcon,
@@ -14,9 +13,6 @@ import {
 } from "ui/icons/Icons";
 import FloatingPanel, { FloatingPanelDivider } from "ui/panels/FloatingPanel";
 import editorActions from "store/features/editor/editorActions";
-import { DropdownButton } from "ui/buttons/DropdownButton";
-import { MenuItem } from "ui/menu/Menu";
-import l10n from "lib/helpers/l10n";
 import { Button } from "ui/buttons/Button";
 
 interface MetaspriteEditorToolsPanelProps {
@@ -52,7 +48,10 @@ const MetaspriteEditorToolsPanel = ({
     spriteAnimationSelectors.selectById(state, selectedAnimationId)
   );
 
-  const frames = spriteAnimation?.frames || [];
+  const frames = useMemo(
+    () => spriteAnimation?.frames || [],
+    [spriteAnimation?.frames]
+  );
 
   const nextFrame = useCallback(() => {
     const currentIndex = frames.indexOf(metaspriteId);

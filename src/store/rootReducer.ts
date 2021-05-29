@@ -32,11 +32,11 @@ const rootReducer = combineReducers({
   trackerDocument: undoable(trackerDocument, {
     limit: 20,
     initTypes: ["@@TRACKER_INIT"],
-    filter: (_action, currentState, previousHistory) => {
+    filter: (action, _currentState, _previousHistory) => {
       return (
-        _action.type.startsWith("tracker/loadSong/fulfilled") ||
-        _action.type.startsWith("tracker/edit") ||
-        _action.type.startsWith("tracker/transpose")
+        action.type.startsWith("tracker/loadSong/fulfilled") ||
+        action.type.startsWith("tracker/edit") ||
+        action.type.startsWith("tracker/transpose")
       );
     },
     ignoreInitialState: true,

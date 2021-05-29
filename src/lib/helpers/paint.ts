@@ -1,9 +1,7 @@
 import { floodFill } from "ts-flood-fill";
 
-type GetValueFn = (x: number, y: number) => void;
 type SetValueFn<T> = (x: number, y: number, value: T) => void;
 type InBoundsFn = (x: number, y: number) => boolean;
-type EqualityFn<T> = (a: T, b: T) => boolean;
 
 const paint = <T>(
   x: number,
@@ -45,7 +43,7 @@ const paintLine = <T>(
 
   paint(x1, y1, size, value, setValue, isInBounds);
 
-  while (!(x1 == x2 && y1 == y2)) {
+  while (!(x1 === x2 && y1 === y2)) {
     const e2 = err << 1;
     if (e2 > -dy) {
       err -= dy;

@@ -82,7 +82,11 @@ export const EngineFieldInput: FC<EngineFieldInputProps> = ({
         name={field.key}
         value={theValue}
         onChange={onChange}
-        placeholder={field.defaultValue}
+        placeholder={
+          typeof field.defaultValue === "number"
+            ? field.defaultValue
+            : undefined
+        }
         min={min}
         max={max}
       />
@@ -108,7 +112,11 @@ export const EngineFieldInput: FC<EngineFieldInputProps> = ({
             }
           }
         }}
-        placeholder={field.defaultValue}
+        placeholder={
+          typeof field.defaultValue === "string"
+            ? field.defaultValue
+            : undefined
+        }
         min={min}
         max={max}
       />
@@ -138,7 +146,7 @@ export const EngineFieldInput: FC<EngineFieldInputProps> = ({
         id={field.key}
         name={field.key}
         value={selectedOption}
-        onChange={(e: any) => onChange(e.value)}
+        onChange={(e: { value: string }) => onChange(e.value)}
         options={options}
       />
     );
@@ -165,6 +173,7 @@ const EngineFieldsEditor: FC<EngineFieldsEditorProps> = ({ searchTerm }) => {
     <>
       {groupedFields.map((group) => (
         <SearchableCard
+          key={group.name}
           searchTerm={searchTerm}
           searchMatches={group.searchMatches}
         >
@@ -174,6 +183,7 @@ const EngineFieldsEditor: FC<EngineFieldsEditorProps> = ({ searchTerm }) => {
           </CardHeading>
           {group.fields.map((field) => (
             <SearchableSettingRow
+              key={field.key}
               searchTerm={searchTerm}
               searchMatches={[l10n(field.label), field.key]}
             >

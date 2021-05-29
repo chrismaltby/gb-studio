@@ -89,6 +89,6 @@ export const getArgsLen = (symbol: FunctionSymbol) => {
   return functionArgsLen[symbol];
 };
 
-const assertUnreachable = (x: never): never => {
+const assertUnreachable = (_x: never): never => {
   throw new Error("Didn't expect to get here");
 };

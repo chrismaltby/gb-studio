@@ -28,8 +28,8 @@ const documentSlice = createSlice({
         state.loaded = false;
       })
       .addCase(projectActions.loadProject.fulfilled, (state, action) => {
-        (state.path = action.payload.path),
-          (state.root = path.dirname(action.payload.path));
+        state.path = action.payload.path;
+        state.root = path.dirname(action.payload.path);
         state.modified = false;
         state.loaded = true;
       })

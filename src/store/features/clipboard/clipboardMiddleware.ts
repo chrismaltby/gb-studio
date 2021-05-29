@@ -6,12 +6,7 @@ import {
   getCustomEventIdsInActor,
   getCustomEventIdsInScene,
 } from "lib/helpers/eventSystem";
-import {
-  Dictionary,
-  Dispatch,
-  Middleware,
-  PayloadAction,
-} from "@reduxjs/toolkit";
+import { Dictionary, Dispatch, Middleware } from "@reduxjs/toolkit";
 import { RootState } from "store/configureStore";
 import {
   customEventSelectors,
@@ -276,7 +271,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
       if (clipboard.format === ClipboardTypeMetasprites) {
         const data = clipboard.data;
 
-        const newActions = data.metasprites.map((metasprite) => {
+        const newActions = data.metasprites.map(() => {
           return entitiesActions.addMetasprite({
             spriteSheetId: action.payload.spriteSheetId,
             spriteAnimationId: action.payload.spriteAnimationId,

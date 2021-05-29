@@ -73,7 +73,6 @@ import {
   sortByFilename,
   swap,
   matchAsset,
-  isUnionValue,
   isUnionVariableValue,
   isUnionPropertyValue,
 } from "./entitiesHelpers";
@@ -2352,7 +2351,7 @@ const editCustomEvent: CaseReducer<
           }
 
           return fixedArgs;
-        }, {} as Dictionary<any>);
+        }, {} as Dictionary<unknown>);
 
         return {
           ...event,
@@ -2543,7 +2542,10 @@ const removeCustomEvent: CaseReducer<
 
 const editEngineFieldValue: CaseReducer<
   EntitiesState,
-  PayloadAction<{ engineFieldId: string; value: any }>
+  PayloadAction<{
+    engineFieldId: string;
+    value: string | number | boolean | undefined;
+  }>
 > = (state, action) => {
   engineFieldValuesAdapter.upsertOne(state.engineFieldValues, {
     id: action.payload.engineFieldId,

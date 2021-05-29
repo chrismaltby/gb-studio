@@ -8,10 +8,8 @@ import {
 type TileLookup = Record<string, Uint8Array>;
 
 const TILE_SIZE = 8;
-const MAX_TILEMAP_TILE_WIDTH = 16;
-const MAX_TILEMAP_WIDTH = TILE_SIZE * MAX_TILEMAP_TILE_WIDTH;
 
-export const tileDataIndexFn: ImageIndexFunction = (r, g, b, a) => {
+export const tileDataIndexFn: ImageIndexFunction = (_r, g, _b, _a) => {
   if (g < 65) {
     return 3;
   }

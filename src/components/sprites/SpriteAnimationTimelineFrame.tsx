@@ -117,7 +117,7 @@ const cardTarget = {
 };
 
 export interface CardProps {
-  id: any;
+  id: string;
   spriteSheetId: string;
   text: string;
   index: number;
@@ -145,7 +145,6 @@ export default class Card extends React.Component<CardProps> {
     const {
       id,
       spriteSheetId,
-      text,
       selected,
       isDragging,
       onSelect,

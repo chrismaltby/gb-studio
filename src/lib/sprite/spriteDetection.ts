@@ -672,10 +672,7 @@ const findBoundingBoxAt = (
 
 // Helpers ------------------------------------------------------------------
 
-const uniqWith = <T extends {}>(
-  arr: T[],
-  comparator: (a: T, b: T) => boolean
-) => {
+const uniqWith = <T>(arr: T[], comparator: (a: T, b: T) => boolean) => {
   const uniques = [];
   for (const a of arr) {
     if (uniques.findIndex((u) => comparator(a, u)) === -1) {
@@ -792,8 +789,8 @@ export const autoHint2 = (inData: Uint16Array): SliceDef[] => {
   const tileWidth = Math.ceil(width / 8);
   const tileHeight = Math.ceil(height / 8);
   // Merge horizontal
-  for (var y = 0; y <= tileHeight - 2; y++) {
-    for (var x = 0; x <= tileWidth - 2; x++) {
+  for (let y = 0; y <= tileHeight - 2; y++) {
+    for (let x = 0; x <= tileWidth - 2; x++) {
       const sliced = sliceData(inData, x * 8, y * 8, 16, 16);
       const numTiles = toNumNonEmptyTiles(sliced);
       const trimmed = trimWhitespace(sliced);
@@ -813,8 +810,8 @@ export const autoHint2 = (inData: Uint16Array): SliceDef[] => {
     }
   }
   // Merge vertical
-  for (var y = 0; y <= tileHeight - 4; y++) {
-    for (var x = 0; x <= tileWidth - 1; x++) {
+  for (let y = 0; y <= tileHeight - 4; y++) {
+    for (let x = 0; x <= tileWidth - 1; x++) {
       const sliced = sliceData(inData, x * 8, y * 8, 8, 32);
       const numTiles = toNumNonEmptyTiles(sliced);
       const trimmed = trimWhitespace(sliced);

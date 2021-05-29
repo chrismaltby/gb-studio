@@ -1,6 +1,5 @@
 import promiseLimit from "../helpers/promiseLimit";
 import { assetFilename } from "../helpers/gbstudio";
-import getFileModifiedTime from "../helpers/fs/getModifiedTime";
 import {
   optimiseTiles,
   indexedImageTo2bppSpriteData,
@@ -60,10 +59,6 @@ export type PrecompiledSpriteSheetData = SpriteSheetData & {
   metasprites: SpriteTileData[][];
   animationOffsets: AnimationOffset[];
   metaspritesOrder: number[];
-};
-
-type CompileSpriteOptions = {
-  warnings: (msg: string) => void;
 };
 
 interface SpriteTileData {
@@ -214,8 +209,7 @@ export const compileSprite = async (
 
 const compileSprites = async (
   spriteSheets: SpriteSheetData[],
-  projectRoot: string,
-  { warnings }: CompileSpriteOptions
+  projectRoot: string
 ): Promise<PrecompiledSpriteSheetData[]> => {
   const spriteData = await promiseLimit(
     10,

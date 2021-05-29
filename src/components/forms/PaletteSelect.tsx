@@ -100,7 +100,6 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
   }, [palettes, value]);
 
   useEffect(() => {
-    console.log({ canKeep, value });
     if (canKeep && value === "keep") {
       setCurrentValue({
         value: "keep",

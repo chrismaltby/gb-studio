@@ -309,7 +309,7 @@ export const SplashTemplateSelect: FC<SplashTemplateSelectProps> = ({
                   playing={template.id === value}
                 />
               ) : (
-                <img src={template.preview} />
+                <img src={template.preview} alt={template.name} />
               )}
             </SplashTemplateLabel>
           </SplashTemplateButtonWrapper>
@@ -618,7 +618,7 @@ export const SplashProjectPath = styled.span`
 
 export const SplashProject: FC<SplashProjectProps> = ({ project, onClick }) => (
   <SplashProjectWrapper onClick={onClick}>
-    <img src={projectIcon} />
+    <img src={projectIcon} alt="" />
     <SplashProjectDetails>
       <SplashProjectName>{project.name}</SplashProjectName>
       <SplashProjectPath>{project.path}</SplashProjectPath>
