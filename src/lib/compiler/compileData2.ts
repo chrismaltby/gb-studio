@@ -190,8 +190,8 @@ export const scriptSymbol = (sceneIndex: number): string =>
 
 export const toStructData = <T extends {}>(
   object: T,
-  indent: number = 0,
-  perLine: number = 16
+  indent = 0,
+  perLine = 16
 ): string => {
   const keys = Object.keys(object) as unknown as [keyof T];
   return keys

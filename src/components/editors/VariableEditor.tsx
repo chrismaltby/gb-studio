@@ -91,7 +91,7 @@ const onVariableEventContainingId =
   (id: string, callback: (event: ScriptEvent) => void) =>
   (event: ScriptEvent) => {
     if (event.args) {
-      for (let arg in event.args) {
+      for (const arg in event.args) {
         if (isVariableField(event.command, arg, event.args)) {
           const argValue = event.args[arg];
           if (

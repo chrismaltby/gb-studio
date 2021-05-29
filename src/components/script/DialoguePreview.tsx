@@ -255,7 +255,7 @@ export const DialoguePreview: FC<DialoguePreviewProps> = ({
   // Load Avatar image
   useEffect(() => {
     if (avatarFilename) {
-      let img = new Image();
+      const img = new Image();
       img.src = avatarFilename;
       img.onload = () => {
         // Make green background color transparent

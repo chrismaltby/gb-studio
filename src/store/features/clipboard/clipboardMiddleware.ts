@@ -286,7 +286,7 @@ const clipboardMiddleware: Middleware<{}, RootState> =
 
         const tileIdMetaspriteLookup = data.metasprites.reduce(
           (memo, metasprite, index) => {
-            for (let tileId of metasprite.tiles) {
+            for (const tileId of metasprite.tiles) {
               memo[tileId] = newIds[index];
             }
             return memo;

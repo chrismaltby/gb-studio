@@ -34,19 +34,19 @@ const paintLine = <T>(
 ) => {
   let x1 = startX;
   let y1 = startY;
-  let x2 = endX;
-  let y2 = endY;
+  const x2 = endX;
+  const y2 = endY;
 
-  let dx = Math.abs(x2 - x1);
-  let dy = Math.abs(y2 - y1);
-  let sx = x1 < x2 ? 1 : -1;
-  let sy = y1 < y2 ? 1 : -1;
+  const dx = Math.abs(x2 - x1);
+  const dy = Math.abs(y2 - y1);
+  const sx = x1 < x2 ? 1 : -1;
+  const sy = y1 < y2 ? 1 : -1;
   let err = dx - dy;
 
   paint(x1, y1, size, value, setValue, isInBounds);
 
   while (!(x1 == x2 && y1 == y2)) {
-    let e2 = err << 1;
+    const e2 = err << 1;
     if (e2 > -dy) {
       err -= dy;
       x1 += sx;

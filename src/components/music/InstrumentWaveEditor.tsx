@@ -6,7 +6,7 @@ import { WaveInstrument } from "store/features/trackerDocument/trackerDocumentTy
 import { FormDivider, FormField, FormRow } from "ui/form/FormLayout";
 import { Select } from "ui/form/Select";
 import { InstrumentLengthForm } from "./InstrumentLengthForm";
-import { WaveEditorForm as WaveEditorForm } from "./WaveEditorForm";
+import { WaveEditorForm } from "./WaveEditorForm";
 
 const volumeOptions = [
   {

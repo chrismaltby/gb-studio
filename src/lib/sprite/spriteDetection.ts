@@ -86,8 +86,8 @@ const sliceData = (
   data[1] = height;
 
   let ii = 2;
-  for (var y = startY; y < startY + height; y++) {
-    for (var x = startX; x < startX + width; x++) {
+  for (let y = startY; y < startY + height; y++) {
+    for (let x = startX; x < startX + width; x++) {
       if (x < inWidth && y < inHeight && x >= 0 && y >= 0) {
         const i = toIndex(x, y, inWidth);
         data[ii] = inData[i];
@@ -109,8 +109,8 @@ const flipX = (inData: Uint16Array): Uint16Array => {
   data[1] = height;
 
   let ii = 2;
-  for (var y = 0; y < height; y++) {
-    for (var x = 0; x < width; x++) {
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
       const i = toIndex(width - x - 1, y, width);
       data[ii] = inData[i];
       ii++;
@@ -128,8 +128,8 @@ const flipY = (inData: Uint16Array): Uint16Array => {
   data[1] = height;
 
   let ii = 2;
-  for (var y = 0; y < height; y++) {
-    for (var x = 0; x < width; x++) {
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
       const i = toIndex(x, height - y - 1, width);
       data[ii] = inData[i];
       ii++;
@@ -147,8 +147,8 @@ const subtractData = (
   const width = removeData[0];
   const height = removeData[1];
   const data = new Uint16Array(inData);
-  for (var y = 0; y < height; y++) {
-    for (var x = 0; x < width; x++) {
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
       const i = toIndex(x, y, width);
       const ii = toIndex(x + offsetX, y + offsetY, inData[0]);
       if (removeData[i]) {
@@ -171,8 +171,8 @@ const fillData = (
 ): Uint16Array => {
   const inWidth = inData[0];
   const data = new Uint16Array(inData);
-  for (var y = startY; y < startY + height; y++) {
-    for (var x = startX; x < startX + width; x++) {
+  for (let y = startY; y < startY + height; y++) {
+    for (let x = startX; x < startX + width; x++) {
       const i = toIndex(x, y, inWidth);
       data[i] = value;
     }
@@ -355,7 +355,7 @@ export const spritesToTiles2 = (
         hintTile
       );
       if (!isStrictEqual(dtmp, hintRemovedSprite)) {
-        let loc2: SpriteTileLocation[] = loc.map((tileLocation) => ({
+        const loc2: SpriteTileLocation[] = loc.map((tileLocation) => ({
           ...tileLocation,
           spriteIndex: si,
         }));
@@ -386,7 +386,7 @@ export const spritesToTiles2 = (
         const slice = sliceData(inData, tx * 8, ty * 16, 8, 16);
         if (!isBlankData(slice)) {
           let found = false;
-          for (let tileDef of tileDefs) {
+          for (const tileDef of tileDefs) {
             const tile = tileDef.data;
             const sliceFX = flipX(slice);
             const sliceFY = flipY(slice);
@@ -600,13 +600,13 @@ const dataToBoundingBoxes = (data: Uint16Array): Bounds[] => {
   const height = data[1];
   const boxes: Bounds[] = [];
   const seen: number[] = [];
-  for (var y = 0; y < height; y++) {
-    for (var x = 0; x < width; x++) {
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
       const i = toIndex(x, y, width);
       if (data[i] !== 0 && seen.indexOf(i) === -1) {
         const bounds = findBoundingBoxAt(x, y, data, seen);
-        for (var xi = bounds.left; xi <= bounds.right; xi++) {
-          for (var yi = bounds.top; yi <= bounds.bottom; yi++) {
+        for (let xi = bounds.left; xi <= bounds.right; xi++) {
+          for (let yi = bounds.top; yi <= bounds.bottom; yi++) {
             const ii = toIndex(xi, yi, width);
             seen.push(ii);
           }
@@ -676,8 +676,8 @@ const uniqWith = <T extends {}>(
   arr: T[],
   comparator: (a: T, b: T) => boolean
 ) => {
-  let uniques = [];
-  for (let a of arr) {
+  const uniques = [];
+  for (const a of arr) {
     if (uniques.findIndex((u) => comparator(a, u)) === -1) {
       uniques.push(a);
     }
@@ -761,8 +761,8 @@ const removeHint = (
   const locations: TileLocation[] = [];
 
   let data = new Uint16Array(inData);
-  for (var y = 0; y <= scanHeight; y++) {
-    for (var x = 0; x <= scanWidth; x++) {
+  for (let y = 0; y <= scanHeight; y++) {
+    for (let x = 0; x <= scanWidth; x++) {
       const subImage = sliceData(data, x, y, 8, 16);
       if (isContained(hintData, subImage)) {
         data = subtractData(data, hintData, x, y);
@@ -865,8 +865,8 @@ export const autoHint2 = (inData: Uint16Array): SliceDef[] => {
 const getHintDividerY = (inData: Uint16Array): number => {
   const width = inData[0];
   const height = inData[1];
-  for (var y = height - 1; y > 0; y--) {
-    for (var x = 0; x <= width - 2; x++) {
+  for (let y = height - 1; y > 0; y--) {
+    for (let x = 0; x <= width - 2; x++) {
       const i = toIndex(x, y, width);
       if (inData[i] === Color.Divider) {
         return roundUp8(y);

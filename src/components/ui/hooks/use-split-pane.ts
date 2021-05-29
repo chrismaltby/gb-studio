@@ -204,7 +204,7 @@ export const toSplitRel = (arr: number[]) => {
   });
 };
 
-var add = (a: number, b: number) => a + b;
+const add = (a: number, b: number) => a + b;
 
 export const resizeAbsPaneBy = (
   resizePane: number,

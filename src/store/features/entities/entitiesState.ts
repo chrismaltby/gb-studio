@@ -770,12 +770,12 @@ const addScene: CaseReducer<
     idReplacements[action.payload.defaults.id] = action.payload.sceneId;
   }
   if (action.payload.defaults?.actors) {
-    for (let actor of action.payload.defaults.actors) {
+    for (const actor of action.payload.defaults.actors) {
       idReplacements[actor.id] = uuid();
     }
   }
   if (action.payload.defaults?.triggers) {
-    for (let trigger of action.payload.defaults.triggers) {
+    for (const trigger of action.payload.defaults.triggers) {
       idReplacements[trigger.id] = uuid();
     }
   }
@@ -784,7 +784,7 @@ const addScene: CaseReducer<
   if (action.payload.variables) {
     const newVariables = action.payload.variables.map((variable) => {
       let newId = variable.id;
-      for (var id in idReplacements) {
+      for (const id in idReplacements) {
         if (variable.id.startsWith(id)) {
           newId = variable.id.replace(id, idReplacements[id] || newId);
           break;
@@ -806,7 +806,7 @@ const addScene: CaseReducer<
   scenesAdapter.addOne(state.scenes, fixedScene);
 
   if (action.payload.defaults?.actors) {
-    for (let actor of action.payload.defaults.actors) {
+    for (const actor of action.payload.defaults.actors) {
       addActorToScene(
         state,
         fixedScene,
@@ -820,7 +820,7 @@ const addScene: CaseReducer<
   }
 
   if (action.payload.defaults?.triggers) {
-    for (let trigger of action.payload.defaults.triggers) {
+    for (const trigger of action.payload.defaults.triggers) {
       addTriggerToScene(
         state,
         fixedScene,
@@ -852,7 +852,7 @@ const editScene: CaseReducer<
   PayloadAction<{ sceneId: string; changes: Partial<Scene> }>
 > = (state, action) => {
   const scene = state.scenes.entities[action.payload.sceneId];
-  let patch = { ...action.payload.changes };
+  const patch = { ...action.payload.changes };
 
   if (!scene) {
     return;
@@ -1078,7 +1078,7 @@ const editActor: CaseReducer<
   PayloadAction<{ actorId: string; changes: Partial<Actor> }>
 > = (state, action) => {
   const actor = localActorSelectors.selectById(state, action.payload.actorId);
-  let patch = { ...action.payload.changes };
+  const patch = { ...action.payload.changes };
 
   if (!actor) {
     return;
@@ -1381,7 +1381,7 @@ const editTrigger: CaseReducer<
   EntitiesState,
   PayloadAction<{ triggerId: string; changes: Partial<Trigger> }>
 > = (state, action) => {
-  let patch = { ...action.payload.changes };
+  const patch = { ...action.payload.changes };
 
   triggersAdapter.updateOne(state.triggers, {
     id: action.payload.triggerId,
@@ -1577,7 +1577,7 @@ const editSpriteSheet: CaseReducer<
   PayloadAction<{ spriteSheetId: string; changes: Partial<SpriteSheet> }>
 > = (state, action) => {
   const spriteSheet = state.spriteSheets.entities[action.payload.spriteSheetId];
-  let patch = { ...action.payload.changes };
+  const patch = { ...action.payload.changes };
 
   if (!spriteSheet) {
     return;
@@ -1909,7 +1909,7 @@ const editMetaspriteTile: CaseReducer<
 > = (state, action) => {
   const metaspriteTile =
     state.metaspriteTiles.entities[action.payload.metaspriteTileId];
-  let patch = { ...action.payload.changes };
+  const patch = { ...action.payload.changes };
 
   if (!metaspriteTile) {
     return;
@@ -2016,7 +2016,7 @@ const editSpriteAnimation: CaseReducer<
 > = (state, action) => {
   const spriteAnimation =
     state.spriteAnimations.entities[action.payload.spriteAnimationId];
-  let patch = { ...action.payload.changes };
+  const patch = { ...action.payload.changes };
 
   if (!spriteAnimation) {
     return;
@@ -2295,7 +2295,7 @@ const editPalette: CaseReducer<
   EntitiesState,
   PayloadAction<{ paletteId: string; changes: Partial<Palette> }>
 > = (state, action) => {
-  let patch = { ...action.payload.changes };
+  const patch = { ...action.payload.changes };
 
   palettesAdapter.updateOne(state.palettes, {
     id: action.payload.paletteId,
@@ -2338,7 +2338,7 @@ const editCustomEvent: CaseReducer<
 > = (state, action) => {
   const oldEvent = state.customEvents.entities[action.payload.customEventId];
 
-  let patch = { ...action.payload.changes };
+  const patch = { ...action.payload.changes };
 
   if (!oldEvent) {
     const newCustomEvent: CustomEvent = {

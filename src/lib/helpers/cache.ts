@@ -5,7 +5,7 @@ const identity = <T>(t: T): T => t;
 export const getCachedObject = memoize(identity, JSON.stringify);
 
 export const createCacheFunction = () => {
-  let lastId: string = "";
+  let lastId = "";
   let lastData: object = {};
   return (data: any) => {
     const id = JSON.stringify(data);

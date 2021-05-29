@@ -18,7 +18,7 @@
     "make": "electron-forge make",
     "make:all": "run-s make:mac make:win make:win32 make:linux",
     "publish": "electron-forge publish",
-    "lint": "eslint --cache --color --ext .jsx,.js src",
+    "lint": "eslint --cache --color src",
     "prettier": "prettier --write src",
     "test": "jest --maxWorkers=2",
     "coverage": "jest --coverage --runInBand || true",

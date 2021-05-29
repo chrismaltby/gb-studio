@@ -565,7 +565,7 @@ static const unsigned char order_cnt = ${song.sequence.length * 2};
 
   for (let idx = 0; idx < patterns.length; idx++) {
     data += `static const unsigned char song_pattern_${idx}[] = {\n`;
-    for (let cell of patterns[idx]) {
+    for (const cell of patterns[idx]) {
       data += `    ${formatPatternCell(cell)},\n`;
     }
     data += "};\n";
@@ -575,17 +575,17 @@ static const unsigned char order_cnt = ${song.sequence.length * 2};
       track + 1
     }[] = {${getSequenceMappingFor(track)}};\n`;
   data += "static const unsigned char duty_instruments[] = {\n";
-  for (let instr of song.duty_instruments) {
+  for (const instr of song.duty_instruments) {
     data += `    ${formatDutyInstrument(instr)},\n`;
   }
   data += "};\n";
   data += "static const unsigned char wave_instruments[] = {\n";
-  for (let instr of song.wave_instruments) {
+  for (const instr of song.wave_instruments) {
     data += `    ${formatWaveInstrument(instr)},\n`;
   }
   data += "};\n";
   data += "static const unsigned char noise_instruments[] = {\n";
-  for (let instr of song.noise_instruments) {
+  for (const instr of song.noise_instruments) {
     data += `    ${formatNoiseInstrument(instr)},\n`;
   }
   data += "};\n";
@@ -593,7 +593,7 @@ static const unsigned char order_cnt = ${song.sequence.length * 2};
   //TODO
   //data += "};\n";
   data += "static const unsigned char waves[] = {\n";
-  for (let wave of song.waves) {
+  for (const wave of song.waves) {
     data += `    ${formatWave(wave)},\n`;
   }
   data += "};\n";

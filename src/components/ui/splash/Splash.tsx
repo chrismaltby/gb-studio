@@ -378,7 +378,7 @@ export const SplashCreditsBackground = () => {
           ctx.fillStyle = bgGrad;
           ctx.fillRect(0, 0, width, height);
 
-          var lineGrad = ctx.createLinearGradient(0, 0, 0, height);
+          const lineGrad = ctx.createLinearGradient(0, 0, 0, height);
           lineGrad.addColorStop(0, "#e79c58");
           lineGrad.addColorStop(0.25, "#e5731b");
           lineGrad.addColorStop(0.4, "#ce1e32");
