@@ -1,8 +1,8 @@
 import React, { Component, FC } from "react";
 import PropTypes from "prop-types";
-import l10n from "../../lib/helpers/l10n";
-import { ActorSpriteType } from "../../store/features/entities/entitiesTypes";
-import { Option, Select } from "../ui/form/Select";
+import l10n from "lib/helpers/l10n";
+import { ActorSpriteType } from "store/features/entities/entitiesTypes";
+import { Option, Select } from "ui/form/Select";
 
 interface SpriteTypeSelectProps {
   name: string;

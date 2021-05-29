@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import l10n from "../../lib/helpers/l10n";
+import l10n from "lib/helpers/l10n";
 
 const speeds = [1, 2, 3, 4, 5];
 

@@ -4,8 +4,8 @@ import { connect } from "react-redux";
 import Select, { components } from "react-select";
 import { PlayIcon } from "../library/Icons";
 import Button from "../library/Button";
-import l10n from "../../lib/helpers/l10n";
-import soundfxActions from "../../store/features/soundfx/soundfxActions";
+import l10n from "lib/helpers/l10n";
+import soundfxActions from "store/features/soundfx/soundfxActions";
 
 const options = [
   {

@@ -1,4 +1,4 @@
-import { hex2GBCrgb } from "../../lib/helpers/color";
+import { hex2GBCrgb } from "lib/helpers/color";
 
 const workerCtx: Worker = self as any;
 

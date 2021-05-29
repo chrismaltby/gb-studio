@@ -1,9 +1,9 @@
 import React, { FC, useLayoutEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import { useSelector } from "react-redux";
-import { RootState } from "../../store/configureStore";
-import { ScriptEvent } from "../../store/features/entities/entitiesTypes";
-import { RelativePortal } from "../ui/layout/RelativePortal";
+import { RootState } from "store/configureStore";
+import { ScriptEvent } from "store/features/entities/entitiesTypes";
+import { RelativePortal } from "ui/layout/RelativePortal";
 import { DialoguePreview } from "./DialoguePreview";
 
 interface ScriptEditorEventHelperProps {

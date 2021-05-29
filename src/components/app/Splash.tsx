@@ -3,7 +3,7 @@ import Path from "path";
 import { ipcRenderer, remote } from "electron";
 import settings from "electron-settings";
 import FocusLock, { AutoFocusInside } from "react-focus-lock";
-import { FlexGrow } from "../ui/spacing/Spacing";
+import { FlexGrow } from "ui/spacing/Spacing";
 import {
   SplashAppTitle,
   SplashContent,
@@ -26,23 +26,21 @@ import {
   SplashTab,
   SplashTemplateSelect,
   SplashWrapper,
-} from "../ui/splash/Splash";
-import createProject, {
-  ERR_PROJECT_EXISTS,
-} from "../../lib/project/createProject";
-import GlobalStyle from "../ui/globalStyle";
-import ThemeProvider from "../ui/theme/ThemeProvider";
-import logoFile from "../ui/icons/GBStudioLogo.png";
-import { FormField, FormRow } from "../ui/form/FormLayout";
-import { TextField } from "../ui/form/TextField";
-import { CloseIcon, DotsIcon } from "../ui/icons/Icons";
-import { Button } from "../ui/buttons/Button";
-import l10n from "../../lib/helpers/l10n";
+} from "ui/splash/Splash";
+import createProject, { ERR_PROJECT_EXISTS } from "lib/project/createProject";
+import GlobalStyle from "ui/globalStyle";
+import ThemeProvider from "ui/theme/ThemeProvider";
+import logoFile from "ui/icons/GBStudioLogo.png";
+import { FormField, FormRow } from "ui/form/FormLayout";
+import { TextField } from "ui/form/TextField";
+import { CloseIcon, DotsIcon } from "ui/icons/Icons";
+import { Button } from "ui/buttons/Button";
+import l10n from "lib/helpers/l10n";
 import contributors from "../../../contributors.json";
 import gbs2Preview from "../../assets/templatePreview/gbs2.mp4";
 import gbhtmlPreview from "../../assets/templatePreview/gbhtml.mp4";
 import blankPreview from "../../assets/templatePreview/blank.png";
-import useWindowFocus from "../ui/hooks/use-window-focus";
+import useWindowFocus from "ui/hooks/use-window-focus";
 
 const { dialog, shell } = remote;
 

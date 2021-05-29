@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { fields } from "../../../lib/events/eventActorCollisionsDisable";
+import { fields } from "lib/events/eventActorCollisionsDisable";
 
 export type EngineFieldType = "number" | "slider" | "checkbox" | "select";
 

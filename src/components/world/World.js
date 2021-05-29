@@ -12,15 +12,15 @@ import {
   TOOL_COLLISIONS,
   TOOL_ERASER,
 } from "../../consts";
-import { SceneShape, VariableShape } from "../../store/stateShape";
+import { SceneShape, VariableShape } from "store/stateShape";
 import {
   sceneSelectors,
   getMaxSceneRight,
   getMaxSceneBottom,
-} from "../../store/features/entities/entitiesState";
-import editorActions from "../../store/features/editor/editorActions";
-import clipboardActions from "../../store/features/clipboard/clipboardActions";
-import entitiesActions from "../../store/features/entities/entitiesActions";
+} from "store/features/entities/entitiesState";
+import editorActions from "store/features/editor/editorActions";
+import clipboardActions from "store/features/clipboard/clipboardActions";
+import entitiesActions from "store/features/entities/entitiesActions";
 
 class World extends Component {
   constructor(props) {

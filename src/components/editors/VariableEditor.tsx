@@ -3,42 +3,42 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   globalVariableCode,
   globalVariableDefaultName,
-} from "../../lib/helpers/variables";
-import { RootState } from "../../store/configureStore";
+} from "lib/helpers/variables";
+import { RootState } from "store/configureStore";
 import {
   actorSelectors,
   sceneSelectors,
   triggerSelectors,
   variableSelectors,
-} from "../../store/features/entities/entitiesState";
-import { DropdownButton } from "../ui/buttons/DropdownButton";
-import { EditableText } from "../ui/form/EditableText";
-import { FormContainer, FormHeader } from "../ui/form/FormLayout";
-import { MenuItem } from "../ui/menu/Menu";
-import entitiesActions from "../../store/features/entities/entitiesActions";
-import editorActions from "../../store/features/editor/editorActions";
-import clipboardActions from "../../store/features/clipboard/clipboardActions";
+} from "store/features/entities/entitiesState";
+import { DropdownButton } from "ui/buttons/DropdownButton";
+import { EditableText } from "ui/form/EditableText";
+import { FormContainer, FormHeader } from "ui/form/FormLayout";
+import { MenuItem } from "ui/menu/Menu";
+import entitiesActions from "store/features/entities/entitiesActions";
+import editorActions from "store/features/editor/editorActions";
+import clipboardActions from "store/features/clipboard/clipboardActions";
 import {
   isVariableField,
   walkActorEvents,
   walkSceneEvents,
   walkTriggerEvents,
-} from "../../lib/helpers/eventSystem";
+} from "lib/helpers/eventSystem";
 import {
   Actor,
   Scene,
   ScriptEvent,
   Trigger,
-} from "../../store/features/entities/entitiesTypes";
-import l10n from "../../lib/helpers/l10n";
-import events from "../../lib/events";
-import { Sidebar, SidebarColumn } from "../ui/sidebars/Sidebar";
-import { FlatList } from "../ui/lists/FlatList";
-import { EntityListItem } from "../ui/lists/EntityListItem";
+} from "store/features/entities/entitiesTypes";
+import l10n from "lib/helpers/l10n";
+import events from "lib/events";
+import { Sidebar, SidebarColumn } from "ui/sidebars/Sidebar";
+import { FlatList } from "ui/lists/FlatList";
+import { EntityListItem } from "ui/lists/EntityListItem";
 import { Dictionary } from "@reduxjs/toolkit";
 import useDimensions from "react-cool-dimensions";
 import styled from "styled-components";
-import { SplitPaneHeader } from "../ui/splitpane/SplitPaneHeader";
+import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 
 interface VariableEditorProps {
   id: string;

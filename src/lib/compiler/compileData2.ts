@@ -2,7 +2,7 @@
 import { Dictionary } from "@reduxjs/toolkit";
 import flatten from "lodash/flatten";
 import { SCREEN_WIDTH, SPRITE_TYPE_STATIC } from "../../consts";
-import { SceneParallaxLayer } from "../../store/features/entities/entitiesTypes";
+import { SceneParallaxLayer } from "store/features/entities/entitiesTypes";
 import { FontData } from "../fonts/fontData";
 import { hexDec } from "../helpers/8bit";
 import { PrecompiledSpriteSheetData } from "./compileSprites";

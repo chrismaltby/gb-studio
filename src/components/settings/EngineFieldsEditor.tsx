@@ -3,22 +3,22 @@ import { useSelector, useDispatch } from "react-redux";
 import {
   EngineFieldCType,
   EngineFieldSchema,
-} from "../../store/features/engine/engineState";
-import { engineFieldValueSelectors } from "../../store/features/entities/entitiesState";
-import entitiesActions from "../../store/features/entities/entitiesActions";
-import { Button } from "../ui/buttons/Button";
-import l10n from "../../lib/helpers/l10n";
-import { SliderField } from "../ui/form/SliderField";
+} from "store/features/engine/engineState";
+import { engineFieldValueSelectors } from "store/features/entities/entitiesState";
+import entitiesActions from "store/features/entities/entitiesActions";
+import { Button } from "ui/buttons/Button";
+import l10n from "lib/helpers/l10n";
+import { SliderField } from "ui/form/SliderField";
 import { useGroupedEngineFields } from "./useGroupedEngineFields";
-import { CardAnchor, CardButtons, CardHeading } from "../ui/cards/Card";
-import { SearchableCard } from "../ui/cards/SearchableCard";
-import { SearchableSettingRow } from "../ui/form/SearchableSettingRow";
-import { SettingRowInput, SettingRowLabel } from "../ui/form/SettingRow";
-import { EngineFieldValue } from "../../store/features/entities/entitiesTypes";
-import { Input } from "../ui/form/Input";
-import { Checkbox } from "../ui/form/Checkbox";
-import clamp from "../../lib/helpers/clamp";
-import { Select } from "../ui/form/Select";
+import { CardAnchor, CardButtons, CardHeading } from "ui/cards/Card";
+import { SearchableCard } from "ui/cards/SearchableCard";
+import { SearchableSettingRow } from "ui/form/SearchableSettingRow";
+import { SettingRowInput, SettingRowLabel } from "ui/form/SettingRow";
+import { EngineFieldValue } from "store/features/entities/entitiesTypes";
+import { Input } from "ui/form/Input";
+import { Checkbox } from "ui/form/Checkbox";
+import clamp from "lib/helpers/clamp";
+import { Select } from "ui/form/Select";
 
 const { editEngineFieldValue, removeEngineFieldValue } = entitiesActions;
 

@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import Alert, { AlertItem } from "../library/Alert";
-import warningsActions from "../../store/features/warnings/warningsActions";
-import { backgroundSelectors } from "../../store/features/entities/entitiesState";
+import warningsActions from "store/features/warnings/warningsActions";
+import { backgroundSelectors } from "store/features/entities/entitiesState";
 
 class BackgroundWarnings extends Component {
   render() {

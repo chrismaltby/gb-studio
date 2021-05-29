@@ -3,15 +3,15 @@ import PropTypes from "prop-types";
 import cx from "classnames";
 import { connect } from "react-redux";
 import SpriteSheetCanvas from "./SpriteSheetCanvas";
-import { ActorShape, PaletteShape } from "../../store/stateShape";
-import { getCachedObject } from "../../lib/helpers/cache";
+import { ActorShape, PaletteShape } from "store/stateShape";
+import { getCachedObject } from "lib/helpers/cache";
 import { DMG_PALETTE, MIDDLE_MOUSE, SPRITE_TYPE_STATIC } from "../../consts";
 import {
   actorSelectors,
   paletteSelectors,
-} from "../../store/features/entities/entitiesState";
-import editorActions from "../../store/features/editor/editorActions";
-import { getSettings } from "../../store/features/settings/settingsState";
+} from "store/features/entities/entitiesState";
+import editorActions from "store/features/editor/editorActions";
+import { getSettings } from "store/features/settings/settingsState";
 
 class Actor extends Component {
   onMouseDown = (e) => {

@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
-import l10n from "../../lib/helpers/l10n";
-import { SceneParallaxLayer } from "../../store/features/entities/entitiesTypes";
-import { CoordinateInput } from "../ui/form/CoordinateInput";
-import { FormField } from "../ui/form/FormLayout";
-import { Select } from "../ui/form/Select";
+import l10n from "lib/helpers/l10n";
+import { SceneParallaxLayer } from "store/features/entities/entitiesTypes";
+import { CoordinateInput } from "ui/form/CoordinateInput";
+import { FormField } from "ui/form/FormLayout";
+import { Select } from "ui/form/Select";
 import { ParallaxSpeedSelect } from "./ParallaxSpeedSelect";
-import editorActions from "../../store/features/editor/editorActions";
+import editorActions from "store/features/editor/editorActions";
 
 interface ParallaxOption {
   value: number;

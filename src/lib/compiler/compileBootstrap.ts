@@ -1,9 +1,9 @@
-import { EngineFieldSchema } from "../../store/features/engine/engineState";
+import { EngineFieldSchema } from "store/features/engine/engineState";
 import {
   ActorDirection,
   Font,
   EngineFieldValue,
-} from "../../store/features/entities/entitiesTypes";
+} from "store/features/entities/entitiesTypes";
 import { avatarFontSymbol, fontSymbol, sceneSymbol } from "./compileData2";
 import { dirEnum } from "./helpers";
 

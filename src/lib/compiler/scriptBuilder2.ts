@@ -13,13 +13,13 @@ import {
   Palette,
   ScriptEvent,
   Variable,
-} from "../../store/features/entities/entitiesTypes";
+} from "store/features/entities/entitiesTypes";
 import { Dictionary } from "@reduxjs/toolkit";
-import { EngineFieldSchema } from "../../store/features/engine/engineState";
+import { EngineFieldSchema } from "store/features/engine/engineState";
 import {
   initialState as initialSettingsState,
   SettingsState,
-} from "../../store/features/settings/settingsState";
+} from "store/features/settings/settingsState";
 import { FunctionSymbol, OperatorSymbol } from "../rpn/types";
 import tokenize from "../rpn/tokenizer";
 import shuntingYard from "../rpn/shuntingYard";

@@ -6,7 +6,7 @@ import {
   OptionLabelWithPreview,
   SingleValueWithPreview,
   SelectCommonProps,
-} from "../ui/form/Select";
+} from "ui/form/Select";
 
 export const instrumentColors = [
   "red",

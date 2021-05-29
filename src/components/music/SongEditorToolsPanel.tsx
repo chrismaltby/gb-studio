@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import { RootState } from "../../store/configureStore";
+import { RootState } from "store/configureStore";
 import {
   PlayIcon,
   PauseIcon,
@@ -10,15 +10,13 @@ import {
   EraserIcon,
   NoiseIcon,
   SongIcon,
-} from "../ui/icons/Icons";
-import FloatingPanel, {
-  FloatingPanelDivider,
-} from "../ui/panels/FloatingPanel";
-import trackerActions from "../../store/features/tracker/trackerActions";
-import { Button } from "../ui/buttons/Button";
-import { Music } from "../../store/features/entities/entitiesTypes";
-import { assetFilename } from "../../lib/helpers/gbstudio";
-import { saveSongFile } from "../../store/features/trackerDocument/trackerDocumentState";
+} from "ui/icons/Icons";
+import FloatingPanel, { FloatingPanelDivider } from "ui/panels/FloatingPanel";
+import trackerActions from "store/features/tracker/trackerActions";
+import { Button } from "ui/buttons/Button";
+import { Music } from "store/features/entities/entitiesTypes";
+import { assetFilename } from "lib/helpers/gbstudio";
+import { saveSongFile } from "store/features/trackerDocument/trackerDocumentState";
 
 interface SongEditorToolsPanelProps {
   selectedSong?: Music;

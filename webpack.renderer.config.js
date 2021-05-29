@@ -1,6 +1,7 @@
 const rules = require("./webpack.rules");
 const plugins = require("./webpack.plugins");
 const CopyPlugin = require("copy-webpack-plugin");
+const Path = require("path");
 
 rules.push({
   test: /\.css$/,
@@ -11,6 +12,10 @@ const rendererPlugins = [].concat(
   plugins,
   new CopyPlugin([{ from: "node_modules/vm2", to: "node_modules/vm2" }])
 );
+
+const srcPath = (subdir) => {
+  return Path.join(__dirname, "src", subdir);
+};
 
 module.exports = {
   // Put your normal webpack config below here
@@ -50,7 +55,7 @@ module.exports = {
           test: /[\\/]node_modules[\\/]chokidar[\\/]/,
           chunks: "all",
           priority: 2,
-        },        
+        },
       },
     },
   },
@@ -59,6 +64,10 @@ module.exports = {
     extensions: [".js", ".ts", ".jsx", ".tsx", ".wasm", ".css"],
     alias: {
       "react-dom": "@hot-loader/react-dom",
+      store: srcPath("store"),
+      components: srcPath("components"),
+      lib: srcPath("lib"),
+      ui: srcPath("components/ui"),
     },
   },
   externals: {

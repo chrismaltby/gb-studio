@@ -18,17 +18,17 @@ import {
   ActorShape,
   TriggerShape,
   SpriteShape,
-} from "../../store/stateShape";
-import { walkSceneEvents } from "../../lib/helpers/eventSystem";
-import { EVENT_PLAYER_SET_SPRITE } from "../../lib/compiler/eventTypes";
+} from "store/stateShape";
+import { walkSceneEvents } from "lib/helpers/eventSystem";
+import { EVENT_PLAYER_SET_SPRITE } from "lib/compiler/eventTypes";
 import {
   sceneSelectors,
   actorSelectors,
   triggerSelectors,
   spriteSheetSelectors,
-} from "../../store/features/entities/entitiesState";
-import clamp from "../../lib/helpers/clamp";
-import l10n from "../../lib/helpers/l10n";
+} from "store/features/entities/entitiesState";
+import clamp from "lib/helpers/clamp";
+import l10n from "lib/helpers/l10n";
 
 const Portal = (props) => {
   const root = document.getElementById("MenuPortal");

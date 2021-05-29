@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import { PatternCell } from "../../lib/helpers/uge/song/PatternCell";
-import { Song } from "../../lib/helpers/uge/song/Song";
-import { RootState } from "../../store/configureStore";
-import trackerActions from "../../store/features/tracker/trackerActions";
-import trackerDocumentActions from "../../store/features/trackerDocument/trackerDocumentActions";
-import { SplitPaneHorizontalDivider } from "../ui/splitpane/SplitPaneDivider";
+import { PatternCell } from "lib/helpers/uge/song/PatternCell";
+import { Song } from "lib/helpers/uge/song/Song";
+import { RootState } from "store/configureStore";
+import trackerActions from "store/features/tracker/trackerActions";
+import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
+import { SplitPaneHorizontalDivider } from "ui/splitpane/SplitPaneDivider";
 import { SequenceEditor } from "./SequenceEditor";
 import { SongRow } from "./SongRow";
 import { UgePlayer } from "./UgePlayer";

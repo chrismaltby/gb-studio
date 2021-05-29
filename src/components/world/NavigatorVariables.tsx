@@ -1,15 +1,12 @@
 import React, { FC, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../store/configureStore";
-import { variableSelectors } from "../../store/features/entities/entitiesState";
-import { FlatList } from "../ui/lists/FlatList";
-import editorActions from "../../store/features/editor/editorActions";
-import { Variable } from "../../store/features/entities/entitiesTypes";
-import {
-  allVariables,
-  globalVariableDefaultName,
-} from "../../lib/helpers/variables";
-import { EntityListItem } from "../ui/lists/EntityListItem";
+import { RootState } from "store/configureStore";
+import { variableSelectors } from "store/features/entities/entitiesState";
+import { FlatList } from "ui/lists/FlatList";
+import editorActions from "store/features/editor/editorActions";
+import { Variable } from "store/features/entities/entitiesTypes";
+import { allVariables, globalVariableDefaultName } from "lib/helpers/variables";
+import { EntityListItem } from "ui/lists/EntityListItem";
 
 interface NavigatorVariablesProps {
   height: number;

@@ -3,16 +3,16 @@ import { Middleware } from "@reduxjs/toolkit";
 import Path from "path";
 import rimraf from "rimraf";
 import { promisify } from "util";
-import getTmp from "../../../lib/helpers/getTmp";
+import getTmp from "lib/helpers/getTmp";
 import { RootState } from "../../configureStore";
-import copy from "../../../lib/helpers/fsCopy";
+import copy from "lib/helpers/fsCopy";
 import consoleActions from "../console/consoleActions";
 import navigationActions from "../navigation/navigationActions";
 import { denormalizeProject } from "../project/projectActions";
-import confirmEjectEngineDialog from "../../../lib/electron/dialog/confirmEjectEngineDialog";
+import confirmEjectEngineDialog from "lib/electron/dialog/confirmEjectEngineDialog";
 import { statSync } from "fs-extra";
-import confirmEjectEngineReplaceDialog from "../../../lib/electron/dialog/confirmEjectEngineReplaceDialog";
-import ejectEngineToDir from "../../../lib/project/ejectEngineToDir";
+import confirmEjectEngineReplaceDialog from "lib/electron/dialog/confirmEjectEngineReplaceDialog";
+import ejectEngineToDir from "lib/project/ejectEngineToDir";
 import actions from "./buildGameActions";
 
 const rmdir = promisify(rimraf);
@@ -45,9 +45,9 @@ const buildGameMiddleware: Middleware<{}, RootState> =
 
         await rmdir(outputRoot);
 
-        const buildProject = await import(
-          "../../../lib/compiler/buildProject"
-        ).then((module) => module.default);
+        const buildProject = await import("lib/compiler/buildProject").then(
+          (module) => module.default
+        );
 
         await buildProject(project, {
           projectRoot,
@@ -120,7 +120,7 @@ const buildGameMiddleware: Middleware<{}, RootState> =
       }
 
       if (module.hot) {
-        module.hot.accept("../../../lib/compiler/buildProject", () => {
+        module.hot.accept("lib/compiler/buildProject", () => {
           dispatch(consoleActions.clearConsole());
           dispatch(consoleActions.stdOut("Reloaded GB Studio Compiler"));
         });
@@ -192,13 +192,13 @@ const buildGameMiddleware: Middleware<{}, RootState> =
           dispatch(consoleActions.stdErr(message));
         };
 
-        const compileData = await import(
-          "../../../lib/compiler/compileData"
-        ).then((module) => module.default);
+        const compileData = await import("lib/compiler/compileData").then(
+          (module) => module.default
+        );
 
-        const ejectBuild = await import(
-          "../../../lib/compiler/ejectBuild"
-        ).then((module) => module.default);
+        const ejectBuild = await import("lib/compiler/ejectBuild").then(
+          (module) => module.default
+        );
 
         const tmpPath = getTmp();
 
@@ -262,5 +262,5 @@ const buildGameMiddleware: Middleware<{}, RootState> =
 export default buildGameMiddleware;
 
 if (module.hot) {
-  module.hot.accept("../../../lib/compiler/buildProject");
+  module.hot.accept("lib/compiler/buildProject");
 }

@@ -1,10 +1,10 @@
 import React, { useCallback, useState } from "react";
 import { useDispatch } from "react-redux";
-import l10n from "../../lib/helpers/l10n";
+import l10n from "lib/helpers/l10n";
 
-import settingsActions from "../../store/features/settings/settingsActions";
-import { SettingsState } from "../../store/features/settings/settingsState";
-import { Button } from "../ui/buttons/Button";
+import settingsActions from "store/features/settings/settingsActions";
+import { SettingsState } from "store/features/settings/settingsState";
+import { Button } from "ui/buttons/Button";
 
 export const NoSongsMessage = () => {
   const dispatch = useDispatch();

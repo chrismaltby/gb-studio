@@ -1,13 +1,13 @@
 import React, { FC, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import { RootState } from "../../store/configureStore";
-import { paletteSelectors } from "../../store/features/entities/entitiesState";
+import { RootState } from "store/configureStore";
+import { paletteSelectors } from "store/features/entities/entitiesState";
 import PaletteBlock from "../library/PaletteBlock";
-import { SelectMenu, selectMenuStyleProps } from "../ui/form/Select";
-import { RelativePortal } from "../ui/layout/RelativePortal";
+import { SelectMenu, selectMenuStyleProps } from "ui/form/Select";
+import { RelativePortal } from "ui/layout/RelativePortal";
 import { PaletteSelect } from "./PaletteSelect";
-import navigationActions from "../../store/features/navigation/navigationActions";
+import navigationActions from "store/features/navigation/navigationActions";
 import { DMG_PALETTE } from "../../consts";
 
 type PaletteSelectProps = {

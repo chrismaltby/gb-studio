@@ -30,8 +30,8 @@ import {
   isPropertyField,
   walkEvents,
   replaceEventActorIds,
-} from "../../../lib/helpers/eventSystem";
-import clamp from "../../../lib/helpers/clamp";
+} from "lib/helpers/eventSystem";
+import clamp from "lib/helpers/clamp";
 import { RootState } from "../../configureStore";
 import settingsActions from "../settings/settingsActions";
 import uuid from "uuid";
@@ -39,9 +39,9 @@ import {
   replaceInvalidCustomEventVariables,
   replaceInvalidCustomEventActors,
   replaceInvalidCustomEventProperties,
-} from "../../../lib/compiler/helpers";
-import { EVENT_CALL_CUSTOM_EVENT } from "../../../lib/compiler/eventTypes";
-import { paint, paintLine, floodFill } from "../../../lib/helpers/paint";
+} from "lib/compiler/helpers";
+import { EVENT_CALL_CUSTOM_EVENT } from "lib/compiler/eventTypes";
+import { paint, paintLine, floodFill } from "lib/helpers/paint";
 import { Brush, EditorSelectionType } from "../editor/editorState";
 import projectActions from "../project/projectActions";
 import {
@@ -78,7 +78,7 @@ import {
   swap,
   matchAsset,
 } from "./entitiesHelpers";
-import { clone } from "../../../lib/helpers/clone";
+import { clone } from "lib/helpers/clone";
 import spriteActions from "../sprite/spriteActions";
 
 const MIN_SCENE_X = 60;

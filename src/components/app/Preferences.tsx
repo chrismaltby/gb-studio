@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
 import Path from "path";
 import settings from "electron-settings";
-import l10n from "../../lib/helpers/l10n";
-import getTmp from "../../lib/helpers/getTmp";
-import ThemeProvider from "../ui/theme/ThemeProvider";
-import GlobalStyle from "../ui/globalStyle";
-import { PreferencesWrapper } from "../ui/preferences/Preferences";
-import { FormField, FormRow } from "../ui/form/FormLayout";
-import { TextField } from "../ui/form/TextField";
-import { Button } from "../ui/buttons/Button";
-import { DotsIcon } from "../ui/icons/Icons";
-import { FixedSpacer, FlexGrow } from "../ui/spacing/Spacing";
-import { AppSelect } from "../ui/form/AppSelect";
+import l10n from "lib/helpers/l10n";
+import getTmp from "lib/helpers/getTmp";
+import ThemeProvider from "ui/theme/ThemeProvider";
+import GlobalStyle from "ui/globalStyle";
+import { PreferencesWrapper } from "ui/preferences/Preferences";
+import { FormField, FormRow } from "ui/form/FormLayout";
+import { TextField } from "ui/form/TextField";
+import { Button } from "ui/buttons/Button";
+import { DotsIcon } from "ui/icons/Icons";
+import { FixedSpacer, FlexGrow } from "ui/spacing/Spacing";
+import { AppSelect } from "ui/form/AppSelect";
 import { remote } from "electron";
 
 const { dialog } = remote;

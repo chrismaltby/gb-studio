@@ -6,15 +6,15 @@ import { connect } from "react-redux";
 import events, {
   engineFieldUpdateEvents,
   engineFieldStoreEvents,
-} from "../../lib/events";
-import { CustomEventShape, EngineFieldShape } from "../../store/stateShape";
+} from "lib/events";
+import { CustomEventShape, EngineFieldShape } from "store/stateShape";
 import ScriptEventFormField from "./ScriptEventFormField";
-import { customEventSelectors } from "../../store/features/entities/entitiesState";
+import { customEventSelectors } from "store/features/entities/entitiesState";
 import { SidebarTabs } from "../editors/Sidebar";
 import {
   EVENT_ENGINE_FIELD_STORE,
   EVENT_ENGINE_FIELD_SET,
-} from "../../lib/compiler/eventTypes";
+} from "lib/compiler/eventTypes";
 
 const genKey = (id, key, index) => `${id}_${key}_${index || 0}`;
 

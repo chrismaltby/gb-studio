@@ -12,12 +12,12 @@ import {
   EVENT_END,
   EVENT_CALL_CUSTOM_EVENT,
   EVENT_COMMENT,
-} from "../../lib/compiler/eventTypes";
+} from "lib/compiler/eventTypes";
 import { DropdownButton } from "../library/Button";
 import { MenuItem, MenuDivider } from "../library/Menu";
-import l10n from "../../lib/helpers/l10n";
-import { EventShape } from "../../store/stateShape";
-import events from "../../lib/events";
+import l10n from "lib/helpers/l10n";
+import { EventShape } from "store/stateShape";
+import events from "lib/events";
 import { ScriptEditorEventHelper } from "./ScriptEditorEventHelper";
 
 const COMMENT_PREFIX = "//";

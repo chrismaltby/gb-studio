@@ -10,7 +10,7 @@ import {
   SpriteAnimation,
 } from "./entitiesTypes";
 import { EntityId, Dictionary } from "@reduxjs/toolkit";
-import { SpriteSheetData } from "../../../lib/compiler/compileSprites";
+import { SpriteSheetData } from "lib/compiler/compileSprites";
 
 const backgroundSchema = new schema.Entity("backgrounds");
 const musicSchema = new schema.Entity("music");

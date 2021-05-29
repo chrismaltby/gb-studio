@@ -1,15 +1,15 @@
 import React, { useCallback } from "react";
-import l10n from "../../lib/helpers/l10n";
-import settingsActions from "../../store/features/settings/settingsActions";
-import { Select } from "../ui/form/Select";
-import { Button } from "../ui/buttons/Button";
-import { SearchableSettingRow } from "../ui/form/SearchableSettingRow";
-import { CardButtons } from "../ui/cards/Card";
-import { SettingRowInput, SettingRowLabel } from "../ui/form/SettingRow";
+import l10n from "lib/helpers/l10n";
+import settingsActions from "store/features/settings/settingsActions";
+import { Select } from "ui/form/Select";
+import { Button } from "ui/buttons/Button";
+import { SearchableSettingRow } from "ui/form/SearchableSettingRow";
+import { CardButtons } from "ui/cards/Card";
+import { SettingRowInput, SettingRowLabel } from "ui/form/SettingRow";
 import { useDispatch, useSelector } from "react-redux";
-import { CartType } from "../../store/features/settings/settingsState";
-import { RootState } from "../../store/configureStore";
-import { Checkbox } from "../ui/form/Checkbox";
+import { CartType } from "store/features/settings/settingsState";
+import { RootState } from "store/configureStore";
+import { Checkbox } from "ui/form/Checkbox";
 
 export interface CartSettingsEditorProps {
   searchTerm?: string;

@@ -13,11 +13,11 @@ import UIPage from "../pages/UIPage";
 import MusicPage from "../pages/MusicPage";
 import PalettePage from "../pages/PalettePage";
 import SettingsPage from "../pages/SettingsPage";
-import l10n from "../../lib/helpers/l10n";
-import { ErrorShape } from "../../store/stateShape";
+import l10n from "lib/helpers/l10n";
+import { ErrorShape } from "store/stateShape";
 import LoadingPane from "../library/LoadingPane";
-import { DropZone } from "../ui/upload/DropZone";
-import projectActions from "../../store/features/project/projectActions";
+import { DropZone } from "ui/upload/DropZone";
+import projectActions from "store/features/project/projectActions";
 
 class App extends Component {
   constructor() {

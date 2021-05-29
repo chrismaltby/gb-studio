@@ -1,18 +1,18 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import l10n from "../../lib/helpers/l10n";
-import { RootState } from "../../store/configureStore";
-import useSplitPane from "../ui/hooks/use-split-pane";
-import useWindowSize from "../ui/hooks/use-window-size";
-import { SplitPaneVerticalDivider } from "../ui/splitpane/SplitPaneDivider";
-import { SplitPaneHeader } from "../ui/splitpane/SplitPaneHeader";
-import editorActions from "../../store/features/editor/editorActions";
-import entitiesActions from "../../store/features/entities/entitiesActions";
+import l10n from "lib/helpers/l10n";
+import { RootState } from "store/configureStore";
+import useSplitPane from "ui/hooks/use-split-pane";
+import useWindowSize from "ui/hooks/use-window-size";
+import { SplitPaneVerticalDivider } from "ui/splitpane/SplitPaneDivider";
+import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
+import editorActions from "store/features/editor/editorActions";
+import entitiesActions from "store/features/entities/entitiesActions";
 import { NavigatorScenes } from "./NavigatorScenes";
 import { NavigatorCustomEvents } from "./NavigatorCustomEvents";
-import { Button } from "../ui/buttons/Button";
-import { PlusIcon } from "../ui/icons/Icons";
+import { Button } from "ui/buttons/Button";
+import { PlusIcon } from "ui/icons/Icons";
 import { NavigatorVariables } from "./NavigatorVariables";
 
 const COLLAPSED_SIZE = 30;

@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import cx from "classnames";
 import { connect } from "react-redux";
-import l10n from "../../lib/helpers/l10n";
+import l10n from "lib/helpers/l10n";
 import {
   PaintBucketIcon,
   SquareIcon,
@@ -26,21 +26,21 @@ import {
   TILE_PROP_LADDER,
 } from "../../consts";
 import PaletteBlock from "../library/PaletteBlock";
-import { PaletteShape } from "../../store/stateShape";
+import { PaletteShape } from "store/stateShape";
 import Modal, { ModalFade, ModalContent } from "../library/Modal";
 import Button from "../library/Button";
 import { FormField } from "../library/Forms";
-import { getCachedObject } from "../../lib/helpers/cache";
-import editorActions from "../../store/features/editor/editorActions";
+import { getCachedObject } from "lib/helpers/cache";
+import editorActions from "store/features/editor/editorActions";
 import {
   backgroundSelectors,
   paletteSelectors,
   sceneSelectors,
-} from "../../store/features/entities/entitiesState";
-import { getSettings } from "../../store/features/settings/settingsState";
-import settingsActions from "../../store/features/settings/settingsActions";
-import navigationActions from "../../store/features/navigation/navigationActions";
-import entitiesActions from "../../store/features/entities/entitiesActions";
+} from "store/features/entities/entitiesState";
+import { getSettings } from "store/features/settings/settingsState";
+import settingsActions from "store/features/settings/settingsActions";
+import navigationActions from "store/features/navigation/navigationActions";
+import entitiesActions from "store/features/entities/entitiesActions";
 import { PaletteSelect } from "../forms/PaletteSelect";
 
 const paletteIndexes = [0, 1, 2, 3, 4, 5, 6, 7];

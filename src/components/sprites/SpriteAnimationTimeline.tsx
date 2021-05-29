@@ -2,13 +2,13 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import throttle from "lodash/throttle";
-import { RootState } from "../../store/configureStore";
-import { spriteAnimationSelectors } from "../../store/features/entities/entitiesState";
-import entitiesActions from "../../store/features/entities/entitiesActions";
-import editorActions from "../../store/features/editor/editorActions";
-import { CloneIcon, PlusIcon } from "../ui/icons/Icons";
+import { RootState } from "store/configureStore";
+import { spriteAnimationSelectors } from "store/features/entities/entitiesState";
+import entitiesActions from "store/features/entities/entitiesActions";
+import editorActions from "store/features/editor/editorActions";
+import { CloneIcon, PlusIcon } from "ui/icons/Icons";
 import SpriteAnimationTimelineFrame from "./SpriteAnimationTimelineFrame";
-import { FixedSpacer } from "../ui/spacing/Spacing";
+import { FixedSpacer } from "ui/spacing/Spacing";
 
 interface SpriteAnimationTimelineProps {
   spriteSheetId: string;

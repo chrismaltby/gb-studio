@@ -7,7 +7,7 @@ import {
   DRAG_DESTINATION,
   DRAG_PLAYER,
 } from "../../../consts";
-import { zoomIn, zoomOut } from "../../../lib/helpers/zoom";
+import { zoomIn, zoomOut } from "lib/helpers/zoom";
 import { Actor, Trigger, SceneData, Variable } from "../entities/entitiesTypes";
 import navigationActions from "../navigation/navigationActions";
 import projectActions from "../project/projectActions";

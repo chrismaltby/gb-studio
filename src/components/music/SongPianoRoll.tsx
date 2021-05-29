@@ -1,14 +1,14 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useSelector } from "react-redux";
 import styled, { css } from "styled-components";
-import { Song } from "../../lib/helpers/uge/song/Song";
-import { RootState } from "../../store/configureStore";
-import { SplitPaneVerticalDivider } from "../ui/splitpane/SplitPaneDivider";
+import { Song } from "lib/helpers/uge/song/Song";
+import { RootState } from "store/configureStore";
+import { SplitPaneVerticalDivider } from "ui/splitpane/SplitPaneDivider";
 import { SequenceEditor } from "./SequenceEditor";
 import { UgePlayer } from "./UgePlayer";
 import scrollIntoView from "scroll-into-view-if-needed";
-import { SplitPaneHeader } from "../ui/splitpane/SplitPaneHeader";
-import l10n from "../../lib/helpers/l10n";
+import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
+import l10n from "lib/helpers/l10n";
 import { RollChannel } from "./RollChannel";
 import { RollChannelGrid } from "./RollChannelGrid";
 

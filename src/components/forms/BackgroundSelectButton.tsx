@@ -1,20 +1,17 @@
 import React, { FC, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled, { css } from "styled-components";
-import { assetFilename } from "../../lib/helpers/gbstudio";
-import l10n from "../../lib/helpers/l10n";
-import { RootState } from "../../store/configureStore";
+import { assetFilename } from "lib/helpers/gbstudio";
+import l10n from "lib/helpers/l10n";
+import { RootState } from "store/configureStore";
 import {
   paletteSelectors,
   backgroundSelectors,
-} from "../../store/features/entities/entitiesState";
-import warningsActions from "../../store/features/warnings/warningsActions";
-import {
-  Palette,
-  Background,
-} from "../../store/features/entities/entitiesTypes";
-import { SelectMenu, selectMenuStyleProps } from "../ui/form/Select";
-import { RelativePortal } from "../ui/layout/RelativePortal";
+} from "store/features/entities/entitiesState";
+import warningsActions from "store/features/warnings/warningsActions";
+import { Palette, Background } from "store/features/entities/entitiesTypes";
+import { SelectMenu, selectMenuStyleProps } from "ui/form/Select";
+import { RelativePortal } from "ui/layout/RelativePortal";
 import { BackgroundSelect } from "./BackgroundSelect";
 
 interface BackgroundSelectProps {

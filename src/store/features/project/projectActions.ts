@@ -15,20 +15,20 @@ import {
   Emote,
 } from "../entities/entitiesTypes";
 import type { RootState } from "../../configureStore";
-import loadProjectData from "../../../lib/project/loadProjectData";
-import saveProjectData from "../../../lib/project/saveProjectData";
-import saveAsProjectData from "../../../lib/project/saveAsProjectData";
-import { loadSpriteData } from "../../../lib/project/loadSpriteData";
-import { loadBackgroundData } from "../../../lib/project/loadBackgroundData";
-import { loadMusicData } from "../../../lib/project/loadMusicData";
-import { loadFontData } from "../../../lib/project/loadFontData";
+import loadProjectData from "lib/project/loadProjectData";
+import saveProjectData from "lib/project/saveProjectData";
+import saveAsProjectData from "lib/project/saveAsProjectData";
+import { loadSpriteData } from "lib/project/loadSpriteData";
+import { loadBackgroundData } from "lib/project/loadBackgroundData";
+import { loadMusicData } from "lib/project/loadMusicData";
+import { loadFontData } from "lib/project/loadFontData";
 import { SettingsState } from "../settings/settingsState";
 import { MetadataState } from "../metadata/metadataState";
-import parseAssetPath from "../../../lib/helpers/path/parseAssetPath";
+import parseAssetPath from "lib/helpers/path/parseAssetPath";
 import { denormalizeEntities } from "../entities/entitiesHelpers";
 import { matchAsset } from "../entities/entitiesHelpers";
-import { loadAvatarData } from "../../../lib/project/loadAvatarData";
-import { loadEmoteData } from "../../../lib/project/loadEmoteData";
+import { loadAvatarData } from "lib/project/loadAvatarData";
+import { loadEmoteData } from "lib/project/loadEmoteData";
 
 let saving = false;
 

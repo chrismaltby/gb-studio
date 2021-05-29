@@ -1,9 +1,6 @@
 import uniq from "lodash/uniq";
-import { EditorSelectionType } from "../../store/features/editor/editorState";
-import {
-  CustomEvent,
-  Variable,
-} from "../../store/features/entities/entitiesTypes";
+import { EditorSelectionType } from "store/features/editor/editorState";
+import { CustomEvent, Variable } from "store/features/entities/entitiesTypes";
 
 const arrayNStrings = (n: number) =>
   Array.from(Array(n).keys()).map((n) => String(n));

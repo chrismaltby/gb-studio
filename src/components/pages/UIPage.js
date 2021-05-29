@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import FilesSidebar from "../assets/FilesSidebar";
 import ImageViewer from "../assets/ImageViewer";
-import electronActions from "../../store/features/electron/electronActions";
+import electronActions from "store/features/electron/electronActions";
 
 class UIPage extends Component {
   constructor(props) {

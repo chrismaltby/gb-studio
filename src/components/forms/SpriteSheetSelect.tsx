@@ -1,16 +1,16 @@
 import React, { FC, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import uniq from "lodash/uniq";
-import { RootState } from "../../store/configureStore";
+import { RootState } from "store/configureStore";
 import {
   paletteSelectors,
   spriteSheetSelectors,
-} from "../../store/features/entities/entitiesState";
+} from "store/features/entities/entitiesState";
 import {
   ActorDirection,
   Palette,
   SpriteSheet,
-} from "../../store/features/entities/entitiesTypes";
+} from "store/features/entities/entitiesTypes";
 import {
   Option,
   OptGroup,
@@ -18,9 +18,9 @@ import {
   OptionLabelWithPreview,
   SingleValueWithPreview,
   SelectCommonProps,
-} from "../ui/form/Select";
+} from "ui/form/Select";
 import SpriteSheetCanvas from "../world/SpriteSheetCanvas";
-import l10n from "../../lib/helpers/l10n";
+import l10n from "lib/helpers/l10n";
 
 interface SpriteSheetSelectProps extends SelectCommonProps {
   name: string;

@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import { RootState } from "../../store/configureStore";
-import { spriteAnimationSelectors } from "../../store/features/entities/entitiesState";
+import { RootState } from "store/configureStore";
+import { spriteAnimationSelectors } from "store/features/entities/entitiesState";
 import {
   EyeOpenIcon,
   PlayIcon,
@@ -11,15 +11,13 @@ import {
   NextIcon,
   GridIcon,
   PauseIcon,
-} from "../ui/icons/Icons";
-import FloatingPanel, {
-  FloatingPanelDivider,
-} from "../ui/panels/FloatingPanel";
-import editorActions from "../../store/features/editor/editorActions";
-import { DropdownButton } from "../ui/buttons/DropdownButton";
-import { MenuItem } from "../ui/menu/Menu";
-import l10n from "../../lib/helpers/l10n";
-import { Button } from "../ui/buttons/Button";
+} from "ui/icons/Icons";
+import FloatingPanel, { FloatingPanelDivider } from "ui/panels/FloatingPanel";
+import editorActions from "store/features/editor/editorActions";
+import { DropdownButton } from "ui/buttons/DropdownButton";
+import { MenuItem } from "ui/menu/Menu";
+import l10n from "lib/helpers/l10n";
+import { Button } from "ui/buttons/Button";
 
 interface MetaspriteEditorToolsPanelProps {
   selectedAnimationId: string;

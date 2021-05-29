@@ -4,10 +4,10 @@ import settings from "electron-settings";
 import Path from "path";
 import { stat } from "fs-extra";
 import menu from "./menu";
-import { checkForUpdate } from "./lib/helpers/updateChecker";
-import switchLanguageDialog from "./lib/electron/dialog/switchLanguageDialog";
-import l10n, { locales } from "./lib/helpers/l10n";
-import initElectronL10n from "./lib/helpers/initElectronL10n";
+import { checkForUpdate } from "lib/helpers/updateChecker";
+import switchLanguageDialog from "lib/electron/dialog/switchLanguageDialog";
+import l10n, { locales } from "lib/helpers/l10n";
+import initElectronL10n from "lib/helpers/initElectronL10n";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;

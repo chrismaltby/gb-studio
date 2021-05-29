@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { useSelector } from "react-redux";
-import { RootState } from "../../../store/configureStore";
+import { RootState } from "store/configureStore";
 
 interface SGBBorderPreviewProps {
   onClick?: () => void;

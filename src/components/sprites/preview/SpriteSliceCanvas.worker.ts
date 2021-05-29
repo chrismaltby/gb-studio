@@ -1,4 +1,4 @@
-import { colorizeSpriteData } from "../../../lib/helpers/color";
+import { colorizeSpriteData } from "lib/helpers/color";
 
 const workerCtx: Worker = self as any;
 

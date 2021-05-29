@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from "react";
-import { MusicDriverSetting } from "../../store/features/settings/settingsState";
-import { Option, Select, SelectCommonProps } from "../ui/form/Select";
+import { MusicDriverSetting } from "store/features/settings/settingsState";
+import { Option, Select, SelectCommonProps } from "ui/form/Select";
 
 interface MusicDriverSelectProps extends SelectCommonProps {
   name: string;

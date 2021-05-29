@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
+import rerenderCheck from "lib/helpers/reactRerenderCheck";
 import CustomEventActorSelect from "./CustomEventActorSelect";
 import SceneActorSelect from "./SceneActorSelect";
 

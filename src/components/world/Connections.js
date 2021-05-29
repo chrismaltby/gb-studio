@@ -2,19 +2,19 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import cx from "classnames";
 import { connect } from "react-redux";
-import { EVENT_SWITCH_SCENE } from "../../lib/compiler/eventTypes";
+import { EVENT_SWITCH_SCENE } from "lib/compiler/eventTypes";
 import {
   walkActorEvents,
   walkTriggerEvents,
   walkSceneSpecificEvents,
-} from "../../lib/helpers/eventSystem";
-import { SceneShape, ActorShape, TriggerShape } from "../../store/stateShape";
+} from "lib/helpers/eventSystem";
+import { SceneShape, ActorShape, TriggerShape } from "store/stateShape";
 import {
   sceneSelectors,
   actorSelectors,
   triggerSelectors,
-} from "../../store/features/entities/entitiesState";
-import editorActions from "../../store/features/editor/editorActions";
+} from "store/features/entities/entitiesState";
+import editorActions from "store/features/editor/editorActions";
 import { MIDDLE_MOUSE } from "../../consts";
 
 const scriptMapTransition = (walkEventsFn) => (script) => {

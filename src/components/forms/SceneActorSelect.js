@@ -3,13 +3,13 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Select, { components } from "react-select";
 import ActorCanvas from "../world/ActorCanvas";
-import { ActorShape } from "../../store/stateShape";
-import { getSettings } from "../../store/features/settings/settingsState";
-import { getCachedObject, createCacheFunction } from "../../lib/helpers/cache";
+import { ActorShape } from "store/stateShape";
+import { getSettings } from "store/features/settings/settingsState";
+import { getCachedObject, createCacheFunction } from "lib/helpers/cache";
 import {
   actorSelectors,
   getSceneActorIds,
-} from "../../store/features/entities/entitiesState";
+} from "store/features/entities/entitiesState";
 
 const menuPortalEl = document.getElementById("MenuPortal");
 

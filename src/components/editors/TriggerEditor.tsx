@@ -2,30 +2,30 @@ import React, { FC, useState } from "react";
 import { clipboard } from "electron";
 import { useDispatch, useSelector } from "react-redux";
 import ScriptEditor from "../script/ScriptEditor";
-import castEventValue from "../../lib/helpers/castEventValue";
-import { DropdownButton } from "../ui/buttons/DropdownButton";
-import { MenuDivider, MenuItem } from "../ui/menu/Menu";
-import l10n from "../../lib/helpers/l10n";
+import castEventValue from "lib/helpers/castEventValue";
+import { DropdownButton } from "ui/buttons/DropdownButton";
+import { MenuDivider, MenuItem } from "ui/menu/Menu";
+import l10n from "lib/helpers/l10n";
 import { SidebarTabs } from "./Sidebar";
 import { WorldEditor } from "./WorldEditor";
 import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
 import {
   triggerSelectors,
   sceneSelectors,
-} from "../../store/features/entities/entitiesState";
-import editorActions from "../../store/features/editor/editorActions";
-import clipboardActions from "../../store/features/clipboard/clipboardActions";
-import entitiesActions from "../../store/features/entities/entitiesActions";
-import { SidebarMultiColumnAuto, SidebarColumn } from "../ui/sidebars/Sidebar";
-import { FormContainer, FormHeader, FormRow } from "../ui/form/FormLayout";
-import { EditableText } from "../ui/form/EditableText";
-import { RootState } from "../../store/configureStore";
-import { Trigger } from "../../store/features/entities/entitiesTypes";
-import { CoordinateInput } from "../ui/form/CoordinateInput";
-import { NoteField } from "../ui/form/NoteField";
-import { TabBar } from "../ui/tabs/Tabs";
-import { Button } from "../ui/buttons/Button";
-import { LockIcon, LockOpenIcon } from "../ui/icons/Icons";
+} from "store/features/entities/entitiesState";
+import editorActions from "store/features/editor/editorActions";
+import clipboardActions from "store/features/clipboard/clipboardActions";
+import entitiesActions from "store/features/entities/entitiesActions";
+import { SidebarMultiColumnAuto, SidebarColumn } from "ui/sidebars/Sidebar";
+import { FormContainer, FormHeader, FormRow } from "ui/form/FormLayout";
+import { EditableText } from "ui/form/EditableText";
+import { RootState } from "store/configureStore";
+import { Trigger } from "store/features/entities/entitiesTypes";
+import { CoordinateInput } from "ui/form/CoordinateInput";
+import { NoteField } from "ui/form/NoteField";
+import { TabBar } from "ui/tabs/Tabs";
+import { Button } from "ui/buttons/Button";
+import { LockIcon, LockOpenIcon } from "ui/icons/Icons";
 
 interface TriggerEditorProps {
   id: string;

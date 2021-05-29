@@ -12,12 +12,12 @@ import {
 import {
   backgroundSelectors,
   sceneSelectors,
-} from "../../store/features/entities/entitiesState";
-import editorActions from "../../store/features/editor/editorActions";
-import settingsActions from "../../store/features/settings/settingsActions";
-import entitiesActions from "../../store/features/entities/entitiesActions";
+} from "store/features/entities/entitiesState";
+import editorActions from "store/features/editor/editorActions";
+import settingsActions from "store/features/settings/settingsActions";
+import entitiesActions from "store/features/entities/entitiesActions";
 
-import { SceneShape, VariableShape } from "../../store/stateShape";
+import { SceneShape, VariableShape } from "store/stateShape";
 import {
   TOOL_COLORS,
   TOOL_COLLISIONS,

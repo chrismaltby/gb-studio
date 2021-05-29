@@ -4,10 +4,10 @@ import { connect } from "react-redux";
 import cx from "classnames";
 import { HelpIcon } from "../library/Icons";
 import Button from "../library/Button";
-import l10n from "../../lib/helpers/l10n";
-import { groupBy } from "../../lib/helpers/array";
-import editorActions from "../../store/features/editor/editorActions";
-import navigationActions from "../../store/features/navigation/navigationActions";
+import l10n from "lib/helpers/l10n";
+import { groupBy } from "lib/helpers/array";
+import editorActions from "store/features/editor/editorActions";
+import navigationActions from "store/features/navigation/navigationActions";
 
 const groupByPlugin = groupBy("plugin");
 

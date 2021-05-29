@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import clamp from "../../../lib/helpers/clamp";
+import clamp from "lib/helpers/clamp";
 
 type SplitDirection = "horizontal" | "vertical";
 

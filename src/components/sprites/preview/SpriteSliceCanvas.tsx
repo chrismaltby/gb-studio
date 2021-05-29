@@ -1,13 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { DMG_PALETTE } from "../../../consts";
-import { assetFilename } from "../../../lib/helpers/gbstudio";
-import { RootState } from "../../../store/configureStore";
-import { spriteSheetSelectors } from "../../../store/features/entities/entitiesState";
-import {
-  ObjPalette,
-  Palette,
-} from "../../../store/features/entities/entitiesTypes";
+import { assetFilename } from "lib/helpers/gbstudio";
+import { RootState } from "store/configureStore";
+import { spriteSheetSelectors } from "store/features/entities/entitiesState";
+import { ObjPalette, Palette } from "store/features/entities/entitiesTypes";
 import SpriteSliceCanvasWorker from "./SpriteSliceCanvas.worker";
 
 interface SpriteSliceCanvasProps {

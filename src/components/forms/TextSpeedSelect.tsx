@@ -1,6 +1,6 @@
 import React, { FC } from "react";
-import l10n from "../../lib/helpers/l10n";
-import { Select, SelectCommonProps } from "../ui/form/Select";
+import l10n from "lib/helpers/l10n";
+import { Select, SelectCommonProps } from "ui/form/Select";
 
 interface TextSpeedSelectProps extends SelectCommonProps {
   name: string;

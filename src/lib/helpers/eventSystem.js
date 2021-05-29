@@ -4,7 +4,7 @@ import {
   EVENT_ENGINE_FIELD_SET,
   EVENT_ENGINE_FIELD_STORE,
 } from "../compiler/eventTypes";
-// import events from "../../lib/events";
+// import events from "lib/events";
 
 const mapValues = (obj, fn) =>
   Object.entries(obj).reduce((memo, [key, value]) => {

@@ -1,16 +1,13 @@
 import React, { useState, useEffect, FC } from "react";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
-import { MathTextarea } from "../ui/form/MathTextarea";
+import { MathTextarea } from "ui/form/MathTextarea";
 import {
   customEventSelectors,
   variableSelectors,
-} from "../../store/features/entities/entitiesState";
-import { RootState } from "../../store/configureStore";
-import {
-  NamedVariable,
-  namedVariablesByContext,
-} from "../../lib/helpers/variables";
+} from "store/features/entities/entitiesState";
+import { RootState } from "store/configureStore";
+import { NamedVariable, namedVariablesByContext } from "lib/helpers/variables";
 
 interface ScriptEventFormMathAreaProps {
   id?: string;

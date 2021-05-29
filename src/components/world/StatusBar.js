@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import l10n from "../../lib/helpers/l10n";
+import l10n from "lib/helpers/l10n";
 import {
   sceneSelectors,
   actorSelectors,
-} from "../../store/features/entities/entitiesState";
+} from "store/features/entities/entitiesState";
 
 class StatusBar extends Component {
   render() {

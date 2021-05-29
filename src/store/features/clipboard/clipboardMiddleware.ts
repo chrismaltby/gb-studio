@@ -5,7 +5,7 @@ import {
   getCustomEventIdsInEvents,
   getCustomEventIdsInActor,
   getCustomEventIdsInScene,
-} from "../../../lib/helpers/eventSystem";
+} from "lib/helpers/eventSystem";
 import { Dictionary, Middleware, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../configureStore";
 import {
@@ -24,7 +24,7 @@ import {
 import actions from "./clipboardActions";
 import entitiesActions from "../entities/entitiesActions";
 import editorActions from "../editor/editorActions";
-import confirmReplaceCustomEvent from "../../../lib/electron/dialog/confirmReplaceCustomEvent";
+import confirmReplaceCustomEvent from "lib/electron/dialog/confirmReplaceCustomEvent";
 import { copy, pasteAny } from "./clipboardHelpers";
 import {
   ClipboardTypeMetasprites,

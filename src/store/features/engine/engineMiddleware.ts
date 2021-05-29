@@ -8,14 +8,14 @@ import { EngineFieldSchema } from "./engineState";
 import events, {
   engineFieldUpdateEvents,
   engineFieldStoreEvents,
-} from "../../../lib/events";
+} from "lib/events";
 import {
   EVENT_ENGINE_FIELD_SET,
   EVENT_ENGINE_FIELD_STORE,
-} from "../../../lib/compiler/eventTypes";
-import { clampToCType, is16BitCType } from "../../../lib/helpers/engineFields";
-import l10n from "../../../lib/helpers/l10n";
-import { setDefault } from "../../../lib/helpers/setDefault";
+} from "lib/compiler/eventTypes";
+import { clampToCType, is16BitCType } from "lib/helpers/engineFields";
+import l10n from "lib/helpers/l10n";
+import { setDefault } from "lib/helpers/setDefault";
 
 interface EngineData {
   fields?: EngineFieldSchema[];

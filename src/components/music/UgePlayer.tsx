@@ -1,8 +1,8 @@
 import { ipcRenderer } from "electron";
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { Song } from "../../lib/helpers/uge/song/Song";
-import { RootState } from "../../store/configureStore";
+import { Song } from "lib/helpers/uge/song/Song";
+import { RootState } from "store/configureStore";
 // import Player from "./helpers/player";
 
 interface UgePlayerProps {

@@ -1,5 +1,5 @@
 import { ipcRenderer } from "electron";
-import player from "./components/music/helpers/player.js";
+import player from "components/music/helpers/player.js";
 
 const log = (log) => {
   console.log(log);

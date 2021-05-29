@@ -5,14 +5,14 @@ import ToolPicker from "../world/ToolPicker";
 import BrushToolbar from "../world/BrushToolbar";
 import EditorSidebar from "../editors/EditorSidebar";
 import StatusBar from "../world/StatusBar";
-import useResizable from "../ui/hooks/use-resizable";
-import useWindowSize from "../ui/hooks/use-window-size";
-import { SplitPaneHorizontalDivider } from "../ui/splitpane/SplitPaneDivider";
+import useResizable from "ui/hooks/use-resizable";
+import useWindowSize from "ui/hooks/use-window-size";
+import { SplitPaneHorizontalDivider } from "ui/splitpane/SplitPaneDivider";
 import { Navigator } from "../world/Navigator";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../store/configureStore";
-import editorActions from "../../store/features/editor/editorActions";
-import settingsActions from "../../store/features/settings/settingsActions";
+import { RootState } from "store/configureStore";
+import editorActions from "store/features/editor/editorActions";
+import settingsActions from "store/features/settings/settingsActions";
 
 import debounce from "lodash/debounce";
 

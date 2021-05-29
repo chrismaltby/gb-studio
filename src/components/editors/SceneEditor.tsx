@@ -2,50 +2,47 @@ import React, { FC, useCallback, useState } from "react";
 import { clipboard } from "electron";
 import { useDispatch, useSelector } from "react-redux";
 import ScriptEditor from "../script/ScriptEditor";
-import castEventValue from "../../lib/helpers/castEventValue";
-import l10n from "../../lib/helpers/l10n";
+import castEventValue from "lib/helpers/castEventValue";
+import l10n from "lib/helpers/l10n";
 import { WorldEditor } from "./WorldEditor";
 import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
 import BackgroundWarnings from "../world/BackgroundWarnings";
-import { sceneSelectors } from "../../store/features/entities/entitiesState";
-import editorActions from "../../store/features/editor/editorActions";
-import clipboardActions from "../../store/features/clipboard/clipboardActions";
-import entitiesActions from "../../store/features/entities/entitiesActions";
-import settingsActions from "../../store/features/settings/settingsActions";
-import { SidebarMultiColumnAuto, SidebarColumn } from "../ui/sidebars/Sidebar";
+import { sceneSelectors } from "store/features/entities/entitiesState";
+import editorActions from "store/features/editor/editorActions";
+import clipboardActions from "store/features/clipboard/clipboardActions";
+import entitiesActions from "store/features/entities/entitiesActions";
+import settingsActions from "store/features/settings/settingsActions";
+import { SidebarMultiColumnAuto, SidebarColumn } from "ui/sidebars/Sidebar";
 import {
   FormContainer,
   FormDivider,
   FormField,
   FormHeader,
   FormRow,
-} from "../ui/form/FormLayout";
-import { EditableText } from "../ui/form/EditableText";
-import { RootState } from "../../store/configureStore";
-import {
-  Scene,
-  ScriptEvent,
-} from "../../store/features/entities/entitiesTypes";
-import { MenuDivider, MenuItem } from "../ui/menu/Menu";
-import { DropdownButton } from "../ui/buttons/DropdownButton";
-import { NoteField } from "../ui/form/NoteField";
+} from "ui/form/FormLayout";
+import { EditableText } from "ui/form/EditableText";
+import { RootState } from "store/configureStore";
+import { Scene, ScriptEvent } from "store/features/entities/entitiesTypes";
+import { MenuDivider, MenuItem } from "ui/menu/Menu";
+import { DropdownButton } from "ui/buttons/DropdownButton";
+import { NoteField } from "ui/form/NoteField";
 import { SceneTypeSelect } from "../forms/SceneTypeSelect";
 import { BackgroundSelectButton } from "../forms/BackgroundSelectButton";
 import { PaletteSelectButton } from "../forms/PaletteSelectButton";
-import { LabelButton, LabelColor } from "../ui/buttons/LabelButton";
-import { CoordinateInput } from "../ui/form/CoordinateInput";
+import { LabelButton, LabelColor } from "ui/buttons/LabelButton";
+import { CoordinateInput } from "ui/form/CoordinateInput";
 import DirectionPicker from "../forms/DirectionPicker";
-import { SettingsState } from "../../store/features/settings/settingsState";
-import { TabBar } from "../ui/tabs/Tabs";
-import { Label } from "../ui/form/Label";
-import { Button } from "../ui/buttons/Button";
-import { LockIcon, LockOpenIcon, ParallaxIcon } from "../ui/icons/Icons";
+import { SettingsState } from "store/features/settings/settingsState";
+import { TabBar } from "ui/tabs/Tabs";
+import { Label } from "ui/form/Label";
+import { Button } from "ui/buttons/Button";
+import { LockIcon, LockOpenIcon, ParallaxIcon } from "ui/icons/Icons";
 import ParallaxSelect, {
   defaultValues as parallaxDefaultValues,
 } from "../forms/ParallaxSelect";
 import { SpriteSheetSelectButton } from "../forms/SpriteSheetSelectButton";
 import styled from "styled-components";
-import { ClipboardTypePaletteIds } from "../../store/features/clipboard/clipboardTypes";
+import { ClipboardTypePaletteIds } from "store/features/clipboard/clipboardTypes";
 import { SCREEN_WIDTH } from "../../consts";
 
 interface SceneEditorProps {

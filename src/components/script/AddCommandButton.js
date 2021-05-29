@@ -10,12 +10,12 @@ import {
   EventsHidden,
   EVENT_TEXT,
   EVENT_CALL_CUSTOM_EVENT,
-} from "../../lib/compiler/eventTypes";
-import l10n from "../../lib/helpers/l10n";
-import trimlines from "../../lib/helpers/trimlines";
-import events from "../../lib/events";
-import { CustomEventShape } from "../../store/stateShape";
-import { customEventSelectors } from "../../store/features/entities/entitiesState";
+} from "lib/compiler/eventTypes";
+import l10n from "lib/helpers/l10n";
+import trimlines from "lib/helpers/trimlines";
+import events from "lib/events";
+import { CustomEventShape } from "store/stateShape";
+import { customEventSelectors } from "store/features/entities/entitiesState";
 
 class AddCommandButton extends Component {
   constructor(props) {

@@ -1,8 +1,8 @@
 import { ipcRenderer } from "electron";
 import React, { useCallback } from "react";
 import styled, { css } from "styled-components";
-import { Button } from "../ui/buttons/Button";
-import { AudioOffIcon, AudioOnIcon } from "../ui/icons/Icons";
+import { Button } from "ui/buttons/Button";
+import { AudioOffIcon, AudioOnIcon } from "ui/icons/Icons";
 
 interface SongGridHeaderCellProps {
   channel?: number;

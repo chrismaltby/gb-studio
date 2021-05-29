@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { DropdownButton } from "../ui/buttons/DropdownButton";
-import { EditableText } from "../ui/form/EditableText";
+import { DropdownButton } from "ui/buttons/DropdownButton";
+import { EditableText } from "ui/form/EditableText";
 import {
   FormContainer,
   FormDivider,
@@ -9,43 +9,43 @@ import {
   FormFieldInfo,
   FormHeader,
   FormRow,
-} from "../ui/form/FormLayout";
-import { MenuDivider, MenuItem } from "../ui/menu/Menu";
-import l10n from "../../lib/helpers/l10n";
-import { Sidebar, SidebarColumn } from "../ui/sidebars/Sidebar";
+} from "ui/form/FormLayout";
+import { MenuDivider, MenuItem } from "ui/menu/Menu";
+import l10n from "lib/helpers/l10n";
+import { Sidebar, SidebarColumn } from "ui/sidebars/Sidebar";
 import {
   MetaspriteTile,
   SpriteAnimation,
   SpriteSheet,
-} from "../../store/features/entities/entitiesTypes";
-import { CoordinateInput } from "../ui/form/CoordinateInput";
-import { Label } from "../ui/form/Label";
+} from "store/features/entities/entitiesTypes";
+import { CoordinateInput } from "ui/form/CoordinateInput";
+import { Label } from "ui/form/Label";
 import {
   metaspriteTileSelectors,
   spriteAnimationSelectors,
   spriteSheetSelectors,
-} from "../../store/features/entities/entitiesState";
-import entitiesActions from "../../store/features/entities/entitiesActions";
-import editorActions from "../../store/features/editor/editorActions";
-import spriteActions from "../../store/features/sprite/spriteActions";
-import clipboardActions from "../../store/features/clipboard/clipboardActions";
-import { RootState } from "../../store/configureStore";
-import castEventValue from "../../lib/helpers/castEventValue";
-import { Button } from "../ui/buttons/Button";
+} from "store/features/entities/entitiesState";
+import entitiesActions from "store/features/entities/entitiesActions";
+import editorActions from "store/features/editor/editorActions";
+import spriteActions from "store/features/sprite/spriteActions";
+import clipboardActions from "store/features/clipboard/clipboardActions";
+import { RootState } from "store/configureStore";
+import castEventValue from "lib/helpers/castEventValue";
+import { Button } from "ui/buttons/Button";
 import {
   FlipHorizontalIcon,
   FlipVerticalIcon,
   SendToFrontIcon,
   SendToBackIcon,
   CheckIcon,
-} from "../ui/icons/Icons";
-import { FlexGrow } from "../ui/spacing/Spacing";
-import { SidebarHeader } from "../ui/form/SidebarHeader";
+} from "ui/icons/Icons";
+import { FlexGrow } from "ui/spacing/Spacing";
+import { SidebarHeader } from "ui/form/SidebarHeader";
 import {
   ClipboardTypeMetasprites,
   ClipboardTypeMetaspriteTiles,
-} from "../../store/features/clipboard/clipboardTypes";
-import { CheckboxField } from "../ui/form/CheckboxField";
+} from "store/features/clipboard/clipboardTypes";
+import { CheckboxField } from "ui/form/CheckboxField";
 import { AnimationTypeSelect } from "../forms/AnimationTypeSelect";
 import { AnimationSpeedSelect } from "../forms/AnimationSpeedSelect";
 import { ObjPaletteSelect } from "../forms/ObjPaletteSelect";

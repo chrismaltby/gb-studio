@@ -1,21 +1,21 @@
 import React, { FC, useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { assetFilename } from "../../lib/helpers/gbstudio";
+import { assetFilename } from "lib/helpers/gbstudio";
 import {
   backgroundSelectors,
   sceneSelectors,
-} from "../../store/features/entities/entitiesState";
+} from "store/features/entities/entitiesState";
 import {
   Option,
   OptionLabelWithPreview,
   SingleValueWithPreview,
   Select,
   SelectCommonProps,
-} from "../ui/form/Select";
-import { Scene } from "../../store/features/entities/entitiesTypes";
-import { RootState } from "../../store/configureStore";
+} from "ui/form/Select";
+import { Scene } from "store/features/entities/entitiesTypes";
+import { RootState } from "store/configureStore";
 import styled from "styled-components";
-import editorActions from "../../store/features/editor/editorActions";
+import editorActions from "store/features/editor/editorActions";
 
 interface SceneSelectProps extends SelectCommonProps {
   name: string;

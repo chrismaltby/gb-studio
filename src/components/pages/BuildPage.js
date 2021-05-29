@@ -7,10 +7,10 @@ import Button, {
   ButtonToolbarFixedSpacer,
 } from "../library/Button";
 import PageContent from "../library/PageContent";
-import l10n from "../../lib/helpers/l10n";
-import editorActions from "../../store/features/editor/editorActions";
-import consoleActions from "../../store/features/console/consoleActions";
-import buildGameActions from "../../store/features/buildGame/buildGameActions";
+import l10n from "lib/helpers/l10n";
+import editorActions from "store/features/editor/editorActions";
+import consoleActions from "store/features/console/consoleActions";
+import buildGameActions from "store/features/buildGame/buildGameActions";
 
 class BuildPage extends Component {
   constructor(props) {

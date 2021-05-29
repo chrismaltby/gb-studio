@@ -1,4 +1,4 @@
-import { PatternCell } from "../../../lib/helpers/uge/song/PatternCell";
+import { PatternCell } from "lib/helpers/uge/song/PatternCell";
 
 export type Song = {
   name: string;

@@ -4,11 +4,11 @@ import { connect } from "react-redux";
 import cx from "classnames";
 import { PlusIcon } from "../library/Icons";
 import Button from "../library/Button";
-import l10n from "../../lib/helpers/l10n";
-import { PaletteShape } from "../../store/stateShape";
+import l10n from "lib/helpers/l10n";
+import { PaletteShape } from "store/stateShape";
 import PaletteBlock from "../library/PaletteBlock";
-import editorActions from "../../store/features/editor/editorActions";
-import navigationActions from "../../store/features/navigation/navigationActions";
+import editorActions from "store/features/editor/editorActions";
+import navigationActions from "store/features/navigation/navigationActions";
 
 class PaletteSidebar extends Component {
   constructor(props) {

@@ -7,7 +7,7 @@ import {
   EVENT_OVERLAY_SHOW,
   EVENT_OVERLAY_MOVE_TO,
   EVENT_IF_ACTOR_AT_POSITION,
-} from "../../lib/compiler/eventTypes";
+} from "lib/compiler/eventTypes";
 
 const TILE_SIZE = 8;
 

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled, { css } from "styled-components";
-import { RootState } from "../../store/configureStore";
+import { RootState } from "store/configureStore";
 import {
   metaspriteSelectors,
   metaspriteTileSelectors,
@@ -9,16 +9,16 @@ import {
   sceneSelectors,
   spriteAnimationSelectors,
   spriteSheetSelectors,
-} from "../../store/features/entities/entitiesState";
-import { MetaspriteTile } from "../../store/features/entities/entitiesTypes";
+} from "store/features/entities/entitiesState";
+import { MetaspriteTile } from "store/features/entities/entitiesTypes";
 import MetaspriteGrid from "./MetaspriteGrid";
 import { SpriteSliceCanvas } from "./preview/SpriteSliceCanvas";
-import entitiesActions from "../../store/features/entities/entitiesActions";
-import editorActions from "../../store/features/editor/editorActions";
-import clipboardActions from "../../store/features/clipboard/clipboardActions";
+import entitiesActions from "store/features/entities/entitiesActions";
+import editorActions from "store/features/editor/editorActions";
+import clipboardActions from "store/features/clipboard/clipboardActions";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { MetaspriteCanvas } from "./preview/MetaspriteCanvas";
-import spriteActions from "../../store/features/sprite/spriteActions";
+import spriteActions from "store/features/sprite/spriteActions";
 
 interface MetaspriteEditorProps {
   spriteSheetId: string;

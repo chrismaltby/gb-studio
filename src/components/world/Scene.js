@@ -2,19 +2,19 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import cx from "classnames";
-import getCoords from "../../lib/helpers/getCoords";
+import getCoords from "lib/helpers/getCoords";
 import Actor from "./Actor";
 import Trigger from "./Trigger";
 import SceneCollisions from "./SceneCollisions";
-import { normalizedFindSceneEvent } from "../../lib/helpers/eventSystem";
+import { normalizedFindSceneEvent } from "lib/helpers/eventSystem";
 import EventHelper from "./EventHelper";
 import {
   SceneShape,
   EventShape,
   BackgroundShape,
   PaletteShape,
-} from "../../store/stateShape";
-import { assetFilename } from "../../lib/helpers/gbstudio";
+} from "store/stateShape";
+import { assetFilename } from "lib/helpers/gbstudio";
 import SceneCursor from "./SceneCursor";
 import ColorizedImage from "./ColorizedImage";
 import {
@@ -23,7 +23,7 @@ import {
   TOOL_ERASER,
   DMG_PALETTE,
 } from "../../consts";
-import { getCachedObject } from "../../lib/helpers/cache";
+import { getCachedObject } from "lib/helpers/cache";
 import SceneInfo from "./SceneInfo";
 import {
   sceneSelectors,
@@ -31,9 +31,9 @@ import {
   triggerSelectors,
   backgroundSelectors,
   paletteSelectors,
-} from "../../store/features/entities/entitiesState";
-import editorActions from "../../store/features/editor/editorActions";
-import entitiesActions from "../../store/features/entities/entitiesActions";
+} from "store/features/entities/entitiesState";
+import editorActions from "store/features/editor/editorActions";
+import entitiesActions from "store/features/entities/entitiesActions";
 
 const TILE_SIZE = 8;
 

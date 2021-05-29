@@ -2,15 +2,15 @@ import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import SpriteSheetCanvas from "./SpriteSheetCanvas";
-import { framesPerDirection } from "../../lib/helpers/gbstudio";
-import { PaletteShape } from "../../store/stateShape";
-import { getCachedObject } from "../../lib/helpers/cache";
+import { framesPerDirection } from "lib/helpers/gbstudio";
+import { PaletteShape } from "store/stateShape";
+import { getCachedObject } from "lib/helpers/cache";
 import { DMG_PALETTE, SPRITE_TYPE_STATIC } from "../../consts";
 import {
   spriteSheetSelectors,
   paletteSelectors,
-} from "../../store/features/entities/entitiesState";
-import { getSettings } from "../../store/features/settings/settingsState";
+} from "store/features/entities/entitiesState";
+import { getSettings } from "store/features/settings/settingsState";
 
 const ActorCanvas = ({
   spriteSheetId,

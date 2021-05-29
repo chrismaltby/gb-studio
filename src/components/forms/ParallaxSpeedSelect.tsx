@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState } from "react";
-import l10n from "../../lib/helpers/l10n";
-import { Input } from "../ui/form/Input";
-import { OptionLabelWithInfo, Select } from "../ui/form/Select";
+import l10n from "lib/helpers/l10n";
+import { Input } from "ui/form/Input";
+import { OptionLabelWithInfo, Select } from "ui/form/Select";
 
 interface ParallaxSpeedSelectProps {
   name: string;

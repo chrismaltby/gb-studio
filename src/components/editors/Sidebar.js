@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import cx from "classnames";
-import editorActions from "../../store/features/editor/editorActions";
+import editorActions from "store/features/editor/editorActions";
 
 const SidebarTabs = ({
   values,

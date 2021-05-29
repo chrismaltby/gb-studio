@@ -1,30 +1,30 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { DropdownButton } from "../ui/buttons/DropdownButton";
-import { EditableText } from "../ui/form/EditableText";
+import { DropdownButton } from "ui/buttons/DropdownButton";
+import { EditableText } from "ui/form/EditableText";
 import {
   FormContainer,
   FormDivider,
   FormHeader,
   FormRow,
-} from "../ui/form/FormLayout";
-import { Sidebar, SidebarColumn } from "../ui/sidebars/Sidebar";
-import { Label } from "../ui/form/Label";
-import { RootState } from "../../store/configureStore";
-import { Input } from "../ui/form/Input";
+} from "ui/form/FormLayout";
+import { Sidebar, SidebarColumn } from "ui/sidebars/Sidebar";
+import { Label } from "ui/form/Label";
+import { RootState } from "store/configureStore";
+import { Input } from "ui/form/Input";
 import { InstrumentDutyEditor } from "./InstrumentDutyEditor";
 import { InstrumentWaveEditor } from "./InstrumentWaveEditor";
 import { InstrumentNoiseEditor } from "./InstrumentNoiseEditor";
-import { Song } from "../../lib/helpers/uge/song/Song";
-import castEventValue from "../../lib/helpers/castEventValue";
-import l10n from "../../lib/helpers/l10n";
+import { Song } from "lib/helpers/uge/song/Song";
+import castEventValue from "lib/helpers/castEventValue";
+import l10n from "lib/helpers/l10n";
 import {
   DutyInstrument,
   NoiseInstrument,
   WaveInstrument,
-} from "../../store/features/trackerDocument/trackerDocumentTypes";
-import trackerActions from "../../store/features/tracker/trackerActions";
-import trackerDocumentActions from "../../store/features/trackerDocument/trackerDocumentActions";
+} from "store/features/trackerDocument/trackerDocumentTypes";
+import trackerActions from "store/features/tracker/trackerActions";
+import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 
 type Instrument = DutyInstrument | NoiseInstrument | WaveInstrument;
 

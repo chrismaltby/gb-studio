@@ -1,11 +1,11 @@
 import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import { RootState } from "../../store/configureStore";
-import trackerActions from "../../store/features/tracker/trackerActions";
-import { CheckboxField } from "../ui/form/CheckboxField";
-import { FormField } from "../ui/form/FormLayout";
-import { Select } from "../ui/form/Select";
+import { RootState } from "store/configureStore";
+import trackerActions from "store/features/tracker/trackerActions";
+import { CheckboxField } from "ui/form/CheckboxField";
+import { FormField } from "ui/form/FormLayout";
+import { Select } from "ui/form/Select";
 import { InstrumentSelect } from "./InstrumentSelect";
 
 const octaveOffsetOptions: OctaveOffsetOptions[] = [0, 1, 2, 3].map((i) => ({

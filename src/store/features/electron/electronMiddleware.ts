@@ -2,16 +2,16 @@ import { ipcRenderer, remote } from "electron";
 import settings from "electron-settings";
 import uniq from "lodash/uniq";
 import Path from "path";
-import confirmDeleteCustomEvent from "../../../lib/electron/dialog/confirmDeleteCustomEvent";
-import confirmEnableColorDialog from "../../../lib/electron/dialog/confirmEnableColorDialog";
+import confirmDeleteCustomEvent from "lib/electron/dialog/confirmDeleteCustomEvent";
+import confirmEnableColorDialog from "lib/electron/dialog/confirmEnableColorDialog";
 import {
   walkEvents,
   walkSceneSpecificEvents,
   walkActorEvents,
   filterEvents,
-} from "../../../lib/helpers/eventSystem";
-import { EVENT_CALL_CUSTOM_EVENT } from "../../../lib/compiler/eventTypes";
-import l10n from "../../../lib/helpers/l10n";
+} from "lib/helpers/eventSystem";
+import { EVENT_CALL_CUSTOM_EVENT } from "lib/compiler/eventTypes";
+import l10n from "lib/helpers/l10n";
 import editorActions from "../editor/editorActions";
 import { getSettings } from "../settings/settingsState";
 import settingsActions from "../settings/settingsActions";

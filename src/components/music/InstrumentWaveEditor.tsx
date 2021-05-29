@@ -1,10 +1,10 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import l10n from "../../lib/helpers/l10n";
-import trackerDocumentActions from "../../store/features/trackerDocument/trackerDocumentActions";
-import { WaveInstrument } from "../../store/features/trackerDocument/trackerDocumentTypes";
-import { FormDivider, FormField, FormRow } from "../ui/form/FormLayout";
-import { Select } from "../ui/form/Select";
+import l10n from "lib/helpers/l10n";
+import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
+import { WaveInstrument } from "store/features/trackerDocument/trackerDocumentTypes";
+import { FormDivider, FormField, FormRow } from "ui/form/FormLayout";
+import { Select } from "ui/form/Select";
 import { InstrumentLengthForm } from "./InstrumentLengthForm";
 import { WaveEditorForm as WaveEditorForm } from "./WaveEditorForm";
 

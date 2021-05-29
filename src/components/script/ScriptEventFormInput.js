@@ -13,7 +13,7 @@ import ActorSelect from "../forms/ActorSelect";
 import OverlayColorSelect from "../forms/OverlayColorSelect";
 import MusicSelect from "../forms/MusicSelect";
 import SoundEffectSelect from "../forms/SoundEffectSelect";
-import castEventValue from "../../lib/helpers/castEventValue";
+import castEventValue from "lib/helpers/castEventValue";
 import OperatorSelect from "../forms/OperatorSelect";
 import ScriptEventFormTextArea from "./ScriptEventFormTextarea";
 import ScriptEventFormMathArea from "./ScriptEventFormMatharea";
@@ -22,16 +22,13 @@ import { MenuItem } from "../library/Menu";
 import { ConnectIcon, CheckIcon, BlankIcon } from "../library/Icons";
 import PropertySelect from "../forms/PropertySelect";
 import CollisionMaskPicker from "../forms/CollisionMaskPicker";
-import {
-  EventValueShape,
-  EventDefaultValueShape,
-} from "../../store/stateShape";
-import l10n from "../../lib/helpers/l10n";
+import { EventValueShape, EventDefaultValueShape } from "store/stateShape";
+import l10n from "lib/helpers/l10n";
 import EngineFieldSelect from "../forms/EngineFieldSelect";
-import { SliderField } from "../ui/form/SliderField";
-import { CheckboxField } from "../ui/form/CheckboxField";
-import { Input } from "../ui/form/Input";
-import { Select } from "../ui/form/Select";
+import { SliderField } from "ui/form/SliderField";
+import { CheckboxField } from "ui/form/CheckboxField";
+import { Input } from "ui/form/Input";
+import { Select } from "ui/form/Select";
 import { AvatarSelect } from "../forms/AvatarSelect";
 import { EmoteSelect } from "../forms/EmoteSelect";
 import { PaletteSelect } from "../forms/PaletteSelect";

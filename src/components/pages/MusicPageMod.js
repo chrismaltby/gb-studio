@@ -3,8 +3,8 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import FilesSidebar from "../assets/FilesSidebar";
 import MusicViewer from "../assets/MusicViewer";
-import { musicSelectors } from "../../store/features/entities/entitiesState";
-import electronActions from "../../store/features/electron/electronActions";
+import { musicSelectors } from "store/features/entities/entitiesState";
+import electronActions from "store/features/electron/electronActions";
 
 class MusicPageMod extends Component {
   constructor(props) {

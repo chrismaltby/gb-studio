@@ -1,11 +1,11 @@
 import { Middleware } from "@reduxjs/toolkit";
-import ScripTracker from "../../../lib/vendor/scriptracker/scriptracker";
+import ScripTracker from "lib/vendor/scriptracker/scriptracker";
 import { RootState } from "../../configureStore";
 import soundfxActions from "../soundfx/soundfxActions";
 import navigationActions from "../navigation/navigationActions";
 import actions from "./musicActions";
 import { musicSelectors } from "../entities/entitiesState";
-import { assetFilename } from "../../../lib/helpers/gbstudio";
+import { assetFilename } from "lib/helpers/gbstudio";
 import { MusicSettings } from "../entities/entitiesTypes";
 
 let modPlayer: ScripTracker;

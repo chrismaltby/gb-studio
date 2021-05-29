@@ -3,9 +3,9 @@ import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
 import FilesSidebar from "../assets/FilesSidebar";
 import ImageViewer from "../assets/ImageViewer";
-import { backgroundSelectors } from "../../store/features/entities/entitiesState";
-import electronActions from "../../store/features/electron/electronActions";
-import { RootState } from "../../store/configureStore";
+import { backgroundSelectors } from "store/features/entities/entitiesState";
+import electronActions from "store/features/electron/electronActions";
+import { RootState } from "store/configureStore";
 
 const ImagesPage = () => {
   const dispatch = useDispatch();

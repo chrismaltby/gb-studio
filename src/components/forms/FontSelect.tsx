@@ -1,16 +1,16 @@
 import React, { FC, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { RootState } from "../../store/configureStore";
-import { fontSelectors } from "../../store/features/entities/entitiesState";
-import { Font } from "../../store/features/entities/entitiesTypes";
+import { RootState } from "store/configureStore";
+import { fontSelectors } from "store/features/entities/entitiesState";
+import { Font } from "store/features/entities/entitiesTypes";
 import {
   Option,
   Select,
   OptionLabelWithPreview,
   SingleValueWithPreview,
   SelectCommonProps,
-} from "../ui/form/Select";
-import { FontIcon } from "../ui/icons/Icons";
+} from "ui/form/Select";
+import { FontIcon } from "ui/icons/Icons";
 
 interface FontSelectProps extends SelectCommonProps {
   name: string;

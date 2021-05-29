@@ -1,14 +1,11 @@
 import { Middleware } from "@reduxjs/toolkit";
 import Path from "path";
 import { RootState } from "../../configureStore";
-import migrateWarning from "../../../lib/project/migrateWarning";
+import migrateWarning from "lib/project/migrateWarning";
 import actions from "./projectActions";
-import {
-  AssetFolder,
-  potentialAssetFolders,
-} from "../../../lib/project/assets";
+import { AssetFolder, potentialAssetFolders } from "lib/project/assets";
 import { copyFile } from "fs-extra";
-import confirmAssetFolder from "../../../lib/electron/dialog/confirmAssetFolder";
+import confirmAssetFolder from "lib/electron/dialog/confirmAssetFolder";
 
 const projectMiddleware: Middleware<{}, RootState> =
   (store) => (next) => async (action) => {

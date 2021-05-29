@@ -1,13 +1,13 @@
 import React, { FC, useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../store/configureStore";
-import { spriteSheetSelectors } from "../../store/features/entities/entitiesState";
-import { FlatList } from "../ui/lists/FlatList";
-import editorActions from "../../store/features/editor/editorActions";
-import { SpriteSheet } from "../../store/features/entities/entitiesTypes";
-import { EntityListItem } from "../ui/lists/EntityListItem";
-import { FormSectionTitle } from "../ui/form/FormLayout";
-import l10n from "../../lib/helpers/l10n";
+import { RootState } from "store/configureStore";
+import { spriteSheetSelectors } from "store/features/entities/entitiesState";
+import { FlatList } from "ui/lists/FlatList";
+import editorActions from "store/features/editor/editorActions";
+import { SpriteSheet } from "store/features/entities/entitiesTypes";
+import { EntityListItem } from "ui/lists/EntityListItem";
+import { FormSectionTitle } from "ui/form/FormLayout";
+import l10n from "lib/helpers/l10n";
 import {
   filterAnimationsBySpriteType,
   getAnimationNameByIndex,

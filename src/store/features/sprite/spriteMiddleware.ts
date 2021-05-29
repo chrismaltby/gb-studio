@@ -9,8 +9,8 @@ import {
   spriteSheetSelectors,
 } from "../entities/entitiesState";
 import entitiesActions from "../entities/entitiesActions";
-import { detect, detectClassic } from "../../../lib/sprite/detect";
-import { compileSprite } from "../../../lib/compiler/compileSprites";
+import { detect, detectClassic } from "lib/sprite/detect";
+import { compileSprite } from "lib/compiler/compileSprites";
 import { denormalizeSprite } from "../entities/entitiesHelpers";
 
 const spriteMiddleware: Middleware<{}, RootState> =

@@ -1,19 +1,19 @@
 import React, { FC, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import styled, { css } from "styled-components";
-import l10n from "../../lib/helpers/l10n";
-import { RootState } from "../../store/configureStore";
+import l10n from "lib/helpers/l10n";
+import { RootState } from "store/configureStore";
 import {
   paletteSelectors,
   spriteSheetSelectors,
-} from "../../store/features/entities/entitiesState";
+} from "store/features/entities/entitiesState";
 import {
   ActorDirection,
   Palette,
   SpriteSheet,
-} from "../../store/features/entities/entitiesTypes";
-import { SelectMenu, selectMenuStyleProps } from "../ui/form/Select";
-import { RelativePortal } from "../ui/layout/RelativePortal";
+} from "store/features/entities/entitiesTypes";
+import { SelectMenu, selectMenuStyleProps } from "ui/form/Select";
+import { RelativePortal } from "ui/layout/RelativePortal";
 import SpriteSheetCanvas from "../world/SpriteSheetCanvas";
 import { SpriteSheetSelect } from "./SpriteSheetSelect";
 

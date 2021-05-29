@@ -14,7 +14,14 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react",
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    "baseUrl": "src",
+    "paths": {
+      "store/*": [ "./store/*" ],
+      "lib/*": [ "./lib/*" ],
+      "ui/*": [ "./components/ui/*" ],
+      "components/*": [ "./components/*" ]
+    }
   },
   "include": ["src"]
 }

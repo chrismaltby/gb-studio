@@ -2,9 +2,9 @@ import React, { FC, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { DMG_PALETTE } from "../../consts";
-import { RootState } from "../../store/configureStore";
-import { paletteSelectors } from "../../store/features/entities/entitiesState";
-import { Palette } from "../../store/features/entities/entitiesTypes";
+import { RootState } from "store/configureStore";
+import { paletteSelectors } from "store/features/entities/entitiesState";
+import { Palette } from "store/features/entities/entitiesTypes";
 import PaletteBlock from "../library/PaletteBlock";
 import {
   Option,
@@ -12,7 +12,7 @@ import {
   OptionLabelWithPreview,
   SingleValueWithPreview,
   SelectCommonProps,
-} from "../ui/form/Select";
+} from "ui/form/Select";
 
 interface PaletteSelectProps extends SelectCommonProps {
   name: string;

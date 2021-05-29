@@ -1,5 +1,5 @@
-import l10n from "../../lib/helpers/l10n";
-import { SpriteAnimationType } from "../../store/features/entities/entitiesTypes";
+import l10n from "lib/helpers/l10n";
+import { SpriteAnimationType } from "store/features/entities/entitiesTypes";
 
 const animationNames = [
   l10n("FIELD_IDLE_DIR", { direction: l10n("FIELD_DIRECTION_RIGHT") }),

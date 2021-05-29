@@ -1,10 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { AppContainer } from "react-hot-loader";
-import Splash from "./components/app/Splash";
-import initElectronL10n from "./lib/helpers/initElectronL10n";
-import "./lib/electron/handleFullScreen";
-import "./lib/helpers/handleTheme";
+import Splash from "components/app/Splash";
+import initElectronL10n from "lib/helpers/initElectronL10n";
+import "lib/electron/handleFullScreen";
+import "lib/helpers/handleTheme";
 import "./styles/App.css";
 
 initElectronL10n();

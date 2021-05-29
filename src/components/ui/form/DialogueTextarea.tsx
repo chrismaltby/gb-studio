@@ -1,18 +1,18 @@
 import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { MentionsInput, SuggestionDataItem } from "react-mentions";
-import { NamedVariable } from "../../../lib/helpers/variables";
+import { NamedVariable } from "lib/helpers/variables";
 import keyBy from "lodash/keyBy";
 import { Dictionary } from "@reduxjs/toolkit";
-import { Font } from "../../../store/features/entities/entitiesTypes";
+import { Font } from "store/features/entities/entitiesTypes";
 import CustomMention from "./CustomMention";
 import { RelativePortal } from "../layout/RelativePortal";
 import { FontSelect } from "../../forms/FontSelect";
 import { VariableSelect } from "../../forms/VariableSelect";
-import { EditorSelectionType } from "../../../store/features/editor/editorState";
+import { EditorSelectionType } from "store/features/editor/editorState";
 import { TextSpeedSelect } from "../../forms/TextSpeedSelect";
 import { SelectMenu, selectMenuStyleProps } from "./Select";
-import l10n from "../../../lib/helpers/l10n";
+import l10n from "lib/helpers/l10n";
 
 const varRegex = /\$([VLT0-9][0-9]*)\$/g;
 const charRegex = /#([VLT0-9][0-9]*)#/g;

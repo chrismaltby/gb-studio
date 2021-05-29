@@ -1,11 +1,11 @@
 import React, { FC, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
-import { RootState } from "../../store/configureStore";
-import { Select, Option, OptGroup } from "../ui/form/Select";
-import l10n from "../../lib/helpers/l10n";
+import { RootState } from "store/configureStore";
+import { Select, Option, OptGroup } from "ui/form/Select";
+import l10n from "lib/helpers/l10n";
 import { useGroupedEngineFields } from "../settings/useGroupedEngineFields";
-import { EngineFieldSchema } from "../../store/features/engine/engineState";
+import { EngineFieldSchema } from "store/features/engine/engineState";
 
 interface EngineFieldSelectProps {
   value?: string;

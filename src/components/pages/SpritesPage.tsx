@@ -8,31 +8,31 @@ import React, {
 import styled, { ThemeContext } from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash/debounce";
-import useResizable from "../ui/hooks/use-resizable";
-import useWindowSize from "../ui/hooks/use-window-size";
+import useResizable from "ui/hooks/use-resizable";
+import useWindowSize from "ui/hooks/use-window-size";
 import {
   SplitPaneHorizontalDivider,
   SplitPaneVerticalDivider,
-} from "../ui/splitpane/SplitPaneDivider";
-import { RootState } from "../../store/configureStore";
-import editorActions from "../../store/features/editor/editorActions";
-import settingsActions from "../../store/features/settings/settingsActions";
+} from "ui/splitpane/SplitPaneDivider";
+import { RootState } from "store/configureStore";
+import editorActions from "store/features/editor/editorActions";
+import settingsActions from "store/features/settings/settingsActions";
 import { SpriteEditor } from "../sprites/SpriteEditor";
 import { NavigatorSprites } from "../sprites/NavigatorSprites";
 import {
   spriteAnimationSelectors,
   spriteSheetSelectors,
-} from "../../store/features/entities/entitiesState";
+} from "store/features/entities/entitiesState";
 import MetaspriteEditor from "../sprites/MetaspriteEditor";
 import SpriteTilePalette from "../sprites/SpriteTilePalette";
 import SpriteAnimationTimeline from "../sprites/SpriteAnimationTimeline";
-import { SplitPaneHeader } from "../ui/splitpane/SplitPaneHeader";
-import l10n from "../../lib/helpers/l10n";
+import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
+import l10n from "lib/helpers/l10n";
 import { getAnimationNameById } from "../sprites/helpers";
 import MetaspriteEditorToolsPanel from "../sprites/MetaspriteEditorToolsPanel";
-import { ZoomButton } from "../ui/buttons/ZoomButton";
+import { ZoomButton } from "ui/buttons/ZoomButton";
 import MetaspriteEditorPreviewSettings from "../sprites/MetaspriteEditorPreviewSettings";
-import spriteActions from "../../store/features/sprite/spriteActions";
+import spriteActions from "store/features/sprite/spriteActions";
 
 const Wrapper = styled.div`
   display: flex;

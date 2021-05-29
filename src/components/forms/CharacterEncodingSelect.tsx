@@ -1,10 +1,10 @@
 import glob from "glob";
 import Path from "path";
 import React, { FC, useEffect, useState } from "react";
-import { Option, Select, SelectCommonProps } from "../ui/form/Select";
-import l10n from "../../lib/helpers/l10n";
+import { Option, Select, SelectCommonProps } from "ui/form/Select";
+import l10n from "lib/helpers/l10n";
 import { localesRoot } from "../../consts";
-import { encodings } from "../../lib/helpers/encodings";
+import { encodings } from "lib/helpers/encodings";
 
 interface CharacterEncodingSelectProps extends SelectCommonProps {
   name: string;

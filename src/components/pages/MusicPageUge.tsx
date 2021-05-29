@@ -8,26 +8,26 @@ import React, {
 import styled, { ThemeContext } from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash/debounce";
-import useResizable from "../ui/hooks/use-resizable";
-import useWindowSize from "../ui/hooks/use-window-size";
+import useResizable from "ui/hooks/use-resizable";
+import useWindowSize from "ui/hooks/use-window-size";
 import {
   SplitPaneHorizontalDivider,
   SplitPaneVerticalDivider,
-} from "../ui/splitpane/SplitPaneDivider";
-import { RootState } from "../../store/configureStore";
-import editorActions from "../../store/features/editor/editorActions";
-import settingsActions from "../../store/features/settings/settingsActions";
+} from "ui/splitpane/SplitPaneDivider";
+import { RootState } from "store/configureStore";
+import editorActions from "store/features/editor/editorActions";
+import settingsActions from "store/features/settings/settingsActions";
 import { NavigatorSongs } from "../music/NavigatorSongs";
 import { SongTracker } from "../music/SongTracker";
-import { musicSelectors } from "../../store/features/entities/entitiesState";
-import { assetFilename } from "../../lib/helpers/gbstudio";
+import { musicSelectors } from "store/features/entities/entitiesState";
+import { assetFilename } from "lib/helpers/gbstudio";
 import { SongEditor } from "../music/SongEditor";
 import SongEditorToolsPanel from "../music/SongEditorToolsPanel";
 import SongEditorRightToolsPanel from "../music/SongEditorRightToolsPanel";
-import { loadSongFile } from "../../store/features/trackerDocument/trackerDocumentState";
+import { loadSongFile } from "store/features/trackerDocument/trackerDocumentState";
 import { SongPianoRoll } from "../music/SongPianoRoll";
-import { Music } from "../../store/features/entities/entitiesTypes";
-import l10n from "../../lib/helpers/l10n";
+import { Music } from "store/features/entities/entitiesTypes";
+import l10n from "lib/helpers/l10n";
 
 const Wrapper = styled.div`
   display: flex;

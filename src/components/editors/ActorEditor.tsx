@@ -1,36 +1,33 @@
 import React, { FC, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { clipboard } from "electron";
-import { RootState } from "../../store/configureStore";
+import { RootState } from "store/configureStore";
 import {
   actorSelectors,
   sceneSelectors,
   spriteSheetSelectors,
-} from "../../store/features/entities/entitiesState";
-import { DropdownButton } from "../ui/buttons/DropdownButton";
-import { EditableText } from "../ui/form/EditableText";
+} from "store/features/entities/entitiesState";
+import { DropdownButton } from "ui/buttons/DropdownButton";
+import { EditableText } from "ui/form/EditableText";
 import {
   FormContainer,
   FormDivider,
   FormField,
   FormHeader,
   FormRow,
-} from "../ui/form/FormLayout";
-import { MenuDivider, MenuItem } from "../ui/menu/Menu";
-import entitiesActions from "../../store/features/entities/entitiesActions";
-import editorActions from "../../store/features/editor/editorActions";
-import clipboardActions from "../../store/features/clipboard/clipboardActions";
-import {
-  Actor,
-  ScriptEvent,
-} from "../../store/features/entities/entitiesTypes";
-import l10n from "../../lib/helpers/l10n";
-import { SidebarColumn, SidebarMultiColumnAuto } from "../ui/sidebars/Sidebar";
-import { CoordinateInput } from "../ui/form/CoordinateInput";
-import { Checkbox } from "../ui/form/Checkbox";
-import { LockIcon, LockOpenIcon, PinIcon } from "../ui/icons/Icons";
-import castEventValue from "../../lib/helpers/castEventValue";
-import { CheckboxField } from "../ui/form/CheckboxField";
+} from "ui/form/FormLayout";
+import { MenuDivider, MenuItem } from "ui/menu/Menu";
+import entitiesActions from "store/features/entities/entitiesActions";
+import editorActions from "store/features/editor/editorActions";
+import clipboardActions from "store/features/clipboard/clipboardActions";
+import { Actor, ScriptEvent } from "store/features/entities/entitiesTypes";
+import l10n from "lib/helpers/l10n";
+import { SidebarColumn, SidebarMultiColumnAuto } from "ui/sidebars/Sidebar";
+import { CoordinateInput } from "ui/form/CoordinateInput";
+import { Checkbox } from "ui/form/Checkbox";
+import { LockIcon, LockOpenIcon, PinIcon } from "ui/icons/Icons";
+import castEventValue from "lib/helpers/castEventValue";
+import { CheckboxField } from "ui/form/CheckboxField";
 import DirectionPicker from "../forms/DirectionPicker";
 import { PaletteSelectButton } from "../forms/PaletteSelectButton";
 import {
@@ -45,15 +42,15 @@ import { WorldEditor } from "./WorldEditor";
 import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
 import { SidebarTabs } from "./Sidebar";
 import ScriptEditor from "../script/ScriptEditor";
-import { NumberField } from "../ui/form/NumberField";
+import { NumberField } from "ui/form/NumberField";
 import { SpriteTypeSelect } from "../forms/SpriteTypeSelect";
 import { AnimationSpeedSelect } from "../forms/AnimationSpeedSelect";
 import { MovementSpeedSelect } from "../forms/MovementSpeedSelect";
 import CollisionMaskPicker from "../forms/CollisionMaskPicker";
-import { KeysMatching } from "../../lib/helpers/types";
-import { NoteField } from "../ui/form/NoteField";
-import { TabBar } from "../ui/tabs/Tabs";
-import { Button } from "../ui/buttons/Button";
+import { KeysMatching } from "lib/helpers/types";
+import { NoteField } from "ui/form/NoteField";
+import { TabBar } from "ui/tabs/Tabs";
+import { Button } from "ui/buttons/Button";
 
 interface ActorEditorProps {
   id: string;

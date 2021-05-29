@@ -1,10 +1,10 @@
 import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled, { css } from "styled-components";
-import { PatternCell } from "../../lib/helpers/uge/song/PatternCell";
-import { RootState } from "../../store/configureStore";
-import trackerActions from "../../store/features/tracker/trackerActions";
-import trackerDocumentActions from "../../store/features/trackerDocument/trackerDocumentActions";
+import { PatternCell } from "lib/helpers/uge/song/PatternCell";
+import { RootState } from "store/configureStore";
+import trackerActions from "store/features/tracker/trackerActions";
+import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 
 import { instrumentColors } from "./InstrumentSelect";
 

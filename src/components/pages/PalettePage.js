@@ -2,16 +2,16 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import l10n from "../../lib/helpers/l10n";
+import l10n from "lib/helpers/l10n";
 import PageHeader from "../library/PageHeader";
 import PageContent from "../library/PageContent";
 import CustomPalettePicker from "../forms/CustomPalettePicker";
-import { PaletteShape } from "../../store/stateShape";
+import { PaletteShape } from "store/stateShape";
 import PaletteSidebar from "../assets/PaletteSidebar";
-import castEventValue from "../../lib/helpers/castEventValue";
+import castEventValue from "lib/helpers/castEventValue";
 import Button from "../library/Button";
-import { paletteSelectors } from "../../store/features/entities/entitiesState";
-import entitiesActions from "../../store/features/entities/entitiesActions";
+import { paletteSelectors } from "store/features/entities/entitiesState";
+import entitiesActions from "store/features/entities/entitiesActions";
 
 class PalettePage extends Component {
   constructor(props) {

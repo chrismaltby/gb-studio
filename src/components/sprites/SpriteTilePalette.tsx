@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { assetFilename } from "../../lib/helpers/gbstudio";
-import { RootState } from "../../store/configureStore";
-import { SpriteTileSelection } from "../../store/features/editor/editorState";
-import { spriteSheetSelectors } from "../../store/features/entities/entitiesState";
-import editorActions from "../../store/features/editor/editorActions";
-import entitiesActions from "../../store/features/entities/entitiesActions";
+import { assetFilename } from "lib/helpers/gbstudio";
+import { RootState } from "store/configureStore";
+import { SpriteTileSelection } from "store/features/editor/editorState";
+import { spriteSheetSelectors } from "store/features/entities/entitiesState";
+import editorActions from "store/features/editor/editorActions";
+import entitiesActions from "store/features/entities/entitiesActions";
 
 interface SpriteTilePaletteProps {
   id: string;

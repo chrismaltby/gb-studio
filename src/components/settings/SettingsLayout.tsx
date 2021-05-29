@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Card } from "../ui/cards/Card";
+import { Card } from "ui/cards/Card";
 
 export const SettingsPageWrapper = styled.div`
   display: flex;

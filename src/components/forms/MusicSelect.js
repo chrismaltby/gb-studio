@@ -4,10 +4,10 @@ import { connect } from "react-redux";
 import Select, { components } from "react-select";
 import { PlayIcon, PauseIcon } from "../library/Icons";
 import Button from "../library/Button";
-import { MusicShape } from "../../store/stateShape";
-import { groupBy } from "../../lib/helpers/array";
-import musicActions from "../../store/features/music/musicActions";
-import { musicSelectors } from "../../store/features/entities/entitiesState";
+import { MusicShape } from "store/stateShape";
+import { groupBy } from "lib/helpers/array";
+import musicActions from "store/features/music/musicActions";
+import { musicSelectors } from "store/features/entities/entitiesState";
 
 const groupByPlugin = groupBy("plugin");
 

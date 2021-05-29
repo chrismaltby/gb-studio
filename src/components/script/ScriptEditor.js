@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import uuid from "uuid/v4";
 import debounce from "lodash/debounce";
-import { EVENT_END } from "../../lib/compiler/eventTypes";
+import { EVENT_END } from "lib/compiler/eventTypes";
 import {
   patchEvents,
   prependEvent,
@@ -12,17 +12,17 @@ import {
   findEvent,
   appendEvent,
   regenerateEventIds,
-} from "../../lib/helpers/eventSystem";
-import events from "../../lib/events";
+} from "lib/helpers/eventSystem";
+import events from "lib/events";
 import ScriptEditorEvent from "./ScriptEditorEvent";
-import l10n from "../../lib/helpers/l10n";
+import l10n from "lib/helpers/l10n";
 import {
   sceneSelectors,
   spriteSheetSelectors,
   musicSelectors,
-} from "../../store/features/entities/entitiesState";
-import editorActions from "../../store/features/editor/editorActions";
-import clipboardActions from "../../store/features/clipboard/clipboardActions";
+} from "store/features/entities/entitiesState";
+import editorActions from "store/features/editor/editorActions";
+import clipboardActions from "store/features/clipboard/clipboardActions";
 
 class ScriptEditor extends Component {
   constructor() {

@@ -1,20 +1,16 @@
 import React, { FC, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../store/configureStore";
+import { RootState } from "store/configureStore";
 import {
   actorSelectors,
   sceneSelectors,
   triggerSelectors,
-} from "../../store/features/entities/entitiesState";
-import { FlatList } from "../ui/lists/FlatList";
-import editorActions from "../../store/features/editor/editorActions";
-import {
-  Actor,
-  Scene,
-  Trigger,
-} from "../../store/features/entities/entitiesTypes";
+} from "store/features/entities/entitiesState";
+import { FlatList } from "ui/lists/FlatList";
+import editorActions from "store/features/editor/editorActions";
+import { Actor, Scene, Trigger } from "store/features/entities/entitiesTypes";
 import styled from "styled-components";
-import { EntityListItem } from "../ui/lists/EntityListItem";
+import { EntityListItem } from "ui/lists/EntityListItem";
 
 interface NavigatorScenesProps {
   height: number;

@@ -1,9 +1,9 @@
 import styled from "styled-components";
 import WindowedSelect from "react-windowed-select";
 import React, { CSSProperties, FC, ReactNode } from "react";
-import { setDefault } from "../../../lib/helpers/setDefault";
+import { setDefault } from "lib/helpers/setDefault";
 import { SearchIcon } from "../icons/Icons";
-import l10n from "../../../lib/helpers/l10n";
+import l10n from "lib/helpers/l10n";
 export { components } from "react-select";
 
 export interface Option {

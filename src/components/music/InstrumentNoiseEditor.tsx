@@ -1,12 +1,12 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import castEventValue from "../../lib/helpers/castEventValue";
-import l10n from "../../lib/helpers/l10n";
-import trackerDocumentActions from "../../store/features/trackerDocument/trackerDocumentActions";
-import { NoiseInstrument } from "../../store/features/trackerDocument/trackerDocumentTypes";
-import { CheckboxField } from "../ui/form/CheckboxField";
-import { FormDivider, FormRow } from "../ui/form/FormLayout";
-import { SliderField } from "../ui/form/SliderField";
+import castEventValue from "lib/helpers/castEventValue";
+import l10n from "lib/helpers/l10n";
+import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
+import { NoiseInstrument } from "store/features/trackerDocument/trackerDocumentTypes";
+import { CheckboxField } from "ui/form/CheckboxField";
+import { FormDivider, FormRow } from "ui/form/FormLayout";
+import { SliderField } from "ui/form/SliderField";
 import { InstrumentLengthForm } from "./InstrumentLengthForm";
 
 interface InstrumentNoiseEditorProps {

@@ -1,13 +1,13 @@
 import React, { FC, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../store/configureStore";
-import { customEventSelectors } from "../../store/features/entities/entitiesState";
-import { FlatList } from "../ui/lists/FlatList";
-import editorActions from "../../store/features/editor/editorActions";
-import { CustomEvent } from "../../store/features/entities/entitiesTypes";
+import { RootState } from "store/configureStore";
+import { customEventSelectors } from "store/features/entities/entitiesState";
+import { FlatList } from "ui/lists/FlatList";
+import editorActions from "store/features/editor/editorActions";
+import { CustomEvent } from "store/features/entities/entitiesTypes";
 import styled from "styled-components";
 import { CodeIcon } from "../library/Icons";
-import l10n from "../../lib/helpers/l10n";
+import l10n from "lib/helpers/l10n";
 
 interface NavigatorCustomEventsProps {
   height: number;

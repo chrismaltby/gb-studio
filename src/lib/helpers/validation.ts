@@ -1,7 +1,7 @@
 import l10n from "./l10n";
 import { divisibleBy8 } from "./8bit";
 import { assetFilename } from "./gbstudio";
-import { Background } from "../../store/features/entities/entitiesTypes";
+import { Background } from "store/features/entities/entitiesTypes";
 import { readFileToTilesDataArray, toTileLookup } from "../tiles/tileData";
 
 const MAX_IMAGE_WIDTH = 2040;

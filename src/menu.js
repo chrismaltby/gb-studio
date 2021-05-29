@@ -2,7 +2,7 @@ import openAboutWindow from "about-window";
 import settings from "electron-settings";
 import { app, Menu, shell } from "electron";
 import { assetsRoot } from "./consts";
-import l10n, { locales } from "./lib/helpers/l10n";
+import l10n, { locales } from "lib/helpers/l10n";
 
 const isDevMode = process.execPath.match(/[\\/]electron/);
 

@@ -1,5 +1,5 @@
-import { directionToFrame } from "../../lib/helpers/gbstudio";
-import { hex2GBCrgb } from "../../lib/helpers/color";
+import { directionToFrame } from "lib/helpers/gbstudio";
+import { hex2GBCrgb } from "lib/helpers/color";
 
 const workerCtx: Worker = self as any;
 

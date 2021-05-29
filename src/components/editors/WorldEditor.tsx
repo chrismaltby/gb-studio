@@ -3,35 +3,35 @@ import React, { FC, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { SceneSelect } from "../forms/SceneSelect";
 import DirectionPicker from "../forms/DirectionPicker";
-import castEventValue from "../../lib/helpers/castEventValue";
-import l10n from "../../lib/helpers/l10n";
+import castEventValue from "lib/helpers/castEventValue";
+import l10n from "lib/helpers/l10n";
 import { MovementSpeedSelect } from "../forms/MovementSpeedSelect";
 import { AnimationSpeedSelect } from "../forms/AnimationSpeedSelect";
-import settingsActions from "../../store/features/settings/settingsActions";
-import metadataActions from "../../store/features/metadata/metadataActions";
-import { sceneSelectors } from "../../store/features/entities/entitiesState";
-import editorActions from "../../store/features/editor/editorActions";
-import navigationActions from "../../store/features/navigation/navigationActions";
-import { SidebarColumn, SidebarMultiColumnAuto } from "../ui/sidebars/Sidebar";
+import settingsActions from "store/features/settings/settingsActions";
+import metadataActions from "store/features/metadata/metadataActions";
+import { sceneSelectors } from "store/features/entities/entitiesState";
+import editorActions from "store/features/editor/editorActions";
+import navigationActions from "store/features/navigation/navigationActions";
+import { SidebarColumn, SidebarMultiColumnAuto } from "ui/sidebars/Sidebar";
 import {
   FormContainer,
   FormDivider,
   FormField,
   FormHeader,
   FormRow,
-} from "../ui/form/FormLayout";
-import { RootState } from "../../store/configureStore";
-import { EditableText } from "../ui/form/EditableText";
-import { DropdownButton } from "../ui/buttons/DropdownButton";
-import { MenuItem } from "../ui/menu/Menu";
-import { MetadataState } from "../../store/features/metadata/metadataState";
-import { CoordinateInput } from "../ui/form/CoordinateInput";
-import { SettingsState } from "../../store/features/settings/settingsState";
-import { Label } from "../ui/form/Label";
-import { NoteField } from "../ui/form/NoteField";
-import { TextField } from "../ui/form/TextField";
-import { CheckboxField } from "../ui/form/CheckboxField";
-import { Button } from "../ui/buttons/Button";
+} from "ui/form/FormLayout";
+import { RootState } from "store/configureStore";
+import { EditableText } from "ui/form/EditableText";
+import { DropdownButton } from "ui/buttons/DropdownButton";
+import { MenuItem } from "ui/menu/Menu";
+import { MetadataState } from "store/features/metadata/metadataState";
+import { CoordinateInput } from "ui/form/CoordinateInput";
+import { SettingsState } from "store/features/settings/settingsState";
+import { Label } from "ui/form/Label";
+import { NoteField } from "ui/form/NoteField";
+import { TextField } from "ui/form/TextField";
+import { CheckboxField } from "ui/form/CheckboxField";
+import { Button } from "ui/buttons/Button";
 
 export const WorldEditor: FC = () => {
   const metadata = useSelector(

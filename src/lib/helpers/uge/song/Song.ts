@@ -2,7 +2,7 @@ import {
   DutyInstrument,
   NoiseInstrument,
   WaveInstrument,
-} from "../../../../store/features/trackerDocument/trackerDocumentTypes";
+} from "store/features/trackerDocument/trackerDocumentTypes";
 import { PatternCell } from "./PatternCell";
 
 export class Song {

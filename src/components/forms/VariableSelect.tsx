@@ -4,37 +4,32 @@ import {
   Option,
   OptGroup,
   SelectCommonProps,
-} from "../ui/form/Select";
+} from "ui/form/Select";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
 import {
   customEventSelectors,
   variableSelectors,
-} from "../../store/features/entities/entitiesState";
-import { RootState } from "../../store/configureStore";
+} from "store/features/entities/entitiesState";
+import { RootState } from "store/configureStore";
 import {
   groupVariables,
   NamedVariable,
   namedVariablesByContext,
   nextVariable,
-} from "../../lib/helpers/variables";
-import { RelativePortal } from "../ui/layout/RelativePortal";
-import { Tooltip } from "../ui/tooltips/Tooltip";
-import {
-  Bits16Icon,
-  Bits8Icon,
-  CheckIcon,
-  PencilIcon,
-} from "../ui/icons/Icons";
-import useDelayedState from "../ui/hooks/use-delayed-state";
-import { Input } from "../ui/form/Input";
-import entitiesActions from "../../store/features/entities/entitiesActions";
-import l10n from "../../lib/helpers/l10n";
+} from "lib/helpers/variables";
+import { RelativePortal } from "ui/layout/RelativePortal";
+import { Tooltip } from "ui/tooltips/Tooltip";
+import { Bits16Icon, Bits8Icon, CheckIcon, PencilIcon } from "ui/icons/Icons";
+import useDelayedState from "ui/hooks/use-delayed-state";
+import { Input } from "ui/form/Input";
+import entitiesActions from "store/features/entities/entitiesActions";
+import l10n from "lib/helpers/l10n";
 import { Dictionary } from "@reduxjs/toolkit";
 import { keyBy } from "lodash";
-import { EditorSelectionType } from "../../store/features/editor/editorState";
-import editorActions from "../../store/features/editor/editorActions";
+import { EditorSelectionType } from "store/features/editor/editorState";
+import editorActions from "store/features/editor/editorActions";
 
 interface VariableSelectProps extends SelectCommonProps {
   id?: string;

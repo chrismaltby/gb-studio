@@ -1,17 +1,14 @@
 import React, { useState, useEffect, FC } from "react";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
-import { DialogueTextarea } from "../ui/form/DialogueTextarea";
+import { DialogueTextarea } from "ui/form/DialogueTextarea";
 import {
   customEventSelectors,
   fontSelectors,
   variableSelectors,
-} from "../../store/features/entities/entitiesState";
-import { RootState } from "../../store/configureStore";
-import {
-  NamedVariable,
-  namedVariablesByContext,
-} from "../../lib/helpers/variables";
+} from "store/features/entities/entitiesState";
+import { RootState } from "store/configureStore";
+import { NamedVariable, namedVariablesByContext } from "lib/helpers/variables";
 
 interface ScriptEventFormTextAreaProps {
   id?: string;

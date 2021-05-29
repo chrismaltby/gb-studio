@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import { RootState } from "../../store/configureStore";
+import { RootState } from "store/configureStore";
 import {
   sceneSelectors,
   spriteAnimationSelectors,
-} from "../../store/features/entities/entitiesState";
+} from "store/features/entities/entitiesState";
 import {
   EyeOpenIcon,
   PlayIcon,
@@ -14,19 +14,17 @@ import {
   NextIcon,
   GridIcon,
   PauseIcon,
-} from "../ui/icons/Icons";
-import FloatingPanel, {
-  FloatingPanelDivider,
-} from "../ui/panels/FloatingPanel";
-import editorActions from "../../store/features/editor/editorActions";
-import { DropdownButton } from "../ui/buttons/DropdownButton";
-import { MenuItem } from "../ui/menu/Menu";
-import l10n from "../../lib/helpers/l10n";
-import { Button } from "../ui/buttons/Button";
+} from "ui/icons/Icons";
+import FloatingPanel, { FloatingPanelDivider } from "ui/panels/FloatingPanel";
+import editorActions from "store/features/editor/editorActions";
+import { DropdownButton } from "ui/buttons/DropdownButton";
+import { MenuItem } from "ui/menu/Menu";
+import l10n from "lib/helpers/l10n";
+import { Button } from "ui/buttons/Button";
 import { SceneSelect } from "../forms/SceneSelect";
-import { SelectMenu, selectMenuStyleProps } from "../ui/form/Select";
-import { RelativePortal } from "../ui/layout/RelativePortal";
-import { sceneName } from "../../lib/compiler/compileData2";
+import { SelectMenu, selectMenuStyleProps } from "ui/form/Select";
+import { RelativePortal } from "ui/layout/RelativePortal";
+import { sceneName } from "lib/compiler/compileData2";
 
 const Wrapper = styled.div`
   position: absolute;
