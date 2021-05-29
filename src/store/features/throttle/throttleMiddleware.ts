@@ -1,5 +1,5 @@
 import { AnyAction, Dictionary, Dispatch, Middleware } from "@reduxjs/toolkit";
-import { RootState } from "../../configureStore";
+import { RootState } from "store/configureStore";
 import throttle from "lodash/throttle";
 import { Cancelable } from "lodash";
 

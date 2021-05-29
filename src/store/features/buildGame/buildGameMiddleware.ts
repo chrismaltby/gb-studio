@@ -4,7 +4,7 @@ import Path from "path";
 import rimraf from "rimraf";
 import { promisify } from "util";
 import getTmp from "lib/helpers/getTmp";
-import { RootState } from "../../configureStore";
+import { RootState } from "store/configureStore";
 import copy from "lib/helpers/fsCopy";
 import consoleActions from "../console/consoleActions";
 import navigationActions from "../navigation/navigationActions";

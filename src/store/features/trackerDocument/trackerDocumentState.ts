@@ -11,7 +11,7 @@ import { writeFileWithBackupAsync } from "lib/helpers/fs/writeFileWithBackup";
 import { PatternCell } from "lib/helpers/uge/song/PatternCell";
 import { Song } from "lib/helpers/uge/song/Song";
 import { loadUGESong, saveUGESong } from "lib/helpers/uge/ugeHelper";
-import { RootState } from "../../configureStore";
+import { RootState } from "store/configureStore";
 import {
   DutyInstrument,
   NoiseInstrument,

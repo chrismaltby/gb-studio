@@ -7,7 +7,7 @@ import {
 } from "lib/soundfx/soundfx";
 import { assetsRoot } from "../../../consts";
 import { Middleware } from "@reduxjs/toolkit";
-import { RootState } from "../../configureStore";
+import { RootState } from "store/configureStore";
 import musicActions from "../music/musicActions";
 import navigationActions from "../navigation/navigationActions";
 import actions from "./soundfxActions";

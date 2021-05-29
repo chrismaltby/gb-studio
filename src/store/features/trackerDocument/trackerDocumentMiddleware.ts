@@ -1,7 +1,7 @@
 import { ThunkMiddleware } from "redux-thunk";
 import confirmUnsavedChangesTrackerDialog from "lib/electron/dialog/confirmUnsavedChangesTrackerDialog";
 import { assetFilename } from "lib/helpers/gbstudio";
-import { RootState } from "../../configureStore";
+import { RootState } from "store/configureStore";
 import editorActions from "../editor/editorActions";
 import { musicSelectors } from "../entities/entitiesState";
 import navigationActions from "../navigation/navigationActions";

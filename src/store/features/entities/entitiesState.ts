@@ -32,7 +32,7 @@ import {
   replaceEventActorIds,
 } from "lib/helpers/eventSystem";
 import clamp from "lib/helpers/clamp";
-import { RootState } from "../../configureStore";
+import { RootState } from "store/configureStore";
 import settingsActions from "../settings/settingsActions";
 import uuid from "uuid";
 import {

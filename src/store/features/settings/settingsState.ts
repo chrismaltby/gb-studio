@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RootState } from "../../configureStore";
+import { RootState } from "store/configureStore";
 import { ActorDirection } from "../entities/entitiesTypes";
 import projectActions from "../project/projectActions";
 

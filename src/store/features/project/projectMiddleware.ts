@@ -1,6 +1,6 @@
 import { Middleware } from "@reduxjs/toolkit";
 import Path from "path";
-import { RootState } from "../../configureStore";
+import { RootState } from "store/configureStore";
 import migrateWarning from "lib/project/migrateWarning";
 import actions from "./projectActions";
 import { AssetFolder, potentialAssetFolders } from "lib/project/assets";

@@ -1,6 +1,6 @@
 import { Middleware } from "@reduxjs/toolkit";
 import { ActionCreators } from "redux-undo";
-import { RootState } from "../../configureStore";
+import { RootState } from "store/configureStore";
 import projectActions from "../project/projectActions";
 
 const undoMiddleware: Middleware<{}, RootState> =

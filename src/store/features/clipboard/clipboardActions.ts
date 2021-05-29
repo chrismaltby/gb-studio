@@ -13,7 +13,7 @@ import {
   SceneData,
   Variable,
 } from "../entities/entitiesTypes";
-import { RootState } from "../../configureStore";
+import { RootState } from "store/configureStore";
 import editorActions from "../editor/editorActions";
 import entitiesActions from "../entities/entitiesActions";
 

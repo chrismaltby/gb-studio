@@ -1,7 +1,7 @@
 import { Middleware } from "@reduxjs/toolkit";
 import Path from "path";
 import { readJSON } from "fs-extra";
-import { RootState } from "../../configureStore";
+import { RootState } from "store/configureStore";
 import actions from "./engineActions";
 import { engineRoot } from "../../../consts";
 import { EngineFieldSchema } from "./engineState";

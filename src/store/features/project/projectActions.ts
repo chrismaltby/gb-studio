@@ -14,7 +14,7 @@ import {
   Avatar,
   Emote,
 } from "../entities/entitiesTypes";
-import type { RootState } from "../../configureStore";
+import type { RootState } from "store/configureStore";
 import loadProjectData from "lib/project/loadProjectData";
 import saveProjectData from "lib/project/saveProjectData";
 import saveAsProjectData from "lib/project/saveAsProjectData";

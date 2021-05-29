@@ -7,7 +7,7 @@ import {
   getCustomEventIdsInScene,
 } from "lib/helpers/eventSystem";
 import { Dictionary, Middleware, PayloadAction } from "@reduxjs/toolkit";
-import { RootState } from "../../configureStore";
+import { RootState } from "store/configureStore";
 import {
   customEventSelectors,
   actorSelectors,
