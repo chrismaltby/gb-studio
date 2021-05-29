@@ -251,7 +251,7 @@ const MathError = styled.div`
 `;
 
 const searchVariables =
-  (variables: NamedVariable[], wrapper: string) =>
+  (variables: NamedVariable[]) =>
   (query: string): SuggestionDataItem[] => {
     const upperSearch = query.toUpperCase();
     return variables
@@ -370,13 +370,13 @@ export const MathTextarea: FC<MathTextareaProps> = ({
         value={value}
         placeholder={placeholder}
         allowSuggestionsAboveCursor={true}
-        onChange={(e: any) => onChange(e.target.value)}
+        onChange={(e) => onChange(e.target.value)}
       >
         <CustomMention
           className="Mentions__TokenVar"
           trigger={/(\$([A-Za-z0-9]+))$/}
           markup="$__id__$"
-          data={searchVariables(variables, "$")}
+          data={searchVariables(variables)}
           regex={/\$([VLT0-9][0-9]*)\$/}
           displayTransform={(variable) =>
             "$" + (variablesLookup[variable]?.name || variable + "$")

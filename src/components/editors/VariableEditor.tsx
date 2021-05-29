@@ -38,6 +38,7 @@ import { Dictionary } from "@reduxjs/toolkit";
 import useDimensions from "react-cool-dimensions";
 import styled from "styled-components";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
+import { isUnionValue } from "store/features/entities/entitiesHelpers";
 
 interface VariableEditorProps {
   id: string;
@@ -88,7 +89,9 @@ const onVariableEventContainingId =
           const argValue = event.args[arg];
           if (
             argValue === id ||
-            (argValue?.type === "variable" && argValue?.value === id)
+            (isUnionValue(argValue) &&
+              argValue.type === "variable" &&
+              argValue.value === id)
           ) {
             callback(event);
           }

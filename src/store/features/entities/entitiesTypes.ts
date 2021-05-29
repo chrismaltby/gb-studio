@@ -12,10 +12,36 @@ export type SpriteAnimationType =
   | "platform_player";
 export type ObjPalette = "OBP0" | "OBP1";
 
+export type UnionVariableValue = {
+  type: "variable";
+  value?: string;
+};
+
+export type UnionPropertyValue = {
+  type: "property";
+  value?: string;
+};
+
+export type UnionNumberValue = {
+  type: "number";
+  value?: number;
+};
+
+export type UnionDirectionValue = {
+  type: "direction";
+  value?: string;
+};
+
+export type UnionValue =
+  | UnionVariableValue
+  | UnionPropertyValue
+  | UnionNumberValue
+  | UnionDirectionValue;
+
 export type ScriptEvent = {
   id: string;
   command: string;
-  args: any;
+  args: Record<string, unknown>;
   children?: Dictionary<ScriptEvent[]>;
 };
 

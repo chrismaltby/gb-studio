@@ -36,6 +36,10 @@ import {
 } from "../helpers/eventSystem";
 import compileEntityEvents from "./compileEntityEvents";
 import { toCSymbol } from "../helpers/cGeneration";
+import {
+  isUnionPropertyValue,
+  isUnionVariableValue,
+} from "store/features/entities/entitiesHelpers";
 
 type ScriptOutput = string[];
 
@@ -1873,22 +1877,22 @@ class ScriptBuilder {
   // Weapons
 
   weaponAttack = (
-    spriteSheetId: string,
-    offset = 10,
-    collisionGroup: string,
-    collisionMask: string
+    _spriteSheetId: string,
+    _offset = 10,
+    _collisionGroup: string,
+    _collisionMask: string
   ) => {
     console.error("weaponAttack not implemented");
   };
 
   launchProjectile = (
-    spriteSheetId: string,
-    x: string,
-    y: string,
-    dirVariable: string,
-    speed: string,
-    collisionGroup: string,
-    collisionMask: string
+    _spriteSheetId: string,
+    _x: string,
+    _y: string,
+    _dirVariable: string,
+    _speed: string,
+    _collisionGroup: string,
+    _collisionMask: string
   ) => {
     console.error("launchProjectile not implemented");
   };
@@ -2199,7 +2203,11 @@ class ScriptBuilder {
     this._addNL();
   };
 
-  inputScriptSet = (input: string, persist: boolean, script: ScriptEvent[]) => {
+  inputScriptSet = (
+    input: string,
+    _persist: boolean,
+    script: ScriptEvent[]
+  ) => {
     this._addComment(`Input Script Attach`);
     const scriptRef = this._compileSubScript("input", script);
     const inputValue = inputDec(input);
@@ -2332,12 +2340,12 @@ class ScriptBuilder {
           const argValue = e.args[arg];
           // Update variable fields
           if (isVariableField(e.command, arg, e.args)) {
-            if (argValue !== null && argValue.type === "variable") {
+            if (isUnionVariableValue(argValue) && argValue.value) {
               e.args[arg] = {
                 ...argValue,
                 value: getArg("variable", argValue.value),
               };
-            } else {
+            } else if (typeof argValue === "string") {
               e.args[arg] = getArg("variable", argValue);
             }
           }
@@ -2348,21 +2356,23 @@ class ScriptBuilder {
               if (actorValue === "player") {
                 return p;
               }
-              // const newActorValue = input[`$actor[${actorValue}]$`];
               const newActorValue = getArg("actor", actorValue);
               return p.replace(/.*:/, `${newActorValue}:`);
             };
-            if (argValue !== null && argValue.type === "property") {
+            if (isUnionPropertyValue(argValue) && argValue.value) {
               e.args[arg] = {
                 ...argValue,
                 value: replacePropertyValueActor(argValue.value),
               };
-            } else {
+            } else if (typeof argValue === "string") {
               e.args[arg] = replacePropertyValueActor(argValue);
             }
           }
           // Update actor fields
-          if (isActorField(e.command, arg, e.args)) {
+          if (
+            isActorField(e.command, arg, e.args) &&
+            typeof argValue === "string"
+          ) {
             e.args[arg] = getArg("actor", argValue); // input[`$variable[${argValue}]$`];
           }
         });

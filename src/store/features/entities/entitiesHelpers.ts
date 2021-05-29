@@ -1,16 +1,70 @@
-import { normalize, denormalize, schema } from "normalizr";
+import { normalize, denormalize, schema, NormalizedSchema } from "normalizr";
 import {
   ProjectEntitiesData,
   EntitiesState,
-  EntityKey,
   Asset,
   SpriteSheet,
   Metasprite,
   MetaspriteTile,
   SpriteAnimation,
+  Scene,
+  Actor,
+  Trigger,
+  Background,
+  Palette,
+  Music,
+  Font,
+  Avatar,
+  Emote,
+  CustomEvent,
+  Variable,
+  EngineFieldValue,
+  UnionValue,
+  UnionDirectionValue,
+  UnionNumberValue,
+  UnionPropertyValue,
+  UnionVariableValue,
 } from "./entitiesTypes";
-import { EntityId, Dictionary } from "@reduxjs/toolkit";
+import { Dictionary, EntityId } from "@reduxjs/toolkit";
 import { SpriteSheetData } from "lib/compiler/compileSprites";
+
+export interface NormalisedEntities {
+  scenes: Record<EntityId, Scene>;
+  actors: Record<EntityId, Actor>;
+  triggers: Record<EntityId, Trigger>;
+  backgrounds: Record<EntityId, Background>;
+  spriteSheets: Record<EntityId, SpriteSheet>;
+  metasprites: Record<EntityId, Metasprite>;
+  metaspriteTiles: Record<EntityId, MetaspriteTile>;
+  spriteAnimations: Record<EntityId, SpriteAnimation>;
+  palettes: Record<EntityId, Palette>;
+  music: Record<EntityId, Music>;
+  fonts: Record<EntityId, Font>;
+  avatars: Record<EntityId, Avatar>;
+  emotes: Record<EntityId, Emote>;
+  customEvents: Record<EntityId, CustomEvent>;
+  variables: Record<EntityId, Variable>;
+  engineFieldValues: Record<EntityId, EngineFieldValue>;
+}
+
+export interface NormalisedResult {
+  scenes: EntityId[];
+  backgrounds: EntityId[];
+  spriteSheets: EntityId[];
+  palettes: EntityId[];
+  customEvents: EntityId[];
+  music: EntityId[];
+  fonts: EntityId[];
+  avatars: EntityId[];
+  emotes: EntityId[];
+  variables: EntityId[];
+  engineFieldValues: EntityId[];
+}
+
+export type NormalisedData = NormalizedSchema<
+  NormalisedEntities,
+  NormalisedResult
+>;
 
 const backgroundSchema = new schema.Entity("backgrounds");
 const musicSchema = new schema.Entity("music");
@@ -65,16 +119,19 @@ const projectSchema = {
   engineFieldValues: [engineFieldValuesSchema],
 };
 
-type ProjectSchemaKey = keyof typeof projectSchema;
-
-export const normalizeEntities = (projectData: ProjectEntitiesData) => {
-  return normalize(projectData, projectSchema);
+export const normalizeEntities = (
+  projectData: ProjectEntitiesData
+): NormalisedData => {
+  return normalize<NormalisedEntities, NormalisedResult>(
+    projectData,
+    projectSchema
+  );
 };
 
 export const denormalizeEntities = (
   state: EntitiesState
 ): ProjectEntitiesData => {
-  const input: Record<ProjectSchemaKey, EntityId[]> = {
+  const input: NormalisedResult = {
     scenes: state.scenes.ids,
     backgrounds: state.backgrounds.ids,
     spriteSheets: state.spriteSheets.ids,
@@ -87,23 +144,32 @@ export const denormalizeEntities = (
     variables: state.variables.ids,
     engineFieldValues: state.engineFieldValues.ids,
   };
-  const entities: Record<EntityKey, Dictionary<any>> = {
-    actors: state.actors.entities,
-    triggers: state.triggers.entities,
-    scenes: state.scenes.entities,
-    backgrounds: state.backgrounds.entities,
-    spriteSheets: state.spriteSheets.entities,
-    metasprites: state.metasprites.entities,
-    metaspriteTiles: state.metaspriteTiles.entities,
-    spriteAnimations: state.spriteAnimations.entities,
-    palettes: state.palettes.entities,
-    customEvents: state.customEvents.entities,
-    music: state.music.entities,
-    fonts: state.fonts.entities,
-    avatars: state.avatars.entities,
-    emotes: state.emotes.entities,
-    variables: state.variables.entities,
-    engineFieldValues: state.engineFieldValues.entities,
+  const entities: NormalisedEntities = {
+    actors: state.actors.entities as Record<EntityId, Actor>,
+    triggers: state.triggers.entities as Record<EntityId, Trigger>,
+    scenes: state.scenes.entities as Record<EntityId, Scene>,
+    backgrounds: state.backgrounds.entities as Record<EntityId, Background>,
+    spriteSheets: state.spriteSheets.entities as Record<EntityId, SpriteSheet>,
+    metasprites: state.metasprites.entities as Record<EntityId, Metasprite>,
+    metaspriteTiles: state.metaspriteTiles.entities as Record<
+      EntityId,
+      MetaspriteTile
+    >,
+    spriteAnimations: state.spriteAnimations.entities as Record<
+      EntityId,
+      SpriteAnimation
+    >,
+    palettes: state.palettes.entities as Record<EntityId, Palette>,
+    customEvents: state.customEvents.entities as Record<EntityId, CustomEvent>,
+    music: state.music.entities as Record<EntityId, Music>,
+    fonts: state.fonts.entities as Record<EntityId, Font>,
+    avatars: state.avatars.entities as Record<EntityId, Avatar>,
+    emotes: state.emotes.entities as Record<EntityId, Emote>,
+    variables: state.variables.entities as Record<EntityId, Variable>,
+    engineFieldValues: state.engineFieldValues.entities as Record<
+      EntityId,
+      EngineFieldValue
+    >,
   };
   return denormalize(input, projectSchema, entities);
 };
@@ -142,3 +208,61 @@ export const swap = <T extends unknown>(
   y: number,
   [...xs]: T[]
 ): T[] => (xs.length > 1 ? (([xs[x], xs[y]] = [xs[y], xs[x]]), xs) : xs);
+
+export const isUnionValue = (input: unknown): input is UnionValue => {
+  if (typeof input !== "object") {
+    return false;
+  }
+  if (!input || !("type" in input)) {
+    return false;
+  }
+  return true;
+};
+
+export const isUnionVariableValue = (
+  input: unknown
+): input is UnionVariableValue => {
+  if (!isUnionValue(input)) {
+    return false;
+  }
+  if (input.type !== "variable") {
+    return false;
+  }
+  return true;
+};
+
+export const isUnionPropertyValue = (
+  input: unknown
+): input is UnionPropertyValue => {
+  if (!isUnionValue(input)) {
+    return false;
+  }
+  if (input.type !== "property") {
+    return false;
+  }
+  return true;
+};
+
+export const isUnionNumberValue = (
+  input: unknown
+): input is UnionNumberValue => {
+  if (!isUnionValue(input)) {
+    return false;
+  }
+  if (input.type !== "number") {
+    return false;
+  }
+  return true;
+};
+
+export const isUnionDirectionValue = (
+  input: unknown
+): input is UnionDirectionValue => {
+  if (!isUnionValue(input)) {
+    return false;
+  }
+  if (input.type !== "direction") {
+    return false;
+  }
+  return true;
+};

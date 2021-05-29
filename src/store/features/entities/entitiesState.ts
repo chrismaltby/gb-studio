@@ -2,12 +2,10 @@ import {
   createEntityAdapter,
   createSlice,
   PayloadAction,
-  EntityState,
   ThunkDispatch,
   AnyAction,
   createSelector,
   CaseReducer,
-  EntityId,
   Dictionary,
 } from "@reduxjs/toolkit";
 import {
@@ -45,7 +43,6 @@ import { paint, paintLine, floodFill } from "lib/helpers/paint";
 import { Brush, EditorSelectionType } from "../editor/editorState";
 import projectActions from "../project/projectActions";
 import {
-  Asset,
   EntitiesState,
   Actor,
   Trigger,
@@ -61,7 +58,6 @@ import {
   CustomEventActor,
   ProjectEntitiesData,
   SceneData,
-  EntityKey,
   MusicSettings,
   EngineFieldValue,
   Metasprite,
@@ -77,6 +73,9 @@ import {
   sortByFilename,
   swap,
   matchAsset,
+  isUnionValue,
+  isUnionVariableValue,
+  isUnionPropertyValue,
 } from "./entitiesHelpers";
 import { clone } from "lib/helpers/clone";
 import spriteActions from "../sprite/spriteActions";
@@ -375,8 +374,7 @@ const loadProject: CaseReducer<
   }>
 > = (state, action) => {
   const data = normalizeEntities(action.payload.data);
-  const fixedData = fixDefaultPalettes(data);
-  const entities = fixedData.entities;
+  const entities = data.entities;
   actorsAdapter.setAll(state.actors, entities.actors || {});
   triggersAdapter.setAll(state.triggers, entities.triggers || {});
   scenesAdapter.setAll(state.scenes, entities.scenes || {});
@@ -705,22 +703,6 @@ const fixAllScenesWithModifiedBackgrounds = (state: EntitiesState) => {
   }
 };
 
-const fixDefaultPalettes = (state: any) => {
-  return {
-    ...state,
-    result: {
-      ...state.result,
-      settings: {
-        ...state.result.settings,
-        defaultBackgroundPaletteIds: state.result.settings
-          .defaultBackgroundPaletteIds
-          ? state.result.settings.defaultBackgroundPaletteIds.slice(-6)
-          : [],
-      },
-    },
-  };
-};
-
 /**************************************************************************
  * Scenes
  */
@@ -876,7 +858,7 @@ const editScene: CaseReducer<
       } else if (
         oldBackground &&
         background &&
-        oldBackground.width == background.width
+        oldBackground.width === background.width
       ) {
         const collisionsSize = Math.ceil(background.width * background.height);
         patch.collisions = scene.collisions.slice(0, collisionsSize);
@@ -2398,7 +2380,11 @@ const editCustomEvent: CaseReducer<
       if (!args) return;
       if (e.args.__comment) return;
 
-      if (args.actorId && args.actorId !== "player") {
+      if (
+        args.actorId &&
+        args.actorId !== "player" &&
+        typeof args.actorId === "string"
+      ) {
         const letter = String.fromCharCode(
           "A".charCodeAt(0) + parseInt(args.actorId)
         );
@@ -2408,7 +2394,11 @@ const editCustomEvent: CaseReducer<
         };
       }
 
-      if (args.otherActorId && args.otherActorId !== "player") {
+      if (
+        args.otherActorId &&
+        args.otherActorId !== "player" &&
+        typeof args.otherActorId === "string"
+      ) {
         const letter = String.fromCharCode(
           "A".charCodeAt(0) + parseInt(args.otherActorId)
         );
@@ -2434,9 +2424,9 @@ const editCustomEvent: CaseReducer<
           };
           const variable = args[arg];
           const field = getField(e.command, arg, args);
-          if (variable != null && variable.type === "variable") {
+          if (isUnionVariableValue(variable) && variable.value) {
             addVariable(variable.value, field.variableType);
-          } else {
+          } else if (typeof variable === "string") {
             addVariable(variable, field.variableType);
           }
         }
@@ -2455,9 +2445,9 @@ const editCustomEvent: CaseReducer<
             }
           };
           const property = args[arg];
-          if (property != null && property.type === "property") {
+          if (isUnionPropertyValue(property) && property.value) {
             addPropertyActor(property.value);
-          } else {
+          } else if (typeof property === "string") {
             addPropertyActor(property);
           }
         }
@@ -2465,18 +2455,20 @@ const editCustomEvent: CaseReducer<
 
       if (args.text) {
         const text = Array.isArray(args.text) ? args.text.join() : args.text;
-        const variablePtrs = text.match(/\$V[0-9]\$/g);
-        if (variablePtrs) {
-          variablePtrs.forEach((variablePtr: string) => {
-            const variable = variablePtr[2];
-            const letter = String.fromCharCode(
-              "A".charCodeAt(0) + parseInt(variable, 10)
-            ).toUpperCase();
-            variables[variable] = {
-              id: variable,
-              name: oldVariables[variable]?.name || `Variable ${letter}`,
-            };
-          });
+        if (typeof text === "string") {
+          const variablePtrs = text.match(/\$V[0-9]\$/g);
+          if (variablePtrs) {
+            variablePtrs.forEach((variablePtr: string) => {
+              const variable = variablePtr[2];
+              const letter = String.fromCharCode(
+                "A".charCodeAt(0) + parseInt(variable, 10)
+              ).toUpperCase();
+              variables[variable] = {
+                id: variable,
+                name: oldVariables[variable]?.name || `Variable ${letter}`,
+              };
+            });
+          }
         }
       }
     });
@@ -2892,9 +2884,6 @@ const localAvatarSelectors = avatarsAdapter.getSelectors(
 );
 const localEmoteSelectors = emotesAdapter.getSelectors(
   (state: EntitiesState) => state.emotes
-);
-const localCustomEventSelectors = customEventsAdapter.getSelectors(
-  (state: EntitiesState) => state.customEvents
 );
 
 // Global

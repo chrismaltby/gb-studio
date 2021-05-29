@@ -1,11 +1,17 @@
 import { colorizeSpriteData } from "lib/helpers/color";
 
-const workerCtx: Worker = self as any;
+// eslint-disable-next-line no-restricted-globals
+const workerCtx: Worker = self as unknown as Worker;
 
 interface CacheRecord {
   // canvas: OffscreenCanvas;
   // ctx: OffscreenCanvasRenderingContext2D;
   img: ImageBitmap;
+}
+
+export interface SpriteSliceCanvasResult {
+  id: number;
+  canvasImage: ImageBitmap;
 }
 
 const cache: Record<string, CacheRecord> = {};
@@ -22,8 +28,6 @@ workerCtx.onmessage = async (evt) => {
   const objPalette = evt.data.objPalette;
   const palette = evt.data.palette;
 
-  let canvas: OffscreenCanvas;
-  let ctx: OffscreenCanvasRenderingContext2D;
   let img: ImageBitmap;
 
   if (cache[src]) {
@@ -38,12 +42,12 @@ workerCtx.onmessage = async (evt) => {
   }
 
   // Fetch New Data
-  canvas = new OffscreenCanvas(width, height);
+  const canvas = new OffscreenCanvas(width, height);
   const tmpCtx = canvas.getContext("2d");
   if (!tmpCtx) {
     return;
   }
-  ctx = tmpCtx;
+  const ctx = tmpCtx;
 
   // Draw Sprite
   ctx.save();
@@ -64,7 +68,8 @@ workerCtx.onmessage = async (evt) => {
   ctx.putImageData(imageData, 0, 0);
 
   const canvasImage = canvas.transferToImageBitmap();
-  workerCtx.postMessage({ id, canvasImage }, [canvasImage]);
+  const res: SpriteSliceCanvasResult = { id, canvasImage };
+  workerCtx.postMessage(res, [canvasImage]);
 };
 
 // -----------------------------------------------------------------
