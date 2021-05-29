@@ -30,7 +30,7 @@ app.allowRendererProcessReuse = false;
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow: any = null;
+let mainWindow: BrowserWindow | null = null;
 let splashWindow: BrowserWindow | null = null;
 let preferencesWindow: BrowserWindow | null = null;
 let playWindow: BrowserWindow | null = null;
@@ -38,6 +38,8 @@ let musicWindow: BrowserWindow | null;
 
 let playWindowSgb = false;
 let hasCheckedForUpdate = false;
+let documentEdited = false;
+let documentName = "";
 
 const isDevMode = !!process.execPath.match(/[\\/]electron/);
 
@@ -61,6 +63,7 @@ const createSplash = async (forceTab?: SplashTab) => {
       preload: SPLASH_WINDOW_PRELOAD_WEBPACK_ENTRY,
     },
   });
+  if (!splashWindow) return;
 
   splashWindow.setMenu(null);
   splashWindow.loadURL(`${SPLASH_WINDOW_WEBPACK_ENTRY}?tab=${forceTab || ""}`);
@@ -137,14 +140,6 @@ const createWindow = async (projectPath: string) => {
     },
   });
 
-  // Enable documentEdited functionality on windows
-  Object.defineProperty(mainWindow, "documentEdited", {
-    value: false,
-    configurable: true,
-    enumerable: true,
-    writable: true,
-  });
-
   mainWindowState.manage(mainWindow);
 
   mainWindow.loadURL(
@@ -154,26 +149,29 @@ const createWindow = async (projectPath: string) => {
   mainWindow.setRepresentedFilename(projectPath);
 
   mainWindow.webContents.on("did-finish-load", () => {
-    mainWindow.webContents.send("open-project", projectPath);
+    mainWindow?.webContents.send("open-project", projectPath);
     setTimeout(() => {
-      mainWindow.show();
+      mainWindow?.show();
     }, 40);
   });
 
   mainWindow.on("enter-full-screen", () => {
-    mainWindow.webContents.send("enter-full-screen");
+    mainWindow?.webContents.send("enter-full-screen");
   });
 
   mainWindow.on("leave-full-screen", () => {
-    mainWindow.webContents.send("leave-full-screen");
+    mainWindow?.webContents.send("leave-full-screen");
   });
 
-  mainWindow.on("page-title-updated", (_e: any, title: string) => {
-    mainWindow.name = title;
+  mainWindow.on("page-title-updated", (e, title) => {
+    documentName = title
+      .replace(/^GB Studio -/, "")
+      .replace(/\(modified\)$/, "")
+      .trim();
   });
 
-  mainWindow.on("close", (e: any) => {
-    if (mainWindow.documentEdited) {
+  mainWindow.on("close", (e) => {
+    if (documentEdited && mainWindow) {
       const choice = dialog.showMessageBoxSync(mainWindow, {
         type: "question",
         buttons: [
@@ -183,7 +181,7 @@ const createWindow = async (projectPath: string) => {
         ],
         defaultId: 0,
         cancelId: 1,
-        message: l10n("DIALOG_SAVE_CHANGES", { name: mainWindow.name }),
+        message: l10n("DIALOG_SAVE_CHANGES", { name: documentName }),
         detail: l10n("DIALOG_SAVE_WARNING"),
       });
       if (choice === 0) {
@@ -381,13 +379,13 @@ ipcMain.on("open-play", async (_event, url, sgb) => {
 });
 
 ipcMain.on("document-modified", () => {
-  mainWindow.setDocumentEdited(true);
-  mainWindow.documentEdited = true; // For Windows
+  mainWindow?.setDocumentEdited(true);
+  documentEdited = true; // For Windows
 });
 
 ipcMain.on("document-unmodified", () => {
-  mainWindow.setDocumentEdited(false);
-  mainWindow.documentEdited = false; // For Windows
+  mainWindow?.setDocumentEdited(false);
+  documentEdited = false; // For Windows
 });
 
 ipcMain.on("project-loaded", (_event, settings) => {
@@ -406,38 +404,49 @@ ipcMain.on("set-show-navigator", (_event, showNavigator) => {
   menu.ref().getMenuItemById("showNavigator").checked = showNavigator;
 });
 
-ipcMain.on("set-menu-plugins", (_event, plugins) => {
-  const distinct = <T>(value: T, index: number, self: T[]) =>
-    self.indexOf(value) === index;
+ipcMain.on(
+  "set-menu-plugins",
+  (
+    _event,
+    plugins: Array<{
+      id: string;
+      plugin: string;
+      name: string;
+      accelerator: string;
+    }>
+  ) => {
+    const distinct = <T>(value: T, index: number, self: T[]) =>
+      self.indexOf(value) === index;
 
-  const pluginValues = Object.values(plugins);
+    const pluginValues = Object.values(plugins);
 
-  const pluginNames = pluginValues
-    .map((plugin: any) => plugin.plugin)
-    .filter(distinct);
+    const pluginNames = pluginValues
+      .map((plugin) => plugin.plugin)
+      .filter(distinct);
 
-  menu.buildMenu(
-    pluginNames.map((pluginName) => {
-      return {
-        label: pluginName,
-        submenu: pluginValues
-          .filter((plugin: any) => {
-            return plugin.plugin === pluginName;
-          })
-          .map((plugin: any) => {
-            return {
-              label: l10n(plugin.id) || plugin.name || plugin.name,
-              accelerator: plugin.accelerator,
-              click() {
-                mainWindow &&
-                  mainWindow.webContents.send("plugin-run", plugin.id);
-              },
-            };
-          }),
-      };
-    })
-  );
-});
+    menu.buildMenu(
+      pluginNames.map((pluginName) => {
+        return {
+          label: pluginName,
+          submenu: pluginValues
+            .filter((plugin) => {
+              return plugin.plugin === pluginName;
+            })
+            .map((plugin) => {
+              return {
+                label: l10n(plugin.id) || plugin.name || plugin.name,
+                accelerator: plugin.accelerator,
+                click() {
+                  mainWindow &&
+                    mainWindow.webContents.send("plugin-run", plugin.id);
+                },
+              };
+            }),
+        };
+      })
+    );
+  }
+);
 
 ipcMain.on("open-music", async () => {
   createMusic();
