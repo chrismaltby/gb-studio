@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { UploadIcon } from "../icons/Icons";
 
-export const DropZone = styled.div.attrs((props) => ({
+export const DropZone = styled.div.attrs((_props) => ({
   children: <UploadIcon />,
 }))`
   position: absolute;

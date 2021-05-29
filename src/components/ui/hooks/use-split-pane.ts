@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import clamp from "lib/helpers/clamp";
+import isEqual from "lodash/isEqual";
 
 type SplitDirection = "horizontal" | "vertical";
 
@@ -46,47 +47,43 @@ const useSplitPane = ({
         }
         return Math.floor(v * (unCollapsedNewHeight / unCollapsedHeight));
       });
-
-      setSizes(resetHeights);
+      if (!isEqual(sizes, resetHeights)) {
+        setSizes(resetHeights);
+      }
     }
-  }, [maxTotal]);
+  }, [collapsedSize, height, maxTotal, setSizes, sizes]);
 
-  const resizePaneBy = (resizePane: number, resizeBy: number) => {
-    setSizes(
-      toSplitRel(
-        resizeAbsPaneBy(
-          resizePane,
-          resizeBy,
-          startAbsSizes.current,
-          minSizes,
-          maxTotal
+  const resizePaneBy = useCallback(
+    (resizePane: number, resizeBy: number) => {
+      setSizes(
+        toSplitRel(
+          resizeAbsPaneBy(
+            resizePane,
+            resizeBy,
+            startAbsSizes.current,
+            minSizes,
+            maxTotal
+          )
         )
-      )
-    );
-  };
+      );
+    },
+    [maxTotal, minSizes, setSizes]
+  );
 
-  useEffect(() => {
-    if (isResizing) {
-      window.addEventListener("mousemove", onDragMove);
-      window.addEventListener("mouseup", onDragStop);
-      return () => {
-        window.removeEventListener("mousemove", onDragMove);
-        window.removeEventListener("mouseup", onDragStop);
-      };
-    }
-  }, [isResizing, sizes]);
-
-  const onDragStop = () => {
+  const onDragStop = useCallback(() => {
     setIsResizing(false);
-  };
+  }, [setIsResizing]);
 
-  const onDragMove = (e: MouseEvent) => {
-    if (direction === "vertical") {
-      resizePaneBy(resizeIndex, e.pageY - startOffset.current);
-    } else {
-      resizePaneBy(resizeIndex, e.pageX - startOffset.current);
-    }
-  };
+  const onDragMove = useCallback(
+    (e: MouseEvent) => {
+      if (direction === "vertical") {
+        resizePaneBy(resizeIndex, e.pageY - startOffset.current);
+      } else {
+        resizePaneBy(resizeIndex, e.pageX - startOffset.current);
+      }
+    },
+    [direction, resizeIndex, resizePaneBy]
+  );
 
   const onDragStart =
     (index: number) => (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -183,6 +180,17 @@ const useSplitPane = ({
       resetSizes(newSizes);
     }
   };
+
+  useEffect(() => {
+    if (isResizing) {
+      window.addEventListener("mousemove", onDragMove);
+      window.addEventListener("mouseup", onDragStop);
+      return () => {
+        window.removeEventListener("mousemove", onDragMove);
+        window.removeEventListener("mouseup", onDragStop);
+      };
+    }
+  }, [isResizing, onDragMove, onDragStop, sizes]);
 
   return [onDragStart, onTogglePane];
 };

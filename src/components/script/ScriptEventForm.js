@@ -47,7 +47,6 @@ class ScriptEventForm extends Component {
             defaultValue: "LAST_VARIABLE",
             key: `$variable[${v.id}]$`,
             type: "variable",
-            variableType: v.type,
           };
         }) || [];
       const usedActors =

@@ -4,12 +4,12 @@ const identity = <T>(t: T): T => t;
 
 export const getCachedObject = memoize(identity, JSON.stringify);
 
-export const createCacheFunction = () => {
+export const createCacheFunction = <T>() => {
   let lastId = "";
-  let lastData: object = {};
-  return (data: any) => {
+  let lastData: T | null = null;
+  return (data: T) => {
     const id = JSON.stringify(data);
-    if (lastId === id) {
+    if (lastId === id && lastData) {
       return lastData;
     }
     lastId = id;

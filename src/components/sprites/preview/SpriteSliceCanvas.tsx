@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { DMG_PALETTE } from "../../../consts";
 import { assetFilename } from "lib/helpers/gbstudio";
 import { RootState } from "store/configureStore";
 import { spriteSheetSelectors } from "store/features/entities/entitiesState";
 import { ObjPalette, Palette } from "store/features/entities/entitiesTypes";
-import SpriteSliceCanvasWorker from "./SpriteSliceCanvas.worker";
+import SpriteSliceCanvasWorker, {
+  SpriteSliceCanvasResult,
+} from "./SpriteSliceCanvas.worker";
 
 interface SpriteSliceCanvasProps {
   spriteSheetId: string;
@@ -39,12 +41,32 @@ export const SpriteSliceCanvas = ({
   );
   const projectRoot = useSelector((state: RootState) => state.document.root);
 
+  const onWorkerComplete = useCallback(
+    (e: MessageEvent<SpriteSliceCanvasResult>) => {
+      if (e.data.id === workerId) {
+        const offscreenCanvas = document.createElement("canvas");
+        const offscreenCtx = offscreenCanvas.getContext("bitmaprenderer");
+        if (!canvasRef.current || !spriteSheet || !offscreenCtx) {
+          return;
+        }
+        const ctx = canvasRef.current.getContext("2d");
+        if (!ctx) {
+          return;
+        }
+        offscreenCtx.transferFromImageBitmap(e.data.canvasImage);
+        ctx.clearRect(0, 0, width, height);
+        ctx.drawImage(offscreenCanvas, 0, 0);
+      }
+    },
+    [height, spriteSheet, width, workerId]
+  );
+
   useEffect(() => {
     worker.addEventListener("message", onWorkerComplete);
     return () => {
       worker.removeEventListener("message", onWorkerComplete);
     };
-  }, [width, height]);
+  }, [width, height, onWorkerComplete]);
 
   useEffect(() => {
     if (!canvasRef.current || !spriteSheet) {
@@ -86,23 +108,6 @@ export const SpriteSliceCanvas = ({
     projectRoot,
     workerId,
   ]);
-
-  const onWorkerComplete = (e: any) => {
-    if (e.data.id === workerId) {
-      const offscreenCanvas = document.createElement("canvas");
-      const offscreenCtx = offscreenCanvas.getContext("bitmaprenderer");
-      if (!canvasRef.current || !spriteSheet || !offscreenCtx) {
-        return;
-      }
-      const ctx = canvasRef.current.getContext("2d");
-      if (!ctx) {
-        return;
-      }
-      offscreenCtx.transferFromImageBitmap(e.data.canvasImage);
-      ctx.clearRect(0, 0, width, height);
-      ctx.drawImage(offscreenCanvas, 0, 0);
-    }
-  };
 
   return (
     <canvas

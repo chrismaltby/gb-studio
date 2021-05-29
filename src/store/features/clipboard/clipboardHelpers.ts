@@ -13,19 +13,33 @@ import {
 } from "./clipboardTypes";
 
 const isClipboardMetaspriteTiles = (
-  input: any
+  input: unknown
 ): input is ClipboardMetaspriteTiles => {
-  return Array.isArray(input?.metaspriteTiles);
+  if (typeof input !== "object" || input === null) {
+    return false;
+  }
+  const wide: { metaspriteTiles?: unknown } = input;
+  return Array.isArray(wide.metaspriteTiles);
 };
 
-const isClipboardMetasprites = (input: any): input is ClipboardMetasprites => {
-  return (
-    Array.isArray(input?.metasprites) && Array.isArray(input?.metaspriteTiles)
-  );
+const isClipboardMetasprites = (
+  input: unknown
+): input is ClipboardMetasprites => {
+  if (typeof input !== "object" || input === null) {
+    return false;
+  }
+  const wide: { metasprites?: unknown; metaspriteTiles?: unknown } = input;
+  return Array.isArray(wide.metasprites) && Array.isArray(wide.metaspriteTiles);
 };
 
-const isClipboardPaletteIds = (input: any): input is ClipboardPaletteIds => {
-  return Array.isArray(input?.paletteIds);
+const isClipboardPaletteIds = (
+  input: unknown
+): input is ClipboardPaletteIds => {
+  if (typeof input !== "object" || input === null) {
+    return false;
+  }
+  const wide: { paletteIds?: unknown } = input;
+  return Array.isArray(wide.paletteIds);
 };
 
 export const copy = (payload: ClipboardType) => {

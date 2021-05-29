@@ -2409,24 +2409,20 @@ const editCustomEvent: CaseReducer<
 
       Object.keys(args).forEach((arg) => {
         if (isVariableField(e.command, arg, args)) {
-          const addVariable = (variable: string, type?: "8bit" | "16bit") => {
+          const addVariable = (variable: string) => {
             const letter = String.fromCharCode(
               "A".charCodeAt(0) + parseInt(variable)
             );
-            const newType =
-              variables[variable]?.type === "16bit" ? "16bit" : type;
             variables[variable] = {
               id: variable,
               name: oldVariables[variable]?.name || `Variable ${letter}`,
-              type: newType,
             };
           };
           const variable = args[arg];
-          const field = getField(e.command, arg, args);
           if (isUnionVariableValue(variable) && variable.value) {
-            addVariable(variable.value, field.variableType);
+            addVariable(variable.value);
           } else if (typeof variable === "string") {
-            addVariable(variable, field.variableType);
+            addVariable(variable);
           }
         }
 

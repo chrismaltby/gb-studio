@@ -8,6 +8,7 @@ import { EngineFieldSchema } from "./engineState";
 import events, {
   engineFieldUpdateEvents,
   engineFieldStoreEvents,
+  EventField,
 } from "lib/events";
 import {
   EVENT_ENGINE_FIELD_SET,
@@ -82,7 +83,6 @@ const updateEngineFieldEvents = (engineFields: EngineFieldSchema[]) => {
             setDefault(engineField.max, Infinity),
             engineField.cType
           ),
-          variableType: "16bit",
           options: engineField.options || [],
           defaultValue: {
             [fieldType]: engineField.defaultValue || 0,
@@ -110,22 +110,15 @@ const updateEngineFieldEvents = (engineFields: EngineFieldSchema[]) => {
           },
         };
 
-    const storeValueField = is16BitCType(engineField.cType)
-      ? {
-          key: "value",
-          type: "variable",
-          defaultValue: "0",
-          variableType: "16bit",
-        }
-      : {
-          key: "value",
-          type: "variable",
-          defaultValue: "0",
-        };
+    const storeValueField = {
+      key: "value",
+      type: "variable",
+      defaultValue: "0",
+    };
 
     engineFieldUpdateEvents[engineField.key] = {
       ...fieldUpdateHandler,
-      fields: ([] as any[]).concat(
+      fields: ([] as EventField[]).concat(
         fieldUpdateHandler.fields || [],
         updateValueField
       ),
@@ -133,7 +126,7 @@ const updateEngineFieldEvents = (engineFields: EngineFieldSchema[]) => {
 
     engineFieldStoreEvents[engineField.key] = {
       ...fieldStoreHandler,
-      fields: ([] as any[]).concat(
+      fields: ([] as EventField[]).concat(
         fieldStoreHandler.fields || [],
         storeValueField
       ),

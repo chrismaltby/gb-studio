@@ -71,29 +71,40 @@ const copySelectedEntity =
   };
 
 const pasteClipboardEntity =
-  (clipboardData: any) =>
+  (clipboardData: unknown) =>
   (dispatch: ThunkDispatch<RootState, unknown, AnyAction>) => {
-    if (clipboardData.__type === "scene") {
-      const clipboardScene = clipboardData.scene as Partial<SceneData>;
+    if (typeof clipboardData !== "object" || clipboardData === null) {
+      return;
+    }
+    const wide: {
+      __type?: unknown;
+      scene?: Partial<SceneData>;
+      actor?: Partial<Actor>;
+      trigger?: Partial<Trigger>;
+      __variables?: Variable[];
+    } = clipboardData;
+
+    if (wide.__type === "scene" && wide.scene) {
+      const clipboardScene = wide.scene;
       dispatch(pasteCustomEvents());
       dispatch(editorActions.setSceneDefaults(clipboardScene));
-    } else if (clipboardData.__type === "actor") {
-      const clipboardActor = clipboardData.actor as Partial<Actor>;
+    } else if (wide.__type === "actor" && wide.actor) {
+      const clipboardActor = wide.actor;
       dispatch(pasteCustomEvents());
       dispatch(editorActions.setActorDefaults(clipboardActor));
-    } else if (clipboardData.__type === "trigger") {
-      const clipboardTrigger = clipboardData.trigger as Partial<Trigger>;
+    } else if (wide.__type === "trigger" && wide.trigger) {
+      const clipboardTrigger = wide.trigger;
       dispatch(pasteCustomEvents());
       dispatch(editorActions.setTriggerDefaults(clipboardTrigger));
     }
-    if (clipboardData.__variables) {
-      const clipboardVariables = clipboardData.__variables as Variable[];
+    if (wide.__variables) {
+      const clipboardVariables = wide.__variables;
       dispatch(editorActions.setClipboardVariables(clipboardVariables));
     }
   };
 
 const pasteClipboardEntityInPlace =
-  (clipboardData: any) =>
+  (clipboardData: unknown) =>
   (
     dispatch: ThunkDispatch<RootState, unknown, AnyAction>,
     getState: () => RootState
@@ -101,41 +112,52 @@ const pasteClipboardEntityInPlace =
     const state = getState();
     const { scene: sceneId } = state.editor;
 
-    if (clipboardData.__type === "scene") {
-      const clipboardScene = clipboardData.scene;
+    if (typeof clipboardData !== "object" || clipboardData === null) {
+      return;
+    }
+    const wide: {
+      __type?: unknown;
+      scene?: Partial<SceneData>;
+      actor?: Partial<Actor>;
+      trigger?: Partial<Trigger>;
+      __variables?: Variable[];
+    } = clipboardData;
+
+    if (wide.__type === "scene" && wide.scene) {
+      const clipboardScene = wide.scene;
       dispatch(pasteCustomEvents());
       dispatch(
         entitiesActions.addScene({
-          x: clipboardScene.x,
-          y: clipboardScene.y,
+          x: clipboardScene.x || 0,
+          y: clipboardScene.y || 0,
           defaults: clipboardScene,
-          variables: clipboardData.__variables,
+          variables: wide.__variables,
         })
       );
-    } else if (sceneId && clipboardData.__type === "actor") {
-      const clipboardActor = clipboardData.actor;
+    } else if (sceneId && wide.__type === "actor" && wide.actor) {
+      const clipboardActor = wide.actor;
       dispatch(pasteCustomEvents());
       dispatch(
         entitiesActions.addActor({
           sceneId,
-          x: clipboardActor.x,
-          y: clipboardActor.y,
+          x: clipboardActor.x || 0,
+          y: clipboardActor.y || 0,
           defaults: clipboardActor,
-          variables: clipboardData.__variables,
+          variables: wide.__variables,
         })
       );
-    } else if (sceneId && clipboardData.__type === "trigger") {
-      const clipboardTrigger = clipboardData.trigger;
+    } else if (sceneId && wide.__type === "trigger" && wide.trigger) {
+      const clipboardTrigger = wide.trigger;
       dispatch(pasteCustomEvents());
       dispatch(
         entitiesActions.addTrigger({
           sceneId,
-          x: clipboardTrigger.x,
-          y: clipboardTrigger.y,
-          width: clipboardTrigger.width,
-          height: clipboardTrigger.height,
+          x: clipboardTrigger.x || 0,
+          y: clipboardTrigger.y || 0,
+          width: clipboardTrigger.width || 1,
+          height: clipboardTrigger.height || 1,
           defaults: clipboardTrigger,
-          variables: clipboardData.__variables,
+          variables: wide.__variables,
         })
       );
     }

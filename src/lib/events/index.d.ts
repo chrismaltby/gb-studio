@@ -1,10 +1,27 @@
 import { Dictionary } from "@reduxjs/toolkit";
 
-interface EventHandler {
+export interface EventField {
+  key: string;
+  type: string;
+  checkboxLabel?: string;
+  types?: string[];
+  defaultType?: string;
+  min?: number;
+  max?: number;
+  options?: Array<[string | number, string]>;
+  defaultValue?:
+    | string
+    | number
+    | boolean
+    | { [string]: string | number | boolean };
+  width?: string;
+}
+
+export interface EventHandler {
   id: string;
-  fields: any[];
+  fields: EventField[];
   name?: string;
-  compile: (input: any, helpers: any) => void;
+  compile: (input: unknown, helpers: unknown) => void;
 }
 
 declare const eventHandlers: Dictionary<EventHandler>;

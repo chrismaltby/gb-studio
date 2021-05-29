@@ -113,10 +113,10 @@ const SpriteTilePalette = ({ id }: SpriteTilePaletteProps) => {
         height: selectionHeight,
       });
     },
-    [zoom, height, selectedTiles, setSelectedTiles]
+    [selectedTiles, width, zoom, height, setSelectedTiles]
   );
 
-  const onDragEnd = (e: MouseEvent) => {
+  const onDragEnd = (_e: MouseEvent) => {
     setIsDragging(false);
     setHoverTile(undefined);
   };
@@ -161,7 +161,7 @@ const SpriteTilePalette = ({ id }: SpriteTilePaletteProps) => {
       );
       dispatch(editorActions.setReplaceSpriteTileMode(false));
     },
-    [dispatch, selectedTileIds]
+    [dispatch, id, selectedTileIds]
   );
 
   // Drag and drop handlers
