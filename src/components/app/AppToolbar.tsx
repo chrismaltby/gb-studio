@@ -2,32 +2,32 @@ import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash/debounce";
-import l10n from "../lib/helpers/l10n";
-import { zoomForSection } from "../lib/helpers/gbstudio";
-import editorActions from "../store/features/editor/editorActions";
-import navigationActions from "../store/features/navigation/navigationActions";
-import electronActions from "../store/features/electron/electronActions";
+import l10n from "../../lib/helpers/l10n";
+import { zoomForSection } from "../../lib/helpers/gbstudio";
+import editorActions from "../../store/features/editor/editorActions";
+import navigationActions from "../../store/features/navigation/navigationActions";
+import electronActions from "../../store/features/electron/electronActions";
 import buildGameActions, {
   BuildType,
-} from "../store/features/buildGame/buildGameActions";
-import { Toolbar, ToolbarText } from "../components/ui/toolbar/Toolbar";
-import { DropdownButton } from "../components/ui/buttons/DropdownButton";
-import { MenuAccelerator, MenuItem } from "../components/ui/menu/Menu";
-import { ZoomButton } from "../components/ui/buttons/ZoomButton";
-import { FixedSpacer, FlexGrow } from "../components/ui/spacing/Spacing";
-import { SearchInput } from "../components/ui/form/SearchInput";
-import { Button } from "../components/ui/buttons/Button";
+} from "../../store/features/buildGame/buildGameActions";
+import { Toolbar, ToolbarText } from "../../components/ui/toolbar/Toolbar";
+import { DropdownButton } from "../../components/ui/buttons/DropdownButton";
+import { MenuAccelerator, MenuItem } from "../../components/ui/menu/Menu";
+import { ZoomButton } from "../../components/ui/buttons/ZoomButton";
+import { FixedSpacer, FlexGrow } from "../../components/ui/spacing/Spacing";
+import { SearchInput } from "../../components/ui/form/SearchInput";
+import { Button } from "../../components/ui/buttons/Button";
 import {
   ExportIcon,
   FolderIcon,
   LoadingIcon,
   PlayIcon,
-} from "../components/ui/icons/Icons";
-import { RootState } from "../store/configureStore";
-import { NavigationSection } from "../store/features/navigation/navigationState";
-import { ZoomSection } from "../store/features/editor/editorState";
-import useWindowFocus from "../components/ui/hooks/use-window-focus";
-import useWindowSize from "../components/ui/hooks/use-window-size";
+} from "../../components/ui/icons/Icons";
+import { RootState } from "../../store/configureStore";
+import { NavigationSection } from "../../store/features/navigation/navigationState";
+import { ZoomSection } from "../../store/features/editor/editorState";
+import useWindowFocus from "../../components/ui/hooks/use-window-focus";
+import useWindowSize from "../../components/ui/hooks/use-window-size";
 
 const sectionNames = {
   world: l10n("NAV_GAME_WORLD"),

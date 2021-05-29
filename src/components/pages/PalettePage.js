@@ -3,13 +3,13 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import l10n from "../../lib/helpers/l10n";
-import PageHeader from "../../components/library/PageHeader";
-import PageContent from "../../components/library/PageContent";
-import CustomPalettePicker from "../../components/forms/CustomPalettePicker";
+import PageHeader from "../library/PageHeader";
+import PageContent from "../library/PageContent";
+import CustomPalettePicker from "../forms/CustomPalettePicker";
 import { PaletteShape } from "../../store/stateShape";
-import PaletteSidebar from "../../components/assets/PaletteSidebar";
+import PaletteSidebar from "../assets/PaletteSidebar";
 import castEventValue from "../../lib/helpers/castEventValue";
-import Button from "../../components/library/Button";
+import Button from "../library/Button";
 import { paletteSelectors } from "../../store/features/entities/entitiesState";
 import entitiesActions from "../../store/features/entities/entitiesActions";
 

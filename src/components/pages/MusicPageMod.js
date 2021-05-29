@@ -1,11 +1,12 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import FilesSidebar from "../../components/assets/FilesSidebar";
-import ImageViewer from "../../components/assets/ImageViewer";
+import FilesSidebar from "../assets/FilesSidebar";
+import MusicViewer from "../assets/MusicViewer";
+import { musicSelectors } from "../../store/features/entities/entitiesState";
 import electronActions from "../../store/features/electron/electronActions";
 
-class UIPage extends Component {
+class MusicPageMod extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -33,14 +34,14 @@ class UIPage extends Component {
 
     return (
       <div>
-        {file && <ImageViewer file={file} />}
+        {file && <MusicViewer file={file} />}
         <FilesSidebar
           files={filesList}
           selectedFile={file}
           query={query}
           onSearch={this.onSearch}
           onAdd={() => {
-            openHelp("ui-elements");
+            openHelp("music");
           }}
         />
       </div>
@@ -48,55 +49,29 @@ class UIPage extends Component {
   }
 }
 
-UIPage.propTypes = {
+MusicPageMod.propTypes = {
   id: PropTypes.string,
   files: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,
-      filename: PropTypes.string.isRequired,
-      _v: PropTypes.number.isRequired,
+      settings: PropTypes.shape({
+        disableSpeedConversion: PropTypes.bool,
+      }),
     })
   ).isRequired,
   openHelp: PropTypes.func.isRequired,
 };
 
-UIPage.defaultProps = {
+MusicPageMod.defaultProps = {
   id: "",
 };
 
 function mapStateToProps(state) {
   const { id } = state.navigation;
-  const projectRoot = state.document && state.document.root;
-  const uiVersion = state.editor.uiVersion;
-  const files = projectRoot
-    ? [
-        {
-          id: "ascii",
-          name: "ASCII Extended",
-          filename: `ascii.png`,
-          _v: uiVersion,
-        },
-        {
-          id: "frame",
-          name: "Window Frame",
-          filename: `frame.png`,
-          _v: uiVersion,
-        },
-        {
-          id: "cursor",
-          name: "Cursor",
-          filename: `cursor.png`,
-          _v: uiVersion,
-        },
-        {
-          id: "emotes",
-          name: "Emotes",
-          filename: `emotes.png`,
-          _v: uiVersion,
-        },
-      ]
-    : [];
+  const files = musicSelectors
+    .selectAll(state)
+    .filter((s) => s.type && s.type === "mod");
   return {
     files,
     id,
@@ -107,4 +82,4 @@ const mapDispatchToProps = {
   openHelp: electronActions.openHelp,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(UIPage);
+export default connect(mapStateToProps, mapDispatchToProps)(MusicPageMod);

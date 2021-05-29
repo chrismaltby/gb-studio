@@ -1,51 +1,44 @@
 import React, { FC, useCallback, useLayoutEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Path from "path";
-import { FormField } from "../../components/library/Forms";
+import { FormField } from "../library/Forms";
 import l10n from "../../lib/helpers/l10n";
 import castEventValue from "../../lib/helpers/castEventValue";
-import CustomControlsPicker from "../../components/forms/CustomControlsPicker";
-import { PaletteSelect } from "../../components/forms/PaletteSelect";
-import { Button } from "../../components/ui/buttons/Button";
+import CustomControlsPicker from "../forms/CustomControlsPicker";
+import { PaletteSelect } from "../forms/PaletteSelect";
+import { Button } from "../ui/buttons/Button";
 import { SettingsState } from "../../store/features/settings/settingsState";
 import settingsActions from "../../store/features/settings/settingsActions";
 import navigationActions from "../../store/features/navigation/navigationActions";
-import EngineFieldsEditor from "../../components/settings/EngineFieldsEditor";
-import { Checkbox } from "../../components/ui/form/Checkbox";
-import { Input } from "../../components/ui/form/Input";
+import EngineFieldsEditor from "../settings/EngineFieldsEditor";
+import { Checkbox } from "../ui/form/Checkbox";
+import { Input } from "../ui/form/Input";
 import { RootState } from "../../store/configureStore";
-import { useGroupedEngineFields } from "../../components/settings/useGroupedEngineFields";
+import { useGroupedEngineFields } from "../settings/useGroupedEngineFields";
 import { NavigationSection } from "../../store/features/navigation/navigationState";
-import { Textarea } from "../../components/ui/form/Textarea";
-import useWindowSize from "../../components/ui/hooks/use-window-size";
+import { Textarea } from "../ui/form/Textarea";
+import useWindowSize from "../ui/hooks/use-window-size";
 import {
   SettingsContentColumn,
   SettingsMenuColumn,
   SettingsMenuItem,
   SettingsPageWrapper,
   SettingsSearchWrapper,
-} from "../../components/settings/SettingsLayout";
-import {
-  CardAnchor,
-  CardButtons,
-  CardHeading,
-} from "../../components/ui/cards/Card";
-import { SearchableSettingRow } from "../../components/ui/form/SearchableSettingRow";
-import {
-  SettingRowInput,
-  SettingRowLabel,
-} from "../../components/ui/form/SettingRow";
-import { SearchableCard } from "../../components/ui/cards/SearchableCard";
-import { FontSelect } from "../../components/forms/FontSelect";
-import { options as sceneTypes } from "../../components/forms/SceneTypeSelect";
-import { SpriteSheetSelect } from "../../components/forms/SpriteSheetSelect";
-import { CharacterEncodingSelect } from "../../components/forms/CharacterEncodingSelect";
-import { ColorAnimationText } from "../../components/settings/ColorAnimationText";
-import { MusicDriverSelect } from "../../components/forms/MusicDriverSelect";
-import { FormInfo } from "../../components/ui/form/FormInfo";
-import { SGBBorderPreview } from "../../components/forms/sgb/SGBBorderPreview";
+} from "../settings/SettingsLayout";
+import { CardAnchor, CardButtons, CardHeading } from "../ui/cards/Card";
+import { SearchableSettingRow } from "../ui/form/SearchableSettingRow";
+import { SettingRowInput, SettingRowLabel } from "../ui/form/SettingRow";
+import { SearchableCard } from "../ui/cards/SearchableCard";
+import { FontSelect } from "../forms/FontSelect";
+import { options as sceneTypes } from "../forms/SceneTypeSelect";
+import { SpriteSheetSelect } from "../forms/SpriteSheetSelect";
+import { CharacterEncodingSelect } from "../forms/CharacterEncodingSelect";
+import { ColorAnimationText } from "../settings/ColorAnimationText";
+import { MusicDriverSelect } from "../forms/MusicDriverSelect";
+import { FormInfo } from "../ui/form/FormInfo";
+import { SGBBorderPreview } from "../forms/sgb/SGBBorderPreview";
 import electronActions from "../../store/features/electron/electronActions";
-import CartSettingsEditor from "../../components/settings/CartSettingsEditor";
+import CartSettingsEditor from "../settings/CartSettingsEditor";
 
 const SettingsPage: FC = () => {
   const dispatch = useDispatch();

@@ -5,8 +5,8 @@ import Button, {
   ButtonToolbar,
   ButtonToolbarSpacer,
   ButtonToolbarFixedSpacer,
-} from "../../components/library/Button";
-import PageContent from "../../components/library/PageContent";
+} from "../library/Button";
+import PageContent from "../library/PageContent";
 import l10n from "../../lib/helpers/l10n";
 import editorActions from "../../store/features/editor/editorActions";
 import consoleActions from "../../store/features/console/consoleActions";
