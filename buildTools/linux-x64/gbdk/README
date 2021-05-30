@@ -1,8 +1,6 @@
-               gbdk-2.96 - http://gbdk.sourceforge.net/
+               gbdk-3.1 - https://github.com/Zal0/gbdk-2020/releases
                ----------------------------------------
             (C) 2001 Michael Hope <michaelh@juju.net.nz>
-
-       This is a early-release beta.  Please report any bugs :)
 
 Short story:
 ------------
@@ -28,16 +26,6 @@ Linux:
     e.g. export GBDKDIR=/home/michaelh/gbdk/
 * Try compiling the examples as above
 
-Notes for this release:
------------------------
-2.96 is a special maintenance release which includes all of the bug
-fixes from a year of development of sdcc.  The code generated should
-now be more reliable, and all examples run correctly.  Banked
-functions, the 'sfr' keyword, and targeting assemblers other than
-asxxxx is unsupported in this release, but will be in the next.  All
-testing was done with xgnuboy on Linux/ppc - thanks to them for making
-a cross platform emulator.
-
 Special note:
 -------------
 I've reverted the WORD to 16 bit unsigned change that required
@@ -55,10 +43,6 @@ Reporting problems and feature requests
     http://sourceforge.net/project/?group_id=1249
 5.  Check if anyone else has reported the problem
     http://sourceforge.net/bugs/?group_id=1249
-6.  Submit a new bug using the link above.  It is _very_ helpful if you can 
-    show how to reproduce the bug and/or give me the source to try and/or
-    use the --dumpall (lcc -Wf--dumpall) option and send me all of the *.dump
-    files.  Use the email address below.
 
 To download the latest source, get the tarball on sourceforge,
 extract, and type:

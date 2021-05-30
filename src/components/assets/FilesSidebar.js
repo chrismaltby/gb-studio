@@ -2,11 +2,12 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import cx from "classnames";
-import { PlusIcon } from "../library/Icons";
+import { HelpIcon } from "../library/Icons";
 import Button from "../library/Button";
-import * as actions from "../../actions";
 import l10n from "../../lib/helpers/l10n";
 import { groupBy } from "../../lib/helpers/array";
+import editorActions from "../../store/features/editor/editorActions";
+import navigationActions from "../../store/features/navigation/navigationActions";
 
 const groupByPlugin = groupBy("plugin");
 
@@ -94,8 +95,8 @@ class FilesSidebar extends Component {
               value={query}
             />
             {onAdd && (
-              <Button onClick={onAdd} title={l10n("ASSET_ADD")}>
-                <PlusIcon />
+              <Button onClick={onAdd} title={l10n("MENU_DOCUMENTATION")}>
+                <HelpIcon />
               </Button>
             )}
           </div>
@@ -147,15 +148,15 @@ FilesSidebar.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  const { filesSidebarWidth: width } = state.settings;
+  const { filesSidebarWidth: width } = state.editor;
   return {
     width
   };
 }
 
 const mapDispatchToProps = {
-  setNavigationId: actions.setNavigationId,
-  resizeFilesSidebar: actions.resizeFilesSidebar
+  setNavigationId: navigationActions.setNavigationId,
+  resizeFilesSidebar: editorActions.resizeFilesSidebar
 };
 
 export default connect(

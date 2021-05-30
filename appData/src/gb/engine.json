@@ -1,0 +1,129 @@
+{
+  "version": "2.0.0-e18",
+  "fields": [
+    {
+      "key": "plat_min_vel",
+      "label": "FIELD_MIN_VEL",
+      "group": "GAMETYPE_PLATFORMER",
+      "type": "slider",
+      "cType": "WORD",
+      "defaultValue": 304,
+      "min": 0,
+      "max": 16384
+    },
+    {
+      "key": "plat_walk_vel",
+      "label": "FIELD_WALK_VEL",
+      "group": "GAMETYPE_PLATFORMER",
+      "type": "slider",
+      "cType": "WORD",
+      "defaultValue": 6400,
+      "min": 0,
+      "max": 16384
+    },
+    {
+      "key": "plat_run_vel",
+      "label": "FIELD_RUN_VEL",
+      "group": "GAMETYPE_PLATFORMER",
+      "type": "slider",
+      "cType": "WORD",
+      "defaultValue": 10496,
+      "min": 0,
+      "max": 16384
+    },
+    {
+      "key": "plat_walk_acc",
+      "label": "FIELD_WALK_ACC",
+      "group": "GAMETYPE_PLATFORMER",
+      "type": "slider",
+      "cType": "WORD",
+      "defaultValue": 152,
+      "min": 0,
+      "max": 768
+    },
+    {
+      "key": "plat_run_acc",
+      "label": "FIELD_RUN_ACC",
+      "group": "GAMETYPE_PLATFORMER",
+      "type": "slider",
+      "cType": "WORD",
+      "defaultValue": 228,
+      "min": 0,
+      "max": 768
+    },
+    {
+      "key": "plat_dec",
+      "label": "FIELD_DECELERATION",
+      "group": "GAMETYPE_PLATFORMER",
+      "type": "slider",
+      "cType": "WORD",
+      "defaultValue": 208,
+      "min": 0,
+      "max": 768
+    },
+    {
+      "key": "plat_jump_vel",
+      "label": "FIELD_JUMP_VEL",
+      "group": "GAMETYPE_PLATFORMER",
+      "type": "slider",
+      "cType": "WORD",
+      "defaultValue": 16384,
+      "min": 0,
+      "max": 32768
+    },   
+    {
+      "key": "plat_grav",
+      "label": "FIELD_GRAVITY",
+      "group": "GAMETYPE_PLATFORMER",
+      "type": "slider",
+      "cType": "WORD",
+      "defaultValue": 1792,
+      "min": 0,
+      "max": 8192
+    },   
+    {
+      "key": "plat_hold_grav",
+      "label": "FIELD_GRAVITY_JUMP",
+      "group": "GAMETYPE_PLATFORMER",
+      "type": "slider",
+      "cType": "WORD",
+      "defaultValue": 512,
+      "min": 0,
+      "max": 8192
+    },       
+    {
+      "key": "plat_max_fall_vel",
+      "label": "FIELD_MAX_FALL_VEL",
+      "group": "GAMETYPE_PLATFORMER",
+      "type": "slider",
+      "cType": "WORD",
+      "defaultValue": 20000,
+      "min": 0,
+      "max": 24560
+    },
+    {
+      "key": "topdown_grid",
+      "label": "FIELD_GRID_SIZE",
+      "group": "GAMETYPE_TOP_DOWN",
+      "type": "select",
+      "options": [
+        [8, "FIELD_GRID_8PX"],
+        [16, "FIELD_GRID_16PX"]
+      ],
+      "cType": "UBYTE",
+      "defaultValue": 8
+    },
+    {
+      "key": "fade_style",
+      "label": "FIELD_FADE_STYLE",
+      "group": "SETTINGS_FADE",
+      "type": "select",
+      "options": [
+        [0, "FIELD_FADE_WHITE"],
+        [1, "FIELD_FADE_BLACK"]
+      ],
+      "cType": "UBYTE",
+      "defaultValue": 0
+    }
+  ]
+}

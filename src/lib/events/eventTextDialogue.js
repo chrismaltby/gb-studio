@@ -1,16 +1,17 @@
-import trimlines from "../helpers/trimlines";
-import l10n from "../helpers/l10n";
+const trimlines = require("../helpers/trimlines");
+const l10n = require("../helpers/l10n").default;
 
-export const id = "EVENT_TEXT";
+const id = "EVENT_TEXT";
 
-export const fields = [
+const fields = [
   {
     key: "text",
     type: "textarea",
     placeholder: l10n("FIELD_TEXT_PLACEHOLDER"),
     updateFn: (string, field, args) => {
       const maxPerLine = args.avatarId ? 16 : 18;
-      return trimlines(string, maxPerLine);
+      const maxTotal = args.avatarId ? 48 : 52;
+      return trimlines(string, maxPerLine, 4, maxTotal);
     },
     multiple: true,
     defaultValue: ""
@@ -25,17 +26,18 @@ export const fields = [
     filter: sprite => sprite.numFrames === 1,
     postUpdate: (args) => {
       const maxPerLine = args.avatarId ? 16 : 18;
+      const maxTotal = args.avatarId ? 48 : 52;
       return {
         ...args,
         text: Array.isArray(args.text)
-          ? args.text.map(string => trimlines(string, maxPerLine))
-          : trimlines(args.text, maxPerLine)
+          ? args.text.map(string => trimlines(string, maxPerLine, 4, maxTotal))
+          : trimlines(args.text, maxPerLine, 4, maxTotal)
       };
     }
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const {
     textDialogue,
     textSetOpenInstant,
@@ -71,4 +73,10 @@ export const compile = (input, helpers) => {
   } else {
     textDialogue(input.text || " ", input.avatarId);
   }
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

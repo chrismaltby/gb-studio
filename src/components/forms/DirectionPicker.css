@@ -36,7 +36,7 @@
   flex: 1;
   background: var(--input-bg-color);
   font-size: 10px;
-  line-height: 28px;
+  line-height: 26px;
   text-align: center;
   border: 1px solid var(--input-border-color);
   border-right: 0;
@@ -89,4 +89,9 @@
 
 .DirectionPicker__Button--Down svg {
   transform: rotate(180deg);
+}
+
+.FormField .DirectionPicker > label > input,
+.FormField .DirectionPicker > label > div {
+  margin-top: 0;
 }

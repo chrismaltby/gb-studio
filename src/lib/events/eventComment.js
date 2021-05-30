@@ -1,8 +1,8 @@
-import l10n from "../helpers/l10n";
+const l10n = require("../helpers/l10n").default;
 
-export const id = "EVENT_COMMENT";
+const id = "EVENT_COMMENT";
 
-export const fields = [
+const fields = [
   {
     key: "text",
     type: "textarea",
@@ -13,4 +13,10 @@ export const fields = [
   }
 ];
 
-export const compile = (input, helpers) => {};
+const compile = (input, helpers) => {};
+
+module.exports = {
+  id,
+  fields,
+  compile
+};

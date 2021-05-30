@@ -1,22 +1,22 @@
-import { getActor, getSprite } from "./helpers";
-import { directionToFrame } from "../helpers/gbstudio";
+const getSprite = require("./helpers").getSprite;
+const directionToFrame = require("../helpers/gbstudio").directionToFrame;
 
-export const id = "EVENT_ACTOR_SET_DIRECTION_TO_VALUE";
+const id = "EVENT_ACTOR_SET_DIRECTION_TO_VALUE";
 
-export const fields = [
+const fields = [
   {
     key: "actorId",
     type: "actor",
-    defaultValue: "player"
+    defaultValue: "$self$",
   },
   {
     key: "variable",
     type: "variable",
-    defaultValue: "LAST_VARIABLE"
-  }
+    defaultValue: "LAST_VARIABLE",
+  },
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { actorSetActive, ifVariableValue } = helpers;
 
   actorSetActive(input.actorId);
@@ -56,18 +56,18 @@ export const compile = (input, helpers) => {
 
 function changeDirection(direction, input, helpers) {
   const {
+    getActorById,
     actorSetDirection,
     actorSetFrame,
     actorSetFlip,
     sprites,
-    scene
   } = helpers;
 
-  const actor = getActor(input.actorId, scene);
+  const actor = getActorById(input.actorId);
 
   actorSetDirection(direction);
 
-  if (actor && actor.movementType === "static") {
+  if (actor && actor.spriteType === "static") {
     const spriteSheet = getSprite(actor.spriteSheetId, sprites);
     const numFrames = spriteSheet ? spriteSheet.numFrames : 0;
     const isActorSheet = numFrames === 3 || numFrames === 6;
@@ -79,3 +79,9 @@ function changeDirection(direction, input, helpers) {
     }
   }
 }
+
+module.exports = {
+  id,
+  fields,
+  compile
+};

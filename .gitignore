@@ -12,3 +12,6 @@ coverage
 /dist
 .DS_Store
 test/projects/*/build
+
+# Webpack
+.webpack/

@@ -2,6 +2,7 @@ import glob from "glob";
 import { promisify } from "util";
 import uuidv4 from "uuid/v4";
 import sizeOf from "image-size";
+import { stat } from "fs-extra";
 import parseAssetPath from "../helpers/path/parseAssetPath";
 import { spriteTypeFromNumFrames } from "../helpers/gbstudio";
 
@@ -14,15 +15,17 @@ const loadSpriteData = projectRoot => async filename => {
   const { file, plugin } = parseAssetPath(filename, projectRoot, "sprites");
   try {
     const size = await sizeOfAsync(filename);
+    const fileStat = await stat(filename, { bigint: true });
+    const inode = fileStat.ino.toString();
     const numFrames = size.width / FRAME_SIZE;
-
     return {
       id: uuidv4(),
       plugin,
-      name: file.replace(".png", ""),
+      name: file.replace(/.png/i, ""),
       numFrames,
       type: spriteTypeFromNumFrames(numFrames),
       filename: file,
+      inode,
       _v: Date.now()
     };
   } catch (e) {
@@ -32,9 +35,9 @@ const loadSpriteData = projectRoot => async filename => {
 };
 
 const loadAllSpriteData = async projectRoot => {
-  const spritePaths = await globAsync(`${projectRoot}/assets/sprites/**/*.png`);
+  const spritePaths = await globAsync(`${projectRoot}/assets/sprites/**/@(*.png|*.PNG)`);
   const pluginPaths = await globAsync(
-    `${projectRoot}/plugins/*/sprites/**/*.png`
+    `${projectRoot}/plugins/*/sprites/**/@(*.png|*.PNG)`,
   );
   const spriteData = (
     await Promise.all(

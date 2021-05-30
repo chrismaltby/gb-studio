@@ -1,20 +1,26 @@
-export const id = "EVENT_ACTOR_SET_MOVEMENT_SPEED";
+const id = "EVENT_ACTOR_SET_MOVEMENT_SPEED";
 
-export const fields = [
+const fields = [
   {
     key: "actorId",
     type: "actor",
-    defaultValue: "player"
+    defaultValue: "$self$"
   },
   {
     key: "speed",
     type: "moveSpeed",
-    defaultValue: "1"
+    defaultValue: 1
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { actorSetActive, actorSetMovementSpeed } = helpers;
   actorSetActive(input.actorId);
   actorSetMovementSpeed(input.speed);
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

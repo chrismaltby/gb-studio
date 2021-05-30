@@ -5,6 +5,13 @@
   "parserOptions": {
     "ecmaVersion": 2018
   },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      }
+    }
+  },
   "rules": {
     "import/extensions": 0,
     "import/no-extraneous-dependencies": 0,
@@ -23,7 +30,8 @@
     "jsx-a11y/click-events-have-key-events": 0,
     "jsx-a11y/mouse-events-have-key-events": 0,
     "jsx-a11y/no-noninteractive-element-interactions": 0,
-    "no-await-in-loop": 0
+    "no-await-in-loop": 0,
+    "camelcase": ["error", {"allow": ["UNSAFE_componentWillReceiveProps"]}]
   },
   "env": {
     "browser": true,

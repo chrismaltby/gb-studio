@@ -1,6 +1,6 @@
-export const id = "EVENT_CAMERA_LOCK";
+const id = "EVENT_CAMERA_LOCK";
 
-export const fields = [
+const fields = [
   {
     key: "speed",
     type: "cameraSpeed",
@@ -8,7 +8,13 @@ export const fields = [
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { cameraLock } = helpers;
   cameraLock(input.speed);
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

@@ -2,16 +2,18 @@ import React from "react";
 import PropTypes from "prop-types";
 import cx from "classnames";
 
-const Menu = ({ right, ...props }) => (
-  <div className={cx("Menu", { "Menu--Right": right })} {...props} />
+const Menu = ({ up, right, ...props }) => (
+  <div className={cx("Menu", { "Menu--Right": right, "Menu--Up": up })} {...props} />
 );
 
 Menu.propTypes = {
-  right: PropTypes.bool
+  right: PropTypes.bool,
+  up: PropTypes.bool
 };
 
 Menu.defaultProps = {
-  right: false
+  right: false,
+  up: false
 };
 
 const MenuItem = props => <div className="MenuItem" {...props} />;

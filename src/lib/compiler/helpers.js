@@ -1,8 +1,10 @@
+import { SPRITE_TYPE_STATIC, SPRITE_TYPE_ACTOR_ANIMATED, SPRITE_TYPE_ACTOR } from "../../consts";
+
 const DIR_LOOKUP = {
   down: 1,
   left: 2,
   right: 4,
-  up: 8
+  up: 8,
 };
 
 const MOVEMENT_LOOKUP = {
@@ -11,10 +13,12 @@ const MOVEMENT_LOOKUP = {
   randomFace: 3,
   faceInteraction: 4,
   randomWalk: 5,
-  rotateTRB: 6
+  rotateTRB: 6,
 };
 
 const MOVEMENT_SPEED_LOOKUP = [0, 1, 2, 4, 8];
+
+const TEXT_SPEED_LOOKUP = [0x0, 0x1, 0x3, 0x7, 0xF, 0x1F];
 
 const OPERATOR_LOOKUP = {
   "==": 1,
@@ -22,7 +26,7 @@ const OPERATOR_LOOKUP = {
   "<": 3,
   ">": 4,
   "<=": 5,
-  ">=": 6
+  ">=": 6,
 };
 
 const KEY_BITS = {
@@ -33,10 +37,10 @@ const KEY_BITS = {
   a: 0x10,
   b: 0x20,
   select: 0x40,
-  start: 0x80
+  start: 0x80,
 };
 
-const inputDec = input => {
+export const inputDec = (input) => {
   let output = 0;
   if (Array.isArray(input)) {
     for (let i = 0; i < input.length; i++) {
@@ -55,16 +59,16 @@ const inputDec = input => {
   return output;
 };
 
-const nameToCName = name => {
+export const nameToCName = (name) => {
   return name
     .toLowerCase()
     .replace(/ /g, "_")
     .replace(/[^A-Za-z0-9_]/g, "");
 };
 
-const dirDec = dir => DIR_LOOKUP[dir] || 1;
+export const dirDec = (dir) => DIR_LOOKUP[dir] || 1;
 
-const dirToXDec = dir => {
+export const dirToXDec = (dir) => {
   const d = dirDec(dir);
   if (d === 2) {
     // Facing left
@@ -77,7 +81,7 @@ const dirToXDec = dir => {
   return 0;
 };
 
-const dirToYDec = dir => {
+export const dirToYDec = (dir) => {
   const d = dirDec(dir);
   if (d === 8) {
     // Facing up
@@ -90,19 +94,27 @@ const dirToYDec = dir => {
   return 0;
 };
 
-const moveDec = move => MOVEMENT_LOOKUP[move] || 1;
+export const moveDec = (move) => MOVEMENT_LOOKUP[move] || 1;
 
-const moveSpeedDec = moveSpeed =>
+export const moveSpeedDec = (moveSpeed) =>
   MOVEMENT_SPEED_LOOKUP[moveSpeed] !== undefined
     ? MOVEMENT_SPEED_LOOKUP[moveSpeed]
     : 1;
 
-const animSpeedDec = animSpeed => (animSpeed !== undefined ? animSpeed : 3);
+export const animSpeedDec = (animSpeed) => {
+  if (animSpeed === "" || animSpeed === null) {
+    return 255;
+  }
+  if (animSpeed === undefined) {
+    return 3;
+  }
+  return animSpeed;
+}
 
-const operatorDec = operator => OPERATOR_LOOKUP[operator] || 1;
+export const operatorDec = (operator) => OPERATOR_LOOKUP[operator] || 1;
 
-const spriteTypeDec = (movementType, numFrames) => {
-  if (moveDec(movementType) === 1) {
+export const spriteTypeDec = (spriteType, numFrames) => {
+  if (spriteType === SPRITE_TYPE_STATIC) {
     // If movement type is static and cycling frames, always set as static sprite
     return 0;
   }
@@ -116,8 +128,8 @@ const spriteTypeDec = (movementType, numFrames) => {
   return 0;
 };
 
-const actorFramesPerDir = (movementType, numFrames) => {
-  if (moveDec(movementType) === 1) {
+export const actorFramesPerDir = (spriteType, numFrames) => {
+  if (spriteType === SPRITE_TYPE_STATIC) {
     // If movement type is static and cycling frames
     return numFrames;
   }
@@ -131,35 +143,126 @@ const actorFramesPerDir = (movementType, numFrames) => {
   return numFrames;
 };
 
-const combineMultipleChoiceText = args => {
-  const trueText = args.trueText.slice(0, 17) || "Choice A";
-  const falseText = args.falseText.slice(0, 17) || "Choice B";
-  return `${trueText}\n${falseText}`;
+export const isMBC1 = (cartType) => cartType === "03" || cartType === "02";
+
+export const replaceInvalidCustomEventVariables = (variable) => {
+  const getValidVariableIndex = (v) => {
+    const variableIndex = parseInt(String(v).replace(/^L|^T/, ""), 10);
+    if (variableIndex >= 10 || isNaN(variableIndex)) {
+      return "0";
+    }
+    return String(variableIndex);  
+  }
+
+  // Support the case for "union" values
+  if (variable && variable.type === "variable") {
+    return {
+      ...variable,
+      value: getValidVariableIndex(variable.value)
+    }
+  }
+  return getValidVariableIndex(variable);
 };
 
-const isMBC1 = cartType => cartType === "03" || cartType === "02";
-
-const replaceInvalidCustomEventVariables = variable => {
-  const variableIndex = parseInt(String(variable).replace(/^L/, ""), 10);
-  if (variableIndex >= 10) {
+export const replaceInvalidCustomEventActors = (actor) => {
+  if (actor.indexOf("-") > -1 || parseInt(actor, 10) >= 10 || actor === "$self$") {
     return "0";
   }
-  return String(variableIndex);
+  return actor;
 };
 
-module.exports = {
-  nameToCName,
-  dirDec,
-  dirToXDec,
-  dirToYDec,
-  inputDec,
-  moveDec,
-  moveSpeedDec,
-  animSpeedDec,
-  operatorDec,
-  spriteTypeDec,
-  actorFramesPerDir,
-  combineMultipleChoiceText,
-  isMBC1,
-  replaceInvalidCustomEventVariables
-};
+export const replaceInvalidCustomEventProperties = (property) => {
+  const getValidPropertyValue = (p) => {
+    const actorValue = p.replace(/:.*/, "");
+    return p.replace(/.*:/, `${replaceInvalidCustomEventActors(actorValue)}:`);
+  }
+
+  // Support the case for "union" values
+  if (property !== null && property.type === "property") {
+    return {
+      ...property,
+      value: getValidPropertyValue(property.value)
+    }
+  }
+  return getValidPropertyValue(property);
+}
+
+export const collisionGroupDec = (group) => {
+  if(group === "player") {
+    return 1;
+  }
+  if (group === "1") {
+    return 2;
+  }
+  if (group === "2") {
+    return 4;
+  }
+  if (group === "3") {
+    return 8;
+  }
+  return 0;
+}
+
+export const collisionMaskDec = (mask) => {
+  if(!Array.isArray(mask)) {
+    return 0;
+  }
+  return mask.reduce((memo, group) => {
+    return memo | collisionGroupDec(group);
+  }, 0);
+}
+
+export const actorRelativeDec = (operation) => {
+  if (operation === "up") {
+    return 0;
+  }
+  if (operation === "down") {
+    return 1;
+  }
+  if (operation === "left") {
+    return 2;
+  }
+  if (operation === "right") {
+    return 3;
+  }
+  return 0;
+}
+
+export const moveTypeDec = (type) => {
+  if (type === "horizontal") {
+    return 0;
+  }
+  if (type === "vertical") {
+    return 1;
+  }
+  if (type === "diagonal") {
+    return 2;
+  }
+  return 0;
+}
+
+export const heightDec = (type) => {
+  if (type === "low") {
+    return 0;
+  }
+  if (type === "medium") {
+    return 1;
+  }
+  if (type === "high") {
+    return 2;
+  }
+  return 1;
+}
+
+export const textSpeedDec = (speed) => TEXT_SPEED_LOOKUP[speed] !== undefined
+  ? TEXT_SPEED_LOOKUP[speed]
+  : 0x1;
+
+export const paletteMaskDec = (mask) => {
+  return mask.reduce((memo, value, index) => {
+    if (!value) {
+      return memo;
+    }
+    return memo + Math.pow(2, index);
+  }, 0);
+}

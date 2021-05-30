@@ -19,6 +19,6 @@
 #define bar_mWidth 20
 #define bar_mHeight 18
 
-extern unsigned char bar_m[];
+extern const unsigned char bar_m[];
 
 /* End of BAR_M.H */

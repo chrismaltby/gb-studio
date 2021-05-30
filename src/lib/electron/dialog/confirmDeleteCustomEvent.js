@@ -20,5 +20,5 @@ export default (name, sceneNames, count) => {
     )
   };
 
-  return dialog.showMessageBox(dialogOptions);
+  return dialog.showMessageBoxSync(dialogOptions);
 };

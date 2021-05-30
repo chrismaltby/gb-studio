@@ -104,50 +104,52 @@ test("Should be able to set active actor to player", () => {
 test("Should be able to move active actor to position", () => {
   const output = [];
   const sb = new ScriptBuilder(output);
-  sb.actorMoveTo(5, 6);
-  expect(output).toEqual([cmd(ACTOR_MOVE_TO), 5, 6]);
+  sb.actorMoveTo(5, 6, false, "horizontal");
+  expect(output).toEqual([cmd(ACTOR_MOVE_TO), 5, 6, 0, 0]);
 });
 
 test("Should default move active actor to position to origin", () => {
   const output = [];
   const sb = new ScriptBuilder(output);
   sb.actorMoveTo();
-  expect(output).toEqual([cmd(ACTOR_MOVE_TO), 0, 0]);
+  expect(output).toEqual([cmd(ACTOR_MOVE_TO), 0, 0, 0, 0]);
 });
 
 test("Should be able to move active actor relatively", () => {
   const output = [];
   const sb = new ScriptBuilder(output);
-  sb.actorMoveRelative(5, 6);
-  expect(output).toEqual([cmd(ACTOR_MOVE_RELATIVE), 5, 0, 6, 0]);
+  sb.actorMoveRelative(5, 6, false, "horizontal");
+  expect(output).toEqual([cmd(ACTOR_MOVE_RELATIVE), 5, 0, 6, 0, 0, 0]);
 });
 
 test("Should be able to move active actor to position defined by variables", () => {
   const output = [];
   const sb = new ScriptBuilder(output, { variables: ["0", "1"] });
-  sb.actorMoveToVariables("0", "1");
+  sb.actorMoveToVariables("0", "1", false, "horizontal");
   expect(output).toEqual([
     cmd(LOAD_VECTORS),
     0,
     0,
     0,
     1,
-    cmd(ACTOR_MOVE_TO_VALUE)
+    cmd(ACTOR_MOVE_TO_VALUE),
+    0,
+    0
   ]);
 });
 
 test("Should be able to move active actor relatively with negative values", () => {
   const output = [];
   const sb = new ScriptBuilder(output);
-  sb.actorMoveRelative(-5, -6);
-  expect(output).toEqual([cmd(ACTOR_MOVE_RELATIVE), 5, 1, 6, 1]);
+  sb.actorMoveRelative(-5, -6, false, "horizontal");
+  expect(output).toEqual([cmd(ACTOR_MOVE_RELATIVE), 5, 1, 6, 1, 0, 0]);
 });
 
 test("Should default to relative actor move to no movement", () => {
   const output = [];
   const sb = new ScriptBuilder(output);
   sb.actorMoveRelative();
-  expect(output).toEqual([cmd(ACTOR_MOVE_RELATIVE), 0, 0, 0, 0]);
+  expect(output).toEqual([cmd(ACTOR_MOVE_RELATIVE), 0, 0, 0, 0, 0, 0]);
 });
 
 test("Should be able to reposition active actor", () => {
@@ -319,13 +321,22 @@ test("Should be able to show active actor", () => {
   expect(output).toEqual([cmd(ACTOR_SHOW)]);
 });
 
-test("Should be able to change player sprite", () => {
+test("Should be able to change player sprite without persist", () => {
   const output = [];
   const sb = new ScriptBuilder(output, {
     sprites: [{ id: "def" }]
   });
-  sb.playerSetSprite("def");
-  expect(output).toEqual([cmd(PLAYER_SET_SPRITE), 0]);
+  sb.playerSetSprite("def", false);
+  expect(output).toEqual([cmd(PLAYER_SET_SPRITE), 0, 0, 0]);
+});
+
+test("Should be able to change player sprite with persist", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, {
+    sprites: [{ id: "def" }]
+  });
+  sb.playerSetSprite("def", true);
+  expect(output).toEqual([cmd(PLAYER_SET_SPRITE), 0, 0, 1]);
 });
 
 test("Should be able to hide all sprites", () => {
@@ -347,7 +358,7 @@ test("Should be able to display text", () => {
   const strings = ["First Text"];
   const sb = new ScriptBuilder(output, { strings });
   sb.textDialogue("First Text");
-  expect(output).toEqual([cmd(TEXT), 0, 0]);
+  expect(output).toEqual([cmd(TEXT), "__REPLACE:STRING_BANK:0", "__REPLACE:STRING_HI:0", "__REPLACE:STRING_LO:0"]);
   expect(strings).toEqual(["First Text"]);
 });
 
@@ -357,7 +368,7 @@ test("Should be able to add additional display text", () => {
   const sb = new ScriptBuilder(output, { strings });
   sb.textDialogue("First Text");
   sb.textDialogue("Second Text");
-  expect(output).toEqual([cmd(TEXT), 0, 0, cmd(TEXT), 0, 2]);
+  expect(output).toEqual([cmd(TEXT), "__REPLACE:STRING_BANK:0", "__REPLACE:STRING_HI:0", "__REPLACE:STRING_LO:0", cmd(TEXT), "__REPLACE:STRING_BANK:2", "__REPLACE:STRING_HI:2", "__REPLACE:STRING_LO:2"]);
   expect(strings).toEqual(["First Text", "Unused Text", "Second Text"]);
 });
 
@@ -366,7 +377,7 @@ test("Should default to empty display text", () => {
   const strings = [];
   const sb = new ScriptBuilder(output, { strings });
   sb.textDialogue();
-  expect(output).toEqual([cmd(TEXT), 0, 0]);
+  expect(output).toEqual([cmd(TEXT), "__REPLACE:STRING_BANK:0", "__REPLACE:STRING_HI:0", "__REPLACE:STRING_LO:0"]);
   expect(strings).toEqual([" "]);
 });
 
@@ -376,7 +387,7 @@ test("Should be able to display text with avatar", () => {
   const avatars = [{ id: "avatar-1" }, { id: "avatar-2" }];
   const sb = new ScriptBuilder(output, { strings, avatars });
   sb.textDialogue("First Text", "avatar-2");
-  expect(output).toEqual([cmd(TEXT_WITH_AVATAR), 0, 0, 1]);
+  expect(output).toEqual([cmd(TEXT_WITH_AVATAR), "__REPLACE:STRING_BANK:0", "__REPLACE:STRING_HI:0", "__REPLACE:STRING_LO:0", 1]);
   expect(strings).toEqual(["First Text"]);
 });
 
@@ -385,7 +396,7 @@ test("Should be able to display choice", () => {
   const strings = ["Hello World"];
   const sb = new ScriptBuilder(output, { variables: ["0", "1", "2"], strings });
   sb.textChoice("2", { trueText: "One", falseText: "Two" });
-  expect(output).toEqual([cmd(CHOICE), 0, 2, 0, 1]);
+  expect(output).toEqual([cmd(CHOICE), 0, 2, "__REPLACE:STRING_BANK:1", "__REPLACE:STRING_HI:1", "__REPLACE:STRING_LO:1"]);
   expect(strings).toEqual(["Hello World", "One\nTwo"]);
 });
 
@@ -394,7 +405,7 @@ test("Should not store choice text multiple times", () => {
   const strings = ["One\nTwo"];
   const sb = new ScriptBuilder(output, { variables: ["0", "1", "2"], strings });
   sb.textChoice("2", { trueText: "One", falseText: "Two" });
-  expect(output).toEqual([cmd(CHOICE), 0, 2, 0, 0]);
+  expect(output).toEqual([cmd(CHOICE), 0, 2, "__REPLACE:STRING_BANK:0", "__REPLACE:STRING_HI:0", "__REPLACE:STRING_LO:0"]);
   expect(strings).toEqual(["One\nTwo"]);
 });
 
@@ -403,7 +414,7 @@ test("Should be able to display menu with default values", () => {
   const strings = ["Hello World"];
   const sb = new ScriptBuilder(output, { variables: ["0", "1", "2"], strings });
   sb.textMenu("2", [ "item1", "item2", "item3" ]);
-  expect(output).toEqual([cmd(MENU), 0, 2, 0, 1, 1, 0]);
+  expect(output).toEqual([cmd(MENU), 0, 2, "__REPLACE:STRING_BANK:1", "__REPLACE:STRING_HI:1", "__REPLACE:STRING_LO:1", 1, 0]);
   expect(strings).toEqual(["Hello World", "item1\nitem2\nitem3"]);
 });
 
@@ -431,15 +442,15 @@ test("Should be able to display menu with different config values", () => {
   sb.textMenu("2", [ "item1", "item2", "item3" ], "dialogue", true, true);
 
   expect(output).toEqual([
-    cmd(MENU), 0, 2, 0, 1, 1, 0,
-    cmd(MENU), 0, 2, 0, 1, 1, 1,
-    cmd(MENU), 0, 2, 0, 1, 1, 2,
-    cmd(MENU), 0, 2, 0, 1, 1, 3,
+    cmd(MENU), 0, 2, "__REPLACE:STRING_BANK:1", "__REPLACE:STRING_HI:1", "__REPLACE:STRING_LO:1", 1, 0,
+    cmd(MENU), 0, 2, "__REPLACE:STRING_BANK:1", "__REPLACE:STRING_HI:1", "__REPLACE:STRING_LO:1", 1, 1,
+    cmd(MENU), 0, 2, "__REPLACE:STRING_BANK:1", "__REPLACE:STRING_HI:1", "__REPLACE:STRING_LO:1", 1, 2,
+    cmd(MENU), 0, 2, "__REPLACE:STRING_BANK:1", "__REPLACE:STRING_HI:1", "__REPLACE:STRING_LO:1", 1, 3,
 
-    cmd(MENU), 0, 2, 0, 1, 0, 0,
-    cmd(MENU), 0, 2, 0, 1, 0, 1,
-    cmd(MENU), 0, 2, 0, 1, 0, 2,
-    cmd(MENU), 0, 2, 0, 1, 0, 3,
+    cmd(MENU), 0, 2, "__REPLACE:STRING_BANK:1", "__REPLACE:STRING_HI:1", "__REPLACE:STRING_LO:1", 0, 0,
+    cmd(MENU), 0, 2, "__REPLACE:STRING_BANK:1", "__REPLACE:STRING_HI:1", "__REPLACE:STRING_LO:1", 0, 1,
+    cmd(MENU), 0, 2, "__REPLACE:STRING_BANK:1", "__REPLACE:STRING_HI:1", "__REPLACE:STRING_LO:1", 0, 2,
+    cmd(MENU), 0, 2, "__REPLACE:STRING_BANK:1", "__REPLACE:STRING_HI:1", "__REPLACE:STRING_LO:1", 0, 3,
   ]);
   expect(strings).toEqual(["Hello World", "item1\nitem2\nitem3"]);
 });
@@ -469,7 +480,7 @@ test("Should be able to set text animation speeds", () => {
   const output = [];
   const sb = new ScriptBuilder(output);
   sb.textSetAnimSpeed(1, 2, 3);
-  expect(output).toEqual([cmd(TEXT_SET_ANIM_SPEED), 1, 2, 3]);
+  expect(output).toEqual([cmd(TEXT_SET_ANIM_SPEED), 1, 2, 7, 1]);
 });
 
 test("Should be able to restore text box close speed", () => {
@@ -516,16 +527,16 @@ test("Should be able to set variable to random number", () => {
 
 test("Should be able to add variables", () => {
   const output = [];
-  const sb = new ScriptBuilder(output, { variables: ["0", "1"] });
-  sb.variablesAdd("0", "1");
-  expect(output).toEqual([cmd(LOAD_VECTORS), 0, 0, 0, 1, cmd(MATH_ADD_VALUE)]);
+  const sb = new ScriptBuilder(output, { variables: ["0", "1"], clamp: true });
+  sb.variablesAdd("0", "1", true);
+  expect(output).toEqual([cmd(LOAD_VECTORS), 0, 0, 0, 1, cmd(MATH_ADD_VALUE), 1]);
 });
 
 test("Should be able to subtract variables", () => {
   const output = [];
-  const sb = new ScriptBuilder(output, { variables: ["0", "1"] });
-  sb.variablesSub("1", "0");
-  expect(output).toEqual([cmd(LOAD_VECTORS), 0, 1, 0, 0, cmd(MATH_SUB_VALUE)]);
+  const sb = new ScriptBuilder(output, { variables: ["0", "1"], clamp: true });
+  sb.variablesSub("1", "0", true);
+  expect(output).toEqual([cmd(LOAD_VECTORS), 0, 1, 0, 0, cmd(MATH_SUB_VALUE), 1]);
 });
 
 test("Should be able to multiply variables", () => {
@@ -635,8 +646,8 @@ test("Should be able to switch scene", () => {
       }
     ]
   });
-  sb.sceneSwitch("abc", 5, 9, "up", 2);
-  expect(output).toEqual([cmd(SWITCH_SCENE), 0, 0, 5, 9, dirDec("up"), 2]);
+  sb.sceneSwitch("abc", 5, 9, "up", 2, 0);
+  expect(output).toEqual([cmd(SWITCH_SCENE), 0, 0, 5, 9, dirDec("up"), 2, 0]);
 });
 
 test("Should skip switching scene if not found", () => {
@@ -648,7 +659,7 @@ test("Should skip switching scene if not found", () => {
       }
     ]
   });
-  sb.sceneSwitch("def", 5, 9, "up", 2);
+  sb.sceneSwitch("def", 5, 9, "up", 2, 0);
   expect(output).toEqual([]);
 });
 
@@ -662,7 +673,7 @@ test("Should default scene switch to facing downwards at origin with default fad
     ]
   });
   sb.sceneSwitch("abc");
-  expect(output).toEqual([cmd(SWITCH_SCENE), 0, 0, 0, 0, dirDec("down"), 2]);
+  expect(output).toEqual([cmd(SWITCH_SCENE), 0, 0, 0, 0, dirDec("down"), 2, 0]);
 });
 
 test("Should be able to store current scene on stack", () => {
@@ -746,8 +757,8 @@ test("Should be able to lock camera with speed flag", () => {
 test("Should be able to shake camera for a number of frames", () => {
   const output = [];
   const sb = new ScriptBuilder(output);
-  sb.cameraShake(3);
-  expect(output).toEqual([cmd(CAMERA_SHAKE), 3]);
+  sb.cameraShake(true, false, 3);
+  expect(output).toEqual([cmd(CAMERA_SHAKE), 1, 0, 3]);
 });
 
 test("Should be able to conditionally execute if variable is true", () => {
@@ -962,7 +973,7 @@ test("Should be able to add input script", () => {
     }
   });
   sb.inputScriptSet("b", []);
-  expect(output).toEqual([cmd(SET_INPUT_SCRIPT), inputDec(["b"]), 99, 0, 200]);
+  expect(output).toEqual([cmd(SET_INPUT_SCRIPT), inputDec(["b"]), 1, 99, 0, 200]);
 });
 
 test("Should be able to add input script as function", () => {
@@ -983,7 +994,7 @@ test("Should be able to add input script as function", () => {
   sb.inputScriptSet("b", () => {
     sb.spritesHide();
   });
-  expect(output).toEqual([cmd(SET_INPUT_SCRIPT), inputDec(["b"]), 99, 0, 200]);
+  expect(output).toEqual([cmd(SET_INPUT_SCRIPT), inputDec(["b"]), 1, 99, 0, 200]);
 });
 
 test("Should be able to remove input script", () => {
@@ -1103,7 +1114,7 @@ test("Should be able to start a tone with period 1000", () => {
   const output = [];
   const sb = new ScriptBuilder(output);
   sb.soundStartTone(1000);
-  expect(output).toEqual([cmd(SOUND_START_TONE), 3, 232]);
+  expect(output).toEqual([cmd(SOUND_START_TONE), 3, 232, 30]);
 });
 
 test("Should be able to stop a tone", () => {

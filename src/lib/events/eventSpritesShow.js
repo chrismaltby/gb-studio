@@ -1,14 +1,20 @@
-import l10n from "../helpers/l10n";
+const l10n = require("../helpers/l10n").default;
 
-export const id = "EVENT_SHOW_SPRITES";
+const id = "EVENT_SHOW_SPRITES";
 
-export const fields = [
+const fields = [
   {
     label: l10n("FIELD_UNHIDE_SPRITES")
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { spritesShow } = helpers;
   spritesShow();
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

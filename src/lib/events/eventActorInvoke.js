@@ -1,20 +1,26 @@
-import l10n from "../helpers/l10n";
+const l10n = require("../helpers/l10n").default;
 
-export const id = "EVENT_ACTOR_INVOKE";
+const id = "EVENT_ACTOR_INVOKE";
 
-export const fields = [
+const fields = [
   {
     label: l10n("FIELD_ACTOR_INVOKE")
   },
   {
     key: "actorId",
     type: "actor",
-    defaultValue: "LAST_ACTOR"
+    defaultValue: "$self$"
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { actorSetActive, actorInvoke } = helpers;
   actorSetActive(input.actorId);
   actorInvoke();
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

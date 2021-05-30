@@ -1,11 +1,13 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import * as actions from "../../actions";
 import Button from "../library/Button";
 import { PlayIcon, PauseIcon } from "../library/Icons";
 import l10n from "../../lib/helpers/l10n";
 import { assetFilename } from "../../lib/helpers/gbstudio";
+import musicActions from "../../store/features/music/musicActions";
+import electronActions from "../../store/features/electron/electronActions";
+import entitiesActions from "../../store/features/entities/entitiesActions";
 
 class MusicViewer extends Component {
   componentDidMount() {
@@ -17,21 +19,23 @@ class MusicViewer extends Component {
   }
 
   onOpen = () => {
-    const { projectRoot, file, openFolder } = this.props;
-    openFolder(`${projectRoot}/assets/music/${file.filename}`);
+    const { projectRoot, file, openFile } = this.props;
+    openFile({
+      filename: `${projectRoot}/assets/music/${file.filename}`,
+      type: "music"
+    });
   };
 
   onPlay = () => {
-    const { projectRoot, file, playMusic } = this.props;
+    const { file, play } = this.props;
     if (file) {
-      const filename = assetFilename(projectRoot, "music", file);
-      playMusic(filename);
+      play({ musicId: file.id });
     }
   };
 
   onPause = () => {
-    const { pauseMusic } = this.props;
-    pauseMusic();
+    const { pause } = this.props;
+    pause();
   };
 
   onKeyDown = e => {
@@ -43,6 +47,16 @@ class MusicViewer extends Component {
         this.onPlay();
       }
     }
+  };
+
+  onChangeSpeedConversion = (e) => {
+    const { file, editMusicSettings } = this.props;
+    editMusicSettings({
+      musicId: file.id,
+      changes: {
+        disableSpeedConversion: e.currentTarget.checked,
+      },
+    });
   };
 
   render() {
@@ -61,6 +75,20 @@ class MusicViewer extends Component {
               </Button>
             )}
             <div className="MusicViewer__Filename">{file.filename}</div>
+            <div className="MusicViewer__Settings">
+              <div className="FormField">
+                <label htmlFor="disableSpeedConversion">
+                  <input
+                    id="disableSpeedConversion"
+                    type="checkbox"
+                    onChange={this.onChangeSpeedConversion}
+                    checked={(file.settings && file.settings.disableSpeedConversion) || false}
+                  />
+                  <div className="FormCheckbox" />
+                  {l10n("FIELD_MUSIC_DISABLE_SPEED_CONVERSION")}
+                </label>
+              </div>
+            </div>
           </div>
         )}
         {file && (
@@ -80,13 +108,17 @@ MusicViewer.propTypes = {
   projectRoot: PropTypes.string.isRequired,
   file: PropTypes.shape({
     id: PropTypes.string.isRequired,
-    filename: PropTypes.string.isRequired
+    filename: PropTypes.string.isRequired,
+    settings: PropTypes.shape({
+      disableSpeedConversion: PropTypes.bool,
+    }),
   }),
   sidebarWidth: PropTypes.number.isRequired,
   playing: PropTypes.bool.isRequired,
-  playMusic: PropTypes.func.isRequired,
-  pauseMusic: PropTypes.func.isRequired,
-  openFolder: PropTypes.func.isRequired
+  play: PropTypes.func.isRequired,
+  pause: PropTypes.func.isRequired,
+  openFile: PropTypes.func.isRequired,
+  editMusicSettings: PropTypes.func.isRequired,
 };
 
 MusicViewer.defaultProps = {
@@ -94,7 +126,7 @@ MusicViewer.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  const { filesSidebarWidth: sidebarWidth } = state.settings;
+  const { filesSidebarWidth: sidebarWidth } = state.editor;
   return {
     projectRoot: state.document && state.document.root,
     playing: state.music.playing,
@@ -103,9 +135,10 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  playMusic: actions.playMusic,
-  pauseMusic: actions.pauseMusic,
-  openFolder: actions.openFolder
+  play: musicActions.playMusic,
+  pause: musicActions.pauseMusic,
+  openFile: electronActions.openFile,
+  editMusicSettings: entitiesActions.editMusicSettings,
 };
 
 export default connect(

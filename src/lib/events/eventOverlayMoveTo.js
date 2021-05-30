@@ -1,8 +1,8 @@
-import l10n from "../helpers/l10n";
+const l10n = require("../helpers/l10n").default;
 
-export const id = "EVENT_OVERLAY_MOVE_TO";
+const id = "EVENT_OVERLAY_MOVE_TO";
 
-export const fields = [
+const fields = [
   {
     key: "x",
     label: l10n("FIELD_X"),
@@ -28,7 +28,14 @@ export const fields = [
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { overlayMoveTo } = helpers;
   overlayMoveTo(input.x, input.y, input.speed);
 };
+
+module.exports = {
+  id,
+  fields,
+  compile
+};
+

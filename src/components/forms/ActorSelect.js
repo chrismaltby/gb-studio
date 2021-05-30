@@ -37,7 +37,7 @@ ActorSelect.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  if (state.editor.type === "customEvents") {
+  if (state.editor.type === "customEvent") {
     return {
       scope: "customEvent"
     };

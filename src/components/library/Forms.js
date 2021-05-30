@@ -8,6 +8,8 @@ import AsyncPaginate, {
 } from "react-select-async-paginate";
 import l10n from "../../lib/helpers/l10n";
 
+const menuPortalEl = document.getElementById("MenuPortal");
+
 reduceGroupedOptions([], []);
 
 export const Textarea = ({ small, large, borderless, fixedSize, ...props }) => (
@@ -40,7 +42,9 @@ export const FormField = ({
   halfWidth,
   thirdWidth,
   quarterWidth,
-  children
+  alignCheckbox,
+  children,
+  style
 }) => (
   <div
     className={cx(
@@ -53,8 +57,12 @@ export const FormField = ({
       },
       {
         "FormField--QuarterWidth": quarterWidth
+      },
+      {
+        "FormField--AlignCheckbox": alignCheckbox
       }
     )}
+    style={style}
   >
     {children}
   </div>
@@ -64,6 +72,7 @@ FormField.propTypes = {
   halfWidth: PropTypes.bool,
   thirdWidth: PropTypes.bool,
   quarterWidth: PropTypes.bool,
+  alignCheckbox: PropTypes.bool,
   children: PropTypes.node
 };
 
@@ -71,6 +80,7 @@ FormField.defaultProps = {
   halfWidth: false,
   thirdWidth: false,
   quarterWidth: false,
+  alignCheckbox: false,
   children: null
 };
 
@@ -266,7 +276,8 @@ export class SelectRenamable extends Component {
       id,
       value,
       onChange,
-      grouped
+      grouped,
+      allowRename
     } = this.props;
     const { edit, editValue } = this.state;
 
@@ -290,11 +301,15 @@ export class SelectRenamable extends Component {
             classNamePrefix="ReactSelect"
             value={value}
             onChange={onChange}
+            options={this.loadOptions("", []).options}
             loadOptions={this.loadOptions}
             reduceOptions={grouped ? reduceGroupedOptions : undefined}
+            menuPlacement="auto"
+            menuPortalTarget={menuPortalEl}
+            blurInputOnSelect
           />
         )}
-        {edit ? (
+        {allowRename && (edit ? (
           <div
             key="save"
             className="SelectRenamable__EditBtn SelectRenamable__SaveBtn"
@@ -310,7 +325,7 @@ export class SelectRenamable extends Component {
           >
             {l10n("FIELD_RENAME")}
           </div>
-        )}
+        ))}
       </div>
     );
   }

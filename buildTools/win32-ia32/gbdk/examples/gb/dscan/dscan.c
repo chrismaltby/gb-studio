@@ -189,18 +189,18 @@ void show_level( UBYTE i )
 
 void show_gover()
 {
-  set_bkg_tiles(  6, 9, 8, 1, msg_gover );
+  set_bkg_tiles(  6, 9, 8, 1, (unsigned char *)msg_gover );
   pf = DEF_PF;
 }
 
 void show_pause()
 {
-  set_bkg_tiles(  6, 9, 8, 1, msg_pause );
+  set_bkg_tiles(  6, 9, 8, 1, (unsigned char *)msg_pause );
 }
 
 void hide_msg()
 {
-  set_bkg_tiles(  6, 9, 8, 1, msg_start );
+  set_bkg_tiles(  6, 9, 8, 1, (unsigned char *)msg_start );
 }
 
 void init_score()
@@ -243,8 +243,8 @@ void init_screen()
 
   pw = 50;
   set_bkg_data(  0, 96, bkg );
-  set_bkg_tiles(  0, 0, 3, 1, msg_1up );
-  set_bkg_tiles( 16, 0, 2, 1, msg_lv );
+  set_bkg_tiles(  0, 0, 3, 1, (unsigned char *)msg_1up );
+  set_bkg_tiles( 16, 0, 2, 1, (unsigned char *)msg_lv );
   SHOW_BKG;
   SPRITES_8x8;
   set_sprite_data( 0, 128, fore );
@@ -430,7 +430,7 @@ void player()
 /* bombs */
 void bombs()
 {
-   volatile UBYTE i;
+   UBYTE i;
 
    for( i=0; i<MAX_TT; i++ ) {
     if( tf[i] != 0 ) {
@@ -724,6 +724,8 @@ void main()
 {
   disable_interrupts();
   DISPLAY_OFF;
+
+  initarand(((UINT16)DIV_REG << 8));
 
   init_screen();
   init_score();

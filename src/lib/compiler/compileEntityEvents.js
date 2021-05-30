@@ -1,5 +1,5 @@
 import ScriptBuilder from "./scriptBuilder";
-import events from "../events";
+import { isVariableField, isPropertyField } from "../helpers/eventSystem";
 
 const STRING_NOT_FOUND = "STRING_NOT_FOUND";
 const VARIABLE_NOT_FOUND = "VARIABLE_NOT_FOUND";
@@ -11,6 +11,8 @@ const VARIABLE_NOT_FOUND = "VARIABLE_NOT_FOUND";
 // and what the command code is?
 
 const compileEntityEvents = (input = [], options = {}) => {
+  const events = require("../events").default;
+  
   const {
     output = [],
     branch = false,
@@ -19,34 +21,44 @@ const compileEntityEvents = (input = [], options = {}) => {
     entity,
     entityType,
     entityIndex,
-    warnings
+    warnings,
+    loop
   } = options;
   const helpers = {
     ...options,
+    isVariableField,
+    isPropertyField,
     compileEvents: (childInput, eventOutput = null, eventBranch = true) =>
       compileEntityEvents(childInput, {
         ...options,
         output: eventOutput || output,
-        branch: eventBranch
-      })
+        branch: eventBranch,
+        labels: eventBranch ? options.labels : {}
+      }),
   };
   const location = Object.assign(
     {},
     scene && {
-      scene: scene.name || `Scene ${sceneIndex + 1}`
+      scene: scene.name || `Scene ${sceneIndex + 1}`,
     },
     entityType && {
-      scriptType: entityType
+      scriptType: entityType,
     },
     entityType === "actor" && {
-      actor: entity.name || `Actor ${entityIndex + 1}`
+      actor: entity.name || `Actor ${entityIndex + 1}`,
     },
     entityType === "trigger" && {
-      actor: entity.name || `Trigger ${entityIndex + 1}`
+      actor: entity.name || `Trigger ${entityIndex + 1}`,
     }
   );
 
   const scriptBuilder = new ScriptBuilder(output, helpers);
+
+  const loopId = `loop_${Math.random()}`;
+
+  if(loop && input.length > 1) {
+    scriptBuilder.labelDefine(loopId);
+  }
 
   for (let i = 0; i < input.length; i++) {
     const command = input[i].command;
@@ -56,16 +68,32 @@ const compileEntityEvents = (input = [], options = {}) => {
       continue;
     }
     if (events[command]) {
+      if (command === "EVENT_PLAYER_SET_SPRITE") {
+        if (input[i].args && input[i].args.spriteSheetId) {
+          const sprite = options.sprites.find(
+            (s) => s.id === input[i].args.spriteSheetId
+          );
+          if (sprite && sprite.numFrames > 6) {
+            warnings(
+              `Used "Set Player Sprite Sheet" event with a sprite sheet containing more than 6 frames. This may cause graphics corruption. ${JSON.stringify({
+                ...location,
+                filename: sprite.filename
+              })}`
+            );
+          }
+        }
+      }      
       try {
         events[command].compile(
           { ...input[i].args, ...input[i].children },
           {
             ...helpers,
             ...scriptBuilder,
-            event: input[i]
+            event: input[i],
           }
         );
       } catch (e) {
+        console.error(e);
         throw new Error(
           `Compiling "${command}" failed with error "${e}". ${JSON.stringify(
             location
@@ -82,7 +110,25 @@ const compileEntityEvents = (input = [], options = {}) => {
   }
 
   if (!branch) {
+
+    if(loop && input.length > 1) {
+      scriptBuilder.nextFrameAwait();
+      scriptBuilder.labelGoto(loopId);    
+    }
     output.push(0); // End script
+
+    if (output.length > 16383) {
+      warnings(
+        `This script is too big for 1 bank, was ${
+          output.length
+        } bytes, must be under 16384.
+        ${JSON.stringify(location)}
+        `
+      );
+      warnings(
+        "Try splitting this script across multiple actors with *Actor invoke*."
+      );
+    }
 
     for (let oi = 0; oi < output.length; oi++) {
       if (typeof output[oi] === "string" || output[oi] < 0) {
@@ -91,7 +137,12 @@ const compileEntityEvents = (input = [], options = {}) => {
           // If string was equivent to position integer then replace it
           // in output otherwise
           output[oi] = intCmd;
-        } else {
+        } else if (
+          !(
+            typeof output[oi] === "string" &&
+            output[oi].startsWith("__REPLACE:")
+          )
+        ) {
           let reason = "";
           if (String(output[oi]).startsWith("goto:")) {
             reason = "Did you remember to define a label in the script?";

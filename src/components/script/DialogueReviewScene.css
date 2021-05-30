@@ -1,0 +1,30 @@
+.PageContent .DialogueReviewScene {
+  margin-bottom: 0px;
+  padding-bottom: 0px;
+}
+
+.DialogueReviewScene__SceneName {
+  display: flex;
+  align-items: center;
+}
+
+.DialogueReviewScene__SceneName h2 {
+  flex-grow: 1;
+  margin: 0px;
+  padding: 20px 0;
+  margin-left: -20px;
+}
+
+.DialogueReviewScene__SceneName h2:hover {
+  cursor: pointer;
+}
+
+.DialogueReviewScene__SceneName h2 svg {
+  width: 10px;
+  height: 10px;
+  margin-right: 10px;
+}
+
+.DialogueReviewScene--Open .DialogueReviewScene__SceneName h2 svg {
+  transform: rotateZ(90deg);
+}

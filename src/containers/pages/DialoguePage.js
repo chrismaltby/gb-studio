@@ -1,43 +1,52 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import * as actions from "../../actions";
 import PageHeader from "../../components/library/PageHeader";
 import PageContent from "../../components/library/PageContent";
-import DialogueReviewLine from "../../components/script/DialogueReviewLine";
-import { walkEvents, patchEvents } from "../../lib/helpers/eventSystem";
+import { walkEvents } from "../../lib/helpers/eventSystem";
 import { EVENT_TEXT } from "../../lib/compiler/eventTypes";
 import l10n from "../../lib/helpers/l10n";
-import { SceneShape, ActorShape, EventShape } from "../../reducers/stateShape";
-import {
-  getScenes,
-  getActorsLookup,
-  getTriggersLookup
-} from "../../reducers/entitiesReducer";
+import { SceneShape, ActorShape, EventShape } from "../../store/stateShape";
+import DialogueReviewScene from "../../components/script/DialogueReviewScene";
+import { sceneSelectors, actorSelectors, triggerSelectors } from "../../store/features/entities/entitiesState";
 
 class DialoguePage extends Component {
-  onChange = (type, sceneId, entityIndex, currentScript, id) => value => {
-    const { editScene, editActor, editTrigger } = this.props;
-    const newData = patchEvents(currentScript, id, {
-      text: value
-    });
-    if (type === "scene") {
-      editScene(sceneId, {
-        script: newData
+  constructor(props) {
+    super(props);
+    this.state = {
+      openScenes: [],
+    };
+  }
+
+  onToggleScene = (sceneId) => (e) => {
+    const { openScenes } = this.state;
+    if (openScenes.includes(sceneId)) {
+      this.setState({
+        openScenes: openScenes.filter((id) => id !== sceneId),
       });
-    } else if (type === "actor") {
-      editActor(sceneId, entityIndex, {
-        script: newData
-      });
-    } else if (type === "trigger") {
-      editTrigger(sceneId, entityIndex, {
-        script: newData
+    } else {
+      this.setState({
+        openScenes: [].concat(openScenes, sceneId),
       });
     }
   };
 
   render() {
-    const { dialogueLines } = this.props;
+    const { dialogueLines, scenes } = this.props;
+    const { openScenes } = this.state;
+
+    const sortedScenes = scenes
+      .map((scene, sceneIndex) => ({
+        id: scene.id,
+        name: scene.name || `Scene ${sceneIndex + 1}`,
+      }))
+      .sort((a, b) =>
+        a.name.localeCompare(b.name, undefined, {
+          numeric: true,
+          sensitivity: "base",
+        })
+      );
+
     const scriptWords = dialogueLines.reduce((memo, dialogueLine) => {
       if (
         dialogueLine &&
@@ -69,8 +78,9 @@ class DialoguePage extends Component {
       }
       return memo;
     }, 0);
+
     return (
-      <div style={{ width: "100%", flexDirection: "column", overflow: "auto" }}>
+      <div style={{ width: "100%", display:"flex", flexDirection: "column", overflow: "auto" }}>
         <PageHeader>
           <h1>{l10n("DIALOGUE_REVIEW")}</h1>
           <p>
@@ -85,21 +95,15 @@ class DialoguePage extends Component {
           </p>
         </PageHeader>
         <PageContent>
-          <section>
-            {dialogueLines.map(dialogueLine => (
-              <DialogueReviewLine
-                key={dialogueLine.line.id}
-                dialogueLine={dialogueLine}
-                onChange={this.onChange(
-                  dialogueLine.entityType,
-                  dialogueLine.sceneId,
-                  dialogueLine.entity.id,
-                  dialogueLine.entity.script,
-                  dialogueLine.line.id
-                )}
-              />
-            ))}
-          </section>
+          {sortedScenes.map((scene, sceneIndex) => (
+            <DialogueReviewScene
+              id={scene.id}
+              key={scene.id}
+              sceneIndex={sceneIndex}
+              open={openScenes.includes(scene.id)}
+              onToggle={this.onToggleScene(scene.id)}
+            />
+          ))}
         </PageContent>
       </div>
     );
@@ -107,29 +111,26 @@ class DialoguePage extends Component {
 }
 
 DialoguePage.propTypes = {
-  editActor: PropTypes.func.isRequired,
-  editTrigger: PropTypes.func.isRequired,
-  editScene: PropTypes.func.isRequired,
+  scenes: PropTypes.arrayOf(SceneShape).isRequired,
   dialogueLines: PropTypes.arrayOf(
     PropTypes.shape({
       scene: SceneShape,
       actor: ActorShape,
       entityIndex: PropTypes.number,
-      line: EventShape
+      line: EventShape,
     })
-  ).isRequired
+  ).isRequired,
 };
 
 function mapStateToProps(state) {
-  const scenes = getScenes(state);
-  const actorsLookup = getActorsLookup(state);
-  const triggersLookup = getTriggersLookup(state);
-  // const dialogueLines = [];
+  const scenes = sceneSelectors.selectAll(state);
+  const actorsLookup = actorSelectors.selectEntities(state);
+  const triggersLookup = triggerSelectors.selectEntities(state);
 
   const dialogueLines = scenes.reduce((memo, scene, sceneIndex) => {
     scene.actors.forEach((actorId, actorIndex) => {
       const actor = actorsLookup[actorId];
-      walkEvents(actor.script, cmd => {
+      walkEvents(actor.script, (cmd) => {
         if (cmd.command === EVENT_TEXT) {
           memo.push({
             sceneId: scene.id,
@@ -138,14 +139,14 @@ function mapStateToProps(state) {
             entityIndex: actorIndex,
             entityName: actor.name || `Actor ${actorIndex + 1}`,
             sceneName: scene.name || `Scene ${sceneIndex + 1}`,
-            line: cmd
+            line: cmd,
           });
         }
       });
     });
     scene.triggers.forEach((triggerId, triggerIndex) => {
       const trigger = triggersLookup[triggerId];
-      walkEvents(trigger.script, cmd => {
+      walkEvents(trigger.script, (cmd) => {
         if (cmd.command === EVENT_TEXT) {
           memo.push({
             sceneId: scene.id,
@@ -154,12 +155,12 @@ function mapStateToProps(state) {
             entityIndex: triggerIndex,
             entityName: trigger.name || `Trigger ${triggerIndex + 1}`,
             sceneName: scene.name || `Scene ${sceneIndex + 1}`,
-            line: cmd
+            line: cmd,
           });
         }
       });
     });
-    walkEvents(scene.script, cmd => {
+    walkEvents(scene.script, (cmd) => {
       if (cmd.command === EVENT_TEXT) {
         memo.push({
           sceneId: scene.id,
@@ -168,7 +169,7 @@ function mapStateToProps(state) {
           entityIndex: sceneIndex,
           entityName: scene.name,
           sceneName: scene.name,
-          line: cmd
+          line: cmd,
         });
       }
     });
@@ -176,17 +177,11 @@ function mapStateToProps(state) {
   }, []);
 
   return {
-    dialogueLines
+    dialogueLines,
+    scenes,
   };
 }
 
-const mapDispatchToProps = {
-  editActor: actions.editActor,
-  editTrigger: actions.editTrigger,
-  editScene: actions.editScene
-};
+const mapDispatchToProps = {};
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(DialoguePage);
+export default connect(mapStateToProps, mapDispatchToProps)(DialoguePage);

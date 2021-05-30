@@ -1,11 +1,11 @@
 .StatusBar {
-  position: fixed;
-  top: 46px;
-  left: 53px;
+  position: absolute;
+  bottom: 16px;
+  left: 0px;
   background-color: var(--main-bg-color);
   color: #888;
   font-size: 11px;
-  border-radius: 4px;
+  border-top-right-radius: 4px;
   padding: 4px 10px;
   animation: StatusBarFadeIn 0.2s;
 }

@@ -1,14 +1,20 @@
-import l10n from "../helpers/l10n";
+const l10n = require("../helpers/l10n").default;
 
-export const id = "EVENT_SCENE_PUSH_STATE";
+const id = "EVENT_SCENE_PUSH_STATE";
 
-export const fields = [
+const fields = [
   {
     label: l10n("FIELD_SCENE_PUSH_STATE_DESCRIPTION")
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { scenePushState } = helpers;
   scenePushState();
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

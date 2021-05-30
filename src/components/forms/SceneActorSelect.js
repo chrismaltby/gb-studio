@@ -3,111 +3,128 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Select, { components } from "react-select";
 import ActorCanvas from "../world/ActorCanvas";
-import { ActorShape } from "../../reducers/stateShape";
-import { getSceneActors } from "../../reducers/entitiesReducer";
-import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
+import { ActorShape } from "../../store/stateShape";
+import {
+  getSettings,
+} from "../../store/features/settings/settingsState";
+import { getCachedObject, createCacheFunction } from "../../lib/helpers/cache";
+import { actorSelectors, getSceneActorIds } from "../../store/features/entities/entitiesState";
 
-class SceneActorSelect extends Component {
-  shouldComponentUpdate(nextProps, nextState) {
-    rerenderCheck("SceneActorSelect", this.props, {}, nextProps, {});
-    return true;
+const menuPortalEl = document.getElementById("MenuPortal");
+
+const cachedObj = createCacheFunction();
+
+// Dropdown Indicator ---------------------------------------------------------
+
+const DropdownIndicator = ({ actor, direction, frame, ...props }) => {
+  if (!actor) {
+    return <components.DropdownIndicator {...props} />;
   }
+  return (
+    <components.DropdownIndicator {...props}>
+      <ActorCanvas actor={actor} direction={direction} frame={frame} />
+    </components.DropdownIndicator>
+  );
+};
 
-  defaultValue = () => {
-    const { playerSpriteSheetId } = this.props;
+DropdownIndicator.propTypes = {
+  actor: ActorShape,
+  direction: PropTypes.string,
+  frame: PropTypes.number,
+};
+
+DropdownIndicator.defaultProps = {
+  actor: undefined,
+  direction: undefined,
+  frame: undefined,
+};
+
+const DropdownIndicatorWithData = (direction, frame) =>
+  connect((state, ownProps) => {
+    const actorId = ownProps.selectProps.value.id;
+    const actorsLookup = actorSelectors.selectEntities(state);
+    const settings = getSettings(state);
+    const playerSpriteSheetId = settings.playerSpriteSheetId;
+    const actor =
+      actorsLookup[actorId] ||
+      getCachedObject({
+        id: "player",
+        spriteSheetId: playerSpriteSheetId,
+      });
     return {
+      actor,
+      direction,
+      frame,
+    };
+  })(DropdownIndicator);
+
+// Option -------------------------------------------------------------------
+
+const Option = ({ label, value, actor, direction, frame, ...props }) => {
+  if (!actor) {
+    return <components.Option {...props} />;
+  }
+  return (
+    <components.Option {...props}>
+      <div style={{ display: "flex" }}>
+        <div style={{ flexGrow: 1 }}>{label}</div>
+        <ActorCanvas actor={actor} direction={direction} frame={frame} />
+      </div>
+    </components.Option>
+  );
+};
+
+Option.propTypes = {
+  label: PropTypes.string.isRequired,
+  value: PropTypes.string.isRequired,
+  actor: ActorShape,
+  direction: PropTypes.string,
+  frame: PropTypes.number,
+};
+
+Option.defaultProps = {
+  actor: undefined,
+  direction: undefined,
+  frame: undefined,
+};
+
+const OptionWithData = connect((state, ownProps) => {
+  const actorsLookup = actorSelectors.selectEntities(state);
+  const settings = getSettings(state);
+  const playerSpriteSheetId = settings.playerSpriteSheetId;
+  const {
+    value,
+    label,
+    data: { contextEntityId },
+  } = ownProps;
+  const actor =
+    actorsLookup[value] ||
+    actorsLookup[contextEntityId] ||
+    getCachedObject({
+      id: "player",
       name: "Player",
       spriteSheetId: playerSpriteSheetId,
-      movementType: "player"
-    };
+    });
+  return {
+    label,
+    actor,
   };
+})(Option);
 
-  actorName = actor => {
-    const { actors } = this.props;
-    return actor.name || `Actor ${actors.indexOf(actor) + 1}`;
-  }
+// Select -------------------------------------------------------------------
 
-  renderDropdownIndicator = props => {
-    const { actors, value, direction, frame, context } = this.props;
-    const actorId = value === "$self$" && context.type === "actors" ? context.entityId : value;
-    const actor = actors.find(a => a.id === actorId) || this.defaultValue();
-    if (!actor) {
-      return <components.DropdownIndicator {...props} />;
-    }
-
-    return (
-      <components.DropdownIndicator {...props}>
-        <ActorCanvas actor={actor} direction={direction} frame={frame} />
-      </components.DropdownIndicator>
-    );
-  };
-
-  renderOption = props => {
-    const { actors, direction, frame, context } = this.props;
-    const { label, value } = props;
-    const actorId = value === "$self$" && context.type === "actors" ? context.entityId : value;
-    const actor = actors.find(a => a.id === actorId) || this.defaultValue();
-    if (!actor) {
-      return <components.Option {...props} />;
-    }
-
-    return (
-      <components.Option {...props}>
-        <div style={{ display: "flex" }}>
-          <div style={{ flexGrow: 1 }}>{label}</div>
-          <ActorCanvas actor={actor} direction={direction} frame={frame} />
-        </div>
-      </components.Option>
-    );
-  };
-
+class SceneActorSelect extends Component {
   render() {
-    const { actors, id, value, onChange, context } = this.props;
+    const {
+      selectedIndex,
+      options,
+      id,
+      onChange,
+      direction,
+      frame,
+    } = this.props;
 
-    let current; 
-    let currentName;
-    let selfOption = [];
-    
-    if (context.type === "actors") {
-      const selfActor = actors.find(a => a.id === context.entityId);
-      const selfName = `Self (${this.actorName(selfActor)})`;
-      selfOption = [ 
-        { 
-          value: "$self$", 
-          label: selfName, 
-          spriteSheetId: selfActor.spriteSheetId
-        } 
-      ];
-
-      if (value === "$self$") {
-        current = selfActor;
-        currentName = selfName;
-      } else {
-        current = actors.find(a => a.id === value) || this.defaultValue();
-        currentName = this.actorName(current);
-      }     
-    } else {
-      if (value === "$self$ ") {
-        current = this.defaultValue();
-      } else {
-        current = actors.find(a => a.id === value) || this.defaultValue();
-      }
-      currentName = this.actorName(current);
-    }
-    
-    const options = selfOption.concat(
-      {
-        value: "player",
-        label: "Player"
-      },
-      actors.map((a, index) => {
-        return {
-          value: a.id,
-          label: a.name || `Actor ${index + 1}`,
-          spriteSheetId: a.spriteSheetId
-        };
-      })
-    );
+    const selectedOption = options[selectedIndex] || options[0];
 
     return (
       <Select
@@ -115,58 +132,88 @@ class SceneActorSelect extends Component {
         className="ReactSelectContainer"
         classNamePrefix="ReactSelect"
         options={options}
-        value={
-          {
-            label: currentName,
-            value
-          }
-        }
-        onChange={data => {
+        value={selectedOption}
+        onChange={(data) => {
           onChange(data.value);
         }}
         components={{
-          DropdownIndicator: this.renderDropdownIndicator,
-          Option: this.renderOption
+          DropdownIndicator: DropdownIndicatorWithData(
+            direction,
+            frame
+          ),
+          Option: OptionWithData,
         }}
+        menuPlacement="auto"
+        menuPortalTarget={menuPortalEl}
+        blurInputOnSelect
       />
     );
   }
 }
 
+const OptionShape = PropTypes.shape({
+  value: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
+});
+
 SceneActorSelect.propTypes = {
   id: PropTypes.string,
-  value: PropTypes.string,
   onChange: PropTypes.func.isRequired,
-  playerSpriteSheetId: PropTypes.string,
-  actors: PropTypes.arrayOf(ActorShape).isRequired,
   direction: PropTypes.string,
   frame: PropTypes.number,
-  context: PropTypes.shape({
-    type: PropTypes.string.isRequired,
-    entityId: PropTypes.string.isRequired
-  }).isRequired
+  options: PropTypes.arrayOf(OptionShape.isRequired).isRequired,
+  selectedIndex: PropTypes.number.isRequired,  
 };
 
 SceneActorSelect.defaultProps = {
   id: "",
-  value: "",
-  playerSpriteSheetId: "",
   frame: undefined,
-  direction: undefined
+  direction: undefined,
 };
 
-function mapStateToProps(state) {
-  const actors = getSceneActors(state, { id: state.editor.scene });
-  const settings = state.entities.present.result.settings;
-  const playerSpriteSheetId = settings.playerSpriteSheetId;
-  const context = {
-    type: state.editor.type,
-    entityId: state.editor.entityId
-  };
+function mapStateToProps(state, ownProps) {
+  const actorIds = getSceneActorIds(state, { id: state.editor.scene });
+  const actorsLookup = actorSelectors.selectEntities(state);
+  const contextType = state.editor.type;
+  const contextEntityId = state.editor.entityId;
+  const value = ownProps.value;
+
+  const selfIndex = actorIds.indexOf(contextEntityId);
+  const selfActor = actorsLookup[contextEntityId];
+  const selfActorName = selfActor ? selfActor.name || `Actor ${selfIndex + 1}` : "";
+
+  const options = cachedObj(
+    [].concat(
+      contextType === "actor"
+        ? {
+            value: "$self$",
+            label: `Self (${selfActorName})`,
+            id: contextEntityId,
+          }
+        : [],
+      {
+        value: "player",
+        label: "Player",
+        id: "player"
+      },
+      actorIds.map((actorId, actorIndex) => {
+        const actor = actorsLookup[actorId];
+        const label = actor.name || `Actor ${actorIndex + 1}`;
+        return {
+          value: actorId,
+          label,
+          id: actorId
+        };
+      })
+    )
+  );
+
+  const selectedIndex = options.findIndex((option) => option.value === value);
+
   return {
-    actors,
-    playerSpriteSheetId,
-    context
+    options,
+    selectedIndex,
   };
 }
 

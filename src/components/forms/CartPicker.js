@@ -1,33 +1,35 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import cx from "classnames";
 import { connect } from "react-redux";
 import l10n from "../../lib/helpers/l10n";
-import * as actions from "../../actions";
-import Button from "../library/Button";
-import CartPreview from "../library/CartPreview";
+import settingsActions from "../../store/features/settings/settingsActions";
+import { Select } from "../ui/form/Select";
+import { Button } from "../ui/buttons/Button";
+import { SearchableSettingRow } from "../ui/form/SearchableSettingRow";
+import { CardButtons } from "../ui/cards/Card";
+import { SettingRowInput, SettingRowLabel } from "../ui/form/SettingRow";
 
-const cartTypes = [
+const cartOptions = [
   {
-    type: "1B",
-    name: "MBC5+RAM+BATTERY"
+    value: "1B",
+    label: "MBC5+RAM+BATTERY",
   },
   {
-    type: "03",
-    name: "MBC1+RAM+BATTERY"
+    value: "03",
+    label: "MBC1+RAM+BATTERY",
   },
   {
-    type: "1A",
-    name: "MBC5+RAM"
+    value: "1A",
+    label: "MBC5+RAM",
   },
   {
-    type: "02",
-    name: "MBC1+RAM"
-  }
+    value: "02",
+    label: "MBC1+RAM",
+  },
 ];
 
 class CustomControlsPicker extends Component {
-  onChange = cartType => () => {
+  onChange = (cartType) => {
     const { editProjectSettings } = this.props;
     editProjectSettings({ cartType });
   };
@@ -38,54 +40,64 @@ class CustomControlsPicker extends Component {
   };
 
   render() {
-    const { settings } = this.props;
+    const { settings, searchTerm } = this.props;
+
+    const cartType = settings.cartType || "1B";
+
+    const currentValue = cartOptions.find(
+      (option) => option.value === cartType
+    );
+
     return (
-      <div className="CartPicker">
-        <div className="CartPicker__Options">
-          {cartTypes.map(cart => (
-            <div
-              key={cart.type}
-              className="CartPicker__Option"
-              onClick={this.onChange(cart.type)}
-            >
-              <CartPreview
-                type={cart.type}
-                selected={
-                  settings.cartType === cart.type ||
-                  (!settings.cartType && cart.type === "1B")
-                }
-              />
-              <div className="CartPicker__OptionLabel">{cart.name}</div>
-            </div>
-          ))}
-        </div>
-        <div style={{ marginTop: 30 }}>
-          <Button onClick={this.onRestoreDefault}>
-            {l10n("FIELD_RESTORE_DEFAULT")}
-          </Button>
-        </div>
-      </div>
+      <>
+        <SearchableSettingRow
+          searchTerm={searchTerm}
+          searchMatches={[l10n("SETTINGS_CART_TYPE")]}
+        >
+          <SettingRowLabel>{l10n("SETTINGS_CART_TYPE")}</SettingRowLabel>
+          <SettingRowInput>
+            <Select
+              value={currentValue}
+              options={cartOptions}
+              onChange={(newValue) => {
+                this.onChange(newValue.value);
+              }}
+            />
+          </SettingRowInput>
+        </SearchableSettingRow>
+        {!searchTerm && (
+          <CardButtons>
+            <Button onClick={this.onRestoreDefault}>
+              {l10n("FIELD_RESTORE_DEFAULT")}
+            </Button>
+          </CardButtons>
+        )}
+      </>
     );
   }
 }
 
 CustomControlsPicker.propTypes = {
   settings: PropTypes.shape({
-    cartType: PropTypes.string
+    cartType: PropTypes.string,
   }).isRequired,
-  editProjectSettings: PropTypes.func.isRequired
+  editProjectSettings: PropTypes.func.isRequired,
+  searchTerm: PropTypes.string,
+};
+
+CustomControlsPicker.defaultProps = {
+  searchTerm: "",
 };
 
 function mapStateToProps(state) {
-  const project = state.entities.present.result;
-  const { settings } = project;
+  const settings = state.project.present.settings;
   return {
-    settings
+    settings,
   };
 }
 
 const mapDispatchToProps = {
-  editProjectSettings: actions.editProjectSettings
+  editProjectSettings: settingsActions.editSettings,
 };
 
 export default connect(

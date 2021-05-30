@@ -1,14 +1,14 @@
-import l10n from "../helpers/l10n";
+const l10n = require("../helpers/l10n").default;
 
-export const id = "EVENT_CAMERA_MOVE_TO";
+const id = "EVENT_CAMERA_MOVE_TO";
 
-export const fields = [
+const fields = [
   {
     key: "x",
     label: l10n("FIELD_X"),
     type: "number",
     min: 0,
-    max: 12,
+    max: 255,
     width: "50%",
     defaultValue: 0
   },
@@ -17,7 +17,7 @@ export const fields = [
     label: l10n("FIELD_Y"),
     type: "number",
     min: 0,
-    max: 14,
+    max: 255,
     width: "50%",
     defaultValue: 0
   },
@@ -28,7 +28,13 @@ export const fields = [
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { cameraMoveTo } = helpers;
   cameraMoveTo(input.x, input.y, input.speed);
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

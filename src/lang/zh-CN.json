@@ -230,6 +230,7 @@
   "MENU_NEW_PROJECT": "新建项目",
   "MENU_OPEN": "打开",
   "MENU_SAVE": "保存",
+  "MENU_SAVE_AS": "另存为",
   "MENU_EDIT": "编辑",
   "MENU_UNDO": "还原",
   "MENU_REDO": "重做",

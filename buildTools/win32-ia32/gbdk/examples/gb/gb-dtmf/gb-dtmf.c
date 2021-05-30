@@ -5,7 +5,6 @@
 /* ---------------------------------------- */
 
 #include <gb/gb.h>
-#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -20,7 +19,7 @@
 #include "key_num.c"	/* Sprite pattern for each key pad */
 #include "cursor.c"		/* cursor pattern */
 
-/* 
+/*
 	usage of BG data
 	file name	number of BG	type of matrix	aount
 	-------------------------------------------------
@@ -45,15 +44,15 @@
 /* display */
 #define TITLE " GB-DTMF BY 05AMU "
 
-#define OFFSET 			27
-#define KEY_STEP 		24	/* Key matrix size as 24 x 24	*/
-#define START_CURSOR_X	24	/* CURSOR position	*/
-#define START_CURSOR_Y	72
+#define OFFSET 			27U
+#define KEY_STEP 		24U	/* Key matrix size as 24 x 24	*/
+#define START_CURSOR_X	24U	/* CURSOR position	*/
+#define START_CURSOR_Y	72U
 
-#define LCD_X 			1	/* start position of X		*/
-#define LCD_Y			2	/* start position of Y		*/
-#define LCD_WIDTH		18	/* Horizontal size of LCD	*/
-#define LCD_HIGHT		2	/* Vertical Size of LCD		*/
+#define LCD_X 			1U	/* start position of X		*/
+#define LCD_Y			2U	/* start position of Y		*/
+#define LCD_WIDTH		18U	/* Horizontal size of LCD	*/
+#define LCD_HIGHT		2U	/* Vertical Size of LCD		*/
 
 
 #define ON	1
@@ -70,7 +69,7 @@
 */
 /*
 	We have to calculate the frequency as followin formula
-	
+
 	DTMF has two set frequency, we have to decide Row & Column
 	with each digit('0','1','2'...)
 */
@@ -83,9 +82,9 @@
 #define R1 0x44U /*  697Hz,  697Hz */
 #define R2 0x56U /*  770Hz,  770Hz */
 #define R3 0x66U /*  852Hz,  851Hz */
-#define R4 0x75U /*  941Hz,  942Hz */ 
+#define R4 0x75U /*  941Hz,  942Hz */
 
-const unsigned char row[4] = {R1,R2,R3,R4};	/* DTMF frequency strage of Row */	
+const unsigned char row[4] = {R1,R2,R3,R4};	/* DTMF frequency strage of Row */
 const unsigned char col[4] = {C1,C2,C3,C4};	/* DTMF frequency strage of Col */
 
 /* It is possible to set up initial screen by each BG data. */
@@ -117,7 +116,7 @@ const unsigned char dtmf_tile[] = {
 };
 
 /*
-	Button image 
+	Button image
 	Normal buttons are created by 3tiles x 3tiles(24pixels x 24pixels)
 	Dialing button is created by 6tiles x 3tiles(48pixels x 24pixels)
 */
@@ -161,7 +160,7 @@ const char	pad[4][6] = {		/* DTMF Pad assign */
 	{'*','0','#','D','s','s'}
 };
 
-unsigned char disp_tile[MAX_DTMF];
+unsigned char disp_tile[MAX_DTMF * 2];
 
 /*
 	Initialize for sound registers
@@ -188,12 +187,12 @@ void init_dial()
 void dialtone(UWORD dtmf_on, UWORD dtmf_off, char str[20])
 {
 	UBYTE i = 0;
-	
+
 	while(str[i]){
 		switch(str[i]){
 		    case '1':
 			  NR13_REG = R1;
-			  NR23_REG = C1; 
+			  NR23_REG = C1;
 			  break;
 		    case '2':
 			  NR13_REG = R1;
@@ -201,72 +200,72 @@ void dialtone(UWORD dtmf_on, UWORD dtmf_off, char str[20])
 			  break;
 		    case '3':
 			  NR13_REG = R1;
-			  NR23_REG = C3;	
+			  NR23_REG = C3;
 			  break;
 		    case 'A':
 		    case 'a':
 			  NR13_REG = R1;
-			  NR23_REG = C4;  
+			  NR23_REG = C4;
 			  break;
 		    case '4':
 			  NR13_REG = R2;
-			  NR23_REG = C1;	
+			  NR23_REG = C1;
 			  break;
 		    case '5':
 			  NR13_REG = R2;
-			  NR23_REG = C2;	
+			  NR23_REG = C2;
 			  break;
 		    case '6':
 			  NR13_REG = R2;
-			  NR23_REG = C3;	
+			  NR23_REG = C3;
 			  break;
 			case 'B':
 			case 'b':
 			  NR13_REG = R2;
-			  NR23_REG = C4;	
+			  NR23_REG = C4;
 			  break;
 			case '7':
 			  NR13_REG = R3;
-			  NR23_REG = C1;	
+			  NR23_REG = C1;
 			  break;
 			case '8':
 			  NR13_REG = R3;
-			  NR23_REG = C2;	
+			  NR23_REG = C2;
 			  break;
 			case '9':
 			  NR13_REG = R3;
-			  NR23_REG = C3;	
+			  NR23_REG = C3;
 			  break;
 			case 'C':
 			case 'c':
 			  NR13_REG = R3;
-			  NR23_REG = C4;	
+			  NR23_REG = C4;
 			  break;
 			case '*':
 			  NR13_REG = R4;
-			  NR23_REG = C1;	
+			  NR23_REG = C1;
 			  break;
 			case '0':
 			  NR13_REG = R4;
-			  NR23_REG = C2;	
+			  NR23_REG = C2;
 			  break;
 			case '#':
 			  NR13_REG = R4;
-			  NR23_REG = C3;	
+			  NR23_REG = C3;
 			  break;
 			case 'D':
 			case 'd':
 			  NR13_REG = R4;
-			  NR23_REG = C4;	
+			  NR23_REG = C4;
 			  break;
 			case ',':
 			  delay(dtmf_on);	/* keep on */
 			  delay(dtmf_off);	/* keep off */
-			 
+
 			default:
 			  NR51_REG = 0x00U;	/* sound off */
 			  goto skip;
-			  
+
 		  }
 		NR24_REG = 0x87U;	/* ch2 tips */
 		NR51_REG = 0x33U;	/* sound on */
@@ -374,7 +373,7 @@ void clr_disp()
 /*
 	CAUTION: Don't display the NULL code
 */
-void disp(char str[MAX_DTMF])
+void disp(const char *str)
 {
 	UBYTE no, left_pos;
 	UBYTE i, start_ch, end_ch;
@@ -435,7 +434,7 @@ void break_button(UBYTE x, UBYTE y)
 
 void init_key()
 {
-	UBYTE key_x, key_y, i, j;
+	UBYTE key_x, key_y, i;
 
 	/* To make numeric KeyPad */
 	set_sprite_data(0, 24, key_num);
@@ -474,14 +473,14 @@ void init_key()
 
 	/* key pad '*', '0', '#' */
 	set_sprite_tile(15, 15);
-	move_sprite(15, KEY_STEP * 1, KEY_STEP * 4 + 40);
+	move_sprite(15, KEY_STEP * 1, KEY_STEP * 4 + 40U);
 	set_sprite_tile(0, 0);
-	move_sprite(0, KEY_STEP * 2, KEY_STEP * 4 + 40);
+	move_sprite(0, KEY_STEP * 2, KEY_STEP * 4 + 40U);
 	set_sprite_tile(14, 14);
-	move_sprite(14, KEY_STEP * 3, KEY_STEP * 4 + 40);
+	move_sprite(14, KEY_STEP * 3, KEY_STEP * 4 + 40U);
 
 	/* func left */
-	key_x = KEY_STEP * 5 + 8;
+	key_x = KEY_STEP * 5 + 8U;
 	for(i = 0;i <= 2;i++){
 		key_y = (i+1) * KEY_STEP + 40;
 		set_sprite_tile(i+16, i+16);
@@ -489,7 +488,7 @@ void init_key()
 	}
 
 	/* func right */
-	key_x = KEY_STEP * 6 + 8;
+	key_x = KEY_STEP * 6 + 8U;
 	for(i = 0;i <= 2;i++){
 		key_y = (i+1) * KEY_STEP + 40;
 		set_sprite_tile(i+19, i+19);
@@ -497,19 +496,19 @@ void init_key()
 	}
 
 	/* dialing button */
-	key_x = KEY_STEP * 5 + 20;
-	key_y = KEY_STEP * 4 + 40;
+	key_x = KEY_STEP * 5 + 20U;
+	key_y = KEY_STEP * 4 + 40U;
 	set_sprite_tile(22, 22);
 	move_sprite(22, key_x, key_y);
 }
 
-void init_bkg()
+void init_background()
 {
 	/* Initialize the background */
 	set_bkg_data( 0, 9, frame_lcd);
 	set_bkg_data( 9, 9, break_btn);
 	set_bkg_data(18, 9, press_btn);
-	
+
 	set_bkg_tiles(0, 0, 20, 18, dtmf_tile);
 }
 
@@ -550,13 +549,13 @@ void main()
 	off_time = DTMF_OFF;
 
 	disable_interrupts();
-	
+
 	SPRITES_8x8;   /* sprites are 8x8 */
 
 	init_dial();
-	
-	init_bkg();
-	
+
+	init_background();
+
 	init_key();
 
 	init_cursor();
@@ -568,7 +567,7 @@ void main()
 	DISPLAY_ON;
 
 	enable_interrupts();
-	
+
 	i = j = 0;
 
 	ch_pos = 0;
@@ -595,7 +594,7 @@ void main()
 					/* sound output on */
 					NR51_REG = 0x33U;
 				}
-				
+
 				/* '?' button */
 				/* appear the title during press A button */
 				if(i == 5 && j == 0 && !non_flick){
@@ -607,7 +606,7 @@ void main()
 				/* decremental button */
 				/* appear the delay during press A button */
 				if(i == 5 && (j == 1 || j == 2) && !non_flick){
-					sprintf(str_ms, "%lu MS", on_time);
+					sprintf(str_ms, "%u MS", on_time);
 					disp(str_ms);
 					non_flick = ON;
 				}

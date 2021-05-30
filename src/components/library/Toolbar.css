@@ -39,7 +39,6 @@
 }
 
 .Toolbar__FixedSpacer {
-  width: 20px;
   flex-shrink: 0;
 }
 
@@ -98,13 +97,14 @@
 
 .Toolbar__Button + .Toolbar__Button,
 .Toolbar__DropdownButton + .Toolbar__Button,
-.Toolbar__Button + .Toolbar__DropdownButton {
+.Toolbar__Button + .Toolbar__DropdownButton,
+.Toolbar__Button + .Toolbar__Search,
+.Toolbar__Search + .Toolbar__Button {
   margin-left: 5px;
 }
 
 .Toolbar__DropdownButton .Toolbar__DropdownButton__Triangle {
   width: 10px;
-  margin-left: 5px;
   flex-grow: 0;
 }
 
@@ -158,5 +158,38 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  padding: 0px 5px;
+}
+
+.Toolbar__Search {
+  height: 26px;
+  background-color: var(--input-bg-color);
+  color: var(--input-text-color);
+  border: 1px solid var(--toolbar-button-border-color);
+  border-radius: 20px;
+  font-size: 13px;
   padding: 0px 10px;
+  min-width: 86px;
+}
+
+/* Screen width <= 720px */
+@media (max-width:720px) {
+  .Toolbar__DropdownButton .Toolbar__DropdownButton__Triangle {
+    margin-left: -2px;
+  }
+
+  .Toolbar__FixedSpacer {
+    width: 5px;
+  }
+}
+
+/* Screen width >= 720px */
+@media (min-width:720px) {
+  .Toolbar__DropdownButton .Toolbar__DropdownButton__Triangle {
+    margin-left: 5px;
+  }
+  
+  .Toolbar__FixedSpacer {
+    width: 20px;
+  }
 }

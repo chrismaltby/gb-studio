@@ -32,7 +32,7 @@
 }
 
 .Button--Small svg {
-  width: 16px;
+  width: 12px;
 }
 
 .Button--Large {
@@ -52,6 +52,7 @@
 .ButtonToolbar {
   display: flex;
   flex-direction: row;
+  align-items: center;
 }
 
 .ButtonToolbar .Button ~ .Button {

@@ -3,43 +3,51 @@ import PropTypes from "prop-types";
 import cx from "classnames";
 import { connect } from "react-redux";
 import SpriteSheetCanvas from "./SpriteSheetCanvas";
-import { ActorShape } from "../../reducers/stateShape";
-import * as actions from "../../actions";
+import { ActorShape, PaletteShape } from "../../store/stateShape";
+import { getCachedObject } from "../../lib/helpers/cache";
+import { DMG_PALETTE, SPRITE_TYPE_STATIC } from "../../consts";
+import { actorSelectors, paletteSelectors } from "../../store/features/entities/entitiesState";
+import editorActions from "../../store/features/editor/editorActions";
+import { getSettings } from "../../store/features/settings/settingsState";
 
 class Actor extends Component {
-  onMouseDown = e => {
-    e.stopPropagation();
-    e.preventDefault();
+  onMouseDown = (e) => {
     const { actor, sceneId, dragActorStart, setTool } = this.props;
-    dragActorStart(sceneId, actor.id);
-    setTool("select");
+    dragActorStart({sceneId, actorId:actor.id});
+    setTool({tool:"select"});
     window.addEventListener("mouseup", this.onMouseUp);
   };
 
-  onMouseUp = e => {
+  onMouseUp = (e) => {
     const { dragActorStop } = this.props;
     dragActorStop();
     window.removeEventListener("mouseup", this.onMouseUp);
   };
 
   render() {
-    const { actor, selected } = this.props;
-    const { x, y, spriteSheetId, direction, movementType, frame } = actor;
+    const { actor, selected, showSprite, palette } = this.props;
+    const { x, y, spriteSheetId, direction, spriteType, frame } = actor;
     return (
-      <div
-        className={cx("Actor", { "Actor--Selected": selected })}
-        onMouseDown={this.onMouseDown}
-        style={{
-          top: y * 8,
-          left: x * 8
-        }}
-      >
-        <SpriteSheetCanvas
-          spriteSheetId={spriteSheetId}
-          direction={direction}
-          frame={movementType === "static" ? frame : 0}
-        />
-      </div>
+      <>
+        {selected && actor.isPinned && <div className="Actor__ScreenPreview" />}
+        <div
+          className={cx("Actor", { "Actor--Selected": selected })}
+          onMouseDown={this.onMouseDown}
+          style={{
+            top: y * 8,
+            left: x * 8,
+          }}
+        >
+          {showSprite && (
+            <SpriteSheetCanvas
+              spriteSheetId={spriteSheetId}
+              direction={direction}
+              frame={spriteType === SPRITE_TYPE_STATIC ? frame : 0}
+              palette={palette}
+            />
+          )}
+        </div>
+      </>
     );
   }
 }
@@ -47,37 +55,52 @@ class Actor extends Component {
 Actor.propTypes = {
   actor: ActorShape,
   sceneId: PropTypes.string.isRequired,
+  palette: PaletteShape,
   selected: PropTypes.bool,
+  showSprite: PropTypes.bool.isRequired,
   dragActorStart: PropTypes.func.isRequired,
   dragActorStop: PropTypes.func.isRequired,
-  setTool: PropTypes.func.isRequired
+  setTool: PropTypes.func.isRequired,
 };
 
 Actor.defaultProps = {
   actor: {},
-  selected: false
+  palette: undefined,
+  selected: false,
 };
 
 function mapStateToProps(state, props) {
   const { type: editorType, entityId, scene: sceneId } = state.editor;
-  const actor = state.entities.present.entities.actors[props.id];
+
+  const actor = actorSelectors.selectById(state, props.id);
+
   const selected =
-    editorType === "actors" &&
+    editorType === "actor" &&
     sceneId === props.sceneId &&
     entityId === props.id;
+  const showSprite = state.editor.zoom > 80;
+  const settings = getSettings(state);
+  const palettesLookup = paletteSelectors.selectEntities(state);
+  const gbcEnabled = settings.customColorsEnabled;
+  const palette = gbcEnabled
+    ? getCachedObject(
+        palettesLookup[actor.paletteId] ||
+          palettesLookup[settings.defaultSpritePaletteId]
+      )
+    : DMG_PALETTE;
+
   return {
     actor,
-    selected
+    selected,
+    showSprite,
+    palette,
   };
 }
 
 const mapDispatchToProps = {
-  dragActorStart: actions.dragActorStart,
-  dragActorStop: actions.dragActorStop,
-  setTool: actions.setTool
+  dragActorStart: editorActions.dragActorStart,
+  dragActorStop: editorActions.dragActorStop,
+  setTool: editorActions.setTool,
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Actor);
+export default connect(mapStateToProps, mapDispatchToProps)(Actor);

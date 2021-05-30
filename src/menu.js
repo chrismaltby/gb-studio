@@ -1,6 +1,7 @@
 import openAboutWindow from "about-window";
 import settings from "electron-settings";
 import { app, Menu, shell } from "electron";
+import { assetsRoot } from "./consts";
 
 const isDevMode = process.execPath.match(/[\\/]electron/);
 
@@ -32,12 +33,27 @@ const buildMenu = async (plugins = []) => {
           }
         },
         {
+          label: l10n("MENU_SWITCH_PROJECT"),
+          accelerator: "CommandOrControl+P",
+          click: () => {
+            notifyListeners("project");
+          }
+        },
+        {
           label: l10n("MENU_SAVE"),
           accelerator: "CommandOrControl+S",
           click: () => {
             notifyListeners("save");
           }
         },
+        {
+          label: l10n("MENU_SAVE_AS"),
+          accelerator: "CommandOrControl+Alt+S",
+          click: () => {
+            notifyListeners("saveAs");
+          }
+        },
+
         { type: "separator" },
         {
           label: l10n("MENU_RELOAD_ASSETS"),
@@ -71,9 +87,15 @@ const buildMenu = async (plugins = []) => {
         { role: "cut" },
         { role: "copy" },
         { role: "paste" },
-        { role: "pasteandmatchstyle" },
+        {
+          label: l10n("MENU_PASTE_IN_PLACE"),
+          accelerator: "Shift+CommandOrControl+V",
+          click: () => {
+            notifyListeners("pasteInPlace");
+          }
+        },
         { role: "delete" },
-        { role: "selectall" }
+        { role: "selectall" },
       ]
     },
     {
@@ -101,11 +123,30 @@ const buildMenu = async (plugins = []) => {
               accelerator: "CommandOrControl+Shift+N",
               click() {
                 notifyListeners("build", "web");
-              }
-            }
-          ]
-        }
-      ]
+              },
+            },
+          ],
+        },
+        { type: "separator" },
+        {
+          label: l10n("MENU_ADVANCED"),
+          submenu: [
+            {
+              label: l10n("MENU_EJECT_ENGINE"),
+              click() {
+                notifyListeners("ejectEngine");
+              },
+            },
+            { type: "separator" },
+            {
+              label: l10n("MENU_EJECT_PROJECT_BUILD"),
+              click() {
+                notifyListeners("ejectProject");
+              },
+            },
+          ],
+        },
+      ],
     },
     {
       label: l10n("MENU_VIEW"),
@@ -146,22 +187,29 @@ const buildMenu = async (plugins = []) => {
           }
         },
         {
-          label: l10n("MENU_DIALOGUE_REVIEW"),
+          label: l10n("MENU_PALETTES"),
           accelerator: "CommandOrControl+6",
+          click: () => {
+            notifyListeners("section", "palettes");
+          }
+        },
+        {
+          label: l10n("MENU_DIALOGUE_REVIEW"),
+          accelerator: "CommandOrControl+7",
           click: () => {
             notifyListeners("section", "dialogue");
           }
         },
         {
           label: l10n("MENU_BUILD_AND_RUN"),
-          accelerator: "CommandOrControl+7",
+          accelerator: "CommandOrControl+8",
           click: () => {
             notifyListeners("section", "build");
           }
         },
         {
           label: l10n("MENU_SETTINGS"),
-          accelerator: "CommandOrControl+8",
+          accelerator: "CommandOrControl+9",
           click: () => {
             notifyListeners("section", "settings");
           }
@@ -239,12 +287,45 @@ const buildMenu = async (plugins = []) => {
           }
         },
         {
-          id: "showConnections",
           label: l10n("MENU_SHOW_CONNECTIONS"),
+          submenu: [
+            {
+              id: "showConnectionsAll",
+              label: l10n("MENU_SHOW_CONNECTIONS_ALL"),
+              type: "checkbox",
+              checked: settings.get("showConnections") === "all",
+              click() {
+                notifyListeners("updateSetting", "showConnections", "all");
+              }
+            },
+            {
+              id: "showConnectionsSelected",
+              label: l10n("MENU_SHOW_CONNECTIONS_SELECTED"),
+              type: "checkbox",
+              checked: settings.get("showConnections") === "selected" || settings.get("showConnections") === true,
+              click() {
+                notifyListeners("updateSetting", "showConnections", "selected");
+              }
+            },
+            { type: "separator" },
+            {
+              id: "showConnectionsNone",
+              label: l10n("MENU_SHOW_CONNECTIONS_NONE"),
+              type: "checkbox",
+              checked: settings.get("showConnections") === false,
+              click() {
+                notifyListeners("updateSetting", "showConnections", false);
+              }
+            }
+          ]
+        },
+        {
+          id: "showNavigator",
+          label: l10n("MENU_SHOW_NAVIGATOR"),
+          checked: settings.get("showNavigator") !== false,
           type: "checkbox",
-          checked: true,
           click: item => {
-            notifyListeners("updateSetting", "showConnections", item.checked);
+            notifyListeners("updateSetting", "showNavigator", item.checked);
           }
         },
         { type: "separator" },
@@ -316,7 +397,7 @@ const buildMenu = async (plugins = []) => {
 
   if (process.platform === "darwin") {
     template.unshift({
-      label: app.getName(),
+      label: app.name,
       submenu: [
         {
           label: l10n("MENU_ABOUT"),
@@ -324,11 +405,18 @@ const buildMenu = async (plugins = []) => {
             openAbout();
           }
         },
-        { type: "separator" },
         {
           label: l10n("MENU_CHECK_FOR_UPDATES"),
           click: () => {
             notifyListeners("checkUpdates");
+          }
+        },        
+        { type: "separator" },
+        {
+          label: l10n("MENU_PREFERENCES"),
+          accelerator: "CommandOrControl+,",
+          click: () => {
+            notifyListeners("preferences");
           }
         },
         { type: "separator" },
@@ -375,6 +463,18 @@ const buildMenu = async (plugins = []) => {
         }
       }
     );
+
+    // Edit Preferences for Windows / Linux
+    template[1].submenu.push(
+      { type: "separator" },
+      {
+        label: l10n("MENU_PREFERENCES"),
+        accelerator: "CommandOrControl+,",
+        click: () => {
+          notifyListeners("preferences");
+        }
+      }
+    );
   }
 
   menu = Menu.buildFromTemplate(template);
@@ -386,7 +486,9 @@ app.on("ready", () => buildMenu([]));
 const listeners = {
   new: [],
   open: [],
+  project: [],
   save: [],
+  saveAs: [],
   checkUpdates: [],
   undo: [],
   redo: [],
@@ -395,7 +497,11 @@ const listeners = {
   reloadAssets: [],
   updateSetting: [],
   run: [],
-  build: []
+  build: [],
+  ejectEngine: [],
+  ejectProject: [],
+  pasteInPlace: [],
+  preferences: []
 };
 
 const notifyListeners = (event, ...data) => {
@@ -414,7 +520,8 @@ const off = (event, fn) => {
 
 const openAbout = () => {
   return openAboutWindow({
-    icon_path: "../../src/assets/app/icon/app_icon.png"
+    icon_path: `${assetsRoot}/app/icon/app_icon.png`,
+    bug_link_text: `Report bug (git: ${COMMITHASH})`
   });
 };
 

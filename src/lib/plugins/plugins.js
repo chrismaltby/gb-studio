@@ -1,4 +1,4 @@
-import { NodeVM } from "vm2";
+
 import fs from "fs";
 import glob from "glob";
 import Path from "path";
@@ -6,9 +6,8 @@ import chokidar from "chokidar";
 import EventEmitter from "events";
 import { ipcRenderer } from "electron";
 
-const babel = require("@babel/standalone");
-const importExportPlugin = require("@babel/plugin-transform-modules-commonjs");
-const jsxPlugin = require("@babel/plugin-transform-react-jsx");
+const VM2 = __non_webpack_require__("vm2");
+const NodeVM = VM2.NodeVM;
 
 const urlParams = new URLSearchParams(window.location.search);
 const projectPath = urlParams.get("path");
@@ -23,15 +22,21 @@ const pluginMenuHandlerPaths = projectRoot
 
 const pluginEmitter = new EventEmitter();
 
-const compiler = code =>
-  babel.transform(code, {
-    plugins: [importExportPlugin, jsxPlugin]
-  }).code;
-
 const vm = new NodeVM({
   timeout: 1000,
   sandbox: {},
-  compiler
+  compiler: (code) => {
+    // Convert es6 style modules to commonjs
+    let moduleCode = code;
+    moduleCode = code.replace(/(^|\n)(\S\s)*export /g, "");
+    if (moduleCode.indexOf("module.exports") === -1) {
+      const moduleExports = code
+        .match(/export [a-z]* [a-zA-Z_$][0-9a-zA-Z_$]*]*/g)
+        .map((c) => c.replace(/.* /, ""));
+      moduleCode += `\nmodule.exports = { ${moduleExports.join(", ")} };`;
+    }
+    return moduleCode;
+  }
 });
 
 const loadPlugin = path => {

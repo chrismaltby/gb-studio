@@ -1,25 +1,43 @@
-import l10n from "../helpers/l10n";
+const l10n = require("../helpers/l10n").default;
 
-export const id = "EVENT_ACTOR_SET_FRAME";
+const id = "EVENT_ACTOR_SET_FRAME";
 
-export const fields = [
+const fields = [
   {
     key: "actorId",
     type: "actor",
-    defaultValue: "LAST_ACTOR"
+    defaultValue: "$self$"
   },
   {
     key: "frame",
     label: l10n("FIELD_ANIMATION_FRAME"),
-    type: "number",
+    type: "union",
+    types: ["number", "variable", "property"],
+    defaultType: "number",
     min: 0,
     max: 25,
-    defaultValue: 0
-  }
+    defaultValue: {
+      number: 0,
+      variable: "LAST_VARIABLE",
+      property: "$self$:frame"
+    },
+  },
+
 ];
 
-export const compile = (input, helpers) => {
-  const { actorSetActive, actorSetFrame } = helpers;
+const compile = (input, helpers) => {
+  const { actorSetActive, actorSetFrame, actorSetFrameToVariable, variableFromUnion, temporaryEntityVariable } = helpers;
   actorSetActive(input.actorId);
-  actorSetFrame(input.frame);
+  if(input.frame.type === "number") {
+    actorSetFrame(input.frame.value);
+  } else {
+    const frameVar = variableFromUnion(input.frame, temporaryEntityVariable(0));
+    actorSetFrameToVariable(frameVar);
+  }
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

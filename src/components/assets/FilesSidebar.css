@@ -49,12 +49,13 @@
 
 .FilesSidebar__Search .Button {
   margin-left: 5px;
-  padding: 5px 13px 5px 14px;
+  padding: 5px 8px 5px 8px;
+  flex-shrink: 0;
 }
 
 .FilesSidebar__Search svg {
-  width: 16px;
-  height: 16px;
+  width: 22px;
+  height: 22px;
   fill: var(--button-text-color);
 }
 

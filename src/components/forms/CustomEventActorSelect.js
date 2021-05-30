@@ -3,8 +3,10 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Select, { components } from "react-select";
 import ActorCanvas from "../world/ActorCanvas";
-import { ActorShape } from "../../reducers/stateShape";
-import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
+import { ActorShape } from "../../store/stateShape";
+import { customEventSelectors } from "../../store/features/entities/entitiesState";
+import { getSettings } from "../../store/features/settings/settingsState";
+// import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 
 const allCustomEventActors = Array.from(Array(10).keys()).map(i => ({
   id: String(i),
@@ -12,17 +14,16 @@ const allCustomEventActors = Array.from(Array(10).keys()).map(i => ({
 }));
 
 class CustomEventActorSelect extends Component {
-  shouldComponentUpdate(nextProps, nextState) {
-    rerenderCheck("CustomEventActorSelect", this.props, {}, nextProps, {});
-    return true;
-  }
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   rerenderCheck("CustomEventActorSelect", this.props, {}, nextProps, {});
+  //   return true;
+  // }
 
   defaultValue = () => {
     const { playerSpriteSheetId } = this.props;
     return {
       name: "Player",
-      spriteSheetId: playerSpriteSheetId,
-      movementType: "player"
+      spriteSheetId: playerSpriteSheetId
     };
   };
 
@@ -85,8 +86,7 @@ class CustomEventActorSelect extends Component {
 
     const defaultValue = {
       name: "Player",
-      spriteSheetId: playerSpriteSheetId,
-      movementType: "player"
+      spriteSheetId: playerSpriteSheetId
     };
     const current = actors.find(a => a.id === value) || defaultValue;
     const currentIndex = allCustomEventActors.indexOf(current);
@@ -111,6 +111,8 @@ class CustomEventActorSelect extends Component {
           DropdownIndicator: this.renderDropdownIndicator,
           Option: this.renderOption
         }}
+        menuPlacement="auto"
+        blurInputOnSelect
       />
     );
   }
@@ -136,10 +138,9 @@ CustomEventActorSelect.defaultProps = {
 
 function mapStateToProps(state) {
   const customEventId = state.editor.entityId;
-  const actors = Object.values(
-    state.entities.present.entities.customEvents[customEventId].actors
-  );
-  const settings = state.entities.present.result.settings;
+  const customEvent = customEventSelectors.selectById(state, customEventId);
+  const actors = customEvent ? Object.values(customEvent.actors) : [];
+  const settings = getSettings(state);  
   const playerSpriteSheetId = settings.playerSpriteSheetId;
   return {
     actors,

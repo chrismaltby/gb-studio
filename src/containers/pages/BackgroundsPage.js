@@ -3,8 +3,8 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import FilesSidebar from "../../components/assets/FilesSidebar";
 import ImageViewer from "../../components/assets/ImageViewer";
-import * as actions from "../../actions";
-import { getBackgrounds } from "../../reducers/entitiesReducer";
+import { backgroundSelectors } from "../../store/features/entities/entitiesState";
+import electronActions from "../../store/features/electron/electronActions";
 
 class ImagesPage extends Component {
   constructor(props) {
@@ -66,7 +66,7 @@ ImagesPage.defaultProps = {
 
 function mapStateToProps(state) {
   const { id } = state.navigation;
-  const files = getBackgrounds(state);
+  const files = backgroundSelectors.selectAll(state);
   return {
     files,
     id
@@ -74,7 +74,7 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  openHelp: actions.openHelp
+  openHelp: electronActions.openHelp
 };
 
 export default connect(

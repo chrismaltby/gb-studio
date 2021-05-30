@@ -1,8 +1,8 @@
-import l10n from "../helpers/l10n";
+const l10n = require("../helpers/l10n").default;
 
-export const id = "EVENT_IF_SAVED_DATA";
+const id = "EVENT_IF_SAVED_DATA";
 
-export const fields = [
+const fields = [
   {
     label: l10n("FIELD_IF_SAVED_DATA")
   },
@@ -38,9 +38,15 @@ export const fields = [
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { ifDataSaved } = helpers;
   const truePath = input.true;
   const falsePath = input.__disableElse ? [] : input.false;
   ifDataSaved(truePath, falsePath);
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

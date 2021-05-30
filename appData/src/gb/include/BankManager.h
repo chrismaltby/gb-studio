@@ -1,8 +1,11 @@
 #ifndef BANK_MANAGER_H
 #define BANK_MANAGER_H
 
-#include "game.h"
 #include "Stack.h"
+
+#define SWITCH_ROM SWITCH_ROM_MBC1
+#define ENABLE_RAM ENABLE_RAM_MBC5
+#define DISABLE_RAM DISABLE_RAM_MBC5
 
 #define N_PUSH_BANKS 10
 

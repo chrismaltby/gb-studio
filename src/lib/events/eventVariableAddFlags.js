@@ -1,8 +1,8 @@
-import l10n from "../helpers/l10n";
+const l10n = require("../helpers/l10n").default;
 
-export const id = "EVENT_ADD_FLAGS";
+const id = "EVENT_ADD_FLAGS";
 
-export const fields = [
+const fields = [
   {
     key: "variable",
     type: "variable",
@@ -66,7 +66,7 @@ export const fields = [
   },
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { variableAddFlags } = helpers;
   let flag = 0;
   if (input.flag1) flag += 2**0; 
@@ -78,4 +78,10 @@ export const compile = (input, helpers) => {
   if (input.flag7) flag += 2**6; 
   if (input.flag8) flag += 2**7; 
   variableAddFlags(input.variable, flag);
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

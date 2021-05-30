@@ -1,8 +1,8 @@
-import l10n from "../helpers/l10n";
+const l10n = require("../helpers/l10n").default;
 
-export const id = "EVENT_SWITCH_SCENE";
+const id = "EVENT_SWITCH_SCENE";
 
-export const fields = [
+const fields = [
   {
     key: "sceneId",
     type: "scene",
@@ -13,7 +13,7 @@ export const fields = [
     label: l10n("FIELD_X"),
     type: "number",
     min: 0,
-    max: 30,
+    max: 255,
     defaultValue: 0,
     width: "50%"
   },
@@ -22,7 +22,7 @@ export const fields = [
     label: l10n("FIELD_Y"),
     type: "number",
     min: 0,
-    max: 31,
+    max: 255,
     defaultValue: 0,
     width: "50%"
   },
@@ -42,8 +42,8 @@ export const fields = [
   }
 ];
 
-export const compile = (input, helpers) => {
-  const { sceneSwitch, scriptEnd } = helpers;
+const compile = (input, helpers) => {
+  const { sceneSwitch } = helpers;
   sceneSwitch(
     input.sceneId,
     input.x,
@@ -51,5 +51,10 @@ export const compile = (input, helpers) => {
     input.direction,
     input.fadeSpeed
   );
-  scriptEnd();
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

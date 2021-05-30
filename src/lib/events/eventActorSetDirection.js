@@ -1,44 +1,105 @@
-import { getActor, getSprite } from "./helpers";
-import { directionToFrame } from "../helpers/gbstudio";
+const getSprite = require("./helpers").getSprite;
+const directionToFrame = require("../helpers/gbstudio").directionToFrame;
 
-export const id = "EVENT_ACTOR_SET_DIRECTION";
+const id = "EVENT_ACTOR_SET_DIRECTION";
 
-export const fields = [
+const fields = [
   {
     key: "actorId",
     type: "actor",
-    defaultValue: "player"
+    defaultValue: "$self$"
   },
   {
     key: "direction",
-    type: "direction",
-    defaultValue: "up"
-  }
+    type: "union",
+    types: ["direction", "variable", "property"],
+    defaultType: "direction",    
+    defaultValue: {
+      direction: "up",
+      variable: "LAST_VARIABLE",
+      property: "$self$:direction"
+    },    
+  },
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const {
     actorSetActive,
+    ifVariableValue,
+    variableFromUnion,
+    temporaryEntityVariable
+  } = helpers;
+
+  actorSetActive(input.actorId);
+
+  if(input.direction.type === "direction") {
+    changeDirection(input.direction.value, input, helpers)
+  } else if(typeof input.direction === "string") {
+    changeDirection(input.direction, input, helpers)    
+  } else {
+    const dirVar = variableFromUnion(input.direction, temporaryEntityVariable(0));
+    ifVariableValue(
+      dirVar,
+      "==",
+      1,
+      () => {
+        changeDirection("down", input, helpers);
+      },
+      () => {
+        ifVariableValue(
+          dirVar,
+          "==",
+          2,
+          () => {
+            changeDirection("left", input, helpers);
+          },
+          () => {
+            ifVariableValue(
+              dirVar,
+              "==",
+              4,
+              () => {
+                changeDirection("right", input, helpers);
+              },
+              () => {
+                changeDirection("up", input, helpers);
+              }
+            );
+          }
+        );
+      }
+    );
+  }
+};
+
+function changeDirection(direction, input, helpers) {
+  const {
+    getActorById,
     actorSetDirection,
     actorSetFrame,
     actorSetFlip,
-    scene,
-    sprites
+    sprites,
   } = helpers;
-  const actor = getActor(input.actorId, scene);
 
-  actorSetActive(input.actorId);
-  actorSetDirection(input.direction);
+  const actor = getActorById(input.actorId);
 
-  if (actor && actor.movementType === "static") {
+  actorSetDirection(direction);
+
+  if (actor && actor.spriteType === "static") {
     const spriteSheet = getSprite(actor.spriteSheetId, sprites);
     const numFrames = spriteSheet ? spriteSheet.numFrames : 0;
     const isActorSheet = numFrames === 3 || numFrames === 6;
     if (isActorSheet) {
-      const frame = directionToFrame(input.direction, numFrames);
-      const flip = input.direction === "left";
+      const frame = directionToFrame(direction, numFrames);
+      const flip = direction === "left";
       actorSetFrame(frame);
       actorSetFlip(flip);
     }
   }
+}
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

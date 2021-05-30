@@ -1,0 +1,61 @@
+.PaletteSelect {
+  width: 100%;
+}
+
+.PaletteSelect__Columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr;
+  grid-column-gap: 20px;
+  grid-row-gap: 0px;
+}
+
+.PaletteSelect__Colors {
+  display: flex;
+  margin-bottom: 12px;
+}
+
+.PaletteSelect label,
+.PaletteSelect label ~ label {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  margin-top: 0px;
+}
+
+.PaletteSelect input:checked + .PaletteSelect__Button {
+  /*outline: none;
+  border-color: transparent;*/
+  box-shadow: 0 0 0px 2px var(--highlight-color) inset;
+  z-index: 10;
+  position: relative;
+}
+
+.PaletteSelect label input {
+}
+
+.PaletteSelect__Legend {
+  flex: 1;
+  line-height: 49px;
+  margin-top: 5px;
+  margin-right: 5px;
+}
+
+.PaletteSelect__Preview {
+  background: var(--input-bg-color);
+  border: 1px solid var(--input-border-color);
+  border-radius: 4px;
+  height: 18px;
+  width: 18px;
+  margin-left: -2px;
+  margin-right: -2px;
+}
+
+.PaletteSelect__Button--Active,
+.PaletteSelect__Button--Active:hover {
+  background-color: var(--highlight-color);
+  border-color: rgba(128, 128, 128, 0.5);
+  color: #fff;
+}

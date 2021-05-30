@@ -14,5 +14,5 @@ export default () => {
     detail: l10n("DIALOG_LANGUAGE_SAVE_AND_RESTART")
   };
 
-  dialog.showMessageBox(dialogOptions);
+  dialog.showMessageBoxSync(dialogOptions);
 };

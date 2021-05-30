@@ -4,6 +4,12 @@
   height: 8px;
   outline: 1px solid rgb(140, 150, 156);
   background: rgba(140, 150, 156, 0.4);
+  -webkit-transform: translate3d(0, 0, 0);
+}
+
+.SceneCursor--Size16px {
+  width: 16px;
+  height: 16px;
 }
 
 .SceneCursor--AddActor {
@@ -11,21 +17,21 @@
   background-color: rgba(247, 45, 220, 0.5);
   outline: 1px solid rgba(140, 0, 177, 0.8);
   pointer-events: all;
-  z-index: 100;
+  z-index: 200;
 }
 
 .SceneCursor--AddTrigger {
   background-color: rgba(255, 120, 0, 0.5);
   outline: 1px solid rgba(255, 120, 0, 1);
   pointer-events: all;
-  z-index: 100;
+  z-index: 200;
 }
 
 .SceneCursor--Eraser {
   background-color: rgba(255, 0, 0, 0.8);
   outline: 1px solid rgba(255, 0, 0, 1);
   pointer-events: all;
-  z-index: 100;
+  z-index: 200;
 }
 
 .SceneCursor--Collisions {

@@ -62,6 +62,14 @@
   border-bottom: 4px solid var(--highlight-color);
 }
 
+.Splash__Tab:hover {
+  background-color: rgba(128,128,128,0.1);
+}
+
+.Splash__Tab--Button:hover {
+  background-color: transparent;
+}
+
 .Splash--Blur .Splash__Tab--Active {
   border-bottom: 4px solid #ccc;
 }
@@ -118,7 +126,7 @@
 .Splash__FormGroup input,
 .Splash__FormGroup select {
   height: 28px;
-  font-size: 18px;
+  font-size: 16px;
   padding: 5px 10px;
   padding-right: 42px;
   border-radius: 4px;
@@ -143,10 +151,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  bottom: 4px;
+  bottom: 9px;
   right: 4px;
-  border-radius: 4px;
-  height: 33px;
+  border-radius: 2px;
+  height: 32px;
   width: 40px;
   user-select: none;
   cursor: default;
@@ -179,6 +187,7 @@ input.Splash__InputButton {
   border: 0;
   border-radius: 4px;
   user-select: none;
+  font-size: 16px;
 }
 
 .Splash__Button--Disabled {
@@ -223,4 +232,8 @@ input.Splash__InputButton {
   background: transparent;
   text-align: left;
   padding: 0;
+}
+
+.Splash__Content a {
+  color: var(--highlight-color);
 }

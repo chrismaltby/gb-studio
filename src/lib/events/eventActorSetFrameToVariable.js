@@ -1,10 +1,10 @@
-export const id = "EVENT_ACTOR_SET_FRAME_TO_VALUE";
+const id = "EVENT_ACTOR_SET_FRAME_TO_VALUE";
 
-export const fields = [
+const fields = [
   {
     key: "actorId",
     type: "actor",
-    defaultValue: "LAST_ACTOR"
+    defaultValue: "$self$"
   },
   {
     key: "variable",
@@ -13,8 +13,14 @@ export const fields = [
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { actorSetActive, actorSetFrameToVariable } = helpers;
   actorSetActive(input.actorId);
   actorSetFrameToVariable(input.variable);
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

@@ -1,13 +1,13 @@
-export const id = "EVENT_LOOP";
+const id = "EVENT_LOOP";
 
-export const fields = [
+const fields = [
   {
     key: "true",
     type: "events"
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const {
     labelDefine,
     labelGoto,
@@ -20,4 +20,10 @@ export const compile = (input, helpers) => {
   compileEvents(input.true);
   nextFrameAwait();
   labelGoto(loopId);
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

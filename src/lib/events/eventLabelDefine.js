@@ -1,8 +1,8 @@
-import l10n from "../helpers/l10n";
+const l10n = require("../helpers/l10n").default;
 
-export const id = "EVENT_DEFINE_LABEL";
+const id = "EVENT_DEFINE_LABEL";
 
-export const fields = [
+const fields = [
   {
     key: "label",
     label: l10n("FIELD_LABEL"),
@@ -10,7 +10,13 @@ export const fields = [
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { labelDefine } = helpers;
   labelDefine(input.label);
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

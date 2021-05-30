@@ -70,7 +70,9 @@ void
 void	
 	plot_point(UINT8 x, UINT8 y);
 
-/** I (MLH) have no idea what switch_data does... */
+/** Exchanges the tile on screen at x,y with the tile pointed by src, original tile 
+    is saved in dst. Both src and dst may be NULL - saving or copying to screen is
+    not performed in this case. */
 void
 	switch_data(UINT8 x, UINT8 y, unsigned char *src, unsigned char *dst) NONBANKED;
 

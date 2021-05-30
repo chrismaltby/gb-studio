@@ -14,8 +14,8 @@ import {
 import l10n from "../../lib/helpers/l10n";
 import trimlines from "../../lib/helpers/trimlines";
 import events from "../../lib/events";
-import { CustomEventShape } from "../../reducers/stateShape";
-import { getCustomEvents } from "../../reducers/entitiesReducer";
+import { CustomEventShape } from "../../store/stateShape";
+import { customEventSelectors } from "../../store/features/entities/entitiesState";
 
 class AddCommandButton extends Component {
   constructor(props) {
@@ -46,14 +46,19 @@ class AddCommandButton extends Component {
     if (e.target.nodeName !== "BODY") {
       return;
     }
-    this.setState({ pasteMode: e.altKey });
+    this.setState({ pasteMode: e.altKey || e.ctrlKey });
   };
 
   onBlur = e => {
     this.setState({ pasteMode: false });
   };
 
-  onOpen = () => {
+  onOpen = (e) => {
+    if (e.altKey || e.ctrlKey) {
+      const { onPaste } = this.props;
+      onPaste();
+      return;
+    }
     this.setState({
       open: true,
       query: ""
@@ -182,7 +187,10 @@ class AddCommandButton extends Component {
           );
         })
         .map(key => {
-          const name = l10n(key) || events[key].name || key;
+          const localisedKey = l10n(key);
+          const name = localisedKey !== key
+            ? localisedKey
+            : events[key].name || key;
           const searchName = `${name.toUpperCase()} ${key.toUpperCase()}`;
           return {
             ...events[key],
@@ -230,7 +238,7 @@ class AddCommandButton extends Component {
   render() {
     const { query, open, selectedIndex, pasteMode } = this.state;
     const { onPaste } = this.props;
-    const actionsList = this.filteredList();
+    const actionsList = open && this.filteredList();
 
     return (
       <div ref={this.button} className="AddCommandButton">
@@ -308,7 +316,7 @@ AddCommandButton.propTypes = {
 };
 
 function mapStateToProps(state) {
-  const customEvents = getCustomEvents(state);
+  const customEvents = customEventSelectors.selectAll(state);
   return {
     customEvents
   };

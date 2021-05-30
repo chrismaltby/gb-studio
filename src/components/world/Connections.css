@@ -4,6 +4,7 @@
   left: 0;
   stroke-width: 2px;
   pointer-events: none;
+  z-index: 11;
 }
 
 .Connections__PlayerStart,

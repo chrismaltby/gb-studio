@@ -1,8 +1,13 @@
-import l10n from "../helpers/l10n";
+const trimlines = require("../helpers/trimlines");
+const l10n = require("../helpers/l10n").default;
 
-export const id = "EVENT_CHOICE";
+const trimChoiceItem = (string) => {
+  return trimlines(string, 17, 1);
+};
 
-export const fields = [
+const id = "EVENT_CHOICE";
+
+const fields = [
   {
     key: "variable",
     type: "variable",
@@ -12,7 +17,7 @@ export const fields = [
     key: "trueText",
     label: l10n("FIELD_SET_TRUE_IF"),
     type: "text",
-    maxLength: 17,
+    updateFn: trimChoiceItem,
     defaultValue: "",
     placeholder: l10n("FIELD_CHOICE_A")
   },
@@ -20,14 +25,20 @@ export const fields = [
     key: "falseText",
     label: l10n("FIELD_SET_FALSE_IF"),
     type: "text",
-    maxLength: 17,
+    updateFn: trimChoiceItem,
     defaultValue: "",
     placeholder: l10n("FIELD_CHOICE_B")
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { textChoice } = helpers;
   const { variable, trueText, falseText } = input;
   textChoice(variable, { trueText, falseText });
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

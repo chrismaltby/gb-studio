@@ -1,0 +1,15 @@
+.PaletteBlock {
+  background-color: var(--input-bg-color);
+  width: 24px;
+  border: 1px solid var(--input-bg-color);
+  box-sizing: border-box;
+  border-radius: 3px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.PaletteBlock__Color {
+  float: left;
+  width: 10px;
+  height: 10px;
+}

@@ -8,10 +8,6 @@
   display: flex;
 }
 
-.InputPicker__Row:nth-child(2) {
-  margin-bottom: 10px;
-}
-
 .InputPicker label,
 .InputPicker label ~ label {
   position: relative;
@@ -121,4 +117,9 @@
 
 .InputPicker__Button--Down svg {
   transform: rotate(180deg);
+}
+
+.InputPicker__Selection {
+  margin-top: 10px;
+  min-height: 15px;
 }

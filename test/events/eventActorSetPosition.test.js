@@ -7,8 +7,14 @@ test("Should set player position", () => {
   compile(
     {
       actorId: "player",
-      x: 5,
-      y: 9
+      x: {
+        type: "number",
+        value: 5
+      },
+      y: {
+        type: "number",
+        value: 9
+      }
     },
     {
       scene: { actors: [] },

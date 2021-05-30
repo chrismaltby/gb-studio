@@ -33,12 +33,9 @@
 
 .ImageViewer__Warning {
   position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: #ffc107;
-  color: #000;
-  padding: 10px;
+  left: 10px;
+  right: 10px;
+  bottom: 20px;
 }
 
 .ImageViewer__Warning ul {

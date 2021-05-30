@@ -1,8 +1,8 @@
-import l10n from "../helpers/l10n";
+const l10n = require("../helpers/l10n").default;
 
-export const id = "EVENT_VARIABLE_MATH";
+const id = "EVENT_VARIABLE_MATH";
 
-export const fields = [
+const fields = [
   {
     key: "vectorX",
     type: "variable",
@@ -90,11 +90,44 @@ export const fields = [
     width: "50%"
   },
   {
-    label: l10n("FIELD_MATH_NOTE")
-  }
+    key: "clamp",
+    type: "checkbox",
+    label: l10n("FIELD_CLAMP"),
+    conditions: [
+      {
+        key: "operation",
+        in: ["add", "sub"],
+      }
+    ],
+    defaultValue: false,
+  },
+  {
+    key: "note1",
+    label: l10n("FIELD_MATH_NOTE"),
+    conditions: [
+      {
+        key: "operation",
+        in: ["mul"],
+      }
+    ],
+  },
+  {
+    key: "note2",
+    label: l10n("FIELD_MATH_NOTE_NO_CLAMP"),
+    conditions: [
+      {
+        key: "operation",
+        in: ["add", "sub"],
+      },      
+      {
+        key: "clamp",
+        ne: true
+      }
+    ],
+  },
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const {
     variableSetToValue,
     variableCopy,
@@ -103,9 +136,10 @@ export const compile = (input, helpers) => {
     variablesSub,
     variablesMul,
     variablesDiv,
-    variablesMod
+    variablesMod,
+    temporaryEntityVariable
   } = helpers;
-  const tmp1 = "tmp1";
+  const tmp1 = temporaryEntityVariable(0);
   switch (input.other) {
     case "true":
       variableSetToValue(tmp1, 1);
@@ -130,10 +164,10 @@ export const compile = (input, helpers) => {
   }
   switch (input.operation) {
     case "add":
-      variablesAdd(input.vectorX, tmp1);
+      variablesAdd(input.vectorX, tmp1, input.clamp);
       break;
     case "sub":
-      variablesSub(input.vectorX, tmp1);
+      variablesSub(input.vectorX, tmp1, input.clamp);
       break;
     case "mul":
       variablesMul(input.vectorX, tmp1);
@@ -149,4 +183,10 @@ export const compile = (input, helpers) => {
       variableCopy(input.vectorX, tmp1);
       break;
   }
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

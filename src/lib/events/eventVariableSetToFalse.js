@@ -1,6 +1,6 @@
-export const id = "EVENT_SET_FALSE";
+const id = "EVENT_SET_FALSE";
 
-export const fields = [
+const fields = [
   {
     key: "variable",
     type: "variable",
@@ -8,7 +8,13 @@ export const fields = [
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { variableSetToFalse } = helpers;
   variableSetToFalse(input.variable);
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

@@ -3,7 +3,7 @@ version: 2
 jobs:
   checkout:
     docker:
-      - image: circleci/node:lts
+      - image: circleci/node:lts-buster
     working_directory: ~/repo
     steps:
       - restore_cache:
@@ -31,7 +31,7 @@ jobs:
             - repo
   test:
     docker:
-      - image: circleci/node:lts
+      - image: circleci/node:lts-buster
     working_directory: ~/repo
     steps:
       - attach_workspace:
@@ -40,14 +40,14 @@ jobs:
 
   "make:mac":
     docker:
-      - image: circleci/node:lts
+      - image: circleci/node:lts-buster
     working_directory: ~/repo
     steps:
       - attach_workspace:
           at: ~/
       - checkout
       - run: sudo yarn make:mac
-      - run: sudo mv ~/repo/out/make/*.zip ~/repo/out/make/gb-studio-${CIRCLE_BRANCH}-darwin_x86_64.zip
+      - run: sudo mv ~/repo/out/make/zip/darwin/x64/*.zip ~/repo/out/make/gb-studio-${CIRCLE_BRANCH}-darwin_x86_64.zip
       - persist_to_workspace:
           root: ~/
           paths:
@@ -55,7 +55,7 @@ jobs:
 
   "make:win32":
     docker:
-      - image: circleci/node:lts
+      - image: circleci/node:lts-buster
     working_directory: ~/repo
     steps:
       - run: sudo dpkg --add-architecture i386
@@ -67,7 +67,7 @@ jobs:
           at: ~/
       - checkout
       - run: sudo yarn make:win32
-      - run: sudo mv ~/repo/out/make/*.zip ~/repo/out/make/gb-studio-${CIRCLE_BRANCH}-windows_x86.zip
+      - run: sudo mv ~/repo/out/make/zip/win32/ia32/*.zip ~/repo/out/make/gb-studio-${CIRCLE_BRANCH}-windows_x86.zip
       - run: sudo mv ~/repo/out/make/squirrel.windows/ia32 ~/repo/out/make/gb-studio-${CIRCLE_BRANCH}-windows_x86-squirrel
       - run:
           name: zip squirrel build
@@ -80,7 +80,7 @@ jobs:
 
   "make:win64":
     docker:
-      - image: circleci/node:lts
+      - image: circleci/node:lts-buster
     working_directory: ~/repo
     steps:
       - run: sudo dpkg --add-architecture i386
@@ -92,7 +92,7 @@ jobs:
           at: ~/
       - checkout
       - run: sudo yarn make:win
-      - run: sudo mv ~/repo/out/make/*.zip ~/repo/out/make/gb-studio-${CIRCLE_BRANCH}-windows_x86_64.zip
+      - run: sudo mv ~/repo/out/make/zip/win32/x64/*.zip ~/repo/out/make/gb-studio-${CIRCLE_BRANCH}-windows_x86_64.zip
       - run: sudo mv ~/repo/out/make/squirrel.windows/x64 ~/repo/out/make/gb-studio-${CIRCLE_BRANCH}-windows_x86_64-squirrel
       - run:
           name: zip squirrel build
@@ -105,7 +105,7 @@ jobs:
 
   "make:linux":
     docker:
-      - image: circleci/node:lts
+      - image: circleci/node:lts-buster
     working_directory: ~/repo
     steps:
       - run: sudo apt-get -y install fakeroot
@@ -114,8 +114,8 @@ jobs:
           at: ~/
       - checkout
       - run: sudo yarn make:linux
-      - run: sudo mv ~/repo/out/make/*.deb ~/repo/out/make/gb-studio-${CIRCLE_BRANCH}-linux_x86_64.deb
-      - run: sudo mv ~/repo/out/make/*.rpm ~/repo/out/make/gb-studio-${CIRCLE_BRANCH}-linux_x86_64.rpm
+      - run: sudo mv ~/repo/out/make/deb/x64/*.deb ~/repo/out/make/gb-studio-${CIRCLE_BRANCH}-linux_x86_64.deb
+      - run: sudo mv ~/repo/out/make/rpm/x64/*.rpm ~/repo/out/make/gb-studio-${CIRCLE_BRANCH}-linux_x86_64.rpm
       - persist_to_workspace:
           root: ~/
           paths:
@@ -123,7 +123,7 @@ jobs:
 
   upload_artifacts:
     docker:
-      - image: circleci/node:lts
+      - image: circleci/node:lts-buster
     working_working_directory: /
     steps:
       - attach_workspace:
@@ -148,6 +148,7 @@ workflows:
               only:
                 - develop
                 - master
+                - v2beta
       - "make:win32":
           requires:
             - checkout
@@ -156,6 +157,7 @@ workflows:
               only:
                 - develop
                 - master
+                - v2beta
       - "make:win64":
           requires:
             - checkout
@@ -164,6 +166,7 @@ workflows:
               only:
                 - develop
                 - master
+                - v2beta
       - "make:linux":
           requires:
             - checkout
@@ -172,6 +175,7 @@ workflows:
               only:
                 - develop
                 - master
+                - v2beta
       - "upload_artifacts":
           requires:
             - "make:mac"
@@ -183,3 +187,4 @@ workflows:
               only:
                 - develop
                 - master
+                - v2beta

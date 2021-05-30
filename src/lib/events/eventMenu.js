@@ -1,8 +1,13 @@
-import l10n from "../helpers/l10n";
+const trimlines = require("../helpers/trimlines");
+const l10n = require("../helpers/l10n").default;
 
-export const id = "EVENT_MENU";
+const trimMenuItem = (string) => {
+  return trimlines(string, 6, 1);
+};
 
-export const fields = [].concat(
+const id = "EVENT_MENU";
+
+const fields = [].concat(
   [
     {
       key: "variable",
@@ -26,7 +31,7 @@ export const fields = [].concat(
         key: `option${i + 1}`,
         label: l10n("FIELD_SET_TO_VALUE_IF", { value: i + 1 }),
         type: "text",
-        maxLength: 6,
+        updateFn: trimMenuItem,
         defaultValue: "",
         placeholder: l10n("FIELD_ITEM", { value: i + 1 }),
         conditions: [
@@ -39,7 +44,7 @@ export const fields = [].concat(
         key: `option${i + 1}`,
         label: l10n("FIELD_SET_TO_VALUE_IF", { value: i + 1 }),
         type: "text",
-        maxLength: 6,
+        updateFn: trimMenuItem,
         defaultValue: "",
         placeholder: l10n("FIELD_ITEM", { value: i + 1 }),
         conditions: [
@@ -56,7 +61,7 @@ export const fields = [].concat(
         key: `option${i + 1}`,
         label: l10n("FIELD_SET_TO_VALUE_IF", { value: 0 }),
         type: "text",
-        maxLength: 6,
+        updateFn: trimMenuItem,
         defaultValue: "",
         placeholder: l10n("FIELD_ITEM", { value: 0 }),
         conditions: [
@@ -95,7 +100,13 @@ export const fields = [].concat(
     }
 );
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { textMenu } = helpers;
   textMenu(input.variable, [input.option1, input.option2, input.option3, input.option4, input.option5, input.option6, input.option7, input.option8].splice(0, input.items), input.layout, input.cancelOnLastOption, input.cancelOnB);
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

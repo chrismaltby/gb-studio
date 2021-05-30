@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { Textarea } from "../library/Forms";
 import trimlines, { textNumLines } from "../../lib/helpers/trimlines";
 import l10n from "../../lib/helpers/l10n";
-import { SceneShape, ActorShape, EventShape } from "../../reducers/stateShape";
+import { SceneShape, ActorShape, EventShape } from "../../store/stateShape";
 
 const DialogueReviewLine = ({ dialogueLine, onChange, ...props }) => {
   const maxPerLine = dialogueLine.line.args.avatarId ? 16 : 18;

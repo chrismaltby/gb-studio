@@ -11,57 +11,69 @@ import BuildPage from "../../containers/pages/BuildPage";
 import WorldPage from "../../containers/pages/WorldPage";
 import UIPage from "../../containers/pages/UIPage";
 import MusicPage from "../../containers/pages/MusicPage";
+import PalettePage from "../../containers/pages/PalettePage";
 import SettingsPage from "../../containers/pages/SettingsPage";
 import l10n from "../../lib/helpers/l10n";
-import { ErrorShape } from "../../reducers/stateShape";
+import { ErrorShape } from "../../store/stateShape";
+import LoadingPane from "../library/LoadingPane";
 
 class App extends Component {
   constructor() {
     super();
     this.state = {
-      blur: false
+      blur: false,
     };
   }
 
   componentDidMount() {
     window.addEventListener("blur", this.onBlur);
     window.addEventListener("focus", this.onFocus);
+    window.addEventListener("resize", this.onFocus);
   }
 
   onBlur = () => {
-    this.setState({ blur: true });
+    if (!this.state.blur) {
+      this.setState({ blur: true });
+    }
   };
 
   onFocus = () => {
-    this.setState({ blur: false });
+    if (this.state.blur) {
+      this.setState({ blur: false });
+    }
   };
 
   render() {
-    const { section, error } = this.props;
+    const { section, loaded, error } = this.props;
     const { blur } = this.state;
 
-    if(error.visible) {
-      return <GlobalError error={error} />
+    if (error.visible) {
+      return <GlobalError error={error} />;
     }
 
     return (
       <div
         className={cx("App", {
           "App--Blur": blur,
-          "App--RTL": l10n("RTL") === true
+          "App--RTL": l10n("RTL") === true,
         })}
       >
         <AppToolbar />
-        <div className="App__Content">
-          {section === "world" && <WorldPage />}
-          {section === "backgrounds" && <BackgroundsPage />}
-          {section === "sprites" && <SpritesPage />}
-          {section === "ui" && <UIPage />}
-          {section === "music" && <MusicPage />}
-          {section === "dialogue" && <DialoguePage />}
-          {section === "build" && <BuildPage />}
-          {section === "settings" && <SettingsPage />}
-        </div>
+        {!loaded ? (
+          <LoadingPane />
+        ) : (
+          <div className="App__Content">
+            {section === "world" && <WorldPage />}
+            {section === "backgrounds" && <BackgroundsPage />}
+            {section === "sprites" && <SpritesPage />}
+            {section === "ui" && <UIPage />}
+            {section === "music" && <MusicPage />}
+            {section === "palettes" && <PalettePage />}
+            {section === "dialogue" && <DialoguePage />}
+            {section === "build" && <BuildPage />}
+            {section === "settings" && <SettingsPage />}
+          </div>
+        )}
       </div>
     );
   }
@@ -74,17 +86,20 @@ App.propTypes = {
     "sprites",
     "ui",
     "music",
+    "palettes",    
     "dialogue",
     "build",
-    "settings"
+    "settings",
   ]).isRequired,
-  error: ErrorShape.isRequired
+  loaded: PropTypes.bool.isRequired,
+  error: ErrorShape.isRequired,
 };
 
 function mapStateToProps(state) {
   return {
     section: state.navigation.section,
-    error: state.error
+    error: state.error,
+    loaded: state.document.loaded,
   };
 }
 

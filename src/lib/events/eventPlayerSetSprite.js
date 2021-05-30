@@ -1,14 +1,28 @@
-export const id = "EVENT_PLAYER_SET_SPRITE";
+const l10n = require("../helpers/l10n").default;
 
-export const fields = [
+const id = "EVENT_PLAYER_SET_SPRITE";
+
+const fields = [
   {
     key: "spriteSheetId",
     type: "sprite",
-    defaultValue: "LAST_SPRITE"
-  }
+    defaultValue: "LAST_SPRITE",
+  },
+  {
+    key: "persist",
+    label: l10n("FIELD_PERSIST_BETWEEN_SCENES"),
+    type: "checkbox",
+    defaultValue: false,
+  },
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { playerSetSprite } = helpers;
-  playerSetSprite(input.spriteSheetId);
+  playerSetSprite(input.spriteSheetId, input.persist);
+};
+
+module.exports = {
+  id,
+  fields,
+  compile,
 };

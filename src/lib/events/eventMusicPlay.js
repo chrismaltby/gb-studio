@@ -1,8 +1,8 @@
-import l10n from "../helpers/l10n";
+const l10n = require("../helpers/l10n").default;
 
-export const id = "EVENT_MUSIC_PLAY";
+const id = "EVENT_MUSIC_PLAY";
 
-export const fields = [
+const fields = [
   {
     key: "musicId",
     type: "music",
@@ -16,7 +16,13 @@ export const fields = [
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { musicPlay } = helpers;
   musicPlay(input.musicId, input.loop);
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

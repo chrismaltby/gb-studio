@@ -25,6 +25,7 @@ export const EVENT_IF_VALUE = "EVENT_IF_VALUE";
 export const EVENT_IF_VALUE_COMPARE = "EVENT_IF_VALUE_COMPARE";
 export const EVENT_IF_INPUT = "EVENT_IF_INPUT";
 export const EVENT_IF_ACTOR_DIRECTION = "EVENT_IF_ACTOR_DIRECTION";
+export const EVENT_IF_ACTOR_RELATIVE_TO_ACTOR = "EVENT_IF_ACTOR_RELATIVE_TO_ACTOR";
 export const EVENT_IF_SAVED_DATA = "EVENT_IF_SAVED_DATA";
 export const EVENT_IF_ACTOR_AT_POSITION = "EVENT_IF_ACTOR_AT_POSITION";
 export const EVENT_SET_TRUE = "EVENT_SET_TRUE";
@@ -103,6 +104,11 @@ export const EVENT_HIDE_SPRITES = "EVENT_HIDE_SPRITES";
 export const EVENT_ACTOR_SHOW = "EVENT_ACTOR_SHOW";
 export const EVENT_ACTOR_HIDE = "EVENT_ACTOR_HIDE";
 
+// Palettes
+export const EVENT_PALETTE_SET_BACKGROUND = "EVENT_PALETTE_SET_BACKGROUND";
+export const EVENT_PALETTE_SET_ACTOR = "EVENT_PALETTE_SET_ACTOR";
+export const EVENT_PALETTE_SET_UI = "EVENT_PALETTE_SET_UI";
+
 // Overlay
 export const EVENT_OVERLAY_SHOW = "EVENT_OVERLAY_SHOW";
 export const EVENT_OVERLAY_HIDE = "EVENT_OVERLAY_HIDE";
@@ -118,6 +124,10 @@ export const EVENT_SOUND_PLAY_BEEP = "EVENT_SOUND_PLAY_BEEP";
 // Call CustomEvent
 export const EVENT_CALL_CUSTOM_EVENT = "EVENT_CALL_CUSTOM_EVENT";
 
+// Engine fields
+export const EVENT_ENGINE_FIELD_SET = "EVENT_ENGINE_FIELD_SET";
+export const EVENT_ENGINE_FIELD_STORE = "EVENT_ENGINE_FIELD_STORE";
+
 export const EventsOnlyForActors = [EVENT_ACTOR_PUSH];
 export const EventsHidden = [
   EVENT_MATH_ADD,
@@ -132,14 +142,18 @@ export const EventsHidden = [
   EVENT_MATH_MUL_VALUE,
   EVENT_MATH_DIV_VALUE,
   EVENT_MATH_MOD_VALUE,
-  EVENT_CALL_CUSTOM_EVENT
+  EVENT_CALL_CUSTOM_EVENT,
+  EVENT_ACTOR_SET_POSITION_TO_VALUE,
+  EVENT_ACTOR_MOVE_TO_VALUE,
+  EVENT_ACTOR_SET_DIRECTION_TO_VALUE,
+  EVENT_ACTOR_SET_FRAME_TO_VALUE
 ];
 
 export const EventFields = {
   [EVENT_LOOP]: [
     {
-      label: l10n("FIELD_LOOP_EXIT")
-    }
+      label: l10n("FIELD_LOOP_EXIT"),
+    },
   ],
   [EVENT_GROUP]: [],
   [EVENT_COMMENT]: [],
@@ -148,20 +162,20 @@ export const EventFields = {
       key: "input",
       label: l10n("FIELD_ON_PRESS"),
       type: "input",
-      defaultValue: "b"
-    }
+      defaultValue: "b",
+    },
   ],
   [EVENT_REMOVE_INPUT_SCRIPT]: [
     {
       key: "input",
       label: l10n("FIELD_REMOVE_INPUT_SCRIPT_ON"),
       type: "input",
-      defaultValue: ["b"]
-    }
+      defaultValue: ["b"],
+    },
   ],
   [EVENT_STOP]: [
     {
-      label: l10n("FIELD_STOP_SCRIPT")
-    }
-  ]
+      label: l10n("FIELD_STOP_SCRIPT"),
+    },
+  ],
 };

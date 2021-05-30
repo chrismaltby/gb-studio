@@ -1,12 +1,12 @@
-import l10n from "../helpers/l10n";
+const l10n = require("../helpers/l10n").default;
 
-export const id = "EVENT_IF_ACTOR_DIRECTION";
+const id = "EVENT_IF_ACTOR_DIRECTION";
 
-export const fields = [
+const fields = [
   {
     key: "actorId",
     type: "actor",
-    defaultValue: "player"
+    defaultValue: "$self$"
   },
   {
     key: "direction",
@@ -45,10 +45,16 @@ export const fields = [
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { actorSetActive, ifActorDirection } = helpers;
   const truePath = input.true;
   const falsePath = input.__disableElse ? [] : input.false;
   actorSetActive(input.actorId);
   ifActorDirection(input.direction, truePath, falsePath);
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

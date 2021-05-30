@@ -1,15 +1,21 @@
-export const id = "EVENT_ACTOR_SHOW";
+const id = "EVENT_ACTOR_SHOW";
 
-export const fields = [
+const fields = [
   {
     key: "actorId",
     type: "actor",
-    defaultValue: "player"
+    defaultValue: "$self$"
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { actorSetActive, actorShow } = helpers;
   actorSetActive(input.actorId);
   actorShow();
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

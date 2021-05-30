@@ -12,7 +12,7 @@ You can use notes from C3 to B8.
 |   1   | 1-4 |                                                  |
 |   2   | 1-4 |                                                  |
 |   3   | 8-15|Volume is usually a bit lower than other channels.|
-|   4   |16-31|Doesn't change with frequency (always C5).        |
+|   4   |16-31|Now Has limited pitch, use notes (C D# F# A# C).  |
 +-------+-----+--------------------------------------------------+
 
                            EFFECTS
@@ -20,16 +20,39 @@ You can use notes from C3 to B8.
 
 0xy - Arpeggio. Only channels 1, 2 and 3.
 
+1nn - Porta Pitch bend / sweep Up, Only channels 1, 2 and 3.
+       May sound diferent in tracker, Max 17F (add 127 every tick)
+
+2nn - Porta Pitch bend / sweep Down, Only channels 1, 2 and 3.
+       May sound diferent in tracker, Max 17F (add 127 every tick)
+
+9xy - Hardware Volume + Envelope, Advanced. (not set offset)
+       NRx2 VVVV APPP Starting volume, Envelope add mode, period.
+       9F0 set max volume, no envelope.
+       9F1 set max volume, subtract 1 every 1 tick fast.
+       9F7 set max volume, subtract 1 every 7 ticks slow.
+       9F8 set max volume, no envelope but wants to add.
+       909 set min volume, add 1 every 1 tick fast.
+       90F set min volume, add 1 every 7 ticks slow.
+
+Ann - Volume envelope. Only channels 1, 2 and 4.
+      ## DEPRICATED ## USE ONLY IN TRACKER FOR SIMULATING 9xy!
+	  Sounds smoother than setting volume every tick, hard to preview.
+	  Set at the start for easy midi conversions with no volume effects.
+	  Keeps fading untill a new song is played.
+	  A0F = fade down note. AF0 = fade up note. A00 = Reset/Disable.
+	  Supported speeds 0,2,3,4,5,6,8,F.   1-2, 7-8 and 9-F are duplicates.
+
 Bnn - Jump to pattern in order nn (in hexadecimal).
 
 Cnn - Sets the volume to nn (in hexadecimal). Valid values from 00h to 40h.
-      Channel 3 can only be set to 0%, 25%, 50% and 100%. Others can be set
-      in a range of 0-Fh.
+      Channel 3 can only be set to C00, C10, C20 and C40. 
+      Others can be set in a range of 0-Fh, eg: C00, C04, C08, C0C, C10, C14...
 
 Dnn - Ends this pattern and jumps to position nn (in decimal) in next pattern.
       If used the last step of a pattern it will jump two patterns, not one!
 
-E8n - Sets the panning to n (in hexadecimal). 
+E8n - Sets the panning to n (in hexadecimal) hardware limited to 0, 8, F. 
       Left --- Both --- Right
       0123   456789AB    CDEF
 
@@ -38,9 +61,7 @@ ECn - Cut Note after n ticks. If n > speed or n = 0, it won't work.
 Fnn - Sets speed to nn (in hexadecimal). Valid values are 01h to 1Fh.
       The higher the value, the slower the song. BPM speed not supported.
 
-Effects are limited in channel 3 when setting a new note (only half of them
-are available). It shouldn't be a problem since the effects that can't be
-used are control commands that can be used by other channels.
+Effects Bnn, Dnn, Fnn not avalible when setting a new note in channel 3.
 
 **********************************************************************
 * You should set volume and instrument whenever you put a new note!! *

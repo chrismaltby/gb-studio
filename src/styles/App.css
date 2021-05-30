@@ -1,13 +1,17 @@
 @import url("./Splash.css");
+@import url("./Preferences.css");
 @import url("./RTL.css");
 @import url("./../components/forms/DirectionPicker.css");
 @import url("./../components/forms/CustomPalettePicker.css");
 @import url("./../components/forms/InputPicker.css");
 @import url("./../components/forms/CartPicker.css");
 @import url("./../components/forms/CustomControlsPicker.css");
+@import url("./../components/forms/PaletteSelect.css");
+@import url("./../components/forms/ColorSlider.css");
 @import url("./../components/editors/Sidebar.css");
 @import url("./../components/editors/EditorSidebar.css");
 @import url("./../components/assets/FilesSidebar.css");
+@import url("./../components/assets/PaletteSidebar.css");
 @import url("./../components/assets/ImageViewer.css");
 @import url("./../components/assets/MusicViewer.css");
 @import url("./../components/world/Actor.css");
@@ -17,6 +21,7 @@
 @import url("./../components/world/Scene.css");
 @import url("./../components/world/StatusBar.css");
 @import url("./../components/world/ToolPicker.css");
+@import url("./../components/world/BrushToolbar.css");
 @import url("./../components/world/EventHelper.css");
 @import url("./../components/world/World.css");
 @import url("./../components/world/WorldHelp.css");
@@ -24,15 +29,20 @@
 @import url("./../components/library/Toolbar.css");
 @import url("./../components/library/Menu.css");
 @import url("./../components/library/Forms.css");
+@import url("./../components/library/LabelButton.css");
 @import url("./../components/library/PageHeader.css");
 @import url("./../components/library/PageContent.css");
 @import url("./../components/library/Button.css");
-@import url("./../components/library/GBScriptEditor.css");
+@import url("./../components/library/Modal.css");
 @import url("./../components/library/GBControlsPreview.css");
 @import url("./../components/library/CartPreview.css");
-@import url("./../components/script/ScriptEventBlock.css");
+@import url("./../components/library/PaletteBlock.css");
+@import url("./../components/library/Alert.css");
+@import url("./../components/script/ScriptEventForm.css");
 @import url("./../components/script/AddCommandButton.css");
 @import url("./../components/script/ScriptEditor.css");
+@import url("./../components/script/DialogueReviewScene.css");
+@import url("./../components/forms/CollisionMaskPicker.css");
 
 html,
 body {
@@ -71,7 +81,7 @@ body {
 
 .App__Content {
   width: 100%;
-  height: 100%;
+  height: calc(100% - 38px);
   display: flex;
   flex-direction: row;
 }
@@ -102,13 +112,6 @@ div::-webkit-scrollbar-thumb {
 
 div::-webkit-scrollbar-corner {
   background: var(--main-bg-color);
-}
-
-body:not(.user-is-tabbing) button:focus,
-body:not(.user-is-tabbing) input:focus,
-body:not(.user-is-tabbing) select:focus,
-body:not(.user-is-tabbing) textarea:focus {
-  outline: none;
 }
 
 @keyframes Rotating {

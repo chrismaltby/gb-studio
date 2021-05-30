@@ -4,8 +4,12 @@ import {
   debugTranslationFn,
   showMissingKeysTranslationFn,
   makeTranslationFn,
-  languageOverrides
+  languageOverrides,
 } from "../../src/lib/helpers/l10n";
+import glob from "glob";
+import { readFile } from "fs-extra";
+
+jest.mock("../../src/consts");
 
 test("should replace params in l10n string", () => {
   expect(replaceParams("Hello {place}!", { place: "World" })).toBe(
@@ -33,7 +37,7 @@ test("Should be able to make a translator function from an l10n data hash", () =
 test("Should be able to make a translator function from an l10n data hash", () => {
   const frenchTranslator = makeTranslator({
     HELLO: "Bonjour",
-    WORLD: "Monde"
+    WORLD: "Monde",
   });
   expect(frenchTranslator("HELLO")).toBe("Bonjour");
   expect(frenchTranslator("WORLD")).toBe("Monde");
@@ -41,7 +45,7 @@ test("Should be able to make a translator function from an l10n data hash", () =
 
 test("Should be able to replace params in translator function", () => {
   const translator = makeTranslator({
-    TEST_STRING: "Version {version} is available"
+    TEST_STRING: "Version {version} is available",
   });
   expect(translator("TEST_STRING", { version: "2.0.0" })).toBe(
     "Version 2.0.0 is available"
@@ -51,20 +55,20 @@ test("Should be able to replace params in translator function", () => {
 test("Should be able to build debug translation lookup", () => {
   expect(debugTranslationFn({ TEST: "TEST" }, "ANOTHER")).toEqual({
     TEST: "TEST",
-    ANOTHER: "ANOTHER"
+    ANOTHER: "ANOTHER",
   });
 });
 
 test("Should be able to build missing translation lookup", () => {
   expect(showMissingKeysTranslationFn({ FOUND: "Found" })({}, "FOUND")).toEqual(
     {
-      FOUND: "Found"
+      FOUND: "Found",
     }
   );
   expect(
     showMissingKeysTranslationFn({ FOUND: "Found" })({}, "ANOTHER")
   ).toEqual({
-    ANOTHER: "ANOTHER"
+    ANOTHER: "ANOTHER",
   });
 });
 
@@ -80,7 +84,7 @@ test("Should be able to make debug translation function", () => {
 
 test("should be able to read language overrides", () => {
   expect(languageOverrides("pt-BR")).toMatchObject({
-    PROJECT: "Projeto"
+    PROJECT: "Projeto",
   });
 });
 
@@ -102,4 +106,17 @@ test("should trace to console if locale is empty", () => {
   expect(console.warn).toHaveBeenCalled();
   // eslint-disable-next-line no-console
   expect(console.trace).toHaveBeenCalled();
+});
+
+test("should be able to parse all language files", async (done) => {
+  const languagePackPaths = glob.sync(`${__dirname}/../../src/lang/*.json`);
+  for (const languagePackPath of languagePackPaths) {
+    const rawFile = await readFile(languagePackPath, "utf8");
+    try {
+      JSON.parse(rawFile)
+    } catch (e) {
+      done.fail(`Error parsing language file ${languagePackPath}`);
+    }
+  }
+  done();
 });

@@ -1,11 +1,29 @@
 /* eslint-disable global-require */
 module.exports = {
-  make_targets: {
-    win32: ["squirrel", "zip"],
-    darwin: ["zip"],
-    linux: ["deb", "rpm"]
-  },
-  electronPackagerConfig: {
+  makers: [
+    {
+      name: "@electron-forge/maker-squirrel",
+      config: {
+        name: "gb_studio",
+        exe: "gb-studio.exe",
+        loadingGif: "src/assets/app/install.gif",
+        setupIcon: "src/assets/app/icon/app_icon.ico",
+      },
+    },
+    {
+      name: "@electron-forge/maker-zip",
+      platforms: ["darwin", "win32"],
+    },
+    {
+      name: "@electron-forge/maker-deb",
+      config: {},
+    },
+    {
+      name: "@electron-forge/maker-rpm",
+      config: {},
+    },
+  ],
+  packagerConfig: {
     name: "GB Studio",
     executableName: "gb-studio",
     packageManager: "yarn",
@@ -20,36 +38,55 @@ module.exports = {
       "hardened-runtime": true,
       "gatekeeper-assess": false,
       entitlements: "./entitlements.plist",
-      "entitlements-inherit": "./entitlements.plist"
+      "entitlements-inherit": "./entitlements.plist",
     },
-    ignore: [
-      "/.vscode($|/)",
-      "/coverage($|/)",
-      "/test($|/)",
-      "/appData($|/)",
-      "/buildTools($|/)"
-    ]
-  },
-  electronWinstallerConfig: {
-    name: "gb_studio",
-    exe: "gb-studio.exe",
-    loadingGif: "src/assets/app/install.gif"
-  },
-  electronInstallerDebian: {},
-  electronInstallerRedhat: {},
-  github_repository: {
-    owner: "",
-    name: ""
-  },
-  electronInstallerDMG: {
-    background: "src/assets/app/dmg/background.tiff",
-    format: "ULFO"
-  },
-  windowsStoreConfig: {
-    packageName: "",
-    name: "gbstudio"
   },
   hooks: {
-    postPackage: require("./src/hooks/notarize.js")
-  }
+    postPackage: require("./src/hooks/notarize.js"),
+  },
+  plugins: [
+    [
+      "@electron-forge/plugin-webpack",
+      {
+        mainConfig: "./webpack.main.config.js",
+        renderer: {
+          config: "./webpack.renderer.config.js",
+          entryPoints: [
+            {
+              html: "./src/project.html",
+              js: "./src/ProjectRoot.js",
+              name: "main_window",
+              additionalChunks: [
+                "vendor-react",
+                "vendor-scriptracker",
+                "vendor-hotloader",
+                "vendor-lodash",
+                "vendor-chokidar",
+              ],
+            },
+            {
+              html: "./src/splash.html",
+              js: "./src/SplashRoot.js",
+              name: "splash_window",
+              additionalChunks: [
+                "vendor-react",
+                "vendor-hotloader",
+                "vendor-lodash",
+              ],
+            },
+            {
+              html: "./src/preferences.html",
+              js: "./src/PreferencesRoot.js",
+              name: "preferences_window",
+              additionalChunks: [
+                "vendor-react",
+                "vendor-hotloader",
+                "vendor-lodash",
+              ],
+            },            
+          ],
+        },
+      },
+    ],
+  ],
 };

@@ -2,12 +2,14 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Button from "../library/Button";
-import * as actions from "../../actions";
 import l10n from "../../lib/helpers/l10n";
-import { divisibleBy8 } from "../../lib/helpers/8bit";
 import { zoomForSection, assetFilename } from "../../lib/helpers/gbstudio";
+import BackgroundWarnings from "../world/BackgroundWarnings";
+import editorActions from "../../store/features/editor/editorActions";
+import electronActions from "../../store/features/electron/electronActions";
 
 class ImageViewer extends Component {
+
   componentDidMount() {
     window.addEventListener("mousewheel", this.onMouseWheel);
   }
@@ -21,38 +23,23 @@ class ImageViewer extends Component {
     if (e.ctrlKey) {
       e.preventDefault();
       if (e.wheelDelta > 0) {
-        zoomIn(section, e.deltaY * 0.5);
+        zoomIn({section, delta:e.deltaY * 0.5});
       } else {
-        zoomOut(section, e.deltaY * 0.5);
+        zoomOut({section, delta:e.deltaY * 0.5});
       }
     }
   };
 
   onOpen = () => {
-    const { projectRoot, file, folder, openFolder } = this.props;
-    openFolder(`${projectRoot}/assets/${folder}/${file.filename}`);
-  };
-
-  getWarnings = () => {
-    const { file, folder } = this.props;
-    const warnings = [];
-    if (file && folder === "backgrounds") {
-      if (file.imageWidth < 160 || file.imageHeight < 144) {
-        warnings.push(l10n("WARNING_BACKGROUND_TOO_SMALL"));
-      }
-      if (file.imageWidth > 256 || file.imageHeight > 256) {
-        warnings.push(l10n("WARNING_BACKGROUND_TOO_LARGE"));
-      }
-      if (!divisibleBy8(file.imageWidth) || !divisibleBy8(file.imageHeight)) {
-        warnings.push(l10n("WARNING_BACKGROUND_NOT_MULTIPLE_OF_8"));
-      }
-    }
-    return warnings;
+    const { projectRoot, file, folder, openFile } = this.props;
+    openFile({
+      filename: `${projectRoot}/assets/${folder}/${file.filename}`,
+      type: "image"
+    });
   };
 
   render() {
     const { projectRoot, file, folder, zoom, sidebarWidth } = this.props;
-    const warnings = this.getWarnings();
     return (
       <div className="ImageViewer" style={{ right: sidebarWidth }}>
         <div className="ImageViewer__Content">
@@ -63,7 +50,7 @@ class ImageViewer extends Component {
             >
               <img
                 alt=""
-                src={`${assetFilename(
+                src={`file://${assetFilename(
                   projectRoot,
                   folder,
                   file
@@ -80,14 +67,9 @@ class ImageViewer extends Component {
             <Button onClick={this.onOpen}>{l10n("ASSET_EDIT")}</Button>
           </div>
         )}
-        {warnings.length > 0 && (
-          <div className="ImageViewer__Warning">
-            <ul>
-              {warnings.map((warning, index) => (
-                // eslint-disable-next-line react/no-array-index-key
-                <li key={index}>{warning}</li>
-              ))}
-            </ul>
+        {file && folder === "backgrounds" && (
+          <div className="ImageViewer__Warning" style={{ right: sidebarWidth + 10 }}>
+            <BackgroundWarnings id={file.id} />
           </div>
         )}
       </div>
@@ -107,18 +89,18 @@ ImageViewer.propTypes = {
   sidebarWidth: PropTypes.number.isRequired,
   zoomIn: PropTypes.func.isRequired,
   zoomOut: PropTypes.func.isRequired,
-  openFolder: PropTypes.func.isRequired
+  openFile: PropTypes.func.isRequired,
 };
 
 ImageViewer.defaultProps = {
   file: {}
 };
 
-function mapStateToProps(state) {
+function mapStateToProps(state, ownProps) {
   const { section } = state.navigation;
   const folder = section;
   const zoom = zoomForSection(section, state.editor);
-  const { filesSidebarWidth: sidebarWidth } = state.settings;
+  const { filesSidebarWidth: sidebarWidth } = state.editor;
   return {
     projectRoot: state.document && state.document.root,
     folder,
@@ -129,9 +111,9 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  openFolder: actions.openFolder,
-  zoomIn: actions.zoomIn,
-  zoomOut: actions.zoomOut
+  openFile: electronActions.openFile,
+  zoomIn: editorActions.zoomIn,
+  zoomOut: editorActions.zoomOut
 };
 
 export default connect(

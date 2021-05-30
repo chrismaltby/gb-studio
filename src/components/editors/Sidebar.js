@@ -2,10 +2,15 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import cx from "classnames";
-import * as actions from "../../actions";
+import editorActions from "../../store/features/editor/editorActions";
 
-const SidebarTabs = ({ values, value, onChange, buttons }) => (
-  <div className="SidebarTabs">
+const SidebarTabs = ({ values, value, onChange, buttons, secondary, small }) => (
+  <div className={cx("SidebarTabs", 
+    {
+      "SidebarTabs--Secondary": secondary,
+      "SidebarTabs--Small": small
+    })}
+  >
     <div className="SidebarTabs__Container">
       {Object.keys(values).map((key, index) => (
         <div
@@ -28,12 +33,16 @@ SidebarTabs.propTypes = {
   value: PropTypes.string,
   values: PropTypes.objectOf(PropTypes.string).isRequired,
   onChange: PropTypes.func,
-  buttons: PropTypes.node
+  buttons: PropTypes.node,
+  secondary: PropTypes.bool,
+  small: PropTypes.bool
 };
 
 SidebarTabs.defaultProps = {
   buttons: null,
   value: null,
+  secondary: false,
+  small: false,
   onChange: () => {}
 };
 
@@ -113,7 +122,7 @@ class Sidebar extends Component {
           onMouseDown={this.onMouseDown}
           onMouseUp={this.onMouseUp}
         />
-        <div style={{ width }} className="Sidebar__Content">
+        <div className="Sidebar__Content">
           {children}
         </div>
       </div>
@@ -134,14 +143,14 @@ Sidebar.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  const { worldSidebarWidth: width } = state.settings;
+  const { worldSidebarWidth: width } = state.editor;
   return {
     width
   };
 }
 
 const mapDispatchToProps = {
-  resizeWorldSidebar: actions.resizeWorldSidebar
+  resizeWorldSidebar: editorActions.resizeWorldSidebar
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Sidebar);

@@ -20,11 +20,24 @@
   right: 0;
 }
 
+.Menu--Up {
+  bottom: 30px;
+}
+
 .MenuItem {
   padding: 6px 10px;
   padding-right: 20px;
   white-space: nowrap;
   overflow: hidden;
+}
+
+.MenuItem svg {
+  width: 10px;
+  height: 10px;
+  margin-right: 5px;
+  margin-bottom: 2px;
+  vertical-align: middle;
+  fill: var(--main-text-color);
 }
 
 .MenuItem:hover {

@@ -1,5 +1,7 @@
 import { compile } from "../../src/lib/events/eventVariableMath";
 
+const temporaryEntityVariable = (num) => `tmp${num + 1}`;
+
 test("Should be able to set variable to value", () => {
   const mockVariableSetToValue = jest.fn();
   const mockVariableCopy = jest.fn();
@@ -13,7 +15,8 @@ test("Should be able to set variable to value", () => {
     },
     {
       variableSetToValue: mockVariableSetToValue,
-      variableCopy: mockVariableCopy
+      variableCopy: mockVariableCopy,
+      temporaryEntityVariable
     }
   );
   expect(mockVariableSetToValue).toBeCalledWith("tmp1", 5);
@@ -32,7 +35,8 @@ test("Should be able to set variable to true", () => {
     },
     {
       variableSetToValue: mockVariableSetToValue,
-      variableCopy: mockVariableCopy
+      variableCopy: mockVariableCopy,
+      temporaryEntityVariable
     }
   );
   expect(mockVariableSetToValue).toBeCalledWith("tmp1", 1);
@@ -51,7 +55,8 @@ test("Should be able to set variable to false", () => {
     },
     {
       variableSetToValue: mockVariableSetToValue,
-      variableCopy: mockVariableCopy
+      variableCopy: mockVariableCopy,
+      temporaryEntityVariable
     }
   );
   expect(mockVariableSetToValue).toBeCalledWith("tmp1", 0);
@@ -69,7 +74,8 @@ test("Should be able to set variable to another variable's value", () => {
       operation: "set"
     },
     {
-      variableCopy: mockVariableCopy
+      variableCopy: mockVariableCopy,
+      temporaryEntityVariable
     }
   );
   expect(mockVariableCopy).toBeCalledWith("tmp1", "3");
@@ -89,7 +95,8 @@ test("Should be able to set variable to a random value", () => {
     },
     {
       variableCopy: mockVariableCopy,
-      variableSetToRandom: mockVariableSetToRandom
+      variableSetToRandom: mockVariableSetToRandom,
+      temporaryEntityVariable
     }
   );
   expect(mockVariableSetToRandom).toBeCalledWith("tmp1", 0, 50);
@@ -109,7 +116,8 @@ test("Should be able to set variable to a random with min value", () => {
     },
     {
       variableCopy: mockVariableCopy,
-      variableSetToRandom: mockVariableSetToRandom
+      variableSetToRandom: mockVariableSetToRandom,
+      temporaryEntityVariable
     }
   );
   expect(mockVariableSetToRandom).toBeCalledWith("tmp1", 30, 20);
@@ -125,15 +133,17 @@ test("Should be able to add value to variable", () => {
       vectorX: "2",
       other: "val",
       value: 5,
+      clamp: true,
       operation: "add"
     },
     {
       variableSetToValue: mockVariableSetToValue,
-      variablesAdd: mockVariablesAdd
+      variablesAdd: mockVariablesAdd,
+      temporaryEntityVariable
     }
   );
   expect(mockVariableSetToValue).toBeCalledWith("tmp1", 5);
-  expect(mockVariablesAdd).toBeCalledWith("2", "tmp1");
+  expect(mockVariablesAdd).toBeCalledWith("2", "tmp1", true);
 });
 
 test("Should be able to subtract value from variable", () => {
@@ -145,15 +155,17 @@ test("Should be able to subtract value from variable", () => {
       vectorX: "2",
       other: "val",
       value: 5,
+      clamp: true,
       operation: "sub"
     },
     {
       variableSetToValue: mockVariableSetToValue,
-      variablesSub: mockVariablesSub
+      variablesSub: mockVariablesSub,
+      temporaryEntityVariable
     }
   );
   expect(mockVariableSetToValue).toBeCalledWith("tmp1", 5);
-  expect(mockVariablesSub).toBeCalledWith("2", "tmp1");
+  expect(mockVariablesSub).toBeCalledWith("2", "tmp1", true);
 });
 
 test("Should be able to multiply variable by value", () => {
@@ -169,7 +181,8 @@ test("Should be able to multiply variable by value", () => {
     },
     {
       variableSetToValue: mockVariableSetToValue,
-      variablesMul: mockVariablesMul
+      variablesMul: mockVariablesMul,
+      temporaryEntityVariable
     }
   );
   expect(mockVariableSetToValue).toBeCalledWith("tmp1", 5);
@@ -189,7 +202,8 @@ test("Should be able to divide variable by value", () => {
     },
     {
       variableSetToValue: mockVariableSetToValue,
-      variablesDiv: mockVariablesDiv
+      variablesDiv: mockVariablesDiv,
+      temporaryEntityVariable
     }
   );
   expect(mockVariableSetToValue).toBeCalledWith("tmp1", 5);
@@ -209,7 +223,8 @@ test("Should be able to modulus variable by value", () => {
     },
     {
       variableSetToValue: mockVariableSetToValue,
-      variablesMod: mockVariablesMod
+      variablesMod: mockVariablesMod,
+      temporaryEntityVariable
     }
   );
   expect(mockVariableSetToValue).toBeCalledWith("tmp1", 5);
