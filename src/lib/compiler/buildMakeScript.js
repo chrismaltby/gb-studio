@@ -96,10 +96,7 @@ export const buildPackFile = async (buildRoot) => {
 };
 
 export const buildLinkFile = async (buildRoot, cartSize) => {
-  const output = [
-    `-g __start_save=${cartSize - 4}`,
-    "../_gbstools/gbdk/lib/small/asxxxx/gb/crt0.o",
-  ];
+  const output = [`-g __start_save=${cartSize - 4}`];
   const srcRoot = `${buildRoot}/src/**/*.@(c|s)`;
   const buildFiles = await globAsync(srcRoot);
   for (const file of buildFiles) {
@@ -139,7 +136,7 @@ export const buildLinkFlags = (
   return [].concat(
     // General
     [
-      `-Wl-yt${cart}`,
+      `-Wm-yt${cart}`,
       "-Wm-yoA",
       "-Wm-ya4",
       "-Wl-j",

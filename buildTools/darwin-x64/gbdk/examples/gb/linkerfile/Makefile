@@ -12,6 +12,7 @@ LCC = $(GBDK_HOME)bin/lcc
 # You can set flags for LCC here
 # For example, you can uncomment the line below to turn on debug output
 # LCCFLAGS = -debug
+# LCCFLAGS = -v
 
 # You can set the name of the .gb ROM file here
 PROJECTNAME    = Example
@@ -47,12 +48,18 @@ $(OBJDIR)/%.o:	$(SRCDIR)/%.s
 $(OBJDIR)/%.s:	$(SRCDIR)/%.c
 	$(LCC) $(LCCFLAGS) -S -o $@ $<
 
-# Link the compiled object files into a .gb ROM file
-$(BINS):	$(OBJS)
-	$(LCC) $(LCCFLAGS) -o $(BINS) $(OBJS)
+
+$(OBJDIR)/linkfile.lk:	$(OBJS)
+	rm -f $(OBJDIR)/linkfile.lk
+	$(foreach O,$(OBJS),echo $O >>$@;)
+
+# Link the compiled object files (via linkerfile) into a .gb ROM file
+$(BINS):	$(OBJDIR)/linkfile.lk
+		$(LCC) $(LCCFLAGS) -o $(BINS) -Wl-f$<
 
 prepare:
 	mkdir -p $(OBJDIR)
+	mkdir -p $(RESDIR)
 
 clean:
 #	rm -f  *.gb *.ihx *.cdb *.adb *.noi *.map

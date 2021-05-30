@@ -23,7 +23,7 @@ CFLAGS = -I$(TOP)include -Wa-I$(TOP)include -Wa-I$(GBDKLIB)
 LFLAGS_NBANKS += -Wm-yoA -Wm-ya4
 LFLAGS_SYMBOLS = -Wl-j -Wl-m -Wl-w -Wm-yS
 
-LFLAGS = -Wl-yt$(CART_MBC) $(LFLAGS_NBANKS) $(LFLAGS_SYMBOLS) -Wl-klib -Wl-g_shadow_OAM2=0xDF00 -Wl-g.STACK=0xDF00 -Wi-e
+LFLAGS = -Wm-yt$(CART_MBC) $(LFLAGS_NBANKS) $(LFLAGS_SYMBOLS) -Wl-klib -Wl-g_shadow_OAM2=0xDF00 -Wl-g.STACK=0xDF00 -Wi-e
 
 PACKFLAGS = -b 5 -f 255 -e rel -c
 
@@ -153,7 +153,6 @@ $(REL_OBJDIR)/linkfile.lk:	$(OBJS)
 	$(eval CART_SIZE=$(shell $(GBSPACK) $(PACKFLAGS) -o $(REL_OBJDIR) -i $(REL_OBJDIR)/packfile.pk))
 
 	$(shell echo -g __start_save=$(shell expr $(CART_SIZE) - 4 ) >$@)
-	$(shell echo $(GBDKLIB)/gb/crt0.o >>$@)
 	$(foreach O,$(REL_OBJS),$(shell echo $O >>$@))
 
 $(ROM_BUILD_DIR)/%.gb:	$(REL_OBJDIR)/linkfile.lk
