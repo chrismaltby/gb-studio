@@ -2,6 +2,7 @@
 
 #include <gb/cgb.h>
 #include <string.h>
+#include <rand.h>
 
 #include "Actor.h"
 #include "BankManager.h"
@@ -22,6 +23,7 @@
 #include "main.h"
 
 UBYTE game_time = 0;
+UBYTE seedRand = 2;
 UINT16 next_state;
 UINT8 delta_time;
 UINT16 current_state;
@@ -190,6 +192,22 @@ int core_start() {
       recent_joy = joy & ~last_joy;
     }
 
+    if (seedRand) {
+      if(seedRand == 2){
+        // Seed on first button press
+        if (joy) {
+          seedRand--;
+          initrand((DIV_REG*256)+game_time);
+        }
+      } else {
+        // Seed on first button release
+          if (!joy) {
+          seedRand = FALSE;
+          initrand((DIV_REG*256)+game_time);
+        }
+      }
+    }
+
     PUSH_BANK(1);
 
     UpdateCamera();
@@ -262,6 +280,16 @@ int core_start() {
 
     //BGP_REG = PAL_DEF(0U, 1U, 2U, 3U);
     //OBP0_REG = OBP1_REG = PAL_DEF(0U, 0U, 1U, 3U);
+
+    // Force Clear Emote
+    move_sprite(0, 0, 0);
+    move_sprite(1, 0, 0);
+    // Force Clear invoke stack
+    script_stack_ptr = 0;
+    // Force all palettes to update on switch
+    #ifdef CGB
+      palette_update_mask = 0x3F;
+    #endif
 
     UIInit();
     LoadScene(current_state);

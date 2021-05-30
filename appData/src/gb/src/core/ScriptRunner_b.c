@@ -1839,6 +1839,8 @@ void Script_LoadVectors_b() {
  */
 void Script_ActorSetMoveSpeed_b() {
   actors[active_script_ctx.script_actor].move_speed = script_cmd_args[0];
+  actors[active_script_ctx.script_actor].pos.x = actors[active_script_ctx.script_actor].pos.x & 0xFFFC;
+  actors[active_script_ctx.script_actor].pos.y = actors[active_script_ctx.script_actor].pos.y & 0xFFFC;
 }
 
 /*
@@ -2280,6 +2282,7 @@ void Script_ActorStopUpdate_b() {
   if (actors[active_script_ctx.script_actor].movement_ctx) {
     ScriptCtxPoolReturn(actors[active_script_ctx.script_actor].movement_ctx, active_script_ctx.script_actor);
   }
+  actors[active_script_ctx.script_actor].movement_ctx = 0; //@wtf fixes crash but still will not stop update script from same update script
 }
 
 void Script_ActorSetAnimate_b() {

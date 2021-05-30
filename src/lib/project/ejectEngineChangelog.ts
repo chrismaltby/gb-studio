@@ -192,6 +192,23 @@ const changes: EngineChange[] = [{
         "src/core/UI_a.s",
         "src/core/UI_b.c",
     ]
+}, {
+    version: "2.0.0-e18",
+    description: "Numerous bug fixes:\n" +
+    "   * Fix speed changes mid tile, emote clear on scene switch, palette event mask\n" +
+    "   * Fix crash with Stop On Update, B no longer default in multichoice\n" +
+    "   * Random seed generated on first button press/release to reduce bias",
+    modifiedFiles: [
+        "include/Math.h",
+        "src/core/Math.c",
+        "src/core/Actor_b.c",
+        "src/core/Core_Main.c",
+        "src/core/ScriptRunner.c",
+        "src/core/ScriptRunner_b.c",
+        "src/core/Scroll.c",
+        "src/core/UI.c",
+        "src/core/UI_b.c",
+    ]
 }];
 
 const ejectEngineChangelog = (currentVersion: string) => {

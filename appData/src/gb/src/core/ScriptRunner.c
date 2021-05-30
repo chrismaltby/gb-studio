@@ -35,7 +35,6 @@ void ScriptRunnerInit() {
 }
 
 void ScriptStart(BankPtr* events_ptr) {
-  SeedRand();
 
   player.moving = FALSE;
 
@@ -50,8 +49,6 @@ void ScriptStart(BankPtr* events_ptr) {
 
 UBYTE ScriptStartBg(BankPtr* events_ptr, UBYTE owner) {
   UWORD new_ctx = 0;
-
-  SeedRand();
 
   // Run in background context
   new_ctx = ScriptCtxPoolNext();

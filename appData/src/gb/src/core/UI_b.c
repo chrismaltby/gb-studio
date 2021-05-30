@@ -81,6 +81,10 @@ void UIUpdate_b() __banked {
     return;
   } else if (win_speed == 3 && ((game_time & 0x1) != 0)) {
     return;
+  } else if (win_speed == 0xFF) {
+    // UIIsClosed = true, but Wait for next frame to close
+    win_speed = 0;
+    return;
   }
 
   if (win_speed == 1) {
