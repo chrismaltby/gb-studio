@@ -24,17 +24,17 @@ These builds reflects the latest changes from the `v2beta` branch and are update
 
 #### macOS
 
-[![MacOS](https://img.shields.io/static/v1.svg?label=&message=64%20bit&color=blue&logo=apple&style=for-the-badge&logoColor=white)](https://circleci.com/api/v1.1/project/github/chrismaltby/gb-studio/latest/artifacts/0/builds/gb-studio-v2beta-darwin_x86_64.zip?branch=v2beta&filter=successful)
+[![MacOS](https://img.shields.io/static/v1.svg?label=&message=64%20bit&color=blue&logo=apple&style=for-the-badge&logoColor=white)](https://github.com/chrismaltby/gb-studio/releases/download/v2.0.0-beta5/gb-studio-v2beta-darwin_x86_64.zip)
 
 #### Linux
 
-[![DEB](https://img.shields.io/static/v1.svg?label=&message=deb&color=blue&logo=Ubuntu&style=for-the-badge&logoColor=white)](https://circleci.com/api/v1.1/project/github/chrismaltby/gb-studio/latest/artifacts/0/builds/gb-studio-v2beta-linux_x86_64.deb?branch=v2beta&filter=successful)
-[![RPM](https://img.shields.io/static/v1.svg?label=&message=RPM&color=blue&logo=linux&style=for-the-badge&logoColor=white)](https://circleci.com/api/v1.1/project/github/chrismaltby/gb-studio/latest/artifacts/0/builds/gb-studio-v2beta-linux_x86_64.rpm?branch=v2beta&filter=successful)
+[![DEB](https://img.shields.io/static/v1.svg?label=&message=deb&color=blue&logo=Ubuntu&style=for-the-badge&logoColor=white)](https://github.com/chrismaltby/gb-studio/releases/download/v2.0.0-beta5/gb-studio-v2beta-linux_x86_64.deb)
+[![RPM](https://img.shields.io/static/v1.svg?label=&message=RPM&color=blue&logo=linux&style=for-the-badge&logoColor=white)](https://github.com/chrismaltby/gb-studio/releases/download/v2.0.0-beta5/gb-studio-v2beta-linux_x86_64.rpm)
 
 #### Windows
 
-[![Windows_x86_64](https://img.shields.io/static/v1.svg?label=&message=64%20bit&color=blue&logo=windows&style=for-the-badge&logoColor=white)](https://circleci.com/api/v1.1/project/github/chrismaltby/gb-studio/latest/artifacts/0/builds/gb-studio-v2beta-windows_x86_64.zip?branch=v2beta&filter=successful)
-[![Windows_x86](https://img.shields.io/static/v1.svg?label=&message=32%20bit&color=blue&logo=windows&style=for-the-badge&logoColor=white)](https://circleci.com/api/v1.1/project/github/chrismaltby/gb-studio/latest/artifacts/0/builds/gb-studio-v2beta-windows_x86.zip?branch=v2beta&filter=successful)
+[![Windows_x86_64](https://img.shields.io/static/v1.svg?label=&message=64%20bit&color=blue&logo=windows&style=for-the-badge&logoColor=white)](https://github.com/chrismaltby/gb-studio/releases/download/v2.0.0-beta5/gb-studio-v2beta-windows_x86_64.zip)
+[![Windows_x86](https://img.shields.io/static/v1.svg?label=&message=32%20bit&color=blue&logo=windows&style=for-the-badge&logoColor=white)](https://github.com/chrismaltby/gb-studio/releases/download/v2.0.0-beta5/gb-studio-v2beta-windows_x86.zip)
 
 
 ## Installation
