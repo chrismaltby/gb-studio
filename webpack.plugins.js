@@ -1,8 +1,8 @@
 const webpack = require("webpack");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
-const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
-  .BundleAnalyzerPlugin;
-const GitRevisionPlugin = require("git-revision-webpack-plugin");
+const BundleAnalyzerPlugin =
+  require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
+const { GitRevisionPlugin } = require("git-revision-webpack-plugin");
 const pkg = require("./package.json");
 
 const gitRevisionPlugin = new GitRevisionPlugin({
@@ -22,7 +22,9 @@ const plugins = [
   }),
   new ForkTsCheckerWebpackPlugin({
     async: false,
-    memoryLimit: 4096,
+    typescript: {
+      memoryLimit: 4096,
+    },
   }),
 ];
 

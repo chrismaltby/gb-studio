@@ -129,18 +129,7 @@ export interface CardProps {
   moveCard: (dragIndex: number, hoverIndex: number) => void;
 }
 
-@DropTarget(ItemType, cardTarget, (connect: DropTargetConnector) => ({
-  connectDropTarget: connect.dropTarget(),
-}))
-@DragSource(
-  ItemType,
-  cardSource,
-  (connect: DragSourceConnector, monitor: DragSourceMonitor) => ({
-    connectDragSource: connect.dragSource(),
-    isDragging: monitor.isDragging(),
-  })
-)
-export default class Card extends React.Component<CardProps> {
+class Card extends React.Component<CardProps> {
   render() {
     const {
       id,
@@ -170,3 +159,22 @@ export default class Card extends React.Component<CardProps> {
     );
   }
 }
+
+const DraggableCard = DropTarget(
+  ItemType,
+  cardTarget,
+  (connect: DropTargetConnector) => ({
+    connectDropTarget: connect.dropTarget(),
+  })
+)(
+  DragSource(
+    ItemType,
+    cardSource,
+    (connect: DragSourceConnector, monitor: DragSourceMonitor) => ({
+      connectDragSource: connect.dragSource(),
+      isDragging: monitor.isDragging(),
+    })
+  )(Card)
+);
+
+export default DraggableCard;

@@ -10,7 +10,9 @@ rules.push({
 
 const rendererPlugins = [].concat(
   plugins,
-  new CopyPlugin([{ from: "node_modules/vm2", to: "node_modules/vm2" }])
+  new CopyPlugin({
+    patterns: [{ from: "node_modules/vm2", to: "node_modules/vm2" }],
+  })
 );
 
 const srcPath = (subdir) => {
@@ -24,6 +26,7 @@ module.exports = {
     rules,
   },
   optimization: {
+    minimize: false,
     splitChunks: {
       cacheGroups: {
         "vendor-react": {

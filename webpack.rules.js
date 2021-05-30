@@ -2,7 +2,7 @@ module.exports = [
   // Add support for native node modules
   {
     test: /\.node$/,
-    use: "node-loader"
+    use: "node-loader",
   },
   {
     test: /\.(m?js|node)$/,
@@ -10,37 +10,37 @@ module.exports = [
     use: {
       loader: "@marshallofsound/webpack-asset-relocator-loader",
       options: {
-        outputAssetBase: "native_modules"
-      }
-    }
+        outputAssetBase: "native_modules",
+      },
+    },
   },
   {
     test: /\.worker\.(ts|js)$/,
     exclude: /(node_modules|.webpack)/,
-    loaders: [
+    rules: [
       {
-        loader: 'worker-loader',
-        options: { publicPath: '../' }
+        loader: "worker-loader",
+        options: { publicPath: "../" },
       },
       {
         loader: "ts-loader",
         options: {
-          transpileOnly: true
-        }
-      }      
-    ]
+          transpileOnly: true,
+        },
+      },
+    ],
   },
   {
     test: /\.(ts|tsx|js|jsx)?$/,
     exclude: /(node_modules|.webpack)/,
-    loaders: [
+    rules: [
       {
         loader: "ts-loader",
         options: {
-          transpileOnly: true
-        }
-      }
-    ]
+          transpileOnly: true,
+        },
+      },
+    ],
   },
   {
     test: /\.(png|jpe?g|gif|mp4)$/i,
@@ -55,11 +55,11 @@ module.exports = [
     type: "javascript/auto",
     loader: "file-loader",
     options: {
-      name: "[name].[hash].[ext]",
-      publicPath: '../wasm',
-      outputPath: 'wasm'
+      name: "[name].[contenthash].[ext]",
+      publicPath: "../wasm",
+      outputPath: "wasm",
     },
-  }
+  },
   // Put your webpack loader rules in this array.  This is where you would put
   // your ts-loader configuration for instance:
   /**
@@ -68,7 +68,7 @@ module.exports = [
    * {
    *   test: /\.tsx?$/,
    *   exclude: /(node_modules|.webpack)/,
-   *   loaders: [{
+   *   rules: [{
    *     loader: 'ts-loader',
    *     options: {
    *       transpileOnly: true

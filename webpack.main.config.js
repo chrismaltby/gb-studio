@@ -4,9 +4,11 @@ const Path = require("path");
 
 const mainPlugins = [].concat(
   plugins,
-  new CopyPlugin([
-    { from: "node_modules/about-window", to: "node_modules/about-window" },
-  ])
+  new CopyPlugin({
+    patterns: [
+      { from: "node_modules/about-window", to: "node_modules/about-window" },
+    ],
+  })
 );
 
 const srcPath = (subdir) => {
