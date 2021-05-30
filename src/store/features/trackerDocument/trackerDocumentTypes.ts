@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import { PatternCell } from "lib/helpers/uge/song/PatternCell";
 
 export type Song = {
