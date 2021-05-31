@@ -51,42 +51,33 @@ test("Should be able to clamp value within cType", () => {
 });
 
 test("Should be able precompile memory offsets for engine fields", () => {
-    const field1 = {
-        key: "test_field_1",
-        label: "Test Field 1",
-        group: "Global",
-        type: "number",
-        cType: "UWORD",
-        defaultValue: 1,        
-    };
-    const field2 = {
-        key: "test_field_2",
-        label: "Test Field 2",
-        group: "Global",
-        type: "number",
-        cType: "UBYTE",
-        defaultValue: 1,   
-    }
-    const field3 = {
-        key: "test_field_3",
-        label: "Test Field 3",
-        group: "Global",
-        type: "number",
-        cType: "UBYTE",
-        defaultValue: 1,   
-    }    
-    expect(precompileEngineFields([field1, field2, field3])).toEqual({
-        test_field_1: {
-            offset: 0,
-            field: field1
-        },
-        test_field_2: {
-            offset: 2,
-            field: field2
-        },
-        test_field_3: {
-            offset: 3,
-            field: field3
-        }
-    })
+  const field1 = {
+    key: "test_field_1",
+    label: "Test Field 1",
+    group: "Global",
+    type: "number",
+    cType: "UWORD",
+    defaultValue: 1,
+  };
+  const field2 = {
+    key: "test_field_2",
+    label: "Test Field 2",
+    group: "Global",
+    type: "number",
+    cType: "UBYTE",
+    defaultValue: 1,
+  };
+  const field3 = {
+    key: "test_field_3",
+    label: "Test Field 3",
+    group: "Global",
+    type: "number",
+    cType: "UBYTE",
+    defaultValue: 1,
+  };
+  expect(precompileEngineFields([field1, field2, field3])).toEqual({
+    test_field_1: field1,
+    test_field_2: field2,
+    test_field_3: field3,
+  });
 });
