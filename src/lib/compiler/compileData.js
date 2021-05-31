@@ -140,38 +140,6 @@ export const compileEngineFields = (
   return fieldDef;
 };
 
-export const precompileVariables = () => {
-  const variables = [];
-
-  // for (let i = 0; i < 100; i++) {
-  //   variables.push(String(i));
-  // }
-  // variables.push(TMP_VAR_1);
-  // variables.push(TMP_VAR_2);
-
-  // walkScenesEvents(scenes, (cmd) => {
-  //   if (eventHasArg(cmd, "variable")) {
-  //     const variable = cmd.args.variable || "0";
-  //     if (variables.indexOf(variable) === -1) {
-  //       variables.push(variable);
-  //     }
-  //   }
-  //   if (eventHasArg(cmd, "vectorX")) {
-  //     const x = cmd.args.vectorX || "0";
-  //     if (variables.indexOf(x) === -1) {
-  //       variables.push(x);
-  //     }
-  //   }
-  //   if (eventHasArg(cmd, "vectorY")) {
-  //     const y = cmd.args.vectorY || "0";
-  //     if (variables.indexOf(y) === -1) {
-  //       variables.push(y);
-  //     }
-  //   }
-  // });
-  return variables;
-};
-
 export const precompileStrings = (scenes) => {
   const strings = [];
   walkScenesEvents(scenes, (cmd) => {
@@ -805,9 +773,6 @@ const precompile = async (
   tmpPath,
   { progress, warnings }
 ) => {
-  progress(EVENT_MSG_PRE_VARIABLES);
-  const variables = precompileVariables(projectData.scenes);
-
   progress(EVENT_MSG_PRE_STRINGS);
   const strings = precompileStrings(projectData.scenes);
 
@@ -915,7 +880,6 @@ const precompile = async (
   progress(EVENT_MSG_PRE_COMPLETE);
 
   return {
-    variables,
     strings,
     usedBackgrounds,
     backgroundLookup,
@@ -1049,7 +1013,6 @@ const compile = async (
         emotes: precompiled.usedEmotes,
         backgrounds: precompiled.usedBackgrounds,
         strings: precompiled.strings,
-        variables: precompiled.variables,
         customEvents: projectData.customEvents,
         palettes: projectData.palettes,
         settings: projectData.settings,

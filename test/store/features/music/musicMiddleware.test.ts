@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import { mocked } from "ts-jest/utils";
 import actions from "../../../../src/store/features/music/musicActions";
 import navigationActions from "../../../../src/store/features/navigation/navigationActions";
@@ -25,7 +29,7 @@ test("Should trigger call to play music", async () => {
 
   const loadSpy = jest.spyOn(modPlayer, "loadModule");
 
-  const store = ({
+  const store = {
     getState: () => ({
       document: {
         root: "/root/path/",
@@ -41,10 +45,10 @@ test("Should trigger call to play music", async () => {
                 track1: {
                   ...dummyMusic,
                   id: "track1",
-                  filename: "track1.mod"
-                }
+                  filename: "track1.mod",
+                },
               },
-              ids: ["track1"]
+              ids: ["track1"],
             },
             backgrounds: {
               entities: {
@@ -60,14 +64,17 @@ test("Should trigger call to play music", async () => {
       },
     }),
     dispatch: jest.fn(),
-  } as unknown) as MiddlewareAPI<Dispatch<AnyAction>, RootState>;
+  } as unknown as MiddlewareAPI<Dispatch<AnyAction>, RootState>;
 
   const next = jest.fn();
   const action = actions.playMusic({ musicId: "track1" });
 
   middleware(store)(next)(action);
 
-  expect(loadSpy).toBeCalledWith("file:///root/path/assets/music/track1.mod", false);
+  expect(loadSpy).toBeCalledWith(
+    "file:///root/path/assets/music/track1.mod",
+    false
+  );
 });
 
 test("Should trigger a call to pause music", async () => {
@@ -87,7 +94,7 @@ test("Should trigger a call to pause music", async () => {
 
   const stopSpy = jest.spyOn(modPlayer, "stop");
 
-  const store = ({
+  const store = {
     getState: () => ({
       document: {
         root: "/root/path/",
@@ -112,7 +119,7 @@ test("Should trigger a call to pause music", async () => {
       },
     }),
     dispatch: jest.fn(),
-  } as unknown) as MiddlewareAPI<Dispatch<AnyAction>, RootState>;
+  } as unknown as MiddlewareAPI<Dispatch<AnyAction>, RootState>;
 
   const next = jest.fn();
   const action = actions.pauseMusic();
@@ -122,21 +129,20 @@ test("Should trigger a call to pause music", async () => {
   expect(stopSpy).toBeCalledWith();
 });
 
-
 test("Should pause music when switching section", async () => {
   const musicModule = await import(
     "../../../../src/store/features/music/musicMiddleware"
   );
   const middleware = musicModule.default;
 
-  const store = ({
+  const store = {
     getState: () => ({
       editor: {
-        section: "world"
-      }
+        section: "world",
+      },
     }),
     dispatch: jest.fn(),
-  } as unknown) as MiddlewareAPI<Dispatch<AnyAction>, RootState>;
+  } as unknown as MiddlewareAPI<Dispatch<AnyAction>, RootState>;
 
   const next = jest.fn();
   const action = navigationActions.setSection("build");

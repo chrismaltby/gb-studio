@@ -83,6 +83,7 @@ test("Should not trigger call to check background warnings if already cached war
           bg1: {
             id: "bg1",
             warnings: ["Warning 2"],
+            is360: false,
             timestamp: 100,
           },
         },

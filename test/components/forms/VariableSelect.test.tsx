@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import React from "react";
 import { VariableSelect } from "../../../src/components/forms/VariableSelect";
 import { render, screen, fireEvent } from "../../react-utils";

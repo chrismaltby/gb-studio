@@ -67,7 +67,6 @@ interface ScriptBuilderOptions {
   sceneIndex: number;
   entityIndex: number;
   entityType: ScriptBuilderEntityType;
-  variables: string[];
   variablesLookup: VariablesLookup;
   variableAliasLookup: Dictionary<string>;
   scenes: ScriptBuilderScene[];
@@ -177,18 +176,6 @@ const getPalette = (
     palettes.find((p) => p.id === fallbackId) ||
     (DMG_PALETTE as Palette)
   );
-};
-
-export const getVariableIndex = (variable: string, variables: string[]) => {
-  const normalisedVariable = String(variable)
-    .replace(/\$/g, "")
-    .replace(/^0+([0-9])/, "$1");
-  let variableIndex = variables.indexOf(normalisedVariable);
-  if (variableIndex === -1) {
-    variables.push(normalisedVariable);
-    variableIndex = variables.length - 1;
-  }
-  return variableIndex;
 };
 
 export const getVariableId = (
@@ -363,7 +350,6 @@ class ScriptBuilder {
       sceneIndex: options.sceneIndex || 0,
       entityIndex: options.entityIndex || 0,
       entityType: options.entityType || "scene",
-      variables: options.variables || [],
       variablesLookup: options.variablesLookup || {},
       variableAliasLookup: options.variableAliasLookup || {},
       engineFields: options.engineFields || {},
@@ -3923,9 +3909,7 @@ ${
     : ""
 }
 .area _CODE_255
-
-${this.includeActor ? "ACTOR = -4" : ""}
-
+${this.includeActor ? "\nACTOR = -4\n" : ""}
 ___bank_${name} = 255
 .globl ___bank_${name}
 

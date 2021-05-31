@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import React from "react";
 import { SearchableCard } from "../../../../src/components/ui/cards/SearchableCard";
 import { render, screen } from "../../../react-utils";

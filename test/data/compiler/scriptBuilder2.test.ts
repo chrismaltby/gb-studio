@@ -19,9 +19,9 @@ test("Should be able to set active actor to player", () => {
   });
   sb.actorSetActive("player");
   expect(output).toEqual([
-    "        VM_PUSH         0",
-    "        VM_SET          ACTOR, .ARG0",
-    "        VM_INVOKE       b_vm_actor_activate, _vm_actor_activate, 1, .ARG0",
+    "        ; Actor Set Active",
+    "        VM_SET_CONST            ACTOR, 0",
+    "",
   ]);
 });
 
@@ -43,9 +43,9 @@ test("Should be able to set active actor to actor by id", () => {
   });
   sb.actorSetActive("actor2");
   expect(output).toEqual([
-    "        VM_PUSH         2",
-    "        VM_SET          ACTOR, .ARG0",
-    "        VM_INVOKE       b_vm_actor_activate, _vm_actor_activate, 1, .ARG0",
+    "        ; Actor Set Active",
+    "        VM_SET_CONST            ACTOR, 2",
+    "",
   ]);
 });
 
@@ -60,11 +60,12 @@ test("Should be able to move actor to new location", () => {
   });
   sb.actorMoveTo(5, 6, true, "horizontal");
   expect(output).toEqual([
-    "        VM_SET_CONST    ^/ACTOR + 1/, 5",
-    "        VM_SET_CONST    ^/ACTOR + 2/, 6",
-    "        VM_SET_CONST    ^/ACTOR + 3/, 1",
-    "        VM_SET_CONST    ^/ACTOR + 4/, 0",
-    "        VM_ACTOR_MOVE_TO ACTOR",
+    "        ; Actor Move To",
+    "        VM_SET_CONST            ^/(ACTOR + 1)/, 640",
+    "        VM_SET_CONST            ^/(ACTOR + 2)/, 768",
+    "        VM_SET_CONST            ^/(ACTOR + 3)/, ^/(.ACTOR_ATTR_CHECK_COLL | .ACTOR_ATTR_H_FIRST)/",
+    "        VM_ACTOR_MOVE_TO        ACTOR",
+    "",
   ]);
 });
 
@@ -79,8 +80,10 @@ test("Should be able to wait for N frames to pass", () => {
   });
   sb.wait(20);
   expect(output).toEqual([
-    "        VM_PUSH         20",
-    "        VM_INVOKE       b_wait_frames, _wait_frames, 1, .ARG0",
+    "        ; Wait N Frames",
+    "        VM_PUSH_CONST           20",
+    "        VM_INVOKE               b_wait_frames, _wait_frames, 1, .ARG0",
+    "",
   ]);
 });
 
@@ -102,25 +105,33 @@ test("Should be able to generate script string", () => {
   });
   sb.actorSetActive("actor2");
   sb.actorMoveTo(5, 6, true, "horizontal");
-  expect(sb.toScriptString("MY_SCRIPT", true)).toEqual(
+  expect(sb.toScriptString("MY_SCRIPT", false)).toEqual(
     `.include "vm.i"
-
-.globl b_vm_actor_activate, _vm_actor_activate
+.include "data/game_globals.i"
 
 .area _CODE_255
+
+ACTOR = -4
 
 ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
 
 _MY_SCRIPT::
-        VM_PUSH         2
-        VM_SET          ACTOR, .ARG0
-        VM_INVOKE       b_vm_actor_activate, _vm_actor_activate, 1, .ARG0
-        VM_SET_CONST    ^/ACTOR + 1/, 5
-        VM_SET_CONST    ^/ACTOR + 2/, 6
-        VM_SET_CONST    ^/ACTOR + 3/, 1
-        VM_SET_CONST    ^/ACTOR + 4/, 0
-        VM_ACTOR_MOVE_TO ACTOR
+        ; Local Actor
+        VM_PUSH_CONST           0
+        VM_PUSH_CONST           0
+        VM_PUSH_CONST           0
+        VM_PUSH_CONST           0
+
+        ; Actor Set Active
+        VM_SET_CONST            ACTOR, 2
+
+        ; Actor Move To
+        VM_SET_CONST            ^/(ACTOR + 1)/, 640
+        VM_SET_CONST            ^/(ACTOR + 2)/, 768
+        VM_SET_CONST            ^/(ACTOR + 3)/, ^/(.ACTOR_ATTR_CHECK_COLL | .ACTOR_ATTR_H_FIRST)/
+        VM_ACTOR_MOVE_TO        ACTOR
+
 `
   );
 });
@@ -137,10 +148,9 @@ test("Should be able to open dialogue boxes", () => {
   sb.textDialogue("Hello World");
   sb.scriptEnd();
 
-  expect(sb.toScriptString("MY_SCRIPT", true)).toEqual(
+  expect(sb.toScriptString("MY_SCRIPT", false)).toEqual(
     `.include "vm.i"
-
-.globl b_ui_text, _ui_text
+.include "data/game_globals.i"
 
 .area _CODE_255
 
@@ -148,8 +158,17 @@ ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
 
 _MY_SCRIPT::
-        VM_INVOKE       b_ui_text, _ui_text, 0, 0
-        .asciz \"Hello World\"
+        ; Text Dialogue
+        VM_LOAD_TEXT            0
+        .asciz "Hello World"
+        VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, ^/(.UI_AUTO_SCROLL | .UI_DRAW_FRAME)/
+        VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_TEXT_IN_SPEED
+        VM_DISPLAY_TEXT
+        VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT | .UI_WAIT_BTN_A)/
+        VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_TEXT_OUT_SPEED
+        VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT)/
+
+        ; Stop Script
         VM_STOP
 `
   );
@@ -163,13 +182,13 @@ test("Should be able to conditionally execute if variable is true with event arr
       actors: [],
       triggers: [],
     },
-    variables: ["0", "1"],
-    compileEvents: (events: ScriptEvent[]) => {
+    // variables: ["0", "1"],
+    compileEvents: (self: ScriptBuilder, events: ScriptEvent[]) => {
       if (events[0].id === "event1") {
-        output.push("        VM_DEBUG        0");
+        output.push("        VM_DEBUG                0");
         output.push('        .asciz "True Path"');
       } else {
-        output.push("        VM_DEBUG        0");
+        output.push("        VM_DEBUG                0");
         output.push('        .asciz "False Path"');
       }
     },
@@ -191,8 +210,9 @@ test("Should be able to conditionally execute if variable is true with event arr
       },
     ]
   );
-  expect(sb.toScriptString("MY_SCRIPT", true)).toEqual(
+  expect(sb.toScriptString("MY_SCRIPT", false)).toEqual(
     `.include "vm.i"
+.include "data/game_globals.i"
 
 .area _CODE_255
 
@@ -200,15 +220,16 @@ ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
 
 _MY_SCRIPT::
-        VM_PUSH         1
-        VM_IF .EQ       1, .ARG0, 1$, 1
-        VM_DEBUG        0
+        ; If Variable True
+        VM_IF_CONST .GT         VAR_VARIABLE_1, 0, 1$, 0
+        VM_DEBUG                0
         .asciz "False Path"
-        VM_JUMP         2$
+        VM_JUMP                 2$
 1$:
-        VM_DEBUG        0
+        VM_DEBUG                0
         .asciz "True Path"
 2$:
+
 `
   );
 });
@@ -228,8 +249,8 @@ test("Should be able to conditionally execute if variable is true with function 
       ],
       triggers: [],
     },
-    variables: ["0", "1"],
-    compileEvents: (events: ScriptEvent[]) => {
+    // variables: ["0", "1"],
+    compileEvents: (self: ScriptBuilder, events: ScriptEvent[]) => {
       if (events[0].id === "event1") {
         output.push("        VM_DEBUG        0");
         output.push('        .asciz "True Path"');
@@ -246,10 +267,9 @@ test("Should be able to conditionally execute if variable is true with function 
   );
   sb.scriptEnd();
 
-  expect(sb.toScriptString("MY_SCRIPT", true)).toEqual(
+  expect(sb.toScriptString("MY_SCRIPT", false)).toEqual(
     `.include "vm.i"
-
-.globl b_ui_text, _ui_text
+.include "data/game_globals.i"
 
 .area _CODE_255
 
@@ -257,15 +277,33 @@ ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
 
 _MY_SCRIPT::
-        VM_PUSH         1
-        VM_IF .EQ       0, .ARG0, 1$, 1
-        VM_INVOKE       b_ui_text, _ui_text, 0, 0
+        ; If Variable True
+        VM_IF_CONST .GT         VAR_VARIABLE_0, 0, 1$, 0
+        ; Text Dialogue
+        VM_LOAD_TEXT            0
         .asciz "Goodbye World"
-        VM_JUMP         2$
+        VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, ^/(.UI_AUTO_SCROLL | .UI_DRAW_FRAME)/
+        VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_TEXT_IN_SPEED
+        VM_DISPLAY_TEXT
+        VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT | .UI_WAIT_BTN_A)/
+        VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_TEXT_OUT_SPEED
+        VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT)/
+
+        VM_JUMP                 2$
 1$:
-        VM_INVOKE       b_ui_text, _ui_text, 0, 0
+        ; Text Dialogue
+        VM_LOAD_TEXT            0
         .asciz "Hello World"
+        VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, ^/(.UI_AUTO_SCROLL | .UI_DRAW_FRAME)/
+        VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_TEXT_IN_SPEED
+        VM_DISPLAY_TEXT
+        VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT | .UI_WAIT_BTN_A)/
+        VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_TEXT_OUT_SPEED
+        VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT)/
+
 2$:
+
+        ; Stop Script
         VM_STOP
 `
   );
@@ -292,7 +330,7 @@ test("Should be able to conditionally execute if variable is true with nested fu
       ],
       triggers: [],
     },
-    variables: ["0", "1", "2"],
+    // variables: ["0", "1", "2"],
   });
 
   sb.ifVariableTrue(
@@ -314,10 +352,9 @@ test("Should be able to conditionally execute if variable is true with nested fu
   );
   sb.scriptEnd();
 
-  expect(sb.toScriptString("MY_SCRIPT", true)).toEqual(
+  expect(sb.toScriptString("MY_SCRIPT", false)).toEqual(
     `.include "vm.i"
-
-.globl b_ui_text, _ui_text
+.include "data/game_globals.i"
 
 .area _CODE_255
 
@@ -325,29 +362,65 @@ ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
 
 _MY_SCRIPT::
-        VM_PUSH         1
-        VM_IF .EQ       0, .ARG0, 1$, 1
-        VM_PUSH         1
-        VM_IF .EQ       2, .ARG0, 3$, 1
-        VM_INVOKE       b_ui_text, _ui_text, 0, 0
+        ; If Variable True
+        VM_IF_CONST .GT         VAR_VARIABLE_0, 0, 1$, 0
+        ; If Variable True
+        VM_IF_CONST .GT         VAR_VARIABLE_2, 0, 3$, 0
+        ; Text Dialogue
+        VM_LOAD_TEXT            0
         .asciz "0=FALSE 2=FALSE"
-        VM_JUMP         4$
+        VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, ^/(.UI_AUTO_SCROLL | .UI_DRAW_FRAME)/
+        VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_TEXT_IN_SPEED
+        VM_DISPLAY_TEXT
+        VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT | .UI_WAIT_BTN_A)/
+        VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_TEXT_OUT_SPEED
+        VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT)/
+
+        VM_JUMP                 4$
 3$:
-        VM_INVOKE       b_ui_text, _ui_text, 0, 0
+        ; Text Dialogue
+        VM_LOAD_TEXT            0
         .asciz "0=FALSE 2=TRUE"
+        VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, ^/(.UI_AUTO_SCROLL | .UI_DRAW_FRAME)/
+        VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_TEXT_IN_SPEED
+        VM_DISPLAY_TEXT
+        VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT | .UI_WAIT_BTN_A)/
+        VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_TEXT_OUT_SPEED
+        VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT)/
+
 4$:
-        VM_JUMP         2$
+
+        VM_JUMP                 2$
 1$:
-        VM_PUSH         1
-        VM_IF .EQ       1, .ARG0, 5$, 1
-        VM_INVOKE       b_ui_text, _ui_text, 0, 0
+        ; If Variable True
+        VM_IF_CONST .GT         VAR_VARIABLE_1, 0, 5$, 0
+        ; Text Dialogue
+        VM_LOAD_TEXT            0
         .asciz "0=TRUE 1=FALSE"
-        VM_JUMP         6$
+        VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, ^/(.UI_AUTO_SCROLL | .UI_DRAW_FRAME)/
+        VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_TEXT_IN_SPEED
+        VM_DISPLAY_TEXT
+        VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT | .UI_WAIT_BTN_A)/
+        VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_TEXT_OUT_SPEED
+        VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT)/
+
+        VM_JUMP                 6$
 5$:
-        VM_INVOKE       b_ui_text, _ui_text, 0, 0
+        ; Text Dialogue
+        VM_LOAD_TEXT            0
         .asciz "0=TRUE 1=TRUE"
+        VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, ^/(.UI_AUTO_SCROLL | .UI_DRAW_FRAME)/
+        VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_TEXT_IN_SPEED
+        VM_DISPLAY_TEXT
+        VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT | .UI_WAIT_BTN_A)/
+        VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_TEXT_OUT_SPEED
+        VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT)/
+
 6$:
+
 2$:
+
+        ; Stop Script
         VM_STOP
 `
   );
@@ -365,8 +438,9 @@ test("Should be able to define labels and jump", () => {
   sb.labelDefine("mylabel");
   sb.labelGoto("mylabel");
 
-  expect(sb.toScriptString("MY_SCRIPT", true)).toEqual(
+  expect(sb.toScriptString("MY_SCRIPT", false)).toEqual(
     `.include "vm.i"
+.include "data/game_globals.i"
 
 .area _CODE_255
 
@@ -374,35 +448,8 @@ ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
 
 _MY_SCRIPT::
-_mylabel$:
-        VM_JUMP         _mylabel$
-`
-  );
-});
-
-test("Should be able to define labels and jump", () => {
-  const output: string[] = [];
-  const sb = new ScriptBuilder(output, {
-    scene: {
-      id: "scene1",
-      actors: [],
-      triggers: [],
-    },
-  });
-  sb.labelDefine("mylabel");
-  sb.labelGoto("mylabel");
-
-  expect(sb.toScriptString("MY_SCRIPT", true)).toEqual(
-    `.include "vm.i"
-
-.area _CODE_255
-
-___bank_MY_SCRIPT = 255
-.globl ___bank_MY_SCRIPT
-
-_MY_SCRIPT::
-_mylabel$:
-        VM_JUMP         _mylabel$
+mylabel$:
+        VM_JUMP                 mylabel$
 `
   );
 });

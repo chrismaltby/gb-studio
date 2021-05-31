@@ -154,7 +154,7 @@ const compile = (input, helpers) => {
     value = 0;
   }
 
-  if (input.operation === "set") {
+  if (!input.operation || input.operation === "set") {
     if (input.other === "var") {
       variableCopy(input.vectorX, input.vectorY);
     } else if (input.other === "rnd") {
