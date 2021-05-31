@@ -1,6 +1,7 @@
 import { hex2GBCrgb } from "lib/helpers/color";
 
-const workerCtx: Worker = self as any;
+// eslint-disable-next-line no-restricted-globals
+const workerCtx: Worker = self as unknown as Worker;
 
 const indexColour = (g: number) => {
   if (g < 65) {

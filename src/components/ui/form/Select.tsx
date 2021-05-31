@@ -42,7 +42,6 @@ export interface SelectCommonProps {
   maxMenuHeight?: number;
   menuPlacement?: "auto" | "bottom" | "top";
   menuPortalTarget?: HTMLElement | null;
-  components?: any;
 }
 
 const menuPortalEl = document.getElementById("MenuPortal");

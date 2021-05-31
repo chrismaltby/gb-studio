@@ -2,11 +2,17 @@ import { DMG_PALETTE } from "../../../consts";
 import { colorizeSpriteData, chromaKeyData } from "lib/helpers/color";
 import { ObjPalette } from "store/features/entities/entitiesTypes";
 
-const workerCtx: Worker = self as any;
+// eslint-disable-next-line no-restricted-globals
+const workerCtx: Worker = self as unknown as Worker;
 
 interface CacheRecord {
   img: ImageBitmap;
   tilesCanvases: Record<ObjPalette, OffscreenCanvas>;
+}
+
+export interface MetaspriteCanvasResult {
+  id: number;
+  canvasImage: ImageBitmap;
 }
 
 const cache: Record<string, CacheRecord> = {};
@@ -14,19 +20,14 @@ const cache: Record<string, CacheRecord> = {};
 workerCtx.onmessage = async (evt) => {
   const id = evt.data.id;
   const src = evt.data.src;
-  const offsetX = evt.data.offsetX || 0;
-  const offsetY = evt.data.offsetY || 0;
   const width = evt.data.width;
   const height = evt.data.height;
   const tiles = evt.data.tiles;
   const flipX = evt.data.flipX;
-  const flipY = evt.data.flipY;
   const palette = evt.data.palette;
   const palettes: [string, string, string, string][] = evt.data.palettes;
   const key = JSON.stringify({ src, palettes });
 
-  let canvas: OffscreenCanvas;
-  let ctx: OffscreenCanvasRenderingContext2D;
   let img: ImageBitmap;
   let tilesCanvas: OffscreenCanvas;
   let tilesCanvases: Record<ObjPalette | number, OffscreenCanvas>;
@@ -99,12 +100,12 @@ workerCtx.onmessage = async (evt) => {
   }
 
   // Fetch New Data
-  canvas = new OffscreenCanvas(width, height);
+  const canvas = new OffscreenCanvas(width, height);
   const tmpCtx = canvas.getContext("2d");
   if (!tmpCtx) {
     return;
   }
-  ctx = tmpCtx;
+  const ctx = tmpCtx;
 
   if (flipX) {
     ctx.translate(width, 0);

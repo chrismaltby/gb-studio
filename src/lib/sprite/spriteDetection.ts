@@ -189,16 +189,6 @@ const isBlankData = (data: Uint16Array): boolean => {
   return true;
 };
 
-const unknownToTransparent = (inData: Uint16Array): Uint16Array => {
-  const data = new Uint16Array(inData);
-  for (let i = 2; i < data.length; i++) {
-    if (data[i] === Color.Unknown) {
-      data[i] = Color.Transparent;
-    }
-  }
-  return data;
-};
-
 const isEquivalent = (dataA: Uint16Array, dataB: Uint16Array): boolean => {
   return (
     isEqualSize(dataA, dataB) &&

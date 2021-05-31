@@ -14,6 +14,11 @@ const { nativeTheme } = remote;
 const themeIds = ["dark", "light", "neon"] as const;
 type ThemeId = typeof themeIds[number];
 
+const isInArray = <T, A extends T>(
+  item: T,
+  array: ReadonlyArray<A>
+): item is A => array.includes(item as A);
+
 const themes: Record<ThemeId, ThemeInterface> = {
   light: lightTheme,
   dark: darkTheme,
@@ -26,8 +31,21 @@ const windowsThemes: Record<ThemeId, ThemeInterface> = {
   neon: neonTheme,
 };
 
-const toThemeId = (value: any, systemShouldUseDarkColors: boolean): ThemeId => {
-  if (themeIds.indexOf(value) > -1) {
+const isThemeId = (value: unknown): value is ThemeId => {
+  if (typeof value !== "string") {
+    return false;
+  }
+  if (isInArray(value, themeIds)) {
+    return true;
+  }
+  return true;
+};
+
+const toThemeId = (
+  value: unknown,
+  systemShouldUseDarkColors: boolean
+): ThemeId => {
+  if (isThemeId(value)) {
     return value;
   }
   if (systemShouldUseDarkColors) {

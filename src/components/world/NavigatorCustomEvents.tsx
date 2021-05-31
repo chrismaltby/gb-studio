@@ -75,7 +75,7 @@ export const NavigatorCustomEvents: FC<NavigatorCustomEventsProps> = ({
       items={items}
       setSelectedId={setSelectedId}
       height={height}
-      children={({ selected, item }) => (
+      children={({ item }) => (
         <NavigatorEntityRow>
           <CodeIcon />
           {item.name}

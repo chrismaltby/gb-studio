@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 
 type ResizeDirection = "left" | "right" | "top" | "bottom";
 
@@ -26,16 +26,20 @@ const useResizable = ({
   const startSize = useRef<number>(0);
   const startOffset = useRef<number>(0);
 
-  useEffect(() => {
-    if (isResizing) {
-      window.addEventListener("mousemove", onDragMove);
-      window.addEventListener("mouseup", onDragStop);
-      return () => {
-        window.removeEventListener("mousemove", onDragMove);
-        window.removeEventListener("mouseup", onDragStop);
-      };
-    }
-  }, [isResizing, size]);
+  const clampSize = useCallback(
+    (size: number) => {
+      return Math.max(minSize, Math.min(maxSize, size));
+    },
+    [maxSize, minSize]
+  );
+
+  const updateSize = useCallback(
+    (newSize: number) => {
+      onResize?.(clampSize(newSize));
+      setSize(newSize);
+    },
+    [clampSize, onResize]
+  );
 
   const onDragStart = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (direction === "left" || direction === "right") {
@@ -48,32 +52,37 @@ const useResizable = ({
     setSize(clampSize(size));
   };
 
-  const onDragStop = () => {
+  const onDragMove = useCallback(
+    (e: MouseEvent) => {
+      if (direction === "left") {
+        updateSize(startSize.current - (e.pageX - startOffset.current));
+      } else if (direction === "right") {
+        updateSize(startSize.current + (e.pageX - startOffset.current));
+      } else if (direction === "top") {
+        updateSize(startSize.current - (e.pageY - startOffset.current));
+      } else if (direction === "bottom") {
+        updateSize(startSize.current + (e.pageY - startOffset.current));
+      }
+    },
+    [direction, updateSize]
+  );
+
+  const onDragStop = useCallback(() => {
     setIsResizing(false);
     setSize(clampSize(size));
     onResizeComplete?.(clampSize(size));
-  };
+  }, [clampSize, onResizeComplete, size]);
 
-  const clampSize = (size: number) => {
-    return Math.max(minSize, Math.min(maxSize, size));
-  };
-
-  const updateSize = (newSize: number) => {
-    onResize?.(clampSize(newSize));
-    setSize(newSize);
-  };
-
-  const onDragMove = (e: MouseEvent) => {
-    if (direction === "left") {
-      updateSize(startSize.current - (e.pageX - startOffset.current));
-    } else if (direction === "right") {
-      updateSize(startSize.current + (e.pageX - startOffset.current));
-    } else if (direction === "top") {
-      updateSize(startSize.current - (e.pageY - startOffset.current));
-    } else if (direction === "bottom") {
-      updateSize(startSize.current + (e.pageY - startOffset.current));
+  useEffect(() => {
+    if (isResizing) {
+      window.addEventListener("mousemove", onDragMove);
+      window.addEventListener("mouseup", onDragStop);
+      return () => {
+        window.removeEventListener("mousemove", onDragMove);
+        window.removeEventListener("mouseup", onDragStop);
+      };
     }
-  };
+  }, [isResizing, onDragMove, onDragStop, size]);
 
   return [clampSize(size), setSize, onDragStart];
 };

@@ -85,7 +85,7 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = ({
     const itemIndex = menuItemChildren.indexOf(child);
     return cloneElement(child, {
       ...itemProps[itemIndex],
-      onClick: (e: any) => {
+      onClick: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         setIsOpen(false);
         child.props.onClick?.(e);
       },

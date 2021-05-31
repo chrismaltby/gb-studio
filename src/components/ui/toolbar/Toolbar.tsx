@@ -1,7 +1,6 @@
 import { ReactNode } from "react";
 import styled, { css } from "styled-components";
 import { Button } from "../buttons/Button";
-import { DropdownButton } from "../buttons/DropdownButton";
 
 export interface ToolbarProps {
   readonly children?: ReactNode;

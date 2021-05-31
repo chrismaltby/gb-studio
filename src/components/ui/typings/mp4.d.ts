@@ -1,4 +1,4 @@
 declare module "*.mp4" {
-  const value: any;
+  const value: string;
   export = value;
 }

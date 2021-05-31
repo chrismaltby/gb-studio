@@ -71,7 +71,7 @@ export default function useDropdownMenu(itemCount: number) {
     if (!windowFocus && isOpen) {
       setIsOpen(false);
     }
-  }, [windowFocus]);
+  }, [isOpen, windowFocus]);
 
   // Handle listening for clicks and auto-hiding the menu
   useEffect(() => {

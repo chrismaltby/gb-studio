@@ -1,7 +1,5 @@
 import styled from "styled-components";
 
-export interface EditableTextProps {}
-
 export const EditableText = styled.input`
   color: ${(props) => props.theme.colors.text};
   border: 1px solid transparent;

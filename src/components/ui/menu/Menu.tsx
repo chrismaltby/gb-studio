@@ -23,8 +23,10 @@ export const Menu = styled.div<MenuProps>`
 
 export interface MenuItemProps {
   readonly focus?: boolean;
-  readonly onClick?: (e: any) => void;
-  readonly onMouseEnter?: (e: any) => void;
+  readonly onClick?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+  readonly onMouseEnter?: (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => void;
 }
 
 export const MenuItem = styled.div<MenuItemProps>`

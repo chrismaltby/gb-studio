@@ -9,7 +9,9 @@ import {
   spriteSheetSelectors,
 } from "store/features/entities/entitiesState";
 import { MetaspriteTile, Palette } from "store/features/entities/entitiesTypes";
-import MetaspriteCanvasWorker from "./MetaspriteCanvas.worker";
+import MetaspriteCanvasWorker, {
+  MetaspriteCanvasResult,
+} from "./MetaspriteCanvas.worker";
 
 interface MetaspriteCanvasProps {
   spriteSheetId: string;
@@ -58,22 +60,25 @@ export const MetaspriteCanvas = ({
     setPaletteColors(palettes ? palettes.map((p) => p.colors) : null);
   }, [palettes]);
 
-  const onWorkerComplete = useCallback((e: any) => {
-    if (e.data.id === workerId) {
-      const offscreenCanvas = document.createElement("canvas");
-      const offscreenCtx = offscreenCanvas.getContext("bitmaprenderer");
-      if (!canvasRef.current || !spriteSheet || !offscreenCtx) {
-        return;
+  const onWorkerComplete = useCallback(
+    (e: MessageEvent<MetaspriteCanvasResult>) => {
+      if (e.data.id === workerId) {
+        const offscreenCanvas = document.createElement("canvas");
+        const offscreenCtx = offscreenCanvas.getContext("bitmaprenderer");
+        if (!canvasRef.current || !spriteSheet || !offscreenCtx) {
+          return;
+        }
+        const ctx = canvasRef.current.getContext("2d");
+        if (!ctx) {
+          return;
+        }
+        offscreenCtx.transferFromImageBitmap(e.data.canvasImage);
+        ctx.clearRect(0, 0, width, height);
+        ctx.drawImage(offscreenCanvas, 0, 0);
       }
-      const ctx = canvasRef.current.getContext("2d");
-      if (!ctx) {
-        return;
-      }
-      offscreenCtx.transferFromImageBitmap(e.data.canvasImage);
-      ctx.clearRect(0, 0, width, height);
-      ctx.drawImage(offscreenCanvas, 0, 0);
-    }
-  }, []);
+    },
+    [height, spriteSheet, width, workerId]
+  );
 
   useEffect(() => {
     worker.addEventListener("message", onWorkerComplete);

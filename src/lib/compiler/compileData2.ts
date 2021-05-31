@@ -2,7 +2,11 @@
 import { Dictionary } from "@reduxjs/toolkit";
 import flatten from "lodash/flatten";
 import { SCREEN_WIDTH } from "../../consts";
-import { SceneParallaxLayer } from "store/features/entities/entitiesTypes";
+import {
+  Actor,
+  SceneParallaxLayer,
+  Trigger,
+} from "store/features/entities/entitiesTypes";
 import { FontData } from "../fonts/fontData";
 import { hexDec } from "../helpers/8bit";
 import { PrecompiledSpriteSheetData } from "./compileSprites";
@@ -26,6 +30,42 @@ interface EmoteData {
   data: Uint8Array;
 }
 
+interface Entity {
+  name: string;
+}
+
+interface PrecompiledScene {
+  id: string;
+  name: string;
+  width: number;
+  height: number;
+  type: string;
+  backgroundIndex: number;
+  playerSpriteIndex: number;
+  parallax: Array<{ height: number; speed: number }>;
+  actors: Actor[];
+  triggers: Trigger[];
+  sprites: number[];
+}
+
+interface PrecompiledSceneEventPtrs {
+  start: string | null;
+  playerHit1: string | null;
+  playerHit2: string | null;
+  playerHit3: string | null;
+  actors: Array<string | null>;
+  actorsMovement: Array<string | null>;
+  actorsHit1: Array<string | null>;
+  actorsHit2: Array<string | null>;
+  actorsHit3: Array<string | null>;
+  triggers: Array<string | null>;
+}
+
+interface PrecompiledPalette {
+  dmg: [string, string, string, string];
+  colors: [string, string, string, string][];
+}
+
 export const BACKGROUND_TYPE = "const struct background_t";
 export const SPRITESHEET_TYPE = "const struct spritesheet_t";
 export const TILESET_TYPE = "const struct tileset_t";
@@ -41,6 +81,10 @@ export const FONT_FLAG_FONT_VWF = "FONT_VWF";
 export const FONT_FLAG_FONT_VWF_1BIT = "FONT_VWF_1BIT";
 
 const INDENT_SPACES = 4;
+
+export function filterNull<T>(ts: (T | null)[]): T[] {
+  return ts.filter((t: T | null): t is T => !!t);
+}
 
 export const chunk = <T>(arr: T[], len?: number): T[][] => {
   if (!len) {
@@ -60,13 +104,13 @@ export const chunk = <T>(arr: T[], len?: number): T[][] => {
 export const toHex = (n: number) =>
   "0x" + n.toString(16).toUpperCase().padStart(2, "0");
 
-export const sceneName = (scene: any, sceneIndex: number) =>
+export const sceneName = (scene: Entity, sceneIndex: number) =>
   scene.name || `Scene ${sceneIndex + 1}`;
 
-export const actorName = (actor: any, actorIndex: number) =>
+export const actorName = (actor: Entity, actorIndex: number) =>
   actor.name || `Actor ${actorIndex + 1}`;
 
-export const triggerName = (trigger: any, triggerIndex: number) =>
+export const triggerName = (trigger: Entity, triggerIndex: number) =>
   trigger.name || `Trigger ${triggerIndex + 1}`;
 
 export const toFarPtr = (ref: string): string => {
@@ -89,10 +133,10 @@ export const toASMCollisionGroup = (group: string) => {
   return "COLLISION_GROUP_NONE";
 };
 
-export const maybeScriptFarPtr = (scriptSymbol: string) =>
+export const maybeScriptFarPtr = (scriptSymbol: string | null) =>
   scriptSymbol ? toFarPtr(scriptSymbol) : undefined;
 
-export const maybeScriptDependency = (scriptSymbol: string) =>
+export const maybeScriptDependency = (scriptSymbol: string | null) =>
   scriptSymbol ? scriptSymbol : [];
 
 export const includeGuard = (key: string, contents: string) => `#ifndef ${key}_H
@@ -196,7 +240,7 @@ export const toStructData = <T extends Record<string, unknown>>(
       }
       if (Array.isArray(object[key])) {
         return `${" ".repeat(indent)}.${key} = {
-${chunk(object[key] as unknown as any[], perLine)
+${chunk(object[key] as unknown as Record<string, unknown>[], perLine)
   .map(
     (r) =>
       " ".repeat(indent * 2) +
@@ -262,7 +306,7 @@ export const toStructArrayDataFile = <T extends Record<string, unknown>>(
   type: string,
   symbol: string,
   comment: string,
-  array: [T],
+  array: Array<T>,
   dependencies?: string[]
 ) => `#pragma bank 255
 ${comment ? "\n" + comment : ""}
@@ -346,7 +390,7 @@ export const compileParallax = (
 };
 
 export const compileScene = (
-  scene: any,
+  scene: PrecompiledScene,
   sceneIndex: number,
   {
     bgPalette,
@@ -355,7 +399,7 @@ export const compileScene = (
   }: {
     bgPalette: number;
     actorsPalette: number;
-    eventPtrs: any;
+    eventPtrs: PrecompiledSceneEventPtrs[];
   }
 ) =>
   toStructDataFile(
@@ -412,7 +456,10 @@ export const compileScene = (
     )
   );
 
-export const compileSceneHeader = (scene: any, sceneIndex: number) =>
+export const compileSceneHeader = (
+  scene: PrecompiledScene,
+  sceneIndex: number
+) =>
   toDataHeader(
     SCENE_TYPE,
     sceneSymbol(sceneIndex),
@@ -448,10 +495,10 @@ export const compileBounds = ({
 };
 
 export const compileSceneActors = (
-  scene: any,
+  scene: PrecompiledScene,
   sceneIndex: number,
-  sprites: any[],
-  { eventPtrs }: { eventPtrs: any }
+  sprites: PrecompiledSpriteSheetData[],
+  { eventPtrs }: { eventPtrs: PrecompiledSceneEventPtrs[] }
 ) => {
   const events = eventPtrs[sceneIndex];
 
@@ -459,36 +506,38 @@ export const compileSceneActors = (
     ACTOR_TYPE,
     sceneActorsSymbol(sceneIndex),
     `// Scene: ${sceneName(scene, sceneIndex)}\n// Actors`,
-    scene.actors.map((actor: any, actorIndex: number) => {
-      const sprite = sprites.find((s) => s.id === actor.spriteSheetId);
-      const spriteIndex = sprites.findIndex(
-        (s) => s.id === actor.spriteSheetId
-      );
-      if (!sprite) return [];
-      return {
-        __comment: actorName(actor, actorIndex),
-        pos: {
-          x: `${actor.x * 8} * 16`,
-          y: `${actor.y * 8} * 16`,
-        },
-        bounds: compileBounds(sprite),
-        dir: dirEnum(actor.direction),
-        sprite: toFarPtr(spriteSheetSymbol(spriteIndex)),
-        move_speed: Math.round(actor.moveSpeed * 16),
-        anim_tick: actor.animSpeed,
-        pinned: actor.isPinned ? "TRUE" : "FALSE",
-        collision_group: toASMCollisionGroup(actor.collisionGroup),
-        collision_enabled: actor.isPinned ? "FALSE" : "TRUE",
-        script: maybeScriptFarPtr(events.actors[actorIndex]),
-        script_update: maybeScriptFarPtr(events.actorsMovement[actorIndex]),
-        script_hit1: maybeScriptFarPtr(events.actorsHit1[actorIndex]),
-        script_hit2: maybeScriptFarPtr(events.actorsHit2[actorIndex]),
-        script_hit3: maybeScriptFarPtr(events.actorsHit3[actorIndex]),
-      };
-    }),
+    filterNull(
+      scene.actors.map((actor, actorIndex) => {
+        const sprite = sprites.find((s) => s.id === actor.spriteSheetId);
+        const spriteIndex = sprites.findIndex(
+          (s) => s.id === actor.spriteSheetId
+        );
+        if (!sprite) return null;
+        return {
+          __comment: actorName(actor, actorIndex),
+          pos: {
+            x: `${actor.x * 8} * 16`,
+            y: `${actor.y * 8} * 16`,
+          },
+          bounds: compileBounds(sprite),
+          dir: dirEnum(actor.direction),
+          sprite: toFarPtr(spriteSheetSymbol(spriteIndex)),
+          move_speed: Math.round(actor.moveSpeed * 16),
+          anim_tick: actor.animSpeed,
+          pinned: actor.isPinned ? "TRUE" : "FALSE",
+          collision_group: toASMCollisionGroup(actor.collisionGroup),
+          collision_enabled: actor.isPinned ? "FALSE" : "TRUE",
+          script: maybeScriptFarPtr(events.actors[actorIndex]),
+          script_update: maybeScriptFarPtr(events.actorsMovement[actorIndex]),
+          script_hit1: maybeScriptFarPtr(events.actorsHit1[actorIndex]),
+          script_hit2: maybeScriptFarPtr(events.actorsHit2[actorIndex]),
+          script_hit3: maybeScriptFarPtr(events.actorsHit3[actorIndex]),
+        };
+      })
+    ),
     // Dependencies
     flatten(
-      scene.actors.map((actor: any, actorIndex: number) => {
+      scene.actors.map((actor, actorIndex) => {
         const spriteIndex = sprites.findIndex(
           (s) => s.id === actor.spriteSheetId
         );
@@ -505,7 +554,10 @@ export const compileSceneActors = (
   );
 };
 
-export const compileSceneActorsHeader = (scene: any, sceneIndex: number) =>
+export const compileSceneActorsHeader = (
+  scene: PrecompiledScene,
+  sceneIndex: number
+) =>
   toArrayDataHeader(
     ACTOR_TYPE,
     sceneActorsSymbol(sceneIndex),
@@ -513,15 +565,15 @@ export const compileSceneActorsHeader = (scene: any, sceneIndex: number) =>
   );
 
 export const compileSceneTriggers = (
-  scene: any,
+  scene: PrecompiledScene,
   sceneIndex: number,
-  { eventPtrs }: { eventPtrs: any }
+  { eventPtrs }: { eventPtrs: PrecompiledSceneEventPtrs[] }
 ) =>
   toStructArrayDataFile(
     TRIGGER_TYPE,
     sceneTriggersSymbol(sceneIndex),
     `// Scene: ${sceneName(scene, sceneIndex)}\n// Triggers`,
-    scene.triggers.map((trigger: any, triggerIndex: number) => ({
+    scene.triggers.map((trigger, triggerIndex) => ({
       __comment: triggerName(trigger, triggerIndex),
       x: trigger.x,
       y: trigger.y,
@@ -531,7 +583,7 @@ export const compileSceneTriggers = (
     })),
     // Dependencies
     flatten(
-      scene.triggers.map((trigger: any, triggerIndex: number) => {
+      scene.triggers.map((trigger, triggerIndex) => {
         return ([] as string[]).concat(
           maybeScriptDependency(eventPtrs[sceneIndex].triggers[triggerIndex])
         );
@@ -539,14 +591,20 @@ export const compileSceneTriggers = (
     )
   );
 
-export const compileSceneTriggersHeader = (scene: any, sceneIndex: number) =>
+export const compileSceneTriggersHeader = (
+  scene: PrecompiledScene,
+  sceneIndex: number
+) =>
   toArrayDataHeader(
     TRIGGER_TYPE,
     sceneTriggersSymbol(sceneIndex),
     `// Scene: ${sceneName(scene, sceneIndex)}\n// Triggers`
   );
 
-export const compileSceneSprites = (scene: any, sceneIndex: number) =>
+export const compileSceneSprites = (
+  scene: PrecompiledScene,
+  sceneIndex: number
+) =>
   toArrayDataFile(
     FARPTR_TYPE,
     sceneSpritesSymbol(sceneIndex),
@@ -558,7 +616,10 @@ export const compileSceneSprites = (scene: any, sceneIndex: number) =>
     scene.sprites.map((spriteIndex: number) => spriteSheetSymbol(spriteIndex))
   );
 
-export const compileSceneSpritesHeader = (scene: any, sceneIndex: number) =>
+export const compileSceneSpritesHeader = (
+  scene: PrecompiledScene,
+  sceneIndex: number
+) =>
   toArrayDataHeader(
     FARPTR_TYPE,
     sceneSpritesSymbol(sceneIndex),
@@ -566,7 +627,7 @@ export const compileSceneSpritesHeader = (scene: any, sceneIndex: number) =>
   );
 
 export const compileSceneCollisions = (
-  scene: any,
+  scene: PrecompiledScene,
   sceneIndex: number,
   collisions: number[]
 ) =>
@@ -578,7 +639,10 @@ export const compileSceneCollisions = (
     scene.width
   );
 
-export const compileSceneCollisionsHeader = (scene: any, sceneIndex: number) =>
+export const compileSceneCollisionsHeader = (
+  scene: PrecompiledScene,
+  sceneIndex: number
+) =>
   toArrayDataHeader(
     DATA_TYPE,
     sceneCollisionsSymbol(sceneIndex),
@@ -597,7 +661,7 @@ export const compileTileset = (tileset: Uint8Array, tilesetIndex: number) =>
   );
 
 export const compileTilesetHeader = (
-  tileset: Uint8Array,
+  _tileset: Uint8Array,
   tilesetIndex: number
 ) =>
   toDataHeader(
@@ -697,7 +761,7 @@ export const compileBackground = (
   );
 
 export const compileBackgroundHeader = (
-  background: any,
+  _background: PrecompiledBackground,
   backgroundIndex: number
 ) =>
   toDataHeader(
@@ -752,7 +816,7 @@ export const compileColor = (hex: string): string => {
 };
 
 export const compilePalette = (
-  palette: any,
+  palette: PrecompiledPalette,
   paletteIndex: number
 ) => `#pragma bank 255
 
@@ -775,14 +839,17 @@ ${palette.colors
     (paletteColors: string[]) =>
       `        CGB_PALETTE(${paletteColors.map(compileColor).join(", ")})`
   )
-  .join(",\n")}
+  .join(",\n")} 
     }`
         : ""
     }
 };
 `;
 
-export const compilePaletteHeader = (palette: any, paletteIndex: number) =>
+export const compilePaletteHeader = (
+  palette: PrecompiledPalette,
+  paletteIndex: number
+) =>
   toDataHeader(
     PALETTE_TYPE,
     paletteSymbol(paletteIndex),

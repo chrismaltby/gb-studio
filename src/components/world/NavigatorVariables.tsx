@@ -64,9 +64,7 @@ export const NavigatorVariables: FC<NavigatorVariablesProps> = ({ height }) => {
       items={items}
       setSelectedId={setSelectedId}
       height={height}
-      children={({ selected, item }) => (
-        <EntityListItem type="variable" item={item} />
-      )}
+      children={({ item }) => <EntityListItem type="variable" item={item} />}
     />
   );
 };

@@ -98,7 +98,7 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
   const sceneIndex = useSelector((state: RootState) =>
     sceneSelectors.selectIds(state).indexOf(id)
   );
-  const [clipboardData, setClipboardData] = useState<any>(null);
+  const [clipboardData, setClipboardData] = useState<unknown>(null);
   const clipboardFormat = useSelector(
     (state: RootState) => state.clipboard.data?.format
   );
@@ -435,11 +435,13 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
                   </MenuItem>
                 )}
                 <MenuItem onClick={onCopy}>{l10n("MENU_COPY_SCENE")}</MenuItem>
-                {clipboardData && clipboardData.__type === "scene" && (
-                  <MenuItem onClick={onPaste}>
-                    {l10n("MENU_PASTE_SCENE")}
-                  </MenuItem>
-                )}
+                {clipboardData &&
+                  (clipboardData as { __type?: unknown }).__type ===
+                    "scene" && (
+                    <MenuItem onClick={onPaste}>
+                      {l10n("MENU_PASTE_SCENE")}
+                    </MenuItem>
+                  )}
                 <MenuDivider />
                 {colorsEnabled && (
                   <MenuItem onClick={onCopyBackgroundPaletteIds}>

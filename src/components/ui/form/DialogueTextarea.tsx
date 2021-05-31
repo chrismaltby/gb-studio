@@ -244,9 +244,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
   onChange,
   variables,
   fonts,
-  editorType,
   entityId,
-  maxlength,
   placeholder,
 }) => {
   const [variablesLookup, setVariablesLookup] = useState<
@@ -286,7 +284,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
     return () => {
       document.removeEventListener("copy", handleCopy);
     };
-  }, []);
+  }, [handleCopy]);
 
   return (
     <DialogueTextareaWrapper>
@@ -458,7 +456,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
           data={speedCodes}
           markup="!__id__!"
           regex={/!(S[0-5]+)!/}
-          displayTransform={(speedCode: string) => "Ｓ"}
+          displayTransform={(_speedCode: string) => "Ｓ"}
           hoverTransform={(speedCode) =>
             speedCodeLookup[speedCode]?.display || ""
           }
@@ -485,7 +483,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
           data={fontItems}
           markup="!__id__!"
           regex={/!(F:[0-9a-f-]+)!/}
-          displayTransform={(fontCode) => {
+          displayTransform={(_fontCode) => {
             return "Ｆ";
           }}
           hoverTransform={(fontCode) => fontsLookup[fontCode]?.display || ""}

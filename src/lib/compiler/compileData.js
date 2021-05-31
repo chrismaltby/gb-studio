@@ -653,8 +653,7 @@ export const precompileFonts = async (
   fonts,
   scenes,
   defaultFontId,
-  projectRoot,
-  { warnings } = {}
+  projectRoot
 ) => {
   const defaultFont =
     fonts.find((font) => font.id === defaultFontId) || fonts[0];

@@ -12,6 +12,7 @@ import { Menu, MenuItem, MenuOverlay } from "../library/Menu";
 import l10n from "lib/helpers/l10n";
 import { Tool } from "store/features/editor/editorState";
 import editorActions from "store/features/editor/editorActions";
+import { RootState } from "store/configureStore";
 
 type ToolPickerProps = {
   selected: Tool;
@@ -181,7 +182,7 @@ class ToolPicker extends Component<
   }
 }
 
-function mapStateToProps(state: any): ToolPickerProps {
+function mapStateToProps(state: RootState): ToolPickerProps {
   return {
     selected: state.editor.tool,
   };

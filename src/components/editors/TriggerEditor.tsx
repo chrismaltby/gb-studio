@@ -41,7 +41,7 @@ export const TriggerEditor: FC<TriggerEditorProps> = ({ id, sceneId }) => {
   const scene = useSelector((state: RootState) =>
     sceneSelectors.selectById(state, sceneId)
   );
-  const [clipboardData, setClipboardData] = useState<any>(null);
+  const [clipboardData, setClipboardData] = useState<unknown>(null);
   const [notesOpen, setNotesOpen] = useState<boolean>(!!trigger?.notes);
   const triggerIndex = scene?.triggers.indexOf(id) || 0;
   const lockScriptEditor = useSelector(
@@ -168,11 +168,13 @@ export const TriggerEditor: FC<TriggerEditorProps> = ({ id, sceneId }) => {
                 <MenuItem onClick={onCopy}>
                   {l10n("MENU_COPY_TRIGGER")}
                 </MenuItem>
-                {clipboardData && clipboardData.__type === "trigger" && (
-                  <MenuItem onClick={onPaste}>
-                    {l10n("MENU_PASTE_TRIGGER")}
-                  </MenuItem>
-                )}
+                {clipboardData &&
+                  (clipboardData as { __type?: unknown }).__type ===
+                    "trigger" && (
+                    <MenuItem onClick={onPaste}>
+                      {l10n("MENU_PASTE_TRIGGER")}
+                    </MenuItem>
+                  )}
                 <MenuDivider />
                 <MenuItem onClick={onRemove}>
                   {l10n("MENU_DELETE_TRIGGER")}

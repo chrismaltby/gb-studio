@@ -96,7 +96,7 @@ export class Song {
         for (const col of cols) {
           const instrumentIndex = row[col].instrument;
           if (instrumentIndex) {
-            if (instrumentIndex == index) {
+            if (instrumentIndex === index) {
               row[col].instrument = null;
             }
             if (instrumentIndex > index) {

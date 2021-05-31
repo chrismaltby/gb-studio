@@ -6,10 +6,22 @@ import {
   spritesToTiles2,
   clusterSprites,
   spriteDataIndexFn,
+  SliceDef,
+  SpriteTileLocation,
+  Position,
+  SpriteCluster,
 } from "./spriteData";
 
 declare const self: Worker;
 const workerCtx: Worker = self;
+
+export interface DetectSpriteResult {
+  tileDefs: SliceDef[];
+  spriteTileLocations: SpriteTileLocation[][];
+  spriteDefs: SliceDef[];
+  alignmentOffsets: Position[];
+  spriteClusters: SpriteCluster[];
+}
 
 workerCtx.onmessage = async (evt) => {
   const src = evt.data as string;

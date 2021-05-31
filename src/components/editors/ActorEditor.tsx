@@ -98,7 +98,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
   const spriteSheet = useSelector((state: RootState) =>
     spriteSheetSelectors.selectById(state, actor?.spriteSheetId || "")
   );
-  const [clipboardData, setClipboardData] = useState<any>(null);
+  const [clipboardData, setClipboardData] = useState<unknown>(null);
   const [notesOpen, setNotesOpen] = useState<boolean>(!!actor?.notes);
   const tabs = Object.keys(actor?.collisionGroup ? collisionTabs : defaultTabs);
   const secondaryTabs = Object.keys(hitTabs);
@@ -361,11 +361,13 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
                   </MenuItem>
                 )}
                 <MenuItem onClick={onCopy}>{l10n("MENU_COPY_ACTOR")}</MenuItem>
-                {clipboardData && clipboardData.__type === "actor" && (
-                  <MenuItem onClick={onPaste}>
-                    {l10n("MENU_PASTE_ACTOR")}
-                  </MenuItem>
-                )}
+                {clipboardData &&
+                  (clipboardData as { __type?: unknown }).__type ===
+                    "actor" && (
+                    <MenuItem onClick={onPaste}>
+                      {l10n("MENU_PASTE_ACTOR")}
+                    </MenuItem>
+                  )}
                 <MenuDivider />
                 <MenuItem onClick={onRemove}>
                   {l10n("MENU_DELETE_ACTOR")}

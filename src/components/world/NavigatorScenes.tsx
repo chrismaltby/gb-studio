@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store/configureStore";
 import {
@@ -9,7 +9,6 @@ import {
 import { FlatList } from "ui/lists/FlatList";
 import editorActions from "store/features/editor/editorActions";
 import { Actor, Scene, Trigger } from "store/features/entities/entitiesTypes";
-import styled from "styled-components";
 import { EntityListItem } from "ui/lists/EntityListItem";
 
 interface NavigatorScenesProps {
@@ -89,6 +88,13 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
 
   const dispatch = useDispatch();
 
+  const isOpen = useCallback(
+    (id: string) => {
+      return openSceneIds.includes(id);
+    },
+    [openSceneIds]
+  );
+
   useEffect(() => {
     const sceneItems = scenes
       .map((scene, sceneIndex) => ({
@@ -121,7 +127,7 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
           : scene.item
       )
     );
-  }, [scenes, actorsLookup, triggersLookup, openSceneIds]);
+  }, [scenes, actorsLookup, triggersLookup, openSceneIds, isOpen]);
 
   const setSelectedId = (id: string, item: SceneNavigatorItem) => {
     if (item.type === "actor") {
@@ -154,10 +160,6 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
     setOpenSceneIds((value) => value.filter((s) => s !== id));
   };
 
-  const isOpen = (id: string) => {
-    return openSceneIds.includes(id);
-  };
-
   return (
     <FlatList
       selectedId={selectedId}
@@ -171,7 +173,7 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
           closeScene(sceneId);
         }
       }}
-      children={({ selected, item }) =>
+      children={({ item }) =>
         item.type === "scene" ? (
           <EntityListItem
             item={item}

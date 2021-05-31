@@ -8,7 +8,7 @@ import {
   SpriteSheet,
 } from "store/features/entities/entitiesTypes";
 import { assetFilename } from "../helpers/gbstudio";
-import DetectSpriteWorker from "./detectSprite.worker";
+import DetectSpriteWorker, { DetectSpriteResult } from "./detectSprite.worker";
 import {
   Position,
   roundUp16,
@@ -39,7 +39,7 @@ export const detect = (
     const failedTimer = setTimeout(() => reject("Detect timeout"), 5000);
     const worker = new DetectSpriteWorker();
     worker.postMessage(filename);
-    worker.onmessage = (res: any) => {
+    worker.onmessage = (res: MessageEvent<DetectSpriteResult>) => {
       const tileDefs: SliceDef[] = res.data.tileDefs;
       const spriteTileLocations: SpriteTileLocation[][] =
         res.data.spriteTileLocations;

@@ -23,7 +23,6 @@ import {
   regenerateEventIds,
   patchEvents,
   mapEvents,
-  getField,
   isVariableField,
   isPropertyField,
   walkEvents,
