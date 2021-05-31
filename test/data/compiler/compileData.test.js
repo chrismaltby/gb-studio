@@ -85,6 +85,10 @@ test("should compile simple project into files object", async () => {
             ],
           },
         ],
+        script: [],
+        playerHit1Script: [],
+        playerHit2Script: [],
+        playerHit3Script: [],
       },
       {
         id: "5",
@@ -139,6 +143,10 @@ test("should compile simple project into files object", async () => {
           },
         ],
         triggers: [],
+        script: [],
+        playerHit1Script: [],
+        playerHit2Script: [],
+        playerHit3Script: [],
       },
       {
         id: "6",
@@ -162,6 +170,10 @@ test("should compile simple project into files object", async () => {
           },
         ],
         triggers: [],
+        script: [],
+        playerHit1Script: [],
+        playerHit2Script: [],
+        playerHit3Script: [],
       },
       {
         id: "9",
@@ -179,6 +191,10 @@ test("should compile simple project into files object", async () => {
         ],
         actors: [],
         triggers: [],
+        script: [],
+        playerHit1Script: [],
+        playerHit2Script: [],
+        playerHit3Script: [],
       },
       {
         id: "10",
@@ -213,6 +229,10 @@ test("should compile simple project into files object", async () => {
             ],
           },
         ],
+        script: [],
+        playerHit1Script: [],
+        playerHit2Script: [],
+        playerHit3Script: [],
       },
     ],
     backgrounds: [
@@ -251,17 +271,56 @@ test("should compile simple project into files object", async () => {
       {
         id: "SPRITE_1",
         filename: "sprite_1.png",
+        animations: [
+          { frames: [] },
+          { frames: [] },
+          { frames: [] },
+          { frames: [] },
+          { frames: [] },
+          { frames: [] },
+          { frames: [] },
+          { frames: [] },
+        ],
       },
       {
         id: "SPRITE_2",
         filename: "sprite_2.png",
+        animations: [
+          { frames: [] },
+          { frames: [] },
+          { frames: [] },
+          { frames: [] },
+          { frames: [] },
+          { frames: [] },
+          { frames: [] },
+          { frames: [] },
+        ],
       },
       {
         id: "SPRITE_3",
         filename: "sprite_3.png",
+        animations: [
+          { frames: [] },
+          { frames: [] },
+          { frames: [] },
+          { frames: [] },
+          { frames: [] },
+          { frames: [] },
+          { frames: [] },
+          { frames: [] },
+        ],
       },
     ],
     music: [],
+    fonts: [
+      {
+        id: "font1",
+        filename: "gbs-mono.png",
+      },
+    ],
+    palettes: [],
+    avatars: [],
+    emotes: [],
   };
   const compiled = await compile(project, {
     projectRoot: `${__dirname}/_files`,
@@ -390,6 +449,7 @@ test("should precompile scenes", async () => {
     {
       id: "1",
       backgroundId: "3",
+      type: "TOPDOWN",
       actors: [
         {
           spriteSheetId: "5",
@@ -400,6 +460,7 @@ test("should precompile scenes", async () => {
     {
       id: "2",
       backgroundId: "4",
+      type: "TOPDOWN",
       actors: [
         {
           spriteSheetId: "5",
@@ -427,7 +488,15 @@ test("should precompile scenes", async () => {
       id: "6",
     },
   ];
-  const sceneData = precompileScenes(scenes, usedBackgrounds, spriteData);
+  const defaultPlayerSprites = {
+    TOPDOWN: "5",
+  };
+  const sceneData = precompileScenes(
+    scenes,
+    defaultPlayerSprites,
+    usedBackgrounds,
+    spriteData
+  );
 
   expect(sceneData).toHaveLength(scenes.length);
   expect(sceneData[0].sprites).toHaveLength(1);
