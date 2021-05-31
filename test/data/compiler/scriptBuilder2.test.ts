@@ -11,6 +11,7 @@ test("Should be able to set active actor to player", () => {
           id: "actor1",
         },
       ],
+      triggers: [],
     },
     entity: {
       id: "actor1",
@@ -37,6 +38,7 @@ test("Should be able to set active actor to actor by id", () => {
           id: "actor2",
         },
       ],
+      triggers: [],
     },
   });
   sb.actorSetActive("actor2");
@@ -53,6 +55,7 @@ test("Should be able to move actor to new location", () => {
     scene: {
       id: "scene1",
       actors: [],
+      triggers: [],
     },
   });
   sb.actorMoveTo(5, 6, true, "horizontal");
@@ -71,6 +74,7 @@ test("Should be able to wait for N frames to pass", () => {
     scene: {
       id: "scene1",
       actors: [],
+      triggers: [],
     },
   });
   sb.wait(20);
@@ -93,11 +97,12 @@ test("Should be able to generate script string", () => {
           id: "actor2",
         },
       ],
+      triggers: [],
     },
   });
   sb.actorSetActive("actor2");
   sb.actorMoveTo(5, 6, true, "horizontal");
-  expect(sb.toScriptString("MY_SCRIPT")).toEqual(
+  expect(sb.toScriptString("MY_SCRIPT", true)).toEqual(
     `.include "vm.i"
 
 .globl b_vm_actor_activate, _vm_actor_activate
@@ -126,12 +131,13 @@ test("Should be able to open dialogue boxes", () => {
     scene: {
       id: "scene1",
       actors: [],
+      triggers: [],
     },
   });
   sb.textDialogue("Hello World");
   sb.scriptEnd();
 
-  expect(sb.toScriptString("MY_SCRIPT")).toEqual(
+  expect(sb.toScriptString("MY_SCRIPT", true)).toEqual(
     `.include "vm.i"
 
 .globl b_ui_text, _ui_text
@@ -155,6 +161,7 @@ test("Should be able to conditionally execute if variable is true with event arr
     scene: {
       id: "scene1",
       actors: [],
+      triggers: [],
     },
     variables: ["0", "1"],
     compileEvents: (events: ScriptEvent[]) => {
@@ -184,7 +191,7 @@ test("Should be able to conditionally execute if variable is true with event arr
       },
     ]
   );
-  expect(sb.toScriptString("MY_SCRIPT")).toEqual(
+  expect(sb.toScriptString("MY_SCRIPT", true)).toEqual(
     `.include "vm.i"
 
 .area _CODE_255
@@ -219,6 +226,7 @@ test("Should be able to conditionally execute if variable is true with function 
           id: "actor2",
         },
       ],
+      triggers: [],
     },
     variables: ["0", "1"],
     compileEvents: (events: ScriptEvent[]) => {
@@ -238,7 +246,7 @@ test("Should be able to conditionally execute if variable is true with function 
   );
   sb.scriptEnd();
 
-  expect(sb.toScriptString("MY_SCRIPT")).toEqual(
+  expect(sb.toScriptString("MY_SCRIPT", true)).toEqual(
     `.include "vm.i"
 
 .globl b_ui_text, _ui_text
@@ -282,6 +290,7 @@ test("Should be able to conditionally execute if variable is true with nested fu
           id: "actor4",
         },
       ],
+      triggers: [],
     },
     variables: ["0", "1", "2"],
   });
@@ -305,7 +314,7 @@ test("Should be able to conditionally execute if variable is true with nested fu
   );
   sb.scriptEnd();
 
-  expect(sb.toScriptString("MY_SCRIPT")).toEqual(
+  expect(sb.toScriptString("MY_SCRIPT", true)).toEqual(
     `.include "vm.i"
 
 .globl b_ui_text, _ui_text
@@ -350,12 +359,13 @@ test("Should be able to define labels and jump", () => {
     scene: {
       id: "scene1",
       actors: [],
+      triggers: [],
     },
   });
   sb.labelDefine("mylabel");
   sb.labelGoto("mylabel");
 
-  expect(sb.toScriptString("MY_SCRIPT")).toEqual(
+  expect(sb.toScriptString("MY_SCRIPT", true)).toEqual(
     `.include "vm.i"
 
 .area _CODE_255
@@ -376,12 +386,13 @@ test("Should be able to define labels and jump", () => {
     scene: {
       id: "scene1",
       actors: [],
+      triggers: [],
     },
   });
   sb.labelDefine("mylabel");
   sb.labelGoto("mylabel");
 
-  expect(sb.toScriptString("MY_SCRIPT")).toEqual(
+  expect(sb.toScriptString("MY_SCRIPT", true)).toEqual(
     `.include "vm.i"
 
 .area _CODE_255
@@ -406,6 +417,7 @@ test("Should throw if jump to label is not stack neutral", () => {
           id: "actor1",
         },
       ],
+      triggers: [],
     },
     entity: {
       id: "actor1",

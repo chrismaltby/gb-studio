@@ -9,7 +9,10 @@ test("Should set loading flag while fetching background warnings", () => {
     ...initialState,
     backgroundsLoading: false,
   };
-  const action = actions.checkBackgroundWarnings("bg1");
+  const action = actions.checkBackgroundWarnings({
+    backgroundId: "bg1",
+    is360: false,
+  });
   const newState = reducer(state, action);
   expect(newState.backgroundsLoading).toBe(true);
 });
@@ -24,6 +27,7 @@ test("Should be able to set background warnings", () => {
     id: "bg1",
     warnings: ["warning 1", "warning 2"],
     numTiles: 10,
+    is360: false,
   });
   const newState = reducer(state, action);
   expect(newState.backgroundsLoading).toBe(false);
@@ -46,6 +50,7 @@ test("Should replace existing warnings", () => {
         id: "bg1",
         warnings: ["warning 1", "warning 2"],
         numTiles: 10,
+        is360: false,
         timestamp: 0,
       },
     },
@@ -54,6 +59,7 @@ test("Should replace existing warnings", () => {
     id: "bg1",
     warnings: ["warning 3"],
     numTiles: 15,
+    is360: false,
   });
   const newState = reducer(state, action);
   expect(newState.backgroundsLoading).toBe(false);

@@ -1,3 +1,4 @@
+import fs from "fs";
 import glob from "glob";
 import Path from "path";
 import en from "../../lang/en.json";
@@ -46,8 +47,8 @@ export const replaceParams = (string: string, params: L10NParams) => {
 export const loadLanguage = (locale: string) => {
   if (locale && locale !== "en") {
     try {
-      const translation = __non_webpack_require__(
-        `${localesRoot}/${locale}.json`
+      const translation = JSON.parse(
+        fs.readFileSync(`${localesRoot}/${locale}.json`, "utf-8")
       ) as L10NLookup;
       for (const key in translation) {
         l10nStrings[key] = translation[key];

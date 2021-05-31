@@ -6,7 +6,7 @@ import { dummyBackground } from "../../../dummydata";
 import { MiddlewareAPI, Dispatch, AnyAction } from "@reduxjs/toolkit";
 import { getBackgroundInfo } from "../../../../src/lib/helpers/validation";
 
-const flushPromises = () => new Promise(setImmediate);
+const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0));
 
 jest.mock("../../../../src/lib/helpers/validation");
 const mockedGetBackgroundWarnings = mocked(getBackgroundInfo, true);
@@ -18,7 +18,7 @@ test("Should trigger call to check background warnings", async () => {
     warnings: ["Warning 1"],
   });
 
-  const store = ({
+  const store = {
     getState: () => ({
       document: {
         root: "/root/path/",
@@ -43,10 +43,13 @@ test("Should trigger call to check background warnings", async () => {
       },
     }),
     dispatch: jest.fn(),
-  } as unknown) as MiddlewareAPI<Dispatch<AnyAction>, RootState>;
+  } as unknown as MiddlewareAPI<Dispatch<AnyAction>, RootState>;
 
   const next = jest.fn();
-  const action = actions.checkBackgroundWarnings("bg1");
+  const action = actions.checkBackgroundWarnings({
+    backgroundId: "bg1",
+    is360: false,
+  });
 
   middleware(store)(next)(action);
 
@@ -57,6 +60,7 @@ test("Should trigger call to check background warnings", async () => {
     actions.setBackgroundWarnings({
       id: "bg1",
       numTiles: 10,
+      is360: false,
       warnings: ["Warning 1"],
     })
   );
@@ -69,7 +73,7 @@ test("Should not trigger call to check background warnings if already cached war
     warnings: ["Warning 1"],
   });
 
-  const store = ({
+  const store = {
     getState: () => ({
       document: {
         root: "/root/path/",
@@ -101,10 +105,13 @@ test("Should not trigger call to check background warnings if already cached war
       },
     }),
     dispatch: jest.fn(),
-  } as unknown) as MiddlewareAPI<Dispatch<AnyAction>, RootState>;
+  } as unknown as MiddlewareAPI<Dispatch<AnyAction>, RootState>;
 
   const next = jest.fn();
-  const action = actions.checkBackgroundWarnings("bg1");
+  const action = actions.checkBackgroundWarnings({
+    backgroundId: "bg1",
+    is360: false,
+  });
 
   middleware(store)(next)(action);
 
@@ -121,7 +128,7 @@ test("Should trigger call to check background warnings if cache has expired", as
     warnings: ["Warning 1"],
   });
 
-  const store = ({
+  const store = {
     getState: () => ({
       document: {
         root: "/root/path/",
@@ -153,10 +160,13 @@ test("Should trigger call to check background warnings if cache has expired", as
       },
     }),
     dispatch: jest.fn(),
-  } as unknown) as MiddlewareAPI<Dispatch<AnyAction>, RootState>;
+  } as unknown as MiddlewareAPI<Dispatch<AnyAction>, RootState>;
 
   const next = jest.fn();
-  const action = actions.checkBackgroundWarnings("bg1");
+  const action = actions.checkBackgroundWarnings({
+    backgroundId: "bg1",
+    is360: false,
+  });
 
   middleware(store)(next)(action);
 
@@ -167,6 +177,7 @@ test("Should trigger call to check background warnings if cache has expired", as
     actions.setBackgroundWarnings({
       id: "bg1",
       numTiles: 10,
+      is360: false,
       warnings: ["Warning 1"],
     })
   );

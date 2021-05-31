@@ -54,15 +54,14 @@ test("should trace to console if locale is empty", () => {
   expect(console.trace).toHaveBeenCalled();
 });
 
-test("should be able to parse all language files", async (done) => {
+test("should be able to parse all language files", async () => {
   const languagePackPaths = glob.sync(`${__dirname}/../../src/lang/*.json`);
   for (const languagePackPath of languagePackPaths) {
     const rawFile = await readFile(languagePackPath, "utf8");
     try {
       JSON.parse(rawFile);
     } catch (e) {
-      done.fail(`Error parsing language file ${languagePackPath}`);
+      throw new Error(`Error parsing language file ${languagePackPath}`);
     }
   }
-  done();
 });

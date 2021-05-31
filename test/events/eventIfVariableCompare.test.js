@@ -10,15 +10,15 @@ test("Should be able to conditionally execute if variable matches another variab
       operator: "==",
       vectorY: "1",
       true: truePath,
-      false: falsePath
+      false: falsePath,
     },
     {
-      ifVariableCompare: mockIfVariableCompare
+      ifVariableCompare: mockIfVariableCompare,
     }
   );
   expect(mockIfVariableCompare).toBeCalledWith(
     "0",
-    "==",
+    ".EQ",
     "1",
     truePath,
     falsePath

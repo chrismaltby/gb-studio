@@ -7,11 +7,11 @@ test("Should be able to conditionally execute if data has been saved", () => {
   compile(
     {
       true: truePath,
-      false: falsePath
+      false: falsePath,
     },
     {
-      ifDataSaved: mockIfDataSaved
+      ifDataSaved: mockIfDataSaved,
     }
   );
-  expect(mockIfDataSaved).toBeCalledWith(truePath, falsePath);
+  expect(mockIfDataSaved).toBeCalledWith(0, truePath, falsePath);
 });
