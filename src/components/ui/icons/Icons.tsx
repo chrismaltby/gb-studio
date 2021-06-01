@@ -403,6 +403,25 @@ export const VariableIcon = () => (
   </svg>
 );
 
+interface ConnectIconProps {
+  connected: boolean;
+}
+
+export const ConnectIcon = ({ connected }: ConnectIconProps) => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <ellipse
+      ry="10"
+      id="svg_1"
+      cy="12"
+      cx="12"
+      strokeWidth="3"
+      stroke="#ccc"
+      fill="transparent"
+    />
+    <circle cx="12" cy="12" r={connected ? 6 : 2} />
+  </svg>
+);
+
 export const CheckIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24">
     <path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z" />
