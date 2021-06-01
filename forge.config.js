@@ -31,7 +31,7 @@ module.exports = {
     darwinDarkModeSupport: true,
     extendInfo: "src/assets/app/Info.plist",
     extraResource: ["src/assets/app/icon/gbsproj.icns"],
-    afterCopy: ["./after-copy"],
+    afterCopy: ["./src/lib/forge/hooks/after-copy"],
     asar: true,
     appBundleId: "dev.gbstudio.gbstudio",
     osxSign: {
@@ -42,7 +42,7 @@ module.exports = {
     },
   },
   hooks: {
-    postPackage: require("./src/hooks/notarize.js"),
+    postPackage: require("./src/lib/forge/hooks/notarize"),
   },
   plugins: [
     [

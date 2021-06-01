@@ -10,7 +10,6 @@ function fileFilter(src, dest) {
 }
 
 function afterCopy(buildPath, electronVersion, platform, arch, callback) {
-
   // Called from packagerConfig in forge.config.js
   // Copies correct build Tools for architecture + dynamically loaded js/json files
   const copyPaths = [
@@ -18,21 +17,30 @@ function afterCopy(buildPath, electronVersion, platform, arch, callback) {
     "/appData/",
     "/src/lang",
     "/src/lib/events",
-    "/src/assets"    
+    "/src/assets",
   ];
 
-  Promise.all(copyPaths.map((dir) => {
-    return fs.copy(__dirname + dir, buildPath + dir, { filter: fileFilter })
-  }))
+  Promise.all(
+    copyPaths.map((dir) => {
+      return fs.copy(__dirname + "/../../../.." + dir, buildPath + dir, {
+        filter: fileFilter,
+      });
+    })
+  )
     .then(() => {
       const dynamicChunks = glob(__dirname + "/.webpack/renderer/[0-9]");
-      return Promise.all(dynamicChunks.map((dynamicChunk) => {
-        const outputPath = buildPath + "/.webpack/renderer/main_window/" + Path.basename(dynamicChunk);
-        return fs.copy(dynamicChunk, outputPath, { filter: fileFilter });
-      }));
+      return Promise.all(
+        dynamicChunks.map((dynamicChunk) => {
+          const outputPath =
+            buildPath +
+            "/.webpack/renderer/main_window/" +
+            Path.basename(dynamicChunk);
+          return fs.copy(dynamicChunk, outputPath, { filter: fileFilter });
+        })
+      );
     })
     .then(() => callback())
-    .catch(err => callback(err));
+    .catch((err) => callback(err));
 }
 
 module.exports = afterCopy;
