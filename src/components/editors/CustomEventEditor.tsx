@@ -21,54 +21,95 @@ import { CustomEvent } from "store/features/entities/entitiesTypes";
 const customEventName = (customEvent: CustomEvent, customEventIndex: number) =>
   customEvent.name ? customEvent.name : `Script ${customEventIndex + 1}`;
 
-const CustomEventEditor: React.FC<{id: string}> = ({id}) => {
-  const customEvents = useSelector((state: RootState) => customEventSelectors.selectAll(state))
-  const customEvent = useSelector((state: RootState) => customEventSelectors.selectById(state, id))
-  const index = React.useMemo(() => customEvents.findIndex((p) => p.id === id), [customEvents, id]);
+const CustomEventEditor: React.FC<{ id: string }> = ({ id }) => {
+  const customEvents = useSelector((state: RootState) =>
+    customEventSelectors.selectAll(state)
+  );
+  const customEvent = useSelector((state: RootState) =>
+    customEventSelectors.selectById(state, id)
+  );
+  const index = React.useMemo(
+    () => customEvents.findIndex((p) => p.id === id),
+    [customEvents, id]
+  );
 
   const dispatch = useDispatch();
 
-  const onEditVariableName = (key: string): React.ChangeEventHandler => (e) => {
-    dispatch(entitiesActions.editCustomEvent({
-      customEventId: customEvent!.id,
-      changes: {
-        variables: {
-          ...customEvent!.variables,
-          [key]: {
-            ...customEvent!.variables[key]!,
-            name: castEventValue(e),
-          },
-        },
-      },
-    }));
-  };
+  const onEditVariableName =
+    (key: string): React.ChangeEventHandler =>
+    (e) => {
+      if (!customEvent) {
+        return;
+      }
+      const variable = customEvent.variables[key];
+      if (!variable) {
+        return;
+      }
 
-  const onEditActorName = (key: string): React.ChangeEventHandler => (e) => {
-    dispatch(entitiesActions.editCustomEvent({
-      customEventId: customEvent!.id,
-      changes: {
-        actors: {
-          ...customEvent!.actors,
-          [key]: {
-            ...customEvent!.actors[key]!,
-            name: castEventValue(e),
+      dispatch(
+        entitiesActions.editCustomEvent({
+          customEventId: customEvent.id,
+          changes: {
+            variables: Object.assign({}, customEvent.variables, {
+              [key]: {
+                ...variable,
+                name: castEventValue(e),
+              },
+            }),
           },
-        },
-      },
-    }));
-  };
+        })
+      );
+    };
 
-  const onEdit = (key: string): React.ChangeEventHandler => e => {
-    dispatch(entitiesActions.editCustomEvent({
-      customEventId: customEvent!.id,
-      changes: {
-        [key]: castEventValue(e),
-      },
-    }));
-  };
+  const onEditActorName =
+    (key: string): React.ChangeEventHandler =>
+    (e) => {
+      if (!customEvent) {
+        return;
+      }
+      const actor = customEvent.actors[key];
+      if (!actor) {
+        return;
+      }
+
+      dispatch(
+        entitiesActions.editCustomEvent({
+          customEventId: customEvent.id,
+          changes: {
+            actors: Object.assign({}, customEvent.actors, {
+              [key]: {
+                ...actor,
+                name: castEventValue(e),
+              },
+            }),
+          },
+        })
+      );
+    };
+
+  const onEdit =
+    (key: string): React.ChangeEventHandler =>
+    (e) => {
+      if (!customEvent) {
+        return;
+      }
+      dispatch(
+        entitiesActions.editCustomEvent({
+          customEventId: customEvent.id,
+          changes: {
+            [key]: castEventValue(e),
+          },
+        })
+      );
+    };
 
   const onRemove = React.useCallback(() => {
-    dispatch(entitiesActions.removeCustomEvent({ customEventId: customEvent!.id }));
+    if (!customEvent) {
+      return;
+    }
+    dispatch(
+      entitiesActions.removeCustomEvent({ customEventId: customEvent.id })
+    );
   }, [dispatch, customEvent]);
 
   const selectSidebar = () => dispatch(editorActions.selectSidebar());
@@ -105,9 +146,7 @@ const CustomEventEditor: React.FC<{id: string}> = ({id}) => {
                 id="customEventDescription"
                 rows={3}
                 value={customEvent.description || ""}
-                placeholder={l10n(
-                  "FIELD_CUSTOM_EVENT_DESCRIPTION_PLACEHOLDER"
-                )}
+                placeholder={l10n("FIELD_CUSTOM_EVENT_DESCRIPTION_PLACEHOLDER")}
                 onChange={onEdit("description")}
               />
             </label>
@@ -121,13 +160,16 @@ const CustomEventEditor: React.FC<{id: string}> = ({id}) => {
             </label>
           </FormField>
           {Object.values(customEvent.variables).map((variable, i) => {
+            if (!variable) {
+              return null;
+            }
             return (
-              <FormField key={variable!.id} style={{}}>
+              <FormField key={variable.id} style={{}}>
                 <input
                   id={`variable[${i}]`}
-                  value={variable!.name}
+                  value={variable.name}
                   placeholder="Variable Name"
-                  onChange={onEditVariableName(variable!.id)}
+                  onChange={onEditVariableName(variable.id)}
                 />
               </FormField>
             );
@@ -138,13 +180,16 @@ const CustomEventEditor: React.FC<{id: string}> = ({id}) => {
             </label>
           </FormField>
           {Object.values(customEvent.actors).map((actor, i) => {
+            if (!actor) {
+              return null;
+            }
             return (
-              <FormField key={actor!.id} style={{}}>
+              <FormField key={actor.id} style={{}}>
                 <input
                   id={`actor[${i}]`}
-                  value={actor!.name}
+                  value={actor.name}
                   placeholder="Actor Name"
-                  onChange={onEditActorName(actor!.id)}
+                  onChange={onEditActorName(actor.id)}
                 />
               </FormField>
             );
@@ -174,6 +219,6 @@ const CustomEventEditor: React.FC<{id: string}> = ({id}) => {
       </SidebarColumn>
     </SidebarMultiColumnAuto>
   );
-}
+};
 
 export default CustomEventEditor;
