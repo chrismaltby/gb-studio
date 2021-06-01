@@ -101,7 +101,7 @@ test("Should be able to resize world view", () => {
   const state: EditorState = {
     ...initialState,
     worldViewWidth: 320,
-    worldViewHeight: 240
+    worldViewHeight: 240,
   };
   const action = actions.resizeWorldView({ width: 640, height: 480 });
   const newState = reducer(state, action);
@@ -114,7 +114,7 @@ test("Should be able to focus on world", () => {
     ...initialState,
     type: "scene",
     scene: "scene1",
-    worldFocus: false
+    worldFocus: false,
   };
   const action = actions.selectWorld();
   const newState = reducer(state, action);
@@ -128,7 +128,7 @@ test("Should be able to focus on sidebar", () => {
     ...initialState,
     type: "scene",
     scene: "scene1",
-    worldFocus: true
+    worldFocus: true,
   };
   const action = actions.selectSidebar();
   const newState = reducer(state, action);
@@ -144,14 +144,14 @@ test("Should be able to hover on scene", () => {
       sceneId: "",
       actorId: "",
       x: 0,
-      y: 0
-    }
+      y: 0,
+    },
   };
 
   const action = actions.sceneHover({
     sceneId: "scene2",
     x: 5,
-    y: 7
+    y: 7,
   });
   const newState = reducer(state, action);
   expect(newState.hover.sceneId).toBe("scene2");
@@ -294,14 +294,14 @@ test("Should be able to resize world sidebar", () => {
   expect(newState.worldSidebarWidth).toBe(550);
 });
 
-test("Should force world sidebar to be larger than 300px", () => {
+test("Should force world sidebar to be larger than 280px", () => {
   const state: EditorState = {
     ...initialState,
     worldSidebarWidth: 400,
   };
   const action = actions.resizeWorldSidebar(200);
   const newState = reducer(state, action);
-  expect(newState.worldSidebarWidth).toBe(300);
+  expect(newState.worldSidebarWidth).toBe(280);
 });
 
 test("Should be able to resize files sidebar", () => {
@@ -314,14 +314,14 @@ test("Should be able to resize files sidebar", () => {
   expect(newState.filesSidebarWidth).toBe(550);
 });
 
-test("Should force files sidebar to be larger than 300px", () => {
+test("Should force files sidebar to be larger than 280px", () => {
   const state: EditorState = {
     ...initialState,
     filesSidebarWidth: 400,
   };
   const action = actions.resizeFilesSidebar(200);
   const newState = reducer(state, action);
-  expect(newState.filesSidebarWidth).toBe(300);
+  expect(newState.filesSidebarWidth).toBe(280);
 });
 
 test("Should focus on newly added scene", () => {

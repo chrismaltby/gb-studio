@@ -9,6 +9,7 @@ import { PaletteShape } from "store/stateShape";
 import PaletteBlock from "../library/PaletteBlock";
 import editorActions from "store/features/editor/editorActions";
 import navigationActions from "store/features/navigation/navigationActions";
+import { clampSidebarWidth } from "lib/helpers/window/sidebar";
 
 class PaletteSidebar extends Component {
   constructor(props) {
@@ -48,7 +49,7 @@ class PaletteSidebar extends Component {
     const { resizeFilesSidebar } = this.props;
     const { dragging } = this.state;
     if (dragging) {
-      resizeFilesSidebar(window.innerWidth - event.pageX);
+      resizeFilesSidebar(clampSidebarWidth(window.innerWidth - event.pageX));
     }
   };
 

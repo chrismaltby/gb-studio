@@ -8,6 +8,7 @@ import l10n from "lib/helpers/l10n";
 import { groupBy } from "lib/helpers/array";
 import editorActions from "store/features/editor/editorActions";
 import navigationActions from "store/features/navigation/navigationActions";
+import { clampSidebarWidth } from "lib/helpers/window/sidebar";
 
 const groupByPlugin = groupBy("plugin");
 
@@ -49,7 +50,7 @@ class FilesSidebar extends Component {
     const { resizeFilesSidebar } = this.props;
     const { dragging } = this.state;
     if (dragging) {
-      resizeFilesSidebar(window.innerWidth - event.pageX);
+      resizeFilesSidebar(clampSidebarWidth(window.innerWidth - event.pageX));
     }
   };
 

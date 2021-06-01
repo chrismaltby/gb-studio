@@ -28,6 +28,7 @@ import { loadSongFile } from "store/features/trackerDocument/trackerDocumentStat
 import { SongPianoRoll } from "../music/SongPianoRoll";
 import { Music } from "store/features/entities/entitiesTypes";
 import l10n from "lib/helpers/l10n";
+import { clampSidebarWidth } from "lib/helpers/window/sidebar";
 
 const Wrapper = styled.div`
   display: flex;
@@ -199,7 +200,9 @@ const MusicPageUge = () => {
 
   const debouncedStoreWidths = useRef(
     debounce((leftPaneWidth: number, rightPaneWidth: number) => {
-      dispatch(editorActions.resizeWorldSidebar(rightPaneWidth));
+      dispatch(
+        editorActions.resizeWorldSidebar(clampSidebarWidth(rightPaneWidth))
+      );
       dispatch(editorActions.resizeNavigatorSidebar(leftPaneWidth));
     }, 100)
   );

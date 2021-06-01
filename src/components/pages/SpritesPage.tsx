@@ -34,6 +34,7 @@ import MetaspriteEditorToolsPanel from "../sprites/MetaspriteEditorToolsPanel";
 import { ZoomButton } from "ui/buttons/ZoomButton";
 import MetaspriteEditorPreviewSettings from "../sprites/MetaspriteEditorPreviewSettings";
 import spriteActions from "store/features/sprite/spriteActions";
+import { clampSidebarWidth } from "lib/helpers/window/sidebar";
 
 const Wrapper = styled.div`
   display: flex;
@@ -175,7 +176,9 @@ const SpritesPage = () => {
 
   const debouncedStoreWidths = useRef(
     debounce((leftPaneWidth: number, rightPaneWidth: number) => {
-      dispatch(editorActions.resizeWorldSidebar(rightPaneWidth));
+      dispatch(
+        editorActions.resizeWorldSidebar(clampSidebarWidth(rightPaneWidth))
+      );
       dispatch(editorActions.resizeNavigatorSidebar(leftPaneWidth));
     }, 100)
   );

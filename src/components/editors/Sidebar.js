@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import cx from "classnames";
 import editorActions from "store/features/editor/editorActions";
+import { clampSidebarWidth } from "lib/helpers/window/sidebar";
 
 const SidebarTabs = ({
   values,
@@ -109,7 +110,7 @@ class Sidebar extends Component {
     const { resizeWorldSidebar } = this.props;
     const { dragging } = this.state;
     if (dragging) {
-      resizeWorldSidebar(window.innerWidth - event.pageX);
+      resizeWorldSidebar(clampSidebarWidth(window.innerWidth - event.pageX));
     }
   };
 

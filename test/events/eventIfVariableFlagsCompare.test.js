@@ -8,6 +8,7 @@ test("Should be able to conditionally execute if variable contains a flag", () =
   const mockVariableCopy = jest.fn();
   const mockVariablesDiv = jest.fn();
   const mockVariablesMod = jest.fn();
+  const mockIfVariableBitwiseValue = jest.fn();
   const truePath = [{ command: "EVENT_END", id: "abc" }];
   const falsePath = [{ command: "EVENT_END", id: "def" }];
 
@@ -16,23 +17,24 @@ test("Should be able to conditionally execute if variable contains a flag", () =
       variable: "2",
       flag: 5,
       true: truePath,
-      false: falsePath
+      false: falsePath,
     },
     {
-      ifVariableValue: mockIfVariableValue, 
+      ifVariableValue: mockIfVariableValue,
       variableSetToValue: mockVariableSetToValue,
       variableCopy: mockVariableCopy,
       variablesDiv: mockVariablesDiv,
       variablesMod: mockVariablesMod,
-      temporaryEntityVariable
+      temporaryEntityVariable,
+      ifVariableBitwiseValue: mockIfVariableBitwiseValue,
     }
   );
 
-  expect(mockVariableCopy).toBeCalledWith("tmp1", "2");
-  expect(mockVariableSetToValue).toBeCalledWith("tmp2", 32);
-  expect(mockVariablesDiv).toBeCalledWith("tmp1", "tmp2");
-  expect(mockVariableSetToValue).toBeCalledWith("tmp2", 2);
-  expect(mockVariablesMod).toBeCalledWith("tmp1", "tmp2");
-
-  expect(mockIfVariableValue).toBeCalledWith("tmp1", "==", 1, truePath, falsePath);
+  expect(mockIfVariableBitwiseValue).toBeCalledWith(
+    "2",
+    ".B_AND",
+    32,
+    truePath,
+    falsePath
+  );
 });

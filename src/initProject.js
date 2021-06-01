@@ -17,6 +17,7 @@ import clipboardActions from "store/features/clipboard/clipboardActions";
 import engineActions from "store/features/engine/engineActions";
 import errorActions from "store/features/error/errorActions";
 import initElectronL10n from "lib/helpers/initElectronL10n";
+import { clampSidebarWidth } from "lib/helpers/window/sidebar";
 
 initElectronL10n();
 
@@ -204,10 +205,14 @@ const filesSidebarWidth = settings.get("filesSidebarWidth");
 const navigatorSidebarWidth = settings.get("navigatorSidebarWidth");
 
 if (worldSidebarWidth) {
-  store.dispatch(editorActions.resizeWorldSidebar(worldSidebarWidth));
+  store.dispatch(
+    editorActions.resizeWorldSidebar(clampSidebarWidth(worldSidebarWidth))
+  );
 }
 if (filesSidebarWidth) {
-  store.dispatch(editorActions.resizeFilesSidebar(filesSidebarWidth));
+  store.dispatch(
+    editorActions.resizeFilesSidebar(clampSidebarWidth(filesSidebarWidth))
+  );
 }
 if (navigatorSidebarWidth) {
   store.dispatch(editorActions.resizeNavigatorSidebar(navigatorSidebarWidth));
@@ -218,10 +223,14 @@ window.addEventListener(
   debounce(() => {
     const state = store.getState();
     store.dispatch(
-      editorActions.resizeWorldSidebar(state.editor.worldSidebarWidth)
+      editorActions.resizeWorldSidebar(
+        clampSidebarWidth(state.editor.worldSidebarWidth)
+      )
     );
     store.dispatch(
-      editorActions.resizeFilesSidebar(state.editor.filesSidebarWidth)
+      editorActions.resizeFilesSidebar(
+        clampSidebarWidth(state.editor.filesSidebarWidth)
+      )
     );
   }, 500)
 );

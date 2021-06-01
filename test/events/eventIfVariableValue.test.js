@@ -10,11 +10,17 @@ test("Should be able to conditionally execute if variable matches a value", () =
       operator: "==",
       comparator: 5,
       true: truePath,
-      false: falsePath
+      false: falsePath,
     },
     {
-      ifVariableValue: mockIfVariableValue
+      ifVariableValue: mockIfVariableValue,
     }
   );
-  expect(mockIfVariableValue).toBeCalledWith("0", "==", 5, truePath, falsePath);
+  expect(mockIfVariableValue).toBeCalledWith(
+    "0",
+    ".EQ",
+    5,
+    truePath,
+    falsePath
+  );
 });

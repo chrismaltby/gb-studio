@@ -14,6 +14,7 @@ import projectActions from "../project/projectActions";
 import settingsActions from "../settings/settingsActions";
 import entitiesActions from "../entities/entitiesActions";
 import spriteActions from "../sprite/spriteActions";
+import { MIN_SIDEBAR_WIDTH } from "lib/helpers/window/sidebar";
 
 export type Tool =
   | "triggers"
@@ -464,10 +465,7 @@ const editorSlice = createSlice({
     },
 
     resizeWorldSidebar: (state, action: PayloadAction<number>) => {
-      state.worldSidebarWidth = Math.min(
-        window.innerWidth - 70,
-        Math.max(300, action.payload)
-      );
+      state.worldSidebarWidth = Math.max(action.payload, MIN_SIDEBAR_WIDTH);
     },
 
     resizeNavigatorSidebar: (state, action: PayloadAction<number>) => {
@@ -475,10 +473,7 @@ const editorSlice = createSlice({
     },
 
     resizeFilesSidebar: (state, action: PayloadAction<number>) => {
-      state.filesSidebarWidth = Math.min(
-        window.innerWidth - 70,
-        Math.max(300, action.payload)
-      );
+      state.filesSidebarWidth = Math.max(action.payload, MIN_SIDEBAR_WIDTH);
     },
 
     editSearchTerm: (state, action: PayloadAction<string>) => {

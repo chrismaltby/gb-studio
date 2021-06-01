@@ -1,12 +1,12 @@
-jest.mock('../../../src/consts')
-
 import compileEntityEvents from "../../../src/lib/compiler/compileEntityEvents";
 import {
   EVENT_END,
   EVENT_TEXT,
   EVENT_IF_TRUE,
-  EVENT_SET_TRUE
+  EVENT_SET_TRUE,
 } from "../../../src/lib/compiler/eventTypes";
+
+jest.mock("../../../src/consts");
 
 const CMD_LOOKUP = {
   END: 0x00, // done
@@ -91,33 +91,48 @@ const CMD_LOOKUP = {
   ACTOR_SET_FLIP: 0x4f,
   TEXT_MULTI: 0x50,
   ACTOR_SET_FRAME_TO_VALUE: 0x51,
-  TEXT_WITH_AVATAR: 0x5b
+  TEXT_WITH_AVATAR: 0x5b,
 };
 
-test("should precompile empty events", () => {
+test("should compile empty events", () => {
   const input = [];
-  const output = compileEntityEvents(input);
-  expect(output).toEqual([CMD_LOOKUP.END]);
-});
+  const output = compileEntityEvents("testname", input);
+  expect(output).toEqual(`.include "vm.i"
+.include "data/game_globals.i"
 
-test("should allow passing in output object", () => {
-  const input = [];
-  let output = [];
-  const newOutput = compileEntityEvents(input, { output });
-  expect(output).toBe(newOutput);
+.area _CODE_255
+
+___bank_testname = 255
+.globl ___bank_testname
+
+_testname::
+        ; Stop Script
+        VM_STOP
+`);
 });
 
 test("should collapse multiple end events", () => {
   const input = [
     {
-      command: EVENT_END
+      command: EVENT_END,
     },
     {
-      command: EVENT_END
-    }
+      command: EVENT_END,
+    },
   ];
-  const output = compileEntityEvents(input);
-  expect(output).toEqual([CMD_LOOKUP.END]);
+  const output = compileEntityEvents("testname", input);
+  expect(output).toEqual(`.include "vm.i"
+.include "data/game_globals.i"
+
+.area _CODE_255
+
+___bank_testname = 255
+.globl ___bank_testname
+
+_testname::
+        ; Stop Script
+        VM_STOP
+`);
 });
 
 test("should output text command", () => {
@@ -125,47 +140,34 @@ test("should output text command", () => {
     {
       command: EVENT_TEXT,
       args: {
-        text: "HELLO WORLD"
-      }
-    }
+        text: "HELLO WORLD",
+      },
+    },
   ];
   const strings = ["HELLO WORLD"];
-  const output = compileEntityEvents(input, { strings });
-  expect(output).toEqual([CMD_LOOKUP.TEXT, "__REPLACE:STRING_BANK:0", "__REPLACE:STRING_HI:0", "__REPLACE:STRING_LO:0", CMD_LOOKUP.END]);
-});
+  const output = compileEntityEvents("testname", input, { strings });
+  expect(output).toEqual(`.include "vm.i"
+.include "data/game_globals.i"
 
-test("should output text command string pointers", () => {
-  const input = [
-    {
-      command: EVENT_TEXT,
-      args: {
-        text: "TEST_10"
-      }
-    },
-    {
-      command: EVENT_TEXT,
-      args: {
-        text: "TEST_260"
-      }
-    }
-  ];
-  let strings = [];
-  for (let i = 0; i < 300; i++) {
-    strings.push("TEST_" + i);
-  }
-  strings.push("HELLO WORLD");
-  const output = compileEntityEvents(input, { strings });
-  expect(output).toEqual([
-    CMD_LOOKUP.TEXT,
-    "__REPLACE:STRING_BANK:10",
-    "__REPLACE:STRING_HI:10",
-    "__REPLACE:STRING_LO:10",
-    CMD_LOOKUP.TEXT,
-    "__REPLACE:STRING_BANK:260",
-    "__REPLACE:STRING_HI:260",
-    "__REPLACE:STRING_LO:260",
-    CMD_LOOKUP.END
-  ]);
+.area _CODE_255
+
+___bank_testname = 255
+.globl ___bank_testname
+
+_testname::
+        ; Text Dialogue
+        VM_LOAD_TEXT            0
+        .asciz "HELLO WORLD"
+        VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, ^/(.UI_AUTO_SCROLL | .UI_DRAW_FRAME)/
+        VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_TEXT_IN_SPEED
+        VM_DISPLAY_TEXT
+        VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT | .UI_WAIT_BTN_A)/
+        VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_TEXT_OUT_SPEED
+        VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT)/
+
+        ; Stop Script
+        VM_STOP
+`);
 });
 
 test("should output text with avatar command", () => {
@@ -174,60 +176,39 @@ test("should output text with avatar command", () => {
       command: EVENT_TEXT,
       args: {
         text: "HELLO WORLD",
-        avatarId: 2
-      }
-    }
+        avatarId: 2,
+      },
+    },
   ];
   const strings = ["HELLO WORLD"];
-  const avatars = [1, 2, 3];
-  const output = compileEntityEvents(input, { strings, avatars });
-  expect(output).toEqual([
-    CMD_LOOKUP.TEXT_WITH_AVATAR,
-    "__REPLACE:STRING_BANK:0",
-    "__REPLACE:STRING_HI:0",
-    "__REPLACE:STRING_LO:0",
-    0,
-    CMD_LOOKUP.END
-  ]);
-});
-
-test("should output text wit avatar command string pointers", () => {
-  const input = [
+  const avatars = [
     {
-      command: EVENT_TEXT,
-      args: {
-        text: "TEST_10",
-        avatarId: 1
-      }
+      id: 2,
     },
-    {
-      command: EVENT_TEXT,
-      args: {
-        text: "TEST_260",
-        avatarId: 1
-      }
-    }
   ];
-  let strings = [];
-  for (let i = 0; i < 300; i++) {
-    strings.push("TEST_" + i);
-  }
-  strings.push("HELLO WORLD");
-  let avatars = [];
-  const output = compileEntityEvents(input, { strings, avatars });
-  expect(output).toEqual([
-    CMD_LOOKUP.TEXT_WITH_AVATAR,
-    "__REPLACE:STRING_BANK:10",
-    "__REPLACE:STRING_HI:10",
-    "__REPLACE:STRING_LO:10",
-    0,
-    CMD_LOOKUP.TEXT_WITH_AVATAR,
-    "__REPLACE:STRING_BANK:260",
-    "__REPLACE:STRING_HI:260",
-    "__REPLACE:STRING_LO:260",
-    0,
-    CMD_LOOKUP.END
-  ]);
+  const output = compileEntityEvents("testname", input, { strings, avatars });
+  expect(output).toEqual(`.include "vm.i"
+.include "data/game_globals.i"
+
+.area _CODE_255
+
+___bank_testname = 255
+.globl ___bank_testname
+
+_testname::
+        ; Text Dialogue
+        VM_LOAD_TEXT            0
+        .asciz "\\001\\001\\002\\001@A\\nBC\\001\\003\\004\\001\\377\\002\\001HELLO WORLD"
+        VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, ^/(.UI_AUTO_SCROLL | .UI_DRAW_FRAME)/
+        VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_TEXT_IN_SPEED
+        VM_DISPLAY_TEXT
+        VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT | .UI_WAIT_BTN_A)/
+        VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_TEXT_OUT_SPEED
+        VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT)/
+
+        ; Stop Script
+        VM_STOP
+`);
 });
 
 test("should allow conditional statements", () => {
@@ -235,52 +216,69 @@ test("should allow conditional statements", () => {
     {
       command: EVENT_IF_TRUE,
       args: {
-        variable: "4"
+        variable: "4",
       },
       children: {
         true: [
           {
             command: EVENT_TEXT,
             args: {
-              text: "TRUE PATH"
-            }
-          }
+              text: "TRUE PATH",
+            },
+          },
         ],
         false: [
           {
             command: EVENT_TEXT,
             args: {
-              text: "FALSE PATH"
-            }
-          }
-        ]
-      }
-    }
+              text: "FALSE PATH",
+            },
+          },
+        ],
+      },
+    },
   ];
   const strings = ["HELLO WORLD", "TRUE PATH", "FALSE PATH"];
   const variables = ["1", "2", "3", "4"];
-  const output = compileEntityEvents(input, { strings, variables });
-  expect(output).toEqual([
-    CMD_LOOKUP.IF_TRUE, // 0
-    0, // 1 Variable ptr hi
-    3, // 2 Variable ptr lo
-    0, // 3 Jump ptr hi
-    12, // 4 Jump ptr lo
-    // False path
-    CMD_LOOKUP.TEXT, // 5
-    "__REPLACE:STRING_BANK:2", // 6
-    "__REPLACE:STRING_HI:2", // 7
-    "__REPLACE:STRING_LO:2", // 8
-    CMD_LOOKUP.JUMP, // 9
-    0, // 10 Jump to end
-    16, // 11
-    // True path
-    CMD_LOOKUP.TEXT, // 12
-    "__REPLACE:STRING_BANK:1", // 13
-    "__REPLACE:STRING_HI:1", // 14
-    "__REPLACE:STRING_LO:1", // 15
-    CMD_LOOKUP.END // 16
-  ]);
+  const output = compileEntityEvents("testname", input, { strings, variables });
+  expect(output).toEqual(`.include "vm.i"
+.include "data/game_globals.i"
+
+.area _CODE_255
+
+___bank_testname = 255
+.globl ___bank_testname
+
+_testname::
+        ; If Variable True
+        VM_IF_CONST .GT         VAR_VARIABLE_4, 0, 1$, 0
+        ; Text Dialogue
+        VM_LOAD_TEXT            0
+        .asciz "FALSE PATH"
+        VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, ^/(.UI_AUTO_SCROLL | .UI_DRAW_FRAME)/
+        VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_TEXT_IN_SPEED
+        VM_DISPLAY_TEXT
+        VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT | .UI_WAIT_BTN_A)/
+        VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_TEXT_OUT_SPEED
+        VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT)/
+
+        VM_JUMP                 2$
+1$:
+        ; Text Dialogue
+        VM_LOAD_TEXT            0
+        .asciz "TRUE PATH"
+        VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, ^/(.UI_AUTO_SCROLL | .UI_DRAW_FRAME)/
+        VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_TEXT_IN_SPEED
+        VM_DISPLAY_TEXT
+        VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT | .UI_WAIT_BTN_A)/
+        VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_TEXT_OUT_SPEED
+        VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT)/
+
+2$:
+
+        ; Stop Script
+        VM_STOP
+`);
 });
 
 test("should allow commands after conditional", () => {
@@ -288,88 +286,83 @@ test("should allow commands after conditional", () => {
     {
       command: EVENT_IF_TRUE,
       args: {
-        variable: "4"
+        variable: "4",
       },
       children: {
         true: [
           {
             command: EVENT_TEXT,
             args: {
-              text: "TRUE PATH"
-            }
-          }
+              text: "TRUE PATH",
+            },
+          },
         ],
         false: [
           {
             command: EVENT_TEXT,
             args: {
-              text: "FALSE PATH"
-            }
-          }
-        ]
-      }
+              text: "FALSE PATH",
+            },
+          },
+        ],
+      },
     },
     {
       command: EVENT_TEXT,
       args: {
-        text: "AFTER"
-      }
-    }
+        text: "AFTER",
+      },
+    },
   ];
   const strings = ["HELLO WORLD", "TRUE PATH", "FALSE PATH", "AFTER"];
   const variables = ["1", "2", "3", "4"];
-  const output = compileEntityEvents(input, { strings, variables });
-  expect(output).toEqual([
-    CMD_LOOKUP.IF_TRUE, // 0
-    0, // 1 Variable ptr hi
-    3, // 2 Variable ptr lo
-    0, // 3 Jump ptr hi
-    12, // 4 Jump ptr lo
-    // False path
-    CMD_LOOKUP.TEXT, // 5
-    "__REPLACE:STRING_BANK:2", // 6
-    "__REPLACE:STRING_HI:2", // 7
-    "__REPLACE:STRING_LO:2", // 8
-    CMD_LOOKUP.JUMP, // 9
-    0, // 10 Jump to end
-    16, // 11
-    // True path
-    CMD_LOOKUP.TEXT, // 12
-    "__REPLACE:STRING_BANK:1", // 13
-    "__REPLACE:STRING_HI:1", // 14
-    "__REPLACE:STRING_LO:1", // 15
-    CMD_LOOKUP.TEXT, // 16
-    "__REPLACE:STRING_BANK:3", // 17
-    "__REPLACE:STRING_HI:3", // 18
-    "__REPLACE:STRING_LO:3", // 19
-    CMD_LOOKUP.END // 20
-  ]);
-});
+  const output = compileEntityEvents("testname", input, { strings, variables });
+  expect(output).toEqual(`.include "vm.i"
+.include "data/game_globals.i"
 
-test("should add strings to array if not found", () => {
-  const input = [
-    {
-      command: EVENT_TEXT,
-      args: {
-        text: "HELLO WORLD"
-      }
-    }
-  ];
-  const strings = ["LOREM IPSUM"];
-  compileEntityEvents(input, { strings });
-  expect(strings.length).toBe(2);
-});
+.area _CODE_255
 
-test("should allow previously undefined variables to be added automatically", () => {
-  const input = [
-    {
-      command: EVENT_SET_TRUE,
-      args: {
-        variable: "1"
-      }
-    }
-  ];
-  const variables = ["2"];
-  compileEntityEvents(input, { variables });
-  expect(variables.length).toEqual(2);
+___bank_testname = 255
+.globl ___bank_testname
+
+_testname::
+        ; If Variable True
+        VM_IF_CONST .GT         VAR_VARIABLE_4, 0, 1$, 0
+        ; Text Dialogue
+        VM_LOAD_TEXT            0
+        .asciz "FALSE PATH"
+        VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, ^/(.UI_AUTO_SCROLL | .UI_DRAW_FRAME)/
+        VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_TEXT_IN_SPEED
+        VM_DISPLAY_TEXT
+        VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT | .UI_WAIT_BTN_A)/
+        VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_TEXT_OUT_SPEED
+        VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT)/
+
+        VM_JUMP                 2$
+1$:
+        ; Text Dialogue
+        VM_LOAD_TEXT            0
+        .asciz "TRUE PATH"
+        VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, ^/(.UI_AUTO_SCROLL | .UI_DRAW_FRAME)/
+        VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_TEXT_IN_SPEED
+        VM_DISPLAY_TEXT
+        VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT | .UI_WAIT_BTN_A)/
+        VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_TEXT_OUT_SPEED
+        VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT)/
+
+2$:
+
+        ; Text Dialogue
+        VM_LOAD_TEXT            0
+        .asciz "AFTER"
+        VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, ^/(.UI_AUTO_SCROLL | .UI_DRAW_FRAME)/
+        VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_TEXT_IN_SPEED
+        VM_DISPLAY_TEXT
+        VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT | .UI_WAIT_BTN_A)/
+        VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_TEXT_OUT_SPEED
+        VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT)/
+
+        ; Stop Script
+        VM_STOP
+`);
 });
