@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Select, { components } from "react-select";
-import { PlayIcon, PauseIcon } from "../library/Icons";
+import { PlayIcon, PauseIcon } from "ui/icons/Icons";
 import Button from "../library/Button";
 import { MusicShape } from "store/stateShape";
 import { groupBy } from "lib/helpers/array";

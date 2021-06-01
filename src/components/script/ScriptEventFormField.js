@@ -3,7 +3,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import cx from "classnames";
-import { TriangleIcon } from "../library/Icons";
+import { TriangleIcon } from "ui/icons/Icons";
 import { FormField, ToggleableFormField } from "../library/Forms";
 import ScriptEventFormInput from "./ScriptEventFormInput";
 

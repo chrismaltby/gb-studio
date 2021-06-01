@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Select, { components } from "react-select";
-import { PlayIcon } from "../library/Icons";
+import { PlayIcon } from "ui/icons/Icons";
 import Button from "../library/Button";
 import l10n from "lib/helpers/l10n";
 import soundfxActions from "store/features/soundfx/soundfxActions";

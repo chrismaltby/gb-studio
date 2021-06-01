@@ -1,5 +1,5 @@
 import { EVENT_FADE_IN } from "./eventTypes";
-import ScriptBuilder from "./scriptBuilder2";
+import ScriptBuilder from "./scriptBuilder";
 
 const STRING_NOT_FOUND = "STRING_NOT_FOUND";
 const VARIABLE_NOT_FOUND = "VARIABLE_NOT_FOUND";

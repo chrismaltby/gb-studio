@@ -14,7 +14,7 @@ import {
   WaveInstrument,
 } from "store/features/trackerDocument/trackerDocumentTypes";
 import { Button } from "ui/buttons/Button";
-import { PlusIcon } from "../library/Icons";
+import { PlusIcon } from "ui/icons/Icons";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import useSplitPane from "ui/hooks/use-split-pane";
 import styled from "styled-components";

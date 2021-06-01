@@ -9,7 +9,7 @@ import {
   SquareIconSmall,
   EyeOpenIcon,
   EyeClosedIcon,
-} from "../library/Icons";
+} from "ui/icons/Icons";
 import {
   TOOL_COLORS,
   TOOL_COLLISIONS,

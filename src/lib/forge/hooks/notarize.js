@@ -6,6 +6,8 @@ const buildOutput = require("path").resolve(
   __dirname,
   "..",
   "..",
+  "..",
+  "..",
   "out",
   "GB Studio-darwin-x64",
   "GB Studio.app"
