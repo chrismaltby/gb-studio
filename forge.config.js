@@ -53,8 +53,8 @@ module.exports = {
           config: "./webpack.renderer.config.js",
           entryPoints: [
             {
-              html: "./src/project.html",
-              js: "./src/ProjectRoot.js",
+              html: "./src/app/project/project.html",
+              js: "./src/app/project/ProjectRoot.js",
               name: "main_window",
               additionalChunks: [
                 "vendor-react",
@@ -65,8 +65,8 @@ module.exports = {
               ],
             },
             {
-              html: "./src/splash.html",
-              js: "./src/SplashRoot.js",
+              html: "./src/app/splash/splash.html",
+              js: "./src/app/splash/SplashRoot.js",
               name: "splash_window",
               additionalChunks: [
                 "vendor-react",
@@ -75,25 +75,25 @@ module.exports = {
               ],
             },
             {
-              html: "./src/preferences.html",
-              js: "./src/PreferencesRoot.js",
+              html: "./src/app/preferences/preferences.html",
+              js: "./src/app/preferences/PreferencesRoot.js",
               name: "preferences_window",
               additionalChunks: [
                 "vendor-react",
                 "vendor-hotloader",
                 "vendor-lodash",
               ],
-            },            
+            },
             {
-              html: "./src/music.html",
-              js: "./src/MusicRoot.js",
+              html: "./src/app/music/music.html",
+              js: "./src/app/music/MusicRoot.js",
               name: "music_window",
               additionalChunks: [
                 "vendor-react",
                 "vendor-hotloader",
                 "vendor-lodash",
               ],
-            },            
+            },
           ],
         },
       },
