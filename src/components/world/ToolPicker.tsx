@@ -7,7 +7,7 @@ import {
   EraserIcon,
   PlusIcon,
   PaintIcon,
-} from "../library/Icons";
+} from "ui/icons/Icons";
 import { Menu, MenuItem, MenuOverlay } from "../library/Menu";
 import l10n from "lib/helpers/l10n";
 import { Tool } from "store/features/editor/editorState";

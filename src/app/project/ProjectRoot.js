@@ -7,9 +7,9 @@ import AppContainerDnD from "components/app/AppContainerDnD";
 import ThemeProvider from "ui/theme/ThemeProvider";
 import "lib/electron/handleFullScreen";
 import "lib/helpers/handleTheme";
-import "./styles/App.css";
-import "./initProject";
 import GlobalStyle from "ui/globalStyle";
+import "./initProject";
+import "../../styles/App.css";
 
 const render = () => {
   ReactDOM.render(

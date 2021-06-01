@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Menu, MenuOverlay } from "./Menu";
-import { TriangleIcon } from "./Icons";
+import { TriangleIcon } from "ui/icons/Icons";
 
 export const Toolbar = (props) => <div className="Toolbar" {...props} />;
 export const ToolbarButton = (props) => (

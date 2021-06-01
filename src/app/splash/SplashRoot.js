@@ -5,7 +5,7 @@ import Splash from "components/app/Splash";
 import initElectronL10n from "lib/helpers/initElectronL10n";
 import "lib/electron/handleFullScreen";
 import "lib/helpers/handleTheme";
-import "./styles/App.css";
+import "../../styles/App.css";
 
 initElectronL10n();
 
