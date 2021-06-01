@@ -510,6 +510,10 @@ menu.on("zoom", (zoomType: string) => {
   mainWindow && mainWindow.webContents.send("zoom", zoomType);
 });
 
+menu.on("windowZoom", (zoomType: string) => {
+  mainWindow && mainWindow.webContents.send("windowZoom", zoomType);
+});
+
 menu.on("run", () => {
   mainWindow && mainWindow.webContents.send("run");
 });

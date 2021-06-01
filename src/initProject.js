@@ -1,6 +1,6 @@
 import Path from "path";
 import { ActionCreators } from "redux-undo";
-import { ipcRenderer, clipboard } from "electron";
+import { ipcRenderer, clipboard, webFrame} from "electron";
 import settings from "electron-settings";
 import debounce from "lodash/debounce";
 import mapValues from "lodash/mapValues";
@@ -147,6 +147,17 @@ const onZoom = (event, zoomType) => {
   }
 };
 
+const onWindowZoom = (event, zoomType) => {
+  const currentLevel = webFrame.getZoomLevel();
+  if (zoomType === "in") {
+    webFrame.setZoomLevel(currentLevel + 1)
+  } else if (zoomType === "out") {
+    webFrame.setZoomLevel(currentLevel - 1);
+  } else {
+    webFrame.setZoomLevel(1);
+  }
+};
+
 const onRun = () => {
   store.dispatch(buildGameActions.buildGame());
 };
@@ -193,6 +204,7 @@ ipcRenderer.on("section", onSetSection);
 ipcRenderer.on("reloadAssets", onReloadAssets);
 ipcRenderer.on("updateSetting", onUpdateSetting);
 ipcRenderer.on("zoom", onZoom);
+ipcRenderer.on("windowZoom", onWindowZoom);
 ipcRenderer.on("run", onRun);
 ipcRenderer.on("build", onBuild);
 ipcRenderer.on("ejectEngine", onEjectEngine);

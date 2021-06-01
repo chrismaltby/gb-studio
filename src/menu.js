@@ -19,6 +19,7 @@ const listeners = {
   redo: [],
   section: [],
   zoom: [],
+  windowZoom: [],
   reloadAssets: [],
   updateSetting: [],
   run: [],
@@ -401,7 +402,31 @@ const buildMenu = async (plugins = []) => {
     },
     {
       role: "window",
-      submenu: [{ role: "minimize" }],
+      submenu: [
+        { role: "minimize" },
+        { type: "separator" },
+        {
+          label: l10n("MENU_ZOOM_RESET"),
+          accelerator: "CommandOrControl+Shift+0",
+          click: () => {
+            notifyListeners("windowZoom", "reset");
+          },
+        },
+        {
+          label: l10n("MENU_ZOOM_IN"),
+          accelerator: "CommandOrControl+Shift+=",
+          click: () => {
+            notifyListeners("windowZoom", "in");
+          },
+        },
+        {
+          label: l10n("MENU_ZOOM_OUT"),
+          accelerator: "CommandOrControl+Shift+-",
+          click: () => {
+            notifyListeners("windowZoom", "out");
+          },
+        },
+      ],
     },
     {
       role: "help",
