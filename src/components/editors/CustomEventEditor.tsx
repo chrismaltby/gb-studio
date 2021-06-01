@@ -21,7 +21,11 @@ import { CustomEvent } from "store/features/entities/entitiesTypes";
 const customEventName = (customEvent: CustomEvent, customEventIndex: number) =>
   customEvent.name ? customEvent.name : `Script ${customEventIndex + 1}`;
 
-const CustomEventEditor: React.FC<{ id: string }> = ({ id }) => {
+interface CustomEventEditorProps {
+  id: string;
+}
+
+const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
   const customEvents = useSelector((state: RootState) =>
     customEventSelectors.selectAll(state)
   );
