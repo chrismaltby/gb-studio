@@ -154,7 +154,7 @@ const onWindowZoom = (event, zoomType) => {
   } else if (zoomType === "out") {
     webFrame.setZoomLevel(currentLevel - 1);
   } else {
-    webFrame.setZoomLevel(1);
+    webFrame.setZoomLevel(0);
   }
 };
 
