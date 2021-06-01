@@ -75,5 +75,6 @@ module.exports = {
   },
   externals: {
     vm2: "vm2",
+    fsevents: "require('fsevents')",
   },
 };
