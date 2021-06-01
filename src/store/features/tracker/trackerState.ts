@@ -13,6 +13,7 @@ export interface TrackerState {
   view: "tracker" | "roll";
   tool: "pencil" | "eraser" | null;
   defaultInstruments: [number, number, number, number];
+  selectedChannel: number;
   visibleChannels: number[];
   hoverNote: number | null;
 }
@@ -28,6 +29,7 @@ export const initialState: TrackerState = {
   view: "roll",
   tool: "pencil",
   defaultInstruments: [0, 0, 0, 0],
+  selectedChannel: 0,
   visibleChannels: [0],
   hoverNote: null,
 };
@@ -56,6 +58,9 @@ const trackerSlice = createSlice({
       _action: PayloadAction<[number, number, number, number]>
     ) => {
       state.defaultInstruments = _action.payload;
+    },
+    setSelectedChannel: (state, _action: PayloadAction<number>) => {
+      state.selectedChannel = _action.payload;
     },
     setVisibleChannels: (state, _action: PayloadAction<number[]>) => {
       state.visibleChannels = _action.payload;

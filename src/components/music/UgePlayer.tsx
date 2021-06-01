@@ -39,13 +39,14 @@ export const UgePlayer = ({
           if (onChannelStatusUpdate) {
             onChannelStatusUpdate(message.channels);
           }
+          break;
         case "log":
           break;
         default:
           console.log(`Action ${d.action} not supported`);
       }
     });
-  }, [onPlaybackUpdate, play]);
+  }, [onChannelStatusUpdate, onPlaybackUpdate, play]);
 
   useEffect(() => {
     if (play) {

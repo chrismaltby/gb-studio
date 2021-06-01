@@ -29,6 +29,7 @@ import { SongPianoRoll } from "../music/SongPianoRoll";
 import { Music } from "store/features/entities/entitiesTypes";
 import l10n from "lib/helpers/l10n";
 import { clampSidebarWidth } from "lib/helpers/window/sidebar";
+import { UgePlayer } from "components/music/UgePlayer";
 
 const Wrapper = styled.div`
   display: flex;
@@ -236,6 +237,21 @@ const MusicPageUge = () => {
     dispatch(settingsActions.setShowNavigator(false));
   };
 
+  const [channelStatus, setChannelStatus] = useState([
+    false,
+    false,
+    false,
+    false,
+  ]);
+  console.log(channelStatus);
+
+  const playing = useSelector((state: RootState) => state.tracker.playing);
+
+  const [playbackState, setPlaybackState] = useState([-1, -1]);
+  useEffect(() => {
+    setPlaybackState([-1, -1]);
+  }, [playing, song]);
+
   const view = useSelector((state: RootState) => state.tracker.view);
 
   const renderGridView = useCallback(() => {
@@ -248,6 +264,8 @@ const MusicPageUge = () => {
             sequenceId={sequenceId}
             song={song}
             height={windowHeight - 100}
+            channelStatus={channelStatus}
+            playbackState={playbackState}
           />
         </div>
       );
@@ -257,10 +275,11 @@ const MusicPageUge = () => {
           sequenceId={sequenceId}
           song={song}
           height={windowHeight - 100}
+          playbackState={playbackState}
         />
       );
     }
-  }, [sequenceId, song, view, windowHeight]);
+  }, [channelStatus, playbackState, sequenceId, song, view, windowHeight]);
 
   return (
     <Wrapper>
@@ -317,10 +336,15 @@ const MusicPageUge = () => {
           >
             <div style={{ position: "relative", height: "60px" }}>
               <SongEditorToolsPanel selectedSong={selectedSong} />
-              <SongEditorRightToolsPanel />
+              <SongEditorRightToolsPanel channelStatus={channelStatus} />
             </div>
             <SplitPaneVerticalDivider />
             {renderGridView()}
+            <UgePlayer
+              data={song}
+              onPlaybackUpdate={setPlaybackState}
+              onChannelStatusUpdate={setChannelStatus}
+            />
           </div>
           <SplitPaneHorizontalDivider onMouseDown={onResizeRight} />
           <div
