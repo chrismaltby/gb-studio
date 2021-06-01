@@ -19,7 +19,7 @@ import ScriptEventFormTextArea from "./ScriptEventFormTextarea";
 import ScriptEventFormMathArea from "./ScriptEventFormMatharea";
 import { DropdownButton } from "../library/Button";
 import { MenuItem } from "../library/Menu";
-import { ConnectIcon, CheckIcon, BlankIcon } from "../library/Icons";
+import { ConnectIcon, CheckIcon, BlankIcon } from "ui/icons/Icons";
 import PropertySelect from "../forms/PropertySelect";
 import CollisionMaskPicker from "../forms/CollisionMaskPicker";
 import { EventValueShape, EventDefaultValueShape } from "store/stateShape";

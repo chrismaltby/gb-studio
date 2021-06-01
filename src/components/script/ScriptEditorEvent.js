@@ -4,7 +4,7 @@ import { clipboard } from "electron";
 import cx from "classnames";
 import uuid from "uuid/v4";
 import { DragSource, DropTarget } from "react-dnd";
-import { TriangleIcon } from "../library/Icons";
+import { TriangleIcon } from "ui/icons/Icons";
 import AddCommandButton from "./AddCommandButton";
 import { FormField } from "../library/Forms";
 import ScriptEventForm from "./ScriptEventForm";

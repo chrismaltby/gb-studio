@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import cx from "classnames";
-import { PlusIcon } from "../library/Icons";
+import { PlusIcon } from "ui/icons/Icons";
 import Button from "../library/Button";
 import l10n from "lib/helpers/l10n";
 import { PaletteShape } from "store/stateShape";
