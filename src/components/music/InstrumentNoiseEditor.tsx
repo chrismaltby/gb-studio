@@ -34,24 +34,6 @@ export const InstrumentNoiseEditor = ({
       );
     };
 
-  const onChangeFieldInput =
-    <T extends keyof NoiseInstrument>(key: T) =>
-    (
-      e:
-        | React.ChangeEvent<HTMLInputElement>
-        | React.ChangeEvent<HTMLTextAreaElement>
-    ) => {
-      const editValue = castEventValue(e);
-      dispatch(
-        trackerDocumentActions.editNoiseInstrument({
-          instrumentId: instrument.index,
-          changes: {
-            [key]: editValue,
-          },
-        })
-      );
-    };
-
   return (
     <>
       <InstrumentLengthForm

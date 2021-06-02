@@ -337,7 +337,7 @@ export const NavigatorSongs = ({
                 }
               }}
             >
-              {({ selected, item }) =>
+              {({ item }) =>
                 item.isGroup ? (
                   <EntityListItem
                     item={item}

@@ -73,7 +73,7 @@ const trackerSlice = createSlice({
     },
   },
   extraReducers: (builder) =>
-    builder.addCase(editorActions.setSelectedSongId, (state, action) => {
+    builder.addCase(editorActions.setSelectedSongId, (state, _action) => {
       state.playing = false;
     }),
 });

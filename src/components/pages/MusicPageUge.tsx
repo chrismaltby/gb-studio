@@ -167,13 +167,13 @@ const MusicPageUge = () => {
       }
     },
   });
-  const [] = useResizable({
+  const [,] = useResizable({
     initialSize: 231,
     direction: "top",
     minSize: 30,
     maxSize: windowHeight - 100,
   });
-  const [] = useState(true);
+  const [,] = useState(true);
 
   useEffect(() => {
     prevWindowWidthRef.current = windowWidth;

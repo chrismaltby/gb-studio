@@ -312,7 +312,7 @@ export const SongTracker = ({
   );
 
   const handleKeysUp = useCallback(
-    (e: KeyboardEvent) => {
+    (_e: KeyboardEvent) => {
       if (selectedCell) {
         // console.log(e.key);
       }
@@ -332,13 +332,13 @@ export const SongTracker = ({
     };
   });
 
-  const onFocus = (e: React.FocusEvent<HTMLDivElement>) => {
+  const onFocus = (_e: React.FocusEvent<HTMLDivElement>) => {
     if (!selectedCell) {
       setSelectedCell(0);
     }
   };
 
-  const onBlur = (e: React.FocusEvent<HTMLDivElement>) => {
+  const onBlur = (_e: React.FocusEvent<HTMLDivElement>) => {
     setSelectedCell(undefined);
   };
 

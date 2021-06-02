@@ -7,8 +7,8 @@ import { RootState } from "store/configureStore";
 
 interface UgePlayerProps {
   data: Song | null;
-  onPlaybackUpdate?: Function;
-  onChannelStatusUpdate?: Function;
+  onPlaybackUpdate?: (update: number[]) => void;
+  onChannelStatusUpdate?: (channels: boolean[]) => void;
 }
 
 export const UgePlayer = ({
