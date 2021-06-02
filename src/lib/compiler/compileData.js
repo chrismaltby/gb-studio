@@ -61,6 +61,8 @@ import {
   compileAvatarFont,
   compileEmoteHeader,
   compileEmote,
+  compileSceneProjectiles,
+  compileSceneProjectilesHeader,
 } from "./compileData2";
 import compileSGBImage from "./sgb";
 import { readFileToTilesData } from "../tiles/tileData";
@@ -673,6 +675,8 @@ export const precompileScenes = (
   { warnings } = {}
 ) => {
   const scenesData = scenes.map((scene, sceneIndex) => {
+    const projectiles = [];
+
     const backgroundIndex = usedBackgrounds.findIndex(
       (background) => background.id === scene.backgroundId
     );
@@ -733,6 +737,15 @@ export const precompileScenes = (
       ) {
         eventSpriteIds.push(event.args.spriteSheetId);
       }
+
+      if (
+        event.args &&
+        event.args.spriteSheetId &&
+        event.command === "EVENT_LAUNCH_PROJECTILE" &&
+        !event.args.__comment
+      ) {
+        projectiles.push(event.args);
+      }
     });
 
     const sceneSpriteIds = [].concat(actorSpriteIds, eventSpriteIds);
@@ -762,6 +775,7 @@ export const precompileScenes = (
       playerSpriteIndex,
       actorsData: [],
       triggersData: [],
+      projectiles,
     };
   });
   return scenesData;
@@ -1281,6 +1295,15 @@ const compile = async (
       output[`scene_${sceneIndex}_sprites.c`] = compileSceneSprites(
         scene,
         sceneIndex
+      );
+    }
+    if (scene.projectiles.length > 0) {
+      output[`scene_${sceneIndex}_projectiles.h`] =
+        compileSceneProjectilesHeader(scene, sceneIndex);
+      output[`scene_${sceneIndex}_projectiles.c`] = compileSceneProjectiles(
+        scene,
+        sceneIndex,
+        precompiled.usedSprites
       );
     }
   });

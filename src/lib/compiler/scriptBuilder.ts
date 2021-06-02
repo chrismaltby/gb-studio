@@ -1112,6 +1112,10 @@ class ScriptBuilder {
     this._addCmd("VM_ACTOR_TERMINATE_UPDATE", addr);
   };
 
+  _projectileLaunch = (addr: string) => {
+    this._addCmd("VM_PROJECTILE_LAUNCH", 0, addr);
+  };
+
   _loadText = (numInputs: number) => {
     this._addCmd("VM_LOAD_TEXT", `${numInputs}`);
   };
@@ -1880,7 +1884,11 @@ class ScriptBuilder {
     _collisionGroup: string,
     _collisionMask: string
   ) => {
-    console.error("launchProjectile not implemented");
+    this._stackPushConst(640);
+    this._stackPushConst(640);
+    this._stackPushConst(115);
+    this._projectileLaunch(".ARG2");
+    this._stackPop(3);
   };
 
   // --------------------------------------------------------------------------
