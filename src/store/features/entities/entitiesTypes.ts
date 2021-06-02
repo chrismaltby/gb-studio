@@ -204,6 +204,11 @@ export type SpriteAnimation = {
   frames: string[];
 };
 
+export type SpriteStates = {
+  id: string;
+  animationType: SpriteAnimationType;
+};
+
 export type SpriteSheet = {
   id: string;
   name: string;
@@ -228,6 +233,7 @@ export type SpriteSheet = {
   animations: string[];
   animSpeed: number | null;
   autoDetect: boolean;
+  states: SpriteStates[];
 };
 
 export type SceneParallaxLayer = {

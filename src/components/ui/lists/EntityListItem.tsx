@@ -11,6 +11,7 @@ import {
   DutyIcon,
   WaveIcon,
   SongIcon,
+  FolderFilledIcon,
 } from "../icons/Icons";
 
 interface EntityListItemWrapperProps {
@@ -23,12 +24,14 @@ interface EntityListItemProps {
     labelColor?: string;
   };
   type:
+    | "folder"
     | "scene"
     | "actor"
     | "trigger"
     | "variable"
     | "sprite"
     | "animation"
+    | "state"
     | "song"
     | "duty"
     | "wave"
@@ -114,6 +117,11 @@ export const EntityListItem: FC<EntityListItemProps> = ({
         <NavigatorArrow open={!collapsed} onClick={() => onToggleCollapse?.()}>
           <ArrowIcon />
         </NavigatorArrow>
+      )}
+      {type === "folder" && (
+        <EnitityIcon>
+          <FolderFilledIcon />
+        </EnitityIcon>
       )}
       {type === "actor" && (
         <EnitityIcon>

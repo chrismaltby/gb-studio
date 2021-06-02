@@ -22,6 +22,7 @@ interface NavigatorSpritesProps {
 interface NavigatorItem {
   id: string;
   name: string;
+  isFolder: boolean;
 }
 
 const spriteToNavigatorItem = (
@@ -30,6 +31,7 @@ const spriteToNavigatorItem = (
 ): NavigatorItem => ({
   id: sprite.id,
   name: sprite.name ? sprite.name : `Sprite ${spriteIndex + 1}`,
+  isFolder: false,
 });
 
 const collator = new Intl.Collator(undefined, {
@@ -77,22 +79,48 @@ export const NavigatorSprites = ({
 
   useEffect(() => {
     if (selectedSprite?.animations) {
-      setSpriteAnimations(
-        filterAnimationsBySpriteType(
-          selectedSprite.animations,
-          selectedSprite?.animationType,
-          selectedSprite?.flipLeft
-        ).map((id, index) => {
-          return {
-            id,
-            name: getAnimationNameByIndex(
-              selectedSprite?.animationType,
-              selectedSprite?.flipLeft,
-              index
-            ),
-          };
-        })
-      );
+      const filteredAnims = filterAnimationsBySpriteType(
+        selectedSprite.animations,
+        selectedSprite?.animationType,
+        selectedSprite?.flipLeft
+      ).map((id, index) => {
+        return {
+          id,
+          name: getAnimationNameByIndex(
+            selectedSprite?.animationType,
+            selectedSprite?.flipLeft,
+            index
+          ),
+          isFolder: false,
+        };
+      });
+
+      const additionalStates = [
+        {
+          id: "default",
+          name: "Default",
+          isFolder: true,
+          // animationType: SpriteAnimationType
+        },
+        ...filteredAnims,
+        {
+          id: "dead",
+          name: "Dying",
+          isFolder: true,
+          // animationType: SpriteAnimationType
+        },
+        ...filteredAnims.map((i) => ({ ...i, id: "a" })),
+        {
+          id: "hurt",
+          name: "Hurt",
+          isFolder: true,
+
+          // animationType: SpriteAnimationType
+        },
+        ...filteredAnims.map((i) => ({ ...i, id: "a" })),
+      ];
+
+      setSpriteAnimations(additionalStates);
     } else {
       setSpriteAnimations([]);
     }
@@ -116,13 +144,21 @@ export const NavigatorSprites = ({
     [dispatch]
   );
 
+  // const animations = [...spriteAnimations];
+  // for(let state of additionalStates) {
+
+  // }
+
+  // const numAnimations = spriteAnimations.length;
+  const numAnimations = 10;
+
   return (
     <>
       <FlatList
         selectedId={selectedId}
         items={items}
         setSelectedId={setSelectedId}
-        height={height - 25 * spriteAnimations.length - 32}
+        height={height - 25 * numAnimations - 32}
       >
         {({ item }) => <EntityListItem type="sprite" item={item} />}
       </FlatList>
@@ -135,9 +171,20 @@ export const NavigatorSprites = ({
         selectedId={selectedAnimationId}
         items={spriteAnimations}
         setSelectedId={setSelectAnimationId}
-        height={25 * spriteAnimations.length}
+        height={25 * numAnimations}
       >
-        {({ item }) => <EntityListItem type="animation" item={item} />}
+        {({ item }) => (
+          <>
+            <EntityListItem
+              item={item}
+              type={item.isFolder ? "state" : "animation"}
+              collapsable={item.isFolder}
+              collapsed={false}
+              onToggleCollapse={() => {}}
+              nestLevel={item.isFolder ? 0 : 1}
+            />
+          </>
+        )}
       </FlatList>
     </>
   );

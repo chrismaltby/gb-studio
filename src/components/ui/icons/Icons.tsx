@@ -12,6 +12,12 @@ export const FolderIcon = () => (
   </svg>
 );
 
+export const FolderFilledIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <path d="M11 5c-1.629 0-2.305-1.058-4-3h-7v20h24v-17h-13z" />
+  </svg>
+);
+
 export const DotsIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24">
     <path d="M6 12c0 1.657-1.343 3-3 3s-3-1.343-3-3 1.343-3 3-3 3 1.343 3 3zm9 0c0 1.657-1.343 3-3 3s-3-1.343-3-3 1.343-3 3-3 3 1.343 3 3zm9 0c0 1.657-1.343 3-3 3s-3-1.343-3-3 1.343-3 3-3 3 1.343 3 3z" />
