@@ -38,7 +38,6 @@
   },
   "dependencies": {
     "3x3-equation-solver": "^1.2.18",
-    "@electron/remote": "^1.1.0",
     "@hot-loader/react-dom": "^16.11.0",
     "@octokit/rest": "^16.25.4",
     "@reduxjs/toolkit": "^1.4.0",

@@ -7,7 +7,6 @@ import Path from "path";
 import settings from "electron-settings";
 import en from "../../lang/en.json";
 import { localesRoot } from "../../consts";
-import { app as remoteApp } from '@electron/remote';
 
 const localesPath = `${localesRoot}/*.json`;
 
@@ -15,7 +14,7 @@ export const locales = glob
   .sync(localesPath)
   .map((path) => Path.basename(path, ".json"));
 
-const app = electron.app || remoteApp;
+const app = electron.app;
 const settingsLocale = app && settings.getSync("locale");
 const systemLocale = app ? app.getLocale() : "en";
 const appLocale = settingsLocale || systemLocale;
