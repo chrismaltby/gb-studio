@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Path from "path";
-import { ipcRenderer, shell, dialog, app } from "electron";
+import { ipcRenderer, shell } from "electron";
 import settings from "electron-settings";
 import FocusLock, { AutoFocusInside } from "react-focus-lock";
 import { FlexGrow } from "ui/spacing/Spacing";
@@ -41,6 +41,7 @@ import gbs2Preview from "../../assets/templatePreview/gbs2.mp4";
 import gbhtmlPreview from "../../assets/templatePreview/gbhtml.mp4";
 import blankPreview from "../../assets/templatePreview/blank.png";
 import useWindowFocus from "ui/hooks/use-window-focus";
+import {app, dialog} from '@electron/remote';
 
 declare const DOCS_URL: string;
 

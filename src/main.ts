@@ -9,6 +9,9 @@ import switchLanguageDialog from "lib/electron/dialog/switchLanguageDialog";
 import l10n, { locales } from "lib/helpers/l10n";
 import initElectronL10n from "lib/helpers/initElectronL10n";
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+require('@electron/remote/main').initialize()
+
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const SPLASH_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
