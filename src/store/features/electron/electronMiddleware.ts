@@ -34,7 +34,7 @@ const electronMiddleware: Middleware<Dispatch, RootState> =
     if (actions.openHelp.match(action)) {
       ipcRenderer.send("open-help", action.payload);
     } else if (actions.openFolder.match(action)) {
-      remote.shell.openItem(action.payload);
+      remote.shell.openPath(action.payload);
     } else if (actions.openFile.match(action)) {
       if (action.payload.type === "image") {
         const app = String(settings.getSync("imageEditorPath") || "") || undefined;
@@ -43,7 +43,7 @@ const electronMiddleware: Middleware<Dispatch, RootState> =
         const app = String(settings.getSync("musicEditorPath") || "") || undefined;
         open(action.payload.filename, { app });
       } else {
-        remote.shell.openItem(action.payload.filename);
+        remote.shell.openPath(action.payload.filename);
       }
     } else if (editorActions.resizeWorldSidebar.match(action)) {
       settings.setSync("worldSidebarWidth", action.payload);
