@@ -1,7 +1,8 @@
 import electron from "electron";
 import l10n from "../../helpers/l10n";
+import { dialog as remoteDialog } from '@electron/remote';
 
-const dialog = electron.remote ? electron.remote.dialog : electron.dialog;
+const dialog = remoteDialog ? remoteDialog : electron.dialog;
 
 export default (name, sceneNames, count) => {
   // eslint-disable-next-line global-require

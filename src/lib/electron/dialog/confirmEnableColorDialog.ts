@@ -1,8 +1,9 @@
 import electron from "electron";
 import l10n from "../../helpers/l10n";
+import { dialog as remoteDialog, getCurrentWindow } from '@electron/remote';
 
-const dialog = electron.remote ? electron.remote.dialog : electron.dialog;
-const win = electron.remote?.getCurrentWindow();
+const dialog = remoteDialog ? remoteDialog : electron.dialog;
+const win = getCurrentWindow();
 
 export default () => {
   const dialogOptions = {
