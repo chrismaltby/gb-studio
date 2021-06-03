@@ -49,7 +49,7 @@
     "@types/react-select": "^3.0.22",
     "@types/react-window": "^1.8.2",
     "@types/styled-components": "^5.1.4",
-    "about-window": "^1.13.2",
+    "about-window": "^1.14.0",
     "chokidar": "^3.5.1",
     "classnames": "^2.2.5",
     "commander": "^6.2.0",
