@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from "react";
-import { ipcRenderer, remote } from "electron";
+import { ipcRenderer, nativeTheme } from "electron";
 import { ThemeProvider } from "styled-components";
 import lightTheme from "./lightTheme";
 import darkTheme from "./darkTheme";
@@ -8,8 +8,6 @@ import darkThemeWin from "./darkThemeWin";
 import neonTheme from "./neonTheme";
 import settings from "electron-settings";
 import { ThemeInterface } from "./ThemeInterface";
-
-const { nativeTheme } = remote;
 
 const themeIds = ["dark", "light", "neon"] as const;
 type ThemeId = typeof themeIds[number];

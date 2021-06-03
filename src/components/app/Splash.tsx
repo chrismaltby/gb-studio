@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Path from "path";
-import { ipcRenderer, remote } from "electron";
+import { ipcRenderer, shell, dialog, app } from "electron";
 import settings from "electron-settings";
 import FocusLock, { AutoFocusInside } from "react-focus-lock";
 import { FlexGrow } from "ui/spacing/Spacing";
@@ -41,8 +41,6 @@ import gbs2Preview from "../../assets/templatePreview/gbs2.mp4";
 import gbhtmlPreview from "../../assets/templatePreview/gbhtml.mp4";
 import blankPreview from "../../assets/templatePreview/blank.png";
 import useWindowFocus from "ui/hooks/use-window-focus";
-
-const { dialog, shell } = remote;
 
 declare const DOCS_URL: string;
 
@@ -92,7 +90,7 @@ const getLastUsedPath = () => {
   if (storedPath && storedPath !== "undefined") {
     return Path.normalize(storedPath);
   }
-  return remote.app.getPath("documents");
+  return app.getPath("documents");
 };
 
 const setLastUsedPath = (path: string) => {
