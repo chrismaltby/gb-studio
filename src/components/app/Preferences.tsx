@@ -138,11 +138,10 @@ const Preferences = () => {
 
         <FormRow>
           <FormField
-            name="musicEditorPath"
-            label={"UI Elements Scaling"}
+            name="zoomLevel"
+            label={l10n("FIELD_DEFAULT_ZOOM_LEVEL")}
           >
             <Select
-              name={"Select"}
               value={currentZoomValue}
               options={options}
               onChange={(newValue: ZoomOptions) => {
