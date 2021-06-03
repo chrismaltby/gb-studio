@@ -61,6 +61,7 @@ const createSplash = async (forceTab?: SplashTab) => {
       nodeIntegration: true,
       devTools: isDevMode,
       preload: SPLASH_WINDOW_PRELOAD_WEBPACK_ENTRY,
+      enableRemoteModule: true
     },
   });
   if (!splashWindow) return;
@@ -97,6 +98,7 @@ const createPreferences = async () => {
       nodeIntegration: true,
       devTools: isDevMode,
       preload: PREFERENCES_WINDOW_PRELOAD_WEBPACK_ENTRY,
+      enableRemoteModule: true
     },
   });
 
@@ -137,6 +139,7 @@ const createWindow = async (projectPath: string) => {
       webSecurity: process.env.NODE_ENV !== "development",
       devTools: isDevMode,
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
+      enableRemoteModule: true
     },
   });
 
@@ -238,6 +241,7 @@ const createPlay = async (url: string, sgb: boolean) => {
       webPreferences: {
         nodeIntegration: false,
         webSecurity: process.env.NODE_ENV !== "development",
+        enableRemoteModule: true
       },
     });
     playWindowSgb = sgb;
@@ -266,6 +270,7 @@ const createMusic = async (open?: boolean) => {
         webSecurity: process.env.NODE_ENV !== "development",
         devTools: isDevMode,
         preload: MUSIC_WINDOW_PRELOAD_WEBPACK_ENTRY,
+        enableRemoteModule: true
       },
     });
   }
