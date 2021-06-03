@@ -9,6 +9,8 @@ import switchLanguageDialog from "lib/electron/dialog/switchLanguageDialog";
 import l10n, { locales } from "lib/helpers/l10n";
 import initElectronL10n from "lib/helpers/initElectronL10n";
 
+// TODO: Migrate to import when `1.1.1` is published
+//  https://github.com/electron/remote/commit/1502a4cf8dc962feff3aa30ec0cd3a5e8d3ceccd#commitcomment-51695814
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('@electron/remote/main').initialize()
 

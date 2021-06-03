@@ -1,8 +1,9 @@
 import electron from "electron";
 import { AssetFolder } from "../../project/assets";
 import l10n from "../../helpers/l10n";
+import {dialog as remoteDialog} from '@electron/remote';
 
-const dialog = electron.dialog;
+const dialog = remoteDialog || electron.dialog;
 
 export default (folders: AssetFolder[]): AssetFolder | undefined => {
   const cancelId = folders.length;
