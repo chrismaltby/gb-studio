@@ -18,6 +18,8 @@ import { ErrorShape } from "store/stateShape";
 import LoadingPane from "../library/LoadingPane";
 import { DropZone } from "ui/upload/DropZone";
 import projectActions from "store/features/project/projectActions";
+import { ipcRenderer } from "electron";
+import settings from "electron-settings";
 
 class App extends Component {
   constructor() {
@@ -36,6 +38,8 @@ class App extends Component {
     window.addEventListener("dragover", this.onDragOver);
     window.addEventListener("dragleave", this.onDragLeave);
     window.addEventListener("drop", this.onDrop);
+    const zoomLevel = Number(settings.get("zoomLevel") || 0);
+    ipcRenderer.send('window-zoom', zoomLevel)
   }
 
   onBlur = () => {

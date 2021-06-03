@@ -147,15 +147,8 @@ const onZoom = (event, zoomType) => {
   }
 };
 
-const onWindowZoom = (event, zoomType) => {
-  const currentLevel = webFrame.getZoomLevel();
-  if (zoomType === "in") {
-    webFrame.setZoomLevel(currentLevel + 1)
-  } else if (zoomType === "out") {
-    webFrame.setZoomLevel(currentLevel - 1);
-  } else {
-    webFrame.setZoomLevel(0);
-  }
+const onWindowZoom = (event, zoomLevel) => {
+  webFrame.setZoomLevel(zoomLevel)
 };
 
 const onRun = () => {
