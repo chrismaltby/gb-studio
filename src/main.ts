@@ -58,6 +58,8 @@ const createSplash = async (forceTab?: SplashTab) => {
     show: false,
     autoHideMenuBar: true,
     webPreferences: {
+      worldSafeExecuteJavaScript: false,
+      contextIsolation: false,
       nodeIntegration: true,
       devTools: isDevMode,
       preload: SPLASH_WINDOW_PRELOAD_WEBPACK_ENTRY,
@@ -95,6 +97,8 @@ const createPreferences = async () => {
     show: false,
     autoHideMenuBar: true,
     webPreferences: {
+      worldSafeExecuteJavaScript: false,
+      contextIsolation: false,
       nodeIntegration: true,
       devTools: isDevMode,
       preload: PREFERENCES_WINDOW_PRELOAD_WEBPACK_ENTRY,
@@ -134,6 +138,8 @@ const createWindow = async (projectPath: string) => {
     fullscreenable: true,
     show: false,
     webPreferences: {
+      worldSafeExecuteJavaScript: false,
+      contextIsolation: false,
       nodeIntegration: true,
       nodeIntegrationInWorker: true,
       webSecurity: process.env.NODE_ENV !== "development",
@@ -239,6 +245,8 @@ const createPlay = async (url: string, sgb: boolean) => {
       autoHideMenuBar: true,
       useContentSize: true,
       webPreferences: {
+        worldSafeExecuteJavaScript: false,
+        contextIsolation: false,
         nodeIntegration: false,
         webSecurity: process.env.NODE_ENV !== "development",
         enableRemoteModule: true
@@ -265,6 +273,8 @@ const createMusic = async (open?: boolean) => {
       width: 330,
       height: 330,
       webPreferences: {
+        worldSafeExecuteJavaScript: false,
+        contextIsolation: false,
         nodeIntegration: true,
         nodeIntegrationInWorker: true,
         webSecurity: process.env.NODE_ENV !== "development",
