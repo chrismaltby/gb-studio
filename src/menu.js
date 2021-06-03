@@ -267,7 +267,7 @@ const buildMenu = async (plugins = []) => {
               id: "themeDefault",
               label: l10n("MENU_THEME_DEFAULT"),
               type: "checkbox",
-              checked: settings.get("theme") === undefined,
+              checked: settings.getSync("theme") === undefined,
               click() {
                 notifyListeners("updateSetting", "theme", undefined);
               },
@@ -277,7 +277,7 @@ const buildMenu = async (plugins = []) => {
               id: "themeLight",
               label: l10n("MENU_THEME_LIGHT"),
               type: "checkbox",
-              checked: settings.get("theme") === "light",
+              checked: settings.getSync("theme") === "light",
               click() {
                 notifyListeners("updateSetting", "theme", "light");
               },
@@ -286,7 +286,7 @@ const buildMenu = async (plugins = []) => {
               id: "themeDark",
               label: l10n("MENU_THEME_DARK"),
               type: "checkbox",
-              checked: settings.get("theme") === "dark",
+              checked: settings.getSync("theme") === "dark",
               click() {
                 notifyListeners("updateSetting", "theme", "dark");
               },
@@ -301,7 +301,7 @@ const buildMenu = async (plugins = []) => {
                 id: "localeDefault",
                 label: l10n("MENU_LANGUAGE_DEFAULT"),
                 type: "checkbox",
-                checked: settings.get("locale") === undefined,
+                checked: settings.getSync("locale") === undefined,
                 click() {
                   notifyListeners("updateSetting", "locale", undefined);
                 },
@@ -313,7 +313,7 @@ const buildMenu = async (plugins = []) => {
                 id: `locale-${locale}`,
                 label: locale,
                 type: "checkbox",
-                checked: settings.get("locale") === locale,
+                checked: settings.getSync("locale") === locale,
                 click() {
                   notifyListeners("updateSetting", "locale", locale);
                 },
@@ -338,7 +338,7 @@ const buildMenu = async (plugins = []) => {
               id: "showConnectionsAll",
               label: l10n("MENU_SHOW_CONNECTIONS_ALL"),
               type: "checkbox",
-              checked: settings.get("showConnections") === "all",
+              checked: settings.getSync("showConnections") === "all",
               click() {
                 notifyListeners("updateSetting", "showConnections", "all");
               },
@@ -348,8 +348,8 @@ const buildMenu = async (plugins = []) => {
               label: l10n("MENU_SHOW_CONNECTIONS_SELECTED"),
               type: "checkbox",
               checked:
-                settings.get("showConnections") === "selected" ||
-                settings.get("showConnections") === true,
+                settings.getSync("showConnections") === "selected" ||
+                settings.getSync("showConnections") === true,
               click() {
                 notifyListeners("updateSetting", "showConnections", "selected");
               },
@@ -359,7 +359,7 @@ const buildMenu = async (plugins = []) => {
               id: "showConnectionsNone",
               label: l10n("MENU_SHOW_CONNECTIONS_NONE"),
               type: "checkbox",
-              checked: settings.get("showConnections") === false,
+              checked: settings.getSync("showConnections") === false,
               click() {
                 notifyListeners("updateSetting", "showConnections", false);
               },
@@ -369,7 +369,7 @@ const buildMenu = async (plugins = []) => {
         {
           id: "showNavigator",
           label: l10n("MENU_SHOW_NAVIGATOR"),
-          checked: settings.get("showNavigator") !== false,
+          checked: settings.getSync("showNavigator") !== false,
           type: "checkbox",
           click: (item) => {
             notifyListeners("updateSetting", "showNavigator", item.checked);

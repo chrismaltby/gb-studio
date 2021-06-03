@@ -24,24 +24,24 @@ const Preferences = () => {
 
   useEffect(() => {
     setTmpPath(getTmp(false));
-    setImageEditorPath(String(settings.get("imageEditorPath") || ""));
-    setMusicEditorPath(String(settings.get("musicEditorPath") || ""));
+    setImageEditorPath(String(settings.getSync("imageEditorPath") || ""));
+    setMusicEditorPath(String(settings.getSync("musicEditorPath") || ""));
   }, []);
 
   const onChangeTmpPath = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newPath = e.currentTarget.value;
     setTmpPath(newPath);
-    settings.set("tmpDir", newPath);
+    settings.setSync("tmpDir", newPath);
   };
 
   const onChangeImageEditorPath = (path: string) => {
     setImageEditorPath(path);
-    settings.set("imageEditorPath", path);
+    settings.setSync("imageEditorPath", path);
   };
 
   const onChangeMusicEditorPath = (path: string) => {
     setMusicEditorPath(path);
-    settings.set("musicEditorPath", path);
+    settings.setSync("musicEditorPath", path);
   };
 
   const onSelectTmpFolder = async () => {
@@ -51,12 +51,12 @@ const Preferences = () => {
     if (path.filePaths[0]) {
       const newPath = Path.normalize(`${path.filePaths[0]}/`);
       setTmpPath(newPath);
-      settings.set("tmpDir", newPath);
+      settings.setSync("tmpDir", newPath);
     }
   };
 
   const onRestoreDefaultTmpPath = () => {
-    settings.delete("tmpDir");
+    settings.unsetSync("tmpDir");
     setTmpPath(getTmp(false));
   };
 

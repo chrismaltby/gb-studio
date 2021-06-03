@@ -8,7 +8,7 @@ import lightTheme from "!!raw-loader!../../styles/theme.css";
 const { nativeTheme } = remote;
 
 const updateMyAppTheme = () => {
-  const settingsTheme = settings.get("theme");
+  const settingsTheme = settings.getSync("theme");
   const theme =
     settingsTheme === "dark"
       ? "dark"

@@ -8,8 +8,8 @@ export default (create = true) => {
     // eslint-disable-next-line global-require
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const settings = require("electron-settings");
-    if (settings.get("tmpDir")) {
-      tmpPath = settings.get("tmpDir");
+    if (settings.getSync("tmpDir")) {
+      tmpPath = settings.getSync("tmpDir");
     }
   }
   if (

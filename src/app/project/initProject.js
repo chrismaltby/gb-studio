@@ -200,9 +200,9 @@ ipcRenderer.on("exportProject", onExportProject);
 ipcRenderer.on("plugin-run", onPluginRun);
 ipcRenderer.on("paste-in-place", onPasteInPlace);
 
-const worldSidebarWidth = settings.get("worldSidebarWidth");
-const filesSidebarWidth = settings.get("filesSidebarWidth");
-const navigatorSidebarWidth = settings.get("navigatorSidebarWidth");
+const worldSidebarWidth = settings.getSync("worldSidebarWidth");
+const filesSidebarWidth = settings.getSync("filesSidebarWidth");
+const navigatorSidebarWidth = settings.getSync("navigatorSidebarWidth");
 
 if (worldSidebarWidth) {
   store.dispatch(

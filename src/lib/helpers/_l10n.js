@@ -15,7 +15,7 @@ export const locales = glob
   .map((path) => Path.basename(path, ".json"));
 
 const app = electron.app || (electron.remote && electron.remote.app);
-const settingsLocale = app && settings.get("locale");
+const settingsLocale = app && settings.getSync("locale");
 const systemLocale = app ? app.getLocale() : "en";
 const appLocale = settingsLocale || systemLocale;
 

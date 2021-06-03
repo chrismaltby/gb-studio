@@ -4,7 +4,7 @@ import { loadLanguage } from "./l10n";
 
 const initElectronL10n = () => {
   const app = electron.app || (electron.remote && electron.remote.app);
-  const settingsLocale = app && settings.get("locale");
+  const settingsLocale = app && settings.getSync("locale");
   const systemLocale = app ? app.getLocale() : "en";
   const appLocale = String(settingsLocale || systemLocale);
 

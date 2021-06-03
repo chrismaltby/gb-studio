@@ -361,12 +361,12 @@ ipcMain.on("request-recent-projects", async (_event) => {
   splashWindow &&
     splashWindow.webContents.send(
       "recent-projects",
-      settings.get("recentProjects")
+      settings.getSync("recentProjects")
     );
 });
 
 ipcMain.on("clear-recent-projects", async (_event) => {
-  settings.set("recentProjects", []);
+  settings.setSync("recentProjects", []);
   app.clearRecentDocuments();
 });
 
@@ -558,7 +558,7 @@ menu.on("preferences", () => {
 });
 
 menu.on("updateSetting", (setting: string, value: string | boolean) => {
-  settings.set(setting, value);
+  settings.setSync(setting, value);
   if (setting === "theme") {
     menu.ref().getMenuItemById("themeDefault").checked = value === undefined;
     menu.ref().getMenuItemById("themeLight").checked = value === "light";
@@ -655,10 +655,10 @@ const openProject = async (projectPath: string) => {
 
 const addRecentProject = (projectPath: string) => {
   // Store recent projects
-  settings.set(
+  settings.setSync(
     "recentProjects",
     ([] as string[])
-      .concat((settings.get("recentProjects") || []) as string[], projectPath)
+      .concat((settings.getSync("recentProjects") || []) as string[], projectPath)
       .reverse()
       .filter(
         (filename: string, index: number, arr: string[]) =>

@@ -88,7 +88,7 @@ const templates: TemplateInfo[] = [
 ];
 
 const getLastUsedPath = () => {
-  const storedPath = String(settings.get("__lastUsedPath"));
+  const storedPath = String(settings.getSync("__lastUsedPath"));
   if (storedPath && storedPath !== "undefined") {
     return Path.normalize(storedPath);
   }
@@ -96,15 +96,15 @@ const getLastUsedPath = () => {
 };
 
 const setLastUsedPath = (path: string) => {
-  settings.set("__lastUsedPath", path);
+  settings.setSync("__lastUsedPath", path);
 };
 
 const getLastUsedTab = () => {
-  return String(settings.get("__lastUsedSplashTab")) || "info";
+  return String(settings.getSync("__lastUsedSplashTab")) || "info";
 };
 
 const setLastUsedTab = (tab: string) => {
-  settings.set("__lastUsedSplashTab", tab);
+  settings.setSync("__lastUsedSplashTab", tab);
 };
 
 const toSplashTab = (tab: string): SplashTabSection => {

@@ -37,20 +37,20 @@ const electronMiddleware: Middleware<Dispatch, RootState> =
       remote.shell.openItem(action.payload);
     } else if (actions.openFile.match(action)) {
       if (action.payload.type === "image") {
-        const app = String(settings.get("imageEditorPath") || "") || undefined;
+        const app = String(settings.getSync("imageEditorPath") || "") || undefined;
         open(action.payload.filename, { app });
       } else if (action.payload.type === "music") {
-        const app = String(settings.get("musicEditorPath") || "") || undefined;
+        const app = String(settings.getSync("musicEditorPath") || "") || undefined;
         open(action.payload.filename, { app });
       } else {
         remote.shell.openItem(action.payload.filename);
       }
     } else if (editorActions.resizeWorldSidebar.match(action)) {
-      settings.set("worldSidebarWidth", action.payload);
+      settings.setSync("worldSidebarWidth", action.payload);
     } else if (editorActions.resizeFilesSidebar.match(action)) {
-      settings.set("filesSidebarWidth", action.payload);
+      settings.setSync("filesSidebarWidth", action.payload);
     } else if (editorActions.resizeNavigatorSidebar.match(action)) {
-      settings.set("navigatorSidebarWidth", action.payload);
+      settings.setSync("navigatorSidebarWidth", action.payload);
     } else if (
       editorActions.setTool.match(action) &&
       action.payload.tool === "colors"

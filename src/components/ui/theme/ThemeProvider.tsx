@@ -59,7 +59,7 @@ const Provider: FC = ({ children }) => {
   useEffect(() => {
     const updateAppTheme = () => {
       const themeId = toThemeId(
-        settings.get?.("theme"),
+        settings.getSync?.("theme"),
         nativeTheme?.shouldUseDarkColors
       );
       if (process.platform === "darwin") {
