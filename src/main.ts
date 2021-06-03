@@ -58,7 +58,6 @@ const createSplash = async (forceTab?: SplashTab) => {
     show: false,
     autoHideMenuBar: true,
     webPreferences: {
-      worldSafeExecuteJavaScript: false,
       contextIsolation: false,
       nodeIntegration: true,
       devTools: isDevMode,
@@ -97,7 +96,6 @@ const createPreferences = async () => {
     show: false,
     autoHideMenuBar: true,
     webPreferences: {
-      worldSafeExecuteJavaScript: false,
       contextIsolation: false,
       nodeIntegration: true,
       devTools: isDevMode,
@@ -138,7 +136,6 @@ const createWindow = async (projectPath: string) => {
     fullscreenable: true,
     show: false,
     webPreferences: {
-      worldSafeExecuteJavaScript: false,
       contextIsolation: false,
       nodeIntegration: true,
       nodeIntegrationInWorker: true,
@@ -245,7 +242,6 @@ const createPlay = async (url: string, sgb: boolean) => {
       autoHideMenuBar: true,
       useContentSize: true,
       webPreferences: {
-        worldSafeExecuteJavaScript: false,
         contextIsolation: false,
         nodeIntegration: false,
         webSecurity: process.env.NODE_ENV !== "development",
@@ -273,7 +269,6 @@ const createMusic = async (open?: boolean) => {
       width: 330,
       height: 330,
       webPreferences: {
-        worldSafeExecuteJavaScript: false,
         contextIsolation: false,
         nodeIntegration: true,
         nodeIntegrationInWorker: true,
