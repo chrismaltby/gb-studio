@@ -9,6 +9,7 @@ import {
   FormFieldInfo,
   FormHeader,
   FormRow,
+  FormSectionTitle,
 } from "ui/form/FormLayout";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import l10n from "lib/helpers/l10n";
@@ -50,6 +51,8 @@ import { AnimationTypeSelect } from "../forms/AnimationTypeSelect";
 import { ObjPaletteSelect } from "../forms/ObjPaletteSelect";
 import { PaletteIndexSelect } from "../forms/PaletteIndexSelect";
 import styled from "styled-components";
+import { CreatableSelect } from "ui/form/Select";
+// import CreatableSelect from "react-select/creatable";
 
 interface SpriteEditorProps {
   id: string;
@@ -125,6 +128,24 @@ export const SpriteEditor = ({
   const onChangeStateField =
     <T extends keyof SpriteSheet>(key: T) =>
     (editValue: SpriteSheet[T]) => {
+      dispatch(
+        entitiesActions.editSpriteState({
+          spriteStateId,
+          changes: {
+            [key]: editValue,
+          },
+        })
+      );
+    };
+
+  const onChangeStateFieldInput =
+    <T extends keyof SpriteSheet>(key: T) =>
+    (
+      e:
+        | React.ChangeEvent<HTMLInputElement>
+        | React.ChangeEvent<HTMLTextAreaElement>
+    ) => {
+      const editValue = castEventValue(e);
       dispatch(
         entitiesActions.editSpriteState({
           spriteStateId,
@@ -291,6 +312,8 @@ export const SpriteEditor = ({
   if (!sprite || !spriteState || !animation) {
     return null;
   }
+
+  const isDefaultState = sprite.states.indexOf(spriteStateId) === 0;
 
   return (
     <Sidebar onClick={selectSidebar}>
@@ -550,7 +573,22 @@ export const SpriteEditor = ({
                   />
                 </FormRow>
               </div>
-              <FormDivider />
+              <FormSectionTitle>
+                {l10n("FIELD_ANIMATION_SETTINGS")}
+              </FormSectionTitle>
+              {!isDefaultState && (
+                <FormRow>
+                  <FormField name="stateName" label="State Name">
+                    <CreatableSelect
+                      classNamePrefix="CustomSelect"
+                      onChange={() => {}}
+                      onInputChange={() => {}}
+                      options={[]}
+                    />
+                  </FormField>
+                </FormRow>
+              )}
+
               <FormRow>
                 <FormField
                   name="animationType"
@@ -570,8 +608,8 @@ export const SpriteEditor = ({
                     <CheckboxField
                       name="customColorsEnabled"
                       label={l10n("FIELD_FLIP_RIGHT_TO_CREATE_LEFT")}
-                      checked={!!sprite.flipLeft}
-                      onChange={onChangeFieldInput("flipLeft")}
+                      checked={!!spriteState.flipLeft}
+                      onChange={onChangeStateFieldInput("flipLeft")}
                     />
                   </FormRow>
                 )}

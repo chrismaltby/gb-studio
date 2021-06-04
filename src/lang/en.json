@@ -388,6 +388,7 @@
   "FIELD_EMOTE_PALETTE_NOTE": "Note: GB Color sprite palette #8 is also used for emotes",
   "FIELD_SGB_PALETTE_NOTE": "Note: Super GB default palette is shared with GB Color palette #5, changing either will also update the other value.",
   "FIELD_CART_BATTERYLESS": "Enable Batteryless Saving (Flash Cart Only)",
+  "FIELD_ANIMATION_SETTINGS": "Animation Settings",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

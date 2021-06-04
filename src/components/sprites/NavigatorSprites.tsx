@@ -23,6 +23,10 @@ import { SplitPaneVerticalDivider } from "ui/splitpane/SplitPaneDivider";
 import useSplitPane from "ui/hooks/use-split-pane";
 import styled from "styled-components";
 import useToggleableList from "ui/hooks/use-toggleable-list";
+import {
+  filterAnimationsBySpriteType,
+  getAnimationNameByIndex,
+} from "./helpers";
 
 interface NavigatorSpritesProps {
   height: number;
@@ -137,10 +141,6 @@ export const NavigatorSprites = ({
         const state = spriteStatesLookup[stateId] as SpriteState;
         return {
           ...state,
-          animations: state.animations.map((animId) => {
-            const anim = spriteAnimationsLookup[animId] as SpriteAnimation;
-            return anim;
-          }),
         };
       });
 
@@ -157,12 +157,20 @@ export const NavigatorSprites = ({
           });
         }
         if (tree.length === 1 || stateOpen) {
-          state.animations.forEach((anim) => {
+          filterAnimationsBySpriteType(
+            state.animations,
+            state.animationType,
+            state.flipLeft
+          ).forEach((id, index) => {
             list.push({
-              id: `${state.id}_${anim.id}`,
-              animationId: anim.id,
+              id: `${state.id}_${id}`,
+              animationId: id,
               stateId: state.id,
-              name: anim.type || "",
+              name: getAnimationNameByIndex(
+                state.animationType,
+                state.flipLeft,
+                index
+              ),
               type: "animation",
               nestLevel: tree.length === 1 ? 0 : 1,
             });

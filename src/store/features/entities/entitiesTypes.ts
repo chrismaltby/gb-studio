@@ -203,6 +203,7 @@ export type SpriteState = {
   id: string;
   name: string;
   animationType: SpriteAnimationType;
+  flipLeft: boolean;
   animations: string[];
 };
 

@@ -691,6 +691,7 @@ const editorSlice = createSlice({
       })
       .addCase(entitiesActions.addSpriteState, (state, action) => {
         state.selectedSpriteStateId = action.payload.spriteStateId;
+        state.selectedAnimationId = "";
       })
       .addCase(entitiesActions.addCustomEvent, (state, action) => {
         state.type = "customEvent";

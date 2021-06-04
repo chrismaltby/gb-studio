@@ -2083,6 +2083,7 @@ const addSpriteState: CaseReducer<
     name: sprite.states.length > 0 ? "New State" : "",
     animations: newAnimations.map((anim) => anim.id),
     animationType: "fixed",
+    flipLeft: true,
   };
 
   // Add to sprite
