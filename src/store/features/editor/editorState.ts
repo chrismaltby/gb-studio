@@ -105,6 +105,7 @@ export interface EditorState {
   profile: boolean;
   focusSceneId: string;
   selectedSpriteSheetId: string;
+  selectedSpriteStateId: string;
   selectedAnimationId: string;
   selectedMetaspriteId: string;
   selectedMetaspriteTileIds: string[];
@@ -168,6 +169,7 @@ export const initialState: EditorState = {
   navigatorSplitSizes: [300, 100, 100],
   focusSceneId: "",
   selectedSpriteSheetId: "",
+  selectedSpriteStateId: "",
   selectedAnimationId: "",
   selectedMetaspriteId: "",
   selectedMetaspriteTileIds: [],
@@ -530,6 +532,7 @@ const editorSlice = createSlice({
 
     setSelectedSpriteSheetId: (state, action: PayloadAction<string>) => {
       state.selectedSpriteSheetId = action.payload;
+      state.selectedSpriteStateId = "";
       state.selectedAnimationId = "";
       state.selectedMetaspriteId = "";
       state.selectedMetaspriteTileIds = [];
@@ -538,8 +541,15 @@ const editorSlice = createSlice({
       state.spriteTileSelection = undefined;
     },
 
-    setSelectedAnimationId: (state, action: PayloadAction<string>) => {
-      state.selectedAnimationId = action.payload;
+    setSelectedAnimationId: (
+      state,
+      action: PayloadAction<{
+        animationId: string;
+        stateId: string;
+      }>
+    ) => {
+      state.selectedAnimationId = action.payload.animationId;
+      state.selectedSpriteStateId = action.payload.stateId;
       state.selectedMetaspriteId = "";
       state.selectedMetaspriteTileIds = [];
       state.playSpriteAnimation = false;
@@ -678,6 +688,9 @@ const editorSlice = createSlice({
       })
       .addCase(entitiesActions.addMetaspriteTile, (state, _action) => {
         state.spriteTileSelection = undefined;
+      })
+      .addCase(entitiesActions.addSpriteState, (state, action) => {
+        state.selectedSpriteStateId = action.payload.spriteStateId;
       })
       .addCase(entitiesActions.addCustomEvent, (state, action) => {
         state.type = "customEvent";

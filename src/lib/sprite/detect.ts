@@ -6,6 +6,7 @@ import {
   SpriteAnimation,
   SpriteAnimationType,
   SpriteSheet,
+  SpriteState,
 } from "store/features/entities/entitiesTypes";
 import { assetFilename } from "../helpers/gbstudio";
 import DetectSpriteWorker, { DetectSpriteResult } from "./detectSprite.worker";
@@ -20,6 +21,7 @@ import {
 interface DetectedSprite {
   spriteSheetId: string;
   spriteAnimations: SpriteAnimation[];
+  spriteStates: SpriteState[];
   metasprites: Metasprite[];
   metaspriteTiles: MetaspriteTile[];
   changes: Partial<SpriteSheet>;
@@ -161,6 +163,7 @@ export const detect = (
       return resolve({
         spriteSheetId: spriteSheet.id,
         spriteAnimations: animations,
+        spriteStates: [],
         metasprites,
         metaspriteTiles,
         changes,
@@ -264,6 +267,7 @@ export const detectClassic = (spriteSheet: SpriteSheet): DetectedSprite => {
   return {
     spriteSheetId: spriteSheet.id,
     spriteAnimations: animations,
+    spriteStates: [],
     metasprites,
     metaspriteTiles,
     changes,

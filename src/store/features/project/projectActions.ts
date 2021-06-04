@@ -185,6 +185,7 @@ const loadSprite = createAsyncThunk<{ data: SpriteSheet }, string>(
           ...existingAsset,
           ...data,
           id: existingId,
+          name: existingAsset?.name || data.name,
           autoDetect:
             existingAsset?.autoDetect !== undefined
               ? existingAsset.autoDetect

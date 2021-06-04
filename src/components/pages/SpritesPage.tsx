@@ -23,6 +23,7 @@ import { NavigatorSprites } from "../sprites/NavigatorSprites";
 import {
   spriteAnimationSelectors,
   spriteSheetSelectors,
+  spriteStateSelectors,
 } from "store/features/entities/entitiesState";
 import MetaspriteEditor from "../sprites/MetaspriteEditor";
 import SpriteTilePalette from "../sprites/SpriteTilePalette";
@@ -35,6 +36,7 @@ import { ZoomButton } from "ui/buttons/ZoomButton";
 import MetaspriteEditorPreviewSettings from "../sprites/MetaspriteEditorPreviewSettings";
 import spriteActions from "store/features/sprite/spriteActions";
 import { clampSidebarWidth } from "lib/helpers/window/sidebar";
+import useSorted from "ui/hooks/use-sorted";
 
 const Wrapper = styled.div`
   display: flex;
@@ -65,11 +67,17 @@ const SpritesPage = () => {
   const spritesLookup = useSelector((state: RootState) =>
     spriteSheetSelectors.selectEntities(state)
   );
+  const spriteStatesLookup = useSelector((state: RootState) =>
+    spriteStateSelectors.selectEntities(state)
+  );
   const spriteAnimationsLookup = useSelector((state: RootState) =>
     spriteAnimationSelectors.selectEntities(state)
   );
   const navigationId = useSelector(
     (state: RootState) => state.editor.selectedSpriteSheetId
+  );
+  const navigationStateId = useSelector(
+    (state: RootState) => state.editor.selectedSpriteStateId
   );
   const animationId = useSelector(
     (state: RootState) => state.editor.selectedAnimationId
@@ -80,11 +88,18 @@ const SpritesPage = () => {
   const colorsEnabled = useSelector(
     (state: RootState) => state.project.present.settings.customColorsEnabled
   );
-  const selectedSprite = spritesLookup[navigationId] || allSprites[0];
+  const sortedSprites = useSorted(allSprites);
+  const selectedSprite = spritesLookup[navigationId] || sortedSprites[0];
+
+  const selectedState =
+    spriteStatesLookup[navigationStateId] ||
+    spriteStatesLookup[selectedSprite.states[0]];
+
   const selectedAnimation =
     spriteAnimationsLookup[animationId] ||
-    spriteAnimationsLookup[selectedSprite.animations?.[0]];
+    (selectedState && spriteAnimationsLookup[selectedState.animations?.[0]]);
   const selectedId = selectedSprite?.id || "";
+  const selectedStateId = selectedState?.id || "";
   const selectedAnimationId = selectedAnimation?.id || "";
   const selectedMetaspriteId =
     metaspriteId || selectedAnimation?.frames[0] || "";
@@ -258,7 +273,9 @@ const SpritesPage = () => {
         >
           <NavigatorSprites
             height={windowHeight - 38}
+            selectedId={selectedId}
             selectedAnimationId={selectedAnimationId}
+            selectedStateId={selectedStateId}
             defaultFirst
           />
         </div>

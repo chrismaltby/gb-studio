@@ -4,6 +4,7 @@ import {
   MetaspriteTile,
   SpriteAnimation,
   SpriteSheet,
+  SpriteState,
 } from "../entities/entitiesTypes";
 
 const detectSprite = createAction<{ spriteSheetId: string }>(
@@ -12,6 +13,7 @@ const detectSprite = createAction<{ spriteSheetId: string }>(
 const detectSpriteComplete = createAction<{
   spriteSheetId: string;
   spriteAnimations: SpriteAnimation[];
+  spriteStates: SpriteState[];
   metasprites: Metasprite[];
   metaspriteTiles: MetaspriteTile[];
   changes: Partial<SpriteSheet>;

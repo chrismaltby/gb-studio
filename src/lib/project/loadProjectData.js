@@ -97,6 +97,7 @@ const loadProject = async (projectPath) => {
                 oldSprite.animations[animationIndex].id) ||
               uuid(),
             frames: (oldSprite.animations &&
+              oldSprite.animations[animationIndex] &&
               oldSprite.animations[animationIndex].frames) || [
               {
                 id: uuid(),
@@ -104,6 +105,33 @@ const loadProject = async (projectPath) => {
               },
             ],
           })),
+          states: (
+            oldSprite.states || [
+              {
+                id: uuid(),
+                name: "",
+              },
+            ]
+          ).map((oldState) => {
+            return {
+              ...oldState,
+              animations: Array.from(Array(8)).map((_, animationIndex) => ({
+                id:
+                  (oldState.animations &&
+                    oldState.animations[animationIndex] &&
+                    oldState.animations[animationIndex].id) ||
+                  uuid(),
+                frames: (oldState.animations &&
+                  oldState.animations[animationIndex] &&
+                  oldState.animations[animationIndex].frames) || [
+                  {
+                    id: uuid(),
+                    tiles: [],
+                  },
+                ],
+              })),
+            };
+          }),
           autoDetect,
         };
       } else {

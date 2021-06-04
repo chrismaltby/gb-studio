@@ -199,13 +199,33 @@ export type Metasprite = {
   tiles: string[];
 };
 
+export type SpriteState = {
+  id: string;
+  name: string;
+  animations: string[];
+};
+
 export type SpriteAnimation = {
   id: string;
+  state?: string;
+  type?:
+    | "idleLeft"
+    | "idleRight"
+    | "idleUp"
+    | "idleDown"
+    | "movingLeft"
+    | "movingRight"
+    | "movingUp"
+    | "movingDown"
+    | "jumpingLeft"
+    | "jumpingRight"
+    | "climbing";
   frames: string[];
 };
 
 export type SpriteStates = {
   id: string;
+  name: string;
   animationType: SpriteAnimationType;
 };
 
@@ -233,7 +253,7 @@ export type SpriteSheet = {
   animations: string[];
   animSpeed: number | null;
   autoDetect: boolean;
-  states: SpriteStates[];
+  states: string[];
 };
 
 export type SceneParallaxLayer = {
@@ -292,6 +312,7 @@ export interface EntitiesState {
   metasprites: EntityState<Metasprite>;
   metaspriteTiles: EntityState<MetaspriteTile>;
   spriteAnimations: EntityState<SpriteAnimation>;
+  spriteStates: EntityState<SpriteState>;
   palettes: EntityState<Palette>;
   customEvents: EntityState<CustomEvent>;
   music: EntityState<Music>;

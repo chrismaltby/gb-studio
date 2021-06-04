@@ -6,6 +6,7 @@ import {
   metaspriteSelectors,
   metaspriteTileSelectors,
   spriteAnimationSelectors,
+  spriteStateSelectors,
   spriteSheetSelectors,
 } from "../entities/entitiesState";
 import entitiesActions from "../entities/entitiesActions";
@@ -116,12 +117,14 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
       const metasprites = metaspriteSelectors.selectEntities(state);
       const metaspriteTiles = metaspriteTileSelectors.selectEntities(state);
       const spriteAnimations = spriteAnimationSelectors.selectEntities(state);
+      const spriteStates = spriteStateSelectors.selectEntities(state);
 
       const spriteData = denormalizeSprite({
         sprite: spriteSheet,
         metasprites,
         metaspriteTiles,
         spriteAnimations,
+        spriteStates,
       });
 
       const res = await compileSprite(spriteData, projectRoot);

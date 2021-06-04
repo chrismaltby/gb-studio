@@ -66,6 +66,7 @@ import {
   ObjPalette,
   Avatar,
   Emote,
+  SpriteState,
 } from "./entitiesTypes";
 import {
   normalizeEntities,
@@ -101,6 +102,7 @@ const spriteSheetsAdapter = createEntityAdapter<SpriteSheet>({
 const metaspritesAdapter = createEntityAdapter<Metasprite>();
 const metaspriteTilesAdapter = createEntityAdapter<MetaspriteTile>();
 const spriteAnimationsAdapter = createEntityAdapter<SpriteAnimation>();
+const spriteStatesAdapter = createEntityAdapter<SpriteState>();
 const palettesAdapter = createEntityAdapter<Palette>();
 const customEventsAdapter = createEntityAdapter<CustomEvent>();
 const musicAdapter = createEntityAdapter<Music>({
@@ -127,6 +129,7 @@ export const initialState: EntitiesState = {
   metasprites: metaspritesAdapter.getInitialState(),
   metaspriteTiles: metaspriteTilesAdapter.getInitialState(),
   spriteAnimations: spriteAnimationsAdapter.getInitialState(),
+  spriteStates: spriteStatesAdapter.getInitialState(),
   palettes: palettesAdapter.getInitialState(),
   customEvents: customEventsAdapter.getInitialState(),
   music: musicAdapter.getInitialState(),
@@ -387,6 +390,7 @@ const loadProject: CaseReducer<
     state.spriteAnimations,
     entities.spriteAnimations || {}
   );
+  spriteStatesAdapter.setAll(state.spriteStates, entities.spriteStates || {});
   palettesAdapter.setAll(state.palettes, entities.palettes || {});
   musicAdapter.setAll(state.music, entities.music || {});
   fontsAdapter.setAll(state.fonts, entities.fonts || {});
@@ -455,6 +459,7 @@ const loadDetectedSprite: CaseReducer<
   PayloadAction<{
     spriteSheetId: string;
     spriteAnimations: SpriteAnimation[];
+    spriteStates: SpriteState[];
     metasprites: Metasprite[];
     metaspriteTiles: MetaspriteTile[];
     changes: Partial<SpriteSheet>;
@@ -480,6 +485,8 @@ const loadDetectedSprite: CaseReducer<
     state.spriteAnimations,
     action.payload.spriteAnimations
   );
+
+  spriteStatesAdapter.addMany(state.spriteStates, action.payload.spriteStates);
 
   spriteSheetsAdapter.updateOne(state.spriteSheets, {
     id: action.payload.spriteSheetId,
@@ -2039,6 +2046,50 @@ const swapSpriteAnimationFrames: CaseReducer<
 };
 
 /**************************************************************************
+ * Sprite State
+ */
+
+const addSpriteState: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    spriteSheetId: string;
+    spriteStateId: string;
+  }>
+> = (state, action) => {
+  const sprite = state.spriteSheets.entities[action.payload.spriteSheetId];
+
+  if (!sprite) {
+    return;
+  }
+
+  const eightElements = Array.from(Array(8));
+
+  const newMetasprites: Metasprite[] = eightElements.map(() => ({
+    id: uuid(),
+    tiles: [],
+  }));
+
+  metaspritesAdapter.addMany(state.metasprites, newMetasprites);
+
+  const newAnimations: SpriteAnimation[] = eightElements.map((_, index) => ({
+    id: uuid(),
+    frames: [newMetasprites[index].id],
+  }));
+
+  spriteAnimationsAdapter.addMany(state.spriteAnimations, newAnimations);
+
+  const newSpriteState: SpriteState = {
+    id: action.payload.spriteStateId,
+    name: sprite.states.length > 0 ? "New State" : "",
+    animations: newAnimations.map((anim) => anim.id),
+  };
+
+  // Add to sprite
+  sprite.states = ([] as string[]).concat(sprite.states, newSpriteState.id);
+  spriteStatesAdapter.addOne(state.spriteStates, newSpriteState);
+};
+
+/**************************************************************************
  * Paint Helpers
  */
 
@@ -2766,6 +2817,22 @@ const entitiesSlice = createSlice({
     swapSpriteAnimationFrames,
 
     /**************************************************************************
+     * Sprite States
+     */
+
+    addSpriteState: {
+      reducer: addSpriteState,
+      prepare: (payload: { spriteSheetId: string }) => {
+        return {
+          payload: {
+            ...payload,
+            spriteStateId: uuid(),
+          },
+        };
+      },
+    },
+
+    /**************************************************************************
      * Variables
      */
 
@@ -2904,6 +2971,9 @@ export const metaspriteTileSelectors = metaspriteTilesAdapter.getSelectors(
 );
 export const spriteAnimationSelectors = spriteAnimationsAdapter.getSelectors(
   (state: RootState) => state.project.present.entities.spriteAnimations
+);
+export const spriteStateSelectors = spriteStatesAdapter.getSelectors(
+  (state: RootState) => state.project.present.entities.spriteStates
 );
 export const backgroundSelectors = backgroundsAdapter.getSelectors(
   (state: RootState) => state.project.present.entities.backgrounds

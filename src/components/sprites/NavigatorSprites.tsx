@@ -1,37 +1,61 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store/configureStore";
-import { spriteSheetSelectors } from "store/features/entities/entitiesState";
+import {
+  spriteAnimationSelectors,
+  spriteSheetSelectors,
+  spriteStateSelectors,
+} from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
 import editorActions from "store/features/editor/editorActions";
-import { SpriteSheet } from "store/features/entities/entitiesTypes";
-import { EntityListItem } from "ui/lists/EntityListItem";
-import { FormSectionTitle } from "ui/form/FormLayout";
-import l10n from "lib/helpers/l10n";
+import entitiesActions from "store/features/entities/entitiesActions";
 import {
-  filterAnimationsBySpriteType,
-  getAnimationNameByIndex,
-} from "./helpers";
+  SpriteAnimation,
+  SpriteSheet,
+  SpriteState,
+} from "store/features/entities/entitiesTypes";
+import { EntityListItem } from "ui/lists/EntityListItem";
+import l10n from "lib/helpers/l10n";
+import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
+import { Button } from "ui/buttons/Button";
+import { PlusIcon } from "ui/icons/Icons";
+import { SplitPaneVerticalDivider } from "ui/splitpane/SplitPaneDivider";
+import useSplitPane from "ui/hooks/use-split-pane";
+import styled from "styled-components";
+import useToggleableList from "ui/hooks/use-toggleable-list";
 
 interface NavigatorSpritesProps {
   height: number;
+  selectedId: string;
   selectedAnimationId: string;
+  selectedStateId: string;
   defaultFirst?: boolean;
 }
 
-interface NavigatorItem {
+interface SpriteNavigatorItem {
   id: string;
   name: string;
-  isFolder: boolean;
 }
+
+interface AnimationNavigatorItem {
+  id: string;
+  type: "state" | "animation";
+  animationId: string;
+  stateId: string;
+  name: string;
+  isOpen?: boolean;
+  nestLevel?: number;
+}
+
+const COLLAPSED_SIZE = 30;
+const REOPEN_SIZE = 300;
 
 const spriteToNavigatorItem = (
   sprite: SpriteSheet,
   spriteIndex: number
-): NavigatorItem => ({
+): SpriteNavigatorItem => ({
   id: sprite.id,
   name: sprite.name ? sprite.name : `Sprite ${spriteIndex + 1}`,
-  isFolder: false,
 });
 
 const collator = new Intl.Collator(undefined, {
@@ -39,31 +63,59 @@ const collator = new Intl.Collator(undefined, {
   sensitivity: "base",
 });
 
-const sortByName = (a: NavigatorItem, b: NavigatorItem) => {
+const sortByName = (a: { name: string }, b: { name: string }) => {
   return collator.compare(a.name, b.name);
 };
 
+const Pane = styled.div`
+  overflow: hidden;
+`;
+
 export const NavigatorSprites = ({
   height,
-  selectedAnimationId,
+  selectedId,
+  selectedStateId,
   defaultFirst,
 }: NavigatorSpritesProps) => {
-  const [spriteAnimations, setSpriteAnimations] = useState<NavigatorItem[]>([]);
-  const [items, setItems] = useState<NavigatorItem[]>([]);
+  const [splitSizes, setSplitSizes] = useState([300, 200]);
+  const [onDragStart, togglePane] = useSplitPane({
+    sizes: splitSizes,
+    setSizes: setSplitSizes,
+    minSizes: [COLLAPSED_SIZE, COLLAPSED_SIZE],
+    collapsedSize: COLLAPSED_SIZE,
+    reopenSize: REOPEN_SIZE,
+    maxTotal: height,
+    direction: "vertical",
+  });
+  const [spriteAnimations, setSpriteAnimations] = useState<
+    AnimationNavigatorItem[]
+  >([]);
+  const [items, setItems] = useState<SpriteNavigatorItem[]>([]);
   const allSprites = useSelector((state: RootState) =>
     spriteSheetSelectors.selectAll(state)
   );
   const spritesLookup = useSelector((state: RootState) =>
     spriteSheetSelectors.selectEntities(state)
   );
-  const navigationId = useSelector(
-    (state: RootState) => state.editor.selectedSpriteSheetId
+  const spriteStatesLookup = useSelector((state: RootState) =>
+    spriteStateSelectors.selectEntities(state)
   );
-  const selectedId = defaultFirst
-    ? spritesLookup[navigationId]?.id || allSprites[0]?.id
-    : navigationId;
+  const spriteAnimationsLookup = useSelector((state: RootState) =>
+    spriteAnimationSelectors.selectEntities(state)
+  );
+  const selectedAnimationId =
+    useSelector((state: RootState) => state.editor.selectedAnimationId) ||
+    "group";
 
   const selectedSprite = spritesLookup[selectedId];
+  const selectedState = spriteStatesLookup[selectedStateId];
+
+  const {
+    values: closedStates,
+    toggle: toggleStateOpen,
+    unset: openState,
+    set: closeState,
+  } = useToggleableList<string>([]);
 
   const dispatch = useDispatch();
 
@@ -78,56 +130,57 @@ export const NavigatorSprites = ({
   }, [allSprites]);
 
   useEffect(() => {
-    if (selectedSprite?.animations) {
-      const filteredAnims = filterAnimationsBySpriteType(
-        selectedSprite.animations,
-        selectedSprite?.animationType,
-        selectedSprite?.flipLeft
-      ).map((id, index) => {
+    if (selectedSprite?.states) {
+      const list: AnimationNavigatorItem[] = [];
+
+      const tree = selectedSprite.states.map((stateId) => {
+        const state = spriteStatesLookup[stateId] as SpriteState;
         return {
-          id,
-          name: getAnimationNameByIndex(
-            selectedSprite?.animationType,
-            selectedSprite?.flipLeft,
-            index
-          ),
-          isFolder: false,
+          ...state,
+          animations: state.animations.map((animId) => {
+            const anim = spriteAnimationsLookup[animId] as SpriteAnimation;
+            return anim;
+          }),
         };
       });
 
-      const additionalStates = [
-        {
-          id: "default",
-          name: "Default",
-          isFolder: true,
-          // animationType: SpriteAnimationType
-        },
-        ...filteredAnims,
-        {
-          id: "dead",
-          name: "Dying",
-          isFolder: true,
-          // animationType: SpriteAnimationType
-        },
-        ...filteredAnims.map((i) => ({ ...i, id: "a" })),
-        {
-          id: "hurt",
-          name: "Hurt",
-          isFolder: true,
+      tree.sort(sortByName).forEach((state) => {
+        const stateOpen = !closedStates.includes(state.id);
+        if (tree.length > 1) {
+          list.push({
+            id: `${state.id}_group`,
+            animationId: "group",
+            stateId: state.id,
+            name: state.name || l10n("FIELD_DEFAULT"),
+            type: "state",
+            isOpen: stateOpen,
+          });
+        }
+        if (tree.length === 1 || stateOpen) {
+          state.animations.forEach((anim) => {
+            list.push({
+              id: `${state.id}_${anim.id}`,
+              animationId: anim.id,
+              stateId: state.id,
+              name: anim.type || "",
+              type: "animation",
+              nestLevel: tree.length === 1 ? 0 : 1,
+            });
+          });
+        }
+      });
 
-          // animationType: SpriteAnimationType
-        },
-        ...filteredAnims.map((i) => ({ ...i, id: "a" })),
-      ];
-
-      setSpriteAnimations(additionalStates);
-    } else {
-      setSpriteAnimations([]);
+      setSpriteAnimations(list);
     }
   }, [
+    selectedSprite?.states,
     selectedSprite?.animations,
     selectedSprite?.animationType,
     selectedSprite?.flipLeft,
+    spriteStatesLookup,
+    spriteAnimationsLookup,
+    closedStates,
+    selectedStateId,
   ]);
 
   const setSelectedId = useCallback(
@@ -138,54 +191,112 @@ export const NavigatorSprites = ({
   );
 
   const setSelectAnimationId = useCallback(
-    (id: string) => {
-      dispatch(editorActions.setSelectedAnimationId(id));
+    (id: string, item: AnimationNavigatorItem) => {
+      dispatch(
+        editorActions.setSelectedAnimationId({
+          animationId: item.animationId,
+          stateId: item.stateId,
+        })
+      );
     },
     [dispatch]
   );
 
-  // const animations = [...spriteAnimations];
-  // for(let state of additionalStates) {
+  const highlightAnimationId =
+    selectedAnimationId === "group"
+      ? (selectedSprite?.states.length || 0) > 1
+        ? "group"
+        : selectedState?.animations?.[0] || selectedAnimationId
+      : selectedAnimationId;
 
-  // }
+  const selectedNavigationId =
+    (selectedSprite?.states.length || 0) > 1 &&
+    (selectedAnimationId === "group" || closedStates.includes(selectedStateId))
+      ? `${selectedStateId}_group`
+      : `${selectedStateId}_${highlightAnimationId}`;
 
-  // const numAnimations = spriteAnimations.length;
-  const numAnimations = 10;
+  const addState = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      e.stopPropagation();
+      dispatch(
+        entitiesActions.addSpriteState({
+          spriteSheetId: selectedId,
+        })
+      );
+    },
+    [dispatch, selectedId]
+  );
 
   return (
     <>
-      <FlatList
-        selectedId={selectedId}
-        items={items}
-        setSelectedId={setSelectedId}
-        height={height - 25 * numAnimations - 32}
-      >
-        {({ item }) => <EntityListItem type="sprite" item={item} />}
-      </FlatList>
+      <Pane style={{ height: splitSizes[0] }}>
+        <SplitPaneHeader
+          onToggle={() => togglePane(0)}
+          collapsed={Math.floor(splitSizes[0]) <= COLLAPSED_SIZE}
+        >
+          {l10n("FIELD_SPRITES")}
+        </SplitPaneHeader>
 
-      <FormSectionTitle style={{ marginBottom: 0 }}>
-        {l10n("FIELD_ANIMATIONS")}
-      </FormSectionTitle>
+        <FlatList
+          selectedId={selectedId}
+          items={items}
+          setSelectedId={setSelectedId}
+          height={splitSizes[0] - 30}
+        >
+          {({ item }) => <EntityListItem type="sprite" item={item} />}
+        </FlatList>
+      </Pane>
+      <SplitPaneVerticalDivider onMouseDown={onDragStart(0)} />
+      <Pane style={{ height: splitSizes[1] }}>
+        <SplitPaneHeader
+          onToggle={() => togglePane(1)}
+          collapsed={false}
+          buttons={
+            <Button
+              variant="transparent"
+              size="small"
+              title={l10n("FIELD_ANIMATIONS")}
+              onClick={addState}
+            >
+              <PlusIcon />
+            </Button>
+          }
+        >
+          {l10n("FIELD_ANIMATIONS")}
+        </SplitPaneHeader>
 
-      <FlatList
-        selectedId={selectedAnimationId}
-        items={spriteAnimations}
-        setSelectedId={setSelectAnimationId}
-        height={25 * numAnimations}
-      >
-        {({ item }) => (
-          <>
-            <EntityListItem
-              item={item}
-              type={item.isFolder ? "state" : "animation"}
-              collapsable={item.isFolder}
-              collapsed={false}
-              onToggleCollapse={() => {}}
-              nestLevel={item.isFolder ? 0 : 1}
-            />
-          </>
-        )}
-      </FlatList>
+        <FlatList
+          selectedId={selectedNavigationId}
+          items={spriteAnimations}
+          setSelectedId={setSelectAnimationId}
+          height={splitSizes[1] - 30}
+          onKeyDown={(e: KeyboardEvent) => {
+            if (e.key === "ArrowRight") {
+              openState(selectedStateId);
+            } else if (e.key === "ArrowLeft") {
+              closeState(selectedStateId);
+            }
+          }}
+        >
+          {({ item }) =>
+            item.type === "state" ? (
+              <EntityListItem
+                item={item}
+                type={item.type}
+                collapsable={true}
+                collapsed={!item.isOpen}
+                onToggleCollapse={toggleStateOpen(item.stateId)}
+              />
+            ) : (
+              <EntityListItem
+                item={item}
+                type={item.type}
+                nestLevel={item.nestLevel}
+              />
+            )
+          }
+        </FlatList>
+      </Pane>
     </>
   );
 };

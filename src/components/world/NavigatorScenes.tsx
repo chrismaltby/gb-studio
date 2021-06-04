@@ -10,6 +10,7 @@ import { FlatList } from "ui/lists/FlatList";
 import editorActions from "store/features/editor/editorActions";
 import { Actor, Scene, Trigger } from "store/features/entities/entitiesTypes";
 import { EntityListItem } from "ui/lists/EntityListItem";
+import useToggleableList from "ui/hooks/use-toggleable-list";
 
 interface NavigatorScenesProps {
   height: number;
@@ -66,7 +67,6 @@ const sortByName = (a: SceneNavigatorItem, b: SceneNavigatorItem) => {
 };
 
 export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
-  const [openSceneIds, setOpenSceneIds] = useState<string[]>([]);
   const [items, setItems] = useState<SceneNavigatorItem[]>([]);
   const scenes = useSelector((state: RootState) =>
     sceneSelectors.selectAll(state)
@@ -81,19 +81,20 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
   const entityId = useSelector((state: RootState) => state.editor.entityId);
   const editorType = useSelector((state: RootState) => state.editor.type);
 
+  const {
+    values: openSceneIds,
+    isSet: isOpen,
+    toggle: toggleSceneOpen,
+    set: openScene,
+    unset: closeScene,
+  } = useToggleableList<string>([]);
+
   const selectedId =
     editorType === "scene" || !openSceneIds.includes(sceneId)
       ? sceneId
       : entityId;
 
   const dispatch = useDispatch();
-
-  const isOpen = useCallback(
-    (id: string) => {
-      return openSceneIds.includes(id);
-    },
-    [openSceneIds]
-  );
 
   useEffect(() => {
     const sceneItems = scenes
@@ -142,22 +143,6 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
       dispatch(editorActions.selectScene({ sceneId: id }));
     }
     dispatch(editorActions.setFocusSceneId(item.sceneId));
-  };
-
-  const toggleSceneOpen = (id: string) => () => {
-    if (isOpen(id)) {
-      closeScene(id);
-    } else {
-      openScene(id);
-    }
-  };
-
-  const openScene = (id: string) => {
-    setOpenSceneIds((value) => ([] as string[]).concat(value, id));
-  };
-
-  const closeScene = (id: string) => {
-    setOpenSceneIds((value) => value.filter((s) => s !== id));
   };
 
   return (
