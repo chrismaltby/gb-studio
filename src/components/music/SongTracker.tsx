@@ -213,6 +213,9 @@ export const SongTracker = ({
             if (e.key === "q") return transposeNoteCell(1);
             if (e.key === "a") return transposeNoteCell(-1);
           }
+          return;
+        } else if (e.metaKey) {
+          return;
         }
 
         if (e.key === "q") editNoteCell(0);
