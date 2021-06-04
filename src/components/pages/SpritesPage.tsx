@@ -369,6 +369,7 @@ const SpritesPage = () => {
         <SpriteEditor
           id={selectedId}
           metaspriteId={selectedMetaspriteId}
+          spriteStateId={selectedStateId}
           animationId={selectedAnimation?.id || ""}
         />
       </div>

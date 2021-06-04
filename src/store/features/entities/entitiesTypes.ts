@@ -202,6 +202,7 @@ export type Metasprite = {
 export type SpriteState = {
   id: string;
   name: string;
+  animationType: SpriteAnimationType;
   animations: string[];
 };
 

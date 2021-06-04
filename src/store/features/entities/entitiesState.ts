@@ -2082,11 +2082,30 @@ const addSpriteState: CaseReducer<
     id: action.payload.spriteStateId,
     name: sprite.states.length > 0 ? "New State" : "",
     animations: newAnimations.map((anim) => anim.id),
+    animationType: "fixed",
   };
 
   // Add to sprite
   sprite.states = ([] as string[]).concat(sprite.states, newSpriteState.id);
   spriteStatesAdapter.addOne(state.spriteStates, newSpriteState);
+};
+
+const editSpriteState: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ spriteStateId: string; changes: Partial<SpriteState> }>
+> = (state, action) => {
+  const spriteState = state.spriteStates.entities[action.payload.spriteStateId];
+
+  const patch = { ...action.payload.changes };
+
+  if (!spriteState) {
+    return;
+  }
+
+  spriteStatesAdapter.updateOne(state.spriteStates, {
+    id: action.payload.spriteStateId,
+    changes: patch,
+  });
 };
 
 /**************************************************************************
@@ -2831,6 +2850,8 @@ const entitiesSlice = createSlice({
         };
       },
     },
+
+    editSpriteState,
 
     /**************************************************************************
      * Variables

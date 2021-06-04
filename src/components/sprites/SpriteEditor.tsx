@@ -23,6 +23,7 @@ import {
   metaspriteTileSelectors,
   spriteAnimationSelectors,
   spriteSheetSelectors,
+  spriteStateSelectors,
 } from "store/features/entities/entitiesState";
 import entitiesActions from "store/features/entities/entitiesActions";
 import editorActions from "store/features/editor/editorActions";
@@ -53,6 +54,7 @@ import styled from "styled-components";
 interface SpriteEditorProps {
   id: string;
   metaspriteId: string;
+  spriteStateId: string;
   animationId: string;
 }
 
@@ -69,12 +71,16 @@ export const SpriteEditor = ({
   id,
   metaspriteId,
   animationId,
+  spriteStateId,
 }: SpriteEditorProps) => {
   const colorsEnabled = useSelector(
     (state: RootState) => state.project.present.settings.customColorsEnabled
   );
   const sprite = useSelector((state: RootState) =>
     spriteSheetSelectors.selectById(state, id)
+  );
+  const spriteState = useSelector((state: RootState) =>
+    spriteStateSelectors.selectById(state, spriteStateId)
   );
   const animation = useSelector((state: RootState) =>
     spriteAnimationSelectors.selectById(state, animationId)
@@ -116,12 +122,12 @@ export const SpriteEditor = ({
       );
     };
 
-  const onChangeField =
+  const onChangeStateField =
     <T extends keyof SpriteSheet>(key: T) =>
     (editValue: SpriteSheet[T]) => {
       dispatch(
-        entitiesActions.editSpriteSheet({
-          spriteSheetId: id,
+        entitiesActions.editSpriteState({
+          spriteStateId,
           changes: {
             [key]: editValue,
           },
@@ -282,7 +288,7 @@ export const SpriteEditor = ({
     }
   }, [dispatch, id, autoDetect]);
 
-  if (!sprite || !animation) {
+  if (!sprite || !spriteState || !animation) {
     return null;
   }
 
@@ -552,8 +558,8 @@ export const SpriteEditor = ({
                 >
                   <AnimationTypeSelect
                     name="animationType"
-                    value={sprite.animationType}
-                    onChange={onChangeField("animationType")}
+                    value={spriteState.animationType}
+                    onChange={onChangeStateField("animationType")}
                   />
                 </FormField>
               </FormRow>
