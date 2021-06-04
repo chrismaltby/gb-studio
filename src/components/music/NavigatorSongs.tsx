@@ -212,7 +212,7 @@ export const NavigatorSongs = ({
           : [],
         [
           {
-            name: "Waves",
+            name: "Wave",
             id: "wave_group",
             instrumentId: "group",
             type: "wave",
