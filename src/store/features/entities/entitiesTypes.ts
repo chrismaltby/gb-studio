@@ -209,26 +209,7 @@ export type SpriteState = {
 
 export type SpriteAnimation = {
   id: string;
-  state?: string;
-  type?:
-    | "idleLeft"
-    | "idleRight"
-    | "idleUp"
-    | "idleDown"
-    | "movingLeft"
-    | "movingRight"
-    | "movingUp"
-    | "movingDown"
-    | "jumpingLeft"
-    | "jumpingRight"
-    | "climbing";
   frames: string[];
-};
-
-export type SpriteStates = {
-  id: string;
-  name: string;
-  animationType: SpriteAnimationType;
 };
 
 export type SpriteSheet = {
@@ -244,8 +225,6 @@ export type SpriteSheet = {
   _v: number;
   width: number;
   height: number;
-  animationType: SpriteAnimationType;
-  flipLeft: boolean;
   canvasWidth: number;
   canvasHeight: number;
   boundsX: number;

@@ -17,6 +17,7 @@ import { Sidebar, SidebarColumn } from "ui/sidebars/Sidebar";
 import {
   MetaspriteTile,
   SpriteSheet,
+  SpriteState,
 } from "store/features/entities/entitiesTypes";
 import { CoordinateInput } from "ui/form/CoordinateInput";
 import { Label } from "ui/form/Label";
@@ -125,8 +126,8 @@ export const SpriteEditor = ({
     };
 
   const onChangeStateField =
-    <T extends keyof SpriteSheet>(key: T) =>
-    (editValue: SpriteSheet[T]) => {
+    <T extends keyof SpriteState>(key: T) =>
+    (editValue: SpriteState[T]) => {
       dispatch(
         entitiesActions.editSpriteState({
           spriteStateId,
@@ -138,7 +139,7 @@ export const SpriteEditor = ({
     };
 
   const onChangeStateFieldInput =
-    <T extends keyof SpriteSheet>(key: T) =>
+    <T extends keyof SpriteState>(key: T) =>
     (
       e:
         | React.ChangeEvent<HTMLInputElement>

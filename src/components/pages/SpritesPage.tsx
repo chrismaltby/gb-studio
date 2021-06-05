@@ -98,6 +98,7 @@ const SpritesPage = () => {
   const selectedAnimation =
     spriteAnimationsLookup[animationId] ||
     (selectedState && spriteAnimationsLookup[selectedState.animations?.[0]]);
+
   const selectedId = selectedSprite?.id || "";
   const selectedStateId = selectedState?.id || "";
   const selectedAnimationId = selectedAnimation?.id || "";
@@ -340,13 +341,14 @@ const SpritesPage = () => {
           onToggle={toggleAnimationsPane}
           collapsed={!animationsOpen}
         >
-          {l10n("FIELD_FRAMES")}:{" "}
-          {getAnimationNameById(
-            selectedSprite.animationType,
-            selectedSprite.flipLeft,
-            selectedAnimationId,
-            selectedSprite.animations
-          )}
+          {l10n("FIELD_FRAMES")}
+          {selectedState &&
+            `: ${getAnimationNameById(
+              selectedState.animationType,
+              selectedState.flipLeft,
+              selectedAnimationId,
+              selectedState.animations
+            )}`}
         </SplitPaneHeader>
         {animationsOpen && (
           <SpriteAnimationTimeline

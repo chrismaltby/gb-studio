@@ -10,7 +10,6 @@ import { FlatList } from "ui/lists/FlatList";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import {
-  SpriteAnimation,
   SpriteSheet,
   SpriteState,
 } from "store/features/entities/entitiesTypes";
@@ -214,8 +213,6 @@ export const NavigatorSprites = ({
   }, [
     selectedSprite?.states,
     selectedSprite?.animations,
-    selectedSprite?.animationType,
-    selectedSprite?.flipLeft,
     spriteStatesLookup,
     spriteAnimationsLookup,
     closedStates,
