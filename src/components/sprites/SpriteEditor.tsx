@@ -51,8 +51,7 @@ import { AnimationTypeSelect } from "../forms/AnimationTypeSelect";
 import { ObjPaletteSelect } from "../forms/ObjPaletteSelect";
 import { PaletteIndexSelect } from "../forms/PaletteIndexSelect";
 import styled from "styled-components";
-import { CreatableSelect } from "ui/form/Select";
-// import CreatableSelect from "react-select/creatable";
+import AnimationStateSelect from "components/forms/AnimationStateSelect";
 
 interface SpriteEditorProps {
   id: string;
@@ -579,11 +578,10 @@ export const SpriteEditor = ({
               {!isDefaultState && (
                 <FormRow>
                   <FormField name="stateName" label="State Name">
-                    <CreatableSelect
-                      classNamePrefix="CustomSelect"
-                      onChange={() => {}}
-                      onInputChange={() => {}}
-                      options={[]}
+                    <AnimationStateSelect
+                      name="stateName"
+                      value={spriteState.name}
+                      onChange={onChangeStateField("name")}
                     />
                   </FormField>
                 </FormRow>
@@ -601,9 +599,9 @@ export const SpriteEditor = ({
                   />
                 </FormField>
               </FormRow>
-              {sprite.animationType &&
-                sprite.animationType !== "fixed" &&
-                sprite.animationType !== "fixed_movement" && (
+              {spriteState.animationType &&
+                spriteState.animationType !== "fixed" &&
+                spriteState.animationType !== "fixed_movement" && (
                   <FormRow>
                     <CheckboxField
                       name="customColorsEnabled"
