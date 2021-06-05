@@ -31,7 +31,6 @@ import useToggleableList from "ui/hooks/use-toggleable-list";
 import {
   AnimationType,
   filterAnimationsBySpriteType,
-  getAnimationNameByIndex,
   getAnimationNameForType,
   getAnimationTypeByIndex,
 } from "./helpers";
@@ -58,6 +57,7 @@ interface AnimationNavigatorItem {
   isOpen?: boolean;
   nestLevel?: number;
   animationType?: AnimationType;
+  warning?: string;
 }
 
 const COLLAPSED_SIZE = 30;
@@ -104,7 +104,6 @@ export const NavigatorSprites = ({
   height,
   selectedId,
   selectedStateId,
-  defaultFirst,
 }: NavigatorSpritesProps) => {
   const [splitSizes, setSplitSizes] = useState([300, 200]);
   const [onDragStart, togglePane] = useSplitPane({
@@ -161,6 +160,7 @@ export const NavigatorSprites = ({
   useEffect(() => {
     if (selectedSprite?.states) {
       const list: AnimationNavigatorItem[] = [];
+      const seenStates: string[] = [];
 
       const tree = selectedSprite.states.map((stateId) => {
         const state = spriteStatesLookup[stateId] as SpriteState;
@@ -179,7 +179,11 @@ export const NavigatorSprites = ({
             name: state.name || l10n("FIELD_DEFAULT"),
             type: "state",
             isOpen: stateOpen,
+            warning: seenStates.includes(state.name)
+              ? l10n("FIELD_DUPLICATE")
+              : undefined,
           });
+          seenStates.push(state.name);
         }
         if (tree.length === 1 || stateOpen) {
           filterAnimationsBySpriteType(

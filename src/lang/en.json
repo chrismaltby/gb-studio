@@ -389,6 +389,7 @@
   "FIELD_SGB_PALETTE_NOTE": "Note: Super GB default palette is shared with GB Color palette #5, changing either will also update the other value.",
   "FIELD_CART_BATTERYLESS": "Enable Batteryless Saving (Flash Cart Only)",
   "FIELD_ANIMATION_SETTINGS": "Animation Settings",
+  "FIELD_DUPLICATE": "Duplicate",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

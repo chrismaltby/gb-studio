@@ -23,6 +23,7 @@ interface EntityListItemProps {
   item: {
     name: string;
     labelColor?: string;
+    warning?: string;
   };
   type:
     | "custom"
@@ -94,6 +95,10 @@ const EnitityLabel = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   flex-grow: 1;
+`;
+
+const EnitityWarningLabel = styled.span`
+  color: red;
 `;
 
 const EntityLabelColor = styled.div.attrs<EntityLabelColorProps>((props) => ({
@@ -173,7 +178,12 @@ export const EntityListItem: FC<EntityListItemProps> = ({
           <NoiseIcon />
         </EnitityIcon>
       )}
-      <EnitityLabel>{item.name}</EnitityLabel>
+      <EnitityLabel>
+        {item.name}{" "}
+        {item.warning && (
+          <EnitityWarningLabel> ({item.warning})</EnitityWarningLabel>
+        )}
+      </EnitityLabel>
       {item.labelColor && <EntityLabelColor color={item.labelColor} />}
     </EnitityListItem>
   );
