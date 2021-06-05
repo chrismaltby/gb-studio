@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, ReactNode } from "react";
 import styled from "styled-components";
 import {
   ActorIcon,
@@ -12,6 +12,7 @@ import {
   WaveIcon,
   SongIcon,
   FolderFilledIcon,
+  ArrowMoveIcon,
 } from "../icons/Icons";
 
 interface EntityListItemWrapperProps {
@@ -24,6 +25,7 @@ interface EntityListItemProps {
     labelColor?: string;
   };
   type:
+    | "custom"
     | "folder"
     | "scene"
     | "actor"
@@ -36,6 +38,7 @@ interface EntityListItemProps {
     | "duty"
     | "wave"
     | "noise";
+  icon?: ReactNode;
   nestLevel?: number;
   collapsed?: boolean;
   collapsable?: boolean;
@@ -106,6 +109,7 @@ const EntityLabelColor = styled.div.attrs<EntityLabelColorProps>((props) => ({
 export const EntityListItem: FC<EntityListItemProps> = ({
   item,
   type,
+  icon,
   nestLevel,
   collapsable,
   collapsed,
@@ -118,6 +122,7 @@ export const EntityListItem: FC<EntityListItemProps> = ({
           <ArrowIcon />
         </NavigatorArrow>
       )}
+      {type === "custom" && icon && <EnitityIcon>{icon}</EnitityIcon>}
       {type === "folder" && (
         <EnitityIcon>
           <FolderFilledIcon />

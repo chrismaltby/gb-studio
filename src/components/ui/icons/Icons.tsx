@@ -1,4 +1,4 @@
-import React from "react";
+import React, { CSSProperties } from "react";
 
 export const LoadingIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" className="Rotating">
@@ -316,6 +316,24 @@ export const EyeClosedIcon = () => (
 export const ArrowIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24">
     <path d="M21 12l-18 12v-24z" />
+  </svg>
+);
+
+export const ArrowMoveIcon = ({ style }: { style?: CSSProperties }) => (
+  <svg width="24" height="24" viewBox="0 0 24 24" style={style}>
+    <path d="M16 8V4L24 12L16 20V16H12V8H16ZM10 8H6V16H10V8ZM4 8H0.0139771V16H4V8Z" />
+  </svg>
+);
+
+export const ArrowIdleIcon = ({ style }: { style?: CSSProperties }) => (
+  <svg width="24" height="24" viewBox="0 0 24 24" style={style}>
+    <path d="m16,8l0,-4l8,8l-8,8l0,-4l-16,0l0,-8l16,0z" />
+  </svg>
+);
+
+export const ArrowJumpIcon = ({ style }: { style?: CSSProperties }) => (
+  <svg width="24" height="24" viewBox="0 0 24 24" style={style}>
+    <path d="M16 15v4l8-8.035-8-7.965v4s-13.277 2.144-16 14c5.796-6.206 16-6 16-6z" />
   </svg>
 );
 

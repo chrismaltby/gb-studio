@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { ReactNode, useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store/configureStore";
 import {
@@ -18,14 +18,22 @@ import { EntityListItem } from "ui/lists/EntityListItem";
 import l10n from "lib/helpers/l10n";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import { Button } from "ui/buttons/Button";
-import { PlusIcon } from "ui/icons/Icons";
+import {
+  ArrowIdleIcon,
+  ArrowJumpIcon,
+  ArrowMoveIcon,
+  PlusIcon,
+} from "ui/icons/Icons";
 import { SplitPaneVerticalDivider } from "ui/splitpane/SplitPaneDivider";
 import useSplitPane from "ui/hooks/use-split-pane";
 import styled from "styled-components";
 import useToggleableList from "ui/hooks/use-toggleable-list";
 import {
+  AnimationType,
   filterAnimationsBySpriteType,
   getAnimationNameByIndex,
+  getAnimationNameForType,
+  getAnimationTypeByIndex,
 } from "./helpers";
 
 interface NavigatorSpritesProps {
@@ -49,6 +57,7 @@ interface AnimationNavigatorItem {
   name: string;
   isOpen?: boolean;
   nestLevel?: number;
+  animationType?: AnimationType;
 }
 
 const COLLAPSED_SIZE = 30;
@@ -74,6 +83,22 @@ const sortByName = (a: { name: string }, b: { name: string }) => {
 const Pane = styled.div`
   overflow: hidden;
 `;
+
+const animationTypeIcons: Record<AnimationType, ReactNode> = {
+  idle: <ArrowIdleIcon style={{ transform: "rotate(90deg)" }} />,
+  moving: <ArrowMoveIcon style={{ transform: "rotate(90deg)" }} />,
+  idleLeft: <ArrowIdleIcon style={{ transform: "rotate(180deg)" }} />,
+  idleRight: <ArrowIdleIcon />,
+  idleUp: <ArrowIdleIcon style={{ transform: "rotate(270deg)" }} />,
+  idleDown: <ArrowIdleIcon style={{ transform: "rotate(90deg)" }} />,
+  movingLeft: <ArrowMoveIcon style={{ transform: "rotate(180deg)" }} />,
+  movingRight: <ArrowMoveIcon />,
+  movingUp: <ArrowMoveIcon style={{ transform: "rotate(270deg)" }} />,
+  movingDown: <ArrowMoveIcon style={{ transform: "rotate(90deg)" }} />,
+  jumpingLeft: <ArrowJumpIcon style={{ transform: "scale(-1,1)" }} />,
+  jumpingRight: <ArrowJumpIcon />,
+  climbing: <ArrowIdleIcon style={{ transform: "rotate(270deg)" }} />,
+};
 
 export const NavigatorSprites = ({
   height,
@@ -162,16 +187,18 @@ export const NavigatorSprites = ({
             state.animationType,
             state.flipLeft
           ).forEach((id, index) => {
+            const animType = getAnimationTypeByIndex(
+              state.animationType,
+              state.flipLeft,
+              index
+            );
             list.push({
               id: `${state.id}_${id}`,
               animationId: id,
               stateId: state.id,
-              name: getAnimationNameByIndex(
-                state.animationType,
-                state.flipLeft,
-                index
-              ),
+              name: getAnimationNameForType(animType),
               type: "animation",
+              animationType: animType,
               nestLevel: tree.length === 1 ? 0 : 1,
             });
           });
@@ -298,7 +325,10 @@ export const NavigatorSprites = ({
             ) : (
               <EntityListItem
                 item={item}
-                type={item.type}
+                type={"custom"}
+                icon={
+                  item.animationType && animationTypeIcons[item.animationType]
+                }
                 nestLevel={item.nestLevel}
               />
             )

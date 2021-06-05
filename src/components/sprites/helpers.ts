@@ -1,6 +1,79 @@
 import l10n from "lib/helpers/l10n";
 import { SpriteAnimationType } from "store/features/entities/entitiesTypes";
 
+export type AnimationType =
+  | "idle"
+  | "moving"
+  | "idleLeft"
+  | "idleRight"
+  | "idleUp"
+  | "idleDown"
+  | "movingLeft"
+  | "movingRight"
+  | "movingUp"
+  | "movingDown"
+  | "jumpingLeft"
+  | "jumpingRight"
+  | "climbing";
+
+const animationTypes: AnimationType[] = [
+  "idleRight",
+  "idleLeft",
+  "idleUp",
+  "idleDown",
+  "movingRight",
+  "movingLeft",
+  "movingUp",
+  "movingDown",
+];
+
+const multiAnimationTypes: AnimationType[] = [
+  "idleRight",
+  "idleLeft",
+  "idleUp",
+  "idleDown",
+];
+
+const fixedAnimationTypes: AnimationType[] = ["idle", "moving"];
+
+const platformAnimationTypes: AnimationType[] = [
+  "idleRight",
+  "idleLeft",
+  "jumpingRight",
+  "jumpingLeft",
+  "movingRight",
+  "movingLeft",
+  "climbing",
+];
+
+const animationNameLookup: Record<AnimationType, string> = {
+  idle: l10n("FIELD_IDLE"),
+  moving: l10n("FIELD_MOVING"),
+  idleLeft: l10n("FIELD_IDLE_DIR", { direction: l10n("FIELD_DIRECTION_LEFT") }),
+  idleRight: l10n("FIELD_IDLE_DIR", {
+    direction: l10n("FIELD_DIRECTION_RIGHT"),
+  }),
+  idleUp: l10n("FIELD_IDLE_DIR", { direction: l10n("FIELD_DIRECTION_UP") }),
+  idleDown: l10n("FIELD_IDLE_DIR", { direction: l10n("FIELD_DIRECTION_DOWN") }),
+  movingLeft: l10n("FIELD_MOVING_DIR", {
+    direction: l10n("FIELD_DIRECTION_LEFT"),
+  }),
+  movingRight: l10n("FIELD_MOVING_DIR", {
+    direction: l10n("FIELD_DIRECTION_RIGHT"),
+  }),
+  movingUp: l10n("FIELD_MOVING_DIR", { direction: l10n("FIELD_DIRECTION_UP") }),
+  movingDown: l10n("FIELD_MOVING_DIR", {
+    direction: l10n("FIELD_DIRECTION_DOWN"),
+  }),
+  jumpingLeft: l10n("FIELD_JUMPING_DIR", {
+    direction: l10n("FIELD_DIRECTION_LEFT"),
+  }),
+  jumpingRight: l10n("FIELD_JUMPING_DIR", {
+    direction: l10n("FIELD_DIRECTION_RIGHT"),
+  }),
+  climbing: l10n("FIELD_CLIMBING"),
+};
+
 const animationNames = [
   l10n("FIELD_IDLE_DIR", { direction: l10n("FIELD_DIRECTION_RIGHT") }),
   l10n("FIELD_IDLE_DIR", { direction: l10n("FIELD_DIRECTION_LEFT") }),
@@ -30,6 +103,33 @@ const platformAnimationNames = [
   l10n("FIELD_MOVING_DIR", { direction: l10n("FIELD_DIRECTION_LEFT") }),
   l10n("FIELD_CLIMBING"),
 ];
+
+export const getAnimationTypeByIndex = (
+  type: SpriteAnimationType,
+  flipLeft: boolean,
+  animationIndex: number
+): AnimationType => {
+  if (type === "fixed" || type === "fixed_movement") {
+    return fixedAnimationTypes[animationIndex];
+  }
+  if (type === "platform_player") {
+    return filterAnimationsBySpriteType(platformAnimationTypes, type, flipLeft)[
+      animationIndex
+    ];
+  }
+  if (type === "multi") {
+    return filterAnimationsBySpriteType(multiAnimationTypes, type, flipLeft)[
+      animationIndex
+    ];
+  }
+  return filterAnimationsBySpriteType(animationTypes, type, flipLeft)[
+    animationIndex
+  ];
+};
+
+export const getAnimationNameForType = (type: AnimationType) => {
+  return animationNameLookup[type];
+};
 
 export const getAnimationNameByIndex = (
   type: SpriteAnimationType,
@@ -74,11 +174,11 @@ const platformIndexes = [0, 1, 4, 5, 2, 3, 6];
 const platformFlipIndexes = [0, 4, 2, 6];
 const flipIndexes = [0, 2, 3, 4, 6, 7];
 
-export const filterAnimationsBySpriteType = (
-  animationIds: string[],
+export const filterAnimationsBySpriteType = <T>(
+  animationIds: T[],
   type: SpriteAnimationType,
   flipLeft: boolean
-): string[] => {
+): T[] => {
   if (type === "fixed") {
     return fixedIndexes.map((i) => animationIds[i]);
   }
