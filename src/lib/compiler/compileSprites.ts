@@ -225,6 +225,7 @@ const compileSprites = async (
 ): Promise<{
   spritesData: PrecompiledSpriteSheetData[];
   statesOrder: string[];
+  stateReferences: string[];
 }> => {
   const spritesData = await promiseLimit(
     10,
@@ -252,7 +253,24 @@ const compileSprites = async (
 
   statesOrder.unshift("");
 
-  return { spritesData, statesOrder };
+  // Build reference names for states
+  const stateReferences: string[] = [];
+  statesOrder.forEach((name) => {
+    const refName =
+      (name || "Default")
+        .replace(/ /g, "_")
+        .replace(/[^a-zA-Z0-9_]/g, "")
+        .toUpperCase() || "S";
+
+    let insertName = refName;
+    let insNum = 1;
+    while (stateReferences.includes(insertName)) {
+      insertName = `${refName}_${insNum++}`;
+    }
+    stateReferences.push(insertName);
+  });
+
+  return { spritesData, statesOrder, stateReferences };
 };
 
 const firstIndexOfMatch = <T>(arr: T[], pattern: T[]): number => {

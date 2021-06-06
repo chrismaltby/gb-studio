@@ -673,7 +673,10 @@ export const compileTilesetHeader = (
 export const compileSpriteSheet = (
   spriteSheet: PrecompiledSpriteSheetData,
   spriteSheetIndex: number,
-  { statesOrder }: { statesOrder: string[] }
+  {
+    statesOrder,
+    stateReferences,
+  }: { statesOrder: string[]; stateReferences: string[] }
 ) => {
   const stateNames = spriteSheet.states.map((state) => state.name);
   const maxState = Math.max.apply(
@@ -684,6 +687,7 @@ export const compileSpriteSheet = (
 // SpriteSheet: ${spriteSheet.name}
   
 #include "gbs_types.h"
+#include "data/${spriteSheetSymbol(spriteSheetIndex)}.h"
 #include "data/${tilesetSymbol(spriteSheet.tilesetIndex)}.h"
 
 ${toBankSymbolInit(spriteSheetSymbol(spriteSheetIndex))};
@@ -722,14 +726,9 @@ ${" ".repeat(INDENT_SPACES)}}`
 
 const UWORD ${spriteSheetSymbol(spriteSheetIndex)}_animations_lookup[] = {
 ${Array.from(Array(maxState + 1).keys())
-  .map(
-    (n) =>
-      `    ${Math.max(0, stateNames.indexOf(statesOrder[n])) * 8}, // ${
-        statesOrder[n] || "Default"
-      }`
-  )
-  .join("\n")}
-  };
+  .map((n) => `    SPRITE_${spriteSheetIndex}_STATE_${stateReferences[n]}`)
+  .join(",\n")}
+};
 
 ${SPRITESHEET_TYPE} ${spriteSheetSymbol(spriteSheetIndex)} = {
 ${toStructData(
@@ -752,14 +751,29 @@ ${toStructData(
 };
 
 export const compileSpriteSheetHeader = (
-  _spriteSheet: PrecompiledSpriteSheetData,
-  spriteSheetIndex: number
-) =>
-  toDataHeader(
+  spriteSheet: PrecompiledSpriteSheetData,
+  spriteSheetIndex: number,
+  {
+    statesOrder,
+    stateReferences,
+  }: { statesOrder: string[]; stateReferences: string[] }
+) => {
+  const stateNames = spriteSheet.states.map((state) => state.name);
+  return toDataHeader(
     SPRITESHEET_TYPE,
     spriteSheetSymbol(spriteSheetIndex),
-    `// SpriteSheet: ${spriteSheetIndex}`
+    `// SpriteSheet: ${spriteSheetIndex}
+    
+${stateReferences
+  .map(
+    (state, n) =>
+      `#define SPRITE_${spriteSheetIndex}_STATE_${state} ${
+        Math.max(0, stateNames.indexOf(statesOrder[n])) * 8
+      }`
+  )
+  .join("\n")}`
   );
+};
 
 export const compileBackground = (
   background: PrecompiledBackground,

@@ -485,7 +485,7 @@ export const precompileSprites = async (
     }
   }
 
-  const { spritesData, statesOrder } = await compileSprites(
+  const { spritesData, statesOrder, stateReferences } = await compileSprites(
     usedSprites,
     projectRoot,
     {
@@ -523,6 +523,7 @@ export const precompileSprites = async (
   return {
     usedSprites: usedSpritesWithData,
     statesOrder,
+    stateReferences,
     spriteLookup,
   };
 };
@@ -808,7 +809,7 @@ const precompile = async (
   );
 
   progress(EVENT_MSG_PRE_SPRITES);
-  const { usedSprites, statesOrder } = await precompileSprites(
+  const { usedSprites, statesOrder, stateReferences } = await precompileSprites(
     projectData.spriteSheets,
     projectData.scenes,
     projectData.settings.defaultPlayerSprites,
@@ -895,6 +896,7 @@ const precompile = async (
     backgroundData,
     usedSprites,
     statesOrder,
+    stateReferences,
     usedMusic,
     usedFonts,
     sceneData,
@@ -1198,11 +1200,16 @@ const compile = async (
       spriteIndex,
       {
         statesOrder: precompiled.statesOrder,
+        stateReferences: precompiled.stateReferences,
       }
     );
     output[`spritesheet_${spriteIndex}.h`] = compileSpriteSheetHeader(
       sprite,
-      spriteIndex
+      spriteIndex,
+      {
+        statesOrder: precompiled.statesOrder,
+        stateReferences: precompiled.stateReferences,
+      }
     );
   });
 
