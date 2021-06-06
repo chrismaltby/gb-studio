@@ -485,9 +485,13 @@ export const precompileSprites = async (
     }
   }
 
-  const spriteData = await compileSprites(usedSprites, projectRoot, {
-    warnings,
-  });
+  const { spritesData, statesOrder } = await compileSprites(
+    usedSprites,
+    projectRoot,
+    {
+      warnings,
+    }
+  );
 
   // Build tilemap cache
   const usedTilesetCache = {};
@@ -495,7 +499,7 @@ export const precompileSprites = async (
     usedTilesetCache[JSON.stringify(tileset)] = tilesetIndex;
   });
 
-  const usedSpritesWithData = spriteData.map((sprite) => {
+  const usedSpritesWithData = spritesData.map((sprite) => {
     // Determine tileset
     const tileset = sprite.data;
     const tilesetKey = JSON.stringify(tileset);
@@ -518,6 +522,7 @@ export const precompileSprites = async (
 
   return {
     usedSprites: usedSpritesWithData,
+    statesOrder,
     spriteLookup,
   };
 };
@@ -803,7 +808,7 @@ const precompile = async (
   );
 
   progress(EVENT_MSG_PRE_SPRITES);
-  const { usedSprites } = await precompileSprites(
+  const { usedSprites, statesOrder } = await precompileSprites(
     projectData.spriteSheets,
     projectData.scenes,
     projectData.settings.defaultPlayerSprites,
@@ -889,6 +894,7 @@ const precompile = async (
     usedTilemapAttrs,
     backgroundData,
     usedSprites,
+    statesOrder,
     usedMusic,
     usedFonts,
     sceneData,
@@ -1189,7 +1195,10 @@ const compile = async (
   precompiled.usedSprites.forEach((sprite, spriteIndex) => {
     output[`spritesheet_${spriteIndex}.c`] = compileSpriteSheet(
       sprite,
-      spriteIndex
+      spriteIndex,
+      {
+        statesOrder: precompiled.statesOrder,
+      }
     );
     output[`spritesheet_${spriteIndex}.h`] = compileSpriteSheetHeader(
       sprite,

@@ -1,4 +1,4 @@
-import promiseLimit from "../helpers/promiseLimit";
+import promiseLimit from "../helpers/promiseLimit2";
 import { assetFilename } from "../helpers/gbstudio";
 import {
   optimiseTiles,
@@ -222,14 +222,37 @@ export const compileSprite = async (
 const compileSprites = async (
   spriteSheets: SpriteSheetData[],
   projectRoot: string
-): Promise<PrecompiledSpriteSheetData[]> => {
-  const spriteData = await promiseLimit(
+): Promise<{
+  spritesData: PrecompiledSpriteSheetData[];
+  statesOrder: string[];
+}> => {
+  const spritesData = await promiseLimit(
     10,
     spriteSheets.map(
       (spriteSheet) => () => compileSprite(spriteSheet, projectRoot)
     )
   );
-  return spriteData;
+  const stateNames = spritesData
+    .map((sprite) => sprite.states)
+    .flat()
+    .map((state) => state.name)
+    .filter((name) => name.length > 0);
+
+  const stateCounts = stateNames.reduce((memo, name) => {
+    name in memo ? (memo[name] += 1) : (memo[name] = 1);
+    return memo;
+  }, {} as Record<string, number>);
+
+  const statesOrder = Object.keys(stateCounts).sort((a, b) => {
+    if (stateCounts[a] === stateCounts[b]) {
+      return 0;
+    }
+    return stateCounts[a] < stateCounts[b] ? 1 : -1;
+  });
+
+  statesOrder.unshift("");
+
+  return { spritesData, statesOrder };
 };
 
 const firstIndexOfMatch = <T>(arr: T[], pattern: T[]): number => {

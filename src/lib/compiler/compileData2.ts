@@ -672,9 +672,15 @@ export const compileTilesetHeader = (
 
 export const compileSpriteSheet = (
   spriteSheet: PrecompiledSpriteSheetData,
-  spriteSheetIndex: number
-) =>
-  `#pragma bank 255
+  spriteSheetIndex: number,
+  { statesOrder }: { statesOrder: string[] }
+) => {
+  const stateNames = spriteSheet.states.map((state) => state.name);
+  const maxState = Math.max.apply(
+    null,
+    stateNames.map((state) => statesOrder.indexOf(state))
+  );
+  return `#pragma bank 255
 // SpriteSheet: ${spriteSheet.name}
   
 #include "gbs_types.h"
@@ -715,10 +721,15 @@ ${" ".repeat(INDENT_SPACES)}}`
 };
 
 const UWORD ${spriteSheetSymbol(spriteSheetIndex)}_animations_lookup[] = {
-${spriteSheet.states
-  .map((states, stateIndex) => `    ${stateIndex * 8}`)
-  .join(",\n")}
-};
+${Array.from(Array(maxState + 1).keys())
+  .map(
+    (n) =>
+      `    ${Math.max(0, stateNames.indexOf(statesOrder[n])) * 8}, // ${
+        statesOrder[n] || "Default"
+      }`
+  )
+  .join("\n")}
+  };
 
 ${SPRITESHEET_TYPE} ${spriteSheetSymbol(spriteSheetIndex)} = {
 ${toStructData(
@@ -738,6 +749,7 @@ ${toStructData(
 )}
 };
 `;
+};
 
 export const compileSpriteSheetHeader = (
   _spriteSheet: PrecompiledSpriteSheetData,
