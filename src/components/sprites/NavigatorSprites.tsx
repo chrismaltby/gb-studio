@@ -212,7 +212,6 @@ export const NavigatorSprites = ({
     }
   }, [
     selectedSprite?.states,
-    selectedSprite?.animations,
     spriteStatesLookup,
     spriteAnimationsLookup,
     closedStates,

@@ -462,6 +462,7 @@ const loadDetectedSprite: CaseReducer<
     spriteStates: SpriteState[];
     metasprites: Metasprite[];
     metaspriteTiles: MetaspriteTile[];
+    state: SpriteState;
     changes: Partial<SpriteSheet>;
   }>
 > = (state, action) => {
@@ -486,13 +487,15 @@ const loadDetectedSprite: CaseReducer<
     action.payload.spriteAnimations
   );
 
-  spriteStatesAdapter.addMany(state.spriteStates, action.payload.spriteStates);
+  spriteStatesAdapter.upsertOne(state.spriteStates, action.payload.state);
+
+  const numStates = spriteSheet.states?.length || 0;
 
   spriteSheetsAdapter.updateOne(state.spriteSheets, {
     id: action.payload.spriteSheetId,
     changes: {
       ...action.payload.changes,
-      animations: action.payload.spriteAnimations.map((s) => s.id),
+      states: numStates === 0 ? [action.payload.state.id] : spriteSheet.states,
     },
   });
 };

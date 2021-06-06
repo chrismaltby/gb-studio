@@ -156,8 +156,8 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
       );
       if (spriteSheet) {
         if (
-          !spriteSheet.animations ||
-          spriteSheet.animations.length === 0 ||
+          !spriteSheet.states ||
+          spriteSheet.states.length === 0 ||
           spriteSheet.autoDetect
         ) {
           store.dispatch(

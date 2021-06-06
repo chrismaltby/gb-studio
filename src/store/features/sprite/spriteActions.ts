@@ -16,6 +16,7 @@ const detectSpriteComplete = createAction<{
   spriteStates: SpriteState[];
   metasprites: Metasprite[];
   metaspriteTiles: MetaspriteTile[];
+  state: SpriteState;
   changes: Partial<SpriteSheet>;
 }>("sprite/detect/fulfilled");
 

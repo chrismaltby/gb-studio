@@ -31,15 +31,21 @@ interface SpriteSheetAnimationData {
   frames: SpriteSheetFrameData[];
 }
 
+interface SpriteSheetStateData {
+  id: string;
+  name: string;
+  animationType: SpriteAnimationType;
+  flipLeft: boolean;
+  animations: SpriteSheetAnimationData[];
+}
+
 export interface SpriteSheetData {
   id: string;
   name: string;
   filename: string;
   canvasWidth: number;
   canvasHeight: number;
-  animationType: SpriteAnimationType;
-  flipLeft: boolean;
-  animations: SpriteSheetAnimationData[];
+  states: SpriteSheetStateData[];
   boundsX: number;
   boundsY: number;
   boundsWidth: number;
@@ -90,7 +96,9 @@ export const compileSprite = async (
 ): Promise<PrecompiledSpriteSheetData> => {
   const filename = assetFilename(projectRoot, "sprites", spriteSheet);
 
-  const metasprites = spriteSheet.animations
+  const metasprites = spriteSheet.states
+    .map((state) => state.animations)
+    .flat()
     .map((animation) => {
       return animation.frames.map((frame) => frame.tiles);
     })
@@ -103,60 +111,64 @@ export const compileSprite = async (
     metasprites
   );
 
-  const animationDefs: SpriteTileData[][][] = toEngineOrder(
-    animationMapBySpriteType(
-      spriteSheet.animations,
-      spriteSheet.animationType,
-      spriteSheet.flipLeft,
-      (animation, flip) => {
-        return animation.frames.map((frame) => {
-          let currentX = 0;
-          let currentY = 0;
-          return [...frame.tiles]
-            .reverse()
-            .map((tile) => {
-              const optimisedTile = lookup[tile.id];
-              if (!optimisedTile) {
-                return null;
-              }
-              if (flip) {
-                const data: SpriteTileData = {
-                  tile: optimisedTile.tile,
-                  x: 8 - tile.x - currentX,
-                  y: -tile.y - currentY,
-                  props: makeProps(
-                    tile.objPalette,
-                    tile.paletteIndex,
-                    !optimisedTile.flipX,
-                    optimisedTile.flipY,
-                    tile.priority
-                  ),
-                };
-                currentX = 8 - tile.x;
-                currentY = -tile.y;
-                return data;
-              }
-              const data: SpriteTileData = {
-                tile: optimisedTile.tile,
-                x: tile.x - currentX,
-                y: -tile.y - currentY,
-                props: makeProps(
-                  tile.objPalette,
-                  tile.paletteIndex,
-                  optimisedTile.flipX,
-                  optimisedTile.flipY,
-                  tile.priority
-                ),
-              };
-              currentX = tile.x;
-              currentY = -tile.y;
-              return data;
-            })
-            .filter((tile) => tile) as SpriteTileData[];
-        });
-      }
+  const animationDefs: SpriteTileData[][][] = spriteSheet.states
+    .map((state) =>
+      toEngineOrder(
+        animationMapBySpriteType(
+          state.animations,
+          state.animationType,
+          state.flipLeft,
+          (animation, flip) => {
+            return animation.frames.map((frame) => {
+              let currentX = 0;
+              let currentY = 0;
+              return [...frame.tiles]
+                .reverse()
+                .map((tile) => {
+                  const optimisedTile = lookup[tile.id];
+                  if (!optimisedTile) {
+                    return null;
+                  }
+                  if (flip) {
+                    const data: SpriteTileData = {
+                      tile: optimisedTile.tile,
+                      x: 8 - tile.x - currentX,
+                      y: -tile.y - currentY,
+                      props: makeProps(
+                        tile.objPalette,
+                        tile.paletteIndex,
+                        !optimisedTile.flipX,
+                        optimisedTile.flipY,
+                        tile.priority
+                      ),
+                    };
+                    currentX = 8 - tile.x;
+                    currentY = -tile.y;
+                    return data;
+                  }
+                  const data: SpriteTileData = {
+                    tile: optimisedTile.tile,
+                    x: tile.x - currentX,
+                    y: -tile.y - currentY,
+                    props: makeProps(
+                      tile.objPalette,
+                      tile.paletteIndex,
+                      optimisedTile.flipX,
+                      optimisedTile.flipY,
+                      tile.priority
+                    ),
+                  };
+                  currentX = tile.x;
+                  currentY = -tile.y;
+                  return data;
+                })
+                .filter((tile) => tile) as SpriteTileData[];
+            });
+          }
+        )
+      )
     )
-  );
+    .flat();
 
   // const uniqFrames: SpriteTileData[][] = [];
   const uniqFramesLookup: Record<string, number> = {};

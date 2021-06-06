@@ -98,7 +98,6 @@ const spriteStatesSchema = new schema.Entity("spriteStates", {
 });
 const spriteSheetsSchema = new schema.Entity("spriteSheets", {
   states: [spriteStatesSchema],
-  animations: [spriteAnimationsSchema],
 });
 
 const variablesSchema = new schema.Entity("variables");

@@ -24,7 +24,7 @@ interface DetectedSprite {
   spriteStates: SpriteState[];
   metasprites: Metasprite[];
   metaspriteTiles: MetaspriteTile[];
-  state: Partial<SpriteState>;
+  state: SpriteState;
   changes: Partial<SpriteSheet>;
 }
 
@@ -153,9 +153,12 @@ export const detect = (
           })
         ) + 16;
 
-      const state: Partial<SpriteState> = {
+      const state: SpriteState = {
+        id: spriteSheet.states?.[0] || uuid(),
+        name: "",
         animationType,
         flipLeft,
+        animations: animations.map((a) => a.id),
       };
 
       const changes: Partial<SpriteSheet> = {
@@ -262,9 +265,12 @@ export const detectClassic = (spriteSheet: SpriteSheet): DetectedSprite => {
     }
   }
 
-  const state: Partial<SpriteState> = {
+  const state: SpriteState = {
+    id: spriteSheet.states?.[0] || uuid(),
+    name: "",
     animationType,
     flipLeft,
+    animations: animations.map((a) => a.id),
   };
 
   const changes: Partial<SpriteSheet> = {

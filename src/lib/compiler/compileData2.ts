@@ -704,12 +704,31 @@ ${spriteSheet.metaspritesOrder
   .join(",\n")}
 };
 
+const struct animation_t ${spriteSheetSymbol(spriteSheetIndex)}_animations[] = {
+${spriteSheet.animationOffsets
+  .map(
+    (object) => `${" ".repeat(INDENT_SPACES)}{
+${toStructData(object as unknown as Record<string, unknown>, 2 * INDENT_SPACES)}
+${" ".repeat(INDENT_SPACES)}}`
+  )
+  .join(",\n")}
+};
+
+const UWORD ${spriteSheetSymbol(spriteSheetIndex)}_animations_lookup[] = {
+${spriteSheet.states
+  .map((states, stateIndex) => `    ${stateIndex * 8}`)
+  .join(",\n")}
+};
+
 ${SPRITESHEET_TYPE} ${spriteSheetSymbol(spriteSheetIndex)} = {
 ${toStructData(
   {
     n_metasprites: spriteSheet.metaspritesOrder.length,
     metasprites: `${spriteSheetSymbol(spriteSheetIndex)}_metasprites`,
-    animations: spriteSheet.animationOffsets,
+    animations: `${spriteSheetSymbol(spriteSheetIndex)}_animations`,
+    animations_lookup: `${spriteSheetSymbol(
+      spriteSheetIndex
+    )}_animations_lookup`,
     bounds: compileBounds(spriteSheet),
     tileset: toFarPtr(tilesetSymbol(spriteSheet.tilesetIndex)),
     cgb_tileset: "{ NULL, NULL }",

@@ -231,7 +231,6 @@ export type SpriteSheet = {
   boundsY: number;
   boundsWidth: number;
   boundsHeight: number;
-  animations: string[];
   animSpeed: number | null;
   autoDetect: boolean;
   states: string[];
