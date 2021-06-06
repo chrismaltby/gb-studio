@@ -2112,6 +2112,37 @@ const editSpriteState: CaseReducer<
   });
 };
 
+const removeSpriteState: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    spriteSheetId: string;
+    spriteStateId: string;
+  }>
+> = (state, action) => {
+  const spriteSheet = localSpriteSheetSelectors.selectById(
+    state,
+    action.payload.spriteSheetId
+  );
+  if (!spriteSheet) {
+    return;
+  }
+
+  // Remove from sprite
+  spriteSheetsAdapter.updateOne(state.spriteSheets, {
+    id: action.payload.spriteSheetId,
+    changes: {
+      states: spriteSheet.states.filter((spriteStateId) => {
+        return spriteStateId !== action.payload.spriteStateId;
+      }),
+    },
+  });
+
+  spriteStatesAdapter.removeOne(
+    state.spriteStates,
+    action.payload.spriteStateId
+  );
+};
+
 /**************************************************************************
  * Paint Helpers
  */
@@ -2856,6 +2887,7 @@ const entitiesSlice = createSlice({
     },
 
     editSpriteState,
+    removeSpriteState,
 
     /**************************************************************************
      * Variables

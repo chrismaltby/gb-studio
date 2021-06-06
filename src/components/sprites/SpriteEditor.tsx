@@ -314,6 +314,15 @@ export const SpriteEditor = ({
     );
   }, [dispatch, id, metaspriteId, animationId]);
 
+  const onRemoveSpriteState = useCallback(() => {
+    dispatch(
+      entitiesActions.removeSpriteState({
+        spriteSheetId: id,
+        spriteStateId,
+      })
+    );
+  }, [dispatch, id, spriteStateId]);
+
   const toggleReplaceMode = useCallback(() => {
     dispatch(editorActions.setReplaceSpriteTileMode(!replaceSpriteTileMode));
   }, [dispatch, replaceSpriteTileMode]);
@@ -408,6 +417,11 @@ export const SpriteEditor = ({
               {selectedTileIds.length === 0 && (
                 <MenuItem onClick={onRemoveMetasprite}>
                   {l10n("MENU_SPRITE_DELETE")}
+                </MenuItem>
+              )}
+              {!isDefaultState && selectedTileIds.length === 0 && (
+                <MenuItem onClick={onRemoveSpriteState}>
+                  {l10n("MENU_SPRITE_STATE_DELETE")}
                 </MenuItem>
               )}
             </DropdownButton>
