@@ -1720,6 +1720,13 @@ const removeMetasprite: CaseReducer<
     state.spriteAnimations.entities[action.payload.spriteAnimationId];
 
   if (!spriteAnimation || spriteAnimation.frames.length <= 1) {
+    // Remove tiles if only frame in animation
+    metaspritesAdapter.updateOne(state.metasprites, {
+      id: action.payload.metaspriteId,
+      changes: {
+        tiles: [],
+      },
+    });
     return;
   }
 
