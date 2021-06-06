@@ -136,6 +136,32 @@ export const AudioOffIcon = () => (
   </svg>
 );
 
+export const PianoIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <path
+      fill-rule="evenodd"
+      clip-rule="evenodd"
+      d="M0 0H22C23 0 24 1 24 2V22C24 23 23 24 22 24H0V0ZM22 2H2V4H14V6H22V2ZM22 8H14V10H2V12H14V14H22V8ZM14 18V16H22V22H2V18H14Z"
+    />
+  </svg>
+);
+
+export const PianoInverseIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <path
+      fill-rule="evenodd"
+      clip-rule="evenodd"
+      d="M22 0H0V24H22C23 24 24 23 24 22V16H14V18H2V16V14V12H14V14H24V8H14V10H2V4H14V6H24V2C24 1 23 0 22 0Z"
+    />
+  </svg>
+);
+
+export const SelectionIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <path d="M11 23v-2h-4v2h4zm8-20h3v2h2v-4h-5v2zm-19 14h2v-4h-2v4zm0-6h2v-4h-2v4zm2-6v-2h3v-2h-5v4h2zm22 2h-2v4h2v-4zm0 6h-2v4h2v-4zm-2 6v2h-3v2h5v-4h-2zm-17 2h-3v-2h-2v4h5v-2zm12 2v-2h-4v2h4zm-6-20v-2h-4v2h4zm6 0v-2h-4v2h4z" />
+  </svg>
+);
+
 export const SaveIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24">
     <path d="M14 3h2.997v5h-2.997v-5zm9 1v20h-22v-24h17.997l4.003 4zm-17 5h12v-7h-12v7zm14 4h-16v9h16v-9z" />

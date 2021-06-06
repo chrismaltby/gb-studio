@@ -1,5 +1,4 @@
 import React, { useCallback } from "react";
-import { CheckboxField } from "ui/form/CheckboxField";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store/configureStore";
 import trackerActions from "store/features/tracker/trackerActions";
@@ -22,7 +21,24 @@ interface ChannelSelectFieldProps {
 
 const Wrapper = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+`;
+
+const ChannelButton = styled(Button)`
+  flex-grow: 0;
+  height: 22px;
+  width: 56px;
+  margin: 0 2px;
+`;
+
+const ActionGroup = styled.div`
+  display: flex;
+  flex-rirection: row;
+
+  & > Button {
+    padding: 0;
+    flex-grow: 1;
+  }
 `;
 
 export const ChannelSelectField = ({
@@ -70,26 +86,31 @@ export const ChannelSelectField = ({
 
   return (
     <Wrapper>
-      <CheckboxField
+      <ChannelButton
         name={name}
-        label={label}
-        onChange={setSelectedChannel(index)}
-        checked={selectedChannel === index}
-      />
-      <Button
-        variant="transparent"
-        size="small"
-        onClick={toggleVisibleChannel(index)}
+        variant={selectedChannel === index ? "primary" : "transparent"}
+        size="medium"
+        active={selectedChannel === index}
+        onClick={setSelectedChannel(index)}
       >
-        {visibleChannels.indexOf(index) > -1 ? (
-          <EyeOpenIcon />
-        ) : (
-          <EyeClosedIcon />
-        )}
-      </Button>
-      <Button variant="transparent" size="small" onClick={setMute}>
-        {muted ? <AudioOffIcon /> : <AudioOnIcon />}
-      </Button>
+        {label}
+      </ChannelButton>
+      <ActionGroup>
+        <Button
+          variant="transparent"
+          size="small"
+          onClick={toggleVisibleChannel(index)}
+        >
+          {visibleChannels.indexOf(index) > -1 ? (
+            <EyeOpenIcon />
+          ) : (
+            <EyeClosedIcon />
+          )}
+        </Button>
+        <Button variant="transparent" size="small" onClick={setMute}>
+          {muted ? <AudioOffIcon /> : <AudioOnIcon />}
+        </Button>
+      </ActionGroup>
     </Wrapper>
   );
 };

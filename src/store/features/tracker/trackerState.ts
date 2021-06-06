@@ -2,6 +2,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import editorActions from "../editor/editorActions";
 
+export type PianoRollToolType = "pencil" | "eraser" | "selection" | null;
 export interface TrackerState {
   // status: "loading" | "error" | "loaded" | null,
   // error?: string;
@@ -11,7 +12,7 @@ export interface TrackerState {
   editStep: number;
   // modified: boolean;
   view: "tracker" | "roll";
-  tool: "pencil" | "eraser" | null;
+  tool: PianoRollToolType;
   defaultInstruments: [number, number, number, number];
   selectedChannel: number;
   visibleChannels: number[];
@@ -50,7 +51,7 @@ const trackerSlice = createSlice({
     setHoverNote: (state, action: PayloadAction<number | null>) => {
       state.hoverNote = action.payload;
     },
-    setTool: (state, _action: PayloadAction<"pencil" | "eraser" | null>) => {
+    setTool: (state, _action: PayloadAction<PianoRollToolType>) => {
       state.tool = _action.payload;
     },
     setDefaultInstruments: (
