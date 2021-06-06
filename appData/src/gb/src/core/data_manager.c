@@ -143,8 +143,11 @@ UBYTE load_sprite(UBYTE sprite_offset, const spritesheet_t * sprite, UBYTE bank)
     return n_tiles;
 }
 
-void load_animations(const spritesheet_t *sprite, UBYTE bank, animation_t * res_animations) __banked {
-    MemcpyBanked(res_animations, sprite->animations, sizeof(sprite->animations), bank);
+void load_animations(const spritesheet_t *sprite, UBYTE bank, UWORD animation_set, animation_t * res_animations) __nonbanked {
+    UBYTE _save = _current_bank;
+    SWITCH_ROM_MBC1(bank);
+    memcpy(res_animations, &(sprite->animations + sprite->animations_lookup[animation_set]), sizeof(animation_t) * 8);
+    SWITCH_ROM_MBC1(_save);
 }
 
 void load_bounds(const spritesheet_t *sprite, UBYTE bank, bounding_box_t * res_bounds) __banked {
@@ -233,7 +236,7 @@ UBYTE load_scene(const scene_t * scene, UBYTE bank, UBYTE init_data) __banked {
         PLAYER.base_tile = 0;
         PLAYER.sprite = scn.player_sprite;
         tile_allocation_hiwater = load_sprite(PLAYER.base_tile, scn.player_sprite.ptr, scn.player_sprite.bank);
-        load_animations(scn.player_sprite.ptr, scn.player_sprite.bank, PLAYER.animations);
+        load_animations(scn.player_sprite.ptr, scn.player_sprite.bank, ANIM_SET_DEFAULT, PLAYER.animations);
         load_bounds(scn.player_sprite.ptr, scn.player_sprite.bank, &PLAYER.bounds);
     } else {
         // no player on logo, but still some little amount of actors may be present
@@ -290,7 +293,7 @@ UBYTE load_scene(const scene_t * scene, UBYTE bank, UBYTE init_data) __banked {
                     UBYTE idx = get_farptr_index(scn.sprites.ptr, scn.sprites.bank, sprites_len, &actor->sprite);
                     actor->base_tile = (idx < sprites_len) ? base_tiles[idx] : 0;
                 }
-                load_animations((void *)actor->sprite.ptr, actor->sprite.bank, actor->animations);
+                load_animations((void *)actor->sprite.ptr, actor->sprite.bank, ANIM_SET_DEFAULT, actor->animations);
                 // add to inactive list by default 
                 actor->enabled = FALSE;
                 DL_PUSH_HEAD(actors_inactive_head, actor);

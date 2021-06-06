@@ -1205,11 +1205,7 @@ const compile = async (
     );
     output[`spritesheet_${spriteIndex}.h`] = compileSpriteSheetHeader(
       sprite,
-      spriteIndex,
-      {
-        statesOrder: precompiled.statesOrder,
-        stateReferences: precompiled.stateReferences,
-      }
+      spriteIndex
     );
   });
 

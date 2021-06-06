@@ -25,6 +25,8 @@
 #define ANIM_CURSOR           0
 #define ANIM_CURSOR_HOVER     1
 
+#define ANIM_SET_DEFAULT      0
+
 typedef enum {
   CHECK_DIR_LEFT = 1,
   CHECK_DIR_RIGHT,

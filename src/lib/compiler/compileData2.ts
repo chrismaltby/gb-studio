@@ -687,10 +687,18 @@ export const compileSpriteSheet = (
 // SpriteSheet: ${spriteSheet.name}
   
 #include "gbs_types.h"
-#include "data/${spriteSheetSymbol(spriteSheetIndex)}.h"
 #include "data/${tilesetSymbol(spriteSheet.tilesetIndex)}.h"
 
 ${toBankSymbolInit(spriteSheetSymbol(spriteSheetIndex))};
+
+${stateReferences
+  .map(
+    (state, n) =>
+      `#define SPRITE_${spriteSheetIndex}_STATE_${state} ${
+        Math.max(0, stateNames.indexOf(statesOrder[n])) * 8
+      }`
+  )
+  .join("\n")}
 
 ${spriteSheet.metasprites
   .map((metasprite, metaspriteIndex) => {
@@ -751,29 +759,14 @@ ${toStructData(
 };
 
 export const compileSpriteSheetHeader = (
-  spriteSheet: PrecompiledSpriteSheetData,
-  spriteSheetIndex: number,
-  {
-    statesOrder,
-    stateReferences,
-  }: { statesOrder: string[]; stateReferences: string[] }
-) => {
-  const stateNames = spriteSheet.states.map((state) => state.name);
-  return toDataHeader(
+  _spriteSheet: PrecompiledSpriteSheetData,
+  spriteSheetIndex: number
+) =>
+  toDataHeader(
     SPRITESHEET_TYPE,
     spriteSheetSymbol(spriteSheetIndex),
-    `// SpriteSheet: ${spriteSheetIndex}
-    
-${stateReferences
-  .map(
-    (state, n) =>
-      `#define SPRITE_${spriteSheetIndex}_STATE_${state} ${
-        Math.max(0, stateNames.indexOf(statesOrder[n])) * 8
-      }`
-  )
-  .join("\n")}`
+    `// SpriteSheet: ${spriteSheetIndex}`
   );
-};
 
 export const compileBackground = (
   background: PrecompiledBackground,
