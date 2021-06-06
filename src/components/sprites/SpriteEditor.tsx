@@ -170,6 +170,25 @@ export const SpriteEditor = ({
       );
     };
 
+  const onChangeTilesFieldInput =
+    <T extends keyof MetaspriteTile>(key: T) =>
+    (
+      e:
+        | React.ChangeEvent<HTMLInputElement>
+        | React.ChangeEvent<HTMLTextAreaElement>
+    ) => {
+      const editValue = castEventValue(e);
+      dispatch(
+        entitiesActions.editMetaspriteTiles({
+          spriteSheetId: id,
+          metaspriteTileIds: selectedTileIds,
+          changes: {
+            [key]: editValue,
+          },
+        })
+      );
+    };
+
   const onChangeTileFieldInput =
     <T extends keyof MetaspriteTile>(key: T) =>
     (
@@ -466,7 +485,7 @@ export const SpriteEditor = ({
                   name="priority"
                   label={l10n("FIELD_DISPLAY_BEHIND_BACKGROUND")}
                   checked={metaspriteTile.priority}
-                  onChange={onChangeTileFieldInput("priority")}
+                  onChange={onChangeTilesFieldInput("priority")}
                 />
               </FormRow>
 
