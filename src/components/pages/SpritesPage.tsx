@@ -306,6 +306,7 @@ const SpritesPage = () => {
               spriteSheetId={selectedId}
               metaspriteId={frameId}
               animationId={selectedAnimation?.id || ""}
+              spriteStateId={selectedStateId}
               hidden={frameId !== selectedMetaspriteId}
             />
           ))}

@@ -608,8 +608,10 @@
   "MENU_SPRITE_TILE_DELETE": "Delete Tile",
   "MENU_SPRITE_COPY": "Copy Frame",
   "MENU_SPRITE_TILE_COPY": "Copy Tile",
+  "MENU_SPRITE_STATE_COPY": "Copy Animation State",
   "MENU_SPRITE_PASTE": "Paste Frame",
   "MENU_SPRITE_TILE_PASTE": "Paste Tile",
+  "MENU_SPRITE_STATE_PASTE": "Paste Animation State",
   "MENU_OPEN_MUSIC_PROCESS_WINDOW": "Open Music Process Window",
 
   "// 11": "Warnings -----------------------------------------------------",

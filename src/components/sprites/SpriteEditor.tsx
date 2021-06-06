@@ -46,6 +46,7 @@ import { SidebarHeader } from "ui/form/SidebarHeader";
 import {
   ClipboardTypeMetasprites,
   ClipboardTypeMetaspriteTiles,
+  ClipboardTypeSpriteState,
 } from "store/features/clipboard/clipboardTypes";
 import { CheckboxField } from "ui/form/CheckboxField";
 import { AnimationTypeSelect } from "../forms/AnimationTypeSelect";
@@ -270,15 +271,24 @@ export const SpriteEditor = ({
     );
   }, [dispatch, metaspriteId]);
 
+  const onCopySpriteState = useCallback(() => {
+    dispatch(
+      clipboardActions.copySpriteState({
+        spriteStateId,
+      })
+    );
+  }, [dispatch, spriteStateId]);
+
   const onPaste = useCallback(() => {
     dispatch(
       clipboardActions.pasteSprite({
         spriteSheetId: id,
         metaspriteId,
         spriteAnimationId: animationId,
+        spriteStateId,
       })
     );
-  }, [dispatch, id, metaspriteId, animationId]);
+  }, [dispatch, id, metaspriteId, animationId, spriteStateId]);
 
   const onFetchClipboard = useCallback(() => {
     dispatch(clipboardActions.fetchClipboard());
@@ -369,6 +379,11 @@ export const SpriteEditor = ({
                   {l10n("MENU_SPRITE_COPY")}
                 </MenuItem>
               )}
+              {selectedTileIds.length === 0 && (
+                <MenuItem onClick={onCopySpriteState}>
+                  {l10n("MENU_SPRITE_STATE_COPY")}
+                </MenuItem>
+              )}
               {clipboardFormat === ClipboardTypeMetaspriteTiles && (
                 <MenuItem onClick={onPaste}>
                   {l10n("MENU_SPRITE_TILE_PASTE")}
@@ -377,6 +392,11 @@ export const SpriteEditor = ({
               {clipboardFormat === ClipboardTypeMetasprites && (
                 <MenuItem onClick={onPaste}>
                   {l10n("MENU_SPRITE_PASTE")}
+                </MenuItem>
+              )}
+              {clipboardFormat === ClipboardTypeSpriteState && (
+                <MenuItem onClick={onPaste}>
+                  {l10n("MENU_SPRITE_STATE_PASTE")}
                 </MenuItem>
               )}
               <MenuDivider />

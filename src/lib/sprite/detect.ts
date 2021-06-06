@@ -238,9 +238,36 @@ export const detectClassic = (spriteSheet: SpriteSheet): DetectedSprite => {
   } else if (numFrames === 6) {
     animationType = "multi_movement";
     flipLeft = true;
-    animations[0].frames.push(metasprites[4].id);
-    animations[2].frames.push(metasprites[2].id);
-    animations[3].frames.push(metasprites[0].id);
+
+    // Clone idle frames
+    [4, 2, 0].forEach((index) => {
+      const originalMetasprite = metasprites[index];
+      const originalTileLeft = metaspriteTiles.find(
+        (tile) => originalMetasprite.tiles[0] === tile.id
+      ) as MetaspriteTile;
+      const originalTileRight = metaspriteTiles.find(
+        (tile) => originalMetasprite.tiles[1] === tile.id
+      ) as MetaspriteTile;
+      const tileLeft: MetaspriteTile = {
+        ...originalTileLeft,
+        id: uuid(),
+      };
+      const tileRight: MetaspriteTile = {
+        ...originalTileRight,
+        id: uuid(),
+      };
+      const metasprite: Metasprite = {
+        id: uuid(),
+        tiles: [tileLeft.id, tileRight.id],
+      };
+      metaspriteTiles.push(tileLeft);
+      metaspriteTiles.push(tileRight);
+      metasprites.push(metasprite);
+    });
+
+    animations[0].frames.push(metasprites[6].id);
+    animations[2].frames.push(metasprites[7].id);
+    animations[3].frames.push(metasprites[8].id);
     animations[4].frames.push(metasprites[5].id);
     animations[4].frames.push(metasprites[4].id);
     animations[6].frames.push(metasprites[3].id);
