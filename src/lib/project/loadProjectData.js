@@ -88,6 +88,7 @@ const loadProject = async (projectPath) => {
           ...sprite,
           id: oldSprite.id,
           _v: oldSprite._v,
+          name: oldSprite.name || sprite.name,
           canvasWidth: oldSprite.canvasWidth || 32,
           canvasHeight: oldSprite.canvasHeight || 32,
           animations: Array.from(Array(8)).map((_, animationIndex) => ({
