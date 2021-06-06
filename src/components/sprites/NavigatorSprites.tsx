@@ -250,6 +250,27 @@ export const NavigatorSprites = ({
       ? `${selectedStateId}_group`
       : `${selectedStateId}_${highlightAnimationId}`;
 
+  useEffect(() => {
+    if (spriteAnimations.length > 0) {
+      const selected = spriteAnimations.find(
+        (a) => a.id === selectedNavigationId
+      );
+      // If selected sprite animation is hidden
+      // reset sub navigation to select root of state
+      if (!selected) {
+        const newId = `${selectedStateId}_group`;
+        if (selectedNavigationId !== newId) {
+          dispatch(
+            editorActions.setSelectedAnimationId({
+              animationId: "",
+              stateId: selectedStateId,
+            })
+          );
+        }
+      }
+    }
+  }, [dispatch, selectedNavigationId, selectedStateId, spriteAnimations]);
+
   const addState = useCallback(
     (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
       e.stopPropagation();
