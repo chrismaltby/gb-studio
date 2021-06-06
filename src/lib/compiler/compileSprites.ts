@@ -262,10 +262,10 @@ const compileSprites = async (
         .replace(/[^a-zA-Z0-9_]/g, "")
         .toUpperCase() || "S";
 
-    let insertName = refName;
+    let insertName = `STATE_${refName}`;
     let insNum = 1;
     while (stateReferences.includes(insertName)) {
-      insertName = `${refName}_${insNum++}`;
+      insertName = `STATE_${refName}_${insNum++}`;
     }
     stateReferences.push(insertName);
   });

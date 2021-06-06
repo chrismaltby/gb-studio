@@ -3,11 +3,17 @@ import { useSelector } from "react-redux";
 import uniq from "lodash/uniq";
 import { RootState } from "store/configureStore";
 import { spriteStateSelectors } from "store/features/entities/entitiesState";
-import { CreatableSelect, Option, SelectCommonProps } from "ui/form/Select";
+import {
+  CreatableSelect,
+  Option,
+  Select,
+  SelectCommonProps,
+} from "ui/form/Select";
 
 interface AnimationStateSelectProps extends SelectCommonProps {
   name: string;
   value?: string;
+  creatable?: boolean;
   onChange?: (newId: string) => void;
 }
 
@@ -19,6 +25,7 @@ const collator = new Intl.Collator(undefined, {
 const AnimationStateSelect = ({
   name,
   value,
+  creatable,
   onChange,
 }: AnimationStateSelectProps) => {
   const [options, setOptions] = useState<Option[]>([]);
@@ -40,8 +47,10 @@ const AnimationStateSelect = ({
     );
   }, [spriteStates]);
 
+  const Element = creatable ? CreatableSelect : Select;
+
   return (
-    <CreatableSelect
+    <Element
       name={name}
       value={{
         value,

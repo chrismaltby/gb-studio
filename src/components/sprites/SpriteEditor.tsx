@@ -636,6 +636,7 @@ export const SpriteEditor = ({
                       name="stateName"
                       value={spriteState.name}
                       onChange={onChangeStateField("name")}
+                      creatable
                     />
                   </FormField>
                 </FormRow>

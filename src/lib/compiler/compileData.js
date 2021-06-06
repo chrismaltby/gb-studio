@@ -1017,6 +1017,8 @@ const compile = async (
         music: precompiled.usedMusic,
         fonts: precompiled.usedFonts,
         sprites: precompiled.usedSprites,
+        statesOrder: precompiled.statesOrder,
+        stateReferences: precompiled.stateReferences,
         avatars: precompiled.usedAvatars,
         emotes: precompiled.usedEmotes,
         backgrounds: precompiled.usedBackgrounds,
@@ -1326,7 +1328,10 @@ const compile = async (
     warnings,
   });
 
-  output["game_globals.i"] = compileGameGlobalsInclude(variableAliasLookup);
+  output["game_globals.i"] = compileGameGlobalsInclude(
+    variableAliasLookup,
+    precompiled.stateReferences
+  );
   output[`script_engine_init.s`] = compileScriptEngineInit({
     startX,
     startY,

@@ -694,7 +694,7 @@ ${toBankSymbolInit(spriteSheetSymbol(spriteSheetIndex))};
 ${stateReferences
   .map(
     (state, n) =>
-      `#define SPRITE_${spriteSheetIndex}_STATE_${state} ${
+      `#define SPRITE_${spriteSheetIndex}_${state} ${
         Math.max(0, stateNames.indexOf(statesOrder[n])) * 8
       }`
   )
@@ -734,7 +734,7 @@ ${" ".repeat(INDENT_SPACES)}}`
 
 const UWORD ${spriteSheetSymbol(spriteSheetIndex)}_animations_lookup[] = {
 ${Array.from(Array(maxState + 1).keys())
-  .map((n) => `    SPRITE_${spriteSheetIndex}_STATE_${stateReferences[n]}`)
+  .map((n) => `    SPRITE_${spriteSheetIndex}_${stateReferences[n]}`)
   .join(",\n")}
 };
 
@@ -1027,7 +1027,8 @@ export const compileScriptHeader = (scriptName: string) =>
   toArrayDataHeader(DATA_TYPE, scriptName, `// Script ${scriptName}`);
 
 export const compileGameGlobalsInclude = (
-  variableAliasLookup: Dictionary<string>
+  variableAliasLookup: Dictionary<string>,
+  stateReferences: string[]
 ) => {
   const variables = Object.values(variableAliasLookup) as string[];
   return (
@@ -1035,6 +1036,12 @@ export const compileGameGlobalsInclude = (
       .map((string, stringIndex) => {
         return `${string} = ${stringIndex}\n`;
       })
-      .join("") + `MAX_GLOBAL_VARS = ${variables.length}\n`
+      .join("") +
+    `MAX_GLOBAL_VARS = ${variables.length}\n` +
+    stateReferences
+      .map((string, stringIndex) => {
+        return `${string} = ${stringIndex}\n`;
+      })
+      .join("")
   );
 };
