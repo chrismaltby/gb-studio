@@ -518,6 +518,7 @@
   "EVENT_IF_EXPRESSION": "If Expression",
   "EVENT_PALETTE_SET_SPRITE": "Palette: Set Sprite Palettes",
   "EVENT_PALETTE_SET_EMOTE": "Palette: Set Emote Palette",
+  "EVENT_ACTOR_SET_STATE": "Actor: Set Animation State",
 
   "// 10": "Menu -----------------------------------------------------",
 
