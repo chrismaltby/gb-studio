@@ -288,7 +288,12 @@ class ScriptEventFormInput extends Component {
     }
     if (type === "animationstate") {
       return (
-        <AnimationStateSelect id={id} value={value} onChange={this.onChange} />
+        <AnimationStateSelect
+          id={id}
+          value={value}
+          onChange={this.onChange}
+          allowDefault
+        />
       );
     }
     if (type === "variable") {

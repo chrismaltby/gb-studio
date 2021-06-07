@@ -9,7 +9,7 @@ const fields = [
   {
     key: "spriteStateId",
     type: "animationstate",
-    defaultValue: "LAST_SPRITE",
+    defaultValue: "",
   },
 ];
 
