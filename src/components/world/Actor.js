@@ -44,14 +44,16 @@ class Actor extends Component {
           }}
         >
           {showSprite && (
-            <SpriteSheetCanvas
-              spriteSheetId={spriteSheetId}
-              direction={direction}
-              frame={0}
-              palette={palette}
-              palettes={palettes}
-              offsetPosition
-            />
+            <div style={{ pointerEvents: "none" }}>
+              <SpriteSheetCanvas
+                spriteSheetId={spriteSheetId}
+                direction={direction}
+                frame={0}
+                palette={palette}
+                palettes={palettes}
+                offsetPosition
+              />
+            </div>
           )}
         </div>
       </>
