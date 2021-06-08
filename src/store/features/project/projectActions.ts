@@ -180,12 +180,16 @@ const loadSprite = createAsyncThunk<{ data: SpriteSheet }, string>(
 
     if (existingAsset) {
       delete inodeToRecentSpriteSheet[data.inode];
+      const oldAutoName = existingAsset.filename.replace(/.png/i, "");
       return {
         data: {
           ...existingAsset,
           ...data,
           id: existingAsset.id,
-          name: existingAsset.name || data.name,
+          name:
+            existingAsset.name !== oldAutoName
+              ? existingAsset.name || data.name
+              : data.name,
           states: existingAsset.states,
         },
       };
