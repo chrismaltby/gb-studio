@@ -31,7 +31,6 @@ const loadSpriteData = (projectRoot) => async (filename) => {
       checksum,
       width: size.width,
       height: size.height,
-      autoDetect: true,
       states: [],
       numTiles: 0,
       canvasWidth: 32,

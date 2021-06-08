@@ -29,13 +29,11 @@ import { LockIcon, LockOpenIcon, PinIcon } from "ui/icons/Icons";
 import castEventValue from "lib/helpers/castEventValue";
 import { CheckboxField } from "ui/form/CheckboxField";
 import DirectionPicker from "../forms/DirectionPicker";
-import { DMG_PALETTE, SPRITE_TYPE_STATIC } from "../../consts";
+import { DMG_PALETTE } from "../../consts";
 import { SpriteSheetSelectButton } from "../forms/SpriteSheetSelectButton";
 import { WorldEditor } from "./WorldEditor";
 import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
 import ScriptEditor from "../script/ScriptEditor";
-import { NumberField } from "ui/form/NumberField";
-import { SpriteTypeSelect } from "../forms/SpriteTypeSelect";
 import { AnimationSpeedSelect } from "../forms/AnimationSpeedSelect";
 import { MovementSpeedSelect } from "../forms/MovementSpeedSelect";
 import CollisionMaskPicker from "../forms/CollisionMaskPicker";
@@ -246,32 +244,8 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
   }
 
   const showDirectionInput = true;
-  // spriteSheet &&
-  // spriteSheet.type !== SPRITE_TYPE_STATIC &&
-  // spriteSheet.type !== SPRITE_TYPE_ANIMATED &&
-  // actor.spriteType !== SPRITE_TYPE_STATIC;
-
-  const showFrameInput =
-    spriteSheet &&
-    spriteSheet.numFrames > 1 &&
-    actor.spriteType === SPRITE_TYPE_STATIC;
-
-  const showSpriteTypeSelect = false;
-  // spriteSheet &&
-  // spriteSheet.type !== "static" &&
-  // spriteSheet.type !== "animated";
-
   const showAnimatedCheckbox = false;
-  // actor.animSpeed !== null &&
-  // spriteSheet &&
-  // spriteSheet.numFrames > 1 &&
-  // (actor.spriteType === SPRITE_TYPE_STATIC ||
-  //   spriteSheet.type !== SPRITE_TYPE_ACTOR);
-
   const showAnimSpeed = true;
-  // spriteSheet &&
-  // (spriteSheet.type === SPRITE_TYPE_ACTOR_ANIMATED ||
-  //   (actor.spriteType === SPRITE_TYPE_STATIC && spriteSheet.numFrames > 1));
 
   const showCollisionGroup = !actor.isPinned;
 
@@ -427,9 +401,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
                   name="actorSprite"
                   value={actor.spriteSheetId}
                   direction={actor.direction}
-                  frame={
-                    actor.spriteType === SPRITE_TYPE_STATIC ? actor.frame : 0
-                  }
+                  frame={0}
                   paletteId={
                     colorsEnabled
                       ? actor.paletteId || defaultSpritePaletteId
@@ -453,7 +425,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
                   />
                 </FormField>
               )}
-              {showFrameInput && (
+              {/* {showFrameInput && (
                 <NumberField
                   name="frame"
                   label={l10n("FIELD_INITIAL_FRAME")}
@@ -463,16 +435,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
                   value={actor.frame}
                   onChange={onChangeFieldInput("frame")}
                 />
-              )}
-              {showSpriteTypeSelect && (
-                <FormField name="spriteType" label={l10n("FIELD_ACTOR_TYPE")}>
-                  <SpriteTypeSelect
-                    name="spriteType"
-                    value={actor.spriteType}
-                    onChange={onChangeField("spriteType")}
-                  />
-                </FormField>
-              )}
+              )} */}
             </FormRow>
             {showAnimatedCheckbox && (
               <FormRow>

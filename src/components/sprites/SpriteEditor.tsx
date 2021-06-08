@@ -327,31 +327,20 @@ export const SpriteEditor = ({
     dispatch(editorActions.setReplaceSpriteTileMode(!replaceSpriteTileMode));
   }, [dispatch, replaceSpriteTileMode]);
 
-  const autoDetect = sprite?.autoDetect;
-
   const onAutoDetect = useCallback(() => {
     dispatch(
-      entitiesActions.editSpriteSheet({
+      spriteActions.detectSprite({
         spriteSheetId: id,
-        changes: {
-          autoDetect: !autoDetect,
-        },
       })
     );
-    if (!autoDetect) {
-      dispatch(
-        spriteActions.detectSprite({
-          spriteSheetId: id,
-        })
-      );
-    }
-  }, [dispatch, id, autoDetect]);
+  }, [dispatch, id]);
 
   if (!sprite || !spriteState || !animation) {
     return null;
   }
 
   const isDefaultState = sprite.states.indexOf(spriteStateId) === 0;
+  const showAutodetect = isDefaultState && sprite.height === 16;
 
   return (
     <Sidebar onClick={selectSidebar}>
@@ -666,19 +655,13 @@ export const SpriteEditor = ({
                     />
                   </FormRow>
                 )}
-              <FormRow>
-                <Button
-                  onClick={onAutoDetect}
-                  variant={sprite.autoDetect ? "primary" : "normal"}
-                >
-                  {sprite.autoDetect && (
-                    <ButtonIcon>
-                      <CheckIcon />
-                    </ButtonIcon>
-                  )}
-                  {l10n("FIELD_AUTODETECT_ANIMATIONS")}
-                </Button>
-              </FormRow>
+              {showAutodetect && (
+                <FormRow>
+                  <Button onClick={onAutoDetect}>
+                    {l10n("FIELD_AUTODETECT_ANIMATIONS")}
+                  </Button>
+                </FormRow>
+              )}
             </>
           )}
         </FormContainer>

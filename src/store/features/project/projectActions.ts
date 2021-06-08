@@ -13,6 +13,8 @@ import {
   Font,
   Avatar,
   Emote,
+  Asset,
+  SpriteSheetData,
 } from "../entities/entitiesTypes";
 import type { RootState } from "store/configureStore";
 import loadProjectData from "lib/project/loadProjectData";
@@ -176,20 +178,15 @@ const loadSprite = createAsyncThunk<{ data: SpriteSheet }, string>(
       spriteSheets.find(matchAsset(data)) ||
       inodeToRecentSpriteSheet[data.inode];
 
-    const existingId = existingAsset?.id;
-
-    if (existingId) {
+    if (existingAsset) {
       delete inodeToRecentSpriteSheet[data.inode];
       return {
         data: {
           ...existingAsset,
           ...data,
-          id: existingId,
-          name: existingAsset?.name || data.name,
-          autoDetect:
-            existingAsset?.autoDetect !== undefined
-              ? existingAsset.autoDetect
-              : true,
+          id: existingAsset.id,
+          name: existingAsset.name || data.name,
+          states: existingAsset.states,
         },
       };
     }

@@ -1,9 +1,7 @@
 import { EntityState, Dictionary } from "@reduxjs/toolkit";
 
 export type ActorDirection = "up" | "down" | "left" | "right";
-export type ActorSpriteType = "static" | "actor";
 export type SpriteType = "static" | "animated" | "actor" | "actor_animated";
-export type SpriteSheetType = "classic" | "autodetect" | "manual";
 export type SpriteAnimationType =
   | "fixed"
   | "fixed_movement"
@@ -52,7 +50,6 @@ export type Actor = {
   x: number;
   y: number;
   spriteSheetId: string;
-  spriteType: ActorSpriteType;
   paletteId: string;
   frame: number;
   moveSpeed: number;
@@ -216,8 +213,6 @@ export type SpriteSheet = {
   id: string;
   name: string;
   filename: string;
-  type: SpriteSheetType;
-  numFrames: number;
   numTiles: number;
   plugin?: string;
   inode: string;
@@ -232,9 +227,10 @@ export type SpriteSheet = {
   boundsWidth: number;
   boundsHeight: number;
   animSpeed: number | null;
-  autoDetect: boolean;
   states: string[];
 };
+
+export type SpriteSheetData = Omit<SpriteSheet, "states">;
 
 export type SceneParallaxLayer = {
   height: number;

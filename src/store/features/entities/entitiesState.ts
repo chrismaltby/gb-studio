@@ -451,7 +451,34 @@ const loadSprite: CaseReducer<
     data: SpriteSheet;
   }>
 > = (state, action) => {
-  spriteSheetsAdapter.upsertOne(state.spriteSheets, action.payload.data);
+  if (action.payload.data.states.length === 0) {
+    // Create default state for newly added spritesheets
+    const metasprites: Metasprite[] = Array.from(Array(8)).map(() => ({
+      id: uuid(),
+      tiles: [],
+    }));
+    const animations: SpriteAnimation[] = metasprites.map((metasprite) => ({
+      id: uuid(),
+      frames: [metasprite.id],
+    }));
+    const animationIds = animations.map((a) => a.id);
+    const spriteState: SpriteState = {
+      id: uuid(),
+      name: "",
+      animationType: "multi_movement",
+      flipLeft: true,
+      animations: animationIds,
+    };
+    metaspritesAdapter.addMany(state.metasprites, metasprites);
+    spriteAnimationsAdapter.addMany(state.spriteAnimations, animations);
+    spriteStatesAdapter.addOne(state.spriteStates, spriteState);
+    spriteSheetsAdapter.upsertOne(state.spriteSheets, {
+      ...action.payload.data,
+      states: [spriteState.id],
+    });
+  } else {
+    spriteSheetsAdapter.upsertOne(state.spriteSheets, action.payload.data);
+  }
 };
 
 const loadDetectedSprite: CaseReducer<
@@ -1072,47 +1099,6 @@ const editActor: CaseReducer<
 
   if (!actor) {
     return;
-  }
-
-  // If changed spriteSheetId
-  if (patch.spriteSheetId) {
-    const newSprite = localSpriteSheetSelectors.selectById(
-      state,
-      patch.spriteSheetId
-    );
-
-    if (newSprite) {
-      // If new sprite not an actor then reset sprite type back to static
-      if (newSprite.numFrames !== 3 && newSprite.numFrames !== 6) {
-        patch.spriteType = SPRITE_TYPE_STATIC;
-      }
-      const oldSprite = localSpriteSheetSelectors.selectById(
-        state,
-        actor.spriteSheetId
-      );
-      // If new sprite is an actor and old one wasn't reset sprite type to actor
-      if (
-        oldSprite &&
-        newSprite &&
-        oldSprite.id !== newSprite.id &&
-        oldSprite.numFrames !== 3 &&
-        oldSprite.numFrames !== 6 &&
-        (newSprite.numFrames === 3 || newSprite.numFrames === 6)
-      ) {
-        patch.spriteType = SPRITE_TYPE_ACTOR;
-      }
-
-      if (newSprite && newSprite.numFrames <= actor.frame) {
-        patch.frame = 0;
-      }
-    }
-  }
-  // If static and cycling frames start from frame 1 (facing downwards)
-  if (
-    (patch.animate && actor.spriteType === SPRITE_TYPE_STATIC) ||
-    patch.spriteType === SPRITE_TYPE_STATIC
-  ) {
-    patch.direction = "down";
   }
 
   actorsAdapter.updateOne(state.actors, {
