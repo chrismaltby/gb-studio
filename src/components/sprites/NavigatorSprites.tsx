@@ -311,7 +311,7 @@ export const NavigatorSprites = ({
             <Button
               variant="transparent"
               size="small"
-              title={l10n("FIELD_ANIMATIONS")}
+              title={l10n("FIELD_ADD_ANIMATION_STATE")}
               onClick={addState}
             >
               <PlusIcon />

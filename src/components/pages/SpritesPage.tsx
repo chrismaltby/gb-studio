@@ -376,6 +376,9 @@ const SpritesPage = () => {
                         : "transparent"
                     }
                     onClick={onTogglePrecisionTiles}
+                    title={`${l10n("FIELD_PRECISION_SELECTION")}${
+                      precisionTileMode ? ` (${l10n("FIELD_ENABLED")})` : ""
+                    }`}
                   >
                     <PrecisionIcon />
                   </Button>
