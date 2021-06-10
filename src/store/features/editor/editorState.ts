@@ -121,6 +121,7 @@ export interface EditorState {
   selectedInstrument: SelectedInstrument;
   selectedSequence: number;
   playbackState: number[];
+  precisionTileMode: boolean;
 }
 
 export const initialState: EditorState = {
@@ -187,6 +188,7 @@ export const initialState: EditorState = {
   },
   selectedSequence: 0,
   playbackState: [0, 0],
+  precisionTileMode: false,
 };
 
 const editorSlice = createSlice({
@@ -612,6 +614,7 @@ const editorSlice = createSlice({
       action: PayloadAction<SpriteTileSelection>
     ) => {
       state.spriteTileSelection = action.payload;
+      state.selectedMetaspriteTileIds = [];
     },
 
     resetSpriteTileSelection: (state) => {
@@ -657,6 +660,10 @@ const editorSlice = createSlice({
 
     setPlaybackState: (state, action: PayloadAction<number[]>) => {
       state.playbackState = action.payload;
+    },
+
+    setPrecisionTileMode: (state, action: PayloadAction<boolean>) => {
+      state.precisionTileMode = action.payload;
     },
   },
   extraReducers: (builder) =>

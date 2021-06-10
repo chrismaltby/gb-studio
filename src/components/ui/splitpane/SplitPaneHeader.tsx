@@ -33,7 +33,6 @@ export const Wrapper = styled.div`
   }
 
   ${Button} {
-    width: 16px;
     padding: 4px;
     min-width: 18px;
   }

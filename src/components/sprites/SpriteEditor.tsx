@@ -39,7 +39,6 @@ import {
   FlipVerticalIcon,
   SendToFrontIcon,
   SendToBackIcon,
-  CheckIcon,
 } from "ui/icons/Icons";
 import { FlexGrow } from "ui/spacing/Spacing";
 import { SidebarHeader } from "ui/form/SidebarHeader";
@@ -52,7 +51,6 @@ import { CheckboxField } from "ui/form/CheckboxField";
 import { AnimationTypeSelect } from "../forms/AnimationTypeSelect";
 import { ObjPaletteSelect } from "../forms/ObjPaletteSelect";
 import { PaletteIndexSelect } from "../forms/PaletteIndexSelect";
-import styled from "styled-components";
 import AnimationStateSelect from "components/forms/AnimationStateSelect";
 
 interface SpriteEditorProps {
@@ -61,15 +59,6 @@ interface SpriteEditorProps {
   spriteStateId: string;
   animationId: string;
 }
-
-const ButtonIcon = styled.div`
-  width: 12px;
-  display: inline-flex;
-  justifycontent: center;
-  alignitems: center;
-  marginleft: -5px;
-  marginright: 5px;
-`;
 
 export const SpriteEditor = ({
   id,

@@ -37,10 +37,23 @@ import MetaspriteEditorPreviewSettings from "../sprites/MetaspriteEditorPreviewS
 import spriteActions from "store/features/sprite/spriteActions";
 import { clampSidebarWidth } from "lib/helpers/window/sidebar";
 import useSorted from "ui/hooks/use-sorted";
+import { Button } from "ui/buttons/Button";
+import { TargetIcon } from "ui/icons/Icons";
+import { FixedSpacer } from "ui/spacing/Spacing";
 
 const Wrapper = styled.div`
   display: flex;
   width: 100%;
+`;
+
+const PrecisionIcon = styled(TargetIcon)`
+  && {
+    height: 16px;
+    width: 16px;
+    max-width: 16px;
+    max-height: 16px;
+    margin: -2px 0 0 0;
+  }
 `;
 
 const SpritesPage = () => {
@@ -85,6 +98,11 @@ const SpritesPage = () => {
   const metaspriteId = useSelector(
     (state: RootState) => state.editor.selectedMetaspriteId
   );
+  const precisionTileMode = useSelector(
+    (state: RootState) => state.editor.precisionTileMode
+  );
+  const [tmpPrecisionMode, setTmpPrecisionMode] = useState(false);
+
   const colorsEnabled = useSelector(
     (state: RootState) => state.project.present.settings.customColorsEnabled
   );
@@ -252,6 +270,36 @@ const SpritesPage = () => {
     dispatch(editorActions.zoomReset({ section: "spriteTiles" }));
   }, [dispatch]);
 
+  const onTogglePrecisionTiles = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      e.stopPropagation();
+      dispatch(editorActions.setPrecisionTileMode(!precisionTileMode));
+    },
+    [dispatch, precisionTileMode]
+  );
+
+  const handleKeys = useCallback((e: KeyboardEvent) => {
+    if (e.altKey) {
+      setTmpPrecisionMode(true);
+    }
+  }, []);
+
+  const handleKeysUp = useCallback((e: KeyboardEvent) => {
+    if (!e.altKey) {
+      setTmpPrecisionMode(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeys);
+    window.addEventListener("keyup", handleKeysUp);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeys);
+      window.removeEventListener("keyup", handleKeysUp);
+    };
+  });
+
   return (
     <Wrapper>
       <div
@@ -319,23 +367,40 @@ const SpritesPage = () => {
             collapsed={centerPaneHeight === 30}
             buttons={
               centerPaneHeight > 30 && (
-                <ZoomButton
-                  zoom={tilesZoom}
-                  size="small"
-                  variant="transparent"
-                  title={l10n("TOOLBAR_ZOOM_RESET")}
-                  titleIn={l10n("TOOLBAR_ZOOM_IN")}
-                  titleOut={l10n("TOOLBAR_ZOOM_OUT")}
-                  onZoomIn={onZoomIn}
-                  onZoomOut={onZoomOut}
-                  onZoomReset={onZoomReset}
-                />
+                <>
+                  <Button
+                    size="small"
+                    variant={
+                      precisionTileMode || tmpPrecisionMode
+                        ? "primary"
+                        : "transparent"
+                    }
+                    onClick={onTogglePrecisionTiles}
+                  >
+                    <PrecisionIcon />
+                  </Button>
+                  <FixedSpacer width={5} />
+                  <ZoomButton
+                    zoom={tilesZoom}
+                    size="small"
+                    variant="transparent"
+                    title={l10n("TOOLBAR_ZOOM_RESET")}
+                    titleIn={l10n("TOOLBAR_ZOOM_IN")}
+                    titleOut={l10n("TOOLBAR_ZOOM_OUT")}
+                    onZoomIn={onZoomIn}
+                    onZoomOut={onZoomOut}
+                    onZoomReset={onZoomReset}
+                  />
+                </>
               )
             }
           >
             {l10n("FIELD_TILES")} ({selectedSprite.numTiles} unique)
           </SplitPaneHeader>
-          <SpriteTilePalette id={selectedId} />
+          <SpriteTilePalette
+            id={selectedId}
+            precisionMode={precisionTileMode || tmpPrecisionMode}
+          />
         </div>
         <SplitPaneVerticalDivider />
         <SplitPaneHeader
