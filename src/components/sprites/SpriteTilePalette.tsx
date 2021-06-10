@@ -51,16 +51,22 @@ const SpriteTilePalette = ({ id, precisionMode }: SpriteTilePaletteProps) => {
 
   const snapX = useCallback(
     (offsetX: number): number => {
-      return Math.max(0, precisionMode ? offsetX - 4 : roundDown8(offsetX));
+      return Math.min(
+        width - 8,
+        Math.max(0, precisionMode ? offsetX - 4 : roundDown8(offsetX))
+      );
     },
-    [precisionMode]
+    [precisionMode, width]
   );
 
   const snapY = useCallback(
     (offsetY: number): number => {
-      return Math.max(0, precisionMode ? offsetY - 8 : roundDown8(offsetY));
+      return Math.min(
+        height - 16,
+        Math.max(0, precisionMode ? offsetY - 8 : roundDown8(offsetY))
+      );
     },
-    [precisionMode]
+    [precisionMode, height]
   );
 
   const onReplace = useCallback(
@@ -87,10 +93,7 @@ const SpriteTilePalette = ({ id, precisionMode }: SpriteTilePaletteProps) => {
       const currentTargetRect = e.currentTarget.getBoundingClientRect();
 
       const offsetX = Math.floor((e.pageX - currentTargetRect.left) / zoom);
-      const offsetY = Math.min(
-        height - 16,
-        Math.floor((e.pageY - currentTargetRect.top) / zoom)
-      );
+      const offsetY = Math.floor((e.pageY - currentTargetRect.top) / zoom);
 
       if (replaceSpriteTileMode && selectedTileIds[0]) {
         onReplace(snapX(offsetX), snapY(offsetY));
@@ -106,7 +109,6 @@ const SpriteTilePalette = ({ id, precisionMode }: SpriteTilePaletteProps) => {
       setIsDragging(true);
     },
     [
-      height,
       onReplace,
       replaceSpriteTileMode,
       selectedTileIds,
@@ -124,20 +126,8 @@ const SpriteTilePalette = ({ id, precisionMode }: SpriteTilePaletteProps) => {
       }
       const currentTargetRect = wrapperRef.current.getBoundingClientRect();
 
-      const offsetX = Math.max(
-        0,
-        Math.min(
-          width - 8,
-          Math.floor((e.pageX - currentTargetRect.left) / zoom)
-        )
-      );
-      const offsetY = Math.max(
-        0,
-        Math.min(
-          height - 16,
-          Math.floor((e.pageY - currentTargetRect.top) / zoom)
-        )
-      );
+      const offsetX = Math.floor((e.pageX - currentTargetRect.left) / zoom);
+      const offsetY = Math.floor((e.pageY - currentTargetRect.top) / zoom);
 
       const x = Math.min(selectedTiles.x, offsetX);
       const y = Math.min(selectedTiles.y, offsetY);
@@ -162,16 +152,7 @@ const SpriteTilePalette = ({ id, precisionMode }: SpriteTilePaletteProps) => {
         height: precisionMode ? 1 : selectionHeight,
       });
     },
-    [
-      selectedTiles,
-      width,
-      zoom,
-      height,
-      setSelectedTiles,
-      snapX,
-      snapY,
-      precisionMode,
-    ]
+    [selectedTiles, zoom, setSelectedTiles, snapX, snapY, precisionMode]
   );
 
   const onDragEnd = (_e: MouseEvent) => {
@@ -182,26 +163,14 @@ const SpriteTilePalette = ({ id, precisionMode }: SpriteTilePaletteProps) => {
   const onHover = useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
       const currentTargetRect = e.currentTarget.getBoundingClientRect();
-      const offsetX = Math.max(
-        0,
-        Math.min(
-          width - 8,
-          Math.floor((e.pageX - currentTargetRect.left) / zoom)
-        )
-      );
-      const offsetY = Math.max(
-        0,
-        Math.min(
-          height - 16,
-          Math.floor((e.pageY - currentTargetRect.top) / zoom)
-        )
-      );
+      const offsetX = Math.floor((e.pageX - currentTargetRect.left) / zoom);
+      const offsetY = Math.floor((e.pageY - currentTargetRect.top) / zoom);
       setHoverTile({
         x: snapX(offsetX),
         y: snapY(offsetY),
       });
     },
-    [width, zoom, height, snapX, snapY]
+    [zoom, snapX, snapY]
   );
 
   const onMouseOut = useCallback(() => {
