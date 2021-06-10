@@ -456,12 +456,6 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         for (const action of newTileActions) {
           store.dispatch(action);
         }
-
-        const newTileIds = newTileActions.map(
-          (action) => action.payload.metaspriteTileId
-        );
-
-        store.dispatch(editorActions.setSelectedMetaspriteTileIds(newTileIds));
       } else if (clipboard.format === ClipboardTypeMetaspriteTiles) {
         const data = clipboard.data;
 
