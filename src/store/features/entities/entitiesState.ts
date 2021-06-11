@@ -9,8 +9,6 @@ import {
   Dictionary,
 } from "@reduxjs/toolkit";
 import {
-  SPRITE_TYPE_STATIC,
-  SPRITE_TYPE_ACTOR,
   DMG_PALETTE,
   COLLISION_ALL,
   TILE_PROPS,
@@ -1044,33 +1042,28 @@ const addActor: CaseReducer<
     variablesAdapter.upsertMany(state.variables, newVariables);
   }
 
-  const newActor = Object.assign(
-    {
-      name: "",
-      frame: 0,
-      animate: false,
-      spriteSheetId,
-      spriteType: SPRITE_TYPE_STATIC,
-      direction: "down",
-      moveSpeed: 1,
-      animSpeed: 3,
-      paletteId: "",
-      isPinned: false,
-      collisionGroup: "",
-      script: [],
-      startScript: [],
-      updateScript: [],
-      hit1Script: [],
-      hit2Script: [],
-      hit3Script: [],
-    } as Partial<Actor>,
-    action.payload.defaults || {},
-    {
-      id: action.payload.actorId,
-      x: clamp(action.payload.x, 0, scene.width - 2),
-      y: clamp(action.payload.y, 0, scene.height - 1),
-    }
-  ) as Actor;
+  const newActor: Actor = {
+    name: "",
+    frame: 0,
+    animate: false,
+    spriteSheetId,
+    direction: "down",
+    moveSpeed: 1,
+    animSpeed: 3,
+    paletteId: "",
+    isPinned: false,
+    collisionGroup: "",
+    script: [],
+    startScript: [],
+    updateScript: [],
+    hit1Script: [],
+    hit2Script: [],
+    hit3Script: [],
+    ...(action.payload.defaults || {}),
+    id: action.payload.actorId,
+    x: clamp(action.payload.x, 0, scene.width - 2),
+    y: clamp(action.payload.y, 0, scene.height - 1),
+  };
 
   addActorToScene(state, scene, newActor, {});
 };

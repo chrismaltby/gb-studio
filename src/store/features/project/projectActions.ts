@@ -13,8 +13,6 @@ import {
   Font,
   Avatar,
   Emote,
-  Asset,
-  SpriteSheetData,
 } from "../entities/entitiesTypes";
 import type { RootState } from "store/configureStore";
 import loadProjectData from "lib/project/loadProjectData";

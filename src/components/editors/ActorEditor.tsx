@@ -5,7 +5,6 @@ import { RootState } from "store/configureStore";
 import {
   actorSelectors,
   sceneSelectors,
-  spriteSheetSelectors,
 } from "store/features/entities/entitiesState";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { EditableText } from "ui/form/EditableText";
@@ -92,9 +91,6 @@ type CollisionTab = keyof typeof collisionTabs;
 export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
   const actor = useSelector((state: RootState) =>
     actorSelectors.selectById(state, id)
-  );
-  const spriteSheet = useSelector((state: RootState) =>
-    spriteSheetSelectors.selectById(state, actor?.spriteSheetId || "")
   );
   const [clipboardData, setClipboardData] = useState<unknown>(null);
   const [notesOpen, setNotesOpen] = useState<boolean>(!!actor?.notes);

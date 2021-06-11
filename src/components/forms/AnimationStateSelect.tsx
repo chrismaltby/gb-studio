@@ -56,7 +56,7 @@ const AnimationStateSelect = ({
     );
 
     setOptions(options);
-  }, [spriteStates]);
+  }, [allowDefault, spriteStates]);
 
   const Element = creatable ? CreatableSelect : Select;
 

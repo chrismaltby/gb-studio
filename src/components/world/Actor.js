@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import SpriteSheetCanvas from "./SpriteSheetCanvas";
 import { ActorShape, PaletteShape } from "store/stateShape";
 import { getCachedObject } from "lib/helpers/cache";
-import { DMG_PALETTE, MIDDLE_MOUSE, SPRITE_TYPE_STATIC } from "../../consts";
+import { DMG_PALETTE, MIDDLE_MOUSE } from "../../consts";
 import {
   actorSelectors,
   paletteSelectors,

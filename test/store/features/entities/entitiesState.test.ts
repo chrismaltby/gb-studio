@@ -252,7 +252,6 @@ test("Should add new sprite sheet if loaded while project is open", () => {
   const loadSpriteSheet: SpriteSheet = {
     ...dummySpriteSheet,
     id: "sprite1",
-    numFrames: 6,
   };
 
   const action = projectActions.loadSprite.fulfilled(
@@ -266,7 +265,6 @@ test("Should add new sprite sheet if loaded while project is open", () => {
   expect(state.spriteSheets.ids.length).toBe(0);
   const newState = reducer(state, action);
   expect(newState.spriteSheets.ids.length).toBe(1);
-  expect(newState.spriteSheets.entities["sprite1"]?.numFrames).toBe(6);
 });
 
 test("Should update sprite sheet if modified while project is open", () => {
@@ -288,7 +286,6 @@ test("Should update sprite sheet if modified while project is open", () => {
     ...dummySpriteSheet,
     id: "sprite1",
     filename: "sprite1.png",
-    numFrames: 8,
   };
 
   const action = projectActions.loadSprite.fulfilled(
@@ -302,7 +299,6 @@ test("Should update sprite sheet if modified while project is open", () => {
   expect(state.spriteSheets.ids.length).toBe(1);
   const newState = reducer(state, action);
   expect(newState.spriteSheets.ids.length).toBe(1);
-  expect(newState.spriteSheets.entities["sprite1"]?.numFrames).toBe(8);
 });
 
 test("Should remove sprite sheets that are deleted while project is open", () => {

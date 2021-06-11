@@ -12,7 +12,6 @@ import {
   WaveIcon,
   SongIcon,
   FolderFilledIcon,
-  ArrowMoveIcon,
 } from "../icons/Icons";
 
 interface EntityListItemWrapperProps {

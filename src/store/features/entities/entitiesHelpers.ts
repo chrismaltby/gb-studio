@@ -127,10 +127,6 @@ const projectSchema = {
 export const normalizeEntities = (
   projectData: ProjectEntitiesData
 ): NormalisedData => {
-  console.log(
-    normalize<NormalisedEntities, NormalisedResult>(projectData, projectSchema)
-  );
-
   return normalize<NormalisedEntities, NormalisedResult>(
     projectData,
     projectSchema
