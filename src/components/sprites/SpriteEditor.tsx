@@ -434,12 +434,14 @@ export const SpriteEditor = ({
                 <Button
                   onClick={sendTileToFront}
                   style={{ width: 28, padding: 3 }}
+                  title={l10n("FIELD_BRING_TO_FRONT")}
                 >
                   <SendToFrontIcon />
                 </Button>
                 <Button
                   onClick={sendTileToBack}
                   style={{ width: 28, padding: 3 }}
+                  title={l10n("FIELD_SEND_TO_BACK")}
                 >
                   <SendToBackIcon />
                 </Button>
@@ -452,6 +454,7 @@ export const SpriteEditor = ({
                       : "normal"
                   }
                   style={{ width: 28, padding: 3 }}
+                  title={l10n("FIELD_FLIP_HORIZONTAL")}
                 >
                   <FlipHorizontalIcon />
                 </Button>
@@ -463,6 +466,7 @@ export const SpriteEditor = ({
                       : "normal"
                   }
                   style={{ width: 28, padding: 3 }}
+                  title={l10n("FIELD_FLIP_VERTICAL")}
                 >
                   <FlipVerticalIcon />
                 </Button>
@@ -471,7 +475,7 @@ export const SpriteEditor = ({
               <FormDivider />
 
               <FormRow>
-                <FormField name="objPalette" label="Obj Palette">
+                <FormField name="objPalette" label={l10n("FIELD_OBJ_PALETTE")}>
                   <ObjPaletteSelect
                     name="objPalette"
                     value={metaspriteTile.objPalette}
@@ -482,7 +486,10 @@ export const SpriteEditor = ({
 
               {colorsEnabled && (
                 <FormRow>
-                  <FormField name="paletteIndex" label="Color Palette">
+                  <FormField
+                    name="paletteIndex"
+                    label={l10n("FIELD_COLOR_PALETTE")}
+                  >
                     <PaletteIndexSelect
                       name="paletteIndex"
                       value={metaspriteTile.paletteIndex}

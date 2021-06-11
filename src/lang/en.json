@@ -401,6 +401,13 @@
   "FIELD_ADD_FRAME": "Add Frame",
   "FIELD_CLONE_FRAME": "Clone Frame",
   "FIELD_ADD_ANIMATION_STATE": "Add Animation State",
+  "FIELD_DEFAULT_COLORS": "Default Colors",
+  "FIELD_BRING_TO_FRONT": "Bring To Front",
+  "FIELD_SEND_TO_BACK": "Send To Back",
+  "FIELD_FLIP_HORIZONTAL": "Flip Horizontal",
+  "FIELD_FLIP_VERTICAL": "Flip Vertical",
+  "FIELD_OBJ_PALETTE": "Obj Palette",
+  "FIELD_COLOR_PALETTE": "Color Palette",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

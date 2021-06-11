@@ -140,7 +140,7 @@ const MetaspriteEditorPreviewSettings = () => {
               onBlur={closeMenu}
               maxMenuHeight={200}
               optional
-              optionalLabel="Default Colors"
+              optionalLabel={l10n("FIELD_DEFAULT_COLORS")}
               {...selectMenuStyleProps}
             />
           </SelectMenu>
