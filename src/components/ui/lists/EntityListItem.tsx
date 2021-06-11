@@ -12,6 +12,7 @@ import {
   WaveIcon,
   SongIcon,
   FolderFilledIcon,
+  BackgroundIcon,
 } from "../icons/Icons";
 
 interface EntityListItemWrapperProps {
@@ -34,6 +35,7 @@ interface EntityListItemProps {
     | "sprite"
     | "animation"
     | "state"
+    | "background"
     | "song"
     | "duty"
     | "wave"
@@ -155,6 +157,11 @@ export const EntityListItem: FC<EntityListItemProps> = ({
       {type === "animation" && (
         <EnitityIcon>
           <AnimationIcon />
+        </EnitityIcon>
+      )}
+      {type === "background" && (
+        <EnitityIcon>
+          <BackgroundIcon />
         </EnitityIcon>
       )}
       {type === "song" && (
