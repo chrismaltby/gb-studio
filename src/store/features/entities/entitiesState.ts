@@ -1049,7 +1049,7 @@ const addActor: CaseReducer<
     spriteSheetId,
     direction: "down",
     moveSpeed: 1,
-    animSpeed: 3,
+    animSpeed: 15,
     paletteId: "",
     isPinned: false,
     collisionGroup: "",
