@@ -408,6 +408,7 @@
   "FIELD_FLIP_VERTICAL": "Flip Vertical",
   "FIELD_OBJ_PALETTE": "Obj Palette",
   "FIELD_COLOR_PALETTE": "Color Palette",
+  "FIELD_EDIT_IMAGE": "Edit Image",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

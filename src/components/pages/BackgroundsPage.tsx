@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useRef } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import styled, { ThemeContext } from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash/debounce";
@@ -10,20 +10,11 @@ import editorActions from "store/features/editor/editorActions";
 import { backgroundSelectors } from "store/features/entities/entitiesState";
 import { NavigatorBackgrounds } from "components/backgrounds/NavigatorBackgrounds";
 import BackgroundViewer from "components/backgrounds/BackgroundViewer";
-import { Button } from "ui/buttons/Button";
 import BackgroundPreviewSettings from "components/backgrounds/BackgroundPreviewSettings";
-import electronActions from "store/features/electron/electronActions";
-import _l10n from "lib/helpers/_l10n";
 
 const Wrapper = styled.div`
   display: flex;
   width: 100%;
-`;
-
-const EditButtonWrapper = styled.div`
-  position: absolute;
-  top: 10px;
-  right: 10px;
 `;
 
 const ImagesPage = () => {
@@ -33,7 +24,6 @@ const ImagesPage = () => {
   const navigatorSidebarWidth = useSelector(
     (state: RootState) => state.editor.navigatorSidebarWidth
   );
-  const projectRoot = useSelector((state: RootState) => state.document.root);
   const windowSize = useWindowSize();
   const prevWindowWidthRef = useRef<number>(0);
   const windowWidth = windowSize.width || 0;
@@ -88,17 +78,6 @@ const ImagesPage = () => {
 
   useEffect(() => debouncedStoreWidths.current(leftPaneWidth), [leftPaneWidth]);
 
-  const onEdit = useCallback(() => {
-    if (background) {
-      dispatch(
-        electronActions.openFile({
-          filename: `${projectRoot}/assets/backgrounds/${background.filename}`,
-          type: "image",
-        })
-      );
-    }
-  }, [background, dispatch, projectRoot]);
-
   return (
     <Wrapper>
       <div
@@ -139,11 +118,10 @@ const ImagesPage = () => {
         }}
       >
         <div style={{ flexGrow: 1, position: "relative" }}>
-          {colorsEnabled && <BackgroundPreviewSettings />}
+          {colorsEnabled && (
+            <BackgroundPreviewSettings backgroundId={background?.id || ""} />
+          )}
           <BackgroundViewer backgroundId={background?.id || ""} />
-          <EditButtonWrapper>
-            <Button onClick={onEdit}>{_l10n("ASSET_EDIT")}</Button>
-          </EditButtonWrapper>
         </div>
       </div>
     </Wrapper>
