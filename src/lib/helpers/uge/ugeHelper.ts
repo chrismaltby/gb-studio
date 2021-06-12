@@ -228,9 +228,9 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
 
   // Create proper flat patterns
   for (let n = 0; n < orders[0].length; n++) {
-    const pattern = [];
+    const pattern: PatternCell[][] = [];
     for (let m = 0; m < 64; m++) {
-      const row = [];
+      const row: PatternCell[] = [];
       for (let track = 0; track < 4; track++) {
         const [note, instrument, effectcode, effectparam] =
           patterns[orders[track][n]][m];
@@ -457,10 +457,7 @@ export const saveUGESong = (song: Song): ArrayBuffer => {
 const comparePatterns = function (a: PatternCell[][], b: PatternCell[][]) {
   if (a.length !== b.length) return false;
   for (let idx = 0; idx < a.length; idx++) {
-    for (let col = 0; col < 4; col++) {
-      if (!patternEqual(a[idx], b[idx])) return false;
-      if (a[idx][col].instrument !== b[idx][col].instrument) return false;
-    }
+    if (!patternEqual(a[idx], b[idx])) return false;
   }
   return true;
 };
@@ -469,7 +466,7 @@ const patternEqual = function (a: PatternCell[], b: PatternCell[]) {
   if (a.length !== b.length) return false;
   for (let idx = 0; idx < a.length; idx++) {
     if (a[idx].note !== b[idx].note) return false;
-    if (a[idx].instrument !== b[idx].note) return false;
+    if (a[idx].instrument !== b[idx].instrument) return false;
     if (a[idx].effectcode !== b[idx].effectcode) return false;
     if (a[idx].effectparam !== b[idx].effectparam) return false;
   }
