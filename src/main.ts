@@ -452,6 +452,10 @@ ipcMain.on("open-music", async () => {
   createMusic();
 });
 
+ipcMain.on("window-zoom", (_, zoomType: number) => {
+  mainWindow && mainWindow.webContents.send("windowZoom", zoomType);
+});
+
 ipcMain.on("close-music", async () => {
   if (musicWindow) {
     musicWindow.destroy();
