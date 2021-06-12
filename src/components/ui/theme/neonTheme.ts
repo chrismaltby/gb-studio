@@ -1,6 +1,7 @@
 import { ThemeInterface } from "./ThemeInterface";
 
-const darkheme: ThemeInterface = {
+const neonTheme: ThemeInterface = {
+  type: "dark",
   typography: {
     fontSize: "11px",
     menuFontSize: "12px",
@@ -100,4 +101,4 @@ const darkheme: ThemeInterface = {
   borderRadius: 4,
 };
 
-export default darkheme;
+export default neonTheme;

@@ -33,7 +33,7 @@ export const initialState: TrackerDocumentState = {
 
 export const loadSongFile = createAsyncThunk<Song | null, string>(
   "tracker/loadSong",
-  async (path, thunkApi): Promise<Song | null> => {
+  async (path, _thunkApi): Promise<Song | null> => {
     const data = await readFile(path);
     const song = loadUGESong(new Uint8Array(data).buffer);
 
@@ -263,7 +263,7 @@ const trackerSlice = createSlice({
   },
   extraReducers: (builder) =>
     builder
-      .addCase(loadSongFile.pending, (state, action) => {
+      .addCase(loadSongFile.pending, (state, _action) => {
         state.status = "loading";
       })
       .addCase(loadSongFile.rejected, (state, action) => {
@@ -279,7 +279,7 @@ const trackerSlice = createSlice({
           state.modified = false;
         }
       })
-      .addCase(saveSongFile.fulfilled, (state, action) => {
+      .addCase(saveSongFile.fulfilled, (state, _action) => {
         state.modified = false;
       })
       .addMatcher(

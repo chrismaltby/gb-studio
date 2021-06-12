@@ -5,7 +5,6 @@ import { Song } from "lib/helpers/uge/song/Song";
 import { RootState } from "store/configureStore";
 import { SplitPaneVerticalDivider } from "ui/splitpane/SplitPaneDivider";
 import { SequenceEditor } from "./SequenceEditor";
-import { UgePlayer } from "./UgePlayer";
 import scrollIntoView from "scroll-into-view-if-needed";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import l10n from "lib/helpers/l10n";
@@ -19,6 +18,7 @@ interface SongPianoRollProps {
   sequenceId: number;
   song: Song | null;
   height: number;
+  playbackState: number[];
 }
 
 interface PianoKeyProps {
@@ -114,18 +114,10 @@ export const SongPianoRoll = ({
   song,
   sequenceId,
   height,
+  playbackState,
 }: SongPianoRollProps) => {
-  const [playbackState, setPlaybackState] = useState([-1, -1]);
   const playing = useSelector((state: RootState) => state.tracker.playing);
   const hoverNote = useSelector((state: RootState) => state.tracker.hoverNote);
-
-  const [channelStatus, setChannelStatus] = useState([
-    false,
-    false,
-    false,
-    false,
-  ]);
-  console.log(channelStatus);
 
   const patternId = song?.sequence[sequenceId] || 0;
 
@@ -142,20 +134,24 @@ export const SongPianoRoll = ({
     }
   }, [playing, playbackState]);
 
-  useEffect(() => {
-    setPlaybackState([-1, -1]);
-  }, [playing, song]);
-
   const [patternsPanelOpen, setPatternsPanelOpen] = useState(true);
   const togglePatternsPanel = useCallback(() => {
     setPatternsPanelOpen(!patternsPanelOpen);
   }, [patternsPanelOpen, setPatternsPanelOpen]);
 
+  const selectedChannel = useSelector(
+    (state: RootState) => state.tracker.selectedChannel
+  );
   const visibleChannels = useSelector(
     (state: RootState) => state.tracker.visibleChannels
   );
 
-  const v = [...visibleChannels].reverse();
+  const v = [
+    selectedChannel,
+    ...visibleChannels.filter((c) => c !== selectedChannel),
+  ].reverse();
+
+  console.log(v, selectedChannel, visibleChannels);
 
   return (
     <div
@@ -254,7 +250,7 @@ export const SongPianoRoll = ({
             {v.map((i) => (
               <RollChannel
                 channelId={i}
-                active={visibleChannels[0] === i}
+                active={selectedChannel === i}
                 patternId={patternId}
                 patterns={song?.patterns[patternId]}
                 cellSize={CELL_SIZE}
@@ -284,11 +280,6 @@ export const SongPianoRoll = ({
           />
         </div>
       )}
-      <UgePlayer
-        data={song}
-        onPlaybackUpdate={setPlaybackState}
-        onChannelStatusUpdate={setChannelStatus}
-      />
     </div>
   );
 };
