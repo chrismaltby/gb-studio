@@ -18,8 +18,8 @@ import { Select } from "ui/form/Select";
 const { dialog } = remote;
 
 interface ZoomOptions {
-  value: number,
-  label: string
+  value: number;
+  label: string;
 }
 
 const options: ZoomOptions[] = [
@@ -121,10 +121,6 @@ const Preferences = () => {
               onChange={onChangeImageEditorPath}
             />
           </FormField>
-        </FormRow>
-        <FixedSpacer height={10} />
-
-        <FormRow>
           <FormField
             name="musicEditorPath"
             label={l10n("FIELD_DEFAULT_MUSIC_EDITOR")}
@@ -136,11 +132,9 @@ const Preferences = () => {
           </FormField>
         </FormRow>
 
+        <FixedSpacer height={10} />
         <FormRow>
-          <FormField
-            name="zoomLevel"
-            label={l10n("FIELD_DEFAULT_ZOOM_LEVEL")}
-          >
+          <FormField name="zoomLevel" label={l10n("FIELD_DEFAULT_ZOOM_LEVEL")}>
             <Select
               value={currentZoomValue}
               options={options}
