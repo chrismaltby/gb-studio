@@ -990,6 +990,32 @@ const migrateFrom200r6To200r7Scenes = (data) => {
 };
 
 /*
+ * Version 2.0.0 r8 moves sprite animations to be wrapped within states array
+ */
+const migrateFrom200r7To200r8Sprites = (data) => {
+  return {
+    ...data,
+    spriteSheets: data.spriteSheets.map((spriteSheet) => {
+      return {
+        ...spriteSheet,
+        states: [
+          {
+            id: uuid(),
+            name: "",
+            animationType: spriteSheet.animationType,
+            flipLeft: spriteSheet.flipLeft,
+            animations: spriteSheet.animations || [],
+          },
+        ],
+        animations: undefined,
+        flipLeft: undefined,
+        animationType: undefined,
+      };
+    }),
+  };
+};
+
+/*
  * Version 2.0.0 r7 moves default player sprite to be per scene type.
  * UI Palette merged into defaultBackgroundPaletteIds.
  */
@@ -1088,6 +1114,10 @@ const migrateProject = (project) => {
       data = migrateFrom200r6To200r7Scenes(data);
       data = migrateFrom200r6To200r7Settings(data);
       release = "7";
+    }
+    if (release === "7") {
+      data = migrateFrom200r7To200r8Sprites(data);
+      release = "8";
     }
   }
 

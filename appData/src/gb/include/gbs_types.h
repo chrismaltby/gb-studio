@@ -101,7 +101,8 @@ typedef struct tileset_t {
 typedef struct spritesheet_t {
     UINT8 n_metasprites;
     metasprite_t * const *metasprites;
-    animation_t animations[8];
+    animation_t *animations;
+    UWORD *animations_lookup;
     bounding_box_t bounds;
     far_ptr_t tileset;              // far pointer to sprite tileset
     far_ptr_t cgb_tileset;          // far pointer to additional CGB tileset (may be NULL)

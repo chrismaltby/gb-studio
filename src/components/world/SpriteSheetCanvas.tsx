@@ -5,6 +5,7 @@ import { RootState } from "store/configureStore";
 import {
   spriteAnimationSelectors,
   spriteSheetSelectors,
+  spriteStateSelectors,
 } from "store/features/entities/entitiesState";
 import { ActorDirection, Palette } from "store/features/entities/entitiesTypes";
 import { MetaspriteCanvas } from "../sprites/preview/MetaspriteCanvas";
@@ -35,21 +36,25 @@ const SpriteSheetCanvas = ({
     spriteSheetSelectors.selectById(state, spriteSheetId)
   );
 
-  const animations = sprite?.animations || [];
+  const state = useSelector((state: RootState) =>
+    spriteStateSelectors.selectById(state, sprite?.states?.[0] || "")
+  );
+
+  const animations = state?.animations || [];
 
   // Determine animation to use based on type
   let animationIndex = directions.indexOf(direction);
   if (
-    sprite?.animationType === "fixed" ||
-    sprite?.animationType === "fixed_movement"
+    state?.animationType === "fixed" ||
+    state?.animationType === "fixed_movement"
   ) {
     animationIndex = 0;
-  } else if (sprite?.animationType === "platform_player") {
+  } else if (state?.animationType === "platform_player") {
     if (animationIndex > 1) {
       animationIndex = 0;
     }
   }
-  const flipX = sprite?.flipLeft && direction === "left";
+  const flipX = state?.flipLeft && direction === "left";
   if (flipX) {
     animationIndex = 0;
   }
@@ -62,7 +67,7 @@ const SpriteSheetCanvas = ({
   const frames = animation?.frames || [];
   const metaspriteId = frames[frame % frames.length] || "";
 
-  if (!sprite) {
+  if (!sprite || !state) {
     return <div />;
   }
 

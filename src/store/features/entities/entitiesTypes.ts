@@ -1,9 +1,7 @@
 import { EntityState, Dictionary } from "@reduxjs/toolkit";
 
 export type ActorDirection = "up" | "down" | "left" | "right";
-export type ActorSpriteType = "static" | "actor";
 export type SpriteType = "static" | "animated" | "actor" | "actor_animated";
-export type SpriteSheetType = "classic" | "autodetect" | "manual";
 export type SpriteAnimationType =
   | "fixed"
   | "fixed_movement"
@@ -52,7 +50,6 @@ export type Actor = {
   x: number;
   y: number;
   spriteSheetId: string;
-  spriteType: ActorSpriteType;
   paletteId: string;
   frame: number;
   moveSpeed: number;
@@ -199,6 +196,14 @@ export type Metasprite = {
   tiles: string[];
 };
 
+export type SpriteState = {
+  id: string;
+  name: string;
+  animationType: SpriteAnimationType;
+  flipLeft: boolean;
+  animations: string[];
+};
+
 export type SpriteAnimation = {
   id: string;
   frames: string[];
@@ -208,8 +213,6 @@ export type SpriteSheet = {
   id: string;
   name: string;
   filename: string;
-  type: SpriteSheetType;
-  numFrames: number;
   numTiles: number;
   plugin?: string;
   inode: string;
@@ -217,18 +220,17 @@ export type SpriteSheet = {
   _v: number;
   width: number;
   height: number;
-  animationType: SpriteAnimationType;
-  flipLeft: boolean;
   canvasWidth: number;
   canvasHeight: number;
   boundsX: number;
   boundsY: number;
   boundsWidth: number;
   boundsHeight: number;
-  animations: string[];
   animSpeed: number | null;
-  autoDetect: boolean;
+  states: string[];
 };
+
+export type SpriteSheetData = Omit<SpriteSheet, "states">;
 
 export type SceneParallaxLayer = {
   height: number;
@@ -286,6 +288,7 @@ export interface EntitiesState {
   metasprites: EntityState<Metasprite>;
   metaspriteTiles: EntityState<MetaspriteTile>;
   spriteAnimations: EntityState<SpriteAnimation>;
+  spriteStates: EntityState<SpriteState>;
   palettes: EntityState<Palette>;
   customEvents: EntityState<CustomEvent>;
   music: EntityState<Music>;

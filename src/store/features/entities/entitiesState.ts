@@ -9,8 +9,6 @@ import {
   Dictionary,
 } from "@reduxjs/toolkit";
 import {
-  SPRITE_TYPE_STATIC,
-  SPRITE_TYPE_ACTOR,
   DMG_PALETTE,
   COLLISION_ALL,
   TILE_PROPS,
@@ -66,6 +64,7 @@ import {
   ObjPalette,
   Avatar,
   Emote,
+  SpriteState,
 } from "./entitiesTypes";
 import {
   normalizeEntities,
@@ -101,6 +100,7 @@ const spriteSheetsAdapter = createEntityAdapter<SpriteSheet>({
 const metaspritesAdapter = createEntityAdapter<Metasprite>();
 const metaspriteTilesAdapter = createEntityAdapter<MetaspriteTile>();
 const spriteAnimationsAdapter = createEntityAdapter<SpriteAnimation>();
+const spriteStatesAdapter = createEntityAdapter<SpriteState>();
 const palettesAdapter = createEntityAdapter<Palette>();
 const customEventsAdapter = createEntityAdapter<CustomEvent>();
 const musicAdapter = createEntityAdapter<Music>({
@@ -127,6 +127,7 @@ export const initialState: EntitiesState = {
   metasprites: metaspritesAdapter.getInitialState(),
   metaspriteTiles: metaspriteTilesAdapter.getInitialState(),
   spriteAnimations: spriteAnimationsAdapter.getInitialState(),
+  spriteStates: spriteStatesAdapter.getInitialState(),
   palettes: palettesAdapter.getInitialState(),
   customEvents: customEventsAdapter.getInitialState(),
   music: musicAdapter.getInitialState(),
@@ -387,6 +388,7 @@ const loadProject: CaseReducer<
     state.spriteAnimations,
     entities.spriteAnimations || {}
   );
+  spriteStatesAdapter.setAll(state.spriteStates, entities.spriteStates || {});
   palettesAdapter.setAll(state.palettes, entities.palettes || {});
   musicAdapter.setAll(state.music, entities.music || {});
   fontsAdapter.setAll(state.fonts, entities.fonts || {});
@@ -447,7 +449,34 @@ const loadSprite: CaseReducer<
     data: SpriteSheet;
   }>
 > = (state, action) => {
-  spriteSheetsAdapter.upsertOne(state.spriteSheets, action.payload.data);
+  if (action.payload.data.states.length === 0) {
+    // Create default state for newly added spritesheets
+    const metasprites: Metasprite[] = Array.from(Array(8)).map(() => ({
+      id: uuid(),
+      tiles: [],
+    }));
+    const animations: SpriteAnimation[] = metasprites.map((metasprite) => ({
+      id: uuid(),
+      frames: [metasprite.id],
+    }));
+    const animationIds = animations.map((a) => a.id);
+    const spriteState: SpriteState = {
+      id: uuid(),
+      name: "",
+      animationType: "multi_movement",
+      flipLeft: true,
+      animations: animationIds,
+    };
+    metaspritesAdapter.addMany(state.metasprites, metasprites);
+    spriteAnimationsAdapter.addMany(state.spriteAnimations, animations);
+    spriteStatesAdapter.addOne(state.spriteStates, spriteState);
+    spriteSheetsAdapter.upsertOne(state.spriteSheets, {
+      ...action.payload.data,
+      states: [spriteState.id],
+    });
+  } else {
+    spriteSheetsAdapter.upsertOne(state.spriteSheets, action.payload.data);
+  }
 };
 
 const loadDetectedSprite: CaseReducer<
@@ -455,8 +484,10 @@ const loadDetectedSprite: CaseReducer<
   PayloadAction<{
     spriteSheetId: string;
     spriteAnimations: SpriteAnimation[];
+    spriteStates: SpriteState[];
     metasprites: Metasprite[];
     metaspriteTiles: MetaspriteTile[];
+    state: SpriteState;
     changes: Partial<SpriteSheet>;
   }>
 > = (state, action) => {
@@ -481,11 +512,15 @@ const loadDetectedSprite: CaseReducer<
     action.payload.spriteAnimations
   );
 
+  spriteStatesAdapter.upsertOne(state.spriteStates, action.payload.state);
+
+  const numStates = spriteSheet.states?.length || 0;
+
   spriteSheetsAdapter.updateOne(state.spriteSheets, {
     id: action.payload.spriteSheetId,
     changes: {
       ...action.payload.changes,
-      animations: action.payload.spriteAnimations.map((s) => s.id),
+      states: numStates === 0 ? [action.payload.state.id] : spriteSheet.states,
     },
   });
 };
@@ -1007,33 +1042,28 @@ const addActor: CaseReducer<
     variablesAdapter.upsertMany(state.variables, newVariables);
   }
 
-  const newActor = Object.assign(
-    {
-      name: "",
-      frame: 0,
-      animate: false,
-      spriteSheetId,
-      spriteType: SPRITE_TYPE_STATIC,
-      direction: "down",
-      moveSpeed: 1,
-      animSpeed: 3,
-      paletteId: "",
-      isPinned: false,
-      collisionGroup: "",
-      script: [],
-      startScript: [],
-      updateScript: [],
-      hit1Script: [],
-      hit2Script: [],
-      hit3Script: [],
-    } as Partial<Actor>,
-    action.payload.defaults || {},
-    {
-      id: action.payload.actorId,
-      x: clamp(action.payload.x, 0, scene.width - 2),
-      y: clamp(action.payload.y, 0, scene.height - 1),
-    }
-  ) as Actor;
+  const newActor: Actor = {
+    name: "",
+    frame: 0,
+    animate: false,
+    spriteSheetId,
+    direction: "down",
+    moveSpeed: 1,
+    animSpeed: 15,
+    paletteId: "",
+    isPinned: false,
+    collisionGroup: "",
+    script: [],
+    startScript: [],
+    updateScript: [],
+    hit1Script: [],
+    hit2Script: [],
+    hit3Script: [],
+    ...(action.payload.defaults || {}),
+    id: action.payload.actorId,
+    x: clamp(action.payload.x, 0, scene.width - 2),
+    y: clamp(action.payload.y, 0, scene.height - 1),
+  };
 
   addActorToScene(state, scene, newActor, {});
 };
@@ -1062,47 +1092,6 @@ const editActor: CaseReducer<
 
   if (!actor) {
     return;
-  }
-
-  // If changed spriteSheetId
-  if (patch.spriteSheetId) {
-    const newSprite = localSpriteSheetSelectors.selectById(
-      state,
-      patch.spriteSheetId
-    );
-
-    if (newSprite) {
-      // If new sprite not an actor then reset sprite type back to static
-      if (newSprite.numFrames !== 3 && newSprite.numFrames !== 6) {
-        patch.spriteType = SPRITE_TYPE_STATIC;
-      }
-      const oldSprite = localSpriteSheetSelectors.selectById(
-        state,
-        actor.spriteSheetId
-      );
-      // If new sprite is an actor and old one wasn't reset sprite type to actor
-      if (
-        oldSprite &&
-        newSprite &&
-        oldSprite.id !== newSprite.id &&
-        oldSprite.numFrames !== 3 &&
-        oldSprite.numFrames !== 6 &&
-        (newSprite.numFrames === 3 || newSprite.numFrames === 6)
-      ) {
-        patch.spriteType = SPRITE_TYPE_ACTOR;
-      }
-
-      if (newSprite && newSprite.numFrames <= actor.frame) {
-        patch.frame = 0;
-      }
-    }
-  }
-  // If static and cycling frames start from frame 1 (facing downwards)
-  if (
-    (patch.animate && actor.spriteType === SPRITE_TYPE_STATIC) ||
-    patch.spriteType === SPRITE_TYPE_STATIC
-  ) {
-    patch.direction = "down";
   }
 
   actorsAdapter.updateOne(state.actors, {
@@ -1710,6 +1699,13 @@ const removeMetasprite: CaseReducer<
     state.spriteAnimations.entities[action.payload.spriteAnimationId];
 
   if (!spriteAnimation || spriteAnimation.frames.length <= 1) {
+    // Remove tiles if only frame in animation
+    metaspritesAdapter.updateOne(state.metasprites, {
+      id: action.payload.metaspriteId,
+      changes: {
+        tiles: [],
+      },
+    });
     return;
   }
 
@@ -2036,6 +2032,101 @@ const swapSpriteAnimationFrames: CaseReducer<
       frames: newFrames,
     },
   });
+};
+
+/**************************************************************************
+ * Sprite State
+ */
+
+const addSpriteState: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    spriteSheetId: string;
+    spriteStateId: string;
+  }>
+> = (state, action) => {
+  const sprite = state.spriteSheets.entities[action.payload.spriteSheetId];
+
+  if (!sprite) {
+    return;
+  }
+
+  const eightElements = Array.from(Array(8));
+
+  const newMetasprites: Metasprite[] = eightElements.map(() => ({
+    id: uuid(),
+    tiles: [],
+  }));
+
+  metaspritesAdapter.addMany(state.metasprites, newMetasprites);
+
+  const newAnimations: SpriteAnimation[] = eightElements.map((_, index) => ({
+    id: uuid(),
+    frames: [newMetasprites[index].id],
+  }));
+
+  spriteAnimationsAdapter.addMany(state.spriteAnimations, newAnimations);
+
+  const newSpriteState: SpriteState = {
+    id: action.payload.spriteStateId,
+    name: sprite.states.length > 0 ? "New State" : "",
+    animations: newAnimations.map((anim) => anim.id),
+    animationType: "fixed",
+    flipLeft: true,
+  };
+
+  // Add to sprite
+  sprite.states = ([] as string[]).concat(sprite.states, newSpriteState.id);
+  spriteStatesAdapter.addOne(state.spriteStates, newSpriteState);
+};
+
+const editSpriteState: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ spriteStateId: string; changes: Partial<SpriteState> }>
+> = (state, action) => {
+  const spriteState = state.spriteStates.entities[action.payload.spriteStateId];
+
+  const patch = { ...action.payload.changes };
+
+  if (!spriteState) {
+    return;
+  }
+
+  spriteStatesAdapter.updateOne(state.spriteStates, {
+    id: action.payload.spriteStateId,
+    changes: patch,
+  });
+};
+
+const removeSpriteState: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    spriteSheetId: string;
+    spriteStateId: string;
+  }>
+> = (state, action) => {
+  const spriteSheet = localSpriteSheetSelectors.selectById(
+    state,
+    action.payload.spriteSheetId
+  );
+  if (!spriteSheet) {
+    return;
+  }
+
+  // Remove from sprite
+  spriteSheetsAdapter.updateOne(state.spriteSheets, {
+    id: action.payload.spriteSheetId,
+    changes: {
+      states: spriteSheet.states.filter((spriteStateId) => {
+        return spriteStateId !== action.payload.spriteStateId;
+      }),
+    },
+  });
+
+  spriteStatesAdapter.removeOne(
+    state.spriteStates,
+    action.payload.spriteStateId
+  );
 };
 
 /**************************************************************************
@@ -2766,6 +2857,25 @@ const entitiesSlice = createSlice({
     swapSpriteAnimationFrames,
 
     /**************************************************************************
+     * Sprite States
+     */
+
+    addSpriteState: {
+      reducer: addSpriteState,
+      prepare: (payload: { spriteSheetId: string }) => {
+        return {
+          payload: {
+            ...payload,
+            spriteStateId: uuid(),
+          },
+        };
+      },
+    },
+
+    editSpriteState,
+    removeSpriteState,
+
+    /**************************************************************************
      * Variables
      */
 
@@ -2904,6 +3014,9 @@ export const metaspriteTileSelectors = metaspriteTilesAdapter.getSelectors(
 );
 export const spriteAnimationSelectors = spriteAnimationsAdapter.getSelectors(
   (state: RootState) => state.project.present.entities.spriteAnimations
+);
+export const spriteStateSelectors = spriteStatesAdapter.getSelectors(
+  (state: RootState) => state.project.present.entities.spriteStates
 );
 export const backgroundSelectors = backgroundsAdapter.getSelectors(
   (state: RootState) => state.project.present.entities.backgrounds

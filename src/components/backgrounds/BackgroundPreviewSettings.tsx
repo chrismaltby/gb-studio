@@ -1,36 +1,34 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { RootState } from "store/configureStore";
 import {
-  metaspriteSelectors,
+  backgroundSelectors,
   sceneSelectors,
-  spriteSheetSelectors,
 } from "store/features/entities/entitiesState";
 import editorActions from "store/features/editor/editorActions";
+import electronActions from "store/features/electron/electronActions";
 import l10n from "lib/helpers/l10n";
 import { SceneSelect } from "../forms/SceneSelect";
 import { SelectMenu, selectMenuStyleProps } from "ui/form/Select";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import { sceneName } from "lib/compiler/compileData2";
-import { Tooltip, TooltipWrapper } from "ui/tooltips/Tooltip";
 import { FixedSpacer } from "ui/spacing/Spacing";
 
-interface MetaspriteEditorPreviewSettingsProps {
-  spriteSheetId: string;
-  metaspriteId: string;
+interface BackgroundPreviewSettingsProps {
+  backgroundId: string;
 }
 
 const Wrapper = styled.div`
   position: absolute;
   display: flex;
   align-items: center;
-  bottom: 10px;
+  bottom: 25px;
   left: 10px;
   z-index: 11;
   border-radius: 16px;
   background: ${(props) => props.theme.colors.document.background};
-  box-shadow: 0 0 0 2px ${(props) => props.theme.colors.document.background};
+  box-shadow: 0 0 0 4px ${(props) => props.theme.colors.document.background};
   font-size: ${(props) => props.theme.typography.fontSize};
 `;
 
@@ -47,17 +45,6 @@ const Pill = styled.button`
   }
 `;
 
-const Info = styled.div`
-  color: ${(props) => props.theme.colors.secondaryText};
-  padding: 0 5px;
-  margin-left: -5px;
-  border-radius: 16px;
-
-  :hover {
-    background: ${(props) => props.theme.colors.list.selectedBackground};
-  }
-`;
-
 const ButtonCover = styled.div`
   position: absolute;
   top: 0;
@@ -66,25 +53,22 @@ const ButtonCover = styled.div`
   height: 60px;
 `;
 
-const MetaspriteEditorPreviewSettings = ({
-  spriteSheetId,
-  metaspriteId,
-}: MetaspriteEditorPreviewSettingsProps) => {
+const BackgroundPreviewSettings = ({
+  backgroundId,
+}: BackgroundPreviewSettingsProps) => {
   const dispatch = useDispatch();
 
   const buttonRef = useRef<HTMLButtonElement>(null);
   const timerRef = useRef<number | null>(null);
 
+  const projectRoot = useSelector((state: RootState) => state.document.root);
+  const background = useSelector((state: RootState) =>
+    backgroundSelectors.selectById(state, backgroundId)
+  );
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [buttonFocus, setButtonFocus] = useState<boolean>(false);
   const value = useSelector(
     (state: RootState) => state.editor.previewAsSceneId
-  );
-  const spriteSheet = useSelector((state: RootState) =>
-    spriteSheetSelectors.selectById(state, spriteSheetId)
-  );
-  const metasprite = useSelector((state: RootState) =>
-    metaspriteSelectors.selectById(state, metaspriteId)
   );
   const scene = useSelector((state: RootState) =>
     sceneSelectors.selectById(state, value)
@@ -93,6 +77,7 @@ const MetaspriteEditorPreviewSettings = ({
     sceneSelectors.selectIds(state)
   );
   const sceneIndex = scenes.indexOf(value);
+
   const colorsEnabled = useSelector(
     (state: RootState) => state.project.present.settings.customColorsEnabled
   );
@@ -167,9 +152,16 @@ const MetaspriteEditorPreviewSettings = ({
     dispatch(editorActions.setPreviewAsSceneId(newValue));
   };
 
-  if (!spriteSheet || !metasprite) {
-    return null;
-  }
+  const onEdit = useCallback(() => {
+    if (background) {
+      dispatch(
+        electronActions.openFile({
+          filename: `${projectRoot}/assets/backgrounds/${background.filename}`,
+          type: "image",
+        })
+      );
+    }
+  }, [background, dispatch, projectRoot]);
 
   return (
     <Wrapper>
@@ -205,23 +197,14 @@ const MetaspriteEditorPreviewSettings = ({
                 })
               : l10n("FIELD_PREVIEW_AS_DEFAULT")}
           </Pill>
-          <FixedSpacer width={10} />
+          <FixedSpacer width={5} />
         </>
       )}
-      <TooltipWrapper tooltip={l10n("FIELD_SPRITE_TILES_TOOLTIP")}>
-        <Info>
-          {l10n("FIELD_TILES")}={metasprite.tiles.length}
-        </Info>
-      </TooltipWrapper>
-      <FixedSpacer width={5} />
-      <TooltipWrapper tooltip={l10n("FIELD_SPRITE_UNIQUE_TILES_TOOLTIP")}>
-        <Info>
-          {l10n("FIELD_UNIQUE")}={spriteSheet.numTiles}
-        </Info>
-      </TooltipWrapper>
-      <FixedSpacer width={5} />
+      <Pill ref={buttonRef} onClick={onEdit}>
+        {l10n("FIELD_EDIT_IMAGE")}
+      </Pill>
     </Wrapper>
   );
 };
 
-export default MetaspriteEditorPreviewSettings;
+export default BackgroundPreviewSettings;

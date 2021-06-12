@@ -105,7 +105,7 @@ class ScriptEditorDropdownButton extends Component {
     const { clipboardEvent } = this.state;
 
     return (
-      <DropdownButton small transparent right onMouseDown={this.readClipboard}>
+      <DropdownButton small transparent onMouseDown={this.readClipboard}>
         <MenuItem onClick={this.onCopyScript}>
           {l10n("MENU_COPY_SCRIPT")}
         </MenuItem>

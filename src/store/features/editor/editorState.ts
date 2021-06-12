@@ -105,6 +105,7 @@ export interface EditorState {
   profile: boolean;
   focusSceneId: string;
   selectedSpriteSheetId: string;
+  selectedSpriteStateId: string;
   selectedAnimationId: string;
   selectedMetaspriteId: string;
   selectedMetaspriteTileIds: string[];
@@ -120,6 +121,7 @@ export interface EditorState {
   selectedInstrument: SelectedInstrument;
   selectedSequence: number;
   playbackState: number[];
+  precisionTileMode: boolean;
 }
 
 export const initialState: EditorState = {
@@ -168,6 +170,7 @@ export const initialState: EditorState = {
   navigatorSplitSizes: [300, 100, 100],
   focusSceneId: "",
   selectedSpriteSheetId: "",
+  selectedSpriteStateId: "",
   selectedAnimationId: "",
   selectedMetaspriteId: "",
   selectedMetaspriteTileIds: [],
@@ -185,6 +188,7 @@ export const initialState: EditorState = {
   },
   selectedSequence: 0,
   playbackState: [0, 0],
+  precisionTileMode: false,
 };
 
 const editorSlice = createSlice({
@@ -530,6 +534,7 @@ const editorSlice = createSlice({
 
     setSelectedSpriteSheetId: (state, action: PayloadAction<string>) => {
       state.selectedSpriteSheetId = action.payload;
+      state.selectedSpriteStateId = "";
       state.selectedAnimationId = "";
       state.selectedMetaspriteId = "";
       state.selectedMetaspriteTileIds = [];
@@ -538,8 +543,15 @@ const editorSlice = createSlice({
       state.spriteTileSelection = undefined;
     },
 
-    setSelectedAnimationId: (state, action: PayloadAction<string>) => {
-      state.selectedAnimationId = action.payload;
+    setSelectedAnimationId: (
+      state,
+      action: PayloadAction<{
+        animationId: string;
+        stateId: string;
+      }>
+    ) => {
+      state.selectedAnimationId = action.payload.animationId;
+      state.selectedSpriteStateId = action.payload.stateId;
       state.selectedMetaspriteId = "";
       state.selectedMetaspriteTileIds = [];
       state.playSpriteAnimation = false;
@@ -602,6 +614,7 @@ const editorSlice = createSlice({
       action: PayloadAction<SpriteTileSelection>
     ) => {
       state.spriteTileSelection = action.payload;
+      state.selectedMetaspriteTileIds = [];
     },
 
     resetSpriteTileSelection: (state) => {
@@ -648,6 +661,10 @@ const editorSlice = createSlice({
     setPlaybackState: (state, action: PayloadAction<number[]>) => {
       state.playbackState = action.payload;
     },
+
+    setPrecisionTileMode: (state, action: PayloadAction<boolean>) => {
+      state.precisionTileMode = action.payload;
+    },
   },
   extraReducers: (builder) =>
     builder
@@ -679,6 +696,11 @@ const editorSlice = createSlice({
       .addCase(entitiesActions.addMetaspriteTile, (state, _action) => {
         state.spriteTileSelection = undefined;
       })
+      .addCase(entitiesActions.addSpriteState, (state, action) => {
+        state.selectedSpriteStateId = action.payload.spriteStateId;
+        state.selectedAnimationId = "";
+        state.selectedMetaspriteTileIds = [];
+      })
       .addCase(entitiesActions.addCustomEvent, (state, action) => {
         state.type = "customEvent";
         state.scene = "";
@@ -697,6 +719,12 @@ const editorSlice = createSlice({
         }
       })
       .addCase(entitiesActions.removeMetasprite, (state, _action) => {
+        state.selectedMetaspriteId = "";
+        state.selectedMetaspriteTileIds = [];
+      })
+      .addCase(entitiesActions.removeSpriteState, (state, _action) => {
+        state.selectedSpriteStateId = "";
+        state.selectedAnimationId = "";
         state.selectedMetaspriteId = "";
         state.selectedMetaspriteTileIds = [];
       })

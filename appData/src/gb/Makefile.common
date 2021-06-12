@@ -156,7 +156,7 @@ $(REL_OBJDIR)/linkfile.lk:	$(OBJS)
 	$(foreach O,$(REL_OBJS),$(shell echo $O >>$@))
 
 $(ROM_BUILD_DIR)/%.gb:	$(REL_OBJDIR)/linkfile.lk
-	$(CC) -v $(LFLAGS) -Wm-yn$(ROMTITLE) -o $@ -Wl-f$<
+	$(CC) $(LFLAGS) -Wm-yn$(ROMTITLE) -o $@ -Wl-f$<
 
 clean:
 	@echo "CLEANUP..."

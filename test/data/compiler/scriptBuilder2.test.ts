@@ -1,4 +1,4 @@
-import ScriptBuilder from "../../../src/lib/compiler/scriptBuilder2";
+import ScriptBuilder from "../../../src/lib/compiler/scriptBuilder";
 import { ScriptEvent } from "../../../src/store/features/entities/entitiesTypes";
 
 test("Should be able to set active actor to player", () => {

@@ -36,3 +36,9 @@ export const convertHexTo15BitDec = (hex: string) => {
   const b = Math.max(1, Math.floor(hexDec(hex.substring(4, 6)) * (32 / 256)));
   return (b << 10) + (g << 5) + r;
 };
+
+export const roundDown8 = (v: number): number => 8 * Math.floor(v / 8);
+export const roundDown16 = (v: number): number => 16 * Math.floor(v / 16);
+
+export const roundUp16 = (x: number): number => Math.ceil(x / 16) * 16;
+export const roundUp8 = (x: number): number => Math.ceil(x / 8) * 8;

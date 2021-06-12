@@ -4,11 +4,13 @@ import {
   ClipboardMetasprites,
   ClipboardMetaspriteTiles,
   ClipboardPaletteIds,
+  ClipboardSpriteState,
   ClipboardType,
   ClipboardTypeMetasprites,
   ClipboardTypeMetaspriteTiles,
   ClipboardTypePaletteIds,
   ClipboardTypes,
+  ClipboardTypeSpriteState,
   NarrowClipboardType,
 } from "./clipboardTypes";
 
@@ -30,6 +32,26 @@ const isClipboardMetasprites = (
   }
   const wide: { metasprites?: unknown; metaspriteTiles?: unknown } = input;
   return Array.isArray(wide.metasprites) && Array.isArray(wide.metaspriteTiles);
+};
+
+const isClipboardSpriteState = (
+  input: unknown
+): input is ClipboardSpriteState => {
+  if (typeof input !== "object" || input === null) {
+    return false;
+  }
+  const wide: {
+    metasprites?: unknown;
+    metaspriteTiles?: unknown;
+    animations?: unknown;
+    spriteState?: unknown;
+  } = input;
+  return (
+    Array.isArray(wide.metasprites) &&
+    Array.isArray(wide.metaspriteTiles) &&
+    Array.isArray(wide.animations) &&
+    typeof wide.spriteState === "object"
+  );
 };
 
 const isClipboardPaletteIds = (
@@ -71,6 +93,14 @@ export const paste = <T extends ClipboardFormat>(
     if (isClipboardMetasprites(data)) {
       return {
         format: ClipboardTypeMetasprites,
+        data,
+      } as NarrowClipboardType<ClipboardType, T>;
+    }
+    return undefined;
+  } else if (format === ClipboardTypeSpriteState) {
+    if (isClipboardSpriteState(data)) {
+      return {
+        format: ClipboardTypeSpriteState,
         data,
       } as NarrowClipboardType<ClipboardType, T>;
     }

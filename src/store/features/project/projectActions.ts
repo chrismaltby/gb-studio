@@ -176,19 +176,19 @@ const loadSprite = createAsyncThunk<{ data: SpriteSheet }, string>(
       spriteSheets.find(matchAsset(data)) ||
       inodeToRecentSpriteSheet[data.inode];
 
-    const existingId = existingAsset?.id;
-
-    if (existingId) {
+    if (existingAsset) {
       delete inodeToRecentSpriteSheet[data.inode];
+      const oldAutoName = existingAsset.filename.replace(/.png/i, "");
       return {
         data: {
           ...existingAsset,
           ...data,
-          id: existingId,
-          autoDetect:
-            existingAsset?.autoDetect !== undefined
-              ? existingAsset.autoDetect
-              : true,
+          id: existingAsset.id,
+          name:
+            existingAsset.name !== oldAutoName
+              ? existingAsset.name || data.name
+              : data.name,
+          states: existingAsset.states,
         },
       };
     }

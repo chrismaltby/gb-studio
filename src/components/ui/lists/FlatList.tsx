@@ -81,6 +81,9 @@ export const FlatList = <T extends FlatListItem>({
     if (!hasFocus) {
       return;
     }
+    if (e.metaKey || e.ctrlKey) {
+      return;
+    }
     if (e.key === "ArrowDown") {
       e.preventDefault();
       throttledNext.current(items, selectedId || "");

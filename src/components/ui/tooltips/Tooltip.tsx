@@ -1,4 +1,6 @@
+import React, { useCallback, useRef, useState } from "react";
 import styled from "styled-components";
+import { RelativePortal } from "ui/layout/RelativePortal";
 
 export const Tooltip = styled.div`
   color: #000;
@@ -17,6 +19,8 @@ export const Tooltip = styled.div`
   max-width: 230px;
   transform: translateX(-10px);
   z-index: 10000;
+  white-space: pre-wrap;
+  min-width: 150px;
 
   p {
     margin: 10px 0;
@@ -28,3 +32,41 @@ export const Tooltip = styled.div`
     margin-bottom: 0;
   }
 `;
+
+interface TooltipWrapperProps {
+  children: React.ReactNode;
+  tooltip: React.ReactNode;
+}
+
+export const TooltipWrapper = ({ children, tooltip }: TooltipWrapperProps) => {
+  const [isOpen, setOpen] = useState(false);
+  const timer = useRef<number | null>(null);
+
+  const onClick = useCallback(() => {
+    setOpen(true);
+  }, []);
+
+  const onHoverStart = useCallback(() => {
+    timer.current = setTimeout(() => {
+      setOpen(true);
+    }, 500);
+  }, []);
+
+  const onHoverEnd = useCallback(() => {
+    if (timer.current) {
+      clearTimeout(timer.current);
+    }
+    setOpen(false);
+  }, []);
+
+  return (
+    <div onClick={onClick} onMouseOver={onHoverStart} onMouseOut={onHoverEnd}>
+      {isOpen && (
+        <RelativePortal pin="bottom-left" offsetX={5} offsetY={-5}>
+          <Tooltip>{tooltip}</Tooltip>
+        </RelativePortal>
+      )}
+      {children}
+    </div>
+  );
+};
