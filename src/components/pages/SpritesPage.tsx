@@ -103,9 +103,6 @@ const SpritesPage = () => {
   );
   const [tmpPrecisionMode, setTmpPrecisionMode] = useState(false);
 
-  const colorsEnabled = useSelector(
-    (state: RootState) => state.project.present.settings.customColorsEnabled
-  );
   const sortedSprites = useSorted(allSprites);
   const selectedSprite = spritesLookup[navigationId] || sortedSprites[0];
 
@@ -358,7 +355,11 @@ const SpritesPage = () => {
               hidden={frameId !== selectedMetaspriteId}
             />
           ))}
-          {colorsEnabled && <MetaspriteEditorPreviewSettings />}
+
+          <MetaspriteEditorPreviewSettings
+            spriteSheetId={selectedId}
+            metaspriteId={selectedMetaspriteId}
+          />
         </div>
         <SplitPaneVerticalDivider onMouseDown={onResizeCenter} />
         <div style={{ position: "relative", height: centerPaneHeight }}>
@@ -398,7 +399,7 @@ const SpritesPage = () => {
               )
             }
           >
-            {l10n("FIELD_TILES")} ({selectedSprite.numTiles} unique)
+            {l10n("FIELD_TILES")}
           </SplitPaneHeader>
           <SpriteTilePalette
             id={selectedId}

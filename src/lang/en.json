@@ -409,6 +409,9 @@
   "FIELD_OBJ_PALETTE": "Obj Palette",
   "FIELD_COLOR_PALETTE": "Color Palette",
   "FIELD_EDIT_IMAGE": "Edit Image",
+  "FIELD_UNIQUE": "Unique",
+  "FIELD_SPRITE_TILES_TOOLTIP": "The number of tiles used in this frame.\n\nA maximum of 40 sprite tiles can be displayed on screen at once, and a maximum of 10 tiles can be displayed on the same horizontal row.",
+  "FIELD_SPRITE_UNIQUE_TILES_TOOLTIP": "This number of unique tiles used by this sprite in total across all animations.\n\nReduce the number of unique tiles to allow more sprites to be used in a single scene.",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

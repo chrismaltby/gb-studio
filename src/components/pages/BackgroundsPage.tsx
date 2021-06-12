@@ -30,10 +30,6 @@ const ImagesPage = () => {
   const windowHeight = windowSize.height || 0;
   const minCenterPaneWidth = 0;
 
-  const colorsEnabled = useSelector(
-    (state: RootState) => state.project.present.settings.customColorsEnabled
-  );
-
   const allBackgrounds = useSelector((state: RootState) =>
     backgroundSelectors.selectAll(state)
   );
@@ -118,9 +114,7 @@ const ImagesPage = () => {
         }}
       >
         <div style={{ flexGrow: 1, position: "relative" }}>
-          {colorsEnabled && (
-            <BackgroundPreviewSettings backgroundId={background?.id || ""} />
-          )}
+          <BackgroundPreviewSettings backgroundId={background?.id || ""} />
           <BackgroundViewer backgroundId={background?.id || ""} />
         </div>
       </div>

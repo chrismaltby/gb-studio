@@ -13,6 +13,7 @@ import { SceneSelect } from "../forms/SceneSelect";
 import { SelectMenu, selectMenuStyleProps } from "ui/form/Select";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import { sceneName } from "lib/compiler/compileData2";
+import { FixedSpacer } from "ui/spacing/Spacing";
 
 interface BackgroundPreviewSettingsProps {
   backgroundId: string;
@@ -20,16 +21,15 @@ interface BackgroundPreviewSettingsProps {
 
 const Wrapper = styled.div`
   position: absolute;
+  display: flex;
+  align-items: center;
   bottom: 25px;
   left: 10px;
   z-index: 11;
   border-radius: 16px;
   background: ${(props) => props.theme.colors.document.background};
   box-shadow: 0 0 0 4px ${(props) => props.theme.colors.document.background};
-
-  & > *:not(:last-child) {
-    margin-right: 5px;
-  }
+  font-size: ${(props) => props.theme.typography.fontSize};
 `;
 
 const Pill = styled.button`
@@ -38,6 +38,8 @@ const Pill = styled.button`
   border: 0px;
   border-radius: 16px;
   padding: 3px 10px;
+  font-size: ${(props) => props.theme.typography.fontSize};
+
   :active {
     background: ${(props) => props.theme.colors.list.selectedBackground};
   }
@@ -75,6 +77,10 @@ const BackgroundPreviewSettings = ({
     sceneSelectors.selectIds(state)
   );
   const sceneIndex = scenes.indexOf(value);
+
+  const colorsEnabled = useSelector(
+    (state: RootState) => state.project.present.settings.customColorsEnabled
+  );
 
   useEffect(() => {
     if (buttonFocus) {
@@ -160,38 +166,40 @@ const BackgroundPreviewSettings = ({
   return (
     <Wrapper>
       {isOpen && <ButtonCover onMouseDown={delayedButtonFocus} />}
-
-      <RelativePortal pin="bottom-left" offsetY={-10}>
-        {isOpen && (
-          <SelectMenu>
-            <SceneSelect
-              name="previewAs"
-              value={value}
-              onChange={onSelectChange}
-              onBlur={closeMenu}
-              maxMenuHeight={200}
-              optional
-              optionalLabel={l10n("FIELD_DEFAULT_COLORS")}
-              {...selectMenuStyleProps}
-            />
-          </SelectMenu>
-        )}
-      </RelativePortal>
-
-      <Pill
-        ref={buttonRef}
-        onClick={openMenu}
-        onFocus={onButtonFocus}
-        onBlur={onButtonBlur}
-      >
-        ▲{" "}
-        {scene
-          ? l10n("FIELD_PREVIEW_AS_SCENE", {
-              sceneName: sceneName(scene, sceneIndex),
-            })
-          : l10n("FIELD_PREVIEW_AS_DEFAULT")}
-      </Pill>
-
+      {colorsEnabled && (
+        <>
+          <RelativePortal pin="bottom-left" offsetY={-10}>
+            {isOpen && (
+              <SelectMenu>
+                <SceneSelect
+                  name="previewAs"
+                  value={value}
+                  onChange={onSelectChange}
+                  onBlur={closeMenu}
+                  maxMenuHeight={200}
+                  optional
+                  optionalLabel={l10n("FIELD_DEFAULT_COLORS")}
+                  {...selectMenuStyleProps}
+                />
+              </SelectMenu>
+            )}
+          </RelativePortal>
+          <Pill
+            ref={buttonRef}
+            onClick={openMenu}
+            onFocus={onButtonFocus}
+            onBlur={onButtonBlur}
+          >
+            ▲{" "}
+            {scene
+              ? l10n("FIELD_PREVIEW_AS_SCENE", {
+                  sceneName: sceneName(scene, sceneIndex),
+                })
+              : l10n("FIELD_PREVIEW_AS_DEFAULT")}
+          </Pill>
+          <FixedSpacer width={5} />
+        </>
+      )}
       <Pill ref={buttonRef} onClick={onEdit}>
         {l10n("FIELD_EDIT_IMAGE")}
       </Pill>
