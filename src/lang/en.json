@@ -305,7 +305,7 @@
   "FIELD_UNLOCK_SCRIPT_EDITOR": "Unlock Script Editor",
   "FIELD_DEFAULT_IMAGE_EDITOR": "Default Image Editor",
   "FIELD_DEFAULT_MUSIC_EDITOR": "Default Music Editor",
-  "FIELD_DEFAULT_ZOOM_LEVEL": "UI Elements Scaling",
+  "FIELD_UI_ELEMENTS_SCALING": "UI Elements Scaling",
   "FIELD_SYSTEM_DEFAULT": "System Default",
   "FIELD_CHOOSE_APPLICATION": "Choose Application",
   "FIELD_ANIMATIONS": "Animations",

@@ -134,7 +134,7 @@ const Preferences = () => {
 
         <FixedSpacer height={10} />
         <FormRow>
-          <FormField name="zoomLevel" label={l10n("FIELD_DEFAULT_ZOOM_LEVEL")}>
+          <FormField name="zoomLevel" label={l10n("FIELD_UI_ELEMENTS_SCALING")}>
             <Select
               value={currentZoomValue}
               options={options}
