@@ -12,7 +12,7 @@ import { Button } from "ui/buttons/Button";
 import { DotsIcon } from "ui/icons/Icons";
 import { FixedSpacer, FlexGrow } from "ui/spacing/Spacing";
 import { AppSelect } from "ui/form/AppSelect";
-import { dialog } from "electron";
+import { dialog } from "@electron/remote";
 
 const Preferences = () => {
   const pathError = "";

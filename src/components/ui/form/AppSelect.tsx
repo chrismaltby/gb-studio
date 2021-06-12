@@ -2,7 +2,7 @@ import React, { FC } from "react";
 import Path from "path";
 import l10n from "lib/helpers/l10n";
 import { Select, Option } from "./Select";
-import { dialog } from "electron";
+import { dialog } from "@electron/remote";
 
 interface AppSelectProps {
   value?: string;
