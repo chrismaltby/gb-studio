@@ -1,6 +1,6 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import styled from "styled-components";
+import styled, { ThemeContext } from "styled-components";
 import { RootState } from "store/configureStore";
 import {
   PlayIcon,
@@ -11,6 +11,7 @@ import {
   NoiseIcon,
   SelectionIcon,
   PianoIcon,
+  PianoInverseIcon,
 } from "ui/icons/Icons";
 import FloatingPanel, { FloatingPanelDivider } from "ui/panels/FloatingPanel";
 import trackerActions from "store/features/tracker/trackerActions";
@@ -123,11 +124,16 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
     [dispatch]
   );
 
+  const themeContext = useContext(ThemeContext);
+
+  const themePianoIcon =
+    themeContext.type === "light" ? <PianoIcon /> : <PianoInverseIcon />;
+
   return (
     <>
       <FloatingPanelSwitchView>
         <Button variant="transparent" onClick={toggleView}>
-          {view === "roll" ? <NoiseIcon /> : <PianoIcon />}
+          {view === "roll" ? <NoiseIcon /> : themePianoIcon}
         </Button>
       </FloatingPanelSwitchView>
 
