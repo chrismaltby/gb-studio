@@ -34,6 +34,7 @@ import { EmoteSelect } from "../forms/EmoteSelect";
 import { PaletteSelect } from "../forms/PaletteSelect";
 import { SceneSelect } from "../forms/SceneSelect";
 import { SpriteSheetSelect } from "../forms/SpriteSheetSelect";
+import AnimationStateSelect from "components/forms/AnimationStateSelect";
 
 const argValue = (arg) => {
   if (arg && arg.value !== undefined) {
@@ -282,6 +283,16 @@ class ScriptEventFormInput extends Component {
           filter={field.filter}
           optional={field.optional}
           onChange={this.onChange}
+        />
+      );
+    }
+    if (type === "animationstate") {
+      return (
+        <AnimationStateSelect
+          id={id}
+          value={value}
+          onChange={this.onChange}
+          allowDefault
         />
       );
     }

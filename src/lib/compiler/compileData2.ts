@@ -655,7 +655,7 @@ export const compileTileset = (tileset: Uint8Array, tilesetIndex: number) =>
     tilesetSymbol(tilesetIndex),
     `// Tileset: ${tilesetIndex}`,
     {
-      n_tiles: Math.ceil(tileset.length / 16),
+      n_tiles: Math.max(1, Math.ceil(tileset.length / 16)),
       tiles: Array.from(tileset.length > 0 ? tileset : [0]).map(toHex),
     }
   );
@@ -672,15 +672,33 @@ export const compileTilesetHeader = (
 
 export const compileSpriteSheet = (
   spriteSheet: PrecompiledSpriteSheetData,
-  spriteSheetIndex: number
-) =>
-  `#pragma bank 255
+  spriteSheetIndex: number,
+  {
+    statesOrder,
+    stateReferences,
+  }: { statesOrder: string[]; stateReferences: string[] }
+) => {
+  const stateNames = spriteSheet.states.map((state) => state.name);
+  const maxState = Math.max.apply(
+    null,
+    stateNames.map((state) => statesOrder.indexOf(state))
+  );
+  return `#pragma bank 255
 // SpriteSheet: ${spriteSheet.name}
   
 #include "gbs_types.h"
 #include "data/${tilesetSymbol(spriteSheet.tilesetIndex)}.h"
 
 ${toBankSymbolInit(spriteSheetSymbol(spriteSheetIndex))};
+
+${stateReferences
+  .map(
+    (state, n) =>
+      `#define SPRITE_${spriteSheetIndex}_${state} ${
+        Math.max(0, stateNames.indexOf(statesOrder[n])) * 8
+      }`
+  )
+  .join("\n")}
 
 ${spriteSheet.metasprites
   .map((metasprite, metaspriteIndex) => {
@@ -704,12 +722,31 @@ ${spriteSheet.metaspritesOrder
   .join(",\n")}
 };
 
+const struct animation_t ${spriteSheetSymbol(spriteSheetIndex)}_animations[] = {
+${spriteSheet.animationOffsets
+  .map(
+    (object) => `${" ".repeat(INDENT_SPACES)}{
+${toStructData(object as unknown as Record<string, unknown>, 2 * INDENT_SPACES)}
+${" ".repeat(INDENT_SPACES)}}`
+  )
+  .join(",\n")}
+};
+
+const UWORD ${spriteSheetSymbol(spriteSheetIndex)}_animations_lookup[] = {
+${Array.from(Array(maxState + 1).keys())
+  .map((n) => `    SPRITE_${spriteSheetIndex}_${stateReferences[n]}`)
+  .join(",\n")}
+};
+
 ${SPRITESHEET_TYPE} ${spriteSheetSymbol(spriteSheetIndex)} = {
 ${toStructData(
   {
     n_metasprites: spriteSheet.metaspritesOrder.length,
     metasprites: `${spriteSheetSymbol(spriteSheetIndex)}_metasprites`,
-    animations: spriteSheet.animationOffsets,
+    animations: `${spriteSheetSymbol(spriteSheetIndex)}_animations`,
+    animations_lookup: `${spriteSheetSymbol(
+      spriteSheetIndex
+    )}_animations_lookup`,
     bounds: compileBounds(spriteSheet),
     tileset: toFarPtr(tilesetSymbol(spriteSheet.tilesetIndex)),
     cgb_tileset: "{ NULL, NULL }",
@@ -719,6 +756,7 @@ ${toStructData(
 )}
 };
 `;
+};
 
 export const compileSpriteSheetHeader = (
   _spriteSheet: PrecompiledSpriteSheetData,
@@ -989,7 +1027,8 @@ export const compileScriptHeader = (scriptName: string) =>
   toArrayDataHeader(DATA_TYPE, scriptName, `// Script ${scriptName}`);
 
 export const compileGameGlobalsInclude = (
-  variableAliasLookup: Dictionary<string>
+  variableAliasLookup: Dictionary<string>,
+  stateReferences: string[]
 ) => {
   const variables = Object.values(variableAliasLookup) as string[];
   return (
@@ -997,6 +1036,12 @@ export const compileGameGlobalsInclude = (
       .map((string, stringIndex) => {
         return `${string} = ${stringIndex}\n`;
       })
-      .join("") + `MAX_GLOBAL_VARS = ${variables.length}\n`
+      .join("") +
+    `MAX_GLOBAL_VARS = ${variables.length}\n` +
+    stateReferences
+      .map((string, stringIndex) => {
+        return `${string} = ${stringIndex}\n`;
+      })
+      .join("")
   );
 };

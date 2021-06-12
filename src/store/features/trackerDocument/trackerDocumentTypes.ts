@@ -28,7 +28,7 @@ export type DutyInstrument = {
 
 export type WaveInstrument = {
   index: number;
-  name: any;
+  name: string;
   length: number | null;
   volume: number;
   wave_index: number;

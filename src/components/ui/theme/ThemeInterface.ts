@@ -1,4 +1,5 @@
 export interface ThemeInterface {
+  type: "light" | "dark";
   typography: {
     fontSize: string;
     menuFontSize: string;

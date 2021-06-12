@@ -5,7 +5,6 @@ import { RootState } from "store/configureStore";
 import styled, { css } from "styled-components";
 import { Select } from "ui/form/Select";
 // import { PlusIcon } from "ui/icons/Icons";
-import trackerActions from "store/features/tracker/trackerActions";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 
 interface SequenceOption {
@@ -41,19 +40,19 @@ const SequenceItem = styled.div<SequenceItemProps>`
       : ""}
 `;
 
-const AddSequenceButton = styled.button`
-  background: ${(props) => props.theme.colors.button.nestedBackground};
-  width: 50px;
-  height: 50px;
-  border: 0;
-  border-radius: 4px;
-  svg {
-    fill: ${(props) => props.theme.colors.button.text};
-  }
-  :hover {
-    background: ${(props) => props.theme.colors.button.nestedActiveBackground};
-  }
-`;
+// const AddSequenceButton = styled.button`
+//   background: ${(props) => props.theme.colors.button.nestedBackground};
+//   width: 50px;
+//   height: 50px;
+//   border: 0;
+//   border-radius: 4px;
+//   svg {
+//     fill: ${(props) => props.theme.colors.button.text};
+//   }
+//   :hover {
+//     background: ${(props) => props.theme.colors.button.nestedActiveBackground};
+//   }
+// `;
 
 export const SequenceEditorFwd = ({
   sequence,

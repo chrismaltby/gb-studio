@@ -1,6 +1,7 @@
 import { ThemeInterface } from "./ThemeInterface";
 
-const darkheme: ThemeInterface = {
+const darkTheme: ThemeInterface = {
+  type: "dark",
   typography: {
     fontSize: "12px",
     menuFontSize: "12px",
@@ -99,4 +100,4 @@ const darkheme: ThemeInterface = {
   borderRadius: 4,
 };
 
-export default darkheme;
+export default darkTheme;

@@ -13,17 +13,35 @@ import { DotsIcon } from "ui/icons/Icons";
 import { FixedSpacer, FlexGrow } from "ui/spacing/Spacing";
 import { AppSelect } from "ui/form/AppSelect";
 import { dialog } from "@electron/remote";
+import { ipcRenderer } from "electron";
+import { Select } from "ui/form/Select";
+
+interface ZoomOptions {
+  value: number;
+  label: string;
+}
+
+const options: ZoomOptions[] = [
+  { value: 0, label: `100%` },
+  { value: 1, label: `200%` },
+  { value: 2, label: `300%` },
+  { value: 3, label: `400%` },
+];
 
 const Preferences = () => {
   const pathError = "";
   const [tmpPath, setTmpPath] = useState<string>("");
   const [imageEditorPath, setImageEditorPath] = useState<string>("");
   const [musicEditorPath, setMusicEditorPath] = useState<string>("");
+  const [zoomLevel, setZoomLevel] = useState<number>(0);
+
+  const currentZoomValue = options.find((o) => o.value === zoomLevel);
 
   useEffect(() => {
     setTmpPath(getTmp(false));
     setImageEditorPath(String(settings.getSync("imageEditorPath") || ""));
     setMusicEditorPath(String(settings.getSync("musicEditorPath") || ""));
+    setZoomLevel(Number(settings.getSync("zoomLevel") || 0));
   }, []);
 
   const onChangeTmpPath = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,6 +58,12 @@ const Preferences = () => {
   const onChangeMusicEditorPath = (path: string) => {
     setMusicEditorPath(path);
     settings.setSync("musicEditorPath", path);
+  };
+
+  const onChangeZoomLevel = (zoomLevel: number) => {
+    setZoomLevel(zoomLevel);
+    settings.set("zoomLevel", zoomLevel);
+    ipcRenderer.send("window-zoom", zoomLevel);
   };
 
   const onSelectTmpFolder = async () => {
@@ -96,10 +120,6 @@ const Preferences = () => {
               onChange={onChangeImageEditorPath}
             />
           </FormField>
-        </FormRow>
-        <FixedSpacer height={10} />
-
-        <FormRow>
           <FormField
             name="musicEditorPath"
             label={l10n("FIELD_DEFAULT_MUSIC_EDITOR")}
@@ -107,6 +127,19 @@ const Preferences = () => {
             <AppSelect
               value={musicEditorPath}
               onChange={onChangeMusicEditorPath}
+            />
+          </FormField>
+        </FormRow>
+
+        <FixedSpacer height={10} />
+        <FormRow>
+          <FormField name="zoomLevel" label={l10n("FIELD_UI_ELEMENTS_SCALING")}>
+            <Select
+              value={currentZoomValue}
+              options={options}
+              onChange={(newValue: ZoomOptions) => {
+                onChangeZoomLevel(newValue.value);
+              }}
             />
           </FormField>
         </FormRow>

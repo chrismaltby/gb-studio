@@ -30,6 +30,9 @@ const copyMetasprites = createAction<{
 const copyMetaspriteTiles = createAction<{
   metaspriteTileIds: string[];
 }>("clipboard/copyMetaspriteTiles");
+const copySpriteState = createAction<{
+  spriteStateId: string;
+}>("clipboard/copySpriteState");
 const copyPaletteIds = createAction<{
   paletteIds: string[];
 }>("clipboard/copyPaletteIds");
@@ -37,6 +40,7 @@ const pasteSprite = createAction<{
   spriteSheetId: string;
   metaspriteId: string;
   spriteAnimationId: string;
+  spriteStateId: string;
 }>("clipboard/pasteSprite");
 const pasteCustomEvents = createAction<void>("clipboard/pasteCustomEvents");
 const pastePaletteIds = createAction<{
@@ -174,6 +178,7 @@ export default {
   copyScript,
   copyMetasprites,
   copyMetaspriteTiles,
+  copySpriteState,
   copySelectedEntity,
   copyPaletteIds,
   pasteClipboardEntity,

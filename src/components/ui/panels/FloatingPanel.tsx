@@ -1,4 +1,5 @@
 import styled, { css } from "styled-components";
+import { Select } from "ui/form/Select";
 import { Button } from "../buttons/Button";
 
 interface FloatingPanelProps {
@@ -30,6 +31,25 @@ const FloatingPanel = styled.div<FloatingPanelProps>`
     }
     & ~ ${Button} {
       margin-left: 1px;
+    }
+  }
+
+  ${Select} {
+    width: 120px;
+
+    .CustomSelect__control {
+      height: 36px;
+      background: transparent;
+      border: 0;
+    }
+
+    .CustomSelect__control:hover {
+      border: 0;
+    }
+
+    .CustomSelect__control--is-focused {
+      border: 0 !important;
+      box-shadow: none !important;
     }
   }
 `;

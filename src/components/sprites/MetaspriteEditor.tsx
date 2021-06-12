@@ -29,6 +29,7 @@ interface MetaspriteEditorProps {
   spriteSheetId: string;
   metaspriteId: string;
   animationId: string;
+  spriteStateId: string;
   hidden?: boolean;
 }
 
@@ -158,6 +159,7 @@ const MetaspriteEditor = ({
   spriteSheetId,
   metaspriteId,
   animationId,
+  spriteStateId,
   hidden,
 }: MetaspriteEditorProps) => {
   const dispatch = useDispatch();
@@ -630,9 +632,10 @@ const MetaspriteEditor = ({
         spriteSheetId,
         metaspriteId,
         spriteAnimationId: animationId,
+        spriteStateId,
       })
     );
-  }, [dispatch, spriteSheetId, metaspriteId, animationId]);
+  }, [dispatch, spriteSheetId, metaspriteId, animationId, spriteStateId]);
 
   const onOverEditor = useCallback(() => {
     setIsOverEditor(true);

@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
-import { ValueType, ActionMeta } from "react-select";
 import { Select } from "ui/form/Select";
 import l10n from "lib/helpers/l10n";
 import { RootState } from "store/configureStore";
@@ -8,7 +7,7 @@ import { FormRow, FormField } from "ui/form/FormLayout";
 
 interface WaveEditorFormProps {
   waveId: number;
-  onChange: (value: ValueType<any>, actionMeta: ActionMeta<any>) => void;
+  onChange: (newValue: { value: string; label: string }) => void;
 }
 
 export const WaveEditorForm = ({ waveId, onChange }: WaveEditorFormProps) => {

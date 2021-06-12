@@ -2,6 +2,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import editorActions from "../editor/editorActions";
 
+export type PianoRollToolType = "pencil" | "eraser" | "selection" | null;
 export interface TrackerState {
   // status: "loading" | "error" | "loaded" | null,
   // error?: string;
@@ -11,8 +12,9 @@ export interface TrackerState {
   editStep: number;
   // modified: boolean;
   view: "tracker" | "roll";
-  tool: "pencil" | "eraser" | null;
+  tool: PianoRollToolType;
   defaultInstruments: [number, number, number, number];
+  selectedChannel: number;
   visibleChannels: number[];
   hoverNote: number | null;
 }
@@ -28,6 +30,7 @@ export const initialState: TrackerState = {
   view: "roll",
   tool: "pencil",
   defaultInstruments: [0, 0, 0, 0],
+  selectedChannel: 0,
   visibleChannels: [0],
   hoverNote: null,
 };
@@ -48,7 +51,7 @@ const trackerSlice = createSlice({
     setHoverNote: (state, action: PayloadAction<number | null>) => {
       state.hoverNote = action.payload;
     },
-    setTool: (state, _action: PayloadAction<"pencil" | "eraser" | null>) => {
+    setTool: (state, _action: PayloadAction<PianoRollToolType>) => {
       state.tool = _action.payload;
     },
     setDefaultInstruments: (
@@ -56,6 +59,9 @@ const trackerSlice = createSlice({
       _action: PayloadAction<[number, number, number, number]>
     ) => {
       state.defaultInstruments = _action.payload;
+    },
+    setSelectedChannel: (state, _action: PayloadAction<number>) => {
+      state.selectedChannel = _action.payload;
     },
     setVisibleChannels: (state, _action: PayloadAction<number[]>) => {
       state.visibleChannels = _action.payload;
@@ -68,7 +74,7 @@ const trackerSlice = createSlice({
     },
   },
   extraReducers: (builder) =>
-    builder.addCase(editorActions.setSelectedSongId, (state, action) => {
+    builder.addCase(editorActions.setSelectedSongId, (state, _action) => {
       state.playing = false;
     }),
 });

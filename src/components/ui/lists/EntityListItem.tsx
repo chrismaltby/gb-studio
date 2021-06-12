@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, ReactNode } from "react";
 import styled from "styled-components";
 import {
   ActorIcon,
@@ -11,6 +11,8 @@ import {
   DutyIcon,
   WaveIcon,
   SongIcon,
+  FolderFilledIcon,
+  BackgroundIcon,
 } from "../icons/Icons";
 
 interface EntityListItemWrapperProps {
@@ -21,18 +23,24 @@ interface EntityListItemProps {
   item: {
     name: string;
     labelColor?: string;
+    warning?: string;
   };
   type:
+    | "custom"
+    | "folder"
     | "scene"
     | "actor"
     | "trigger"
     | "variable"
     | "sprite"
     | "animation"
+    | "state"
+    | "background"
     | "song"
     | "duty"
     | "wave"
     | "noise";
+  icon?: ReactNode;
   nestLevel?: number;
   collapsed?: boolean;
   collapsable?: boolean;
@@ -90,6 +98,10 @@ const EnitityLabel = styled.div`
   flex-grow: 1;
 `;
 
+const EnitityWarningLabel = styled.span`
+  color: red;
+`;
+
 const EntityLabelColor = styled.div.attrs<EntityLabelColorProps>((props) => ({
   className: `label--${props.color}`,
 }))`
@@ -103,6 +115,7 @@ const EntityLabelColor = styled.div.attrs<EntityLabelColorProps>((props) => ({
 export const EntityListItem: FC<EntityListItemProps> = ({
   item,
   type,
+  icon,
   nestLevel,
   collapsable,
   collapsed,
@@ -114,6 +127,12 @@ export const EntityListItem: FC<EntityListItemProps> = ({
         <NavigatorArrow open={!collapsed} onClick={() => onToggleCollapse?.()}>
           <ArrowIcon />
         </NavigatorArrow>
+      )}
+      {type === "custom" && icon && <EnitityIcon>{icon}</EnitityIcon>}
+      {type === "folder" && (
+        <EnitityIcon>
+          <FolderFilledIcon />
+        </EnitityIcon>
       )}
       {type === "actor" && (
         <EnitityIcon>
@@ -140,6 +159,11 @@ export const EntityListItem: FC<EntityListItemProps> = ({
           <AnimationIcon />
         </EnitityIcon>
       )}
+      {type === "background" && (
+        <EnitityIcon>
+          <BackgroundIcon />
+        </EnitityIcon>
+      )}
       {type === "song" && (
         <EnitityIcon>
           <SongIcon />
@@ -160,7 +184,12 @@ export const EntityListItem: FC<EntityListItemProps> = ({
           <NoiseIcon />
         </EnitityIcon>
       )}
-      <EnitityLabel>{item.name}</EnitityLabel>
+      <EnitityLabel>
+        {item.name}{" "}
+        {item.warning && (
+          <EnitityWarningLabel> ({item.warning})</EnitityWarningLabel>
+        )}
+      </EnitityLabel>
       {item.labelColor && <EntityLabelColor color={item.labelColor} />}
     </EnitityListItem>
   );

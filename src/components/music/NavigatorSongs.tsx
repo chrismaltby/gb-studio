@@ -212,7 +212,7 @@ export const NavigatorSongs = ({
           : [],
         [
           {
-            name: "Waves",
+            name: "Wave",
             id: "wave_group",
             instrumentId: "group",
             type: "wave",
@@ -337,7 +337,7 @@ export const NavigatorSongs = ({
                 }
               }}
             >
-              {({ selected, item }) =>
+              {({ item }) =>
                 item.isGroup ? (
                   <EntityListItem
                     item={item}

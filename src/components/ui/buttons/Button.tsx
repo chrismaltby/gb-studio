@@ -96,6 +96,7 @@ const primaryStyles = css`
 const transparentStyles = css<ButtonProps>`
   background: transparent;
   border-color: transparent;
+  color: ${(props) => props.theme.colors.button.text};
 
   ${(props) =>
     !props.disabled

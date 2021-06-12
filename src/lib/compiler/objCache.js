@@ -26,11 +26,13 @@ export const cacheObjData = async (buildRoot, tmpPath, env) => {
     ignore: `${buildIncludeRoot}/data/*.h`,
   });
   includeFiles.push(`${buildIncludeRoot}/data/data_bootstrap.h`);
+  const globalsFile = `${buildIncludeRoot}/data/game_globals.i`;
 
   const includeChecksums = await Promise.all(includeFiles.map(checksumFile));
   const includeChecksum = mergeChecksums(includeChecksums);
 
   const envChecksum = checksumString(JSON.stringify(env));
+  const globalsChecksum = await checksumFile(globalsFile);
 
   for (let i = 0; i < objFiles.length; i++) {
     const objFilePath = objFiles[i];
@@ -46,8 +48,12 @@ export const cacheObjData = async (buildRoot, tmpPath, env) => {
 
       if (matchingSrc) {
         const checksum = await checksumFile(matchingSrc);
+        const includesGlobals =
+          !!Path.basename(matchingSrc).match(/(script_.*\.s)/);
         const cacheFilename = checksumString(
-          `${envChecksum}_${includeChecksum}_${checksum}`
+          `${envChecksum}_${
+            includeChecksum + (includesGlobals ? globalsChecksum : "")
+          }_${checksum}`
         );
         const outFile = `${cacheRoot}/${cacheFilename}`;
         await copyFile(objFilePath, outFile);
@@ -67,18 +73,24 @@ export const fetchCachedObjData = async (buildRoot, tmpPath, env) => {
     ignore: `${buildIncludeRoot}/data/*.h`,
   });
   includeFiles.push(`${buildIncludeRoot}/data/data_bootstrap.h`);
+  const globalsFile = `${buildIncludeRoot}/data/game_globals.i`;
 
   const includeChecksums = await Promise.all(includeFiles.map(checksumFile));
   const includeChecksum = mergeChecksums(includeChecksums);
 
   const envChecksum = checksumString(JSON.stringify(env));
+  const globalsChecksum = await checksumFile(globalsFile);
 
   for (let i = 0; i < srcFiles.length; i++) {
     const srcFilePath = srcFiles[i];
     const fileName = Path.basename(srcFilePath).replace(/\.(s|c)$/, "");
     const checksum = await checksumFile(srcFilePath);
+    const includesGlobals =
+      !!Path.basename(srcFilePath).match(/(script_.*\.s)/);
     const cacheFilename = checksumString(
-      `${envChecksum}_${includeChecksum}_${checksum}`
+      `${envChecksum}_${
+        includeChecksum + (includesGlobals ? globalsChecksum : "")
+      }_${checksum}`
     );
     const cacheFile = `${cacheRoot}/${cacheFilename}`;
 

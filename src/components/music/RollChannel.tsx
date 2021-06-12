@@ -120,7 +120,7 @@ export const RollChannelFwd = ({
   );
 
   const handleMouseLeave = useCallback(
-    (e: MouseEvent) => {
+    (_e: MouseEvent) => {
       if (hoverNote) {
         dispatch(trackerActions.setHoverNote(null));
       }
