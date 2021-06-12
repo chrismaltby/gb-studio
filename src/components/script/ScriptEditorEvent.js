@@ -288,7 +288,6 @@ class ScriptEditorEvent extends Component {
               <DropdownButton
                 small
                 transparent
-                right
                 onMouseDown={this.readClipboard}
               >
                 {command === EVENT_CALL_CUSTOM_EVENT && [

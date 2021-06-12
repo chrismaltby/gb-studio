@@ -171,5 +171,6 @@ const SCRIPT_CMD script_cmds[] = {
     {0, 0},
 
     {vm_actor_get_anim_frame,   2}, // 0x83
+    {vm_actor_set_anim_set,     4}, // 0x84
 
 };

@@ -9,6 +9,7 @@ import {
   FormFieldInfo,
   FormHeader,
   FormRow,
+  FormSectionTitle,
 } from "ui/form/FormLayout";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import l10n from "lib/helpers/l10n";
@@ -16,6 +17,7 @@ import { Sidebar, SidebarColumn } from "ui/sidebars/Sidebar";
 import {
   MetaspriteTile,
   SpriteSheet,
+  SpriteState,
 } from "store/features/entities/entitiesTypes";
 import { CoordinateInput } from "ui/form/CoordinateInput";
 import { Label } from "ui/form/Label";
@@ -23,6 +25,7 @@ import {
   metaspriteTileSelectors,
   spriteAnimationSelectors,
   spriteSheetSelectors,
+  spriteStateSelectors,
 } from "store/features/entities/entitiesState";
 import entitiesActions from "store/features/entities/entitiesActions";
 import editorActions from "store/features/editor/editorActions";
@@ -36,45 +39,41 @@ import {
   FlipVerticalIcon,
   SendToFrontIcon,
   SendToBackIcon,
-  CheckIcon,
 } from "ui/icons/Icons";
 import { FlexGrow } from "ui/spacing/Spacing";
 import { SidebarHeader } from "ui/form/SidebarHeader";
 import {
   ClipboardTypeMetasprites,
   ClipboardTypeMetaspriteTiles,
+  ClipboardTypeSpriteState,
 } from "store/features/clipboard/clipboardTypes";
 import { CheckboxField } from "ui/form/CheckboxField";
 import { AnimationTypeSelect } from "../forms/AnimationTypeSelect";
 import { ObjPaletteSelect } from "../forms/ObjPaletteSelect";
 import { PaletteIndexSelect } from "../forms/PaletteIndexSelect";
-import styled from "styled-components";
+import AnimationStateSelect from "components/forms/AnimationStateSelect";
 
 interface SpriteEditorProps {
   id: string;
   metaspriteId: string;
+  spriteStateId: string;
   animationId: string;
 }
-
-const ButtonIcon = styled.div`
-  width: 12px;
-  display: inline-flex;
-  justifycontent: center;
-  alignitems: center;
-  marginleft: -5px;
-  marginright: 5px;
-`;
 
 export const SpriteEditor = ({
   id,
   metaspriteId,
   animationId,
+  spriteStateId,
 }: SpriteEditorProps) => {
   const colorsEnabled = useSelector(
     (state: RootState) => state.project.present.settings.customColorsEnabled
   );
   const sprite = useSelector((state: RootState) =>
     spriteSheetSelectors.selectById(state, id)
+  );
+  const spriteState = useSelector((state: RootState) =>
+    spriteStateSelectors.selectById(state, spriteStateId)
   );
   const animation = useSelector((state: RootState) =>
     spriteAnimationSelectors.selectById(state, animationId)
@@ -116,12 +115,30 @@ export const SpriteEditor = ({
       );
     };
 
-  const onChangeField =
-    <T extends keyof SpriteSheet>(key: T) =>
-    (editValue: SpriteSheet[T]) => {
+  const onChangeStateField =
+    <T extends keyof SpriteState>(key: T) =>
+    (editValue: SpriteState[T]) => {
       dispatch(
-        entitiesActions.editSpriteSheet({
-          spriteSheetId: id,
+        entitiesActions.editSpriteState({
+          spriteStateId,
+          changes: {
+            [key]: editValue,
+          },
+        })
+      );
+    };
+
+  const onChangeStateFieldInput =
+    <T extends keyof SpriteState>(key: T) =>
+    (
+      e:
+        | React.ChangeEvent<HTMLInputElement>
+        | React.ChangeEvent<HTMLTextAreaElement>
+    ) => {
+      const editValue = castEventValue(e);
+      dispatch(
+        entitiesActions.editSpriteState({
+          spriteStateId,
           changes: {
             [key]: editValue,
           },
@@ -132,6 +149,25 @@ export const SpriteEditor = ({
   const onChangeTilesFields =
     <T extends keyof MetaspriteTile>(key: T) =>
     (editValue: MetaspriteTile[T]) => {
+      dispatch(
+        entitiesActions.editMetaspriteTiles({
+          spriteSheetId: id,
+          metaspriteTileIds: selectedTileIds,
+          changes: {
+            [key]: editValue,
+          },
+        })
+      );
+    };
+
+  const onChangeTilesFieldInput =
+    <T extends keyof MetaspriteTile>(key: T) =>
+    (
+      e:
+        | React.ChangeEvent<HTMLInputElement>
+        | React.ChangeEvent<HTMLTextAreaElement>
+    ) => {
+      const editValue = castEventValue(e);
       dispatch(
         entitiesActions.editMetaspriteTiles({
           spriteSheetId: id,
@@ -224,15 +260,24 @@ export const SpriteEditor = ({
     );
   }, [dispatch, metaspriteId]);
 
+  const onCopySpriteState = useCallback(() => {
+    dispatch(
+      clipboardActions.copySpriteState({
+        spriteStateId,
+      })
+    );
+  }, [dispatch, spriteStateId]);
+
   const onPaste = useCallback(() => {
     dispatch(
       clipboardActions.pasteSprite({
         spriteSheetId: id,
         metaspriteId,
         spriteAnimationId: animationId,
+        spriteStateId,
       })
     );
-  }, [dispatch, id, metaspriteId, animationId]);
+  }, [dispatch, id, metaspriteId, animationId, spriteStateId]);
 
   const onFetchClipboard = useCallback(() => {
     dispatch(clipboardActions.fetchClipboard());
@@ -258,33 +303,33 @@ export const SpriteEditor = ({
     );
   }, [dispatch, id, metaspriteId, animationId]);
 
+  const onRemoveSpriteState = useCallback(() => {
+    dispatch(
+      entitiesActions.removeSpriteState({
+        spriteSheetId: id,
+        spriteStateId,
+      })
+    );
+  }, [dispatch, id, spriteStateId]);
+
   const toggleReplaceMode = useCallback(() => {
     dispatch(editorActions.setReplaceSpriteTileMode(!replaceSpriteTileMode));
   }, [dispatch, replaceSpriteTileMode]);
 
-  const autoDetect = sprite?.autoDetect;
-
   const onAutoDetect = useCallback(() => {
     dispatch(
-      entitiesActions.editSpriteSheet({
+      spriteActions.detectSprite({
         spriteSheetId: id,
-        changes: {
-          autoDetect: !autoDetect,
-        },
       })
     );
-    if (!autoDetect) {
-      dispatch(
-        spriteActions.detectSprite({
-          spriteSheetId: id,
-        })
-      );
-    }
-  }, [dispatch, id, autoDetect]);
+  }, [dispatch, id]);
 
-  if (!sprite || !animation) {
+  if (!sprite || !spriteState || !animation) {
     return null;
   }
+
+  const isDefaultState = sprite.states.indexOf(spriteStateId) === 0;
+  const showAutodetect = isDefaultState && sprite.height === 16;
 
   return (
     <Sidebar onClick={selectSidebar}>
@@ -321,6 +366,11 @@ export const SpriteEditor = ({
                   {l10n("MENU_SPRITE_COPY")}
                 </MenuItem>
               )}
+              {selectedTileIds.length === 0 && (
+                <MenuItem onClick={onCopySpriteState}>
+                  {l10n("MENU_SPRITE_STATE_COPY")}
+                </MenuItem>
+              )}
               {clipboardFormat === ClipboardTypeMetaspriteTiles && (
                 <MenuItem onClick={onPaste}>
                   {l10n("MENU_SPRITE_TILE_PASTE")}
@@ -329,6 +379,11 @@ export const SpriteEditor = ({
               {clipboardFormat === ClipboardTypeMetasprites && (
                 <MenuItem onClick={onPaste}>
                   {l10n("MENU_SPRITE_PASTE")}
+                </MenuItem>
+              )}
+              {clipboardFormat === ClipboardTypeSpriteState && (
+                <MenuItem onClick={onPaste}>
+                  {l10n("MENU_SPRITE_STATE_PASTE")}
                 </MenuItem>
               )}
               <MenuDivider />
@@ -340,6 +395,11 @@ export const SpriteEditor = ({
               {selectedTileIds.length === 0 && (
                 <MenuItem onClick={onRemoveMetasprite}>
                   {l10n("MENU_SPRITE_DELETE")}
+                </MenuItem>
+              )}
+              {!isDefaultState && selectedTileIds.length === 0 && (
+                <MenuItem onClick={onRemoveSpriteState}>
+                  {l10n("MENU_SPRITE_STATE_DELETE")}
                 </MenuItem>
               )}
             </DropdownButton>
@@ -374,12 +434,14 @@ export const SpriteEditor = ({
                 <Button
                   onClick={sendTileToFront}
                   style={{ width: 28, padding: 3 }}
+                  title={l10n("FIELD_BRING_TO_FRONT")}
                 >
                   <SendToFrontIcon />
                 </Button>
                 <Button
                   onClick={sendTileToBack}
                   style={{ width: 28, padding: 3 }}
+                  title={l10n("FIELD_SEND_TO_BACK")}
                 >
                   <SendToBackIcon />
                 </Button>
@@ -392,6 +454,7 @@ export const SpriteEditor = ({
                       : "normal"
                   }
                   style={{ width: 28, padding: 3 }}
+                  title={l10n("FIELD_FLIP_HORIZONTAL")}
                 >
                   <FlipHorizontalIcon />
                 </Button>
@@ -403,6 +466,7 @@ export const SpriteEditor = ({
                       : "normal"
                   }
                   style={{ width: 28, padding: 3 }}
+                  title={l10n("FIELD_FLIP_VERTICAL")}
                 >
                   <FlipVerticalIcon />
                 </Button>
@@ -411,7 +475,7 @@ export const SpriteEditor = ({
               <FormDivider />
 
               <FormRow>
-                <FormField name="objPalette" label="Obj Palette">
+                <FormField name="objPalette" label={l10n("FIELD_OBJ_PALETTE")}>
                   <ObjPaletteSelect
                     name="objPalette"
                     value={metaspriteTile.objPalette}
@@ -422,7 +486,10 @@ export const SpriteEditor = ({
 
               {colorsEnabled && (
                 <FormRow>
-                  <FormField name="paletteIndex" label="Color Palette">
+                  <FormField
+                    name="paletteIndex"
+                    label={l10n("FIELD_COLOR_PALETTE")}
+                  >
                     <PaletteIndexSelect
                       name="paletteIndex"
                       value={metaspriteTile.paletteIndex}
@@ -437,7 +504,7 @@ export const SpriteEditor = ({
                   name="priority"
                   label={l10n("FIELD_DISPLAY_BEHIND_BACKGROUND")}
                   checked={metaspriteTile.priority}
-                  onChange={onChangeTileFieldInput("priority")}
+                  onChange={onChangeTilesFieldInput("priority")}
                 />
               </FormRow>
 
@@ -544,7 +611,22 @@ export const SpriteEditor = ({
                   />
                 </FormRow>
               </div>
-              <FormDivider />
+              <FormSectionTitle>
+                {l10n("FIELD_ANIMATION_SETTINGS")}
+              </FormSectionTitle>
+              {!isDefaultState && (
+                <FormRow>
+                  <FormField name="stateName" label="State Name">
+                    <AnimationStateSelect
+                      name="stateName"
+                      value={spriteState.name}
+                      onChange={onChangeStateField("name")}
+                      creatable
+                    />
+                  </FormField>
+                </FormRow>
+              )}
+
               <FormRow>
                 <FormField
                   name="animationType"
@@ -552,36 +634,30 @@ export const SpriteEditor = ({
                 >
                   <AnimationTypeSelect
                     name="animationType"
-                    value={sprite.animationType}
-                    onChange={onChangeField("animationType")}
+                    value={spriteState.animationType}
+                    onChange={onChangeStateField("animationType")}
                   />
                 </FormField>
               </FormRow>
-              {sprite.animationType &&
-                sprite.animationType !== "fixed" &&
-                sprite.animationType !== "fixed_movement" && (
+              {spriteState.animationType &&
+                spriteState.animationType !== "fixed" &&
+                spriteState.animationType !== "fixed_movement" && (
                   <FormRow>
                     <CheckboxField
                       name="customColorsEnabled"
                       label={l10n("FIELD_FLIP_RIGHT_TO_CREATE_LEFT")}
-                      checked={!!sprite.flipLeft}
-                      onChange={onChangeFieldInput("flipLeft")}
+                      checked={!!spriteState.flipLeft}
+                      onChange={onChangeStateFieldInput("flipLeft")}
                     />
                   </FormRow>
                 )}
-              <FormRow>
-                <Button
-                  onClick={onAutoDetect}
-                  variant={sprite.autoDetect ? "primary" : "normal"}
-                >
-                  {sprite.autoDetect && (
-                    <ButtonIcon>
-                      <CheckIcon />
-                    </ButtonIcon>
-                  )}
-                  {l10n("FIELD_AUTODETECT_ANIMATIONS")}
-                </Button>
-              </FormRow>
+              {showAutodetect && (
+                <FormRow>
+                  <Button onClick={onAutoDetect}>
+                    {l10n("FIELD_AUTODETECT_ANIMATIONS")}
+                  </Button>
+                </FormRow>
+              )}
             </>
           )}
         </FormContainer>

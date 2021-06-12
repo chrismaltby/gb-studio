@@ -170,13 +170,7 @@ class World extends Component {
   };
 
   onKeyUp = (e) => {
-    if (e.target.nodeName !== "BODY") {
-      return;
-    }
-    if (e.ctrlKey || e.shiftKey || e.metaKey) {
-      return;
-    }
-    if (e.code === "Space" || e.key === "Alt") {
+    if (this.state.dragMode && (e.code === "Space" || e.key === "Alt")) {
       this.setState({ dragMode: false });
     }
   };

@@ -71,6 +71,8 @@ interface ScriptBuilderOptions {
   variableAliasLookup: Dictionary<string>;
   scenes: ScriptBuilderScene[];
   sprites: ScriptBuilderEntity[];
+  statesOrder: string[];
+  stateReferences: string[];
   fonts: PrecompiledFontData[];
   music: PrecompiledMusicTrack[];
   avatars: ScriptBuilderEntity[];
@@ -355,6 +357,8 @@ class ScriptBuilder {
       engineFields: options.engineFields || {},
       scenes: options.scenes || [],
       sprites: options.sprites || [],
+      statesOrder: options.statesOrder || [],
+      stateReferences: options.stateReferences || [],
       fonts: options.fonts || [],
       music: options.music || [],
       avatars: options.avatars || [],
@@ -1103,6 +1107,11 @@ class ScriptBuilder {
     );
   };
 
+  _actorSetAnimState = (addr: string, state: string) => {
+    this.includeActor = true;
+    this._addCmd("VM_ACTOR_SET_ANIM_SET", addr, state);
+  };
+
   _actorEmote = (addr: string, symbol: string) => {
     this.includeActor = true;
     this._addCmd("VM_ACTOR_EMOTE", addr, `___bank_${symbol}`, `_${symbol}`);
@@ -1807,6 +1816,16 @@ class ScriptBuilder {
       this._addComment("Player Set Spritesheet");
       this._setConst("ACTOR", 0);
       this._actorSetSpritesheet("ACTOR", spriteSheetSymbol(spriteIndex));
+      this._addNL();
+    }
+  };
+
+  actorSetState = (state: string) => {
+    const { statesOrder, stateReferences } = this.options;
+    const stateIndex = statesOrder.indexOf(state);
+    if (stateIndex > -1) {
+      this._addComment("Actor Set Animation State");
+      this._actorSetAnimState("ACTOR", stateReferences[stateIndex]);
       this._addNL();
     }
   };

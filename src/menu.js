@@ -401,7 +401,9 @@ const buildMenu = async (plugins = []) => {
     },
     {
       role: "window",
-      submenu: [{ role: "minimize" }],
+      submenu: [
+        { role: "minimize" }
+      ]
     },
     {
       role: "help",

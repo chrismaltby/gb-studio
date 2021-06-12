@@ -15,11 +15,14 @@ import {
   variableSelectors,
   metaspriteSelectors,
   metaspriteTileSelectors,
+  spriteStateSelectors,
+  spriteAnimationSelectors,
 } from "../entities/entitiesState";
 import {
   CustomEvent,
   Metasprite,
   MetaspriteTile,
+  SpriteAnimation,
 } from "../entities/entitiesTypes";
 import actions from "./clipboardActions";
 import entitiesActions from "../entities/entitiesActions";
@@ -30,6 +33,7 @@ import {
   ClipboardTypeMetasprites,
   ClipboardTypeMetaspriteTiles,
   ClipboardTypePaletteIds,
+  ClipboardTypeSpriteState,
 } from "./clipboardTypes";
 import clipboardActions from "./clipboardActions";
 
@@ -211,6 +215,54 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
       }
     } else if (actions.copyText.match(action)) {
       clipboard.writeText(action.payload);
+    } else if (actions.copySpriteState.match(action)) {
+      const state = store.getState();
+      const spriteStateLookup = spriteStateSelectors.selectEntities(state);
+      const animationsLookup = spriteAnimationSelectors.selectEntities(state);
+      const metaspritesLookup = metaspriteSelectors.selectEntities(state);
+      const metaspriteTilesLookup =
+        metaspriteTileSelectors.selectEntities(state);
+
+      const spriteState = spriteStateLookup[action.payload.spriteStateId];
+      if (!spriteState) {
+        return;
+      }
+
+      const animations = spriteState.animations
+        .map((id) => {
+          return animationsLookup[id];
+        })
+        .filter((animation): animation is SpriteAnimation => !!animation);
+
+      const metaspriteIds = flatten(
+        animations.map((animation) => animation.frames)
+      );
+
+      const metasprites = metaspriteIds
+        .map((id) => {
+          return metaspritesLookup[id];
+        })
+        .filter((metasprite): metasprite is Metasprite => !!metasprite);
+
+      const metaspriteTileIds = flatten(
+        metasprites.map((metasprite) => metasprite.tiles)
+      );
+
+      const metaspriteTiles = metaspriteTileIds
+        .map((tileId) => {
+          return metaspriteTilesLookup[tileId];
+        })
+        .filter((tile): tile is MetaspriteTile => !!tile);
+
+      copy({
+        format: ClipboardTypeSpriteState,
+        data: {
+          spriteState,
+          animations,
+          metasprites,
+          metaspriteTiles,
+        },
+      });
     } else if (actions.copyMetasprites.match(action)) {
       const state = store.getState();
       const metaspritesLookup = metaspriteSelectors.selectEntities(state);
@@ -268,7 +320,98 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
       if (!clipboard) {
         return next(action);
       }
-      if (clipboard.format === ClipboardTypeMetasprites) {
+
+      if (clipboard.format === ClipboardTypeSpriteState) {
+        const data = clipboard.data;
+        const state = store.getState();
+
+        const spriteState = spriteStateSelectors.selectById(
+          state,
+          action.payload.spriteStateId
+        );
+        if (!spriteState) {
+          return;
+        }
+
+        // Update Sprite State
+        store.dispatch(
+          entitiesActions.editSpriteState({
+            spriteStateId: action.payload.spriteStateId,
+            changes: {
+              animationType: data.spriteState.animationType,
+              flipLeft: data.spriteState.flipLeft,
+            },
+          })
+        );
+
+        // Update sprite animations
+        for (let i = 0; i < spriteState.animations.length; i++) {
+          const animationId = spriteState.animations[i];
+          const newData = data.animations[i];
+          if (!newData) {
+            continue;
+          }
+
+          store.dispatch(
+            entitiesActions.editSpriteAnimation({
+              spriteSheetId: action.payload.spriteSheetId,
+              spriteAnimationId: animationId,
+              changes: {
+                frames: [],
+              },
+            })
+          );
+
+          const animMetasprites = data.metasprites.filter((metasprite) => {
+            return newData.frames.includes(metasprite.id);
+          });
+
+          const newActions = animMetasprites.map(() => {
+            return entitiesActions.addMetasprite({
+              spriteSheetId: action.payload.spriteSheetId,
+              spriteAnimationId: animationId,
+            });
+          });
+
+          for (const action of newActions) {
+            store.dispatch(action);
+          }
+
+          const newIds = newActions.map(
+            (action) => action.payload.metaspriteId
+          );
+
+          const tileIdMetaspriteLookup = animMetasprites.reduce(
+            (memo, metasprite, index) => {
+              for (const tileId of metasprite.tiles) {
+                memo[tileId] = newIds[index];
+              }
+              return memo;
+            },
+            {} as Dictionary<string>
+          );
+
+          const newTileActions = data.metaspriteTiles.map((tile) => {
+            return entitiesActions.addMetaspriteTile({
+              spriteSheetId: action.payload.spriteSheetId,
+              metaspriteId: tileIdMetaspriteLookup[tile.id] || "",
+              x: tile.x,
+              y: tile.y,
+              sliceX: tile.sliceX,
+              sliceY: tile.sliceY,
+              flipX: tile.flipX,
+              flipY: tile.flipY,
+              objPalette: tile.objPalette,
+              paletteIndex: tile.paletteIndex,
+              priority: tile.priority,
+            });
+          });
+
+          for (const action of newTileActions) {
+            store.dispatch(action);
+          }
+        }
+      } else if (clipboard.format === ClipboardTypeMetasprites) {
         const data = clipboard.data;
 
         const newActions = data.metasprites.map(() => {
@@ -313,12 +456,6 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         for (const action of newTileActions) {
           store.dispatch(action);
         }
-
-        const newTileIds = newTileActions.map(
-          (action) => action.payload.metaspriteTileId
-        );
-
-        store.dispatch(editorActions.setSelectedMetaspriteTileIds(newTileIds));
       } else if (clipboard.format === ClipboardTypeMetaspriteTiles) {
         const data = clipboard.data;
 

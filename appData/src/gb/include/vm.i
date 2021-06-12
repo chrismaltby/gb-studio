@@ -511,6 +511,11 @@ OP_VM_ACTOR_GET_ANIM_FRAME     = 0x83
         .db OP_VM_ACTOR_GET_ANIM_FRAME, #>ACTOR, #<ACTOR
 .endm
 
+OP_VM_ACTOR_SET_ANIM_SET       = 0x84
+.macro VM_ACTOR_SET_ANIM_SET ACTOR, OFFSET
+        .db OP_VM_ACTOR_SET_ANIM_SET, #>OFFSET, #<OFFSET, #>ACTOR, #<ACTOR
+.endm
+
 ; --- UI ------------------------------------------
 
 OP_VM_LOAD_TEXT         = 0x40
