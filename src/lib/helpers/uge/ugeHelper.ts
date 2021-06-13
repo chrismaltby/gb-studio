@@ -450,7 +450,6 @@ export const saveUGESong = (song: Song): ArrayBuffer => {
     addUint32(0); //Add empty routines
   }
 
-  console.log(buffer.slice(0, idx));
   return buffer.slice(0, idx);
 };
 

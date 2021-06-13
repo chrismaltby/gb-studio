@@ -151,8 +151,6 @@ export const SongPianoRoll = ({
     ...visibleChannels.filter((c) => c !== selectedChannel),
   ].reverse();
 
-  console.log(v, selectedChannel, visibleChannels);
-
   return (
     <div
       style={{
