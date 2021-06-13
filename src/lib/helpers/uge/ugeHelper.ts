@@ -559,6 +559,7 @@ export const exportToC = (song: Song, trackName: string): string => {
 
 #include "hUGEDriver.h"
 #include <stddef.h>
+#include "hUGEDriverRoutines.h"
 
 static const unsigned char order_cnt = ${song.sequence.length * 2};
 `;
@@ -605,7 +606,7 @@ const hUGESong_t ${trackName}_Data = {
     &order_cnt,
     order1, order2, order3, order4,
     duty_instruments, wave_instruments, noise_instruments,
-    NULL,
+    routines,
     waves
 };
 `;

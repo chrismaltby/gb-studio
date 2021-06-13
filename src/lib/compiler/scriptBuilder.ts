@@ -1384,6 +1384,15 @@ class ScriptBuilder {
     this._addCmd("VM_MUSIC_STOP");
   };
 
+  _musicRoutine = (routine: number, symbol: string) => {
+    this._addCmd(
+      "VM_MUSIC_ROUTINE",
+      routine,
+      `___bank_${symbol}`,
+      `_${symbol}`
+    );
+  };
+
   _soundPlay = (
     frames: number,
     channel: number,
@@ -2925,6 +2934,14 @@ class ScriptBuilder {
     this._addNL();
   };
 
+  musicRoutineSet = (routine: number, script: ScriptEvent[]) => {
+    this._addComment(`Music Routine Attach`);
+    const scriptRef = this._compileSubScript("music", script);
+    const routineValue = Number(routine);
+    this._musicRoutine(routineValue, scriptRef);
+    this._addNL();
+  };
+
   // --------------------------------------------------------------------------
   // Sound
 
@@ -3516,7 +3533,7 @@ class ScriptBuilder {
   };
 
   _compileSubScript = (
-    type: "input" | "timer" | "custom",
+    type: "input" | "timer" | "music" | "custom",
     script: ScriptEvent[],
     name?: string,
     options?: Partial<ScriptBuilderOptions>
