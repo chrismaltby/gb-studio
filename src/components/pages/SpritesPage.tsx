@@ -143,9 +143,6 @@ const SpritesPage = () => {
       recalculateRightColumn();
     },
     onResizeComplete: (v) => {
-      if (v < 100) {
-        hideNavigator();
-      }
       if (v < 200) {
         setLeftPaneSize(200);
       }
@@ -239,10 +236,6 @@ const SpritesPage = () => {
     }
   };
 
-  const hideNavigator = () => {
-    dispatch(settingsActions.setShowNavigator(false));
-  };
-
   const toggleTilesPane = useCallback(() => {
     if (centerPaneHeight === 30) {
       setCenterPaneSize(231);
@@ -302,9 +295,8 @@ const SpritesPage = () => {
       <div
         style={{
           transition: "opacity 0.3s ease-in-out",
-          width: leftPaneWidth,
+          width: Math.max(200, leftPaneWidth),
           background: themeContext.colors.sidebar.background,
-          opacity: leftPaneWidth < 100 ? 0.1 : 1,
           overflow: "hidden",
           position: "relative",
         }}
