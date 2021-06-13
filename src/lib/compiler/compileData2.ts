@@ -8,7 +8,7 @@ import {
   Trigger,
 } from "store/features/entities/entitiesTypes";
 import { FontData } from "../fonts/fontData";
-import { hexDec } from "../helpers/8bit";
+import { hexDec, wrap8Bit } from "../helpers/8bit";
 import { PrecompiledSpriteSheetData } from "./compileSprites";
 import { dirEnum } from "./helpers";
 
@@ -813,7 +813,7 @@ export const compileTilemap = (tilemap: number[], tilemapIndex: number) =>
     DATA_TYPE,
     tilemapSymbol(tilemapIndex),
     `// Tilemap ${tilemapIndex}`,
-    Array.from(tilemap).map(toHex),
+    Array.from(tilemap).map(wrap8Bit).map(toHex),
     16
   );
 
