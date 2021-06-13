@@ -15,3 +15,6 @@ test/projects/*/build
 
 # Webpack
 .webpack/
+
+# IDEs
+.idea/
