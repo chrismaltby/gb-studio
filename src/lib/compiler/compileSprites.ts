@@ -50,7 +50,6 @@ export interface SpriteSheetData {
   boundsY: number;
   boundsWidth: number;
   boundsHeight: number;
-  _v: string;
 }
 
 interface AnimationOffset {

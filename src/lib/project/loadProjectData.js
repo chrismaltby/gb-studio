@@ -160,7 +160,6 @@ const loadProject = async (projectPath) => {
         return {
           ...font,
           id: oldFont.id,
-          _v: oldFont._v,
         };
       }
       return font;
@@ -179,7 +178,6 @@ const loadProject = async (projectPath) => {
         return {
           ...avatar,
           id: oldAvatar.id,
-          _v: oldAvatar._v,
         };
       }
       return avatar;
@@ -198,7 +196,6 @@ const loadProject = async (projectPath) => {
         return {
           ...emote,
           id: oldEmote.id,
-          _v: oldEmote._v,
         };
       }
       return emote;

@@ -1,7 +1,7 @@
 import glob from "glob";
 import { promisify } from "util";
 import uuid from "uuid/v4";
-import { createReadStream } from "fs-extra";
+import { createReadStream, readJson } from "fs-extra";
 import { stat } from "fs";
 import { PNG } from "pngjs";
 
@@ -15,6 +15,7 @@ export interface FontAssetData {
   height: number;
   filename: string;
   inode: string;
+  mapping: Record<string, number>;
   _v: number;
 }
 
@@ -40,6 +41,20 @@ const loadFontData =
       const size = await sizeOfAsync(filename);
       const fileStat = await statAsync(filename, { bigint: true });
       const inode = fileStat.ino.toString();
+
+      const metadataFilename = filename.replace(/\.png$/i, ".json");
+      let mapping: Record<string, number> = {};
+      try {
+        const metadataFile = await readJson(metadataFilename);
+        if (
+          typeof metadataFile === "object" &&
+          metadataFile.mapping &&
+          typeof metadataFile.mapping === "object"
+        ) {
+          mapping = metadataFile.mapping;
+        }
+      } catch (e) {}
+
       return {
         id: uuid(),
         plugin,
@@ -48,6 +63,7 @@ const loadFontData =
         height: size.height,
         filename: file,
         inode,
+        mapping,
         _v: Date.now(),
       };
     } catch (e) {

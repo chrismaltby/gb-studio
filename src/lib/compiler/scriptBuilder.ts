@@ -40,6 +40,7 @@ import {
   isUnionPropertyValue,
   isUnionVariableValue,
 } from "store/features/entities/entitiesHelpers";
+import { lexText } from "lib/fonts/lexText";
 
 type ScriptOutput = string[];
 
@@ -74,12 +75,12 @@ interface ScriptBuilderOptions {
   statesOrder: string[];
   stateReferences: string[];
   fonts: PrecompiledFontData[];
+  defaultFontId: string;
   music: PrecompiledMusicTrack[];
   avatars: ScriptBuilderEntity[];
   emotes: ScriptBuilderEntity[];
   palettes: Palette[];
   customEvents: CustomEvent[];
-  characterEncoding: string;
   entity?: ScriptBuilderEntity;
   engineFields: Dictionary<EngineFieldSchema>;
   settings: SettingsState;
@@ -360,12 +361,12 @@ class ScriptBuilder {
       statesOrder: options.statesOrder || [],
       stateReferences: options.stateReferences || [],
       fonts: options.fonts || [],
+      defaultFontId: options.defaultFontId || "",
       music: options.music || [],
       avatars: options.avatars || [],
       emotes: options.emotes || [],
       palettes: options.palettes || [],
       customEvents: options.customEvents || [],
-      characterEncoding: options.characterEncoding || "",
       additionalScripts: options.additionalScripts || {},
       symbols: options.symbols || {},
       argLookup: options.argLookup || { actor: {}, variable: {} },
@@ -770,8 +771,7 @@ class ScriptBuilder {
   };
 
   _string = (str: string) => {
-    const { characterEncoding } = this.options;
-    this._addCmd(`.asciz "${encodeString(str, characterEncoding)}"`);
+    this._addCmd(`.asciz "${str}"`);
   };
 
   _importFarPtrData = (farPtr: string) => {
@@ -1130,42 +1130,53 @@ class ScriptBuilder {
     avatarIndex?: number,
     scrollHeight?: number
   ) => {
-    let text = inputText;
+    const { fonts, defaultFontId } = this.options;
+    let font = fonts.find((f) => f.id === defaultFontId);
 
-    const inlineVariables = (
-      text.match(/(\$L[0-9]\$|\$T[0-1]\$|\$V[0-9]\$|\$[0-9]+\$)/g) || []
-    ).map((s) => s.replace(/\$/g, ""));
+    if (!font) {
+      this._string("UNABLE TO LOAD FONT");
+      return;
+    }
 
-    const inlineFonts = (text.match(/(!F:[0-9a-f-]+!)/g) || []).map((id) =>
-      id.substring(3).replace(/!$/, "")
-    );
+    const textTokens = lexText(inputText);
 
+    let text = "";
     const indirectVars: string[] = [];
-    const usedVariableAliases = inlineVariables.map((variable) => {
-      if (variable.match(/^V[0-9]$/)) {
-        const key = variable.replace(/V/, "");
-        const arg = this.options.argLookup.variable[key];
-        if (!arg) {
-          throw new Error("Cant find arg");
+    const usedVariableAliases: string[] = [];
+
+    textTokens.forEach((token) => {
+      if (token.type === "text") {
+        text += encodeString(token.value, font?.mapping);
+      } else if (token.type === "font") {
+        const newFont = fonts.find((f) => f.id === token.fontId);
+        if (newFont) {
+          const fontIndex = this._getFontIndex(token.fontId);
+          font = newFont;
+          text += textCodeSetFont(fontIndex);
         }
-        indirectVars.unshift(arg);
-        return `.ARG${indirectVars.length - 1}`;
+      } else if (token.type === "variable" || token.type === "char") {
+        const variable = token.variableId;
+        if (variable.match(/^V[0-9]$/)) {
+          const key = variable.replace(/V/, "");
+          const arg = this.options.argLookup.variable[key];
+          if (!arg) {
+            throw new Error("Cant find arg");
+          }
+          indirectVars.unshift(arg);
+          usedVariableAliases.push(`.ARG${indirectVars.length - 1}`);
+        } else {
+          usedVariableAliases.push(
+            this.getVariableAlias(variable.replace(/^0/g, ""))
+          );
+        }
+        if (token.type === "variable") {
+          text += "%d";
+        } else {
+          text += "%d"; // @todo Should be %c but seems to be broken right now
+        }
+      } else if (token.type === "speed") {
+        text += textCodeSetSpeed(token.speed);
       }
-      return this.getVariableAlias(variable.replace(/^0/g, ""));
-    });
-
-    // Replace speed codes
-    text = text.replace(/!S([0-5])!/g, (_match, value: string) => {
-      return `\\001\\${decOct(Number(value) + 2)}`;
-    });
-
-    inlineVariables.forEach((code) => {
-      text = text.replace(`$${code}$`, "%d");
-    });
-
-    inlineFonts.forEach((fontId) => {
-      const fontIndex = this._getFontIndex(fontId);
-      text = text.replace(`!F:${fontId}!`, `\\002\\${decOct(fontIndex + 1)}`);
     });
 
     // Replace newlines with scroll code if larger than max dialogue size
@@ -1187,10 +1198,12 @@ class ScriptBuilder {
     }
 
     this._loadText(usedVariableAliases.length);
+
     if (usedVariableAliases.length > 0) {
       this._dw(...usedVariableAliases);
     }
 
+    // Add avatar
     if (avatarIndex !== undefined) {
       const { fonts } = this.options;
       const avatarFontSize = 16;

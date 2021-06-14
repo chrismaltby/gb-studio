@@ -1016,6 +1016,7 @@ const compile = async (
         scenes: precompiled.sceneData,
         music: precompiled.usedMusic,
         fonts: precompiled.usedFonts,
+        defaultFontId: projectData.settings.defaultFontId,
         sprites: precompiled.usedSprites,
         statesOrder: precompiled.statesOrder,
         stateReferences: precompiled.stateReferences,

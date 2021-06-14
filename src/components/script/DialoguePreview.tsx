@@ -10,6 +10,8 @@ import {
   fontSelectors,
 } from "store/features/entities/entitiesState";
 import { Font } from "store/features/entities/entitiesTypes";
+import { lexText } from "lib/fonts/lexText";
+import { encodeChar } from "lib/helpers/encodings";
 
 interface DialoguePreviewProps {
   text: string;
@@ -21,7 +23,11 @@ interface FontData {
   img: HTMLImageElement;
   isMono: boolean;
   widths: number[];
+  mapping: Record<string, number>;
 }
+
+const DOLLAR_CHAR = 4;
+const HASH_CHAR = 3;
 
 const isTransparent = (r: number, g: number, b: number): boolean => {
   return (
@@ -113,6 +119,7 @@ const loadFont = async (projectRoot: string, font: Font): Promise<FontData> => {
     img,
     isMono,
     widths,
+    mapping: font.mapping,
   };
 };
 
@@ -131,30 +138,10 @@ const drawText = (
   if (!font) {
     return;
   }
-  const defaultFont = font;
 
-  const string = dummyText(text);
-
-  for (let i = 0; i < string.length; i++) {
-    if (string[i] === "\n") {
-      drawX = 0;
-      drawY += 8;
-      continue;
-    }
-    // Check for font change
-    if (string[i] === "!" && string[i + 1] === "F" && string[i + 2] === ":") {
-      const fontId = string.substring(i + 3, i + 40).replace(/!.*/, "");
-      font = fontsData[fontId] || defaultFont;
-      i += fontId.length + 3;
-      if (font.isMono) {
-        drawX = Math.floor(drawX / 8) * 8;
-      }
-      continue;
-    }
-    const char = (string.charCodeAt(i) - 32) % font.widths.length;
+  const drawCharCode = (char: number) => {
     const lookupX = char % 16;
     const lookupY = Math.floor(char / 16);
-
     ctx.drawImage(
       font.img,
       lookupX * 8,
@@ -166,9 +153,38 @@ const drawText = (
       font.widths[char],
       8
     );
-
     drawX += font.widths[char];
-  }
+  };
+
+  const textTokens = lexText(text);
+  textTokens.forEach((token) => {
+    if (token.type === "text") {
+      const string = token.value;
+      for (let i = 0; i < string.length; i++) {
+        if (string[i] === "\n") {
+          drawX = 0;
+          drawY += 8;
+          continue;
+        }
+        const char =
+          (encodeChar(string[i], font.mapping) - 32) % font.widths.length;
+        drawCharCode(char);
+      }
+    } else if (token.type === "variable") {
+      drawCharCode(DOLLAR_CHAR);
+      drawCharCode(DOLLAR_CHAR);
+      drawCharCode(DOLLAR_CHAR);
+    } else if (token.type === "char") {
+      drawCharCode(HASH_CHAR);
+      drawCharCode(HASH_CHAR);
+      drawCharCode(HASH_CHAR);
+    } else if (token.type === "font") {
+      const newFont = fontsData[token.fontId];
+      if (newFont) {
+        font = newFont;
+      }
+    }
+  });
 };
 
 export const DialoguePreview: FC<DialoguePreviewProps> = ({

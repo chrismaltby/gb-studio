@@ -80,7 +80,6 @@ const SettingsPage: FC = () => {
     defaultBackgroundPaletteIds,
     defaultSpritePaletteIds,
     defaultFontId,
-    defaultCharacterEncoding,
     defaultPlayerSprites,
     musicDriver,
   } = settings;
@@ -461,10 +460,7 @@ const SettingsPage: FC = () => {
 
         <SearchableCard
           searchTerm={searchTerm}
-          searchMatches={[
-            l10n("FIELD_DEFAULT_FONT"),
-            l10n("FIELD_CHARACTER_ENCODING"),
-          ]}
+          searchMatches={[l10n("FIELD_DEFAULT_FONT")]}
         >
           <CardAnchor id="settingsUI" />
           <CardHeading>{l10n("MENU_UI_ELEMENTS")}</CardHeading>
@@ -479,22 +475,6 @@ const SettingsPage: FC = () => {
                 name="defaultFont"
                 value={defaultFontId || ""}
                 onChange={onEditSetting("defaultFontId")}
-              />
-            </SettingRowInput>
-          </SearchableSettingRow>
-
-          <SearchableSettingRow
-            searchTerm={searchTerm}
-            searchMatches={[l10n("FIELD_CHARACTER_ENCODING")]}
-          >
-            <SettingRowLabel>
-              {l10n("FIELD_CHARACTER_ENCODING")}
-            </SettingRowLabel>
-            <SettingRowInput>
-              <CharacterEncodingSelect
-                name="defaultCharacterEncoding"
-                value={defaultCharacterEncoding || ""}
-                onChange={onEditSetting("defaultCharacterEncoding")}
               />
             </SettingRowInput>
           </SearchableSettingRow>

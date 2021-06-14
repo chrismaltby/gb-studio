@@ -1,18 +1,19 @@
 import { createAsyncThunk, createAction, Dictionary } from "@reduxjs/toolkit";
 import {
-  Scene,
   Background,
   SpriteSheet,
-  Palette,
   Music,
-  Variable,
-  Actor,
-  Trigger,
-  CustomEvent,
   EntitiesState,
   Font,
   Avatar,
   Emote,
+  ProjectEntitiesData,
+  BackgroundData,
+  SpriteSheetData,
+  MusicData,
+  FontData,
+  AvatarData,
+  EmoteData,
 } from "../entities/entitiesTypes";
 import type { RootState } from "store/configureStore";
 import loadProjectData from "lib/project/loadProjectData";
@@ -32,28 +33,13 @@ import { loadEmoteData } from "lib/project/loadEmoteData";
 
 let saving = false;
 
-export type ProjectData = {
+export type ProjectData = ProjectEntitiesData & {
   name: string;
   author: string;
   notes: string;
   _version: string;
   _release: string;
-  scenes: SceneData[];
-  backgrounds: Background[];
-  spriteSheets: SpriteSheet[];
-  palettes: Palette[];
-  customEvents: CustomEvent[];
-  music: Music[];
-  fonts: Font[];
-  avatars: Avatar[];
-  emotes: Emote[];
-  variables: Variable[];
   settings: SettingsState;
-};
-
-type SceneData = Omit<Scene, "actors" | "triggers"> & {
-  actors: Actor[];
-  triggers: Trigger[];
 };
 
 export const denormalizeProject = (project: {
@@ -69,6 +55,61 @@ export const denormalizeProject = (project: {
       settings: project.settings,
     })
   );
+};
+
+export const trimDenormalisedProject = (data: ProjectData): ProjectData => {
+  return {
+    ...data,
+    backgrounds: data.backgrounds.map(
+      (background) =>
+        ({
+          ...background,
+          inode: undefined,
+          _v: undefined,
+        } as unknown as BackgroundData)
+    ),
+    spriteSheets: data.spriteSheets.map(
+      (spriteSheet) =>
+        ({
+          ...spriteSheet,
+          inode: undefined,
+          _v: undefined,
+        } as unknown as SpriteSheetData)
+    ),
+    music: data.music.map(
+      (track) =>
+        ({
+          ...track,
+          inode: undefined,
+          _v: undefined,
+        } as unknown as MusicData)
+    ),
+    fonts: data.fonts.map(
+      (font) =>
+        ({
+          ...font,
+          mapping: undefined,
+          inode: undefined,
+          _v: undefined,
+        } as unknown as FontData)
+    ),
+    avatars: data.avatars.map(
+      (avatar) =>
+        ({
+          ...avatar,
+          inode: undefined,
+          _v: undefined,
+        } as unknown as AvatarData)
+    ),
+    emotes: data.emotes.map(
+      (emote) =>
+        ({
+          ...emote,
+          inode: undefined,
+          _v: undefined,
+        } as unknown as EmoteData)
+    ),
+  };
 };
 
 const inodeToRecentBackground: Dictionary<Background> = {};
@@ -303,7 +344,7 @@ const removeFont = createAsyncThunk<
  * Avatars
  */
 
-const loadAvatar = createAsyncThunk<{ data: Font }, string>(
+const loadAvatar = createAsyncThunk<{ data: Avatar }, string>(
   "project/loadAvatar",
   async (filename, thunkApi) => {
     const state = thunkApi.getState() as RootState;
@@ -340,7 +381,7 @@ const removeAvatar = createAsyncThunk<
  * Emotes
  */
 
-const loadEmote = createAsyncThunk<{ data: Font }, string>(
+const loadEmote = createAsyncThunk<{ data: Emote }, string>(
   "project/loadEmote",
   async (filename, thunkApi) => {
     const state = thunkApi.getState() as RootState;
@@ -408,7 +449,9 @@ const saveProject = createAsyncThunk<void, string | undefined>(
     saving = true;
 
     try {
-      const normalizedProject = denormalizeProject(state.project.present);
+      const normalizedProject = trimDenormalisedProject(
+        denormalizeProject(state.project.present)
+      );
 
       const data = {
         ...normalizedProject,

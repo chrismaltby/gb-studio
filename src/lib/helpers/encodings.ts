@@ -30,13 +30,27 @@ export const encodings: EncodingDef[] = glob.sync(encodingsPath).map((path) => {
   }
 });
 
-export const encodeString = (inStr: string, encodingId: string) => {
-  const encoding = encodings.find((encoding) => encoding.id === encodingId);
+export const encodeChar = (
+  char: string,
+  mapping?: Record<string, number>
+): number => {
+  let code = char.charCodeAt(0);
+  const mappedCode = mapping?.[char.charAt(0)];
+  if (mappedCode) {
+    code = mappedCode;
+  }
+  return code;
+};
+
+export const encodeString = (
+  inStr: string,
+  mapping?: Record<string, number>
+) => {
   let output = "";
   const nlStr = inStr.replace(/\n/g, "\\n");
   for (let i = 0; i < nlStr.length; i++) {
     let code = nlStr.charCodeAt(i);
-    const mappedCode = encoding && encoding.mapping[nlStr.charAt(i)];
+    const mappedCode = mapping?.[nlStr.charAt(i)];
     if (mappedCode) {
       code = mappedCode;
     }

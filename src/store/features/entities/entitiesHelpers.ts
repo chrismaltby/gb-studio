@@ -25,9 +25,14 @@ import {
   UnionPropertyValue,
   UnionVariableValue,
   SpriteState,
+  FontData,
+  AvatarData,
+  EmoteData,
+  BackgroundData,
+  SpriteSheetData,
+  MusicData,
 } from "./entitiesTypes";
 import { Dictionary, EntityId } from "@reduxjs/toolkit";
-import { SpriteSheetData } from "lib/compiler/compileSprites";
 
 export interface NormalisedEntities {
   scenes: Record<EntityId, Scene>;

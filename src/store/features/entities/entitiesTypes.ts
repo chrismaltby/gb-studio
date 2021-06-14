@@ -91,6 +91,8 @@ export type Background = {
   _v: number;
 };
 
+export type BackgroundData = Omit<Background, "_v" | "inode">;
+
 export type Font = {
   id: string;
   name: string;
@@ -99,8 +101,11 @@ export type Font = {
   height: number;
   plugin?: string;
   inode: string;
+  mapping: Record<string, number>;
   _v: number;
 };
+
+export type FontData = Omit<Font, "mapping" | "_v" | "inode">;
 
 export type Avatar = {
   id: string;
@@ -113,6 +118,8 @@ export type Avatar = {
   _v: number;
 };
 
+export type AvatarData = Omit<Avatar, "_v" | "inode">;
+
 export type Emote = {
   id: string;
   name: string;
@@ -123,6 +130,8 @@ export type Emote = {
   inode: string;
   _v: number;
 };
+
+export type EmoteData = Omit<Emote, "_v" | "inode">;
 
 export type MusicSettings = {
   disableSpeedConversion?: boolean;
@@ -138,6 +147,8 @@ export type Music = {
   inode: string;
   _v: number;
 };
+
+export type MusicData = Omit<Music, "_v" | "inode">;
 
 export type Palette = {
   id: string;
@@ -196,6 +207,10 @@ export type Metasprite = {
   tiles: string[];
 };
 
+export type MetaspriteData = Omit<Metasprite, "tiles"> & {
+  tiles: MetaspriteTile[];
+};
+
 export type SpriteState = {
   id: string;
   name: string;
@@ -204,9 +219,17 @@ export type SpriteState = {
   animations: string[];
 };
 
+export type SpriteStateData = Omit<SpriteState, "animations"> & {
+  animations: SpriteAnimationData[];
+};
+
 export type SpriteAnimation = {
   id: string;
   frames: string[];
+};
+
+export type SpriteAnimationData = Omit<SpriteAnimation, "frames"> & {
+  frames: MetaspriteData[];
 };
 
 export type SpriteSheet = {
@@ -230,7 +253,9 @@ export type SpriteSheet = {
   states: string[];
 };
 
-export type SpriteSheetData = Omit<SpriteSheet, "states">;
+export type SpriteSheetData = Omit<SpriteSheet, "states" | "_v" | "inode"> & {
+  states: SpriteStateData[];
+};
 
 export type SceneParallaxLayer = {
   height: number;
@@ -268,14 +293,14 @@ export type SceneData = Omit<Scene, "actors" | "triggers"> & {
 
 export type ProjectEntitiesData = {
   scenes: SceneData[];
-  backgrounds: Background[];
-  spriteSheets: SpriteSheet[];
+  backgrounds: BackgroundData[];
+  spriteSheets: SpriteSheetData[];
   palettes: Palette[];
   customEvents: CustomEvent[];
-  music: Music[];
-  fonts: Font[];
-  avatars: Avatar[];
-  emotes: Emote[];
+  music: MusicData[];
+  fonts: FontData[];
+  avatars: AvatarData[];
+  emotes: EmoteData[];
   variables: Variable[];
 };
 
