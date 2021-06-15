@@ -1,4 +1,5 @@
 import Path from "path";
+import { readJson } from "fs-extra";
 import {
   ImageIndexFunction,
   IndexedImage,
@@ -15,6 +16,7 @@ export interface FontData {
   data: Uint8Array;
   isVariableWidth: boolean;
   is1Bit: boolean;
+  mapping: Record<string, number>;
 }
 
 interface CharacterData {
@@ -45,6 +47,19 @@ export const readFileToFontData = async (
   const chars: CharacterData[] = [];
   let is1Bit = true;
   let isVariableWidth = false;
+
+  const metadataFilename = filename.replace(/\.png$/i, ".json");
+  let mapping: Record<string, number> = {};
+  try {
+    const metadataFile = await readJson(metadataFilename);
+    if (
+      typeof metadataFile === "object" &&
+      metadataFile.mapping &&
+      typeof metadataFile.mapping === "object"
+    ) {
+      mapping = metadataFile.mapping;
+    }
+  } catch (e) {}
 
   // Determine if font is only using white & black pixels
   for (let i = 0; i < image.data.length; i++) {
@@ -104,6 +119,7 @@ export const readFileToFontData = async (
     data,
     isVariableWidth,
     is1Bit,
+    mapping,
   };
 };
 
