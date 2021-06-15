@@ -1,10 +1,12 @@
 #include <gb/gb.h>
+#include <gb/cgb.h>
+#include <stdint.h>
 
 #include "bar_c.h"
 #include "bar_c.c"
 #include "bar_m.c"
 
-const UWORD bar_p[] =
+const uint16_t bar_p[] =
 {
   bar_cCGBPal0c0,bar_cCGBPal0c1,bar_cCGBPal0c2,bar_cCGBPal0c3,
   bar_cCGBPal1c0,bar_cCGBPal1c1,bar_cCGBPal1c2,bar_cCGBPal1c3,

@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <stdio.h>
 #include <ctype.h>
 
@@ -5,11 +6,11 @@
 #define NUMBER    '0'
 #define STACKSIZE 40
 
-UBYTE sp;
+uint8_t sp;
 float stack[STACKSIZE];
 
 char s[MAXOP];
-UBYTE pos;
+uint8_t pos;
 float f;
 
 void push(float f)
@@ -38,7 +39,7 @@ float top()
   return 0.0;
 }
 
-BYTE read_op()
+int8_t read_op()
 {
   if(pos == 0) {
     gets(s);
@@ -57,18 +58,18 @@ BYTE read_op()
 
   f = s[pos] - '0';
   while(isdigit(s[++pos])) {
-    BYTE i = s[pos] - '0';
+    int8_t i = s[pos] - '0';
     f = 10.0 * f;
     f += (float)i;
   }
-/*     f = 10.0 * f + (float)(BYTE)(s[pos] - '0'); */
+/*     f = 10.0 * f + (float)(int8_t)(s[pos] - '0'); */
 
   return NUMBER;
 }
 
 void main()
 {
-  BYTE type;
+  int8_t type;
   float op2;
 
   puts("FP RPN Calculator");

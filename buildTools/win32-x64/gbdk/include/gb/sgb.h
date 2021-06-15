@@ -6,6 +6,9 @@
 #ifndef _SGB_H
 #define _SGB_H
 
+#include <types.h>
+#include <stdint.h>
+
 #define SGB_PAL_01 0x00U    /**< SGB Command: Set SGB Palettes 0 & 1 */
 #define SGB_PAL_23 0x01U    /**< SGB Command: Set SGB Palettes 2 & 3 */
 #define SGB_PAL_03 0x02U    /**< SGB Command: Set SGB Palettes 0 & 3 */
@@ -34,7 +37,7 @@
 
 
 /** Returns a non-null value if running on Super GameBoy */
-UINT8 sgb_check(void) __preserves_regs(b, c);
+uint8_t sgb_check(void) __preserves_regs(b, c);
 
 /** Transfer a SGB packet
 
@@ -48,6 +51,6 @@ UINT8 sgb_check(void) __preserves_regs(b, c);
 
     @see sgb_check()
 */
-void sgb_transfer(unsigned char * packet) __preserves_regs(b, c);
+void sgb_transfer(uint8_t * packet) __preserves_regs(b, c);
 
 #endif /* _SGB_H */

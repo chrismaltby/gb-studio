@@ -1,4 +1,18 @@
 gbdk-4.0.3
+    - Updated documentation
+    - Library was improved
+        - Switch to standard types declared in stdint.h and stdbool.h
+        - separate cgb.h and sgb.h from gb.h (possible breaking change)
+        - get_vram_byte(), get_win_tile_xy(), get_bkg_tile_xy(), set_tile_data()
+        - fix broken decompression to VRAM routines
+        - Multiple minor improvements
+    - png2mtspr improvements and bug fixes
+    - support for code relocation with bankpack
+    - support for link scripts in lcc
+    - support for C input into gbcompress
+    - other lcc frontend improvements
+
+gbdk-4.0.3
     - Updated documentation, including the PDF version
     - Library was improved
         - Metasprites support (see example)

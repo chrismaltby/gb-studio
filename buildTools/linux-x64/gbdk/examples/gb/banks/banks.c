@@ -2,6 +2,7 @@
     as in banked/
  */
 #include <gb/gb.h>
+#include <stdint.h>
 #include <stdio.h>
 
 int var_internal;  /* In internal RAM */
@@ -19,7 +20,7 @@ void bank_fixed(void) NONBANKED
   puts("I'm in fixed ROM");
 }
 
-void print_var(UBYTE bank)
+void print_var(uint8_t bank)
 {
   SWITCH_RAM_MBC1(bank);
   printf("Var_%u is %u\n");

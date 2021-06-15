@@ -7,6 +7,7 @@
 #define __FONT_H
 
 #include <gb/gb.h>
+#include <stdint.h>
 
 /** Various flags in the font header.
  */
@@ -20,7 +21,7 @@
 
 /** font_t is a handle to a font loaded by font_load().
     It can be used with @ref font_set() */
-typedef UINT16 font_t;
+typedef uint16_t font_t;
 
 
 /*! \defgroup gbdk_fonts List of gbdk fonts
@@ -28,10 +29,10 @@ typedef UINT16 font_t;
 */
 
 /** The default fonts */
-extern UINT8 font_spect[], font_italic[], font_ibm[], font_min[];
+extern uint8_t font_spect[], font_italic[], font_ibm[], font_min[];
 
 /** Backwards compatible font */
-extern UINT8 font_ibm_fixed[];
+extern uint8_t font_ibm_fixed[];
 
  /*! @} End of gbdk_fonts */
 
@@ -67,7 +68,7 @@ typedef struct sfont_handle *pmfont_handle;
 /** Font handle structure
 */
 struct sfont_handle {
-    UINT8 first_tile;		/**< First tile used for font */
+    uint8_t first_tile;		/**< First tile used for font */
     void *font;			/**< Pointer to the base of the font */
 };
 

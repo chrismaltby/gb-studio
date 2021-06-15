@@ -1,4 +1,5 @@
 #include <gb/gb.h>
+#include <stdint.h>
 #include <stdio.h>
 
 unsigned char str[] = "Hello World!";
@@ -6,7 +7,7 @@ unsigned char buffer[32];
 
 void main(void)
 {
-    UBYTE i, n = 0;
+    uint8_t i, n = 0;
     unsigned char *s;
 
     puts("Byte");

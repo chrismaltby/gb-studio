@@ -1,4 +1,5 @@
 #include <gb/gb.h>
+#include <stdint.h>
 #include <stdio.h>      // Just for printf()
 #include <gb/cgb.h>     // Just for the cpu_fast()/slow() calls in CGB 2x example
 

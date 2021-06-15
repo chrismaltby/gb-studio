@@ -5,6 +5,8 @@
  ********************************************************************/
 
 #include <gb/gb.h>
+#include <gb/cgb.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <rand.h>
 
@@ -18,7 +20,7 @@
 
 /* ************************************************************ */
 
-const UWORD bkg_p[] =
+const uint16_t bkg_p[] =
 {
   bkgCGBPal0c0,bkgCGBPal0c1,bkgCGBPal0c2,bkgCGBPal0c3,
   bkgCGBPal1c0,bkgCGBPal1c1,bkgCGBPal1c2,bkgCGBPal1c3,
@@ -30,7 +32,7 @@ const UWORD bkg_p[] =
   bkgCGBPal7c0,bkgCGBPal7c1,bkgCGBPal7c2,bkgCGBPal7c3
 };
 
-const UWORD obj_p[] =
+const uint16_t obj_p[] =
 {
   foreCGBPal0c0,foreCGBPal0c1,foreCGBPal0c2,foreCGBPal0c3,
   foreCGBPal1c0,foreCGBPal1c1,foreCGBPal1c2,foreCGBPal1c3,
@@ -104,17 +106,17 @@ const unsigned char * const msg_gover = "GAMEOVER";
 const unsigned char * const msg_pause = " PAUSE! ";
 const unsigned char * const msg_start = "        ";
 
-UBYTE pf, px, pp, pl;
-UWORD pw;
-UWORD ps;
-UBYTE tf[MAX_TT];
-UBYTE tx[MAX_TT], ty[MAX_TT];
-UBYTE ef[MAX_ET], ex[MAX_ET], ey[MAX_ET];
-UBYTE kf[MAX_KT], kx[MAX_KT], ky[MAX_KT];
-UBYTE rnd_enemy, rnd_kirai;
-UBYTE k_right, k_left;
+uint8_t pf, px, pp, pl;
+uint16_t pw;
+uint16_t ps;
+uint8_t tf[MAX_TT];
+uint8_t tx[MAX_TT], ty[MAX_TT];
+uint8_t ef[MAX_ET], ex[MAX_ET], ey[MAX_ET];
+uint8_t kf[MAX_KT], kx[MAX_KT], ky[MAX_KT];
+uint8_t rnd_enemy, rnd_kirai;
+uint8_t k_right, k_left;
 
-void set_sprite_attrb( UBYTE nb, UBYTE tile )
+void set_sprite_attrb( uint8_t nb, uint8_t tile )
 {
   if( _cpu==CGB_TYPE ) {
     set_sprite_prop( nb, tile );
@@ -122,9 +124,9 @@ void set_sprite_attrb( UBYTE nb, UBYTE tile )
 }
 
 
-void set_bkg_attr( UBYTE x, UBYTE y, UBYTE sx, UBYTE sy, unsigned char *d )
+void set_bkg_attr( uint8_t x, uint8_t y, uint8_t sx, uint8_t sy, unsigned char *d )
 {
-  UBYTE xx, yy;
+  uint8_t xx, yy;
 
   VBK_REG = 1;		/* select palette bank */
   for( yy=0; yy<sy; yy++ ) {
@@ -137,15 +139,15 @@ void set_bkg_attr( UBYTE x, UBYTE y, UBYTE sx, UBYTE sy, unsigned char *d )
   VBK_REG = 0;		/* select data bank */
 }
 
-UBYTE make_rnd( UBYTE i )
+uint8_t make_rnd( uint8_t i )
 {
   return( arand()%(i+1) );
 }
 
-void show_score( UWORD s )
+void show_score( uint16_t s )
 {
-  UWORD m;
-  UBYTE i, n, f;
+  uint16_t m;
+  uint8_t i, n, f;
   unsigned char score[6];
 
   f = 0; m = 10000;
@@ -162,7 +164,7 @@ void show_score( UWORD s )
   set_bkg_tiles( 4, 0, 6, 1, score );
 }
 
-void set_level( UBYTE i )
+void set_level( uint8_t i )
 {
   /* level */
   if( i < 9 ) {
@@ -174,7 +176,7 @@ void set_level( UBYTE i )
   }
 }
 
-void show_level( UBYTE i )
+void show_level( uint8_t i )
 {
   unsigned char level[2];
 
@@ -213,7 +215,7 @@ void init_score()
 
 void init_screen()
 {
-  UBYTE n;
+  uint8_t n;
 
   if( _cpu==CGB_TYPE ) {
     /* Transfer color palette */
@@ -268,7 +270,7 @@ void init_player()
 
 void init_tama()
 {
-  UBYTE i;
+  uint8_t i;
 
   for( i=0; i<MAX_TT; i++ ) {
     tf[i] = 0;
@@ -282,7 +284,7 @@ void init_tama()
 
 void init_enemy()
 {
-  UBYTE i;
+  uint8_t i;
 
   for( i=0; i<MAX_ET; i++ ) {
     ef[i] = 0;
@@ -297,7 +299,7 @@ void init_enemy()
 
 void init_kirai()
 {
-  UBYTE i;
+  uint8_t i;
 
   for( i=0; i<MAX_KT; i++ ) {
     kf[i] = 0;
@@ -311,9 +313,9 @@ void init_kirai()
 /* player */
 void player()
 {
-  UBYTE key;
-  UBYTE i;
-  UINT16 seed;
+  uint8_t key;
+  uint8_t i;
+  uint16_t seed;
 
   key = joypad();
   /* pause */
@@ -322,7 +324,7 @@ void player()
       /* Initialize the random number generator */
       seed = DIV_REG;
       waitpadup();
-      seed |= ((UINT16)DIV_REG << 8);
+      seed |= ((uint16_t)DIV_REG << 8);
       initarand(seed);
       hide_msg();
       init_score();
@@ -430,7 +432,7 @@ void player()
 /* bombs */
 void bombs()
 {
-   UBYTE i;
+   uint8_t i;
 
    for( i=0; i<MAX_TT; i++ ) {
     if( tf[i] != 0 ) {
@@ -450,7 +452,7 @@ void bombs()
 /* enemys */
 void enemys()
 {
-  UBYTE i, j;
+  uint8_t i, j;
 
   for( i=0; i<MAX_ET; i++ ) {
     if( ef[i] == 1 ) {
@@ -689,7 +691,7 @@ void enemys()
 /* kirai */
 void kirai()
 {
-  UBYTE i;
+  uint8_t i;
 
   for( i=0; i<MAX_KT; i++ ) {
     if( kf[i] != 0 ) {
@@ -725,7 +727,7 @@ void main()
   disable_interrupts();
   DISPLAY_OFF;
 
-  initarand(((UINT16)DIV_REG << 8));
+  initarand(((uint16_t)DIV_REG << 8));
 
   init_screen();
   init_score();

@@ -1,4 +1,5 @@
 #include <gb/gb.h>
+#include <stdint.h>
 #include <stdio.h>
 
 // These two entries are needed to enable auto-banking in the source file
@@ -6,7 +7,7 @@
 const void __at(255) __bank_srcfile2; 
 
 
-const UINT8 some_const_var_2 = 2;
+const uint8_t some_const_var_2 = 2;
 
 void func_2() BANKED
 {

@@ -1,6 +1,8 @@
 #pragma bank 2
 
-#include <gb/cgb.h>
+#ifdef CGB
+    #include <gb/cgb.h>
+#endif
 
 #include "system.h"
 #include "gbs_types.h"

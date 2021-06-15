@@ -1,4 +1,5 @@
 #include <gb/gb.h>
+#include <stdint.h>
 #include <gb/far_ptr.h>
 
 #include <stdio.h>

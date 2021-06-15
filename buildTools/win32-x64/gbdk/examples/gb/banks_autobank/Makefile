@@ -33,16 +33,16 @@ make.bat: Makefile
 # -Wb-v        : Prints out assigned autobank info (optional)
 # -Wl-yoA      : Have makebin automatically calculate required number of ROM banks (otherwise use -Wl-yo4 in this example)
 # -Wl-ya4      : Use 4 RAM banks
-# -Wl-yt19     : Use MBC5 cartridge type
+# -Wl-yt0x1B   : Use MBC5+RAM+BATTERY cartridge type 
 $(BINS):	$(OBJS)
-	$(LCC) $(CFLAGS) -autobank -Wb-ext=.rel -Wb-v -Wl-yt19 -Wl-yoA -Wl-ya4 -o $(BINS) $(OBJS)
+	$(LCC) $(CFLAGS) -autobank -Wb-ext=.rel -Wb-v -Wl-yt0x1B -Wl-yoA -Wl-ya4 -o $(BINS) $(OBJS)
 
 
 # It's also possible to do all the compiling, autobanking and linking in a single call to lcc
 # with none of the other makefile "targets" above. You can try this target out by using "make onepass".
 # Notice that the input files are the .c and .asm sources instead of the compiled object files.
 onepass:
-		$(LCC) $(CFLAGS) -autobank -Wb-ext=.rel -Wb-v -Wl-yt19 -Wl-yoA -Wl-ya4 -o $(BINS) $(CSOURCES) $(ASMSOURCES)
+		$(LCC) $(CFLAGS) -autobank -Wb-ext=.rel -Wb-v -Wl-yt0x1B -Wl-yoA -Wl-ya4 -o $(BINS) $(CSOURCES) $(ASMSOURCES)
 
 
 clean:
@@ -51,7 +51,8 @@ clean:
 
 # For lcc linker option: -Wl-ytN where N is one of the numbers below
 #
-# ROM Byte 0147: Cartridge type:
+# ROM Byte 0147: Cartridge type 
+#
 # 0-ROM ONLY            12-ROM+MBC3+RAM
 # 1-ROM+MBC1            13-ROM+MBC3+RAM+BATT
 # 2-ROM+MBC1+RAM        19-ROM+MBC5

@@ -1,4 +1,5 @@
 #include <gb/gb.h>
+#include <stdint.h>
 
 #include "bigmap_map.h"
 #include "bigmap_tiles.h"
@@ -8,20 +9,20 @@
 
 #define MIN(A,B) ((A)<(B)?(A):(B))
 
-UBYTE joy;
+uint8_t joy;
 
 // current and old positions of the camera in pixels
-UWORD camera_x, camera_y, old_camera_x, old_camera_y;
+uint16_t camera_x, camera_y, old_camera_x, old_camera_y;
 // current and old position of the map in tiles
-UBYTE map_pos_x, map_pos_y, old_map_pos_x, old_map_pos_y;
+uint8_t map_pos_x, map_pos_y, old_map_pos_x, old_map_pos_y;
 // redraw flag, indicates that camera position was changed
-UBYTE redraw;
+uint8_t redraw;
 
 void set_camera() {
     // update hardware scroll position
     SCY_REG = camera_y; SCX_REG = camera_x; 
     // up or down
-    map_pos_y = (UBYTE)(camera_y >> 3u);
+    map_pos_y = (uint8_t)(camera_y >> 3u);
     if (map_pos_y != old_map_pos_y) { 
         if (camera_y < old_camera_y) {
             set_bkg_submap(map_pos_x, map_pos_y, MIN(21u, bigmap_mapWidth-map_pos_x), 1, bigmap_map, bigmap_mapWidth);
@@ -31,7 +32,7 @@ void set_camera() {
         old_map_pos_y = map_pos_y; 
     }
     // left or right
-    map_pos_x = (UBYTE)(camera_x >> 3u);
+    map_pos_x = (uint8_t)(camera_x >> 3u);
     if (map_pos_x != old_map_pos_x) {
         if (camera_x < old_camera_x) {
             set_bkg_submap(map_pos_x, map_pos_y, 1, MIN(19u, bigmap_mapHeight - map_pos_y), bigmap_map, bigmap_mapWidth);     

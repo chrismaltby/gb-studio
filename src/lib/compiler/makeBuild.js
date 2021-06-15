@@ -22,9 +22,14 @@ const makeBuild = async ({
   const { settings } = data;
 
   const buildToolsPath = await ensureBuildTools(tmpPath);
+  const buildToolsVersion = await fs.readFile(
+    `${buildToolsPath}/tools_version`,
+    "utf8"
+  );
 
   env.PATH = [`${buildToolsPath}/gbdk/bin`, env.PATH].join(":");
   env.GBDKDIR = `${buildToolsPath}/gbdk/`;
+  env.GBS_TOOLS_VERSION = buildToolsVersion;
 
   env.CART_TYPE = settings.cartType || "mbc5";
   env.TMP = tmpPath;

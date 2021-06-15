@@ -1,10 +1,11 @@
 #include <gb/gb.h>
+#include <stdint.h>
 #include <gb/sgb.h>
 
 #include <stdio.h>
 #include <gb/console.h>
 
-UINT8 sprite_data[] = { 
+uint8_t sprite_data[] = {
     0x3C,0x3C,0x42,0x7E,0x99,0xFF,0xA9,0xFF,0x89,0xFF,0x89,0xFF,0x42,0x7E,0x3C,0x3C,
     0x3C,0x3C,0x42,0x7E,0xB9,0xFF,0x89,0xFF,0x91,0xFF,0xB9,0xFF,0x42,0x7E,0x3C,0x3C,
     0x3C,0x3C,0x42,0x7E,0x99,0xFF,0x89,0xFF,0x99,0xFF,0x89,0xFF,0x5A,0x7E,0x3C,0x3C,
@@ -13,14 +14,14 @@ UINT8 sprite_data[] = {
 };
 
 // initializes sprites for pad. every pad uses 3 sprites which id's are aligned by 4
-void init_pad(UINT8 n) {
+void init_pad(uint8_t n) {
     set_sprite_tile(n << 2, n);
     set_sprite_tile((n << 2) + 1, n);
     set_sprite_tile((n << 2) + 2, n);
 }
 
 // inline function for moving pads; code of this function will be inlined with the code of main()
-inline void draw_pad(UINT8 n, UINT8 x, UINT8 y) {
+inline void draw_pad(uint8_t n, uint8_t x, uint8_t y) {
     move_sprite(n << 2, x, y);
     move_sprite((n << 2) + 1, x, y + 8);
     move_sprite((n << 2) + 2, x, y + 16);
@@ -29,18 +30,18 @@ inline void draw_pad(UINT8 n, UINT8 x, UINT8 y) {
 joypads_t joypads;
 
 // absolute Y coordinates of player 1 & 2
-UINT8 player1, player2;
-UINT16 player1_score, player2_score;
+uint8_t player1, player2;
+uint16_t player1_score, player2_score;
 
 // player constraints
 #define YMIN 28
 #define YMAX 100
 #define PLAYER1_X 16
-#define PLAYER2_X (UINT8)((20 * 8) - 8)
+#define PLAYER2_X (uint8_t)((20 * 8) - 8)
 
 // coordinates and speeds of ball
-UINT8 ballX, ballY;
-INT8 spd_ballX, spd_ballY;
+uint8_t ballX, ballY;
+int8_t spd_ballX, spd_ballY;
 
 #define INITBALLX 80 + 4 
 #define INITBALLY 64 + 8

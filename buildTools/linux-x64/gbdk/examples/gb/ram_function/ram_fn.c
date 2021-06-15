@@ -1,8 +1,9 @@
 #include <gb/gb.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 
-UWORD counter = 0;
+uint16_t counter = 0;
 
 // inc() must be a relocatable function, be careful!
 void inc() {
@@ -34,8 +35,8 @@ void print_counter() {
 
 void main() {
     // copy inc() function to it's new destinations: hiram_buffer and ram_buffer
-    hiramcpy((UBYTE)&hiram_buffer, (void *)&inc, (UBYTE)object_distance(inc, inc_end));
-    memcpy(&ram_buffer, (void *)&inc, (UWORD)object_distance(inc, inc_end));
+    hiramcpy((uint8_t)&hiram_buffer, (void *)&inc, (uint8_t)object_distance(inc, inc_end));
+    memcpy(&ram_buffer, (void *)&inc, (uint16_t)object_distance(inc, inc_end));
 
     // print initial counter state
     puts("Program Start...");

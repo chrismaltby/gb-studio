@@ -135,11 +135,11 @@ __endasm;
 
 void ApplyPaletteChangeColor(UBYTE index) {
     if (fade_style) {
-        CGBFadeToBlackStep(BkgPalette, (UBYTE)(&BCPS_REG), index);
-        CGBFadeToBlackStep(SprPalette, (UBYTE)(&OCPS_REG), index);
+        CGBFadeToBlackStep(BkgPalette, BCPS_REG_ADDR, index);
+        CGBFadeToBlackStep(SprPalette, OCPS_REG_ADDR, index);
     } else {
-        CGBFadeToWhiteStep(BkgPalette, (UBYTE)(&BCPS_REG), index);
-        CGBFadeToWhiteStep(SprPalette, (UBYTE)(&OCPS_REG), index);
+        CGBFadeToWhiteStep(BkgPalette, BCPS_REG_ADDR, index);
+        CGBFadeToWhiteStep(SprPalette, OCPS_REG_ADDR, index);
     }
 }
 #endif

@@ -1,4 +1,5 @@
 #include <gb/gb.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <gb/console.h>
 
@@ -21,16 +22,16 @@
 
 #define UNSIGNED 0
 
-UBYTE previous_keys = 0;
-BYTE keys = 0;
+uint8_t previous_keys = 0;
+int8_t keys = 0;
 #define UPDATE_KEYS() previous_keys = keys; keys = joypad()
 #define KEY_PRESSED(K) (keys & (K))
 #define KEY_TICKED(K) ((keys & (K)) && !(previous_keys & (K)))
 
-void show_register_channel(UBYTE mode);
+void show_register_channel(uint8_t mode);
 
 void clss()  {
-	UINT8 i = 0;
+	uint8_t i = 0;
 	for(i = 0; i < 18; ++i) {
 		gotoxy(0, i);
 		printf("                    ");
@@ -42,7 +43,7 @@ void print(const char* str) {
 }
 
 const char hex[] = "0123456789ABCDEF";
-void printn(UWORD n, UINT8 base, UINT8 sign) {
+void printn(uint16_t n, uint8_t base, uint8_t sign) {
 	(void) sign;
 	if(base == 16u) {
 		printf("%c", hex[0x000Fu & (n >> 4u)]);
@@ -53,7 +54,7 @@ void printn(UWORD n, UINT8 base, UINT8 sign) {
 }
 
 
-void println(UWORD n, UINT8 base, UINT8 sign) {
+void println(uint16_t n, uint8_t base, uint8_t sign) {
 	printn(n, base, sign);
 	printf("\n");
 }
@@ -68,7 +69,7 @@ enum notes {
   SILENCE, END
 };
 
-const UWORD frequencies[] = {
+const uint16_t frequencies[] = {
   44, 156, 262, 363, 457, 547, 631, 710, 786, 854, 923, 986,
   1046, 1102, 1155, 1205, 1253, 1297, 1339, 1379, 1417, 1452, 1486, 1517,
   1546, 1575, 1602, 1627, 1650, 1673, 1694, 1714, 1732, 1750, 1767, 1783,
@@ -77,7 +78,7 @@ const UWORD frequencies[] = {
   1985, 1988, 1992, 1995, 1998, 2001, 2004, 2006, 2009, 2011, 2013, 2015
 };
 
-const UBYTE music[] = {
+const uint8_t music[] = {
   C3, C3, G3, G3, A3, A3, G3, SILENCE,
   F3, F3, E3, E3, D3, D3, C3, SILENCE,
   G3, G3, F3, F3, E3, E3, D3, D3,
@@ -89,7 +90,7 @@ const UBYTE music[] = {
 
 struct Params {
   char *name;
-  UWORD max;
+  uint16_t max;
 };
 
 const struct Params params_0[] = {
@@ -177,120 +178,120 @@ const struct Params *params;
 struct SoundReg {
   struct {
     //NR10 0xFF10
-    UINT16 sweepShifts     ;//: 3;
-    UINT16 sweepMode       ;//: 1;
-    UINT16 sweepTime       ;//: 3;
-    UINT16 unused_1        ;//: 1;
+    uint16_t sweepShifts     ;//: 3;
+    uint16_t sweepMode       ;//: 1;
+    uint16_t sweepTime       ;//: 3;
+    uint16_t unused_1        ;//: 1;
 
     //NR11 0xFF11
-    UINT16 soundLength     ;//: 6;
-    UINT16 patternDuty     ;//: 2;
+    uint16_t soundLength     ;//: 6;
+    uint16_t patternDuty     ;//: 2;
 
     //NR12 0xFF12
-    UINT16 envNbSweep      ;//: 3;
-    UINT16 envMode         ;//: 1;
-    UINT16 envInitialValue ;//: 4;
+    uint16_t envNbSweep      ;//: 3;
+    uint16_t envMode         ;//: 1;
+    uint16_t envInitialValue ;//: 4;
 
     //NR13 0xFF13
-    UINT16 frequencyLow;
+    uint16_t frequencyLow;
 
     //NR14 0xFF14
-    UINT16 frequencyHigh   ;//: 3;
-    UINT16 unused_2        ;//: 3;
-    UINT16 counter_ConsSel ;//: 1;
-    UINT16 restart         ;//: 1;
+    uint16_t frequencyHigh   ;//: 3;
+    uint16_t unused_2        ;//: 3;
+    uint16_t counter_ConsSel ;//: 1;
+    uint16_t restart         ;//: 1;
   } mode1;
   struct {
     //NR20 0xFF15
-    UINT16 unused_1;
+    uint16_t unused_1;
 
     //NR21 0xFF16
-    UINT16 soundLength     ;//: 6;
-    UINT16 patternDuty     ;//: 2;
+    uint16_t soundLength     ;//: 6;
+    uint16_t patternDuty     ;//: 2;
 
     //NR22 0xFF17
-    UINT16 envNbStep       ;//: 3;
-    UINT16 envMode         ;//: 1;
-    UINT16 envInitialValue ;//: 4;
+    uint16_t envNbStep       ;//: 3;
+    uint16_t envMode         ;//: 1;
+    uint16_t envInitialValue ;//: 4;
 
     //NR23 0xFF18
-    UINT16 frequencyLow;
+    uint16_t frequencyLow;
 
     //NR24 0xFF19
-    UINT16 frequencyHigh   ;//: 3;
-    UINT16 unused_2        ;//: 3;
-    UINT16 counter_ConsSel ;//: 1;
-    UINT16 restart         ;//: 1;
+    uint16_t frequencyHigh   ;//: 3;
+    uint16_t unused_2        ;//: 3;
+    uint16_t counter_ConsSel ;//: 1;
+    uint16_t restart         ;//: 1;
   } mode2;
   struct {
     //NR30 0xFF1A
-    UINT16 unused_1        ;//: 7;
-    UINT16 on_Off          ;//: 1;
+    uint16_t unused_1        ;//: 7;
+    uint16_t on_Off          ;//: 1;
 
     //NR31 0xFF1B
-    UINT16 soundLength;
+    uint16_t soundLength;
 
     //NR32 0xFF1C
-    UINT16 unused_2        ;//: 5;
-    UINT16 selOutputLevel  ;//: 2;
-    UINT16 unused_3        ;//: 1;
+    uint16_t unused_2        ;//: 5;
+    uint16_t selOutputLevel  ;//: 2;
+    uint16_t unused_3        ;//: 1;
 
     //NR33 0xFF1D
-    UINT16 frequencyLow;
+    uint16_t frequencyLow;
 
     //NR34 0xFF1E
-    UINT16 frequencyHigh   ;//: 3;
-    UINT16 unused_4        ;//: 3;
-    UINT16 counter_ConsSel ;//: 1;
-    UINT16 restart         ;//: 1;
+    uint16_t frequencyHigh   ;//: 3;
+    uint16_t unused_4        ;//: 3;
+    uint16_t counter_ConsSel ;//: 1;
+    uint16_t restart         ;//: 1;
   } mode3;
   struct {
     //NR40 0xFF1F
-    UINT16 unused_1;
+    uint16_t unused_1;
 
     //NR41 0xFF20
-    UINT16 soundLength     ;//: 6;
-    UINT16 unused_2        ;//: 2;
+    uint16_t soundLength     ;//: 6;
+    uint16_t unused_2        ;//: 2;
 
     //NR42 0xFF21
-    UINT16 envNbStep       ;//: 3;
-    UINT16 envMode         ;//: 1;
-    UINT16 envInitialValue ;//: 4;
+    uint16_t envNbStep       ;//: 3;
+    uint16_t envMode         ;//: 1;
+    uint16_t envInitialValue ;//: 4;
 
     //NR43 0xFF22
-    UINT16 polyCounterDiv  ;//: 3;
-    UINT16 polyCounterStep ;//: 1;
-    UINT16 polyCounterFreq ;//: 4;
+    uint16_t polyCounterDiv  ;//: 3;
+    uint16_t polyCounterStep ;//: 1;
+    uint16_t polyCounterFreq ;//: 4;
 
     //NR44 0xFF23
-    UINT16 unused_3        ;//: 6;
-    UINT16 counter_ConsSel ;//: 1;
-    UINT16 restart         ;//: 1;
+    uint16_t unused_3        ;//: 6;
+    uint16_t counter_ConsSel ;//: 1;
+    uint16_t restart         ;//: 1;
   } mode4;
   struct {
     // NR50 0xFF24
-    UINT16 SO1_OutputLevel ;//: 3;
-    UINT16 Vin_SO1         ;//: 1;
-    UINT16 SO2_OutputLevel ;//: 3;
-    UINT16 Vin_SO2         ;//: 1;
+    uint16_t SO1_OutputLevel ;//: 3;
+    uint16_t Vin_SO1         ;//: 1;
+    uint16_t SO2_OutputLevel ;//: 3;
+    uint16_t Vin_SO2         ;//: 1;
 
     // NR51 0xFF25
-    UINT16 Sound1_To_SO1   ;//: 1;
-    UINT16 Sound2_To_SO1   ;//: 1;
-    UINT16 Sound3_To_SO1   ;//: 1;
-    UINT16 Sound4_To_SO1   ;//: 1;
-    UINT16 Sound1_To_SO2   ;//: 1;
-    UINT16 Sound2_To_SO2   ;//: 1;
-    UINT16 Sound3_To_SO2   ;//: 1;
-    UINT16 Sound4_To_SO2   ;//: 1;
+    uint16_t Sound1_To_SO1   ;//: 1;
+    uint16_t Sound2_To_SO1   ;//: 1;
+    uint16_t Sound3_To_SO1   ;//: 1;
+    uint16_t Sound4_To_SO1   ;//: 1;
+    uint16_t Sound1_To_SO2   ;//: 1;
+    uint16_t Sound2_To_SO2   ;//: 1;
+    uint16_t Sound3_To_SO2   ;//: 1;
+    uint16_t Sound4_To_SO2   ;//: 1;
 
     // NR52 0xFF26
-    UINT16 Sound1_On_Off   ;//: 1;
-    UINT16 Sound2_On_Off   ;//: 1;
-    UINT16 Sound3_On_Off   ;//: 1;
-    UINT16 Sound4_On_Off   ;//: 1;
-    UINT16 unused_1        ;//: 3;
-    UINT16 global_On_Off   ;//: 1;
+    uint16_t Sound1_On_Off   ;//: 1;
+    uint16_t Sound2_On_Off   ;//: 1;
+    uint16_t Sound3_On_Off   ;//: 1;
+    uint16_t Sound4_On_Off   ;//: 1;
+    uint16_t unused_1        ;//: 3;
+    uint16_t global_On_Off   ;//: 1;
   } control;
 };
 
@@ -322,99 +323,99 @@ struct SoundReg s = {
 	  0, 0, 0, 0, 0, 1 }
 };
 
-UBYTE NR10() {
+uint8_t NR10() {
 	return soundReg->mode1.sweepShifts | (soundReg->mode1.sweepMode << 3) | (soundReg->mode1.sweepTime << 4);
 }
 
-UBYTE NR11() {
+uint8_t NR11() {
 	return soundReg->mode1.soundLength | (soundReg->mode1.patternDuty << 6);
 }
 
-UBYTE NR12() {
+uint8_t NR12() {
 	return soundReg->mode1.envNbSweep | (soundReg->mode1.envMode << 3) | (soundReg->mode1.envInitialValue << 4);
 }
 
-UBYTE NR13() {
+uint8_t NR13() {
 	return soundReg->mode1.frequencyLow;
 }
 
-UBYTE NR14() {
+uint8_t NR14() {
 	return soundReg->mode1.frequencyHigh | (soundReg->mode1.counter_ConsSel << 6) | (soundReg->mode1.restart << 7);
 }
 
 //--------------------------
-UBYTE NR21() {
+uint8_t NR21() {
 	return soundReg->mode2.soundLength | (soundReg->mode2.patternDuty << 6);
 }
 
-UBYTE NR22() {
+uint8_t NR22() {
 	return soundReg->mode2.envNbStep | (soundReg->mode2.envMode << 3) | (soundReg->mode2.envInitialValue << 4);
 }
 
-UBYTE NR23() {
+uint8_t NR23() {
 	return soundReg->mode2.frequencyLow;
 }
 
-UBYTE NR24() {
+uint8_t NR24() {
 	return soundReg->mode2.frequencyHigh | (soundReg->mode2.counter_ConsSel << 6) | (soundReg->mode2.restart << 7);
 }
 
 //-------------------------------
-UBYTE NR30() {
+uint8_t NR30() {
 	return soundReg->mode3.on_Off << 7;
 }
 
-UBYTE NR31() {
+uint8_t NR31() {
 	return soundReg->mode3.soundLength;
 }
 
-UBYTE NR32() {
+uint8_t NR32() {
 	return soundReg->mode3.selOutputLevel << 5;
 }
 
-UBYTE NR33() {
+uint8_t NR33() {
 	return soundReg->mode3.frequencyLow;
 }
 
-UBYTE NR34() {
+uint8_t NR34() {
 	return soundReg->mode3.frequencyHigh | (soundReg->mode3.counter_ConsSel << 6) | (soundReg->mode3.restart << 7);
 }
 
 //-------------------------------
-UBYTE NR41() {
+uint8_t NR41() {
 	return soundReg->mode4.soundLength;
 }
 
-UBYTE NR42() {
+uint8_t NR42() {
 	return soundReg->mode4.envNbStep | (soundReg->mode4.envMode << 3) | (soundReg->mode4.envInitialValue << 4);
 }
 
-UBYTE NR43() {
+uint8_t NR43() {
 	return soundReg->mode4.polyCounterDiv | (soundReg->mode4.polyCounterStep << 3) | (soundReg->mode4.polyCounterFreq << 4);
 }
 
-UBYTE NR44() {
+uint8_t NR44() {
 	return (soundReg->mode4.counter_ConsSel << 6) | (soundReg->mode4.restart << 7);
 }
 
 //-------------------------------
-UBYTE NR50() {
+uint8_t NR50() {
 	return soundReg->control.SO1_OutputLevel | (soundReg->control.Vin_SO1 << 3u) | (soundReg->control.SO2_OutputLevel << 4u) |
 	           (soundReg->control.Vin_SO2 << 7u);
 }
 
-UBYTE NR51() {
+uint8_t NR51() {
 	return soundReg->control.Sound1_To_SO1 | (soundReg->control.Sound2_To_SO1 << 1) | (soundReg->control.Sound3_To_SO1 << 2) |
 	          (soundReg->control.Sound4_To_SO1 << 3) | (soundReg->control.Sound1_To_SO2 << 4) | (soundReg->control.Sound2_To_SO2 << 5) |
 			  (soundReg->control.Sound3_To_SO2 << 6)| (soundReg->control.Sound4_To_SO2 << 7);
 }
 
-UBYTE NR52() {
+uint8_t NR52() {
 	return soundReg->control.global_On_Off << 7;
 }
 
 //---------------------------------------------------------------------------------
-UWORD current_value(UBYTE mode, UBYTE line)
+uint16_t current_value(uint8_t mode, uint8_t line)
 {
   if(mode == 0) {
     switch(line)
@@ -537,7 +538,7 @@ UWORD current_value(UBYTE mode, UBYTE line)
   return 0;
 }
 
-void update_value(UBYTE mode, UBYTE line, UWORD value)
+void update_value(uint8_t mode, uint8_t line, uint16_t value)
 {
   if(mode == 0) {
     switch(line)
@@ -804,9 +805,9 @@ void update_value(UBYTE mode, UBYTE line, UWORD value)
   }
 }
 
-UBYTE draw_screen(UBYTE mode)
+uint8_t draw_screen(uint8_t mode)
 {
-  UBYTE i;
+  uint8_t i;
 
   clss();
   gotoxy(FIRST_X, TITLE_Y);
@@ -823,9 +824,9 @@ UBYTE draw_screen(UBYTE mode)
 }
 
 
-void play_music(UBYTE mode)
+void play_music(uint8_t mode)
 {
-  UBYTE i = 0;
+  uint8_t i = 0;
 
   while(music[i] != END) {
     if(music[i] != SILENCE) {
@@ -838,7 +839,7 @@ void play_music(UBYTE mode)
 }
 
 
-void show_register_channel(UBYTE mode) {
+void show_register_channel(uint8_t mode) {
 
     switch (mode) {
         case 1:
@@ -931,11 +932,11 @@ void dump_registers()
 	print("NR52:");println(NR52(), 16, UNSIGNED);
 }
 
-void wait_event(UBYTE mode)
+void wait_event(uint8_t mode)
 {
-  UBYTE y, last_y;
-  UWORD l = 0;
-  UWORD m = 0;
+  uint8_t y, last_y;
+  uint16_t l = 0;
+  uint16_t m = 0;
 
   while(1) {
     params = params_array[mode];

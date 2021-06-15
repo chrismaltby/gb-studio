@@ -1,4 +1,5 @@
 #include <gb/gb.h>
+#include <stdint.h>
 #include <stdio.h>
 
 // this macro is needed when using RAM banks with MBC1
@@ -62,27 +63,27 @@ void main() {
     SET_BANKS(1, 1);
 
     // say hello
-    for (INT8 i = 0; (hello0[i]); i++) putchar(hello0[i]);  
-    for (INT8 i = 0; (hello1[i]); i++) putchar(hello1[i]);
-    for (INT8 i = 0; (hello2[i]); i++) putchar(hello2[i]);
+    for (int8_t i = 0; (hello0[i]); i++) putchar(hello0[i]);  
+    for (int8_t i = 0; (hello1[i]); i++) putchar(hello1[i]);
+    for (int8_t i = 0; (hello2[i]); i++) putchar(hello2[i]);
 
     // prepare and say hello from rom bank1 to ram bank0
-    for (INT8 i = 0; (i < sizeof(hello1)); i++) hello1_ram[i] = hello1[i];
-    for (INT8 i = 0; (i < 4); i++) hello1_ram[i + 11] = data[i];
-    for (INT8 i = 0; (hello1_ram[i]); i++) putchar(hello1_ram[i]);
+    for (int8_t i = 0; (i < sizeof(hello1)); i++) hello1_ram[i] = hello1[i];
+    for (int8_t i = 0; (i < 4); i++) hello1_ram[i + 11] = data[i];
+    for (int8_t i = 0; (hello1_ram[i]); i++) putchar(hello1_ram[i]);
 
     // prepare and say hello from rom bank1 to ram bank1
-    for (INT8 i = 0; (i < sizeof(hello2)); i++) hello2_ram[i] = hello2[i];
-    for (INT8 i = 0; (i < 4); i++) hello2_ram[i + 11] = data[i];
-    for (INT8 i = 0; (hello2_ram[i]); i++) putchar(hello2_ram[i]);
+    for (int8_t i = 0; (i < sizeof(hello2)); i++) hello2_ram[i] = hello2[i];
+    for (int8_t i = 0; (i < 4); i++) hello2_ram[i + 11] = data[i];
+    for (int8_t i = 0; (hello2_ram[i]); i++) putchar(hello2_ram[i]);
 
     printf("once more...\n");
     // hello again; if we access we just access, don't care
-    for (INT8 i = 0; (hello0[i]); i++) putchar(hello0[i]);  
-    for (INT8 i = 0; (hello1[i]); i++) putchar(hello1[i]);
-    for (INT8 i = 0; (hello2[i]); i++) putchar(hello2[i]);
-    for (INT8 i = 0; (hello1_ram[i]); i++) putchar(hello1_ram[i]);
-    for (INT8 i = 0; (hello2_ram[i]); i++) putchar(hello2_ram[i]);
+    for (int8_t i = 0; (hello0[i]); i++) putchar(hello0[i]);  
+    for (int8_t i = 0; (hello1[i]); i++) putchar(hello1[i]);
+    for (int8_t i = 0; (hello2[i]); i++) putchar(hello2[i]);
+    for (int8_t i = 0; (hello1_ram[i]); i++) putchar(hello1_ram[i]);
+    for (int8_t i = 0; (hello2_ram[i]); i++) putchar(hello2_ram[i]);
 
     printf("once more...\n");
     // if we need an address, then we use a macro switch_to()

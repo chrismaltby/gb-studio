@@ -1,4 +1,5 @@
 #include <gb/gb.h>
+#include <stdint.h>
 #include "sgb_border.h"
 
 #include "border_data.h"

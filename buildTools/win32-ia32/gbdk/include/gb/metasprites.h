@@ -21,6 +21,23 @@
     structured data for use with the ...metasprite...()
     functions.
 
+    # Metasprites composed of variable numbers of sprites
+
+    When using png2mtspr, it's common for the output of
+    different frames to be composed of different numbers
+    of hardware sprites (since it's trying to create each
+    frame as efficiently as possible). Due to that, it's
+    good practice to clear out (hide) unused sprites in the
+    shadow_OAM that have been set by previous frames.
+
+    \code
+    // Example:
+    // Hide rest of the hardware sprites, because amount
+    // of sprites differ between animation frames.
+    // (where hiwater == last hardware sprite used + 1)
+    for (uint8_t i = hiwater; i < 40; i++) shadow_OAM[i].y = 0;
+    \endcode
+
     @anchor metasprite_and_sprite_properties
     # Metasprites and sprite properties (including cgb palette)
 
@@ -43,11 +60,13 @@
 #ifndef _METASPRITES_H_INCLUDE
 #define _METASPRITES_H_INCLUDE
 
+#include <stdint.h>
+
 /** Metasprite sub-item structure
-    @param dy        (INT8)  Y coordinate of the sprite relative to the metasprite origin (pivot)
-    @param dx        (INT8)  X coordinate of the sprite relative to the metasprite origin (pivot)
-    @param dtile     (UINT8) Start tile relative to the metasprites own set of tiles
-    @param props     (UINT8) Property Flags
+    @param dy        (int8_t)  Y coordinate of the sprite relative to the metasprite origin (pivot)
+    @param dx        (int8_t)  X coordinate of the sprite relative to the metasprite origin (pivot)
+    @param dtile     (uint8_t) Start tile relative to the metasprites own set of tiles
+    @param props     (uint8_t) Property Flags
 
     Metasprites are built from multiple metasprite_t items (one for each sub-sprite)
     and a pool of tiles they reference. If a metasprite has multiple frames then each
@@ -55,23 +74,23 @@
     on how many sprites are required for that particular frame).
 */
 typedef struct metasprite_t {
-    INT8  dy, dx;
-    UINT8 dtile;
-    UINT8 props;
+    int8_t  dy, dx;
+    uint8_t dtile;
+    uint8_t props;
 } metasprite_t;
 
 #define metasprite_end -128 
 
 extern const void * __current_metasprite;
-extern UBYTE __current_base_tile;
-extern UBYTE __render_shadow_OAM;
+extern uint8_t __current_base_tile;
+extern uint8_t __render_shadow_OAM;
 
 
-static UBYTE __move_metasprite(UINT8 id, UINT8 x, UINT8 y);
-static UBYTE __move_metasprite_vflip(UINT8 id, UINT8 x, UINT8 y);
-static UBYTE __move_metasprite_hflip(UINT8 id, UINT8 x, UINT8 y);
-static UBYTE __move_metasprite_hvflip(UINT8 id, UINT8 x, UINT8 y);
-static void __hide_metasprite(UINT8 id);
+static uint8_t __move_metasprite(uint8_t id, uint8_t x, uint8_t y);
+static uint8_t __move_metasprite_vflip(uint8_t id, uint8_t x, uint8_t y);
+static uint8_t __move_metasprite_hflip(uint8_t id, uint8_t x, uint8_t y);
+static uint8_t __move_metasprite_hvflip(uint8_t id, uint8_t x, uint8_t y);
+static void __hide_metasprite(uint8_t id);
 
 
 /** Moves metasprite to the absolute position x and y
@@ -96,7 +115,7 @@ static void __hide_metasprite(UINT8 id);
 
     @return Number of hardware sprites used to draw this metasprite
  */
-inline UBYTE move_metasprite(const metasprite_t * metasprite, UINT8 base_tile, UINT8 base_sprite, UINT8 x, UINT8 y) {
+inline uint8_t move_metasprite(const metasprite_t * metasprite, uint8_t base_tile, uint8_t base_sprite, uint8_t x, uint8_t y) {
     __current_metasprite = metasprite; 
     __current_base_tile = base_tile;
     return __move_metasprite(base_sprite, x, y); 
@@ -123,7 +142,7 @@ inline UBYTE move_metasprite(const metasprite_t * metasprite, UINT8 base_tile, U
 
     @see move_metasprite()
 */
-inline UBYTE move_metasprite_vflip(const metasprite_t * metasprite, UINT8 base_tile, UINT8 base_sprite, UINT8 x, UINT8 y) {
+inline uint8_t move_metasprite_vflip(const metasprite_t * metasprite, uint8_t base_tile, uint8_t base_sprite, uint8_t x, uint8_t y) {
     __current_metasprite = metasprite; 
     __current_base_tile = base_tile;
     return __move_metasprite_vflip(base_sprite, x - 8, y); 
@@ -151,7 +170,7 @@ inline UBYTE move_metasprite_vflip(const metasprite_t * metasprite, UINT8 base_t
 
     @see move_metasprite()
 */
-inline UBYTE move_metasprite_hflip(const metasprite_t * metasprite, UINT8 base_tile, UINT8 base_sprite, UINT8 x, UINT8 y) {
+inline uint8_t move_metasprite_hflip(const metasprite_t * metasprite, uint8_t base_tile, uint8_t base_sprite, uint8_t x, uint8_t y) {
     __current_metasprite = metasprite; 
     __current_base_tile = base_tile;
     return __move_metasprite_hflip(base_sprite, x, y - ((LCDC_REG & 0x04U) ? 16 : 8) ); 
@@ -178,7 +197,7 @@ inline UBYTE move_metasprite_hflip(const metasprite_t * metasprite, UINT8 base_t
 
     @see move_metasprite()
 */
-inline UBYTE move_metasprite_hvflip(const metasprite_t * metasprite, UINT8 base_tile, UINT8 base_sprite, UINT8 x, UINT8 y) {
+inline uint8_t move_metasprite_hvflip(const metasprite_t * metasprite, uint8_t base_tile, uint8_t base_sprite, uint8_t x, uint8_t y) {
     __current_metasprite = metasprite; 
     __current_base_tile = base_tile;
     return __move_metasprite_hvflip(base_sprite, x - 8, y - ((LCDC_REG & 0x04U) ? 16 : 8)); 
@@ -193,7 +212,7 @@ inline UBYTE move_metasprite_hvflip(const metasprite_t * metasprite, UINT8 base_
     \li __current_metasprite = metasprite;
 
  **/
-inline void hide_metasprite(const metasprite_t * metasprite, UINT8 base_sprite) {
+inline void hide_metasprite(const metasprite_t * metasprite, uint8_t base_sprite) {
     __current_metasprite = metasprite; 
     __hide_metasprite(base_sprite);
 }

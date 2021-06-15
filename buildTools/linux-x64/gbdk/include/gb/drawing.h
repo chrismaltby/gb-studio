@@ -29,6 +29,8 @@
 #ifndef __DRAWING_H
 #define __DRAWING_H
 
+#include <stdint.h>
+
 /** Size of the screen in pixels */
 #define GRAPHICS_WIDTH	160
 #define GRAPHICS_HEIGHT 144
@@ -78,14 +80,14 @@ void
     @see gotogxy()
 */
 void
-	gprintln(INT16 number, INT8 radix, INT8 signed_value);
+	gprintln(int16_t number, int8_t radix, int8_t signed_value);
 
 /** Print 8 bit __number__ in  __radix__ (base) in the default font at the current text position.
 
     @see gprintln(), gotogxy()
 */
 void
-	gprintn(INT8 number, INT8 radix, INT8 signed_value);
+	gprintn(int8_t number, int8_t radix, int8_t signed_value);
 
 /** Print the string and arguments given by __fmt__ with arguments __...__
 
@@ -95,52 +97,52 @@ void
     Currently supported:
     \li \%c (character)
     \li \%u (int)
-    \li \%d (INT8)
-    \li \%o (INT8 as octal)
-    \li \%x (INT8 as hex)
+    \li \%d (int8_t)
+    \li \%o (int8_t as octal)
+    \li \%x (int8_t as hex)
     \li \%s (string)
 
     @return Returns the number of items printed, or -1 if there was an error.
     @see gotogxy()
 */
-INT8
+int8_t
 	gprintf(char *fmt,...) NONBANKED;
 
 /** Old style plot - try @ref plot_point() */
 void
-	plot(UINT8 x, UINT8 y, UINT8 colour, UINT8 mode);
+	plot(uint8_t x, uint8_t y, uint8_t colour, uint8_t mode);
 
 /** Plot a point in the current drawing mode and colour at __x,y__ */
 void
-	plot_point(UINT8 x, UINT8 y);
+	plot_point(uint8_t x, uint8_t y);
 
 /** Exchanges the tile on screen at x,y with the tile pointed by src, original tile
     is saved in dst. Both src and dst may be NULL - saving or copying to screen is
     not performed in this case. */
 void
-	switch_data(UINT8 x, UINT8 y, unsigned char *src, unsigned char *dst) NONBANKED;
+	switch_data(uint8_t x, uint8_t y, uint8_t *src, uint8_t *dst) NONBANKED;
 
 /** Draw a full screen image at __data__ */
 void
-	draw_image(unsigned char *data) NONBANKED;
+	draw_image(uint8_t *data) NONBANKED;
 
 /** Draw a line in the current drawing mode and colour from __x1,y1__ to __x2,y2__ */
 void
-	line(UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2);
+	line(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2);
 
 /** Draw a box (rectangle) with corners __x1,y1__ and __x2,y2__ using fill mode
    __style__ (one of NOFILL or FILL) */
 void
-	box(UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2, UINT8 style);
+	box(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, uint8_t style);
 
 /** Draw a circle with centre at __x,y__ and __radius__ using fill mode
    __style__  (one of NOFILL or FILL)*/
 void
-	circle(UINT8 x, UINT8 y, UINT8 radius, UINT8 style);
+	circle(uint8_t x, uint8_t y, uint8_t radius, uint8_t style);
 
 /** Returns the current colour of the pixel at __x,y__ */
-UINT8
-	getpix(UINT8 x, UINT8 y);
+uint8_t
+	getpix(uint8_t x, uint8_t y);
 
 /** Prints the character __chr__ in the default font at the current text position.
 
@@ -154,10 +156,10 @@ void
     Note: __x__ and __y__ have units of tiles (8 pixels per unit)
     @see wrtchr() */
 void
-	gotogxy(UINT8 x, UINT8 y);
+	gotogxy(uint8_t x, uint8_t y);
 
 /** Set the current __foreground__ colour (for pixels), __background__ colour, and
    draw __mode__ */
-void	color(UINT8 forecolor, UINT8 backcolor, UINT8 mode);
+void	color(uint8_t forecolor, uint8_t backcolor, uint8_t mode);
 
 #endif /* __DRAWING_H */

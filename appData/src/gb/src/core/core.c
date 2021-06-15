@@ -1,6 +1,10 @@
 #pragma bank 4
 
 #include <gb/gb.h>
+#ifdef SGB
+    #include <gb/sgb.h>
+#endif
+
 #include <string.h>
 #include <rand.h>
 

@@ -1,6 +1,7 @@
 #pragma bank 2
 
 #include <gb/gb.h>
+#include <stdint.h>
 #include <stdio.h>
 
 int local_bank2_proc(int param1, int param2) {

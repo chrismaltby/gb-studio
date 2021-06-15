@@ -24,7 +24,7 @@
 /** Macro to get the Segment (Bank) number of a far pointer
     @param ptr    A far pointer (type @ref  FAR_PTR)
 
-    @returns Segment (Bank) of the far pointer (type unsigned int)
+    @returns Segment (Bank) of the far pointer (type uint16_t)
 */
 #define FAR_SEG(ptr) (((union __far_ptr *)&ptr)->segofs.seg)
 
@@ -46,12 +46,12 @@
     \code{.c}
     // A function in bank 2
     #pragma bank 2
-    int some_function(int param1, int param2) __banked {  return 1; };
+    uint16_t some_function(uint16_t param1, uint16_t param2) __banked {  return 1; };
 
     ...
     // Code elsewhere, such as unbanked main()
     // This type declaration should match the above function
-    typedef int (*some_function_t)(int, int) __banked;
+    typedef uint16_t (*some_function_t)(uint16_t, uint16_t) __banked;
 
     // Using FAR_CALL() with the above as *ptr*, *typ*, and two parameters.
     result = FAR_CALL(some_function, some_function_t, 100, 50);
@@ -63,7 +63,7 @@
 
 /** Type for storing a FAR_PTR
 */
-typedef unsigned long FAR_PTR;
+typedef uint32_t FAR_PTR;
 
 /** Union for working with members of a FAR_PTR
 */
@@ -71,17 +71,17 @@ union __far_ptr {
     FAR_PTR ptr;
     struct {
         void * ofs;
-        unsigned int seg;
+        uint16_t seg;
     } segofs;
     struct {
         void (*fn)();
-        unsigned int seg;
+        uint16_t seg;
     } segfn;
 };
 
 extern volatile FAR_PTR __call_banked_ptr;
 extern volatile void * __call_banked_addr;
-extern volatile unsigned char __call_banked_bank;
+extern volatile uint8_t __call_banked_bank;
 
 void __call__banked();
 
@@ -91,6 +91,6 @@ void __call__banked();
 
     @returns A far pointer (type @ref FAR_PTR)
 */
-long to_far_ptr(void* ofs, int seg);
+int32_t to_far_ptr(void* ofs, int16_t seg);
 
 #endif

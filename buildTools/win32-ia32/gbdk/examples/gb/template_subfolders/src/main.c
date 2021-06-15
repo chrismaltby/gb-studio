@@ -1,4 +1,5 @@
 #include <gb/gb.h>
+#include <stdint.h>
 #include "../res/dungeon_map.h"
 #include "../res/dungeon_tiles.h"
 

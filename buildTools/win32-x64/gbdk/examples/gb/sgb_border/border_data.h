@@ -2,6 +2,7 @@
 #define __SGB_BORDER_DATA_H_INCLUDE
 
 #include <gb/gb.h>
+#include <stdint.h>
 
 extern const unsigned char border_chr[];
 extern const unsigned int border_chr_size;

@@ -1,6 +1,10 @@
 #ifndef GBS_TYPES_H
 #define GBS_TYPES_H
 
+#ifdef CGB
+    #include <gb/cgb.h>
+#endif
+
 #include "bankdata.h"
 #include "parallax.h"
 #include "metasprite.h"

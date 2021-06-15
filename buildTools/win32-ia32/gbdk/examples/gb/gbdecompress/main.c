@@ -1,6 +1,6 @@
 #include <gb/gb.h>
-#include <gb/gbdecompress.h>
 #include <stdint.h>
+#include <gb/gbdecompress.h>
 #include <stdbool.h>
 
 // Include graphics data

@@ -1,4 +1,5 @@
 #include <gb/gb.h>
+#include <stdint.h>
 
 #include <stdio.h>
 #include <gb/font.h>
@@ -9,7 +10,7 @@ BCD bcd  = MAKE_BCD(10203040);
 BCD bcd2 = MAKE_BCD(05060708);
 BCD bcd3 = MAKE_BCD(11111111);
 
-UBYTE len = 0;
+uint8_t len = 0;
 unsigned char buf[10];
 
 void main() {

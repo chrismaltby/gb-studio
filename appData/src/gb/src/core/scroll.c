@@ -183,8 +183,8 @@ void scroll_repaint() __banked {
         // Immediately set all palettes black while screen renders.
 #ifdef CGB
         if (_is_CGB) {
-            CGBZeroPalette((UBYTE)(&BCPS_REG));
-            CGBZeroPalette((UBYTE)(&OCPS_REG));
+            CGBZeroPalette(BCPS_REG_ADDR);
+            CGBZeroPalette(OCPS_REG_ADDR);
         } else
 #endif
         OBP0_REG = 0xFF, BGP_REG = 0xFF;

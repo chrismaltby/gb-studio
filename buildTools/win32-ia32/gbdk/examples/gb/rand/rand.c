@@ -11,18 +11,19 @@
  **************************************************************************/
 
 #include <gb/gb.h>
+#include <stdint.h>
 #include <rand.h>
 #include <gb/drawing.h>
 #include <stdio.h>
 #include <string.h>
 
-UBYTE accu[80];
-UBYTE accua[80];
+uint8_t accu[80];
+uint8_t accua[80];
 
 void main(void)
 {
-  UBYTE r, s, t = 0, u = 0;
-  UWORD seed;
+  uint8_t r, s, t = 0, u = 0;
+  uint16_t seed;
 
   memset(accu, 0, sizeof(accu));
   memset(accua, 0, sizeof(accua));
@@ -36,7 +37,7 @@ void main(void)
   puts("Push any key (2)");
   waitpad(0xFF);
   waitpadup();
-  seed |= (UWORD)DIV_REG << 8;
+  seed |= (uint16_t)DIV_REG << 8;
 
   /* initarand() calls initrand() */
   initarand(seed);
