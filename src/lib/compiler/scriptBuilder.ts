@@ -2015,7 +2015,10 @@ class ScriptBuilder {
     const variableAlias = this.getVariableAlias(variable);
     const trueText = trimlines(args.trueText || "", 17, 1) || "Choice A";
     const falseText = trimlines(args.falseText || "", 17, 1) || "Choice B";
-    const choiceText = `\\001\\001 ${trueText}\n ${falseText}`;
+    const speedInstant = textCodeSetSpeed(0);
+    const gotoFirstLine = textCodeGoto(3, 2);
+    const gotoSecondLine = textCodeGoto(3, 3);
+    const choiceText = `${speedInstant}${gotoFirstLine}${trueText}\n${gotoSecondLine}${falseText}`;
     const numLines = choiceText.split("\n").length;
 
     this._addComment("Text Multiple Choice");
