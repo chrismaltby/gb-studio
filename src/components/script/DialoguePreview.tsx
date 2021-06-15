@@ -129,12 +129,18 @@ const drawText = (
   xOffset: number,
   yOffset: number,
   fontsData: Record<string, FontData>,
-  defaultFontId: string
+  defaultFontId: string,
+  fallbackFontId: string
 ) => {
   let drawX = 0;
   let drawY = 0;
 
   let font = fontsData[defaultFontId];
+
+  if (!font) {
+    font = fontsData[fallbackFontId];
+  }
+
   if (!font) {
     return;
   }
@@ -313,17 +319,26 @@ export const DialoguePreview: FC<DialoguePreviewProps> = ({
         canvas.height = tileHeight * 8;
         drawFrame(ctx, frameImage, tileWidth, tileHeight);
         if (avatarId) {
-          drawText(ctx, text, 24, 8, fontsData, defaultFontId);
+          drawText(ctx, text, 24, 8, fontsData, defaultFontId, fonts[0]?.id);
           if (avatarImage) {
             ctx.drawImage(avatarImage, 8, 8);
           }
         } else {
-          drawText(ctx, text, 8, 8, fontsData, defaultFontId);
+          drawText(ctx, text, 8, 8, fontsData, defaultFontId, fonts[0]?.id);
         }
       }
       setDrawn(true);
     }
-  }, [ref, text, avatarId, frameImage, avatarImage, fontsData, defaultFontId]);
+  }, [
+    ref,
+    text,
+    avatarId,
+    frameImage,
+    avatarImage,
+    fontsData,
+    defaultFontId,
+    fonts,
+  ]);
 
   return (
     <canvas

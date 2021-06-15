@@ -1134,6 +1134,11 @@ class ScriptBuilder {
     let font = fonts.find((f) => f.id === defaultFontId);
 
     if (!font) {
+      font = fonts[0];
+    }
+
+    if (!font) {
+      this._loadText(0);
       this._string("UNABLE TO LOAD FONT");
       return;
     }
