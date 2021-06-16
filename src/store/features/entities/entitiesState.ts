@@ -35,7 +35,7 @@ import {
   replaceInvalidCustomEventActors,
   replaceInvalidCustomEventProperties,
 } from "lib/compiler/helpers";
-import { EVENT_CALL_CUSTOM_EVENT } from "lib/compiler/eventTypes";
+import { EVENT_CALL_CUSTOM_EVENT, EVENT_END } from "lib/compiler/eventTypes";
 import { paint, paintLine, floodFill } from "lib/helpers/paint";
 import { Brush, EditorSelectionType } from "../editor/editorState";
 import projectActions from "../project/projectActions";
@@ -137,6 +137,14 @@ export const initialState: EntitiesState = {
   variables: variablesAdapter.getInitialState(),
   engineFieldValues: engineFieldValuesAdapter.getInitialState(),
 };
+
+const createEmptyScript = () => [
+  {
+    id: uuid(),
+    args: {},
+    command: EVENT_END,
+  },
+];
 
 const moveSelectedEntity =
   ({ sceneId, x, y }: { sceneId: string; x: number; y: number }) =>
@@ -764,10 +772,10 @@ const addScene: CaseReducer<
       paletteIds: [],
       spritePaletteIds: [],
       collisions: [],
-      script: [],
-      playerHit1Script: [],
-      playerHit2Script: [],
-      playerHit3Script: [],
+      script: createEmptyScript(),
+      playerHit1Script: createEmptyScript(),
+      playerHit2Script: createEmptyScript(),
+      playerHit3Script: createEmptyScript(),
     },
     action.payload.defaults || {},
     {
@@ -1053,12 +1061,12 @@ const addActor: CaseReducer<
     paletteId: "",
     isPinned: false,
     collisionGroup: "",
-    script: [],
-    startScript: [],
-    updateScript: [],
-    hit1Script: [],
-    hit2Script: [],
-    hit3Script: [],
+    script: createEmptyScript(),
+    startScript: createEmptyScript(),
+    updateScript: createEmptyScript(),
+    hit1Script: createEmptyScript(),
+    hit2Script: createEmptyScript(),
+    hit3Script: createEmptyScript(),
     ...(action.payload.defaults || {}),
     id: action.payload.actorId,
     x: clamp(action.payload.x, 0, scene.width - 2),
@@ -1315,7 +1323,7 @@ const addTrigger: CaseReducer<
     {
       name: "",
       trigger: "walk",
-      script: [],
+      script: createEmptyScript(),
     },
     action.payload.defaults || {},
     {
@@ -2395,7 +2403,7 @@ const addCustomEvent: CaseReducer<
     description: "",
     variables: {},
     actors: {},
-    script: [],
+    script: createEmptyScript(),
   };
   customEventsAdapter.addOne(state.customEvents, newCustomEvent);
 };
@@ -2418,7 +2426,7 @@ const editCustomEvent: CaseReducer<
       description: "",
       variables: {},
       actors: {},
-      script: [],
+      script: createEmptyScript(),
     };
     customEventsAdapter.addOne(state.customEvents, newCustomEvent);
   }
