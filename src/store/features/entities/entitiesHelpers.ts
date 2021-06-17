@@ -25,12 +25,8 @@ import {
   UnionPropertyValue,
   UnionVariableValue,
   SpriteState,
-  FontData,
-  AvatarData,
-  EmoteData,
-  BackgroundData,
   SpriteSheetData,
-  MusicData,
+  ScriptEvent,
 } from "./entitiesTypes";
 import { Dictionary, EntityId } from "@reduxjs/toolkit";
 
@@ -38,6 +34,7 @@ export interface NormalisedEntities {
   scenes: Record<EntityId, Scene>;
   actors: Record<EntityId, Actor>;
   triggers: Record<EntityId, Trigger>;
+  scriptEvents: Record<EntityId, ScriptEvent>;
   backgrounds: Record<EntityId, Background>;
   spriteSheets: Record<EntityId, SpriteSheet>;
   metasprites: Record<EntityId, Metasprite>;
@@ -78,19 +75,21 @@ const musicSchema = new schema.Entity("music");
 const fontSchema = new schema.Entity("fonts");
 const avatarSchema = new schema.Entity("avatars");
 const emoteSchema = new schema.Entity("emotes");
-const actorSchema = new schema.Entity("actors");
-const triggerSchema = new schema.Entity("triggers");
-/*
-// Normalise events
-const eventSchema = new schema.Entity("events");
-eventSchema.define({
+
+const scriptEventSchema = new schema.Entity("scriptEvents");
+scriptEventSchema.define({
   children: {
-    true: [eventSchema],
-    false: [eventSchema],
-    script: [eventSchema]
-  }
+    true: [scriptEventSchema],
+    false: [scriptEventSchema],
+    script: [scriptEventSchema],
+  },
 });
-*/
+const actorSchema = new schema.Entity("actors", {
+  script: [scriptEventSchema],
+});
+const triggerSchema = new schema.Entity("triggers", {
+  script: [scriptEventSchema],
+});
 const metaspriteTilesSchema = new schema.Entity("metaspriteTiles");
 const metaspritesSchema = new schema.Entity("metasprites", {
   tiles: [metaspriteTilesSchema],
@@ -109,7 +108,7 @@ const variablesSchema = new schema.Entity("variables");
 const sceneSchema = new schema.Entity("scenes", {
   actors: [actorSchema],
   triggers: [triggerSchema],
-  // script: [eventSchema],
+  script: [scriptEventSchema],
 });
 const customEventsSchema = new schema.Entity("customEvents");
 const palettesSchema = new schema.Entity("palettes");
@@ -158,6 +157,7 @@ export const denormalizeEntities = (
     actors: state.actors.entities as Record<EntityId, Actor>,
     triggers: state.triggers.entities as Record<EntityId, Trigger>,
     scenes: state.scenes.entities as Record<EntityId, Scene>,
+    scriptEvents: state.scriptEvents.entities as Record<EntityId, ScriptEvent>,
     backgrounds: state.backgrounds.entities as Record<EntityId, Background>,
     spriteSheets: state.spriteSheets.entities as Record<EntityId, SpriteSheet>,
     metasprites: state.metasprites.entities as Record<EntityId, Metasprite>,

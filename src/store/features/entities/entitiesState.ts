@@ -88,6 +88,7 @@ const inodeToRecentFont: Dictionary<Font> = {};
 const inodeToRecentAvatar: Dictionary<Avatar> = {};
 const inodeToRecentEmote: Dictionary<Emote> = {};
 
+const scriptEventsAdapter = createEntityAdapter<ScriptEvent>();
 const actorsAdapter = createEntityAdapter<Actor>();
 const triggersAdapter = createEntityAdapter<Trigger>();
 const scenesAdapter = createEntityAdapter<Scene>();
@@ -122,6 +123,7 @@ export const initialState: EntitiesState = {
   actors: actorsAdapter.getInitialState(),
   triggers: triggersAdapter.getInitialState(),
   scenes: scenesAdapter.getInitialState(),
+  scriptEvents: scriptEventsAdapter.getInitialState(),
   backgrounds: backgroundsAdapter.getInitialState(),
   spriteSheets: spriteSheetsAdapter.getInitialState(),
   metasprites: metaspritesAdapter.getInitialState(),
@@ -385,6 +387,7 @@ const loadProject: CaseReducer<
   actorsAdapter.setAll(state.actors, entities.actors || {});
   triggersAdapter.setAll(state.triggers, entities.triggers || {});
   scenesAdapter.setAll(state.scenes, entities.scenes || {});
+  scriptEventsAdapter.setAll(state.scriptEvents, entities.scriptEvents || {});
   backgroundsAdapter.setAll(state.backgrounds, entities.backgrounds || {});
   spriteSheetsAdapter.setAll(state.spriteSheets, entities.spriteSheets || {});
   metaspritesAdapter.setAll(state.metasprites, entities.metasprites || {});

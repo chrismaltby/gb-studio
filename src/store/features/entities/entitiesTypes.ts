@@ -280,10 +280,10 @@ export type Scene = {
   triggers: string[];
   parallax?: SceneParallaxLayer[];
   playerSpriteSheetId?: string;
-  script: ScriptEvent[];
-  playerHit1Script: ScriptEvent[];
-  playerHit2Script: ScriptEvent[];
-  playerHit3Script: ScriptEvent[];
+  script: string[];
+  playerHit1Script: string[];
+  playerHit2Script: string[];
+  playerHit3Script: string[];
 };
 
 export type SceneData = Omit<Scene, "actors" | "triggers"> & {
@@ -308,6 +308,7 @@ export interface EntitiesState {
   actors: EntityState<Actor>;
   triggers: EntityState<Trigger>;
   scenes: EntityState<Scene>;
+  scriptEvents: EntityState<ScriptEvent>;
   backgrounds: EntityState<Background>;
   spriteSheets: EntityState<SpriteSheet>;
   metasprites: EntityState<Metasprite>;

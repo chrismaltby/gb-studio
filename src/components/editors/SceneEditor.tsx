@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useState } from "react";
 import { clipboard } from "electron";
 import { useDispatch, useSelector } from "react-redux";
-import ScriptEditor from "../script/ScriptEditor";
+import ScriptEditor from "../script/ScriptEditor2";
 import castEventValue from "lib/helpers/castEventValue";
 import l10n from "lib/helpers/l10n";
 import { WorldEditor } from "./WorldEditor";
