@@ -60,15 +60,19 @@ const AppToolbar: FC = () => {
     (state: RootState) => state.project.present.metadata.name
   );
   const section = useSelector((state: RootState) => state.navigation.section);
-  const editor = useSelector((state: RootState) => state.editor);
+  const zoom = useSelector((state: RootState) =>
+    zoomForSection(section, state.editor)
+  );
+  const initalSearchTerm = useSelector(
+    (state: RootState) => state.editor.searchTerm
+  );
   const projectRoot = useSelector((state: RootState) => state.document.root);
   const running = useSelector(
     (state: RootState) => state.console.status === "running"
   );
-  const zoom = zoomForSection(section, editor);
   const showZoom = zoomSections.includes(section);
   const showSearch = section === "world";
-  const [searchTerm, setSearchTerm] = useState<string>(editor.searchTerm);
+  const [searchTerm, setSearchTerm] = useState<string>(initalSearchTerm);
   const windowFocus = useWindowFocus();
   const windowSize = useWindowSize();
   const smallZoom = (windowSize.width || 0) < 900;
@@ -128,10 +132,10 @@ const AppToolbar: FC = () => {
   );
 
   useEffect(() => {
-    if (!editor.searchTerm) {
+    if (!initalSearchTerm) {
       setSearchTerm("");
     }
-  }, [editor.searchTerm]);
+  }, [initalSearchTerm]);
 
   const openProjectFolder = useCallback(() => {
     dispatch(electronActions.openFolder(projectRoot));
