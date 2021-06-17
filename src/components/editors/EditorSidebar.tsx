@@ -8,10 +8,11 @@ import CustomEventEditor from "./CustomEventEditor";
 import { VariableEditor } from "./VariableEditor";
 import { RootState } from "store/configureStore";
 
-const EditorSidebar: React.FC = () => {
-  const { type, entityId, scene: sceneId } = useSelector((state: RootState) =>
-    state.editor
-  );
+const EditorSidebar = () => {
+  const type = useSelector((state: RootState) => state.editor.type);
+  const entityId = useSelector((state: RootState) => state.editor.entityId);
+  const sceneId = useSelector((state: RootState) => state.editor.scene);
+
   if (type === "trigger") {
     return <TriggerEditor key={entityId} id={entityId} sceneId={sceneId} />;
   }
