@@ -40,7 +40,15 @@ export type ScriptEvent = {
   id: string;
   command: string;
   args: Record<string, unknown>;
-  children?: Dictionary<ScriptEvent[]>;
+  children?: Dictionary<string[]>;
+};
+
+export type ScriptEventsRef = {
+  scriptEventId: string;
+  index: number;
+  parentType: "scene" | "actor" | "trigger" | "scriptEvent";
+  parentKey: string;
+  parentId: string;
 };
 
 export type Actor = {

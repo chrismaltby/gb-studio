@@ -12,7 +12,7 @@ import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import settingsActions from "store/features/settings/settingsActions";
-import { SidebarMultiColumnAuto, SidebarColumn } from "ui/sidebars/Sidebar";
+import { Sidebar, SidebarColumn } from "ui/sidebars/Sidebar";
 import {
   FormContainer,
   FormDivider,
@@ -47,6 +47,7 @@ import { SCREEN_WIDTH } from "../../consts";
 
 interface SceneEditorProps {
   id: string;
+  multiColumn: boolean;
 }
 
 interface ScriptHandler {
@@ -77,6 +78,12 @@ const PaletteButtons = styled.div`
   }
 `;
 
+const StickyTabs = styled.div`
+  position: sticky;
+  top: 0;
+  background: ${(props) => props.theme.colors.sidebar.background};
+`;
+
 const defaultTabs = {
   start: l10n("SIDEBAR_ON_INIT"),
   hit: l10n("SIDEBAR_ON_PLAYER_HIT"),
@@ -91,7 +98,7 @@ const hitTabs = {
 const sceneName = (scene: Scene, sceneIndex: number) =>
   scene.name ? scene.name : `Scene ${sceneIndex + 1}`;
 
-export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
+export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
   const scene = useSelector((state: RootState) =>
     sceneSelectors.selectById(state, id)
   );
@@ -382,7 +389,7 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
   const showParallaxOptions = showParallaxButton && scene.parallax;
 
   return (
-    <SidebarMultiColumnAuto onClick={selectSidebar}>
+    <Sidebar onClick={selectSidebar} multiColumn={multiColumn}>
       {!lockScriptEditor && (
         <SidebarColumn>
           <FormContainer>
@@ -666,45 +673,50 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
         </SidebarColumn>
       )}
       <SidebarColumn>
-        <TabBar
-          value={scriptMode}
-          values={defaultTabs}
-          onChange={onChangeScriptMode}
-          overflowActiveTab={scriptMode === "hit"}
-          buttons={
-            scriptMode !== "hit" && scripts[scriptMode] ? (
-              <>
-                {lockButton}
-                <ScriptEditorDropdownButton
+        <StickyTabs>
+          <TabBar
+            value={scriptMode}
+            values={defaultTabs}
+            onChange={onChangeScriptMode}
+            overflowActiveTab={scriptMode === "hit"}
+            buttons={
+              scriptMode !== "hit" && scripts[scriptMode] ? (
+                <>
+                  {lockButton}
+                  {/* <ScriptEditorDropdownButton
                   value={scripts[scriptMode].value}
                   onChange={scripts[scriptMode].onChange}
-                />
-              </>
-            ) : (
-              lockButton
-            )
-          }
-        />
-        {scriptMode === "hit" && scripts[scriptMode] && (
-          <TabBar
-            variant="secondary"
-            value={scriptModeSecondary}
-            values={scripts[scriptMode].tabs}
-            onChange={onChangeScriptModeSecondary}
-            buttons={
-              <ScriptEditorDropdownButton
-                value={scripts[scriptMode][scriptModeSecondary].value}
-                onChange={scripts[scriptMode][scriptModeSecondary].onChange}
-              />
+                /> */}
+                </>
+              ) : (
+                lockButton
+              )
             }
           />
-        )}
+          {scriptMode === "hit" && scripts[scriptMode] && (
+            <TabBar
+              variant="secondary"
+              value={scriptModeSecondary}
+              values={scripts[scriptMode].tabs}
+              onChange={onChangeScriptModeSecondary}
+              // buttons={
+              //   <ScriptEditorDropdownButton
+              //     value={scripts[scriptMode][scriptModeSecondary].value}
+              //     onChange={scripts[scriptMode][scriptModeSecondary].onChange}
+              //     entityId={scene.id}
+              //     scriptKey={scriptMode}
+              //   />
+              // }
+            />
+          )}
+        </StickyTabs>
         {scriptMode !== "hit" && scripts[scriptMode] && (
           <ScriptEditor
             value={scripts[scriptMode].value}
             type="scene"
             onChange={scripts[scriptMode].onChange}
             entityId={scene.id}
+            scriptKey={"script"}
           />
         )}
         {scriptMode === "hit" &&
@@ -715,9 +727,10 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
               type="scene"
               onChange={scripts[scriptMode][scriptModeSecondary].onChange}
               entityId={scene.id}
+              scriptKey={scriptMode}
             />
           )}
       </SidebarColumn>
-    </SidebarMultiColumnAuto>
+    </Sidebar>
   );
 };

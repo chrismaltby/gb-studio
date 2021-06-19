@@ -65,6 +65,7 @@ import {
   Avatar,
   Emote,
   SpriteState,
+  ScriptEventsRef,
 } from "./entitiesTypes";
 import {
   normalizeEntities,
@@ -324,6 +325,7 @@ const patchCustomEventCallArgs = (
   variables: Dictionary<CustomEventVariable>,
   actors: Dictionary<CustomEventActor>
 ) => {
+  /*
   const usedVariables = Object.keys(variables).map((i) => `$variable[${i}]$`);
   const usedActors = Object.keys(actors).map((i) => `$actor[${i}]$`);
 
@@ -352,6 +354,7 @@ const patchCustomEventCallArgs = (
       },
     };
   };
+  */
 };
 
 const patchCustomEventCallName = (customEventId: string, name: string) => {
@@ -2418,209 +2421,191 @@ const editCustomEvent: CaseReducer<
     changes: Partial<CustomEvent>;
   }>
 > = (state, action) => {
-  const oldEvent = state.customEvents.entities[action.payload.customEventId];
-
-  const patch = { ...action.payload.changes };
-
-  if (!oldEvent) {
-    const newCustomEvent: CustomEvent = {
-      id: action.payload.customEventId,
-      name: "",
-      description: "",
-      variables: {},
-      actors: {},
-      script: createEmptyScript(),
-    };
-    customEventsAdapter.addOne(state.customEvents, newCustomEvent);
-  }
-
-  if (patch.script) {
-    // Fix invalid variables in script
-    const fix = replaceInvalidCustomEventVariables;
-    const fixActor = replaceInvalidCustomEventActors;
-    const fixProperty = replaceInvalidCustomEventProperties;
-    patch.script = mapEvents(patch.script, (event: ScriptEvent) => {
-      if (event.args) {
-        const fixedEventArgs = Object.keys(event.args).reduce((memo, arg) => {
-          const fixedArgs = memo;
-          if (isVariableField(event.command, arg, event.args)) {
-            fixedArgs[arg] = fix(event.args[arg]);
-          } else if (isPropertyField(event.command, arg, event.args[arg])) {
-            fixedArgs[arg] = fixProperty(event.args[arg]);
-          } else {
-            fixedArgs[arg] = event.args[arg];
-          }
-
-          return fixedArgs;
-        }, {} as Dictionary<unknown>);
-
-        return {
-          ...event,
-          args: {
-            ...event.args,
-            ...fixedEventArgs,
-            actorId: event.args.actorId && fixActor(event.args.actorId),
-            otherActorId:
-              event.args.otherActorId && fixActor(event.args.otherActorId),
-          },
-        };
-      }
-      return event;
-    });
-
-    const variables = {} as Dictionary<CustomEventVariable>;
-    const actors = {} as Dictionary<CustomEventActor>;
-
-    const oldVariables = oldEvent ? oldEvent.variables : {};
-    const oldActors = oldEvent ? oldEvent.actors : {};
-
-    walkEvents(patch.script, (e: ScriptEvent) => {
-      const args = e.args;
-
-      if (!args) return;
-      if (e.args.__comment) return;
-
-      if (
-        args.actorId &&
-        args.actorId !== "player" &&
-        typeof args.actorId === "string"
-      ) {
-        const letter = String.fromCharCode(
-          "A".charCodeAt(0) + parseInt(args.actorId)
-        );
-        actors[args.actorId] = {
-          id: args.actorId,
-          name: oldActors[args.actorId]?.name || `Actor ${letter}`,
-        };
-      }
-
-      if (
-        args.otherActorId &&
-        args.otherActorId !== "player" &&
-        typeof args.otherActorId === "string"
-      ) {
-        const letter = String.fromCharCode(
-          "A".charCodeAt(0) + parseInt(args.otherActorId)
-        );
-        actors[args.otherActorId] = {
-          id: args.otherActorId,
-          name: oldActors[args.otherActorId]?.name || `Actor ${letter}`,
-        };
-      }
-
-      Object.keys(args).forEach((arg) => {
-        if (isVariableField(e.command, arg, args)) {
-          const addVariable = (variable: string) => {
-            const letter = String.fromCharCode(
-              "A".charCodeAt(0) + parseInt(variable)
-            );
-            variables[variable] = {
-              id: variable,
-              name: oldVariables[variable]?.name || `Variable ${letter}`,
-            };
-          };
-          const variable = args[arg];
-          if (isUnionVariableValue(variable) && variable.value) {
-            addVariable(variable.value);
-          } else if (typeof variable === "string") {
-            addVariable(variable);
-          }
-        }
-
-        if (isPropertyField(e.command, arg, args[arg])) {
-          const addPropertyActor = (property: string) => {
-            const actor = property && property.replace(/:.*/, "");
-            if (actor !== "player") {
-              const letter = String.fromCharCode(
-                "A".charCodeAt(0) + parseInt(actor)
-              );
-              actors[actor] = {
-                id: actor,
-                name: oldActors[actor]?.name || `Actor ${letter}`,
-              };
-            }
-          };
-          const property = args[arg];
-          if (isUnionPropertyValue(property) && property.value) {
-            addPropertyActor(property.value);
-          } else if (typeof property === "string") {
-            addPropertyActor(property);
-          }
-        }
-      });
-
-      if (args.text) {
-        const text = Array.isArray(args.text) ? args.text.join() : args.text;
-        if (typeof text === "string") {
-          const variablePtrs = text.match(/\$V[0-9]\$/g);
-          if (variablePtrs) {
-            variablePtrs.forEach((variablePtr: string) => {
-              const variable = variablePtr[2];
-              const letter = String.fromCharCode(
-                "A".charCodeAt(0) + parseInt(variable, 10)
-              ).toUpperCase();
-              variables[variable] = {
-                id: variable,
-                name: oldVariables[variable]?.name || `Variable ${letter}`,
-              };
-            });
-          }
-        }
-      }
-    });
-
-    patch.variables = { ...variables };
-    patch.actors = { ...actors };
-
-    const patchEventCallFn = patchCustomEventCallArgs(
-      action.payload.customEventId,
-      patch.script,
-      patch.variables,
-      patch.actors
-    );
-    const patchedActors = mapActorsEvents(
-      localActorSelectors.selectAll(state),
-      patchEventCallFn
-    );
-    const patchedTriggers = mapTriggersEvents(
-      localTriggerSelectors.selectAll(state),
-      patchEventCallFn
-    );
-    const patchedScenes = mapScenesEvents(
-      localSceneSelectors.selectAll(state),
-      patchEventCallFn
-    );
-    actorsAdapter.setAll(state.actors, patchedActors);
-    triggersAdapter.setAll(state.triggers, patchedTriggers);
-    scenesAdapter.setAll(state.scenes, patchedScenes);
-  }
-
-  if (patch.name) {
-    const patchEventCallFn = patchCustomEventCallName(
-      action.payload.customEventId,
-      patch.name
-    );
-    const patchedActors = mapActorsEvents(
-      localActorSelectors.selectAll(state),
-      patchEventCallFn
-    );
-    const patchedTriggers = mapTriggersEvents(
-      localTriggerSelectors.selectAll(state),
-      patchEventCallFn
-    );
-    const patchedScenes = mapScenesEvents(
-      localSceneSelectors.selectAll(state),
-      patchEventCallFn
-    );
-    actorsAdapter.setAll(state.actors, patchedActors);
-    triggersAdapter.setAll(state.triggers, patchedTriggers);
-    scenesAdapter.setAll(state.scenes, patchedScenes);
-  }
-
-  customEventsAdapter.updateOne(state.customEvents, {
-    id: action.payload.customEventId,
-    changes: patch,
-  });
+  //   const oldEvent = state.customEvents.entities[action.payload.customEventId];
+  //   const patch = { ...action.payload.changes };
+  //   if (!oldEvent) {
+  //     const newCustomEvent: CustomEvent = {
+  //       id: action.payload.customEventId,
+  //       name: "",
+  //       description: "",
+  //       variables: {},
+  //       actors: {},
+  //       script: createEmptyScript(),
+  //     };
+  //     customEventsAdapter.addOne(state.customEvents, newCustomEvent);
+  //   }
+  //   if (patch.script) {
+  //     // Fix invalid variables in script
+  //     const fix = replaceInvalidCustomEventVariables;
+  //     const fixActor = replaceInvalidCustomEventActors;
+  //     const fixProperty = replaceInvalidCustomEventProperties;
+  //     patch.script = mapEvents(patch.script, (event: ScriptEvent) => {
+  //       if (event.args) {
+  //         const fixedEventArgs = Object.keys(event.args).reduce((memo, arg) => {
+  //           const fixedArgs = memo;
+  //           if (isVariableField(event.command, arg, event.args)) {
+  //             fixedArgs[arg] = fix(event.args[arg]);
+  //           } else if (isPropertyField(event.command, arg, event.args[arg])) {
+  //             fixedArgs[arg] = fixProperty(event.args[arg]);
+  //           } else {
+  //             fixedArgs[arg] = event.args[arg];
+  //           }
+  //           return fixedArgs;
+  //         }, {} as Dictionary<unknown>);
+  //         return {
+  //           ...event,
+  //           args: {
+  //             ...event.args,
+  //             ...fixedEventArgs,
+  //             actorId: event.args.actorId && fixActor(event.args.actorId),
+  //             otherActorId:
+  //               event.args.otherActorId && fixActor(event.args.otherActorId),
+  //           },
+  //         };
+  //       }
+  //       return event;
+  //     });
+  //     const variables = {} as Dictionary<CustomEventVariable>;
+  //     const actors = {} as Dictionary<CustomEventActor>;
+  //     const oldVariables = oldEvent ? oldEvent.variables : {};
+  //     const oldActors = oldEvent ? oldEvent.actors : {};
+  //     walkEvents(patch.script, (e: ScriptEvent) => {
+  //       const args = e.args;
+  //       if (!args) return;
+  //       if (e.args.__comment) return;
+  //       if (
+  //         args.actorId &&
+  //         args.actorId !== "player" &&
+  //         typeof args.actorId === "string"
+  //       ) {
+  //         const letter = String.fromCharCode(
+  //           "A".charCodeAt(0) + parseInt(args.actorId)
+  //         );
+  //         actors[args.actorId] = {
+  //           id: args.actorId,
+  //           name: oldActors[args.actorId]?.name || `Actor ${letter}`,
+  //         };
+  //       }
+  //       if (
+  //         args.otherActorId &&
+  //         args.otherActorId !== "player" &&
+  //         typeof args.otherActorId === "string"
+  //       ) {
+  //         const letter = String.fromCharCode(
+  //           "A".charCodeAt(0) + parseInt(args.otherActorId)
+  //         );
+  //         actors[args.otherActorId] = {
+  //           id: args.otherActorId,
+  //           name: oldActors[args.otherActorId]?.name || `Actor ${letter}`,
+  //         };
+  //       }
+  //       Object.keys(args).forEach((arg) => {
+  //         if (isVariableField(e.command, arg, args)) {
+  //           const addVariable = (variable: string) => {
+  //             const letter = String.fromCharCode(
+  //               "A".charCodeAt(0) + parseInt(variable)
+  //             );
+  //             variables[variable] = {
+  //               id: variable,
+  //               name: oldVariables[variable]?.name || `Variable ${letter}`,
+  //             };
+  //           };
+  //           const variable = args[arg];
+  //           if (isUnionVariableValue(variable) && variable.value) {
+  //             addVariable(variable.value);
+  //           } else if (typeof variable === "string") {
+  //             addVariable(variable);
+  //           }
+  //         }
+  //         if (isPropertyField(e.command, arg, args[arg])) {
+  //           const addPropertyActor = (property: string) => {
+  //             const actor = property && property.replace(/:.*/, "");
+  //             if (actor !== "player") {
+  //               const letter = String.fromCharCode(
+  //                 "A".charCodeAt(0) + parseInt(actor)
+  //               );
+  //               actors[actor] = {
+  //                 id: actor,
+  //                 name: oldActors[actor]?.name || `Actor ${letter}`,
+  //               };
+  //             }
+  //           };
+  //           const property = args[arg];
+  //           if (isUnionPropertyValue(property) && property.value) {
+  //             addPropertyActor(property.value);
+  //           } else if (typeof property === "string") {
+  //             addPropertyActor(property);
+  //           }
+  //         }
+  //       });
+  //       if (args.text) {
+  //         const text = Array.isArray(args.text) ? args.text.join() : args.text;
+  //         if (typeof text === "string") {
+  //           const variablePtrs = text.match(/\$V[0-9]\$/g);
+  //           if (variablePtrs) {
+  //             variablePtrs.forEach((variablePtr: string) => {
+  //               const variable = variablePtr[2];
+  //               const letter = String.fromCharCode(
+  //                 "A".charCodeAt(0) + parseInt(variable, 10)
+  //               ).toUpperCase();
+  //               variables[variable] = {
+  //                 id: variable,
+  //                 name: oldVariables[variable]?.name || `Variable ${letter}`,
+  //               };
+  //             });
+  //           }
+  //         }
+  //       }
+  //     });
+  //     patch.variables = { ...variables };
+  //     patch.actors = { ...actors };
+  //     const patchEventCallFn = patchCustomEventCallArgs(
+  //       action.payload.customEventId,
+  //       patch.script,
+  //       patch.variables,
+  //       patch.actors
+  //     );
+  //     const patchedActors = mapActorsEvents(
+  //       localActorSelectors.selectAll(state),
+  //       patchEventCallFn
+  //     );
+  //     const patchedTriggers = mapTriggersEvents(
+  //       localTriggerSelectors.selectAll(state),
+  //       patchEventCallFn
+  //     );
+  //     const patchedScenes = mapScenesEvents(
+  //       localSceneSelectors.selectAll(state),
+  //       patchEventCallFn
+  //     );
+  //     actorsAdapter.setAll(state.actors, patchedActors);
+  //     triggersAdapter.setAll(state.triggers, patchedTriggers);
+  //     scenesAdapter.setAll(state.scenes, patchedScenes);
+  //   }
+  //   if (patch.name) {
+  //     const patchEventCallFn = patchCustomEventCallName(
+  //       action.payload.customEventId,
+  //       patch.name
+  //     );
+  //     const patchedActors = mapActorsEvents(
+  //       localActorSelectors.selectAll(state),
+  //       patchEventCallFn
+  //     );
+  //     const patchedTriggers = mapTriggersEvents(
+  //       localTriggerSelectors.selectAll(state),
+  //       patchEventCallFn
+  //     );
+  //     const patchedScenes = mapScenesEvents(
+  //       localSceneSelectors.selectAll(state),
+  //       patchEventCallFn
+  //     );
+  //     actorsAdapter.setAll(state.actors, patchedActors);
+  //     triggersAdapter.setAll(state.triggers, patchedTriggers);
+  //     scenesAdapter.setAll(state.scenes, patchedScenes);
+  //   }
+  //   customEventsAdapter.updateOne(state.customEvents, {
+  //     id: action.payload.customEventId,
+  //     changes: patch,
+  //   });
 };
 
 const removeCustomEvent: CaseReducer<
@@ -2631,6 +2616,76 @@ const removeCustomEvent: CaseReducer<
     state.customEvents,
     action.payload.customEventId
   );
+};
+
+/**************************************************************************
+ * Script Events
+ */
+
+const selectScriptIds = (
+  state: EntitiesState,
+  location: ScriptEventsRef
+): string[] | undefined => {
+  if (location.parentType === "scene") {
+    const scene = state.scenes.entities[location.parentId];
+    if (!scene) return;
+    const script = scene[location.parentKey as "script"];
+    return script;
+  } else if (location.parentType === "scriptEvent") {
+    const scriptEvent = state.scriptEvents.entities[location.parentId];
+    if (!scriptEvent) return;
+    const script = scriptEvent.children?.[location.parentKey];
+    return script;
+  }
+};
+
+const moveScriptEvent: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    from: ScriptEventsRef;
+    to: ScriptEventsRef;
+  }>
+> = (state, action) => {
+  const from = selectScriptIds(state, action.payload.from);
+  const to = selectScriptIds(state, action.payload.to);
+  if (!from || !to) {
+    return;
+  }
+
+  const fromIndex = from.indexOf(action.payload.from.scriptEventId);
+  const toIndex = to.indexOf(action.payload.to.scriptEventId);
+  if (fromIndex === -1 || toIndex === -1) {
+    return;
+  }
+
+  from.splice(fromIndex, 1);
+  to.splice(Math.max(toIndex - 1, 0), 0, action.payload.from.scriptEventId);
+};
+
+const editScriptEvent: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    scriptEventId: string;
+    changes: Partial<ScriptEvent>;
+  }>
+> = (state, action) => {
+  scriptEventsAdapter.updateOne(state.scriptEvents, {
+    id: action.payload.scriptEventId,
+    changes: action.payload.changes,
+  });
+};
+
+const toggleScriptEventOpen: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    scriptEventId: string;
+  }>
+> = (state, action) => {
+  const scriptEvent = state.scriptEvents.entities[action.payload.scriptEventId];
+  if (!scriptEvent) {
+    return;
+  }
+  scriptEvent.args.__collapse = !scriptEvent.args.__collapse;
 };
 
 /**************************************************************************
@@ -2928,6 +2983,14 @@ const entitiesSlice = createSlice({
     removeCustomEvent,
 
     /**************************************************************************
+     * Script Events
+     */
+
+    moveScriptEvent,
+    editScriptEvent,
+    toggleScriptEventOpen,
+
+    /**************************************************************************
      * Music
      */
 
@@ -3013,6 +3076,9 @@ export const triggerSelectors = triggersAdapter.getSelectors(
 );
 export const sceneSelectors = scenesAdapter.getSelectors(
   (state: RootState) => state.project.present.entities.scenes
+);
+export const scriptEventSelectors = scriptEventsAdapter.getSelectors(
+  (state: RootState) => state.project.present.entities.scriptEvents
 );
 export const spriteSheetSelectors = spriteSheetsAdapter.getSelectors(
   (state: RootState) => state.project.present.entities.spriteSheets

@@ -8,7 +8,11 @@ import CustomEventEditor from "./CustomEventEditor";
 import { VariableEditor } from "./VariableEditor";
 import { RootState } from "store/configureStore";
 
-const EditorSidebar = () => {
+interface EditorSidebarProps {
+  multiColumn: boolean;
+}
+
+const EditorSidebar = ({ multiColumn }: EditorSidebarProps) => {
   const type = useSelector((state: RootState) => state.editor.type);
   const entityId = useSelector((state: RootState) => state.editor.entityId);
   const sceneId = useSelector((state: RootState) => state.editor.scene);
@@ -20,7 +24,7 @@ const EditorSidebar = () => {
     return <ActorEditor key={entityId} id={entityId} sceneId={sceneId} />;
   }
   if (type === "scene") {
-    return <SceneEditor key={sceneId} id={sceneId} />;
+    return <SceneEditor key={sceneId} id={sceneId} multiColumn={multiColumn} />;
   }
   if (type === "world") {
     return <WorldEditor />;

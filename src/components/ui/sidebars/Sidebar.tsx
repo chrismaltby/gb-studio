@@ -44,11 +44,11 @@ export const SidebarMultiColumnAuto: FC<SidebarMultiColumnAutoProps> = ({
   children,
   onClick,
 }) => {
-  const { ref, width } = useDimensions();
+  // const { ref, width } = useDimensions();
   return (
     <Sidebar
-      ref={ref as React.RefObject<HTMLDivElement>}
-      multiColumn={width >= 500}
+      // ref={ref as React.RefObject<HTMLDivElement>}
+      multiColumn={false}
       onClick={onClick}
     >
       {children}

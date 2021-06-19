@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import ScriptEditorEvent from "./ScriptEditorEvent2";
 
 interface ScriptEditorProps {
@@ -6,18 +6,29 @@ interface ScriptEditorProps {
   type: "scene";
   onChange: (newValue: string[]) => void;
   entityId: string;
+  scriptKey: string;
 }
 
 const ScriptEditor = ({
   value,
   type,
-  onChange,
   entityId,
+  scriptKey,
 }: ScriptEditorProps) => {
+  const [dropId, setDropId] = useState("");
   return (
     <div>
-      {value.map((id) => (
-        <ScriptEditorEvent key={id} id={id} />
+      {value.map((id, index) => (
+        <ScriptEditorEvent
+          key={id}
+          id={id}
+          index={index}
+          parentType={type}
+          parentId={entityId}
+          parentKey={scriptKey}
+          dropId={dropId}
+          setDropId={setDropId}
+        />
       ))}
     </div>
   );
