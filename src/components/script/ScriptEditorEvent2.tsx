@@ -11,13 +11,20 @@ import { RootState } from "store/configureStore";
 import { scriptEventSelectors } from "store/features/entities/entitiesState";
 import { ScriptEventsRef } from "store/features/entities/entitiesTypes";
 import { EVENT_END } from "lib/compiler/eventTypes";
-import styled, { css } from "styled-components";
-import { Button } from "ui/buttons/Button";
 import AddButton from "./AddButton";
+import {
+  ScriptEventFormWrapper,
+  ScriptEventHeader,
+  ScriptEventWrapper,
+  ScriptEventPlaceholder,
+} from "ui/scripting/ScriptEvents";
+import { ArrowIcon } from "ui/icons/Icons";
+import { FixedSpacer } from "ui/spacing/Spacing";
 
 interface ScriptEditorEventProps {
   id: string;
   index: number;
+  nestLevel?: number;
   parentType: "scene" | "actor" | "trigger" | "scriptEvent";
   parentId: string;
   parentKey: string;
@@ -29,53 +36,6 @@ const ItemTypes = {
   SCRIPT_EVENT: "SCRIPT_EVENT",
 };
 
-const Placeholder = styled.div`
-  background: #ccc;
-  height: 50px;
-`;
-
-interface HeaderProps {
-  conditional?: boolean;
-}
-
-export const Header = styled.div<HeaderProps>`
-  display: flex;
-  align-items: center;
-  text-transform: uppercase;
-  font-size: 11px;
-  font-weight: bold;
-  padding: 0px 10px;
-  padding-right: 5px;
-  padding-left: 5px;
-  height: 30px;
-  background-color: ${(props) => props.theme.colors.input.background};
-  color: ${(props) => props.theme.colors.input.text};
-  // border-bottom: 1px solid ${(props) => props.theme.colors.input.border};
-
-  ${(props) =>
-    props.conditional
-      ? css`
-          background: blue;
-          color: #fff;
-        `
-      : ""}
-
-  > span {
-    flex-grow: 1;
-  }
-
-  ${Button} {
-    padding: 4px;
-    min-width: 18px;
-  }
-`;
-
-const EventWrapper = styled.div`
-  & ~ & {
-    border-top: 1px solid ${(props) => props.theme.colors.input.border};
-  }
-`;
-
 const ScriptEditorEvent = ({
   id,
   index,
@@ -84,6 +44,7 @@ const ScriptEditorEvent = ({
   parentKey,
   dropId,
   setDropId,
+  nestLevel = 0,
 }: ScriptEditorEventProps) => {
   const dispatch = useDispatch();
   const dragRef = useRef<HTMLDivElement>(null);
@@ -188,7 +149,6 @@ const ScriptEditorEvent = ({
     dispatch(entityActions.toggleScriptEventOpen({ scriptEventId: id }));
   }, [dispatch, id]);
 
-  const opacity = isDragging ? 0.5 : 1;
   drag(dragRef);
   drop(dropRef);
 
@@ -201,96 +161,109 @@ const ScriptEditorEvent = ({
 
   if (scriptEvent.command === EVENT_END) {
     return (
-      <EventWrapper
-        ref={dropRef}
-        style={{ opacity }}
-        data-handler-id={handlerId}
-      >
-        {id === dropId && <Placeholder />}
+      <ScriptEventWrapper ref={dropRef} data-handler-id={handlerId}>
+        {id === dropId && <ScriptEventPlaceholder />}
         <AddButton />
-      </EventWrapper>
+      </ScriptEventWrapper>
     );
   }
 
   const isOpen = scriptEvent.args && !scriptEvent.args.__collapse;
 
   return (
-    <>
-      <EventWrapper>
-        <div ref={dropRef}>
-          {id === dropId && <Placeholder />}
-          <div
-            style={{
-              opacity,
-              height: isDragging ? 0 : "auto",
-              display: isDragging ? "none" : "block",
-              ...(scriptEvent.children && { borderLeft: "10px solid blue" }),
-            }}
-            data-handler-id={handlerId}
+    <ScriptEventWrapper
+      style={{
+        height: isDragging ? 0 : "auto",
+        display: isDragging ? "none" : "block",
+      }}
+    >
+      <div ref={dropRef}>
+        {id === dropId && <ScriptEventPlaceholder />}
+        <div ref={dragRef}>
+          <ScriptEventHeader
+            conditional={!!scriptEvent.children}
+            nestLevel={nestLevel}
+            onClick={toggleOpen}
+            open={isOpen}
           >
-            <div ref={dragRef}>
-              <Header conditional={!!scriptEvent.children} onClick={toggleOpen}>
-                {!!scriptEvent.children ? "T" : "F"}
-                {id}
-              </Header>
-            </div>
-            {isOpen && (
-              <div>
-                FORM
-                <br />
-                a<br />b
-              </div>
-            )}
-          </div>
+            <ArrowIcon />
+            <FixedSpacer width={5} />
+            {id}
+          </ScriptEventHeader>
         </div>
-        {isOpen && scriptEvent.children && (
-          <div
-            style={{
-              opacity,
-              height: isDragging ? 0 : "auto",
-              display: isDragging ? "none" : "block",
-              background: "white",
-              borderLeft: "10px solid blue",
-            }}
-            data-handler-id={handlerId}
-          >
-            {Object.keys(scriptEvent.children).map((key, groupIndex) => (
-              <div key={key}>
-                {groupIndex > 0 && (
-                  <div style={{ background: "blue" }}>{key}</div>
-                )}
+        <ScriptEventFormWrapper
+          conditional={!!scriptEvent.children}
+          nestLevel={nestLevel}
+          style={{
+            height: isDragging ? 0 : "auto",
+            display: isDragging ? "none" : "block",
+          }}
+          data-handler-id={handlerId}
+        >
+          {isOpen && (
+            <div>
+              FORM
+              <br />
+              a<br />b
+            </div>
+          )}
+        </ScriptEventFormWrapper>
+      </div>
+      {isOpen && scriptEvent.children && (
+        <ScriptEventFormWrapper
+          conditional={!!scriptEvent.children}
+          nestLevel={nestLevel}
+          style={{
+            height: isDragging ? 0 : "auto",
+            display: isDragging ? "none" : "block",
+            background: "white",
+          }}
+          data-handler-id={handlerId}
+        >
+          {Object.keys(scriptEvent.children).map((key, groupIndex) => (
+            <div key={key}>
+              {groupIndex > 0 && (
+                <ScriptEventHeader
+                  conditional={!!scriptEvent.children}
+                  nestLevel={nestLevel}
+                  child
+                  open={isOpen}
+                >
+                  {key}
+                </ScriptEventHeader>
+              )}
+              <div
+                style={{
+                  padding: "10px 0 10px 10px",
+                }}
+              >
                 <div
                   style={{
-                    padding: "10px 0 10px 10px",
+                    borderLeft: "1px solid #ccc",
+                    borderTop: "1px solid #ccc",
+                    borderBottom: "1px solid #ccc",
                   }}
                 >
-                  <div
-                    style={{
-                      borderLeft: "1px solid #ccc",
-                      borderTop: "1px solid #ccc",
-                      borderBottom: "1px solid #ccc",
-                    }}
-                  >
-                    {scriptEvent.children?.[key]?.map((child, index) => (
-                      <ScriptEditorEvent
-                        key={child}
-                        id={child}
-                        index={index}
-                        parentType="scriptEvent"
-                        parentId={id}
-                        parentKey={key}
-                        dropId={dropId}
-                        setDropId={setDropId}
-                      />
-                    ))}
-                  </div>
+                  {scriptEvent.children?.[key]?.map((child, index) => (
+                    <ScriptEditorEvent
+                      key={child}
+                      id={child}
+                      index={index}
+                      nestLevel={nestLevel + 1}
+                      parentType="scriptEvent"
+                      parentId={id}
+                      parentKey={key}
+                      dropId={dropId}
+                      setDropId={setDropId}
+                    />
+                  ))}
                 </div>
               </div>
-            ))}
-          </div>
-        )}
-      </EventWrapper>
-    </>
+            </div>
+          ))}
+        </ScriptEventFormWrapper>
+      )}
+    </ScriptEventWrapper>
   );
 };
 
