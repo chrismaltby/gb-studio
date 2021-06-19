@@ -139,7 +139,7 @@ int core_start() {
   memset(&script_cmd_args, 0, sizeof(script_cmd_args));
   memset(&script_stack, 0, sizeof(script_stack));
   memset(&script_bank_stack, 0, sizeof(script_bank_stack));
-  memset(&script_start_stack, 0, sizeof(script_bank_stack));
+  memset(&script_start_stack, 0, sizeof(script_start_stack));
 
   memset(&actors, 0, sizeof(actors));
   memset(&active_script_ctx, 0, sizeof(active_script_ctx));

@@ -240,8 +240,10 @@ void RenderScreen() {
       set_sprite_palette(0, 8, BkgPaletteBuffer);
     } else
     #endif
+    {
       OBP0_REG = 0xFF;
       BGP_REG = 0xFF;
+    }
   }
 
   // Clear pending rows/ columns
