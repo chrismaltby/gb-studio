@@ -21,6 +21,7 @@ import {
 import { ArrowIcon } from "ui/icons/Icons";
 import { FixedSpacer } from "ui/spacing/Spacing";
 import ScriptEventForm from "./ScriptEventForm2";
+import uuid from "uuid";
 
 interface ScriptEditorEventProps {
   id: string;
@@ -29,9 +30,7 @@ interface ScriptEditorEventProps {
   parentType: "scene" | "actor" | "trigger" | "scriptEvent";
   parentId: string;
   parentKey: string;
-  dropId: string;
   entityId: string;
-  setDropId: (newId: string) => void;
 }
 
 const ItemTypes = {
@@ -44,8 +43,6 @@ const ScriptEditorEvent = ({
   parentType,
   parentId,
   parentKey,
-  dropId,
-  setDropId,
   entityId,
   nestLevel = 0,
 }: ScriptEditorEventProps) => {
@@ -53,14 +50,20 @@ const ScriptEditorEvent = ({
   const dragRef = useRef<HTMLDivElement>(null);
   const dropRef = useRef<HTMLDivElement>(null);
 
-  const [{ handlerId }, drop] = useDrop({
+  const [{ handlerId, isOverCurrent }, drop] = useDrop({
     accept: ItemTypes.SCRIPT_EVENT,
     collect(monitor) {
       return {
         handlerId: monitor.getHandlerId(),
+        isOverCurrent: monitor.isOver({ shallow: true }),
       };
     },
-    hover(item: ScriptEventsRef) {
+    drop(item: ScriptEventsRef, monitor: DropTargetMonitor) {
+      const didDrop = monitor.didDrop();
+      if (didDrop) {
+        return;
+      }
+
       if (!dropRef.current) {
         return;
       }
@@ -83,33 +86,17 @@ const ScriptEditorEvent = ({
         return;
       }
 
-      if (dropId !== id) {
-        setDropId(id);
-      }
-    },
-
-    drop(item: ScriptEventsRef, _monitor: DropTargetMonitor) {
-      if (!dropRef.current) {
-        return;
-      }
-
-      const dragIndex = item.index;
-      const hoverIndex = index;
-
-      //  Don't replace items with themselves
-      if (
-        dragIndex === hoverIndex &&
-        parentType === item.parentType &&
-        parentKey === item.parentKey &&
-        parentId === item.parentId
-      ) {
-        return;
-      }
-
-      // Can't become as child of self
-      if (parentId === item.scriptEventId) {
-        return;
-      }
+      console.log("FROM", item.scriptEventId, "TO", id);
+      console.log({
+        to: {
+          scriptEventId: id,
+          index,
+          parentType,
+          parentKey,
+          parentId,
+        },
+        from: item,
+      });
 
       dispatch(
         entityActions.moveScriptEvent({
@@ -123,7 +110,6 @@ const ScriptEditorEvent = ({
           from: item,
         })
       );
-      setDropId("");
 
       item.index = hoverIndex;
       item.parentType = parentType;
@@ -158,6 +144,25 @@ const ScriptEditorEvent = ({
   const scriptEvent = useSelector((state: RootState) =>
     scriptEventSelectors.selectById(state, id)
   );
+
+  const renderEvents = useCallback(
+    (key: string) => {
+      return (scriptEvent?.children?.[key] || []).map((child, childIndex) => (
+        <ScriptEditorEvent
+          key={child}
+          id={child}
+          index={childIndex}
+          nestLevel={nestLevel + 1}
+          parentType="scriptEvent"
+          parentId={id}
+          parentKey={key}
+          entityId={entityId}
+        />
+      ));
+    },
+    [entityId, id, nestLevel, scriptEvent?.children]
+  );
+
   if (!scriptEvent) {
     return null;
   }
@@ -165,7 +170,7 @@ const ScriptEditorEvent = ({
   if (scriptEvent.command === EVENT_END) {
     return (
       <ScriptEventWrapper ref={dropRef} data-handler-id={handlerId}>
-        {id === dropId && <ScriptEventPlaceholder />}
+        {isOverCurrent && <ScriptEventPlaceholder />}
         <AddButton />
       </ScriptEventWrapper>
     );
@@ -181,7 +186,7 @@ const ScriptEditorEvent = ({
       }}
     >
       <div ref={dropRef}>
-        {id === dropId && <ScriptEventPlaceholder />}
+        {isOverCurrent && <ScriptEventPlaceholder />}
         <div ref={dragRef}>
           <ScriptEventHeader
             conditional={!!scriptEvent.children}
@@ -197,70 +202,17 @@ const ScriptEditorEvent = ({
         <ScriptEventFormWrapper
           conditional={!!scriptEvent.children}
           nestLevel={nestLevel}
-          style={{
-            height: isDragging ? 0 : "auto",
-            display: isDragging ? "none" : "block",
-          }}
           data-handler-id={handlerId}
         >
-          {isOpen && <ScriptEventForm id={id} entityId={entityId} />}
+          {isOpen && (
+            <ScriptEventForm
+              id={id}
+              entityId={entityId}
+              renderEvents={renderEvents}
+            />
+          )}
         </ScriptEventFormWrapper>
       </div>
-      {isOpen && scriptEvent.children && (
-        <ScriptEventFormWrapper
-          conditional={!!scriptEvent.children}
-          nestLevel={nestLevel}
-          style={{
-            height: isDragging ? 0 : "auto",
-            display: isDragging ? "none" : "block",
-            background: "white",
-          }}
-          data-handler-id={handlerId}
-        >
-          {Object.keys(scriptEvent.children).map((key, groupIndex) => (
-            <div key={key}>
-              {groupIndex > 0 && (
-                <ScriptEventHeader
-                  conditional={!!scriptEvent.children}
-                  nestLevel={nestLevel}
-                  child
-                  open={isOpen}
-                >
-                  {key}
-                </ScriptEventHeader>
-              )}
-              <div
-                style={{
-                  padding: "10px 0 10px 10px",
-                }}
-              >
-                <div
-                  style={{
-                    borderLeft: "1px solid #ccc",
-                    borderTop: "1px solid #ccc",
-                    borderBottom: "1px solid #ccc",
-                  }}
-                >
-                  {scriptEvent.children?.[key]?.map((child, index) => (
-                    <ScriptEditorEvent
-                      key={child}
-                      id={child}
-                      index={index}
-                      nestLevel={nestLevel + 1}
-                      parentType="scriptEvent"
-                      parentId={id}
-                      parentKey={key}
-                      dropId={dropId}
-                      entityId={entityId}
-                      setDropId={setDropId}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-          ))}
-        </ScriptEventFormWrapper>
-      )}
     </ScriptEventWrapper>
   );
 };

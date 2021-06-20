@@ -9,6 +9,7 @@ import ScriptEventFormInput from "./ScriptEventFormInput";
 import cx from "classnames";
 import { FormField, ToggleableFormField } from "ui/form/FormLayout";
 import { ScriptEventField } from "ui/scripting/ScriptEvents";
+import { SidebarTabs } from "../editors/Sidebar";
 
 interface ScriptEventFormFieldProps {
   scriptEventId: string;
@@ -115,6 +116,17 @@ const ScriptEventFormField = memo(
         >
           <TriangleIcon /> {field.label || ""}
         </div>
+      );
+    }
+
+    if (field.type === "tabs") {
+      return (
+        <SidebarTabs
+          small
+          value={String(value || "")}
+          values={field.values || {}}
+          onChange={onChange}
+        />
       );
     }
 

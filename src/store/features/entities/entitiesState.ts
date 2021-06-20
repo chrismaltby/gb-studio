@@ -2653,13 +2653,20 @@ const moveScriptEvent: CaseReducer<
   }
 
   const fromIndex = from.indexOf(action.payload.from.scriptEventId);
-  const toIndex = to.indexOf(action.payload.to.scriptEventId);
+  let toIndex = to.indexOf(action.payload.to.scriptEventId);
   if (fromIndex === -1 || toIndex === -1) {
     return;
   }
 
   from.splice(fromIndex, 1);
-  to.splice(Math.max(toIndex - 1, 0), 0, action.payload.from.scriptEventId);
+  if (from === to && fromIndex < toIndex) {
+    toIndex--;
+  }
+  to.splice(
+    Math.min(Math.max(toIndex, 0), to.length - 1),
+    0,
+    action.payload.from.scriptEventId
+  );
 };
 
 const editScriptEvent: CaseReducer<

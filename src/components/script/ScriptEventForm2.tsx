@@ -32,6 +32,7 @@ import { ScriptEventFields } from "ui/scripting/ScriptEvents";
 interface ScriptEventFormProps {
   id: string;
   entityId: string;
+  renderEvents: (key: string) => React.ReactNode;
 }
 
 const genKey = (id: string, key: string, index: number) =>
@@ -116,7 +117,11 @@ const getScriptEventFields = (
   return eventCommands;
 };
 
-const ScriptEventForm = ({ id, entityId }: ScriptEventFormProps) => {
+const ScriptEventForm = ({
+  id,
+  entityId,
+  renderEvents,
+}: ScriptEventFormProps) => {
   const [fields, setFields] = useState<ScriptEventFieldSchema[]>([]);
   const scriptEvent = useSelector((state: RootState) =>
     scriptEventSelectors.selectById(state, id)
@@ -167,7 +172,7 @@ const ScriptEventForm = ({ id, entityId }: ScriptEventFormProps) => {
         }
 
         if (field.type === "events") {
-          return <div>CHILD</div>;
+          return renderEvents(field.key || "");
         }
 
         return (

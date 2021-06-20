@@ -359,6 +359,7 @@ export interface ScriptEventFieldSchema {
   conditions?: ScriptEventFieldCondition[];
   toggleLabel?: string;
   width?: string;
+  values?: Record<string, string>;
   postUpdate?: (
     newArgs: Record<string, unknown>,
     prevArgs: Record<string, unknown>

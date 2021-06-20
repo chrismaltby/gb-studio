@@ -15,7 +15,6 @@ const ScriptEditor = ({
   entityId,
   scriptKey,
 }: ScriptEditorProps) => {
-  const [dropId, setDropId] = useState("");
   return (
     <div>
       {value.map((id, index) => (
@@ -26,8 +25,6 @@ const ScriptEditor = ({
           parentType={type}
           parentId={entityId}
           parentKey={scriptKey}
-          dropId={dropId}
-          setDropId={setDropId}
           entityId={entityId}
         />
       ))}
