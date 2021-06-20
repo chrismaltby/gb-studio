@@ -28,6 +28,7 @@ const ScriptEditor = ({
           parentKey={scriptKey}
           dropId={dropId}
           setDropId={setDropId}
+          entityId={entityId}
         />
       ))}
     </div>

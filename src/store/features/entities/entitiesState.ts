@@ -2688,6 +2688,21 @@ const toggleScriptEventOpen: CaseReducer<
   scriptEvent.args.__collapse = !scriptEvent.args.__collapse;
 };
 
+const editScriptEventArg: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    scriptEventId: string;
+    key: string;
+    value: unknown;
+  }>
+> = (state, action) => {
+  const scriptEvent = state.scriptEvents.entities[action.payload.scriptEventId];
+  if (!scriptEvent) {
+    return;
+  }
+  scriptEvent.args[action.payload.key] = action.payload.value;
+};
+
 /**************************************************************************
  * Engine Field Values
  */
@@ -2989,6 +3004,7 @@ const entitiesSlice = createSlice({
     moveScriptEvent,
     editScriptEvent,
     toggleScriptEventOpen,
+    editScriptEventArg,
 
     /**************************************************************************
      * Music

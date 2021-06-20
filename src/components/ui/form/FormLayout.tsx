@@ -81,7 +81,7 @@ export const FormFieldInfo = styled.div`
 
 export interface FormFieldProps {
   readonly name: string;
-  readonly label?: string;
+  readonly label?: string | React.ReactNode;
   readonly info?: string;
   readonly variant?: "normal" | "error";
 }
@@ -150,7 +150,7 @@ export const FormLink = styled.div`
 
 export interface ToggleableFormFieldProps {
   readonly enabled: boolean;
-  readonly disabledLabel: string;
+  readonly disabledLabel: string | React.ReactNode;
 }
 
 export const ToggleableFormField: FC<

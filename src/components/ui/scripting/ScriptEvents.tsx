@@ -100,3 +100,27 @@ export const ScriptEventFormWrapper = styled.div<ScriptEventFormWrapperProps>`
         `
       : ""}
 `;
+
+export const ScriptEventFields = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 10px;
+  padding: 10px;
+  & > * {
+    grid-column-end: span 2;
+  }
+`;
+
+interface ScriptEventFieldProps {
+  halfWidth?: boolean;
+}
+
+export const ScriptEventField = styled.div<ScriptEventFieldProps>`
+  // padding: 10px;
+  ${(props) =>
+    props.halfWidth
+      ? css`
+          grid-column-end: span 1;
+        `
+      : ""}
+`;

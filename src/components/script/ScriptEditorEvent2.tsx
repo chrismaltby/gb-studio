@@ -20,6 +20,7 @@ import {
 } from "ui/scripting/ScriptEvents";
 import { ArrowIcon } from "ui/icons/Icons";
 import { FixedSpacer } from "ui/spacing/Spacing";
+import ScriptEventForm from "./ScriptEventForm2";
 
 interface ScriptEditorEventProps {
   id: string;
@@ -29,6 +30,7 @@ interface ScriptEditorEventProps {
   parentId: string;
   parentKey: string;
   dropId: string;
+  entityId: string;
   setDropId: (newId: string) => void;
 }
 
@@ -44,6 +46,7 @@ const ScriptEditorEvent = ({
   parentKey,
   dropId,
   setDropId,
+  entityId,
   nestLevel = 0,
 }: ScriptEditorEventProps) => {
   const dispatch = useDispatch();
@@ -200,13 +203,7 @@ const ScriptEditorEvent = ({
           }}
           data-handler-id={handlerId}
         >
-          {isOpen && (
-            <div>
-              FORM
-              <br />
-              a<br />b
-            </div>
-          )}
+          {isOpen && <ScriptEventForm id={id} entityId={entityId} />}
         </ScriptEventFormWrapper>
       </div>
       {isOpen && scriptEvent.children && (
@@ -254,6 +251,7 @@ const ScriptEditorEvent = ({
                       parentId={id}
                       parentKey={key}
                       dropId={dropId}
+                      entityId={entityId}
                       setDropId={setDropId}
                     />
                   ))}

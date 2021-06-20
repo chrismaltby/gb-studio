@@ -338,4 +338,31 @@ export type Asset = {
   plugin?: string;
 };
 
+export interface ScriptEventFieldCondition {
+  key: string;
+  ne?: unknown;
+  eq?: unknown;
+  gt?: unknown;
+  lt?: unknown;
+  gte?: unknown;
+  lte?: unknown;
+  in?: unknown[];
+}
+
+export interface ScriptEventFieldSchema {
+  label?: string | React.ReactNode;
+  defaultValue?: unknown;
+  key?: string;
+  type?: string;
+  hide?: boolean;
+  multiple?: boolean;
+  conditions?: ScriptEventFieldCondition[];
+  toggleLabel?: string;
+  width?: string;
+  postUpdate?: (
+    newArgs: Record<string, unknown>,
+    prevArgs: Record<string, unknown>
+  ) => void;
+}
+
 export type EntityKey = keyof EntitiesState;
