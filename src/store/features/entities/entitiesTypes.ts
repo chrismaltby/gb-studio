@@ -39,7 +39,7 @@ export type UnionValue =
 export type ScriptEvent = {
   id: string;
   command: string;
-  args: Record<string, unknown>;
+  args?: Record<string, unknown>;
   children?: Dictionary<string[]>;
 };
 
@@ -360,6 +360,7 @@ export interface ScriptEventFieldSchema {
   toggleLabel?: string;
   width?: string;
   values?: Record<string, string>;
+  alignCheckbox?: boolean;
   postUpdate?: (
     newArgs: Record<string, unknown>,
     prevArgs: Record<string, unknown>

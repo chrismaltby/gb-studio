@@ -59,6 +59,7 @@ export const FormSpacer = styled.div`
 
 interface FormFieldWrapperProps {
   readonly variant?: "normal" | "error";
+  readonly alignCheckbox?: boolean;
 }
 
 const FormFieldWrapper = styled.div<FormFieldWrapperProps>`
@@ -68,6 +69,12 @@ const FormFieldWrapper = styled.div<FormFieldWrapperProps>`
     props.variant === "error"
       ? css`
           color: ${props.theme.colors.highlight};
+        `
+      : ""}
+  ${(props) =>
+    props.alignCheckbox
+      ? css`
+          padding-top: 21px;
         `
       : ""}
 `;
@@ -83,6 +90,7 @@ export interface FormFieldProps {
   readonly name: string;
   readonly label?: string | React.ReactNode;
   readonly info?: string;
+  readonly alignCheckbox?: boolean;
   readonly variant?: "normal" | "error";
 }
 
@@ -91,9 +99,10 @@ export const FormField: FC<FormFieldProps> = ({
   label,
   info,
   variant,
+  alignCheckbox,
   children,
 }) => (
-  <FormFieldWrapper variant={variant}>
+  <FormFieldWrapper variant={variant} alignCheckbox={alignCheckbox}>
     {label && <Label htmlFor={name}>{label}</Label>}
     {children}
     {info && <FormFieldInfo>{info}</FormFieldInfo>}

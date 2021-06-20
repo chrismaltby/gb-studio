@@ -3,29 +3,38 @@ import { Button } from "ui/buttons/Button";
 
 export const ScriptEventPlaceholder = styled.div`
   background: #ccc;
-  height: 50px;
+  height: 25px;
 `;
 
 interface ScriptEventHeaderProps {
   conditional: boolean;
   nestLevel: number;
+  comment?: boolean;
   child?: boolean;
-  open: boolean;
+  open?: boolean;
 }
 
 export const ScriptEventHeader = styled.div<ScriptEventHeaderProps>`
+  position: relative;
   display: flex;
   align-items: center;
-  text-transform: uppercase;
   font-size: 11px;
   font-weight: bold;
   padding: 0px 10px;
   padding-right: 5px;
   padding-left: 10px;
-  height: 30px;
-  background-color: ${(props) => props.theme.colors.input.background};
+  height: 25px;
+  background-color: ${(props) => props.theme.colors.sidebar.background};
   color: ${(props) => props.theme.colors.input.text};
-  // border-bottom: 1px solid ${(props) => props.theme.colors.input.border};
+  line-height: 12px;
+  cursor: move;
+
+  &:before {
+    content: "⋮";
+    position: absolute;
+    left: 3px;
+    top: 6px;
+  }
 
   svg {
     fill: ${(props) => props.theme.colors.text};
@@ -35,26 +44,38 @@ export const ScriptEventHeader = styled.div<ScriptEventHeaderProps>`
   }
 
   ${(props) =>
-    props.conditional && props.nestLevel === 0
+    props.conditional && props.nestLevel % 4 === 0
       ? css`
-          background: blue;
-          color: #fff;
-          svg {
-            fill: #fff;
-          }
+          background: ${props.theme.colors.scripting.header.nest1Background};
+        `
+      : ""}
+  ${(props) =>
+    props.conditional && props.nestLevel % 4 === 1
+      ? css`
+          background: ${props.theme.colors.scripting.header.nest2Background};
+        `
+      : ""}
+  ${(props) =>
+    props.conditional && props.nestLevel % 4 === 2
+      ? css`
+          background: ${props.theme.colors.scripting.header.nest3Background};
+        `
+      : ""}
+          
+  ${(props) =>
+    props.conditional && props.nestLevel % 4 === 3
+      ? css`
+          background: ${props.theme.colors.scripting.header.nest4Background};
         `
       : ""}
 
   ${(props) =>
-    props.conditional && props.nestLevel === 1
+    props.comment
       ? css`
-          background: purple;
-          color: #fff;
-          svg {
-            fill: #fff;
-          }
+          background: ${props.theme.colors.scripting.header.commentBackground};
         `
-      : ""}      
+      : ""}
+
 
   ${(props) =>
     props.child
@@ -63,11 +84,6 @@ export const ScriptEventHeader = styled.div<ScriptEventHeaderProps>`
         `
       : ""}
 
-
-  > span {
-    flex-grow: 1;
-  }
-
   ${Button} {
     padding: 4px;
     min-width: 18px;
@@ -75,6 +91,7 @@ export const ScriptEventHeader = styled.div<ScriptEventHeaderProps>`
 `;
 
 export const ScriptEventWrapper = styled.div`
+  background: ${(props) => props.theme.colors.scripting.form.background};
   & ~ & {
     border-top: 1px solid ${(props) => props.theme.colors.input.border};
   }
@@ -86,22 +103,52 @@ interface ScriptEventFormWrapperProps {
 }
 
 export const ScriptEventFormWrapper = styled.div<ScriptEventFormWrapperProps>`
-  ${(props) =>
-    props.conditional && props.nestLevel === 0
-      ? css`
-          border-left: 10px solid blue;
-        `
-      : ""}
+  position: relative;
 
   ${(props) =>
-    props.conditional && props.nestLevel === 1
+    props.conditional && props.nestLevel % 4 === 0
       ? css`
-          border-left: 10px solid purple;
+          border-left: 10px solid
+            ${props.theme.colors.scripting.header.nest1Background};
+        `
+      : ""}
+  ${(props) =>
+    props.conditional && props.nestLevel % 4 === 1
+      ? css`
+          border-left: 10px solid
+            ${props.theme.colors.scripting.header.nest2Background};
+        `
+      : ""}
+  ${(props) =>
+    props.conditional && props.nestLevel % 4 === 2
+      ? css`
+          border-left: 10px solid
+            ${props.theme.colors.scripting.header.nest3Background};
+        `
+      : ""}
+          
+  ${(props) =>
+    props.conditional && props.nestLevel % 4 === 3
+      ? css`
+          border-left: 10px solid
+            ${props.theme.colors.scripting.header.nest4Background};
         `
       : ""}
 `;
 
+export const ScriptEventFormNest = styled.div`
+  position: absolute;
+  top: 0;
+  left: -10px;
+  bottom: 0;
+  width: 12px;
+  :hover {
+    background: rgba(128, 128, 128, 0.1);
+  }
+`;
+
 export const ScriptEventFields = styled.div`
+  border-top: 1px solid ${(props) => props.theme.colors.input.border};
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px 10px;
@@ -123,4 +170,10 @@ export const ScriptEventField = styled.div<ScriptEventFieldProps>`
           grid-column-end: span 1;
         `
       : ""}
+`;
+
+export const ScriptEditorChildren = styled.div`
+  border: 1px solid ${(props) => props.theme.colors.input.border};
+  border-right: 0;
+  margin-right: -10px;
 `;

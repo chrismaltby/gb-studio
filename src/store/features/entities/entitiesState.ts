@@ -362,7 +362,7 @@ const patchCustomEventCallName = (customEventId: string, name: string) => {
     if (event.command !== EVENT_CALL_CUSTOM_EVENT) {
       return event;
     }
-    if (event.args.customEventId !== customEventId) {
+    if (event.args?.customEventId !== customEventId) {
       return event;
     }
     return {
@@ -2689,7 +2689,7 @@ const toggleScriptEventOpen: CaseReducer<
   }>
 > = (state, action) => {
   const scriptEvent = state.scriptEvents.entities[action.payload.scriptEventId];
-  if (!scriptEvent) {
+  if (!scriptEvent || !scriptEvent.args) {
     return;
   }
   scriptEvent.args.__collapse = !scriptEvent.args.__collapse;
@@ -2704,7 +2704,7 @@ const editScriptEventArg: CaseReducer<
   }>
 > = (state, action) => {
   const scriptEvent = state.scriptEvents.entities[action.payload.scriptEventId];
-  if (!scriptEvent) {
+  if (!scriptEvent || !scriptEvent.args) {
     return;
   }
   scriptEvent.args[action.payload.key] = action.payload.value;

@@ -10,18 +10,21 @@ import entityActions from "store/features/entities/entitiesActions";
 import { RootState } from "store/configureStore";
 import { scriptEventSelectors } from "store/features/entities/entitiesState";
 import { ScriptEventsRef } from "store/features/entities/entitiesTypes";
-import { EVENT_END } from "lib/compiler/eventTypes";
+import { EVENT_COMMENT, EVENT_END } from "lib/compiler/eventTypes";
 import AddButton from "./AddButton";
 import {
   ScriptEventFormWrapper,
   ScriptEventHeader,
   ScriptEventWrapper,
   ScriptEventPlaceholder,
+  ScriptEditorChildren,
+  ScriptEventFormNest,
 } from "ui/scripting/ScriptEvents";
 import { ArrowIcon } from "ui/icons/Icons";
 import { FixedSpacer } from "ui/spacing/Spacing";
 import ScriptEventForm from "./ScriptEventForm2";
-import uuid from "uuid";
+import l10n from "lib/helpers/l10n";
+import events from "lib/events";
 
 interface ScriptEditorEventProps {
   id: string;
@@ -36,6 +39,8 @@ interface ScriptEditorEventProps {
 const ItemTypes = {
   SCRIPT_EVENT: "SCRIPT_EVENT",
 };
+
+const COMMENT_PREFIX = "//";
 
 const ScriptEditorEvent = ({
   id,
@@ -147,18 +152,22 @@ const ScriptEditorEvent = ({
 
   const renderEvents = useCallback(
     (key: string) => {
-      return (scriptEvent?.children?.[key] || []).map((child, childIndex) => (
-        <ScriptEditorEvent
-          key={child}
-          id={child}
-          index={childIndex}
-          nestLevel={nestLevel + 1}
-          parentType="scriptEvent"
-          parentId={id}
-          parentKey={key}
-          entityId={entityId}
-        />
-      ));
+      return (
+        <ScriptEditorChildren>
+          {(scriptEvent?.children?.[key] || []).map((child, childIndex) => (
+            <ScriptEditorEvent
+              key={child}
+              id={child}
+              index={childIndex}
+              nestLevel={nestLevel + 1}
+              parentType="scriptEvent"
+              parentId={id}
+              parentKey={key}
+              entityId={entityId}
+            />
+          ))}
+        </ScriptEditorChildren>
+      );
     },
     [entityId, id, nestLevel, scriptEvent?.children]
   );
@@ -166,6 +175,26 @@ const ScriptEditorEvent = ({
   if (!scriptEvent) {
     return null;
   }
+
+  const command = scriptEvent.command;
+  const isComment = command === EVENT_COMMENT;
+  const commented = scriptEvent.args && scriptEvent.args.__comment;
+  const hasElse = scriptEvent.children && scriptEvent.children.false;
+  const disabledElse = scriptEvent.args && scriptEvent.args.__disableElse;
+
+  const localisedCommand = l10n(command);
+  const defaultCommandName =
+    localisedCommand !== command
+      ? localisedCommand
+      : (events[command] && events[command]?.name) || command;
+
+  const eventName = String(scriptEvent.args?.__name || defaultCommandName);
+
+  const labelName = scriptEvent.args?.__label
+    ? scriptEvent.args.__label
+    : isComment && scriptEvent.args?.text;
+
+  const hoverName = labelName || eventName;
 
   if (scriptEvent.command === EVENT_END) {
     return (
@@ -190,28 +219,49 @@ const ScriptEditorEvent = ({
         <div ref={dragRef}>
           <ScriptEventHeader
             conditional={!!scriptEvent.children}
+            comment={Boolean(commented || isComment)}
             nestLevel={nestLevel}
             onClick={toggleOpen}
-            open={isOpen}
+            open={isOpen && !commented}
           >
-            <ArrowIcon />
-            <FixedSpacer width={5} />
-            {id}
+            {!commented && (
+              <>
+                <ArrowIcon />
+                <FixedSpacer width={5} />
+              </>
+            )}
+            <div>
+              {commented || isComment ? <span>{COMMENT_PREFIX} </span> : ""}
+              {labelName ? (
+                <span>
+                  {labelName}
+                  <small>{eventName}</small>
+                </span>
+              ) : (
+                <span>{eventName}</span>
+              )}
+            </div>
           </ScriptEventHeader>
         </div>
-        <ScriptEventFormWrapper
-          conditional={!!scriptEvent.children}
-          nestLevel={nestLevel}
-          data-handler-id={handlerId}
-        >
-          {isOpen && (
+        {isOpen && !commented && (
+          <ScriptEventFormWrapper
+            conditional={!!scriptEvent.children}
+            nestLevel={nestLevel}
+            data-handler-id={handlerId}
+          >
+            {!!scriptEvent.children && (
+              <ScriptEventFormNest
+                title={String(hoverName || "")}
+                onClick={toggleOpen}
+              />
+            )}
             <ScriptEventForm
               id={id}
               entityId={entityId}
               renderEvents={renderEvents}
             />
-          )}
-        </ScriptEventFormWrapper>
+          </ScriptEventFormWrapper>
+        )}
       </div>
     </ScriptEventWrapper>
   );

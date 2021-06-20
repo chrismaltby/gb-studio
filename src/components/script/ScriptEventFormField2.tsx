@@ -48,7 +48,7 @@ const ScriptEventFormField = memo(
         if (scriptEvent && field.postUpdate) {
           field.postUpdate(
             { ...scriptEvent.args, [key]: value },
-            scriptEvent.args
+            scriptEvent.args || {}
           );
         }
       },
@@ -198,8 +198,12 @@ const ScriptEventFormField = memo(
       <ScriptEventField halfWidth={field.width === "50%"}>
         <FormField
           name={genKey(scriptEventId, field.key || "")}
-          label={field.label}
-          //   alignCheckbox={field.alignCheckbox}
+          label={
+            field.label && field.type !== "checkbox" && field.type !== "group"
+              ? field.label
+              : ""
+          }
+          alignCheckbox={field.alignCheckbox}
         >
           {/* {label && field.type !== "checkbox" && field.type !== "group" && (
         <label

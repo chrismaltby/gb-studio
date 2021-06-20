@@ -83,6 +83,25 @@ const lightTheme: ThemeInterface = {
       selectedBackground: "#dddddd",
       activeBackground: "#eaeaea",
     },
+    scripting: {
+      header: {
+        background: "#efefef",
+        backgroundAlt: "#dedede",
+        nest1Background: "#b3e5fc",
+        nest1BackgroundAlt: "#81d4fa",
+        nest2Background: "#ffccbc",
+        nest2BackgroundAlt: "#ffab91",
+        nest3Background: "#c8e6c9",
+        nest3BackgroundAlt: "#a5d6a7",
+        nest4Background: "#d1c4e9",
+        nest4BackgroundAlt: "#b39ddb",
+        commentBackground: "#dcedc8",
+        commentBackgroundAlt: "#c5e1a5",
+      },
+      form: {
+        background: "#ffffff",
+      },
+    },
     tracker: {
       background: "#f2f2f2",
       activeBackground: "#eaeaea",

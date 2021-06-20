@@ -83,6 +83,25 @@ const darkTheme: ThemeInterface = {
       selectedBackground: "#000000",
       activeBackground: "#333333",
     },
+    scripting: {
+      header: {
+        background: "#0a0e0e",
+        backgroundAlt: "#101515",
+        nest1Background: "#01579b",
+        nest1BackgroundAlt: "#0277bd",
+        nest2Background: "#bf360c",
+        nest2BackgroundAlt: "#d84315",
+        nest3Background: "#1b5e20",
+        nest3BackgroundAlt: "#2e7d32",
+        nest4Background: "#311b92",
+        nest4BackgroundAlt: "#4527a0",
+        commentBackground: "#8bc34a",
+        commentBackgroundAlt: "#7cb342",
+      },
+      form: {
+        background: "#000000",
+      },
+    },
     tracker: {
       background: "#222222",
       activeBackground: "#333333",
