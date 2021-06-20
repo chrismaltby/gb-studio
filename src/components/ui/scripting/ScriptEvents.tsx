@@ -6,12 +6,20 @@ export const ScriptEventPlaceholder = styled.div`
   height: 25px;
 `;
 
+export const ScriptEventWrapper = styled.div`
+  background: ${(props) => props.theme.colors.scripting.form.background};
+  & ~ & {
+    border-top: 1px solid ${(props) => props.theme.colors.input.border};
+  }
+`;
+
 interface ScriptEventHeaderProps {
   conditional: boolean;
   nestLevel: number;
   comment?: boolean;
   child?: boolean;
   open?: boolean;
+  altBg?: boolean;
 }
 
 export const ScriptEventHeader = styled.div<ScriptEventHeaderProps>`
@@ -24,7 +32,8 @@ export const ScriptEventHeader = styled.div<ScriptEventHeaderProps>`
   padding-right: 5px;
   padding-left: 10px;
   height: 25px;
-  background-color: ${(props) => props.theme.colors.sidebar.background};
+  background-color: ${(props) =>
+    props.theme.colors.scripting.header.background};
   color: ${(props) => props.theme.colors.input.text};
   line-height: 12px;
   cursor: move;
@@ -44,38 +53,83 @@ export const ScriptEventHeader = styled.div<ScriptEventHeaderProps>`
   }
 
   ${(props) =>
-    props.conditional && props.nestLevel % 4 === 0
+    props.altBg
+      ? css`
+          background: ${props.theme.colors.scripting.header.backgroundAlt};
+        `
+      : ""}
+
+  ${(props) =>
+    !props.altBg && props.conditional && props.nestLevel % 4 === 0
       ? css`
           background: ${props.theme.colors.scripting.header.nest1Background};
         `
       : ""}
   ${(props) =>
-    props.conditional && props.nestLevel % 4 === 1
+    !props.altBg && props.conditional && props.nestLevel % 4 === 1
       ? css`
           background: ${props.theme.colors.scripting.header.nest2Background};
         `
       : ""}
   ${(props) =>
-    props.conditional && props.nestLevel % 4 === 2
+    !props.altBg && props.conditional && props.nestLevel % 4 === 2
       ? css`
           background: ${props.theme.colors.scripting.header.nest3Background};
         `
       : ""}
           
   ${(props) =>
-    props.conditional && props.nestLevel % 4 === 3
+    !props.altBg && props.conditional && props.nestLevel % 4 === 3
       ? css`
           background: ${props.theme.colors.scripting.header.nest4Background};
         `
       : ""}
 
   ${(props) =>
-    props.comment
+    !props.altBg && props.comment
       ? css`
-          background: ${props.theme.colors.scripting.header.commentBackground};
+          &&& {
+            background: ${props.theme.colors.scripting.header
+              .commentBackground};
+          }
         `
       : ""}
 
+  ${(props) =>
+    props.altBg && props.conditional && props.nestLevel % 4 === 0
+      ? css`
+          background: ${props.theme.colors.scripting.header.nest1BackgroundAlt};
+        `
+      : ""}
+  ${(props) =>
+    props.altBg && props.conditional && props.nestLevel % 4 === 1
+      ? css`
+          background: ${props.theme.colors.scripting.header.nest2BackgroundAlt};
+        `
+      : ""}
+  ${(props) =>
+    props.altBg && props.conditional && props.nestLevel % 4 === 2
+      ? css`
+          background: ${props.theme.colors.scripting.header.nest3BackgroundAlt};
+        `
+      : ""}
+          
+  ${(props) =>
+    props.altBg && props.conditional && props.nestLevel % 4 === 3
+      ? css`
+          background: ${props.theme.colors.scripting.header.nest4BackgroundAlt};
+        `
+      : ""}
+
+  ${(props) =>
+    props.altBg && props.comment
+      ? css`
+          &&& {
+            background: ${props.theme.colors.scripting.header
+              .commentBackgroundAlt};
+          }
+        `
+      : ""}
 
   ${(props) =>
     props.child
@@ -90,37 +144,31 @@ export const ScriptEventHeader = styled.div<ScriptEventHeaderProps>`
   }
 `;
 
-export const ScriptEventWrapper = styled.div`
-  background: ${(props) => props.theme.colors.scripting.form.background};
-  & ~ & {
-    border-top: 1px solid ${(props) => props.theme.colors.input.border};
-  }
-`;
-
 interface ScriptEventFormWrapperProps {
   conditional: boolean;
   nestLevel: number;
+  altBg?: boolean;
 }
 
 export const ScriptEventFormWrapper = styled.div<ScriptEventFormWrapperProps>`
   position: relative;
 
   ${(props) =>
-    props.conditional && props.nestLevel % 4 === 0
+    !props.altBg && props.conditional && props.nestLevel % 4 === 0
       ? css`
           border-left: 10px solid
             ${props.theme.colors.scripting.header.nest1Background};
         `
       : ""}
   ${(props) =>
-    props.conditional && props.nestLevel % 4 === 1
+    !props.altBg && props.conditional && props.nestLevel % 4 === 1
       ? css`
           border-left: 10px solid
             ${props.theme.colors.scripting.header.nest2Background};
         `
       : ""}
   ${(props) =>
-    props.conditional && props.nestLevel % 4 === 2
+    !props.altBg && props.conditional && props.nestLevel % 4 === 2
       ? css`
           border-left: 10px solid
             ${props.theme.colors.scripting.header.nest3Background};
@@ -128,10 +176,40 @@ export const ScriptEventFormWrapper = styled.div<ScriptEventFormWrapperProps>`
       : ""}
           
   ${(props) =>
-    props.conditional && props.nestLevel % 4 === 3
+    !props.altBg && props.conditional && props.nestLevel % 4 === 3
       ? css`
           border-left: 10px solid
             ${props.theme.colors.scripting.header.nest4Background};
+        `
+      : ""}
+
+  ${(props) =>
+    props.altBg && props.conditional && props.nestLevel % 4 === 0
+      ? css`
+          border-left: 10px solid
+            ${props.theme.colors.scripting.header.nest1BackgroundAlt};
+        `
+      : ""}
+  ${(props) =>
+    props.altBg && props.conditional && props.nestLevel % 4 === 1
+      ? css`
+          border-left: 10px solid
+            ${props.theme.colors.scripting.header.nest2BackgroundAlt};
+        `
+      : ""}
+  ${(props) =>
+    props.altBg && props.conditional && props.nestLevel % 4 === 2
+      ? css`
+          border-left: 10px solid
+            ${props.theme.colors.scripting.header.nest3BackgroundAlt};
+        `
+      : ""}
+          
+  ${(props) =>
+    props.altBg && props.conditional && props.nestLevel % 4 === 3
+      ? css`
+          border-left: 10px solid
+            ${props.theme.colors.scripting.header.nest4BackgroundAlt};
         `
       : ""}
 `;

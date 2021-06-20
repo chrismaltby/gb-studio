@@ -223,6 +223,7 @@ const ScriptEditorEvent = ({
             nestLevel={nestLevel}
             onClick={toggleOpen}
             open={isOpen && !commented}
+            altBg={index % 2 === 0}
           >
             {!commented && (
               <>
@@ -247,6 +248,7 @@ const ScriptEditorEvent = ({
           <ScriptEventFormWrapper
             conditional={!!scriptEvent.children}
             nestLevel={nestLevel}
+            altBg={index % 2 === 0}
             data-handler-id={handlerId}
           >
             {!!scriptEvent.children && (
