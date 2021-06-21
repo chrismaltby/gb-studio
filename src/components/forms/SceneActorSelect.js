@@ -165,7 +165,7 @@ SceneActorSelect.defaultProps = {
 };
 
 function mapStateToProps(state, ownProps) {
-  const actorIds = getSceneActorIds(state, { id: state.editor.scene });
+  const actorIds = getSceneActorIds(state, { id: state.editor.scene }) || [];
   const actorsLookup = actorSelectors.selectEntities(state);
   const contextType = state.editor.type;
   const contextEntityId = state.editor.entityId;

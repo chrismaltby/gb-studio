@@ -26,8 +26,9 @@ export const ScriptEditorEventHelper: FC<ScriptEditorEventHelperProps> = ({
     return (
       <RelativePortal offsetX={-10} offsetY={10} pin="top-right">
         {Array.isArray(event.args?.text) ? (
-          event.args?.text.map((text: string) => (
+          event.args?.text.map((text: string, index) => (
             <DialoguePreview
+              key={index}
               text={text}
               avatarId={toString(event.args?.avatarId)}
             />

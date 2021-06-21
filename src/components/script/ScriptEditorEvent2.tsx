@@ -172,7 +172,7 @@ const ScriptEditorEvent = ({
   const renderEvents = useCallback(
     (key: string) => {
       return (
-        <ScriptEditorChildren>
+        <ScriptEditorChildren key={key}>
           {(scriptEvent?.children?.[key] || []).map((child, childIndex) => (
             <ScriptEditorEvent
               key={child}
