@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   DragSourceMonitor,
   DropTargetMonitor,
@@ -41,6 +41,7 @@ const ItemTypes = {
 };
 
 const COMMENT_PREFIX = "//";
+const INITIAL_EVENT_LOAD_COUNT = 3;
 
 const ScriptEditorEvent = ({
   id,
@@ -54,6 +55,22 @@ const ScriptEditorEvent = ({
   const dispatch = useDispatch();
   const dragRef = useRef<HTMLDivElement>(null);
   const dropRef = useRef<HTMLDivElement>(null);
+  const timerRef = useRef<number>(0);
+  const [visible, setVisible] = useState(
+    nestLevel + index < INITIAL_EVENT_LOAD_COUNT
+  );
+
+  // Load long scripts asynchronously
+  useEffect(() => {
+    timerRef.current = setTimeout(() => {
+      setVisible(true);
+    }, Math.min(0, nestLevel + index - INITIAL_EVENT_LOAD_COUNT));
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, [index, nestLevel]);
 
   const [{ handlerId, isOverCurrent }, drop] = useDrop({
     accept: ItemTypes.SCRIPT_EVENT,
@@ -244,7 +261,7 @@ const ScriptEditorEvent = ({
             </div>
           </ScriptEventHeader>
         </div>
-        {isOpen && !commented && (
+        {visible && isOpen && !commented && (
           <ScriptEventFormWrapper
             conditional={!!scriptEvent.children}
             nestLevel={nestLevel}
