@@ -4,16 +4,22 @@ import { RootState } from "store/configureStore";
 import { scriptEventSelectors } from "store/features/entities/entitiesState";
 import { ScriptEventFieldSchema } from "store/features/entities/entitiesTypes";
 import entitiesActions from "store/features/entities/entitiesActions";
-import { TriangleIcon } from "ui/icons/Icons";
+import { ArrowIcon } from "ui/icons/Icons";
 import ScriptEventFormInput from "./ScriptEventFormInput";
-import cx from "classnames";
 import { FormField, ToggleableFormField } from "ui/form/FormLayout";
-import { ScriptEventField } from "ui/scripting/ScriptEvents";
+import {
+  ScriptEventField,
+  ScriptEventBranchHeader,
+} from "ui/scripting/ScriptEvents";
 import { SidebarTabs } from "../editors/Sidebar";
+import { FixedSpacer } from "ui/spacing/Spacing";
+import { TabBar } from "ui/tabs/Tabs";
 
 interface ScriptEventFormFieldProps {
   scriptEventId: string;
   field: ScriptEventFieldSchema;
+  nestLevel: number;
+  altBg: boolean;
   entityId: string;
 }
 
@@ -21,20 +27,22 @@ const genKey = (id: string, key: string, index?: number) =>
   `${id}_${key}_${index || 0}`;
 
 const ScriptEventFormField = memo(
-  ({ scriptEventId, field, entityId }: ScriptEventFormFieldProps) => {
+  ({
+    scriptEventId,
+    field,
+    entityId,
+    nestLevel,
+    altBg,
+  }: ScriptEventFormFieldProps) => {
     const dispatch = useDispatch();
-    const [value, setValue] = useState<unknown | unknown[]>();
     const scriptEvent = useSelector((state: RootState) =>
       scriptEventSelectors.selectById(state, scriptEventId)
     );
 
-    useEffect(() => {
-      const args = scriptEvent?.args;
-      const fieldValue: unknown = field.multiple
-        ? ([] as unknown[]).concat([], args?.[field.key || ""])
-        : args?.[field.key || ""];
-      setValue(fieldValue);
-    }, [scriptEvent, field]);
+    const args = scriptEvent?.args;
+    const value: unknown = field.multiple
+      ? ([] as unknown[]).concat([], args?.[field.key || ""])
+      : args?.[field.key || ""];
 
     const setArgValue = useCallback(
       (key: string, value: unknown) => {
@@ -108,21 +116,24 @@ const ScriptEventFormField = memo(
 
     if (field.type === "collapsable") {
       return (
-        <div
-          className={cx("ScriptEditorEvent__Else", {
-            "ScriptEditorEvent__Else--Open": !value,
-          })}
+        <ScriptEventBranchHeader
+          conditional={true}
           onClick={() => onChange(!value)}
+          open={!value}
+          nestLevel={nestLevel}
+          altBg={altBg}
         >
-          <TriangleIcon /> {field.label || ""}
-        </div>
+          <ArrowIcon />
+          <FixedSpacer width={5} />
+          {field.label || ""}
+        </ScriptEventBranchHeader>
       );
     }
 
     if (field.type === "tabs") {
       return (
-        <SidebarTabs
-          small
+        <TabBar
+          variant="scriptEvent"
           value={String(value || "")}
           values={field.values || {}}
           onChange={onChange}
@@ -205,16 +216,6 @@ const ScriptEventFormField = memo(
           }
           alignCheckbox={field.alignCheckbox}
         >
-          {/* {label && field.type !== "checkbox" && field.type !== "group" && (
-        <label
-          htmlFor={genKey(scriptEventId, field.key)}
-          style={
-            field.lineHeight ? { lineHeight: field.lineHeight } : undefined
-          }
-        >
-          {label}
-        </label>
-      )} */}
           {inputField}
         </FormField>
       </ScriptEventField>

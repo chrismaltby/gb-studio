@@ -38,7 +38,7 @@ export const ScriptEventHeader = styled.div<ScriptEventHeaderProps>`
   line-height: 12px;
   cursor: move;
 
-  &:before {
+  &:hover:before {
     content: "⋮";
     position: absolute;
     left: 3px;
@@ -49,6 +49,7 @@ export const ScriptEventHeader = styled.div<ScriptEventHeaderProps>`
     fill: ${(props) => props.theme.colors.text};
     width: 8px;
     height: 8px;
+    flex-shrink: 0;
     transform: rotate(${(props) => (props.open ? 90 : 0)}deg);
   }
 
@@ -142,6 +143,83 @@ export const ScriptEventHeader = styled.div<ScriptEventHeaderProps>`
     padding: 4px;
     min-width: 18px;
   }
+`;
+
+export const ScriptEventBranchHeader = styled.div<ScriptEventHeaderProps>`
+  position: relative;
+  display: flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 0px 10px;
+  padding-right: 5px;
+  padding-left: 0px;
+  margin-left: -10px;
+  margin-right: -10px;
+  margin-bottom: -10px;
+  height: 25px;
+  color: ${(props) => props.theme.colors.input.text};
+  line-height: 12px;
+
+  svg {
+    fill: ${(props) => props.theme.colors.text};
+    width: 8px;
+    height: 8px;
+    flex-shrink: 0;
+    transform: rotate(${(props) => (props.open ? 90 : 0)}deg);
+  }
+
+  ${(props) =>
+    !props.altBg && props.conditional && props.nestLevel % 4 === 0
+      ? css`
+          background: ${props.theme.colors.scripting.header.nest1Background};
+        `
+      : ""}
+  ${(props) =>
+    !props.altBg && props.conditional && props.nestLevel % 4 === 1
+      ? css`
+          background: ${props.theme.colors.scripting.header.nest2Background};
+        `
+      : ""}
+  ${(props) =>
+    !props.altBg && props.conditional && props.nestLevel % 4 === 2
+      ? css`
+          background: ${props.theme.colors.scripting.header.nest3Background};
+        `
+      : ""}
+          
+  ${(props) =>
+    !props.altBg && props.conditional && props.nestLevel % 4 === 3
+      ? css`
+          background: ${props.theme.colors.scripting.header.nest4Background};
+        `
+      : ""}
+
+  ${(props) =>
+    props.altBg && props.conditional && props.nestLevel % 4 === 0
+      ? css`
+          background: ${props.theme.colors.scripting.header.nest1BackgroundAlt};
+        `
+      : ""}
+  ${(props) =>
+    props.altBg && props.conditional && props.nestLevel % 4 === 1
+      ? css`
+          background: ${props.theme.colors.scripting.header.nest2BackgroundAlt};
+        `
+      : ""}
+  ${(props) =>
+    props.altBg && props.conditional && props.nestLevel % 4 === 2
+      ? css`
+          background: ${props.theme.colors.scripting.header.nest3BackgroundAlt};
+        `
+      : ""}
+          
+  ${(props) =>
+    props.altBg && props.conditional && props.nestLevel % 4 === 3
+      ? css`
+          background: ${props.theme.colors.scripting.header.nest4BackgroundAlt};
+        `
+      : ""}
 `;
 
 interface ScriptEventFormWrapperProps {
@@ -254,4 +332,8 @@ export const ScriptEditorChildren = styled.div`
   border: 1px solid ${(props) => props.theme.colors.input.border};
   border-right: 0;
   margin-right: -10px;
+
+  ${ScriptEventBranchHeader} + & {
+    margin-top: 10px;
+  }
 `;

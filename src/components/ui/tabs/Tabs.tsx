@@ -6,21 +6,22 @@ interface TabBarProps<T extends string> {
   values: Record<T, string>;
   onChange?: (newValue: T) => void;
   buttons?: ReactNode;
-  variant?: "normal" | "secondary";
+  variant?: "normal" | "secondary" | "scriptEvent";
   overflowActiveTab?: boolean;
 }
 
 interface WrapperProps {
-  variant?: "normal" | "secondary";
+  variant?: "normal" | "secondary" | "scriptEvent";
 }
 
 interface TabsProps {
   overflowActiveTab?: boolean;
+  variant?: "normal" | "secondary" | "scriptEvent";
 }
 
 interface TabProps {
   selected: boolean;
-  variant?: "normal" | "secondary";
+  variant?: "normal" | "secondary" | "scriptEvent";
 }
 
 const Wrapper = styled.div<WrapperProps>`
@@ -42,6 +43,16 @@ const Wrapper = styled.div<WrapperProps>`
           background-color: ${(props) => props.theme.colors.input.background};
         `
       : ""}
+
+  ${(props) =>
+    props.variant === "scriptEvent"
+      ? css`
+          border-left: 1px solid var(--sidebar-border-color);
+          border-bottom: 0;
+          margin-bottom: -10px;
+          height: 25px;
+        `
+      : ""}
 `;
 
 const Tabs = styled.div<TabsProps>`
@@ -58,6 +69,13 @@ const Tabs = styled.div<TabsProps>`
     props.overflowActiveTab
       ? css`
           height: 38px;
+        `
+      : ""}
+
+  ${(props) =>
+    props.variant === "scriptEvent"
+      ? css`
+          height: 25px;
         `
       : ""}
 `;
@@ -126,6 +144,14 @@ ${(props) =>
         `
       : ""}
 
+
+      ${(props) =>
+    props.variant === "scriptEvent"
+      ? css`
+          padding: 0 10px;
+        `
+      : ""}
+
   ${Tabs}:hover > &:not(:hover) {
     overflow: hidden;
   }
@@ -151,7 +177,7 @@ export const TabBar = <T extends string>({
 
   return (
     <Wrapper variant={variant}>
-      <Tabs overflowActiveTab={overflowActiveTab}>
+      <Tabs overflowActiveTab={overflowActiveTab} variant={variant}>
         {tabKeys.map((tab, index) => (
           <Tab
             key={values[tab]}

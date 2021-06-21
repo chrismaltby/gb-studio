@@ -25,6 +25,8 @@ import { ScriptEventFields } from "ui/scripting/ScriptEvents";
 interface ScriptEventFormProps {
   id: string;
   entityId: string;
+  nestLevel: number;
+  altBg: boolean;
   renderEvents: (key: string) => React.ReactNode;
 }
 
@@ -113,6 +115,8 @@ const getScriptEventFields = (
 const ScriptEventForm = ({
   id,
   entityId,
+  nestLevel,
+  altBg,
   renderEvents,
 }: ScriptEventFormProps) => {
   const [fields, setFields] = useState<ScriptEventFieldSchema[]>([]);
@@ -174,6 +178,8 @@ const ScriptEventForm = ({
             scriptEventId={id}
             field={field}
             entityId={entityId}
+            nestLevel={nestLevel}
+            altBg={altBg}
           />
         );
       })}

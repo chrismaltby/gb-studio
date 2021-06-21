@@ -261,6 +261,8 @@ const ScriptEditorEvent = ({
               id={id}
               entityId={entityId}
               renderEvents={renderEvents}
+              nestLevel={nestLevel}
+              altBg={index % 2 === 0}
             />
           </ScriptEventFormWrapper>
         )}
