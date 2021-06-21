@@ -17,11 +17,13 @@ import {
   metaspriteTileSelectors,
   spriteStateSelectors,
   spriteAnimationSelectors,
+  scriptEventSelectors,
 } from "../entities/entitiesState";
 import {
   CustomEvent,
   Metasprite,
   MetaspriteTile,
+  ScriptEvent,
   SpriteAnimation,
 } from "../entities/entitiesTypes";
 import actions from "./clipboardActions";
@@ -33,9 +35,11 @@ import {
   ClipboardTypeMetasprites,
   ClipboardTypeMetaspriteTiles,
   ClipboardTypePaletteIds,
+  ClipboardTypeScriptEvents,
   ClipboardTypeSpriteState,
 } from "./clipboardTypes";
 import clipboardActions from "./clipboardActions";
+import { walkNormalisedScriptEvents } from "../entities/entitiesHelpers";
 
 const clipboardMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => (action) => {
@@ -305,6 +309,23 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         format: ClipboardTypeMetaspriteTiles,
         data: {
           metaspriteTiles,
+        },
+      });
+    } else if (actions.copyScriptEvents.match(action)) {
+      const state = store.getState();
+      const scriptEventsLookup = scriptEventSelectors.selectEntities(state);
+      const scriptEvents: ScriptEvent[] = [];
+      walkNormalisedScriptEvents(
+        action.payload.scriptEventIds,
+        scriptEventsLookup,
+        (scriptEvent) => {
+          scriptEvents.push(scriptEvent);
+        }
+      );
+      copy({
+        format: ClipboardTypeScriptEvents,
+        data: {
+          scriptEvents,
         },
       });
     } else if (actions.fetchClipboard.match(action)) {

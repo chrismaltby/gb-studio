@@ -24,6 +24,9 @@ const copyTrigger = createAction<Trigger>("clipboard/copyTrigger");
 const copyScene = createAction<Scene>("clipboard/copyScene");
 const copyEvent = createAction<ScriptEvent>("clipboard/copyEvent");
 const copyScript = createAction<ScriptEvent[]>("clipboard/copyScript");
+const copyScriptEvents = createAction<{
+  scriptEventIds: string[];
+}>("clipboard/copyScriptEvents");
 const copyMetasprites = createAction<{
   metaspriteIds: string[];
 }>("clipboard/copyMetasprites");
@@ -176,6 +179,7 @@ export default {
   copyScene,
   copyEvent,
   copyScript,
+  copyScriptEvents,
   copyMetasprites,
   copyMetaspriteTiles,
   copySpriteState,

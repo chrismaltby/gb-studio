@@ -280,3 +280,24 @@ export const isUnionDirectionValue = (
   }
   return true;
 };
+
+export const walkNormalisedScriptEvents = (
+  ids: string[],
+  lookup: Dictionary<ScriptEvent>,
+  callback: (scriptEvent: ScriptEvent) => void
+) => {
+  for (let i = 0; i < ids.length; i++) {
+    const scriptEvent = lookup[ids[i]];
+    if (scriptEvent) {
+      callback(scriptEvent);
+      if (scriptEvent.children) {
+        Object.keys(scriptEvent.children).forEach((key) => {
+          const script = scriptEvent.children?.[key];
+          if (script) {
+            walkNormalisedScriptEvents(script, lookup, callback);
+          }
+        });
+      }
+    }
+  }
+};

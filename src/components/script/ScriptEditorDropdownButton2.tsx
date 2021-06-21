@@ -9,7 +9,7 @@ import l10n from "lib/helpers/l10n";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import { useDispatch } from "react-redux";
-// import clipboardActions from "store/features/clipboard/clipboardActions";
+import clipboardActions from "store/features/clipboard/clipboardActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 
 interface ScriptEditorDropdownButtonProps {
@@ -28,7 +28,13 @@ const ScriptEditorDropdownButton = ({
   const dispatch = useDispatch();
   const clipboardEvent = false;
 
-  const onCopyScript = useCallback(() => {}, []);
+  const onCopyScript = useCallback(() => {
+    dispatch(
+      clipboardActions.copyScriptEvents({
+        scriptEventIds: value,
+      })
+    );
+  }, [dispatch, value]);
 
   const onReplaceScript = useCallback(() => {}, []);
 

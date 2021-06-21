@@ -3,8 +3,10 @@ import {
   Metasprite,
   SpriteState,
   SpriteAnimation,
+  ScriptEvent,
 } from "../entities/entitiesTypes";
 
+export const ClipboardTypeScriptEvents = "gbstudio.scriptevents";
 export const ClipboardTypeMetaspriteTiles = "gbstudio.metaspritetiles";
 export const ClipboardTypeMetasprites = "gbstudio.metasprites";
 export const ClipboardTypeSpriteState = "gbstudio.spritestate";
@@ -32,6 +34,10 @@ export type ClipboardPaletteIds = {
   paletteIds: string[];
 };
 
+export type ClipboardScriptEvents = {
+  scriptEvents: ScriptEvent[];
+};
+
 export type ClipboardType =
   | {
       format: typeof ClipboardTypeMetaspriteTiles;
@@ -48,6 +54,10 @@ export type ClipboardType =
   | {
       format: typeof ClipboardTypePaletteIds;
       data: ClipboardPaletteIds;
+    }
+  | {
+      format: typeof ClipboardTypeScriptEvents;
+      data: ClipboardScriptEvents;
     };
 
 export type ClipboardFormat = ClipboardType["format"];
@@ -57,4 +67,5 @@ export const ClipboardTypes: ClipboardFormat[] = [
   ClipboardTypeMetasprites,
   ClipboardTypeSpriteState,
   ClipboardTypePaletteIds,
+  ClipboardTypeScriptEvents,
 ];
