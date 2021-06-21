@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import entityActions from "store/features/entities/entitiesActions";
 import { RootState } from "store/configureStore";
 import { scriptEventSelectors } from "store/features/entities/entitiesState";
+import editorActions from "store/features/editor/editorActions";
 import { ScriptEventsRef } from "store/features/entities/entitiesTypes";
 import { EVENT_COMMENT, EVENT_END } from "lib/compiler/eventTypes";
 import AddButton from "./AddButton";
@@ -25,6 +26,7 @@ import { FixedSpacer } from "ui/spacing/Spacing";
 import ScriptEventForm from "./ScriptEventForm2";
 import l10n from "lib/helpers/l10n";
 import events from "lib/events";
+import { ScriptEditorEventHelper } from "./ScriptEditorEventHelper";
 
 interface ScriptEditorEventProps {
   id: string;
@@ -189,6 +191,14 @@ const ScriptEditorEvent = ({
     [entityId, id, nestLevel, scriptEvent?.children]
   );
 
+  const onMouseEnter = useCallback(() => {
+    dispatch(editorActions.selectScriptEvent({ eventId: id }));
+  }, [dispatch, id]);
+
+  const onMouseLeave = useCallback(() => {
+    dispatch(editorActions.selectScriptEvent({ eventId: "" }));
+  }, [dispatch]);
+
   if (!scriptEvent) {
     return null;
   }
@@ -226,6 +236,8 @@ const ScriptEditorEvent = ({
 
   return (
     <ScriptEventWrapper
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       style={{
         height: isDragging ? 0 : "auto",
         display: isDragging ? "none" : "block",
@@ -274,6 +286,7 @@ const ScriptEditorEvent = ({
                 onClick={toggleOpen}
               />
             )}
+            <ScriptEditorEventHelper event={scriptEvent} />
             <ScriptEventForm
               id={id}
               entityId={entityId}
