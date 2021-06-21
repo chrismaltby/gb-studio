@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useState } from "react";
+import React, { memo, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store/configureStore";
 import { scriptEventSelectors } from "store/features/entities/entitiesState";
@@ -11,7 +11,6 @@ import {
   ScriptEventField,
   ScriptEventBranchHeader,
 } from "ui/scripting/ScriptEvents";
-import { SidebarTabs } from "../editors/Sidebar";
 import { FixedSpacer } from "ui/spacing/Spacing";
 import { TabBar } from "ui/tabs/Tabs";
 
