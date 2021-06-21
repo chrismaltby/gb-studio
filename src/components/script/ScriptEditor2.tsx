@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import ScriptEditorEvent from "./ScriptEditorEvent2";
 
 interface ScriptEditorProps {
   value: string[];
   type: "scene";
-  onChange: (newValue: string[]) => void;
   entityId: string;
   scriptKey: string;
 }

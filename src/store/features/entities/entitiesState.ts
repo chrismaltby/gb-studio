@@ -2624,19 +2624,33 @@ const removeCustomEvent: CaseReducer<
 
 const selectScriptIds = (
   state: EntitiesState,
-  location: ScriptEventsRef
+  parentType: "scene" | "actor" | "trigger" | "scriptEvent",
+  parentId: string,
+  parentKey: string
 ): string[] | undefined => {
-  if (location.parentType === "scene") {
-    const scene = state.scenes.entities[location.parentId];
+  if (parentType === "scene") {
+    const scene = state.scenes.entities[parentId];
     if (!scene) return;
-    const script = scene[location.parentKey as "script"];
+    const script = scene[parentKey as "script"];
     return script;
-  } else if (location.parentType === "scriptEvent") {
-    const scriptEvent = state.scriptEvents.entities[location.parentId];
+  } else if (parentType === "scriptEvent") {
+    const scriptEvent = state.scriptEvents.entities[parentId];
     if (!scriptEvent) return;
-    const script = scriptEvent.children?.[location.parentKey];
+    const script = scriptEvent.children?.[parentKey];
     return script;
   }
+};
+
+const selectScriptIdsByRef = (
+  state: EntitiesState,
+  location: ScriptEventsRef
+): string[] | undefined => {
+  return selectScriptIds(
+    state,
+    location.parentType,
+    location.parentId,
+    location.parentKey
+  );
 };
 
 const moveScriptEvent: CaseReducer<
@@ -2646,8 +2660,8 @@ const moveScriptEvent: CaseReducer<
     to: ScriptEventsRef;
   }>
 > = (state, action) => {
-  const from = selectScriptIds(state, action.payload.from);
-  const to = selectScriptIds(state, action.payload.to);
+  const from = selectScriptIdsByRef(state, action.payload.from);
+  const to = selectScriptIdsByRef(state, action.payload.to);
   if (!from || !to) {
     return;
   }
@@ -2708,6 +2722,25 @@ const editScriptEventArg: CaseReducer<
     return;
   }
   scriptEvent.args[action.payload.key] = action.payload.value;
+};
+
+const resetScript: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    entityId: string;
+    type: "scene" | "actor" | "trigger" | "scriptEvent";
+    key: string;
+  }>
+> = (state, action) => {
+  const script = selectScriptIds(
+    state,
+    action.payload.type,
+    action.payload.entityId,
+    action.payload.key
+  );
+  if (script) {
+    script.splice(0, script.length - 1);
+  }
 };
 
 /**************************************************************************
@@ -3010,6 +3043,7 @@ const entitiesSlice = createSlice({
 
     moveScriptEvent,
     editScriptEvent,
+    resetScript,
     toggleScriptEventOpen,
     editScriptEventArg,
 

@@ -19,6 +19,7 @@ export const Menu = styled.div<MenuProps>`
   color: ${(props) => props.theme.colors.text};
   font-size: ${(props) => props.theme.typography.menuFontSize};
   padding: 4px 0;
+  font-weight: normal;
 `;
 
 export interface MenuItemProps {
