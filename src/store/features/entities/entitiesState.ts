@@ -2764,6 +2764,32 @@ const toggleScriptEventOpen: CaseReducer<
   scriptEvent.args.__collapse = !scriptEvent.args.__collapse;
 };
 
+const toggleScriptEventComment: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    scriptEventId: string;
+  }>
+> = (state, action) => {
+  const scriptEvent = state.scriptEvents.entities[action.payload.scriptEventId];
+  if (!scriptEvent || !scriptEvent.args) {
+    return;
+  }
+  scriptEvent.args.__comment = !scriptEvent.args.__comment;
+};
+
+const toggleScriptEventDisableElse: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    scriptEventId: string;
+  }>
+> = (state, action) => {
+  const scriptEvent = state.scriptEvents.entities[action.payload.scriptEventId];
+  if (!scriptEvent || !scriptEvent.args) {
+    return;
+  }
+  scriptEvent.args.__disableElse = !scriptEvent.args.__disableElse;
+};
+
 const editScriptEventArg: CaseReducer<
   EntitiesState,
   PayloadAction<{
@@ -2777,6 +2803,20 @@ const editScriptEventArg: CaseReducer<
     return;
   }
   scriptEvent.args[action.payload.key] = action.payload.value;
+};
+
+const editScriptEventLabel: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    scriptEventId: string;
+    value: string;
+  }>
+> = (state, action) => {
+  const scriptEvent = state.scriptEvents.entities[action.payload.scriptEventId];
+  if (!scriptEvent || !scriptEvent.args) {
+    return;
+  }
+  scriptEvent.args.__label = action.payload.value;
 };
 
 const resetScript: CaseReducer<
@@ -2796,6 +2836,16 @@ const resetScript: CaseReducer<
   if (script) {
     script.splice(0, script.length);
   }
+};
+
+const removeScriptEvent: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ scriptEventId: string }>
+> = (state, action) => {
+  scriptEventsAdapter.removeOne(
+    state.scriptEvents,
+    action.payload.scriptEventId
+  );
 };
 
 /**************************************************************************
@@ -3119,7 +3169,11 @@ const entitiesSlice = createSlice({
     editScriptEvent,
     resetScript,
     toggleScriptEventOpen,
+    toggleScriptEventComment,
+    toggleScriptEventDisableElse,
     editScriptEventArg,
+    editScriptEventLabel,
+    removeScriptEvent,
 
     /**************************************************************************
      * Music
