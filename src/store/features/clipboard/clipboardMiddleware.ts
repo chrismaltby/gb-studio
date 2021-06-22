@@ -18,6 +18,7 @@ import {
   spriteStateSelectors,
   spriteAnimationSelectors,
   scriptEventSelectors,
+  generateScriptEventInsertActions,
 } from "../entities/entitiesState";
 import {
   CustomEvent,
@@ -40,6 +41,7 @@ import {
 } from "./clipboardTypes";
 import clipboardActions from "./clipboardActions";
 import { walkNormalisedScriptEvents } from "../entities/entitiesHelpers";
+import keyBy from "lodash/keyBy";
 
 const clipboardMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => (action) => {
@@ -326,8 +328,57 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         format: ClipboardTypeScriptEvents,
         data: {
           scriptEvents,
+          script: action.payload.scriptEventIds,
         },
       });
+    } else if (actions.pasteScriptEvents.match(action)) {
+      const clipboard = pasteAny();
+      if (!clipboard) {
+        return next(action);
+      }
+      if (clipboard.format === ClipboardTypeScriptEvents) {
+        const scriptEventIds = clipboard.data.script;
+        const scriptEvents = clipboard.data.scriptEvents;
+        const scriptEventsLookup = keyBy(scriptEvents, "id");
+        const insertActions = generateScriptEventInsertActions(
+          scriptEventIds,
+          scriptEventsLookup,
+          action.payload.entityId,
+          action.payload.type,
+          action.payload.key,
+          action.payload.insertId,
+          action.payload.before
+        );
+        for (const action of insertActions) {
+          store.dispatch(action);
+        }
+      }
+    } else if (actions.pasteScriptEventValues.match(action)) {
+      const clipboard = pasteAny();
+      if (!clipboard) {
+        return next(action);
+      }
+      if (clipboard.format === ClipboardTypeScriptEvents) {
+        const state = store.getState();
+        const currentEvent =
+          state.project.present.entities.scriptEvents.entities[
+            action.payload.scriptEventId
+          ];
+        const scriptEvent = clipboard.data.scriptEvents[0];
+        if (currentEvent && scriptEvent) {
+          store.dispatch(
+            entitiesActions.editScriptEvent({
+              scriptEventId: action.payload.scriptEventId,
+              changes: {
+                args: {
+                  ...currentEvent.args,
+                  ...scriptEvent.args,
+                },
+              },
+            })
+          );
+        }
+      }
     } else if (actions.fetchClipboard.match(action)) {
       const clipboard = pasteAny();
       if (clipboard) {

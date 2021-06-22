@@ -1,7 +1,22 @@
+import ItemTypes from "lib/dnd/itemTypes";
 import l10n from "lib/helpers/l10n";
-import React from "react";
+import React, { useRef } from "react";
+import { DropTargetMonitor, useDrop } from "react-dnd";
+import { ScriptEventsRef } from "store/features/entities/entitiesTypes";
 import styled from "styled-components";
 import { Button } from "ui/buttons/Button";
+import entitiesActions from "store/features/entities/entitiesActions";
+import { useDispatch } from "react-redux";
+import {
+  ScriptEventPlaceholder,
+  ScriptEventWrapper,
+} from "ui/scripting/ScriptEvents";
+
+interface AddButtonProps {
+  parentType: "scene" | "actor" | "trigger" | "scriptEvent";
+  parentId: string;
+  parentKey: string;
+}
 
 const Wrapper = styled.div`
   display: flex;
@@ -13,11 +28,55 @@ const Wrapper = styled.div`
   }
 `;
 
-const AddButton = () => {
+const AddButton = ({ parentType, parentId, parentKey }: AddButtonProps) => {
+  const dispatch = useDispatch();
+
+  const dropRef = useRef<HTMLDivElement>(null);
+  const [{ handlerId, isOverCurrent }, drop] = useDrop({
+    accept: ItemTypes.SCRIPT_EVENT,
+    collect(monitor) {
+      return {
+        handlerId: monitor.getHandlerId(),
+        isOverCurrent: monitor.isOver({ shallow: true }),
+      };
+    },
+    drop(item: ScriptEventsRef, monitor: DropTargetMonitor) {
+      const didDrop = monitor.didDrop();
+      if (didDrop) {
+        return;
+      }
+
+      if (!dropRef.current) {
+        return;
+      }
+
+      dispatch(
+        entitiesActions.moveScriptEvent({
+          to: {
+            scriptEventId: "",
+            parentType,
+            parentKey,
+            parentId,
+          },
+          from: item,
+        })
+      );
+
+      item.parentType = parentType;
+      item.parentKey = parentKey;
+      item.parentId = parentId;
+    },
+  });
+
+  drop(dropRef);
+
   return (
-    <Wrapper>
-      <Button>{l10n("SIDEBAR_ADD_EVENT")}</Button>
-    </Wrapper>
+    <ScriptEventWrapper ref={dropRef} data-handler-id={handlerId}>
+      {isOverCurrent && <ScriptEventPlaceholder />}
+      <Wrapper>
+        <Button>{l10n("SIDEBAR_ADD_EVENT")}</Button>
+      </Wrapper>
+    </ScriptEventWrapper>
   );
 };
 

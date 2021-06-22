@@ -45,7 +45,6 @@ export type ScriptEvent = {
 
 export type ScriptEventsRef = {
   scriptEventId: string;
-  index: number;
   parentType: "scene" | "actor" | "trigger" | "scriptEvent";
   parentKey: string;
   parentId: string;

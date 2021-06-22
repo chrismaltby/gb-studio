@@ -2653,6 +2653,58 @@ const selectScriptIdsByRef = (
   );
 };
 
+const addScriptEvents: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    scriptEventIds: string[];
+    entityId: string;
+    type: "scene" | "actor" | "trigger" | "scriptEvent";
+    key: string;
+    insertId?: string;
+    before?: boolean;
+    data: Omit<ScriptEvent, "id">[];
+  }>
+> = (state, action) => {
+  const script = selectScriptIds(
+    state,
+    action.payload.type,
+    action.payload.entityId,
+    action.payload.key
+  );
+
+  if (!script) {
+    return;
+  }
+
+  const newScriptEvents = action.payload.data.map(
+    (scriptEventData, scriptEventIndex) => {
+      const newScriptEvent: ScriptEvent = {
+        ...scriptEventData,
+        id: action.payload.scriptEventIds[scriptEventIndex],
+      };
+      if (scriptEventData.children) {
+        newScriptEvent.children = Object.keys(scriptEventData.children).reduce(
+          (memo, key) => {
+            memo[key] = [];
+            return memo;
+          },
+          {} as Dictionary<string[]>
+        );
+      }
+      return newScriptEvent;
+    }
+  );
+
+  const insertIndex = Math.max(
+    0,
+    script.indexOf(action.payload.insertId || "") +
+      (action.payload.before ? 0 : 1)
+  );
+
+  scriptEventsAdapter.addMany(state.scriptEvents, newScriptEvents);
+  script.splice(insertIndex, 0, ...action.payload.scriptEventIds);
+};
+
 const moveScriptEvent: CaseReducer<
   EntitiesState,
   PayloadAction<{
@@ -2668,8 +2720,11 @@ const moveScriptEvent: CaseReducer<
 
   const fromIndex = from.indexOf(action.payload.from.scriptEventId);
   let toIndex = to.indexOf(action.payload.to.scriptEventId);
-  if (fromIndex === -1 || toIndex === -1) {
+  if (fromIndex === -1) {
     return;
+  }
+  if (toIndex === -1) {
+    toIndex = to.length;
   }
 
   from.splice(fromIndex, 1);
@@ -2677,7 +2732,7 @@ const moveScriptEvent: CaseReducer<
     toIndex--;
   }
   to.splice(
-    Math.min(Math.max(toIndex, 0), to.length - 1),
+    Math.min(Math.max(toIndex, 0), to.length),
     0,
     action.payload.from.scriptEventId
   );
@@ -2739,7 +2794,7 @@ const resetScript: CaseReducer<
     action.payload.key
   );
   if (script) {
-    script.splice(0, script.length - 1);
+    script.splice(0, script.length);
   }
 };
 
@@ -3041,6 +3096,25 @@ const entitiesSlice = createSlice({
      * Script Events
      */
 
+    addScriptEvents: {
+      reducer: addScriptEvents,
+      prepare: (payload: {
+        entityId: string;
+        type: "scene" | "actor" | "trigger" | "scriptEvent";
+        key: string;
+        insertId?: string;
+        before?: boolean;
+        data: Omit<ScriptEvent, "id">[];
+      }) => {
+        return {
+          payload: {
+            ...payload,
+            scriptEventIds: payload.data.map(() => uuid()),
+          },
+        };
+      },
+    },
+
     moveScriptEvent,
     editScriptEvent,
     resetScript,
@@ -3086,6 +3160,69 @@ export const actions = {
   moveSelectedEntity,
   editDestinationPosition,
   removeSelectedEntity,
+};
+
+/**************************************************************************
+ * Action Generators
+ */
+
+export const generateScriptEventInsertActions = (
+  scriptEventIds: string[],
+  scriptEventsLookup: Dictionary<ScriptEvent>,
+  entityId: string,
+  type: "scene" | "actor" | "trigger" | "scriptEvent",
+  key: string,
+  insertId?: string,
+  before?: boolean
+) => {
+  const insertActions: ReturnType<
+    typeof entitiesSlice.actions.addScriptEvents
+  >[] = [];
+
+  const collectInsertActions = (
+    scriptEventIds: string[],
+    entityId: string,
+    type: "scene" | "actor" | "trigger" | "scriptEvent",
+    key: string,
+    insertId?: string,
+    before?: boolean
+  ) => {
+    const insertEvents: ScriptEvent[] = [];
+    for (let i = 0; i < scriptEventIds.length; i++) {
+      const scriptEvent = scriptEventsLookup[scriptEventIds[i]];
+      if (!scriptEvent) {
+        continue;
+      }
+      insertEvents.push(scriptEvent);
+    }
+
+    const action = entitiesSlice.actions.addScriptEvents({
+      entityId,
+      type,
+      key,
+      insertId,
+      before,
+      data: insertEvents,
+    });
+
+    insertActions.push(action);
+
+    // Child events
+    for (let i = 0; i < insertEvents.length; i++) {
+      const insertedEvent = insertEvents[i];
+      if (insertedEvent.children) {
+        Object.keys(insertedEvent.children).forEach((key) => {
+          const childIds = insertedEvent?.children?.[key] || [];
+          const newParentId = action.payload.scriptEventIds[i];
+          collectInsertActions(childIds, newParentId, "scriptEvent", key);
+        });
+      }
+    }
+  };
+
+  collectInsertActions(scriptEventIds, entityId, type, key, insertId, before);
+
+  return insertActions;
 };
 
 /**************************************************************************

@@ -6,12 +6,16 @@ import {
   useDrop,
 } from "react-dnd";
 import { useDispatch, useSelector } from "react-redux";
-import entityActions from "store/features/entities/entitiesActions";
+import entitiesActions from "store/features/entities/entitiesActions";
 import { RootState } from "store/configureStore";
 import { scriptEventSelectors } from "store/features/entities/entitiesState";
 import editorActions from "store/features/editor/editorActions";
 import { ScriptEventsRef } from "store/features/entities/entitiesTypes";
-import { EVENT_COMMENT, EVENT_END } from "lib/compiler/eventTypes";
+import {
+  EVENT_CALL_CUSTOM_EVENT,
+  EVENT_COMMENT,
+  EVENT_END,
+} from "lib/compiler/eventTypes";
 import AddButton from "./AddButton";
 import {
   ScriptEventFormWrapper,
@@ -20,13 +24,22 @@ import {
   ScriptEventPlaceholder,
   ScriptEditorChildren,
   ScriptEventFormNest,
+  ScriptEventHeaderTitle,
+  ScriptEventHeaderCaret,
+  ScriptEventRenameInput,
+  ScriptEventRenameInputCompleteButton,
 } from "ui/scripting/ScriptEvents";
-import { ArrowIcon } from "ui/icons/Icons";
+import { ArrowIcon, CheckIcon, CommentIcon } from "ui/icons/Icons";
 import { FixedSpacer } from "ui/spacing/Spacing";
 import ScriptEventForm from "./ScriptEventForm2";
 import l10n from "lib/helpers/l10n";
 import events from "lib/events";
 import { ScriptEditorEventHelper } from "./ScriptEditorEventHelper";
+import ItemTypes from "lib/dnd/itemTypes";
+import { DropdownButton } from "ui/buttons/DropdownButton";
+import { MenuDivider, MenuItem } from "ui/menu/Menu";
+import clipboardActions from "store/features/clipboard/clipboardActions";
+import { ClipboardTypeScriptEvents } from "store/features/clipboard/clipboardTypes";
 
 interface ScriptEditorEventProps {
   id: string;
@@ -38,11 +51,6 @@ interface ScriptEditorEventProps {
   entityId: string;
 }
 
-const ItemTypes = {
-  SCRIPT_EVENT: "SCRIPT_EVENT",
-};
-
-const COMMENT_PREFIX = "//";
 const INITIAL_EVENT_LOAD_COUNT = 3;
 
 const ScriptEditorEvent = ({
@@ -61,6 +69,22 @@ const ScriptEditorEvent = ({
   const [visible, setVisible] = useState(
     nestLevel + index < INITIAL_EVENT_LOAD_COUNT
   );
+  const [rename, setRename] = useState(false);
+
+  const clipboardFormat = useSelector(
+    (state: RootState) => state.clipboard.data?.format
+  );
+  const scriptEvent = useSelector((state: RootState) =>
+    scriptEventSelectors.selectById(state, id)
+  );
+
+  const onFetchClipboard = useCallback(() => {
+    dispatch(clipboardActions.fetchClipboard());
+  }, [dispatch]);
+
+  const toggleRename = useCallback(() => {
+    setRename(!rename);
+  }, [rename]);
 
   // Load long scripts asynchronously
   useEffect(() => {
@@ -92,16 +116,8 @@ const ScriptEditorEvent = ({
         return;
       }
 
-      const dragIndex = item.index;
-      const hoverIndex = index;
-
       //  Don't replace items with themselves
-      if (
-        dragIndex === hoverIndex &&
-        parentType === item.parentType &&
-        parentKey === item.parentKey &&
-        parentId === item.parentId
-      ) {
+      if (id === item.scriptEventId) {
         return;
       }
 
@@ -110,23 +126,10 @@ const ScriptEditorEvent = ({
         return;
       }
 
-      console.log("FROM", item.scriptEventId, "TO", id);
-      console.log({
-        to: {
-          scriptEventId: id,
-          index,
-          parentType,
-          parentKey,
-          parentId,
-        },
-        from: item,
-      });
-
       dispatch(
-        entityActions.moveScriptEvent({
+        entitiesActions.moveScriptEvent({
           to: {
             scriptEventId: id,
-            index,
             parentType,
             parentKey,
             parentId,
@@ -135,7 +138,6 @@ const ScriptEditorEvent = ({
         })
       );
 
-      item.index = hoverIndex;
       item.parentType = parentType;
       item.parentKey = parentKey;
       item.parentId = parentId;
@@ -147,7 +149,6 @@ const ScriptEditorEvent = ({
     item: (): ScriptEventsRef => {
       return {
         scriptEventId: id,
-        index,
         parentType,
         parentId,
         parentKey,
@@ -159,15 +160,93 @@ const ScriptEditorEvent = ({
   });
 
   const toggleOpen = useCallback(() => {
-    dispatch(entityActions.toggleScriptEventOpen({ scriptEventId: id }));
+    dispatch(entitiesActions.toggleScriptEventOpen({ scriptEventId: id }));
   }, [dispatch, id]);
+
+  const toggleComment = useCallback(() => {
+    dispatch(entitiesActions.toggleScriptEventComment({ scriptEventId: id }));
+  }, [dispatch, id]);
+
+  const toggleElse = useCallback(() => {
+    dispatch(
+      entitiesActions.toggleScriptEventDisableElse({ scriptEventId: id })
+    );
+  }, [dispatch, id]);
+
+  const editCustomEvent = useCallback(() => {
+    const customEventId = scriptEvent?.args?.customEventId;
+    if (customEventId && typeof customEventId === "string") {
+      dispatch(editorActions.selectCustomEvent({ customEventId }));
+    }
+  }, [dispatch, scriptEvent?.args?.customEventId]);
+
+  const onRemove = useCallback(() => {
+    dispatch(
+      entitiesActions.removeScriptEvent({
+        scriptEventId: id,
+      })
+    );
+  }, [dispatch, id]);
+
+  const onPasteValues = useCallback(() => {
+    dispatch(
+      clipboardActions.pasteScriptEventValues({
+        scriptEventId: id,
+      })
+    );
+  }, [dispatch, id]);
+
+  const onCopyScript = useCallback(() => {
+    dispatch(
+      clipboardActions.copyScriptEvents({
+        scriptEventIds: [id],
+      })
+    );
+  }, [dispatch, id]);
+
+  const onPasteScript = useCallback(
+    (before: boolean) => {
+      dispatch(
+        clipboardActions.pasteScriptEvents({
+          entityId: parentId,
+          type: parentType,
+          key: parentKey,
+          insertId: id,
+          before,
+        })
+      );
+    },
+    [dispatch, id, parentId, parentKey, parentType]
+  );
+
+  const onRename = useCallback(
+    (e) => {
+      dispatch(
+        entitiesActions.editScriptEventLabel({
+          scriptEventId: id,
+          value: e.currentTarget.value,
+        })
+      );
+    },
+    [dispatch, id]
+  );
+
+  const onRenameFocus = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
+    e.currentTarget.select();
+  }, []);
+
+  const onRenameComplete = useCallback(() => {
+    setRename(false);
+  }, []);
+
+  const onDetectRenameComplete = useCallback((e) => {
+    if (e.key === "Enter") {
+      setRename(false);
+    }
+  }, []);
 
   drag(dragRef);
   drop(dropRef);
-
-  const scriptEvent = useSelector((state: RootState) =>
-    scriptEventSelectors.selectById(state, id)
-  );
 
   const renderEvents = useCallback(
     (key: string) => {
@@ -185,6 +264,7 @@ const ScriptEditorEvent = ({
               entityId={entityId}
             />
           ))}
+          <AddButton parentType="scriptEvent" parentId={id} parentKey={key} />
         </ScriptEditorChildren>
       );
     },
@@ -217,19 +297,15 @@ const ScriptEditorEvent = ({
 
   const eventName = String(scriptEvent.args?.__name || defaultCommandName);
 
-  const labelName = scriptEvent.args?.__label
-    ? scriptEvent.args.__label
-    : isComment && scriptEvent.args?.text;
+  const labelName =
+    (scriptEvent.args?.__label
+      ? scriptEvent.args.__label
+      : isComment && scriptEvent.args?.text) || undefined;
 
   const hoverName = labelName || eventName;
 
   if (scriptEvent.command === EVENT_END) {
-    return (
-      <ScriptEventWrapper ref={dropRef} data-handler-id={handlerId}>
-        {isOverCurrent && <ScriptEventPlaceholder />}
-        <AddButton />
-      </ScriptEventWrapper>
-    );
+    return null;
   }
 
   const isOpen = scriptEvent.args && !scriptEvent.args.__collapse;
@@ -250,27 +326,94 @@ const ScriptEditorEvent = ({
             conditional={!!scriptEvent.children}
             comment={Boolean(commented || isComment)}
             nestLevel={nestLevel}
-            onClick={toggleOpen}
-            open={isOpen && !commented}
             altBg={index % 2 === 0}
           >
-            {!commented && (
-              <>
-                <ArrowIcon />
-                <FixedSpacer width={5} />
-              </>
-            )}
-            <div>
-              {commented || isComment ? <span>{COMMENT_PREFIX} </span> : ""}
-              {labelName ? (
-                <span>
-                  {labelName}
-                  <small>{eventName}</small>
-                </span>
+            <ScriptEventHeaderTitle onClick={!rename ? toggleOpen : undefined}>
+              {!commented ? (
+                <ScriptEventHeaderCaret open={isOpen && !commented}>
+                  <ArrowIcon />
+                </ScriptEventHeaderCaret>
               ) : (
-                <span>{eventName}</span>
+                <ScriptEventHeaderCaret>
+                  <CommentIcon />
+                </ScriptEventHeaderCaret>
               )}
-            </div>
+              <FixedSpacer width={5} />
+              {rename ? (
+                <>
+                  <ScriptEventRenameInput
+                    autoFocus
+                    value={String(labelName || "")}
+                    onChange={onRename}
+                    onFocus={onRenameFocus}
+                    onBlur={onRenameComplete}
+                    onKeyDown={onDetectRenameComplete}
+                    placeholder={eventName}
+                  />
+                  <ScriptEventRenameInputCompleteButton
+                    onClick={onRenameComplete}
+                    title={l10n("FIELD_RENAME")}
+                  >
+                    <CheckIcon />
+                  </ScriptEventRenameInputCompleteButton>
+                </>
+              ) : (
+                <span>{labelName ? String(labelName) : eventName}</span>
+              )}
+            </ScriptEventHeaderTitle>
+
+            <DropdownButton
+              size="small"
+              variant="transparent"
+              menuDirection="right"
+              onMouseDown={onFetchClipboard}
+            >
+              {command === EVENT_CALL_CUSTOM_EVENT && [
+                <MenuItem key="0" onClick={editCustomEvent}>
+                  {l10n("MENU_EDIT_CUSTOM_EVENT")}
+                </MenuItem>,
+                <MenuDivider key="1" />,
+              ]}
+              <MenuItem onClick={toggleRename}>
+                {l10n("MENU_RENAME_EVENT")}
+              </MenuItem>
+              <MenuItem onClick={toggleComment}>
+                {commented
+                  ? l10n("MENU_REENABLE_EVENT")
+                  : l10n("MENU_DISABLE_EVENT")}
+              </MenuItem>
+              {hasElse && (
+                <MenuItem onClick={toggleElse}>
+                  {disabledElse
+                    ? l10n("MENU_REENABLE_ELSE")
+                    : l10n("MENU_DISABLE_ELSE")}
+                </MenuItem>
+              )}
+              <MenuDivider />
+              <MenuItem onClick={onCopyScript}>
+                {l10n("MENU_COPY_EVENT")}
+              </MenuItem>
+              {clipboardFormat === ClipboardTypeScriptEvents && <MenuDivider />}
+              {clipboardFormat === ClipboardTypeScriptEvents && (
+                <MenuItem onClick={onPasteValues}>
+                  {l10n("MENU_PASTE_VALUES")}
+                </MenuItem>
+              )}
+              {clipboardFormat === ClipboardTypeScriptEvents && (
+                <MenuItem onClick={() => onPasteScript(true)}>
+                  {l10n("MENU_PASTE_EVENT_BEFORE")}
+                </MenuItem>
+              )}
+              {clipboardFormat === ClipboardTypeScriptEvents && (
+                <MenuItem onClick={() => onPasteScript(false)}>
+                  {l10n("MENU_PASTE_EVENT_AFTER")}
+                </MenuItem>
+              )}
+              <MenuDivider />
+              <MenuItem onClick={onRemove}>
+                {l10n("MENU_DELETE_EVENT")}
+              </MenuItem>
+            </DropdownButton>
           </ScriptEventHeader>
         </div>
         {visible && isOpen && !commented && (

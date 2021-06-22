@@ -72,8 +72,8 @@ const isClipboardScriptEvents = (
   if (typeof input !== "object" || input === null) {
     return false;
   }
-  const wide: { scriptEvents?: unknown } = input;
-  return Array.isArray(wide.scriptEvents);
+  const wide: { scriptEvents?: unknown; script?: unknown } = input;
+  return Array.isArray(wide.scriptEvents) && Array.isArray(wide.script);
 };
 
 export const copy = (payload: ClipboardType) => {

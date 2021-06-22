@@ -36,6 +36,7 @@ export type ClipboardPaletteIds = {
 
 export type ClipboardScriptEvents = {
   scriptEvents: ScriptEvent[];
+  script: string[];
 };
 
 export type ClipboardType =

@@ -8,9 +8,11 @@ import React, { useCallback } from "react";
 import l10n from "lib/helpers/l10n";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import entitiesActions from "store/features/entities/entitiesActions";
+import { RootState } from "store/configureStore";
+import { ClipboardTypeScriptEvents } from "store/features/clipboard/clipboardTypes";
 
 interface ScriptEditorDropdownButtonProps {
   value: string[];
@@ -26,7 +28,14 @@ const ScriptEditorDropdownButton = ({
   scriptKey,
 }: ScriptEditorDropdownButtonProps) => {
   const dispatch = useDispatch();
-  const clipboardEvent = false;
+
+  const clipboardFormat = useSelector(
+    (state: RootState) => state.clipboard.data?.format
+  );
+
+  const onFetchClipboard = useCallback(() => {
+    dispatch(clipboardActions.fetchClipboard());
+  }, [dispatch]);
 
   const onCopyScript = useCallback(() => {
     dispatch(
@@ -36,9 +45,39 @@ const ScriptEditorDropdownButton = ({
     );
   }, [dispatch, value]);
 
-  const onReplaceScript = useCallback(() => {}, []);
+  const onReplaceScript = useCallback(() => {
+    dispatch(
+      entitiesActions.resetScript({
+        entityId,
+        type,
+        key: scriptKey,
+      })
+    );
+    dispatch(
+      clipboardActions.pasteScriptEvents({
+        entityId,
+        type,
+        key: scriptKey,
+        insertId: "",
+        before: false,
+      })
+    );
+  }, [dispatch, entityId, scriptKey, type]);
 
-  const onPasteScript = useCallback((before: boolean) => {}, []);
+  const onPasteScript = useCallback(
+    (before: boolean) => {
+      dispatch(
+        clipboardActions.pasteScriptEvents({
+          entityId,
+          type,
+          key: scriptKey,
+          insertId: before ? value[0] : value[value.length - 1],
+          before,
+        })
+      );
+    },
+    [dispatch, entityId, scriptKey, type, value]
+  );
 
   const onRemoveScript = useCallback(() => {
     dispatch(
@@ -55,25 +94,29 @@ const ScriptEditorDropdownButton = ({
       size="small"
       variant="transparent"
       menuDirection="right"
-      // onMouseDown={readClipboard}
+      onMouseDown={onFetchClipboard}
     >
       <MenuItem onClick={onCopyScript}>{l10n("MENU_COPY_SCRIPT")}</MenuItem>
-      {clipboardEvent && <MenuDivider />}
-      {clipboardEvent && (
+      {clipboardFormat === ClipboardTypeScriptEvents && <MenuDivider />}
+      {clipboardFormat === ClipboardTypeScriptEvents && (
         <MenuItem onClick={onReplaceScript}>
           {l10n("MENU_REPLACE_SCRIPT")}
         </MenuItem>
       )}
-      {clipboardEvent && value && value.length > 1 && (
-        <MenuItem onClick={() => onPasteScript(true)}>
-          {l10n("MENU_PASTE_SCRIPT_BEFORE")}
-        </MenuItem>
-      )}
-      {clipboardEvent && value && value.length > 1 && (
-        <MenuItem onClick={() => onPasteScript(false)}>
-          {l10n("MENU_PASTE_SCRIPT_AFTER")}
-        </MenuItem>
-      )}
+      {clipboardFormat === ClipboardTypeScriptEvents &&
+        value &&
+        value.length > 1 && (
+          <MenuItem onClick={() => onPasteScript(true)}>
+            {l10n("MENU_PASTE_SCRIPT_BEFORE")}
+          </MenuItem>
+        )}
+      {clipboardFormat === ClipboardTypeScriptEvents &&
+        value &&
+        value.length > 1 && (
+          <MenuItem onClick={() => onPasteScript(false)}>
+            {l10n("MENU_PASTE_SCRIPT_AFTER")}
+          </MenuItem>
+        )}
       <MenuDivider />
       <MenuItem onClick={onRemoveScript}>{l10n("MENU_DELETE_SCRIPT")}</MenuItem>
     </DropdownButton>

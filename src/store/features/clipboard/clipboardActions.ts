@@ -45,6 +45,16 @@ const pasteSprite = createAction<{
   spriteAnimationId: string;
   spriteStateId: string;
 }>("clipboard/pasteSprite");
+const pasteScriptEvents = createAction<{
+  entityId: string;
+  type: "scene" | "actor" | "trigger" | "scriptEvent";
+  key: string;
+  insertId: string;
+  before: boolean;
+}>("clipboard/pasteScriptEvents");
+const pasteScriptEventValues = createAction<{
+  scriptEventId: string;
+}>("clipboard/pasteScriptEventValues");
 const pasteCustomEvents = createAction<void>("clipboard/pasteCustomEvents");
 const pastePaletteIds = createAction<{
   sceneId: string;
@@ -190,4 +200,6 @@ export default {
   pasteCustomEvents,
   pasteSprite,
   pastePaletteIds,
+  pasteScriptEvents,
+  pasteScriptEventValues,
 };

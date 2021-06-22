@@ -10,6 +10,7 @@ import { FormField, ToggleableFormField } from "ui/form/FormLayout";
 import {
   ScriptEventField,
   ScriptEventBranchHeader,
+  ScriptEventHeaderCaret,
 } from "ui/scripting/ScriptEvents";
 import { FixedSpacer } from "ui/spacing/Spacing";
 import { TabBar } from "ui/tabs/Tabs";
@@ -118,11 +119,12 @@ const ScriptEventFormField = memo(
         <ScriptEventBranchHeader
           conditional={true}
           onClick={() => onChange(!value)}
-          open={!value}
           nestLevel={nestLevel}
           altBg={altBg}
         >
-          <ArrowIcon />
+          <ScriptEventHeaderCaret open={!value}>
+            <ArrowIcon />
+          </ScriptEventHeaderCaret>
           <FixedSpacer width={5} />
           {field.label || ""}
         </ScriptEventBranchHeader>

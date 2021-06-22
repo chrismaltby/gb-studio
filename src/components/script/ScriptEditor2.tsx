@@ -1,4 +1,5 @@
 import React from "react";
+import AddButton from "./AddButton";
 import ScriptEditorEvent from "./ScriptEditorEvent2";
 
 interface ScriptEditorProps {
@@ -27,6 +28,7 @@ const ScriptEditor = ({
           entityId={entityId}
         />
       ))}
+      <AddButton parentType={type} parentId={entityId} parentKey={scriptKey} />
     </div>
   );
 };

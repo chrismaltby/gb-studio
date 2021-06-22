@@ -13,12 +13,72 @@ export const ScriptEventWrapper = styled.div`
   }
 `;
 
+export const ScriptEventRenameInput = styled.input`
+  flex-grow: 1;
+  border: 0;
+  border-radius: 4px;
+  padding: 5px;
+  margin-left: -5px;
+  font-weight: bold;
+`;
+
+export const ScriptEventRenameInputCompleteButton = styled.button`
+  z-index: 10000;
+  position: relative;
+  top: 0px;
+  left: -22px;
+  width: 21px;
+  height: 21px;
+  border: 0;
+  border-radius: ${(props) => Math.max(0, props.theme.borderRadius - 1)}px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  line-height: 10px;
+  font-size: 12px;
+  font-weight: bold;
+  background: transparent;
+  border-color: transparent;
+
+  :hover {
+    background: rgba(128, 128, 128, 0.3);
+  }
+  :active {
+    background: rgba(128, 128, 128, 0.4);
+  }
+  svg {
+    width: 12px;
+    height: 12px;
+    fill: #333;
+  }
+`;
+
+export const ScriptEventHeaderTitle = styled.div`
+  display: flex;
+  flex-grow: 1;
+  align-items: center;
+`;
+
+interface ScriptEventHeaderCaretProps {
+  open?: boolean;
+}
+
+export const ScriptEventHeaderCaret = styled.div<ScriptEventHeaderCaretProps>`
+  svg {
+    fill: ${(props) => props.theme.colors.text};
+    width: 8px;
+    height: 8px;
+    flex-shrink: 0;
+    transform: rotate(${(props) => (props.open ? 90 : 0)}deg);
+  }
+`;
+
 interface ScriptEventHeaderProps {
   conditional: boolean;
   nestLevel: number;
   comment?: boolean;
   child?: boolean;
-  open?: boolean;
   altBg?: boolean;
 }
 
@@ -29,7 +89,7 @@ export const ScriptEventHeader = styled.div<ScriptEventHeaderProps>`
   font-size: 11px;
   font-weight: bold;
   padding: 0px 10px;
-  padding-right: 5px;
+  padding-right: 10px;
   padding-left: 10px;
   height: 25px;
   background-color: ${(props) =>
@@ -43,14 +103,6 @@ export const ScriptEventHeader = styled.div<ScriptEventHeaderProps>`
     position: absolute;
     left: 3px;
     top: 6px;
-  }
-
-  svg {
-    fill: ${(props) => props.theme.colors.text};
-    width: 8px;
-    height: 8px;
-    flex-shrink: 0;
-    transform: rotate(${(props) => (props.open ? 90 : 0)}deg);
   }
 
   ${(props) =>
@@ -138,11 +190,6 @@ export const ScriptEventHeader = styled.div<ScriptEventHeaderProps>`
           padding-left: 0;
         `
       : ""}
-
-  ${Button} {
-    padding: 4px;
-    min-width: 18px;
-  }
 `;
 
 export const ScriptEventBranchHeader = styled.div<ScriptEventHeaderProps>`
@@ -160,14 +207,6 @@ export const ScriptEventBranchHeader = styled.div<ScriptEventHeaderProps>`
   height: 25px;
   color: ${(props) => props.theme.colors.input.text};
   line-height: 12px;
-
-  svg {
-    fill: ${(props) => props.theme.colors.text};
-    width: 8px;
-    height: 8px;
-    flex-shrink: 0;
-    transform: rotate(${(props) => (props.open ? 90 : 0)}deg);
-  }
 
   ${(props) =>
     !props.altBg && props.conditional && props.nestLevel % 4 === 0
