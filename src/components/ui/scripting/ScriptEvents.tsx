@@ -20,13 +20,14 @@ export const ScriptEventRenameInput = styled.input`
   padding: 5px;
   margin-left: -5px;
   font-weight: bold;
+  margin-right: -22px;
 `;
 
 export const ScriptEventRenameInputCompleteButton = styled.button`
   z-index: 10000;
   position: relative;
   top: 0px;
-  left: -22px;
+  left: 0px;
   width: 21px;
   height: 21px;
   border: 0;
