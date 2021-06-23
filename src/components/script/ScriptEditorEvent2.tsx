@@ -10,7 +10,10 @@ import entitiesActions from "store/features/entities/entitiesActions";
 import { RootState } from "store/configureStore";
 import { scriptEventSelectors } from "store/features/entities/entitiesState";
 import editorActions from "store/features/editor/editorActions";
-import { ScriptEventsRef } from "store/features/entities/entitiesTypes";
+import {
+  ScriptEventParentType,
+  ScriptEventsRef,
+} from "store/features/entities/entitiesTypes";
 import {
   EVENT_CALL_CUSTOM_EVENT,
   EVENT_COMMENT,
@@ -45,7 +48,7 @@ interface ScriptEditorEventProps {
   id: string;
   index: number;
   nestLevel?: number;
-  parentType: "scene" | "actor" | "trigger" | "scriptEvent";
+  parentType: ScriptEventParentType;
   parentId: string;
   parentKey: string;
   entityId: string;

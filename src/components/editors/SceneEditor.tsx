@@ -33,7 +33,7 @@ import { LabelButton, LabelColor } from "ui/buttons/LabelButton";
 import { CoordinateInput } from "ui/form/CoordinateInput";
 import DirectionPicker from "../forms/DirectionPicker";
 import { SettingsState } from "store/features/settings/settingsState";
-import { TabBar } from "ui/tabs/Tabs";
+import { StickyTabs, TabBar } from "ui/tabs/Tabs";
 import { Label } from "ui/form/Label";
 import { Button } from "ui/buttons/Button";
 import { LockIcon, LockOpenIcon, ParallaxIcon } from "ui/icons/Icons";
@@ -82,13 +82,6 @@ const PaletteButtons = styled.div`
   & > *:last-child {
     margin-right: 0px;
   }
-`;
-
-const StickyTabs = styled.div`
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  background: ${(props) => props.theme.colors.sidebar.background};
 `;
 
 const scriptTabs = {

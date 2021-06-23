@@ -21,7 +21,14 @@ const EditorSidebar = ({ multiColumn }: EditorSidebarProps) => {
     return <TriggerEditor key={entityId} id={entityId} sceneId={sceneId} />;
   }
   if (type === "actor") {
-    return <ActorEditor key={entityId} id={entityId} sceneId={sceneId} />;
+    return (
+      <ActorEditor
+        key={entityId}
+        id={entityId}
+        sceneId={sceneId}
+        multiColumn={multiColumn}
+      />
+    );
   }
   if (type === "scene") {
     return <SceneEditor key={sceneId} id={sceneId} multiColumn={multiColumn} />;

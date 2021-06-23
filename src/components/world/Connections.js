@@ -188,6 +188,7 @@ class Connections extends Component {
     } = this.props;
 
     const connections = scenes.reduce((memo, scene) => {
+      /*
       // Actor Transitions
       scene.actors.forEach((entityId, entityIndex) => {
         const entity = actorsLookup[entityId];
@@ -273,6 +274,7 @@ class Connections extends Component {
           }
         }
       });
+      */
       return memo;
     }, []);
 

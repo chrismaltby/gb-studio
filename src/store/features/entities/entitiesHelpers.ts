@@ -86,6 +86,11 @@ scriptEventSchema.define({
 });
 const actorSchema = new schema.Entity("actors", {
   script: [scriptEventSchema],
+  startScript: [scriptEventSchema],
+  updateScript: [scriptEventSchema],
+  hit1Script: [scriptEventSchema],
+  hit2Script: [scriptEventSchema],
+  hit3Script: [scriptEventSchema],
 });
 const triggerSchema = new schema.Entity("triggers", {
   script: [scriptEventSchema],
@@ -109,6 +114,9 @@ const sceneSchema = new schema.Entity("scenes", {
   actors: [actorSchema],
   triggers: [triggerSchema],
   script: [scriptEventSchema],
+  playerHit1Script: [scriptEventSchema],
+  playerHit2Script: [scriptEventSchema],
+  playerHit3Script: [scriptEventSchema],
 });
 const customEventsSchema = new schema.Entity("customEvents");
 const palettesSchema = new schema.Entity("palettes");

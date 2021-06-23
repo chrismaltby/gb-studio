@@ -109,6 +109,7 @@ class SceneInfo extends Component {
     };
 
     // Find used sprite sheets in events
+    /*
     walkSceneEvents(fullScene, (event) => {
       if (
         event.args &&
@@ -119,6 +120,7 @@ class SceneInfo extends Component {
         addSprite(event.args.spriteSheetId);
       }
     });
+    */
 
     // Find used sprite sheets from scene actors
     fullScene.actors.forEach((actor) => {

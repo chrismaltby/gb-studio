@@ -194,3 +194,10 @@ export const TabBar = <T extends string>({
     </Wrapper>
   );
 };
+
+export const StickyTabs = styled.div`
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: ${(props) => props.theme.colors.sidebar.background};
+`;

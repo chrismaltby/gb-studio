@@ -2,7 +2,10 @@ import ItemTypes from "lib/dnd/itemTypes";
 import l10n from "lib/helpers/l10n";
 import React, { useRef } from "react";
 import { DropTargetMonitor, useDrop } from "react-dnd";
-import { ScriptEventsRef } from "store/features/entities/entitiesTypes";
+import {
+  ScriptEventParentType,
+  ScriptEventsRef,
+} from "store/features/entities/entitiesTypes";
 import styled from "styled-components";
 import { Button } from "ui/buttons/Button";
 import entitiesActions from "store/features/entities/entitiesActions";
@@ -13,7 +16,7 @@ import {
 } from "ui/scripting/ScriptEvents";
 
 interface AddButtonProps {
-  parentType: "scene" | "actor" | "trigger" | "scriptEvent";
+  parentType: ScriptEventParentType;
   parentId: string;
   parentKey: string;
 }

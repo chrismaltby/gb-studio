@@ -1,10 +1,11 @@
 import React from "react";
+import { ScriptEventParentType } from "store/features/entities/entitiesTypes";
 import AddButton from "./AddButton";
 import ScriptEditorEvent from "./ScriptEditorEvent2";
 
 interface ScriptEditorProps {
   value: string[];
-  type: "scene";
+  type: ScriptEventParentType;
   entityId: string;
   scriptKey: string;
 }

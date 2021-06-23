@@ -66,6 +66,7 @@ import {
   Emote,
   SpriteState,
   ScriptEventsRef,
+  ScriptEventParentType,
 } from "./entitiesTypes";
 import {
   normalizeEntities,
@@ -140,14 +141,6 @@ export const initialState: EntitiesState = {
   variables: variablesAdapter.getInitialState(),
   engineFieldValues: engineFieldValuesAdapter.getInitialState(),
 };
-
-const createEmptyScript = () => [
-  {
-    id: uuid(),
-    args: {},
-    command: EVENT_END,
-  },
-];
 
 const moveSelectedEntity =
   ({ sceneId, x, y }: { sceneId: string; x: number; y: number }) =>
@@ -778,10 +771,10 @@ const addScene: CaseReducer<
       paletteIds: [],
       spritePaletteIds: [],
       collisions: [],
-      script: createEmptyScript(),
-      playerHit1Script: createEmptyScript(),
-      playerHit2Script: createEmptyScript(),
-      playerHit3Script: createEmptyScript(),
+      script: [],
+      playerHit1Script: [],
+      playerHit2Script: [],
+      playerHit3Script: [],
     },
     action.payload.defaults || {},
     {
@@ -1067,12 +1060,12 @@ const addActor: CaseReducer<
     paletteId: "",
     isPinned: false,
     collisionGroup: "",
-    script: createEmptyScript(),
-    startScript: createEmptyScript(),
-    updateScript: createEmptyScript(),
-    hit1Script: createEmptyScript(),
-    hit2Script: createEmptyScript(),
-    hit3Script: createEmptyScript(),
+    script: [],
+    startScript: [],
+    updateScript: [],
+    hit1Script: [],
+    hit2Script: [],
+    hit3Script: [],
     ...(action.payload.defaults || {}),
     id: action.payload.actorId,
     x: clamp(action.payload.x, 0, scene.width - 2),
@@ -1329,7 +1322,7 @@ const addTrigger: CaseReducer<
     {
       name: "",
       trigger: "walk",
-      script: createEmptyScript(),
+      script: [],
     },
     action.payload.defaults || {},
     {
@@ -2409,7 +2402,7 @@ const addCustomEvent: CaseReducer<
     description: "",
     variables: {},
     actors: {},
-    script: createEmptyScript(),
+    script: [],
   };
   customEventsAdapter.addOne(state.customEvents, newCustomEvent);
 };
@@ -2430,7 +2423,7 @@ const editCustomEvent: CaseReducer<
   //       description: "",
   //       variables: {},
   //       actors: {},
-  //       script: createEmptyScript(),
+  //       script: [],
   //     };
   //     customEventsAdapter.addOne(state.customEvents, newCustomEvent);
   //   }
@@ -2624,7 +2617,7 @@ const removeCustomEvent: CaseReducer<
 
 const selectScriptIds = (
   state: EntitiesState,
-  parentType: "scene" | "actor" | "trigger" | "scriptEvent",
+  parentType: ScriptEventParentType,
   parentId: string,
   parentKey: string
 ): string[] | undefined => {
@@ -2637,6 +2630,21 @@ const selectScriptIds = (
     const scriptEvent = state.scriptEvents.entities[parentId];
     if (!scriptEvent) return;
     const script = scriptEvent.children?.[parentKey];
+    return script;
+  } else if (parentType === "actor") {
+    const actor = state.actors.entities[parentId];
+    if (!actor) return;
+    const script = actor[parentKey as "script"];
+    return script;
+  } else if (parentType === "trigger") {
+    const trigger = state.triggers.entities[parentId];
+    if (!trigger) return;
+    const script = trigger[parentKey as "script"];
+    return script;
+  } else if (parentType === "customEvent") {
+    const customEvent = state.customEvents.entities[parentId];
+    if (!customEvent) return;
+    const script = customEvent[parentKey as "script"];
     return script;
   }
 };
@@ -2658,7 +2666,7 @@ const addScriptEvents: CaseReducer<
   PayloadAction<{
     scriptEventIds: string[];
     entityId: string;
-    type: "scene" | "actor" | "trigger" | "scriptEvent";
+    type: ScriptEventParentType;
     key: string;
     insertId?: string;
     before?: boolean;
@@ -2823,7 +2831,7 @@ const resetScript: CaseReducer<
   EntitiesState,
   PayloadAction<{
     entityId: string;
-    type: "scene" | "actor" | "trigger" | "scriptEvent";
+    type: ScriptEventParentType;
     key: string;
   }>
 > = (state, action) => {
@@ -3150,7 +3158,7 @@ const entitiesSlice = createSlice({
       reducer: addScriptEvents,
       prepare: (payload: {
         entityId: string;
-        type: "scene" | "actor" | "trigger" | "scriptEvent";
+        type: ScriptEventParentType;
         key: string;
         insertId?: string;
         before?: boolean;
@@ -3224,7 +3232,7 @@ export const generateScriptEventInsertActions = (
   scriptEventIds: string[],
   scriptEventsLookup: Dictionary<ScriptEvent>,
   entityId: string,
-  type: "scene" | "actor" | "trigger" | "scriptEvent",
+  type: ScriptEventParentType,
   key: string,
   insertId?: string,
   before?: boolean
@@ -3236,7 +3244,7 @@ export const generateScriptEventInsertActions = (
   const collectInsertActions = (
     scriptEventIds: string[],
     entityId: string,
-    type: "scene" | "actor" | "trigger" | "scriptEvent",
+    type: ScriptEventParentType,
     key: string,
     insertId?: string,
     before?: boolean

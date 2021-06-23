@@ -384,15 +384,16 @@ function mapStateToProps(state, props) {
 
   const sceneEventVisible =
     state.editor.eventId && state.editor.scene === props.id;
-  const event =
-    (sceneEventVisible &&
-      normalizedFindSceneEvent(
-        scene,
-        actorsLookup,
-        triggersLookup,
-        state.editor.eventId
-      )) ||
-    null;
+  // const event =
+  //   (sceneEventVisible &&
+  //     normalizedFindSceneEvent(
+  //       scene,
+  //       actorsLookup,
+  //       triggersLookup,
+  //       state.editor.eventId
+  //     )) ||
+  //   null;
+  const event = null;
 
   const selected = sceneId === props.id;
   const dragging = selected && editorDragging;

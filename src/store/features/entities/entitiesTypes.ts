@@ -36,6 +36,13 @@ export type UnionValue =
   | UnionNumberValue
   | UnionDirectionValue;
 
+export type ScriptEventParentType =
+  | "scene"
+  | "actor"
+  | "trigger"
+  | "scriptEvent"
+  | "customEvent";
+
 export type ScriptEvent = {
   id: string;
   command: string;
@@ -45,7 +52,7 @@ export type ScriptEvent = {
 
 export type ScriptEventsRef = {
   scriptEventId: string;
-  parentType: "scene" | "actor" | "trigger" | "scriptEvent";
+  parentType: ScriptEventParentType;
   parentKey: string;
   parentId: string;
 };
@@ -65,12 +72,12 @@ export type Actor = {
   animate: boolean;
   isPinned: boolean;
   collisionGroup: string;
-  script: ScriptEvent[];
-  startScript: ScriptEvent[];
-  updateScript: ScriptEvent[];
-  hit1Script: ScriptEvent[];
-  hit2Script: ScriptEvent[];
-  hit3Script: ScriptEvent[];
+  script: string[];
+  startScript: string[];
+  updateScript: string[];
+  hit1Script: string[];
+  hit2Script: string[];
+  hit3Script: string[];
 };
 
 export type Trigger = {
@@ -81,7 +88,7 @@ export type Trigger = {
   y: number;
   width: number;
   height: number;
-  script: ScriptEvent[];
+  script: string[];
 };
 
 export type Background = {
@@ -187,7 +194,7 @@ export type CustomEvent = {
   description: string;
   variables: Dictionary<CustomEventVariable>;
   actors: Dictionary<CustomEventActor>;
-  script: ScriptEvent[];
+  script: string[];
 };
 
 export type EngineFieldValue = {

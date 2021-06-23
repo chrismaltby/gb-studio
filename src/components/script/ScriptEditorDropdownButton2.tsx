@@ -1,10 +1,4 @@
 import React, { useCallback } from "react";
-// import PropTypes from "prop-types";
-// import { clipboard } from "electron";
-// import { connect } from "react-redux";
-// import uuid from "uuid/v4";
-// import { EVENT_END } from "lib/compiler/eventTypes";
-// import { regenerateEventIds } from "lib/helpers/eventSystem";
 import l10n from "lib/helpers/l10n";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
@@ -13,10 +7,11 @@ import clipboardActions from "store/features/clipboard/clipboardActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { RootState } from "store/configureStore";
 import { ClipboardTypeScriptEvents } from "store/features/clipboard/clipboardTypes";
+import { ScriptEventParentType } from "store/features/entities/entitiesTypes";
 
 interface ScriptEditorDropdownButtonProps {
   value: string[];
-  type: "scene";
+  type: ScriptEventParentType;
   entityId: string;
   scriptKey: string;
 }

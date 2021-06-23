@@ -12,6 +12,7 @@ import {
   ScriptEvent,
   SceneData,
   Variable,
+  ScriptEventParentType,
 } from "../entities/entitiesTypes";
 import { RootState } from "store/configureStore";
 import editorActions from "../editor/editorActions";
@@ -47,7 +48,7 @@ const pasteSprite = createAction<{
 }>("clipboard/pasteSprite");
 const pasteScriptEvents = createAction<{
   entityId: string;
-  type: "scene" | "actor" | "trigger" | "scriptEvent";
+  type: ScriptEventParentType;
   key: string;
   insertId: string;
   before: boolean;
