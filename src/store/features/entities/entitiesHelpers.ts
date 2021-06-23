@@ -118,7 +118,9 @@ const sceneSchema = new schema.Entity("scenes", {
   playerHit2Script: [scriptEventSchema],
   playerHit3Script: [scriptEventSchema],
 });
-const customEventsSchema = new schema.Entity("customEvents");
+const customEventsSchema = new schema.Entity("customEvents", {
+  script: [scriptEventSchema],
+});
 const palettesSchema = new schema.Entity("palettes");
 const engineFieldValuesSchema = new schema.Entity("engineFieldValues");
 

@@ -44,7 +44,13 @@ const EditorSidebar = ({ multiColumn }: EditorSidebarProps) => {
     return <WorldEditor />;
   }
   if (type === "customEvent") {
-    return <CustomEventEditor key="entityId" id={entityId} />;
+    return (
+      <CustomEventEditor
+        key="entityId"
+        id={entityId}
+        multiColumn={multiColumn}
+      />
+    );
   }
   if (type === "variable") {
     return <VariableEditor id={entityId} />;
