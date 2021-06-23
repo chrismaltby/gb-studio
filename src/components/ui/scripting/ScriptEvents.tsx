@@ -1,8 +1,7 @@
 import styled, { css } from "styled-components";
-import { Button } from "ui/buttons/Button";
 
 export const ScriptEventPlaceholder = styled.div`
-  background: #ccc;
+  background: ${(props) => props.theme.colors.scripting.placeholder.background};
   height: 25px;
 `;
 
@@ -59,6 +58,7 @@ export const ScriptEventHeaderTitle = styled.div`
   display: flex;
   flex-grow: 1;
   align-items: center;
+  height: 25px;
 `;
 
 interface ScriptEventHeaderCaretProps {
@@ -201,7 +201,7 @@ export const ScriptEventBranchHeader = styled.div<ScriptEventHeaderProps>`
   font-weight: bold;
   padding: 0px 10px;
   padding-right: 5px;
-  padding-left: 0px;
+  padding-left: 8px;
   margin-left: -10px;
   margin-right: -10px;
   margin-bottom: -10px;
@@ -274,21 +274,21 @@ export const ScriptEventFormWrapper = styled.div<ScriptEventFormWrapperProps>`
   ${(props) =>
     !props.altBg && props.conditional && props.nestLevel % 4 === 0
       ? css`
-          border-left: 10px solid
+          border-left: 2px solid
             ${props.theme.colors.scripting.header.nest1Background};
         `
       : ""}
   ${(props) =>
     !props.altBg && props.conditional && props.nestLevel % 4 === 1
       ? css`
-          border-left: 10px solid
+          border-left: 2px solid
             ${props.theme.colors.scripting.header.nest2Background};
         `
       : ""}
   ${(props) =>
     !props.altBg && props.conditional && props.nestLevel % 4 === 2
       ? css`
-          border-left: 10px solid
+          border-left: 2px solid
             ${props.theme.colors.scripting.header.nest3Background};
         `
       : ""}
@@ -296,7 +296,7 @@ export const ScriptEventFormWrapper = styled.div<ScriptEventFormWrapperProps>`
   ${(props) =>
     !props.altBg && props.conditional && props.nestLevel % 4 === 3
       ? css`
-          border-left: 10px solid
+          border-left: 2px solid
             ${props.theme.colors.scripting.header.nest4Background};
         `
       : ""}
@@ -304,21 +304,21 @@ export const ScriptEventFormWrapper = styled.div<ScriptEventFormWrapperProps>`
   ${(props) =>
     props.altBg && props.conditional && props.nestLevel % 4 === 0
       ? css`
-          border-left: 10px solid
+          border-left: 2px solid
             ${props.theme.colors.scripting.header.nest1BackgroundAlt};
         `
       : ""}
   ${(props) =>
     props.altBg && props.conditional && props.nestLevel % 4 === 1
       ? css`
-          border-left: 10px solid
+          border-left: 2px solid
             ${props.theme.colors.scripting.header.nest2BackgroundAlt};
         `
       : ""}
   ${(props) =>
     props.altBg && props.conditional && props.nestLevel % 4 === 2
       ? css`
-          border-left: 10px solid
+          border-left: 2px solid
             ${props.theme.colors.scripting.header.nest3BackgroundAlt};
         `
       : ""}
@@ -326,7 +326,7 @@ export const ScriptEventFormWrapper = styled.div<ScriptEventFormWrapperProps>`
   ${(props) =>
     props.altBg && props.conditional && props.nestLevel % 4 === 3
       ? css`
-          border-left: 10px solid
+          border-left: 2px solid
             ${props.theme.colors.scripting.header.nest4BackgroundAlt};
         `
       : ""}
@@ -335,9 +335,9 @@ export const ScriptEventFormWrapper = styled.div<ScriptEventFormWrapperProps>`
 export const ScriptEventFormNest = styled.div`
   position: absolute;
   top: 0;
-  left: -10px;
+  left: -2px;
   bottom: 0;
-  width: 12px;
+  width: 4px;
   :hover {
     background: rgba(128, 128, 128, 0.1);
   }

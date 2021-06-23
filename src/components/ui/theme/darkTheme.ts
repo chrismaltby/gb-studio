@@ -85,8 +85,8 @@ const darkTheme: ThemeInterface = {
     },
     scripting: {
       header: {
-        background: "#0a0e0e",
-        backgroundAlt: "#101515",
+        background: "#444444",
+        backgroundAlt: "#383838",
         nest1Background: "#01579b",
         nest1BackgroundAlt: "#0277bd",
         nest2Background: "#bf360c",
@@ -99,7 +99,10 @@ const darkTheme: ThemeInterface = {
         commentBackgroundAlt: "#7cb342",
       },
       form: {
-        background: "#000000",
+        background: "#222222",
+      },
+      placeholder: {
+        background: "#666",
       },
     },
     tracker: {

@@ -98,6 +98,9 @@ export interface ThemeInterface {
       form: {
         background: string;
       };
+      placeholder: {
+        background: string;
+      };
     };
     tracker: {
       background: string;

@@ -21,7 +21,7 @@ interface AddButtonProps {
 const Wrapper = styled.div`
   display: flex;
   padding: 10px;
-  background: #fff;
+  background: ${(props) => props.theme.colors.scripting.form.background};
 
   ${Button} {
     width: 100%;

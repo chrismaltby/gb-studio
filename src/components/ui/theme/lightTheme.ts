@@ -101,6 +101,9 @@ const lightTheme: ThemeInterface = {
       form: {
         background: "#ffffff",
       },
+      placeholder: {
+        background: "#ccc",
+      },
     },
     tracker: {
       background: "#f2f2f2",

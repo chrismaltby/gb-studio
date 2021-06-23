@@ -102,6 +102,9 @@ const neonTheme: ThemeInterface = {
       form: {
         background: "#000000",
       },
+      placeholder: {
+        background: "#666",
+      },
     },
     tracker: {
       background: "#222222",
