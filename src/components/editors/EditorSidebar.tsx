@@ -18,7 +18,14 @@ const EditorSidebar = ({ multiColumn }: EditorSidebarProps) => {
   const sceneId = useSelector((state: RootState) => state.editor.scene);
 
   if (type === "trigger") {
-    return <TriggerEditor key={entityId} id={entityId} sceneId={sceneId} />;
+    return (
+      <TriggerEditor
+        key={entityId}
+        id={entityId}
+        sceneId={sceneId}
+        multiColumn={multiColumn}
+      />
+    );
   }
   if (type === "actor") {
     return (
