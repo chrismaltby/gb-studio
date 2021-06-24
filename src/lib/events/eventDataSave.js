@@ -1,7 +1,7 @@
 const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_SAVE_DATA";
-const group = "EVENT_GROUP_SAVE_DATA";
+const groups = ["EVENT_GROUP_SAVE_DATA"];
 
 const fields = [
   {
@@ -27,7 +27,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
-  group,
+  groups,
   fields,
   compile,
 };

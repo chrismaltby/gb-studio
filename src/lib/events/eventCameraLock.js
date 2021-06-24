@@ -1,5 +1,5 @@
 const id = "EVENT_CAMERA_LOCK";
-const group = "EVENT_GROUP_CAMERA";
+const groups = ["EVENT_GROUP_CAMERA"];
 
 const fields = [
   {
@@ -16,7 +16,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
-  group,
+  groups,
   fields,
   compile,
 };

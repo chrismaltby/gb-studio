@@ -1,5 +1,5 @@
 const id = "EVENT_GROUP";
-const group = "EVENT_GROUP_MISC";
+const groups = ["EVENT_GROUP_MISC"];
 
 const fields = [
   {
@@ -15,7 +15,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
-  group,
+  groups,
   fields,
   compile,
   allowedBeforeInitFade: true,

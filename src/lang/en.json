@@ -437,8 +437,10 @@
   "EVENT_GROUP_SCREEN": "Screen",
   "EVENT_GROUP_SCENE": "Scene",
   "EVENT_GROUP_INPUT": "Input",
-  "EVENT_GROUP_VARIABLES": "Variables",
+  "EVENT_GROUP_MATH": "Math",
   "EVENT_GROUP_ENGINE_FIELDS": "Engine Fields",
+  "EVENT_GROUP_COLOR": "Color",
+  "EVENT_GROUP_VARIABLES": "Variables",
 
   "EVENT_SWITCH_SCENE": "Scene: Change Scene",
   "EVENT_WAIT": "Wait",

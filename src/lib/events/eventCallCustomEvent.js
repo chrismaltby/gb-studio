@@ -1,5 +1,5 @@
 const id = "EVENT_CALL_CUSTOM_EVENT";
-const group = "EVENT_GROUP_CONTROL_FLOW";
+const groups = ["EVENT_GROUP_CONTROL_FLOW"];
 
 const fields = [
   {
@@ -22,7 +22,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
-  group,
+  groups,
   fields,
   compile,
   allowedBeforeInitFade: true,

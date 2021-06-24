@@ -1,7 +1,7 @@
 const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_ACTOR_MOVE_TO";
-const group = "EVENT_GROUP_ACTOR";
+const groups = ["EVENT_GROUP_ACTOR"];
 const weight = 2;
 
 const fields = [
@@ -91,7 +91,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
-  group,
+  groups,
   weight,
   fields,
   compile,

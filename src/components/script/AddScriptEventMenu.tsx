@@ -8,12 +8,16 @@ import { CaretRightIcon, StarIcon, StarOutlineIcon } from "ui/icons/Icons";
 import { FlexGrow } from "ui/spacing/Spacing";
 import { Button } from "ui/buttons/Button";
 import Fuse from "fuse.js";
-import groupBy from "lodash/groupBy";
+import { Dictionary } from "@reduxjs/toolkit";
 
 interface AddScriptEventMenuProps {
   onChange?: (addValue: EventHandler) => void;
   onBlur?: () => void;
 }
+
+type MenuElement = HTMLDivElement & {
+  scrollIntoViewIfNeeded: (center: boolean) => void;
+};
 
 interface EventOption {
   label: string;
@@ -47,7 +51,7 @@ const defaultFavourites = [
 const SelectMenu = styled.div`
   padding: 10px;
   width: 300px;
-  height: 450px;
+  height: 350px;
 
   ${Menu} {
     width: 300px;
@@ -239,10 +243,26 @@ const AddScriptEventMenu = ({ onChange, onBlur }: AddScriptEventMenuProps) => {
       keys: ["label"],
     });
 
-    const groupedEvents = groupBy(
-      eventList,
-      (e) => e.group || "EVENT_GROUP_MISC"
-    );
+    const groupedEvents = eventList.reduce((memo, event) => {
+      if (Array.isArray(event.groups)) {
+        event.groups.forEach((group) => {
+          if (!memo[group]) {
+            memo[group] = [event];
+          } else {
+            memo[group]?.push(event);
+          }
+        });
+      } else {
+        const group = "EVENT_GROUP_MISC";
+        if (!memo[group]) {
+          memo[group] = [event];
+        } else {
+          memo[group]?.push(event);
+        }
+      }
+      return memo;
+    }, {} as Dictionary<EventHandler[]>);
+
     console.log(groupedEvents);
 
     const groupKeys = Object.keys(groupedEvents).sort(sortAlphabetically);
@@ -261,7 +281,7 @@ const AddScriptEventMenu = ({ onChange, onBlur }: AddScriptEventMenuProps) => {
       groupKeys
         .map((key: string) => ({
           label: key === "" ? l10n("EVENT_GROUP_MISC") : l10n(key),
-          options: groupedEvents[key].map(eventToOption),
+          options: (groupedEvents[key] || []).map(eventToOption),
         }))
         .map((option, optionIndex) => {
           if (optionIndex === 0) {
@@ -292,10 +312,10 @@ const AddScriptEventMenu = ({ onChange, onBlur }: AddScriptEventMenuProps) => {
       if (childOptionsRef.current && selectedCategoryIndex > -1) {
         const el = childOptionsRef.current.querySelector(
           `[data-index="${index}"]`
-        );
+        ) as MenuElement;
         if (el) {
-          (el as any).focus();
-          (el as any).scrollIntoViewIfNeeded(false);
+          el.focus();
+          el.scrollIntoViewIfNeeded(false);
         }
       }
     },

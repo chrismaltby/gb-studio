@@ -21,7 +21,7 @@ export interface EventHandler {
   id: string;
   fields: EventField[];
   name?: string;
-  group?: string;
+  groups?: string[];
   compile: (input: unknown, helpers: unknown) => void;
 }
 

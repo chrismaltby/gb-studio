@@ -1,7 +1,7 @@
 const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_CAMERA_SHAKE";
-const group = "EVENT_GROUP_CAMERA";
+const groups = ["EVENT_GROUP_CAMERA"];
 
 const fields = [
   {
@@ -61,7 +61,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
-  group,
+  groups,
   fields,
   compile,
 };
