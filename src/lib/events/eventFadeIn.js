@@ -1,4 +1,5 @@
 const id = "EVENT_FADE_IN";
+const group = "EVENT_GROUP_CAMERA";
 
 const fields = [
   {
@@ -15,6 +16,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  group,
   fields,
   compile,
 };

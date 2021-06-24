@@ -413,6 +413,8 @@
   "FIELD_UNIQUE": "Unique",
   "FIELD_SPRITE_TILES_TOOLTIP": "The number of tiles used in this frame.\n\nA maximum of 40 sprite tiles can be displayed on screen at once, and a maximum of 10 tiles can be displayed on the same horizontal row.",
   "FIELD_SPRITE_UNIQUE_TILES_TOOLTIP": "This number of unique tiles used by this sprite in total across all animations.\n\nReduce the number of unique tiles to allow more sprites to be used in a single scene.",
+  "FIELD_FAVORITES": "Favorites",
+  "FIELD_CATEGORIES": "Categories",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -427,6 +429,17 @@
   "BUILD_EMPTY_BUILD_CACHE": "Empty Build Cache",
 
   "// 9": "Scripting Events -----------------------------------------",
+  "EVENT_GROUP_ACTOR": "Actor",
+  "EVENT_GROUP_CAMERA": "Camera",
+  "EVENT_GROUP_CONTROL_FLOW": "Control Flow",
+  "EVENT_GROUP_SAVE_DATA": "Save Data",
+  "EVENT_GROUP_MISC": "Miscellaneous",
+  "EVENT_GROUP_SCREEN": "Screen",
+  "EVENT_GROUP_SCENE": "Scene",
+  "EVENT_GROUP_INPUT": "Input",
+  "EVENT_GROUP_VARIABLES": "Variables",
+  "EVENT_GROUP_ENGINE_FIELDS": "Engine Fields",
+
   "EVENT_SWITCH_SCENE": "Scene: Change Scene",
   "EVENT_WAIT": "Wait",
   "EVENT_CAMERA_SHAKE": "Camera: Shake",

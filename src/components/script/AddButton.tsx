@@ -1,6 +1,6 @@
 import ItemTypes from "lib/dnd/itemTypes";
 import l10n from "lib/helpers/l10n";
-import React, { useRef } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { DropTargetMonitor, useDrop } from "react-dnd";
 import {
   ScriptEventParentType,
@@ -14,6 +14,9 @@ import {
   ScriptEventPlaceholder,
   ScriptEventWrapper,
 } from "ui/scripting/ScriptEvents";
+import { RelativePortal } from "ui/layout/RelativePortal";
+import AddScriptEventSelect from "./AddScriptEventSelect";
+import { SelectMenu } from "ui/form/Select";
 
 interface AddButtonProps {
   parentType: ScriptEventParentType;
@@ -33,8 +36,9 @@ const Wrapper = styled.div`
 
 const AddButton = ({ parentType, parentId, parentKey }: AddButtonProps) => {
   const dispatch = useDispatch();
-
+  const [isOpen, setOpen] = useState(false);
   const dropRef = useRef<HTMLDivElement>(null);
+
   const [{ handlerId, isOverCurrent }, drop] = useDrop({
     accept: ItemTypes.SCRIPT_EVENT,
     collect(monitor) {
@@ -71,13 +75,40 @@ const AddButton = ({ parentType, parentId, parentKey }: AddButtonProps) => {
     },
   });
 
+  const onOpen = useCallback(() => {
+    setOpen(true);
+  }, []);
+
+  const onClose = useCallback(() => {
+    setOpen(false);
+  }, []);
+
+  const onAdd = useCallback((newEvent: any) => {
+    console.log(
+      "ADD NEW EVENT",
+      JSON.stringify(newEvent),
+      newEvent.event.id,
+      JSON.stringify(newEvent.event.fields)
+    );
+    setOpen(false);
+  }, []);
+
   drop(dropRef);
 
   return (
     <ScriptEventWrapper ref={dropRef} data-handler-id={handlerId}>
       {isOverCurrent && <ScriptEventPlaceholder />}
+      <div style={{ position: "absolute", right: 10 }}>
+        <RelativePortal pin="bottom-right" offsetX={-10} offsetY={-10}>
+          {isOpen && (
+            <SelectMenu style={{ width: 300 }}>
+              <AddScriptEventSelect onBlur={onClose} onChange={onAdd} />
+            </SelectMenu>
+          )}
+        </RelativePortal>
+      </div>
       <Wrapper>
-        <Button>{l10n("SIDEBAR_ADD_EVENT")}</Button>
+        <Button onClick={onOpen}>{l10n("SIDEBAR_ADD_EVENT")}</Button>
       </Wrapper>
     </ScriptEventWrapper>
   );

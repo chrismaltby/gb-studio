@@ -1,4 +1,5 @@
 const id = "EVENT_ACTOR_COLLISIONS_ENABLE";
+const group = "EVENT_GROUP_ACTOR";
 
 const fields = [
   {
@@ -16,6 +17,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  group,
   fields,
   compile,
   allowedBeforeInitFade: true,

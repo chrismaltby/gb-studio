@@ -38,7 +38,7 @@ export const Input = styled.input<InputProps>`
 `;
 
 const smallStyles = css`
-  font-size: 9px;
+  font-size: 10px;
   padding: 6px;
   height: 22px;
 `;

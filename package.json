@@ -63,6 +63,7 @@
     "electron-window-state": "^5.0.3",
     "focus-visible": "^5.2.0",
     "fs-extra": "^7.0.1",
+    "fuse.js": "^6.4.6",
     "gbdkjs": "^2.1.4",
     "glob": "^7.1.4",
     "image-size": "^1.0.0",

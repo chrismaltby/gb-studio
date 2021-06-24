@@ -1,4 +1,5 @@
 const id = "EVENT_ENGINE_FIELD_STORE";
+const group = "EVENT_GROUP_CAMERA";
 
 const fields = [
   {
@@ -23,6 +24,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  group,
   fields,
   compile,
   allowedBeforeInitFade: true,
