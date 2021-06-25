@@ -222,6 +222,7 @@ const MenuItemFavorite = styled.div<MenuItemFavoriteProps>`
     height: 18px;
     padding: 0;
     margin: -10px -5px;
+    transition: all 0.1s ease-out;
   }
 
   ${(props) =>
@@ -235,6 +236,13 @@ const MenuItemFavorite = styled.div<MenuItemFavoriteProps>`
       ? css`
           svg {
             opacity: 0.3;
+          }
+
+          ${Button}:active {
+            transform: scale(1.5);
+            svg {
+              opacity: 1;
+            }
           }
         `
       : ""}      
