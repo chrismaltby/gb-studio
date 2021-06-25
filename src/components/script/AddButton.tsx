@@ -119,7 +119,7 @@ const instanciateScriptEvent = (
   return {
     command: handler.id,
     args,
-    children,
+    ...(children && { children }),
   };
 };
 
