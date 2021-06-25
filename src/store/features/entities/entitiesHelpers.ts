@@ -292,7 +292,7 @@ export const isUnionDirectionValue = (
 };
 
 export const walkNormalisedScriptEvents = (
-  ids: string[],
+  ids: string[] = [],
   lookup: Dictionary<ScriptEvent>,
   callback: (scriptEvent: ScriptEvent) => void
 ) => {
