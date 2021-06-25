@@ -1,6 +1,7 @@
 const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_SWITCH_SCENE";
+const groups = ["EVENT_GROUP_SCENE"];
 
 const fields = [
   {
@@ -55,6 +56,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  groups,
   fields,
   compile,
 };

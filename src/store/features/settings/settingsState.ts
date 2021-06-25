@@ -53,6 +53,7 @@ export type SettingsState = {
   musicDriver: MusicDriverSetting;
   cartType: CartType;
   batterylessEnabled: boolean;
+  favoriteEvents: string[];
 };
 
 export const initialState: SettingsState = {
@@ -101,6 +102,7 @@ export const initialState: SettingsState = {
   musicDriver: "gbt",
   cartType: "mbc5",
   batterylessEnabled: false,
+  favoriteEvents: ["EVENT_TEXT", "EVENT_SWITCH_SCENE"],
 };
 
 const settingsSlice = createSlice({
@@ -136,6 +138,16 @@ const settingsSlice = createSlice({
 
     setShowNavigator: (state, action: PayloadAction<boolean>) => {
       state.showNavigator = action.payload;
+    },
+
+    toggleFavoriteEvent: (state, action: PayloadAction<string>) => {
+      if (state.favoriteEvents.includes(action.payload)) {
+        state.favoriteEvents = state.favoriteEvents.filter(
+          (item) => item !== action.payload
+        );
+      } else {
+        state.favoriteEvents.push(action.payload);
+      }
     },
   },
   extraReducers: (builder) =>

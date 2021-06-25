@@ -6,6 +6,7 @@ const trimMenuItem = (string) => {
 };
 
 const id = "EVENT_MENU";
+const groups = ["EVENT_GROUP_DIALOGUE"];
 
 const fields = [].concat(
   [
@@ -126,6 +127,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  groups,
   fields,
   compile,
 };

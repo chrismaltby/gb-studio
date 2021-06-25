@@ -275,8 +275,8 @@ export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
       {isOpen && <ButtonCover onMouseDown={delayedButtonFocus} />}
 
       <div style={{ position: "absolute", top: "100%", left: "0%" }}>
-        <RelativePortal pin="top-left">
-          {isOpen && (
+        {isOpen && (
+          <RelativePortal pin="top-left">
             <SelectMenu>
               <SpriteSheetSelect
                 name={name}
@@ -291,8 +291,8 @@ export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
                 {...selectMenuStyleProps}
               />
             </SelectMenu>
-          )}
-        </RelativePortal>
+          </RelativePortal>
+        )}
       </div>
     </Wrapper>
   );

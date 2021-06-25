@@ -4,11 +4,14 @@ import events, { EventHandler } from "lib/events";
 import l10n from "lib/helpers/l10n";
 import styled, { css } from "styled-components";
 import { Menu, MenuGroup, MenuItem } from "ui/menu/Menu";
-import { CaretRightIcon, StarIcon, StarOutlineIcon } from "ui/icons/Icons";
+import { CaretRightIcon, StarIcon } from "ui/icons/Icons";
 import { FlexGrow } from "ui/spacing/Spacing";
 import { Button } from "ui/buttons/Button";
 import Fuse from "fuse.js";
 import { Dictionary } from "@reduxjs/toolkit";
+import { useDispatch, useSelector } from "react-redux";
+import settingsActions from "store/features/settings/settingsActions";
+import { RootState } from "store/configureStore";
 
 interface AddScriptEventMenuProps {
   onChange?: (addValue: EventHandler) => void;
@@ -22,7 +25,9 @@ type MenuElement = HTMLDivElement & {
 interface EventOption {
   label: string;
   value: string;
+  group?: string;
   groupLabel?: string;
+  isFavorite: boolean;
   event: EventHandler;
 }
 
@@ -32,30 +37,38 @@ interface EventOptGroup {
   options: EventOption[];
 }
 
-const eventToOption = (event: EventHandler): EventOption => {
-  const localisedKey = l10n(event.id);
-  const name =
-    localisedKey !== event.id ? localisedKey : event.name || event.id;
-  return {
-    label: name,
-    value: event.id,
-    event,
-  };
-};
+const MENU_HEADER_HEIGHT = 68;
+const MENU_ITEM_HEIGHT = 25;
+const MENU_GROUP_HEIGHT = 25;
+const MENU_GROUP_SPACER = 10;
 
-const defaultFavourites = [
-  events["EVENT_TEXT"],
-  events["EVENT_SWITCH_SCENE"],
-] as EventHandler[];
+const eventToOption =
+  (favorites: string[]) =>
+  (event: EventHandler): EventOption => {
+    const localisedKey = l10n(event.id); //.replace(/[^:*]*:[ ]*/g, "");
+    const name =
+      localisedKey !== event.id ? localisedKey : event.name || event.id;
+    const groupName = (("groups" in event && event.groups) || [])
+      .map((key) => l10n(key))
+      .join(" ");
+
+    return {
+      label: name,
+      group: groupName,
+      value: event.id,
+      event,
+      isFavorite: favorites.includes(event.id),
+    };
+  };
 
 const SelectMenu = styled.div`
-  padding: 10px;
-  width: 300px;
-  height: 350px;
+  min-width: 280px;
 
   ${Menu} {
-    width: 300px;
+    width: 100%;
     height: 450px;
+    min-height: 300px;
+    max-height: min(80vh, 700px);
     overflow: hidden;
   }
 `;
@@ -191,7 +204,12 @@ const MenuItemCaret = styled.div`
   }
 `;
 
-const MenuItemFavorite = styled.div`
+interface MenuItemFavoriteProps {
+  visible: boolean;
+  isFavorite: boolean;
+}
+
+const MenuItemFavorite = styled.div<MenuItemFavoriteProps>`
   opacity: 0;
   svg {
     display: inline-block;
@@ -199,11 +217,27 @@ const MenuItemFavorite = styled.div`
     height: 10px;
     fill: ${(props) => props.theme.colors.text};
   }
+
   ${Button} {
     height: 18px;
     padding: 0;
     margin: -10px -5px;
   }
+
+  ${(props) =>
+    props.visible
+      ? css`
+          opacity: 1;
+        `
+      : ""}
+  ${(props) =>
+    !props.isFavorite
+      ? css`
+          svg {
+            opacity: 0.3;
+          }
+        `
+      : ""}      
   ${MenuItem}:hover > & {
     opacity: 1;
   }
@@ -220,28 +254,71 @@ const sortAlphabetically = (a: string, b: string) => {
   return a < b ? -1 : 1;
 };
 
+const sortAlphabeticallyByLabel = (
+  a: { label: string },
+  b: { label: string }
+) => {
+  // console.log("COMPARE", a.label, b.label);
+  if (a.label === b.label) {
+    return 0;
+  } else if (a.label === l10n("EVENT_GROUP_MISC")) {
+    return 1;
+  } else if (b.label === l10n("EVENT_GROUP_MISC")) {
+    return -1;
+  }
+  return a.label < b.label ? -1 : 1;
+};
+
+const notDeprecated = (a: { deprecated?: boolean }) => {
+  return !a.deprecated;
+};
+
+const identity = <T extends unknown>(i: T): T => i;
+
 const AddScriptEventMenu = ({ onChange, onBlur }: AddScriptEventMenuProps) => {
+  const dispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState("");
   const [options, setOptions] = useState<(EventOptGroup | EventOption)[]>([]);
   const [allOptions, setAllOptions] = useState<(EventOptGroup | EventOption)[]>(
     []
   );
+  const favoriteEvents = useSelector(
+    (state: RootState) => state.project.present.settings.favoriteEvents
+  );
+  const [favoritesCache, setFavoritesCache] = useState<string[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(-1);
   const [renderCategoryIndex, setRenderedCategoryIndex] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
+  const rootOptionsRef = useRef<HTMLDivElement>(null);
   const childOptionsRef = useRef<HTMLDivElement>(null);
   const fuseRef = useRef<Fuse<EventOption> | null>(null);
 
   useEffect(() => {
-    const eventList = Object.values(events).filter((i) => i) as EventHandler[];
-    fuseRef.current = new Fuse(eventList.map(eventToOption), {
+    if (selectedCategoryIndex === -1) {
+      setFavoritesCache(favoriteEvents);
+    }
+  }, [favoriteEvents, selectedCategoryIndex]);
+
+  useEffect(() => {
+    const eventList = (
+      Object.values(events).filter(identity) as EventHandler[]
+    ).filter(notDeprecated);
+    fuseRef.current = new Fuse(eventList.map(eventToOption(favoriteEvents)), {
       includeScore: true,
       includeMatches: true,
       ignoreLocation: true,
       threshold: 0.2,
-      keys: ["label"],
+      keys: [
+        "label",
+        {
+          name: "group",
+          weight: 2,
+        },
+      ],
     });
+
+    console.log(eventList.map(eventToOption(favoriteEvents)));
 
     const groupedEvents = eventList.reduce((memo, event) => {
       if (Array.isArray(event.groups)) {
@@ -263,26 +340,33 @@ const AddScriptEventMenu = ({ onChange, onBlur }: AddScriptEventMenuProps) => {
       return memo;
     }, {} as Dictionary<EventHandler[]>);
 
-    console.log(groupedEvents);
-
     const groupKeys = Object.keys(groupedEvents).sort(sortAlphabetically);
-    console.log(groupKeys);
 
     const allOptions = ([] as (EventOptGroup | EventOption)[]).concat(
-      defaultFavourites.map(eventToOption).map((option, optionIndex) => {
-        if (optionIndex === 0) {
-          return {
-            ...option,
-            groupLabel: l10n("FIELD_FAVORITES"),
-          };
-        }
-        return option;
-      }),
+      (
+        favoritesCache
+          .map((id: string) => events[id])
+          .filter(identity) as EventHandler[]
+      )
+        .map(eventToOption(favoriteEvents))
+        .sort(sortAlphabeticallyByLabel)
+        .map((option, optionIndex) => {
+          if (optionIndex === 0) {
+            return {
+              ...option,
+              groupLabel: l10n("FIELD_FAVORITES"),
+            };
+          }
+          return option;
+        }),
       groupKeys
         .map((key: string) => ({
           label: key === "" ? l10n("EVENT_GROUP_MISC") : l10n(key),
-          options: (groupedEvents[key] || []).map(eventToOption),
+          options: (groupedEvents[key] || [])
+            .map(eventToOption(favoriteEvents))
+            .sort(sortAlphabeticallyByLabel),
         }))
+        .sort(sortAlphabeticallyByLabel)
         .map((option, optionIndex) => {
           if (optionIndex === 0) {
             return {
@@ -294,11 +378,10 @@ const AddScriptEventMenu = ({ onChange, onBlur }: AddScriptEventMenuProps) => {
         })
     );
     setAllOptions(allOptions);
-  }, []);
+  }, [favoriteEvents, favoritesCache]);
 
   useEffect(() => {
     if (searchTerm && fuseRef.current) {
-      console.log(fuseRef.current.search(searchTerm));
       setOptions(fuseRef.current.search(searchTerm).map((res) => res.item));
       setSelectedIndex(0);
       setSelectedCategoryIndex(-1);
@@ -317,12 +400,20 @@ const AddScriptEventMenu = ({ onChange, onBlur }: AddScriptEventMenuProps) => {
           el.focus();
           el.scrollIntoViewIfNeeded(false);
         }
+      } else if (rootOptionsRef.current && selectedCategoryIndex === -1) {
+        const el = rootOptionsRef.current.querySelector(
+          `[data-index="${index}"]`
+        ) as MenuElement;
+        if (el) {
+          el.focus();
+          el.scrollIntoViewIfNeeded(false);
+        }
       }
     },
     [selectedCategoryIndex]
   );
 
-  const onSelectCategory = useCallback(
+  const onSelectOption = useCallback(
     (index: number) => {
       if (
         index === -1 ||
@@ -350,6 +441,33 @@ const AddScriptEventMenu = ({ onChange, onBlur }: AddScriptEventMenuProps) => {
     [onChange, options, selectedCategoryIndex]
   );
 
+  const onToggleFavouriteEventId = useCallback(
+    (eventId: string) => {
+      dispatch(settingsActions.toggleFavoriteEvent(eventId));
+    },
+    [dispatch]
+  );
+
+  const onToggleFavoriteOption = useCallback(
+    (index: number) => {
+      if (selectedCategoryIndex === -1) {
+        const option = options[index];
+        if ("event" in option) {
+          onToggleFavouriteEventId(option.event.id);
+        }
+      } else {
+        const categoryOption = options[selectedCategoryIndex];
+        if ("options" in categoryOption) {
+          const option = categoryOption.options[index];
+          if ("event" in option) {
+            onToggleFavouriteEventId(option.event.id);
+          }
+        }
+      }
+    },
+    [onToggleFavouriteEventId, options, selectedCategoryIndex]
+  );
+
   const onKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === "Escape") {
@@ -374,12 +492,16 @@ const AddScriptEventMenu = ({ onChange, onBlur }: AddScriptEventMenuProps) => {
         setSelectedIndex(Math.max(selectedIndex - 1, 0));
         scrollIntoViewIfNeeded(selectedIndex - 1);
       } else if (e.key === "Enter") {
-        onSelectCategory(selectedIndex);
+        onSelectOption(selectedIndex);
+      } else if (e.key === "Tab") {
+        e.preventDefault();
+        onToggleFavoriteOption(selectedIndex);
       }
     },
     [
       onBlur,
-      onSelectCategory,
+      onSelectOption,
+      onToggleFavoriteOption,
       options,
       scrollIntoViewIfNeeded,
       searchTerm.length,
@@ -390,23 +512,37 @@ const AddScriptEventMenu = ({ onChange, onBlur }: AddScriptEventMenuProps) => {
 
   const onChangeSearchTerm = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      setSearchTerm(e.currentTarget.value);
+      const value = e.currentTarget.value;
+      if (value.trim() === "") {
+        setSearchTerm("");
+      } else {
+        setSearchTerm(e.currentTarget.value);
+      }
     },
     []
   );
 
+  const menuHeight =
+    MENU_HEADER_HEIGHT +
+    allOptions.length * MENU_ITEM_HEIGHT +
+    MENU_GROUP_HEIGHT +
+    (favoriteEvents.length > 0 ? MENU_GROUP_HEIGHT + MENU_GROUP_SPACER : 0);
+
+  if (allOptions.length === 0) {
+    return null;
+  }
+
   return (
     <SelectMenu>
-      <Menu>
+      <Menu style={{ height: menuHeight }}>
         <SelectMenuHeader
           isOpen={!searchTerm && selectedCategoryIndex > -1}
-          onClick={() => onSelectCategory(-1)}
+          onClick={() => onSelectOption(-1)}
         >
           <SelectMenuTitle>Add Event</SelectMenuTitle>
           <SelectMenuTitle>
             {renderCategoryIndex > -1 && options[renderCategoryIndex]?.label}
           </SelectMenuTitle>
-
           <SelectMenuBackButton>
             <CaretRightIcon />
           </SelectMenuBackButton>
@@ -424,7 +560,7 @@ const AddScriptEventMenu = ({ onChange, onBlur }: AddScriptEventMenuProps) => {
         <SelectMenuOptionsWrapper
           isOpen={!searchTerm && selectedCategoryIndex > -1}
         >
-          <SelectMenuOptions>
+          <SelectMenuOptions ref={rootOptionsRef}>
             {options.map((option, optionIndex) => (
               <>
                 {option.groupLabel && (
@@ -434,13 +570,14 @@ const AddScriptEventMenu = ({ onChange, onBlur }: AddScriptEventMenuProps) => {
                 )}
                 <MenuItem
                   key={option.label}
+                  data-index={optionIndex}
                   selected={
                     (selectedCategoryIndex === -1 &&
                       selectedIndex === optionIndex) ||
                     selectedCategoryIndex === optionIndex
                   }
                   onMouseOver={() => setSelectedIndex(optionIndex)}
-                  onClick={() => onSelectCategory(optionIndex)}
+                  onClick={() => onSelectOption(optionIndex)}
                 >
                   {option.label}
                   {"options" in option ? (
@@ -450,8 +587,24 @@ const AddScriptEventMenu = ({ onChange, onBlur }: AddScriptEventMenuProps) => {
                   ) : (
                     <>
                       <FlexGrow />
-                      <MenuItemFavorite>
-                        <Button size="small" variant="transparent">
+                      <MenuItemFavorite
+                        visible={
+                          (selectedCategoryIndex === -1 &&
+                            selectedIndex === optionIndex) ||
+                          selectedCategoryIndex === optionIndex ||
+                          ("isFavorite" in option && option.isFavorite)
+                        }
+                        isFavorite={option.isFavorite}
+                      >
+                        <Button
+                          size="small"
+                          variant="transparent"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            onToggleFavoriteOption(optionIndex);
+                          }}
+                        >
                           <StarIcon />
                         </Button>
                       </MenuItemFavorite>
@@ -463,21 +616,35 @@ const AddScriptEventMenu = ({ onChange, onBlur }: AddScriptEventMenuProps) => {
           </SelectMenuOptions>
           <SelectMenuOptions ref={childOptionsRef}>
             {renderCategoryIndex > -1 &&
-              (options[renderCategoryIndex] as OptGroup)?.options &&
-              (options[renderCategoryIndex] as OptGroup).options.map(
+              (options[renderCategoryIndex] as EventOptGroup)?.options &&
+              (options[renderCategoryIndex] as EventOptGroup).options.map(
                 (childOption, childOptionIndex) => (
                   <MenuItem
                     key={childOption.value}
                     data-index={childOptionIndex}
                     selected={selectedIndex === childOptionIndex}
                     onMouseOver={() => setSelectedIndex(childOptionIndex)}
-                    onClick={() => onSelectCategory(childOptionIndex)}
+                    onClick={() => onSelectOption(childOptionIndex)}
                   >
                     {childOption.label}
                     <FlexGrow />
-                    <MenuItemFavorite>
-                      <Button size="small" variant="transparent">
-                        <StarOutlineIcon />
+                    <MenuItemFavorite
+                      visible={
+                        selectedIndex === childOptionIndex ||
+                        childOption.isFavorite
+                      }
+                      isFavorite={childOption.isFavorite}
+                    >
+                      <Button
+                        size="small"
+                        variant="transparent"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          onToggleFavoriteOption(childOptionIndex);
+                        }}
+                      >
+                        <StarIcon />
                       </Button>
                     </MenuItemFavorite>
                   </MenuItem>

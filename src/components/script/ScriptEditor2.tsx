@@ -1,5 +1,6 @@
 import React from "react";
 import { ScriptEventParentType } from "store/features/entities/entitiesTypes";
+import styled from "styled-components";
 import AddButton from "./AddButton";
 import ScriptEditorEvent from "./ScriptEditorEvent2";
 
@@ -10,6 +11,10 @@ interface ScriptEditorProps {
   scriptKey: string;
 }
 
+const ScriptEditorWrapper = styled.div`
+  position: relative;
+`;
+
 const ScriptEditor = ({
   value,
   type,
@@ -17,7 +22,7 @@ const ScriptEditor = ({
   scriptKey,
 }: ScriptEditorProps) => {
   return (
-    <div>
+    <ScriptEditorWrapper>
       {value.map((id, index) => (
         <ScriptEditorEvent
           key={id}
@@ -30,7 +35,7 @@ const ScriptEditor = ({
         />
       ))}
       <AddButton parentType={type} parentId={entityId} parentKey={scriptKey} />
-    </div>
+    </ScriptEditorWrapper>
   );
 };
 

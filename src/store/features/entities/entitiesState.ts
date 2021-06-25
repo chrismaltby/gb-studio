@@ -2625,27 +2625,54 @@ const selectScriptIds = (
     const scene = state.scenes.entities[parentId];
     if (!scene) return;
     const script = scene[parentKey as "script"];
-    return script;
+    if (script) {
+      return script;
+    }
+    const newScript = (scene[parentKey as "script"] = []);
+    return newScript;
   } else if (parentType === "scriptEvent") {
     const scriptEvent = state.scriptEvents.entities[parentId];
     if (!scriptEvent) return;
     const script = scriptEvent.children?.[parentKey];
-    return script;
+    if (script) {
+      return script;
+    }
+    if (!scriptEvent.children) {
+      scriptEvent.children = {
+        [parentKey]: [],
+      };
+      return scriptEvent.children?.[parentKey];
+    } else {
+      scriptEvent.children[parentKey] = [];
+      return scriptEvent.children[parentKey];
+    }
   } else if (parentType === "actor") {
     const actor = state.actors.entities[parentId];
     if (!actor) return;
     const script = actor[parentKey as "script"];
-    return script;
+    if (script) {
+      return script;
+    }
+    const newScript = (actor[parentKey as "script"] = []);
+    return newScript;
   } else if (parentType === "trigger") {
     const trigger = state.triggers.entities[parentId];
     if (!trigger) return;
     const script = trigger[parentKey as "script"];
-    return script;
+    if (script) {
+      return script;
+    }
+    const newScript = (trigger[parentKey as "script"] = []);
+    return newScript;
   } else if (parentType === "customEvent") {
     const customEvent = state.customEvents.entities[parentId];
     if (!customEvent) return;
     const script = customEvent[parentKey as "script"];
-    return script;
+    if (script) {
+      return script;
+    }
+    const newScript = (customEvent[parentKey as "script"] = []);
+    return newScript;
   }
 };
 
@@ -2703,11 +2730,13 @@ const addScriptEvents: CaseReducer<
     }
   );
 
-  const insertIndex = Math.max(
-    0,
-    script.indexOf(action.payload.insertId || "") +
-      (action.payload.before ? 0 : 1)
-  );
+  const insertIndex = action.payload.insertId
+    ? Math.max(
+        0,
+        script.indexOf(action.payload.insertId || "") +
+          (action.payload.before ? 0 : 1)
+      )
+    : script.length;
 
   scriptEventsAdapter.addMany(state.scriptEvents, newScriptEvents);
   script.splice(insertIndex, 0, ...action.payload.scriptEventIds);

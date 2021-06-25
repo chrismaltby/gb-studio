@@ -20,6 +20,7 @@ export const Menu = styled.div<MenuProps>`
   font-size: ${(props) => props.theme.typography.menuFontSize};
   padding: 4px 0;
   font-weight: normal;
+  line-height: 15px;
 `;
 
 export interface MenuItemProps {
@@ -69,6 +70,10 @@ export const MenuGroup = styled.div`
   font-size: 10px;
   text-transform: uppercase;
   opacity: 0.8;
+
+  ${MenuItem} + & {
+    margin-top: 10px;
+  }
 `;
 
 export const MenuDivider = styled.div`

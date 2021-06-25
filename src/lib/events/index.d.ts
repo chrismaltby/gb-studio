@@ -9,11 +9,7 @@ export interface EventField {
   min?: number;
   max?: number;
   options?: Array<[string | number, string]>;
-  defaultValue?:
-    | string
-    | number
-    | boolean
-    | { [string]: string | number | boolean };
+  defaultValue?: Record<string, unknown> | unknown;
   width?: string;
 }
 
@@ -22,6 +18,7 @@ export interface EventHandler {
   fields: EventField[];
   name?: string;
   groups?: string[];
+  deprecated?: boolean;
   compile: (input: unknown, helpers: unknown) => void;
 }
 

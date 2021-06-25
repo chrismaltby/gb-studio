@@ -1,6 +1,7 @@
 const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_OVERLAY_MOVE_TO";
+const groups = ["EVENT_GROUP_SCREEN"];
 
 const fields = [
   {
@@ -35,6 +36,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  groups,
   fields,
   compile,
 };

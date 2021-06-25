@@ -6,6 +6,7 @@ const trimChoiceItem = (string) => {
 };
 
 const id = "EVENT_CHOICE";
+const groups = ["EVENT_GROUP_DIALOGUE"];
 
 const fields = [
   {
@@ -39,6 +40,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  groups,
   fields,
   compile,
 };

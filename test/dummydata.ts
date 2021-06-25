@@ -179,6 +179,7 @@ export const dummyProjectData: ProjectData = {
     musicDriver: "huge",
     cartType: "mbc5",
     batterylessEnabled: false,
+    favoriteEvents: [],
   },
 };
 

@@ -279,8 +279,8 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
       {isOpen && <ButtonCover onMouseDown={delayedButtonFocus} />}
 
       <div style={{ position: "absolute", top: "100%", left: "100%" }}>
-        <RelativePortal pin="top-right">
-          {isOpen && (
+        {isOpen && (
+          <RelativePortal pin="top-right">
             <SelectMenu>
               <BackgroundSelect
                 name={name}
@@ -290,8 +290,8 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
                 {...selectMenuStyleProps}
               />
             </SelectMenu>
-          )}
-        </RelativePortal>
+          </RelativePortal>
+        )}
       </div>
     </Wrapper>
   );

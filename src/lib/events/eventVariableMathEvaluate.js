@@ -1,4 +1,5 @@
 const id = "EVENT_VARIABLE_MATH_EVALUATE";
+const groups = ["EVENT_GROUP_MATH", "EVENT_GROUP_VARIABLES"];
 
 const fields = [
   {
@@ -28,6 +29,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  groups,
   fields,
   compile,
   allowedBeforeInitFade: true,
