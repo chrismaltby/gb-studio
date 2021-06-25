@@ -149,26 +149,17 @@ const moveSelectedEntity =
     getState: () => RootState
   ) => {
     const state = getState();
-    const {
-      dragging,
-      scene,
-      eventId,
-      entityId,
-      type: editorType,
-    } = state.editor;
+    const { dragging, scene, eventId, entityId } = state.editor;
     if (dragging === DRAG_PLAYER) {
       dispatch(settingsActions.editPlayerStartAt({ sceneId, x, y }));
     } else if (dragging === DRAG_DESTINATION) {
       dispatch(
-        editDestinationPosition(
-          eventId,
-          scene,
-          editorType,
-          entityId,
-          sceneId,
+        actions.editScriptEventDestination({
+          scriptEventId: eventId,
+          destSceneId: sceneId,
           x,
-          y
-        )
+          y,
+        })
       );
     } else if (dragging === DRAG_ACTOR) {
       dispatch(
@@ -2842,6 +2833,27 @@ const editScriptEventArg: CaseReducer<
   scriptEvent.args[action.payload.key] = action.payload.value;
 };
 
+const editScriptEventDestination: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    scriptEventId: string;
+    destSceneId: string;
+    x: number;
+    y: number;
+  }>
+> = (state, action) => {
+  const scriptEvent = state.scriptEvents.entities[action.payload.scriptEventId];
+  if (!scriptEvent || !scriptEvent.args) {
+    return;
+  }
+  scriptEvent.args = {
+    ...scriptEvent.args,
+    sceneId: action.payload.destSceneId,
+    x: action.payload.x,
+    y: action.payload.y,
+  };
+};
+
 const editScriptEventLabel: CaseReducer<
   EntitiesState,
   PayloadAction<{
@@ -3209,6 +3221,7 @@ const entitiesSlice = createSlice({
     toggleScriptEventComment,
     toggleScriptEventDisableElse,
     editScriptEventArg,
+    editScriptEventDestination,
     editScriptEventLabel,
     removeScriptEvent,
 

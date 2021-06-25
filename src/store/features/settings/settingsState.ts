@@ -3,7 +3,7 @@ import { RootState } from "store/configureStore";
 import { ActorDirection } from "../entities/entitiesTypes";
 import projectActions from "../project/projectActions";
 
-type ShowConnectionsSetting = "all" | "selected" | true | false;
+export type ShowConnectionsSetting = "all" | "selected" | true | false;
 export type MusicDriverSetting = "huge" | "gbt";
 export type CartType = "mbc5" | "mbc3";
 

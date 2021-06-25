@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import throttle from "lodash/throttle";
 import Scene from "./Scene";
 import WorldHelp from "./WorldHelp";
-import Connections from "./Connections";
+import Connections from "./Connections2";
 import {
   MIDDLE_MOUSE,
   TOOL_COLORS,

@@ -311,3 +311,57 @@ export const walkNormalisedScriptEvents = (
     }
   }
 };
+
+export const walkNormalisedSceneSpecificEvents = (
+  scene: Scene,
+  lookup: Dictionary<ScriptEvent>,
+  callback: (scriptEvent: ScriptEvent) => void
+) => {
+  walkNormalisedScriptEvents(scene.script, lookup, callback);
+  walkNormalisedScriptEvents(scene.playerHit1Script, lookup, callback);
+  walkNormalisedScriptEvents(scene.playerHit2Script, lookup, callback);
+  walkNormalisedScriptEvents(scene.playerHit3Script, lookup, callback);
+};
+
+export const walkNormalisedActorEvents = (
+  actor: Actor,
+  lookup: Dictionary<ScriptEvent>,
+  callback: (scriptEvent: ScriptEvent) => void
+) => {
+  walkNormalisedScriptEvents(actor.script, lookup, callback);
+  walkNormalisedScriptEvents(actor.startScript, lookup, callback);
+  walkNormalisedScriptEvents(actor.updateScript, lookup, callback);
+  walkNormalisedScriptEvents(actor.hit1Script, lookup, callback);
+  walkNormalisedScriptEvents(actor.hit2Script, lookup, callback);
+  walkNormalisedScriptEvents(actor.hit3Script, lookup, callback);
+};
+
+export const walkNormalisedTriggerEvents = (
+  trigger: Trigger,
+  lookup: Dictionary<ScriptEvent>,
+  callback: (scriptEvent: ScriptEvent) => void
+) => {
+  walkNormalisedScriptEvents(trigger.script, lookup, callback);
+};
+
+export const walkNormalisedSceneEvents = (
+  scene: Scene,
+  lookup: Dictionary<ScriptEvent>,
+  actorsLookup: Dictionary<Actor>,
+  triggersLookup: Dictionary<Trigger>,
+  callback: (scriptEvent: ScriptEvent) => void
+) => {
+  walkNormalisedSceneSpecificEvents(scene, lookup, callback);
+  scene.actors.forEach((actorId) => {
+    const actor = actorsLookup[actorId];
+    if (actor) {
+      walkNormalisedActorEvents(actor, lookup, callback);
+    }
+  });
+  scene.triggers.forEach((triggerId) => {
+    const trigger = triggersLookup[triggerId];
+    if (trigger) {
+      walkNormalisedTriggerEvents(trigger, lookup, callback);
+    }
+  });
+};
