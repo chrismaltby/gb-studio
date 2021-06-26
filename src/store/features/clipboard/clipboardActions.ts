@@ -18,7 +18,7 @@ import { RootState } from "store/configureStore";
 import editorActions from "../editor/editorActions";
 import entitiesActions from "../entities/entitiesActions";
 import { pasteAny } from "./clipboardHelpers";
-import { ClipboardTypeTriggers } from "./clipboardTypes";
+import { ClipboardTypeActors, ClipboardTypeTriggers } from "./clipboardTypes";
 
 const fetchClipboard = createAction("clipboard/fetch");
 const copyText = createAction<string>("clipboard/copyText");
@@ -33,6 +33,9 @@ const copyScriptEvents = createAction<{
 const copyTriggers = createAction<{
   triggerIds: string[];
 }>("clipboard/copyTriggers");
+const copyActors = createAction<{
+  actorIds: string[];
+}>("clipboard/copyActors");
 const copyMetasprites = createAction<{
   metaspriteIds: string[];
 }>("clipboard/copyMetasprites");
@@ -71,6 +74,11 @@ const pasteTriggerAt = createAction<{
   x: number;
   y: number;
 }>("clipboard/pasteTriggerAt");
+const pasteActorAt = createAction<{
+  sceneId: string;
+  x: number;
+  y: number;
+}>("clipboard/pasteActorAt");
 
 const copySelectedEntity =
   () =>
@@ -88,7 +96,7 @@ const copySelectedEntity =
     } else if (editorType === "actor") {
       const actor = actorSelectors.selectById(state, entityId);
       if (actor) {
-        dispatch(copyActor(actor));
+        dispatch(copyActors({ actorIds: [actor.id] }));
       }
     } else if (editorType === "trigger") {
       const trigger = triggerSelectors.selectById(state, entityId);
@@ -106,6 +114,9 @@ const pasteClipboardEntity =
     }
     if (clipboard.format === ClipboardTypeTriggers) {
       dispatch(editorActions.setTool({ tool: "triggers" }));
+      dispatch(editorActions.setPasteMode(true));
+    } else if (clipboard.format === ClipboardTypeActors) {
+      dispatch(editorActions.setTool({ tool: "actors" }));
       dispatch(editorActions.setPasteMode(true));
     }
 
@@ -156,6 +167,15 @@ const pasteClipboardEntityInPlace =
       const trigger = clipboard.data.triggers[0];
       dispatch(
         pasteTriggerAt({
+          sceneId,
+          x: trigger.x,
+          y: trigger.y,
+        })
+      );
+    } else if (clipboard.format === ClipboardTypeActors) {
+      const trigger = clipboard.data.actors[0];
+      dispatch(
+        pasteActorAt({
           sceneId,
           x: trigger.x,
           y: trigger.y,
@@ -230,6 +250,7 @@ export default {
   copyScript,
   copyScriptEvents,
   copyTriggers,
+  copyActors,
   copyMetasprites,
   copyMetaspriteTiles,
   copySpriteState,
@@ -243,4 +264,5 @@ export default {
   pasteScriptEvents,
   pasteScriptEventValues,
   pasteTriggerAt,
+  pasteActorAt,
 };

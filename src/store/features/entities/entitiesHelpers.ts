@@ -27,6 +27,8 @@ import {
   SpriteState,
   SpriteSheetData,
   ScriptEvent,
+  ActorScriptKey,
+  actorScriptKeys,
 } from "./entitiesTypes";
 import { Dictionary, EntityId } from "@reduxjs/toolkit";
 
@@ -328,12 +330,9 @@ export const walkNormalisedActorEvents = (
   lookup: Dictionary<ScriptEvent>,
   callback: (scriptEvent: ScriptEvent) => void
 ) => {
-  walkNormalisedScriptEvents(actor.script, lookup, callback);
-  walkNormalisedScriptEvents(actor.startScript, lookup, callback);
-  walkNormalisedScriptEvents(actor.updateScript, lookup, callback);
-  walkNormalisedScriptEvents(actor.hit1Script, lookup, callback);
-  walkNormalisedScriptEvents(actor.hit2Script, lookup, callback);
-  walkNormalisedScriptEvents(actor.hit3Script, lookup, callback);
+  walkActorScriptsKeys((key) => {
+    walkNormalisedScriptEvents(actor[key], lookup, callback);
+  });
 };
 
 export const walkNormalisedTriggerEvents = (
@@ -364,4 +363,10 @@ export const walkNormalisedSceneEvents = (
       walkNormalisedTriggerEvents(trigger, lookup, callback);
     }
   });
+};
+
+export const walkActorScriptsKeys = (
+  callback: (scriptKey: ActorScriptKey) => void
+) => {
+  actorScriptKeys.forEach((key) => callback(key));
 };

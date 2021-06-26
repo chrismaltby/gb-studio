@@ -1,5 +1,6 @@
 import { clipboard } from "electron";
 import {
+  ClipboardActors,
   ClipboardFormat,
   ClipboardMetasprites,
   ClipboardMetaspriteTiles,
@@ -8,6 +9,7 @@ import {
   ClipboardSpriteState,
   ClipboardTriggers,
   ClipboardType,
+  ClipboardTypeActors,
   ClipboardTypeMetasprites,
   ClipboardTypeMetaspriteTiles,
   ClipboardTypePaletteIds,
@@ -86,6 +88,14 @@ const isClipboardTriggers = (input: unknown): input is ClipboardTriggers => {
   return Array.isArray(wide.scriptEvents) && Array.isArray(wide.triggers);
 };
 
+const isClipboardActors = (input: unknown): input is ClipboardActors => {
+  if (typeof input !== "object" || input === null) {
+    return false;
+  }
+  const wide: { scriptEvents?: unknown; actors?: unknown } = input;
+  return Array.isArray(wide.scriptEvents) && Array.isArray(wide.actors);
+};
+
 export const copy = (payload: ClipboardType) => {
   const buffer = Buffer.from(JSON.stringify(payload.data), "utf8");
   clipboard.writeBuffer(payload.format, buffer);
@@ -145,6 +155,13 @@ export const paste = <T extends ClipboardFormat>(
     if (isClipboardTriggers(data)) {
       return {
         format: ClipboardTypeTriggers,
+        data,
+      } as NarrowClipboardType<ClipboardType, T>;
+    }
+  } else if (format === ClipboardTypeActors) {
+    if (isClipboardActors(data)) {
+      return {
+        format: ClipboardTypeActors,
         data,
       } as NarrowClipboardType<ClipboardType, T>;
     }

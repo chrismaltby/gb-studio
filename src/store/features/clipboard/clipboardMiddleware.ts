@@ -21,6 +21,7 @@ import {
   generateScriptEventInsertActions,
 } from "../entities/entitiesState";
 import {
+  Actor,
   CustomEvent,
   Metasprite,
   MetaspriteTile,
@@ -34,6 +35,7 @@ import editorActions from "../editor/editorActions";
 import confirmReplaceCustomEvent from "lib/electron/dialog/confirmReplaceCustomEvent";
 import { copy, pasteAny } from "./clipboardHelpers";
 import {
+  ClipboardTypeActors,
   ClipboardTypeMetasprites,
   ClipboardTypeMetaspriteTiles,
   ClipboardTypePaletteIds,
@@ -43,6 +45,8 @@ import {
 } from "./clipboardTypes";
 import clipboardActions from "./clipboardActions";
 import {
+  walkActorScriptsKeys,
+  walkNormalisedActorEvents,
   walkNormalisedScriptEvents,
   walkNormalisedTriggerEvents,
 } from "../entities/entitiesHelpers";
@@ -362,6 +366,32 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           scriptEvents,
         },
       });
+    } else if (actions.copyActors.match(action)) {
+      const state = store.getState();
+      const actorsLookup = actorSelectors.selectEntities(state);
+      const scriptEventsLookup = scriptEventSelectors.selectEntities(state);
+      const actors: Actor[] = [];
+      const scriptEvents: ScriptEvent[] = [];
+      action.payload.actorIds.forEach((actorId) => {
+        const actor = actorsLookup[actorId];
+        if (actor) {
+          actors.push(actor);
+          walkNormalisedActorEvents(
+            actor,
+            scriptEventsLookup,
+            (scriptEvent) => {
+              scriptEvents.push(scriptEvent);
+            }
+          );
+        }
+      });
+      copy({
+        format: ClipboardTypeActors,
+        data: {
+          actors,
+          scriptEvents,
+        },
+      });
     } else if (actions.pasteScriptEvents.match(action)) {
       const clipboard = pasteAny();
       if (!clipboard) {
@@ -436,15 +466,38 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         for (const action of insertActions) {
           store.dispatch(action);
         }
-      } else {
-        const addTriggerAction = entitiesActions.addTrigger({
+      }
+    } else if (actions.pasteActorAt.match(action)) {
+      const clipboard = pasteAny();
+      if (clipboard && clipboard.format === ClipboardTypeActors) {
+        const actor = clipboard.data.actors[0];
+        const scriptEvents = clipboard.data.scriptEvents;
+        const scriptEventsLookup = keyBy(scriptEvents, "id");
+        const addActorAction = entitiesActions.addActor({
           sceneId: action.payload.sceneId,
           x: action.payload.x,
           y: action.payload.y,
-          width: 1,
-          height: 1,
+          defaults: actor,
         });
-        store.dispatch(addTriggerAction);
+        const insertActions: ReturnType<
+          typeof generateScriptEventInsertActions
+        > = [];
+        walkActorScriptsKeys((key) => {
+          const scriptEventIds = actor[key];
+          insertActions.push(
+            ...generateScriptEventInsertActions(
+              scriptEventIds,
+              scriptEventsLookup,
+              addActorAction.payload.actorId,
+              "actor",
+              key
+            )
+          );
+        });
+        store.dispatch(addActorAction);
+        for (const action of insertActions) {
+          store.dispatch(action);
+        }
       }
     } else if (actions.fetchClipboard.match(action)) {
       const clipboard = pasteAny();

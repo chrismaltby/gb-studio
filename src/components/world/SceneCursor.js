@@ -112,6 +112,7 @@ class SceneCursor extends Component {
       setSelectedPalette,
       pasteMode,
       pasteTriggerAt,
+      pasteActorAt,
     } = this.props;
 
     this.lockX = undefined;
@@ -122,13 +123,19 @@ class SceneCursor extends Component {
     }
 
     if (tool === "actors") {
-      addActor({
-        sceneId,
-        x,
-        y,
-        defaults: actorDefaults,
-        variables: clipboardVariables,
-      });
+      if (pasteMode) {
+        pasteActorAt({
+          sceneId,
+          x,
+          y,
+        });
+      } else {
+        addActor({
+          sceneId,
+          x,
+          y,
+        });
+      }
       setTool({ tool: "select" });
     } else if (tool === "triggers") {
       if (pasteMode) {
@@ -644,6 +651,7 @@ function mapStateToProps(state, props) {
 
 const mapDispatchToProps = {
   addActor: entitiesActions.addActor,
+  pasteActorAt: clipboardActions.pasteActorAt,
   removeActorAt: entitiesActions.removeActorAt,
   paintCollision: entitiesActions.paintCollision,
   paintColor: entitiesActions.paintColor,

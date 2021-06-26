@@ -57,6 +57,16 @@ export type ScriptEventsRef = {
   parentId: string;
 };
 
+export const actorScriptKeys = [
+  "script",
+  "startScript",
+  "updateScript",
+  "hit1Script",
+  "hit2Script",
+  "hit3Script",
+] as const;
+export type ActorScriptKey = typeof actorScriptKeys[number];
+
 export type Actor = {
   id: string;
   name: string;

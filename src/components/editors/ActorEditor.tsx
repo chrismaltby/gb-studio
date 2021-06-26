@@ -247,7 +247,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({
 
   const onCopy = () => {
     if (actor) {
-      dispatch(clipboardActions.copyActor(actor));
+      dispatch(clipboardActions.copyActors({ actorIds: [actor.id] }));
     }
   };
 
