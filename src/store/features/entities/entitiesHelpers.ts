@@ -33,6 +33,7 @@ import {
   SceneScriptKey,
 } from "./entitiesTypes";
 import { Dictionary, EntityId } from "@reduxjs/toolkit";
+import l10n from "lib/helpers/l10n";
 
 export interface NormalisedEntities {
   scenes: Record<EntityId, Scene>;
@@ -377,4 +378,8 @@ export const walkSceneScriptsKeys = (
   callback: (scriptKey: SceneScriptKey) => void
 ) => {
   sceneScriptKeys.forEach((key) => callback(key));
+};
+
+export const actorName = (actor: Actor, actorIndex: number) => {
+  return actor.name || `${l10n("ACTOR")} ${actorIndex + 1}`;
 };

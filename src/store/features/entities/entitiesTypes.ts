@@ -375,6 +375,7 @@ export interface ScriptEventFieldCondition {
 
 export interface ScriptEventFieldSchema {
   label?: string | React.ReactNode;
+  checkboxLabel?: string;
   defaultValue?: unknown;
   key?: string;
   type?: string;
@@ -385,6 +386,24 @@ export interface ScriptEventFieldSchema {
   width?: string;
   values?: Record<string, string>;
   alignCheckbox?: boolean;
+  placeholder?: string;
+  rows?: number;
+  maxLength?: number;
+  min?: number;
+  max?: number;
+  step?: number;
+  options?: [unknown, string][];
+  optional?: boolean;
+  paletteType?: "background" | "ui" | "emote" | "sprite";
+  paletteIndex?: number;
+  canKeep?: boolean;
+  includePlayer?: boolean;
+  filter?: (value: unknown) => boolean;
+  updateFn?: (
+    newValue: unknown,
+    field: ScriptEventFieldSchema,
+    args: Record<string, unknown>
+  ) => unknown;
   postUpdate?: (
     newArgs: Record<string, unknown>,
     prevArgs: Record<string, unknown>

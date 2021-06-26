@@ -415,6 +415,9 @@
   "FIELD_SPRITE_UNIQUE_TILES_TOOLTIP": "This number of unique tiles used by this sprite in total across all animations.\n\nReduce the number of unique tiles to allow more sprites to be used in a single scene.",
   "FIELD_FAVORITES": "Favorites",
   "FIELD_CATEGORIES": "Categories",
+  "FIELD_BLACK": "Black",
+  "FIELD_WHITE": "White",
+  "FIELD_SELF": "Self",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

@@ -31,7 +31,7 @@ interface VariableSelectProps extends SelectCommonProps {
   id?: string;
   name: string;
   value?: string;
-  type: "8bit" | "16bit";
+  type?: "8bit" | "16bit";
   entityId: string;
   allowRename?: boolean;
   onChange: (newValue: string) => void;
