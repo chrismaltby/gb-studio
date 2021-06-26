@@ -28,12 +28,7 @@ export const TextSpeedSelect: FC<TextSpeedSelectProps> = ({
   onChange,
   ...selectProps
 }) => {
-  console.log({ selectProps });
   const currentValue = options.find((o) => o.value === value);
-  console.log({
-    value,
-    currentValue,
-  });
   return (
     <Select
       name={name}

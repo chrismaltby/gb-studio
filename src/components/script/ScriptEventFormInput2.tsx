@@ -1,6 +1,7 @@
 import { ActorSelect } from "components/forms/ActorSelect2";
 import { AnimationSpeedSelect } from "components/forms/AnimationSpeedSelect";
 import AnimationStateSelect from "components/forms/AnimationStateSelect";
+import { AvatarSelect } from "components/forms/AvatarSelect";
 import { BackgroundSelect } from "components/forms/BackgroundSelect";
 import { CameraSpeedSelect } from "components/forms/CameraSpeedSelect2";
 import CollisionMaskPicker from "components/forms/CollisionMaskPicker";
@@ -9,6 +10,7 @@ import { EmoteSelect } from "components/forms/EmoteSelect";
 import { FadeSpeedSelect } from "components/forms/FadeSpeedSelect2";
 import InputPicker from "components/forms/InputPicker";
 import { MovementSpeedSelect } from "components/forms/MovementSpeedSelect";
+import { OperatorSelect } from "components/forms/OperatorSelect2";
 import { OverlayColorSelect } from "components/forms/OverlayColorSelect2";
 import { PaletteSelect } from "components/forms/PaletteSelect";
 import { SceneSelect } from "components/forms/SceneSelect";
@@ -347,6 +349,23 @@ const ScriptEventFormInput = ({
   } else if (type === "emote") {
     return (
       <EmoteSelect name={id} value={String(value)} onChange={onChangeField} />
+    );
+  } else if (type === "avatar") {
+    return (
+      <AvatarSelect
+        name={id}
+        value={String(value)}
+        onChange={onChangeField}
+        optional={field.optional}
+      />
+    );
+  } else if (type === "operator") {
+    return (
+      <OperatorSelect
+        name={id}
+        value={String(value ?? "")}
+        onChange={onChangeField}
+      />
     );
   }
 

@@ -418,6 +418,12 @@
   "FIELD_BLACK": "Black",
   "FIELD_WHITE": "White",
   "FIELD_SELF": "Self",
+  "FIELD_EQ": "Equal To",
+  "FIELD_NE": "Not Equal To",
+  "FIELD_LT": "Less Than",
+  "FIELD_GT": "Greater Than",
+  "FIELD_LTE": "Less Than Or Equal To",
+  "FIELD_GTE": "Greater Than Or Equal To",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
