@@ -243,7 +243,7 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
 
   const onCopy = () => {
     if (scene) {
-      dispatch(clipboardActions.copyScene(scene));
+      dispatch(clipboardActions.copyScenes({ sceneIds: [scene.id] }));
     }
   };
 

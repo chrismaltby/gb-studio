@@ -36,6 +36,9 @@ const copyTriggers = createAction<{
 const copyActors = createAction<{
   actorIds: string[];
 }>("clipboard/copyActors");
+const copyScenes = createAction<{
+  sceneIds: string[];
+}>("clipboard/copyScenes");
 const copyMetasprites = createAction<{
   metaspriteIds: string[];
 }>("clipboard/copyMetasprites");
@@ -91,7 +94,7 @@ const copySelectedEntity =
     if (editorType === "scene") {
       const scene = sceneSelectors.selectById(state, sceneId);
       if (scene) {
-        dispatch(copyScene(scene));
+        dispatch(copyScenes({ sceneIds: [scene.id] }));
       }
     } else if (editorType === "actor") {
       const actor = actorSelectors.selectById(state, entityId);
@@ -251,6 +254,7 @@ export default {
   copyScriptEvents,
   copyTriggers,
   copyActors,
+  copyScenes,
   copyMetasprites,
   copyMetaspriteTiles,
   copySpriteState,

@@ -6,6 +6,7 @@ import {
   ScriptEvent,
   Trigger,
   Actor,
+  Scene,
 } from "../entities/entitiesTypes";
 
 export const ClipboardTypeScriptEvents = "gbstudio.scriptevents";
@@ -15,6 +16,7 @@ export const ClipboardTypeSpriteState = "gbstudio.spritestate";
 export const ClipboardTypePaletteIds = "gbstudio.palettes";
 export const ClipboardTypeTriggers = " gbstudio.triggers";
 export const ClipboardTypeActors = " gbstudio.actors";
+export const ClipboardTypeScenes = " gbstudio.scenes";
 
 export type NarrowClipboardType<T, N> = T extends { format: N } ? T : never;
 
@@ -53,6 +55,13 @@ export type ClipboardActors = {
   scriptEvents: ScriptEvent[];
 };
 
+export type ClipboardScenes = {
+  scenes: Scene[];
+  actors: Actor[];
+  triggers: Trigger[];
+  scriptEvents: ScriptEvent[];
+};
+
 export type ClipboardType =
   | {
       format: typeof ClipboardTypeMetaspriteTiles;
@@ -81,6 +90,10 @@ export type ClipboardType =
   | {
       format: typeof ClipboardTypeActors;
       data: ClipboardActors;
+    }
+  | {
+      format: typeof ClipboardTypeScenes;
+      data: ClipboardScenes;
     };
 
 export type ClipboardFormat = ClipboardType["format"];
@@ -93,4 +106,5 @@ export const ClipboardTypes: ClipboardFormat[] = [
   ClipboardTypeScriptEvents,
   ClipboardTypeTriggers,
   ClipboardTypeActors,
+  ClipboardTypeScenes,
 ];

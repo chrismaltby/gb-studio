@@ -5,6 +5,7 @@ import {
   ClipboardMetasprites,
   ClipboardMetaspriteTiles,
   ClipboardPaletteIds,
+  ClipboardScenes,
   ClipboardScriptEvents,
   ClipboardSpriteState,
   ClipboardTriggers,
@@ -14,6 +15,7 @@ import {
   ClipboardTypeMetaspriteTiles,
   ClipboardTypePaletteIds,
   ClipboardTypes,
+  ClipboardTypeScenes,
   ClipboardTypeScriptEvents,
   ClipboardTypeSpriteState,
   ClipboardTypeTriggers,
@@ -96,6 +98,24 @@ const isClipboardActors = (input: unknown): input is ClipboardActors => {
   return Array.isArray(wide.scriptEvents) && Array.isArray(wide.actors);
 };
 
+const isClipboardScenes = (input: unknown): input is ClipboardScenes => {
+  if (typeof input !== "object" || input === null) {
+    return false;
+  }
+  const wide: {
+    scriptEvents?: unknown;
+    actors?: unknown;
+    triggers?: unknown;
+    scenes?: unknown;
+  } = input;
+  return (
+    Array.isArray(wide.scriptEvents) &&
+    Array.isArray(wide.actors) &&
+    Array.isArray(wide.triggers) &&
+    Array.isArray(wide.scenes)
+  );
+};
+
 export const copy = (payload: ClipboardType) => {
   const buffer = Buffer.from(JSON.stringify(payload.data), "utf8");
   clipboard.writeBuffer(payload.format, buffer);
@@ -162,6 +182,13 @@ export const paste = <T extends ClipboardFormat>(
     if (isClipboardActors(data)) {
       return {
         format: ClipboardTypeActors,
+        data,
+      } as NarrowClipboardType<ClipboardType, T>;
+    }
+  } else if (format === ClipboardTypeScenes) {
+    if (isClipboardScenes(data)) {
+      return {
+        format: ClipboardTypeScenes,
         data,
       } as NarrowClipboardType<ClipboardType, T>;
     }

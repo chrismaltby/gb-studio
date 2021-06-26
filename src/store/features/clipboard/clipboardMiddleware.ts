@@ -19,12 +19,14 @@ import {
   spriteAnimationSelectors,
   scriptEventSelectors,
   generateScriptEventInsertActions,
+  sceneSelectors,
 } from "../entities/entitiesState";
 import {
   Actor,
   CustomEvent,
   Metasprite,
   MetaspriteTile,
+  Scene,
   ScriptEvent,
   SpriteAnimation,
   Trigger,
@@ -39,6 +41,7 @@ import {
   ClipboardTypeMetasprites,
   ClipboardTypeMetaspriteTiles,
   ClipboardTypePaletteIds,
+  ClipboardTypeScenes,
   ClipboardTypeScriptEvents,
   ClipboardTypeSpriteState,
   ClipboardTypeTriggers,
@@ -47,6 +50,7 @@ import clipboardActions from "./clipboardActions";
 import {
   walkActorScriptsKeys,
   walkNormalisedActorEvents,
+  walkNormalisedSceneSpecificEvents,
   walkNormalisedScriptEvents,
   walkNormalisedTriggerEvents,
 } from "../entities/entitiesHelpers";
@@ -389,6 +393,64 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         format: ClipboardTypeActors,
         data: {
           actors,
+          scriptEvents,
+        },
+      });
+    } else if (actions.copyScenes.match(action)) {
+      const state = store.getState();
+      const scenesLookup = sceneSelectors.selectEntities(state);
+      const actorsLookup = actorSelectors.selectEntities(state);
+      const triggersLookup = triggerSelectors.selectEntities(state);
+      const scriptEventsLookup = scriptEventSelectors.selectEntities(state);
+      const scenes: Scene[] = [];
+      const actors: Actor[] = [];
+      const triggers: Trigger[] = [];
+      const scriptEvents: ScriptEvent[] = [];
+      action.payload.sceneIds.forEach((sceneId) => {
+        const scene = scenesLookup[sceneId];
+        if (scene) {
+          scenes.push(scene);
+          scene.actors.forEach((actorId) => {
+            const actor = actorsLookup[actorId];
+            if (actor) {
+              actors.push(actor);
+              walkNormalisedActorEvents(
+                actor,
+                scriptEventsLookup,
+                (scriptEvent) => {
+                  scriptEvents.push(scriptEvent);
+                }
+              );
+            }
+          });
+          scene.triggers.forEach((triggerId) => {
+            const trigger = triggersLookup[triggerId];
+            if (trigger) {
+              triggers.push(trigger);
+              walkNormalisedTriggerEvents(
+                trigger,
+                scriptEventsLookup,
+                (scriptEvent) => {
+                  scriptEvents.push(scriptEvent);
+                }
+              );
+            }
+          });
+          walkNormalisedSceneSpecificEvents(
+            scene,
+            scriptEventsLookup,
+            (scriptEvent) => {
+              scriptEvents.push(scriptEvent);
+            }
+          );
+        }
+      });
+      copy({
+        format: ClipboardTypeScenes,
+        data: {
+          scenes,
+          actors,
+          triggers,
           scriptEvents,
         },
       });
