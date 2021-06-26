@@ -29,6 +29,8 @@ import {
   ScriptEvent,
   ActorScriptKey,
   actorScriptKeys,
+  sceneScriptKeys,
+  SceneScriptKey,
 } from "./entitiesTypes";
 import { Dictionary, EntityId } from "@reduxjs/toolkit";
 
@@ -369,4 +371,10 @@ export const walkActorScriptsKeys = (
   callback: (scriptKey: ActorScriptKey) => void
 ) => {
   actorScriptKeys.forEach((key) => callback(key));
+};
+
+export const walkSceneScriptsKeys = (
+  callback: (scriptKey: SceneScriptKey) => void
+) => {
+  sceneScriptKeys.forEach((key) => callback(key));
 };

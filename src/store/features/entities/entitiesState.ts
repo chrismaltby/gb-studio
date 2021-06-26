@@ -744,107 +744,36 @@ const addScene: CaseReducer<
     sceneId: string;
     x: number;
     y: number;
-    defaults?: Partial<SceneData>;
+    defaults?: Partial<Scene>;
     variables?: Variable[];
   }>
 > = (state, action) => {
   const scenesTotal = localSceneSelectors.selectTotal(state);
-  const backgroundId = localBackgroundSelectors.selectIds(state)[0];
+  const backgroundId = String(localBackgroundSelectors.selectIds(state)[0]);
   const background = localBackgroundSelectors.selectById(state, backgroundId);
 
-  const newScene: Scene = Object.assign(
-    {
-      name: `Scene ${scenesTotal + 1}`,
-      backgroundId,
-      width: Math.max(MIN_SCENE_WIDTH, background?.width || 0),
-      height: Math.max(MIN_SCENE_HEIGHT, background?.height || 0),
-      type: "TOPDOWN",
-      paletteIds: [],
-      spritePaletteIds: [],
-      collisions: [],
-      script: [],
-      playerHit1Script: [],
-      playerHit2Script: [],
-      playerHit3Script: [],
-    },
-    action.payload.defaults || {},
-    {
-      id: action.payload.sceneId,
-      x: Math.max(MIN_SCENE_X, action.payload.x),
-      y: Math.max(MIN_SCENE_Y, action.payload.y),
-      actors: [],
-      triggers: [],
-    }
-  );
+  const newScene: Scene = {
+    name: `Scene ${scenesTotal + 1}`,
+    backgroundId,
+    width: Math.max(MIN_SCENE_WIDTH, background?.width || 0),
+    height: Math.max(MIN_SCENE_HEIGHT, background?.height || 0),
+    type: "TOPDOWN",
+    paletteIds: [],
+    spritePaletteIds: [],
+    collisions: [],
+    ...(action.payload.defaults || {}),
+    id: action.payload.sceneId,
+    x: Math.max(MIN_SCENE_X, action.payload.x),
+    y: Math.max(MIN_SCENE_Y, action.payload.y),
+    actors: [],
+    triggers: [],
+    script: [],
+    playerHit1Script: [],
+    playerHit2Script: [],
+    playerHit3Script: [],
+  };
 
-  // Generate new ids
-  const idReplacements: Dictionary<string> = {};
-  if (action.payload.defaults?.id) {
-    idReplacements[action.payload.defaults.id] = action.payload.sceneId;
-  }
-  if (action.payload.defaults?.actors) {
-    for (const actor of action.payload.defaults.actors) {
-      idReplacements[actor.id] = uuid();
-    }
-  }
-  if (action.payload.defaults?.triggers) {
-    for (const trigger of action.payload.defaults.triggers) {
-      idReplacements[trigger.id] = uuid();
-    }
-  }
-
-  // Add any variables from clipboard
-  if (action.payload.variables) {
-    const newVariables = action.payload.variables.map((variable) => {
-      let newId = variable.id;
-      for (const id in idReplacements) {
-        if (variable.id.startsWith(id)) {
-          newId = variable.id.replace(id, idReplacements[id] || newId);
-          break;
-        }
-      }
-      return {
-        ...variable,
-        id: newId,
-      };
-    });
-
-    variablesAdapter.upsertMany(state.variables, newVariables);
-  }
-
-  const fixedScene = mapSceneEvents(newScene, (event) =>
-    replaceEventActorIds(idReplacements, regenerateEventIds(event))
-  );
-
-  scenesAdapter.addOne(state.scenes, fixedScene);
-
-  if (action.payload.defaults?.actors) {
-    for (const actor of action.payload.defaults.actors) {
-      addActorToScene(
-        state,
-        fixedScene,
-        {
-          ...actor,
-          id: idReplacements[actor.id] || uuid(),
-        },
-        idReplacements
-      );
-    }
-  }
-
-  if (action.payload.defaults?.triggers) {
-    for (const trigger of action.payload.defaults.triggers) {
-      addTriggerToScene(
-        state,
-        fixedScene,
-        {
-          ...trigger,
-          id: idReplacements[trigger.id] || uuid(),
-        },
-        idReplacements
-      );
-    }
-  }
+  scenesAdapter.addOne(state.scenes, newScene);
 };
 
 const moveScene: CaseReducer<
@@ -2944,7 +2873,7 @@ const entitiesSlice = createSlice({
       prepare: (payload: {
         x: number;
         y: number;
-        defaults?: Partial<SceneData>;
+        defaults?: Partial<Scene>;
         variables?: Variable[];
       }) => {
         return {

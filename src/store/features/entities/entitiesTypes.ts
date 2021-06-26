@@ -286,6 +286,14 @@ export type SceneParallaxLayer = {
   speed: number;
 };
 
+export const sceneScriptKeys = [
+  "script",
+  "playerHit1Script",
+  "playerHit2Script",
+  "playerHit3Script",
+] as const;
+export type SceneScriptKey = typeof sceneScriptKeys[number];
+
 export type Scene = {
   id: string;
   type: string;

@@ -6,7 +6,7 @@ import {
   getCustomEventIdsInActor,
   getCustomEventIdsInScene,
 } from "lib/helpers/eventSystem";
-import { Dictionary, Dispatch, Middleware } from "@reduxjs/toolkit";
+import { AnyAction, Dictionary, Dispatch, Middleware } from "@reduxjs/toolkit";
 import { RootState } from "store/configureStore";
 import {
   customEventSelectors,
@@ -53,8 +53,121 @@ import {
   walkNormalisedSceneSpecificEvents,
   walkNormalisedScriptEvents,
   walkNormalisedTriggerEvents,
+  walkSceneScriptsKeys,
 } from "../entities/entitiesHelpers";
 import keyBy from "lodash/keyBy";
+
+const generateActorInsertActions = (
+  actor: Actor,
+  scriptEventsLookup: Dictionary<ScriptEvent>,
+  sceneId: string,
+  x: number,
+  y: number
+): AnyAction[] => {
+  const actions: AnyAction[] = [];
+  const addActorAction = entitiesActions.addActor({
+    sceneId,
+    x,
+    y,
+    defaults: actor,
+  });
+  actions.push(addActorAction);
+  walkActorScriptsKeys((key) => {
+    const scriptEventIds = actor[key];
+    actions.push(
+      ...generateScriptEventInsertActions(
+        scriptEventIds,
+        scriptEventsLookup,
+        addActorAction.payload.actorId,
+        "actor",
+        key
+      )
+    );
+  });
+  return actions;
+};
+
+const generateTriggerInsertActions = (
+  trigger: Trigger,
+  scriptEventsLookup: Dictionary<ScriptEvent>,
+  sceneId: string,
+  x: number,
+  y: number
+): AnyAction[] => {
+  const actions: AnyAction[] = [];
+  const scriptEventIds = trigger.script;
+  const addTriggerAction = entitiesActions.addTrigger({
+    sceneId,
+    x,
+    y,
+    width: trigger.width,
+    height: trigger.height,
+    defaults: trigger,
+  });
+  actions.push(addTriggerAction);
+  actions.push(
+    ...generateScriptEventInsertActions(
+      scriptEventIds,
+      scriptEventsLookup,
+      addTriggerAction.payload.triggerId,
+      "trigger",
+      "script"
+    )
+  );
+  return actions;
+};
+
+const generateSceneInsertActions = (
+  scene: Scene,
+  actors: Actor[],
+  triggers: Trigger[],
+  scriptEventsLookup: Dictionary<ScriptEvent>,
+  x: number,
+  y: number
+): AnyAction[] => {
+  const actions: AnyAction[] = [];
+  const addSceneAction = entitiesActions.addScene({
+    x,
+    y,
+    defaults: scene,
+  });
+  actions.push(addSceneAction);
+  walkSceneScriptsKeys((key) => {
+    const scriptEventIds = scene[key];
+    actions.push(
+      ...generateScriptEventInsertActions(
+        scriptEventIds,
+        scriptEventsLookup,
+        addSceneAction.payload.sceneId,
+        "scene",
+        key
+      )
+    );
+  });
+  for (const actor of actors) {
+    actions.push(
+      ...generateActorInsertActions(
+        actor,
+        scriptEventsLookup,
+        addSceneAction.payload.sceneId,
+        actor.x,
+        actor.y
+      )
+    );
+  }
+  for (const trigger of triggers) {
+    actions.push(
+      ...generateTriggerInsertActions(
+        trigger,
+        scriptEventsLookup,
+        addSceneAction.payload.sceneId,
+        trigger.x,
+        trigger.y
+      )
+    );
+  }
+  return actions;
+};
 
 const clipboardMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => (action) => {
@@ -505,60 +618,56 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
     } else if (actions.pasteTriggerAt.match(action)) {
       const clipboard = pasteAny();
       if (clipboard && clipboard.format === ClipboardTypeTriggers) {
-        const trigger = clipboard.data.triggers[0];
-        const scriptEventIds = trigger.script;
         const scriptEvents = clipboard.data.scriptEvents;
         const scriptEventsLookup = keyBy(scriptEvents, "id");
-        const addTriggerAction = entitiesActions.addTrigger({
-          sceneId: action.payload.sceneId,
-          x: action.payload.x,
-          y: action.payload.y,
-          width: trigger.width,
-          height: trigger.height,
-          defaults: trigger,
-        });
-        const insertActions = generateScriptEventInsertActions(
-          scriptEventIds,
-          scriptEventsLookup,
-          addTriggerAction.payload.triggerId,
-          "trigger",
-          "script"
-        );
-        store.dispatch(addTriggerAction);
-        for (const action of insertActions) {
-          store.dispatch(action);
+        for (const trigger of clipboard.data.triggers) {
+          const actions = generateTriggerInsertActions(
+            trigger,
+            scriptEventsLookup,
+            action.payload.sceneId,
+            action.payload.x,
+            action.payload.y
+          );
+          for (const action of actions) {
+            store.dispatch(action);
+          }
         }
       }
     } else if (actions.pasteActorAt.match(action)) {
       const clipboard = pasteAny();
       if (clipboard && clipboard.format === ClipboardTypeActors) {
-        const actor = clipboard.data.actors[0];
         const scriptEvents = clipboard.data.scriptEvents;
         const scriptEventsLookup = keyBy(scriptEvents, "id");
-        const addActorAction = entitiesActions.addActor({
-          sceneId: action.payload.sceneId,
-          x: action.payload.x,
-          y: action.payload.y,
-          defaults: actor,
-        });
-        const insertActions: ReturnType<
-          typeof generateScriptEventInsertActions
-        > = [];
-        walkActorScriptsKeys((key) => {
-          const scriptEventIds = actor[key];
-          insertActions.push(
-            ...generateScriptEventInsertActions(
-              scriptEventIds,
-              scriptEventsLookup,
-              addActorAction.payload.actorId,
-              "actor",
-              key
-            )
+        for (const actor of clipboard.data.actors) {
+          const actions = generateActorInsertActions(
+            actor,
+            scriptEventsLookup,
+            action.payload.sceneId,
+            action.payload.x,
+            action.payload.y
           );
-        });
-        store.dispatch(addActorAction);
-        for (const action of insertActions) {
-          store.dispatch(action);
+          for (const action of actions) {
+            store.dispatch(action);
+          }
+        }
+      }
+    } else if (actions.pasteSceneAt.match(action)) {
+      const clipboard = pasteAny();
+      if (clipboard && clipboard.format === ClipboardTypeScenes) {
+        const scriptEvents = clipboard.data.scriptEvents;
+        const scriptEventsLookup = keyBy(scriptEvents, "id");
+        for (const scene of clipboard.data.scenes) {
+          const actions = generateSceneInsertActions(
+            scene,
+            clipboard.data.actors,
+            clipboard.data.triggers,
+            scriptEventsLookup,
+            action.payload.x,
+            action.payload.y
+          );
+          for (const action of actions) {
+            store.dispatch(action);
+          }
         }
       }
     } else if (actions.fetchClipboard.match(action)) {

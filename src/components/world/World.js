@@ -273,14 +273,28 @@ class World extends Component {
   };
 
   onAddScene = (_e) => {
-    const { addScene, setTool, sceneDefaults, clipboardVariables } = this.props;
+    const {
+      addScene,
+      pasteSceneAt,
+      pasteMode,
+      setTool,
+      sceneDefaults,
+      clipboardVariables,
+    } = this.props;
     const { hoverX, hoverY } = this.state;
-    addScene({
-      x: hoverX,
-      y: hoverY,
-      defaults: sceneDefaults,
-      variables: clipboardVariables,
-    });
+    if (pasteMode) {
+      pasteSceneAt({
+        x: hoverX,
+        y: hoverY,
+      });
+    } else {
+      addScene({
+        x: hoverX,
+        y: hoverY,
+        defaults: sceneDefaults,
+        variables: clipboardVariables,
+      });
+    }
     setTool({ tool: "select" });
     this.setState({ hover: false });
   };
@@ -431,7 +445,7 @@ function mapStateToProps(state) {
     scenesLookup[focusSceneId] ||
     null;
 
-  const { tool } = state.editor;
+  const { tool, pasteMode } = state.editor;
 
   return {
     scenes,
@@ -440,6 +454,7 @@ function mapStateToProps(state) {
     scrollX,
     scrollY,
     tool,
+    pasteMode,
     sceneDefaults,
     clipboardVariables,
     zoomRatio: (state.editor.zoom || 100) / 100,
@@ -458,6 +473,7 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = {
   addScene: entitiesActions.addScene,
+  pasteSceneAt: clipboardActions.pasteSceneAt,
   setTool: editorActions.setTool,
   selectWorld: editorActions.selectWorld,
   removeSelectedEntity: entitiesActions.removeSelectedEntity,

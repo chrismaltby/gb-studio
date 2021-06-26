@@ -18,7 +18,11 @@ import { RootState } from "store/configureStore";
 import editorActions from "../editor/editorActions";
 import entitiesActions from "../entities/entitiesActions";
 import { pasteAny } from "./clipboardHelpers";
-import { ClipboardTypeActors, ClipboardTypeTriggers } from "./clipboardTypes";
+import {
+  ClipboardTypeActors,
+  ClipboardTypeScenes,
+  ClipboardTypeTriggers,
+} from "./clipboardTypes";
 
 const fetchClipboard = createAction("clipboard/fetch");
 const copyText = createAction<string>("clipboard/copyText");
@@ -82,6 +86,10 @@ const pasteActorAt = createAction<{
   x: number;
   y: number;
 }>("clipboard/pasteActorAt");
+const pasteSceneAt = createAction<{
+  x: number;
+  y: number;
+}>("clipboard/pasteSceneAt");
 
 const copySelectedEntity =
   () =>
@@ -120,6 +128,9 @@ const pasteClipboardEntity =
       dispatch(editorActions.setPasteMode(true));
     } else if (clipboard.format === ClipboardTypeActors) {
       dispatch(editorActions.setTool({ tool: "actors" }));
+      dispatch(editorActions.setPasteMode(true));
+    } else if (clipboard.format === ClipboardTypeScenes) {
+      dispatch(editorActions.setTool({ tool: "scene" }));
       dispatch(editorActions.setPasteMode(true));
     }
 
@@ -176,12 +187,20 @@ const pasteClipboardEntityInPlace =
         })
       );
     } else if (clipboard.format === ClipboardTypeActors) {
-      const trigger = clipboard.data.actors[0];
+      const actor = clipboard.data.actors[0];
       dispatch(
         pasteActorAt({
           sceneId,
-          x: trigger.x,
-          y: trigger.y,
+          x: actor.x,
+          y: actor.y,
+        })
+      );
+    } else if (clipboard.format === ClipboardTypeScenes) {
+      const scene = clipboard.data.scenes[0];
+      dispatch(
+        pasteSceneAt({
+          x: scene.x,
+          y: scene.y,
         })
       );
     }
@@ -269,4 +288,5 @@ export default {
   pasteScriptEventValues,
   pasteTriggerAt,
   pasteActorAt,
+  pasteSceneAt,
 };
