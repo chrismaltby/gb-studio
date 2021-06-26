@@ -248,9 +248,7 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
   };
 
   const onPaste = () => {
-    if (clipboardData) {
-      dispatch(clipboardActions.pasteClipboardEntity(clipboardData));
-    }
+    dispatch(clipboardActions.pasteClipboardEntity());
   };
 
   const onRemove = () => {

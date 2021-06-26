@@ -26,6 +26,7 @@ import {
   MetaspriteTile,
   ScriptEvent,
   SpriteAnimation,
+  Trigger,
 } from "../entities/entitiesTypes";
 import actions from "./clipboardActions";
 import entitiesActions from "../entities/entitiesActions";
@@ -38,9 +39,13 @@ import {
   ClipboardTypePaletteIds,
   ClipboardTypeScriptEvents,
   ClipboardTypeSpriteState,
+  ClipboardTypeTriggers,
 } from "./clipboardTypes";
 import clipboardActions from "./clipboardActions";
-import { walkNormalisedScriptEvents } from "../entities/entitiesHelpers";
+import {
+  walkNormalisedScriptEvents,
+  walkNormalisedTriggerEvents,
+} from "../entities/entitiesHelpers";
 import keyBy from "lodash/keyBy";
 
 const clipboardMiddleware: Middleware<Dispatch, RootState> =
@@ -331,6 +336,32 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           script: action.payload.scriptEventIds,
         },
       });
+    } else if (actions.copyTriggers.match(action)) {
+      const state = store.getState();
+      const triggersLookup = triggerSelectors.selectEntities(state);
+      const scriptEventsLookup = scriptEventSelectors.selectEntities(state);
+      const triggers: Trigger[] = [];
+      const scriptEvents: ScriptEvent[] = [];
+      action.payload.triggerIds.forEach((triggerId) => {
+        const trigger = triggersLookup[triggerId];
+        if (trigger) {
+          triggers.push(trigger);
+          walkNormalisedTriggerEvents(
+            trigger,
+            scriptEventsLookup,
+            (scriptEvent) => {
+              scriptEvents.push(scriptEvent);
+            }
+          );
+        }
+      });
+      copy({
+        format: ClipboardTypeTriggers,
+        data: {
+          triggers,
+          scriptEvents,
+        },
+      });
     } else if (actions.pasteScriptEvents.match(action)) {
       const clipboard = pasteAny();
       if (!clipboard) {
@@ -378,6 +409,42 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             })
           );
         }
+      }
+    } else if (actions.pasteTriggerAt.match(action)) {
+      const clipboard = pasteAny();
+      if (clipboard && clipboard.format === ClipboardTypeTriggers) {
+        const trigger = clipboard.data.triggers[0];
+        const scriptEventIds = trigger.script;
+        const scriptEvents = clipboard.data.scriptEvents;
+        const scriptEventsLookup = keyBy(scriptEvents, "id");
+        const addTriggerAction = entitiesActions.addTrigger({
+          sceneId: action.payload.sceneId,
+          x: action.payload.x,
+          y: action.payload.y,
+          width: 1,
+          height: 1,
+          defaults: trigger,
+        });
+        const insertActions = generateScriptEventInsertActions(
+          scriptEventIds,
+          scriptEventsLookup,
+          addTriggerAction.payload.triggerId,
+          "trigger",
+          "script"
+        );
+        store.dispatch(addTriggerAction);
+        for (const action of insertActions) {
+          store.dispatch(action);
+        }
+      } else {
+        const addTriggerAction = entitiesActions.addTrigger({
+          sceneId: action.payload.sceneId,
+          x: action.payload.x,
+          y: action.payload.y,
+          width: 1,
+          height: 1,
+        });
+        store.dispatch(addTriggerAction);
       }
     } else if (actions.fetchClipboard.match(action)) {
       const clipboard = pasteAny();

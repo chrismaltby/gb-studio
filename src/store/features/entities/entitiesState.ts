@@ -1284,46 +1284,26 @@ const addTrigger: CaseReducer<
     width: number;
     height: number;
     defaults?: Partial<Trigger>;
-    variables?: Variable[];
+    // variables?: Variable[];
   }>
 > = (state, action) => {
   const scene = localSceneSelectors.selectById(state, action.payload.sceneId);
   if (!scene) {
     return;
   }
-
   const width = Math.min(action.payload.width, scene.width);
   const height = Math.min(action.payload.height, scene.height);
 
-  // Add any variables from clipboard
-  if (action.payload.defaults?.id && action.payload.variables) {
-    const newVariables = action.payload.variables.map((variable) => {
-      return {
-        ...variable,
-        id: variable.id.replace(
-          action.payload.defaults?.id || "",
-          action.payload.triggerId
-        ),
-      };
-    });
-    variablesAdapter.upsertMany(state.variables, newVariables);
-  }
-
-  const newTrigger: Trigger = Object.assign(
-    {
-      name: "",
-      trigger: "walk",
-      script: [],
-    },
-    action.payload.defaults || {},
-    {
-      id: action.payload.triggerId,
-      x: clamp(action.payload.x, 0, scene.width - width),
-      y: clamp(action.payload.y, 0, scene.height - height),
-      width,
-      height,
-    }
-  );
+  const newTrigger: Trigger = {
+    name: "",
+    ...(action.payload.defaults || {}),
+    id: action.payload.triggerId,
+    x: clamp(action.payload.x, 0, scene.width - width),
+    y: clamp(action.payload.y, 0, scene.height - height),
+    width,
+    height,
+    script: [],
+  };
 
   // Add to scene
   addTriggerToScene(state, scene, newTrigger, {});

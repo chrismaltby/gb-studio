@@ -145,8 +145,7 @@ class World extends Component {
     e.preventDefault();
     try {
       const { pasteClipboardEntity } = this.props;
-      const clipboardData = JSON.parse(clipboard.readText());
-      pasteClipboardEntity(clipboardData);
+      pasteClipboardEntity();
     } catch (err) {
       // Clipboard isn't pastable, just ignore it
     }

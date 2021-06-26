@@ -6,6 +6,7 @@ import {
   ClipboardPaletteIds,
   ClipboardScriptEvents,
   ClipboardSpriteState,
+  ClipboardTriggers,
   ClipboardType,
   ClipboardTypeMetasprites,
   ClipboardTypeMetaspriteTiles,
@@ -13,6 +14,7 @@ import {
   ClipboardTypes,
   ClipboardTypeScriptEvents,
   ClipboardTypeSpriteState,
+  ClipboardTypeTriggers,
   NarrowClipboardType,
 } from "./clipboardTypes";
 
@@ -76,6 +78,14 @@ const isClipboardScriptEvents = (
   return Array.isArray(wide.scriptEvents) && Array.isArray(wide.script);
 };
 
+const isClipboardTriggers = (input: unknown): input is ClipboardTriggers => {
+  if (typeof input !== "object" || input === null) {
+    return false;
+  }
+  const wide: { scriptEvents?: unknown; triggers?: unknown } = input;
+  return Array.isArray(wide.scriptEvents) && Array.isArray(wide.triggers);
+};
+
 export const copy = (payload: ClipboardType) => {
   const buffer = Buffer.from(JSON.stringify(payload.data), "utf8");
   clipboard.writeBuffer(payload.format, buffer);
@@ -128,6 +138,13 @@ export const paste = <T extends ClipboardFormat>(
     if (isClipboardScriptEvents(data)) {
       return {
         format: ClipboardTypeScriptEvents,
+        data,
+      } as NarrowClipboardType<ClipboardType, T>;
+    }
+  } else if (format === ClipboardTypeTriggers) {
+    if (isClipboardTriggers(data)) {
+      return {
+        format: ClipboardTypeTriggers,
         data,
       } as NarrowClipboardType<ClipboardType, T>;
     }

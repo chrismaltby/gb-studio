@@ -17,6 +17,8 @@ import {
 import { RootState } from "store/configureStore";
 import editorActions from "../editor/editorActions";
 import entitiesActions from "../entities/entitiesActions";
+import { pasteAny } from "./clipboardHelpers";
+import { ClipboardTypeTriggers } from "./clipboardTypes";
 
 const fetchClipboard = createAction("clipboard/fetch");
 const copyText = createAction<string>("clipboard/copyText");
@@ -28,6 +30,9 @@ const copyScript = createAction<ScriptEvent[]>("clipboard/copyScript");
 const copyScriptEvents = createAction<{
   scriptEventIds: string[];
 }>("clipboard/copyScriptEvents");
+const copyTriggers = createAction<{
+  triggerIds: string[];
+}>("clipboard/copyTriggers");
 const copyMetasprites = createAction<{
   metaspriteIds: string[];
 }>("clipboard/copyMetasprites");
@@ -61,6 +66,11 @@ const pastePaletteIds = createAction<{
   sceneId: string;
   type: "background" | "sprite";
 }>("clipboard/pastePaletteIds");
+const pasteTriggerAt = createAction<{
+  sceneId: string;
+  x: number;
+  y: number;
+}>("clipboard/pasteTriggerAt");
 
 const copySelectedEntity =
   () =>
@@ -83,42 +93,50 @@ const copySelectedEntity =
     } else if (editorType === "trigger") {
       const trigger = triggerSelectors.selectById(state, entityId);
       if (trigger) {
-        dispatch(copyTrigger(trigger));
+        dispatch(copyTriggers({ triggerIds: [trigger.id] }));
       }
     }
   };
 
 const pasteClipboardEntity =
-  (clipboardData: unknown) =>
-  (dispatch: ThunkDispatch<RootState, unknown, AnyAction>) => {
-    if (typeof clipboardData !== "object" || clipboardData === null) {
+  () => (dispatch: ThunkDispatch<RootState, unknown, AnyAction>) => {
+    const clipboard = pasteAny();
+    if (!clipboard) {
       return;
     }
-    const wide: {
-      __type?: unknown;
-      scene?: Partial<SceneData>;
-      actor?: Partial<Actor>;
-      trigger?: Partial<Trigger>;
-      __variables?: Variable[];
-    } = clipboardData;
+    if (clipboard.format === ClipboardTypeTriggers) {
+      dispatch(editorActions.setTool({ tool: "triggers" }));
+      dispatch(editorActions.setPasteMode(true));
+    }
 
-    if (wide.__type === "scene" && wide.scene) {
-      const clipboardScene = wide.scene;
-      dispatch(pasteCustomEvents());
-      dispatch(editorActions.setSceneDefaults(clipboardScene));
-    } else if (wide.__type === "actor" && wide.actor) {
-      const clipboardActor = wide.actor;
-      dispatch(pasteCustomEvents());
-      dispatch(editorActions.setActorDefaults(clipboardActor));
-    } else if (wide.__type === "trigger" && wide.trigger) {
-      const clipboardTrigger = wide.trigger;
-      dispatch(pasteCustomEvents());
-      dispatch(editorActions.setTriggerDefaults(clipboardTrigger));
-    }
-    if (wide.__variables) {
-      const clipboardVariables = wide.__variables;
-      dispatch(editorActions.setClipboardVariables(clipboardVariables));
-    }
+    // if (typeof clipboardData !== "object" || clipboardData === null) {
+    //   return;
+    // }
+    // const wide: {
+    //   __type?: unknown;
+    //   scene?: Partial<SceneData>;
+    //   actor?: Partial<Actor>;
+    //   trigger?: Partial<Trigger>;
+    //   __variables?: Variable[];
+    // } = clipboardData;
+
+    // if (wide.__type === "scene" && wide.scene) {
+    //   const clipboardScene = wide.scene;
+    //   dispatch(pasteCustomEvents());
+    //   dispatch(editorActions.setSceneDefaults(clipboardScene));
+    // } else if (wide.__type === "actor" && wide.actor) {
+    //   const clipboardActor = wide.actor;
+    //   dispatch(pasteCustomEvents());
+    //   dispatch(editorActions.setActorDefaults(clipboardActor));
+    // } else if (wide.__type === "trigger" && wide.trigger) {
+    //   const clipboardTrigger = wide.trigger;
+    //   dispatch(pasteCustomEvents());
+    //   dispatch(editorActions.setTriggerDefaults(clipboardTrigger));
+    // }
+    // if (wide.__variables) {
+    //   const clipboardVariables = wide.__variables;
+    //   dispatch(editorActions.setClipboardVariables(clipboardVariables));
+    // }
   };
 
 const pasteClipboardEntityInPlace =
@@ -191,6 +209,7 @@ export default {
   copyEvent,
   copyScript,
   copyScriptEvents,
+  copyTriggers,
   copyMetasprites,
   copyMetaspriteTiles,
   copySpriteState,
@@ -203,4 +222,5 @@ export default {
   pastePaletteIds,
   pasteScriptEvents,
   pasteScriptEventValues,
+  pasteTriggerAt,
 };

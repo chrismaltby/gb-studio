@@ -83,14 +83,16 @@ export const TriggerEditor = ({
 
   const onCopy = () => {
     if (trigger) {
-      dispatch(clipboardActions.copyTrigger(trigger));
+      dispatch(
+        clipboardActions.copyTriggers({
+          triggerIds: [id],
+        })
+      );
     }
   };
 
   const onPaste = () => {
-    if (clipboardData) {
-      dispatch(clipboardActions.pasteClipboardEntity(clipboardData));
-    }
+    dispatch(clipboardActions.pasteClipboardEntity());
   };
 
   const onRemove = () => {
