@@ -98,7 +98,7 @@ class SceneCursor extends Component {
       backgroundId,
       scene,
       actorDefaults,
-      clipboardVariables,
+      triggerDefaults,
       selectScene,
       showCollisions,
       showLayers,
@@ -134,6 +134,7 @@ class SceneCursor extends Component {
           sceneId,
           x,
           y,
+          defaults: actorDefaults,
         });
       }
       setTool({ tool: "select" });
@@ -151,6 +152,7 @@ class SceneCursor extends Component {
           y,
           width: 1,
           height: 1,
+          defaults: triggerDefaults,
         });
       }
 
@@ -566,6 +568,7 @@ SceneCursor.propTypes = {
   y: PropTypes.number.isRequired,
   entityId: PropTypes.string,
   actorDefaults: PropTypes.shape(),
+  triggerDefaults: PropTypes.shape(),
   clipboardVariables: PropTypes.arrayOf(VariableShape).isRequired,
   sceneId: PropTypes.string.isRequired,
   hoverPalette: PropTypes.number.isRequired,
@@ -592,6 +595,7 @@ SceneCursor.propTypes = {
 SceneCursor.defaultProps = {
   entityId: null,
   actorDefaults: {},
+  triggerDefaults: {},
 };
 
 function mapStateToProps(state, props) {
@@ -604,6 +608,7 @@ function mapStateToProps(state, props) {
     selectedBrush,
     showLayers,
     actorDefaults,
+    triggerDefaults,
     clipboardVariables,
     pasteMode,
   } = state.editor;
@@ -639,6 +644,7 @@ function mapStateToProps(state, props) {
     selectedTileType,
     selectedBrush,
     actorDefaults,
+    triggerDefaults,
     clipboardVariables,
     entityId,
     showCollisions,
