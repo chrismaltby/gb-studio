@@ -24,7 +24,7 @@ import {
   DMG_PALETTE,
 } from "../../consts";
 import { getCachedObject } from "lib/helpers/cache";
-import SceneInfo from "./SceneInfo";
+import SceneInfo from "./SceneInfo2";
 import {
   sceneSelectors,
   actorSelectors,
