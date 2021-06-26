@@ -75,7 +75,6 @@ const instanciateScriptEvent = (
       if (defaultValue === "LAST_SCENE") {
         replaceValue = defaultSceneId;
       } else if (defaultValue === "LAST_VARIABLE") {
-        // replaceValue = scope === "customEvents" ? "0" : "L0";
         replaceValue = defaultVariableId;
       } else if (defaultValue === "LAST_MUSIC") {
         replaceValue = defaultMusicId;
@@ -83,8 +82,6 @@ const instanciateScriptEvent = (
         replaceValue = defaultSpriteId;
       } else if (defaultValue === "LAST_ACTOR") {
         replaceValue = defaultActorId;
-        // replaceValue =
-        //   actorIds.length > 0 ? actorIds[actorIds.length - 1] : "player";
       } else if (field.type === "events") {
         replaceValue = undefined;
       } else if (defaultValue !== undefined) {
