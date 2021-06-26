@@ -140,11 +140,30 @@ const pasteClipboardEntity =
   };
 
 const pasteClipboardEntityInPlace =
-  (clipboardData: unknown) =>
+  () =>
   (
     dispatch: ThunkDispatch<RootState, unknown, AnyAction>,
     getState: () => RootState
   ) => {
+    const clipboard = pasteAny();
+    if (!clipboard) {
+      return;
+    }
+
+    const state = getState();
+    const { scene: sceneId } = state.editor;
+    if (clipboard.format === ClipboardTypeTriggers) {
+      const trigger = clipboard.data.triggers[0];
+      dispatch(
+        pasteTriggerAt({
+          sceneId,
+          x: trigger.x,
+          y: trigger.y,
+        })
+      );
+    }
+
+    /*
     const state = getState();
     const { scene: sceneId } = state.editor;
 
@@ -197,6 +216,7 @@ const pasteClipboardEntityInPlace =
         })
       );
     }
+    */
   };
 
 export default {

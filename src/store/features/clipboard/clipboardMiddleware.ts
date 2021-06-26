@@ -421,8 +421,8 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           sceneId: action.payload.sceneId,
           x: action.payload.x,
           y: action.payload.y,
-          width: 1,
-          height: 1,
+          width: trigger.width,
+          height: trigger.height,
           defaults: trigger,
         });
         const insertActions = generateScriptEventInsertActions(
