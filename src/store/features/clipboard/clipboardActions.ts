@@ -10,13 +10,10 @@ import {
   Trigger,
   Scene,
   ScriptEvent,
-  SceneData,
-  Variable,
   ScriptEventParentType,
 } from "../entities/entitiesTypes";
 import { RootState } from "store/configureStore";
 import editorActions from "../editor/editorActions";
-import entitiesActions from "../entities/entitiesActions";
 import { pasteAny } from "./clipboardHelpers";
 import {
   ClipboardTypeActors,
@@ -133,35 +130,6 @@ const pasteClipboardEntity =
       dispatch(editorActions.setTool({ tool: "scene" }));
       dispatch(editorActions.setPasteMode(true));
     }
-
-    // if (typeof clipboardData !== "object" || clipboardData === null) {
-    //   return;
-    // }
-    // const wide: {
-    //   __type?: unknown;
-    //   scene?: Partial<SceneData>;
-    //   actor?: Partial<Actor>;
-    //   trigger?: Partial<Trigger>;
-    //   __variables?: Variable[];
-    // } = clipboardData;
-
-    // if (wide.__type === "scene" && wide.scene) {
-    //   const clipboardScene = wide.scene;
-    //   dispatch(pasteCustomEvents());
-    //   dispatch(editorActions.setSceneDefaults(clipboardScene));
-    // } else if (wide.__type === "actor" && wide.actor) {
-    //   const clipboardActor = wide.actor;
-    //   dispatch(pasteCustomEvents());
-    //   dispatch(editorActions.setActorDefaults(clipboardActor));
-    // } else if (wide.__type === "trigger" && wide.trigger) {
-    //   const clipboardTrigger = wide.trigger;
-    //   dispatch(pasteCustomEvents());
-    //   dispatch(editorActions.setTriggerDefaults(clipboardTrigger));
-    // }
-    // if (wide.__variables) {
-    //   const clipboardVariables = wide.__variables;
-    //   dispatch(editorActions.setClipboardVariables(clipboardVariables));
-    // }
   };
 
 const pasteClipboardEntityInPlace =
@@ -174,7 +142,6 @@ const pasteClipboardEntityInPlace =
     if (!clipboard) {
       return;
     }
-
     const state = getState();
     const { scene: sceneId } = state.editor;
     if (clipboard.format === ClipboardTypeTriggers) {
@@ -204,61 +171,6 @@ const pasteClipboardEntityInPlace =
         })
       );
     }
-
-    /*
-    const state = getState();
-    const { scene: sceneId } = state.editor;
-
-    if (typeof clipboardData !== "object" || clipboardData === null) {
-      return;
-    }
-    const wide: {
-      __type?: unknown;
-      scene?: Partial<SceneData>;
-      actor?: Partial<Actor>;
-      trigger?: Partial<Trigger>;
-      __variables?: Variable[];
-    } = clipboardData;
-
-    if (wide.__type === "scene" && wide.scene) {
-      const clipboardScene = wide.scene;
-      dispatch(pasteCustomEvents());
-      dispatch(
-        entitiesActions.addScene({
-          x: clipboardScene.x || 0,
-          y: clipboardScene.y || 0,
-          defaults: clipboardScene,
-          variables: wide.__variables,
-        })
-      );
-    } else if (sceneId && wide.__type === "actor" && wide.actor) {
-      const clipboardActor = wide.actor;
-      dispatch(pasteCustomEvents());
-      dispatch(
-        entitiesActions.addActor({
-          sceneId,
-          x: clipboardActor.x || 0,
-          y: clipboardActor.y || 0,
-          defaults: clipboardActor,
-          variables: wide.__variables,
-        })
-      );
-    } else if (sceneId && wide.__type === "trigger" && wide.trigger) {
-      const clipboardTrigger = wide.trigger;
-      dispatch(pasteCustomEvents());
-      dispatch(
-        entitiesActions.addTrigger({
-          sceneId,
-          x: clipboardTrigger.x || 0,
-          y: clipboardTrigger.y || 0,
-          width: clipboardTrigger.width || 1,
-          height: clipboardTrigger.height || 1,
-          defaults: clipboardTrigger,
-          variables: wide.__variables,
-        })
-      );
-    }
-    */
   };
 
 export default {
