@@ -10,8 +10,9 @@ const fields = [
   {
     key: "__scriptTabs",
     type: "tabs",
+    defaultValue: "save",
     values: {
-      end: l10n("FIELD_ON_SAVE"),
+      save: l10n("FIELD_ON_SAVE"),
     },
   },
   {
