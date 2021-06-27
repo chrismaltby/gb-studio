@@ -266,7 +266,6 @@ const sortAlphabeticallyByLabel = (
   a: { label: string },
   b: { label: string }
 ) => {
-  // console.log("COMPARE", a.label, b.label);
   if (a.label === b.label) {
     return 0;
   } else if (a.label === l10n("EVENT_GROUP_MISC")) {
@@ -325,8 +324,6 @@ const AddScriptEventMenu = ({ onChange, onBlur }: AddScriptEventMenuProps) => {
         },
       ],
     });
-
-    console.log(eventList.map(eventToOption(favoriteEvents)));
 
     const groupedEvents = eventList.reduce((memo, event) => {
       if (Array.isArray(event.groups)) {
