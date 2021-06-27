@@ -5,6 +5,7 @@ import { AvatarSelect } from "components/forms/AvatarSelect";
 import { BackgroundSelect } from "components/forms/BackgroundSelect";
 import { CameraSpeedSelect } from "components/forms/CameraSpeedSelect2";
 import CollisionMaskPicker from "components/forms/CollisionMaskPicker";
+import { CustomEventSelect } from "components/forms/CustomEventSelect";
 import DirectionPicker from "components/forms/DirectionPicker";
 import { EmoteSelect } from "components/forms/EmoteSelect";
 import EngineFieldSelect from "components/forms/EngineFieldSelect";
@@ -441,6 +442,14 @@ const ScriptEventFormInput = ({
   } else if (type === "engineField") {
     return (
       <EngineFieldSelect
+        name={id}
+        value={String(value ?? "")}
+        onChange={onChangeField}
+      />
+    );
+  } else if (type === "customEvent") {
+    return (
+      <CustomEventSelect
         name={id}
         value={String(value ?? "")}
         onChange={onChangeField}

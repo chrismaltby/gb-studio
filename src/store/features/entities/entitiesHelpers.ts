@@ -383,3 +383,10 @@ export const walkSceneScriptsKeys = (
 export const actorName = (actor: Actor, actorIndex: number) => {
   return actor.name || `${l10n("ACTOR")} ${actorIndex + 1}`;
 };
+
+export const customEventName = (
+  customEvent: CustomEvent,
+  customEventIndex: number
+) => {
+  return customEvent.name || `${l10n("CUSTOM_EVENT")} ${customEventIndex + 1}`;
+};

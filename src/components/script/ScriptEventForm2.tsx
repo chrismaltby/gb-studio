@@ -73,8 +73,8 @@ const getScriptEventFields = (
       }) || [];
 
     return ([] as ScriptEventFieldSchema[]).concat(
-      description,
       eventCommands,
+      description,
       usedVariables,
       usedActors
     );

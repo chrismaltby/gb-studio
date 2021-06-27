@@ -3,14 +3,7 @@ const groups = ["EVENT_GROUP_CONTROL_FLOW"];
 
 const fields = [
   {
-    type: "events",
-    key: "script",
-    hide: true,
-    defaultValue: [],
-  },
-  {
-    type: "text",
-    hide: true,
+    type: "customEvent",
     key: "customEventId",
   },
 ];
