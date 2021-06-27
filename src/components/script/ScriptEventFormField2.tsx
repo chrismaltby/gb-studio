@@ -135,7 +135,7 @@ const ScriptEventFormField = memo(
       return (
         <TabBar
           variant="scriptEvent"
-          value={String(value || "")}
+          value={String(value || Object.keys(field.values || {})[0])}
           values={field.values || {}}
           onChange={onChange}
         />
