@@ -75,6 +75,7 @@ import {
   matchAsset,
   isUnionVariableValue,
   isUnionPropertyValue,
+  walkNormalisedScriptEvents,
 } from "./entitiesHelpers";
 import { clone } from "lib/helpers/clone";
 import spriteActions from "../sprite/spriteActions";
@@ -2314,191 +2315,11 @@ const editCustomEvent: CaseReducer<
     changes: Partial<CustomEvent>;
   }>
 > = (state, action) => {
-  //   const oldEvent = state.customEvents.entities[action.payload.customEventId];
-  //   const patch = { ...action.payload.changes };
-  //   if (!oldEvent) {
-  //     const newCustomEvent: CustomEvent = {
-  //       id: action.payload.customEventId,
-  //       name: "",
-  //       description: "",
-  //       variables: {},
-  //       actors: {},
-  //       script: [],
-  //     };
-  //     customEventsAdapter.addOne(state.customEvents, newCustomEvent);
-  //   }
-  //   if (patch.script) {
-  //     // Fix invalid variables in script
-  //     const fix = replaceInvalidCustomEventVariables;
-  //     const fixActor = replaceInvalidCustomEventActors;
-  //     const fixProperty = replaceInvalidCustomEventProperties;
-  //     patch.script = mapEvents(patch.script, (event: ScriptEvent) => {
-  //       if (event.args) {
-  //         const fixedEventArgs = Object.keys(event.args).reduce((memo, arg) => {
-  //           const fixedArgs = memo;
-  //           if (isVariableField(event.command, arg, event.args)) {
-  //             fixedArgs[arg] = fix(event.args[arg]);
-  //           } else if (isPropertyField(event.command, arg, event.args[arg])) {
-  //             fixedArgs[arg] = fixProperty(event.args[arg]);
-  //           } else {
-  //             fixedArgs[arg] = event.args[arg];
-  //           }
-  //           return fixedArgs;
-  //         }, {} as Dictionary<unknown>);
-  //         return {
-  //           ...event,
-  //           args: {
-  //             ...event.args,
-  //             ...fixedEventArgs,
-  //             actorId: event.args.actorId && fixActor(event.args.actorId),
-  //             otherActorId:
-  //               event.args.otherActorId && fixActor(event.args.otherActorId),
-  //           },
-  //         };
-  //       }
-  //       return event;
-  //     });
-  //     const variables = {} as Dictionary<CustomEventVariable>;
-  //     const actors = {} as Dictionary<CustomEventActor>;
-  //     const oldVariables = oldEvent ? oldEvent.variables : {};
-  //     const oldActors = oldEvent ? oldEvent.actors : {};
-  //     walkEvents(patch.script, (e: ScriptEvent) => {
-  //       const args = e.args;
-  //       if (!args) return;
-  //       if (e.args.__comment) return;
-  //       if (
-  //         args.actorId &&
-  //         args.actorId !== "player" &&
-  //         typeof args.actorId === "string"
-  //       ) {
-  //         const letter = String.fromCharCode(
-  //           "A".charCodeAt(0) + parseInt(args.actorId)
-  //         );
-  //         actors[args.actorId] = {
-  //           id: args.actorId,
-  //           name: oldActors[args.actorId]?.name || `Actor ${letter}`,
-  //         };
-  //       }
-  //       if (
-  //         args.otherActorId &&
-  //         args.otherActorId !== "player" &&
-  //         typeof args.otherActorId === "string"
-  //       ) {
-  //         const letter = String.fromCharCode(
-  //           "A".charCodeAt(0) + parseInt(args.otherActorId)
-  //         );
-  //         actors[args.otherActorId] = {
-  //           id: args.otherActorId,
-  //           name: oldActors[args.otherActorId]?.name || `Actor ${letter}`,
-  //         };
-  //       }
-  //       Object.keys(args).forEach((arg) => {
-  //         if (isVariableField(e.command, arg, args)) {
-  //           const addVariable = (variable: string) => {
-  //             const letter = String.fromCharCode(
-  //               "A".charCodeAt(0) + parseInt(variable)
-  //             );
-  //             variables[variable] = {
-  //               id: variable,
-  //               name: oldVariables[variable]?.name || `Variable ${letter}`,
-  //             };
-  //           };
-  //           const variable = args[arg];
-  //           if (isUnionVariableValue(variable) && variable.value) {
-  //             addVariable(variable.value);
-  //           } else if (typeof variable === "string") {
-  //             addVariable(variable);
-  //           }
-  //         }
-  //         if (isPropertyField(e.command, arg, args[arg])) {
-  //           const addPropertyActor = (property: string) => {
-  //             const actor = property && property.replace(/:.*/, "");
-  //             if (actor !== "player") {
-  //               const letter = String.fromCharCode(
-  //                 "A".charCodeAt(0) + parseInt(actor)
-  //               );
-  //               actors[actor] = {
-  //                 id: actor,
-  //                 name: oldActors[actor]?.name || `Actor ${letter}`,
-  //               };
-  //             }
-  //           };
-  //           const property = args[arg];
-  //           if (isUnionPropertyValue(property) && property.value) {
-  //             addPropertyActor(property.value);
-  //           } else if (typeof property === "string") {
-  //             addPropertyActor(property);
-  //           }
-  //         }
-  //       });
-  //       if (args.text) {
-  //         const text = Array.isArray(args.text) ? args.text.join() : args.text;
-  //         if (typeof text === "string") {
-  //           const variablePtrs = text.match(/\$V[0-9]\$/g);
-  //           if (variablePtrs) {
-  //             variablePtrs.forEach((variablePtr: string) => {
-  //               const variable = variablePtr[2];
-  //               const letter = String.fromCharCode(
-  //                 "A".charCodeAt(0) + parseInt(variable, 10)
-  //               ).toUpperCase();
-  //               variables[variable] = {
-  //                 id: variable,
-  //                 name: oldVariables[variable]?.name || `Variable ${letter}`,
-  //               };
-  //             });
-  //           }
-  //         }
-  //       }
-  //     });
-  //     patch.variables = { ...variables };
-  //     patch.actors = { ...actors };
-  //     const patchEventCallFn = patchCustomEventCallArgs(
-  //       action.payload.customEventId,
-  //       patch.script,
-  //       patch.variables,
-  //       patch.actors
-  //     );
-  //     const patchedActors = mapActorsEvents(
-  //       localActorSelectors.selectAll(state),
-  //       patchEventCallFn
-  //     );
-  //     const patchedTriggers = mapTriggersEvents(
-  //       localTriggerSelectors.selectAll(state),
-  //       patchEventCallFn
-  //     );
-  //     const patchedScenes = mapScenesEvents(
-  //       localSceneSelectors.selectAll(state),
-  //       patchEventCallFn
-  //     );
-  //     actorsAdapter.setAll(state.actors, patchedActors);
-  //     triggersAdapter.setAll(state.triggers, patchedTriggers);
-  //     scenesAdapter.setAll(state.scenes, patchedScenes);
-  //   }
-  //   if (patch.name) {
-  //     const patchEventCallFn = patchCustomEventCallName(
-  //       action.payload.customEventId,
-  //       patch.name
-  //     );
-  //     const patchedActors = mapActorsEvents(
-  //       localActorSelectors.selectAll(state),
-  //       patchEventCallFn
-  //     );
-  //     const patchedTriggers = mapTriggersEvents(
-  //       localTriggerSelectors.selectAll(state),
-  //       patchEventCallFn
-  //     );
-  //     const patchedScenes = mapScenesEvents(
-  //       localSceneSelectors.selectAll(state),
-  //       patchEventCallFn
-  //     );
-  //     actorsAdapter.setAll(state.actors, patchedActors);
-  //     triggersAdapter.setAll(state.triggers, patchedTriggers);
-  //     scenesAdapter.setAll(state.scenes, patchedScenes);
-  //   }
-  //   customEventsAdapter.updateOne(state.customEvents, {
-  //     id: action.payload.customEventId,
-  //     changes: patch,
-  //   });
+  const patch = { ...action.payload.changes };
+  customEventsAdapter.updateOne(state.customEvents, {
+    id: action.payload.customEventId,
+    changes: patch,
+  });
 };
 
 const removeCustomEvent: CaseReducer<
@@ -2509,6 +2330,118 @@ const removeCustomEvent: CaseReducer<
     state.customEvents,
     action.payload.customEventId
   );
+};
+
+const refreshCustomEventArgs: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ customEventId: string }>
+> = (state, action) => {
+  const customEvent = state.customEvents.entities[action.payload.customEventId];
+  if (!customEvent) {
+    return;
+  }
+
+  const variables = {} as Dictionary<CustomEventVariable>;
+  const actors = {} as Dictionary<CustomEventActor>;
+  const oldVariables = customEvent.variables;
+  const oldActors = customEvent.actors;
+
+  walkNormalisedScriptEvents(
+    customEvent.script,
+    state.scriptEvents.entities,
+    (scriptEvent) => {
+      const args = scriptEvent.args;
+      if (!args) return;
+      if (args.__comment) return;
+      if (
+        args.actorId &&
+        args.actorId !== "player" &&
+        args.actorId !== "$self$" &&
+        typeof args.actorId === "string"
+      ) {
+        const letter = String.fromCharCode(
+          "A".charCodeAt(0) + parseInt(args.actorId)
+        );
+        actors[args.actorId] = {
+          id: args.actorId,
+          name: oldActors[args.actorId]?.name || `Actor ${letter}`,
+        };
+      }
+      if (
+        args.otherActorId &&
+        args.otherActorId !== "player" &&
+        typeof args.otherActorId === "string"
+      ) {
+        const letter = String.fromCharCode(
+          "A".charCodeAt(0) + parseInt(args.otherActorId)
+        );
+        actors[args.otherActorId] = {
+          id: args.otherActorId,
+          name: oldActors[args.otherActorId]?.name || `Actor ${letter}`,
+        };
+      }
+      Object.keys(args).forEach((arg) => {
+        if (isVariableField(scriptEvent.command, arg, args)) {
+          const addVariable = (variable: string) => {
+            const letter = String.fromCharCode(
+              "A".charCodeAt(0) + parseInt(variable)
+            );
+            variables[variable] = {
+              id: variable,
+              name: oldVariables[variable]?.name || `Variable ${letter}`,
+            };
+          };
+          const variable = args[arg];
+          if (isUnionVariableValue(variable) && variable.value) {
+            addVariable(variable.value);
+          } else if (typeof variable === "string") {
+            addVariable(variable);
+          }
+        }
+        if (isPropertyField(scriptEvent.command, arg, args[arg])) {
+          const addPropertyActor = (property: string) => {
+            const actor = property && property.replace(/:.*/, "");
+            if (actor !== "player" && actor !== "$self$") {
+              const letter = String.fromCharCode(
+                "A".charCodeAt(0) + parseInt(actor)
+              );
+              actors[actor] = {
+                id: actor,
+                name: oldActors[actor]?.name || `Actor ${letter}`,
+              };
+            }
+          };
+          const property = args[arg];
+          if (isUnionPropertyValue(property) && property.value) {
+            addPropertyActor(property.value);
+          } else if (typeof property === "string") {
+            addPropertyActor(property);
+          }
+        }
+      });
+      if (args.text) {
+        const text = Array.isArray(args.text) ? args.text.join() : args.text;
+        if (typeof text === "string") {
+          const variablePtrs = text.match(/\$V[0-9]\$/g);
+          if (variablePtrs) {
+            variablePtrs.forEach((variablePtr: string) => {
+              const variable = variablePtr[2];
+              const letter = String.fromCharCode(
+                "A".charCodeAt(0) + parseInt(variable, 10)
+              ).toUpperCase();
+              variables[variable] = {
+                id: variable,
+                name: oldVariables[variable]?.name || `Variable ${letter}`,
+              };
+            });
+          }
+        }
+      }
+    }
+  );
+
+  customEvent.variables = variables;
+  customEvent.actors = actors;
 };
 
 /**************************************************************************
@@ -3099,6 +3032,20 @@ const entitiesSlice = createSlice({
 
     editCustomEvent,
     removeCustomEvent,
+    refreshCustomEventArgs: {
+      reducer: refreshCustomEventArgs,
+      prepare: (payload: { customEventId: string }) => {
+        return {
+          payload: {
+            customEventId: payload.customEventId,
+          },
+          meta: {
+            throttle: 1000,
+            key: `refresh_${payload.customEventId}`,
+          },
+        };
+      },
+    },
 
     /**************************************************************************
      * Script Events

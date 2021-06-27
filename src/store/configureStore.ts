@@ -12,6 +12,7 @@ import engineMiddleware from "./features/engine/engineMiddleware";
 import spriteMiddleware from "./features/sprite/spriteMiddleware";
 import throttleMiddleware from "./features/throttle/throttleMiddleware";
 import trackerDocumentMiddleware from "./features/trackerDocument/trackerDocumentMiddleware";
+import entitiesMiddleware from "./features/entities/entitiesMiddleware";
 
 export type RootState = ReturnType<typeof rootReducer>;
 
@@ -28,6 +29,7 @@ const store = configureStore({
     throttleMiddleware,
     electronMiddleware,
     projectMiddleware,
+    entitiesMiddleware,
     engineMiddleware,
     spriteMiddleware,
     buildGameMiddleware,
