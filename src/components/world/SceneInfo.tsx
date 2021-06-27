@@ -66,13 +66,15 @@ function useDebounce<T extends (...args: Array<any>) => any>(cb: T, delay: numbe
 
 const Portal: React.FC = (props) => {
   const root = document.getElementById("MenuPortal");
-  if (!root) return;
+  if (!root) return null;
   return ReactDOM.createPortal(props.children, root);
 };
 
 interface SceneInfoProps {
   id: string;
 }
+
+type TooltipVals = "" | "actors" | "frames" | "triggers";
 
 const SceneInfo = ({
                      id
@@ -108,7 +110,7 @@ const SceneInfo = ({
   const [tooltip, setTooltip] = React.useState({
     x: 100,
     y: 100,
-    type: ""
+    type: "" as TooltipVals
   });
 
   const {
@@ -276,7 +278,7 @@ const SceneInfo = ({
     defaultPlayerSprites
   ]);
 
-  const openTooltip = React.useCallback((type: string, e: MouseEvent<HTMLElement>, delay: number) => {
+  const openTooltip = React.useCallback((type: TooltipVals, e: MouseEvent<HTMLElement>, delay: number) => {
     clearTimeout(tooltipTimer.current);
     if (!e.currentTarget) return;
     const rect = e.currentTarget.getBoundingClientRect();
@@ -297,12 +299,11 @@ const SceneInfo = ({
     }, delay);
   }, []);
 
-
-  const onHoverOn = (type: string) => (e: MouseEvent<HTMLElement>) => {
+  const onHoverOn = (type: TooltipVals) => (e: MouseEvent<HTMLElement>) => {
     openTooltip(type, e, 500);
   };
 
-  const onOpenTooltip = (type: string) => (e: MouseEvent<HTMLElement>) => {
+  const onOpenTooltip = (type: TooltipVals) => (e: MouseEvent<HTMLElement>) => {
     openTooltip(type, e, 0);
   };
 
