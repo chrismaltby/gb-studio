@@ -1,5 +1,4 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
+import React from "react";
 import {
   COLLISION_TOP,
   COLLISION_ALL,
@@ -11,26 +10,26 @@ import {
 
 const TILE_SIZE = 8;
 
-class SceneCollisions extends Component {
-  constructor(props) {
-    super(props);
-    this.canvas = React.createRef();
-  }
+interface SceneCollisionsProps {
+  width: number,
+  height: number,
+  collisions: number[]
+}
 
-  componentDidMount() {
-    this.draw();
-  }
+const SceneCollisions = ({
+  width,
+  height,
+  collisions
+}: SceneCollisionsProps) => {
+  const canvas = React.useRef<HTMLCanvasElement>(null);
 
-  componentDidUpdate() {
-    this.draw();
-  }
-
-  draw = () => {
-    const { collisions, width, height } = this.props;
-    if (this.canvas.current) {
+  React.useEffect(() => {
+    if (canvas.current) {
       // eslint-disable-next-line no-self-assign
-      this.canvas.current.width = this.canvas.current.width; // Clear canvas
-      const ctx = this.canvas.current.getContext("2d");
+      canvas.current.width = canvas.current.width; // Clear canvas
+      const ctx = canvas.current.getContext("2d");
+
+      if (!ctx) return;
 
       for (let yi = 0; yi < height; yi++) {
         for (let xi = 0; xi < width; xi++) {
@@ -101,26 +100,17 @@ class SceneCollisions extends Component {
         }
       }
     }
-  };
+  }, [collisions, height, width])
 
-  render() {
-    const { width, height } = this.props;
-    return (
-      <div className="SceneCollisions">
-        <canvas
-          ref={this.canvas}
-          width={width * TILE_SIZE}
-          height={height * TILE_SIZE}
-        />
-      </div>
-    );
-  }
+  return (
+    <div className="SceneCollisions">
+      <canvas
+        ref={canvas}
+        width={width * TILE_SIZE}
+        height={height * TILE_SIZE}
+      />
+    </div>
+  );
 }
-
-SceneCollisions.propTypes = {
-  width: PropTypes.number.isRequired,
-  height: PropTypes.number.isRequired,
-  collisions: PropTypes.arrayOf(PropTypes.number).isRequired,
-};
 
 export default SceneCollisions;
