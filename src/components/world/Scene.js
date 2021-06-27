@@ -311,7 +311,7 @@ class Scene extends Component {
             ))}
           {event && (
             <div className="Scene__EventHelper">
-              <EventHelper event={event} scene={scene} />
+              <EventHelper event={event} />
             </div>
           )}
         </div>
