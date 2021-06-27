@@ -79,6 +79,7 @@ const Actor = (props: ActorProps) => {
     onMouseUp.current = () => {
       dragActorStop();
       window.removeEventListener("mouseup", onMouseUp.current);
+      isMouseListening.current = false;
     };
     if (isMouseListening.current) {
       window.removeEventListener("mouseup", oldFn);
@@ -91,6 +92,7 @@ const Actor = (props: ActorProps) => {
       dragActorStart({ sceneId, actorId: actor.id });
       setTool({ tool: "select" });
       window.addEventListener("mouseup", onMouseUp.current);
+      isMouseListening.current = true;
     }
   };
 
