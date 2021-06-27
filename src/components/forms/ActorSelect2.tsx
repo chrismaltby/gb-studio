@@ -48,8 +48,12 @@ export const ActorSelect = ({
 
   const editorType = useSelector((state: RootState) => state.editor.type);
   const sceneId = useSelector((state: RootState) => state.editor.scene);
-  const scene = useSelector((state: RootState) =>
-    sceneSelectors.selectById(state, sceneId)
+  const sceneType = useSelector(
+    (state: RootState) => sceneSelectors.selectById(state, sceneId)?.type
+  );
+  const scenePlayerSpriteSheetId = useSelector(
+    (state: RootState) =>
+      sceneSelectors.selectById(state, sceneId)?.playerSpriteSheetId
   );
   const defaultPlayerSprites = useSelector(
     (state: RootState) => state.project.present.settings.defaultPlayerSprites
@@ -69,7 +73,7 @@ export const ActorSelect = ({
   const selfIndex = sceneActorIds?.indexOf(contextEntityId);
   const selfActor = actorsLookup[contextEntityId];
   const playerSpriteSheetId =
-    scene && (scene.playerSpriteSheetId || defaultPlayerSprites[scene.type]);
+    scenePlayerSpriteSheetId || (sceneType && defaultPlayerSprites[sceneType]);
 
   useEffect(() => {
     if (editorType === "customEvent" && customEvent) {
