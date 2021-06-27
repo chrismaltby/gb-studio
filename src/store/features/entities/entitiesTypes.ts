@@ -376,7 +376,7 @@ export interface ScriptEventFieldCondition {
 export interface ScriptEventFieldSchema {
   label?: string | React.ReactNode;
   checkboxLabel?: string;
-  defaultValue?: unknown;
+  defaultValue?: unknown | Record<string, unknown>;
   key?: string;
   type?: string;
   hide?: boolean;
@@ -398,6 +398,8 @@ export interface ScriptEventFieldSchema {
   paletteIndex?: number;
   canKeep?: boolean;
   includePlayer?: boolean;
+  defaultType?: string;
+  types?: string[];
   filter?: (value: unknown) => boolean;
   updateFn?: (
     newValue: unknown,

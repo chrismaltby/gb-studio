@@ -63,6 +63,23 @@ export const MenuItem = styled.div<MenuItemProps>`
       : ""}
 `;
 
+export const MenuItemIcon = styled.div<MenuItemProps>`
+  width: 15px;
+  height: 15px;
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  svg {
+    width: 12px;
+    height: 12px;
+  }
+  &:nth-child(1) {
+    margin-left: -5px;
+    margin-right: 5px;
+  }
+`;
+
 export const MenuGroup = styled.div`
   display: flex;
   align-items: center;
