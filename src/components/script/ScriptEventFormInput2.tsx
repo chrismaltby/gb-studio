@@ -10,6 +10,7 @@ import { EmoteSelect } from "components/forms/EmoteSelect";
 import { FadeSpeedSelect } from "components/forms/FadeSpeedSelect2";
 import InputPicker from "components/forms/InputPicker";
 import { MovementSpeedSelect } from "components/forms/MovementSpeedSelect";
+import { MusicSelect } from "components/forms/MusicSelect2";
 import { OperatorSelect } from "components/forms/OperatorSelect2";
 import { OverlayColorSelect } from "components/forms/OverlayColorSelect2";
 import { PaletteSelect } from "components/forms/PaletteSelect";
@@ -354,7 +355,7 @@ const ScriptEventFormInput = ({
     return (
       <AvatarSelect
         name={id}
-        value={String(value)}
+        value={String(value ?? "")}
         onChange={onChangeField}
         optional={field.optional}
       />
@@ -362,6 +363,14 @@ const ScriptEventFormInput = ({
   } else if (type === "operator") {
     return (
       <OperatorSelect
+        name={id}
+        value={String(value ?? "")}
+        onChange={onChangeField}
+      />
+    );
+  } else if (type === "music") {
+    return (
+      <MusicSelect
         name={id}
         value={String(value ?? "")}
         onChange={onChangeField}
