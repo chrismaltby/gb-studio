@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import uniq from "lodash/uniq";
 import { RootState } from "store/configureStore";
 import { musicSelectors } from "store/features/entities/entitiesState";
-import { Music } from "store/features/entities/entitiesTypes";
 import {
   Option,
   Select,
@@ -24,10 +23,6 @@ interface MusicSelectProps extends SelectCommonProps {
 
 interface PlayPauseTrackProps extends SelectCommonProps {
   musicId: string;
-}
-
-interface TrackOption extends Option {
-  track: Music;
 }
 
 export const PlayPauseTrack = ({ musicId }: PlayPauseTrackProps) => {
@@ -124,7 +119,7 @@ export const MusicSelect = ({
       value={currentValue}
       options={options}
       onChange={onSelectChange}
-      formatOptionLabel={(option: TrackOption) => {
+      formatOptionLabel={(option: Option) => {
         return (
           <OptionLabelWithPreview
             preview={<PlayPauseTrack musicId={option.value} />}

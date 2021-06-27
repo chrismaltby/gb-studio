@@ -15,6 +15,7 @@ import { OperatorSelect } from "components/forms/OperatorSelect2";
 import { OverlayColorSelect } from "components/forms/OverlayColorSelect2";
 import { PaletteSelect } from "components/forms/PaletteSelect";
 import { SceneSelect } from "components/forms/SceneSelect";
+import { SoundEffectSelect } from "components/forms/SoundEffectSelect2";
 import { SpriteSheetSelect } from "components/forms/SpriteSheetSelect";
 import { VariableSelect } from "components/forms/VariableSelect";
 import castEventValue from "lib/helpers/castEventValue";
@@ -376,9 +377,20 @@ const ScriptEventFormInput = ({
         onChange={onChangeField}
       />
     );
+  } else if (type === "soundEffect") {
+    return (
+      <SoundEffectSelect
+        name={id}
+        value={String(value ?? "")}
+        onChange={onChangeField}
+        duration={argValue(args.duration) as number | undefined}
+        pitch={argValue(args.pitch) as number | undefined}
+        frequency={argValue(args.frequency) as number | undefined}
+      />
+    );
   }
 
-  return <div>ABC</div>;
+  return null;
 };
 
 export default ScriptEventFormInput;
