@@ -4,6 +4,7 @@ import { RootState } from "store/configureStore";
 import { customEventName } from "store/features/entities/entitiesHelpers";
 import { customEventSelectors } from "store/features/entities/entitiesState";
 import { Option, Select, SelectCommonProps } from "ui/form/Select";
+import { sortByLabel } from "lib/helpers/sort";
 
 interface CustomEventSelectProps extends SelectCommonProps {
   name: string;
@@ -24,10 +25,12 @@ export const CustomEventSelect = ({
 
   useEffect(() => {
     setOptions(
-      customEvents.map((customEvent, customEventIndex) => ({
-        label: customEventName(customEvent, customEventIndex),
-        value: customEvent.id,
-      }))
+      customEvents
+        .map((customEvent, customEventIndex) => ({
+          label: customEventName(customEvent, customEventIndex),
+          value: customEvent.id,
+        }))
+        .sort(sortByLabel)
     );
   }, [customEvents]);
 
