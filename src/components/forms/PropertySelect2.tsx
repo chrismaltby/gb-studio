@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Actor, ActorDirection } from "store/features/entities/entitiesTypes";
+import { Actor } from "store/features/entities/entitiesTypes";
 import { RootState } from "store/configureStore";
 import {
   OptGroup,
