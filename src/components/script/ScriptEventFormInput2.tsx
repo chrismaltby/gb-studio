@@ -16,7 +16,7 @@ import { MusicSelect } from "components/forms/MusicSelect2";
 import { OperatorSelect } from "components/forms/OperatorSelect2";
 import { OverlayColorSelect } from "components/forms/OverlayColorSelect2";
 import { PaletteSelect } from "components/forms/PaletteSelect";
-import PropertySelect from "components/forms/PropertySelect";
+import { PropertySelect } from "components/forms/PropertySelect2";
 import { SceneSelect } from "components/forms/SceneSelect";
 import { SoundEffectSelect } from "components/forms/SoundEffectSelect2";
 import { SpriteSheetSelect } from "components/forms/SpriteSheetSelect";
@@ -465,8 +465,14 @@ const ScriptEventFormInput = ({
         onChange={onChangeField}
       />
     );
-  } else if (type === "propery") {
-    return <PropertySelect id={id} value={value} onChange={onChangeField} />;
+  } else if (type === "property") {
+    return (
+      <PropertySelect
+        name={id}
+        value={String(value ?? "")}
+        onChange={onChangeField}
+      />
+    );
   } else if (type === "union") {
     const currentType = ((value && (value as { type: string }).type) ||
       field.defaultType) as string;
