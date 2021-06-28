@@ -339,16 +339,14 @@ const ScriptEditorEvent = ({
         <>
           <MenuOverlay onClick={onCloseAddMenu} />
           <RelativePortal pin={"top-right"} offsetX={40} offsetY={20}>
-            <div style={{ minWidth: 280 }}>
-              <AddScriptEventMenu
-                onBlur={onCloseAddMenu}
-                parentId={parentId}
-                parentKey={parentKey}
-                parentType={parentType}
-                insertId={id}
-                before={insertBefore}
-              />
-            </div>
+            <AddScriptEventMenu
+              onBlur={onCloseAddMenu}
+              parentId={parentId}
+              parentKey={parentKey}
+              parentType={parentType}
+              insertId={id}
+              before={insertBefore}
+            />
           </RelativePortal>
         </>
       )}

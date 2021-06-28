@@ -102,14 +102,12 @@ const AddButton = ({ parentType, parentId, parentKey }: AddButtonProps) => {
         <>
           <MenuOverlay onClick={onClose} />
           <RelativePortal pin={pinDirection} offsetX={40} offsetY={20}>
-            <div style={{ minWidth: menuWidth }}>
-              <AddScriptEventMenu
-                onBlur={onClose}
-                parentId={parentId}
-                parentKey={parentKey}
-                parentType={parentType}
-              />
-            </div>
+            <AddScriptEventMenu
+              onBlur={onClose}
+              parentId={parentId}
+              parentKey={parentKey}
+              parentType={parentType}
+            />
           </RelativePortal>
         </>
       )}

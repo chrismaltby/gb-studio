@@ -160,7 +160,7 @@ const eventToOption =
   };
 
 const SelectMenu = styled.div`
-  min-width: 280px;
+  width: 300px;
 
   ${Menu} {
     width: 100%;
