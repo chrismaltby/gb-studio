@@ -13,6 +13,8 @@ import { EditorSelectionType } from "store/features/editor/editorState";
 import { TextSpeedSelect } from "../../forms/TextSpeedSelect";
 import { SelectMenu, selectMenuStyleProps } from "./Select";
 import l10n from "lib/helpers/l10n";
+import { useSelector } from "react-redux";
+import { RootState } from "store/configureStore";
 
 const varRegex = /\$([VLT0-9][0-9]*)\$/g;
 const charRegex = /#([VLT0-9][0-9]*)#/g;
@@ -258,6 +260,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
     Dictionary<SuggestionDataItem>
   >({});
   const [editMode, setEditMode] = useState<EditModeOptions>();
+  const editorType = useSelector((state: RootState) => state.editor.type);
 
   useEffect(() => {
     setVariablesLookup(keyBy(variables, "code"));
@@ -333,14 +336,18 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
                 entityId={entityId}
                 onChange={(newId) => {
                   let matches = 0;
+                  const newVar =
+                    editorType === "customEvent"
+                      ? `V${newId}`
+                      : newId.padStart(2, "0");
                   const newValue = value.replace(
                     editMode.type === "var" ? varRegex : charRegex,
                     (match) => {
                       if (matches === editMode.index) {
                         matches++;
                         return editMode.type === "var"
-                          ? `$${newId.padStart(2, "0")}$`
-                          : `#${newId.padStart(2, "0")}#`;
+                          ? `$${newVar}$`
+                          : `#${newVar}#`;
                       }
                       matches++;
                       return match;
