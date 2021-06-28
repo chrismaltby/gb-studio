@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import cloneDeep from "lodash/cloneDeep";
 import { OptGroup } from "ui/form/Select";
 import events, { EventHandler } from "lib/events";
 import l10n from "lib/helpers/l10n";
@@ -12,9 +13,23 @@ import { Dictionary } from "@reduxjs/toolkit";
 import { useDispatch, useSelector } from "react-redux";
 import settingsActions from "store/features/settings/settingsActions";
 import { RootState } from "store/configureStore";
+import {
+  ScriptEvent,
+  ScriptEventParentType,
+} from "store/features/entities/entitiesTypes";
+import entitiesActions from "store/features/entities/entitiesActions";
+import {
+  musicSelectors,
+  sceneSelectors,
+  spriteSheetSelectors,
+} from "store/features/entities/entitiesState";
 
 interface AddScriptEventMenuProps {
-  onChange?: (addValue: EventHandler) => void;
+  parentType: ScriptEventParentType;
+  parentId: string;
+  parentKey: string;
+  insertId?: string | undefined;
+  before?: boolean | undefined;
   onBlur?: () => void;
 }
 
@@ -37,10 +52,86 @@ interface EventOptGroup {
   options: EventOption[];
 }
 
+interface InstanciateOptions {
+  defaultSceneId: string;
+  defaultVariableId: string;
+  defaultMusicId: string;
+  defaultActorId: string;
+  defaultSpriteId: string;
+}
+
 const MENU_HEADER_HEIGHT = 68;
 const MENU_ITEM_HEIGHT = 25;
 const MENU_GROUP_HEIGHT = 25;
 const MENU_GROUP_SPACER = 10;
+
+const instanciateScriptEvent = (
+  handler: EventHandler,
+  {
+    defaultSceneId,
+    defaultVariableId,
+    defaultMusicId,
+    defaultActorId,
+    defaultSpriteId,
+  }: InstanciateOptions
+): Omit<ScriptEvent, "id"> => {
+  const fields = handler.fields || [];
+  const args = cloneDeep(
+    fields.reduce((memo, field) => {
+      let replaceValue = null;
+      let defaultValue = field.defaultValue;
+      if (field.type === "union") {
+        defaultValue = (field?.defaultValue as Record<string, unknown>)?.[
+          field.defaultType || ""
+        ];
+      }
+      if (defaultValue === "LAST_SCENE") {
+        replaceValue = defaultSceneId;
+      } else if (defaultValue === "LAST_VARIABLE") {
+        replaceValue = defaultVariableId;
+      } else if (defaultValue === "LAST_MUSIC") {
+        replaceValue = defaultMusicId;
+      } else if (defaultValue === "LAST_SPRITE") {
+        replaceValue = defaultSpriteId;
+      } else if (defaultValue === "LAST_ACTOR") {
+        replaceValue = defaultActorId;
+      } else if (field.type === "events") {
+        replaceValue = undefined;
+      } else if (defaultValue !== undefined) {
+        replaceValue = defaultValue;
+      }
+      if (field.type === "union") {
+        replaceValue = {
+          type: field.defaultType,
+          value: replaceValue,
+        };
+      }
+      if (replaceValue !== null) {
+        return {
+          ...memo,
+          [field.key]: replaceValue,
+        };
+      }
+
+      return memo;
+    }, {} as Record<string, unknown>)
+  );
+  const childFields = fields.filter((field) => field.type === "events");
+  const children =
+    childFields.length > 0
+      ? childFields.reduce((memo, field) => {
+          return {
+            ...memo,
+            [field.key]: [],
+          };
+        }, {} as Dictionary<string[]>)
+      : undefined;
+  return {
+    command: handler.id,
+    args,
+    ...(children && { children }),
+  };
+};
 
 const eventToOption =
   (favorites: string[]) =>
@@ -282,7 +373,14 @@ const notDeprecated = (a: { deprecated?: boolean }) => {
 
 const identity = <T extends unknown>(i: T): T => i;
 
-const AddScriptEventMenu = ({ onChange, onBlur }: AddScriptEventMenuProps) => {
+const AddScriptEventMenu = ({
+  parentId,
+  parentKey,
+  parentType,
+  insertId,
+  before,
+  onBlur,
+}: AddScriptEventMenuProps) => {
   const dispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState("");
   const [options, setOptions] = useState<(EventOptGroup | EventOption)[]>([]);
@@ -301,6 +399,18 @@ const AddScriptEventMenu = ({ onChange, onBlur }: AddScriptEventMenuProps) => {
   const childOptionsRef = useRef<HTMLDivElement>(null);
   const fuseRef = useRef<Fuse<EventOption> | null>(null);
 
+  const lastSceneId = useSelector((state: RootState) => {
+    const ids = sceneSelectors.selectIds(state);
+    return ids[ids.length - 1];
+  });
+  const lastMusicId = useSelector(
+    (state: RootState) => musicSelectors.selectIds(state)[0]
+  );
+  const lastSpriteId = useSelector(
+    (state: RootState) => spriteSheetSelectors.selectIds(state)[0]
+  );
+  const scope = useSelector((state: RootState) => state.editor.type);
+
   useEffect(() => {
     if (selectedCategoryIndex === -1) {
       setFavoritesCache(favoriteEvents);
@@ -315,7 +425,7 @@ const AddScriptEventMenu = ({ onChange, onBlur }: AddScriptEventMenuProps) => {
       includeScore: true,
       includeMatches: true,
       ignoreLocation: true,
-      threshold: 0.2,
+      threshold: 0.8,
       keys: [
         "label",
         {
@@ -387,7 +497,20 @@ const AddScriptEventMenu = ({ onChange, onBlur }: AddScriptEventMenuProps) => {
 
   useEffect(() => {
     if (searchTerm && fuseRef.current) {
-      setOptions(fuseRef.current.search(searchTerm).map((res) => res.item));
+      const queryWords = searchTerm.toUpperCase().split(" ");
+      setOptions(
+        fuseRef.current
+          .search(searchTerm)
+          .map((res) => res.item)
+          .filter((item) => {
+            // Make sure matches include search terms
+            return queryWords.reduce((memo: boolean, word: string) => {
+              const groupIndex = item.group?.toUpperCase()?.indexOf(word) ?? -1;
+              const labelIndex = item.label?.toUpperCase()?.indexOf(word) ?? -1;
+              return memo && (labelIndex > -1 || groupIndex > -1);
+            }, true);
+          })
+      );
       setSelectedIndex(0);
       setSelectedCategoryIndex(-1);
     } else {
@@ -418,6 +541,43 @@ const AddScriptEventMenu = ({ onChange, onBlur }: AddScriptEventMenuProps) => {
     [selectedCategoryIndex]
   );
 
+  const onAdd = useCallback(
+    (newEvent: EventHandler) => {
+      dispatch(
+        entitiesActions.addScriptEvents({
+          entityId: parentId,
+          type: parentType,
+          key: parentKey,
+          insertId,
+          before,
+          data: [
+            instanciateScriptEvent(newEvent, {
+              defaultActorId: "player",
+              defaultVariableId: scope === "customEvent" ? "0" : "L0",
+              defaultMusicId: String(lastMusicId),
+              defaultSceneId: String(lastSceneId),
+              defaultSpriteId: String(lastSpriteId),
+            }),
+          ],
+        })
+      );
+      onBlur?.();
+    },
+    [
+      before,
+      dispatch,
+      insertId,
+      lastMusicId,
+      lastSceneId,
+      lastSpriteId,
+      onBlur,
+      parentId,
+      parentKey,
+      parentType,
+      scope,
+    ]
+  );
+
   const onSelectOption = useCallback(
     (index: number) => {
       if (
@@ -431,19 +591,19 @@ const AddScriptEventMenu = ({ onChange, onBlur }: AddScriptEventMenuProps) => {
       } else if (selectedCategoryIndex === -1) {
         const option = options[index];
         if ("event" in option) {
-          onChange?.(option.event);
+          onAdd(option.event);
         }
       } else {
         const categoryOption = options[selectedCategoryIndex];
         if ("options" in categoryOption) {
           const option = categoryOption.options[index];
           if ("event" in option) {
-            onChange?.(option.event);
+            onAdd(option.event);
           }
         }
       }
     },
-    [onChange, options, selectedCategoryIndex]
+    [onAdd, options, selectedCategoryIndex]
   );
 
   const onToggleFavouriteEventId = useCallback(
@@ -459,6 +619,7 @@ const AddScriptEventMenu = ({ onChange, onBlur }: AddScriptEventMenuProps) => {
         const option = options[index];
         if ("event" in option) {
           onToggleFavouriteEventId(option.event.id);
+          inputRef.current?.focus();
         }
       } else {
         const categoryOption = options[selectedCategoryIndex];
@@ -466,6 +627,7 @@ const AddScriptEventMenu = ({ onChange, onBlur }: AddScriptEventMenuProps) => {
           const option = categoryOption.options[index];
           if ("event" in option) {
             onToggleFavouriteEventId(option.event.id);
+            inputRef.current?.focus();
           }
         }
       }

@@ -40,9 +40,11 @@ import events from "lib/events";
 import { ScriptEditorEventHelper } from "./ScriptEditorEventHelper";
 import ItemTypes from "lib/dnd/itemTypes";
 import { DropdownButton } from "ui/buttons/DropdownButton";
-import { MenuDivider, MenuItem } from "ui/menu/Menu";
+import { MenuDivider, MenuItem, MenuOverlay } from "ui/menu/Menu";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import { ClipboardTypeScriptEvents } from "store/features/clipboard/clipboardTypes";
+import { RelativePortal } from "ui/layout/RelativePortal";
+import AddScriptEventMenu from "./AddScriptEventMenu";
 
 interface ScriptEditorEventProps {
   id: string;
@@ -73,6 +75,8 @@ const ScriptEditorEvent = ({
     nestLevel + index < INITIAL_EVENT_LOAD_COUNT
   );
   const [rename, setRename] = useState(false);
+  const [isAddOpen, setAddOpen] = useState(false);
+  const [insertBefore, setInsertBefore] = useState(false);
 
   const clipboardFormat = useSelector(
     (state: RootState) => state.clipboard.data?.format
@@ -282,6 +286,15 @@ const ScriptEditorEvent = ({
     dispatch(editorActions.selectScriptEvent({ eventId: "" }));
   }, [dispatch]);
 
+  const onOpenAddMenu = useCallback((before: boolean) => {
+    setInsertBefore(before);
+    setAddOpen(true);
+  }, []);
+
+  const onCloseAddMenu = useCallback(() => {
+    setAddOpen(false);
+  }, []);
+
   if (!scriptEvent) {
     return null;
   }
@@ -322,6 +335,24 @@ const ScriptEditorEvent = ({
         display: isDragging ? "none" : "block",
       }}
     >
+      {isAddOpen && (
+        <>
+          <MenuOverlay onClick={onCloseAddMenu} />
+          <RelativePortal pin={"top-right"} offsetX={40} offsetY={20}>
+            <div style={{ minWidth: 280 }}>
+              <AddScriptEventMenu
+                onBlur={onCloseAddMenu}
+                parentId={parentId}
+                parentKey={parentKey}
+                parentType={parentType}
+                insertId={id}
+                before={insertBefore}
+              />
+            </div>
+          </RelativePortal>
+        </>
+      )}
+
       <div ref={dropRef}>
         {isOverCurrent && <ScriptEventPlaceholder />}
         <div ref={dragRef}>
@@ -392,6 +423,13 @@ const ScriptEditorEvent = ({
                     : l10n("MENU_DISABLE_ELSE")}
                 </MenuItem>
               )}
+              <MenuDivider />
+              <MenuItem onClick={() => onOpenAddMenu(true)}>
+                {l10n("MENU_INSERT_EVENT_BEFORE")}
+              </MenuItem>
+              <MenuItem onClick={() => onOpenAddMenu(false)}>
+                {l10n("MENU_INSERT_EVENT_AFTER")}
+              </MenuItem>
               <MenuDivider />
               <MenuItem onClick={onCopyScript}>
                 {l10n("MENU_COPY_EVENT")}

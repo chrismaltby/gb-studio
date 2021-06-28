@@ -625,6 +625,8 @@
   "MENU_REENABLE_ELSE": "Reenable Else",
   "MENU_PASTE_VALUES": "Paste Values",
   "MENU_PASTE_EVENT_BEFORE": "Paste Event Before",
+  "MENU_INSERT_EVENT_BEFORE": "Insert Event Before",
+  "MENU_INSERT_EVENT_AFTER": "Insert Event After",
   "MENU_PASTE_EVENT": "Paste Event",
   "MENU_REPLACE_EVENT": "Replace Event",
   "MENU_PASTE_EVENT_AFTER": "Paste Event After",
