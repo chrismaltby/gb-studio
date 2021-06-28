@@ -30,6 +30,8 @@ import {
   ActorDirection,
   ScriptEventFieldSchema,
 } from "store/features/entities/entitiesTypes";
+import styled from "styled-components";
+import { Button } from "ui/buttons/Button";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { CheckboxField } from "ui/form/CheckboxField";
 import { Input } from "ui/form/Input";
@@ -52,6 +54,14 @@ interface ScriptEventFormInputProps {
   allowRename?: boolean;
   onChange: (newValue: unknown, valueIndex?: number | undefined) => void;
 }
+
+const ConnectButton = styled.div`
+  ${Button} {
+    min-width: 15px;
+    padding: 0;
+    height: 28px;
+  }
+`;
 
 const argValue = (arg: unknown): unknown => {
   const unionArg = arg as { value: unknown; type: unknown };
@@ -485,22 +495,26 @@ const ScriptEventFormInput = ({
             onChange={onChangeUnionField}
           />
         </div>
-        <DropdownButton
-          variant="transparent"
-          size="small"
-          showArrow={false}
-          menuDirection="right"
-          label={<ConnectIcon connected={currentType !== field.defaultType} />}
-        >
-          {(field.types || []).map((type) => (
-            <MenuItem key={type} onClick={() => onChangeUnionType(type)}>
-              <MenuItemIcon>
-                {type === currentType ? <CheckIcon /> : <BlankIcon />}
-              </MenuItemIcon>
-              {type}
-            </MenuItem>
-          ))}
-        </DropdownButton>
+        <ConnectButton>
+          <DropdownButton
+            variant="transparent"
+            size="small"
+            showArrow={false}
+            menuDirection="right"
+            label={
+              <ConnectIcon connected={currentType !== field.defaultType} />
+            }
+          >
+            {(field.types || []).map((type) => (
+              <MenuItem key={type} onClick={() => onChangeUnionType(type)}>
+                <MenuItemIcon>
+                  {type === currentType ? <CheckIcon /> : <BlankIcon />}
+                </MenuItemIcon>
+                {type}
+              </MenuItem>
+            ))}
+          </DropdownButton>
+        </ConnectButton>
       </div>
     );
   }
