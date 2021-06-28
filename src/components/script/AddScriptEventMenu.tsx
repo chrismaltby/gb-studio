@@ -23,6 +23,7 @@ import {
   sceneSelectors,
   spriteSheetSelectors,
 } from "store/features/entities/entitiesState";
+import { EVENT_TEXT } from "lib/compiler/eventTypes";
 
 interface AddScriptEventMenuProps {
   parentType: ScriptEventParentType;
@@ -43,6 +44,7 @@ interface EventOption {
   group?: string;
   groupLabel?: string;
   isFavorite: boolean;
+  defaultArgs?: Record<string, unknown>;
   event: EventHandler;
 }
 
@@ -58,6 +60,7 @@ interface InstanciateOptions {
   defaultMusicId: string;
   defaultActorId: string;
   defaultSpriteId: string;
+  defaultArgs?: Record<string, unknown>;
 }
 
 const MENU_HEADER_HEIGHT = 68;
@@ -73,48 +76,52 @@ const instanciateScriptEvent = (
     defaultMusicId,
     defaultActorId,
     defaultSpriteId,
+    defaultArgs,
   }: InstanciateOptions
 ): Omit<ScriptEvent, "id"> => {
   const fields = handler.fields || [];
   const args = cloneDeep(
-    fields.reduce((memo, field) => {
-      let replaceValue = null;
-      let defaultValue = field.defaultValue;
-      if (field.type === "union") {
-        defaultValue = (field?.defaultValue as Record<string, unknown>)?.[
-          field.defaultType || ""
-        ];
-      }
-      if (defaultValue === "LAST_SCENE") {
-        replaceValue = defaultSceneId;
-      } else if (defaultValue === "LAST_VARIABLE") {
-        replaceValue = defaultVariableId;
-      } else if (defaultValue === "LAST_MUSIC") {
-        replaceValue = defaultMusicId;
-      } else if (defaultValue === "LAST_SPRITE") {
-        replaceValue = defaultSpriteId;
-      } else if (defaultValue === "LAST_ACTOR") {
-        replaceValue = defaultActorId;
-      } else if (field.type === "events") {
-        replaceValue = undefined;
-      } else if (defaultValue !== undefined) {
-        replaceValue = defaultValue;
-      }
-      if (field.type === "union") {
-        replaceValue = {
-          type: field.defaultType,
-          value: replaceValue,
-        };
-      }
-      if (replaceValue !== null) {
-        return {
-          ...memo,
-          [field.key]: replaceValue,
-        };
-      }
+    fields.reduce(
+      (memo, field) => {
+        let replaceValue = null;
+        let defaultValue = field.defaultValue;
+        if (field.type === "union") {
+          defaultValue = (field?.defaultValue as Record<string, unknown>)?.[
+            field.defaultType || ""
+          ];
+        }
+        if (defaultValue === "LAST_SCENE") {
+          replaceValue = defaultSceneId;
+        } else if (defaultValue === "LAST_VARIABLE") {
+          replaceValue = defaultVariableId;
+        } else if (defaultValue === "LAST_MUSIC") {
+          replaceValue = defaultMusicId;
+        } else if (defaultValue === "LAST_SPRITE") {
+          replaceValue = defaultSpriteId;
+        } else if (defaultValue === "LAST_ACTOR") {
+          replaceValue = defaultActorId;
+        } else if (field.type === "events") {
+          replaceValue = undefined;
+        } else if (defaultValue !== undefined) {
+          replaceValue = defaultValue;
+        }
+        if (field.type === "union") {
+          replaceValue = {
+            type: field.defaultType,
+            value: replaceValue,
+          };
+        }
+        if (replaceValue !== null) {
+          return {
+            ...memo,
+            [field.key]: memo[field.key] ?? replaceValue,
+          };
+        }
 
-      return memo;
-    }, {} as Record<string, unknown>)
+        return memo;
+      },
+      { ...defaultArgs } as Record<string, unknown>
+    )
   );
   const childFields = fields.filter((field) => field.type === "events");
   const children =
@@ -498,18 +505,31 @@ const AddScriptEventMenu = ({
   useEffect(() => {
     if (searchTerm && fuseRef.current) {
       const queryWords = searchTerm.toUpperCase().split(" ");
+      const searchOptions = fuseRef.current
+        .search(searchTerm)
+        .map((res) => res.item)
+        .filter((item) => {
+          // Make sure matches include search terms
+          return queryWords.reduce((memo: boolean, word: string) => {
+            const groupIndex = item.group?.toUpperCase()?.indexOf(word) ?? -1;
+            const labelIndex = item.label?.toUpperCase()?.indexOf(word) ?? -1;
+            return memo && (labelIndex > -1 || groupIndex > -1);
+          }, true);
+        });
       setOptions(
-        fuseRef.current
-          .search(searchTerm)
-          .map((res) => res.item)
-          .filter((item) => {
-            // Make sure matches include search terms
-            return queryWords.reduce((memo: boolean, word: string) => {
-              const groupIndex = item.group?.toUpperCase()?.indexOf(word) ?? -1;
-              const labelIndex = item.label?.toUpperCase()?.indexOf(word) ?? -1;
-              return memo && (labelIndex > -1 || groupIndex > -1);
-            }, true);
-          })
+        searchOptions.length > 0
+          ? searchOptions
+          : [
+              {
+                value: "",
+                label: `${l10n(EVENT_TEXT)} "${searchTerm}"`,
+                event: events[EVENT_TEXT] as EventHandler,
+                defaultArgs: {
+                  text: [searchTerm],
+                },
+                isFavorite: false,
+              },
+            ]
       );
       setSelectedIndex(0);
       setSelectedCategoryIndex(-1);
@@ -542,7 +562,7 @@ const AddScriptEventMenu = ({
   );
 
   const onAdd = useCallback(
-    (newEvent: EventHandler) => {
+    (newEvent: EventHandler, defaultArgs?: Record<string, unknown>) => {
       dispatch(
         entitiesActions.addScriptEvents({
           entityId: parentId,
@@ -557,6 +577,7 @@ const AddScriptEventMenu = ({
               defaultMusicId: String(lastMusicId),
               defaultSceneId: String(lastSceneId),
               defaultSpriteId: String(lastSpriteId),
+              defaultArgs,
             }),
           ],
         })
@@ -591,14 +612,14 @@ const AddScriptEventMenu = ({
       } else if (selectedCategoryIndex === -1) {
         const option = options[index];
         if ("event" in option) {
-          onAdd(option.event);
+          onAdd(option.event, option.defaultArgs);
         }
       } else {
         const categoryOption = options[selectedCategoryIndex];
         if ("options" in categoryOption) {
           const option = categoryOption.options[index];
           if ("event" in option) {
-            onAdd(option.event);
+            onAdd(option.event, option.defaultArgs);
           }
         }
       }
@@ -754,27 +775,29 @@ const AddScriptEventMenu = ({
                   ) : (
                     <>
                       <FlexGrow />
-                      <MenuItemFavorite
-                        visible={
-                          (selectedCategoryIndex === -1 &&
-                            selectedIndex === optionIndex) ||
-                          selectedCategoryIndex === optionIndex ||
-                          ("isFavorite" in option && option.isFavorite)
-                        }
-                        isFavorite={option.isFavorite}
-                      >
-                        <Button
-                          size="small"
-                          variant="transparent"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            onToggleFavoriteOption(optionIndex);
-                          }}
+                      {!option.defaultArgs && (
+                        <MenuItemFavorite
+                          visible={
+                            (selectedCategoryIndex === -1 &&
+                              selectedIndex === optionIndex) ||
+                            selectedCategoryIndex === optionIndex ||
+                            ("isFavorite" in option && option.isFavorite)
+                          }
+                          isFavorite={option.isFavorite}
                         >
-                          <StarIcon />
-                        </Button>
-                      </MenuItemFavorite>
+                          <Button
+                            size="small"
+                            variant="transparent"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              onToggleFavoriteOption(optionIndex);
+                            }}
+                          >
+                            <StarIcon />
+                          </Button>
+                        </MenuItemFavorite>
+                      )}
                     </>
                   )}
                 </MenuItem>
