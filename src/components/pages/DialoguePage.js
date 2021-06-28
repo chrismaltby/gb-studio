@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import PageHeader from "../library/PageHeader";
 import PageContent from "../library/PageContent";
-import { walkEvents } from "lib/helpers/eventSystem";
 import { EVENT_TEXT } from "lib/compiler/eventTypes";
 import l10n from "lib/helpers/l10n";
 import { SceneShape, ActorShape, EventShape } from "store/stateShape";
@@ -12,7 +11,13 @@ import {
   sceneSelectors,
   actorSelectors,
   triggerSelectors,
+  scriptEventSelectors,
 } from "store/features/entities/entitiesState";
+import {
+  walkNormalisedActorEvents,
+  walkNormalisedSceneSpecificEvents,
+  walkNormalisedTriggerEvents,
+} from "store/features/entities/entitiesHelpers";
 
 class DialoguePage extends Component {
   constructor(props) {
@@ -137,11 +142,12 @@ function mapStateToProps(state) {
   const scenes = sceneSelectors.selectAll(state);
   const actorsLookup = actorSelectors.selectEntities(state);
   const triggersLookup = triggerSelectors.selectEntities(state);
+  const scriptEventsLookup = scriptEventSelectors.selectEntities(state);
 
   const dialogueLines = scenes.reduce((memo, scene, sceneIndex) => {
     scene.actors.forEach((actorId, actorIndex) => {
       const actor = actorsLookup[actorId];
-      walkEvents(actor.script, (cmd) => {
+      walkNormalisedActorEvents(actor, scriptEventsLookup, (cmd) => {
         if (cmd.command === EVENT_TEXT) {
           memo.push({
             sceneId: scene.id,
@@ -157,7 +163,7 @@ function mapStateToProps(state) {
     });
     scene.triggers.forEach((triggerId, triggerIndex) => {
       const trigger = triggersLookup[triggerId];
-      walkEvents(trigger.script, (cmd) => {
+      walkNormalisedTriggerEvents(trigger, scriptEventsLookup, (cmd) => {
         if (cmd.command === EVENT_TEXT) {
           memo.push({
             sceneId: scene.id,
@@ -171,7 +177,7 @@ function mapStateToProps(state) {
         }
       });
     });
-    walkEvents(scene.script, (cmd) => {
+    walkNormalisedSceneSpecificEvents(scene, scriptEventsLookup, (cmd) => {
       if (cmd.command === EVENT_TEXT) {
         memo.push({
           sceneId: scene.id,
