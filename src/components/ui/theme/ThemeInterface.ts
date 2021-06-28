@@ -82,6 +82,7 @@ export interface ThemeInterface {
     };
     scripting: {
       header: {
+        text: string;
         background: string;
         backgroundAlt: string;
         nest1Background: string;
@@ -97,6 +98,9 @@ export interface ThemeInterface {
       };
       form: {
         background: string;
+      };
+      children: {
+        boxShadow: string;
       };
       placeholder: {
         background: string;

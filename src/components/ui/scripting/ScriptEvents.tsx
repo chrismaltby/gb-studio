@@ -8,11 +8,13 @@ export const ScriptEventPlaceholder = styled.div`
 export const ScriptEventWrapper = styled.div`
   background: ${(props) => props.theme.colors.scripting.form.background};
   & ~ & {
-    border-top: 1px solid ${(props) => props.theme.colors.input.border};
+    border-top: 1px solid ${(props) => props.theme.colors.sidebar.border};
   }
 `;
 
 export const ScriptEventRenameInput = styled.input`
+  background: ${(props) => props.theme.colors.input.background};
+  color: ${(props) => props.theme.colors.input.text};
   flex-grow: 1;
   border: 0;
   border-radius: 4px;
@@ -50,7 +52,7 @@ export const ScriptEventRenameInputCompleteButton = styled.button`
   svg {
     width: 12px;
     height: 12px;
-    fill: #333;
+    fill: ${(props) => props.theme.colors.input.text};
   }
 `;
 
@@ -67,7 +69,7 @@ interface ScriptEventHeaderCaretProps {
 
 export const ScriptEventHeaderCaret = styled.div<ScriptEventHeaderCaretProps>`
   svg {
-    fill: ${(props) => props.theme.colors.text};
+    fill: ${(props) => props.theme.colors.scripting.header.text};
     width: 8px;
     height: 8px;
     flex-shrink: 0;
@@ -95,7 +97,7 @@ export const ScriptEventHeader = styled.div<ScriptEventHeaderProps>`
   height: 25px;
   background-color: ${(props) =>
     props.theme.colors.scripting.header.background};
-  color: ${(props) => props.theme.colors.input.text};
+  color: ${(props) => props.theme.colors.scripting.header.text};
   line-height: 12px;
   cursor: move;
 
@@ -206,7 +208,7 @@ export const ScriptEventBranchHeader = styled.div<ScriptEventHeaderProps>`
   margin-right: -10px;
   margin-bottom: -10px;
   height: 25px;
-  color: ${(props) => props.theme.colors.input.text};
+  color: ${(props) => props.theme.colors.scripting.header.text};
   line-height: 12px;
 
   ${(props) =>
@@ -344,7 +346,7 @@ export const ScriptEventFormNest = styled.div`
 `;
 
 export const ScriptEventFields = styled.div`
-  border-top: 1px solid ${(props) => props.theme.colors.input.border};
+  border-top: 1px solid ${(props) => props.theme.colors.sidebar.border};
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px 10px;
@@ -369,7 +371,9 @@ export const ScriptEventField = styled.div<ScriptEventFieldProps>`
 `;
 
 export const ScriptEditorChildren = styled.div`
-  border: 1px solid ${(props) => props.theme.colors.input.border};
+  border: 1px solid ${(props) => props.theme.colors.sidebar.border};
+  // box-shadow: -1px 2px 3px rgba(0, 0, 0, 0.8);
+  box-shadow: ${(props) => props.theme.colors.scripting.children.boxShadow};
   border-right: 0;
   margin-right: -10px;
 

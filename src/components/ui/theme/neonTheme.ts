@@ -86,6 +86,7 @@ const neonTheme: ThemeInterface = {
     },
     scripting: {
       header: {
+        text: "#ffffff",
         background: "#0a0e0e",
         backgroundAlt: "#101515",
         nest1Background: "#01579b",
@@ -101,6 +102,10 @@ const neonTheme: ThemeInterface = {
       },
       form: {
         background: "#000000",
+      },
+      children: {
+        boxShadow:
+          "0 0 0 1px rgba(150, 150, 150, 0.3), 0 4px 11px hsla(0, 0%, 0%, 0.1)",
       },
       placeholder: {
         background: "#666",

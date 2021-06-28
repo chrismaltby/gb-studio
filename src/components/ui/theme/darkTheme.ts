@@ -85,24 +85,28 @@ const darkTheme: ThemeInterface = {
     },
     scripting: {
       header: {
+        text: "#ffffff",
         background: "#444444",
         backgroundAlt: "#383838",
-        nest1Background: "#01579b",
-        nest1BackgroundAlt: "#0277bd",
-        nest2Background: "#bf360c",
-        nest2BackgroundAlt: "#d84315",
-        nest3Background: "#1b5e20",
-        nest3BackgroundAlt: "#2e7d32",
-        nest4Background: "#311b92",
-        nest4BackgroundAlt: "#4527a0",
+        nest1Background: "#455a64",
+        nest1BackgroundAlt: "#37474f",
+        nest2Background: "#006064",
+        nest2BackgroundAlt: "#00838f",
+        nest3Background: "#00695c",
+        nest3BackgroundAlt: "#004d40",
+        nest4Background: "#2b698e",
+        nest4BackgroundAlt: "#1c506f",
         commentBackground: "#8bc34a",
         commentBackgroundAlt: "#7cb342",
       },
       form: {
         background: "#222222",
       },
+      children: {
+        boxShadow: "-2px 2px 5px hsla(0,0%,0%,0.5)",
+      },
       placeholder: {
-        background: "#666",
+        background: "#000",
       },
     },
     tracker: {

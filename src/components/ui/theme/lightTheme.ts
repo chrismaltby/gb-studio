@@ -85,6 +85,7 @@ const lightTheme: ThemeInterface = {
     },
     scripting: {
       header: {
+        text: "#3b3a3b",
         background: "#efefef",
         backgroundAlt: "#dedede",
         nest1Background: "#b3e5fc",
@@ -100,6 +101,9 @@ const lightTheme: ThemeInterface = {
       },
       form: {
         background: "#ffffff",
+      },
+      children: {
+        boxShadow: "-1px 1px 3px hsla(0,0%,0%,0.15)",
       },
       placeholder: {
         background: "#ccc",
