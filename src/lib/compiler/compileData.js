@@ -1006,7 +1006,7 @@ const compile = async (
 
       const scriptName = `script_s${sceneIndex}${entityCode}_${scriptTypeCode}`;
 
-      if (script.length < 2) {
+      if (script.length === 0) {
         return null;
       }
 
@@ -1056,7 +1056,7 @@ const compile = async (
         .concat(
           scene.actors.map((actor) => {
             const actorStartScript = actor.startScript || [];
-            if (actorStartScript.length < 2) {
+            if (actorStartScript.length === 0) {
               return [];
             }
             return [].concat(
@@ -1071,7 +1071,7 @@ const compile = async (
               actorStartScript.filter((event) => event.command !== EVENT_END)
             );
           }),
-          scene.script.length >= 2
+          scene.script.length > 0
             ? {
                 command: "INTERNAL_SET_CONTEXT",
                 args: {
@@ -1102,7 +1102,7 @@ const compile = async (
       (entity, entityIndex) => {
         if (
           !entity[entityScriptField] ||
-          entity[entityScriptField].length <= 1
+          entity[entityScriptField].length === 0
         ) {
           return null;
         }

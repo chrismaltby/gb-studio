@@ -123,7 +123,7 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
 
   const loopId = loop ? scriptBuilder.getNextLabel() : "";
 
-  if (loop && input.length > 1) {
+  if (loop && input.length > 0) {
     scriptBuilder.labelDefine(loopId);
   }
 
@@ -131,7 +131,7 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
 
   try {
     if (!branch) {
-      if (loop && input.length > 1) {
+      if (loop && input.length > 0) {
         scriptBuilder.nextFrameAwait();
         scriptBuilder.labelGoto(loopId);
       }
