@@ -3165,7 +3165,9 @@ export const generateScriptEventInsertActions = (
       data: insertEvents,
     });
 
-    insertActions.push(action);
+    if (insertEvents.length > 0) {
+      insertActions.push(action);
+    }
 
     // Child events
     for (let i = 0; i < insertEvents.length; i++) {

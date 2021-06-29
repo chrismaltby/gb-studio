@@ -56,6 +56,7 @@ import {
   walkSceneScriptsKeys,
 } from "../entities/entitiesHelpers";
 import keyBy from "lodash/keyBy";
+import { patchEventArgs } from "lib/helpers/eventHelpers";
 
 const generateActorInsertActions = (
   actor: Actor,
@@ -166,7 +167,44 @@ const generateSceneInsertActions = (
       )
     );
   }
-  return actions;
+
+  const actorMapping: Record<string, string> = actions
+    .filter((action) => {
+      return action.type === "entities/addActor";
+    })
+    .reduce((memo, action) => {
+      const oldId: string = action.payload?.defaults?.id;
+      const newId: string = action.payload?.actorId;
+      if (oldId && newId) {
+        memo[oldId] = newId;
+      }
+      return memo;
+    }, {} as Record<string, string>);
+
+  const remappedActions = actions.map((action) => {
+    if (action.type !== "entities/addScriptEvents") {
+      return action;
+    }
+    return {
+      ...action,
+      payload: {
+        ...action.payload,
+        data: action.payload.data.map((eventData: ScriptEvent) => {
+          return {
+            ...eventData,
+            args: patchEventArgs(
+              eventData.command,
+              "actor",
+              eventData.args || {},
+              actorMapping
+            ),
+          };
+        }),
+      },
+    };
+  });
+
+  return remappedActions;
 };
 
 const clipboardMiddleware: Middleware<Dispatch, RootState> =
