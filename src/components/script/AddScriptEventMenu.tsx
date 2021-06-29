@@ -670,6 +670,7 @@ const AddScriptEventMenu = ({
           setSelectedCategoryIndex(-1);
         }
       } else if (e.key === "ArrowDown") {
+        e.preventDefault();
         const max =
           selectedCategoryIndex === -1
             ? options.length - 1
@@ -677,6 +678,7 @@ const AddScriptEventMenu = ({
         setSelectedIndex(Math.min(selectedIndex + 1, max));
         scrollIntoViewIfNeeded(Math.min(selectedIndex + 1, max));
       } else if (e.key === "ArrowUp") {
+        e.preventDefault();
         setSelectedIndex(Math.max(selectedIndex - 1, 0));
         scrollIntoViewIfNeeded(selectedIndex - 1);
       } else if (e.key === "Enter") {
