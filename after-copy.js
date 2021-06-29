@@ -13,13 +13,26 @@ function afterCopy(buildPath, electronVersion, platform, arch, callback) {
 
   // Called from packagerConfig in forge.config.js
   // Copies correct build Tools for architecture + dynamically loaded js/json files
-  const copyPaths = [
-    "/buildTools/" + platform + "-" + arch,
-    "/appData/",
-    "/src/lang",
-    "/src/lib/events",
-    "/src/assets"    
-  ];
+  var tempCopyPaths = [];
+  if (arch !== "armv7l") {
+    tempCopyPaths = [
+      "/buildTools/" + platform + "-" + arch,
+      "/appData/",
+      "/src/lang",
+      "/src/lib/events",
+      "/src/assets"    
+    ];
+  } else {
+    tempCopyPaths = [
+      "/buildTools/" + platform + "-arm",
+      "/appData/",
+      "/src/lang",
+      "/src/lib/events",
+      "/src/assets"    
+    ];
+  }
+
+  const copyPaths = tempCopyPaths;
 
   Promise.all(copyPaths.map((dir) => {
     return fs.copy(__dirname + dir, buildPath + dir, { filter: fileFilter })

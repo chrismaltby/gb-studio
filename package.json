@@ -15,6 +15,8 @@
     "make:win32": "electron-forge make --arch=ia32 --platform=win32",
     "make:mac": "electron-forge make --arch=x64 --platform=darwin",
     "make:linux": "electron-forge make --arch=x64 --platform=linux",
+    "make:linux-armhf": "electron-forge make --arch=armv7l --platform=linux",
+    "make:linux-arm64": "electron-forge make --arch=arm64 --platform=linux",
     "make": "electron-forge make",
     "make:all": "run-s make:mac make:win make:win32 make:linux",
     "publish": "electron-forge publish",
