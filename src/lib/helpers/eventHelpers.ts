@@ -20,6 +20,19 @@ export const patchEventArgs = (
       if (replacements[args[field.key] as string]) {
         patchArgs[field.key] = replacements[args[field.key] as string];
       }
+    } else if (
+      type === "actor" &&
+      (args[field.key] as { type?: string })?.type === "property"
+    ) {
+      const propertyParts = (
+        (args[field.key] as { value?: string })?.value || ""
+      ).split(":");
+      if (propertyParts.length === 2) {
+        patchArgs[field.key] = {
+          type: "property",
+          value: `${replacements[propertyParts[0]]}:${propertyParts[1]}`,
+        };
+      }
     }
   });
 
