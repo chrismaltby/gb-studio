@@ -191,6 +191,9 @@ const ScriptEditorEvent = ({
     dispatch(
       entitiesActions.removeScriptEvent({
         scriptEventId: id,
+        entityId: parentId,
+        type: parentType,
+        key: parentKey,
       })
     );
   }, [dispatch, id]);

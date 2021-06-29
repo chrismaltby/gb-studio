@@ -2731,8 +2731,30 @@ const resetScript: CaseReducer<
 
 const removeScriptEvent: CaseReducer<
   EntitiesState,
-  PayloadAction<{ scriptEventId: string }>
+  PayloadAction<{
+    scriptEventId: string;
+    entityId: string;
+    type: ScriptEventParentType;
+    key: string;
+  }>
 > = (state, action) => {
+  const script = selectScriptIds(
+    state,
+    action.payload.type,
+    action.payload.entityId,
+    action.payload.key
+  );
+
+  if (!script) {
+    return;
+  }
+
+  const eventIndex = script.indexOf(action.payload.scriptEventId);
+  if (eventIndex === -1) {
+    return;
+  }
+
+  script.splice(eventIndex, 1);
   scriptEventsAdapter.removeOne(
     state.scriptEvents,
     action.payload.scriptEventId
