@@ -309,12 +309,10 @@ const ScriptEditorEvent = ({
   const disabledElse = scriptEvent.args && scriptEvent.args.__disableElse;
 
   const localisedCommand = l10n(command);
-  const defaultCommandName =
+  const eventName =
     localisedCommand !== command
       ? localisedCommand
       : (events[command] && events[command]?.name) || command;
-
-  const eventName = String(scriptEvent.args?.__name || defaultCommandName);
 
   const labelName =
     (scriptEvent.args?.__label
