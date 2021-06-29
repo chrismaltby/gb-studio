@@ -1,6 +1,6 @@
 import ItemTypes from "lib/dnd/itemTypes";
 import l10n from "lib/helpers/l10n";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { DropTargetMonitor, useDrop } from "react-dnd";
 import {
   ScriptEventParentType,
@@ -17,6 +17,7 @@ import {
 import { RelativePortal } from "ui/layout/RelativePortal";
 import AddScriptEventMenu from "./AddScriptEventMenu";
 import { MenuOverlay } from "ui/menu/Menu";
+import clipboardActions from "store/features/clipboard/clipboardActions";
 
 interface AddButtonProps {
   parentType: ScriptEventParentType;
@@ -39,7 +40,7 @@ const AddButton = ({ parentType, parentId, parentKey }: AddButtonProps) => {
   const [isOpen, setOpen] = useState(false);
   const [pinDirection, setPinDirection] =
     useState<"bottom-right" | "top-right">("bottom-right");
-  const [menuWidth, setMenuWidth] = useState(280);
+  const [pasteMode, setPasteMode] = useState(false);
   const dropRef = useRef<HTMLDivElement>(null);
 
   const [{ handlerId, isOverCurrent }, drop] = useDrop({
@@ -85,13 +86,44 @@ const AddButton = ({ parentType, parentId, parentKey }: AddButtonProps) => {
     } else {
       setPinDirection("top-right");
     }
-    setMenuWidth(boundingRect.width);
     setOpen(true);
   }, []);
 
   const onClose = useCallback(() => {
     setOpen(false);
   }, []);
+
+  const onPaste = useCallback(() => {
+    dispatch(
+      clipboardActions.pasteScriptEvents({
+        entityId: parentId,
+        type: parentType,
+        key: parentKey,
+      })
+    );
+  }, [dispatch, parentId, parentKey, parentType]);
+
+  const handleKeys = useCallback((e: KeyboardEvent) => {
+    if (e.altKey) {
+      setPasteMode(true);
+    }
+  }, []);
+
+  const handleKeysUp = useCallback((e: KeyboardEvent) => {
+    if (!e.altKey) {
+      setPasteMode(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeys);
+    window.addEventListener("keyup", handleKeysUp);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeys);
+      window.removeEventListener("keyup", handleKeysUp);
+    };
+  });
 
   drop(dropRef);
 
@@ -112,7 +144,9 @@ const AddButton = ({ parentType, parentId, parentKey }: AddButtonProps) => {
         </>
       )}
       <Wrapper>
-        <Button onClick={onOpen}>{l10n("SIDEBAR_ADD_EVENT")}</Button>
+        <Button onClick={pasteMode ? onPaste : onOpen}>
+          {pasteMode ? l10n("MENU_PASTE_EVENT") : l10n("SIDEBAR_ADD_EVENT")}
+        </Button>
       </Wrapper>
     </ScriptEventWrapper>
   );

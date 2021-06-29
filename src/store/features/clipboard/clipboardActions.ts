@@ -62,8 +62,8 @@ const pasteScriptEvents = createAction<{
   entityId: string;
   type: ScriptEventParentType;
   key: string;
-  insertId: string;
-  before: boolean;
+  insertId?: string;
+  before?: boolean;
 }>("clipboard/pasteScriptEvents");
 const pasteScriptEventValues = createAction<{
   scriptEventId: string;
