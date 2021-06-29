@@ -1,8 +1,9 @@
 #include <gb/gb.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 
-UWORD counter = 0;
+uint16_t counter = 0;
 
 // inc() must be a relocatable function, be careful!
 void inc() {
@@ -20,8 +21,8 @@ unsigned char __at _inc_hiram hiram_buffer[];
 
 // those are function pointer variables, we can initialize them right here
 typedef void (*inc_t)(void);
-inc_t inc_ram_var   = (inc_t)&ram_buffer;
-inc_t inc_hiram_var = (inc_t)&hiram_buffer;
+inc_t inc_ram_var   = (inc_t)ram_buffer;
+inc_t inc_hiram_var = (inc_t)hiram_buffer;
 
 // those are defined by passing parameters to the linker, they must be located at the same 
 // addresses where ram_buffer and hiram_buffer are located
@@ -34,8 +35,8 @@ void print_counter() {
 
 void main() {
     // copy inc() function to it's new destinations: hiram_buffer and ram_buffer
-    hiramcpy((UBYTE)&hiram_buffer, (void *)&inc, (UBYTE)object_distance(inc, inc_end));
-    memcpy(&ram_buffer, (void *)&inc, (UWORD)object_distance(inc, inc_end));
+    hiramcpy((uint8_t)&hiram_buffer, (void *)&inc, (uint8_t)object_distance(inc, inc_end));
+    memcpy(&ram_buffer, (void *)&inc, (uint16_t)object_distance(inc, inc_end));
 
     // print initial counter state
     puts("Program Start...");

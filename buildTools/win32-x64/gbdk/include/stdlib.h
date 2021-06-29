@@ -96,6 +96,20 @@ char *ltoa(long n, char *s);
 char *ultoa(unsigned long n, char *s);
 
 
+/** Memory allocation functions 
+ */
+void *calloc (size_t nmemb, size_t size);
+void *malloc (size_t size);
+void *realloc (void *ptr, size_t size);
+#if __STDC_VERSION__ >= 201112L
+inline void *aligned_alloc(size_t alignment, size_t size)
+{
+  (void)alignment;
+  return malloc(size);
+}
+#endif
+extern void free (void * ptr);
+
 /* Searching and sorting utilities (ISO C11 7.22.5) */
 /** search a sorted array of __nmemb__ items
     @param key      Pointer to object that is the key for the search

@@ -1,13 +1,14 @@
 #include <gb/gb.h>
+#include <stdint.h>
 #include <stdio.h>
 
 #include <gb/bgb_emu.h>
 
-const UBYTE scanline_offsets_tbl[] = {0, 1, 2, 3, 3, 2, 1, 0, 0, 1, 2, 3, 3, 2, 1, 0};
-const UBYTE * scanline_offsets = scanline_offsets_tbl;
+const uint8_t scanline_offsets_tbl[] = {0, 1, 2, 3, 3, 2, 1, 0, 0, 1, 2, 3, 3, 2, 1, 0};
+const uint8_t * scanline_offsets = scanline_offsets_tbl;
 
 void scanline_isr() {
-    SCX_REG = scanline_offsets[LY_REG & (UBYTE)7];
+    SCX_REG = scanline_offsets[LY_REG & (uint8_t)7];
 }
 
 
@@ -22,6 +23,6 @@ void main() {
 
     while (1) {
         wait_vbl_done();        
-        scanline_offsets = &scanline_offsets_tbl[(UBYTE)(sys_time >> 2) & 0x07u];
+        scanline_offsets = &scanline_offsets_tbl[(uint8_t)(sys_time >> 2) & 0x07u];
     }
 }

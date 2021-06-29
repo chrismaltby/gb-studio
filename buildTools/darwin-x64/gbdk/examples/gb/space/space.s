@@ -19,7 +19,7 @@
 	;; Note that the window is kept in the lower right part of the screen
 	;; since it can't be made transparent
 
-	.include	"../../../lib/small/asxxxx/global.s"
+	.include	"global.s"
 
 	.globl	.init_vram
 	.globl	.copy_vram

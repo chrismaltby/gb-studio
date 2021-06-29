@@ -1,7 +1,14 @@
 #ifndef __BCD_H_INCLUDE
 #define __BCD_H_INCLUDE
 
+#include <stdint.h>
 #include <asm/types.h>
+
+/** @file bcd.h
+    Support for working with BCD (Binary Coded Decimal)
+
+    See the example BCD project for additional details.
+*/
 
 // macro for creating BCD constants
 #define BCD_HEX(v) ((BCD)(v))
@@ -12,13 +19,13 @@
 */
 #define MAKE_BCD(v) BCD_HEX(0x ## v)
 
-typedef unsigned long BCD;
+typedef uint32_t BCD;
 
 /** Converts integer __i__ into BCD format (Binary Coded Decimal)
     @param i      Numeric value to convert
     @param value  Pointer to a BCD variable to store the converted result
 */
-void uint2bcd(unsigned int i, BCD * value);
+void uint2bcd(uint16_t i, BCD * value);
 
 /** Adds two numbers in BCD format: __sour__ += __value__
     @param sour   Pointer to a BCD value to add to (and where the result is stored)
@@ -49,6 +56,6 @@ void bcd_sub(BCD * sour, const BCD * value);
     \li It can also be set to the ascii value for character '0'
     so that the buffer is a normal string that can be passed to @ref printf.
 */
-UBYTE bcd2text(const BCD * bcd, UBYTE tile_offset, unsigned char * buffer);
+uint8_t bcd2text(const BCD * bcd, uint8_t tile_offset, uint8_t * buffer);
 
 #endif

@@ -1,4 +1,5 @@
 #include <gb/gb.h>
+#include <stdint.h>
 #include <gb/console.h>
 #include <stdio.h>
 #include <string.h>
