@@ -8,6 +8,14 @@ Fork, then clone the repo:
 git clone git@github.com:your-username/gb-studio.git
 ```
 
+> If you're using Windows, you should clone using Symlink support, otherwise your tests will fail.
+>
+> To do this, you must've enabled Symlink support when installing Git for Windows.
+>
+> With it enabled, you must run your `git clone` command like this, with admin privileges:
+>
+> `git clone -c core.symlinks=true git@github.com:your-username/gb-studio.git`
+
 Install it:
 
 ```bash
