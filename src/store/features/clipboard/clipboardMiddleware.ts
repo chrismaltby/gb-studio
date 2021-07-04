@@ -61,9 +61,29 @@ import keyBy from "lodash/keyBy";
 import { patchEventArgs } from "lib/helpers/eventHelpers";
 import { EVENT_CALL_CUSTOM_EVENT } from "lib/compiler/eventTypes";
 
+const generateLocalVariableInsertActions = (
+  originalId: string,
+  newId: string,
+  variables: Variable[]
+) => {
+  const actions: AnyAction[] = [];
+  for (const variable of variables) {
+    if (variable.id.startsWith(originalId)) {
+      const variableId = variable.id.replace(originalId, newId);
+      const addVarAction = entitiesActions.renameVariable({
+        variableId,
+        name: variable.name,
+      });
+      actions.push(addVarAction);
+    }
+  }
+  return actions;
+};
+
 const generateActorInsertActions = (
   actor: Actor,
   scriptEventsLookup: Dictionary<ScriptEvent>,
+  variables: Variable[],
   sceneId: string,
   x: number,
   y: number
@@ -87,6 +107,13 @@ const generateActorInsertActions = (
         key
       )
     );
+    actions.push(
+      ...generateLocalVariableInsertActions(
+        actor.id,
+        addActorAction.payload.actorId,
+        variables
+      )
+    );
   });
   return actions;
 };
@@ -94,6 +121,7 @@ const generateActorInsertActions = (
 const generateTriggerInsertActions = (
   trigger: Trigger,
   scriptEventsLookup: Dictionary<ScriptEvent>,
+  variables: Variable[],
   sceneId: string,
   x: number,
   y: number
@@ -118,6 +146,13 @@ const generateTriggerInsertActions = (
       "script"
     )
   );
+  actions.push(
+    ...generateLocalVariableInsertActions(
+      trigger.id,
+      addTriggerAction.payload.triggerId,
+      variables
+    )
+  );
   return actions;
 };
 
@@ -126,6 +161,7 @@ const generateSceneInsertActions = (
   actors: Actor[],
   triggers: Trigger[],
   scriptEventsLookup: Dictionary<ScriptEvent>,
+  variables: Variable[],
   x: number,
   y: number
 ): AnyAction[] => {
@@ -148,11 +184,19 @@ const generateSceneInsertActions = (
       )
     );
   });
+  actions.push(
+    ...generateLocalVariableInsertActions(
+      scene.id,
+      addSceneAction.payload.sceneId,
+      variables
+    )
+  );
   for (const actor of actors) {
     actions.push(
       ...generateActorInsertActions(
         actor,
         scriptEventsLookup,
+        variables,
         addSceneAction.payload.sceneId,
         actor.x,
         actor.y
@@ -164,6 +208,7 @@ const generateSceneInsertActions = (
       ...generateTriggerInsertActions(
         trigger,
         scriptEventsLookup,
+        variables,
         addSceneAction.payload.sceneId,
         trigger.x,
         trigger.y
@@ -773,6 +818,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           const actions = generateTriggerInsertActions(
             trigger,
             scriptEventsLookup,
+            clipboard.data.variables,
             action.payload.sceneId,
             action.payload.x,
             action.payload.y
@@ -791,6 +837,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           const actions = generateActorInsertActions(
             actor,
             scriptEventsLookup,
+            clipboard.data.variables,
             action.payload.sceneId,
             action.payload.x,
             action.payload.y
@@ -811,6 +858,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             clipboard.data.actors,
             clipboard.data.triggers,
             scriptEventsLookup,
+            clipboard.data.variables,
             action.payload.x,
             action.payload.y
           );
