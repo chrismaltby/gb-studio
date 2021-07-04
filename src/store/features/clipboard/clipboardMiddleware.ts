@@ -216,6 +216,10 @@ const generateSceneInsertActions = (
     );
   }
 
+  actions.push(
+    editorActions.selectScene({ sceneId: addSceneAction.payload.sceneId })
+  );
+
   const actorMapping: Record<string, string> = actions
     .filter((action) => {
       return action.type === "entities/addActor";
