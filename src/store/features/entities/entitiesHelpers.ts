@@ -368,6 +368,14 @@ export const walkNormalisedSceneEvents = (
   });
 };
 
+export const walkNormalisedCustomEventEvents = (
+  customEvent: CustomEvent,
+  lookup: Dictionary<ScriptEvent>,
+  callback: (scriptEvent: ScriptEvent) => void
+) => {
+  walkNormalisedScriptEvents(customEvent.script, lookup, callback);
+};
+
 export const walkActorScriptsKeys = (
   callback: (scriptKey: ActorScriptKey) => void
 ) => {

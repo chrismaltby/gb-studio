@@ -30,6 +30,7 @@ import {
   ScriptEvent,
   SpriteAnimation,
   Trigger,
+  Variable,
 } from "../entities/entitiesTypes";
 import actions from "./clipboardActions";
 import entitiesActions from "../entities/entitiesActions";
@@ -50,6 +51,7 @@ import clipboardActions from "./clipboardActions";
 import {
   walkActorScriptsKeys,
   walkNormalisedActorEvents,
+  walkNormalisedCustomEventEvents,
   walkNormalisedSceneSpecificEvents,
   walkNormalisedScriptEvents,
   walkNormalisedTriggerEvents,
@@ -57,6 +59,7 @@ import {
 } from "../entities/entitiesHelpers";
 import keyBy from "lodash/keyBy";
 import { patchEventArgs } from "lib/helpers/eventHelpers";
+import { EVENT_CALL_CUSTOM_EVENT } from "lib/compiler/eventTypes";
 
 const generateActorInsertActions = (
   actor: Actor,
@@ -480,18 +483,42 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
     } else if (actions.copyScriptEvents.match(action)) {
       const state = store.getState();
       const scriptEventsLookup = scriptEventSelectors.selectEntities(state);
+      const customEventsLookup = customEventSelectors.selectEntities(state);
       const scriptEvents: ScriptEvent[] = [];
+      const customEvents: CustomEvent[] = [];
+      const customEventsSeen: Record<string, boolean> = {};
+      const addEvent = (scriptEvent: ScriptEvent) => {
+        scriptEvents.push(scriptEvent);
+        if (
+          scriptEvent.command === EVENT_CALL_CUSTOM_EVENT &&
+          scriptEvent.args?.customEventId
+        ) {
+          const customEvent =
+            customEventsLookup[scriptEvent.args?.customEventId as string];
+          if (customEvent && !customEventsSeen[customEvent.id]) {
+            customEventsSeen[customEvent.id] = true;
+            customEvents.push(customEvent);
+          }
+        }
+      };
+
       walkNormalisedScriptEvents(
         action.payload.scriptEventIds,
         scriptEventsLookup,
-        (scriptEvent) => {
-          scriptEvents.push(scriptEvent);
-        }
+        addEvent
       );
+      for (const customEvent of customEvents) {
+        walkNormalisedCustomEventEvents(
+          customEvent,
+          scriptEventsLookup,
+          addEvent
+        );
+      }
       copy({
         format: ClipboardTypeScriptEvents,
         data: {
           scriptEvents,
+          customEvents,
           script: action.payload.scriptEventIds,
         },
       });
@@ -499,25 +526,54 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
       const state = store.getState();
       const triggersLookup = triggerSelectors.selectEntities(state);
       const scriptEventsLookup = scriptEventSelectors.selectEntities(state);
+      const customEventsLookup = customEventSelectors.selectEntities(state);
       const triggers: Trigger[] = [];
       const scriptEvents: ScriptEvent[] = [];
+      const customEvents: CustomEvent[] = [];
+      const customEventsSeen: Record<string, boolean> = {};
+      const allVariables = variableSelectors.selectAll(state);
+      const variables = allVariables.filter((variable) => {
+        return action.payload.triggerIds.find((id) =>
+          variable.id.startsWith(id)
+        );
+      });
+
+      const addEvent = (scriptEvent: ScriptEvent) => {
+        scriptEvents.push(scriptEvent);
+        if (
+          scriptEvent.command === EVENT_CALL_CUSTOM_EVENT &&
+          scriptEvent.args?.customEventId
+        ) {
+          const customEvent =
+            customEventsLookup[scriptEvent.args?.customEventId as string];
+          if (customEvent && !customEventsSeen[customEvent.id]) {
+            customEventsSeen[customEvent.id] = true;
+            customEvents.push(customEvent);
+          }
+        }
+      };
+
       action.payload.triggerIds.forEach((triggerId) => {
         const trigger = triggersLookup[triggerId];
         if (trigger) {
           triggers.push(trigger);
-          walkNormalisedTriggerEvents(
-            trigger,
-            scriptEventsLookup,
-            (scriptEvent) => {
-              scriptEvents.push(scriptEvent);
-            }
-          );
+          walkNormalisedTriggerEvents(trigger, scriptEventsLookup, addEvent);
         }
       });
+      for (const customEvent of customEvents) {
+        walkNormalisedCustomEventEvents(
+          customEvent,
+          scriptEventsLookup,
+          addEvent
+        );
+      }
+
       copy({
         format: ClipboardTypeTriggers,
         data: {
           triggers,
+          customEvents,
+          variables,
           scriptEvents,
         },
       });
@@ -525,25 +581,52 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
       const state = store.getState();
       const actorsLookup = actorSelectors.selectEntities(state);
       const scriptEventsLookup = scriptEventSelectors.selectEntities(state);
+      const customEventsLookup = customEventSelectors.selectEntities(state);
       const actors: Actor[] = [];
       const scriptEvents: ScriptEvent[] = [];
+      const customEvents: CustomEvent[] = [];
+      const customEventsSeen: Record<string, boolean> = {};
+      const allVariables = variableSelectors.selectAll(state);
+      const variables = allVariables.filter((variable) => {
+        return action.payload.actorIds.find((id) => variable.id.startsWith(id));
+      });
+
+      const addEvent = (scriptEvent: ScriptEvent) => {
+        scriptEvents.push(scriptEvent);
+        if (
+          scriptEvent.command === EVENT_CALL_CUSTOM_EVENT &&
+          scriptEvent.args?.customEventId
+        ) {
+          const customEvent =
+            customEventsLookup[scriptEvent.args?.customEventId as string];
+          if (customEvent && !customEventsSeen[customEvent.id]) {
+            customEventsSeen[customEvent.id] = true;
+            customEvents.push(customEvent);
+          }
+        }
+      };
+
       action.payload.actorIds.forEach((actorId) => {
         const actor = actorsLookup[actorId];
         if (actor) {
           actors.push(actor);
-          walkNormalisedActorEvents(
-            actor,
-            scriptEventsLookup,
-            (scriptEvent) => {
-              scriptEvents.push(scriptEvent);
-            }
-          );
+          walkNormalisedActorEvents(actor, scriptEventsLookup, addEvent);
         }
       });
+      for (const customEvent of customEvents) {
+        walkNormalisedCustomEventEvents(
+          customEvent,
+          scriptEventsLookup,
+          addEvent
+        );
+      }
+
       copy({
         format: ClipboardTypeActors,
         data: {
           actors,
+          customEvents,
+          variables,
           scriptEvents,
         },
       });
@@ -553,25 +636,42 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
       const actorsLookup = actorSelectors.selectEntities(state);
       const triggersLookup = triggerSelectors.selectEntities(state);
       const scriptEventsLookup = scriptEventSelectors.selectEntities(state);
+      const customEventsLookup = customEventSelectors.selectEntities(state);
       const scenes: Scene[] = [];
       const actors: Actor[] = [];
       const triggers: Trigger[] = [];
+      const customEvents: CustomEvent[] = [];
+      const customEventsSeen: Record<string, boolean> = {};
       const scriptEvents: ScriptEvent[] = [];
+
+      const addEvent = (scriptEvent: ScriptEvent) => {
+        scriptEvents.push(scriptEvent);
+        if (
+          scriptEvent.command === EVENT_CALL_CUSTOM_EVENT &&
+          scriptEvent.args?.customEventId
+        ) {
+          const customEvent =
+            customEventsLookup[scriptEvent.args?.customEventId as string];
+          if (customEvent && !customEventsSeen[customEvent.id]) {
+            customEventsSeen[customEvent.id] = true;
+            customEvents.push(customEvent);
+          }
+        }
+      };
+
+      const entityIds = [...action.payload.sceneIds];
+
       action.payload.sceneIds.forEach((sceneId) => {
         const scene = scenesLookup[sceneId];
         if (scene) {
           scenes.push(scene);
+          entityIds.push(...scene.actors);
+          entityIds.push(...scene.triggers);
           scene.actors.forEach((actorId) => {
             const actor = actorsLookup[actorId];
             if (actor) {
               actors.push(actor);
-              walkNormalisedActorEvents(
-                actor,
-                scriptEventsLookup,
-                (scriptEvent) => {
-                  scriptEvents.push(scriptEvent);
-                }
-              );
+              walkNormalisedActorEvents(actor, scriptEventsLookup, addEvent);
             }
           });
           scene.triggers.forEach((triggerId) => {
@@ -581,27 +681,38 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
               walkNormalisedTriggerEvents(
                 trigger,
                 scriptEventsLookup,
-                (scriptEvent) => {
-                  scriptEvents.push(scriptEvent);
-                }
+                addEvent
               );
             }
           });
           walkNormalisedSceneSpecificEvents(
             scene,
             scriptEventsLookup,
-            (scriptEvent) => {
-              scriptEvents.push(scriptEvent);
-            }
+            addEvent
           );
         }
       });
+      for (const customEvent of customEvents) {
+        walkNormalisedCustomEventEvents(
+          customEvent,
+          scriptEventsLookup,
+          addEvent
+        );
+      }
+
+      const allVariables = variableSelectors.selectAll(state);
+      const variables = allVariables.filter((variable) => {
+        return entityIds.find((id) => variable.id.startsWith(id));
+      });
+
       copy({
         format: ClipboardTypeScenes,
         data: {
           scenes,
           actors,
           triggers,
+          variables,
+          customEvents,
           scriptEvents,
         },
       });

@@ -7,6 +7,8 @@ import {
   Trigger,
   Actor,
   Scene,
+  CustomEvent,
+  Variable,
 } from "../entities/entitiesTypes";
 
 export const ClipboardTypeScriptEvents = "gbstudio.scriptevents";
@@ -43,16 +45,21 @@ export type ClipboardPaletteIds = {
 export type ClipboardScriptEvents = {
   scriptEvents: ScriptEvent[];
   script: string[];
+  customEvents: CustomEvent[];
 };
 
 export type ClipboardTriggers = {
   triggers: Trigger[];
   scriptEvents: ScriptEvent[];
+  variables: Variable[];
+  customEvents: CustomEvent[];
 };
 
 export type ClipboardActors = {
   actors: Actor[];
   scriptEvents: ScriptEvent[];
+  variables: Variable[];
+  customEvents: CustomEvent[];
 };
 
 export type ClipboardScenes = {
@@ -60,6 +67,8 @@ export type ClipboardScenes = {
   actors: Actor[];
   triggers: Trigger[];
   scriptEvents: ScriptEvent[];
+  variables: Variable[];
+  customEvents: CustomEvent[];
 };
 
 export type ClipboardType =
