@@ -107,14 +107,14 @@ const generateActorInsertActions = (
         key
       )
     );
-    actions.push(
-      ...generateLocalVariableInsertActions(
-        actor.id,
-        addActorAction.payload.actorId,
-        variables
-      )
-    );
   });
+  actions.push(
+    ...generateLocalVariableInsertActions(
+      actor.id,
+      addActorAction.payload.actorId,
+      variables
+    )
+  );
   return actions;
 };
 
