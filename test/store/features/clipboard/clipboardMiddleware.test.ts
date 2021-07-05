@@ -6,19 +6,26 @@ import { dummyActor } from "../../../dummydata";
 import { MiddlewareAPI, Dispatch, AnyAction } from "@reduxjs/toolkit";
 import { clipboard } from "electron";
 import { mocked } from "ts-jest/utils";
+import { ClipboardTypeActors } from "../../../../src/store/features/clipboard/clipboardTypes";
 
 jest.mock("electron");
 
 const mockedClipboard = mocked(clipboard, true);
 
 test("Should be able to copy actor to clipboard", async () => {
-  mockedClipboard.writeText.mockClear();
+  mockedClipboard.writeBuffer.mockClear();
 
-  const store = ({
+  const store = {
     getState: () => ({
       project: {
         present: {
           entities: {
+            actors: {
+              entities: {
+                [dummyActor.id]: dummyActor,
+              },
+              ids: [dummyActor.id],
+            },
             customEvents: {
               entities: {},
               ids: [],
@@ -27,91 +34,105 @@ test("Should be able to copy actor to clipboard", async () => {
               entities: {},
               ids: [],
             },
+            scriptEvents: {
+              entities: {},
+              ids: [],
+            },
           },
         },
       },
     }),
     dispatch: jest.fn(),
-  } as unknown) as MiddlewareAPI<Dispatch<AnyAction>, RootState>;
+  } as unknown as MiddlewareAPI<Dispatch<AnyAction>, RootState>;
 
   const next = jest.fn();
-  const action = actions.copyActor({
-    ...dummyActor,
+  const action = actions.copyActors({
+    actorIds: [dummyActor.id],
   });
 
   middleware(store)(next)(action);
 
   expect(next).toHaveBeenCalledWith(action);
-  expect(mockedClipboard.writeText).toHaveBeenCalledWith(
-    JSON.stringify(
-      {
-        actor: dummyActor,
-        __type: "actor",
-      },
-      null,
-      4
+  expect(mockedClipboard.writeBuffer).toHaveBeenCalledWith(
+    ClipboardTypeActors,
+    Buffer.from(
+      JSON.stringify({
+        actors: [dummyActor],
+        customEvents: [],
+        variables: [],
+        scriptEvents: [],
+      }),
+      "utf8"
     )
   );
 });
 
 test("Should include referenced variables when copying actor", async () => {
-  mockedClipboard.writeText.mockClear();
+  mockedClipboard.writeBuffer.mockClear();
 
-  const store = ({
+  const store = {
     getState: () => ({
       project: {
         present: {
           entities: {
+            actors: {
+              entities: {
+                [dummyActor.id]: dummyActor,
+              },
+              ids: [dummyActor.id],
+            },
             customEvents: {
               entities: {},
               ids: [],
             },
             variables: {
               entities: {
-                actor1_L0: {
-                  id: "actor1_L0",
+                [`${dummyActor.id}_L0`]: {
+                  id: `${dummyActor.id}_L0`,
                   name: "Actor Local",
                 },
+                // eslint-disable-next-line camelcase
                 actor2_L0: {
                   id: "actor2_L0",
                   name: "Actor Local",
                 },
               },
-              ids: ["actor1_L0", "actor2_L0"],
+              ids: [`${dummyActor.id}_L0`, "actor2_L0"],
+            },
+            scriptEvents: {
+              entities: {},
+              ids: [],
             },
           },
         },
       },
     }),
     dispatch: jest.fn(),
-  } as unknown) as MiddlewareAPI<Dispatch<AnyAction>, RootState>;
+  } as unknown as MiddlewareAPI<Dispatch<AnyAction>, RootState>;
 
   const next = jest.fn();
-  const action = actions.copyActor({
-    ...dummyActor,
-    id: "actor1",
+  const action = actions.copyActors({
+    actorIds: [dummyActor.id],
   });
 
   middleware(store)(next)(action);
 
   expect(next).toHaveBeenCalledWith(action);
-  expect(mockedClipboard.writeText).toHaveBeenCalledWith(
-    JSON.stringify(
-      {
-        actor: {
-          ...dummyActor,
-          id: "actor1",
-        },
-        __type: "actor",
-        __variables: [
+  expect(mockedClipboard.writeBuffer).toHaveBeenCalledWith(
+    ClipboardTypeActors,
+    Buffer.from(
+      JSON.stringify({
+        actors: [dummyActor],
+        customEvents: [],
+        variables: [
           {
-            id: "actor1_L0",
+            id: `${dummyActor.id}_L0`,
             name: "Actor Local",
           },
         ],
-      },
-      null,
-      4
+        scriptEvents: [],
+      }),
+      "utf8"
     )
   );
 });

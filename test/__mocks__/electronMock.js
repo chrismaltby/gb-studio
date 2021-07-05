@@ -7,9 +7,10 @@ export const remote = {
 };
 
 export const clipboard = {
-  writeText: jest.fn()
+  writeText: jest.fn(),
+  writeBuffer: jest.fn(),
 };
 
 export default {
-  app: null
-}
+  app: null,
+};
