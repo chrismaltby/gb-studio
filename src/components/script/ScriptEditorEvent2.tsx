@@ -196,7 +196,7 @@ const ScriptEditorEvent = ({
         key: parentKey,
       })
     );
-  }, [dispatch, id]);
+  }, [dispatch, id, parentId, parentKey, parentType]);
 
   const onPasteValues = useCallback(() => {
     dispatch(
