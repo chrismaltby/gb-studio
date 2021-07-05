@@ -118,7 +118,7 @@ ___bank_testname = 255
 _testname::
         ; Text Dialogue
         VM_LOAD_TEXT            0
-        .asciz "\\001\\001\\002\\001@A\\nBC\\001\\003\\004\\001\\377\\002\\001HELLO WORLD"
+        .asciz "\\001\\001\\002\\002@A\\nBC\\001\\003\\004\\001\\377\\002\\001HELLO WORLD"
         VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, ^/(.UI_AUTO_SCROLL | .UI_DRAW_FRAME)/
         VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_TEXT_IN_SPEED
         VM_DISPLAY_TEXT
