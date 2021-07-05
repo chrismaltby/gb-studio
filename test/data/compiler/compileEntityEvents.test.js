@@ -4,6 +4,7 @@ import {
   EVENT_TEXT,
   EVENT_IF_TRUE,
 } from "../../../src/lib/compiler/eventTypes";
+import { getDummyCompiledFont } from "../../dummydata";
 
 jest.mock("../../../src/consts");
 
@@ -48,7 +49,8 @@ _testname::
 `);
 });
 
-test("should output text command", () => {
+test("should output text command", async () => {
+  const dummyCompiledFont = await getDummyCompiledFont();
   const input = [
     {
       command: EVENT_TEXT,
@@ -58,7 +60,7 @@ test("should output text command", () => {
     },
   ];
   const strings = ["HELLO WORLD"];
-  const output = compileEntityEvents("testname", input, { strings });
+  const output = compileEntityEvents("testname", input, { strings, fonts: [dummyCompiledFont] });
   expect(output).toEqual(`.include "vm.i"
 .include "data/game_globals.i"
 
@@ -83,7 +85,9 @@ _testname::
 `);
 });
 
-test("should output text with avatar command", () => {
+test("should output text with avatar command", async () => {
+  const dummyCompiledFont = await getDummyCompiledFont();
+
   const input = [
     {
       command: EVENT_TEXT,
@@ -99,7 +103,10 @@ test("should output text with avatar command", () => {
       id: 2,
     },
   ];
-  const output = compileEntityEvents("testname", input, { strings, avatars });
+
+  const fonts = [dummyCompiledFont];
+
+  const output = compileEntityEvents("testname", input, { strings, avatars, fonts });
   expect(output).toEqual(`.include "vm.i"
 .include "data/game_globals.i"
 
@@ -111,7 +118,7 @@ ___bank_testname = 255
 _testname::
         ; Text Dialogue
         VM_LOAD_TEXT            0
-        .asciz "\\001\\001\\002\\001@A\\nBC\\001\\003\\004\\001\\377\\002\\001HELLO WORLD"
+        .asciz "\\001\\001\\002\\002@A\\nBC\\001\\003\\004\\001\\377\\002\\001HELLO WORLD"
         VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, ^/(.UI_AUTO_SCROLL | .UI_DRAW_FRAME)/
         VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_TEXT_IN_SPEED
         VM_DISPLAY_TEXT
@@ -124,7 +131,9 @@ _testname::
 `);
 });
 
-test("should allow conditional statements", () => {
+test("should allow conditional statements", async () => {
+  const dummyCompiledFont = await getDummyCompiledFont();
+
   const input = [
     {
       command: EVENT_IF_TRUE,
@@ -153,7 +162,8 @@ test("should allow conditional statements", () => {
   ];
   const strings = ["HELLO WORLD", "TRUE PATH", "FALSE PATH"];
   const variables = ["1", "2", "3", "4"];
-  const output = compileEntityEvents("testname", input, { strings, variables });
+  const fonts = [dummyCompiledFont];
+  const output = compileEntityEvents("testname", input, { strings, variables, fonts });
   expect(output).toEqual(`.include "vm.i"
 .include "data/game_globals.i"
 
@@ -194,7 +204,8 @@ _testname::
 `);
 });
 
-test("should allow commands after conditional", () => {
+test("should allow commands after conditional", async () => {
+  const dummyCompiledFont = await getDummyCompiledFont();
   const input = [
     {
       command: EVENT_IF_TRUE,
@@ -229,7 +240,8 @@ test("should allow commands after conditional", () => {
   ];
   const strings = ["HELLO WORLD", "TRUE PATH", "FALSE PATH", "AFTER"];
   const variables = ["1", "2", "3", "4"];
-  const output = compileEntityEvents("testname", input, { strings, variables });
+  const fonts = [dummyCompiledFont];
+  const output = compileEntityEvents("testname", input, { strings, variables, fonts });
   expect(output).toEqual(`.include "vm.i"
 .include "data/game_globals.i"
 
