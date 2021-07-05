@@ -103,13 +103,11 @@ const SceneCollisions = ({
   }, [collisions, height, width])
 
   return (
-    <div className="SceneCollisions">
-      <canvas
-        ref={canvas}
-        width={width * TILE_SIZE}
-        height={height * TILE_SIZE}
-      />
-    </div>
+    <canvas
+      ref={canvas}
+      width={width * TILE_SIZE}
+      height={height * TILE_SIZE}
+    />
   );
 }
 
