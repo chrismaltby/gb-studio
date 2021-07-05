@@ -4,7 +4,7 @@ import events, {
   engineFieldUpdateEvents,
   engineFieldStoreEvents,
 } from "lib/events";
-import ScriptEventFormField from "./ScriptEventFormField2";
+import ScriptEventFormField from "./ScriptEventFormField";
 import {
   customEventSelectors,
   scriptEventSelectors,

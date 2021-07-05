@@ -2,7 +2,7 @@ import React from "react";
 import { ScriptEventParentType } from "store/features/entities/entitiesTypes";
 import styled from "styled-components";
 import AddButton from "./AddButton";
-import ScriptEditorEvent from "./ScriptEditorEvent2";
+import ScriptEditorEvent from "./ScriptEditorEvent";
 
 interface ScriptEditorProps {
   value: string[];

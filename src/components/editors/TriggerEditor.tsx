@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { clipboard } from "electron";
 import { useDispatch, useSelector } from "react-redux";
-import ScriptEditor from "../script/ScriptEditor2";
+import ScriptEditor from "../script/ScriptEditor";
 import castEventValue from "lib/helpers/castEventValue";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import l10n from "lib/helpers/l10n";
 import { WorldEditor } from "./WorldEditor";
-import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton2";
+import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
 import {
   triggerSelectors,
   sceneSelectors,

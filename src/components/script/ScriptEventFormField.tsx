@@ -5,7 +5,7 @@ import { scriptEventSelectors } from "store/features/entities/entitiesState";
 import { ScriptEventFieldSchema } from "store/features/entities/entitiesTypes";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { ArrowIcon } from "ui/icons/Icons";
-import ScriptEventFormInput from "./ScriptEventFormInput2";
+import ScriptEventFormInput from "./ScriptEventFormInput";
 import { FormField, ToggleableFormField } from "ui/form/FormLayout";
 import {
   ScriptEventField,

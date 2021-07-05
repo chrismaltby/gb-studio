@@ -1,11 +1,11 @@
 import React, { useCallback, useState } from "react";
 import { clipboard } from "electron";
 import { useDispatch, useSelector } from "react-redux";
-import ScriptEditor from "../script/ScriptEditor2";
+import ScriptEditor from "../script/ScriptEditor";
 import castEventValue from "lib/helpers/castEventValue";
 import l10n from "lib/helpers/l10n";
 import { WorldEditor } from "./WorldEditor";
-import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton2";
+import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
 import BackgroundWarnings from "../world/BackgroundWarnings";
 import { sceneSelectors } from "store/features/entities/entitiesState";
 import editorActions from "store/features/editor/editorActions";

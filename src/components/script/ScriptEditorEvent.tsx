@@ -34,7 +34,7 @@ import {
 } from "ui/scripting/ScriptEvents";
 import { ArrowIcon, CheckIcon, CommentIcon } from "ui/icons/Icons";
 import { FixedSpacer } from "ui/spacing/Spacing";
-import ScriptEventForm from "./ScriptEventForm2";
+import ScriptEventForm from "./ScriptEventForm";
 import l10n from "lib/helpers/l10n";
 import events from "lib/events";
 import { ScriptEditorEventHelper } from "./ScriptEditorEventHelper";

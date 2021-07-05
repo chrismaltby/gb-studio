@@ -1,11 +1,10 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { clipboard } from "electron";
 import { connect } from "react-redux";
 import throttle from "lodash/throttle";
 import Scene from "./Scene";
 import WorldHelp from "./WorldHelp";
-import Connections from "./Connections2";
+import Connections from "./Connections";
 import {
   MIDDLE_MOUSE,
   TOOL_COLORS,
