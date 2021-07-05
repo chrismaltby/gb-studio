@@ -161,7 +161,11 @@ class Scene extends Component {
       labelColor,
     } = scene;
 
-    const { tileColors } = image;
+    /**
+     * Image may potentially be `undefined` if a user has selected an image,
+     * then deleted it.
+     */
+    const { tileColors } = image || {};
 
     if (!visible) {
       return null;
