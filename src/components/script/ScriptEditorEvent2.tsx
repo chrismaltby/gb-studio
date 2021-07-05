@@ -326,6 +326,7 @@ const ScriptEditorEvent = ({
   }
 
   const isOpen = scriptEvent.args && !scriptEvent.args.__collapse;
+  const isConditional = events[command]?.isConditional ?? false;
 
   return (
     <ScriptEventWrapper
@@ -356,7 +357,7 @@ const ScriptEditorEvent = ({
         {isOverCurrent && <ScriptEventPlaceholder />}
         <div ref={dragRef}>
           <ScriptEventHeader
-            conditional={!!scriptEvent.children}
+            conditional={isConditional}
             comment={Boolean(commented || isComment)}
             nestLevel={nestLevel}
             altBg={index % 2 === 0}
@@ -458,12 +459,12 @@ const ScriptEditorEvent = ({
         </div>
         {visible && isOpen && !commented && (
           <ScriptEventFormWrapper
-            conditional={!!scriptEvent.children}
+            conditional={isConditional}
             nestLevel={nestLevel}
             altBg={index % 2 === 0}
             data-handler-id={handlerId}
           >
-            {!!scriptEvent.children && (
+            {isConditional && (
               <ScriptEventFormNest
                 title={String(hoverName || "")}
                 onClick={toggleOpen}

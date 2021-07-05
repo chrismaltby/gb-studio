@@ -40,6 +40,8 @@ const loadPlugin = (projectRoot, path) => {
     if (!plugin.id) {
       throw new Error(`Event plugin ${path} is missing id`);
     }
+    plugin.isConditional =
+      plugin.fields && !!plugin.fields.find((f) => f.type === "events");
     plugin.plugin = Path.relative(`${projectRoot}/plugins`, path).split(
       Path.sep
     )[0];
