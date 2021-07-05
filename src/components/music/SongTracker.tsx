@@ -205,7 +205,6 @@ export const SongTracker = ({
 
       if (selectedCell % 4 === 0) {
         if (e.ctrlKey) {
-          console.log(e.ctrlKey, e.shiftKey, e.key);
           if (e.shiftKey) {
             if (e.key === "Q") return transposeNoteCell(12);
             if (e.key === "A") return transposeNoteCell(-12);

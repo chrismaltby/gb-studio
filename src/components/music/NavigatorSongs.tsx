@@ -147,7 +147,6 @@ export const NavigatorSongs = ({
   const selectedSong = songsLookup[selectedSongId];
 
   useEffect(() => {
-    console.log("Set items", selectedSongId, allSongs, modified);
     setItems(
       allSongs
         .filter(ugeFilter)

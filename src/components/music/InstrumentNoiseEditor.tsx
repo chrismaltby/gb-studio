@@ -8,6 +8,7 @@ import { CheckboxField } from "ui/form/CheckboxField";
 import { FormDivider, FormRow } from "ui/form/FormLayout";
 import { SliderField } from "ui/form/SliderField";
 import { InstrumentLengthForm } from "./InstrumentLengthForm";
+import { NoiseMacroEditorForm } from "./NoiseMacroEditorForm";
 
 interface InstrumentNoiseEditorProps {
   id: string;
@@ -110,6 +111,9 @@ export const InstrumentNoiseEditor = ({
             onChangeField("bit_count")(value);
           }}
         />
+      </FormRow>
+      <FormRow>
+        <NoiseMacroEditorForm macros={[0, 1, 2, 3, 4, 5]} />
       </FormRow>
     </>
   );
