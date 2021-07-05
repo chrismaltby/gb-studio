@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import {
   COLLISION_TOP,
   COLLISION_ALL,
@@ -21,9 +21,9 @@ const SceneCollisions = ({
   height,
   collisions,
 }: SceneCollisionsProps) => {
-  const canvas = React.useRef<HTMLCanvasElement>(null);
+  const canvas = useRef<HTMLCanvasElement>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (canvas.current) {
       // eslint-disable-next-line no-self-assign
       canvas.current.width = canvas.current.width; // Clear canvas
