@@ -5,13 +5,7 @@ import {
   actorSelectors,
   triggerSelectors,
 } from "../entities/entitiesState";
-import {
-  Actor,
-  Trigger,
-  Scene,
-  ScriptEvent,
-  ScriptEventParentType,
-} from "../entities/entitiesTypes";
+import { ScriptEventParentType } from "../entities/entitiesTypes";
 import { RootState } from "store/configureStore";
 import editorActions from "../editor/editorActions";
 import { pasteAny } from "./clipboardHelpers";
@@ -23,11 +17,6 @@ import {
 
 const fetchClipboard = createAction("clipboard/fetch");
 const copyText = createAction<string>("clipboard/copyText");
-const copyActor = createAction<Actor>("clipboard/copyActor");
-const copyTrigger = createAction<Trigger>("clipboard/copyTrigger");
-const copyScene = createAction<Scene>("clipboard/copyScene");
-const copyEvent = createAction<ScriptEvent>("clipboard/copyEvent");
-const copyScript = createAction<ScriptEvent[]>("clipboard/copyScript");
 const copyScriptEvents = createAction<{
   scriptEventIds: string[];
 }>("clipboard/copyScriptEvents");
@@ -177,11 +166,6 @@ export default {
   ...actions,
   fetchClipboard,
   copyText,
-  copyActor,
-  copyTrigger,
-  copyScene,
-  copyEvent,
-  copyScript,
   copyScriptEvents,
   copyTriggers,
   copyActors,

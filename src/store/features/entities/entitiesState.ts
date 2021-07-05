@@ -17,27 +17,13 @@ import {
   DRAG_TRIGGER,
   DRAG_ACTOR,
 } from "../../../consts";
-import {
-  regenerateEventIds,
-  patchEvents,
-  mapEvents,
-  isVariableField,
-  isPropertyField,
-  walkEvents,
-  replaceEventActorIds,
-} from "lib/helpers/eventSystem";
+import { isVariableField, isPropertyField } from "lib/helpers/eventSystem";
 import clamp from "lib/helpers/clamp";
 import { RootState } from "store/configureStore";
 import settingsActions from "../settings/settingsActions";
 import uuid from "uuid";
-import {
-  replaceInvalidCustomEventVariables,
-  replaceInvalidCustomEventActors,
-  replaceInvalidCustomEventProperties,
-} from "lib/compiler/helpers";
-import { EVENT_CALL_CUSTOM_EVENT, EVENT_END } from "lib/compiler/eventTypes";
 import { paint, paintLine, floodFill } from "lib/helpers/paint";
-import { Brush, EditorSelectionType } from "../editor/editorState";
+import { Brush } from "../editor/editorState";
 import projectActions from "../project/projectActions";
 import {
   EntitiesState,
@@ -54,7 +40,6 @@ import {
   CustomEventVariable,
   CustomEventActor,
   ProjectEntitiesData,
-  SceneData,
   MusicSettings,
   EngineFieldValue,
   Metasprite,
@@ -202,162 +187,11 @@ const removeSelectedEntity =
     }
   };
 
-const editDestinationPosition = (
-  eventId: string,
-  sceneId: string,
-  selectionType: EditorSelectionType,
-  id: string,
-  destSceneId: string,
-  x: number,
-  y: number
-) => {
-  if (selectionType === "actor") {
-    return actions.editActorEventDestinationPosition({
-      eventId,
-      actorId: id,
-      destSceneId,
-      x,
-      y,
-    });
-  }
-  if (selectionType === "trigger") {
-    return actions.editTriggerEventDestinationPosition({
-      eventId,
-      triggerId: id,
-      destSceneId,
-      x,
-      y,
-    });
-  }
-  return actions.editSceneEventDestinationPosition({
-    eventId,
-    sceneId,
-    destSceneId,
-    x,
-    y,
-  });
-};
-
 const first = <T>(array: T[]): T | undefined => {
   if (array[0]) {
     return array[0];
   }
   return undefined;
-};
-
-const mapActorEvents = (
-  actor: Actor,
-  fn: (event: ScriptEvent) => ScriptEvent
-): Actor => {
-  return {
-    ...actor,
-    script: mapEvents(actor.script || [], fn),
-    startScript: mapEvents(actor.startScript || [], fn),
-    updateScript: mapEvents(actor.updateScript || [], fn),
-    hit1Script: mapEvents(actor.hit1Script || [], fn),
-    hit2Script: mapEvents(actor.hit2Script || [], fn),
-    hit3Script: mapEvents(actor.hit3Script || [], fn),
-  };
-};
-
-const mapTriggerEvents = (
-  trigger: Trigger,
-  fn: (event: ScriptEvent) => ScriptEvent
-): Trigger => {
-  return {
-    ...trigger,
-    script: mapEvents(trigger.script || [], fn),
-  };
-};
-
-const mapSceneEvents = (
-  scene: Scene,
-  fn: (event: ScriptEvent) => ScriptEvent
-): Scene => {
-  return {
-    ...scene,
-    script: mapEvents(scene.script || [], fn),
-    playerHit1Script: mapEvents(scene.playerHit1Script || [], fn),
-    playerHit2Script: mapEvents(scene.playerHit2Script || [], fn),
-    playerHit3Script: mapEvents(scene.playerHit3Script || [], fn),
-  };
-};
-
-const mapActorsEvents = (
-  actors: Actor[],
-  fn: (event: ScriptEvent) => ScriptEvent
-): Actor[] => {
-  return actors.map((actor) => mapActorEvents(actor, fn));
-};
-
-const mapTriggersEvents = (
-  triggers: Trigger[],
-  fn: (event: ScriptEvent) => ScriptEvent
-): Trigger[] => {
-  return triggers.map((trigger) => mapTriggerEvents(trigger, fn));
-};
-
-const mapScenesEvents = (
-  scenes: Scene[],
-  fn: (event: ScriptEvent) => ScriptEvent
-): Scene[] => {
-  return scenes.map((scene) => mapSceneEvents(scene, fn));
-};
-
-const patchCustomEventCallArgs = (
-  customEventId: string,
-  script: ScriptEvent[],
-  variables: Dictionary<CustomEventVariable>,
-  actors: Dictionary<CustomEventActor>
-) => {
-  /*
-  const usedVariables = Object.keys(variables).map((i) => `$variable[${i}]$`);
-  const usedActors = Object.keys(actors).map((i) => `$actor[${i}]$`);
-
-  return (event: ScriptEvent): ScriptEvent => {
-    if (event.command !== EVENT_CALL_CUSTOM_EVENT) {
-      return event;
-    }
-    if (event.args.customEventId !== customEventId) {
-      return event;
-    }
-    const newArgs = Object.assign({ ...event.args });
-    Object.keys(newArgs).forEach((k) => {
-      if (
-        k.startsWith("$") &&
-        !usedVariables.find((v) => v === k) &&
-        !usedActors.find((a) => a === k)
-      ) {
-        delete newArgs[k];
-      }
-    });
-    return {
-      ...event,
-      args: newArgs,
-      children: {
-        script: [...script],
-      },
-    };
-  };
-  */
-};
-
-const patchCustomEventCallName = (customEventId: string, name: string) => {
-  return (event: ScriptEvent): ScriptEvent => {
-    if (event.command !== EVENT_CALL_CUSTOM_EVENT) {
-      return event;
-    }
-    if (event.args?.customEventId !== customEventId) {
-      return event;
-    }
-    return {
-      ...event,
-      args: {
-        ...event.args,
-        __name: name,
-      },
-    };
-  };
 };
 
 /**************************************************************************
@@ -877,51 +711,6 @@ const editScene: CaseReducer<
   });
 };
 
-const editSceneEventDestinationPosition: CaseReducer<
-  EntitiesState,
-  PayloadAction<{
-    sceneId: string;
-    eventId: string;
-    destSceneId: string;
-    x: number;
-    y: number;
-  }>
-> = (state, action) => {
-  const scene = localSceneSelectors.selectById(state, action.payload.sceneId);
-  if (!scene) {
-    return;
-  }
-
-  const updatedScene = mapSceneEvents(scene, (event) => {
-    if (event.id !== action.payload.eventId) {
-      return event;
-    }
-    return {
-      ...event,
-      args: {
-        ...event.args,
-        sceneId: action.payload.destSceneId,
-        x: action.payload.x,
-        y: action.payload.y,
-      },
-    };
-  });
-
-  const patch = (({
-    script,
-    playerHit1Script,
-    playerHit2Script,
-    playerHit3Script,
-  }) => ({ script, playerHit1Script, playerHit2Script, playerHit3Script }))(
-    updatedScene
-  );
-
-  scenesAdapter.updateOne(state.scenes, {
-    id: action.payload.sceneId,
-    changes: patch,
-  });
-};
-
 const removeScene: CaseReducer<
   EntitiesState,
   PayloadAction<{
@@ -993,22 +782,9 @@ const addActor: CaseReducer<
     y: clamp(action.payload.y, 0, scene.height - 1),
   };
 
-  addActorToScene(state, scene, newActor, {});
-};
-
-const addActorToScene = (
-  state: EntitiesState,
-  scene: Scene,
-  actor: Actor,
-  idReplacements: Dictionary<string>
-) => {
-  const fixedActor = mapActorEvents(actor, (event) =>
-    replaceEventActorIds(idReplacements, regenerateEventIds(event))
-  );
-
   // Add to scene
-  scene.actors = ([] as string[]).concat(scene.actors, fixedActor.id);
-  actorsAdapter.addOne(state.actors, fixedActor);
+  scene.actors = ([] as string[]).concat(scene.actors, newActor.id);
+  actorsAdapter.addOne(state.actors, newActor);
 };
 
 const editActor: CaseReducer<
@@ -1083,58 +859,6 @@ const moveActor: CaseReducer<
       x: clamp(action.payload.x, 0, newScene.width - 2),
       y: clamp(action.payload.y, 0, newScene.height - 1),
     },
-  });
-};
-
-const editActorEventDestinationPosition: CaseReducer<
-  EntitiesState,
-  PayloadAction<{
-    actorId: string;
-    eventId: string;
-    destSceneId: string;
-    x: number;
-    y: number;
-  }>
-> = (state, action) => {
-  const actor = localActorSelectors.selectById(state, action.payload.actorId);
-  if (!actor) {
-    return;
-  }
-
-  const updatedActor = mapActorEvents(actor, (event) => {
-    if (event.id !== action.payload.eventId) {
-      return event;
-    }
-    return {
-      ...event,
-      args: {
-        ...event.args,
-        sceneId: action.payload.destSceneId,
-        x: action.payload.x,
-        y: action.payload.y,
-      },
-    };
-  });
-
-  const patch = (({
-    script,
-    startScript,
-    updateScript,
-    hit1Script,
-    hit2Script,
-    hit3Script,
-  }) => ({
-    script,
-    startScript,
-    updateScript,
-    hit1Script,
-    hit2Script,
-    hit3Script,
-  }))(updatedActor);
-
-  actorsAdapter.updateOne(state.actors, {
-    id: action.payload.actorId,
-    changes: patch,
   });
 };
 
@@ -1236,22 +960,8 @@ const addTrigger: CaseReducer<
   };
 
   // Add to scene
-  addTriggerToScene(state, scene, newTrigger, {});
-};
-
-const addTriggerToScene = (
-  state: EntitiesState,
-  scene: Scene,
-  trigger: Trigger,
-  idReplacements: Dictionary<string>
-) => {
-  const fixedTrigger = mapTriggerEvents(trigger, (event) =>
-    replaceEventActorIds(idReplacements, regenerateEventIds(event))
-  );
-
-  // Add to scene
-  scene.triggers = ([] as string[]).concat(scene.triggers, fixedTrigger.id);
-  triggersAdapter.addOne(state.triggers, fixedTrigger);
+  scene.triggers = ([] as string[]).concat(scene.triggers, newTrigger.id);
+  triggersAdapter.addOne(state.triggers, newTrigger);
 };
 
 const editTrigger: CaseReducer<
@@ -1349,35 +1059,6 @@ const resizeTrigger: CaseReducer<
       y: Math.min(action.payload.y, action.payload.startY),
       width: Math.abs(action.payload.x - action.payload.startX) + 1,
       height: Math.abs(action.payload.y - action.payload.startY) + 1,
-    },
-  });
-};
-
-const editTriggerEventDestinationPosition: CaseReducer<
-  EntitiesState,
-  PayloadAction<{
-    triggerId: string;
-    eventId: string;
-    destSceneId: string;
-    x: number;
-    y: number;
-  }>
-> = (state, action) => {
-  const trigger = localTriggerSelectors.selectById(
-    state,
-    action.payload.triggerId
-  );
-  if (!trigger) {
-    return;
-  }
-  triggersAdapter.updateOne(state.triggers, {
-    id: action.payload.triggerId,
-    changes: {
-      script: patchEvents(trigger.script, action.payload.eventId, {
-        sceneId: action.payload.destSceneId,
-        x: action.payload.x,
-        y: action.payload.y,
-      }),
     },
   });
 };
@@ -2844,7 +2525,6 @@ const entitiesSlice = createSlice({
     editScene,
     removeScene,
     moveScene,
-    editSceneEventDestinationPosition,
     paintCollision,
     paintColor,
 
@@ -2874,7 +2554,6 @@ const entitiesSlice = createSlice({
     removeActor,
     removeActorAt,
     moveActor,
-    editActorEventDestinationPosition,
 
     /**************************************************************************
      * Triggers
@@ -2905,7 +2584,6 @@ const entitiesSlice = createSlice({
     removeTriggerAt,
     moveTrigger,
     resizeTrigger,
-    editTriggerEventDestinationPosition,
 
     /**************************************************************************
      * Sprites
@@ -3145,7 +2823,6 @@ export const { reducer } = entitiesSlice;
 export const actions = {
   ...entitiesSlice.actions,
   moveSelectedEntity,
-  editDestinationPosition,
   removeSelectedEntity,
 };
 
