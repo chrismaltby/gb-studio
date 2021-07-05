@@ -709,9 +709,11 @@ const editorSlice = createSlice({
         state.selectedMetaspriteTileIds = [];
       })
       .addCase(entitiesActions.addCustomEvent, (state, action) => {
-        state.type = "customEvent";
-        state.scene = "";
-        state.entityId = action.payload.customEventId;
+        if (!action.payload.defaults) {
+          state.type = "customEvent";
+          state.scene = "";
+          state.entityId = action.payload.customEventId;
+        }
       })
       .addCase(entitiesActions.moveActor, (state, action) => {
         if (state.scene !== action.payload.newSceneId) {
