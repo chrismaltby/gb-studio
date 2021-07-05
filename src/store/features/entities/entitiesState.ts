@@ -2295,7 +2295,7 @@ const removePalette: CaseReducer<
 
 const addCustomEvent: CaseReducer<
   EntitiesState,
-  PayloadAction<{ customEventId: string }>
+  PayloadAction<{ customEventId: string; defaults?: Partial<CustomEvent> }>
 > = (state, action) => {
   const newCustomEvent: CustomEvent = {
     id: action.payload.customEventId,
@@ -2303,6 +2303,7 @@ const addCustomEvent: CaseReducer<
     description: "",
     variables: {},
     actors: {},
+    ...(action.payload.defaults || {}),
     script: [],
   };
   customEventsAdapter.addOne(state.customEvents, newCustomEvent);
@@ -3043,10 +3044,14 @@ const entitiesSlice = createSlice({
 
     addCustomEvent: {
       reducer: addCustomEvent,
-      prepare: () => {
+      prepare: (payload?: {
+        customEventId?: string;
+        defaults?: Partial<CustomEvent>;
+      }) => {
         return {
           payload: {
-            customEventId: uuid(),
+            customEventId: payload?.customEventId ?? uuid(),
+            defaults: payload?.defaults,
           },
         };
       },

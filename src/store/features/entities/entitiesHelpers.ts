@@ -1,4 +1,5 @@
 import { normalize, denormalize, schema, NormalizedSchema } from "normalizr";
+import isEqual from "lodash/isEqual";
 import {
   ProjectEntitiesData,
   EntitiesState,
@@ -386,6 +387,54 @@ export const walkSceneScriptsKeys = (
   callback: (scriptKey: SceneScriptKey) => void
 ) => {
   sceneScriptKeys.forEach((key) => callback(key));
+};
+
+export const isNormalisedScriptEqual = (
+  idsA: string[] = [],
+  lookupA: Dictionary<ScriptEvent>,
+  idsB: string[] = [],
+  lookupB: Dictionary<ScriptEvent>
+) => {
+  const scriptAEvents: { args?: Record<string, unknown>; command: string }[] =
+    [];
+  const scriptBEvents: { args?: Record<string, unknown>; command: string }[] =
+    [];
+  walkNormalisedScriptEvents(idsA, lookupA, (scriptEvent) => {
+    const { args, command } = scriptEvent;
+    scriptAEvents.push({ args, command });
+  });
+  walkNormalisedScriptEvents(idsB, lookupB, (scriptEvent) => {
+    const { args, command } = scriptEvent;
+    scriptBEvents.push({ args, command });
+  });
+  return isEqual(scriptAEvents, scriptBEvents);
+};
+
+export const isCustomEventEqual = (
+  customEventA: CustomEvent,
+  lookupA: Dictionary<ScriptEvent>,
+  customEventB: CustomEvent,
+  lookupB: Dictionary<ScriptEvent>
+) => {
+  const compareA = {
+    ...customEventA,
+    script: undefined,
+    id: undefined,
+  };
+  const compareB = {
+    ...customEventB,
+    script: undefined,
+    id: undefined,
+  };
+  if (!isEqual(compareA, compareB)) {
+    return false;
+  }
+  return isNormalisedScriptEqual(
+    customEventA.script,
+    lookupA,
+    customEventB.script,
+    lookupB
+  );
 };
 
 export const actorName = (actor: Actor, actorIndex: number) => {

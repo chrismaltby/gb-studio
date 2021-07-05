@@ -49,6 +49,8 @@ import {
 } from "./clipboardTypes";
 import clipboardActions from "./clipboardActions";
 import {
+  customEventName,
+  isCustomEventEqual,
   walkActorScriptsKeys,
   walkNormalisedActorEvents,
   walkNormalisedCustomEventEvents,
@@ -77,6 +79,69 @@ const generateLocalVariableInsertActions = (
       actions.push(addVarAction);
     }
   }
+  return actions;
+};
+
+const generateCustomEventInsertActions = (
+  customEvent: CustomEvent,
+  scriptEventsLookup: Dictionary<ScriptEvent>,
+  existingCustomEvents: CustomEvent[],
+  existingScriptEventsLookup: Dictionary<ScriptEvent>
+): AnyAction[] => {
+  const actions: AnyAction[] = [];
+
+  const existingEvent = existingCustomEvents.find(
+    (e) => e.id === customEvent.id
+  );
+  if (
+    existingEvent &&
+    isCustomEventEqual(
+      customEvent,
+      scriptEventsLookup,
+      existingEvent,
+      existingScriptEventsLookup
+    )
+  ) {
+    return [];
+  }
+
+  if (existingEvent) {
+    const existingEventIndex = existingCustomEvents.indexOf(existingEvent);
+    const existingName = customEventName(existingEvent, existingEventIndex);
+    const cancel = confirmReplaceCustomEvent(existingName);
+    if (cancel) {
+      return [];
+    }
+  }
+
+  if (!existingEvent) {
+    const addCustomEventAction = entitiesActions.addCustomEvent({
+      customEventId: customEvent.id,
+      defaults: customEvent,
+    });
+    actions.push(addCustomEventAction);
+  } else {
+    const addCustomEventAction = entitiesActions.editCustomEvent({
+      customEventId: customEvent.id,
+      changes: {
+        ...customEvent,
+        script: [],
+      },
+    });
+    actions.push(addCustomEventAction);
+  }
+
+  const scriptEventIds = customEvent.script;
+  actions.push(
+    ...generateScriptEventInsertActions(
+      scriptEventIds,
+      scriptEventsLookup,
+      customEvent.id,
+      "customEvent",
+      "script"
+    )
+  );
+
   return actions;
 };
 
@@ -771,9 +836,13 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         return next(action);
       }
       if (clipboard.format === ClipboardTypeScriptEvents) {
+        const state = store.getState();
         const scriptEventIds = clipboard.data.script;
         const scriptEvents = clipboard.data.scriptEvents;
         const scriptEventsLookup = keyBy(scriptEvents, "id");
+        const existingCustomEvents = customEventSelectors.selectAll(state);
+        const existingScriptEventsLookup =
+          scriptEventSelectors.selectEntities(state);
         const insertActions = generateScriptEventInsertActions(
           scriptEventIds,
           scriptEventsLookup,
@@ -785,6 +854,17 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         );
         for (const action of insertActions) {
           store.dispatch(action);
+        }
+        for (const customEvent of clipboard.data.customEvents) {
+          const actions = generateCustomEventInsertActions(
+            customEvent,
+            scriptEventsLookup,
+            existingCustomEvents,
+            existingScriptEventsLookup
+          );
+          for (const action of actions) {
+            store.dispatch(action);
+          }
         }
       }
     } else if (actions.pasteScriptEventValues.match(action)) {
@@ -816,8 +896,12 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
     } else if (actions.pasteTriggerAt.match(action)) {
       const clipboard = pasteAny();
       if (clipboard && clipboard.format === ClipboardTypeTriggers) {
+        const state = store.getState();
         const scriptEvents = clipboard.data.scriptEvents;
         const scriptEventsLookup = keyBy(scriptEvents, "id");
+        const existingCustomEvents = customEventSelectors.selectAll(state);
+        const existingScriptEventsLookup =
+          scriptEventSelectors.selectEntities(state);
         for (const trigger of clipboard.data.triggers) {
           const actions = generateTriggerInsertActions(
             trigger,
@@ -831,12 +915,27 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             store.dispatch(action);
           }
         }
+        for (const customEvent of clipboard.data.customEvents) {
+          const actions = generateCustomEventInsertActions(
+            customEvent,
+            scriptEventsLookup,
+            existingCustomEvents,
+            existingScriptEventsLookup
+          );
+          for (const action of actions) {
+            store.dispatch(action);
+          }
+        }
       }
     } else if (actions.pasteActorAt.match(action)) {
       const clipboard = pasteAny();
       if (clipboard && clipboard.format === ClipboardTypeActors) {
+        const state = store.getState();
         const scriptEvents = clipboard.data.scriptEvents;
         const scriptEventsLookup = keyBy(scriptEvents, "id");
+        const existingCustomEvents = customEventSelectors.selectAll(state);
+        const existingScriptEventsLookup =
+          scriptEventSelectors.selectEntities(state);
         for (const actor of clipboard.data.actors) {
           const actions = generateActorInsertActions(
             actor,
@@ -850,12 +949,27 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             store.dispatch(action);
           }
         }
+        for (const customEvent of clipboard.data.customEvents) {
+          const actions = generateCustomEventInsertActions(
+            customEvent,
+            scriptEventsLookup,
+            existingCustomEvents,
+            existingScriptEventsLookup
+          );
+          for (const action of actions) {
+            store.dispatch(action);
+          }
+        }
       }
     } else if (actions.pasteSceneAt.match(action)) {
       const clipboard = pasteAny();
       if (clipboard && clipboard.format === ClipboardTypeScenes) {
+        const state = store.getState();
         const scriptEvents = clipboard.data.scriptEvents;
         const scriptEventsLookup = keyBy(scriptEvents, "id");
+        const existingCustomEvents = customEventSelectors.selectAll(state);
+        const existingScriptEventsLookup =
+          scriptEventSelectors.selectEntities(state);
         for (const scene of clipboard.data.scenes) {
           const actions = generateSceneInsertActions(
             scene,
@@ -865,6 +979,17 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             clipboard.data.variables,
             action.payload.x,
             action.payload.y
+          );
+          for (const action of actions) {
+            store.dispatch(action);
+          }
+        }
+        for (const customEvent of clipboard.data.customEvents) {
+          const actions = generateCustomEventInsertActions(
+            customEvent,
+            scriptEventsLookup,
+            existingCustomEvents,
+            existingScriptEventsLookup
           );
           for (const action of actions) {
             store.dispatch(action);
@@ -1086,7 +1211,6 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         }
       }
     }
-
     next(action);
   };
 
