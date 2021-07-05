@@ -11,15 +11,15 @@ import {
 const TILE_SIZE = 8;
 
 interface SceneCollisionsProps {
-  width: number,
-  height: number,
-  collisions: number[]
+  width: number;
+  height: number;
+  collisions: number[];
 }
 
 const SceneCollisions = ({
   width,
   height,
-  collisions
+  collisions,
 }: SceneCollisionsProps) => {
   const canvas = React.useRef<HTMLCanvasElement>(null);
 
@@ -100,7 +100,7 @@ const SceneCollisions = ({
         }
       }
     }
-  }, [collisions, height, width])
+  }, [collisions, height, width]);
 
   return (
     <canvas
@@ -109,6 +109,6 @@ const SceneCollisions = ({
       height={height * TILE_SIZE}
     />
   );
-}
+};
 
 export default SceneCollisions;
