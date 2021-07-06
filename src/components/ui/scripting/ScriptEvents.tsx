@@ -276,21 +276,21 @@ export const ScriptEventFormWrapper = styled.div<ScriptEventFormWrapperProps>`
   ${(props) =>
     !props.altBg && props.conditional && props.nestLevel % 4 === 0
       ? css`
-          border-left: 2px solid
+          border-left: 10px solid
             ${props.theme.colors.scripting.header.nest1Background};
         `
       : ""}
   ${(props) =>
     !props.altBg && props.conditional && props.nestLevel % 4 === 1
       ? css`
-          border-left: 2px solid
+          border-left: 10px solid
             ${props.theme.colors.scripting.header.nest2Background};
         `
       : ""}
   ${(props) =>
     !props.altBg && props.conditional && props.nestLevel % 4 === 2
       ? css`
-          border-left: 2px solid
+          border-left: 10px solid
             ${props.theme.colors.scripting.header.nest3Background};
         `
       : ""}
@@ -298,7 +298,7 @@ export const ScriptEventFormWrapper = styled.div<ScriptEventFormWrapperProps>`
   ${(props) =>
     !props.altBg && props.conditional && props.nestLevel % 4 === 3
       ? css`
-          border-left: 2px solid
+          border-left: 10px solid
             ${props.theme.colors.scripting.header.nest4Background};
         `
       : ""}
@@ -306,21 +306,21 @@ export const ScriptEventFormWrapper = styled.div<ScriptEventFormWrapperProps>`
   ${(props) =>
     props.altBg && props.conditional && props.nestLevel % 4 === 0
       ? css`
-          border-left: 2px solid
+          border-left: 10px solid
             ${props.theme.colors.scripting.header.nest1BackgroundAlt};
         `
       : ""}
   ${(props) =>
     props.altBg && props.conditional && props.nestLevel % 4 === 1
       ? css`
-          border-left: 2px solid
+          border-left: 10px solid
             ${props.theme.colors.scripting.header.nest2BackgroundAlt};
         `
       : ""}
   ${(props) =>
     props.altBg && props.conditional && props.nestLevel % 4 === 2
       ? css`
-          border-left: 2px solid
+          border-left: 10px solid
             ${props.theme.colors.scripting.header.nest3BackgroundAlt};
         `
       : ""}
@@ -328,7 +328,7 @@ export const ScriptEventFormWrapper = styled.div<ScriptEventFormWrapperProps>`
   ${(props) =>
     props.altBg && props.conditional && props.nestLevel % 4 === 3
       ? css`
-          border-left: 2px solid
+          border-left: 10px solid
             ${props.theme.colors.scripting.header.nest4BackgroundAlt};
         `
       : ""}
@@ -337,11 +337,12 @@ export const ScriptEventFormWrapper = styled.div<ScriptEventFormWrapperProps>`
 export const ScriptEventFormNest = styled.div`
   position: absolute;
   top: 0;
-  left: -2px;
+  left: -10px;
   bottom: 0;
-  width: 4px;
+  width: 10px;
   :hover {
     background: rgba(128, 128, 128, 0.1);
+    mix-blend-mode: multiply;
   }
 `;
 
