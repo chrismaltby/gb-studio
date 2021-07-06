@@ -121,6 +121,7 @@ const ScriptEventFormField = memo(
           onClick={() => onChange(!value)}
           nestLevel={nestLevel}
           altBg={altBg}
+          open={!value}
         >
           <ScriptEventHeaderCaret open={!value}>
             <ArrowIcon />

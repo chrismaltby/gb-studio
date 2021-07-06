@@ -195,7 +195,16 @@ export const ScriptEventHeader = styled.div<ScriptEventHeaderProps>`
       : ""}
 `;
 
-export const ScriptEventBranchHeader = styled.div<ScriptEventHeaderProps>`
+interface ScriptEventBranchHeaderProps {
+  conditional: boolean;
+  nestLevel: number;
+  comment?: boolean;
+  child?: boolean;
+  altBg?: boolean;
+  open?: boolean;
+}
+
+export const ScriptEventBranchHeader = styled.div<ScriptEventBranchHeaderProps>`
   position: relative;
   display: flex;
   align-items: center;
@@ -206,10 +215,16 @@ export const ScriptEventBranchHeader = styled.div<ScriptEventHeaderProps>`
   padding-left: 8px;
   margin-left: -10px;
   margin-right: -10px;
-  margin-bottom: -10px;
   height: 25px;
   color: ${(props) => props.theme.colors.scripting.header.text};
   line-height: 12px;
+
+  ${(props) =>
+    !props.open
+      ? css`
+          margin-bottom: -10px;
+        `
+      : ""}
 
   ${(props) =>
     !props.altBg && props.conditional && props.nestLevel % 4 === 0
@@ -373,12 +388,7 @@ export const ScriptEventField = styled.div<ScriptEventFieldProps>`
 
 export const ScriptEditorChildren = styled.div`
   border: 1px solid ${(props) => props.theme.colors.sidebar.border};
-  // box-shadow: -1px 2px 3px rgba(0, 0, 0, 0.8);
   box-shadow: ${(props) => props.theme.colors.scripting.children.boxShadow};
   border-right: 0;
   margin-right: -10px;
-
-  ${ScriptEventBranchHeader} + & {
-    margin-top: 10px;
-  }
 `;
