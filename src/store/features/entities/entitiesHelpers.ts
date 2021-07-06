@@ -84,11 +84,7 @@ const emoteSchema = new schema.Entity("emotes");
 
 const scriptEventSchema = new schema.Entity("scriptEvents");
 scriptEventSchema.define({
-  children: {
-    true: [scriptEventSchema],
-    false: [scriptEventSchema],
-    script: [scriptEventSchema],
-  },
+  children: new schema.Values([scriptEventSchema]),
 });
 const actorSchema = new schema.Entity("actors", {
   script: [scriptEventSchema],

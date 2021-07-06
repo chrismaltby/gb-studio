@@ -114,6 +114,14 @@ const ScriptEventFormField = memo(
       [field.key, setArgValue, value]
     );
 
+    let label = field.label;
+    if (typeof label === "string" && label.replace) {
+      label = label.replace(
+        /\$\$([^$]*)\$\$/g,
+        (match, key) => (args?.[key] || "") as string
+      );
+    }
+
     if (field.type === "collapsable") {
       return (
         <ScriptEventBranchHeader
@@ -127,7 +135,7 @@ const ScriptEventFormField = memo(
             <ArrowIcon />
           </ScriptEventHeaderCaret>
           <FixedSpacer width={5} />
-          {field.label || ""}
+          {label || ""}
         </ScriptEventBranchHeader>
       );
     }
@@ -198,7 +206,7 @@ const ScriptEventFormField = memo(
           <ToggleableFormField
             name={genKey(scriptEventId, field.key || "")}
             disabledLabel={field.toggleLabel}
-            label={field.label || ""}
+            label={label || ""}
             enabled={!!value}
           >
             {inputField}
@@ -212,8 +220,8 @@ const ScriptEventFormField = memo(
         <FormField
           name={genKey(scriptEventId, field.key || "")}
           label={
-            field.label && field.type !== "checkbox" && field.type !== "group"
-              ? field.label
+            label && field.type !== "checkbox" && field.type !== "group"
+              ? label
               : ""
           }
           alignCheckbox={field.alignCheckbox}
