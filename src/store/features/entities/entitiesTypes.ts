@@ -99,6 +99,7 @@ export type Trigger = {
   width: number;
   height: number;
   script: string[];
+  leaveScript: string[];
 };
 
 export type Background = {

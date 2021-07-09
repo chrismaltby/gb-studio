@@ -59,6 +59,7 @@ interface PrecompiledSceneEventPtrs {
   actorsHit2: Array<string | null>;
   actorsHit3: Array<string | null>;
   triggers: Array<string | null>;
+  triggersLeave: Array<string | null>;
 }
 
 interface PrecompiledPalette {
@@ -580,12 +581,18 @@ export const compileSceneTriggers = (
       width: trigger.width,
       height: trigger.height,
       script: maybeScriptFarPtr(eventPtrs[sceneIndex].triggers[triggerIndex]),
+      script_leave: maybeScriptFarPtr(
+        eventPtrs[sceneIndex].triggersLeave[triggerIndex]
+      ),
     })),
     // Dependencies
     flatten(
       scene.triggers.map((trigger, triggerIndex) => {
         return ([] as string[]).concat(
-          maybeScriptDependency(eventPtrs[sceneIndex].triggers[triggerIndex])
+          maybeScriptDependency(eventPtrs[sceneIndex].triggers[triggerIndex]),
+          maybeScriptDependency(
+            eventPtrs[sceneIndex].triggersLeave[triggerIndex]
+          )
         );
       })
     )

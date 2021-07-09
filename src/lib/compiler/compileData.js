@@ -760,9 +760,12 @@ export const precompileScenes = (
         // Filter out unused triggers which cause slow down
         // When walking over
         return (
-          trigger.script &&
-          trigger.script.length >= 1 &&
-          trigger.script[0].command !== EVENT_END
+          (trigger.script &&
+            trigger.script.length >= 1 &&
+            trigger.script[0].command !== EVENT_END) ||
+          (trigger.leaveScript &&
+            trigger.leaveScript.length >= 1 &&
+            trigger.leaveScript[0].command !== EVENT_END)
         );
       }),
       playerSpriteIndex,
@@ -992,8 +995,12 @@ const compile = async (
         entityCode = `a${entityIndex}`;
         scriptTypeCode = scriptLookup[scriptType] || scriptTypeCode;
       } else if (entityType === "trigger") {
+        const scriptLookup = {
+          script: "interact",
+          leaveScript: "leave",
+        };
         entityCode = `t${entityIndex}`;
-        scriptTypeCode = "interact";
+        scriptTypeCode = scriptLookup[scriptType] || scriptTypeCode;
       } else if (entityType === "scene") {
         const scriptLookup = {
           script: "init",
@@ -1132,6 +1139,9 @@ const compile = async (
       actorsHit2: scene.actors.map(bankEntityEvents("actor", "hit2Script")),
       actorsHit3: scene.actors.map(bankEntityEvents("actor", "hit3Script")),
       triggers: scene.triggers.map(bankEntityEvents("trigger")),
+      triggersLeave: scene.triggers.map(
+        bankEntityEvents("trigger", "leaveScript")
+      ),
     };
   });
 

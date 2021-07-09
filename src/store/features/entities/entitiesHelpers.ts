@@ -96,6 +96,7 @@ const actorSchema = new schema.Entity("actors", {
 });
 const triggerSchema = new schema.Entity("triggers", {
   script: [scriptEventSchema],
+  leaveScript: [scriptEventSchema],
 });
 const metaspriteTilesSchema = new schema.Entity("metaspriteTiles");
 const metaspritesSchema = new schema.Entity("metasprites", {
@@ -341,6 +342,7 @@ export const walkNormalisedTriggerEvents = (
   callback: (scriptEvent: ScriptEvent) => void
 ) => {
   walkNormalisedScriptEvents(trigger.script, lookup, callback);
+  walkNormalisedScriptEvents(trigger.leaveScript, lookup, callback);
 };
 
 export const walkNormalisedSceneEvents = (

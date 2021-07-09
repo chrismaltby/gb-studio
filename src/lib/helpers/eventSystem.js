@@ -52,6 +52,7 @@ const mapSceneEvents = (scene, callback) => {
       return {
         ...trigger,
         script: mapEvents(trigger.script, callback),
+        leaveScript: mapEvents(trigger.leaveScript, callback),
       };
     }),
   };
@@ -103,6 +104,7 @@ const walkActorEvents = (actor, callback) => {
 
 const walkTriggerEvents = (trigger, callback) => {
   walkEvents(trigger.script, callback);
+  walkEvents(trigger.leaveScript, callback);
 };
 
 const walkSceneEvents = (scene, callback) => {
