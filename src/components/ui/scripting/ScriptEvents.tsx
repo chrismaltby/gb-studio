@@ -5,13 +5,6 @@ export const ScriptEventPlaceholder = styled.div`
   height: 25px;
 `;
 
-export const ScriptEventWrapper = styled.div`
-  background: ${(props) => props.theme.colors.scripting.form.background};
-  & ~ & {
-    border-top: 1px solid ${(props) => props.theme.colors.sidebar.border};
-  }
-`;
-
 export const ScriptEventRenameInput = styled.input`
   background: ${(props) => props.theme.colors.input.background};
   color: ${(props) => props.theme.colors.input.text};
@@ -213,8 +206,21 @@ export const ScriptEventBranchHeader = styled.div<ScriptEventBranchHeaderProps>`
   padding: 0px 10px;
   padding-right: 5px;
   padding-left: 8px;
-  margin-left: -10px;
-  margin-right: -10px;
+  // margin-left: -10px;
+  // margin-right: -10px;
+  margin: -10px;
+  // && {
+  //   margin: -10px -10px -10px 0px;
+  // }
+
+  && {
+    // background: red;
+    margin-top: -5px;
+    margin-right: -5px;
+    margin-bottom: -5px;
+    margin-left: calc(10px - min(50px, max(10px, 5%)));
+  }
+
   height: 25px;
   color: ${(props) => props.theme.colors.scripting.header.text};
   line-height: 12px;
@@ -223,58 +229,6 @@ export const ScriptEventBranchHeader = styled.div<ScriptEventBranchHeaderProps>`
     !props.open
       ? css`
           margin-bottom: -10px;
-        `
-      : ""}
-
-  ${(props) =>
-    !props.altBg && props.conditional && props.nestLevel % 4 === 0
-      ? css`
-          background: ${props.theme.colors.scripting.header.nest1Background};
-        `
-      : ""}
-  ${(props) =>
-    !props.altBg && props.conditional && props.nestLevel % 4 === 1
-      ? css`
-          background: ${props.theme.colors.scripting.header.nest2Background};
-        `
-      : ""}
-  ${(props) =>
-    !props.altBg && props.conditional && props.nestLevel % 4 === 2
-      ? css`
-          background: ${props.theme.colors.scripting.header.nest3Background};
-        `
-      : ""}
-          
-  ${(props) =>
-    !props.altBg && props.conditional && props.nestLevel % 4 === 3
-      ? css`
-          background: ${props.theme.colors.scripting.header.nest4Background};
-        `
-      : ""}
-
-  ${(props) =>
-    props.altBg && props.conditional && props.nestLevel % 4 === 0
-      ? css`
-          background: ${props.theme.colors.scripting.header.nest1BackgroundAlt};
-        `
-      : ""}
-  ${(props) =>
-    props.altBg && props.conditional && props.nestLevel % 4 === 1
-      ? css`
-          background: ${props.theme.colors.scripting.header.nest2BackgroundAlt};
-        `
-      : ""}
-  ${(props) =>
-    props.altBg && props.conditional && props.nestLevel % 4 === 2
-      ? css`
-          background: ${props.theme.colors.scripting.header.nest3BackgroundAlt};
-        `
-      : ""}
-          
-  ${(props) =>
-    props.altBg && props.conditional && props.nestLevel % 4 === 3
-      ? css`
-          background: ${props.theme.colors.scripting.header.nest4BackgroundAlt};
         `
       : ""}
 `;
@@ -287,66 +241,6 @@ interface ScriptEventFormWrapperProps {
 
 export const ScriptEventFormWrapper = styled.div<ScriptEventFormWrapperProps>`
   position: relative;
-
-  ${(props) =>
-    !props.altBg && props.conditional && props.nestLevel % 4 === 0
-      ? css`
-          border-left: 10px solid
-            ${props.theme.colors.scripting.header.nest1Background};
-        `
-      : ""}
-  ${(props) =>
-    !props.altBg && props.conditional && props.nestLevel % 4 === 1
-      ? css`
-          border-left: 10px solid
-            ${props.theme.colors.scripting.header.nest2Background};
-        `
-      : ""}
-  ${(props) =>
-    !props.altBg && props.conditional && props.nestLevel % 4 === 2
-      ? css`
-          border-left: 10px solid
-            ${props.theme.colors.scripting.header.nest3Background};
-        `
-      : ""}
-          
-  ${(props) =>
-    !props.altBg && props.conditional && props.nestLevel % 4 === 3
-      ? css`
-          border-left: 10px solid
-            ${props.theme.colors.scripting.header.nest4Background};
-        `
-      : ""}
-
-  ${(props) =>
-    props.altBg && props.conditional && props.nestLevel % 4 === 0
-      ? css`
-          border-left: 10px solid
-            ${props.theme.colors.scripting.header.nest1BackgroundAlt};
-        `
-      : ""}
-  ${(props) =>
-    props.altBg && props.conditional && props.nestLevel % 4 === 1
-      ? css`
-          border-left: 10px solid
-            ${props.theme.colors.scripting.header.nest2BackgroundAlt};
-        `
-      : ""}
-  ${(props) =>
-    props.altBg && props.conditional && props.nestLevel % 4 === 2
-      ? css`
-          border-left: 10px solid
-            ${props.theme.colors.scripting.header.nest3BackgroundAlt};
-        `
-      : ""}
-          
-  ${(props) =>
-    props.altBg && props.conditional && props.nestLevel % 4 === 3
-      ? css`
-          border-left: 10px solid
-            ${props.theme.colors.scripting.header.nest4BackgroundAlt};
-        `
-      : ""}
 `;
 
 export const ScriptEventFormNest = styled.div`
@@ -362,13 +256,28 @@ export const ScriptEventFormNest = styled.div`
 `;
 
 export const ScriptEventFields = styled.div`
-  border-top: 1px solid ${(props) => props.theme.colors.sidebar.border};
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px 10px;
-  padding: 10px;
+  // border-top: 1px solid ${(props) => props.theme.colors.sidebar.border};
+  // display: grid;
+  // grid-template-columns: 1fr 1fr;
+  // gap: 10px 10px;
+
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+
+  padding: 5px;
+
   & > * {
-    grid-column-end: span 2;
+    // grid-column-end: span 2;
+    flex-grow: 1;
+    // min-width: 280px;
+    // min-width: 90%;
+    // width: 90%;
+    // max-width: 280px;
+    // flex: 1 0 auto;
+    flex-grow: 1;
+    flex-basis: 220px;
+    margin: 5px;
   }
 `;
 
@@ -381,7 +290,14 @@ export const ScriptEventField = styled.div<ScriptEventFieldProps>`
   ${(props) =>
     props.halfWidth
       ? css`
-          grid-column-end: span 1;
+          // grid-column-end: span 1;
+          // min-width: 140px;
+          // min-width: 45%;
+          // width: 40%;
+          // max-width: 140px;
+
+          // flex: 1 0 auto;
+          flex-basis: 100px;
         `
       : ""}
 `;
@@ -390,5 +306,103 @@ export const ScriptEditorChildren = styled.div`
   border: 1px solid ${(props) => props.theme.colors.sidebar.border};
   box-shadow: ${(props) => props.theme.colors.scripting.children.boxShadow};
   border-right: 0;
-  margin-right: -10px;
+  // margin-right: -10px;
+  // border-top-left-radius: 8px;
+  // border-bottom-left-radius: 8px;
+  // overflow: hidden;
+
+  // max-width: none;
+  // width: 100%;
+  flex-grow: 1;
+  flex-shrink: 0;
+  flex-basis: 100%;
+
+  // margin: 5px 0 5px 5px;
+  // background: ${(props) => props.theme.colors.sidebar.background};
+
+  ${ScriptEventBranchHeader} + & {
+    // margin-top: -5px;
+  }
+`;
+
+interface ScriptEventWrapperProps {
+  conditional: boolean;
+  nestLevel: number;
+  altBg?: boolean;
+}
+
+export const ScriptEventWrapper = styled.div<ScriptEventWrapperProps>`
+  background: ${(props) => props.theme.colors.scripting.form.background};
+  ${(props) =>
+    props.conditional
+      ? css`
+          background: ${(props) =>
+            props.theme.colors.scripting.header.nest1Background};
+
+          & > div > div > ${ScriptEventFields} {
+            padding-top: 0px;
+            margin-top: -5px;
+            padding-left: 5%;
+            margin-left: -10px;
+            padding-left: min(50px, max(10px, 5%));
+          }
+        `
+      : ""}
+
+  ${(props) =>
+    !props.altBg && props.conditional && props.nestLevel % 4 === 0
+      ? css`
+          background: ${props.theme.colors.scripting.header.nest1Background};
+        `
+      : ""}
+      ${(props) =>
+    !props.altBg && props.conditional && props.nestLevel % 4 === 1
+      ? css`
+          background: ${props.theme.colors.scripting.header.nest2Background};
+        `
+      : ""}
+      ${(props) =>
+    !props.altBg && props.conditional && props.nestLevel % 4 === 2
+      ? css`
+          background: ${props.theme.colors.scripting.header.nest3Background};
+        `
+      : ""}
+              
+      ${(props) =>
+    !props.altBg && props.conditional && props.nestLevel % 4 === 3
+      ? css`
+          background: ${props.theme.colors.scripting.header.nest4Background};
+        `
+      : ""}
+    
+      ${(props) =>
+    props.altBg && props.conditional && props.nestLevel % 4 === 0
+      ? css`
+          background: ${props.theme.colors.scripting.header.nest1BackgroundAlt};
+        `
+      : ""}
+      ${(props) =>
+    props.altBg && props.conditional && props.nestLevel % 4 === 1
+      ? css`
+          background: ${props.theme.colors.scripting.header.nest2BackgroundAlt};
+        `
+      : ""}
+      ${(props) =>
+    props.altBg && props.conditional && props.nestLevel % 4 === 2
+      ? css`
+          background: ${props.theme.colors.scripting.header.nest3BackgroundAlt};
+        `
+      : ""}
+              
+      ${(props) =>
+    props.altBg && props.conditional && props.nestLevel % 4 === 3
+      ? css`
+          background: ${props.theme.colors.scripting.header.nest4BackgroundAlt};
+        `
+      : ""}
+    
+
+  & ~ & {
+    // border-top: 1px solid ${(props) => props.theme.colors.sidebar.border};
+  }
 `;

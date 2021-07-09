@@ -29,6 +29,7 @@ const Wrapper = styled.div`
   display: flex;
   padding: 10px;
   background: ${(props) => props.theme.colors.scripting.form.background};
+  border-top: 1px solid ${(props) => props.theme.colors.sidebar.border};
 
   ${Button} {
     width: 100%;
@@ -128,7 +129,12 @@ const AddButton = ({ parentType, parentId, parentKey }: AddButtonProps) => {
   drop(dropRef);
 
   return (
-    <ScriptEventWrapper ref={dropRef} data-handler-id={handlerId}>
+    <ScriptEventWrapper
+      ref={dropRef}
+      data-handler-id={handlerId}
+      conditional={false}
+      nestLevel={0}
+    >
       {isOverCurrent && <ScriptEventPlaceholder />}
       {isOpen && (
         <>
