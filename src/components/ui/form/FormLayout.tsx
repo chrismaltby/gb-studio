@@ -74,7 +74,7 @@ const FormFieldWrapper = styled.div<FormFieldWrapperProps>`
   ${(props) =>
     props.alignCheckbox
       ? css`
-          padding-top: 21px;
+          padding-bottom: 5px;
         `
       : ""}
 `;
