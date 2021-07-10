@@ -388,7 +388,7 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
   return (
     <Sidebar onClick={selectSidebar} multiColumn={multiColumn}>
       {!lockScriptEditor && (
-        <SidebarColumn>
+        <SidebarColumn style={{ maxWidth: multiColumn ? 300 : undefined }}>
           <FormContainer>
             <FormHeader>
               <EditableText

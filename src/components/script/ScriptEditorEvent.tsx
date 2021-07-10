@@ -274,7 +274,13 @@ const ScriptEditorEvent = ({
               entityId={entityId}
             />
           ))}
-          <AddButton parentType="scriptEvent" parentId={id} parentKey={key} />
+          <AddButton
+            parentType="scriptEvent"
+            parentId={id}
+            parentKey={key}
+            nestLevel={nestLevel}
+            conditional={true}
+          />
         </ScriptEditorChildren>
       );
     },

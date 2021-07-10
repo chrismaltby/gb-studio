@@ -10,6 +10,8 @@ export interface ThemeInterface {
     secondaryText: string;
     highlight: string;
     highlightText: string;
+    translucent: string;
+    hoverTranslucent: string;
     conditional: {
       level1: string;
       level2: string;

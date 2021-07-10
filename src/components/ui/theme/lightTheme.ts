@@ -10,6 +10,8 @@ const lightTheme: ThemeInterface = {
   colors: {
     highlight: "#c92c61",
     highlightText: "#ffffff",
+    translucent: "rgba(255,255,255,0.3)",
+    hoverTranslucent: "rgba(255,255,255,0.4)",
     text: "#3b3a3b",
     secondaryText: "#999999",
     conditional: {
@@ -87,7 +89,7 @@ const lightTheme: ThemeInterface = {
       header: {
         text: "#3b3a3b",
         background: "#efefef",
-        backgroundAlt: "#dedede",
+        backgroundAlt: "#e4e4e4",
         nest1Background: "#b3e5fc",
         nest1BackgroundAlt: "#81d4fa",
         nest2Background: "#ffccbc",

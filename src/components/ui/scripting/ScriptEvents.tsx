@@ -88,8 +88,12 @@ export const ScriptEventHeader = styled.div<ScriptEventHeaderProps>`
   padding-right: 10px;
   padding-left: 10px;
   height: 25px;
-  background-color: ${(props) =>
-    props.theme.colors.scripting.header.background};
+  background: linear-gradient(
+    0deg,
+    ${(props) => props.theme.colors.scripting.header.backgroundAlt},
+    ${(props) => props.theme.colors.scripting.header.background}
+  );
+
   color: ${(props) => props.theme.colors.scripting.header.text};
   line-height: 12px;
   cursor: move;
@@ -102,39 +106,6 @@ export const ScriptEventHeader = styled.div<ScriptEventHeaderProps>`
   }
 
   ${(props) =>
-    props.altBg
-      ? css`
-          background: ${props.theme.colors.scripting.header.backgroundAlt};
-        `
-      : ""}
-
-  ${(props) =>
-    !props.altBg && props.conditional && props.nestLevel % 4 === 0
-      ? css`
-          background: ${props.theme.colors.scripting.header.nest1Background};
-        `
-      : ""}
-  ${(props) =>
-    !props.altBg && props.conditional && props.nestLevel % 4 === 1
-      ? css`
-          background: ${props.theme.colors.scripting.header.nest2Background};
-        `
-      : ""}
-  ${(props) =>
-    !props.altBg && props.conditional && props.nestLevel % 4 === 2
-      ? css`
-          background: ${props.theme.colors.scripting.header.nest3Background};
-        `
-      : ""}
-          
-  ${(props) =>
-    !props.altBg && props.conditional && props.nestLevel % 4 === 3
-      ? css`
-          background: ${props.theme.colors.scripting.header.nest4Background};
-        `
-      : ""}
-
-  ${(props) =>
     !props.altBg && props.comment
       ? css`
           &&& {
@@ -145,28 +116,9 @@ export const ScriptEventHeader = styled.div<ScriptEventHeaderProps>`
       : ""}
 
   ${(props) =>
-    props.altBg && props.conditional && props.nestLevel % 4 === 0
+    props.conditional
       ? css`
-          background: ${props.theme.colors.scripting.header.nest1BackgroundAlt};
-        `
-      : ""}
-  ${(props) =>
-    props.altBg && props.conditional && props.nestLevel % 4 === 1
-      ? css`
-          background: ${props.theme.colors.scripting.header.nest2BackgroundAlt};
-        `
-      : ""}
-  ${(props) =>
-    props.altBg && props.conditional && props.nestLevel % 4 === 2
-      ? css`
-          background: ${props.theme.colors.scripting.header.nest3BackgroundAlt};
-        `
-      : ""}
-          
-  ${(props) =>
-    props.altBg && props.conditional && props.nestLevel % 4 === 3
-      ? css`
-          background: ${props.theme.colors.scripting.header.nest4BackgroundAlt};
+          background: transparent;
         `
       : ""}
 
@@ -246,11 +198,11 @@ export const ScriptEventFormWrapper = styled.div<ScriptEventFormWrapperProps>`
 export const ScriptEventFormNest = styled.div`
   position: absolute;
   top: 0;
-  left: -10px;
+  left: 0px;
   bottom: 0;
   width: 10px;
   :hover {
-    background: rgba(128, 128, 128, 0.1);
+    background: ${(props) => props.theme.colors.translucent};
     mix-blend-mode: multiply;
   }
 `;
@@ -303,9 +255,9 @@ export const ScriptEventField = styled.div<ScriptEventFieldProps>`
 `;
 
 export const ScriptEditorChildren = styled.div`
-  border: 1px solid ${(props) => props.theme.colors.sidebar.border};
-  box-shadow: ${(props) => props.theme.colors.scripting.children.boxShadow};
-  border-right: 0;
+  // border: 1px solid ${(props) => props.theme.colors.sidebar.border};
+  // box-shadow: ${(props) => props.theme.colors.scripting.children.boxShadow};
+  // border-right: 0;
   // margin-right: -10px;
   // border-top-left-radius: 8px;
   // border-bottom-left-radius: 8px;
@@ -332,12 +284,15 @@ interface ScriptEventWrapperProps {
 }
 
 export const ScriptEventWrapper = styled.div<ScriptEventWrapperProps>`
-  background: ${(props) => props.theme.colors.scripting.form.background};
+  background-color: ${(props) => props.theme.colors.scripting.form.background};
+  color: ${(props) => props.theme.colors.text};
+
   ${(props) =>
     props.conditional
       ? css`
           background: ${(props) =>
             props.theme.colors.scripting.header.nest1Background};
+          color: ${(props) => props.theme.colors.scripting.header.text};
 
           & > div > div > ${ScriptEventFields} {
             padding-top: 0px;
@@ -348,61 +303,47 @@ export const ScriptEventWrapper = styled.div<ScriptEventWrapperProps>`
           }
         `
       : ""}
-
   ${(props) =>
-    !props.altBg && props.conditional && props.nestLevel % 4 === 0
+    props.conditional && props.nestLevel % 4 === 0
       ? css`
-          background: ${props.theme.colors.scripting.header.nest1Background};
+          background: linear-gradient(
+            0deg,
+            ${props.theme.colors.scripting.header.nest1BackgroundAlt},
+            ${props.theme.colors.scripting.header.nest1Background}
+          );
         `
       : ""}
-      ${(props) =>
-    !props.altBg && props.conditional && props.nestLevel % 4 === 1
+    ${(props) =>
+    props.conditional && props.nestLevel % 4 === 1
       ? css`
-          background: ${props.theme.colors.scripting.header.nest2Background};
+          background: linear-gradient(
+            0deg,
+            ${props.theme.colors.scripting.header.nest2BackgroundAlt},
+            ${props.theme.colors.scripting.header.nest2Background}
+          );
         `
       : ""}
-      ${(props) =>
-    !props.altBg && props.conditional && props.nestLevel % 4 === 2
+    ${(props) =>
+    props.conditional && props.nestLevel % 4 === 2
       ? css`
-          background: ${props.theme.colors.scripting.header.nest3Background};
+          background: linear-gradient(
+            0deg,
+            ${props.theme.colors.scripting.header.nest3BackgroundAlt},
+            ${props.theme.colors.scripting.header.nest3Background}
+          );
         `
       : ""}
-              
-      ${(props) =>
-    !props.altBg && props.conditional && props.nestLevel % 4 === 3
+    ${(props) =>
+    props.conditional && props.nestLevel % 4 === 3
       ? css`
-          background: ${props.theme.colors.scripting.header.nest4Background};
+          background: linear-gradient(
+            0deg,
+            ${props.theme.colors.scripting.header.nest4BackgroundAlt},
+            ${props.theme.colors.scripting.header.nest4Background}
+          );
         `
       : ""}
-    
-      ${(props) =>
-    props.altBg && props.conditional && props.nestLevel % 4 === 0
-      ? css`
-          background: ${props.theme.colors.scripting.header.nest1BackgroundAlt};
-        `
-      : ""}
-      ${(props) =>
-    props.altBg && props.conditional && props.nestLevel % 4 === 1
-      ? css`
-          background: ${props.theme.colors.scripting.header.nest2BackgroundAlt};
-        `
-      : ""}
-      ${(props) =>
-    props.altBg && props.conditional && props.nestLevel % 4 === 2
-      ? css`
-          background: ${props.theme.colors.scripting.header.nest3BackgroundAlt};
-        `
-      : ""}
-              
-      ${(props) =>
-    props.altBg && props.conditional && props.nestLevel % 4 === 3
-      ? css`
-          background: ${props.theme.colors.scripting.header.nest4BackgroundAlt};
-        `
-      : ""}
-    
-
-  & ~ & {
+    & ~& {
     // border-top: 1px solid ${(props) => props.theme.colors.sidebar.border};
   }
 `;

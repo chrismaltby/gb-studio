@@ -6,7 +6,7 @@ import {
   ScriptEventParentType,
   ScriptEventsRef,
 } from "store/features/entities/entitiesTypes";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { Button } from "ui/buttons/Button";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { useDispatch } from "react-redux";
@@ -18,25 +18,79 @@ import { RelativePortal } from "ui/layout/RelativePortal";
 import AddScriptEventMenu from "./AddScriptEventMenu";
 import { MenuOverlay } from "ui/menu/Menu";
 import clipboardActions from "store/features/clipboard/clipboardActions";
+import { CloneIcon, PlusIcon } from "ui/icons/Icons";
 
 interface AddButtonProps {
   parentType: ScriptEventParentType;
   parentId: string;
   parentKey: string;
+  nestLevel?: number;
+  conditional?: boolean;
 }
 
-const Wrapper = styled.div`
+interface WrapperProps {
+  conditional?: boolean;
+}
+
+const Wrapper = styled.div<WrapperProps>`
   display: flex;
   padding: 10px;
-  background: ${(props) => props.theme.colors.scripting.form.background};
-  border-top: 1px solid ${(props) => props.theme.colors.sidebar.border};
+  // justify-content: center;
+  // padding-left: 0px;
 
   ${Button} {
     width: 100%;
+    max-width: 300px;
+    // justify-content: flex-start;
+    // padding-left: 5px;
+    // background: rgba(128, 128, 128, 0.2);
+
+    svg {
+      width: 12px;
+      height: 12px;
+      margin-right: 5px;
+    }
+  }
+
+  background: ${(props) => props.theme.colors.scripting.form.background};
+  border-top: 1px solid ${(props) => props.theme.colors.sidebar.border};
+
+  ${(props) =>
+    props.conditional
+      ? css`
+          // background: rgba(0, 0, 0, 0.05);
+          background: ${(props) => props.theme.colors.translucent};
+          border-top: 0;
+          // padding-left: 0px;
+          ${Button} {
+            // width: auto;
+
+            .BLAH {
+              background: ${(props) => props.theme.colors.translucent};
+              border: 0;
+              :hover {
+                background: ${(props) => props.theme.colors.hoverTranslucent};
+              }
+            }
+          }
+        `
+      : ""}
+
+  ${Button} {
+    // width: 100%;
+    // text-align: left;
+    // padding: 0px;
+    // opacity: 0.5;
   }
 `;
 
-const AddButton = ({ parentType, parentId, parentKey }: AddButtonProps) => {
+const AddButton = ({
+  parentType,
+  parentId,
+  parentKey,
+  nestLevel,
+  conditional,
+}: AddButtonProps) => {
   const dispatch = useDispatch();
   const [isOpen, setOpen] = useState(false);
   const [pinDirection, setPinDirection] =
@@ -132,8 +186,12 @@ const AddButton = ({ parentType, parentId, parentKey }: AddButtonProps) => {
     <ScriptEventWrapper
       ref={dropRef}
       data-handler-id={handlerId}
-      conditional={false}
-      nestLevel={0}
+      conditional={conditional ?? false}
+      nestLevel={nestLevel ?? 0}
+      style={{
+        background: "transparent",
+        flexBasis: "100%",
+      }}
     >
       {isOverCurrent && <ScriptEventPlaceholder />}
       {isOpen && (
@@ -149,8 +207,9 @@ const AddButton = ({ parentType, parentId, parentKey }: AddButtonProps) => {
           </RelativePortal>
         </>
       )}
-      <Wrapper>
+      <Wrapper conditional={conditional ?? false}>
         <Button onClick={pasteMode ? onPaste : onOpen}>
+          {pasteMode ? <CloneIcon /> : <PlusIcon />}
           {pasteMode ? l10n("MENU_PASTE_EVENT") : l10n("SIDEBAR_ADD_EVENT")}
         </Button>
       </Wrapper>
