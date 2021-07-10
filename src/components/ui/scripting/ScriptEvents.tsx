@@ -106,11 +106,16 @@ export const ScriptEventHeader = styled.div<ScriptEventHeaderProps>`
   }
 
   ${(props) =>
-    !props.altBg && props.comment
+    props.comment
       ? css`
           &&& {
-            background: ${props.theme.colors.scripting.header
-              .commentBackground};
+            background: linear-gradient(
+              0deg,
+              ${(props) =>
+                props.theme.colors.scripting.header.commentBackgroundAlt},
+              ${(props) =>
+                props.theme.colors.scripting.header.commentBackground}
+            );
           }
         `
       : ""}
@@ -119,16 +124,6 @@ export const ScriptEventHeader = styled.div<ScriptEventHeaderProps>`
     props.conditional
       ? css`
           background: transparent;
-        `
-      : ""}
-
-  ${(props) =>
-    props.altBg && props.comment
-      ? css`
-          &&& {
-            background: ${props.theme.colors.scripting.header
-              .commentBackgroundAlt};
-          }
         `
       : ""}
 
