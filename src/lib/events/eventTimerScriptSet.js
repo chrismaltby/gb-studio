@@ -5,9 +5,6 @@ const groups = ["EVENT_GROUP_TIMER"];
 
 const fields = [
   {
-    label: l10n("FIELD_SET_TIMER"),
-  },
-  {
     key: "duration",
     type: "number",
     label: l10n("FIELD_TIMER_DURATION"),
@@ -21,7 +18,7 @@ const fields = [
     type: "tabs",
     defaultValue: "end",
     values: {
-      end: l10n("FIELD_ON_TIMER_END"),
+      end: l10n("FIELD_ON_TIMER_TICK"),
     },
   },
   {

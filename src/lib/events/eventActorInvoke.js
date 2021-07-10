@@ -5,10 +5,8 @@ const groups = ["EVENT_GROUP_ACTOR"];
 
 const fields = [
   {
-    label: l10n("FIELD_ACTOR_INVOKE"),
-  },
-  {
     key: "actorId",
+    label: l10n("FIELD_ACTOR_INVOKE"),
     type: "actor",
     defaultValue: "$self$",
   },

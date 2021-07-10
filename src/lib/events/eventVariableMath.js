@@ -101,6 +101,7 @@ const fields = [
       },
     ],
     defaultValue: false,
+    alignCheckbox: true,
   },
   {
     key: "note1",
@@ -109,6 +110,19 @@ const fields = [
       {
         key: "operation",
         in: ["mul"],
+      },
+    ],
+  },
+  {
+    type: "break",
+    conditions: [
+      {
+        key: "operation",
+        in: ["add", "sub"],
+      },
+      {
+        key: "clamp",
+        ne: true,
       },
     ],
   },

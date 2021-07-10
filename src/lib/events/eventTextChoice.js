@@ -11,8 +11,12 @@ const groups = ["EVENT_GROUP_DIALOGUE"];
 const fields = [
   {
     key: "variable",
+    label: l10n("FIELD_SET_VARIABLE"),
     type: "variable",
     defaultValue: "LAST_VARIABLE",
+  },
+  {
+    type: "break",
   },
   {
     key: "trueText",

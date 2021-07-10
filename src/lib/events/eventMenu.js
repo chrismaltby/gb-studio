@@ -12,6 +12,7 @@ const fields = [].concat(
   [
     {
       key: "variable",
+      label: l10n("FIELD_SET_VARIABLE"),
       type: "variable",
       defaultValue: "LAST_VARIABLE",
     },
@@ -92,12 +93,14 @@ const fields = [].concat(
     type: "checkbox",
     label: l10n("FIELD_LAST_OPTION_CANCELS"),
     key: "cancelOnLastOption",
+    alignCheckbox: true,
   },
   {
     type: "checkbox",
     label: l10n("FIELD_CANCEL_IF_B"),
     key: "cancelOnB",
     defaultValue: true,
+    alignCheckbox: true,
   },
   {
     key: "layout",

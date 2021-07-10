@@ -10,10 +10,14 @@ const fields = [
     defaultValue: "LAST_VARIABLE",
   },
   {
+    type: "break",
+  },
+  {
     key: "flag1",
     label: l10n("FIELD_FLAG_1"),
     type: "checkbox",
     width: "50%",
+    flexBasis: "40%",
     defaultValue: false,
   },
   {
@@ -21,6 +25,7 @@ const fields = [
     label: l10n("FIELD_FLAG_2"),
     type: "checkbox",
     width: "50%",
+    flexBasis: "40%",
     defaultValue: false,
   },
   {
@@ -28,6 +33,7 @@ const fields = [
     label: l10n("FIELD_FLAG_3"),
     type: "checkbox",
     width: "50%",
+    flexBasis: "40%",
     defaultValue: false,
   },
   {
@@ -35,6 +41,7 @@ const fields = [
     label: l10n("FIELD_FLAG_4"),
     type: "checkbox",
     width: "50%",
+    flexBasis: "40%",
     defaultValue: false,
   },
   {
@@ -42,6 +49,7 @@ const fields = [
     label: l10n("FIELD_FLAG_5"),
     type: "checkbox",
     width: "50%",
+    flexBasis: "40%",
     defaultValue: false,
   },
   {
@@ -49,6 +57,7 @@ const fields = [
     label: l10n("FIELD_FLAG_6"),
     type: "checkbox",
     width: "50%",
+    flexBasis: "40%",
     defaultValue: false,
   },
   {
@@ -56,6 +65,7 @@ const fields = [
     label: l10n("FIELD_FLAG_7"),
     type: "checkbox",
     width: "50%",
+    flexBasis: "40%",
     defaultValue: false,
   },
   {
@@ -63,6 +73,7 @@ const fields = [
     label: l10n("FIELD_FLAG_8"),
     type: "checkbox",
     width: "50%",
+    flexBasis: "40%",
     defaultValue: false,
   },
 ];

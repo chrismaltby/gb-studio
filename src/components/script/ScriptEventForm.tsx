@@ -51,6 +51,9 @@ const getScriptEventFields = (
                 <div key={index}>{text || <div>&nbsp;</div>}</div>
               )),
           },
+          {
+            type: "break",
+          },
         ]
       : [];
     const usedVariables =

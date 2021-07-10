@@ -263,6 +263,7 @@
   "FIELD_HORIZONTAL": "Horizontal",
   "FIELD_VERTICAL": "Vertical",
   "FIELD_ON_TIMER_END": "On Timer End",
+  "FIELD_ON_TIMER_TICK": "On Tick",
   "FIELD_NUM_ACTORS_LABEL": "Number of actors in scene",
   "FIELD_NUM_FRAMES_LABEL": "Number of frames used by actors in scene",
   "FIELD_NUM_SPRITE_TILES_LABEL": "Number of tiles used by sprites in scene",
@@ -424,6 +425,7 @@
   "FIELD_GT": "Greater Than",
   "FIELD_LTE": "Less Than Or Equal To",
   "FIELD_GTE": "Greater Than Or Equal To",
+  "FIELD_SET_VARIABLE": "Set Variable",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

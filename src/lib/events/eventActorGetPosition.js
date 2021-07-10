@@ -6,6 +6,7 @@ const groups = ["EVENT_GROUP_ACTOR", "EVENT_GROUP_VARIABLES"];
 const fields = [
   {
     key: "actorId",
+    label: l10n("ACTOR"),
     type: "actor",
     defaultValue: "$self$",
   },
@@ -14,12 +15,14 @@ const fields = [
     type: "variable",
     label: l10n("FIELD_X"),
     defaultValue: "LAST_VARIABLE",
+    width: "50%",
   },
   {
     key: "vectorY",
     type: "variable",
     label: l10n("FIELD_Y"),
     defaultValue: "LAST_VARIABLE",
+    width: "50%",
   },
 ];
 

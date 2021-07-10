@@ -6,6 +6,9 @@ const fields = [
     type: "customEvent",
     key: "customEventId",
   },
+  {
+    type: "break",
+  },
 ];
 
 const compile = (input, helpers) => {

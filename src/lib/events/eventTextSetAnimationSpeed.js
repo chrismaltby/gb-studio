@@ -29,6 +29,7 @@ const fields = [
     label: l10n("FIELD_ALLOW_FASTFORWARD"),
     key: "allowFastForward",
     defaultValue: true,
+    alignCheckbox: true,
   },
 ];
 

@@ -6,6 +6,7 @@ const groups = ["EVENT_GROUP_SCENE"];
 const fields = [
   {
     key: "sceneId",
+    label: l10n("SCENE"),
     type: "scene",
     defaultValue: "LAST_SCENE",
   },

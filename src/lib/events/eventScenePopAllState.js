@@ -8,6 +8,9 @@ const fields = [
     label: l10n("FIELD_SCENE_POP_ALL_STATE_DESCRIPTION"),
   },
   {
+    type: "break",
+  },
+  {
     key: "fadeSpeed",
     label: l10n("FIELD_FADE_SPEED"),
     type: "fadeSpeed",

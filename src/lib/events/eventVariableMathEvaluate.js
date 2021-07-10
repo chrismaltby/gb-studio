@@ -9,11 +9,6 @@ const fields = [
     width: "50%",
   },
   {
-    label: "=",
-    width: "50%",
-    lineHeight: "23px",
-  },
-  {
     key: "expression",
     type: "matharea",
     rows: 5,

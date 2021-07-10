@@ -17,5 +17,6 @@ export const FixedSpacer = styled.div<FixedSpacerProps>`
 
 export const FlexBreak = styled.div`
   flex-basis: 100% !important;
+  margin: 0 !important;
   height: 0;
 `;
