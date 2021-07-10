@@ -172,6 +172,20 @@ type ScriptBuilderPathFunction = () => void;
 
 type VariablesLookup = { [name: string]: Variable | undefined };
 
+type ScriptArgumentStackItem = 
+  | {
+      type: "variable";
+      index: number;
+      arg: any;
+      value: string;
+    }
+  | {
+      type: "reference";
+      index: number;
+      arg: any;
+      value: number;
+    };
+ 
 // - Helpers --------------
 
 const getActorIndex = (actorId: string, scene: ScriptBuilderScene) => {
@@ -654,6 +668,17 @@ class ScriptBuilder {
   _stackPushInd = (location: ScriptBuilderStackVariable) => {
     this.stackPtr++;
     this._addCmd("VM_PUSH_VALUE_IND", location);
+  };
+
+  _stackPushReference = (
+    location: ScriptBuilderStackVariable,
+    comment?: string
+  ) => {
+    this.stackPtr++;
+    this._addCmd(
+      "VM_PUSH_REFERENCE",
+      location + (comment ? ` ; ${comment}` : "")
+    );
   };
 
   _stackPop = (num: number) => {
@@ -2591,7 +2616,10 @@ class ScriptBuilder {
   // --------------------------------------------------------------------------
   // Call Script
 
-  callScript = (scriptId: string, input: Dictionary<string>) => {
+  callScript = (
+    scriptId: string,
+    input: Dictionary<string | ScriptBuilderUnionValue>
+  ) => {
     const { customEvents } = this.options;
     const customEvent = customEvents.find((ce) => ce.id === scriptId);
 
@@ -2638,24 +2666,81 @@ class ScriptBuilder {
       return argLookup[type][value];
     };
 
-    if (actorArgs) {
-      for (const actorArg of actorArgs.reverse()) {
-        if (actorArg) {
-          const actorValue = input?.[`$actor[${actorArg.id}]$`] || "";
-          const actorIndex = this.getActorIndex(actorValue);
-          const arg = registerArg("actor", actorArg.id);
-          this._stackPushConst(actorIndex, `Actor ${arg}`);
-        }
-      }
-    }
+    const argStack:ScriptArgumentStackItem[] = [];
+    let referencesLen = 0;
 
     if (variableArgs) {
       for (const variableArg of variableArgs.reverse()) {
         if (variableArg) {
           const variableValue = input?.[`$variable[${variableArg.id}]$`] || "";
-          const variableAlias = this.getVariableAlias(variableValue);
-          const arg = registerArg("variable", variableArg.id);
-          this._stackPushConst(variableAlias, `Variable ${arg}`);
+          if (typeof variableValue === "string") {
+            argStack.push({
+              type: "variable",
+              arg: variableArg,
+              value: variableValue,
+              index: -1,
+            });
+          } else if (variableValue && variableValue.type === "number") {
+            this._stackPushConst(variableValue.value);
+
+            argStack.push({
+              type: "reference",
+              arg: variableArg,
+              value: variableValue.value,
+              index: ++referencesLen,
+            });
+          } else {
+            argStack.push({
+              type: "variable",
+              arg: variableArg,
+              value: variableValue.value,
+              index: -1,
+            });
+          }
+        }
+      }
+    }
+
+    if (referencesLen > 0) this._addNL();
+
+    let localStackIndex = 1;
+    for (const stackedArg of argStack) {
+      const {
+        type,
+        index,
+        arg: variableArg,
+        value: variableValue,
+      } = stackedArg;
+
+      if (type === "reference") {
+        const arg = registerArg("variable", variableArg.id);
+        this._stackPushReference(
+          -(referencesLen - index + localStackIndex),
+          `Value (${variableValue}) ${arg}`
+        );
+        localStackIndex++;
+      }
+
+      if (type === "variable") {
+        if (typeof variableValue !== "string") {
+          throw new Error(`Custom script argument ${variableArg.id} value isn't a string`);
+        }
+        const variableAlias = this.getVariableAlias(variableValue);
+        const arg = registerArg("variable", variableArg.id);
+        this._stackPushConst(variableAlias, `Variable ${arg}`);
+        localStackIndex++;
+      }
+    }
+
+    if (actorArgs) {
+      for (const actorArg of actorArgs.reverse()) {
+        if (actorArg) {
+          const actorValue = input?.[`$actor[${actorArg.id}]$`] || "";
+          if (typeof actorValue === "string") {
+            const actorIndex = this.getActorIndex(actorValue);
+            const arg = registerArg("actor", actorArg.id);
+            this._stackPushConst(actorIndex, `Actor ${arg}`);
+          }
         }
       }
     }
@@ -2722,8 +2807,8 @@ class ScriptBuilder {
     );
 
     this._callFar(scriptRef);
-    if (argsLen > 0) {
-      this._stackPop(argsLen);
+    if (argsLen + referencesLen > 0) {
+      this._stackPop(argsLen + referencesLen);
     }
 
     this._addNL();
