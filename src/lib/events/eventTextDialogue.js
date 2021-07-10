@@ -10,6 +10,7 @@ const fields = [
     placeholder: l10n("FIELD_TEXT_PLACEHOLDER"),
     multiple: true,
     defaultValue: "",
+    flexBasis: "100%",
   },
   {
     key: "avatarId",

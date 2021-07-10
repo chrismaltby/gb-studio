@@ -12,7 +12,7 @@ import {
   ScriptEventBranchHeader,
   ScriptEventHeaderCaret,
 } from "ui/scripting/ScriptEvents";
-import { FixedSpacer } from "ui/spacing/Spacing";
+import { FixedSpacer, FlexBreak } from "ui/spacing/Spacing";
 import { TabBar } from "ui/tabs/Tabs";
 
 interface ScriptEventFormFieldProps {
@@ -122,6 +122,10 @@ const ScriptEventFormField = memo(
       );
     }
 
+    if (field.type === "break") {
+      return <FlexBreak />;
+    }
+
     if (field.type === "collapsable") {
       return (
         <ScriptEventBranchHeader
@@ -202,7 +206,10 @@ const ScriptEventFormField = memo(
 
     if (field.toggleLabel) {
       return (
-        <ScriptEventField halfWidth={field.width === "50%"}>
+        <ScriptEventField
+          halfWidth={field.width === "50%"}
+          style={{ flexBasis: field.flexBasis }}
+        >
           <ToggleableFormField
             name={genKey(scriptEventId, field.key || "")}
             disabledLabel={field.toggleLabel}
@@ -216,7 +223,10 @@ const ScriptEventFormField = memo(
     }
 
     return (
-      <ScriptEventField halfWidth={field.width === "50%"}>
+      <ScriptEventField
+        halfWidth={field.width === "50%"}
+        style={{ flexBasis: field.flexBasis }}
+      >
         <FormField
           name={genKey(scriptEventId, field.key || "")}
           label={

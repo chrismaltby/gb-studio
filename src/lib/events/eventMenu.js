@@ -23,6 +23,9 @@ const fields = [].concat(
       max: 8,
       defaultValue: 2,
     },
+    {
+      type: "break",
+    },
   ],
   Array(8)
     .fill()
@@ -82,6 +85,9 @@ const fields = [].concat(
       );
       return arr;
     }, []),
+  {
+    type: "break",
+  },
   {
     type: "checkbox",
     label: l10n("FIELD_LAST_OPTION_CANCELS"),

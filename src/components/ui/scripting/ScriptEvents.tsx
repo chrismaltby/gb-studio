@@ -171,6 +171,7 @@ export const ScriptEventBranchHeader = styled.div<ScriptEventBranchHeaderProps>`
     margin-right: -5px;
     margin-bottom: -5px;
     margin-left: calc(10px - min(50px, max(10px, 5%)));
+    flex-basis: 100%;
   }
 
   height: 25px;

@@ -14,3 +14,8 @@ export const FixedSpacer = styled.div<FixedSpacerProps>`
   height: ${(props) => (props.height ? props.height : 1)}px;
   flex-shrink: 0;
 `;
+
+export const FlexBreak = styled.div`
+  flex-basis: 100% !important;
+  height: 0;
+`;
