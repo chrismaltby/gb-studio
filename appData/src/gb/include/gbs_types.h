@@ -1,9 +1,7 @@
 #ifndef GBS_TYPES_H
 #define GBS_TYPES_H
 
-#ifdef CGB
-    #include <gb/cgb.h>
-#endif
+#include <gb/cgb.h>
 
 #include "bankdata.h"
 #include "parallax.h"
@@ -71,7 +69,7 @@ typedef struct actor_t
 
 typedef struct trigger_t {
     UINT8 x, y, width, height;
-    far_ptr_t script;
+    far_ptr_t script, script_leave;
 } trigger_t;
 
 typedef struct scene_t {
