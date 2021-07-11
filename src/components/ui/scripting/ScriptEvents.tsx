@@ -299,11 +299,11 @@ export const ScriptEditorChildren = styled.div<ScriptEditorChildrenProps>`
   padding-left: 10px;
   padding-left: calc(max(10px, min(4%, 50px)));
   box-sizing: border-box;
-
   border-radius: 10px;
   position: relative;
   min-height: 50px;
   border-left: 2px solid #ccc;
+  width: 100%;
 
   ${(props) =>
     props.nestLevel % 4 === 0

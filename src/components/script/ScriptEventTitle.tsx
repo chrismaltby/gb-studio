@@ -16,9 +16,10 @@ import {
   variableSelectors,
   getSceneActorIds,
   actorSelectors,
+  sceneSelectors,
 } from "store/features/entities/entitiesState";
 import keyBy from "lodash/keyBy";
-import { actorName } from "store/features/entities/entitiesHelpers";
+import { actorName, sceneName } from "store/features/entities/entitiesHelpers";
 import { Actor } from "store/features/entities/entitiesTypes";
 import styled from "styled-components";
 
@@ -66,6 +67,12 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
   const actorsLookup = useSelector((state: RootState) =>
     actorSelectors.selectEntities(state)
   );
+  const scenesLookup = useSelector((state: RootState) =>
+    sceneSelectors.selectEntities(state)
+  );
+  const scenes = useSelector((state: RootState) =>
+    sceneSelectors.selectAll(state)
+  );
 
   useEffect(() => {
     const variables = namedVariablesByContext(
@@ -80,8 +87,14 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
 
   useEffect(() => {
     if (events[command]?.autoLabel) {
+      const fieldLookup = keyBy(events[command]?.fields || [], "key");
+
       const extractValue = (arg: unknown): unknown => {
-        if (typeof arg === "object" && "value" in (arg as { value: unknown })) {
+        if (
+          arg &&
+          typeof arg === "object" &&
+          "value" in (arg as { value: unknown })
+        ) {
           return (arg as { value: unknown }).value;
         }
         return arg;
@@ -93,47 +106,73 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
           return l10n("FIELD_PLAYER");
         } else if (actorsLookup[value as string] && sceneActorIds) {
           const actor = actorsLookup[value as string] as Actor;
-          return actorName(actor, sceneActorIds?.indexOf(actor.id));
+          return actorName(actor, sceneActorIds?.indexOf(actor.id)).replace(
+            / /g,
+            ""
+          );
         } else {
           return l10n("FIELD_PLAYER");
         }
       };
       const propertyNameForId = (value: string) => {
         if (value === "xpos") {
-          return l10n("FIELD_X_POSITION");
+          return l10n("FIELD_X_POSITION").replace(/ /g, "");
         }
         if (value === "ypos") {
-          return l10n("FIELD_Y_POSITION");
+          return l10n("FIELD_Y_POSITION").replace(/ /g, "");
         }
         if (value === "direction") {
-          return l10n("FIELD_DIRECTION");
+          return l10n("FIELD_DIRECTION").replace(/ /g, "");
         }
         if (value === "frame") {
-          return l10n("FIELD_ANIMATION_FRAME");
+          return l10n("FIELD_ANIMATION_FRAME").replace(/ /g, "");
         }
         return value;
+      };
+      const variableNameForId = (value: unknown) => {
+        const id = String(value).replace(/^0*(.+)/, "$1");
+        return `$${
+          namedVariablesLookup[id]?.name.replace(/ /g, "") ?? String(value)
+        }`;
+      };
+      const sceneNameForId = (value: unknown) => {
+        const scene = scenesLookup[value as string];
+        if (scene) {
+          return sceneName(scene, scenes.indexOf(scene)).replace(/ /g, "");
+        }
+        return String(value);
       };
 
       const mapArg = (key: string) => {
         const arg = args[key];
         const argValue = extractValue(arg);
+        const fieldType = fieldLookup[key]?.type || "";
+        const fieldDefault = fieldLookup[key]?.defaultValue;
+        const fieldPlaceholder = fieldLookup[key]?.placeholder;
+
+        console.log({ key, fieldPlaceholder, fieldDefault });
+
+        const value = argValue || fieldDefault || fieldPlaceholder;
+
         if (isActorField(command, key, args)) {
-          return actorNameForId(argValue);
+          return actorNameForId(value);
         } else if (isVariableField(command, key, args)) {
-          return `$${
-            namedVariablesLookup[argValue as string]?.name.replace(/ /g, "") ??
-            String(argValue)
-          }`;
+          return variableNameForId(value);
         } else if (isPropertyField(command, key, arg)) {
-          const propertyParts = String(argValue).split(":");
-          return `${actorNameForId(propertyParts[0]).replace(
-            / /g,
-            ""
-          )} ${propertyNameForId(propertyParts[1]).replace(/ /g, "")}`;
+          const propertyParts = String(value).split(":");
+          return `${actorNameForId(propertyParts[0])} ${propertyNameForId(
+            propertyParts[1]
+          )}`;
+        } else if (fieldType === "matharea") {
+          return String(value).replace(/\$([VLT]*[0-9]+)\$/g, (_, match) => {
+            return variableNameForId(match);
+          });
+        } else if (fieldType === "scene") {
+          return sceneNameForId(value);
         }
-        return String(argValue);
+        return String(value);
       };
-      setAutoName(events[command]?.autoLabel?.(mapArg) || "");
+      setAutoName(events[command]?.autoLabel?.(mapArg, args) || "");
     }
   }, [
     command,
@@ -142,9 +181,11 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
     editorType,
     actorsLookup,
     sceneActorIds,
+    scenesLookup,
+    scenes,
   ]);
 
-  return <Wrapper>{String(autoName || labelName || eventName)}</Wrapper>;
+  return <Wrapper>{String(labelName || autoName || eventName)}</Wrapper>;
 };
 
 export default ScriptEventTitle;

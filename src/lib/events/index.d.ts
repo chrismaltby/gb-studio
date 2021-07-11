@@ -6,6 +6,7 @@ export interface EventField {
   checkboxLabel?: string;
   types?: string[];
   defaultType?: string;
+  placeholder?: string;
   min?: number;
   max?: number;
   options?: Array<[string | number, string]>;
@@ -15,7 +16,10 @@ export interface EventField {
 
 export interface EventHandler {
   id: string;
-  autoLabel?: (lookup: (key: string) => string) => string;
+  autoLabel?: (
+    lookup: (key: string) => string,
+    args: Record<string, unknown>
+  ) => string;
   fields: EventField[];
   name?: string;
   groups?: string[];
