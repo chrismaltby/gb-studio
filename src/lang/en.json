@@ -434,6 +434,7 @@
   "FIELD_IF_ACTOR_AT_POSITION_LABEL": "If {actor} At Position {{x},{y}}",
   "FIELD_SWITCH_SCENE_LABEL": "Change Scene To {scene} At {{x},{y}}",
   "FIELD_MENU_LABEL": "Display Menu: Set {variable} with options {text}",
+  "FIELD_CHOICE_LABEL": "Display Multiple Choice: Set {variable} with options {text}",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
