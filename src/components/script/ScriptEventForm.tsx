@@ -27,7 +27,7 @@ interface ScriptEventFormProps {
   entityId: string;
   nestLevel: number;
   altBg: boolean;
-  renderEvents: (key: string) => React.ReactNode;
+  renderEvents: (key: string, label: string) => React.ReactNode;
 }
 
 const genKey = (id: string, key: string, index: number) =>
@@ -172,7 +172,10 @@ const ScriptEventForm = ({
         }
 
         if (field.type === "events") {
-          return renderEvents(field.key || "");
+          return renderEvents(
+            field.key || "",
+            typeof field.label === "string" ? field.label : ""
+          );
         }
 
         return (

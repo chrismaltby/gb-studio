@@ -54,6 +54,7 @@ const Wrapper = styled.div<WrapperProps>`
           margin-left: 5px;
           height: 25px;
           flex-basis: 100%;
+          padding-left: calc(2px + max(10px, min(4%, 50px)));
         `
       : ""}
 `;
@@ -152,10 +153,7 @@ ${(props) =>
     props.variant === "scriptEvent"
       ? css`
           padding: 0 10px;
-          background: ${(props) => props.theme.colors.translucent};
-          color: ${(props) => props.theme.colors.scripting.header.text};
-          border: 0;
-          outline: none !important;
+          margin-left: 1px;
         `
       : ""}
 

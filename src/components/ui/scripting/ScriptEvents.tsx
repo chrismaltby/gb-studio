@@ -211,41 +211,25 @@ export const ScriptEventBranchHeader = styled.div<ScriptEventBranchHeaderProps>`
   ${(props) =>
     props.conditional && props.nestLevel % 4 === 0
       ? css`
-          background: linear-gradient(
-            0deg,
-            ${props.theme.colors.scripting.header.nest1Background},
-            ${props.theme.colors.scripting.header.nest1Background}
-          );
+          background: ${props.theme.colors.scripting.branch.nest1Background};
         `
       : ""}
   ${(props) =>
     props.conditional && props.nestLevel % 4 === 1
       ? css`
-          background: linear-gradient(
-            0deg,
-            ${props.theme.colors.scripting.header.nest2Background},
-            ${props.theme.colors.scripting.header.nest2Background}
-          );
+          background: ${props.theme.colors.scripting.branch.nest2Background};
         `
       : ""}
     ${(props) =>
     props.conditional && props.nestLevel % 4 === 2
       ? css`
-          background: linear-gradient(
-            0deg,
-            ${props.theme.colors.scripting.header.nest3Background},
-            ${props.theme.colors.scripting.header.nest3Background}
-          );
+          background: ${props.theme.colors.scripting.branch.nest3Background};
         `
       : ""}
     ${(props) =>
     props.conditional && props.nestLevel % 4 === 3
       ? css`
-          background: linear-gradient(
-            0deg,
-            ${props.theme.colors.scripting.header.nest4Background},
-            ${props.theme.colors.scripting.header.nest4Background}
-          );
+          background: ${props.theme.colors.scripting.branch.nest4Background};
         `
       : ""}
 
@@ -312,7 +296,46 @@ export const ScriptEditorChildren = styled.div`
 export const ScriptEditorChildrenWrapper = styled.div`
   border: 1px solid ${(props) => props.theme.colors.sidebar.border};
   border-right: 0px;
-  // box-shadow: ${(props) => props.theme.colors.scripting.children.boxShadow};
+`;
+
+interface ScriptEditorChildrenLabelProps {
+  nestLevel: number;
+}
+
+export const ScriptEditorChildrenLabel = styled.div<ScriptEditorChildrenLabelProps>`
+  position: absolute;
+  top: 50%;
+  left: -1px;
+  transform: translate(-50%, -50%) rotate(270deg);
+  font-size: 8px;
+  background: ${(props) => props.theme.colors.scripting.form.background};
+  padding: 0px 5px;
+  text-transform: uppercase;
+
+  ${(props) =>
+    props.nestLevel % 4 === 0
+      ? css`
+          color: ${props.theme.colors.scripting.children.nest1Text};
+        `
+      : ""}
+  ${(props) =>
+    props.nestLevel % 4 === 1
+      ? css`
+          color: ${props.theme.colors.scripting.children.nest2Text};
+        `
+      : ""}
+           ${(props) =>
+    props.nestLevel % 4 === 2
+      ? css`
+          color: ${props.theme.colors.scripting.children.nest3Text};
+        `
+      : ""}
+               ${(props) =>
+    props.nestLevel % 4 === 3
+      ? css`
+          color: ${props.theme.colors.scripting.children.nest4Text};
+        `
+      : ""}
 `;
 
 interface ScriptEventWrapperProps {
@@ -331,22 +354,9 @@ export const ScriptEventWrapper = styled.div<ScriptEventWrapperProps>`
           ${ScriptEditorChildren} {
             position: relative;
             border-radius: 10px;
-            border-left: 2px dotted
-              ${props.theme.colors.scripting.header.nest1Background};
+            border-left: 2px solid
+              ${props.theme.colors.scripting.children.nest1Border};
             min-height: 50px;
-
-            :after {
-              content: "TRUE";
-              position: absolute;
-              top: 50%;
-              left: 0;
-              transform: translate(-50%, -50%) rotate(270deg);
-              font-size: 8px;
-              background: ${(props) =>
-                props.theme.colors.scripting.form.background};
-              padding: 0px 5px;
-              color: #03a9f4;
-            }
           }
         `
       : ""}
@@ -354,12 +364,8 @@ export const ScriptEventWrapper = styled.div<ScriptEventWrapperProps>`
     props.conditional && props.nestLevel % 4 === 1
       ? css`
           ${ScriptEditorChildren} {
-            border-left: 2px dotted
-              ${props.theme.colors.scripting.header.nest2Background};
-
-            :after {
-              color: #ff5722;
-            }
+            border-left: 2px solid
+              ${props.theme.colors.scripting.children.nest2Border};
           }
         `
       : ""}
@@ -367,12 +373,8 @@ export const ScriptEventWrapper = styled.div<ScriptEventWrapperProps>`
     props.conditional && props.nestLevel % 4 === 2
       ? css`
           ${ScriptEditorChildren} {
-            border-left: 2px dotted
-              ${props.theme.colors.scripting.header.nest3Background};
-
-            :after {
-              color: ${props.theme.colors.scripting.header.nest3Background};
-            }
+            border-left: 2px solid
+              ${props.theme.colors.scripting.children.nest3Border};
           }
         `
       : ""}
@@ -380,23 +382,8 @@ export const ScriptEventWrapper = styled.div<ScriptEventWrapperProps>`
     props.conditional && props.nestLevel % 4 === 3
       ? css`
           ${ScriptEditorChildren} {
-            border-left: 2px dotted
-              ${props.theme.colors.scripting.header.nest4Background};
-
-            :after {
-              color: ${props.theme.colors.scripting.header.nest4Background};
-            }
-          }
-        `
-      : ""}
-
-    ${(props) =>
-    props.conditional && props.nestLevel === 4
-      ? css`
-          ${ScriptEditorChildren} {
-            :after {
-              color: ${props.theme.colors.text};
-            }
+            border-left: 2px solid
+              ${props.theme.colors.scripting.children.nest4Border};
           }
         `
       : ""}

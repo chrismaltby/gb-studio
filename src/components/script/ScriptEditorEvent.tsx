@@ -31,6 +31,7 @@ import {
   ScriptEventRenameInput,
   ScriptEventRenameInputCompleteButton,
   ScriptEditorChildrenWrapper,
+  ScriptEditorChildrenLabel,
 } from "ui/scripting/ScriptEvents";
 import { ArrowIcon, CheckIcon, CommentIcon } from "ui/icons/Icons";
 import { FixedSpacer } from "ui/spacing/Spacing";
@@ -258,11 +259,42 @@ const ScriptEditorEvent = ({
   drag(dragRef);
   drop(dropRef);
 
+  const command = scriptEvent?.command ?? "";
+  const isComment = command === EVENT_COMMENT;
+  const commented = (scriptEvent?.args && scriptEvent?.args.__comment) ?? "";
+  const hasElse =
+    (scriptEvent?.children && !!scriptEvent.children.false) ?? false;
+  const disabledElse =
+    (scriptEvent?.args && scriptEvent?.args.__disableElse) ?? false;
+
+  const localisedCommand = l10n(command);
+  const eventName =
+    localisedCommand !== command
+      ? localisedCommand
+      : (events[command] && events[command]?.name) || command;
+
+  const labelName =
+    (scriptEvent?.args?.__label
+      ? scriptEvent.args.__label
+      : isComment && scriptEvent?.args?.text) || undefined;
+
+  const hoverName = labelName || eventName;
+
   const renderEvents = useCallback(
-    (key: string) => {
+    (key: string, label: string) => {
       return (
-        <ScriptEditorChildren key={key}>
-          <ScriptEditorChildrenWrapper>
+        <ScriptEditorChildren
+          key={key}
+          title={`${labelName ? String(labelName) : eventName}${
+            label ? `: ${label}` : ""
+          }`}
+        >
+          {label && (
+            <ScriptEditorChildrenLabel nestLevel={nestLevel}>
+              {label}
+            </ScriptEditorChildrenLabel>
+          )}
+          <ScriptEditorChildrenWrapper title="">
             {(scriptEvent?.children?.[key] || []).map((child, childIndex) => (
               <ScriptEditorEvent
                 key={child}
@@ -286,7 +318,7 @@ const ScriptEditorEvent = ({
         </ScriptEditorChildren>
       );
     },
-    [entityId, id, nestLevel, scriptEvent?.children]
+    [labelName, eventName, nestLevel, scriptEvent?.children, id, entityId]
   );
 
   const onMouseEnter = useCallback(() => {
@@ -309,25 +341,6 @@ const ScriptEditorEvent = ({
   if (!scriptEvent) {
     return null;
   }
-
-  const command = scriptEvent.command;
-  const isComment = command === EVENT_COMMENT;
-  const commented = scriptEvent.args && scriptEvent.args.__comment;
-  const hasElse = scriptEvent.children && scriptEvent.children.false;
-  const disabledElse = scriptEvent.args && scriptEvent.args.__disableElse;
-
-  const localisedCommand = l10n(command);
-  const eventName =
-    localisedCommand !== command
-      ? localisedCommand
-      : (events[command] && events[command]?.name) || command;
-
-  const labelName =
-    (scriptEvent.args?.__label
-      ? scriptEvent.args.__label
-      : isComment && scriptEvent.args?.text) || undefined;
-
-  const hoverName = labelName || eventName;
 
   if (scriptEvent.command === EVENT_END) {
     return null;

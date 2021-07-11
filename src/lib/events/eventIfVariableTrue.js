@@ -11,6 +11,7 @@ const fields = [
   },
   {
     key: "true",
+    label: l10n("FIELD_TRUE"),
     type: "events",
   },
   {
@@ -27,6 +28,7 @@ const fields = [
   },
   {
     key: "false",
+    label: l10n("FIELD_FALSE"),
     conditions: [
       {
         key: "__collapseElse",
