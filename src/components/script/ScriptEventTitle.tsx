@@ -35,6 +35,14 @@ const Wrapper = styled.div`
   max-width: 100%;
 `;
 
+const customEventActorsLookup = keyBy(
+  Array.from(Array(10).keys()).map((i) => ({
+    id: String(i),
+    name: `Actor ${String.fromCharCode("A".charCodeAt(0) + i)}`,
+  })),
+  "id"
+);
+
 const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
   const isComment = command === EVENT_COMMENT;
   const localisedCommand = l10n(command);
@@ -100,6 +108,15 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
         return arg;
       };
       const actorNameForId = (value: unknown) => {
+        if (
+          editorType === "customEvent" &&
+          customEventActorsLookup[value as string]
+        ) {
+          return customEventActorsLookup[value as string].name.replace(
+            / /g,
+            ""
+          );
+        }
         if (value === "$self$" && editorType === "actor") {
           return l10n("FIELD_SELF");
         } else if (value === "$self$" || value === "player") {
@@ -164,7 +181,7 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
           return variableNameForId(value);
         } else if (isPropertyField(command, key, arg)) {
           const propertyParts = String(value).split(":");
-          return `${actorNameForId(propertyParts[0])} ${propertyNameForId(
+          return `${actorNameForId(propertyParts[0])}.${propertyNameForId(
             propertyParts[1]
           )}`;
         } else if (fieldType === "matharea") {
