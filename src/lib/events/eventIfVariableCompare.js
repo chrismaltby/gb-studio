@@ -28,7 +28,7 @@ const fields = [
     key: "__collapseElse",
     label: l10n("FIELD_ELSE"),
     type: "collapsable",
-    defaultValue: false,
+    defaultValue: true,
     conditions: [
       {
         key: "__disableElse",
