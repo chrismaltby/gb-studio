@@ -30,6 +30,7 @@ import {
   ScriptEventHeaderCaret,
   ScriptEventRenameInput,
   ScriptEventRenameInputCompleteButton,
+  ScriptEditorChildrenWrapper,
 } from "ui/scripting/ScriptEvents";
 import { ArrowIcon, CheckIcon, CommentIcon } from "ui/icons/Icons";
 import { FixedSpacer } from "ui/spacing/Spacing";
@@ -261,25 +262,27 @@ const ScriptEditorEvent = ({
     (key: string) => {
       return (
         <ScriptEditorChildren key={key}>
-          {(scriptEvent?.children?.[key] || []).map((child, childIndex) => (
-            <ScriptEditorEvent
-              key={child}
-              id={child}
-              index={childIndex}
-              nestLevel={nestLevel + 1}
+          <ScriptEditorChildrenWrapper>
+            {(scriptEvent?.children?.[key] || []).map((child, childIndex) => (
+              <ScriptEditorEvent
+                key={child}
+                id={child}
+                index={childIndex}
+                nestLevel={nestLevel + 1}
+                parentType="scriptEvent"
+                parentId={id}
+                parentKey={key}
+                entityId={entityId}
+              />
+            ))}
+            <AddButton
               parentType="scriptEvent"
               parentId={id}
               parentKey={key}
-              entityId={entityId}
+              nestLevel={nestLevel}
+              conditional={true}
             />
-          ))}
-          <AddButton
-            parentType="scriptEvent"
-            parentId={id}
-            parentKey={key}
-            nestLevel={nestLevel}
-            conditional={true}
-          />
+          </ScriptEditorChildrenWrapper>
         </ScriptEditorChildren>
       );
     },
