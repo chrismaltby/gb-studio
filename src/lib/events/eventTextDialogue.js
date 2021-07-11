@@ -3,10 +3,14 @@ const l10n = require("../helpers/l10n").default;
 const id = "EVENT_TEXT";
 const groups = ["EVENT_GROUP_DIALOGUE"];
 
-const autoLabel = (fetchArg) => {
-  return l10n("FIELD_TEXT_LABEL", {
-    text: fetchArg("text"),
-  });
+const autoLabel = (fetchArg, args) => {
+  if (args.text.join()) {
+    return l10n("FIELD_TEXT_LABEL", {
+      text: fetchArg("text"),
+    });
+  } else {
+    l10n("EVENT_TEXT");
+  }
 };
 
 const fields = [
