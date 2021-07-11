@@ -6,7 +6,6 @@ import {
   isVariableField,
 } from "lib/helpers/eventSystem";
 import l10n from "lib/helpers/l10n";
-import { EVENT_COMMENT } from "lib/compiler/eventTypes";
 import { NamedVariable, namedVariablesByContext } from "lib/helpers/variables";
 import { Dictionary } from "@reduxjs/toolkit";
 import { useSelector } from "react-redux";
@@ -44,14 +43,12 @@ const customEventActorsLookup = keyBy(
 );
 
 const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
-  const isComment = command === EVENT_COMMENT;
   const localisedCommand = l10n(command);
   const eventName =
     localisedCommand !== command
       ? localisedCommand
       : (events[command] && events[command]?.name) || command;
-  const labelName =
-    (args?.__label ? args.__label : isComment && args?.text) || undefined;
+  const labelName = args?.__label ? args.__label : undefined;
 
   const [autoName, setAutoName] = useState("");
   const [namedVariablesLookup, setNamedVariablesLookup] = useState<
