@@ -98,11 +98,24 @@ export interface ThemeInterface {
         commentBackground: string;
         commentBackgroundAlt: string;
       };
+      branch: {
+        nest1Background: string;
+        nest2Background: string;
+        nest3Background: string;
+        nest4Background: string;
+      };
       form: {
         background: string;
       };
       children: {
-        boxShadow: string;
+        nest1Border: string;
+        nest1Text: string;
+        nest2Border: string;
+        nest2Text: string;
+        nest3Border: string;
+        nest3Text: string;
+        nest4Border: string;
+        nest4Text: string;
       };
       placeholder: {
         background: string;

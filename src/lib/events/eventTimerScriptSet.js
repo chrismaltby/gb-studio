@@ -23,6 +23,7 @@ const fields = [
   },
   {
     key: "script",
+    label: l10n("FIELD_ON_TIMER_TICK"),
     type: "events",
     conditions: [
       {

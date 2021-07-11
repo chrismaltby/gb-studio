@@ -101,11 +101,24 @@ const lightTheme: ThemeInterface = {
         commentBackground: "#dcedc8",
         commentBackgroundAlt: "#c5e1a5",
       },
+      branch: {
+        nest1Background: "#e1f5fe",
+        nest2Background: "#fbe9e7",
+        nest3Background: "#e8f5e9",
+        nest4Background: "#f3e5f5",
+      },
       form: {
         background: "#ffffff",
       },
       children: {
-        boxShadow: "-1px 1px 3px hsla(0,0%,0%,0.15)",
+        nest1Border: "#b3e5fc",
+        nest1Text: "#03a9f4",
+        nest2Border: "#ffccbc",
+        nest2Text: "#ff5722",
+        nest3Border: "#c8e6c9",
+        nest3Text: "#4CAF50",
+        nest4Border: "#d1c4e9",
+        nest4Text: "#9C27B0",
       },
       placeholder: {
         background: "#ccc",

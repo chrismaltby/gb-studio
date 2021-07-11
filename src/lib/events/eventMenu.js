@@ -8,6 +8,20 @@ const trimMenuItem = (string) => {
 const id = "EVENT_MENU";
 const groups = ["EVENT_GROUP_DIALOGUE"];
 
+const autoLabel = (fetchArg) => {
+  const numItems = parseInt(fetchArg("items"));
+  const text = Array(numItems)
+    .fill()
+    .map((_, i) => {
+      return `"${fetchArg(`option${i + 1}`)}"`;
+    })
+    .join();
+  return l10n("FIELD_MENU_LABEL", {
+    variable: fetchArg("variable"),
+    text,
+  });
+};
+
 const fields = [].concat(
   [
     {
@@ -35,11 +49,11 @@ const fields = [].concat(
       arr.push(
         {
           key: `option${i + 1}`,
-          label: l10n("FIELD_SET_TO_VALUE_IF", { value: i + 1 }),
+          label: l10n("FIELD_SET_TO_VALUE_IF", { value: String(i + 1) }),
           type: "text",
           updateFn: trimMenuItem,
           defaultValue: "",
-          placeholder: l10n("FIELD_ITEM", { value: i + 1 }),
+          placeholder: l10n("FIELD_ITEM", { value: String(i + 1) }),
           conditions: [
             {
               key: "items",
@@ -49,11 +63,11 @@ const fields = [].concat(
         },
         {
           key: `option${i + 1}`,
-          label: l10n("FIELD_SET_TO_VALUE_IF", { value: i + 1 }),
+          label: l10n("FIELD_SET_TO_VALUE_IF", { value: String(i + 1) }),
           type: "text",
           updateFn: trimMenuItem,
           defaultValue: "",
-          placeholder: l10n("FIELD_ITEM", { value: i + 1 }),
+          placeholder: l10n("FIELD_ITEM", { value: String(i + 1) }),
           conditions: [
             {
               key: "items",
@@ -67,11 +81,11 @@ const fields = [].concat(
         },
         {
           key: `option${i + 1}`,
-          label: l10n("FIELD_SET_TO_VALUE_IF", { value: 0 }),
+          label: l10n("FIELD_SET_TO_VALUE_IF", { value: "0" }),
           type: "text",
           updateFn: trimMenuItem,
           defaultValue: "",
-          placeholder: l10n("FIELD_ITEM", { value: 0 }),
+          placeholder: l10n("FIELD_ITEM", { value: String(i + 1) }),
           conditions: [
             {
               key: "items",
@@ -136,6 +150,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  autoLabel,
   groups,
   fields,
   compile,

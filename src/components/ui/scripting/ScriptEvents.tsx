@@ -54,6 +54,10 @@ export const ScriptEventHeaderTitle = styled.div`
   flex-grow: 1;
   align-items: center;
   height: 25px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 `;
 
 interface ScriptEventHeaderCaretProps {
@@ -106,6 +110,48 @@ export const ScriptEventHeader = styled.div<ScriptEventHeaderProps>`
   }
 
   ${(props) =>
+    props.conditional && props.nestLevel % 4 === 0
+      ? css`
+          background: linear-gradient(
+            0deg,
+            ${props.theme.colors.scripting.header.nest1BackgroundAlt},
+            ${props.theme.colors.scripting.header.nest1Background}
+          );
+        `
+      : ""}
+  ${(props) =>
+    props.conditional && props.nestLevel % 4 === 1
+      ? css`
+          background: linear-gradient(
+            0deg,
+            ${props.theme.colors.scripting.header.nest2BackgroundAlt},
+            ${props.theme.colors.scripting.header.nest2Background}
+          );
+        `
+      : ""}
+    ${(props) =>
+    props.conditional && props.nestLevel % 4 === 2
+      ? css`
+          background: linear-gradient(
+            0deg,
+            ${props.theme.colors.scripting.header.nest3BackgroundAlt},
+            ${props.theme.colors.scripting.header.nest3Background}
+          );
+        `
+      : ""}
+    ${(props) =>
+    props.conditional && props.nestLevel % 4 === 3
+      ? css`
+          background: linear-gradient(
+            0deg,
+            ${props.theme.colors.scripting.header.nest4BackgroundAlt},
+            ${props.theme.colors.scripting.header.nest4Background}
+          );
+        `
+      : ""}
+
+
+  ${(props) =>
     props.comment
       ? css`
           &&& {
@@ -117,13 +163,6 @@ export const ScriptEventHeader = styled.div<ScriptEventHeaderProps>`
                 props.theme.colors.scripting.header.commentBackground}
             );
           }
-        `
-      : ""}
-
-  ${(props) =>
-    props.conditional
-      ? css`
-          background: transparent;
         `
       : ""}
 
@@ -155,17 +194,17 @@ export const ScriptEventBranchHeader = styled.div<ScriptEventBranchHeaderProps>`
   padding-left: 8px;
   // margin-left: -10px;
   // margin-right: -10px;
-  margin: -10px;
+  margin: -15px;
   // && {
   //   margin: -10px -10px -10px 0px;
   // }
 
   && {
     // background: red;
-    margin-top: -5px;
+    // margin-top: -5px;
     margin-right: -5px;
-    margin-bottom: -5px;
-    margin-left: calc(10px - min(50px, max(10px, 5%)));
+    // margin-bottom: -5px;
+    margin-left: -5px;
     flex-basis: 100%;
   }
 
@@ -174,9 +213,37 @@ export const ScriptEventBranchHeader = styled.div<ScriptEventBranchHeaderProps>`
   line-height: 12px;
 
   ${(props) =>
+    props.conditional && props.nestLevel % 4 === 0
+      ? css`
+          background: ${props.theme.colors.scripting.branch.nest1Background};
+        `
+      : ""}
+  ${(props) =>
+    props.conditional && props.nestLevel % 4 === 1
+      ? css`
+          background: ${props.theme.colors.scripting.branch.nest2Background};
+        `
+      : ""}
+    ${(props) =>
+    props.conditional && props.nestLevel % 4 === 2
+      ? css`
+          background: ${props.theme.colors.scripting.branch.nest3Background};
+        `
+      : ""}
+    ${(props) =>
+    props.conditional && props.nestLevel % 4 === 3
+      ? css`
+          background: ${props.theme.colors.scripting.branch.nest4Background};
+        `
+      : ""}
+
+
+  ${(props) =>
     !props.open
       ? css`
-          margin-bottom: -10px;
+          && {
+            margin-bottom: -5px;
+          }
         `
       : ""}
 `;
@@ -219,10 +286,94 @@ export const ScriptEventField = styled.div<ScriptEventFieldProps>`
       : ""}
 `;
 
-export const ScriptEditorChildren = styled.div`
+interface ScriptEditorChildrenProps {
+  nestLevel: number;
+}
+
+export const ScriptEditorChildren = styled.div<ScriptEditorChildrenProps>`
   flex-grow: 1;
   flex-shrink: 0;
   flex-basis: 100%;
+  border-left: 1px dotted
+    ${(props) => props.theme.colors.scripting.header.backgroundAlt};
+  padding-left: 10px;
+  padding-left: calc(max(10px, min(4%, 50px)));
+  box-sizing: border-box;
+  border-radius: 10px;
+  position: relative;
+  min-height: 50px;
+  border-left: 2px solid #ccc;
+  width: 100%;
+
+  ${(props) =>
+    props.nestLevel % 4 === 0
+      ? css`
+          border-color: ${props.theme.colors.scripting.children.nest1Border};
+        `
+      : ""}
+  ${(props) =>
+    props.nestLevel % 4 === 1
+      ? css`
+          border-color: ${props.theme.colors.scripting.children.nest2Border};
+        `
+      : ""}
+    ${(props) =>
+    props.nestLevel % 4 === 2
+      ? css`
+          border-color: ${props.theme.colors.scripting.children.nest3Border};
+        `
+      : ""}
+    ${(props) =>
+    props.nestLevel % 4 === 3
+      ? css`
+          border-color: ${props.theme.colors.scripting.children.nest4Border};
+        `
+      : ""}
+`;
+
+export const ScriptEditorChildrenWrapper = styled.div`
+  border: 1px solid ${(props) => props.theme.colors.sidebar.border};
+  border-right: 0px;
+`;
+
+interface ScriptEditorChildrenLabelProps {
+  nestLevel: number;
+}
+
+export const ScriptEditorChildrenLabel = styled.div<ScriptEditorChildrenLabelProps>`
+  position: absolute;
+  top: 50%;
+  left: -1px;
+  transform: translate(-50%, -50%) rotate(270deg);
+  font-size: 8px;
+  background: ${(props) => props.theme.colors.scripting.form.background};
+  padding: 0px 5px;
+  text-transform: uppercase;
+
+  ${(props) =>
+    props.nestLevel % 4 === 0
+      ? css`
+          color: ${props.theme.colors.scripting.children.nest1Text};
+        `
+      : ""}
+  ${(props) =>
+    props.nestLevel % 4 === 1
+      ? css`
+          color: ${props.theme.colors.scripting.children.nest2Text};
+        `
+      : ""}
+           ${(props) =>
+    props.nestLevel % 4 === 2
+      ? css`
+          color: ${props.theme.colors.scripting.children.nest3Text};
+        `
+      : ""}
+               ${(props) =>
+    props.nestLevel % 4 === 3
+      ? css`
+          color: ${props.theme.colors.scripting.children.nest4Text};
+        `
+      : ""}
 `;
 
 interface ScriptEventWrapperProps {
@@ -234,61 +385,4 @@ interface ScriptEventWrapperProps {
 export const ScriptEventWrapper = styled.div<ScriptEventWrapperProps>`
   background-color: ${(props) => props.theme.colors.scripting.form.background};
   color: ${(props) => props.theme.colors.text};
-
-  ${(props) =>
-    props.conditional
-      ? css`
-          background: ${(props) =>
-            props.theme.colors.scripting.header.nest1Background};
-          color: ${(props) => props.theme.colors.scripting.header.text};
-
-          & > div > div > ${ScriptEventFields} {
-            padding-top: 0px;
-            margin-top: -5px;
-            padding-left: 5%;
-            margin-left: -10px;
-            padding-left: min(50px, max(10px, 5%));
-          }
-        `
-      : ""}
-  ${(props) =>
-    props.conditional && props.nestLevel % 4 === 0
-      ? css`
-          background: linear-gradient(
-            0deg,
-            ${props.theme.colors.scripting.header.nest1BackgroundAlt},
-            ${props.theme.colors.scripting.header.nest1Background}
-          );
-        `
-      : ""}
-    ${(props) =>
-    props.conditional && props.nestLevel % 4 === 1
-      ? css`
-          background: linear-gradient(
-            0deg,
-            ${props.theme.colors.scripting.header.nest2BackgroundAlt},
-            ${props.theme.colors.scripting.header.nest2Background}
-          );
-        `
-      : ""}
-    ${(props) =>
-    props.conditional && props.nestLevel % 4 === 2
-      ? css`
-          background: linear-gradient(
-            0deg,
-            ${props.theme.colors.scripting.header.nest3BackgroundAlt},
-            ${props.theme.colors.scripting.header.nest3Background}
-          );
-        `
-      : ""}
-    ${(props) =>
-    props.conditional && props.nestLevel % 4 === 3
-      ? css`
-          background: linear-gradient(
-            0deg,
-            ${props.theme.colors.scripting.header.nest4BackgroundAlt},
-            ${props.theme.colors.scripting.header.nest4Background}
-          );
-        `
-      : ""}
 `;

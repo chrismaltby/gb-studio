@@ -21,6 +21,7 @@ const fields = [
   },
   {
     key: "true",
+    label: l10n("FIELD_ON_TRIGGER"),
     type: "events",
     conditions: [
       {

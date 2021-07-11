@@ -53,8 +53,12 @@ const Wrapper = styled.div<WrapperProps>`
   ${(props) =>
     props.conditional
       ? css`
-          background: ${(props) => props.theme.colors.translucent};
           border-top: 0;
+
+          * + * > & {
+            border-top: 1px solid
+              ${(props) => props.theme.colors.sidebar.border};
+          }
         `
       : ""}
 `;

@@ -101,11 +101,24 @@ const darkTheme: ThemeInterface = {
         commentBackground: "#8bc34a",
         commentBackgroundAlt: "#7cb342",
       },
+      branch: {
+        nest1Background: "#203D6A",
+        nest2Background: "#6F491A",
+        nest3Background: "#27492A",
+        nest4Background: "#3F2460",
+      },
       form: {
         background: "#333333",
       },
       children: {
-        boxShadow: "-1px 1px 2px hsla(0,0%,0%,0.7)",
+        nest1Border: "#2196f3",
+        nest1Text: "#2196f3",
+        nest2Border: "#ca750b",
+        nest2Text: "#ca750b",
+        nest3Border: "#4caf50",
+        nest3Text: "#4caf50",
+        nest4Border: "#9575cd",
+        nest4Text: "#9575cd",
       },
       placeholder: {
         background: "#000",
