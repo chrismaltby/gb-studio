@@ -46,6 +46,7 @@ import clipboardActions from "store/features/clipboard/clipboardActions";
 import { ClipboardTypeScriptEvents } from "store/features/clipboard/clipboardTypes";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import AddScriptEventMenu from "./AddScriptEventMenu";
+import ScriptEventTitle from "./ScriptEventTitle";
 
 interface ScriptEditorEventProps {
   id: string;
@@ -266,29 +267,15 @@ const ScriptEditorEvent = ({
     (scriptEvent?.children && !!scriptEvent.children.false) ?? false;
   const disabledElse =
     (scriptEvent?.args && scriptEvent?.args.__disableElse) ?? false;
-
-  const localisedCommand = l10n(command);
-  const eventName =
-    localisedCommand !== command
-      ? localisedCommand
-      : (events[command] && events[command]?.name) || command;
-
   const labelName =
     (scriptEvent?.args?.__label
       ? scriptEvent.args.__label
       : isComment && scriptEvent?.args?.text) || undefined;
 
-  const hoverName = labelName || eventName;
-
   const renderEvents = useCallback(
     (key: string, label: string) => {
       return (
-        <ScriptEditorChildren
-          key={key}
-          title={`${labelName ? String(labelName) : eventName}${
-            label ? `: ${label}` : ""
-          }`}
-        >
+        <ScriptEditorChildren key={key} title={label} nestLevel={nestLevel}>
           {label && (
             <ScriptEditorChildrenLabel nestLevel={nestLevel}>
               {label}
@@ -318,7 +305,7 @@ const ScriptEditorEvent = ({
         </ScriptEditorChildren>
       );
     },
-    [labelName, eventName, nestLevel, scriptEvent?.children, id, entityId]
+    [nestLevel, scriptEvent?.children, id, entityId]
   );
 
   const onMouseEnter = useCallback(() => {
@@ -406,7 +393,7 @@ const ScriptEditorEvent = ({
                     onFocus={onRenameFocus}
                     onBlur={onRenameComplete}
                     onKeyDown={onDetectRenameComplete}
-                    placeholder={eventName}
+                    placeholder={l10n("FIELD_RENAME")}
                   />
                   <ScriptEventRenameInputCompleteButton
                     onClick={onRenameComplete}
@@ -416,7 +403,10 @@ const ScriptEditorEvent = ({
                   </ScriptEventRenameInputCompleteButton>
                 </>
               ) : (
-                <span>{labelName ? String(labelName) : eventName}</span>
+                <ScriptEventTitle
+                  command={scriptEvent.command}
+                  args={scriptEvent.args}
+                />
               )}
             </ScriptEventHeaderTitle>
 

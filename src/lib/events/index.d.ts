@@ -15,6 +15,7 @@ export interface EventField {
 
 export interface EventHandler {
   id: string;
+  autoLabel?: (lookup: (key: string) => string) => string;
   fields: EventField[];
   name?: string;
   groups?: string[];

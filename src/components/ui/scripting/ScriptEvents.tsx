@@ -54,6 +54,10 @@ export const ScriptEventHeaderTitle = styled.div`
   flex-grow: 1;
   align-items: center;
   height: 25px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 `;
 
 interface ScriptEventHeaderCaretProps {
@@ -282,7 +286,11 @@ export const ScriptEventField = styled.div<ScriptEventFieldProps>`
       : ""}
 `;
 
-export const ScriptEditorChildren = styled.div`
+interface ScriptEditorChildrenProps {
+  nestLevel: number;
+}
+
+export const ScriptEditorChildren = styled.div<ScriptEditorChildrenProps>`
   flex-grow: 1;
   flex-shrink: 0;
   flex-basis: 100%;
@@ -291,6 +299,36 @@ export const ScriptEditorChildren = styled.div`
   padding-left: 10px;
   padding-left: calc(max(10px, min(4%, 50px)));
   box-sizing: border-box;
+
+  border-radius: 10px;
+  position: relative;
+  min-height: 50px;
+  border-left: 2px solid #ccc;
+
+  ${(props) =>
+    props.nestLevel % 4 === 0
+      ? css`
+          border-color: ${props.theme.colors.scripting.children.nest1Border};
+        `
+      : ""}
+  ${(props) =>
+    props.nestLevel % 4 === 1
+      ? css`
+          border-color: ${props.theme.colors.scripting.children.nest2Border};
+        `
+      : ""}
+    ${(props) =>
+    props.nestLevel % 4 === 2
+      ? css`
+          border-color: ${props.theme.colors.scripting.children.nest3Border};
+        `
+      : ""}
+    ${(props) =>
+    props.nestLevel % 4 === 3
+      ? css`
+          border-color: ${props.theme.colors.scripting.children.nest4Border};
+        `
+      : ""}
 `;
 
 export const ScriptEditorChildrenWrapper = styled.div`
@@ -347,44 +385,4 @@ interface ScriptEventWrapperProps {
 export const ScriptEventWrapper = styled.div<ScriptEventWrapperProps>`
   background-color: ${(props) => props.theme.colors.scripting.form.background};
   color: ${(props) => props.theme.colors.text};
-
-  ${(props) =>
-    props.conditional && props.nestLevel % 4 === 0
-      ? css`
-          ${ScriptEditorChildren} {
-            position: relative;
-            border-radius: 10px;
-            border-left: 2px solid
-              ${props.theme.colors.scripting.children.nest1Border};
-            min-height: 50px;
-          }
-        `
-      : ""}
-  ${(props) =>
-    props.conditional && props.nestLevel % 4 === 1
-      ? css`
-          ${ScriptEditorChildren} {
-            border-left: 2px solid
-              ${props.theme.colors.scripting.children.nest2Border};
-          }
-        `
-      : ""}
-    ${(props) =>
-    props.conditional && props.nestLevel % 4 === 2
-      ? css`
-          ${ScriptEditorChildren} {
-            border-left: 2px solid
-              ${props.theme.colors.scripting.children.nest3Border};
-          }
-        `
-      : ""}
-    ${(props) =>
-    props.conditional && props.nestLevel % 4 === 3
-      ? css`
-          ${ScriptEditorChildren} {
-            border-left: 2px solid
-              ${props.theme.colors.scripting.children.nest4Border};
-          }
-        `
-      : ""}
 `;
