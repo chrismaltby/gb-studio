@@ -35,15 +35,10 @@ interface WrapperProps {
 const Wrapper = styled.div<WrapperProps>`
   display: flex;
   padding: 10px;
-  // justify-content: center;
-  // padding-left: 0px;
 
   ${Button} {
     width: 100%;
     max-width: 300px;
-    // justify-content: flex-start;
-    // padding-left: 5px;
-    // background: rgba(128, 128, 128, 0.2);
 
     svg {
       width: 12px;
@@ -58,30 +53,10 @@ const Wrapper = styled.div<WrapperProps>`
   ${(props) =>
     props.conditional
       ? css`
-          // background: rgba(0, 0, 0, 0.05);
           background: ${(props) => props.theme.colors.translucent};
           border-top: 0;
-          // padding-left: 0px;
-          ${Button} {
-            // width: auto;
-
-            .BLAH {
-              background: ${(props) => props.theme.colors.translucent};
-              border: 0;
-              :hover {
-                background: ${(props) => props.theme.colors.hoverTranslucent};
-              }
-            }
-          }
         `
       : ""}
-
-  ${Button} {
-    // width: 100%;
-    // text-align: left;
-    // padding: 0px;
-    // opacity: 0.5;
-  }
 `;
 
 const AddButton = ({

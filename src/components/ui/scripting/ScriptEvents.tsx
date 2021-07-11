@@ -191,38 +191,14 @@ export const ScriptEventFormWrapper = styled.div<ScriptEventFormWrapperProps>`
   position: relative;
 `;
 
-export const ScriptEventFormNest = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0px;
-  bottom: 0;
-  width: 10px;
-  :hover {
-    background: ${(props) => props.theme.colors.translucent};
-    mix-blend-mode: multiply;
-  }
-`;
-
 export const ScriptEventFields = styled.div`
-  // border-top: 1px solid ${(props) => props.theme.colors.sidebar.border};
-  // display: grid;
-  // grid-template-columns: 1fr 1fr;
-  // gap: 10px 10px;
-
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
-
   padding: 5px;
 
   & > * {
-    // grid-column-end: span 2;
     flex-grow: 1;
-    // min-width: 280px;
-    // min-width: 90%;
-    // width: 90%;
-    // max-width: 280px;
-    // flex: 1 0 auto;
     flex-grow: 1;
     flex-basis: 220px;
     margin: 5px;
@@ -238,39 +214,15 @@ export const ScriptEventField = styled.div<ScriptEventFieldProps>`
   ${(props) =>
     props.halfWidth
       ? css`
-          // grid-column-end: span 1;
-          // min-width: 140px;
-          // min-width: 45%;
-          // width: 40%;
-          // max-width: 140px;
-
-          // flex: 1 0 auto;
           flex-basis: 100px;
         `
       : ""}
 `;
 
 export const ScriptEditorChildren = styled.div`
-  // border: 1px solid ${(props) => props.theme.colors.sidebar.border};
-  // box-shadow: ${(props) => props.theme.colors.scripting.children.boxShadow};
-  // border-right: 0;
-  // margin-right: -10px;
-  // border-top-left-radius: 8px;
-  // border-bottom-left-radius: 8px;
-  // overflow: hidden;
-
-  // max-width: none;
-  // width: 100%;
   flex-grow: 1;
   flex-shrink: 0;
   flex-basis: 100%;
-
-  // margin: 5px 0 5px 5px;
-  // background: ${(props) => props.theme.colors.sidebar.background};
-
-  ${ScriptEventBranchHeader} + & {
-    // margin-top: -5px;
-  }
 `;
 
 interface ScriptEventWrapperProps {
@@ -339,7 +291,4 @@ export const ScriptEventWrapper = styled.div<ScriptEventWrapperProps>`
           );
         `
       : ""}
-    & ~& {
-    // border-top: 1px solid ${(props) => props.theme.colors.sidebar.border};
-  }
 `;

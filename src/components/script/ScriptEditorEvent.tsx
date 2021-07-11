@@ -26,7 +26,6 @@ import {
   ScriptEventWrapper,
   ScriptEventPlaceholder,
   ScriptEditorChildren,
-  ScriptEventFormNest,
   ScriptEventHeaderTitle,
   ScriptEventHeaderCaret,
   ScriptEventRenameInput,
@@ -473,12 +472,6 @@ const ScriptEditorEvent = ({
             altBg={index % 2 === 0}
             data-handler-id={handlerId}
           >
-            {isConditional && (
-              <ScriptEventFormNest
-                title={String(hoverName || "")}
-                onClick={toggleOpen}
-              />
-            )}
             <ScriptEditorEventHelper event={scriptEvent} />
             <ScriptEventForm
               id={id}
