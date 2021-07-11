@@ -197,9 +197,9 @@ export const ScriptEventBranchHeader = styled.div<ScriptEventBranchHeaderProps>`
 
   && {
     // background: red;
-    margin-top: -5px;
+    // margin-top: -5px;
     margin-right: -5px;
-    margin-bottom: -5px;
+    // margin-bottom: -5px;
     margin-left: -5px;
     flex-basis: 100%;
   }
@@ -209,9 +209,53 @@ export const ScriptEventBranchHeader = styled.div<ScriptEventBranchHeaderProps>`
   line-height: 12px;
 
   ${(props) =>
+    props.conditional && props.nestLevel % 4 === 0
+      ? css`
+          background: linear-gradient(
+            0deg,
+            ${props.theme.colors.scripting.header.nest1Background},
+            ${props.theme.colors.scripting.header.nest1Background}
+          );
+        `
+      : ""}
+  ${(props) =>
+    props.conditional && props.nestLevel % 4 === 1
+      ? css`
+          background: linear-gradient(
+            0deg,
+            ${props.theme.colors.scripting.header.nest2Background},
+            ${props.theme.colors.scripting.header.nest2Background}
+          );
+        `
+      : ""}
+    ${(props) =>
+    props.conditional && props.nestLevel % 4 === 2
+      ? css`
+          background: linear-gradient(
+            0deg,
+            ${props.theme.colors.scripting.header.nest3Background},
+            ${props.theme.colors.scripting.header.nest3Background}
+          );
+        `
+      : ""}
+    ${(props) =>
+    props.conditional && props.nestLevel % 4 === 3
+      ? css`
+          background: linear-gradient(
+            0deg,
+            ${props.theme.colors.scripting.header.nest4Background},
+            ${props.theme.colors.scripting.header.nest4Background}
+          );
+        `
+      : ""}
+
+
+  ${(props) =>
     !props.open
       ? css`
-          margin-bottom: -10px;
+          && {
+            margin-bottom: -5px;
+          }
         `
       : ""}
 `;
