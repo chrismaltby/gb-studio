@@ -147,12 +147,16 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
         const arg = args[key];
         const argValue = extractValue(arg);
         const fieldType = fieldLookup[key]?.type || "";
-        const fieldDefault = fieldLookup[key]?.defaultValue;
+        const fieldDefault =
+          arg && (arg as { type: string })?.type
+            ? (fieldLookup[key]?.defaultValue as Record<string, unknown>)?.[
+                (arg as { type: string })?.type
+              ]
+            : fieldLookup[key]?.defaultValue;
         const fieldPlaceholder = fieldLookup[key]?.placeholder;
 
-        console.log({ key, fieldPlaceholder, fieldDefault });
-
-        const value = argValue || fieldDefault || fieldPlaceholder;
+        const value =
+          argValue || (fieldDefault ?? fieldPlaceholder ?? argValue);
 
         if (isActorField(command, key, args)) {
           return actorNameForId(value);
