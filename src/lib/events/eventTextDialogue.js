@@ -4,7 +4,7 @@ const id = "EVENT_TEXT";
 const groups = ["EVENT_GROUP_DIALOGUE"];
 
 const autoLabel = (fetchArg, args) => {
-  if (args.text.join()) {
+  if ((args.text || []).join()) {
     return l10n("FIELD_TEXT_LABEL", {
       text: fetchArg("text"),
     });
