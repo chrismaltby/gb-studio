@@ -173,7 +173,7 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
         const fieldPlaceholder = fieldLookup[key]?.placeholder;
 
         const value =
-          argValue || (fieldDefault ?? fieldPlaceholder ?? argValue);
+          (argValue || fieldDefault || fieldPlaceholder) ?? argValue;
 
         if (isActorField(command, key, args)) {
           return actorNameForId(value);
