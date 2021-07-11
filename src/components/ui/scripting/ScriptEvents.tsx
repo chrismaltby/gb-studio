@@ -268,7 +268,7 @@ export const ScriptEditorChildren = styled.div`
 export const ScriptEditorChildrenWrapper = styled.div`
   border: 1px solid ${(props) => props.theme.colors.sidebar.border};
   border-right: 0px;
-  box-shadow: ${(props) => props.theme.colors.scripting.children.boxShadow};
+  // box-shadow: ${(props) => props.theme.colors.scripting.children.boxShadow};
 `;
 
 interface ScriptEventWrapperProps {
@@ -285,17 +285,21 @@ export const ScriptEventWrapper = styled.div<ScriptEventWrapperProps>`
     props.conditional && props.nestLevel % 4 === 0
       ? css`
           ${ScriptEditorChildren} {
-            border-left: 1px dotted
+            position: relative;
+            border-radius: 10px;
+            border-left: 2px dotted
               ${props.theme.colors.scripting.header.nest1Background};
+            min-height: 50px;
 
             :after {
               content: "TRUE";
               position: absolute;
               top: 50%;
-              left: -8px;
-              transform: rotate(270deg);
-              font-size: 10px;
-              background: #fff;
+              left: 0;
+              transform: translate(-50%, -50%) rotate(270deg);
+              font-size: 8px;
+              background: ${(props) =>
+                props.theme.colors.scripting.form.background};
               padding: 0px 5px;
               color: #03a9f4;
             }
@@ -306,7 +310,7 @@ export const ScriptEventWrapper = styled.div<ScriptEventWrapperProps>`
     props.conditional && props.nestLevel % 4 === 1
       ? css`
           ${ScriptEditorChildren} {
-            border-left: 1px dotted
+            border-left: 2px dotted
               ${props.theme.colors.scripting.header.nest2Background};
 
             :after {
@@ -318,15 +322,38 @@ export const ScriptEventWrapper = styled.div<ScriptEventWrapperProps>`
     ${(props) =>
     props.conditional && props.nestLevel % 4 === 2
       ? css`
-          border-left: 5px solid
-            ${props.theme.colors.scripting.header.nest3Background};
+          ${ScriptEditorChildren} {
+            border-left: 2px dotted
+              ${props.theme.colors.scripting.header.nest3Background};
+
+            :after {
+              color: ${props.theme.colors.scripting.header.nest3Background};
+            }
+          }
         `
       : ""}
     ${(props) =>
     props.conditional && props.nestLevel % 4 === 3
       ? css`
-          border-left: 5px solid
-            ${props.theme.colors.scripting.header.nest4Background};
+          ${ScriptEditorChildren} {
+            border-left: 2px dotted
+              ${props.theme.colors.scripting.header.nest4Background};
+
+            :after {
+              color: ${props.theme.colors.scripting.header.nest4Background};
+            }
+          }
+        `
+      : ""}
+
+    ${(props) =>
+    props.conditional && props.nestLevel === 4
+      ? css`
+          ${ScriptEditorChildren} {
+            :after {
+              color: ${props.theme.colors.text};
+            }
+          }
         `
       : ""}
 `;
