@@ -287,6 +287,18 @@ export const ScriptEventWrapper = styled.div<ScriptEventWrapperProps>`
           ${ScriptEditorChildren} {
             border-left: 1px dotted
               ${props.theme.colors.scripting.header.nest1Background};
+
+            :after {
+              content: "TRUE";
+              position: absolute;
+              top: 50%;
+              left: -8px;
+              transform: rotate(270deg);
+              font-size: 10px;
+              background: #fff;
+              padding: 0px 5px;
+              color: #03a9f4;
+            }
           }
         `
       : ""}
@@ -296,6 +308,10 @@ export const ScriptEventWrapper = styled.div<ScriptEventWrapperProps>`
           ${ScriptEditorChildren} {
             border-left: 1px dotted
               ${props.theme.colors.scripting.header.nest2Background};
+
+            :after {
+              color: #ff5722;
+            }
           }
         `
       : ""}
