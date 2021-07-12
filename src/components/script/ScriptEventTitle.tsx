@@ -158,6 +158,18 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
         }
         return String(value);
       };
+      const directionForValue = (value: unknown) => {
+        if (value === "left") {
+          return l10n("FIELD_DIRECTION_LEFT");
+        }
+        if (value === "right") {
+          return l10n("FIELD_DIRECTION_RIGHT");
+        }
+        if (value === "down") {
+          return l10n("FIELD_DIRECTION_DOWN");
+        }
+        return l10n("FIELD_DIRECTION_UP");
+      };
 
       const mapArg = (key: string) => {
         const arg = args[key];
@@ -189,6 +201,8 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
           });
         } else if (fieldType === "scene") {
           return sceneNameForId(value);
+        } else if (fieldType === "direction") {
+          return directionForValue(value);
         }
         return String(value);
       };
