@@ -192,20 +192,13 @@ export const ScriptEventBranchHeader = styled.div<ScriptEventBranchHeaderProps>`
   padding: 0px 10px;
   padding-right: 5px;
   padding-left: 8px;
-  // margin-left: -10px;
-  // margin-right: -10px;
   margin: -15px;
-  // && {
-  //   margin: -10px -10px -10px 0px;
-  // }
 
   && {
-    // background: red;
-    // margin-top: -5px;
     margin-right: -5px;
-    // margin-bottom: -5px;
     margin-left: -5px;
     flex-basis: 100%;
+    max-width: 100%;
   }
 
   height: 25px;
@@ -269,6 +262,7 @@ export const ScriptEventFields = styled.div`
     flex-grow: 1;
     flex-basis: 220px;
     margin: 5px;
+    max-width: calc(100% - 10px);
   }
 `;
 
@@ -304,6 +298,7 @@ export const ScriptEditorChildren = styled.div<ScriptEditorChildrenProps>`
   min-height: 50px;
   border-left: 2px solid #ccc;
   width: 100%;
+  max-width: 100%;
 
   ${(props) =>
     props.nestLevel % 4 === 0
