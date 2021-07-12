@@ -21,6 +21,7 @@ import keyBy from "lodash/keyBy";
 import { actorName, sceneName } from "store/features/entities/entitiesHelpers";
 import { Actor } from "store/features/entities/entitiesTypes";
 import styled from "styled-components";
+import { fadeIn } from "ui/animations/animations";
 
 interface ScriptEventTitleProps {
   command: string;
@@ -32,6 +33,7 @@ const Wrapper = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
+  animation: ${fadeIn} 0.1s linear;
 `;
 
 const customEventActorsLookup = keyBy(

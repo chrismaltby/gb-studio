@@ -39,6 +39,7 @@ import { Select } from "ui/form/Select";
 import { SliderField } from "ui/form/SliderField";
 import { BlankIcon, CheckIcon, ConnectIcon } from "ui/icons/Icons";
 import { MenuItem, MenuItemIcon } from "ui/menu/Menu";
+import { OffscreenSkeletonInput } from "ui/skeleton/Skeleton";
 import ScriptEventFormMathArea from "./ScriptEventFormMatharea";
 import ScriptEventFormTextArea from "./ScriptEventFormTextarea";
 
@@ -242,146 +243,176 @@ const ScriptEventFormInput = ({
     );
   } else if (type === "scene") {
     return (
-      <SceneSelect
-        name={id}
-        value={String(value || "")}
-        onChange={onChangeField}
-      />
+      <OffscreenSkeletonInput>
+        <SceneSelect
+          name={id}
+          value={String(value || "")}
+          onChange={onChangeField}
+        />
+      </OffscreenSkeletonInput>
     );
   } else if (type === "background") {
     return (
-      <BackgroundSelect
-        name={id}
-        value={String(value || "")}
-        onChange={onChangeField}
-      />
+      <OffscreenSkeletonInput>
+        <BackgroundSelect
+          name={id}
+          value={String(value || "")}
+          onChange={onChangeField}
+        />
+      </OffscreenSkeletonInput>
     );
   } else if (type === "palette") {
     if (field.paletteType === "ui") {
       return (
-        <PaletteSelect
-          name={id}
-          value={String(value || "")}
-          onChange={onChangeField}
-          optional
-          optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
-          optionalDefaultPaletteId={defaultBackgroundPaletteIds[7] || ""}
-          type="tile"
-        />
+        <OffscreenSkeletonInput>
+          <PaletteSelect
+            name={id}
+            value={String(value || "")}
+            onChange={onChangeField}
+            optional
+            optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
+            optionalDefaultPaletteId={defaultBackgroundPaletteIds[7] || ""}
+            type="tile"
+          />
+        </OffscreenSkeletonInput>
       );
     }
     if (field.paletteType === "emote") {
       return (
-        <PaletteSelect
-          name={id}
-          value={String(value || "")}
-          onChange={onChangeField}
-          optional
-          optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
-          optionalDefaultPaletteId={defaultSpritePaletteIds[7] || ""}
-          type="sprite"
-        />
+        <OffscreenSkeletonInput>
+          <PaletteSelect
+            name={id}
+            value={String(value || "")}
+            onChange={onChangeField}
+            optional
+            optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
+            optionalDefaultPaletteId={defaultSpritePaletteIds[7] || ""}
+            type="sprite"
+          />
+        </OffscreenSkeletonInput>
       );
     }
     if (field.paletteType === "sprite") {
       return (
+        <OffscreenSkeletonInput>
+          <PaletteSelect
+            name={id}
+            value={String(value || "")}
+            onChange={onChangeField}
+            optional
+            optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
+            optionalDefaultPaletteId={
+              defaultSpritePaletteIds[field.paletteIndex || 0] || ""
+            }
+            canKeep={field.canKeep}
+            keepLabel={l10n("FIELD_DONT_MODIFY")}
+            type="sprite"
+          />
+        </OffscreenSkeletonInput>
+      );
+    }
+    return (
+      <OffscreenSkeletonInput>
         <PaletteSelect
           name={id}
           value={String(value || "")}
           onChange={onChangeField}
+          prefix={`${(field.paletteIndex || 0) + 1}: `}
           optional
           optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
           optionalDefaultPaletteId={
-            defaultSpritePaletteIds[field.paletteIndex || 0] || ""
+            defaultBackgroundPaletteIds[field.paletteIndex || 0] || ""
           }
           canKeep={field.canKeep}
           keepLabel={l10n("FIELD_DONT_MODIFY")}
-          type="sprite"
+          type="tile"
         />
-      );
-    }
-    return (
-      <PaletteSelect
-        name={id}
-        value={String(value || "")}
-        onChange={onChangeField}
-        prefix={`${(field.paletteIndex || 0) + 1}: `}
-        optional
-        optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
-        optionalDefaultPaletteId={
-          defaultBackgroundPaletteIds[field.paletteIndex || 0] || ""
-        }
-        canKeep={field.canKeep}
-        keepLabel={l10n("FIELD_DONT_MODIFY")}
-        type="tile"
-      />
+      </OffscreenSkeletonInput>
     );
   } else if (type === "sprite") {
     return (
-      <SpriteSheetSelect
-        name={id}
-        value={String(value || "")}
-        filter={field.filter}
-        optional={field.optional}
-        onChange={onChangeField}
-      />
+      <OffscreenSkeletonInput>
+        <SpriteSheetSelect
+          name={id}
+          value={String(value || "")}
+          filter={field.filter}
+          optional={field.optional}
+          onChange={onChangeField}
+        />
+      </OffscreenSkeletonInput>
     );
   } else if (type === "animationstate") {
     return (
-      <AnimationStateSelect
-        name={id}
-        value={String(value || "")}
-        onChange={onChangeField}
-        allowDefault
-      />
+      <OffscreenSkeletonInput>
+        <AnimationStateSelect
+          name={id}
+          value={String(value || "")}
+          onChange={onChangeField}
+          allowDefault
+        />
+      </OffscreenSkeletonInput>
     );
   } else if (type === "variable") {
     return (
-      <VariableSelect
-        name={id}
-        value={String(value || "0")}
-        entityId={entityId}
-        onChange={onChangeField}
-        allowRename={allowRename}
-      />
+      <OffscreenSkeletonInput>
+        <VariableSelect
+          name={id}
+          value={String(value || "0")}
+          entityId={entityId}
+          onChange={onChangeField}
+          allowRename={allowRename}
+        />
+      </OffscreenSkeletonInput>
     );
   } else if (type === "direction") {
-    return <DirectionPicker id={id} value={value} onChange={onChangeField} />;
+    return (
+      <OffscreenSkeletonInput>
+        <DirectionPicker id={id} value={value} onChange={onChangeField} />
+      </OffscreenSkeletonInput>
+    );
   } else if (type === "collisionMask") {
     return (
-      <CollisionMaskPicker
-        id={id}
-        value={value}
-        onChange={onChangeField}
-        includePlayer={field.includePlayer}
-      />
+      <OffscreenSkeletonInput>
+        <CollisionMaskPicker
+          id={id}
+          value={value}
+          onChange={onChangeField}
+          includePlayer={field.includePlayer}
+        />
+      </OffscreenSkeletonInput>
     );
   } else if (type === "input") {
     return <InputPicker id={id} value={value} onChange={onChangeField} />;
   } else if (type === "fadeSpeed") {
     return (
-      <FadeSpeedSelect
-        name={id}
-        value={Number(value ?? 2)}
-        onChange={onChangeField}
-      />
+      <OffscreenSkeletonInput>
+        <FadeSpeedSelect
+          name={id}
+          value={Number(value ?? 2)}
+          onChange={onChangeField}
+        />
+      </OffscreenSkeletonInput>
     );
   } else if (type === "cameraSpeed") {
     return (
-      <CameraSpeedSelect
-        name={id}
-        allowNone
-        value={Number(value ?? 0)}
-        onChange={onChangeField}
-      />
+      <OffscreenSkeletonInput>
+        <CameraSpeedSelect
+          name={id}
+          allowNone
+          value={Number(value ?? 0)}
+          onChange={onChangeField}
+        />
+      </OffscreenSkeletonInput>
     );
   } else if (type === "moveSpeed") {
     return (
-      <MovementSpeedSelect
-        name={id}
-        value={Number(value ?? 1)}
-        onChange={onChangeField}
-      />
+      <OffscreenSkeletonInput>
+        <MovementSpeedSelect
+          name={id}
+          value={Number(value ?? 1)}
+          onChange={onChangeField}
+        />
+      </OffscreenSkeletonInput>
     );
   } else if (type === "animSpeed") {
     return (
@@ -393,85 +424,105 @@ const ScriptEventFormInput = ({
     );
   } else if (type === "overlayColor") {
     return (
-      <OverlayColorSelect
-        name={id}
-        value={String(value ?? "")}
-        onChange={onChangeField}
-      />
+      <OffscreenSkeletonInput>
+        <OverlayColorSelect
+          name={id}
+          value={String(value ?? "")}
+          onChange={onChangeField}
+        />
+      </OffscreenSkeletonInput>
     );
   } else if (type === "actor") {
     return (
-      <ActorSelect
-        name={id}
-        value={String(value ?? "")}
-        direction={argValue(args.direction) as ActorDirection}
-        frame={argValue(args.frame) as number | undefined}
-        onChange={onChangeField}
-      />
+      <OffscreenSkeletonInput>
+        <ActorSelect
+          name={id}
+          value={String(value ?? "")}
+          direction={argValue(args.direction) as ActorDirection}
+          frame={argValue(args.frame) as number | undefined}
+          onChange={onChangeField}
+        />
+      </OffscreenSkeletonInput>
     );
   } else if (type === "emote") {
     return (
-      <EmoteSelect name={id} value={String(value)} onChange={onChangeField} />
+      <OffscreenSkeletonInput>
+        <EmoteSelect name={id} value={String(value)} onChange={onChangeField} />
+      </OffscreenSkeletonInput>
     );
   } else if (type === "avatar") {
     return (
-      <AvatarSelect
-        name={id}
-        value={String(value ?? "")}
-        onChange={onChangeField}
-        optional={field.optional}
-      />
+      <OffscreenSkeletonInput>
+        <AvatarSelect
+          name={id}
+          value={String(value ?? "")}
+          onChange={onChangeField}
+          optional={field.optional}
+        />
+      </OffscreenSkeletonInput>
     );
   } else if (type === "operator") {
     return (
-      <OperatorSelect
-        name={id}
-        value={String(value ?? "")}
-        onChange={onChangeField}
-      />
+      <OffscreenSkeletonInput>
+        <OperatorSelect
+          name={id}
+          value={String(value ?? "")}
+          onChange={onChangeField}
+        />
+      </OffscreenSkeletonInput>
     );
   } else if (type === "music") {
     return (
-      <MusicSelect
-        name={id}
-        value={String(value ?? "")}
-        onChange={onChangeField}
-      />
+      <OffscreenSkeletonInput>
+        <MusicSelect
+          name={id}
+          value={String(value ?? "")}
+          onChange={onChangeField}
+        />
+      </OffscreenSkeletonInput>
     );
   } else if (type === "soundEffect") {
     return (
-      <SoundEffectSelect
-        name={id}
-        value={String(value ?? "")}
-        onChange={onChangeField}
-        duration={argValue(args.duration) as number | undefined}
-        pitch={argValue(args.pitch) as number | undefined}
-        frequency={argValue(args.frequency) as number | undefined}
-      />
+      <OffscreenSkeletonInput>
+        <SoundEffectSelect
+          name={id}
+          value={String(value ?? "")}
+          onChange={onChangeField}
+          duration={argValue(args.duration) as number | undefined}
+          pitch={argValue(args.pitch) as number | undefined}
+          frequency={argValue(args.frequency) as number | undefined}
+        />
+      </OffscreenSkeletonInput>
     );
   } else if (type === "engineField") {
     return (
-      <EngineFieldSelect
-        name={id}
-        value={String(value ?? "")}
-        onChange={onChangeField}
-      />
+      <OffscreenSkeletonInput>
+        <EngineFieldSelect
+          name={id}
+          value={String(value ?? "")}
+          onChange={onChangeField}
+        />
+      </OffscreenSkeletonInput>
     );
   } else if (type === "customEvent") {
     return (
-      <CustomEventSelect
-        name={id}
-        value={String(value ?? "")}
-        onChange={onChangeField}
-      />
+      <OffscreenSkeletonInput>
+        <CustomEventSelect
+          name={id}
+          value={String(value ?? "")}
+          onChange={onChangeField}
+        />
+      </OffscreenSkeletonInput>
     );
   } else if (type === "property") {
     return (
-      <PropertySelect
-        name={id}
-        value={String(value ?? "")}
-        onChange={onChangeField}
-      />
+      <OffscreenSkeletonInput>
+        <PropertySelect
+          name={id}
+          value={String(value ?? "")}
+          onChange={onChangeField}
+        />
+      </OffscreenSkeletonInput>
     );
   } else if (type === "union") {
     const currentType = ((value && (value as { type: string }).type) ||
