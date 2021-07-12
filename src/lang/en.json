@@ -440,6 +440,11 @@
   "FIELD_CHOICE_LABEL": "Display Multiple Choice: Set {variable} with options {text}",
   "FIELD_ACTOR_HIDE_LABEL": "Hide {actor}",
   "FIELD_ACTOR_SHOW_LABEL": "Show {actor}",
+  "FIELD_ACTOR_INVOKE_LABEL": "Invoke {actor} Interact Script",
+  "FIELD_ACTOR_GET_POSITION_LABEL": "Store {actor} Position In Variables {{x},{y}}",
+  "FIELD_ACTOR_GET_DIRECTION_LABEL": "Store {actor} Direction In Variable {variable}",
+  "FIELD_ACTOR_SET_FRAME_LABEL": "{actor} Set Animation Frame To {frame}",
+  "FIELD_ACTOR_SET_ANIMATION_SPEED_LABEL": "{actor} Set Animation Speed To {speed}",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

@@ -22,6 +22,7 @@ import { actorName, sceneName } from "store/features/entities/entitiesHelpers";
 import { Actor } from "store/features/entities/entitiesTypes";
 import styled from "styled-components";
 import { fadeIn } from "ui/animations/animations";
+import { animLabelLookup } from "components/forms/AnimationSpeedSelect";
 
 interface ScriptEventTitleProps {
   command: string;
@@ -170,6 +171,9 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
         }
         return l10n("FIELD_DIRECTION_UP");
       };
+      const animSpeedForValue = (value: unknown) => {
+        return animLabelLookup[value as number] || String(value);
+      };
 
       const mapArg = (key: string) => {
         const arg = args[key];
@@ -203,6 +207,8 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
           return sceneNameForId(value);
         } else if (fieldType === "direction") {
           return directionForValue(value);
+        } else if (fieldType === "animSpeed") {
+          return animSpeedForValue(value);
         }
         return String(value);
       };

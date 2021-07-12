@@ -3,6 +3,13 @@ const l10n = require("../helpers/l10n").default;
 const id = "EVENT_ACTOR_SET_FRAME";
 const groups = ["EVENT_GROUP_ACTOR"];
 
+const autoLabel = (fetchArg) => {
+  return l10n("FIELD_ACTOR_SET_FRAME_LABEL", {
+    actor: fetchArg("actorId"),
+    frame: fetchArg("frame"),
+  });
+};
+
 const fields = [
   {
     key: "actorId",
@@ -46,6 +53,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  autoLabel,
   groups,
   fields,
   compile,
