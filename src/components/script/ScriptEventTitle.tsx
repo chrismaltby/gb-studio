@@ -16,6 +16,8 @@ import {
   getSceneActorIds,
   actorSelectors,
   sceneSelectors,
+  spriteSheetSelectors,
+  emoteSelectors,
 } from "store/features/entities/entitiesState";
 import keyBy from "lodash/keyBy";
 import { actorName, sceneName } from "store/features/entities/entitiesHelpers";
@@ -28,6 +30,11 @@ interface ScriptEventTitleProps {
   command: string;
   args?: Record<string, unknown>;
 }
+
+type UnionType = {
+  type: string;
+  value: unknown;
+};
 
 const Wrapper = styled.div`
   white-space: nowrap;
@@ -81,6 +88,18 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
   const scenes = useSelector((state: RootState) =>
     sceneSelectors.selectAll(state)
   );
+  const spriteSheetsLookup = useSelector((state: RootState) =>
+    spriteSheetSelectors.selectEntities(state)
+  );
+  const spriteSheets = useSelector((state: RootState) =>
+    spriteSheetSelectors.selectAll(state)
+  );
+  const emotesLookup = useSelector((state: RootState) =>
+    emoteSelectors.selectEntities(state)
+  );
+  const emotes = useSelector((state: RootState) =>
+    emoteSelectors.selectAll(state)
+  );
 
   useEffect(() => {
     const variables = namedVariablesByContext(
@@ -107,15 +126,22 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
         }
         return arg;
       };
+      const extractFieldType = (key: string, arg: unknown): unknown => {
+        const fieldType = fieldLookup[key]?.type || "";
+        if (fieldType === "union" && arg && (arg as UnionType).type) {
+          return (arg as UnionType).type;
+        } else if (fieldType === "union") {
+          return fieldLookup[key]?.defaultType;
+        }
+        return fieldType;
+      };
       const actorNameForId = (value: unknown) => {
-        if (
-          editorType === "customEvent" &&
-          customEventActorsLookup[value as string]
-        ) {
-          return customEventActorsLookup[value as string].name.replace(
-            / /g,
-            ""
-          );
+        if (editorType === "customEvent" && customEvent) {
+          return (
+            customEvent.actors[value as string]?.name ||
+            customEventActorsLookup[value as string]?.name ||
+            l10n("FIELD_PLAYER")
+          ).replace(/ /g, "");
         }
         if (value === "$self$" && editorType === "actor") {
           return l10n("FIELD_SELF");
@@ -174,11 +200,25 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
       const animSpeedForValue = (value: unknown) => {
         return animLabelLookup[value as number] || String(value);
       };
+      const spriteForValue = (value: unknown) => {
+        return (
+          spriteSheetsLookup[value as string]?.name ||
+          spriteSheets[0]?.name ||
+          String(value)
+        );
+      };
+      const emoteForValue = (value: unknown) => {
+        return (
+          emotesLookup[value as string]?.name ||
+          emotes[0]?.name ||
+          String(value)
+        );
+      };
 
       const mapArg = (key: string) => {
         const arg = args[key];
         const argValue = extractValue(arg);
-        const fieldType = fieldLookup[key]?.type || "";
+        const fieldType = extractFieldType(key, arg);
         const fieldDefault =
           arg && (arg as { type: string })?.type
             ? (fieldLookup[key]?.defaultValue as Record<string, unknown>)?.[
@@ -209,6 +249,10 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
           return directionForValue(value);
         } else if (fieldType === "animSpeed") {
           return animSpeedForValue(value);
+        } else if (fieldType === "sprite") {
+          return spriteForValue(value);
+        } else if (fieldType === "emote") {
+          return emoteForValue(value);
         }
         return String(value);
       };
