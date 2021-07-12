@@ -192,7 +192,12 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
         }
         return String(value);
       };
-      setAutoName(events[command]?.autoLabel?.(mapArg, args) || "");
+      try {
+        setAutoName(events[command]?.autoLabel?.(mapArg, args) || "");
+      } catch (e) {
+        console.error(`Auto name failed for ${command} with args`, args);
+        console.error(e);
+      }
     }
   }, [
     command,
