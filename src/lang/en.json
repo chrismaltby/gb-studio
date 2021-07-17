@@ -462,6 +462,8 @@
   "FIELD_SET_INPUT_SCRIPT_LABEL": "Attach Script To {input} Button",
   "FIELD_AWAIT_INPUT_LABEL": "Pause Script Until {input} Pressed",
   "FIELD_REMOVE_INPUT_LABEL": "Remove {input} Button Script",
+  "FIELD_VARIABLE_MATH_EVALUATE_LABEL": "{variable} = {expression}",
+  "FIELD_IF_VALUE_COMPARE_LABEL": "If {variable} {operator} {value}",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

@@ -1,5 +1,18 @@
+const l10n = require("../helpers/l10n").default;
+
 const id = "EVENT_VARIABLE_MATH_EVALUATE";
 const groups = ["EVENT_GROUP_MATH", "EVENT_GROUP_VARIABLES"];
+
+const autoLabel = (fetchArg, args) => {
+  if (args.expression) {
+    return l10n("FIELD_VARIABLE_MATH_EVALUATE_LABEL", {
+      variable: fetchArg("variable"),
+      expression: fetchArg("expression"),
+    });
+  } else {
+    return l10n("EVENT_VARIABLE_MATH_EVALUATE");
+  }
+};
 
 const fields = [
   {
@@ -24,6 +37,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  autoLabel,
   groups,
   fields,
   compile,
