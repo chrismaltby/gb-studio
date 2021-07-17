@@ -207,6 +207,36 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
         }
         return l10n("FIELD_DIRECTION_UP");
       };
+      const inputForValue = (value: unknown) => {
+        const l10nInput = (value: unknown) => {
+          if (value === "a") {
+            return "A";
+          }
+          if (value === "b") {
+            return "B";
+          }
+          if (value === "start") {
+            return "Start";
+          }
+          if (value === "select") {
+            return "Select";
+          }
+          if (value === "left") {
+            return l10n("FIELD_DIRECTION_LEFT");
+          }
+          if (value === "right") {
+            return l10n("FIELD_DIRECTION_RIGHT");
+          }
+          if (value === "down") {
+            return l10n("FIELD_DIRECTION_DOWN");
+          }
+          return l10n("FIELD_DIRECTION_UP");
+        };
+        if (Array.isArray(value)) {
+          return value.map(l10nInput).join("/");
+        }
+        return l10nInput(value);
+      };
       const animSpeedForValue = (value: unknown) => {
         return animLabelLookup[value as number] || String(value);
       };
@@ -275,6 +305,8 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
           return emoteForValue(value);
         } else if (fieldType === "customEvent") {
           return customEventNameForId(value);
+        } else if (fieldType === "input") {
+          return inputForValue(value);
         }
         return String(value);
       };
@@ -294,6 +326,13 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
     sceneActorIds,
     scenesLookup,
     scenes,
+    customEvent,
+    spriteSheetsLookup,
+    spriteSheets,
+    emotesLookup,
+    emotes,
+    customEventsLookup,
+    customEvents,
   ]);
 
   return <Wrapper>{String(labelName || autoName || eventName)}</Wrapper>;
