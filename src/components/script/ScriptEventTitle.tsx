@@ -20,7 +20,11 @@ import {
   emoteSelectors,
 } from "store/features/entities/entitiesState";
 import keyBy from "lodash/keyBy";
-import { actorName, sceneName } from "store/features/entities/entitiesHelpers";
+import {
+  actorName,
+  customEventName,
+  sceneName,
+} from "store/features/entities/entitiesHelpers";
 import { Actor } from "store/features/entities/entitiesTypes";
 import styled from "styled-components";
 import { fadeIn } from "ui/animations/animations";
@@ -99,6 +103,12 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
   );
   const emotes = useSelector((state: RootState) =>
     emoteSelectors.selectAll(state)
+  );
+  const customEventsLookup = useSelector((state: RootState) =>
+    customEventSelectors.selectEntities(state)
+  );
+  const customEvents = useSelector((state: RootState) =>
+    customEventSelectors.selectAll(state)
   );
 
   useEffect(() => {
@@ -214,6 +224,16 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
           String(value)
         );
       };
+      const customEventNameForId = (value: unknown) => {
+        const customEvent = customEventsLookup[value as string];
+        if (customEvent) {
+          return customEventName(
+            customEvent,
+            customEvents.indexOf(customEvent)
+          ).replace(/ /g, "");
+        }
+        return String(value);
+      };
 
       const mapArg = (key: string) => {
         const arg = args[key];
@@ -253,6 +273,8 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
           return spriteForValue(value);
         } else if (fieldType === "emote") {
           return emoteForValue(value);
+        } else if (fieldType === "customEvent") {
+          return customEventNameForId(value);
         }
         return String(value);
       };

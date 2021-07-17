@@ -457,6 +457,7 @@
   "FIELD_ACTOR_STOP_UPDATE_LABEL": "{actor} Stop \"On Update\" Script",
   "FIELD_CAMERA_MOVE_TO_LABEL": "Camera Move To {{x},{y}}",
   "FIELD_CAMERA_SHAKE_LABEL": "Camera Shake {direction} For {time} Seconds",
+  "FIELD_CALL_CUSTOM_EVENT_LABEL": "Call Script: {script}",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
