@@ -3,6 +3,19 @@ const l10n = require("../helpers/l10n").default;
 const id = "EVENT_CAMERA_SHAKE";
 const groups = ["EVENT_GROUP_CAMERA"];
 
+const autoLabel = (fetchArg, input) => {
+  let direction = l10n("FIELD_HORIZONTAL");
+  if (input.shakeDirection === "vertical") {
+    direction = l10n("FIELD_VERTICAL");
+  } else if (input.shakeDirection === "diagonal") {
+    direction = l10n("FIELD_DIAGONAL");
+  }
+  return l10n("FIELD_CAMERA_SHAKE_LABEL", {
+    time: fetchArg("time"),
+    direction,
+  });
+};
+
 const fields = [
   {
     key: "time",
@@ -61,6 +74,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  autoLabel,
   groups,
   fields,
   compile,
