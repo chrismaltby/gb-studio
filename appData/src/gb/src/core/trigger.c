@@ -47,15 +47,15 @@ UBYTE trigger_activate_at_intersection(bounding_box_t *bb, upoint16_t *offset, U
     if (last_trigger != NO_TRIGGER_COLLISON && 
         (hit_trigger == NO_TRIGGER_COLLISON || hit_trigger != last_trigger)) {
         
-        if (hit_trigger != NO_TRIGGER_COLLISON && triggers[hit_trigger].script.bank) {
-            script_execute(triggers[hit_trigger].script.bank, triggers[hit_trigger].script.ptr, 0, 0);
+        if (hit_trigger != NO_TRIGGER_COLLISON && triggers[hit_trigger].script_flags & TRIGGER_HAS_ENTER_SCRIPT) {
+            script_execute(triggers[hit_trigger].script.bank, triggers[hit_trigger].script.ptr, 0, 1, 1);
             trigger_script_called = TRUE;
         }
 
-        if (triggers[last_trigger].script_leave.bank) {
+        if (triggers[last_trigger].script_flags & TRIGGER_HAS_LEAVE_SCRIPT) {
             script_execute(
-                triggers[last_trigger].script_leave.bank, 
-                triggers[last_trigger].script_leave.ptr, 0, 0);
+                triggers[last_trigger].script.bank, 
+                triggers[last_trigger].script.ptr, 0, 1, 2);
             trigger_script_called = TRUE;
         }
 
@@ -66,8 +66,8 @@ UBYTE trigger_activate_at_intersection(bounding_box_t *bb, upoint16_t *offset, U
     
     last_trigger = hit_trigger;
 
-    if (hit_trigger != NO_TRIGGER_COLLISON && triggers[hit_trigger].script.bank) {
-        script_execute(triggers[hit_trigger].script.bank, triggers[hit_trigger].script.ptr, 0, 0);
+    if (hit_trigger != NO_TRIGGER_COLLISON && triggers[hit_trigger].script_flags & TRIGGER_HAS_ENTER_SCRIPT) {
+        script_execute(triggers[hit_trigger].script.bank, triggers[hit_trigger].script.ptr, 0, 1, 1);
         return TRUE;
     }
 

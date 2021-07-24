@@ -3339,6 +3339,23 @@ class ScriptBuilder {
     this._addNL();
   };
 
+  ifParamValue = (
+    parameter: string,
+    value: number,
+    truePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+  ) => {
+    const trueLabel = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+    this._addComment(`If Parameter ${parameter} Equals ${value}`);
+    this._ifConst(".EQ", parameter, value, trueLabel, 0);
+    this._jump(endLabel);
+    this._label(trueLabel);
+    this._compilePath(truePath);
+    this._stop();
+    this._label(endLabel);
+    this._addNL();
+  };
+
   ifColorSupported = (truePath = [], falsePath = []) => {
     const falseLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();

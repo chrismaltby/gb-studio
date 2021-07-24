@@ -140,6 +140,15 @@ export const maybeScriptFarPtr = (scriptSymbol: string | null) =>
 export const maybeScriptDependency = (scriptSymbol: string | null) =>
   scriptSymbol ? scriptSymbol : [];
 
+export const toASMTriggerScriptFlags = (trigger: Trigger) => {
+  const flags = [];
+
+  if (trigger.script.length > 0) flags.push("TRIGGER_HAS_ENTER_SCRIPT");
+  if (trigger.leaveScript.length > 0) flags.push("TRIGGER_HAS_LEAVE_SCRIPT");
+
+  return flags.length > 0 ? flags.join(" | ") : 0;
+};
+
 export const includeGuard = (key: string, contents: string) => `#ifndef ${key}_H
 #define ${key}_H
 
@@ -581,18 +590,13 @@ export const compileSceneTriggers = (
       width: trigger.width,
       height: trigger.height,
       script: maybeScriptFarPtr(eventPtrs[sceneIndex].triggers[triggerIndex]),
-      script_leave: maybeScriptFarPtr(
-        eventPtrs[sceneIndex].triggersLeave[triggerIndex]
-      ),
+      script_flags: toASMTriggerScriptFlags(trigger),
     })),
     // Dependencies
     flatten(
       scene.triggers.map((trigger, triggerIndex) => {
         return ([] as string[]).concat(
-          maybeScriptDependency(eventPtrs[sceneIndex].triggers[triggerIndex]),
-          maybeScriptDependency(
-            eventPtrs[sceneIndex].triggersLeave[triggerIndex]
-          )
+          maybeScriptDependency(eventPtrs[sceneIndex].triggers[triggerIndex])
         );
       })
     )
