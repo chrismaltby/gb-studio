@@ -12,7 +12,9 @@ UBYTE last_trigger = NO_TRIGGER_COLLISON;
 UBYTE trigger_at_intersection(bounding_box_t *bb, upoint16_t *offset); 
 
 void trigger_interact(UBYTE i) __banked {
-    script_execute(triggers[i].script.bank, triggers[i].script.ptr, 0, 0);
+    if (triggers[i].script_flags & TRIGGER_HAS_ENTER_SCRIPT) {
+        script_execute(triggers[i].script.bank, triggers[i].script.ptr, 0, 1, 1);
+    }
 }
 
 UBYTE trigger_activate_at(UBYTE tx, UBYTE ty, UBYTE force) __banked {
