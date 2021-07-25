@@ -45,8 +45,8 @@ interface ScriptHandlers {
 type TriggerScriptKey = "script" | "leaveScript";
 
 const scriptTabs = {
-  trigger: l10n("SIDEBAR_ON_TRIGGER_ENTER"),
-  leave: l10n("SIDEBAR_ON_TRIGGER_LEAVE"),
+  trigger: l10n("SIDEBAR_ON_ENTER"),
+  leave: l10n("SIDEBAR_ON_LEAVE"),
 } as const;
 
 const getScriptKey = (tab: keyof typeof scriptTabs): TriggerScriptKey => {
