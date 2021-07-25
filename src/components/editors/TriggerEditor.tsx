@@ -49,6 +49,10 @@ const scriptTabs = {
   leave: l10n("SIDEBAR_ON_LEAVE"),
 } as const;
 
+const pointNClickScriptTabs = {
+  trigger: l10n("SIDEBAR_ON_INTERACT"),
+} as const;
+
 const getScriptKey = (tab: keyof typeof scriptTabs): TriggerScriptKey => {
   if (tab === "trigger") {
     return "script";
@@ -285,17 +289,29 @@ export const TriggerEditor = ({
       )}
       <SidebarColumn>
         <StickyTabs>
-          <TabBar
-            value={scriptMode}
-            values={scriptTabs}
-            onChange={onChangeScriptMode}
-            buttons={
-              <>
-                {lockButton}
-                {scriptButton}
-              </>
-            }
-          />
+          {scene.type === "POINTNCLICK" ? (
+            <TabBar
+              values={pointNClickScriptTabs}
+              buttons={
+                <>
+                  {lockButton}
+                  {scriptButton}
+                </>
+              }
+            />
+          ) : (
+            <TabBar
+              value={scriptMode}
+              values={scriptTabs}
+              onChange={onChangeScriptMode}
+              buttons={
+                <>
+                  {lockButton}
+                  {scriptButton}
+                </>
+              }
+            />
+          )}
         </StickyTabs>
         <ScriptEditor
           value={trigger[scriptKey]}
