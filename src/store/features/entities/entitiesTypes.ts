@@ -99,7 +99,7 @@ export type Trigger = {
   width: number;
   height: number;
   script: string[];
-  leaveScript: string[];
+  leaveScript?: string[]; // Optional: Old versions of GBS don't have this script
 };
 
 export type Background = {

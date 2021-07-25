@@ -314,7 +314,7 @@ export const TriggerEditor = ({
           )}
         </StickyTabs>
         <ScriptEditor
-          value={trigger[scriptKey]}
+          value={trigger[scriptKey] || []}
           type="trigger"
           entityId={trigger.id}
           scriptKey={scriptKey}

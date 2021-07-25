@@ -144,7 +144,7 @@ export const toASMTriggerScriptFlags = (trigger: Trigger) => {
   const flags = [];
 
   if (trigger.script.length > 0) flags.push("TRIGGER_HAS_ENTER_SCRIPT");
-  if (trigger.leaveScript.length > 0) flags.push("TRIGGER_HAS_LEAVE_SCRIPT");
+  if (trigger.leaveScript && trigger.leaveScript.length > 0) flags.push("TRIGGER_HAS_LEAVE_SCRIPT");
 
   return flags.length > 0 ? flags.join(" | ") : 0;
 };
