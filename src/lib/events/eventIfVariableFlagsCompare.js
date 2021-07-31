@@ -3,6 +3,13 @@ const l10n = require("../helpers/l10n").default;
 const id = "EVENT_IF_FLAGS_COMPARE";
 const groups = ["EVENT_GROUP_CONTROL_FLOW"];
 
+const autoLabel = (fetchArg) => {
+  return l10n("FIELD_IF_FLAGS_COMPARE_LABEL", {
+    variable: fetchArg("variable"),
+    flag: String(Number(fetchArg("flag")) + 1),
+  });
+};
+
 const fields = [
   {
     key: "variable",
@@ -22,7 +29,7 @@ const fields = [
       [6, l10n("FIELD_FLAG_7")],
       [7, l10n("FIELD_FLAG_8")],
     ],
-    defaultValue: 1,
+    defaultValue: 0,
   },
   {
     key: "true",
@@ -68,6 +75,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  autoLabel,
   groups,
   fields,
   compile,

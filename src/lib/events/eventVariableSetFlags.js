@@ -3,6 +3,33 @@ const l10n = require("../helpers/l10n").default;
 const id = "EVENT_SET_FLAGS";
 const groups = ["EVENT_GROUP_VARIABLES"];
 
+const autoLabel = (fetchArg, input) => {
+  const flags = [
+    input.flag1,
+    input.flag2,
+    input.flag3,
+    input.flag4,
+    input.flag5,
+    input.flag6,
+    input.flag7,
+    input.flag8,
+  ]
+    .map((value, i) => {
+      if (value) {
+        return String(i + 1);
+      }
+      return "";
+    })
+    .filter((i) => i)
+    .join(",");
+
+  return l10n("FIELD_SET_FLAGS_LABEL", {
+    variable: fetchArg("variable"),
+    flags
+  });
+};
+
+
 const fields = [
   {
     key: "variable",
@@ -94,6 +121,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  autoLabel,
   groups,
   fields,
   compile,
