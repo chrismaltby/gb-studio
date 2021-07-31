@@ -45,7 +45,7 @@ const ScriptEditor = React.memo(
           (id, index) =>
             index < renderTo && (
               <ScriptEditorEvent
-                key={id}
+                key={`${id}_${index}`}
                 id={id}
                 index={index}
                 parentType={type}

@@ -274,7 +274,7 @@ const ScriptEditorEvent = React.memo(
             <ScriptEditorChildrenWrapper title="">
               {(scriptEvent?.children?.[key] || []).map((child, childIndex) => (
                 <ScriptEditorEvent
-                  key={child}
+                  key={`${child}_${childIndex}`}
                   id={child}
                   index={childIndex}
                   nestLevel={nestLevel + 1}
