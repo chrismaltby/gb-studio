@@ -180,12 +180,7 @@ const onPluginRun = (_event, pluginId) => {
 };
 
 const onPasteInPlace = (_event) => {
-  try {
-    const clipboardData = JSON.parse(clipboard.readText());
-    store.dispatch(clipboardActions.pasteClipboardEntityInPlace(clipboardData));
-  } catch (err) {
-    // Clipboard isn't pastable, just ignore it
-  }
+  store.dispatch(clipboardActions.pasteClipboardEntityInPlace());
 };
 
 ipcRenderer.on("save-project", onSaveProject);

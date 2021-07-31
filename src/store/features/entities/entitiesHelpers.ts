@@ -1,4 +1,5 @@
 import { normalize, denormalize, schema, NormalizedSchema } from "normalizr";
+import isEqual from "lodash/isEqual";
 import {
   ProjectEntitiesData,
   EntitiesState,
@@ -25,19 +26,21 @@ import {
   UnionPropertyValue,
   UnionVariableValue,
   SpriteState,
-  FontData,
-  AvatarData,
-  EmoteData,
-  BackgroundData,
   SpriteSheetData,
-  MusicData,
+  ScriptEvent,
+  ActorScriptKey,
+  actorScriptKeys,
+  sceneScriptKeys,
+  SceneScriptKey,
 } from "./entitiesTypes";
 import { Dictionary, EntityId } from "@reduxjs/toolkit";
+import l10n from "lib/helpers/l10n";
 
 export interface NormalisedEntities {
   scenes: Record<EntityId, Scene>;
   actors: Record<EntityId, Actor>;
   triggers: Record<EntityId, Trigger>;
+  scriptEvents: Record<EntityId, ScriptEvent>;
   backgrounds: Record<EntityId, Background>;
   spriteSheets: Record<EntityId, SpriteSheet>;
   metasprites: Record<EntityId, Metasprite>;
@@ -78,19 +81,22 @@ const musicSchema = new schema.Entity("music");
 const fontSchema = new schema.Entity("fonts");
 const avatarSchema = new schema.Entity("avatars");
 const emoteSchema = new schema.Entity("emotes");
-const actorSchema = new schema.Entity("actors");
-const triggerSchema = new schema.Entity("triggers");
-/*
-// Normalise events
-const eventSchema = new schema.Entity("events");
-eventSchema.define({
-  children: {
-    true: [eventSchema],
-    false: [eventSchema],
-    script: [eventSchema]
-  }
+
+const scriptEventSchema = new schema.Entity("scriptEvents");
+scriptEventSchema.define({
+  children: new schema.Values([scriptEventSchema]),
 });
-*/
+const actorSchema = new schema.Entity("actors", {
+  script: [scriptEventSchema],
+  startScript: [scriptEventSchema],
+  updateScript: [scriptEventSchema],
+  hit1Script: [scriptEventSchema],
+  hit2Script: [scriptEventSchema],
+  hit3Script: [scriptEventSchema],
+});
+const triggerSchema = new schema.Entity("triggers", {
+  script: [scriptEventSchema],
+});
 const metaspriteTilesSchema = new schema.Entity("metaspriteTiles");
 const metaspritesSchema = new schema.Entity("metasprites", {
   tiles: [metaspriteTilesSchema],
@@ -109,9 +115,14 @@ const variablesSchema = new schema.Entity("variables");
 const sceneSchema = new schema.Entity("scenes", {
   actors: [actorSchema],
   triggers: [triggerSchema],
-  // script: [eventSchema],
+  script: [scriptEventSchema],
+  playerHit1Script: [scriptEventSchema],
+  playerHit2Script: [scriptEventSchema],
+  playerHit3Script: [scriptEventSchema],
 });
-const customEventsSchema = new schema.Entity("customEvents");
+const customEventsSchema = new schema.Entity("customEvents", {
+  script: [scriptEventSchema],
+});
 const palettesSchema = new schema.Entity("palettes");
 const engineFieldValuesSchema = new schema.Entity("engineFieldValues");
 
@@ -158,6 +169,7 @@ export const denormalizeEntities = (
     actors: state.actors.entities as Record<EntityId, Actor>,
     triggers: state.triggers.entities as Record<EntityId, Trigger>,
     scenes: state.scenes.entities as Record<EntityId, Scene>,
+    scriptEvents: state.scriptEvents.entities as Record<EntityId, ScriptEvent>,
     backgrounds: state.backgrounds.entities as Record<EntityId, Background>,
     spriteSheets: state.spriteSheets.entities as Record<EntityId, SpriteSheet>,
     metasprites: state.metasprites.entities as Record<EntityId, Metasprite>,
@@ -279,4 +291,159 @@ export const isUnionDirectionValue = (
     return false;
   }
   return true;
+};
+
+export const walkNormalisedScriptEvents = (
+  ids: string[] = [],
+  lookup: Dictionary<ScriptEvent>,
+  callback: (scriptEvent: ScriptEvent) => void
+) => {
+  for (let i = 0; i < ids.length; i++) {
+    const scriptEvent = lookup[ids[i]];
+    if (scriptEvent) {
+      callback(scriptEvent);
+      if (scriptEvent.children) {
+        Object.keys(scriptEvent.children).forEach((key) => {
+          const script = scriptEvent.children?.[key];
+          if (script) {
+            walkNormalisedScriptEvents(script, lookup, callback);
+          }
+        });
+      }
+    }
+  }
+};
+
+export const walkNormalisedSceneSpecificEvents = (
+  scene: Scene,
+  lookup: Dictionary<ScriptEvent>,
+  callback: (scriptEvent: ScriptEvent) => void
+) => {
+  walkNormalisedScriptEvents(scene.script, lookup, callback);
+  walkNormalisedScriptEvents(scene.playerHit1Script, lookup, callback);
+  walkNormalisedScriptEvents(scene.playerHit2Script, lookup, callback);
+  walkNormalisedScriptEvents(scene.playerHit3Script, lookup, callback);
+};
+
+export const walkNormalisedActorEvents = (
+  actor: Actor,
+  lookup: Dictionary<ScriptEvent>,
+  callback: (scriptEvent: ScriptEvent) => void
+) => {
+  walkActorScriptsKeys((key) => {
+    walkNormalisedScriptEvents(actor[key], lookup, callback);
+  });
+};
+
+export const walkNormalisedTriggerEvents = (
+  trigger: Trigger,
+  lookup: Dictionary<ScriptEvent>,
+  callback: (scriptEvent: ScriptEvent) => void
+) => {
+  walkNormalisedScriptEvents(trigger.script, lookup, callback);
+};
+
+export const walkNormalisedSceneEvents = (
+  scene: Scene,
+  lookup: Dictionary<ScriptEvent>,
+  actorsLookup: Dictionary<Actor>,
+  triggersLookup: Dictionary<Trigger>,
+  callback: (scriptEvent: ScriptEvent) => void
+) => {
+  walkNormalisedSceneSpecificEvents(scene, lookup, callback);
+  scene.actors.forEach((actorId) => {
+    const actor = actorsLookup[actorId];
+    if (actor) {
+      walkNormalisedActorEvents(actor, lookup, callback);
+    }
+  });
+  scene.triggers.forEach((triggerId) => {
+    const trigger = triggersLookup[triggerId];
+    if (trigger) {
+      walkNormalisedTriggerEvents(trigger, lookup, callback);
+    }
+  });
+};
+
+export const walkNormalisedCustomEventEvents = (
+  customEvent: CustomEvent,
+  lookup: Dictionary<ScriptEvent>,
+  callback: (scriptEvent: ScriptEvent) => void
+) => {
+  walkNormalisedScriptEvents(customEvent.script, lookup, callback);
+};
+
+export const walkActorScriptsKeys = (
+  callback: (scriptKey: ActorScriptKey) => void
+) => {
+  actorScriptKeys.forEach((key) => callback(key));
+};
+
+export const walkSceneScriptsKeys = (
+  callback: (scriptKey: SceneScriptKey) => void
+) => {
+  sceneScriptKeys.forEach((key) => callback(key));
+};
+
+export const isNormalisedScriptEqual = (
+  idsA: string[] = [],
+  lookupA: Dictionary<ScriptEvent>,
+  idsB: string[] = [],
+  lookupB: Dictionary<ScriptEvent>
+) => {
+  const scriptAEvents: { args?: Record<string, unknown>; command: string }[] =
+    [];
+  const scriptBEvents: { args?: Record<string, unknown>; command: string }[] =
+    [];
+  walkNormalisedScriptEvents(idsA, lookupA, (scriptEvent) => {
+    const { args, command } = scriptEvent;
+    scriptAEvents.push({ args, command });
+  });
+  walkNormalisedScriptEvents(idsB, lookupB, (scriptEvent) => {
+    const { args, command } = scriptEvent;
+    scriptBEvents.push({ args, command });
+  });
+  return isEqual(scriptAEvents, scriptBEvents);
+};
+
+export const isCustomEventEqual = (
+  customEventA: CustomEvent,
+  lookupA: Dictionary<ScriptEvent>,
+  customEventB: CustomEvent,
+  lookupB: Dictionary<ScriptEvent>
+) => {
+  const compareA = {
+    ...customEventA,
+    script: undefined,
+    id: undefined,
+  };
+  const compareB = {
+    ...customEventB,
+    script: undefined,
+    id: undefined,
+  };
+  if (!isEqual(compareA, compareB)) {
+    return false;
+  }
+  return isNormalisedScriptEqual(
+    customEventA.script,
+    lookupA,
+    customEventB.script,
+    lookupB
+  );
+};
+
+export const actorName = (actor: Actor, actorIndex: number) => {
+  return actor.name || `${l10n("ACTOR")} ${actorIndex + 1}`;
+};
+
+export const sceneName = (scene: Scene, sceneIndex: number) => {
+  return scene.name || `Scene ${sceneIndex + 1}`;
+};
+
+export const customEventName = (
+  customEvent: CustomEvent,
+  customEventIndex: number
+) => {
+  return customEvent.name || `${l10n("CUSTOM_EVENT")} ${customEventIndex + 1}`;
 };

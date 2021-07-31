@@ -113,7 +113,7 @@ const electronMiddleware: Middleware<Dispatch, RootState> =
 
       const isThisEvent = (event: ScriptEvent) =>
         event.command === EVENT_CALL_CUSTOM_EVENT &&
-        event.args.customEventId === action.payload.customEventId;
+        event.args?.customEventId === action.payload.customEventId;
 
       const sceneName = (sceneId: string) => {
         const scene = scenesLookup[sceneId];

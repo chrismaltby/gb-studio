@@ -25,17 +25,18 @@ export const ScriptEditorEventHelper: FC<ScriptEditorEventHelperProps> = ({
   if (event.command === "EVENT_TEXT") {
     return (
       <RelativePortal offsetX={-10} offsetY={10} pin="top-right">
-        {Array.isArray(event.args.text) ? (
-          event.args.text.map((text: string) => (
+        {Array.isArray(event.args?.text) ? (
+          event.args?.text.map((text: string, index) => (
             <DialoguePreview
+              key={index}
               text={text}
-              avatarId={toString(event.args.avatarId)}
+              avatarId={toString(event.args?.avatarId)}
             />
           ))
         ) : (
           <DialoguePreview
-            text={toString(event.args.text)}
-            avatarId={toString(event.args.avatarId)}
+            text={toString(event.args?.text)}
+            avatarId={toString(event.args?.avatarId)}
           />
         )}
       </RelativePortal>

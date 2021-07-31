@@ -10,6 +10,8 @@ const darkTheme: ThemeInterface = {
   colors: {
     highlight: "#c92c61",
     highlightText: "#ffffff",
+    translucent: "rgba(0,0,0,0.3)",
+    hoverTranslucent: "rgba(0,0,0,0.4)",
     text: "#b7babb",
     secondaryText: "#777777",
     conditional: {
@@ -82,6 +84,45 @@ const darkTheme: ThemeInterface = {
     list: {
       selectedBackground: "#000000",
       activeBackground: "#333333",
+    },
+    scripting: {
+      header: {
+        text: "#ffffff",
+        background: "#4e4e4e",
+        backgroundAlt: "#444444",
+        nest1Background: "#1565c0",
+        nest1BackgroundAlt: "#0d47a1",
+        nest2Background: "#ca750b",
+        nest2BackgroundAlt: "#9a490b",
+        nest3Background: "#2e7d32",
+        nest3BackgroundAlt: "#1b5e20",
+        nest4Background: "#6a1b9a",
+        nest4BackgroundAlt: "#4a148c",
+        commentBackground: "#8bc34a",
+        commentBackgroundAlt: "#7cb342",
+      },
+      branch: {
+        nest1Background: "#203D6A",
+        nest2Background: "#6F491A",
+        nest3Background: "#27492A",
+        nest4Background: "#3F2460",
+      },
+      form: {
+        background: "#333333",
+      },
+      children: {
+        nest1Border: "#2196f3",
+        nest1Text: "#2196f3",
+        nest2Border: "#ca750b",
+        nest2Text: "#ca750b",
+        nest3Border: "#4caf50",
+        nest3Text: "#4caf50",
+        nest4Border: "#9575cd",
+        nest4Text: "#9575cd",
+      },
+      placeholder: {
+        background: "#000",
+      },
     },
     tracker: {
       background: "#222222",

@@ -6,21 +6,25 @@ export interface EventField {
   checkboxLabel?: string;
   types?: string[];
   defaultType?: string;
+  placeholder?: string;
   min?: number;
   max?: number;
   options?: Array<[string | number, string]>;
-  defaultValue?:
-    | string
-    | number
-    | boolean
-    | { [string]: string | number | boolean };
+  defaultValue?: Record<string, unknown> | unknown;
   width?: string;
 }
 
 export interface EventHandler {
   id: string;
+  autoLabel?: (
+    lookup: (key: string) => string,
+    args: Record<string, unknown>
+  ) => string;
   fields: EventField[];
   name?: string;
+  groups?: string[];
+  deprecated?: boolean;
+  isConditional?: boolean;
   compile: (input: unknown, helpers: unknown) => void;
 }
 

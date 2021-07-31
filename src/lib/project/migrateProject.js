@@ -1,6 +1,11 @@
 /* eslint-disable no-nested-ternary */
 import { indexBy } from "../helpers/array";
-import { mapScenesEvents, mapEvents } from "../helpers/eventSystem";
+import {
+  mapScenesEvents,
+  mapEvents,
+  filterScenesEvents,
+  filterEvents,
+} from "../helpers/eventSystem";
 import generateRandomWalkScript from "../movement/generateRandomWalkScript";
 import generateRandomLookScript from "../movement/generateRandomLookScript";
 import { COLLISION_ALL, DMG_PALETTE } from "../../consts";
@@ -1056,6 +1061,25 @@ const migrateFrom200r6To200r7Settings = (data) => {
   };
 };
 
+/* Version 2.0.0 r8 removes EVENT_END commands marking the end of script branches
+ */
+const filterFrom200r8To200r9Event = (event) => {
+  return event.command !== "EVENT_END";
+};
+
+const migrateFrom200r8To200r9Events = (data) => {
+  return {
+    ...data,
+    scenes: filterScenesEvents(data.scenes, filterFrom200r8To200r9Event),
+    customEvents: (data.customEvents || []).map((customEvent) => {
+      return {
+        ...customEvent,
+        script: filterEvents(customEvent.script, filterFrom200r8To200r9Event),
+      };
+    }),
+  };
+};
+
 const migrateProject = (project) => {
   let data = { ...project };
   let version = project._version || "1.0.0";
@@ -1118,6 +1142,10 @@ const migrateProject = (project) => {
     if (release === "7") {
       data = migrateFrom200r7To200r8Sprites(data);
       release = "8";
+    }
+    if (release === "8") {
+      data = migrateFrom200r8To200r9Events(data);
+      release = "9";
     }
   }
 

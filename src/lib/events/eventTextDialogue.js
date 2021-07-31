@@ -1,6 +1,17 @@
 const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_TEXT";
+const groups = ["EVENT_GROUP_DIALOGUE"];
+
+const autoLabel = (fetchArg, args) => {
+  if (([].concat(args.text) || []).join()) {
+    return l10n("EVENT_TEXT_LABEL", {
+      text: fetchArg("text"),
+    });
+  } else {
+    l10n("EVENT_TEXT");
+  }
+};
 
 const fields = [
   {
@@ -9,6 +20,7 @@ const fields = [
     placeholder: l10n("FIELD_TEXT_PLACEHOLDER"),
     multiple: true,
     defaultValue: "",
+    flexBasis: "100%",
   },
   {
     key: "avatarId",
@@ -27,6 +39,8 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  autoLabel,
+  groups,
   fields,
   compile,
 };

@@ -1,4 +1,5 @@
 const id = "EVENT_GBVM_SCRIPT";
+const groups = ["EVENT_GROUP_MISC"];
 
 const fields = [
   {
@@ -14,6 +15,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  groups,
   fields,
   compile,
   allowedBeforeInitFade: true,

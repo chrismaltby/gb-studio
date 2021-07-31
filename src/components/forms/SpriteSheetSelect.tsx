@@ -39,7 +39,7 @@ const buildOptions = (
   spriteSheets: SpriteSheet[]
 ) => {
   memo.push({
-    label: l10n("FIELD_SPRITES") + (plugin ? ` - ${plugin}` : ""),
+    label: plugin ? plugin : "",
     options: spriteSheets.map((spriteSheet) => {
       return {
         value: spriteSheet.id,

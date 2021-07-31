@@ -51,7 +51,7 @@ export const dummyScene: SceneData = {
 };
 
 export const dummyActor: Actor = {
-  id: "",
+  id: "dummyActor1",
   name: "",
   spriteSheetId: "",
   x: 0,
@@ -183,6 +183,7 @@ export const dummyProjectData: ProjectData = {
     musicDriver: "huge",
     cartType: "mbc5",
     batterylessEnabled: false,
+    favoriteEvents: [],
   },
 };
 

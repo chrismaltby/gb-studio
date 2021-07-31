@@ -1,6 +1,11 @@
 const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_WAIT";
+const groups = ["EVENT_GROUP_TIMER"];
+
+const autoLabel = (fetchArg) => {
+  return l10n("EVENT_WAIT_LABEL", { time: fetchArg("time") });
+};
 
 const fields = [
   {
@@ -27,6 +32,8 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  autoLabel,
+  groups,
   fields,
   compile,
 };

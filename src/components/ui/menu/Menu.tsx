@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { ThemeInterface } from "../theme/ThemeInterface";
 
 export interface MenuProps {
@@ -19,10 +19,13 @@ export const Menu = styled.div<MenuProps>`
   color: ${(props) => props.theme.colors.text};
   font-size: ${(props) => props.theme.typography.menuFontSize};
   padding: 4px 0;
+  font-weight: normal;
+  line-height: 15px;
 `;
 
 export interface MenuItemProps {
   readonly focus?: boolean;
+  readonly selected?: boolean;
   readonly onClick?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
   readonly onMouseEnter?: (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>
@@ -33,6 +36,7 @@ export const MenuItem = styled.div<MenuItemProps>`
   display: flex;
   align-items: center;
   padding: 5px 10px;
+  font-size: ${(props) => props.theme.typography.menuFontSize};
 
   &:hover,
   &:focus {
@@ -47,6 +51,45 @@ export const MenuItem = styled.div<MenuItemProps>`
 
   ${Menu}:hover &:focus&:not(:hover) {
     background: ${(props) => props.theme.colors.menu.activeBackground};
+  }
+
+  ${(props) =>
+    props.selected
+      ? css`
+          background: ${(props) => props.theme.colors.menu.hoverBackground};
+          outline: none;
+          box-shadow: none;
+        `
+      : ""}
+`;
+
+export const MenuItemIcon = styled.div<MenuItemProps>`
+  width: 15px;
+  height: 15px;
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  svg {
+    width: 12px;
+    height: 12px;
+  }
+  &:nth-child(1) {
+    margin-left: -5px;
+    margin-right: 5px;
+  }
+`;
+
+export const MenuGroup = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 5px 10px;
+  font-size: 10px;
+  text-transform: uppercase;
+  opacity: 0.8;
+
+  ${MenuItem} + & {
+    margin-top: 10px;
   }
 `;
 

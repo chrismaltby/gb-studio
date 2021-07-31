@@ -1,16 +1,24 @@
 import { clipboard } from "electron";
 import {
+  ClipboardActors,
   ClipboardFormat,
   ClipboardMetasprites,
   ClipboardMetaspriteTiles,
   ClipboardPaletteIds,
+  ClipboardScenes,
+  ClipboardScriptEvents,
   ClipboardSpriteState,
+  ClipboardTriggers,
   ClipboardType,
+  ClipboardTypeActors,
   ClipboardTypeMetasprites,
   ClipboardTypeMetaspriteTiles,
   ClipboardTypePaletteIds,
   ClipboardTypes,
+  ClipboardTypeScenes,
+  ClipboardTypeScriptEvents,
   ClipboardTypeSpriteState,
+  ClipboardTypeTriggers,
   NarrowClipboardType,
 } from "./clipboardTypes";
 
@@ -64,6 +72,50 @@ const isClipboardPaletteIds = (
   return Array.isArray(wide.paletteIds);
 };
 
+const isClipboardScriptEvents = (
+  input: unknown
+): input is ClipboardScriptEvents => {
+  if (typeof input !== "object" || input === null) {
+    return false;
+  }
+  const wide: { scriptEvents?: unknown; script?: unknown } = input;
+  return Array.isArray(wide.scriptEvents) && Array.isArray(wide.script);
+};
+
+const isClipboardTriggers = (input: unknown): input is ClipboardTriggers => {
+  if (typeof input !== "object" || input === null) {
+    return false;
+  }
+  const wide: { scriptEvents?: unknown; triggers?: unknown } = input;
+  return Array.isArray(wide.scriptEvents) && Array.isArray(wide.triggers);
+};
+
+const isClipboardActors = (input: unknown): input is ClipboardActors => {
+  if (typeof input !== "object" || input === null) {
+    return false;
+  }
+  const wide: { scriptEvents?: unknown; actors?: unknown } = input;
+  return Array.isArray(wide.scriptEvents) && Array.isArray(wide.actors);
+};
+
+const isClipboardScenes = (input: unknown): input is ClipboardScenes => {
+  if (typeof input !== "object" || input === null) {
+    return false;
+  }
+  const wide: {
+    scriptEvents?: unknown;
+    actors?: unknown;
+    triggers?: unknown;
+    scenes?: unknown;
+  } = input;
+  return (
+    Array.isArray(wide.scriptEvents) &&
+    Array.isArray(wide.actors) &&
+    Array.isArray(wide.triggers) &&
+    Array.isArray(wide.scenes)
+  );
+};
+
 export const copy = (payload: ClipboardType) => {
   const buffer = Buffer.from(JSON.stringify(payload.data), "utf8");
   clipboard.writeBuffer(payload.format, buffer);
@@ -109,6 +161,34 @@ export const paste = <T extends ClipboardFormat>(
     if (isClipboardPaletteIds(data)) {
       return {
         format: ClipboardTypePaletteIds,
+        data,
+      } as NarrowClipboardType<ClipboardType, T>;
+    }
+  } else if (format === ClipboardTypeScriptEvents) {
+    if (isClipboardScriptEvents(data)) {
+      return {
+        format: ClipboardTypeScriptEvents,
+        data,
+      } as NarrowClipboardType<ClipboardType, T>;
+    }
+  } else if (format === ClipboardTypeTriggers) {
+    if (isClipboardTriggers(data)) {
+      return {
+        format: ClipboardTypeTriggers,
+        data,
+      } as NarrowClipboardType<ClipboardType, T>;
+    }
+  } else if (format === ClipboardTypeActors) {
+    if (isClipboardActors(data)) {
+      return {
+        format: ClipboardTypeActors,
+        data,
+      } as NarrowClipboardType<ClipboardType, T>;
+    }
+  } else if (format === ClipboardTypeScenes) {
+    if (isClipboardScenes(data)) {
+      return {
+        format: ClipboardTypeScenes,
         data,
       } as NarrowClipboardType<ClipboardType, T>;
     }

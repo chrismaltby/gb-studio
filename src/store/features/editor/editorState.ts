@@ -58,6 +58,7 @@ export interface SelectedInstrument {
 
 export interface EditorState {
   tool: Tool;
+  pasteMode: boolean;
   actorDefaults?: Partial<Actor>;
   triggerDefaults?: Partial<Trigger>;
   sceneDefaults?: Partial<SceneData>;
@@ -126,6 +127,7 @@ export interface EditorState {
 
 export const initialState: EditorState = {
   tool: "select",
+  pasteMode: false,
   type: "world",
   worldFocus: false,
   scene: "",
@@ -200,6 +202,11 @@ const editorSlice = createSlice({
       state.actorDefaults = undefined;
       state.triggerDefaults = undefined;
       state.sceneDefaults = undefined;
+      state.pasteMode = false;
+    },
+
+    setPasteMode: (state, action: PayloadAction<boolean>) => {
+      state.pasteMode = action.payload;
     },
 
     setBrush: (state, action: PayloadAction<{ brush: Brush }>) => {
@@ -702,9 +709,11 @@ const editorSlice = createSlice({
         state.selectedMetaspriteTileIds = [];
       })
       .addCase(entitiesActions.addCustomEvent, (state, action) => {
-        state.type = "customEvent";
-        state.scene = "";
-        state.entityId = action.payload.customEventId;
+        if (!action.payload.defaults) {
+          state.type = "customEvent";
+          state.scene = "";
+          state.entityId = action.payload.customEventId;
+        }
       })
       .addCase(entitiesActions.moveActor, (state, action) => {
         if (state.scene !== action.payload.newSceneId) {

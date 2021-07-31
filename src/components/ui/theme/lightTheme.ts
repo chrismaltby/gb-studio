@@ -10,6 +10,8 @@ const lightTheme: ThemeInterface = {
   colors: {
     highlight: "#c92c61",
     highlightText: "#ffffff",
+    translucent: "rgba(255,255,255,0.3)",
+    hoverTranslucent: "rgba(255,255,255,0.4)",
     text: "#3b3a3b",
     secondaryText: "#999999",
     conditional: {
@@ -82,6 +84,45 @@ const lightTheme: ThemeInterface = {
     list: {
       selectedBackground: "#dddddd",
       activeBackground: "#eaeaea",
+    },
+    scripting: {
+      header: {
+        text: "#3b3a3b",
+        background: "#efefef",
+        backgroundAlt: "#e4e4e4",
+        nest1Background: "#b3e5fc",
+        nest1BackgroundAlt: "#81d4fa",
+        nest2Background: "#ffccbc",
+        nest2BackgroundAlt: "#ffab91",
+        nest3Background: "#c8e6c9",
+        nest3BackgroundAlt: "#a5d6a7",
+        nest4Background: "#d1c4e9",
+        nest4BackgroundAlt: "#b39ddb",
+        commentBackground: "#dcedc8",
+        commentBackgroundAlt: "#c5e1a5",
+      },
+      branch: {
+        nest1Background: "#e1f5fe",
+        nest2Background: "#fbe9e7",
+        nest3Background: "#e8f5e9",
+        nest4Background: "#f3e5f5",
+      },
+      form: {
+        background: "#ffffff",
+      },
+      children: {
+        nest1Border: "#b3e5fc",
+        nest1Text: "#03a9f4",
+        nest2Border: "#ffccbc",
+        nest2Text: "#ff5722",
+        nest3Border: "#c8e6c9",
+        nest3Text: "#4CAF50",
+        nest4Border: "#d1c4e9",
+        nest4Text: "#9C27B0",
+      },
+      placeholder: {
+        background: "#ccc",
+      },
     },
     tracker: {
       background: "#f2f2f2",

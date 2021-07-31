@@ -21,7 +21,7 @@ import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import { Actor, ScriptEvent } from "store/features/entities/entitiesTypes";
 import l10n from "lib/helpers/l10n";
-import { SidebarColumn, SidebarMultiColumnAuto } from "ui/sidebars/Sidebar";
+import { Sidebar, SidebarColumn } from "ui/sidebars/Sidebar";
 import { CoordinateInput } from "ui/form/CoordinateInput";
 import { Checkbox } from "ui/form/Checkbox";
 import { LockIcon, LockOpenIcon, PinIcon } from "ui/icons/Icons";
@@ -38,12 +38,13 @@ import { MovementSpeedSelect } from "../forms/MovementSpeedSelect";
 import CollisionMaskPicker from "../forms/CollisionMaskPicker";
 import { KeysMatching } from "lib/helpers/types";
 import { NoteField } from "ui/form/NoteField";
-import { TabBar } from "ui/tabs/Tabs";
+import { StickyTabs, TabBar } from "ui/tabs/Tabs";
 import { Button } from "ui/buttons/Button";
 
 interface ActorEditorProps {
   id: string;
   sceneId: string;
+  multiColumn: boolean;
 }
 
 interface ScriptHandler {
@@ -62,6 +63,14 @@ interface ScriptHandlers {
     hit3: ScriptHandler;
   };
 }
+
+type ActorScriptKey =
+  | "script"
+  | "startScript"
+  | "updateScript"
+  | "hit1Script"
+  | "hit2Script"
+  | "hit3Script";
 
 const actorName = (actor: Actor, actorIndex: number) =>
   actor.name ? actor.name : `Actor ${actorIndex + 1}`;
@@ -83,12 +92,47 @@ const hitTabs = {
   hit1: l10n("FIELD_COLLISION_GROUP_N", { n: 1 }),
   hit2: l10n("FIELD_COLLISION_GROUP_N", { n: 2 }),
   hit3: l10n("FIELD_COLLISION_GROUP_N", { n: 3 }),
-};
+} as const;
 
 type DefaultTab = keyof typeof defaultTabs;
 type CollisionTab = keyof typeof collisionTabs;
+type HitTab = keyof typeof hitTabs;
 
-export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
+const getScriptKey = (
+  primaryTab: DefaultTab | CollisionTab,
+  secondaryTab: HitTab
+): ActorScriptKey => {
+  if (primaryTab === "interact") {
+    return "script";
+  }
+  if (primaryTab === "start") {
+    return "startScript";
+  }
+  if (primaryTab === "update") {
+    return "updateScript";
+  }
+  if (primaryTab === "hit") {
+    if (secondaryTab === "hitPlayer") {
+      return "script";
+    }
+    if (secondaryTab === "hit1") {
+      return "hit1Script";
+    }
+    if (secondaryTab === "hit2") {
+      return "hit2Script";
+    }
+    if (secondaryTab === "hit3") {
+      return "hit3Script";
+    }
+  }
+  return "script";
+};
+
+export const ActorEditor: FC<ActorEditorProps> = ({
+  id,
+  sceneId,
+  multiColumn,
+}) => {
   const actor = useSelector((state: RootState) =>
     actorSelectors.selectById(state, id)
   );
@@ -203,14 +247,12 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
 
   const onCopy = () => {
     if (actor) {
-      dispatch(clipboardActions.copyActor(actor));
+      dispatch(clipboardActions.copyActors({ actorIds: [actor.id] }));
     }
   };
 
   const onPaste = () => {
-    if (clipboardData) {
-      dispatch(clipboardActions.pasteClipboardEntity(clipboardData));
-    }
+    dispatch(clipboardActions.pasteClipboardEntity());
   };
 
   const onRemove = () => {
@@ -247,51 +289,6 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
 
   const showNotes = actor.notes || notesOpen;
 
-  const onEditScript = onChangeField("script");
-
-  const onEditStartScript = onChangeField("startScript");
-
-  const onEditUpdateScript = onChangeField("updateScript");
-
-  const onEditHit1Script = onChangeField("hit1Script");
-
-  const onEditHit2Script = onChangeField("hit2Script");
-
-  const onEditHit3Script = onChangeField("hit3Script");
-
-  const scripts = {
-    start: {
-      value: actor.startScript,
-      onChange: onEditStartScript,
-    },
-    interact: {
-      value: actor.script,
-      onChange: onEditScript,
-    },
-    update: {
-      value: actor.updateScript,
-      onChange: onEditUpdateScript,
-    },
-    hit: {
-      hitPlayer: {
-        value: actor.script,
-        onChange: onEditScript,
-      },
-      hit1: {
-        value: actor.hit1Script,
-        onChange: onEditHit1Script,
-      },
-      hit2: {
-        value: actor.hit2Script,
-        onChange: onEditHit2Script,
-      },
-      hit3: {
-        value: actor.hit3Script,
-        onChange: onEditHit3Script,
-      },
-    },
-  } as const;
-
   const lockButton = (
     <Button
       size="small"
@@ -307,10 +304,21 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
     </Button>
   );
 
+  const scriptKey = getScriptKey(scriptMode, scriptModeSecondary);
+
+  const scriptButton = (
+    <ScriptEditorDropdownButton
+      value={actor[scriptKey]}
+      type="actor"
+      entityId={actor.id}
+      scriptKey={scriptKey}
+    />
+  );
+
   return (
-    <SidebarMultiColumnAuto onClick={selectSidebar}>
+    <Sidebar onClick={selectSidebar} multiColumn={multiColumn}>
       {!lockScriptEditor && (
-        <SidebarColumn>
+        <SidebarColumn style={{ maxWidth: multiColumn ? 300 : undefined }}>
           <FormContainer>
             <FormHeader>
               <EditableText
@@ -490,81 +498,49 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
         </SidebarColumn>
       )}
       <SidebarColumn>
-        {!actor.collisionGroup && (
-          <TabBar
-            value={scriptMode as DefaultTab}
-            values={defaultTabs}
-            overflowActiveTab={scriptMode === "hit"}
-            onChange={onChangeScriptMode}
-            buttons={
-              scriptMode !== "hit" && scripts[scriptMode] ? (
+        <StickyTabs>
+          {actor.collisionGroup ? (
+            <TabBar
+              value={scriptMode as CollisionTab}
+              values={collisionTabs}
+              onChange={onChangeScriptMode}
+              overflowActiveTab={scriptMode === "hit"}
+              buttons={
                 <>
                   {lockButton}
-                  <ScriptEditorDropdownButton
-                    value={scripts[scriptMode].value}
-                    onChange={scripts[scriptMode].onChange}
-                  />
+                  {scriptButton}
                 </>
-              ) : (
-                lockButton
-              )
-            }
-          />
-        )}
-        {actor.collisionGroup && (
-          <TabBar
-            value={scriptMode as CollisionTab}
-            values={collisionTabs}
-            overflowActiveTab={scriptMode === "hit"}
-            onChange={onChangeScriptMode}
-            buttons={
-              scriptMode !== "hit" && scripts[scriptMode] ? (
+              }
+            />
+          ) : (
+            <TabBar
+              value={scriptMode as DefaultTab}
+              values={defaultTabs}
+              onChange={onChangeScriptMode}
+              buttons={
                 <>
                   {lockButton}
-                  <ScriptEditorDropdownButton
-                    value={scripts[scriptMode].value}
-                    onChange={scripts[scriptMode].onChange}
-                  />
+                  {scriptButton}
                 </>
-              ) : (
-                lockButton
-              )
-            }
-          />
-        )}
-        {scriptMode === "hit" && (
-          <TabBar
-            variant="secondary"
-            value={scriptModeSecondary}
-            values={hitTabs}
-            onChange={onChangeScriptModeSecondary}
-            buttons={
-              <ScriptEditorDropdownButton
-                value={scripts[scriptMode][scriptModeSecondary].value}
-                onChange={scripts[scriptMode][scriptModeSecondary].onChange}
-              />
-            }
-          />
-        )}
-        {scriptMode !== "hit" && scripts[scriptMode] && (
-          <ScriptEditor
-            value={scripts[scriptMode].value}
-            type="actor"
-            onChange={scripts[scriptMode].onChange}
-            entityId={actor.id}
-          />
-        )}
-        {scriptMode === "hit" &&
-          scripts[scriptMode] &&
-          scripts[scriptMode][scriptModeSecondary] && (
-            <ScriptEditor
-              value={scripts[scriptMode][scriptModeSecondary].value}
-              type="actor"
-              onChange={scripts[scriptMode][scriptModeSecondary].onChange}
-              entityId={actor.id}
+              }
             />
           )}
+          {scriptMode === "hit" && (
+            <TabBar
+              variant="secondary"
+              value={scriptModeSecondary}
+              values={hitTabs}
+              onChange={onChangeScriptModeSecondary}
+            />
+          )}
+        </StickyTabs>
+        <ScriptEditor
+          value={actor[scriptKey]}
+          type="actor"
+          entityId={actor.id}
+          scriptKey={scriptKey}
+        />
       </SidebarColumn>
-    </SidebarMultiColumnAuto>
+    </Sidebar>
   );
 };

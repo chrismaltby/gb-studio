@@ -1,4 +1,17 @@
+const l10n = require("../helpers/l10n").default;
+
 const id = "EVENT_ENGINE_FIELD_SET";
+const groups = ["EVENT_GROUP_ENGINE_FIELDS"];
+
+const autoLabel = (fetchArg, input) => {
+  if (input.engineFieldKey === undefined || input.value === undefined) {
+    return l10n("EVENT_ENGINE_FIELD_SET");
+  }
+  return l10n("EVENT_ENGINE_FIELD_SET_LABEL", {
+    engineField: fetchArg("engineFieldKey"),
+    value: fetchArg("value"),
+  });
+};
 
 const fields = [
   {
@@ -29,6 +42,8 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  autoLabel,
+  groups,
   fields,
   compile,
   allowedBeforeInitFade: true,

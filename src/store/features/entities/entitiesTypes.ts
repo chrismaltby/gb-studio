@@ -36,12 +36,36 @@ export type UnionValue =
   | UnionNumberValue
   | UnionDirectionValue;
 
+export type ScriptEventParentType =
+  | "scene"
+  | "actor"
+  | "trigger"
+  | "scriptEvent"
+  | "customEvent";
+
 export type ScriptEvent = {
   id: string;
   command: string;
-  args: Record<string, unknown>;
-  children?: Dictionary<ScriptEvent[]>;
+  args?: Record<string, unknown>;
+  children?: Dictionary<string[]>;
 };
+
+export type ScriptEventsRef = {
+  scriptEventId: string;
+  parentType: ScriptEventParentType;
+  parentKey: string;
+  parentId: string;
+};
+
+export const actorScriptKeys = [
+  "script",
+  "startScript",
+  "updateScript",
+  "hit1Script",
+  "hit2Script",
+  "hit3Script",
+] as const;
+export type ActorScriptKey = typeof actorScriptKeys[number];
 
 export type Actor = {
   id: string;
@@ -58,12 +82,12 @@ export type Actor = {
   animate: boolean;
   isPinned: boolean;
   collisionGroup: string;
-  script: ScriptEvent[];
-  startScript: ScriptEvent[];
-  updateScript: ScriptEvent[];
-  hit1Script: ScriptEvent[];
-  hit2Script: ScriptEvent[];
-  hit3Script: ScriptEvent[];
+  script: string[];
+  startScript: string[];
+  updateScript: string[];
+  hit1Script: string[];
+  hit2Script: string[];
+  hit3Script: string[];
 };
 
 export type Trigger = {
@@ -74,7 +98,7 @@ export type Trigger = {
   y: number;
   width: number;
   height: number;
-  script: ScriptEvent[];
+  script: string[];
 };
 
 export type Background = {
@@ -180,7 +204,7 @@ export type CustomEvent = {
   description: string;
   variables: Dictionary<CustomEventVariable>;
   actors: Dictionary<CustomEventActor>;
-  script: ScriptEvent[];
+  script: string[];
 };
 
 export type EngineFieldValue = {
@@ -262,6 +286,14 @@ export type SceneParallaxLayer = {
   speed: number;
 };
 
+export const sceneScriptKeys = [
+  "script",
+  "playerHit1Script",
+  "playerHit2Script",
+  "playerHit3Script",
+] as const;
+export type SceneScriptKey = typeof sceneScriptKeys[number];
+
 export type Scene = {
   id: string;
   type: string;
@@ -280,10 +312,10 @@ export type Scene = {
   triggers: string[];
   parallax?: SceneParallaxLayer[];
   playerSpriteSheetId?: string;
-  script: ScriptEvent[];
-  playerHit1Script: ScriptEvent[];
-  playerHit2Script: ScriptEvent[];
-  playerHit3Script: ScriptEvent[];
+  script: string[];
+  playerHit1Script: string[];
+  playerHit2Script: string[];
+  playerHit3Script: string[];
 };
 
 export type SceneData = Omit<Scene, "actors" | "triggers"> & {
@@ -308,6 +340,7 @@ export interface EntitiesState {
   actors: EntityState<Actor>;
   triggers: EntityState<Trigger>;
   scenes: EntityState<Scene>;
+  scriptEvents: EntityState<ScriptEvent>;
   backgrounds: EntityState<Background>;
   spriteSheets: EntityState<SpriteSheet>;
   metasprites: EntityState<Metasprite>;
@@ -328,5 +361,56 @@ export type Asset = {
   filename: string;
   plugin?: string;
 };
+
+export interface ScriptEventFieldCondition {
+  key: string;
+  ne?: unknown;
+  eq?: unknown;
+  gt?: unknown;
+  lt?: unknown;
+  gte?: unknown;
+  lte?: unknown;
+  in?: unknown[];
+}
+
+export interface ScriptEventFieldSchema {
+  label?: string | React.ReactNode;
+  checkboxLabel?: string;
+  defaultValue?: unknown | Record<string, unknown>;
+  key?: string;
+  type?: string;
+  hide?: boolean;
+  multiple?: boolean;
+  conditions?: ScriptEventFieldCondition[];
+  toggleLabel?: string;
+  width?: string;
+  flexBasis?: string;
+  values?: Record<string, string>;
+  alignCheckbox?: boolean;
+  placeholder?: string;
+  rows?: number;
+  maxLength?: number;
+  min?: number;
+  max?: number;
+  step?: number;
+  options?: [unknown, string][];
+  optional?: boolean;
+  paletteType?: "background" | "ui" | "emote" | "sprite";
+  paletteIndex?: number;
+  canKeep?: boolean;
+  includePlayer?: boolean;
+  defaultType?: string;
+  types?: string[];
+  filter?: (value: unknown) => boolean;
+  updateFn?: (
+    newValue: unknown,
+    field: ScriptEventFieldSchema,
+    args: Record<string, unknown>
+  ) => unknown;
+  postUpdate?: (
+    newArgs: Record<string, unknown>,
+    prevArgs: Record<string, unknown>
+  ) => void;
+}
 
 export type EntityKey = keyof EntitiesState;

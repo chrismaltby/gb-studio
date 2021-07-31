@@ -1,11 +1,9 @@
 const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_SET_TIMER_SCRIPT";
+const groups = ["EVENT_GROUP_TIMER"];
 
 const fields = [
-  {
-    label: l10n("FIELD_SET_TIMER"),
-  },
   {
     key: "duration",
     type: "number",
@@ -20,11 +18,12 @@ const fields = [
     type: "tabs",
     defaultValue: "end",
     values: {
-      end: l10n("FIELD_ON_TIMER_END"),
+      end: l10n("FIELD_ON_TIMER_TICK"),
     },
   },
   {
     key: "script",
+    label: l10n("FIELD_ON_TIMER_TICK"),
     type: "events",
     conditions: [
       {
@@ -43,6 +42,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  groups,
   fields,
   compile,
 };

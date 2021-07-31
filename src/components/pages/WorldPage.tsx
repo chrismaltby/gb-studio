@@ -187,7 +187,7 @@ const WorldPage = () => {
           position: "relative",
         }}
       >
-        <EditorSidebar />
+        <EditorSidebar multiColumn={rightPaneWidth >= 500} />
       </div>
     </Wrapper>
   );

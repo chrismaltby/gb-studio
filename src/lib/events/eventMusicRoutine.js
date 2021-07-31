@@ -1,6 +1,7 @@
 const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_SET_MUSIC_ROUTINE";
+const groups = ["EVENT_GROUP_MUSIC"];
 
 const fields = [
   {
@@ -20,6 +21,7 @@ const fields = [
   },
   {
     key: "true",
+    label: l10n("FIELD_ON_TRIGGER"),
     type: "events",
     conditions: [
       {
@@ -37,6 +39,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  groups,
   fields,
   compile,
 };

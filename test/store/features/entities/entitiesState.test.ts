@@ -20,7 +20,6 @@ import {
   dummyActor,
   dummyTrigger,
   dummyPalette,
-  dummyCustomEvent,
 } from "../../../dummydata";
 import { DMG_PALETTE } from "../../../../src/consts";
 
@@ -436,74 +435,6 @@ test("Should be able to add a scene", () => {
   expect(newState.scenes.ids.length).toBe(1);
   expect(newState.scenes.entities[newState.scenes.ids[0]]?.x).toBe(110);
   expect(newState.scenes.entities[newState.scenes.ids[0]]?.y).toBe(220);
-});
-
-test("Should be able to add a scene with defaults and variables", () => {
-  jest.mock("../../../../src/consts");
-
-  const state: EntitiesState = {
-    ...initialState,
-  };
-
-  const action = actions.addScene({
-    x: 110,
-    y: 220,
-    defaults: {
-      id: "scene1",
-      name: "Clipboard Scene Name",
-      actors: [
-        {
-          ...dummyActor,
-          id: "actor1",
-          name: "Clipboard Actor",
-          x: 5,
-          y: 3,
-        },
-      ],
-      triggers: [
-        {
-          ...dummyTrigger,
-          id: "trigger1",
-          script: [
-            {
-              id: "event1",
-              command: "EVENT_ACTOR_MOVE_TO",
-              args: {
-                actorId: "actor1",
-              },
-            },
-          ],
-        },
-      ],
-    },
-    variables: [
-      {
-        id: "trigger1__L0",
-        name: "Clipboard Trigger Var Name",
-      },
-      {
-        id: "scene1__L0",
-        name: "Clipboard Scene Var Name",
-      },
-    ],
-  });
-
-  const newState = reducer(state, action);
-
-  expect(newState.scenes.ids.length).toBe(1);
-  expect(newState.actors.ids.length).toBe(1);
-  expect(newState.triggers.ids.length).toBe(1);
-  expect(newState.variables.ids.length).toBe(2);
-  expect(
-    newState.variables.entities[`${newState.triggers.ids[0]}__L0`]?.name
-  ).toBe("Clipboard Trigger Var Name");
-  expect(
-    newState.variables.entities[`${newState.scenes.ids[0]}__L0`]?.name
-  ).toBe("Clipboard Scene Var Name");
-  expect(
-    newState.triggers.entities[newState.triggers.ids[0]]?.script[0]?.args
-      ?.actorId
-  ).toBe(newState.actors.ids[0]);
 });
 
 test("Should be able to move a scene", () => {
@@ -1079,7 +1010,7 @@ test("Should be able to add a trigger to a scene", () => {
   expect(newState.triggers.entities[newTriggerId]?.height).toBe(2);
 });
 
-test("Should be able to add a trigger to a scene with defaults and variables", () => {
+test("Should be able to add a trigger to a scene with defaults", () => {
   const state: EntitiesState = {
     ...initialState,
     scenes: {
@@ -1107,12 +1038,6 @@ test("Should be able to add a trigger to a scene with defaults and variables", (
       id: "trigger1",
       name: "Clipboard Trigger",
     },
-    variables: [
-      {
-        id: "trigger1__L0",
-        name: "Clipboard Variable Name",
-      },
-    ],
   });
 
   const newState = reducer(state, action);
@@ -1120,11 +1045,7 @@ test("Should be able to add a trigger to a scene with defaults and variables", (
   const newTriggerId = action.payload.triggerId;
 
   expect(newState.triggers.ids.length).toBe(1);
-  expect(newState.variables.ids.length).toBe(1);
   expect(newState.triggers.entities[newTriggerId]?.id).not.toBe("trigger1");
-  expect(newState.variables.entities[`${newTriggerId}__L0`]?.name).toBe(
-    "Clipboard Variable Name"
-  );
 });
 
 test("Should be able to move a trigger with a scene", () => {
@@ -1543,165 +1464,4 @@ test("Should be able to add custom event", () => {
   expect(
     newState.customEvents.entities[action.payload.customEventId]?.script
   ).toEqual([]);
-});
-
-test("Editing a custom event name should propagate to instances of the event", () => {
-  const state: EntitiesState = {
-    ...initialState,
-    scenes: {
-      entities: {
-        scene1: {
-          ...dummyScene,
-          id: "scene1",
-          actors: [],
-          triggers: [],
-          script: [
-            {
-              id: "customevent1",
-              command: "EVENT_CALL_CUSTOM_EVENT",
-              args: {
-                customEventId: "customevent1",
-                __name: "Previous Name",
-              },
-            },
-          ],
-        },
-      },
-      ids: ["scene1"],
-    },
-    customEvents: {
-      entities: {
-        customevent1: {
-          ...dummyCustomEvent,
-          id: "customevent1",
-          name: "Previous Name",
-        },
-      },
-      ids: ["customevent1"],
-    },
-  };
-
-  const action = actions.editCustomEvent({
-    customEventId: "customevent1",
-    changes: {
-      name: "New Name",
-    },
-  });
-
-  const newState = reducer(state, action);
-  expect(newState.customEvents.entities["customevent1"]?.name).toBe("New Name");
-  expect(newState.scenes.entities["scene1"]?.script?.[0]?.args?.__name).toBe(
-    "New Name"
-  );
-});
-
-test("Edits to custom event description should not affect event instance names", () => {
-  const state: EntitiesState = {
-    ...initialState,
-    scenes: {
-      entities: {
-        scene1: {
-          ...dummyScene,
-          id: "scene1",
-          actors: [],
-          triggers: [],
-          script: [
-            {
-              id: "customevent1",
-              command: "EVENT_CALL_CUSTOM_EVENT",
-              args: {
-                customEventId: "customevent1",
-                __name: "Event Name",
-              },
-            },
-          ],
-        },
-      },
-      ids: ["scene1"],
-    },
-    customEvents: {
-      entities: {
-        customevent1: {
-          ...dummyCustomEvent,
-          id: "customevent1",
-          name: "Event Name",
-          description: "Old Description",
-        },
-      },
-      ids: ["customevent1"],
-    },
-  };
-
-  const action = actions.editCustomEvent({
-    customEventId: "customevent1",
-    changes: {
-      description: "New Description",
-    },
-  });
-
-  const newState = reducer(state, action);
-  expect(newState.customEvents.entities["customevent1"]?.description).toBe(
-    "New Description"
-  );
-  expect(newState.scenes.entities["scene1"]?.script?.[0]?.args?.__name).toBe(
-    "Event Name"
-  );
-});
-
-test("Edits to custom event script should not affect event instance names", () => {
-  const state: EntitiesState = {
-    ...initialState,
-    scenes: {
-      entities: {
-        scene1: {
-          ...dummyScene,
-          id: "scene1",
-          actors: [],
-          triggers: [],
-          script: [
-            {
-              id: "customevent1",
-              command: "EVENT_CALL_CUSTOM_EVENT",
-              args: {
-                customEventId: "customevent1",
-                __name: "Event Name",
-              },
-            },
-          ],
-        },
-      },
-      ids: ["scene1"],
-    },
-    customEvents: {
-      entities: {
-        customevent1: {
-          ...dummyCustomEvent,
-          id: "customevent1",
-          name: "Event Name",
-          description: "Old Description",
-        },
-      },
-      ids: ["customevent1"],
-    },
-  };
-
-  const action = actions.editCustomEvent({
-    customEventId: "customevent1",
-    changes: {
-      script: [
-        {
-          id: "event66",
-          command: "EVENT_TEXT",
-          args: {
-            text: "Hello there",
-          },
-        },
-      ],
-    },
-  });
-
-  const newState = reducer(state, action);
-  expect(newState.scenes.entities["scene1"]?.script?.[0]?.args?.__name).toBe(
-    "Event Name"
-  );
 });

@@ -6,11 +6,27 @@ const trimMenuItem = (string) => {
 };
 
 const id = "EVENT_MENU";
+const groups = ["EVENT_GROUP_DIALOGUE"];
+
+const autoLabel = (fetchArg) => {
+  const numItems = parseInt(fetchArg("items"));
+  const text = Array(numItems)
+    .fill()
+    .map((_, i) => {
+      return `"${fetchArg(`option${i + 1}`)}"`;
+    })
+    .join();
+  return l10n("EVENT_MENU_LABEL", {
+    variable: fetchArg("variable"),
+    text,
+  });
+};
 
 const fields = [].concat(
   [
     {
       key: "variable",
+      label: l10n("FIELD_SET_VARIABLE"),
       type: "variable",
       defaultValue: "LAST_VARIABLE",
     },
@@ -22,6 +38,9 @@ const fields = [].concat(
       max: 8,
       defaultValue: 2,
     },
+    {
+      type: "break",
+    },
   ],
   Array(8)
     .fill()
@@ -30,11 +49,11 @@ const fields = [].concat(
       arr.push(
         {
           key: `option${i + 1}`,
-          label: l10n("FIELD_SET_TO_VALUE_IF", { value: i + 1 }),
+          label: l10n("FIELD_SET_TO_VALUE_IF", { value: String(i + 1) }),
           type: "text",
           updateFn: trimMenuItem,
           defaultValue: "",
-          placeholder: l10n("FIELD_ITEM", { value: i + 1 }),
+          placeholder: l10n("FIELD_ITEM", { value: String(i + 1) }),
           conditions: [
             {
               key: "items",
@@ -44,11 +63,11 @@ const fields = [].concat(
         },
         {
           key: `option${i + 1}`,
-          label: l10n("FIELD_SET_TO_VALUE_IF", { value: i + 1 }),
+          label: l10n("FIELD_SET_TO_VALUE_IF", { value: String(i + 1) }),
           type: "text",
           updateFn: trimMenuItem,
           defaultValue: "",
-          placeholder: l10n("FIELD_ITEM", { value: i + 1 }),
+          placeholder: l10n("FIELD_ITEM", { value: String(i + 1) }),
           conditions: [
             {
               key: "items",
@@ -62,11 +81,11 @@ const fields = [].concat(
         },
         {
           key: `option${i + 1}`,
-          label: l10n("FIELD_SET_TO_VALUE_IF", { value: 0 }),
+          label: l10n("FIELD_SET_TO_VALUE_IF", { value: "0" }),
           type: "text",
           updateFn: trimMenuItem,
           defaultValue: "",
-          placeholder: l10n("FIELD_ITEM", { value: 0 }),
+          placeholder: l10n("FIELD_ITEM", { value: String(i + 1) }),
           conditions: [
             {
               key: "items",
@@ -82,15 +101,20 @@ const fields = [].concat(
       return arr;
     }, []),
   {
+    type: "break",
+  },
+  {
     type: "checkbox",
     label: l10n("FIELD_LAST_OPTION_CANCELS"),
     key: "cancelOnLastOption",
+    alignCheckbox: true,
   },
   {
     type: "checkbox",
     label: l10n("FIELD_CANCEL_IF_B"),
     key: "cancelOnB",
     defaultValue: true,
+    alignCheckbox: true,
   },
   {
     key: "layout",
@@ -126,6 +150,8 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  autoLabel,
+  groups,
   fields,
   compile,
 };

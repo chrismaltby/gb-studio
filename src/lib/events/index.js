@@ -38,6 +38,8 @@ const eventHandlers = {
     if (!handler.id) {
       throw new Error(`Event handler ${path} is missing id`);
     }
+    handler.isConditional =
+      handler.fields && !!handler.fields.find((f) => f.type === "events");
     return {
       ...memo,
       [handler.id]: handler,

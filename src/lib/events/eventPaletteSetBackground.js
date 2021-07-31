@@ -1,4 +1,5 @@
 const id = "EVENT_PALETTE_SET_BACKGROUND";
+const groups = ["EVENT_GROUP_COLOR"];
 
 const fields = [
   {
@@ -83,6 +84,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  groups,
   fields,
   compile,
 };
