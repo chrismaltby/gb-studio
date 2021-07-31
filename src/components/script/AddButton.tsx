@@ -38,7 +38,7 @@ const Wrapper = styled.div<WrapperProps>`
 
   ${Button} {
     width: 100%;
-    max-width: 300px;
+    max-width: 480px;
 
     svg {
       width: 12px;
