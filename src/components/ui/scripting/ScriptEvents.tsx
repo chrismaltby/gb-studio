@@ -271,7 +271,6 @@ interface ScriptEventFieldProps {
 }
 
 export const ScriptEventField = styled.div<ScriptEventFieldProps>`
-  // padding: 10px;
   ${(props) =>
     props.halfWidth
       ? css`

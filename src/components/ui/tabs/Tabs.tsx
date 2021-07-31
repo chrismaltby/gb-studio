@@ -47,7 +47,6 @@ const Wrapper = styled.div<WrapperProps>`
   ${(props) =>
     props.variant === "scriptEvent"
       ? css`
-          // border-left: 1px solid var(--sidebar-border-color);
           border: 0;
           border-bottom: 0;
           margin-bottom: -5px;

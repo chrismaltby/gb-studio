@@ -1,13 +1,7 @@
-import React, { FC } from "react";
 import styled, { css } from "styled-components";
-import useDimensions from "react-cool-dimensions";
 
 interface SidebarProps {
   multiColumn?: boolean;
-}
-
-interface SidebarMultiColumnAutoProps {
-  onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 }
 
 export const SidebarColumn = styled.div``;
@@ -39,19 +33,3 @@ const scrollStyles = css`
   overflow-y: auto;
   height: 100%;
 `;
-
-export const SidebarMultiColumnAuto: FC<SidebarMultiColumnAutoProps> = ({
-  children,
-  onClick,
-}) => {
-  // const { ref, width } = useDimensions();
-  return (
-    <Sidebar
-      // ref={ref as React.RefObject<HTMLDivElement>}
-      multiColumn={false}
-      onClick={onClick}
-    >
-      {children}
-    </Sidebar>
-  );
-};

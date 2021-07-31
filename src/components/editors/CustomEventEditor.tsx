@@ -244,26 +244,6 @@ const CustomEventEditor = ({ id, multiColumn }: CustomEventEditorProps) => {
         </SidebarColumn>
       )}
       <SidebarColumn>
-        {/* <div>
-          <SidebarHeading
-            title={l10n("SIDEBAR_CUSTOM_EVENT_SCRIPT")}
-            buttons={
-              <ScriptEditorDropdownButton
-                value={customEvent.script}
-                onChange={onEdit("script")}
-              />
-            }
-          />
-          <ScriptEditor
-            value={customEvent.script}
-            type="customEvent"
-            variables={Object.keys(customEvent.variables)}
-            actors={Object.keys(customEvent.actors)}
-            onChange={onEdit("script")}
-            entityId={customEvent.id}
-          />
-        </div> */}
-
         <StickyTabs>
           <TabBar
             values={scriptTabs}
