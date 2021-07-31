@@ -4,7 +4,7 @@ const id = "EVENT_ACTOR_SET_MOVEMENT_SPEED";
 const groups = ["EVENT_GROUP_ACTOR"];
 
 const autoLabel = (fetchArg) => {
-  return l10n("FIELD_ACTOR_SET_MOVEMENT_SPEED_LABEL", {
+  return l10n("EVENT_ACTOR_SET_MOVEMENT_SPEED_LABEL", {
     actor: fetchArg("actorId"),
     speed: fetchArg("speed"),
   });

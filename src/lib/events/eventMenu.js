@@ -16,7 +16,7 @@ const autoLabel = (fetchArg) => {
       return `"${fetchArg(`option${i + 1}`)}"`;
     })
     .join();
-  return l10n("FIELD_MENU_LABEL", {
+  return l10n("EVENT_MENU_LABEL", {
     variable: fetchArg("variable"),
     text,
   });

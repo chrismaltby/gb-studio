@@ -13,7 +13,7 @@ const autoLabel = (fetchArg) => {
     `"${fetchArg("trueText")}"`,
     `"${fetchArg("falseText")}"`,
   ].join();
-  return l10n("FIELD_CHOICE_LABEL", {
+  return l10n("EVENT_CHOICE_LABEL", {
     variable: fetchArg("variable"),
     text,
   });

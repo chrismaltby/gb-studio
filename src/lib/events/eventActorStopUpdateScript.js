@@ -4,7 +4,7 @@ const id = "EVENT_ACTOR_STOP_UPDATE";
 const groups = ["EVENT_GROUP_ACTOR"];
 
 const autoLabel = (fetchArg) => {
-  return l10n("FIELD_ACTOR_STOP_UPDATE_LABEL", {
+  return l10n("EVENT_ACTOR_STOP_UPDATE_LABEL", {
     actor: fetchArg("actorId"),
   });
 };

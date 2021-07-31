@@ -4,7 +4,7 @@ const id = "EVENT_CALL_CUSTOM_EVENT";
 const groups = ["EVENT_GROUP_CONTROL_FLOW"];
 
 const autoLabel = (fetchArg) => {
-  return l10n("FIELD_CALL_CUSTOM_EVENT_LABEL", {
+  return l10n("EVENT_CALL_CUSTOM_EVENT_LABEL", {
     script: fetchArg("customEventId"),
   });
 };

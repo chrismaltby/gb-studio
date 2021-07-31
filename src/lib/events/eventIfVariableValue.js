@@ -4,7 +4,7 @@ const id = "EVENT_IF_VALUE";
 const groups = ["EVENT_GROUP_VARIABLES", "EVENT_GROUP_CONTROL_FLOW"];
 
 const autoLabel = (fetchArg) => {
-  return l10n("FIELD_IF_VALUE_COMPARE_LABEL", {
+  return l10n("EVENT_IF_VALUE_COMPARE_LABEL", {
     variable: fetchArg("variable"),
     operator: fetchArg("operator"),
     value: fetchArg("comparator"),

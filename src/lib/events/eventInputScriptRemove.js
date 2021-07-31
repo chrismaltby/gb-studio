@@ -4,7 +4,7 @@ const id = "EVENT_REMOVE_INPUT_SCRIPT";
 const groups = ["EVENT_GROUP_INPUT"];
 
 const autoLabel = (fetchArg) => {
-  return l10n("FIELD_REMOVE_INPUT_LABEL", {
+  return l10n("EVENT_REMOVE_INPUT_LABEL", {
     input: fetchArg("input"),
   });
 };

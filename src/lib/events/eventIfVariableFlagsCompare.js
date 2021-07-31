@@ -4,7 +4,7 @@ const id = "EVENT_IF_FLAGS_COMPARE";
 const groups = ["EVENT_GROUP_CONTROL_FLOW"];
 
 const autoLabel = (fetchArg) => {
-  return l10n("FIELD_IF_FLAGS_COMPARE_LABEL", {
+  return l10n("EVENT_IF_FLAGS_COMPARE_LABEL", {
     variable: fetchArg("variable"),
     flag: String(Number(fetchArg("flag")) + 1),
   });

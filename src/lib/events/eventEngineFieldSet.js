@@ -7,10 +7,10 @@ const autoLabel = (fetchArg, input) => {
   if (input.engineFieldKey === undefined || input.value === undefined) {
     return l10n("EVENT_ENGINE_FIELD_SET");
   }
-  return l10n("FIELD_ENGINE_FIELD_SET_LABEL", {
+  return l10n("EVENT_ENGINE_FIELD_SET_LABEL", {
     engineField: fetchArg("engineFieldKey"),
     value: fetchArg("value"),
-  })
+  });
 };
 
 const fields = [

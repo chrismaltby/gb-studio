@@ -10,7 +10,7 @@ const autoLabel = (fetchArg, input) => {
   } else if (input.shakeDirection === "diagonal") {
     direction = l10n("FIELD_DIAGONAL");
   }
-  return l10n("FIELD_CAMERA_SHAKE_LABEL", {
+  return l10n("EVENT_CAMERA_SHAKE_LABEL", {
     time: fetchArg("time"),
     direction,
   });

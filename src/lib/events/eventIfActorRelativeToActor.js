@@ -13,7 +13,7 @@ const autoLabel = (fetchArg) => {
   } else if (dir === "right") {
     direction = l10n("FIELD_IS_RIGHT_OF");
   }
-  return l10n("FIELD_IF_ACTOR_RELATIVE_TO_ACTOR_LABEL", {
+  return l10n("EVENT_IF_ACTOR_RELATIVE_TO_ACTOR_LABEL", {
     actor: fetchArg("actorId"),
     direction,
     otherActor: fetchArg("otherActorId"),

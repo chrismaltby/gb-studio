@@ -4,7 +4,7 @@ const id = "EVENT_DEC_VALUE";
 const groups = ["EVENT_GROUP_VARIABLES"];
 
 const autoLabel = (fetchArg) => {
-  return l10n("FIELD_DEC_VALUE_LABEL", { variable: fetchArg("variable") });
+  return l10n("EVENT_DEC_VALUE_LABEL", { variable: fetchArg("variable") });
 };
 
 const fields = [

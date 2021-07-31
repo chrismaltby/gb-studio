@@ -4,7 +4,7 @@ const id = "EVENT_ACTOR_INVOKE";
 const groups = ["EVENT_GROUP_ACTOR"];
 
 const autoLabel = (fetchArg) => {
-  return l10n("FIELD_ACTOR_INVOKE_LABEL", {
+  return l10n("EVENT_ACTOR_INVOKE_LABEL", {
     actor: fetchArg("actorId"),
   });
 };

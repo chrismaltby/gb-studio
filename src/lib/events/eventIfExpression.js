@@ -5,7 +5,7 @@ const groups = ["EVENT_GROUP_MATH", "EVENT_GROUP_CONTROL_FLOW"];
 
 const autoLabel = (fetchArg, args) => {
   if (args.expression) {
-    return l10n("FIELD_IF_EXPRESSION_LABEL", {
+    return l10n("EVENT_IF_EXPRESSION_LABEL", {
       expression: fetchArg("expression"),
     });
   } else {

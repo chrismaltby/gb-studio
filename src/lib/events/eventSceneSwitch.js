@@ -4,7 +4,7 @@ const id = "EVENT_SWITCH_SCENE";
 const groups = ["EVENT_GROUP_SCENE"];
 
 const autoLabel = (fetchArg) => {
-  return l10n("FIELD_SWITCH_SCENE_LABEL", {
+  return l10n("EVENT_SWITCH_SCENE_LABEL", {
     scene: fetchArg("sceneId"),
     x: fetchArg("x"),
     y: fetchArg("y"),

@@ -6,11 +6,11 @@ const groups = ["EVENT_GROUP_ENGINE_FIELDS", "EVENT_GROUP_VARIABLES"];
 const autoLabel = (fetchArg, input) => {
   if (input.engineFieldKey === undefined || input.value === undefined) {
     return l10n("EVENT_ENGINE_FIELD_STORE");
-  }  
-  return l10n("FIELD_ENGINE_FIELD_STORE_LABEL", {
+  }
+  return l10n("EVENT_ENGINE_FIELD_STORE_LABEL", {
     variable: fetchArg("value"),
     engineField: fetchArg("engineFieldKey"),
-  })
+  });
 };
 
 const fields = [

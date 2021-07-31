@@ -8,17 +8,17 @@ const autoLabel = (fetchArg, input) => {
   const op = input.operation;
   const other = input.other;
 
-  let operation = ""
+  let operation = "";
   if (op === "add") {
     operation = `${variable} +`;
   } else if (op === "sub") {
-    operation = `${variable} -`
+    operation = `${variable} -`;
   } else if (op === "mul") {
-    operation = `${variable} *`
+    operation = `${variable} *`;
   } else if (op === "div") {
-    operation = `${variable} /`
+    operation = `${variable} /`;
   } else if (op === "mod") {
-    operation = `${variable} %`
+    operation = `${variable} %`;
   }
 
   let value = fetchArg("value");
@@ -29,10 +29,12 @@ const autoLabel = (fetchArg, input) => {
   } else if (other === "var") {
     value = fetchArg("vectorY");
   } else if (other === "rnd") {
-    value = `${l10n("FIELD_RANDOM")}(${fetchArg("minValue")},${fetchArg("maxValue")})`;
+    value = `${l10n("FIELD_RANDOM")}(${fetchArg("minValue")},${fetchArg(
+      "maxValue"
+    )})`;
   }
 
-  return l10n("FIELD_VARIABLE_MATH_LABEL", { variable, operation, value  });
+  return l10n("EVENT_VARIABLE_MATH_LABEL", { variable, operation, value });
 };
 
 const fields = [

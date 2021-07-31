@@ -5,7 +5,7 @@ const groups = ["EVENT_GROUP_ACTOR"];
 const weight = 2;
 
 const autoLabel = (fetchArg) => {
-  return l10n("FIELD_ACTOR_MOVE_TO_LABEL", {
+  return l10n("EVENT_ACTOR_MOVE_TO_LABEL", {
     actor: fetchArg("actorId"),
     x: fetchArg("x"),
     y: fetchArg("y"),

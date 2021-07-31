@@ -4,7 +4,7 @@ const id = "EVENT_WAIT";
 const groups = ["EVENT_GROUP_TIMER"];
 
 const autoLabel = (fetchArg) => {
-  return l10n("FIELD_WAIT_LABEL", { time: fetchArg("time") });
+  return l10n("EVENT_WAIT_LABEL", { time: fetchArg("time") });
 };
 
 const fields = [

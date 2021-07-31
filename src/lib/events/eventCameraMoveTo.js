@@ -4,7 +4,7 @@ const id = "EVENT_CAMERA_MOVE_TO";
 const groups = ["EVENT_GROUP_CAMERA"];
 
 const autoLabel = (fetchArg) => {
-  return l10n("FIELD_CAMERA_MOVE_TO_LABEL", {
+  return l10n("EVENT_CAMERA_MOVE_TO_LABEL", {
     x: fetchArg("x"),
     y: fetchArg("y"),
   });

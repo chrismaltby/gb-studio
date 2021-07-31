@@ -4,7 +4,7 @@ const id = "EVENT_AWAIT_INPUT";
 const groups = ["EVENT_GROUP_INPUT"];
 
 const autoLabel = (fetchArg) => {
-  return l10n("FIELD_AWAIT_INPUT_LABEL", {
+  return l10n("EVENT_AWAIT_INPUT_LABEL", {
     input: fetchArg("input"),
   });
 };

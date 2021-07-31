@@ -23,12 +23,11 @@ const autoLabel = (fetchArg, input) => {
     .filter((i) => i)
     .join(",");
 
-  return l10n("FIELD_SET_FLAGS_LABEL", {
+  return l10n("EVENT_SET_FLAGS_LABEL", {
     variable: fetchArg("variable"),
-    flags
+    flags,
   });
 };
-
 
 const fields = [
   {
