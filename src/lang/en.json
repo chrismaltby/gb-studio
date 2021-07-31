@@ -622,7 +622,9 @@
   "EVENT_SET_FLAGS_LABEL": "Set Flags {flags} In {variable}", 
   "EVENT_CLEAR_FLAGS_LABEL": "Clear Flags {flags} From {variable}",
   "EVENT_IF_FLAGS_COMPARE_LABEL": "If {variable} Has Flag {flag}",
-  
+  "EVENT_IF_TRUE_LABEL": "If {variable} Is 'True'",
+  "EVENT_IF_FALSE_LABEL": "If {variable} Is 'False'",
+
   "// 10": "Menu -----------------------------------------------------",
 
   "MENU_FILE": "File",

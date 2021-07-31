@@ -3,6 +3,12 @@ const l10n = require("../helpers/l10n").default;
 const id = "EVENT_IF_TRUE";
 const groups = ["EVENT_GROUP_CONTROL_FLOW"];
 
+const autoLabel = (fetchArg) => {
+  return l10n("EVENT_IF_TRUE_LABEL", {
+    variable: fetchArg("variable"),
+  });
+};
+
 const fields = [
   {
     key: "variable",
@@ -52,6 +58,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  autoLabel,
   groups,
   fields,
   compile,
