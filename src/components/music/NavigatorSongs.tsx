@@ -21,6 +21,8 @@ import styled from "styled-components";
 import { SplitPaneVerticalDivider } from "ui/splitpane/SplitPaneDivider";
 import { instrumentColors } from "./InstrumentSelect";
 import { NoSongsMessage } from "./NoSongsMessage";
+import { assetFilename } from "lib/helpers/gbstudio";
+import { addNewSongFile } from "store/features/trackerDocument/trackerDocumentState";
 
 const COLLAPSED_SIZE = 30;
 
@@ -279,6 +281,20 @@ export const NavigatorSongs = ({
 
   const showInstrumentList = selectedSong && selectedSong.type === "uge";
 
+  const projectRoot = useSelector((state: RootState) => state.document.root);
+
+  const addSong = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      e.stopPropagation();
+
+      const path = `${assetFilename(projectRoot, "music", {
+        filename: "song_template.uge",
+      })}`;
+      dispatch(addNewSongFile(path));
+    },
+    [dispatch, projectRoot]
+  );
+
   return (
     <>
       <Pane style={{ height: showInstrumentList ? splitSizes[0] : height }}>
@@ -290,7 +306,7 @@ export const NavigatorSongs = ({
               variant="transparent"
               size="small"
               title={l10n("TOOL_ADD_SONG_LABEL")}
-              onClick={() => {}}
+              onClick={addSong}
             >
               <PlusIcon />
             </Button>
