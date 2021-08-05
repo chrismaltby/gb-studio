@@ -127,7 +127,7 @@ void main(void) {
             };
 
         // Hide rest of the hardware sprites, because amount of sprites differ between animation frames.
-        for (uint8_t i = hiwater; i < 40; i++) shadow_OAM[i].y = 0;
+	hide_sprites_range(hiwater, 40);        
 
         // Y Axis: update velocity (reduce speed) if no U/D button pressed
         if (!(PosF & ACC_Y)) {

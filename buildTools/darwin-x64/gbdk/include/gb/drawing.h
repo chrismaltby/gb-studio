@@ -9,7 +9,8 @@
     in APA mode - use gprintf() and wrtchr() instead.
 
     Note: Using drawing.h will cause it's custom VBL and LCD ISRs
-    (`drawing_vbl` and `drawing_lcd`) to be installed.
+    (`drawing_vbl` and `drawing_lcd`) to be installed. Changing
+    the mode (`mode(M_TEXT_OUT);`) will cause them to be de-installed.
 
     The valid coordinate ranges are from (x,y) 0,0 to 159,143.
     There is no built-in clipping, so drawing outside valid
@@ -19,7 +20,7 @@
 
     __Important note for the drawing API :__
 
-        The Game Boy graphics hardware is not well suited to frame-buffer
+    The Game Boy graphics hardware is not well suited to frame-buffer
     style graphics such as the kind provided in `drawing.h`.
     Due to that, __most drawing functions (rectangles, circles, etc) will
     be slow__ . When possible it's much faster and more efficient

@@ -16,7 +16,7 @@ void main() {
     printf("This is\na wobble\ntest\nfor DMG\n|\n|\n|\n|\n|");
     
     CRITICAL {
-        STAT_REG = 0x18;
+        STAT_REG = STATF_MODE01 | STATF_MODE00;
         add_LCD(scanline_isr);
     }
     set_interrupts(VBL_IFLAG | LCD_IFLAG);

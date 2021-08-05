@@ -42,7 +42,7 @@ void main() {
     printf("Scrolling %d chars", sizeof(scroller_text) - 1);
     
     CRITICAL {
-        STAT_REG |= 0b01000000; LYC_REG = 0;
+        STAT_REG |= STATF_LYC; LYC_REG = 0;
         add_LCD(scanline_isr);
         set_interrupts(VBL_IFLAG | LCD_IFLAG);
     }

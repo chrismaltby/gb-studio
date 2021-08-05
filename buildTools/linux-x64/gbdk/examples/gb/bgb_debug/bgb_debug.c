@@ -17,7 +17,7 @@
 //
 // See the BGB Manual for more information 
 // ("expressions, breakpoint conditions, and debug messages")
-// http://bgb.bircd.org/manual.html#expressions
+// https://bgb.bircd.org/manual.html#expressions
 
 int main(void)
 {
@@ -31,6 +31,7 @@ int main(void)
     printf("Message to the \nGameBoy screen\n");
 
     // Log a message to the BGB debug message window
+    BGB_MESSAGE(""); // new line
     BGB_MESSAGE("Message to the BGB console");
 
     // ==== Normal Speed Mode ====
@@ -43,12 +44,11 @@ int main(void)
     // You should see the message "NOP TIME: 2".
     //
     // So in this case, divide the printed value by 2 = The NOP took "1" cycle
-    BGB_MESSAGE("Profile a single NOP instruction at Normal Speed");
-
+	
     __critical {  // Temporarily turn off interrupts for more accurate measurements
-        BGB_PROFILE_BEGIN();
+        BGB_PROFILE_BEGIN("Profile a single NOP instruction at Normal Speed");
             __asm__("nop");
-        BGB_PROFILE_END(NOP TIME);
+        BGB_PROFILE_END("NOP TIME:");
     }
 
 
@@ -73,14 +73,13 @@ int main(void)
         // divide by 2 to get the cycle count.
         //
         // You should see the message "NOP TIME: 1".
-        BGB_MESSAGE("Profile a single NOP instruction at Double Speed");
 
         __critical {  // Temporarily turn off interrupts for more accurate measurements
-            BGB_MESSAGE("%ZEROCLKS%");
+			BGB_PROFILE_BEGIN("Profile a single NOP instruction at CGB Double Speed");
                 __asm__("nop");
             // The "-4+" subtracts 4 clocks to compensate for the ones
             // used by the debug message itself (Normal speed uses -8)
-            BGB_MESSAGE("NOP TIME: %-4+LASTCLKS%");
+            BGB_MESSAGE("NOP TIME:%-4+LASTCLKS%");
         }
 
         // Return the CGB to normal speed
@@ -88,18 +87,17 @@ int main(void)
     }
 
 
-    BGB_MESSAGE("Profile code in a loop");
     __critical {  // Temporarily turn off interrupts for more accurate measurements
 
         // Profile code in a loop
-        BGB_PROFILE_BEGIN();
+        BGB_PROFILE_BEGIN("Profile code in a loop");
             for(c=0; c<5; c++) {
                 // Do something
                 printf("%d\n", c);
             }
         // Elapsed cycle count output is in hex. 
         // Remember to divide by 2 for the result (Normal Speed)
-        BGB_PROFILE_END(NOP TIME);
+        BGB_PROFILE_END("LOOP TIME:");
     }
     
 
@@ -113,7 +111,6 @@ int main(void)
 
     // Which Banks are currently active (for MBC based cartridges)
     BGB_MESSAGE("Current  ROM bank: %ROMBANK%");
-    BGB_MESSAGE("Current XRAM bank: %XRAMBANK%");
     BGB_MESSAGE("Current SRAM bank: %SRAMBANK%");
     // These are only banked in the CGB
     BGB_MESSAGE("Current VRAM bank: %VRAMBANK%");
@@ -138,8 +135,13 @@ int main(void)
     // It's equivalent to:
     BGB_MESSAGE("PROFILE,%(SP+$0)%,%(SP+$1)%,%A%,%TOTALCLKS%,%ROMBANK%,%WRAMBANK%");
 
+	uint8_t var0 = 16;
+	int16_t var1 = -10;
+	//
+	BGB_printf("var0: %hd; var1: %d; var0*var1=%d", (uint8_t)var0, var1, var0 * var1);
+
     // The BGB_TEXT() macro will accept a non-quoted string
-    BGB_TEXT(The End);
+    BGB_TEXT("The End");
 
     return 0;
 }

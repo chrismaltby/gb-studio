@@ -504,7 +504,7 @@ void main()
 
   disable_interrupts();
   DISPLAY_OFF;
-  LCDC_REG = 0x67;
+  LCDC_REG = LCDCF_OFF | LCDCF_WIN9C00 | LCDCF_WINON | LCDCF_BG8800 | LCDCF_BG9800 | LCDCF_OBJ16 | LCDCF_OBJON | LCDCF_BGON;
   /*
    * LCD        = Off
    * WindowBank = 0x9C00

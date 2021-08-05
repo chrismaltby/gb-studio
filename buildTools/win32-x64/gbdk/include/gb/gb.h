@@ -4,7 +4,7 @@
 #ifndef _GB_H
 #define _GB_H
 
-#define __GBDK_VERSION 404
+#define __GBDK_VERSION 405
 
 #include <types.h>
 #include <stdint.h>
@@ -70,6 +70,9 @@
 #define S_PRIORITY   0x80U
 
 /* Interrupt flags */
+/** Disable calling of interrupt service routines
+ */
+#define EMPTY_IFLAG  0x00U
 /** VBlank Interrupt occurs at the start of the vertical blank.
 
     During this period the video ram may be freely accessed.
@@ -92,6 +95,16 @@
     @see set_interrupts(), @see add_JOY
  */
 #define JOY_IFLAG    0x10U
+
+
+/* DMG Palettes */
+#define DMG_BLACK     0x03
+#define DMG_DARK_GRAY 0x02
+#define DMG_LITE_GRAY 0x01
+#define DMG_WHITE     0x00
+/** DMG palette helper macro.
+ */
+#define DMG_PALETTE(C0, C1, C2, C3) ((UBYTE)((((C3) & 0x03) << 6) | (((C2) & 0x03) << 4) | (((C1) & 0x03) << 2) | ((C0) & 0x03)))
 
 /* Limits */
 /** Width of the visible screen in pixels.
@@ -165,6 +178,11 @@ void remove_JOY(int_handler h) NONBANKED;
     called last.  If the @ref remove_VBL function is to be called,
     only three may be added.
 
+    Do not use '__critical' and '__interrupt' attributes for a
+    function added via add_VBL() (or LCD, etc). The attributes 
+    are only required when constructing a bare jump from the 
+    interrupt vector itself.
+
     Note: The default VBL is installed automatically.
 */
 void add_VBL(int_handler h) NONBANKED;
@@ -221,9 +239,7 @@ void add_SIO(int_handler h) NONBANKED;
     or more times for every button press and one or more
     times for every button release.
 
-
-
-    @see joypad()
+    @see joypad(), add_VBL()
 */
 void add_JOY(int_handler h) NONBANKED;
 
@@ -348,6 +364,52 @@ extern volatile uint8_t _io_out;
     SWITCH_ROM_MBC5, or call a BANKED function.
 */
 __REG _current_bank;
+#define CURRENT_BANK _current_bank
+
+/** Obtains the __bank number__ of VARNAME
+
+    @param VARNAME Name of the variable which has a __bank_VARNAME companion symbol which is adjusted by bankpack
+
+    Use this to obtain the bank number from a bank reference
+    created with @ref BANKREF().
+
+    @see BANKREF_EXTERN(), BANKREF()
+*/
+#ifndef BANK
+#define BANK(VARNAME) ( (uint8_t) & __bank_ ## VARNAME )
+#endif
+
+/** Creates a reference for retrieving the bank number of a variable or function
+
+    @param VARNAME Variable name to use, which may be an existing identifier
+
+    @see BANK() for obtaining the bank number of the included data.
+
+    More than one `BANKREF()` may be created per file, but each call should
+    always use a unique VARNAME.
+
+    Use @ref BANKREF_EXTERN() within another source file
+    to make the variable and it's data accesible there.
+*/
+#define BANKREF(VARNAME) void __func_ ## VARNAME() __banked __naked { \
+__asm \
+    .local b___func_ ## VARNAME \
+    ___bank_ ## VARNAME = b___func_ ## VARNAME \
+    .globl ___bank_ ## VARNAME \
+__endasm; \
+}
+
+/** Creates extern references for accessing a BANKREF() generated variable.
+
+    @param VARNAME Name of the variable used with @ref BANKREF()
+
+    This makes a @ref BANKREF() reference in another source
+    file accessible in the current file for use with @ref BANK().
+
+    @see BANKREF(), BANK()
+*/
+#define BANKREF_EXTERN(VARNAME) extern const void __bank_ ## VARNAME;
+
 
 /** Makes MBC1 and other compatible MBCs switch the active ROM bank
     @param b   ROM bank to switch to
@@ -355,21 +417,29 @@ __REG _current_bank;
 #define SWITCH_ROM_MBC1(b) \
   _current_bank = (b), *(uint8_t *)0x2000 = (b)
 
+#define SWITCH_ROM SWITCH_ROM_MBC1
+
 /** Switches SRAM bank on MBC1 and other compaticle MBCs
     @param b   SRAM bank to switch to
 */
 #define SWITCH_RAM_MBC1(b) \
   *(uint8_t *)0x4000 = (b)
 
+#define SWITCH_RAM SWITCH_RAM_MBC1
+
 /** Enables SRAM on MBC1
 */
 #define ENABLE_RAM_MBC1 \
   *(uint8_t *)0x0000 = 0x0A
 
+#define ENABLE_RAM ENABLE_RAM_MBC1
+
 /** Disables SRAM on MBC1
 */
 #define DISABLE_RAM_MBC1 \
   *(uint8_t *)0x0000 = 0x00
+
+#define DISABLE_RAM DISABLE_RAM_MBC1
 
 #define SWITCH_16_8_MODE_MBC1 \
   *(uint8_t *)0x6000 = 0x00
@@ -495,7 +565,9 @@ void joypad_ex(joypads_t * joypads) __preserves_regs(b, c);
 /** Enables unmasked interrupts
     @see disable_interrupts, set_interrupts
 */
-void enable_interrupts(void) NONBANKED __preserves_regs(a, b, c, d, e, h, l);
+inline void enable_interrupts(void) __preserves_regs(a, b, c, d, e, h, l) {
+    __asm__("ei");
+}
 
 /** Disables interrupts.
 
@@ -504,7 +576,9 @@ void enable_interrupts(void) NONBANKED __preserves_regs(a, b, c, d, e, h, l);
     them.
     @see enable_interrupts, set_interrupts
 */
-void disable_interrupts(void) NONBANKED __preserves_regs(a, b, c, d, e, h, l);
+inline void disable_interrupts(void) __preserves_regs(a, b, c, d, e, h, l) {
+    __asm__("di");
+}
 
 /** Clears any pending interrupts and sets the interrupt mask
     register IO to flags.
@@ -555,7 +629,7 @@ void hiramcpy(uint8_t dst,
     @see display_off, DISPLAY_OFF
 */
 #define DISPLAY_ON \
-  LCDC_REG|=0x80U
+  LCDC_REG|=LCDCF_ON
 
 /** Turns the display off immediately.
     @see display_off, DISPLAY_ON
@@ -567,49 +641,49 @@ void hiramcpy(uint8_t dst,
     Sets bit 0 of the LCDC register to 1.
 */
 #define SHOW_BKG \
-  LCDC_REG|=0x01U
+  LCDC_REG|=LCDCF_BGON
 
 /** Turns off the background layer.
     Sets bit 0 of the LCDC register to 0.
 */
 #define HIDE_BKG \
-  LCDC_REG&=0xFEU
+  LCDC_REG&=~LCDCF_BGON
 
 /** Turns on the window layer
     Sets bit 5 of the LCDC register to 1.
 */
 #define SHOW_WIN \
-  LCDC_REG|=0x20U
+  LCDC_REG|=LCDCF_WINON
 
 /** Turns off the window layer.
     Clears bit 5 of the LCDC register to 0.
 */
 #define HIDE_WIN \
-  LCDC_REG&=0xDFU
+  LCDC_REG&=~LCDCF_WINON
 
 /** Turns on the sprites layer.
     Sets bit 1 of the LCDC register to 1.
 */
 #define SHOW_SPRITES \
-  LCDC_REG|=0x02U
+  LCDC_REG|=LCDCF_OBJON
 
 /** Turns off the sprites layer.
     Clears bit 1 of the LCDC register to 0.
 */
 #define HIDE_SPRITES \
-  LCDC_REG&=0xFDU
+  LCDC_REG&=~LCDCF_OBJON
 
 /** Sets sprite size to 8x16 pixels, two tiles one above the other.
     Sets bit 2 of the LCDC register to 1.
 */
 #define SPRITES_8x16 \
-  LCDC_REG|=0x04U
+  LCDC_REG|=LCDCF_OBJ16
 
 /** Sets sprite size to 8x8 pixels, one tile.
     Clears bit 2 of the LCDC register to 0.
 */
 #define SPRITES_8x8 \
-  LCDC_REG&=0xFBU
+  LCDC_REG&=~LCDCF_OBJ16
 
 
 
@@ -1336,12 +1410,15 @@ void set_tiles(uint8_t x,
           uint8_t *vram_addr,
           const uint8_t *tiles) NONBANKED __preserves_regs(b, c);
 
-/** Sets VRAM Tile Pattern data starting from given base address
+/** Sets VRAM Tile Pattern data starting from given base address 
+    without taking into account the state of LCDC bit 4.
 
     @param first_tile  Index of the first tile to write
     @param nb_tiles    Number of tiles to write
     @param data        Pointer to (2 bpp) source Tile Pattern data.
 	@param base        MSB of the destination address in VRAM (usually 0x80 or 0x90 which gives 0x8000 or 0x9000)
+
+set_tile_data() allows to load tile data not taking into account LCDC bit 4 state    
 */
 void set_tile_data(uint8_t first_tile,
           uint8_t nb_tiles,
