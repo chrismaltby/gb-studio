@@ -12,7 +12,6 @@ coverage
 /dist
 .DS_Store
 test/projects/*/build
-storybook-static
 
 # Webpack
 .webpack/

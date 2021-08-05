@@ -25,9 +25,7 @@
     "missing-translations": "node src/lang/list_missing.js",
     "make:cli": "webpack --config webpack.cli.config.js",
     "analyze-bundle": "env ANALYZE_BUNDLE=1 electron-forge start",
-    "fetch-contributors": "curl https://api.github.com/repos/chrismaltby/gb-studio/contributors > contributors.json",
-    "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "fetch-contributors": "curl https://api.github.com/repos/chrismaltby/gb-studio/contributors > contributors.json"
   },
   "keywords": [],
   "author": "GB Studio",
@@ -107,7 +105,6 @@
     "vm2": "3.9.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.14.8",
     "@electron-forge/cli": "6.0.0-beta.57",
     "@electron-forge/maker-deb": "6.0.0-beta.57",
     "@electron-forge/maker-rpm": "6.0.0-beta.57",
@@ -115,10 +112,6 @@
     "@electron-forge/maker-zip": "6.0.0-beta.57",
     "@electron-forge/plugin-webpack": "6.0.0-beta.57",
     "@marshallofsound/webpack-asset-relocator-loader": "^0.5.0",
-    "@storybook/addon-actions": "^6.3.6",
-    "@storybook/addon-essentials": "^6.3.6",
-    "@storybook/addon-links": "^6.3.6",
-    "@storybook/react": "^6.3.6",
     "@testing-library/jest-dom": "^5.11.5",
     "@testing-library/react": "^11.1.0",
     "@types/electron-devtools-installer": "^2.2.0",
@@ -134,7 +127,6 @@
     "@typescript-eslint/eslint-plugin": "^4.25.0",
     "@typescript-eslint/parser": "^4.25.0",
     "babel-eslint": "^10.1.0",
-    "babel-loader": "^8.2.2",
     "css-loader": "^3.0.0",
     "electron": "8.5.5",
     "eslint": "^7.21.0",
