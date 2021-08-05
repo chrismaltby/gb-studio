@@ -265,8 +265,6 @@ UBYTE load_scene(const scene_t * scene, UBYTE bank, UBYTE init_data) __banked {
 
         // Copy scene player hit scripts to player actor
         memcpy(&PLAYER.script_hit1, &scn.script_p_hit1, sizeof(far_ptr_t));
-        memcpy(&PLAYER.script_hit2, &scn.script_p_hit2, sizeof(far_ptr_t));
-        memcpy(&PLAYER.script_hit3, &scn.script_p_hit3, sizeof(far_ptr_t));
 
         player_moving = FALSE;
 
@@ -335,7 +333,7 @@ UBYTE load_scene(const scene_t * scene, UBYTE bank, UBYTE init_data) __banked {
 
     emote_actor = NULL;
 
-    if (init_data && scn.script_init.ptr) {
+    if ((init_data) && (scn.script_init.ptr != NULL)) {
         return (script_execute(scn.script_init.bank, scn.script_init.ptr, 0, 0) != 0);
     }
     return FALSE;

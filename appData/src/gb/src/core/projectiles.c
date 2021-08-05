@@ -2,11 +2,11 @@
 
 #include "projectiles.h"
 
+#include <gb/metasprites.h>
 #include <string.h>
 
 #include "scroll.h"
 #include "actor.h"
-#include "metasprite.h"
 #include "linked_list.h"
 #include "game_time.h"
 #include "vm.h"

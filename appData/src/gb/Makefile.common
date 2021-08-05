@@ -10,6 +10,7 @@ EMU	= $(TOP)../bgb/bgb
 GBSPACK = $(TOP)../gbspack/gbspack
 TEST_CHK = python $(CURDIR)/$(TEST_FW)/unit_checker.py
 GBS_CLI = node $(TOP)../gb-studio/out/cli/gb-studio-cli.js
+PLATFORM =
 
 ROMTITLE = "GBSTUDIO"
 
@@ -18,12 +19,12 @@ OBJDIR = obj
 REL_OBJDIR = obj/_rel
 
 
-CFLAGS = -I$(TOP)include -Wa-I$(TOP)include -Wa-I$(GBDKLIB)
+CFLAGS = $(PLATFORM) -I$(TOP)include -Wa-I$(TOP)include -Wa-I$(GBDKLIB)
 
 LFLAGS_NBANKS += -Wm-yoA -Wm-ya4
 LFLAGS_SYMBOLS = -Wl-j -Wl-m -Wl-w -Wm-yS
 
-LFLAGS = -Wm-yt$(CART_MBC) $(LFLAGS_NBANKS) $(LFLAGS_SYMBOLS) -Wl-klib -Wl-g_shadow_OAM2=0xDF00 -Wl-g.STACK=0xDF00 -Wi-e
+LFLAGS = $(PLATFORM) -Wm-yt$(CART_MBC) $(LFLAGS_NBANKS) $(LFLAGS_SYMBOLS) -Wl-klib -Wl-g.STACK=0xDF00 -Wi-e
 
 PACKFLAGS = -b 5 -f 255 -e rel -c
 
@@ -58,10 +59,15 @@ ENGINE_OBJS = $(CSRC:%.c=$(TOP)$(OBJDIR)/%.o) \
 OBJS = $(ENGINE_OBJS)
 REL_OBJS = $(OBJS:$(OBJDIR)/%.o=$(REL_OBJDIR)/%.rel)
 
-all: settings directories $(TARGET)
+all:	settings directories BUILD
 
-.PHONY: directories clean release debug profile DMG CGB SGB MBC3 MBC5 hUGE GBT test
-.SECONDARY: $(OBJS) 
+.PHONY:	directories clean release debug profile AP DMG CGB SGB MBC3 MBC5 hUGE GBT test rom BUILD
+.SECONDARY:	$(OBJS)
+
+AP:
+	$(eval PLATFORM = -mgbz80:ap)
+	$(eval TARGET = $(patsubst %.gb,%.pocket,$(TARGET)))
+	@echo "Analogue pocket build"
 
 release:
 	$(eval CFLAGS += -Wf'--max-allocs-per-node 50000')
@@ -112,7 +118,7 @@ GBT:
 	$(eval LFLAGS += -Wl-l$(TOP)lib/gbt_player.lib)
 	@echo "Enable GBTPlayer"
 
-directories: $(ROM_BUILD_DIR) $(OBJDIR) $(REL_OBJDIR)
+directories:	$(ROM_BUILD_DIR) $(OBJDIR) $(REL_OBJDIR)
 
 $(ROM_BUILD_DIR):
 	mkdir -p $(ROM_BUILD_DIR)
@@ -142,7 +148,7 @@ $(TOP)$(OBJDIR)/%.o:	$(TOP)src/%.c
 $(TOP)$(OBJDIR)/%.o:	$(TOP)src/%.s
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-$(TOP)$(OBJDIR)/test_main.o: $(TOP)test/framework/test_main.c
+$(TOP)$(OBJDIR)/test_main.o:	$(TOP)test/framework/test_main.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 $(REL_OBJDIR)/linkfile.lk:	$(OBJS)
@@ -155,8 +161,8 @@ $(REL_OBJDIR)/linkfile.lk:	$(OBJS)
 	$(shell echo -g __start_save=$(shell expr $(CART_SIZE) - 4 ) >$@)
 	$(foreach O,$(REL_OBJS),$(shell echo $O >>$@))
 
-$(ROM_BUILD_DIR)/%.gb:	$(REL_OBJDIR)/linkfile.lk
-	$(CC) $(LFLAGS) -Wm-yn$(ROMTITLE) -o $@ -Wl-f$<
+BUILD:	$(REL_OBJDIR)/linkfile.lk
+	$(CC) $(LFLAGS) -Wm-yn$(ROMTITLE) -o $(TARGET) -Wl-f$<
 
 clean:
 	@echo "CLEANUP..."
@@ -169,4 +175,4 @@ clean:
 	rm -rf $(EXAMPLES_DIR)/*/obj
 	rm -rf $(EXAMPLES_DIR)/*/build
 
-rom: directories $(TARGET)
+rom:	directories BUILD

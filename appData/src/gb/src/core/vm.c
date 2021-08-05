@@ -153,10 +153,10 @@ void vm_beginthread(UWORD dummy0, UWORD dummy1, SCRIPT_CTX * THIS, UBYTE bank, U
     if (ctx) {
         UBYTE _save = _current_bank;        // we must preserve current bank, 
         SWITCH_ROM_MBC1(THIS->bank);        // then switch to bytecode bank
-        for (UBYTE i = 0; i < nargs; i++) {
-            UWORD * A;
-            if (idx < 0) A = THIS->stack_ptr + idx; else A = script_memory + idx;
-            *(ctx->stack_ptr++) = *A;
+        for (UBYTE i = nargs; i != 0; i--) {
+            INT16 A = *((INT16 *)THIS->PC);
+            A = (A < 0) ? *(THIS->stack_ptr + idx) : *(script_memory + idx);
+            *(ctx->stack_ptr++) = (UWORD)A;
             THIS->PC += 2;
         }
         SWITCH_ROM_MBC1(_save);
@@ -222,6 +222,12 @@ void vm_push_value(SCRIPT_CTX * THIS, INT16 idx) __banked {
 void vm_push_value_ind(SCRIPT_CTX * THIS, INT16 idx) __banked {
     idx = *((idx < 0) ? (THIS->stack_ptr + idx) : (script_memory + idx));
     *(THIS->stack_ptr) = *((idx < 0) ? (THIS->stack_ptr + idx) : (script_memory + idx));
+    THIS->stack_ptr++;
+}
+// translates idx into absolute index and pushes result to VM stack
+// if idx >= 0 then idx it is pushed as is, else idx is translated into the absolute index from the beginning of script_memory[]  
+void vm_push_reference(SCRIPT_CTX * THIS, INT16 idx) __banked {
+    *(THIS->stack_ptr) = ((idx < 0) ? ((((UWORD)(THIS->stack_ptr) - (UWORD)script_memory) >> 1) + idx) : idx);
     THIS->stack_ptr++;
 }
 // manipulates VM stack pointer
@@ -609,38 +615,40 @@ void script_runner_init(UBYTE reset) __banked {
 
 // execute a script in the new allocated context
 // actually, it initializes free context with bytecode and moves it into the active context chain
-SCRIPT_CTX * script_execute(UBYTE bank, UBYTE * pc, UWORD * handle, INT8 nargs, ...) __banked {
-    if (free_ctxs) {
-        SCRIPT_CTX * tmp = free_ctxs;
-        // remove context from free list
-        free_ctxs = free_ctxs->next;
-        // initialize context
-        tmp->PC = pc, tmp->bank = bank, tmp->stack_ptr = tmp->base_addr;
-        // set thread handle by reference
-        tmp->hthread = handle;
-        if (handle) *handle = tmp->ID;
-        // clear termination flag
-        tmp->terminated = FALSE;
-        // clear lock count
-        tmp->lock_count = 0;
-        // clear flags
-        tmp->flags = 0;
-        // Clear update fn
-        tmp->update_fn_bank = 0;
-        // add context to active list
-        tmp->next = first_ctx, first_ctx = tmp;
-        // push threadlocals
-        if (nargs) {
-            va_list va;
-            va_start(va, nargs);
-            for (INT8 i = 0; i < nargs; i++) {
-                *(tmp->stack_ptr++) = va_arg(va, INT16);
-            }
+SCRIPT_CTX * script_execute(UBYTE bank, UBYTE * pc, UWORD * handle, UBYTE nargs, ...) __banked {
+    if (free_ctxs == 0) return NULL;
+#ifdef SAFE_SCRIPT_EXECUTE
+    if (pc == NULL) return NULL;
+#endif
+
+    SCRIPT_CTX * tmp = free_ctxs;
+    // remove context from free list
+    free_ctxs = free_ctxs->next;
+    // initialize context
+    tmp->PC = pc, tmp->bank = bank, tmp->stack_ptr = tmp->base_addr;
+    // set thread handle by reference
+    tmp->hthread = handle;
+    if (handle) *handle = tmp->ID;
+    // clear termination flag
+    tmp->terminated = FALSE;
+    // clear lock count
+    tmp->lock_count = 0;
+    // clear flags
+    tmp->flags = 0;
+    // Clear update fn
+    tmp->update_fn_bank = 0;
+    // add context to active list
+    tmp->next = first_ctx, first_ctx = tmp;
+    // push threadlocals
+    if (nargs) {
+        va_list va;
+        va_start(va, nargs);
+        for (UBYTE i = nargs; i != 0; i--) {
+            *(tmp->stack_ptr++) = va_arg(va, INT16);
         }
-        // return thread ID
-        return tmp;
     }
-    return 0;
+    // return thread ID
+    return tmp;
 }
 
 // terminate script by ID

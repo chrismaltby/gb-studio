@@ -95,6 +95,12 @@ void vm_display_text(SCRIPT_CTX * THIS) __banked {
     current_text_speed = text_draw_speed;
 }
 
+// switch text rendering to screen or background
+void vm_switch_text_layer(SCRIPT_CTX * THIS, UBYTE target) __banked {
+    THIS;
+    if (target) text_render_base_addr = GetWinAddr(); else text_render_base_addr = GetBkgAddr();
+}
+
 // set position of overlayed window
 void vm_overlay_setpos(SCRIPT_CTX * THIS, UBYTE pos_x, UBYTE pos_y) __banked {
     THIS;

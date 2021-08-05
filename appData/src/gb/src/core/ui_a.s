@@ -188,3 +188,46 @@ _ui_print_shift_char::
         ld  (#0x2000), a
 
         ret
+
+; void ui_draw_frame_row(void * dest, UBYTE tile, UBYTE width);
+
+_ui_draw_frame_row::
+        ldhl sp, #5
+        ld a, (hl-)
+        ld c, a
+        ld a, (hl-)
+        ld e, a
+        ld a, (hl-)
+        ld l, (hl)
+        ld h, a
+
+.ui_draw_frame_row::
+        ld a, c
+        or a
+        jr z, 2$
+
+        WAIT_STAT
+        ld a, e
+        ld (hl+), a
+
+        dec c
+        jr z, 2$
+
+        inc e
+
+        ld b, c
+        dec b
+        jr z, 1$
+3$:
+        WAIT_STAT
+        ld a, e
+        ld (hl+), a
+        dec c
+        dec b
+        jr nz, 3$
+1$:
+        inc e
+        WAIT_STAT
+        ld (hl), e
+2$:
+        ret

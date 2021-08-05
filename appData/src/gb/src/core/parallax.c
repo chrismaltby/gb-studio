@@ -1,5 +1,6 @@
 #pragma bank 1
 
+#include <gb/hardware.h>
 #include <string.h>
 
 #include "parallax.h"
@@ -32,7 +33,7 @@ __asm
         ld d, a
 2$:
         ldh a, (#_STAT_REG)
-        and #0x02
+        bit STATF_B_BUSY, a
         jr nz, 2$
 
         ld a, e

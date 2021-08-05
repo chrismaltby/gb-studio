@@ -366,6 +366,13 @@ OP_VM_POLL_LOADED     = 0x2B
         .db OP_VM_POLL_LOADED, #>IDX, #<IDX
 .endm
 
+; Translates idx into absolute index and pushes result to VM stack
+OP_VM_PUSH_REFERENCE  = 0x2C 
+.macro VM_PUSH_REFERENCE IDX
+        .db OP_VM_PUSH_REFERENCE, #>IDX, #<IDX
+.endm
+
+
 OP_VM_MEMSET          = 0x76
 .macro VM_MEMSET DEST, VALUE, COUNT
         .db OP_VM_MEMSET, #>COUNT, #<COUNT, #>VALUE, #<VALUE, #>DEST, #<DEST
@@ -377,18 +384,6 @@ OP_VM_MEMCPY          = 0x77
 .endm
 
 ; --- engine-specific instructions ------------------------------------------
-
-; --- MATH -------------------------------------------
-
-OP_VM_SIN_SCALE         = 0x2C
-.macro VM_SIN_SCALE IDX, IDX_ANGLE, SCALE
-        .db OP_VM_SIN_SCALE, #<SCALE, #>IDX_ANGLE, #<IDX_ANGLE, #>IDX, #<IDX
-.endm
-
-OP_VM_COS_SCALE         = 0x2D
-.macro VM_COS_SCALE IDX, IDX_ANGLE, SCALE
-        .db OP_VM_COS_SCALE, #<SCALE, #>IDX_ANGLE, #<IDX_ANGLE, #>IDX, #<IDX
-.endm
 
 ; --- LOAD/SAVE --------------------------------------
 
@@ -527,6 +522,14 @@ OP_VM_DISPLAY_TEXT      = 0x41
 .macro VM_DISPLAY_TEXT
         .db OP_VM_DISPLAY_TEXT
 .endm
+
+OP_VM_SWITCH_TEXT_LAYER = 0x85
+.TEXT_LAYER_BKG         = 0
+.TEXT_LAYER_WIN         = 1
+.macro VM_SWITCH_TEXT_LAYER LAYER
+        .db OP_VM_SWITCH_TEXT_LAYER, #<LAYER
+.endm
+
 
 OP_VM_OVERLAY_SETPOS    = 0x42
 .macro VM_OVERLAY_SETPOS X, Y
@@ -900,4 +903,16 @@ OP_VM_RUMBLE             = 0x7F
 OP_VM_PROJECTILE_LAUNCH  = 0x80
 .macro VM_PROJECTILE_LAUNCH TYPE, IDX
         .db OP_VM_PROJECTILE_LAUNCH, #>IDX, #<IDX, #<TYPE
+.endm
+
+; --- MATH -------------------------------------------
+
+OP_VM_SIN_SCALE         = 0x89
+.macro VM_SIN_SCALE IDX, IDX_ANGLE, SCALE
+        .db OP_VM_SIN_SCALE, #<SCALE, #>IDX_ANGLE, #<IDX_ANGLE, #>IDX, #<IDX
+.endm
+
+OP_VM_COS_SCALE         = 0x8A
+.macro VM_COS_SCALE IDX, IDX_ANGLE, SCALE
+        .db OP_VM_COS_SCALE, #<SCALE, #>IDX_ANGLE, #<IDX_ANGLE, #>IDX, #<IDX
 .endm

@@ -52,13 +52,13 @@ _set_bkg_tile_xy::
 
 _GetWinAddr::
         ldh     a,(.LCDC)
-        bit     6,a
+        bit     LCDCF_B_WIN9C00,a
         jr      Z,.is98
         jr      .is9c
 
 _GetBkgAddr::
         ldh     a,(.LCDC)
-        bit     3,a
+        bit     LCDCF_B_BG9C00,a
         jr      NZ,.is9c
 .is98:
         ld      de,#0x9800      ; DE = origin
