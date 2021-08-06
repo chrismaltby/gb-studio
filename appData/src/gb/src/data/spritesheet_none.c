@@ -4,7 +4,7 @@
 
 #include "gbs_types.h"
 
-const void __at(255) __bank_spritesheet_none;
+BANKREF(spritesheet_none)
 
 const metasprite_t spritesheet_none_metasprite[]  = {
     {metasprite_end}

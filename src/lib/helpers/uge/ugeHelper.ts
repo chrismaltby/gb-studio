@@ -620,7 +620,7 @@ static const unsigned char order_cnt = ${song.sequence.length * 2};
   data += "};\n";
 
   data += `
-const void __at(255) __bank_${trackName}_Data;
+BANKREF(${trackName}_Data)
 const hUGESong_t ${trackName}_Data = {
     ${song.ticks_per_row},
     &order_cnt,
