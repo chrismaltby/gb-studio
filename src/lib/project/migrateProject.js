@@ -15,6 +15,7 @@ import uuid from "uuid";
 const indexById = indexBy("id");
 
 export const LATEST_PROJECT_VERSION = "2.0.0";
+export const LATEST_PROJECT_MINOR_VERSION = "10";
 
 /*
  * Helper function to make sure that all migrated functions
@@ -1080,6 +1081,23 @@ const migrateFrom200r8To200r9Events = (data) => {
   };
 };
 
+export const migrateFrom200r9To200r10Triggers = (data) => {
+  return {
+    ...data,
+    scenes: data.scenes.map((scene) => {
+      return {
+        ...scene,
+        triggers: scene.triggers.map((trigger) => {
+          return {
+            ...trigger,
+            leaveScript: trigger.leaveScript || [],
+          };
+        }),
+      };
+    }),
+  };
+};
+
 const migrateProject = (project) => {
   let data = { ...project };
   let version = project._version || "1.0.0";
@@ -1146,6 +1164,10 @@ const migrateProject = (project) => {
     if (release === "8") {
       data = migrateFrom200r8To200r9Events(data);
       release = "9";
+    }
+    if (release === "9") {
+      data = migrateFrom200r9To200r10Triggers(data);
+      release = "10";
     }
   }
 
