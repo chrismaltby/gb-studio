@@ -10,6 +10,8 @@ const neonTheme: ThemeInterface = {
   colors: {
     highlight: "#f6019d",
     highlightText: "#ffffff",
+    translucent: "rgba(0,0,0,0.1)",
+    hoverTranslucent: "rgba(0,0,0,0.3)",
     text: "#f5dcec",
     secondaryText: "#777777",
     conditional: {
@@ -100,12 +102,24 @@ const neonTheme: ThemeInterface = {
         commentBackground: "#8bc34a",
         commentBackgroundAlt: "#7cb342",
       },
+      branch: {
+        nest1Background: "#1565c0",
+        nest2Background: "#ca750b",
+        nest3Background: "#2e7d32",
+        nest4Background: "#6a1b9a",
+      },
       form: {
         background: "#000000",
       },
       children: {
-        boxShadow:
-          "0 0 0 1px rgba(150, 150, 150, 0.3), 0 4px 11px hsla(0, 0%, 0%, 0.1)",
+        nest1Border: "#1565c0",
+        nest1Text: "#1565c0",
+        nest2Border: "#ca750b",
+        nest2Text: "#ca750b",
+        nest3Border: "#2e7d32",
+        nest3Text: "#2e7d32",
+        nest4Border: "#6a1b9a",
+        nest4Text: "#6a1b9a",
       },
       placeholder: {
         background: "#666",

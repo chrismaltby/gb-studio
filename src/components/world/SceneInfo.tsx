@@ -7,7 +7,7 @@ import {
   SCREEN_HEIGHT,
   SCREEN_WIDTH,
 } from "../../consts";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "store/configureStore";
 import {
@@ -21,16 +21,9 @@ import styled, { css } from "styled-components";
 import { TooltipWrapper } from "ui/tooltips/Tooltip";
 import l10n from "lib/helpers/l10n";
 import { walkNormalisedSceneEvents } from "store/features/entities/entitiesHelpers";
-import {
-  Actor,
-  Scene,
-  ScriptEvent,
-  SpriteSheet,
-  Trigger,
-} from "store/features/entities/entitiesTypes";
-import useDebouncedCallback from "ui/hooks/use-debounced-callback";
-import { Dictionary } from "@reduxjs/toolkit";
+import { SpriteSheet } from "store/features/entities/entitiesTypes";
 import clamp from "lib/helpers/clamp";
+import { useDebounce } from "ui/hooks/use-debounce";
 
 interface SceneInfoWrapperProps {
   loaded: boolean;
@@ -114,167 +107,154 @@ const SceneInfo = () => {
   const [actorWarnings, setActorWarnings] = useState<string[]>([]);
   const [loaded, setLoaded] = useState(false);
 
-  const debouncedCalculateCounts = useDebouncedCallback(
-    (
-      scene: Scene | undefined,
-      actorsLookup: Dictionary<Actor>,
-      triggersLookup: Dictionary<Trigger>,
-      scriptEventsLookup: Dictionary<ScriptEvent>,
-      spriteSheetsLookup: Dictionary<SpriteSheet>,
-      defaultPlayerSprites: Record<string, string>
-    ) => {
-      const newActorWarnings: string[] = [];
-      const usedSpriteSheets: SpriteSheet[] = [];
+  const recalculateCounts = useCallback(() => {
+    if (!scene) {
+      return;
+    }
+    const newActorWarnings: string[] = [];
+    const usedSpriteSheets: SpriteSheet[] = [];
 
-      const addSprite = (id: string, force = false) => {
-        const spriteSheet = spriteSheetsLookup[id];
-        if (
-          spriteSheet &&
-          (force || usedSpriteSheets.indexOf(spriteSheet) === -1)
-        ) {
-          usedSpriteSheets.push(spriteSheet);
-        }
-      };
-
-      if (scene) {
-        // Actor sprites
-        scene.actors.forEach((actorId) => {
-          const actor = actorsLookup[actorId];
-          if (actor) {
-            addSprite(actor.spriteSheetId);
-          }
-        });
-        // Player sprite
-        if (scene.playerSpriteSheetId) {
-          addSprite(scene.playerSpriteSheetId, true);
-        } else {
-          addSprite(defaultPlayerSprites[scene.type || "TOPDOWN"], true);
-        }
-        // Events
-        walkNormalisedSceneEvents(
-          scene,
-          scriptEventsLookup,
-          actorsLookup,
-          triggersLookup,
-          (scriptEvent) => {
-            if (
-              scriptEvent.args?.spriteSheetId &&
-              !scriptEvent.args?.__comment
-            ) {
-              addSprite(String(scriptEvent.args.spriteSheetId || ""));
-            }
-          }
-        );
-
-        const tileCount = usedSpriteSheets.reduce((memo, spriteSheet) => {
-          return (
-            memo +
-            (spriteSheet && spriteSheet.numTiles ? spriteSheet.numTiles : 0)
-          );
-        }, 0);
-
-        setTileCount(tileCount);
+    const addSprite = (id: string, force = false) => {
+      const spriteSheet = spriteSheetsLookup[id];
+      if (
+        spriteSheet &&
+        (force || usedSpriteSheets.indexOf(spriteSheet) === -1)
+      ) {
+        usedSpriteSheets.push(spriteSheet);
       }
+    };
 
-      const checkScreenAt = (x: number, y: number) => {
-        let near = 0;
-        if (scene) {
-          for (let j = 0; j < scene.actors.length; j++) {
-            const otherActorId = scene.actors[j];
-            const otherActor = actorsLookup[otherActorId];
-            if (
-              otherActor &&
-              otherActor.x >= x - 1 &&
-              otherActor.x <= x + 2 + SCREEN_WIDTH &&
-              otherActor.y >= y &&
-              otherActor.y <= y + SCREEN_HEIGHT
-            ) {
-              near++;
-            }
+    if (scene) {
+      // Actor sprites
+      scene.actors.forEach((actorId) => {
+        const actor = actorsLookup[actorId];
+        if (actor) {
+          addSprite(actor.spriteSheetId);
+        }
+      });
+      // Player sprite
+      if (scene.playerSpriteSheetId) {
+        addSprite(scene.playerSpriteSheetId, true);
+      } else {
+        addSprite(defaultPlayerSprites[scene.type || "TOPDOWN"], true);
+      }
+      // Events
+      walkNormalisedSceneEvents(
+        scene,
+        scriptEventsLookup,
+        actorsLookup,
+        triggersLookup,
+        (scriptEvent) => {
+          if (scriptEvent.args?.spriteSheetId && !scriptEvent.args?.__comment) {
+            addSprite(String(scriptEvent.args.spriteSheetId || ""));
           }
         }
-        return near;
-      };
+      );
 
-      const checkScreenCache: Record<string, number> = {};
-      const cachedCheckScreenAt = (checkX: number, checkY: number) => {
-        if (scene) {
-          const x = clamp(checkX, 0, scene.width - SCREEN_WIDTH);
-          const y = clamp(checkY, 0, scene.height - SCREEN_HEIGHT);
-          const key = `${x}_${y}`;
-          if (checkScreenCache[key] === undefined) {
-            checkScreenCache[key] = checkScreenAt(x, y);
+      const tileCount = usedSpriteSheets.reduce((memo, spriteSheet) => {
+        return (
+          memo +
+          (spriteSheet && spriteSheet.numTiles ? spriteSheet.numTiles : 0)
+        );
+      }, 0);
+
+      setTileCount(tileCount);
+    }
+
+    const checkScreenAt = (x: number, y: number) => {
+      let near = 0;
+      if (scene) {
+        for (let j = 0; j < scene.actors.length; j++) {
+          const otherActorId = scene.actors[j];
+          const otherActor = actorsLookup[otherActorId];
+          if (
+            otherActor &&
+            otherActor.x >= x - 1 &&
+            otherActor.x <= x + 2 + SCREEN_WIDTH &&
+            otherActor.y >= y &&
+            otherActor.y <= y + SCREEN_HEIGHT
+          ) {
+            near++;
           }
-          return checkScreenCache[key];
         }
-        return 0;
-      };
+      }
+      return near;
+    };
 
-      function checkForTooCloseActors() {
-        if (scene) {
-          for (let i = scene.actors.length - 1; i > 0; i--) {
-            const actorId = scene.actors[i];
-            const actor = actorsLookup[actorId];
-            if (!actor) {
-              continue;
-            }
-            const actorX = clamp(actor.x, 0, 255);
-            const actorY = clamp(actor.y, 0, 255);
+    const checkScreenCache: Record<string, number> = {};
+    const cachedCheckScreenAt = (checkX: number, checkY: number) => {
+      if (scene) {
+        const x = clamp(checkX, 0, scene.width - SCREEN_WIDTH);
+        const y = clamp(checkY, 0, scene.height - SCREEN_HEIGHT);
+        const key = `${x}_${y}`;
+        if (checkScreenCache[key] === undefined) {
+          checkScreenCache[key] = checkScreenAt(x, y);
+        }
+        return checkScreenCache[key];
+      }
+      return 0;
+    };
+
+    function checkForTooCloseActors() {
+      if (scene) {
+        for (let i = scene.actors.length - 1; i > 0; i--) {
+          const actorId = scene.actors[i];
+          const actor = actorsLookup[actorId];
+          if (!actor) {
+            continue;
+          }
+          const actorX = clamp(actor.x, 0, 255);
+          const actorY = clamp(actor.y, 0, 255);
+          for (let x = actorX - SCREEN_WIDTH; x < actorX + SCREEN_WIDTH; x++) {
             for (
-              let x = actorX - SCREEN_WIDTH;
-              x < actorX + SCREEN_WIDTH;
-              x++
+              let y = actorY - SCREEN_HEIGHT;
+              y < actorY + SCREEN_HEIGHT;
+              y++
             ) {
-              for (
-                let y = actorY - SCREEN_HEIGHT;
-                y < actorY + SCREEN_HEIGHT;
-                y++
-              ) {
-                const near = cachedCheckScreenAt(x, y);
-                if (near > MAX_ONSCREEN) {
-                  const actorName = actor.name || `Actor ${i + 1}`;
-                  console.log("TOO CLOSE");
-                  newActorWarnings.push(
-                    l10n("WARNING_TOO_MANY_ONSCREEN_ACTORS", { actorName })
-                  );
-                  newActorWarnings.push(
-                    l10n("WARNING_ONSCREEN_ACTORS_LIMIT", {
-                      maxOnscreen: MAX_ONSCREEN,
-                    })
-                  );
-                  return;
-                }
+              const near = cachedCheckScreenAt(x, y);
+              if (near > MAX_ONSCREEN) {
+                const actorName = actor.name || `Actor ${i + 1}`;
+                console.log("TOO CLOSE");
+                newActorWarnings.push(
+                  l10n("WARNING_TOO_MANY_ONSCREEN_ACTORS", { actorName })
+                );
+                newActorWarnings.push(
+                  l10n("WARNING_ONSCREEN_ACTORS_LIMIT", {
+                    maxOnscreen: MAX_ONSCREEN,
+                  })
+                );
+                return;
               }
             }
           }
         }
       }
+    }
 
-      checkForTooCloseActors();
-      setActorWarnings(newActorWarnings);
-      setLoaded(true);
-    },
-    [],
-    200
-  );
+    checkForTooCloseActors();
+    setActorWarnings(newActorWarnings);
+    setLoaded(true);
+  }, [
+    actorsLookup,
+    defaultPlayerSprites,
+    scene,
+    scriptEventsLookup,
+    spriteSheetsLookup,
+    triggersLookup,
+  ]);
+
+  const debouncedRecalculateCounts = useDebounce(recalculateCounts, 200);
 
   useEffect(() => {
-    debouncedCalculateCounts(
-      scene,
-      actorsLookup,
-      triggersLookup,
-      scriptEventsLookup,
-      spriteSheetsLookup,
-      defaultPlayerSprites
-    );
+    debouncedRecalculateCounts();
   }, [
+    debouncedRecalculateCounts,
     scene,
     actorsLookup,
     triggersLookup,
     scriptEventsLookup,
     spriteSheetsLookup,
     defaultPlayerSprites,
-    debouncedCalculateCounts,
   ]);
 
   if (!scene) {

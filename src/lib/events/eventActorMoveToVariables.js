@@ -6,6 +6,7 @@ const groups = ["EVENT_GROUP_ACTOR"];
 const fields = [
   {
     key: "actorId",
+    label: l10n("ACTOR"),
     type: "actor",
     defaultValue: "$self$",
   },

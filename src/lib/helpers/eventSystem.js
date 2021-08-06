@@ -326,7 +326,7 @@ const replaceEventActorIds = (replacementIds, event) => {
   };
 };
 
-const filterEvents = (data, fn) => {
+const filterEvents = (data = [], fn) => {
   return data.reduce((memo, o) => {
     if (fn(o)) {
       memo.push({

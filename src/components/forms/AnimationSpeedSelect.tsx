@@ -13,17 +13,24 @@ interface AnimationSpeedOption {
   label: string;
 }
 
-const options: AnimationSpeedOption[] = [
-  { value: 255, label: `${l10n("FIELD_NONE")}` },
-  { value: 127, label: `${l10n("FIELD_SPEED")} 1` },
-  { value: 63, label: `${l10n("FIELD_SPEED")} 2` },
-  { value: 31, label: `${l10n("FIELD_SPEED")} 3` },
-  { value: 15, label: `${l10n("FIELD_SPEED")} 4` },
-  { value: 7, label: `${l10n("FIELD_SPEED")} 5` },
-  { value: 3, label: `${l10n("FIELD_SPEED")} 6` },
-  { value: 1, label: `${l10n("FIELD_SPEED")} 7` },
-  { value: 0, label: `${l10n("FIELD_SPEED")} 8` },
-];
+export const animLabelLookup: Record<number, string> = {
+  255: `${l10n("FIELD_NONE")}`,
+  127: `${l10n("FIELD_SPEED")} 1`,
+  63: `${l10n("FIELD_SPEED")} 2`,
+  31: `${l10n("FIELD_SPEED")} 3`,
+  15: `${l10n("FIELD_SPEED")} 4`,
+  7: `${l10n("FIELD_SPEED")} 5`,
+  3: `${l10n("FIELD_SPEED")} 6`,
+  1: `${l10n("FIELD_SPEED")} 7`,
+  0: `${l10n("FIELD_SPEED")} 8`,
+};
+
+const options: AnimationSpeedOption[] = [255, 127, 63, 31, 15, 7, 3, 1, 0].map(
+  (value) => ({
+    value,
+    label: animLabelLookup[value],
+  })
+);
 
 export const AnimationSpeedSelect: FC<AnimationSpeedSelectProps> = ({
   name,

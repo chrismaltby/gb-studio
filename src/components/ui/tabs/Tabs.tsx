@@ -47,10 +47,13 @@ const Wrapper = styled.div<WrapperProps>`
   ${(props) =>
     props.variant === "scriptEvent"
       ? css`
-          border-left: 1px solid var(--sidebar-border-color);
+          border: 0;
           border-bottom: 0;
-          margin-bottom: -10px;
+          margin-bottom: -5px;
+          margin-left: 5px;
           height: 25px;
+          flex-basis: 100%;
+          padding-left: calc(2px + max(10px, min(4%, 50px)));
         `
       : ""}
 `;
@@ -149,6 +152,7 @@ ${(props) =>
     props.variant === "scriptEvent"
       ? css`
           padding: 0 10px;
+          margin-left: 1px;
         `
       : ""}
 

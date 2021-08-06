@@ -385,6 +385,7 @@ export interface ScriptEventFieldSchema {
   conditions?: ScriptEventFieldCondition[];
   toggleLabel?: string;
   width?: string;
+  flexBasis?: string;
   values?: Record<string, string>;
   alignCheckbox?: boolean;
   placeholder?: string;

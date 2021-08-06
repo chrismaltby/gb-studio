@@ -3,6 +3,40 @@ const l10n = require("../helpers/l10n").default;
 const id = "EVENT_VARIABLE_MATH";
 const groups = ["EVENT_GROUP_MATH", "EVENT_GROUP_VARIABLES"];
 
+const autoLabel = (fetchArg, input) => {
+  const variable = fetchArg("vectorX");
+  const op = input.operation;
+  const other = input.other;
+
+  let operation = "";
+  if (op === "add") {
+    operation = `${variable} +`;
+  } else if (op === "sub") {
+    operation = `${variable} -`;
+  } else if (op === "mul") {
+    operation = `${variable} *`;
+  } else if (op === "div") {
+    operation = `${variable} /`;
+  } else if (op === "mod") {
+    operation = `${variable} %`;
+  }
+
+  let value = fetchArg("value");
+  if (other === "true") {
+    value = l10n("FIELD_TRUE");
+  } else if (other === "false") {
+    value = l10n("FIELD_FALSE");
+  } else if (other === "var") {
+    value = fetchArg("vectorY");
+  } else if (other === "rnd") {
+    value = `${l10n("FIELD_RANDOM")}(${fetchArg("minValue")},${fetchArg(
+      "maxValue"
+    )})`;
+  }
+
+  return l10n("EVENT_VARIABLE_MATH_LABEL", { variable, operation, value });
+};
+
 const fields = [
   {
     key: "vectorX",
@@ -101,6 +135,7 @@ const fields = [
       },
     ],
     defaultValue: false,
+    alignCheckbox: true,
   },
   {
     key: "note1",
@@ -109,6 +144,19 @@ const fields = [
       {
         key: "operation",
         in: ["mul"],
+      },
+    ],
+  },
+  {
+    type: "break",
+    conditions: [
+      {
+        key: "operation",
+        in: ["add", "sub"],
+      },
+      {
+        key: "clamp",
+        ne: true,
       },
     ],
   },
@@ -183,6 +231,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  autoLabel,
   groups,
   fields,
   compile,
