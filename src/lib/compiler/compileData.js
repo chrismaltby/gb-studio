@@ -996,7 +996,7 @@ const compile = async (
         scriptTypeCode = scriptLookup[scriptType] || scriptTypeCode;
       } else if (entityType === "trigger") {
         entityCode = `t${entityIndex}`;
-        scriptTypeCode = "interact"
+        scriptTypeCode = "interact";
       } else if (entityType === "scene") {
         const scriptLookup = {
           script: "init",
@@ -1121,26 +1121,28 @@ const compile = async (
           entityScriptField
         );
       };
-    
+
     const combineScripts = (scripts) => {
-      const filteredScripts = scripts.filter((s) => (s.script && (s.script.length > 0)));
+      const filteredScripts = scripts.filter(
+        (s) => s.script && s.script.length > 0
+      );
       if (filteredScripts.length > 1) {
         return filteredScripts.map((s) => {
           return {
             command: "INTERNAL_IF_PARAM",
             args: {
-              parameter: ".ARG0",
-              value: s.param,
+              parameter: s.parameter,
+              value: s.value,
             },
             children: {
               true: s.script,
-            }
-          }
+            },
+          };
         });
       } else {
         return filteredScripts[0].script;
       }
-    }
+    };
 
     return {
       start: bankSceneEvents(scene, sceneIndex),
@@ -1155,8 +1157,11 @@ const compile = async (
       actorsHit2: scene.actors.map(bankEntityEvents("actor", "hit2Script")),
       actorsHit3: scene.actors.map(bankEntityEvents("actor", "hit3Script")),
       triggers: scene.triggers.map((entity, entityIndex) => {
-        const combinedTriggerScript = combineScripts([ { param: 1, script: entity.script}, { param: 2, script: entity.leaveScript}]);
-        
+        const combinedTriggerScript = combineScripts([
+          { parameter: 0, value: 1, script: entity.script },
+          { parameter: 0, value: 2, script: entity.leaveScript },
+        ]);
+
         return compileScript(
           combinedTriggerScript,
           "trigger",

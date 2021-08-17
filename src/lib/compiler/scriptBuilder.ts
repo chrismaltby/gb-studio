@@ -340,6 +340,7 @@ class ScriptBuilder {
   stackPtr: number;
   labelStackSize: Dictionary<number>;
   includeActor: boolean;
+  includeParams: number[];
   headers: string[];
 
   constructor(
@@ -381,6 +382,7 @@ class ScriptBuilder {
     this.stackPtr = 0;
     this.labelStackSize = {};
     this.includeActor = false;
+    this.includeParams = [];
     this.headers = ["vm.i", "data/game_globals.i"];
   }
 
@@ -3340,14 +3342,17 @@ class ScriptBuilder {
   };
 
   ifParamValue = (
-    parameter: string,
+    parameter: number,
     value: number,
     truePath: ScriptEvent[] | ScriptBuilderPathFunction = []
   ) => {
+    if (!this.includeParams.includes(parameter)) {
+      this.includeParams.push(parameter);
+    }
     const trueLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
     this._addComment(`If Parameter ${parameter} Equals ${value}`);
-    this._ifConst(".EQ", parameter, value, trueLabel, 0);
+    this._ifConst(".EQ", `.PARAM${parameter}`, value, trueLabel, 0);
     this._jump(endLabel);
     this._label(trueLabel);
     this._compilePath(truePath);
@@ -3638,7 +3643,16 @@ ${
     : ""
 }
 .area _CODE_255
-${this.includeActor ? "\nACTOR = -4\n" : ""}
+${this.includeActor ? "\nACTOR = -4" : ""}
+${this.includeParams
+  .map(
+    (parameter) =>
+      `.PARAM${parameter} = ${String(
+        -(parameter + (this.includeActor ? 5 : 1))
+      )}`
+  )
+  .join("\n")}
+
 ___bank_${name} = 255
 .globl ___bank_${name}
 
