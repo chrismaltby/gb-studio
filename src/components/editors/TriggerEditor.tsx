@@ -19,7 +19,7 @@ import { SidebarColumn, Sidebar } from "ui/sidebars/Sidebar";
 import { FormContainer, FormHeader, FormRow } from "ui/form/FormLayout";
 import { EditableText } from "ui/form/EditableText";
 import { RootState } from "store/configureStore";
-import { Trigger } from "store/features/entities/entitiesTypes";
+import { Trigger, ScriptEvent } from "store/features/entities/entitiesTypes";
 import { CoordinateInput } from "ui/form/CoordinateInput";
 import { NoteField } from "ui/form/NoteField";
 import { StickyTabs, TabBar } from "ui/tabs/Tabs";
@@ -32,9 +32,36 @@ interface TriggerEditorProps {
   multiColumn: boolean;
 }
 
+interface ScriptHandler {
+  value: ScriptEvent[];
+  onChange: (newValue: ScriptEvent[]) => void;
+}
+
+interface ScriptHandlers {
+  trigger: ScriptHandler;
+  leave: ScriptHandler;
+}
+
+type TriggerScriptKey = "script" | "leaveScript";
+
 const scriptTabs = {
-  trigger: l10n("SIDEBAR_ON_TRIGGER"),
+  trigger: l10n("SIDEBAR_ON_ENTER"),
+  leave: l10n("SIDEBAR_ON_LEAVE"),
 } as const;
+
+const pointNClickScriptTabs = {
+  trigger: l10n("SIDEBAR_ON_INTERACT"),
+} as const;
+
+const getScriptKey = (tab: keyof typeof scriptTabs): TriggerScriptKey => {
+  if (tab === "trigger") {
+    return "script";
+  }
+  if (tab === "leave") {
+    return "leaveScript";
+  }
+  return "script";
+};
 
 const triggerName = (trigger: Trigger, triggerIndex: number) =>
   trigger.name ? trigger.name : `Trigger ${triggerIndex + 1}`;
@@ -149,6 +176,23 @@ export const TriggerEditor = ({
     />
   );
 
+  const tabs = Object.keys(scriptTabs);
+  const lastScriptTab = useSelector(
+    (state: RootState) => state.editor.lastScriptTabTrigger
+  );
+  const initialTab = tabs.includes(lastScriptTab) ? lastScriptTab : tabs[0];
+
+  const [scriptMode, setScriptMode] = useState<keyof ScriptHandlers>(
+    initialTab as keyof ScriptHandlers
+  );
+
+  const onChangeScriptMode = (mode: keyof ScriptHandlers) => {
+    setScriptMode(mode);
+    dispatch(editorActions.setScriptTabTrigger(mode));
+  };
+
+  const scriptKey = getScriptKey(scriptMode);
+
   return (
     <Sidebar onClick={selectSidebar} multiColumn={multiColumn}>
       {!lockScriptEditor && (
@@ -245,21 +289,35 @@ export const TriggerEditor = ({
       )}
       <SidebarColumn>
         <StickyTabs>
-          <TabBar
-            values={scriptTabs}
-            buttons={
-              <>
-                {lockButton}
-                {scriptButton}
-              </>
-            }
-          />
+          {scene.type === "POINTNCLICK" ? (
+            <TabBar
+              values={pointNClickScriptTabs}
+              buttons={
+                <>
+                  {lockButton}
+                  {scriptButton}
+                </>
+              }
+            />
+          ) : (
+            <TabBar
+              value={scriptMode}
+              values={scriptTabs}
+              onChange={onChangeScriptMode}
+              buttons={
+                <>
+                  {lockButton}
+                  {scriptButton}
+                </>
+              }
+            />
+          )}
         </StickyTabs>
         <ScriptEditor
-          value={trigger.script}
+          value={trigger[scriptKey] || []}
           type="trigger"
           entityId={trigger.id}
-          scriptKey={"script"}
+          scriptKey={scriptKey}
         />
       </SidebarColumn>
     </Sidebar>

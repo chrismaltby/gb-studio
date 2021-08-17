@@ -957,6 +957,7 @@ const addTrigger: CaseReducer<
     width,
     height,
     script: [],
+    leaveScript: [],
   };
 
   // Add to scene

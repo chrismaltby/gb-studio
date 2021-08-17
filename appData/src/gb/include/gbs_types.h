@@ -68,9 +68,13 @@ typedef struct actor_t
   struct actor_t *prev;
 } actor_t;
 
+#define TRIGGER_HAS_ENTER_SCRIPT    1
+#define TRIGGER_HAS_LEAVE_SCRIPT    2
+
 typedef struct trigger_t {
     UINT8 x, y, width, height;
     far_ptr_t script;
+    UBYTE script_flags;
 } trigger_t;
 
 typedef struct scene_t {

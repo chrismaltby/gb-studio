@@ -760,9 +760,12 @@ export const precompileScenes = (
         // Filter out unused triggers which cause slow down
         // When walking over
         return (
-          trigger.script &&
-          trigger.script.length >= 1 &&
-          trigger.script[0].command !== EVENT_END
+          (trigger.script &&
+            trigger.script.length >= 1 &&
+            trigger.script[0].command !== EVENT_END) ||
+          (trigger.leaveScript &&
+            trigger.leaveScript.length >= 1 &&
+            trigger.leaveScript[0].command !== EVENT_END)
         );
       }),
       playerSpriteIndex,
@@ -993,7 +996,7 @@ const compile = async (
         scriptTypeCode = scriptLookup[scriptType] || scriptTypeCode;
       } else if (entityType === "trigger") {
         entityCode = `t${entityIndex}`;
-        scriptTypeCode = "interact";
+        scriptTypeCode = "interact"
       } else if (entityType === "scene") {
         const scriptLookup = {
           script: "init",
@@ -1118,6 +1121,26 @@ const compile = async (
           entityScriptField
         );
       };
+    
+    const combineScripts = (scripts) => {
+      const filteredScripts = scripts.filter((s) => (s.script && (s.script.length > 0)));
+      if (filteredScripts.length > 1) {
+        return filteredScripts.map((s) => {
+          return {
+            command: "INTERNAL_IF_PARAM",
+            args: {
+              parameter: ".ARG0",
+              value: s.param,
+            },
+            children: {
+              true: s.script,
+            }
+          }
+        });
+      } else {
+        return filteredScripts[0].script;
+      }
+    }
 
     return {
       start: bankSceneEvents(scene, sceneIndex),
@@ -1131,7 +1154,19 @@ const compile = async (
       actorsHit1: scene.actors.map(bankEntityEvents("actor", "hit1Script")),
       actorsHit2: scene.actors.map(bankEntityEvents("actor", "hit2Script")),
       actorsHit3: scene.actors.map(bankEntityEvents("actor", "hit3Script")),
-      triggers: scene.triggers.map(bankEntityEvents("trigger")),
+      triggers: scene.triggers.map((entity, entityIndex) => {
+        const combinedTriggerScript = combineScripts([ { param: 1, script: entity.script}, { param: 2, script: entity.leaveScript}]);
+        
+        return compileScript(
+          combinedTriggerScript,
+          "trigger",
+          entity,
+          entityIndex,
+          false,
+          true,
+          "script"
+        );
+      }),
     };
   });
 

@@ -12,7 +12,9 @@ UBYTE last_trigger = NO_TRIGGER_COLLISON;
 UBYTE trigger_at_intersection(bounding_box_t *bb, upoint16_t *offset); 
 
 void trigger_interact(UBYTE i) __banked {
-    script_execute(triggers[i].script.bank, triggers[i].script.ptr, 0, 0);
+    if (triggers[i].script_flags & TRIGGER_HAS_ENTER_SCRIPT) {
+        script_execute(triggers[i].script.bank, triggers[i].script.ptr, 0, 1, 1);
+    }
 }
 
 UBYTE trigger_activate_at(UBYTE tx, UBYTE ty, UBYTE force) __banked {
@@ -37,15 +39,37 @@ UBYTE trigger_activate_at(UBYTE tx, UBYTE ty, UBYTE force) __banked {
 
 UBYTE trigger_activate_at_intersection(bounding_box_t *bb, upoint16_t *offset, UBYTE force) __banked {
     UBYTE hit_trigger = trigger_at_intersection(bb, offset);
+    UBYTE trigger_script_called = FALSE;
 
     // Don't reactivate trigger if not changed tile
     if (!force && (last_trigger == hit_trigger)) {
         return FALSE;
     }
+
+    if (last_trigger != NO_TRIGGER_COLLISON && 
+        (hit_trigger == NO_TRIGGER_COLLISON || hit_trigger != last_trigger)) {
+        
+        if (hit_trigger != NO_TRIGGER_COLLISON && triggers[hit_trigger].script_flags & TRIGGER_HAS_ENTER_SCRIPT) {
+            script_execute(triggers[hit_trigger].script.bank, triggers[hit_trigger].script.ptr, 0, 1, 1);
+            trigger_script_called = TRUE;
+        }
+
+        if (triggers[last_trigger].script_flags & TRIGGER_HAS_LEAVE_SCRIPT) {
+            script_execute(
+                triggers[last_trigger].script.bank, 
+                triggers[last_trigger].script.ptr, 0, 1, 2);
+            trigger_script_called = TRUE;
+        }
+
+        last_trigger = hit_trigger;
+
+        return trigger_script_called;
+    }
+    
     last_trigger = hit_trigger;
 
-    if (hit_trigger != NO_TRIGGER_COLLISON) {
-        script_execute(triggers[hit_trigger].script.bank, triggers[hit_trigger].script.ptr, 0, 0);
+    if (hit_trigger != NO_TRIGGER_COLLISON && triggers[hit_trigger].script_flags & TRIGGER_HAS_ENTER_SCRIPT) {
+        script_execute(triggers[hit_trigger].script.bank, triggers[hit_trigger].script.ptr, 0, 1, 1);
         return TRUE;
     }
 
