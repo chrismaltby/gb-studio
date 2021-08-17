@@ -9,19 +9,15 @@
 _ui_swap_tiles::
         ld hl, #_vwf_tile_data
         ld de, #(_vwf_tile_data + 16)
-        ld a, (_text_bkg_fill)
-        ld b, a
-        ld c, #2
-1$:
-        .rept 8
+        .rept 16
             ld a, (de)
             ld (hl+), a
-            ld a, b
-            ld (de), a
             inc de
         .endm
-        dec c
-        jr nz, 1$
+        ld a, (_text_bkg_fill)
+        .rept 16
+            ld (hl+), a
+        .endm
         ret
 
 _ui_print_make_mask_lr::

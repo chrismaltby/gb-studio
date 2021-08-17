@@ -152,14 +152,14 @@ void vm_beginthread(UWORD dummy0, UWORD dummy1, SCRIPT_CTX * THIS, UBYTE bank, U
     if (!(nargs)) return;
     if (ctx) {
         UBYTE _save = _current_bank;        // we must preserve current bank, 
-        SWITCH_ROM_MBC1(THIS->bank);        // then switch to bytecode bank
+        SWITCH_ROM(THIS->bank);             // then switch to bytecode bank
         for (UBYTE i = nargs; i != 0; i--) {
             INT16 A = *((INT16 *)THIS->PC);
             A = (A < 0) ? *(THIS->stack_ptr + idx) : *(script_memory + idx);
             *(ctx->stack_ptr++) = (UWORD)A;
             THIS->PC += 2;
         }
-        SWITCH_ROM_MBC1(_save);
+        SWITCH_ROM(_save);
     }
 }
 // 
@@ -262,7 +262,7 @@ void vm_rpn(UWORD dummy0, UWORD dummy1, SCRIPT_CTX * THIS) __nonbanked {
     INT16 idx;
 
     UBYTE _save = _current_bank;        // we must preserve current bank, 
-    SWITCH_ROM_MBC1(THIS->bank);        // then switch to bytecode bank
+    SWITCH_ROM(THIS->bank);             // then switch to bytecode bank
 
     ARGS = THIS->stack_ptr;
     while (TRUE) {
@@ -294,7 +294,7 @@ void vm_rpn(UWORD dummy0, UWORD dummy1, SCRIPT_CTX * THIS) __nonbanked {
                     *(THIS->stack_ptr) = op;
                     break;
                 default:
-                    SWITCH_ROM_MBC1(_save);         // restore bank
+                    SWITCH_ROM(_save);             // restore bank
                     return;
             }
             THIS->stack_ptr++;
@@ -330,7 +330,7 @@ void vm_rpn(UWORD dummy0, UWORD dummy1, SCRIPT_CTX * THIS) __nonbanked {
                 case 'Q': *B = isqrt((UWORD)*B); continue;
                 // terminator
                 default:
-                    SWITCH_ROM_MBC1(_save);         // restore bank
+                    SWITCH_ROM(_save);             // restore bank
                     return;
             }
             THIS->stack_ptr--;

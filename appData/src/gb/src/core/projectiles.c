@@ -89,7 +89,7 @@ void projectiles_update() __nonbanked {
             continue;
         }
 
-        SWITCH_ROM_MBC1(projectile->def.sprite.bank);
+        SWITCH_ROM(projectile->def.sprite.bank);
         spritesheet_t *sprite = projectile->def.sprite.ptr;
     
         allocated_hardware_sprites += move_metasprite(
@@ -104,7 +104,7 @@ void projectiles_update() __nonbanked {
         projectile = projectile->next;
     }
 
-    SWITCH_ROM_MBC1(_save_bank);
+    SWITCH_ROM(_save_bank);
 }
 
 void projectiles_render() __nonbanked {    
@@ -126,7 +126,7 @@ void projectiles_render() __nonbanked {
             continue;
         }
 
-        SWITCH_ROM_MBC1(projectile->def.sprite.bank);
+        SWITCH_ROM(projectile->def.sprite.bank);
         spritesheet_t *sprite = projectile->def.sprite.ptr;
     
         allocated_hardware_sprites += move_metasprite(
@@ -141,7 +141,7 @@ void projectiles_render() __nonbanked {
         projectile = projectile->next;
     }
 
-    SWITCH_ROM_MBC1(_save_bank);
+    SWITCH_ROM(_save_bank);
 }
 
 void projectile_launch(UBYTE index, upoint16_t *pos, UBYTE angle) __banked {    

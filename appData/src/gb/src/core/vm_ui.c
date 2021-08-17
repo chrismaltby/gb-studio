@@ -33,7 +33,7 @@ void vm_load_text(UWORD dummy0, UWORD dummy1, SCRIPT_CTX * THIS, UBYTE nargs) __
     dummy0; dummy1; // suppress warnings
 
     UBYTE _save = _current_bank;
-    SWITCH_ROM_MBC1(THIS->bank);
+    SWITCH_ROM(THIS->bank);
     
     const INT16 * args = (INT16 *)THIS->PC;
     const unsigned char * s = THIS->PC + (nargs << 1);
@@ -82,7 +82,7 @@ void vm_load_text(UWORD dummy0, UWORD dummy1, SCRIPT_CTX * THIS, UBYTE nargs) __
     }
     *d = 0;
 
-    SWITCH_ROM_MBC1(_save);
+    SWITCH_ROM(_save);
     THIS->PC = s + 1;
 }
 

@@ -822,6 +822,10 @@ OP_VM_CAMERA_MOVE_TO     = 0x70
         .db OP_VM_CAMERA_MOVE_TO, #<AFTER_LOCK, #<SPEED, #>IDX, #<IDX
 .endm
 
+.CAMERA_LOCK             = 0b00000011
+.CAMERA_LOCK_X           = 0b00000001
+.CAMERA_LOCK_Y           = 0b00000010
+
 OP_VM_CAMERA_SET_POS     = 0x71
 .macro VM_CAMERA_SET_POS IDX
         .db OP_VM_CAMERA_SET_POS, #>IDX, #<IDX

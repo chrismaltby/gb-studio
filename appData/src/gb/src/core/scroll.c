@@ -251,20 +251,20 @@ void scroll_load_pending_row() __nonbanked {
 
 #ifdef CGB
     if (_is_CGB) {  // Color Row Load
-        SWITCH_ROM_MBC1(image_attr_bank);
+        SWITCH_ROM(image_attr_bank);
         VBK_REG = 1;
         set_bkg_submap(pending_w_x, pending_w_y, width, 1, image_attr_ptr, image_tile_width);
         VBK_REG = 0;
     }
 #endif
     // DMG Row Load
-    SWITCH_ROM_MBC1(image_bank);
+    SWITCH_ROM(image_bank);
     set_bkg_submap(pending_w_x, pending_w_y, width, 1, image_ptr, image_tile_width);
 
     pending_w_x += width;
     pending_w_i -= width;
 
-    SWITCH_ROM_MBC1(_save);
+    SWITCH_ROM(_save);
 }
 
 
@@ -274,16 +274,16 @@ void scroll_load_row(UBYTE x, UBYTE y) __nonbanked {
 #ifdef CGB
     if (_is_CGB) {  // Color Column Load
         VBK_REG = 1;
-        SWITCH_ROM_MBC1(image_attr_bank);
+        SWITCH_ROM(image_attr_bank);
         set_bkg_submap(x, y, SCREEN_TILE_REFRES_W, 1, image_attr_ptr, image_tile_width);
         VBK_REG = 0;
     }
 #endif
     // DMG Row Load
-    SWITCH_ROM_MBC1(image_bank);
+    SWITCH_ROM(image_bank);
     set_bkg_submap(x, y, MIN(SCREEN_TILE_REFRES_W, image_tile_width), 1, image_ptr, image_tile_width);
 
-    SWITCH_ROM_MBC1(_save);
+    SWITCH_ROM(_save);
 }
 
 void scroll_load_col(UBYTE x, UBYTE y, UBYTE height) __nonbanked {
@@ -291,7 +291,7 @@ void scroll_load_col(UBYTE x, UBYTE y, UBYTE height) __nonbanked {
  
 #ifdef CGB
     if (_is_CGB) {  // Color Column Load
-        SWITCH_ROM_MBC1(image_attr_bank);
+        SWITCH_ROM(image_attr_bank);
         VBK_REG = 1;
         set_bkg_submap(x, y, 1, height, image_attr_ptr, image_tile_width);
         VBK_REG = 0;
@@ -299,30 +299,30 @@ void scroll_load_col(UBYTE x, UBYTE y, UBYTE height) __nonbanked {
 #endif
     // DMG Column Load
     unsigned char* map = image_ptr + image_tile_width * y + x;
-    SWITCH_ROM_MBC1(image_bank);
+    SWITCH_ROM(image_bank);
     set_bkg_submap(x, y, 1, height, image_ptr, image_tile_width);
-    SWITCH_ROM_MBC1(_save);
+    SWITCH_ROM(_save);
 }
 
 void scroll_load_pending_col() __nonbanked {
     UINT8 _save = _current_bank;
     UBYTE height = MIN(pending_h_i, PENDING_BATCH_SIZE);
 
-    SWITCH_ROM_MBC1(image_bank);
+    SWITCH_ROM(image_bank);
 #ifdef CGB
     if (_is_CGB) {  // Color Column Load
-        SWITCH_ROM_MBC1(image_attr_bank);
+        SWITCH_ROM(image_attr_bank);
         VBK_REG = 1;
         set_bkg_submap(pending_h_x, pending_h_y, 1, height, image_attr_ptr, image_tile_width);
         VBK_REG = 0;
     }
 #endif
     // DMG Column Load
-    SWITCH_ROM_MBC1(image_bank);
+    SWITCH_ROM(image_bank);
     set_bkg_submap(pending_h_x, pending_h_y, 1, height, image_ptr, image_tile_width);
 
     pending_h_y += height;
     pending_h_i -= height;
 
-    SWITCH_ROM_MBC1(_save);
+    SWITCH_ROM(_save);
 }

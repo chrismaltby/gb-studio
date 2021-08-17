@@ -67,7 +67,7 @@ void actors_update() __nonbanked {
     actor = &PLAYER;
 
     if (emote_actor) {
-        SWITCH_ROM_MBC1(BANK_EMOTE_METASPRITE); // bank of emote_offsets[] and emote_metasprite[]
+        SWITCH_ROM(BANK_EMOTE_METASPRITE); // bank of emote_offsets[] and emote_metasprite[]
         screen_x = (emote_actor->pos.x >> 4) - scroll_x + 8;
         screen_y = (emote_actor->pos.y >> 4) - scroll_y - 16;   
         if (emote_timer < EMOTE_BOUNCE_FRAMES) {
@@ -117,7 +117,7 @@ void actors_update() __nonbanked {
             }
         }
 
-        SWITCH_ROM_MBC1(actor->sprite.bank);
+        SWITCH_ROM(actor->sprite.bank);
         spritesheet_t *sprite = actor->sprite.ptr;
         
         allocated_hardware_sprites += move_metasprite(
@@ -131,7 +131,7 @@ void actors_update() __nonbanked {
         actor = actor->prev;
     }
 
-    SWITCH_ROM_MBC1(_save);
+    SWITCH_ROM(_save);
 }
 
 void deactivate_actor(actor_t *actor) __banked {

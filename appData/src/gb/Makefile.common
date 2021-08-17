@@ -1,7 +1,6 @@
 TOP := $(dir $(lastword $(MAKEFILE_LIST)))
 
 GBDK = $(TOP)../gbdk
-GBDKLIB = $(GBDK)/lib/small/asxxxx
 CC = $(GBDK)/bin/lcc
 TEST_DIR = $(TOP)test
 TEST_FW	= $(TEST_DIR)/framework
@@ -19,7 +18,7 @@ OBJDIR = obj
 REL_OBJDIR = obj/_rel
 
 
-CFLAGS = $(PLATFORM) -I$(TOP)include -Wa-I$(TOP)include -Wa-I$(GBDKLIB)
+CFLAGS = $(PLATFORM) -I$(TOP)include -Wa-I$(TOP)include
 
 LFLAGS_NBANKS += -Wm-yoA -Wm-ya4
 LFLAGS_SYMBOLS = -Wl-j -Wl-m -Wl-w -Wm-yS

@@ -24,16 +24,14 @@ void vm_camera_move_to(SCRIPT_CTX * THIS, INT16 idx, UBYTE speed, UBYTE after_lo
 
     cam_move_to_t * params = VM_REF_TO_PTR(idx);
 
-    // Actor reached destination
-    if ((camera_x == params->X) && (camera_y == params->Y)) {
-        if (after_lock_camera) {
-            camera_settings = camera_settings | CAMERA_LOCK_FLAG;
-        }
-        return;
-    }
-
     // Disable camera lock
     camera_settings &= ~(CAMERA_LOCK_FLAG);
+
+    // Actor reached destination
+    if ((camera_x == params->X) && (camera_y == params->Y)) {
+        camera_settings |= (after_lock_camera & CAMERA_LOCK_FLAG);
+        return;
+    }
 
     // Move camera towards destination
     if ((game_time & speed) == 0) {

@@ -5,11 +5,17 @@
 
 trigger_t triggers[MAX_TRIGGERS];
 UBYTE triggers_len = 0;
-UBYTE last_trigger_tx = 0;
-UBYTE last_trigger_ty = 0;
-UBYTE last_trigger = NO_TRIGGER_COLLISON;
+UBYTE last_trigger_tx;
+UBYTE last_trigger_ty;
+UBYTE last_trigger;
 
 UBYTE trigger_at_intersection(bounding_box_t *bb, upoint16_t *offset); 
+
+void trigger_reset() __banked {
+    last_trigger_tx = 0;
+    last_trigger_ty = 0;
+    last_trigger = NO_TRIGGER_COLLISON;
+}
 
 void trigger_interact(UBYTE i) __banked {
     if (triggers[i].script_flags & TRIGGER_HAS_ENTER_SCRIPT) {
