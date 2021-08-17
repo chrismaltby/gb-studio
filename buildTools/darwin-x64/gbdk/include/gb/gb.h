@@ -308,6 +308,19 @@ extern uint8_t _cpu;
 */
 #define CGB_TYPE 0x11
 
+/** GBA detection
+
+    @see GBA_DETECTED, GBA_NOT_DETECTED, _cpu
+*/
+extern uint8_t _is_GBA;
+
+/** Hardware Model: DMG, CGB or MGB. @see _cpu
+*/
+#define GBA_NOT_DETECTED 0x00
+/** Hardware Model: GBA. @see _cpu
+*/
+#define GBA_DETECTED 0x01
+
 /** Global Time Counter in VBL periods (60Hz)
 
     Increments once per Frame

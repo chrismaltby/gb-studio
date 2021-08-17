@@ -144,7 +144,6 @@ export const buildLinkFlags = (
       "-Wl-w",
       "-Wm-yS",
       "-Wl-klib",
-      "-Wl-g_shadow_OAM2=0xDF00",
       "-Wl-g.STACK=0xDF00",
       "-Wi-e",
       `-Wm-yn"${validName}"`,

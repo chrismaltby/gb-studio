@@ -10,6 +10,8 @@
 #include <stdint.h>
 #include <sms/hardware.h>
 
+#define VBK_REG VDP_ATTR_SHIFT
+
 /** Joypad bits.
     A logical OR of these is used in the wait_pad and joypad
     functions.  For example, to see if the B button is pressed
@@ -68,12 +70,6 @@ void add_TIM(int_handler h);
 void add_SIO(int_handler h);
 void add_JOY(int_handler h);
 
-
-void vmemcpy(uint16_t dst, const void *src, uint16_t size) __z88dk_callee __preserves_regs(iyh, iyl);
-
-void set_bkg_data(uint8_t start, uint8_t ntiles, const void *src) __z88dk_callee __preserves_regs(iyh,iyl);
-void set_bkg_2bpp_data(uint8_t start, uint8_t ntiles, const void *src) __z88dk_callee __preserves_regs(iyh,iyl);
-
 inline void move_bkg(uint8_t x, uint8_t y) {
 	__WRITE_VDP_REG(VDP_RSCX, x);
 	__WRITE_VDP_REG(VDP_RSCY, y);
@@ -116,6 +112,37 @@ inline void display_off(void) {
 #define DISPLAY_OFF \
 	display_off();
 
+/** Blanks leftmost column, so it is not garbaged when you use horizontal scroll
+    @see SHOW_LEFT_COLUMN
+*/
+#define HIDE_LEFT_COLUMN \
+	__WRITE_VDP_REG(VDP_R0, __READ_VDP_REG(VDP_R0) |= R0_LCB)
+
+/** Shows leftmost column
+    @see HIDE_LEFT_COLUMN
+*/
+#define SHOW_LEFT_COLUMN \
+	__WRITE_VDP_REG(VDP_R0, __READ_VDP_REG(VDP_R0) &= (~R0_LCB))
+
+/** Turns on the sprites layer.
+    Not yet implemented
+*/
+#define SHOW_SPRITES
+
+/** Turns off the sprites layer.
+    Not yet implemented
+*/
+#define HIDE_SPRITES
+
+/** Sets sprite size to 8x16 pixels, two tiles one above the other.
+*/
+#define SPRITES_8x16 \
+	__WRITE_VDP_REG(VDP_R1, __READ_VDP_REG(VDP_R1) |= R1_SPR_8X16)
+
+/** Sets sprite size to 8x8 pixels, one tile.
+*/
+#define SPRITES_8x8 \
+	__WRITE_VDP_REG(VDP_R1, __READ_VDP_REG(VDP_R1) &= (~R1_SPR_8X16))
 
 /** Tracks current active ROM bank in frame 1
 */
@@ -171,7 +198,30 @@ __endasm; \
     @param b   ROM bank to switch to
 */
 
-#define SWITCH_ROM(b) MAP_FRAME1 = (b)
+#define SWITCH_ROM(b) MAP_FRAME1=(b)
+#define SWITCH_ROM1 SWITCH_ROM
+
+/** Makes switch the active ROM bank in frame 2
+    @param b   ROM bank to switch to
+*/
+
+#define SWITCH_ROM2(b) MAP_FRAME2=(b)
+
+/** Switches RAM bank
+    @param b   SRAM bank to switch to
+*/
+
+#define SWITCH_RAM (((b)&1)?RAM_CONTROL|=RAMCTL_BANK:RAM_CONTROL&=(~RAMCTL_BANK))
+
+/** Enables RAM
+*/
+
+#define ENABLE_RAM RAM_CONTROL|=RAMCTL_RAM
+
+/** Disables RAM
+*/
+
+#define DISABLE_RAM RAM_CONTROL&=(~RAMCTL_RAM)
 
 
 /** Reads and returns the current state of the joypad.
@@ -235,10 +285,128 @@ void joypad_ex(joypads_t * joypads) __z88dk_fastcall __preserves_regs(iyh, iyl);
 #endif
 #endif
 
-void set_bkg_palette_entry(uint8_t palette, uint8_t entry, uint16_t rgb_data) __z88dk_callee __preserves_regs(iyh, iyl);
-void set_sprite_palette_entry(uint8_t palette, uint8_t entry, uint16_t rgb_data) __z88dk_callee __preserves_regs(iyh, iyl);
-void set_bkg_palette(uint8_t first_palette, uint8_t nb_palettes, uint16_t *rgb_data) __z88dk_callee;
-void set_sprite_palette(uint8_t first_palette, uint8_t nb_palettes, uint16_t *rgb_data) __z88dk_callee;
+#define set_bkg_palette_entry set_palette_entry
+#define set_sprite_palette_entry(palette,entry,rgb_data) set_palette_entry(1,entry,rgb_data)
+void set_palette_entry(uint8_t palette, uint8_t entry, uint16_t rgb_data) __z88dk_callee __preserves_regs(iyh, iyl);
+#define set_bkg_palette set_palette
+#define set_sprite_palette(first_palette,nb_palettes,rgb_data) set_palette(1,1,rgb_data)
+void set_palette(uint8_t first_palette, uint8_t nb_palettes, uint16_t *rgb_data) __z88dk_callee;
+
+#define set_bkg_data set_tile_data
+#define set_sprite_data(start,ntiles,src) set_tile_data((uint8_t)(start)+0x100,(uint8_t)(ntiles),src)
+void set_tile_data(uint16_t start, uint16_t ntiles, const void *src) __z88dk_callee __preserves_regs(iyh,iyl);
+#define set_bkg_2bpp_data set_tile_2bpp_data
+#define set_sprite_2bpp_data(start,ntiles,src) set_tile_2bpp_data((uint8_t)(start)+0x100,(uint8_t)(ntiles),src)
+void set_tile_2bpp_data(uint16_t start, uint16_t ntiles, const void *src) __z88dk_callee __preserves_regs(iyh,iyl);
+
+void vmemcpy(uint16_t dst, const void *src, uint16_t size) __z88dk_callee __preserves_regs(iyh, iyl);
+
+void set_tile_map(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *tiles) __z88dk_callee __preserves_regs(iyh, iyl);
+#define set_bkg_tiles set_tile_map_compat
+#define set_win_tiles set_tile_map_compat
+void set_tile_map_compat(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *tiles) __z88dk_callee __preserves_regs(iyh, iyl);
+
+/** Shadow OAM array in WRAM, that is transferred into the real OAM each VBlank
+*/
+extern volatile uint8_t shadow_OAM[];
+
+/** MSB of shadow_OAM address is used by OAM copying routine
+*/
+extern volatile uint8_t _shadow_OAM_base;
+
+/** Flag for disabling of OAM copying routine
+*/
+extern volatile uint8_t _shadow_OAM_OFF;
+
+/** Disable OAM copy each VBlank (note: there is no real DMA, this name is for compatibility with GB library)
+*/
+#define DISABLE_OAM_DMA \
+    _shadow_OAM_OFF = 1
+
+/** Enable OAM DMA copy each VBlank and set it to transfer default shadow_OAM array
+*/
+#define ENABLE_OAM_DMA \
+    _shadow_OAM_OFF = 0
+
+/** Enable OAM DMA copy each VBlank and set it to transfer any 256-byte aligned array
+*/
+inline void SET_SHADOW_OAM_ADDRESS(void * address) {
+    _shadow_OAM_base = (uint8_t)((uint16_t)address >> 8);
+}
+
+/** Sets sprite number __nb__in the OAM to display tile number __tile__.
+
+    @param nb    Sprite number, range 0 - 39
+    @param tile  Selects a tile (0 - 255) from memory at 8000h - 8FFFh
+                 \n In CGB Mode this could be either in VRAM Bank
+                 \n 0 or 1, depending on Bit 3 of the OAM Attribute Flag
+                 \n (see @ref set_sprite_prop)
+
+    In 8x16 mode:
+    \li The sprite will also display the next tile (__tile__ + 1)
+        directly below (y + 8) the first tile.
+    \li The lower bit of the tile number is ignored:
+        the upper 8x8 tile is (__tile__ & 0xFE), and
+        the lower 8x8 tile is (__tile__ | 0x01).
+    \li See: @ref SPRITES_8x16
+*/
+inline void set_sprite_tile(uint8_t nb, uint8_t tile) {
+    shadow_OAM[0x41+(nb << 1)] = tile;
+}
+
+
+/** Returns the tile number of sprite number __nb__ in the OAM.
+
+@param nb    Sprite number, range 0 - 39
+
+@see set_sprite_tile for more details
+*/
+inline uint8_t get_sprite_tile(uint8_t nb) {
+    return shadow_OAM[0x41+(nb << 1)];
+}
+
+/** Moves sprite number __nb__ to the __x__, __y__ position on the screen.
+
+    @param nb  Sprite number, range 0 - 39
+    @param x   X Position. Specifies the sprites horizontal position on the screen (minus 8).
+               \n An offscreen value (X=0 or X>=168) hides the sprite, but the sprite
+               still affects the priority ordering - a better way to hide a sprite is to set
+               its Y-coordinate offscreen.
+    @param y   Y Position. Specifies the sprites vertical position on the screen (minus 16).
+               \n An offscreen value (for example, Y=0 or Y>=160) hides the sprite.
+
+    Moving the sprite to 0,0 (or similar off-screen location) will hide it.
+*/
+inline void move_sprite(uint8_t nb, uint8_t x, uint8_t y) {
+    shadow_OAM[nb] = (y < VDP_SAT_TERM) ? y : 0xC0; 
+    shadow_OAM[0x40+(nb << 1)] = x;
+}
+
+
+/** Moves sprite number __nb__ relative to its current position.
+
+    @param nb  Sprite number, range 0 - 39
+    @param x   Number of pixels to move the sprite on the __X axis__
+               \n Range: -128 - 127
+    @param y   Number of pixels to move the sprite on the __Y axis__
+               \n Range: -128 - 127
+
+    @see move_sprite for more details about the X and Y position
+ */
+inline void scroll_sprite(uint8_t nb, int8_t x, int8_t y) {
+    uint8_t new_y = shadow_OAM[nb] + y;
+    shadow_OAM[nb] = (new_y < VDP_SAT_TERM) ? new_y : 0xC0; 
+    shadow_OAM[0x40+(nb << 1)] = x;
+}
+
+
+/** Hides sprite number __nb__ by moving it to zero position by Y.
+
+    @param nb  Sprite number, range 0 - 39
+ */
+inline void hide_sprite(uint8_t nb) {
+    shadow_OAM[nb] = 0xC0;
+}
 
 
 #endif /* _SMS_H */

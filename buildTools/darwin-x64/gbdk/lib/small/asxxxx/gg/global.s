@@ -19,7 +19,11 @@
         .JOY_P2_LATCH   = 0b00001000
 
         .VDP_VRAM       = 0x4000
+        .VDP_TILEMAP    = 0x7800
         .VDP_CRAM       = 0xC000
+        .VDP_SAT        = 0x7F00
+
+        .VDP_SAT_TERM   = 0xD0
 
         .VDP_VCOUNTER   = 0x7E
         .VDP_PSG        = 0x7F
@@ -145,6 +149,8 @@
         .RAMCTL_RO      = 0b00010000
         .RAMCTL_PROT    = 0b10000000
         
+        .GLASSES_3D     = 0xfff8
+
         .MAP_FRAME0     = 0xfffd
         .MAP_FRAME1     = 0xfffe
         .MAP_FRAME2     = 0xffff
@@ -160,8 +166,8 @@
 
         ;; Symbols defined at link time
         .globl  .STACK
-        .globl  _shadow_OAM     ; temporary
-        .globl  .refresh_OAM    ; temporary
+        .globl  _shadow_OAM
+        .globl  __shadow_OAM_OFF
         
         ;; Main user routine    
         .globl  _main

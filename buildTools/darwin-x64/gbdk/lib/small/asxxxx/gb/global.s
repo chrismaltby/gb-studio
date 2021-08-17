@@ -387,6 +387,11 @@
         OAMB_PAL1       = 4 ; Palette number; 0,1 (DMG)
         OAMB_BANK1      = 3 ; Bank number; 0,1 (GBC)
         
+        ;; CPU detection
+        .DMG_TYPE       = 0x01 ; Original GB or Super GB
+        .MGB_TYPE       = 0xFF ; Pocket GB or Super GB 2
+        .CGB_TYPE       = 0x11 ; Color GB        
+
         ;; GBDK library screen modes
 
         .G_MODE         = 0x01  ; Graphic mode
@@ -428,6 +433,7 @@
         .globl  .mode
 
         .globl  __cpu
+        .globl  __is_GBA
 
         ;; Global routines
 ;       .globl  .set_mode       ;; don't link mode.o by default

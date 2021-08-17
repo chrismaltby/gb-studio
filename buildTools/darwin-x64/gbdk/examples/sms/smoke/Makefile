@@ -1,4 +1,4 @@
-CC	= ../../../bin/lcc -mz80:sms -Wl-a -Wm-yoA -Wa-l -Wl-m -Wl-j
+CC	= ../../../bin/lcc -mz80:sms -Wm-yoA -Wa-l -Wl-j
 
 BINS	= smoketest.sms
 
