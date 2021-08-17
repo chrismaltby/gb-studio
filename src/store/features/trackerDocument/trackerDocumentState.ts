@@ -262,6 +262,31 @@ const trackerSlice = createSlice({
         sequence: newSequence,
       };
     },
+    addSequence: (state) => {
+      if (!state.song) {
+        return;
+      }
+
+      const newPatterns = state.song.patterns;
+      const pattern = [];
+      for (let n = 0; n < 64; n++)
+        pattern.push([
+          new PatternCell(),
+          new PatternCell(),
+          new PatternCell(),
+          new PatternCell(),
+        ]);
+      newPatterns.push(pattern);
+
+      const newSequence = state.song.sequence;
+      newSequence.push(newPatterns.length - 1);
+
+      state.song = {
+        ...state.song,
+        patterns: newPatterns,
+        sequence: newSequence,
+      };
+    },
     transposeNoteCell: (
       state,
       _action: PayloadAction<{
@@ -329,7 +354,8 @@ const trackerSlice = createSlice({
       .addMatcher(
         (action: AnyAction): action is AnyAction =>
           action.type.startsWith("tracker/edit") ||
-          action.type.startsWith("tracker/transpose"),
+          action.type.startsWith("tracker/transpose") ||
+          action.type.startsWith("tracker/addSequence"),
         (state, _action) => {
           state.modified = true;
         }
