@@ -772,6 +772,10 @@ class ScriptBuilder {
     this._addCmd("VM_MEMCPY", dest, source, count);
   };
 
+  _getThreadLocal = (dest: ScriptBuilderStackVariable, local: number) => {
+    this._addCmd("VM_GET_TLOCAL", dest, local);
+  };
+
   _string = (str: string) => {
     this._addCmd(`.asciz "${str}"`);
   };
@@ -3352,7 +3356,9 @@ class ScriptBuilder {
     const trueLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
     this._addComment(`If Parameter ${parameter} Equals ${value}`);
-    this._ifConst(".EQ", `.PARAM${parameter}`, value, trueLabel, 0);
+    this._stackPushConst(0);
+    this._getThreadLocal(".ARG0", parameter);
+    this._ifConst(".EQ", ".ARG0", value, trueLabel, 1);
     this._jump(endLabel);
     this._label(trueLabel);
     this._compilePath(truePath);
@@ -3644,14 +3650,6 @@ ${
 }
 .area _CODE_255
 ${this.includeActor ? "\nACTOR = -4" : ""}
-${this.includeParams
-  .map(
-    (parameter) =>
-      `.PARAM${parameter} = ${String(
-        -(parameter + (this.includeActor ? 5 : 1))
-      )}`
-  )
-  .join("\n")}
 
 ___bank_${name} = 255
 .globl ___bank_${name}

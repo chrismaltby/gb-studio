@@ -102,9 +102,13 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
         scriptBuilder.options.entity = args.entity;
         scriptBuilder.options.entityType = args.entityType;
         scriptBuilder.options.entityId = args.entityId;
-      } else if (command === "INTERNAL_IF_PARAM") { 
+      } else if (command === "INTERNAL_IF_PARAM") {
         const args = subInput[i].args;
-        scriptBuilder.ifParamValue(args.parameter, args.value, subInput[i].children.true);
+        scriptBuilder.ifParamValue(
+          args.parameter,
+          args.value,
+          subInput[i].children.true
+        );
       } else if (command !== "EVENT_END") {
         warnings(
           `No compiler for command "${command}". Are you missing a plugin? ${JSON.stringify(
