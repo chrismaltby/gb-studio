@@ -51,13 +51,9 @@ interface PrecompiledScene {
 interface PrecompiledSceneEventPtrs {
   start: string | null;
   playerHit1: string | null;
-  playerHit2: string | null;
-  playerHit3: string | null;
   actors: Array<string | null>;
   actorsMovement: Array<string | null>;
   actorsHit1: Array<string | null>;
-  actorsHit2: Array<string | null>;
-  actorsHit3: Array<string | null>;
   triggers: Array<string | null>;
   triggersLeave: Array<string | null>;
 }
@@ -442,8 +438,6 @@ export const compileScene = (
           : undefined,
       script_init: maybeScriptFarPtr(eventPtrs[sceneIndex].start),
       script_p_hit1: maybeScriptFarPtr(eventPtrs[sceneIndex].playerHit1),
-      script_p_hit2: maybeScriptFarPtr(eventPtrs[sceneIndex].playerHit2),
-      script_p_hit3: maybeScriptFarPtr(eventPtrs[sceneIndex].playerHit3),
     },
     // Dependencies
     ([] as string[]).concat(
@@ -456,9 +450,7 @@ export const compileScene = (
       scene.triggers.length > 0 ? sceneTriggersSymbol(sceneIndex) : [],
       scene.sprites.length > 0 ? sceneSpritesSymbol(sceneIndex) : [],
       maybeScriptDependency(eventPtrs[sceneIndex].start),
-      maybeScriptDependency(eventPtrs[sceneIndex].playerHit1),
-      maybeScriptDependency(eventPtrs[sceneIndex].playerHit2),
-      maybeScriptDependency(eventPtrs[sceneIndex].playerHit3)
+      maybeScriptDependency(eventPtrs[sceneIndex].playerHit1)
     )
   );
 
@@ -536,8 +528,6 @@ export const compileSceneActors = (
           script: maybeScriptFarPtr(events.actors[actorIndex]),
           script_update: maybeScriptFarPtr(events.actorsMovement[actorIndex]),
           script_hit1: maybeScriptFarPtr(events.actorsHit1[actorIndex]),
-          script_hit2: maybeScriptFarPtr(events.actorsHit2[actorIndex]),
-          script_hit3: maybeScriptFarPtr(events.actorsHit3[actorIndex]),
         };
       })
     ),
@@ -551,9 +541,7 @@ export const compileSceneActors = (
           spriteSheetSymbol(spriteIndex),
           maybeScriptDependency(events.actors[actorIndex]),
           maybeScriptDependency(events.actorsMovement[actorIndex]),
-          maybeScriptDependency(events.actorsHit1[actorIndex]),
-          maybeScriptDependency(events.actorsHit2[actorIndex]),
-          maybeScriptDependency(events.actorsHit3[actorIndex])
+          maybeScriptDependency(events.actorsHit1[actorIndex])
         );
       })
     )
