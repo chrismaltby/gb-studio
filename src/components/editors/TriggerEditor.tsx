@@ -66,6 +66,8 @@ const getScriptKey = (tab: keyof typeof scriptTabs): TriggerScriptKey => {
 const triggerName = (trigger: Trigger, triggerIndex: number) =>
   trigger.name ? trigger.name : `Trigger ${triggerIndex + 1}`;
 
+const tabs = Object.keys(scriptTabs);
+
 export const TriggerEditor = ({
   id,
   sceneId,
@@ -79,6 +81,24 @@ export const TriggerEditor = ({
   );
   const [clipboardData, setClipboardData] = useState<unknown>(null);
   const [notesOpen, setNotesOpen] = useState<boolean>(!!trigger?.notes);
+
+  const lastScriptTab = useSelector(
+    (state: RootState) => state.editor.lastScriptTabTrigger
+  );
+
+  const initialTab = tabs.includes(lastScriptTab) ? lastScriptTab : tabs[0];
+
+  const [scriptMode, setScriptMode] = useState<keyof ScriptHandlers>(
+    initialTab as keyof ScriptHandlers
+  );
+
+  const onChangeScriptMode = (mode: keyof ScriptHandlers) => {
+    setScriptMode(mode);
+    dispatch(editorActions.setScriptTabTrigger(mode));
+  };
+
+  const scriptKey = getScriptKey(scriptMode);
+
   const triggerIndex = scene?.triggers.indexOf(id) || 0;
   const lockScriptEditor = useSelector(
     (state: RootState) => state.editor.lockScriptEditor
@@ -175,23 +195,6 @@ export const TriggerEditor = ({
       scriptKey={"script"}
     />
   );
-
-  const tabs = Object.keys(scriptTabs);
-  const lastScriptTab = useSelector(
-    (state: RootState) => state.editor.lastScriptTabTrigger
-  );
-  const initialTab = tabs.includes(lastScriptTab) ? lastScriptTab : tabs[0];
-
-  const [scriptMode, setScriptMode] = useState<keyof ScriptHandlers>(
-    initialTab as keyof ScriptHandlers
-  );
-
-  const onChangeScriptMode = (mode: keyof ScriptHandlers) => {
-    setScriptMode(mode);
-    dispatch(editorActions.setScriptTabTrigger(mode));
-  };
-
-  const scriptKey = getScriptKey(scriptMode);
 
   return (
     <Sidebar onClick={selectSidebar} multiColumn={multiColumn}>
