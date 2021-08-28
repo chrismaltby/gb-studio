@@ -2057,7 +2057,7 @@ class ScriptBuilder {
   ) => {
     const variableAlias = this.getVariableAlias(setVariable);
     const optionsText = options.map(
-      (option, index) => trimlines(option || "", 6, 1) || `Item ${index + 1}`
+      (option, index) => textCodeSetFont(0) + (option || `Item ${index + 1}`)
     );
     const height =
       layout === "menu" ? options.length : Math.min(options.length, 4);

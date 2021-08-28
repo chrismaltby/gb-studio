@@ -1,9 +1,4 @@
-const trimlines = require("../helpers/trimlines");
 const l10n = require("../helpers/l10n").default;
-
-const trimMenuItem = (string) => {
-  return trimlines(string, 6, 1);
-};
 
 const id = "EVENT_MENU";
 const groups = ["EVENT_GROUP_DIALOGUE"];
@@ -51,7 +46,6 @@ const fields = [].concat(
           key: `option${i + 1}`,
           label: l10n("FIELD_SET_TO_VALUE_IF", { value: String(i + 1) }),
           type: "text",
-          updateFn: trimMenuItem,
           defaultValue: "",
           placeholder: l10n("FIELD_ITEM", { value: String(i + 1) }),
           conditions: [
@@ -65,7 +59,6 @@ const fields = [].concat(
           key: `option${i + 1}`,
           label: l10n("FIELD_SET_TO_VALUE_IF", { value: String(i + 1) }),
           type: "text",
-          updateFn: trimMenuItem,
           defaultValue: "",
           placeholder: l10n("FIELD_ITEM", { value: String(i + 1) }),
           conditions: [
@@ -83,7 +76,6 @@ const fields = [].concat(
           key: `option${i + 1}`,
           label: l10n("FIELD_SET_TO_VALUE_IF", { value: "0" }),
           type: "text",
-          updateFn: trimMenuItem,
           defaultValue: "",
           placeholder: l10n("FIELD_ITEM", { value: String(i + 1) }),
           conditions: [

@@ -648,15 +648,25 @@ export const precompileFonts = async (
     }
   };
 
+  const addFontsFromString = (s) => {
+    (s.match(/(!F:[0-9a-f-]+!)/g) || [])
+      .map((id) => id.substring(3).replace(/!$/, ""))
+      .forEach(addFont);
+  };
+  
   walkScenesEvents(scenes, (cmd) => {
     if (cmd.args && cmd.args.fontId !== undefined) {
       addFont(cmd.args.fontId || fonts[0].id);
     }
     if (cmd.args && cmd.args.text !== undefined) {
       // Add fonts referenced in text
-      (String(cmd.args.text).match(/(!F:[0-9a-f-]+!)/g) || [])
-        .map((id) => id.substring(3).replace(/!$/, ""))
-        .forEach(addFont);
+      addFontsFromString(String(cmd.args.text));
+    }
+    if (cmd.command && cmd.command === "EVENT_MENU" && cmd.args) {
+      // Add fonts referenced in menu items
+      for (let i = 1; i <= cmd.args.items; i++) {
+        addFontsFromString(String(cmd.args[`option${i}`]));
+      }
     }
   });
 
