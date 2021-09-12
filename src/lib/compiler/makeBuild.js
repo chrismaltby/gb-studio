@@ -15,11 +15,14 @@ const makeBuild = async ({
   tmpPath = "/tmp",
   data = {},
   profile = false,
+  buildType = "rom",
   progress = (_msg) => {},
   warnings = (_msg) => {},
 } = {}) => {
   const env = Object.create(process.env);
   const { settings } = data;
+
+  const targetPlatform = buildType === "pocket" ? "pocket" : "gb";
 
   const buildToolsPath = await ensureBuildTools(tmpPath);
   const buildToolsVersion = await fs.readFile(
@@ -30,6 +33,7 @@ const makeBuild = async ({
   env.PATH = [`${buildToolsPath}/gbdk/bin`, env.PATH].join(":");
   env.GBDKDIR = `${buildToolsPath}/gbdk/`;
   env.GBS_TOOLS_VERSION = buildToolsVersion;
+  env.TARGET_PLATFORM = targetPlatform;
 
   env.CART_TYPE = settings.cartType || "mbc5";
   env.TMP = tmpPath;
@@ -70,6 +74,7 @@ const makeBuild = async ({
     batteryless: settings.batterylessEnabled,
     profile,
     platform: process.platform,
+    targetPlatform,
   });
   await fs.writeFile(`${buildRoot}/${makeScriptFile}`, makeScript);
 
@@ -123,7 +128,8 @@ const makeBuild = async ({
     settings.cartType,
     settings.customColorsEnabled,
     settings.sgbEnabled,
-    settings.musicDriver
+    settings.musicDriver,
+    targetPlatform
   );
 
   await spawn(linkCommand, linkArgs, options, {
