@@ -25,12 +25,7 @@ const trackerMiddleware: ThunkMiddleware<RootState> =
         const option = confirmUnsavedChangesTrackerDialog(selectedSong?.name);
         switch (option) {
           case 0: // Save and continue
-            const path = `${assetFilename(
-              state.document.root,
-              "music",
-              selectedSong
-            )}`;
-            store.dispatch(saveSongFile(path));
+            store.dispatch(saveSongFile());
             break;
           case 1: // continue without saving
             store.dispatch(trackerDocumentActions.unloadSong());
@@ -41,6 +36,14 @@ const trackerMiddleware: ThunkMiddleware<RootState> =
         }
       }
     }
+
+    if (
+      action.type === "project/saveProject/pending" &&
+      state.trackerDocument.present.modified
+    ) {
+      store.dispatch(saveSongFile());
+    }
+
     return next(action);
   };
 

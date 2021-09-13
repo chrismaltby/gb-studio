@@ -93,10 +93,9 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
 
   const saveSong = useCallback(() => {
     if (selectedSong && modified) {
-      const path = `${assetFilename(projectRoot, "music", selectedSong)}`;
-      dispatch(saveSongFile(path));
+      dispatch(saveSongFile());
     }
-  }, [dispatch, modified, projectRoot, selectedSong]);
+  }, [dispatch, modified, selectedSong]);
 
   const defaultInstruments = useSelector(
     (state: RootState) => state.tracker.defaultInstruments
