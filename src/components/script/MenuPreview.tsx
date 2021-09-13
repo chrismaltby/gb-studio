@@ -9,7 +9,7 @@ import { loadFont, drawFrame, drawText, FontData } from "./TextPreviewHelper";
 
 interface MenuPreviewProps {
   items: string[];
-  layout: string;
+  layout: "dialogue" | "menu";
 }
 
 export const MenuPreview: FC<MenuPreviewProps> = ({ items, layout }) => {
