@@ -62,7 +62,23 @@ export const ScriptEditorEventHelper: FC<ScriptEditorEventHelperProps> = ({
 
     return (
       <RelativePortal offsetX={-10} offsetY={10} pin="top-right">
-        <MenuPreview items={items} layout={toString(event.args?.layout)} />
+        <MenuPreview
+          items={items}
+          layout={event.args?.layout === "dialogue" ? "dialogue" : "menu"}
+        />
+      </RelativePortal>
+    );
+  }
+
+  if (event.command === "EVENT_CHOICE") {
+    const items = [
+      toString(event.args?.trueText),
+      toString(event.args?.falseText),
+    ];
+
+    return (
+      <RelativePortal offsetX={-10} offsetY={10} pin="top-right">
+        <MenuPreview items={items} layout="dialogue" />
       </RelativePortal>
     );
   }
