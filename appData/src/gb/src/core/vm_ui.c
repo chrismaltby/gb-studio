@@ -33,7 +33,7 @@ void vm_load_text(UWORD dummy0, UWORD dummy1, SCRIPT_CTX * THIS, UBYTE nargs) __
     dummy0; dummy1; // suppress warnings
 
     UBYTE _save = _current_bank;
-    SWITCH_ROM_MBC1(THIS->bank);
+    SWITCH_ROM(THIS->bank);
     
     const INT16 * args = (INT16 *)THIS->PC;
     const unsigned char * s = THIS->PC + (nargs << 1);
@@ -82,7 +82,7 @@ void vm_load_text(UWORD dummy0, UWORD dummy1, SCRIPT_CTX * THIS, UBYTE nargs) __
     }
     *d = 0;
 
-    SWITCH_ROM_MBC1(_save);
+    SWITCH_ROM(_save);
     THIS->PC = s + 1;
 }
 
@@ -93,6 +93,12 @@ void vm_display_text(SCRIPT_CTX * THIS) __banked {
     INPUT_RESET;
     text_drawn = text_wait = text_ff = FALSE;
     current_text_speed = text_draw_speed;
+}
+
+// switch text rendering to screen or background
+void vm_switch_text_layer(SCRIPT_CTX * THIS, UBYTE target) __banked {
+    THIS;
+    if (target) text_render_base_addr = GetWinAddr(); else text_render_base_addr = GetBkgAddr();
 }
 
 // set position of overlayed window

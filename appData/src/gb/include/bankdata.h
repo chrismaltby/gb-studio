@@ -3,13 +3,34 @@
 
 #include <gb/gb.h>
 
-#define __BANK_PREFIX(A) __bank_##A
-#define TO_FAR_PTR_T(A) {.bank = (char)&(__BANK_PREFIX(A)), .ptr = (void *)&(A)}
+#define TO_FAR_PTR_T(A) {.bank = (char)&(__bank_ ## A), .ptr = (void *)&(A)}
 #define TO_FAR_ARGS(T, A) (T)(A).ptr, (A).bank
-#define BANK(A) (UBYTE)&(__BANK_PREFIX(A))
 
-#define __SIZE_PREFIX(A) __size_##A
-#define SIZE(A) (UWORD)&(__SIZE_PREFIX(A))
+#ifndef BANK
+#define BANK(VARNAME) ( (UBYTE) & __bank_ ## VARNAME )
+#endif
+#ifndef BANKREF
+#define BANKREF(VARNAME) void __func_ ## VARNAME() __banked __naked { \
+__asm \
+    .local b___func_ ## VARNAME \
+    ___bank_ ## VARNAME = b___func_ ## VARNAME \
+    .globl ___bank_ ## VARNAME \
+__endasm; \
+} 
+#endif
+#ifndef BANKREF_EXTERN
+#define BANKREF_EXTERN(VARNAME) extern const void __bank_ ## VARNAME;
+#endif
+
+#ifndef SIZE
+#define SIZE(VARNAME) ((UWORD)&( __size_ ## VARNAME ))
+#endif
+#ifndef SIZEREF
+#define SIZEREF(VARNAME) const void __at(sizeof(VARNAME)) __size_ ## VARNAME;
+#endif
+#ifndef SIZEREF_EXTERN
+#define SIZEREF_EXTERN(VARNAME) extern const void __size_ ## VARNAME;
+#endif
 
 typedef struct far_ptr_t {
     UINT8 bank;

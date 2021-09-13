@@ -340,6 +340,7 @@ class ScriptBuilder {
   stackPtr: number;
   labelStackSize: Dictionary<number>;
   includeActor: boolean;
+  includeParams: number[];
   headers: string[];
 
   constructor(
@@ -381,6 +382,7 @@ class ScriptBuilder {
     this.stackPtr = 0;
     this.labelStackSize = {};
     this.includeActor = false;
+    this.includeParams = [];
     this.headers = ["vm.i", "data/game_globals.i"];
   }
 
@@ -768,6 +770,10 @@ class ScriptBuilder {
     count: ScriptBuilderStackVariable
   ) => {
     this._addCmd("VM_MEMCPY", dest, source, count);
+  };
+
+  _getThreadLocal = (dest: ScriptBuilderStackVariable, local: number) => {
+    this._addCmd("VM_GET_TLOCAL", dest, local);
   };
 
   _string = (str: string) => {
@@ -2057,7 +2063,7 @@ class ScriptBuilder {
   ) => {
     const variableAlias = this.getVariableAlias(setVariable);
     const optionsText = options.map(
-      (option, index) => trimlines(option || "", 6, 1) || `Item ${index + 1}`
+      (option, index) => textCodeSetFont(0) + (option || `Item ${index + 1}`)
     );
     const height =
       layout === "menu" ? options.length : Math.min(options.length, 4);
@@ -3339,6 +3345,28 @@ class ScriptBuilder {
     this._addNL();
   };
 
+  ifParamValue = (
+    parameter: number,
+    value: number,
+    truePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+  ) => {
+    if (!this.includeParams.includes(parameter)) {
+      this.includeParams.push(parameter);
+    }
+    const trueLabel = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+    this._addComment(`If Parameter ${parameter} Equals ${value}`);
+    this._stackPushConst(0);
+    this._getThreadLocal(".ARG0", parameter);
+    this._ifConst(".EQ", ".ARG0", value, trueLabel, 1);
+    this._jump(endLabel);
+    this._label(trueLabel);
+    this._compilePath(truePath);
+    this._stop();
+    this._label(endLabel);
+    this._addNL();
+  };
+
   ifColorSupported = (truePath = [], falsePath = []) => {
     const falseLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
@@ -3621,7 +3649,8 @@ ${
     : ""
 }
 .area _CODE_255
-${this.includeActor ? "\nACTOR = -4\n" : ""}
+${this.includeActor ? "\nACTOR = -4" : ""}
+
 ___bank_${name} = 255
 .globl ___bank_${name}
 

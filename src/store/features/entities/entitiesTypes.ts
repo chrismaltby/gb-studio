@@ -90,6 +90,9 @@ export type Actor = {
   hit3Script: string[];
 };
 
+export const triggerScriptKeys = ["script", "leaveScript"] as const;
+export type TriggerScriptKey = typeof triggerScriptKeys[number];
+
 export type Trigger = {
   id: string;
   name: string;
@@ -99,6 +102,7 @@ export type Trigger = {
   width: number;
   height: number;
   script: string[];
+  leaveScript: string[];
 };
 
 export type Background = {

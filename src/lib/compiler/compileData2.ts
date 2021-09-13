@@ -51,14 +51,11 @@ interface PrecompiledScene {
 interface PrecompiledSceneEventPtrs {
   start: string | null;
   playerHit1: string | null;
-  playerHit2: string | null;
-  playerHit3: string | null;
   actors: Array<string | null>;
   actorsMovement: Array<string | null>;
   actorsHit1: Array<string | null>;
-  actorsHit2: Array<string | null>;
-  actorsHit3: Array<string | null>;
   triggers: Array<string | null>;
+  triggersLeave: Array<string | null>;
 }
 
 interface PrecompiledPalette {
@@ -139,6 +136,15 @@ export const maybeScriptFarPtr = (scriptSymbol: string | null) =>
 export const maybeScriptDependency = (scriptSymbol: string | null) =>
   scriptSymbol ? scriptSymbol : [];
 
+export const toASMTriggerScriptFlags = (trigger: Trigger) => {
+  const flags = [];
+
+  if (trigger.script.length > 0) flags.push("TRIGGER_HAS_ENTER_SCRIPT");
+  if (trigger.leaveScript.length > 0) flags.push("TRIGGER_HAS_LEAVE_SCRIPT");
+
+  return flags.length > 0 ? flags.join(" | ") : 0;
+};
+
 export const includeGuard = (key: string, contents: string) => `#ifndef ${key}_H
 #define ${key}_H
 
@@ -147,13 +153,9 @@ ${contents}
 #endif
 `;
 
-const toBankSymbol = (symbol: string): string => `__bank_${symbol}`;
+const bankRefExtern = (symbol: string): string => `BANKREF_EXTERN(${symbol})`;
 
-const toBankSymbolDef = (symbol: string): string =>
-  `extern const void ${toBankSymbol(symbol)}`;
-
-const toBankSymbolInit = (symbol: string): string =>
-  `const void __at(255) ${toBankSymbol(symbol)}`;
+const bankRef = (symbol: string): string => `BANKREF(${symbol})`;
 
 const backgroundSymbol = (backgroundIndex: number): string =>
   `background_${backgroundIndex}`;
@@ -191,7 +193,7 @@ const toDataHeader = (type: string, symbol: string, comment: string) =>
 
 #include "gbs_types.h"
 
-${toBankSymbolDef(symbol)};
+${bankRefExtern(symbol)}
 extern ${type} ${symbol};`
   );
 
@@ -202,7 +204,7 @@ const toArrayDataHeader = (type: string, symbol: string, comment: string) =>
 
 #include "gbs_types.h"
 
-${toBankSymbolDef(symbol)};
+${bankRefExtern(symbol)}
 extern ${type} ${symbol}[];`
   );
 
@@ -295,7 +297,7 @@ ${comment ? "\n" + comment : ""}
     : ""
 }
 
-${toBankSymbolInit(symbol)};
+${bankRef(symbol)}
 
 ${type} ${symbol} = {
 ${toStructData(object, INDENT_SPACES)}
@@ -320,7 +322,7 @@ ${comment ? "\n" + comment : ""}
     : ""
 }
 
-${toBankSymbolInit(symbol)};
+${bankRef(symbol)}
 
 ${type} ${symbol}[] = {
 ${array
@@ -352,7 +354,7 @@ ${comment ? "\n" + comment : ""}
     : ""
 }
 
-${toBankSymbolInit(symbol)};
+${bankRef(symbol)}
 
 ${type} ${symbol}[] = {
 ${chunk(array, perLine)
@@ -363,7 +365,7 @@ ${chunk(array, perLine)
 
 export const dataArrayToC = (name: string, data: [number]): string => {
   return `#pragma bank 255
-const void __at(255) __bank_${name};
+${bankRef(name)}
   
 const unsigned char ${name}[] = {
 ${data}
@@ -436,8 +438,6 @@ export const compileScene = (
           : undefined,
       script_init: maybeScriptFarPtr(eventPtrs[sceneIndex].start),
       script_p_hit1: maybeScriptFarPtr(eventPtrs[sceneIndex].playerHit1),
-      script_p_hit2: maybeScriptFarPtr(eventPtrs[sceneIndex].playerHit2),
-      script_p_hit3: maybeScriptFarPtr(eventPtrs[sceneIndex].playerHit3),
     },
     // Dependencies
     ([] as string[]).concat(
@@ -450,9 +450,7 @@ export const compileScene = (
       scene.triggers.length > 0 ? sceneTriggersSymbol(sceneIndex) : [],
       scene.sprites.length > 0 ? sceneSpritesSymbol(sceneIndex) : [],
       maybeScriptDependency(eventPtrs[sceneIndex].start),
-      maybeScriptDependency(eventPtrs[sceneIndex].playerHit1),
-      maybeScriptDependency(eventPtrs[sceneIndex].playerHit2),
-      maybeScriptDependency(eventPtrs[sceneIndex].playerHit3)
+      maybeScriptDependency(eventPtrs[sceneIndex].playerHit1)
     )
   );
 
@@ -530,8 +528,6 @@ export const compileSceneActors = (
           script: maybeScriptFarPtr(events.actors[actorIndex]),
           script_update: maybeScriptFarPtr(events.actorsMovement[actorIndex]),
           script_hit1: maybeScriptFarPtr(events.actorsHit1[actorIndex]),
-          script_hit2: maybeScriptFarPtr(events.actorsHit2[actorIndex]),
-          script_hit3: maybeScriptFarPtr(events.actorsHit3[actorIndex]),
         };
       })
     ),
@@ -545,9 +541,7 @@ export const compileSceneActors = (
           spriteSheetSymbol(spriteIndex),
           maybeScriptDependency(events.actors[actorIndex]),
           maybeScriptDependency(events.actorsMovement[actorIndex]),
-          maybeScriptDependency(events.actorsHit1[actorIndex]),
-          maybeScriptDependency(events.actorsHit2[actorIndex]),
-          maybeScriptDependency(events.actorsHit3[actorIndex])
+          maybeScriptDependency(events.actorsHit1[actorIndex])
         );
       })
     )
@@ -580,6 +574,7 @@ export const compileSceneTriggers = (
       width: trigger.width,
       height: trigger.height,
       script: maybeScriptFarPtr(eventPtrs[sceneIndex].triggers[triggerIndex]),
+      script_flags: toASMTriggerScriptFlags(trigger),
     })),
     // Dependencies
     flatten(
@@ -689,7 +684,7 @@ export const compileSpriteSheet = (
 #include "gbs_types.h"
 #include "data/${tilesetSymbol(spriteSheet.tilesetIndex)}.h"
 
-${toBankSymbolInit(spriteSheetSymbol(spriteSheetIndex))};
+${bankRef(spriteSheetSymbol(spriteSheetIndex))}
 
 ${stateReferences
   .map(
@@ -862,7 +857,7 @@ export const compilePalette = (
 
 #include "gbs_types.h"
 
-${toBankSymbolInit(paletteSymbol(paletteIndex))};
+${bankRef(paletteSymbol(paletteIndex))}
 
 ${PALETTE_TYPE} ${paletteSymbol(paletteIndex)} = {
     .mask = 0xFF,
@@ -925,7 +920,7 @@ ${chunk(Array.from(Array.from(font.data).map(toHex)), 16)
   .join(",\n")}
 };
 
-${toBankSymbolInit(fontSymbol(fontIndex))};
+${bankRef(fontSymbol(fontIndex))}
 const font_desc_t ${fontSymbol(fontIndex)} = {
     ${toFlags([
       ...(true ? [FONT_FLAG_FONT_RECODE] : []),
@@ -966,7 +961,7 @@ ${chunk(avatars.map((a) => Array.from(a.data).map(toHex)).flat(), 16)
   .join(",\n")}
 };
   
-${toBankSymbolInit(avatarFontSymbol(avatarFontIndex))};
+${bankRef(avatarFontSymbol(avatarFontIndex))}
 const font_desc_t ${avatarFontSymbol(avatarFontIndex)} = {
     ${toFlags([FONT_FLAG_FONT_RECODE])}, 
     0x3F,

@@ -106,7 +106,7 @@ void music_play(const TRACK_T *track, UBYTE bank, UBYTE loop) __nonbanked {
         __critical {
             gbt_play(track, bank, 7);
             gbt_loop(loop);
-            SWITCH_ROM_MBC1(_save);
+            SWITCH_ROM(_save);
             music_mute(channel_mask);
         }
 #endif
@@ -116,9 +116,9 @@ void music_play(const TRACK_T *track, UBYTE bank, UBYTE loop) __nonbanked {
         current_track_bank = bank;
         __critical {
             music_stop();
-            SWITCH_ROM_MBC1(current_track_bank);
+            SWITCH_ROM(current_track_bank);
             hUGE_init(track);
-            SWITCH_ROM_MBC1(_save);
+            SWITCH_ROM(_save);
             huge_initialized = TRUE;
             music_mute(channel_mask);
             music_stopped = FALSE;        
@@ -138,7 +138,7 @@ void music_stop() __banked {
 #ifdef GBT_PLAYER
     UBYTE _save = _current_bank;
     gbt_stop();
-    SWITCH_ROM_MBC1(_save);
+    SWITCH_ROM(_save);
 #endif
 #ifdef HUGE_TRACKER
     music_stopped = TRUE;

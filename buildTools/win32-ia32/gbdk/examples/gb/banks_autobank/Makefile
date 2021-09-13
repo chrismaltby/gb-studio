@@ -46,7 +46,7 @@ onepass:
 
 
 clean:
-	rm -f *.o *.lst *.map *.gb *.ihx *.sym *.cdb *.adb *.asm *.rel
+	rm -f *.o *.lst *.map *.gb *.ihx *.sym *.cdb *.adb *.asm *.rel *.sav
 
 
 # For lcc linker option: -Wl-ytN where N is one of the numbers below

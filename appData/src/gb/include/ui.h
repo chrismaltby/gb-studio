@@ -55,7 +55,9 @@ extern unsigned char ui_text_data[TEXT_MAX_LENGTH];
 extern UBYTE vwf_direction;
 extern font_desc_t vwf_current_font_desc;
 extern UBYTE vwf_current_font_bank;
-extern UBYTE vwf_tile_data[];
+extern UBYTE vwf_tile_data[16 * 2];
+
+extern UBYTE * text_render_base_addr;
 
 extern UBYTE * text_scroll_addr;
 extern UBYTE text_scroll_width, text_scroll_height;

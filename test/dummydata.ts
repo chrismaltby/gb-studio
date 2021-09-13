@@ -80,6 +80,7 @@ export const dummyTrigger: Trigger = {
   width: 0,
   height: 0,
   script: [],
+  leaveScript: [],
 };
 
 export const dummyPalette: Palette = {

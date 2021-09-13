@@ -52,6 +52,7 @@ import {
   walkNormalisedScriptEvents,
   walkNormalisedTriggerEvents,
   walkSceneScriptsKeys,
+  walkTriggerScriptsKeys,
 } from "../entities/entitiesHelpers";
 import keyBy from "lodash/keyBy";
 import { patchEventArgs } from "lib/helpers/eventHelpers";
@@ -196,15 +197,18 @@ const generateTriggerInsertActions = (
     defaults: trigger,
   });
   actions.push(addTriggerAction);
-  actions.push(
-    ...generateScriptEventInsertActions(
-      scriptEventIds,
-      scriptEventsLookup,
-      addTriggerAction.payload.triggerId,
-      "trigger",
-      "script"
-    )
-  );
+  walkTriggerScriptsKeys((key) => {
+    const scriptEventIds = trigger[key];
+    actions.push(
+      ...generateScriptEventInsertActions(
+        scriptEventIds,
+        scriptEventsLookup,
+        addTriggerAction.payload.triggerId,
+        "trigger",
+        key
+      )
+    );
+  });
   actions.push(
     ...generateLocalVariableInsertActions(
       trigger.id,

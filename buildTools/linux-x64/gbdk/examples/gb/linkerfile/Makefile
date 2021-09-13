@@ -51,7 +51,7 @@ $(OBJDIR)/%.s:	$(SRCDIR)/%.c
 
 $(OBJDIR)/linkfile.lk:	$(OBJS)
 	rm -f $(OBJDIR)/linkfile.lk
-	$(foreach O,$(OBJS),echo $O >>$@;)
+	$(foreach O,$(OBJS),echo $O >>$@)
 
 # Link the compiled object files (via linkerfile) into a .gb ROM file
 $(BINS):	$(OBJDIR)/linkfile.lk

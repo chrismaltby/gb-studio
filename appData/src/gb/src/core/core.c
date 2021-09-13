@@ -204,7 +204,7 @@ void core_run() __banked {
     display_off();
     palette_init();
 
-    LCDC_REG = 0x67;
+    LCDC_REG = LCDCF_OFF | LCDCF_WIN9C00 | LCDCF_WINON | LCDCF_BG8800 | LCDCF_BG9800 | LCDCF_OBJ16 | LCDCF_OBJON | LCDCF_BGON;
 
     WX_REG = MINWNDPOSX;
     WY_REG = MENU_CLOSED_Y;
@@ -219,7 +219,7 @@ void core_run() __banked {
         LYC_REG = 0u;
 
         add_VBL(VBL_isr);
-        STAT_REG |= 0x40u; 
+        STAT_REG |= STATF_LYC; 
 
         #ifdef CGB
             // CGB_VAL = 256 - ((256 - DMG_VAL) * 2)

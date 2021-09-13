@@ -91,6 +91,6 @@ void __call__banked();
 
     @returns A far pointer (type @ref FAR_PTR)
 */
-int32_t to_far_ptr(void* ofs, int16_t seg);
+uint32_t to_far_ptr(void* ofs, uint16_t seg);
 
 #endif

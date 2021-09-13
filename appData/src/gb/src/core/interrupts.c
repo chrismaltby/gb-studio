@@ -1,17 +1,20 @@
+#pragma bank 1
+
 #include <gb/gb.h>
 
 #include "interrupts.h"
 
 #include "scroll.h"
-#include "metasprite.h"
 #include "parallax.h"
 #include "ui.h"
 
-void remove_LCD_ISRs() __critical {
+UBYTE hide_sprites = 0;
+
+void remove_LCD_ISRs() __critical __banked {
     remove_LCD(parallax_LCD_isr);
     remove_LCD(simple_LCD_isr);
     remove_LCD(fullscreen_LCD_isr);
-    LCDC_REG &= 0b11101111;
+    LCDC_REG &= ~LCDCF_BG8000;
 }
 
 void simple_LCD_isr() __nonbanked {
@@ -29,13 +32,13 @@ void simple_LCD_isr() __nonbanked {
 
 void fullscreen_LCD_isr() __nonbanked {
     if (LYC_REG == 0) {
-        LCDC_REG &= 0b11101111;
+        LCDC_REG &= ~LCDCF_BG8000;
         SCX_REG = draw_scroll_x;
         SCY_REG = draw_scroll_y;
         if (!hide_sprites) SHOW_SPRITES;
         LYC_REG = (9 * 8) - 1;    
     } else {
-        LCDC_REG |= 0b00010000;
+        LCDC_REG |= LCDCF_BG8000;
         LYC_REG = 0;
     }
 }

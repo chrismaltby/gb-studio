@@ -32,6 +32,8 @@ import {
   actorScriptKeys,
   sceneScriptKeys,
   SceneScriptKey,
+  TriggerScriptKey,
+  triggerScriptKeys,
 } from "./entitiesTypes";
 import { Dictionary, EntityId } from "@reduxjs/toolkit";
 import l10n from "lib/helpers/l10n";
@@ -96,6 +98,7 @@ const actorSchema = new schema.Entity("actors", {
 });
 const triggerSchema = new schema.Entity("triggers", {
   script: [scriptEventSchema],
+  leaveScript: [scriptEventSchema],
 });
 const metaspriteTilesSchema = new schema.Entity("metaspriteTiles");
 const metaspritesSchema = new schema.Entity("metasprites", {
@@ -341,6 +344,7 @@ export const walkNormalisedTriggerEvents = (
   callback: (scriptEvent: ScriptEvent) => void
 ) => {
   walkNormalisedScriptEvents(trigger.script, lookup, callback);
+  walkNormalisedScriptEvents(trigger.leaveScript, lookup, callback);
 };
 
 export const walkNormalisedSceneEvents = (
@@ -377,6 +381,12 @@ export const walkActorScriptsKeys = (
   callback: (scriptKey: ActorScriptKey) => void
 ) => {
   actorScriptKeys.forEach((key) => callback(key));
+};
+
+export const walkTriggerScriptsKeys = (
+  callback: (scriptKey: TriggerScriptKey) => void
+) => {
+  triggerScriptKeys.forEach((key) => callback(key));
 };
 
 export const walkSceneScriptsKeys = (

@@ -4,14 +4,14 @@ import hardware_inc from "./include/hardware_inc";
 import hugeDriver_asm from "./include/hUGEDriver_asm";
 import hUGE_inc from "./include/hUGE_inc";
 import hUGE_note_table_inc from "./include/hUGE_note_table_inc";
-import rgbds_player_asm from "./include/rgbds_player_asm";
+import player_asm from "./include/player_asm";
 
 const files = {
   "HARDWARE.INC": hardware_inc,
   "hUGE.inc": hUGE_inc,
   "hUGEDriver.asm": hugeDriver_asm,
   "hUGE_note_table.inc": hUGE_note_table_inc,
-  "main.asm": rgbds_player_asm,
+  "main.asm": player_asm,
   //     "main.asm": `INCLUDE "hardware.inc"
 
   // SECTION "entry", ROM0[$100]

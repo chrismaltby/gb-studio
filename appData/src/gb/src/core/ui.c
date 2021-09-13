@@ -53,7 +53,7 @@ static UBYTE ui_current_tile_bank;
 static UBYTE ui_prev_tile;
 static UBYTE ui_prev_tile_bank;
 static UBYTE vwf_current_offset;
-UBYTE vwf_tile_data[16 * 2];
+//UBYTE vwf_tile_data[16 * 2]; // moved into absolute.c to free 64 bytes of WRAM (move after shadow_OAM[] which is 256-boundary aligned)
 UBYTE vwf_current_mask;
 UBYTE vwf_current_rotate;
 UBYTE vwf_inverse_map;
@@ -62,6 +62,8 @@ UBYTE vwf_direction;
 font_desc_t vwf_current_font_desc;
 UBYTE vwf_current_font_bank;
 UBYTE vwf_current_font_idx;
+
+UBYTE * text_render_base_addr;
 
 UBYTE * text_scroll_addr;
 UBYTE text_scroll_width, text_scroll_height;
@@ -98,6 +100,8 @@ void ui_init() __banked {
     text_drawn                  = TRUE;
     text_draw_speed             = 1;
 
+    text_render_base_addr       = GetWinAddr();
+
     text_scroll_addr            = GetWinAddr();
     text_scroll_width           = 20; 
     text_scroll_height          = 8;
@@ -116,7 +120,10 @@ void ui_load_tiles() __banked {
     set_bkg_data(ui_black_tile, 1, vwf_tile_data);
 }
 
+void ui_draw_frame_row(void * dest, UBYTE tile, UBYTE width);
+
 void ui_draw_frame(UBYTE x, UBYTE y, UBYTE width, UBYTE height) __banked {
+    if (height == 0) return;
 #ifdef CGB
     if (_is_CGB) {
         VBK_REG = 1;
@@ -124,15 +131,16 @@ void ui_draw_frame(UBYTE x, UBYTE y, UBYTE width, UBYTE height) __banked {
         VBK_REG = 0;
     }
 #endif
-    fill_win_rect   (x + 1u,          y + 1u,          width - 2u, height - 2u,  ui_frame_bg_tiles);  // background
-    set_win_tile_xy (x,               y,                                         ui_frame_tl_tiles);
-    fill_win_rect   (x + 1u,          y,               width - 2u, 1u,           ui_frame_t_tiles );   // top
-    set_win_tile_xy (x + width - 1u,  y,                                         ui_frame_tr_tiles);
-    fill_win_rect   (x,               y + 1u,          1u,         height - 2u,  ui_frame_l_tiles );   // left
-    fill_win_rect   (x + width - 1u,  y + 1u,          1u,         height - 2u,  ui_frame_r_tiles );   // right
-    set_win_tile_xy (x,               y + height - 1u,                           ui_frame_bl_tiles);
-    fill_win_rect   (x + 1u,          y + height - 1u, width - 2u, 1u,           ui_frame_b_tiles );   // bottom
-    set_win_tile_xy (x + width - 1u,  y + height - 1u,                           ui_frame_br_tiles);
+    UBYTE * base_addr = GetWinAddr() + (y << 5) + x;
+    ui_draw_frame_row(base_addr, ui_frame_tl_tiles, width);
+    if (--height == 0) return;
+    if (height > 1)
+        for (UBYTE i = height - 1; i != 0; i--) {
+            base_addr += 32;
+            ui_draw_frame_row(base_addr, ui_frame_l_tiles, width);
+        }
+    base_addr += 32;
+    ui_draw_frame_row(base_addr, ui_frame_bl_tiles, width);
 }
 
 inline void ui_load_tile(const UBYTE * tiledata, UBYTE bank) {
@@ -265,7 +273,7 @@ void ui_draw_text_buffer_char() __banked {
         // current char pointer
         ui_text_ptr = ui_text_data;
         // VRAM destination
-        ui_dest_base = GetWinAddr() + 32 + 1; // gotoxy(1,1)
+        ui_dest_base = text_render_base_addr + 32 + 1; // gotoxy(1,1)
         if (vwf_direction == UI_PRINT_RIGHTTOLEFT) ui_dest_base += 17;
         // with and initial pos correction
         // initialize current pointer with corrected base value
@@ -304,7 +312,7 @@ void ui_draw_text_buffer_char() __banked {
         }
         case 0x03:
             // gotoxy 
-            ui_dest_ptr = ui_dest_base = GetWinAddr() + (*++ui_text_ptr - 1u) + (*++ui_text_ptr - 1u) * 32u;
+            ui_dest_ptr = ui_dest_base = text_render_base_addr + (*++ui_text_ptr - 1u) + (*++ui_text_ptr - 1u) * 32u;
             if (vwf_current_offset) ui_print_reset();
             break;
         case 0x04: {

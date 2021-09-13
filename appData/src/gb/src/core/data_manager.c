@@ -145,9 +145,9 @@ UBYTE load_sprite(UBYTE sprite_offset, const spritesheet_t * sprite, UBYTE bank)
 
 void load_animations(const spritesheet_t *sprite, UBYTE bank, UWORD animation_set, animation_t * res_animations) __nonbanked {
     UBYTE _save = _current_bank;
-    SWITCH_ROM_MBC1(bank);
+    SWITCH_ROM(bank);
     memcpy(res_animations, &(sprite->animations + sprite->animations_lookup[animation_set]), sizeof(animation_t) * 8);
-    SWITCH_ROM_MBC1(_save);
+    SWITCH_ROM(_save);
 }
 
 void load_bounds(const spritesheet_t *sprite, UBYTE bank, bounding_box_t * res_bounds) __banked {
@@ -265,8 +265,6 @@ UBYTE load_scene(const scene_t * scene, UBYTE bank, UBYTE init_data) __banked {
 
         // Copy scene player hit scripts to player actor
         memcpy(&PLAYER.script_hit1, &scn.script_p_hit1, sizeof(far_ptr_t));
-        memcpy(&PLAYER.script_hit2, &scn.script_p_hit2, sizeof(far_ptr_t));
-        memcpy(&PLAYER.script_hit3, &scn.script_p_hit3, sizeof(far_ptr_t));
 
         player_moving = FALSE;
 
@@ -328,14 +326,11 @@ UBYTE load_scene(const scene_t * scene, UBYTE bank, UBYTE init_data) __banked {
     }
 
     scroll_reset();
-
-    // Reset last trigger
-    last_trigger_tx = 0xFF;
-    last_trigger_ty = 0xFF;
+    trigger_reset();
 
     emote_actor = NULL;
 
-    if (init_data && scn.script_init.ptr) {
+    if ((init_data) && (scn.script_init.ptr != NULL)) {
         return (script_execute(scn.script_init.bank, scn.script_init.ptr, 0, 0) != 0);
     }
     return FALSE;

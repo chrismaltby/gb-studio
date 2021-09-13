@@ -648,15 +648,25 @@ export const precompileFonts = async (
     }
   };
 
+  const addFontsFromString = (s) => {
+    (s.match(/(!F:[0-9a-f-]+!)/g) || [])
+      .map((id) => id.substring(3).replace(/!$/, ""))
+      .forEach(addFont);
+  };
+  
   walkScenesEvents(scenes, (cmd) => {
     if (cmd.args && cmd.args.fontId !== undefined) {
       addFont(cmd.args.fontId || fonts[0].id);
     }
     if (cmd.args && cmd.args.text !== undefined) {
       // Add fonts referenced in text
-      (String(cmd.args.text).match(/(!F:[0-9a-f-]+!)/g) || [])
-        .map((id) => id.substring(3).replace(/!$/, ""))
-        .forEach(addFont);
+      addFontsFromString(String(cmd.args.text));
+    }
+    if (cmd.command && cmd.command === "EVENT_MENU" && cmd.args) {
+      // Add fonts referenced in menu items
+      for (let i = 1; i <= cmd.args.items; i++) {
+        addFontsFromString(String(cmd.args[`option${i}`]));
+      }
     }
   });
 
@@ -760,9 +770,12 @@ export const precompileScenes = (
         // Filter out unused triggers which cause slow down
         // When walking over
         return (
-          trigger.script &&
-          trigger.script.length >= 1 &&
-          trigger.script[0].command !== EVENT_END
+          (trigger.script &&
+            trigger.script.length >= 1 &&
+            trigger.script[0].command !== EVENT_END) ||
+          (trigger.leaveScript &&
+            trigger.leaveScript.length >= 1 &&
+            trigger.leaveScript[0].command !== EVENT_END)
         );
       }),
       playerSpriteIndex,
@@ -1119,19 +1132,91 @@ const compile = async (
         );
       };
 
+    const combineScripts = (scripts, canCollapse) => {
+      const filteredScripts = scripts.filter(
+        (s) => s.script && s.script.length > 0
+      );
+      if (!canCollapse || filteredScripts.length > 1) {
+        return filteredScripts.map((s) => {
+          return {
+            command: "INTERNAL_IF_PARAM",
+            args: {
+              parameter: s.parameter,
+              value: s.value,
+            },
+            children: {
+              true: s.script,
+            },
+          };
+        });
+      } else if (filteredScripts[0]) {
+        return filteredScripts[0].script;
+      }
+      return [];
+    };
+
+    const combinedPlayerHitScript = combineScripts(
+      [
+        { parameter: 0, value: 2, script: scene.playerHit1Script },
+        { parameter: 0, value: 4, script: scene.playerHit2Script },
+        { parameter: 0, value: 8, script: scene.playerHit3Script },
+      ],
+      false
+    );
+
     return {
       start: bankSceneEvents(scene, sceneIndex),
-      playerHit1: bankEntityEvents("scene", "playerHit1Script")(scene),
-      playerHit2: bankEntityEvents("scene", "playerHit2Script")(scene),
-      playerHit3: bankEntityEvents("scene", "playerHit3Script")(scene),
+      playerHit1: compileScript(
+        combinedPlayerHitScript,
+        "scene",
+        scene,
+        sceneIndex,
+        false,
+        false,
+        "playerHit1Script"
+      ),
       actors: scene.actors.map(bankEntityEvents("actor")),
       actorsMovement: scene.actors.map(
         bankEntityEvents("actor", "updateScript")
       ),
-      actorsHit1: scene.actors.map(bankEntityEvents("actor", "hit1Script")),
-      actorsHit2: scene.actors.map(bankEntityEvents("actor", "hit2Script")),
-      actorsHit3: scene.actors.map(bankEntityEvents("actor", "hit3Script")),
-      triggers: scene.triggers.map(bankEntityEvents("trigger")),
+      actorsHit1: scene.actors.map((entity, entityIndex) => {
+        const combinedActorScript = combineScripts(
+          [
+            { parameter: 0, value: 2, script: entity.hit1Script },
+            { parameter: 0, value: 4, script: entity.hit2Script },
+            { parameter: 0, value: 8, script: entity.hit3Script },
+          ],
+          false
+        );
+        return compileScript(
+          combinedActorScript,
+          "actor",
+          entity,
+          entityIndex,
+          false,
+          false,
+          "hit1Script"
+        );
+      }),
+      triggers: scene.triggers.map((entity, entityIndex) => {
+        const combinedTriggerScript = combineScripts(
+          [
+            { parameter: 0, value: 1, script: entity.script },
+            { parameter: 0, value: 2, script: entity.leaveScript },
+          ],
+          true
+        );
+
+        return compileScript(
+          combinedTriggerScript,
+          "trigger",
+          entity,
+          entityIndex,
+          false,
+          true,
+          "script"
+        );
+      }),
     };
   });
 
