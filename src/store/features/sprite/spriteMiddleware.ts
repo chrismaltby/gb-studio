@@ -6,10 +6,11 @@ import {
   metaspriteSelectors,
   metaspriteTileSelectors,
   spriteAnimationSelectors,
+  spriteStateSelectors,
   spriteSheetSelectors,
 } from "../entities/entitiesState";
 import entitiesActions from "../entities/entitiesActions";
-import { detect, detectClassic } from "lib/sprite/detect";
+import { detectClassic } from "lib/sprite/detect";
 import { compileSprite } from "lib/compiler/compileSprites";
 import { denormalizeSprite } from "../entities/entitiesHelpers";
 
@@ -17,7 +18,6 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => async (action) => {
     if (actions.detectSprite.match(action)) {
       const state = store.getState();
-      const projectRoot = state.document.root;
 
       const spriteSheet = spriteSheetSelectors.selectById(
         state,
@@ -35,10 +35,6 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
             detectClassic(spriteSheet)
           )
         );
-      } else {
-        store.dispatch(
-          actions.detectSpriteComplete(await detect(spriteSheet, projectRoot))
-        );
       }
 
       store.dispatch(
@@ -47,18 +43,6 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
     }
 
     next(action);
-
-    // Trigger recompile if sprite has changed
-    if (entitiesActions.editSpriteSheet.match(action)) {
-      if (
-        action.payload.changes.numTiles === undefined &&
-        action.payload.changes.autoDetect === undefined
-      ) {
-        store.dispatch(
-          actions.compileSprite({ spriteSheetId: action.payload.spriteSheetId })
-        );
-      }
-    }
 
     // Trigger recompile if sprite animations or tiles have changed
     if (
@@ -79,24 +63,9 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
       entitiesActions.editSpriteAnimation.match(action) ||
       entitiesActions.swapSpriteAnimationFrames.match(action)
     ) {
-      const state = store.getState();
-      const spriteSheet = spriteSheetSelectors.selectById(
-        state,
-        action.payload.spriteSheetId
-      );
       store.dispatch(
         actions.compileSprite({ spriteSheetId: action.payload.spriteSheetId })
       );
-      if (spriteSheet?.autoDetect) {
-        store.dispatch(
-          entitiesActions.editSpriteSheet({
-            spriteSheetId: action.payload.spriteSheetId,
-            changes: {
-              autoDetect: false,
-            },
-          })
-        );
-      }
     }
 
     // Compile sprite to determine how many tiles it will use
@@ -116,12 +85,14 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
       const metasprites = metaspriteSelectors.selectEntities(state);
       const metaspriteTiles = metaspriteTileSelectors.selectEntities(state);
       const spriteAnimations = spriteAnimationSelectors.selectEntities(state);
+      const spriteStates = spriteStateSelectors.selectEntities(state);
 
       const spriteData = denormalizeSprite({
         sprite: spriteSheet,
         metasprites,
         metaspriteTiles,
         spriteAnimations,
+        spriteStates,
       });
 
       const res = await compileSprite(spriteData, projectRoot);
@@ -152,11 +123,7 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
         action.payload.data.id
       );
       if (spriteSheet) {
-        if (
-          !spriteSheet.animations ||
-          spriteSheet.animations.length === 0 ||
-          spriteSheet.autoDetect
-        ) {
+        if (action.payload.data.states.length === 0) {
           store.dispatch(
             actions.detectSprite({ spriteSheetId: spriteSheet.id })
           );

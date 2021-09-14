@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { Button } from "../buttons/Button";
 import { CaretDownIcon, CaretRightIcon } from "../icons/Icons";
 
@@ -10,7 +10,11 @@ interface SplitPaneHeaderProps {
   onToggle?: () => void;
 }
 
-export const Wrapper = styled.div`
+interface WrapperProps {
+  collapsible: boolean;
+}
+
+export const Wrapper = styled.div<WrapperProps>`
   display: flex;
   align-items: center;
   text-transform: uppercase;
@@ -24,16 +28,23 @@ export const Wrapper = styled.div`
   color: ${(props) => props.theme.colors.input.text};
   border-bottom: 1px solid ${(props) => props.theme.colors.input.border};
 
+  ${(props) =>
+    props.collapsible
+      ? css`
+          :active {
+            background-color: ${(props) =>
+              props.theme.colors.input.hoverBackground};
+          }
+        `
+      : css`
+          padding-left: 10px;
+        `};
+
   > span {
     flex-grow: 1;
   }
 
-  :active {
-    background-color: ${(props) => props.theme.colors.input.hoverBackground};
-  }
-
   ${Button} {
-    width: 16px;
     padding: 4px;
     min-width: 18px;
   }
@@ -57,10 +68,12 @@ export const SplitPaneHeader: React.FC<SplitPaneHeaderProps> = ({
   collapsed,
 }) => {
   return (
-    <Wrapper onClick={onToggle}>
-      <CollapseIcon>
-        {collapsed ? <CaretRightIcon /> : <CaretDownIcon />}
-      </CollapseIcon>
+    <Wrapper onClick={onToggle} collapsible={!!onToggle}>
+      {onToggle && (
+        <CollapseIcon>
+          {collapsed ? <CaretRightIcon /> : <CaretDownIcon />}
+        </CollapseIcon>
+      )}
       <span>{children}</span>
       {buttons}
     </Wrapper>

@@ -1,6 +1,17 @@
 const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_IF_EXPRESSION";
+const groups = ["EVENT_GROUP_MATH", "EVENT_GROUP_CONTROL_FLOW"];
+
+const autoLabel = (fetchArg, args) => {
+  if (args.expression) {
+    return l10n("EVENT_IF_EXPRESSION_LABEL", {
+      expression: fetchArg("expression"),
+    });
+  } else {
+    return l10n("EVENT_IF_EXPRESSION");
+  }
+};
 
 const fields = [
   {
@@ -12,6 +23,7 @@ const fields = [
   },
   {
     key: "true",
+    label: l10n("FIELD_TRUE"),
     type: "events",
   },
   {
@@ -28,6 +40,7 @@ const fields = [
   },
   {
     key: "false",
+    label: l10n("FIELD_FALSE"),
     conditions: [
       {
         key: "__collapseElse",
@@ -51,6 +64,8 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  autoLabel,
+  groups,
   fields,
   compile,
   allowedBeforeInitFade: true,

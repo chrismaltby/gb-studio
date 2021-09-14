@@ -5,6 +5,7 @@
 /* ---------------------------------------- */
 
 #include <gb/gb.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -184,9 +185,9 @@ void init_dial()
 }
 
 /* sound engine for DTMF */
-void dialtone(UWORD dtmf_on, UWORD dtmf_off, char str[20])
+void dialtone(uint16_t dtmf_on, uint16_t dtmf_off, char str[20])
 {
-	UBYTE i = 0;
+	uint8_t i = 0;
 
 	while(str[i]){
 		switch(str[i]){
@@ -281,9 +282,9 @@ void dialtone(UWORD dtmf_on, UWORD dtmf_off, char str[20])
 
 
 /* Display looks like 7-SEGMENT LED */
-void disp_lcd(UBYTE len, char str[MAX_DTMF])
+void disp_lcd(uint8_t len, char str[MAX_DTMF])
 {
-	UBYTE i,j;
+	uint8_t i,j;
 
 	j = len;
 
@@ -375,8 +376,8 @@ void clr_disp()
 */
 void disp(const char *str)
 {
-	UBYTE no, left_pos;
-	UBYTE i, start_ch, end_ch;
+	uint8_t no, left_pos;
+	uint8_t i, start_ch, end_ch;
 	char work[MAX_DTMF];
 
 	clr_disp();
@@ -405,7 +406,7 @@ void disp(const char *str)
 	set_bkg_tiles(left_pos, 2, end_ch, LCD_HIGHT, disp_tile);
 }
 
-void press_button(UBYTE x, UBYTE y)
+void press_button(uint8_t x, uint8_t y)
 {
 	if(x <= 3 && y <= 3){
 		set_bkg_tiles(x * 3 + 1, y * 3 + 5, 3, 3, press_tile);
@@ -418,7 +419,7 @@ void press_button(UBYTE x, UBYTE y)
 	}
 }
 
-void break_button(UBYTE x, UBYTE y)
+void break_button(uint8_t x, uint8_t y)
 {
 	if(x <= 3 && y <= 3){
 		set_bkg_tiles(x * 3 + 1, y * 3 + 5, 3, 3, break_tile);
@@ -434,7 +435,7 @@ void break_button(UBYTE x, UBYTE y)
 
 void init_key()
 {
-	UBYTE key_x, key_y, i;
+	uint8_t key_x, key_y, i;
 
 	/* To make numeric KeyPad */
 	set_sprite_data(0, 24, key_num);
@@ -514,7 +515,7 @@ void init_background()
 
 void init_cursor()
 {
-	UBYTE i;
+	uint8_t i;
 
 	/* Setup the cursor data*/
 	set_sprite_data(23, 8, cursor_data);
@@ -524,7 +525,7 @@ void init_cursor()
 	}
 }
 
-void move_cursor(UBYTE x, UBYTE y)
+void move_cursor(uint8_t x, uint8_t y)
 {
 	move_sprite(23, x, y);
 	move_sprite(24, x, y+8);
@@ -534,9 +535,9 @@ void move_cursor(UBYTE x, UBYTE y)
 
 void main()
 {
-	UBYTE key1, key2, i, j, pos_x, pos_y, ch_pos;
-	UBYTE non_flick = OFF;
-	UWORD on_time, off_time;
+	uint8_t key1, key2, i, j, pos_x, pos_y, ch_pos;
+	uint8_t non_flick = OFF;
+	uint16_t on_time, off_time;
 
 	char str[MAX_DTMF];
 	char str_ms[10];

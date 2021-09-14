@@ -8,6 +8,7 @@ import { RootState } from "store/configureStore";
 import {
   actorSelectors,
   sceneSelectors,
+  scriptEventSelectors,
   triggerSelectors,
   variableSelectors,
 } from "store/features/entities/entitiesState";
@@ -18,12 +19,7 @@ import { MenuItem } from "ui/menu/Menu";
 import entitiesActions from "store/features/entities/entitiesActions";
 import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
-import {
-  isVariableField,
-  walkActorEvents,
-  walkSceneEvents,
-  walkTriggerEvents,
-} from "lib/helpers/eventSystem";
+import { isVariableField } from "lib/helpers/eventSystem";
 import {
   Actor,
   Scene,
@@ -38,7 +34,12 @@ import { Dictionary } from "@reduxjs/toolkit";
 import useDimensions from "react-cool-dimensions";
 import styled from "styled-components";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
-import { isUnionValue } from "store/features/entities/entitiesHelpers";
+import {
+  isUnionValue,
+  walkNormalisedActorEvents,
+  walkNormalisedSceneSpecificEvents,
+  walkNormalisedTriggerEvents,
+} from "store/features/entities/entitiesHelpers";
 
 interface VariableEditorProps {
   id: string;
@@ -128,6 +129,9 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
   const triggersLookup = useSelector((state: RootState) =>
     triggerSelectors.selectEntities(state)
   );
+  const scriptEventsLookup = useSelector((state: RootState) =>
+    scriptEventSelectors.selectEntities(state)
+  );
 
   const dispatch = useDispatch();
 
@@ -137,8 +141,9 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
 
     for (let sceneIndex = 0; sceneIndex < scenes.length; sceneIndex++) {
       const scene = scenes[sceneIndex];
-      walkSceneEvents(
+      walkNormalisedSceneSpecificEvents(
         scene,
+        scriptEventsLookup,
         onVariableEventContainingId(id, (event: ScriptEvent) => {
           if (!useLookup[scene.id]) {
             uses.push({
@@ -158,8 +163,9 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
         const actorId = scene.actors[actorIndex];
         const actor = actorsLookup[actorId];
         if (actor) {
-          walkActorEvents(
+          walkNormalisedActorEvents(
             actor,
+            scriptEventsLookup,
             onVariableEventContainingId(id, (event: ScriptEvent) => {
               if (!useLookup[scene.id]) {
                 uses.push({
@@ -195,8 +201,9 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
         const triggerId = scene.triggers[triggerIndex];
         const trigger = triggersLookup[triggerId];
         if (trigger) {
-          walkTriggerEvents(
+          walkNormalisedTriggerEvents(
             trigger,
+            scriptEventsLookup,
             onVariableEventContainingId(id, (event: ScriptEvent) => {
               if (!useLookup[scene.id]) {
                 uses.push({
@@ -231,7 +238,7 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
     }
 
     setVariableUses(uses);
-  }, [scenes, actorsLookup, triggersLookup, id]);
+  }, [scenes, actorsLookup, triggersLookup, id, scriptEventsLookup]);
 
   const onRename = (e: React.ChangeEvent<HTMLInputElement>) => {
     const editValue = e.currentTarget.value;

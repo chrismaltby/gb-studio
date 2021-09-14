@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { clipboard } from "electron";
 import { useDispatch, useSelector } from "react-redux";
 import ScriptEditor from "../script/ScriptEditor";
@@ -12,7 +12,7 @@ import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import settingsActions from "store/features/settings/settingsActions";
-import { SidebarMultiColumnAuto, SidebarColumn } from "ui/sidebars/Sidebar";
+import { Sidebar, SidebarColumn } from "ui/sidebars/Sidebar";
 import {
   FormContainer,
   FormDivider,
@@ -33,7 +33,7 @@ import { LabelButton, LabelColor } from "ui/buttons/LabelButton";
 import { CoordinateInput } from "ui/form/CoordinateInput";
 import DirectionPicker from "../forms/DirectionPicker";
 import { SettingsState } from "store/features/settings/settingsState";
-import { TabBar } from "ui/tabs/Tabs";
+import { StickyTabs, TabBar } from "ui/tabs/Tabs";
 import { Label } from "ui/form/Label";
 import { Button } from "ui/buttons/Button";
 import { LockIcon, LockOpenIcon, ParallaxIcon } from "ui/icons/Icons";
@@ -47,6 +47,7 @@ import { SCREEN_WIDTH } from "../../consts";
 
 interface SceneEditorProps {
   id: string;
+  multiColumn: boolean;
 }
 
 interface ScriptHandler {
@@ -63,6 +64,12 @@ interface ScriptHandlers {
   };
 }
 
+type SceneScriptKey =
+  | "script"
+  | "playerHit1Script"
+  | "playerHit2Script"
+  | "playerHit3Script";
+
 const PaletteButtons = styled.div`
   display: flex;
   width: 100%;
@@ -77,21 +84,40 @@ const PaletteButtons = styled.div`
   }
 `;
 
-const defaultTabs = {
+const scriptTabs = {
   start: l10n("SIDEBAR_ON_INIT"),
   hit: l10n("SIDEBAR_ON_PLAYER_HIT"),
-};
+} as const;
 
-const hitTabs = {
+const scriptSecondaryTabs = {
   hit1: l10n("FIELD_COLLISION_GROUP_N", { n: 1 }),
   hit2: l10n("FIELD_COLLISION_GROUP_N", { n: 2 }),
   hit3: l10n("FIELD_COLLISION_GROUP_N", { n: 3 }),
+} as const;
+
+const getScriptKey = (
+  primaryTab: keyof typeof scriptTabs,
+  secondaryTab: keyof typeof scriptSecondaryTabs
+): SceneScriptKey => {
+  if (primaryTab === "start") {
+    return "script";
+  }
+  if (secondaryTab === "hit1") {
+    return "playerHit1Script";
+  }
+  if (secondaryTab === "hit2") {
+    return "playerHit2Script";
+  }
+  if (secondaryTab === "hit3") {
+    return "playerHit3Script";
+  }
+  return "script";
 };
 
 const sceneName = (scene: Scene, sceneIndex: number) =>
   scene.name ? scene.name : `Scene ${sceneIndex + 1}`;
 
-export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
+export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
   const scene = useSelector((state: RootState) =>
     sceneSelectors.selectById(state, id)
   );
@@ -129,8 +155,8 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
   const defaultPlayerSprites = useSelector(
     (state: RootState) => state.project.present.settings.defaultPlayerSprites
   );
-  const tabs = Object.keys(defaultTabs);
-  const secondaryTabs = Object.keys(hitTabs);
+  const tabs = Object.keys(scriptTabs);
+  const secondaryTabs = Object.keys(scriptSecondaryTabs);
 
   const lastScriptTab = useSelector(
     (state: RootState) => state.editor.lastScriptTabScene
@@ -217,14 +243,12 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
 
   const onCopy = () => {
     if (scene) {
-      dispatch(clipboardActions.copyScene(scene));
+      dispatch(clipboardActions.copyScenes({ sceneIds: [scene.id] }));
     }
   };
 
   const onPaste = () => {
-    if (clipboardData) {
-      dispatch(clipboardActions.pasteClipboardEntity(clipboardData));
-    }
+    dispatch(clipboardActions.pasteClipboardEntity());
   };
 
   const onRemove = () => {
@@ -317,14 +341,6 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
 
   const showNotes = scene.notes || notesOpen;
 
-  const onEditScript = onChangeField("script");
-
-  const onEditPlayerHit1Script = onChangeField("playerHit1Script");
-
-  const onEditPlayerHit2Script = onChangeField("playerHit2Script");
-
-  const onEditPlayerHit3Script = onChangeField("playerHit3Script");
-
   const onEditPaletteId = (index: number) => (paletteId: string) => {
     const paletteIds = scene.paletteIds ? [...scene.paletteIds] : [];
     paletteIds[index] = paletteId;
@@ -338,28 +354,6 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
     spritePaletteIds[index] = paletteId;
     onChangeField("spritePaletteIds")(spritePaletteIds);
   };
-
-  const scripts = {
-    start: {
-      value: scene.script,
-      onChange: onEditScript,
-    },
-    hit: {
-      tabs: hitTabs,
-      hit1: {
-        value: scene.playerHit1Script,
-        onChange: onEditPlayerHit1Script,
-      },
-      hit2: {
-        value: scene.playerHit2Script,
-        onChange: onEditPlayerHit2Script,
-      },
-      hit3: {
-        value: scene.playerHit3Script,
-        onChange: onEditPlayerHit3Script,
-      },
-    },
-  } as const;
 
   const isStartingScene = startSceneId === id;
 
@@ -380,11 +374,21 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
 
   const showParallaxButton = scene.width && scene.width > SCREEN_WIDTH;
   const showParallaxOptions = showParallaxButton && scene.parallax;
+  const scriptKey = getScriptKey(scriptMode, scriptModeSecondary);
+
+  const scriptButton = (
+    <ScriptEditorDropdownButton
+      value={scene[scriptKey]}
+      type="scene"
+      entityId={scene.id}
+      scriptKey={scriptKey}
+    />
+  );
 
   return (
-    <SidebarMultiColumnAuto onClick={selectSidebar}>
+    <Sidebar onClick={selectSidebar} multiColumn={multiColumn}>
       {!lockScriptEditor && (
-        <SidebarColumn>
+        <SidebarColumn style={{ maxWidth: multiColumn ? 300 : undefined }}>
           <FormContainer>
             <FormHeader>
               <EditableText
@@ -666,58 +670,35 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
         </SidebarColumn>
       )}
       <SidebarColumn>
-        <TabBar
-          value={scriptMode}
-          values={defaultTabs}
-          onChange={onChangeScriptMode}
-          overflowActiveTab={scriptMode === "hit"}
-          buttons={
-            scriptMode !== "hit" && scripts[scriptMode] ? (
+        <StickyTabs>
+          <TabBar
+            value={scriptMode}
+            values={scriptTabs}
+            onChange={onChangeScriptMode}
+            overflowActiveTab={scriptMode === "hit"}
+            buttons={
               <>
                 {lockButton}
-                <ScriptEditorDropdownButton
-                  value={scripts[scriptMode].value}
-                  onChange={scripts[scriptMode].onChange}
-                />
+                {scriptButton}
               </>
-            ) : (
-              lockButton
-            )
-          }
-        />
-        {scriptMode === "hit" && scripts[scriptMode] && (
-          <TabBar
-            variant="secondary"
-            value={scriptModeSecondary}
-            values={scripts[scriptMode].tabs}
-            onChange={onChangeScriptModeSecondary}
-            buttons={
-              <ScriptEditorDropdownButton
-                value={scripts[scriptMode][scriptModeSecondary].value}
-                onChange={scripts[scriptMode][scriptModeSecondary].onChange}
-              />
             }
           />
-        )}
-        {scriptMode !== "hit" && scripts[scriptMode] && (
-          <ScriptEditor
-            value={scripts[scriptMode].value}
-            type="scene"
-            onChange={scripts[scriptMode].onChange}
-            entityId={scene.id}
-          />
-        )}
-        {scriptMode === "hit" &&
-          scripts[scriptMode] &&
-          scripts[scriptMode][scriptModeSecondary] && (
-            <ScriptEditor
-              value={scripts[scriptMode][scriptModeSecondary].value}
-              type="scene"
-              onChange={scripts[scriptMode][scriptModeSecondary].onChange}
-              entityId={scene.id}
+          {scriptMode === "hit" && (
+            <TabBar
+              variant="secondary"
+              value={scriptModeSecondary}
+              values={scriptSecondaryTabs}
+              onChange={onChangeScriptModeSecondary}
             />
           )}
+        </StickyTabs>
+        <ScriptEditor
+          value={scene[scriptKey]}
+          type="scene"
+          entityId={scene.id}
+          scriptKey={scriptKey}
+        />
       </SidebarColumn>
-    </SidebarMultiColumnAuto>
+    </Sidebar>
   );
 };

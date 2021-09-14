@@ -2,29 +2,21 @@ import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import SpriteSheetCanvas from "./SpriteSheetCanvas";
-import { framesPerDirection } from "lib/helpers/gbstudio";
 import { PaletteShape } from "store/stateShape";
 import { getCachedObject } from "lib/helpers/cache";
-import { DMG_PALETTE, SPRITE_TYPE_STATIC } from "../../consts";
-import {
-  spriteSheetSelectors,
-  paletteSelectors,
-} from "store/features/entities/entitiesState";
+import { DMG_PALETTE } from "../../consts";
+import { paletteSelectors } from "store/features/entities/entitiesState";
 import { getSettings } from "store/features/settings/settingsState";
 
 const ActorCanvas = ({
   spriteSheetId,
-  spriteType,
   direction,
   overrideDirection,
   frame,
-  totalFrames,
   palette,
 }) => {
   let spriteFrame = frame || 0;
-  if (spriteType !== SPRITE_TYPE_STATIC) {
-    spriteFrame = frame % totalFrames;
-  } else if (overrideDirection) {
+  if (overrideDirection) {
     spriteFrame = 0;
   }
 
@@ -40,7 +32,6 @@ const ActorCanvas = ({
 
 ActorCanvas.propTypes = {
   spriteSheetId: PropTypes.string.isRequired,
-  spriteType: PropTypes.string,
   direction: PropTypes.string,
   overrideDirection: PropTypes.string,
   frame: PropTypes.number,
@@ -54,16 +45,11 @@ ActorCanvas.defaultProps = {
   frame: undefined,
   totalFrames: 1,
   palette: undefined,
-  spriteType: SPRITE_TYPE_STATIC,
 };
 
 function mapStateToProps(state, props) {
-  const { spriteSheetId, spriteType, direction, frame, paletteId } =
-    props.actor;
+  const { spriteSheetId, direction, frame, paletteId } = props.actor;
 
-  const spriteSheet = spriteSheetSelectors.selectById(state, spriteSheetId);
-  const spriteFrames = spriteSheet ? spriteSheet.numFrames : 0;
-  const totalFrames = framesPerDirection(spriteType, spriteFrames);
   const settings = getSettings(state);
   const palettesLookup = paletteSelectors.selectEntities(state);
   const gbcEnabled = settings.customColorsEnabled;
@@ -76,11 +62,9 @@ function mapStateToProps(state, props) {
 
   return {
     spriteSheetId,
-    spriteType,
     direction: props.direction !== undefined ? props.direction : direction,
     overrideDirection: props.direction,
-    frame: props.frame !== undefined ? props.frame % totalFrames : frame,
-    totalFrames,
+    frame: props.frame !== undefined ? props.frame : frame,
     palette,
   };
 }

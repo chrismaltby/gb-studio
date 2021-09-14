@@ -12,7 +12,7 @@ import metadataActions from "store/features/metadata/metadataActions";
 import { sceneSelectors } from "store/features/entities/entitiesState";
 import editorActions from "store/features/editor/editorActions";
 import navigationActions from "store/features/navigation/navigationActions";
-import { SidebarColumn, SidebarMultiColumnAuto } from "ui/sidebars/Sidebar";
+import { SidebarColumn, Sidebar } from "ui/sidebars/Sidebar";
 import {
   FormContainer,
   FormDivider,
@@ -104,7 +104,7 @@ export const WorldEditor: FC = () => {
   const showNotes = metadata.notes || notesOpen;
 
   return (
-    <SidebarMultiColumnAuto onClick={selectSidebar}>
+    <Sidebar onClick={selectSidebar}>
       <SidebarColumn>
         <FormContainer>
           <FormHeader>
@@ -232,6 +232,6 @@ export const WorldEditor: FC = () => {
           </FormRow>
         </FormContainer>
       </SidebarColumn>
-    </SidebarMultiColumnAuto>
+    </Sidebar>
   );
 };

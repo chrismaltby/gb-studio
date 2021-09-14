@@ -8,6 +8,7 @@ import { useGroupedEngineFields } from "../settings/useGroupedEngineFields";
 import { EngineFieldSchema } from "store/features/engine/engineState";
 
 interface EngineFieldSelectProps {
+  name: string;
   value?: string;
   onChange?: (newValue: string) => void;
 }
@@ -16,6 +17,7 @@ const notDefine = (engineField: EngineFieldSchema) =>
   engineField.cType !== "define";
 
 const EngineFieldSelect: React.FC<EngineFieldSelectProps> = ({
+  name,
   value,
   onChange,
 }) => {
@@ -44,6 +46,7 @@ const EngineFieldSelect: React.FC<EngineFieldSelectProps> = ({
 
   return (
     <Select
+      name={name}
       value={currentValue}
       options={options}
       onChange={(e: Option) => {

@@ -57,8 +57,17 @@ typedef INT32	   	DWORD;
 /** Unsigned 32 bit */
 typedef UINT32	   	UDWORD;
 
-/** Useful definition for fixed point values */
+/** Useful definition for working with 8 bit + 8 bit fixed point values
+
+    Use `.w` to access the variable as unsigned 16 bit type.
+
+    Use `.b.h` and `.b.l` (or just `.h` and `.l`) to directly access it's high and low unsigned 8 bit values.
+ */
 typedef union _fixed {
+  struct {
+    UBYTE l;
+    UBYTE h;
+  };
   struct {
     UBYTE l;
     UBYTE h;

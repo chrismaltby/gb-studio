@@ -1,4 +1,5 @@
 #include <gb/gb.h>
+#include <stdint.h>
 #include <stdio.h>
 
 int var_1;  /* In external RAM bank 1 */

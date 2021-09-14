@@ -1,5 +1,6 @@
 import ScriptBuilder from "../../../src/lib/compiler/scriptBuilder";
 import { ScriptEvent } from "../../../src/store/features/entities/entitiesTypes";
+import { getDummyCompiledFont } from "../../dummydata";
 
 test("Should be able to set active actor to player", () => {
   const output: string[] = [];
@@ -76,7 +77,7 @@ test("Should be able to wait for N frames to pass", () => {
       id: "scene1",
       actors: [],
       triggers: [],
-    },
+    }
   });
   sb.wait(20);
   expect(output).toEqual([
@@ -136,7 +137,8 @@ _MY_SCRIPT::
   );
 });
 
-test("Should be able to open dialogue boxes", () => {
+test("Should be able to open dialogue boxes", async () => {
+  const dummyCompiledFont = await getDummyCompiledFont();
   const output: string[] = [];
   const sb = new ScriptBuilder(output, {
     scene: {
@@ -144,6 +146,7 @@ test("Should be able to open dialogue boxes", () => {
       actors: [],
       triggers: [],
     },
+    fonts: [dummyCompiledFont]
   });
   sb.textDialogue("Hello World");
   sb.scriptEnd();
@@ -234,7 +237,8 @@ _MY_SCRIPT::
   );
 });
 
-test("Should be able to conditionally execute if variable is true with function paths", () => {
+test("Should be able to conditionally execute if variable is true with function paths", async () => {
+  const dummyCompiledFont = await getDummyCompiledFont();
   const output: string[] = [];
   const sb = new ScriptBuilder(output, {
     scene: {
@@ -249,6 +253,7 @@ test("Should be able to conditionally execute if variable is true with function 
       ],
       triggers: [],
     },
+    fonts: [dummyCompiledFont],
     // variables: ["0", "1"],
     compileEvents: (self: ScriptBuilder, events: ScriptEvent[]) => {
       if (events[0].id === "event1") {
@@ -309,7 +314,8 @@ _MY_SCRIPT::
   );
 });
 
-test("Should be able to conditionally execute if variable is true with nested function paths", () => {
+test("Should be able to conditionally execute if variable is true with nested function paths", async () => {
+  const dummyCompiledFont = await getDummyCompiledFont();
   const output: string[] = [];
   const sb = new ScriptBuilder(output, {
     scene: {
@@ -330,6 +336,7 @@ test("Should be able to conditionally execute if variable is true with nested fu
       ],
       triggers: [],
     },
+    fonts: [dummyCompiledFont],
     // variables: ["0", "1", "2"],
   });
 

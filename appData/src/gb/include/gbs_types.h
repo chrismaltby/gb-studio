@@ -1,9 +1,12 @@
 #ifndef GBS_TYPES_H
 #define GBS_TYPES_H
 
+#include <gb/gb.h>
+#include <gb/cgb.h>
+#include <gb/metasprites.h>
+
 #include "bankdata.h"
 #include "parallax.h"
-#include "metasprite.h"
 #include "collision.h"
 
 typedef enum {
@@ -53,7 +56,7 @@ typedef struct actor_t
   UINT8 exclusive_sprite;
   animation_t animations[8];
   far_ptr_t sprite;
-  far_ptr_t script, script_update, script_hit1, script_hit2, script_hit3;
+  far_ptr_t script, script_update, script_hit1;
   UWORD hscript_update;
 
   // Collisions
@@ -65,9 +68,13 @@ typedef struct actor_t
   struct actor_t *prev;
 } actor_t;
 
+#define TRIGGER_HAS_ENTER_SCRIPT    1
+#define TRIGGER_HAS_LEAVE_SCRIPT    2
+
 typedef struct trigger_t {
     UINT8 x, y, width, height;
     far_ptr_t script;
+    UBYTE script_flags;
 } trigger_t;
 
 typedef struct scene_t {
@@ -77,7 +84,7 @@ typedef struct scene_t {
     far_ptr_t player_sprite;
     far_ptr_t background, collisions; 
     far_ptr_t palette, sprite_palette;
-    far_ptr_t script_init, script_p_hit1, script_p_hit2, script_p_hit3;
+    far_ptr_t script_init, script_p_hit1;
     far_ptr_t sprites;
     far_ptr_t actors;
     far_ptr_t triggers;
@@ -101,7 +108,8 @@ typedef struct tileset_t {
 typedef struct spritesheet_t {
     UINT8 n_metasprites;
     metasprite_t * const *metasprites;
-    animation_t animations[8];
+    animation_t *animations;
+    UWORD *animations_lookup;
     bounding_box_t bounds;
     far_ptr_t tileset;              // far pointer to sprite tileset
     far_ptr_t cgb_tileset;          // far pointer to additional CGB tileset (may be NULL)

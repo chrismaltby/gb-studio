@@ -61,9 +61,8 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_get_indirect,           4}, // 0x29
     {vm_test_terminate,         1}, // 0x2A
     {vm_poll_loaded,            2}, // 0x2B
-    // trigonometry instructions section
-    {vm_sin_scale,              5}, // 0x2C 
-    {vm_cos_scale,              5}, // 0x2D
+    {vm_push_reference,         2}, // 0x2C 
+    {0, 0},
     // load/save instrunctions section
     {vm_save_peek,              8}, // 0x2E
     {vm_save_clear,             1}, // 0x2F
@@ -171,5 +170,13 @@ const SCRIPT_CMD script_cmds[] = {
     {0, 0},
 
     {vm_actor_get_anim_frame,   2}, // 0x83
+    {vm_actor_set_anim_set,     4}, // 0x84
+    {vm_switch_text_layer,      1}, // 0x85 
+    {0, 0},
+    {0, 0},
+    {0, 0},
 
+    // trigonometry instructions section
+    {vm_sin_scale,              5}, // 0x89 
+    {vm_cos_scale,              5}  // 0x8A
 };

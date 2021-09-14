@@ -2,6 +2,7 @@
     as in banked/
  */
 #include <gb/gb.h>
+#include <stdint.h>
 #include <stdio.h>
 
 int var_internal;  /* In internal RAM */
@@ -19,9 +20,9 @@ void bank_fixed(void) NONBANKED
   puts("I'm in fixed ROM");
 }
 
-void print_var(UBYTE bank)
+void print_var(uint8_t bank)
 {
-  SWITCH_RAM_MBC1(bank);
+  SWITCH_RAM(bank);
   printf("Var_%u is %u\n");
 }
 
@@ -29,17 +30,16 @@ void main(void)
 {
   puts("Program Start...");
 
-  ENABLE_RAM_MBC1;
-  SWITCH_4_32_MODE_MBC1;
+  ENABLE_RAM;
 
   var_internal = 1;
-  SWITCH_RAM_MBC1(0);
+  SWITCH_RAM(0);
   var_0 = 2;
-  SWITCH_RAM_MBC1(1);
+  SWITCH_RAM(1);
   var_1 = 3;
-  SWITCH_RAM_MBC1(2);
+  SWITCH_RAM(2);
   var_2 = 4;
-  SWITCH_RAM_MBC1(3);
+  SWITCH_RAM(3);
   var_3 = 5;
 
   bank_fixed();
@@ -48,13 +48,13 @@ void main(void)
   bank_3();
 
   printf("Var is %u\n", var_internal);
-  SWITCH_RAM_MBC1(0);
+  SWITCH_RAM(0);
   printf("Var_0 is %u\n", var_0);
-  SWITCH_RAM_MBC1(1);
+  SWITCH_RAM(1);
   printf("Var_1 is %u\n", var_1);
-  SWITCH_RAM_MBC1(2);
+  SWITCH_RAM(2);
   printf("Var_2 is %u\n", var_2);
-  SWITCH_RAM_MBC1(3);
+  SWITCH_RAM(3);
   printf("Var_3 is %u\n", var_3);
 
   puts("The End...");

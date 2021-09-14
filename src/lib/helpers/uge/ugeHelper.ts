@@ -108,7 +108,7 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
     const noise_macro = [];
     if (version >= 4) {
       for (let n = 0; n < 6; n++) {
-        noise_macro.push(new Int8Array(data.slice(offset, offset + 4)));
+        noise_macro.push(uint8data[offset]);
         offset += 1;
       }
     }
@@ -171,12 +171,14 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
       instr.bit_count = noise_counter_step ? 7 : 15;
       if (version >= 4) {
         instr.noise_macro = noise_macro;
+      } else {
+        instr.noise_macro = [0, 0, 0, 0, 0, 0];
       }
 
       noise_instrument_mapping[(n % 15) + 1] = song.noise_instruments.length;
       song.addNoiseInstrument(instr);
     } else {
-      console.log(n, name, type);
+      throw Error(`Invalid instrument type ${type} [${n}, "${name}"]`);
     }
   }
   for (let n = 0; n < 16; n++) {
@@ -196,6 +198,10 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
   const patterns = [];
   for (let n = 0; n < pattern_count; n++) {
     const pattern = [];
+    if (version >= 5) {
+      // V5 has a pattern key (we don't use it, but need to offset it)
+      offset += 4;
+    }
     for (let m = 0; m < 64; m++) {
       const [note, instrument, effectcode] = new Int32Array(
         data.slice(offset, offset + 12)
@@ -222,9 +228,9 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
 
   // Create proper flat patterns
   for (let n = 0; n < orders[0].length; n++) {
-    const pattern = [];
+    const pattern: PatternCell[][] = [];
     for (let m = 0; m < 64; m++) {
-      const row = [];
+      const row: PatternCell[] = [];
       for (let track = 0; track < 4; track++) {
         const [note, instrument, effectcode, effectparam] =
           patterns[orders[track][n]][m];
@@ -299,6 +305,10 @@ export const saveUGESong = (song: Song): ArrayBuffer => {
     view.setUint32(idx, value, true);
     idx += 4;
   }
+  function addInt8(value: number) {
+    view.setInt8(idx, value);
+    idx += 1;
+  }
   function addShortString(s: string) {
     view.setUint8(idx, s.length);
     idx += 1;
@@ -330,6 +340,10 @@ export const saveUGESong = (song: Song): ArrayBuffer => {
     addUint32(0);
     addUint32(0);
     addUint32(0);
+
+    for (let n = 0; n < 6; n++) {
+      addInt8(0);
+    }
   }
 
   function addWaveInstrument(type: number, i: WaveInstrument) {
@@ -354,6 +368,10 @@ export const saveUGESong = (song: Song): ArrayBuffer => {
     addUint32(0);
     addUint32(0);
     addUint32(0);
+
+    for (let n = 0; n < 6; n++) {
+      addInt8(0);
+    }
   }
 
   function addNoiseInstrument(type: number, i: NoiseInstrument) {
@@ -380,9 +398,13 @@ export const saveUGESong = (song: Song): ArrayBuffer => {
     addUint32(0);
     addUint32(i.bit_count === 7 ? 1 : 0);
     addUint32(i.dividing_ratio);
+
+    for (const v of i.noise_macro) {
+      addInt8(v);
+    }
   }
 
-  addUint32(3); // version
+  addUint32(5); // version
   addShortString(song.name);
   addShortString(song.artist);
   addShortString(song.comment);
@@ -405,7 +427,9 @@ export const saveUGESong = (song: Song): ArrayBuffer => {
 
   addUint32(song.patterns.length * 4);
   for (const pattern of song.patterns) {
+    let patternKey = 0;
     for (let track = 0; track < 4; track++) {
+      addUint32(patternKey++);
       for (let m = 0; m < 64; m++) {
         const t = pattern[m][track];
         addUint32(t.note === null ? 90 : t.note);
@@ -426,17 +450,13 @@ export const saveUGESong = (song: Song): ArrayBuffer => {
     addUint32(0); //Add empty routines
   }
 
-  console.log(buffer.slice(0, idx));
   return buffer.slice(0, idx);
 };
 
 const comparePatterns = function (a: PatternCell[][], b: PatternCell[][]) {
   if (a.length !== b.length) return false;
   for (let idx = 0; idx < a.length; idx++) {
-    for (let col = 0; col < 4; col++) {
-      if (!patternEqual(a[idx], b[idx])) return false;
-      if (a[idx][col].instrument !== b[idx][col].instrument) return false;
-    }
+    if (!patternEqual(a[idx], b[idx])) return false;
   }
   return true;
 };
@@ -445,7 +465,7 @@ const patternEqual = function (a: PatternCell[], b: PatternCell[]) {
   if (a.length !== b.length) return false;
   for (let idx = 0; idx < a.length; idx++) {
     if (a[idx].note !== b[idx].note) return false;
-    if (a[idx].instrument !== b[idx].note) return false;
+    if (a[idx].instrument !== b[idx].instrument) return false;
     if (a[idx].effectcode !== b[idx].effectcode) return false;
     if (a[idx].effectparam !== b[idx].effectparam) return false;
   }
@@ -559,6 +579,7 @@ export const exportToC = (song: Song, trackName: string): string => {
 
 #include "hUGEDriver.h"
 #include <stddef.h>
+#include "hUGEDriverRoutines.h"
 
 static const unsigned char order_cnt = ${song.sequence.length * 2};
 `;
@@ -605,7 +626,7 @@ const hUGESong_t ${trackName}_Data = {
     &order_cnt,
     order1, order2, order3, order4,
     duty_instruments, wave_instruments, noise_instruments,
-    NULL,
+    routines,
     waves
 };
 `;

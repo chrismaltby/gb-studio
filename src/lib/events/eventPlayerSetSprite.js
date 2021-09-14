@@ -1,6 +1,7 @@
 const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_PLAYER_SET_SPRITE";
+const groups = ["EVENT_GROUP_ACTOR"];
 
 const fields = [
   {
@@ -23,6 +24,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  groups,
   fields,
   compile,
 };

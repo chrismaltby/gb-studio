@@ -1,9 +1,7 @@
 import { EntityState, Dictionary } from "@reduxjs/toolkit";
 
 export type ActorDirection = "up" | "down" | "left" | "right";
-export type ActorSpriteType = "static" | "actor";
 export type SpriteType = "static" | "animated" | "actor" | "actor_animated";
-export type SpriteSheetType = "classic" | "autodetect" | "manual";
 export type SpriteAnimationType =
   | "fixed"
   | "fixed_movement"
@@ -38,12 +36,36 @@ export type UnionValue =
   | UnionNumberValue
   | UnionDirectionValue;
 
+export type ScriptEventParentType =
+  | "scene"
+  | "actor"
+  | "trigger"
+  | "scriptEvent"
+  | "customEvent";
+
 export type ScriptEvent = {
   id: string;
   command: string;
-  args: Record<string, unknown>;
-  children?: Dictionary<ScriptEvent[]>;
+  args?: Record<string, unknown>;
+  children?: Dictionary<string[]>;
 };
+
+export type ScriptEventsRef = {
+  scriptEventId: string;
+  parentType: ScriptEventParentType;
+  parentKey: string;
+  parentId: string;
+};
+
+export const actorScriptKeys = [
+  "script",
+  "startScript",
+  "updateScript",
+  "hit1Script",
+  "hit2Script",
+  "hit3Script",
+] as const;
+export type ActorScriptKey = typeof actorScriptKeys[number];
 
 export type Actor = {
   id: string;
@@ -52,7 +74,6 @@ export type Actor = {
   x: number;
   y: number;
   spriteSheetId: string;
-  spriteType: ActorSpriteType;
   paletteId: string;
   frame: number;
   moveSpeed: number;
@@ -61,13 +82,16 @@ export type Actor = {
   animate: boolean;
   isPinned: boolean;
   collisionGroup: string;
-  script: ScriptEvent[];
-  startScript: ScriptEvent[];
-  updateScript: ScriptEvent[];
-  hit1Script: ScriptEvent[];
-  hit2Script: ScriptEvent[];
-  hit3Script: ScriptEvent[];
+  script: string[];
+  startScript: string[];
+  updateScript: string[];
+  hit1Script: string[];
+  hit2Script: string[];
+  hit3Script: string[];
 };
+
+export const triggerScriptKeys = ["script", "leaveScript"] as const;
+export type TriggerScriptKey = typeof triggerScriptKeys[number];
 
 export type Trigger = {
   id: string;
@@ -77,7 +101,8 @@ export type Trigger = {
   y: number;
   width: number;
   height: number;
-  script: ScriptEvent[];
+  script: string[];
+  leaveScript: string[];
 };
 
 export type Background = {
@@ -94,6 +119,8 @@ export type Background = {
   _v: number;
 };
 
+export type BackgroundData = Omit<Background, "_v" | "inode">;
+
 export type Font = {
   id: string;
   name: string;
@@ -102,8 +129,11 @@ export type Font = {
   height: number;
   plugin?: string;
   inode: string;
+  mapping: Record<string, number>;
   _v: number;
 };
+
+export type FontData = Omit<Font, "mapping" | "_v" | "inode">;
 
 export type Avatar = {
   id: string;
@@ -116,6 +146,8 @@ export type Avatar = {
   _v: number;
 };
 
+export type AvatarData = Omit<Avatar, "_v" | "inode">;
+
 export type Emote = {
   id: string;
   name: string;
@@ -126,6 +158,8 @@ export type Emote = {
   inode: string;
   _v: number;
 };
+
+export type EmoteData = Omit<Emote, "_v" | "inode">;
 
 export type MusicSettings = {
   disableSpeedConversion?: boolean;
@@ -141,6 +175,8 @@ export type Music = {
   inode: string;
   _v: number;
 };
+
+export type MusicData = Omit<Music, "_v" | "inode">;
 
 export type Palette = {
   id: string;
@@ -172,7 +208,7 @@ export type CustomEvent = {
   description: string;
   variables: Dictionary<CustomEventVariable>;
   actors: Dictionary<CustomEventActor>;
-  script: ScriptEvent[];
+  script: string[];
 };
 
 export type EngineFieldValue = {
@@ -199,17 +235,35 @@ export type Metasprite = {
   tiles: string[];
 };
 
+export type MetaspriteData = Omit<Metasprite, "tiles"> & {
+  tiles: MetaspriteTile[];
+};
+
+export type SpriteState = {
+  id: string;
+  name: string;
+  animationType: SpriteAnimationType;
+  flipLeft: boolean;
+  animations: string[];
+};
+
+export type SpriteStateData = Omit<SpriteState, "animations"> & {
+  animations: SpriteAnimationData[];
+};
+
 export type SpriteAnimation = {
   id: string;
   frames: string[];
+};
+
+export type SpriteAnimationData = Omit<SpriteAnimation, "frames"> & {
+  frames: MetaspriteData[];
 };
 
 export type SpriteSheet = {
   id: string;
   name: string;
   filename: string;
-  type: SpriteSheetType;
-  numFrames: number;
   numTiles: number;
   plugin?: string;
   inode: string;
@@ -217,23 +271,32 @@ export type SpriteSheet = {
   _v: number;
   width: number;
   height: number;
-  animationType: SpriteAnimationType;
-  flipLeft: boolean;
   canvasWidth: number;
   canvasHeight: number;
   boundsX: number;
   boundsY: number;
   boundsWidth: number;
   boundsHeight: number;
-  animations: string[];
   animSpeed: number | null;
-  autoDetect: boolean;
+  states: string[];
+};
+
+export type SpriteSheetData = Omit<SpriteSheet, "states" | "_v" | "inode"> & {
+  states: SpriteStateData[];
 };
 
 export type SceneParallaxLayer = {
   height: number;
   speed: number;
 };
+
+export const sceneScriptKeys = [
+  "script",
+  "playerHit1Script",
+  "playerHit2Script",
+  "playerHit3Script",
+] as const;
+export type SceneScriptKey = typeof sceneScriptKeys[number];
 
 export type Scene = {
   id: string;
@@ -253,10 +316,10 @@ export type Scene = {
   triggers: string[];
   parallax?: SceneParallaxLayer[];
   playerSpriteSheetId?: string;
-  script: ScriptEvent[];
-  playerHit1Script: ScriptEvent[];
-  playerHit2Script: ScriptEvent[];
-  playerHit3Script: ScriptEvent[];
+  script: string[];
+  playerHit1Script: string[];
+  playerHit2Script: string[];
+  playerHit3Script: string[];
 };
 
 export type SceneData = Omit<Scene, "actors" | "triggers"> & {
@@ -266,14 +329,14 @@ export type SceneData = Omit<Scene, "actors" | "triggers"> & {
 
 export type ProjectEntitiesData = {
   scenes: SceneData[];
-  backgrounds: Background[];
-  spriteSheets: SpriteSheet[];
+  backgrounds: BackgroundData[];
+  spriteSheets: SpriteSheetData[];
   palettes: Palette[];
   customEvents: CustomEvent[];
-  music: Music[];
-  fonts: Font[];
-  avatars: Avatar[];
-  emotes: Emote[];
+  music: MusicData[];
+  fonts: FontData[];
+  avatars: AvatarData[];
+  emotes: EmoteData[];
   variables: Variable[];
 };
 
@@ -281,11 +344,13 @@ export interface EntitiesState {
   actors: EntityState<Actor>;
   triggers: EntityState<Trigger>;
   scenes: EntityState<Scene>;
+  scriptEvents: EntityState<ScriptEvent>;
   backgrounds: EntityState<Background>;
   spriteSheets: EntityState<SpriteSheet>;
   metasprites: EntityState<Metasprite>;
   metaspriteTiles: EntityState<MetaspriteTile>;
   spriteAnimations: EntityState<SpriteAnimation>;
+  spriteStates: EntityState<SpriteState>;
   palettes: EntityState<Palette>;
   customEvents: EntityState<CustomEvent>;
   music: EntityState<Music>;
@@ -300,5 +365,56 @@ export type Asset = {
   filename: string;
   plugin?: string;
 };
+
+export interface ScriptEventFieldCondition {
+  key: string;
+  ne?: unknown;
+  eq?: unknown;
+  gt?: unknown;
+  lt?: unknown;
+  gte?: unknown;
+  lte?: unknown;
+  in?: unknown[];
+}
+
+export interface ScriptEventFieldSchema {
+  label?: string | React.ReactNode;
+  checkboxLabel?: string;
+  defaultValue?: unknown | Record<string, unknown>;
+  key?: string;
+  type?: string;
+  hide?: boolean;
+  multiple?: boolean;
+  conditions?: ScriptEventFieldCondition[];
+  toggleLabel?: string;
+  width?: string;
+  flexBasis?: string;
+  values?: Record<string, string>;
+  alignCheckbox?: boolean;
+  placeholder?: string;
+  rows?: number;
+  maxLength?: number;
+  min?: number;
+  max?: number;
+  step?: number;
+  options?: [unknown, string][];
+  optional?: boolean;
+  paletteType?: "background" | "ui" | "emote" | "sprite";
+  paletteIndex?: number;
+  canKeep?: boolean;
+  includePlayer?: boolean;
+  defaultType?: string;
+  types?: string[];
+  filter?: (value: unknown) => boolean;
+  updateFn?: (
+    newValue: unknown,
+    field: ScriptEventFieldSchema,
+    args: Record<string, unknown>
+  ) => unknown;
+  postUpdate?: (
+    newArgs: Record<string, unknown>,
+    prevArgs: Record<string, unknown>
+  ) => void;
+}
 
 export type EntityKey = keyof EntitiesState;

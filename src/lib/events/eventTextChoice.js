@@ -6,12 +6,28 @@ const trimChoiceItem = (string) => {
 };
 
 const id = "EVENT_CHOICE";
+const groups = ["EVENT_GROUP_DIALOGUE"];
+
+const autoLabel = (fetchArg) => {
+  const text = [
+    `"${fetchArg("trueText")}"`,
+    `"${fetchArg("falseText")}"`,
+  ].join();
+  return l10n("EVENT_CHOICE_LABEL", {
+    variable: fetchArg("variable"),
+    text,
+  });
+};
 
 const fields = [
   {
     key: "variable",
+    label: l10n("FIELD_SET_VARIABLE"),
     type: "variable",
     defaultValue: "LAST_VARIABLE",
+  },
+  {
+    type: "break",
   },
   {
     key: "trueText",
@@ -39,6 +55,8 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  autoLabel,
+  groups,
   fields,
   compile,
 };

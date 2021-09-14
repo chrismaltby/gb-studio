@@ -9,19 +9,15 @@
 _ui_swap_tiles::
         ld hl, #_vwf_tile_data
         ld de, #(_vwf_tile_data + 16)
-        ld a, (_text_bkg_fill)
-        ld b, a
-        ld c, #2
-1$:
-        .rept 8
+        .rept 16
             ld a, (de)
             ld (hl+), a
-            ld a, b
-            ld (de), a
             inc de
         .endm
-        dec c
-        jr nz, 1$
+        ld a, (_text_bkg_fill)
+        .rept 16
+            ld (hl+), a
+        .endm
         ret
 
 _ui_print_make_mask_lr::
@@ -187,4 +183,47 @@ _ui_print_shift_char::
         ldh (__current_bank),a
         ld  (#0x2000), a
 
+        ret
+
+; void ui_draw_frame_row(void * dest, UBYTE tile, UBYTE width);
+
+_ui_draw_frame_row::
+        ldhl sp, #5
+        ld a, (hl-)
+        ld c, a
+        ld a, (hl-)
+        ld e, a
+        ld a, (hl-)
+        ld l, (hl)
+        ld h, a
+
+.ui_draw_frame_row::
+        ld a, c
+        or a
+        jr z, 2$
+
+        WAIT_STAT
+        ld a, e
+        ld (hl+), a
+
+        dec c
+        jr z, 2$
+
+        inc e
+
+        ld b, c
+        dec b
+        jr z, 1$
+3$:
+        WAIT_STAT
+        ld a, e
+        ld (hl+), a
+        dec c
+        dec b
+        jr nz, 3$
+1$:
+        inc e
+        WAIT_STAT
+        ld (hl), e
+2$:
         ret

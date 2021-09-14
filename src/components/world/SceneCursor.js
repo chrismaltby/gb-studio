@@ -30,6 +30,7 @@ import {
   COLLISION_ALL,
   TILE_PROPS,
 } from "../../consts";
+import clipboardActions from "store/features/clipboard/clipboardActions";
 
 class SceneCursor extends Component {
   constructor() {
@@ -98,7 +99,6 @@ class SceneCursor extends Component {
       scene,
       actorDefaults,
       triggerDefaults,
-      clipboardVariables,
       selectScene,
       showCollisions,
       showLayers,
@@ -110,6 +110,9 @@ class SceneCursor extends Component {
       editSearchTerm,
       hoverPalette,
       setSelectedPalette,
+      pasteMode,
+      pasteTriggerAt,
+      pasteActorAt,
     } = this.props;
 
     this.lockX = undefined;
@@ -120,24 +123,39 @@ class SceneCursor extends Component {
     }
 
     if (tool === "actors") {
-      addActor({
-        sceneId,
-        x,
-        y,
-        defaults: actorDefaults,
-        variables: clipboardVariables,
-      });
+      if (pasteMode) {
+        pasteActorAt({
+          sceneId,
+          x,
+          y,
+        });
+      } else {
+        addActor({
+          sceneId,
+          x,
+          y,
+          defaults: actorDefaults,
+        });
+      }
       setTool({ tool: "select" });
     } else if (tool === "triggers") {
-      addTrigger({
-        sceneId,
-        x,
-        y,
-        width: 1,
-        height: 1,
-        defaults: triggerDefaults,
-        variables: clipboardVariables,
-      });
+      if (pasteMode) {
+        pasteTriggerAt({
+          sceneId,
+          x,
+          y,
+        });
+      } else {
+        addTrigger({
+          sceneId,
+          x,
+          y,
+          width: 1,
+          height: 1,
+          defaults: triggerDefaults,
+        });
+      }
+
       this.startX = x;
       this.startY = y;
       this.setState({ resize: true });
@@ -592,6 +610,7 @@ function mapStateToProps(state, props) {
     actorDefaults,
     triggerDefaults,
     clipboardVariables,
+    pasteMode,
   } = state.editor;
   const showCollisions = state.project.present.settings.showCollisions;
   const scenesLookup = sceneSelectors.selectEntities(state);
@@ -620,6 +639,7 @@ function mapStateToProps(state, props) {
     x: x || 0,
     y: y || 0,
     tool,
+    pasteMode,
     selectedPalette,
     selectedTileType,
     selectedBrush,
@@ -637,10 +657,12 @@ function mapStateToProps(state, props) {
 
 const mapDispatchToProps = {
   addActor: entitiesActions.addActor,
+  pasteActorAt: clipboardActions.pasteActorAt,
   removeActorAt: entitiesActions.removeActorAt,
   paintCollision: entitiesActions.paintCollision,
   paintColor: entitiesActions.paintColor,
   addTrigger: entitiesActions.addTrigger,
+  pasteTriggerAt: clipboardActions.pasteTriggerAt,
   removeTriggerAt: entitiesActions.removeTriggerAt,
   resizeTrigger: entitiesActions.resizeTrigger,
   selectScene: editorActions.selectScene,

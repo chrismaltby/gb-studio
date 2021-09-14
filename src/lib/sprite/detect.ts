@@ -6,6 +6,7 @@ import {
   SpriteAnimation,
   SpriteAnimationType,
   SpriteSheet,
+  SpriteState,
 } from "store/features/entities/entitiesTypes";
 import { assetFilename } from "../helpers/gbstudio";
 import DetectSpriteWorker, { DetectSpriteResult } from "./detectSprite.worker";
@@ -20,8 +21,10 @@ import {
 interface DetectedSprite {
   spriteSheetId: string;
   spriteAnimations: SpriteAnimation[];
+  spriteStates: SpriteState[];
   metasprites: Metasprite[];
   metaspriteTiles: MetaspriteTile[];
+  state: SpriteState;
   changes: Partial<SpriteSheet>;
 }
 
@@ -150,19 +153,27 @@ export const detect = (
           })
         ) + 16;
 
+      const state: SpriteState = {
+        id: spriteSheet.states?.[0] || uuid(),
+        name: "",
+        animationType,
+        flipLeft,
+        animations: animations.map((a) => a.id),
+      };
+
       const changes: Partial<SpriteSheet> = {
         canvasWidth: roundUp16(furthestX * 2),
         canvasHeight: roundUp16(furthestY),
-        animationType,
-        flipLeft,
       };
 
       clearTimeout(failedTimer);
       return resolve({
         spriteSheetId: spriteSheet.id,
         spriteAnimations: animations,
+        spriteStates: [],
         metasprites,
         metaspriteTiles,
+        state,
         changes,
       });
     };
@@ -227,9 +238,36 @@ export const detectClassic = (spriteSheet: SpriteSheet): DetectedSprite => {
   } else if (numFrames === 6) {
     animationType = "multi_movement";
     flipLeft = true;
-    animations[0].frames.push(metasprites[4].id);
-    animations[2].frames.push(metasprites[2].id);
-    animations[3].frames.push(metasprites[0].id);
+
+    // Clone idle frames
+    [4, 2, 0].forEach((index) => {
+      const originalMetasprite = metasprites[index];
+      const originalTileLeft = metaspriteTiles.find(
+        (tile) => originalMetasprite.tiles[0] === tile.id
+      ) as MetaspriteTile;
+      const originalTileRight = metaspriteTiles.find(
+        (tile) => originalMetasprite.tiles[1] === tile.id
+      ) as MetaspriteTile;
+      const tileLeft: MetaspriteTile = {
+        ...originalTileLeft,
+        id: uuid(),
+      };
+      const tileRight: MetaspriteTile = {
+        ...originalTileRight,
+        id: uuid(),
+      };
+      const metasprite: Metasprite = {
+        id: uuid(),
+        tiles: [tileLeft.id, tileRight.id],
+      };
+      metaspriteTiles.push(tileLeft);
+      metaspriteTiles.push(tileRight);
+      metasprites.push(metasprite);
+    });
+
+    animations[0].frames.push(metasprites[6].id);
+    animations[2].frames.push(metasprites[7].id);
+    animations[3].frames.push(metasprites[8].id);
     animations[4].frames.push(metasprites[5].id);
     animations[4].frames.push(metasprites[4].id);
     animations[6].frames.push(metasprites[3].id);
@@ -254,18 +292,26 @@ export const detectClassic = (spriteSheet: SpriteSheet): DetectedSprite => {
     }
   }
 
+  const state: SpriteState = {
+    id: spriteSheet.states?.[0] || uuid(),
+    name: "",
+    animationType,
+    flipLeft,
+    animations: animations.map((a) => a.id),
+  };
+
   const changes: Partial<SpriteSheet> = {
     canvasWidth: 16,
     canvasHeight: 16,
-    animationType,
-    flipLeft,
   };
 
   return {
     spriteSheetId: spriteSheet.id,
     spriteAnimations: animations,
+    spriteStates: [],
     metasprites,
     metaspriteTiles,
+    state,
     changes,
   };
 };

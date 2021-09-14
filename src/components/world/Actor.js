@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import SpriteSheetCanvas from "./SpriteSheetCanvas";
 import { ActorShape, PaletteShape } from "store/stateShape";
 import { getCachedObject } from "lib/helpers/cache";
-import { DMG_PALETTE, MIDDLE_MOUSE, SPRITE_TYPE_STATIC } from "../../consts";
+import { DMG_PALETTE, MIDDLE_MOUSE } from "../../consts";
 import {
   actorSelectors,
   paletteSelectors,
@@ -31,7 +31,7 @@ class Actor extends Component {
 
   render() {
     const { actor, selected, showSprite, palette, palettes } = this.props;
-    const { x, y, spriteSheetId, direction, spriteType, frame } = actor;
+    const { x, y, spriteSheetId, direction } = actor;
     return (
       <>
         {selected && actor.isPinned && <div className="Actor__ScreenPreview" />}
@@ -44,14 +44,16 @@ class Actor extends Component {
           }}
         >
           {showSprite && (
-            <SpriteSheetCanvas
-              spriteSheetId={spriteSheetId}
-              direction={direction}
-              frame={spriteType === SPRITE_TYPE_STATIC ? frame : 0}
-              palette={palette}
-              palettes={palettes}
-              offsetPosition
-            />
+            <div style={{ pointerEvents: "none" }}>
+              <SpriteSheetCanvas
+                spriteSheetId={spriteSheetId}
+                direction={direction}
+                frame={0}
+                palette={palette}
+                palettes={palettes}
+                offsetPosition
+              />
+            </div>
           )}
         </div>
       </>

@@ -1,6 +1,14 @@
 const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_CAMERA_MOVE_TO";
+const groups = ["EVENT_GROUP_CAMERA"];
+
+const autoLabel = (fetchArg) => {
+  return l10n("EVENT_CAMERA_MOVE_TO_LABEL", {
+    x: fetchArg("x"),
+    y: fetchArg("y"),
+  });
+};
 
 const fields = [
   {
@@ -35,6 +43,8 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  autoLabel,
+  groups,
   fields,
   compile,
 };

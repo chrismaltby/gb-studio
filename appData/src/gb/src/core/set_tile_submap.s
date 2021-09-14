@@ -93,14 +93,14 @@ _set_xy_win_submap::
 .set_xy_win_submap::
         push    hl              ; store wh
         ldh     a,(.LCDC)
-        bit     6,a
+        bit     LCDCF_B_WIN9C00,a
         jr      z,.is98
         jr      .is9c
         ;; set background tile table from (bc) at xy = de of size wh = hl
 .set_xy_bkg_submap::
         push    hl              ; store wh
         ldh     a,(.LCDC)
-        bit     3,a
+        bit     LCDCF_B_BG9C00,a
         jr      nz,.is9c
 .is98:
         ld      hl,#0x9800

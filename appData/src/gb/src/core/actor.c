@@ -1,15 +1,16 @@
 #pragma bank 1
 
+#include "actor.h"
+
 #include <gb/gb.h>
+#include <gb/metasprites.h>
 #include <string.h>
 
-#include "actor.h"
 #include "game_time.h"
 #include "scroll.h"
 #include "linked_list.h"
 #include "math.h"
 #include "collision.h"
-#include "metasprite.h"
 #include "vm.h"
 
 #ifdef STRICT
@@ -38,7 +39,6 @@ actor_t *invalid;
 UBYTE player_moving;
 UBYTE player_iframes;
 actor_t *player_collision_actor;
-far_ptr_t *script_p_hit1, script_p_hit2, script_p_hit3;
 actor_t *emote_actor;
 UBYTE emote_timer;
 
@@ -67,7 +67,7 @@ void actors_update() __nonbanked {
     actor = &PLAYER;
 
     if (emote_actor) {
-        SWITCH_ROM_MBC1(BANK_EMOTE_METASPRITE); // bank of emote_offsets[] and emote_metasprite[]
+        SWITCH_ROM(BANK_EMOTE_METASPRITE); // bank of emote_offsets[] and emote_metasprite[]
         screen_x = (emote_actor->pos.x >> 4) - scroll_x + 8;
         screen_y = (emote_actor->pos.y >> 4) - scroll_y - 16;   
         if (emote_timer < EMOTE_BOUNCE_FRAMES) {
@@ -117,7 +117,7 @@ void actors_update() __nonbanked {
             }
         }
 
-        SWITCH_ROM_MBC1(actor->sprite.bank);
+        SWITCH_ROM(actor->sprite.bank);
         spritesheet_t *sprite = actor->sprite.ptr;
         
         allocated_hardware_sprites += move_metasprite(
@@ -131,7 +131,7 @@ void actors_update() __nonbanked {
         actor = actor->prev;
     }
 
-    SWITCH_ROM_MBC1(_save);
+    SWITCH_ROM(_save);
 }
 
 void deactivate_actor(actor_t *actor) __banked {
@@ -312,27 +312,9 @@ void actors_handle_player_collision() __banked {
     if (player_iframes == 0 && player_collision_actor != NULL) {
         if (player_collision_actor->collision_group) {
             // Execute scene player hit scripts based on actor's collision group
-            switch (player_collision_actor->collision_group) {
-                case COLLISION_GROUP_1: {
-                    if (PLAYER.script_hit1.bank) {
-                        script_execute(PLAYER.script_hit1.bank, PLAYER.script_hit1.ptr, 0, 0);
-                    }
-                    break;
-                }
-                case COLLISION_GROUP_2: {
-                    if (PLAYER.script_hit2.bank) {
-                        script_execute(PLAYER.script_hit2.bank, PLAYER.script_hit2.ptr, 0, 0);
-                    }
-                    break;
-                }                
-                case COLLISION_GROUP_3: {
-                    if (PLAYER.script_hit3.bank) {
-                        script_execute(PLAYER.script_hit3.bank, PLAYER.script_hit3.ptr, 0, 0);
-                    }
-                    break;
-                } 
+            if (PLAYER.script_hit1.bank) {
+                script_execute(PLAYER.script_hit1.bank, PLAYER.script_hit1.ptr, 0, 1, (UWORD)(player_collision_actor->collision_group));
             }
-  
             // Execute actor's onHit player script
             if (player_collision_actor->script.bank) {
                 script_execute(player_collision_actor->script.bank,

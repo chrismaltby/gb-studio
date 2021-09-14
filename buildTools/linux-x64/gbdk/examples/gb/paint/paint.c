@@ -1,4 +1,5 @@
 #include <gb/gb.h>
+#include <stdint.h>
 #include <gb/drawing.h>
 
 #define NB_TOOLS 18
@@ -23,17 +24,17 @@
 
 typedef struct icon_info_
 {
-  UBYTE data_idx; /* Index of data in the data array */
-  UBYTE x, y, w, h; /* Position and size (in tiles) */
-  UBYTE up, down, left, right; /* Index of next icons (for cursor movements) */
-  UBYTE cursor; /* Cursor associated with icon */
+  uint8_t data_idx; /* Index of data in the data array */
+  uint8_t x, y, w, h; /* Position and size (in tiles) */
+  uint8_t up, down, left, right; /* Index of next icons (for cursor movements) */
+  uint8_t cursor; /* Cursor associated with icon */
 } icon_info;
 
 typedef struct cursor_info_
 {
-  UBYTE data_idx; /* Index of data in the data array */
-  UBYTE w, h; /* Size (in tiles) */
-  UBYTE hot_x, hot_y; /* Position of hot point, relatice to top-left of sprite (in pixels) */
+  uint8_t data_idx; /* Index of data in the data array */
+  uint8_t w, h; /* Size (in tiles) */
+  uint8_t hot_x, hot_y; /* Position of hot point, relatice to top-left of sprite (in pixels) */
 } cursor_info;
 
 const icon_info icons[] =
@@ -246,21 +247,21 @@ const unsigned char cursors_data[][0x10] = {
 
 unsigned char data_buffer[NB_DATA_TILES][0x10];
 
-const UBYTE colors[] = { WHITE, DKGREY, LTGREY, BLACK };
-const UBYTE modes[] = { SOLID, OR, XOR, AND };
+const uint8_t colors[] = { WHITE, DKGREY, LTGREY, BLACK };
+const uint8_t modes[] = { SOLID, OR, XOR, AND };
 
-UBYTE current_tool;
-UBYTE current_color;
-UBYTE current_mode;
-UBYTE current_cursor;
-UBYTE menu_cursor_pos;
+uint8_t current_tool;
+uint8_t current_color;
+uint8_t current_mode;
+uint8_t current_cursor;
+uint8_t menu_cursor_pos;
 
-UBYTE cursor_x;
-UBYTE cursor_y;
+uint8_t cursor_x;
+uint8_t cursor_y;
 
 void set_cursor()
 {
-    UBYTE x, y, i;
+    uint8_t x, y, i;
 
     i = 0;
     for(x = 0; x < cursors[current_cursor].w; x++)
@@ -280,7 +281,7 @@ void set_cursor()
 
 void move_cursor()
 {
-  UBYTE x, y;
+  uint8_t x, y;
 
   for(x = 0; x < cursors[current_cursor].w; x++)
     for(y = 0; y < cursors[current_cursor].h; y++)
@@ -296,13 +297,13 @@ void move_menu_cursor()
 	      ((icons[menu_cursor_pos].y+icons[menu_cursor_pos].h)<<3) + 12);
 }
 
-void set_icon(UBYTE icon, UBYTE selected)
+void set_icon(uint8_t icon, uint8_t selected)
 {
-    UBYTE x, y;
+    uint8_t x, y;
 
     for(x = 0; x < icons[icon].w; x++)
 	for(y = 0; y < icons[icon].h; y++) {
-	    UWORD index = icons[icon].data_idx+((UWORD)x<<1)+y;
+	    uint16_t index = icons[icon].data_idx+((uint16_t)x<<1)+y;
 	    switch_data(icons[icon].x + x,
 			icons[icon].y + y,
 			selected ? selected_data[index] : data[index],
@@ -310,23 +311,23 @@ void set_icon(UBYTE icon, UBYTE selected)
 	}
 }
 
-void change_icon(UBYTE icon, UBYTE selected)
+void change_icon(uint8_t icon, uint8_t selected)
 {
-  UBYTE x, y;
+  uint8_t x, y;
 
   for(x = 0; x < icons[icon].w; x++)
     for(y = 0; y < icons[icon].h; y++)
       switch_data(icons[icon].x + x,
 		  icons[icon].y + y,
 		  (selected ?
-		   selected_data[icons[icon].data_idx+((UWORD)x<<1)+y] :
-		   data[icons[icon].data_idx+((UWORD)x<<1)+y]),
+		   selected_data[icons[icon].data_idx+((uint16_t)x<<1)+y] :
+		   data[icons[icon].data_idx+((uint16_t)x<<1)+y]),
 		  NULL);
 }
 
-void reset_icon(UBYTE icon)
+void reset_icon(uint8_t icon)
 {
-  UBYTE x, y;
+  uint8_t x, y;
 
   for(x = 0; x < icons[icon].w; x++)
     for(y = 0; y < icons[icon].h; y++)
@@ -338,7 +339,7 @@ void reset_icon(UBYTE icon)
 
 void splash()
 {
-  UBYTE x, y;
+  uint8_t x, y;
 
   cursor_x = 40;
   cursor_y = 50;
@@ -382,9 +383,9 @@ void splash()
 
 void menu()
 {
-  UBYTE i, key;
-  UBYTE slowdown;
-  UBYTE cursor;
+  uint8_t i, key;
+  uint8_t slowdown;
+  uint8_t cursor;
 
   slowdown = 50;
 
@@ -452,9 +453,9 @@ void menu()
 
 void run()
 {
-  UBYTE key;
-  UBYTE slowdown;
-  UBYTE drawn, erased;
+  uint8_t key;
+  uint8_t slowdown;
+  uint8_t drawn, erased;
 
   slowdown = 10;
   drawn = erased = 0;

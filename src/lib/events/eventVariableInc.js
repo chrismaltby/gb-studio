@@ -1,4 +1,11 @@
+const l10n = require("../helpers/l10n").default;
+
 const id = "EVENT_INC_VALUE";
+const groups = ["EVENT_GROUP_VARIABLES"];
+
+const autoLabel = (fetchArg) => {
+  return l10n("EVENT_INC_VALUE_LABEL", { variable: fetchArg("variable") });
+};
 
 const fields = [
   {
@@ -15,6 +22,8 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  autoLabel,
+  groups,
   fields,
   compile,
   allowedBeforeInitFade: true,

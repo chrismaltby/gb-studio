@@ -147,7 +147,6 @@ export const NavigatorSongs = ({
   const selectedSong = songsLookup[selectedSongId];
 
   useEffect(() => {
-    console.log("Set items", selectedSongId, allSongs, modified);
     setItems(
       allSongs
         .filter(ugeFilter)
@@ -212,7 +211,7 @@ export const NavigatorSongs = ({
           : [],
         [
           {
-            name: "Waves",
+            name: "Wave",
             id: "wave_group",
             instrumentId: "group",
             type: "wave",
@@ -337,7 +336,7 @@ export const NavigatorSongs = ({
                 }
               }}
             >
-              {({ selected, item }) =>
+              {({ item }) =>
                 item.isGroup ? (
                   <EntityListItem
                     item={item}

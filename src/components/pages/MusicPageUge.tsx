@@ -29,6 +29,7 @@ import { SongPianoRoll } from "../music/SongPianoRoll";
 import { Music } from "store/features/entities/entitiesTypes";
 import l10n from "lib/helpers/l10n";
 import { clampSidebarWidth } from "lib/helpers/window/sidebar";
+import { UgePlayer } from "components/music/UgePlayer";
 
 const Wrapper = styled.div`
   display: flex;
@@ -134,9 +135,6 @@ const MusicPageUge = () => {
       recalculateRightColumn();
     },
     onResizeComplete: (v) => {
-      if (v < 100) {
-        hideNavigator();
-      }
       if (v < 200) {
         setLeftPaneSize(200);
       }
@@ -166,13 +164,13 @@ const MusicPageUge = () => {
       }
     },
   });
-  const [] = useResizable({
+  const [,] = useResizable({
     initialSize: 231,
     direction: "top",
     minSize: 30,
     maxSize: windowHeight - 100,
   });
-  const [] = useState(true);
+  const [,] = useState(true);
 
   useEffect(() => {
     prevWindowWidthRef.current = windowWidth;
@@ -232,9 +230,20 @@ const MusicPageUge = () => {
     }
   };
 
-  const hideNavigator = () => {
-    dispatch(settingsActions.setShowNavigator(false));
-  };
+  const [channelStatus, setChannelStatus] = useState([
+    false,
+    false,
+    false,
+    false,
+  ]);
+  console.log(channelStatus);
+
+  const playing = useSelector((state: RootState) => state.tracker.playing);
+
+  const [playbackState, setPlaybackState] = useState([-1, -1]);
+  useEffect(() => {
+    setPlaybackState([-1, -1]);
+  }, [playing, song]);
 
   const view = useSelector((state: RootState) => state.tracker.view);
 
@@ -248,6 +257,8 @@ const MusicPageUge = () => {
             sequenceId={sequenceId}
             song={song}
             height={windowHeight - 100}
+            channelStatus={channelStatus}
+            playbackState={playbackState}
           />
         </div>
       );
@@ -257,19 +268,19 @@ const MusicPageUge = () => {
           sequenceId={sequenceId}
           song={song}
           height={windowHeight - 100}
+          playbackState={playbackState}
         />
       );
     }
-  }, [sequenceId, song, view, windowHeight]);
+  }, [channelStatus, playbackState, sequenceId, song, view, windowHeight]);
 
   return (
     <Wrapper>
       <div
         style={{
           transition: "opacity 0.3s ease-in-out",
-          width: leftPaneWidth,
+          width: Math.max(200, leftPaneWidth),
           background: themeContext.colors.sidebar.background,
-          opacity: leftPaneWidth < 100 ? 0.1 : 1,
           overflow: "hidden",
           position: "relative",
         }}
@@ -317,10 +328,15 @@ const MusicPageUge = () => {
           >
             <div style={{ position: "relative", height: "60px" }}>
               <SongEditorToolsPanel selectedSong={selectedSong} />
-              <SongEditorRightToolsPanel />
+              <SongEditorRightToolsPanel channelStatus={channelStatus} />
             </div>
             <SplitPaneVerticalDivider />
             {renderGridView()}
+            <UgePlayer
+              data={song}
+              onPlaybackUpdate={setPlaybackState}
+              onChannelStatusUpdate={setChannelStatus}
+            />
           </div>
           <SplitPaneHorizontalDivider onMouseDown={onResizeRight} />
           <div

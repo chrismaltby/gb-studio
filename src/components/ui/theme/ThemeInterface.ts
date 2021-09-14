@@ -1,4 +1,5 @@
 export interface ThemeInterface {
+  type: "light" | "dark";
   typography: {
     fontSize: string;
     menuFontSize: string;
@@ -9,6 +10,8 @@ export interface ThemeInterface {
     secondaryText: string;
     highlight: string;
     highlightText: string;
+    translucent: string;
+    hoverTranslucent: string;
     conditional: {
       level1: string;
       level2: string;
@@ -78,6 +81,45 @@ export interface ThemeInterface {
     list: {
       selectedBackground: string;
       activeBackground: string;
+    };
+    scripting: {
+      header: {
+        text: string;
+        background: string;
+        backgroundAlt: string;
+        nest1Background: string;
+        nest1BackgroundAlt: string;
+        nest2Background: string;
+        nest2BackgroundAlt: string;
+        nest3Background: string;
+        nest3BackgroundAlt: string;
+        nest4Background: string;
+        nest4BackgroundAlt: string;
+        commentBackground: string;
+        commentBackgroundAlt: string;
+      };
+      branch: {
+        nest1Background: string;
+        nest2Background: string;
+        nest3Background: string;
+        nest4Background: string;
+      };
+      form: {
+        background: string;
+      };
+      children: {
+        nest1Border: string;
+        nest1Text: string;
+        nest2Border: string;
+        nest2Text: string;
+        nest3Border: string;
+        nest3Text: string;
+        nest4Border: string;
+        nest4Text: string;
+      };
+      placeholder: {
+        background: string;
+      };
     };
     tracker: {
       background: string;

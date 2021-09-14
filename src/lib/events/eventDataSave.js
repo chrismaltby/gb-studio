@@ -1,6 +1,7 @@
 const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_SAVE_DATA";
+const groups = ["EVENT_GROUP_SAVE_DATA"];
 
 const fields = [
   {
@@ -9,12 +10,14 @@ const fields = [
   {
     key: "__scriptTabs",
     type: "tabs",
+    defaultValue: "save",
     values: {
-      end: l10n("FIELD_ON_SAVE"),
+      save: l10n("FIELD_ON_SAVE"),
     },
   },
   {
     key: "true",
+    label: l10n("FIELD_ON_SAVE"),
     type: "events",
   },
 ];
@@ -26,6 +29,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  groups,
   fields,
   compile,
 };

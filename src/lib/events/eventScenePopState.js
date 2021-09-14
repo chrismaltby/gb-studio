@@ -1,10 +1,14 @@
 const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_SCENE_POP_STATE";
+const groups = ["EVENT_GROUP_SCENE"];
 
 const fields = [
   {
     label: l10n("FIELD_SCENE_POP_STATE_DESCRIPTION"),
+  },
+  {
+    type: "break",
   },
   {
     key: "fadeSpeed",
@@ -23,6 +27,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  groups,
   fields,
   compile,
 };

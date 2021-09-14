@@ -1,6 +1,15 @@
 const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_COMMENT";
+const groups = ["EVENT_GROUP_MISC"];
+
+const autoLabel = (fetchArg, args) => {
+  if (args.text) {
+    return `// ${fetchArg("text")}`;
+  } else {
+    return `// ${l10n("EVENT_COMMENT")}`;
+  }
+};
 
 const fields = [
   {
@@ -17,6 +26,8 @@ const compile = () => {};
 
 module.exports = {
   id,
+  autoLabel,
+  groups,
   fields,
   compile,
   allowedBeforeInitFade: true,

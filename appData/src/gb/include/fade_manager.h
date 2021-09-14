@@ -15,6 +15,9 @@ extern UBYTE fade_black;
 extern UBYTE fade_timer;
 extern UBYTE fade_style;
 
+#define BCPS_REG_ADDR 0x68
+#define OCPS_REG_ADDR 0x6A
+
 /**
  * Initialise fade variables
  */

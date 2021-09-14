@@ -28,7 +28,7 @@ export type DutyInstrument = {
 
 export type WaveInstrument = {
   index: number;
-  name: any;
+  name: string;
   length: number | null;
   volume: number;
   wave_index: number;
@@ -43,5 +43,5 @@ export type NoiseInstrument = {
   shift_clock_mask: number;
   dividing_ratio: number;
   bit_count: 7 | 15;
-  noise_macro: Int8Array[];
+  noise_macro: number[];
 };

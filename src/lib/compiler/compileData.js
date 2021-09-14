@@ -487,9 +487,13 @@ export const precompileSprites = async (
     }
   }
 
-  const spriteData = await compileSprites(usedSprites, projectRoot, {
-    warnings,
-  });
+  const { spritesData, statesOrder, stateReferences } = await compileSprites(
+    usedSprites,
+    projectRoot,
+    {
+      warnings,
+    }
+  );
 
   // Build tilemap cache
   const usedTilesetCache = {};
@@ -497,7 +501,7 @@ export const precompileSprites = async (
     usedTilesetCache[JSON.stringify(tileset)] = tilesetIndex;
   });
 
-  const usedSpritesWithData = spriteData.map((sprite) => {
+  const usedSpritesWithData = spritesData.map((sprite) => {
     // Determine tileset
     const tileset = sprite.data;
     const tilesetKey = JSON.stringify(tileset);
@@ -520,6 +524,8 @@ export const precompileSprites = async (
 
   return {
     usedSprites: usedSpritesWithData,
+    statesOrder,
+    stateReferences,
     spriteLookup,
   };
 };
@@ -644,15 +650,25 @@ export const precompileFonts = async (
     }
   };
 
+  const addFontsFromString = (s) => {
+    (s.match(/(!F:[0-9a-f-]+!)/g) || [])
+      .map((id) => id.substring(3).replace(/!$/, ""))
+      .forEach(addFont);
+  };
+  
   walkScenesEvents(scenes, (cmd) => {
     if (cmd.args && cmd.args.fontId !== undefined) {
       addFont(cmd.args.fontId || fonts[0].id);
     }
     if (cmd.args && cmd.args.text !== undefined) {
       // Add fonts referenced in text
-      (String(cmd.args.text).match(/(!F:[0-9a-f-]+!)/g) || [])
-        .map((id) => id.substring(3).replace(/!$/, ""))
-        .forEach(addFont);
+      addFontsFromString(String(cmd.args.text));
+    }
+    if (cmd.command && cmd.command === "EVENT_MENU" && cmd.args) {
+      // Add fonts referenced in menu items
+      for (let i = 1; i <= cmd.args.items; i++) {
+        addFontsFromString(String(cmd.args[`option${i}`]));
+      }
     }
   });
 
@@ -767,9 +783,12 @@ export const precompileScenes = (
         // Filter out unused triggers which cause slow down
         // When walking over
         return (
-          trigger.script &&
-          trigger.script.length >= 1 &&
-          trigger.script[0].command !== EVENT_END
+          (trigger.script &&
+            trigger.script.length >= 1 &&
+            trigger.script[0].command !== EVENT_END) ||
+          (trigger.leaveScript &&
+            trigger.leaveScript.length >= 1 &&
+            trigger.leaveScript[0].command !== EVENT_END)
         );
       }),
       playerSpriteIndex,
@@ -817,7 +836,7 @@ const precompile = async (
   );
 
   progress(EVENT_MSG_PRE_SPRITES);
-  const { usedSprites } = await precompileSprites(
+  const { usedSprites, statesOrder, stateReferences } = await precompileSprites(
     projectData.spriteSheets,
     projectData.scenes,
     projectData.settings.defaultPlayerSprites,
@@ -903,6 +922,8 @@ const precompile = async (
     usedTilemapAttrs,
     backgroundData,
     usedSprites,
+    statesOrder,
+    stateReferences,
     usedMusic,
     usedFonts,
     sceneData,
@@ -1012,7 +1033,7 @@ const compile = async (
 
       const scriptName = `script_s${sceneIndex}${entityCode}_${scriptTypeCode}`;
 
-      if (script.length < 2) {
+      if (script.length === 0) {
         return null;
       }
 
@@ -1022,7 +1043,10 @@ const compile = async (
         scenes: precompiled.sceneData,
         music: precompiled.usedMusic,
         fonts: precompiled.usedFonts,
+        defaultFontId: projectData.settings.defaultFontId,
         sprites: precompiled.usedSprites,
+        statesOrder: precompiled.statesOrder,
+        stateReferences: precompiled.stateReferences,
         avatars: precompiled.usedAvatars,
         emotes: precompiled.usedEmotes,
         backgrounds: precompiled.usedBackgrounds,
@@ -1059,7 +1083,7 @@ const compile = async (
         .concat(
           scene.actors.map((actor) => {
             const actorStartScript = actor.startScript || [];
-            if (actorStartScript.length < 2) {
+            if (actorStartScript.length === 0) {
               return [];
             }
             return [].concat(
@@ -1074,7 +1098,7 @@ const compile = async (
               actorStartScript.filter((event) => event.command !== EVENT_END)
             );
           }),
-          scene.script.length >= 2
+          scene.script.length > 0
             ? {
                 command: "INTERNAL_SET_CONTEXT",
                 args: {
@@ -1105,7 +1129,7 @@ const compile = async (
       (entity, entityIndex) => {
         if (
           !entity[entityScriptField] ||
-          entity[entityScriptField].length <= 1
+          entity[entityScriptField].length === 0
         ) {
           return null;
         }
@@ -1122,19 +1146,91 @@ const compile = async (
         );
       };
 
+    const combineScripts = (scripts, canCollapse) => {
+      const filteredScripts = scripts.filter(
+        (s) => s.script && s.script.length > 0
+      );
+      if (!canCollapse || filteredScripts.length > 1) {
+        return filteredScripts.map((s) => {
+          return {
+            command: "INTERNAL_IF_PARAM",
+            args: {
+              parameter: s.parameter,
+              value: s.value,
+            },
+            children: {
+              true: s.script,
+            },
+          };
+        });
+      } else if (filteredScripts[0]) {
+        return filteredScripts[0].script;
+      }
+      return [];
+    };
+
+    const combinedPlayerHitScript = combineScripts(
+      [
+        { parameter: 0, value: 2, script: scene.playerHit1Script },
+        { parameter: 0, value: 4, script: scene.playerHit2Script },
+        { parameter: 0, value: 8, script: scene.playerHit3Script },
+      ],
+      false
+    );
+
     return {
       start: bankSceneEvents(scene, sceneIndex),
-      playerHit1: bankEntityEvents("scene", "playerHit1Script")(scene),
-      playerHit2: bankEntityEvents("scene", "playerHit2Script")(scene),
-      playerHit3: bankEntityEvents("scene", "playerHit3Script")(scene),
+      playerHit1: compileScript(
+        combinedPlayerHitScript,
+        "scene",
+        scene,
+        sceneIndex,
+        false,
+        false,
+        "playerHit1Script"
+      ),
       actors: scene.actors.map(bankEntityEvents("actor")),
       actorsMovement: scene.actors.map(
         bankEntityEvents("actor", "updateScript")
       ),
-      actorsHit1: scene.actors.map(bankEntityEvents("actor", "hit1Script")),
-      actorsHit2: scene.actors.map(bankEntityEvents("actor", "hit2Script")),
-      actorsHit3: scene.actors.map(bankEntityEvents("actor", "hit3Script")),
-      triggers: scene.triggers.map(bankEntityEvents("trigger")),
+      actorsHit1: scene.actors.map((entity, entityIndex) => {
+        const combinedActorScript = combineScripts(
+          [
+            { parameter: 0, value: 2, script: entity.hit1Script },
+            { parameter: 0, value: 4, script: entity.hit2Script },
+            { parameter: 0, value: 8, script: entity.hit3Script },
+          ],
+          false
+        );
+        return compileScript(
+          combinedActorScript,
+          "actor",
+          entity,
+          entityIndex,
+          false,
+          false,
+          "hit1Script"
+        );
+      }),
+      triggers: scene.triggers.map((entity, entityIndex) => {
+        const combinedTriggerScript = combineScripts(
+          [
+            { parameter: 0, value: 1, script: entity.script },
+            { parameter: 0, value: 2, script: entity.leaveScript },
+          ],
+          true
+        );
+
+        return compileScript(
+          combinedTriggerScript,
+          "trigger",
+          entity,
+          entityIndex,
+          false,
+          true,
+          "script"
+        );
+      }),
     };
   });
 
@@ -1203,7 +1299,11 @@ const compile = async (
   precompiled.usedSprites.forEach((sprite, spriteIndex) => {
     output[`spritesheet_${spriteIndex}.c`] = compileSpriteSheet(
       sprite,
-      spriteIndex
+      spriteIndex,
+      {
+        statesOrder: precompiled.statesOrder,
+        stateReferences: precompiled.stateReferences,
+      }
     );
     output[`spritesheet_${spriteIndex}.h`] = compileSpriteSheetHeader(
       sprite,
@@ -1337,7 +1437,10 @@ const compile = async (
     warnings,
   });
 
-  output["game_globals.i"] = compileGameGlobalsInclude(variableAliasLookup);
+  output["game_globals.i"] = compileGameGlobalsInclude(
+    variableAliasLookup,
+    precompiled.stateReferences
+  );
   output[`script_engine_init.s`] = compileScriptEngineInit({
     startX,
     startY,

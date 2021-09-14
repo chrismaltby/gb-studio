@@ -40,6 +40,7 @@ import {
   isUnionPropertyValue,
   isUnionVariableValue,
 } from "store/features/entities/entitiesHelpers";
+import { lexText } from "lib/fonts/lexText";
 
 type ScriptOutput = string[];
 
@@ -71,13 +72,15 @@ interface ScriptBuilderOptions {
   variableAliasLookup: Dictionary<string>;
   scenes: ScriptBuilderScene[];
   sprites: ScriptBuilderEntity[];
+  statesOrder: string[];
+  stateReferences: string[];
   fonts: PrecompiledFontData[];
+  defaultFontId: string;
   music: PrecompiledMusicTrack[];
   avatars: ScriptBuilderEntity[];
   emotes: ScriptBuilderEntity[];
   palettes: Palette[];
   customEvents: CustomEvent[];
-  characterEncoding: string;
   entity?: ScriptBuilderEntity;
   engineFields: Dictionary<EngineFieldSchema>;
   settings: SettingsState;
@@ -337,6 +340,7 @@ class ScriptBuilder {
   stackPtr: number;
   labelStackSize: Dictionary<number>;
   includeActor: boolean;
+  includeParams: number[];
   headers: string[];
 
   constructor(
@@ -355,13 +359,15 @@ class ScriptBuilder {
       engineFields: options.engineFields || {},
       scenes: options.scenes || [],
       sprites: options.sprites || [],
+      statesOrder: options.statesOrder || [],
+      stateReferences: options.stateReferences || [],
       fonts: options.fonts || [],
+      defaultFontId: options.defaultFontId || "",
       music: options.music || [],
       avatars: options.avatars || [],
       emotes: options.emotes || [],
       palettes: options.palettes || [],
       customEvents: options.customEvents || [],
-      characterEncoding: options.characterEncoding || "",
       additionalScripts: options.additionalScripts || {},
       symbols: options.symbols || {},
       argLookup: options.argLookup || { actor: {}, variable: {} },
@@ -376,6 +382,7 @@ class ScriptBuilder {
     this.stackPtr = 0;
     this.labelStackSize = {};
     this.includeActor = false;
+    this.includeParams = [];
     this.headers = ["vm.i", "data/game_globals.i"];
   }
 
@@ -765,9 +772,12 @@ class ScriptBuilder {
     this._addCmd("VM_MEMCPY", dest, source, count);
   };
 
+  _getThreadLocal = (dest: ScriptBuilderStackVariable, local: number) => {
+    this._addCmd("VM_GET_TLOCAL", dest, local);
+  };
+
   _string = (str: string) => {
-    const { characterEncoding } = this.options;
-    this._addCmd(`.asciz "${encodeString(str, characterEncoding)}"`);
+    this._addCmd(`.asciz "${str}"`);
   };
 
   _importFarPtrData = (farPtr: string) => {
@@ -1103,6 +1113,11 @@ class ScriptBuilder {
     );
   };
 
+  _actorSetAnimState = (addr: string, state: string) => {
+    this.includeActor = true;
+    this._addCmd("VM_ACTOR_SET_ANIM_SET", addr, state);
+  };
+
   _actorEmote = (addr: string, symbol: string) => {
     this.includeActor = true;
     this._addCmd("VM_ACTOR_EMOTE", addr, `___bank_${symbol}`, `_${symbol}`);
@@ -1125,48 +1140,64 @@ class ScriptBuilder {
     avatarIndex?: number,
     scrollHeight?: number
   ) => {
-    let text = inputText;
+    const { fonts, defaultFontId } = this.options;
+    let font = fonts.find((f) => f.id === defaultFontId);
 
-    const inlineVariables = (
-      text.match(/(\$L[0-9]\$|\$T[0-1]\$|\$V[0-9]\$|\$[0-9]+\$)/g) || []
-    ).map((s) => s.replace(/\$/g, ""));
+    if (!font) {
+      font = fonts[0];
+    }
 
-    const inlineFonts = (text.match(/(!F:[0-9a-f-]+!)/g) || []).map((id) =>
-      id.substring(3).replace(/!$/, "")
-    );
+    if (!font) {
+      this._loadText(0);
+      this._string("UNABLE TO LOAD FONT");
+      return;
+    }
 
+    const textTokens = lexText(inputText);
+
+    let text = "";
     const indirectVars: string[] = [];
-    const usedVariableAliases = inlineVariables.map((variable) => {
-      if (variable.match(/^V[0-9]$/)) {
-        const key = variable.replace(/V/, "");
-        const arg = this.options.argLookup.variable[key];
-        if (!arg) {
-          throw new Error("Cant find arg");
+    const usedVariableAliases: string[] = [];
+
+    textTokens.forEach((token) => {
+      if (token.type === "text") {
+        text += encodeString(token.value, font?.mapping);
+      } else if (token.type === "font") {
+        const newFont = fonts.find((f) => f.id === token.fontId);
+        if (newFont) {
+          const fontIndex = this._getFontIndex(token.fontId);
+          font = newFont;
+          text += textCodeSetFont(fontIndex);
         }
-        indirectVars.unshift(arg);
-        return `.ARG${indirectVars.length - 1}`;
+      } else if (token.type === "variable" || token.type === "char") {
+        const variable = token.variableId;
+        if (variable.match(/^V[0-9]$/)) {
+          const key = variable.replace(/V/, "");
+          const arg = this.options.argLookup.variable[key];
+          if (!arg) {
+            throw new Error("Cant find arg");
+          }
+          indirectVars.unshift(arg);
+          usedVariableAliases.push(`.ARG${indirectVars.length - 1}`);
+        } else {
+          usedVariableAliases.push(
+            this.getVariableAlias(variable.replace(/^0/g, ""))
+          );
+        }
+        if (token.type === "variable") {
+          text += "%d";
+        } else {
+          text += "%d"; // @todo Should be %c but seems to be broken right now
+        }
+      } else if (token.type === "speed") {
+        text += textCodeSetSpeed(token.speed);
       }
-      return this.getVariableAlias(variable.replace(/^0/g, ""));
-    });
-
-    // Replace speed codes
-    text = text.replace(/!S([0-5])!/g, (_match, value: string) => {
-      return `\\001\\${decOct(Number(value) + 2)}`;
-    });
-
-    inlineVariables.forEach((code) => {
-      text = text.replace(`$${code}$`, "%d");
-    });
-
-    inlineFonts.forEach((fontId) => {
-      const fontIndex = this._getFontIndex(fontId);
-      text = text.replace(`!F:${fontId}!`, `\\002\\${decOct(fontIndex + 1)}`);
     });
 
     // Replace newlines with scroll code if larger than max dialogue size
     if (scrollHeight) {
       let numNewlines = 0;
-      text = text.replace(/\n/g, (newline) => {
+      text = text.replace(/\\n/g, (newline) => {
         numNewlines++;
         if (numNewlines > scrollHeight - 1) {
           return "\\r";
@@ -1182,10 +1213,12 @@ class ScriptBuilder {
     }
 
     this._loadText(usedVariableAliases.length);
+
     if (usedVariableAliases.length > 0) {
       this._dw(...usedVariableAliases);
     }
 
+    // Add avatar
     if (avatarIndex !== undefined) {
       const { fonts } = this.options;
       const avatarFontSize = 16;
@@ -1377,6 +1410,15 @@ class ScriptBuilder {
 
   _musicStop = () => {
     this._addCmd("VM_MUSIC_STOP");
+  };
+
+  _musicRoutine = (routine: number, symbol: string) => {
+    this._addCmd(
+      "VM_MUSIC_ROUTINE",
+      routine,
+      `___bank_${symbol}`,
+      `_${symbol}`
+    );
   };
 
   _soundPlay = (
@@ -1815,6 +1857,16 @@ class ScriptBuilder {
     }
   };
 
+  actorSetState = (state: string) => {
+    const { statesOrder, stateReferences } = this.options;
+    const stateIndex = statesOrder.indexOf(state);
+    if (stateIndex > -1) {
+      this._addComment("Actor Set Animation State");
+      this._actorSetAnimState("ACTOR", stateReferences[stateIndex]);
+      this._addNL();
+    }
+  };
+
   actorSetMovementSpeed = (speed = 1) => {
     this._addComment("Actor Set Movement Speed");
     this._actorSetMoveSpeed("ACTOR", Math.round(speed * 16));
@@ -1977,7 +2029,10 @@ class ScriptBuilder {
     const variableAlias = this.getVariableAlias(variable);
     const trueText = trimlines(args.trueText || "", 17, 1) || "Choice A";
     const falseText = trimlines(args.falseText || "", 17, 1) || "Choice B";
-    const choiceText = `\\001\\001 ${trueText}\n ${falseText}`;
+    const speedInstant = textCodeSetSpeed(0);
+    const gotoFirstLine = textCodeGoto(3, 2);
+    const gotoSecondLine = textCodeGoto(3, 3);
+    const choiceText = `${speedInstant}${gotoFirstLine}${trueText}\n${gotoSecondLine}${falseText}`;
     const numLines = choiceText.split("\n").length;
 
     this._addComment("Text Multiple Choice");
@@ -2016,7 +2071,7 @@ class ScriptBuilder {
   ) => {
     const variableAlias = this.getVariableAlias(setVariable);
     const optionsText = options.map(
-      (option, index) => trimlines(option || "", 6, 1) || `Item ${index + 1}`
+      (option, index) => textCodeSetFont(0) + (option || `Item ${index + 1}`)
     );
     const height =
       layout === "menu" ? options.length : Math.min(options.length, 4);
@@ -2914,6 +2969,14 @@ class ScriptBuilder {
     this._addNL();
   };
 
+  musicRoutineSet = (routine: number, script: ScriptEvent[]) => {
+    this._addComment(`Music Routine Attach`);
+    const scriptRef = this._compileSubScript("music", script);
+    const routineValue = Number(routine);
+    this._musicRoutine(routineValue, scriptRef);
+    this._addNL();
+  };
+
   // --------------------------------------------------------------------------
   // Sound
 
@@ -3290,6 +3353,28 @@ class ScriptBuilder {
     this._addNL();
   };
 
+  ifParamValue = (
+    parameter: number,
+    value: number,
+    truePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+  ) => {
+    if (!this.includeParams.includes(parameter)) {
+      this.includeParams.push(parameter);
+    }
+    const trueLabel = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+    this._addComment(`If Parameter ${parameter} Equals ${value}`);
+    this._stackPushConst(0);
+    this._getThreadLocal(".ARG0", parameter);
+    this._ifConst(".EQ", ".ARG0", value, trueLabel, 1);
+    this._jump(endLabel);
+    this._label(trueLabel);
+    this._compilePath(truePath);
+    this._stop();
+    this._label(endLabel);
+    this._addNL();
+  };
+
   ifColorSupported = (truePath = [], falsePath = []) => {
     const falseLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
@@ -3505,7 +3590,7 @@ class ScriptBuilder {
   };
 
   _compileSubScript = (
-    type: "input" | "timer" | "custom",
+    type: "input" | "timer" | "music" | "custom",
     script: ScriptEvent[],
     name?: string,
     options?: Partial<ScriptBuilderOptions>
@@ -3572,7 +3657,8 @@ ${
     : ""
 }
 .area _CODE_255
-${this.includeActor ? "\nACTOR = -4\n" : ""}
+${this.includeActor ? "\nACTOR = -4" : ""}
+
 ___bank_${name} = 255
 .globl ___bank_${name}
 

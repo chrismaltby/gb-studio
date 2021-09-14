@@ -127,6 +127,8 @@ const MathTextareaWrapper = styled.div`
   position: relative;
   display: inline-block;
   width: 100%;
+  font-size: ${(props) => props.theme.typography.fontSize};
+  font-family: monospace;
 
   .MentionsInput {
     font-family: monospace;
@@ -137,8 +139,7 @@ const MathTextareaWrapper = styled.div`
     background: ${(props) => props.theme.colors.input.background};
     border-radius: 4px;
     padding: 5px;
-    // min-height: 74px;
-    line-height: 18px;
+    line-height: 16px;
   }
 
   .MentionsInput__highlighter {
@@ -166,8 +167,9 @@ const MathTextareaWrapper = styled.div`
     box-sizing: border-box;
     width: 100%;
     height: 100%;
-    line-height: 18px;
+    line-height: 16px;
     font-family: monospace;
+    padding: 5px;
 
     :hover {
       background: ${(props) => props.theme.colors.input.hoverBackground};

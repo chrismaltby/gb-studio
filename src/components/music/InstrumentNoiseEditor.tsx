@@ -8,6 +8,7 @@ import { CheckboxField } from "ui/form/CheckboxField";
 import { FormDivider, FormRow } from "ui/form/FormLayout";
 import { SliderField } from "ui/form/SliderField";
 import { InstrumentLengthForm } from "./InstrumentLengthForm";
+import { NoiseMacroEditorForm } from "./NoiseMacroEditorForm";
 
 interface InstrumentNoiseEditorProps {
   id: string;
@@ -24,24 +25,6 @@ export const InstrumentNoiseEditor = ({
   const onChangeField =
     <T extends keyof NoiseInstrument>(key: T) =>
     (editValue: NoiseInstrument[T]) => {
-      dispatch(
-        trackerDocumentActions.editNoiseInstrument({
-          instrumentId: instrument.index,
-          changes: {
-            [key]: editValue,
-          },
-        })
-      );
-    };
-
-  const onChangeFieldInput =
-    <T extends keyof NoiseInstrument>(key: T) =>
-    (
-      e:
-        | React.ChangeEvent<HTMLInputElement>
-        | React.ChangeEvent<HTMLTextAreaElement>
-    ) => {
-      const editValue = castEventValue(e);
       dispatch(
         trackerDocumentActions.editNoiseInstrument({
           instrumentId: instrument.index,
@@ -128,6 +111,9 @@ export const InstrumentNoiseEditor = ({
             onChangeField("bit_count")(value);
           }}
         />
+      </FormRow>
+      <FormRow>
+        <NoiseMacroEditorForm macros={[0, 1, 2, 3, 4, 5]} />
       </FormRow>
     </>
   );

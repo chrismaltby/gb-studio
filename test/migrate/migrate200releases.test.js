@@ -1,5 +1,8 @@
 import migrateProject, {
   migrateFrom200r1To200r2Event,
+  migrateFrom200r9To200r10Triggers,
+  LATEST_PROJECT_VERSION,
+  LATEST_PROJECT_MINOR_VERSION,
 } from "../../src/lib/project/migrateProject";
 
 test("should migrate player set sprite with persist=true to match old default", () => {
@@ -48,11 +51,12 @@ test("should migrate EVENT_PLAYER_SET_SPRITE events from 2.0.0 r1 to 2.0.0 r2", 
     ],
     backgrounds: [],
     customEvents: [],
+    spriteSheets: [],
   };
   const newProject = JSON.parse(JSON.stringify(migrateProject(oldProject)));
   expect(newProject).toMatchObject({
-    _version: "2.0.0",
-    _release: "7",
+    _version: LATEST_PROJECT_VERSION,
+    _release: LATEST_PROJECT_MINOR_VERSION,
     settings: {
       startMoveSpeed: 1,
       startAnimSpeed: 15,
@@ -79,6 +83,7 @@ test("should migrate EVENT_PLAYER_SET_SPRITE events from 2.0.0 r1 to 2.0.0 r2", 
     ],
     backgrounds: [],
     customEvents: [],
+    spriteSheets: [],
     engineFieldValues: [
       {
         id: "fade_style",
@@ -111,10 +116,12 @@ test("should not migrate EVENT_PLAYER_SET_SPRITE events if already on 2.0.0 r2+"
         playerHit1Script: [],
         playerHit2Script: [],
         playerHit3Script: [],
+        spriteSheets: [],
       },
     ],
     backgrounds: [],
     customEvents: [],
+    spriteSheets: [],
   };
   const newProject = JSON.parse(JSON.stringify(migrateProject(oldProject)));
   expect(newProject.scenes.script).toEqual(oldProject.scenes.script);
@@ -141,15 +148,17 @@ test("should migrate EVENT_SET_INPUT_SCRIPT events from 2.0.0 r2 to 2.0.0 r4", (
         playerHit1Script: [],
         playerHit2Script: [],
         playerHit3Script: [],
+        spriteSheets: [],
       },
     ],
     backgrounds: [],
     customEvents: [],
+    spriteSheets: [],
   };
   const newProject = JSON.parse(JSON.stringify(migrateProject(oldProject)));
   expect(newProject).toMatchObject({
-    _version: "2.0.0",
-    _release: "7",
+    _version: LATEST_PROJECT_VERSION,
+    _release: LATEST_PROJECT_MINOR_VERSION,
     settings: {
       startMoveSpeed: 1,
       startAnimSpeed: 15,
@@ -175,6 +184,7 @@ test("should migrate EVENT_SET_INPUT_SCRIPT events from 2.0.0 r2 to 2.0.0 r4", (
     ],
     backgrounds: [],
     customEvents: [],
+    spriteSheets: [],
     engineFieldValues: [
       {
         id: "fade_style",
@@ -209,11 +219,12 @@ test("should not migrate 2.0.0 r2 EVENT_SET_INPUT_SCRIPT events if they already 
     ],
     backgrounds: [],
     customEvents: [],
+    spriteSheets: [],
   };
   const newProject = JSON.parse(JSON.stringify(migrateProject(oldProject)));
   expect(newProject).toMatchObject({
-    _version: "2.0.0",
-    _release: "7",
+    _version: LATEST_PROJECT_VERSION,
+    _release: LATEST_PROJECT_MINOR_VERSION,
     settings: {
       startMoveSpeed: 1,
       startAnimSpeed: 15,
@@ -245,6 +256,7 @@ test("should not migrate 2.0.0 r2 EVENT_SET_INPUT_SCRIPT events if they already 
     ],
     backgrounds: [],
     customEvents: [],
+    spriteSheets: [],
   });
 });
 
@@ -293,11 +305,12 @@ test("should migrate 2.0.0 r4 EVENT_ACTOR_SET_ANIMATION_SPEED events to store as
     ],
     backgrounds: [],
     customEvents: [],
+    spriteSheets: [],
   };
   const newProject = JSON.parse(JSON.stringify(migrateProject(oldProject)));
   expect(newProject).toMatchObject({
-    _version: "2.0.0",
-    _release: "7",
+    _version: LATEST_PROJECT_VERSION,
+    _release: LATEST_PROJECT_MINOR_VERSION,
     settings: {
       startAnimSpeed: 15,
       startMoveSpeed: 1,
@@ -344,6 +357,7 @@ test("should migrate 2.0.0 r4 EVENT_ACTOR_SET_ANIMATION_SPEED events to store as
     ],
     backgrounds: [],
     customEvents: [],
+    spriteSheets: [],
   });
 });
 
@@ -392,11 +406,12 @@ test("should migrate 2.0.0 r4 EVENT_ACTOR_SET_MOVEMENT_SPEED events to store as 
     ],
     backgrounds: [],
     customEvents: [],
+    spriteSheets: [],
   };
   const newProject = JSON.parse(JSON.stringify(migrateProject(oldProject)));
   expect(newProject).toMatchObject({
-    _version: "2.0.0",
-    _release: "7",
+    _version: LATEST_PROJECT_VERSION,
+    _release: LATEST_PROJECT_MINOR_VERSION,
     settings: {
       startAnimSpeed: 15,
       startMoveSpeed: 1,
@@ -443,6 +458,7 @@ test("should migrate 2.0.0 r4 EVENT_ACTOR_SET_MOVEMENT_SPEED events to store as 
     ],
     backgrounds: [],
     customEvents: [],
+    spriteSheets: [],
   });
 });
 
@@ -491,11 +507,12 @@ test("should migrate 2.0.0 r4 EVENT_LAUNCH_PROJECTILE events to store as number"
     ],
     backgrounds: [],
     customEvents: [],
+    spriteSheets: [],
   };
   const newProject = JSON.parse(JSON.stringify(migrateProject(oldProject)));
   expect(newProject).toMatchObject({
-    _version: "2.0.0",
-    _release: "7",
+    _version: LATEST_PROJECT_VERSION,
+    _release: LATEST_PROJECT_MINOR_VERSION,
     settings: {
       startAnimSpeed: 15,
       startMoveSpeed: 1,
@@ -542,6 +559,7 @@ test("should migrate 2.0.0 r4 EVENT_LAUNCH_PROJECTILE events to store as number"
     ],
     backgrounds: [],
     customEvents: [],
+    spriteSheets: [],
   });
 });
 
@@ -577,13 +595,14 @@ test("Should migrate actors to use number|null for animSpeed and number for move
     ],
     backgrounds: [],
     customEvents: [],
+    spriteSheets: [],
   };
 
   const newProject = JSON.parse(JSON.stringify(migrateProject(oldProject)));
 
   expect(newProject).toMatchObject({
-    _version: "2.0.0",
-    _release: "7",
+    _version: LATEST_PROJECT_VERSION,
+    _release: LATEST_PROJECT_MINOR_VERSION,
     settings: {},
     scenes: [
       {
@@ -624,6 +643,7 @@ test("Should migrate player to use number|null for animSpeed and number for move
     scenes: [],
     backgrounds: [],
     customEvents: [],
+    spriteSheets: [],
   };
 
   const oldProject2 = {
@@ -636,6 +656,7 @@ test("Should migrate player to use number|null for animSpeed and number for move
     scenes: [],
     backgrounds: [],
     customEvents: [],
+    spriteSheets: [],
   };
 
   const oldProject3 = {
@@ -648,6 +669,7 @@ test("Should migrate player to use number|null for animSpeed and number for move
     scenes: [],
     backgrounds: [],
     customEvents: [],
+    spriteSheets: [],
   };
 
   const newProject1 = JSON.parse(JSON.stringify(migrateProject(oldProject1)));
@@ -655,8 +677,8 @@ test("Should migrate player to use number|null for animSpeed and number for move
   const newProject3 = JSON.parse(JSON.stringify(migrateProject(oldProject3)));
 
   expect(newProject1).toMatchObject({
-    _version: "2.0.0",
-    _release: "7",
+    _version: LATEST_PROJECT_VERSION,
+    _release: LATEST_PROJECT_MINOR_VERSION,
     settings: {
       startMoveSpeed: 3,
       startAnimSpeed: 63,
@@ -665,8 +687,8 @@ test("Should migrate player to use number|null for animSpeed and number for move
   });
 
   expect(newProject2).toMatchObject({
-    _version: "2.0.0",
-    _release: "7",
+    _version: LATEST_PROJECT_VERSION,
+    _release: LATEST_PROJECT_MINOR_VERSION,
     settings: {
       startMoveSpeed: 1,
       startAnimSpeed: 15,
@@ -675,8 +697,8 @@ test("Should migrate player to use number|null for animSpeed and number for move
   });
 
   expect(newProject3).toMatchObject({
-    _version: "2.0.0",
-    _release: "7",
+    _version: LATEST_PROJECT_VERSION,
+    _release: LATEST_PROJECT_MINOR_VERSION,
     settings: {
       startMoveSpeed: 1,
       startAnimSpeed: 15,
@@ -719,13 +741,14 @@ test("Should migrate actors to use string for collisionGroup", () => {
     ],
     backgrounds: [],
     customEvents: [],
+    spriteSheets: [],
   };
 
   const newProject = JSON.parse(JSON.stringify(migrateProject(oldProject)));
 
   expect(newProject).toMatchObject({
-    _version: "2.0.0",
-    _release: "7",
+    _version: LATEST_PROJECT_VERSION,
+    _release: LATEST_PROJECT_MINOR_VERSION,
     settings: {},
     scenes: [
       {
@@ -754,5 +777,74 @@ test("Should migrate actors to use string for collisionGroup", () => {
         script: [],
       },
     ],
+  });
+});
+
+describe("migrateFrom200r9To200r10Triggers", () => {
+  test("Should add leaveScript to all triggers", () => {
+    const input = {
+      scenes: [
+        {
+          id: "scene1",
+          triggers: [
+            {
+              id: "trigger1",
+              script: [
+                {
+                  id: "event1",
+                  command: "EVENT_TEXT",
+                  args: { text: "Hello, World" },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      backgrounds: [],
+    };
+    const output = migrateFrom200r9To200r10Triggers(input);
+    expect(output.scenes).toHaveLength(1);
+    expect(output.scenes[0].triggers).toHaveLength(1);
+    expect(output.scenes[0].triggers[0].script).toEqual(
+      input.scenes[0].triggers[0].script
+    );
+    expect(output.scenes[0].triggers[0].leaveScript).toBeDefined();
+    expect(output.scenes[0].triggers[0].leaveScript).toHaveLength(0);
+  });
+
+  test("Should keep existing leaveScript when migrating if already exists", () => {
+    const input = {
+      scenes: [
+        {
+          id: "scene1",
+          triggers: [
+            {
+              id: "trigger1",
+              script: [
+                {
+                  id: "event1",
+                  command: "EVENT_TEXT",
+                  args: { text: "Hello, World" },
+                },
+              ],
+              leaveScript: [
+                {
+                  id: "event2",
+                  command: "EVENT_TEXT",
+                  args: { text: "Goodbye, World" },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      backgrounds: [],
+    };
+    const output = migrateFrom200r9To200r10Triggers(input);
+    expect(output.scenes[0].triggers[0].leaveScript).toBeDefined();
+    expect(output.scenes[0].triggers[0].leaveScript).toHaveLength(1);
+    expect(output.scenes[0].triggers[0].leaveScript).toEqual(
+      input.scenes[0].triggers[0].leaveScript
+    );
   });
 });

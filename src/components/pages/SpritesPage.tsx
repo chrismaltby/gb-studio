@@ -23,6 +23,7 @@ import { NavigatorSprites } from "../sprites/NavigatorSprites";
 import {
   spriteAnimationSelectors,
   spriteSheetSelectors,
+  spriteStateSelectors,
 } from "store/features/entities/entitiesState";
 import MetaspriteEditor from "../sprites/MetaspriteEditor";
 import SpriteTilePalette from "../sprites/SpriteTilePalette";
@@ -35,10 +36,24 @@ import { ZoomButton } from "ui/buttons/ZoomButton";
 import MetaspriteEditorPreviewSettings from "../sprites/MetaspriteEditorPreviewSettings";
 import spriteActions from "store/features/sprite/spriteActions";
 import { clampSidebarWidth } from "lib/helpers/window/sidebar";
+import useSorted from "ui/hooks/use-sorted";
+import { Button } from "ui/buttons/Button";
+import { TargetIcon } from "ui/icons/Icons";
+import { FixedSpacer } from "ui/spacing/Spacing";
 
 const Wrapper = styled.div`
   display: flex;
   width: 100%;
+`;
+
+const PrecisionIcon = styled(TargetIcon)`
+  && {
+    height: 16px;
+    width: 16px;
+    max-width: 16px;
+    max-height: 16px;
+    margin: -2px 0 0 0;
+  }
 `;
 
 const SpritesPage = () => {
@@ -65,11 +80,17 @@ const SpritesPage = () => {
   const spritesLookup = useSelector((state: RootState) =>
     spriteSheetSelectors.selectEntities(state)
   );
+  const spriteStatesLookup = useSelector((state: RootState) =>
+    spriteStateSelectors.selectEntities(state)
+  );
   const spriteAnimationsLookup = useSelector((state: RootState) =>
     spriteAnimationSelectors.selectEntities(state)
   );
   const navigationId = useSelector(
     (state: RootState) => state.editor.selectedSpriteSheetId
+  );
+  const navigationStateId = useSelector(
+    (state: RootState) => state.editor.selectedSpriteStateId
   );
   const animationId = useSelector(
     (state: RootState) => state.editor.selectedAnimationId
@@ -77,14 +98,24 @@ const SpritesPage = () => {
   const metaspriteId = useSelector(
     (state: RootState) => state.editor.selectedMetaspriteId
   );
-  const colorsEnabled = useSelector(
-    (state: RootState) => state.project.present.settings.customColorsEnabled
+  const precisionTileMode = useSelector(
+    (state: RootState) => state.editor.precisionTileMode
   );
-  const selectedSprite = spritesLookup[navigationId] || allSprites[0];
+  const [tmpPrecisionMode, setTmpPrecisionMode] = useState(false);
+
+  const sortedSprites = useSorted(allSprites);
+  const selectedSprite = spritesLookup[navigationId] || sortedSprites[0];
+
+  const selectedState =
+    spriteStatesLookup[navigationStateId] ||
+    spriteStatesLookup[selectedSprite.states[0]];
+
   const selectedAnimation =
     spriteAnimationsLookup[animationId] ||
-    spriteAnimationsLookup[selectedSprite.animations?.[0]];
+    (selectedState && spriteAnimationsLookup[selectedState.animations?.[0]]);
+
   const selectedId = selectedSprite?.id || "";
+  const selectedStateId = selectedState?.id || "";
   const selectedAnimationId = selectedAnimation?.id || "";
   const selectedMetaspriteId =
     metaspriteId || selectedAnimation?.frames[0] || "";
@@ -112,9 +143,6 @@ const SpritesPage = () => {
       recalculateRightColumn();
     },
     onResizeComplete: (v) => {
-      if (v < 100) {
-        hideNavigator();
-      }
       if (v < 200) {
         setLeftPaneSize(200);
       }
@@ -208,10 +236,6 @@ const SpritesPage = () => {
     }
   };
 
-  const hideNavigator = () => {
-    dispatch(settingsActions.setShowNavigator(false));
-  };
-
   const toggleTilesPane = useCallback(() => {
     if (centerPaneHeight === 30) {
       setCenterPaneSize(231);
@@ -236,14 +260,43 @@ const SpritesPage = () => {
     dispatch(editorActions.zoomReset({ section: "spriteTiles" }));
   }, [dispatch]);
 
+  const onTogglePrecisionTiles = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      e.stopPropagation();
+      dispatch(editorActions.setPrecisionTileMode(!precisionTileMode));
+    },
+    [dispatch, precisionTileMode]
+  );
+
+  const handleKeys = useCallback((e: KeyboardEvent) => {
+    if (e.altKey) {
+      setTmpPrecisionMode(true);
+    }
+  }, []);
+
+  const handleKeysUp = useCallback((e: KeyboardEvent) => {
+    if (!e.altKey) {
+      setTmpPrecisionMode(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeys);
+    window.addEventListener("keyup", handleKeysUp);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeys);
+      window.removeEventListener("keyup", handleKeysUp);
+    };
+  });
+
   return (
     <Wrapper>
       <div
         style={{
           transition: "opacity 0.3s ease-in-out",
-          width: leftPaneWidth,
+          width: Math.max(200, leftPaneWidth),
           background: themeContext.colors.sidebar.background,
-          opacity: leftPaneWidth < 100 ? 0.1 : 1,
           overflow: "hidden",
           position: "relative",
         }}
@@ -258,7 +311,9 @@ const SpritesPage = () => {
         >
           <NavigatorSprites
             height={windowHeight - 38}
+            selectedId={selectedId}
             selectedAnimationId={selectedAnimationId}
+            selectedStateId={selectedStateId}
             defaultFirst
           />
         </div>
@@ -288,10 +343,15 @@ const SpritesPage = () => {
               spriteSheetId={selectedId}
               metaspriteId={frameId}
               animationId={selectedAnimation?.id || ""}
+              spriteStateId={selectedStateId}
               hidden={frameId !== selectedMetaspriteId}
             />
           ))}
-          {colorsEnabled && <MetaspriteEditorPreviewSettings />}
+
+          <MetaspriteEditorPreviewSettings
+            spriteSheetId={selectedId}
+            metaspriteId={selectedMetaspriteId}
+          />
         </div>
         <SplitPaneVerticalDivider onMouseDown={onResizeCenter} />
         <div style={{ position: "relative", height: centerPaneHeight }}>
@@ -300,36 +360,57 @@ const SpritesPage = () => {
             collapsed={centerPaneHeight === 30}
             buttons={
               centerPaneHeight > 30 && (
-                <ZoomButton
-                  zoom={tilesZoom}
-                  size="small"
-                  variant="transparent"
-                  title={l10n("TOOLBAR_ZOOM_RESET")}
-                  titleIn={l10n("TOOLBAR_ZOOM_IN")}
-                  titleOut={l10n("TOOLBAR_ZOOM_OUT")}
-                  onZoomIn={onZoomIn}
-                  onZoomOut={onZoomOut}
-                  onZoomReset={onZoomReset}
-                />
+                <>
+                  <Button
+                    size="small"
+                    variant={
+                      precisionTileMode || tmpPrecisionMode
+                        ? "primary"
+                        : "transparent"
+                    }
+                    onClick={onTogglePrecisionTiles}
+                    title={`${l10n("FIELD_PRECISION_SELECTION")}${
+                      precisionTileMode ? ` (${l10n("FIELD_ENABLED")})` : ""
+                    }`}
+                  >
+                    <PrecisionIcon />
+                  </Button>
+                  <FixedSpacer width={5} />
+                  <ZoomButton
+                    zoom={tilesZoom}
+                    size="small"
+                    variant="transparent"
+                    title={l10n("TOOLBAR_ZOOM_RESET")}
+                    titleIn={l10n("TOOLBAR_ZOOM_IN")}
+                    titleOut={l10n("TOOLBAR_ZOOM_OUT")}
+                    onZoomIn={onZoomIn}
+                    onZoomOut={onZoomOut}
+                    onZoomReset={onZoomReset}
+                  />
+                </>
               )
             }
           >
-            {l10n("FIELD_TILES")} ({selectedSprite.numTiles} unique)
+            {l10n("FIELD_TILES")}
           </SplitPaneHeader>
-          <SpriteTilePalette id={selectedId} />
+          <SpriteTilePalette
+            id={selectedId}
+            precisionMode={precisionTileMode || tmpPrecisionMode}
+          />
         </div>
         <SplitPaneVerticalDivider />
         <SplitPaneHeader
           onToggle={toggleAnimationsPane}
           collapsed={!animationsOpen}
         >
-          {l10n("FIELD_FRAMES")}:{" "}
-          {getAnimationNameById(
-            selectedSprite.animationType,
-            selectedSprite.flipLeft,
-            selectedAnimationId,
-            selectedSprite.animations
-          )}
+          {l10n("FIELD_FRAMES")}
+          {selectedState &&
+            `: ${getAnimationNameById(
+              selectedState.animationType,
+              selectedState.flipLeft,
+              selectedAnimationId,
+              selectedState.animations
+            )}`}
         </SplitPaneHeader>
         {animationsOpen && (
           <SpriteAnimationTimeline
@@ -352,6 +433,7 @@ const SpritesPage = () => {
         <SpriteEditor
           id={selectedId}
           metaspriteId={selectedMetaspriteId}
+          spriteStateId={selectedStateId}
           animationId={selectedAnimation?.id || ""}
         />
       </div>

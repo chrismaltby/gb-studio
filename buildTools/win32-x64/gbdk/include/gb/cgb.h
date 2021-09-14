@@ -18,6 +18,7 @@
 #define _CGB_H
 
 #include <types.h>
+#include <stdint.h>
 
 /** Macro to create a CGB palette color entry out of the color components.
 
@@ -30,7 +31,7 @@
     @see set_bkg_palette(), set_sprite_palette()
  */
 #define RGB(r, g, b) \
-  ((((UINT16)(b) & 0x1f) << 10) | (((UINT16)(g) & 0x1f) << 5) | (((UINT16)(r) & 0x1f) << 0))
+  ((((uint16_t)(b) & 0x1f) << 10) | (((uint16_t)(g) & 0x1f) << 5) | (((uint16_t)(r) & 0x1f) << 0))
 
 /** Common colors based on the EGA default palette.
  */
@@ -72,9 +73,9 @@
     @see RGB(), set_bkg_palette_entry()
  */
 void
-set_bkg_palette(UINT8 first_palette,
-                UINT8 nb_palettes,
-                UINT16 *rgb_data) NONBANKED;
+set_bkg_palette(uint8_t first_palette,
+                uint8_t nb_palettes,
+                uint16_t *rgb_data) NONBANKED;
 
 /** Set CGB sprite palette(s).
 
@@ -92,9 +93,9 @@ set_bkg_palette(UINT8 first_palette,
     @see RGB(), set_sprite_palette_entry()
  */
 void
-set_sprite_palette(UINT8 first_palette,
-                   UINT8 nb_palettes,
-                   UINT16 *rgb_data) NONBANKED;
+set_sprite_palette(uint8_t first_palette,
+                   uint8_t nb_palettes,
+                   uint16_t *rgb_data) NONBANKED;
 
 /** Sets a single color in the specified CGB background palette.
 
@@ -106,9 +107,9 @@ set_sprite_palette(UINT8 first_palette,
  */
 
 void
-set_bkg_palette_entry(UINT8 palette,
-                      UINT8 entry,
-                      UINT16 rgb_data);
+set_bkg_palette_entry(uint8_t palette,
+                      uint8_t entry,
+                      uint16_t rgb_data);
 
 /** Sets a single color in the specified CGB sprite palette.
 
@@ -119,9 +120,9 @@ set_bkg_palette_entry(UINT8 palette,
     @see set_sprite_palette(), RGB()
  */
 void
-set_sprite_palette_entry(UINT8 palette,
-                         UINT8 entry,
-                         UINT16 rgb_data);
+set_sprite_palette_entry(uint8_t palette,
+                         uint8_t entry,
+                         uint16_t rgb_data);
 
 /** Set CPU speed to slow (Normal Speed) operation.
 

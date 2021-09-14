@@ -2,6 +2,7 @@
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
 /* eslint-disable no-console */
+const fs = require("fs");
 const locale = process.argv[2];
 
 if (!locale) {
@@ -9,6 +10,12 @@ if (!locale) {
   console.log("");
   console.log("Run as:");
   console.log("npm run missing-translations pt-PT");
+  console.log("");
+  process.exit();
+}
+
+if (locale === "en") {
+  console.log("Can't run script on English language file.");
   console.log("");
   process.exit();
 }
@@ -22,23 +29,45 @@ try {
   translation = require(`${__dirname}/${locale}.json`);
 } catch (e) {
   console.log(`Translation file not found ${locale}.json`);
-  process.exit();
+  console.log("Creating...");
+  console.log("");
 }
-const missing = Object.keys(en).reduce((memo, key) => {
-  if (translation[key] === undefined) {
-    memo.push(key);
-  }
-  return memo;
-}, []);
 
-if (missing.length > 0) {
-  console.log("Missing translations for:");
-  console.log("");
-  missing.forEach((key) => {
-    console.log(`  "${key}": "${en[key]}",`);
-  });
-  console.log("");
-} else {
-  console.log("All good!");
-  console.log("");
+const newTranslation = {};
+const removedKeys = [];
+const untranslatedKeys = [];
+Object.keys(en).forEach((key) => {
+  if (
+    !key.startsWith("//") &&
+    typeof en[key] === "string" &&
+    (translation[key] === undefined || translation[key] === en[key])
+  ) {
+    untranslatedKeys.push(key);
+  }
+  newTranslation[key] = translation[key] || en[key];
+});
+
+Object.keys(translation).forEach((key) => {
+  if (en[key] === undefined) {
+    removedKeys.push(key);
+  }
+});
+
+if (removedKeys.length > 0) {
+  console.log("Removed keys that were no longer in use");
+  console.log(
+    removedKeys.map((key) => `  ${key}: "${translation[key]}"`).join("\n")
+  );
 }
+
+if (untranslatedKeys.length > 0) {
+  console.log("Untranslated keys:");
+  console.log(
+    untranslatedKeys.map((key) => `  ${key}: "${en[key]}"`).join("\n")
+  );
+}
+
+fs.writeFileSync(
+  `${__dirname}/${locale}.json`,
+  JSON.stringify(newTranslation, null, 2)
+);

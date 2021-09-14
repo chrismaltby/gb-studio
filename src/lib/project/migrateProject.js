@@ -1,6 +1,11 @@
 /* eslint-disable no-nested-ternary */
 import { indexBy } from "../helpers/array";
-import { mapScenesEvents, mapEvents } from "../helpers/eventSystem";
+import {
+  mapScenesEvents,
+  mapEvents,
+  filterScenesEvents,
+  filterEvents,
+} from "../helpers/eventSystem";
 import generateRandomWalkScript from "../movement/generateRandomWalkScript";
 import generateRandomLookScript from "../movement/generateRandomLookScript";
 import { COLLISION_ALL, DMG_PALETTE } from "../../consts";
@@ -10,6 +15,7 @@ import uuid from "uuid";
 const indexById = indexBy("id");
 
 export const LATEST_PROJECT_VERSION = "2.0.0";
+export const LATEST_PROJECT_MINOR_VERSION = "10";
 
 /*
  * Helper function to make sure that all migrated functions
@@ -990,6 +996,32 @@ const migrateFrom200r6To200r7Scenes = (data) => {
 };
 
 /*
+ * Version 2.0.0 r8 moves sprite animations to be wrapped within states array
+ */
+const migrateFrom200r7To200r8Sprites = (data) => {
+  return {
+    ...data,
+    spriteSheets: data.spriteSheets.map((spriteSheet) => {
+      return {
+        ...spriteSheet,
+        states: [
+          {
+            id: uuid(),
+            name: "",
+            animationType: spriteSheet.animationType,
+            flipLeft: spriteSheet.flipLeft,
+            animations: spriteSheet.animations || [],
+          },
+        ],
+        animations: undefined,
+        flipLeft: undefined,
+        animationType: undefined,
+      };
+    }),
+  };
+};
+
+/*
  * Version 2.0.0 r7 moves default player sprite to be per scene type.
  * UI Palette merged into defaultBackgroundPaletteIds.
  */
@@ -1027,6 +1059,42 @@ const migrateFrom200r6To200r7Settings = (data) => {
         data.settings.defaultSpritePaletteId || DMG_PALETTE.id,
       ],
     },
+  };
+};
+
+/* Version 2.0.0 r8 removes EVENT_END commands marking the end of script branches
+ */
+const filterFrom200r8To200r9Event = (event) => {
+  return event.command !== "EVENT_END";
+};
+
+const migrateFrom200r8To200r9Events = (data) => {
+  return {
+    ...data,
+    scenes: filterScenesEvents(data.scenes, filterFrom200r8To200r9Event),
+    customEvents: (data.customEvents || []).map((customEvent) => {
+      return {
+        ...customEvent,
+        script: filterEvents(customEvent.script, filterFrom200r8To200r9Event),
+      };
+    }),
+  };
+};
+
+export const migrateFrom200r9To200r10Triggers = (data) => {
+  return {
+    ...data,
+    scenes: data.scenes.map((scene) => {
+      return {
+        ...scene,
+        triggers: scene.triggers.map((trigger) => {
+          return {
+            ...trigger,
+            leaveScript: trigger.leaveScript || [],
+          };
+        }),
+      };
+    }),
   };
 };
 
@@ -1088,6 +1156,18 @@ const migrateProject = (project) => {
       data = migrateFrom200r6To200r7Scenes(data);
       data = migrateFrom200r6To200r7Settings(data);
       release = "7";
+    }
+    if (release === "7") {
+      data = migrateFrom200r7To200r8Sprites(data);
+      release = "8";
+    }
+    if (release === "8") {
+      data = migrateFrom200r8To200r9Events(data);
+      release = "9";
+    }
+    if (release === "9") {
+      data = migrateFrom200r9To200r10Triggers(data);
+      release = "10";
     }
   }
 

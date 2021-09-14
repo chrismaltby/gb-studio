@@ -1,6 +1,13 @@
 const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_REMOVE_INPUT_SCRIPT";
+const groups = ["EVENT_GROUP_INPUT"];
+
+const autoLabel = (fetchArg) => {
+  return l10n("EVENT_REMOVE_INPUT_LABEL", {
+    input: fetchArg("input"),
+  });
+};
 
 const fields = [
   {
@@ -18,6 +25,8 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  autoLabel,
+  groups,
   fields,
   compile,
 };

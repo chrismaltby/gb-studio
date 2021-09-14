@@ -15,9 +15,9 @@ const TRACK_T *current_track;
 UBYTE tone_frames;
 UBYTE channel_mask;
 UBYTE sound_channel;
+UBYTE current_track_bank;
 // --------------------------------------------
 #ifdef HUGE_TRACKER
-    UBYTE current_track_bank;
     UBYTE music_stopped;
     UBYTE huge_initialized;
 #endif
@@ -98,14 +98,15 @@ UBYTE music_events_poll() __banked {
 void music_play(const TRACK_T *track, UBYTE bank, UBYTE loop) __nonbanked {
     if (track == NULL) {
         music_stop();
-    } else if (track != current_track) {
+    } else if (track != current_track || bank != current_track_bank) {
         channel_mask = MASK_ALL_CHANNELS;
 #ifdef GBT_PLAYER
         UBYTE _save = _current_bank;
+        current_track_bank = bank;
         __critical {
             gbt_play(track, bank, 7);
             gbt_loop(loop);
-            SWITCH_ROM_MBC1(_save);
+            SWITCH_ROM(_save);
             music_mute(channel_mask);
         }
 #endif
@@ -115,9 +116,9 @@ void music_play(const TRACK_T *track, UBYTE bank, UBYTE loop) __nonbanked {
         current_track_bank = bank;
         __critical {
             music_stop();
-            SWITCH_ROM_MBC1(current_track_bank);
+            SWITCH_ROM(current_track_bank);
             hUGE_init(track);
-            SWITCH_ROM_MBC1(_save);
+            SWITCH_ROM(_save);
             huge_initialized = TRUE;
             music_mute(channel_mask);
             music_stopped = FALSE;        
@@ -137,7 +138,7 @@ void music_stop() __banked {
 #ifdef GBT_PLAYER
     UBYTE _save = _current_bank;
     gbt_stop();
-    SWITCH_ROM_MBC1(_save);
+    SWITCH_ROM(_save);
 #endif
 #ifdef HUGE_TRACKER
     music_stopped = TRUE;

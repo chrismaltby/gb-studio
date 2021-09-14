@@ -18,12 +18,14 @@
 
 #define PLAYER_HURT_IFRAMES   20
 
-#define ANIM_JUMP_LEFT        4
-#define ANIM_JUMP_RIGHT       6
-#define ANIM_CLIMB            2
+#define ANIM_JUMP_LEFT        0
+#define ANIM_JUMP_RIGHT       2
+#define ANIM_CLIMB            6
 
 #define ANIM_CURSOR           0
 #define ANIM_CURSOR_HOVER     1
+
+#define ANIM_SET_DEFAULT      0
 
 typedef enum {
   CHECK_DIR_LEFT = 1,

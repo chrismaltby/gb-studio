@@ -1,4 +1,7 @@
-import migrateProject from "../../src/lib/project/migrateProject";
+import migrateProject, {
+  LATEST_PROJECT_VERSION,
+  LATEST_PROJECT_MINOR_VERSION,
+} from "../../src/lib/project/migrateProject";
 
 test("should migrate conditional events from 1.0.0 to 2.0.0", () => {
   const oldProject = {
@@ -33,12 +36,13 @@ test("should migrate conditional events from 1.0.0 to 2.0.0", () => {
       },
     ],
     backgrounds: [],
+    spriteSheets: [],
   };
 
   const newProject = JSON.parse(JSON.stringify(migrateProject(oldProject)));
   expect(newProject).toEqual({
-    _version: "2.0.0",
-    _release: "7",
+    _version: LATEST_PROJECT_VERSION,
+    _release: LATEST_PROJECT_MINOR_VERSION,
     settings: {
       startMoveSpeed: 1,
       startAnimSpeed: 15,
@@ -102,6 +106,7 @@ test("should migrate conditional events from 1.0.0 to 2.0.0", () => {
     ],
     backgrounds: [],
     customEvents: [],
+    spriteSheets: [],
     engineFieldValues: [
       {
         id: "fade_style",
@@ -146,11 +151,12 @@ test("should migrate conditional events from 1.2.0 to 2.0.0", () => {
       },
     ],
     backgrounds: [],
+    spriteSheets: [],
   };
   const newProject = JSON.parse(JSON.stringify(migrateProject(oldProject)));
   expect(newProject).toEqual({
-    _version: "2.0.0",
-    _release: "7",
+    _version: LATEST_PROJECT_VERSION,
+    _release: LATEST_PROJECT_MINOR_VERSION,
     settings: {
       startMoveSpeed: 1,
       startAnimSpeed: 15,
@@ -214,6 +220,7 @@ test("should migrate conditional events from 1.2.0 to 2.0.0", () => {
     ],
     backgrounds: [],
     customEvents: [],
+    spriteSheets: [],
     engineFieldValues: [
       {
         id: "fade_style",

@@ -13,41 +13,25 @@ import {
   sceneSelectors,
   actorSelectors,
   triggerSelectors,
+  scriptEventSelectors,
 } from "store/features/entities/entitiesState";
 import navigationActions from "store/features/navigation/navigationActions";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
+import {
+  walkNormalisedActorEvents,
+  walkNormalisedSceneSpecificEvents,
+  walkNormalisedTriggerEvents,
+} from "store/features/entities/entitiesHelpers";
 
 class DialogueReviewScene extends Component {
-  onChange = (type, sceneId, entityIndex, currentScript, id) => (value) => {
-    const { editScene, editActor, editTrigger } = this.props;
-    const newData = patchEvents(currentScript, id, {
-      text: value,
+  onChange = (id) => (value) => {
+    const { editScriptEventArg } = this.props;
+    editScriptEventArg({
+      scriptEventId: id,
+      key: "text",
+      value,
     });
-    if (type === "scene") {
-      editScene({
-        sceneId,
-        changes: {
-          script: newData,
-        },
-      });
-    } else if (type === "actor") {
-      editActor({
-        sceneId,
-        actorId: entityIndex,
-        changes: {
-          script: newData,
-        },
-      });
-    } else if (type === "trigger") {
-      editTrigger({
-        sceneId,
-        triggerId: entityIndex,
-        changes: {
-          script: newData,
-        },
-      });
-    }
   };
 
   onSearch = () => {
@@ -88,13 +72,7 @@ class DialogueReviewScene extends Component {
               <DialogueReviewLine
                 key={dialogueLine.line.id}
                 dialogueLine={dialogueLine}
-                onChange={this.onChange(
-                  dialogueLine.entityType,
-                  dialogueLine.sceneId,
-                  dialogueLine.entity.id,
-                  dialogueLine.entity.script,
-                  dialogueLine.line.id
-                )}
+                onChange={this.onChange(dialogueLine.line.id)}
               />
             ))}
         </div>
@@ -127,13 +105,14 @@ function mapStateToProps(state, props) {
   const scenesLookup = sceneSelectors.selectEntities(state);
   const actorsLookup = actorSelectors.selectEntities(state);
   const triggersLookup = triggerSelectors.selectEntities(state);
+  const scriptEventsLookup = scriptEventSelectors.selectEntities(state);
   const scene = scenesLookup[props.id];
   const sceneIndex = props.sceneIndex;
 
   const memo = [];
   scene.actors.forEach((actorId, actorIndex) => {
     const actor = actorsLookup[actorId];
-    walkEvents(actor.script, (cmd) => {
+    walkNormalisedActorEvents(actor, scriptEventsLookup, (cmd) => {
       if (cmd.command === EVENT_TEXT) {
         memo.push({
           sceneId: scene.id,
@@ -149,7 +128,7 @@ function mapStateToProps(state, props) {
   });
   scene.triggers.forEach((triggerId, triggerIndex) => {
     const trigger = triggersLookup[triggerId];
-    walkEvents(trigger.script, (cmd) => {
+    walkNormalisedTriggerEvents(trigger, scriptEventsLookup, (cmd) => {
       if (cmd.command === EVENT_TEXT) {
         memo.push({
           sceneId: scene.id,
@@ -163,7 +142,7 @@ function mapStateToProps(state, props) {
       }
     });
   });
-  walkEvents(scene.script, (cmd) => {
+  walkNormalisedSceneSpecificEvents(scene, scriptEventsLookup, (cmd) => {
     if (cmd.command === EVENT_TEXT) {
       memo.push({
         sceneId: scene.id,
@@ -184,9 +163,7 @@ function mapStateToProps(state, props) {
 }
 
 const mapDispatchToProps = {
-  editActor: entitiesActions.editActor,
-  editTrigger: entitiesActions.editTrigger,
-  editScene: entitiesActions.editScene,
+  editScriptEventArg: entitiesActions.editScriptEventArg,
   editSearchTerm: editorActions.editSearchTerm,
   setSection: navigationActions.setSection,
 };

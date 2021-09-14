@@ -31,6 +31,7 @@ import {
   triggerSelectors,
   backgroundSelectors,
   paletteSelectors,
+  scriptEventSelectors,
 } from "store/features/entities/entitiesState";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
@@ -161,7 +162,11 @@ class Scene extends Component {
       labelColor,
     } = scene;
 
-    const { tileColors } = image;
+    /**
+     * Image may potentially be `undefined` if a user has selected an image,
+     * then deleted it.
+     */
+    const { tileColors } = image || {};
 
     if (!visible) {
       return null;
@@ -376,6 +381,8 @@ function mapStateToProps(state, props) {
   const actorsLookup = actorSelectors.selectEntities(state);
   const triggersLookup = triggerSelectors.selectEntities(state);
   const backgroundsLookup = backgroundSelectors.selectEntities(state);
+  const scriptEventsLookup = scriptEventSelectors.selectEntities(state);
+
   const settings = state.project.present.settings;
 
   const scene = sceneSelectors.selectById(state, props.id);
@@ -384,15 +391,7 @@ function mapStateToProps(state, props) {
 
   const sceneEventVisible =
     state.editor.eventId && state.editor.scene === props.id;
-  const event =
-    (sceneEventVisible &&
-      normalizedFindSceneEvent(
-        scene,
-        actorsLookup,
-        triggersLookup,
-        state.editor.eventId
-      )) ||
-    null;
+  const event = sceneEventVisible && scriptEventsLookup[state.editor.eventId];
 
   const selected = sceneId === props.id;
   const dragging = selected && editorDragging;

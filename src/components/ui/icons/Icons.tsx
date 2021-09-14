@@ -1,4 +1,4 @@
-import React from "react";
+import React, { CSSProperties } from "react";
 
 export const LoadingIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" className="Rotating">
@@ -12,9 +12,22 @@ export const FolderIcon = () => (
   </svg>
 );
 
+export const FolderFilledIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <path d="M11 5c-1.629 0-2.305-1.058-4-3h-7v20h24v-17h-13z" />
+  </svg>
+);
+
 export const DotsIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24">
     <path d="M6 12c0 1.657-1.343 3-3 3s-3-1.343-3-3 1.343-3 3-3 3 1.343 3 3zm9 0c0 1.657-1.343 3-3 3s-3-1.343-3-3 1.343-3 3-3 3 1.343 3 3zm9 0c0 1.657-1.343 3-3 3s-3-1.343-3-3 1.343-3 3-3 3 1.343 3 3z" />
+  </svg>
+);
+
+export const CommentIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <path d="M21 0H24L14.5 24H11.5L21 0Z" fill="black" />
+    <path d="M9.5 4.63426e-06H12.5L3 24H0L9.5 4.63426e-06Z" fill="black" />
   </svg>
 );
 
@@ -100,6 +113,12 @@ export const AnimationIcon = () => (
   </svg>
 );
 
+export const BackgroundIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <path d="M5 8.5c0-.828.672-1.5 1.5-1.5s1.5.672 1.5 1.5c0 .829-.672 1.5-1.5 1.5s-1.5-.671-1.5-1.5zm9 .5l-2.519 4-2.481-1.96-4 5.96h14l-5-8zm8-4v14h-20v-14h20zm2-2h-24v18h24v-18z" />
+  </svg>
+);
+
 export const SongIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24">
     <path d="M 22.050781 0.0703125 L 7.050781 4.5 C 6.425781 4.695312 6 5.273438 6 5.929688 L 6 18.183594 C 5.507812 18.066406 5.003906 18.003906 4.5 18 C 2.015625 18 0 19.34375 0 21 C 0 22.65625 2.015625 24 4.5 24 C 6.984375 24 9 22.65625 9 21 L 9 10.046875 L 21 6.53125 L 21 15.183594 C 20.507812 15.066406 20.003906 15.003906 19.5 15 C 17.015625 15 15 16.34375 15 18 C 15 19.65625 17.015625 21 19.5 21 C 21.984375 21 24 19.65625 24 18 L 24 1.5 C 24 1.023438 23.773438 0.574219 23.386719 0.292969 C 23 0.0078125 22.503906 -0.0742188 22.050781 0.0703125 Z M 22.050781 0.0703125 " />
@@ -136,6 +155,32 @@ export const AudioOffIcon = () => (
   </svg>
 );
 
+export const PianoIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <path
+      fill-rule="evenodd"
+      clip-rule="evenodd"
+      d="M0 0H22C23 0 24 1 24 2V22C24 23 23 24 22 24H0V0ZM22 2H2V4H14V6H22V2ZM22 8H14V10H2V12H14V14H22V8ZM14 18V16H22V22H2V18H14Z"
+    />
+  </svg>
+);
+
+export const PianoInverseIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <path
+      fill-rule="evenodd"
+      clip-rule="evenodd"
+      d="M22 0H0V24H22C23 24 24 23 24 22V16H14V18H2V16V14V12H14V14H24V8H14V10H2V4H14V6H24V2C24 1 23 0 22 0Z"
+    />
+  </svg>
+);
+
+export const SelectionIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <path d="M11 23v-2h-4v2h4zm8-20h3v2h2v-4h-5v2zm-19 14h2v-4h-2v4zm0-6h2v-4h-2v4zm2-6v-2h3v-2h-5v4h2zm22 2h-2v4h2v-4zm0 6h-2v4h2v-4zm-2 6v2h-3v2h5v-4h-2zm-17 2h-3v-2h-2v4h5v-2zm12 2v-2h-4v2h4zm-6-20v-2h-4v2h4zm6 0v-2h-4v2h4z" />
+  </svg>
+);
+
 export const SaveIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24">
     <path d="M14 3h2.997v5h-2.997v-5zm9 1v20h-22v-24h17.997l4.003 4zm-17 5h12v-7h-12v7zm14 4h-16v9h16v-9z" />
@@ -145,6 +190,24 @@ export const SaveIcon = () => (
 export const CloneIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24">
     <path d="M18 6v-6h-18v18h6v6h18v-18h-6zm-12 10h-4v-14h14v4h-10v10zm16 6h-14v-14h14v14zm-3-8h-3v-3h-2v3h-3v2h3v3h2v-3h3v-2z" />
+  </svg>
+);
+
+export const TargetIcon = ({
+  className,
+  style,
+}: {
+  className?: string;
+  style?: CSSProperties;
+}) => (
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    className={className}
+    style={style}
+  >
+    <path d="M24 11h-2.051c-.469-4.725-4.224-8.48-8.949-8.95v-2.05h-2v2.05c-4.725.47-8.48 4.225-8.949 8.95h-2.051v2h2.051c.469 4.725 4.224 8.48 8.949 8.95v2.05h2v-2.05c4.725-.469 8.48-4.225 8.949-8.95h2.051v-2zm-11 8.931v-3.931h-2v3.931c-3.611-.454-6.478-3.32-6.931-6.931h3.931v-2h-3.931c.453-3.611 3.32-6.477 6.931-6.931v3.931h2v-3.931c3.611.454 6.478 3.319 6.931 6.931h-3.931v2h3.931c-.453 3.611-3.32 6.477-6.931 6.931zm1-7.931c0 1.104-.896 2-2 2s-2-.896-2-2 .896-2 2-2 2 .896 2 2z" />
   </svg>
 );
 
@@ -313,6 +376,24 @@ export const ArrowIcon = () => (
   </svg>
 );
 
+export const ArrowMoveIcon = ({ style }: { style?: CSSProperties }) => (
+  <svg width="24" height="24" viewBox="0 0 24 24" style={style}>
+    <path d="M16 8V4L24 12L16 20V16H12V8H16ZM10 8H6V16H10V8ZM4 8H0.0139771V16H4V8Z" />
+  </svg>
+);
+
+export const ArrowIdleIcon = ({ style }: { style?: CSSProperties }) => (
+  <svg width="24" height="24" viewBox="0 0 24 24" style={style}>
+    <path d="m16,8l0,-4l8,8l-8,8l0,-4l-16,0l0,-8l16,0z" />
+  </svg>
+);
+
+export const ArrowJumpIcon = ({ style }: { style?: CSSProperties }) => (
+  <svg width="24" height="24" viewBox="0 0 24 24" style={style}>
+    <path d="M16 15v4l8-8.035-8-7.965v4s-13.277 2.144-16 14c5.796-6.206 16-6 16-6z" />
+  </svg>
+);
+
 export const SearchIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24">
     <path d="M23.822 20.88l-6.353-6.354c.93-1.465 1.467-3.2 1.467-5.059.001-5.219-4.247-9.467-9.468-9.467s-9.468 4.248-9.468 9.468c0 5.221 4.247 9.469 9.468 9.469 1.768 0 3.421-.487 4.839-1.333l6.396 6.396 3.119-3.12zm-20.294-11.412c0-3.273 2.665-5.938 5.939-5.938 3.275 0 5.94 2.664 5.94 5.938 0 3.275-2.665 5.939-5.94 5.939-3.274 0-5.939-2.664-5.939-5.939z" />
@@ -443,6 +524,18 @@ export const CaretUpIcon = () => (
 export const CaretRightIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24">
     <path d="M7.33 24l-2.83-2.829 9.339-9.175-9.339-9.167 2.83-2.829 12.17 11.996z" />
+  </svg>
+);
+
+export const StarIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z" />
+  </svg>
+);
+
+export const StarOutlineIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <path d="M12 5.173l2.335 4.817 5.305.732-3.861 3.71.942 5.27-4.721-2.524-4.721 2.525.942-5.27-3.861-3.71 5.305-.733 2.335-4.817zm0-4.586l-3.668 7.568-8.332 1.151 6.064 5.828-1.48 8.279 7.416-3.967 7.416 3.966-1.48-8.279 6.064-5.827-8.332-1.15-3.668-7.569z" />
   </svg>
 );
 

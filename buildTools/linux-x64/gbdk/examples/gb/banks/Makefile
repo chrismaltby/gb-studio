@@ -54,10 +54,10 @@ bank_3.o:	bank_3.c
 	$(CC) -Wf-bo3 -Wf-ba3 -c -o $@ $<
 
 # Link banks
-#      ROM+MBC1+RAM : -Wl-yt2
+#      MBC5+ROM+RAM : -Wl-yt0x19
 #      4 ROM banks  : -Wl-yo4
 #      4 RAM banks  : -Wl-ya4
 #
 banks.gb:	banks.o bank_0.o bank_1.o bank_2.o bank_3.o
-	$(CC) -Wl-yt2 -Wl-yo4 -Wl-ya4 -o $@ banks.o bank_0.o bank_1.o bank_2.o bank_3.o
+	$(CC) -Wl-yt0x1A -Wl-yo4 -Wl-ya4 -o $@ banks.o bank_0.o bank_1.o bank_2.o bank_3.o
 

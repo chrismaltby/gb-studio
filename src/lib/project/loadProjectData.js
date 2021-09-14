@@ -77,39 +77,52 @@ const loadProject = async (projectPath) => {
     .map((sprite) => {
       const oldSprite =
         oldSpriteByFilename[elemKey(sprite)] || oldSpriteByInode[sprite.inode];
-      if (oldSprite) {
-        const autoDetect =
-          oldSprite?.autoDetect !== undefined ? oldSprite.autoDetect : true;
-        if (autoDetect && oldSprite.checksum !== sprite.checksum) {
-          modifiedSpriteIds.push(oldSprite.id);
-        }
-        return {
-          ...oldSprite,
-          ...sprite,
-          id: oldSprite.id,
-          _v: oldSprite._v,
-          canvasWidth: oldSprite.canvasWidth || 32,
-          canvasHeight: oldSprite.canvasHeight || 32,
-          animations: Array.from(Array(8)).map((_, animationIndex) => ({
-            id:
-              (oldSprite.animations &&
-                oldSprite.animations[animationIndex] &&
-                oldSprite.animations[animationIndex].id) ||
-              uuid(),
-            frames: (oldSprite.animations &&
-              oldSprite.animations[animationIndex].frames) || [
-              {
-                id: uuid(),
-                tiles: [],
-              },
-            ],
-          })),
-          autoDetect,
-        };
-      } else {
-        modifiedSpriteIds.push(sprite.id);
+      const oldData = oldSprite || {};
+      const id = oldData.id || sprite.id;
+
+      if (!oldSprite || !oldSprite.states || !oldSprite.numTiles) {
+        modifiedSpriteIds.push(id);
       }
-      return sprite;
+
+      return {
+        ...sprite,
+        ...oldData,
+        id,
+        _v: oldData._v || sprite._v,
+        filename: sprite.filename,
+        name: oldData.name || sprite.name,
+        canvasWidth: oldData.canvasWidth || 32,
+        canvasHeight: oldData.canvasHeight || 32,
+        states: (
+          oldData.states || [
+            {
+              id: uuid(),
+              name: "",
+              animationType: "multi_movement",
+              flipLeft: true,
+            },
+          ]
+        ).map((oldState) => {
+          return {
+            ...oldState,
+            animations: Array.from(Array(8)).map((_, animationIndex) => ({
+              id:
+                (oldState.animations &&
+                  oldState.animations[animationIndex] &&
+                  oldState.animations[animationIndex].id) ||
+                uuid(),
+              frames: (oldState.animations &&
+                oldState.animations[animationIndex] &&
+                oldState.animations[animationIndex].frames) || [
+                {
+                  id: uuid(),
+                  tiles: [],
+                },
+              ],
+            })),
+          };
+        }),
+      };
     })
     .sort(sortByName);
 
@@ -147,7 +160,6 @@ const loadProject = async (projectPath) => {
         return {
           ...font,
           id: oldFont.id,
-          _v: oldFont._v,
         };
       }
       return font;
@@ -166,7 +178,6 @@ const loadProject = async (projectPath) => {
         return {
           ...avatar,
           id: oldAvatar.id,
-          _v: oldAvatar._v,
         };
       }
       return avatar;
@@ -185,7 +196,6 @@ const loadProject = async (projectPath) => {
         return {
           ...emote,
           id: oldEmote.id,
-          _v: oldEmote._v,
         };
       }
       return emote;

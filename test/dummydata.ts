@@ -25,6 +25,10 @@ import { initialState as initialClipboardState } from "../src/store/features/cli
 import { initialState as initialSpriteState } from "../src/store/features/sprite/spriteState";
 import { initialState as initialTrackerState } from "../src/store/features/tracker/trackerState";
 import { initialState as initialTrackerDocumentState } from "../src/store/features/trackerDocument/trackerDocumentState";
+import compileFonts, { PrecompiledFontData } from "../src/lib/compiler/compileFonts";
+import {
+  projectTemplatesRoot
+} from "../src/consts";
 
 export const dummyScene: SceneData = {
   id: "",
@@ -47,10 +51,9 @@ export const dummyScene: SceneData = {
 };
 
 export const dummyActor: Actor = {
-  id: "",
+  id: "dummyActor1",
   name: "",
   spriteSheetId: "",
-  spriteType: "static",
   x: 0,
   y: 0,
   frame: 0,
@@ -77,6 +80,7 @@ export const dummyTrigger: Trigger = {
   width: 0,
   height: 0,
   script: [],
+  leaveScript: [],
 };
 
 export const dummyPalette: Palette = {
@@ -102,23 +106,18 @@ export const dummySpriteSheet: SpriteSheet = {
   id: "",
   name: "",
   filename: "",
-  numFrames: 1,
   numTiles: 1,
   checksum: "",
-  type: "classic",
   width: 16,
   height: 16,
-  animationType: "multi_movement",
-  flipLeft: true,
   canvasWidth: 32,
   canvasHeight: 32,
   boundsX: 0,
   boundsY: 0,
   boundsWidth: 16,
   boundsHeight: 16,
-  animations: [],
+  states: [],
   animSpeed: 4,
-  autoDetect: false,
   inode: "1",
   _v: 0,
 };
@@ -185,8 +184,27 @@ export const dummyProjectData: ProjectData = {
     musicDriver: "huge",
     cartType: "mbc5",
     batterylessEnabled: false,
+    favoriteEvents: [],
   },
 };
+
+export const getDummyCompiledFont = async (): Promise<PrecompiledFontData> => {
+  const compiledFontsRet = await compileFonts([
+      {
+        id: "87d28862-ac4a-4f15-b678-d8d2e3e8787c",
+        name: "gbs-mono",
+        width: 128,
+        height: 112,
+        filename: "gbs-mono.png",
+        inode: "10414574138355865",
+        mapping: {},
+        _v: 1625435968911,
+        plugin: undefined,
+      }
+    ], `${projectTemplatesRoot}/gbhtml`);
+
+    return compiledFontsRet[0];
+}
 
 export const dummyRootState: RootState = {
   editor: {

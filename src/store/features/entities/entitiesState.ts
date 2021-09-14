@@ -9,8 +9,6 @@ import {
   Dictionary,
 } from "@reduxjs/toolkit";
 import {
-  SPRITE_TYPE_STATIC,
-  SPRITE_TYPE_ACTOR,
   DMG_PALETTE,
   COLLISION_ALL,
   TILE_PROPS,
@@ -19,27 +17,13 @@ import {
   DRAG_TRIGGER,
   DRAG_ACTOR,
 } from "../../../consts";
-import {
-  regenerateEventIds,
-  patchEvents,
-  mapEvents,
-  isVariableField,
-  isPropertyField,
-  walkEvents,
-  replaceEventActorIds,
-} from "lib/helpers/eventSystem";
+import { isVariableField, isPropertyField } from "lib/helpers/eventSystem";
 import clamp from "lib/helpers/clamp";
 import { RootState } from "store/configureStore";
 import settingsActions from "../settings/settingsActions";
 import uuid from "uuid";
-import {
-  replaceInvalidCustomEventVariables,
-  replaceInvalidCustomEventActors,
-  replaceInvalidCustomEventProperties,
-} from "lib/compiler/helpers";
-import { EVENT_CALL_CUSTOM_EVENT } from "lib/compiler/eventTypes";
 import { paint, paintLine, floodFill } from "lib/helpers/paint";
-import { Brush, EditorSelectionType } from "../editor/editorState";
+import { Brush } from "../editor/editorState";
 import projectActions from "../project/projectActions";
 import {
   EntitiesState,
@@ -56,7 +40,6 @@ import {
   CustomEventVariable,
   CustomEventActor,
   ProjectEntitiesData,
-  SceneData,
   MusicSettings,
   EngineFieldValue,
   Metasprite,
@@ -66,6 +49,9 @@ import {
   ObjPalette,
   Avatar,
   Emote,
+  SpriteState,
+  ScriptEventsRef,
+  ScriptEventParentType,
 } from "./entitiesTypes";
 import {
   normalizeEntities,
@@ -74,6 +60,7 @@ import {
   matchAsset,
   isUnionVariableValue,
   isUnionPropertyValue,
+  walkNormalisedScriptEvents,
 } from "./entitiesHelpers";
 import { clone } from "lib/helpers/clone";
 import spriteActions from "../sprite/spriteActions";
@@ -89,6 +76,7 @@ const inodeToRecentFont: Dictionary<Font> = {};
 const inodeToRecentAvatar: Dictionary<Avatar> = {};
 const inodeToRecentEmote: Dictionary<Emote> = {};
 
+const scriptEventsAdapter = createEntityAdapter<ScriptEvent>();
 const actorsAdapter = createEntityAdapter<Actor>();
 const triggersAdapter = createEntityAdapter<Trigger>();
 const scenesAdapter = createEntityAdapter<Scene>();
@@ -101,6 +89,7 @@ const spriteSheetsAdapter = createEntityAdapter<SpriteSheet>({
 const metaspritesAdapter = createEntityAdapter<Metasprite>();
 const metaspriteTilesAdapter = createEntityAdapter<MetaspriteTile>();
 const spriteAnimationsAdapter = createEntityAdapter<SpriteAnimation>();
+const spriteStatesAdapter = createEntityAdapter<SpriteState>();
 const palettesAdapter = createEntityAdapter<Palette>();
 const customEventsAdapter = createEntityAdapter<CustomEvent>();
 const musicAdapter = createEntityAdapter<Music>({
@@ -122,11 +111,13 @@ export const initialState: EntitiesState = {
   actors: actorsAdapter.getInitialState(),
   triggers: triggersAdapter.getInitialState(),
   scenes: scenesAdapter.getInitialState(),
+  scriptEvents: scriptEventsAdapter.getInitialState(),
   backgrounds: backgroundsAdapter.getInitialState(),
   spriteSheets: spriteSheetsAdapter.getInitialState(),
   metasprites: metaspritesAdapter.getInitialState(),
   metaspriteTiles: metaspriteTilesAdapter.getInitialState(),
   spriteAnimations: spriteAnimationsAdapter.getInitialState(),
+  spriteStates: spriteStatesAdapter.getInitialState(),
   palettes: palettesAdapter.getInitialState(),
   customEvents: customEventsAdapter.getInitialState(),
   music: musicAdapter.getInitialState(),
@@ -144,26 +135,17 @@ const moveSelectedEntity =
     getState: () => RootState
   ) => {
     const state = getState();
-    const {
-      dragging,
-      scene,
-      eventId,
-      entityId,
-      type: editorType,
-    } = state.editor;
+    const { dragging, scene, eventId, entityId } = state.editor;
     if (dragging === DRAG_PLAYER) {
       dispatch(settingsActions.editPlayerStartAt({ sceneId, x, y }));
     } else if (dragging === DRAG_DESTINATION) {
       dispatch(
-        editDestinationPosition(
-          eventId,
-          scene,
-          editorType,
-          entityId,
-          sceneId,
+        actions.editScriptEventDestination({
+          scriptEventId: eventId,
+          destSceneId: sceneId,
           x,
-          y
-        )
+          y,
+        })
       );
     } else if (dragging === DRAG_ACTOR) {
       dispatch(
@@ -205,160 +187,11 @@ const removeSelectedEntity =
     }
   };
 
-const editDestinationPosition = (
-  eventId: string,
-  sceneId: string,
-  selectionType: EditorSelectionType,
-  id: string,
-  destSceneId: string,
-  x: number,
-  y: number
-) => {
-  if (selectionType === "actor") {
-    return actions.editActorEventDestinationPosition({
-      eventId,
-      actorId: id,
-      destSceneId,
-      x,
-      y,
-    });
-  }
-  if (selectionType === "trigger") {
-    return actions.editTriggerEventDestinationPosition({
-      eventId,
-      triggerId: id,
-      destSceneId,
-      x,
-      y,
-    });
-  }
-  return actions.editSceneEventDestinationPosition({
-    eventId,
-    sceneId,
-    destSceneId,
-    x,
-    y,
-  });
-};
-
 const first = <T>(array: T[]): T | undefined => {
   if (array[0]) {
     return array[0];
   }
   return undefined;
-};
-
-const mapActorEvents = (
-  actor: Actor,
-  fn: (event: ScriptEvent) => ScriptEvent
-): Actor => {
-  return {
-    ...actor,
-    script: mapEvents(actor.script || [], fn),
-    startScript: mapEvents(actor.startScript || [], fn),
-    updateScript: mapEvents(actor.updateScript || [], fn),
-    hit1Script: mapEvents(actor.hit1Script || [], fn),
-    hit2Script: mapEvents(actor.hit2Script || [], fn),
-    hit3Script: mapEvents(actor.hit3Script || [], fn),
-  };
-};
-
-const mapTriggerEvents = (
-  trigger: Trigger,
-  fn: (event: ScriptEvent) => ScriptEvent
-): Trigger => {
-  return {
-    ...trigger,
-    script: mapEvents(trigger.script || [], fn),
-  };
-};
-
-const mapSceneEvents = (
-  scene: Scene,
-  fn: (event: ScriptEvent) => ScriptEvent
-): Scene => {
-  return {
-    ...scene,
-    script: mapEvents(scene.script || [], fn),
-    playerHit1Script: mapEvents(scene.playerHit1Script || [], fn),
-    playerHit2Script: mapEvents(scene.playerHit2Script || [], fn),
-    playerHit3Script: mapEvents(scene.playerHit3Script || [], fn),
-  };
-};
-
-const mapActorsEvents = (
-  actors: Actor[],
-  fn: (event: ScriptEvent) => ScriptEvent
-): Actor[] => {
-  return actors.map((actor) => mapActorEvents(actor, fn));
-};
-
-const mapTriggersEvents = (
-  triggers: Trigger[],
-  fn: (event: ScriptEvent) => ScriptEvent
-): Trigger[] => {
-  return triggers.map((trigger) => mapTriggerEvents(trigger, fn));
-};
-
-const mapScenesEvents = (
-  scenes: Scene[],
-  fn: (event: ScriptEvent) => ScriptEvent
-): Scene[] => {
-  return scenes.map((scene) => mapSceneEvents(scene, fn));
-};
-
-const patchCustomEventCallArgs = (
-  customEventId: string,
-  script: ScriptEvent[],
-  variables: Dictionary<CustomEventVariable>,
-  actors: Dictionary<CustomEventActor>
-) => {
-  const usedVariables = Object.keys(variables).map((i) => `$variable[${i}]$`);
-  const usedActors = Object.keys(actors).map((i) => `$actor[${i}]$`);
-
-  return (event: ScriptEvent): ScriptEvent => {
-    if (event.command !== EVENT_CALL_CUSTOM_EVENT) {
-      return event;
-    }
-    if (event.args.customEventId !== customEventId) {
-      return event;
-    }
-    const newArgs = Object.assign({ ...event.args });
-    Object.keys(newArgs).forEach((k) => {
-      if (
-        k.startsWith("$") &&
-        !usedVariables.find((v) => v === k) &&
-        !usedActors.find((a) => a === k)
-      ) {
-        delete newArgs[k];
-      }
-    });
-    return {
-      ...event,
-      args: newArgs,
-      children: {
-        script: [...script],
-      },
-    };
-  };
-};
-
-const patchCustomEventCallName = (customEventId: string, name: string) => {
-  return (event: ScriptEvent): ScriptEvent => {
-    if (event.command !== EVENT_CALL_CUSTOM_EVENT) {
-      return event;
-    }
-    if (event.args.customEventId !== customEventId) {
-      return event;
-    }
-    return {
-      ...event,
-      args: {
-        ...event.args,
-        __name: name,
-      },
-    };
-  };
 };
 
 /**************************************************************************
@@ -376,6 +209,7 @@ const loadProject: CaseReducer<
   actorsAdapter.setAll(state.actors, entities.actors || {});
   triggersAdapter.setAll(state.triggers, entities.triggers || {});
   scenesAdapter.setAll(state.scenes, entities.scenes || {});
+  scriptEventsAdapter.setAll(state.scriptEvents, entities.scriptEvents || {});
   backgroundsAdapter.setAll(state.backgrounds, entities.backgrounds || {});
   spriteSheetsAdapter.setAll(state.spriteSheets, entities.spriteSheets || {});
   metaspritesAdapter.setAll(state.metasprites, entities.metasprites || {});
@@ -387,6 +221,7 @@ const loadProject: CaseReducer<
     state.spriteAnimations,
     entities.spriteAnimations || {}
   );
+  spriteStatesAdapter.setAll(state.spriteStates, entities.spriteStates || {});
   palettesAdapter.setAll(state.palettes, entities.palettes || {});
   musicAdapter.setAll(state.music, entities.music || {});
   fontsAdapter.setAll(state.fonts, entities.fonts || {});
@@ -447,7 +282,34 @@ const loadSprite: CaseReducer<
     data: SpriteSheet;
   }>
 > = (state, action) => {
-  spriteSheetsAdapter.upsertOne(state.spriteSheets, action.payload.data);
+  if (action.payload.data.states.length === 0) {
+    // Create default state for newly added spritesheets
+    const metasprites: Metasprite[] = Array.from(Array(8)).map(() => ({
+      id: uuid(),
+      tiles: [],
+    }));
+    const animations: SpriteAnimation[] = metasprites.map((metasprite) => ({
+      id: uuid(),
+      frames: [metasprite.id],
+    }));
+    const animationIds = animations.map((a) => a.id);
+    const spriteState: SpriteState = {
+      id: uuid(),
+      name: "",
+      animationType: "multi_movement",
+      flipLeft: true,
+      animations: animationIds,
+    };
+    metaspritesAdapter.addMany(state.metasprites, metasprites);
+    spriteAnimationsAdapter.addMany(state.spriteAnimations, animations);
+    spriteStatesAdapter.addOne(state.spriteStates, spriteState);
+    spriteSheetsAdapter.upsertOne(state.spriteSheets, {
+      ...action.payload.data,
+      states: [spriteState.id],
+    });
+  } else {
+    spriteSheetsAdapter.upsertOne(state.spriteSheets, action.payload.data);
+  }
 };
 
 const loadDetectedSprite: CaseReducer<
@@ -455,8 +317,10 @@ const loadDetectedSprite: CaseReducer<
   PayloadAction<{
     spriteSheetId: string;
     spriteAnimations: SpriteAnimation[];
+    spriteStates: SpriteState[];
     metasprites: Metasprite[];
     metaspriteTiles: MetaspriteTile[];
+    state: SpriteState;
     changes: Partial<SpriteSheet>;
   }>
 > = (state, action) => {
@@ -481,11 +345,15 @@ const loadDetectedSprite: CaseReducer<
     action.payload.spriteAnimations
   );
 
+  spriteStatesAdapter.upsertOne(state.spriteStates, action.payload.state);
+
+  const numStates = spriteSheet.states?.length || 0;
+
   spriteSheetsAdapter.updateOne(state.spriteSheets, {
     id: action.payload.spriteSheetId,
     changes: {
       ...action.payload.changes,
-      animations: action.payload.spriteAnimations.map((s) => s.id),
+      states: numStates === 0 ? [action.payload.state.id] : spriteSheet.states,
     },
   });
 };
@@ -711,107 +579,36 @@ const addScene: CaseReducer<
     sceneId: string;
     x: number;
     y: number;
-    defaults?: Partial<SceneData>;
+    defaults?: Partial<Scene>;
     variables?: Variable[];
   }>
 > = (state, action) => {
   const scenesTotal = localSceneSelectors.selectTotal(state);
-  const backgroundId = localBackgroundSelectors.selectIds(state)[0];
+  const backgroundId = String(localBackgroundSelectors.selectIds(state)[0]);
   const background = localBackgroundSelectors.selectById(state, backgroundId);
 
-  const newScene: Scene = Object.assign(
-    {
-      name: `Scene ${scenesTotal + 1}`,
-      backgroundId,
-      width: Math.max(MIN_SCENE_WIDTH, background?.width || 0),
-      height: Math.max(MIN_SCENE_HEIGHT, background?.height || 0),
-      type: "TOPDOWN",
-      paletteIds: [],
-      spritePaletteIds: [],
-      collisions: [],
-      script: [],
-      playerHit1Script: [],
-      playerHit2Script: [],
-      playerHit3Script: [],
-    },
-    action.payload.defaults || {},
-    {
-      id: action.payload.sceneId,
-      x: Math.max(MIN_SCENE_X, action.payload.x),
-      y: Math.max(MIN_SCENE_Y, action.payload.y),
-      actors: [],
-      triggers: [],
-    }
-  );
+  const newScene: Scene = {
+    name: `Scene ${scenesTotal + 1}`,
+    backgroundId,
+    width: Math.max(MIN_SCENE_WIDTH, background?.width || 0),
+    height: Math.max(MIN_SCENE_HEIGHT, background?.height || 0),
+    type: "TOPDOWN",
+    paletteIds: [],
+    spritePaletteIds: [],
+    collisions: [],
+    ...(action.payload.defaults || {}),
+    id: action.payload.sceneId,
+    x: Math.max(MIN_SCENE_X, action.payload.x),
+    y: Math.max(MIN_SCENE_Y, action.payload.y),
+    actors: [],
+    triggers: [],
+    script: [],
+    playerHit1Script: [],
+    playerHit2Script: [],
+    playerHit3Script: [],
+  };
 
-  // Generate new ids
-  const idReplacements: Dictionary<string> = {};
-  if (action.payload.defaults?.id) {
-    idReplacements[action.payload.defaults.id] = action.payload.sceneId;
-  }
-  if (action.payload.defaults?.actors) {
-    for (const actor of action.payload.defaults.actors) {
-      idReplacements[actor.id] = uuid();
-    }
-  }
-  if (action.payload.defaults?.triggers) {
-    for (const trigger of action.payload.defaults.triggers) {
-      idReplacements[trigger.id] = uuid();
-    }
-  }
-
-  // Add any variables from clipboard
-  if (action.payload.variables) {
-    const newVariables = action.payload.variables.map((variable) => {
-      let newId = variable.id;
-      for (const id in idReplacements) {
-        if (variable.id.startsWith(id)) {
-          newId = variable.id.replace(id, idReplacements[id] || newId);
-          break;
-        }
-      }
-      return {
-        ...variable,
-        id: newId,
-      };
-    });
-
-    variablesAdapter.upsertMany(state.variables, newVariables);
-  }
-
-  const fixedScene = mapSceneEvents(newScene, (event) =>
-    replaceEventActorIds(idReplacements, regenerateEventIds(event))
-  );
-
-  scenesAdapter.addOne(state.scenes, fixedScene);
-
-  if (action.payload.defaults?.actors) {
-    for (const actor of action.payload.defaults.actors) {
-      addActorToScene(
-        state,
-        fixedScene,
-        {
-          ...actor,
-          id: idReplacements[actor.id] || uuid(),
-        },
-        idReplacements
-      );
-    }
-  }
-
-  if (action.payload.defaults?.triggers) {
-    for (const trigger of action.payload.defaults.triggers) {
-      addTriggerToScene(
-        state,
-        fixedScene,
-        {
-          ...trigger,
-          id: idReplacements[trigger.id] || uuid(),
-        },
-        idReplacements
-      );
-    }
-  }
+  scenesAdapter.addOne(state.scenes, newScene);
 };
 
 const moveScene: CaseReducer<
@@ -914,51 +711,6 @@ const editScene: CaseReducer<
   });
 };
 
-const editSceneEventDestinationPosition: CaseReducer<
-  EntitiesState,
-  PayloadAction<{
-    sceneId: string;
-    eventId: string;
-    destSceneId: string;
-    x: number;
-    y: number;
-  }>
-> = (state, action) => {
-  const scene = localSceneSelectors.selectById(state, action.payload.sceneId);
-  if (!scene) {
-    return;
-  }
-
-  const updatedScene = mapSceneEvents(scene, (event) => {
-    if (event.id !== action.payload.eventId) {
-      return event;
-    }
-    return {
-      ...event,
-      args: {
-        ...event.args,
-        sceneId: action.payload.destSceneId,
-        x: action.payload.x,
-        y: action.payload.y,
-      },
-    };
-  });
-
-  const patch = (({
-    script,
-    playerHit1Script,
-    playerHit2Script,
-    playerHit3Script,
-  }) => ({ script, playerHit1Script, playerHit2Script, playerHit3Script }))(
-    updatedScene
-  );
-
-  scenesAdapter.updateOne(state.scenes, {
-    id: action.payload.sceneId,
-    changes: patch,
-  });
-};
-
 const removeScene: CaseReducer<
   EntitiesState,
   PayloadAction<{
@@ -1007,50 +759,32 @@ const addActor: CaseReducer<
     variablesAdapter.upsertMany(state.variables, newVariables);
   }
 
-  const newActor = Object.assign(
-    {
-      name: "",
-      frame: 0,
-      animate: false,
-      spriteSheetId,
-      spriteType: SPRITE_TYPE_STATIC,
-      direction: "down",
-      moveSpeed: 1,
-      animSpeed: 3,
-      paletteId: "",
-      isPinned: false,
-      collisionGroup: "",
-      script: [],
-      startScript: [],
-      updateScript: [],
-      hit1Script: [],
-      hit2Script: [],
-      hit3Script: [],
-    } as Partial<Actor>,
-    action.payload.defaults || {},
-    {
-      id: action.payload.actorId,
-      x: clamp(action.payload.x, 0, scene.width - 2),
-      y: clamp(action.payload.y, 0, scene.height - 1),
-    }
-  ) as Actor;
-
-  addActorToScene(state, scene, newActor, {});
-};
-
-const addActorToScene = (
-  state: EntitiesState,
-  scene: Scene,
-  actor: Actor,
-  idReplacements: Dictionary<string>
-) => {
-  const fixedActor = mapActorEvents(actor, (event) =>
-    replaceEventActorIds(idReplacements, regenerateEventIds(event))
-  );
+  const newActor: Actor = {
+    name: "",
+    frame: 0,
+    animate: false,
+    spriteSheetId,
+    direction: "down",
+    moveSpeed: 1,
+    animSpeed: 15,
+    paletteId: "",
+    isPinned: false,
+    collisionGroup: "",
+    ...(action.payload.defaults || {}),
+    script: [],
+    startScript: [],
+    updateScript: [],
+    hit1Script: [],
+    hit2Script: [],
+    hit3Script: [],
+    id: action.payload.actorId,
+    x: clamp(action.payload.x, 0, scene.width - 2),
+    y: clamp(action.payload.y, 0, scene.height - 1),
+  };
 
   // Add to scene
-  scene.actors = ([] as string[]).concat(scene.actors, fixedActor.id);
-  actorsAdapter.addOne(state.actors, fixedActor);
+  scene.actors = ([] as string[]).concat(scene.actors, newActor.id);
+  actorsAdapter.addOne(state.actors, newActor);
 };
 
 const editActor: CaseReducer<
@@ -1062,47 +796,6 @@ const editActor: CaseReducer<
 
   if (!actor) {
     return;
-  }
-
-  // If changed spriteSheetId
-  if (patch.spriteSheetId) {
-    const newSprite = localSpriteSheetSelectors.selectById(
-      state,
-      patch.spriteSheetId
-    );
-
-    if (newSprite) {
-      // If new sprite not an actor then reset sprite type back to static
-      if (newSprite.numFrames !== 3 && newSprite.numFrames !== 6) {
-        patch.spriteType = SPRITE_TYPE_STATIC;
-      }
-      const oldSprite = localSpriteSheetSelectors.selectById(
-        state,
-        actor.spriteSheetId
-      );
-      // If new sprite is an actor and old one wasn't reset sprite type to actor
-      if (
-        oldSprite &&
-        newSprite &&
-        oldSprite.id !== newSprite.id &&
-        oldSprite.numFrames !== 3 &&
-        oldSprite.numFrames !== 6 &&
-        (newSprite.numFrames === 3 || newSprite.numFrames === 6)
-      ) {
-        patch.spriteType = SPRITE_TYPE_ACTOR;
-      }
-
-      if (newSprite && newSprite.numFrames <= actor.frame) {
-        patch.frame = 0;
-      }
-    }
-  }
-  // If static and cycling frames start from frame 1 (facing downwards)
-  if (
-    (patch.animate && actor.spriteType === SPRITE_TYPE_STATIC) ||
-    patch.spriteType === SPRITE_TYPE_STATIC
-  ) {
-    patch.direction = "down";
   }
 
   actorsAdapter.updateOne(state.actors, {
@@ -1166,58 +859,6 @@ const moveActor: CaseReducer<
       x: clamp(action.payload.x, 0, newScene.width - 2),
       y: clamp(action.payload.y, 0, newScene.height - 1),
     },
-  });
-};
-
-const editActorEventDestinationPosition: CaseReducer<
-  EntitiesState,
-  PayloadAction<{
-    actorId: string;
-    eventId: string;
-    destSceneId: string;
-    x: number;
-    y: number;
-  }>
-> = (state, action) => {
-  const actor = localActorSelectors.selectById(state, action.payload.actorId);
-  if (!actor) {
-    return;
-  }
-
-  const updatedActor = mapActorEvents(actor, (event) => {
-    if (event.id !== action.payload.eventId) {
-      return event;
-    }
-    return {
-      ...event,
-      args: {
-        ...event.args,
-        sceneId: action.payload.destSceneId,
-        x: action.payload.x,
-        y: action.payload.y,
-      },
-    };
-  });
-
-  const patch = (({
-    script,
-    startScript,
-    updateScript,
-    hit1Script,
-    hit2Script,
-    hit3Script,
-  }) => ({
-    script,
-    startScript,
-    updateScript,
-    hit1Script,
-    hit2Script,
-    hit3Script,
-  }))(updatedActor);
-
-  actorsAdapter.updateOne(state.actors, {
-    id: action.payload.actorId,
-    changes: patch,
   });
 };
 
@@ -1297,64 +938,31 @@ const addTrigger: CaseReducer<
     width: number;
     height: number;
     defaults?: Partial<Trigger>;
-    variables?: Variable[];
+    // variables?: Variable[];
   }>
 > = (state, action) => {
   const scene = localSceneSelectors.selectById(state, action.payload.sceneId);
   if (!scene) {
     return;
   }
-
   const width = Math.min(action.payload.width, scene.width);
   const height = Math.min(action.payload.height, scene.height);
 
-  // Add any variables from clipboard
-  if (action.payload.defaults?.id && action.payload.variables) {
-    const newVariables = action.payload.variables.map((variable) => {
-      return {
-        ...variable,
-        id: variable.id.replace(
-          action.payload.defaults?.id || "",
-          action.payload.triggerId
-        ),
-      };
-    });
-    variablesAdapter.upsertMany(state.variables, newVariables);
-  }
-
-  const newTrigger: Trigger = Object.assign(
-    {
-      name: "",
-      trigger: "walk",
-      script: [],
-    },
-    action.payload.defaults || {},
-    {
-      id: action.payload.triggerId,
-      x: clamp(action.payload.x, 0, scene.width - width),
-      y: clamp(action.payload.y, 0, scene.height - height),
-      width,
-      height,
-    }
-  );
+  const newTrigger: Trigger = {
+    name: "",
+    ...(action.payload.defaults || {}),
+    id: action.payload.triggerId,
+    x: clamp(action.payload.x, 0, scene.width - width),
+    y: clamp(action.payload.y, 0, scene.height - height),
+    width,
+    height,
+    script: [],
+    leaveScript: [],
+  };
 
   // Add to scene
-  addTriggerToScene(state, scene, newTrigger, {});
-};
-
-const addTriggerToScene = (
-  state: EntitiesState,
-  scene: Scene,
-  trigger: Trigger,
-  idReplacements: Dictionary<string>
-) => {
-  const fixedTrigger = mapTriggerEvents(trigger, (event) =>
-    replaceEventActorIds(idReplacements, regenerateEventIds(event))
-  );
-
-  // Add to scene
-  scene.triggers = ([] as string[]).concat(scene.triggers, fixedTrigger.id);
-  triggersAdapter.addOne(state.triggers, fixedTrigger);
+  scene.triggers = ([] as string[]).concat(scene.triggers, newTrigger.id);
+  triggersAdapter.addOne(state.triggers, newTrigger);
 };
 
 const editTrigger: CaseReducer<
@@ -1452,35 +1060,6 @@ const resizeTrigger: CaseReducer<
       y: Math.min(action.payload.y, action.payload.startY),
       width: Math.abs(action.payload.x - action.payload.startX) + 1,
       height: Math.abs(action.payload.y - action.payload.startY) + 1,
-    },
-  });
-};
-
-const editTriggerEventDestinationPosition: CaseReducer<
-  EntitiesState,
-  PayloadAction<{
-    triggerId: string;
-    eventId: string;
-    destSceneId: string;
-    x: number;
-    y: number;
-  }>
-> = (state, action) => {
-  const trigger = localTriggerSelectors.selectById(
-    state,
-    action.payload.triggerId
-  );
-  if (!trigger) {
-    return;
-  }
-  triggersAdapter.updateOne(state.triggers, {
-    id: action.payload.triggerId,
-    changes: {
-      script: patchEvents(trigger.script, action.payload.eventId, {
-        sceneId: action.payload.destSceneId,
-        x: action.payload.x,
-        y: action.payload.y,
-      }),
     },
   });
 };
@@ -1710,6 +1289,13 @@ const removeMetasprite: CaseReducer<
     state.spriteAnimations.entities[action.payload.spriteAnimationId];
 
   if (!spriteAnimation || spriteAnimation.frames.length <= 1) {
+    // Remove tiles if only frame in animation
+    metaspritesAdapter.updateOne(state.metasprites, {
+      id: action.payload.metaspriteId,
+      changes: {
+        tiles: [],
+      },
+    });
     return;
   }
 
@@ -2039,6 +1625,101 @@ const swapSpriteAnimationFrames: CaseReducer<
 };
 
 /**************************************************************************
+ * Sprite State
+ */
+
+const addSpriteState: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    spriteSheetId: string;
+    spriteStateId: string;
+  }>
+> = (state, action) => {
+  const sprite = state.spriteSheets.entities[action.payload.spriteSheetId];
+
+  if (!sprite) {
+    return;
+  }
+
+  const eightElements = Array.from(Array(8));
+
+  const newMetasprites: Metasprite[] = eightElements.map(() => ({
+    id: uuid(),
+    tiles: [],
+  }));
+
+  metaspritesAdapter.addMany(state.metasprites, newMetasprites);
+
+  const newAnimations: SpriteAnimation[] = eightElements.map((_, index) => ({
+    id: uuid(),
+    frames: [newMetasprites[index].id],
+  }));
+
+  spriteAnimationsAdapter.addMany(state.spriteAnimations, newAnimations);
+
+  const newSpriteState: SpriteState = {
+    id: action.payload.spriteStateId,
+    name: sprite.states.length > 0 ? "New State" : "",
+    animations: newAnimations.map((anim) => anim.id),
+    animationType: "fixed",
+    flipLeft: true,
+  };
+
+  // Add to sprite
+  sprite.states = ([] as string[]).concat(sprite.states, newSpriteState.id);
+  spriteStatesAdapter.addOne(state.spriteStates, newSpriteState);
+};
+
+const editSpriteState: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ spriteStateId: string; changes: Partial<SpriteState> }>
+> = (state, action) => {
+  const spriteState = state.spriteStates.entities[action.payload.spriteStateId];
+
+  const patch = { ...action.payload.changes };
+
+  if (!spriteState) {
+    return;
+  }
+
+  spriteStatesAdapter.updateOne(state.spriteStates, {
+    id: action.payload.spriteStateId,
+    changes: patch,
+  });
+};
+
+const removeSpriteState: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    spriteSheetId: string;
+    spriteStateId: string;
+  }>
+> = (state, action) => {
+  const spriteSheet = localSpriteSheetSelectors.selectById(
+    state,
+    action.payload.spriteSheetId
+  );
+  if (!spriteSheet) {
+    return;
+  }
+
+  // Remove from sprite
+  spriteSheetsAdapter.updateOne(state.spriteSheets, {
+    id: action.payload.spriteSheetId,
+    changes: {
+      states: spriteSheet.states.filter((spriteStateId) => {
+        return spriteStateId !== action.payload.spriteStateId;
+      }),
+    },
+  });
+
+  spriteStatesAdapter.removeOne(
+    state.spriteStates,
+    action.payload.spriteStateId
+  );
+};
+
+/**************************************************************************
  * Paint Helpers
  */
 
@@ -2296,7 +1977,7 @@ const removePalette: CaseReducer<
 
 const addCustomEvent: CaseReducer<
   EntitiesState,
-  PayloadAction<{ customEventId: string }>
+  PayloadAction<{ customEventId: string; defaults?: Partial<CustomEvent> }>
 > = (state, action) => {
   const newCustomEvent: CustomEvent = {
     id: action.payload.customEventId,
@@ -2304,6 +1985,7 @@ const addCustomEvent: CaseReducer<
     description: "",
     variables: {},
     actors: {},
+    ...(action.payload.defaults || {}),
     script: [],
   };
   customEventsAdapter.addOne(state.customEvents, newCustomEvent);
@@ -2316,71 +1998,48 @@ const editCustomEvent: CaseReducer<
     changes: Partial<CustomEvent>;
   }>
 > = (state, action) => {
-  const oldEvent = state.customEvents.entities[action.payload.customEventId];
-
   const patch = { ...action.payload.changes };
+  customEventsAdapter.updateOne(state.customEvents, {
+    id: action.payload.customEventId,
+    changes: patch,
+  });
+};
 
-  if (!oldEvent) {
-    const newCustomEvent: CustomEvent = {
-      id: action.payload.customEventId,
-      name: "",
-      description: "",
-      variables: {},
-      actors: {},
-      script: [],
-    };
-    customEventsAdapter.addOne(state.customEvents, newCustomEvent);
+const removeCustomEvent: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ customEventId: string }>
+> = (state, action) => {
+  customEventsAdapter.removeOne(
+    state.customEvents,
+    action.payload.customEventId
+  );
+};
+
+const refreshCustomEventArgs: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ customEventId: string }>
+> = (state, action) => {
+  const customEvent = state.customEvents.entities[action.payload.customEventId];
+  if (!customEvent) {
+    return;
   }
 
-  if (patch.script) {
-    // Fix invalid variables in script
-    const fix = replaceInvalidCustomEventVariables;
-    const fixActor = replaceInvalidCustomEventActors;
-    const fixProperty = replaceInvalidCustomEventProperties;
-    patch.script = mapEvents(patch.script, (event: ScriptEvent) => {
-      if (event.args) {
-        const fixedEventArgs = Object.keys(event.args).reduce((memo, arg) => {
-          const fixedArgs = memo;
-          if (isVariableField(event.command, arg, event.args)) {
-            fixedArgs[arg] = fix(event.args[arg]);
-          } else if (isPropertyField(event.command, arg, event.args[arg])) {
-            fixedArgs[arg] = fixProperty(event.args[arg]);
-          } else {
-            fixedArgs[arg] = event.args[arg];
-          }
+  const variables = {} as Dictionary<CustomEventVariable>;
+  const actors = {} as Dictionary<CustomEventActor>;
+  const oldVariables = customEvent.variables;
+  const oldActors = customEvent.actors;
 
-          return fixedArgs;
-        }, {} as Dictionary<unknown>);
-
-        return {
-          ...event,
-          args: {
-            ...event.args,
-            ...fixedEventArgs,
-            actorId: event.args.actorId && fixActor(event.args.actorId),
-            otherActorId:
-              event.args.otherActorId && fixActor(event.args.otherActorId),
-          },
-        };
-      }
-      return event;
-    });
-
-    const variables = {} as Dictionary<CustomEventVariable>;
-    const actors = {} as Dictionary<CustomEventActor>;
-
-    const oldVariables = oldEvent ? oldEvent.variables : {};
-    const oldActors = oldEvent ? oldEvent.actors : {};
-
-    walkEvents(patch.script, (e: ScriptEvent) => {
-      const args = e.args;
-
+  walkNormalisedScriptEvents(
+    customEvent.script,
+    state.scriptEvents.entities,
+    (scriptEvent) => {
+      const args = scriptEvent.args;
       if (!args) return;
-      if (e.args.__comment) return;
-
+      if (args.__comment) return;
       if (
         args.actorId &&
         args.actorId !== "player" &&
+        args.actorId !== "$self$" &&
         typeof args.actorId === "string"
       ) {
         const letter = String.fromCharCode(
@@ -2391,7 +2050,6 @@ const editCustomEvent: CaseReducer<
           name: oldActors[args.actorId]?.name || `Actor ${letter}`,
         };
       }
-
       if (
         args.otherActorId &&
         args.otherActorId !== "player" &&
@@ -2405,9 +2063,8 @@ const editCustomEvent: CaseReducer<
           name: oldActors[args.otherActorId]?.name || `Actor ${letter}`,
         };
       }
-
       Object.keys(args).forEach((arg) => {
-        if (isVariableField(e.command, arg, args)) {
+        if (isVariableField(scriptEvent.command, arg, args)) {
           const addVariable = (variable: string) => {
             const letter = String.fromCharCode(
               "A".charCodeAt(0) + parseInt(variable)
@@ -2424,11 +2081,10 @@ const editCustomEvent: CaseReducer<
             addVariable(variable);
           }
         }
-
-        if (isPropertyField(e.command, arg, args[arg])) {
+        if (isPropertyField(scriptEvent.command, arg, args[arg])) {
           const addPropertyActor = (property: string) => {
             const actor = property && property.replace(/:.*/, "");
-            if (actor !== "player") {
+            if (actor !== "player" && actor !== "$self$") {
               const letter = String.fromCharCode(
                 "A".charCodeAt(0) + parseInt(actor)
               );
@@ -2446,7 +2102,6 @@ const editCustomEvent: CaseReducer<
           }
         }
       });
-
       if (args.text) {
         const text = Array.isArray(args.text) ? args.text.join() : args.text;
         if (typeof text === "string") {
@@ -2465,69 +2120,327 @@ const editCustomEvent: CaseReducer<
           }
         }
       }
-    });
+    }
+  );
 
-    patch.variables = { ...variables };
-    patch.actors = { ...actors };
+  customEvent.variables = variables;
+  customEvent.actors = actors;
+};
 
-    const patchEventCallFn = patchCustomEventCallArgs(
-      action.payload.customEventId,
-      patch.script,
-      patch.variables,
-      patch.actors
-    );
-    const patchedActors = mapActorsEvents(
-      localActorSelectors.selectAll(state),
-      patchEventCallFn
-    );
-    const patchedTriggers = mapTriggersEvents(
-      localTriggerSelectors.selectAll(state),
-      patchEventCallFn
-    );
-    const patchedScenes = mapScenesEvents(
-      localSceneSelectors.selectAll(state),
-      patchEventCallFn
-    );
-    actorsAdapter.setAll(state.actors, patchedActors);
-    triggersAdapter.setAll(state.triggers, patchedTriggers);
-    scenesAdapter.setAll(state.scenes, patchedScenes);
+/**************************************************************************
+ * Script Events
+ */
+
+const selectScriptIds = (
+  state: EntitiesState,
+  parentType: ScriptEventParentType,
+  parentId: string,
+  parentKey: string
+): string[] | undefined => {
+  if (parentType === "scene") {
+    const scene = state.scenes.entities[parentId];
+    if (!scene) return;
+    const script = scene[parentKey as "script"];
+    if (script) {
+      return script;
+    }
+    const newScript = (scene[parentKey as "script"] = []);
+    return newScript;
+  } else if (parentType === "scriptEvent") {
+    const scriptEvent = state.scriptEvents.entities[parentId];
+    if (!scriptEvent) return;
+    const script = scriptEvent.children?.[parentKey];
+    if (script) {
+      return script;
+    }
+    if (!scriptEvent.children) {
+      scriptEvent.children = {
+        [parentKey]: [],
+      };
+      return scriptEvent.children?.[parentKey];
+    } else {
+      scriptEvent.children[parentKey] = [];
+      return scriptEvent.children[parentKey];
+    }
+  } else if (parentType === "actor") {
+    const actor = state.actors.entities[parentId];
+    if (!actor) return;
+    const script = actor[parentKey as "script"];
+    if (script) {
+      return script;
+    }
+    const newScript = (actor[parentKey as "script"] = []);
+    return newScript;
+  } else if (parentType === "trigger") {
+    const trigger = state.triggers.entities[parentId];
+    if (!trigger) return;
+    const script = trigger[parentKey as "script"];
+    if (script) {
+      return script;
+    }
+    const newScript = (trigger[parentKey as "script"] = []);
+    return newScript;
+  } else if (parentType === "customEvent") {
+    const customEvent = state.customEvents.entities[parentId];
+    if (!customEvent) return;
+    const script = customEvent[parentKey as "script"];
+    if (script) {
+      return script;
+    }
+    const newScript = (customEvent[parentKey as "script"] = []);
+    return newScript;
+  }
+};
+
+const selectScriptIdsByRef = (
+  state: EntitiesState,
+  location: ScriptEventsRef
+): string[] | undefined => {
+  return selectScriptIds(
+    state,
+    location.parentType,
+    location.parentId,
+    location.parentKey
+  );
+};
+
+const addScriptEvents: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    scriptEventIds: string[];
+    entityId: string;
+    type: ScriptEventParentType;
+    key: string;
+    insertId?: string;
+    before?: boolean;
+    data: Omit<ScriptEvent, "id">[];
+  }>
+> = (state, action) => {
+  const script = selectScriptIds(
+    state,
+    action.payload.type,
+    action.payload.entityId,
+    action.payload.key
+  );
+
+  if (!script) {
+    return;
   }
 
-  if (patch.name) {
-    const patchEventCallFn = patchCustomEventCallName(
-      action.payload.customEventId,
-      patch.name
-    );
-    const patchedActors = mapActorsEvents(
-      localActorSelectors.selectAll(state),
-      patchEventCallFn
-    );
-    const patchedTriggers = mapTriggersEvents(
-      localTriggerSelectors.selectAll(state),
-      patchEventCallFn
-    );
-    const patchedScenes = mapScenesEvents(
-      localSceneSelectors.selectAll(state),
-      patchEventCallFn
-    );
-    actorsAdapter.setAll(state.actors, patchedActors);
-    triggersAdapter.setAll(state.triggers, patchedTriggers);
-    scenesAdapter.setAll(state.scenes, patchedScenes);
+  const newScriptEvents = action.payload.data.map(
+    (scriptEventData, scriptEventIndex) => {
+      const newScriptEvent: ScriptEvent = {
+        ...scriptEventData,
+        id: action.payload.scriptEventIds[scriptEventIndex],
+      };
+      if (scriptEventData.children) {
+        newScriptEvent.children = Object.keys(scriptEventData.children).reduce(
+          (memo, key) => {
+            memo[key] = [];
+            return memo;
+          },
+          {} as Dictionary<string[]>
+        );
+      }
+      return newScriptEvent;
+    }
+  );
+
+  const insertIndex = action.payload.insertId
+    ? Math.max(
+        0,
+        script.indexOf(action.payload.insertId || "") +
+          (action.payload.before ? 0 : 1)
+      )
+    : script.length;
+
+  scriptEventsAdapter.addMany(state.scriptEvents, newScriptEvents);
+  script.splice(insertIndex, 0, ...action.payload.scriptEventIds);
+};
+
+const moveScriptEvent: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    from: ScriptEventsRef;
+    to: ScriptEventsRef;
+  }>
+> = (state, action) => {
+  const from = selectScriptIdsByRef(state, action.payload.from);
+  const to = selectScriptIdsByRef(state, action.payload.to);
+  if (!from || !to) {
+    return;
   }
 
-  customEventsAdapter.updateOne(state.customEvents, {
-    id: action.payload.customEventId,
-    changes: patch,
+  const fromIndex = from.indexOf(action.payload.from.scriptEventId);
+  let toIndex = to.indexOf(action.payload.to.scriptEventId);
+  if (fromIndex === -1) {
+    return;
+  }
+  if (toIndex === -1) {
+    toIndex = to.length;
+  }
+
+  from.splice(fromIndex, 1);
+  if (from === to && fromIndex < toIndex) {
+    toIndex--;
+  }
+  to.splice(
+    Math.min(Math.max(toIndex, 0), to.length),
+    0,
+    action.payload.from.scriptEventId
+  );
+};
+
+const editScriptEvent: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    scriptEventId: string;
+    changes: Partial<ScriptEvent>;
+  }>
+> = (state, action) => {
+  scriptEventsAdapter.updateOne(state.scriptEvents, {
+    id: action.payload.scriptEventId,
+    changes: action.payload.changes,
   });
 };
 
-const removeCustomEvent: CaseReducer<
+const toggleScriptEventOpen: CaseReducer<
   EntitiesState,
-  PayloadAction<{ customEventId: string }>
+  PayloadAction<{
+    scriptEventId: string;
+  }>
 > = (state, action) => {
-  customEventsAdapter.removeOne(
-    state.customEvents,
-    action.payload.customEventId
+  const scriptEvent = state.scriptEvents.entities[action.payload.scriptEventId];
+  if (!scriptEvent || !scriptEvent.args) {
+    return;
+  }
+  scriptEvent.args.__collapse = !scriptEvent.args.__collapse;
+};
+
+const toggleScriptEventComment: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    scriptEventId: string;
+  }>
+> = (state, action) => {
+  const scriptEvent = state.scriptEvents.entities[action.payload.scriptEventId];
+  if (!scriptEvent || !scriptEvent.args) {
+    return;
+  }
+  scriptEvent.args.__comment = !scriptEvent.args.__comment;
+};
+
+const toggleScriptEventDisableElse: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    scriptEventId: string;
+  }>
+> = (state, action) => {
+  const scriptEvent = state.scriptEvents.entities[action.payload.scriptEventId];
+  if (!scriptEvent || !scriptEvent.args) {
+    return;
+  }
+  scriptEvent.args.__disableElse = !scriptEvent.args.__disableElse;
+};
+
+const editScriptEventArg: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    scriptEventId: string;
+    key: string;
+    value: unknown;
+  }>
+> = (state, action) => {
+  const scriptEvent = state.scriptEvents.entities[action.payload.scriptEventId];
+  if (!scriptEvent || !scriptEvent.args) {
+    return;
+  }
+  scriptEvent.args[action.payload.key] = action.payload.value;
+};
+
+const editScriptEventDestination: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    scriptEventId: string;
+    destSceneId: string;
+    x: number;
+    y: number;
+  }>
+> = (state, action) => {
+  const scriptEvent = state.scriptEvents.entities[action.payload.scriptEventId];
+  if (!scriptEvent || !scriptEvent.args) {
+    return;
+  }
+  scriptEvent.args = {
+    ...scriptEvent.args,
+    sceneId: action.payload.destSceneId,
+    x: action.payload.x,
+    y: action.payload.y,
+  };
+};
+
+const editScriptEventLabel: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    scriptEventId: string;
+    value: string;
+  }>
+> = (state, action) => {
+  const scriptEvent = state.scriptEvents.entities[action.payload.scriptEventId];
+  if (!scriptEvent || !scriptEvent.args) {
+    return;
+  }
+  scriptEvent.args.__label = action.payload.value;
+};
+
+const resetScript: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    entityId: string;
+    type: ScriptEventParentType;
+    key: string;
+  }>
+> = (state, action) => {
+  const script = selectScriptIds(
+    state,
+    action.payload.type,
+    action.payload.entityId,
+    action.payload.key
+  );
+  if (script) {
+    script.splice(0, script.length);
+  }
+};
+
+const removeScriptEvent: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    scriptEventId: string;
+    entityId: string;
+    type: ScriptEventParentType;
+    key: string;
+  }>
+> = (state, action) => {
+  const script = selectScriptIds(
+    state,
+    action.payload.type,
+    action.payload.entityId,
+    action.payload.key
+  );
+
+  if (!script) {
+    return;
+  }
+
+  const eventIndex = script.indexOf(action.payload.scriptEventId);
+  if (eventIndex === -1) {
+    return;
+  }
+
+  script.splice(eventIndex, 1);
+  scriptEventsAdapter.removeOne(
+    state.scriptEvents,
+    action.payload.scriptEventId
   );
 };
 
@@ -2598,7 +2511,7 @@ const entitiesSlice = createSlice({
       prepare: (payload: {
         x: number;
         y: number;
-        defaults?: Partial<SceneData>;
+        defaults?: Partial<Scene>;
         variables?: Variable[];
       }) => {
         return {
@@ -2613,7 +2526,6 @@ const entitiesSlice = createSlice({
     editScene,
     removeScene,
     moveScene,
-    editSceneEventDestinationPosition,
     paintCollision,
     paintColor,
 
@@ -2643,7 +2555,6 @@ const entitiesSlice = createSlice({
     removeActor,
     removeActorAt,
     moveActor,
-    editActorEventDestinationPosition,
 
     /**************************************************************************
      * Triggers
@@ -2674,7 +2585,6 @@ const entitiesSlice = createSlice({
     removeTriggerAt,
     moveTrigger,
     resizeTrigger,
-    editTriggerEventDestinationPosition,
 
     /**************************************************************************
      * Sprites
@@ -2766,6 +2676,25 @@ const entitiesSlice = createSlice({
     swapSpriteAnimationFrames,
 
     /**************************************************************************
+     * Sprite States
+     */
+
+    addSpriteState: {
+      reducer: addSpriteState,
+      prepare: (payload: { spriteSheetId: string }) => {
+        return {
+          payload: {
+            ...payload,
+            spriteStateId: uuid(),
+          },
+        };
+      },
+    },
+
+    editSpriteState,
+    removeSpriteState,
+
+    /**************************************************************************
      * Variables
      */
 
@@ -2794,10 +2723,14 @@ const entitiesSlice = createSlice({
 
     addCustomEvent: {
       reducer: addCustomEvent,
-      prepare: () => {
+      prepare: (payload?: {
+        customEventId?: string;
+        defaults?: Partial<CustomEvent>;
+      }) => {
         return {
           payload: {
-            customEventId: uuid(),
+            customEventId: payload?.customEventId ?? uuid(),
+            defaults: payload?.defaults,
           },
         };
       },
@@ -2805,6 +2738,54 @@ const entitiesSlice = createSlice({
 
     editCustomEvent,
     removeCustomEvent,
+    refreshCustomEventArgs: {
+      reducer: refreshCustomEventArgs,
+      prepare: (payload: { customEventId: string }) => {
+        return {
+          payload: {
+            customEventId: payload.customEventId,
+          },
+          meta: {
+            throttle: 1000,
+            key: `refresh_${payload.customEventId}`,
+          },
+        };
+      },
+    },
+
+    /**************************************************************************
+     * Script Events
+     */
+
+    addScriptEvents: {
+      reducer: addScriptEvents,
+      prepare: (payload: {
+        entityId: string;
+        type: ScriptEventParentType;
+        key: string;
+        insertId?: string;
+        before?: boolean;
+        data: Omit<ScriptEvent, "id">[];
+      }) => {
+        return {
+          payload: {
+            ...payload,
+            scriptEventIds: payload.data.map(() => uuid()),
+          },
+        };
+      },
+    },
+
+    moveScriptEvent,
+    editScriptEvent,
+    resetScript,
+    toggleScriptEventOpen,
+    toggleScriptEventComment,
+    toggleScriptEventDisableElse,
+    editScriptEventArg,
+    editScriptEventDestination,
+    editScriptEventLabel,
+    removeScriptEvent,
 
     /**************************************************************************
      * Music
@@ -2843,8 +2824,72 @@ export const { reducer } = entitiesSlice;
 export const actions = {
   ...entitiesSlice.actions,
   moveSelectedEntity,
-  editDestinationPosition,
   removeSelectedEntity,
+};
+
+/**************************************************************************
+ * Action Generators
+ */
+
+export const generateScriptEventInsertActions = (
+  scriptEventIds: string[],
+  scriptEventsLookup: Dictionary<ScriptEvent>,
+  entityId: string,
+  type: ScriptEventParentType,
+  key: string,
+  insertId?: string,
+  before?: boolean
+) => {
+  const insertActions: ReturnType<
+    typeof entitiesSlice.actions.addScriptEvents
+  >[] = [];
+
+  const collectInsertActions = (
+    scriptEventIds: string[],
+    entityId: string,
+    type: ScriptEventParentType,
+    key: string,
+    insertId?: string,
+    before?: boolean
+  ) => {
+    const insertEvents: ScriptEvent[] = [];
+    for (let i = 0; i < scriptEventIds.length; i++) {
+      const scriptEvent = scriptEventsLookup[scriptEventIds[i]];
+      if (!scriptEvent) {
+        continue;
+      }
+      insertEvents.push(scriptEvent);
+    }
+
+    const action = entitiesSlice.actions.addScriptEvents({
+      entityId,
+      type,
+      key,
+      insertId,
+      before,
+      data: insertEvents,
+    });
+
+    if (insertEvents.length > 0) {
+      insertActions.push(action);
+    }
+
+    // Child events
+    for (let i = 0; i < insertEvents.length; i++) {
+      const insertedEvent = insertEvents[i];
+      if (insertedEvent.children) {
+        Object.keys(insertedEvent.children).forEach((key) => {
+          const childIds = insertedEvent?.children?.[key] || [];
+          const newParentId = action.payload.scriptEventIds[i];
+          collectInsertActions(childIds, newParentId, "scriptEvent", key);
+        });
+      }
+    }
+  };
+
+  collectInsertActions(scriptEventIds, entityId, type, key, insertId, before);
+
+  return insertActions;
 };
 
 /**************************************************************************
@@ -2893,6 +2938,9 @@ export const triggerSelectors = triggersAdapter.getSelectors(
 export const sceneSelectors = scenesAdapter.getSelectors(
   (state: RootState) => state.project.present.entities.scenes
 );
+export const scriptEventSelectors = scriptEventsAdapter.getSelectors(
+  (state: RootState) => state.project.present.entities.scriptEvents
+);
 export const spriteSheetSelectors = spriteSheetsAdapter.getSelectors(
   (state: RootState) => state.project.present.entities.spriteSheets
 );
@@ -2904,6 +2952,9 @@ export const metaspriteTileSelectors = metaspriteTilesAdapter.getSelectors(
 );
 export const spriteAnimationSelectors = spriteAnimationsAdapter.getSelectors(
   (state: RootState) => state.project.present.entities.spriteAnimations
+);
+export const spriteStateSelectors = spriteStatesAdapter.getSelectors(
+  (state: RootState) => state.project.present.entities.spriteStates
 );
 export const backgroundSelectors = backgroundsAdapter.getSelectors(
   (state: RootState) => state.project.present.entities.backgrounds

@@ -4,12 +4,10 @@ import styled from "styled-components";
 import { PatternCell } from "lib/helpers/uge/song/PatternCell";
 import { Song } from "lib/helpers/uge/song/Song";
 import { RootState } from "store/configureStore";
-import trackerActions from "store/features/tracker/trackerActions";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import { SplitPaneHorizontalDivider } from "ui/splitpane/SplitPaneDivider";
 import { SequenceEditor } from "./SequenceEditor";
 import { SongRow } from "./SongRow";
-import { UgePlayer } from "./UgePlayer";
 import scrollIntoView from "scroll-into-view-if-needed";
 import { SongGridHeaderCell } from "./SongGridHeaderCell";
 
@@ -17,6 +15,8 @@ interface SongTrackerProps {
   sequenceId: number;
   song: Song | null;
   height: number;
+  channelStatus: boolean[];
+  playbackState: number[];
 }
 
 const COLUMN_CELLS = 4;
@@ -44,23 +44,20 @@ const SongGridHeader = styled.div`
   border-style: solid;
 `;
 
-export const SongTracker = ({ song, sequenceId, height }: SongTrackerProps) => {
+export const SongTracker = ({
+  song,
+  sequenceId,
+  height,
+  channelStatus,
+  playbackState,
+}: SongTrackerProps) => {
   const dispatch = useDispatch();
 
-  const [playbackState, setPlaybackState] = useState([-1, -1]);
   const playing = useSelector((state: RootState) => state.tracker.playing);
   const editStep = useSelector((state: RootState) => state.tracker.editStep);
   const octaveOffset = useSelector(
     (state: RootState) => state.tracker.octaveOffset
   );
-
-  const [channelStatus, setChannelStatus] = useState([
-    false,
-    false,
-    false,
-    false,
-  ]);
-  console.log(channelStatus);
 
   const patternId = song?.sequence[sequenceId] || 0;
   const [selectedCell, setSelectedCell] = useState<number | undefined>();
@@ -85,10 +82,6 @@ export const SongTracker = ({ song, sequenceId, height }: SongTrackerProps) => {
       }
     }
   }, [playing, selectedCell]);
-
-  useEffect(() => {
-    setPlaybackState([-1, -1]);
-  }, [playing, song]);
 
   const handleMouseDown = useCallback((e: any) => {
     const cellId = e.target.dataset["cellid"];
@@ -212,7 +205,6 @@ export const SongTracker = ({ song, sequenceId, height }: SongTrackerProps) => {
 
       if (selectedCell % 4 === 0) {
         if (e.ctrlKey) {
-          console.log(e.ctrlKey, e.shiftKey, e.key);
           if (e.shiftKey) {
             if (e.key === "Q") return transposeNoteCell(12);
             if (e.key === "A") return transposeNoteCell(-12);
@@ -220,6 +212,9 @@ export const SongTracker = ({ song, sequenceId, height }: SongTrackerProps) => {
             if (e.key === "q") return transposeNoteCell(1);
             if (e.key === "a") return transposeNoteCell(-1);
           }
+          return;
+        } else if (e.metaKey) {
+          return;
         }
 
         if (e.key === "q") editNoteCell(0);
@@ -319,7 +314,7 @@ export const SongTracker = ({ song, sequenceId, height }: SongTrackerProps) => {
   );
 
   const handleKeysUp = useCallback(
-    (e: KeyboardEvent) => {
+    (_e: KeyboardEvent) => {
       if (selectedCell) {
         // console.log(e.key);
       }
@@ -339,13 +334,13 @@ export const SongTracker = ({ song, sequenceId, height }: SongTrackerProps) => {
     };
   });
 
-  const onFocus = (e: React.FocusEvent<HTMLDivElement>) => {
+  const onFocus = (_e: React.FocusEvent<HTMLDivElement>) => {
     if (!selectedCell) {
       setSelectedCell(0);
     }
   };
 
-  const onBlur = (e: React.FocusEvent<HTMLDivElement>) => {
+  const onBlur = (_e: React.FocusEvent<HTMLDivElement>) => {
     setSelectedCell(undefined);
   };
 
@@ -411,11 +406,6 @@ export const SongTracker = ({ song, sequenceId, height }: SongTrackerProps) => {
           })}
         </SongGrid>
       </div>
-      <UgePlayer
-        data={song}
-        onPlaybackUpdate={setPlaybackState}
-        onChannelStatusUpdate={setChannelStatus}
-      />
     </div>
   );
 };

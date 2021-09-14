@@ -1,6 +1,7 @@
 import { ThemeInterface } from "./ThemeInterface";
 
-const darkheme: ThemeInterface = {
+const neonTheme: ThemeInterface = {
+  type: "dark",
   typography: {
     fontSize: "11px",
     menuFontSize: "12px",
@@ -9,6 +10,8 @@ const darkheme: ThemeInterface = {
   colors: {
     highlight: "#f6019d",
     highlightText: "#ffffff",
+    translucent: "rgba(0,0,0,0.1)",
+    hoverTranslucent: "rgba(0,0,0,0.3)",
     text: "#f5dcec",
     secondaryText: "#777777",
     conditional: {
@@ -83,6 +86,45 @@ const darkheme: ThemeInterface = {
       selectedBackground: "#000000",
       activeBackground: "#333333",
     },
+    scripting: {
+      header: {
+        text: "#ffffff",
+        background: "#0a0e0e",
+        backgroundAlt: "#101515",
+        nest1Background: "#01579b",
+        nest1BackgroundAlt: "#0277bd",
+        nest2Background: "#bf360c",
+        nest2BackgroundAlt: "#d84315",
+        nest3Background: "#1b5e20",
+        nest3BackgroundAlt: "#2e7d32",
+        nest4Background: "#311b92",
+        nest4BackgroundAlt: "#4527a0",
+        commentBackground: "#8bc34a",
+        commentBackgroundAlt: "#7cb342",
+      },
+      branch: {
+        nest1Background: "#1565c0",
+        nest2Background: "#ca750b",
+        nest3Background: "#2e7d32",
+        nest4Background: "#6a1b9a",
+      },
+      form: {
+        background: "#000000",
+      },
+      children: {
+        nest1Border: "#1565c0",
+        nest1Text: "#1565c0",
+        nest2Border: "#ca750b",
+        nest2Text: "#ca750b",
+        nest3Border: "#2e7d32",
+        nest3Text: "#2e7d32",
+        nest4Border: "#6a1b9a",
+        nest4Text: "#6a1b9a",
+      },
+      placeholder: {
+        background: "#666",
+      },
+    },
     tracker: {
       background: "#222222",
       activeBackground: "#333333",
@@ -100,4 +142,4 @@ const darkheme: ThemeInterface = {
   borderRadius: 4,
 };
 
-export default darkheme;
+export default neonTheme;

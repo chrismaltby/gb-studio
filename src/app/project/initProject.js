@@ -1,6 +1,6 @@
 import Path from "path";
 import { ActionCreators } from "redux-undo";
-import { ipcRenderer, clipboard } from "electron";
+import { ipcRenderer, clipboard, webFrame} from "electron";
 import settings from "electron-settings";
 import debounce from "lodash/debounce";
 import mapValues from "lodash/mapValues";
@@ -147,6 +147,10 @@ const onZoom = (event, zoomType) => {
   }
 };
 
+const onWindowZoom = (event, zoomLevel) => {
+  webFrame.setZoomLevel(zoomLevel)
+};
+
 const onRun = () => {
   store.dispatch(buildGameActions.buildGame());
 };
@@ -176,12 +180,7 @@ const onPluginRun = (_event, pluginId) => {
 };
 
 const onPasteInPlace = (_event) => {
-  try {
-    const clipboardData = JSON.parse(clipboard.readText());
-    store.dispatch(clipboardActions.pasteClipboardEntityInPlace(clipboardData));
-  } catch (err) {
-    // Clipboard isn't pastable, just ignore it
-  }
+  store.dispatch(clipboardActions.pasteClipboardEntityInPlace());
 };
 
 ipcRenderer.on("save-project", onSaveProject);
@@ -193,6 +192,7 @@ ipcRenderer.on("section", onSetSection);
 ipcRenderer.on("reloadAssets", onReloadAssets);
 ipcRenderer.on("updateSetting", onUpdateSetting);
 ipcRenderer.on("zoom", onZoom);
+ipcRenderer.on("windowZoom", onWindowZoom);
 ipcRenderer.on("run", onRun);
 ipcRenderer.on("build", onBuild);
 ipcRenderer.on("ejectEngine", onEjectEngine);

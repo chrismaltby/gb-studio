@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ScriptEditor from "../script/ScriptEditor";
 import { FormField } from "../library/Forms";
@@ -12,20 +12,28 @@ import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
 import { customEventSelectors } from "store/features/entities/entitiesState";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
-import { SidebarMultiColumnAuto, SidebarColumn } from "ui/sidebars/Sidebar";
+import { Sidebar, SidebarColumn } from "ui/sidebars/Sidebar";
 import { FormContainer, FormHeader } from "ui/form/FormLayout";
 import { EditableText } from "ui/form/EditableText";
 import { RootState } from "store/configureStore";
 import { CustomEvent } from "store/features/entities/entitiesTypes";
+import { StickyTabs, TabBar } from "ui/tabs/Tabs";
+import { Button } from "ui/buttons/Button";
+import { LockIcon, LockOpenIcon } from "ui/icons/Icons";
 
 const customEventName = (customEvent: CustomEvent, customEventIndex: number) =>
   customEvent.name ? customEvent.name : `Script ${customEventIndex + 1}`;
 
 interface CustomEventEditorProps {
   id: string;
+  multiColumn: boolean;
 }
 
-const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
+const scriptTabs = {
+  script: l10n("SIDEBAR_CUSTOM_EVENT_SCRIPT"),
+} as const;
+
+const CustomEventEditor = ({ id, multiColumn }: CustomEventEditorProps) => {
   const customEvents = useSelector((state: RootState) =>
     customEventSelectors.selectAll(state)
   );
@@ -35,6 +43,9 @@ const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
   const index = React.useMemo(
     () => customEvents.findIndex((p) => p.id === id),
     [customEvents, id]
+  );
+  const lockScriptEditor = useSelector(
+    (state: RootState) => state.editor.lockScriptEditor
   );
 
   const dispatch = useDispatch();
@@ -116,112 +127,142 @@ const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
     );
   }, [dispatch, customEvent]);
 
+  const onToggleLockScriptEditor = useCallback(() => {
+    dispatch(editorActions.setLockScriptEditor(!lockScriptEditor));
+  }, [dispatch, lockScriptEditor]);
+
   const selectSidebar = () => dispatch(editorActions.selectSidebar());
 
   if (!customEvent) {
     return <WorldEditor />;
   }
 
+  const lockButton = (
+    <Button
+      size="small"
+      variant={lockScriptEditor ? "primary" : "transparent"}
+      onClick={onToggleLockScriptEditor}
+      title={
+        lockScriptEditor
+          ? l10n("FIELD_UNLOCK_SCRIPT_EDITOR")
+          : l10n("FIELD_LOCK_SCRIPT_EDITOR")
+      }
+    >
+      {lockScriptEditor ? <LockIcon /> : <LockOpenIcon />}
+    </Button>
+  );
+
+  const scriptButton = (
+    <ScriptEditorDropdownButton
+      value={customEvent.script}
+      type="customEvent"
+      entityId={customEvent.id}
+      scriptKey={"script"}
+    />
+  );
+
   return (
-    <SidebarMultiColumnAuto onClick={selectSidebar}>
-      <SidebarColumn>
-        <FormContainer>
-          <FormHeader>
-            <EditableText
-              name="name"
-              placeholder={customEventName(customEvent, index)}
-              value={customEvent.name || ""}
-              onChange={onEdit("name")}
-            />
-            <DropdownButton
-              size="small"
-              variant="transparent"
-              menuDirection="right"
-            >
-              <MenuItem onClick={onRemove}>
-                {l10n("MENU_DELETE_CUSTOM_EVENT")}
-              </MenuItem>
-            </DropdownButton>
-          </FormHeader>
-          <FormField style={{}}>
-            <label htmlFor="customEventDescription">
-              {l10n("FIELD_DESCRIPTION")}
-              <textarea
-                id="customEventDescription"
-                rows={3}
-                value={customEvent.description || ""}
-                placeholder={l10n("FIELD_CUSTOM_EVENT_DESCRIPTION_PLACEHOLDER")}
-                onChange={onEdit("description")}
+    <Sidebar onClick={selectSidebar} multiColumn={multiColumn}>
+      {!lockScriptEditor && (
+        <SidebarColumn style={{ maxWidth: multiColumn ? 300 : undefined }}>
+          <FormContainer>
+            <FormHeader>
+              <EditableText
+                name="name"
+                placeholder={customEventName(customEvent, index)}
+                value={customEvent.name || ""}
+                onChange={onEdit("name")}
               />
-            </label>
-          </FormField>
-        </FormContainer>
-        <div>
-          <SidebarHeading title={l10n("SIDEBAR_PARAMETERS")} />
-          <FormField style={{}}>
-            <label>
-              {`Variables: ${Object.values(customEvent.variables).length}/10`}
-            </label>
-          </FormField>
-          {Object.values(customEvent.variables).map((variable, i) => {
-            if (!variable) {
-              return null;
-            }
-            return (
-              <FormField key={variable.id} style={{}}>
-                <input
-                  id={`variable[${i}]`}
-                  value={variable.name}
-                  placeholder="Variable Name"
-                  onChange={onEditVariableName(variable.id)}
+              <DropdownButton
+                size="small"
+                variant="transparent"
+                menuDirection="right"
+              >
+                <MenuItem onClick={onRemove}>
+                  {l10n("MENU_DELETE_CUSTOM_EVENT")}
+                </MenuItem>
+              </DropdownButton>
+            </FormHeader>
+            <FormField style={{}}>
+              <label htmlFor="customEventDescription">
+                {l10n("FIELD_DESCRIPTION")}
+                <textarea
+                  id="customEventDescription"
+                  rows={3}
+                  value={customEvent.description || ""}
+                  placeholder={l10n(
+                    "FIELD_CUSTOM_EVENT_DESCRIPTION_PLACEHOLDER"
+                  )}
+                  onChange={onEdit("description")}
                 />
-              </FormField>
-            );
-          })}
-          <FormField style={{}}>
-            <label>
-              {`Actors: ${Object.values(customEvent.actors).length}/10`}
-            </label>
-          </FormField>
-          {Object.values(customEvent.actors).map((actor, i) => {
-            if (!actor) {
-              return null;
-            }
-            return (
-              <FormField key={actor.id} style={{}}>
-                <input
-                  id={`actor[${i}]`}
-                  value={actor.name}
-                  placeholder="Actor Name"
-                  onChange={onEditActorName(actor.id)}
-                />
-              </FormField>
-            );
-          })}
-        </div>
-      </SidebarColumn>
+              </label>
+            </FormField>
+          </FormContainer>
+          <div>
+            <SidebarHeading title={l10n("SIDEBAR_PARAMETERS")} />
+            <FormField style={{}}>
+              <label>
+                {`Variables: ${Object.values(customEvent.variables).length}/10`}
+              </label>
+            </FormField>
+            {Object.values(customEvent.variables).map((variable, i) => {
+              if (!variable) {
+                return null;
+              }
+              return (
+                <FormField key={variable.id} style={{}}>
+                  <input
+                    id={`variable[${i}]`}
+                    value={variable.name}
+                    placeholder="Variable Name"
+                    onChange={onEditVariableName(variable.id)}
+                  />
+                </FormField>
+              );
+            })}
+            <FormField style={{}}>
+              <label>
+                {`Actors: ${Object.values(customEvent.actors).length}/10`}
+              </label>
+            </FormField>
+            {Object.values(customEvent.actors).map((actor, i) => {
+              if (!actor) {
+                return null;
+              }
+              return (
+                <FormField key={actor.id} style={{}}>
+                  <input
+                    id={`actor[${i}]`}
+                    value={actor.name}
+                    placeholder="Actor Name"
+                    onChange={onEditActorName(actor.id)}
+                  />
+                </FormField>
+              );
+            })}
+          </div>
+        </SidebarColumn>
+      )}
       <SidebarColumn>
-        <div>
-          <SidebarHeading
-            title={l10n("SIDEBAR_CUSTOM_EVENT_SCRIPT")}
+        <StickyTabs>
+          <TabBar
+            values={scriptTabs}
             buttons={
-              <ScriptEditorDropdownButton
-                value={customEvent.script}
-                onChange={onEdit("script")}
-              />
+              <>
+                {lockButton}
+                {scriptButton}
+              </>
             }
           />
-          <ScriptEditor
-            value={customEvent.script}
-            type="customEvent"
-            variables={Object.keys(customEvent.variables)}
-            actors={Object.keys(customEvent.actors)}
-            onChange={onEdit("script")}
-            entityId={customEvent.id}
-          />
-        </div>
+        </StickyTabs>
+        <ScriptEditor
+          value={customEvent.script}
+          type="customEvent"
+          entityId={customEvent.id}
+          scriptKey={"script"}
+        />
       </SidebarColumn>
-    </SidebarMultiColumnAuto>
+    </Sidebar>
   );
 };
 

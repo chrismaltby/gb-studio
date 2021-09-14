@@ -1,4 +1,4 @@
-CC	= ../../../bin/lcc -Wa-l -Wl-m -Wl-j -Wm-yc
+CC	= ../../../bin/lcc -Wl-m -Wl-j -Wm-yS -Wm-yc
 
 BINS	= bgb_debug.gb
 

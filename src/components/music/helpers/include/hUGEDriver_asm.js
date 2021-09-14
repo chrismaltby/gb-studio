@@ -1,4 +1,4 @@
-// https://raw.githubusercontent.com/untoxa/hUGEBuild/master/hUGEDriver.asm
+// https://raw.githubusercontent.com/untoxa/hUGEBuild/master/hUGEDriver.asm\n
 
 export default `include "HARDWARE.INC"\n
 include "hUGE.inc"\n
@@ -37,7 +37,6 @@ ret_dont_call_playnote: MACRO\n
     jp hl\n
 ENDM\n
 \n
-\n
 add_a_ind_ret_hl: MACRO\n
     ld hl, \\1\n
     add [hl]\n
@@ -63,7 +62,28 @@ load_de_ind: MACRO\n
     ld d, a\n
 ENDM\n
 \n
+retMute: MACRO\n
+    bit \\1, a\n
+    ret nz\n
+ENDM\n
+\n
+checkMute: MACRO\n
+    ld a, [mute_channels]\n
+    bit \\1, a\n
+    jr nz, \\2\n
+ENDM\n
+\n
+loadShort: MACRO\n
+    ld a, [\\1]\n
+    ld \\3, a\n
+    ld a, [\\1 + 1]\n
+    ld \\2, a\n
+ENDM\n
+\n
+;; Maximum pattern length\n
 PATTERN_LENGTH EQU 64\n
+;; Amount to be shifted in order to skip a channel.\n
+CHANNEL_SIZE_EXPONENT EQU 3\n
 \n
 SECTION "Playback variables", WRAM0\n
 _start_vars:\n
@@ -101,14 +121,11 @@ temp_note_value: dw\n
 row: db\n
 tick: db\n
 counter: db\n
-hUGE_current_wave::\n
+__current_ch3_wave::\n
+_hUGE_current_wave::\n
 current_wave: db\n
 \n
-;; Amount to be shifted in order to skip a channel.\n
-CHANNEL_SIZE_EXPONENT EQU 3\n
-\n
 channels:\n
-\n
 ;;;;;;;;;;;\n
 ;;Channel 1\n
 ;;;;;;;;;;;\n
@@ -156,12 +173,6 @@ highmask4: db\n
 _end_vars:\n
 \n
 SECTION "Sound Driver", ROMX\n
-\n
-_hUGE_reset_wave_banked::\n
-_hUGE_reset_wave::\n
-    ld a, 100\n
-    ld [current_wave], a\n
-    ret\n
 \n
 _hUGE_init_banked::\n
     ld hl, sp+2+4\n
@@ -213,6 +224,18 @@ hUGE_mute_channel::\n
     call nz, note_cut\n
     ret\n
 \n
+_hUGE_set_position_banked::\n
+    ld hl, sp+2+4\n
+    jr continue_set_position\n
+_hUGE_set_position::\n
+    ld hl, sp+2\n
+continue_set_position:\n
+    push bc\n
+    ld c, [hl]\n
+    call hUGE_set_position\n
+    pop  bc\n
+    ret\n
+    \n
 hUGE_init::\n
     push hl\n
     if !DEF(PREVIEW_MODE)\n
@@ -223,7 +246,7 @@ hUGE_init::\n
 .fill_loop:\n
     ld [hl+], a\n
     dec c\n
-    jp nz, .fill_loop\n
+    jr nz, .fill_loop\n
     ENDC\n
 \n
     ld a, %11110000\n
@@ -265,9 +288,9 @@ _refresh_patterns:\n
 \n
     ;; Call with c set to what order to load\n
 \n
-    IF DEF(PREVIEW_MODE)\n
+IF DEF(PREVIEW_MODE)\n
     db $fc ; signal order update to tracker\n
-    ENDC\n
+ENDC\n
 \n
     ld hl, order1\n
     ld de, pattern1\n
@@ -280,7 +303,6 @@ _refresh_patterns:\n
     call .load_pattern\n
 \n
     ld hl, order4\n
-    jr .load_pattern\n
 \n
 .load_pattern:\n
     ld a, [hl+]\n
@@ -405,21 +427,15 @@ _update_channel:\n
     ;; Channel in B\n
     ;; Note tone in DE\n
     ld c, a\n
-\n
-    dec b\n
-    jr z, _update_channel2\n
-    dec b\n
-    jr z, _update_channel3\n
-    dec b\n
-    jr z, _update_channel4\n
-\n
-retMute: MACRO\n
     ld a, [mute_channels]\n
-    bit \\1, a\n
-    ret nz\n
-ENDM\n
+    dec b\n
+    jr z, .update_channel2\n
+    dec b\n
+    jr z, .update_channel3\n
+    dec b\n
+    jr z, .update_channel4\n
 \n
-_update_channel1:\n
+.update_channel1:\n
     retMute 0\n
 \n
     ld a, e\n
@@ -428,7 +444,7 @@ _update_channel1:\n
     or c\n
     ld [rAUD1HIGH], a\n
     ret\n
-_update_channel2:\n
+.update_channel2:\n
     retMute 1\n
 \n
     ld a, e\n
@@ -437,7 +453,7 @@ _update_channel2:\n
     or c\n
     ld [rAUD2HIGH], a\n
     ret\n
-_update_channel3:\n
+.update_channel3:\n
     retMute 2\n
 \n
     ld a, e\n
@@ -446,7 +462,7 @@ _update_channel3:\n
     or c\n
     ld [rAUD3HIGH], a\n
     ret\n
-_update_channel4:\n
+.update_channel4:\n
     retMute 3\n
 \n
     ld a, e\n
@@ -456,7 +472,14 @@ _update_channel4:\n
     ld [rAUD4GO], a\n
     ret\n
 \n
+_play_note_routines:\n
+    jr _playnote1\n
+    jr _playnote2\n
+    jr _playnote3\n
+    jr _playnote4\n
+\n
 _playnote1:\n
+    ld a, [mute_channels]\n
     retMute 0\n
 \n
     ;; Play a note on channel 1 (square wave)\n
@@ -475,6 +498,7 @@ _playnote1:\n
     ret\n
 \n
 _playnote2:\n
+    ld a, [mute_channels]\n
     retMute 1\n
 \n
     ;; Play a note on channel 2 (square wave)\n
@@ -493,6 +517,7 @@ _playnote2:\n
     ret\n
 \n
 _playnote3:\n
+    ld a, [mute_channels]\n
     retMute 2\n
 \n
     ;; This fixes a gameboy hardware quirk, apparently.\n
@@ -519,6 +544,7 @@ _playnote3:\n
     ret\n
 \n
 _playnote4:\n
+    ld a, [mute_channels]\n
     retMute 3\n
 \n
     ;; Play a "note" on channel 4 (noise)\n
@@ -543,15 +569,15 @@ _doeffect:\n
     ;; Strip the instrument bits off leaving only effect code\n
     ld a, b\n
     and %00001111\n
-    ld b, a\n
-\n
-    ;; Multiply by 3 to get offset into table\n
-    ld a, b\n
-    add a, b\n
-    add a, b\n
+    ;; Multiply by 2 to get offset into table\n
+    add a, a\n
 \n
     ld hl, .jump\n
     add_a_to_hl\n
+    \n
+    ld a, [hl+]\n
+    ld h, [hl]\n
+    ld l, a\n
 \n
     ld b, e\n
     ld a, [tick]\n
@@ -560,22 +586,22 @@ _doeffect:\n
 \n
 .jump:\n
     ;; Jump table for effect\n
-    jp fx_arpeggio                     ;0xy\n
-    jp fx_porta_up                     ;1xy\n
-    jp fx_porta_down                   ;2xy\n
-    jp fx_toneporta                    ;3xy\n
-    jp fx_vibrato                      ;4xy\n
-    jp fx_set_master_volume            ;5xy ; global\n
-    jp fx_call_routine                 ;6xy\n
-    jp fx_note_delay                   ;7xy\n
-    jp fx_set_pan                      ;8xy\n
-    jp fx_set_duty                     ;9xy\n
-    jp fx_vol_slide                    ;Axy\n
-    jp fx_pos_jump                     ;Bxy ; global\n
-    jp fx_set_volume                   ;Cxy\n
-    jp fx_pattern_break                ;Dxy ; global\n
-    jp fx_note_cut                     ;Exy\n
-    jp fx_set_speed                    ;Fxy ; global\n
+    dw fx_arpeggio                     ;0xy\n
+    dw fx_porta_up                     ;1xy\n
+    dw fx_porta_down                   ;2xy\n
+    dw fx_toneporta                    ;3xy\n
+    dw fx_vibrato                      ;4xy\n
+    dw fx_set_master_volume            ;5xy ; global\n
+    dw fx_call_routine                 ;6xy\n
+    dw fx_note_delay                   ;7xy\n
+    dw fx_set_pan                      ;8xy\n
+    dw fx_set_duty                     ;9xy\n
+    dw fx_vol_slide                    ;Axy\n
+    dw fx_pos_jump                     ;Bxy ; global\n
+    dw fx_set_volume                   ;Cxy\n
+    dw fx_pattern_break                ;Dxy ; global\n
+    dw fx_note_cut                     ;Exy\n
+    dw fx_set_speed                    ;Fxy ; global\n
 \n
 setup_channel_pointer:\n
     ;; Call with:\n
@@ -681,6 +707,7 @@ fx_set_duty:\n
 \n
     ld a, b\n
     or a\n
+    ld a, [mute_channels]\n
     jr z, .chan1\n
 .chan2:\n
     retMute 1\n
@@ -771,8 +798,7 @@ fx_vol_slide:\n
 \n
     ld hl, _play_note_routines\n
     ld a, b\n
-    add b\n
-    add b\n
+    add a\n
     add_a_to_hl\n
     jp hl\n
 \n
@@ -823,16 +849,9 @@ fx_note_delay:\n
 \n
     ld hl, _play_note_routines\n
     ld a, b\n
-    add b\n
-    add b\n
+    add a\n
     add_a_to_hl\n
     jp hl\n
-\n
-_play_note_routines:\n
-    jp _playnote1\n
-    jp _playnote2\n
-    jp _playnote3\n
-    jp _playnote4\n
 \n
 fx_set_speed:\n
     ret nz\n
@@ -847,6 +866,7 @@ fx_set_speed:\n
     ld [ticks_per_row], a\n
     ret\n
 \n
+hUGE_set_position::\n
 fx_pos_jump:\n
     ;; A: tick\n
     ;; ZF: (tick == 0)\n
@@ -935,13 +955,33 @@ set_channel_volume:\n
     ;; Correct volume value in C\n
     ;; Channel number in B\n
 \n
-    ld a, b\n
-    cp 3 ; check if it's channel 4\n
-    jr z, set_chn_4_vol\n
-    cp 1 ; check if it's channel 2\n
-    jr c, set_chn_1_vol\n
-    jr z, set_chn_2_vol\n
-set_chn_3_vol:\n
+    ld a, [mute_channels]\n
+    dec b\n
+    jr z, .set_chn_2_vol\n
+    dec b \n
+    jr z, .set_chn_3_vol\n
+    dec b\n
+    jr z, .set_chn_4_vol\n
+\n
+.set_chn_1_vol:\n
+    retMute 0\n
+\n
+    ld a, [rAUD1ENV]\n
+    and %00001111\n
+    swap c\n
+    or c\n
+    ld [rAUD1ENV], a\n
+    ret\n
+.set_chn_2_vol:\n
+    retMute 1\n
+\n
+    ld a, [rAUD2ENV]\n
+    and %00001111\n
+    swap c\n
+    or c\n
+    ld [rAUD2ENV], a\n
+    ret\n
+.set_chn_3_vol:\n
     retMute 2\n
 \n
     ;; "Quantize" the more finely grained volume control down to one of 4 values.\n
@@ -966,25 +1006,7 @@ set_chn_3_vol:\n
 .done:\n
     ld [rAUD3LEVEL], a\n
     ret\n
-set_chn_2_vol:\n
-    retMute 1\n
-\n
-    ld a, [rAUD2ENV]\n
-    and %00001111\n
-    swap c\n
-    or c\n
-    ld [rAUD2ENV], a\n
-    ret\n
-set_chn_1_vol:\n
-    retMute 0\n
-\n
-    ld a, [rAUD1ENV]\n
-    and %00001111\n
-    swap c\n
-    or c\n
-    ld [rAUD1ENV], a\n
-    ret\n
-set_chn_4_vol:\n
+.set_chn_4_vol:\n
     retMute 3\n
 \n
     swap c\n
@@ -1241,13 +1263,6 @@ fx_toneporta:\n
     ld [hl], c\n
     jp _update_channel\n
 \n
-loadShort: MACRO\n
-    ld a, [\\1]\n
-    ld \\3, a\n
-    ld a, [\\1 + 1]\n
-    ld \\2, a\n
-ENDM\n
-\n
 ;; TODO: Find some way to de-duplicate this code!\n
 _setup_instrument_pointer_ch4:\n
     ;; Call with:\n
@@ -1261,7 +1276,7 @@ _setup_instrument_pointer_ch4:\n
 \n
     dec a ; Instrument 0 is "no instrument"\n
     add a\n
-    jp _setup_instrument_pointer.finish\n
+    jr _setup_instrument_pointer.finish\n
 _setup_instrument_pointer:\n
     ;; Call with:\n
     ;; Instrument/High nibble of effect in B\n
@@ -1282,12 +1297,6 @@ _setup_instrument_pointer:\n
 \n
     rla ; reset the Z flag\n
     ret\n
-\n
-checkMute: MACRO\n
-    ld a, [mute_channels]\n
-    bit \\1, a\n
-    jp nz, \\2\n
-ENDM\n
 \n
 _hUGE_dosound_banked::\n
 _hUGE_dosound::\n
@@ -1333,11 +1342,9 @@ _hUGE_dosound::\n
     ld e, 0\n
     call _doeffect\n
 \n
-    pop af\n
-\n
-    jr nc, .after_note1\n
-\n
-    call _playnote1\n
+    pop af              ; 1 byte\n
+    jr nc, .after_note1 ; 2 bytes\n
+    call _playnote1     ; 3 bytes\n
 \n
 .after_note1:\n
     ;; Note playback\n
@@ -1376,11 +1383,9 @@ _hUGE_dosound::\n
     ld e, 1\n
     call _doeffect\n
 \n
-    pop af\n
-\n
-    jr nc, .after_note2\n
-\n
-    call _playnote2\n
+    pop af              ; 1 byte\n
+    jr nc, .after_note2 ; 2 bytes\n
+    call _playnote2     ; 3 bytes\n
 \n
 .after_note2:\n
     loadShort pattern3, b, c\n
@@ -1426,8 +1431,8 @@ _hUGE_dosound::\n
 \n
 _addr = _AUD3WAVERAM\n
     REPT 16\n
-    ld a, [hl+]\n
-    ldh [_addr], a\n
+        ld a, [hl+]\n
+        ldh [_addr], a\n
 _addr = _addr + 1\n
     ENDR\n
 \n
@@ -1444,10 +1449,9 @@ _addr = _addr + 1\n
     ld e, 2\n
     call _doeffect\n
 \n
-    pop af\n
-    jr nc, .after_note3\n
-\n
-    call _playnote3\n
+    pop af              ; 1 byte\n
+    jr nc, .after_note3 ; 2 bytes\n
+    call _playnote3     ; 3 bytes\n
 \n
 .after_note3:\n
     loadShort pattern4, b, c\n
@@ -1498,10 +1502,9 @@ _addr = _addr + 1\n
     ld e, 3\n
     call _doeffect\n
 \n
-    pop af\n
-    jr nc, .after_note4\n
-\n
-    call _playnote4\n
+    pop af              ; 1 byte\n
+    jr nc, .after_note4 ; 2 bytes\n
+    call _playnote4     ; 3 bytes\n
 \n
 .after_note4:\n
     ;; finally just update the tick/order/row values\n
@@ -1519,7 +1522,7 @@ _addr = _addr + 1\n
     jr z, .after_effect1\n
 \n
     ld e, 0\n
-    call _doeffect\n
+    call _doeffect      ; make sure we never return with ret_dont_call_playnote macro\n
 \n
 .after_effect1:\n
     checkMute 1, .after_effect2\n
@@ -1532,7 +1535,7 @@ _addr = _addr + 1\n
     jr z, .after_effect2\n
 \n
     ld e, 1\n
-    call _doeffect\n
+    call _doeffect      ; make sure we never return with ret_dont_call_playnote macro\n
 \n
 .after_effect2:\n
     checkMute 2, .after_effect3\n
@@ -1545,7 +1548,7 @@ _addr = _addr + 1\n
     jr z, .after_effect3\n
 \n
     ld e, 2\n
-    call _doeffect\n
+    call _doeffect      ; make sure we never return with ret_dont_call_playnote macro\n
 \n
 .after_effect3:\n
     checkMute 3, .after_effect4\n
@@ -1553,7 +1556,7 @@ _addr = _addr + 1\n
     loadShort pattern4, b, c\n
     call _load_note_data\n
     cp LAST_NOTE\n
-    jp nc, .done_macro\n
+    jr nc, .done_macro\n
     ld h, a\n
 \n
     load_de_ind noise_instruments\n
@@ -1562,7 +1565,7 @@ _addr = _addr + 1\n
 \n
     ld a, [tick]\n
     cp 7\n
-    jp nc, .done_macro\n
+    jr nc, .done_macro\n
 \n
     inc de\n
     push de\n
@@ -1591,7 +1594,7 @@ _addr = _addr + 1\n
     jr z, .after_effect4\n
 \n
     ld e, 3\n
-    call _doeffect\n
+    call _doeffect      ; make sure we never return with ret_dont_call_playnote macro\n
 \n
 .after_effect4:\n
 \n
@@ -1626,15 +1629,11 @@ _newrow:\n
     dec a\n
     ld b, a\n
 \n
-    ld a, [next_order]\n
-    or a\n
-\n
-    ;; Maybe use HL instead?\n
-    push af\n
+    ld hl, row_break\n
     xor a\n
-    ld [next_order], a\n
-    ld [row_break], a\n
-    pop af\n
+    ld [hl-], a\n
+    or [hl]     ; a = [next_order], zf = ([next_order] == 0)\n
+    ld [hl], 0\n
 \n
     jr z, _neworder\n
 \n
@@ -1673,10 +1672,10 @@ _noreset:\n
     ld a, b\n
     ld [row], a\n
 \n
-    IF DEF(PREVIEW_MODE)\n
+IF DEF(PREVIEW_MODE)\n
     db $fd ; signal row update to tracker\n
-    ENDC\n
+ENDC\n
     ret\n
 \n
 note_table:\n
-include "hUGE_note_table.inc"\n`;
+include "hUGE_note_table.inc"`;

@@ -42,6 +42,7 @@ const mapSceneEvents = (scene, callback) => {
         ...actor,
         script: mapEvents(actor.script, callback),
         startScript: mapEvents(actor.startScript, callback),
+        updateScript: mapEvents(actor.updateScript, callback),
         hit1Script: mapEvents(actor.hit1Script, callback),
         hit2Script: mapEvents(actor.hit2Script, callback),
         hit3Script: mapEvents(actor.hit3Script, callback),
@@ -51,6 +52,7 @@ const mapSceneEvents = (scene, callback) => {
       return {
         ...trigger,
         script: mapEvents(trigger.script, callback),
+        leaveScript: mapEvents(trigger.leaveScript, callback),
       };
     }),
   };
@@ -102,6 +104,7 @@ const walkActorEvents = (actor, callback) => {
 
 const walkTriggerEvents = (trigger, callback) => {
   walkEvents(trigger.script, callback);
+  walkEvents(trigger.leaveScript, callback);
 };
 
 const walkSceneEvents = (scene, callback) => {
@@ -323,7 +326,7 @@ const replaceEventActorIds = (replacementIds, event) => {
   };
 };
 
-const filterEvents = (data, fn) => {
+const filterEvents = (data = [], fn) => {
   return data.reduce((memo, o) => {
     if (fn(o)) {
       memo.push({
@@ -335,6 +338,39 @@ const filterEvents = (data, fn) => {
     }
     return memo;
   }, []);
+};
+
+const filterSceneEvents = (scene, callback) => {
+  return {
+    ...scene,
+    script: filterEvents(scene.script, callback),
+    playerHit1Script: filterEvents(scene.playerHit1Script, callback),
+    playerHit2Script: filterEvents(scene.playerHit2Script, callback),
+    playerHit3Script: filterEvents(scene.playerHit3Script, callback),
+    actors: scene.actors.map((actor) => {
+      return {
+        ...actor,
+        script: filterEvents(actor.script, callback),
+        startScript: filterEvents(actor.startScript, callback),
+        updateScript: filterEvents(actor.updateScript, callback),
+        hit1Script: filterEvents(actor.hit1Script, callback),
+        hit2Script: filterEvents(actor.hit2Script, callback),
+        hit3Script: filterEvents(actor.hit3Script, callback),
+      };
+    }),
+    triggers: scene.triggers.map((trigger) => {
+      return {
+        ...trigger,
+        script: filterEvents(trigger.script, callback),
+      };
+    }),
+  };
+};
+
+const filterScenesEvents = (scenes, callback) => {
+  return scenes.map((scene) => {
+    return filterSceneEvents(scene, callback);
+  });
 };
 
 const findEvent = (data, id) => {
@@ -472,6 +508,8 @@ export {
   replaceEventActorIds,
   removeEventIds,
   filterEvents,
+  filterScenesEvents,
+  filterSceneEvents,
   findEvent,
   eventHasArg,
   getField,

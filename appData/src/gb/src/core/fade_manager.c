@@ -57,7 +57,7 @@ __asm
         ld b, #(8 * 4)
 1$:
         ldh a, (_STAT_REG)
-        and #0x02
+        bit STATF_B_BUSY, a
         jr nz, 1$
         ld a, (hl+)
         or e
@@ -65,7 +65,7 @@ __asm
 
 3$:
         ldh a, (_STAT_REG)
-        and #0x02
+        bit STATF_B_BUSY, a
         jr nz, 3$
         ld a, (hl+)
         or d
@@ -112,7 +112,7 @@ __asm
         ld b, #(8 * 4)
 1$:
         ldh a, (_STAT_REG)
-        and #0x02
+        bit STATF_B_BUSY, a
         jr nz, 1$
         ld a, (hl+)
         and e
@@ -120,7 +120,7 @@ __asm
 
 3$:
         ldh a, (_STAT_REG)
-        and #0x02
+        bit STATF_B_BUSY, a
         jr nz, 3$
         ld a, (hl+)
         and d
@@ -135,11 +135,11 @@ __endasm;
 
 void ApplyPaletteChangeColor(UBYTE index) {
     if (fade_style) {
-        CGBFadeToBlackStep(BkgPalette, (UBYTE)(&BCPS_REG), index);
-        CGBFadeToBlackStep(SprPalette, (UBYTE)(&OCPS_REG), index);
+        CGBFadeToBlackStep(BkgPalette, BCPS_REG_ADDR, index);
+        CGBFadeToBlackStep(SprPalette, OCPS_REG_ADDR, index);
     } else {
-        CGBFadeToWhiteStep(BkgPalette, (UBYTE)(&BCPS_REG), index);
-        CGBFadeToWhiteStep(SprPalette, (UBYTE)(&OCPS_REG), index);
+        CGBFadeToWhiteStep(BkgPalette, BCPS_REG_ADDR, index);
+        CGBFadeToWhiteStep(SprPalette, OCPS_REG_ADDR, index);
     }
 }
 #endif

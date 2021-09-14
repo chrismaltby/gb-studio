@@ -7,25 +7,26 @@
 #define _CONSOLE_H
 
 #include <types.h>
+#include <stdint.h>
 
 /** Move the cursor to an absolute position at __x, y__.
 
     __x__ and __y__ have units of tiles (8 pixels per unit)
     @see setchar()
  */
-void gotoxy(UINT8 x, UINT8 y);
+void gotoxy(uint8_t x, uint8_t y);
 
 /** Returns the current X position of the cursor.
 
     @see gotoxy()
  */
-UINT8 posx(void);
+uint8_t posx(void);
 
 /** Returns the current Y position of the cursor.
 
     @see gotoxy()
  */
-UINT8 posy(void);
+uint8_t posy(void);
 
 /** Writes out a single character at the current cursor
     position.

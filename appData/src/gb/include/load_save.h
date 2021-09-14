@@ -3,11 +3,11 @@
 
 #include <gb/gb.h>
 
+#define SRAM_BANKS_TO_SAVE 3
+#define SRAM_BANK_SIZE 0x2000
+
 // initializes saving capabilities
 void data_init() __banked;
-
-// check SRAM contains valid save blob
-UBYTE data_is_saved(UBYTE slot) __banked;
 
 // save state to SRAM
 void data_save(UBYTE slot) __banked;

@@ -1,6 +1,33 @@
 const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_CLEAR_FLAGS";
+const groups = ["EVENT_GROUP_VARIABLES"];
+
+const autoLabel = (fetchArg, input) => {
+  const flags = [
+    input.flag1,
+    input.flag2,
+    input.flag3,
+    input.flag4,
+    input.flag5,
+    input.flag6,
+    input.flag7,
+    input.flag8,
+  ]
+    .map((value, i) => {
+      if (value) {
+        return String(i + 1);
+      }
+      return "";
+    })
+    .filter((i) => i)
+    .join(",");
+
+  return l10n("EVENT_CLEAR_FLAGS_LABEL", {
+    variable: fetchArg("variable"),
+    flags,
+  });
+};
 
 const fields = [
   {
@@ -9,10 +36,14 @@ const fields = [
     defaultValue: "LAST_VARIABLE",
   },
   {
+    type: "break",
+  },
+  {
     key: "flag1",
     label: l10n("FIELD_FLAG_1"),
     type: "checkbox",
     width: "50%",
+    flexBasis: "40%",
     defaultValue: false,
   },
   {
@@ -20,6 +51,7 @@ const fields = [
     label: l10n("FIELD_FLAG_2"),
     type: "checkbox",
     width: "50%",
+    flexBasis: "40%",
     defaultValue: false,
   },
   {
@@ -27,6 +59,7 @@ const fields = [
     label: l10n("FIELD_FLAG_3"),
     type: "checkbox",
     width: "50%",
+    flexBasis: "40%",
     defaultValue: false,
   },
   {
@@ -34,6 +67,7 @@ const fields = [
     label: l10n("FIELD_FLAG_4"),
     type: "checkbox",
     width: "50%",
+    flexBasis: "40%",
     defaultValue: false,
   },
   {
@@ -41,6 +75,7 @@ const fields = [
     label: l10n("FIELD_FLAG_5"),
     type: "checkbox",
     width: "50%",
+    flexBasis: "40%",
     defaultValue: false,
   },
   {
@@ -48,6 +83,7 @@ const fields = [
     label: l10n("FIELD_FLAG_6"),
     type: "checkbox",
     width: "50%",
+    flexBasis: "40%",
     defaultValue: false,
   },
   {
@@ -55,6 +91,7 @@ const fields = [
     label: l10n("FIELD_FLAG_7"),
     type: "checkbox",
     width: "50%",
+    flexBasis: "40%",
     defaultValue: false,
   },
   {
@@ -62,6 +99,7 @@ const fields = [
     label: l10n("FIELD_FLAG_8"),
     type: "checkbox",
     width: "50%",
+    flexBasis: "40%",
     defaultValue: false,
   },
 ];
@@ -82,6 +120,8 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  autoLabel,
+  groups,
   fields,
   compile,
 };

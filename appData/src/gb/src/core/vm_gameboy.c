@@ -2,10 +2,11 @@
 
 #include "vm_gameboy.h"
 
+#include <gb/metasprites.h>
+
 #include "system.h"
 #include "vm.h"
 
-#include "metasprite.h"
 #include "input.h"
 #include "events.h"
 #include "fade_manager.h"
@@ -13,6 +14,7 @@
 #include "load_save.h"
 #include "bankdata.h"
 #include "data_manager.h"
+#include "interrupts.h"
 
 void vm_show_sprites() __banked {
     hide_sprites = FALSE;

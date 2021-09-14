@@ -15,6 +15,7 @@ import editorActions from "store/features/editor/editorActions";
 import { CloneIcon, PlusIcon } from "ui/icons/Icons";
 import SpriteAnimationTimelineFrame from "./SpriteAnimationTimelineFrame";
 import { FixedSpacer } from "ui/spacing/Spacing";
+import l10n from "lib/helpers/l10n";
 
 interface SpriteAnimationTimelineProps {
   spriteSheetId: string;
@@ -204,7 +205,12 @@ const SpriteAnimationTimeline = ({
             />
           );
         })}
-        <AddFrameButton onClick={cloneFrame ? onCloneFrame : onAddFrame}>
+        <AddFrameButton
+          onClick={cloneFrame ? onCloneFrame : onAddFrame}
+          title={
+            cloneFrame ? l10n("FIELD_CLONE_FRAME") : l10n("FIELD_ADD_FRAME")
+          }
+        >
           {cloneFrame ? <CloneIcon /> : <PlusIcon />}
         </AddFrameButton>
         <FixedSpacer width={10} />

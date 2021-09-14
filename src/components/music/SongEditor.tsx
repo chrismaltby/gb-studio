@@ -23,7 +23,6 @@ import {
   NoiseInstrument,
   WaveInstrument,
 } from "store/features/trackerDocument/trackerDocumentTypes";
-import trackerActions from "store/features/tracker/trackerActions";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 
 type Instrument = DutyInstrument | NoiseInstrument | WaveInstrument;

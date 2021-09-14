@@ -7,6 +7,7 @@
 #define RAND_INCLUDE
 
 #include <types.h>
+#include <stdint.h>
 
 /** Initalise the pseudo-random number generator.
 
@@ -24,20 +25,20 @@
     @see rand(), randw()
 */
 void
-initrand(UINT16 seed) NONBANKED; /* Non-banked as called from asm in arand.s */
+initrand(uint16_t seed) NONBANKED; /* Non-banked as called from asm in arand.s */
 
 /** Returns a random byte (8 bit) value.
 
     @ref initrand() should be used to initialize the random number generator before using rand()
  */
-INT8
+int8_t
 rand(void);
 
 /** Returns a random word (16 bit) value.
 
     @ref initrand() should be used to initialize the random number generator before using rand()
  */
-UINT16
+uint16_t
 randw(void);
 
 /** Random generator using the linear lagged additive method
@@ -50,13 +51,13 @@ randw(void);
     @see initrand() for suggestions about seed values, arand()
 */
 void
-initarand(UINT16 seed);
+initarand(uint16_t seed);
 
 /** Returns a random number generated with the linear lagged additive method.
 
     @ref initarand() should be used to initialize the random number generator before using arand()
  */
-INT8
+int8_t
 arand(void);
 
 #endif

@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { useState } from "react";
 import { clipboard } from "electron";
 import { useDispatch, useSelector } from "react-redux";
 import ScriptEditor from "../script/ScriptEditor";
@@ -15,26 +15,64 @@ import {
 import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import entitiesActions from "store/features/entities/entitiesActions";
-import { SidebarMultiColumnAuto, SidebarColumn } from "ui/sidebars/Sidebar";
+import { SidebarColumn, Sidebar } from "ui/sidebars/Sidebar";
 import { FormContainer, FormHeader, FormRow } from "ui/form/FormLayout";
 import { EditableText } from "ui/form/EditableText";
 import { RootState } from "store/configureStore";
-import { Trigger } from "store/features/entities/entitiesTypes";
+import { Trigger, ScriptEvent } from "store/features/entities/entitiesTypes";
 import { CoordinateInput } from "ui/form/CoordinateInput";
 import { NoteField } from "ui/form/NoteField";
-import { TabBar } from "ui/tabs/Tabs";
+import { StickyTabs, TabBar } from "ui/tabs/Tabs";
 import { Button } from "ui/buttons/Button";
 import { LockIcon, LockOpenIcon } from "ui/icons/Icons";
 
 interface TriggerEditorProps {
   id: string;
   sceneId: string;
+  multiColumn: boolean;
 }
+
+interface ScriptHandler {
+  value: ScriptEvent[];
+  onChange: (newValue: ScriptEvent[]) => void;
+}
+
+interface ScriptHandlers {
+  trigger: ScriptHandler;
+  leave: ScriptHandler;
+}
+
+type TriggerScriptKey = "script" | "leaveScript";
+
+const scriptTabs = {
+  trigger: l10n("SIDEBAR_ON_ENTER"),
+  leave: l10n("SIDEBAR_ON_LEAVE"),
+} as const;
+
+const pointNClickScriptTabs = {
+  trigger: l10n("SIDEBAR_ON_INTERACT"),
+} as const;
+
+const getScriptKey = (tab: keyof typeof scriptTabs): TriggerScriptKey => {
+  if (tab === "trigger") {
+    return "script";
+  }
+  if (tab === "leave") {
+    return "leaveScript";
+  }
+  return "script";
+};
 
 const triggerName = (trigger: Trigger, triggerIndex: number) =>
   trigger.name ? trigger.name : `Trigger ${triggerIndex + 1}`;
 
-export const TriggerEditor: FC<TriggerEditorProps> = ({ id, sceneId }) => {
+const tabs = Object.keys(scriptTabs);
+
+export const TriggerEditor = ({
+  id,
+  sceneId,
+  multiColumn,
+}: TriggerEditorProps) => {
   const trigger = useSelector((state: RootState) =>
     triggerSelectors.selectById(state, id)
   );
@@ -43,25 +81,30 @@ export const TriggerEditor: FC<TriggerEditorProps> = ({ id, sceneId }) => {
   );
   const [clipboardData, setClipboardData] = useState<unknown>(null);
   const [notesOpen, setNotesOpen] = useState<boolean>(!!trigger?.notes);
+
+  const lastScriptTab = useSelector(
+    (state: RootState) => state.editor.lastScriptTabTrigger
+  );
+
+  const initialTab = tabs.includes(lastScriptTab) ? lastScriptTab : tabs[0];
+
+  const [scriptMode, setScriptMode] = useState<keyof ScriptHandlers>(
+    initialTab as keyof ScriptHandlers
+  );
+
+  const onChangeScriptMode = (mode: keyof ScriptHandlers) => {
+    setScriptMode(mode);
+    dispatch(editorActions.setScriptTabTrigger(mode));
+  };
+
+  const scriptKey = getScriptKey(scriptMode);
+
   const triggerIndex = scene?.triggers.indexOf(id) || 0;
   const lockScriptEditor = useSelector(
     (state: RootState) => state.editor.lockScriptEditor
   );
 
   const dispatch = useDispatch();
-
-  const onChangeField =
-    <T extends keyof Trigger>(key: T) =>
-    (editValue: Trigger[T]) => {
-      dispatch(
-        entitiesActions.editTrigger({
-          triggerId: id,
-          changes: {
-            [key]: editValue,
-          },
-        })
-      );
-    };
 
   const onChangeFieldInput =
     (key: keyof Trigger) =>
@@ -87,14 +130,16 @@ export const TriggerEditor: FC<TriggerEditorProps> = ({ id, sceneId }) => {
 
   const onCopy = () => {
     if (trigger) {
-      dispatch(clipboardActions.copyTrigger(trigger));
+      dispatch(
+        clipboardActions.copyTriggers({
+          triggerIds: [id],
+        })
+      );
     }
   };
 
   const onPaste = () => {
-    if (clipboardData) {
-      dispatch(clipboardActions.pasteClipboardEntity(clipboardData));
-    }
+    dispatch(clipboardActions.pasteClipboardEntity());
   };
 
   const onRemove = () => {
@@ -142,10 +187,19 @@ export const TriggerEditor: FC<TriggerEditorProps> = ({ id, sceneId }) => {
     </Button>
   );
 
+  const scriptButton = (
+    <ScriptEditorDropdownButton
+      value={trigger.script}
+      type="trigger"
+      entityId={trigger.id}
+      scriptKey={"script"}
+    />
+  );
+
   return (
-    <SidebarMultiColumnAuto onClick={selectSidebar}>
+    <Sidebar onClick={selectSidebar} multiColumn={multiColumn}>
       {!lockScriptEditor && (
-        <SidebarColumn>
+        <SidebarColumn style={{ maxWidth: multiColumn ? 300 : undefined }}>
           <FormContainer>
             <FormHeader>
               <EditableText
@@ -237,29 +291,38 @@ export const TriggerEditor: FC<TriggerEditorProps> = ({ id, sceneId }) => {
         </SidebarColumn>
       )}
       <SidebarColumn>
-        <div>
-          <TabBar
-            values={{
-              trigger: l10n("SIDEBAR_ON_TRIGGER"),
-            }}
-            buttons={
-              <>
-                {lockButton}
-                <ScriptEditorDropdownButton
-                  value={trigger.script}
-                  onChange={onChangeField("script")}
-                />
-              </>
-            }
-          />
-          <ScriptEditor
-            value={trigger.script}
-            type="trigger"
-            onChange={onChangeField("script")}
-            entityId={trigger.id}
-          />
-        </div>
+        <StickyTabs>
+          {scene.type === "POINTNCLICK" ? (
+            <TabBar
+              values={pointNClickScriptTabs}
+              buttons={
+                <>
+                  {lockButton}
+                  {scriptButton}
+                </>
+              }
+            />
+          ) : (
+            <TabBar
+              value={scriptMode}
+              values={scriptTabs}
+              onChange={onChangeScriptMode}
+              buttons={
+                <>
+                  {lockButton}
+                  {scriptButton}
+                </>
+              }
+            />
+          )}
+        </StickyTabs>
+        <ScriptEditor
+          value={trigger[scriptKey] || []}
+          type="trigger"
+          entityId={trigger.id}
+          scriptKey={scriptKey}
+        />
       </SidebarColumn>
-    </SidebarMultiColumnAuto>
+    </Sidebar>
   );
 };

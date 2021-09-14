@@ -14,6 +14,7 @@ import {
 import FloatingPanel, { FloatingPanelDivider } from "ui/panels/FloatingPanel";
 import editorActions from "store/features/editor/editorActions";
 import { Button } from "ui/buttons/Button";
+import l10n from "lib/helpers/l10n";
 
 interface MetaspriteEditorToolsPanelProps {
   selectedAnimationId: string;
@@ -97,13 +98,25 @@ const MetaspriteEditorToolsPanel = ({
 
   return (
     <Wrapper>
-      <Button variant="transparent" onClick={prevFrame}>
+      <Button
+        variant="transparent"
+        onClick={prevFrame}
+        title={l10n("FIELD_PREVIOUS_FRAME")}
+      >
         <PrevIcon />
       </Button>
-      <Button variant="transparent" onClick={togglePlay}>
+      <Button
+        variant="transparent"
+        onClick={togglePlay}
+        title={play ? l10n("FIELD_PAUSE") : l10n("FIELD_PLAY")}
+      >
         {play ? <PauseIcon /> : <PlayIcon />}
       </Button>
-      <Button variant="transparent" onClick={nextFrame}>
+      <Button
+        variant="transparent"
+        onClick={nextFrame}
+        title={l10n("FIELD_NEXT_FRAME")}
+      >
         <NextIcon />
       </Button>
       <FloatingPanelDivider />
@@ -111,6 +124,9 @@ const MetaspriteEditorToolsPanel = ({
         variant="transparent"
         active={showOnionSkin}
         onClick={toggleOnionSkin}
+        title={`${l10n("FIELD_ONION_SKIN")}${
+          showOnionSkin ? ` (${l10n("FIELD_ENABLED")})` : ""
+        }`}
       >
         <OnionSkinIcon />
       </Button>
@@ -118,6 +134,9 @@ const MetaspriteEditorToolsPanel = ({
         variant="transparent"
         active={showSpriteGrid}
         onClick={toggleSpriteGrid}
+        title={`${l10n("FIELD_SHOW_GRID")}${
+          showSpriteGrid ? ` (${l10n("FIELD_ENABLED")})` : ""
+        }`}
       >
         <GridIcon />
       </Button>

@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <stdio.h>
 #include <ctype.h>
 
@@ -5,14 +6,14 @@
 #define NUMBER    '0'
 #define STACKSIZE 40
 
-UBYTE sp;
-WORD stack[STACKSIZE];
+uint8_t sp;
+int16_t stack[STACKSIZE];
 
 char s[MAXOP];
-UBYTE pos;
-WORD n;
+uint8_t pos;
+int16_t n;
 
-void push(WORD l)
+void push(int16_t l)
 {
   if(sp < STACKSIZE)
     stack[sp++] = l;
@@ -20,7 +21,7 @@ void push(WORD l)
     puts("Stack full");
 }
 
-WORD pop(void)
+int16_t pop(void)
 {
   if(sp > 0)
     return stack[--sp];
@@ -29,7 +30,7 @@ WORD pop(void)
   return 0;
 }
 
-WORD top(void)
+int16_t top(void)
 {
   if(sp > 0)
     return stack[sp-1];
@@ -38,7 +39,7 @@ WORD top(void)
   return 0;
 }
 
-BYTE read_op(void)
+int8_t read_op(void)
 {
     if(pos == 0) {
 	gets(s);
@@ -64,8 +65,8 @@ BYTE read_op(void)
 
 void main(void)
 {
-  BYTE type;
-  WORD op2;
+  int8_t type;
+  int16_t op2;
 
   puts("RPN Calculator");
   sp = 0;

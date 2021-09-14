@@ -102,6 +102,13 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
         scriptBuilder.options.entity = args.entity;
         scriptBuilder.options.entityType = args.entityType;
         scriptBuilder.options.entityId = args.entityId;
+      } else if (command === "INTERNAL_IF_PARAM") {
+        const args = subInput[i].args;
+        scriptBuilder.ifParamValue(
+          args.parameter,
+          args.value,
+          subInput[i].children.true
+        );
       } else if (command !== "EVENT_END") {
         warnings(
           `No compiler for command "${command}". Are you missing a plugin? ${JSON.stringify(
@@ -123,7 +130,7 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
 
   const loopId = loop ? scriptBuilder.getNextLabel() : "";
 
-  if (loop && input.length > 1) {
+  if (loop && input.length > 0) {
     scriptBuilder.labelDefine(loopId);
   }
 
@@ -131,7 +138,7 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
 
   try {
     if (!branch) {
-      if (loop && input.length > 1) {
+      if (loop && input.length > 0) {
         scriptBuilder.nextFrameAwait();
         scriptBuilder.labelGoto(loopId);
       }

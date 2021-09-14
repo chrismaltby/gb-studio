@@ -1,6 +1,7 @@
 const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_SWITCH";
+const groups = ["EVENT_GROUP_CONTROL_FLOW"];
 
 const fields = [].concat(
   [
@@ -120,6 +121,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  groups,
   fields,
   compile,
 };

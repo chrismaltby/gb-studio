@@ -2,12 +2,11 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Textarea } from "../library/Forms";
-import trimlines, { textNumLines } from "lib/helpers/trimlines";
+import { textNumLines } from "lib/helpers/trimlines";
 import l10n from "lib/helpers/l10n";
 import { SceneShape, ActorShape, EventShape } from "store/stateShape";
 
 const DialogueReviewLine = ({ dialogueLine, onChange }) => {
-  const maxPerLine = dialogueLine.line.args.avatarId ? 16 : 18;
   return (
     <div>
       {Array.isArray(dialogueLine.line.args.text) ? (
@@ -32,7 +31,7 @@ const DialogueReviewLine = ({ dialogueLine, onChange }) => {
                 onChange(
                   dialogueLine.line.args.text.map((value, valueIndex) => {
                     if (valueIndex === textIndex) {
-                      return trimlines(e.currentTarget.value, maxPerLine);
+                      return e.currentTarget.value;
                     }
                     return value;
                   })
@@ -59,7 +58,7 @@ const DialogueReviewLine = ({ dialogueLine, onChange }) => {
             value={dialogueLine.line.args.text}
             placeholder={l10n("FIELD_TEXT_PLACEHOLDER")}
             onChange={(e) => {
-              onChange(trimlines(e.currentTarget.value, maxPerLine));
+              onChange(e.currentTarget.value);
             }}
           />
         </div>

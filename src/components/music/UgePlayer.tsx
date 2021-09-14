@@ -7,8 +7,8 @@ import { RootState } from "store/configureStore";
 
 interface UgePlayerProps {
   data: Song | null;
-  onPlaybackUpdate?: Function;
-  onChannelStatusUpdate?: Function;
+  onPlaybackUpdate?: (update: number[]) => void;
+  onChannelStatusUpdate?: (channels: boolean[]) => void;
 }
 
 export const UgePlayer = ({
@@ -39,13 +39,14 @@ export const UgePlayer = ({
           if (onChannelStatusUpdate) {
             onChannelStatusUpdate(message.channels);
           }
+          break;
         case "log":
           break;
         default:
           console.log(`Action ${d.action} not supported`);
       }
     });
-  }, [onPlaybackUpdate, play]);
+  }, [onChannelStatusUpdate, onPlaybackUpdate, play]);
 
   useEffect(() => {
     if (play) {

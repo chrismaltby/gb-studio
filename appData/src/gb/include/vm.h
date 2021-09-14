@@ -102,6 +102,7 @@ void vm_if(SCRIPT_CTX * THIS, UBYTE condition, INT16 idxA, INT16 idxB, UBYTE * p
 void vm_if_const(SCRIPT_CTX * THIS, UBYTE condition, INT16 idxA, INT16 B, UBYTE * pc, UBYTE n) __banked;
 void vm_push_value(SCRIPT_CTX * THIS, INT16 idx) __banked;
 void vm_push_value_ind(SCRIPT_CTX * THIS, INT16 idx) __banked;
+void vm_push_reference(SCRIPT_CTX * THIS, INT16 idx) __banked;
 void vm_reserve(SCRIPT_CTX * THIS, INT8 ofs) __banked;
 void vm_set(SCRIPT_CTX * THIS, INT16 idxA, INT16 idxB) __banked;
 void vm_set_const(SCRIPT_CTX * THIS, INT16 idx, UWORD value) __banked;
@@ -139,10 +140,13 @@ inline UBYTE VM_ISLOCKED() {
     return (vm_lock_state != 0);
 } 
 
+// enable check for pointer in script_execute(), disabled by default 
+// #define SAFE_SCRIPT_EXECUTE
+
 // initialize script runner contexts
 void script_runner_init(UBYTE reset) __banked;
 // execute a script in the new allocated context
-SCRIPT_CTX * script_execute(UBYTE bank, UBYTE * pc, UWORD * handle, INT8 nargs, ...) __banked;
+SCRIPT_CTX * script_execute(UBYTE bank, UBYTE * pc, UWORD * handle, UBYTE nargs, ...) __banked;
 // terminate script by ID; returns non zero if no such thread is running
 UBYTE script_terminate(UBYTE ID) __banked; 
 

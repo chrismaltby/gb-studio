@@ -1,4 +1,4 @@
-import promiseLimit from "../helpers/promiseLimit";
+import promiseLimit from "../helpers/promiseLimit2";
 import { assetFilename } from "../helpers/gbstudio";
 import {
   optimiseTiles,
@@ -31,20 +31,25 @@ interface SpriteSheetAnimationData {
   frames: SpriteSheetFrameData[];
 }
 
+interface SpriteSheetStateData {
+  id: string;
+  name: string;
+  animationType: SpriteAnimationType;
+  flipLeft: boolean;
+  animations: SpriteSheetAnimationData[];
+}
+
 export interface SpriteSheetData {
   id: string;
   name: string;
   filename: string;
   canvasWidth: number;
   canvasHeight: number;
-  animationType: SpriteAnimationType;
-  flipLeft: boolean;
-  animations: SpriteSheetAnimationData[];
+  states: SpriteSheetStateData[];
   boundsX: number;
   boundsY: number;
   boundsWidth: number;
   boundsHeight: number;
-  _v: string;
 }
 
 interface AnimationOffset {
@@ -90,7 +95,9 @@ export const compileSprite = async (
 ): Promise<PrecompiledSpriteSheetData> => {
   const filename = assetFilename(projectRoot, "sprites", spriteSheet);
 
-  const metasprites = spriteSheet.animations
+  const metasprites = spriteSheet.states
+    .map((state) => state.animations)
+    .flat()
     .map((animation) => {
       return animation.frames.map((frame) => frame.tiles);
     })
@@ -103,60 +110,64 @@ export const compileSprite = async (
     metasprites
   );
 
-  const animationDefs: SpriteTileData[][][] = toEngineOrder(
-    animationMapBySpriteType(
-      spriteSheet.animations,
-      spriteSheet.animationType,
-      spriteSheet.flipLeft,
-      (animation, flip) => {
-        return animation.frames.map((frame) => {
-          let currentX = 0;
-          let currentY = 0;
-          return [...frame.tiles]
-            .reverse()
-            .map((tile) => {
-              const optimisedTile = lookup[tile.id];
-              if (!optimisedTile) {
-                return null;
-              }
-              if (flip) {
-                const data: SpriteTileData = {
-                  tile: optimisedTile.tile,
-                  x: 8 - tile.x - currentX,
-                  y: -tile.y - currentY,
-                  props: makeProps(
-                    tile.objPalette,
-                    tile.paletteIndex,
-                    !optimisedTile.flipX,
-                    optimisedTile.flipY,
-                    tile.priority
-                  ),
-                };
-                currentX = 8 - tile.x;
-                currentY = -tile.y;
-                return data;
-              }
-              const data: SpriteTileData = {
-                tile: optimisedTile.tile,
-                x: tile.x - currentX,
-                y: -tile.y - currentY,
-                props: makeProps(
-                  tile.objPalette,
-                  tile.paletteIndex,
-                  optimisedTile.flipX,
-                  optimisedTile.flipY,
-                  tile.priority
-                ),
-              };
-              currentX = tile.x;
-              currentY = -tile.y;
-              return data;
-            })
-            .filter((tile) => tile) as SpriteTileData[];
-        });
-      }
+  const animationDefs: SpriteTileData[][][] = spriteSheet.states
+    .map((state) =>
+      toEngineOrder(
+        animationMapBySpriteType(
+          state.animations,
+          state.animationType,
+          state.flipLeft,
+          (animation, flip) => {
+            return animation.frames.map((frame) => {
+              let currentX = 0;
+              let currentY = 0;
+              return [...frame.tiles]
+                .reverse()
+                .map((tile) => {
+                  const optimisedTile = lookup[tile.id];
+                  if (!optimisedTile) {
+                    return null;
+                  }
+                  if (flip) {
+                    const data: SpriteTileData = {
+                      tile: optimisedTile.tile,
+                      x: 8 - tile.x - currentX,
+                      y: -tile.y - currentY,
+                      props: makeProps(
+                        tile.objPalette,
+                        tile.paletteIndex,
+                        !optimisedTile.flipX,
+                        optimisedTile.flipY,
+                        tile.priority
+                      ),
+                    };
+                    currentX = 8 - tile.x;
+                    currentY = -tile.y;
+                    return data;
+                  }
+                  const data: SpriteTileData = {
+                    tile: optimisedTile.tile,
+                    x: tile.x - currentX,
+                    y: -tile.y - currentY,
+                    props: makeProps(
+                      tile.objPalette,
+                      tile.paletteIndex,
+                      optimisedTile.flipX,
+                      optimisedTile.flipY,
+                      tile.priority
+                    ),
+                  };
+                  currentX = tile.x;
+                  currentY = -tile.y;
+                  return data;
+                })
+                .filter((tile) => tile) as SpriteTileData[];
+            });
+          }
+        )
+      )
     )
-  );
+    .flat();
 
   // const uniqFrames: SpriteTileData[][] = [];
   const uniqFramesLookup: Record<string, number> = {};
@@ -210,14 +221,55 @@ export const compileSprite = async (
 const compileSprites = async (
   spriteSheets: SpriteSheetData[],
   projectRoot: string
-): Promise<PrecompiledSpriteSheetData[]> => {
-  const spriteData = await promiseLimit(
+): Promise<{
+  spritesData: PrecompiledSpriteSheetData[];
+  statesOrder: string[];
+  stateReferences: string[];
+}> => {
+  const spritesData = await promiseLimit(
     10,
     spriteSheets.map(
       (spriteSheet) => () => compileSprite(spriteSheet, projectRoot)
     )
   );
-  return spriteData;
+  const stateNames = spritesData
+    .map((sprite) => sprite.states)
+    .flat()
+    .map((state) => state.name)
+    .filter((name) => name.length > 0);
+
+  const stateCounts = stateNames.reduce((memo, name) => {
+    name in memo ? (memo[name] += 1) : (memo[name] = 1);
+    return memo;
+  }, {} as Record<string, number>);
+
+  const statesOrder = Object.keys(stateCounts).sort((a, b) => {
+    if (stateCounts[a] === stateCounts[b]) {
+      return 0;
+    }
+    return stateCounts[a] < stateCounts[b] ? 1 : -1;
+  });
+
+  statesOrder.unshift("");
+
+  // Build reference names for states
+  const stateReferences: string[] = [];
+  statesOrder.forEach((name) => {
+    const refName =
+      (name || "Default")
+        .replace(/ /g, "_")
+        .replace(/[^a-zA-Z0-9_]/g, "")
+        .toUpperCase() || "S";
+
+    let insertName = `STATE_${refName}`;
+    let insNum = 1;
+    while (stateReferences.includes(insertName)) {
+      insertName = `STATE_${refName}_${insNum++}`;
+    }
+    stateReferences.push(insertName);
+  });
+
+  return { spritesData, statesOrder, stateReferences };
 };
 
 const firstIndexOfMatch = <T>(arr: T[], pattern: T[]): number => {

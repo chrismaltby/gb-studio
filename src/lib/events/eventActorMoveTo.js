@@ -1,10 +1,21 @@
 const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_ACTOR_MOVE_TO";
+const groups = ["EVENT_GROUP_ACTOR"];
+const weight = 2;
+
+const autoLabel = (fetchArg) => {
+  return l10n("EVENT_ACTOR_MOVE_TO_LABEL", {
+    actor: fetchArg("actorId"),
+    x: fetchArg("x"),
+    y: fetchArg("y"),
+  });
+};
 
 const fields = [
   {
     key: "actorId",
+    label: l10n("ACTOR"),
     type: "actor",
     defaultValue: "$self$",
   },
@@ -89,6 +100,9 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  autoLabel,
+  groups,
+  weight,
   fields,
   compile,
 };

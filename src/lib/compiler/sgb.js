@@ -409,9 +409,11 @@ const tileTo4BPP = (tileData) => {
 const toSGBCData = (tiles, map, palettes) => {
   return `#pragma bank 255
 
-const void __at(255) __bank_SGB_border_chr;
-const void __at(255) __bank_SGB_border_map;
-const void __at(255) __bank_SGB_border_pal;
+#include "gbs_types.h"
+
+BANKREF(SGB_border_chr)
+BANKREF(SGB_border_map)
+BANKREF(SGB_border_pal)
 
 const unsigned char SGB_border_chr[]={
 ${tiles
@@ -430,9 +432,9 @@ const unsigned char SGB_border_pal[]={
     ${palettes.map(decHex)}
 };
 
-const void __at(sizeof(SGB_border_chr)) __size_SGB_border_chr;
-const void __at(sizeof(SGB_border_map)) __size_SGB_border_map;
-const void __at(sizeof(SGB_border_pal)) __size_SGB_border_pal;
+SIZEREF(SGB_border_chr)
+SIZEREF(SGB_border_map)
+SIZEREF(SGB_border_pal)
 `;
 };
 
