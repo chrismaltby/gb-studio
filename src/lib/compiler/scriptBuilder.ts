@@ -1971,42 +1971,6 @@ class ScriptBuilder {
     console.error("weaponAttack not implemented");
   };
 
-  launchProjectile = (
-    spriteSheetId: string,
-    x = 0,
-    y = 0,
-    dirVariable: string,
-    speed: number,
-    collisionGroup: string,
-    collisionMask: string[]
-  ) => {
-    const { scene } = this.options;
-    const projectileHash = toProjectileHash({
-      spriteSheetId,
-      speed,
-      collisionGroup,
-      collisionMask,
-    });
-    const projectileHashes = scene.projectiles.map((p) => p.hash);
-    const projectileIndex = projectileHashes.indexOf(projectileHash);
-
-    this._addComment("Launch Projectile");
-    this._actorGetPosition("ACTOR");
-    this._rpn() //
-      .ref("^/(ACTOR + 1)/")
-      .int16(x * 16)
-      .operator(".ADD")
-      .ref("^/(ACTOR + 2)/")
-      .int16(y * 16)
-      .operator(".ADD")
-      .stop();
-    // this._stackPushConst(115); // Angle
-    this._stackPushConst(192); // Angle
-
-    this._projectileLaunch(projectileIndex, ".ARG2");
-    this._stackPop(3);
-  };
-
   launchProjectileInDirection = (
     spriteSheetId: string,
     x = 0,

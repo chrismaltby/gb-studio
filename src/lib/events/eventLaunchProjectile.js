@@ -112,7 +112,6 @@ const fields = [
           ["actor", l10n("FIELD_ACTOR_DIRECTION")],
           ["angle", l10n("FIELD_ANGLE")],
           ["anglevar", l10n("FIELD_ANGLE_VARIABLE")],
-          ["var", l10n("FIELD_DIRECTION_VARIABLE")],
         ],
         inline: true,
         defaultValue: "direction",
@@ -146,20 +145,14 @@ const fields = [
 
 const compile = (input, helpers) => {
   const {
-    launchProjectile,
     launchProjectileInDirection,
     launchProjectileInAngle,
     launchProjectileInSourceActorDirection,
     launchProjectileInActorDirection,
     launchProjectileInAngleVariable,
     actorSetActive,
-    variableFromUnion,
-    temporaryEntityVariable,
   } = helpers;
 
-  console.log("LAUNCH", JSON.stringify(input));
-
-  // const dirVar = variableFromUnion(input.direction, temporaryEntityVariable(0));
   actorSetActive(input.actorId);
   if (input.directionType === "direction") {
     launchProjectileInDirection(
