@@ -2034,7 +2034,7 @@ class ScriptBuilder {
       .int16(y * 16)
       .operator(".ADD")
       .stop();
-    this._stackPushConst(Math.round((angle % 360) * (256 / 360)));
+    this._stackPushConst(Math.round(angle % 256));
     this._projectileLaunch(projectileIndex, ".ARG2");
     this._stackPop(3);
   };
