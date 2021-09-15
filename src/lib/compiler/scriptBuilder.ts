@@ -52,6 +52,14 @@ interface ScriptBuilderScene {
   id: string;
   actors: ScriptBuilderEntity[];
   triggers: ScriptBuilderEntity[];
+  projectiles: ScriptBuilderProjectile[];
+}
+
+interface ScriptBuilderProjectile {
+  hash: string;
+  spriteSheetId: string;
+  collisionGroup: string;
+  collisionMask: string[];
 }
 
 type ScriptBuilderEntityType = "scene" | "actor" | "trigger";
@@ -249,6 +257,19 @@ const toASMMoveFlags = (moveType: string, useCollisions: boolean) => {
   );
 };
 
+const dirToAngle = (direction: string) => {
+  if (direction === "left") {
+    return 192;
+  } else if (direction === "right") {
+    return 64;
+  } else if (direction === "up") {
+    return 0;
+  } else if (direction === "down") {
+    return 128;
+  }
+  return 0;
+};
+
 const toScriptOperator = (
   operator: OperatorSymbol
 ): ScriptBuilderRPNOperation => {
@@ -325,6 +346,24 @@ const textCodeGotoRel = (x: number, y: number): string => {
 const assertUnreachable = (_x: never): never => {
   throw new Error("Didn't expect to get here");
 };
+
+export const toProjectileHash = ({
+  spriteSheetId,
+  speed,
+  collisionGroup,
+  collisionMask,
+}: {
+  spriteSheetId: string;
+  speed: number;
+  collisionGroup: string;
+  collisionMask: string[];
+}) =>
+  JSON.stringify({
+    spriteSheetId,
+    speed,
+    collisionGroup,
+    collisionMask,
+  });
 
 const MAX_DIALOGUE_LINES = 5;
 
@@ -1045,6 +1084,11 @@ class ScriptBuilder {
     this._addCmd("VM_ACTOR_GET_DIR", addr, dest);
   };
 
+  _actorGetAngle = (addr: string, dest: string) => {
+    this.includeActor = true;
+    this._addCmd("VM_ACTOR_GET_ANGLE", addr, dest);
+  };
+
   _actorGetDirectionToVariable = (addr: string, variable: string) => {
     const variableAlias = this.getVariableAlias(variable);
     if (this._isArg(variableAlias)) {
@@ -1127,8 +1171,8 @@ class ScriptBuilder {
     this._addCmd("VM_ACTOR_TERMINATE_UPDATE", addr);
   };
 
-  _projectileLaunch = (addr: string) => {
-    this._addCmd("VM_PROJECTILE_LAUNCH", 0, addr);
+  _projectileLaunch = (index: number, addr: string) => {
+    this._addCmd("VM_PROJECTILE_LAUNCH", index, addr);
   };
 
   _loadText = (numInputs: number) => {
@@ -1922,24 +1966,220 @@ class ScriptBuilder {
     _spriteSheetId: string,
     _offset = 10,
     _collisionGroup: string,
-    _collisionMask: string
+    _collisionMask: string[]
   ) => {
     console.error("weaponAttack not implemented");
   };
 
   launchProjectile = (
-    _spriteSheetId: string,
-    _x: string,
-    _y: string,
-    _dirVariable: string,
-    _speed: string,
-    _collisionGroup: string,
-    _collisionMask: string
+    spriteSheetId: string,
+    x = 0,
+    y = 0,
+    dirVariable: string,
+    speed: number,
+    collisionGroup: string,
+    collisionMask: string[]
   ) => {
-    this._stackPushConst(640);
-    this._stackPushConst(640);
-    this._stackPushConst(115);
-    this._projectileLaunch(".ARG2");
+    const { scene } = this.options;
+    const projectileHash = toProjectileHash({
+      spriteSheetId,
+      speed,
+      collisionGroup,
+      collisionMask,
+    });
+    const projectileHashes = scene.projectiles.map((p) => p.hash);
+    const projectileIndex = projectileHashes.indexOf(projectileHash);
+
+    this._addComment("Launch Projectile");
+    this._actorGetPosition("ACTOR");
+    this._rpn() //
+      .ref("^/(ACTOR + 1)/")
+      .int16(x * 16)
+      .operator(".ADD")
+      .ref("^/(ACTOR + 2)/")
+      .int16(y * 16)
+      .operator(".ADD")
+      .stop();
+    // this._stackPushConst(115); // Angle
+    this._stackPushConst(192); // Angle
+
+    this._projectileLaunch(projectileIndex, ".ARG2");
+    this._stackPop(3);
+  };
+
+  launchProjectileInDirection = (
+    spriteSheetId: string,
+    x = 0,
+    y = 0,
+    direction: string,
+    speed: number,
+    collisionGroup: string,
+    collisionMask: string[]
+  ) => {
+    const { scene } = this.options;
+    const projectileHash = toProjectileHash({
+      spriteSheetId,
+      speed,
+      collisionGroup,
+      collisionMask,
+    });
+    const projectileHashes = scene.projectiles.map((p) => p.hash);
+    const projectileIndex = projectileHashes.indexOf(projectileHash);
+
+    this._addComment("Launch Projectile In Direction");
+    this._actorGetPosition("ACTOR");
+    this._rpn() //
+      .ref("^/(ACTOR + 1)/")
+      .int16(x * 16)
+      .operator(".ADD")
+      .ref("^/(ACTOR + 2)/")
+      .int16(y * 16)
+      .operator(".ADD")
+      .stop();
+    this._stackPushConst(dirToAngle(direction));
+    this._projectileLaunch(projectileIndex, ".ARG2");
+    this._stackPop(3);
+  };
+
+  launchProjectileInAngle = (
+    spriteSheetId: string,
+    x = 0,
+    y = 0,
+    angle: number,
+    speed: number,
+    collisionGroup: string,
+    collisionMask: string[]
+  ) => {
+    const { scene } = this.options;
+    const projectileHash = toProjectileHash({
+      spriteSheetId,
+      speed,
+      collisionGroup,
+      collisionMask,
+    });
+    const projectileHashes = scene.projectiles.map((p) => p.hash);
+    const projectileIndex = projectileHashes.indexOf(projectileHash);
+
+    this._addComment("Launch Projectile In Angle");
+    this._actorGetPosition("ACTOR");
+    this._rpn() //
+      .ref("^/(ACTOR + 1)/")
+      .int16(x * 16)
+      .operator(".ADD")
+      .ref("^/(ACTOR + 2)/")
+      .int16(y * 16)
+      .operator(".ADD")
+      .stop();
+    this._stackPushConst(Math.round((angle % 360) * (256 / 360)));
+    this._projectileLaunch(projectileIndex, ".ARG2");
+    this._stackPop(3);
+  };
+
+  launchProjectileInAngleVariable = (
+    spriteSheetId: string,
+    x = 0,
+    y = 0,
+    angleVariable: string,
+    speed: number,
+    collisionGroup: string,
+    collisionMask: string[]
+  ) => {
+    const { scene } = this.options;
+    const projectileHash = toProjectileHash({
+      spriteSheetId,
+      speed,
+      collisionGroup,
+      collisionMask,
+    });
+    const projectileHashes = scene.projectiles.map((p) => p.hash);
+    const projectileIndex = projectileHashes.indexOf(projectileHash);
+
+    this._addComment("Launch Projectile In Angle");
+    this._actorGetPosition("ACTOR");
+    this._rpn() //
+      .ref("^/(ACTOR + 1)/")
+      .int16(x * 16)
+      .operator(".ADD")
+      .ref("^/(ACTOR + 2)/")
+      .int16(y * 16)
+      .operator(".ADD")
+      .refVariable(angleVariable)
+      .stop();
+    this._projectileLaunch(projectileIndex, ".ARG2");
+    this._stackPop(3);
+  };
+
+  launchProjectileInSourceActorDirection = (
+    spriteSheetId: string,
+    x = 0,
+    y = 0,
+    speed: number,
+    collisionGroup: string,
+    collisionMask: string[]
+  ) => {
+    const { scene } = this.options;
+    const projectileHash = toProjectileHash({
+      spriteSheetId,
+      speed,
+      collisionGroup,
+      collisionMask,
+    });
+    const projectileHashes = scene.projectiles.map((p) => p.hash);
+    const projectileIndex = projectileHashes.indexOf(projectileHash);
+
+    this._addComment("Launch Projectile In Source Actor Direction");
+    this._actorGetPosition("ACTOR");
+    this._rpn() //
+      .ref("^/(ACTOR + 1)/")
+      .int16(x * 16)
+      .operator(".ADD")
+      .ref("^/(ACTOR + 2)/")
+      .int16(y * 16)
+      .operator(".ADD")
+      .stop();
+
+    this._stackPushConst(0);
+    this._actorGetAngle("^/(ACTOR - 3)/", ".ARG0");
+
+    // this._stackPushConst(Math.round((angle % 360) * (256 / 360)));
+    this._projectileLaunch(projectileIndex, ".ARG2");
+    this._stackPop(3);
+  };
+
+  launchProjectileInActorDirection = (
+    spriteSheetId: string,
+    x = 0,
+    y = 0,
+    actorId: string,
+    speed: number,
+    collisionGroup: string,
+    collisionMask: string[]
+  ) => {
+    const { scene } = this.options;
+    const projectileHash = toProjectileHash({
+      spriteSheetId,
+      speed,
+      collisionGroup,
+      collisionMask,
+    });
+    const projectileHashes = scene.projectiles.map((p) => p.hash);
+    const projectileIndex = projectileHashes.indexOf(projectileHash);
+
+    this._addComment("Launch Projectile In Actor Direction");
+    this._actorGetPosition("ACTOR");
+    this._rpn() //
+      .ref("^/(ACTOR + 1)/")
+      .int16(x * 16)
+      .operator(".ADD")
+      .ref("^/(ACTOR + 2)/")
+      .int16(y * 16)
+      .operator(".ADD")
+      .stop();
+
+    this.actorPushById(actorId);
+    this._actorGetAngle(".ARG0", ".ARG0");
+
+    this._projectileLaunch(projectileIndex, ".ARG2");
     this._stackPop(3);
   };
 
@@ -2512,12 +2752,23 @@ class ScriptBuilder {
     if (this._isArg(id)) {
       return id;
     }
-    const { entity, scene } = this.options;
-    const newIndex =
-      (id === "" || id === "$self$") && entity
-        ? getActorIndex(entity.id, scene)
-        : getActorIndex(id, scene);
-    return newIndex;
+    const { entity, entityType, scene } = this.options;
+
+    if (id === "player" || (id === "$self$" && entityType !== "actor")) {
+      return 0;
+    }
+
+    if (id === "$self$" && entity) {
+      return getActorIndex(entity.id, scene);
+    }
+
+    const index = getActorIndex(id, scene);
+
+    if (entity && index === 0) {
+      return getActorIndex(entity.id, scene);
+    }
+
+    return index;
   };
 
   getVariableAlias = (variable = "0"): string => {

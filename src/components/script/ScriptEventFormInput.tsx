@@ -241,6 +241,36 @@ const ScriptEventFormInput = ({
         onChange={onChangeField}
       />
     );
+  } else if (type === "selectbutton") {
+    const selectedOption = (field.options || []).find(
+      ([type]) => type === value
+    );
+    const selectedLabel = selectedOption ? selectedOption[1] : undefined;
+    return (
+      <ConnectButton>
+        <DropdownButton
+          variant="transparent"
+          size="small"
+          showArrow={false}
+          menuDirection="right"
+          label={
+            <ConnectIcon
+              connected={value !== field.defaultValue}
+              title={selectedLabel}
+            />
+          }
+        >
+          {(field.options || []).map(([type, label]) => (
+            <MenuItem key={String(type)} onClick={() => onChangeField(type)}>
+              <MenuItemIcon>
+                {type === value ? <CheckIcon /> : <BlankIcon />}
+              </MenuItemIcon>
+              {label}
+            </MenuItem>
+          ))}
+        </DropdownButton>
+      </ConnectButton>
+    );
   } else if (type === "scene") {
     return (
       <OffscreenSkeletonInput>

@@ -486,10 +486,12 @@ export const VariableIcon = () => (
 
 interface ConnectIconProps {
   connected: boolean;
+  title?: string;
 }
 
-export const ConnectIcon = ({ connected }: ConnectIconProps) => (
+export const ConnectIcon = ({ connected, title }: ConnectIconProps) => (
   <svg width="24" height="24" viewBox="0 0 24 24">
+    {title && <title>{title}</title>}
     <ellipse
       ry="10"
       id="svg_1"

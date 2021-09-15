@@ -24,5 +24,6 @@ void vm_actor_terminate_update(SCRIPT_CTX * THIS, INT16 idx) __banked;
 void vm_actor_set_anim_frame(SCRIPT_CTX * THIS, INT16 idx) __banked;
 void vm_actor_get_anim_frame(SCRIPT_CTX * THIS, INT16 idx) __banked;
 void vm_actor_set_anim_set(SCRIPT_CTX * THIS, INT16 idx, UWORD offset) __banked;
+void vm_actor_get_angle(SCRIPT_CTX * THIS, INT16 idx, INT16 dest) __banked;
 
 #endif

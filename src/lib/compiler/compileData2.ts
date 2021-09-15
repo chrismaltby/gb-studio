@@ -24,6 +24,7 @@ interface PrecompiledBackground {
 
 interface PrecompiledProjectile {
   spriteSheetId: string;
+  speed: number;
 }
 
 interface AvatarData {
@@ -655,7 +656,7 @@ export const compileSceneProjectiles = (
         return {
           __comment: `Projectile ${projectileIndex}`,
           sprite: toFarPtr(spriteSheetSymbol(spriteIndex)),
-          move_speed: 4,
+          move_speed: Math.round(projectile.speed * 16),
           life_time: 60,
           anim_tick: 7,
           frame: 0,

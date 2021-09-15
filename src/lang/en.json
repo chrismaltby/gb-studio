@@ -430,6 +430,10 @@
   "FIELD_LTE": "Less Than Or Equal To",
   "FIELD_GTE": "Greater Than Or Equal To",
   "FIELD_SET_VARIABLE": "Set Variable",
+  "FIELD_ANGLE": "Angle",
+  "FIELD_ANGLE_VARIABLE": "Angle Variable",
+  "FIELD_DIRECTION_VARIABLE": "Direction Variable",
+  "FIELD_ACTOR_DIRECTION": "Actor Direction",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
