@@ -423,9 +423,41 @@ const getField = (cmd, fieldName, args) => {
 
   if (!event) return false;
 
-  const field = event.fields.find((f) => f.key === fieldName);
+  const findFieldRecursive = (fields) => {
+    for (const field of fields) {
+      if (field.key === fieldName) {
+        return field;
+      }
+      if (field.type === "group" && field.fields) {
+        const childField = findFieldRecursive(field.fields);
+        if (childField) {
+          return childField;
+        }
+      }
+    }
+  };
 
-  return field;
+  return findFieldRecursive(event.fields);
+};
+
+const isFieldVisible = (field, args) => {
+  if (!field.conditions) {
+    return true;
+  }
+  // Determine if field conditions are met
+  return field.conditions.reduce((memo, condition) => {
+    const keyValue = args[condition.key];
+    return (
+      memo &&
+      (!condition.eq || keyValue === condition.eq) &&
+      (!condition.ne || keyValue !== condition.ne) &&
+      (!condition.gt || Number(keyValue) > Number(condition.gt)) &&
+      (!condition.gte || Number(keyValue) >= Number(condition.gte)) &&
+      (!condition.lt || Number(keyValue) > Number(condition.lt)) &&
+      (!condition.lte || Number(keyValue) >= Number(condition.lte)) &&
+      (!condition.in || condition.in.indexOf(keyValue) >= 0)
+    );
+  }, true);
 };
 
 const isVariableField = (cmd, fieldName, args) => {
@@ -435,25 +467,28 @@ const isVariableField = (cmd, fieldName, args) => {
     (field.type === "variable" ||
       (field.type === "union" &&
         args[fieldName] &&
-        args[fieldName].type === "variable"))
+        args[fieldName].type === "variable")) &&
+    isFieldVisible(field, args)
   );
 };
 
 const isActorField = (cmd, fieldName, args) => {
   const field = getField(cmd, fieldName, args);
-  return field && field.type === "actor";
+  return field && field.type === "actor" && isFieldVisible(field, args);
 };
 
-const isPropertyField = (cmd, fieldName, fieldValue) => {
+const isPropertyField = (cmd, fieldName, args) => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const events = require("../events").default;
   const event = events[cmd];
   if (!event) return false;
   const field = event.fields.find((f) => f.key === fieldName);
+  const fieldValue = args[fieldName];
   return (
     field &&
     (field.type === "property" ||
-      (field.type === "union" && fieldValue.type === "property"))
+      (field.type === "union" && fieldValue.type === "property")) &&
+    isFieldVisible(field, args)
   );
 };
 

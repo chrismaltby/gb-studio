@@ -2552,6 +2552,9 @@ class ScriptBuilder {
       if (type === "actor" && value === "player") {
         return value;
       }
+      if (type === "actor" && value === "$self$") {
+        return "player";
+      }
       if (!argLookup[type][value]) {
         throw new Error("Unknown arg " + type + " " + value);
       }
@@ -2603,7 +2606,7 @@ class ScriptBuilder {
             }
           }
           // Update property fields
-          if (isPropertyField(e.command, arg, argValue)) {
+          if (isPropertyField(e.command, arg, e.args)) {
             const replacePropertyValueActor = (p: string) => {
               const actorValue = p.replace(/:.*/, "");
               if (actorValue === "player") {

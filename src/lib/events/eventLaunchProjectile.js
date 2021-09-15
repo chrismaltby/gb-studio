@@ -48,7 +48,7 @@ const fields = [
         key: "otherActorId",
         label: l10n("FIELD_DIRECTION"),
         type: "actor",
-        defaultValue: "right",
+        defaultValue: "$self$",
         conditions: [
           {
             key: "directionType",
@@ -60,23 +60,11 @@ const fields = [
         key: "direction",
         label: l10n("FIELD_DIRECTION"),
         type: "direction",
-        defaultValue: "$self$",
+        defaultValue: "right",
         conditions: [
           {
             key: "directionType",
             eq: "direction",
-          },
-        ],
-      },
-      {
-        key: "directionVariable",
-        label: l10n("FIELD_DIRECTION"),
-        type: "variable",
-        defaultValue: "LAST_VARIABLE",
-        conditions: [
-          {
-            key: "directionType",
-            eq: "var",
           },
         ],
       },
