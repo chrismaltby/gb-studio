@@ -7,11 +7,22 @@ const fields = [
   {
     label: l10n("FIELD_LOAD_DATA"),
   },
+  {
+    key: "saveSlot",
+    label: l10n("FIELD_SAVE_SLOT"),
+    type: "select",
+    options: [
+      [0, l10n("FIELD_SAVE_SLOT_1")],
+      [1, l10n("FIELD_SAVE_SLOT_2")],
+      [2, l10n("FIELD_SAVE_SLOT_3")],
+    ],
+    defaultValue: 0,
+  },
 ];
 
 const compile = (input, helpers) => {
   const { dataLoad } = helpers;
-  dataLoad(0);
+  dataLoad(input.saveSlot);
 };
 
 module.exports = {

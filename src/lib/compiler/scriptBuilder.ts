@@ -3196,7 +3196,7 @@ class ScriptBuilder {
   // --------------------------------------------------------------------------
   // Data
 
-  dataLoad = (slot: number) => {
+  dataLoad = (slot = 0) => {
     this._addComment(`Load Data from Slot ${slot}`);
     this._raiseException("EXCEPTION_LOAD", 1);
     this._saveSlot(slot);
@@ -3204,7 +3204,7 @@ class ScriptBuilder {
   };
 
   dataSave = (
-    slot: number,
+    slot = 0,
     onSavePath: ScriptEvent[] | ScriptBuilderPathFunction = []
   ) => {
     const loadedLabel = this.getNextLabel();
@@ -3220,7 +3220,7 @@ class ScriptBuilder {
     this._addNL();
   };
 
-  dataClear = (slot: number) => {
+  dataClear = (slot = 0) => {
     this._addComment(`Clear Data in Slot ${slot}`);
     this._saveClear(slot);
     this._addNL();
@@ -3430,7 +3430,7 @@ class ScriptBuilder {
   };
 
   ifDataSaved = (
-    slot: number,
+    slot = 0,
     truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
     falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
   ) => {
