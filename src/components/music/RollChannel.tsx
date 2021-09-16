@@ -7,6 +7,7 @@ import trackerActions from "store/features/tracker/trackerActions";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 
 import { instrumentColors } from "./InstrumentSelect";
+import { ipcRenderer } from "electron";
 
 interface RollChannelProps {
   channelId: number;
@@ -104,6 +105,13 @@ export const RollChannelFwd = ({
             changes: changes,
           })
         );
+
+        // ipcRenderer.send("music-data-send", {
+        //   action: "preview",
+        //   note: note,
+        //   instrument: null, //defaultInstruments[cell],
+        //   square2: true,
+        // });  
       }
     },
     [tool, cellSize, defaultInstruments, dispatch, patternId]

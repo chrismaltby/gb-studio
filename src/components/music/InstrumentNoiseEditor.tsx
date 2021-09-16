@@ -9,6 +9,8 @@ import { FormDivider, FormRow } from "ui/form/FormLayout";
 import { SliderField } from "ui/form/SliderField";
 import { InstrumentLengthForm } from "./InstrumentLengthForm";
 import { NoiseMacroEditorForm } from "./NoiseMacroEditorForm";
+import { ipcRenderer } from "electron";
+import { Button } from "ui/buttons/Button";
 
 interface InstrumentNoiseEditorProps {
   id: string;
@@ -35,6 +37,16 @@ export const InstrumentNoiseEditor = ({
       );
     };
 
+  const onTestInstrument = () => {
+    ipcRenderer.send("music-data-send", {
+      action: "preview",
+      note: 24, // C_5
+      type: "noise",
+      instrument: instrument,
+      square2: false,
+    });  
+  };
+  
   return (
     <>
       <InstrumentLengthForm
@@ -114,6 +126,14 @@ export const InstrumentNoiseEditor = ({
       </FormRow>
       <FormRow>
         <NoiseMacroEditorForm macros={[0, 1, 2, 3, 4, 5]} />
+      </FormRow>
+
+      <FormDivider />
+
+      <FormRow>
+        <Button onClick={onTestInstrument}>
+          {l10n("FIELD_TEST_INSTRUMENT")}
+        </Button>
       </FormRow>
     </>
   );

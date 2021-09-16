@@ -29,6 +29,12 @@ export const UgePlayer = ({
     ipcRenderer.removeAllListeners("music-data");
     ipcRenderer.on("music-data", (event, d) => {
       switch (d.action) {
+        case "initialized": 
+          ipcRenderer.send("music-data-send", {
+            action: "load-song",
+            song: data
+          });
+          break;
         case "update":
           if (onPlaybackUpdate) {
             onPlaybackUpdate(d.update);
@@ -46,7 +52,7 @@ export const UgePlayer = ({
           console.log(`Action ${d.action} not supported`);
       }
     });
-  }, [onChannelStatusUpdate, onPlaybackUpdate, play]);
+  }, [onChannelStatusUpdate, onPlaybackUpdate, play, data]);
 
   useEffect(() => {
     if (play) {

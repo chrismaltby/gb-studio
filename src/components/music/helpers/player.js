@@ -2,10 +2,12 @@
 import compiler from "./compiler";
 import storage from "./storage";
 import emulator from "./emulator";
+import { note2freq, NR10, NR11, NR12, NR13, NR14, NR30, NR31, NR32, NR33, NR34, AUD3_WAVE_RAM } from "./music_constants";
 
 let interval_handle = null;
 let update_handle = null;
 let rom_file = null;
+let current_song = null;
 
 let current_sequence = -1;
 let current_row = -1;
@@ -13,6 +15,20 @@ let current_row = -1;
 const channels = [false, false, false, false];
 
 let onIntervalCallback = (updateData) => {};
+
+const bitpack = (value, bitResolution) => {
+  const bitsString = Math.abs(value || 0).toString(2);
+  if (bitsString.length > bitResolution) {
+    throw Error(`value must be between 0 and ${Math.pow(2, bitResolution) - 1}`);
+  }
+
+  let missingValues = "";
+  for(let i = 0; i < (bitResolution - bitsString.length); i++) {
+    missingValues = missingValues + "0";
+  }
+
+  return missingValues + bitsString;  
+};
 
 const initPlayer = (onInit) => {
   compiler.setLogCallback(console.log);
@@ -28,16 +44,46 @@ const initPlayer = (onInit) => {
     if (onInit) {
       onInit(file);
     }
+    emulator.init(null, rom_file);
   });
 };
+
 const setChannel = (channel, muted) => {
   channels[channel] = emulator.setChannel(channel, muted);
   return channels;
 };
 
-const play = (song) => {
-  stop();
+const loadSong = (song) => {
   updateRom(song);
+
+  const is_player_paused = compiler.getRamSymbols().findIndex((v) => {
+    return v === "is_player_paused";
+  });
+  const do_resume_player = compiler.getRamSymbols().findIndex((v) => {
+    return v === "do_resume_player";
+  });
+
+  const updateTracker = () => {
+    emulator.step("run");
+    console.log("RUN", 
+      emulator.readMem(is_player_paused), 
+      emulator.readMem(do_resume_player),
+      emulator.readMem(0xFF0F)
+    );
+  };
+  interval_handle = setInterval(updateTracker, 10);
+
+  emulator.step("frame");
+  stop();
+}
+
+const play = (song) => {
+  updateRom(song);
+
+  emulator.setChannel(0, channels[0]);
+  emulator.setChannel(1, channels[1]);
+  emulator.setChannel(2, channels[2]);
+  emulator.setChannel(3, channels[3]);
 
   const current_order_addr = compiler.getRamSymbols().findIndex((v) => {
     return v === "current_order";
@@ -46,20 +92,14 @@ const play = (song) => {
     return v === "row";
   });
 
-  emulator.init(null, rom_file);
-
-  emulator.setChannel(0, channels[0]);
-  emulator.setChannel(1, channels[1]);
-  emulator.setChannel(2, channels[2]);
-  emulator.setChannel(3, channels[3]);
-
-  const updateTracker = () => {
-    emulator.step("run");
-  };
-  interval_handle = setInterval(updateTracker, 10);
+  const do_resume_player = compiler.getRamSymbols().findIndex((v) => {
+    return v === "do_resume_player";
+  });
+  emulator.writeMem(do_resume_player, 1);
 
   const updateUI = () => {
     const old_row = current_row;
+    console.log([current_sequence, current_row]);
 
     current_sequence = emulator.readMem(current_order_addr) / 2;
     current_row = emulator.readMem(row_addr);
@@ -70,15 +110,111 @@ const play = (song) => {
   update_handle = setInterval(updateUI, 10);
 };
 
+const preview = (note, type, instrument, square2) => {
+  console.log(note, instrument, square2);
+  const noteFreq = note2freq[note];
+
+  switch (type) {
+    case "duty":
+      const regs = {
+        NR10: 
+          '0' +
+          bitpack(instrument.frequency_sweep_time, 3) + 
+          (instrument.frequency_sweep_shift < 0 ? 1 : 0) + 
+          bitpack(Math.abs(instrument.frequency_sweep_shift), 3),
+        NR11: 
+          bitpack(instrument.duty_cycle, 2) +
+          bitpack(instrument.length !== null ? 64 - instrument.length : 0, 6),
+        NR12: 
+          bitpack(instrument.initial_volume, 4) +
+          (instrument.volume_sweep_change > 0 ? 1 : 0) + 
+          bitpack(instrument.volume_sweep_change !== 0 ? 8 - Math.abs(instrument.volume_sweep_change) : 0, 3), 
+        NR13: noteFreq & 0b11111111,
+        NR14: 
+          '1' + // Initial 
+          (instrument.length ? 1 : 0) + 
+          '000' + 
+          ((noteFreq & 0b0000011100000000) >> 8).toString(2)
+      }
+      console.log(`NR10`, regs.NR10, parseInt(regs.NR10, 2));
+      console.log(`NR11`, regs.NR11, parseInt(regs.NR11, 2));
+      console.log(`NR12`, regs.NR12, parseInt(regs.NR12, 2));
+      console.log(`NR13`, regs.NR13, parseInt(regs.NR13, 2));
+      console.log(`NR14`, regs.NR14, parseInt(regs.NR14, 2));
+
+      emulator.writeMem(NR10, parseInt(regs.NR10, 2));
+      emulator.writeMem(NR11, parseInt(regs.NR11, 2));
+      emulator.writeMem(NR12, parseInt(regs.NR12, 2));
+      emulator.writeMem(NR13, parseInt(regs.NR13, 2));
+      emulator.writeMem(NR14, parseInt(regs.NR14, 2));
+      break;
+    case "wave": 
+      // Copy Wave Form
+      const wave = current_song.waves[instrument.wave_index];
+      for (let idx = 0; idx < 16; idx++) {
+        emulator.writeMem(AUD3_WAVE_RAM + idx, (wave[idx * 2] << 4) | wave[idx * 2 + 1]);
+      }
+
+      const regs = {
+        NR30: '1' + bitpack(0, 7),
+        NR31: bitpack((instrument.length !== null ? instrument.length : 0) & 0xff, 8),
+        NR32: 
+          '00' + 
+          bitpack(instrument.volume, 2) + 
+          '00000',
+        NR33: noteFreq & 0b11111111,
+        NR34:
+          '1' + // Initial 
+          (instrument.length ? 1 : 0) + 
+          '000' + 
+          ((noteFreq & 0b0000011100000000) >> 8).toString(2)
+      };
+
+      console.log("-------------");
+      console.log(`NR30`, regs.NR30, parseInt(regs.NR30, 2));
+      console.log(`NR31`, regs.NR31, parseInt(regs.NR31, 2));
+      console.log(`NR32`, regs.NR32, parseInt(regs.NR32, 2));
+      console.log(`NR33`, regs.NR33, parseInt(regs.NR33, 2));
+      console.log(`NR34`, regs.NR34, parseInt(regs.NR34, 2));
+      console.log("=============");
+
+      emulator.writeMem(NR30, parseInt(regs.NR30, 2));
+      emulator.writeMem(NR31, parseInt(regs.NR31, 2));
+      emulator.writeMem(NR32, parseInt(regs.NR32, 2));
+      emulator.writeMem(NR33, parseInt(regs.NR33, 2));
+      emulator.writeMem(NR34, parseInt(regs.NR34, 2));
+
+      break;
+    case "noise":
+
+      break;
+  }
+
+  setTimeout(() => {
+    emulator.writeMem(NR12, 0);
+    // emulator.writeMem(NR22, 0);
+    emulator.writeMem(NR30, 0);
+    // emulator.writeMem(NR42, 0);
+  }, 3000)
+};
+
 const stop = () => {
-  if (interval_handle === null) return;
-  clearInterval(interval_handle);
-  window.cancelAnimationFrame(update_handle);
-  interval_handle = null;
+  console.log("STOP!");
+
+  const _if = emulator.readMem(0xFF0F);
+  console.log(_if);
+  emulator.writeMem(0xFF0F, _if | 0b00001000);
+  console.log(emulator.readMem(0xFF0F));
+
+  clearInterval(update_handle);
+  update_handle = null;
 };
 
 const updateRom = (song) => {
+  current_song = song;
+
   let addr = compiler.getRomSymbols().indexOf("_song_descriptor");
+
   const buf = new Uint8Array(rom_file.buffer);
 
   buf[addr] = song.ticks_per_row;
@@ -190,13 +326,16 @@ const updateRom = (song) => {
       buf[order_addr++] = pattern_addr[song.sequence[n]] >> 8;
     }
   }
+
   emulator.updateRom(rom_file);
 };
 
 export default {
   initPlayer,
+  loadSong,
   play,
   stop,
+  preview,
   setChannel,
   updateRom,
   setOnIntervalCallback: (cb) => {

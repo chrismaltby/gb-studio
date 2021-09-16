@@ -7,6 +7,8 @@ import { FormDivider, FormField, FormRow } from "ui/form/FormLayout";
 import { Select } from "ui/form/Select";
 import { SliderField } from "ui/form/SliderField";
 import { InstrumentLengthForm } from "./InstrumentLengthForm";
+import { ipcRenderer } from "electron";
+import { Button } from "ui/buttons/Button";
 
 const dutyOptions = [
   {
@@ -109,6 +111,16 @@ export const InstrumentDutyEditor = ({
       );
     };
 
+  const onTestInstrument = () => {
+    ipcRenderer.send("music-data-send", {
+      action: "preview",
+      note: 24, // C_5
+      type: "duty",
+      instrument: instrument,
+      square2: false,
+    });  
+  };
+
   return (
     <>
       <InstrumentLengthForm
@@ -181,6 +193,14 @@ export const InstrumentDutyEditor = ({
             onChange={onChangeFieldSelect("duty_cycle")}
           />
         </FormField>
+      </FormRow>
+
+      <FormDivider />
+
+      <FormRow>
+        <Button onClick={onTestInstrument}>
+          {l10n("FIELD_TEST_INSTRUMENT")}
+        </Button>
       </FormRow>
     </>
   );

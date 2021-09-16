@@ -7,6 +7,8 @@ import { FormDivider, FormField, FormRow } from "ui/form/FormLayout";
 import { Select } from "ui/form/Select";
 import { InstrumentLengthForm } from "./InstrumentLengthForm";
 import { WaveEditorForm } from "./WaveEditorForm";
+import { ipcRenderer } from "electron";
+import { Button } from "ui/buttons/Button";
 
 const volumeOptions = [
   {
@@ -70,6 +72,16 @@ export const InstrumentWaveEditor = ({
       );
     };
 
+  const onTestInstrument = () => {
+    ipcRenderer.send("music-data-send", {
+      action: "preview",
+      note: 24, // C_5
+      type: "wave",
+      instrument: instrument,
+      square2: false,
+    });  
+  };
+
   return (
     <>
       <InstrumentLengthForm
@@ -94,6 +106,15 @@ export const InstrumentWaveEditor = ({
         waveId={instrument.wave_index}
         onChange={onChangeFieldSelect("wave_index")}
       />
+
+      <FormDivider />
+
+      <FormRow>
+        <Button onClick={onTestInstrument}>
+          {l10n("FIELD_TEST_INSTRUMENT")}
+        </Button>
+      </FormRow>
+
     </>
   );
 };
