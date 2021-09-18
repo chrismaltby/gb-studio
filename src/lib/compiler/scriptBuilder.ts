@@ -1352,11 +1352,11 @@ class ScriptBuilder {
   _savePeek = (
     successDest: ScriptBuilderStackVariable,
     dest: ScriptBuilderStackVariable,
-    offset: number,
+    source: ScriptBuilderStackVariable,
     count: number,
     slot: number
   ) => {
-    this._addCmd("VM_SAVE_PEEK", successDest, dest, offset, count, slot);
+    this._addCmd("VM_SAVE_PEEK", successDest, dest, source, count, slot);
   };
 
   _saveClear = (slot: number) => {
@@ -3223,6 +3223,16 @@ class ScriptBuilder {
   dataClear = (slot = 0) => {
     this._addComment(`Clear Data in Slot ${slot}`);
     this._saveClear(slot);
+    this._addNL();
+  };
+
+  dataPeek = (variableSource: string, variableDest: string, slot = 0) => {
+    const variableDestAlias = this.getVariableAlias(variableDest);
+    const variableSourceAlias = this.getVariableAlias(variableSource);
+    this._addComment(
+      `Store ${variableSourceAlias} from save slot ${slot} into ${variableDestAlias}`
+    );
+    this._savePeek(".ARG0", variableDestAlias, variableSourceAlias, 1, slot);
     this._addNL();
   };
 

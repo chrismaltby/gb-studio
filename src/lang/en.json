@@ -536,6 +536,7 @@
   "EVENT_SAVE_DATA": "Game Data Save",
   "EVENT_CLEAR_DATA": "Game Data Remove",
   "EVENT_IF_SAVED_DATA": "If Game Data Saved",
+  "EVENT_PEEK_DATA": "Store Variable from Game Data In Variable",
   "EVENT_ACTOR_SET_MOVEMENT_SPEED": "Set Actor Movement Speed",
   "EVENT_ACTOR_SET_ANIMATION_SPEED": "Set Actor Animation Speed",
   "EVENT_TEXT_SET_ANIMATION_SPEED": "Set Text Animation Speed",
