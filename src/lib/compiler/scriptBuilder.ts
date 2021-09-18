@@ -3226,7 +3226,7 @@ class ScriptBuilder {
     this._addNL();
   };
 
-  dataPeek = (variableSource: string, variableDest: string, slot = 0) => {
+  dataPeek = (slot = 0, variableSource: string, variableDest: string) => {
     const variableDestAlias = this.getVariableAlias(variableDest);
     const variableSourceAlias = this.getVariableAlias(variableSource);
     this._addComment(

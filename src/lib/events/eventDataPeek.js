@@ -32,7 +32,7 @@ const fields = [
 
 const compile = (input, helpers) => {
   const { dataPeek } = helpers;
-  dataPeek(input.variableSource, input.variableDest, input.saveSlot);
+  dataPeek(input.saveSlot, input.variableSource, input.variableDest);
 };
 
 module.exports = {
