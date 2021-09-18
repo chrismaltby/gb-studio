@@ -14,7 +14,6 @@ const fields = [
   },
   {
     key: "saveSlot",
-    label: l10n("FIELD_SAVE_SLOT"),
     type: "select",
     options: [
       [0, l10n("FIELD_SAVE_SLOT_1")],
