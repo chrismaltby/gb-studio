@@ -15,7 +15,7 @@ import uuid from "uuid";
 const indexById = indexBy("id");
 
 export const LATEST_PROJECT_VERSION = "2.0.0";
-export const LATEST_PROJECT_MINOR_VERSION = "10";
+export const LATEST_PROJECT_MINOR_VERSION = "11";
 
 /*
  * Helper function to make sure that all migrated functions
@@ -1098,6 +1098,57 @@ export const migrateFrom200r9To200r10Triggers = (data) => {
   };
 };
 
+/* Version 2.0.0 r11 adds additional parameters to EVENT_LAUNCH_PROJECTILE
+ */
+export const migrateFrom200r10To200r11Event = (event) => {
+  const migrateMeta = generateMigrateMeta(event);
+
+  if (event.args && event.command === "EVENT_LAUNCH_PROJECTILE") {
+    const unionType =
+      (event.args && event.args.direction && event.args.direction.type) ||
+      "direction";
+    const unionValue =
+      event.args && event.args.direction && event.args.direction.value;
+
+    let directionType = "direction";
+    if (unionType === "variable") {
+      directionType = "anglevar";
+    } else if (unionType === "property") {
+      directionType = "actor";
+    }
+
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        animSpeed: 7,
+        lifeTime: 1,
+        directionType,
+        direction: unionType === "direction" ? unionValue : "right",
+        angleVariable: unionType === "variable" ? unionValue : "0",
+        angle: 0,
+        otherActorId:
+          unionType === "property" ? unionValue.replace(/:.*/, "") : "$self$",
+      },
+    });
+  }
+
+  return event;
+};
+
+const migrateFrom200r10To200r11Events = (data) => {
+  return {
+    ...data,
+    scenes: mapScenesEvents(data.scenes, migrateFrom200r10To200r11Event),
+    customEvents: (data.customEvents || []).map((customEvent) => {
+      return {
+        ...customEvent,
+        script: mapEvents(customEvent.script, migrateFrom200r10To200r11Event),
+      };
+    }),
+  };
+};
+
 const migrateProject = (project) => {
   let data = { ...project };
   let version = project._version || "1.0.0";
@@ -1168,6 +1219,10 @@ const migrateProject = (project) => {
     if (release === "9") {
       data = migrateFrom200r9To200r10Triggers(data);
       release = "10";
+    }
+    if (release === "10") {
+      data = migrateFrom200r10To200r11Events(data);
+      release = "11";
     }
   }
 
