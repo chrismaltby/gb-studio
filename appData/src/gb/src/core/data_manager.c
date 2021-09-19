@@ -346,7 +346,7 @@ void load_player() __banked {
     PLAYER.frame_start = 0;
     PLAYER.frame_end = 2;
     PLAYER.pinned = FALSE;    
-    PLAYER.collision_group = 0;
+    PLAYER.collision_group = COLLISION_GROUP_PLAYER;
     PLAYER.collision_enabled = TRUE;
 }
 

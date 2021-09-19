@@ -1997,7 +1997,7 @@ class ScriptBuilder {
       .int16(x * 16)
       .operator(".ADD")
       .ref("^/(ACTOR + 2)/")
-      .int16((8 - y) * 16)
+      .int16(-y * 16)
       .operator(".ADD")
       .stop();
     this._stackPushConst(dirToAngle(direction));
@@ -2031,7 +2031,7 @@ class ScriptBuilder {
       .int16(x * 16)
       .operator(".ADD")
       .ref("^/(ACTOR + 2)/")
-      .int16((8 - y) * 16)
+      .int16(-y * 16)
       .operator(".ADD")
       .stop();
     this._stackPushConst(Math.round(angle % 256));
@@ -2065,7 +2065,7 @@ class ScriptBuilder {
       .int16(x * 16)
       .operator(".ADD")
       .ref("^/(ACTOR + 2)/")
-      .int16((8 - y) * 16)
+      .int16(-y * 16)
       .operator(".ADD")
       .refVariable(angleVariable)
       .stop();
@@ -2098,7 +2098,7 @@ class ScriptBuilder {
       .int16(x * 16)
       .operator(".ADD")
       .ref("^/(ACTOR + 2)/")
-      .int16((8 - y) * 16)
+      .int16(-y * 16)
       .operator(".ADD")
       .stop();
 
@@ -2136,7 +2136,7 @@ class ScriptBuilder {
       .int16(x * 16)
       .operator(".ADD")
       .ref("^/(ACTOR + 2)/")
-      .int16((8 - y) * 16)
+      .int16(-y * 16)
       .operator(".ADD")
       .stop();
 

@@ -114,6 +114,23 @@ const fields = [
     width: "50%",
   },
   {
+    key: "animSpeed",
+    label: l10n("FIELD_ANIMATION_SPEED"),
+    type: "animSpeed",
+    defaultValue: 15,
+    width: "50%",
+  },
+  {
+    key: "lifeTime",
+    label: l10n("FIELD_LIFE_TIME"),
+    type: "number",
+    min: 0,
+    max: 4,
+    step: 0.1,
+    width: "50%",
+    defaultValue: 1,
+  },
+  {
     key: "collisionGroup",
     label: l10n("FIELD_COLLISION_GROUP"),
     type: "collisionMask",

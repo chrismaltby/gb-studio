@@ -25,6 +25,10 @@ interface PrecompiledBackground {
 interface PrecompiledProjectile {
   spriteSheetId: string;
   speed: number;
+  animSpeed: number;
+  lifeTime: number;
+  collisionGroup: string;
+  collisionMask: string[];
 }
 
 interface AvatarData {
@@ -135,6 +139,28 @@ export const toASMCollisionGroup = (group: string) => {
     return "COLLISION_GROUP_3";
   }
   return "COLLISION_GROUP_NONE";
+};
+
+export const toASMCollisionMask = (mask: string[]) => {
+  const flags = mask
+    .map((group: string) => {
+      if (group === "player") {
+        return "COLLISION_GROUP_PLAYER";
+      }
+      if (group === "1") {
+        return "COLLISION_GROUP_1";
+      }
+      if (group === "2") {
+        return "COLLISION_GROUP_2";
+      }
+      if (group === "3") {
+        return "COLLISION_GROUP_3";
+      }
+      return "";
+    })
+    .filter((group) => group !== "");
+
+  return flags.length > 0 ? flags.join(" | ") : 0;
 };
 
 export const maybeScriptFarPtr = (scriptSymbol: string | null) =>
@@ -653,15 +679,19 @@ export const compileSceneProjectiles = (
           (s) => s.id === projectile.spriteSheetId
         );
         if (!sprite) return null;
+        const animOffsets = sprite.animationOffsets[0];
         return {
           __comment: `Projectile ${projectileIndex}`,
           sprite: toFarPtr(spriteSheetSymbol(spriteIndex)),
           move_speed: Math.round(projectile.speed * 16),
-          life_time: 60,
-          anim_tick: 7,
-          frame: 0,
-          frame_start: 0,
-          frame_end: 1,
+          life_time: Math.round(projectile.lifeTime * 60),
+          collision_group: toASMCollisionGroup(projectile.collisionGroup),
+          collision_mask: toASMCollisionMask(projectile.collisionMask),
+          bounds: compileBounds(sprite),
+          anim_tick: projectile.animSpeed,
+          frame: animOffsets.start,
+          frame_start: animOffsets.start,
+          frame_end: animOffsets.end + 1,
         };
       })
     ),

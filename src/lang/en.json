@@ -434,6 +434,7 @@
   "FIELD_ANGLE_VARIABLE": "Angle Variable",
   "FIELD_DIRECTION_VARIABLE": "Direction Variable",
   "FIELD_ACTOR_DIRECTION": "Actor Direction",
+  "FIELD_LIFE_TIME": "Life Time",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
