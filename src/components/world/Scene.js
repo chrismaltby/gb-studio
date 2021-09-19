@@ -18,6 +18,7 @@ import { assetFilename } from "../../lib/helpers/gbstudio";
 import SceneCursor from "./SceneCursor";
 import ColorizedImage from "./ColorizedImage";
 import {
+  MIDDLE_MOUSE,
   TOOL_COLORS,
   TOOL_COLLISIONS,
   TOOL_ERASER,
@@ -90,12 +91,14 @@ class Scene extends Component {
 
   onStartDrag = (e) => {
     const { id, selectScene } = this.props;
-    this.lastPageX = e.pageX;
-    this.lastPageY = e.pageY;
-
-    selectScene({ sceneId: id });
-
-    this.dragging = true;
+    if (e.nativeEvent.which !== MIDDLE_MOUSE) {
+      this.lastPageX = e.pageX;
+      this.lastPageY = e.pageY;
+  
+      selectScene({ sceneId: id });
+  
+      this.dragging = true;
+    }
   };
 
   onMoveDrag = (e) => {
