@@ -16,6 +16,7 @@ test("should compile empty events", () => {
 
 .area _CODE_255
 
+
 ___bank_testname = 255
 .globl ___bank_testname
 
@@ -39,6 +40,7 @@ test("should collapse multiple end events", () => {
 .include "data/game_globals.i"
 
 .area _CODE_255
+
 
 ___bank_testname = 255
 .globl ___bank_testname
@@ -65,6 +67,7 @@ test("should output text command", async () => {
 .include "data/game_globals.i"
 
 .area _CODE_255
+
 
 ___bank_testname = 255
 .globl ___bank_testname
@@ -111,6 +114,7 @@ test("should output text with avatar command", async () => {
 .include "data/game_globals.i"
 
 .area _CODE_255
+
 
 ___bank_testname = 255
 .globl ___bank_testname
@@ -168,6 +172,7 @@ test("should allow conditional statements", async () => {
 .include "data/game_globals.i"
 
 .area _CODE_255
+
 
 ___bank_testname = 255
 .globl ___bank_testname
@@ -246,6 +251,7 @@ test("should allow commands after conditional", async () => {
 .include "data/game_globals.i"
 
 .area _CODE_255
+
 
 ___bank_testname = 255
 .globl ___bank_testname

@@ -157,6 +157,7 @@ test("Should be able to open dialogue boxes", async () => {
 
 .area _CODE_255
 
+
 ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
 
@@ -219,6 +220,7 @@ test("Should be able to conditionally execute if variable is true with event arr
 
 .area _CODE_255
 
+
 ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
 
@@ -277,6 +279,7 @@ test("Should be able to conditionally execute if variable is true with function 
 .include "data/game_globals.i"
 
 .area _CODE_255
+
 
 ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
@@ -365,6 +368,7 @@ test("Should be able to conditionally execute if variable is true with nested fu
 
 .area _CODE_255
 
+
 ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
 
@@ -450,6 +454,7 @@ test("Should be able to define labels and jump", () => {
 .include "data/game_globals.i"
 
 .area _CODE_255
+
 
 ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
