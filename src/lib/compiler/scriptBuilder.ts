@@ -350,19 +350,25 @@ const assertUnreachable = (_x: never): never => {
 export const toProjectileHash = ({
   spriteSheetId,
   speed,
+  animSpeed,
+  lifeTime,
   collisionGroup,
   collisionMask,
 }: {
   spriteSheetId: string;
   speed: number;
+  animSpeed: number;
+  lifeTime: number;
   collisionGroup: string;
   collisionMask: string[];
 }) =>
   JSON.stringify({
     spriteSheetId,
     speed,
+    animSpeed,
+    lifeTime,
     collisionGroup,
-    collisionMask,
+    collisionMask: [...collisionMask].sort(),
   });
 
 const MAX_DIALOGUE_LINES = 5;
@@ -1971,12 +1977,11 @@ class ScriptBuilder {
     console.error("weaponAttack not implemented");
   };
 
-  launchProjectileInDirection = (
+  getProjectileIndex = (
     spriteSheetId: string,
-    x = 0,
-    y = 0,
-    direction: string,
     speed: number,
+    animSpeed: number,
+    lifeTime: number,
     collisionGroup: string,
     collisionMask: string[]
   ) => {
@@ -1984,12 +1989,22 @@ class ScriptBuilder {
     const projectileHash = toProjectileHash({
       spriteSheetId,
       speed,
+      animSpeed,
+      lifeTime,
       collisionGroup,
       collisionMask,
     });
     const projectileHashes = scene.projectiles.map((p) => p.hash);
     const projectileIndex = projectileHashes.indexOf(projectileHash);
+    return projectileIndex;
+  };
 
+  launchProjectileInDirection = (
+    projectileIndex: number,
+    x = 0,
+    y = 0,
+    direction: string
+  ) => {
     this._addComment("Launch Projectile In Direction");
     this._actorGetPosition("ACTOR");
     this._rpn() //
@@ -2006,24 +2021,11 @@ class ScriptBuilder {
   };
 
   launchProjectileInAngle = (
-    spriteSheetId: string,
+    projectileIndex: number,
     x = 0,
     y = 0,
-    angle: number,
-    speed: number,
-    collisionGroup: string,
-    collisionMask: string[]
+    angle: number
   ) => {
-    const { scene } = this.options;
-    const projectileHash = toProjectileHash({
-      spriteSheetId,
-      speed,
-      collisionGroup,
-      collisionMask,
-    });
-    const projectileHashes = scene.projectiles.map((p) => p.hash);
-    const projectileIndex = projectileHashes.indexOf(projectileHash);
-
     this._addComment("Launch Projectile In Angle");
     this._actorGetPosition("ACTOR");
     this._rpn() //
@@ -2040,24 +2042,11 @@ class ScriptBuilder {
   };
 
   launchProjectileInAngleVariable = (
-    spriteSheetId: string,
+    projectileIndex: number,
     x = 0,
     y = 0,
-    angleVariable: string,
-    speed: number,
-    collisionGroup: string,
-    collisionMask: string[]
+    angleVariable: string
   ) => {
-    const { scene } = this.options;
-    const projectileHash = toProjectileHash({
-      spriteSheetId,
-      speed,
-      collisionGroup,
-      collisionMask,
-    });
-    const projectileHashes = scene.projectiles.map((p) => p.hash);
-    const projectileIndex = projectileHashes.indexOf(projectileHash);
-
     this._addComment("Launch Projectile In Angle");
     this._actorGetPosition("ACTOR");
     this._rpn() //
@@ -2074,23 +2063,10 @@ class ScriptBuilder {
   };
 
   launchProjectileInSourceActorDirection = (
-    spriteSheetId: string,
+    projectileIndex: number,
     x = 0,
-    y = 0,
-    speed: number,
-    collisionGroup: string,
-    collisionMask: string[]
+    y = 0
   ) => {
-    const { scene } = this.options;
-    const projectileHash = toProjectileHash({
-      spriteSheetId,
-      speed,
-      collisionGroup,
-      collisionMask,
-    });
-    const projectileHashes = scene.projectiles.map((p) => p.hash);
-    const projectileIndex = projectileHashes.indexOf(projectileHash);
-
     this._addComment("Launch Projectile In Source Actor Direction");
     this._actorGetPosition("ACTOR");
     this._rpn() //
@@ -2111,24 +2087,11 @@ class ScriptBuilder {
   };
 
   launchProjectileInActorDirection = (
-    spriteSheetId: string,
+    projectileIndex: number,
     x = 0,
     y = 0,
-    actorId: string,
-    speed: number,
-    collisionGroup: string,
-    collisionMask: string[]
+    actorId: string
   ) => {
-    const { scene } = this.options;
-    const projectileHash = toProjectileHash({
-      spriteSheetId,
-      speed,
-      collisionGroup,
-      collisionMask,
-    });
-    const projectileHashes = scene.projectiles.map((p) => p.hash);
-    const projectileIndex = projectileHashes.indexOf(projectileHash);
-
     this._addComment("Launch Projectile In Actor Direction");
     this._actorGetPosition("ACTOR");
     this._rpn() //

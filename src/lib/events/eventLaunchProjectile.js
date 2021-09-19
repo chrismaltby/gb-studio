@@ -150,6 +150,7 @@ const fields = [
 
 const compile = (input, helpers) => {
   const {
+    getProjectileIndex,
     launchProjectileInDirection,
     launchProjectileInAngle,
     launchProjectileInSourceActorDirection,
@@ -159,55 +160,39 @@ const compile = (input, helpers) => {
   } = helpers;
 
   actorSetActive(input.actorId);
+  const projectileIndex = getProjectileIndex(
+    input.spriteSheetId,
+    input.speed,
+    input.animSpeed,
+    input.lifeTime,
+    input.collisionGroup,
+    input.collisionMask
+  );
   if (input.directionType === "direction") {
     launchProjectileInDirection(
-      input.spriteSheetId,
+      projectileIndex,
       input.x,
       input.y,
-      input.direction,
-      input.speed,
-      input.collisionGroup,
-      input.collisionMask
+      input.direction
     );
   } else if (input.directionType === "angle") {
-    launchProjectileInAngle(
-      input.spriteSheetId,
-      input.x,
-      input.y,
-      input.angle,
-      input.speed,
-      input.collisionGroup,
-      input.collisionMask
-    );
+    launchProjectileInAngle(projectileIndex, input.x, input.y, input.angle);
   } else if (input.directionType === "anglevar") {
     launchProjectileInAngleVariable(
-      input.spriteSheetId,
+      projectileIndex,
       input.x,
       input.y,
-      input.angleVariable,
-      input.speed,
-      input.collisionGroup,
-      input.collisionMask
+      input.angleVariable
     );
   } else if (input.directionType === "actor") {
     if (input.actorId === input.otherActorId) {
-      launchProjectileInSourceActorDirection(
-        input.spriteSheetId,
-        input.x,
-        input.y,
-        input.speed,
-        input.collisionGroup,
-        input.collisionMask
-      );
+      launchProjectileInSourceActorDirection(projectileIndex, input.x, input.y);
     } else {
       launchProjectileInActorDirection(
-        input.spriteSheetId,
+        projectileIndex,
         input.x,
         input.y,
-        input.otherActorId,
-        input.speed,
-        input.collisionGroup,
-        input.collisionMask
+        input.otherActorId
       );
     }
   }

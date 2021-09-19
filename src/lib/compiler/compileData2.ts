@@ -158,7 +158,8 @@ export const toASMCollisionMask = (mask: string[]) => {
       }
       return "";
     })
-    .filter((group) => group !== "");
+    .filter((group) => group !== "")
+    .sort();
 
   return flags.length > 0 ? flags.join(" | ") : 0;
 };
