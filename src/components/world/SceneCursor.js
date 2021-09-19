@@ -9,7 +9,7 @@ import settingsActions from "../../store/features/settings/settingsActions";
 import entitiesActions from "../../store/features/entities/entitiesActions";
 
 import { SceneShape, VariableShape } from "../../store/stateShape";
-import { TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER, TOOL_TRIGGERS, TOOL_ACTORS, BRUSH_FILL, BRUSH_16PX, TOOL_SELECT, COLLISION_ALL, TILE_PROPS } from "../../consts";
+import { MIDDLE_MOUSE, TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER, TOOL_TRIGGERS, TOOL_ACTORS, BRUSH_FILL, BRUSH_16PX, TOOL_SELECT, COLLISION_ALL, TILE_PROPS } from "../../consts";
 
 class SceneCursor extends Component {
   constructor() {
@@ -90,6 +90,8 @@ class SceneCursor extends Component {
       hoverPalette,
       setSelectedPalette,
     } = this.props;
+    
+    if (e.nativeEvent.which === MIDDLE_MOUSE) return; // Do nothing on middle click
 
     this.lockX = undefined;
     this.lockY = undefined;
