@@ -82,8 +82,9 @@ class World extends Component {
     if (scroll && loaded && !prevProps.loaded) {
       scroll.scrollTo(scrollX, scrollY);
     }
-
-    if(onlyMatchingScene && (onlyMatchingScene !== prevProps.onlyMatchingScene)) {
+    
+    const sceneMatchesPrevious = !!(onlyMatchingScene !== null && prevProps.onlyMatchingScene !== null && onlyMatchingScene.id === prevProps.onlyMatchingScene.id);
+    if(onlyMatchingScene && !sceneMatchesPrevious) {
       const view = this.scrollRef.current;
       const viewContents = this.scrollContentsRef.current;
       const halfViewWidth = 0.5 * view.clientWidth;
@@ -94,7 +95,7 @@ class World extends Component {
       view.scroll({
         top: newScrollY,
         left: newScrollX
-      });      
+      });
     }
   }
 
@@ -208,6 +209,7 @@ class World extends Component {
   startWorldDragIfAltOrMiddleClick = e => {
     if (e.altKey || e.nativeEvent.which === MIDDLE_MOUSE) {
       this.worldDragging = true;
+      e.preventDefault();
       e.stopPropagation();
     }
   };
