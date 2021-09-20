@@ -3229,10 +3229,16 @@ class ScriptBuilder {
   dataPeek = (slot = 0, variableSource: string, variableDest: string) => {
     const variableDestAlias = this.getVariableAlias(variableDest);
     const variableSourceAlias = this.getVariableAlias(variableSource);
+    const foundLabel = this.getNextLabel();
+
     this._addComment(
       `Store ${variableSourceAlias} from save slot ${slot} into ${variableDestAlias}`
     );
+    this._stackPushConst(0);
     this._savePeek(".ARG0", variableDestAlias, variableSourceAlias, 1, slot);
+    this._ifConst(".EQ", ".ARG0", 1, foundLabel, 1);
+    this._setVariableConst(variableDest, 0);
+    this._label(foundLabel);
     this._addNL();
   };
 
