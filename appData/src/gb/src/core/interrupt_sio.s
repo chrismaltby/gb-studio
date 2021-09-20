@@ -9,7 +9,7 @@
         ei
         jp .sio_ISR
 
-        .area   _BSS
+        .area   _DATA
 .start_sio_globals:
 
 _SIO_status::
@@ -39,7 +39,7 @@ _link_next_mode::
         ld  a, #0x80
         ldh (.SC), a            ; use external clock
 
-        .area   _BASE
+        .area   _HOME
 
 .sio_ISR::
         push af

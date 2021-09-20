@@ -65,12 +65,12 @@ inline void music_setpos(UBYTE pattern, UBYTE row) {
  * 
  * @param channels channel mask
  */
-void music_mute(UBYTE channels) __nonbanked;
+void music_mute(UBYTE channels) OLDCALL __nonbanked;
 
 /**
  * Update music player
  */
-void music_update() __nonbanked;
+void music_update() OLDCALL __nonbanked;
 
 /**
  * Update music events

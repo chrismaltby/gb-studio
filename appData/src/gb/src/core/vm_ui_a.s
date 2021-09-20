@@ -1,7 +1,7 @@
     .module     vm_ui_a
     .include    "global.s"
 
-    .area   _BSS
+    .area   _DATA
 
 __itoa_fmt_len::
     .ds 0x01

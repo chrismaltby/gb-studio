@@ -2,6 +2,7 @@
 
 #include <string.h>
 
+#include "compat.h"
 #include "music_manager.h"
 #include "sample_player.h"
 #include "bankdata.h"
@@ -147,7 +148,7 @@ void music_stop() __banked {
     current_track = NULL;
 }
 
-void music_mute(UBYTE channels) __nonbanked __naked {
+void music_mute(UBYTE channels) OLDCALL __nonbanked __naked {
     channels;
 __asm
 #ifdef GBT_PLAYER
@@ -196,7 +197,7 @@ __endasm;
 }
 
 UINT8 ISR_counter = 0;
-void music_update() __nonbanked __naked {
+void music_update() OLDCALL __nonbanked __naked {
 __asm
         call _sample_play_isr
         ld hl, #_ISR_counter
@@ -266,7 +267,7 @@ void wave_play(UBYTE frames, UBYTE bank, UBYTE * sample, UWORD size) __banked {
     tone_frames = frames;
 }
 
-static void sound_load_regs(UBYTE reg, UBYTE len, UBYTE bank, const UBYTE * data) __nonbanked __naked {
+static void sound_load_regs(UBYTE reg, UBYTE len, UBYTE bank, const UBYTE * data) OLDCALL __nonbanked __naked {
     reg; len; bank; data;
 __asm
         ldhl sp, #2

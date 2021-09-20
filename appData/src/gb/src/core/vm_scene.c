@@ -6,7 +6,7 @@
 #include "bankdata.h"
 #include "data_manager.h"
 
-void vm_scene_push() __banked {
+void vm_scene_push() OLDCALL __banked {
     scene_stack_ptr->scene = current_scene;
     scene_stack_ptr->pos = PLAYER.pos;
     scene_stack_ptr->dir = PLAYER.dir;
@@ -22,16 +22,16 @@ static void raise_change_scene_exception() {
     PLAYER.dir = scene_stack_ptr->dir;
 }
 
-void vm_scene_pop() __banked {
+void vm_scene_pop() OLDCALL __banked {
     scene_stack_ptr--;
     raise_change_scene_exception();
 }
 
-void vm_scene_pop_all() __banked {
+void vm_scene_pop_all() OLDCALL __banked {
     scene_stack_ptr = scene_stack;
     raise_change_scene_exception();
 }
 
-void vm_scene_stack_reset() __banked {
+void vm_scene_stack_reset() OLDCALL __banked {
     scene_stack_ptr = scene_stack;
 }
