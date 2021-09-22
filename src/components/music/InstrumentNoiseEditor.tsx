@@ -125,7 +125,7 @@ export const InstrumentNoiseEditor = ({
         />
       </FormRow>
       <FormRow>
-        <NoiseMacroEditorForm macros={[0, 1, 2, 3, 4, 5]} />
+        <NoiseMacroEditorForm macros={instrument.noise_macro} />
       </FormRow>
 
       <FormDivider />

@@ -2,9 +2,8 @@
 import compiler from "./compiler";
 import storage from "./storage";
 import emulator from "./emulator";
-import { note2freq, NR10, NR11, NR12, NR13, NR14, NR30, NR31, NR32, NR33, NR34, AUD3_WAVE_RAM } from "./music_constants";
+import { note2freq, NR10, NR11, NR12, NR13, NR14, NR30, NR31, NR32, NR33, NR34, NR41, NR42, NR43, NR44, AUD3_WAVE_RAM } from "./music_constants";
 
-let interval_handle = null;
 let update_handle = null;
 let rom_file = null;
 let current_song = null;
@@ -45,6 +44,24 @@ const initPlayer = (onInit) => {
       onInit(file);
     }
     emulator.init(null, rom_file);
+
+    const is_player_paused = compiler.getRamSymbols().findIndex((v) => {
+      return v === "is_player_paused";
+    });
+    const do_resume_player = compiler.getRamSymbols().findIndex((v) => {
+      return v === "do_resume_player";
+    });
+  
+    const updateTracker = () => {
+      emulator.step("run");
+      console.log("RUN", 
+        emulator.readMem(is_player_paused), 
+        emulator.readMem(do_resume_player),
+        emulator.readMem(0xFF0F)
+      );
+    };
+    setInterval(updateTracker, 10);
+  
   });
 };
 
@@ -55,24 +72,6 @@ const setChannel = (channel, muted) => {
 
 const loadSong = (song) => {
   updateRom(song);
-
-  const is_player_paused = compiler.getRamSymbols().findIndex((v) => {
-    return v === "is_player_paused";
-  });
-  const do_resume_player = compiler.getRamSymbols().findIndex((v) => {
-    return v === "do_resume_player";
-  });
-
-  const updateTracker = () => {
-    emulator.step("run");
-    console.log("RUN", 
-      emulator.readMem(is_player_paused), 
-      emulator.readMem(do_resume_player),
-      emulator.readMem(0xFF0F)
-    );
-  };
-  interval_handle = setInterval(updateTracker, 10);
-
   emulator.step("frame");
   stop();
 }
@@ -96,6 +95,7 @@ const play = (song) => {
     return v === "do_resume_player";
   });
   emulator.writeMem(do_resume_player, 1);
+  emulator.step("frame");
 
   const updateUI = () => {
     const old_row = current_row;
@@ -107,7 +107,7 @@ const play = (song) => {
       onIntervalCallback([current_sequence, current_row]);
     }
   };
-  update_handle = setInterval(updateUI, 10);
+  update_handle = setInterval(updateUI, 15.625);
 };
 
 const preview = (note, type, instrument, square2) => {
@@ -136,11 +136,14 @@ const preview = (note, type, instrument, square2) => {
           '000' + 
           ((noteFreq & 0b0000011100000000) >> 8).toString(2)
       }
+
+      console.log("-------------");
       console.log(`NR10`, regs.NR10, parseInt(regs.NR10, 2));
       console.log(`NR11`, regs.NR11, parseInt(regs.NR11, 2));
       console.log(`NR12`, regs.NR12, parseInt(regs.NR12, 2));
       console.log(`NR13`, regs.NR13, parseInt(regs.NR13, 2));
       console.log(`NR14`, regs.NR14, parseInt(regs.NR14, 2));
+      console.log("=============");
 
       emulator.writeMem(NR10, parseInt(regs.NR10, 2));
       emulator.writeMem(NR11, parseInt(regs.NR11, 2));
@@ -186,7 +189,38 @@ const preview = (note, type, instrument, square2) => {
 
       break;
     case "noise":
+      const regs = {
+        NR41: 
+          '00' + 
+          bitpack(instrument.length !== null ? 64 - instrument.length : 0, 6),
+        NR42: 
+          bitpack(instrument.initial_volume, 4) +
+          (instrument.volume_sweep_change > 0 ? 1 : 0) + 
+          bitpack(instrument.volume_sweep_change !== 0 ? 8 - Math.abs(instrument.volume_sweep_change) : 0, 3), 
+        NR43:
+          bitpack(0xF - noteFreq >> 7, 4) +
+          (instrument.bit_count === 7 ? 1 : 0) +
+          bitpack(instrument.dividing_ratio, 3),
+        NR44:
+          '1' + // Initial 
+          (instrument.length ? 1 : 0) + 
+          '000000'
+      }
 
+      console.log("-------------");
+      console.log(`NR41`, regs.NR41, parseInt(regs.NR41, 2));
+      console.log(`NR42`, regs.NR42, parseInt(regs.NR42, 2));
+      console.log(`NR43`, regs.NR43, parseInt(regs.NR43, 2));
+      console.log(`NR44`, regs.NR44, parseInt(regs.NR44, 2));
+      console.log("=============");
+
+      emulator.writeMem(NR41, parseInt(regs.NR41, 2));
+      emulator.writeMem(NR42, parseInt(regs.NR42, 2));
+      emulator.writeMem(NR43, parseInt(regs.NR43, 2));
+      emulator.writeMem(NR44, parseInt(regs.NR44, 2));
+
+      break;
+    default:
       break;
   }
 
@@ -194,17 +228,24 @@ const preview = (note, type, instrument, square2) => {
     emulator.writeMem(NR12, 0);
     // emulator.writeMem(NR22, 0);
     emulator.writeMem(NR30, 0);
-    // emulator.writeMem(NR42, 0);
+    emulator.writeMem(NR42, 0);
   }, 3000)
 };
 
 const stop = () => {
   console.log("STOP!");
 
-  const _if = emulator.readMem(0xFF0F);
-  console.log(_if);
-  emulator.writeMem(0xFF0F, _if | 0b00001000);
-  console.log(emulator.readMem(0xFF0F));
+  const is_player_paused = compiler.getRamSymbols().findIndex((v) => {
+    return v === "is_player_paused";
+  });
+  if (emulator.readMem(is_player_paused) === 0) { 
+    const _if = emulator.readMem(0xFF0F);
+    console.log(_if);
+    emulator.writeMem(0xFF0F, _if | 0b00001000);
+    console.log(emulator.readMem(0xFF0F));
+
+    emulator.step("frame");
+  }
 
   clearInterval(update_handle);
   update_handle = null;
@@ -337,7 +378,6 @@ export default {
   stop,
   preview,
   setChannel,
-  updateRom,
   setOnIntervalCallback: (cb) => {
     onIntervalCallback = cb;
   },
