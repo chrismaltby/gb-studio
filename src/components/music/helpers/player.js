@@ -11,6 +11,8 @@ let current_song = null;
 let current_sequence = -1;
 let current_row = -1;
 
+let timeoutId = null;
+
 const channels = [false, false, false, false];
 
 let onIntervalCallback = (updateData) => {};
@@ -129,12 +131,12 @@ const preview = (note, type, instrument, square2) => {
           bitpack(instrument.initial_volume, 4) +
           (instrument.volume_sweep_change > 0 ? 1 : 0) + 
           bitpack(instrument.volume_sweep_change !== 0 ? 8 - Math.abs(instrument.volume_sweep_change) : 0, 3), 
-        NR13: noteFreq & 0b11111111,
+        NR13: bitpack((noteFreq & 0b11111111), 8),
         NR14: 
           '1' + // Initial 
           (instrument.length ? 1 : 0) + 
           '000' + 
-          ((noteFreq & 0b0000011100000000) >> 8).toString(2)
+          bitpack((noteFreq & 0b0000011100000000) >> 8, 3)
       }
 
       console.log("-------------");
@@ -165,12 +167,12 @@ const preview = (note, type, instrument, square2) => {
           '00' + 
           bitpack(instrument.volume, 2) + 
           '00000',
-        NR33: noteFreq & 0b11111111,
+        NR33: bitpack((noteFreq & 0b11111111), 8),
         NR34:
           '1' + // Initial 
           (instrument.length ? 1 : 0) + 
           '000' + 
-          ((noteFreq & 0b0000011100000000) >> 8).toString(2)
+          bitpack((noteFreq & 0b0000011100000000) >> 8, 3)
       };
 
       console.log("-------------");
@@ -224,12 +226,16 @@ const preview = (note, type, instrument, square2) => {
       break;
   }
 
-  setTimeout(() => {
+  if (timeoutId) {
+    clearTimeout(timeoutId);
+  }
+  timeoutId = setTimeout(() => {
     emulator.writeMem(NR12, 0);
     // emulator.writeMem(NR22, 0);
     emulator.writeMem(NR30, 0);
     emulator.writeMem(NR42, 0);
   }, 3000)
+
 };
 
 const stop = () => {
