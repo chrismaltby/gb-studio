@@ -372,6 +372,8 @@ export const toProjectileHash = ({
   });
 
 const MAX_DIALOGUE_LINES = 5;
+const CAMERA_LOCK_XY = 0x3;
+const CAMERA_UNLOCK = 0x0;
 
 // ------------------------
 
@@ -1441,8 +1443,8 @@ class ScriptBuilder {
     this._addCmd("VM_FADE_OUT", speed);
   };
 
-  _cameraMoveTo = (addr: string, speed: number, lock: boolean) => {
-    this._addCmd("VM_CAMERA_MOVE_TO", addr, speed, lock ? 1 : 0);
+  _cameraMoveTo = (addr: string, speed: number, lock: number) => {
+    this._addCmd("VM_CAMERA_MOVE_TO", addr, speed, lock);
   };
 
   _cameraSetPos = (addr: string) => {
@@ -2362,7 +2364,7 @@ class ScriptBuilder {
     if (speed === 0) {
       this._cameraSetPos(".ARG1");
     } else {
-      this._cameraMoveTo(".ARG1", speed, false);
+      this._cameraMoveTo(".ARG1", speed, CAMERA_UNLOCK);
     }
     this._stackPop(2);
   };
@@ -2384,11 +2386,8 @@ class ScriptBuilder {
     this._set("^/(ACTOR + 2 - 2)/", ".ARG0");
     if (speed === 0) {
       this._cameraSetPos(".ARG1");
-      this._cameraMoveTo(".ARG1", speed, true);
-    } else {
-      this._cameraMoveTo(".ARG1", speed, true);
     }
-
+    this._cameraMoveTo(".ARG1", speed, CAMERA_LOCK_XY);
     this._stackPop(2);
   };
 
