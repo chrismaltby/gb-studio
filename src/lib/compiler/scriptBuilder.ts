@@ -1,4 +1,4 @@
-import { inputDec, textSpeedDec } from "./helpers";
+import { animSpeedDec, inputDec, textSpeedDec } from "./helpers";
 import { decHex, decOct, hexDec } from "../helpers/8bit";
 import trimlines from "../helpers/trimlines";
 import { is16BitCType } from "../helpers/engineFields";
@@ -123,6 +123,8 @@ type ScriptBuilderOverlayWaitFlag =
 type ScriptBuilderPaletteType = ".PALETTE_BKG" | ".PALETTE_SPRITE";
 
 type ScriptBuilderChoiceFlag = ".UI_MENU_LAST_0" | ".UI_MENU_CANCEL_B";
+
+type ScriptBuilderAxis = "x" | "y";
 
 type ScriptBuilderRPNOperation =
   | ".ADD"
@@ -257,6 +259,17 @@ const toASMMoveFlags = (moveType: string, useCollisions: boolean) => {
   );
 };
 
+const toASMCameraLock = (axis: ScriptBuilderAxis[]) => {
+  let lock = 0;
+  if (axis.includes("x")) {
+    lock += CAMERA_LOCK_X;
+  }
+  if (axis.includes("y")) {
+    lock += CAMERA_LOCK_Y;
+  }
+  return lock;
+};
+
 const dirToAngle = (direction: string) => {
   if (direction === "left") {
     return 192;
@@ -372,6 +385,8 @@ export const toProjectileHash = ({
   });
 
 const MAX_DIALOGUE_LINES = 5;
+const CAMERA_LOCK_X = 0x1;
+const CAMERA_LOCK_Y = 0x2;
 const CAMERA_LOCK_XY = 0x3;
 const CAMERA_UNLOCK = 0x0;
 
@@ -1447,8 +1462,8 @@ class ScriptBuilder {
     this._addCmd("VM_CAMERA_MOVE_TO", addr, speed, lock);
   };
 
-  _cameraSetPos = (addr: string) => {
-    this._addCmd("VM_CAMERA_SET_POS", addr);
+  _cameraSetPos = (addr: string, lock: number) => {
+    this._addCmd("VM_CAMERA_SET_POS", addr, lock);
   };
 
   _musicPlay = (symbol: string, loop: boolean) => {
@@ -2362,7 +2377,7 @@ class ScriptBuilder {
     this._stackPushConst(xOffset + Math.round(x * 8));
     this._stackPushConst(yOffset + Math.round(y * 8));
     if (speed === 0) {
-      this._cameraSetPos(".ARG1");
+      this._cameraSetPos(".ARG1", CAMERA_UNLOCK);
     } else {
       this._cameraMoveTo(".ARG1", speed, CAMERA_UNLOCK);
     }
@@ -2384,14 +2399,14 @@ class ScriptBuilder {
       .operator(".ADD")
       .stop();
     if (speed === 0) {
-      this._cameraSetPos(".ARG1");
+      this._cameraSetPos(".ARG1", CAMERA_UNLOCK);
     } else {
       this._cameraMoveTo(".ARG1", speed, CAMERA_UNLOCK);
     }
     this._stackPop(2);
   };
 
-  cameraLock = (speed = 0) => {
+  cameraLock = (speed = 0, axis: ScriptBuilderAxis[]) => {
     this._addComment("Camera Lock");
     this._setConst("ACTOR", 0);
     this._actorGetPosition("ACTOR");
@@ -2407,9 +2422,10 @@ class ScriptBuilder {
     this._set("^/(ACTOR + 1 - 2)/", ".ARG1");
     this._set("^/(ACTOR + 2 - 2)/", ".ARG0");
     if (speed === 0) {
-      this._cameraSetPos(".ARG1");
+      this._cameraSetPos(".ARG1", toASMCameraLock(axis));
+    } else {
+      this._cameraMoveTo(".ARG1", speed, toASMCameraLock(axis));
     }
-    this._cameraMoveTo(".ARG1", speed, CAMERA_LOCK_XY);
     this._stackPop(2);
   };
 

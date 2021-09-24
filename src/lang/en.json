@@ -435,6 +435,7 @@
   "FIELD_DIRECTION_VARIABLE": "Direction Variable",
   "FIELD_ACTOR_DIRECTION": "Actor Direction",
   "FIELD_LIFE_TIME": "Life Time",
+  "FIELD_LOCK_AXIS": "Lock Axis",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

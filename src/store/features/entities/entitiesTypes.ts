@@ -446,6 +446,8 @@ export interface ScriptEventFieldSchema {
   step?: number;
   options?: [unknown, string][];
   optional?: boolean;
+  allowNone?: boolean;
+  allowMultiple?: boolean;
   paletteType?: "background" | "ui" | "emote" | "sprite";
   paletteIndex?: number;
   canKeep?: boolean;

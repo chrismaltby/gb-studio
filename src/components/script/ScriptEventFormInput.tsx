@@ -37,6 +37,7 @@ import { CheckboxField } from "ui/form/CheckboxField";
 import { Input } from "ui/form/Input";
 import { Select } from "ui/form/Select";
 import { SliderField } from "ui/form/SliderField";
+import ToggleButtons from "ui/form/ToggleButtons";
 import { BlankIcon, CheckIcon, ConnectIcon } from "ui/icons/Icons";
 import { MenuItem, MenuItemIcon } from "ui/menu/Menu";
 import { OffscreenSkeletonInput } from "ui/skeleton/Skeleton";
@@ -270,6 +271,19 @@ const ScriptEventFormInput = ({
           ))}
         </DropdownButton>
       </ConnectButton>
+    );
+  } else if (type === "togglebuttons") {
+    return (
+      <div>
+        <ToggleButtons
+          name={id}
+          options={field.options as [string, string][]}
+          value={value as string[]}
+          allowMultiple={field.allowMultiple as true}
+          allowNone={field.allowNone}
+          onChange={onChangeField}
+        />
+      </div>
     );
   } else if (type === "scene") {
     return (
