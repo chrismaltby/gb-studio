@@ -260,14 +260,12 @@ const toASMMoveFlags = (moveType: string, useCollisions: boolean) => {
 };
 
 const toASMCameraLock = (axis: ScriptBuilderAxis[]) => {
-  let lock = 0;
-  if (axis.includes("x")) {
-    lock += CAMERA_LOCK_X;
-  }
-  if (axis.includes("y")) {
-    lock += CAMERA_LOCK_Y;
-  }
-  return lock;
+  return unionFlags(
+    ([] as string[]).concat(
+      axis.includes("x") ? ".CAMERA_LOCK_X" : [],
+      axis.includes("y") ? ".CAMERA_LOCK_Y" : []
+    )
+  );
 };
 
 const dirToAngle = (direction: string) => {
@@ -1458,12 +1456,12 @@ class ScriptBuilder {
     this._addCmd("VM_FADE_OUT", speed);
   };
 
-  _cameraMoveTo = (addr: string, speed: number, lock: number) => {
+  _cameraMoveTo = (addr: string, speed: number, lock: string) => {
     this._addCmd("VM_CAMERA_MOVE_TO", addr, speed, lock);
   };
 
-  _cameraSetPos = (addr: string, lock: number) => {
-    this._addCmd("VM_CAMERA_SET_POS", addr, lock);
+  _cameraSetPos = (addr: string) => {
+    this._addCmd("VM_CAMERA_SET_POS", addr);
   };
 
   _musicPlay = (symbol: string, loop: boolean) => {
@@ -2377,9 +2375,9 @@ class ScriptBuilder {
     this._stackPushConst(xOffset + Math.round(x * 8));
     this._stackPushConst(yOffset + Math.round(y * 8));
     if (speed === 0) {
-      this._cameraSetPos(".ARG1", CAMERA_UNLOCK);
+      this._cameraSetPos(".ARG1");
     } else {
-      this._cameraMoveTo(".ARG1", speed, CAMERA_UNLOCK);
+      this._cameraMoveTo(".ARG1", speed, ".CAMERA_UNLOCK");
     }
     this._stackPop(2);
   };
@@ -2399,9 +2397,9 @@ class ScriptBuilder {
       .operator(".ADD")
       .stop();
     if (speed === 0) {
-      this._cameraSetPos(".ARG1", CAMERA_UNLOCK);
+      this._cameraSetPos(".ARG1");
     } else {
-      this._cameraMoveTo(".ARG1", speed, CAMERA_UNLOCK);
+      this._cameraMoveTo(".ARG1", speed, ".CAMERA_UNLOCK");
     }
     this._stackPop(2);
   };
@@ -2422,10 +2420,9 @@ class ScriptBuilder {
     this._set("^/(ACTOR + 1 - 2)/", ".ARG1");
     this._set("^/(ACTOR + 2 - 2)/", ".ARG0");
     if (speed === 0) {
-      this._cameraSetPos(".ARG1", toASMCameraLock(axis));
-    } else {
-      this._cameraMoveTo(".ARG1", speed, toASMCameraLock(axis));
+      this._cameraSetPos(".ARG1");
     }
+    this._cameraMoveTo(".ARG1", speed, toASMCameraLock(axis));
     this._stackPop(2);
   };
 
