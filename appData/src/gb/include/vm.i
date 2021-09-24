@@ -823,13 +823,14 @@ OP_VM_SIO_EXCHANGE      = 0x6D
 ; --- CAMERA -------------------------------
 
 OP_VM_CAMERA_MOVE_TO     = 0x70
+.macro VM_CAMERA_MOVE_TO IDX, SPEED, AFTER_LOCK
+        .db OP_VM_CAMERA_MOVE_TO, #<AFTER_LOCK, #<SPEED, #>IDX, #<IDX
+.endm
+
 .CAMERA_LOCK             = 0b00000011
 .CAMERA_LOCK_X           = 0b00000001
 .CAMERA_LOCK_Y           = 0b00000010
 .CAMERA_UNLOCK           = 0b00000000
-.macro VM_CAMERA_MOVE_TO IDX, SPEED, AFTER_LOCK
-        .db OP_VM_CAMERA_MOVE_TO, #<AFTER_LOCK, #<SPEED, #>IDX, #<IDX
-.endm
 
 OP_VM_CAMERA_SET_POS     = 0x71
 .macro VM_CAMERA_SET_POS IDX

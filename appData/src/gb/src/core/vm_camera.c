@@ -53,12 +53,13 @@ void vm_camera_move_to(SCRIPT_CTX * THIS, INT16 idx, UBYTE speed, UBYTE after_lo
 
 void vm_camera_set_pos(SCRIPT_CTX * THIS, INT16 idx) OLDCALL __banked {
     cam_set_pos_t * params = VM_REF_TO_PTR(idx);
-
     camera_x = params->X;
     camera_y = params->Y;
 
-    scroll_update();
+    // Disable camera lock
+    camera_settings &= ~(CAMERA_LOCK_FLAG);
 
+    scroll_update();
     return;
 }
 
