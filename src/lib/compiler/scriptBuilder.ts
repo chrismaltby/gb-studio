@@ -229,6 +229,9 @@ const unionFlags = (flags: string[], defaultValue = "0") => {
   if (flags.length === 0) {
     return defaultValue;
   }
+  if (flags.length === 1) {
+    return flags[0];
+  }
   return `^/(${flags.join(" | ")})/`;
 };
 
