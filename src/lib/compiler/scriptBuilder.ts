@@ -2369,6 +2369,28 @@ class ScriptBuilder {
     this._stackPop(2);
   };
 
+  cameraMoveToVariables = (variableX: string, variableY: string, speed = 0) => {
+    this._addComment("Camera Move To Variables");
+    this._rpn() //
+      .refVariable(variableX)
+      .int16(8)
+      .operator(".MUL")
+      .int16(80)
+      .operator(".ADD")
+      .refVariable(variableY)
+      .int16(8)
+      .operator(".MUL")
+      .int16(72)
+      .operator(".ADD")
+      .stop();
+    if (speed === 0) {
+      this._cameraSetPos(".ARG1");
+    } else {
+      this._cameraMoveTo(".ARG1", speed, CAMERA_UNLOCK);
+    }
+    this._stackPop(2);
+  };
+
   cameraLock = (speed = 0) => {
     this._addComment("Camera Lock");
     this._setConst("ACTOR", 0);

@@ -14,31 +14,56 @@ const fields = [
   {
     key: "x",
     label: l10n("FIELD_X"),
-    type: "number",
+    type: "union",
+    types: ["number", "variable", "property"],
+    defaultType: "number",
     min: 0,
     max: 255,
     width: "50%",
-    defaultValue: 0,
+    defaultValue: {
+      number: 0,
+      variable: "LAST_VARIABLE",
+      property: "$self$:xpos",
+    },
   },
   {
     key: "y",
     label: l10n("FIELD_Y"),
-    type: "number",
+    type: "union",
+    types: ["number", "variable", "property"],
+    defaultType: "number",
     min: 0,
     max: 255,
     width: "50%",
-    defaultValue: 0,
+    defaultValue: {
+      number: 0,
+      variable: "LAST_VARIABLE",
+      property: "$self$:xpos",
+    },
   },
   {
     key: "speed",
+    label: l10n("FIELD_SPEED"),
     type: "cameraSpeed",
     defaultValue: 0,
   },
 ];
 
 const compile = (input, helpers) => {
-  const { cameraMoveTo } = helpers;
-  cameraMoveTo(input.x, input.y, Number(input.speed));
+  const {
+    cameraMoveTo,
+    cameraMoveToVariables,
+    variableFromUnion,
+    temporaryEntityVariable,
+  } = helpers;
+  if (input.x.type === "number" && input.y.type === "number") {
+    cameraMoveTo(input.x, input.y, Number(input.speed));
+  } else {
+    // If any value is not a number transfer values into variables and use variable implementation
+    const xVar = variableFromUnion(input.x, temporaryEntityVariable(0));
+    const yVar = variableFromUnion(input.y, temporaryEntityVariable(1));
+    cameraMoveToVariables(xVar, yVar, Number(input.speed));
+  }
 };
 
 module.exports = {
