@@ -1424,11 +1424,11 @@ class ScriptBuilder {
   _savePeek = (
     successDest: ScriptBuilderStackVariable,
     dest: ScriptBuilderStackVariable,
-    offset: number,
+    source: ScriptBuilderStackVariable,
     count: number,
     slot: number
   ) => {
-    this._addCmd("VM_SAVE_PEEK", successDest, dest, offset, count, slot);
+    this._addCmd("VM_SAVE_PEEK", successDest, dest, source, count, slot);
   };
 
   _saveClear = (slot: number) => {
@@ -3422,7 +3422,7 @@ class ScriptBuilder {
   // --------------------------------------------------------------------------
   // Data
 
-  dataLoad = (slot: number) => {
+  dataLoad = (slot = 0) => {
     this._addComment(`Load Data from Slot ${slot}`);
     this._raiseException("EXCEPTION_LOAD", 1);
     this._saveSlot(slot);
@@ -3430,7 +3430,7 @@ class ScriptBuilder {
   };
 
   dataSave = (
-    slot: number,
+    slot = 0,
     onSavePath: ScriptEvent[] | ScriptBuilderPathFunction = []
   ) => {
     const loadedLabel = this.getNextLabel();
@@ -3446,9 +3446,25 @@ class ScriptBuilder {
     this._addNL();
   };
 
-  dataClear = (slot: number) => {
+  dataClear = (slot = 0) => {
     this._addComment(`Clear Data in Slot ${slot}`);
     this._saveClear(slot);
+    this._addNL();
+  };
+
+  dataPeek = (slot = 0, variableSource: string, variableDest: string) => {
+    const variableDestAlias = this.getVariableAlias(variableDest);
+    const variableSourceAlias = this.getVariableAlias(variableSource);
+    const foundLabel = this.getNextLabel();
+
+    this._addComment(
+      `Store ${variableSourceAlias} from save slot ${slot} into ${variableDestAlias}`
+    );
+    this._stackPushConst(0);
+    this._savePeek(".ARG0", variableDestAlias, variableSourceAlias, 1, slot);
+    this._ifConst(".EQ", ".ARG0", 1, foundLabel, 1);
+    this._setVariableConst(variableDest, 0);
+    this._label(foundLabel);
     this._addNL();
   };
 
@@ -3656,7 +3672,7 @@ class ScriptBuilder {
   };
 
   ifDataSaved = (
-    slot: number,
+    slot = 0,
     truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
     falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
   ) => {
