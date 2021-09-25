@@ -5,12 +5,18 @@ test("Should be able to move camera position", () => {
 
   compile(
     {
-      x: 5,
-      y: 9,
-      speed: 1
+      x: {
+        type: "number",
+        value: 5,
+      },
+      y: {
+        type: "number",
+        value: 9,
+      },
+      speed: 1,
     },
     {
-      cameraMoveTo: mockCameraMoveTo
+      cameraMoveTo: mockCameraMoveTo,
     }
   );
   expect(mockCameraMoveTo).toBeCalledWith(5, 9, 1);
