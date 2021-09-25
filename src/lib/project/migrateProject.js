@@ -15,7 +15,7 @@ import uuid from "uuid";
 const indexById = indexBy("id");
 
 export const LATEST_PROJECT_VERSION = "2.0.0";
-export const LATEST_PROJECT_MINOR_VERSION = "12";
+export const LATEST_PROJECT_MINOR_VERSION = "13";
 
 /*
  * Helper function to make sure that all migrated functions
@@ -1195,6 +1195,42 @@ const migrateFrom200r11To200r12Events = (data) => {
   };
 };
 
+/* Version 2.0.0 r13 adds multiple save slots for save/load events
+ */
+export const migrateFrom200r12To200r13Event = (event) => {
+  const migrateMeta = generateMigrateMeta(event);
+
+  if (
+    event.args &&
+    (event.command === "EVENT_SAVE_DATA" ||
+      event.command === "EVENT_LOAD_DATA" ||
+      event.command === "EVENT_CLEAR_DATA" ||
+      event.command === "EVENT_IF_SAVED_DATA")
+  ) {
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        saveSlot: 0,
+      },
+    });
+  }
+  return event;
+};
+
+const migrateFrom200r12To200r13Events = (data) => {
+  return {
+    ...data,
+    scenes: mapScenesEvents(data.scenes, migrateFrom200r12To200r13Event),
+    customEvents: (data.customEvents || []).map((customEvent) => {
+      return {
+        ...customEvent,
+        script: mapEvents(customEvent.script, migrateFrom200r12To200r13Event),
+      };
+    }),
+  };
+};
+
 const migrateProject = (project) => {
   let data = { ...project };
   let version = project._version || "1.0.0";
@@ -1273,6 +1309,10 @@ const migrateProject = (project) => {
     if (release === "11") {
       data = migrateFrom200r11To200r12Events(data);
       release = "12";
+    }
+    if (release === "12") {
+      data = migrateFrom200r12To200r13Events(data);
+      release = "13";
     }
   }
 
