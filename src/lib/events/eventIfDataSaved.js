@@ -5,17 +5,31 @@ const groups = ["EVENT_GROUP_SAVE_DATA", "EVENT_GROUP_CONTROL_FLOW"];
 
 const fields = [
   {
-    label: l10n("FIELD_IF_SAVED_DATA"),
+    key: "saveSlot",
+    label: l10n("FIELD_SAVE_SLOT"),
+    type: "togglebuttons",
+    options: [
+      [
+        0,
+        l10n("FIELD_SLOT_N", { slot: 1 }),
+        l10n("FIELD_SAVE_SLOT_N", { slot: 1 }),
+      ],
+      [
+        1,
+        l10n("FIELD_SLOT_N", { slot: 2 }),
+        l10n("FIELD_SAVE_SLOT_N", { slot: 2 }),
+      ],
+      [
+        2,
+        l10n("FIELD_SLOT_N", { slot: 3 }),
+        l10n("FIELD_SAVE_SLOT_N", { slot: 3 }),
+      ],
+    ],
+    allowNone: false,
+    defaultValue: 0,
   },
   {
-    key: "saveSlot",
-    type: "select",
-    options: [
-      [0, l10n("FIELD_SAVE_SLOT_1")],
-      [1, l10n("FIELD_SAVE_SLOT_2")],
-      [2, l10n("FIELD_SAVE_SLOT_3")],
-    ],
-    defaultValue: 0,
+    label: l10n("FIELD_IF_SAVED_DATA"),
   },
   {
     key: "true",

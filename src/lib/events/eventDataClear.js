@@ -9,12 +9,26 @@ const fields = [
   },
   {
     key: "saveSlot",
-    type: "select",
+    label: l10n("FIELD_SAVE_SLOT"),
+    type: "togglebuttons",
     options: [
-      [0, l10n("FIELD_SAVE_SLOT_1")],
-      [1, l10n("FIELD_SAVE_SLOT_2")],
-      [2, l10n("FIELD_SAVE_SLOT_3")],
+      [
+        0,
+        l10n("FIELD_SLOT_N", { slot: 1 }),
+        l10n("FIELD_SAVE_SLOT_N", { slot: 1 }),
+      ],
+      [
+        1,
+        l10n("FIELD_SLOT_N", { slot: 2 }),
+        l10n("FIELD_SAVE_SLOT_N", { slot: 2 }),
+      ],
+      [
+        2,
+        l10n("FIELD_SLOT_N", { slot: 3 }),
+        l10n("FIELD_SAVE_SLOT_N", { slot: 3 }),
+      ],
     ],
+    allowNone: false,
     defaultValue: 0,
   },
 ];
