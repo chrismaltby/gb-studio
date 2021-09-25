@@ -2,6 +2,7 @@ import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled, { css } from "styled-components";
 import { PatternCell } from "lib/helpers/uge/song/PatternCell";
+import { Song } from "lib/helpers/uge/song/Song";
 import { RootState } from "store/configureStore";
 import trackerActions from "store/features/tracker/trackerActions";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
@@ -47,6 +48,36 @@ const Note = styled.div<NoteProps>`
   line-height: 1.1em;
 `;
 
+const getInstrumentType = (channel: string) => {
+  switch (channel) {
+    case "0":
+    case "1":
+      return "duty";
+    case "2":
+      return "wave";
+    case "3":
+      return "noise";
+    default:
+      return "";
+  }
+}
+
+const getInstrumentList = (song: Song, type: string) => {
+  if (!song) return [];
+
+  switch (type) {
+    case "duty":
+    case "duty":
+      return song.duty_instruments;
+    case "wave":
+      return song.wave_instruments;
+    case "noise":
+      return song.noise_instruments;
+    default:
+      return [];
+  }
+}
+
 export const RollChannelFwd = ({
   channelId,
   active,
@@ -61,6 +92,9 @@ export const RollChannelFwd = ({
     (state: RootState) => state.tracker.defaultInstruments
   );
   const hoverNote = useSelector((state: RootState) => state.tracker.hoverNote);
+  const song = useSelector(
+    (state: RootState) => state.trackerDocument.present.song
+  );
 
   const removeNote = useCallback(
     (channel: number, column: number) => (e: any) => {
@@ -90,31 +124,36 @@ export const RollChannelFwd = ({
 
   const handleMouseDown = useCallback(
     (e: any) => {
-      const cell = e.target.dataset["channel"];
-      if (cell !== undefined && tool === "pencil" && e.button === 0) {
+      const channel = e.target.dataset["channel"];
+      if (channel !== undefined && tool === "pencil" && e.button === 0) {
         const col = Math.floor(e.offsetX / cellSize);
         const note = 12 * 6 - 1 - Math.floor(e.offsetY / cellSize);
         const changes = {
-          instrument: defaultInstruments[cell],
+          instrument: defaultInstruments[channel],
           note: note,
         };
         dispatch(
           trackerDocumentActions.editPatternCell({
             patternId: patternId,
-            cell: [col, cell],
+            cell: [col, channel],
             changes: changes,
           })
         );
 
-        // ipcRenderer.send("music-data-send", {
-        //   action: "preview",
-        //   note: note,
-        //   instrument: null, //defaultInstruments[cell],
-        //   square2: true,
-        // });  
+        if (song) {
+          const instrumentType = getInstrumentType(channel);
+          const instrumentList = getInstrumentList(song, instrumentType);
+          ipcRenderer.send("music-data-send", {
+            action: "preview",
+            note: note,
+            type: instrumentType,
+            instrument: instrumentList[defaultInstruments[channel]],
+            square2: true,
+          });  
+        }
       }
     },
-    [tool, cellSize, defaultInstruments, dispatch, patternId]
+    [tool, cellSize, defaultInstruments, dispatch, patternId, song]
   );
 
   const handleMouseMove = useCallback(

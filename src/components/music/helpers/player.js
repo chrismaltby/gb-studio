@@ -172,7 +172,7 @@ const preview = (note, type, instrument, square2) => {
           '1' + // Initial 
           (instrument.length ? 1 : 0) + 
           '000' + 
-          bitpack((noteFreq & 0b0000011100000000) >> 8, 3)
+          bitpack((noteFreq & 0b0000011100000000) >> 8, 3).toString(2)
       };
 
       console.log("-------------");
@@ -200,7 +200,7 @@ const preview = (note, type, instrument, square2) => {
           (instrument.volume_sweep_change > 0 ? 1 : 0) + 
           bitpack(instrument.volume_sweep_change !== 0 ? 8 - Math.abs(instrument.volume_sweep_change) : 0, 3), 
         NR43:
-          bitpack(0xF - noteFreq >> 7, 4) +
+          bitpack(Math.abs(0xF - noteFreq) >> 7, 4) +
           (instrument.bit_count === 7 ? 1 : 0) +
           bitpack(instrument.dividing_ratio, 3),
         NR44:
