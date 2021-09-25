@@ -62,6 +62,9 @@ export const walkDenormalizedEvents = (
   options: WalkDenormalizedOptions,
   callback: (event: ScriptEventDenormalized) => void
 ) => {
+  if (!script) {
+    return;
+  }
   for (let i = 0; i < script.length; i++) {
     const scriptEvent = script[i];
     if (scriptEvent?.args?.__comment) {
