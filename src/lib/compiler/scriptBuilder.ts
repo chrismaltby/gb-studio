@@ -1,4 +1,4 @@
-import { inputDec, textSpeedDec } from "./helpers";
+import { animSpeedDec, inputDec, textSpeedDec } from "./helpers";
 import { decHex, decOct, hexDec } from "../helpers/8bit";
 import trimlines from "../helpers/trimlines";
 import { is16BitCType } from "../helpers/engineFields";
@@ -52,6 +52,14 @@ interface ScriptBuilderScene {
   id: string;
   actors: ScriptBuilderEntity[];
   triggers: ScriptBuilderEntity[];
+  projectiles: ScriptBuilderProjectile[];
+}
+
+interface ScriptBuilderProjectile {
+  hash: string;
+  spriteSheetId: string;
+  collisionGroup: string;
+  collisionMask: string[];
 }
 
 type ScriptBuilderEntityType = "scene" | "actor" | "trigger";
@@ -115,6 +123,8 @@ type ScriptBuilderOverlayWaitFlag =
 type ScriptBuilderPaletteType = ".PALETTE_BKG" | ".PALETTE_SPRITE";
 
 type ScriptBuilderChoiceFlag = ".UI_MENU_LAST_0" | ".UI_MENU_CANCEL_B";
+
+type ScriptBuilderAxis = "x" | "y";
 
 type ScriptBuilderRPNOperation =
   | ".ADD"
@@ -219,6 +229,9 @@ const unionFlags = (flags: string[], defaultValue = "0") => {
   if (flags.length === 0) {
     return defaultValue;
   }
+  if (flags.length === 1) {
+    return flags[0];
+  }
   return `^/(${flags.join(" | ")})/`;
 };
 
@@ -247,6 +260,28 @@ const toASMMoveFlags = (moveType: string, useCollisions: boolean) => {
       moveType === "diagonal" ? ".ACTOR_ATTR_DIAGONAL" : []
     )
   );
+};
+
+const toASMCameraLock = (axis: ScriptBuilderAxis[]) => {
+  return unionFlags(
+    ([] as string[]).concat(
+      axis.includes("x") ? ".CAMERA_LOCK_X" : [],
+      axis.includes("y") ? ".CAMERA_LOCK_Y" : []
+    )
+  );
+};
+
+const dirToAngle = (direction: string) => {
+  if (direction === "left") {
+    return 192;
+  } else if (direction === "right") {
+    return 64;
+  } else if (direction === "up") {
+    return 0;
+  } else if (direction === "down") {
+    return 128;
+  }
+  return 0;
 };
 
 const toScriptOperator = (
@@ -326,7 +361,35 @@ const assertUnreachable = (_x: never): never => {
   throw new Error("Didn't expect to get here");
 };
 
+export const toProjectileHash = ({
+  spriteSheetId,
+  speed,
+  animSpeed,
+  lifeTime,
+  collisionGroup,
+  collisionMask,
+}: {
+  spriteSheetId: string;
+  speed: number;
+  animSpeed: number;
+  lifeTime: number;
+  collisionGroup: string;
+  collisionMask: string[];
+}) =>
+  JSON.stringify({
+    spriteSheetId,
+    speed,
+    animSpeed,
+    lifeTime,
+    collisionGroup,
+    collisionMask: [...collisionMask].sort(),
+  });
+
 const MAX_DIALOGUE_LINES = 5;
+const CAMERA_LOCK_X = 0x1;
+const CAMERA_LOCK_Y = 0x2;
+const CAMERA_LOCK_XY = 0x3;
+const CAMERA_UNLOCK = 0x0;
 
 // ------------------------
 
@@ -1045,6 +1108,11 @@ class ScriptBuilder {
     this._addCmd("VM_ACTOR_GET_DIR", addr, dest);
   };
 
+  _actorGetAngle = (addr: string, dest: string) => {
+    this.includeActor = true;
+    this._addCmd("VM_ACTOR_GET_ANGLE", addr, dest);
+  };
+
   _actorGetDirectionToVariable = (addr: string, variable: string) => {
     const variableAlias = this.getVariableAlias(variable);
     if (this._isArg(variableAlias)) {
@@ -1125,6 +1193,10 @@ class ScriptBuilder {
 
   _actorTerminateUpdate = (addr: string) => {
     this._addCmd("VM_ACTOR_TERMINATE_UPDATE", addr);
+  };
+
+  _projectileLaunch = (index: number, addr: string) => {
+    this._addCmd("VM_PROJECTILE_LAUNCH", index, addr);
   };
 
   _loadText = (numInputs: number) => {
@@ -1387,8 +1459,8 @@ class ScriptBuilder {
     this._addCmd("VM_FADE_OUT", speed);
   };
 
-  _cameraMoveTo = (addr: string, speed: number, lock: boolean) => {
-    this._addCmd("VM_CAMERA_MOVE_TO", addr, speed, lock ? 1 : 0);
+  _cameraMoveTo = (addr: string, speed: number, lock: string) => {
+    this._addCmd("VM_CAMERA_MOVE_TO", addr, speed, lock);
   };
 
   _cameraSetPos = (addr: string) => {
@@ -1918,21 +1990,142 @@ class ScriptBuilder {
     _spriteSheetId: string,
     _offset = 10,
     _collisionGroup: string,
-    _collisionMask: string
+    _collisionMask: string[]
   ) => {
     console.error("weaponAttack not implemented");
   };
 
-  launchProjectile = (
-    _spriteSheetId: string,
-    _x: string,
-    _y: string,
-    _dirVariable: string,
-    _speed: string,
-    _collisionGroup: string,
-    _collisionMask: string
+  getProjectileIndex = (
+    spriteSheetId: string,
+    speed: number,
+    animSpeed: number,
+    lifeTime: number,
+    collisionGroup: string,
+    collisionMask: string[]
   ) => {
-    console.error("launchProjectile not implemented");
+    const { scene } = this.options;
+    const projectileHash = toProjectileHash({
+      spriteSheetId,
+      speed,
+      animSpeed,
+      lifeTime,
+      collisionGroup,
+      collisionMask,
+    });
+    const projectileHashes = scene.projectiles.map((p) => p.hash);
+    const projectileIndex = projectileHashes.indexOf(projectileHash);
+    return projectileIndex;
+  };
+
+  launchProjectileInDirection = (
+    projectileIndex: number,
+    x = 0,
+    y = 0,
+    direction: string
+  ) => {
+    this._addComment("Launch Projectile In Direction");
+    this._actorGetPosition("ACTOR");
+    this._rpn() //
+      .ref("^/(ACTOR + 1)/")
+      .int16(x * 16)
+      .operator(".ADD")
+      .ref("^/(ACTOR + 2)/")
+      .int16(-y * 16)
+      .operator(".ADD")
+      .stop();
+    this._stackPushConst(dirToAngle(direction));
+    this._projectileLaunch(projectileIndex, ".ARG2");
+    this._stackPop(3);
+  };
+
+  launchProjectileInAngle = (
+    projectileIndex: number,
+    x = 0,
+    y = 0,
+    angle: number
+  ) => {
+    this._addComment("Launch Projectile In Angle");
+    this._actorGetPosition("ACTOR");
+    this._rpn() //
+      .ref("^/(ACTOR + 1)/")
+      .int16(x * 16)
+      .operator(".ADD")
+      .ref("^/(ACTOR + 2)/")
+      .int16(-y * 16)
+      .operator(".ADD")
+      .stop();
+    this._stackPushConst(Math.round(angle % 256));
+    this._projectileLaunch(projectileIndex, ".ARG2");
+    this._stackPop(3);
+  };
+
+  launchProjectileInAngleVariable = (
+    projectileIndex: number,
+    x = 0,
+    y = 0,
+    angleVariable: string
+  ) => {
+    this._addComment("Launch Projectile In Angle");
+    this._actorGetPosition("ACTOR");
+    this._rpn() //
+      .ref("^/(ACTOR + 1)/")
+      .int16(x * 16)
+      .operator(".ADD")
+      .ref("^/(ACTOR + 2)/")
+      .int16(-y * 16)
+      .operator(".ADD")
+      .refVariable(angleVariable)
+      .stop();
+    this._projectileLaunch(projectileIndex, ".ARG2");
+    this._stackPop(3);
+  };
+
+  launchProjectileInSourceActorDirection = (
+    projectileIndex: number,
+    x = 0,
+    y = 0
+  ) => {
+    this._addComment("Launch Projectile In Source Actor Direction");
+    this._actorGetPosition("ACTOR");
+    this._rpn() //
+      .ref("^/(ACTOR + 1)/")
+      .int16(x * 16)
+      .operator(".ADD")
+      .ref("^/(ACTOR + 2)/")
+      .int16(-y * 16)
+      .operator(".ADD")
+      .stop();
+
+    this._stackPushConst(0);
+    this._actorGetAngle("^/(ACTOR - 3)/", ".ARG0");
+
+    // this._stackPushConst(Math.round((angle % 360) * (256 / 360)));
+    this._projectileLaunch(projectileIndex, ".ARG2");
+    this._stackPop(3);
+  };
+
+  launchProjectileInActorDirection = (
+    projectileIndex: number,
+    x = 0,
+    y = 0,
+    actorId: string
+  ) => {
+    this._addComment("Launch Projectile In Actor Direction");
+    this._actorGetPosition("ACTOR");
+    this._rpn() //
+      .ref("^/(ACTOR + 1)/")
+      .int16(x * 16)
+      .operator(".ADD")
+      .ref("^/(ACTOR + 2)/")
+      .int16(-y * 16)
+      .operator(".ADD")
+      .stop();
+
+    this.actorPushById(actorId);
+    this._actorGetAngle(".ARG0", ".ARG0");
+
+    this._projectileLaunch(projectileIndex, ".ARG2");
+    this._stackPop(3);
   };
 
   // --------------------------------------------------------------------------
@@ -2187,12 +2380,34 @@ class ScriptBuilder {
     if (speed === 0) {
       this._cameraSetPos(".ARG1");
     } else {
-      this._cameraMoveTo(".ARG1", speed, false);
+      this._cameraMoveTo(".ARG1", speed, ".CAMERA_UNLOCK");
     }
     this._stackPop(2);
   };
 
-  cameraLock = (speed = 0) => {
+  cameraMoveToVariables = (variableX: string, variableY: string, speed = 0) => {
+    this._addComment("Camera Move To Variables");
+    this._rpn() //
+      .refVariable(variableX)
+      .int16(8)
+      .operator(".MUL")
+      .int16(80)
+      .operator(".ADD")
+      .refVariable(variableY)
+      .int16(8)
+      .operator(".MUL")
+      .int16(72)
+      .operator(".ADD")
+      .stop();
+    if (speed === 0) {
+      this._cameraSetPos(".ARG1");
+    } else {
+      this._cameraMoveTo(".ARG1", speed, ".CAMERA_UNLOCK");
+    }
+    this._stackPop(2);
+  };
+
+  cameraLock = (speed = 0, axis: ScriptBuilderAxis[]) => {
     this._addComment("Camera Lock");
     this._setConst("ACTOR", 0);
     this._actorGetPosition("ACTOR");
@@ -2209,11 +2424,8 @@ class ScriptBuilder {
     this._set("^/(ACTOR + 2 - 2)/", ".ARG0");
     if (speed === 0) {
       this._cameraSetPos(".ARG1");
-      this._cameraMoveTo(".ARG1", speed, true);
-    } else {
-      this._cameraMoveTo(".ARG1", speed, true);
     }
-
+    this._cameraMoveTo(".ARG1", speed, toASMCameraLock(axis));
     this._stackPop(2);
   };
 
@@ -2340,6 +2552,9 @@ class ScriptBuilder {
       if (type === "actor" && value === "player") {
         return value;
       }
+      if (type === "actor" && value === "$self$") {
+        return "player";
+      }
       if (!argLookup[type][value]) {
         throw new Error("Unknown arg " + type + " " + value);
       }
@@ -2391,7 +2606,7 @@ class ScriptBuilder {
             }
           }
           // Update property fields
-          if (isPropertyField(e.command, arg, argValue)) {
+          if (isPropertyField(e.command, arg, e.args)) {
             const replacePropertyValueActor = (p: string) => {
               const actorValue = p.replace(/:.*/, "");
               if (actorValue === "player") {
@@ -2504,12 +2719,23 @@ class ScriptBuilder {
     if (this._isArg(id)) {
       return id;
     }
-    const { entity, scene } = this.options;
-    const newIndex =
-      (id === "" || id === "$self$") && entity
-        ? getActorIndex(entity.id, scene)
-        : getActorIndex(id, scene);
-    return newIndex;
+    const { entity, entityType, scene } = this.options;
+
+    if (id === "player" || (id === "$self$" && entityType !== "actor")) {
+      return 0;
+    }
+
+    if (id === "$self$" && entity) {
+      return getActorIndex(entity.id, scene);
+    }
+
+    const index = getActorIndex(id, scene);
+
+    if (entity && index === 0) {
+      return getActorIndex(entity.id, scene);
+    }
+
+    return index;
   };
 
   getVariableAlias = (variable = "0"): string => {

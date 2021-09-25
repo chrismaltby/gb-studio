@@ -127,6 +127,7 @@ typedef struct projectile_def_t
     UINT8 anim_tick;
     UINT8 move_speed;
     collision_group_e collision_group;
+    UINT8 collision_mask;
 } projectile_def_t;
 
 typedef struct projectile_t

@@ -17,22 +17,118 @@ const fields = [
     defaultValue: "$self$",
   },
   {
-    key: "direction",
-    label: l10n("FIELD_DIRECTION"),
-    type: "union",
-    types: ["direction", "variable", "property"],
-    defaultType: "direction",
-    defaultValue: {
-      direction: "right",
-      variable: "LAST_VARIABLE",
-      property: "$self$:direction",
-    },
+    type: "group",
+    fields: [
+      {
+        key: "x",
+        label: l10n("FIELD_OFFSET_X"),
+        type: "number",
+        min: -256,
+        max: 256,
+        width: "50%",
+        defaultValue: 0,
+      },
+      {
+        key: "y",
+        label: l10n("FIELD_OFFSET_Y"),
+        type: "number",
+        min: -256,
+        max: 256,
+        width: "50%",
+        defaultValue: 0,
+      },
+    ],
+  },
+
+  {
+    type: "group",
+    width: "50%",
+    fields: [
+      {
+        key: "otherActorId",
+        label: l10n("FIELD_DIRECTION"),
+        type: "actor",
+        defaultValue: "$self$",
+        conditions: [
+          {
+            key: "directionType",
+            eq: "actor",
+          },
+        ],
+      },
+      {
+        key: "direction",
+        label: l10n("FIELD_DIRECTION"),
+        type: "direction",
+        defaultValue: "right",
+        conditions: [
+          {
+            key: "directionType",
+            eq: "direction",
+          },
+        ],
+      },
+      {
+        key: "angle",
+        label: l10n("FIELD_ANGLE"),
+        type: "number",
+        defaultValue: 0,
+        conditions: [
+          {
+            key: "directionType",
+            eq: "angle",
+          },
+        ],
+      },
+      {
+        key: "angleVariable",
+        label: l10n("FIELD_ANGLE"),
+        type: "variable",
+        defaultValue: "LAST_VARIABLE",
+        conditions: [
+          {
+            key: "directionType",
+            eq: "anglevar",
+          },
+        ],
+      },
+      {
+        key: "directionType",
+        type: "selectbutton",
+        options: [
+          ["direction", l10n("FIELD_FIXED_DIRECTION")],
+          ["actor", l10n("FIELD_ACTOR_DIRECTION")],
+          ["angle", l10n("FIELD_ANGLE")],
+          ["anglevar", l10n("FIELD_ANGLE_VARIABLE")],
+        ],
+        inline: true,
+        defaultValue: "direction",
+      },
+    ],
   },
   {
     key: "speed",
     label: l10n("FIELD_SPEED"),
     type: "moveSpeed",
     defaultValue: 2,
+    width: "50%",
+  },
+  {
+    key: "animSpeed",
+    label: l10n("FIELD_ANIMATION_SPEED"),
+    type: "animSpeed",
+    defaultValue: 15,
+    width: "50%",
+  },
+  {
+    key: "lifeTime",
+    label: l10n("FIELD_LIFE_TIME"),
+    type: "number",
+    min: 0,
+    max: 4,
+    step: 0.1,
+    width: "50%",
+    defaultValue: 1,
   },
   {
     key: "collisionGroup",
@@ -54,22 +150,52 @@ const fields = [
 
 const compile = (input, helpers) => {
   const {
-    launchProjectile,
+    getProjectileIndex,
+    launchProjectileInDirection,
+    launchProjectileInAngle,
+    launchProjectileInSourceActorDirection,
+    launchProjectileInActorDirection,
+    launchProjectileInAngleVariable,
     actorSetActive,
-    variableFromUnion,
-    temporaryEntityVariable,
   } = helpers;
-  const dirVar = variableFromUnion(input.direction, temporaryEntityVariable(0));
+
   actorSetActive(input.actorId);
-  launchProjectile(
+  const projectileIndex = getProjectileIndex(
     input.spriteSheetId,
-    input.x,
-    input.y,
-    dirVar,
     input.speed,
+    input.animSpeed,
+    input.lifeTime,
     input.collisionGroup,
     input.collisionMask
   );
+  if (input.directionType === "direction") {
+    launchProjectileInDirection(
+      projectileIndex,
+      input.x,
+      input.y,
+      input.direction
+    );
+  } else if (input.directionType === "angle") {
+    launchProjectileInAngle(projectileIndex, input.x, input.y, input.angle);
+  } else if (input.directionType === "anglevar") {
+    launchProjectileInAngleVariable(
+      projectileIndex,
+      input.x,
+      input.y,
+      input.angleVariable
+    );
+  } else if (input.directionType === "actor") {
+    if (input.actorId === input.otherActorId) {
+      launchProjectileInSourceActorDirection(projectileIndex, input.x, input.y);
+    } else {
+      launchProjectileInActorDirection(
+        projectileIndex,
+        input.x,
+        input.y,
+        input.otherActorId
+      );
+    }
+  }
 };
 
 module.exports = {

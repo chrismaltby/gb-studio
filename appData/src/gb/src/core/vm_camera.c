@@ -17,7 +17,7 @@ typedef struct cam_set_pos_t {
     INT16 X, Y;
 } cam_set_pos_t;
 
-void vm_camera_move_to(SCRIPT_CTX * THIS, INT16 idx, UBYTE speed, UBYTE after_lock_camera) __banked {
+void vm_camera_move_to(SCRIPT_CTX * THIS, INT16 idx, UBYTE speed, UBYTE after_lock_camera) OLDCALL __banked {
 
     // indicate waitable state of context
     THIS->waitable = 1;
@@ -51,7 +51,7 @@ void vm_camera_move_to(SCRIPT_CTX * THIS, INT16 idx, UBYTE speed, UBYTE after_lo
     return;
 }
 
-void vm_camera_set_pos(SCRIPT_CTX * THIS, INT16 idx) __banked {
+void vm_camera_set_pos(SCRIPT_CTX * THIS, INT16 idx) OLDCALL __banked {
     cam_set_pos_t * params = VM_REF_TO_PTR(idx);
     camera_x = params->X;
     camera_y = params->Y;
@@ -64,7 +64,7 @@ void vm_camera_set_pos(SCRIPT_CTX * THIS, INT16 idx) __banked {
 }
 
 // VM_INVOKE handler
-UBYTE camera_shake_frames(void * THIS, UBYTE start, UWORD * stack_frame) __banked {
+UBYTE camera_shake_frames(void * THIS, UBYTE start, UWORD * stack_frame) OLDCALL __banked {
     if (start) *((SCRIPT_CTX *)THIS)->stack_ptr = sys_time;
     if (((UWORD)sys_time - *((SCRIPT_CTX *)THIS)->stack_ptr) < stack_frame[0]) {
         if (stack_frame[1] & CAMERA_SHAKE_X) {

@@ -433,6 +433,12 @@
   "FIELD_SAVE_SLOT_1": "Save Slot 1",
   "FIELD_SAVE_SLOT_2": "Save Slot 2",
   "FIELD_SAVE_SLOT_3": "Save Slot 3",
+  "FIELD_ANGLE": "Angle",
+  "FIELD_ANGLE_VARIABLE": "Angle Variable",
+  "FIELD_DIRECTION_VARIABLE": "Direction Variable",
+  "FIELD_ACTOR_DIRECTION": "Actor Direction",
+  "FIELD_LIFE_TIME": "Life Time",
+  "FIELD_LOCK_AXIS": "Lock Axis",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

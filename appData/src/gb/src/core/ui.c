@@ -120,7 +120,7 @@ void ui_load_tiles() __banked {
     set_bkg_data(ui_black_tile, 1, vwf_tile_data);
 }
 
-void ui_draw_frame_row(void * dest, UBYTE tile, UBYTE width);
+void ui_draw_frame_row(void * dest, UBYTE tile, UBYTE width) OLDCALL;
 
 void ui_draw_frame(UBYTE x, UBYTE y, UBYTE width, UBYTE height) __banked {
     if (height == 0) return;
@@ -185,9 +185,9 @@ void ui_print_reset() {
     memset(vwf_tile_data, text_bkg_fill, sizeof(vwf_tile_data));
 }
 
-void ui_print_shift_char(void * dest, const void * src, UBYTE bank) __nonbanked;
-UWORD ui_print_make_mask_lr(UBYTE width, UBYTE ofs);
-UWORD ui_print_make_mask_rl(UBYTE width, UBYTE ofs);
+void ui_print_shift_char(void * dest, const void * src, UBYTE bank) OLDCALL;
+UWORD ui_print_make_mask_lr(UBYTE width, UBYTE ofs) OLDCALL;
+UWORD ui_print_make_mask_rl(UBYTE width, UBYTE ofs) OLDCALL;
 void ui_swap_tiles();
 
 UBYTE ui_print_render(const unsigned char ch) {
@@ -354,15 +354,19 @@ void ui_draw_text_buffer_char() __banked {
             break;
         case '\r':
             // line feed
-            scroll_rect(text_scroll_addr, text_scroll_width, text_scroll_height, text_scroll_fill);
+            if ((ui_dest_ptr + 32u) > (UBYTE *)((((UWORD)text_scroll_addr + ((UWORD)text_scroll_height << 5)) & 0xFFE0) - 1)) {
+                scroll_rect(text_scroll_addr, text_scroll_width, text_scroll_height, text_scroll_fill);
 #ifdef CGB
-            if (_is_CGB) {
-                VBK_REG = 1;
-                scroll_rect(text_scroll_addr, text_scroll_width, text_scroll_height, (UI_PALETTE & 0x07u));
-                VBK_REG = 0;
-            }
+                if (_is_CGB) {
+                    VBK_REG = 1;
+                    scroll_rect(text_scroll_addr, text_scroll_width, text_scroll_height, (UI_PALETTE & 0x07u));
+                    VBK_REG = 0;
+                }
 #endif
-            ui_dest_ptr = ui_dest_base;
+                ui_dest_ptr = ui_dest_base;
+            } else {
+                ui_dest_ptr = ui_dest_base += 32u;
+            }
             if (vwf_current_offset) ui_print_reset();
             break;
         case '\n':

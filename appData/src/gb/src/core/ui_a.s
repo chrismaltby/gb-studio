@@ -2,8 +2,6 @@
 
         .globl _vwf_current_rotate, _vwf_current_mask, _vwf_inverse_map, _vwf_tile_data
 
-        .area _BSS
-
         .area _CODE_1
 
 _ui_swap_tiles::
