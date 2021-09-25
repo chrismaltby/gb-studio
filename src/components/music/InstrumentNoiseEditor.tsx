@@ -44,9 +44,9 @@ export const InstrumentNoiseEditor = ({
       type: "noise",
       instrument: instrument,
       square2: false,
-    });  
+    });
   };
-  
+
   return (
     <>
       <InstrumentLengthForm

@@ -2,7 +2,24 @@
 import compiler from "./compiler";
 import storage from "./storage";
 import emulator from "./emulator";
-import { note2freq, NR10, NR11, NR12, NR13, NR14, NR30, NR31, NR32, NR33, NR34, NR41, NR42, NR43, NR44, AUD3_WAVE_RAM } from "./music_constants";
+import {
+  note2freq,
+  NR10,
+  NR11,
+  NR12,
+  NR13,
+  NR14,
+  NR30,
+  NR31,
+  NR32,
+  NR33,
+  NR34,
+  NR41,
+  NR42,
+  NR43,
+  NR44,
+  AUD3_WAVE_RAM,
+} from "./music_constants";
 
 let update_handle = null;
 let rom_file = null;
@@ -20,15 +37,17 @@ let onIntervalCallback = (updateData) => {};
 const bitpack = (value, bitResolution) => {
   const bitsString = Math.abs(value || 0).toString(2);
   if (bitsString.length > bitResolution) {
-    throw Error(`value must be between 0 and ${Math.pow(2, bitResolution) - 1}`);
+    throw Error(
+      `value must be between 0 and ${Math.pow(2, bitResolution) - 1}`
+    );
   }
 
   let missingValues = "";
-  for(let i = 0; i < (bitResolution - bitsString.length); i++) {
+  for (let i = 0; i < bitResolution - bitsString.length; i++) {
     missingValues = missingValues + "0";
   }
 
-  return missingValues + bitsString;  
+  return missingValues + bitsString;
 };
 
 const initPlayer = (onInit) => {
@@ -53,17 +72,17 @@ const initPlayer = (onInit) => {
     const do_resume_player = compiler.getRamSymbols().findIndex((v) => {
       return v === "do_resume_player";
     });
-  
+
     const updateTracker = () => {
       emulator.step("run");
-      console.log("RUN", 
-        emulator.readMem(is_player_paused), 
+      console.log(
+        "RUN",
+        emulator.readMem(is_player_paused),
         emulator.readMem(do_resume_player),
-        emulator.readMem(0xFF0F)
+        emulator.readMem(0xff0f)
       );
     };
     setInterval(updateTracker, 10);
-  
   });
 };
 
@@ -76,7 +95,7 @@ const loadSong = (song) => {
   updateRom(song);
   emulator.step("frame");
   stop();
-}
+};
 
 const play = (song) => {
   updateRom(song);
@@ -119,25 +138,30 @@ const preview = (note, type, instrument, square2) => {
   switch (type) {
     case "duty":
       const regs = {
-        NR10: 
-          '0' +
-          bitpack(instrument.frequency_sweep_time, 3) + 
-          (instrument.frequency_sweep_shift < 0 ? 1 : 0) + 
+        NR10:
+          "0" +
+          bitpack(instrument.frequency_sweep_time, 3) +
+          (instrument.frequency_sweep_shift < 0 ? 1 : 0) +
           bitpack(Math.abs(instrument.frequency_sweep_shift), 3),
-        NR11: 
+        NR11:
           bitpack(instrument.duty_cycle, 2) +
           bitpack(instrument.length !== null ? 64 - instrument.length : 0, 6),
-        NR12: 
+        NR12:
           bitpack(instrument.initial_volume, 4) +
-          (instrument.volume_sweep_change > 0 ? 1 : 0) + 
-          bitpack(instrument.volume_sweep_change !== 0 ? 8 - Math.abs(instrument.volume_sweep_change) : 0, 3), 
-        NR13: bitpack((noteFreq & 0b11111111), 8),
-        NR14: 
-          '1' + // Initial 
-          (instrument.length ? 1 : 0) + 
-          '000' + 
-          bitpack((noteFreq & 0b0000011100000000) >> 8, 3)
-      }
+          (instrument.volume_sweep_change > 0 ? 1 : 0) +
+          bitpack(
+            instrument.volume_sweep_change !== 0
+              ? 8 - Math.abs(instrument.volume_sweep_change)
+              : 0,
+            3
+          ),
+        NR13: bitpack(noteFreq & 0b11111111, 8),
+        NR14:
+          "1" + // Initial
+          (instrument.length ? 1 : 0) +
+          "000" +
+          bitpack((noteFreq & 0b0000011100000000) >> 8, 3),
+      };
 
       console.log("-------------");
       console.log(`NR10`, regs.NR10, parseInt(regs.NR10, 2));
@@ -153,26 +177,29 @@ const preview = (note, type, instrument, square2) => {
       emulator.writeMem(NR13, parseInt(regs.NR13, 2));
       emulator.writeMem(NR14, parseInt(regs.NR14, 2));
       break;
-    case "wave": 
+    case "wave":
       // Copy Wave Form
       const wave = current_song.waves[instrument.wave_index];
       for (let idx = 0; idx < 16; idx++) {
-        emulator.writeMem(AUD3_WAVE_RAM + idx, (wave[idx * 2] << 4) | wave[idx * 2 + 1]);
+        emulator.writeMem(
+          AUD3_WAVE_RAM + idx,
+          (wave[idx * 2] << 4) | wave[idx * 2 + 1]
+        );
       }
 
       const regs = {
-        NR30: '1' + bitpack(0, 7),
-        NR31: bitpack((instrument.length !== null ? instrument.length : 0) & 0xff, 8),
-        NR32: 
-          '00' + 
-          bitpack(instrument.volume, 2) + 
-          '00000',
-        NR33: bitpack((noteFreq & 0b11111111), 8),
+        NR30: "1" + bitpack(0, 7),
+        NR31: bitpack(
+          (instrument.length !== null ? instrument.length : 0) & 0xff,
+          8
+        ),
+        NR32: "00" + bitpack(instrument.volume, 2) + "00000",
+        NR33: bitpack(noteFreq & 0b11111111, 8),
         NR34:
-          '1' + // Initial 
-          (instrument.length ? 1 : 0) + 
-          '000' + 
-          bitpack((noteFreq & 0b0000011100000000) >> 8, 3).toString(2)
+          "1" + // Initial
+          (instrument.length ? 1 : 0) +
+          "000" +
+          bitpack((noteFreq & 0b0000011100000000) >> 8, 3).toString(2),
       };
 
       console.log("-------------");
@@ -192,22 +219,27 @@ const preview = (note, type, instrument, square2) => {
       break;
     case "noise":
       const regs = {
-        NR41: 
-          '00' + 
+        NR41:
+          "00" +
           bitpack(instrument.length !== null ? 64 - instrument.length : 0, 6),
-        NR42: 
+        NR42:
           bitpack(instrument.initial_volume, 4) +
-          (instrument.volume_sweep_change > 0 ? 1 : 0) + 
-          bitpack(instrument.volume_sweep_change !== 0 ? 8 - Math.abs(instrument.volume_sweep_change) : 0, 3), 
+          (instrument.volume_sweep_change > 0 ? 1 : 0) +
+          bitpack(
+            instrument.volume_sweep_change !== 0
+              ? 8 - Math.abs(instrument.volume_sweep_change)
+              : 0,
+            3
+          ),
         NR43:
-          bitpack(Math.abs(0xF - noteFreq) >> 7, 4) +
+          bitpack(Math.abs(0xf - noteFreq) >> 7, 4) +
           (instrument.bit_count === 7 ? 1 : 0) +
           bitpack(instrument.dividing_ratio, 3),
         NR44:
-          '1' + // Initial 
-          (instrument.length ? 1 : 0) + 
-          '000000'
-      }
+          "1" + // Initial
+          (instrument.length ? 1 : 0) +
+          "000000",
+      };
 
       console.log("-------------");
       console.log(`NR41`, regs.NR41, parseInt(regs.NR41, 2));
@@ -234,8 +266,7 @@ const preview = (note, type, instrument, square2) => {
     // emulator.writeMem(NR22, 0);
     emulator.writeMem(NR30, 0);
     emulator.writeMem(NR42, 0);
-  }, 3000)
-
+  }, 3000);
 };
 
 const stop = () => {
@@ -244,11 +275,11 @@ const stop = () => {
   const is_player_paused = compiler.getRamSymbols().findIndex((v) => {
     return v === "is_player_paused";
   });
-  if (emulator.readMem(is_player_paused) === 0) { 
-    const _if = emulator.readMem(0xFF0F);
+  if (emulator.readMem(is_player_paused) === 0) {
+    const _if = emulator.readMem(0xff0f);
     console.log(_if);
-    emulator.writeMem(0xFF0F, _if | 0b00001000);
-    console.log(emulator.readMem(0xFF0F));
+    emulator.writeMem(0xff0f, _if | 0b00001000);
+    console.log(emulator.readMem(0xff0f));
 
     emulator.step("frame");
   }

@@ -118,7 +118,7 @@ export const InstrumentDutyEditor = ({
       type: "duty",
       instrument: instrument,
       square2: false,
-    });  
+    });
   };
 
   return (

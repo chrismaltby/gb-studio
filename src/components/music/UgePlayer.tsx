@@ -29,10 +29,10 @@ export const UgePlayer = ({
     ipcRenderer.removeAllListeners("music-data");
     ipcRenderer.on("music-data", (event, d) => {
       switch (d.action) {
-        case "initialized": 
+        case "initialized":
           ipcRenderer.send("music-data-send", {
             action: "load-song",
-            song: data
+            song: data,
           });
           break;
         case "update":

@@ -91,7 +91,7 @@ const init = (canvas, rom_data) => {
 
 const updateRom = (rom_data) => {
   if (!isAvailable()) {
-    console.log('UPDATE ROM: NOT AVAILABLE');
+    console.log("UPDATE ROM: NOT AVAILABLE");
     return false;
   }
 

@@ -60,7 +60,7 @@ const getInstrumentType = (channel: string) => {
     default:
       return "";
   }
-}
+};
 
 const getInstrumentList = (song: Song, type: string) => {
   if (!song) return [];
@@ -76,7 +76,7 @@ const getInstrumentList = (song: Song, type: string) => {
     default:
       return [];
   }
-}
+};
 
 export const RollChannelFwd = ({
   channelId,
@@ -149,7 +149,7 @@ export const RollChannelFwd = ({
             type: instrumentType,
             instrument: instrumentList[defaultInstruments[channel]],
             square2: true,
-          });  
+          });
         }
       }
     },

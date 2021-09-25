@@ -79,7 +79,7 @@ export const InstrumentWaveEditor = ({
       type: "wave",
       instrument: instrument,
       square2: false,
-    });  
+    });
   };
 
   return (
@@ -114,7 +114,6 @@ export const InstrumentWaveEditor = ({
           {l10n("FIELD_TEST_INSTRUMENT")}
         </Button>
       </FormRow>
-
     </>
   );
 };
