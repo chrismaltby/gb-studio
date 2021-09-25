@@ -358,7 +358,7 @@ export type SceneData = Omit<Scene, "actors" | "triggers"> & {
 };
 
 export type SceneDenormalized = Omit<
-  Actor,
+  Scene,
   | "actors"
   | "triggers"
   | "script"
