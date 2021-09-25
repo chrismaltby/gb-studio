@@ -57,7 +57,7 @@ const compile = (input, helpers) => {
     temporaryEntityVariable,
   } = helpers;
   if (input.x.type === "number" && input.y.type === "number") {
-    cameraMoveTo(input.x, input.y, Number(input.speed));
+    cameraMoveTo(input.x.value, input.y.value, Number(input.speed));
   } else {
     // If any value is not a number transfer values into variables and use variable implementation
     const xVar = variableFromUnion(input.x, temporaryEntityVariable(0));

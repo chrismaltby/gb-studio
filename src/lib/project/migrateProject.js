@@ -15,7 +15,7 @@ import uuid from "uuid";
 const indexById = indexBy("id");
 
 export const LATEST_PROJECT_VERSION = "2.0.0";
-export const LATEST_PROJECT_MINOR_VERSION = "11";
+export const LATEST_PROJECT_MINOR_VERSION = "12";
 
 /*
  * Helper function to make sure that all migrated functions
@@ -1149,6 +1149,52 @@ const migrateFrom200r10To200r11Events = (data) => {
   };
 };
 
+/* Version 2.0.0 r12 adds variable support for camera events + ability to lock per axis
+ */
+export const migrateFrom200r11To200r12Event = (event) => {
+  const migrateMeta = generateMigrateMeta(event);
+
+  if (event.args && event.command === "EVENT_CAMERA_MOVE_TO") {
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        x: {
+          type: "number",
+          value: event.args.x,
+        },
+        y: {
+          type: "number",
+          value: event.args.y,
+        },
+      },
+    });
+  } else if (event.args && event.command === "EVENT_CAMERA_LOCK") {
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        axis: ["x", "y"],
+      },
+    });
+  }
+
+  return event;
+};
+
+const migrateFrom200r11To200r12Events = (data) => {
+  return {
+    ...data,
+    scenes: mapScenesEvents(data.scenes, migrateFrom200r11To200r12Event),
+    customEvents: (data.customEvents || []).map((customEvent) => {
+      return {
+        ...customEvent,
+        script: mapEvents(customEvent.script, migrateFrom200r11To200r12Event),
+      };
+    }),
+  };
+};
+
 const migrateProject = (project) => {
   let data = { ...project };
   let version = project._version || "1.0.0";
@@ -1223,6 +1269,10 @@ const migrateProject = (project) => {
     if (release === "10") {
       data = migrateFrom200r10To200r11Events(data);
       release = "11";
+    }
+    if (release === "11") {
+      data = migrateFrom200r11To200r12Events(data);
+      release = "12";
     }
   }
 
