@@ -108,7 +108,9 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
     const noise_macro = [];
     if (version >= 4) {
       for (let n = 0; n < 6; n++) {
-        noise_macro.push(uint8data[offset]);
+        const uint8ref = uint8data[offset];
+        const int8ref = uint8ref > 0x7f ? uint8ref - 0x100 : uint8ref;
+        noise_macro.push(int8ref);
         offset += 1;
       }
     }
