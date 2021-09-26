@@ -87,6 +87,8 @@ export const InstrumentWaveEditor = ({
       <InstrumentLengthForm
         value={instrument.length}
         onChange={onChangeField("length")}
+        min={1}
+        max={256}
       />
 
       <FormDivider />

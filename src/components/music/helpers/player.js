@@ -145,7 +145,12 @@ const preview = (note, type, instrument, square2) => {
           bitpack(Math.abs(instrument.frequency_sweep_shift), 3),
         NR11:
           bitpack(instrument.duty_cycle, 2) +
-          bitpack(instrument.length !== null ? 64 - instrument.length : 0, 6),
+          bitpack(
+            instrument.length !== null && instrument.length !== 0
+              ? 64 - instrument.length
+              : 0,
+            6
+          ),
         NR12:
           bitpack(instrument.initial_volume, 4) +
           (instrument.volume_sweep_change > 0 ? 1 : 0) +
@@ -158,7 +163,7 @@ const preview = (note, type, instrument, square2) => {
         NR13: bitpack(noteFreq & 0b11111111, 8),
         NR14:
           "1" + // Initial
-          (instrument.length ? 1 : 0) +
+          (instrument.length !== null ? 1 : 0) +
           "000" +
           bitpack((noteFreq & 0b0000011100000000) >> 8, 3),
       };
@@ -190,14 +195,14 @@ const preview = (note, type, instrument, square2) => {
       const regs = {
         NR30: "1" + bitpack(0, 7),
         NR31: bitpack(
-          (instrument.length !== null ? instrument.length : 0) & 0xff,
+          (instrument.length !== null ? 256 - instrument.length : 0) & 0xff,
           8
         ),
         NR32: "00" + bitpack(instrument.volume, 2) + "00000",
         NR33: bitpack(noteFreq & 0b11111111, 8),
         NR34:
           "1" + // Initial
-          (instrument.length ? 1 : 0) +
+          (instrument.length !== null ? 1 : 0) +
           "000" +
           bitpack((noteFreq & 0b0000011100000000) >> 8, 3).toString(2),
       };
@@ -237,7 +242,7 @@ const preview = (note, type, instrument, square2) => {
           bitpack(instrument.dividing_ratio, 3),
         NR44:
           "1" + // Initial
-          (instrument.length ? 1 : 0) +
+          (instrument.length !== null ? 1 : 0) +
           "000000",
       };
 

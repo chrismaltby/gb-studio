@@ -115,7 +115,6 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
 
     if (type === 0) {
       length = 64 - length;
-      if (length === 64) length = 0;
 
       const instr = {} as DutyInstrument;
       if (length_enabled) {
@@ -136,7 +135,6 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
       song.addDutyInstrument(instr);
     } else if (type === 1) {
       length = 256 - length;
-      if (length === 256) length = 0;
 
       const instr = {} as WaveInstrument;
       if (length_enabled) {
@@ -153,7 +151,6 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
       song.addWaveInstrument(instr);
     } else if (type === 2) {
       length = 64 - length;
-      if (length === 64) length = 0;
 
       const instr = {} as NoiseInstrument;
       if (length_enabled) {
@@ -320,7 +317,7 @@ export const saveUGESong = (song: Song): ArrayBuffer => {
     addUint32(type);
 
     addShortString(i.name || "");
-    addUint32(i.length ? i.length : 0);
+    addUint32(i.length !== null ? 64 - i.length : 0);
     addUint8(i.length === null ? 0 : 1);
     addUint8(i.initial_volume);
     addUint32(i.volume_sweep_change < 0 ? 1 : 0);
@@ -378,7 +375,7 @@ export const saveUGESong = (song: Song): ArrayBuffer => {
     addUint32(type);
 
     addShortString(i.name || "");
-    addUint32(i.length ? i.length : 0);
+    addUint32(i.length !== null ? 64 - i.length : 0);
     addUint8(i.length === null ? 0 : 1);
     addUint8(i.initial_volume);
     addUint32(i.volume_sweep_change < 0 ? 1 : 0);
