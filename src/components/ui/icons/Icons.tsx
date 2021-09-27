@@ -175,6 +175,15 @@ export const PianoInverseIcon = () => (
   </svg>
 );
 
+export const TrackerIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <path d="M22.5 0H1.5C0.671875 0 0 0.671875 0 1.5V22.5C0 23.3281 0.671875 24 1.5 24H22.5C23.3281 24 24 23.3281 24 22.5V1.5C24 0.671875 23.3281 0 22.5 0ZM21.75 21.75H2.25V2.25H21.75V21.75Z" />
+    <circle r="2" transform="matrix(-1 0 0 1 18 17)" />
+    <circle r="2" transform="matrix(-1 0 0 1 12 17)" />
+    <circle r="2" transform="matrix(-1 0 0 1 6 17)" />
+  </svg>
+);
+
 export const SelectionIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24">
     <path d="M11 23v-2h-4v2h4zm8-20h3v2h2v-4h-5v2zm-19 14h2v-4h-2v4zm0-6h2v-4h-2v4zm2-6v-2h3v-2h-5v4h2zm22 2h-2v4h2v-4zm0 6h-2v4h2v-4zm-2 6v2h-3v2h5v-4h-2zm-17 2h-3v-2h-2v4h5v-2zm12 2v-2h-4v2h4zm-6-20v-2h-4v2h4zm6 0v-2h-4v2h4z" />

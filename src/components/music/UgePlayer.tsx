@@ -1,9 +1,10 @@
 import { ipcRenderer } from "electron";
 import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Song } from "lib/helpers/uge/song/Song";
 import { RootState } from "store/configureStore";
 // import Player from "./helpers/player";
+import trackerActions from "store/features/tracker/trackerActions";
 
 interface UgePlayerProps {
   data: Song | null;
@@ -16,6 +17,8 @@ export const UgePlayer = ({
   onPlaybackUpdate,
   onChannelStatusUpdate,
 }: UgePlayerProps) => {
+  const dispatch = useDispatch();
+
   useEffect(() => {
     ipcRenderer.send("open-music");
     return function close() {
@@ -34,6 +37,9 @@ export const UgePlayer = ({
             action: "load-song",
             song: data,
           });
+          break;
+        case "loaded":
+          dispatch(trackerActions.playerReady(true));
           break;
         case "update":
           if (onPlaybackUpdate) {

@@ -8,7 +8,7 @@ import {
   SaveIcon,
   PencilIcon,
   EraserIcon,
-  NoiseIcon,
+  TrackerIcon,
   SelectionIcon,
   PianoIcon,
   PianoInverseIcon,
@@ -56,6 +56,9 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
   const projectRoot = useSelector((state: RootState) => state.document.root);
 
   const play = useSelector((state: RootState) => state.tracker.playing);
+  const playerReady = useSelector(
+    (state: RootState) => state.tracker.playerReady
+  );
 
   const modified = useSelector(
     (state: RootState) => state.trackerDocument.present.modified
@@ -133,7 +136,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
     <>
       <FloatingPanelSwitchView>
         <Button variant="transparent" onClick={toggleView}>
-          {view === "roll" ? <NoiseIcon /> : themePianoIcon}
+          {view === "roll" ? <TrackerIcon /> : themePianoIcon}
         </Button>
       </FloatingPanelSwitchView>
 
@@ -146,7 +149,11 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
           <SaveIcon />
         </Button>
         <FloatingPanelDivider />
-        <Button variant="transparent" onClick={togglePlay}>
+        <Button
+          variant="transparent"
+          disabled={!playerReady}
+          onClick={togglePlay}
+        >
           {play ? <PauseIcon /> : <PlayIcon />}
         </Button>
         {view === "roll" ? (

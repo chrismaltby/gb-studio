@@ -34,6 +34,9 @@ ipcRenderer.on("music-data", (event, d) => {
         action: "log",
         message: "load song",
       });
+      ipcRenderer.send("music-data-receive", {
+        action: "loaded",
+      });
       break;
     case "play":
       player.play(d.song);

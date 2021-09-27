@@ -7,6 +7,7 @@ export interface TrackerState {
   // status: "loading" | "error" | "loaded" | null,
   // error?: string;
   playing: boolean;
+  playerReady: boolean;
   // song?: Song;
   octaveOffset: number;
   editStep: number;
@@ -23,6 +24,7 @@ export const initialState: TrackerState = {
   // status: null,
   // error: "",
   playing: false,
+  playerReady: false,
   // song: null,
   octaveOffset: 0,
   editStep: 1,
@@ -44,6 +46,9 @@ const trackerSlice = createSlice({
     },
     pauseTracker: (state, _action: PayloadAction<void>) => {
       state.playing = false;
+    },
+    playerReady: (state, _action: PayloadAction<boolean>) => {
+      state.playerReady = _action.payload;
     },
     toggleView: (state, _action: PayloadAction<"tracker" | "roll">) => {
       state.view = _action.payload;
@@ -76,6 +81,7 @@ const trackerSlice = createSlice({
   extraReducers: (builder) =>
     builder.addCase(editorActions.setSelectedSongId, (state, _action) => {
       state.playing = false;
+      state.playerReady = false;
     }),
 });
 
