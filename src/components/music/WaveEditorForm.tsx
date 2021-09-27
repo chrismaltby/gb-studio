@@ -101,6 +101,13 @@ export const WaveEditorForm = ({ waveId, onChange }: WaveEditorFormProps) => {
     let mousedown = false;
     let newWaves = new Uint8Array(song.waves[waveId]);
 
+    canvas.onmouseout = () => {
+      if (!mousedown) {
+        drawGrid(song.waves[waveId]);
+        drawWave(song.waves[waveId]);
+      }
+    };
+
     const handleMouseMove = (e: any) => {
       if (e.target !== canvasRef.current) {
         return;
@@ -140,12 +147,13 @@ export const WaveEditorForm = ({ waveId, onChange }: WaveEditorFormProps) => {
       if (e.target === canvasRef.current) {
         mousedown = true;
       }
-      console.log(e);
     };
 
     const handleMouseUp = (e: any) => {
-      mousedown = false;
-      onEditWave(newWaves);
+      if (mousedown) {
+        mousedown = false;
+        onEditWave(newWaves);
+      }
     };
 
     window.addEventListener("mousemove", handleMouseMove);

@@ -106,8 +106,11 @@ export const InstrumentNoiseEditor = ({
           }}
         />
       </FormRow>
-      
-      <NoiseMacroEditorForm macros={instrument.noise_macro} />
+
+      <NoiseMacroEditorForm
+        macros={instrument.noise_macro}
+        onChange={onChangeField("noise_macro")}
+      />
 
       <FormDivider />
 
