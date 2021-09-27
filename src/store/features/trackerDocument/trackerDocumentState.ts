@@ -211,6 +211,22 @@ const trackerSlice = createSlice({
         patterns: patterns,
       };
     },
+    editWaveform: (
+      state,
+      _action: PayloadAction<{ index: number; waveForm: Uint8Array }>
+    ) => {
+      if (!state.song) {
+        return;
+      }
+
+      const newWaves = [...state.song.waves];
+      newWaves[_action.payload.index] = _action.payload.waveForm;
+
+      state.song = {
+        ...state.song,
+        waves: newWaves,
+      };
+    },
     editSequence: (
       state,
       _action: PayloadAction<{ sequenceIndex: number; sequenceId: number }>
