@@ -162,6 +162,7 @@ export const NoiseMacroEditorForm = ({
             backgroundColor: "#000",
             borderRadius: 4,
             imageRendering: "pixelated",
+            cursor: "pointer",
           }}
           height={138}
         />

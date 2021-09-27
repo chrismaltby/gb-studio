@@ -187,6 +187,7 @@ export const WaveEditorForm = ({ waveId, onChange }: WaveEditorFormProps) => {
             height: "120px",
             backgroundColor: "#000",
             borderRadius: 4,
+            cursor: "pointer",
           }}
           height={120}
         />
