@@ -52,8 +52,6 @@ export const InstrumentVolumeEditor = ({
       ctx.beginPath();
       ctx.moveTo(5, canvas.height - 5 - normalisedVolume * drawHeight);
 
-      console.log(drawWidth);
-
       if (volume_sweep_change < 0) {
         //fade down
         volume_sweep_change = volume_sweep_change + 8;
@@ -76,11 +74,17 @@ export const InstrumentVolumeEditor = ({
 
         ctx.lineTo(
           5 + Math.min(envLength, secLength) * drawWidth,
-          (1 - Math.min(secLength / envLength, 1)) * drawHeight + 5
+          (1 - Math.min(secLength / envLength, 1)) *
+            normalisedVolume *
+            drawHeight +
+            5
         );
         ctx.lineTo(
           5 + secLength * drawWidth,
-          (1 - Math.min(secLength / envLength, 1)) * drawHeight + 5
+          (1 - Math.min(secLength / envLength, 1)) *
+            normalisedVolume *
+            drawHeight +
+            5
         );
       } else {
         //no fade
