@@ -27,7 +27,7 @@ const REWIND_FRAMES_PER_BASE_STATE = 45;
 const REWIND_BUFFER_CAPACITY = 4 * 1024 * 1024;
 const REWIND_FACTOR = 1.5;
 const REWIND_UPDATE_MS = 16;
-const BUILTIN_PALETTES = 62;  // See builtin-palettes.def.
+const BUILTIN_PALETTES = 83;  // GB Studio palette in builtin-palettes.def.
 const GAMEPAD_POLLING_INTERVAL = 1000 / 60 / 4; // When activated, poll for gamepad input about ~4 times per gameboy frame (~240 times second)
 const GAMEPAD_KEYMAP_STANDARD_STR = "standard"; // Try to use "standard" HTML5 mapping config if available
 
@@ -68,6 +68,7 @@ class VM {
         this.extRamUpdated = false;
       }
     }, 1000);
+    this.cgbColorCurve = 2; // Gambatte color curve
   }
 
   get paused() { return this.paused_; }
@@ -133,7 +134,7 @@ class Emulator {
         .set(new Uint8Array(romBuffer));
     this.e = this.module._emulator_new_simple(
         this.romDataPtr, romBuffer.byteLength, Audio.ctx.sampleRate,
-        AUDIO_FRAMES);
+        AUDIO_FRAMES, vm.cgbColorCurve);
     if (this.e == 0) {
       throw new Error('Invalid ROM.');
     }
