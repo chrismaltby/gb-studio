@@ -18,6 +18,7 @@ import engineActions from "store/features/engine/engineActions";
 import errorActions from "store/features/error/errorActions";
 import initElectronL10n from "lib/helpers/initElectronL10n";
 import { clampSidebarWidth } from "lib/helpers/window/sidebar";
+import { initKeyBindings } from "lib/keybindings/keyBindings";
 
 initElectronL10n();
 
@@ -44,6 +45,8 @@ if (projectPath) {
   store.dispatch(engineActions.scanEngine(projectPath));
   initPlugins(projectRoot);
 }
+
+initKeyBindings();
 
 watchProject(projectPath, {
   onAddSprite: (f) => store.dispatch(projectActions.loadSprite(f)),
@@ -148,7 +151,7 @@ const onZoom = (event, zoomType) => {
 };
 
 const onWindowZoom = (event, zoomLevel) => {
-  webFrame.setZoomLevel(zoomLevel)
+  webFrame.setZoomLevel(zoomLevel);
 };
 
 const onRun = () => {
@@ -183,6 +186,10 @@ const onPasteInPlace = (_event) => {
   store.dispatch(clipboardActions.pasteClipboardEntityInPlace());
 };
 
+const onKeyBindingsUpdate = (_event) => {
+  initKeyBindings();
+};
+
 ipcRenderer.on("save-project", onSaveProject);
 ipcRenderer.on("save-project-and-close", onSaveAndCloseProject);
 ipcRenderer.on("save-as-project", onSaveProjectAs);
@@ -199,6 +206,7 @@ ipcRenderer.on("ejectEngine", onEjectEngine);
 ipcRenderer.on("exportProject", onExportProject);
 ipcRenderer.on("plugin-run", onPluginRun);
 ipcRenderer.on("paste-in-place", onPasteInPlace);
+ipcRenderer.on("keybindings-update", onKeyBindingsUpdate);
 
 const worldSidebarWidth = settings.get("worldSidebarWidth");
 const filesSidebarWidth = settings.get("filesSidebarWidth");

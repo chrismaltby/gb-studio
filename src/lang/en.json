@@ -463,6 +463,11 @@
   "FIELD_CURSOR": "Cursor",
   "FIELD_HOVER": "Hover",
   "FIELD_OVERRIDE_DEFAULT_BUTTON_ACTION": "Override default button action",
+  "FIELD_UI_TRACKER_KEYBINDINGS": "Music Tracker Keyboard Layout",
+  "FIELD_UI_LINEAR": "Linear",
+  "FIELD_UI_PIANO": "Piano",
+  "FIELD_UI_LINEAR_INFO": "OpenMPT, hUGETracker",
+  "FIELD_UI_PIANO_INFO": "MilkyTracker, FastTracker2",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

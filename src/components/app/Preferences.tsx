@@ -13,17 +13,17 @@ import { DotsIcon } from "ui/icons/Icons";
 import { FixedSpacer, FlexGrow } from "ui/spacing/Spacing";
 import { AppSelect } from "ui/form/AppSelect";
 import { ipcRenderer, remote } from "electron";
-import { Select } from "ui/form/Select";
+import { OptionLabelWithInfo, Select } from "ui/form/Select";
 
 const { dialog } = remote;
 
-interface ZoomOptions {
+interface Options {
   value: number;
   label: string;
 }
 
 // ZoomLevel scale := 1.2 ^ level
-const options: ZoomOptions[] = [
+const zoomOptions: Options[] = [
   { value: -3.80178, label: `50%` },
   { value: -3, label: `58%` },
   { value: -2, label: `69%` },
@@ -35,20 +35,36 @@ const options: ZoomOptions[] = [
   { value: 3.80178, label: `200%` },
 ];
 
+const trackerKeyBindingsOptions: Options[] = [
+  { value: 0, label: l10n("FIELD_UI_LINEAR") },
+  { value: 1, label: l10n("FIELD_UI_PIANO") },
+];
+
+const trackerKeyBindingsOptionsInfo: string[] = [
+  l10n("FIELD_UI_LINEAR_INFO"),
+  l10n("FIELD_UI_PIANO_INFO"),
+];
+
 const Preferences = () => {
   const pathError = "";
   const [tmpPath, setTmpPath] = useState<string>("");
   const [imageEditorPath, setImageEditorPath] = useState<string>("");
   const [musicEditorPath, setMusicEditorPath] = useState<string>("");
   const [zoomLevel, setZoomLevel] = useState<number>(0);
+  const [trackerKeyBindings, setTrackerKeyBindings] = useState<number>(0);
 
-  const currentZoomValue = options.find((o) => o.value === zoomLevel);
+  const currentZoomValue = zoomOptions.find((o) => o.value === zoomLevel);
+
+  const currentTrackerKeyBindings = trackerKeyBindingsOptions.find(
+    (o) => o.value === trackerKeyBindings
+  );
 
   useEffect(() => {
     setTmpPath(getTmp(false));
     setImageEditorPath(String(settings.get("imageEditorPath") || ""));
     setMusicEditorPath(String(settings.get("musicEditorPath") || ""));
     setZoomLevel(Number(settings.get("zoomLevel") || 0));
+    setTrackerKeyBindings(Number(settings.get("trackerKeyBindings") || 0));
   }, []);
 
   const onChangeTmpPath = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -71,6 +87,12 @@ const Preferences = () => {
     setZoomLevel(zoomLevel);
     settings.set("zoomLevel", zoomLevel);
     ipcRenderer.send("window-zoom", zoomLevel);
+  };
+
+  const onChangeTrackerKeyBindings = (trackerKeyBindings: number) => {
+    setTrackerKeyBindings(trackerKeyBindings);
+    settings.set("trackerKeyBindings", trackerKeyBindings);
+    ipcRenderer.send("keybindings-updated");
   };
 
   const onSelectTmpFolder = async () => {
@@ -143,9 +165,43 @@ const Preferences = () => {
           <FormField name="zoomLevel" label={l10n("FIELD_UI_ELEMENTS_SCALING")}>
             <Select
               value={currentZoomValue}
-              options={options}
-              onChange={(newValue: ZoomOptions) => {
+              options={zoomOptions}
+              onChange={(newValue: Options) => {
                 onChangeZoomLevel(newValue.value);
+              }}
+            />
+          </FormField>
+        </FormRow>
+        <FixedSpacer height={10} />
+        <FormRow>
+          <FormField
+            name="trackerKeyBindings"
+            label={l10n("FIELD_UI_TRACKER_KEYBINDINGS")}
+          >
+            <Select
+              value={currentTrackerKeyBindings}
+              options={trackerKeyBindingsOptions}
+              onChange={(newValue: Options) => {
+                onChangeTrackerKeyBindings(newValue.value);
+              }}
+              formatOptionLabel={(
+                option: Options,
+                { context }: { context: "menu" | "value" }
+              ) => {
+                return (
+                  <OptionLabelWithInfo
+                    info={
+                      context === "menu"
+                        ? trackerKeyBindingsOptionsInfo[option.value]
+                        : ""
+                    }
+                  >
+                    {option.label}
+                    {context === "value"
+                      ? ` (${trackerKeyBindingsOptionsInfo[option.value]})`
+                      : ""}
+                  </OptionLabelWithInfo>
+                );
               }}
             />
           </FormField>
