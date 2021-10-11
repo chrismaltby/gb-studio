@@ -10,6 +10,8 @@ import { SequenceEditor } from "./SequenceEditor";
 import { SongRow } from "./SongRow";
 import scrollIntoView from "scroll-into-view-if-needed";
 import { SongGridHeaderCell } from "./SongGridHeaderCell";
+import { ipcRenderer } from "electron";
+import { getInstrumentTypeByChannel, getInstrumentListByType } from "./helpers";
 
 interface SongTrackerProps {
   sequenceId: number;
@@ -55,6 +57,9 @@ export const SongTracker = ({
 
   const playing = useSelector((state: RootState) => state.tracker.playing);
   const editStep = useSelector((state: RootState) => state.tracker.editStep);
+  const defaultInstruments = useSelector(
+    (state: RootState) => state.tracker.defaultInstruments
+  );
   const octaveOffset = useSelector(
     (state: RootState) => state.tracker.octaveOffset
   );
@@ -130,9 +135,27 @@ export const SongTracker = ({
         if (selectedCell === undefined) {
           return;
         }
+
+        const channel = Math.floor(selectedCell / 4) % 4;
+        const defaultInstrument = defaultInstruments[channel];
+
+        if (song && value !== null) {
+          const instrumentType = getInstrumentTypeByChannel(channel) || "duty";
+          const instrumentList = getInstrumentListByType(song, instrumentType);
+          ipcRenderer.send("music-data-send", {
+            action: "preview",
+            note: value,
+            type: instrumentType,
+            instrument: instrumentList[defaultInstrument],
+            square2: channel === 1,
+          });
+        }
+
         editPatternCell("note")(
           value === null ? null : value + octaveOffset * 12
         );
+        editPatternCell("instrument")(defaultInstrument);
+
         if (value !== null) {
           setSelectedCell(selectedCell + ROW_SIZE * editStep);
         }

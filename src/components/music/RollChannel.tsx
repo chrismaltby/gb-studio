@@ -9,6 +9,7 @@ import trackerDocumentActions from "store/features/trackerDocument/trackerDocume
 
 import { instrumentColors } from "./InstrumentSelect";
 import { ipcRenderer } from "electron";
+import { getInstrumentTypeByChannel, getInstrumentListByType } from "./helpers";
 
 interface RollChannelProps {
   channelId: number;
@@ -47,36 +48,6 @@ const Note = styled.div<NoteProps>`
   text-align: center;
   line-height: 1.1em;
 `;
-
-const getInstrumentType = (channel: string) => {
-  switch (channel) {
-    case "0":
-    case "1":
-      return "duty";
-    case "2":
-      return "wave";
-    case "3":
-      return "noise";
-    default:
-      return "";
-  }
-};
-
-const getInstrumentList = (song: Song, type: string) => {
-  if (!song) return [];
-
-  switch (type) {
-    case "duty":
-    case "duty":
-      return song.duty_instruments;
-    case "wave":
-      return song.wave_instruments;
-    case "noise":
-      return song.noise_instruments;
-    default:
-      return [];
-  }
-};
 
 export const RollChannelFwd = ({
   channelId,
@@ -124,8 +95,8 @@ export const RollChannelFwd = ({
 
   const handleMouseDown = useCallback(
     (e: any) => {
-      const channel = e.target.dataset["channel"];
-      if (channel !== undefined && tool === "pencil" && e.button === 0) {
+      const channel = parseInt(e.target.dataset["channel"]);
+      if (!isNaN(channel) && tool === "pencil" && e.button === 0) {
         const col = Math.floor(e.offsetX / cellSize);
         const note = 12 * 6 - 1 - Math.floor(e.offsetY / cellSize);
         const changes = {
@@ -141,14 +112,14 @@ export const RollChannelFwd = ({
         );
 
         if (song) {
-          const instrumentType = getInstrumentType(channel);
-          const instrumentList = getInstrumentList(song, instrumentType);
+          const instrumentType = getInstrumentTypeByChannel(channel) || "duty";
+          const instrumentList = getInstrumentListByType(song, instrumentType);
           ipcRenderer.send("music-data-send", {
             action: "preview",
             note: note,
             type: instrumentType,
             instrument: instrumentList[defaultInstruments[channel]],
-            square2: true,
+            square2: channel === 1,
           });
         }
       }
