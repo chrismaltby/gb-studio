@@ -74,6 +74,10 @@ const trackerSlice = createSlice({
       state.song = _action.payload;
       state.modified = false;
     },
+    unloadSong: (state, _action: PayloadAction<void>) => {
+      state.song = undefined;
+      state.modified = false;
+    },
     editSong: (state, _action: PayloadAction<{ changes: Partial<Song> }>) => {
       if (state.song) {
         state.song = {

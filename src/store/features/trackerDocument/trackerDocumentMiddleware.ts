@@ -6,6 +6,7 @@ import editorActions from "../editor/editorActions";
 import { musicSelectors } from "../entities/entitiesState";
 import navigationActions from "../navigation/navigationActions";
 import { saveSongFile } from "./trackerDocumentState";
+import trackerDocumentActions from "./trackerDocumentActions";
 
 const trackerMiddleware: ThunkMiddleware<RootState> =
   (store) => (next) => (action) => {
@@ -32,6 +33,7 @@ const trackerMiddleware: ThunkMiddleware<RootState> =
             store.dispatch(saveSongFile(path));
             break;
           case 1: // continue without saving
+            store.dispatch(trackerDocumentActions.unloadSong());
             break;
           case 2: // cancel
           default:
