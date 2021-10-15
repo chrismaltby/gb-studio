@@ -6,6 +6,37 @@
  */
 "use strict";
 
+// User configurable.
+const ROM_FILENAME = "rom/game.gb";
+const ENABLE_REWIND = true;
+const ENABLE_PAUSE = false;
+const ENABLE_SWITCH_PALETTES = true;
+const OSGP_DEADZONE = 0.1;    // On screen gamepad deadzone range
+const CGB_COLOR_CURVE = 2;    // 0: none, 1: Sameboy "Emulate Hardware" 2: Gambatte/Gameboy Online
+
+
+// List of DMG palettes to switch between. By default it includes all 84
+// built-in palettes. If you want to restrict this, change it to an array of
+// the palettes you want to use and change DEFAULT_PALETTE_IDX to the index of the
+// default palette in that list.
+//
+// Example: (only allow one palette with index 16):
+//   const DEFAULT_PALETTE_IDX = 0;
+//   const PALETTES = [16];
+//
+// Example: (allow three palettes, 16, 32, 64, with default 32):
+//   const DEFAULT_PALETTE_IDX = 1;
+//   const PALETTES = [16, 32, 64];
+//
+const DEFAULT_PALETTE_IDX = 83;
+const PALETTES = [
+  0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16,
+  17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33,
+  34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50,
+  51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67,
+  68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83,
+];
+
 const RESULT_OK = 0;
 const RESULT_ERROR = 1;
 const SCREEN_WIDTH = 160;
@@ -27,12 +58,18 @@ const REWIND_FRAMES_PER_BASE_STATE = 45;
 const REWIND_BUFFER_CAPACITY = 4 * 1024 * 1024;
 const REWIND_FACTOR = 1.5;
 const REWIND_UPDATE_MS = 16;
-const BUILTIN_PALETTES = 83;  // GB Studio palette in builtin-palettes.def.
 const GAMEPAD_POLLING_INTERVAL = 1000 / 60 / 4; // When activated, poll for gamepad input about ~4 times per gameboy frame (~240 times second)
 const GAMEPAD_KEYMAP_STANDARD_STR = "standard"; // Try to use "standard" HTML5 mapping config if available
 
 const $ = document.querySelector.bind(document);
 let emulator = null;
+
+const controllerEl = $('#controller');
+const dpadEl = $('#controller_dpad');
+const selectEl = $('#controller_select');
+const startEl = $('#controller_start');
+const bEl = $('#controller_b');
+const aEl = $('#controller_a');
 
 const binjgbPromise = Binjgb();
 
@@ -52,7 +89,7 @@ class VM {
     this.extRamUpdated = false;
     this.paused_ = false;
     this.volume = 0.5;
-    this.pal = 0;
+    this.palIdx = DEFAULT_PALETTE_IDX;
     this.canvas = {
       show: true,
       useSgbBorder: sgbEnabled,
@@ -68,7 +105,6 @@ class VM {
         this.extRamUpdated = false;
       }
     }, 1000);
-    this.cgbColorCurve = 2; // Gambatte color curve
   }
 
   get paused() { return this.paused_; }
@@ -102,11 +138,11 @@ const vm = new VM();
 
 // Load a ROM.
 (async function go() {
-  let response = await fetch('rom/game.gb');
+  let response = await fetch(ROM_FILENAME);
   let romBuffer = await response.arrayBuffer();
   const extRam = new Uint8Array(JSON.parse(localStorage.getItem('extram')));
   Emulator.start(await binjgbPromise, romBuffer, extRam);
-  emulator.setBuiltinPalette(BUILTIN_PALETTES);
+  emulator.setBuiltinPalette(vm.palIdx);
 })();
 
 function makeWasmBuffer(module, ptr, size) {
@@ -134,7 +170,7 @@ class Emulator {
         .set(new Uint8Array(romBuffer));
     this.e = this.module._emulator_new_simple(
         this.romDataPtr, romBuffer.byteLength, Audio.ctx.sampleRate,
-        AUDIO_FRAMES, vm.cgbColorCurve);
+        AUDIO_FRAMES, CGB_COLOR_CURVE);
     if (this.e == 0) {
       throw new Error('Invalid ROM.');
     }
@@ -153,13 +189,19 @@ class Emulator {
       this.loadExtRam(extRamBuffer);
     }
 
-    this.bindKeys();
+    this.bindKeys()
+    this.bindTouch();
+
+    this.touchEnabled = 'ontouchstart' in document.documentElement;
+    this.updateOnscreenGamepad();
+
     this.gamepad.init();
   }
 
   destroy() {
-    this.unbindKeys();
     this.gamepad.shutdown();
+    this.unbindTouch();
+    this.unbindKeys();
     this.cancelAnimationFrame();
     clearInterval(this.rewindIntervalId);
     this.rewind.destroy();
@@ -213,8 +255,8 @@ class Emulator {
     }
   }
 
-  setBuiltinPalette(pal) {
-    this.module._emulator_set_builtin_palette(this.e, pal);
+  setBuiltinPalette(palIdx) {
+    this.module._emulator_set_builtin_palette(this.e, PALETTES[palIdx]);
   }
 
   get isRewinding() {
@@ -311,18 +353,132 @@ class Emulator {
     this.video.renderTexture();
   }
 
+  updateOnscreenGamepad() {
+    $('#controller').style.display = this.touchEnabled ? 'block' : 'none';
+  }
+
+  bindTouch() {
+    this.touchFuncs = {
+      'controller_b': this.setJoypB.bind(this),
+      'controller_a': this.setJoypA.bind(this),
+      'controller_start': this.setJoypStart.bind(this),
+      'controller_select': this.setJoypSelect.bind(this),
+    };
+
+    this.boundButtonTouchStart = this.buttonTouchStart.bind(this);
+    this.boundButtonTouchEnd = this.buttonTouchEnd.bind(this);
+    selectEl.addEventListener('touchstart', this.boundButtonTouchStart);
+    selectEl.addEventListener('touchend', this.boundButtonTouchEnd);
+    startEl.addEventListener('touchstart', this.boundButtonTouchStart);
+    startEl.addEventListener('touchend', this.boundButtonTouchEnd);
+    bEl.addEventListener('touchstart', this.boundButtonTouchStart);
+    bEl.addEventListener('touchend', this.boundButtonTouchEnd);
+    aEl.addEventListener('touchstart', this.boundButtonTouchStart);
+    aEl.addEventListener('touchend', this.boundButtonTouchEnd);
+
+    this.boundDpadTouchStartMove = this.dpadTouchStartMove.bind(this);
+    this.boundDpadTouchEnd = this.dpadTouchEnd.bind(this);
+    dpadEl.addEventListener('touchstart', this.boundDpadTouchStartMove);
+    dpadEl.addEventListener('touchmove', this.boundDpadTouchStartMove);
+    dpadEl.addEventListener('touchend', this.boundDpadTouchEnd);
+
+    this.boundTouchRestore = this.touchRestore.bind(this);
+    window.addEventListener('touchstart', this.boundTouchRestore);
+  }
+
+  unbindTouch() {
+    selectEl.removeEventListener('touchstart', this.boundButtonTouchStart);
+    selectEl.removeEventListener('touchend', this.boundButtonTouchEnd);
+    startEl.removeEventListener('touchstart', this.boundButtonTouchStart);
+    startEl.removeEventListener('touchend', this.boundButtonTouchEnd);
+    bEl.removeEventListener('touchstart', this.boundButtonTouchStart);
+    bEl.removeEventListener('touchend', this.boundButtonTouchEnd);
+    aEl.removeEventListener('touchstart', this.boundButtonTouchStart);
+    aEl.removeEventListener('touchend', this.boundButtonTouchEnd);
+
+    dpadEl.removeEventListener('touchstart', this.boundDpadTouchStartMove);
+    dpadEl.removeEventListener('touchmove', this.boundDpadTouchStartMove);
+    dpadEl.removeEventListener('touchend', this.boundDpadTouchEnd);
+
+    window.removeEventListener('touchstart', this.boundTouchRestore);
+  }
+
+  buttonTouchStart(event) {
+    if (event.currentTarget.id in this.touchFuncs) {
+      this.touchFuncs[event.currentTarget.id](true);
+      event.currentTarget.classList.add('btnPressed');
+      event.preventDefault();
+    }
+  }
+
+  buttonTouchEnd(event) {
+    if (event.currentTarget.id in this.touchFuncs) {
+      this.touchFuncs[event.currentTarget.id](false);
+      event.currentTarget.classList.remove('btnPressed');
+      event.preventDefault();
+    }
+  }
+
+  dpadTouchStartMove(event) {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = (2 * (event.targetTouches[0].clientX - rect.left)) / rect.width - 1;
+    const y = (2 * (event.targetTouches[0].clientY - rect.top)) / rect.height - 1;
+
+    if (Math.abs(x) > OSGP_DEADZONE) {
+      if (y > x && y < -x) {
+        this.setJoypLeft(true);
+        this.setJoypRight(false);
+      } else if (y < x && y > -x) {
+        this.setJoypLeft(false);
+        this.setJoypRight(true);
+      }
+    } else {
+      this.setJoypLeft(false);
+      this.setJoypRight(false);
+    }
+
+    if (Math.abs(y) > OSGP_DEADZONE) {
+      if (x > y && x < -y) {
+        this.setJoypUp(true);
+        this.setJoypDown(false);
+      } else if (x < y && x > -y) {
+        this.setJoypUp(false);
+        this.setJoypDown(true);
+      }
+    } else {
+      this.setJoypUp(false);
+      this.setJoypDown(false);
+    }
+    event.preventDefault();
+  }
+
+  dpadTouchEnd(event) {
+    this.setJoypLeft(false);
+    this.setJoypRight(false);
+    this.setJoypUp(false);
+    this.setJoypDown(false);
+    event.preventDefault();
+  }
+
+  touchRestore() {
+    this.touchEnabled = true;
+    this.updateOnscreenGamepad();
+  }
+
   bindKeys() {
     this.keyFuncs = {
-      'ArrowDown': this.module._set_joyp_down.bind(null, this.e),
-      'ArrowLeft': this.module._set_joyp_left.bind(null, this.e),
-      'ArrowRight': this.module._set_joyp_right.bind(null, this.e),
-      'ArrowUp': this.module._set_joyp_up.bind(null, this.e),
-      'KeyZ': this.module._set_joyp_B.bind(null, this.e),
-      'KeyX': this.module._set_joyp_A.bind(null, this.e),
-      'Enter': this.module._set_joyp_start.bind(null, this.e),
-      'Tab': this.module._set_joyp_select.bind(null, this.e),
+      'ArrowDown': this.setJoypDown.bind(this),
+      'ArrowLeft': this.setJoypLeft.bind(this),
+      'ArrowRight': this.setJoypRight.bind(this),
+      'ArrowUp': this.setJoypUp.bind(this),
+      'KeyZ': this.setJoypB.bind(this),
+      'KeyX': this.setJoypA.bind(this),
+      'Enter': this.setJoypStart.bind(this),
+      'Tab': this.setJoypSelect.bind(this),
       'Backspace': this.keyRewind.bind(this),
       'Space': this.keyPause.bind(this),
+      'BracketLeft': this.keyPrevPalette.bind(this),
+      'BracketRight': this.keyNextPalette.bind(this),
     };
     this.boundKeyDown = this.keyDown.bind(this);
     this.boundKeyUp = this.keyUp.bind(this);
@@ -338,6 +494,10 @@ class Emulator {
 
   keyDown(event) {
     if (event.code in this.keyFuncs) {
+      if (this.touchEnabled) {
+        this.touchEnabled = false;
+        this.updateOnscreenGamepad();
+      }
       this.keyFuncs[event.code](true);
       event.preventDefault();
     }
@@ -351,6 +511,7 @@ class Emulator {
   }
 
   keyRewind(isKeyDown) {
+    if (!ENABLE_REWIND) { return; }
     if (this.isRewinding !== isKeyDown) {
       if (isKeyDown) {
         vm.paused = true;
@@ -363,8 +524,34 @@ class Emulator {
   }
 
   keyPause(isKeyDown) {
+    if (!ENABLE_PAUSE) { return; }
     if (isKeyDown) vm.togglePause();
   }
+
+  keyPrevPalette(isKeyDown) {
+    if (!ENABLE_SWITCH_PALETTES) { return; }
+    if (isKeyDown) {
+      vm.palIdx = (vm.palIdx + PALETTES.length - 1) % PALETTES.length;
+      emulator.setBuiltinPalette(vm.palIdx);
+    }
+  }
+
+  keyNextPalette(isKeyDown) {
+    if (!ENABLE_SWITCH_PALETTES) { return; }
+    if (isKeyDown) {
+      vm.palIdx = (vm.palIdx + 1) % PALETTES.length;
+      emulator.setBuiltinPalette(vm.palIdx);
+    }
+  }
+
+  setJoypDown(set) { this.module._set_joyp_down(this.e, set); }
+  setJoypUp(set) { this.module._set_joyp_up(this.e, set); }
+  setJoypLeft(set) { this.module._set_joyp_left(this.e, set); }
+  setJoypRight(set) { this.module._set_joyp_right(this.e, set); }
+  setJoypSelect(set) { this.module._set_joyp_select(this.e, set); }
+  setJoypStart(set) { this.module._set_joyp_start(this.e, set); }
+  setJoypB(set) { this.module._set_joyp_B(this.e, set); }
+  setJoypA(set) { this.module._set_joyp_A(this.e, set); }  
 }
 
 class Gamepad {
@@ -595,17 +782,32 @@ class Gamepad {
 
 class Audio {
   constructor(module, e) {
+    this.started = false;
     this.module = module;
     this.buffer = makeWasmBuffer(
         this.module, this.module._get_audio_buffer_ptr(e),
         this.module._get_audio_buffer_capacity(e));
     this.startSec = 0;
     this.resume();
+
+    this.boundStartPlayback = this.startPlayback.bind(this);
+    window.addEventListener('keydown', this.boundStartPlayback, true);
+    window.addEventListener('click', this.boundStartPlayback, true);
+    window.addEventListener('touchend', this.boundStartPlayback, true);
+  }
+
+  startPlayback() {
+    window.removeEventListener('touchend', this.boundStartPlayback, true);
+    window.removeEventListener('keydown', this.boundStartPlayback, true);
+    window.removeEventListener('click', this.boundStartPlayback, true);
+    this.started = true;
+    this.resume();
   }
 
   get sampleRate() { return Audio.ctx.sampleRate; }
 
   pushBuffer() {
+    if (!this.started) { return; }
     const nowSec = Audio.ctx.currentTime;
     const nowPlusLatency = nowSec + AUDIO_LATENCY_SEC;
     const volume = vm.volume;
@@ -633,10 +835,12 @@ class Audio {
   }
 
   pause() {
+    if (!this.started) { return; }
     Audio.ctx.suspend();
   }
 
   resume() {
+    if (!this.started) { return; }
     Audio.ctx.resume();
   }
 }
