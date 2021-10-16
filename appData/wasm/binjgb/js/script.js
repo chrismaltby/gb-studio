@@ -477,19 +477,84 @@ class Emulator {
 
   bindKeys() {
     this.keyFuncs = {
-      ArrowDown: this.setJoypDown.bind(this),
-      ArrowLeft: this.setJoypLeft.bind(this),
-      ArrowRight: this.setJoypRight.bind(this),
-      ArrowUp: this.setJoypUp.bind(this),
-      KeyZ: this.setJoypB.bind(this),
-      KeyX: this.setJoypA.bind(this),
-      Enter: this.setJoypStart.bind(this),
-      Tab: this.setJoypSelect.bind(this),
       Backspace: this.keyRewind.bind(this),
-      Space: this.keyPause.bind(this),
-      BracketLeft: this.keyPrevPalette.bind(this),
-      BracketRight: this.keyNextPalette.bind(this),
+      " ": this.keyPause.bind(this),
+      "[": this.keyPrevPalette.bind(this),
+      "]": this.keyNextPalette.bind(this),
     };
+
+    if (customControls.down && customControls.down.length > 0) {
+      customControls.down.forEach((k) => {
+        this.keyFuncs[k] = this.setJoypDown.bind(this);
+      });
+    } else {
+      this.keyFuncs["ArrowDown"] = this.setJoypDown.bind(this);
+      this.keyFuncs["s"] = this.setJoypDown.bind(this);
+    }
+
+    if (customControls.left && customControls.left.length > 0) {
+      customControls.left.forEach((k) => {
+        this.keyFuncs[k] = this.setJoypLeft.bind(this);
+      });
+    } else {
+      this.keyFuncs["ArrowLeft"] = this.setJoypLeft.bind(this);
+      this.keyFuncs["a"] = this.setJoypLeft.bind(this);
+    }
+
+    if (customControls.right && customControls.right.length > 0) {
+      customControls.right.forEach((k) => {
+        this.keyFuncs[k] = this.setJoypRight.bind(this);
+      });
+    } else {
+      this.keyFuncs["ArrowRight"] = this.setJoypRight.bind(this);
+      this.keyFuncs["d"] = this.setJoypRight.bind(this);
+    }
+
+    if (customControls.up && customControls.up.length > 0) {
+      customControls.up.forEach((k) => {
+        this.keyFuncs[k] = this.setJoypUp.bind(this);
+      });
+    } else {
+      this.keyFuncs["ArrowUp"] = this.setJoypUp.bind(this);
+      this.keyFuncs["w"] = this.setJoypUp.bind(this);
+    }
+
+    if (customControls.a && customControls.a.length > 0) {
+      customControls.a.forEach((k) => {
+        this.keyFuncs[k] = this.setJoypA.bind(this);
+      });
+    } else {
+      this.keyFuncs["z"] = this.setJoypA.bind(this);
+      this.keyFuncs["j"] = this.setJoypA.bind(this);
+      this.keyFuncs["Alt"] = this.setJoypA.bind(this);
+    }
+
+    if (customControls.b && customControls.b.length > 0) {
+      customControls.b.forEach((k) => {
+        this.keyFuncs[k] = this.setJoypB.bind(this);
+      });
+    } else {
+      this.keyFuncs["x"] = this.setJoypB.bind(this);
+      this.keyFuncs["k"] = this.setJoypB.bind(this);
+      this.keyFuncs["Control"] = this.setJoypB.bind(this);
+    }
+
+    if (customControls.start && customControls.start.length > 0) {
+      customControls.start.forEach((k) => {
+        this.keyFuncs[k] = this.setJoypStart.bind(this);
+      });
+    } else {
+      this.keyFuncs["Enter"] = this.setJoypStart.bind(this);
+    }
+
+    if (customControls.select && customControls.select.length > 0) {
+      customControls.select.forEach((k) => {
+        this.keyFuncs[k] = this.setJoypSelect.bind(this);
+      });
+    } else {
+      this.keyFuncs["Shift"] = this.setJoypSelect.bind(this);
+    }
+
     this.boundKeyDown = this.keyDown.bind(this);
     this.boundKeyUp = this.keyUp.bind(this);
 
@@ -503,19 +568,19 @@ class Emulator {
   }
 
   keyDown(event) {
-    if (event.code in this.keyFuncs) {
+    if (event.key in this.keyFuncs) {
       if (this.touchEnabled) {
         this.touchEnabled = false;
         this.updateOnscreenGamepad();
       }
-      this.keyFuncs[event.code](true);
+      this.keyFuncs[event.key](true);
       event.preventDefault();
     }
   }
 
   keyUp(event) {
-    if (event.code in this.keyFuncs) {
-      this.keyFuncs[event.code](false);
+    if (event.key in this.keyFuncs) {
+      this.keyFuncs[event.key](false);
       event.preventDefault();
     }
   }
