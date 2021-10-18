@@ -236,14 +236,11 @@ const MusicPageUge = () => {
     false,
     false,
   ]);
-  console.log(channelStatus);
 
-  const playing = useSelector((state: RootState) => state.tracker.playing);
-
-  const [playbackState, setPlaybackState] = useState([-1, -1]);
+  const [playbackState, setPlaybackState] = useState([0, 0]);
   useEffect(() => {
-    setPlaybackState([-1, -1]);
-  }, [playing, song]);
+    setPlaybackState([0, 0]);
+  }, [selectedSongId]);
 
   const view = useSelector((state: RootState) => state.tracker.view);
 

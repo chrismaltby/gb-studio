@@ -241,7 +241,8 @@ export const SongPianoRoll = ({
             <RollPlaybackTracker
               ref={playingRowRef}
               style={{
-                transform: `translateX(${20 + playbackState[1] * CELL_SIZE}px)`,
+                display: playbackState[0] === sequenceId ? "" : "none",
+                transform: `translateX(${10 + playbackState[1] * CELL_SIZE}px)`,
               }}
             />
             <RollChannelGrid cellSize={CELL_SIZE} />
