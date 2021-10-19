@@ -18,7 +18,6 @@ interface SongTrackerProps {
   song: Song | null;
   height: number;
   channelStatus: boolean[];
-  playbackState: number[];
 }
 
 const COLUMN_CELLS = 4;
@@ -51,7 +50,6 @@ export const SongTracker = ({
   sequenceId,
   height,
   channelStatus,
-  playbackState,
 }: SongTrackerProps) => {
   const dispatch = useDispatch();
 
@@ -65,6 +63,21 @@ export const SongTracker = ({
   );
 
   const patternId = song?.sequence[sequenceId] || 0;
+
+  const [playbackState, setPlaybackState] = useState([0, 0]);
+  useEffect(() => {
+    const listener = (_event: any, d: any) => {
+      if (d.action === "update") {
+        setPlaybackState(d.update);
+      }
+    };
+    ipcRenderer.on("music-data", listener);
+
+    return () => {
+      ipcRenderer.removeListener("music-data", listener);
+    };
+  }, [setPlaybackState]);
+
   const [selectedCell, setSelectedCell] = useState<number | undefined>();
 
   const playingRowRef = useRef<HTMLSpanElement>(null);

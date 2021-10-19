@@ -16,7 +16,6 @@ import {
 } from "ui/splitpane/SplitPaneDivider";
 import { RootState } from "store/configureStore";
 import editorActions from "store/features/editor/editorActions";
-import settingsActions from "store/features/settings/settingsActions";
 import { NavigatorSongs } from "../music/NavigatorSongs";
 import { SongTracker } from "../music/SongTracker";
 import { musicSelectors } from "store/features/entities/entitiesState";
@@ -237,11 +236,6 @@ const MusicPageUge = () => {
     false,
   ]);
 
-  const [playbackState, setPlaybackState] = useState([0, 0]);
-  useEffect(() => {
-    setPlaybackState([0, 0]);
-  }, [selectedSongId]);
-
   const view = useSelector((state: RootState) => state.tracker.view);
 
   const renderGridView = useCallback(() => {
@@ -255,7 +249,6 @@ const MusicPageUge = () => {
             song={song}
             height={windowHeight - 100}
             channelStatus={channelStatus}
-            playbackState={playbackState}
           />
         </div>
       );
@@ -265,11 +258,10 @@ const MusicPageUge = () => {
           sequenceId={sequenceId}
           song={song}
           height={windowHeight - 100}
-          playbackState={playbackState}
         />
       );
     }
-  }, [channelStatus, playbackState, sequenceId, song, view, windowHeight]);
+  }, [channelStatus, sequenceId, song, view, windowHeight]);
 
   return (
     <Wrapper>
@@ -329,11 +321,7 @@ const MusicPageUge = () => {
             </div>
             <SplitPaneVerticalDivider />
             {renderGridView()}
-            <UgePlayer
-              data={song}
-              onPlaybackUpdate={setPlaybackState}
-              onChannelStatusUpdate={setChannelStatus}
-            />
+            <UgePlayer data={song} onChannelStatusUpdate={setChannelStatus} />
           </div>
           <SplitPaneHorizontalDivider onMouseDown={onResizeRight} />
           <div
