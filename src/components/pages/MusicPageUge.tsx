@@ -117,13 +117,24 @@ const MusicPageUge = () => {
   const error = useSelector(
     (state: RootState) => state.trackerDocument.present.error
   );
+
+  const [selectedSongPath, setSelectedSongPath] = useState("");
+  const [selectedSongType, setSelectedSongType] = useState("");
   useEffect(() => {
-    if (selectedSong && selectedSong.type === "uge") {
-      dispatch({ type: "@@TRACKER_INIT" });
-      const path = `${assetFilename(projectRoot, "music", selectedSong)}`;
-      dispatch(loadSongFile(path));
+    if (selectedSong) {
+      setSelectedSongPath(
+        `${assetFilename(projectRoot, "music", selectedSong)}`
+      );
+      setSelectedSongType(selectedSong.type || "");
     }
-  }, [dispatch, projectRoot, selectedSong]);
+  }, [projectRoot, selectedSong]);
+
+  useEffect(() => {
+    if (selectedSongPath !== "" && selectedSongType === "uge") {
+      dispatch({ type: "@@TRACKER_INIT" });
+      dispatch(loadSongFile(selectedSongPath));
+    }
+  }, [dispatch, selectedSongPath, selectedSongType]);
 
   const [leftPaneWidth, setLeftPaneSize, startLeftPaneResize] = useResizable({
     initialSize: navigatorSidebarWidth,
