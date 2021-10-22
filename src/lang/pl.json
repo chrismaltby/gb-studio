@@ -3,7 +3,7 @@
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
-  "TRIGGER": "Rozruch",
+  "TRIGGER": "Wyzwalacz",
   "SCENE": "Scena",
   "PROJECT": "Projekt",
   "CUSTOM_EVENT": "Własne zdarzenie",
@@ -33,8 +33,8 @@
   "TOOL_SELECT_LABEL": "Zaznacz",
   "TOOL_ADD_LABEL": "Dodaj",
   "TOOL_ADD_ACTOR_LABEL": "Dodaj aktora",
-  "TOOL_ADD_TRIGGER_LABEL": "Dodaj rozruch",
-  "TOOL_ADD_SCENE_LABEL": "Dodaj scene",
+  "TOOL_ADD_TRIGGER_LABEL": "Dodaj wyzwalacz",
+  "TOOL_ADD_SCENE_LABEL": "Dodaj scenę",
   "TOOL_ERASER_LABEL": "Usuń",
   "TOOL_COLLISIONS_LABEL": "Kolizja",
 
@@ -43,7 +43,7 @@
   "SIDEBAR_STARTING_SCENE": "Scena początkowa",
   "SIDEBAR_SCENE_START_SCRIPT": "Skrypt sceny początkowej",
   "SIDEBAR_ACTOR_SCRIPT": "Skrypt aktora",
-  "SIDEBAR_TRIGGER_SCRIPT": "Skrypt rozruchu",
+  "SIDEBAR_TRIGGER_SCRIPT": "Skrypt wyzwalacza",
   "SIDEBAR_CUSTOM_EVENT_SCRIPT": "Skrypt polecenia zdarzenia",
   "SIDEBAR_ADD_EVENT": "Dodaj polecenie",
   "SIDEBAR_CUSTOM_EVENTS": "Własne zdarzenia",
@@ -98,7 +98,7 @@
   "FIELD_SAVE": "Zapisz",
   "FIELD_VARIABLE_NAME": "Nazwa zmiennej",
   "FIELD_RESET_VARIABLES": "Resetuj WSZYSTKIE zmienne do 'Fałsz'.",
-  "FIELD_LOOP_EXIT": "Zakończ poprzez 'Zatrzymaj skrypt' lub 'Zmień scene'.",
+  "FIELD_LOOP_EXIT": "Zakończ poprzez 'Zatrzymaj skrypt' lub 'Zmień scenę'.",
   "FIELD_OVERLAY_HIDE": "Schowanie nakładanego okna na ekranie.",
   "FIELD_UNHIDE_SPRITES": "Odkrycie wszystkich aktywnych obiektów.",
   "FIELD_HIDE_SPRITES": "Schowanie wszystkich obiektów z ekranu.",
@@ -230,7 +230,7 @@
   "EVENT_MATH_DIV": "Matematyka: podziel",
   "EVENT_MATH_MOD": "Matematyka: modulo",
   "EVENT_MATH_ADD_VALUE": "Matematyka: dodaj zmienną",
-  "EVENT_MATH_SUB_VALUE": "Matematyka: odejmnij zmienną",
+  "EVENT_MATH_SUB_VALUE": "Matematyka: odejmij zmienną",
   "EVENT_MATH_MUL_VALUE": "Matematyka: pomnóż zmienną",
   "EVENT_MATH_DIV_VALUE": "Matematyka: podziel zmienną",
   "EVENT_MATH_MOD_VALUE": "Matematyka: modulo zmiennej",
@@ -271,7 +271,7 @@
   "EVENT_OVERLAY_SHOW": "Narzuta: pokaż (widzialna)",
   "EVENT_OVERLAY_HIDE": "Narzuta: schowaj (niewidzialna)",
   "EVENT_OVERLAY_MOVE_TO": "Narzuta: przesuń",
-  "EVENT_AWAIT_INPUT": "Przycisk Joypad: czekaj na przycisk",
+  "EVENT_AWAIT_INPUT": "Przycisk Joypada: czekaj na przycisk",
   "EVENT_MUSIC_PLAY": "Muzyka: odegraj utwór",
   "EVENT_MUSIC_STOP": "Muzyka: stop",
   "EVENT_STOP": "Skrypt: zatrzymaj zdarzenie (stop)",
@@ -282,8 +282,8 @@
   "EVENT_ACTOR_SET_MOVEMENT_SPEED": "Aktor: szybkość ruchu",
   "EVENT_ACTOR_SET_ANIMATION_SPEED": "Aktor: szybkość animacji",
   "EVENT_TEXT_SET_ANIMATION_SPEED": "Tekst: szybkość animacji",
-  "EVENT_SET_INPUT_SCRIPT": "Przycisk Joypad: przypisz zdarzenie",
-  "EVENT_REMOVE_INPUT_SCRIPT": "Przycisk Joypad: usuń przypisane zdarzenie",
+  "EVENT_SET_INPUT_SCRIPT": "Przycisk Joypada: przypisz zdarzenie",
+  "EVENT_REMOVE_INPUT_SCRIPT": "Przycisk Joypada: usuń przypisane zdarzenie",
   "EVENT_ACTOR_SET_FRAME": "Aktor: klatka animacji",
   "EVENT_VARIABLE_MATH": "Zmienna: funkcje matematyczne",
   "EVENT_ACTOR_SET_FRAME_TO_VALUE": "Aktor: klatka animacji ze zmiennej",
@@ -365,12 +365,12 @@
   "MENU_COPY_ACTOR": "Kopiuj aktora",
   "MENU_PASTE_ACTOR": "Wklej aktora",
   "MENU_DELETE_ACTOR": "Usuń aktora",
-  "MENU_COPY_TRIGGER": "Kopiuj rozruch",
-  "MENU_PASTE_TRIGGER": "Wklej rozruch",
-  "MENU_DELETE_TRIGGER": "Usuń rozruch",
-  "MENU_COPY_SCENE": "Kopiuj scene",
-  "MENU_PASTE_SCENE": "Wklej scene",
-  "MENU_DELETE_SCENE": "Usuń scene",
+  "MENU_COPY_TRIGGER": "Kopiuj wyzwalacz",
+  "MENU_PASTE_TRIGGER": "Wklej wyzwalacz",
+  "MENU_DELETE_TRIGGER": "Usuń wyzwalacz",
+  "MENU_COPY_SCENE": "Kopiuj scenę",
+  "MENU_PASTE_SCENE": "Wklej scenę",
+  "MENU_DELETE_SCENE": "Usuń scenę",
   "MENU_DELETE_CUSTOM_EVENT": "Usuń własne zdarzenie",
   "MENU_EDIT_CUSTOM_EVENT": "Edytuj własne zdarzenie",
   "MENU_CHECK_FOR_UPDATES": "Sprawdź aktualizacje",
@@ -411,7 +411,7 @@
 
   "// 14": "Dialogue Review ------------------------------------------------",
 
-  "DIALOGUE_REVIEW": "Dialogue Review",
+  "DIALOGUE_REVIEW": "Przegląd dialogów",
   "DIALOGUE_LINE": ": wiersz",
   "DIALOGUE_LINES": ": wierszy",
   "DIALOGUE_WORD": ": wyraz",
@@ -461,10 +461,27 @@
   "SETTINGS_GBC": "Opcje dla GB Color",
   "SETTINGS_CUSTOM_HEADER": "Własny nagłówek (Header dla wersji web)",
 
-  "// 17 ": "Error ------------------------------------------------------",
+  "// 17 ": "Palettes ---------------------------------------------------",
+
+  "PALETTES_EDITOR": "Edytor palet",
+
+  "// 18 ": "Error ------------------------------------------------------",
 
   "ERROR_TITLE": "GB Studio napotkał błąd",
   "ERROR_WHAT_CAN_I_DO": "Co można zrobić?",
   "ERROR_VIEW_STACK_TRACE": "Wyświetl śledzenie pamięci",
-  "ERROR_CLOSE": "Zamknij"
+  "ERROR_CLOSE": "Zamknij",
+
+  "// 19 ": "Game Type --------------------------------------------------",
+
+  "GAMETYPE_TOP_DOWN": "Top Down 2D",
+  "GAMETYPE_PLATFORMER": "Platformówka",
+  "GAMETYPE_ADVENTURE": "Przygodówka",
+  "GAMETYPE_SHMUP": "Shoot Em' Up",
+  "GAMETYPE_POINT_N_CLICK": "Point and Click",
+
+  "// 20": "Compiler -----------------------------------------------------",
+
+  "COMPILER_COMPILING": "Kompilowanie",
+  "COMPILER_LINKING": "Linkowanie"
 }
