@@ -10,10 +10,7 @@ interface UgePlayerProps {
   onChannelStatusUpdate?: (channels: boolean[]) => void;
 }
 
-export const UgePlayer = ({
-  data,
-  onChannelStatusUpdate,
-}: UgePlayerProps) => {
+export const UgePlayer = ({ data, onChannelStatusUpdate }: UgePlayerProps) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -50,13 +47,12 @@ export const UgePlayer = ({
           console.log(`Action ${d.action} not supported`);
       }
     };
-    
+
     ipcRenderer.on("music-data", listener);
 
     return () => {
       ipcRenderer.removeListener("music-data", listener);
-    }
-
+    };
   }, [onChannelStatusUpdate, play, data, dispatch]);
 
   useEffect(() => {

@@ -370,15 +370,21 @@ export const SongTracker = ({
     };
   });
 
-  const onFocus = useCallback((_e: React.FocusEvent<HTMLDivElement>) => {
-    if (!selectedCell) {
-      setSelectedCell(0);
-    }
-  }, [selectedCell, setSelectedCell]);
+  const onFocus = useCallback(
+    (_e: React.FocusEvent<HTMLDivElement>) => {
+      if (!selectedCell) {
+        setSelectedCell(0);
+      }
+    },
+    [selectedCell, setSelectedCell]
+  );
 
-  const onBlur = useCallback((_e: React.FocusEvent<HTMLDivElement>) => {
-    setSelectedCell(undefined);
-  }, [setSelectedCell]);
+  const onBlur = useCallback(
+    (_e: React.FocusEvent<HTMLDivElement>) => {
+      setSelectedCell(undefined);
+    },
+    [setSelectedCell]
+  );
 
   return (
     <div

@@ -202,7 +202,7 @@ const comparePatternCell = (a: PatternCell, b: PatternCell) => {
     a.effectcode === b.effectcode &&
     a.effectparam === b.effectparam
   );
-}
+};
 const arePropsEqual = (prevProps: SongRowProps, nextProps: SongRowProps) => {
   for (let i = 0; i < prevProps.row.length; i++) {
     if (!comparePatternCell(prevProps.row[i], nextProps.row[i])) {
@@ -217,6 +217,6 @@ const arePropsEqual = (prevProps: SongRowProps, nextProps: SongRowProps) => {
     prevProps.isSelected === nextProps.isSelected &&
     prevProps.isPlaying === nextProps.isPlaying
   );
-}
+};
 
 export const SongRow = React.memo(SongRowFwd, arePropsEqual);

@@ -17,7 +17,6 @@ import FloatingPanel, { FloatingPanelDivider } from "ui/panels/FloatingPanel";
 import trackerActions from "store/features/tracker/trackerActions";
 import { Button } from "ui/buttons/Button";
 import { Music } from "store/features/entities/entitiesTypes";
-import { assetFilename } from "lib/helpers/gbstudio";
 import { saveSongFile } from "store/features/trackerDocument/trackerDocumentState";
 import { InstrumentSelect } from "./InstrumentSelect";
 import { Select } from "ui/form/Select";
