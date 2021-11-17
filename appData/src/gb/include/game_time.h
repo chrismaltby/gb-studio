@@ -12,6 +12,7 @@
 #define IS_FRAME_4 ((game_time & 0x3) == 0)
 #define IS_FRAME_2 ((game_time & 0x1) == 0)
 #define IS_FRAME_ODD ((game_time & 0x1) == 1)
+#define IS_FRAME_EVEN ((game_time & 0x1) == 0)
 
 extern UINT8 game_time;
 

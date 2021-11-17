@@ -1,6 +1,6 @@
 #include <gb/gb.h>
+#include <gbdk/console.h>
 #include <stdint.h>
-#include <gb/console.h>
 #include <stdio.h>
 #include <string.h>
 

@@ -92,7 +92,6 @@ void vm_display_text(SCRIPT_CTX * THIS) OLDCALL __banked {
 
     INPUT_RESET;
     text_drawn = text_wait = text_ff = FALSE;
-    current_text_speed = text_draw_speed;
 }
 
 // switch text rendering to window or background

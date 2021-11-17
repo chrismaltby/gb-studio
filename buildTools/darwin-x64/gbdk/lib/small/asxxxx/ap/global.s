@@ -20,6 +20,7 @@
         ;; MBC Equates
 
         .MBC1_ROM_PAGE  = 0x2000 ; Address to write to for MBC1 switching
+        .MBC_ROM_PAGE   = 0x2000 ; Default platform MBC rom switching address
 
         rRAMG           = 0x0000 ; $0000->$1fff
         rROMB0          = 0x2000 ; $2000->$2fff

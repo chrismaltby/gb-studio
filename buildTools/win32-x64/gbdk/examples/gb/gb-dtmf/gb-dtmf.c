@@ -69,7 +69,7 @@
 	Frequency setting
 */
 /*
-	We have to calculate the frequency as followin formula
+	We have to calculate the frequency as following formula
 
 	DTMF has two set frequency, we have to decide Row & Column
 	with each digit('0','1','2'...)

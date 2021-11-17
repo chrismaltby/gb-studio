@@ -16,14 +16,14 @@
     to be in the upper left-hand corner as with regular
     hardware sprites.
 
-    Use the @ref utility_png2mtspr tool to convert single
+    Use the @ref utility_png2asset tool to convert single
     or multiple frames of graphics into metasprite
     structured data for use with the ...metasprite...()
     functions.
 
     # Metasprites composed of variable numbers of sprites
 
-    When using png2mtspr, it's common for the output of
+    When using png2asset, it's common for the output of
     different frames to be composed of different numbers
     of hardware sprites (since it's trying to create each
     frame as efficiently as possible). Due to that, it's
@@ -52,7 +52,7 @@
       property flags can be modified at runtime.
     - The metasprite structures can have the property flags
       modified before compilation (such as with `-sp <props>`
-      in the @ref utility_png2mtspr "png2mtspr" tool).
+      in the @ref utility_png2asset "png2asset" tool).
     - Update properties for the affected sprites after calling
       a move_metasprite_*() function.
 */
@@ -61,6 +61,7 @@
 #define _METASPRITES_H_INCLUDE
 
 #include <gb/hardware.h>
+#include <types.h>
 #include <stdint.h>
 
 /** Metasprite sub-item structure
@@ -83,24 +84,26 @@ typedef struct metasprite_t {
 } metasprite_t;
 
 #define metasprite_end -128 
+#define METASPR_ITEM(dy,dx,dt,a) {(dy),(dx),(dt),(a)}
+#define METASPR_TERM {metasprite_end}
 
 extern const void * __current_metasprite;
 extern uint8_t __current_base_tile;
 extern uint8_t __render_shadow_OAM;
 
 
-static uint8_t __move_metasprite(uint8_t id, uint8_t x, uint8_t y);
-static uint8_t __move_metasprite_vflip(uint8_t id, uint8_t x, uint8_t y);
-static uint8_t __move_metasprite_hflip(uint8_t id, uint8_t x, uint8_t y);
-static uint8_t __move_metasprite_hvflip(uint8_t id, uint8_t x, uint8_t y);
-static void __hide_metasprite(uint8_t id);
+static uint8_t __move_metasprite(uint8_t id, uint8_t x, uint8_t y) OLDCALL;
+static uint8_t __move_metasprite_vflip(uint8_t id, uint8_t x, uint8_t y) OLDCALL;
+static uint8_t __move_metasprite_hflip(uint8_t id, uint8_t x, uint8_t y) OLDCALL;
+static uint8_t __move_metasprite_hvflip(uint8_t id, uint8_t x, uint8_t y) OLDCALL;
+static void __hide_metasprite(uint8_t id) OLDCALL;
 
 /**
  * Hides all hardware sprites in range from <= X < to
  * @param from start OAM index
  * @param to finish OAM index
  */ 
-void hide_sprites_range(UINT8 from, UINT8 to) __preserves_regs(b, c);
+void hide_sprites_range(UINT8 from, UINT8 to) OLDCALL __preserves_regs(b, c);
 
 /** Moves metasprite to the absolute position x and y
 

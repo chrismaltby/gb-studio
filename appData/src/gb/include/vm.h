@@ -2,7 +2,7 @@
 #define _VM_H_INCLUDE
 
 #include <gb/gb.h>
-#include <gb/far_ptr.h>
+#include <gbdk/far_ptr.h>
 
 #ifdef VM_DEBUG_OUTPUT
     #include <stdio.h>

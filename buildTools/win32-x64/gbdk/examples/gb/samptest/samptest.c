@@ -3,10 +3,12 @@
  * by Lars Malmborg <glue@df.lth.se>
  */
 
-#include <gb/gb.h>
 #include <stdint.h>
-#include <gb/sample.h>
 #include <stdio.h>
+
+#include <gb/gb.h>
+
+#include "sample.h"
 
 #define SAMPLES 25768
 extern const uint8_t sample[];

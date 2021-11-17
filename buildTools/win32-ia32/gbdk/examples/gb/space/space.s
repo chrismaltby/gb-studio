@@ -49,7 +49,7 @@
 
 	.module	Space
 
-	.area	_BSS
+	.area	_DATA
 
 .time:				; Global "time" value (counter)
 	.ds	0x01
