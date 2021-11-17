@@ -11,7 +11,7 @@
 #include "vm.h"
 #include "bankdata.h"
 
-void vm_load_palette(SCRIPT_CTX * THIS, UBYTE mask, UBYTE options) __banked {
+void vm_load_palette(SCRIPT_CTX * THIS, UBYTE mask, UBYTE options) OLDCALL __banked {
     UBYTE bank = THIS->bank;
     #ifdef SGB
         UBYTE sgb_changes = SGB_PALETTES_NONE;

@@ -12,6 +12,7 @@ export interface EventField {
   options?: Array<[string | number, string]>;
   defaultValue?: Record<string, unknown> | unknown;
   width?: string;
+  fields?: EventField[];
 }
 
 export interface EventHandler {

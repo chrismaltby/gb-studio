@@ -14,6 +14,7 @@ import projectActions, {
 import {
   dummyProjectData,
   dummyScene,
+  dummySceneDenormalized,
   dummyBackground,
   dummySpriteSheet,
   dummyMusic,
@@ -32,7 +33,7 @@ test("Should fix scene widths if backgrounds has been removed since save", () =>
     ...dummyProjectData,
     scenes: [
       {
-        ...dummyScene,
+        ...dummySceneDenormalized,
         id: "scene1",
         backgroundId: "missingbg",
         width: 20,
@@ -64,7 +65,7 @@ test("Should fix scene widths if backgrounds have changed dimensions since save"
     ...dummyProjectData,
     scenes: [
       {
-        ...dummyScene,
+        ...dummySceneDenormalized,
         id: "scene1",
         backgroundId: "bg1",
         width: 20,
@@ -104,7 +105,7 @@ test("Should keep scene widths if backgrounds have NOT changed dimensions since 
     ...dummyProjectData,
     scenes: [
       {
-        ...dummyScene,
+        ...dummySceneDenormalized,
         id: "scene1",
         backgroundId: "bg1",
         width: 20,

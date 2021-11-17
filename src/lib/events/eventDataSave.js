@@ -8,6 +8,30 @@ const fields = [
     label: l10n("FIELD_SAVE_DATA"),
   },
   {
+    key: "saveSlot",
+    label: l10n("FIELD_SAVE_SLOT"),
+    type: "togglebuttons",
+    options: [
+      [
+        0,
+        l10n("FIELD_SLOT_N", { slot: 1 }),
+        l10n("FIELD_SAVE_SLOT_N", { slot: 1 }),
+      ],
+      [
+        1,
+        l10n("FIELD_SLOT_N", { slot: 2 }),
+        l10n("FIELD_SAVE_SLOT_N", { slot: 2 }),
+      ],
+      [
+        2,
+        l10n("FIELD_SLOT_N", { slot: 3 }),
+        l10n("FIELD_SAVE_SLOT_N", { slot: 3 }),
+      ],
+    ],
+    allowNone: false,
+    defaultValue: 0,
+  },
+  {
     key: "__scriptTabs",
     type: "tabs",
     defaultValue: "save",
@@ -24,7 +48,7 @@ const fields = [
 
 const compile = (input, helpers) => {
   const { dataSave } = helpers;
-  dataSave(0, input.true);
+  dataSave(input.saveSlot, input.true);
 };
 
 module.exports = {

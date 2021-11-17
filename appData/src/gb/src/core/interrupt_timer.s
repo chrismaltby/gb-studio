@@ -9,7 +9,7 @@
         ei
         jp      .timer_ISR
 
-        .area   _BASE
+        .area   _HOME
 
 .timer_ISR::
         push af

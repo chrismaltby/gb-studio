@@ -457,6 +457,7 @@ test("should precompile image data", async () => {
   const { usedBackgrounds, backgroundLookup } = await precompileBackgrounds(
     backgrounds,
     scenes,
+    {},
     `${__dirname}/_files`,
     `${__dirname}/_tmp`
   );
@@ -514,6 +515,7 @@ test("should precompile scenes", async () => {
   };
   const sceneData = precompileScenes(
     scenes,
+    {},
     defaultPlayerSprites,
     usedBackgrounds,
     spriteData

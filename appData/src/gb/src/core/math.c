@@ -27,6 +27,13 @@ const point8_t dir_lookup[4] = {
     { .x = -1, .y =  0 }
 };
 
+const UBYTE dir_angle_lookup[4] = {
+    128,
+    64,
+    0,
+    192,
+};
+
 UBYTE isqrt(UWORD x) __nonbanked {
     UWORD m, y, b;
     m = 0x4000;

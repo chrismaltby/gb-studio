@@ -268,6 +268,7 @@ export const ScriptEventFields = styled.div`
 
 interface ScriptEventFieldProps {
   halfWidth?: boolean;
+  inline?: boolean;
 }
 
 export const ScriptEventField = styled.div<ScriptEventFieldProps>`
@@ -277,6 +278,17 @@ export const ScriptEventField = styled.div<ScriptEventFieldProps>`
           flex-basis: 100px;
         `
       : ""}
+
+      ${(props) =>
+        props.inline
+          ? css`
+              flex-basis: 0;
+              flex-grow: 0;
+              margin-left: -2px;
+            `
+          : ""}
+  }
+
 `;
 
 interface ScriptEditorChildrenProps {
@@ -379,4 +391,21 @@ interface ScriptEventWrapperProps {
 export const ScriptEventWrapper = styled.div<ScriptEventWrapperProps>`
   background-color: ${(props) => props.theme.colors.scripting.form.background};
   color: ${(props) => props.theme.colors.text};
+`;
+
+interface ScriptEventFieldGroupProps {
+  halfWidth?: boolean;
+}
+
+export const ScriptEventFieldGroupWrapper = styled.div<ScriptEventFieldGroupProps>`
+  ${(props) =>
+    props.halfWidth
+      ? css`
+          flex-basis: 100px;
+        `
+      : ""}
+  & > div {
+    margin: -10px;
+    flex-wrap: nowrap;
+  }
 `;

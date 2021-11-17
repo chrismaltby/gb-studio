@@ -13,6 +13,7 @@ test("Should be able to set active actor to player", () => {
         },
       ],
       triggers: [],
+      projectiles: [],
     },
     entity: {
       id: "actor1",
@@ -40,6 +41,7 @@ test("Should be able to set active actor to actor by id", () => {
         },
       ],
       triggers: [],
+      projectiles: [],
     },
   });
   sb.actorSetActive("actor2");
@@ -57,6 +59,7 @@ test("Should be able to move actor to new location", () => {
       id: "scene1",
       actors: [],
       triggers: [],
+      projectiles: [],
     },
   });
   sb.actorMoveTo(5, 6, true, "horizontal");
@@ -77,7 +80,8 @@ test("Should be able to wait for N frames to pass", () => {
       id: "scene1",
       actors: [],
       triggers: [],
-    }
+      projectiles: [],
+    },
   });
   sb.wait(20);
   expect(output).toEqual([
@@ -102,6 +106,7 @@ test("Should be able to generate script string", () => {
         },
       ],
       triggers: [],
+      projectiles: [],
     },
   });
   sb.actorSetActive("actor2");
@@ -145,8 +150,9 @@ test("Should be able to open dialogue boxes", async () => {
       id: "scene1",
       actors: [],
       triggers: [],
+      projectiles: [],
     },
-    fonts: [dummyCompiledFont]
+    fonts: [dummyCompiledFont],
   });
   sb.textDialogue("Hello World");
   sb.scriptEnd();
@@ -156,6 +162,7 @@ test("Should be able to open dialogue boxes", async () => {
 .include "data/game_globals.i"
 
 .area _CODE_255
+
 
 ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
@@ -184,6 +191,7 @@ test("Should be able to conditionally execute if variable is true with event arr
       id: "scene1",
       actors: [],
       triggers: [],
+      projectiles: [],
     },
     // variables: ["0", "1"],
     compileEvents: (self: ScriptBuilder, events: ScriptEvent[]) => {
@@ -219,6 +227,7 @@ test("Should be able to conditionally execute if variable is true with event arr
 
 .area _CODE_255
 
+
 ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
 
@@ -252,6 +261,7 @@ test("Should be able to conditionally execute if variable is true with function 
         },
       ],
       triggers: [],
+      projectiles: [],
     },
     fonts: [dummyCompiledFont],
     // variables: ["0", "1"],
@@ -277,6 +287,7 @@ test("Should be able to conditionally execute if variable is true with function 
 .include "data/game_globals.i"
 
 .area _CODE_255
+
 
 ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
@@ -335,6 +346,7 @@ test("Should be able to conditionally execute if variable is true with nested fu
         },
       ],
       triggers: [],
+      projectiles: [],
     },
     fonts: [dummyCompiledFont],
     // variables: ["0", "1", "2"],
@@ -364,6 +376,7 @@ test("Should be able to conditionally execute if variable is true with nested fu
 .include "data/game_globals.i"
 
 .area _CODE_255
+
 
 ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
@@ -440,6 +453,7 @@ test("Should be able to define labels and jump", () => {
       id: "scene1",
       actors: [],
       triggers: [],
+      projectiles: [],
     },
   });
   sb.labelDefine("mylabel");
@@ -450,6 +464,7 @@ test("Should be able to define labels and jump", () => {
 .include "data/game_globals.i"
 
 .area _CODE_255
+
 
 ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
@@ -472,6 +487,7 @@ test("Should throw if jump to label is not stack neutral", () => {
         },
       ],
       triggers: [],
+      projectiles: [],
     },
     entity: {
       id: "actor1",

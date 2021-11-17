@@ -63,10 +63,10 @@ void projectiles_update() __nonbanked {
         projectile->pos.y -= projectile->delta_pos.y;
 
         actor_t *hit_actor = actor_overlapping_bb(&projectile->def.bounds, &projectile->pos, NULL, FALSE);
-        if (hit_actor) {
+        if (hit_actor && (hit_actor->collision_group & projectile->def.collision_mask)) {
             // Hit! - Fire collision script here
-            if (hit_actor->script.bank) {
-                script_execute(hit_actor->script.bank, hit_actor->script.ptr, 0, 0);
+            if (hit_actor->script_hit1.bank) {
+                script_execute(hit_actor->script_hit1.bank, hit_actor->script_hit1.ptr, 0, 1, (UWORD)(projectile->def.collision_group));
             }
 
             // Remove projectile
@@ -78,7 +78,7 @@ void projectiles_update() __nonbanked {
         }
 
         UINT8 screen_x = (projectile->pos.x >> 4) - draw_scroll_x + 8,
-              screen_y = (projectile->pos.y >> 4) - draw_scroll_y;
+              screen_y = (projectile->pos.y >> 4) - draw_scroll_y + 8;
 
         if (screen_x > 160 || screen_y > 144) {
             // Remove projectile

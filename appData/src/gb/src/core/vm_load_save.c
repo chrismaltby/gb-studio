@@ -4,12 +4,12 @@
 
 #include "load_save.h"
 
-void vm_save_clear(SCRIPT_CTX * THIS, UBYTE slot) __banked {
+void vm_save_clear(SCRIPT_CTX * THIS, UBYTE slot) OLDCALL __banked {
     THIS;
     data_clear(slot);
 }
 
-void vm_save_peek(SCRIPT_CTX * THIS, INT16 idxA, INT16 idxB, INT16 idxC, UBYTE count, UBYTE slot) __banked {
+void vm_save_peek(SCRIPT_CTX * THIS, INT16 idxA, INT16 idxB, INT16 idxC, UBYTE count, UBYTE slot) OLDCALL __banked {
     INT16 * res = VM_REF_TO_PTR(idxA);      // result of the operation
     INT16 * dest = VM_REF_TO_PTR(idxB);     // destination for data being peeked
     if (idxC < 0) idxC = 0;                 // source of peek in save slot (global)

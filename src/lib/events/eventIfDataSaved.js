@@ -5,6 +5,30 @@ const groups = ["EVENT_GROUP_SAVE_DATA", "EVENT_GROUP_CONTROL_FLOW"];
 
 const fields = [
   {
+    key: "saveSlot",
+    label: l10n("FIELD_SAVE_SLOT"),
+    type: "togglebuttons",
+    options: [
+      [
+        0,
+        l10n("FIELD_SLOT_N", { slot: 1 }),
+        l10n("FIELD_SAVE_SLOT_N", { slot: 1 }),
+      ],
+      [
+        1,
+        l10n("FIELD_SLOT_N", { slot: 2 }),
+        l10n("FIELD_SAVE_SLOT_N", { slot: 2 }),
+      ],
+      [
+        2,
+        l10n("FIELD_SLOT_N", { slot: 3 }),
+        l10n("FIELD_SAVE_SLOT_N", { slot: 3 }),
+      ],
+    ],
+    allowNone: false,
+    defaultValue: 0,
+  },
+  {
     label: l10n("FIELD_IF_SAVED_DATA"),
   },
   {
@@ -45,7 +69,7 @@ const compile = (input, helpers) => {
   const { ifDataSaved } = helpers;
   const truePath = input.true;
   const falsePath = input.__disableElse ? [] : input.false;
-  ifDataSaved(0, truePath, falsePath);
+  ifDataSaved(input.saveSlot, truePath, falsePath);
 };
 
 module.exports = {

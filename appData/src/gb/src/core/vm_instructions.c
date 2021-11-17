@@ -172,7 +172,7 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_actor_get_anim_frame,   2}, // 0x83
     {vm_actor_set_anim_set,     4}, // 0x84
     {vm_switch_text_layer,      1}, // 0x85 
-    {0, 0},
+    {vm_actor_get_angle,        4}, // 0x86
     {0, 0},
     {0, 0},
 

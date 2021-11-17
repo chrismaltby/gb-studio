@@ -284,7 +284,7 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
           return actorNameForId(value);
         } else if (isVariableField(command, key, args)) {
           return variableNameForId(value);
-        } else if (isPropertyField(command, key, arg)) {
+        } else if (isPropertyField(command, key, args)) {
           const propertyParts = String(value).split(":");
           return `${actorNameForId(propertyParts[0])}.${propertyNameForId(
             propertyParts[1]

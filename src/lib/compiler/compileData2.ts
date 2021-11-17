@@ -22,6 +22,15 @@ interface PrecompiledBackground {
   tilemapAttrIndex: number;
 }
 
+interface PrecompiledProjectile {
+  spriteSheetId: string;
+  speed: number;
+  animSpeed: number;
+  lifeTime: number;
+  collisionGroup: string;
+  collisionMask: string[];
+}
+
 interface AvatarData {
   data: Uint8Array;
 }
@@ -45,6 +54,7 @@ interface PrecompiledScene {
   parallax: Array<{ height: number; speed: number }>;
   actors: Actor[];
   triggers: Trigger[];
+  projectiles: PrecompiledProjectile[];
   sprites: number[];
 }
 
@@ -69,6 +79,7 @@ export const TILESET_TYPE = "const struct tileset_t";
 export const TRIGGER_TYPE = "const struct trigger_t";
 export const ACTOR_TYPE = "const struct actor_t";
 export const SCENE_TYPE = "const struct scene_t";
+export const PROJECTILE_TYPE = "const struct projectile_def_t";
 export const PALETTE_TYPE = "const struct palette_t";
 export const DATA_TYPE = "const unsigned char";
 export const FARPTR_TYPE = "const far_ptr_t";
@@ -128,6 +139,29 @@ export const toASMCollisionGroup = (group: string) => {
     return "COLLISION_GROUP_3";
   }
   return "COLLISION_GROUP_NONE";
+};
+
+export const toASMCollisionMask = (mask: string[]) => {
+  const flags = mask
+    .map((group: string) => {
+      if (group === "player") {
+        return "COLLISION_GROUP_PLAYER";
+      }
+      if (group === "1") {
+        return "COLLISION_GROUP_1";
+      }
+      if (group === "2") {
+        return "COLLISION_GROUP_2";
+      }
+      if (group === "3") {
+        return "COLLISION_GROUP_3";
+      }
+      return "";
+    })
+    .filter((group) => group !== "")
+    .sort();
+
+  return flags.length > 0 ? flags.join(" | ") : 0;
 };
 
 export const maybeScriptFarPtr = (scriptSymbol: string | null) =>
@@ -219,6 +253,9 @@ export const sceneTriggersSymbol = (sceneIndex: number): string =>
 
 export const sceneSpritesSymbol = (sceneIndex: number): string =>
   `scene_${sceneIndex}_sprites`;
+
+export const sceneProjectilesSymbol = (sceneIndex: number): string =>
+  `scene_${sceneIndex}_projectiles`;
 
 export const sceneCollisionsSymbol = (sceneIndex: number): string =>
   `scene_${sceneIndex}_collisions`;
@@ -424,6 +461,7 @@ export const compileScene = (
       n_actors: scene.actors.length,
       n_triggers: scene.triggers.length,
       n_sprites: scene.sprites.length,
+      n_projectiles: scene.projectiles.length,
       actors:
         scene.actors.length > 0
           ? toFarPtr(sceneActorsSymbol(sceneIndex))
@@ -435,6 +473,10 @@ export const compileScene = (
       sprites:
         scene.sprites.length > 0
           ? toFarPtr(sceneSpritesSymbol(sceneIndex))
+          : undefined,
+      projectiles:
+        scene.projectiles.length > 0
+          ? toFarPtr(sceneProjectilesSymbol(sceneIndex))
           : undefined,
       script_init: maybeScriptFarPtr(eventPtrs[sceneIndex].start),
       script_p_hit1: maybeScriptFarPtr(eventPtrs[sceneIndex].playerHit1),
@@ -449,6 +491,7 @@ export const compileScene = (
       scene.actors.length ? sceneActorsSymbol(sceneIndex) : [],
       scene.triggers.length > 0 ? sceneTriggersSymbol(sceneIndex) : [],
       scene.sprites.length > 0 ? sceneSpritesSymbol(sceneIndex) : [],
+      scene.projectiles.length > 0 ? sceneProjectilesSymbol(sceneIndex) : [],
       maybeScriptDependency(eventPtrs[sceneIndex].start),
       maybeScriptDependency(eventPtrs[sceneIndex].playerHit1)
     )
@@ -619,6 +662,59 @@ export const compileSceneSpritesHeader = (
     FARPTR_TYPE,
     sceneSpritesSymbol(sceneIndex),
     `// Scene: ${sceneName(scene, sceneIndex)}\n// Sprites`
+  );
+
+export const compileSceneProjectiles = (
+  scene: PrecompiledScene,
+  sceneIndex: number,
+  sprites: PrecompiledSpriteSheetData[]
+) =>
+  toStructArrayDataFile(
+    PROJECTILE_TYPE,
+    sceneProjectilesSymbol(sceneIndex),
+    `// Scene: ${sceneName(scene, sceneIndex)}\n// Projectiles`,
+    filterNull(
+      scene.projectiles.map((projectile, projectileIndex) => {
+        const sprite = sprites.find((s) => s.id === projectile.spriteSheetId);
+        const spriteIndex = sprites.findIndex(
+          (s) => s.id === projectile.spriteSheetId
+        );
+        if (!sprite) return null;
+        const animOffsets = sprite.animationOffsets[0];
+        return {
+          __comment: `Projectile ${projectileIndex}`,
+          sprite: toFarPtr(spriteSheetSymbol(spriteIndex)),
+          move_speed: Math.round(projectile.speed * 16),
+          life_time: Math.round(projectile.lifeTime * 60),
+          collision_group: toASMCollisionGroup(projectile.collisionGroup),
+          collision_mask: toASMCollisionMask(projectile.collisionMask),
+          bounds: compileBounds(sprite),
+          anim_tick: projectile.animSpeed,
+          frame: animOffsets.start,
+          frame_start: animOffsets.start,
+          frame_end: animOffsets.end + 1,
+        };
+      })
+    ),
+    // Dependencies
+    flatten(
+      scene.projectiles.map((projectile) => {
+        const spriteIndex = sprites.findIndex(
+          (s) => s.id === projectile.spriteSheetId
+        );
+        return spriteSheetSymbol(spriteIndex);
+      })
+    )
+  );
+
+export const compileSceneProjectilesHeader = (
+  scene: PrecompiledScene,
+  sceneIndex: number
+) =>
+  toArrayDataHeader(
+    FARPTR_TYPE,
+    sceneProjectilesSymbol(sceneIndex),
+    `// Scene: ${sceneName(scene, sceneIndex)}\n// Projectiles`
   );
 
 export const compileSceneCollisions = (

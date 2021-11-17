@@ -15,7 +15,7 @@
 #include "palette.h"
 
 // put submap of a large map to screen
-void set_bkg_submap(UINT8 x, UINT8 y, UINT8 w, UINT8 h, const unsigned char *map, UINT8 map_w);
+void set_bkg_submap(UINT8 x, UINT8 y, UINT8 w, UINT8 h, const unsigned char *map, UINT8 map_w) OLDCALL;
 
 void scroll_queue_row(UBYTE x, UBYTE y);
 void scroll_queue_col(UBYTE x, UBYTE y);

@@ -15,7 +15,7 @@ import uuid from "uuid";
 const indexById = indexBy("id");
 
 export const LATEST_PROJECT_VERSION = "2.0.0";
-export const LATEST_PROJECT_MINOR_VERSION = "10";
+export const LATEST_PROJECT_MINOR_VERSION = "13";
 
 /*
  * Helper function to make sure that all migrated functions
@@ -1098,6 +1098,139 @@ export const migrateFrom200r9To200r10Triggers = (data) => {
   };
 };
 
+/* Version 2.0.0 r11 adds additional parameters to EVENT_LAUNCH_PROJECTILE
+ */
+export const migrateFrom200r10To200r11Event = (event) => {
+  const migrateMeta = generateMigrateMeta(event);
+
+  if (event.args && event.command === "EVENT_LAUNCH_PROJECTILE") {
+    const unionType =
+      (event.args && event.args.direction && event.args.direction.type) ||
+      "direction";
+    const unionValue =
+      event.args && event.args.direction && event.args.direction.value;
+
+    let directionType = "direction";
+    if (unionType === "variable") {
+      directionType = "anglevar";
+    } else if (unionType === "property") {
+      directionType = "actor";
+    }
+
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        animSpeed: 7,
+        lifeTime: 1,
+        directionType,
+        direction: unionType === "direction" ? unionValue : "right",
+        angleVariable: unionType === "variable" ? unionValue : "0",
+        angle: 0,
+        otherActorId:
+          unionType === "property" ? unionValue.replace(/:.*/, "") : "$self$",
+      },
+    });
+  }
+
+  return event;
+};
+
+const migrateFrom200r10To200r11Events = (data) => {
+  return {
+    ...data,
+    scenes: mapScenesEvents(data.scenes, migrateFrom200r10To200r11Event),
+    customEvents: (data.customEvents || []).map((customEvent) => {
+      return {
+        ...customEvent,
+        script: mapEvents(customEvent.script, migrateFrom200r10To200r11Event),
+      };
+    }),
+  };
+};
+
+/* Version 2.0.0 r12 adds variable support for camera events + ability to lock per axis
+ */
+export const migrateFrom200r11To200r12Event = (event) => {
+  const migrateMeta = generateMigrateMeta(event);
+
+  if (event.args && event.command === "EVENT_CAMERA_MOVE_TO") {
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        x: {
+          type: "number",
+          value: event.args.x,
+        },
+        y: {
+          type: "number",
+          value: event.args.y,
+        },
+      },
+    });
+  } else if (event.args && event.command === "EVENT_CAMERA_LOCK") {
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        axis: ["x", "y"],
+      },
+    });
+  }
+
+  return event;
+};
+
+const migrateFrom200r11To200r12Events = (data) => {
+  return {
+    ...data,
+    scenes: mapScenesEvents(data.scenes, migrateFrom200r11To200r12Event),
+    customEvents: (data.customEvents || []).map((customEvent) => {
+      return {
+        ...customEvent,
+        script: mapEvents(customEvent.script, migrateFrom200r11To200r12Event),
+      };
+    }),
+  };
+};
+
+/* Version 2.0.0 r13 adds multiple save slots for save/load events
+ */
+export const migrateFrom200r12To200r13Event = (event) => {
+  const migrateMeta = generateMigrateMeta(event);
+
+  if (
+    event.args &&
+    (event.command === "EVENT_SAVE_DATA" ||
+      event.command === "EVENT_LOAD_DATA" ||
+      event.command === "EVENT_CLEAR_DATA" ||
+      event.command === "EVENT_IF_SAVED_DATA")
+  ) {
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        saveSlot: 0,
+      },
+    });
+  }
+  return event;
+};
+
+const migrateFrom200r12To200r13Events = (data) => {
+  return {
+    ...data,
+    scenes: mapScenesEvents(data.scenes, migrateFrom200r12To200r13Event),
+    customEvents: (data.customEvents || []).map((customEvent) => {
+      return {
+        ...customEvent,
+        script: mapEvents(customEvent.script, migrateFrom200r12To200r13Event),
+      };
+    }),
+  };
+};
+
 const migrateProject = (project) => {
   let data = { ...project };
   let version = project._version || "1.0.0";
@@ -1168,6 +1301,18 @@ const migrateProject = (project) => {
     if (release === "9") {
       data = migrateFrom200r9To200r10Triggers(data);
       release = "10";
+    }
+    if (release === "10") {
+      data = migrateFrom200r10To200r11Events(data);
+      release = "11";
+    }
+    if (release === "11") {
+      data = migrateFrom200r11To200r12Events(data);
+      release = "12";
+    }
+    if (release === "12") {
+      data = migrateFrom200r12To200r13Events(data);
+      release = "13";
     }
   }
 

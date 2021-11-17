@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import cloneDeep from "lodash/cloneDeep";
 import { OptGroup } from "ui/form/Select";
-import events, { EventHandler } from "lib/events";
+import events, { EventField, EventHandler } from "lib/events";
 import l10n from "lib/helpers/l10n";
 import styled, { css } from "styled-components";
 import { Menu, MenuGroup, MenuItem } from "ui/menu/Menu";
@@ -79,7 +79,21 @@ const instanciateScriptEvent = (
     defaultArgs,
   }: InstanciateOptions
 ): Omit<ScriptEvent, "id"> => {
-  const fields = handler.fields || [];
+  const flattenFields = (fields: EventField[], memo: EventField[] = []) => {
+    const addFields = (fields: EventField[]) => {
+      for (const field of fields) {
+        memo.push(field);
+        if (field.type === "group" && field.fields) {
+          addFields(field.fields);
+        }
+      }
+    };
+    addFields(fields);
+    return memo;
+  };
+
+  const fields = flattenFields(handler.fields || []);
+
   const args = cloneDeep(
     fields.reduce(
       (memo, field) => {

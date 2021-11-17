@@ -6,6 +6,6 @@
 
 #include "vm.h"
                                                                                           
-void vm_sgb_transfer(UWORD dummy0, UWORD dummy1, SCRIPT_CTX * THIS) __nonbanked;
+void vm_sgb_transfer(UWORD dummy0, UWORD dummy1, SCRIPT_CTX * THIS) OLDCALL __nonbanked;
 
 #endif

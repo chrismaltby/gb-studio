@@ -8,6 +8,7 @@ import React, {
   ReactNode,
 } from "react";
 import styled, { css } from "styled-components";
+import { RelativePortal } from "ui/layout/RelativePortal";
 import useDropdownMenu from "../hooks/use-dropdown-menu";
 import { TriangleIcon } from "../icons/Icons";
 import { Menu, MenuItem, MenuItemProps } from "../menu/Menu";
@@ -33,10 +34,12 @@ export const MenuWrapper = styled.div<MenuWrapperProps>`
   position: absolute;
   margin-top: 2px;
   z-index: 10001;
+  left: 0;
 
   ${(props) =>
     props.menuDirection === "right"
       ? css`
+          left: auto;
           right: 0;
         `
       : ""}
@@ -122,7 +125,11 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = ({
       </Button>
       {isOpen && (
         <MenuWrapper menuDirection={menuDirection}>
-          <Menu role="menu">{childrenWithProps}</Menu>
+          <RelativePortal
+            pin={menuDirection === "left" ? "top-left" : "top-right"}
+          >
+            <Menu role="menu">{childrenWithProps}</Menu>
+          </RelativePortal>
         </MenuWrapper>
       )}
     </Wrapper>

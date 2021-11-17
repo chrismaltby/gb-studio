@@ -90,6 +90,7 @@ typedef enum {
 
 extern const INT8 sine_wave[256];
 extern const point8_t dir_lookup[4];
+extern const UBYTE dir_angle_lookup[4];
 
 inline void point_translate_dir(upoint16_t *point, direction_e dir, UBYTE speed) {
     point->x += (WORD)(dir_lookup[dir].x * speed);

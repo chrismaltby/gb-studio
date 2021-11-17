@@ -4,7 +4,6 @@ import events, {
   engineFieldUpdateEvents,
   engineFieldStoreEvents,
 } from "lib/events";
-import ScriptEventFormField from "./ScriptEventFormField";
 import {
   customEventSelectors,
   scriptEventSelectors,
@@ -20,7 +19,7 @@ import {
   CustomEvent,
   ScriptEventFieldSchema,
 } from "store/features/entities/entitiesTypes";
-import { ScriptEventFields } from "ui/scripting/ScriptEvents";
+import ScriptEventFields from "./ScriptEventFields";
 
 interface ScriptEventFormProps {
   id: string;
@@ -29,9 +28,6 @@ interface ScriptEventFormProps {
   altBg: boolean;
   renderEvents: (key: string, label: string) => React.ReactNode;
 }
-
-const genKey = (id: string, key: string, index: number) =>
-  `${id}_${key}_${index || 0}`;
 
 const getScriptEventFields = (
   command: string,
@@ -146,50 +142,15 @@ const ScriptEventForm = ({
   }
 
   return (
-    <ScriptEventFields>
-      {fields.map((field, fieldIndex) => {
-        if (field.hide) {
-          return null;
-        }
-        // Determine if field conditions are met and hide if not
-        if (field.conditions) {
-          const showField = field.conditions.reduce((memo, condition) => {
-            const keyValue = value?.[condition.key];
-            return (
-              memo &&
-              (!condition.eq || keyValue === condition.eq) &&
-              (!condition.ne || keyValue !== condition.ne) &&
-              (!condition.gt || Number(keyValue) > Number(condition.gt)) &&
-              (!condition.gte || Number(keyValue) >= Number(condition.gte)) &&
-              (!condition.lt || Number(keyValue) > Number(condition.lt)) &&
-              (!condition.lte || Number(keyValue) >= Number(condition.lte)) &&
-              (!condition.in || condition.in.indexOf(keyValue) >= 0)
-            );
-          }, true);
-          if (!showField) {
-            return null;
-          }
-        }
-
-        if (field.type === "events") {
-          return renderEvents(
-            field.key || "",
-            typeof field.label === "string" ? field.label : ""
-          );
-        }
-
-        return (
-          <ScriptEventFormField
-            key={genKey(id, field.key || "", fieldIndex)}
-            scriptEventId={id}
-            field={field}
-            entityId={entityId}
-            nestLevel={nestLevel}
-            altBg={altBg}
-          />
-        );
-      })}
-    </ScriptEventFields>
+    <ScriptEventFields
+      id={id}
+      entityId={entityId}
+      nestLevel={nestLevel}
+      altBg={altBg}
+      renderEvents={renderEvents}
+      fields={fields}
+      value={value}
+    />
   );
 };
 
