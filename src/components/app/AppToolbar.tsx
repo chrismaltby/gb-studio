@@ -223,6 +223,7 @@ const AppToolbar: FC = () => {
         </MenuItem>
         <MenuItem onClick={onBuild("pocket")}>
           {l10n("TOOLBAR_EXPORT_POCKET")}
+          <MenuAccelerator accelerator="CommandOrControl+Shift+M" />
         </MenuItem>
       </DropdownButton>
       <FixedSpacer width={10} />

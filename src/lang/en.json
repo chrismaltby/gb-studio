@@ -28,6 +28,7 @@
   "TOOLBAR_EXPORT_AS": "Export As...",
   "TOOLBAR_EXPORT_ROM": "Export ROM",
   "TOOLBAR_EXPORT_WEB": "Export Web",
+  "TOOLBAR_EXPORT_POCKET": "Export Pocket",
   "TOOLBAR_RUN": "Run",
   "TOOLBAR_SEARCH": "Search...",
 
@@ -452,6 +453,7 @@
   "BUILD_RUN": "Run",
   "BUILD_EXPORT_ROM": "Export ROM",
   "BUILD_EXPORT_WEB": "Export Web",
+  "BUILD_EXPORT_POCKET": "Export Pocket",
   "BUILD_CLEAR": "Clear",
   "BUILD_EMPTY_BUILD_CACHE": "Empty Build Cache",
 
@@ -656,6 +658,7 @@
   "MENU_EXPORT_AS": "Export As",
   "MENU_EXPORT_ROM": "Export ROM",
   "MENU_EXPORT_WEB": "Export Web",
+  "MENU_EXPORT_POCKET": "Export Pocket",
   "MENU_VIEW": "View",
   "MENU_GAME_WORLD": "Game World",
   "MENU_SPRITES": "Sprites",
