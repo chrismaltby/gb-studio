@@ -78,6 +78,12 @@ const buildProject = async (
       .replace(/___CUSTOM_CONTROLS___/g, customControls);
 
     await fs.writeFile(`${outputRoot}/build/web/index.html`, html);
+  } else if (buildType === "pocket") {
+    await fs.mkdir(`${outputRoot}/build/pocket`);
+    await copy(
+      `${outputRoot}/build/rom/game.pocket`,
+      `${outputRoot}/build/pocket/game.pocket`
+    );
   }
 };
 

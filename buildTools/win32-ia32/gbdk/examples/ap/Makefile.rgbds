@@ -22,8 +22,8 @@ OTHER = sound.gb \
 
 all:	$(BINS)
 
-make.bat: Makefile
-	make -sn | sed y/\\//\\\\/ | grep -v make > make.bat
+compile.bat: Makefile
+	make -sn | sed y/\\//\\\\/ | grep -v make > compile.bat
 
 %.o:	%.s
 

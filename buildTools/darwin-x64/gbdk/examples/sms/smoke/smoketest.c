@@ -7,6 +7,7 @@ BANKREF_EXTERN(earth_data_size)
 extern const unsigned int earth_data_size;
 
 const uint8_t tilemap[] = {2, 4, 6, 8, 3, 5, 7, 9};
+const uint16_t tilemapw[] = {2, 4, 6, 8, 3, 5, 7, 9};
 
 uint16_t banked_func(uint8_t be, uint8_t ef) __banked;
 
@@ -25,13 +26,15 @@ void main() {
 
     SWITCH_ROM(BANK(earth_data));
     if (banked_func(0xBE, 0xEF) == 0xBEEF) {
-        set_bkg_2bpp_data(2, earth_data_size >> 4, earth_data);
-        set_sprite_2bpp_data(0, earth_data_size >> 4, earth_data);
+        set_bkg_data(2, earth_data_size >> 4, earth_data);
+        set_sprite_data(0, earth_data_size >> 4, earth_data);
         set_sprite_tile(0, 0);
         set_sprite_tile(1, 2);
     }
 
     set_bkg_tiles(4, 10, 4, 2, tilemap);
+
+    set_tile_map(4, 16, 4, 2, tilemapw);
 
     joypad_init(2, &joy);
 

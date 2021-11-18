@@ -2,7 +2,7 @@
 SUBDIRS := $(wildcard */.)
 
 # Top-level phony targets.
-all clean make.bat: $(SUBDIRS) FORCE
+all clean compile.bat: $(SUBDIRS) FORCE
 # Similar to:
 # .PHONY: all clean
 # all clean: $(SUBDIRS)

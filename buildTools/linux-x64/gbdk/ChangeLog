@@ -1,4 +1,39 @@
-gbdk-4.0.3
+gbdk-4.0.5
+    - Support for Sega Master Sysyem/Sega Game Gear
+        - z80 library which provide compatibility layer as well as platform-specific functions
+        - support for the new targets on the toolchain side
+        - cross-platform examples (gnu make is required)
+    - Library fixes/improvements
+        - low level register/constant definitions for all targets
+        - DEVICE_* constants
+        - BANK* macros
+        - some headers were moved from gb/* into gbdk/*
+            - bcd.h, console.h, far_ptr.h, font.h, gbdecompress.h, metasprites.h 
+        - new headers:
+            - gbdk/platform.h: includes specific platform headers depending on the target
+            - gbdk/incbin.h: INCBIN* macros for including of raw binary data
+            - gbdk/rledecompress.h: RLE decompression functions
+        - itoa()/uitoa()/ltoa()/ultoa() require radix parameter (GB target ignores it and assumes radix is 10)
+        - fixed get_bkg_tile_xy()
+        - other minor fixes/enhancements
+    - Toolchain
+        - lcc
+            - ability to pass target port/platform
+            - support for linker files
+        - bankpack
+            - support for linker files
+            - support for SMS/GG specifics
+        - png2mtspr was renamed to png2asset 
+            - tilemaps/tiledata export without metasprite descriptors
+            - CGB support
+        - support for RLE compression in gbcompress
+    - New examples
+        - cross-platform examples
+        - INCBIN example
+        - on-the-fly RLE data decompression example
+    - Updated documentation    
+    
+gbdk-4.0.4
     - Updated documentation
     - Library was improved
         - Switch to standard types declared in stdint.h and stdbool.h

@@ -14,7 +14,7 @@
     returned to the parent.
     All open streams are flushed and closed.
 */
-void exit(int status) NONBANKED;
+void exit(int status);
 
 #if 0
 /** Compatibility function.  Not implemented.
@@ -27,14 +27,14 @@ int getkey(void);
 
     If i is negative, returns -i; else returns i.
 */
-int abs(int i);
+int abs(int i) OLDCALL;
 
 
 /** Returns the absolute value of long int __num__
 
     @param num   Long integer to obtain absolute value of
  */
-long labs(long num);
+long labs(long num) OLDCALL;
 
 
 /** Converts an ASCII string to an int
@@ -64,39 +64,47 @@ int atoi(const char *s);
 long atol(const char *s);
 
 /** Converts an int into a base 10 ASCII string.
-    @param n    Int to convert to a string
-    @param s    String to store the converted number
+    @param n      Int to convert to a string
+    @param s      String to store the converted number
+    @param radix  Numerical base for converted number, ex: 10 is decimal base
+                  (parameter is required but not utilized on Game Boy and Analogue Pocket)
 
     Returns:    Pointer to converted string
  */
-char *itoa(int n, char *s);
+char *itoa(int n, char *s, unsigned char radix) OLDCALL;
 
 /** Converts an unsigned int into a base 10 ASCII string.
-    @param n    Unsigned Int to convert to a string
-    @param s    String to store the converted number
+    @param n      Unsigned Int to convert to a string
+    @param s      String to store the converted number
+    @param radix  Numerical base for converted number, ex: 10 is decimal base
+                  (parameter is required but not utilized on Game Boy and Analogue Pocket)
 
     Returns:    Pointer to converted string
  */
-char *utoa(unsigned int n, char *s);
+char *uitoa(unsigned int n, char *s, unsigned char radix) OLDCALL;
 
 /** Converts a long into a base 10 ASCII string.
-    @param n    Long int to convert to a string
-    @param s    String to store the converted number
+    @param n      Long int to convert to a string
+    @param s      String to store the converted number
+    @param radix  Numerical base for converted number, ex: 10 is decimal base
+                  (parameter is required but not utilized on Game Boy and Analogue Pocket)
 
     Returns:    Pointer to converted string
  */
-char *ltoa(long n, char *s);
+char *ltoa(long n, char *s, unsigned char radix) OLDCALL;
 
 /** Converts an unsigned long into a base 10 ASCII string.
-    @param n    Unsigned Long Int to convert to a string
-    @param s    String to store the converted number
+    @param n      Unsigned Long Int to convert to a string
+    @param s      String to store the converted number
+    @param radix  Numerical base for converted number, ex: 10 is decimal base
+                  (parameter is required but not utilized on Game Boy and Analogue Pocket)
 
     Returns:    Pointer to converted string
  */
-char *ultoa(unsigned long n, char *s);
+char *ultoa(unsigned long n, char *s, unsigned char radix) OLDCALL;
 
 
-/** Memory allocation functions 
+/** Memory allocation functions
  */
 void *calloc (size_t nmemb, size_t size);
 void *malloc (size_t size);

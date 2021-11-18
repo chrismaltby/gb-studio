@@ -28,6 +28,7 @@
   "TOOLBAR_EXPORT_AS": "Export As...",
   "TOOLBAR_EXPORT_ROM": "Export ROM",
   "TOOLBAR_EXPORT_WEB": "Export Web",
+  "TOOLBAR_EXPORT_POCKET": "Export Pocket",
   "TOOLBAR_RUN": "Run",
   "TOOLBAR_SEARCH": "Search...",
 
@@ -439,9 +440,11 @@
   "FIELD_ACTOR_DIRECTION": "Actor Direction",
   "FIELD_LIFE_TIME": "Life Time",
   "FIELD_LOCK_AXIS": "Lock Axis",
-  "FIELD_SET_VARIABLE": "Set Variable",
-  "FIELD_TO_VARIABLE": "To Variable",
   "FIELD_FROM_SAVE_SLOT": "From Save Slot",
+  "FIELD_CLIMB_VEL": "Climb Velocity",
+  "FIELD_LINK_CLOSE": "Close the current link session.",
+  "FIELD_LINK_JOIN": "Join a link session.",
+  "FIELD_LINK_HOST": "Host a link session.",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -452,6 +455,7 @@
   "BUILD_RUN": "Run",
   "BUILD_EXPORT_ROM": "Export ROM",
   "BUILD_EXPORT_WEB": "Export Web",
+  "BUILD_EXPORT_POCKET": "Export Pocket",
   "BUILD_CLEAR": "Clear",
   "BUILD_EMPTY_BUILD_CACHE": "Empty Build Cache",
 
@@ -639,6 +643,11 @@
   "EVENT_IF_FLAGS_COMPARE_LABEL": "If {variable} Has Flag {flag}",
   "EVENT_IF_TRUE_LABEL": "If {variable} Is 'True'",
   "EVENT_IF_FALSE_LABEL": "If {variable} Is 'False'",
+  "EVENT_GBVM_SCRIPT": "GBVM Script",
+  "EVENT_LINK_CLOSE": "Link: Close",
+  "EVENT_LINK_JOIN": "Link: Join",
+  "EVENT_LINK_HOST": "Link: Host",
+  "EVENT_LINK_CLOSE": "Link: Transfer",
 
   "// 10": "Menu -----------------------------------------------------",
 
@@ -656,6 +665,7 @@
   "MENU_EXPORT_AS": "Export As",
   "MENU_EXPORT_ROM": "Export ROM",
   "MENU_EXPORT_WEB": "Export Web",
+  "MENU_EXPORT_POCKET": "Export Pocket",
   "MENU_VIEW": "View",
   "MENU_GAME_WORLD": "Game World",
   "MENU_SPRITES": "Sprites",
@@ -887,6 +897,7 @@
   "GAMETYPE_ADVENTURE": "Adventure",
   "GAMETYPE_SHMUP": "Shoot Em' Up",
   "GAMETYPE_POINT_N_CLICK": "Point and Click",
+  "GAMETYPE_LOGO": "Logo",
 
   "// 20": "Compiler -----------------------------------------------------",
 

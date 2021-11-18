@@ -26,9 +26,9 @@ OBJS        = $(CSOURCES:%.c=$(OBJDIR)/%.o) $(ASMSOURCES:%.s=$(OBJDIR)/%.o)
 
 all:	prepare $(BINS)
 
-make.bat: Makefile
-	@echo "REM Automatically generated from Makefile" > make.bat
-	@make -sn | sed y/\\//\\\\/ | grep -v make >> make.bat
+compile.bat: Makefile
+	@echo "REM Automatically generated from Makefile" > compile.bat
+	@make -sn | sed y/\\//\\\\/ | grep -v make >> compile.bat
 
 # Compile .c files in "src/" to .o object files
 $(OBJDIR)/%.o:	$(SRCDIR)/%.c

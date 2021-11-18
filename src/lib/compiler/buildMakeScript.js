@@ -8,7 +8,15 @@ const globAsync = promisify(glob);
 
 export default async (
   buildRoot,
-  { customColorsEnabled, sgb, musicDriver, profile, platform, batteryless }
+  {
+    customColorsEnabled,
+    sgb,
+    musicDriver,
+    profile,
+    platform,
+    batteryless,
+    targetPlatform,
+  }
 ) => {
   const cmds = platform === "win32" ? [""] : ["#!/bin/bash", "set -e"];
   const objFiles = [];
@@ -39,6 +47,10 @@ export default async (
 
   if (profile) {
     CFLAGS += " -Wf--profile";
+  }
+
+  if (targetPlatform === "pocket") {
+    CFLAGS += " -mgbz80:ap";
   }
 
   const srcRoot = `${buildRoot}/src/**/*.@(c|s)`;
@@ -126,7 +138,8 @@ export const buildLinkFlags = (
   cartType,
   color = false,
   sgb = false,
-  musicDriver = "gbtplayer"
+  musicDriver = "gbtplayer",
+  targetPlatform = "gb"
 ) => {
   const validName = name
     .toUpperCase()
@@ -152,13 +165,18 @@ export const buildLinkFlags = (
     color ? ["-Wm-yC"] : [],
     // SGB
     sgb ? ["-Wm-ys"] : [],
+    // Pocket
+    targetPlatform === "pocket" ? ["-mgbz80:ap"] : [],
+    // Music Driver
     musicDriver === "huge"
       ? // hugetracker
         ["-Wl-lhUGEDriver.lib"]
       : // gbtplayer
         ["-Wl-lgbt_player.lib"],
     // Output
-    ["-o", "build/rom/game.gb", `-Wl-f${linkFile}`]
+    targetPlatform === "gb" ? ["-o", "build/rom/game.gb"] : [],
+    targetPlatform === "pocket" ? ["-o", "build/rom/game.pocket"] : [],
+    [`-Wl-f${linkFile}`]
   );
 };
 
