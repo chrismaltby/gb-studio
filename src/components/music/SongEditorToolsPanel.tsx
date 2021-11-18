@@ -171,13 +171,13 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
             >
               <EraserIcon />
             </Button>
-            <Button
+            {/* <Button
               variant="transparent"
               onClick={() => setTool("selection")}
               active={tool === "selection"}
             >
               <SelectionIcon />
-            </Button>{" "}
+            </Button>{" "} */}
           </>
         ) : (
           ""
