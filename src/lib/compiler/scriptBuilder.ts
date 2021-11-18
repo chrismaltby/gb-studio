@@ -143,8 +143,9 @@ type ScriptBuilderRPNOperation =
 
 type ScriptBuilderOverlayMoveSpeed =
   | number
-  | ".OVERLAY_TEXT_IN_SPEED"
-  | ".OVERLAY_TEXT_OUT_SPEED";
+  | ".OVERLAY_IN_SPEED"
+  | ".OVERLAY_OUT_SPEED"
+  | ".OVERLAY_SPEED_INSTANT";
 
 type ScriptBuilderUIColor = 0 | ".UI_COLOR_WHITE" | ".UI_COLOR_BLACK";
 
@@ -2177,7 +2178,7 @@ class ScriptBuilder {
       this._loadStructuredText(text, avatarIndex, MAX_DIALOGUE_LINES);
       this._overlayClear(0, 0, 20, textBoxHeight, ".UI_COLOR_WHITE", true);
       if (textIndex === 0) {
-        this._overlayMoveTo(0, textBoxY, ".OVERLAY_TEXT_IN_SPEED");
+        this._overlayMoveTo(0, textBoxY, ".OVERLAY_IN_SPEED");
       }
       this._displayText();
       this._overlayWait(true, [
@@ -2186,7 +2187,7 @@ class ScriptBuilder {
         ".UI_WAIT_BTN_A",
       ]);
       if (textIndex === input.length - 1) {
-        this._overlayMoveTo(0, 18, ".OVERLAY_TEXT_OUT_SPEED");
+        this._overlayMoveTo(0, 18, ".OVERLAY_OUT_SPEED");
         this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
       }
     });
@@ -2230,13 +2231,13 @@ class ScriptBuilder {
 
     this._loadStructuredText(choiceText);
     this._overlayClear(0, 0, 20, numLines + 2, ".UI_COLOR_WHITE", true);
-    this._overlayMoveTo(0, 18 - numLines - 2, ".OVERLAY_TEXT_IN_SPEED");
+    this._overlayMoveTo(0, 18 - numLines - 2, ".OVERLAY_IN_SPEED");
     this._displayText();
     this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
     this._choice(dest, [".UI_MENU_LAST_0", ".UI_MENU_CANCEL_B"], 2);
     this._menuItem(1, 1, 0, 0, 0, 2);
     this._menuItem(1, 2, 0, 0, 1, 0);
-    this._overlayMoveTo(0, 18, ".OVERLAY_TEXT_OUT_SPEED");
+    this._overlayMoveTo(0, 18, ".OVERLAY_OUT_SPEED");
     this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
 
     if (this._isArg(variableAlias)) {
@@ -2294,9 +2295,9 @@ class ScriptBuilder {
     this._loadStructuredText(menuText);
     this._overlayClear(0, 0, 20 - x, height + 2, ".UI_COLOR_WHITE", true);
     if (layout === "menu") {
-      this._overlayMoveTo(10, 18, 0);
+      this._overlayMoveTo(10, 18, ".OVERLAY_SPEED_INSTANT");
     }
-    this._overlayMoveTo(x, 18 - height - 2, ".OVERLAY_TEXT_IN_SPEED");
+    this._overlayMoveTo(x, 18 - height - 2, ".OVERLAY_IN_SPEED");
     this._displayText();
     this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
     this._choice(dest, choiceFlags, numLines);
@@ -2335,10 +2336,10 @@ class ScriptBuilder {
       }
     }
 
-    this._overlayMoveTo(x, 18, ".OVERLAY_TEXT_OUT_SPEED");
+    this._overlayMoveTo(x, 18, ".OVERLAY_OUT_SPEED");
     this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
     if (layout === "menu") {
-      this._overlayMoveTo(0, 18, 0);
+      this._overlayMoveTo(0, 18, ".OVERLAY_SPEED_INSTANT");
     }
 
     if (this._isArg(variableAlias)) {

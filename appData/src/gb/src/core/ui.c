@@ -75,8 +75,8 @@ void ui_init() __banked {
     vwf_current_font_bank       = ui_fonts[0].bank;
     MemcpyBanked(&vwf_current_font_desc, ui_fonts[0].ptr, sizeof(font_desc_t), vwf_current_font_bank);
 
-    text_in_speed               = 1;
-    text_out_speed              = 1;
+    text_in_speed               = 0;
+    text_out_speed              = 0;
     text_ff_joypad              = 1;
     text_bkg_fill               = TEXT_BKG_FILL_W;
 
