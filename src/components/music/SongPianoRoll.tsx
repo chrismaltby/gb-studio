@@ -96,7 +96,9 @@ const SongGrid = styled.div`
   border-color: ${(props) => props.theme.colors.sidebar.border};
   border-style: solid;
   position: relative;
-  z-index: 1;
+  :focus {
+    z-index: 1;
+  }
 `;
 
 const RollPlaybackTracker = styled.div`
