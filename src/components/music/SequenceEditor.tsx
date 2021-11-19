@@ -16,7 +16,7 @@ interface SequenceEditorProps {
   patterns?: number;
   playingSequence: number;
   height?: number;
-  direction?: "vertical" | "horizontal";
+  direction: "vertical" | "horizontal";
 }
 
 interface SequenceItemProps {
@@ -89,10 +89,17 @@ export const SequenceEditorFwd = ({
 
   const sequenceOptions: SequenceOption[] = Array.from(
     Array(patterns || 0).keys()
-  ).map((i) => ({
-    value: i,
-    label: `${i}`.padStart(2, "0"),
-  }));
+  )
+    .map((i) => ({
+      value: i,
+      label: `${i}`.padStart(2, "0"),
+    }))
+    .concat([
+      {
+        value: -1,
+        label: `${(patterns || 1).toString().padStart(2, "0")} (New)`,
+      },
+    ]);
 
   const editSequence = useCallback(
     (index: number, newValue: SequenceOption) => {
@@ -115,15 +122,21 @@ export const SequenceEditorFwd = ({
       if (!hasFocus || selectHasFocus) {
         return;
       }
-      if (e.key === "ArrowUp") {
+      if (
+        (direction === "vertical" && e.key === "ArrowUp") ||
+        (direction === "horizontal" && e.key === "ArrowLeft")
+      ) {
         e.preventDefault();
         setSequenceId(sequenceId - 1);
-      } else if (e.key === "ArrowDown") {
+      } else if (
+        (direction === "vertical" && e.key === "ArrowDown") ||
+        (direction === "horizontal" && e.key === "ArrowRight")
+      ) {
         e.preventDefault();
         setSequenceId(sequenceId + 1);
       }
     },
-    [hasFocus, selectHasFocus, sequenceId, setSequenceId]
+    [direction, hasFocus, selectHasFocus, sequenceId, setSequenceId]
   );
 
   useEffect(() => {

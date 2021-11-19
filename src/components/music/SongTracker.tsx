@@ -352,6 +352,7 @@ export const SongTracker = ({
     >
       <div style={{ position: "relative", minWidth: "93px" }}>
         <SequenceEditor
+          direction="vertical"
           sequence={song?.sequence}
           patterns={song?.patterns.length}
           playingSequence={playbackState[0]}
