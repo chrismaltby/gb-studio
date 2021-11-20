@@ -46,7 +46,7 @@ const watchProject = async (
   };
 
   const musicAwaitWriteFinish = {
-    stabilityThreshold: 5000,
+    stabilityThreshold: 500,
     pollInterval: 100,
   };
 

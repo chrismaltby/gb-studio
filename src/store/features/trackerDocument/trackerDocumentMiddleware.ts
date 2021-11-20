@@ -6,6 +6,7 @@ import editorActions from "../editor/editorActions";
 import { musicSelectors } from "../entities/entitiesState";
 import navigationActions from "../navigation/navigationActions";
 import { saveSongFile } from "./trackerDocumentState";
+import trackerDocumentActions from "./trackerDocumentActions";
 
 const trackerMiddleware: ThunkMiddleware<RootState> =
   (store) => (next) => (action) => {
@@ -24,14 +25,10 @@ const trackerMiddleware: ThunkMiddleware<RootState> =
         const option = confirmUnsavedChangesTrackerDialog(selectedSong?.name);
         switch (option) {
           case 0: // Save and continue
-            const path = `${assetFilename(
-              state.document.root,
-              "music",
-              selectedSong
-            )}`;
-            store.dispatch(saveSongFile(path));
+            store.dispatch(saveSongFile());
             break;
           case 1: // continue without saving
+            store.dispatch(trackerDocumentActions.unloadSong());
             break;
           case 2: // cancel
           default:
@@ -39,6 +36,14 @@ const trackerMiddleware: ThunkMiddleware<RootState> =
         }
       }
     }
+
+    if (
+      action.type === "project/saveProject/pending" &&
+      state.trackerDocument.present.modified
+    ) {
+      store.dispatch(saveSongFile());
+    }
+
     return next(action);
   };
 

@@ -10,13 +10,14 @@ import { SequenceEditor } from "./SequenceEditor";
 import { SongRow } from "./SongRow";
 import scrollIntoView from "scroll-into-view-if-needed";
 import { SongGridHeaderCell } from "./SongGridHeaderCell";
+import { ipcRenderer } from "electron";
+import { getInstrumentTypeByChannel, getInstrumentListByType } from "./helpers";
 
 interface SongTrackerProps {
   sequenceId: number;
   song: Song | null;
   height: number;
   channelStatus: boolean[];
-  playbackState: number[];
 }
 
 const COLUMN_CELLS = 4;
@@ -49,17 +50,34 @@ export const SongTracker = ({
   sequenceId,
   height,
   channelStatus,
-  playbackState,
 }: SongTrackerProps) => {
   const dispatch = useDispatch();
 
   const playing = useSelector((state: RootState) => state.tracker.playing);
   const editStep = useSelector((state: RootState) => state.tracker.editStep);
+  const defaultInstruments = useSelector(
+    (state: RootState) => state.tracker.defaultInstruments
+  );
   const octaveOffset = useSelector(
     (state: RootState) => state.tracker.octaveOffset
   );
 
   const patternId = song?.sequence[sequenceId] || 0;
+
+  const [playbackState, setPlaybackState] = useState([0, 0]);
+  useEffect(() => {
+    const listener = (_event: any, d: any) => {
+      if (d.action === "update") {
+        setPlaybackState(d.update);
+      }
+    };
+    ipcRenderer.on("music-data", listener);
+
+    return () => {
+      ipcRenderer.removeListener("music-data", listener);
+    };
+  }, [setPlaybackState]);
+
   const [selectedCell, setSelectedCell] = useState<number | undefined>();
 
   const playingRowRef = useRef<HTMLSpanElement>(null);
@@ -130,9 +148,27 @@ export const SongTracker = ({
         if (selectedCell === undefined) {
           return;
         }
+
+        const channel = Math.floor(selectedCell / 4) % 4;
+        const defaultInstrument = defaultInstruments[channel];
+
+        if (song && value !== null) {
+          const instrumentType = getInstrumentTypeByChannel(channel) || "duty";
+          const instrumentList = getInstrumentListByType(song, instrumentType);
+          ipcRenderer.send("music-data-send", {
+            action: "preview",
+            note: value,
+            type: instrumentType,
+            instrument: instrumentList[defaultInstrument],
+            square2: channel === 1,
+          });
+        }
+
         editPatternCell("note")(
           value === null ? null : value + octaveOffset * 12
         );
+        editPatternCell("instrument")(defaultInstrument);
+
         if (value !== null) {
           setSelectedCell(selectedCell + ROW_SIZE * editStep);
         }
@@ -334,15 +370,21 @@ export const SongTracker = ({
     };
   });
 
-  const onFocus = (_e: React.FocusEvent<HTMLDivElement>) => {
-    if (!selectedCell) {
-      setSelectedCell(0);
-    }
-  };
+  const onFocus = useCallback(
+    (_e: React.FocusEvent<HTMLDivElement>) => {
+      if (!selectedCell) {
+        setSelectedCell(0);
+      }
+    },
+    [selectedCell, setSelectedCell]
+  );
 
-  const onBlur = (_e: React.FocusEvent<HTMLDivElement>) => {
-    setSelectedCell(undefined);
-  };
+  const onBlur = useCallback(
+    (_e: React.FocusEvent<HTMLDivElement>) => {
+      setSelectedCell(undefined);
+    },
+    [setSelectedCell]
+  );
 
   return (
     <div

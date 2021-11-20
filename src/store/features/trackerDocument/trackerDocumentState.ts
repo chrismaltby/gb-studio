@@ -36,31 +36,32 @@ export const loadSongFile = createAsyncThunk<Song | null, string>(
   async (path, _thunkApi): Promise<Song | null> => {
     const data = await readFile(path);
     const song = loadUGESong(new Uint8Array(data).buffer);
-
+    if (song) {
+      song.filename = path;
+    }
     return song;
   }
 );
 
-export const saveSongFile = createAsyncThunk<void, string | undefined>(
+export const saveSongFile = createAsyncThunk<void, void>(
   "tracker/saveSong",
-  async (path, thunkApi) => {
+  async (_, thunkApi) => {
     const state = thunkApi.getState() as RootState;
 
-    // if (!state.document.loaded) {
-    //   throw new Error("Cannot save project that has not finished loading");
-    // }
-    // if (saving) {
-    //   throw new Error("Cannot save project while already saving");
-    // }
-    if (!path && !state.trackerDocument.present.modified) {
+    if (!state.trackerDocument.present.modified) {
       throw new Error("Cannot save unmodified song");
     }
     if (!state.trackerDocument.present.song) {
       throw new Error("No song selected");
     }
 
-    const buffer = saveUGESong(state.trackerDocument.present.song);
-    await writeFileWithBackupAsync(path, new Uint8Array(buffer), "utf8");
+    const song = state.trackerDocument.present.song;
+    const buffer = saveUGESong(song);
+    await writeFileWithBackupAsync(
+      song.filename,
+      new Uint8Array(buffer),
+      "utf8"
+    );
   }
 );
 
@@ -72,6 +73,10 @@ const trackerSlice = createSlice({
   reducers: {
     loadSong: (state, _action: PayloadAction<Song>) => {
       state.song = _action.payload;
+      state.modified = false;
+    },
+    unloadSong: (state, _action: PayloadAction<void>) => {
+      state.song = undefined;
       state.modified = false;
     },
     editSong: (state, _action: PayloadAction<{ changes: Partial<Song> }>) => {
@@ -209,6 +214,22 @@ const trackerSlice = createSlice({
       state.song = {
         ...state.song,
         patterns: patterns,
+      };
+    },
+    editWaveform: (
+      state,
+      _action: PayloadAction<{ index: number; waveForm: Uint8Array }>
+    ) => {
+      if (!state.song) {
+        return;
+      }
+
+      const newWaves = [...state.song.waves];
+      newWaves[_action.payload.index] = _action.payload.waveForm;
+
+      state.song = {
+        ...state.song,
+        waves: newWaves,
       };
     },
     editSequence: (

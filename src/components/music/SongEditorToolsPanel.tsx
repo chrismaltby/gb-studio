@@ -8,7 +8,7 @@ import {
   SaveIcon,
   PencilIcon,
   EraserIcon,
-  NoiseIcon,
+  TrackerIcon,
   SelectionIcon,
   PianoIcon,
   PianoInverseIcon,
@@ -17,7 +17,6 @@ import FloatingPanel, { FloatingPanelDivider } from "ui/panels/FloatingPanel";
 import trackerActions from "store/features/tracker/trackerActions";
 import { Button } from "ui/buttons/Button";
 import { Music } from "store/features/entities/entitiesTypes";
-import { assetFilename } from "lib/helpers/gbstudio";
 import { saveSongFile } from "store/features/trackerDocument/trackerDocumentState";
 import { InstrumentSelect } from "./InstrumentSelect";
 import { Select } from "ui/form/Select";
@@ -56,6 +55,9 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
   const projectRoot = useSelector((state: RootState) => state.document.root);
 
   const play = useSelector((state: RootState) => state.tracker.playing);
+  const playerReady = useSelector(
+    (state: RootState) => state.tracker.playerReady
+  );
 
   const modified = useSelector(
     (state: RootState) => state.trackerDocument.present.modified
@@ -90,10 +92,9 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
 
   const saveSong = useCallback(() => {
     if (selectedSong && modified) {
-      const path = `${assetFilename(projectRoot, "music", selectedSong)}`;
-      dispatch(saveSongFile(path));
+      dispatch(saveSongFile());
     }
-  }, [dispatch, modified, projectRoot, selectedSong]);
+  }, [dispatch, modified, selectedSong]);
 
   const defaultInstruments = useSelector(
     (state: RootState) => state.tracker.defaultInstruments
@@ -133,7 +134,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
     <>
       <FloatingPanelSwitchView>
         <Button variant="transparent" onClick={toggleView}>
-          {view === "roll" ? <NoiseIcon /> : themePianoIcon}
+          {view === "roll" ? <TrackerIcon /> : themePianoIcon}
         </Button>
       </FloatingPanelSwitchView>
 
@@ -146,7 +147,11 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
           <SaveIcon />
         </Button>
         <FloatingPanelDivider />
-        <Button variant="transparent" onClick={togglePlay}>
+        <Button
+          variant="transparent"
+          disabled={!playerReady}
+          onClick={togglePlay}
+        >
           {play ? <PauseIcon /> : <PlayIcon />}
         </Button>
         {view === "roll" ? (
@@ -166,13 +171,13 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
             >
               <EraserIcon />
             </Button>
-            <Button
+            {/* <Button
               variant="transparent"
               onClick={() => setTool("selection")}
               active={tool === "selection"}
             >
               <SelectionIcon />
-            </Button>{" "}
+            </Button>{" "} */}
           </>
         ) : (
           ""
