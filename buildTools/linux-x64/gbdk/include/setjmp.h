@@ -63,14 +63,14 @@ typedef unsigned char jmp_buf[3]; /* 1 for the stack pointer, 2 for the return a
 typedef unsigned char jmp_buf[RET_SIZE + SP_SIZE + BP_SIZE + SPX_SIZE + BPX_SIZE];
 #endif
 
-int __setjmp (jmp_buf);
+int __setjmp (jmp_buf) OLDCALL;
 
 /* C99 might require setjmp to be a macro. The standard seems self-contradicting on this issue. */
 /* However, it is clear that the standards allow setjmp to be a macro. */
 #define setjmp(jump_buf) __setjmp(jump_buf)
 
 #ifndef __SDCC_HIDE_LONGJMP
-_Noreturn void longjmp(jmp_buf, int);
+_Noreturn void longjmp(jmp_buf, int) OLDCALL;
 #endif
 
 #undef RET_SIZE

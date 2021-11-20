@@ -1,10 +1,9 @@
-#include <gb/gb.h>
 #include <stdint.h>
-
 #include <stdio.h>
-#include <gb/font.h>
 
-#include "bcd.h"
+#include <gbdk/platform.h>
+#include <gbdk/font.h>
+#include <gbdk/bcd.h>
 
 BCD bcd  = MAKE_BCD(10203040);
 BCD bcd2 = MAKE_BCD(05060708);

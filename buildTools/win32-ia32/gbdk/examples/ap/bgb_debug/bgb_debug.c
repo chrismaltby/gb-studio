@@ -61,13 +61,13 @@ int main(void)
     // check for a CGB and turn on Double Speed mode).
     //
     // Check and only run this test if on CGB hardware
-    if (_cpu == CGB_TYPE) {
+    if (DEVICE_SUPPORTS_COLOR) {
 
         // Set CGB into double speed mode
         // (Requires passing -Wm-yc or -Wm-yC with Lcc during build time)
         cpu_fast();
         // Set some default DMG styled colors in the CGB Palette
-        cgb_compatibility();
+        set_default_palette();
 
         // In CGB Double Speed mode, you don't have to 
         // divide by 2 to get the cycle count.

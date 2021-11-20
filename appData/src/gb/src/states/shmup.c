@@ -161,22 +161,24 @@ void shmup_update() __banked {
         }
     }
 
-    // Check for trigger collisions
-    if (trigger_activate_at_intersection(&PLAYER.bounds, &PLAYER.pos, FALSE)) {
-        // Landed on a trigger
-        return;
-    }
-
-    // Check for actor collisions
-    hit_actor = actor_overlapping_player(FALSE);
-    if (hit_actor != NULL && hit_actor->collision_group) {
-        player_register_collision_with(hit_actor);
-    } else if (INPUT_A_PRESSED) {
-        if (!hit_actor) {
-            hit_actor = actor_in_front_of_player(8, TRUE);
+    if (IS_FRAME_ODD) {
+        // Check for trigger collisions
+        if (trigger_activate_at_intersection(&PLAYER.bounds, &PLAYER.pos, FALSE)) {
+            // Landed on a trigger
+            return;
         }
-        if (hit_actor && !hit_actor->collision_group && hit_actor->script.bank) {
-            script_execute(hit_actor->script.bank, hit_actor->script.ptr, 0, 0);
+
+        // Check for actor collisions
+        hit_actor = actor_overlapping_player(FALSE);
+        if (hit_actor != NULL && hit_actor->collision_group) {
+            player_register_collision_with(hit_actor);
+        } else if (INPUT_A_PRESSED) {
+            if (!hit_actor) {
+                hit_actor = actor_in_front_of_player(8, TRUE);
+            }
+            if (hit_actor && !hit_actor->collision_group && hit_actor->script.bank) {
+                script_execute(hit_actor->script.bank, hit_actor->script.ptr, 0, 0);
+            }
         }
     }
 }

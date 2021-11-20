@@ -20,6 +20,7 @@
         ;; MBC Equates
 
         .MBC1_ROM_PAGE  = 0x2000 ; Address to write to for MBC1 switching
+        .MBC_ROM_PAGE   = 0x2000 ; Default platform MBC rom switching address
 
         rRAMG           = 0x0000 ; $0000->$1fff
         rROMB0          = 0x2000 ; $2000->$2fff
@@ -386,7 +387,12 @@
         OAMB_XFLIP      = 5 ; X flip
         OAMB_PAL1       = 4 ; Palette number; 0,1 (DMG)
         OAMB_BANK1      = 3 ; Bank number; 0,1 (GBC)
-        
+
+        ;; CPU detection
+        .DMG_TYPE       = 0x01 ; Original GB or Super GB
+        .MGB_TYPE       = 0xFF ; Pocket GB or Super GB 2
+        .CGB_TYPE       = 0x11 ; Color GB        
+
         ;; GBDK library screen modes
 
         .G_MODE         = 0x01  ; Graphic mode
@@ -428,6 +434,7 @@
         .globl  .mode
 
         .globl  __cpu
+        .globl  __is_GBA
 
         ;; Global routines
 ;       .globl  .set_mode       ;; don't link mode.o by default

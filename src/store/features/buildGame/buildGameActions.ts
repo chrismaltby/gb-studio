@@ -1,6 +1,6 @@
 import { createAction } from "@reduxjs/toolkit";
 
-export type BuildType = "web" | "rom";
+export type BuildType = "web" | "rom" | "pocket";
 export type ProjectExportType = "src" | "data";
 
 const buildGame = createAction(

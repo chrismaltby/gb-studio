@@ -25,7 +25,6 @@ void adventure_init() __banked {
 }
 
 void adventure_update() __banked {
-    upoint16_t start_pos;
     actor_t *hit_actor;
     UBYTE tile_start, tile_end;
     UBYTE angle = 0;
@@ -68,9 +67,6 @@ void adventure_update() __banked {
         player_moving = TRUE;
         angle = ANGLE_180DEG;
     }
-
-    start_pos.x = PLAYER.pos.x;
-    start_pos.y = PLAYER.pos.y;
 
     if (player_moving) {
         upoint16_t new_pos;
@@ -136,22 +132,22 @@ void adventure_update() __banked {
         actor_set_anim_idle(&PLAYER);
     }
 
-    // Check for trigger collisions
-    if (trigger_activate_at_intersection(&PLAYER.bounds, &PLAYER.pos, FALSE)) {
-        // Landed on a trigger
-        return;
+    hit_actor = NULL;
+    if (IS_FRAME_ODD) {
+        // Check for trigger collisions
+        if (trigger_activate_at_intersection(&PLAYER.bounds, &PLAYER.pos, FALSE)) {
+            // Landed on a trigger
+            return;
+        }
+
+        // Check for actor collisions
+        hit_actor = actor_overlapping_player(FALSE);
+        if (hit_actor != NULL && hit_actor->collision_group) {
+            player_register_collision_with(hit_actor);
+        }
     }
 
-    // Check for actor collisions
-    hit_actor = actor_overlapping_player(FALSE);
-    if (hit_actor != NULL) {
-        PLAYER.pos.x = start_pos.x;
-        PLAYER.pos.y = start_pos.y;
-    }
-
-    if (hit_actor != NULL && hit_actor->collision_group) {
-        player_register_collision_with(hit_actor);
-    } else if (INPUT_A_PRESSED) {
+    if (INPUT_A_PRESSED) {
         if (!hit_actor) {
             hit_actor = actor_in_front_of_player(8, TRUE);
         }

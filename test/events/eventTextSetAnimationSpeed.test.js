@@ -8,11 +8,11 @@ test("Should be able to set text box animation speeds", () => {
       speedIn: 2,
       speedOut: 3,
       speed: 4,
-      allowFastForward: true
+      allowFastForward: true,
     },
     {
-      textSetAnimSpeed: mockTextSetAnimSpeed
+      textSetAnimSpeed: mockTextSetAnimSpeed,
     }
   );
-  expect(mockTextSetAnimSpeed).toBeCalledWith(2, 3, 4, true);
+  expect(mockTextSetAnimSpeed).toBeCalledWith(1, 2, 4, true);
 });

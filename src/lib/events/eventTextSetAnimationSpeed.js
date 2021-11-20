@@ -35,12 +35,9 @@ const fields = [
 
 const compile = (input, helpers) => {
   const { textSetAnimSpeed } = helpers;
-  textSetAnimSpeed(
-    input.speedIn,
-    input.speedOut,
-    input.speed,
-    input.allowFastForward
-  );
+  let speedIn = input.speedIn > 0 ? input.speedIn - 1 : -3;
+  let speedOut = input.speedOut > 0 ? input.speedOut - 1 : -3;
+  textSetAnimSpeed(speedIn, speedOut, input.speed, input.allowFastForward);
 };
 
 module.exports = {

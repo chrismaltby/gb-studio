@@ -4,26 +4,31 @@ body {
   font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue",
     Helvetica, Arial, "Lucida Grande", sans-serif;
   font-weight: 300;
-  margin: 0px;
-  padding: 0px;
+  margin: 0;
+  padding: 0;
   touch-action: none;
-  text-align: center;
   -webkit-touch-callout: none;
   user-select: none;
+  -webkit-user-select: none;
   overflow: hidden;
 }
 
 #game {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
   width: 100%;
+  height: 100%;
   touch-action: none;
-  text-align: center;
 }
 
 #game canvas {
+  object-fit: contain;
   image-rendering: -moz-crisp-edges;
   image-rendering: -webkit-crisp-edges;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
+  height: 100%;
 }
 
 #controller {
@@ -314,4 +319,3 @@ body {
     opacity: 0.5;
   }
 }
-

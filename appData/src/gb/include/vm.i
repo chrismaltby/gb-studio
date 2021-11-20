@@ -257,52 +257,54 @@ OP_VM_IF_CONST  = 0x1A
         .db OP_VM_IF_CONST, #<N, #>LABEL, #<LABEL, #>B, #<B, #>IDXA, #<IDXA, #<CONDITION
 .endm
 
-; gets unsigned int8 from VM RAM. second argument is a VM RAM address of unsigned int8
+; gets unsigned int8 from WRAM. second argument is an address of unsigned int8
 OP_VM_GET_UINT8 = 0x1B
 .macro VM_GET_UINT8 IDXA, ADDR
         .db OP_VM_GET_UINT8, #>ADDR, #<ADDR, #>IDXA, #<IDXA
 .endm
 
-; gets int8 from VM RAM. second argument is a VM RAM address of int8
+; gets int8 from WRAM. second argument is an address of int8
 OP_VM_GET_INT8  = 0x1C
 .macro VM_GET_INT8 IDXA, ADDR
         .db OP_VM_GET_INT8, #>ADDR, #<ADDR, #>IDXA, #<IDXA
 .endm
 
-; gets int8 from VM RAM. second argument is a VM RAM address of int8
+; gets int16 from WRAM. second argument is an address of int16
 OP_VM_GET_INT16  = 0x1D
 .macro VM_GET_INT16 IDXA, ADDR
         .db OP_VM_GET_INT16, #>ADDR, #<ADDR, #>IDXA, #<IDXA
 .endm
 
-; sets unsigned int8 from VM RAM. second argument is a VM RAM address of unsigned int8
+; sets unsigned int8 in WRAM. first argument is an address of unsigned int8
 OP_VM_SET_UINT8 = 0x1E
 .macro VM_SET_UINT8 ADDR, IDXA
         .db OP_VM_SET_UINT8, #>IDXA, #<IDXA, #>ADDR, #<ADDR
 .endm
 
-; sets int8 from VM RAM. second argument is a VM RAM address of int8
+; sets int8 in WRAM. first argument is an address of int8
 OP_VM_SET_INT8  = 0x1F
 .macro VM_SET_INT8 ADDR, IDXA
         .db OP_VM_SET_INT8, #>IDXA, #<IDXA, #>ADDR, #<ADDR
 .endm
 
-; sets int8 from VM RAM. second argument is a VM RAM address of int8
+; sets int16 in WRAM. first argument is an address of int16
 OP_VM_SET_INT16  = 0x20
 .macro VM_SET_INT16 ADDR, IDXA
         .db OP_VM_SET_INT16, #>IDXA, #<IDXA, #>ADDR, #<ADDR
 .endm
 
-; sets int8 from VM RAM. second argument is a VM RAM address of int8
+; sets int8 in WRAM to a const. first argument is an address of int8
 OP_VM_SET_CONST_INT8 = 0x21
 .macro VM_SET_CONST_INT8 ADDR, V
         .db OP_VM_SET_CONST_INT8, #<V, #>ADDR, #<ADDR
 .endm
+
+; sets unsigned int8 in WRAM to a const. first argument is an address of unsigned int8
 .macro VM_SET_CONST_UINT8 ADDR, V
         .db OP_VM_SET_CONST_INT8, #<V, #>ADDR, #<ADDR
 .endm
 
-; sets int8 from VM RAM. second argument is a VM RAM address of int8
+; sets int16 in WRAM to a const. first argument is an address of int16
 OP_VM_SET_CONST_INT16 = 0x22
 .macro VM_SET_CONST_INT16 ADDR, V
         .db OP_VM_SET_CONST_INT16, #>V, #<V, #>ADDR, #<ADDR
@@ -560,8 +562,11 @@ OP_VM_OVERLAY_WAIT      = 0x44
 .endm
 
 OP_VM_OVERLAY_MOVE_TO   = 0x45
-.OVERLAY_TEXT_IN_SPEED  = -1
-.OVERLAY_TEXT_OUT_SPEED = -2
+.OVERLAY_IN_SPEED       = -1
+.OVERLAY_TEXT_IN_SPEED  = -1    ; obsolete
+.OVERLAY_OUT_SPEED      = -2
+.OVERLAY_TEXT_OUT_SPEED = -2    ; obsolete
+.OVERLAY_SPEED_INSTANT  = -3
 .macro VM_OVERLAY_MOVE_TO X, Y, SPEED
         .db OP_VM_OVERLAY_MOVE_TO, #<SPEED, #<Y, #<X
 .endm
@@ -653,8 +658,8 @@ OP_VM_INPUT_ATTACH      = 0x53
 OP_VM_INPUT_GET         = 0x54
 .JOY0                   = 0
 .JOY1                   = 1
-.JOY2                   = 3
-.JOY3                   = 4
+.JOY2                   = 2
+.JOY3                   = 3
 .macro VM_INPUT_GET IDX, JOYID
         .db OP_VM_INPUT_GET, #<JOYID, #>IDX, #<IDX
 .endm

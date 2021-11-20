@@ -13,9 +13,6 @@
 #include "data_manager.h"
 #include "data/data_bootstrap.h"
 
-#define VM_ARG_TEXT_IN_SPEED -1
-#define VM_ARG_TEXT_OUT_SPEED -2
-
 void ui_draw_frame(UBYTE x, UBYTE y, UBYTE width, UBYTE height) __banked;
 
 extern UBYTE _itoa_fmt_len;
@@ -92,7 +89,6 @@ void vm_display_text(SCRIPT_CTX * THIS) OLDCALL __banked {
 
     INPUT_RESET;
     text_drawn = text_wait = text_ff = FALSE;
-    current_text_speed = text_draw_speed;
 }
 
 // switch text rendering to window or background
@@ -140,9 +136,9 @@ void vm_overlay_wait(SCRIPT_CTX * THIS, UBYTE is_modal, UBYTE wait_flags) OLDCAL
 // set position of overlayed window
 void vm_overlay_move_to(SCRIPT_CTX * THIS, UBYTE pos_x, UBYTE pos_y, BYTE speed) OLDCALL __banked {
     THIS;
-    if (speed == VM_ARG_TEXT_IN_SPEED) {
+    if (speed == UI_IN_SPEED) {
         speed = text_in_speed;
-    } else if (speed == VM_ARG_TEXT_OUT_SPEED) {
+    } else if (speed == UI_OUT_SPEED) {
         speed = text_out_speed;
     }
     ui_move_to(pos_x << 3, pos_y << 3, speed);
