@@ -255,12 +255,35 @@ const trackerSlice = createSlice({
       }
 
       const newSequence = state.song.sequence;
-      newSequence[_action.payload.sequenceIndex] = _action.payload.sequenceId;
 
-      state.song = {
-        ...state.song,
-        sequence: newSequence,
-      };
+      // Assign a new empty pattern
+      if (_action.payload.sequenceId === -1) {
+        const newPatterns = state.song.patterns;
+        const pattern = [];
+        for (let n = 0; n < 64; n++)
+          pattern.push([
+            new PatternCell(),
+            new PatternCell(),
+            new PatternCell(),
+            new PatternCell(),
+          ]);
+        newPatterns.push(pattern);
+
+        newSequence[_action.payload.sequenceIndex] = newPatterns.length - 1;
+
+        state.song = {
+          ...state.song,
+          patterns: newPatterns,
+          sequence: newSequence,
+        };
+      } else {
+        newSequence[_action.payload.sequenceIndex] = _action.payload.sequenceId;
+
+        state.song = {
+          ...state.song,
+          sequence: newSequence,
+        };
+      }
     },
     addSequence: (state) => {
       if (!state.song) {
