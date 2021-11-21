@@ -640,8 +640,18 @@ export const precompileEmotes = async (
   };
 };
 
-export const precompileMusic = (scenes, customEventsLookup, music) => {
+export const precompileMusic = (
+  scenes,
+  customEventsLookup,
+  music,
+  musicDriver
+) => {
   const usedMusicIds = [];
+  const driverMusic =
+    musicDriver === "huge"
+      ? music.filter((track) => track.type === "uge")
+      : music.filter((track) => track.type !== "uge");
+
   walkDenormalizedScenesEvents(
     scenes,
     {
@@ -665,6 +675,22 @@ export const precompileMusic = (scenes, customEventsLookup, music) => {
     .filter((track) => {
       return usedMusicIds.indexOf(track.id) > -1;
     })
+    .map((track) => {
+      // If wrong driver needed, fallback to first driver track
+      if (
+        (musicDriver === "huge" && track.type === "uge") ||
+        (musicDriver !== "huge" && track.type !== "uge")
+      ) {
+        return track;
+      }
+      if (driverMusic[0]) {
+        return {
+          ...driverMusic[0],
+          id: track.id,
+        };
+      }
+    })
+    .filter((track) => track)
     .map((track, index) => {
       return {
         ...track,
@@ -960,7 +986,8 @@ const precompile = async (
   const { usedMusic } = await precompileMusic(
     projectData.scenes,
     customEventsLookup,
-    projectData.music
+    projectData.music,
+    projectData.settings.musicDriver
   );
 
   progress(EVENT_MSG_PRE_FONTS);
