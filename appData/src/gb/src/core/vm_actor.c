@@ -114,7 +114,7 @@ void vm_actor_move_to(SCRIPT_CTX * THIS, INT16 idx) OLDCALL __banked {
         point_translate_dir(&actor->pos, new_dir, actor->move_speed);
 
         // Check for actor collision
-        if (actor_overlapping_bb(&actor->bounds, &actor->pos, actor, FALSE)) {
+        if (CHK_FLAG(params->ATTR, ACTOR_ATTR_CHECK_COLL) && actor_overlapping_bb(&actor->bounds, &actor->pos, actor, FALSE)) {
             point_translate_dir(&actor->pos, FLIPPED_DIR(new_dir), actor->move_speed);   
             THIS->flags = 0;
             actor_set_anim_idle(actor);
@@ -147,7 +147,7 @@ void vm_actor_move_to(SCRIPT_CTX * THIS, INT16 idx) OLDCALL __banked {
         point_translate_dir(&actor->pos, new_dir, actor->move_speed);
 
         // Check for actor collision
-        if (actor_overlapping_bb(&actor->bounds, &actor->pos, actor, FALSE)) {
+        if (CHK_FLAG(params->ATTR, ACTOR_ATTR_CHECK_COLL) && actor_overlapping_bb(&actor->bounds, &actor->pos, actor, FALSE)) {
             point_translate_dir(&actor->pos, FLIPPED_DIR(new_dir), actor->move_speed);   
             THIS->flags = 0;
             actor_set_anim_idle(actor);
