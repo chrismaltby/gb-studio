@@ -568,6 +568,9 @@ class Emulator {
   }
 
   keyDown(event) {
+    if (event.key === "w" && (event.metaKey || event.ctrlKey)) {
+      return;
+    }
     if (event.key in this.keyFuncs) {
       if (this.touchEnabled) {
         this.touchEnabled = false;
