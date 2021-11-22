@@ -482,7 +482,7 @@ const AddScriptEventMenu = ({
 
     const allOptions = ([] as (EventOptGroup | EventOption)[]).concat(
       (
-        favoritesCache
+        (firstLoad.current ? favoritesCache : favoriteEvents)
           .map((id: string) => events[id])
           .filter(identity) as EventHandler[]
       )
