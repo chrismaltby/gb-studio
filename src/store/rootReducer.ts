@@ -36,7 +36,9 @@ const rootReducer = combineReducers({
       return (
         action.type.startsWith("tracker/loadSong/fulfilled") ||
         action.type.startsWith("tracker/edit") ||
-        action.type.startsWith("tracker/transpose")
+        action.type.startsWith("tracker/transpose") ||
+        action.type.startsWith("tracker/addSequence") ||
+        action.type.startsWith("tracker/removeSequence")
       );
     },
     ignoreInitialState: true,

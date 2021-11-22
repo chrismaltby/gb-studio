@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { EditableText } from "ui/form/EditableText";
@@ -24,6 +24,7 @@ import {
   WaveInstrument,
 } from "store/features/trackerDocument/trackerDocumentTypes";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
+import { MenuDivider, MenuItem } from "components/library/Menu";
 
 type Instrument = DutyInstrument | NoiseInstrument | WaveInstrument;
 
@@ -72,7 +73,9 @@ export const SongEditor = () => {
   const selectedInstrument = useSelector(
     (state: RootState) => state.editor.selectedInstrument
   );
-
+  const sequenceId = useSelector(
+    (state: RootState) => state.editor.selectedSequence
+  );
   const song = useSelector(
     (state: RootState) => state.trackerDocument.present.song
   );
@@ -139,6 +142,14 @@ export const SongEditor = () => {
     }
   }
 
+  const onRemovePattern = useCallback(() => {
+    dispatch(
+      trackerDocumentActions.removeSequence({
+        sequenceIndex: sequenceId,
+      })
+    );
+  }, [dispatch, sequenceId]);
+
   if (!song) {
     return null;
   }
@@ -160,12 +171,9 @@ export const SongEditor = () => {
               variant="transparent"
               menuDirection="right"
             >
-              {/* <MenuItem onClick={onCopyVar}>
-                {l10n("MENU_VARIABLE_COPY_EMBED")}
+              <MenuItem onClick={onRemovePattern}>
+                {l10n("MENU_PATTERN_DELETE")}
               </MenuItem>
-              <MenuItem onClick={onCopyChar}>
-                {l10n("MENU_VARIABLE_COPY_EMBED_CHAR")}
-              </MenuItem> */}
             </DropdownButton>
           </FormHeader>
 

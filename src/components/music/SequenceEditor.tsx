@@ -80,6 +80,16 @@ export const SequenceEditorFwd = ({
     },
     [dispatch]
   );
+  useEffect(() => {
+    if (sequence) {
+      if (sequenceId >= sequence?.length) {
+        setSequenceId(sequence.length - 1);
+      }
+      if (sequenceId < 0) {
+        setSequenceId(0);
+      }
+    }
+  }, [dispatch, sequence, sequenceId, setSequenceId]);
 
   const play = useSelector((state: RootState) => state.tracker.playing);
 
@@ -117,9 +127,15 @@ export const SequenceEditorFwd = ({
     dispatch(trackerDocumentActions.addSequence());
   }, [dispatch]);
 
+  const onRemoveSequence = useCallback(() => {
+    dispatch(
+      trackerDocumentActions.removeSequence({ sequenceIndex: sequenceId })
+    );
+  }, [dispatch, sequenceId]);
+
   const handleKeys = useCallback(
     (e: KeyboardEvent) => {
-      if (!hasFocus || selectHasFocus) {
+      if (!sequence || !hasFocus || selectHasFocus) {
         return;
       }
       if (
@@ -127,16 +143,32 @@ export const SequenceEditorFwd = ({
         (direction === "horizontal" && e.key === "ArrowLeft")
       ) {
         e.preventDefault();
-        setSequenceId(sequenceId - 1);
+        const id = sequenceId - 1;
+        setSequenceId(
+          ((id % sequence.length) + sequence.length) % sequence.length
+        );
       } else if (
         (direction === "vertical" && e.key === "ArrowDown") ||
         (direction === "horizontal" && e.key === "ArrowRight")
       ) {
         e.preventDefault();
-        setSequenceId(sequenceId + 1);
+        const id = sequenceId + 1;
+        setSequenceId(
+          ((id % sequence.length) + sequence.length) % sequence.length
+        );
+      } else if (e.key === "Backspace") {
+        onRemoveSequence();
       }
     },
-    [direction, hasFocus, selectHasFocus, sequenceId, setSequenceId]
+    [
+      direction,
+      hasFocus,
+      onRemoveSequence,
+      selectHasFocus,
+      sequence,
+      sequenceId,
+      setSequenceId,
+    ]
   );
 
   useEffect(() => {
@@ -164,6 +196,7 @@ export const SequenceEditorFwd = ({
       {sequence &&
         sequence.map((item, i) => (
           <SequenceItem
+            key={i}
             onClick={() => setSequenceId(i)}
             selected={i === sequenceId}
             active={playingSequence === i}

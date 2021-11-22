@@ -254,11 +254,11 @@ const trackerSlice = createSlice({
         return;
       }
 
-      const newSequence = state.song.sequence;
+      const newSequence = [...state.song.sequence];
 
       // Assign a new empty pattern
       if (_action.payload.sequenceId === -1) {
-        const newPatterns = state.song.patterns;
+        const newPatterns = [...state.song.patterns];
         const pattern = [];
         for (let n = 0; n < 64; n++)
           pattern.push([
@@ -290,7 +290,7 @@ const trackerSlice = createSlice({
         return;
       }
 
-      const newPatterns = state.song.patterns;
+      const newPatterns = [...state.song.patterns];
       const pattern = [];
       for (let n = 0; n < 64; n++)
         pattern.push([
@@ -301,7 +301,7 @@ const trackerSlice = createSlice({
         ]);
       newPatterns.push(pattern);
 
-      const newSequence = state.song.sequence;
+      const newSequence = [...state.song.sequence];
       newSequence.push(newPatterns.length - 1);
 
       state.song = {
@@ -309,6 +309,24 @@ const trackerSlice = createSlice({
         patterns: newPatterns,
         sequence: newSequence,
       };
+    },
+    removeSequence: (
+      state,
+      _action: PayloadAction<{ sequenceIndex: number }>
+    ) => {
+      if (!state.song) {
+        return;
+      }
+
+      const newSequence = [...state.song.sequence];
+      if (newSequence.length > 1) {
+        newSequence.splice(_action.payload.sequenceIndex, 1);
+
+        state.song = {
+          ...state.song,
+          sequence: newSequence,
+        };
+      }
     },
     transposeNoteCell: (
       state,
@@ -378,7 +396,8 @@ const trackerSlice = createSlice({
         (action: AnyAction): action is AnyAction =>
           action.type.startsWith("tracker/edit") ||
           action.type.startsWith("tracker/transpose") ||
-          action.type.startsWith("tracker/addSequence"),
+          action.type.startsWith("tracker/addSequence") ||
+          action.type.startsWith("tracker/removeSequence"),
         (state, _action) => {
           state.modified = true;
         }
