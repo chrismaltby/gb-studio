@@ -28,9 +28,9 @@ OBJS       = $(CSOURCES:%.c=$(OBJDIR)/%.o) $(ASMSOURCES:%.s=$(OBJDIR)/%.o)
 
 all:	prepare $(BINS)
 
-make.bat: Makefile
-	@echo "REM Automatically generated from Makefile" > make.bat
-	@make -sn | sed y/\\//\\\\/ | grep -v make >> make.bat
+compile.bat: Makefile
+	@echo "REM Automatically generated from Makefile" > compile.bat
+	@make -sn | sed y/\\//\\\\/ | grep -v make >> compile.bat
 
 # Compile .c files in "src/" to .o object files
 $(OBJDIR)/%.o:	$(SRCDIR)/%.c
@@ -51,8 +51,10 @@ $(OBJDIR)/%.s:	$(SRCDIR)/%.c
 
 
 $(OBJDIR)/linkfile.lk:	$(OBJS)
-	rm -f $(OBJDIR)/linkfile.lk
-	$(foreach O,$(OBJS),echo $O >>$@)
+	rm -f $@
+	@for obj in $(OBJS); do \
+		echo $$obj >>$@; \
+	done
 
 # Link the compiled object files (via linkerfile) into a .pocket ROM file
 $(BINS):	$(OBJDIR)/linkfile.lk

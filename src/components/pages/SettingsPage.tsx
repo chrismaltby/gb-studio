@@ -346,7 +346,7 @@ const SettingsPage: FC = () => {
             l10n("FIELD_BORDER_IMAGE"),
           ]}
         >
-          <CardAnchor id="settingsColor" />
+          <CardAnchor id="settingsSuper" />
           <CardHeading>{l10n("SETTINGS_SGB")}</CardHeading>
           <SearchableSettingRow
             searchTerm={searchTerm}

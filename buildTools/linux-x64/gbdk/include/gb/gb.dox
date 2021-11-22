@@ -1,4 +1,0 @@
-PROJECT_NAME = "gbdk"
-OUTPUT_DIRECTORY = "html"
-INPUT = gb.h cgb.h console.h drawing.h font.h hardware.h \
-	malloc.h sample.h sgb.h

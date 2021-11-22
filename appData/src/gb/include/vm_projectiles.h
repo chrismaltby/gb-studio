@@ -4,6 +4,6 @@
 #include "vm.h"
 #include "gbs_types.h"
 
-void vm_projectile_launch(SCRIPT_CTX * THIS, UBYTE type, INT16 idx) __banked;
+void vm_projectile_launch(SCRIPT_CTX * THIS, UBYTE type, INT16 idx) OLDCALL __banked;
 
 #endif

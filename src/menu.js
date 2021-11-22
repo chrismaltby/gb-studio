@@ -164,6 +164,13 @@ const buildMenu = async (plugins = []) => {
                 notifyListeners("build", "web");
               },
             },
+            {
+              label: l10n("MENU_EXPORT_POCKET"),
+              accelerator: "CommandOrControl+Shift+M",
+              click() {
+                notifyListeners("build", "pocket");
+              },
+            },
           ],
         },
         { type: "separator" },

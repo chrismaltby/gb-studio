@@ -17,13 +17,13 @@
 
 UBYTE exchange_state = EXCHANGE_COMPLETED;
 
-void vm_sio_set_mode(SCRIPT_CTX * THIS, UBYTE mode) __banked {
+void vm_sio_set_mode(SCRIPT_CTX * THIS, UBYTE mode) OLDCALL __banked {
     THIS;
     exchange_state = EXCHANGE_COMPLETED;
     SIO_set_mode(mode);
 }
 
-void vm_sio_exchange(SCRIPT_CTX * THIS, INT16 idxA, INT16 idxB, UBYTE len) __banked {
+void vm_sio_exchange(SCRIPT_CTX * THIS, INT16 idxA, INT16 idxB, UBYTE len) OLDCALL __banked {
     INT16 * data;
     // terminate if something is wrong
     if (link_operation_mode == LINK_MODE_NONE) {

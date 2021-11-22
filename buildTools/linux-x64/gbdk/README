@@ -27,10 +27,10 @@ Setup:
 * Recommended but not required: Add the gbdk 'bin' sub-directory to your
   system path using the Windows System control panel
 
-* Open a command line and compile the examples by running "make.bat" in 
+* Open a command line and compile the examples by running "compile.bat" in
   the "examples\gb" sub-directory:
     cd c:\gbdk\examples\gb
-    make.bat
+    compile.bat
 
 
 === Linux ===
@@ -42,7 +42,7 @@ Setup:
     Run from command line (only lasts for that session): export GBDKDIR=/opt/gbdk
     Or add that to your shell defaults (permanent)
 
-* Open a command line and compile the examples by running "make.bat" in 
+* Open a command line and compile the examples by running "make" in
   the "examples\gb" sub-directory:
     cd /opt/gbdk/examples/gb
     make

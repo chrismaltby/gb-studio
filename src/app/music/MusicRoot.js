@@ -11,6 +11,9 @@ player.initPlayer((file) => {
   } else {
     log(file);
     log(`COMPILE DONE`);
+    ipcRenderer.send("music-data-receive", {
+      action: "initialized",
+    });
   }
 });
 
@@ -25,6 +28,16 @@ player.setOnIntervalCallback((playbackUpdate) => {
 ipcRenderer.on("music-data", (event, d) => {
   log(d);
   switch (d.action) {
+    case "load-song":
+      player.loadSong(d.song);
+      ipcRenderer.send("music-data-receive", {
+        action: "log",
+        message: "load song",
+      });
+      ipcRenderer.send("music-data-receive", {
+        action: "loaded",
+      });
+      break;
     case "play":
       player.play(d.song);
       ipcRenderer.send("music-data-receive", {
@@ -34,6 +47,10 @@ ipcRenderer.on("music-data", (event, d) => {
       break;
     case "stop":
       player.stop();
+      ipcRenderer.send("music-data-receive", {
+        action: "log",
+        message: "stop",
+      });
       break;
     case "set-mute":
       const channels = player.setChannel(d.channel, d.muted);
@@ -42,6 +59,13 @@ ipcRenderer.on("music-data", (event, d) => {
         message: {
           channels,
         },
+      });
+      break;
+    case "preview":
+      player.preview(d.note, d.type, d.instrument, d.square2);
+      ipcRenderer.send("music-data-receive", {
+        action: "log",
+        message: "preview",
       });
       break;
     default:

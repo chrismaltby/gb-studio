@@ -16,7 +16,6 @@ import {
 } from "ui/splitpane/SplitPaneDivider";
 import { RootState } from "store/configureStore";
 import editorActions from "store/features/editor/editorActions";
-import settingsActions from "store/features/settings/settingsActions";
 import { NavigatorSongs } from "../music/NavigatorSongs";
 import { SongTracker } from "../music/SongTracker";
 import { musicSelectors } from "store/features/entities/entitiesState";
@@ -118,13 +117,24 @@ const MusicPageUge = () => {
   const error = useSelector(
     (state: RootState) => state.trackerDocument.present.error
   );
+
+  const [selectedSongPath, setSelectedSongPath] = useState("");
+  const [selectedSongType, setSelectedSongType] = useState("");
   useEffect(() => {
-    if (selectedSong && selectedSong.type === "uge") {
-      dispatch({ type: "@@TRACKER_INIT" });
-      const path = `${assetFilename(projectRoot, "music", selectedSong)}`;
-      dispatch(loadSongFile(path));
+    if (selectedSong) {
+      setSelectedSongPath(
+        `${assetFilename(projectRoot, "music", selectedSong)}`
+      );
+      setSelectedSongType(selectedSong.type || "");
     }
-  }, [dispatch, projectRoot, selectedSong]);
+  }, [projectRoot, selectedSong]);
+
+  useEffect(() => {
+    if (selectedSongPath !== "" && selectedSongType === "uge") {
+      dispatch({ type: "@@TRACKER_INIT" });
+      dispatch(loadSongFile(selectedSongPath));
+    }
+  }, [dispatch, selectedSongPath, selectedSongType]);
 
   const [leftPaneWidth, setLeftPaneSize, startLeftPaneResize] = useResizable({
     initialSize: navigatorSidebarWidth,
@@ -236,14 +246,6 @@ const MusicPageUge = () => {
     false,
     false,
   ]);
-  console.log(channelStatus);
-
-  const playing = useSelector((state: RootState) => state.tracker.playing);
-
-  const [playbackState, setPlaybackState] = useState([-1, -1]);
-  useEffect(() => {
-    setPlaybackState([-1, -1]);
-  }, [playing, song]);
 
   const view = useSelector((state: RootState) => state.tracker.view);
 
@@ -258,7 +260,6 @@ const MusicPageUge = () => {
             song={song}
             height={windowHeight - 100}
             channelStatus={channelStatus}
-            playbackState={playbackState}
           />
         </div>
       );
@@ -268,11 +269,10 @@ const MusicPageUge = () => {
           sequenceId={sequenceId}
           song={song}
           height={windowHeight - 100}
-          playbackState={playbackState}
         />
       );
     }
-  }, [channelStatus, playbackState, sequenceId, song, view, windowHeight]);
+  }, [channelStatus, sequenceId, song, view, windowHeight]);
 
   return (
     <Wrapper>
@@ -332,11 +332,7 @@ const MusicPageUge = () => {
             </div>
             <SplitPaneVerticalDivider />
             {renderGridView()}
-            <UgePlayer
-              data={song}
-              onPlaybackUpdate={setPlaybackState}
-              onChannelStatusUpdate={setChannelStatus}
-            />
+            <UgePlayer data={song} onChannelStatusUpdate={setChannelStatus} />
           </div>
           <SplitPaneHorizontalDivider onMouseDown={onResizeRight} />
           <div

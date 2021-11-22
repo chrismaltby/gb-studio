@@ -28,6 +28,7 @@
   "TOOLBAR_EXPORT_AS": "Export As...",
   "TOOLBAR_EXPORT_ROM": "Export ROM",
   "TOOLBAR_EXPORT_WEB": "Export Web",
+  "TOOLBAR_EXPORT_POCKET": "Export Pocket",
   "TOOLBAR_RUN": "Run",
   "TOOLBAR_SEARCH": "Search...",
 
@@ -430,6 +431,20 @@
   "FIELD_LTE": "Less Than Or Equal To",
   "FIELD_GTE": "Greater Than Or Equal To",
   "FIELD_SET_VARIABLE": "Set Variable",
+  "FIELD_SAVE_SLOT": "Save Slot",
+  "FIELD_SAVE_SLOT_N": "Save Slot {slot}",
+  "FIELD_SLOT_N": "Slot {slot}",
+  "FIELD_ANGLE": "Angle",
+  "FIELD_ANGLE_VARIABLE": "Angle Variable",
+  "FIELD_DIRECTION_VARIABLE": "Direction Variable",
+  "FIELD_ACTOR_DIRECTION": "Actor Direction",
+  "FIELD_LIFE_TIME": "Life Time",
+  "FIELD_LOCK_AXIS": "Lock Axis",
+  "FIELD_FROM_SAVE_SLOT": "From Save Slot",
+  "FIELD_CLIMB_VEL": "Climb Velocity",
+  "FIELD_LINK_CLOSE": "Close the current link session.",
+  "FIELD_LINK_JOIN": "Join a link session.",
+  "FIELD_LINK_HOST": "Host a link session.",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -440,6 +455,7 @@
   "BUILD_RUN": "Run",
   "BUILD_EXPORT_ROM": "Export ROM",
   "BUILD_EXPORT_WEB": "Export Web",
+  "BUILD_EXPORT_POCKET": "Export Pocket",
   "BUILD_CLEAR": "Clear",
   "BUILD_EMPTY_BUILD_CACHE": "Empty Build Cache",
 
@@ -532,6 +548,7 @@
   "EVENT_SAVE_DATA": "Game Data Save",
   "EVENT_CLEAR_DATA": "Game Data Remove",
   "EVENT_IF_SAVED_DATA": "If Game Data Saved",
+  "EVENT_PEEK_DATA": "Store Variable from Game Data In Variable",
   "EVENT_ACTOR_SET_MOVEMENT_SPEED": "Set Actor Movement Speed",
   "EVENT_ACTOR_SET_ANIMATION_SPEED": "Set Actor Animation Speed",
   "EVENT_TEXT_SET_ANIMATION_SPEED": "Set Text Animation Speed",
@@ -626,6 +643,11 @@
   "EVENT_IF_FLAGS_COMPARE_LABEL": "If {variable} Has Flag {flag}",
   "EVENT_IF_TRUE_LABEL": "If {variable} Is 'True'",
   "EVENT_IF_FALSE_LABEL": "If {variable} Is 'False'",
+  "EVENT_GBVM_SCRIPT": "GBVM Script",
+  "EVENT_LINK_CLOSE": "Link: Close",
+  "EVENT_LINK_JOIN": "Link: Join",
+  "EVENT_LINK_HOST": "Link: Host",
+  "EVENT_LINK_CLOSE": "Link: Transfer",
 
   "// 10": "Menu -----------------------------------------------------",
 
@@ -643,6 +665,7 @@
   "MENU_EXPORT_AS": "Export As",
   "MENU_EXPORT_ROM": "Export ROM",
   "MENU_EXPORT_WEB": "Export Web",
+  "MENU_EXPORT_POCKET": "Export Pocket",
   "MENU_VIEW": "View",
   "MENU_GAME_WORLD": "Game World",
   "MENU_SPRITES": "Sprites",
@@ -874,6 +897,7 @@
   "GAMETYPE_ADVENTURE": "Adventure",
   "GAMETYPE_SHMUP": "Shoot Em' Up",
   "GAMETYPE_POINT_N_CLICK": "Point and Click",
+  "GAMETYPE_LOGO": "Logo",
 
   "// 20": "Compiler -----------------------------------------------------",
 

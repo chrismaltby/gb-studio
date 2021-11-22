@@ -46,19 +46,11 @@ const buildProject = async (
     warnings,
   });
   if (buildType === "web") {
-    if (!exportBuild) {
-      await copy(binjgbRoot, `${outputRoot}/build/web`);
-      await copy(
-        `${outputRoot}/build/rom/game.gb`,
-        `${outputRoot}/build/web/rom/game.gb`
-      );
-    } else {
-      await copy(emulatorRoot, `${outputRoot}/build/web`);
-      await copy(
-        `${outputRoot}/build/rom/game.gb`,
-        `${outputRoot}/build/web/rom/game.gb`
-      );
-    }
+    await copy(binjgbRoot, `${outputRoot}/build/web`);
+    await copy(
+      `${outputRoot}/build/rom/game.gb`,
+      `${outputRoot}/build/web/rom/game.gb`
+    );
     const sanitize = (s) => String(s || "").replace(/["<>]/g, "");
     const projectName = sanitize(data.name);
     const author = sanitize(data.author);
@@ -86,6 +78,12 @@ const buildProject = async (
       .replace(/___CUSTOM_CONTROLS___/g, customControls);
 
     await fs.writeFile(`${outputRoot}/build/web/index.html`, html);
+  } else if (buildType === "pocket") {
+    await fs.mkdir(`${outputRoot}/build/pocket`);
+    await copy(
+      `${outputRoot}/build/rom/game.pocket`,
+      `${outputRoot}/build/pocket/game.pocket`
+    );
   }
 };
 

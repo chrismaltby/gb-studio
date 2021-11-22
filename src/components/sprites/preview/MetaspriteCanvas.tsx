@@ -88,6 +88,9 @@ export const MetaspriteCanvas = ({
   }, [width, height, onWorkerComplete]);
 
   useEffect(() => {
+    if (tiles.length === 0) {
+      return;
+    }
     if (!canvasRef.current || !spriteSheet) {
       return;
     }

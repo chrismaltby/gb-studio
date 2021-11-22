@@ -118,7 +118,7 @@ uint8_t k_right, k_left;
 
 void set_sprite_attrb( uint8_t nb, uint8_t tile )
 {
-  if( _cpu==CGB_TYPE ) {
+  if(DEVICE_SUPPORTS_COLOR) {
     set_sprite_prop( nb, tile );
   }
 }
@@ -217,7 +217,7 @@ void init_screen()
 {
   uint8_t n;
 
-  if( _cpu==CGB_TYPE ) {
+  if(DEVICE_SUPPORTS_COLOR) {
     /* Transfer color palette */
     set_bkg_palette( 0, 1, &bkg_p[0] );
     set_bkg_palette( 1, 1, &bkg_p[4] );

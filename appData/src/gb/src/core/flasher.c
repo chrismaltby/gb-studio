@@ -3,6 +3,7 @@
 #include <gb/gb.h>
 #include <bankdata.h>
 
+#include "compat.h"
 #include "flasher.h"
 
 extern void _start_save;
@@ -17,8 +18,8 @@ void restore_sram() __banked {
         restore_sram_bank(i);
 }
 
-extern UINT8 erase_flash();                 // erases FLASH sector: 64K or 4 banks
-extern UINT8 save_sram_banks(UINT8 count);  // copies up to count SRAM banks to FLASH
+extern UINT8 erase_flash() OLDCALL;                  // erases FLASH sector: 64K or 4 banks
+extern UINT8 save_sram_banks(UINT8 count) OLDCALL;   // copies up to count SRAM banks to FLASH
 
 UINT8 save_sram(UINT8 count) __banked {
     if (!erase_flash()) return 0;

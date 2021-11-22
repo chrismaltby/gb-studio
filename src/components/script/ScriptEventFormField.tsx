@@ -225,6 +225,7 @@ const ScriptEventFormField = memo(
     return (
       <ScriptEventField
         halfWidth={field.width === "50%"}
+        inline={field.inline}
         style={{ flexBasis: field.flexBasis }}
       >
         <FormField

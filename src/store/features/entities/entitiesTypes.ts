@@ -50,6 +50,10 @@ export type ScriptEvent = {
   children?: Dictionary<string[]>;
 };
 
+export type ScriptEventDenormalized = Omit<ScriptEvent, "children"> & {
+  children: Dictionary<ScriptEventDenormalized[]>;
+};
+
 export type ScriptEventsRef = {
   scriptEventId: string;
   parentType: ScriptEventParentType;
@@ -90,6 +94,23 @@ export type Actor = {
   hit3Script: string[];
 };
 
+export type ActorDenormalized = Omit<
+  Actor,
+  | "script"
+  | "startScript"
+  | "updateScript"
+  | "hit1Script"
+  | "hit2Script"
+  | "hit3Script"
+> & {
+  script: ScriptEventDenormalized[];
+  startScript: ScriptEventDenormalized[];
+  updateScript: ScriptEventDenormalized[];
+  hit1Script: ScriptEventDenormalized[];
+  hit2Script: ScriptEventDenormalized[];
+  hit3Script: ScriptEventDenormalized[];
+};
+
 export const triggerScriptKeys = ["script", "leaveScript"] as const;
 export type TriggerScriptKey = typeof triggerScriptKeys[number];
 
@@ -103,6 +124,11 @@ export type Trigger = {
   height: number;
   script: string[];
   leaveScript: string[];
+};
+
+export type TriggerDenormalized = Omit<Trigger, "script" | "leaveScript"> & {
+  script: ScriptEventDenormalized[];
+  leaveScript: ScriptEventDenormalized[];
 };
 
 export type Background = {
@@ -209,6 +235,10 @@ export type CustomEvent = {
   variables: Dictionary<CustomEventVariable>;
   actors: Dictionary<CustomEventActor>;
   script: string[];
+};
+
+export type CustomEventDenormalized = Omit<CustomEvent, "script"> & {
+  script: ScriptEventDenormalized[];
 };
 
 export type EngineFieldValue = {
@@ -327,8 +357,25 @@ export type SceneData = Omit<Scene, "actors" | "triggers"> & {
   triggers: Trigger[];
 };
 
+export type SceneDenormalized = Omit<
+  Scene,
+  | "actors"
+  | "triggers"
+  | "script"
+  | "playerHit1Script"
+  | "playerHit2Script"
+  | "playerHit3Script"
+> & {
+  actors: ActorDenormalized[];
+  triggers: TriggerDenormalized[];
+  script: ScriptEventDenormalized[];
+  playerHit1Script: ScriptEventDenormalized[];
+  playerHit2Script: ScriptEventDenormalized[];
+  playerHit3Script: ScriptEventDenormalized[];
+};
+
 export type ProjectEntitiesData = {
-  scenes: SceneData[];
+  scenes: SceneDenormalized[];
   backgrounds: BackgroundData[];
   spriteSheets: SpriteSheetData[];
   palettes: Palette[];
@@ -399,12 +446,16 @@ export interface ScriptEventFieldSchema {
   step?: number;
   options?: [unknown, string][];
   optional?: boolean;
+  allowNone?: boolean;
+  allowMultiple?: boolean;
   paletteType?: "background" | "ui" | "emote" | "sprite";
   paletteIndex?: number;
   canKeep?: boolean;
   includePlayer?: boolean;
   defaultType?: string;
   types?: string[];
+  fields?: ScriptEventFieldSchema[];
+  inline?: boolean;
   filter?: (value: unknown) => boolean;
   updateFn?: (
     newValue: unknown,

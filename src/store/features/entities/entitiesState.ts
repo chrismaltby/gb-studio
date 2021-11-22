@@ -2053,6 +2053,7 @@ const refreshCustomEventArgs: CaseReducer<
       if (
         args.otherActorId &&
         args.otherActorId !== "player" &&
+        args.otherActorId !== "$self$" &&
         typeof args.otherActorId === "string"
       ) {
         const letter = String.fromCharCode(
@@ -2081,7 +2082,7 @@ const refreshCustomEventArgs: CaseReducer<
             addVariable(variable);
           }
         }
-        if (isPropertyField(scriptEvent.command, arg, args[arg])) {
+        if (isPropertyField(scriptEvent.command, arg, args)) {
           const addPropertyActor = (property: string) => {
             const actor = property && property.replace(/:.*/, "");
             if (actor !== "player" && actor !== "$self$") {

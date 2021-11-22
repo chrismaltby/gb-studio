@@ -10,6 +10,7 @@ import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import l10n from "lib/helpers/l10n";
 import { RollChannel } from "./RollChannel";
 import { RollChannelGrid } from "./RollChannelGrid";
+import { ipcRenderer } from "electron";
 
 const CELL_SIZE = 14;
 const MAX_NOTE = 71;
@@ -18,7 +19,6 @@ interface SongPianoRollProps {
   sequenceId: number;
   song: Song | null;
   height: number;
-  playbackState: number[];
 }
 
 interface PianoKeyProps {
@@ -96,7 +96,9 @@ const SongGrid = styled.div`
   border-color: ${(props) => props.theme.colors.sidebar.border};
   border-style: solid;
   position: relative;
-  z-index: 1;
+  :focus {
+    z-index: 1;
+  }
 `;
 
 const RollPlaybackTracker = styled.div`
@@ -114,12 +116,25 @@ export const SongPianoRoll = ({
   song,
   sequenceId,
   height,
-  playbackState,
 }: SongPianoRollProps) => {
   const playing = useSelector((state: RootState) => state.tracker.playing);
   const hoverNote = useSelector((state: RootState) => state.tracker.hoverNote);
 
   const patternId = song?.sequence[sequenceId] || 0;
+
+  const [playbackState, setPlaybackState] = useState([0, 0]);
+  useEffect(() => {
+    const listener = (_event: any, d: any) => {
+      if (d.action === "update") {
+        setPlaybackState(d.update);
+      }
+    };
+    ipcRenderer.on("music-data", listener);
+
+    return () => {
+      ipcRenderer.removeListener("music-data", listener);
+    };
+  }, [setPlaybackState]);
 
   const playingRowRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -241,7 +256,8 @@ export const SongPianoRoll = ({
             <RollPlaybackTracker
               ref={playingRowRef}
               style={{
-                transform: `translateX(${20 + playbackState[1] * CELL_SIZE}px)`,
+                display: playbackState[0] === sequenceId ? "" : "none",
+                transform: `translateX(${10 + playbackState[1] * CELL_SIZE}px)`,
               }}
             />
             <RollChannelGrid cellSize={CELL_SIZE} />

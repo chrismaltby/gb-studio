@@ -1,21 +1,18 @@
 import { ipcRenderer } from "electron";
 import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Song } from "lib/helpers/uge/song/Song";
 import { RootState } from "store/configureStore";
-// import Player from "./helpers/player";
+import trackerActions from "store/features/tracker/trackerActions";
 
 interface UgePlayerProps {
   data: Song | null;
-  onPlaybackUpdate?: (update: number[]) => void;
   onChannelStatusUpdate?: (channels: boolean[]) => void;
 }
 
-export const UgePlayer = ({
-  data,
-  onPlaybackUpdate,
-  onChannelStatusUpdate,
-}: UgePlayerProps) => {
+export const UgePlayer = ({ data, onChannelStatusUpdate }: UgePlayerProps) => {
+  const dispatch = useDispatch();
+
   useEffect(() => {
     ipcRenderer.send("open-music");
     return function close() {
@@ -26,13 +23,16 @@ export const UgePlayer = ({
   const play = useSelector((state: RootState) => state.tracker.playing);
 
   useEffect(() => {
-    ipcRenderer.removeAllListeners("music-data");
-    ipcRenderer.on("music-data", (event, d) => {
+    const listener = (_event: any, d: any) => {
       switch (d.action) {
-        case "update":
-          if (onPlaybackUpdate) {
-            onPlaybackUpdate(d.update);
-          }
+        case "initialized":
+          ipcRenderer.send("music-data-send", {
+            action: "load-song",
+            song: data,
+          });
+          break;
+        case "loaded":
+          dispatch(trackerActions.playerReady(true));
           break;
         case "muted":
           const message = d.message;
@@ -40,13 +40,20 @@ export const UgePlayer = ({
             onChannelStatusUpdate(message.channels);
           }
           break;
+        case "update":
         case "log":
           break;
         default:
           console.log(`Action ${d.action} not supported`);
       }
-    });
-  }, [onChannelStatusUpdate, onPlaybackUpdate, play]);
+    };
+
+    ipcRenderer.on("music-data", listener);
+
+    return () => {
+      ipcRenderer.removeListener("music-data", listener);
+    };
+  }, [onChannelStatusUpdate, play, data, dispatch]);
 
   useEffect(() => {
     if (play) {

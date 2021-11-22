@@ -7,9 +7,9 @@
 #include <types.h>
 #include <stdint.h>
 
-#define CLOCKS_PER_SEC		60
+#define CLOCKS_PER_SEC 60
 
-typedef uint16_t	time_t;
+typedef uint16_t time_t;
 
 /** Returns an approximation of processor time used by the program in Clocks
 
@@ -22,7 +22,7 @@ typedef uint16_t	time_t;
 
     @see sys_time, time()
 */
-clock_t clock(void) NONBANKED;
+clock_t clock();
 
 /** Converts clock() time to Seconds
 

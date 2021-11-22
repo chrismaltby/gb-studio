@@ -7,11 +7,15 @@ import { SliderField } from "ui/form/SliderField";
 interface InstrumentLengthFormProps {
   value: number | null;
   onChange: (value: number | null) => void;
+  min?: number;
+  max?: number;
 }
 
 export const InstrumentLengthForm = ({
   value,
   onChange,
+  min = 1,
+  max = 64,
 }: InstrumentLengthFormProps) => {
   return (
     <>
@@ -34,8 +38,8 @@ export const InstrumentLengthForm = ({
         <SliderField
           name="length"
           value={value || 0}
-          min={0}
-          max={63}
+          min={value ? min : 0}
+          max={max}
           onChange={(value) => {
             onChange(value || 0);
           }}

@@ -4,11 +4,21 @@
 #ifndef _SMS_H
 #define _SMS_H
 
-#define __GBDK_VERSION 405
-
 #include <types.h>
 #include <stdint.h>
+#include <gbdk/version.h>
 #include <sms/hardware.h>
+
+#define SEGA
+#ifdef NINTENDO
+#undef NINTENDO
+#endif
+#if defined(__TARGET_sms)
+#define MASTERSYSTEM
+#elif defined(__TARGET_gg)
+#define GAMEGEAR
+#endif
+
 
 #define VBK_REG VDP_ATTR_SHIFT
 
@@ -25,26 +35,123 @@
 
     @see joypad
  */
-#define	J_START      0b01000000
-#define	J_SELECT     0b01000000
-#define	J_B          0b00100000
-#define	J_A          0b00010000
-#define	J_DOWN       0b00000010
 #define	J_UP         0b00000001
+#define	J_DOWN       0b00000010
 #define	J_LEFT       0b00000100
 #define	J_RIGHT      0b00001000
+#define	J_A          0b00010000
+#define	J_B          0b00100000
+#if defined(__TARGET_sms)
+#define	J_SELECT     0b00100000
+#define	J_START      0b00010000
+#elif defined(__TARGET_gg)
+#define	J_SELECT     0b00100000
+#define	J_START      0b10000000
+#endif
 
+/** Screen modes.
+    Normally used by internal functions only.
+    @see mode()
+ */
+#define	M_TEXT_OUT   0x02U
+#define	M_TEXT_INOUT 0x03U
+/** Set this in addition to the others to disable scrolling
+
+    If scrolling is disabled, the cursor returns to (0,0)
+    @see mode()
+*/
+#define M_NO_SCROLL  0x04U
+/** Set this to disable interpretation
+    @see mode()
+*/
+#define M_NO_INTERP  0x08U
+
+/** If set the background tile will be flipped horizontally.
+ */
+#define S_FLIPX      0x02U
+/** If set the background tile will be flipped vertically.
+ */
+#define S_FLIPY      0x04U
+/** If set the background tile palette.
+ */
+#define S_PALETTE    0x08U
+/** If set the background tile priority.
+ */
+#define S_PRIORITY   0x10U
+
+// VDP helper macros
 #define __WRITE_VDP_REG(REG, v) shadow_##REG=(v);__critical{VDP_CMD=(shadow_##REG),VDP_CMD=REG;}
 #define __READ_VDP_REG(REG) shadow_##REG
 
 void WRITE_VDP_CMD(uint16_t cmd) __z88dk_fastcall __preserves_regs(b, c, d, e, iyh, iyl);
 void WRITE_VDP_DATA(uint16_t data) __z88dk_fastcall __preserves_regs(b, c, d, e, iyh, iyl);
 
+/** Set the current screen mode - one of M_* modes
+
+    Normally used by internal functions only.
+
+    @see M_TEXT_OUT, M_TEXT_INOUT, M_NO_SCROLL, M_NO_INTERP
+*/
+void mode(uint8_t m) OLDCALL;
+
+/** Returns the current mode
+
+    @see M_TEXT_OUT, M_TEXT_INOUT, M_NO_SCROLL, M_NO_INTERP
+*/
+uint8_t get_mode() OLDCALL;
+
+/* Interrupt flags */
+/** Disable calling of interrupt service routines
+ */
+#define EMPTY_IFLAG  0x00U
+/** VBlank Interrupt occurs at the start of the vertical blank.
+
+    During this period the video ram may be freely accessed.
+    @see set_interrupts(), @see add_VBL
+ */
+#define VBL_IFLAG    0x01U
+/** LCD Interrupt when triggered by the STAT register.
+    @see set_interrupts(), @see add_LCD
+*/
+#define LCD_IFLAG    0x02U
+/** Does nothing on SMS/GG
+ */
+#define TIM_IFLAG    0x04U
+/** Does nothing on SMS/GG
+ */
+#define SIO_IFLAG    0x08U
+/** Does nothing on SMS/GG
+ */
+#define JOY_IFLAG    0x10U
+
+void set_interrupts(uint8_t flags) __z88dk_fastcall;
+
+/* Limits */
+/** Width of the visible screen in pixels.
+ */
+#define SCREENWIDTH  DEVICE_SCREEN_PX_WIDTH
+/** Height of the visible screen in pixels.
+ */
+#define SCREENHEIGHT DEVICE_SCREEN_PX_HEIGHT
+/** The Minimum X position of the Window Layer (Left edge of screen) @see move_win()
+ */
+#define MINWNDPOSX   0x00U
+/** The Minimum Y position of the Window Layer (Top edge of screen) @see move_win()
+ */
+#define MINWNDPOSY   0x00U
+/** The Maximum X position of the Window Layer (Right edge of screen) @see move_win()
+ */
+#define MAXWNDPOSX   0x00U
+/** The Maximum Y position of the Window Layer (Bottom edge of screen) @see move_win()
+ */
+#define MAXWNDPOSY   0x00U
+
+
 /** Interrupt handlers
  */
 typedef void (*int_handler)(void) NONBANKED;
 
-/** Removes the VBL interrupt handler. 
+/** Removes the VBL interrupt handler.
     @see add_VBL()
 */
 void remove_VBL(int_handler h) __z88dk_fastcall __preserves_regs(iyh, iyl);
@@ -54,9 +161,9 @@ void remove_VBL(int_handler h) __z88dk_fastcall __preserves_regs(iyh, iyl);
 */
 void remove_LCD(int_handler h) __z88dk_fastcall __preserves_regs(b, c, iyh, iyl);
 
-void remove_TIM(int_handler h);
-void remove_SIO(int_handler h);
-void remove_JOY(int_handler h);
+void remove_TIM(int_handler h) __z88dk_fastcall;
+void remove_SIO(int_handler h) __z88dk_fastcall;
+void remove_JOY(int_handler h) __z88dk_fastcall;
 
 /** Adds a V-blank interrupt handler.
 */
@@ -66,18 +173,33 @@ void add_VBL(int_handler h) __z88dk_fastcall __preserves_regs(d, e, iyh, iyl);
 */
 void add_LCD(int_handler h) __z88dk_fastcall __preserves_regs(b, c, iyh, iyl);
 
-void add_TIM(int_handler h);
-void add_SIO(int_handler h);
-void add_JOY(int_handler h);
+/** Does nothing on SMS/GG
+ */
+void add_TIM(int_handler h) __z88dk_fastcall;
+
+/** Does nothing on SMS/GG
+ */
+void add_SIO(int_handler h) __z88dk_fastcall;
+
+/** Does nothing on SMS/GG
+ */
+void add_JOY(int_handler h) __z88dk_fastcall;
+
+/** Cancel pending interrupts
+ */
+inline uint8_t cancel_pending_interrupts() {
+    return VDP_STATUS;
+}
 
 inline void move_bkg(uint8_t x, uint8_t y) {
-	__WRITE_VDP_REG(VDP_RSCX, x);
+	__WRITE_VDP_REG(VDP_RSCX, -x);
 	__WRITE_VDP_REG(VDP_RSCY, y);
 }
 
 inline void scroll_bkg(int8_t x, int8_t y) {
-	__WRITE_VDP_REG(VDP_RSCX, __READ_VDP_REG(VDP_RSCX) + x);
-	__WRITE_VDP_REG(VDP_RSCY, __READ_VDP_REG(VDP_RSCY) + y);
+	__WRITE_VDP_REG(VDP_RSCX, __READ_VDP_REG(VDP_RSCX) - x);
+    int16_t tmp = __READ_VDP_REG(VDP_RSCY) + y;
+	__WRITE_VDP_REG(VDP_RSCY, (tmp < 0) ? 224 + tmp : tmp % 224u);
 }
 
 /** HALTs the CPU and waits for the vertical blank interrupt (VBL) to finish.
@@ -90,13 +212,13 @@ inline void scroll_bkg(int8_t x, int8_t y) {
     never return. If the screen is off this function returns
     immediately.
 */
-void wait_vbl_done(void) __preserves_regs(b, c, d, e, h, l, iyh, iyl);
+void wait_vbl_done() __preserves_regs(b, c, d, e, h, l, iyh, iyl);
 
 /** Turns the display off.
 
     @see DISPLAY_ON
 */
-inline void display_off(void) {
+inline void display_off() {
 	__WRITE_VDP_REG(VDP_R1, __READ_VDP_REG(VDP_R1) &= (~R1_DISP_ON));
 }
 
@@ -112,6 +234,10 @@ inline void display_off(void) {
 #define DISPLAY_OFF \
 	display_off();
 
+/** Copies data from shadow OAM to OAM
+ */
+void refresh_OAM();
+
 /** Blanks leftmost column, so it is not garbaged when you use horizontal scroll
     @see SHOW_LEFT_COLUMN
 */
@@ -123,6 +249,26 @@ inline void display_off(void) {
 */
 #define SHOW_LEFT_COLUMN \
 	__WRITE_VDP_REG(VDP_R0, __READ_VDP_REG(VDP_R0) &= (~R0_LCB))
+
+/** Turns on the background layer.
+    Not yet implemented
+*/
+#define SHOW_BKG
+
+/** Turns off the background layer.
+    Not yet implemented
+*/
+#define HIDE_BKG
+
+/** Turns on the window layer
+    Not yet implemented
+*/
+#define SHOW_WIN
+
+/** Turns off the window layer.
+    Not yet implemented
+*/
+#define HIDE_WIN
 
 /** Turns on the sprites layer.
     Not yet implemented
@@ -143,6 +289,19 @@ inline void display_off(void) {
 */
 #define SPRITES_8x8 \
 	__WRITE_VDP_REG(VDP_R1, __READ_VDP_REG(VDP_R1) &= (~R1_SPR_8X16))
+
+/** Macro returns TRUE if device supports color
+ *  (it always does on SMS/GG)
+ */
+#define DEVICE_SUPPORTS_COLOR (TRUE)
+
+/** Global Time Counter in VBL periods (60Hz)
+
+    Increments once per Frame
+
+    Will wrap around every ~18 minutes (unsigned 16 bits = 65535 / 60 / 60 = 18.2)
+*/
+extern volatile uint16_t sys_time;
 
 /** Tracks current active ROM bank in frame 1
 */
@@ -211,7 +370,7 @@ __endasm; \
     @param b   SRAM bank to switch to
 */
 
-#define SWITCH_RAM (((b)&1)?RAM_CONTROL|=RAMCTL_BANK:RAM_CONTROL&=(~RAMCTL_BANK))
+#define SWITCH_RAM(b) RAM_CONTROL=((b)&1)?RAM_CONTROL|RAMCTL_BANK:RAM_CONTROL&(~RAMCTL_BANK)
 
 /** Enables RAM
 */
@@ -224,9 +383,16 @@ __endasm; \
 #define DISABLE_RAM RAM_CONTROL&=(~RAMCTL_RAM)
 
 
+/** Delays the given number of milliseconds.
+    Uses no timers or interrupts, and can be called with
+    interrupts disabled
+ */
+void delay(uint16_t d) __z88dk_fastcall;
+
+
 /** Reads and returns the current state of the joypad.
 */
-uint8_t joypad(void) __preserves_regs(b, c, d, e, h, iyh, iyl);
+uint8_t joypad() OLDCALL __preserves_regs(b, c, d, e, h, iyh, iyl);
 
 /** Waits until at least one of the buttons given in mask are pressed.
 */
@@ -237,7 +403,7 @@ uint8_t waitpad(uint8_t mask) __z88dk_fastcall __preserves_regs(b, c, d, e, iyh,
     Note: Checks in a loop that doesn't HALT at all, so the CPU
     will be maxed out until this call returns.
 */
-void waitpadup(void) __preserves_regs(b, c, d, e, iyh, iyl);
+void waitpadup() __preserves_regs(b, c, d, e, iyh, iyl);
 
 /** Multiplayer joypad structure.
 
@@ -273,38 +439,148 @@ uint8_t joypad_init(uint8_t npads, joypads_t * joypads) __z88dk_callee;
 void joypad_ex(joypads_t * joypads) __z88dk_fastcall __preserves_regs(iyh, iyl);
 
 
-#ifdef __TARGET_sms
-#define RGB(r,g,b)        ((r)|((g)<<2)|((b)<<4))
-#define RGB8(r,g,b)       (((r)>>6)|(((g)>>6)<<2)|(((b)>>6)<<4))
-#define RGBHTML(RGB24bit) (((RGB24bit)>>22)|((((RGB24bit)&0xFFFF)>>14)<<2)|((((RGB24bit)&0xFF)>>6)<<4))
+#if defined(__TARGET_sms)
+
+#define RGB(r,g,b)        ((r) | ((g) << 2) | ((b) << 4))
+#define RGB8(r,g,b)       (((r) >> 6) | (((g) >> 6) << 2) | (((b) >> 6) << 4))
+#define RGBHTML(RGB24bit) (((RGB24bit) >> 22) | ((((RGB24bit) & 0xFFFF) >> 14) << 2) | ((((RGB24bit) & 0xFF) >> 6) << 4))
+
+/** Common colors based on the EGA default palette.
+ */
+#define RGB_RED        RGB( 3,  0,  0)
+#define RGB_DARKRED    RGB( 2,  0,  0)
+#define RGB_GREEN      RGB( 0,  3,  0)
+#define RGB_DARKGREEN  RGB( 0,  2,  0)
+#define RGB_BLUE       RGB( 0,  0,  3)
+#define RGB_DARKBLUE   RGB( 0,  0,  2)
+#define RGB_YELLOW     RGB( 3,  3,  0)
+#define RGB_DARKYELLOW RGB( 2,  2,  0)
+#define RGB_CYAN       RGB( 0,  3,  3)
+#define RGB_AQUA       RGB( 3,  1,  2)
+#define RGB_PINK       RGB( 3,  0,  3)
+#define RGB_PURPLE     RGB( 2,  0,  2)
+#define RGB_BLACK      RGB( 0,  0,  0)
+#define RGB_DARKGRAY   RGB( 1,  1,  1)
+#define RGB_LIGHTGRAY  RGB( 2,  2,  2)
+#define RGB_WHITE      RGB( 3,  3,  3)
+
+typedef uint8_t palette_color_t;
+
+#elif defined(__TARGET_gg)
+
+#define RGB(r,g,b)        ((uint16_t)(r) | (uint16_t)((g) << 4) | (uint16_t)((b) << 8))
+#define RGB8(r,g,b)       ((uint16_t)((r) >> 4) | ((uint16_t)((g) >> 4) << 4) | ((uint16_t)((b) >> 4) << 8))
+#define RGBHTML(RGB24bit) (((RGB24bit) >> 20) | ((((RGB24bit) & 0xFFFF) >> 12) << 4)|((((RGB24bit) & 0xFF) >> 4) << 8))
+
+/** Common colors based on the EGA default palette.
+ */
+#define RGB_RED        RGB(15,  0,  0)
+#define RGB_DARKRED    RGB( 7,  0,  0)
+#define RGB_GREEN      RGB( 0, 15,  0)
+#define RGB_DARKGREEN  RGB( 0,  7,  0)
+#define RGB_BLUE       RGB( 0,  0, 15)
+#define RGB_DARKBLUE   RGB( 0,  0,  7)
+#define RGB_YELLOW     RGB(15, 15,  0)
+#define RGB_DARKYELLOW RGB( 7,  7,  0)
+#define RGB_CYAN       RGB( 0, 15, 15)
+#define RGB_AQUA       RGB(14,  2, 11)
+#define RGB_PINK       RGB(15,  0, 15)
+#define RGB_PURPLE     RGB(10,  0, 10)
+#define RGB_BLACK      RGB( 0,  0,  0)
+#define RGB_DARKGRAY   RGB( 5,  5,  5)
+#define RGB_LIGHTGRAY  RGB(10, 10, 10)
+#define RGB_WHITE      RGB(15, 15, 15)
+
+#define RGB_LIGHTFLESH RGB(15, 10,  7)
+#define RGB_BROWN      RGB( 5,  5,  0)
+#define RGB_ORANGE     RGB(15, 10,  0)
+#define RGB_TEAL       RGB( 7,  7,  0)
+
+typedef uint16_t palette_color_t;
+
 #else
-#ifdef __TARGET_gg
-#define RGB(r,g,b)        ((r)|((g)<<4)|((b)<<8))
-#define RGB8(r,g,b)       (((r)>>4)|(((g)>>4)<<4)|(((b)>>4)<<8))
-#define RGBHTML(RGB24bit) (((RGB24bit)>>20)|((((RGB24bit)&0xFFFF)>>12)<<4)|((((RGB24bit)&0xFF)>>4)<<8))
-#endif
+#error Unrecognized port
 #endif
 
+void set_default_palette();
+inline void cpu_fast() {}
+
+void set_palette_entry(uint8_t palette, uint8_t entry, uint16_t rgb_data) __z88dk_callee __preserves_regs(iyh, iyl);
 #define set_bkg_palette_entry set_palette_entry
 #define set_sprite_palette_entry(palette,entry,rgb_data) set_palette_entry(1,entry,rgb_data)
-void set_palette_entry(uint8_t palette, uint8_t entry, uint16_t rgb_data) __z88dk_callee __preserves_regs(iyh, iyl);
+void set_palette(uint8_t first_palette, uint8_t nb_palettes, palette_color_t *rgb_data) __z88dk_callee;
 #define set_bkg_palette set_palette
 #define set_sprite_palette(first_palette,nb_palettes,rgb_data) set_palette(1,1,rgb_data)
-void set_palette(uint8_t first_palette, uint8_t nb_palettes, uint16_t *rgb_data) __z88dk_callee;
 
-#define set_bkg_data set_tile_data
-#define set_sprite_data(start,ntiles,src) set_tile_data((uint8_t)(start)+0x100,(uint8_t)(ntiles),src)
-void set_tile_data(uint16_t start, uint16_t ntiles, const void *src) __z88dk_callee __preserves_regs(iyh,iyl);
-#define set_bkg_2bpp_data set_tile_2bpp_data
-#define set_sprite_2bpp_data(start,ntiles,src) set_tile_2bpp_data((uint8_t)(start)+0x100,(uint8_t)(ntiles),src)
-void set_tile_2bpp_data(uint16_t start, uint16_t ntiles, const void *src) __z88dk_callee __preserves_regs(iyh,iyl);
+void set_native_tile_data(uint16_t start, uint16_t ntiles, const void *src) __z88dk_callee __preserves_regs(iyh,iyl);
+inline void set_bkg_4bpp_data(uint16_t start, uint16_t ntiles, const void *src) {
+    set_native_tile_data(start, ntiles, src);
+}
+inline void set_sprite_4bpp_data(uint16_t start, uint16_t ntiles, const void *src) {
+    set_native_tile_data((uint8_t)(start) + 0x100u, ntiles, src);
+}
 
+#define COMPAT_PALETTE(C0,C1,C2,C3) (((uint16_t)(C3) << 12) | ((uint16_t)(C2) << 8) | ((uint16_t)(C1) << 4) | (uint16_t)(C0))
+extern uint16_t _current_2bpp_palette;
+inline void set_2bpp_palette(uint16_t palette) {
+    _current_2bpp_palette = palette;
+}
+void set_tile_2bpp_data(uint16_t start, uint16_t ntiles, const void *src, uint16_t palette) __z88dk_callee __preserves_regs(iyh,iyl);
+inline void set_bkg_data(uint16_t start, uint16_t ntiles, const void *src) {
+    set_tile_2bpp_data(start, ntiles, src, _current_2bpp_palette);
+}
+inline void set_sprite_data(uint16_t start, uint16_t ntiles, const void *src) {
+    set_tile_2bpp_data((uint8_t)(start) + 0x100u, ntiles, src, _current_2bpp_palette);
+}
+inline void set_bkg_2bpp_data(uint16_t start, uint16_t ntiles, const void *src) {
+    set_tile_2bpp_data(start, ntiles, src, _current_2bpp_palette);
+}
+inline void set_sprite_2bpp_data(uint16_t start, uint16_t ntiles, const void *src) {
+    set_tile_2bpp_data((uint8_t)(start) + 0x100u, ntiles, src, _current_2bpp_palette);
+}
+
+extern uint16_t _current_1bpp_colors;
+inline void set_1bpp_colors(uint8_t fgcolor, uint8_t bgcolor) {
+    _current_1bpp_colors = ((uint16_t)bgcolor << 8) | fgcolor;
+}
+void set_tile_1bpp_data(uint16_t start, uint16_t ntiles, const void *src, uint16_t colors) __z88dk_callee __preserves_regs(iyh,iyl);
+inline void set_bkg_1bpp_data(uint16_t start, uint16_t ntiles, const void *src) {
+    set_tile_1bpp_data(start, ntiles, src, _current_1bpp_colors);
+}
+inline void set_sprite_1bpp_data(uint16_t start, uint16_t ntiles, const void *src) {
+    set_tile_1bpp_data((uint8_t)(start) + 0x100u, ntiles, src, _current_1bpp_colors);
+}
+
+
+/** Copies arbitrary data to an address in VRAM
+
+    @param dst       destination VRAM Address
+    @param src       Pointer to source buffer
+    @param size      Number of bytes to copy
+
+    Copies __size__ bytes from a buffer at _src__ to VRAM starting at __dst__.
+*/
+void set_data(uint16_t dst, const void *src, uint16_t size) __z88dk_callee __preserves_regs(iyh, iyl);
 void vmemcpy(uint16_t dst, const void *src, uint16_t size) __z88dk_callee __preserves_regs(iyh, iyl);
 
 void set_tile_map(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *tiles) __z88dk_callee __preserves_regs(iyh, iyl);
+void set_tile_map_compat(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *tiles) __z88dk_callee __preserves_regs(iyh, iyl);
 #define set_bkg_tiles set_tile_map_compat
 #define set_win_tiles set_tile_map_compat
-void set_tile_map_compat(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *tiles) __z88dk_callee __preserves_regs(iyh, iyl);
+
+void set_tile_submap(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t map_w, const uint8_t *map) __z88dk_callee __preserves_regs(iyh, iyl);
+void set_tile_submap_compat(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t map_w, const uint8_t *map) __z88dk_callee __preserves_regs(iyh, iyl);
+inline void set_bkg_submap(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *map, uint8_t map_w) {
+    set_tile_submap_compat(x, y, w, h, map_w, map);
+}
+inline void set_win_submap(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *map, uint8_t map_w) {
+    set_tile_submap_compat(x, y, w, h, map_w, map);
+}
+
+void fill_rect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint16_t tile) __z88dk_callee __preserves_regs(iyh, iyl);
+void fill_rect_compat(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint16_t tile) __z88dk_callee __preserves_regs(iyh, iyl);
+#define fill_bkg_rect fill_rect_compat
+#define fill_win_rect fill_rect_compat
 
 /** Shadow OAM array in WRAM, that is transferred into the real OAM each VBlank
 */
@@ -315,20 +591,46 @@ extern volatile uint8_t shadow_OAM[];
 extern volatile uint8_t _shadow_OAM_base;
 
 /** Flag for disabling of OAM copying routine
+
+    Values:
+    \li 1: OAM copy routine is disabled (non-isr VDP operation may be in progress)
+    \li 0: OAM copy routine is enabled
+
+    This flag is modified by all sms/gg GBDK API calls that write to the VDP.
+    It is set to DISABLED when they start and ENABLED when they complete.
+
+    @note It is recommended to avoid writing to the Video Display Processor
+    (VDP) during an interrupt service routine (ISR) since it can corrupt
+    the VDP pointer of an VDP operation already in progress.
+
+    If it is necessary, this flag can be used during an ISR to determine
+    whether a VDP operation is already in progress. If the value is `1`
+    then avoid writing to the VDP (tiles, map, scrolling, colors, etc).
+
+    \code{.c}
+    // at the beginning of and ISR that would write to the VDP
+    if (_shadow_OAM_OFF) return;
+    \endcode
+
+    @see @ref docs_consoles_safe_display_controller_access
 */
 extern volatile uint8_t _shadow_OAM_OFF;
 
-/** Disable OAM copy each VBlank (note: there is no real DMA, this name is for compatibility with GB library)
+/** Disable shadow OAM to VRAM copy on each VBlank
 */
-#define DISABLE_OAM_DMA \
-    _shadow_OAM_OFF = 1
+#define DISABLE_VBL_TRANSFER \
+    _shadow_OAM_base = 0
 
-/** Enable OAM DMA copy each VBlank and set it to transfer default shadow_OAM array
+/** Enable shadow OAM to VRAM copy on each VBlank
 */
-#define ENABLE_OAM_DMA \
-    _shadow_OAM_OFF = 0
+#define ENABLE_VBL_TRANSFER \
+    _shadow_OAM_base = (uint8_t)((uint16_t)&shadow_OAM >> 8)
 
-/** Enable OAM DMA copy each VBlank and set it to transfer any 256-byte aligned array
+/** Amount of hardware sprites in OAM
+*/
+#define MAX_HARDWARE_SPRITES 64
+
+/** Sets address of 256-byte aligned array of shadow OAM to be transferred on each VBlank
 */
 inline void SET_SHADOW_OAM_ADDRESS(void * address) {
     _shadow_OAM_base = (uint8_t)((uint16_t)address >> 8);
@@ -365,6 +667,15 @@ inline uint8_t get_sprite_tile(uint8_t nb) {
     return shadow_OAM[0x41+(nb << 1)];
 }
 
+inline void set_sprite_prop(uint8_t nb, uint8_t prop) {
+    nb; prop;
+}
+
+inline uint8_t get_sprite_prop(uint8_t nb) {
+    nb;
+    return 0;
+}
+
 /** Moves sprite number __nb__ to the __x__, __y__ position on the screen.
 
     @param nb  Sprite number, range 0 - 39
@@ -378,7 +689,7 @@ inline uint8_t get_sprite_tile(uint8_t nb) {
     Moving the sprite to 0,0 (or similar off-screen location) will hide it.
 */
 inline void move_sprite(uint8_t nb, uint8_t x, uint8_t y) {
-    shadow_OAM[nb] = (y < VDP_SAT_TERM) ? y : 0xC0; 
+    shadow_OAM[nb] = (y < VDP_SAT_TERM) ? y : 0xC0;
     shadow_OAM[0x40+(nb << 1)] = x;
 }
 
@@ -395,7 +706,7 @@ inline void move_sprite(uint8_t nb, uint8_t x, uint8_t y) {
  */
 inline void scroll_sprite(uint8_t nb, int8_t x, int8_t y) {
     uint8_t new_y = shadow_OAM[nb] + y;
-    shadow_OAM[nb] = (new_y < VDP_SAT_TERM) ? new_y : 0xC0; 
+    shadow_OAM[nb] = (new_y < VDP_SAT_TERM) ? new_y : 0xC0;
     shadow_OAM[0x40+(nb << 1)] = x;
 }
 
@@ -408,5 +719,38 @@ inline void hide_sprite(uint8_t nb) {
     shadow_OAM[nb] = 0xC0;
 }
 
+/**
+ * Set byte in vram at given memory location
+ *
+ * @param addr address to write to
+ * @param v value
+ */
+void set_vram_byte(uint8_t * addr, uint8_t v) __z88dk_callee __preserves_regs(iyh, iyl);
+
+/**
+ * Set single tile t with attributes on background layer at x,y
+ * @param x X-coordinate
+ * @param y Y-coordinate
+ * @param t tile index
+ * @return returns the address of tile, so you may use faster set_vram_byte() later
+ */
+uint8_t * set_attributed_tile_xy(uint8_t x, uint8_t y, uint16_t t) __z88dk_callee __preserves_regs(iyh, iyl);
+
+/**
+ * Set single tile t on background layer at x,y
+ * @param x X-coordinate
+ * @param y Y-coordinate
+ * @param t tile index
+ * @return returns the address of tile, so you may use faster set_vram_byte() later
+ */
+uint8_t * set_tile_xy(uint8_t x, uint8_t y, uint8_t t) __z88dk_callee __preserves_regs(iyh, iyl);
+#define set_bkg_tile_xy set_tile_xy
+#define set_win_tile_xy set_tile_xy
+
+/**
+ * Get address of X,Y tile of background map
+ */
+uint8_t * get_bkg_xy_addr(uint8_t x, uint8_t y) __z88dk_callee __preserves_regs(iyh, iyl);
+#define get_win_xy_addr get_bkg_xy_addr
 
 #endif /* _SMS_H */

@@ -5,11 +5,12 @@ test("Should be able to lock camera to player position", () => {
 
   compile(
     {
-      speed: 1
+      speed: 1,
+      axis: ["x"],
     },
     {
-      cameraLock: mockCameraLock
+      cameraLock: mockCameraLock,
     }
   );
-  expect(mockCameraLock).toBeCalledWith(1);
+  expect(mockCameraLock).toBeCalledWith(1, ["x"]);
 });

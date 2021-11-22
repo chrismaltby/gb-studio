@@ -39,7 +39,6 @@ extern UBYTE win_speed;
 extern UBYTE text_drawn;
 extern UBYTE text_wait;
 
-extern UBYTE current_text_speed;
 extern UBYTE text_in_speed;
 extern UBYTE text_out_speed;
 extern UBYTE text_draw_speed;
@@ -63,6 +62,7 @@ extern UBYTE * text_scroll_addr;
 extern UBYTE text_scroll_width, text_scroll_height;
 extern UBYTE text_scroll_fill;
 
+extern const UBYTE ui_time_masks[];
 
 void ui_init() __banked;
 void ui_update() __nonbanked;  // critical path, __nonbanked for speed
@@ -78,6 +78,10 @@ void ui_load_tiles() __banked;
 #define UI_DRAW_FRAME   1
 #define UI_AUTOSCROLL   2
 
+#define UI_IN_SPEED      -1
+#define UI_OUT_SPEED     -2
+#define UI_SPEED_INSTANT -3
+
 void ui_run_modal(UBYTE wait_flags) __banked;  // process UI until closed
 
 inline void ui_set_pos(UBYTE x, UBYTE y) {
@@ -85,10 +89,10 @@ inline void ui_set_pos(UBYTE x, UBYTE y) {
     win_pos_x = win_dest_pos_x = x;
 }
 
-inline void ui_move_to(UBYTE x, UBYTE y, UBYTE speed) {
+inline void ui_move_to(UBYTE x, UBYTE y, BYTE speed) {
     win_dest_pos_y = y;
     win_dest_pos_x = x;
-    if (speed == 0) win_pos_y = y, win_pos_x = x; else win_speed = speed;
+    if (speed == UI_SPEED_INSTANT) win_pos_y = y, win_pos_x = x; else win_speed = speed;
 }
 
 UBYTE ui_run_menu(menu_item_t * start_item, UBYTE bank, UBYTE options, UBYTE count) __banked;

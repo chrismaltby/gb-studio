@@ -13,6 +13,7 @@ test("Should be able to set active actor to player", () => {
         },
       ],
       triggers: [],
+      projectiles: [],
     },
     entity: {
       id: "actor1",
@@ -40,6 +41,7 @@ test("Should be able to set active actor to actor by id", () => {
         },
       ],
       triggers: [],
+      projectiles: [],
     },
   });
   sb.actorSetActive("actor2");
@@ -57,6 +59,7 @@ test("Should be able to move actor to new location", () => {
       id: "scene1",
       actors: [],
       triggers: [],
+      projectiles: [],
     },
   });
   sb.actorMoveTo(5, 6, true, "horizontal");
@@ -77,7 +80,8 @@ test("Should be able to wait for N frames to pass", () => {
       id: "scene1",
       actors: [],
       triggers: [],
-    }
+      projectiles: [],
+    },
   });
   sb.wait(20);
   expect(output).toEqual([
@@ -102,6 +106,7 @@ test("Should be able to generate script string", () => {
         },
       ],
       triggers: [],
+      projectiles: [],
     },
   });
   sb.actorSetActive("actor2");
@@ -145,8 +150,9 @@ test("Should be able to open dialogue boxes", async () => {
       id: "scene1",
       actors: [],
       triggers: [],
+      projectiles: [],
     },
-    fonts: [dummyCompiledFont]
+    fonts: [dummyCompiledFont],
   });
   sb.textDialogue("Hello World");
   sb.scriptEnd();
@@ -157,6 +163,7 @@ test("Should be able to open dialogue boxes", async () => {
 
 .area _CODE_255
 
+
 ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
 
@@ -165,10 +172,10 @@ _MY_SCRIPT::
         VM_LOAD_TEXT            0
         .asciz "Hello World"
         VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, ^/(.UI_AUTO_SCROLL | .UI_DRAW_FRAME)/
-        VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_TEXT_IN_SPEED
+        VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_IN_SPEED
         VM_DISPLAY_TEXT
         VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT | .UI_WAIT_BTN_A)/
-        VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_TEXT_OUT_SPEED
+        VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_OUT_SPEED
         VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT)/
 
         ; Stop Script
@@ -184,6 +191,7 @@ test("Should be able to conditionally execute if variable is true with event arr
       id: "scene1",
       actors: [],
       triggers: [],
+      projectiles: [],
     },
     // variables: ["0", "1"],
     compileEvents: (self: ScriptBuilder, events: ScriptEvent[]) => {
@@ -219,6 +227,7 @@ test("Should be able to conditionally execute if variable is true with event arr
 
 .area _CODE_255
 
+
 ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
 
@@ -252,6 +261,7 @@ test("Should be able to conditionally execute if variable is true with function 
         },
       ],
       triggers: [],
+      projectiles: [],
     },
     fonts: [dummyCompiledFont],
     // variables: ["0", "1"],
@@ -278,6 +288,7 @@ test("Should be able to conditionally execute if variable is true with function 
 
 .area _CODE_255
 
+
 ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
 
@@ -288,10 +299,10 @@ _MY_SCRIPT::
         VM_LOAD_TEXT            0
         .asciz "Goodbye World"
         VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, ^/(.UI_AUTO_SCROLL | .UI_DRAW_FRAME)/
-        VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_TEXT_IN_SPEED
+        VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_IN_SPEED
         VM_DISPLAY_TEXT
         VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT | .UI_WAIT_BTN_A)/
-        VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_TEXT_OUT_SPEED
+        VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_OUT_SPEED
         VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT)/
 
         VM_JUMP                 2$
@@ -300,10 +311,10 @@ _MY_SCRIPT::
         VM_LOAD_TEXT            0
         .asciz "Hello World"
         VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, ^/(.UI_AUTO_SCROLL | .UI_DRAW_FRAME)/
-        VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_TEXT_IN_SPEED
+        VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_IN_SPEED
         VM_DISPLAY_TEXT
         VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT | .UI_WAIT_BTN_A)/
-        VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_TEXT_OUT_SPEED
+        VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_OUT_SPEED
         VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT)/
 
 2$:
@@ -335,6 +346,7 @@ test("Should be able to conditionally execute if variable is true with nested fu
         },
       ],
       triggers: [],
+      projectiles: [],
     },
     fonts: [dummyCompiledFont],
     // variables: ["0", "1", "2"],
@@ -365,6 +377,7 @@ test("Should be able to conditionally execute if variable is true with nested fu
 
 .area _CODE_255
 
+
 ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
 
@@ -377,10 +390,10 @@ _MY_SCRIPT::
         VM_LOAD_TEXT            0
         .asciz "0=FALSE 2=FALSE"
         VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, ^/(.UI_AUTO_SCROLL | .UI_DRAW_FRAME)/
-        VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_TEXT_IN_SPEED
+        VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_IN_SPEED
         VM_DISPLAY_TEXT
         VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT | .UI_WAIT_BTN_A)/
-        VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_TEXT_OUT_SPEED
+        VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_OUT_SPEED
         VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT)/
 
         VM_JUMP                 4$
@@ -389,10 +402,10 @@ _MY_SCRIPT::
         VM_LOAD_TEXT            0
         .asciz "0=FALSE 2=TRUE"
         VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, ^/(.UI_AUTO_SCROLL | .UI_DRAW_FRAME)/
-        VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_TEXT_IN_SPEED
+        VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_IN_SPEED
         VM_DISPLAY_TEXT
         VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT | .UI_WAIT_BTN_A)/
-        VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_TEXT_OUT_SPEED
+        VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_OUT_SPEED
         VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT)/
 
 4$:
@@ -405,10 +418,10 @@ _MY_SCRIPT::
         VM_LOAD_TEXT            0
         .asciz "0=TRUE 1=FALSE"
         VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, ^/(.UI_AUTO_SCROLL | .UI_DRAW_FRAME)/
-        VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_TEXT_IN_SPEED
+        VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_IN_SPEED
         VM_DISPLAY_TEXT
         VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT | .UI_WAIT_BTN_A)/
-        VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_TEXT_OUT_SPEED
+        VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_OUT_SPEED
         VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT)/
 
         VM_JUMP                 6$
@@ -417,10 +430,10 @@ _MY_SCRIPT::
         VM_LOAD_TEXT            0
         .asciz "0=TRUE 1=TRUE"
         VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, ^/(.UI_AUTO_SCROLL | .UI_DRAW_FRAME)/
-        VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_TEXT_IN_SPEED
+        VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_IN_SPEED
         VM_DISPLAY_TEXT
         VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT | .UI_WAIT_BTN_A)/
-        VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_TEXT_OUT_SPEED
+        VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_OUT_SPEED
         VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT)/
 
 6$:
@@ -440,6 +453,7 @@ test("Should be able to define labels and jump", () => {
       id: "scene1",
       actors: [],
       triggers: [],
+      projectiles: [],
     },
   });
   sb.labelDefine("mylabel");
@@ -450,6 +464,7 @@ test("Should be able to define labels and jump", () => {
 .include "data/game_globals.i"
 
 .area _CODE_255
+
 
 ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
@@ -472,6 +487,7 @@ test("Should throw if jump to label is not stack neutral", () => {
         },
       ],
       triggers: [],
+      projectiles: [],
     },
     entity: {
       id: "actor1",

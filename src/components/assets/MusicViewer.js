@@ -94,10 +94,7 @@ class MusicViewer extends Component {
           </div>
         )}
         {file && (
-          <div
-            className="ImageViewer__Edit"
-            style={{ right: sidebarWidth + 10 }}
-          >
+          <div className="ImageViewer__Edit" style={{ right: 10 }}>
             <Button onClick={this.onOpen}>{l10n("ASSET_EDIT")}</Button>
           </div>
         )}

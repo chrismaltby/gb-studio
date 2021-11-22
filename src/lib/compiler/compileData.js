@@ -1,10 +1,6 @@
 import { copy } from "fs-extra";
 import keyBy from "lodash/keyBy";
-import {
-  walkScenesEvents,
-  eventHasArg,
-  walkSceneEvents,
-} from "../helpers/eventSystem";
+import { eventHasArg } from "../helpers/eventSystem";
 import compileImages from "./compileImages";
 import { indexBy } from "../helpers/array";
 import compileEntityEvents from "./compileEntityEvents";
@@ -61,6 +57,8 @@ import {
   compileAvatarFont,
   compileEmoteHeader,
   compileEmote,
+  compileSceneProjectiles,
+  compileSceneProjectilesHeader,
 } from "./compileData2";
 import compileSGBImage from "./sgb";
 import { readFileToTilesData } from "../tiles/tileData";
@@ -68,6 +66,11 @@ import l10n from "../helpers/l10n";
 import { compileScriptEngineInit } from "./compileBootstrap";
 import { compileMusicTracks, compileMusicHeader } from "./compileMusic";
 import { chunk } from "../helpers/array2";
+import { toProjectileHash } from "./scriptBuilder";
+import {
+  walkDenormalizedSceneEvents,
+  walkDenormalizedScenesEvents,
+} from "lib/helpers/eventHelpers";
 
 const indexById = indexBy("id");
 
@@ -89,6 +92,8 @@ export const EVENT_MSG_PRE_FONTS = "Preparing fonts...";
 
 export const EVENT_MSG_PRE_COMPLETE = "Preparation complete";
 export const EVENT_MSG_COMPILING_EVENTS = "Compiling events...";
+
+const MAX_NESTED_SCRIPT_DEPTH = 5;
 
 const padArrayEnd = (arr, len, padding) => {
   if (arr.length > len) {
@@ -140,27 +145,34 @@ export const compileEngineFields = (
   return fieldDef;
 };
 
-export const precompileStrings = (scenes) => {
+export const precompileStrings = (scenes, customEventsLookup) => {
   const strings = [];
-  walkScenesEvents(scenes, (cmd) => {
-    if (
-      cmd.args &&
-      (cmd.args.text !== undefined || cmd.command === EVENT_TEXT)
-    ) {
-      const text = cmd.args.text || " "; // Replace empty strings with single space
-      // If never seen this string before add it to the list
-      if (Array.isArray(text)) {
-        for (let i = 0; i < text.length; i++) {
-          const rowText = text[i] || " ";
-          if (strings.indexOf(rowText) === -1) {
-            strings.push(rowText);
+  walkDenormalizedScenesEvents(
+    scenes,
+    {
+      customEventsLookup,
+      maxDepth: MAX_NESTED_SCRIPT_DEPTH,
+    },
+    (cmd) => {
+      if (
+        cmd.args &&
+        (cmd.args.text !== undefined || cmd.command === EVENT_TEXT)
+      ) {
+        const text = cmd.args.text || " "; // Replace empty strings with single space
+        // If never seen this string before add it to the list
+        if (Array.isArray(text)) {
+          for (let i = 0; i < text.length; i++) {
+            const rowText = text[i] || " ";
+            if (strings.indexOf(rowText) === -1) {
+              strings.push(rowText);
+            }
           }
+        } else if (strings.indexOf(text) === -1) {
+          strings.push(text);
         }
-      } else if (strings.indexOf(text) === -1) {
-        strings.push(text);
       }
     }
-  });
+  );
   if (strings.length === 0) {
     return ["NOSTRINGS"];
   }
@@ -170,6 +182,7 @@ export const precompileStrings = (scenes) => {
 export const precompileBackgrounds = async (
   backgrounds,
   scenes,
+  customEventsLookup,
   projectRoot,
   tmpPath,
   { warnings } = {}
@@ -180,11 +193,18 @@ export const precompileBackgrounds = async (
   const usedTilemapAttrsCache = {};
 
   const eventImageIds = [];
-  walkScenesEvents(scenes, (cmd) => {
-    if (eventHasArg(cmd, "backgroundId")) {
-      eventImageIds.push(cmd.args.backgroundId);
+  walkDenormalizedScenesEvents(
+    scenes,
+    {
+      customEventsLookup,
+      maxDepth: MAX_NESTED_SCRIPT_DEPTH,
+    },
+    (cmd) => {
+      if (eventHasArg(cmd, "backgroundId")) {
+        eventImageIds.push(cmd.args.backgroundId);
+      }
     }
-  });
+  );
   const usedBackgrounds = backgrounds.filter(
     (background) =>
       eventImageIds.indexOf(background.id) > -1 ||
@@ -450,6 +470,7 @@ export const precompileUIImages = async (
 export const precompileSprites = async (
   spriteSheets,
   scenes,
+  customEventsLookup,
   defaultPlayerSprites,
   projectRoot,
   usedTilesets,
@@ -467,13 +488,20 @@ export const precompileSprites = async (
     }
   };
 
-  walkScenesEvents(scenes, (event) => {
-    if (event.args) {
-      if (event.args.spriteSheetId) {
-        addSprite(event.args.spriteSheetId);
+  walkDenormalizedScenesEvents(
+    scenes,
+    {
+      customEventsLookup,
+      maxDepth: MAX_NESTED_SCRIPT_DEPTH,
+    },
+    (event) => {
+      if (event.args) {
+        if (event.args.spriteSheetId) {
+          addSprite(event.args.spriteSheetId);
+        }
       }
     }
-  });
+  );
 
   for (let i = 0; i < scenes.length; i++) {
     const scene = scenes[i];
@@ -531,6 +559,7 @@ export const precompileSprites = async (
 export const precompileAvatars = async (
   avatars,
   scenes,
+  customEventsLookup,
   projectRoot,
   { warnings } = {}
 ) => {
@@ -538,19 +567,26 @@ export const precompileAvatars = async (
   const usedAvatarLookup = {};
   const avatarLookup = indexById(avatars);
 
-  walkScenesEvents(scenes, (event) => {
-    if (event.args) {
-      if (
-        event.args.avatarId &&
-        !usedAvatarLookup[event.args.avatarId] &&
-        avatarLookup[event.args.avatarId]
-      ) {
-        const avatar = avatarLookup[event.args.avatarId];
-        usedAvatars.push(avatar);
-        usedAvatarLookup[event.args.avatarId] = avatar;
+  walkDenormalizedScenesEvents(
+    scenes,
+    {
+      customEventsLookup,
+      maxDepth: MAX_NESTED_SCRIPT_DEPTH,
+    },
+    (event) => {
+      if (event.args) {
+        if (
+          event.args.avatarId &&
+          !usedAvatarLookup[event.args.avatarId] &&
+          avatarLookup[event.args.avatarId]
+        ) {
+          const avatar = avatarLookup[event.args.avatarId];
+          usedAvatars.push(avatar);
+          usedAvatarLookup[event.args.avatarId] = avatar;
+        }
       }
     }
-  });
+  );
 
   const avatarData = await compileAvatars(usedAvatars, projectRoot, {
     warnings,
@@ -565,6 +601,7 @@ export const precompileAvatars = async (
 export const precompileEmotes = async (
   emotes,
   scenes,
+  customEventsLookup,
   projectRoot,
   { warnings } = {}
 ) => {
@@ -572,19 +609,26 @@ export const precompileEmotes = async (
   const usedEmoteLookup = {};
   const emoteLookup = indexById(emotes);
 
-  walkScenesEvents(scenes, (event) => {
-    if (event.args) {
-      if (
-        event.args.emoteId &&
-        !usedEmoteLookup[event.args.emoteId] &&
-        emoteLookup[event.args.emoteId]
-      ) {
-        const emote = emoteLookup[event.args.emoteId];
-        usedEmotes.push(emote);
-        usedEmoteLookup[event.args.emoteId] = emote;
+  walkDenormalizedScenesEvents(
+    scenes,
+    {
+      customEventsLookup,
+      maxDepth: MAX_NESTED_SCRIPT_DEPTH,
+    },
+    (event) => {
+      if (event.args) {
+        if (
+          event.args.emoteId &&
+          !usedEmoteLookup[event.args.emoteId] &&
+          emoteLookup[event.args.emoteId]
+        ) {
+          const emote = emoteLookup[event.args.emoteId];
+          usedEmotes.push(emote);
+          usedEmoteLookup[event.args.emoteId] = emote;
+        }
       }
     }
-  });
+  );
 
   const emoteData = await compileEmotes(usedEmotes, projectRoot, {
     warnings,
@@ -596,24 +640,57 @@ export const precompileEmotes = async (
   };
 };
 
-export const precompileMusic = (scenes, music) => {
+export const precompileMusic = (
+  scenes,
+  customEventsLookup,
+  music,
+  musicDriver
+) => {
   const usedMusicIds = [];
-  walkScenesEvents(scenes, (cmd) => {
-    if (
-      cmd.args &&
-      (cmd.args.musicId !== undefined || cmd.command === EVENT_MUSIC_PLAY)
-    ) {
-      const musicId = cmd.args.musicId || music[0].id;
-      // If never seen this track before add it to the list
-      if (usedMusicIds.indexOf(musicId) === -1) {
-        usedMusicIds.push(musicId);
+  const driverMusic =
+    musicDriver === "huge"
+      ? music.filter((track) => track.type === "uge")
+      : music.filter((track) => track.type !== "uge");
+
+  walkDenormalizedScenesEvents(
+    scenes,
+    {
+      customEventsLookup,
+      maxDepth: MAX_NESTED_SCRIPT_DEPTH,
+    },
+    (cmd) => {
+      if (
+        cmd.args &&
+        (cmd.args.musicId !== undefined || cmd.command === EVENT_MUSIC_PLAY)
+      ) {
+        const musicId = cmd.args.musicId || music[0].id;
+        // If never seen this track before add it to the list
+        if (usedMusicIds.indexOf(musicId) === -1) {
+          usedMusicIds.push(musicId);
+        }
       }
     }
-  });
+  );
   const usedMusic = music
     .filter((track) => {
       return usedMusicIds.indexOf(track.id) > -1;
     })
+    .map((track) => {
+      // If wrong driver needed, fallback to first driver track
+      if (
+        (musicDriver === "huge" && track.type === "uge") ||
+        (musicDriver !== "huge" && track.type !== "uge")
+      ) {
+        return track;
+      }
+      if (driverMusic[0]) {
+        return {
+          ...driverMusic[0],
+          id: track.id,
+        };
+      }
+    })
+    .filter((track) => track)
     .map((track, index) => {
       return {
         ...track,
@@ -626,6 +703,7 @@ export const precompileMusic = (scenes, music) => {
 export const precompileFonts = async (
   fonts,
   scenes,
+  customEventsLookup,
   defaultFontId,
   projectRoot
 ) => {
@@ -653,22 +731,29 @@ export const precompileFonts = async (
       .map((id) => id.substring(3).replace(/!$/, ""))
       .forEach(addFont);
   };
-  
-  walkScenesEvents(scenes, (cmd) => {
-    if (cmd.args && cmd.args.fontId !== undefined) {
-      addFont(cmd.args.fontId || fonts[0].id);
-    }
-    if (cmd.args && cmd.args.text !== undefined) {
-      // Add fonts referenced in text
-      addFontsFromString(String(cmd.args.text));
-    }
-    if (cmd.command && cmd.command === "EVENT_MENU" && cmd.args) {
-      // Add fonts referenced in menu items
-      for (let i = 1; i <= cmd.args.items; i++) {
-        addFontsFromString(String(cmd.args[`option${i}`]));
+
+  walkDenormalizedScenesEvents(
+    scenes,
+    {
+      customEventsLookup,
+      maxDepth: MAX_NESTED_SCRIPT_DEPTH,
+    },
+    (cmd) => {
+      if (cmd.args && cmd.args.fontId !== undefined) {
+        addFont(cmd.args.fontId || fonts[0].id);
+      }
+      if (cmd.args && cmd.args.text !== undefined) {
+        // Add fonts referenced in text
+        addFontsFromString(String(cmd.args.text));
+      }
+      if (cmd.command && cmd.command === "EVENT_MENU" && cmd.args) {
+        // Add fonts referenced in menu items
+        for (let i = 1; i <= cmd.args.items; i++) {
+          addFontsFromString(String(cmd.args[`option${i}`]));
+        }
       }
     }
-  });
+  );
 
   const usedFonts = [defaultFont].concat(
     fonts.filter((font) => {
@@ -683,11 +768,14 @@ export const precompileFonts = async (
 
 export const precompileScenes = (
   scenes,
+  customEvents,
   defaultPlayerSprites,
   usedBackgrounds,
   usedSprites,
   { warnings } = {}
 ) => {
+  const customEventsLookup = keyBy(customEvents, "id");
+
   const scenesData = scenes.map((scene, sceneIndex) => {
     const backgroundIndex = usedBackgrounds.findIndex(
       (background) => background.id === scene.backgroundId
@@ -740,16 +828,50 @@ export const precompileScenes = (
       );
     }
 
-    walkSceneEvents(scene, (event) => {
-      if (
-        event.args &&
-        event.args.spriteSheetId &&
-        event.command !== EVENT_PLAYER_SET_SPRITE &&
-        !event.args.__comment
-      ) {
-        eventSpriteIds.push(event.args.spriteSheetId);
+    const projectiles = [];
+    const addProjectile = (data) => {
+      const projectile = {
+        ...data,
+        hash: toProjectileHash({
+          spriteSheetId: data.spriteSheetId,
+          speed: data.speed,
+          animSpeed: data.animSpeed,
+          lifeTime: data.lifeTime,
+          collisionGroup: data.collisionGroup,
+          collisionMask: data.collisionMask,
+        }),
+      };
+      if (!projectiles.find((p) => p.hash === projectile.hash)) {
+        projectiles.push(projectile);
       }
-    });
+    };
+
+    walkDenormalizedSceneEvents(
+      scene,
+      {
+        customEventsLookup,
+        maxDepth: MAX_NESTED_SCRIPT_DEPTH,
+      },
+      (event) => {
+        if (
+          event.args &&
+          event.args.spriteSheetId &&
+          event.command !== EVENT_PLAYER_SET_SPRITE &&
+          !event.args.__comment
+        ) {
+          eventSpriteIds.push(event.args.spriteSheetId);
+        }
+
+        if (
+          event.args &&
+          event.args.spriteSheetId &&
+          event.command === "EVENT_LAUNCH_PROJECTILE" &&
+          !event.args.__comment
+        ) {
+          addProjectile(event.args);
+        }
+      }
+    );
 
     const sceneSpriteIds = [].concat(actorSpriteIds, eventSpriteIds);
 
@@ -781,6 +903,7 @@ export const precompileScenes = (
       playerSpriteIndex,
       actorsData: [],
       triggersData: [],
+      projectiles,
     };
   });
   return scenesData;
@@ -792,8 +915,10 @@ const precompile = async (
   tmpPath,
   { progress, warnings }
 ) => {
+  const customEventsLookup = keyBy(projectData.customEvents, "id");
+
   progress(EVENT_MSG_PRE_STRINGS);
-  const strings = precompileStrings(projectData.scenes);
+  const strings = precompileStrings(projectData.scenes, customEventsLookup);
 
   progress(EVENT_MSG_PRE_IMAGES);
   const {
@@ -807,6 +932,7 @@ const precompile = async (
   } = await precompileBackgrounds(
     projectData.backgrounds,
     projectData.scenes,
+    customEventsLookup,
     projectRoot,
     tmpPath,
     { warnings }
@@ -825,6 +951,7 @@ const precompile = async (
   const { usedSprites, statesOrder, stateReferences } = await precompileSprites(
     projectData.spriteSheets,
     projectData.scenes,
+    customEventsLookup,
     projectData.settings.defaultPlayerSprites,
     projectRoot,
     usedTilesets,
@@ -837,6 +964,7 @@ const precompile = async (
   const { usedAvatars } = await precompileAvatars(
     projectData.avatars || [],
     projectData.scenes,
+    customEventsLookup,
     projectRoot,
     {
       warnings,
@@ -847,6 +975,7 @@ const precompile = async (
   const { usedEmotes } = await precompileEmotes(
     projectData.emotes || [],
     projectData.scenes,
+    customEventsLookup,
     projectRoot,
     {
       warnings,
@@ -856,13 +985,16 @@ const precompile = async (
   progress(EVENT_MSG_PRE_MUSIC);
   const { usedMusic } = await precompileMusic(
     projectData.scenes,
-    projectData.music
+    customEventsLookup,
+    projectData.music,
+    projectData.settings.musicDriver
   );
 
   progress(EVENT_MSG_PRE_FONTS);
   const { usedFonts } = await precompileFonts(
     projectData.fonts,
     projectData.scenes,
+    customEventsLookup,
     projectData.settings.defaultFontId,
     projectRoot,
     {
@@ -873,6 +1005,7 @@ const precompile = async (
   progress(EVENT_MSG_PRE_SCENES);
   const sceneData = precompileScenes(
     projectData.scenes,
+    projectData.customEvents,
     projectData.settings.defaultPlayerSprites,
     usedBackgrounds,
     usedSprites,
@@ -1381,6 +1514,15 @@ const compile = async (
       output[`scene_${sceneIndex}_sprites.c`] = compileSceneSprites(
         scene,
         sceneIndex
+      );
+    }
+    if (scene.projectiles.length > 0) {
+      output[`scene_${sceneIndex}_projectiles.h`] =
+        compileSceneProjectilesHeader(scene, sceneIndex);
+      output[`scene_${sceneIndex}_projectiles.c`] = compileSceneProjectiles(
+        scene,
+        sceneIndex,
+        precompiled.usedSprites
       );
     }
   });

@@ -6,7 +6,7 @@
 
 void main(void) {
     DISPLAY_ON; 
-    set_sgb_border(border_chr, border_chr_size, border_map, border_map_size, border_pal, border_pal_size);
+    set_sgb_border(border_data_tiles, sizeof(border_data_tiles), border_data_map, sizeof(border_data_map), border_data_palettes, sizeof(border_data_palettes));
     while(1) {
         wait_vbl_done();
     }

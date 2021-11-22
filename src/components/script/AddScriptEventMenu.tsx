@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import cloneDeep from "lodash/cloneDeep";
 import { OptGroup } from "ui/form/Select";
-import events, { EventHandler } from "lib/events";
+import events, { EventField, EventHandler } from "lib/events";
 import l10n from "lib/helpers/l10n";
 import styled, { css } from "styled-components";
 import { Menu, MenuGroup, MenuItem } from "ui/menu/Menu";
@@ -24,6 +24,7 @@ import {
   spriteSheetSelectors,
 } from "store/features/entities/entitiesState";
 import { EVENT_TEXT } from "lib/compiler/eventTypes";
+import { useDebounce } from "ui/hooks/use-debounce";
 
 interface AddScriptEventMenuProps {
   parentType: ScriptEventParentType;
@@ -79,7 +80,21 @@ const instanciateScriptEvent = (
     defaultArgs,
   }: InstanciateOptions
 ): Omit<ScriptEvent, "id"> => {
-  const fields = handler.fields || [];
+  const flattenFields = (fields: EventField[], memo: EventField[] = []) => {
+    const addFields = (fields: EventField[]) => {
+      for (const field of fields) {
+        memo.push(field);
+        if (field.type === "group" && field.fields) {
+          addFields(field.fields);
+        }
+      }
+    };
+    addFields(fields);
+    return memo;
+  };
+
+  const fields = flattenFields(handler.fields || []);
+
   const args = cloneDeep(
     fields.reduce(
       (memo, field) => {
@@ -389,6 +404,7 @@ const AddScriptEventMenu = ({
   onBlur,
 }: AddScriptEventMenuProps) => {
   const dispatch = useDispatch();
+  const firstLoad = useRef(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [options, setOptions] = useState<(EventOptGroup | EventOption)[]>([]);
   const [allOptions, setAllOptions] = useState<(EventOptGroup | EventOption)[]>(
@@ -466,7 +482,7 @@ const AddScriptEventMenu = ({
 
     const allOptions = ([] as (EventOptGroup | EventOption)[]).concat(
       (
-        favoritesCache
+        (firstLoad.current ? favoritesCache : favoriteEvents)
           .map((id: string) => events[id])
           .filter(identity) as EventHandler[]
       )
@@ -500,9 +516,13 @@ const AddScriptEventMenu = ({
         })
     );
     setAllOptions(allOptions);
+    if (!firstLoad.current) {
+      setOptions(allOptions);
+      firstLoad.current = true;
+    }
   }, [favoriteEvents, favoritesCache]);
 
-  useEffect(() => {
+  const updateOptions = useCallback(() => {
     if (searchTerm && fuseRef.current) {
       const queryWords = searchTerm.toUpperCase().split(" ");
       const searchOptions = fuseRef.current
@@ -537,6 +557,14 @@ const AddScriptEventMenu = ({
       setOptions(allOptions);
     }
   }, [allOptions, searchTerm]);
+
+  const debouncedUpdateOptions = useDebounce(updateOptions, 200);
+
+  useEffect(debouncedUpdateOptions, [
+    debouncedUpdateOptions,
+    allOptions,
+    searchTerm,
+  ]);
 
   const scrollIntoViewIfNeeded = useCallback(
     (index: number) => {

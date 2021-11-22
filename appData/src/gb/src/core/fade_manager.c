@@ -5,6 +5,7 @@
     #include <gb/cgb.h>
 #endif
 
+#include "compat.h"
 #include "system.h"
 #include "fade_manager.h"
 #include "palette.h"
@@ -24,7 +25,7 @@ static FADE_DIRECTION fade_direction;
 
 #ifdef CGB
 
-void CGBFadeToWhiteStep(const palette_entry_t * pal, UBYTE reg, UBYTE step) __naked {
+void CGBFadeToWhiteStep(const palette_entry_t * pal, UBYTE reg, UBYTE step) OLDCALL __naked {
     pal; reg; step;
 __asm
         ldhl sp, #5
@@ -78,7 +79,7 @@ __asm
 __endasm;
 }
 
-void CGBFadeToBlackStep(const palette_entry_t * pal, UBYTE reg, UBYTE step) __naked {
+void CGBFadeToBlackStep(const palette_entry_t * pal, UBYTE reg, UBYTE step) OLDCALL __naked {
     pal; reg; step;
 __asm
         ldhl sp, #5
@@ -144,7 +145,7 @@ void ApplyPaletteChangeColor(UBYTE index) {
 }
 #endif
 
-UBYTE DMGFadeToWhiteStep(UBYTE pal, UBYTE step) __naked {
+UBYTE DMGFadeToWhiteStep(UBYTE pal, UBYTE step) OLDCALL __naked {
     pal; step;
 __asm
         ldhl    SP, #3
@@ -181,7 +182,7 @@ __asm
 __endasm;
 }
 
-UBYTE DMGFadeToBlackStep(UBYTE pal, UBYTE step) __naked {
+UBYTE DMGFadeToBlackStep(UBYTE pal, UBYTE step) OLDCALL __naked {
     pal; step;
 __asm
         ldhl    SP, #3

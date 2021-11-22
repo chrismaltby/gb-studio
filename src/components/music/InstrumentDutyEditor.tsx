@@ -7,6 +7,9 @@ import { FormDivider, FormField, FormRow } from "ui/form/FormLayout";
 import { Select } from "ui/form/Select";
 import { SliderField } from "ui/form/SliderField";
 import { InstrumentLengthForm } from "./InstrumentLengthForm";
+import { InstrumentVolumeEditor } from "./InstrumentVolumeEditor";
+import { ipcRenderer } from "electron";
+import { Button } from "ui/buttons/Button";
 
 const dutyOptions = [
   {
@@ -109,6 +112,16 @@ export const InstrumentDutyEditor = ({
       );
     };
 
+  const onTestInstrument = () => {
+    ipcRenderer.send("music-data-send", {
+      action: "preview",
+      note: 24, // C_5
+      type: "duty",
+      instrument: instrument,
+      square2: false,
+    });
+  };
+
   return (
     <>
       <InstrumentLengthForm
@@ -118,31 +131,12 @@ export const InstrumentDutyEditor = ({
 
       <FormDivider />
 
-      <FormRow>
-        <SliderField
-          name="initial_volume"
-          label={l10n("FIELD_INITIAL_VOLUME")}
-          value={instrument.initial_volume || 0}
-          min={0}
-          max={15}
-          onChange={(value) => {
-            onChangeField("initial_volume")(value || 0);
-          }}
-        />
-      </FormRow>
-
-      <FormRow>
-        <SliderField
-          name="volume_sweep_change"
-          label={l10n("FIELD_VOLUME_SWEEP_CHANGE")}
-          value={instrument.volume_sweep_change || 0}
-          min={-7}
-          max={7}
-          onChange={(value) => {
-            onChangeField("volume_sweep_change")(value || 0);
-          }}
-        />
-      </FormRow>
+      <InstrumentVolumeEditor
+        initial_volume={instrument.initial_volume}
+        volume_sweep_change={instrument.volume_sweep_change}
+        length={instrument.length}
+        onChange={onChangeField}
+      />
 
       <FormDivider />
 
@@ -181,6 +175,14 @@ export const InstrumentDutyEditor = ({
             onChange={onChangeFieldSelect("duty_cycle")}
           />
         </FormField>
+      </FormRow>
+
+      <FormDivider />
+
+      <FormRow>
+        <Button onClick={onTestInstrument}>
+          {l10n("FIELD_TEST_INSTRUMENT")}
+        </Button>
       </FormRow>
     </>
   );

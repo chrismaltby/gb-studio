@@ -2,11 +2,14 @@ import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled, { css } from "styled-components";
 import { PatternCell } from "lib/helpers/uge/song/PatternCell";
+import { Song } from "lib/helpers/uge/song/Song";
 import { RootState } from "store/configureStore";
 import trackerActions from "store/features/tracker/trackerActions";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 
 import { instrumentColors } from "./InstrumentSelect";
+import { ipcRenderer } from "electron";
+import { getInstrumentTypeByChannel, getInstrumentListByType } from "./helpers";
 
 interface RollChannelProps {
   channelId: number;
@@ -26,7 +29,7 @@ interface WrapperProps {
 const Wrapper = styled.div<WrapperProps>`
   position: absolute;
   top: 0;
-  margin: 0 20px;
+  margin: 0 10px;
   ${(props) => css`
     width: ${props.cols * props.size}px;
     height: ${props.rows * props.size}px;
@@ -60,6 +63,9 @@ export const RollChannelFwd = ({
     (state: RootState) => state.tracker.defaultInstruments
   );
   const hoverNote = useSelector((state: RootState) => state.tracker.hoverNote);
+  const song = useSelector(
+    (state: RootState) => state.trackerDocument.present.song
+  );
 
   const removeNote = useCallback(
     (channel: number, column: number) => (e: any) => {
@@ -89,24 +95,36 @@ export const RollChannelFwd = ({
 
   const handleMouseDown = useCallback(
     (e: any) => {
-      const cell = e.target.dataset["channel"];
-      if (cell !== undefined && tool === "pencil" && e.button === 0) {
+      const channel = parseInt(e.target.dataset["channel"]);
+      if (!isNaN(channel) && tool === "pencil" && e.button === 0) {
         const col = Math.floor(e.offsetX / cellSize);
         const note = 12 * 6 - 1 - Math.floor(e.offsetY / cellSize);
         const changes = {
-          instrument: defaultInstruments[cell],
+          instrument: defaultInstruments[channel],
           note: note,
         };
         dispatch(
           trackerDocumentActions.editPatternCell({
             patternId: patternId,
-            cell: [col, cell],
+            cell: [col, channel],
             changes: changes,
           })
         );
+
+        if (song) {
+          const instrumentType = getInstrumentTypeByChannel(channel) || "duty";
+          const instrumentList = getInstrumentListByType(song, instrumentType);
+          ipcRenderer.send("music-data-send", {
+            action: "preview",
+            note: note,
+            type: instrumentType,
+            instrument: instrumentList[defaultInstruments[channel]],
+            square2: channel === 1,
+          });
+        }
       }
     },
-    [tool, cellSize, defaultInstruments, dispatch, patternId]
+    [tool, cellSize, defaultInstruments, dispatch, patternId, song]
   );
 
   const handleMouseMove = useCallback(

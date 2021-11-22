@@ -32,6 +32,7 @@ Binjgb({
 });
 
 const init = (canvas, rom_data) => {
+  console.log("INIT EMULATOR");
   if (isAvailable()) destroy();
 
   if (typeof audio_ctx == "undefined") audio_ctx = new AudioContext();
@@ -89,7 +90,10 @@ const init = (canvas, rom_data) => {
 };
 
 const updateRom = (rom_data) => {
-  if (!isAvailable()) return false;
+  if (!isAvailable()) {
+    console.log("UPDATE ROM: NOT AVAILABLE");
+    return false;
+  }
 
   let required_size = ((rom_data.length - 1) | 0x3fff) + 1;
   if (required_size < 0x8000) required_size = 0x8000;
@@ -204,7 +208,11 @@ const readMem = (addr) => {
   return Module._emulator_read_mem(emu, addr);
 };
 const writeMem = (addr, data) => {
-  if (!isAvailable()) return;
+  if (!isAvailable()) {
+    console.log("WRITE MEM NOT AVAILABLE");
+    return;
+  }
+  console.log("WRITE MEM", addr, data);
   return Module._emulator_write_mem(emu, addr, data);
 };
 

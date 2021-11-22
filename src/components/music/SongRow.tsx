@@ -195,4 +195,28 @@ const SongRowFwd = React.forwardRef<HTMLSpanElement, SongRowProps>(
   }
 );
 
-export const SongRow = React.memo(SongRowFwd);
+const comparePatternCell = (a: PatternCell, b: PatternCell) => {
+  return (
+    a.note === b.note &&
+    a.instrument === b.instrument &&
+    a.effectcode === b.effectcode &&
+    a.effectparam === b.effectparam
+  );
+};
+const arePropsEqual = (prevProps: SongRowProps, nextProps: SongRowProps) => {
+  for (let i = 0; i < prevProps.row.length; i++) {
+    if (!comparePatternCell(prevProps.row[i], nextProps.row[i])) {
+      return false;
+    }
+  }
+  return (
+    prevProps.id === nextProps.id &&
+    prevProps.n === nextProps.n &&
+    prevProps.startCellId === nextProps.startCellId &&
+    prevProps.selectedCell === nextProps.selectedCell &&
+    prevProps.isSelected === nextProps.isSelected &&
+    prevProps.isPlaying === nextProps.isPlaying
+  );
+};
+
+export const SongRow = React.memo(SongRowFwd, arePropsEqual);

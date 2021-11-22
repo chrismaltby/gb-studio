@@ -1,4 +1,4 @@
-CC	= ../../../bin/lcc -mz80:sms -Wm-yoA -Wa-l -Wl-j
+CC	= ../../../bin/lcc -mz80:sms -Wm-yoA -Wl-j
 
 BINS	= smoketest.sms
 
@@ -9,9 +9,9 @@ CSRC = $(wildcard *.c)
 
 OBJS = $(CSRC:%.c=%.o) $(ASRC:%.s=%.o)
 
-make.bat: Makefile
-	@echo "REM Automatically generated from Makefile" > make.bat
-	@make -sn | sed y/\\//\\\\/ | grep -v make >> make.bat
+compile.bat: Makefile
+	@echo "REM Automatically generated from Makefile" > compile.bat
+	@make -sn | sed y/\\//\\\\/ | grep -v make >> compile.bat
 
 # Compile and link single file in one pass
 

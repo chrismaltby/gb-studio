@@ -1,13 +1,13 @@
 #pragma bank 4
 
-#include "gbs_types.h"
-#include "palette.h"
-
 #ifdef SGB
     #include <gb/sgb.h>
 #endif
 #include <string.h>
 
+#include "compat.h"
+#include "gbs_types.h"
+#include "palette.h"
 #include "system.h"
 
 UBYTE DMG_palette[3];
@@ -28,7 +28,7 @@ void palette_init() __banked {
 }
 
 #ifdef CGB
-void CGBZeroPalette(UBYTE reg) __banked __naked {
+void CGBZeroPalette(UBYTE reg) OLDCALL __banked __naked {
     reg;
 __asm
         ldhl sp, #6

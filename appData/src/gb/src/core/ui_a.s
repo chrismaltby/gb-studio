@@ -2,8 +2,6 @@
 
         .globl _vwf_current_rotate, _vwf_current_mask, _vwf_inverse_map, _vwf_tile_data
 
-        .area _BSS
-
         .area _CODE_1
 
 _ui_swap_tiles::
@@ -82,7 +80,7 @@ _ui_print_make_mask_rl::
 
 ; used from __nonbanked code, so should be nonbanked too, because bank is random
 _ui_time_masks::
-        .db #0x00, #0x00, #0x00, #0x01, #0x03, #0x07, #0x0f, #0x1f
+        .db #0x00, #0x00, #0x01, #0x03, #0x07, #0x0f, #0x1f, #0x3f
 
 ; void ui_print_shift_char(void * dest, const void * src, UBYTE bank);
 

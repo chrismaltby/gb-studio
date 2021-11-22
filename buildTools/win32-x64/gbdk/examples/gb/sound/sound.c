@@ -1,7 +1,7 @@
 #include <gb/gb.h>
+#include <gbdk/console.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <gb/console.h>
 
 #define ARROW_CHAR '>'
 #define SPACE_CHAR ' '

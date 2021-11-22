@@ -9,17 +9,17 @@
 
 /** Good 'ol NULL.
  */
-#define	NULL     0
+#define	NULL 0
 
 /** A 'false' value.
  */
-#define FALSE		0
+#define FALSE 0
 /** A 'true' value.
  */
-#define TRUE		1
+#define TRUE 1
 
 /** No longer used.
  */
-typedef void *       	POINTER;
+typedef void * POINTER;
 
 #endif

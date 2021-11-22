@@ -7,6 +7,7 @@ import {
   Trigger,
   Palette,
   CustomEvent,
+  SceneDenormalized,
 } from "../src/store/features/entities/entitiesTypes";
 import { ProjectData } from "../src/store/features/project/projectActions";
 import { RootState } from "../src/store/configureStore";
@@ -25,10 +26,10 @@ import { initialState as initialClipboardState } from "../src/store/features/cli
 import { initialState as initialSpriteState } from "../src/store/features/sprite/spriteState";
 import { initialState as initialTrackerState } from "../src/store/features/tracker/trackerState";
 import { initialState as initialTrackerDocumentState } from "../src/store/features/trackerDocument/trackerDocumentState";
-import compileFonts, { PrecompiledFontData } from "../src/lib/compiler/compileFonts";
-import {
-  projectTemplatesRoot
-} from "../src/consts";
+import compileFonts, {
+  PrecompiledFontData,
+} from "../src/lib/compiler/compileFonts";
+import { projectTemplatesRoot } from "../src/consts";
 
 export const dummyScene: SceneData = {
   id: "",
@@ -49,6 +50,9 @@ export const dummyScene: SceneData = {
   playerHit2Script: [],
   playerHit3Script: [],
 };
+
+export const dummySceneDenormalized: SceneDenormalized =
+  dummyScene as unknown as SceneDenormalized;
 
 export const dummyActor: Actor = {
   id: "dummyActor1",
@@ -189,7 +193,8 @@ export const dummyProjectData: ProjectData = {
 };
 
 export const getDummyCompiledFont = async (): Promise<PrecompiledFontData> => {
-  const compiledFontsRet = await compileFonts([
+  const compiledFontsRet = await compileFonts(
+    [
       {
         id: "87d28862-ac4a-4f15-b678-d8d2e3e8787c",
         name: "gbs-mono",
@@ -200,11 +205,13 @@ export const getDummyCompiledFont = async (): Promise<PrecompiledFontData> => {
         mapping: {},
         _v: 1625435968911,
         plugin: undefined,
-      }
-    ], `${projectTemplatesRoot}/gbhtml`);
+      },
+    ],
+    `${projectTemplatesRoot}/gbhtml`
+  );
 
-    return compiledFontsRet[0];
-}
+  return compiledFontsRet[0];
+};
 
 export const dummyRootState: RootState = {
   editor: {

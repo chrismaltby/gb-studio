@@ -34,7 +34,7 @@ typedef struct act_set_frame_t {
     INT16 FRAME;
 } act_set_frame_t;
 
-void vm_actor_move_to(SCRIPT_CTX * THIS, INT16 idx) __banked {
+void vm_actor_move_to(SCRIPT_CTX * THIS, INT16 idx) OLDCALL __banked {
     actor_t *actor;
     direction_e new_dir = DIR_DOWN;
 
@@ -114,7 +114,7 @@ void vm_actor_move_to(SCRIPT_CTX * THIS, INT16 idx) __banked {
         point_translate_dir(&actor->pos, new_dir, actor->move_speed);
 
         // Check for actor collision
-        if (actor_overlapping_bb(&actor->bounds, &actor->pos, actor, FALSE)) {
+        if (CHK_FLAG(params->ATTR, ACTOR_ATTR_CHECK_COLL) && !CHK_FLAG(THIS->flags, MOVE_ALLOW_V) && actor_overlapping_bb(&actor->bounds, &actor->pos, actor, FALSE)) {
             point_translate_dir(&actor->pos, FLIPPED_DIR(new_dir), actor->move_speed);   
             THIS->flags = 0;
             actor_set_anim_idle(actor);
@@ -147,7 +147,7 @@ void vm_actor_move_to(SCRIPT_CTX * THIS, INT16 idx) __banked {
         point_translate_dir(&actor->pos, new_dir, actor->move_speed);
 
         // Check for actor collision
-        if (actor_overlapping_bb(&actor->bounds, &actor->pos, actor, FALSE)) {
+        if (CHK_FLAG(params->ATTR, ACTOR_ATTR_CHECK_COLL) && actor_overlapping_bb(&actor->bounds, &actor->pos, actor, FALSE)) {
             point_translate_dir(&actor->pos, FLIPPED_DIR(new_dir), actor->move_speed);   
             THIS->flags = 0;
             actor_set_anim_idle(actor);
@@ -177,17 +177,17 @@ void vm_actor_move_to(SCRIPT_CTX * THIS, INT16 idx) __banked {
     return;
 }
 
-void vm_actor_activate(SCRIPT_CTX * THIS, INT16 idx) __banked {    
+void vm_actor_activate(SCRIPT_CTX * THIS, INT16 idx) OLDCALL __banked {    
     UBYTE * n_actor = VM_REF_TO_PTR(idx);
     activate_actor(actors + *n_actor);
 }
 
-void vm_actor_deactivate(SCRIPT_CTX * THIS, INT16 idx) __banked {    
+void vm_actor_deactivate(SCRIPT_CTX * THIS, INT16 idx) OLDCALL __banked {    
     UBYTE * n_actor = VM_REF_TO_PTR(idx);
     deactivate_actor(actors + *n_actor);
 }
 
-void vm_actor_terminate_update(SCRIPT_CTX * THIS, INT16 idx) __banked {
+void vm_actor_terminate_update(SCRIPT_CTX * THIS, INT16 idx) OLDCALL __banked {
     actor_t *actor;
 
     act_set_pos_t * params = VM_REF_TO_PTR(idx);
@@ -198,18 +198,18 @@ void vm_actor_terminate_update(SCRIPT_CTX * THIS, INT16 idx) __banked {
     }
 }
 
-void vm_actor_set_dir(SCRIPT_CTX * THIS, INT16 idx, direction_e dir) __banked {
+void vm_actor_set_dir(SCRIPT_CTX * THIS, INT16 idx, direction_e dir) OLDCALL __banked {
     UBYTE * n_actor = VM_REF_TO_PTR(idx);
     actor_set_dir(actors + *n_actor, dir, FALSE);
 }
 
-void vm_actor_set_anim(SCRIPT_CTX * THIS, INT16 idx, INT16 idx_anim) __banked {
+void vm_actor_set_anim(SCRIPT_CTX * THIS, INT16 idx, INT16 idx_anim) OLDCALL __banked {
     UBYTE * n_actor = VM_REF_TO_PTR(idx);
     UBYTE * n_anim = VM_REF_TO_PTR(idx_anim);
     actor_set_anim(actors + *n_actor, *n_anim);
 }
 
-void vm_actor_set_pos(SCRIPT_CTX * THIS, INT16 idx) __banked {
+void vm_actor_set_pos(SCRIPT_CTX * THIS, INT16 idx) OLDCALL __banked {
     actor_t *actor;
     
     act_set_pos_t * params = VM_REF_TO_PTR(idx);
@@ -219,7 +219,7 @@ void vm_actor_set_pos(SCRIPT_CTX * THIS, INT16 idx) __banked {
     actor->pos.y = params->Y;
 }
 
-void vm_actor_get_pos(SCRIPT_CTX * THIS, INT16 idx) __banked {
+void vm_actor_get_pos(SCRIPT_CTX * THIS, INT16 idx) OLDCALL __banked {
     actor_t *actor;
     
     act_set_pos_t * params = VM_REF_TO_PTR(idx);
@@ -229,7 +229,7 @@ void vm_actor_get_pos(SCRIPT_CTX * THIS, INT16 idx) __banked {
     params->Y = actor->pos.y;
 }
 
-void vm_actor_get_dir(SCRIPT_CTX * THIS, INT16 idx, INT16 dest) __banked {
+void vm_actor_get_dir(SCRIPT_CTX * THIS, INT16 idx, INT16 dest) OLDCALL __banked {
     UWORD * A;
     actor_t *actor;
     
@@ -240,7 +240,18 @@ void vm_actor_get_dir(SCRIPT_CTX * THIS, INT16 idx, INT16 dest) __banked {
     *A = actor->dir;
 }
 
-void vm_actor_emote(SCRIPT_CTX * THIS, INT16 idx, UBYTE emote_tiles_bank, const unsigned char *emote_tiles) __banked {
+void vm_actor_get_angle(SCRIPT_CTX * THIS, INT16 idx, INT16 dest) OLDCALL __banked {
+    UWORD * A;
+    actor_t *actor;
+    
+    act_set_pos_t * params = VM_REF_TO_PTR(idx);
+    actor = actors + (UBYTE)(params->ID);
+
+    if (dest < 0) A = THIS->stack_ptr + dest; else A = script_memory + dest;
+    *A = dir_angle_lookup[actor->dir];
+}
+
+void vm_actor_emote(SCRIPT_CTX * THIS, INT16 idx, UBYTE emote_tiles_bank, const unsigned char *emote_tiles) OLDCALL __banked {
 
     // on first call load emote sprite 
     if (THIS->flags == 0) {
@@ -262,7 +273,7 @@ void vm_actor_emote(SCRIPT_CTX * THIS, INT16 idx, UBYTE emote_tiles_bank, const 
     }
 }
 
-void vm_actor_set_bounds(SCRIPT_CTX * THIS, INT16 idx, BYTE left, BYTE right, BYTE top, BYTE bottom) __banked {
+void vm_actor_set_bounds(SCRIPT_CTX * THIS, INT16 idx, BYTE left, BYTE right, BYTE top, BYTE bottom) OLDCALL __banked {
     UBYTE * n_actor = VM_REF_TO_PTR(idx);
     actor_t * actor = actors + *n_actor;
     actor->bounds.left = left;
@@ -271,7 +282,7 @@ void vm_actor_set_bounds(SCRIPT_CTX * THIS, INT16 idx, BYTE left, BYTE right, BY
     actor->bounds.bottom = bottom;
 }
 
-void vm_actor_set_spritesheet(SCRIPT_CTX * THIS, INT16 idx, UBYTE spritesheet_bank, const spritesheet_t *spritesheet) __banked {
+void vm_actor_set_spritesheet(SCRIPT_CTX * THIS, INT16 idx, UBYTE spritesheet_bank, const spritesheet_t *spritesheet) OLDCALL __banked {
     UBYTE * n_actor = VM_REF_TO_PTR(idx);
     actor_t * actor = actors + *n_actor;
     load_sprite(actor->base_tile, spritesheet, spritesheet_bank);
@@ -282,41 +293,41 @@ void vm_actor_set_spritesheet(SCRIPT_CTX * THIS, INT16 idx, UBYTE spritesheet_ba
     actor_reset_anim(actor);
 }
 
-void vm_actor_replace_tile(SCRIPT_CTX * THIS, INT16 idx, UBYTE target_tile, UBYTE tileset_bank, const tileset_t * tileset, UBYTE start_tile, UBYTE length) __banked {
+void vm_actor_replace_tile(SCRIPT_CTX * THIS, INT16 idx, UBYTE target_tile, UBYTE tileset_bank, const tileset_t * tileset, UBYTE start_tile, UBYTE length) OLDCALL __banked {
     UBYTE * n_actor = VM_REF_TO_PTR(idx);
     actor_t * actor = actors + *n_actor;
     SetBankedSpriteData(actor->base_tile + target_tile, length, tileset->tiles + (start_tile << 4), tileset_bank);
 }
 
-void vm_actor_set_hidden(SCRIPT_CTX * THIS, INT16 idx, UBYTE hidden) __banked {    
+void vm_actor_set_hidden(SCRIPT_CTX * THIS, INT16 idx, UBYTE hidden) OLDCALL __banked {    
     actor_t *actor;
     UBYTE * n_actor = VM_REF_TO_PTR(idx);
     actor = actors + *n_actor;
     actor->hidden = hidden;
 }
 
-void vm_actor_set_anim_tick(SCRIPT_CTX * THIS, INT16 idx, UBYTE tick) __banked {
+void vm_actor_set_anim_tick(SCRIPT_CTX * THIS, INT16 idx, UBYTE tick) OLDCALL __banked {
     actor_t *actor;
     UBYTE * n_actor = VM_REF_TO_PTR(idx);
     actor = actors + *n_actor;
     actor->anim_tick = tick;
 }
 
-void vm_actor_set_move_speed(SCRIPT_CTX * THIS, INT16 idx, UBYTE speed) __banked {
+void vm_actor_set_move_speed(SCRIPT_CTX * THIS, INT16 idx, UBYTE speed) OLDCALL __banked {
     actor_t *actor;
     UBYTE * n_actor = VM_REF_TO_PTR(idx);
     actor = actors + *n_actor;
     actor->move_speed = speed;
 }
 
-void vm_actor_set_coll_enabled(SCRIPT_CTX * THIS, INT16 idx, UBYTE enabled) __banked {
+void vm_actor_set_coll_enabled(SCRIPT_CTX * THIS, INT16 idx, UBYTE enabled) OLDCALL __banked {
     actor_t *actor;
     UBYTE * n_actor = VM_REF_TO_PTR(idx);
     actor = actors + *n_actor;
     actor->collision_enabled = enabled;
 }
 
-void vm_actor_set_anim_frame(SCRIPT_CTX * THIS, INT16 idx) __banked {
+void vm_actor_set_anim_frame(SCRIPT_CTX * THIS, INT16 idx) OLDCALL __banked {
     actor_t *actor;
 
     act_set_frame_t * params = VM_REF_TO_PTR(idx);
@@ -325,7 +336,7 @@ void vm_actor_set_anim_frame(SCRIPT_CTX * THIS, INT16 idx) __banked {
     actor_set_frame_offset(actor, params->FRAME);
 }
 
-void vm_actor_get_anim_frame(SCRIPT_CTX * THIS, INT16 idx) __banked {
+void vm_actor_get_anim_frame(SCRIPT_CTX * THIS, INT16 idx) OLDCALL __banked {
     actor_t *actor;
 
     act_set_frame_t * params = VM_REF_TO_PTR(idx);
@@ -334,7 +345,7 @@ void vm_actor_get_anim_frame(SCRIPT_CTX * THIS, INT16 idx) __banked {
     params->FRAME = actor_get_frame_offset(actor);
 }
 
-void vm_actor_set_anim_set(SCRIPT_CTX * THIS, INT16 idx, UWORD offset) __banked {
+void vm_actor_set_anim_set(SCRIPT_CTX * THIS, INT16 idx, UWORD offset) OLDCALL __banked {
     actor_t *actor;
     UBYTE * n_actor = VM_REF_TO_PTR(idx);
     actor = actors + *n_actor;
