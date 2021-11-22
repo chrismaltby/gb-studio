@@ -24,6 +24,7 @@ import {
   spriteSheetSelectors,
 } from "store/features/entities/entitiesState";
 import { EVENT_TEXT } from "lib/compiler/eventTypes";
+import { useDebounce } from "ui/hooks/use-debounce";
 
 interface AddScriptEventMenuProps {
   parentType: ScriptEventParentType;
@@ -403,6 +404,7 @@ const AddScriptEventMenu = ({
   onBlur,
 }: AddScriptEventMenuProps) => {
   const dispatch = useDispatch();
+  const firstLoad = useRef(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [options, setOptions] = useState<(EventOptGroup | EventOption)[]>([]);
   const [allOptions, setAllOptions] = useState<(EventOptGroup | EventOption)[]>(
@@ -514,9 +516,13 @@ const AddScriptEventMenu = ({
         })
     );
     setAllOptions(allOptions);
+    if (!firstLoad.current) {
+      setOptions(allOptions);
+      firstLoad.current = true;
+    }
   }, [favoriteEvents, favoritesCache]);
 
-  useEffect(() => {
+  const updateOptions = useCallback(() => {
     if (searchTerm && fuseRef.current) {
       const queryWords = searchTerm.toUpperCase().split(" ");
       const searchOptions = fuseRef.current
@@ -551,6 +557,14 @@ const AddScriptEventMenu = ({
       setOptions(allOptions);
     }
   }, [allOptions, searchTerm]);
+
+  const debouncedUpdateOptions = useDebounce(updateOptions, 200);
+
+  useEffect(debouncedUpdateOptions, [
+    debouncedUpdateOptions,
+    allOptions,
+    searchTerm,
+  ]);
 
   const scrollIntoViewIfNeeded = useCallback(
     (index: number) => {
