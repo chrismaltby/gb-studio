@@ -445,6 +445,7 @@
   "FIELD_LINK_CLOSE": "Close the current link session.",
   "FIELD_LINK_JOIN": "Join a link session.",
   "FIELD_LINK_HOST": "Host a link session.",
+  "FIELD_TEST_INSTRUMENT": "Test Instrument (C5)",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -647,7 +648,7 @@
   "EVENT_LINK_CLOSE": "Link: Close",
   "EVENT_LINK_JOIN": "Link: Join",
   "EVENT_LINK_HOST": "Link: Host",
-  "EVENT_LINK_CLOSE": "Link: Transfer",
+  "EVENT_LINK_TRANSFER": "Link: Transfer",
 
   "// 10": "Menu -----------------------------------------------------",
 
@@ -747,6 +748,7 @@
   "MENU_SPRITE_STATE_PASTE": "Paste Animation State",
   "MENU_SPRITE_STATE_DELETE": "Delete Animation State",
   "MENU_OPEN_MUSIC_PROCESS_WINDOW": "Open Music Process Window",
+  "MENU_PATTERN_DELETE": "Delete Pattern",
 
   "// 11": "Warnings -----------------------------------------------------",
 
