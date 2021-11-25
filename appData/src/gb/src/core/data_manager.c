@@ -292,7 +292,8 @@ UBYTE load_scene(const scene_t * scene, UBYTE bank, UBYTE init_data) __banked {
                 if (actor->exclusive_sprite) {
                     // exclusive sprites allocated separately to avoid overwriting if modified
                     actor->base_tile = tile_allocation_hiwater;
-                    tile_allocation_hiwater = load_sprite(tile_allocation_hiwater, actor->sprite.ptr, actor->sprite.bank);
+                    UBYTE n_loaded = load_sprite(tile_allocation_hiwater, actor->sprite.ptr, actor->sprite.bank);
+                    tile_allocation_hiwater += (n_loaded > actor->exclusive_sprite) ? n_loaded : actor->exclusive_sprite; 
                 } else {
                     // resolve and set base_tile for each actor
                     UBYTE idx = get_farptr_index(scn.sprites.ptr, scn.sprites.bank, sprites_len, &actor->sprite);

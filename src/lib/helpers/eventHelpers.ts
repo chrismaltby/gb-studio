@@ -150,14 +150,25 @@ export const walkDenormalizedSceneSpecificEvents = (
 export const walkDenormalizedSceneEvents = (
   scene: SceneDenormalized,
   options: WalkDenormalizedOptions,
-  callback: (event: ScriptEventDenormalized) => void
+  callback: (
+    event: ScriptEventDenormalized,
+    scene: SceneDenormalized,
+    actor?: ActorDenormalized,
+    trigger?: TriggerDenormalized
+  ) => void
 ) => {
-  walkDenormalizedSceneSpecificEvents(scene, options, callback);
+  walkDenormalizedSceneSpecificEvents(scene, options, (e) =>
+    callback(e, scene, undefined, undefined)
+  );
   scene.actors.forEach((actor) => {
-    walkDenormalizedActorEvents(actor, options, callback);
+    walkDenormalizedActorEvents(actor, options, (e) =>
+      callback(e, scene, actor, undefined)
+    );
   });
   scene.triggers.forEach((trigger) => {
-    walkDenormalizedTriggerEvents(trigger, options, callback);
+    walkDenormalizedTriggerEvents(trigger, options, (e) =>
+      callback(e, scene, undefined, trigger)
+    );
   });
 };
 
