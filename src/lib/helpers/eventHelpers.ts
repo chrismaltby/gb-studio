@@ -13,6 +13,7 @@ type WalkDenormalizedOptions =
   | {
       customEventsLookup: Dictionary<CustomEventDenormalized>;
       maxDepth: number;
+      customEventArgs: Record<string, unknown>;
     };
 
 export const patchEventArgs = (
@@ -57,6 +58,25 @@ export const patchEventArgs = (
   };
 };
 
+export const replaceCustomEventArgs = (
+  scriptEvent: ScriptEventDenormalized,
+  customEventArgs: Record<string, unknown> | undefined
+) => {
+  if (!customEventArgs) {
+    return scriptEvent;
+  }
+  return {
+    ...scriptEvent,
+    args: {
+      ...scriptEvent.args,
+      actorId:
+        customEventArgs[`$actor[${scriptEvent.args?.actorId || 0}]$`] ??
+        "$self$",
+      // @todo Replace other custom event fields
+    },
+  };
+};
+
 export const walkDenormalizedEvents = (
   script: ScriptEventDenormalized[],
   options: WalkDenormalizedOptions,
@@ -71,7 +91,7 @@ export const walkDenormalizedEvents = (
       // Skip commented events
       continue;
     }
-    callback(scriptEvent);
+    callback(replaceCustomEventArgs(scriptEvent, options?.customEventArgs));
     if (scriptEvent.children) {
       Object.keys(scriptEvent.children).forEach((key) => {
         const script = scriptEvent.children?.[key];
@@ -94,6 +114,7 @@ export const walkDenormalizedEvents = (
           {
             ...options,
             maxDepth: options.maxDepth - 1,
+            customEventArgs: scriptEvent.args || {},
           },
           callback
         );
@@ -150,14 +171,25 @@ export const walkDenormalizedSceneSpecificEvents = (
 export const walkDenormalizedSceneEvents = (
   scene: SceneDenormalized,
   options: WalkDenormalizedOptions,
-  callback: (event: ScriptEventDenormalized) => void
+  callback: (
+    event: ScriptEventDenormalized,
+    scene: SceneDenormalized,
+    actor?: ActorDenormalized,
+    trigger?: TriggerDenormalized
+  ) => void
 ) => {
-  walkDenormalizedSceneSpecificEvents(scene, options, callback);
+  walkDenormalizedSceneSpecificEvents(scene, options, (e) =>
+    callback(e, scene, undefined, undefined)
+  );
   scene.actors.forEach((actor) => {
-    walkDenormalizedActorEvents(actor, options, callback);
+    walkDenormalizedActorEvents(actor, options, (e) =>
+      callback(e, scene, actor, undefined)
+    );
   });
   scene.triggers.forEach((trigger) => {
-    walkDenormalizedTriggerEvents(trigger, options, callback);
+    walkDenormalizedTriggerEvents(trigger, options, (e) =>
+      callback(e, scene, undefined, trigger)
+    );
   });
 };
 

@@ -101,7 +101,7 @@ typedef struct background_t {
 } background_t;
 
 typedef struct tileset_t {
-    UWORD n_tiles;
+    UWORD n_tiles;                  // actual amount of 8x8 tiles in tiles[] array 
     UINT8 tiles[];
 } tileset_t;
 

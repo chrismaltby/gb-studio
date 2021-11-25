@@ -53,6 +53,7 @@ interface PrecompiledScene {
   backgroundIndex: number;
   playerSpriteIndex: number;
   parallax: Array<{ height: number; speed: number }>;
+  actorsExclusiveLookup: Dictionary<number>;
   actors: Actor[];
   triggers: Trigger[];
   projectiles: PrecompiledProjectile[];
@@ -572,6 +573,7 @@ export const compileSceneActors = (
           script: maybeScriptFarPtr(events.actors[actorIndex]),
           script_update: maybeScriptFarPtr(events.actorsMovement[actorIndex]),
           script_hit1: maybeScriptFarPtr(events.actorsHit1[actorIndex]),
+          exclusive_sprite: scene.actorsExclusiveLookup[actor.id] ?? 0,
         };
       })
     ),
