@@ -9,7 +9,6 @@ import {
   PencilIcon,
   EraserIcon,
   TrackerIcon,
-  SelectionIcon,
   PianoIcon,
   PianoInverseIcon,
 } from "ui/icons/Icons";
@@ -52,7 +51,6 @@ const FloatingPanelTools = styled(FloatingPanel)`
 
 const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
   const dispatch = useDispatch();
-  const projectRoot = useSelector((state: RootState) => state.document.root);
 
   const play = useSelector((state: RootState) => state.tracker.playing);
   const playerReady = useSelector(
@@ -130,7 +128,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
       if (e.target && (e.target as Node).nodeName === "INPUT") {
         return;
       }
-      if (e.ctrlKey || e.shiftKey || e.metaKey) {
+      if (!e.ctrlKey) {
         return;
       }
       if (e.code === "Digit1") {

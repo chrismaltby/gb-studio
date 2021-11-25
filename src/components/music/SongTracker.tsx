@@ -166,9 +166,9 @@ export const SongTracker = ({
         editPatternCell("note")(
           value === null ? null : value + octaveOffset * 12
         );
-        editPatternCell("instrument")(defaultInstrument);
 
         if (value !== null) {
+          editPatternCell("instrument")(defaultInstrument);
           setSelectedCell(selectedCell + ROW_SIZE * editStep);
         }
       };
@@ -345,7 +345,15 @@ export const SongTracker = ({
           editEffectParamCell(null);
       }
     },
-    [dispatch, editStep, octaveOffset, patternId, selectedCell]
+    [
+      defaultInstruments,
+      dispatch,
+      editStep,
+      octaveOffset,
+      patternId,
+      selectedCell,
+      song,
+    ]
   );
 
   const handleKeysUp = useCallback(
