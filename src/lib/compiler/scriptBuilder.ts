@@ -367,6 +367,7 @@ export const toProjectileHash = ({
   speed,
   animSpeed,
   lifeTime,
+  initialOffset,
   collisionGroup,
   collisionMask,
 }: {
@@ -374,6 +375,7 @@ export const toProjectileHash = ({
   speed: number;
   animSpeed: number;
   lifeTime: number;
+  initialOffset: number;
   collisionGroup: string;
   collisionMask: string[];
 }) =>
@@ -382,6 +384,7 @@ export const toProjectileHash = ({
     speed,
     animSpeed,
     lifeTime,
+    initialOffset,
     collisionGroup,
     collisionMask: [...collisionMask].sort(),
   });
@@ -1987,20 +1990,12 @@ class ScriptBuilder {
   // --------------------------------------------------------------------------
   // Weapons
 
-  weaponAttack = (
-    _spriteSheetId: string,
-    _offset = 10,
-    _collisionGroup: string,
-    _collisionMask: string[]
-  ) => {
-    console.error("weaponAttack not implemented");
-  };
-
   getProjectileIndex = (
     spriteSheetId: string,
     speed: number,
     animSpeed: number,
     lifeTime: number,
+    initialOffset: number,
     collisionGroup: string,
     collisionMask: string[]
   ) => {
@@ -2010,6 +2005,7 @@ class ScriptBuilder {
       speed,
       animSpeed,
       lifeTime,
+      initialOffset,
       collisionGroup,
       collisionMask,
     });

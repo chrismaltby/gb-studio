@@ -101,7 +101,7 @@ typedef struct background_t {
 } background_t;
 
 typedef struct tileset_t {
-    UWORD n_tiles;
+    UWORD n_tiles;                  // actual amount of 8x8 tiles in tiles[] array 
     UINT8 tiles[];
 } tileset_t;
 
@@ -126,6 +126,7 @@ typedef struct projectile_def_t
     UINT8 frame_end;
     UINT8 anim_tick;
     UINT8 move_speed;
+    WORD initial_offset;
     collision_group_e collision_group;
     UINT8 collision_mask;
 } projectile_def_t;

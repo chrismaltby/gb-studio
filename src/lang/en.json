@@ -446,6 +446,7 @@
   "FIELD_LINK_JOIN": "Join a link session.",
   "FIELD_LINK_HOST": "Host a link session.",
   "FIELD_TEST_INSTRUMENT": "Test Instrument (C5)",
+  "FIELD_DIRECTION_OFFSET": "Direction Offset",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

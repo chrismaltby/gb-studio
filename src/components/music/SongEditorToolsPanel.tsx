@@ -1,4 +1,4 @@
-import React, { useCallback, useContext } from "react";
+import React, { useCallback, useContext, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled, { ThemeContext } from "styled-components";
 import { RootState } from "store/configureStore";
@@ -124,6 +124,44 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
     },
     [dispatch]
   );
+
+  const onKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.target && (e.target as Node).nodeName === "INPUT") {
+        return;
+      }
+      if (e.ctrlKey || e.shiftKey || e.metaKey) {
+        return;
+      }
+      if (e.code === "Digit1") {
+        setDefaultInstruments(0);
+      } else if (e.code === "Digit2") {
+        setDefaultInstruments(1);
+      } else if (e.code === "Digit3") {
+        setDefaultInstruments(2);
+      } else if (e.code === "Digit4") {
+        setDefaultInstruments(3);
+      } else if (e.code === "Digit5") {
+        setDefaultInstruments(4);
+      } else if (e.code === "Digit6") {
+        setDefaultInstruments(5);
+      } else if (e.code === "Digit7") {
+        setDefaultInstruments(6);
+      } else if (e.code === "Digit8") {
+        setDefaultInstruments(7);
+      } else if (e.code === "Digit9") {
+        setDefaultInstruments(8);
+      }
+    },
+    [setDefaultInstruments]
+  );
+
+  useEffect(() => {
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  });
 
   const themeContext = useContext(ThemeContext);
 

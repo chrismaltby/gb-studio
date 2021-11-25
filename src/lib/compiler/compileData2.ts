@@ -27,6 +27,7 @@ interface PrecompiledProjectile {
   speed: number;
   animSpeed: number;
   lifeTime: number;
+  initialOffset: number;
   collisionGroup: string;
   collisionMask: string[];
 }
@@ -52,6 +53,7 @@ interface PrecompiledScene {
   backgroundIndex: number;
   playerSpriteIndex: number;
   parallax: Array<{ height: number; speed: number }>;
+  actorsExclusiveLookup: Dictionary<number>;
   actors: Actor[];
   triggers: Trigger[];
   projectiles: PrecompiledProjectile[];
@@ -571,6 +573,7 @@ export const compileSceneActors = (
           script: maybeScriptFarPtr(events.actors[actorIndex]),
           script_update: maybeScriptFarPtr(events.actorsMovement[actorIndex]),
           script_hit1: maybeScriptFarPtr(events.actorsHit1[actorIndex]),
+          exclusive_sprite: scene.actorsExclusiveLookup[actor.id] ?? 0,
         };
       })
     ),
@@ -693,6 +696,7 @@ export const compileSceneProjectiles = (
           frame: animOffsets.start,
           frame_start: animOffsets.start,
           frame_end: animOffsets.end + 1,
+          initial_offset: Math.round((projectile.initialOffset || 0) * 16),
         };
       })
     ),

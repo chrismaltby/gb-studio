@@ -9,6 +9,7 @@ import {
   EVENT_MUSIC_PLAY,
   EVENT_END,
   EVENT_PLAYER_SET_SPRITE,
+  EVENT_ACTOR_SET_SPRITE,
 } from "./eventTypes";
 import {
   projectTemplatesRoot,
@@ -788,6 +789,8 @@ export const precompileScenes = (
       );
     }
 
+    const usedSpritesLookup = keyBy(usedSprites, "id");
+
     if (scene.actors.length > MAX_ACTORS) {
       warnings(
         `Scene #${sceneIndex + 1} ${
@@ -812,7 +815,6 @@ export const precompileScenes = (
       return usedSprites.find((s) => s.id === actor.spriteSheetId);
     });
 
-    const actorSpriteIds = actors.map((a) => a.spriteSheetId);
     const eventSpriteIds = [];
     const playerSpriteSheetId = scene.playerSpriteSheetId
       ? scene.playerSpriteSheetId
@@ -829,6 +831,7 @@ export const precompileScenes = (
     }
 
     const projectiles = [];
+    const actorsExclusiveLookup = {};
     const addProjectile = (data) => {
       const projectile = {
         ...data,
@@ -837,6 +840,7 @@ export const precompileScenes = (
           speed: data.speed,
           animSpeed: data.animSpeed,
           lifeTime: data.lifeTime,
+          initialOffset: data.initialOffset,
           collisionGroup: data.collisionGroup,
           collisionMask: data.collisionMask,
         }),
@@ -852,11 +856,12 @@ export const precompileScenes = (
         customEventsLookup,
         maxDepth: MAX_NESTED_SCRIPT_DEPTH,
       },
-      (event) => {
+      (event, scene, actor, trigger) => {
         if (
           event.args &&
           event.args.spriteSheetId &&
           event.command !== EVENT_PLAYER_SET_SPRITE &&
+          event.command !== EVENT_ACTOR_SET_SPRITE &&
           !event.args.__comment
         ) {
           eventSpriteIds.push(event.args.spriteSheetId);
@@ -870,8 +875,28 @@ export const precompileScenes = (
         ) {
           addProjectile(event.args);
         }
+
+        if (
+          event.args &&
+          event.args.spriteSheetId &&
+          event.command === EVENT_ACTOR_SET_SPRITE
+        ) {
+          let actorId = event.args.actorId;
+          if (actorId === "$self$" && actor) {
+            actorId = actor.id;
+          }
+          const sprite = usedSpritesLookup[event.args.spriteSheetId];
+          actorsExclusiveLookup[actorId] = Math.max(
+            actorsExclusiveLookup[actorId] || 0,
+            sprite.numTiles * 2
+          );
+        }
       }
     );
+
+    const actorSpriteIds = actors
+      .filter((a) => !actorsExclusiveLookup[a.id])
+      .map((a) => a.spriteSheetId);
 
     const sceneSpriteIds = [].concat(actorSpriteIds, eventSpriteIds);
 
@@ -901,6 +926,7 @@ export const precompileScenes = (
         );
       }),
       playerSpriteIndex,
+      actorsExclusiveLookup,
       actorsData: [],
       triggersData: [],
       projectiles,
