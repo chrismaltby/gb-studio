@@ -887,7 +887,7 @@ export const precompileScenes = (
           const sprite = usedSpritesLookup[event.args.spriteSheetId];
           actorsExclusiveLookup[actorId] = Math.max(
             actorsExclusiveLookup[actorId] || 0,
-            sprite.numTiles
+            sprite.numTiles * 2
           );
         }
       }
