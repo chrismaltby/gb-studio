@@ -27,6 +27,7 @@ interface PrecompiledProjectile {
   speed: number;
   animSpeed: number;
   lifeTime: number;
+  initialOffset: number;
   collisionGroup: string;
   collisionMask: string[];
 }
@@ -693,6 +694,7 @@ export const compileSceneProjectiles = (
           frame: animOffsets.start,
           frame_start: animOffsets.start,
           frame_end: animOffsets.end + 1,
+          initial_offset: Math.round((projectile.initialOffset || 0) * 16),
         };
       })
     ),

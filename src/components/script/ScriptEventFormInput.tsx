@@ -454,6 +454,7 @@ const ScriptEventFormInput = ({
         <MovementSpeedSelect
           name={id}
           value={Number(value ?? 1)}
+          allowNone={field.allowNone}
           onChange={onChangeField}
         />
       </OffscreenSkeletonInput>

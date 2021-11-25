@@ -15,7 +15,7 @@ import uuid from "uuid";
 const indexById = indexBy("id");
 
 export const LATEST_PROJECT_VERSION = "2.0.0";
-export const LATEST_PROJECT_MINOR_VERSION = "13";
+export const LATEST_PROJECT_MINOR_VERSION = "14";
 
 /*
  * Helper function to make sure that all migrated functions
@@ -1231,6 +1231,44 @@ const migrateFrom200r12To200r13Events = (data) => {
   };
 };
 
+/* Version 2.0.0 r14 deprecates weapon attack event, replacing with launch projectile
+ */
+export const migrateFrom200r13To200r14Event = (event) => {
+  const migrateMeta = generateMigrateMeta(event);
+
+  if (event.args && event.command === "EVENT_WEAPON_ATTACK") {
+    return migrateMeta({
+      ...event,
+      command: "EVENT_LAUNCH_PROJECTILE",
+      args: {
+        ...event.args,
+        otherActorId: event.args.actorId,
+        directionType: "actor",
+        initialOffset: event.args.offset,
+        x: 0,
+        y: 0,
+        speed: 0,
+        animSpeed: 15,
+        lifeTime: 0.2,
+      },
+    });
+  }
+  return event;
+};
+
+const migrateFrom200r13To200r14Events = (data) => {
+  return {
+    ...data,
+    scenes: mapScenesEvents(data.scenes, migrateFrom200r13To200r14Event),
+    customEvents: (data.customEvents || []).map((customEvent) => {
+      return {
+        ...customEvent,
+        script: mapEvents(customEvent.script, migrateFrom200r13To200r14Event),
+      };
+    }),
+  };
+};
+
 const migrateProject = (project) => {
   let data = { ...project };
   let version = project._version || "1.0.0";
@@ -1313,6 +1351,10 @@ const migrateProject = (project) => {
     if (release === "12") {
       data = migrateFrom200r12To200r13Events(data);
       release = "13";
+    }
+    if (release === "13") {
+      data = migrateFrom200r13To200r14Events(data);
+      release = "14";
     }
   }
 

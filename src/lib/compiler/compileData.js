@@ -837,6 +837,7 @@ export const precompileScenes = (
           speed: data.speed,
           animSpeed: data.animSpeed,
           lifeTime: data.lifeTime,
+          initialOffset: data.initialOffset,
           collisionGroup: data.collisionGroup,
           collisionMask: data.collisionMask,
         }),

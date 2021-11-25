@@ -39,7 +39,6 @@ const fields = [
       },
     ],
   },
-
   {
     type: "group",
     width: "50%",
@@ -107,9 +106,19 @@ const fields = [
     ],
   },
   {
+    key: "initialOffset",
+    label: l10n("FIELD_DIRECTION_OFFSET"),
+    type: "number",
+    min: 0,
+    max: 256,
+    width: "50%",
+    defaultValue: 0,
+  },
+  {
     key: "speed",
     label: l10n("FIELD_SPEED"),
     type: "moveSpeed",
+    allowNone: true,
     defaultValue: 2,
     width: "50%",
   },
@@ -165,6 +174,7 @@ const compile = (input, helpers) => {
     input.speed,
     input.animSpeed,
     input.lifeTime,
+    input.initialOffset,
     input.collisionGroup,
     input.collisionMask
   );

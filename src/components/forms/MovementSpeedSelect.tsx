@@ -6,11 +6,12 @@ import { OptionLabelWithInfo, Select } from "ui/form/Select";
 interface MovementSpeedSelectProps {
   name: string;
   value?: number;
+  allowNone?: boolean;
   onChange?: (newValue: number) => void;
 }
 
 interface MovementSpeedOption {
-  value: number;
+  value: number | undefined;
   label: string;
 }
 
@@ -20,12 +21,18 @@ const options: MovementSpeedOption[] = [
   { value: 2, label: `${l10n("FIELD_SPEED")} 2` },
   { value: 3, label: `${l10n("FIELD_SPEED")} 3` },
   { value: 4, label: `${l10n("FIELD_SPEED")} 4` },
-  { value: 0, label: `${l10n("FIELD_CUSTOM_SPEED")}` },
+  { value: undefined, label: `${l10n("FIELD_CUSTOM_SPEED")}` },
+];
+
+const optionsWithNone: MovementSpeedOption[] = [
+  { value: 0, label: `${l10n("FIELD_NONE")}` },
+  ...options,
 ];
 
 export const MovementSpeedSelect: FC<MovementSpeedSelectProps> = ({
   name,
   value = 1,
+  allowNone,
   onChange,
 }) => {
   const [currentValue, setCurrentValue] =
@@ -33,12 +40,14 @@ export const MovementSpeedSelect: FC<MovementSpeedSelectProps> = ({
   const [isCustom, setIsCustom] = useState(false);
 
   useEffect(() => {
-    const current = options.find((o) => o.value === value);
+    const current = (allowNone ? optionsWithNone : options).find(
+      (o) => o.value === value
+    );
     setCurrentValue(current);
-    if (value === 0 || !current) {
+    if (value === undefined || !current) {
       setIsCustom(true);
     }
-  }, [value]);
+  }, [allowNone, value]);
 
   if (isCustom) {
     return (
@@ -68,7 +77,7 @@ export const MovementSpeedSelect: FC<MovementSpeedSelectProps> = ({
     <Select
       name={name}
       value={currentValue}
-      options={options}
+      options={allowNone ? optionsWithNone : options}
       formatOptionLabel={(
         option: MovementSpeedOption,
         { context }: { context: "menu" | "value" }
@@ -76,7 +85,7 @@ export const MovementSpeedSelect: FC<MovementSpeedSelectProps> = ({
         return (
           <OptionLabelWithInfo
             info={
-              context === "menu" && option.value > 0
+              context === "menu" && option.value && option.value > 0
                 ? `${String(Math.round(option.value * 100) / 100)} ${l10n(
                     "FIELD_PIXELS_PER_FRAME_SHORT"
                   )}`
@@ -94,7 +103,11 @@ export const MovementSpeedSelect: FC<MovementSpeedSelectProps> = ({
         );
       }}
       onChange={(newValue: MovementSpeedOption) => {
-        onChange?.(newValue.value);
+        if (newValue.value !== undefined) {
+          onChange?.(newValue.value);
+        } else {
+          setIsCustom(true);
+        }
       }}
     />
   );
