@@ -837,6 +837,7 @@ export const precompileScenes = (
         ...data,
         hash: toProjectileHash({
           spriteSheetId: data.spriteSheetId,
+          spriteStateId: data.spriteStateId,
           speed: data.speed,
           animSpeed: data.animSpeed,
           lifeTime: data.lifeTime,

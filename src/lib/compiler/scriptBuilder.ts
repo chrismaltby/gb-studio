@@ -364,6 +364,7 @@ const assertUnreachable = (_x: never): never => {
 
 export const toProjectileHash = ({
   spriteSheetId,
+  spriteStateId,
   speed,
   animSpeed,
   lifeTime,
@@ -372,6 +373,7 @@ export const toProjectileHash = ({
   collisionMask,
 }: {
   spriteSheetId: string;
+  spriteStateId: string;
   speed: number;
   animSpeed: number;
   lifeTime: number;
@@ -381,6 +383,7 @@ export const toProjectileHash = ({
 }) =>
   JSON.stringify({
     spriteSheetId,
+    spriteStateId,
     speed,
     animSpeed,
     lifeTime,
@@ -1992,6 +1995,7 @@ class ScriptBuilder {
 
   getProjectileIndex = (
     spriteSheetId: string,
+    spriteStateId: string,
     speed: number,
     animSpeed: number,
     lifeTime: number,
@@ -2002,6 +2006,7 @@ class ScriptBuilder {
     const { scene } = this.options;
     const projectileHash = toProjectileHash({
       spriteSheetId,
+      spriteStateId,
       speed,
       animSpeed,
       lifeTime,
