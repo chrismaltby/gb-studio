@@ -133,6 +133,9 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
       if (e.ctrlKey || e.shiftKey || e.metaKey) {
         return;
       }
+      if (view !== "roll") {
+        return;
+      }
       if (e.code === "Digit1") {
         setDefaultInstruments(0);
       } else if (e.code === "Digit2") {
@@ -153,7 +156,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
         setDefaultInstruments(8);
       }
     },
-    [setDefaultInstruments]
+    [setDefaultInstruments, view]
   );
 
   useEffect(() => {
