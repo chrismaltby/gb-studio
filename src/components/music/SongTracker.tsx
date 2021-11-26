@@ -291,6 +291,10 @@ export const SongTracker = ({
         if (e.code === "Delete" || e.code === "Backspace") editNoteCell(null);
       }
       if ((selectedCell - 1) % 4 === 0) {
+        if (e.ctrlKey) {
+          return;
+        }
+
         if (e.key === "0") editInstrumentCell(0);
         if (e.key === "1") editInstrumentCell(1);
         if (e.key === "2") editInstrumentCell(2);
@@ -305,6 +309,10 @@ export const SongTracker = ({
           editInstrumentCell(null);
       }
       if ((selectedCell - 2) % 4 === 0) {
+        if (e.ctrlKey) {
+          return;
+        }
+
         if (e.key === "0") editEffectCodeCell(0);
         if (e.key === "1") editEffectCodeCell(1);
         if (e.key === "2") editEffectCodeCell(2);
@@ -325,6 +333,10 @@ export const SongTracker = ({
           editEffectCodeCell(null);
       }
       if ((selectedCell - 3) % 4 === 0) {
+        if (e.ctrlKey) {
+          return;
+        }
+
         if (e.key === "0") editEffectParamCell(0);
         if (e.key === "1") editEffectParamCell(1);
         if (e.key === "2") editEffectParamCell(2);
