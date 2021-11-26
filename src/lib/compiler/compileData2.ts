@@ -24,6 +24,7 @@ interface PrecompiledBackground {
 
 interface PrecompiledProjectile {
   spriteSheetId: string;
+  spriteStateId: string;
   speed: number;
   animSpeed: number;
   lifeTime: number;
@@ -683,7 +684,14 @@ export const compileSceneProjectiles = (
           (s) => s.id === projectile.spriteSheetId
         );
         if (!sprite) return null;
-        const animOffsets = sprite.animationOffsets[0];
+
+        const animIndex =
+          sprite.states.findIndex(
+            (st) => st.name === projectile.spriteStateId
+          ) ?? 0;
+        const animOffsets =
+          sprite.animationOffsets[animIndex * 8] || sprite.animationOffsets[0];
+
         return {
           __comment: `Projectile ${projectileIndex}`,
           sprite: toFarPtr(spriteSheetSymbol(spriteIndex)),

@@ -5,10 +5,21 @@ const groups = ["EVENT_GROUP_ACTOR"];
 
 const fields = [
   {
-    key: "spriteSheetId",
-    type: "sprite",
-    label: l10n("FIELD_SPRITE_SHEET"),
-    defaultValue: "LAST_SPRITE",
+    type: "group",
+    fields: [
+      {
+        key: "spriteSheetId",
+        type: "sprite",
+        label: l10n("FIELD_SPRITE_SHEET"),
+        defaultValue: "LAST_SPRITE",
+      },
+      {
+        key: "spriteStateId",
+        type: "animationstate",
+        label: l10n("FIELD_ANIMATION_STATE"),
+        defaultValue: "",
+      },
+    ],
   },
   {
     key: "actorId",
@@ -140,20 +151,25 @@ const fields = [
     defaultValue: 1,
   },
   {
-    key: "collisionGroup",
-    label: l10n("FIELD_COLLISION_GROUP"),
-    type: "collisionMask",
-    width: "50%",
-    includePlayer: false,
-    defaultValue: "3",
-  },
-  {
-    key: "collisionMask",
-    label: l10n("FIELD_COLLIDE_WITH"),
-    type: "collisionMask",
-    width: "50%",
-    includePlayer: true,
-    defaultValue: ["1"],
+    type: "group",
+    fields: [
+      {
+        key: "collisionGroup",
+        label: l10n("FIELD_COLLISION_GROUP"),
+        type: "collisionMask",
+        width: "50%",
+        includePlayer: false,
+        defaultValue: "3",
+      },
+      {
+        key: "collisionMask",
+        label: l10n("FIELD_COLLIDE_WITH"),
+        type: "collisionMask",
+        width: "50%",
+        includePlayer: true,
+        defaultValue: ["1"],
+      },
+    ],
   },
 ];
 
@@ -171,6 +187,7 @@ const compile = (input, helpers) => {
   actorSetActive(input.actorId);
   const projectileIndex = getProjectileIndex(
     input.spriteSheetId,
+    input.spriteStateId,
     input.speed,
     input.animSpeed,
     input.lifeTime,

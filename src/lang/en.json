@@ -407,6 +407,7 @@
   "FIELD_ENABLED": "Enabled",
   "FIELD_ADD_FRAME": "Add Frame",
   "FIELD_CLONE_FRAME": "Clone Frame",
+  "FIELD_ANIMATION_STATE": "Animation State",
   "FIELD_ADD_ANIMATION_STATE": "Add Animation State",
   "FIELD_DEFAULT_COLORS": "Default Colors",
   "FIELD_BRING_TO_FRONT": "Bring To Front",
