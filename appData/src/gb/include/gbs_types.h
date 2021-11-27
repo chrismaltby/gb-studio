@@ -107,6 +107,7 @@ typedef struct tileset_t {
 
 typedef struct spritesheet_t {
     UINT8 n_metasprites;
+    point8_t emote_origin;
     metasprite_t * const *metasprites;
     animation_t *animations;
     UWORD *animations_lookup;
