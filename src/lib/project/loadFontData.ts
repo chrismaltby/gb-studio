@@ -44,6 +44,7 @@ const loadFontData =
 
       const metadataFilename = filename.replace(/\.png$/i, ".json");
       let mapping: Record<string, number> = {};
+      let name: string = file.replace(/.png/i, "");
       try {
         const metadataFile = await readJson(metadataFilename);
         if (
@@ -52,13 +53,16 @@ const loadFontData =
           typeof metadataFile.mapping === "object"
         ) {
           mapping = metadataFile.mapping;
+          if (metadataFile.name) {
+            name = metadataFile.name;
+          }
         }
       } catch (e) {}
 
       return {
         id: uuid(),
         plugin,
-        name: file.replace(/.png/i, ""),
+        name,
         width: size.width,
         height: size.height,
         filename: file,

@@ -715,6 +715,9 @@ export const precompileFonts = async (
     await ensureProjectAsset("assets/fonts/gbs-mono.png", {
       projectRoot,
     });
+    await ensureProjectAsset("assets/fonts/gbs-mono.json", {
+      projectRoot,
+    });
     throw new Error(l10n("ERROR_MISSING_FONTS"));
   }
 

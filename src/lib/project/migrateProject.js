@@ -20,7 +20,7 @@ import uniq from "lodash/uniq";
 const indexById = indexBy("id");
 
 export const LATEST_PROJECT_VERSION = "2.0.0";
-export const LATEST_PROJECT_MINOR_VERSION = "16";
+export const LATEST_PROJECT_MINOR_VERSION = "17";
 
 const ensureProjectAssetSync = (relativePath, { projectRoot }) => {
   const projectPath = `${projectRoot}/${relativePath}`;
@@ -1355,7 +1355,7 @@ const migrateFrom200r14Tor15Emotes = (data, projectRoot) => {
   };
 };
 
-/* Version 2.0.0 r15 migrates old avatar events to new avatars format (and copies sprites to correct folder)
+/* Version 2.0.0 r16 migrates old avatar events to new avatars format (and copies sprites to correct folder)
  */
 export const migrateFrom200r15To200r16Event = (avatarsIdLookup) => (event) => {
   const migrateMeta = generateMigrateMeta(event);
@@ -1436,6 +1436,39 @@ const migrateFrom200r15Tor16Avatars = (data, projectRoot) => {
         ),
       };
     }),
+  };
+};
+
+/* Version 2.0.0 r17 migrates to new fonts format
+ */
+const migrateFrom200r16Tor17Fonts = (data, projectRoot) => {
+  if (data.fonts || !projectRoot) {
+    return data;
+  }
+  const fontNames = ["gbs-mono", "gbs-var"];
+  const fontsData = fontNames.map((name) => ({
+    id: uuid(),
+    name,
+    filename: `${name}.png`,
+  }));
+
+  for (let i = 0; i < fontsData.length; i++) {
+    const fontData = fontsData[i];
+    ensureProjectAssetSync(`assets/fonts/${fontData.name}.png`, {
+      projectRoot,
+    });
+    ensureProjectAssetSync(`assets/fonts/${fontData.name}.json`, {
+      projectRoot,
+    });
+  }
+
+  return {
+    ...data,
+    fonts: fontsData,
+    settings: {
+      ...data.settings,
+      defaultFontId: fontsData[0].id,
+    },
   };
 };
 
@@ -1533,6 +1566,10 @@ const migrateProject = (project, projectRoot) => {
     if (release === "15") {
       data = migrateFrom200r15Tor16Avatars(data, projectRoot);
       release = "16";
+    }
+    if (release === "16") {
+      data = migrateFrom200r16Tor17Fonts(data, projectRoot);
+      release = "17";
     }
   }
 
