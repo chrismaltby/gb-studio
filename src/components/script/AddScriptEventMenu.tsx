@@ -19,6 +19,7 @@ import {
 } from "store/features/entities/entitiesTypes";
 import entitiesActions from "store/features/entities/entitiesActions";
 import {
+  emoteSelectors,
   musicSelectors,
   sceneSelectors,
   spriteSheetSelectors,
@@ -61,6 +62,7 @@ interface InstanciateOptions {
   defaultMusicId: string;
   defaultActorId: string;
   defaultSpriteId: string;
+  defaultEmoteId: string;
   defaultArgs?: Record<string, unknown>;
 }
 
@@ -77,6 +79,7 @@ const instanciateScriptEvent = (
     defaultMusicId,
     defaultActorId,
     defaultSpriteId,
+    defaultEmoteId,
     defaultArgs,
   }: InstanciateOptions
 ): Omit<ScriptEvent, "id"> => {
@@ -113,6 +116,8 @@ const instanciateScriptEvent = (
           replaceValue = defaultMusicId;
         } else if (defaultValue === "LAST_SPRITE") {
           replaceValue = defaultSpriteId;
+        } else if (defaultValue === "LAST_EMOTE") {
+          replaceValue = defaultEmoteId;
         } else if (defaultValue === "LAST_ACTOR") {
           replaceValue = defaultActorId;
         } else if (field.type === "events") {
@@ -432,6 +437,9 @@ const AddScriptEventMenu = ({
   const lastSpriteId = useSelector(
     (state: RootState) => spriteSheetSelectors.selectIds(state)[0]
   );
+  const lastEmoteId = useSelector(
+    (state: RootState) => emoteSelectors.selectIds(state)[0]
+  );
   const scope = useSelector((state: RootState) => state.editor.type);
 
   useEffect(() => {
@@ -605,6 +613,7 @@ const AddScriptEventMenu = ({
               defaultMusicId: String(lastMusicId),
               defaultSceneId: String(lastSceneId),
               defaultSpriteId: String(lastSpriteId),
+              defaultEmoteId: String(lastEmoteId),
               defaultArgs,
             }),
           ],

@@ -19,7 +19,7 @@ const fields = [
   {
     key: "emoteId",
     type: "emote",
-    defaultValue: 0,
+    defaultValue: "LAST_EMOTE",
   },
 ];
 
