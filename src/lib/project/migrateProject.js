@@ -5,6 +5,8 @@ import {
   mapEvents,
   filterScenesEvents,
   filterEvents,
+  walkScenesEvents,
+  walkEvents,
 } from "../helpers/eventSystem";
 import generateRandomWalkScript from "../movement/generateRandomWalkScript";
 import generateRandomLookScript from "../movement/generateRandomLookScript";
@@ -13,11 +15,12 @@ import { EVENT_END } from "../compiler/eventTypes";
 import uuid from "uuid";
 import { copySync } from "fs-extra";
 import { projectTemplatesRoot } from "../../consts";
+import uniq from "lodash/uniq";
 
 const indexById = indexBy("id");
 
 export const LATEST_PROJECT_VERSION = "2.0.0";
-export const LATEST_PROJECT_MINOR_VERSION = "15";
+export const LATEST_PROJECT_MINOR_VERSION = "16";
 
 const ensureProjectAssetSync = (relativePath, { projectRoot }) => {
   const projectPath = `${projectRoot}/${relativePath}`;
@@ -1352,6 +1355,90 @@ const migrateFrom200r14Tor15Emotes = (data, projectRoot) => {
   };
 };
 
+/* Version 2.0.0 r15 migrates old avatar events to new avatars format (and copies sprites to correct folder)
+ */
+export const migrateFrom200r15To200r16Event = (avatarsIdLookup) => (event) => {
+  const migrateMeta = generateMigrateMeta(event);
+
+  if (event.args && event.command === "EVENT_TEXT") {
+    return migrateMeta({
+      ...event,
+      command: "EVENT_TEXT",
+      args: {
+        ...event.args,
+        avatarId: event.args.avatarId && avatarsIdLookup[event.args.avatarId],
+      },
+    });
+  }
+  return event;
+};
+
+const migrateFrom200r15Tor16Avatars = (data, projectRoot) => {
+  if (data.avatars || !projectRoot) {
+    return data;
+  }
+
+  const avatarIds = [];
+  const handleEvent = (event) => {
+    if (event.command === "EVENT_TEXT" && event.args && event.args.avatarId) {
+      avatarIds.push(event.args.avatarId);
+    }
+  };
+
+  walkScenesEvents(data.scenes, handleEvent);
+  data.customEvents.forEach((customEvent) =>
+    walkEvents(customEvent.script, handleEvent)
+  );
+
+  const uniqueAvatarIds = uniq(avatarIds);
+
+  const avatarsData = uniqueAvatarIds.map((spriteId) => {
+    const sprite = data.spriteSheets.find((sprite) => sprite.id === spriteId);
+    return {
+      id: uuid(),
+      name: sprite.name,
+      width: 16,
+      height: 16,
+      filename: sprite.filename,
+    };
+  });
+
+  const avatarsIdLookup = uniqueAvatarIds.reduce((memo, oldId, index) => {
+    const newId = avatarsData[index].id;
+    memo[oldId] = newId;
+    return memo;
+  }, {});
+
+  avatarsData.forEach((avatar) => {
+    const destPath = `${projectRoot}/assets/avatars/${avatar.filename}`;
+    const spritePath = `${projectRoot}/assets/sprites/${avatar.filename}`;
+    try {
+      copySync(spritePath, destPath, {
+        overwrite: false,
+        errorOnExist: true,
+      });
+    } catch (e) {}
+  });
+
+  return {
+    ...data,
+    avatars: avatarsData,
+    scenes: mapScenesEvents(
+      data.scenes,
+      migrateFrom200r15To200r16Event(avatarsIdLookup)
+    ),
+    customEvents: (data.customEvents || []).map((customEvent) => {
+      return {
+        ...customEvent,
+        script: mapEvents(
+          customEvent.script,
+          migrateFrom200r15To200r16Event(avatarsIdLookup)
+        ),
+      };
+    }),
+  };
+};
+
 const migrateProject = (project, projectRoot) => {
   let data = { ...project };
   let version = project._version || "1.0.0";
@@ -1442,6 +1529,10 @@ const migrateProject = (project, projectRoot) => {
     if (release === "14") {
       data = migrateFrom200r14Tor15Emotes(data, projectRoot);
       release = "15";
+    }
+    if (release === "15") {
+      data = migrateFrom200r15Tor16Avatars(data, projectRoot);
+      release = "16";
     }
   }
 
