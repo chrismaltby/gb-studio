@@ -11,11 +11,28 @@ import generateRandomLookScript from "../movement/generateRandomLookScript";
 import { COLLISION_ALL, DMG_PALETTE } from "../../consts";
 import { EVENT_END } from "../compiler/eventTypes";
 import uuid from "uuid";
+import { copySync } from "fs-extra";
+import { projectTemplatesRoot } from "../../consts";
 
 const indexById = indexBy("id");
 
 export const LATEST_PROJECT_VERSION = "2.0.0";
-export const LATEST_PROJECT_MINOR_VERSION = "14";
+export const LATEST_PROJECT_MINOR_VERSION = "15";
+
+const ensureProjectAssetSync = (relativePath, { projectRoot }) => {
+  const projectPath = `${projectRoot}/${relativePath}`;
+  const defaultPath = `${projectTemplatesRoot}/gbhtml/${relativePath}`;
+  try {
+    copySync(defaultPath, projectPath, {
+      overwrite: false,
+      errorOnExist: true,
+    });
+  } catch (e) {
+    // Don't need to catch this, if it failed then the file already exists
+    // and we can safely continue.
+  }
+  return `${projectPath}`;
+};
 
 /*
  * Helper function to make sure that all migrated functions
@@ -1269,7 +1286,73 @@ const migrateFrom200r13To200r14Events = (data) => {
   };
 };
 
-const migrateProject = (project) => {
+/* Version 2.0.0 r15 migrates old emote events to new emotes format (and creates default emote pngs if missing)
+ */
+export const migrateFrom200r14To200r15Event = (emotesData) => (event) => {
+  const migrateMeta = generateMigrateMeta(event);
+
+  if (event.args && event.command === "EVENT_ACTOR_EMOTE") {
+    return migrateMeta({
+      ...event,
+      command: "EVENT_ACTOR_EMOTE",
+      args: {
+        ...event.args,
+        emoteId: (emotesData[parseInt(event.args.emoteId)] || emotesData[0]).id,
+      },
+    });
+  }
+  return event;
+};
+
+const migrateFrom200r14Tor15Emotes = (data, projectRoot) => {
+  if (data.emotes || !projectRoot) {
+    return data;
+  }
+  const emoteNames = [
+    "shock",
+    "question",
+    "love",
+    "pause",
+    "anger",
+    "sweat",
+    "music",
+    "sleep",
+  ];
+  const emotesData = emoteNames.map((name) => ({
+    id: uuid(),
+    name,
+    width: 16,
+    height: 16,
+    filename: `${name}.png`,
+  }));
+
+  for (let i = 0; i < emotesData.length; i++) {
+    const emoteData = emotesData[i];
+    ensureProjectAssetSync(`assets/emotes/${emoteData.name}.png`, {
+      projectRoot,
+    });
+  }
+
+  return {
+    ...data,
+    emotes: emotesData,
+    scenes: mapScenesEvents(
+      data.scenes,
+      migrateFrom200r14To200r15Event(emotesData)
+    ),
+    customEvents: (data.customEvents || []).map((customEvent) => {
+      return {
+        ...customEvent,
+        script: mapEvents(
+          customEvent.script,
+          migrateFrom200r14To200r15Event(emotesData)
+        ),
+      };
+    }),
+  };
+};
+
+const migrateProject = (project, projectRoot) => {
   let data = { ...project };
   let version = project._version || "1.0.0";
   let release = project._release || "1";
@@ -1355,6 +1438,10 @@ const migrateProject = (project) => {
     if (release === "13") {
       data = migrateFrom200r13To200r14Events(data);
       release = "14";
+    }
+    if (release === "14") {
+      data = migrateFrom200r14Tor15Emotes(data, projectRoot);
+      release = "15";
     }
   }
 
