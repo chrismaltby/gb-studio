@@ -1262,7 +1262,7 @@ class ScriptBuilder {
         if (token.type === "variable") {
           text += "%d";
         } else {
-          text += "%d"; // @todo Should be %c but seems to be broken right now
+          text += "%c";
         }
       } else if (token.type === "speed") {
         text += textCodeSetSpeed(token.speed);
