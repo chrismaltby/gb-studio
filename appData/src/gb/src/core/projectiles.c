@@ -117,7 +117,7 @@ void projectiles_render() __nonbanked {
 
     while (projectile) {
         UINT8 screen_x = (projectile->pos.x >> 4) - draw_scroll_x + 8,
-              screen_y = (projectile->pos.y >> 4) - draw_scroll_y;
+              screen_y = (projectile->pos.y >> 4) - draw_scroll_y + 8;
 
         if (screen_x > 160 || screen_y > 144) {
             // Remove projectile
@@ -151,19 +151,21 @@ void projectile_launch(UBYTE index, upoint16_t *pos, UBYTE angle) __banked {
     if (projectile) {
         memcpy(&projectile->def, &projectile_defs[index], sizeof(projectile_def_t));
 
-        WORD initial_offset = projectile->def.initial_offset;
+        UINT16 initial_offset = projectile->def.initial_offset;
         projectile->pos.x = pos->x;
         projectile->pos.y = pos->y;
 
+        INT8 sinv = SIN(angle), cosv = COS(angle);
+
         // Offset by initial amount
-        while (initial_offset >= 0xFF) {
-            projectile->pos.x += ((SIN(angle) * (0xFF)) >> 7);
-            projectile->pos.y -= ((COS(angle) * (0xFF)) >> 7); 
-            initial_offset -= 0xFF;           
+        while (initial_offset > 0xFFu) {
+            projectile->pos.x += ((sinv * (UINT8)(0xFF)) >> 7);
+            projectile->pos.y -= ((cosv * (UINT8)(0xFF)) >> 7); 
+            initial_offset -= 0xFFu;           
         }
         if (initial_offset > 0) {
-            projectile->pos.x += ((SIN(angle) * (initial_offset)) >> 7);
-            projectile->pos.y -= ((COS(angle) * (initial_offset)) >> 7); 
+            projectile->pos.x += ((sinv * (UINT8)(initial_offset)) >> 7);
+            projectile->pos.y -= ((cosv * (UINT8)(initial_offset)) >> 7); 
         }
 
         point_translate_angle_to_delta(&projectile->delta_pos, angle, projectile->def.move_speed);

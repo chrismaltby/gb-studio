@@ -120,14 +120,14 @@ typedef struct projectile_def_t
 {
     bounding_box_t bounds;
     far_ptr_t sprite;
-    UBYTE life_time;
+    UINT8 life_time;
     UINT8 base_tile;
     UINT8 frame;
     UINT8 frame_start;
     UINT8 frame_end;
     UINT8 anim_tick;
     UINT8 move_speed;
-    WORD initial_offset;
+    UINT16 initial_offset;
     collision_group_e collision_group;
     UINT8 collision_mask;
 } projectile_def_t;
