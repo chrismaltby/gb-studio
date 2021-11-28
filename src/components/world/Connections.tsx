@@ -1,5 +1,5 @@
 import { Dictionary } from "@reduxjs/toolkit";
-import { MIDDLE_MOUSE } from "../../consts";
+import { MAX_NESTED_SCRIPT_DEPTH, MIDDLE_MOUSE } from "../../consts";
 import { EVENT_SWITCH_SCENE } from "lib/compiler/eventTypes";
 import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,6 +11,7 @@ import {
 } from "store/features/entities/entitiesHelpers";
 import {
   actorSelectors,
+  customEventSelectors,
   sceneSelectors,
   scriptEventSelectors,
   triggerSelectors,
@@ -18,6 +19,7 @@ import {
 import {
   Actor,
   ActorDirection,
+  CustomEvent,
   Scene,
   ScriptEvent,
   Trigger,
@@ -121,7 +123,8 @@ const getSceneConnections = (
   eventsLookup: Dictionary<ScriptEvent>,
   scenesLookup: Dictionary<Scene>,
   actorsLookup: Dictionary<Actor>,
-  triggersLookup: Dictionary<Trigger>
+  triggersLookup: Dictionary<Trigger>,
+  customEventsLookup: Dictionary<CustomEvent>
 ) => {
   const ifMatches = (
     scriptEvent: ScriptEvent,
@@ -143,62 +146,85 @@ const getSceneConnections = (
   };
 
   const connections: TransitionCoords[] = [];
-  walkNormalisedSceneSpecificEvents(scene, eventsLookup, (scriptEvent) => {
-    ifMatches(scriptEvent, (destScene) => {
-      connections.push(
-        calculateTransitionCoords({
-          type: "scene",
-          scriptEvent,
-          scene,
-          destScene,
-        })
-      );
-    });
-  });
+  walkNormalisedSceneSpecificEvents(
+    scene,
+    eventsLookup,
+    {
+      customEventsLookup,
+      maxDepth: MAX_NESTED_SCRIPT_DEPTH,
+      customEventArgs: {},
+    },
+    (scriptEvent) => {
+      ifMatches(scriptEvent, (destScene) => {
+        connections.push(
+          calculateTransitionCoords({
+            type: "scene",
+            scriptEvent,
+            scene,
+            destScene,
+          })
+        );
+      });
+    }
+  );
 
   scene.actors.forEach((entityId) => {
     const entity = actorsLookup[entityId];
     if (entity) {
-      walkNormalisedActorEvents(entity, eventsLookup, (scriptEvent) => {
-        ifMatches(scriptEvent, (destScene) => {
-          connections.push(
-            calculateTransitionCoords({
-              type: "actor",
-              scriptEvent,
-              scene,
-              destScene,
-              entityId: entity.id,
-              entityX: entity.x,
-              entityY: entity.y,
-              entityWidth: 2,
-              entityHeight: 1,
-            })
-          );
-        });
-      });
+      walkNormalisedActorEvents(
+        entity,
+        eventsLookup,
+        {
+          customEventsLookup,
+          maxDepth: MAX_NESTED_SCRIPT_DEPTH,
+          customEventArgs: {},
+        },
+        (scriptEvent) => {
+          ifMatches(scriptEvent, (destScene) => {
+            connections.push(
+              calculateTransitionCoords({
+                type: "actor",
+                scriptEvent,
+                scene,
+                destScene,
+                entityId: entity.id,
+                entityX: entity.x,
+                entityY: entity.y,
+                entityWidth: 2,
+                entityHeight: 1,
+              })
+            );
+          });
+        }
+      );
     }
   });
 
   scene.triggers.forEach((entityId) => {
     const entity = triggersLookup[entityId];
     if (entity) {
-      walkNormalisedTriggerEvents(entity, eventsLookup, (scriptEvent) => {
-        ifMatches(scriptEvent, (destScene) => {
-          connections.push(
-            calculateTransitionCoords({
-              type: "trigger",
-              scriptEvent,
-              scene,
-              destScene,
-              entityId: entity.id,
-              entityX: entity.x,
-              entityY: entity.y,
-              entityWidth: entity.width || 2,
-              entityHeight: entity.height || 1,
-            })
-          );
-        });
-      });
+      walkNormalisedTriggerEvents(
+        entity,
+        eventsLookup,
+        { customEventsLookup, maxDepth: 5, customEventArgs: {} },
+        (scriptEvent) => {
+          ifMatches(scriptEvent, (destScene) => {
+            connections.push(
+              calculateTransitionCoords({
+                type: "trigger",
+                scriptEvent,
+                scene,
+                destScene,
+                entityId: entity.id,
+                entityX: entity.x,
+                entityY: entity.y,
+                entityWidth: entity.width || 2,
+                entityHeight: entity.height || 1,
+              })
+            );
+          });
+        }
+      );
     }
   });
 
@@ -250,6 +276,9 @@ const Connections = ({
   const eventsLookup = useSelector((state: RootState) =>
     scriptEventSelectors.selectEntities(state)
   );
+  const customEventsLookup = useSelector((state: RootState) =>
+    customEventSelectors.selectEntities(state)
+  );
 
   useEffect(() => {
     setConnections(
@@ -262,7 +291,8 @@ const Connections = ({
             eventsLookup,
             scenesLookup,
             actorsLookup,
-            triggersLookup
+            triggersLookup,
+            customEventsLookup
           )
         )
         .flat()
@@ -275,6 +305,7 @@ const Connections = ({
     triggersLookup,
     eventsLookup,
     scenesLookup,
+    customEventsLookup,
     selectedSceneId,
   ]);
 

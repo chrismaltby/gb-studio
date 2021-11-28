@@ -443,12 +443,14 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
       walkNormalisedScriptEvents(
         action.payload.scriptEventIds,
         scriptEventsLookup,
+        undefined,
         addEvent
       );
       for (const customEvent of customEvents) {
         walkNormalisedCustomEventEvents(
           customEvent,
           scriptEventsLookup,
+          undefined,
           addEvent
         );
       }
@@ -495,13 +497,19 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         const trigger = triggersLookup[triggerId];
         if (trigger) {
           triggers.push(trigger);
-          walkNormalisedTriggerEvents(trigger, scriptEventsLookup, addEvent);
+          walkNormalisedTriggerEvents(
+            trigger,
+            scriptEventsLookup,
+            undefined,
+            addEvent
+          );
         }
       });
       for (const customEvent of customEvents) {
         walkNormalisedCustomEventEvents(
           customEvent,
           scriptEventsLookup,
+          undefined,
           addEvent
         );
       }
@@ -548,13 +556,19 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         const actor = actorsLookup[actorId];
         if (actor) {
           actors.push(actor);
-          walkNormalisedActorEvents(actor, scriptEventsLookup, addEvent);
+          walkNormalisedActorEvents(
+            actor,
+            scriptEventsLookup,
+            undefined,
+            addEvent
+          );
         }
       });
       for (const customEvent of customEvents) {
         walkNormalisedCustomEventEvents(
           customEvent,
           scriptEventsLookup,
+          undefined,
           addEvent
         );
       }
@@ -609,7 +623,12 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             const actor = actorsLookup[actorId];
             if (actor) {
               actors.push(actor);
-              walkNormalisedActorEvents(actor, scriptEventsLookup, addEvent);
+              walkNormalisedActorEvents(
+                actor,
+                scriptEventsLookup,
+                undefined,
+                addEvent
+              );
             }
           });
           scene.triggers.forEach((triggerId) => {
@@ -619,6 +638,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
               walkNormalisedTriggerEvents(
                 trigger,
                 scriptEventsLookup,
+                undefined,
                 addEvent
               );
             }
@@ -626,6 +646,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           walkNormalisedSceneSpecificEvents(
             scene,
             scriptEventsLookup,
+            undefined,
             addEvent
           );
         }
@@ -634,6 +655,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         walkNormalisedCustomEventEvents(
           customEvent,
           scriptEventsLookup,
+          undefined,
           addEvent
         );
       }

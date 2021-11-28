@@ -144,6 +144,7 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
       walkNormalisedSceneSpecificEvents(
         scene,
         scriptEventsLookup,
+        undefined,
         onVariableEventContainingId(id, (event: ScriptEvent) => {
           if (!useLookup[scene.id]) {
             uses.push({
@@ -166,6 +167,7 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
           walkNormalisedActorEvents(
             actor,
             scriptEventsLookup,
+            undefined,
             onVariableEventContainingId(id, (event: ScriptEvent) => {
               if (!useLookup[scene.id]) {
                 uses.push({
@@ -204,6 +206,7 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
           walkNormalisedTriggerEvents(
             trigger,
             scriptEventsLookup,
+            undefined,
             onVariableEventContainingId(id, (event: ScriptEvent) => {
               if (!useLookup[scene.id]) {
                 uses.push({

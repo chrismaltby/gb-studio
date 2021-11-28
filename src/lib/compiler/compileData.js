@@ -16,6 +16,7 @@ import {
   MAX_ACTORS,
   MAX_TRIGGERS,
   DMG_PALETTE,
+  MAX_NESTED_SCRIPT_DEPTH,
 } from "../../consts";
 import compileSprites from "./compileSprites";
 import compileAvatars from "./compileAvatars";
@@ -93,8 +94,6 @@ export const EVENT_MSG_PRE_FONTS = "Preparing fonts...";
 
 export const EVENT_MSG_PRE_COMPLETE = "Preparation complete";
 export const EVENT_MSG_COMPILING_EVENTS = "Compiling events...";
-
-const MAX_NESTED_SCRIPT_DEPTH = 5;
 
 const padArrayEnd = (arr, len, padding) => {
   if (arr.length > len) {
@@ -860,7 +859,7 @@ export const precompileScenes = (
         customEventsLookup,
         maxDepth: MAX_NESTED_SCRIPT_DEPTH,
       },
-      (event, scene, actor, trigger) => {
+      (event, _scene, actor, _trigger) => {
         if (
           event.args &&
           event.args.spriteSheetId &&

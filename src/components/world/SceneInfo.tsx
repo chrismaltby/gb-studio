@@ -1,6 +1,7 @@
 import {
   MAX_ACTORS,
   MAX_ACTORS_SMALL,
+  MAX_NESTED_SCRIPT_DEPTH,
   MAX_ONSCREEN,
   MAX_TRIGGERS,
   SCREEN_HEIGHT,
@@ -11,6 +12,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "store/configureStore";
 import {
   actorSelectors,
+  customEventSelectors,
   sceneSelectors,
   scriptEventSelectors,
   spriteSheetSelectors,
@@ -24,6 +26,10 @@ import { SpriteSheet } from "store/features/entities/entitiesTypes";
 import clamp from "lib/helpers/clamp";
 import { useDebounce } from "ui/hooks/use-debounce";
 import maxSpriteTilesForBackgroundTilesLength from "lib/helpers/maxSpriteTilesForBackgroundTilesLength";
+import {
+  EVENT_ACTOR_SET_SPRITE,
+  EVENT_PLAYER_SET_SPRITE,
+} from "lib/compiler/eventTypes";
 
 interface SceneInfoWrapperProps {
   loaded: boolean;
@@ -100,6 +106,9 @@ const SceneInfo = () => {
   const scriptEventsLookup = useSelector((state: RootState) =>
     scriptEventSelectors.selectEntities(state)
   );
+  const customEventsLookup = useSelector((state: RootState) =>
+    customEventSelectors.selectEntities(state)
+  );
   const defaultPlayerSprites = useSelector(
     (state: RootState) => state.project.present.settings.defaultPlayerSprites
   );
@@ -129,31 +138,90 @@ const SceneInfo = () => {
     };
 
     if (scene) {
-      // Actor sprites
-      scene.actors.forEach((actorId) => {
-        const actor = actorsLookup[actorId];
-        if (actor) {
-          addSprite(actor.spriteSheetId);
-        }
-      });
-      // Player sprite
-      if (scene.playerSpriteSheetId) {
-        addSprite(scene.playerSpriteSheetId, true);
-      } else {
-        addSprite(defaultPlayerSprites[scene.type || "TOPDOWN"], true);
-      }
+      const actorsExclusiveLookup: Record<string, SpriteSheet> = {};
+
       // Events
       walkNormalisedSceneEvents(
         scene,
         scriptEventsLookup,
         actorsLookup,
         triggersLookup,
-        (scriptEvent) => {
-          if (scriptEvent.args?.spriteSheetId && !scriptEvent.args?.__comment) {
+        {
+          customEventsLookup,
+          maxDepth: MAX_NESTED_SCRIPT_DEPTH,
+          customEventArgs: {},
+        },
+        (scriptEvent, actor, _trigger) => {
+          // Skip commented events
+          if (scriptEvent.args?.__comment) {
+            return;
+          }
+          // Add projectiles etc.
+          if (
+            scriptEvent.command !== EVENT_ACTOR_SET_SPRITE &&
+            scriptEvent.command !== EVENT_PLAYER_SET_SPRITE &&
+            scriptEvent.args?.spriteSheetId
+          ) {
             addSprite(String(scriptEvent.args.spriteSheetId || ""));
+          }
+
+          // For EVENT_ACTOR_SET_SPRITE build lookup table of exclusive actors
+          // storing max sized sprite used for actor
+          if (
+            scriptEvent.args &&
+            scriptEvent.args.spriteSheetId &&
+            scriptEvent.command === EVENT_ACTOR_SET_SPRITE
+          ) {
+            let actorId = String(scriptEvent.args.actorId);
+            if (actorId === "$self$" && actor) {
+              actorId = actor.id;
+            }
+            const sprite =
+              spriteSheetsLookup[String(scriptEvent.args.spriteSheetId) || ""];
+
+            if (sprite) {
+              if (!actorsExclusiveLookup[actorId]) {
+                actorsExclusiveLookup[actorId] = sprite;
+              } else if (
+                actorsExclusiveLookup[actorId].numTiles < sprite.numTiles
+              ) {
+                actorsExclusiveLookup[actorId] = sprite;
+              }
+            }
           }
         }
       );
+
+      // Actor sprites - Non exclusive
+      scene.actors.forEach((actorId) => {
+        const actor = actorsLookup[actorId];
+        if (actor && !actorsExclusiveLookup[actorId]) {
+          addSprite(actor.spriteSheetId);
+        }
+      });
+
+      // Add Exclusive Actor sprites
+      scene.actors.forEach((actorId) => {
+        const actor = actorsLookup[actorId];
+        if (actor && actorsExclusiveLookup[actorId]) {
+          const defaultSprite = spriteSheetsLookup[actor.spriteSheetId || ""];
+          if (
+            !defaultSprite ||
+            actorsExclusiveLookup[actorId].numTiles > defaultSprite.numTiles
+          ) {
+            addSprite(actorsExclusiveLookup[actorId].id, true);
+          } else {
+            addSprite(actor.spriteSheetId, true);
+          }
+        }
+      });
+
+      // Player sprite
+      if (scene.playerSpriteSheetId) {
+        addSprite(scene.playerSpriteSheetId, true);
+      } else {
+        addSprite(defaultPlayerSprites[scene.type || "TOPDOWN"], true);
+      }
 
       const tileCount = usedSpriteSheets.reduce((memo, spriteSheet) => {
         return (
@@ -245,6 +313,7 @@ const SceneInfo = () => {
     scriptEventsLookup,
     spriteSheetsLookup,
     triggersLookup,
+    customEventsLookup,
   ]);
 
   const debouncedRecalculateCounts = useDebounce(recalculateCounts, 200);

@@ -112,7 +112,7 @@ function mapStateToProps(state, props) {
   const memo = [];
   scene.actors.forEach((actorId, actorIndex) => {
     const actor = actorsLookup[actorId];
-    walkNormalisedActorEvents(actor, scriptEventsLookup, (cmd) => {
+    walkNormalisedActorEvents(actor, scriptEventsLookup, undefined, (cmd) => {
       if (cmd.command === EVENT_TEXT) {
         memo.push({
           sceneId: scene.id,
@@ -128,33 +128,43 @@ function mapStateToProps(state, props) {
   });
   scene.triggers.forEach((triggerId, triggerIndex) => {
     const trigger = triggersLookup[triggerId];
-    walkNormalisedTriggerEvents(trigger, scriptEventsLookup, (cmd) => {
+    walkNormalisedTriggerEvents(
+      trigger,
+      scriptEventsLookup,
+      undefined,
+      (cmd) => {
+        if (cmd.command === EVENT_TEXT) {
+          memo.push({
+            sceneId: scene.id,
+            entityType: "trigger",
+            entity: trigger,
+            entityIndex: triggerIndex,
+            entityName: trigger.name || `Trigger ${triggerIndex + 1}`,
+            sceneName: scene.name || `Scene ${sceneIndex + 1}`,
+            line: cmd,
+          });
+        }
+      }
+    );
+  });
+  walkNormalisedSceneSpecificEvents(
+    scene,
+    scriptEventsLookup,
+    undefined,
+    (cmd) => {
       if (cmd.command === EVENT_TEXT) {
         memo.push({
           sceneId: scene.id,
-          entityType: "trigger",
-          entity: trigger,
-          entityIndex: triggerIndex,
-          entityName: trigger.name || `Trigger ${triggerIndex + 1}`,
-          sceneName: scene.name || `Scene ${sceneIndex + 1}`,
+          entityType: "scene",
+          entity: scene,
+          entityIndex: sceneIndex,
+          entityName: scene.name,
+          sceneName: scene.name,
           line: cmd,
         });
       }
-    });
-  });
-  walkNormalisedSceneSpecificEvents(scene, scriptEventsLookup, (cmd) => {
-    if (cmd.command === EVENT_TEXT) {
-      memo.push({
-        sceneId: scene.id,
-        entityType: "scene",
-        entity: scene,
-        entityIndex: sceneIndex,
-        entityName: scene.name,
-        sceneName: scene.name,
-        line: cmd,
-      });
     }
-  });
+  );
 
   return {
     scene,

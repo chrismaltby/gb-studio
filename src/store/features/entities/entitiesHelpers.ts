@@ -78,6 +78,14 @@ export type NormalisedData = NormalizedSchema<
   NormalisedResult
 >;
 
+type WalkNormalizedOptions =
+  | undefined
+  | {
+      customEventsLookup: Dictionary<CustomEvent>;
+      maxDepth: number;
+      customEventArgs: Record<string, unknown>;
+    };
+
 const backgroundSchema = new schema.Entity("backgrounds");
 const musicSchema = new schema.Entity("music");
 const fontSchema = new schema.Entity("fonts");
@@ -296,22 +304,63 @@ export const isUnionDirectionValue = (
   return true;
 };
 
+export const replaceCustomEventArgs = (
+  scriptEvent: ScriptEvent,
+  customEventArgs: Record<string, unknown> | undefined
+) => {
+  if (!customEventArgs) {
+    return scriptEvent;
+  }
+  return {
+    ...scriptEvent,
+    args: {
+      ...scriptEvent.args,
+      actorId:
+        customEventArgs[`$actor[${scriptEvent.args?.actorId || 0}]$`] ??
+        "$self$",
+      // @todo Replace other custom event fields
+    },
+  };
+};
+
 export const walkNormalisedScriptEvents = (
   ids: string[] = [],
   lookup: Dictionary<ScriptEvent>,
+  options: WalkNormalizedOptions,
   callback: (scriptEvent: ScriptEvent) => void
 ) => {
   for (let i = 0; i < ids.length; i++) {
     const scriptEvent = lookup[ids[i]];
     if (scriptEvent) {
-      callback(scriptEvent);
+      callback(replaceCustomEventArgs(scriptEvent, options?.customEventArgs));
       if (scriptEvent.children) {
         Object.keys(scriptEvent.children).forEach((key) => {
           const script = scriptEvent.children?.[key];
           if (script) {
-            walkNormalisedScriptEvents(script, lookup, callback);
+            walkNormalisedScriptEvents(script, lookup, options, callback);
           }
         });
+      }
+      if (
+        options?.customEventsLookup &&
+        scriptEvent.command === "EVENT_CALL_CUSTOM_EVENT"
+      ) {
+        const customEvent =
+          options.customEventsLookup[
+            String(scriptEvent.args?.customEventId || "")
+          ];
+        if (customEvent) {
+          walkNormalisedScriptEvents(
+            customEvent.script,
+            lookup,
+            {
+              ...options,
+              maxDepth: options.maxDepth - 1,
+              customEventArgs: scriptEvent.args || {},
+            },
+            callback
+          );
+        }
       }
     }
   }
@@ -320,31 +369,34 @@ export const walkNormalisedScriptEvents = (
 export const walkNormalisedSceneSpecificEvents = (
   scene: Scene,
   lookup: Dictionary<ScriptEvent>,
+  options: WalkNormalizedOptions,
   callback: (scriptEvent: ScriptEvent) => void
 ) => {
-  walkNormalisedScriptEvents(scene.script, lookup, callback);
-  walkNormalisedScriptEvents(scene.playerHit1Script, lookup, callback);
-  walkNormalisedScriptEvents(scene.playerHit2Script, lookup, callback);
-  walkNormalisedScriptEvents(scene.playerHit3Script, lookup, callback);
+  walkNormalisedScriptEvents(scene.script, lookup, options, callback);
+  walkNormalisedScriptEvents(scene.playerHit1Script, lookup, options, callback);
+  walkNormalisedScriptEvents(scene.playerHit2Script, lookup, options, callback);
+  walkNormalisedScriptEvents(scene.playerHit3Script, lookup, options, callback);
 };
 
 export const walkNormalisedActorEvents = (
   actor: Actor,
   lookup: Dictionary<ScriptEvent>,
+  options: WalkNormalizedOptions,
   callback: (scriptEvent: ScriptEvent) => void
 ) => {
   walkActorScriptsKeys((key) => {
-    walkNormalisedScriptEvents(actor[key], lookup, callback);
+    walkNormalisedScriptEvents(actor[key], lookup, options, callback);
   });
 };
 
 export const walkNormalisedTriggerEvents = (
   trigger: Trigger,
   lookup: Dictionary<ScriptEvent>,
+  options: WalkNormalizedOptions,
   callback: (scriptEvent: ScriptEvent) => void
 ) => {
-  walkNormalisedScriptEvents(trigger.script, lookup, callback);
-  walkNormalisedScriptEvents(trigger.leaveScript, lookup, callback);
+  walkNormalisedScriptEvents(trigger.script, lookup, options, callback);
+  walkNormalisedScriptEvents(trigger.leaveScript, lookup, options, callback);
 };
 
 export const walkNormalisedSceneEvents = (
@@ -352,19 +404,26 @@ export const walkNormalisedSceneEvents = (
   lookup: Dictionary<ScriptEvent>,
   actorsLookup: Dictionary<Actor>,
   triggersLookup: Dictionary<Trigger>,
-  callback: (scriptEvent: ScriptEvent) => void
+  options: WalkNormalizedOptions,
+  callback: (scriptEvent: ScriptEvent, actor?: Actor, trigger?: Trigger) => void
 ) => {
-  walkNormalisedSceneSpecificEvents(scene, lookup, callback);
+  walkNormalisedSceneSpecificEvents(scene, lookup, options, (e) =>
+    callback(e, undefined, undefined)
+  );
   scene.actors.forEach((actorId) => {
     const actor = actorsLookup[actorId];
     if (actor) {
-      walkNormalisedActorEvents(actor, lookup, callback);
+      walkNormalisedActorEvents(actor, lookup, options, (e) =>
+        callback(e, actor, undefined)
+      );
     }
   });
   scene.triggers.forEach((triggerId) => {
     const trigger = triggersLookup[triggerId];
     if (trigger) {
-      walkNormalisedTriggerEvents(trigger, lookup, callback);
+      walkNormalisedTriggerEvents(trigger, lookup, options, (e) =>
+        callback(e, undefined, trigger)
+      );
     }
   });
 };
@@ -372,9 +431,10 @@ export const walkNormalisedSceneEvents = (
 export const walkNormalisedCustomEventEvents = (
   customEvent: CustomEvent,
   lookup: Dictionary<ScriptEvent>,
+  options: WalkNormalizedOptions,
   callback: (scriptEvent: ScriptEvent) => void
 ) => {
-  walkNormalisedScriptEvents(customEvent.script, lookup, callback);
+  walkNormalisedScriptEvents(customEvent.script, lookup, options, callback);
 };
 
 export const walkActorScriptsKeys = (
@@ -405,11 +465,11 @@ export const isNormalisedScriptEqual = (
     [];
   const scriptBEvents: { args?: Record<string, unknown>; command: string }[] =
     [];
-  walkNormalisedScriptEvents(idsA, lookupA, (scriptEvent) => {
+  walkNormalisedScriptEvents(idsA, lookupA, undefined, (scriptEvent) => {
     const { args, command } = scriptEvent;
     scriptAEvents.push({ args, command });
   });
-  walkNormalisedScriptEvents(idsB, lookupB, (scriptEvent) => {
+  walkNormalisedScriptEvents(idsB, lookupB, undefined, (scriptEvent) => {
     const { args, command } = scriptEvent;
     scriptBEvents.push({ args, command });
   });

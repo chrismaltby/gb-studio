@@ -2032,6 +2032,7 @@ const refreshCustomEventArgs: CaseReducer<
   walkNormalisedScriptEvents(
     customEvent.script,
     state.scriptEvents.entities,
+    undefined,
     (scriptEvent) => {
       const args = scriptEvent.args;
       if (!args) return;
