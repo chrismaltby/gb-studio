@@ -57,8 +57,6 @@ void core_reset() __banked {
     events_init(FALSE);
     timers_init(FALSE);
     music_init(FALSE);
-    // kill all threads, clear VM memory
-    script_runner_init(TRUE);
 }
 
 void process_VM() {
@@ -68,8 +66,8 @@ void process_VM() {
             case RUNNER_IDLE: {                
                 input_update();
                 if (INPUT_SOFT_RESTART) {
-                    // kill all threads (in case something is wrong and all contexts occupied) 
-                    script_runner_init(FALSE);
+                    // kill all threads and cleanup 
+                    script_runner_init(TRUE);
                     // execute bootstrap script              
                     script_execute(BANK(bootstrap_script), bootstrap_script, 0, 0);
                     break;
@@ -107,6 +105,8 @@ void process_VM() {
                         remove_LCD_ISRs();
                         // reset everything
                         core_reset_hook();
+                        // kill all threads, clear VM memory
+                        script_runner_init(FALSE);
                         // load start scene
                         fade_in = !(load_scene(start_scene.ptr, start_scene.bank, TRUE));
                         // load initial player
@@ -213,6 +213,8 @@ void core_run() __banked {
 
     // reset everything (before init interrupts below!)
     core_reset_hook();
+    // kill all threads and cleanup
+    script_runner_init(TRUE);
 
     __critical {
         parallax_row = parallax_rows;
