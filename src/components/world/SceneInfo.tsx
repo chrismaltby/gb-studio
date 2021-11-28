@@ -2,7 +2,6 @@ import {
   MAX_ACTORS,
   MAX_ACTORS_SMALL,
   MAX_ONSCREEN,
-  MAX_SPRITE_TILES,
   MAX_TRIGGERS,
   SCREEN_HEIGHT,
   SCREEN_WIDTH,
@@ -24,6 +23,7 @@ import { walkNormalisedSceneEvents } from "store/features/entities/entitiesHelpe
 import { SpriteSheet } from "store/features/entities/entitiesTypes";
 import clamp from "lib/helpers/clamp";
 import { useDebounce } from "ui/hooks/use-debounce";
+import maxSpriteTilesForBackgroundTilesLength from "lib/helpers/maxSpriteTilesForBackgroundTilesLength";
 
 interface SceneInfoWrapperProps {
   loaded: boolean;
@@ -102,6 +102,10 @@ const SceneInfo = () => {
   );
   const defaultPlayerSprites = useSelector(
     (state: RootState) => state.project.present.settings.defaultPlayerSprites
+  );
+  const backgroundNumTiles = useSelector(
+    (state: RootState) =>
+      state.warnings.backgrounds[scene?.backgroundId || ""]?.numTiles
   );
   const [tileCount, setTileCount] = useState(0);
   const [actorWarnings, setActorWarnings] = useState<string[]>([]);
@@ -270,6 +274,8 @@ const SceneInfo = () => {
   const actorWarning = actorWarnings.length > 0;
   const actorError = actorCount > maxActors;
   const triggerCount = scene.triggers.length;
+  const maxSpriteTiles =
+    maxSpriteTilesForBackgroundTilesLength(backgroundNumTiles);
 
   return (
     <SceneInfoWrapper loaded={loaded}>
@@ -307,23 +313,23 @@ const SceneInfo = () => {
             <div>
               {l10n("FIELD_SPRITE_TILES_COUNT", {
                 tileCount: String(tileCount),
-                maxTiles: MAX_SPRITE_TILES,
+                maxTiles: maxSpriteTiles,
               })}
             </div>
-            {tileCount > MAX_SPRITE_TILES && (
+            {tileCount > maxSpriteTiles && (
               <div className="Scene__TooltipTitle">{l10n("FIELD_WARNING")}</div>
             )}
-            {tileCount > MAX_SPRITE_TILES && (
+            {tileCount > maxSpriteTiles && (
               <div>{l10n("WARNING_SPRITE_TILES_LIMIT")}</div>
             )}
           </>
         }
       >
         <SceneInfoButton
-          warning={tileCount === MAX_SPRITE_TILES}
-          error={tileCount > MAX_SPRITE_TILES}
+          warning={tileCount === maxSpriteTiles}
+          error={tileCount > maxSpriteTiles}
         >
-          S: {tileCount}/{MAX_SPRITE_TILES}
+          S: {tileCount}/{maxSpriteTiles}
         </SceneInfoButton>
       </TooltipWrapper>
 
