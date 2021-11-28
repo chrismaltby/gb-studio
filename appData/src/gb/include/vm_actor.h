@@ -25,5 +25,6 @@ void vm_actor_terminate_update(SCRIPT_CTX * THIS, INT16 idx) OLDCALL __banked;
 void vm_actor_set_anim_frame(SCRIPT_CTX * THIS, INT16 idx) OLDCALL __banked;
 void vm_actor_get_anim_frame(SCRIPT_CTX * THIS, INT16 idx) OLDCALL __banked;
 void vm_actor_set_anim_set(SCRIPT_CTX * THIS, INT16 idx, UWORD offset) OLDCALL __banked;
+void vm_actor_set_spritesheet_by_ref(SCRIPT_CTX * THIS, INT16 idx) OLDCALL __banked;
 
 #endif

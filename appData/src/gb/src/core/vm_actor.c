@@ -34,6 +34,13 @@ typedef struct act_set_frame_t {
     INT16 FRAME;
 } act_set_frame_t;
 
+typedef struct act_set_sprite_t {
+    INT16 ID;
+    UBYTE BANK;
+    UBYTE _pad0; 
+    spritesheet_t * SPRITE;
+} act_set_sprite_t;
+
 void vm_actor_move_to(SCRIPT_CTX * THIS, INT16 idx) OLDCALL __banked {
     actor_t *actor;
     direction_e new_dir = DIR_DOWN;
@@ -350,5 +357,20 @@ void vm_actor_set_anim_set(SCRIPT_CTX * THIS, INT16 idx, UWORD offset) OLDCALL _
     UBYTE * n_actor = VM_REF_TO_PTR(idx);
     actor = actors + *n_actor;
     load_animations(actor->sprite.ptr, actor->sprite.bank, offset, actor->animations);
+    actor_reset_anim(actor);
+}
+
+void vm_actor_set_spritesheet_by_ref(SCRIPT_CTX * THIS, INT16 idx) OLDCALL __banked {
+    actor_t *actor;
+    act_set_sprite_t * params = VM_REF_TO_PTR(idx);
+    actor = actors + params->ID;
+    UBYTE spritesheet_bank = params->BANK;
+    spritesheet_t *spritesheet = params->SPRITE;
+
+    load_sprite(actor->base_tile, spritesheet, spritesheet_bank);
+    actor->sprite.bank = spritesheet_bank;
+    actor->sprite.ptr = (void *)spritesheet;
+    load_animations(spritesheet, spritesheet_bank, ANIM_SET_DEFAULT, actor->animations);
+    load_bounds(spritesheet, spritesheet_bank, &actor->bounds);
     actor_reset_anim(actor);
 }

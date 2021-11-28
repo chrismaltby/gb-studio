@@ -173,7 +173,7 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_actor_set_anim_set,     4}, // 0x84
     {vm_switch_text_layer,      1}, // 0x85 
     {vm_actor_get_angle,        4}, // 0x86
-    {0, 0},
+    {vm_actor_set_spritesheet_by_ref, 2}, // 0x87
     {0, 0},
 
     // trigonometry instructions section
