@@ -50,6 +50,7 @@ interface ScriptBuilderEntity {
 
 interface ScriptBuilderScene {
   id: string;
+  type: string;
   actors: ScriptBuilderEntity[];
   triggers: ScriptBuilderEntity[];
   projectiles: ScriptBuilderProjectile[];
@@ -1921,13 +1922,18 @@ class ScriptBuilder {
     }
   };
 
-  playerSetSprite = (spriteSheetId: string) => {
-    const { sprites } = this.options;
+  playerSetSprite = (spriteSheetId: string, persist: boolean) => {
+    const { sprites, scene } = this.options;
     const spriteIndex = sprites.findIndex((s) => s.id === spriteSheetId);
     if (spriteIndex > -1) {
       this._addComment("Player Set Spritesheet");
       this._setConst("ACTOR", 0);
       this._actorSetSpritesheet("ACTOR", spriteSheetSymbol(spriteIndex));
+      if (persist) {
+        const symbol = spriteSheetSymbol(spriteIndex);
+        this._setConst(`PLAYER_SPRITE_${scene.type}_BANK`, `___bank_${symbol}`);
+        this._setConst(`PLAYER_SPRITE_${scene.type}_DATA`, `_${symbol}`);
+      }
       this._addNL();
     }
   };

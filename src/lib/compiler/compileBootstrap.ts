@@ -18,6 +18,7 @@ interface InitialState {
   avatarFonts: undefined[];
   engineFields: EngineFieldSchema[];
   engineFieldValues: EngineFieldValue[];
+  persistSceneSpriteSymbols: Record<string, string>;
 }
 
 const notDefine = (engineField: EngineFieldSchema) =>
@@ -34,8 +35,10 @@ export const compileScriptEngineInit = ({
   avatarFonts,
   engineFields,
   engineFieldValues,
+  persistSceneSpriteSymbols,
 }: InitialState) => `.include "vm.i"
 .include "macro.i"
+.include "data/game_globals.i"
 
 ; define constants in rom bank 0
 .area _CODE
@@ -90,6 +93,14 @@ ${engineFields
     return `        VM_SET_CONST_INT16      _${engineField.key}, ${value}`;
   })
   .join("\n")}
+
+${Object.keys(persistSceneSpriteSymbols)
+  .map(
+    (sceneType) =>
+      `        VM_SET_CONST      PLAYER_SPRITE_${sceneType}_BANK, ___bank_${persistSceneSpriteSymbols[sceneType]}\n` +
+      `        VM_SET_CONST      PLAYER_SPRITE_${sceneType}_DATA, _${persistSceneSpriteSymbols[sceneType]}\n`
+  )
+  .join("")}
 
         ; return from init routine
         VM_RET_FAR

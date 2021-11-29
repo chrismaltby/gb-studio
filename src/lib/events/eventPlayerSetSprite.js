@@ -11,7 +11,7 @@ const fields = [
   },
   {
     key: "persist",
-    label: l10n("FIELD_PERSIST_BETWEEN_SCENES"),
+    label: l10n("FIELD_REPLACE_SCENE_TYPE_DEFAULT"),
     type: "checkbox",
     defaultValue: false,
   },
@@ -27,4 +27,5 @@ module.exports = {
   groups,
   fields,
   compile,
+  allowedBeforeInitFade: true,
 };
