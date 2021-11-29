@@ -417,7 +417,11 @@ export const compileParallax = (
 ): string[] | undefined => {
   if (parallax) {
     let row = 0;
-    return parallax.map((layer, layerIndex) => {
+    const layers = parallax.map((layer, layerIndex) => {
+      // For num layers = 1 or 2 extend final layer to fill screen
+      if (parallax.length < 3 && layerIndex === parallax.length - 1) {
+        return `PARALLAX_STEP(${row}, 18, ${layer.speed})`;
+      }
       if (layerIndex === parallax.length - 1) {
         return `PARALLAX_STEP(${row}, 0, ${layer.speed})`;
       }
@@ -427,6 +431,11 @@ export const compileParallax = (
       row += layer.height;
       return str;
     });
+    // For num layers = 1 or 2 append parallax terminator
+    if (parallax.length < 3) {
+      layers.push("PARALLAX_STEP(18, 0, 0)");
+    }
+    return layers;
   }
   return [`PARALLAX_STEP(0,0,0)`];
 };

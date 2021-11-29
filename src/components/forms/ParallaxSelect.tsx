@@ -249,13 +249,23 @@ const ParallaxSelect = ({
                   }}
                 />
                 <FormField name={`layer_${layerIndex}_speed`}>
-                  <ParallaxSpeedSelect
-                    name={`layer_${layerIndex}_speed`}
-                    value={layer.speed}
-                    onChange={(speed) => {
-                      onChange?.(updateParallaxSpeed(value, layerIndex, speed));
-                    }}
-                  />
+                  {layerIndex === 2 && value.length === 3 ? (
+                    <ParallaxSpeedSelect
+                      name={`layer_${layerIndex}_speed`}
+                      value={0}
+                      disabled
+                    />
+                  ) : (
+                    <ParallaxSpeedSelect
+                      name={`layer_${layerIndex}_speed`}
+                      value={layer.speed}
+                      onChange={(speed) => {
+                        onChange?.(
+                          updateParallaxSpeed(value, layerIndex, speed)
+                        );
+                      }}
+                    />
+                  )}
                 </FormField>
               </LayerRow>
             </LayerWrapper>
