@@ -62,7 +62,7 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_test_terminate,         1}, // 0x2A
     {vm_poll_loaded,            2}, // 0x2B
     {vm_push_reference,         2}, // 0x2C 
-    {0, 0},
+    {vm_call_native,            3}, // 0x2D
     // load/save instrunctions section
     {vm_save_peek,              8}, // 0x2E
     {vm_save_clear,             1}, // 0x2F

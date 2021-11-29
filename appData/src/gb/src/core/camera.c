@@ -25,7 +25,7 @@ void camera_reset() __banked {
 
 void camera_update() __nonbanked {
     if ((camera_settings & CAMERA_LOCK_X_FLAG)) {
-        UWORD a_x = PLAYER.pos.x >> 4;
+        UWORD a_x = (PLAYER.pos.x >> 4) + 8;
         // Horizontal lock
         if (camera_x < a_x - camera_deadzone_x - camera_offset_x) { 
             camera_x = a_x - camera_deadzone_x - camera_offset_x;
@@ -35,7 +35,7 @@ void camera_update() __nonbanked {
     }
 
     if ((camera_settings & CAMERA_LOCK_Y_FLAG)) {
-        UWORD a_y = PLAYER.pos.y >> 4;
+        UWORD a_y = (PLAYER.pos.y >> 4) + 8;
         // Vertical lock
         if (camera_y < a_y - camera_deadzone_y - camera_offset_y) { 
             camera_y = a_y - camera_deadzone_y - camera_offset_y;

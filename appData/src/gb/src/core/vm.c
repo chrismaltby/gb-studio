@@ -143,7 +143,7 @@ void vm_invoke(SCRIPT_CTX * THIS, UBYTE bank, UBYTE * fn, UBYTE nparams, INT16 i
 } 
 
 // runs script in a new thread
-void vm_beginthread(UWORD dummy0, UWORD dummy1, SCRIPT_CTX * THIS, UBYTE bank, UBYTE * pc, INT16 idx, UBYTE nargs) OLDCALL __nonbanked {
+void vm_beginthread(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS, UBYTE bank, UBYTE * pc, INT16 idx, UBYTE nargs) OLDCALL __nonbanked {
     dummy0; dummy1;
     UWORD * A;
     if (idx < 0) A = THIS->stack_ptr + idx; else A = script_memory + idx;
@@ -256,7 +256,7 @@ void vm_get_tlocal(SCRIPT_CTX * THIS, INT16 idxA, INT16 idxB) OLDCALL __banked {
 }
 // rpn calculator; must be __nonbanked because we access VM bytecode
 // dummy parameters are needed to make nonbanked function to be compatible with banked call
-void vm_rpn(UWORD dummy0, UWORD dummy1, SCRIPT_CTX * THIS) OLDCALL __nonbanked {
+void vm_rpn(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS) OLDCALL __nonbanked {
     dummy0; dummy1; // suppress warnings
     INT16 * A, * B, * ARGS;
     INT16 idx;
@@ -464,6 +464,21 @@ void vm_poll_loaded(SCRIPT_CTX * THIS, INT16 idx) OLDCALL __banked {
     *A = vm_loaded_state;
     vm_loaded_state = FALSE;
 }
+// call native function by far pointer;
+void vm_call_native(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS, UINT8 bank, const void * ptr) OLDCALL __nonbanked {
+    dummy0; dummy1; THIS; bank; ptr; // suppress warnings
+#if defined(NINTENDO)
+__asm
+        lda hl, 8(sp)
+        ld a, (hl+)
+        ld e, a
+        ld a, (hl+)
+        ld h, (hl)
+        ld l, a
+        jp ___sdcc_bcall_ehl
+__endasm;
+#endif
+}
 // memset for VM variables
 void vm_memset(SCRIPT_CTX * THIS, INT16 idx, INT16 value, INT16 count) OLDCALL __banked {
     memset(VM_REF_TO_PTR(idx), value, count << 1);
@@ -476,7 +491,7 @@ void vm_memcpy(SCRIPT_CTX * THIS, INT16 idxA, INT16 idxB, INT16 count) OLDCALL _
 // executes one step in the passed context
 // return zero if script end
 // bank with VM code must be active
-UBYTE VM_STEP(SCRIPT_CTX * CTX) OLDCALL __naked __nonbanked __preserves_regs(b, c) {
+UBYTE VM_STEP(SCRIPT_CTX * CTX) __naked __nonbanked STEP_FUNC_ATTR {
     CTX;
 __asm
         lda hl, 2(sp)

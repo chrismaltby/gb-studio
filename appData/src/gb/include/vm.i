@@ -374,12 +374,19 @@ OP_VM_PUSH_REFERENCE  = 0x2C
         .db OP_VM_PUSH_REFERENCE, #>IDX, #<IDX
 .endm
 
+; call native code by far pointer
+OP_VM_CALL_NATIVE     = 0x2D 
+.macro VM_CALL_NATIVE BANK, PTR
+        .db OP_VM_CALL_NATIVE, #>PTR, #<PTR, #<BANK
+.endm
 
+; clear VM memory
 OP_VM_MEMSET          = 0x76
 .macro VM_MEMSET DEST, VALUE, COUNT
         .db OP_VM_MEMSET, #>COUNT, #<COUNT, #>VALUE, #<VALUE, #>DEST, #<DEST
 .endm
 
+; copy VM memory
 OP_VM_MEMCPY          = 0x77
 .macro VM_MEMCPY DEST, SOUR, COUNT
         .db OP_VM_MEMCPY, #>COUNT, #<COUNT, #>SOUR, #<SOUR, #>DEST, #<DEST

@@ -26,7 +26,7 @@ inline UBYTE itoa_format(INT16 v, UBYTE * d, UBYTE dlen) {
 }
 
 // renders UI text into buffer
-void vm_load_text(UWORD dummy0, UWORD dummy1, SCRIPT_CTX * THIS, UBYTE nargs) OLDCALL __nonbanked {
+void vm_load_text(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS, UBYTE nargs) OLDCALL __nonbanked {
     dummy0; dummy1; // suppress warnings
 
     UBYTE _save = _current_bank;

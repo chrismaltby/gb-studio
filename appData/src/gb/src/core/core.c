@@ -66,7 +66,7 @@ void process_VM() {
             case RUNNER_IDLE: {                
                 input_update();
                 if (INPUT_SOFT_RESTART) {
-                    // kill all threads and cleanup 
+                    // kill all threads and clear VM memory 
                     script_runner_init(TRUE);
                     // execute bootstrap script              
                     script_execute(BANK(bootstrap_script), bootstrap_script, 0, 0);
@@ -105,7 +105,7 @@ void process_VM() {
                         remove_LCD_ISRs();
                         // reset everything
                         core_reset_hook();
-                        // kill all threads, clear VM memory
+                        // kill all threads, but don't clear VM memory
                         script_runner_init(FALSE);
                         // load start scene
                         fade_in = !(load_scene(start_scene.ptr, start_scene.bank, TRUE));
@@ -213,7 +213,7 @@ void core_run() __banked {
 
     // reset everything (before init interrupts below!)
     core_reset_hook();
-    // kill all threads and cleanup
+    // kill all threads and clear VM memory
     script_runner_init(TRUE);
 
     __critical {

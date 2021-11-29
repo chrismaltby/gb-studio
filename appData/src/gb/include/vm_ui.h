@@ -3,7 +3,7 @@
 
 #include "vm.h"
 
-void vm_load_text(UWORD dummy0, UWORD dummy1, SCRIPT_CTX * THIS, UBYTE nargs) OLDCALL __nonbanked;
+void vm_load_text(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS, UBYTE nargs) OLDCALL __nonbanked;
 void vm_display_text(SCRIPT_CTX * THIS, UBYTE avatar_index, UBYTE options) OLDCALL __banked;
 void vm_switch_text_layer(SCRIPT_CTX * THIS, UBYTE target) OLDCALL __banked;
 

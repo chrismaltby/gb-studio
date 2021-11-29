@@ -10,6 +10,16 @@
 
 #include "compat.h"
 
+#if defined(NINTENDO)
+#define STEP_FUNC_ATTR OLDCALL __preserves_regs(b, c) 
+typedef UWORD DUMMY0_t;
+typedef UWORD DUMMY1_t;
+#elif defined(SEGA)
+#define STEP_FUNC_ATTR __z88dk_fastcall
+typedef UBYTE DUMMY0_t;
+typedef UWORD DUMMY1_t;
+#endif
+
 typedef void * SCRIPT_CMD_FN;
 
 typedef struct _SCRIPT_CMD {
@@ -99,7 +109,7 @@ void vm_jump_rel(SCRIPT_CTX * THIS, INT8 ofs) OLDCALL __banked;
 void vm_jump(SCRIPT_CTX * THIS, UBYTE * pc) OLDCALL __banked;
 void vm_systime(SCRIPT_CTX * THIS, INT16 idx) OLDCALL __banked;
 void vm_invoke(SCRIPT_CTX * THIS, UBYTE bank, UBYTE * fn, UBYTE nparams, INT16 idx) OLDCALL __banked;
-void vm_beginthread(UWORD dummy0, UWORD dummy1, SCRIPT_CTX * THIS, UBYTE bank, UBYTE * pc, INT16 idx, UBYTE nargs) OLDCALL __nonbanked;
+void vm_beginthread(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS, UBYTE bank, UBYTE * pc, INT16 idx, UBYTE nargs) OLDCALL __nonbanked;
 void vm_if(SCRIPT_CTX * THIS, UBYTE condition, INT16 idxA, INT16 idxB, UBYTE * pc, UBYTE n) OLDCALL __banked;
 void vm_if_const(SCRIPT_CTX * THIS, UBYTE condition, INT16 idxA, INT16 B, UBYTE * pc, UBYTE n) OLDCALL __banked;
 void vm_push_value(SCRIPT_CTX * THIS, INT16 idx) OLDCALL __banked;
@@ -108,7 +118,7 @@ void vm_push_reference(SCRIPT_CTX * THIS, INT16 idx) OLDCALL __banked;
 void vm_reserve(SCRIPT_CTX * THIS, INT8 ofs) OLDCALL __banked;
 void vm_set(SCRIPT_CTX * THIS, INT16 idxA, INT16 idxB) OLDCALL __banked;
 void vm_set_const(SCRIPT_CTX * THIS, INT16 idx, UWORD value) OLDCALL __banked;
-void vm_rpn(UWORD dummy0, UWORD dummy1, SCRIPT_CTX * THIS) OLDCALL __nonbanked;
+void vm_rpn(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS) OLDCALL __nonbanked;
 void vm_join(SCRIPT_CTX * THIS, INT16 idx) OLDCALL __banked;
 void vm_terminate(SCRIPT_CTX * THIS, INT16 idx) OLDCALL __banked;
 void vm_idle(SCRIPT_CTX * THIS) OLDCALL __banked;
@@ -130,12 +140,13 @@ void vm_set_indirect(SCRIPT_CTX * THIS, INT16 idxA, INT16 idxB) OLDCALL __banked
 void vm_get_indirect(SCRIPT_CTX * THIS, INT16 idxA, INT16 idxB) OLDCALL __banked;
 void vm_test_terminate(SCRIPT_CTX * THIS, UBYTE flags) OLDCALL __banked;
 void vm_poll_loaded(SCRIPT_CTX * THIS, INT16 idx) OLDCALL __banked;
+void vm_call_native(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS, UINT8 bank, const void * ptr) OLDCALL __nonbanked;
 void vm_memset(SCRIPT_CTX * THIS, INT16 idx, INT16 value, INT16 count) OLDCALL __banked;
 void vm_memcpy(SCRIPT_CTX * THIS, INT16 idxA, INT16 idxB, INT16 count) OLDCALL __banked;
 
 // return zero if script end
 // bank with VM code must be active
-UBYTE VM_STEP(SCRIPT_CTX * CTX) OLDCALL __naked __nonbanked __preserves_regs(b, c);
+UBYTE VM_STEP(SCRIPT_CTX * CTX) __naked __nonbanked STEP_FUNC_ATTR;
 
 // return TRUE if VM is in locked state
 inline UBYTE VM_ISLOCKED() {

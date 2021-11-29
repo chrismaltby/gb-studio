@@ -4,7 +4,7 @@
 
 #include "vm.h"
 
-void vm_sgb_transfer(UWORD dummy0, UWORD dummy1, SCRIPT_CTX * THIS) OLDCALL __nonbanked {
+void vm_sgb_transfer(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS) OLDCALL __nonbanked {
     dummy0; dummy1; // suppress warnings
     UBYTE _save = _current_bank; 
     SWITCH_ROM(THIS->bank);
