@@ -26,6 +26,7 @@ interface SpriteSheetSelectProps {
   onChange?: (newId: string) => void;
   optional?: boolean;
   optionalLabel?: string;
+  optionalValue?: string;
 }
 
 interface WrapperProps {
@@ -157,11 +158,12 @@ export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
   includeInfo,
   optional,
   optionalLabel,
+  optionalValue,
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const timerRef = useRef<number | null>(null);
   const spriteSheet = useSelector((state: RootState) =>
-    spriteSheetSelectors.selectById(state, value || "")
+    spriteSheetSelectors.selectById(state, value || optionalValue || "")
   );
   const palette = useSelector((state: RootState) =>
     paletteSelectors.selectById(state, paletteId || "")
@@ -248,7 +250,7 @@ export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
           {spriteSheet ? (
             <PreviewWrapper>
               <SpriteSheetCanvas
-                spriteSheetId={value || ""}
+                spriteSheetId={value || optionalValue || ""}
                 direction={direction}
                 frame={frame}
                 palette={palette}

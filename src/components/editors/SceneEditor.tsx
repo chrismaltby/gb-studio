@@ -611,16 +611,14 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
               >
                 <SpriteSheetSelectButton
                   name="playerSpriteSheetId"
-                  value={
-                    scene.playerSpriteSheetId ||
-                    defaultPlayerSprites[scene.type]
-                  }
+                  value={scene.playerSpriteSheetId}
                   direction={isStartingScene ? startDirection : "down"}
                   paletteId={undefined}
                   onChange={onChangeField("playerSpriteSheetId")}
                   includeInfo
                   optional
                   optionalLabel={l10n("FIELD_SCENE_TYPE_DEFAULT")}
+                  optionalValue={defaultPlayerSprites[scene.type]}
                 />
               </FormField>
             </FormRow>
