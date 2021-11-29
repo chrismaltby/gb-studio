@@ -5,7 +5,7 @@ import {
   autoHint2,
   spritesToTiles2,
   clusterSprites,
-  spriteDataIndexFn,
+  spriteDataWithDividerIndexFn,
   SliceDef,
   SpriteTileLocation,
   Position,
@@ -27,7 +27,7 @@ workerCtx.onmessage = async (evt) => {
   const src = evt.data as string;
   const imgblob = await fetch(src).then((r) => r.blob());
   const img = await createImageBitmap(imgblob);
-  const indexedImage = imageToIndexedImage(img, spriteDataIndexFn);
+  const indexedImage = imageToIndexedImage(img, spriteDataWithDividerIndexFn);
   const spriteDefs = indexedImageToSprites(indexedImage);
   const alignmentOffsets = spriteAlignmentOffsets(spriteDefs);
   const hintTileDefs = autoHint2(indexedImage);

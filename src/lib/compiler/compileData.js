@@ -328,7 +328,7 @@ export const precompilePalettes = async (scenes, settings, palettes) => {
     const sceneBackgroundPaletteIds = scene.paletteIds || [];
 
     const scenePalette = {
-      dmg: ["DMG_WHITE", "DMG_LITE_GRAY", "DMG_DARK_GRAY", "DMG_BLACK"],
+      dmg: [["DMG_WHITE", "DMG_LITE_GRAY", "DMG_DARK_GRAY", "DMG_BLACK"]],
       colors:
         isColor &&
         [
@@ -387,7 +387,10 @@ export const precompilePalettes = async (scenes, settings, palettes) => {
     const sceneSpritePaletteIds = scene.spritePaletteIds || [];
 
     const actorsPalette = {
-      dmg: ["DMG_WHITE", "DMG_WHITE", "DMG_LITE_GRAY", "DMG_BLACK"],
+      dmg: [
+        ["DMG_WHITE", "DMG_WHITE", "DMG_LITE_GRAY", "DMG_BLACK"],
+        ["DMG_WHITE", "DMG_WHITE", "DMG_DARK_GRAY", "DMG_BLACK"],
+      ],
       colors:
         isColor &&
         [

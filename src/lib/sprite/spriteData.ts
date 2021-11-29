@@ -64,17 +64,27 @@ enum Color {
 }
 
 export const spriteDataIndexFn: ImageIndexFunction = (r, g, b, _a) => {
-  if (b >= 200 && g < 20) {
-    return Color.Divider;
-  } else if ((g > 249 && r < 180 && b < 20) || (r > 249 && b > 249)) {
+  if ((g > 249 && r < 180 && b < 20) || (b >= 200 && g < 20)) {
     return Color.Transparent;
-  } else if (g > 200) {
+  } else if (g >= 205) {
     return Color.Light;
-  } else if (g > 100) {
+  } else if (g >= 130) {
     return Color.Mid;
   } else {
     return Color.Dark;
   }
+};
+
+export const spriteDataWithDividerIndexFn: ImageIndexFunction = (
+  r,
+  g,
+  b,
+  a
+) => {
+  if (b >= 200 && g < 20) {
+    return Color.Divider;
+  }
+  return spriteDataIndexFn(r, g, b, a);
 };
 
 const removeIndexedImageMask = (

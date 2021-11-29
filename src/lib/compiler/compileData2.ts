@@ -72,7 +72,7 @@ interface PrecompiledSceneEventPtrs {
 }
 
 interface PrecompiledPalette {
-  dmg: [string, string, string, string];
+  dmg: [string, string, string, string][];
   colors: [string, string, string, string][];
 }
 
@@ -971,7 +971,12 @@ ${bankRef(paletteSymbol(paletteIndex))}
 ${PALETTE_TYPE} ${paletteSymbol(paletteIndex)} = {
     .mask = 0xFF,
     .palette = {
-        DMG_PALETTE(${palette.dmg.join(", ")}),
+${palette.dmg
+  .map(
+    (paletteColors: string[]) =>
+      `        DMG_PALETTE(${paletteColors.join(", ")})`
+  )
+  .join(",\n")}
     }${
       palette.colors
         ? `,
