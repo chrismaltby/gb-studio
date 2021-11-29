@@ -7,6 +7,7 @@ test("Should be able to set active actor to player", () => {
   const sb = new ScriptBuilder(output, {
     scene: {
       id: "scene1",
+      type: "TOPDOWN",
       actors: [
         {
           id: "actor1",
@@ -32,6 +33,7 @@ test("Should be able to set active actor to actor by id", () => {
   const sb = new ScriptBuilder(output, {
     scene: {
       id: "scene1",
+      type: "TOPDOWN",
       actors: [
         {
           id: "actor1",
@@ -57,6 +59,7 @@ test("Should be able to move actor to new location", () => {
   const sb = new ScriptBuilder(output, {
     scene: {
       id: "scene1",
+      type: "TOPDOWN",
       actors: [],
       triggers: [],
       projectiles: [],
@@ -78,6 +81,7 @@ test("Should be able to wait for N frames to pass", () => {
   const sb = new ScriptBuilder(output, {
     scene: {
       id: "scene1",
+      type: "TOPDOWN",
       actors: [],
       triggers: [],
       projectiles: [],
@@ -97,6 +101,7 @@ test("Should be able to generate script string", () => {
   const sb = new ScriptBuilder(output, {
     scene: {
       id: "scene1",
+      type: "TOPDOWN",
       actors: [
         {
           id: "actor1",
@@ -148,6 +153,7 @@ test("Should be able to open dialogue boxes", async () => {
   const sb = new ScriptBuilder(output, {
     scene: {
       id: "scene1",
+      type: "TOPDOWN",
       actors: [],
       triggers: [],
       projectiles: [],
@@ -189,6 +195,7 @@ test("Should be able to conditionally execute if variable is true with event arr
   const sb = new ScriptBuilder(output, {
     scene: {
       id: "scene1",
+      type: "TOPDOWN",
       actors: [],
       triggers: [],
       projectiles: [],
@@ -252,6 +259,7 @@ test("Should be able to conditionally execute if variable is true with function 
   const sb = new ScriptBuilder(output, {
     scene: {
       id: "scene1",
+      type: "TOPDOWN",
       actors: [
         {
           id: "actor1",
@@ -331,6 +339,7 @@ test("Should be able to conditionally execute if variable is true with nested fu
   const sb = new ScriptBuilder(output, {
     scene: {
       id: "scene1",
+      type: "TOPDOWN",
       actors: [
         {
           id: "actor1",
@@ -451,6 +460,7 @@ test("Should be able to define labels and jump", () => {
   const sb = new ScriptBuilder(output, {
     scene: {
       id: "scene1",
+      type: "TOPDOWN",
       actors: [],
       triggers: [],
       projectiles: [],
@@ -481,6 +491,7 @@ test("Should throw if jump to label is not stack neutral", () => {
   const sb = new ScriptBuilder(output, {
     scene: {
       id: "scene1",
+      type: "TOPDOWN",
       actors: [
         {
           id: "actor1",
