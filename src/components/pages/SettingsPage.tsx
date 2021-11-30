@@ -463,7 +463,11 @@ const SettingsPage: FC = () => {
 
         <SearchableCard
           searchTerm={searchTerm}
-          searchMatches={[l10n("FIELD_DEFAULT_FONT")]}
+          searchMatches={[
+            l10n("FIELD_DEFAULT_FONT"),
+            l10n("FIELD_CURSOR_IMAGE"),
+            l10n("FIELD_FRAME_IMAGE"),
+          ]}
         >
           <CardAnchor id="settingsUI" />
           <CardHeading>{l10n("MENU_UI_ELEMENTS")}</CardHeading>
