@@ -22,11 +22,17 @@ interface ZoomOptions {
   label: string;
 }
 
+// ZoomLevel scale := 1.2 ^ level
 const options: ZoomOptions[] = [
+  { value: -3.80178, label: `50%` },
+  { value: -3, label: `58%` },
+  { value: -2, label: `69%` },
+  { value: -1, label: `83%` },
   { value: 0, label: `100%` },
-  { value: 1, label: `200%` },
-  { value: 2, label: `300%` },
-  { value: 3, label: `400%` },
+  { value: 1, label: `120%` },
+  { value: 2.2239, label: `150%` },
+  { value: 3, label: `172%` },
+  { value: 3.80178, label: `200%` },
 ];
 
 const Preferences = () => {
