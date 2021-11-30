@@ -1048,6 +1048,15 @@ const migrateFrom200r7To200r8Sprites = (data) => {
 const migrateFrom200r6To200r7Settings = (data) => {
   return {
     ...data,
+    spriteSheets: data.spriteSheets.map((spriteSheet) => {
+      if (spriteSheet.id !== data.settings.playerSpriteSheetId) {
+        return spriteSheet;
+      }
+      return {
+        ...spriteSheet,
+        boundsHeight: 8,
+      };
+    }),
     settings: {
       ...data.settings,
       defaultPlayerSprites: {
