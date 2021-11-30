@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { Button } from "ui/buttons/Button";
@@ -8,6 +8,8 @@ import consoleActions from "store/features/console/consoleActions";
 import buildGameActions from "store/features/buildGame/buildGameActions";
 import { FixedSpacer, FlexGrow } from "ui/spacing/Spacing";
 import { RootState } from "store/configureStore";
+
+const PIN_TO_BOTTOM_RANGE = 100;
 
 const Wrapper = styled.div`
   width: 100%;
@@ -44,7 +46,7 @@ const ButtonToolbar = styled.div`
 `;
 
 const BuildPage = () => {
-  const scrollRef = useRef(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const dispatch = useDispatch();
 
   const output = useSelector((state: RootState) => state.console.output);
@@ -52,9 +54,9 @@ const BuildPage = () => {
   const status = useSelector((state: RootState) => state.console.status);
   const profile = useSelector((state: RootState) => state.editor.profile);
 
-  // Only show the latest 100 lines during build
+  // Only show the latest 500 lines during build
   // show full output on complete
-  const outputLines = status === "complete" ? output : output.slice(-100);
+  const outputLines = status === "complete" ? output : output.slice(-500);
 
   const onBuild = useCallback(
     (type: "rom" | "web") => {
@@ -83,6 +85,19 @@ const BuildPage = () => {
   const onToggleProfiling = useCallback(() => {
     dispatch(editorActions.setProfiling(!profile));
   }, [dispatch, profile]);
+
+  useEffect(() => {
+    // Pin scroll to bottom of console as new lines arrive if currently near bottom of scroll anyway
+    const scrollEl = scrollRef.current;
+    if (scrollEl) {
+      if (
+        scrollEl.scrollTop >
+        scrollEl.scrollHeight - scrollEl.clientHeight - PIN_TO_BOTTOM_RANGE
+      ) {
+        scrollEl.scrollTop = scrollEl.scrollHeight;
+      }
+    }
+  }, [output]);
 
   return (
     <Wrapper>
