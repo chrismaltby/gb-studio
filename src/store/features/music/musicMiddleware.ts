@@ -59,7 +59,9 @@ function pause() {
   if (modPlayer && modPlayer.isPlaying) {
     modPlayer.stop();
   }
-  ipcRenderer.send("close-music");
+  if (ipcRenderer) {
+    ipcRenderer.send("close-music");
+  }
 }
 
 const musicMiddleware: Middleware<Dispatch, RootState> =
