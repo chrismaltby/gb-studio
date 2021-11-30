@@ -449,6 +449,8 @@
   "FIELD_LINK_HOST": "Host a link session.",
   "FIELD_TEST_INSTRUMENT": "Test Instrument (C5)",
   "FIELD_DIRECTION_OFFSET": "Direction Offset",
+  "FIELD_CURSOR_IMAGE": "Cursor Image",
+  "FIELD_FRAME_IMAGE": "Frame Image",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

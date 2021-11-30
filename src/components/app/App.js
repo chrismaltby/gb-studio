@@ -9,7 +9,6 @@ import SpritesPage from "../pages/SpritesPage";
 import DialoguePage from "../pages/DialoguePage";
 import BuildPage from "../pages/BuildPage";
 import WorldPage from "../pages/WorldPage";
-import UIPage from "../pages/UIPage";
 import MusicPage from "../pages/MusicPage";
 import PalettePage from "../pages/PalettePage";
 import SettingsPage from "../pages/SettingsPage";
@@ -39,7 +38,7 @@ class App extends Component {
     window.addEventListener("dragleave", this.onDragLeave);
     window.addEventListener("drop", this.onDrop);
     const zoomLevel = Number(settings.get("zoomLevel") || 0);
-    ipcRenderer.send('window-zoom', zoomLevel)
+    ipcRenderer.send("window-zoom", zoomLevel);
   }
 
   onBlur = () => {
@@ -111,7 +110,6 @@ class App extends Component {
             {section === "world" && <WorldPage />}
             {section === "backgrounds" && <BackgroundsPage />}
             {section === "sprites" && <SpritesPage />}
-            {section === "ui" && <UIPage />}
             {section === "music" && <MusicPage />}
             {section === "palettes" && <PalettePage />}
             {section === "dialogue" && <DialoguePage />}
