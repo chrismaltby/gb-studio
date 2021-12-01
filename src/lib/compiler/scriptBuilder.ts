@@ -2037,6 +2037,15 @@ class ScriptBuilder {
     this._addNL();
   };
 
+  actorInvoke = () => {
+    const { scene, scenes } = this.options;
+    const sceneIndex = scenes.indexOf(scene);
+    if (this.actorIndex > 0) {
+      this._addComment("Invoke Actor Interact Script");
+      this._callFar(`script_s${sceneIndex}a${this.actorIndex - 1}_interact`);
+    }
+  };
+
   // --------------------------------------------------------------------------
   // Weapons
 
