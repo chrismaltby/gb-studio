@@ -99,6 +99,14 @@ const BuildPage = () => {
     }
   }, [output]);
 
+  useEffect(() => {
+    // Pin scroll to bottom of console on initial load
+    const scrollEl = scrollRef.current;
+    if (scrollEl) {
+      scrollEl.scrollTop = scrollEl.scrollHeight;
+    }
+  }, []);
+
   return (
     <Wrapper>
       <Terminal ref={scrollRef}>
