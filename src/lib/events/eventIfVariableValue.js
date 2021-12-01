@@ -82,7 +82,7 @@ const compile = (input, helpers) => {
   ifVariableValue(
     input.variable,
     operation,
-    input.comparator,
+    input.comparator || 0,
     truePath,
     falsePath
   );
