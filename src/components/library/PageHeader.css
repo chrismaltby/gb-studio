@@ -13,6 +13,10 @@
   max-width: 1000px;
 }
 
+.PageHeader h1 button {
+  margin-left: 10px;
+}
+
 .PageHeader h1 input {
   display: block;
   height: 30px;
