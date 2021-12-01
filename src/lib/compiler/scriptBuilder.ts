@@ -407,6 +407,7 @@ class ScriptBuilder {
   options: ScriptBuilderOptions;
   dependencies: string[];
   nextLabel: number;
+  labelLookup: Record<string, string>;
   actorIndex: number;
   stackPtr: number;
   labelStackSize: Dictionary<number>;
@@ -447,6 +448,7 @@ class ScriptBuilder {
     };
     this.dependencies = [];
     this.nextLabel = 1;
+    this.labelLookup = {};
     this.actorIndex = options.entity
       ? getActorIndex(options.entity.id, options.scene)
       : 0;
@@ -2939,12 +2941,12 @@ class ScriptBuilder {
         this._stackPushConst(256);
         this._if(".GTE", ".ARG0", ".ARG1", clampLabel, 1);
         this._setConst("ARG0", 255);
-        this.labelDefine(clampLabel);
+        this._label(clampLabel);
       } else if (operation === ".SUB") {
         this._stackPushConst(0);
         this._if(".LTE", ".ARG0", ".ARG1", clampLabel, 1);
         this._setConst("ARG0", 0);
-        this.labelDefine(clampLabel);
+        this._label(clampLabel);
       }
     }
 
@@ -2973,12 +2975,12 @@ class ScriptBuilder {
         this._stackPushConst(256);
         this._if(".GTE", ".ARG0", ".ARG1", clampLabel, 1);
         this._setConst("ARG0", 255);
-        this.labelDefine(clampLabel);
+        this._label(clampLabel);
       } else if (operation === ".SUB") {
         this._stackPushConst(0);
         this._if(".LTE", ".ARG0", ".ARG1", clampLabel, 1);
         this._setConst("ARG0", 0);
-        this.labelDefine(clampLabel);
+        this._label(clampLabel);
       }
     }
 
@@ -3011,12 +3013,12 @@ class ScriptBuilder {
         this._stackPushConst(256);
         this._if(".GTE", ".ARG0", ".ARG1", clampLabel, 1);
         this._setConst("ARG0", 255);
-        this.labelDefine(clampLabel);
+        this._label(clampLabel);
       } else if (operation === ".SUB") {
         this._stackPushConst(0);
         this._if(".LTE", ".ARG0", ".ARG1", clampLabel, 1);
         this._setConst("ARG0", 0);
-        this.labelDefine(clampLabel);
+        this._label(clampLabel);
       }
     }
 
@@ -3470,11 +3472,19 @@ class ScriptBuilder {
   };
 
   labelDefine = (name: string) => {
-    this._label(name);
+    if (!this.labelLookup[name]) {
+      const label = this.getNextLabel();
+      this.labelLookup[name] = label;
+    }
+    this._label(this.labelLookup[name]);
   };
 
   labelGoto = (name: string) => {
-    this._jump(name);
+    if (!this.labelLookup[name]) {
+      const label = this.getNextLabel();
+      this.labelLookup[name] = label;
+    }
+    this._jump(this.labelLookup[name]);
   };
 
   // --------------------------------------------------------------------------
