@@ -1697,6 +1697,28 @@ class ScriptBuilder {
     this._addNL();
   };
 
+  actorSetPositionToVariables = (variableX: string, variableY: string) => {
+    const stackPtr = this.stackPtr;
+    this._addComment("Actor Set Position To Variables");
+
+    this._rpn() //
+      .refVariable(variableX)
+      .int16(8 * 16)
+      .operator(".MUL")
+      .refVariable(variableY)
+      .int16(8 * 16)
+      .operator(".MUL")
+      .stop();
+
+    this._set("^/(ACTOR + 1 - 2)/", ".ARG1");
+    this._set("^/(ACTOR + 2 - 2)/", ".ARG0");
+    this._stackPop(2);
+
+    this._actorSetPosition("ACTOR");
+    this._assertStackNeutral(stackPtr);
+    this._addNL();
+  };
+
   actorSetPositionRelative = (x = 0, y = 0) => {
     this._addComment("Actor Set Position Relative");
     this._actorGetPosition("ACTOR");
