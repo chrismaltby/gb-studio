@@ -1697,6 +1697,25 @@ class ScriptBuilder {
     this._addNL();
   };
 
+  actorSetPositionRelative = (x = 0, y = 0) => {
+    this._addComment("Actor Set Position Relative");
+    this._actorGetPosition("ACTOR");
+    this._rpn() //
+      .ref("^/(ACTOR + 1)/")
+      .int16(x * 8 * 16)
+      .operator(".ADD")
+      .ref("^/(ACTOR + 2)/")
+      .int16(y * 8 * 16)
+      .operator(".ADD")
+      .stop();
+
+    this._set("^/(ACTOR + 1 - 2)/", ".ARG1");
+    this._set("^/(ACTOR + 2 - 2)/", ".ARG0");
+    this._stackPop(2);
+    this._actorSetPosition("ACTOR");
+    this._addNL();
+  };
+
   actorGetPosition = (variableX: string, variableY: string) => {
     this._addComment(`Store Position In Variables`);
     this._actorGetPosition("ACTOR");
