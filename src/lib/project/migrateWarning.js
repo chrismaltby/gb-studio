@@ -69,10 +69,11 @@ export default async (projectPath) => {
       l10n("DIALOG_MIGRATE", {
         version: LATEST_PROJECT_VERSION,
       }),
+      l10n("DIALOG_MIGRATION_GUIDE"),
       l10n("DIALOG_CANCEL"),
     ],
     defaultId: 0,
-    cancelId: 1,
+    cancelId: 2,
     title: l10n("DIALOG_PROJECT_NEED_MIGRATION"),
     message: l10n("DIALOG_PROJECT_NEED_MIGRATION"),
     detail: l10n("DIALOG_MIGRATION_DESCRIPTION", {
@@ -90,6 +91,9 @@ export default async (projectPath) => {
   }
   if (buttonIndex === 0) {
     return true;
+  }
+  if (buttonIndex === 1) {
+    await shell.openExternal("https://www.gbstudio.dev/migrate/");
   }
   return false;
 };
