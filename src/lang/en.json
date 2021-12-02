@@ -452,6 +452,8 @@
   "FIELD_CURSOR_IMAGE": "Cursor Image",
   "FIELD_FRAME_IMAGE": "Frame Image",
   "FIELD_ADD_PALETTE": "Add Palette",
+  "FIELD_CURSOR": "Cursor",
+  "FIELD_HOVER": "Hover",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

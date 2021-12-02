@@ -14,7 +14,8 @@ export type AnimationType =
   | "movingDown"
   | "jumpingLeft"
   | "jumpingRight"
-  | "climbing";
+  | "climbing"
+  | "hover";
 
 const animationTypes: AnimationType[] = [
   "idleRight",
@@ -46,6 +47,8 @@ const platformAnimationTypes: AnimationType[] = [
   "climbing",
 ];
 
+const cursorAnimationTypes: AnimationType[] = ["idle", "hover"];
+
 const animationNameLookup: Record<AnimationType, string> = {
   idle: l10n("FIELD_IDLE"),
   moving: l10n("FIELD_MOVING"),
@@ -72,6 +75,7 @@ const animationNameLookup: Record<AnimationType, string> = {
     direction: l10n("FIELD_DIRECTION_RIGHT"),
   }),
   climbing: l10n("FIELD_CLIMBING"),
+  hover: l10n("FIELD_HOVER"),
 };
 
 const animationNames = [
@@ -114,6 +118,11 @@ export const getAnimationTypeByIndex = (
   }
   if (type === "platform_player") {
     return filterAnimationsBySpriteType(platformAnimationTypes, type, flipLeft)[
+      animationIndex
+    ];
+  }
+  if (type === "cursor") {
+    return filterAnimationsBySpriteType(cursorAnimationTypes, type, flipLeft)[
       animationIndex
     ];
   }
@@ -173,6 +182,7 @@ const multiFlipIndexes = [0, 2, 3];
 const platformIndexes = [0, 1, 4, 5, 2, 3, 6];
 const platformFlipIndexes = [0, 4, 2, 6];
 const flipIndexes = [0, 2, 3, 4, 6, 7];
+const cursorIndexes = [0, 1];
 
 export const filterAnimationsBySpriteType = <T>(
   animationIds: T[],
@@ -196,6 +206,9 @@ export const filterAnimationsBySpriteType = <T>(
   }
   if (type === "platform_player" && flipLeft) {
     return platformFlipIndexes.map((i) => animationIds[i]);
+  }
+  if (type === "cursor") {
+    return cursorIndexes.map((i) => animationIds[i]);
   }
   if (flipLeft) {
     return flipIndexes.map((i) => animationIds[i]);
@@ -299,6 +312,14 @@ export const animationMapBySpriteType = <T, U>(
         return fn(items[index - 1], true);
       }
       return fn(items[index], false);
+    }
+    if (type === "cursor") {
+      // Flip order of hover and idle state
+      if (index === 0) {
+        return fn(items[1], false);
+      } else {
+        return fn(items[0], false);
+      }
     }
     if (flipLeft) {
       // Left facing maps to previous animation (right) flipped

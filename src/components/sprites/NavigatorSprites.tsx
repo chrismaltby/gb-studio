@@ -97,6 +97,7 @@ const animationTypeIcons: Record<AnimationType, ReactNode> = {
   jumpingLeft: <ArrowJumpIcon style={{ transform: "scale(-1,1)" }} />,
   jumpingRight: <ArrowJumpIcon />,
   climbing: <ArrowIdleIcon style={{ transform: "rotate(270deg)" }} />,
+  hover: <ArrowJumpIcon />,
 };
 
 export const NavigatorSprites = ({
