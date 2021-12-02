@@ -333,7 +333,10 @@ export const walkNormalisedScriptEvents = (
     const scriptEvent = lookup[ids[i]];
     if (scriptEvent) {
       callback(replaceCustomEventArgs(scriptEvent, options?.customEventArgs));
-      if (scriptEvent.children) {
+      if (
+        scriptEvent.children &&
+        scriptEvent.command !== "EVENT_CALL_CUSTOM_EVENT"
+      ) {
         Object.keys(scriptEvent.children).forEach((key) => {
           const script = scriptEvent.children?.[key];
           if (script) {
