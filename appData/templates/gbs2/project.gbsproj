@@ -10926,8 +10926,8 @@
                                         "command": "EVENT_SWITCH_SCENE",
                                         "args": {
                                             "sceneId": "a15eed10-615c-488a-b972-b4b37ccfc14e",
-                                            "x": 4,
-                                            "y": 2,
+                                            "x": 5,
+                                            "y": 3,
                                             "direction": "right",
                                             "fadeSpeed": "2"
                                         }
@@ -37028,7 +37028,7 @@
                 0,
                 0,
                 0,
-                0,
+                16,
                 0,
                 0,
                 0,
@@ -37225,7 +37225,7 @@
                 0,
                 0,
                 0,
-                0,
+                16,
                 0,
                 15,
                 15,
@@ -60952,9 +60952,9 @@
                     ]
                 }
             ],
-            "numTiles": 0,
-            "canvasWidth": 32,
-            "canvasHeight": 32,
+            "numTiles": 8,
+            "canvasWidth": 16,
+            "canvasHeight": 16,
             "boundsX": 0,
             "boundsY": 0,
             "boundsWidth": 16,
@@ -63367,8 +63367,8 @@
                 }
             ],
             "numTiles": 12,
-            "canvasWidth": 32,
-            "canvasHeight": 32,
+            "canvasWidth": 16,
+            "canvasHeight": 16,
             "boundsX": 0,
             "boundsY": 0,
             "boundsWidth": 16,
@@ -63807,7 +63807,7 @@
                 }
             ],
             "numTiles": 4,
-            "canvasWidth": 32,
+            "canvasWidth": 16,
             "canvasHeight": 32,
             "boundsX": 0,
             "boundsY": 0,
@@ -64935,7 +64935,7 @@
             "boundsX": 0,
             "boundsY": 0,
             "boundsWidth": 16,
-            "boundsHeight": 16,
+            "boundsHeight": 24,
             "animSpeed": 15
         },
         {
