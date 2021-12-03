@@ -56,11 +56,11 @@ typedef struct SCRIPT_CTX {
 #define INSTRUCTION_SIZE 1
 
 // maximum number of concurrent running VM threads
-#define SCRIPT_MAX_CONTEXTS 16
+#define VM_MAX_CONTEXTS 16
 // stack size of each VM thread
-#define CONTEXT_STACK_SIZE 64
+#define VM_CONTEXT_STACK_SIZE 64
 // number of shared variables
-#define MAX_GLOBAL_VARS 1024
+#define VM_HEAP_SIZE 1024
 // quant size
 #define INSTRUCTIONS_PER_QUANT 0x10
 // termination flag
@@ -78,11 +78,11 @@ typedef struct SCRIPT_CTX {
 #define VM_OP_NOT 9
 
 // shared context memory
-extern UWORD script_memory[MAX_GLOBAL_VARS + (SCRIPT_MAX_CONTEXTS * CONTEXT_STACK_SIZE)];  // maximum stack depth is 16 words
+extern UWORD script_memory[VM_HEAP_SIZE + (VM_MAX_CONTEXTS * VM_CONTEXT_STACK_SIZE)];  // maximum stack depth is 16 words
 
 // contexts for executing scripts 
 // ScriptRunnerInit(), ExecuteScript(), ScriptRunnerUpdate() manipulate these contexts
-extern SCRIPT_CTX CTXS[SCRIPT_MAX_CONTEXTS];
+extern SCRIPT_CTX CTXS[VM_MAX_CONTEXTS];
 extern SCRIPT_CTX * first_ctx, * free_ctxs;
 
 // lock state 

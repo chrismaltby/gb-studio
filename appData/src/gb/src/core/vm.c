@@ -14,7 +14,7 @@ extern const SCRIPT_CMD script_cmds[];
 
 // contexts for executing scripts 
 // ScriptRunnerInit(), ExecuteScript(), ScriptRunnerUpdate() manipulate these contexts
-SCRIPT_CTX CTXS[SCRIPT_MAX_CONTEXTS];
+SCRIPT_CTX CTXS[VM_MAX_CONTEXTS];
 SCRIPT_CTX * first_ctx, * free_ctxs;
 
 // lock state 
@@ -604,7 +604,7 @@ __endasm;
 }
 
 // global shared script memory
-UWORD script_memory[MAX_GLOBAL_VARS + (SCRIPT_MAX_CONTEXTS * CONTEXT_STACK_SIZE)];
+UWORD script_memory[VM_HEAP_SIZE + (VM_MAX_CONTEXTS * VM_CONTEXT_STACK_SIZE)];
 
 // initialize script runner contexts
 // resets whole VM engine
@@ -613,15 +613,15 @@ void script_runner_init(UBYTE reset) __banked {
         memset(script_memory, 0, sizeof(script_memory));
         memset(CTXS, 0, sizeof(CTXS));
     }
-    UWORD * base_addr = &script_memory[MAX_GLOBAL_VARS];
+    UWORD * base_addr = &script_memory[VM_HEAP_SIZE];
     free_ctxs = CTXS, first_ctx = 0;
     SCRIPT_CTX * nxt = 0;
-    SCRIPT_CTX * tmp = CTXS + (SCRIPT_MAX_CONTEXTS - 1);
-    for (UBYTE i = SCRIPT_MAX_CONTEXTS; i != 0; i--) {
+    SCRIPT_CTX * tmp = CTXS + (VM_MAX_CONTEXTS - 1);
+    for (UBYTE i = VM_MAX_CONTEXTS; i != 0; i--) {
         tmp->next = nxt;
         tmp->base_addr = base_addr;
         tmp->ID = i;
-        base_addr += CONTEXT_STACK_SIZE;
+        base_addr += VM_CONTEXT_STACK_SIZE;
         nxt = tmp--;
     }
     vm_lock_state = 0;
