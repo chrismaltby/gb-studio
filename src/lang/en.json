@@ -467,6 +467,9 @@
   "BUILD_EXPORT_POCKET": "Export Pocket",
   "BUILD_CLEAR": "Clear",
   "BUILD_EMPTY_BUILD_CACHE": "Empty Build Cache",
+  "BUILD_CANCEL": "Cancel Build",
+  "BUILD_CANCELLING": "Cancelling Build",
+  "BUILD_CANCELLED": "Cancelled Build",
 
   "// 9": "Scripting Events -----------------------------------------",
   "EVENT_GROUP_ACTOR": "Actor",

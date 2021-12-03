@@ -17,7 +17,13 @@ import { ZoomButton } from "ui/buttons/ZoomButton";
 import { FixedSpacer, FlexGrow } from "ui/spacing/Spacing";
 import { SearchInput } from "ui/form/SearchInput";
 import { Button } from "ui/buttons/Button";
-import { ExportIcon, FolderIcon, LoadingIcon, PlayIcon } from "ui/icons/Icons";
+import {
+  DotsIcon,
+  ExportIcon,
+  FolderIcon,
+  LoadingIcon,
+  PlayIcon,
+} from "ui/icons/Icons";
 import { RootState } from "store/configureStore";
 import { NavigationSection } from "store/features/navigation/navigationState";
 import { ZoomSection } from "store/features/editor/editorState";
@@ -65,9 +71,10 @@ const AppToolbar: FC = () => {
     (state: RootState) => state.editor.searchTerm
   );
   const projectRoot = useSelector((state: RootState) => state.document.root);
-  const running = useSelector(
-    (state: RootState) => state.console.status === "running"
-  );
+  const buildStatus = useSelector((state: RootState) => state.console.status);
+  const running = buildStatus === "running";
+  const cancelling = buildStatus === "cancelled";
+
   const showZoom = zoomSections.includes(section);
   const showSearch = section === "world";
   const [searchTerm, setSearchTerm] = useState<string>(initalSearchTerm);
@@ -225,12 +232,18 @@ const AppToolbar: FC = () => {
         </MenuItem>
       </DropdownButton>
       <FixedSpacer width={10} />
-      <Button
-        title={l10n("TOOLBAR_RUN")}
-        onClick={running ? setSection("build") : onRun}
-      >
-        {running ? <LoadingIcon /> : <PlayIcon />}
-      </Button>
+      {cancelling ? (
+        <Button title={l10n("BUILD_CANCELLING")} onClick={setSection("build")}>
+          <DotsIcon />
+        </Button>
+      ) : (
+        <Button
+          title={l10n("TOOLBAR_RUN")}
+          onClick={running ? setSection("build") : onRun}
+        >
+          {running ? <LoadingIcon /> : <PlayIcon />}
+        </Button>
+      )}
     </Toolbar>
   );
 };

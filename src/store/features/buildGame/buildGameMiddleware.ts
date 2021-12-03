@@ -14,6 +14,7 @@ import { statSync } from "fs-extra";
 import confirmEjectEngineReplaceDialog from "lib/electron/dialog/confirmEjectEngineReplaceDialog";
 import ejectEngineToDir from "lib/project/ejectEngineToDir";
 import actions from "./buildGameActions";
+import l10n from "lib/helpers/l10n";
 
 const rmdir = promisify(rimraf);
 
@@ -28,8 +29,13 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
       const { buildType, exportBuild } = action.payload;
       const buildStartTime = Date.now();
 
+      if (state.console.status === "cancelled") {
+        // Wait until cancel is complete before allowing another build
+        return;
+      }
       if (state.console.status === "running") {
         // Stop build if already building
+        store.dispatch(consoleActions.cancelConsole());
         return;
       }
 
@@ -58,6 +64,12 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
           tmpPath: getTmp(),
           profile: state.editor.profile,
           progress: (message) => {
+            // Detect if build was cancelled and stop current build
+            const state = store.getState();
+            if (state.console.status === "cancelled") {
+              throw new Error(l10n("BUILD_CANCELLED"));
+            }
+
             if (
               message !== "'" &&
               message.indexOf("unknown or unsupported #pragma") === -1
@@ -111,6 +123,11 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
         if (typeof e === "string") {
           dispatch(navigationActions.setSection("build"));
           dispatch(consoleActions.stdErr(e));
+        } else if (
+          e instanceof Error &&
+          e.toString().includes(l10n("BUILD_CANCELLED"))
+        ) {
+          dispatch(consoleActions.stdOut(l10n("BUILD_CANCELLED")));
         } else {
           dispatch(navigationActions.setSection("build"));
           dispatch(consoleActions.stdErr(e.toString()));

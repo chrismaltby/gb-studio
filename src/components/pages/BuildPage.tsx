@@ -119,6 +119,9 @@ const BuildPage = () => {
             {out.text}
           </div>
         ))}
+        {status === "cancelled" && (
+          <div style={{ color: "orange" }}>{l10n("BUILD_CANCELLING")}...</div>
+        )}
         {status === "complete" && warnings.length > 0 && (
           <div>
             <br />
@@ -133,31 +136,38 @@ const BuildPage = () => {
         )}
       </Terminal>
       <ButtonToolbar>
-        <Button onClick={onRun}>{l10n("BUILD_RUN")}</Button>
-        <FixedSpacer width={10} />
-        <Button onClick={() => onBuild("rom")}>
-          {l10n("BUILD_EXPORT_ROM")}
-        </Button>
-        <Button onClick={() => onBuild("web")}>
-          {l10n("BUILD_EXPORT_WEB")}
-        </Button>
-        <Button onClick={onDeleteCache}>
-          {l10n("BUILD_EMPTY_BUILD_CACHE")}
-        </Button>
-        {process.env.NODE_ENV !== "production" && (
+        {status === "running" ? (
+          <Button onClick={onRun}>{l10n("BUILD_CANCEL")}</Button>
+        ) : (
           <>
+            <Button onClick={onRun}>{l10n("BUILD_RUN")}</Button>
             <FixedSpacer width={10} />
-            <label htmlFor="enableProfile">
-              <input
-                id="enableProfile"
-                type="checkbox"
-                checked={profile}
-                onChange={onToggleProfiling}
-              />{" "}
-              Enable BGB Profiling
-            </label>
+            <Button onClick={() => onBuild("rom")}>
+              {l10n("BUILD_EXPORT_ROM")}
+            </Button>
+            <Button onClick={() => onBuild("web")}>
+              {l10n("BUILD_EXPORT_WEB")}
+            </Button>
+            <Button onClick={onDeleteCache}>
+              {l10n("BUILD_EMPTY_BUILD_CACHE")}
+            </Button>
+            {process.env.NODE_ENV !== "production" && (
+              <>
+                <FixedSpacer width={10} />
+                <label htmlFor="enableProfile">
+                  <input
+                    id="enableProfile"
+                    type="checkbox"
+                    checked={profile}
+                    onChange={onToggleProfiling}
+                  />{" "}
+                  Enable BGB Profiling
+                </label>
+              </>
+            )}
           </>
         )}
+
         <FlexGrow />
         <Button onClick={onClear}>{l10n("BUILD_CLEAR")}</Button>
       </ButtonToolbar>

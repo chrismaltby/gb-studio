@@ -23,7 +23,12 @@ const spawn = (
         if (line.length === 0 && lineIndex === lines.length - 1) {
           return;
         }
-        onLog(line);
+        try {
+          onLog(line);
+        } catch (e) {
+          child.kill();
+          return reject(e);
+        }
       });
     });
 
