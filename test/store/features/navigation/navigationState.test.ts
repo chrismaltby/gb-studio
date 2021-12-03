@@ -9,10 +9,10 @@ import consoleActions from "../../../../src/store/features/console/consoleAction
 test("Should be able to set section", () => {
   const state: NavigationState = {
     ...initialState,
-    section: "ui",
+    section: "music",
   };
   const action = actions.setSection("palettes");
-  expect(state.section).toBe("ui");
+  expect(state.section).toBe("music");
 
   const newState = reducer(state, action);
   expect(newState.section).toBe("palettes");

@@ -480,8 +480,8 @@ ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
 
 _MY_SCRIPT::
-mylabel$:
-        VM_JUMP                 mylabel$
+1$:
+        VM_JUMP                 1$
 `
   );
 });

@@ -20,7 +20,7 @@ void pointnclick_init() __banked {
     camera_deadzone_x = POINT_N_CLICK_CAMERA_DEADZONE;
     camera_deadzone_y = POINT_N_CLICK_CAMERA_DEADZONE;
     PLAYER.dir = DIR_RIGHT;
-    actor_set_anim_idle(&PLAYER);
+    actor_set_anim(&PLAYER, ANIM_CURSOR);
 }
 
 void pointnclick_update() __banked {

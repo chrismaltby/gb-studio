@@ -366,7 +366,7 @@ void vm_actor_set_spritesheet_by_ref(SCRIPT_CTX * THIS, INT16 idxA, INT16 idxB) 
 
     gbs_farptr_t * params = VM_REF_TO_PTR(idxB);
     UBYTE spritesheet_bank = params->BANK;
-    spritesheet_t *spritesheet = params->DATA;
+    const spritesheet_t *spritesheet = params->DATA;
 
     load_sprite(actor->base_tile, spritesheet, spritesheet_bank);
     actor->sprite.bank = spritesheet_bank;

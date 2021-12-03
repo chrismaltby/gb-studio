@@ -641,7 +641,8 @@ export const SpriteEditor = ({
               </FormRow>
               {spriteState.animationType &&
                 spriteState.animationType !== "fixed" &&
-                spriteState.animationType !== "fixed_movement" && (
+                spriteState.animationType !== "fixed_movement" &&
+                spriteState.animationType !== "cursor" && (
                   <FormRow>
                     <CheckboxField
                       name="customColorsEnabled"

@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-type ConsoleStatus = "idle" | "running" | "complete";
+type ConsoleStatus = "idle" | "running" | "complete" | "cancelled";
 
 interface ConsoleLine {
   type: "out" | "err";
@@ -29,7 +29,9 @@ const consoleSlice = createSlice({
   initialState,
   reducers: {
     clearConsole: (state, _action: PayloadAction<void>) => {
-      state.status = "idle";
+      if (state.status !== "running") {
+        state.status = "idle";
+      }
       state.output = [];
       state.warnings = [];
     },
@@ -40,6 +42,11 @@ const consoleSlice = createSlice({
     },
     completeConsole: (state, _action: PayloadAction<void>) => {
       state.status = "complete";
+    },
+    cancelConsole: (state, _action: PayloadAction<void>) => {
+      if (state.status === "running") {
+        state.status = "cancelled";
+      }
     },
     stdOut: (state, action: PayloadAction<string>) => {
       if (action.payload) {

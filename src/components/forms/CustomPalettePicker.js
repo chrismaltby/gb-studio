@@ -6,10 +6,10 @@ import cx from "classnames";
 import { clipboard } from "electron";
 import l10n from "lib/helpers/l10n";
 import { FormField } from "../library/Forms";
-import { PaletteShape } from "store/stateShape";
 import ColorSlider from "./ColorSlider";
 import { paletteSelectors } from "store/features/entities/entitiesState";
 import entitiesActions from "store/features/entities/entitiesActions";
+import { Button } from "ui/buttons/Button";
 
 const DEFAULT_WHITE = "E8F8E0";
 const DEFAULT_LIGHT = "B0F088";
@@ -200,6 +200,31 @@ class CustomPalettePicker extends Component {
     window.removeEventListener("paste", this.onPaste);
   }
 
+  componentDidUpdate(prevProps) {
+    const { palette } = this.props;
+    if (palette.id !== prevProps.palette.id) {
+      this.setState(
+        {
+          selectedColor: -1,
+          colorR: 0,
+          colorG: 0,
+          colorB: 0,
+          colorH: 0,
+          colorS: 0,
+          colorV: 0,
+          whiteHex: palette.colors[0] || DEFAULT_WHITE,
+          lightHex: palette.colors[1] || DEFAULT_LIGHT,
+          darkHex: palette.colors[2] || DEFAULT_DARK,
+          blackHex: palette.colors[3] || DEFAULT_BLACK,
+          currentCustomHex: "",
+        },
+        () => {
+          this.onColorSelect(0)();
+        }
+      );
+    }
+  }
+
   onCopy = (e) => {
     if (e.target.nodeName !== "BODY" && e.target.value.length > 0) {
       return;
@@ -238,8 +263,10 @@ class CustomPalettePicker extends Component {
     } else if (colorIndex === 3) {
       editHex = blackHex;
     }
-
-    this.setState({ selectedColor: colorIndex, currentCustomHex: "" });
+    this.setState({
+      selectedColor: colorIndex,
+      currentCustomHex: "#" + hexToGBCHex(editHex).toLowerCase(),
+    });
     this.applyHexToState(editHex);
   };
 
@@ -409,6 +436,21 @@ class CustomPalettePicker extends Component {
       this.updateColorFromRGB
     );
   }
+
+  onReset = () => {
+    const { editPalette, palette } = this.props;
+    editPalette({
+      paletteId: palette.id,
+      changes: {
+        colors: palette.defaultColors || [],
+      },
+    });
+  };
+
+  onRemove = () => {
+    const { removePalette, palette } = this.props;
+    removePalette({ paletteId: palette.id });
+  };
 
   render() {
     const { palette } = this.props;
@@ -634,15 +676,21 @@ class CustomPalettePicker extends Component {
             />
           </label>
         </FormField>
+
+        <div style={{ marginTop: 30 }}>
+          {palette.defaultColors ? (
+            <Button onClick={this.onReset}>Reset Palette</Button>
+          ) : (
+            <Button onClick={this.onRemove}>Remove Palette</Button>
+          )}
+        </div>
       </div>
     );
   }
 }
 
 CustomPalettePicker.propTypes = {
-  palette: PaletteShape,
   paletteId: PropTypes.string.isRequired,
-  editPalette: PropTypes.func.isRequired,
 };
 
 CustomPalettePicker.defaultProps = {
@@ -662,6 +710,7 @@ function mapStateToProps(state, props) {
 
 const mapDispatchToProps = {
   editPalette: entitiesActions.editPalette,
+  removePalette: entitiesActions.removePalette,
 };
 
 export default connect(

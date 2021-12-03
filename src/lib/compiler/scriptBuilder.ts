@@ -407,6 +407,7 @@ class ScriptBuilder {
   options: ScriptBuilderOptions;
   dependencies: string[];
   nextLabel: number;
+  labelLookup: Record<string, string>;
   actorIndex: number;
   stackPtr: number;
   labelStackSize: Dictionary<number>;
@@ -447,6 +448,7 @@ class ScriptBuilder {
     };
     this.dependencies = [];
     this.nextLabel = 1;
+    this.labelLookup = {};
     this.actorIndex = options.entity
       ? getActorIndex(options.entity.id, options.scene)
       : 0;
@@ -1697,6 +1699,47 @@ class ScriptBuilder {
     this._addNL();
   };
 
+  actorSetPositionToVariables = (variableX: string, variableY: string) => {
+    const stackPtr = this.stackPtr;
+    this._addComment("Actor Set Position To Variables");
+
+    this._rpn() //
+      .refVariable(variableX)
+      .int16(8 * 16)
+      .operator(".MUL")
+      .refVariable(variableY)
+      .int16(8 * 16)
+      .operator(".MUL")
+      .stop();
+
+    this._set("^/(ACTOR + 1 - 2)/", ".ARG1");
+    this._set("^/(ACTOR + 2 - 2)/", ".ARG0");
+    this._stackPop(2);
+
+    this._actorSetPosition("ACTOR");
+    this._assertStackNeutral(stackPtr);
+    this._addNL();
+  };
+
+  actorSetPositionRelative = (x = 0, y = 0) => {
+    this._addComment("Actor Set Position Relative");
+    this._actorGetPosition("ACTOR");
+    this._rpn() //
+      .ref("^/(ACTOR + 1)/")
+      .int16(x * 8 * 16)
+      .operator(".ADD")
+      .ref("^/(ACTOR + 2)/")
+      .int16(y * 8 * 16)
+      .operator(".ADD")
+      .stop();
+
+    this._set("^/(ACTOR + 1 - 2)/", ".ARG1");
+    this._set("^/(ACTOR + 2 - 2)/", ".ARG0");
+    this._stackPop(2);
+    this._actorSetPosition("ACTOR");
+    this._addNL();
+  };
+
   actorGetPosition = (variableX: string, variableY: string) => {
     this._addComment(`Store Position In Variables`);
     this._actorGetPosition("ACTOR");
@@ -1994,6 +2037,15 @@ class ScriptBuilder {
     }
     this._setConstMemInt16("pl_vel_y", value);
     this._addNL();
+  };
+
+  actorInvoke = () => {
+    const { scene, scenes } = this.options;
+    const sceneIndex = scenes.indexOf(scene);
+    if (this.actorIndex > 0) {
+      this._addComment("Invoke Actor Interact Script");
+      this._callFar(`script_s${sceneIndex}a${this.actorIndex - 1}_interact`);
+    }
   };
 
   // --------------------------------------------------------------------------
@@ -2889,12 +2941,12 @@ class ScriptBuilder {
         this._stackPushConst(256);
         this._if(".GTE", ".ARG0", ".ARG1", clampLabel, 1);
         this._setConst("ARG0", 255);
-        this.labelDefine(clampLabel);
+        this._label(clampLabel);
       } else if (operation === ".SUB") {
         this._stackPushConst(0);
         this._if(".LTE", ".ARG0", ".ARG1", clampLabel, 1);
         this._setConst("ARG0", 0);
-        this.labelDefine(clampLabel);
+        this._label(clampLabel);
       }
     }
 
@@ -2923,12 +2975,12 @@ class ScriptBuilder {
         this._stackPushConst(256);
         this._if(".GTE", ".ARG0", ".ARG1", clampLabel, 1);
         this._setConst("ARG0", 255);
-        this.labelDefine(clampLabel);
+        this._label(clampLabel);
       } else if (operation === ".SUB") {
         this._stackPushConst(0);
         this._if(".LTE", ".ARG0", ".ARG1", clampLabel, 1);
         this._setConst("ARG0", 0);
-        this.labelDefine(clampLabel);
+        this._label(clampLabel);
       }
     }
 
@@ -2961,12 +3013,12 @@ class ScriptBuilder {
         this._stackPushConst(256);
         this._if(".GTE", ".ARG0", ".ARG1", clampLabel, 1);
         this._setConst("ARG0", 255);
-        this.labelDefine(clampLabel);
+        this._label(clampLabel);
       } else if (operation === ".SUB") {
         this._stackPushConst(0);
         this._if(".LTE", ".ARG0", ".ARG1", clampLabel, 1);
         this._setConst("ARG0", 0);
-        this.labelDefine(clampLabel);
+        this._label(clampLabel);
       }
     }
 
@@ -3420,11 +3472,19 @@ class ScriptBuilder {
   };
 
   labelDefine = (name: string) => {
-    this._label(name);
+    if (!this.labelLookup[name]) {
+      const label = this.getNextLabel();
+      this.labelLookup[name] = label;
+    }
+    this._label(this.labelLookup[name]);
   };
 
   labelGoto = (name: string) => {
-    this._jump(name);
+    if (!this.labelLookup[name]) {
+      const label = this.getNextLabel();
+      this.labelLookup[name] = label;
+    }
+    this._jump(this.labelLookup[name]);
   };
 
   // --------------------------------------------------------------------------

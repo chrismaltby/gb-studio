@@ -19,8 +19,8 @@ import uniq from "lodash/uniq";
 
 const indexById = indexBy("id");
 
-export const LATEST_PROJECT_VERSION = "2.0.0";
-export const LATEST_PROJECT_MINOR_VERSION = "17";
+export const LATEST_PROJECT_VERSION = "3.0.0";
+export const LATEST_PROJECT_MINOR_VERSION = "1";
 
 const ensureProjectAssetSync = (relativePath, { projectRoot }) => {
   const projectPath = `${projectRoot}/${relativePath}`;
@@ -1048,6 +1048,15 @@ const migrateFrom200r7To200r8Sprites = (data) => {
 const migrateFrom200r6To200r7Settings = (data) => {
   return {
     ...data,
+    spriteSheets: data.spriteSheets.map((spriteSheet) => {
+      if (spriteSheet.id !== data.settings.playerSpriteSheetId) {
+        return spriteSheet;
+      }
+      return {
+        ...spriteSheet,
+        boundsHeight: 8,
+      };
+    }),
     settings: {
       ...data.settings,
       defaultPlayerSprites: {
@@ -1569,7 +1578,8 @@ const migrateProject = (project, projectRoot) => {
     }
     if (release === "16") {
       data = migrateFrom200r16Tor17Fonts(data, projectRoot);
-      release = "17";
+      version = "3.0.0";
+      release = "1";
     }
   }
 
@@ -1579,8 +1589,8 @@ const migrateProject = (project, projectRoot) => {
     }
   }
 
-  data._version = version;
-  data._release = release;
+  data._version = LATEST_PROJECT_VERSION;
+  data._release = LATEST_PROJECT_MINOR_VERSION;
 
   return data;
 };

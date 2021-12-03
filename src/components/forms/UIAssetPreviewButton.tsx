@@ -3,11 +3,12 @@ import styled from "styled-components";
 import { useSelector } from "react-redux";
 import { RootState } from "store/configureStore";
 
-interface SGBBorderPreviewProps {
+interface UIAssetPreviewProps {
+  path: string;
   onClick?: () => void;
 }
 
-const SGBBorderPreviewButton = styled.button`
+const UIAssetPreviewButton = styled.button`
   position: relative;
   width: 128px;
   height: 112px;
@@ -35,31 +36,30 @@ const SGBBorderPreviewButton = styled.button`
     width: 128px;
     height: 112px;
     border-radius: 4px;
+    image-rendering: pixelated;
   }
 `;
 
-const SGBBorderError = styled.div`
+const UIAssetError = styled.div`
   font-size: 12px;
 `;
 
-export const SGBBorderPreview = ({ onClick }: SGBBorderPreviewProps) => {
+export const UIAssetPreview = ({ path, onClick }: UIAssetPreviewProps) => {
   const [error, setError] = useState(false);
   const projectRoot = useSelector((state: RootState) => state.document.root);
   const uiVersion = useSelector((state: RootState) => state.editor.uiVersion);
 
   if (error) {
-    return (
-      <SGBBorderError>Image will be created after next build.</SGBBorderError>
-    );
+    return <UIAssetError>Image will be created after next build.</UIAssetError>;
   }
 
   return (
-    <SGBBorderPreviewButton onError={() => setError(true)} onClick={onClick}>
+    <UIAssetPreviewButton onError={() => setError(true)} onClick={onClick}>
       <img
         onError={() => console.log("IMG ERROR")}
-        src={`file://${projectRoot}/assets/sgb/border.png?_v=${uiVersion}`}
+        src={`file://${projectRoot}/assets/${path}?_v=${uiVersion}`}
         alt=""
       />
-    </SGBBorderPreviewButton>
+    </UIAssetPreviewButton>
   );
 };

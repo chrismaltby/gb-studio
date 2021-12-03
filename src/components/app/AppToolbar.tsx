@@ -17,7 +17,13 @@ import { ZoomButton } from "ui/buttons/ZoomButton";
 import { FixedSpacer, FlexGrow } from "ui/spacing/Spacing";
 import { SearchInput } from "ui/form/SearchInput";
 import { Button } from "ui/buttons/Button";
-import { ExportIcon, FolderIcon, LoadingIcon, PlayIcon } from "ui/icons/Icons";
+import {
+  DotsIcon,
+  ExportIcon,
+  FolderIcon,
+  LoadingIcon,
+  PlayIcon,
+} from "ui/icons/Icons";
 import { RootState } from "store/configureStore";
 import { NavigationSection } from "store/features/navigation/navigationState";
 import { ZoomSection } from "store/features/editor/editorState";
@@ -28,7 +34,6 @@ const sectionNames = {
   world: l10n("NAV_GAME_WORLD"),
   sprites: l10n("NAV_SPRITES"),
   backgrounds: l10n("NAV_BACKGROUNDS"),
-  ui: l10n("NAV_UI_ELEMENTS"),
   music: l10n("NAV_MUSIC"),
   palettes: l10n("NAV_PALETTES"),
   dialogue: l10n("NAV_DIALOGUE_REVIEW"),
@@ -42,12 +47,11 @@ const sectionAccelerators = {
   world: "CommandOrControl+1",
   sprites: "CommandOrControl+2",
   backgrounds: "CommandOrControl+3",
-  ui: "CommandOrControl+4",
-  music: "CommandOrControl+5",
-  palettes: "CommandOrControl+6",
-  dialogue: "CommandOrControl+7",
-  build: "CommandOrControl+8",
-  settings: "CommandOrControl+9",
+  music: "CommandOrControl+4",
+  palettes: "CommandOrControl+5",
+  dialogue: "CommandOrControl+6",
+  build: "CommandOrControl+7",
+  settings: "CommandOrControl+8",
 };
 
 const zoomSections = ["world", "sprites", "backgrounds", "ui"];
@@ -67,9 +71,10 @@ const AppToolbar: FC = () => {
     (state: RootState) => state.editor.searchTerm
   );
   const projectRoot = useSelector((state: RootState) => state.document.root);
-  const running = useSelector(
-    (state: RootState) => state.console.status === "running"
-  );
+  const buildStatus = useSelector((state: RootState) => state.console.status);
+  const running = buildStatus === "running";
+  const cancelling = buildStatus === "cancelled";
+
   const showZoom = zoomSections.includes(section);
   const showSearch = section === "world";
   const [searchTerm, setSearchTerm] = useState<string>(initalSearchTerm);
@@ -227,12 +232,18 @@ const AppToolbar: FC = () => {
         </MenuItem>
       </DropdownButton>
       <FixedSpacer width={10} />
-      <Button
-        title={l10n("TOOLBAR_RUN")}
-        onClick={running ? setSection("build") : onRun}
-      >
-        {running ? <LoadingIcon /> : <PlayIcon />}
-      </Button>
+      {cancelling ? (
+        <Button title={l10n("BUILD_CANCELLING")} onClick={setSection("build")}>
+          <DotsIcon />
+        </Button>
+      ) : (
+        <Button
+          title={l10n("TOOLBAR_RUN")}
+          onClick={running ? setSection("build") : onRun}
+        >
+          {running ? <LoadingIcon /> : <PlayIcon />}
+        </Button>
+      )}
     </Toolbar>
   );
 };

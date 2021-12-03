@@ -79,7 +79,7 @@ const loadProject = async (projectPath) => {
       const oldData = oldSprite || {};
       const id = oldData.id || sprite.id;
 
-      if (!oldSprite || !oldSprite.states || !oldSprite.numTiles) {
+      if (!oldSprite || !oldSprite.states || oldSprite.numTiles === undefined) {
         modifiedSpriteIds.push(id);
       }
 

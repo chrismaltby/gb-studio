@@ -7,6 +7,10 @@ import actions from "./musicActions";
 import { musicSelectors } from "../entities/entitiesState";
 import { assetFilename } from "lib/helpers/gbstudio";
 import { MusicSettings } from "../entities/entitiesTypes";
+import { ipcRenderer } from "electron";
+import { readFile } from "fs-extra";
+import { loadUGESong } from "lib/helpers/uge/ugeHelper";
+import toArrayBuffer from "lib/helpers/toArrayBuffer";
 
 let modPlayer: ScripTracker;
 
@@ -27,7 +31,7 @@ function onSongLoaded(player: ScripTracker) {
   player.play();
 }
 
-function play(filename: string, settings: MusicSettings) {
+function playMOD(filename: string, settings: MusicSettings) {
   if (modPlayer) {
     modPlayer.loadModule(
       `file://${filename}`,
@@ -36,9 +40,27 @@ function play(filename: string, settings: MusicSettings) {
   }
 }
 
+async function playUGE(filename: string, _settings: MusicSettings) {
+  const fileData = toArrayBuffer(await readFile(filename));
+  const data = loadUGESong(fileData);
+  const listener = async (_event: any, d: any) => {
+    if (d.action === "initialized") {
+      ipcRenderer.send("music-data-send", {
+        action: "play",
+        song: data,
+      });
+    }
+  };
+  ipcRenderer.on("music-data", listener);
+  ipcRenderer.send("open-music");
+}
+
 function pause() {
   if (modPlayer && modPlayer.isPlaying) {
     modPlayer.stop();
+  }
+  if (ipcRenderer) {
+    ipcRenderer.send("close-music");
   }
 }
 
@@ -50,7 +72,11 @@ const musicMiddleware: Middleware<Dispatch, RootState> =
       if (track) {
         const projectRoot = state.document.root;
         const filename = assetFilename(projectRoot, "music", track);
-        play(filename, track.settings);
+        if (track.type === "uge") {
+          playUGE(filename, track.settings);
+        } else {
+          playMOD(filename, track.settings);
+        }
       }
     } else if (actions.pauseMusic.match(action)) {
       pause();

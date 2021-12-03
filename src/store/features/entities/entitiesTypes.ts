@@ -7,7 +7,8 @@ export type SpriteAnimationType =
   | "fixed_movement"
   | "multi"
   | "multi_movement"
-  | "platform_player";
+  | "platform_player"
+  | "cursor";
 export type ObjPalette = "OBP0" | "OBP1";
 
 export type UnionVariableValue = {

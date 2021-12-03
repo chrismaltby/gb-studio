@@ -32,13 +32,12 @@ import { SearchableCard } from "ui/cards/SearchableCard";
 import { FontSelect } from "../forms/FontSelect";
 import { options as sceneTypes } from "../forms/SceneTypeSelect";
 import { SpriteSheetSelect } from "../forms/SpriteSheetSelect";
-import { CharacterEncodingSelect } from "../forms/CharacterEncodingSelect";
 import { ColorAnimationText } from "../settings/ColorAnimationText";
 import { MusicDriverSelect } from "../forms/MusicDriverSelect";
 import { FormInfo } from "ui/form/FormInfo";
-import { SGBBorderPreview } from "../forms/sgb/SGBBorderPreview";
 import electronActions from "store/features/electron/electronActions";
 import CartSettingsEditor from "../settings/CartSettingsEditor";
+import { UIAssetPreview } from "components/forms/UIAssetPreviewButton";
 
 const SettingsPage: FC = () => {
   const dispatch = useDispatch();
@@ -163,14 +162,17 @@ const SettingsPage: FC = () => {
     [dispatch]
   );
 
-  const openSGBBorder = useCallback(() => {
-    dispatch(
-      electronActions.openFile({
-        filename: Path.join(projectRoot, "assets", "sgb", "border.png"),
-        type: "image",
-      })
-    );
-  }, [dispatch, projectRoot]);
+  const openAsset = useCallback(
+    (path: string) => {
+      dispatch(
+        electronActions.openFile({
+          filename: Path.join(projectRoot, "assets", path),
+          type: "image",
+        })
+      );
+    },
+    [dispatch, projectRoot]
+  );
 
   return (
     <SettingsPageWrapper>
@@ -417,9 +419,10 @@ const SettingsPage: FC = () => {
                         padding: 0,
                       }}
                     >
-                      <SGBBorderPreview
+                      <UIAssetPreview
+                        path="sgb/border.png"
                         onClick={() => {
-                          openSGBBorder();
+                          openAsset("sgb/border.png");
                         }}
                       />
                     </FormField>
@@ -460,7 +463,11 @@ const SettingsPage: FC = () => {
 
         <SearchableCard
           searchTerm={searchTerm}
-          searchMatches={[l10n("FIELD_DEFAULT_FONT")]}
+          searchMatches={[
+            l10n("FIELD_DEFAULT_FONT"),
+            l10n("FIELD_CURSOR_IMAGE"),
+            l10n("FIELD_FRAME_IMAGE"),
+          ]}
         >
           <CardAnchor id="settingsUI" />
           <CardHeading>{l10n("MENU_UI_ELEMENTS")}</CardHeading>
@@ -475,6 +482,36 @@ const SettingsPage: FC = () => {
                 name="defaultFont"
                 value={defaultFontId || ""}
                 onChange={onEditSetting("defaultFontId")}
+              />
+            </SettingRowInput>
+          </SearchableSettingRow>
+
+          <SearchableSettingRow
+            searchTerm={searchTerm}
+            searchMatches={[l10n("FIELD_CURSOR_IMAGE")]}
+          >
+            <SettingRowLabel>{l10n("FIELD_CURSOR_IMAGE")}</SettingRowLabel>
+            <SettingRowInput>
+              <UIAssetPreview
+                path="ui/cursor.png"
+                onClick={() => {
+                  openAsset("ui/cursor.png");
+                }}
+              />
+            </SettingRowInput>
+          </SearchableSettingRow>
+
+          <SearchableSettingRow
+            searchTerm={searchTerm}
+            searchMatches={[l10n("FIELD_FRAME_IMAGE")]}
+          >
+            <SettingRowLabel>{l10n("FIELD_FRAME_IMAGE")}</SettingRowLabel>
+            <SettingRowInput>
+              <UIAssetPreview
+                path="ui/frame.png"
+                onClick={() => {
+                  openAsset("ui/frame.png");
+                }}
               />
             </SettingRowInput>
           </SearchableSettingRow>
