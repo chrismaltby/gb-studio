@@ -21,5 +21,5 @@
   height: 144px;
   pointer-events: none;
   z-index: 100;
-  outline: 2000px solid black;
+  outline: 2000px solid rgba(0, 0, 0, 0.5);
 }
