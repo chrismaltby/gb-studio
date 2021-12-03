@@ -30,6 +30,7 @@ import { denormalizeEntities } from "../entities/entitiesHelpers";
 import { matchAsset } from "../entities/entitiesHelpers";
 import { loadAvatarData } from "lib/project/loadAvatarData";
 import { loadEmoteData } from "lib/project/loadEmoteData";
+import { pick } from "lodash";
 
 let saving = false;
 
@@ -220,6 +221,18 @@ const loadSprite = createAsyncThunk<{ data: SpriteSheet }, string>(
     if (existingAsset) {
       delete inodeToRecentSpriteSheet[data.inode];
       const oldAutoName = existingAsset.filename.replace(/.png/i, "");
+
+      const preferExisting = pick(existingAsset, [
+        "states",
+        "canvasWidth",
+        "canvasHeight",
+        "boundsX",
+        "boundsY",
+        "boundsWidth",
+        "boundsHeight",
+        "animSpeed",
+      ]);
+
       return {
         data: {
           ...existingAsset,
@@ -229,7 +242,7 @@ const loadSprite = createAsyncThunk<{ data: SpriteSheet }, string>(
             existingAsset.name !== oldAutoName
               ? existingAsset.name || data.name
               : data.name,
-          states: existingAsset.states,
+          ...preferExisting,
         },
       };
     }
