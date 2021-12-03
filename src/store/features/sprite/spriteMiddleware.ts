@@ -36,10 +36,6 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
           )
         );
       }
-
-      store.dispatch(
-        actions.compileSprite({ spriteSheetId: action.payload.spriteSheetId })
-      );
     }
 
     next(action);
@@ -113,6 +109,7 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
     if (projectActions.loadProject.fulfilled.match(action)) {
       for (const spriteSheetId of action.payload.modifiedSpriteIds) {
         store.dispatch(actions.detectSprite({ spriteSheetId }));
+        store.dispatch(actions.compileSprite({ spriteSheetId }));
       }
     }
 
@@ -128,6 +125,9 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
             actions.detectSprite({ spriteSheetId: spriteSheet.id })
           );
         }
+        store.dispatch(
+          actions.compileSprite({ spriteSheetId: spriteSheet.id })
+        );
       }
     }
   };

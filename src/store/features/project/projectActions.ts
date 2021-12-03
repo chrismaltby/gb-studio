@@ -231,6 +231,7 @@ const loadSprite = createAsyncThunk<{ data: SpriteSheet }, string>(
         "boundsWidth",
         "boundsHeight",
         "animSpeed",
+        "numTiles",
       ]);
 
       return {
