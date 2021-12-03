@@ -7,6 +7,35 @@ import { spriteSheetSelectors } from "store/features/entities/entitiesState";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { roundDown8 } from "lib/helpers/8bit";
+import styled from "styled-components";
+import l10n from "lib/helpers/l10n";
+import electronActions from "store/features/electron/electronActions";
+
+const PillWrapper = styled.div`
+  position: absolute;
+  display: flex;
+  align-items: center;
+  bottom: 10px;
+  left: 10px;
+  z-index: 11;
+  border-radius: 16px;
+  background: ${(props) => props.theme.colors.document.background};
+  box-shadow: 0 0 0 2px ${(props) => props.theme.colors.document.background};
+  font-size: ${(props) => props.theme.typography.fontSize};
+`;
+
+const Pill = styled.button`
+  color: ${(props) => props.theme.colors.button.text};
+  background: ${(props) => props.theme.colors.list.activeBackground};
+  border: 0px;
+  border-radius: 16px;
+  padding: 3px 10px;
+  font-size: ${(props) => props.theme.typography.fontSize};
+
+  :active {
+    background: ${(props) => props.theme.colors.list.selectedBackground};
+  }
+`;
 
 interface SpriteTilePaletteProps {
   id: string;
@@ -190,6 +219,17 @@ const SpriteTilePalette = ({ id, precisionMode }: SpriteTilePaletteProps) => {
     return () => {};
   }, [isDragging, onDrag]);
 
+  const onEdit = useCallback(() => {
+    if (spriteSheet) {
+      dispatch(
+        electronActions.openFile({
+          filename: `${projectRoot}/assets/sprites/${spriteSheet.filename}`,
+          type: "image",
+        })
+      );
+    }
+  }, [spriteSheet, dispatch, projectRoot]);
+
   if (!spriteSheet) {
     return null;
   }
@@ -213,6 +253,10 @@ const SpriteTilePalette = ({ id, precisionMode }: SpriteTilePaletteProps) => {
         minWidth: 0,
       }}
     >
+      <PillWrapper>
+        <Pill onClick={onEdit}>{l10n("FIELD_EDIT_IMAGE")}</Pill>
+      </PillWrapper>
+
       <div
         style={{
           display: "flex",
