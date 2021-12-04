@@ -122,9 +122,7 @@ typedef struct projectile_def_t
     far_ptr_t sprite;
     UINT8 life_time;
     UINT8 base_tile;
-    UINT8 frame;
-    UINT8 frame_start;
-    UINT8 frame_end;
+    animation_t animations[4];
     UINT8 anim_tick;
     UINT8 move_speed;
     UINT16 initial_offset;
@@ -136,6 +134,9 @@ typedef struct projectile_t
 {
     upoint16_t pos;
     point16_t delta_pos;
+    UINT8 frame;
+    UINT8 frame_start;
+    UINT8 frame_end;    
     projectile_def_t def;
     struct projectile_t *next;
 } projectile_t;

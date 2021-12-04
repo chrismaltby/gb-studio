@@ -285,7 +285,7 @@ export const toStructData = <T extends Record<string, unknown>>(
 ${chunk(object[key] as unknown as Record<string, unknown>[], perLine)
   .map(
     (r) =>
-      " ".repeat(indent * 2) +
+      " ".repeat(indent + INDENT_SPACES) +
       r
         .map((v) => {
           if (v instanceof Object) {
@@ -293,12 +293,14 @@ ${chunk(object[key] as unknown as Record<string, unknown>[], perLine)
               v,
               indent + 2 * INDENT_SPACES,
               perLine
-            )}\n${" ".repeat(indent * 2)}}`;
+            )}\n${" ".repeat(indent + INDENT_SPACES)}}`;
           }
           return v;
         })
         .join(
-          r[0] && r[0] instanceof Object ? `,\n${" ".repeat(indent * 2)}` : ", "
+          r[0] && r[0] instanceof Object
+            ? `,\n${" ".repeat(indent + INDENT_SPACES)}`
+            : ", "
         )
   )
   .join(",\n")}
@@ -710,9 +712,7 @@ export const compileSceneProjectiles = (
           collision_mask: toASMCollisionMask(projectile.collisionMask),
           bounds: compileBounds(sprite),
           anim_tick: projectile.animSpeed,
-          frame: animOffsets.start,
-          frame_start: animOffsets.start,
-          frame_end: animOffsets.end + 1,
+          animations: sprite.animationOffsets.slice(0, 4),
           initial_offset: Math.round((projectile.initialOffset || 0) * 16),
         };
       })

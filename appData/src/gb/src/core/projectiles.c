@@ -51,10 +51,10 @@ void projectiles_update() __nonbanked {
     
         // Check reached animation tick frame
         if ((game_time & projectile->def.anim_tick) == 0) {
-            projectile->def.frame++;
+            projectile->frame++;
             // Check reached end of animation
-            if (projectile->def.frame == projectile->def.frame_end) {
-                projectile->def.frame = projectile->def.frame_start;
+            if (projectile->frame == projectile->frame_end) {
+                projectile->frame = projectile->frame_start;
             }
         }
 
@@ -95,7 +95,7 @@ void projectiles_update() __nonbanked {
         spritesheet_t *sprite = projectile->def.sprite.ptr;
     
         allocated_hardware_sprites += move_metasprite(
-            *(sprite->metasprites + projectile->def.frame),
+            *(sprite->metasprites + projectile->frame),
             projectile->def.base_tile,
             allocated_hardware_sprites,
             screen_x,
@@ -132,7 +132,7 @@ void projectiles_render() __nonbanked {
         spritesheet_t *sprite = projectile->def.sprite.ptr;
     
         allocated_hardware_sprites += move_metasprite(
-            *(sprite->metasprites + projectile->def.frame),
+            *(sprite->metasprites + projectile->frame),
             projectile->def.base_tile,
             allocated_hardware_sprites,
             screen_x,
@@ -150,6 +150,19 @@ void projectile_launch(UBYTE index, upoint16_t *pos, UBYTE angle) __banked {
     projectile_t *projectile = projectiles_inactive_head;
     if (projectile) {
         memcpy(&projectile->def, &projectile_defs[index], sizeof(projectile_def_t));
+
+        // Set correct projectile frames based on angle
+        UBYTE dir = DIR_UP;
+        if (angle > 160 && angle < 224 ) {
+            dir = DIR_LEFT;
+        } else if (angle > 96) {
+            dir = DIR_DOWN;
+        } else if (angle > 32) {
+            dir = DIR_RIGHT;
+        }
+        projectile->frame = projectile->def.animations[dir].start;
+        projectile->frame_start = projectile->def.animations[dir].start;
+        projectile->frame_end = projectile->def.animations[dir].end + 1;
 
         UINT16 initial_offset = projectile->def.initial_offset;
         projectile->pos.x = pos->x;
