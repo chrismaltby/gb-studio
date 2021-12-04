@@ -41,6 +41,7 @@ let playWindowSgb = false;
 let hasCheckedForUpdate = false;
 let documentEdited = false;
 let documentName = "";
+let mainWindowCloseCancelled = false;
 
 const isDevMode = !!process.execPath.match(/[\\/]electron/);
 
@@ -148,6 +149,7 @@ const createWindow = async (projectPath: string) => {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
     },
   });
+  mainWindowCloseCancelled = false;
 
   mainWindowState.manage(mainWindow);
 
@@ -181,6 +183,7 @@ const createWindow = async (projectPath: string) => {
 
   mainWindow.on("close", (e) => {
     if (documentEdited && mainWindow) {
+      mainWindowCloseCancelled = false;
       const choice = dialog.showMessageBoxSync(mainWindow, {
         type: "question",
         buttons: [
@@ -200,6 +203,7 @@ const createWindow = async (projectPath: string) => {
       } else if (choice === 1) {
         // Cancel
         e.preventDefault();
+        mainWindowCloseCancelled = true;
       } else {
         // Don't Save
       }
@@ -213,6 +217,21 @@ const createWindow = async (projectPath: string) => {
     if (musicWindow) {
       musicWindow.destroy();
     }
+  });
+};
+
+const waitUntilWindowClosed = (): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    const check = () => {
+      if (mainWindow === null) {
+        resolve();
+      } else if (mainWindowCloseCancelled) {
+        reject();
+      } else {
+        setTimeout(check, 10);
+      }
+    };
+    check();
   });
 };
 
@@ -608,6 +627,10 @@ const newProject = async () => {
 };
 
 const openProjectPicker = async () => {
+  if (mainWindow) {
+    mainWindow.close();
+    await waitUntilWindowClosed();
+  }
   const files = dialog.showOpenDialogSync({
     properties: ["openFile"],
     filters: [
@@ -623,16 +646,22 @@ const openProjectPicker = async () => {
 };
 
 const switchProject = async () => {
+  if (mainWindow) {
+    mainWindow.close();
+    await waitUntilWindowClosed();
+  }
   if (splashWindow) {
     splashWindow.close();
   }
   await createSplash("recent");
-  if (mainWindow) {
-    mainWindow.close();
-  }
 };
 
 const openProject = async (projectPath: string) => {
+  if (mainWindow) {
+    mainWindow.close();
+    await waitUntilWindowClosed();
+  }
+
   const ext = Path.extname(projectPath);
   if (validProjectExt.indexOf(ext) === -1) {
     dialog.showErrorBox(
@@ -654,15 +683,9 @@ const openProject = async (projectPath: string) => {
 
   addRecentProject(projectPath);
 
-  const oldMainWindow = mainWindow;
   await createWindow(projectPath);
-  const newMainWindow = mainWindow;
   if (splashWindow) {
     splashWindow.close();
-  }
-  if (oldMainWindow) {
-    oldMainWindow.close();
-    mainWindow = newMainWindow;
   }
 };
 
