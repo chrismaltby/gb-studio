@@ -56,7 +56,7 @@ typedef struct actor_t
   UINT8 exclusive_sprite;
   animation_t animations[8];
   far_ptr_t sprite;
-  far_ptr_t script, script_update, script_hit1;
+  far_ptr_t script, script_update;
   UWORD hscript_update;
 
   // Collisions

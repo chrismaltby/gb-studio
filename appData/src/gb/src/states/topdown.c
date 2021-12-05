@@ -144,7 +144,7 @@ void topdown_update() __banked {
                 actor_set_dir(hit_actor, FLIPPED_DIR(PLAYER.dir), FALSE);
                 player_moving = FALSE;
                 if (hit_actor->script.bank) {
-                    script_execute(hit_actor->script.bank, hit_actor->script.ptr, 0, 0);
+                    script_execute(hit_actor->script.bank, hit_actor->script.ptr, 0, 1, 0);
                 }
             }
         }

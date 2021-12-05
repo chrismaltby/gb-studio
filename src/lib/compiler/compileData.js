@@ -1387,13 +1387,24 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
         false,
         "playerHit1Script"
       ),
-      actors: scene.actors.map(bankEntityEvents("actor")),
       actorsMovement: scene.actors.map(
         bankEntityEvents("actor", "updateScript")
       ),
-      actorsHit1: scene.actors.map((entity, entityIndex) => {
+      actors: scene.actors.map((entity, entityIndex) => {
+        if (!entity.collisionGroup) {
+          return compileScript(
+            entity.script,
+            "actor",
+            entity,
+            entityIndex,
+            false,
+            true,
+            "script"
+          );
+        }
         const combinedActorScript = combineScripts(
           [
+            { parameter: 0, value: 0, script: entity.script },
             { parameter: 0, value: 2, script: entity.hit1Script },
             { parameter: 0, value: 4, script: entity.hit2Script },
             { parameter: 0, value: 8, script: entity.hit3Script },
@@ -1407,7 +1418,7 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
           entityIndex,
           false,
           false,
-          "hit1Script"
+          "script"
         );
       }),
       triggers: scene.triggers.map((entity, entityIndex) => {

@@ -315,13 +315,13 @@ void actors_handle_player_collision() __banked {
     if (player_iframes == 0 && player_collision_actor != NULL) {
         if (player_collision_actor->collision_group) {
             // Execute scene player hit scripts based on actor's collision group
-            if (PLAYER.script_hit1.bank) {
-                script_execute(PLAYER.script_hit1.bank, PLAYER.script_hit1.ptr, 0, 1, (UWORD)(player_collision_actor->collision_group));
+            if (PLAYER.script.bank) {
+                script_execute(PLAYER.script.bank, PLAYER.script.ptr, 0, 1, (UWORD)(player_collision_actor->collision_group));
             }
             // Execute actor's onHit player script
             if (player_collision_actor->script.bank) {
                 script_execute(player_collision_actor->script.bank,
-                               player_collision_actor->script.ptr, 0, 0);
+                               player_collision_actor->script.ptr, 0, 1, 0);
             }
 
             // Set player to be invicible for N frames

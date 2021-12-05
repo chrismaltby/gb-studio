@@ -264,7 +264,7 @@ void platform_update() __banked {
             hit_actor = actor_in_front_of_player(8, TRUE);
         }
         if (hit_actor && !hit_actor->collision_group && hit_actor->script.bank) {
-            script_execute(hit_actor->script.bank, hit_actor->script.ptr, 0, 0);
+            script_execute(hit_actor->script.bank, hit_actor->script.ptr, 0, 1, 0);
             can_jump = FALSE;
         }
     }

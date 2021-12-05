@@ -97,7 +97,7 @@ void pointnclick_update() __banked {
         player_moving = FALSE;
         if (is_hover_actor) {
             // Run actor script
-            script_execute(hit_actor->script.bank, hit_actor->script.ptr, 0, 0);
+            script_execute(hit_actor->script.bank, hit_actor->script.ptr, 0, 1, 0);
         }
         else if (is_hover_trigger) {
             // Run trigger script

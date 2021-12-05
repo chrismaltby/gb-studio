@@ -271,7 +271,7 @@ UBYTE load_scene(const scene_t * scene, UBYTE bank, UBYTE init_data) __banked {
         camera_reset();
 
         // Copy scene player hit scripts to player actor
-        memcpy(&PLAYER.script_hit1, &scn.script_p_hit1, sizeof(far_ptr_t));
+        memcpy(&PLAYER.script, &scn.script_p_hit1, sizeof(far_ptr_t));
 
         player_moving = FALSE;
 

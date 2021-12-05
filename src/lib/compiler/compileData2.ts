@@ -582,9 +582,8 @@ export const compileSceneActors = (
           pinned: actor.isPinned ? "TRUE" : "FALSE",
           collision_group: toASMCollisionGroup(actor.collisionGroup),
           collision_enabled: actor.isPinned ? "FALSE" : "TRUE",
-          script: maybeScriptFarPtr(events.actors[actorIndex]),
           script_update: maybeScriptFarPtr(events.actorsMovement[actorIndex]),
-          script_hit1: maybeScriptFarPtr(events.actorsHit1[actorIndex]),
+          script: maybeScriptFarPtr(events.actors[actorIndex]),
           exclusive_sprite: scene.actorsExclusiveLookup[actor.id] ?? 0,
         };
       })
@@ -597,9 +596,8 @@ export const compileSceneActors = (
         );
         return ([] as string[]).concat(
           spriteSheetSymbol(spriteIndex),
-          maybeScriptDependency(events.actors[actorIndex]),
           maybeScriptDependency(events.actorsMovement[actorIndex]),
-          maybeScriptDependency(events.actorsHit1[actorIndex])
+          maybeScriptDependency(events.actors[actorIndex])
         );
       })
     )
