@@ -16,8 +16,10 @@ typedef struct timer_time_t {
     UBYTE value, remains;
 } timer_time_t;
 
-extern script_event_t timer_events[4];
-extern timer_time_t timer_values[4];
+#define MAX_CONCURRENT_TIMERS 4
+
+extern script_event_t timer_events[MAX_CONCURRENT_TIMERS];
+extern timer_time_t timer_values[MAX_CONCURRENT_TIMERS];
 
 void events_init(UBYTE preserve) __banked;
 void events_update() __nonbanked;

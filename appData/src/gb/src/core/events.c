@@ -8,8 +8,8 @@
 script_event_t input_events[8];
 UBYTE input_slots[8];
 
-script_event_t timer_events[4];
-timer_time_t timer_values[4];
+script_event_t timer_events[MAX_CONCURRENT_TIMERS];
+timer_time_t timer_values[MAX_CONCURRENT_TIMERS];
 
 void events_init(UBYTE preserve) __banked {
     if (preserve) {
@@ -36,7 +36,7 @@ void events_update() __nonbanked {
 
 void timers_init(UBYTE preserve) __banked {
     if (preserve) {
-        for (UBYTE i = 0; i < 4; i++) 
+        for (UBYTE i = 0; i != MAX_CONCURRENT_TIMERS; i++) 
             timer_events[i].handle = 0;
     } else {
         memset(timer_values, 0, sizeof(timer_values));
@@ -45,16 +45,19 @@ void timers_init(UBYTE preserve) __banked {
 }
 
 void timers_update() __nonbanked {
-    for (UBYTE i = 0; i < 4; i++) {
-        if  (timer_values[i].value) {
-            if (timer_values[i].remains == 0) {                
+    timer_time_t * ctimer = timer_values;
+    for (UBYTE i = 0; i != MAX_CONCURRENT_TIMERS; i++) {
+        if (ctimer->value) {
+            if (--ctimer->remains == 0) {
+                ctimer->remains = ctimer->value;
                 script_event_t * event = &timer_events[i];
                 if (!event->script_addr) continue;
                 if ((event->handle == 0) || ((event->handle & SCRIPT_TERMINATED) != 0)) {
                     script_execute(event->script_bank, event->script_addr, &event->handle, 0, 0);
-                    timer_values[i].remains = timer_values[i].value;
                 }
-            } else timer_values[i].remains--;
+            }
+        
         }
+        ctimer++;
     } 
 }

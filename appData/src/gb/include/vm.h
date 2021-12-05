@@ -60,7 +60,7 @@ typedef struct SCRIPT_CTX {
 // stack size of each VM thread
 #define VM_CONTEXT_STACK_SIZE 64
 // number of shared variables
-#define VM_HEAP_SIZE 1024
+#define VM_HEAP_SIZE 768
 // quant size
 #define INSTRUCTIONS_PER_QUANT 0x10
 // termination flag
