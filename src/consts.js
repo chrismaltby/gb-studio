@@ -21,7 +21,7 @@ const localesRoot = path.normalize(`${rootDir}/src/lang`);
 const eventsRoot = path.normalize(`${rootDir}/src/lib/events`);
 const assetsRoot = path.normalize(`${rootDir}/src/assets`);
 
-const MAX_ACTORS = 30;
+const MAX_ACTORS = 20;
 const MAX_ACTORS_SMALL = 10;
 const MAX_TRIGGERS = 30;
 const MAX_FRAMES = 25;
