@@ -1,7 +1,7 @@
 const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_CAMERA_LOCK";
-const groups = ["EVENT_GROUP_SCREEN"];
+const groups = ["EVENT_GROUP_CAMERA"];
 
 const fields = [
   {
