@@ -235,6 +235,19 @@ const waitUntilWindowClosed = (): Promise<void> => {
   });
 };
 
+const waitUntilSplashClosed = (): Promise<void> => {
+  return new Promise((resolve) => {
+    const check = () => {
+      if (splashWindow === null) {
+        resolve();
+      } else {
+        setTimeout(check, 10);
+      }
+    };
+    check();
+  });
+};
+
 const openHelp = async (helpPage: string) => {
   if (helpPage === "sprites") {
     shell.openExternal("https://www.gbstudio.dev/docs/sprites/");
@@ -619,6 +632,7 @@ menu.on("updateSetting", (setting: string, value: string | boolean) => {
 const newProject = async () => {
   if (splashWindow) {
     splashWindow.close();
+    await waitUntilSplashClosed();
   }
   await createSplash("new");
   if (mainWindow) {
@@ -652,6 +666,7 @@ const switchProject = async () => {
   }
   if (splashWindow) {
     splashWindow.close();
+    await waitUntilSplashClosed();
   }
   await createSplash("recent");
 };
