@@ -1209,6 +1209,14 @@ class ScriptBuilder {
     this._addCmd("VM_PROJECTILE_LAUNCH", index, addr);
   };
 
+  _spritesHide = () => {
+    this._addCmd("VM_HIDE_SPRITES");
+  };
+
+  _spritesShow = () => {
+    this._addCmd("VM_SHOW_SPRITES");
+  };
+
   _loadText = (numInputs: number) => {
     this._addCmd("VM_LOAD_TEXT", `${numInputs}`);
   };
@@ -2714,6 +2722,19 @@ class ScriptBuilder {
 
   returnFar = () => {
     this._returnFar();
+  };
+
+  // --------------------------------------------------------------------------
+  // Sprites
+
+  spritesHide = () => {
+    this._addComment("Hide Sprites");
+    this._spritesHide();
+  };
+
+  spritesShow = () => {
+    this._addComment("Show Sprites");
+    this._spritesShow();
   };
 
   // --------------------------------------------------------------------------
