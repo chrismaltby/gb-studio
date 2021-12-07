@@ -343,6 +343,7 @@ const ScriptEventFormInput = ({
             name={id}
             value={String(value || "")}
             onChange={onChangeField}
+            prefix={`${(field.paletteIndex || 0) + 1}: `}
             optional
             optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
             optionalDefaultPaletteId={
