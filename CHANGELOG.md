@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0]
+
+- Moved to new [GBVM](https://github.com/chrismaltby/gbvm) based game engine
+- Added sprite editor with support for large sprites and multiple animation states
+- Added ability to define idle animations, jump and climb animations for platform scenes and hover animations for point and click scenes.
+- Added hUGEDriver music support
+- Added music editor for .uge files
+- Added parallax background support
+- Added math expression events to simplify performing calculations
+- Added support for multiple saves slots
+- Added ability to create .pocket files for use on Analogue Pocket 
+- Allow sprites and backgrounds to share vram, lets you use more sprite tiles on backgrounds with fewer tiles
+- Increased the number of background palettes available per scene to 8
+- Added ability to set 8 sprite palettes per scene, sprites can choose which palette to use per 8px x 16px tile
+- Allow cancelling a build in progress
+- Add support for Super GB border images
+- Add ability to store 3 save slots
+- Add ability to fire script when leaving a trigger
+- Added ability to use additional custom emotes by adding images to assets/emotes.
+- Updated “Add Event” menu to group events and allow setting favourites.
+- Moved emulator to use [binjgb](https://github.com/binji/binjgb)
+
 ## [2.0.0-beta5]
 
 ### Added
