@@ -8,7 +8,10 @@ import { checkForUpdate } from "lib/helpers/updateChecker";
 import switchLanguageDialog from "lib/electron/dialog/switchLanguageDialog";
 import l10n, { locales } from "lib/helpers/l10n";
 import initElectronL10n from "lib/helpers/initElectronL10n";
-import installExtension, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer';
+import installExtension, {
+  REACT_DEVELOPER_TOOLS,
+  REDUX_DEVTOOLS,
+} from "electron-devtools-installer";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -42,6 +45,7 @@ let hasCheckedForUpdate = false;
 let documentEdited = false;
 let documentName = "";
 let mainWindowCloseCancelled = false;
+let keepOpen = false;
 
 const isDevMode = !!process.execPath.match(/[\\/]electron/);
 
@@ -51,8 +55,8 @@ if (isDevMode) {
   app.whenReady().then(() => {
     installExtension([REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS])
       .then((name) => console.log(`Added Extension:  ${name}`))
-      .catch((err) => console.log('An error occurred: ', err));
-  })
+      .catch((err) => console.log("An error occurred: ", err));
+  });
 }
 
 const createSplash = async (forceTab?: SplashTab) => {
@@ -203,6 +207,7 @@ const createWindow = async (projectPath: string) => {
       } else if (choice === 1) {
         // Cancel
         e.preventDefault();
+        keepOpen = false;
         mainWindowCloseCancelled = true;
       } else {
         // Don't Save
@@ -346,7 +351,10 @@ app.on("ready", async () => {
   }
 
   const lastArg = process.argv[process.argv.length - 1];
-  if (
+
+  if (require("electron-squirrel-startup")) {
+    app.quit();
+  } else if (
     process.argv.length >= 2 &&
     lastArg !== "." &&
     lastArg.indexOf("-") !== 0
@@ -367,7 +375,9 @@ app.on("window-all-closed", () => {
   // On OS X it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== "darwin") {
-    app.quit();
+    if (!keepOpen) {
+      app.quit();
+    }
   }
 });
 
@@ -630,21 +640,20 @@ menu.on("updateSetting", (setting: string, value: string | boolean) => {
 });
 
 const newProject = async () => {
+  keepOpen = true;
   if (splashWindow) {
     splashWindow.close();
     await waitUntilSplashClosed();
   }
-  await createSplash("new");
-  if (mainWindow) {
-    mainWindow.close();
-  }
-};
-
-const openProjectPicker = async () => {
   if (mainWindow) {
     mainWindow.close();
     await waitUntilWindowClosed();
   }
+  await createSplash("new");
+  keepOpen = false;
+};
+
+const openProjectPicker = async () => {
   const files = dialog.showOpenDialogSync({
     properties: ["openFile"],
     filters: [
@@ -655,11 +664,20 @@ const openProjectPicker = async () => {
     ],
   });
   if (files && files[0]) {
+    keepOpen = true;
+    if (mainWindow) {
+      mainWindow.close();
+      await waitUntilWindowClosed();
+    }
+
     openProject(files[0]);
+
+    keepOpen = false;
   }
 };
 
 const switchProject = async () => {
+  keepOpen = true;
   if (mainWindow) {
     mainWindow.close();
     await waitUntilWindowClosed();
@@ -669,14 +687,10 @@ const switchProject = async () => {
     await waitUntilSplashClosed();
   }
   await createSplash("recent");
+  keepOpen = false;
 };
 
 const openProject = async (projectPath: string) => {
-  if (mainWindow) {
-    mainWindow.close();
-    await waitUntilWindowClosed();
-  }
-
   const ext = Path.extname(projectPath);
   if (validProjectExt.indexOf(ext) === -1) {
     dialog.showErrorBox(
@@ -698,10 +712,18 @@ const openProject = async (projectPath: string) => {
 
   addRecentProject(projectPath);
 
+  keepOpen = true;
+
+  if (mainWindow) {
+    mainWindow.close();
+    await waitUntilWindowClosed();
+  }
   await createWindow(projectPath);
   if (splashWindow) {
     splashWindow.close();
   }
+
+  keepOpen = false;
 };
 
 const addRecentProject = (projectPath: string) => {
