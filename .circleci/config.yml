@@ -148,6 +148,8 @@ workflows:
               only:
                 - develop
                 - master
+                - main
+                - v3alpha
                 - v2beta
                 - uge-tracker
       - "make:win32":
@@ -158,6 +160,8 @@ workflows:
               only:
                 - develop
                 - master
+                - main
+                - v3alpha
                 - v2beta
                 - uge-tracker
       - "make:win64":
@@ -168,6 +172,8 @@ workflows:
               only:
                 - develop
                 - master
+                - main
+                - v3alpha
                 - v2beta
                 - uge-tracker
       - "make:linux":
@@ -178,6 +184,8 @@ workflows:
               only:
                 - develop
                 - master
+                - main
+                - v3alpha
                 - v2beta
                 - uge-tracker
       - "upload_artifacts":
@@ -191,5 +199,7 @@ workflows:
               only:
                 - develop
                 - master
+                - main
+                - v3alpha
                 - v2beta
                 - uge-tracker
