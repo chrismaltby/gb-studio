@@ -81,7 +81,5 @@ Pull the latest code and run make:cli again, yarn link is only needed for the fi
 
 ## Documentation
 
-Documentation is not yet available for version 3.0, for previous builds refer to the following:
-
 [GB Studio Documentation](https://www.gbstudio.dev/docs)
 
