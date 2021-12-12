@@ -117,7 +117,9 @@ test("Should be able to generate script string", () => {
   sb.actorSetActive("actor2");
   sb.actorMoveTo(5, 6, true, "horizontal");
   expect(sb.toScriptString("MY_SCRIPT", false)).toEqual(
-    `.include "vm.i"
+    `.module MY_SCRIPT
+
+.include "vm.i"
 .include "data/game_globals.i"
 
 .area _CODE_255
@@ -164,7 +166,9 @@ test("Should be able to open dialogue boxes", async () => {
   sb.scriptEnd();
 
   expect(sb.toScriptString("MY_SCRIPT", false)).toEqual(
-    `.include "vm.i"
+    `.module MY_SCRIPT
+
+.include "vm.i"
 .include "data/game_globals.i"
 
 .area _CODE_255
@@ -229,7 +233,9 @@ test("Should be able to conditionally execute if variable is true with event arr
     ]
   );
   expect(sb.toScriptString("MY_SCRIPT", false)).toEqual(
-    `.include "vm.i"
+    `.module MY_SCRIPT
+
+.include "vm.i"
 .include "data/game_globals.i"
 
 .area _CODE_255
@@ -291,7 +297,9 @@ test("Should be able to conditionally execute if variable is true with function 
   sb.scriptEnd();
 
   expect(sb.toScriptString("MY_SCRIPT", false)).toEqual(
-    `.include "vm.i"
+    `.module MY_SCRIPT
+
+.include "vm.i"
 .include "data/game_globals.i"
 
 .area _CODE_255
@@ -381,7 +389,9 @@ test("Should be able to conditionally execute if variable is true with nested fu
   sb.scriptEnd();
 
   expect(sb.toScriptString("MY_SCRIPT", false)).toEqual(
-    `.include "vm.i"
+    `.module MY_SCRIPT
+
+.include "vm.i"
 .include "data/game_globals.i"
 
 .area _CODE_255
@@ -470,7 +480,9 @@ test("Should be able to define labels and jump", () => {
   sb.labelGoto("mylabel");
 
   expect(sb.toScriptString("MY_SCRIPT", false)).toEqual(
-    `.include "vm.i"
+    `.module MY_SCRIPT
+
+.include "vm.i"
 .include "data/game_globals.i"
 
 .area _CODE_255
