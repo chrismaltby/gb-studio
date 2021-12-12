@@ -92,11 +92,28 @@ export const saveSongFile = createAsyncThunk<void, void>(
 
     const song = state.trackerDocument.present.song;
     const buffer = saveUGESong(song);
-    await writeFileWithBackupAsync(
-      song.filename,
-      new Uint8Array(buffer),
-      "utf8"
-    );
+
+    const delay = (time: number) =>
+      new Promise((resolve) => setTimeout(resolve, time));
+
+    const writeFileWithRetry: any = async (retryCount = 3, delayTime = 400) => {
+      console.log("WRITE FILE");
+      if (retryCount <= 0) {
+        throw new Error("Max retries reached");
+      }
+      try {
+        await writeFileWithBackupAsync(
+          song.filename,
+          new Uint8Array(buffer),
+          "utf8"
+        );
+      } catch (e) {
+        await delay(delayTime);
+        writeFileWithRetry(retryCount - 1);
+      }
+    };
+
+    await writeFileWithRetry(3);
   }
 );
 
@@ -412,6 +429,12 @@ const trackerSlice = createSlice({
       })
       .addCase(saveSongFile.fulfilled, (state, _action) => {
         state.modified = false;
+      })
+      .addCase(saveSongFile.rejected, (state, action) => {
+        console.log("REJECTED SAVE");
+        state.modified = true;
+        state.status = "error";
+        state.error = action.error.message;
       })
       .addMatcher(
         (action: AnyAction): action is AnyAction =>
