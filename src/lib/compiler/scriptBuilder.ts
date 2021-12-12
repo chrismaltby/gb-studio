@@ -3973,7 +3973,9 @@ class ScriptBuilder {
 
   toScriptString = (name: string, lock: boolean) => {
     this._assertStackNeutral();
-    return `${this.headers.map((header) => `.include "${header}"`).join("\n")}
+    return `.module ${name}
+
+${this.headers.map((header) => `.include "${header}"`).join("\n")}
 ${
   this.dependencies.length > 0
     ? `\n.globl ${this.dependencies.join(", ")}\n`
