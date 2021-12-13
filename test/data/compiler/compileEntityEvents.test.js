@@ -11,7 +11,9 @@ jest.mock("../../../src/consts");
 test("should compile empty events", () => {
   const input = [];
   const output = compileEntityEvents("testname", input);
-  expect(output).toEqual(`.include "vm.i"
+  expect(output).toEqual(`.module testname
+
+.include "vm.i"
 .include "data/game_globals.i"
 
 .area _CODE_255
@@ -36,7 +38,9 @@ test("should collapse multiple end events", () => {
     },
   ];
   const output = compileEntityEvents("testname", input);
-  expect(output).toEqual(`.include "vm.i"
+  expect(output).toEqual(`.module testname
+
+.include "vm.i"
 .include "data/game_globals.i"
 
 .area _CODE_255
@@ -66,7 +70,9 @@ test("should output text command", async () => {
     strings,
     fonts: [dummyCompiledFont],
   });
-  expect(output).toEqual(`.include "vm.i"
+  expect(output).toEqual(`.module testname
+
+.include "vm.i"
 .include "data/game_globals.i"
 
 .area _CODE_255
@@ -117,7 +123,9 @@ test("should output text with avatar command", async () => {
     avatars,
     fonts,
   });
-  expect(output).toEqual(`.include "vm.i"
+  expect(output).toEqual(`.module testname
+
+.include "vm.i"
 .include "data/game_globals.i"
 
 .area _CODE_255
@@ -179,7 +187,9 @@ test("should allow conditional statements", async () => {
     variables,
     fonts,
   });
-  expect(output).toEqual(`.include "vm.i"
+  expect(output).toEqual(`.module testname
+
+.include "vm.i"
 .include "data/game_globals.i"
 
 .area _CODE_255
@@ -262,7 +272,9 @@ test("should allow commands after conditional", async () => {
     variables,
     fonts,
   });
-  expect(output).toEqual(`.include "vm.i"
+  expect(output).toEqual(`.module testname
+
+.include "vm.i"
 .include "data/game_globals.i"
 
 .area _CODE_255

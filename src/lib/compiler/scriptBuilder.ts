@@ -2961,12 +2961,12 @@ class ScriptBuilder {
       if (operation === ".ADD") {
         this._stackPushConst(256);
         this._if(".GTE", ".ARG0", ".ARG1", clampLabel, 1);
-        this._setConst("ARG0", 255);
+        this._setConst(".ARG0", 255);
         this._label(clampLabel);
       } else if (operation === ".SUB") {
         this._stackPushConst(0);
         this._if(".LTE", ".ARG0", ".ARG1", clampLabel, 1);
-        this._setConst("ARG0", 0);
+        this._setConst(".ARG0", 0);
         this._label(clampLabel);
       }
     }
@@ -2995,12 +2995,12 @@ class ScriptBuilder {
       if (operation === ".ADD") {
         this._stackPushConst(256);
         this._if(".GTE", ".ARG0", ".ARG1", clampLabel, 1);
-        this._setConst("ARG0", 255);
+        this._setConst(".ARG0", 255);
         this._label(clampLabel);
       } else if (operation === ".SUB") {
         this._stackPushConst(0);
         this._if(".LTE", ".ARG0", ".ARG1", clampLabel, 1);
-        this._setConst("ARG0", 0);
+        this._setConst(".ARG0", 0);
         this._label(clampLabel);
       }
     }
@@ -3033,12 +3033,12 @@ class ScriptBuilder {
       if (operation === ".ADD") {
         this._stackPushConst(256);
         this._if(".GTE", ".ARG0", ".ARG1", clampLabel, 1);
-        this._setConst("ARG0", 255);
+        this._setConst(".ARG0", 255);
         this._label(clampLabel);
       } else if (operation === ".SUB") {
         this._stackPushConst(0);
         this._if(".LTE", ".ARG0", ".ARG1", clampLabel, 1);
-        this._setConst("ARG0", 0);
+        this._setConst(".ARG0", 0);
         this._label(clampLabel);
       }
     }
@@ -3973,7 +3973,9 @@ class ScriptBuilder {
 
   toScriptString = (name: string, lock: boolean) => {
     this._assertStackNeutral();
-    return `${this.headers.map((header) => `.include "${header}"`).join("\n")}
+    return `.module ${name}
+
+${this.headers.map((header) => `.include "${header}"`).join("\n")}
 ${
   this.dependencies.length > 0
     ? `\n.globl ${this.dependencies.join(", ")}\n`
