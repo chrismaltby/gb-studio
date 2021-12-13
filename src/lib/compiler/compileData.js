@@ -1,4 +1,3 @@
-import { copy } from "fs-extra";
 import keyBy from "lodash/keyBy";
 import { eventHasArg } from "../helpers/eventSystem";
 import compileImages from "./compileImages";
@@ -74,6 +73,9 @@ import {
   walkDenormalizedSceneEvents,
   walkDenormalizedScenesEvents,
 } from "lib/helpers/eventHelpers";
+import copy from "lib/helpers/fsCopy";
+import { ensureDir } from "fs-extra";
+import Path from "path";
 
 const indexById = indexBy("id");
 
@@ -107,6 +109,7 @@ const ensureProjectAsset = async (relativePath, { projectRoot, warnings }) => {
   const projectPath = `${projectRoot}/${relativePath}`;
   const defaultPath = `${projectTemplatesRoot}/gbhtml/${relativePath}`;
   try {
+    await ensureDir(Path.dirname(projectPath));
     await copy(defaultPath, projectPath, {
       overwrite: false,
       errorOnExist: true,

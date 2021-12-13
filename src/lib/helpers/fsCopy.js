@@ -3,16 +3,20 @@ import fs from "fs-extra";
 
 const copyFile = async (src, dest, options = {}) => {
   const { overwrite = true, errorOnExist = false, mode } = options;
+  let throwAlreadyExists = false;
   if (!overwrite) {
     try {
       await fs.lstat(dest);
       if (errorOnExist) {
-        throw new Error(`File already exists ${dest}`);
+        throwAlreadyExists = true;
       } else {
         return;
       }
     } catch (e) {
       // Didn't exist so copy it
+    }
+    if (throwAlreadyExists) {
+      throw new Error(`File already exists ${dest}`);
     }
   }
   await new Promise((resolve, reject) => {
