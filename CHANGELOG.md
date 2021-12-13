@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
+- Blank project updated to use hUGEDriver by default
 
 ### Fixed
 
