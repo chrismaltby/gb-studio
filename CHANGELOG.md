@@ -5,13 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Improved console errors for gbvm scripts [@pau-tomas](https://github.com/pau-tomas)
+- Improved warning message when no .mod files are found and music engine is set to GBT Player [@pau-tomas](https://github.com/pau-tomas)
+
+### Changed
+
+- Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
+- Blank project updated to use hUGEDriver by default
+
+### Fixed
+
+- Fixed error when using clamp in math events [@pau-tomas](https://github.com/pau-tomas)
+- Updated 32-bit Windows app to use correct 32-bit GBDK-2020
+
 ## [3.0.0]
 
-- Moved to new [GBVM](https://github.com/chrismaltby/gbvm) based game engine
+- Moved to new [GBVM](https://github.com/chrismaltby/gbvm) based game engine (big thanks to [untoxa](https://github.com/untoxa))
 - Added sprite editor with support for large sprites and multiple animation states
 - Added ability to define idle animations, jump and climb animations for platform scenes and hover animations for point and click scenes.
 - Added hUGEDriver music support
-- Added music editor for .uge files
+- Added music editor for .uge files (thank you to [pau-tomas](https://github.com/pau-tomas/) + [Daid](https://github.com/Daid/) and [Superdisk](https://github.com/SuperDisk) for the inspiration and support)
 - Added parallax background support
 - Added math expression events to simplify performing calculations
 - Added support for multiple saves slots

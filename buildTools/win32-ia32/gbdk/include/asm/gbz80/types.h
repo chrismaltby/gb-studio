@@ -9,6 +9,8 @@
   #error gbz80 only.
 #endif
 
+#ifdef __SDCC
+
 #define NONBANKED		__nonbanked  /**< Placed in the non-banked lower 16K region (bank 0), regardless of the bank selected by it's source file. */
 #define BANKED			__banked     /**< The function will use banked sdcc calls, and is placed in the bank selected by it's source file (or compiler switches). */
 
@@ -21,7 +23,6 @@
 
     @see enable_interrupts, disable_interrupts
 */
-
 #define CRITICAL		__critical
 
 /**  Indicate to the compiler the function will be used as an interrupt handler.
@@ -34,6 +35,8 @@
     @see ISR_VECTOR(), ISR_NESTED_VECTOR()
 */
 #define INTERRUPT		__interrupt
+
+#endif
 
 /** Signed eight bit.
  */
@@ -56,12 +59,12 @@ typedef unsigned long 	UINT32;
 
 #ifndef __SIZE_T_DEFINED
 #define __SIZE_T_DEFINED
-typedef int	      	size_t;
+typedef unsigned int	size_t;
 #endif
 
 /** Returned from clock
     @see clock
 */
-typedef UINT16		clock_t;
+typedef unsigned int	clock_t;
 
 #endif

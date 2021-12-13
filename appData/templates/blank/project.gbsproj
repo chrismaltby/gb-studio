@@ -965,7 +965,7 @@
             "POINTNCLICK": "581d34d0-9591-4e6e-a609-1d94f203b0cd",
             "LOGO": "581d34d0-9591-4e6e-a609-1d94f203b0cd"
         },
-        "musicDriver": "gbt",
+        "musicDriver": "huge",
         "cartType": "mbc5",
         "batterylessEnabled": false,
         "favoriteEvents": [
