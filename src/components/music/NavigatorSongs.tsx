@@ -325,7 +325,7 @@ export const NavigatorSongs = ({
           </FlatList>
         ) : (
           <EmptyState>
-            <NoSongsMessage />
+            <NoSongsMessage type="uge" />
           </EmptyState>
         )}
       </Pane>
