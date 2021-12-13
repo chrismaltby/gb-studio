@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Improved console errors for gbvm scripts [@pau-tomas](https://github.com/pau-tomas)
 - Improved warning message when no .mod files are found and music engine is set to GBT Player [@pau-tomas](https://github.com/pau-tomas)
+- Additional tracker editor keyboard shortcuts [@RichardULZ](https://github.com/RichardULZ) 
 
 ### Changed
 
@@ -22,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed error when using clamp in math events [@pau-tomas](https://github.com/pau-tomas)
 - Updated 32-bit Windows app to use correct 32-bit GBDK-2020
 - Fixed error when building if any "Actor Set Sprite Sheet" events link to deleted sprites
+- Fix issue when gbvm scripts use .ARG10 and above [@RichardULZ](https://github.com/RichardULZ) 
+- Fix issue where music preview would stop working after window loses focus [@RichardULZ](https://github.com/RichardULZ) 
 
 ## [3.0.0]
 
