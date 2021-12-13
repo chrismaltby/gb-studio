@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Improved console errors for gbvm scripts [@pau-tomas](https://github.com/pau-tomas)
+
+### Fixed
+
+- Fixed error when using clamp in math events [@pau-tomas](https://github.com/pau-tomas)
+
 ## [3.0.0]
 
 - Moved to new [GBVM](https://github.com/chrismaltby/gbvm) based game engine (big thanks to [untoxa](https://github.com/untoxa))
