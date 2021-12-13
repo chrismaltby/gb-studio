@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fixed error when using clamp in math events [@pau-tomas](https://github.com/pau-tomas)
+- Updated 32-bit Windows app to use correct 32-bit GBDK-2020
 
 ## [3.0.0]
 

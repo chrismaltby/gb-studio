@@ -19,8 +19,8 @@ void main(void)
 
     CRITICAL {
         add_SIO(nowait_int_handler);    // disable waiting VRAM state before return
-        set_interrupts(SIO_IFLAG);      // disable other interrupts
     }
+    set_interrupts(SIO_IFLAG);          // disable other interrupts. note: this disables sprite movement
 
     while(1) {
         i = waitpad(J_A | J_B | J_START | J_SELECT);
