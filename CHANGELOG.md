@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Improved console errors for gbvm scripts [@pau-tomas](https://github.com/pau-tomas)
 
+### Changed
+
+- Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
+
 ### Fixed
 
 - Fixed error when using clamp in math events [@pau-tomas](https://github.com/pau-tomas)
