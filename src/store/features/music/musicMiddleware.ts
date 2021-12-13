@@ -25,7 +25,6 @@ export function initMusic() {
 // Initialise audio on first click
 window.addEventListener("click", initMusic);
 window.addEventListener("keydown", initMusic);
-//window.addEventListener("blur", pause);
 
 function onSongLoaded(player: ScripTracker) {
   player.play();
