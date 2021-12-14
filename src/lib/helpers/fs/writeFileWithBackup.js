@@ -31,7 +31,11 @@ export const writeFileWithBackup = (path, data, options, callback) => {
         if (writeError) {
           return callback(writeError);
         }
-        renameSync(`${path}.new`, path);
+        try {
+          renameSync(`${path}.new`, path);
+        } catch (e) {
+          return callback(e);
+        }
         return callback();
       }
     );

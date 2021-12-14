@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved console errors for gbvm scripts [@pau-tomas](https://github.com/pau-tomas)
 - Improved warning message when no .mod files are found and music engine is set to GBT Player [@pau-tomas](https://github.com/pau-tomas)
 - Additional tracker editor keyboard shortcuts [@RichardULZ](https://github.com/RichardULZ) 
+- Added error message if music editor fails to save due to read only permissions
 
 ### Changed
 
