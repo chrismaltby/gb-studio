@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
 - Blank project updated to use hUGEDriver by default
+- Reduced padding on scene info
 
 ### Fixed
 
