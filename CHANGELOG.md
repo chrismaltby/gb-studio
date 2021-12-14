@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where new template music and font files would be read only by default on Windows
 - Fix issue where migrated emotes and default font would be read only by default on Windows
 - Fix setting fade in / fade out speed
+- Fix for issue migrating projects with references to avatars that no longer exist
 
 ## [3.0.0]
 

@@ -1404,35 +1404,40 @@ const migrateFrom200r15Tor16Avatars = (data, projectRoot) => {
 
   const avatarsData = uniqueAvatarIds.map((spriteId) => {
     const sprite = data.spriteSheets.find((sprite) => sprite.id === spriteId);
-    return {
-      id: uuid(),
-      name: sprite.name,
-      width: 16,
-      height: 16,
-      filename: sprite.filename,
-    };
+    return (
+      sprite && {
+        id: uuid(),
+        name: sprite.name,
+        width: 16,
+        height: 16,
+        filename: sprite.filename,
+      }
+    );
   });
 
   const avatarsIdLookup = uniqueAvatarIds.reduce((memo, oldId, index) => {
-    const newId = avatarsData[index].id;
+    const avatar = avatarsData[index];
+    const newId = avatar && avatar.id;
     memo[oldId] = newId;
     return memo;
   }, {});
 
   avatarsData.forEach((avatar) => {
-    const destPath = `${projectRoot}/assets/avatars/${avatar.filename}`;
-    const spritePath = `${projectRoot}/assets/sprites/${avatar.filename}`;
-    try {
-      copySync(spritePath, destPath, {
-        overwrite: false,
-        errorOnExist: true,
-      });
-    } catch (e) {}
+    if (avatar) {
+      try {
+        const destPath = `${projectRoot}/assets/avatars/${avatar.filename}`;
+        const spritePath = `${projectRoot}/assets/sprites/${avatar.filename}`;
+        copySync(spritePath, destPath, {
+          overwrite: false,
+          errorOnExist: true,
+        });
+      } catch (e) {}
+    }
   });
 
   return {
     ...data,
-    avatars: avatarsData,
+    avatars: avatarsData.filter((i) => i),
     scenes: mapScenesEvents(
       data.scenes,
       migrateFrom200r15To200r16Event(avatarsIdLookup)
