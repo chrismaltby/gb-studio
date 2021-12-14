@@ -13,7 +13,7 @@ import generateRandomLookScript from "../movement/generateRandomLookScript";
 import { COLLISION_ALL, DMG_PALETTE } from "../../consts";
 import { EVENT_END } from "../compiler/eventTypes";
 import uuid from "uuid";
-import fs, { copySync, chmodSync } from "fs-extra";
+import { copySync, chmodSync } from "fs-extra";
 import { projectTemplatesRoot } from "../../consts";
 import uniq from "lodash/uniq";
 
@@ -30,13 +30,7 @@ const ensureProjectAssetSync = (relativePath, { projectRoot }) => {
       overwrite: false,
       errorOnExist: true,
     });
-    chmodSync(
-      projectPath,
-      fs.constants.S_IRUSR |
-        fs.constants.S_IWUSR |
-        fs.constants.S_IRGRP |
-        fs.constants.S_IROTH
-    );
+    chmodSync(projectPath, 0o644);
   } catch (e) {
     // Don't need to catch this, if it failed then the file already exists
     // and we can safely continue.
