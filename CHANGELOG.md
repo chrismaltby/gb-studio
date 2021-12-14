@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue when gbvm scripts use .ARG10 and above [@RichardULZ](https://github.com/RichardULZ) 
 - Fix issue where music preview would stop working after window loses focus [@RichardULZ](https://github.com/RichardULZ) 
 - Fix issue where new template music and font files would be read only by default on Windows
+- Fix issue where migrated emotes and default font would be read only by default on Windows
 
 ## [3.0.0]
 
