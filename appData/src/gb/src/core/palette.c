@@ -15,7 +15,7 @@ UBYTE DMG_palette[3];
 palette_entry_t SprPalette[8];
 //palette_entry_t BkgPalette[8]; // moved into absolute.c to free 64 bytes of WRAM (move after shadow_OAM[] which is 256-boundary aligned)
 
-void palette_init() __banked {
+void palette_init() BANKED {
 #ifdef CGB
     if (_is_CGB) {
         memset(BkgPalette, 0, sizeof(BkgPalette));
@@ -28,7 +28,7 @@ void palette_init() __banked {
 }
 
 #ifdef CGB
-void CGBZeroPalette(UBYTE reg) OLDCALL __banked __naked {
+void CGBZeroPalette(UBYTE reg) OLDCALL BANKED NAKED {
     reg;
 __asm
         ldhl sp, #6
@@ -59,7 +59,7 @@ typedef struct sgb_pal_packet_t {
     UWORD palettes[7];
 } sgb_pal_packet_t;
 
-void SGBTransferPalettes(UBYTE palettes) __banked {
+void SGBTransferPalettes(UBYTE palettes) BANKED {
     sgb_pal_packet_t data;
     data.cmd = (SGB_PAL_01 << 3) | 1;
     if (palettes & SGB_PALETTES_01) {

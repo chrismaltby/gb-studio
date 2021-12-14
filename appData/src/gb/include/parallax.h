@@ -18,7 +18,7 @@ typedef struct parallax_row_t {
 extern parallax_row_t parallax_rows[3];
 extern parallax_row_t * parallax_row;
 
-void parallax_init() __banked;
-void parallax_LCD_isr() __nonbanked;
+void parallax_init() BANKED;
+void parallax_LCD_isr() NONBANKED;
 
 #endif

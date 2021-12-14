@@ -677,6 +677,7 @@ OP_VM_INPUT_WAIT        = 0x52
 .endm
 
 OP_VM_INPUT_ATTACH      = 0x53
+.OVERRIDE_DEFAULT       = 0x80
 .macro VM_INPUT_ATTACH MASK, SLOT
         .db OP_VM_INPUT_ATTACH, #<SLOT, #<MASK
 .endm

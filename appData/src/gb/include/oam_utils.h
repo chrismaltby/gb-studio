@@ -8,6 +8,6 @@
  * @param from start OAM index
  * @param to finish OAM index
  */ 
-void hide_hardware_sprites(UINT8 from, UINT8 to) OLDCALL __preserves_regs(b, c);
+void hide_hardware_sprites(UINT8 from, UINT8 to) OLDCALL PRESERVES_REGS(b, c);
 
 #endif

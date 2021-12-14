@@ -10,14 +10,14 @@
 
 UBYTE hide_sprites = 0;
 
-void remove_LCD_ISRs() __critical __banked {
+void remove_LCD_ISRs() CRITICAL BANKED {
     remove_LCD(parallax_LCD_isr);
     remove_LCD(simple_LCD_isr);
     remove_LCD(fullscreen_LCD_isr);
     LCDC_REG &= ~LCDCF_BG8000;
 }
 
-void simple_LCD_isr() __nonbanked {
+void simple_LCD_isr() NONBANKED {
     if (LYC_REG == 0) {
         SCX_REG = draw_scroll_x;
         SCY_REG = draw_scroll_y;
@@ -30,7 +30,7 @@ void simple_LCD_isr() __nonbanked {
     }
 }
 
-void fullscreen_LCD_isr() __nonbanked {
+void fullscreen_LCD_isr() NONBANKED {
     if (LYC_REG == 0) {
         LCDC_REG &= ~LCDCF_BG8000;
         SCX_REG = draw_scroll_x;
@@ -43,7 +43,7 @@ void fullscreen_LCD_isr() __nonbanked {
     }
 }
 
-void VBL_isr() __nonbanked {
+void VBL_isr() NONBANKED {
     if ((win_pos_y < MAXWNDPOSY) && (win_pos_x < SCREENWIDTH - 1)) {
         WX_REG = win_pos_x + 7u;
         WY_REG = win_pos_y;

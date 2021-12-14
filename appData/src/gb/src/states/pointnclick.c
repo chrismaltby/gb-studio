@@ -1,5 +1,6 @@
 #pragma bank 3
 
+#include "states/states_defines.h"
 #include "states/pointnclick.h"
 
 #include "actor.h"
@@ -10,11 +11,13 @@
 #include "trigger.h"
 #include "vm.h"
 
+#ifndef POINT_N_CLICK_CAMERA_DEADZONE
 #define POINT_N_CLICK_CAMERA_DEADZONE 24
+#endif
 
 UBYTE last_hit_trigger = MAX_TRIGGERS;
 
-void pointnclick_init() __banked {
+void pointnclick_init() BANKED {
     camera_offset_x = 0;
     camera_offset_y = 0;
     camera_deadzone_x = POINT_N_CLICK_CAMERA_DEADZONE;
@@ -23,7 +26,7 @@ void pointnclick_init() __banked {
     actor_set_anim(&PLAYER, ANIM_CURSOR);
 }
 
-void pointnclick_update() __banked {
+void pointnclick_update() BANKED {
     UBYTE angle, hit_trigger, is_hover_trigger, is_hover_actor;
     actor_t *hit_actor;
 

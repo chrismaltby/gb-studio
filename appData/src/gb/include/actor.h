@@ -44,20 +44,20 @@ extern UBYTE emote_timer;
 
 extern UBYTE allocated_hardware_sprites;
 
-void actors_init() __banked;
-void actors_update() __nonbanked;
-void deactivate_actor(actor_t *actor) __banked;
-void activate_actor(actor_t *actor) __banked;
-void actor_set_frames(actor_t *actor, UBYTE frame_start, UBYTE frame_end) __banked;
-void actor_set_frame_offset(actor_t *actor, UBYTE frame_offset) __banked;
-UBYTE actor_get_frame_offset(actor_t *actor) __banked;
-actor_t *actor_at_tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip) __banked;
-actor_t *actor_in_front_of_player(UBYTE grid_size, UBYTE inc_noclip) __banked;
-actor_t *actor_overlapping_player(UBYTE inc_noclip) __banked;
-actor_t *actor_overlapping_bb(bounding_box_t *bb, upoint16_t *offset, actor_t *ignore, UBYTE inc_noclip) __banked;
-void actor_set_anim_idle(actor_t *actor) __banked;
-void actor_set_anim_moving(actor_t *actor) __banked;
-void actor_set_dir(actor_t *actor, direction_e dir, UBYTE moving) __banked;
+void actors_init() BANKED;
+void actors_update() NONBANKED;
+void deactivate_actor(actor_t *actor) BANKED;
+void activate_actor(actor_t *actor) BANKED;
+void actor_set_frames(actor_t *actor, UBYTE frame_start, UBYTE frame_end) BANKED;
+void actor_set_frame_offset(actor_t *actor, UBYTE frame_offset) BANKED;
+UBYTE actor_get_frame_offset(actor_t *actor) BANKED;
+actor_t *actor_at_tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip) BANKED;
+actor_t *actor_in_front_of_player(UBYTE grid_size, UBYTE inc_noclip) BANKED;
+actor_t *actor_overlapping_player(UBYTE inc_noclip) BANKED;
+actor_t *actor_overlapping_bb(bounding_box_t *bb, upoint16_t *offset, actor_t *ignore, UBYTE inc_noclip) BANKED;
+void actor_set_anim_idle(actor_t *actor) BANKED;
+void actor_set_anim_moving(actor_t *actor) BANKED;
+void actor_set_dir(actor_t *actor, direction_e dir, UBYTE moving) BANKED;
 inline void actor_set_anim(actor_t *actor, UBYTE anim) {
     actor->animation = anim;
     actor_set_frames(actor, actor->animations[anim].start, actor->animations[anim].end + 1);
@@ -72,10 +72,10 @@ inline void actor_stop_anim(actor_t *actor) {
 inline void player_register_collision_with(actor_t *actor) {
     player_collision_actor = actor;
 }
-void actors_handle_player_collision() __banked;
-UWORD check_collision_in_direction(UWORD start_x, UWORD start_y, bounding_box_t *bounds, UWORD end_pos, col_check_dir_e check_dir) __banked;
-void activate_actors_in_row(UBYTE x, UBYTE y) __banked;
-void activate_actors_in_col(UBYTE x, UBYTE y) __banked;
-void player_init() __banked;
+void actors_handle_player_collision() BANKED;
+UWORD check_collision_in_direction(UWORD start_x, UWORD start_y, bounding_box_t *bounds, UWORD end_pos, col_check_dir_e check_dir) BANKED;
+void activate_actors_in_row(UBYTE x, UBYTE y) BANKED;
+void activate_actors_in_col(UBYTE x, UBYTE y) BANKED;
+void player_init() BANKED;
 
 #endif

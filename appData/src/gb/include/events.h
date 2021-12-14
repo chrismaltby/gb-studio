@@ -21,10 +21,10 @@ typedef struct timer_time_t {
 extern script_event_t timer_events[MAX_CONCURRENT_TIMERS];
 extern timer_time_t timer_values[MAX_CONCURRENT_TIMERS];
 
-void events_init(UBYTE preserve) __banked;
-void events_update() __nonbanked;
+void events_init(UBYTE preserve) BANKED;
+void events_update() NONBANKED;
 
-void timers_init(UBYTE preserve) __banked;
-void timers_update() __nonbanked;
+void timers_init(UBYTE preserve) BANKED;
+void timers_update() NONBANKED;
 
 #endif

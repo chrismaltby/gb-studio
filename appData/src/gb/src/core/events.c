@@ -11,7 +11,7 @@ UBYTE input_slots[8];
 script_event_t timer_events[MAX_CONCURRENT_TIMERS];
 timer_time_t timer_values[MAX_CONCURRENT_TIMERS];
 
-void events_init(UBYTE preserve) __banked {
+void events_init(UBYTE preserve) BANKED {
     if (preserve) {
         for (UBYTE i = 0; i < 8; i++) 
             input_events[i].handle = 0;
@@ -21,20 +21,21 @@ void events_init(UBYTE preserve) __banked {
     }
 }
 
-void events_update() __nonbanked {
-    UBYTE * slot = input_slots;
-    for (UBYTE tmp = joy & ~last_joy, key = 1; (tmp); tmp = tmp >> 1, key = key << 1, slot++) {
+void events_update() NONBANKED {
+    UBYTE * slot_ptr = input_slots;
+    for (UBYTE tmp = joy & ~last_joy, key = 1; (tmp); tmp = tmp >> 1, key = key << 1, slot_ptr++) {
         if (tmp & 1) {
-            if (*slot == 0) continue;
-            script_event_t * event = &input_events[*slot - 1u];
+            if (*slot_ptr == 0) continue;
+            script_event_t * event = &input_events[(*slot_ptr & 0x0f) - 1u];
             if (!event->script_addr) continue;
+            if (*slot_ptr & 0x80) joy ^= key;     // reset key bit
             if ((event->handle == 0) || ((event->handle & SCRIPT_TERMINATED) != 0))
                 script_execute(event->script_bank, event->script_addr, &event->handle, 1, (int)key);
         }
     }
 }
 
-void timers_init(UBYTE preserve) __banked {
+void timers_init(UBYTE preserve) BANKED {
     if (preserve) {
         for (UBYTE i = 0; i != MAX_CONCURRENT_TIMERS; i++) 
             timer_events[i].handle = 0;
@@ -44,7 +45,7 @@ void timers_init(UBYTE preserve) __banked {
     }
 }
 
-void timers_update() __nonbanked {
+void timers_update() NONBANKED {
     timer_time_t * ctimer = timer_values;
     for (UBYTE i = 0; i != MAX_CONCURRENT_TIMERS; i++) {
         if (ctimer->value) {

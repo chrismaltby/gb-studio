@@ -13,10 +13,10 @@
 #include "data_manager.h"
 #include "data/data_bootstrap.h"
 
-void ui_draw_frame(UBYTE x, UBYTE y, UBYTE width, UBYTE height) __banked;
+void ui_draw_frame(UBYTE x, UBYTE y, UBYTE width, UBYTE height) BANKED;
 
 extern UBYTE _itoa_fmt_len;
-UBYTE itoa_fmt(INT16 v, UBYTE * d) OLDCALL __banked __preserves_regs(b, c);
+UBYTE itoa_fmt(INT16 v, UBYTE * d) OLDCALL BANKED PRESERVES_REGS(b, c);
 
 inline UBYTE itoa_format(INT16 v, UBYTE * d, UBYTE dlen) {
     _itoa_fmt_len = dlen;
@@ -26,7 +26,7 @@ inline UBYTE itoa_format(INT16 v, UBYTE * d, UBYTE dlen) {
 }
 
 // renders UI text into buffer
-void vm_load_text(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS, UBYTE nargs) OLDCALL __nonbanked {
+void vm_load_text(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS, UBYTE nargs) OLDCALL NONBANKED {
     dummy0; dummy1; // suppress warnings
 
     UBYTE _save = _current_bank;
@@ -84,7 +84,7 @@ void vm_load_text(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS, UBYTE nar
 }
 
 // start displaying text
-void vm_display_text(SCRIPT_CTX * THIS) OLDCALL __banked {
+void vm_display_text(SCRIPT_CTX * THIS) OLDCALL BANKED {
     THIS;
 
     INPUT_RESET;
@@ -92,24 +92,24 @@ void vm_display_text(SCRIPT_CTX * THIS) OLDCALL __banked {
 }
 
 // switch text rendering to window or background
-void vm_switch_text_layer(SCRIPT_CTX * THIS, UBYTE target) OLDCALL __banked {
+void vm_switch_text_layer(SCRIPT_CTX * THIS, UBYTE target) OLDCALL BANKED {
     THIS;
     if (target) text_render_base_addr = GetWinAddr(); else text_render_base_addr = GetBkgAddr();
 }
 
 // set position of overlayed window
-void vm_overlay_setpos(SCRIPT_CTX * THIS, UBYTE pos_x, UBYTE pos_y) OLDCALL __banked {
+void vm_overlay_setpos(SCRIPT_CTX * THIS, UBYTE pos_x, UBYTE pos_y) OLDCALL BANKED {
     THIS;
     ui_set_pos(pos_x << 3, pos_y << 3);
 }
 
 // hides overlayed window
-void vm_overlay_hide() OLDCALL __banked {
+void vm_overlay_hide() OLDCALL BANKED {
     ui_set_pos(0, MENU_CLOSED_Y);
 }
 
 // wait until overlay window reaches destination
-void vm_overlay_wait(SCRIPT_CTX * THIS, UBYTE is_modal, UBYTE wait_flags) OLDCALL __banked {
+void vm_overlay_wait(SCRIPT_CTX * THIS, UBYTE is_modal, UBYTE wait_flags) OLDCALL BANKED {
     if (is_modal) {
         ui_run_modal(wait_flags);
         return;
@@ -134,7 +134,7 @@ void vm_overlay_wait(SCRIPT_CTX * THIS, UBYTE is_modal, UBYTE wait_flags) OLDCAL
 }
 
 // set position of overlayed window
-void vm_overlay_move_to(SCRIPT_CTX * THIS, UBYTE pos_x, UBYTE pos_y, BYTE speed) OLDCALL __banked {
+void vm_overlay_move_to(SCRIPT_CTX * THIS, UBYTE pos_x, UBYTE pos_y, BYTE speed) OLDCALL BANKED {
     THIS;
     if (speed == UI_IN_SPEED) {
         speed = text_in_speed;
@@ -145,7 +145,7 @@ void vm_overlay_move_to(SCRIPT_CTX * THIS, UBYTE pos_x, UBYTE pos_y, BYTE speed)
 }
 
 // set autoscroll parameters
-void vm_overlay_set_scroll(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE w, UBYTE h, UBYTE color) OLDCALL __banked {
+void vm_overlay_set_scroll(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE w, UBYTE h, UBYTE color) OLDCALL BANKED {
     THIS;
     text_scroll_addr = GetWinAddr() + (y << 5) + x;
     text_scroll_width = w; text_scroll_height = h;
@@ -153,7 +153,7 @@ void vm_overlay_set_scroll(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE w, UBYTE h
 }
 
 // clears overlay window
-void vm_overlay_clear(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE w, UBYTE h, UBYTE color, UBYTE options) OLDCALL __banked {
+void vm_overlay_clear(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE w, UBYTE h, UBYTE color, UBYTE options) OLDCALL BANKED {
     THIS;
     text_bkg_fill = (color) ? TEXT_BKG_FILL_W : TEXT_BKG_FILL_B;
     if (options & UI_DRAW_FRAME) {
@@ -173,40 +173,40 @@ void vm_overlay_clear(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE w, UBYTE h, UBY
 }
 
 // shows overlay
-void vm_overlay_show(SCRIPT_CTX * THIS, UBYTE pos_x, UBYTE pos_y, UBYTE color, UBYTE options) OLDCALL __banked {
+void vm_overlay_show(SCRIPT_CTX * THIS, UBYTE pos_x, UBYTE pos_y, UBYTE color, UBYTE options) OLDCALL BANKED {
     THIS;
     if ((pos_x < 20u) && (pos_y < 18u)) vm_overlay_clear(THIS, 0, 0, 20u - pos_x, 18u - pos_y, color, options);
     ui_set_pos(pos_x << 3, pos_y << 3);
 }
 
-void vm_choice(SCRIPT_CTX * THIS, INT16 idx, UBYTE options, UBYTE count) OLDCALL __banked {
+void vm_choice(SCRIPT_CTX * THIS, INT16 idx, UBYTE options, UBYTE count) OLDCALL BANKED {
     INT16 * v = VM_REF_TO_PTR(idx);
     *v = (count) ? ui_run_menu((menu_item_t *)(THIS->PC), THIS->bank, options, count) : 0;
     THIS->PC += sizeof(menu_item_t) * count;
 }
 
-void vm_load_frame(SCRIPT_CTX * THIS, UBYTE bank, UBYTE * offset) OLDCALL __banked {
+void vm_load_frame(SCRIPT_CTX * THIS, UBYTE bank, UBYTE * offset) OLDCALL BANKED {
     THIS;
     ui_load_frame_tiles(offset, bank);
 }
 
-void vm_load_cursor(SCRIPT_CTX * THIS, UBYTE bank, UBYTE * offset) OLDCALL __banked {
+void vm_load_cursor(SCRIPT_CTX * THIS, UBYTE bank, UBYTE * offset) OLDCALL BANKED {
     THIS;
     ui_load_cursor_tile(offset, bank);
 }
 
-void vm_set_font(SCRIPT_CTX * THIS, UBYTE font_index) OLDCALL __banked {
+void vm_set_font(SCRIPT_CTX * THIS, UBYTE font_index) OLDCALL BANKED {
     THIS;
     vwf_current_font_bank = ui_fonts[font_index].bank;
     MemcpyBanked(&vwf_current_font_desc, ui_fonts[font_index].ptr, sizeof(font_desc_t), vwf_current_font_bank);
 }
 
-void vm_set_print_dir(SCRIPT_CTX * THIS, UBYTE print_dir) OLDCALL __banked {
+void vm_set_print_dir(SCRIPT_CTX * THIS, UBYTE print_dir) OLDCALL BANKED {
     THIS;
     vwf_direction = print_dir & 1;
 }
 
-void vm_overlay_scroll(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE w, UBYTE h, UBYTE color) OLDCALL __banked {
+void vm_overlay_scroll(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE w, UBYTE h, UBYTE color) OLDCALL BANKED {
     THIS;
     UBYTE * base_addr = GetWinAddr() + (y << 5) + x;
     scroll_rect(base_addr, w, h, ((color) ? ui_while_tile : ui_black_tile));
@@ -221,7 +221,7 @@ void vm_overlay_scroll(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE w, UBYTE h, UB
 
 void set_xy_win_submap(const UBYTE * source, UBYTE bank, UBYTE width, UBYTE x, UBYTE y, UBYTE w, UBYTE h) OLDCALL;
 
-void vm_overlay_set_submap(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE w, UBYTE h, UBYTE scene_x, UBYTE scene_y) OLDCALL __banked {
+void vm_overlay_set_submap(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE w, UBYTE h, UBYTE scene_x, UBYTE scene_y) OLDCALL BANKED {
     THIS;
     UWORD offset = (scene_y * image_tile_width) + scene_x;
 #ifdef CGB

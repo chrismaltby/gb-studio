@@ -11,19 +11,19 @@ UBYTE last_trigger;
 
 UBYTE trigger_at_intersection(bounding_box_t *bb, upoint16_t *offset); 
 
-void trigger_reset() __banked {
+void trigger_reset() BANKED {
     last_trigger_tx = 0;
     last_trigger_ty = 0;
     last_trigger = NO_TRIGGER_COLLISON;
 }
 
-void trigger_interact(UBYTE i) __banked {
+void trigger_interact(UBYTE i) BANKED {
     if (triggers[i].script_flags & TRIGGER_HAS_ENTER_SCRIPT) {
         script_execute(triggers[i].script.bank, triggers[i].script.ptr, 0, 1, 1);
     }
 }
 
-UBYTE trigger_activate_at(UBYTE tx, UBYTE ty, UBYTE force) __banked {
+UBYTE trigger_activate_at(UBYTE tx, UBYTE ty, UBYTE force) BANKED {
     UBYTE hit_trigger;
 
     // Don't reactivate trigger if not changed tile
@@ -43,7 +43,7 @@ UBYTE trigger_activate_at(UBYTE tx, UBYTE ty, UBYTE force) __banked {
     return FALSE;
 }
 
-UBYTE trigger_activate_at_intersection(bounding_box_t *bb, upoint16_t *offset, UBYTE force) __banked {
+UBYTE trigger_activate_at_intersection(bounding_box_t *bb, upoint16_t *offset, UBYTE force) BANKED {
     UBYTE hit_trigger = trigger_at_intersection(bb, offset);
     UBYTE trigger_script_called = FALSE;
 
@@ -82,7 +82,7 @@ UBYTE trigger_activate_at_intersection(bounding_box_t *bb, upoint16_t *offset, U
     return FALSE;
 }
 
-UBYTE trigger_at_intersection(bounding_box_t *bb, upoint16_t *offset) __banked {
+UBYTE trigger_at_intersection(bounding_box_t *bb, upoint16_t *offset) BANKED {
     UBYTE tile_left   = ((offset->x >> 4) + bb->left)   >> 3;
     UBYTE tile_right  = ((offset->x >> 4) + bb->right)  >> 3;
     UBYTE tile_top    = ((offset->y >> 4) + bb->top)    >> 3;
@@ -106,7 +106,7 @@ UBYTE trigger_at_intersection(bounding_box_t *bb, upoint16_t *offset) __banked {
     return NO_TRIGGER_COLLISON;
 }
 
-UBYTE trigger_at_tile(UBYTE tx_a, UBYTE ty_a) __banked {
+UBYTE trigger_at_tile(UBYTE tx_a, UBYTE ty_a) BANKED {
     UBYTE i, tx_b, ty_b, tx_c, ty_c;
 
     for (i = 0; i != triggers_len; i++) {

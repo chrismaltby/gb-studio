@@ -10,6 +10,6 @@
 #define PALETTE_BKG    2u
 #define PALETTE_SPRITE 4u
 
-void vm_load_palette(SCRIPT_CTX * THIS, UBYTE mask, UBYTE options) OLDCALL __banked;
+void vm_load_palette(SCRIPT_CTX * THIS, UBYTE mask, UBYTE options) OLDCALL BANKED;
 
 #endif

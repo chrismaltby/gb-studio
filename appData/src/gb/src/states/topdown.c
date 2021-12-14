@@ -1,5 +1,6 @@
 #pragma bank 3
 
+#include "states/states_defines.h"
 #include "states/topdown.h"
 
 #include "actor.h"
@@ -12,11 +13,13 @@
 #include "math.h"
 #include "vm.h"
 
+#ifndef INPUT_TOPDOWN_INTERACT
 #define INPUT_TOPDOWN_INTERACT INPUT_A
+#endif
 
 UBYTE topdown_grid;
 
-void topdown_init() __banked {
+void topdown_init() BANKED {
     camera_offset_x = 0;
     camera_offset_y = 0;
     camera_deadzone_x = 0;
@@ -32,7 +35,7 @@ void topdown_init() __banked {
     }
 }
 
-void topdown_update() __banked {
+void topdown_update() BANKED {
     actor_t *hit_actor;
     UBYTE tile_start, tile_end;
     direction_e new_dir = DIR_NONE;

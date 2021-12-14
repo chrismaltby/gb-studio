@@ -21,35 +21,35 @@ extern UBYTE fade_style;
 /**
  * Initialise fade variables
  */
-void fade_init() __banked;
+void fade_init() BANKED;
 
 /**
  * Start Fade In
  */
-void fade_in() __banked;
+void fade_in() BANKED;
 
 /**
  * Start Fade Out
  */
-void fade_out() __banked;
+void fade_out() BANKED;
 
 /**
  * Update current fade
  */
-void fade_update() __banked;
+void fade_update() BANKED;
 
 /**
  * Refresh tile coloring to reflect changes in palette
  * Call after LoadPalette etc.
  */
-void fade_applypalettechange() __banked;
+void fade_applypalettechange() BANKED;
 
 /**
  * Change current fade speed
  * 
  * @param speed new fade speed
  */
-void fade_setspeed(UBYTE speed) __banked;
+void fade_setspeed(UBYTE speed) BANKED;
 
 /**
  * Check if fade is currently running
@@ -63,11 +63,11 @@ inline UBYTE fade_isfading() {
 /**
  * Fade in and wait until complete
  */
-void fade_in_modal() __banked;
+void fade_in_modal() BANKED;
 
 /**
  * Fade out and wait until complete
  */
-void fade_out_modal() __banked;
+void fade_out_modal() BANKED;
 
 #endif
