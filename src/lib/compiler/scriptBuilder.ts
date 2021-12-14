@@ -398,6 +398,7 @@ const CAMERA_LOCK_X = 0x1;
 const CAMERA_LOCK_Y = 0x2;
 const CAMERA_LOCK_XY = 0x3;
 const CAMERA_UNLOCK = 0x0;
+const fadeSpeeds = [0x0, 0x1, 0x3, 0x7, 0xf, 0x1f, 0x3f];
 
 // ------------------------
 
@@ -1469,12 +1470,12 @@ class ScriptBuilder {
     this._addCmd("VM_SCENE_STACK_RESET");
   };
 
-  _fadeIn = (speed: number) => {
-    this._addCmd("VM_FADE_IN", speed);
+  _fadeIn = (isModal: number) => {
+    this._addCmd("VM_FADE_IN", isModal);
   };
 
-  _fadeOut = (speed: number) => {
-    this._addCmd("VM_FADE_OUT", speed);
+  _fadeOut = (isModal: number) => {
+    this._addCmd("VM_FADE_OUT", isModal);
   };
 
   _cameraMoveTo = (addr: string, speed: number, lock: string) => {
@@ -2752,7 +2753,11 @@ class ScriptBuilder {
     const { scenes } = this.options;
     const sceneIndex = scenes.findIndex((s) => s.id === sceneId);
     if (sceneIndex > -1) {
-      this._fadeOut(fadeSpeed);
+      this._setConstMemInt8(
+        "fade_frames_per_step",
+        fadeSpeeds[fadeSpeed] ?? 0x3
+      );
+      this._fadeOut(1);
       this._setConst("ACTOR", 0);
       this._setConst("^/(ACTOR + 1)/", x * 8 * 16);
       this._setConst("^/(ACTOR + 2)/", y * 8 * 16);
@@ -2775,14 +2780,16 @@ class ScriptBuilder {
 
   scenePopState = (fadeSpeed = 2) => {
     this._addComment("Pop Scene State");
-    this._fadeOut(fadeSpeed);
+    this._setConstMemInt8("fade_frames_per_step", fadeSpeeds[fadeSpeed] ?? 0x3);
+    this._fadeOut(1);
     this._scenePop();
     this._addNL();
   };
 
   scenePopAllState = (fadeSpeed = 2) => {
     this._addComment("Pop All Scene State");
-    this._fadeOut(fadeSpeed);
+    this._setConstMemInt8("fade_frames_per_step", fadeSpeeds[fadeSpeed] ?? 0x3);
+    this._fadeOut(1);
     this._scenePopAll();
     this._addNL();
   };
@@ -3239,13 +3246,15 @@ class ScriptBuilder {
 
   fadeIn = (speed = 1) => {
     this._addComment(`Fade In`);
-    this._fadeIn(speed);
+    this._setConstMemInt8("fade_frames_per_step", fadeSpeeds[speed] ?? 0x3);
+    this._fadeIn(1);
     this._addNL();
   };
 
   fadeOut = (speed = 1) => {
     this._addComment(`Fade Out`);
-    this._fadeOut(speed);
+    this._setConstMemInt8("fade_frames_per_step", fadeSpeeds[speed] ?? 0x3);
+    this._fadeOut(1);
     this._addNL();
   };
 
