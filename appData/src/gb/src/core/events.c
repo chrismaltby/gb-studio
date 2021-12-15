@@ -23,13 +23,13 @@ void events_init(UBYTE preserve) BANKED {
 
 void events_update() NONBANKED {
     UBYTE * slot_ptr = input_slots;
-    for (UBYTE tmp = joy & ~last_joy, key = 1; (tmp); tmp = tmp >> 1, key = key << 1, slot_ptr++) {
+    for (UBYTE tmp = joy, last_tmp = last_joy, key = 1; (tmp); tmp = tmp >> 1, last_tmp = last_tmp >> 1, key = key << 1, slot_ptr++) { 
         if (tmp & 1) {
             if (*slot_ptr == 0) continue;
             script_event_t * event = &input_events[(*slot_ptr & 0x0f) - 1u];
             if (!event->script_addr) continue;
             if (*slot_ptr & 0x80) joy ^= key;     // reset key bit
-            if ((event->handle == 0) || ((event->handle & SCRIPT_TERMINATED) != 0))
+            if (((last_tmp & 1) == 0) && ((event->handle == 0) || ((event->handle & SCRIPT_TERMINATED) != 0)))
                 script_execute(event->script_bank, event->script_addr, &event->handle, 1, (int)key);
         }
     }
