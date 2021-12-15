@@ -3,6 +3,8 @@
 
 #include <gb/gb.h>
 
+#include "compat.h"
+
 #define LINK_MAX_PACKET_LENGTH 32
 
 #define LINK_MODE_NONE 0

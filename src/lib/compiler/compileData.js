@@ -127,28 +127,6 @@ const ensureProjectAsset = async (relativePath, { projectRoot, warnings }) => {
 
 // #region precompile
 
-export const compileEngineFields = (
-  engineFields,
-  engineFieldValues,
-  header
-) => {
-  let fieldDef = "";
-  if (engineFields.length > 0) {
-    for (const engineField of engineFields) {
-      const prop = engineFieldValues.find((p) => p.id === engineField.key);
-      const customValue = prop && prop.value;
-      const value =
-        customValue !== undefined
-          ? Number(customValue)
-          : Number(engineField.defaultValue);
-      fieldDef += `${header ? `extern ${engineField.cType} ` : "    "}${
-        engineField.key
-      }${!header && value !== undefined ? ` = ${value}` : ""};\n`;
-    }
-  }
-  return fieldDef;
-};
-
 export const precompileStrings = (scenes, customEventsLookup) => {
   const strings = [];
   walkDenormalizedScenesEvents(
@@ -1670,6 +1648,18 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
     `#ifndef DATA_PTRS_H\n#define DATA_PTRS_H\n\n` +
     `#include "bankdata.h"\n` +
     `#include "gbs_types.h"\n\n` +
+    `extern const INT16 start_scene_x;\n` +
+    `extern const INT16 start_scene_y;\n` +
+    `extern const direction_e start_scene_dir;\n` +
+    `extern const far_ptr_t start_scene;\n` +
+    `extern const UBYTE start_player_move_speed;\n` +
+    `extern const UBYTE start_player_anim_tick;\n\n` +
+    `extern const far_ptr_t ui_fonts[];\n\n` +
+    `void bootstrap_init() __banked;\n\n` +
+    `#endif\n`;
+
+  output[`states_defines.h`] =
+    `#ifndef STATES_DEFINES_H\n#define STATES_DEFINES_H\n\n` +
     // Add define fields from engineFields
     engineFields
       .filter(
@@ -1684,18 +1674,11 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
           engineValue && engineValue.value !== undefined
             ? engineValue.value
             : engineField.defaultValue;
-        return `#define ${engineField.key} ${value}${
+        return `#define ${String(engineField.key).padEnd(32, " ")} ${value}${
           defineIndex === defineFields.length - 1 ? "\n\n" : "\n"
         }`;
-      }) +
-    `extern const INT16 start_scene_x;\n` +
-    `extern const INT16 start_scene_y;\n` +
-    `extern const direction_e start_scene_dir;\n` +
-    `extern const far_ptr_t start_scene;\n` +
-    `extern const UBYTE start_player_move_speed;\n` +
-    `extern const UBYTE start_player_anim_tick;\n\n` +
-    `extern const far_ptr_t ui_fonts[];\n\n` +
-    `void bootstrap_init() __banked;\n\n` +
+      })
+      .join("") +
     `#endif\n`;
 
   return {

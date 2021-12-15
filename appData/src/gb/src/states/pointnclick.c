@@ -1,6 +1,6 @@
 #pragma bank 3
 
-#include "states/states_defines.h"
+#include "data/states_defines.h"
 #include "states/pointnclick.h"
 
 #include "actor.h"

@@ -3,6 +3,8 @@
 
 #include <gb/gb.h>
 
+#include "compat.h"
+
 extern UINT8 play_bank;
 extern const UINT8 * play_sample;
 extern UINT16 play_length;

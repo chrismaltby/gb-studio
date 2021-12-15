@@ -1,6 +1,6 @@
 #pragma bank 3
 
-#include "states/states_defines.h"
+#include "data/states_defines.h"
 #include "states/platform.h"
 
 #include "actor.h"
