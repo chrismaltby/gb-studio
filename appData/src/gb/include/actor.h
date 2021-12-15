@@ -5,7 +5,7 @@
 #include "bankdata.h"
 #include "gbs_types.h"
 
-#define MAX_ACTORS            20
+#define MAX_ACTORS            21
 #define MAX_ACTORS_ACTIVE     12
 
 #define ACTOR_ATTR_H_FIRST    0x01

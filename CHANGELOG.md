@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix for issue migrating projects with references to avatars that no longer exist
 - Fix issue where input scripts wouldn't override default button actions [untoxa](https://github.com/untoxa)
 - Fix issue where input scripts could fire while interact scripts were running (VM is locked)
+- Fix issue where game would crash if more than 19 actors are used in a single scene
 
 ## [3.0.0]
 
