@@ -22,6 +22,7 @@ void input_update() NONBANKED {
     last_joy = frame_joy;
 #ifdef SGB
     joypad_ex(&joypads);
+    frame_joy = joy;
 #else 
     joy = frame_joy = joypad();
 #endif
