@@ -1411,8 +1411,16 @@ class ScriptBuilder {
     );
   };
 
-  _inputContextAttach = (buttonMask: number, context: number) => {
-    this._addCmd("VM_INPUT_ATTACH", buttonMask, context);
+  _inputContextAttach = (
+    buttonMask: number,
+    context: number,
+    override: boolean
+  ) => {
+    this._addCmd(
+      "VM_INPUT_ATTACH",
+      buttonMask,
+      unionFlags([String(context)].concat(override ? ".OVERRIDE_DEFAULT" : []))
+    );
   };
 
   _inputContextDetach = (buttonMask: number) => {
@@ -2527,7 +2535,7 @@ class ScriptBuilder {
 
   inputScriptSet = (
     input: string,
-    _persist: boolean,
+    override: boolean,
     script: ScriptEvent[]
   ) => {
     this._addComment(`Input Script Attach`);
@@ -2538,7 +2546,7 @@ class ScriptBuilder {
       ctx = 1;
     }
     this._inputContextPrepare(scriptRef, ctx);
-    this._inputContextAttach(inputValue, ctx);
+    this._inputContextAttach(inputValue, ctx, override);
     this._addNL();
   };
 

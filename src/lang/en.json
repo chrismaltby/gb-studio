@@ -454,6 +454,7 @@
   "FIELD_ADD_PALETTE": "Add Palette",
   "FIELD_CURSOR": "Cursor",
   "FIELD_HOVER": "Hover",
+  "FIELD_OVERRIDE_DEFAULT_BUTTON_ACTION": "Override default button action",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
