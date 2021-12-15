@@ -904,6 +904,8 @@
   "ERROR_WHAT_CAN_I_DO": "Co można zrobić?",
   "ERROR_VIEW_STACK_TRACE": "Wyświetl śledzenie pamięci",
   "ERROR_CLOSE": "Zamknij",
+  "ERROR_UNABLE_TO_SAVE_MUSIC_FILE": "Nie można zapisać pliku muzycznego",
+  "ERROR_UNABLE_TO_SAVE_MUSIC_FILE_DESC": "Dokładnie sprawdź, czy edytowany plik nie jest ustawiony jako tylko do odczytu",
   
   "// 19 ": "Game Type --------------------------------------------------",
 
@@ -923,8 +925,12 @@
   "// 21": "Messages -----------------------------------------------------",
 
   "MESSAGE_NO_SONGS_FOUND": "Nie znaleziono muzyki",
-  "MESSAGE_ADD_UGE_FILES": "Dodaj plik .uge fo folderu projektu assets/music.",
+  "MESSAGE_ADD_UGE_FILES": "Dodaj pliki .uge do folderu projektu assets/music.",
   "MESSAGE_WHAT_ABOUT_MOD": "Otwarzanie plików .mod?",
-  "MESSAGE_USE_MOD_FILES": "W celu użycia plików .mod należy w projekcie zmienić sterownik muzyczny z hUGEDriver na GBT Player. Opcję tę można zmienić w 'Ustawieniach'..",
-  "MESSAGE_ENABLE_GBT": "Włącz GBT Player"
+  "MESSAGE_USE_MOD_FILES": "W celu użycia plików .mod należy w projekcie zmienić sterownik muzyczny z hUGEDriver na GBT Player. Opcję tę można zmienić w 'Ustawieniach'.",
+  "MESSAGE_ENABLE_GBT": "Włącz GBT Player",
+  "MESSAGE_ADD_MOD_FILES": "Dodaj pliki .mod do folderu projektu assets/music.",
+  "MESSAGE_WHAT_ABOUT_UGE": "Odtwarzanie plików .uge?",
+  "MESSAGE_USE_UGE_FILES": "W celu użycia plików .uge należy w projekcie zmienić sterownik muzyczny z GTP Player na hUGEDriver. Opcję tę można zmienić w 'Ustawieniach'.",
+  "MESSAGE_ENABLE_HUGE": "Włącz hUGEDriver"
 }
