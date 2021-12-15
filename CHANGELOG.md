@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Blank project updated to use hUGEDriver by default
 - Reduced padding on scene info
 - Engine "define" fields now written to state_defines.h file
+- Scene info now highlights actor count in orange if reached (but not over) scene limit
 
 ### Fixed
 
