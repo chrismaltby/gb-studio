@@ -33,6 +33,7 @@ void events_update() NONBANKED {
                 script_execute(event->script_bank, event->script_addr, &event->handle, 1, (int)key);
         }
     }
+    recent_joy = recent_joy & joy;
 }
 
 void timers_init(UBYTE preserve) BANKED {
