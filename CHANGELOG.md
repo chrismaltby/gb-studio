@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Reduced padding on scene info
 - Engine "define" fields now written to state_defines.h file
 - Scene info now highlights actor count in orange if reached (but not over) scene limit
+- Animation state name input now includes pencil button to work closer to variable renaming
 
 ### Fixed
 
