@@ -13,12 +13,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved warning message when no .mod files are found and music engine is set to GBT Player [@pau-tomas](https://github.com/pau-tomas)
 - Additional tracker editor keyboard shortcuts [@RichardULZ](https://github.com/RichardULZ) 
 - Added error message if music editor fails to save due to read only permissions
+- Added ability to toggle if input scripts should override default button actions
 
 ### Changed
 
 - Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
 - Blank project updated to use hUGEDriver by default
 - Reduced padding on scene info
+- Engine "define" fields now written to state_defines.h file
 
 ### Fixed
 
@@ -31,6 +33,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where migrated emotes and default font would be read only by default on Windows
 - Fix setting fade in / fade out speed
 - Fix for issue migrating projects with references to avatars that no longer exist
+- Fix issue where input scripts wouldn't override default button actions [untoxa](https://github.com/untoxa)
+- Fix issue where input scripts could fire while interact scripts were running (VM is locked)
 
 ## [3.0.0]
 
