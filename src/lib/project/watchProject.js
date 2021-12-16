@@ -55,7 +55,7 @@ const watchProject = async (
   };
 
   const spriteWatcher = chokidar
-    .watch([`${spritesRoot}/**/*.png`,`${spritesRoot}/**/*.PNG`], {
+    .watch(`${spritesRoot}/**/*.{png,PNG}`, {
       ignoreInitial: true,
       persistent: true,
       awaitWriteFinish,
@@ -65,7 +65,7 @@ const watchProject = async (
     .on("unlink", onRemoveSprite);
 
   const backgroundWatcher = chokidar
-    .watch([`${backgroundsRoot}/**/*.png`,`${backgroundsRoot}/**/*.PNG`], {
+    .watch(`${backgroundsRoot}/**/*.{png,PNG}`, {
       ignoreInitial: true,
       persistent: true,
       awaitWriteFinish,
@@ -75,7 +75,7 @@ const watchProject = async (
     .on("unlink", onRemoveBackground);
 
   const uiWatcher = chokidar
-    .watch([`${uiRoot}/**/*.png`,`${uiRoot}/**/*.PNG`], {
+    .watch(`${uiRoot}/**/*.{png,PNG}`, {
       ignoreInitial: true,
       persistent: true,
       awaitWriteFinish,
@@ -85,7 +85,7 @@ const watchProject = async (
     .on("unlink", onRemoveUI);
 
   const sgbWatcher = chokidar
-    .watch([`${sgbRoot}/**/*.png`,`${sgbRoot}/**/*.PNG`], {
+    .watch(`${sgbRoot}/**/*.{png,PNG}`, {
       ignoreInitial: true,
       persistent: true,
       awaitWriteFinish,
@@ -95,8 +95,7 @@ const watchProject = async (
     .on("unlink", onRemoveUI);
 
   const musicWatcher = chokidar
-    .watch([`${musicRoot}/**/*.uge`,`${musicRoot}/**/*.UGE`,
-            `${musicRoot}/**/*.mod`,`${musicRoot}/**/*.MOD`], {
+    .watch(`${musicRoot}/**/*.{uge,UGE,mod,MOD}`, {
       ignoreInitial: true,
       persistent: true,
       awaitWriteFinish: musicAwaitWriteFinish,
@@ -106,7 +105,7 @@ const watchProject = async (
     .on("unlink", onRemoveMusic);
 
   const fontsWatcher = chokidar
-    .watch([`${fontsRoot}/**/*.png`,`${fontsRoot}/**/*.PNG`], {
+    .watch(`${fontsRoot}/**/*.{png,PNG}`, {
       ignoreInitial: true,
       persistent: true,
       awaitWriteFinish,
@@ -116,7 +115,7 @@ const watchProject = async (
     .on("unlink", onRemoveFont);
 
   const avatarsWatcher = chokidar
-    .watch([`${avatarsRoot}/**/*.png`,`${avatarsRoot}/**/*.PNG`], {
+    .watch(`${avatarsRoot}/**/*.{png,PNG}`, {
       ignoreInitial: true,
       persistent: true,
       awaitWriteFinish,
@@ -126,7 +125,7 @@ const watchProject = async (
     .on("unlink", onRemoveAvatar);
 
   const emotesWatcher = chokidar
-    .watch([`${emotesRoot}/**/*.png`,`${emotesRoot}/**/*.PNG`], {
+    .watch(`${emotesRoot}/**/*.{png,PNG}`, {
       ignoreInitial: true,
       persistent: true,
       awaitWriteFinish,
@@ -146,9 +145,7 @@ const watchProject = async (
     .on("unlink", onChangedEngineSchema);
 
   const pluginsWatcher = chokidar
-    .watch([`${pluginsRoot}/**/*.png`,`${pluginsRoot}/**/*.PNG`,
-            `${pluginsRoot}/**/*.mod`,`${pluginsRoot}/**/*.MOD`,
-            `${pluginsRoot}/**/*.uge`,`${pluginsRoot}/**/*.UGE`], {
+    .watch(`${pluginsRoot}/**/*.{png,PNG,uge,UGE,mod,MOD}`, {
       ignoreInitial: true,
       persistent: true,
       awaitWriteFinish,
