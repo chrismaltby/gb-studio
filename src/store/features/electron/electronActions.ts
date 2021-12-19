@@ -8,8 +8,13 @@ const openFile =
     type?: "image" | "music";
   }>("electron/openFile");
 
+const showErrorBox = createAction<{ title: string; content: string }>(
+  "electron/showErrorBox"
+);
+
 export default {
   openHelp,
   openFolder,
   openFile,
+  showErrorBox,
 };

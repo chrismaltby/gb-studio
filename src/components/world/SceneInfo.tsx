@@ -345,7 +345,7 @@ const SceneInfo = () => {
   }
 
   const actorCount = scene.actors.length;
-  const actorWarning = actorWarnings.length > 0;
+  const actorWarning = actorWarnings.length > 0 || actorCount === maxActors;
   const actorError = actorCount > maxActors;
   const triggerCount = scene.triggers.length;
   const maxSpriteTiles =

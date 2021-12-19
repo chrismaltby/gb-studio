@@ -17,7 +17,7 @@ projectile_def_t projectile_defs[MAX_PROJECTILE_DEFS];
 projectile_t *projectiles_active_head;
 projectile_t *projectiles_inactive_head;
 
-void projectiles_init() __banked {
+void projectiles_init() BANKED {
     UBYTE i;
     projectiles_active_head = NULL;
     projectiles_inactive_head = NULL;
@@ -30,7 +30,7 @@ static UBYTE _save_bank;
 static projectile_t *projectile;
 static projectile_t *prev_projectile;
 
-void projectiles_update() __nonbanked {
+void projectiles_update() NONBANKED {
     projectile_t *next;
 
     projectile = projectiles_active_head;
@@ -54,7 +54,9 @@ void projectiles_update() __nonbanked {
             projectile->frame++;
             // Check reached end of animation
             if (projectile->frame == projectile->frame_end) {
-                projectile->frame = projectile->frame_start;
+                if (!projectile->anim_noloop) {
+                    projectile->frame = projectile->frame_start;
+                }
             }
         }
 
@@ -109,7 +111,7 @@ void projectiles_update() __nonbanked {
     SWITCH_ROM(_save_bank);
 }
 
-void projectiles_render() __nonbanked {    
+void projectiles_render() NONBANKED {    
     projectile = projectiles_active_head;
     prev_projectile = NULL;
 
@@ -146,7 +148,7 @@ void projectiles_render() __nonbanked {
     SWITCH_ROM(_save_bank);
 }
 
-void projectile_launch(UBYTE index, upoint16_t *pos, UBYTE angle) __banked {    
+void projectile_launch(UBYTE index, upoint16_t *pos, UBYTE angle) BANKED {    
     projectile_t *projectile = projectiles_inactive_head;
     if (projectile) {
         memcpy(&projectile->def, &projectile_defs[index], sizeof(projectile_def_t));

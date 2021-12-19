@@ -1,12 +1,13 @@
 import { ThunkMiddleware } from "redux-thunk";
 import confirmUnsavedChangesTrackerDialog from "lib/electron/dialog/confirmUnsavedChangesTrackerDialog";
-import { assetFilename } from "lib/helpers/gbstudio";
 import { RootState } from "store/configureStore";
 import editorActions from "../editor/editorActions";
 import { musicSelectors } from "../entities/entitiesState";
 import navigationActions from "../navigation/navigationActions";
 import { saveSongFile } from "./trackerDocumentState";
 import trackerDocumentActions from "./trackerDocumentActions";
+import electronActions from "../electron/electronActions";
+import l10n from "lib/helpers/l10n";
 
 const trackerMiddleware: ThunkMiddleware<RootState> =
   (store) => (next) => (action) => {
@@ -42,6 +43,15 @@ const trackerMiddleware: ThunkMiddleware<RootState> =
       state.trackerDocument.present.modified
     ) {
       store.dispatch(saveSongFile());
+    }
+
+    if (saveSongFile.rejected.match(action)) {
+      store.dispatch(
+        electronActions.showErrorBox({
+          title: l10n("ERROR_UNABLE_TO_SAVE_MUSIC_FILE"),
+          content: l10n("ERROR_UNABLE_TO_SAVE_MUSIC_FILE_DESC"),
+        })
+      );
     }
 
     return next(action);

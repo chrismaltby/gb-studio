@@ -5,6 +5,9 @@
 #include <gb/cgb.h>
 #include <gb/metasprites.h>
 
+#include <stdint.h>
+#include <stdbool.h>
+
 #include "bankdata.h"
 #include "parallax.h"
 #include "collision.h"
@@ -34,53 +37,54 @@ typedef enum {
 
 typedef struct animation_t
 {
-    UINT8 start;
-    UINT8 end;
+    uint8_t start;
+    uint8_t end;
 } animation_t;
 
 typedef struct actor_t
 {
-  UINT8 enabled; 
-  upoint16_t pos;
-  direction_e dir;
-  bounding_box_t bounds;
-  UINT8 base_tile;
-  UINT8 pinned;
-  UINT8 hidden;  
-  UINT8 frame;
-  UINT8 frame_start;
-  UINT8 frame_end;
-  UINT8 anim_tick;
-  UINT8 move_speed;
-  UINT8 animation;
-  UINT8 exclusive_sprite;
-  animation_t animations[8];
-  far_ptr_t sprite;
-  far_ptr_t script, script_update;
-  UWORD hscript_update;
+    bool enabled              : 1; 
+    bool pinned               : 1;
+    bool hidden               : 1;
+    bool anim_noloop          : 1;  
+    bool collision_enabled    : 1;
+    upoint16_t pos;
+    direction_e dir;
+    bounding_box_t bounds;
+    uint8_t base_tile;
+    uint8_t frame;
+    uint8_t frame_start;
+    uint8_t frame_end;
+    uint8_t anim_tick;
+    uint8_t move_speed;
+    uint8_t animation;
+    uint8_t exclusive_sprite;
+    animation_t animations[8];
+    far_ptr_t sprite;
+    far_ptr_t script, script_update;
+    uint16_t hscript_update;
 
-  // Collisions
-  collision_group_e collision_group;
-  UBYTE collision_enabled;
+    // Collisions
+    collision_group_e collision_group;
 
-  // Linked list
-  struct actor_t *next;
-  struct actor_t *prev;
+    // Linked list
+    struct actor_t *next;
+    struct actor_t *prev;
 } actor_t;
 
 #define TRIGGER_HAS_ENTER_SCRIPT    1
 #define TRIGGER_HAS_LEAVE_SCRIPT    2
 
 typedef struct trigger_t {
-    UINT8 x, y, width, height;
+    uint8_t x, y, width, height;
     far_ptr_t script;
-    UBYTE script_flags;
+    uint8_t script_flags;
 } trigger_t;
 
 typedef struct scene_t {
-    UINT8 width, height;
+    uint8_t width, height;
     scene_type_e type;
-    UINT8 n_actors, n_triggers, n_projectiles, n_sprites;
+    uint8_t n_actors, n_triggers, n_projectiles, n_sprites;
     far_ptr_t player_sprite;
     far_ptr_t background, collisions; 
     far_ptr_t palette, sprite_palette;
@@ -93,7 +97,7 @@ typedef struct scene_t {
 } scene_t;
 
 typedef struct background_t {
-    UINT8 width, height;
+    uint8_t width, height;
     far_ptr_t tileset;
     far_ptr_t cgb_tileset;
     far_ptr_t tilemap;              // far pointer to array of bytes with map
@@ -101,16 +105,16 @@ typedef struct background_t {
 } background_t;
 
 typedef struct tileset_t {
-    UWORD n_tiles;                  // actual amount of 8x8 tiles in tiles[] array 
-    UINT8 tiles[];
+    uint16_t n_tiles;                  // actual amount of 8x8 tiles in tiles[] array 
+    uint8_t tiles[];
 } tileset_t;
 
 typedef struct spritesheet_t {
-    UINT8 n_metasprites;
+    uint8_t n_metasprites;
     point8_t emote_origin;
     metasprite_t * const *metasprites;
     animation_t *animations;
-    UWORD *animations_lookup;
+    uint16_t *animations_lookup;
     bounding_box_t bounds;
     far_ptr_t tileset;              // far pointer to sprite tileset
     far_ptr_t cgb_tileset;          // far pointer to additional CGB tileset (may be NULL)
@@ -120,23 +124,24 @@ typedef struct projectile_def_t
 {
     bounding_box_t bounds;
     far_ptr_t sprite;
-    UINT8 life_time;
-    UINT8 base_tile;
+    uint8_t life_time;
+    uint8_t base_tile;
     animation_t animations[4];
-    UINT8 anim_tick;
-    UINT8 move_speed;
-    UINT16 initial_offset;
+    uint8_t anim_tick;
+    uint8_t move_speed;
+    uint16_t initial_offset;
     collision_group_e collision_group;
-    UINT8 collision_mask;
+    uint8_t collision_mask;
 } projectile_def_t;
 
 typedef struct projectile_t
 {
+    bool anim_noloop          : 1;  
     upoint16_t pos;
     point16_t delta_pos;
-    UINT8 frame;
-    UINT8 frame_start;
-    UINT8 frame_end;    
+    uint8_t frame;
+    uint8_t frame_start;
+    uint8_t frame_end;    
     projectile_def_t def;
     struct projectile_t *next;
 } projectile_t;
@@ -148,10 +153,10 @@ typedef struct projectile_t
 #define FONT_RECODE_SIZE_7BIT 0x7fu
 
 typedef struct font_desc_t {
-    UBYTE attr, mask;
-    const UBYTE * recode_table;
-    const UBYTE * widths;
-    const UBYTE * bitmaps;
+    uint8_t attr, mask;
+    const uint8_t * recode_table;
+    const uint8_t * widths;
+    const uint8_t * bitmaps;
 } font_desc_t;
 
 typedef struct scene_stack_item_t {
@@ -161,8 +166,8 @@ typedef struct scene_stack_item_t {
 } scene_stack_item_t;
 
 typedef struct menu_item_t {
-    UBYTE X, Y;
-    UBYTE iL, iR, iU, iD;
+    uint8_t X, Y;
+    uint8_t iL, iR, iU, iD;
 } menu_item_t;
 
 #define DMG_BLACK 0x03
@@ -171,19 +176,19 @@ typedef struct menu_item_t {
 #define DMG_WHITE 0x00
 
 #ifndef DMG_PALETTE
-#define DMG_PALETTE(C0, C1, C2, C3) ((UBYTE)((((C3) & 0x03) << 6) | (((C2) & 0x03) << 4) | (((C1) & 0x03) << 2) | ((C0) & 0x03)))
+#define DMG_PALETTE(C0, C1, C2, C3) ((uint8_t)((((C3) & 0x03) << 6) | (((C2) & 0x03) << 4) | (((C1) & 0x03) << 2) | ((C0) & 0x03)))
 #endif
 
 #define CGB_PALETTE(C0, C1, C2, C3) {C0, C1, C2, C3}
-#define CGB_COLOR(R, G, B) ((UWORD)(((R) & 0x1f) | (((G) & 0x1f) << 5) | (((B) & 0x1f) << 10)))
+#define CGB_COLOR(R, G, B) ((uint16_t)(((R) & 0x1f) | (((G) & 0x1f) << 5) | (((B) & 0x1f) << 10)))
 
 typedef struct palette_entry_t { 
-    UWORD c0, c1, c2, c3;
+    uint16_t c0, c1, c2, c3;
 } palette_entry_t;
 
 typedef struct palette_t {
-    UBYTE mask;
-    UBYTE palette[2];
+    uint8_t mask;
+    uint8_t palette[2];
     palette_entry_t cgb_palette[];
 } palette_t;
 

@@ -10,6 +10,7 @@
 #define _ISR_H_INCLUDE_
 
 #include <stdint.h>
+#include <types.h>
 
 // #define VECTOR_VBL     0x40 // you can not define raw vector for VBlank interrupt
 #define VECTOR_STAT    0x48  /**< Address for the STAT interrupt vector */
@@ -49,7 +50,7 @@ typedef struct isr_vector_t {
     @see ISR_NESTED_VECTOR, set_interrupts
 */
 #define ISR_VECTOR(ADDR, FUNC) \
-static const isr_vector_t __at((ADDR)) __ISR_ ## ADDR = {0xc3, (void *)&(FUNC)};
+static const isr_vector_t AT((ADDR)) __ISR_ ## ADDR = {0xc3, (void *)&(FUNC)};
 
 typedef struct isr_nested_vector_t {
     uint8_t opcode[2];
@@ -67,7 +68,7 @@ typedef struct isr_nested_vector_t {
     @see ISR_VECTOR
 */
 #define ISR_NESTED_VECTOR(ADDR, FUNC) \
-static const isr_nested_vector_t __at((ADDR)) __ISR_ ## ADDR = {{0xfb, 0xc3}, (void *)&(FUNC)};
+static const isr_nested_vector_t AT((ADDR)) __ISR_ ## ADDR = {{0xfb, 0xc3}, (void *)&(FUNC)};
 
 
 #endif // _ISR_H_INCLUDE_

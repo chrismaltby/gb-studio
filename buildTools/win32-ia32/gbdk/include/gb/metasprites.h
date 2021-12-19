@@ -103,7 +103,7 @@ static void __hide_metasprite(uint8_t id) OLDCALL;
  * @param from start OAM index
  * @param to finish OAM index
  */ 
-void hide_sprites_range(UINT8 from, UINT8 to) OLDCALL __preserves_regs(b, c);
+void hide_sprites_range(UINT8 from, UINT8 to) OLDCALL PRESERVES_REGS(b, c);
 
 /** Moves metasprite to the absolute position x and y
 

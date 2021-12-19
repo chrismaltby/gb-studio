@@ -1,6 +1,6 @@
 #include "math.h"
 
-const INT8 sine_wave[256] = {
+const int8_t sine_wave[256] = {
     0,3,6,9,12,16,19,22,25,28,31,34,37,40,43,46,49,51,54,57,60,
     63,65,68,71,73,76,78,81,83,85,88,90,92,94,96,98,100,102,104,
     106,107,109,111,112,113,115,116,117,118,120,121,122,122,123,
@@ -34,8 +34,8 @@ const UBYTE dir_angle_lookup[4] = {
     192,
 };
 
-UBYTE isqrt(UWORD x) __nonbanked {
-    UWORD m, y, b;
+UBYTE isqrt(uint16_t x) NONBANKED {
+    uint16_t m, y, b;
     m = 0x4000;
     y = 0;
     while (m != 0) {

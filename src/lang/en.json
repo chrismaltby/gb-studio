@@ -454,6 +454,7 @@
   "FIELD_ADD_PALETTE": "Add Palette",
   "FIELD_CURSOR": "Cursor",
   "FIELD_HOVER": "Hover",
+  "FIELD_OVERRIDE_DEFAULT_BUTTON_ACTION": "Override default button action",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -904,6 +905,8 @@
   "ERROR_WHAT_CAN_I_DO": "What can I do?",
   "ERROR_VIEW_STACK_TRACE": "View Stack Trace",
   "ERROR_CLOSE": "Close",
+  "ERROR_UNABLE_TO_SAVE_MUSIC_FILE": "Unable to save music file",
+  "ERROR_UNABLE_TO_SAVE_MUSIC_FILE_DESC": "Double check the file you're trying to edit isn't Read-only",
 
   "// 19 ": "Game Type --------------------------------------------------",
 
@@ -923,8 +926,12 @@
   "// 21": "Messages -----------------------------------------------------",
 
   "MESSAGE_NO_SONGS_FOUND": "No songs found",
-  "MESSAGE_ADD_UGE_FILES": "Please add .uge files to the project assets/music folder.",
+  "MESSAGE_ADD_UGE_FILES": "Please add .uge files to the project assets/music folder. You can also create a new song with the + button above.",
   "MESSAGE_WHAT_ABOUT_MOD": "What about .mod files?",
   "MESSAGE_USE_MOD_FILES": "In order to use .mod files in your project you should change the current music driver from hUGEDriver to GBT Player. You can change this later in 'Settings'.",
-  "MESSAGE_ENABLE_GBT": "Enable GBT Player"
+  "MESSAGE_ENABLE_GBT": "Enable GBT Player",
+  "MESSAGE_ADD_MOD_FILES": "Please add .mod files to the project assets/music folder.",
+  "MESSAGE_WHAT_ABOUT_UGE": "What about .uge files?",
+  "MESSAGE_USE_UGE_FILES": "To use .uge files in your project, change the music driver from GBT Player to hUGEDriver in 'Settings'.",
+  "MESSAGE_ENABLE_HUGE": "Enable hUGEDriver"
 }

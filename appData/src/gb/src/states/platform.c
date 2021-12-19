@@ -1,6 +1,8 @@
 #pragma bank 3
 
+#include "data/states_defines.h"
 #include "states/platform.h"
+
 #include "actor.h"
 #include "camera.h"
 #include "collision.h"
@@ -12,12 +14,21 @@
 #include "trigger.h"
 #include "vm.h"
 
+#ifndef INPUT_PLATFORM_JUMP
 #define INPUT_PLATFORM_JUMP        INPUT_A
+#endif
+#ifndef INPUT_PLATFORM_RUN
 #define INPUT_PLATFORM_RUN         INPUT_B
+#endif
+#ifndef INPUT_PLATFORM_INTERACT
 #define INPUT_PLATFORM_INTERACT    INPUT_A
-
+#endif
+#ifndef PLATFORM_CAMERA_DEADZONE_X
 #define PLATFORM_CAMERA_DEADZONE_X 4
+#endif
+#ifndef PLATFORM_CAMERA_DEADZONE_Y
 #define PLATFORM_CAMERA_DEADZONE_Y 16
+#endif
 
 UBYTE grounded;
 UBYTE on_ladder;
@@ -35,7 +46,7 @@ WORD plat_grav;
 WORD plat_hold_grav;
 WORD plat_max_fall_vel;
 
-void platform_init() __banked {
+void platform_init() BANKED {
     UBYTE tile_x, tile_y;
 
     pl_vel_x = 0;
@@ -71,7 +82,7 @@ void platform_init() __banked {
     game_time = 0;
 }
 
-void platform_update() __banked {
+void platform_update() BANKED {
     UBYTE tile_start, tile_end;
     actor_t *hit_actor;
     UBYTE p_half_width = (PLAYER.bounds.right - PLAYER.bounds.left) >> 1;

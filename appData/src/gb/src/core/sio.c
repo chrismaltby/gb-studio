@@ -4,8 +4,8 @@
 #include "sio.h"
 
 extern volatile UBYTE SIO_status;
-void SIO_send_byte(UBYTE data) __preserves_regs(b, c, d, e, h, l);
-void SIO_receive() __preserves_regs(b, c, d, e, h, l);
+void SIO_send_byte(UBYTE data) PRESERVES_REGS(b, c, d, e, h, l);
+void SIO_receive() PRESERVES_REGS(b, c, d, e, h, l);
 
 UBYTE link_operation_mode;
 
@@ -21,7 +21,7 @@ UBYTE link_packet_snd_len;
 const UBYTE * link_packet_snd_ptr;
 UBYTE link_packet_sent;
 
-void on_SIO_receive(UBYTE data) __nonbanked {
+void on_SIO_receive(UBYTE data) NONBANKED {
     if (link_packet_len) {
         link_packet_len--;
         *link_packet_ptr++ = data;
@@ -38,7 +38,7 @@ void on_SIO_receive(UBYTE data) __nonbanked {
     }
 }
 
-UBYTE SIO_update() __nonbanked {
+UBYTE SIO_update() NONBANKED {
     if (SIO_status == IO_ERROR) {
         link_operation_mode = LINK_MODE_NONE;
         link_packet_len = link_packet_snd_len = 0;
@@ -60,7 +60,7 @@ UBYTE SIO_update() __nonbanked {
     return TRUE;
 }
 
-void SIO_init() __banked {
+void SIO_init() BANKED {
     link_operation_mode = LINK_MODE_NONE;
 
     link_packet_len = 0;
