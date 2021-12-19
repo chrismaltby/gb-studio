@@ -172,7 +172,7 @@ type ScriptBuilderPathFunction = () => void;
 
 type VariablesLookup = { [name: string]: Variable | undefined };
 
-type ScriptArgumentStackItem = 
+type ScriptArgumentStackItem =
   | {
       type: "variable";
       index: number;
@@ -185,7 +185,7 @@ type ScriptArgumentStackItem =
       arg: any;
       value: number;
     };
- 
+
 // - Helpers --------------
 
 const getActorIndex = (actorId: string, scene: ScriptBuilderScene) => {
@@ -231,6 +231,14 @@ export const isVariableLocal = (variable: string) => {
 
 export const isVariableTemp = (variable: string) => {
   return ["T0", "T1"].indexOf(variable) > -1;
+};
+
+export const isVariableCustomEvent = (variable: string) => {
+  return (
+    ["V0", "V1", "V2", "V3", "V4", "V5", "V6", "V7", "V8", "V9"].indexOf(
+      variable
+    ) > -1
+  );
 };
 
 const toValidLabel = (label: string): string => {
@@ -2666,7 +2674,7 @@ class ScriptBuilder {
       return argLookup[type][value];
     };
 
-    const argStack:ScriptArgumentStackItem[] = [];
+    const argStack: ScriptArgumentStackItem[] = [];
     let referencesLen = 0;
 
     if (variableArgs) {
@@ -2723,7 +2731,9 @@ class ScriptBuilder {
 
       if (type === "variable") {
         if (typeof variableValue !== "string") {
-          throw new Error(`Custom script argument ${variableArg.id} value isn't a string`);
+          throw new Error(
+            `Custom script argument ${variableArg.id} value isn't a string`
+          );
         }
         const variableAlias = this.getVariableAlias(variableValue);
         const arg = registerArg("variable", variableArg.id);
@@ -2758,12 +2768,19 @@ class ScriptBuilder {
           const argValue = e.args[arg];
           // Update variable fields
           if (isVariableField(e.command, arg, e.args)) {
-            if (isUnionVariableValue(argValue) && argValue.value) {
+            if (
+              isUnionVariableValue(argValue) &&
+              argValue.value &&
+              isVariableCustomEvent(argValue.value)
+            ) {
               e.args[arg] = {
                 ...argValue,
                 value: getArg("variable", argValue.value),
               };
-            } else if (typeof argValue === "string") {
+            } else if (
+              typeof argValue === "string" &&
+              isVariableCustomEvent(argValue)
+            ) {
               e.args[arg] = getArg("variable", argValue);
             }
           }

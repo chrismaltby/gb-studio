@@ -35,8 +35,8 @@ export const namedVariablesByContext = (
   customEvent: CustomEvent | undefined
 ): NamedVariable[] => {
   if (context === "customEvent") {
-    if (customEvent) {
-      return namedCustomEventVariables(customEvent);
+    if (customEvent && variablesLookup) {
+      return namedCustomEventVariables(customEvent, variablesLookup);
     }
     return [];
   }
@@ -47,17 +47,23 @@ export const namedVariablesByContext = (
 };
 
 export const namedCustomEventVariables = (
-  customEvent: CustomEvent
+  customEvent: CustomEvent,
+  variablesLookup: VariablesLookup
 ): NamedVariable[] => {
-  if (customEvent) {
-    return customEventVariables.map((variable) => ({
-      id: variable,
+  return ([] as NamedVariable[]).concat(
+    customEventVariables.map((variable) => ({
+      id: customEventVariableCode(variable),
       code: customEventVariableCode(variable),
       name: customEventVariableName(variable, customEvent),
-      group: "",
-    }));
-  }
-  return [];
+      group: "Parameters",
+    })),
+    allVariables.map((variable) => ({
+      id: variable,
+      code: globalVariableCode(variable),
+      name: globalVariableName(variable, variablesLookup),
+      group: "Global",
+    }))
+  );
 };
 
 export const namedEntityVariables = (

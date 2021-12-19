@@ -64,6 +64,7 @@ import {
 } from "./entitiesHelpers";
 import { clone } from "lib/helpers/clone";
 import spriteActions from "../sprite/spriteActions";
+import { isVariableCustomEvent } from "lib/compiler/scriptBuilder";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
@@ -2069,7 +2070,7 @@ const refreshCustomEventArgs: CaseReducer<
         if (isVariableField(scriptEvent.command, arg, args)) {
           const addVariable = (variable: string) => {
             const letter = String.fromCharCode(
-              "A".charCodeAt(0) + parseInt(variable)
+              "A".charCodeAt(0) + parseInt(variable[1])
             );
             variables[variable] = {
               id: variable,
@@ -2077,9 +2078,16 @@ const refreshCustomEventArgs: CaseReducer<
             };
           };
           const variable = args[arg];
-          if (isUnionVariableValue(variable) && variable.value) {
+          if (
+            isUnionVariableValue(variable) &&
+            variable.value &&
+            isVariableCustomEvent(variable.value)
+          ) {
             addVariable(variable.value);
-          } else if (typeof variable === "string") {
+          } else if (
+            typeof variable === "string" &&
+            isVariableCustomEvent(variable)
+          ) {
             addVariable(variable);
           }
         }
@@ -2114,9 +2122,10 @@ const refreshCustomEventArgs: CaseReducer<
               const letter = String.fromCharCode(
                 "A".charCodeAt(0) + parseInt(variable, 10)
               ).toUpperCase();
-              variables[variable] = {
-                id: variable,
-                name: oldVariables[variable]?.name || `Variable ${letter}`,
+              const variableId = `V${variable}`;
+              variables[variableId] = {
+                id: variableId,
+                name: oldVariables[variableId]?.name || `Variable ${letter}`,
               };
             });
           }
