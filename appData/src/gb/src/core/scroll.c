@@ -41,7 +41,7 @@ UBYTE pending_w_i;
 INT16 current_row, new_row;
 INT16 current_col, new_col;
 
-void scroll_init() __banked {
+void scroll_init() BANKED {
     draw_scroll_x   = 0;
     draw_scroll_y   = 0;
     scroll_x_max    = 0;
@@ -51,7 +51,7 @@ void scroll_init() __banked {
     scroll_reset();
 }
 
-void scroll_reset() __banked {
+void scroll_reset() BANKED {
     pending_w_i     = 0;
     pending_h_i     = 0;
     scroll_x        = 0x7FFF;
@@ -60,7 +60,7 @@ void scroll_reset() __banked {
     game_time       = 0; // was in scroll_render_rows() - that is insane, here is not the best place either 
 }
 
-void scroll_update() __banked {
+void scroll_update() BANKED {
     INT16 x, y;
     UBYTE render = FALSE;
 
@@ -175,7 +175,7 @@ UBYTE scroll_viewport(parallax_row_t * port) {
     }
 }
 
-void scroll_repaint() __banked {
+void scroll_repaint() BANKED {
     // this looks overcomplicated, what's this for?!
     if (!fade_style) {
         DISPLAY_OFF;
@@ -245,7 +245,7 @@ void scroll_queue_col(UBYTE x, UBYTE y) {
 }
 
 /* Update pending (up to 5) rows */
-void scroll_load_pending_row() __nonbanked {
+void scroll_load_pending_row() NONBANKED {
     UINT8 _save = _current_bank;
     UBYTE width = MIN(pending_w_i, PENDING_BATCH_SIZE);
 
@@ -268,7 +268,7 @@ void scroll_load_pending_row() __nonbanked {
 }
 
 
-void scroll_load_row(UBYTE x, UBYTE y) __nonbanked {
+void scroll_load_row(UBYTE x, UBYTE y) NONBANKED {
     UINT8 _save = _current_bank;
 
 #ifdef CGB
@@ -286,7 +286,7 @@ void scroll_load_row(UBYTE x, UBYTE y) __nonbanked {
     SWITCH_ROM(_save);
 }
 
-void scroll_load_col(UBYTE x, UBYTE y, UBYTE height) __nonbanked {
+void scroll_load_col(UBYTE x, UBYTE y, UBYTE height) NONBANKED {
     UINT8 _save = _current_bank;
  
 #ifdef CGB
@@ -304,7 +304,7 @@ void scroll_load_col(UBYTE x, UBYTE y, UBYTE height) __nonbanked {
     SWITCH_ROM(_save);
 }
 
-void scroll_load_pending_col() __nonbanked {
+void scroll_load_pending_col() NONBANKED {
     UINT8 _save = _current_bank;
     UBYTE height = MIN(pending_h_i, PENDING_BATCH_SIZE);
 

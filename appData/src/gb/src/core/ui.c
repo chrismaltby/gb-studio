@@ -69,7 +69,7 @@ UBYTE * text_scroll_addr;
 UBYTE text_scroll_width, text_scroll_height;
 UBYTE text_scroll_fill;
 
-void ui_init() __banked {
+void ui_init() BANKED {
     vwf_direction               = UI_PRINT_LEFTTORIGHT;
     vwf_current_font_idx        = 0;
     vwf_current_font_bank       = ui_fonts[0].bank;
@@ -108,7 +108,7 @@ void ui_init() __banked {
     ui_load_tiles();
 }
 
-void ui_load_tiles() __banked {
+void ui_load_tiles() BANKED {
     ui_load_frame_tiles(frame_image, BANK(frame_image));
     ui_load_cursor_tile(cursor_image, BANK(cursor_image));
 
@@ -120,7 +120,7 @@ void ui_load_tiles() __banked {
 
 void ui_draw_frame_row(void * dest, UBYTE tile, UBYTE width) OLDCALL;
 
-void ui_draw_frame(UBYTE x, UBYTE y, UBYTE width, UBYTE height) __banked {
+void ui_draw_frame(UBYTE x, UBYTE y, UBYTE width, UBYTE height) BANKED {
     if (height == 0) return;
 #ifdef CGB
     if (_is_CGB) {
@@ -251,7 +251,7 @@ inline void ui_set_tile(UBYTE * addr, UBYTE tile, UBYTE bank) {
     SetTile(addr, tile);
 }
 
-void ui_draw_text_buffer_char() __banked {
+void ui_draw_text_buffer_char() BANKED {
     static UBYTE current_font_idx, current_text_bkg_fill, current_vwf_direction, current_text_ff_joypad, current_text_draw_speed;
 
     if ((text_ff_joypad) && (INPUT_A_OR_B_PRESSED)) text_ff = TRUE;
@@ -392,7 +392,7 @@ void ui_draw_text_buffer_char() __banked {
     ui_text_ptr++;
 }
 
-void ui_update() __nonbanked {
+void ui_update() NONBANKED {
     UBYTE is_moving = FALSE;
 
     // y should always move first
@@ -425,7 +425,7 @@ void ui_update() __nonbanked {
     } while (((text_ff) || (text_draw_speed == 0)) && (!text_drawn));
 }
 
-UBYTE ui_run_menu(menu_item_t * start_item, UBYTE bank, UBYTE options, UBYTE count) __banked {
+UBYTE ui_run_menu(menu_item_t * start_item, UBYTE bank, UBYTE options, UBYTE count) BANKED {
     menu_item_t current_menu_item;
     UBYTE current_index = 1u, next_index = 0u;
     // copy first menu item
@@ -499,7 +499,7 @@ UBYTE ui_run_menu(menu_item_t * start_item, UBYTE bank, UBYTE options, UBYTE cou
     };
 }
 
-void ui_run_modal(UBYTE wait_flags) __banked {
+void ui_run_modal(UBYTE wait_flags) BANKED {
     UBYTE fail;
     do {
         fail = FALSE;

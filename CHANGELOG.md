@@ -5,13 +5,57 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+### Changed
+
+### Fixed
+
+- Fixed some cases where assets would no longer live reload by switching to using chokidar glob syntax rather than regex filters [@RichardULZ](https://github.com/RichardULZ) 
+
+## [3.0.1]
+
+### Added
+
+- Improved console errors for gbvm scripts [@pau-tomas](https://github.com/pau-tomas)
+- Improved warning message when no .mod files are found and music engine is set to GBT Player [@pau-tomas](https://github.com/pau-tomas)
+- Additional tracker editor keyboard shortcuts [@RichardULZ](https://github.com/RichardULZ) 
+- Added error message if music editor fails to save due to read only permissions
+- Added ability to toggle if input scripts should override default button actions
+
+### Changed
+
+- Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
+- Blank project updated to use hUGEDriver by default
+- Reduced padding on scene info
+- Engine "define" fields now written to state_defines.h file
+- Scene info now highlights actor count in orange if reached (but not over) scene limit
+- Animation state name input now includes pencil button to work closer to variable renaming
+
+### Fixed
+
+- Fixed error when using clamp in math events [@pau-tomas](https://github.com/pau-tomas)
+- Updated 32-bit Windows app to use correct 32-bit GBDK-2020
+- Fixed error when building if any "Actor Set Sprite Sheet" events link to deleted sprites
+- Fix issue when gbvm scripts use .ARG10 and above [@RichardULZ](https://github.com/RichardULZ) 
+- Fix issue where music preview would stop working after window loses focus [@RichardULZ](https://github.com/RichardULZ) 
+- Fix issue where new template music and font files would be read only by default on Windows
+- Fix issue where migrated emotes and default font would be read only by default on Windows
+- Fix setting fade in / fade out speed
+- Fix for issue migrating projects with references to avatars that no longer exist
+- Fix issue where input scripts wouldn't override default button actions [untoxa](https://github.com/untoxa)
+- Fix issue where input scripts could fire while interact scripts were running (VM is locked)
+- Fix issue where game would crash if more than 19 actors are used in a single scene
+
 ## [3.0.0]
 
-- Moved to new [GBVM](https://github.com/chrismaltby/gbvm) based game engine
+- Moved to new [GBVM](https://github.com/chrismaltby/gbvm) based game engine (big thanks to [untoxa](https://github.com/untoxa))
 - Added sprite editor with support for large sprites and multiple animation states
 - Added ability to define idle animations, jump and climb animations for platform scenes and hover animations for point and click scenes.
 - Added hUGEDriver music support
-- Added music editor for .uge files
+- Added music editor for .uge files (thank you to [pau-tomas](https://github.com/pau-tomas/) + [Daid](https://github.com/Daid/) and [Superdisk](https://github.com/SuperDisk) for the inspiration and support)
 - Added parallax background support
 - Added math expression events to simplify performing calculations
 - Added support for multiple saves slots

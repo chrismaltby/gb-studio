@@ -44,8 +44,8 @@ void main() {
     CRITICAL {
         STAT_REG |= STATF_LYC; LYC_REG = 0;
         add_LCD(scanline_isr);
-        set_interrupts(VBL_IFLAG | LCD_IFLAG);
     }
+    set_interrupts(VBL_IFLAG | LCD_IFLAG);
 
     scroller_vram_addr = get_bkg_xy_addr(20, SCROLL_POS);
     set_vram_byte(scroller_vram_addr, *scroller_next_char - 0x20);

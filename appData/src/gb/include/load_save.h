@@ -7,18 +7,18 @@
 #define SRAM_BANK_SIZE 0x2000
 
 // initializes saving capabilities
-void data_init() __banked;
+void data_init() BANKED;
 
 // save state to SRAM
-void data_save(UBYTE slot) __banked;
+void data_save(UBYTE slot) BANKED;
 
 // load state from SRAM
-UBYTE data_load(UBYTE slot) __banked;
+UBYTE data_load(UBYTE slot) BANKED;
 
 // clear state in SRAM
-void data_clear(UBYTE slot) __banked;
+void data_clear(UBYTE slot) BANKED;
 
 // peek count VM variables from idx into dest
-UBYTE data_peek(UBYTE slot, UINT16 idx, UBYTE count, UINT16 * dest) __banked;
+UBYTE data_peek(UBYTE slot, UINT16 idx, UBYTE count, UINT16 * dest) BANKED;
 
 #endif

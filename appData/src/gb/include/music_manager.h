@@ -23,13 +23,13 @@ extern script_event_t music_events[4];
 /**
  * Initializes sound and music subsystem
  */
-void sound_init() __banked;
+void sound_init() BANKED;
 
 /**
  * Initializes music events subsystem
  * 
  */
-void music_init(UBYTE preserve) __banked;
+void music_init(UBYTE preserve) BANKED;
 
 /**
  * Play music
@@ -38,12 +38,12 @@ void music_init(UBYTE preserve) __banked;
  * @param bank bank location of track
  * @param loop if TRUE will infinitely loop the music
  */
-void music_play(const TRACK_T *track, UBYTE bank, UBYTE loop) __nonbanked;
+void music_play(const TRACK_T *track, UBYTE bank, UBYTE loop) NONBANKED;
 
 /**
  * Stop currently playing music
  */
-void music_stop() __banked;
+void music_stop() BANKED;
 
 /**
  * Sets music playback position
@@ -65,22 +65,22 @@ inline void music_setpos(UBYTE pattern, UBYTE row) {
  * 
  * @param channels channel mask
  */
-void music_mute(UBYTE channels) OLDCALL __nonbanked;
+void music_mute(UBYTE channels) OLDCALL NONBANKED;
 
 /**
  * Update music player
  */
-void music_update() OLDCALL __nonbanked;
+void music_update() OLDCALL NONBANKED;
 
 /**
  * Update music events
  */ 
-void music_events_update() __nonbanked;
+void music_events_update() NONBANKED;
 
 /**
  * Poll music events
  */ 
-UBYTE music_events_poll() __banked;
+UBYTE music_events_poll() BANKED;
 
 /**
  * Plays FX sound on given channel
@@ -89,7 +89,7 @@ UBYTE music_events_poll() __banked;
  * @param channel sound channel
  * @param data data to be written to sound registers
  */
-void sound_play(UBYTE frames, UBYTE channel,  UBYTE bank, const UBYTE * data) __banked;
+void sound_play(UBYTE frames, UBYTE channel,  UBYTE bank, const UBYTE * data) BANKED;
 
 /**
  * Plays waveform on channel 3
@@ -99,13 +99,13 @@ void sound_play(UBYTE frames, UBYTE channel,  UBYTE bank, const UBYTE * data) __
  * @param sample offset of wave data
  * @param size waveform size
  */
-void wave_play(UBYTE frames, UBYTE bank, UBYTE * sample, UWORD size) __banked;
+void wave_play(UBYTE frames, UBYTE bank, UBYTE * sample, UWORD size) BANKED;
 
 /**
  * Stops FX sound on given channel
  * 
  * @param channel sound channel
  */
-void sound_stop(UBYTE channel) __nonbanked;
+void sound_stop(UBYTE channel) NONBANKED;
 
 #endif

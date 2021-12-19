@@ -64,10 +64,10 @@ extern UBYTE text_scroll_fill;
 
 extern const UBYTE ui_time_masks[];
 
-void ui_init() __banked;
-void ui_update() __nonbanked;  // critical path, __nonbanked for speed
+void ui_init() BANKED;
+void ui_update() NONBANKED;  // critical path, NONBANKED for speed
 
-void ui_load_tiles() __banked; 
+void ui_load_tiles() BANKED; 
 
 #define UI_WAIT_WINDOW  1
 #define UI_WAIT_TEXT    2
@@ -82,7 +82,7 @@ void ui_load_tiles() __banked;
 #define UI_OUT_SPEED     -2
 #define UI_SPEED_INSTANT -3
 
-void ui_run_modal(UBYTE wait_flags) __banked;  // process UI until closed
+void ui_run_modal(UBYTE wait_flags) BANKED;  // process UI until closed
 
 inline void ui_set_pos(UBYTE x, UBYTE y) {
     win_pos_y = win_dest_pos_y = y;
@@ -95,7 +95,7 @@ inline void ui_move_to(UBYTE x, UBYTE y, BYTE speed) {
     if (speed == UI_SPEED_INSTANT) win_pos_y = y, win_pos_x = x; else win_speed = speed;
 }
 
-UBYTE ui_run_menu(menu_item_t * start_item, UBYTE bank, UBYTE options, UBYTE count) __banked;
+UBYTE ui_run_menu(menu_item_t * start_item, UBYTE bank, UBYTE options, UBYTE count) BANKED;
 
 inline void ui_load_frame_tiles(const UBYTE * offset, UBYTE bank) {
     SetBankedBkgData(192, 9, offset, bank);

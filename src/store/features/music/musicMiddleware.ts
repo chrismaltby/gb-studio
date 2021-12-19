@@ -25,7 +25,6 @@ export function initMusic() {
 // Initialise audio on first click
 window.addEventListener("click", initMusic);
 window.addEventListener("keydown", initMusic);
-window.addEventListener("blur", pause);
 
 function onSongLoaded(player: ScripTracker) {
   player.play();
@@ -51,7 +50,7 @@ async function playUGE(filename: string, _settings: MusicSettings) {
       });
     }
   };
-  ipcRenderer.on("music-data", listener);
+  ipcRenderer.once("music-data", listener);
   ipcRenderer.send("open-music");
 }
 

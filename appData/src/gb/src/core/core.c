@@ -42,7 +42,7 @@ extern const UBYTE bootstrap_script[];
 
 extern void core_reset_hook(); 
 
-void core_reset() __banked {
+void core_reset() BANKED {
     // cleanup core stuff
     SIO_init();
     input_init();
@@ -72,9 +72,9 @@ void process_VM() {
                     script_execute(BANK(bootstrap_script), bootstrap_script, 0, 0);
                     break;
                 }
-                if (joy != 0) events_update();
                 if (!VM_ISLOCKED()) {
-                    state_update();                                     // Update Current Scene Type
+                    if (joy != 0) events_update();                      // update joypad events (must be the first)
+                    state_update();                                     // update current scene, depending on its type
                     if ((game_time & 0x0F) == 0x00) timers_update();    // update timers
                     music_events_update();                              // update music events
                 }
@@ -149,7 +149,7 @@ void process_VM() {
                     }
                 }
 
-                __critical {
+                CRITICAL {
                     switch (scene_LCD_type) {
                         case LCD_parallax: 
                             add_LCD(parallax_LCD_isr);
@@ -180,7 +180,7 @@ void process_VM() {
     }
 }
 
-void core_run() __banked {
+void core_run() BANKED {
 #ifdef CGB
     if (_cpu == CGB_TYPE) cpu_fast();
 #endif
@@ -216,7 +216,7 @@ void core_run() __banked {
     // kill all threads and clear VM memory
     script_runner_init(TRUE);
 
-    __critical {
+    CRITICAL {
         parallax_row = parallax_rows;
         LYC_REG = 0u;
 

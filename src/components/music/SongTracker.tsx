@@ -241,11 +241,11 @@ export const SongTracker = ({
       if (selectedCell % 4 === 0) {
         if (e.ctrlKey) {
           if (e.shiftKey) {
-            if (e.key === "Q") return transposeNoteCell(12);
-            if (e.key === "A") return transposeNoteCell(-12);
+            if (e.key === "Q" || e.key === "+") return transposeNoteCell(12);
+            if (e.key === "A" || e.key === "_") return transposeNoteCell(-12);
           } else {
-            if (e.key === "q") return transposeNoteCell(1);
-            if (e.key === "a") return transposeNoteCell(-1);
+            if (e.key === "q" || e.key === "=") return transposeNoteCell(1);
+            if (e.key === "a" || e.key === "-") return transposeNoteCell(-1);
           }
           return;
         } else if (e.metaKey) {
@@ -275,7 +275,7 @@ export const SongTracker = ({
         if (e.key === "l") editNoteCell(20);
         if (e.key === ";") editNoteCell(21);
         if (e.key === "'") editNoteCell(22);
-        //if (e.key === "??") editNoteCell(23);
+        if (e.key === "\\") editNoteCell(23);
         if (e.key === "z") editNoteCell(24);
         if (e.key === "x") editNoteCell(25);
         if (e.key === "c") editNoteCell(26);

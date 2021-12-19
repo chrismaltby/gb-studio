@@ -3,9 +3,9 @@
 
 #include <gb/gb.h>
 
-void restore_sram_bank(UINT8 bank) __banked;
-void restore_sram() __banked;
+void restore_sram_bank(UINT8 bank) BANKED;
+void restore_sram() BANKED;
 
-UINT8 save_sram(UINT8 count) __banked;
+UINT8 save_sram(UINT8 count) BANKED;
 
 #endif
