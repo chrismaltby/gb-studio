@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Updated Portuguese localisation. [@toxworks](https://github.com/toxworks)
+- Updated Simplified Chinese localisation. [@wcxu21](https://github.com/wcxu21) 
 
 ### Fixed
 
