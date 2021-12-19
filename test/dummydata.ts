@@ -94,6 +94,7 @@ export const dummyTrigger: Trigger = {
   height: 0,
   script: [],
   leaveScript: [],
+  updateScript: [],
 };
 
 export const dummyPalette: Palette = {
