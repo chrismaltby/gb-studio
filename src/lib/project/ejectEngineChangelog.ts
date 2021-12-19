@@ -32,6 +32,23 @@ const changes: EngineChange[] = [
       "   * Switched SDCC features to use macros in preparation for new GBDK",
     modifiedFiles: ["All..."],
   },
+  {
+    version: "3.0.2-e0",
+    description:
+      "Bug fixes and crash handler:\n" +
+      "   * Added crash handler screen\n" +
+      "   * Text control code 0x09 added to skip characters without waiting\n" +
+      "   * Allow tilesets with zero length\n" +
+      "   * Fix issue where VM_LOCK was not affecting context switching\n" +
+      "   * Optimised input script checks",
+    modifiedFiles: [
+      "src/core/crash_handler.s",
+      "src/core/data_manager.c",
+      "src/core/events.c",
+      "src/core/ui.c",
+      "src/core/vm.c",
+    ],
+  },
 ];
 
 const ejectEngineChangelog = (currentVersion: string) => {

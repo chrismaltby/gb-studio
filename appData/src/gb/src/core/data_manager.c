@@ -64,39 +64,38 @@ void load_bkg_tileset(const tileset_t* tiles, UBYTE bank) BANKED {
     prev_bank = bank; prev_tiles = tiles;
     if ((!bank) || (!tiles)) return;
 
-    UWORD ntiles = ReadBankedUWORD(&(prev_tiles->n_tiles), prev_bank);
+    UWORD n_tiles = ReadBankedUWORD(&(prev_tiles->n_tiles), prev_bank);
 
     // load first background chunk, align to zero tile
     UBYTE * data = prev_tiles->tiles;
-    if (ntiles < 128) {
-        SetBankedBkgData(0, ntiles, data, prev_bank);
+    if (n_tiles < 128) {
+        if ((UBYTE)n_tiles) SetBankedBkgData(0, n_tiles, data, prev_bank);
         return;    
     }
     SetBankedBkgData(0, 128, data, prev_bank);
-    ntiles -= 128; data += 128 * 16;
+    n_tiles -= 128; data += 128 * 16;
 
     // load second background chunk
-    if (ntiles < 128) {
-        if (ntiles < 65) {
+    if (n_tiles < 128) {
+        if (n_tiles < 65) {
             #ifdef ALLOC_BKG_TILES_TOWARDS_SPR
                 // new allocation style, align to 192-th tile
-                SetBankedBkgData(192 - ntiles, ntiles, data, prev_bank);
+                if ((UBYTE)n_tiles) SetBankedBkgData(192 - n_tiles, n_tiles, data, prev_bank);
             #else
                 // old allocation style, align to 128-th tile
-                SetBankedBkgData(128, ntiles, data, prev_bank);
+                if ((UBYTE)n_tiles) SetBankedBkgData(128, n_tiles, data, prev_bank);
             #endif
         } else {
             // if greater than 64 allow overflow into UI, align to 128-th tile
-            SetBankedBkgData(128, ntiles, data, prev_bank);
+            if ((UBYTE)n_tiles) SetBankedBkgData(128, n_tiles, data, prev_bank);
         }
         return;
     }
     SetBankedBkgData(128, 128, data, prev_bank);
-    ntiles -= 128; data += 128 * 16; 
+    n_tiles -= 128; data += 128 * 16; 
     
     // if more than 256 - then it's a 360-tile logo, load rest to sprite area
-    if (!ntiles) return;
-    SetBankedSpriteData(0, ntiles, data, prev_bank);
+    if ((UBYTE)n_tiles) SetBankedSpriteData(0, n_tiles, data, prev_bank);
 }
 
 void load_background(const background_t* background, UBYTE bank) BANKED {
@@ -128,7 +127,7 @@ void load_background(const background_t* background, UBYTE bank) BANKED {
 
 inline UBYTE load_sprite_tileset(UBYTE base_tile, const tileset_t * tileset, UBYTE bank) {
     UBYTE n_tiles = ReadBankedUBYTE(&(tileset->n_tiles), bank);
-    SetBankedSpriteData(base_tile, n_tiles, tileset->tiles, bank);
+    if (n_tiles) SetBankedSpriteData(base_tile, n_tiles, tileset->tiles, bank);
     return n_tiles;
 }
 

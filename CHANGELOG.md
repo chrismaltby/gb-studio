@@ -9,14 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added in-game crash handler screen [untoxa](https://github.com/untoxa)
+
 ### Changed
 
 - Updated Portuguese localisation. [@toxworks](https://github.com/toxworks)
 - Updated Simplified Chinese localisation. [@wcxu21](https://github.com/wcxu21) 
+- Optimised game engine input script checks [untoxa](https://github.com/untoxa)
 
 ### Fixed
 
 - Fixed some cases where assets would no longer live reload by switching to using chokidar glob syntax rather than regex filters [@RichardULZ](https://github.com/RichardULZ) 
+- Allow tilesets with zero length [untoxa](https://github.com/untoxa)
+- Fix issue where VM_LOCK was not affecting context switching [untoxa](https://github.com/untoxa)
 
 ## [3.0.1]
 

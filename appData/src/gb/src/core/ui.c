@@ -283,6 +283,8 @@ void ui_draw_text_buffer_char() BANKED {
         ui_print_reset();
     }
 
+    while (*ui_text_ptr == 0x09) ui_text_ptr++; // all 0x09 characters must be skipped without waiting
+
     switch (*ui_text_ptr) {
         case 0x00: {
             ui_text_ptr = 0; 

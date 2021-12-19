@@ -610,6 +610,9 @@ __endasm;
 // global shared script memory
 UWORD script_memory[VM_HEAP_SIZE + (VM_MAX_CONTEXTS * VM_CONTEXT_STACK_SIZE)];
 
+// context pointers for script_runner
+static SCRIPT_CTX * old_executing_ctx, * executing_ctx;
+
 // initialize script runner contexts
 // resets whole VM engine
 void script_runner_init(UBYTE reset) BANKED {
@@ -630,6 +633,8 @@ void script_runner_init(UBYTE reset) BANKED {
     }
     vm_lock_state = 0;
     vm_loaded_state = FALSE;
+    // reset script_runner
+    old_executing_ctx = 0, executing_ctx = first_ctx;
 }
 
 // execute a script in the new allocated context
@@ -689,34 +694,38 @@ UBYTE script_terminate(UBYTE ID) BANKED {
 // process all contexts
 // executes one command in each active context
 UBYTE script_runner_update() NONBANKED {
-    static SCRIPT_CTX * old_ctx, * ctx;
     static UBYTE waitable;
     static UBYTE counter;
-    old_ctx = 0, ctx = first_ctx;
+
+    // if locked then execute last context until it is unlocked or terminated
+    if (!vm_lock_state) old_executing_ctx = 0, executing_ctx = first_ctx;
+    
     waitable = TRUE;
     counter = INSTRUCTIONS_PER_QUANT;
-    while (ctx) {
+    while (executing_ctx) {
         vm_exception_code = EXCEPTION_CODE_NONE;
-        ctx->waitable = FALSE;
-        if ((ctx->terminated != FALSE) || (!VM_STEP(ctx))) {
+        executing_ctx->waitable = FALSE;
+        if ((executing_ctx->terminated != FALSE) || (!VM_STEP(executing_ctx))) {
             // update lock state
-            vm_lock_state -= ctx->lock_count;
+            vm_lock_state -= executing_ctx->lock_count;
             // update handle if present
-            if (ctx->hthread) *(ctx->hthread) |= SCRIPT_TERMINATED;
+            if (executing_ctx->hthread) *(executing_ctx->hthread) |= SCRIPT_TERMINATED;
             // script is finished, remove from linked list
-            if (old_ctx) old_ctx->next = ctx->next; else first_ctx = ctx->next;
+            if (old_executing_ctx) old_executing_ctx->next = executing_ctx->next; else first_ctx = executing_ctx->next;
             // add terminated context to free contexts list
-            ctx->next = free_ctxs, free_ctxs = ctx;
+            executing_ctx->next = free_ctxs, free_ctxs = executing_ctx;
             // next context
-            if (old_ctx) ctx = old_ctx->next; else ctx = first_ctx;
+            if (old_executing_ctx) executing_ctx = old_executing_ctx->next; else executing_ctx = first_ctx;
         } else {
             // check exception
             if (vm_exception_code) return RUNNER_EXCEPTION;
             // loop until waitable state or quant is expired 
-            if (!(ctx->waitable) && (counter--)) continue;
+            if (!(executing_ctx->waitable) && (counter--)) continue;
+            // exit while loop if context switching is locked
+            if (vm_lock_state) break;
             // switch to the next context
-            waitable &= ctx->waitable; 
-            old_ctx = ctx, ctx = ctx->next;
+            waitable &= executing_ctx->waitable; 
+            old_executing_ctx = executing_ctx, executing_ctx = executing_ctx->next;
             counter = INSTRUCTIONS_PER_QUANT;
         }
     }
