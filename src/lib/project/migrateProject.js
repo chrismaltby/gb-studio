@@ -13,7 +13,7 @@ import generateRandomLookScript from "../movement/generateRandomLookScript";
 import { COLLISION_ALL, DMG_PALETTE } from "../../consts";
 import { EVENT_END } from "../compiler/eventTypes";
 import uuid from "uuid";
-import { copySync } from "fs-extra";
+import { copySync, chmodSync } from "fs-extra";
 import { projectTemplatesRoot } from "../../consts";
 import uniq from "lodash/uniq";
 
@@ -30,6 +30,7 @@ const ensureProjectAssetSync = (relativePath, { projectRoot }) => {
       overwrite: false,
       errorOnExist: true,
     });
+    chmodSync(projectPath, 0o644);
   } catch (e) {
     // Don't need to catch this, if it failed then the file already exists
     // and we can safely continue.
@@ -1403,35 +1404,40 @@ const migrateFrom200r15Tor16Avatars = (data, projectRoot) => {
 
   const avatarsData = uniqueAvatarIds.map((spriteId) => {
     const sprite = data.spriteSheets.find((sprite) => sprite.id === spriteId);
-    return {
-      id: uuid(),
-      name: sprite.name,
-      width: 16,
-      height: 16,
-      filename: sprite.filename,
-    };
+    return (
+      sprite && {
+        id: uuid(),
+        name: sprite.name,
+        width: 16,
+        height: 16,
+        filename: sprite.filename,
+      }
+    );
   });
 
   const avatarsIdLookup = uniqueAvatarIds.reduce((memo, oldId, index) => {
-    const newId = avatarsData[index].id;
+    const avatar = avatarsData[index];
+    const newId = avatar && avatar.id;
     memo[oldId] = newId;
     return memo;
   }, {});
 
   avatarsData.forEach((avatar) => {
-    const destPath = `${projectRoot}/assets/avatars/${avatar.filename}`;
-    const spritePath = `${projectRoot}/assets/sprites/${avatar.filename}`;
-    try {
-      copySync(spritePath, destPath, {
-        overwrite: false,
-        errorOnExist: true,
-      });
-    } catch (e) {}
+    if (avatar) {
+      try {
+        const destPath = `${projectRoot}/assets/avatars/${avatar.filename}`;
+        const spritePath = `${projectRoot}/assets/sprites/${avatar.filename}`;
+        copySync(spritePath, destPath, {
+          overwrite: false,
+          errorOnExist: true,
+        });
+      } catch (e) {}
+    }
   });
 
   return {
     ...data,
-    avatars: avatarsData,
+    avatars: avatarsData.filter((i) => i),
     scenes: mapScenesEvents(
       data.scenes,
       migrateFrom200r15To200r16Event(avatarsIdLookup)

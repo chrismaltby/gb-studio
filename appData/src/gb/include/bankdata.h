@@ -12,7 +12,7 @@
 #define BANK(VARNAME) ( (UBYTE) & __bank_ ## VARNAME )
 #endif
 #ifndef BANKREF
-#define BANKREF(VARNAME) void __func_ ## VARNAME() __banked __naked { \
+#define BANKREF(VARNAME) void __func_ ## VARNAME() BANKED NAKED { \
 __asm \
     .local b___func_ ## VARNAME \
     ___bank_ ## VARNAME = b___func_ ## VARNAME \
@@ -28,7 +28,7 @@ __endasm; \
 #define SIZE(VARNAME) ((UWORD)&( __size_ ## VARNAME ))
 #endif
 #ifndef SIZEREF
-#define SIZEREF(VARNAME) const void __at(sizeof(VARNAME)) __size_ ## VARNAME;
+#define SIZEREF(VARNAME) const void AT(sizeof(VARNAME)) __size_ ## VARNAME;
 #endif
 #ifndef SIZEREF_EXTERN
 #define SIZEREF_EXTERN(VARNAME) extern const void __size_ ## VARNAME;
@@ -91,7 +91,7 @@ void SetBankedWinTiles(UINT8 x, UINT8 y, UINT8 w, UINT8 h, const unsigned char *
  * @param ptr memory address of data within bank
  * @param bank bank to read from
  */
-void ReadBankedFarPtr(far_ptr_t * dest, const unsigned char *ptr, UBYTE bank) OLDCALL __preserves_regs(b, c);
+void ReadBankedFarPtr(far_ptr_t * dest, const unsigned char *ptr, UBYTE bank) OLDCALL PRESERVES_REGS(b, c);
 
 /**
  * Read UWORD from banked memory location (non-reentrant!)
@@ -100,7 +100,7 @@ void ReadBankedFarPtr(far_ptr_t * dest, const unsigned char *ptr, UBYTE bank) OL
  * @param bank bank to read from
  * @return value stored in banked location
  */
-UWORD ReadBankedUWORD(const unsigned char *ptr, UBYTE bank) OLDCALL __preserves_regs(b, c);
+UWORD ReadBankedUWORD(const unsigned char *ptr, UBYTE bank) OLDCALL PRESERVES_REGS(b, c);
 
 /**
  * Read UBYTE from banked memory location (non-reentrant!)

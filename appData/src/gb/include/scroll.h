@@ -31,22 +31,22 @@ extern UINT8 pending_h_i;
 /**
  * Resets scroll settings on engine start
  */
-void scroll_reset() __banked;
+void scroll_reset() BANKED;
 
 /**
  * Initialise scroll variables, call on scene load
  */
-void scroll_init() __banked;
+void scroll_init() BANKED;
 
 /**
  * Update scroll position and load in any newly visible background tiles and actors
  */
-void scroll_update() __banked;
+void scroll_update() BANKED;
 
 /**
  * Resets scroll and update the whole screen 
  */
-void scroll_repaint() __banked;
+void scroll_repaint() BANKED;
 
 /**
  * Set vram tile at memory location to a value
@@ -54,17 +54,17 @@ void scroll_repaint() __banked;
  * @param r address of tile to write to
  * @param t new tile value
  */
-void SetTile(UBYTE * r, UINT8 t) OLDCALL __preserves_regs(b, c);
+void SetTile(UBYTE * r, UINT8 t) OLDCALL PRESERVES_REGS(b, c);
 
 /**
  * Get base address of window map
  */
-UINT8 * GetWinAddr() OLDCALL __preserves_regs(b, c, h, l);
+UINT8 * GetWinAddr() OLDCALL PRESERVES_REGS(b, c, h, l);
 
 /**
  * Get base address of background map
  */
-UINT8 * GetBkgAddr() OLDCALL __preserves_regs(b, c, h, l);
+UINT8 * GetBkgAddr() OLDCALL PRESERVES_REGS(b, c, h, l);
 
 /**
  * Set single tile t on window layer at x,y
@@ -72,7 +72,7 @@ UINT8 * GetBkgAddr() OLDCALL __preserves_regs(b, c, h, l);
  * @param y Y-coordinate
  * @param t tile index
  */ 
-UBYTE * set_win_tile_xy(UBYTE x, UBYTE y, UBYTE t) OLDCALL __preserves_regs(b, c);
+UBYTE * set_win_tile_xy(UBYTE x, UBYTE y, UBYTE t) OLDCALL PRESERVES_REGS(b, c);
 
 /**
  * Set single tile t on background layer at x,y
@@ -80,7 +80,7 @@ UBYTE * set_win_tile_xy(UBYTE x, UBYTE y, UBYTE t) OLDCALL __preserves_regs(b, c
  * @param y Y-coordinate
  * @param t tile index
  */ 
-UBYTE * set_bkg_tile_xy(UBYTE x, UBYTE y, UBYTE t) OLDCALL __preserves_regs(b, c);
+UBYTE * set_bkg_tile_xy(UBYTE x, UBYTE y, UBYTE t) OLDCALL PRESERVES_REGS(b, c);
 
 /**
  * Scrolls rectangle area of VRAM filemap by base address 1 row up
@@ -89,7 +89,7 @@ UBYTE * set_bkg_tile_xy(UBYTE x, UBYTE y, UBYTE t) OLDCALL __preserves_regs(b, c
  * @param h height of the area
  * @param fill tile id to fill the bottom row 
  */
-void scroll_rect(UBYTE * base_addr, UBYTE w, UBYTE h, UBYTE fill) OLDCALL __banked __preserves_regs(b, c);
+void scroll_rect(UBYTE * base_addr, UBYTE w, UBYTE h, UBYTE fill) OLDCALL BANKED PRESERVES_REGS(b, c);
 
 /**
  * copies scroll position variables into double buffered copies

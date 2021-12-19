@@ -1,5 +1,5 @@
 {
-  "version": "3.0.0-e0",
+  "version": "3.0.1-e0",
   "fields": [
     {
       "key": "INPUT_PLATFORM_JUMP",
@@ -12,7 +12,6 @@
         ["INPUT_UP", "FIELD_DIRECTION_UP"]
       ],
       "cType": "define",
-      "file": "src/states/platform.c",
       "defaultValue": "INPUT_A"
     },
     {
@@ -25,7 +24,6 @@
         ["INPUT_B", "B"]
       ],
       "cType": "define",
-      "file": "src/states/platform.c",
       "defaultValue": "INPUT_B"
     }, 
     {
@@ -40,7 +38,6 @@
         ["INPUT_DOWN", "FIELD_DIRECTION_DOWN"]        
       ],
       "cType": "define",
-      "file": "src/states/platform.c",
       "defaultValue": "INPUT_A"
     },        
     {
@@ -173,7 +170,6 @@
         ["INPUT_B", "B"]
       ],
       "cType": "define",
-      "file": "src/states/topdown.c",
       "defaultValue": "INPUT_A"
     },    
     {

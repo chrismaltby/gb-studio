@@ -3,9 +3,12 @@
 
 #include <gb/gb.h>
 
+#include <stdint.h>
+#include <stdbool.h>
+
 #include "asm/types.h"
 
-#define IS_NEG(a) ((UBYTE)(a)&0x80)
+#define IS_NEG(a) ((uint8_t)(a)&0x80)
 
 #define U_LESS_THAN(A, B) ((A) - (B)&0x8000u)
 #define UBYTE_LESS_THAN(A, B) ((A) - (B)&0x80u)
@@ -45,8 +48,8 @@
 #define DIV_4(a) ((a) >> 2)
 #define DIV_2(a) ((a) >> 1)
 
-#define SIN(a)  (sine_wave[(UBYTE)(a)])
-#define COS(a)  (sine_wave[(UBYTE)((UBYTE)(a) + 64u)])
+#define SIN(a)  (sine_wave[(uint8_t)(a)])
+#define COS(a)  (sine_wave[(uint8_t)((uint8_t)(a) + 64u)])
 
 #define ANGLE_UP        0
 #define ANGLE_RIGHT     64
@@ -69,15 +72,15 @@
 #define N_DIRECTIONS    4
 
 typedef struct upoint16_t {
-    UINT16 x, y;
+    uint16_t x, y;
 } upoint16_t;
 
 typedef struct point16_t {
-    INT16 x, y;
+    int16_t x, y;
 } point16_t;
 
 typedef struct point8_t {
-    INT8 x, y;
+    int8_t x, y;
 } point8_t;
 
 typedef enum {
@@ -88,30 +91,30 @@ typedef enum {
     DIR_NONE
 } direction_e;
 
-extern const INT8 sine_wave[256];
+extern const int8_t sine_wave[256];
 extern const point8_t dir_lookup[4];
-extern const UBYTE dir_angle_lookup[4];
+extern const uint8_t dir_angle_lookup[4];
 
-inline void point_translate_dir(upoint16_t *point, direction_e dir, UBYTE speed) {
-    point->x += (WORD)(dir_lookup[dir].x * speed);
-    point->y += (WORD)(dir_lookup[dir].y * speed);
+inline void point_translate_dir(upoint16_t *point, direction_e dir, uint8_t speed) {
+    point->x += (int16_t)(dir_lookup[dir].x * speed);
+    point->y += (int16_t)(dir_lookup[dir].y * speed);
 }
 
-inline void point_translate_dir_word(upoint16_t *point, direction_e dir, UWORD speed) {
-    point->x += (WORD)(dir_lookup[dir].x * speed);
-    point->y += (WORD)(dir_lookup[dir].y * speed);
+inline void point_translate_dir_word(upoint16_t *point, direction_e dir, uint16_t speed) {
+    point->x += (int16_t)(dir_lookup[dir].x * speed);
+    point->y += (int16_t)(dir_lookup[dir].y * speed);
 }
 
-inline void point_translate_angle(upoint16_t *point, UBYTE angle, UBYTE speed) {
+inline void point_translate_angle(upoint16_t *point, uint8_t angle, uint8_t speed) {
     point->x += ((SIN(angle) * (speed)) >> 7);
     point->y -= ((COS(angle) * (speed)) >> 7);
 }
 
-inline void point_translate_angle_to_delta(point16_t *point, UBYTE angle, UBYTE speed) {
+inline void point_translate_angle_to_delta(point16_t *point, uint8_t angle, uint8_t speed) {
     point->x = ((SIN(angle) * (speed)) >> 7);
     point->y = ((COS(angle) * (speed)) >> 7);
 }
 
-UBYTE isqrt(UWORD x) __nonbanked;
+uint8_t isqrt(uint16_t x) NONBANKED;
 
 #endif

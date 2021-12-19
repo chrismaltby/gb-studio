@@ -96,7 +96,7 @@ extern joypads_t joypads;
 extern UBYTE last_joy;
 extern UBYTE recent_joy;
 
-void input_init() __banked;
-void input_update() __nonbanked;
+void input_init() BANKED;
+void input_update() NONBANKED;
 
 #endif

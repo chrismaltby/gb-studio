@@ -16,30 +16,30 @@
 #include "data_manager.h"
 #include "interrupts.h"
 
-void vm_show_sprites() OLDCALL __banked {
+void vm_show_sprites() OLDCALL BANKED {
     hide_sprites = FALSE;
     SHOW_SPRITES;
 }
 
-void vm_hide_sprites() OLDCALL __banked {
+void vm_hide_sprites() OLDCALL BANKED {
     hide_sprites = TRUE;
     HIDE_SPRITES;
 }
 
-void vm_input_wait(SCRIPT_CTX * THIS, UBYTE mask) OLDCALL __banked { 
+void vm_input_wait(SCRIPT_CTX * THIS, UBYTE mask) OLDCALL BANKED { 
     if ((joy != last_joy) && (joy & mask)) return;
     THIS->waitable = 1;
     THIS->PC -= INSTRUCTION_SIZE + sizeof(mask);
 }
 
-void vm_context_prepare(SCRIPT_CTX * THIS, UBYTE slot, UBYTE bank, UBYTE * pc) OLDCALL __banked {
+void vm_context_prepare(SCRIPT_CTX * THIS, UBYTE slot, UBYTE bank, UBYTE * pc) OLDCALL BANKED {
     THIS;
     script_event_t * event = &input_events[(slot - 1) & 7];
     event->script_bank = bank; 
     event->script_addr = pc;
 }
 
-void vm_input_attach(SCRIPT_CTX * THIS, UBYTE mask, UBYTE slot) OLDCALL __banked {
+void vm_input_attach(SCRIPT_CTX * THIS, UBYTE mask, UBYTE slot) OLDCALL BANKED {
     THIS;
     UBYTE * current_slot = input_slots;
     for (UBYTE tmp = mask; (tmp); tmp = tmp >> 1, current_slot++) {
@@ -47,7 +47,7 @@ void vm_input_attach(SCRIPT_CTX * THIS, UBYTE mask, UBYTE slot) OLDCALL __banked
     }
 }
 
-void vm_input_detach(SCRIPT_CTX * THIS, UBYTE mask) OLDCALL __banked {
+void vm_input_detach(SCRIPT_CTX * THIS, UBYTE mask) OLDCALL BANKED {
     THIS;
     UBYTE * current_slot = input_slots;
     for (UBYTE tmp = mask; (tmp); tmp = tmp >> 1, current_slot++) {
@@ -55,48 +55,48 @@ void vm_input_detach(SCRIPT_CTX * THIS, UBYTE mask) OLDCALL __banked {
     }
 }
 
-void vm_input_get(SCRIPT_CTX * THIS, INT16 idx, UBYTE joyid) OLDCALL __banked { 
+void vm_input_get(SCRIPT_CTX * THIS, INT16 idx, UBYTE joyid) OLDCALL BANKED { 
     INT16 * A = VM_REF_TO_PTR(idx);
     *A = joypads.joypads[joyid];
 }
 
-void vm_fade_in(SCRIPT_CTX * THIS, UBYTE is_modal) OLDCALL __banked {
+void vm_fade_in(SCRIPT_CTX * THIS, UBYTE is_modal) OLDCALL BANKED {
     THIS; 
     if (is_modal) fade_in_modal(); else fade_in();
 }
 
-void vm_fade_out(SCRIPT_CTX * THIS, UBYTE is_modal) OLDCALL __banked { 
+void vm_fade_out(SCRIPT_CTX * THIS, UBYTE is_modal) OLDCALL BANKED { 
     THIS;
     if (is_modal) fade_out_modal(); else fade_out();
 }
 
-void vm_timer_prepare(SCRIPT_CTX * THIS, UBYTE timer, UBYTE bank, UBYTE * pc) OLDCALL __banked {
+void vm_timer_prepare(SCRIPT_CTX * THIS, UBYTE timer, UBYTE bank, UBYTE * pc) OLDCALL BANKED {
     THIS;
     script_event_t * event = &timer_events[(timer - 1) & 3];
     event->script_bank = bank; 
     event->script_addr = pc;
 }
 
-void vm_timer_set(SCRIPT_CTX * THIS, UBYTE timer, UBYTE value) OLDCALL __banked {
+void vm_timer_set(SCRIPT_CTX * THIS, UBYTE timer, UBYTE value) OLDCALL BANKED {
     THIS;
     timer_time_t * timer_value = &timer_values[(timer - 1) & 3];
     timer_value->value = value;
     timer_value->remains = value;
 }
 
-void vm_timer_stop(SCRIPT_CTX * THIS, UBYTE timer) OLDCALL __banked {
+void vm_timer_stop(SCRIPT_CTX * THIS, UBYTE timer) OLDCALL BANKED {
     THIS;
     timer_time_t * timer_value = &timer_values[(timer - 1) & 3];
     timer_value->value = 0;
 }
 
-void vm_timer_reset(SCRIPT_CTX * THIS, UBYTE timer) OLDCALL __banked {
+void vm_timer_reset(SCRIPT_CTX * THIS, UBYTE timer) OLDCALL BANKED {
     THIS;
     timer_time_t * timer_value = &timer_values[(timer - 1) & 3];
     timer_value->remains = timer_value->value;
 }
 
-void vm_get_tile_xy(SCRIPT_CTX * THIS, INT16 idx_tile, INT16 idx_x, INT16 idx_y) OLDCALL __banked {
+void vm_get_tile_xy(SCRIPT_CTX * THIS, INT16 idx_tile, INT16 idx_x, INT16 idx_y) OLDCALL BANKED {
     THIS;
 
     INT16 * res = VM_REF_TO_PTR(idx_tile);
@@ -116,7 +116,7 @@ void vm_get_tile_xy(SCRIPT_CTX * THIS, INT16 idx_tile, INT16 idx_x, INT16 idx_y)
 }
 
 
-void vm_replace_tile(SCRIPT_CTX * THIS, INT16 idx_target_tile, UBYTE tileset_bank, const tileset_t * tileset, INT16 idx_start_tile, UBYTE length) OLDCALL __banked {
+void vm_replace_tile(SCRIPT_CTX * THIS, INT16 idx_target_tile, UBYTE tileset_bank, const tileset_t * tileset, INT16 idx_start_tile, UBYTE length) OLDCALL BANKED {
     INT16 * A = VM_REF_TO_PTR(idx_start_tile);
     INT16 * B = VM_REF_TO_PTR(idx_target_tile);
 #ifdef CGB
@@ -130,7 +130,7 @@ void vm_replace_tile(SCRIPT_CTX * THIS, INT16 idx_target_tile, UBYTE tileset_ban
 #endif
 }
 
-void vm_poll(SCRIPT_CTX * THIS, INT16 idx, INT16 res, UBYTE event_mask) OLDCALL __banked {
+void vm_poll(SCRIPT_CTX * THIS, INT16 idx, INT16 res, UBYTE event_mask) OLDCALL BANKED {
     INT16 * result_mask = VM_REF_TO_PTR(idx); 
     INT16 * result = VM_REF_TO_PTR(res);
     if (event_mask & POLL_EVENT_INPUT) { 
@@ -152,12 +152,12 @@ void vm_poll(SCRIPT_CTX * THIS, INT16 idx, INT16 res, UBYTE event_mask) OLDCALL 
     THIS->PC -= INSTRUCTION_SIZE + sizeof(idx) + sizeof(res) + sizeof(event_mask);
 }
 
-void vm_set_sprite_mode(SCRIPT_CTX * THIS, UBYTE mode) OLDCALL __banked {
+void vm_set_sprite_mode(SCRIPT_CTX * THIS, UBYTE mode) OLDCALL BANKED {
     THIS;
     if (mode) SPRITES_8x16; else SPRITES_8x8;
 }
 
-void vm_replace_tile_xy(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE tileset_bank, const tileset_t * tileset, INT16 idx_start_tile) OLDCALL __banked {
+void vm_replace_tile_xy(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE tileset_bank, const tileset_t * tileset, INT16 idx_start_tile) OLDCALL BANKED {
     THIS;
 
     INT16 * A = VM_REF_TO_PTR(idx_start_tile);
@@ -187,7 +187,7 @@ void vm_replace_tile_xy(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE tileset_bank,
 #endif
 }
 
-void vm_rumble(SCRIPT_CTX * THIS, UBYTE enable) OLDCALL __banked {
+void vm_rumble(SCRIPT_CTX * THIS, UBYTE enable) OLDCALL BANKED {
     THIS;
     if (enable) *(UBYTE *)0x4000 |= RUMBLE_ENABLE; else *(UBYTE *)0x4000 &= (~RUMBLE_ENABLE);
 }

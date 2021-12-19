@@ -52,7 +52,7 @@ const save_point_t save_points[] = {
 
 size_t save_blob_size;
 
-void data_init() __banked {
+void data_init() BANKED {
     ENABLE_RAM_MBC5;
     // calculate save blob size
     save_blob_size = sizeof(signature);
@@ -78,7 +78,7 @@ UBYTE * data_slot_address(UBYTE slot, UBYTE *bank) {
     return (UBYTE *)0xA000u + res;
 }
 
-void data_save(UBYTE slot) __banked {
+void data_save(UBYTE slot) BANKED {
     UBYTE data_bank, *save_data = data_slot_address(slot, &data_bank);
     if (save_data == NULL) return;
     SWITCH_RAM(data_bank);
@@ -95,7 +95,7 @@ void data_save(UBYTE slot) __banked {
 #endif
 }
 
-UBYTE data_load(UBYTE slot) __banked {
+UBYTE data_load(UBYTE slot) BANKED {
     UBYTE data_bank, *save_data = data_slot_address(slot, &data_bank);
     if (save_data == NULL) return FALSE;
     SWITCH_RAM(data_bank);
@@ -109,7 +109,7 @@ UBYTE data_load(UBYTE slot) __banked {
     return TRUE;
 }
 
-void data_clear(UBYTE slot) __banked {
+void data_clear(UBYTE slot) BANKED {
     UBYTE data_bank, *save_data = data_slot_address(slot, &data_bank);
     if (save_data == NULL) return;
     SWITCH_RAM(data_bank);
@@ -120,7 +120,7 @@ void data_clear(UBYTE slot) __banked {
 #endif
 }
 
-UBYTE data_peek(UBYTE slot, UINT16 idx, UBYTE count, UINT16 * dest) __banked {
+UBYTE data_peek(UBYTE slot, UINT16 idx, UBYTE count, UINT16 * dest) BANKED {
     UBYTE data_bank, *save_data = data_slot_address(slot, &data_bank);
     if (save_data == NULL) return FALSE;
     SWITCH_RAM(data_bank);

@@ -5,7 +5,7 @@ import {
   createSlice,
   PayloadAction,
 } from "@reduxjs/toolkit";
-import { copy, pathExists, readFile } from "fs-extra";
+import { pathExists, readFile } from "fs-extra";
 import cloneDeep from "lodash/cloneDeep";
 import { writeFileWithBackupAsync } from "lib/helpers/fs/writeFileWithBackup";
 import { PatternCell } from "lib/helpers/uge/song/PatternCell";
@@ -18,6 +18,7 @@ import {
   WaveInstrument,
 } from "./trackerDocumentTypes";
 import { projectTemplatesRoot } from "../../../consts";
+import copy from "lib/helpers/fsCopy";
 
 export interface TrackerDocumentState {
   status: "loading" | "error" | "loaded" | null;

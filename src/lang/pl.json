@@ -27,7 +27,8 @@
   "TOOLBAR_OPEN_PROJECT_FOLDER": "Otwórz folder projektu",
   "TOOLBAR_EXPORT_AS": "Eksportuj jako...",
   "TOOLBAR_EXPORT_ROM": "Eksportuj jako ROM",
-  "TOOLBAR_EXPORT_WEB": "Eksportuj jako wersja Web",
+  "TOOLBAR_EXPORT_WEB": "Eksportuj do wersja Web",
+  "TOOLBAR_EXPORT_POCKET": "Eksportuj do urządzenia Poket",
   "TOOLBAR_RUN": "Uruchom",
   "TOOLBAR_SEARCH": "Szukaj...",
   
@@ -59,6 +60,8 @@
   "SIDEBAR_PARAMETERS": "Parametry",
   "SIDEBAR_ON_INIT": "Skrypt (auto start)",
   "SIDEBAR_ON_TRIGGER": "Skrypt (dotknięcie)",
+  "SIDEBAR_ON_ENTER": "Na wejście",
+  "SIDEBAR_ON_LEAVE": "Na wyjście",
   "SIDEBAR_ON_INTERACT": "Skrypt (naciśnięcie)",
   "SIDEBAR_ON_HIT": "Dotknięcie",
   "SIDEBAR_ON_PLAYER_HIT": "Dotknięcie (gracza)",
@@ -253,6 +256,7 @@
   "FIELD_BOUNCE_NOTE": "Dotyczy tylko scen platformowych",
   "FIELD_WEAPON_SPRITE": "Grafika broni",
   "FIELD_WORK_IN_PROGRESS": "Praca w toku",
+  "FIELD_REPLACE_SCENE_TYPE_DEFAULT": "Zastąp domyślne ustawienia dla rodzaju sceny",
   "FIELD_PERSIST_BETWEEN_SCENES": "Zapamiętaj zmianę (między scenami)",
   "FIELD_PERSIST_BETWEEN_SCENES_WARNING": "Uwaga: Niektóre zdarzenia, takie jak pociski i zmiany grafiki obietków, obecnie nie działają, jeżeli są użyte w skrypcie wejściowym, który jest uruchomiony między scenami.",
   "FIELD_ALLOW_FASTFORWARD": "Przewiń tekst (przetrzymanie przycisku)",
@@ -404,6 +408,7 @@
   "FIELD_ENABLED": "Włączone",
   "FIELD_ADD_FRAME": "Dodaj klatkę",
   "FIELD_CLONE_FRAME": "Klonuj klatkę",
+  "FIELD_ANIMATION_STATE": "Stan animacji",
   "FIELD_ADD_ANIMATION_STATE": "Dodaj stan animacji",
   "FIELD_DEFAULT_COLORS": "Domyślne kolory",
   "FIELD_BRING_TO_FRONT": "Przenieś do przodu",
@@ -428,6 +433,27 @@
   "FIELD_LTE": "Mniejsza lub równa",
   "FIELD_GTE": "Większa lub równa",
   "FIELD_SET_VARIABLE": "Ustaw zmienną",
+  "FIELD_SAVE_SLOT": "Zapisz plik",
+  "FIELD_SAVE_SLOT_N": "Zapisz plik {numer}",
+  "FIELD_SLOT_N": "Plik {numer}",
+  "FIELD_ANGLE": "Kąt",
+  "FIELD_ANGLE_VARIABLE": "Kąt-zmienna",
+  "FIELD_DIRECTION_VARIABLE": "Kierunek-zmienna",
+  "FIELD_ACTOR_DIRECTION": "Kierunek aktora",
+  "FIELD_LIFE_TIME": "Czas (życie)",
+  "FIELD_LOCK_AXIS": "Zablokuj oś",
+  "FIELD_FROM_SAVE_SLOT": "Zapisz z pliku",
+  "FIELD_CLIMB_VEL": "Prędkość wspinania",
+  "FIELD_LINK_CLOSE": "Zamknij aktualną sesję łączenia (link).",
+  "FIELD_LINK_JOIN": "Dołącz do sesji (link).",
+  "FIELD_LINK_HOST": "Hostuj sesję (link).",
+  "FIELD_TEST_INSTRUMENT": "Testuj instriment (C5)",
+  "FIELD_DIRECTION_OFFSET": "Przesunięcie kierunku",
+  "FIELD_CURSOR_IMAGE": "Obraz kursora",
+  "FIELD_FRAME_IMAGE": "Obraz ramki",
+  "FIELD_ADD_PALETTE": "Dodaj paletę",
+  "FIELD_CURSOR": "Kursor",
+  "FIELD_HOVER": "Hover",
  
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
@@ -437,9 +463,13 @@
   "// 8": "Build ----------------------------------------------------",
   "BUILD_RUN": "Uruchom",
   "BUILD_EXPORT_ROM": "Eksportuj jako ROM",
-  "BUILD_EXPORT_WEB": "Eksportuj jako wersja Web",
+  "BUILD_EXPORT_WEB": "Eksportuj do wersji Web",
+  "BUILD_EXPORT_POCKET": "Eksportuj do Pocket",
   "BUILD_CLEAR": "Czyść",
   "BUILD_EMPTY_BUILD_CACHE": "Pusta kompilacja pamięci (Cache)",
+  "BUILD_CANCEL": "Anuluj kompilację",
+  "BUILD_CANCELLING": "Anulowanie kompilacji",
+  "BUILD_CANCELLED": "Kompilacja anulowana",  
  
   "// 9": "Scripting Events -----------------------------------------",
   "EVENT_GROUP_ACTOR": "Aktor",
@@ -530,6 +560,7 @@
   "EVENT_SAVE_DATA": "Stan gry: zapisz",
   "EVENT_CLEAR_DATA": "Stan gry: czyść",
   "EVENT_IF_SAVED_DATA": "Warunek: stan gry zapisano",
+  "EVENT_PEEK_DATA": "Zapisz zmienną z stanu gry do zmiennej",
   "EVENT_ACTOR_SET_MOVEMENT_SPEED": "Aktor: szybkość ruchu",
   "EVENT_ACTOR_SET_ANIMATION_SPEED": "Aktor: szybkość animacji",
   "EVENT_TEXT_SET_ANIMATION_SPEED": "Tekst: szybkość animacji",
@@ -624,6 +655,11 @@
   "EVENT_IF_FLAGS_COMPARE_LABEL": "Warunek {variable} ma flagę {flag}",
   "EVENT_IF_TRUE_LABEL": "Warunek {variable} jest 'Prawda'",
   "EVENT_IF_FALSE_LABEL": "Warunek {variable} jest 'Fałsz'",
+  "EVENT_GBVM_SCRIPT": "Skrypt GBVM",
+  "EVENT_LINK_CLOSE": "Link: Zamknij",
+  "EVENT_LINK_JOIN": "Link: Połącz",
+  "EVENT_LINK_HOST": "Link: Hostuj",
+  "EVENT_LINK_TRANSFER": "Link: Transfer",
  
   "// 10": "Menu -----------------------------------------------------",
 
@@ -640,7 +676,8 @@
   "MENU_RUN": "Uruchom",
   "MENU_EXPORT_AS": "Eksportuj jako",
   "MENU_EXPORT_ROM": "Eksportuj jako ROM",
-  "MENU_EXPORT_WEB": "Eksportuj jako wersja Web",
+  "MENU_EXPORT_WEB": "Eksportuj do wersji Web",
+  "MENU_EXPORT_POCKET": "Eksportuj do Pocket",
   "MENU_VIEW": "Podgląd",
   "MENU_GAME_WORLD": "Świat gry",
   "MENU_SPRITES": "Obiekty",
@@ -722,6 +759,7 @@
   "MENU_SPRITE_STATE_PASTE": "Wklej stan animacji",
   "MENU_SPRITE_STATE_DELETE": "Usuń stan animacji",
   "MENU_OPEN_MUSIC_PROCESS_WINDOW": "Otwórz okno procesu muzycznego",
+  "MENU_PATTERN_DELETE": "Wyczyść wzór",
  
   "// 11": "Warnings -----------------------------------------------------",
 
@@ -744,6 +782,7 @@
   "WARNING_TRIGGERS_LIMIT": "Scena zawiera zbyt wiele rozruchów, niektóre zostaną pominięte podczas gry.",
   "WARNING_LOGO_WRONG_SIZE": "Scena zawierająca logo muszą mieć wymiary 160x144 pikseli",
   "WARNING_NO_PLAYER_SET_FOR_SCENE_TYPE": "Nie ustawiono domyślnej grafiki gracza dla scen \"{type}\". Opcję tę należy określić w sekcji \"Ustawienia\".",
+  "WARNING_LOGO_ENTITIES": "Scena z logo nie może zawierać aktorów ani rozruchów",
  
   "// 12": "Errors -------------------------------------------------------",
 
@@ -834,6 +873,7 @@
   "DIALOG_TRACKER_CHANGES_NOT_SAVED_DESCRIPTION": "Twoje zmiany w bieżącym utworze zostaną utracone, jeśli ich nie zapiszesz.",
   "DIALOG_CONTINUE_WITHOUT_SAVING": "Kontynuuj bez zapisywania",
   "DIALOG_SAVE_AND_CONTINUE": "Zapisz i kontynuuj",
+  "DIALOG_MIGRATION_GUIDE": "Otwórz przewodnik migracji",
   
   "// 16": "Settings ----------------------------------------------------", 
 
@@ -864,6 +904,8 @@
   "ERROR_WHAT_CAN_I_DO": "Co można zrobić?",
   "ERROR_VIEW_STACK_TRACE": "Wyświetl śledzenie pamięci",
   "ERROR_CLOSE": "Zamknij",
+  "ERROR_UNABLE_TO_SAVE_MUSIC_FILE": "Nie można zapisać pliku muzycznego",
+  "ERROR_UNABLE_TO_SAVE_MUSIC_FILE_DESC": "Dokładnie sprawdź, czy edytowany plik nie jest ustawiony jako tylko do odczytu",
   
   "// 19 ": "Game Type --------------------------------------------------",
 
@@ -872,6 +914,7 @@
   "GAMETYPE_ADVENTURE": "Przygodówka",
   "GAMETYPE_SHMUP": "Strzelanka (SHMUP)",
   "GAMETYPE_POINT_N_CLICK": "Wskaż i kliknij (point and click)",
+  "GAMETYPE_LOGO": "Logo",
   
   "// 20": "Compiler -----------------------------------------------------",
 
@@ -882,8 +925,12 @@
   "// 21": "Messages -----------------------------------------------------",
 
   "MESSAGE_NO_SONGS_FOUND": "Nie znaleziono muzyki",
-  "MESSAGE_ADD_UGE_FILES": "Dodaj plik .uge fo folderu projektu assets/music.",
+  "MESSAGE_ADD_UGE_FILES": "Dodaj pliki .uge do folderu projektu assets/music.",
   "MESSAGE_WHAT_ABOUT_MOD": "Otwarzanie plików .mod?",
-  "MESSAGE_USE_MOD_FILES": "W celu użycia plików .mod należy w projekcie zmienić sterownik muzyczny z hUGEDriver na GBT Player. Opcję tę można zmienić w 'Ustawieniach'..",
-  "MESSAGE_ENABLE_GBT": "Włącz GBT Player"
+  "MESSAGE_USE_MOD_FILES": "W celu użycia plików .mod należy w projekcie zmienić sterownik muzyczny z hUGEDriver na GBT Player. Opcję tę można zmienić w 'Ustawieniach'.",
+  "MESSAGE_ENABLE_GBT": "Włącz GBT Player",
+  "MESSAGE_ADD_MOD_FILES": "Dodaj pliki .mod do folderu projektu assets/music.",
+  "MESSAGE_WHAT_ABOUT_UGE": "Odtwarzanie plików .uge?",
+  "MESSAGE_USE_UGE_FILES": "W celu użycia plików .uge należy w projekcie zmienić sterownik muzyczny z GTP Player na hUGEDriver. Opcję tę można zmienić w 'Ustawieniach'.",
+  "MESSAGE_ENABLE_HUGE": "Włącz hUGEDriver"
 }

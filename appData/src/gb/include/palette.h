@@ -10,17 +10,17 @@ extern UBYTE DMG_palette[3];
 extern palette_entry_t SprPalette[8];
 extern palette_entry_t BkgPalette[8];
 
-void palette_init() __banked;
+void palette_init() BANKED;
 
 #ifdef CGB
-void CGBZeroPalette(UBYTE reg) OLDCALL __banked;
+void CGBZeroPalette(UBYTE reg) OLDCALL BANKED;
 #endif
 
 #ifdef SGB
 #define SGB_PALETTES_NONE 0
 #define SGB_PALETTES_01 1
 #define SGB_PALETTES_23 2
-void SGBTransferPalettes(UBYTE palettes) __banked;
+void SGBTransferPalettes(UBYTE palettes) BANKED;
 #endif
 
 #endif

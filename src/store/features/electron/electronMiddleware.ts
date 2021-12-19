@@ -275,6 +275,8 @@ const electronMiddleware: Middleware<Dispatch, RootState> =
           );
         });
       }
+    } else if (actions.showErrorBox.match(action)) {
+      remote.dialog.showErrorBox(action.payload.title, action.payload.content);
     }
 
     next(action);

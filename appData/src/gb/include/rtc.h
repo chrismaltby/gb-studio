@@ -3,9 +3,9 @@
 
 #include <gb/gb.h>
 
-volatile UBYTE __at(0x4000) RTC_SELECT_REG;
-volatile UBYTE __at(0x6000) RTC_LATCH_REG;
-volatile UBYTE __at(0xA000) RTC_VALUE_REG;
+volatile UBYTE AT(0x4000) RTC_SELECT_REG;
+volatile UBYTE AT(0x6000) RTC_LATCH_REG;
+volatile UBYTE AT(0xA000) RTC_VALUE_REG;
 
 #define RTC_TIMER_STOP 0b01000000
 

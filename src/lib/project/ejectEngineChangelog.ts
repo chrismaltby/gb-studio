@@ -22,6 +22,16 @@ const changes: EngineChange[] = [
       "   * Much more!",
     modifiedFiles: ["All of them (sorry)"],
   },
+  {
+    version: "3.0.1-e0",
+    description:
+      "Bug fixes and preperation for GBDK-2020 v4.0.6:\n" +
+      "   * Fixed issue where input scripts could be trigger while VM is locked\n" +
+      "   * Allowed input scripts to optionally prevent default button actions\n" +
+      "   * Moved engine field defines into a single state_defines.h file\n" +
+      "   * Switched SDCC features to use macros in preparation for new GBDK",
+    modifiedFiles: ["All..."],
+  },
 ];
 
 const ejectEngineChangelog = (currentVersion: string) => {

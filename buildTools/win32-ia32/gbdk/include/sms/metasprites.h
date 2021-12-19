@@ -35,6 +35,7 @@
 #define _METASPRITES_H_INCLUDE
 
 #include <sms/hardware.h>
+#include <types.h>
 #include <stdint.h>
 
 /** Metasprite sub-item structure
@@ -63,15 +64,15 @@ extern uint8_t __current_base_tile;
 extern uint8_t __render_shadow_OAM;
 
 
-static uint8_t __move_metasprite(uint8_t id, uint8_t x, uint8_t y) __z88dk_callee __preserves_regs(iyh,iyl);
-static void __hide_metasprite(uint8_t id) __z88dk_fastcall __preserves_regs(iyh,iyl);
+static uint8_t __move_metasprite(uint8_t id, uint8_t x, uint8_t y) Z88DK_CALLEE PRESERVES_REGS(iyh, iyl);
+static void __hide_metasprite(uint8_t id) Z88DK_FASTCALL PRESERVES_REGS(iyh, iyl);
 
 /**
  * Hides all hardware sprites in range from <= X < to
  * @param from start OAM index
  * @param to finish OAM index
  */ 
-void hide_sprites_range(UINT8 from, UINT8 to) __z88dk_callee __preserves_regs(iyh,iyl);
+void hide_sprites_range(UINT8 from, UINT8 to) Z88DK_CALLEE PRESERVES_REGS(iyh, iyl);
 
 /** Moves metasprite to the absolute position x and y
 

@@ -5,9 +5,9 @@
 
 #include "vm.h"
 
-void vm_scene_push() OLDCALL __banked;
-void vm_scene_pop() OLDCALL __banked;
-void vm_scene_pop_all() OLDCALL __banked;
-void vm_scene_stack_reset() OLDCALL __banked;
+void vm_scene_push() OLDCALL BANKED;
+void vm_scene_pop() OLDCALL BANKED;
+void vm_scene_pop_all() OLDCALL BANKED;
+void vm_scene_stack_reset() OLDCALL BANKED;
 
 #endif

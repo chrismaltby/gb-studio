@@ -26,13 +26,13 @@ extern LCD_isr_e scene_LCD_type;
 extern scene_stack_item_t scene_stack[SCENE_STACK_SIZE];
 extern scene_stack_item_t * scene_stack_ptr;
 
-void load_init() __banked;
-UBYTE load_scene(const scene_t * scene, UBYTE bank, UBYTE init_data) __banked;
+void load_init() BANKED;
+UBYTE load_scene(const scene_t * scene, UBYTE bank, UBYTE init_data) BANKED;
 
-UBYTE load_sprite(UBYTE sprite_offset, const spritesheet_t * sprite, UBYTE bank) __banked;
-void load_player() __banked;
-void load_emote(const unsigned char * tiles, UBYTE bank) __banked;
-void load_animations(const spritesheet_t *sprite, UBYTE bank, UWORD animation_set, animation_t * res_animations) __nonbanked;
-void load_bounds(const spritesheet_t * sprite, UBYTE bank, bounding_box_t * res_bounds) __banked;
+UBYTE load_sprite(UBYTE sprite_offset, const spritesheet_t * sprite, UBYTE bank) BANKED;
+void load_player() BANKED;
+void load_emote(const unsigned char * tiles, UBYTE bank) BANKED;
+void load_animations(const spritesheet_t *sprite, UBYTE bank, UWORD animation_set, animation_t * res_animations) NONBANKED;
+void load_bounds(const spritesheet_t * sprite, UBYTE bank, bounding_box_t * res_bounds) BANKED;
 
 #endif

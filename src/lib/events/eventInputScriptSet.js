@@ -16,6 +16,12 @@ const fields = [
     defaultValue: ["b"],
   },
   {
+    key: "override",
+    type: "checkbox",
+    label: l10n("FIELD_OVERRIDE_DEFAULT_BUTTON_ACTION"),
+    defaultValue: true,
+  },
+  {
     key: "__scriptTabs",
     type: "tabs",
     defaultValue: "press",
@@ -38,7 +44,7 @@ const fields = [
 
 const compile = (input, helpers) => {
   const { inputScriptSet } = helpers;
-  inputScriptSet(input.input, input.persist, input.true);
+  inputScriptSet(input.input, input.override !== false, input.true);
 };
 
 module.exports = {

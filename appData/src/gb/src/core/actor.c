@@ -44,7 +44,7 @@ UBYTE emote_timer;
 
 UBYTE allocated_hardware_sprites;
 
-void actors_init() __banked {
+void actors_init() BANKED {
     actors_active_head = actors_inactive_head = NULL;
     player_moving           = FALSE;
     player_iframes          = 0;
@@ -54,12 +54,12 @@ void actors_init() __banked {
     memset(actors, 0, sizeof(actors));
 }
 
-void player_init() __banked {
+void player_init() BANKED {
     actor_set_anim_idle(&PLAYER);
     PLAYER.hidden = FALSE;
 }
 
-void actors_update() __nonbanked {
+void actors_update() NONBANKED {
     UBYTE _save = _current_bank;
     static actor_t *actor;
 
@@ -116,7 +116,11 @@ void actors_update() __nonbanked {
             actor->frame++;
             // Check reached end of animation
             if (actor->frame == actor->frame_end) {
-                actor->frame = actor->frame_start;
+                if (actor->anim_noloop) {
+                    // TODO: execute onAnimationEnd here
+                } else {
+                    actor->frame = actor->frame_start;
+                }
             }
         }
 
@@ -137,7 +141,7 @@ void actors_update() __nonbanked {
     SWITCH_ROM(_save);
 }
 
-void deactivate_actor(actor_t *actor) __banked {
+void deactivate_actor(actor_t *actor) BANKED {
 #ifdef STRICT
     // Check exists in inactive list
     UBYTE found = 0;
@@ -160,7 +164,7 @@ void deactivate_actor(actor_t *actor) __banked {
     }
 }
 
-void activate_actor(actor_t *actor) __banked {
+void activate_actor(actor_t *actor) BANKED {
 #ifdef STRICT
     // Check exists in inactive list
     UBYTE found = 0;
@@ -184,7 +188,7 @@ void activate_actor(actor_t *actor) __banked {
     }
 }
 
-void activate_actors_in_row(UBYTE x, UBYTE y) __banked {
+void activate_actors_in_row(UBYTE x, UBYTE y) BANKED {
     static actor_t *actor;
     actor = actors_inactive_head;
 
@@ -203,7 +207,7 @@ void activate_actors_in_row(UBYTE x, UBYTE y) __banked {
     }    
 }
 
-void activate_actors_in_col(UBYTE x, UBYTE y) __banked {
+void activate_actors_in_col(UBYTE x, UBYTE y) BANKED {
     static actor_t *actor;
     actor = actors_inactive_head;
     while (actor) {
@@ -221,7 +225,7 @@ void activate_actors_in_col(UBYTE x, UBYTE y) __banked {
     }
 }
 
-void actor_set_frames(actor_t *actor, UBYTE frame_start, UBYTE frame_end) __banked {
+void actor_set_frames(actor_t *actor, UBYTE frame_start, UBYTE frame_end) BANKED {
     if (actor->frame_start != frame_start || actor->frame_end != frame_end) {
         actor->frame = frame_start;
         actor->frame_start = frame_start;
@@ -229,23 +233,23 @@ void actor_set_frames(actor_t *actor, UBYTE frame_start, UBYTE frame_end) __bank
     }
 }
 
-void actor_set_frame_offset(actor_t *actor, UBYTE frame_offset) __banked {
+void actor_set_frame_offset(actor_t *actor, UBYTE frame_offset) BANKED {
     actor->frame = actor->frame_start + (frame_offset % (actor->frame_end - actor->frame_start));
 }
 
-UBYTE actor_get_frame_offset(actor_t *actor) __banked {
+UBYTE actor_get_frame_offset(actor_t *actor) BANKED {
     return actor->frame - actor->frame_start;
 }
 
-void actor_set_anim_idle(actor_t *actor) __banked {
+void actor_set_anim_idle(actor_t *actor) BANKED {
     actor_set_anim(actor, actor->dir);
 }
 
-void actor_set_anim_moving(actor_t *actor) __banked {
+void actor_set_anim_moving(actor_t *actor) BANKED {
     actor_set_anim(actor, actor->dir + N_DIRECTIONS);
 }
 
-void actor_set_dir(actor_t *actor, direction_e dir, UBYTE moving) __banked {
+void actor_set_dir(actor_t *actor, direction_e dir, UBYTE moving) BANKED {
     actor->dir = dir;
     if (moving) {
         actor_set_anim(actor, dir + N_DIRECTIONS);
@@ -254,7 +258,7 @@ void actor_set_dir(actor_t *actor, direction_e dir, UBYTE moving) __banked {
     }
 }
 
-actor_t *actor_at_tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip) __banked {
+actor_t *actor_at_tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip) BANKED {
     for (actor_t *actor = actors_active_head; (actor); actor = actor->next) {
         if ((!inc_noclip && !actor->collision_enabled))
             continue;
@@ -265,7 +269,7 @@ actor_t *actor_at_tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip) __banked {
     return NULL;
 }
 
-actor_t *actor_in_front_of_player(UBYTE grid_size, UBYTE inc_noclip) __banked {
+actor_t *actor_in_front_of_player(UBYTE grid_size, UBYTE inc_noclip) BANKED {
     upoint16_t offset;
     offset.x = PLAYER.pos.x;
     offset.y = PLAYER.pos.y;
@@ -273,7 +277,7 @@ actor_t *actor_in_front_of_player(UBYTE grid_size, UBYTE inc_noclip) __banked {
     return actor_overlapping_bb(&PLAYER.bounds, &offset, &PLAYER, inc_noclip);
 }
 
-actor_t *actor_overlapping_player(UBYTE inc_noclip) __banked {
+actor_t *actor_overlapping_player(UBYTE inc_noclip) BANKED {
     actor_t *actor = PLAYER.prev;
 
     while (actor) {
@@ -292,7 +296,7 @@ actor_t *actor_overlapping_player(UBYTE inc_noclip) __banked {
     return NULL;
 }
 
-actor_t *actor_overlapping_bb(bounding_box_t *bb, upoint16_t *offset, actor_t *ignore, UBYTE inc_noclip) __banked {
+actor_t *actor_overlapping_bb(bounding_box_t *bb, upoint16_t *offset, actor_t *ignore, UBYTE inc_noclip) BANKED {
     actor_t *actor = &PLAYER;
 
     while (actor) {
@@ -311,7 +315,7 @@ actor_t *actor_overlapping_bb(bounding_box_t *bb, upoint16_t *offset, actor_t *i
     return NULL;
 }
 
-void actors_handle_player_collision() __banked {
+void actors_handle_player_collision() BANKED {
     if (player_iframes == 0 && player_collision_actor != NULL) {
         if (player_collision_actor->collision_group) {
             // Execute scene player hit scripts based on actor's collision group
@@ -333,7 +337,7 @@ void actors_handle_player_collision() __banked {
     player_collision_actor = NULL; 
 }
 
-UWORD check_collision_in_direction(UWORD start_x, UWORD start_y, bounding_box_t *bounds, UWORD end_pos, col_check_dir_e check_dir) __banked {
+UWORD check_collision_in_direction(UWORD start_x, UWORD start_y, bounding_box_t *bounds, UWORD end_pos, col_check_dir_e check_dir) BANKED {
     UBYTE tx1, ty1, tx2, ty2, tt;
     switch (check_dir) {
         case CHECK_DIR_LEFT:  // Check left

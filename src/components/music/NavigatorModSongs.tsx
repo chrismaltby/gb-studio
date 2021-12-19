@@ -97,7 +97,7 @@ export const NavigatorModSongs = ({
           </FlatList>
         ) : (
           <EmptyState>
-            <NoSongsMessage />
+            <NoSongsMessage type="mod" />
           </EmptyState>
         )}
       </Pane>
