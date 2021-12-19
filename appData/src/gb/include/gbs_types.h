@@ -77,6 +77,7 @@ typedef struct actor_t
 
 #define TRIGGER_HAS_ENTER_SCRIPT    1
 #define TRIGGER_HAS_LEAVE_SCRIPT    2
+#define TRIGGER_HAS_UPDATE_SCRIPT   4
 
 typedef struct trigger_t {
     uint8_t x, y, width, height;

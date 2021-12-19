@@ -977,7 +977,10 @@ export const precompileScenes = (
             trigger.script[0].command !== EVENT_END) ||
           (trigger.leaveScript &&
             trigger.leaveScript.length >= 1 &&
-            trigger.leaveScript[0].command !== EVENT_END)
+            trigger.leaveScript[0].command !== EVENT_END) ||
+            (trigger.updateScript &&
+              trigger.updateScript.length >= 1 &&
+              trigger.updateScript[0].command !== EVENT_END)
         );
       }),
       playerSprite,
@@ -1519,6 +1522,7 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
           [
             { parameter: 0, value: 1, script: entity.script },
             { parameter: 0, value: 2, script: entity.leaveScript },
+            { parameter: 0, value: 3, script: entity.updateScript },
           ],
           true
         );

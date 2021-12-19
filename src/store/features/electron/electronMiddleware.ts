@@ -270,6 +270,10 @@ const electronMiddleware: Middleware<Dispatch, RootState> =
                   triggersLookup[triggerId]?.leaveScript || [],
                   filter
                 ),
+                updateScript: filterEvents(
+                  triggersLookup[triggerId]?.updateScript || [],
+                  filter
+                ),
               },
             })
           );

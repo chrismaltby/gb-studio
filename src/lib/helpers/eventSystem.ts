@@ -57,6 +57,7 @@ const mapSceneEvents = (scene: any, callback: any) => {
         ...trigger,
         script: mapEvents(trigger.script, callback),
         leaveScript: mapEvents(trigger.leaveScript, callback),
+        updateScript: mapEvents(trigger.updateScript, callback),
       };
     }),
   };
@@ -109,6 +110,7 @@ const walkActorEvents = (actor: any, callback: any) => {
 const walkTriggerEvents = (trigger: any, callback: any) => {
   walkEvents(trigger.script, callback);
   walkEvents(trigger.leaveScript, callback);
+  walkEvents(trigger.updateScript, callback);
 };
 
 const walkSceneEvents = (scene: any, callback: any) => {
