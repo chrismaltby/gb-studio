@@ -6,7 +6,7 @@ const groups = ["EVENT_GROUP_CONTROL_FLOW"];
 const autoLabel = (fetchArg) => {
   return l10n("EVENT_IF_FLAGS_COMPARE_LABEL", {
     variable: fetchArg("variable"),
-    flag: String(Number(fetchArg("flag")) + 1),
+    flag: String(Number(fetchArg("flag"))),
   });
 };
 
@@ -20,16 +20,24 @@ const fields = [
     key: "flag",
     type: "select",
     options: [
-      [0, l10n("FIELD_FLAG_1")],
-      [1, l10n("FIELD_FLAG_2")],
-      [2, l10n("FIELD_FLAG_3")],
-      [3, l10n("FIELD_FLAG_4")],
-      [4, l10n("FIELD_FLAG_5")],
-      [5, l10n("FIELD_FLAG_6")],
-      [6, l10n("FIELD_FLAG_7")],
-      [7, l10n("FIELD_FLAG_8")],
+      [0x0001, l10n("FIELD_FLAG_1")],
+      [0x0002, l10n("FIELD_FLAG_2")],
+      [0x0004, l10n("FIELD_FLAG_3")],
+      [0x0008, l10n("FIELD_FLAG_4")],
+      [0x0010, l10n("FIELD_FLAG_5")],
+      [0x0020, l10n("FIELD_FLAG_6")],
+      [0x0040, l10n("FIELD_FLAG_7")],
+      [0x0080, l10n("FIELD_FLAG_8")],
+      [0x0100, l10n("FIELD_FLAG_9")],
+      [0x0200, l10n("FIELD_FLAG_10")],
+      [0x0400, l10n("FIELD_FLAG_11")],
+      [0x0800, l10n("FIELD_FLAG_12")],
+      [0x1000, l10n("FIELD_FLAG_13")],
+      [0x2000, l10n("FIELD_FLAG_14")],
+      [0x4000, l10n("FIELD_FLAG_15")],
+      [0x8000, l10n("FIELD_FLAG_16")],
     ],
-    defaultValue: 0,
+    defaultValue: 0x0001,
   },
   {
     key: "true",
@@ -69,7 +77,7 @@ const compile = (input, helpers) => {
   const { ifVariableBitwiseValue } = helpers;
   const truePath = input.true;
   const falsePath = input.__disableElse ? [] : input.false;
-  const flags = 2 ** input.flag;
+  const flags = input.flag;
   ifVariableBitwiseValue(input.variable, ".B_AND", flags, truePath, falsePath);
 };
 
