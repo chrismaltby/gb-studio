@@ -102,7 +102,7 @@
     "styled-components": "^5.2.0",
     "ts-flood-fill": "^1.0.2",
     "uuid": "^3.3.2",
-    "vm2": "3.9.2"
+    "vm2": "3.9.4"
   },
   "devDependencies": {
     "@electron-forge/cli": "6.0.0-beta.57",
