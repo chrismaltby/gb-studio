@@ -349,7 +349,7 @@ export const saveUGESong = (song: Song): ArrayBuffer => {
     addUint32(type);
 
     addShortString(i.name || "");
-    addUint32(i.length ? i.length : 0);
+    addUint32(i.length !== null ? 256 - i.length : 0);
     addUint8(i.length === null ? 0 : 1);
     addUint8(0);
     addUint32(0);
