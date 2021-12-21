@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added in-game crash handler screen [untoxa](https://github.com/untoxa)
+- Added support for 16-bit in flag events [@Rebusmind](https://github.com/Rebusmind)
 
 ### Changed
 
