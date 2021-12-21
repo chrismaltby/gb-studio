@@ -3095,7 +3095,7 @@ class ScriptBuilder {
     this._addComment(`Variable Add Flags`);
     this._rpn() //
       .refVariable(variable)
-      .int8(flags)
+      .int16(flags)
       .operator(".B_OR")
       .stop();
     this._setVariable(variable, ".ARG0");
@@ -3107,8 +3107,8 @@ class ScriptBuilder {
     this._addComment(`Variable Clear Flags`);
     this._rpn() //
       .refVariable(variable)
-      .int8(-1)
-      .int8(flags)
+      .int16(-1)
+      .int16(flags)
       .operator(".B_XOR")
       .operator(".B_AND")
       .stop();
@@ -3681,7 +3681,7 @@ class ScriptBuilder {
     this._addComment(`If Variable ${operator} Value`);
     this._rpn() //
       .refVariable(variable)
-      .int8(flags)
+      .int16(flags)
       .operator(operator)
       .stop();
     this._ifConst(".NE", ".ARG0", 0, trueLabel, 1);
