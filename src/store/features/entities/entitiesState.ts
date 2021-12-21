@@ -2104,9 +2104,14 @@ const refreshCustomEventArgs: CaseReducer<
           }
         }
       });
-      if (args.text) {
-        const text = Array.isArray(args.text) ? args.text.join() : args.text;
-        if (typeof text === "string") {
+      if (args.text || args.expression) {
+        let text;
+        if (args.text) {
+          text = Array.isArray(args.text) ? args.text.join() : args.text;
+        } else if (args.expression) {
+          text = args.expression;
+        }
+        if (text && typeof text === "string") {
           const variablePtrs = text.match(/\$V[0-9]\$/g);
           if (variablePtrs) {
             variablePtrs.forEach((variablePtr: string) => {
