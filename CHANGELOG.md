@@ -10,18 +10,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added in-game crash handler screen [untoxa](https://github.com/untoxa)
+- Added support for 16-bit in flag events [@Rebusmind](https://github.com/Rebusmind)
+- Compile files in parallel based on available CPU cores for system
 
 ### Changed
 
 - Updated Portuguese localisation. [@toxworks](https://github.com/toxworks)
 - Updated Simplified Chinese localisation. [@wcxu21](https://github.com/wcxu21) 
 - Optimised game engine input script checks [untoxa](https://github.com/untoxa)
+- Reimplemented GBSPack in pure JS as binary was incorrectly flagged by anti-virus software on Windows
 
 ### Fixed
 
 - Fixed some cases where assets would no longer live reload by switching to using chokidar glob syntax rather than regex filters [@RichardULZ](https://github.com/RichardULZ) 
 - Allow tilesets with zero length [untoxa](https://github.com/untoxa)
 - Fix issue where VM_LOCK was not affecting context switching [untoxa](https://github.com/untoxa)
+- Properly detect grouped property fields for events inside custom scripts [@pau-tomas](https://github.com/pau-tomas)
+- Detect variables in math expression events within Custom Scripts [@pau-tomas](https://github.com/pau-tomas)
+- Rebuilt GBDK for Mac to support macOS versions below 10.15 [untoxa](https://github.com/untoxa)
 
 ## [3.0.1]
 

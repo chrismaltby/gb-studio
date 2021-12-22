@@ -1,14 +1,19 @@
 import fs from "fs-extra";
-import buildMakeScript, {
+import os from "os";
+
+import {
   buildLinkFile,
   buildLinkFlags,
-  buildPackFile,
-  buildPackFlags,
+  getBuildCommands,
+  getPackFiles,
 } from "./buildMakeScript";
 import { cacheObjData, fetchCachedObjData } from "./objCache";
 import ensureBuildTools from "./ensureBuildTools";
 import spawn from "../helpers/cli/spawn";
 import l10n from "../helpers/l10n";
+import { gbspack } from "./gbspack";
+
+const cpuCount = os.cpus().length;
 
 const makeBuild = async ({
   buildRoot = "/tmp",
@@ -61,10 +66,7 @@ const makeBuild = async ({
   await fetchCachedObjData(buildRoot, tmpPath, env);
 
   // Compile Source Files
-
-  const makeScriptFile = process.platform === "win32" ? "make.bat" : "make.sh";
-
-  const makeScript = await buildMakeScript(buildRoot, {
+  const makeCommands = await getBuildCommands(buildRoot, {
     CART_TYPE: env.CART_TYPE,
     CART_SIZE: env.CART_SIZE,
     customColorsEnabled: settings.customColorsEnabled,
@@ -76,11 +78,6 @@ const makeBuild = async ({
     platform: process.platform,
     targetPlatform,
   });
-  await fs.writeFile(`${buildRoot}/${makeScriptFile}`, makeScript);
-
-  const command =
-    process.platform === "win32" ? makeScriptFile : `/bin/sh ${makeScriptFile}`;
-  const args = ["rom"];
 
   const options = {
     cwd: buildRoot,
@@ -88,27 +85,30 @@ const makeBuild = async ({
     shell: true,
   };
 
-  await spawn(command, args, options, {
-    onLog: (msg) => progress(msg),
-    onError: (msg) => warnings(msg),
-  });
-
-  await fs.unlink(`${buildRoot}/${makeScriptFile}`);
+  // Build source files in parallel
+  const concurrency = cpuCount;
+  await Promise.all(
+    Array(concurrency)
+      .fill(makeCommands.entries())
+      .map(async (cursor) => {
+        for (let [_, makeCommand] of cursor) {
+          progress(makeCommand.label);
+          await spawn(makeCommand.command, makeCommand.args, options, {
+            onLog: (msg) => progress(msg),
+            onError: (msg) => warnings(msg),
+          });
+        }
+      })
+  );
 
   // GBSPack ---
 
   progress(`${l10n("COMPILER_PACKING")}...`);
-  const packFile = await buildPackFile(buildRoot);
-  const packFilePath = `${buildRoot}/obj/packfile.pk`;
-  await fs.writeFile(packFilePath, packFile);
-
-  const packCommand =
-    process.platform === "win32"
-      ? `..\\_gbstools\\gbspack\\gbspack.exe`
-      : `../_gbstools/gbspack/gbspack`;
-  const packArgs = buildPackFlags(packFilePath, settings.batterylessEnabled);
-  const cartSize = await spawn(packCommand, packArgs, options, {
-    onError: (msg) => warnings(msg),
+  const { cartSize } = await gbspack(await getPackFiles(buildRoot), {
+    bankOffset: 5,
+    filter: 255,
+    extension: "rel",
+    additional: settings.batterylessEnabled ? 4 : 0,
   });
 
   // Link ROM ---
