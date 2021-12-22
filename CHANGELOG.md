@@ -23,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed some cases where assets would no longer live reload by switching to using chokidar glob syntax rather than regex filters [@RichardULZ](https://github.com/RichardULZ) 
 - Allow tilesets with zero length [untoxa](https://github.com/untoxa)
 - Fix issue where VM_LOCK was not affecting context switching [untoxa](https://github.com/untoxa)
+- Properly detect grouped property fields for events inside custom scripts [@pau-tomas](https://github.com/pau-tomas)
+- Detect variables in math expression events within Custom Scripts [@pau-tomas](https://github.com/pau-tomas)
 
 ## [3.0.1]
 

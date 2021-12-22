@@ -482,7 +482,7 @@ const isPropertyField = (cmd, fieldName, args) => {
   const events = require("../events").default;
   const event = events[cmd];
   if (!event) return false;
-  const field = event.fields.find((f) => f.key === fieldName);
+  const field = getField(cmd, fieldName, args);
   const fieldValue = args[fieldName];
   return (
     field &&
