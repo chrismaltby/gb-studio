@@ -10,7 +10,7 @@
 #define __BYTES extern UBYTE
 #define __BYTE_REG extern volatile UBYTE
 
-static volatile __sfr __at(0x3E) MEMORY_CTL;
+static volatile SFR AT(0x3E) MEMORY_CTL;
 
 #define MEMCTL_JOYON   0b00000000
 #define MEMCTL_JOYOFF  0b00000100
@@ -25,18 +25,18 @@ static volatile __sfr __at(0x3E) MEMORY_CTL;
 #define MEMCTL_EXTON   0b00000000
 #define MEMCTL_EXTOFF  0b10000000
 
-static volatile __sfr __at(0x3F) JOY_CTL;
+static volatile SFR AT(0x3F) JOY_CTL;
 
 #define JOY_P1_LATCH   0b00000010
 #define JOY_P2_LATCH   0b00001000
 
-static volatile __sfr __at(0x7E) VCOUNTER;
-static volatile __sfr __at(0x7F) PSG;
-static volatile __sfr __at(0x7F) HCOUNTER;
+static volatile SFR AT(0x7E) VCOUNTER;
+static volatile SFR AT(0x7F) PSG;
+static volatile SFR AT(0x7F) HCOUNTER;
 
-static volatile __sfr __at(0xBE) VDP_DATA;
-static volatile __sfr __at(0xBF) VDP_CMD;
-static volatile __sfr __at(0xBF) VDP_STATUS;
+static volatile SFR AT(0xBE) VDP_DATA;
+static volatile SFR AT(0xBF) VDP_CMD;
+static volatile SFR AT(0xBF) VDP_STATUS;
 
 #define STATF_INT_VBL  0b10000000
 #define STATF_9_SPR    0b01000000
@@ -124,7 +124,7 @@ extern UBYTE shadow_VDP_R10;
 #define R10_INT_OFF    0xFF
 #define R10_INT_EVERY  0x00
 
-static volatile __sfr __at(0xDC) JOY_PORT1;
+static volatile SFR AT(0xDC) JOY_PORT1;
 
 #define JOY_P1_UP      0b00000001
 #define JOY_P1_DOWN    0b00000010
@@ -136,7 +136,7 @@ static volatile __sfr __at(0xDC) JOY_PORT1;
 #define JOY_P2_UP      0b01000000
 #define JOY_P2_DOWN    0b10000000
 
-static volatile __sfr __at(0xDD) JOY_PORT2;
+static volatile SFR AT(0xDD) JOY_PORT2;
 
 #define JOY_P2_LEFT    0b00000001
 #define JOY_P2_RIGHT   0b00000010
@@ -147,11 +147,11 @@ static volatile __sfr __at(0xDD) JOY_PORT2;
 #define JOY_P1_LIGHT   0b01000000
 #define JOY_P2_LIGHT   0b10000000
 
-static volatile __sfr __at(0xF0) FMADDRESS;
-static volatile __sfr __at(0xF1) FMDATA;
-static volatile __sfr __at(0xF2) AUDIOCTRL;
+static volatile SFR AT(0xF0) FMADDRESS;
+static volatile SFR AT(0xF1) FMDATA;
+static volatile SFR AT(0xF2) AUDIOCTRL;
 
-static volatile UBYTE __at(0xfffc) RAM_CONTROL;
+static volatile UBYTE AT(0xfffc) RAM_CONTROL;
 
 #define RAMCTL_BANK    0b00000100
 #define RAMCTL_ROM     0b00000000
@@ -159,11 +159,11 @@ static volatile UBYTE __at(0xfffc) RAM_CONTROL;
 #define RAMCTL_RO      0b00010000
 #define RAMCTL_PROT    0b10000000
 
-static volatile UBYTE __at(0xfff8) GLASSES_3D;
+static volatile UBYTE AT(0xfff8) GLASSES_3D;
 
-static volatile UBYTE __at(0xfffd) MAP_FRAME0;
-static volatile UBYTE __at(0xfffe) MAP_FRAME1;
-static volatile UBYTE __at(0xffff) MAP_FRAME2;
+static volatile UBYTE AT(0xfffd) MAP_FRAME0;
+static volatile UBYTE AT(0xfffe) MAP_FRAME1;
+static volatile UBYTE AT(0xffff) MAP_FRAME2;
 
 extern const UBYTE _BIOS;
 
