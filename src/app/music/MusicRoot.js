@@ -46,10 +46,17 @@ ipcRenderer.on("music-data", (event, d) => {
       });
       break;
     case "stop":
-      player.stop();
+      player.stop(d.position);
       ipcRenderer.send("music-data-receive", {
         action: "log",
         message: "stop",
+      });
+      break;
+    case "position":
+      player.setStartPosition(d.position);
+      ipcRenderer.send("music-data-receive", {
+        action: "log",
+        message: "position",
       });
       break;
     case "set-mute":

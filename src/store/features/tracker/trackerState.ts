@@ -18,6 +18,8 @@ export interface TrackerState {
   selectedChannel: number;
   visibleChannels: number[];
   hoverNote: number | null;
+  startPlaybackPosition: [number, number];
+  defaultStartPlaybackPosition: [number, number];
 }
 
 export const initialState: TrackerState = {
@@ -35,17 +37,24 @@ export const initialState: TrackerState = {
   selectedChannel: 0,
   visibleChannels: [0],
   hoverNote: null,
+  startPlaybackPosition: [0, 0],
+  defaultStartPlaybackPosition: [0, 0],
 };
 
 const trackerSlice = createSlice({
   name: "tracker",
   initialState,
   reducers: {
+    init: () => initialState,
     playTracker: (state, _action: PayloadAction<void>) => {
       state.playing = true;
     },
     pauseTracker: (state, _action: PayloadAction<void>) => {
       state.playing = false;
+    },
+    stopTracker: (state, _action: PayloadAction<void>) => {
+      state.playing = false;
+      state.startPlaybackPosition = [...state.defaultStartPlaybackPosition];
     },
     playerReady: (state, _action: PayloadAction<boolean>) => {
       state.playerReady = _action.payload;
@@ -76,6 +85,13 @@ const trackerSlice = createSlice({
     },
     setEditStep: (state, _action: PayloadAction<number>) => {
       state.editStep = _action.payload;
+    },
+    setDefaultStartPlaybackPosition: (
+      state,
+      _action: PayloadAction<[number, number]>
+    ) => {
+      state.startPlaybackPosition = _action.payload;
+      state.defaultStartPlaybackPosition = _action.payload;
     },
   },
   extraReducers: (builder) =>

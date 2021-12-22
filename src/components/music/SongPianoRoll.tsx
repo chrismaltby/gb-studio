@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import styled, { css } from "styled-components";
 import { Song } from "lib/helpers/uge/song/Song";
 import { RootState } from "store/configureStore";
@@ -11,6 +11,7 @@ import l10n from "lib/helpers/l10n";
 import { RollChannel } from "./RollChannel";
 import { RollChannelGrid } from "./RollChannelGrid";
 import { ipcRenderer } from "electron";
+import trackerActions from "store/features/tracker/trackerActions";
 
 const CELL_SIZE = 14;
 const MAX_NOTE = 71;
@@ -104,11 +105,11 @@ const SongGrid = styled.div`
 const RollPlaybackTracker = styled.div`
   z-index: 0;
   width: ${CELL_SIZE - 1}px;
-  height: ${CELL_SIZE * 12 * 6}px;
+  height: ${CELL_SIZE * 12 * 6 + CELL_SIZE}px;
   border: 1px solid ${(props) => props.theme.colors.highlight};
   background: ${(props) => props.theme.colors.highlight};
   position: absolute;
-  top: 0;
+  top: -${CELL_SIZE}px;
   bottom: 0;
 `;
 
@@ -117,12 +118,22 @@ export const SongPianoRoll = ({
   sequenceId,
   height,
 }: SongPianoRollProps) => {
+  const dispatch = useDispatch();
+
   const playing = useSelector((state: RootState) => state.tracker.playing);
   const hoverNote = useSelector((state: RootState) => state.tracker.hoverNote);
+  const startPlaybackPosition = useSelector(
+    (state: RootState) => state.tracker.startPlaybackPosition
+  );
 
   const patternId = song?.sequence[sequenceId] || 0;
 
   const [playbackState, setPlaybackState] = useState([0, 0]);
+
+  useEffect(() => {
+    setPlaybackState(startPlaybackPosition);
+  }, [setPlaybackState, startPlaybackPosition]);
+
   useEffect(() => {
     const listener = (_event: any, d: any) => {
       if (d.action === "update") {
@@ -135,6 +146,21 @@ export const SongPianoRoll = ({
       ipcRenderer.removeListener("music-data", listener);
     };
   }, [setPlaybackState]);
+
+  const setPlaybackPosition = useCallback(
+    (e: any) => {
+      const col = Math.floor(e.offsetX / CELL_SIZE);
+
+      dispatch(
+        trackerActions.setDefaultStartPlaybackPosition([sequenceId, col])
+      );
+      ipcRenderer.send("music-data-send", {
+        action: "position",
+        position: [sequenceId, col],
+      });
+    },
+    [dispatch, sequenceId]
+  );
 
   const playingRowRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -189,8 +215,22 @@ export const SongPianoRoll = ({
             overflow: "auto",
             height: "100%",
             zIndex: 1,
+            paddingTop: CELL_SIZE,
           }}
         >
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 30 + 10,
+              right: 0,
+              width: 64 * CELL_SIZE,
+              height: CELL_SIZE,
+            }}
+            onMouseDown={(e) => {
+              setPlaybackPosition(e.nativeEvent);
+            }}
+          ></div>
           <Piano>
             {Array(6)
               .fill("")
