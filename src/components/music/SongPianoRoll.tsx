@@ -28,6 +28,10 @@ interface PianoKeyProps {
   highlight?: boolean;
 }
 
+interface SongGridHeaderProps {
+  cols: number;
+}
+
 const Piano = styled.div`
   position: sticky;
   left: 0;
@@ -111,6 +115,26 @@ const RollPlaybackTracker = styled.div`
   position: absolute;
   top: -${CELL_SIZE}px;
   bottom: 0;
+`;
+
+const SongGridHeader = styled.div<SongGridHeaderProps>`
+  position: absolute;
+  top: 0;
+  left: ${30 + 10 + 1}px;
+  right: 0;
+  ${(props) => css`
+    width: ${props.cols * CELL_SIZE}px;
+    height: ${CELL_SIZE}px;
+    background-image: linear-gradient(
+      90deg,
+      ${props.theme.colors.tracker.rollCell.border} 2px,
+      transparent 1px
+    );
+    background-size: ${CELL_SIZE * 8}px ${CELL_SIZE / 3}px;
+    background-size: 112px 6px;
+    background-repeat: repeat-x;
+    background-position-y: center;
+  `}
 `;
 
 export const SongPianoRoll = ({
@@ -218,19 +242,12 @@ export const SongPianoRoll = ({
             paddingTop: CELL_SIZE,
           }}
         >
-          <div
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 30 + 10,
-              right: 0,
-              width: 64 * CELL_SIZE,
-              height: CELL_SIZE,
-            }}
+          <SongGridHeader
+            cols={64}
             onMouseDown={(e) => {
               setPlaybackPosition(e.nativeEvent);
             }}
-          ></div>
+          ></SongGridHeader>
           <Piano>
             {Array(6)
               .fill("")
