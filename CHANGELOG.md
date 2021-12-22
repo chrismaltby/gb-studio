@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rebuilt GBDK for Mac to support macOS versions below 10.15 [untoxa](https://github.com/untoxa)
 - Hide sprites when overlay is fullscreen [untoxa](https://github.com/untoxa)
 - Make sequences of control codes in strings "instant" [untoxa](https://github.com/untoxa)
+- Fixed error when saving wave length in music editor [@pau-tomas](https://github.com/pau-tomas)
 
 ## [3.0.1]
 
