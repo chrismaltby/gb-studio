@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated Simplified Chinese localisation. [@wcxu21](https://github.com/wcxu21) 
 - Optimised game engine input script checks [untoxa](https://github.com/untoxa)
 - Reimplemented GBSPack in pure JS as binary was incorrectly flagged by anti-virus software on Windows
+- Updated French localisation. [@Toinane](https://github.com/Toinane)
 
 ### Fixed
 
