@@ -93,6 +93,94 @@ export default async (
   return cmds.join("\n");
 };
 
+export const getBuildCommands = async (
+  buildRoot,
+  {
+    customColorsEnabled,
+    sgb,
+    musicDriver,
+    profile,
+    platform,
+    batteryless,
+    targetPlatform,
+  }
+) => {
+  const srcRoot = `${buildRoot}/src/**/*.@(c|s)`;
+  const buildFiles = await globAsync(srcRoot);
+  const output = [];
+
+  const CC =
+    platform === "win32"
+      ? `..\\_gbstools\\gbdk\\bin\\lcc`
+      : `../_gbstools/gbdk/bin/lcc`;
+
+  for (const file of buildFiles) {
+    if (musicDriver === "huge" && file.indexOf("GBT_PLAYER") !== -1) {
+      continue;
+    }
+    if (musicDriver !== "huge" && file.indexOf("HUGE_TRACKER") !== -1) {
+      continue;
+    }
+
+    const objFile = `${file
+      .replace(/src.*\//, "obj/")
+      .replace(/\.[cs]$/, "")}.o`;
+
+    if (!(await pathExists(objFile))) {
+      const buildArgs = [
+        `-Iinclude`,
+        `-Wa-Iinclude`,
+        `-Wa-I../_gbstools/gbdk/lib/small/asxxxx`,
+        `-Wl-a`,
+        `-c`,
+      ];
+
+      if (customColorsEnabled) {
+        buildArgs.push("-DCGB");
+      }
+
+      if (sgb) {
+        buildArgs.push("-DSGB");
+      }
+
+      if (musicDriver === "huge") {
+        buildArgs.push("-DHUGE_TRACKER");
+      } else {
+        buildArgs.push("-DGBT_PLAYER");
+      }
+
+      if (batteryless) {
+        buildArgs.push("-DBATTERYLESS");
+      }
+
+      if (profile) {
+        buildArgs.push("-Wf--profile");
+      }
+
+      if (targetPlatform === "pocket") {
+        buildArgs.push("-mgbz80:ap");
+      }
+
+      buildArgs.push(
+        "-c",
+        "-o",
+        Path.relative(buildRoot, objFile),
+        Path.relative(buildRoot, file)
+      );
+
+      output.push({
+        label: `${l10n("COMPILER_COMPILING")}: ${Path.relative(
+          buildRoot,
+          file
+        )}`,
+        command: CC,
+        args: buildArgs,
+      });
+    }
+  }
+  return output;
+};
+
 export const buildPackFile = async (buildRoot) => {
   const output = [];
   const srcRoot = `${buildRoot}/src/**/*.@(c|s)`;
@@ -105,6 +193,20 @@ export const buildPackFile = async (buildRoot) => {
     output.push(objFile);
   }
   return output.join("\n");
+};
+
+export const getPackFiles = async (buildRoot) => {
+  const output = [];
+  const srcRoot = `${buildRoot}/src/**/*.@(c|s)`;
+  const buildFiles = await globAsync(srcRoot);
+  for (const file of buildFiles) {
+    const objFile = `${file
+      .replace(/src.*\//, "obj/")
+      .replace(/\.[cs]$/, "")}.o`;
+
+    output.push(objFile);
+  }
+  return output;
 };
 
 export const buildLinkFile = async (buildRoot, cartSize) => {
