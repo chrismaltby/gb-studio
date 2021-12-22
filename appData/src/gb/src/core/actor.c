@@ -226,7 +226,7 @@ void activate_actors_in_col(UBYTE x, UBYTE y) BANKED {
 }
 
 void actor_set_frames(actor_t *actor, UBYTE frame_start, UBYTE frame_end) BANKED {
-    if (actor->frame_start != frame_start || actor->frame_end != frame_end) {
+    if ((actor->frame_start != frame_start) || (actor->frame_end != frame_end)) {
         actor->frame = frame_start;
         actor->frame_start = frame_start;
         actor->frame_end = frame_end;

@@ -49,6 +49,18 @@ const changes: EngineChange[] = [
       "src/core/vm.c",
     ],
   },
+  {
+    version: "3.0.2-e1",
+    description:
+      "Bug fixes:\n" +
+      "   * Hide sprites when overlay is fullscreen\n" +
+      '   * Make sequences of control codes in strings "instant"',
+    modifiedFiles: [
+      "src/core/actor.s",
+      "src/core/interrupts.c",
+      "src/core/ui.c",
+    ],
+  },
 ];
 
 const ejectEngineChangelog = (currentVersion: string) => {

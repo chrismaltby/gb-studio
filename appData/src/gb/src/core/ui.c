@@ -283,115 +283,119 @@ void ui_draw_text_buffer_char() BANKED {
         ui_print_reset();
     }
 
-    while (*ui_text_ptr == 0x09) ui_text_ptr++; // all 0x09 characters must be skipped without waiting
-
-    switch (*ui_text_ptr) {
-        case 0x00: {
-            ui_text_ptr = 0; 
-            text_drawn = TRUE;
-            if (vwf_current_font_idx != current_font_idx) {
-                const far_ptr_t * font = ui_fonts + vwf_current_font_idx;
-                MemcpyBanked(&vwf_current_font_desc, font->ptr, sizeof(font_desc_t), vwf_current_font_bank = font->bank);
-            }
-            text_bkg_fill = current_text_bkg_fill;
-            vwf_direction = current_vwf_direction;
-            text_ff_joypad = current_text_ff_joypad;
-            text_draw_speed = current_text_draw_speed;
-            return;
-        }
-        case 0x01:
-            // set text speed
-            text_draw_speed = (*(++ui_text_ptr) - 1u) & 0x07u;
-            current_text_speed = ui_time_masks[text_draw_speed];
-            break;
-        case 0x02: {
-            // set current font
-            current_font_idx = *(++ui_text_ptr) - 1u;
-            const far_ptr_t * font = ui_fonts + current_font_idx;
-            UBYTE old_flags = vwf_current_font_desc.attr;
-            MemcpyBanked(&vwf_current_font_desc, font->ptr, sizeof(font_desc_t), vwf_current_font_bank = font->bank);
-            if ((vwf_current_offset) && ((old_flags & FONT_VWF) != 0) && ((vwf_current_font_desc.attr & FONT_VWF) == 0)) {
-                ui_dest_ptr++;
-            }
-            break;
-        }
-        case 0x03:
-            // gotoxy 
-            ui_dest_ptr = ui_dest_base = text_render_base_addr + (*++ui_text_ptr - 1u) + (*++ui_text_ptr - 1u) * 32u;
-            if (vwf_current_offset) ui_print_reset();
-            break;
-        case 0x04: {
-            // relative gotoxy
-            BYTE dx = (BYTE)(*++ui_text_ptr);
-            if (dx > 0) dx--;
-            BYTE dy = (BYTE)(*++ui_text_ptr);
-            if (dy > 0) dy--;
-            ui_dest_base = ui_dest_ptr += dx + dy * 32u;
-            if (vwf_current_offset) ui_print_reset();
-            break;
-        }
-        case 0x06:
-            // wait for input cancels fast forward
-            if (text_ff) {
-                text_ff = FALSE;
-                text_ff_joypad = FALSE;
-                INPUT_RESET;
-            }
-            // if high speed then skip waiting
-            if (text_draw_speed == 0) {
-                ui_text_ptr++;
-                break;
-            } 
-            // wait for key press (parameter is a mask)
-            if ((joy & ~last_joy) & *++ui_text_ptr) {
-                text_ff_joypad = current_text_ff_joypad;
-                break;
-            }
-            ui_text_ptr--;
-            return;
-        case 0x07:
-            // set text color
-            text_bkg_fill = (*++ui_text_ptr & 1u) ? TEXT_BKG_FILL_W : TEXT_BKG_FILL_B;
-            break;
-        case 0x08:
-            // text direction (left-to-right or right-to-left)
-            vwf_direction = (*++ui_text_ptr & 1u) ? UI_PRINT_LEFTTORIGHT : UI_PRINT_RIGHTTOLEFT;
-            break;
-        case '\r':
-            // line feed
-            if ((ui_dest_ptr + 32u) > (UBYTE *)((((UWORD)text_scroll_addr + ((UWORD)text_scroll_height << 5)) & 0xFFE0) - 1)) {
-                scroll_rect(text_scroll_addr, text_scroll_width, text_scroll_height, text_scroll_fill);
-#ifdef CGB
-                if (_is_CGB) {
-                    VBK_REG = 1;
-                    scroll_rect(text_scroll_addr, text_scroll_width, text_scroll_height, (UI_PALETTE & 0x07u));
-                    VBK_REG = 0;
+    // normally runs once, but if control code encountered, then process them until printable symbol or terminator
+    while (TRUE) {
+        switch (*ui_text_ptr) {
+            case 0x00: {
+                ui_text_ptr = 0; 
+                text_drawn = TRUE;
+                if (vwf_current_font_idx != current_font_idx) {
+                    const far_ptr_t * font = ui_fonts + vwf_current_font_idx;
+                    MemcpyBanked(&vwf_current_font_desc, font->ptr, sizeof(font_desc_t), vwf_current_font_bank = font->bank);
                 }
+                text_bkg_fill = current_text_bkg_fill;
+                vwf_direction = current_vwf_direction;
+                text_ff_joypad = current_text_ff_joypad;
+                text_draw_speed = current_text_draw_speed;
+                return;
+            }
+            case 0x01:
+                // set text speed
+                text_draw_speed = (*(++ui_text_ptr) - 1u) & 0x07u;
+                current_text_speed = ui_time_masks[text_draw_speed];
+                break;
+            case 0x02: {
+                // set current font
+                current_font_idx = *(++ui_text_ptr) - 1u;
+                const far_ptr_t * font = ui_fonts + current_font_idx;
+                UBYTE old_flags = vwf_current_font_desc.attr;
+                MemcpyBanked(&vwf_current_font_desc, font->ptr, sizeof(font_desc_t), vwf_current_font_bank = font->bank);
+                if ((vwf_current_offset) && ((old_flags & FONT_VWF) != 0) && ((vwf_current_font_desc.attr & FONT_VWF) == 0)) {
+                    ui_dest_ptr++;
+                }
+                break;
+            }
+            case 0x03:
+                // gotoxy 
+                ui_dest_ptr = ui_dest_base = text_render_base_addr + (*++ui_text_ptr - 1u) + (*++ui_text_ptr - 1u) * 32u;
+                if (vwf_current_offset) ui_print_reset();
+                break;
+            case 0x04: {
+                // relative gotoxy
+                BYTE dx = (BYTE)(*++ui_text_ptr);
+                if (dx > 0) dx--;
+                BYTE dy = (BYTE)(*++ui_text_ptr);
+                if (dy > 0) dy--;
+                ui_dest_base = ui_dest_ptr += dx + dy * 32u;
+                if (vwf_current_offset) ui_print_reset();
+                break;
+            }
+            case 0x06:
+                // wait for input cancels fast forward
+                if (text_ff) {
+                    text_ff = FALSE;
+                    text_ff_joypad = FALSE;
+                    INPUT_RESET;
+                }
+                // if high speed then skip waiting
+                if (text_draw_speed == 0) {
+                    ui_text_ptr++;
+                    break;
+                } 
+                // wait for key press (parameter is a mask)
+                if ((joy & ~last_joy) & *++ui_text_ptr) {
+                    text_ff_joypad = current_text_ff_joypad;
+                    break;
+                }
+                ui_text_ptr--;
+                return;
+            case 0x07:
+                // set text color
+                text_bkg_fill = (*++ui_text_ptr & 1u) ? TEXT_BKG_FILL_W : TEXT_BKG_FILL_B;
+                break;
+            case 0x08:
+                // text direction (left-to-right or right-to-left)
+                vwf_direction = (*++ui_text_ptr & 1u) ? UI_PRINT_LEFTTORIGHT : UI_PRINT_RIGHTTOLEFT;
+                break;
+            case 0x09:
+                break;
+            case '\r':
+                // line feed
+                if ((ui_dest_ptr + 32u) > (UBYTE *)((((UWORD)text_scroll_addr + ((UWORD)text_scroll_height << 5)) & 0xFFE0) - 1)) {
+                    scroll_rect(text_scroll_addr, text_scroll_width, text_scroll_height, text_scroll_fill);
+#ifdef CGB
+                    if (_is_CGB) {
+                        VBK_REG = 1;
+                        scroll_rect(text_scroll_addr, text_scroll_width, text_scroll_height, (UI_PALETTE & 0x07u));
+                        VBK_REG = 0;
+                    }
 #endif
-                ui_dest_ptr = ui_dest_base;
-            } else {
+                    ui_dest_ptr = ui_dest_base;
+                } else {
+                    ui_dest_ptr = ui_dest_base += 32u;
+                }
+                if (vwf_current_offset) ui_print_reset();
+                break;
+            case '\n':
+                // carriage return
                 ui_dest_ptr = ui_dest_base += 32u;
-            }
-            if (vwf_current_offset) ui_print_reset();
-            break;
-        case '\n':
-            // carriage return
-            ui_dest_ptr = ui_dest_base += 32u;
-            if (vwf_current_offset) ui_print_reset();
-            break;
-        case 0x05:
-            // escape symbol
-            ui_text_ptr++; 
-            // fall down to default
-        default:
-            if (ui_print_render(*ui_text_ptr)) {
-                ui_set_tile(ui_dest_ptr, ui_prev_tile, ui_prev_tile_bank);
-                if (vwf_direction == UI_PRINT_LEFTTORIGHT)  ui_dest_ptr++; else ui_dest_ptr--;
-            }
-            if (vwf_current_offset) ui_set_tile(ui_dest_ptr, ui_current_tile, ui_current_tile_bank);
-            break;
+                if (vwf_current_offset) ui_print_reset();
+                break;
+            case 0x05:
+                // escape symbol
+                ui_text_ptr++; 
+                // fall down to default
+            default:
+                if (ui_print_render(*ui_text_ptr)) {
+                    ui_set_tile(ui_dest_ptr, ui_prev_tile, ui_prev_tile_bank);
+                    if (vwf_direction == UI_PRINT_LEFTTORIGHT)  ui_dest_ptr++; else ui_dest_ptr--;
+                }
+                if (vwf_current_offset) ui_set_tile(ui_dest_ptr, ui_current_tile, ui_current_tile_bank);
+                ui_text_ptr++;
+                return;
+        }
+        ui_text_ptr++;
     }
-    ui_text_ptr++;
 }
 
 void ui_update() NONBANKED {
