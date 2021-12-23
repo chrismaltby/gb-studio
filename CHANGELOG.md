@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Reimplemented GBSPack in pure JS as binary was incorrectly flagged by anti-virus software on Windows
 - Updated French localisation. [@Toinane](https://github.com/Toinane)
 - Player bounce event no longer deprecated
+- Don't prevent jumping when overlapping actor in platform scenes
 
 ### Fixed
 

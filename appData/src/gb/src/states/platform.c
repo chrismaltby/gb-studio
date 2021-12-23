@@ -269,7 +269,6 @@ void platform_update() BANKED {
     hit_actor = actor_overlapping_player(FALSE);
     if (hit_actor != NULL && hit_actor->collision_group) {
         player_register_collision_with(hit_actor);
-        can_jump = FALSE;
     } else if (INPUT_PRESSED(INPUT_PLATFORM_INTERACT)) {
         if (!hit_actor) {
             hit_actor = actor_in_front_of_player(8, TRUE);

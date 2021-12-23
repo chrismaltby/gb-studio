@@ -61,6 +61,13 @@ const changes: EngineChange[] = [
       "src/core/ui.c",
     ],
   },
+  {
+    version: "3.0.2-e2",
+    description:
+      "Bug fixes:\n" +
+      "   * Don't prevent jumping when overlapping actor in platform scenes",
+    modifiedFiles: ["src/states/platform.c"],
+  },
 ];
 
 const ejectEngineChangelog = (currentVersion: string) => {
