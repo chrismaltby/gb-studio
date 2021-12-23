@@ -3585,6 +3585,10 @@ class ScriptBuilder {
     this._sioSetMode(".SIO_MODE_MASTER");
   };
 
+  linkClose = () => {
+    this._sioSetMode(".SIO_MODE_NONE");
+  };
+
   linkTransfer = (
     sendVariable: string,
     receiveVariable: string,
