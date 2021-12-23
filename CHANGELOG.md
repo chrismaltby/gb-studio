@@ -34,6 +34,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed error when saving wave length in music editor [@pau-tomas](https://github.com/pau-tomas)
 - Fixed copy/paste on Ubuntu
 - Fixed codegen for Link Close event [@pau-tomas](https://github.com/pau-tomas)
+- Fixed issue where world view would snap to center of selected scene each time a change was made [@tustin2121](https://github.com/tustin2121)
+- Fixed accidental movement of scenes/drawing when panning with the middle mouse button [@tustin2121](https://github.com/tustin2121)
 
 ## [3.0.1]
 

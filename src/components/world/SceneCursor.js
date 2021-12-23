@@ -29,6 +29,7 @@ import {
   TOOL_SELECT,
   COLLISION_ALL,
   TILE_PROPS,
+  MIDDLE_MOUSE,
 } from "../../consts";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 
@@ -114,6 +115,10 @@ class SceneCursor extends Component {
       pasteTriggerAt,
       pasteActorAt,
     } = this.props;
+
+    if (e.nativeEvent.which === MIDDLE_MOUSE) {
+      return;
+    }
 
     this.lockX = undefined;
     this.lockY = undefined;

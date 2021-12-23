@@ -98,7 +98,8 @@ class World extends Component {
 
     if (
       onlyMatchingScene &&
-      onlyMatchingScene !== prevProps.onlyMatchingScene
+      (!prevProps.onlyMatchingScene ||
+        onlyMatchingScene.id !== prevProps.onlyMatchingScene.id)
     ) {
       const view = this.scrollRef.current;
       const viewContents = this.scrollContentsRef.current;
