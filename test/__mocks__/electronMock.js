@@ -4,6 +4,10 @@ export const remote = {
     // replace the showOpenDialog function with a spy which returns a value
     showOpenDialog: jest.fn().mockReturnValue("path/to/output folder"),
   },
+  clipboard: {
+    writeText: jest.fn(),
+    writeBuffer: jest.fn(),
+  },
 };
 
 export const clipboard = {

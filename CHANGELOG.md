@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Hide sprites when overlay is fullscreen [untoxa](https://github.com/untoxa)
 - Make sequences of control codes in strings "instant" [untoxa](https://github.com/untoxa)
 - Fixed error when saving wave length in music editor [@pau-tomas](https://github.com/pau-tomas)
+- Fixed copy/paste on Ubuntu
 
 ## [3.0.1]
 

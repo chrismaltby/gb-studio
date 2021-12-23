@@ -1,5 +1,4 @@
 import React, { useCallback, useState } from "react";
-import { clipboard } from "electron";
 import { useDispatch, useSelector } from "react-redux";
 import ScriptEditor from "../script/ScriptEditor";
 import castEventValue from "lib/helpers/castEventValue";
@@ -42,7 +41,10 @@ import ParallaxSelect, {
 } from "../forms/ParallaxSelect";
 import { SpriteSheetSelectButton } from "../forms/SpriteSheetSelectButton";
 import styled from "styled-components";
-import { ClipboardTypePaletteIds } from "store/features/clipboard/clipboardTypes";
+import {
+  ClipboardTypePaletteIds,
+  ClipboardTypeScenes,
+} from "store/features/clipboard/clipboardTypes";
 import { SCREEN_WIDTH } from "../../consts";
 
 interface SceneEditorProps {
@@ -124,7 +126,6 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
   const sceneIndex = useSelector((state: RootState) =>
     sceneSelectors.selectIds(state).indexOf(id)
   );
-  const [clipboardData, setClipboardData] = useState<unknown>(null);
   const clipboardFormat = useSelector(
     (state: RootState) => state.clipboard.data?.format
   );
@@ -254,15 +255,6 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
   const onRemove = () => {
     if (scene) {
       dispatch(entitiesActions.removeScene({ sceneId: scene.id }));
-    }
-  };
-
-  const readClipboard = () => {
-    onFetchClipboard();
-    try {
-      setClipboardData(JSON.parse(clipboard.readText()));
-    } catch (err) {
-      setClipboardData(null);
     }
   };
 
@@ -402,7 +394,7 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
                 size="small"
                 variant="transparent"
                 menuDirection="right"
-                onMouseDown={readClipboard}
+                onMouseDown={onFetchClipboard}
               >
                 <MenuItem style={{ paddingRight: 10, marginBottom: 5 }}>
                   <div style={{ display: "flex" }}>
@@ -439,13 +431,11 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
                   </MenuItem>
                 )}
                 <MenuItem onClick={onCopy}>{l10n("MENU_COPY_SCENE")}</MenuItem>
-                {clipboardData &&
-                  (clipboardData as { __type?: unknown }).__type ===
-                    "scene" && (
-                    <MenuItem onClick={onPaste}>
-                      {l10n("MENU_PASTE_SCENE")}
-                    </MenuItem>
-                  )}
+                {clipboardFormat === ClipboardTypeScenes && (
+                  <MenuItem onClick={onPaste}>
+                    {l10n("MENU_PASTE_SCENE")}
+                  </MenuItem>
+                )}
                 <MenuDivider />
                 {colorsEnabled && (
                   <MenuItem onClick={onCopyBackgroundPaletteIds}>
