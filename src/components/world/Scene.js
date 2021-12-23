@@ -18,6 +18,7 @@ import { assetFilename } from "lib/helpers/gbstudio";
 import SceneCursor from "./SceneCursor";
 import ColorizedImage from "./ColorizedImage";
 import {
+  MIDDLE_MOUSE
   TOOL_COLORS,
   TOOL_COLLISIONS,
   TOOL_ERASER,
@@ -99,7 +100,7 @@ class Scene extends Component {
   onStartDrag = (e) => {
     const { id, selectScene, editable } = this.props;
 
-    if (!editable) {
+    if (!editable || e.nativeEvent.which === MIDDLE_MOUSE) {
       return;
     }
 
