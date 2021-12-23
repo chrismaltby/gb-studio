@@ -19,6 +19,7 @@ import entitiesActions from "store/features/entities/entitiesActions";
 
 import { SceneShape, VariableShape } from "store/stateShape";
 import {
+  MIDDLE_MOUSE,
   TOOL_COLORS,
   TOOL_COLLISIONS,
   TOOL_ERASER,
@@ -114,6 +115,10 @@ class SceneCursor extends Component {
       pasteTriggerAt,
       pasteActorAt,
     } = this.props;
+    
+    if (e.nativeEvent.which === MIDDLE_MOUSE) {
+      return;
+    }
 
     this.lockX = undefined;
     this.lockY = undefined;
