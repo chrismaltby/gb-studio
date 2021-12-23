@@ -110,11 +110,27 @@ const RollPlaybackTracker = styled.div`
   z-index: 0;
   width: ${CELL_SIZE - 1}px;
   height: ${CELL_SIZE * 12 * 6 + CELL_SIZE}px;
-  border: 1px solid ${(props) => props.theme.colors.highlight};
-  background: ${(props) => props.theme.colors.highlight};
+  background-image: linear-gradient(
+    90deg,
+    ${(props) => props.theme.colors.highlight} 2px,
+    transparent 1px
+  );
+  background-position-y: ${CELL_SIZE}px;
+  background-repeat-y: no-repeat;
+  background-size: ${CELL_SIZE * 8}px ${CELL_SIZE * 12 * 6 + CELL_SIZE}px;
   position: absolute;
   top: -${CELL_SIZE}px;
   bottom: 0;
+  &::before {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: -${CELL_SIZE / 2 - 1}px;
+    border-top: ${CELL_SIZE - 4}px solid transparent;
+    border-top-color: ${(props) => props.theme.colors.highlight};
+    border-left: ${CELL_SIZE / 2}px solid transparent;
+    border-right: ${CELL_SIZE / 2}px solid transparent;
+  }
 `;
 
 const SongGridHeader = styled.div<SongGridHeaderProps>`
