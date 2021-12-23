@@ -43,10 +43,10 @@ class World extends Component {
     window.addEventListener("keydown", this.onKeyDown);
     window.addEventListener("keyup", this.onKeyUp);
     window.addEventListener("mouseup", this.onMouseUp);
-    window.addEventListener("mousewheel", this.onMouseWheel, {
+    window.addEventListener("resize", this.onWindowResize);
+    this.scrollRef.current.addEventListener("mousewheel", this.onMouseWheel, {
       passive: false,
     });
-    window.addEventListener("resize", this.onWindowResize);
 
     const viewContents = this.scrollContentsRef.current;
     // Set zoom ratio on component mount incase it wasn't at 100%
@@ -125,7 +125,7 @@ class World extends Component {
     window.removeEventListener("keyup", this.onKeyUp);
     window.removeEventListener("click", this.onClick);
     window.removeEventListener("mouseup", this.onMouseUp);
-    window.removeEventListener("mousewheel", this.onMouseWheel);
+    this.scrollRef.current.removeEventListener("mousewheel", this.onMouseWheel);
   }
 
   onCopy = (e) => {
@@ -216,7 +216,9 @@ class World extends Component {
 
   onMouseWheel = (e) => {
     const { zoomIn, zoomOut } = this.props;
-    if (e.ctrlKey && !this.blockWheelZoom) {
+    // Only check ctrlKey on MacOS, as touch pad is more versitile for scrolling
+    const keyCheck = process.platform === 'darwin'? e.ctrlKey : true;
+    if (keyCheck && !this.blockWheelZoom) {
       e.preventDefault();
       if (e.wheelDelta > 0) {
         zoomIn({ section: "world", delta: e.deltaY * 0.5 });
