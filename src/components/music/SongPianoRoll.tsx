@@ -147,7 +147,6 @@ const SongGridHeader = styled.div<SongGridHeaderProps>`
       transparent 1px
     );
     background-size: ${CELL_SIZE * 8}px ${CELL_SIZE / 3}px;
-    background-size: 112px 6px;
     background-repeat: repeat-x;
     background-position-y: center;
   `}
@@ -253,7 +252,7 @@ export const SongPianoRoll = ({
             display: "flex",
             position: "relative",
             overflow: "auto",
-            height: "100%",
+            height: `calc(100% - ${CELL_SIZE}px)`,
             zIndex: 1,
             paddingTop: CELL_SIZE,
           }}
