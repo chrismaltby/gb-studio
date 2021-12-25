@@ -609,7 +609,7 @@ const AddScriptEventMenu = ({
           data: [
             instanciateScriptEvent(newEvent, {
               defaultActorId: "player",
-              defaultVariableId: scope === "customEvent" ? "0" : "L0",
+              defaultVariableId: scope === "customEvent" ? "V0" : "L0",
               defaultMusicId: String(lastMusicId),
               defaultSceneId: String(lastSceneId),
               defaultSpriteId: String(lastSpriteId),
