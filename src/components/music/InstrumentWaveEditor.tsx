@@ -32,10 +32,12 @@ const volumeOptions = [
 interface InstrumentWaveEditorProps {
   id: string;
   instrument?: WaveInstrument;
+  waveForms?: Uint8Array[];
 }
 
 export const InstrumentWaveEditor = ({
   instrument,
+  waveForms,
 }: InstrumentWaveEditorProps) => {
   const dispatch = useDispatch();
 
@@ -79,6 +81,7 @@ export const InstrumentWaveEditor = ({
       type: "wave",
       instrument: instrument,
       square2: false,
+      waveForms: waveForms,
     });
   };
 

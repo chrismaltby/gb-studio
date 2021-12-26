@@ -135,7 +135,7 @@ const play = (song) => {
   update_handle = setInterval(updateUI, 15.625);
 };
 
-const preview = (note, type, instrument, square2) => {
+const preview = (note, type, instrument, square2, waves = []) => {
   console.log(note, instrument, square2);
   const noteFreq = note2freq[note];
 
@@ -228,7 +228,7 @@ const preview = (note, type, instrument, square2) => {
       break;
     case "wave":
       // Copy Wave Form
-      const wave = current_song.waves[instrument.wave_index];
+      const wave = waves[instrument.wave_index];
       for (let idx = 0; idx < 16; idx++) {
         emulator.writeMem(
           AUD3_WAVE_RAM + idx,

@@ -30,7 +30,8 @@ type Instrument = DutyInstrument | NoiseInstrument | WaveInstrument;
 
 const renderInstrumentEditor = (
   type: string,
-  instrumentData: Instrument | null
+  instrumentData: Instrument | null,
+  waveForms?: Uint8Array[]
 ) => {
   if (type === "duty")
     return (
@@ -53,6 +54,7 @@ const renderInstrumentEditor = (
       <InstrumentWaveEditor
         id={`instrument_${instrumentData?.index}`}
         instrument={instrumentData as WaveInstrument}
+        waveForms={waveForms}
       />
     );
 };
@@ -227,7 +229,11 @@ export const SongEditor = () => {
                 </MenuItem> */}
                 </DropdownButton>
               </FormHeader>
-              {renderInstrumentEditor(selectedInstrument.type, instrumentData)}
+              {renderInstrumentEditor(
+                selectedInstrument.type,
+                instrumentData,
+                song.waves
+              )}
             </>
           ) : (
             ""
