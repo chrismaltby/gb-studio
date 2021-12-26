@@ -104,6 +104,11 @@ const loadSong = (song) => {
 const play = (song) => {
   updateRom(song);
 
+  const ticks_per_row_addr = compiler.getRamSymbols().findIndex((v) => {
+    return v === "ticks_per_row";
+  });
+  emulator.writeMem(ticks_per_row_addr, song.ticks_per_row);
+
   emulator.setChannel(0, channels[0]);
   emulator.setChannel(1, channels[1]);
   emulator.setChannel(2, channels[2]);
