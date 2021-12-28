@@ -114,7 +114,7 @@ export const SongEditor = () => {
       let action;
       if (type === "duty") action = trackerDocumentActions.editDutyInstrument;
       if (type === "wave") action = trackerDocumentActions.editWaveInstrument;
-      if (type === "noise") action = trackerDocumentActions.editWaveInstrument;
+      if (type === "noise") action = trackerDocumentActions.editNoiseInstrument;
 
       if (!action || !instrumentData) return;
 
