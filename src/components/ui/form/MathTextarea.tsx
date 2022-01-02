@@ -12,6 +12,8 @@ import { RelativePortal } from "../layout/RelativePortal";
 import { SelectMenu, selectMenuStyleProps } from "./Select";
 import { VariableSelect } from "../../forms/VariableSelect";
 import l10n from "lib/helpers/l10n";
+import { useSelector } from "react-redux";
+import { RootState } from "store/configureStore";
 
 const varRegex = /\$([VLT0-9][0-9]*)\$/g;
 
@@ -297,6 +299,7 @@ export const MathTextarea: FC<MathTextareaProps> = ({
   placeholder,
 }) => {
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
+  const editorType = useSelector((state: RootState) => state.editor.type);
   const [variablesLookup, setVariablesLookup] = useState<
     Dictionary<NamedVariable>
   >({});
@@ -346,9 +349,15 @@ export const MathTextarea: FC<MathTextareaProps> = ({
                   const newValue = value.replace(varRegex, (match) => {
                     if (matches === editMode.index) {
                       matches++;
-                      return editMode.type === "var"
-                        ? `$${newId.padStart(2, "0")}$`
-                        : `#${newId.padStart(2, "0")}#`;
+                      if (editorType !== "customEvent") {
+                        return editMode.type === "var"
+                          ? `$${newId.padStart(2, "0")}$`
+                          : `#${newId.padStart(2, "0")}#`;
+                      } else {
+                        return editMode.type === "var"
+                          ? `$V${newId}$`
+                          : `#V${newId}#`;
+                      }
                     }
                     matches++;
                     return match;
