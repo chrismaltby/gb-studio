@@ -3734,6 +3734,36 @@ class ScriptBuilder {
     this._addNL();
   };
 
+  ifDeviceCGB = (truePath = [], falsePath = []) => {
+    const falseLabel = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+    this._addComment(`If Color Supported`);
+    this._stackPushConst(0);
+    this._getMemUInt8(".ARG0", "_is_CGB");
+    this._ifConst(".NE", ".ARG0", 1, falseLabel, 1);
+    this._compilePath(truePath);
+    this._jump(endLabel);
+    this._label(falseLabel);
+    this._compilePath(falsePath);
+    this._label(endLabel);
+    this._addNL();
+  };
+
+  ifDeviceSGB = (truePath = [], falsePath = []) => {
+    const falseLabel = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+    this._addComment(`If Device SGB`);
+    this._stackPushConst(0);
+    this._getMemUInt8(".ARG0", "_is_SGB");
+    this._ifConst(".NE", ".ARG0", 1, falseLabel, 1);
+    this._compilePath(truePath);
+    this._jump(endLabel);
+    this._label(falseLabel);
+    this._compilePath(falsePath);
+    this._label(endLabel);
+    this._addNL();
+  };
+
   ifActorAtPosition = (
     x: number,
     y: number,
