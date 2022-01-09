@@ -1054,10 +1054,10 @@ Audio.ctx = new AudioContext();
 class Video {
   constructor(module, e, el) {
     this.module = module;
-    // iPhone Safari doesn't upscale using image-rendering: pixelated on webgl
-    // canvases. See https://bugs.webkit.org/show_bug.cgi?id=193895.
+    // Both iPhone and Desktop Safari dont't upscale using image-rendering: pixelated
+    // on webgl canvases. See https://bugs.webkit.org/show_bug.cgi?id=193895.
     // For now, default to Canvas2D.
-    if (window.navigator.userAgent.match(/iPhone|iPad/)) {
+    if (window.navigator.userAgent.match(/iPhone|iPad|15.[0-9] Safari/)) {
       this.renderer = new Canvas2DRenderer(el);
     } else {
       try {
