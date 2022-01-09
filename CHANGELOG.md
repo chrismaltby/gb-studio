@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed blurry emulator when running web export on desktop Safari [@pau-tomas](https://github.com/pau-tomas)
 - Fix issue where replacing trigger OnLeave script would replace OnEnter [@pau-tomas](https://github.com/pau-tomas)
+- Fix issue replacing math expresion variables in custom events [@pau-tomas](https://github.com/pau-tomas)
 
 ## [3.0.2]
 
