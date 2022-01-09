@@ -9,7 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added event to determine if device is running on SGB
+
 ### Changed
+
+- Changed if color supported event to return false when game is DMG even if run on color device
 
 ### Fixed
 
