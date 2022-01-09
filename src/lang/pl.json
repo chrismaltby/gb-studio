@@ -462,6 +462,7 @@
   "FIELD_ADD_PALETTE": "Dodaj paletę",
   "FIELD_CURSOR": "Kursor",
   "FIELD_HOVER": "Hover",
+  "FIELD_OVERRIDE_DEFAULT_BUTTON_ACTION": "Nadpisz domyślny przycisk akcji",
  
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
