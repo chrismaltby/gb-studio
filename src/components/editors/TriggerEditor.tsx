@@ -190,7 +190,7 @@ export const TriggerEditor = ({
       value={trigger.script}
       type="trigger"
       entityId={trigger.id}
-      scriptKey={"script"}
+      scriptKey={scriptKey}
     />
   );
 
