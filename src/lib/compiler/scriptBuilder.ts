@@ -579,8 +579,8 @@ class ScriptBuilder {
         if (token.type === "VAL") {
           rpn = rpn.int16(token.value);
         } else if (token.type === "VAR") {
-          const ref = this.getVariableAlias(token.symbol.replace(/\$/g, ""));
-          rpn = rpn.ref(ref);
+          const ref = token.symbol.replace(/\$/g, "");
+          rpn = rpn.refVariable(ref);
         } else if (token.type === "FUN") {
           const op = funToScriptOperator(token.function);
           rpn = rpn.operator(op);
