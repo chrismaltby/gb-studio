@@ -59,7 +59,7 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
           init &&
           !hasInit &&
           !globalHasInit &&
-          !events[command].allowedBeforeInitFade
+          events[command].waitUntilAfterInitFade
         ) {
           // Found an event that cannot happen before init fade in
           if (i > 0 || isBranch) {
