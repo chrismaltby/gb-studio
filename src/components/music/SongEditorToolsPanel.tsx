@@ -26,6 +26,7 @@ import { Select } from "ui/form/Select";
 import { PianoRollToolType } from "store/features/tracker/trackerState";
 import { ipcRenderer } from "electron";
 import l10n from "lib/helpers/l10n";
+import { InstrumentType } from "store/features/editor/editorState";
 
 const octaveOffsetOptions: OctaveOffsetOptions[] = [0, 1, 2, 3].map((i) => ({
   value: i,
@@ -248,6 +249,33 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
     };
   });
 
+  const song = useSelector(
+    (state: RootState) => state.trackerDocument.present.song
+  );
+  const selectedChannel = useSelector(
+    (state: RootState) => state.tracker.selectedChannel
+  );
+  const [instrumentType, setInstrumentType] =
+    useState<InstrumentType | undefined>();
+  useEffect(() => {
+    if (view === "roll") {
+      switch (selectedChannel) {
+        case 0:
+        case 1:
+          setInstrumentType("duty");
+          break;
+        case 2:
+          setInstrumentType("wave");
+          break;
+        case 3:
+          setInstrumentType("noise");
+          break;
+      }
+    } else {
+      setInstrumentType(undefined);
+    }
+  }, [view, setInstrumentType, song, selectedChannel]);
+
   const themeContext = useContext(ThemeContext);
 
   const themePianoIcon =
@@ -338,6 +366,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
           onChange={(newValue) => {
             setDefaultInstruments(parseInt(newValue));
           }}
+          instrumentType={instrumentType}
         />
         {view === "tracker" ? (
           <>
