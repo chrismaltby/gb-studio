@@ -87,7 +87,7 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
             `${outputRoot}/build/${buildType}`,
             `${projectRoot}/build/${buildType}`
           );
-          remote.shell.openItem(`${projectRoot}/build/${buildType}`);
+          await remote.shell.openPath(`${projectRoot}/build/${buildType}`);
           dispatch(consoleActions.stdOut("-"));
           dispatch(
             consoleActions.stdOut(
@@ -173,8 +173,8 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
         }
       }
 
-      ejectEngineToDir(outputDir).then(() => {
-        remote.shell.openItem(outputDir);
+      ejectEngineToDir(outputDir).then(async () => {
+        await remote.shell.openPath(outputDir);
       });
     } else if (actions.exportProject.match(action)) {
       const state = store.getState();
@@ -259,7 +259,7 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
         dispatch(consoleActions.stdOut(`Build Time: ${buildTime}ms`));
         dispatch(consoleActions.completeConsole());
 
-        remote.shell.openItem(exportRoot);
+        await remote.shell.openPath(exportRoot);
       } catch (e) {
         if (typeof e === "string") {
           dispatch(navigationActions.setSection("build"));
