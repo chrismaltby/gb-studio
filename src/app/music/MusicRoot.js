@@ -69,7 +69,13 @@ ipcRenderer.on("music-data", (event, d) => {
       });
       break;
     case "preview":
-      player.preview(d.note, d.type, d.instrument, d.square2);
+      player.preview(
+        d.note,
+        d.type,
+        d.instrument,
+        d.square2,
+        d.waveForms || []
+      );
       ipcRenderer.send("music-data-receive", {
         action: "log",
         message: "preview",
