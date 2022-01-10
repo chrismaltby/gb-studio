@@ -119,8 +119,9 @@ const RollPlaybackTracker = styled.div`
   background-repeat-y: no-repeat;
   background-size: ${CELL_SIZE * 8}px ${CELL_SIZE * 12 * 6 + CELL_SIZE}px;
   position: absolute;
-  top: -${CELL_SIZE}px;
+  top: 0;
   bottom: 0;
+  left: -10px;
   &::before {
     content: "";
     position: absolute;
@@ -134,13 +135,15 @@ const RollPlaybackTracker = styled.div`
 `;
 
 const SongGridHeader = styled.div<SongGridHeaderProps>`
-  position: absolute;
+  position: sticky;
   top: 0;
   left: ${30 + 10 + 1}px;
   right: 0;
+  z-index: 10;
   ${(props) => css`
     width: ${props.cols * CELL_SIZE}px;
     height: ${CELL_SIZE}px;
+    background-color: ${props.theme.colors.document.background};
     background-image: linear-gradient(
       90deg,
       ${props.theme.colors.tracker.rollCell.border} 2px,
@@ -149,6 +152,9 @@ const SongGridHeader = styled.div<SongGridHeaderProps>`
     background-size: ${CELL_SIZE * 8}px ${CELL_SIZE / 3}px;
     background-repeat: repeat-x;
     background-position-y: center;
+    border-bottom: 1px solid #808080;
+    margin-bottom: -1px;
+    border-right: 2px solid ${props.theme.colors.document.background};
   `}
 `;
 
@@ -249,12 +255,9 @@ export const SongPianoRoll = ({
       >
         <div
           style={{
-            display: "flex",
-            position: "relative",
             overflow: "auto",
-            height: `calc(100% - ${CELL_SIZE}px)`,
+            height: "100%",
             zIndex: 1,
-            paddingTop: CELL_SIZE,
           }}
         >
           <SongGridHeader
@@ -262,69 +265,7 @@ export const SongPianoRoll = ({
             onMouseDown={(e) => {
               setPlaybackPosition(e.nativeEvent);
             }}
-          ></SongGridHeader>
-          <Piano>
-            {Array(6)
-              .fill("")
-              .map((_, i) => (
-                <>
-                  <PianoKey
-                    color="white"
-                    highlight={hoverNote === MAX_NOTE - i * 12}
-                  ></PianoKey>
-                  <PianoKey
-                    color="black"
-                    highlight={hoverNote === MAX_NOTE - (i * 12 + 1)}
-                  ></PianoKey>
-                  <PianoKey
-                    color="white"
-                    highlight={hoverNote === MAX_NOTE - (i * 12 + 2)}
-                    tall
-                  ></PianoKey>
-                  <PianoKey
-                    color="black"
-                    highlight={hoverNote === MAX_NOTE - (i * 12 + 3)}
-                  ></PianoKey>
-                  <PianoKey
-                    color="white"
-                    highlight={hoverNote === MAX_NOTE - (i * 12 + 4)}
-                    tall
-                  ></PianoKey>
-                  <PianoKey
-                    color="black"
-                    highlight={hoverNote === MAX_NOTE - (i * 12 + 5)}
-                  ></PianoKey>
-                  <PianoKey
-                    color="white"
-                    highlight={hoverNote === MAX_NOTE - (i * 12 + 6)}
-                  ></PianoKey>
-                  <PianoKey
-                    color="white"
-                    highlight={hoverNote === MAX_NOTE - (i * 12 + 7)}
-                  ></PianoKey>
-                  <PianoKey
-                    color="black"
-                    highlight={hoverNote === MAX_NOTE - (i * 12 + 8)}
-                  ></PianoKey>
-                  <PianoKey
-                    color="white"
-                    highlight={hoverNote === MAX_NOTE - (i * 12 + 9)}
-                    tall
-                  ></PianoKey>
-                  <PianoKey
-                    color="black"
-                    highlight={hoverNote === MAX_NOTE - (i * 12 + 10)}
-                  ></PianoKey>
-                  <PianoKey
-                    color="white"
-                    highlight={hoverNote === MAX_NOTE - (i * 12 + 11)}
-                  >
-                    C{8 - i}
-                  </PianoKey>
-                </>
-              ))}
-          </Piano>
-          <SongGrid tabIndex={0}>
+          >
             <RollPlaybackTracker
               ref={playingRowRef}
               style={{
@@ -332,17 +273,89 @@ export const SongPianoRoll = ({
                 transform: `translateX(${10 + playbackState[1] * CELL_SIZE}px)`,
               }}
             />
-            <RollChannelGrid cellSize={CELL_SIZE} />
-            {v.map((i) => (
-              <RollChannel
-                channelId={i}
-                active={selectedChannel === i}
-                patternId={patternId}
-                patterns={song?.patterns[patternId]}
-                cellSize={CELL_SIZE}
-              />
-            ))}
-          </SongGrid>
+          </SongGridHeader>
+          <div
+            style={{
+              display: "flex",
+              position: "relative",
+              width: "100%",
+              zIndex: 1,
+            }}
+          >
+            <Piano>
+              {Array(6)
+                .fill("")
+                .map((_, i) => (
+                  <>
+                    <PianoKey
+                      color="white"
+                      highlight={hoverNote === MAX_NOTE - i * 12}
+                    ></PianoKey>
+                    <PianoKey
+                      color="black"
+                      highlight={hoverNote === MAX_NOTE - (i * 12 + 1)}
+                    ></PianoKey>
+                    <PianoKey
+                      color="white"
+                      highlight={hoverNote === MAX_NOTE - (i * 12 + 2)}
+                      tall
+                    ></PianoKey>
+                    <PianoKey
+                      color="black"
+                      highlight={hoverNote === MAX_NOTE - (i * 12 + 3)}
+                    ></PianoKey>
+                    <PianoKey
+                      color="white"
+                      highlight={hoverNote === MAX_NOTE - (i * 12 + 4)}
+                      tall
+                    ></PianoKey>
+                    <PianoKey
+                      color="black"
+                      highlight={hoverNote === MAX_NOTE - (i * 12 + 5)}
+                    ></PianoKey>
+                    <PianoKey
+                      color="white"
+                      highlight={hoverNote === MAX_NOTE - (i * 12 + 6)}
+                    ></PianoKey>
+                    <PianoKey
+                      color="white"
+                      highlight={hoverNote === MAX_NOTE - (i * 12 + 7)}
+                    ></PianoKey>
+                    <PianoKey
+                      color="black"
+                      highlight={hoverNote === MAX_NOTE - (i * 12 + 8)}
+                    ></PianoKey>
+                    <PianoKey
+                      color="white"
+                      highlight={hoverNote === MAX_NOTE - (i * 12 + 9)}
+                      tall
+                    ></PianoKey>
+                    <PianoKey
+                      color="black"
+                      highlight={hoverNote === MAX_NOTE - (i * 12 + 10)}
+                    ></PianoKey>
+                    <PianoKey
+                      color="white"
+                      highlight={hoverNote === MAX_NOTE - (i * 12 + 11)}
+                    >
+                      C{8 - i}
+                    </PianoKey>
+                  </>
+                ))}
+            </Piano>
+            <SongGrid tabIndex={0}>
+              <RollChannelGrid cellSize={CELL_SIZE} />
+              {v.map((i) => (
+                <RollChannel
+                  channelId={i}
+                  active={selectedChannel === i}
+                  patternId={patternId}
+                  patterns={song?.patterns[patternId]}
+                  cellSize={CELL_SIZE}
+                />
+              ))}
+            </SongGrid>
+          </div>
         </div>
       </div>
       <SplitPaneVerticalDivider />
