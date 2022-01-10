@@ -130,6 +130,7 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_music_routine,          4}, // 0x65
     {vm_wave_play,              6}, // 0x66
     {vm_music_setpos,           2}, // 0x67
+    // scene stack instructions
     {vm_scene_push,             0}, // 0x68
     {vm_scene_pop,              0}, // 0x69
     {vm_scene_pop_all,          0}, // 0x6A
@@ -178,5 +179,7 @@ const SCRIPT_CMD script_cmds[] = {
 
     // trigonometry instructions section
     {vm_sin_scale,              5}, // 0x89 
-    {vm_cos_scale,              5}  // 0x8A
+    {vm_cos_scale,              5}, // 0x8A
+
+    {vm_set_text_sound,         2}  // 0x8B
 };

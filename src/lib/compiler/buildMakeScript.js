@@ -132,6 +132,7 @@ export const getBuildCommands = async (
         `-Wa-Iinclude`,
         `-Wa-I../_gbstools/gbdk/lib/small/asxxxx`,
         `-Wl-a`,
+        `-Wf-MMD`,
         `-c`,
       ];
 

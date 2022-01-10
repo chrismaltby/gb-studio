@@ -84,6 +84,8 @@ extern UWORD script_memory[VM_HEAP_SIZE + (VM_MAX_CONTEXTS * VM_CONTEXT_STACK_SI
 // ScriptRunnerInit(), ExecuteScript(), ScriptRunnerUpdate() manipulate these contexts
 extern SCRIPT_CTX CTXS[VM_MAX_CONTEXTS];
 extern SCRIPT_CTX * first_ctx, * free_ctxs;
+// context pointers for script_runner
+extern SCRIPT_CTX * old_executing_ctx, * executing_ctx;
 
 // lock state 
 extern UBYTE vm_lock_state;

@@ -16,6 +16,8 @@ extern const SCRIPT_CMD script_cmds[];
 // ScriptRunnerInit(), ExecuteScript(), ScriptRunnerUpdate() manipulate these contexts
 SCRIPT_CTX CTXS[VM_MAX_CONTEXTS];
 SCRIPT_CTX * first_ctx, * free_ctxs;
+// context pointers for script_runner
+SCRIPT_CTX * old_executing_ctx, * executing_ctx;
 
 // lock state 
 UBYTE vm_lock_state;
@@ -609,9 +611,6 @@ __endasm;
 
 // global shared script memory
 UWORD script_memory[VM_HEAP_SIZE + (VM_MAX_CONTEXTS * VM_CONTEXT_STACK_SIZE)];
-
-// context pointers for script_runner
-static SCRIPT_CTX * old_executing_ctx, * executing_ctx;
 
 // initialize script runner contexts
 // resets whole VM engine

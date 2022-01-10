@@ -6,7 +6,7 @@
 #ifdef SGB
     #define MAX_JOYPADS 2
 #endif
-#define joy (joypads.joy0)
+#define joy (frame_joy)
 
 /* TRUE if any button is being held */
 #define INPUT_ANY (joy)
@@ -93,6 +93,7 @@
 #define INPUT_DPAD 0xF
 
 extern joypads_t joypads;
+extern UBYTE frame_joy;
 extern UBYTE last_joy;
 extern UBYTE recent_joy;
 

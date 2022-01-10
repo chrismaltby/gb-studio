@@ -233,3 +233,11 @@ void vm_overlay_set_submap(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE w, UBYTE h
 #endif
     set_xy_win_submap(image_ptr + offset, image_bank, image_tile_width, x, y, w, h);
 }
+
+void vm_set_text_sound(SCRIPT_CTX * THIS, UBYTE frames, UBYTE channel) OLDCALL BANKED {
+    text_sound_frames = frames;
+    text_sound_ch = channel; 
+    text_sound_bank = THIS->bank;  
+    text_sound_data = THIS->PC;
+    THIS->PC += ((channel == 3) ? 0x15 : 5); // skip regs and waveform, if playing on ch3
+}

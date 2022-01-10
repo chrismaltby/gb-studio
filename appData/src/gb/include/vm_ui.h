@@ -23,4 +23,6 @@ void vm_load_cursor(SCRIPT_CTX * THIS, UBYTE bank, UBYTE * offset) OLDCALL BANKE
 void vm_set_font(SCRIPT_CTX * THIS, UBYTE bank, UBYTE * offset) OLDCALL BANKED;
 void vm_set_print_dir(SCRIPT_CTX * THIS, UBYTE print_dir) OLDCALL BANKED;
 
+void vm_set_text_sound(SCRIPT_CTX * THIS, UBYTE frames, UBYTE channel) OLDCALL BANKED;
+
 #endif

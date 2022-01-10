@@ -30,7 +30,7 @@ const save_point_t save_points[] = {
     SAVEPOINT(script_memory),
     // VM contexts
     SAVEPOINT(CTXS),
-    SAVEPOINT(first_ctx), SAVEPOINT(free_ctxs), SAVEPOINT(vm_lock_state),
+    SAVEPOINT(first_ctx), SAVEPOINT(free_ctxs), SAVEPOINT(old_executing_ctx), SAVEPOINT(executing_ctx), SAVEPOINT(vm_lock_state),
     // intupt events
     SAVEPOINT(input_events), SAVEPOINT(input_slots), 
     // timers

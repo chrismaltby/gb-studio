@@ -911,7 +911,7 @@ OP_VM_LOAD_PALETTE       = 0x7C
 .PALETTE_BKG             = 2
 .PALETTE_SPRITE          = 4
 .macro .DMG_PAL COL1, COL2, COL3, COL4
-        .dw #((COL1 & 0x03) | ((COL2 & 0x03) << 2) | ((COL2 & 0x03) << 4) | ((COL4 & 0x03) << 6))
+        .dw #((COL1 & 0x03) | ((COL2 & 0x03) << 2) | ((COL3 & 0x03) << 4) | ((COL4 & 0x03) << 6))
         .dw 0,0,0 
 .endm
 .macro .CGB_PAL R1,G1,B1 R2,G2,B2 R3,G3,B3 R4,G4,B4
@@ -958,3 +958,13 @@ OP_VM_COS_SCALE         = 0x8A
 .macro VM_COS_SCALE IDX, IDX_ANGLE, SCALE
         .db OP_VM_COS_SCALE, #<SCALE, #>IDX_ANGLE, #<IDX_ANGLE, #>IDX, #<IDX
 .endm
+
+; --- TEXT SOUND -------------------------------------
+
+; Set sound effect for text 
+OP_VM_SET_TEXT_SOUND    = 0x8B
+.macro VM_SET_TEXT_SOUND FRAMES, CH, ?A, ?B, ?C, ?D, ?E
+        .db OP_VM_SET_TEXT_SOUND, #<CH, #<FRAMES
+        .db #<A, #<B, #<C, #<D, #<E    
+.endm
+

@@ -15,16 +15,18 @@ void input_init() BANKED {
     recent_joy = 0;
 #ifdef SGB
     joypad_init(MAX_JOYPADS, &joypads);
+#else
+    joypads.npads = 1;
 #endif
 }
 
 void input_update() NONBANKED {
-    last_joy = frame_joy;
+    last_joy = joypads.joy0;
 #ifdef SGB
     joypad_ex(&joypads);
-    frame_joy = joy;
+    joy = joypads.joy0;
 #else 
-    joy = frame_joy = joypad();
+    joypads.joy0 = joy = joypad();
 #endif
     if ((joy & INPUT_DPAD) != (last_joy & INPUT_DPAD))
         recent_joy = joy & ~last_joy;

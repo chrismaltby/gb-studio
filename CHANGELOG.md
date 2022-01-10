@@ -13,11 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added event to determine if device is a GBA
 - Added ability to choose from two keyboard layout options for tracker [@pau-tomas](https://github.com/pau-tomas)
 - Added ability to to set the start playback position in music editor by clicking bar above piano roll [@pau-tomas](https://github.com/pau-tomas)
+- Add engine support for text sounds [untoxa](https://github.com/untoxa)
 
 ### Changed
 
 - Changed if color supported event to return false when game is DMG even if run on color device
 - Changed wording from "Reenable" to "Enable" for toggling events/else [@codyjb](https://github.com/codyjb)
+- Update engine to latest hUGEDriver [untoxa](https://github.com/untoxa)
 
 ### Fixed
 
@@ -28,6 +30,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix music editor: Instrument name isn't editable  [@pau-tomas](https://github.com/pau-tomas)
 - Fix music editor: Ticks per row field updates aren't reflected when playing the song [@pau-tomas](https://github.com/pau-tomas)
 - Fix music editor: Wave form changes are not updating for instrument preview [@pau-tomas](https://github.com/pau-tomas)
+- Improved engine GBA detection [untoxa](https://github.com/untoxa)
+- Fix scroll jitter seen in top-down scenes [untoxa](https://github.com/untoxa)
+- Save executing ctxs when saving game data [untoxa](https://github.com/untoxa)
 
 ## [3.0.2]
 

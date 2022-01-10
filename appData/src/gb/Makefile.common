@@ -130,24 +130,21 @@ $(REL_OBJDIR):
 	mkdir -p $(REL_OBJDIR)
 
 $(TOP)$(OBJDIR)/%.o:	$(TOP)src/core/%.c
-	$(CC) $(CFLAGS) $(filter -Wf-ba%, $(subst .d,-Wf-ba,$(suffix $(<:%.c=%)))) -c -o $@ $<
+	$(CC) $(CFLAGS) -Wf-MMD $(filter -Wf-ba%, $(subst .d,-Wf-ba,$(suffix $(<:%.c=%)))) -c -o $@ $<
 
 $(TOP)$(OBJDIR)/%.o:	$(TOP)src/core/%.s
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 $(TOP)$(OBJDIR)/%.o:	$(TOP)src/states/%.c
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) -Wf-MMD -c -o $@ $<
 
 $(TOP)$(OBJDIR)/%.o:	$(TOP)src/states/%.s
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 $(TOP)$(OBJDIR)/%.o:	$(TOP)src/%.c
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) -Wf-MMD -c -o $@ $<
 
 $(TOP)$(OBJDIR)/%.o:	$(TOP)src/%.s
-	$(CC) $(CFLAGS) -c -o $@ $<
-
-$(TOP)$(OBJDIR)/test_main.o:	$(TOP)test/framework/test_main.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 $(REL_OBJDIR)/linkfile.lk:	$(OBJS)

@@ -68,6 +68,32 @@ const changes: EngineChange[] = [
       "   * Don't prevent jumping when overlapping actor in platform scenes",
     modifiedFiles: ["src/states/platform.c"],
   },
+  {
+    version: "3.0.3-e0",
+    description:
+      "Updates:\n" +
+      "   * Update to latest hUGEDriver" +
+      "   * Add engine support for text sounds" +
+      "   * Save executing ctxs when saving game data" +
+      "   * Improve GBA detection" +
+      "   * Fix scroll jitter seen in top-down scenes",
+    modifiedFiles: [
+      "include/input.h",
+      "include/ui.h",
+      "include/vm.h",
+      "include/vm.i",
+      "include/vm_ui.h",
+      "lib/hUGEDriver.lib",
+      "src/core/core.c",
+      "src/core/input.c",
+      "src/core/interrupts.c",
+      "src/core/load_save.c",
+      "src/core/ui.c",
+      "src/core/vm.c",
+      "src/core/vm_instructions.c",
+      "src/core/vm_ui.c",
+    ],
+  },
 ];
 
 const ejectEngineChangelog = (currentVersion: string) => {

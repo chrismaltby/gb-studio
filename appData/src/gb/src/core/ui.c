@@ -16,6 +16,7 @@
 #include "actor.h"
 #include "projectiles.h"
 #include "shadow.h"
+#include "music_manager.h"
 
 #define ui_frame_tl_tiles 0xC0u
 #define ui_frame_bl_tiles 0xC6u
@@ -69,6 +70,10 @@ UBYTE * text_scroll_addr;
 UBYTE text_scroll_width, text_scroll_height;
 UBYTE text_scroll_fill;
 
+UBYTE text_sound_frames, text_sound_ch;
+UBYTE text_sound_bank; 
+const UBYTE * text_sound_data;
+
 void ui_init() BANKED {
     vwf_direction               = UI_PRINT_LEFTTORIGHT;
     vwf_current_font_idx        = 0;
@@ -77,7 +82,7 @@ void ui_init() BANKED {
 
     text_in_speed               = 0;
     text_out_speed              = 0;
-    text_ff_joypad              = 1;
+    text_ff_joypad              = TRUE;
     text_bkg_fill               = TEXT_BKG_FILL_W;
 
     ui_text_ptr                 = 0;
@@ -104,6 +109,9 @@ void ui_init() BANKED {
     text_scroll_width           = 20; 
     text_scroll_height          = 8;
     text_scroll_fill            = ui_while_tile;
+
+    text_sound_frames           = 0;
+    text_sound_ch               = 0;
 
     ui_load_tiles();
 }
@@ -251,14 +259,14 @@ inline void ui_set_tile(UBYTE * addr, UBYTE tile, UBYTE bank) {
     SetTile(addr, tile);
 }
 
-void ui_draw_text_buffer_char() BANKED {
+UBYTE ui_draw_text_buffer_char() BANKED {
     static UBYTE current_font_idx, current_text_bkg_fill, current_vwf_direction, current_text_ff_joypad, current_text_draw_speed;
 
     if ((text_ff_joypad) && (INPUT_A_OR_B_PRESSED)) text_ff = TRUE;
 
     if ((!text_ff) && (text_wait)) {
         text_wait--;
-        return;
+        return FALSE;
     }
 
     if (ui_text_ptr == 0) {
@@ -297,7 +305,7 @@ void ui_draw_text_buffer_char() BANKED {
                 vwf_direction = current_vwf_direction;
                 text_ff_joypad = current_text_ff_joypad;
                 text_draw_speed = current_text_draw_speed;
-                return;
+                return FALSE;
             }
             case 0x01:
                 // set text speed
@@ -345,10 +353,11 @@ void ui_draw_text_buffer_char() BANKED {
                 // wait for key press (parameter is a mask)
                 if ((joy & ~last_joy) & *++ui_text_ptr) {
                     text_ff_joypad = current_text_ff_joypad;
+                    INPUT_RESET;
                     break;
                 }
                 ui_text_ptr--;
-                return;
+                return FALSE;
             case 0x07:
                 // set text color
                 text_bkg_fill = (*++ui_text_ptr & 1u) ? TEXT_BKG_FILL_W : TEXT_BKG_FILL_B;
@@ -392,7 +401,7 @@ void ui_draw_text_buffer_char() BANKED {
                 }
                 if (vwf_current_offset) ui_set_tile(ui_dest_ptr, ui_current_tile, ui_current_tile_bank);
                 ui_text_ptr++;
-                return;
+                return TRUE;
         }
         ui_text_ptr++;
     }
@@ -426,9 +435,12 @@ void ui_update() NONBANKED {
     // too fast - wait
     if ((!INPUT_A_OR_B_PRESSED) && (game_time & current_text_speed)) return;
     // render next char
+    UBYTE letter_drawn;
     do {
-        ui_draw_text_buffer_char();
+        letter_drawn = ui_draw_text_buffer_char();
     } while (((text_ff) || (text_draw_speed == 0)) && (!text_drawn));
+    // play sound
+    if ((letter_drawn) && (text_sound_frames != 0)) sound_play(text_sound_frames, text_sound_ch, text_sound_bank, text_sound_data);
 }
 
 UBYTE ui_run_menu(menu_item_t * start_item, UBYTE bank, UBYTE options, UBYTE count) BANKED {

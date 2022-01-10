@@ -200,6 +200,8 @@ void core_run() BANKED {
     _is_SGB = FALSE;
     _is_CGB = ((_cpu == CGB_TYPE) && (*(UBYTE *)0x0143 & 0x80));
 #endif
+    // GBA features only available together with CGB
+    _is_GBA = (_is_GBA && _is_CGB);
 
     display_off();
     palette_init();
