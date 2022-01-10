@@ -75,4 +75,5 @@ module.exports = {
   groups,
   fields,
   compile,
+  waitUntilAfterInitFade: true,
 };

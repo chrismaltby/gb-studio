@@ -579,8 +579,8 @@ class ScriptBuilder {
         if (token.type === "VAL") {
           rpn = rpn.int16(token.value);
         } else if (token.type === "VAR") {
-          const ref = this.getVariableAlias(token.symbol.replace(/\$/g, ""));
-          rpn = rpn.ref(ref);
+          const ref = token.symbol.replace(/\$/g, "");
+          rpn = rpn.refVariable(ref);
         } else if (token.type === "FUN") {
           const op = funToScriptOperator(token.function);
           rpn = rpn.operator(op);
@@ -3726,6 +3726,51 @@ class ScriptBuilder {
     this._stackPushConst(0);
     this._getMemUInt8(".ARG0", "_cpu");
     this._ifConst(".NE", ".ARG0", "0x11", falseLabel, 1);
+    this._compilePath(truePath);
+    this._jump(endLabel);
+    this._label(falseLabel);
+    this._compilePath(falsePath);
+    this._label(endLabel);
+    this._addNL();
+  };
+
+  ifDeviceCGB = (truePath = [], falsePath = []) => {
+    const falseLabel = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+    this._addComment(`If Color Supported`);
+    this._stackPushConst(0);
+    this._getMemUInt8(".ARG0", "_is_CGB");
+    this._ifConst(".NE", ".ARG0", 1, falseLabel, 1);
+    this._compilePath(truePath);
+    this._jump(endLabel);
+    this._label(falseLabel);
+    this._compilePath(falsePath);
+    this._label(endLabel);
+    this._addNL();
+  };
+
+  ifDeviceSGB = (truePath = [], falsePath = []) => {
+    const falseLabel = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+    this._addComment(`If Device SGB`);
+    this._stackPushConst(0);
+    this._getMemUInt8(".ARG0", "_is_SGB");
+    this._ifConst(".NE", ".ARG0", 1, falseLabel, 1);
+    this._compilePath(truePath);
+    this._jump(endLabel);
+    this._label(falseLabel);
+    this._compilePath(falsePath);
+    this._label(endLabel);
+    this._addNL();
+  };
+
+  ifDeviceGBA = (truePath = [], falsePath = []) => {
+    const falseLabel = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+    this._addComment(`If Device GBA`);
+    this._stackPushConst(0);
+    this._getMemUInt8(".ARG0", "_is_GBA");
+    this._ifConst(".NE", ".ARG0", 1, falseLabel, 1);
     this._compilePath(truePath);
     this._jump(endLabel);
     this._label(falseLabel);

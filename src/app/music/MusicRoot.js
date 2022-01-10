@@ -46,10 +46,17 @@ ipcRenderer.on("music-data", (event, d) => {
       });
       break;
     case "stop":
-      player.stop();
+      player.stop(d.position);
       ipcRenderer.send("music-data-receive", {
         action: "log",
         message: "stop",
+      });
+      break;
+    case "position":
+      player.setStartPosition(d.position);
+      ipcRenderer.send("music-data-receive", {
+        action: "log",
+        message: "position",
       });
       break;
     case "set-mute":
@@ -62,7 +69,13 @@ ipcRenderer.on("music-data", (event, d) => {
       });
       break;
     case "preview":
-      player.preview(d.note, d.type, d.instrument, d.square2);
+      player.preview(
+        d.note,
+        d.type,
+        d.instrument,
+        d.square2,
+        d.waveForms || []
+      );
       ipcRenderer.send("music-data-receive", {
         action: "log",
         message: "preview",

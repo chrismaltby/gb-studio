@@ -29,6 +29,7 @@ import { Music } from "store/features/entities/entitiesTypes";
 import l10n from "lib/helpers/l10n";
 import { clampSidebarWidth } from "lib/helpers/window/sidebar";
 import { UgePlayer } from "components/music/UgePlayer";
+import trackerActions from "store/features/tracker/trackerActions";
 
 const Wrapper = styled.div`
   display: flex;
@@ -133,6 +134,7 @@ const MusicPageUge = () => {
     if (selectedSongPath !== "" && selectedSongType === "uge") {
       dispatch({ type: "@@TRACKER_INIT" });
       dispatch(loadSongFile(selectedSongPath));
+      dispatch(trackerActions.init());
     }
   }, [dispatch, selectedSongPath, selectedSongType]);
 

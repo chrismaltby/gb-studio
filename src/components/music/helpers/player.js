@@ -104,6 +104,11 @@ const loadSong = (song) => {
 const play = (song) => {
   updateRom(song);
 
+  const ticks_per_row_addr = compiler.getRamSymbols().findIndex((v) => {
+    return v === "ticks_per_row";
+  });
+  emulator.writeMem(ticks_per_row_addr, song.ticks_per_row);
+
   emulator.setChannel(0, channels[0]);
   emulator.setChannel(1, channels[1]);
   emulator.setChannel(2, channels[2]);
@@ -135,7 +140,7 @@ const play = (song) => {
   update_handle = setInterval(updateUI, 15.625);
 };
 
-const preview = (note, type, instrument, square2) => {
+const preview = (note, type, instrument, square2, waves = []) => {
   console.log(note, instrument, square2);
   const noteFreq = note2freq[note];
 
@@ -228,7 +233,7 @@ const preview = (note, type, instrument, square2) => {
       break;
     case "wave":
       // Copy Wave Form
-      const wave = current_song.waves[instrument.wave_index];
+      const wave = waves[instrument.wave_index];
       for (let idx = 0; idx < 16; idx++) {
         emulator.writeMem(
           AUD3_WAVE_RAM + idx,
@@ -318,7 +323,7 @@ const preview = (note, type, instrument, square2) => {
   }, 3000);
 };
 
-const stop = () => {
+const stop = (position) => {
   console.log("STOP!");
 
   const is_player_paused = compiler.getRamSymbols().findIndex((v) => {
@@ -333,8 +338,24 @@ const stop = () => {
     emulator.step("frame");
   }
 
+  if (position) {
+    setStartPosition(position);
+  }
+
   clearInterval(update_handle);
   update_handle = null;
+};
+
+const setStartPosition = (position) => {
+  const current_order_addr = compiler.getRamSymbols().findIndex((v) => {
+    return v === "current_order";
+  });
+  const row_addr = compiler.getRamSymbols().findIndex((v) => {
+    return v === "row";
+  });
+
+  emulator.writeMem(current_order_addr, position[0] * 2);
+  emulator.writeMem(row_addr, position[1]);
 };
 
 const updateRom = (song) => {
@@ -464,6 +485,7 @@ export default {
   stop,
   preview,
   setChannel,
+  setStartPosition,
   setOnIntervalCallback: (cb) => {
     onIntervalCallback = cb;
   },

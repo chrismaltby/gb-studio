@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Added event to determine if device is running on SGB
+- Added event to determine if device is a GBA
+
+### Changed
+
+- Changed if color supported event to return false when game is DMG even if run on color device
+- Changed wording from "Reenable" to "Enable" for toggling events/else [@codyjb](https://github.com/codyjb)
+
+### Fixed
+
+- Fixed blurry emulator when running web export on desktop Safari [@pau-tomas](https://github.com/pau-tomas)
+- Fix issue where replacing trigger OnLeave script would replace OnEnter [@pau-tomas](https://github.com/pau-tomas)
+- Fix issue replacing math expresion variables in custom events [@pau-tomas](https://github.com/pau-tomas)
+- Fix issue where some events when used in init scripts would cause the script to wait until the scene had faded in before continuing
+
 ## [3.0.2]
 
 ### Added

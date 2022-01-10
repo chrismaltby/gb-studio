@@ -35,5 +35,4 @@ module.exports = {
   groups,
   fields,
   compile,
-  allowedBeforeInitFade: true,
 };
