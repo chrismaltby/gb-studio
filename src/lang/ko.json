@@ -281,7 +281,7 @@
   "MENU_COPY_EVENT": "Copy Event",
   "MENU_RENAME_EVENT": "Rename Event",
   "MENU_DISABLE_EVENT": "Disable Event",
-  "MENU_REENABLE_EVENT": "Reenable Event",
+  "MENU_ENABLE_EVENT": "Enable Event",
   "MENU_PASTE_VALUES": "Paste Values",
   "MENU_PASTE_EVENT_BEFORE": "Paste Event Before",
   "MENU_PASTE_EVENT": "Paste Event",
