@@ -47,15 +47,15 @@ const Wrapper = styled.span<WrapperProps>`
         `
       : ""}
   ${(props) =>
-    props.isPlaying
-      ? css`
-          background-color: ${props.theme.colors.highlight};
-        `
-      : ""}
-  ${(props) =>
     props.isSelected
       ? css`
           background-color: ${props.theme.colors.tracker.activeBackground};
+        `
+      : ""}
+  ${(props) =>
+    props.isPlaying
+      ? css`
+          background-color: ${props.theme.colors.highlight};
         `
       : ""}
 `;
@@ -72,6 +72,12 @@ const Cell = styled.span<{ selected?: boolean }>`
           background-color: white;
         `
       : ""}
+`;
+
+const HCell = styled.span`
+  margin: 0;
+  padding: 0 4px;
+  pointer-events: none;
 `;
 
 const NoteCell = styled(Cell)`
@@ -141,8 +147,9 @@ const SongRowFwd = React.forwardRef<HTMLSpanElement, SongRowProps>(
           isSelected={isSelected}
           n={n}
           size="small"
+          data-row={n}
         >
-          <Cell id={`cell_${n}`}>{renderCounter(n)}</Cell>
+          <HCell id={`cell_${n}`}>{renderCounter(n)}</HCell>
         </Wrapper>
         {row.map((cell, i) => {
           const ret = (

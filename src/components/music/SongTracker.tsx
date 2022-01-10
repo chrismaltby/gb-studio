@@ -12,6 +12,7 @@ import scrollIntoView from "scroll-into-view-if-needed";
 import { SongGridHeaderCell } from "./SongGridHeaderCell";
 import { ipcRenderer } from "electron";
 import { getInstrumentTypeByChannel, getInstrumentListByType } from "./helpers";
+import trackerActions from "store/features/tracker/trackerActions";
 
 interface SongTrackerProps {
   sequenceId: number;
@@ -60,10 +61,17 @@ export const SongTracker = ({
   const octaveOffset = useSelector(
     (state: RootState) => state.tracker.octaveOffset
   );
+  const startPlaybackPosition = useSelector(
+    (state: RootState) => state.tracker.startPlaybackPosition
+  );
 
   const patternId = song?.sequence[sequenceId] || 0;
 
   const [playbackState, setPlaybackState] = useState([0, 0]);
+
+  useEffect(() => {
+    setPlaybackState(startPlaybackPosition);
+  }, [setPlaybackState, startPlaybackPosition]);
   useEffect(() => {
     const listener = (_event: any, d: any) => {
       if (d.action === "update") {
@@ -100,14 +108,30 @@ export const SongTracker = ({
     }
   }, [playing, selectedCell]);
 
-  const handleMouseDown = useCallback((e: any) => {
-    const cellId = e.target.dataset["cellid"];
-    if (!!cellId) {
-      setSelectedCell(parseInt(cellId));
-    } else {
-      setSelectedCell(undefined);
-    }
-  }, []);
+  const handleMouseDown = useCallback(
+    (e: any) => {
+      const cellId = e.target.dataset["cellid"];
+      const rowId = e.target.dataset["row"];
+
+      if (!!cellId) {
+        setSelectedCell(parseInt(cellId));
+      } else if (rowId) {
+        dispatch(
+          trackerActions.setDefaultStartPlaybackPosition([
+            sequenceId,
+            parseInt(rowId),
+          ])
+        );
+        ipcRenderer.send("music-data-send", {
+          action: "position",
+          position: [sequenceId, parseInt(rowId)],
+        });
+      } else {
+        setSelectedCell(undefined);
+      }
+    },
+    [dispatch, sequenceId]
+  );
 
   const handleKeys = useCallback(
     (e: KeyboardEvent) => {
@@ -345,7 +369,15 @@ export const SongTracker = ({
           editEffectParamCell(null);
       }
     },
-    [dispatch, editStep, octaveOffset, patternId, selectedCell]
+    [
+      defaultInstruments,
+      dispatch,
+      editStep,
+      octaveOffset,
+      patternId,
+      selectedCell,
+      song,
+    ]
   );
 
   const handleKeysUp = useCallback(
@@ -431,6 +463,8 @@ export const SongTracker = ({
             const isSelected =
               selectedCell !== undefined &&
               Math.floor(selectedCell / ROW_SIZE) === i;
+            const isPlaying =
+              playbackState[0] === sequenceId && playbackState[1] === i;
             return (
               <span ref={playbackState[1] === i ? playingRowRef : null}>
                 <SongRow
@@ -440,7 +474,7 @@ export const SongTracker = ({
                   startCellId={i * ROW_SIZE}
                   selectedCell={isSelected ? selectedCell : undefined}
                   isSelected={isSelected}
-                  isPlaying={playbackState[1] === i}
+                  isPlaying={isPlaying}
                   ref={selectedCellRef}
                 />
               </span>

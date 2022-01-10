@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled, { ThemeContext } from "styled-components";
 import { RootState } from "store/configureStore";
@@ -12,6 +12,8 @@ import {
   SelectionIcon,
   PianoIcon,
   PianoInverseIcon,
+  StopIcon,
+  PlayStartIcon,
 } from "ui/icons/Icons";
 import FloatingPanel, { FloatingPanelDivider } from "ui/panels/FloatingPanel";
 import trackerActions from "store/features/tracker/trackerActions";
@@ -21,6 +23,7 @@ import { saveSongFile } from "store/features/trackerDocument/trackerDocumentStat
 import { InstrumentSelect } from "./InstrumentSelect";
 import { Select } from "ui/form/Select";
 import { PianoRollToolType } from "store/features/tracker/trackerState";
+import { ipcRenderer } from "electron";
 
 const octaveOffsetOptions: OctaveOffsetOptions[] = [0, 1, 2, 3].map((i) => ({
   value: i,
@@ -67,13 +70,33 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
 
   const tool = useSelector((state: RootState) => state.tracker.tool);
 
+  const defaultStartPlaybackPosition = useSelector(
+    (state: RootState) => state.tracker.defaultStartPlaybackPosition
+  );
+
+  const [playbackFromStart, setPlaybackFromStart] = useState(false);
+
   const togglePlay = useCallback(() => {
     if (!play) {
+      if (playbackFromStart) {
+        ipcRenderer.send("music-data-send", {
+          action: "position",
+          position: defaultStartPlaybackPosition,
+        });
+      }
       dispatch(trackerActions.playTracker());
     } else {
       dispatch(trackerActions.pauseTracker());
     }
-  }, [dispatch, play]);
+  }, [defaultStartPlaybackPosition, dispatch, play, playbackFromStart]);
+
+  const stopPlayback = useCallback(() => {
+    dispatch(trackerActions.stopTracker());
+    ipcRenderer.send("music-data-send", {
+      action: "stop",
+      position: defaultStartPlaybackPosition,
+    });
+  }, [defaultStartPlaybackPosition, dispatch]);
 
   const toggleView = useCallback(() => {
     if (view === "tracker") {
@@ -130,8 +153,11 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
       if (e.target && (e.target as Node).nodeName === "INPUT") {
         return;
       }
-      if (e.ctrlKey || e.shiftKey || e.metaKey) {
+      if (e.ctrlKey || e.shiftKey) {
         return;
+      }
+      if (e.altKey) {
+        setPlaybackFromStart(true);
       }
       if (view !== "roll") {
         return;
@@ -156,13 +182,24 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
         setDefaultInstruments(8);
       }
     },
-    [setDefaultInstruments, view]
+    [setDefaultInstruments, setPlaybackFromStart, view]
+  );
+
+  const onKeyUp = useCallback(
+    (e: KeyboardEvent) => {
+      if (!e.altKey) {
+        setPlaybackFromStart(false);
+      }
+    },
+    [setPlaybackFromStart]
   );
 
   useEffect(() => {
     window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keyup", onKeyUp);
     return () => {
       window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keyup", onKeyUp);
     };
   });
 
@@ -193,7 +230,20 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
           disabled={!playerReady}
           onClick={togglePlay}
         >
-          {play ? <PauseIcon /> : <PlayIcon />}
+          {play ? (
+            <PauseIcon />
+          ) : playbackFromStart ? (
+            <PlayStartIcon />
+          ) : (
+            <PlayIcon />
+          )}
+        </Button>
+        <Button
+          variant="transparent"
+          disabled={!playerReady}
+          onClick={stopPlayback}
+        >
+          <StopIcon />
         </Button>
         {view === "roll" ? (
           <>

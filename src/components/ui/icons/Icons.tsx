@@ -244,6 +244,19 @@ export const PauseIcon = () => (
   </svg>
 );
 
+export const StopIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <path d="M2 2h20v20h-20z" />
+  </svg>
+);
+
+export const PlayStartIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <path d="M2 3H6V21H2V3Z" />
+    <path d="M22 12L7 21L7 3L22 12Z" />
+  </svg>
+);
+
 export const NextIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24">
     <path d="M19 12l-18 12v-24l18 12zm4-11h-4v22h4v-22z" />

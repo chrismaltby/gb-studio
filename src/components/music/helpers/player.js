@@ -318,7 +318,7 @@ const preview = (note, type, instrument, square2) => {
   }, 3000);
 };
 
-const stop = () => {
+const stop = (position) => {
   console.log("STOP!");
 
   const is_player_paused = compiler.getRamSymbols().findIndex((v) => {
@@ -333,8 +333,24 @@ const stop = () => {
     emulator.step("frame");
   }
 
+  if (position) {
+    setStartPosition(position);
+  }
+
   clearInterval(update_handle);
   update_handle = null;
+};
+
+const setStartPosition = (position) => {
+  const current_order_addr = compiler.getRamSymbols().findIndex((v) => {
+    return v === "current_order";
+  });
+  const row_addr = compiler.getRamSymbols().findIndex((v) => {
+    return v === "row";
+  });
+
+  emulator.writeMem(current_order_addr, position[0] * 2);
+  emulator.writeMem(row_addr, position[1]);
 };
 
 const updateRom = (song) => {
@@ -464,6 +480,7 @@ export default {
   stop,
   preview,
   setChannel,
+  setStartPosition,
   setOnIntervalCallback: (cb) => {
     onIntervalCallback = cb;
   },
