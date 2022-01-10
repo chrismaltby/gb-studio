@@ -1,4 +1,3 @@
-import { clipboard } from "electron";
 import flatten from "lodash/flatten";
 import { AnyAction, Dictionary, Dispatch, Middleware } from "@reduxjs/toolkit";
 import { RootState } from "store/configureStore";
@@ -30,7 +29,7 @@ import actions from "./clipboardActions";
 import entitiesActions from "../entities/entitiesActions";
 import editorActions from "../editor/editorActions";
 import confirmReplaceCustomEvent from "lib/electron/dialog/confirmReplaceCustomEvent";
-import { copy, pasteAny } from "./clipboardHelpers";
+import { clipboard, copy, pasteAny } from "./clipboardHelpers";
 import {
   ClipboardTypeActors,
   ClipboardTypeMetasprites,

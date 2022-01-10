@@ -1,6 +1,6 @@
 const l10n = require("../helpers/l10n").default;
 
-const id = "EVENT_IF_COLOR_SUPPORTED";
+const id = "EVENT_IF_DEVICE_SGB";
 const groups = ["EVENT_GROUP_CONTROL_FLOW", "EVENT_GROUP_COLOR"];
 
 const fields = [
@@ -39,10 +39,10 @@ const fields = [
 ];
 
 const compile = (input, helpers) => {
-  const { ifDeviceCGB } = helpers;
+  const { ifDeviceSGB } = helpers;
   const truePath = input.true;
   const falsePath = input.__disableElse ? [] : input.false;
-  ifDeviceCGB(truePath, falsePath);
+  ifDeviceSGB(truePath, falsePath);
 };
 
 module.exports = {

@@ -422,13 +422,13 @@ const ScriptEditorEvent = React.memo(
                     </MenuItem>
                     <MenuItem onClick={toggleComment}>
                       {commented
-                        ? l10n("MENU_REENABLE_EVENT")
+                        ? l10n("MENU_ENABLE_EVENT")
                         : l10n("MENU_DISABLE_EVENT")}
                     </MenuItem>
                     {hasElse && (
                       <MenuItem onClick={toggleElse}>
                         {disabledElse
-                          ? l10n("MENU_REENABLE_ELSE")
+                          ? l10n("MENU_ENABLE_ELSE")
                           : l10n("MENU_DISABLE_ELSE")}
                       </MenuItem>
                     )}

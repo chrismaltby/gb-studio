@@ -110,4 +110,5 @@ module.exports = {
   weight,
   fields,
   compile,
+  waitUntilAfterInitFade: true,
 };

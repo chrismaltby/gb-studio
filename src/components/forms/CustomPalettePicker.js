@@ -3,13 +3,13 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Solver from "3x3-equation-solver";
 import cx from "classnames";
-import { clipboard } from "electron";
 import l10n from "lib/helpers/l10n";
 import { FormField } from "../library/Forms";
 import ColorSlider from "./ColorSlider";
 import { paletteSelectors } from "store/features/entities/entitiesState";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { Button } from "ui/buttons/Button";
+import { clipboard } from "store/features/clipboard/clipboardHelpers";
 
 const DEFAULT_WHITE = "E8F8E0";
 const DEFAULT_LIGHT = "B0F088";

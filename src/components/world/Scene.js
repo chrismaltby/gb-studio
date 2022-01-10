@@ -22,6 +22,7 @@ import {
   TOOL_COLLISIONS,
   TOOL_ERASER,
   DMG_PALETTE,
+  MIDDLE_MOUSE,
 } from "../../consts";
 import { getCachedObject } from "lib/helpers/cache";
 import SceneInfo from "./SceneInfo";
@@ -99,7 +100,7 @@ class Scene extends Component {
   onStartDrag = (e) => {
     const { id, selectScene, editable } = this.props;
 
-    if (!editable) {
+    if (!editable || e.nativeEvent.which === MIDDLE_MOUSE) {
       return;
     }
 

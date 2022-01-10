@@ -765,7 +765,7 @@ export const compileTileset = (tileset: Uint8Array, tilesetIndex: number) =>
     tilesetSymbol(tilesetIndex),
     `// Tileset: ${tilesetIndex}`,
     {
-      n_tiles: Math.max(1, Math.ceil(tileset.length / 16)),
+      n_tiles: Math.ceil(tileset.length / 16),
       tiles: Array.from(tileset.length > 0 ? tileset : [0]).map(toHex),
     }
   );

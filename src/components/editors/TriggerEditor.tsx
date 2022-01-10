@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { clipboard } from "electron";
+import React, { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ScriptEditor from "../script/ScriptEditor";
 import castEventValue from "lib/helpers/castEventValue";
@@ -25,6 +24,7 @@ import { NoteField } from "ui/form/NoteField";
 import { StickyTabs, TabBar } from "ui/tabs/Tabs";
 import { Button } from "ui/buttons/Button";
 import { LockIcon, LockOpenIcon } from "ui/icons/Icons";
+import { ClipboardTypeTriggers } from "store/features/clipboard/clipboardTypes";
 
 interface TriggerEditorProps {
   id: string;
@@ -79,7 +79,9 @@ export const TriggerEditor = ({
   const scene = useSelector((state: RootState) =>
     sceneSelectors.selectById(state, sceneId)
   );
-  const [clipboardData, setClipboardData] = useState<unknown>(null);
+  const clipboardFormat = useSelector(
+    (state: RootState) => state.clipboard.data?.format
+  );
   const [notesOpen, setNotesOpen] = useState<boolean>(!!trigger?.notes);
 
   const lastScriptTab = useSelector(
@@ -150,13 +152,9 @@ export const TriggerEditor = ({
     }
   };
 
-  const readClipboard = () => {
-    try {
-      setClipboardData(JSON.parse(clipboard.readText()));
-    } catch (err) {
-      setClipboardData(null);
-    }
-  };
+  const onFetchClipboard = useCallback(() => {
+    dispatch(clipboardActions.fetchClipboard());
+  }, [dispatch]);
 
   const onAddNotes = () => {
     setNotesOpen(true);
@@ -192,7 +190,7 @@ export const TriggerEditor = ({
       value={trigger.script}
       type="trigger"
       entityId={trigger.id}
-      scriptKey={"script"}
+      scriptKey={scriptKey}
     />
   );
 
@@ -212,7 +210,7 @@ export const TriggerEditor = ({
                 size="small"
                 variant="transparent"
                 menuDirection="right"
-                onMouseDown={readClipboard}
+                onMouseDown={onFetchClipboard}
               >
                 {!showNotes && (
                   <MenuItem onClick={onAddNotes}>
@@ -222,13 +220,11 @@ export const TriggerEditor = ({
                 <MenuItem onClick={onCopy}>
                   {l10n("MENU_COPY_TRIGGER")}
                 </MenuItem>
-                {clipboardData &&
-                  (clipboardData as { __type?: unknown }).__type ===
-                    "trigger" && (
-                    <MenuItem onClick={onPaste}>
-                      {l10n("MENU_PASTE_TRIGGER")}
-                    </MenuItem>
-                  )}
+                {clipboardFormat === ClipboardTypeTriggers && (
+                  <MenuItem onClick={onPaste}>
+                    {l10n("MENU_PASTE_TRIGGER")}
+                  </MenuItem>
+                )}
                 <MenuDivider />
                 <MenuItem onClick={onRemove}>
                   {l10n("MENU_DELETE_TRIGGER")}

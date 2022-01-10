@@ -1,6 +1,5 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { clipboard } from "electron";
 import { RootState } from "store/configureStore";
 import {
   actorSelectors,
@@ -40,6 +39,7 @@ import { KeysMatching } from "lib/helpers/types";
 import { NoteField } from "ui/form/NoteField";
 import { StickyTabs, TabBar } from "ui/tabs/Tabs";
 import { Button } from "ui/buttons/Button";
+import { ClipboardTypeActors } from "store/features/clipboard/clipboardTypes";
 
 interface ActorEditorProps {
   id: string;
@@ -136,8 +136,10 @@ export const ActorEditor: FC<ActorEditorProps> = ({
   const actor = useSelector((state: RootState) =>
     actorSelectors.selectById(state, id)
   );
-  const [clipboardData, setClipboardData] = useState<unknown>(null);
   const [notesOpen, setNotesOpen] = useState<boolean>(!!actor?.notes);
+  const clipboardFormat = useSelector(
+    (state: RootState) => state.clipboard.data?.format
+  );
   const tabs = Object.keys(actor?.collisionGroup ? collisionTabs : defaultTabs);
   const secondaryTabs = Object.keys(hitTabs);
 
@@ -261,13 +263,9 @@ export const ActorEditor: FC<ActorEditorProps> = ({
     }
   };
 
-  const readClipboard = () => {
-    try {
-      setClipboardData(JSON.parse(clipboard.readText()));
-    } catch (err) {
-      setClipboardData(null);
-    }
-  };
+  const onFetchClipboard = useCallback(() => {
+    dispatch(clipboardActions.fetchClipboard());
+  }, [dispatch]);
 
   const onAddNotes = () => {
     setNotesOpen(true);
@@ -331,7 +329,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({
                 size="small"
                 variant="transparent"
                 menuDirection="right"
-                onMouseDown={readClipboard}
+                onMouseDown={onFetchClipboard}
               >
                 {!showNotes && (
                   <MenuItem onClick={onAddNotes}>
@@ -339,13 +337,11 @@ export const ActorEditor: FC<ActorEditorProps> = ({
                   </MenuItem>
                 )}
                 <MenuItem onClick={onCopy}>{l10n("MENU_COPY_ACTOR")}</MenuItem>
-                {clipboardData &&
-                  (clipboardData as { __type?: unknown }).__type ===
-                    "actor" && (
-                    <MenuItem onClick={onPaste}>
-                      {l10n("MENU_PASTE_ACTOR")}
-                    </MenuItem>
-                  )}
+                {clipboardFormat === ClipboardTypeActors && (
+                  <MenuItem onClick={onPaste}>
+                    {l10n("MENU_PASTE_ACTOR")}
+                  </MenuItem>
+                )}
                 <MenuDivider />
                 <MenuItem onClick={onRemove}>
                   {l10n("MENU_DELETE_ACTOR")}

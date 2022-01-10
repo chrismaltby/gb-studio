@@ -286,7 +286,7 @@
   "MENU_COPY_EVENT": "イベントをコピーする",
   "MENU_RENAME_EVENT": "イベント名を変更する",
   "MENU_DISABLE_EVENT": "イベントを無効にする",
-  "MENU_REENABLE_EVENT": "イベントを有効にする",
+  "MENU_ENABLE_EVENT": "イベントを有効にする",
   "MENU_PASTE_VALUES": "値を張り付け",
   "MENU_PASTE_EVENT_BEFORE": "イベントの前に貼り付け",
   "MENU_PASTE_EVENT": "イベント貼り付け",

@@ -9,6 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added event to determine if device is running on SGB
+- Added event to determine if device is a GBA
+
+### Changed
+
+- Changed if color supported event to return false when game is DMG even if run on color device
+- Changed wording from "Reenable" to "Enable" for toggling events/else [@codyjb](https://github.com/codyjb)
+
+### Fixed
+
+- Fixed blurry emulator when running web export on desktop Safari [@pau-tomas](https://github.com/pau-tomas)
+- Fix issue where replacing trigger OnLeave script would replace OnEnter [@pau-tomas](https://github.com/pau-tomas)
+- Fix issue replacing math expresion variables in custom events [@pau-tomas](https://github.com/pau-tomas)
+- Fix issue where some events when used in init scripts would cause the script to wait until the scene had faded in before continuing
+
+## [3.0.2]
+
+### Added
+
 - Added in-game crash handler screen [untoxa](https://github.com/untoxa)
 - Added support for 16-bit in flag events [@Rebusmind](https://github.com/Rebusmind)
 - Compile files in parallel based on available CPU cores for system
@@ -20,6 +39,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Optimised game engine input script checks [untoxa](https://github.com/untoxa)
 - Reimplemented GBSPack in pure JS as binary was incorrectly flagged by anti-virus software on Windows
 - Updated French localisation. [@Toinane](https://github.com/Toinane)
+- Player bounce event no longer deprecated
+- Don't prevent jumping when overlapping actor in platform scenes
 
 ### Fixed
 
@@ -32,6 +53,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Hide sprites when overlay is fullscreen [untoxa](https://github.com/untoxa)
 - Make sequences of control codes in strings "instant" [untoxa](https://github.com/untoxa)
 - Fixed error when saving wave length in music editor [@pau-tomas](https://github.com/pau-tomas)
+- Fixed copy/paste on Ubuntu
+- Fixed codegen for Link Close event [@pau-tomas](https://github.com/pau-tomas)
+- Fixed issue where world view would snap to center of selected scene each time a change was made [@tustin2121](https://github.com/tustin2121)
+- Fixed accidental movement of scenes/drawing when panning with the middle mouse button [@tustin2121](https://github.com/tustin2121)
 
 ## [3.0.1]
 
