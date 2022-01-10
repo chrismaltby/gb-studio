@@ -101,7 +101,7 @@ const createPreferences = async () => {
   // Create the browser window.
   preferencesWindow = new BrowserWindow({
     width: 600,
-    height: 330,
+    height: 400,
     resizable: false,
     maximizable: false,
     fullscreenable: false,
@@ -505,6 +505,10 @@ ipcMain.on("open-music", async () => {
 
 ipcMain.on("window-zoom", (_, zoomType: number) => {
   mainWindow && mainWindow.webContents.send("windowZoom", zoomType);
+});
+
+ipcMain.on("keybindings-updated", (_, zoomType: number) => {
+  mainWindow && mainWindow.webContents.send("keybindings-update", zoomType);
 });
 
 ipcMain.on("close-music", async () => {

@@ -12,6 +12,7 @@ import scrollIntoView from "scroll-into-view-if-needed";
 import { SongGridHeaderCell } from "./SongGridHeaderCell";
 import { ipcRenderer } from "electron";
 import { getInstrumentTypeByChannel, getInstrumentListByType } from "./helpers";
+import { getKeys, KeyWhen } from "lib/keybindings/keyBindings";
 import trackerActions from "store/features/tracker/trackerActions";
 
 interface SongTrackerProps {
@@ -262,6 +263,8 @@ export const SongTracker = ({
       }
       setSelectedCell(((tmpSelectedCell % NUM_CELLS) + NUM_CELLS) % NUM_CELLS);
 
+      let currentFocus: KeyWhen = null;
+
       if (selectedCell % 4 === 0) {
         if (e.ctrlKey) {
           if (e.shiftKey) {
@@ -276,97 +279,25 @@ export const SongTracker = ({
           return;
         }
 
-        if (e.key === "q") editNoteCell(0);
-        if (e.key === "w") editNoteCell(1);
-        if (e.key === "e") editNoteCell(2);
-        if (e.key === "r") editNoteCell(3);
-        if (e.key === "t") editNoteCell(4);
-        if (e.key === "y") editNoteCell(5);
-        if (e.key === "u") editNoteCell(6);
-        if (e.key === "i") editNoteCell(7);
-        if (e.key === "o") editNoteCell(8);
-        if (e.key === "p") editNoteCell(9);
-        if (e.key === "[") editNoteCell(10);
-        if (e.key === "]") editNoteCell(11);
-        if (e.key === "a") editNoteCell(12);
-        if (e.key === "s") editNoteCell(13);
-        if (e.key === "d") editNoteCell(14);
-        if (e.key === "f") editNoteCell(15);
-        if (e.key === "g") editNoteCell(16);
-        if (e.key === "h") editNoteCell(17);
-        if (e.key === "j") editNoteCell(18);
-        if (e.key === "k") editNoteCell(19);
-        if (e.key === "l") editNoteCell(20);
-        if (e.key === ";") editNoteCell(21);
-        if (e.key === "'") editNoteCell(22);
-        if (e.key === "\\") editNoteCell(23);
-        if (e.key === "z") editNoteCell(24);
-        if (e.key === "x") editNoteCell(25);
-        if (e.key === "c") editNoteCell(26);
-        if (e.key === "v") editNoteCell(27);
-        if (e.key === "b") editNoteCell(28);
-        if (e.key === "n") editNoteCell(29);
-        if (e.key === "m") editNoteCell(30);
-        if (e.key === ",") editNoteCell(31);
-        if (e.key === ".") editNoteCell(32);
-        if (e.key === "/") editNoteCell(33);
-        //if (e.code == "??") editNoteCell(34);
-        //if (e.code == "??") editNoteCell(35);
-        if (e.code === "Delete" || e.code === "Backspace") editNoteCell(null);
+        currentFocus = "noteColumnFocus";
       }
       if ((selectedCell - 1) % 4 === 0) {
-        if (e.key === "0") editInstrumentCell(0);
-        if (e.key === "1") editInstrumentCell(1);
-        if (e.key === "2") editInstrumentCell(2);
-        if (e.key === "3") editInstrumentCell(3);
-        if (e.key === "4") editInstrumentCell(4);
-        if (e.key === "5") editInstrumentCell(5);
-        if (e.key === "6") editInstrumentCell(6);
-        if (e.key === "7") editInstrumentCell(7);
-        if (e.key === "8") editInstrumentCell(8);
-        if (e.key === "9") editInstrumentCell(9);
-        if (e.code === "Delete" || e.code === "Backspace")
-          editInstrumentCell(null);
+        currentFocus = "instrumentColumnFocus";
       }
       if ((selectedCell - 2) % 4 === 0) {
-        if (e.key === "0") editEffectCodeCell(0);
-        if (e.key === "1") editEffectCodeCell(1);
-        if (e.key === "2") editEffectCodeCell(2);
-        if (e.key === "3") editEffectCodeCell(3);
-        if (e.key === "4") editEffectCodeCell(4);
-        if (e.key === "5") editEffectCodeCell(5);
-        if (e.key === "6") editEffectCodeCell(6);
-        if (e.key === "7") editEffectCodeCell(7);
-        if (e.key === "8") editEffectCodeCell(8);
-        if (e.key === "9") editEffectCodeCell(9);
-        if (e.key === "a") editEffectCodeCell(10);
-        if (e.key === "b") editEffectCodeCell(11);
-        if (e.key === "c") editEffectCodeCell(12);
-        if (e.key === "d") editEffectCodeCell(13);
-        if (e.key === "e") editEffectCodeCell(14);
-        if (e.key === "f") editEffectCodeCell(15);
-        if (e.code === "Delete" || e.code === "Backspace")
-          editEffectCodeCell(null);
+        currentFocus = "effectCodeColumnFocus";
       }
       if ((selectedCell - 3) % 4 === 0) {
-        if (e.key === "0") editEffectParamCell(0);
-        if (e.key === "1") editEffectParamCell(1);
-        if (e.key === "2") editEffectParamCell(2);
-        if (e.key === "3") editEffectParamCell(3);
-        if (e.key === "4") editEffectParamCell(4);
-        if (e.key === "5") editEffectParamCell(5);
-        if (e.key === "6") editEffectParamCell(6);
-        if (e.key === "7") editEffectParamCell(7);
-        if (e.key === "8") editEffectParamCell(8);
-        if (e.key === "9") editEffectParamCell(9);
-        if (e.key === "a") editEffectParamCell(10);
-        if (e.key === "b") editEffectParamCell(11);
-        if (e.key === "c") editEffectParamCell(12);
-        if (e.key === "d") editEffectParamCell(13);
-        if (e.key === "e") editEffectParamCell(14);
-        if (e.key === "f") editEffectParamCell(15);
-        if (e.code === "Delete" || e.code === "Backspace")
-          editEffectParamCell(null);
+        currentFocus = "effectParamColumnFocus";
+      }
+
+      if (currentFocus) {
+        getKeys(e.key, currentFocus, {
+          editNoteCell,
+          editInstrumentCell,
+          editEffectCodeCell,
+          editEffectParamCell,
+        });
       }
     },
     [
