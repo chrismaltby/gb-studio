@@ -1114,6 +1114,7 @@ const compile = async (
   const isColor = customColorsEnabled || isSGB;
 
   const precompiledEngineFields = precompileEngineFields(engineFields);
+  const customEventsLookup = keyBy(projectData.customEvents, "id");
 
   // Add UI data
   output["frame_image.c"] = compileFrameImage(precompiled.frameTiles);
@@ -1234,6 +1235,7 @@ const compile = async (
         lock,
         init: scriptTypeCode === "init",
         engineFields: precompiledEngineFields,
+        customEventsLookup,
         output: [],
         additionalScripts,
         symbols,

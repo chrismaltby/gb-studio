@@ -1,3 +1,4 @@
+import { walkDenormalizedEvents } from "lib/helpers/eventHelpers";
 import { EVENT_FADE_IN } from "./eventTypes";
 import ScriptBuilder from "./scriptBuilder";
 
@@ -18,6 +19,7 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
     lock,
     init,
     isFunction,
+    customEventsLookup,
   } = options;
 
   const location = {
@@ -35,15 +37,13 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
     }),
   };
 
-  let globalHasInit = false;
+  let hasInit = false;
 
   const compileEventsWithScriptBuilder = (
     scriptBuilder,
     subInput = [],
     isBranch = false
   ) => {
-    let hasInit = false;
-
     // eslint-disable-next-line global-require
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const events = require("../events").default;
@@ -55,23 +55,27 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
         continue;
       }
       if (events[command]) {
-        if (
-          init &&
-          !hasInit &&
-          !globalHasInit &&
-          events[command].waitUntilAfterInitFade
-        ) {
-          // Found an event that cannot happen before init fade in
-          if (i > 0 || isBranch) {
-            // Force await the next frame if not the first command
-            // at top level so that actors update before fade in occurs
+        if (init && !isBranch && !hasInit) {
+          let waitUntilAfterInitFade = events[command].waitUntilAfterInitFade;
+          if (!waitUntilAfterInitFade) {
+            // Check if any child events have waitUntilAfterInitFade
+            walkDenormalizedEvents(
+              [subInput[i]],
+              { customEventsLookup },
+              (childEvent) => {
+                waitUntilAfterInitFade =
+                  waitUntilAfterInitFade ||
+                  events[childEvent.command].waitUntilAfterInitFade;
+              }
+            );
+          }
+          if (waitUntilAfterInitFade) {
+            hasInit = true;
             scriptBuilder.nextFrameAwait();
+            if (command !== EVENT_FADE_IN) {
+              scriptBuilder.fadeIn();
+            }
           }
-          if (command !== EVENT_FADE_IN) {
-            scriptBuilder.fadeIn();
-          }
-          hasInit = true;
-          globalHasInit = true;
         }
         try {
           events[command].compile(
@@ -82,13 +86,6 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
               event: subInput[i],
             }
           );
-          if (!isBranch && !hasInit && globalHasInit) {
-            // A branch caused a fade in, but hasn't faded in globally yet
-            // Need to force fade in case one path of branch didn't already fade
-            scriptBuilder.nextFrameAwait();
-            scriptBuilder.fadeIn();
-            hasInit = true;
-          }
         } catch (e) {
           console.error(e);
           throw new Error(
@@ -143,12 +140,12 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
         scriptBuilder.labelGoto(loopId);
       }
 
-      if (init && !globalHasInit) {
+      if (init && !hasInit) {
         // No part of script caused a fade in so do this
         // before ending the script
         scriptBuilder.nextFrameAwait();
         scriptBuilder.fadeIn();
-        globalHasInit = true;
+        hasInit = true;
       }
 
       if (isFunction) {
