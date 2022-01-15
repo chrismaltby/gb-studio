@@ -15,7 +15,7 @@
 #endif
 
 #define SIGN_BY_PTR(ptr) *((UINT32 *)(ptr))
-const UINT32 signature = 0x45564153;
+extern const UINT32 save_signature;
 
 typedef struct save_point_t {
     void * target;
@@ -55,7 +55,7 @@ size_t save_blob_size;
 void data_init() BANKED {
     ENABLE_RAM_MBC5;
     // calculate save blob size
-    save_blob_size = sizeof(signature);
+    save_blob_size = sizeof(save_signature);
     for(const save_point_t * point = save_points; (point->target); point++) {
         save_blob_size += point->size;  
     }
@@ -83,8 +83,8 @@ void data_save(UBYTE slot) BANKED {
     if (save_data == NULL) return;
     SWITCH_RAM(data_bank);
 
-    SIGN_BY_PTR(save_data) = signature; 
-    save_data += sizeof(signature);    
+    SIGN_BY_PTR(save_data) = save_signature; 
+    save_data += sizeof(save_signature);    
     for(const save_point_t * point = save_points; (point->target); point++) {
         memcpy(save_data, point->target, point->size);
         save_data += point->size;  
@@ -99,8 +99,8 @@ UBYTE data_load(UBYTE slot) BANKED {
     UBYTE data_bank, *save_data = data_slot_address(slot, &data_bank);
     if (save_data == NULL) return FALSE;
     SWITCH_RAM(data_bank);
-    if (SIGN_BY_PTR(save_data) != signature) return FALSE;
-    save_data += sizeof(signature);
+    if (SIGN_BY_PTR(save_data) != save_signature) return FALSE;
+    save_data += sizeof(save_signature);
 
     for(const save_point_t * point = save_points; (point->target); point++) {
         memcpy(point->target, save_data, point->size);    
@@ -124,8 +124,8 @@ UBYTE data_peek(UBYTE slot, UINT16 idx, UBYTE count, UINT16 * dest) BANKED {
     UBYTE data_bank, *save_data = data_slot_address(slot, &data_bank);
     if (save_data == NULL) return FALSE;
     SWITCH_RAM(data_bank);
-    if (SIGN_BY_PTR(save_data) != signature) return FALSE;
+    if (SIGN_BY_PTR(save_data) != save_signature) return FALSE;
 
-    if (count) memcpy(dest, save_data + sizeof(signature) + (idx << 1), count << 1);
+    if (count) memcpy(dest, save_data + sizeof(save_signature) + (idx << 1), count << 1);
     return TRUE;
 }
