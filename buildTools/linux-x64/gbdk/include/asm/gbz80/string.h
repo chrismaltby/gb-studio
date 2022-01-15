@@ -17,7 +17,7 @@
 
     @return 			A pointer to dest
 */
-char *strcpy(char *dest, const char *src) OLDCALL __preserves_regs(b, c);
+char *strcpy(char *dest, const char *src) OLDCALL PRESERVES_REGS(b, c);
 
 /** Compares strings
 
@@ -29,7 +29,7 @@ char *strcpy(char *dest, const char *src) OLDCALL __preserves_regs(b, c);
     \li 0 if __s1__ == __s2__
     \li < 0 if __s1__ < __s2__
 */
-int strcmp(const char *s1, const char *s2) OLDCALL __preserves_regs(b, c);
+int strcmp(const char *s1, const char *s2) OLDCALL PRESERVES_REGS(b, c);
 
 /** Copies n bytes from memory area src to memory area dest.
 
@@ -39,7 +39,7 @@ int strcmp(const char *s1, const char *s2) OLDCALL __preserves_regs(b, c);
     @param src			Buffer to copy from
     @param len			Number of Bytes to copy
 */
-void *memcpy(void *dest, const void *src, size_t len) OLDCALL __preserves_regs(b, c);
+void *memcpy(void *dest, const void *src, size_t len) OLDCALL PRESERVES_REGS(b, c);
 
 /** Copies n bytes from memory area src to memory area dest, areas may overlap
  */
@@ -51,7 +51,7 @@ void *memmove (void *dest, const void *src, size_t n);
     @param c         char value to fill with (truncated from int)
     @param n         Number of bytes to fill
 */
-void *memset (void *s, int c, size_t n) OLDCALL __preserves_regs(b, c);
+void *memset (void *s, int c, size_t n) OLDCALL PRESERVES_REGS(b, c);
 
 /** Reverses the characters in a string
 
@@ -63,7 +63,7 @@ void *memset (void *s, int c, size_t n) OLDCALL __preserves_regs(b, c);
 
     Returns: Pointer to __s__
 */
-char *reverse(char *s) OLDCALL __preserves_regs(b, c);
+char *reverse(char *s) OLDCALL PRESERVES_REGS(b, c);
 
 /** Concatenate Strings. Appends string __s2__ to the end of string __s1__
 
@@ -84,7 +84,7 @@ char *strcat(char *s1, const char *s2);
 
     Returns: Length of string not including the terminating `\0' character.
 */
-int strlen(const char *s) OLDCALL __preserves_regs(b, c);
+int strlen(const char *s) OLDCALL PRESERVES_REGS(b, c);
 
 /**Concatenate at most __n__ characters from string __s2__ onto the end of __s1__.
 
@@ -127,5 +127,18 @@ int strncmp(const char *s1, const char *s2, int n);
     Returns: Pointer to __s1__
 */
 char *strncpy(char *s1, const char *s2, int n);
+
+/** Compares buffers
+
+    @param buf1         First buffer to compare
+    @param buf2         Second buffer to compare
+    @param count        Buffer length
+
+    Returns:
+    \li > 0 if __buf1__ > __buf2__
+    \li 0 if __buf1__ == __buf2__
+    \li < 0 if __buf1__ < __buf2__
+*/
+int memcmp(const void *buf1, const void *buf2, size_t count) OLDCALL;
 
 #endif

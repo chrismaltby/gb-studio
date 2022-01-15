@@ -83,8 +83,8 @@
 #define __WRITE_VDP_REG(REG, v) shadow_##REG=(v);__critical{VDP_CMD=(shadow_##REG),VDP_CMD=REG;}
 #define __READ_VDP_REG(REG) shadow_##REG
 
-void WRITE_VDP_CMD(uint16_t cmd) __z88dk_fastcall __preserves_regs(b, c, d, e, iyh, iyl);
-void WRITE_VDP_DATA(uint16_t data) __z88dk_fastcall __preserves_regs(b, c, d, e, iyh, iyl);
+void WRITE_VDP_CMD(uint16_t cmd) Z88DK_FASTCALL PRESERVES_REGS(b, c, d, e, iyh, iyl);
+void WRITE_VDP_DATA(uint16_t data) Z88DK_FASTCALL PRESERVES_REGS(b, c, d, e, iyh, iyl);
 
 /** Set the current screen mode - one of M_* modes
 
@@ -124,7 +124,7 @@ uint8_t get_mode() OLDCALL;
  */
 #define JOY_IFLAG    0x10U
 
-void set_interrupts(uint8_t flags) __z88dk_fastcall;
+void set_interrupts(uint8_t flags) Z88DK_FASTCALL;
 
 /* Limits */
 /** Width of the visible screen in pixels.
@@ -154,36 +154,36 @@ typedef void (*int_handler)(void) NONBANKED;
 /** Removes the VBL interrupt handler.
     @see add_VBL()
 */
-void remove_VBL(int_handler h) __z88dk_fastcall __preserves_regs(iyh, iyl);
+void remove_VBL(int_handler h) Z88DK_FASTCALL PRESERVES_REGS(iyh, iyl);
 
 /** Removes the LCD interrupt handler.
     @see add_LCD(), remove_VBL()
 */
-void remove_LCD(int_handler h) __z88dk_fastcall __preserves_regs(b, c, iyh, iyl);
+void remove_LCD(int_handler h) Z88DK_FASTCALL PRESERVES_REGS(b, c, iyh, iyl);
 
-void remove_TIM(int_handler h) __z88dk_fastcall;
-void remove_SIO(int_handler h) __z88dk_fastcall;
-void remove_JOY(int_handler h) __z88dk_fastcall;
+void remove_TIM(int_handler h) Z88DK_FASTCALL;
+void remove_SIO(int_handler h) Z88DK_FASTCALL;
+void remove_JOY(int_handler h) Z88DK_FASTCALL;
 
 /** Adds a V-blank interrupt handler.
 */
-void add_VBL(int_handler h) __z88dk_fastcall __preserves_regs(d, e, iyh, iyl);
+void add_VBL(int_handler h) Z88DK_FASTCALL PRESERVES_REGS(d, e, iyh, iyl);
 
 /** Adds a LCD interrupt handler.
 */
-void add_LCD(int_handler h) __z88dk_fastcall __preserves_regs(b, c, iyh, iyl);
+void add_LCD(int_handler h) Z88DK_FASTCALL PRESERVES_REGS(b, c, iyh, iyl);
 
 /** Does nothing on SMS/GG
  */
-void add_TIM(int_handler h) __z88dk_fastcall;
+void add_TIM(int_handler h) Z88DK_FASTCALL;
 
 /** Does nothing on SMS/GG
  */
-void add_SIO(int_handler h) __z88dk_fastcall;
+void add_SIO(int_handler h) Z88DK_FASTCALL;
 
 /** Does nothing on SMS/GG
  */
-void add_JOY(int_handler h) __z88dk_fastcall;
+void add_JOY(int_handler h) Z88DK_FASTCALL;
 
 /** Cancel pending interrupts
  */
@@ -212,7 +212,7 @@ inline void scroll_bkg(int8_t x, int8_t y) {
     never return. If the screen is off this function returns
     immediately.
 */
-void wait_vbl_done() __preserves_regs(b, c, d, e, h, l, iyh, iyl);
+void wait_vbl_done() PRESERVES_REGS(b, c, d, e, h, l, iyh, iyl);
 
 /** Turns the display off.
 
@@ -387,23 +387,23 @@ __endasm; \
     Uses no timers or interrupts, and can be called with
     interrupts disabled
  */
-void delay(uint16_t d) __z88dk_fastcall;
+void delay(uint16_t d) Z88DK_FASTCALL;
 
 
 /** Reads and returns the current state of the joypad.
 */
-uint8_t joypad() OLDCALL __preserves_regs(b, c, d, e, h, iyh, iyl);
+uint8_t joypad() OLDCALL PRESERVES_REGS(b, c, d, e, h, iyh, iyl);
 
 /** Waits until at least one of the buttons given in mask are pressed.
 */
-uint8_t waitpad(uint8_t mask) __z88dk_fastcall __preserves_regs(b, c, d, e, iyh, iyl);
+uint8_t waitpad(uint8_t mask) Z88DK_FASTCALL PRESERVES_REGS(b, c, d, e, iyh, iyl);
 
 /** Waits for the directional pad and all buttons to be released.
 
     Note: Checks in a loop that doesn't HALT at all, so the CPU
     will be maxed out until this call returns.
 */
-void waitpadup() __preserves_regs(b, c, d, e, iyh, iyl);
+void waitpadup() PRESERVES_REGS(b, c, d, e, iyh, iyl);
 
 /** Multiplayer joypad structure.
 
@@ -428,7 +428,7 @@ typedef struct {
     @returns number of joypads avaliable
     @see joypad_ex(), joypads_t
 */
-uint8_t joypad_init(uint8_t npads, joypads_t * joypads) __z88dk_callee;
+uint8_t joypad_init(uint8_t npads, joypads_t * joypads) Z88DK_CALLEE;
 
 /** Polls all avaliable joypads
     @param joypads	pointer to joypads_t structure to be filled with joypad statuses,
@@ -436,7 +436,7 @@ uint8_t joypad_init(uint8_t npads, joypads_t * joypads) __z88dk_callee;
 
     @see joypad_init(), joypads_t
 */
-void joypad_ex(joypads_t * joypads) __z88dk_fastcall __preserves_regs(iyh, iyl);
+void joypad_ex(joypads_t * joypads) Z88DK_FASTCALL PRESERVES_REGS(iyh, iyl);
 
 
 #if defined(__TARGET_sms)
@@ -505,14 +505,14 @@ typedef uint16_t palette_color_t;
 void set_default_palette();
 inline void cpu_fast() {}
 
-void set_palette_entry(uint8_t palette, uint8_t entry, uint16_t rgb_data) __z88dk_callee __preserves_regs(iyh, iyl);
+void set_palette_entry(uint8_t palette, uint8_t entry, uint16_t rgb_data) Z88DK_CALLEE PRESERVES_REGS(iyh, iyl);
 #define set_bkg_palette_entry set_palette_entry
 #define set_sprite_palette_entry(palette,entry,rgb_data) set_palette_entry(1,entry,rgb_data)
-void set_palette(uint8_t first_palette, uint8_t nb_palettes, palette_color_t *rgb_data) __z88dk_callee;
+void set_palette(uint8_t first_palette, uint8_t nb_palettes, palette_color_t *rgb_data) Z88DK_CALLEE;
 #define set_bkg_palette set_palette
 #define set_sprite_palette(first_palette,nb_palettes,rgb_data) set_palette(1,1,rgb_data)
 
-void set_native_tile_data(uint16_t start, uint16_t ntiles, const void *src) __z88dk_callee __preserves_regs(iyh,iyl);
+void set_native_tile_data(uint16_t start, uint16_t ntiles, const void *src) Z88DK_CALLEE PRESERVES_REGS(iyh, iyl);
 inline void set_bkg_4bpp_data(uint16_t start, uint16_t ntiles, const void *src) {
     set_native_tile_data(start, ntiles, src);
 }
@@ -525,7 +525,7 @@ extern uint16_t _current_2bpp_palette;
 inline void set_2bpp_palette(uint16_t palette) {
     _current_2bpp_palette = palette;
 }
-void set_tile_2bpp_data(uint16_t start, uint16_t ntiles, const void *src, uint16_t palette) __z88dk_callee __preserves_regs(iyh,iyl);
+void set_tile_2bpp_data(uint16_t start, uint16_t ntiles, const void *src, uint16_t palette) Z88DK_CALLEE PRESERVES_REGS(iyh, iyl);
 inline void set_bkg_data(uint16_t start, uint16_t ntiles, const void *src) {
     set_tile_2bpp_data(start, ntiles, src, _current_2bpp_palette);
 }
@@ -543,7 +543,7 @@ extern uint16_t _current_1bpp_colors;
 inline void set_1bpp_colors(uint8_t fgcolor, uint8_t bgcolor) {
     _current_1bpp_colors = ((uint16_t)bgcolor << 8) | fgcolor;
 }
-void set_tile_1bpp_data(uint16_t start, uint16_t ntiles, const void *src, uint16_t colors) __z88dk_callee __preserves_regs(iyh,iyl);
+void set_tile_1bpp_data(uint16_t start, uint16_t ntiles, const void *src, uint16_t colors) Z88DK_CALLEE PRESERVES_REGS(iyh, iyl);
 inline void set_bkg_1bpp_data(uint16_t start, uint16_t ntiles, const void *src) {
     set_tile_1bpp_data(start, ntiles, src, _current_1bpp_colors);
 }
@@ -560,16 +560,28 @@ inline void set_sprite_1bpp_data(uint16_t start, uint16_t ntiles, const void *sr
 
     Copies __size__ bytes from a buffer at _src__ to VRAM starting at __dst__.
 */
-void set_data(uint16_t dst, const void *src, uint16_t size) __z88dk_callee __preserves_regs(iyh, iyl);
-void vmemcpy(uint16_t dst, const void *src, uint16_t size) __z88dk_callee __preserves_regs(iyh, iyl);
+void set_data(uint16_t dst, const void *src, uint16_t size) Z88DK_CALLEE PRESERVES_REGS(iyh, iyl);
+void vmemcpy(uint16_t dst, const void *src, uint16_t size) Z88DK_CALLEE PRESERVES_REGS(iyh, iyl);
 
-void set_tile_map(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *tiles) __z88dk_callee __preserves_regs(iyh, iyl);
-void set_tile_map_compat(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *tiles) __z88dk_callee __preserves_regs(iyh, iyl);
+void set_tile_map(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *tiles) Z88DK_CALLEE PRESERVES_REGS(iyh, iyl);
+void set_tile_map_compat(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *tiles) Z88DK_CALLEE PRESERVES_REGS(iyh, iyl);
 #define set_bkg_tiles set_tile_map_compat
 #define set_win_tiles set_tile_map_compat
 
-void set_tile_submap(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t map_w, const uint8_t *map) __z88dk_callee __preserves_regs(iyh, iyl);
-void set_tile_submap_compat(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t map_w, const uint8_t *map) __z88dk_callee __preserves_regs(iyh, iyl);
+extern uint8_t _map_tile_offset;
+inline void set_bkg_based_tiles(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *tiles, uint8_t base_tile) {
+    _map_tile_offset = base_tile;
+    set_tile_map_compat(x, y, w, h, tiles);
+    _map_tile_offset = 0;
+}
+inline void set_win_based_tiles(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *tiles, uint8_t base_tile) {
+    _map_tile_offset = base_tile;
+    set_tile_map_compat(x, y, w, h, tiles);
+    _map_tile_offset = 0;
+}
+
+void set_tile_submap(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t map_w, const uint8_t *map) Z88DK_CALLEE PRESERVES_REGS(iyh, iyl);
+void set_tile_submap_compat(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t map_w, const uint8_t *map) Z88DK_CALLEE PRESERVES_REGS(iyh, iyl);
 inline void set_bkg_submap(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *map, uint8_t map_w) {
     set_tile_submap_compat(x, y, w, h, map_w, map);
 }
@@ -577,8 +589,20 @@ inline void set_win_submap(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uin
     set_tile_submap_compat(x, y, w, h, map_w, map);
 }
 
-void fill_rect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint16_t tile) __z88dk_callee __preserves_regs(iyh, iyl);
-void fill_rect_compat(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint16_t tile) __z88dk_callee __preserves_regs(iyh, iyl);
+extern uint8_t _submap_tile_offset;
+inline void set_bkg_based_submap(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *map, uint8_t map_w, uint8_t base_tile) {
+    _submap_tile_offset = base_tile;
+    set_tile_submap_compat(x, y, w, h, map_w, map);
+    _submap_tile_offset = 0;
+}
+inline void set_win_based_submap(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *map, uint8_t map_w, uint8_t base_tile) {
+    _submap_tile_offset = base_tile;
+    set_tile_submap_compat(x, y, w, h, map_w, map);
+    _submap_tile_offset = 0;
+}
+
+void fill_rect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint16_t tile) Z88DK_CALLEE PRESERVES_REGS(iyh, iyl);
+void fill_rect_compat(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint16_t tile) Z88DK_CALLEE PRESERVES_REGS(iyh, iyl);
 #define fill_bkg_rect fill_rect_compat
 #define fill_win_rect fill_rect_compat
 
@@ -725,7 +749,7 @@ inline void hide_sprite(uint8_t nb) {
  * @param addr address to write to
  * @param v value
  */
-void set_vram_byte(uint8_t * addr, uint8_t v) __z88dk_callee __preserves_regs(iyh, iyl);
+void set_vram_byte(uint8_t * addr, uint8_t v) Z88DK_CALLEE PRESERVES_REGS(iyh, iyl);
 
 /**
  * Set single tile t with attributes on background layer at x,y
@@ -734,7 +758,7 @@ void set_vram_byte(uint8_t * addr, uint8_t v) __z88dk_callee __preserves_regs(iy
  * @param t tile index
  * @return returns the address of tile, so you may use faster set_vram_byte() later
  */
-uint8_t * set_attributed_tile_xy(uint8_t x, uint8_t y, uint16_t t) __z88dk_callee __preserves_regs(iyh, iyl);
+uint8_t * set_attributed_tile_xy(uint8_t x, uint8_t y, uint16_t t) Z88DK_CALLEE PRESERVES_REGS(iyh, iyl);
 
 /**
  * Set single tile t on background layer at x,y
@@ -743,14 +767,14 @@ uint8_t * set_attributed_tile_xy(uint8_t x, uint8_t y, uint16_t t) __z88dk_calle
  * @param t tile index
  * @return returns the address of tile, so you may use faster set_vram_byte() later
  */
-uint8_t * set_tile_xy(uint8_t x, uint8_t y, uint8_t t) __z88dk_callee __preserves_regs(iyh, iyl);
+uint8_t * set_tile_xy(uint8_t x, uint8_t y, uint8_t t) Z88DK_CALLEE PRESERVES_REGS(iyh, iyl);
 #define set_bkg_tile_xy set_tile_xy
 #define set_win_tile_xy set_tile_xy
 
 /**
  * Get address of X,Y tile of background map
  */
-uint8_t * get_bkg_xy_addr(uint8_t x, uint8_t y) __z88dk_callee __preserves_regs(iyh, iyl);
+uint8_t * get_bkg_xy_addr(uint8_t x, uint8_t y) Z88DK_CALLEE PRESERVES_REGS(iyh, iyl);
 #define get_win_xy_addr get_bkg_xy_addr
 
 #endif /* _SMS_H */

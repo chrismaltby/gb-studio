@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changed if color supported event to return false when game is DMG even if run on color device
 - Changed wording from "Reenable" to "Enable" for toggling events/else [@codyjb](https://github.com/codyjb)
 - Update engine to latest hUGEDriver [untoxa](https://github.com/untoxa)
+- Updated to latest GBDK-2020
 
 ### Fixed
 

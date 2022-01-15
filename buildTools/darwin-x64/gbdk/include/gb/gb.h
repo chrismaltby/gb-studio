@@ -221,7 +221,6 @@ void add_VBL(int_handler h) OLDCALL;
     Called when the LCD interrupt occurs, which is normally
     when @ref LY_REG == @ref LYC_REG.
 
-    From pan/k0Pa:
     There are various reasons for this interrupt to occur
     as described by the @ref STAT_REG register ($FF41). One very
     popular reason is to indicate to the user when the
@@ -236,7 +235,8 @@ void add_LCD(int_handler h) OLDCALL;
 
 /** Adds a timer interrupt handler.
 
-    From pan/k0Pa:
+    Can not be used together with @ref add_low_priority_TIM
+
     This interrupt occurs when the @ref TIMA_REG
     register ($FF05) changes from $FF to $00.
 
@@ -245,10 +245,22 @@ void add_LCD(int_handler h) OLDCALL;
 */
 void add_TIM(int_handler h) OLDCALL;
 
+/** Adds a timer interrupt handler, that could be 
+    interrupted by the other interrupts, 
+    as well as itself, if it runs too slow.
+
+    Can not be used together with @ref add_TIM
+
+    This interrupt occurs when the @ref TIMA_REG
+    register ($FF05) changes from $FF to $00.
+
+    @see add_VBL
+    @see set_interrupts() with TIM_IFLAG
+*/
+void add_low_priority_TIM(int_handler h) OLDCALL;
 
 /** Adds a Serial Link transmit complete interrupt handler.
 
-    From pan/k0Pa:
     This interrupt occurs when a serial transfer has
     completed on the game link port.
 
@@ -260,7 +272,6 @@ void add_SIO(int_handler h) OLDCALL;
 
 /** Adds a joypad button change interrupt handler.
 
-    From pan/k0Pa:
     This interrupt occurs on a transition of any of the
     keypad input lines from high to low. Due to the fact
     that keypad "bounce" is virtually always present,
@@ -921,6 +932,15 @@ void set_bkg_tiles(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *ti
 #define set_tile_map set_bkg_tiles
 
 
+extern uint8_t _map_tile_offset;
+
+inline void set_bkg_based_tiles(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *tiles, uint8_t base_tile) {
+    _map_tile_offset = base_tile;
+    set_bkg_tiles(x, y, w, h, tiles);
+    _map_tile_offset = 0;
+}
+
+
 /** Sets a rectangular area of the Background Tile Map using a sub-region
     from a source tile map. Useful for scrolling implementations of maps
     larger than 32 x 32 tiles.
@@ -951,6 +971,45 @@ void set_bkg_tiles(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *ti
 */
 void set_bkg_submap(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *map, uint8_t map_w) OLDCALL;
 #define set_tile_submap set_bkg_submap
+
+
+extern uint8_t _submap_tile_offset;
+
+/** Sets a rectangular area of the Background Tile Map using a sub-region
+    from a source tile map and base_tile tile ID offset. Useful for scrolling 
+    implementations of maps larger than 32 x 32 tiles.
+
+    @param x      X Start position in Background Map tile coordinates. Range 0 - 31
+    @param y      Y Start position in Background Map tile coordinates. Range 0 - 31
+    @param w      Width of area to set in tiles. Range 1 - 255
+    @param h      Height of area to set in tiles. Range 1 - 255
+    @param map    Pointer to source tile map data
+    @param map_w  Width of source tile map in tiles. Range 1 - 255
+    @param base_tile Offset each tile ID of submap by this value
+
+    Entries are copied from __map__ to the Background Tile Map starting at
+    __x__, __y__ writing across for __w__ tiles and down for __h__ tiles,
+    using __map_w__ as the rowstride for the source tile map.
+
+    Use this instead of @ref set_bkg_tiles when the source map is wider than
+    32 tiles or when writing a width that does not match the source map width.
+
+    One byte per source tile map entry.
+
+    Writes that exceed coordinate 31 on the x or y axis will wrap around to
+    the Left and Top edges.
+
+    See @ref set_bkg_tiles for setting CGB attribute maps with @ref VBK_REG.
+
+    @see SHOW_BKG
+    @see set_bkg_data, set_bkg_tiles, set_win_submap, set_tiles
+*/
+inline void set_bkg_based_submap(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *map, uint8_t map_w, uint8_t base_tile) {
+    _submap_tile_offset = base_tile;
+    set_bkg_submap(x, y, w, h, map, map_w);
+    _submap_tile_offset = 0;
+}
+
 
 /** Copies a rectangular region of Background Tile Map entries into a buffer.
 
@@ -1108,6 +1167,12 @@ void get_win_data(uint8_t first_tile, uint8_t nb_tiles, uint8_t *data) OLDCALL P
 void set_win_tiles(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *tiles) OLDCALL PRESERVES_REGS(b, c);
 
 
+inline void set_win_based_tiles(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *tiles, uint8_t base_tile) {
+    _map_tile_offset = base_tile;
+    set_win_tiles(x, y, w, h, tiles);
+    _map_tile_offset = 0;
+}
+
 /** Sets a rectangular area of the Window Tile Map using a sub-region
     from a source tile map.
 
@@ -1139,6 +1204,44 @@ void set_win_tiles(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *ti
     @see SHOW_WIN, HIDE_WIN, set_win_tiles, set_bkg_submap, set_bkg_tiles, set_bkg_data, set_tiles
 **/
 void set_win_submap(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *map, uint8_t map_w) OLDCALL;
+
+
+/** Sets a rectangular area of the Window Tile Map using a sub-region
+    from a source tile map and base_tile tile ID offset
+
+    @param x         X Start position in Window Map tile coordinates. Range 0 - 31
+    @param y         Y Start position in Wimdpw Map tile coordinates. Range 0 - 31
+    @param w         Width of area to set in tiles. Range 1 - 255
+    @param h         Height of area to set in tiles. Range 1 - 255
+    @param map       Pointer to source tile map data
+    @param map_w     Width of source tile map in tiles. Range 1 - 255
+    @param base_tile Offset each tile ID of submap by this value
+
+    Entries are copied from __map__ to the Window Tile Map starting at
+    __x__, __y__ writing across for __w__ tiles and down for __h__ tiles,
+    using __map_w__ as the rowstride for the source tile map.
+
+    Use this instead of @ref set_win_tiles when the source map is wider than
+    32 tiles or when writing a width that does not match the source map width.
+
+    One byte per source tile map entry.
+
+    Writes that exceed coordinate 31 on the x or y axis will wrap around to
+    the Left and Top edges.
+
+    GBC only: @ref VBK_REG determines whether Tile Numbers or Tile Attributes get set.
+    \li VBK_REG=0 Tile Numbers are written
+    \li VBK_REG=1 Tile Attributes are written
+
+    See @ref set_bkg_tiles for details about CGB attribute maps with @ref VBK_REG.
+
+    @see SHOW_WIN, HIDE_WIN, set_win_tiles, set_bkg_submap, set_bkg_tiles, set_bkg_data, set_tiles
+**/
+inline void set_win_based_submap(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *map, uint8_t map_w, uint8_t base_tile) {
+    _submap_tile_offset = base_tile;
+    set_win_submap(x, y, w, h, map, map_w);
+    _submap_tile_offset = 0;
+}
 
 
 /** Copies a rectangular region of Window Tile Map entries into a buffer.
