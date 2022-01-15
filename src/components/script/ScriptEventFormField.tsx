@@ -174,19 +174,19 @@ const ScriptEventFormField = memo(
               />
               <div className="ScriptEventForm__BtnRow">
                 {valueIndex !== 0 && (
-                  <div
+                  <button
                     className="ScriptEventForm__Btn"
                     onClick={() => onRemoveValue(valueIndex)}
                   >
                     -
-                  </div>
+                  </button>
                 )}
-                <div
+                <button
                   className="ScriptEventForm__Btn"
                   onClick={() => onAddValue(valueIndex)}
                 >
                   +
-                </div>
+                </button>
               </div>
             </span>
           );

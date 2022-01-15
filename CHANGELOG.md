@@ -34,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix scroll jitter seen in top-down scenes [untoxa](https://github.com/untoxa)
 - Save executing ctxs when saving game data [untoxa](https://github.com/untoxa)
 - Fixed issue where scene may not fade in some cases where scene init script contained conditional events
+- Fix keyboard accessibility for add/remove buttons in form fields [@rik-smeets](https://github.com/rik-smeets)
 
 ## [3.0.2]
 

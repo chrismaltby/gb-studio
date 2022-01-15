@@ -25,9 +25,10 @@
   color: var(--main-text-color);
   width: 18px;
   height: 18px;
-  text-align: center;
   margin-left: 4px;
   opacity: 0.4;
+  padding: 0;
+  border: 0;
   border-radius: 2px;
 }
 
@@ -35,6 +36,7 @@
   opacity: 1;
 }
 
-.ScriptEventForm__Btn:hover {
+.ScriptEventForm__Btn:hover, .ScriptEventForm__Btn:focus {
   background: rgba(128, 128, 128, 0.5);
+  opacity: 1;
 }
