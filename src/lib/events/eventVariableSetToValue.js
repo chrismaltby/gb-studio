@@ -21,8 +21,8 @@ const fields = [
     type: "union",
     types: ["number", "variable", "property"],
     defaultType: "number",
-    min: 0,
-    max: 255,
+    min: -32768,
+    max: 32767,
     defaultValue: {
       number: 0,
       variable: "LAST_VARIABLE",
@@ -36,16 +36,17 @@ const compile = (input, helpers) => {
 
   if (input.value.type === "number") {
     const value = parseInt(input.value.value, 10);
-    if (value > 1) {
-      const { variableSetToValue } = helpers;
-      variableSetToValue(input.variable, value);
-    } else if (value === 1) {
+    if (value === 1) {
       const { variableSetToTrue } = helpers;
       variableSetToTrue(input.variable);
-    } else {
+    } else if (value === 0) {
       const { variableSetToFalse } = helpers;
       variableSetToFalse(input.variable);
+    } else {
+      const { variableSetToValue } = helpers;
+      variableSetToValue(input.variable, value);
     }
+
   } else {
     variableSetToUnionValue(input.variable, input.value);
   }

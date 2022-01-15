@@ -3002,7 +3002,7 @@ class ScriptBuilder {
     this._addComment(`Variables ${operation} Value`);
     this._rpn() //
       .refVariable(setVariable)
-      .int8(value)
+      .int16(value)
       .operator(operation)
       .stop();
 
