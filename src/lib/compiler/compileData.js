@@ -61,6 +61,7 @@ import {
   compileSceneProjectiles,
   compileSceneProjectilesHeader,
   spriteSheetSymbol,
+  compileSaveSignature,
 } from "./compileData2";
 import compileSGBImage from "./sgb";
 import { readFileToTilesData } from "../tiles/tileData";
@@ -1682,6 +1683,10 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
       })
       .join("") +
     `#endif\n`;
+
+  output[`game_signature.c`] = compileSaveSignature(
+    JSON.stringify(projectData)
+  );
 
   return {
     files: output,
