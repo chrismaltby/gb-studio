@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added ability to choose from two keyboard layout options for tracker [@pau-tomas](https://github.com/pau-tomas)
 - Added ability to to set the start playback position in music editor by clicking bar above piano roll [@pau-tomas](https://github.com/pau-tomas)
 - Add engine support for text sounds [untoxa](https://github.com/untoxa)
+- Added ability to see where automatic Fade In event will appear in Scene "On Init" script with option to disable or change speed
 
 ### Changed
 
