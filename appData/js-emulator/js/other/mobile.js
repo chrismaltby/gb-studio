@@ -1,11 +1,11 @@
-var romPath = "rom/game.gb";
-var mainCanvas = null;
-var soundReady = false;
+let romPath = "rom/game.gb";
+let mainCanvas = null;
+let soundReady = false;
 
-var cout = console.log.bind(console);
+let cout = console.log.bind(console);
 function startGame(blob) {
-  var binaryHandle = new FileReader();
-  binaryHandle.onload = function() {
+  let binaryHandle = new FileReader();
+  binaryHandle.onload = function () {
     if (this.readyState === 2) {
       try {
         start(mainCanvas, this.result);
@@ -18,10 +18,10 @@ function startGame(blob) {
 }
 
 function loadViaXHR() {
-  var xhr = new XMLHttpRequest();
+  let xhr = new XMLHttpRequest();
   xhr.open("GET", romPath);
   xhr.responseType = "blob";
-  xhr.onload = function() {
+  xhr.onload = function () {
     startGame(new Blob([this.response], { type: "text/plain" }));
   };
   xhr.send();
@@ -75,8 +75,8 @@ function initSound() {
     window.audioContext = new AudioContext();
     if (window.audioContext) {
       // Create empty buffer
-      var buffer = window.audioContext.createBuffer(1, 1, 22050);
-      var source = window.audioContext.createBufferSource();
+      let buffer = window.audioContext.createBuffer(1, 1, 22050);
+      let source = window.audioContext.createBufferSource();
       source.buffer = buffer;
       // Connect to output (speakers)
       source.connect(window.audioContext.destination);
@@ -97,7 +97,7 @@ function initSound() {
   }
 }
 
-var soundInitTimer = setInterval(function() {
+let soundInitTimer = setInterval(function () {
   if (GameBoyEmulatorInitialized()) {
     initSound();
     clearTimeout(soundInitTimer);

@@ -1,19 +1,19 @@
 //This file is part of the XAudioJS library.
-var XAudioJSResampledBuffer = [];
-var XAudioJSOutputBuffer = [];
-var XAudioJSResampleBufferStart = 0;
-var XAudioJSResampleBufferEnd = 0;
-var XAudioJSResampleBufferSize = 0;
-var XAudioJSChannelsAllocated = 1;
+let XAudioJSResampledBuffer = [];
+let XAudioJSOutputBuffer = [];
+let XAudioJSResampleBufferStart = 0;
+let XAudioJSResampleBufferEnd = 0;
+let XAudioJSResampleBufferSize = 0;
+let XAudioJSChannelsAllocated = 1;
 //Message Receiver:
 self.onmessage = function (event) {
-	var data = event.data;
+	let data = event.data;
 	switch (data[0]) {
 		case 0:
 			//Add new audio samples to our ring buffer:
-			var resampledResult = data[1];
-			var length = resampledResult.length;
-			for (var i = 0; i < length; ++i) {
+			let resampledResult = data[1];
+			let length = resampledResult.length;
+			for (let i = 0; i < length; ++i) {
 				XAudioJSResampledBuffer[XAudioJSResampleBufferEnd++] = resampledResult[i];
 				if (XAudioJSResampleBufferEnd == XAudioJSResampleBufferSize) {
 					XAudioJSResampleBufferEnd = 0;
@@ -36,14 +36,14 @@ self.onmessage = function (event) {
 //MediaStream Polyfill Event:
 self.onprocessmedia = function (event) {
 	//Get some buffer length computations:
-	var apiBufferLength = event.audioLength;
-	var apiBufferLengthAll = apiBufferLength * event.audioChannels;
+	let apiBufferLength = event.audioLength;
+	let apiBufferLengthAll = apiBufferLength * event.audioChannels;
 	if (apiBufferLengthAll > XAudioJSOutputBuffer.length) {
 		XAudioJSOutputBuffer = new Float32Array(apiBufferLengthAll);
 	}
 	//De-interleave the buffered audio while looping through our ring buffer:
-	var sampleFramesCount = Math.min(apiBufferLength, XAudioJSResampledSamplesLeft() / XAudioJSChannelsAllocated);
-	for (var sampleFramePosition = 0, channelOffset = 0; sampleFramePosition < sampleFramesCount; ++sampleFramePosition) {
+	let sampleFramesCount = Math.min(apiBufferLength, XAudioJSResampledSamplesLeft() / XAudioJSChannelsAllocated);
+	for (let sampleFramePosition = 0, channelOffset = 0; sampleFramePosition < sampleFramesCount; ++sampleFramePosition) {
 		for (channelOffset = sampleFramePosition; channelOffset < apiBufferLengthAll; channelOffset += apiBufferLength) {
 			XAudioJSOutputBuffer[channelOffset] = XAudioJSResampledBuffer[XAudioJSResampleBufferStart++];
 			if (XAudioJSResampleBufferStart == XAudioJSResampleBufferSize) {

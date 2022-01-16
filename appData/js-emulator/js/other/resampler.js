@@ -13,10 +13,10 @@ Resampler.prototype.initialize = function () {
 		if (this.fromSampleRate == this.toSampleRate) {
 			//Setup a resampler bypass:
 			this.resampler = this.bypassResampler;		//Resampler just returns what was passed through.
-            this.ratioWeight = 1;
+			this.ratioWeight = 1;
 		}
 		else {
-            this.ratioWeight = this.fromSampleRate / this.toSampleRate;
+			this.ratioWeight = this.fromSampleRate / this.toSampleRate;
 			if (this.fromSampleRate < this.toSampleRate) {
 				/*
 					Use generic linear interpolation if upsampling,
@@ -40,24 +40,24 @@ Resampler.prototype.initialize = function () {
 		}
 	}
 	else {
-		throw(new Error("Invalid settings specified for the resampler."));
+		throw (new Error("Invalid settings specified for the resampler."));
 	}
 }
 Resampler.prototype.compileLinearInterpolationFunction = function () {
-	var toCompile = "var bufferLength = buffer.length;\
-	var outLength = this.outputBufferSize;\
+	let toCompile = "let bufferLength = buffer.length;\
+	let outLength = this.outputBufferSize;\
 	if ((bufferLength % " + this.channels + ") == 0) {\
 		if (bufferLength > 0) {\
-			var weight = this.lastWeight;\
-			var firstWeight = 0;\
-			var secondWeight = 0;\
-			var sourceOffset = 0;\
-			var outputOffset = 0;\
-			var outputBuffer = this.outputBuffer;\
+			let weight = this.lastWeight;\
+			let firstWeight = 0;\
+			let secondWeight = 0;\
+			let sourceOffset = 0;\
+			let outputOffset = 0;\
+			let outputBuffer = this.outputBuffer;\
 			for (; weight < 1; weight += " + this.ratioWeight + ") {\
 				secondWeight = weight % 1;\
 				firstWeight = 1 - secondWeight;";
-	for (var channel = 0; channel < this.channels; ++channel) {
+	for (let channel = 0; channel < this.channels; ++channel) {
 		toCompile += "outputBuffer[outputOffset++] = (this.lastOutput[" + channel + "] * firstWeight) + (buffer[" + channel + "] * secondWeight);";
 	}
 	toCompile += "}\
@@ -65,13 +65,13 @@ Resampler.prototype.compileLinearInterpolationFunction = function () {
 			for (bufferLength -= " + this.channels + ", sourceOffset = Math.floor(weight) * " + this.channels + "; outputOffset < outLength && sourceOffset < bufferLength;) {\
 				secondWeight = weight % 1;\
 				firstWeight = 1 - secondWeight;";
-	for (var channel = 0; channel < this.channels; ++channel) {
+	for (let channel = 0; channel < this.channels; ++channel) {
 		toCompile += "outputBuffer[outputOffset++] = (buffer[sourceOffset" + ((channel > 0) ? (" + " + channel) : "") + "] * firstWeight) + (buffer[sourceOffset + " + (this.channels + channel) + "] * secondWeight);";
 	}
 	toCompile += "weight += " + this.ratioWeight + ";\
 				sourceOffset = Math.floor(weight) * " + this.channels + ";\
 			}";
-	for (var channel = 0; channel < this.channels; ++channel) {
+	for (let channel = 0; channel < this.channels; ++channel) {
 		toCompile += "this.lastOutput[" + channel + "] = buffer[sourceOffset++];";
 	}
 	toCompile += "this.lastWeight = weight % 1;\
@@ -87,21 +87,21 @@ Resampler.prototype.compileLinearInterpolationFunction = function () {
 	this.resampler = Function("buffer", toCompile);
 }
 Resampler.prototype.compileMultiTapFunction = function () {
-	var toCompile = "var bufferLength = buffer.length;\
-	var outLength = this.outputBufferSize;\
+	let toCompile = "let bufferLength = buffer.length;\
+	let outLength = this.outputBufferSize;\
 	if ((bufferLength % " + this.channels + ") == 0) {\
 		if (bufferLength > 0) {\
-			var weight = 0;";
-	for (var channel = 0; channel < this.channels; ++channel) {
-		toCompile += "var output" + channel + " = 0;"
+			let weight = 0;";
+	for (let channel = 0; channel < this.channels; ++channel) {
+		toCompile += "let output" + channel + " = 0;"
 	}
-	toCompile += "var actualPosition = 0;\
-			var amountToNext = 0;\
-			var alreadyProcessedTail = !this.tailExists;\
+	toCompile += "let actualPosition = 0;\
+			let amountToNext = 0;\
+			let alreadyProcessedTail = !this.tailExists;\
 			this.tailExists = false;\
-			var outputBuffer = this.outputBuffer;\
-			var outputOffset = 0;\
-			var currentPosition = 0;\
+			let outputBuffer = this.outputBuffer;\
+			let outputOffset = 0;\
+			let currentPosition = 0;\
 			do {\
 				if (alreadyProcessedTail) {\
 					weight = " + this.ratioWeight + ";";
