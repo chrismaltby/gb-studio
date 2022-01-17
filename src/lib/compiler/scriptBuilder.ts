@@ -1089,22 +1089,6 @@ class ScriptBuilder {
     }
   };
 
-  _clampStackHead8Bit = () => {
-    const clampGtLabel = this.getNextLabel();
-    const clampLtLabel = this.getNextLabel();
-    this._addComment(`Clamp > 255`);
-    this._stackPushConst(255);
-    this._if(".GT", ".ARG0", ".ARG1", clampGtLabel, 1);
-    this._setConst(".ARG0", 255);
-    this._jump(clampLtLabel);
-    this._label(clampGtLabel);
-    this._addComment(`Clamp < 255`);
-    this._stackPushConst(0);
-    this._if(".LT", ".ARG0", ".ARG1", clampLtLabel, 1);
-    this._setConst(".ARG0", 0);
-    this._label(clampLtLabel);
-  };
-
   _actorActivate = (addr: string) => {
     this.includeActor = true;
     this._addCmd("VM_ACTOR_ACTIVATE", addr);
@@ -2980,15 +2964,18 @@ class ScriptBuilder {
     clamp: boolean
   ) => {
     this._addComment(`Variables ${operation}`);
-    this._rpn() //
+    const rpn = this._rpn();
+    if (clamp) {
+      rpn.int16(0).int16(255);
+    }
+    rpn //
       .refVariable(setVariable)
       .refVariable(otherVariable)
-      .operator(operation)
-      .stop();
-
+      .operator(operation);
     if (clamp) {
-      this._clampStackHead8Bit();
+      rpn.operator(".MIN").operator(".MAX");
     }
+    rpn.stop();
     this._setVariable(setVariable, ".ARG0");
     this._stackPop(1);
     this._addNL();
@@ -3001,16 +2988,18 @@ class ScriptBuilder {
     clamp: boolean
   ) => {
     this._addComment(`Variables ${operation} Value`);
-    this._rpn() //
+    const rpn = this._rpn();
+    if (clamp) {
+      rpn.int16(0).int16(255);
+    }
+    rpn //
       .refVariable(setVariable)
       .int16(value)
-      .operator(operation)
-      .stop();
-
+      .operator(operation);
     if (clamp) {
-      this._clampStackHead8Bit();
+      rpn.operator(".MIN").operator(".MAX");
     }
-
+    rpn.stop();
     this._setVariable(setVariable, ".ARG0");
     this._stackPop(1);
     this._addNL();
@@ -3027,16 +3016,18 @@ class ScriptBuilder {
     this._stackPushConst(0);
     this._randomize();
     this._rand(".ARG0", min, range);
-    this._rpn() //
+    const rpn = this._rpn();
+    if (clamp) {
+      rpn.int16(0).int16(255);
+    }
+    rpn //
       .refVariable(variable)
       .ref(".ARG1")
-      .operator(operation)
-      .stop();
-
+      .operator(operation);
     if (clamp) {
-      this._clampStackHead8Bit();
+      rpn.operator(".MIN").operator(".MAX");
     }
-
+    rpn.stop();
     this._setVariable(variable, ".ARG0");
     this._stackPop(2);
     this._addNL();

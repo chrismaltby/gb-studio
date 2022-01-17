@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update engine to latest hUGEDriver [untoxa](https://github.com/untoxa)
 - Changed default .uge template to be blank [MOL-IS-MOL](https://github.com/MOL-IS-MOL)
 - Updated to latest GBDK-2020
+- Improved Math Functions clamp to not require branching
 
 ### Fixed
 
