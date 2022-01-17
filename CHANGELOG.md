@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added ability to choose from two keyboard layout options for tracker [@pau-tomas](https://github.com/pau-tomas)
 - Added ability to to set the start playback position in music editor by clicking bar above piano roll [@pau-tomas](https://github.com/pau-tomas)
 - Add engine support for text sounds [untoxa](https://github.com/untoxa)
+- Added ability to use values between -32768 and 32767 in variable events [@Rebusmind](https://github.com/Rebusmind)
+- Added ability to clamp to 8-bit while using multiply
 - Added ability to see where automatic Fade In event will appear in Scene "On Init" script with option to disable or change speed
 
 ### Changed
@@ -37,6 +39,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix scroll jitter seen in top-down scenes [untoxa](https://github.com/untoxa)
 - Save executing ctxs when saving game data [untoxa](https://github.com/untoxa)
 - Fixed issue where scene may not fade in some cases where scene init script contained conditional events
+- Fixed issue causing Math event values > 128 to wrap as they were treated as signed 8-bit numbers [@Rebusmind](https://github.com/Rebusmind)
+- Fixed clamp when adding/subtracting negative numbers
 - Generate a new save hash when project changes to prevent crashes when loading invalid data [untoxa](https://github.com/untoxa)
 - Fix crashes when using too many sprite tiles by using GBDK-2020 sprite hiding function [untoxa](https://github.com/untoxa)
 - Fix rendering of garbage when no scene has loaded yet [untoxa](https://github.com/untoxa)
