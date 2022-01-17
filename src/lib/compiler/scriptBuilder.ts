@@ -1089,6 +1089,22 @@ class ScriptBuilder {
     }
   };
 
+  _clampStackHead8Bit = () => {
+    const clampGtLabel = this.getNextLabel();
+    const clampLtLabel = this.getNextLabel();
+    this._addComment(`Clamp > 255`);
+    this._stackPushConst(255);
+    this._if(".GT", ".ARG0", ".ARG1", clampGtLabel, 1);
+    this._setConst(".ARG0", 255);
+    this._jump(clampLtLabel);
+    this._label(clampGtLabel);
+    this._addComment(`Clamp < 255`);
+    this._stackPushConst(0);
+    this._if(".LT", ".ARG0", ".ARG1", clampLtLabel, 1);
+    this._setConst(".ARG0", 0);
+    this._label(clampLtLabel);
+  };
+
   _actorActivate = (addr: string) => {
     this.includeActor = true;
     this._addCmd("VM_ACTOR_ACTIVATE", addr);
@@ -2963,8 +2979,6 @@ class ScriptBuilder {
     otherVariable: string,
     clamp: boolean
   ) => {
-    const clampLabel = clamp ? this.getNextLabel() : "";
-
     this._addComment(`Variables ${operation}`);
     this._rpn() //
       .refVariable(setVariable)
@@ -2973,19 +2987,8 @@ class ScriptBuilder {
       .stop();
 
     if (clamp) {
-      if (operation === ".ADD") {
-        this._stackPushConst(256);
-        this._if(".GTE", ".ARG0", ".ARG1", clampLabel, 1);
-        this._setConst(".ARG0", 255);
-        this._label(clampLabel);
-      } else if (operation === ".SUB") {
-        this._stackPushConst(0);
-        this._if(".LTE", ".ARG0", ".ARG1", clampLabel, 1);
-        this._setConst(".ARG0", 0);
-        this._label(clampLabel);
-      }
+      this._clampStackHead8Bit();
     }
-
     this._setVariable(setVariable, ".ARG0");
     this._stackPop(1);
     this._addNL();
@@ -2997,8 +3000,6 @@ class ScriptBuilder {
     value: number,
     clamp: boolean
   ) => {
-    const clampLabel = clamp ? this.getNextLabel() : "";
-
     this._addComment(`Variables ${operation} Value`);
     this._rpn() //
       .refVariable(setVariable)
@@ -3007,17 +3008,7 @@ class ScriptBuilder {
       .stop();
 
     if (clamp) {
-      if (operation === ".ADD") {
-        this._stackPushConst(256);
-        this._if(".GTE", ".ARG0", ".ARG1", clampLabel, 1);
-        this._setConst(".ARG0", 255);
-        this._label(clampLabel);
-      } else if (operation === ".SUB") {
-        this._stackPushConst(0);
-        this._if(".LTE", ".ARG0", ".ARG1", clampLabel, 1);
-        this._setConst(".ARG0", 0);
-        this._label(clampLabel);
-      }
+      this._clampStackHead8Bit();
     }
 
     this._setVariable(setVariable, ".ARG0");
@@ -3032,8 +3023,6 @@ class ScriptBuilder {
     range: number,
     clamp: boolean
   ) => {
-    const clampLabel = clamp ? this.getNextLabel() : "";
-
     this._addComment(`Variables ${operation} Random`);
     this._stackPushConst(0);
     this._randomize();
@@ -3045,17 +3034,7 @@ class ScriptBuilder {
       .stop();
 
     if (clamp) {
-      if (operation === ".ADD") {
-        this._stackPushConst(256);
-        this._if(".GTE", ".ARG0", ".ARG1", clampLabel, 1);
-        this._setConst(".ARG0", 255);
-        this._label(clampLabel);
-      } else if (operation === ".SUB") {
-        this._stackPushConst(0);
-        this._if(".LTE", ".ARG0", ".ARG1", clampLabel, 1);
-        this._setConst(".ARG0", 0);
-        this._label(clampLabel);
-      }
+      this._clampStackHead8Bit();
     }
 
     this._setVariable(variable, ".ARG0");

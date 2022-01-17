@@ -131,48 +131,11 @@ const fields = [
     conditions: [
       {
         key: "operation",
-        in: ["add", "sub"],
+        in: ["add", "sub", "mul"],
       },
     ],
     defaultValue: false,
     alignCheckbox: true,
-  },
-  {
-    key: "note1",
-    label: l10n("FIELD_MATH_NOTE"),
-    conditions: [
-      {
-        key: "operation",
-        in: ["mul"],
-      },
-    ],
-  },
-  {
-    type: "break",
-    conditions: [
-      {
-        key: "operation",
-        in: ["add", "sub"],
-      },
-      {
-        key: "clamp",
-        ne: true,
-      },
-    ],
-  },
-  {
-    key: "note2",
-    label: l10n("FIELD_MATH_NOTE_NO_CLAMP"),
-    conditions: [
-      {
-        key: "operation",
-        in: ["add", "sub"],
-      },
-      {
-        key: "clamp",
-        ne: true,
-      },
-    ],
   },
 ];
 
