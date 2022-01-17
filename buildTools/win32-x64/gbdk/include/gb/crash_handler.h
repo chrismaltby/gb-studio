@@ -12,14 +12,14 @@
 
     Also see the `crash` example project included with gbdk.
 */
-#ifndef __CRASH_HEANDLER_INCLUDE
-#define __CRASH_HEANDLER_INCLUDE
+#ifndef __CRASH_HANDLER_INCLUDE
+#define __CRASH_HANDLER_INCLUDE
 
 /** Display the crash dump screen.
 
     See the intro for this file for more details.
 */
 void __HandleCrash();
-static void * __CRASH_HEANDLER_INIT = &__HandleCrash;
+static void * __CRASH_HANDLER_INIT = &__HandleCrash;
 
 #endif

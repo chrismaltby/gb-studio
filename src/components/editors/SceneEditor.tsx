@@ -46,6 +46,7 @@ import {
   ClipboardTypeScenes,
 } from "store/features/clipboard/clipboardTypes";
 import { SCREEN_WIDTH } from "../../consts";
+import { ScriptEventAutoFadeDisabledWarning } from "components/script/ScriptEventAutoFade";
 
 interface SceneEditorProps {
   id: string;
@@ -680,11 +681,15 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
             />
           )}
         </StickyTabs>
+        {scene.autoFadeSpeed === null && scriptKey === "script" && (
+          <ScriptEventAutoFadeDisabledWarning />
+        )}
         <ScriptEditor
           value={scene[scriptKey]}
           type="scene"
           entityId={scene.id}
           scriptKey={scriptKey}
+          showAutoFadeIndicator={scriptKey === "script"}
         />
       </SidebarColumn>
     </Sidebar>

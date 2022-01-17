@@ -11,7 +11,7 @@
 
 #define __BYTES extern UBYTE
 #define __BYTE_REG extern volatile UBYTE
-#define __REG extern volatile __sfr
+#define __REG extern volatile SFR
 
 /** Memoty map */
 
@@ -157,6 +157,7 @@ __REG NR52_REG;         /**< Sound Master on/off */
 #define AUDENA_OFF   0b00000000
 
 __BYTE_REG AUD3WAVE[16];
+__BYTE_REG PCM_SAMPLE[16];
 
 __REG LCDC_REG;         /**< LCD control */
 #define rLCDC LCDC_REG
