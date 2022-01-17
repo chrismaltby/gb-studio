@@ -39,7 +39,7 @@ const compile = (input, helpers) => {
     if (value === 1) {
       const { variableSetToTrue } = helpers;
       variableSetToTrue(input.variable);
-    } else if (value === 0) {
+    } else if (value === 0 || isNaN(value)) {
       const { variableSetToFalse } = helpers;
       variableSetToFalse(input.variable);
     } else {
