@@ -35,11 +35,12 @@ typedef enum {
 } col_check_dir_e;
 
 extern actor_t actors[MAX_ACTORS];
-extern actor_t *actors_active_head;
-extern actor_t *actors_inactive_head;
+extern actor_t * actors_active_head;
+extern actor_t * actors_active_tail;
+extern actor_t * actors_inactive_head;
 extern UBYTE player_moving;
-extern actor_t *player_collision_actor;
-extern actor_t *emote_actor;
+extern actor_t * player_collision_actor;
+extern actor_t * emote_actor;
 extern UBYTE emote_timer;
 
 extern UBYTE allocated_hardware_sprites;

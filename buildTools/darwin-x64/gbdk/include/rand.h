@@ -30,11 +30,14 @@ void initrand(uint16_t seed) OLDCALL;
 void initrand(uint16_t seed) Z88DK_FASTCALL;
 #endif
 
+#define RAND_MAX 255
+#define RANDW_MAX 65535
+
 /** Returns a random byte (8 bit) value.
 
     @ref initrand() should be used to initialize the random number generator before using rand()
  */
-int8_t rand() OLDCALL;
+uint8_t rand() OLDCALL;
 
 /** Returns a random word (16 bit) value.
 
@@ -61,6 +64,6 @@ void initarand(uint16_t seed) Z88DK_FASTCALL;
 
     @ref initarand() should be used to initialize the random number generator before using arand()
  */
-int8_t arand() OLDCALL;
+uint8_t arand() OLDCALL;
 
 #endif

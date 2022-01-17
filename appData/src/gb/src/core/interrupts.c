@@ -8,7 +8,7 @@
 #include "parallax.h"
 #include "ui.h"
 
-#define LYC_SYNC_VALUE 143u
+#define LYC_SYNC_VALUE 153u
 
 UBYTE hide_sprites = FALSE;
 UBYTE show_actors_on_overlay = FALSE;

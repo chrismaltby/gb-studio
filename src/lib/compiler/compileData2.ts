@@ -8,7 +8,7 @@ import {
   Trigger,
 } from "store/features/entities/entitiesTypes";
 import { FontData } from "../fonts/fontData";
-import { hexDec, wrap8Bit } from "../helpers/8bit";
+import { decHex32Val, hexDec, wrap8Bit } from "../helpers/8bit";
 import { PrecompiledSpriteSheetData } from "./compileSprites";
 import { dirEnum } from "./helpers";
 
@@ -1160,4 +1160,21 @@ export const compileGameGlobalsInclude = (
       })
       .join("")
   );
+};
+
+export const compileSaveSignature = (data: string) => {
+  const generateHash = function (input: string) {
+    let hash = 0,
+      i,
+      chr;
+    if (input.length === 0) return hash;
+    for (i = 0; i < input.length; i++) {
+      chr = input.charCodeAt(i);
+      hash = (hash << 5) - hash + chr;
+      hash |= 0; // Convert to 32bit integer
+    }
+    return hash;
+  };
+  const hash = generateHash(data);
+  return `const unsigned long save_signature = 0x${decHex32Val(hash)};`;
 };

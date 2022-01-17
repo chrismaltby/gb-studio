@@ -280,7 +280,8 @@ UBYTE load_scene(const scene_t * scene, UBYTE bank, UBYTE init_data) BANKED {
 
         // Add player to inactive, then activate
         PLAYER.enabled = FALSE;
-        DL_PUSH_HEAD(actors_inactive_head, &PLAYER);
+        actors_active_tail = &PLAYER;
+        DL_PUSH_HEAD(actors_inactive_head, actors_active_tail);
         activate_actor(&PLAYER);
 
         // Add other actors, activate pinned

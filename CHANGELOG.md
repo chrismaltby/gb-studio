@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added ability to choose from two keyboard layout options for tracker [@pau-tomas](https://github.com/pau-tomas)
 - Added ability to to set the start playback position in music editor by clicking bar above piano roll [@pau-tomas](https://github.com/pau-tomas)
 - Add engine support for text sounds [untoxa](https://github.com/untoxa)
+- Added ability to see where automatic Fade In event will appear in Scene "On Init" script with option to disable or change speed
 
 ### Changed
 
@@ -21,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changed wording from "Reenable" to "Enable" for toggling events/else [@codyjb](https://github.com/codyjb)
 - Update engine to latest hUGEDriver [untoxa](https://github.com/untoxa)
 - Changed default .uge template to be blank [MOL-IS-MOL](https://github.com/MOL-IS-MOL)
+- Updated to latest GBDK-2020
 
 ### Fixed
 
@@ -34,6 +36,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved engine GBA detection [untoxa](https://github.com/untoxa)
 - Fix scroll jitter seen in top-down scenes [untoxa](https://github.com/untoxa)
 - Save executing ctxs when saving game data [untoxa](https://github.com/untoxa)
+- Fixed issue where scene may not fade in some cases where scene init script contained conditional events
+- Generate a new save hash when project changes to prevent crashes when loading invalid data [untoxa](https://github.com/untoxa)
+- Fix crashes when using too many sprite tiles by using GBDK-2020 sprite hiding function [untoxa](https://github.com/untoxa)
+- Fix rendering of garbage when no scene has loaded yet [untoxa](https://github.com/untoxa)
 
 ## [3.0.2]
 
