@@ -51,7 +51,7 @@ void *memmove (void *dest, const void *src, size_t n) OLDCALL;
     @param c         char value to fill with (truncated from int)
     @param n         Number of bytes to fill
 */
-void *memset (void *s, int c, size_t n) __z88dk_callee;
+void *memset (void *s, int c, size_t n) Z88DK_CALLEE;
 
 /** Reverses the characters in a string
 
@@ -127,5 +127,18 @@ int strncmp(const char *s1, const char *s2, int n) NONBANKED;
     Returns: Pointer to __s1__
 */
 char *strncpy(char *s1, const char *s2, int n) NONBANKED;
+
+/** Compares buffers
+
+    @param buf1         First buffer to compare
+    @param buf2         Second buffer to compare
+    @param count        Buffer length
+
+    Returns:
+    \li > 0 if __buf1__ > __buf2__
+    \li 0 if __buf1__ == __buf2__
+    \li < 0 if __buf1__ < __buf2__
+*/
+int memcmp(const void *buf1, const void *buf2, size_t count) Z88DK_CALLEE;
 
 #endif

@@ -38,8 +38,8 @@ uint8_t rle_init(void * data) OLDCALL;
  */
 uint8_t rle_decompress(void * dest, uint8_t len) OLDCALL;
 #elif defined(__TARGET_sms) || defined(__TARGET_gg)
-uint8_t rle_init(void * data) __z88dk_fastcall;
-uint8_t rle_decompress(void * dest, uint8_t len) __z88dk_callee;
+uint8_t rle_init(void * data) Z88DK_FASTCALL;
+uint8_t rle_decompress(void * dest, uint8_t len) Z88DK_CALLEE;
 #else
   #error Unrecognized port
 #endif

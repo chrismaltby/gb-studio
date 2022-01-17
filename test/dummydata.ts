@@ -40,6 +40,7 @@ export const dummyScene: SceneData = {
   width: 20,
   height: 18,
   type: "0",
+  autoFadeSpeed: 1,
   paletteIds: [],
   spritePaletteIds: [],
   collisions: [0],

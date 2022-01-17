@@ -31,7 +31,18 @@ static volatile SFR AT(0x3F) JOY_CTL;
 #define JOY_P2_LATCH   0b00001000
 
 static volatile SFR AT(0x7E) VCOUNTER;
+
 static volatile SFR AT(0x7F) PSG;
+
+#define PSG_LATCH      0x80
+
+#define PSG_CH0        0b00000000
+#define PSG_CH1        0b00100000
+#define PSG_CH2        0b01000000
+#define PSG_CH3        0b01100000
+
+#define PSG_VOLUME     0b00010000
+
 static volatile SFR AT(0x7F) HCOUNTER;
 
 static volatile SFR AT(0xBE) VDP_DATA;

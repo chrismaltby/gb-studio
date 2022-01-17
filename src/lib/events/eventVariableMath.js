@@ -90,8 +90,8 @@ const fields = [
         eq: "val",
       },
     ],
-    min: 0,
-    max: 255,
+    min: -32768,
+    max: 32767,
     defaultValue: "0",
   },
   {
@@ -103,8 +103,8 @@ const fields = [
         eq: "rnd",
       },
     ],
-    min: 0,
-    max: 255,
+    min: -32768,
+    max: 32767,
     label: l10n("FIELD_MIN_VALUE"),
     defaultValue: "0",
     width: "50%",
@@ -118,10 +118,10 @@ const fields = [
         eq: "rnd",
       },
     ],
-    min: 0,
-    max: 255,
+    min: -32768,
+    max: 32767,
     label: l10n("FIELD_MAX_VALUE"),
-    defaultValue: "255",
+    defaultValue: "32767",
     width: "50%",
   },
   {
@@ -131,48 +131,11 @@ const fields = [
     conditions: [
       {
         key: "operation",
-        in: ["add", "sub"],
+        in: ["add", "sub", "mul"],
       },
     ],
     defaultValue: false,
     alignCheckbox: true,
-  },
-  {
-    key: "note1",
-    label: l10n("FIELD_MATH_NOTE"),
-    conditions: [
-      {
-        key: "operation",
-        in: ["mul"],
-      },
-    ],
-  },
-  {
-    type: "break",
-    conditions: [
-      {
-        key: "operation",
-        in: ["add", "sub"],
-      },
-      {
-        key: "clamp",
-        ne: true,
-      },
-    ],
-  },
-  {
-    key: "note2",
-    label: l10n("FIELD_MATH_NOTE_NO_CLAMP"),
-    conditions: [
-      {
-        key: "operation",
-        in: ["add", "sub"],
-      },
-      {
-        key: "clamp",
-        ne: true,
-      },
-    ],
   },
 ];
 
@@ -188,7 +151,7 @@ const compile = (input, helpers) => {
 
   let value = input.value || 0;
   const min = input.minValue || 0;
-  const range = Math.min(254, Math.max(0, (input.maxValue || 0) - min)) + 1;
+  const range = Math.min(32767, Math.max(0, (input.maxValue || 0) - min)) + 1;
   const operationLookup = {
     add: ".ADD",
     sub: ".SUB",

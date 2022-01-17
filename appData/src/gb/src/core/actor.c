@@ -31,21 +31,22 @@ const metasprite_t emote_metasprite[]  = {
 };
 
 actor_t actors[MAX_ACTORS];
-actor_t *actors_active_head;
-actor_t *actors_inactive_head;
+actor_t * actors_active_head;
+actor_t * actors_active_tail;
+actor_t * actors_inactive_head;
 
 UINT8 screen_x, screen_y;
-actor_t *invalid;
+actor_t * invalid;
 UBYTE player_moving;
 UBYTE player_iframes;
-actor_t *player_collision_actor;
-actor_t *emote_actor;
+actor_t * player_collision_actor;
+actor_t * emote_actor;
 UBYTE emote_timer;
 
 UBYTE allocated_hardware_sprites;
 
 void actors_init() BANKED {
-    actors_active_head = actors_inactive_head = NULL;
+    actors_active_tail = actors_active_head = actors_inactive_head = NULL;
     player_moving           = FALSE;
     player_iframes          = 0;
     player_collision_actor  = NULL;
@@ -62,9 +63,6 @@ void player_init() BANKED {
 void actors_update() NONBANKED {
     UBYTE _save = _current_bank;
     static actor_t *actor;
-
-    // PLAYER is always last in the active list and always present
-    actor = &PLAYER;
 
     if (emote_actor) {
         SWITCH_ROM(emote_actor->sprite.bank);
@@ -85,6 +83,7 @@ void actors_update() NONBANKED {
         );        
     }
 
+    actor = actors_active_tail;
     while (actor) {
         if (actor->pinned) 
             screen_x = (actor->pos.x >> 4) + 8, screen_y = (actor->pos.y >> 4) + 8;

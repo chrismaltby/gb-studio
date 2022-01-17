@@ -37,7 +37,7 @@
 
 
 /** Returns a non-null value if running on Super GameBoy */
-uint8_t sgb_check() OLDCALL __preserves_regs(b, c);
+uint8_t sgb_check() OLDCALL PRESERVES_REGS(b, c);
 
 /** Transfer a SGB packet
 
@@ -51,6 +51,6 @@ uint8_t sgb_check() OLDCALL __preserves_regs(b, c);
 
     @see sgb_check()
 */
-void sgb_transfer(uint8_t * packet) OLDCALL __preserves_regs(b, c);
+void sgb_transfer(uint8_t * packet) OLDCALL PRESERVES_REGS(b, c);
 
 #endif /* _SGB_H */
