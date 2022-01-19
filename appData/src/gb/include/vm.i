@@ -792,7 +792,7 @@ OP_VM_SOUND_MASTERVOL   = 0x63
 
 ; Plays sound effect
 OP_VM_SOUND_PLAY        = 0x64
-.macro VM_SOUND_PLAY FRAMES, CH, ?A, ?B, ?C, ?D, ?E
+.macro VM_SOUND_PLAY FRAMES, CH, A, B, C, D, E
         .db OP_VM_SOUND_PLAY, #<CH, #<FRAMES
         .db #<A, #<B, #<C, #<D, #<E    
 .endm
@@ -963,7 +963,7 @@ OP_VM_COS_SCALE         = 0x8A
 
 ; Set sound effect for text 
 OP_VM_SET_TEXT_SOUND    = 0x8B
-.macro VM_SET_TEXT_SOUND FRAMES, CH, ?A, ?B, ?C, ?D, ?E
+.macro VM_SET_TEXT_SOUND FRAMES, CH, A, B, C, D, E
         .db OP_VM_SET_TEXT_SOUND, #<CH, #<FRAMES
         .db #<A, #<B, #<C, #<D, #<E    
 .endm
