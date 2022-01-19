@@ -12,6 +12,7 @@ const autoLabel = (fetchArg) => {
 const fields = [
   {
     key: "actorId",
+    label: l10n("ACTOR"),
     type: "actor",
     defaultValue: "$self$",
   },
