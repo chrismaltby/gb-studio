@@ -72,10 +72,10 @@ const changes: EngineChange[] = [
     version: "3.0.3-e0",
     description:
       "Updates:\n" +
-      "   * Update to latest hUGEDriver" +
-      "   * Add engine support for text sounds" +
-      "   * Save executing ctxs when saving game data" +
-      "   * Improve GBA detection" +
+      "   * Update to latest hUGEDriver\n" +
+      "   * Add engine support for text sounds\n" +
+      "   * Save executing ctxs when saving game data\n" +
+      "   * Improve GBA detection\n" +
       "   * Fix scroll jitter seen in top-down scenes",
     modifiedFiles: [
       "include/input.h",
@@ -98,8 +98,8 @@ const changes: EngineChange[] = [
     version: "3.0.3-e1",
     description:
       "Updates:\n" +
-      "   * Avoid rendering garbage when no scene has loaded yet" +
-      "   * use GBDK-2020 hardware sprite hiding function" +
+      "   * Avoid rendering garbage when no scene has loaded yet\n" +
+      "   * use GBDK-2020 hardware sprite hiding function\n" +
       "   * Move save blob signature to game data",
     modifiedFiles: [
       "include/actor.h",
@@ -111,6 +111,15 @@ const changes: EngineChange[] = [
       "src/core/load_save.c",
       "src/core/oam_utils.s",
     ],
+  },
+  {
+    version: "3.0.3-e2",
+    description:
+      "Updates:\n" +
+      "   * Fix logic hiding actors behind overlay\n" +
+      "   * Fix VM_OVERLAY_HIDE\n" +
+      "   * Remove optional macro args from sound instructions",
+    modifiedFiles: ["include/vm.i", "src/core/interrupts.c"],
   },
 ];
 

@@ -421,7 +421,12 @@ export const compileParallax = (
     let row = 0;
     const layers = parallax.map((layer, layerIndex) => {
       // For num layers = 1 or 2 extend final layer to fill screen
-      if (parallax.length < 3 && layerIndex === parallax.length - 1) {
+      // if not set to normal scroll speed
+      if (
+        parallax.length < 3 &&
+        layerIndex === parallax.length - 1 &&
+        layer.speed !== 0
+      ) {
         return `PARALLAX_STEP(${row}, 18, ${layer.speed})`;
       }
       if (layerIndex === parallax.length - 1) {
