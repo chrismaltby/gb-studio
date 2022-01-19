@@ -856,8 +856,6 @@ export const precompileScenes = (
 
     let playerSpritePersist = false;
 
-    console.log("HERE????", scene);
-
     walkDenormalizedSceneEvents(
       scene,
       {
@@ -867,7 +865,6 @@ export const precompileScenes = (
         },
       },
       (event, _scene, actor, _trigger) => {
-        console.log("BLAH", event);
         if (
           event.args &&
           event.args.spriteSheetId &&
@@ -892,8 +889,6 @@ export const precompileScenes = (
           event.args.spriteSheetId &&
           event.command === EVENT_ACTOR_SET_SPRITE
         ) {
-          console.log("HERE", event.command, event.args);
-
           let actorId = event.args.actorId;
           if (actorId === "$self$" && actor) {
             actorId = actor.id;
