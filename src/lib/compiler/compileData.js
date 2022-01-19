@@ -71,6 +71,7 @@ import { compileMusicTracks, compileMusicHeader } from "./compileMusic";
 import { chunk } from "../helpers/array2";
 import { toProjectileHash } from "./scriptBuilder";
 import {
+  calculateAutoFadeEventIdDenormalised,
   walkDenormalizedSceneEvents,
   walkDenormalizedScenesEvents,
 } from "lib/helpers/eventHelpers";
@@ -133,8 +134,11 @@ export const precompileStrings = (scenes, customEventsLookup) => {
   walkDenormalizedScenesEvents(
     scenes,
     {
-      customEventsLookup,
-      maxDepth: MAX_NESTED_SCRIPT_DEPTH,
+      customEvents: {
+        lookup: customEventsLookup,
+        maxDepth: MAX_NESTED_SCRIPT_DEPTH,
+        args: {},
+      },
     },
     (cmd) => {
       if (
@@ -179,8 +183,11 @@ export const precompileBackgrounds = async (
   walkDenormalizedScenesEvents(
     scenes,
     {
-      customEventsLookup,
-      maxDepth: MAX_NESTED_SCRIPT_DEPTH,
+      customEvents: {
+        lookup: customEventsLookup,
+        maxDepth: MAX_NESTED_SCRIPT_DEPTH,
+        args: {},
+      },
     },
     (cmd) => {
       if (eventHasArg(cmd, "backgroundId")) {
@@ -477,8 +484,11 @@ export const precompileSprites = async (
   walkDenormalizedScenesEvents(
     scenes,
     {
-      customEventsLookup,
-      maxDepth: MAX_NESTED_SCRIPT_DEPTH,
+      customEvents: {
+        lookup: customEventsLookup,
+        maxDepth: MAX_NESTED_SCRIPT_DEPTH,
+        args: {},
+      },
     },
     (event) => {
       if (event.args) {
@@ -556,8 +566,11 @@ export const precompileAvatars = async (
   walkDenormalizedScenesEvents(
     scenes,
     {
-      customEventsLookup,
-      maxDepth: MAX_NESTED_SCRIPT_DEPTH,
+      customEvents: {
+        lookup: customEventsLookup,
+        maxDepth: MAX_NESTED_SCRIPT_DEPTH,
+        args: {},
+      },
     },
     (event) => {
       if (event.args) {
@@ -598,8 +611,11 @@ export const precompileEmotes = async (
   walkDenormalizedScenesEvents(
     scenes,
     {
-      customEventsLookup,
-      maxDepth: MAX_NESTED_SCRIPT_DEPTH,
+      customEvents: {
+        lookup: customEventsLookup,
+        maxDepth: MAX_NESTED_SCRIPT_DEPTH,
+        args: {},
+      },
     },
     (event) => {
       if (event.args) {
@@ -641,8 +657,11 @@ export const precompileMusic = (
   walkDenormalizedScenesEvents(
     scenes,
     {
-      customEventsLookup,
-      maxDepth: MAX_NESTED_SCRIPT_DEPTH,
+      customEvents: {
+        lookup: customEventsLookup,
+        maxDepth: MAX_NESTED_SCRIPT_DEPTH,
+        args: {},
+      },
     },
     (cmd) => {
       if (
@@ -724,8 +743,11 @@ export const precompileFonts = async (
   walkDenormalizedScenesEvents(
     scenes,
     {
-      customEventsLookup,
-      maxDepth: MAX_NESTED_SCRIPT_DEPTH,
+      customEvents: {
+        lookup: customEventsLookup,
+        maxDepth: MAX_NESTED_SCRIPT_DEPTH,
+        args: {},
+      },
     },
     (cmd) => {
       if (cmd.args && cmd.args.fontId !== undefined) {
@@ -843,8 +865,11 @@ export const precompileScenes = (
     walkDenormalizedSceneEvents(
       scene,
       {
-        customEventsLookup,
-        maxDepth: MAX_NESTED_SCRIPT_DEPTH,
+        customEvents: {
+          lookup: customEventsLookup,
+          maxDepth: MAX_NESTED_SCRIPT_DEPTH,
+          args: {},
+        },
       },
       (event, _scene, actor, _trigger) => {
         if (
@@ -1202,7 +1227,11 @@ const compile = async (
 
       const scriptName = `script_s${sceneIndex}${entityCode}_${scriptTypeCode}`;
 
-      if (script.length === 0) {
+      if (
+        script.length === 0 &&
+        // Generate scene init for empty script if autoFade is not disabled
+        (scriptTypeCode !== "init" || scene.autoFadeSpeed === null)
+      ) {
         return null;
       }
 
@@ -1234,9 +1263,7 @@ const compile = async (
         warnings,
         loop,
         lock,
-        init: scriptTypeCode === "init",
         engineFields: precompiledEngineFields,
-        customEventsLookup,
         output: [],
         additionalScripts,
         symbols,
@@ -1293,6 +1320,28 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
           [scene.script] || []
         )
         .flat();
+
+      // Inject automatic Scene Fade In if required
+      if (scene.autoFadeSpeed !== null) {
+        const autoFadeId = calculateAutoFadeEventIdDenormalised(
+          initScript,
+          customEventsLookup
+        );
+        const autoFadeIndex = initScript.findIndex(
+          (item) => item.id === autoFadeId
+        );
+        const fadeEvent = {
+          command: "EVENT_FADE_IN",
+          args: {
+            speed: scene.autoFadeSpeed,
+          },
+        };
+        if (autoFadeIndex > -1) {
+          initScript.splice(autoFadeIndex, 0, fadeEvent);
+        } else if (autoFadeId !== "MANUAL") {
+          initScript.push(fadeEvent);
+        }
+      }
 
       // Compile scene start script
       return compileScript(

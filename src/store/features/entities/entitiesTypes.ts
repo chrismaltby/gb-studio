@@ -52,7 +52,7 @@ export type ScriptEvent = {
 };
 
 export type ScriptEventDenormalized = Omit<ScriptEvent, "children"> & {
-  children: Dictionary<ScriptEventDenormalized[]>;
+  children?: Dictionary<ScriptEventDenormalized[]>;
 };
 
 export type ScriptEventsRef = {
@@ -343,6 +343,8 @@ export type Scene = {
   paletteIds: string[];
   spritePaletteIds: string[];
   collisions: number[];
+  autoFadeSpeed: number | null;
+  autoFadeEventCollapse?: boolean;
   actors: string[];
   triggers: string[];
   parallax?: SceneParallaxLayer[];

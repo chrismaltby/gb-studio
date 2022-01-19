@@ -278,8 +278,9 @@ export const JigsawIcon = () => (
   </svg>
 );
 
-export const PlusIcon = () => (
+export const PlusIcon = ({ title }: { title?: string }) => (
   <svg width="24" height="24" viewBox="0 0 24 24">
+    {title && <title>{title}</title>}
     <path d="M24 9h-9v-9h-6v9h-9v6h9v9h6v-9h9z" />
   </svg>
 );
@@ -302,9 +303,10 @@ export const ResizeIcon = () => (
   </svg>
 );
 
-export const MinusIcon = () => (
+export const MinusIcon = ({ title }: { title?: string }) => (
   <svg width="24" height="24" viewBox="0 0 24 24">
-    <path d="M0 10h24v4h-24z" />
+    {title && <title>{title}</title>}
+    <path d="M24 9h-24v6h24v-6z" />
   </svg>
 );
 

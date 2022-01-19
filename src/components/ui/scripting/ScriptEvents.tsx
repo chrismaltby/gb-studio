@@ -409,3 +409,10 @@ export const ScriptEventFieldGroupWrapper = styled.div<ScriptEventFieldGroupProp
     flex-wrap: nowrap;
   }
 `;
+
+export const ScriptEventWarning = styled.div`
+  background: #ffc107;
+  color: #000;
+  padding: 10px;
+  font-size: 11px;
+`;
