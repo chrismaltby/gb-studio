@@ -468,6 +468,11 @@
   "FIELD_UI_PIANO": "Piano",
   "FIELD_UI_LINEAR_INFO": "OpenMPT, hUGETracker",
   "FIELD_UI_PIANO_INFO": "MilkyTracker, FastTracker2",
+  "FIELD_AUTOMATIC": "Automatic",
+  "FIELD_DISABLE_AUTOMATIC_FADE_IN": "Disable Automatic Fade In",
+  "FIELD_ENABLE_AUTOMATIC_FADE_IN": "Enable Automatic Fade In",
+  "FIELD_AUTOMATIC_FADE_IN_DISABLED": "Automatic Fade In is disabled for this scene",
+  "FIELD_AUTOMATIC_FADE_IN_DISABLED_INFO": "You must add a \"{eventName}\" event manually.",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

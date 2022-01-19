@@ -596,6 +596,7 @@ const addScene: CaseReducer<
     paletteIds: [],
     spritePaletteIds: [],
     collisions: [],
+    autoFadeSpeed: 1,
     ...(action.payload.defaults || {}),
     id: action.payload.sceneId,
     x: Math.max(MIN_SCENE_X, action.payload.x),
