@@ -2963,19 +2963,29 @@ class ScriptBuilder {
     otherVariable: string,
     clamp: boolean
   ) => {
+    const clampLabel = clamp ? this.getNextLabel() : "";
+
     this._addComment(`Variables ${operation}`);
-    const rpn = this._rpn();
-    if (clamp) {
-      rpn.int16(0).int16(255);
-    }
-    rpn //
+    this._rpn() //
       .refVariable(setVariable)
       .refVariable(otherVariable)
-      .operator(operation);
+      .operator(operation)
+      .stop();
+
     if (clamp) {
-      rpn.operator(".MIN").operator(".MAX");
+      if (operation === ".ADD") {
+        this._stackPushConst(256);
+        this._if(".GTE", ".ARG0", ".ARG1", clampLabel, 1);
+        this._setConst(".ARG0", 255);
+        this._label(clampLabel);
+      } else if (operation === ".SUB") {
+        this._stackPushConst(0);
+        this._if(".LTE", ".ARG0", ".ARG1", clampLabel, 1);
+        this._setConst(".ARG0", 0);
+        this._label(clampLabel);
+      }
     }
-    rpn.stop();
+
     this._setVariable(setVariable, ".ARG0");
     this._stackPop(1);
     this._addNL();
@@ -2987,19 +2997,29 @@ class ScriptBuilder {
     value: number,
     clamp: boolean
   ) => {
+    const clampLabel = clamp ? this.getNextLabel() : "";
+
     this._addComment(`Variables ${operation} Value`);
-    const rpn = this._rpn();
-    if (clamp) {
-      rpn.int16(0).int16(255);
-    }
-    rpn //
+    this._rpn() //
       .refVariable(setVariable)
-      .int16(value)
-      .operator(operation);
+      .int8(value)
+      .operator(operation)
+      .stop();
+
     if (clamp) {
-      rpn.operator(".MIN").operator(".MAX");
+      if (operation === ".ADD") {
+        this._stackPushConst(256);
+        this._if(".GTE", ".ARG0", ".ARG1", clampLabel, 1);
+        this._setConst(".ARG0", 255);
+        this._label(clampLabel);
+      } else if (operation === ".SUB") {
+        this._stackPushConst(0);
+        this._if(".LTE", ".ARG0", ".ARG1", clampLabel, 1);
+        this._setConst(".ARG0", 0);
+        this._label(clampLabel);
+      }
     }
-    rpn.stop();
+
     this._setVariable(setVariable, ".ARG0");
     this._stackPop(1);
     this._addNL();
@@ -3012,22 +3032,32 @@ class ScriptBuilder {
     range: number,
     clamp: boolean
   ) => {
+    const clampLabel = clamp ? this.getNextLabel() : "";
+
     this._addComment(`Variables ${operation} Random`);
     this._stackPushConst(0);
     this._randomize();
     this._rand(".ARG0", min, range);
-    const rpn = this._rpn();
-    if (clamp) {
-      rpn.int16(0).int16(255);
-    }
-    rpn //
+    this._rpn() //
       .refVariable(variable)
       .ref(".ARG1")
-      .operator(operation);
+      .operator(operation)
+      .stop();
+
     if (clamp) {
-      rpn.operator(".MIN").operator(".MAX");
+      if (operation === ".ADD") {
+        this._stackPushConst(256);
+        this._if(".GTE", ".ARG0", ".ARG1", clampLabel, 1);
+        this._setConst(".ARG0", 255);
+        this._label(clampLabel);
+      } else if (operation === ".SUB") {
+        this._stackPushConst(0);
+        this._if(".LTE", ".ARG0", ".ARG1", clampLabel, 1);
+        this._setConst(".ARG0", 0);
+        this._label(clampLabel);
+      }
     }
-    rpn.stop();
+
     this._setVariable(variable, ".ARG0");
     this._stackPop(2);
     this._addNL();
@@ -4022,7 +4052,6 @@ ${this.includeActor ? "\nACTOR = -4" : ""}
 
 ___bank_${name} = 255
 .globl ___bank_${name}
-.CURRENT_SCRIPT_BANK == ___bank_${name}
 
 _${name}::
 ${lock ? this._padCmd("VM_LOCK", "", 8, 24) + "\n\n" : ""}${

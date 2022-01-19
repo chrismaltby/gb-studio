@@ -53,5 +53,4 @@ module.exports = {
   groups,
   fields,
   compile,
-  allowChildrenBeforeInitFade: true,
 };

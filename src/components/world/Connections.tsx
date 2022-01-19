@@ -150,11 +150,9 @@ const getSceneConnections = (
     scene,
     eventsLookup,
     {
-      customEvents: {
-        lookup: customEventsLookup,
-        maxDepth: MAX_NESTED_SCRIPT_DEPTH,
-        args: {},
-      },
+      customEventsLookup,
+      maxDepth: MAX_NESTED_SCRIPT_DEPTH,
+      customEventArgs: {},
     },
     (scriptEvent) => {
       ifMatches(scriptEvent, (destScene) => {
@@ -177,11 +175,9 @@ const getSceneConnections = (
         entity,
         eventsLookup,
         {
-          customEvents: {
-            lookup: customEventsLookup,
-            maxDepth: MAX_NESTED_SCRIPT_DEPTH,
-            args: {},
-          },
+          customEventsLookup,
+          maxDepth: MAX_NESTED_SCRIPT_DEPTH,
+          customEventArgs: {},
         },
         (scriptEvent) => {
           ifMatches(scriptEvent, (destScene) => {
@@ -210,13 +206,7 @@ const getSceneConnections = (
       walkNormalisedTriggerEvents(
         entity,
         eventsLookup,
-        {
-          customEvents: {
-            lookup: customEventsLookup,
-            maxDepth: MAX_NESTED_SCRIPT_DEPTH,
-            args: {},
-          },
-        },
+        { customEventsLookup, maxDepth: 5, customEventArgs: {} },
         (scriptEvent) => {
           ifMatches(scriptEvent, (destScene) => {
             connections.push(

@@ -1,23 +1,14 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
-import {
-  customEventSelectors,
-  scriptEventSelectors,
-} from "store/features/entities/entitiesState";
+import React, { useEffect, useRef, useState } from "react";
 import { ScriptEventParentType } from "store/features/entities/entitiesTypes";
 import styled from "styled-components";
 import AddButton from "./AddButton";
 import ScriptEditorEvent from "./ScriptEditorEvent";
-import { ScriptEventAutoFade } from "./ScriptEventAutoFade";
-import { calculateAutoFadeEventIdNormalised } from "lib/helpers/eventHelpers";
 
 interface ScriptEditorProps {
   value: string[];
   type: ScriptEventParentType;
   entityId: string;
   scriptKey: string;
-  showAutoFadeIndicator?: boolean;
 }
 
 const ScriptEditorWrapper = styled.div`
@@ -25,31 +16,9 @@ const ScriptEditorWrapper = styled.div`
 `;
 
 const ScriptEditor = React.memo(
-  ({
-    value,
-    type,
-    entityId,
-    scriptKey,
-    showAutoFadeIndicator,
-  }: ScriptEditorProps) => {
+  ({ value, type, entityId, scriptKey }: ScriptEditorProps) => {
     const [renderTo, setRenderTo] = useState(0);
     const timerRef = useRef<number>(0);
-    const scriptEventsLookup = useSelector((state: RootState) =>
-      scriptEventSelectors.selectEntities(state)
-    );
-    const customEventsLookup = useSelector((state: RootState) =>
-      customEventSelectors.selectEntities(state)
-    );
-
-    const autoFadeEventId = useMemo(() => {
-      return showAutoFadeIndicator
-        ? calculateAutoFadeEventIdNormalised(
-            value,
-            scriptEventsLookup,
-            customEventsLookup
-          )
-        : "";
-    }, [customEventsLookup, scriptEventsLookup, showAutoFadeIndicator, value]);
 
     // Reset renderTo on script tab change
     useEffect(() => {
@@ -75,24 +44,16 @@ const ScriptEditor = React.memo(
         {value.map(
           (id, index) =>
             index < renderTo && (
-              <>
-                {showAutoFadeIndicator && id === autoFadeEventId && (
-                  <ScriptEventAutoFade />
-                )}
-                <ScriptEditorEvent
-                  key={`${id}_${index}`}
-                  id={id}
-                  index={index}
-                  parentType={type}
-                  parentId={entityId}
-                  parentKey={scriptKey}
-                  entityId={entityId}
-                />
-              </>
+              <ScriptEditorEvent
+                key={`${id}_${index}`}
+                id={id}
+                index={index}
+                parentType={type}
+                parentId={entityId}
+                parentKey={scriptKey}
+                entityId={entityId}
+              />
             )
-        )}
-        {showAutoFadeIndicator && autoFadeEventId === "" && (
-          <ScriptEventAutoFade />
         )}
         <AddButton
           parentType={type}

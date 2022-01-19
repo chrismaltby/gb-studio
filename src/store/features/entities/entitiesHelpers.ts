@@ -81,12 +81,9 @@ export type NormalisedData = NormalizedSchema<
 type WalkNormalizedOptions =
   | undefined
   | {
-      filter?: (ScriptEvent: ScriptEvent) => boolean;
-      customEvents?: {
-        lookup: Dictionary<CustomEvent>;
-        maxDepth: number;
-        args: Record<string, unknown>;
-      };
+      customEventsLookup: Dictionary<CustomEvent>;
+      maxDepth: number;
+      customEventArgs: Record<string, unknown>;
     };
 
 const backgroundSchema = new schema.Entity("backgrounds");
@@ -335,14 +332,7 @@ export const walkNormalisedScriptEvents = (
   for (let i = 0; i < ids.length; i++) {
     const scriptEvent = lookup[ids[i]];
     if (scriptEvent) {
-      // If filter is provided skip events that fail filter
-      if (options?.filter && !options.filter(scriptEvent)) {
-        continue;
-      }
-
-      callback(
-        replaceCustomEventArgs(scriptEvent, options?.customEvents?.args)
-      );
+      callback(replaceCustomEventArgs(scriptEvent, options?.customEventArgs));
       if (
         scriptEvent.children &&
         scriptEvent.command !== "EVENT_CALL_CUSTOM_EVENT"
@@ -355,11 +345,11 @@ export const walkNormalisedScriptEvents = (
         });
       }
       if (
-        options?.customEvents &&
+        options?.customEventsLookup &&
         scriptEvent.command === "EVENT_CALL_CUSTOM_EVENT"
       ) {
         const customEvent =
-          options.customEvents.lookup[
+          options.customEventsLookup[
             String(scriptEvent.args?.customEventId || "")
           ];
         if (customEvent) {
@@ -368,11 +358,8 @@ export const walkNormalisedScriptEvents = (
             lookup,
             {
               ...options,
-              customEvents: {
-                ...options.customEvents,
-                maxDepth: options.customEvents.maxDepth - 1,
-                args: scriptEvent.args || {},
-              },
+              maxDepth: options.maxDepth - 1,
+              customEventArgs: scriptEvent.args || {},
             },
             callback
           );

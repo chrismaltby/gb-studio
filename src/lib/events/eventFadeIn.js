@@ -10,8 +10,7 @@ const fields = [
 ];
 
 const compile = (input, helpers) => {
-  const { fadeIn, nextFrameAwait } = helpers;
-  nextFrameAwait();
+  const { fadeIn } = helpers;
   fadeIn(input.speed);
 };
 

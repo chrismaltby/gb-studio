@@ -147,11 +147,9 @@ const SceneInfo = () => {
         actorsLookup,
         triggersLookup,
         {
-          customEvents: {
-            lookup: customEventsLookup,
-            maxDepth: MAX_NESTED_SCRIPT_DEPTH,
-            args: {},
-          },
+          customEventsLookup,
+          maxDepth: MAX_NESTED_SCRIPT_DEPTH,
+          customEventArgs: {},
         },
         (scriptEvent, actor, _trigger) => {
           // Skip commented events

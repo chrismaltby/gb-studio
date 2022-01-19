@@ -1,3 +1,5 @@
+import { walkDenormalizedEvents } from "lib/helpers/eventHelpers";
+import { EVENT_FADE_IN } from "./eventTypes";
 import ScriptBuilder from "./scriptBuilder";
 
 const STRING_NOT_FOUND = "STRING_NOT_FOUND";
@@ -15,7 +17,9 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
     warnings,
     loop,
     lock,
+    init,
     isFunction,
+    customEventsLookup,
   } = options;
 
   const location = {
@@ -51,6 +55,28 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
         continue;
       }
       if (events[command]) {
+        if (init && !isBranch && !hasInit) {
+          let waitUntilAfterInitFade = events[command].waitUntilAfterInitFade;
+          if (!waitUntilAfterInitFade) {
+            // Check if any child events have waitUntilAfterInitFade
+            walkDenormalizedEvents(
+              [subInput[i]],
+              { customEventsLookup },
+              (childEvent) => {
+                waitUntilAfterInitFade =
+                  waitUntilAfterInitFade ||
+                  events[childEvent.command].waitUntilAfterInitFade;
+              }
+            );
+          }
+          if (waitUntilAfterInitFade) {
+            hasInit = true;
+            scriptBuilder.nextFrameAwait();
+            if (command !== EVENT_FADE_IN) {
+              scriptBuilder.fadeIn();
+            }
+          }
+        }
         try {
           events[command].compile(
             { ...subInput[i].args, ...subInput[i].children },
@@ -113,6 +139,15 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
         scriptBuilder.nextFrameAwait();
         scriptBuilder.labelGoto(loopId);
       }
+
+      if (init && !hasInit) {
+        // No part of script caused a fade in so do this
+        // before ending the script
+        scriptBuilder.nextFrameAwait();
+        scriptBuilder.fadeIn();
+        hasInit = true;
+      }
+
       if (isFunction) {
         if (scriptBuilder.includeActor) {
           scriptBuilder.stackPtr += 4;
