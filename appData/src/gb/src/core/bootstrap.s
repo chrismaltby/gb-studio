@@ -5,6 +5,7 @@
 
 ___bank_bootstrap_script = 255
 .globl ___bank_bootstrap_script
+.CURRENT_SCRIPT_BANK == ___bank_bootstrap_script
 
 .globl ___bank_script_engine_init, _script_engine_init
 
