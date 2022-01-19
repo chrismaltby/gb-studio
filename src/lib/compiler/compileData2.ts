@@ -422,7 +422,7 @@ export const compileParallax = (
     const layers = parallax.map((layer, layerIndex) => {
       // For num layers = 1 or 2 extend final layer to fill screen
       if (parallax.length < 3 && layerIndex === parallax.length - 1) {
-        return `PARALLAX_STEP(${row}, 0, ${layer.speed})`;
+        return `PARALLAX_STEP(${row}, 18, ${layer.speed})`;
       }
       if (layerIndex === parallax.length - 1) {
         return `PARALLAX_STEP(${row}, 0, ${layer.speed})`;
