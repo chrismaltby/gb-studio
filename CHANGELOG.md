@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added ability to use values between -32768 and 32767 in variable events [@Rebusmind](https://github.com/Rebusmind)
 - Added ability to clamp to 8-bit while using multiply
 - Added ability to see where automatic Fade In event will appear in Scene "On Init" script with option to disable or change speed
+- Add vertical scrolling in last parallax viewport is Speed=1 [@um3k](https://github.com/um3k)
 
 ### Changed
 
