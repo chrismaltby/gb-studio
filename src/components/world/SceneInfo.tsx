@@ -150,7 +150,6 @@ const SceneInfo = () => {
           customEvents: {
             lookup: customEventsLookup,
             maxDepth: MAX_NESTED_SCRIPT_DEPTH,
-            args: {},
           },
         },
         (scriptEvent, actor, _trigger) => {

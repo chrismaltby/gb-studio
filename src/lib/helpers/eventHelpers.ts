@@ -19,7 +19,7 @@ type WalkDenormalizedOptions =
       customEvents?: {
         lookup: Dictionary<CustomEventDenormalized>;
         maxDepth: number;
-        args: Record<string, unknown>;
+        args?: Record<string, unknown>;
       };
     };
 
@@ -253,7 +253,6 @@ export const calculateAutoFadeEventIdNormalised = (
         customEvents: {
           lookup: customEventsLookup,
           maxDepth: 5,
-          args: {},
         },
         filter: (childEvent) => {
           if (childEvent?.args?.__comment) {
@@ -305,7 +304,6 @@ export const calculateAutoFadeEventIdDenormalised = (
         customEvents: {
           lookup: customEventsLookup,
           maxDepth: 5,
-          args: {},
         },
         filter: (childEvent) => {
           if (childEvent?.args?.__comment) {

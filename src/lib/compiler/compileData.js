@@ -137,7 +137,6 @@ export const precompileStrings = (scenes, customEventsLookup) => {
       customEvents: {
         lookup: customEventsLookup,
         maxDepth: MAX_NESTED_SCRIPT_DEPTH,
-        args: {},
       },
     },
     (cmd) => {
@@ -186,7 +185,6 @@ export const precompileBackgrounds = async (
       customEvents: {
         lookup: customEventsLookup,
         maxDepth: MAX_NESTED_SCRIPT_DEPTH,
-        args: {},
       },
     },
     (cmd) => {
@@ -487,7 +485,6 @@ export const precompileSprites = async (
       customEvents: {
         lookup: customEventsLookup,
         maxDepth: MAX_NESTED_SCRIPT_DEPTH,
-        args: {},
       },
     },
     (event) => {
@@ -569,7 +566,6 @@ export const precompileAvatars = async (
       customEvents: {
         lookup: customEventsLookup,
         maxDepth: MAX_NESTED_SCRIPT_DEPTH,
-        args: {},
       },
     },
     (event) => {
@@ -614,7 +610,6 @@ export const precompileEmotes = async (
       customEvents: {
         lookup: customEventsLookup,
         maxDepth: MAX_NESTED_SCRIPT_DEPTH,
-        args: {},
       },
     },
     (event) => {
@@ -660,7 +655,6 @@ export const precompileMusic = (
       customEvents: {
         lookup: customEventsLookup,
         maxDepth: MAX_NESTED_SCRIPT_DEPTH,
-        args: {},
       },
     },
     (cmd) => {
@@ -746,7 +740,6 @@ export const precompileFonts = async (
       customEvents: {
         lookup: customEventsLookup,
         maxDepth: MAX_NESTED_SCRIPT_DEPTH,
-        args: {},
       },
     },
     (cmd) => {
@@ -862,16 +855,19 @@ export const precompileScenes = (
     };
 
     let playerSpritePersist = false;
+
+    console.log("HERE????", scene);
+
     walkDenormalizedSceneEvents(
       scene,
       {
         customEvents: {
           lookup: customEventsLookup,
           maxDepth: MAX_NESTED_SCRIPT_DEPTH,
-          args: {},
         },
       },
       (event, _scene, actor, _trigger) => {
+        console.log("BLAH", event);
         if (
           event.args &&
           event.args.spriteSheetId &&
@@ -896,6 +892,8 @@ export const precompileScenes = (
           event.args.spriteSheetId &&
           event.command === EVENT_ACTOR_SET_SPRITE
         ) {
+          console.log("HERE", event.command, event.args);
+
           let actorId = event.args.actorId;
           if (actorId === "$self$" && actor) {
             actorId = actor.id;

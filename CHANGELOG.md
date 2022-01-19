@@ -49,6 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix crashes when using too many sprite tiles by using GBDK-2020 sprite hiding function [untoxa](https://github.com/untoxa)
 - Fix rendering of garbage when no scene has loaded yet [untoxa](https://github.com/untoxa)
 - Fix overlay hide [untoxa](https://github.com/untoxa)
+- Fix issue where walking events was incorrectly replacing actorIds with $self$
 
 ## [3.0.2]
 
