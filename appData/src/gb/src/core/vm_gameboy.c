@@ -16,14 +16,9 @@
 #include "data_manager.h"
 #include "interrupts.h"
 
-void vm_show_sprites() OLDCALL BANKED {
-    hide_sprites = FALSE;
-    SHOW_SPRITES;
-}
-
-void vm_hide_sprites() OLDCALL BANKED {
-    hide_sprites = TRUE;
-    HIDE_SPRITES;
+void vm_set_sprites_visible(SCRIPT_CTX * THIS, UBYTE mode) OLDCALL BANKED {
+    THIS;
+    if (hide_sprites = mode) SHOW_SPRITES; else HIDE_SPRITES;
 }
 
 void vm_input_wait(SCRIPT_CTX * THIS, UBYTE mask) OLDCALL BANKED { 
@@ -60,14 +55,13 @@ void vm_input_get(SCRIPT_CTX * THIS, INT16 idx, UBYTE joyid) OLDCALL BANKED {
     *A = joypads.joypads[joyid];
 }
 
-void vm_fade_in(SCRIPT_CTX * THIS, UBYTE is_modal) OLDCALL BANKED {
+void vm_fade(SCRIPT_CTX * THIS, UBYTE mode) OLDCALL BANKED {
     THIS; 
-    if (is_modal) fade_in_modal(); else fade_in();
-}
-
-void vm_fade_out(SCRIPT_CTX * THIS, UBYTE is_modal) OLDCALL BANKED { 
-    THIS;
-    if (is_modal) fade_out_modal(); else fade_out();
+    if (mode & FADE_DIR_IN) {
+        if (mode & FADE_MODE_MODAL) fade_in_modal(); else fade_in();
+    } else {
+        if (mode & FADE_MODE_MODAL) fade_out_modal(); else fade_out();
+    }
 }
 
 void vm_timer_prepare(SCRIPT_CTX * THIS, UBYTE timer, UBYTE bank, UBYTE * pc) OLDCALL BANKED {

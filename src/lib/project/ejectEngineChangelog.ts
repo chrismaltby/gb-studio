@@ -121,6 +121,21 @@ const changes: EngineChange[] = [
       "   * Remove optional macro args from sound instructions",
     modifiedFiles: ["include/vm.i", "src/core/interrupts.c"],
   },
+  {
+    version: "3.0.3-e3",
+    description:
+      "Updates:\n" +
+      "   * Fix issue where vertical parallax could write over tiles\n" +
+      "   * Merged sprites hide/show into single instruction\n" +
+      "   * Merged fade in/out into single instruction",
+    modifiedFiles: [
+      "include/vm.i",
+      "include/vm_gameboy.h",
+      "src/core/scroll.c",
+      "src/core/vm_gameboy.c",
+      "src/core/vm_instructions.c",
+    ],
+  },
 ];
 
 const ejectEngineChangelog = (currentVersion: string) => {
