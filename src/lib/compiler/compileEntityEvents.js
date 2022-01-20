@@ -102,7 +102,7 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
   const loopId = loop ? scriptBuilder.getNextLabel() : "";
 
   if (loop && input.length > 0) {
-    scriptBuilder.labelDefine(loopId);
+    scriptBuilder._label(loopId);
   }
 
   compileEventsWithScriptBuilder(scriptBuilder, input, branch);
@@ -111,7 +111,7 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
     if (!branch) {
       if (loop && input.length > 0) {
         scriptBuilder.nextFrameAwait();
-        scriptBuilder.labelGoto(loopId);
+        scriptBuilder._jump(loopId);
       }
       if (isFunction) {
         if (scriptBuilder.includeActor) {

@@ -174,12 +174,37 @@ const SceneInfo = () => {
             scriptEvent.command === EVENT_ACTOR_SET_SPRITE
           ) {
             let actorId = String(scriptEvent.args.actorId);
-            if (actorId === "$self$" && actor) {
-              actorId = actor.id;
+            if (actorId === "$self$") {
+              if (actor) {
+                actorId = actor.id;
+              } else {
+                actorId = "player";
+              }
             }
             const sprite =
               spriteSheetsLookup[String(scriptEvent.args.spriteSheetId) || ""];
 
+            if (sprite) {
+              if (!actorsExclusiveLookup[actorId]) {
+                actorsExclusiveLookup[actorId] = sprite;
+              } else if (
+                actorsExclusiveLookup[actorId].numTiles < sprite.numTiles
+              ) {
+                actorsExclusiveLookup[actorId] = sprite;
+              }
+            }
+          }
+
+          // For EVENT_PLAYER_SET_SPRITE build lookup table
+          // storing max sized sprite used for player
+          if (
+            scriptEvent.args &&
+            scriptEvent.args.spriteSheetId &&
+            scriptEvent.command === EVENT_PLAYER_SET_SPRITE
+          ) {
+            const actorId = "player";
+            const sprite =
+              spriteSheetsLookup[String(scriptEvent.args.spriteSheetId) || ""];
             if (sprite) {
               if (!actorsExclusiveLookup[actorId]) {
                 actorsExclusiveLookup[actorId] = sprite;
@@ -218,11 +243,20 @@ const SceneInfo = () => {
       });
 
       // Player sprite
-      if (scene.playerSpriteSheetId) {
-        addSprite(scene.playerSpriteSheetId, true);
-      } else {
-        addSprite(defaultPlayerSprites[scene.type || "TOPDOWN"], true);
+      let playerSpriteId = scene.playerSpriteSheetId || "";
+      if (!scene.playerSpriteSheetId) {
+        playerSpriteId = defaultPlayerSprites[scene.type || "TOPDOWN"];
       }
+      const defaultPlayerSprite = spriteSheetsLookup[playerSpriteId || ""];
+      // Check if any player exclusive sprite have more tiles than default
+      if (
+        defaultPlayerSprite &&
+        actorsExclusiveLookup["player"] &&
+        actorsExclusiveLookup["player"].numTiles > defaultPlayerSprite.numTiles
+      ) {
+        playerSpriteId = actorsExclusiveLookup["player"].id;
+      }
+      addSprite(playerSpriteId, true);
 
       const tileCount = usedSpriteSheets.reduce((memo, spriteSheet) => {
         return (
