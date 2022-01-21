@@ -68,7 +68,10 @@ export const RollChannelFwd = ({
   );
 
   const removeNote = useCallback(
-    (channel: number, column: number) => (e: any) => {
+    (channel: number, column: number, note: number) => (e: any) => {
+      if (!song) {
+        return;
+      }
       if (e.button === 2 || (tool === "eraser" && e.button === 0)) {
         dispatch(
           trackerDocumentActions.editPatternCell({
@@ -88,9 +91,18 @@ export const RollChannelFwd = ({
             changes: { instrument: defaultInstruments[channel] },
           })
         );
+        const instrumentType = getInstrumentTypeByChannel(channel) || "duty";
+        const instrumentList = getInstrumentListByType(song, instrumentType);
+        ipcRenderer.send("music-data-send", {
+          action: "preview",
+          note: note,
+          type: instrumentType,
+          instrument: instrumentList[defaultInstruments[channel]],
+          square2: channel === 1,
+        });
       }
     },
-    [defaultInstruments, dispatch, patternId, tool]
+    [defaultInstruments, dispatch, patternId, song, tool]
   );
 
   const handleMouseDown = useCallback(
@@ -171,7 +183,7 @@ export const RollChannelFwd = ({
             <>
               <Note
                 key={`note_${columnIdx}_${channelId}`}
-                onMouseDown={removeNote(channelId, columnIdx)}
+                onMouseDown={removeNote(channelId, columnIdx, cell.note)}
                 size={cellSize}
                 className={
                   cell.instrument !== null
