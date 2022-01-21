@@ -87,7 +87,7 @@ export const PaletteIndexSelect: FC<PaletteIndexSelectProps> = ({
               />
             }
           >
-            {option.label}
+            {option.palette?.name}
           </OptionLabelWithPreview>
         );
       }}
@@ -102,7 +102,7 @@ export const PaletteIndexSelect: FC<PaletteIndexSelectProps> = ({
               />
             }
           >
-            {currentValue?.label}
+            {currentValue?.palette?.name}
           </SingleValueWithPreview>
         ),
       }}
