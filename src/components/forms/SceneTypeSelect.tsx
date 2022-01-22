@@ -1,6 +1,11 @@
 import React, { FC } from "react";
 import l10n from "lib/helpers/l10n";
 import { Select } from "ui/form/Select";
+import initElectronL10n from "lib/helpers/initElectronL10n";
+
+// Make sure localisation has loaded so that
+// l10n function can be used at top level
+initElectronL10n();
 
 interface SceneTypeSelectProps {
   name: string;

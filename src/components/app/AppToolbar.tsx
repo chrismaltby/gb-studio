@@ -29,6 +29,11 @@ import { NavigationSection } from "store/features/navigation/navigationState";
 import { ZoomSection } from "store/features/editor/editorState";
 import useWindowFocus from "ui/hooks/use-window-focus";
 import useWindowSize from "ui/hooks/use-window-size";
+import initElectronL10n from "lib/helpers/initElectronL10n";
+
+// Make sure localisation has loaded so that
+// l10n function can be used at top level
+initElectronL10n();
 
 const sectionNames = {
   world: l10n("NAV_GAME_WORLD"),

@@ -54,6 +54,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue with saving/loading patterns from UGE files [@pau-tomas](https://github.com/pau-tomas)
 - Fixed issue where changing player sprite mid scene would write over actor tiles (still an issue using "Replace Default Sprite" with a larger than initial)  
 - Fix playing note preview when adding to wave channel [@pau-tomas](https://github.com/pau-tomas)
+- Fixed some fields not being localised correctly (such as the top left Project View Button)
 
 ## [3.0.2]
 
