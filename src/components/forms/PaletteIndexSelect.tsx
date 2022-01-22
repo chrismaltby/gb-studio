@@ -87,7 +87,7 @@ export const PaletteIndexSelect: FC<PaletteIndexSelectProps> = ({
               />
             }
           >
-            {option.palette?.name}
+            {option.label.concat( " ", "(", (option.palette?.name || ""),  ")")}
           </OptionLabelWithPreview>
         );
       }}
@@ -102,7 +102,7 @@ export const PaletteIndexSelect: FC<PaletteIndexSelectProps> = ({
               />
             }
           >
-            {currentValue?.palette?.name}
+            {currentValue?.label.concat( " ", "(", (currentValue?.palette?.name || ""),  ")")}
           </SingleValueWithPreview>
         ),
       }}
