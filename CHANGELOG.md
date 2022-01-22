@@ -50,6 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix rendering of garbage when no scene has loaded yet [untoxa](https://github.com/untoxa)
 - Fix overlay hide [untoxa](https://github.com/untoxa)
 - Fix issue where walking events was incorrectly replacing actorIds with $self$
+- Fix issue with saving/loading patterns from UGE files [@pau-tomas](https://github.com/pau-tomas)
 
 ## [3.0.2]
 
