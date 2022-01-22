@@ -242,6 +242,8 @@ UBYTE load_scene(const scene_t * scene, UBYTE bank, UBYTE init_data) BANKED {
         PLAYER.base_tile = 0;
         PLAYER.sprite = scn.player_sprite;
         tile_allocation_hiwater = load_sprite(PLAYER.base_tile, scn.player_sprite.ptr, scn.player_sprite.bank);
+        UBYTE n_loaded = load_sprite(PLAYER.base_tile, scn.player_sprite.ptr, scn.player_sprite.bank);
+        tile_allocation_hiwater = (n_loaded > scn.reserve_tiles) ? n_loaded : scn.reserve_tiles; 
         load_animations(scn.player_sprite.ptr, scn.player_sprite.bank, ANIM_SET_DEFAULT, PLAYER.animations);
         load_bounds(scn.player_sprite.ptr, scn.player_sprite.bank, &PLAYER.bounds);
     } else {
@@ -289,11 +291,11 @@ UBYTE load_scene(const scene_t * scene, UBYTE bank, UBYTE init_data) BANKED {
             actor_t * actor = actors + 1;
             MemcpyBanked(actor, scn.actors.ptr, sizeof(actor_t) * (actors_len - 1), scn.actors.bank);
             for (i = actors_len - 1; i != 0; i--, actor++) {
-                if (actor->exclusive_sprite) {
+                if (actor->reserve_tiles) {
                     // exclusive sprites allocated separately to avoid overwriting if modified
                     actor->base_tile = tile_allocation_hiwater;
                     UBYTE n_loaded = load_sprite(tile_allocation_hiwater, actor->sprite.ptr, actor->sprite.bank);
-                    tile_allocation_hiwater += (n_loaded > actor->exclusive_sprite) ? n_loaded : actor->exclusive_sprite; 
+                    tile_allocation_hiwater += (n_loaded > actor->reserve_tiles) ? n_loaded : actor->reserve_tiles; 
                 } else {
                     // resolve and set base_tile for each actor
                     UBYTE idx = get_farptr_index(scn.sprites.ptr, scn.sprites.bank, sprites_len, &actor->sprite);

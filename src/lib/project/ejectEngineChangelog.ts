@@ -136,6 +136,14 @@ const changes: EngineChange[] = [
       "src/core/vm_instructions.c",
     ],
   },
+  {
+    version: "3.0.3-e4",
+    description:
+      "Updates:\n" +
+      "   * Allow reserving sprite tiles per scene for player\n" +
+      "   * Renamed exclusive_sprite to reserve_tiles",
+    modifiedFiles: ["include/gbs_types.i", "src/core/data_manager.c"],
+  },
 ];
 
 const ejectEngineChangelog = (currentVersion: string) => {
