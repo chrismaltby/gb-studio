@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added ability to see where automatic Fade In event will appear in Scene "On Init" script with option to disable or change speed
 - Added missing label in Actor Show event [@ReyAnthony](https://github.com/ReyAnthony)
 - Add vertical scrolling in last parallax viewport is Speed=1 [@um3k](https://github.com/um3k)
+- Add palette name to tile palette select based on current preview scene [@ReyAnthony](https://github.com/ReyAnthony)
 
 ### Changed
 
