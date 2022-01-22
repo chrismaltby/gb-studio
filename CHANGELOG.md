@@ -51,6 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix overlay hide [untoxa](https://github.com/untoxa)
 - Fix issue where walking events was incorrectly replacing actorIds with $self$
 - Fixed issue where changing player sprite mid scene would write over actor tiles (still an issue using "Replace Default Sprite" with a larger than initial)  
+- Fix playing note preview when adding to wave channel [@pau-tomas](https://github.com/pau-tomas)
 
 ## [3.0.2]
 
