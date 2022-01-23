@@ -421,7 +421,12 @@ export const compileParallax = (
     let row = 0;
     const layers = parallax.map((layer, layerIndex) => {
       // For num layers = 1 or 2 extend final layer to fill screen
-      if (parallax.length < 3 && layerIndex === parallax.length - 1) {
+      // if not set to normal scroll speed
+      if (
+        parallax.length < 3 &&
+        layerIndex === parallax.length - 1 &&
+        layer.speed !== 0
+      ) {
         return `PARALLAX_STEP(${row}, 18, ${layer.speed})`;
       }
       if (layerIndex === parallax.length - 1) {
@@ -471,6 +476,7 @@ export const compileScene = (
       ),
       palette: toFarPtr(paletteSymbol(bgPalette)),
       sprite_palette: toFarPtr(paletteSymbol(actorsPalette)),
+      reserve_tiles: scene.actorsExclusiveLookup["player"] ?? 0,
       player_sprite: toFarPtr(spriteSheetSymbol(scene.playerSpriteIndex)),
       n_actors: scene.actors.length,
       n_triggers: scene.triggers.length,
@@ -584,7 +590,7 @@ export const compileSceneActors = (
           collision_enabled: actor.isPinned ? "FALSE" : "TRUE",
           script_update: maybeScriptFarPtr(events.actorsMovement[actorIndex]),
           script: maybeScriptFarPtr(events.actors[actorIndex]),
-          exclusive_sprite: scene.actorsExclusiveLookup[actor.id] ?? 0,
+          reserve_tiles: scene.actorsExclusiveLookup[actor.id] ?? 0,
         };
       })
     ),

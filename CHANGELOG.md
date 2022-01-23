@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added ability to use values between -32768 and 32767 in variable events [@Rebusmind](https://github.com/Rebusmind)
 - Added ability to clamp to 8-bit while using multiply
 - Added ability to see where automatic Fade In event will appear in Scene "On Init" script with option to disable or change speed
+- Added missing label in Actor Show event [@ReyAnthony](https://github.com/ReyAnthony)
+- Add vertical scrolling in last parallax viewport is Speed=1 [@um3k](https://github.com/um3k)
+- Add palette name to tile palette select based on current preview scene [@ReyAnthony](https://github.com/ReyAnthony)
 
 ### Changed
 
@@ -26,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changed default .uge template to be blank [MOL-IS-MOL](https://github.com/MOL-IS-MOL)
 - Updated to latest GBDK-2020
 - Improved Math Functions clamp to not require branching
+- Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
 
 ### Fixed
 
@@ -46,6 +50,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Generate a new save hash when project changes to prevent crashes when loading invalid data [untoxa](https://github.com/untoxa)
 - Fix crashes when using too many sprite tiles by using GBDK-2020 sprite hiding function [untoxa](https://github.com/untoxa)
 - Fix rendering of garbage when no scene has loaded yet [untoxa](https://github.com/untoxa)
+- Fix overlay hide [untoxa](https://github.com/untoxa)
+- Fix issue where walking events was incorrectly replacing actorIds with $self$
+- Fix issue with saving/loading patterns from UGE files [@pau-tomas](https://github.com/pau-tomas)
+- Fixed issue where changing player sprite mid scene would write over actor tiles (still an issue using "Replace Default Sprite" with a larger than initial)  
+- Fix playing note preview when adding to wave channel [@pau-tomas](https://github.com/pau-tomas)
+- Fixed some fields not being localised correctly (such as the top left Project View Button)
 
 ## [3.0.2]
 

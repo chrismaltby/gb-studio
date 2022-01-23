@@ -157,7 +157,7 @@ UBYTE scroll_viewport(parallax_row_t * port) {
         } else if (current_row == new_row + 1) {
             // Queue top row
             UBYTE x = MAX(0, new_col - SCREEN_PAD_LEFT);
-            UBYTE y = MAX(0, new_row - SCREEN_PAD_TOP);
+            UBYTE y = MAX(port->start_tile, new_row - SCREEN_PAD_TOP);
             scroll_queue_row(x, y);
             activate_actors_in_row(x, y);
         } else if (current_row != new_row) {

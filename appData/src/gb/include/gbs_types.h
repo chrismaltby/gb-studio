@@ -58,7 +58,7 @@ typedef struct actor_t
     uint8_t anim_tick;
     uint8_t move_speed;
     uint8_t animation;
-    uint8_t exclusive_sprite;
+    uint8_t reserve_tiles;
     animation_t animations[8];
     far_ptr_t sprite;
     far_ptr_t script, script_update;
@@ -85,6 +85,7 @@ typedef struct scene_t {
     uint8_t width, height;
     scene_type_e type;
     uint8_t n_actors, n_triggers, n_projectiles, n_sprites;
+    uint8_t reserve_tiles;
     far_ptr_t player_sprite;
     far_ptr_t background, collisions; 
     far_ptr_t palette, sprite_palette;

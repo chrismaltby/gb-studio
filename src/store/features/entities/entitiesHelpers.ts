@@ -85,7 +85,7 @@ type WalkNormalizedOptions =
       customEvents?: {
         lookup: Dictionary<CustomEvent>;
         maxDepth: number;
-        args: Record<string, unknown>;
+        args?: Record<string, unknown>;
       };
     };
 

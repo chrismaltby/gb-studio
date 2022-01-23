@@ -153,7 +153,6 @@ const getSceneConnections = (
       customEvents: {
         lookup: customEventsLookup,
         maxDepth: MAX_NESTED_SCRIPT_DEPTH,
-        args: {},
       },
     },
     (scriptEvent) => {
@@ -180,7 +179,6 @@ const getSceneConnections = (
           customEvents: {
             lookup: customEventsLookup,
             maxDepth: MAX_NESTED_SCRIPT_DEPTH,
-            args: {},
           },
         },
         (scriptEvent) => {
@@ -214,7 +212,6 @@ const getSceneConnections = (
           customEvents: {
             lookup: customEventsLookup,
             maxDepth: MAX_NESTED_SCRIPT_DEPTH,
-            args: {},
           },
         },
         (scriptEvent) => {
