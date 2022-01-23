@@ -136,7 +136,6 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
           dispatch(consoleActions.stdErr(e.toString()));
         }
         dispatch(consoleActions.completeConsole());
-        throw e;
       }
 
       if (module.hot) {
