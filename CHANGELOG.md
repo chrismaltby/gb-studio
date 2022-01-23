@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated to latest GBDK-2020
 - Improved Math Functions clamp to not require branching
 - Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
+- Updated Simplified Chinese localisation. [@wcxu21](https://github.com/wcxu21) 
 
 ### Fixed
 
