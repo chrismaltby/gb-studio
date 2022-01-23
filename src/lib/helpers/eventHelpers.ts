@@ -19,7 +19,7 @@ type WalkDenormalizedOptions =
       customEvents?: {
         lookup: Dictionary<CustomEventDenormalized>;
         maxDepth: number;
-        args: Record<string, unknown>;
+        args?: Record<string, unknown>;
       };
     };
 
@@ -229,7 +229,7 @@ export const calculateAutoFadeEventIdNormalised = (
   const events = require("../events").default;
   let fadeEventId = "";
   const checkEvent = (eventId: string) => (scriptEvent: ScriptEvent) => {
-    if (!fadeEventId && events[scriptEvent.command].waitUntilAfterInitFade) {
+    if (!fadeEventId && events[scriptEvent.command]?.waitUntilAfterInitFade) {
       if (scriptEvent.command === EVENT_FADE_IN) {
         fadeEventId = "MANUAL";
       } else {
@@ -253,13 +253,12 @@ export const calculateAutoFadeEventIdNormalised = (
         customEvents: {
           lookup: customEventsLookup,
           maxDepth: 5,
-          args: {},
         },
         filter: (childEvent) => {
           if (childEvent?.args?.__comment) {
             return false;
           }
-          if (events[childEvent.command].allowChildrenBeforeInitFade) {
+          if (events[childEvent.command]?.allowChildrenBeforeInitFade) {
             return false;
           }
           return true;
@@ -305,7 +304,6 @@ export const calculateAutoFadeEventIdDenormalised = (
         customEvents: {
           lookup: customEventsLookup,
           maxDepth: 5,
-          args: {},
         },
         filter: (childEvent) => {
           if (childEvent?.args?.__comment) {

@@ -41,6 +41,11 @@ import gbs2Preview from "../../assets/templatePreview/gbs2.mp4";
 import gbhtmlPreview from "../../assets/templatePreview/gbhtml.mp4";
 import blankPreview from "../../assets/templatePreview/blank.png";
 import useWindowFocus from "ui/hooks/use-window-focus";
+import initElectronL10n from "lib/helpers/initElectronL10n";
+
+// Make sure localisation has loaded so that
+// l10n function can be used at top level
+initElectronL10n();
 
 const { dialog, shell } = remote;
 

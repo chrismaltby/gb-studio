@@ -183,7 +183,7 @@ const SettingsPage: FC = () => {
               <Input
                 autoFocus
                 type="search"
-                placeholder="Search Settings..."
+                placeholder={l10n("FIELD_SEARCH_SETTINGS")}
                 value={searchTerm}
                 onChange={onSearch}
               />
@@ -228,9 +228,8 @@ const SettingsPage: FC = () => {
           searchTerm={searchTerm}
           searchMatches={[
             l10n("FIELD_EXPORT_IN_COLOR"),
-            "Default Background Palettes",
-            "Default Sprite Palette",
-            "Default UI Palette",
+            l10n("FIELD_DEFAULT_BACKGROUND_PALETTES"),
+            l10n("FIELD_DEFAULT_SPRITE_PALETTES"),
           ]}
         >
           <CardAnchor id="settingsColor" />
@@ -255,9 +254,11 @@ const SettingsPage: FC = () => {
             <>
               <SearchableSettingRow
                 searchTerm={searchTerm}
-                searchMatches={["Default Background Palettes"]}
+                searchMatches={[l10n("FIELD_DEFAULT_BACKGROUND_PALETTES")]}
               >
-                <SettingRowLabel>Default Background Palettes</SettingRowLabel>
+                <SettingRowLabel>
+                  {l10n("FIELD_DEFAULT_BACKGROUND_PALETTES")}
+                </SettingRowLabel>
                 <SettingRowInput>
                   <div>
                     {[0, 1, 2, 3, 4, 5, 6, 7].map((index) => (
@@ -294,9 +295,11 @@ const SettingsPage: FC = () => {
 
               <SearchableSettingRow
                 searchTerm={searchTerm}
-                searchMatches={["Default Sprite Palettes"]}
+                searchMatches={[l10n("FIELD_DEFAULT_SPRITE_PALETTES")]}
               >
-                <SettingRowLabel>Default Sprite Palettes</SettingRowLabel>
+                <SettingRowLabel>
+                  {l10n("FIELD_DEFAULT_SPRITE_PALETTES")}
+                </SettingRowLabel>
                 <SettingRowInput>
                   <div key={JSON.stringify(defaultSpritePaletteIds)}>
                     {[0, 1, 2, 3, 4, 5, 6, 7].map((index) => (
@@ -544,10 +547,10 @@ const SettingsPage: FC = () => {
         <SearchableCard
           searchTerm={searchTerm}
           searchMatches={[
-            "Up",
-            "Down",
-            "Left",
-            "Right",
+            l10n("FIELD_DIRECTION_UP"),
+            l10n("FIELD_DIRECTION_DOWN"),
+            l10n("FIELD_DIRECTION_LEFT"),
+            l10n("FIELD_DIRECTION_RIGHT"),
             "A",
             "B",
             "Start",
@@ -570,15 +573,17 @@ const SettingsPage: FC = () => {
 
         <SearchableCard
           searchTerm={searchTerm}
-          searchMatches={["Custom HTML Header"]}
+          searchMatches={[l10n("FIELD_CUSTOM_HTML_HEADER")]}
         >
           <CardAnchor id="settingsCustomHead" />
           <CardHeading>{l10n("SETTINGS_CUSTOM_HEADER")}</CardHeading>
           <SearchableSettingRow
             searchTerm={searchTerm}
-            searchMatches={["Custom HTML Header"]}
+            searchMatches={[l10n("FIELD_CUSTOM_HTML_HEADER")]}
           >
-            <SettingRowLabel>Custom HTML Header</SettingRowLabel>
+            <SettingRowLabel>
+              {l10n("FIELD_CUSTOM_HTML_HEADER")}
+            </SettingRowLabel>
             <SettingRowInput>
               <pre>
                 &lt;!DOCTYPE html&gt;{"\n"}

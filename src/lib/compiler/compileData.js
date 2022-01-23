@@ -137,7 +137,6 @@ export const precompileStrings = (scenes, customEventsLookup) => {
       customEvents: {
         lookup: customEventsLookup,
         maxDepth: MAX_NESTED_SCRIPT_DEPTH,
-        args: {},
       },
     },
     (cmd) => {
@@ -186,7 +185,6 @@ export const precompileBackgrounds = async (
       customEvents: {
         lookup: customEventsLookup,
         maxDepth: MAX_NESTED_SCRIPT_DEPTH,
-        args: {},
       },
     },
     (cmd) => {
@@ -487,7 +485,6 @@ export const precompileSprites = async (
       customEvents: {
         lookup: customEventsLookup,
         maxDepth: MAX_NESTED_SCRIPT_DEPTH,
-        args: {},
       },
     },
     (event) => {
@@ -569,7 +566,6 @@ export const precompileAvatars = async (
       customEvents: {
         lookup: customEventsLookup,
         maxDepth: MAX_NESTED_SCRIPT_DEPTH,
-        args: {},
       },
     },
     (event) => {
@@ -614,7 +610,6 @@ export const precompileEmotes = async (
       customEvents: {
         lookup: customEventsLookup,
         maxDepth: MAX_NESTED_SCRIPT_DEPTH,
-        args: {},
       },
     },
     (event) => {
@@ -660,7 +655,6 @@ export const precompileMusic = (
       customEvents: {
         lookup: customEventsLookup,
         maxDepth: MAX_NESTED_SCRIPT_DEPTH,
-        args: {},
       },
     },
     (cmd) => {
@@ -746,7 +740,6 @@ export const precompileFonts = async (
       customEvents: {
         lookup: customEventsLookup,
         maxDepth: MAX_NESTED_SCRIPT_DEPTH,
-        args: {},
       },
     },
     (cmd) => {
@@ -862,13 +855,13 @@ export const precompileScenes = (
     };
 
     let playerSpritePersist = false;
+
     walkDenormalizedSceneEvents(
       scene,
       {
         customEvents: {
           lookup: customEventsLookup,
           maxDepth: MAX_NESTED_SCRIPT_DEPTH,
-          args: {},
         },
       },
       (event, _scene, actor, _trigger) => {
@@ -897,8 +890,12 @@ export const precompileScenes = (
           event.command === EVENT_ACTOR_SET_SPRITE
         ) {
           let actorId = event.args.actorId;
-          if (actorId === "$self$" && actor) {
-            actorId = actor.id;
+          if (actorId === "$self$") {
+            if (actor) {
+              actorId = actor.id;
+            } else {
+              actorId = "player";
+            }
           }
           const sprite = usedSpritesLookup[event.args.spriteSheetId];
           actorsExclusiveLookup[actorId] = Math.max(
@@ -910,10 +907,17 @@ export const precompileScenes = (
         if (
           event.args &&
           event.args.spriteSheetId &&
-          event.command === EVENT_PLAYER_SET_SPRITE &&
-          event.args.persist
+          event.command === EVENT_PLAYER_SET_SPRITE
         ) {
-          playerSpritePersist = true;
+          const actorId = "player";
+          const sprite = usedSpritesLookup[event.args.spriteSheetId];
+          actorsExclusiveLookup[actorId] = Math.max(
+            actorsExclusiveLookup[actorId] || 0,
+            ((sprite ? sprite.numTiles : 0) || 0) * 2
+          );
+          if (event.args.persist) {
+            playerSpritePersist = true;
+          }
         }
       }
     );
@@ -1707,7 +1711,7 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
     `extern const UBYTE start_player_move_speed;\n` +
     `extern const UBYTE start_player_anim_tick;\n\n` +
     `extern const far_ptr_t ui_fonts[];\n\n` +
-    `void bootstrap_init() __banked;\n\n` +
+    `void bootstrap_init() BANKED;\n\n` +
     `#endif\n`;
 
   output[`states_defines.h`] =

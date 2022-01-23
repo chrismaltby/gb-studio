@@ -1,4 +1,4 @@
-import { animSpeedDec, inputDec, textSpeedDec } from "./helpers";
+import { inputDec, textSpeedDec } from "./helpers";
 import { decHex, decOct, hexDec } from "../helpers/8bit";
 import trimlines from "../helpers/trimlines";
 import { is16BitCType } from "../helpers/engineFields";
@@ -1478,12 +1478,12 @@ class ScriptBuilder {
     this._addCmd("VM_SCENE_STACK_RESET");
   };
 
-  _fadeIn = (isModal: number) => {
-    this._addCmd("VM_FADE_IN", isModal);
+  _fadeIn = (isModal: boolean) => {
+    this._addCmd("VM_FADE_IN", isModal ? 1 : 0);
   };
 
-  _fadeOut = (isModal: number) => {
-    this._addCmd("VM_FADE_OUT", isModal);
+  _fadeOut = (isModal: boolean) => {
+    this._addCmd("VM_FADE_OUT", isModal ? 1 : 0);
   };
 
   _cameraMoveTo = (addr: string, speed: number, lock: string) => {
@@ -2765,7 +2765,7 @@ class ScriptBuilder {
         "fade_frames_per_step",
         fadeSpeeds[fadeSpeed] ?? 0x3
       );
-      this._fadeOut(1);
+      this._fadeOut(true);
       this._setConst("ACTOR", 0);
       this._setConst("^/(ACTOR + 1)/", x * 8 * 16);
       this._setConst("^/(ACTOR + 2)/", y * 8 * 16);
@@ -2789,7 +2789,7 @@ class ScriptBuilder {
   scenePopState = (fadeSpeed = 2) => {
     this._addComment("Pop Scene State");
     this._setConstMemInt8("fade_frames_per_step", fadeSpeeds[fadeSpeed] ?? 0x3);
-    this._fadeOut(1);
+    this._fadeOut(true);
     this._scenePop();
     this._addNL();
   };
@@ -2797,7 +2797,7 @@ class ScriptBuilder {
   scenePopAllState = (fadeSpeed = 2) => {
     this._addComment("Pop All Scene State");
     this._setConstMemInt8("fade_frames_per_step", fadeSpeeds[fadeSpeed] ?? 0x3);
-    this._fadeOut(1);
+    this._fadeOut(true);
     this._scenePopAll();
     this._addNL();
   };
@@ -3225,14 +3225,14 @@ class ScriptBuilder {
   fadeIn = (speed = 1) => {
     this._addComment(`Fade In`);
     this._setConstMemInt8("fade_frames_per_step", fadeSpeeds[speed] ?? 0x3);
-    this._fadeIn(1);
+    this._fadeIn(true);
     this._addNL();
   };
 
   fadeOut = (speed = 1) => {
     this._addComment(`Fade Out`);
     this._setConstMemInt8("fade_frames_per_step", fadeSpeeds[speed] ?? 0x3);
-    this._fadeOut(1);
+    this._fadeOut(true);
     this._addNL();
   };
 

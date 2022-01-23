@@ -661,14 +661,18 @@ OP_VM_OVERLAY_SET_SUBMAP = 0x4F
 
 ; --- GAMEBOY ------------------------------------------
 
-OP_VM_SHOW_SPRITES      = 0x50
-.macro VM_SHOW_SPRITES
-        .db OP_VM_SHOW_SPRITES
+OP_VM_SET_SPRITE_VISIBLE = 0x51
+.SPRITES_SHOW           = 0
+.SPRITES_HIDE           = 1
+.macro VM_SET_SPRITE_VISIBLE MODE
+        .db OP_VM_SET_SPRITE_VISIBLE, #<MODE 
 .endm
 
-OP_VM_HIDE_SPRITES      = 0x51
+.macro VM_SHOW_SPRITES
+        VM_SET_SPRITE_VISIBLE .SPRITES_SHOW
+.endm
 .macro VM_HIDE_SPRITES
-        .db OP_VM_HIDE_SPRITES
+        VM_SET_SPRITE_VISIBLE .SPRITES_HIDE
 .endm
 
 OP_VM_INPUT_WAIT        = 0x52
@@ -696,14 +700,28 @@ OP_VM_CONTEXT_PREPARE   = 0x55
         .db OP_VM_CONTEXT_PREPARE, #>ADDR, #<ADDR, #<BANK, #<SLOT
 .endm
 
-OP_VM_FADE_IN           = 0x56
-.macro VM_FADE_IN IS_MODAL
-        .db OP_VM_FADE_IN, #<IS_MODAL
+OP_VM_FADE              = 0x57
+.FADE_NONMODAL          = 0x00
+.FADE_MODAL             = 0x01
+.FADE_OUT               = 0x00
+.FADE_IN                = 0x02
+.macro VM_FADE FLAGS
+        .db OP_VM_FADE, #<FLAGS
 .endm
 
-OP_VM_FADE_OUT          = 0x57
+.macro VM_FADE_IN IS_MODAL
+        .if IS_MODAL
+                VM_FADE ^/(.FADE_IN | .FADE_MODAL)/
+        .else
+                VM_FADE ^/(.FADE_IN)/
+        .endif
+.endm
 .macro VM_FADE_OUT IS_MODAL
-        .db OP_VM_FADE_OUT, #<IS_MODAL
+        .if IS_MODAL
+                VM_FADE ^/(.FADE_OUT | .FADE_MODAL)/
+        .else
+                VM_FADE ^/(.FADE_OUT)/
+        .endif
 .endm
 
 ; Load script into timer context
@@ -792,7 +810,7 @@ OP_VM_SOUND_MASTERVOL   = 0x63
 
 ; Plays sound effect
 OP_VM_SOUND_PLAY        = 0x64
-.macro VM_SOUND_PLAY FRAMES, CH, ?A, ?B, ?C, ?D, ?E
+.macro VM_SOUND_PLAY FRAMES, CH, A, B, C, D, E
         .db OP_VM_SOUND_PLAY, #<CH, #<FRAMES
         .db #<A, #<B, #<C, #<D, #<E    
 .endm
@@ -963,7 +981,7 @@ OP_VM_COS_SCALE         = 0x8A
 
 ; Set sound effect for text 
 OP_VM_SET_TEXT_SOUND    = 0x8B
-.macro VM_SET_TEXT_SOUND FRAMES, CH, ?A, ?B, ?C, ?D, ?E
+.macro VM_SET_TEXT_SOUND FRAMES, CH, A, B, C, D, E
         .db OP_VM_SET_TEXT_SOUND, #<CH, #<FRAMES
         .db #<A, #<B, #<C, #<D, #<E    
 .endm

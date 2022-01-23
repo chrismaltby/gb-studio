@@ -48,7 +48,13 @@ const off = (event, fn) => {
 const openAbout = () => {
   return openAboutWindow({
     icon_path: `${assetsRoot}/app/icon/app_icon.png`,
-    bug_link_text: `Report bug (git: ${COMMITHASH})`,
+    bug_link_text: `${l10n("FIELD_REPORT_BUG")} (git: ${COMMITHASH})`,
+    // eslint-disable-next-line camelcase
+    win_options: {
+      title: l10n("MENU_ABOUT"),
+    },
+    description: l10n("GBSTUDIO_DESCRIPTION"),
+    copyright: l10n("GBSTUDIO_COPYRIGHT"),
   });
 };
 
@@ -102,7 +108,7 @@ const buildMenu = async (plugins = []) => {
           },
         },
         { type: "separator" },
-        { role: "close" },
+        { role: "close", label: l10n("MENU_CLOSE") },
       ],
     },
     {
@@ -123,9 +129,9 @@ const buildMenu = async (plugins = []) => {
           },
         },
         { type: "separator" },
-        { role: "cut" },
-        { role: "copy" },
-        { role: "paste" },
+        { role: "cut", label: l10n("MENU_CUT") },
+        { role: "copy", label: l10n("MENU_COPY") },
+        { role: "paste", label: l10n("MENU_PASTE") },
         {
           label: l10n("MENU_PASTE_IN_PLACE"),
           accelerator: "Shift+CommandOrControl+V",
@@ -133,8 +139,8 @@ const buildMenu = async (plugins = []) => {
             notifyListeners("pasteInPlace");
           },
         },
-        { role: "delete" },
-        { role: "selectall" },
+        { role: "delete", label: l10n("MENU_DELETE") },
+        { role: "selectall", label: l10n("MENU_SELECT_ALL") },
       ],
     },
     {
@@ -401,10 +407,12 @@ const buildMenu = async (plugins = []) => {
     },
     {
       role: "window",
+      label: l10n("MENU_WINDOW"),
       submenu: [{ role: "minimize" }],
     },
     {
       role: "help",
+      label: l10n("MENU_HELP"),
       submenu: [
         {
           label: l10n("MENU_DOCUMENTATION"),

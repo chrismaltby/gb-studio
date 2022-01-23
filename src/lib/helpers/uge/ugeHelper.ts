@@ -22,7 +22,7 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
   // TODO: Use `DataView` object instead of loads of Uint32Arrays
   let offset = 0;
   const version = new Uint32Array(data.slice(offset, offset + 4))[0];
-  console.log(`uge version: ${version}`);
+  console.log(`! uge version: ${version}`);
   if (version < 0 || version > 5) {
     throw new Error(`UGE version ${version} is not supported by GB Studio`);
   }
@@ -196,10 +196,13 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
   offset += 4;
   const patterns = [];
   for (let n = 0; n < pattern_count; n++) {
+    let patternId = 0;
     const pattern = [];
     if (version >= 5) {
-      // V5 has a pattern key (we don't use it, but need to offset it)
+      patternId = new Uint32Array(data.slice(offset, offset + 4))[0];
       offset += 4;
+    } else {
+      patternId = n;
     }
     for (let m = 0; m < 64; m++) {
       const [note, instrument, effectcode] = new Int32Array(
@@ -211,7 +214,16 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
 
       pattern.push([note, instrument, effectcode, effectparam]);
     }
-    patterns.push(pattern);
+    /*
+     If there's a repeated pattern it probably means the song was saved
+     with an old version of GB Studio (3.0.2 or earlier) that didn't saved the
+     unique pattern ids and instead expected them to always be consecutive.
+    */
+    if (version === 5 && patterns[patternId]) {
+      patterns[n] = pattern;
+    } else {
+      patterns[patternId] = pattern;
+    }
   }
 
   const orders = [];
@@ -425,8 +437,8 @@ export const saveUGESong = (song: Song): ArrayBuffer => {
   addUint32(song.ticks_per_row);
 
   addUint32(song.patterns.length * 4);
+  let patternKey = 0;
   for (const pattern of song.patterns) {
-    let patternKey = 0;
     for (let track = 0; track < 4; track++) {
       addUint32(patternKey++);
       for (let m = 0; m < 64; m++) {
