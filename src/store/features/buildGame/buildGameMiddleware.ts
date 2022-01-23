@@ -66,7 +66,10 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
           progress: (message) => {
             // Detect if build was cancelled and stop current build
             const state = store.getState();
-            if (state.console.status === "cancelled") {
+            if (
+              state.console.status === "cancelled" ||
+              state.console.status === "complete"
+            ) {
               throw new Error(l10n("BUILD_CANCELLED"));
             }
 
