@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added missing label in Actor Show event [@ReyAnthony](https://github.com/ReyAnthony)
 - Add vertical scrolling in last parallax viewport is Speed=1 [@um3k](https://github.com/um3k)
 - Add palette name to tile palette select based on current preview scene [@ReyAnthony](https://github.com/ReyAnthony)
+- Added event to manually seed random number generator
 
 ### Changed
 
@@ -57,6 +58,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed issue where changing player sprite mid scene would write over actor tiles (still an issue using "Replace Default Sprite" with a larger than initial)  
 - Fix playing note preview when adding to wave channel [@pau-tomas](https://github.com/pau-tomas)
 - Fixed some fields not being localised correctly (such as the top left Project View Button)
+- Fixed issue where random numbers were being seeded every call preventing them from being very random
 
 ## [3.0.2]
 

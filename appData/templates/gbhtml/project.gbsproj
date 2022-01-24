@@ -4338,6 +4338,11 @@
                     }
                 },
                 {
+                    "command": "EVENT_RNG_SEED",
+                    "args": {},
+                    "id": "11bfc6ff-9528-492b-8b81-b19dcf49f392"
+                },
+                {
                     "id": "19a94599-0006-4e3f-9049-c5087d230ed8",
                     "command": "EVENT_LOOP",
                     "args": {},

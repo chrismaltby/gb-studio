@@ -2952,8 +2952,13 @@ class ScriptBuilder {
 
   variableSetToRandom = (variable: string, min: number, range: number) => {
     this._addComment("Variable Set To Random");
-    this._randomize();
     this._randVariable(variable, min, range);
+    this._addNL();
+  };
+
+  seedRng = () => {
+    this._addComment("Seed RNG");
+    this._randomize();
     this._addNL();
   };
 
@@ -3014,7 +3019,6 @@ class ScriptBuilder {
   ) => {
     this._addComment(`Variables ${operation} Random`);
     this._stackPushConst(0);
-    this._randomize();
     this._rand(".ARG0", min, range);
     const rpn = this._rpn();
     if (clamp) {

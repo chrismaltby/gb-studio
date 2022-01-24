@@ -489,6 +489,7 @@
   "FIELD_CUSTOM_HTML_HEADER": "Custom HTML Header",
   "FIELD_SEARCH_SETTINGS": "Search Settings...",
   "FIELD_REPORT_BUG": "Report bug",
+  "FIELD_RNG_SEED_DESCRIPTION": "Place this to run in response to user input to ensure random numbers change between playthroughs",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -522,7 +523,6 @@
   "EVENT_GROUP_MUSIC": "Music & Sound Effects",
   "EVENT_GROUP_DIALOGUE": "Dialogue & Menus",
   "EVENT_GROUP_TIMER": "Timer",
-
   "EVENT_SWITCH_SCENE": "Change Scene",
   "EVENT_WAIT": "Wait",
   "EVENT_CAMERA_SHAKE": "Camera Shake",
@@ -697,6 +697,7 @@
   "EVENT_LINK_JOIN": "Link: Join",
   "EVENT_LINK_HOST": "Link: Host",
   "EVENT_LINK_TRANSFER": "Link: Transfer",
+  "EVENT_RNG_SEED": "Seed Random Number Generator",
 
   "// 10": "Menu -----------------------------------------------------",
 
