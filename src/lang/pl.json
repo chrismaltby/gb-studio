@@ -1,7 +1,10 @@
 {
   "RTL": false,
 
-  "// 1": "UI -------------------------------------------------------",
+  "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 981220124",
+ 
+ "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
   "TRIGGER": "Rozruch",
   "SCENE": "Scena",
@@ -473,7 +476,20 @@
   "FIELD_ENABLE_AUTOMATIC_FADE_IN": "Włącz automatycznie przenikanie",
   "FIELD_AUTOMATIC_FADE_IN_DISABLED": "Automatyczne przenikanie jest wyłączone dla tej sceny",
   "FIELD_AUTOMATIC_FADE_IN_DISABLED_INFO": "Musisz manualnie dodać zdarzenie \"{eventName}\" .",
- 
+  "FIELD_LADDER": "Drabina",
+  "FIELD_SOLID": "Kolizja pełna",
+  "FIELD_COLLISION_TOP": "Kolizja: góra",
+  "FIELD_COLLISION_BOTTOM": "Kolizja: dół",
+  "FIELD_COLLISION_LEFT": "Kolizja: lewo",
+  "FIELD_COLLISION_RIGHT": "Kolizja: prawo",
+  "FIELD_RESET_PALETTE": "Resetuj paletę",
+  "FIELD_REMOVE_PALETTE": "Usuń paletę",
+  "FIELD_DEFAULT_BACKGROUND_PALETTES": "Domyślna paleta tła",
+  "FIELD_DEFAULT_SPRITE_PALETTES": "Domyślna paleta obiektów",
+  "FIELD_CUSTOM_HTML_HEADER": "Własny nagłówek HTML",
+  "FIELD_SEARCH_SETTINGS": "Szukaj w ustawieniach",
+  "FIELD_REPORT_BUG": "Zgłoś błąd",
+  
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
   "ASSET_EDIT": "Edytuj",
@@ -781,7 +797,15 @@
   "MENU_SPRITE_STATE_DELETE": "Usuń stan animacji",
   "MENU_OPEN_MUSIC_PROCESS_WINDOW": "Otwórz okno procesu muzycznego",
   "MENU_PATTERN_DELETE": "Wyczyść wzór",
- 
+  "MENU_CLOSE": "Zamknij",
+  "MENU_CUT": "Wytnij",
+  "MENU_COPY": "Kopiuj",
+  "MENU_PASTE": "Wklej",
+  "MENU_DELETE": "Usuń",
+  "MENU_SELECT_ALL": "Zaznacz wszystko",
+  "MENU_WINDOW": "Okno",
+  "MENU_HELP": "Pomoc",
+  
   "// 11": "Warnings -----------------------------------------------------",
 
   "WARNING_BACKGROUND_TOO_SMALL": "Tło jest za małe, minimalne wymiary dla tła to: 160px x 144px",
