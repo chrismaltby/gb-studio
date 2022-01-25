@@ -1046,6 +1046,32 @@ class ScriptBuilder {
     this.stackPtr -= popNum;
   };
 
+  _switch = (
+    variable: ScriptBuilderStackVariable,
+    switchCases: [number, string][],
+    popNum: number
+  ) => {
+    this._addCmd(`VM_SWITCH`, `${variable}, ${switchCases.length}, ${popNum}`);
+    for (const switchCase of switchCases) {
+      this._dw(...switchCase);
+    }
+    this.stackPtr -= popNum;
+  };
+
+  _switchVariable = (
+    variable: string,
+    switchCases: [number, string][],
+    popNum: number
+  ) => {
+    const variableAlias = this.getVariableAlias(variable);
+    if (this._isArg(variableAlias)) {
+      this._stackPushInd(this._stackOffset(variableAlias));
+      this._switch(".ARG0", switchCases, popNum + 1);
+    } else {
+      this._switch(variableAlias, switchCases, popNum);
+    }
+  };
+
   _ifVariableConst = (
     operator: ScriptBuilderComparisonOperator,
     variable: string,
@@ -3901,23 +3927,35 @@ class ScriptBuilder {
     const caseKeys = Object.keys(cases);
     const numCases = caseKeys.length;
 
-    this._addComment(`Switch Variable`);
     if (numCases === 0) {
       this._compilePath(falsePath);
-    } else {
-      const caseLabels = caseKeys.map(() => this.getNextLabel());
-      const endLabel = this.getNextLabel();
-      for (let i = 0; i < numCases; i++) {
-        this._addComment(`case ${caseKeys[i]}:`);
-        this._ifVariableConst(".NE", variable, caseKeys[i], caseLabels[i], 0);
-        this._compilePath(cases[caseKeys[i]]);
-        this._jump(endLabel);
-        this._label(caseLabels[i]);
-      }
-      this._addComment(`default:`);
-      this._compilePath(falsePath);
-      this._label(endLabel);
+      return;
     }
+
+    const caseLabels = caseKeys.map(() => this.getNextLabel());
+    const endLabel = this.getNextLabel();
+
+    this._addComment(`Switch Variable`);
+    this._switchVariable(
+      variable,
+      caseLabels.map((label, i) => [Number(caseKeys[i]), `${label}$`]),
+      0
+    );
+    this._addNL();
+
+    // Default
+    this._compilePath(falsePath);
+    this._jump(endLabel);
+
+    // Cases
+    for (let i = 0; i < numCases; i++) {
+      this._addComment(`case ${caseKeys[i]}:`);
+      this._label(caseLabels[i]);
+      this._compilePath(cases[caseKeys[i]]);
+      this._jump(endLabel);
+    }
+    this._label(endLabel);
+
     this._addNL();
   };
 
