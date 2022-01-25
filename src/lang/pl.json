@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 981220124",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 982220125",
  
  "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -489,6 +489,7 @@
   "FIELD_CUSTOM_HTML_HEADER": "Własny nagłówek HTML",
   "FIELD_SEARCH_SETTINGS": "Szukaj w ustawieniach",
   "FIELD_REPORT_BUG": "Zgłoś błąd",
+  "FIELD_RNG_SEED_DESCRIPTION": "Place this to run in response to user input to ensure random numbers change between playthroughs",
   
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
@@ -521,8 +522,7 @@
   "EVENT_GROUP_VARIABLES": "Zmienne",
   "EVENT_GROUP_MUSIC": "Muzyka i dźwięk",
   "EVENT_GROUP_DIALOGUE": "Tekst i menu",
-  "EVENT_GROUP_TIMER": "Stoper",
-  
+  "EVENT_GROUP_TIMER": "Stoper",  
   "EVENT_SWITCH_SCENE": "Scena: zmień scenę (teleport)",
   "EVENT_WAIT": "Czekaj",
   "EVENT_CAMERA_SHAKE": "Ekran: wstrząs",
@@ -697,6 +697,7 @@
   "EVENT_LINK_JOIN": "Link: Połącz",
   "EVENT_LINK_HOST": "Link: Hostuj",
   "EVENT_LINK_TRANSFER": "Link: Transfer",
+  "EVENT_RNG_SEED": "Generator losowych liczb",
  
   "// 10": "Menu -----------------------------------------------------",
 
