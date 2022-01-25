@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Updated to latest GBDK-2020
+
 ### Fixed
 
 - Fixed Wait event in scene init scripts to happen after automatic fade in
