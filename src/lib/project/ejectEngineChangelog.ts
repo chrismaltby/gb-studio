@@ -144,6 +144,20 @@ const changes: EngineChange[] = [
       "   * Renamed exclusive_sprite to reserve_tiles",
     modifiedFiles: ["include/gbs_types.i", "src/core/data_manager.c"],
   },
+  {
+    version: "3.1.0-e0",
+    description:
+      "Updates:\n" +
+      "   * Store RNG seed in saved data\n" +
+      "   * Add support for VM_SWITCH instruction",
+    modifiedFiles: [
+      "include/vm.h",
+      "include/vm.i",
+      "src/core/load_save.c",
+      "src/core/vm.c",
+      "src/core/vm_instructions.c",
+    ],
+  },
 ];
 
 const ejectEngineChangelog = (currentVersion: string) => {
