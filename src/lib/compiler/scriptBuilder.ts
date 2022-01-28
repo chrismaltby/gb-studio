@@ -1720,9 +1720,13 @@ class ScriptBuilder {
       .ref("^/(ACTOR + 1)/")
       .int16(x * 8 * 16)
       .operator(".ADD")
+      .int16(0)
+      .operator(".MAX")
       .ref("^/(ACTOR + 2)/")
       .int16(y * 8 * 16)
       .operator(".ADD")
+      .int16(0)
+      .operator(".MAX")
       .stop();
 
     this._set("^/(ACTOR + 1 - 2)/", ".ARG1");
@@ -1771,9 +1775,13 @@ class ScriptBuilder {
       .ref("^/(ACTOR + 1)/")
       .int16(x * 8 * 16)
       .operator(".ADD")
+      .int16(0)
+      .operator(".MAX")
       .ref("^/(ACTOR + 2)/")
       .int16(y * 8 * 16)
       .operator(".ADD")
+      .int16(0)
+      .operator(".MAX")
       .stop();
 
     this._set("^/(ACTOR + 1 - 2)/", ".ARG1");
