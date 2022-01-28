@@ -13,7 +13,10 @@ import spawn from "../helpers/cli/spawn";
 import l10n from "../helpers/l10n";
 import { gbspack } from "./gbspack";
 
-const cpuCount = os.cpus().length;
+// This is always 0 for M1 macs, so set it to a safe number for now.
+const cpuCount = process.platform === 'darwin' && process.arch === 'arm64'
+  ? 7
+  : os.cpus().length;
 
 const makeBuild = async ({
   buildRoot = "/tmp",
