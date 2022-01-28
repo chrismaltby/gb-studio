@@ -66,6 +66,7 @@ typedef struct actor_t
 
     // Collisions
     collision_group_e collision_group;
+    uint8_t solid  			  : 4;
 
     // Linked list
     struct actor_t *next;

@@ -46,6 +46,11 @@ WORD plat_grav;
 WORD plat_hold_grav;
 WORD plat_max_fall_vel;
 
+upoint16_t new_pos;
+actor_t *standing_on;
+WORD plat_last_pos_x;
+WORD plat_last_pos_y;
+
 void platform_init() BANKED {
     UBYTE tile_x, tile_y;
 
@@ -190,37 +195,8 @@ void platform_update() BANKED {
         } else {
             pl_vel_y += plat_grav;
         }
-
-        // Step X
-        tile_start = (((PLAYER.pos.y >> 4) + PLAYER.bounds.top)    >> 3);
-        tile_end   = (((PLAYER.pos.y >> 4) + PLAYER.bounds.bottom) >> 3) + 1;
-        if (pl_vel_x > 0) {
-            UWORD new_x = PLAYER.pos.x + (pl_vel_x >> 8);
-            UBYTE tile_x = ((new_x >> 4) + PLAYER.bounds.right) >> 3;
-            while (tile_start != tile_end) {
-                if (tile_at(tile_x, tile_start) & COLLISION_LEFT) {
-                    new_x = (((tile_x << 3) - PLAYER.bounds.right) << 4) - 1;
-                    pl_vel_x = 0;
-                    break;
-                }
-                tile_start++;
-            }
-            PLAYER.pos.x = MIN((image_width - 16) << 4, new_x);
-        } else if (pl_vel_x < 0) {
-            WORD new_x = PLAYER.pos.x + (pl_vel_x >> 8);
-            UBYTE tile_x = ((new_x >> 4) + PLAYER.bounds.left) >> 3;
-            while (tile_start != tile_end) {
-                if (tile_at(tile_x, tile_start) & COLLISION_RIGHT) {
-                    new_x = ((((tile_x + 1) << 3) - PLAYER.bounds.left) << 4) + 1;
-                    pl_vel_x = 0;
-                    break;
-                }
-                tile_start++;
-            }
-            PLAYER.pos.x = MAX(0, new_x);
-        }
-
-        // Step Y
+		
+		        // Step Y
         grounded = FALSE;    
         tile_start = (((PLAYER.pos.x >> 4) + PLAYER.bounds.left)  >> 3);
         tile_end   = (((PLAYER.pos.x >> 4) + PLAYER.bounds.right) >> 3) + 1;
@@ -236,6 +212,21 @@ void platform_update() BANKED {
                 }
                 tile_start++;
             }
+			new_pos.x = PLAYER.pos.x;
+			new_pos.y = new_y + 2;
+			hit_actor = actor_overlapping_bb(&PLAYER.bounds, &new_pos, &PLAYER, FALSE);
+			if (hit_actor != NULL && hit_actor->collision_group) {
+				new_y = (((hit_actor->pos.y >> 4) + hit_actor->bounds.top - PLAYER.bounds.bottom) << 4) - 1;
+                grounded = TRUE;
+                pl_vel_y = 0;
+				if (hit_actor == standing_on) {
+					PLAYER.pos.x = PLAYER.pos.x + ((hit_actor->pos.x - plat_last_pos_x));
+					new_y = new_y + ((hit_actor->pos.y - plat_last_pos_y));
+				}
+				plat_last_pos_x = hit_actor->pos.x;
+				plat_last_pos_y = hit_actor->pos.y;
+			}
+			standing_on = hit_actor;
             PLAYER.pos.y = new_y;
         } else if (pl_vel_y < 0) {
             UWORD new_y = PLAYER.pos.y + (pl_vel_y >> 8);
@@ -248,8 +239,60 @@ void platform_update() BANKED {
                 }
                 tile_start++;
             }
+			new_pos.x = PLAYER.pos.x;
+			new_pos.y = new_y;
+			hit_actor = actor_overlapping_bb(&PLAYER.bounds, &new_pos, &PLAYER, FALSE);
+			if (hit_actor != NULL && hit_actor->collision_group) {
+				new_y = (((hit_actor->pos.y >> 4) + hit_actor->bounds.bottom - PLAYER.bounds.top + 1) << 4);
+                pl_vel_y = 0;
+			}
             PLAYER.pos.y = new_y;
         }
+
+
+        // Step X
+        tile_start = (((PLAYER.pos.y >> 4) + PLAYER.bounds.top)    >> 3);
+        tile_end   = (((PLAYER.pos.y >> 4) + PLAYER.bounds.bottom) >> 3) + 1;
+        if (pl_vel_x > 0) {
+            UWORD new_x = PLAYER.pos.x + (pl_vel_x >> 8);
+            UBYTE tile_x = ((new_x >> 4) + PLAYER.bounds.right) >> 3;
+            while (tile_start != tile_end) {
+                if (tile_at(tile_x, tile_start) & COLLISION_LEFT) {
+                    new_x = (((tile_x << 3) - PLAYER.bounds.right) << 4) - 1;
+                    pl_vel_x = 0;
+                    break;
+                }
+                tile_start++;
+            }
+			new_pos.x = new_x;
+			new_pos.y = PLAYER.pos.y;
+			hit_actor = actor_overlapping_bb(&PLAYER.bounds, &new_pos, &PLAYER, FALSE);
+			if (hit_actor != NULL && hit_actor != standing_on && hit_actor->collision_group) {
+				new_x = (((hit_actor->pos.x >> 4) + hit_actor->bounds.left - PLAYER.bounds.right) << 4) - 1;
+                pl_vel_x = 0;
+			}
+            PLAYER.pos.x = MIN((image_width - 16) << 4, new_x);
+        } else if (pl_vel_x < 0) {
+            WORD new_x = PLAYER.pos.x + (pl_vel_x >> 8);
+            UBYTE tile_x = ((new_x >> 4) + PLAYER.bounds.left) >> 3;
+            while (tile_start != tile_end) {
+                if (tile_at(tile_x, tile_start) & COLLISION_RIGHT) {
+                    new_x = ((((tile_x + 1) << 3) - PLAYER.bounds.left) << 4) + 1;
+                    pl_vel_x = 0;
+                    break;
+                }
+                tile_start++;
+            }
+			new_pos.x = new_x;
+			new_pos.y = PLAYER.pos.y;
+			hit_actor = actor_overlapping_bb(&PLAYER.bounds, &new_pos, &PLAYER, FALSE);
+			if (hit_actor != NULL && hit_actor != standing_on && hit_actor->collision_group) {
+				new_x = (((hit_actor->pos.x >> 4) + hit_actor->bounds.right - PLAYER.bounds.left + 1) << 4);
+                pl_vel_x = 0;
+			}
+            PLAYER.pos.x = MAX(0, new_x);
+        }
+
 
         // Clamp Y Velocity
         pl_vel_y = MIN(pl_vel_y, plat_max_fall_vel);
@@ -267,6 +310,9 @@ void platform_update() BANKED {
     // Actor Collisions
     UBYTE can_jump = TRUE;
     hit_actor = actor_overlapping_player(FALSE);
+	
+	
+	
     if (hit_actor != NULL && hit_actor->collision_group) {
         player_register_collision_with(hit_actor);
     } else if (INPUT_PRESSED(INPUT_PLATFORM_INTERACT)) {
