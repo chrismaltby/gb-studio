@@ -15,10 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Save/restore RNG seed when saving/loading a game [untoxa](https://github.com/untoxa)
 - Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
 - Optimised Switch event codegen to use VM_SWITCH instruction
+- Optimised codegen to use a stack frame rather than push/pop
 
 ### Fixed
 
 - Fixed Wait event in scene init scripts to happen after automatic fade in
+- Fixed issue where animated camera lock would be off by 8x8px
 
 ## [3.0.3]
 
