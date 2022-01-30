@@ -52,6 +52,7 @@ void vm_actor_move_to(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {
 
     if (THIS->flags == 0) {
         THIS->flags = MOVE_ACTIVE;
+        actor->movement_interrupt = FALSE;
 
         // Snap to nearest pixel before moving
         actor->pos.x = ((actor->pos.x >> 4) << 4);
@@ -98,6 +99,22 @@ void vm_actor_move_to(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {
                     params->X = check_collision_in_direction(actor->pos.x, params->Y, &actor->bounds, params->X, check_dir);
                 }
             }
+        }
+    }
+
+    // Interrupt actor movement
+    if (actor->movement_interrupt) {
+        // Set new X destination to next tile
+        if (actor->pos.x < params->X && (actor->pos.x & 0b1111111)) {
+            params->X = ((actor->pos.x >> 7) << 7) + 128;
+        } else {
+            params->X = ((actor->pos.x >> 7) << 7);
+        }
+        // Set new Y destination to next tile
+        if (actor->pos.y < params->Y && (actor->pos.y & 0b1111111)) {
+            params->Y = ((actor->pos.y >> 7) << 7) + 128;
+        } else {
+            params->Y = ((actor->pos.y >> 7) << 7); 
         }
     }
 
@@ -181,6 +198,13 @@ void vm_actor_move_to(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {
 
     THIS->PC -= (INSTRUCTION_SIZE + sizeof(idx));
     return;
+}
+
+void vm_actor_interrupt_movement(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {
+    UBYTE * n_actor = VM_REF_TO_PTR(idx);
+    actor_t * actor = actors + *n_actor;
+
+    actor->movement_interrupt = TRUE;
 }
 
 void vm_actor_activate(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {    

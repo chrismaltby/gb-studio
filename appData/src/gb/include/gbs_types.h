@@ -48,6 +48,7 @@ typedef struct actor_t
     bool hidden               : 1;
     bool anim_noloop          : 1;  
     bool collision_enabled    : 1;
+    bool movement_interrupt   : 1;
     upoint16_t pos;
     direction_e dir;
     bounding_box_t bounds;
