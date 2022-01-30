@@ -1130,6 +1130,11 @@ class ScriptBuilder {
     this._addCmd("VM_ACTOR_MOVE_TO", addr);
   };
 
+  _actorInterruptMovement = (addr: string) => {
+    this.includeActor = true;
+    this._addCmd("VM_ACTOR_INTERRUPT_MOVEMENT", addr);
+  };
+
   _actorGetPosition = (addr: string) => {
     this.includeActor = true;
     this._addCmd("VM_ACTOR_GET_POS", addr);
@@ -1731,6 +1736,11 @@ class ScriptBuilder {
     this._setConst("^/(ACTOR + 3)/", toASMMoveFlags(moveType, useCollisions));
     this._actorMoveTo("ACTOR");
     this._assertStackNeutral(stackPtr);
+    this._addNL();
+  };
+
+  actorInterruptMovement = () => {
+    this._actorInterruptMovement("ACTOR");
     this._addNL();
   };
 
