@@ -128,7 +128,6 @@ test("Should be able to generate script string", () => {
 
 ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
-.CURRENT_SCRIPT_BANK == ___bank_MY_SCRIPT
 
 _MY_SCRIPT::
         VM_RESERVE              4
@@ -173,7 +172,6 @@ test("Should be able to open dialogue boxes", async () => {
 
 ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
-.CURRENT_SCRIPT_BANK == ___bank_MY_SCRIPT
 
 _MY_SCRIPT::
         ; Text Dialogue
@@ -241,7 +239,6 @@ test("Should be able to conditionally execute if variable is true with event arr
 
 ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
-.CURRENT_SCRIPT_BANK == ___bank_MY_SCRIPT
 
 _MY_SCRIPT::
         ; If Variable True
@@ -306,7 +303,6 @@ test("Should be able to conditionally execute if variable is true with function 
 
 ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
-.CURRENT_SCRIPT_BANK == ___bank_MY_SCRIPT
 
 _MY_SCRIPT::
         ; If Variable True
@@ -399,7 +395,6 @@ test("Should be able to conditionally execute if variable is true with nested fu
 
 ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
-.CURRENT_SCRIPT_BANK == ___bank_MY_SCRIPT
 
 _MY_SCRIPT::
         ; If Variable True
@@ -491,7 +486,6 @@ test("Should be able to define labels and jump", () => {
 
 ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
-.CURRENT_SCRIPT_BANK == ___bank_MY_SCRIPT
 
 _MY_SCRIPT::
 1$:

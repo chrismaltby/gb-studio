@@ -4310,7 +4310,6 @@ ${scriptArgVars}${scriptArgActors}${Object.keys(this.localsLookup)
 
 ___bank_${name} = 255
 .globl ___bank_${name}
-.CURRENT_SCRIPT_BANK == ___bank_${name}
 
 _${name}::
 ${lock ? this._padCmd("VM_LOCK", "", 8, 24) + "\n\n" : ""}${
