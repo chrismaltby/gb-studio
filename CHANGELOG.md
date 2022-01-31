@@ -22,6 +22,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed Wait event in scene init scripts to happen after automatic fade in
 - Fixed issue where animated camera lock would be off by 8x8px
 
+### Removed
+
+- Removed .CURRENT_SCRIPT_BANK for gbvm scripts as results were unreliable
+
 ## [3.0.3]
 
 ### Added
