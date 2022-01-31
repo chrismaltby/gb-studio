@@ -591,6 +591,7 @@ export const compileSceneActors = (
           script_update: maybeScriptFarPtr(events.actorsMovement[actorIndex]),
           script: maybeScriptFarPtr(events.actors[actorIndex]),
           reserve_tiles: scene.actorsExclusiveLookup[actor.id] ?? 0,
+          solid: actor.solid ? "TRUE" : "FALSE",
         };
       })
     ),
