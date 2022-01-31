@@ -109,15 +109,13 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
 
   try {
     if (!branch) {
+      scriptBuilder._packLocals();
       if (loop && input.length > 0) {
         scriptBuilder.nextFrameAwait();
         scriptBuilder._jump(loopId);
       }
       if (isFunction) {
-        if (scriptBuilder.includeActor) {
-          scriptBuilder.stackPtr += 4;
-          scriptBuilder._stackPop(4);
-        }
+        scriptBuilder.unreserveLocals();
         scriptBuilder.returnFar();
       } else {
         scriptBuilder.scriptEnd();

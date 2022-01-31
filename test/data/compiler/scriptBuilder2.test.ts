@@ -23,7 +23,7 @@ test("Should be able to set active actor to player", () => {
   sb.actorSetActive("player");
   expect(output).toEqual([
     "        ; Actor Set Active",
-    "        VM_SET_CONST            ACTOR, 0",
+    "        VM_SET_CONST            .LOCAL_ACTOR, 0",
     "",
   ]);
 });
@@ -49,7 +49,7 @@ test("Should be able to set active actor to actor by id", () => {
   sb.actorSetActive("actor2");
   expect(output).toEqual([
     "        ; Actor Set Active",
-    "        VM_SET_CONST            ACTOR, 2",
+    "        VM_SET_CONST            .LOCAL_ACTOR, 2",
     "",
   ]);
 });
@@ -68,10 +68,10 @@ test("Should be able to move actor to new location", () => {
   sb.actorMoveTo(5, 6, true, "horizontal");
   expect(output).toEqual([
     "        ; Actor Move To",
-    "        VM_SET_CONST            ^/(ACTOR + 1)/, 640",
-    "        VM_SET_CONST            ^/(ACTOR + 2)/, 768",
-    "        VM_SET_CONST            ^/(ACTOR + 3)/, ^/(.ACTOR_ATTR_CHECK_COLL | .ACTOR_ATTR_H_FIRST)/",
-    "        VM_ACTOR_MOVE_TO        ACTOR",
+    "        VM_SET_CONST            ^/(.LOCAL_ACTOR + 1)/, 640",
+    "        VM_SET_CONST            ^/(.LOCAL_ACTOR + 2)/, 768",
+    "        VM_SET_CONST            ^/(.LOCAL_ACTOR + 3)/, ^/(.ACTOR_ATTR_CHECK_COLL | .ACTOR_ATTR_H_FIRST)/",
+    "        VM_ACTOR_MOVE_TO        .LOCAL_ACTOR",
     "",
   ]);
 });
@@ -90,8 +90,8 @@ test("Should be able to wait for N frames to pass", () => {
   sb.wait(20);
   expect(output).toEqual([
     "        ; Wait N Frames",
-    "        VM_PUSH_CONST           20",
-    "        VM_INVOKE               b_wait_frames, _wait_frames, 1, .ARG0",
+    "        VM_SET_CONST            .LOCAL_TMP0_WAIT_ARGS, 20",
+    "        VM_INVOKE               b_wait_frames, _wait_frames, 0, .LOCAL_TMP0_WAIT_ARGS",
     "",
   ]);
 });
@@ -124,27 +124,22 @@ test("Should be able to generate script string", () => {
 
 .area _CODE_255
 
-ACTOR = -4
+.LOCAL_ACTOR = -4
 
 ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
-.CURRENT_SCRIPT_BANK == ___bank_MY_SCRIPT
 
 _MY_SCRIPT::
-        ; Local Actor
-        VM_PUSH_CONST           0
-        VM_PUSH_CONST           0
-        VM_PUSH_CONST           0
-        VM_PUSH_CONST           0
+        VM_RESERVE              4
 
         ; Actor Set Active
-        VM_SET_CONST            ACTOR, 2
+        VM_SET_CONST            .LOCAL_ACTOR, 2
 
         ; Actor Move To
-        VM_SET_CONST            ^/(ACTOR + 1)/, 640
-        VM_SET_CONST            ^/(ACTOR + 2)/, 768
-        VM_SET_CONST            ^/(ACTOR + 3)/, ^/(.ACTOR_ATTR_CHECK_COLL | .ACTOR_ATTR_H_FIRST)/
-        VM_ACTOR_MOVE_TO        ACTOR
+        VM_SET_CONST            ^/(.LOCAL_ACTOR + 1)/, 640
+        VM_SET_CONST            ^/(.LOCAL_ACTOR + 2)/, 768
+        VM_SET_CONST            ^/(.LOCAL_ACTOR + 3)/, ^/(.ACTOR_ATTR_CHECK_COLL | .ACTOR_ATTR_H_FIRST)/
+        VM_ACTOR_MOVE_TO        .LOCAL_ACTOR
 
 `
   );
@@ -177,7 +172,6 @@ test("Should be able to open dialogue boxes", async () => {
 
 ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
-.CURRENT_SCRIPT_BANK == ___bank_MY_SCRIPT
 
 _MY_SCRIPT::
         ; Text Dialogue
@@ -245,7 +239,6 @@ test("Should be able to conditionally execute if variable is true with event arr
 
 ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
-.CURRENT_SCRIPT_BANK == ___bank_MY_SCRIPT
 
 _MY_SCRIPT::
         ; If Variable True
@@ -310,7 +303,6 @@ test("Should be able to conditionally execute if variable is true with function 
 
 ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
-.CURRENT_SCRIPT_BANK == ___bank_MY_SCRIPT
 
 _MY_SCRIPT::
         ; If Variable True
@@ -403,7 +395,6 @@ test("Should be able to conditionally execute if variable is true with nested fu
 
 ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
-.CURRENT_SCRIPT_BANK == ___bank_MY_SCRIPT
 
 _MY_SCRIPT::
         ; If Variable True
@@ -495,7 +486,6 @@ test("Should be able to define labels and jump", () => {
 
 ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
-.CURRENT_SCRIPT_BANK == ___bank_MY_SCRIPT
 
 _MY_SCRIPT::
 1$:
