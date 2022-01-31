@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Optimised Switch event codegen to use VM_SWITCH instruction
 - Optimised codegen to use a stack frame rather than push/pop
 - Improved randomize [untoxa](https://github.com/untoxa)
+- Improved gbspack error when data is over bank size limits
 
 ### Fixed
 
