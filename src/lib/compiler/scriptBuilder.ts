@@ -1129,7 +1129,6 @@ class ScriptBuilder {
   };
 
   _actorInterruptMovement = (addr: string) => {
-    this.includeActor = true;
     this._addCmd("VM_ACTOR_INTERRUPT_MOVEMENT", addr);
   };
 
@@ -1870,7 +1869,8 @@ class ScriptBuilder {
   };
 
   actorInterruptMovement = () => {
-    this._actorInterruptMovement("ACTOR");
+    const actorRef = this._declareLocal("actor", 4);
+    this._actorInterruptMovement(this._localRef(actorRef));
     this._addNL();
   };
 
