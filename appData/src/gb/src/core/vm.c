@@ -36,15 +36,6 @@ const void * vm_exception_params_offset;
 // if VM function has no parameters and does not manipulate context
 // then you may declare it without params at all bacause caller clears stack - that is safe
 
-// this is a call instruction, it pushes return address onto VM stack
-void vm_call_rel(SCRIPT_CTX * THIS, INT8 ofs) OLDCALL BANKED {
-    // push current VM PC onto VM stack
-    *(THIS->stack_ptr++) = (UWORD)THIS->PC;
-    // modify VM PC (goto PC + ofs)
-    // pc is a pointer, you may point to any other script wherever you want
-    // you may also pass absolute pointer instead of ofs, if you want
-    THIS->PC += ofs;    
-}
 // call absolute instruction
 void vm_call(SCRIPT_CTX * THIS, UBYTE * pc) OLDCALL BANKED {
     *(THIS->stack_ptr++) = (UWORD)THIS->PC;
@@ -86,16 +77,6 @@ void vm_push(SCRIPT_CTX * THIS, UWORD value) OLDCALL BANKED {
     return *(THIS->stack_ptr);
 }
 
-// do..while loop, callee cleanups stack
-void vm_loop_rel(SCRIPT_CTX * THIS, INT16 idx, INT8 ofs, UBYTE n) OLDCALL BANKED {
-    UWORD * counter;
-    if (idx < 0) counter = THIS->stack_ptr + idx; else counter = script_memory + idx;
-    if (*counter) {
-        THIS->PC += ofs, (*counter)--; 
-    } else {
-        if (n) THIS->stack_ptr -= n;
-    }
-}
 // loop absolute, callee cleanups stack
 void vm_loop(SCRIPT_CTX * THIS, INT16 idx, UINT8 * pc, UBYTE n) OLDCALL BANKED {
     UWORD * counter;
@@ -107,10 +88,31 @@ void vm_loop(SCRIPT_CTX * THIS, INT16 idx, UINT8 * pc, UBYTE n) OLDCALL BANKED {
     }
 }
 
-// jump relative
-void vm_jump_rel(SCRIPT_CTX * THIS, INT8 ofs) OLDCALL BANKED {
-    THIS->PC += ofs;    
+// switch
+void vm_switch(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS, INT16 idx, UBYTE size, UBYTE n) OLDCALL NONBANKED {
+    dummy0; dummy1; // suppress warnings
+    INT16 value, * table;
+
+    if (idx < 0) value = *(THIS->stack_ptr + idx); else value = *(script_memory + idx);
+    if (n) THIS->stack_ptr -= n;        // dispose values on VM stack if required
+
+    UBYTE _save = _current_bank;        // we must preserve current bank, 
+    SWITCH_ROM(THIS->bank);             // then switch to bytecode bank
+
+    table = (INT16 *)(THIS->PC);
+    while (size) {
+        if (value == *table++) {
+            THIS->PC = (UBYTE *)(*table);   // condition met, perform jump
+            SWITCH_ROM(_save);              // restore bank
+            return; 
+        } else table++;
+        size--;
+    }
+
+    SWITCH_ROM(_save);                  // restore bank    
+    THIS->PC = (UBYTE *)table;          // make PC point to the next instruction command
 }
+
 // jump absolute
 void vm_jump(SCRIPT_CTX * THIS, UBYTE * pc) OLDCALL BANKED {
     THIS->PC = pc;    
@@ -403,8 +405,10 @@ void vm_set_const_int16(SCRIPT_CTX * THIS, INT16 * addr, INT16 v) OLDCALL BANKED
 }
 
 // initializes random number generator
-void vm_randomize() OLDCALL BANKED {
-    initrand(DIV_REG);
+void vm_init_rng(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {
+    UINT16 * A;
+    if (idx < 0) A = THIS->stack_ptr + idx; else A = script_memory + idx;
+    initrand(*A);
 }
 
 // sets value on stack indexed by idx to random value from given range 0 <= n < limit, mask is calculated by macro 

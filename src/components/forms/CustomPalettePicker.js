@@ -679,9 +679,13 @@ class CustomPalettePicker extends Component {
 
         <div style={{ marginTop: 30 }}>
           {palette.defaultColors ? (
-            <Button onClick={this.onReset}>Reset Palette</Button>
+            <Button onClick={this.onReset}>
+              {l10n("FIELD_RESET_PALETTE")}
+            </Button>
           ) : (
-            <Button onClick={this.onRemove}>Remove Palette</Button>
+            <Button onClick={this.onRemove}>
+              {l10n("FIELD_REMOVE_PALETTE")}
+            </Button>
           )}
         </div>
       </div>

@@ -102,22 +102,20 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
   const loopId = loop ? scriptBuilder.getNextLabel() : "";
 
   if (loop && input.length > 0) {
-    scriptBuilder.labelDefine(loopId);
+    scriptBuilder._label(loopId);
   }
 
   compileEventsWithScriptBuilder(scriptBuilder, input, branch);
 
   try {
     if (!branch) {
+      scriptBuilder._packLocals();
       if (loop && input.length > 0) {
         scriptBuilder.nextFrameAwait();
-        scriptBuilder.labelGoto(loopId);
+        scriptBuilder._jump(loopId);
       }
       if (isFunction) {
-        if (scriptBuilder.includeActor) {
-          scriptBuilder.stackPtr += 4;
-          scriptBuilder._stackPop(4);
-        }
+        scriptBuilder.unreserveLocals();
         scriptBuilder.returnFar();
       } else {
         scriptBuilder.scriptEnd();

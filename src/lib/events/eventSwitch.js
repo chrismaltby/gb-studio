@@ -48,8 +48,8 @@ const fields = [].concat(
           },
         ],
         type: "number",
-        min: 0,
-        max: 255,
+        min: -32768,
+        max: 32767,
         defaultValue: i + 1,
       });
       arr.push({
@@ -106,7 +106,7 @@ const compile = (input, helpers) => {
     .fill()
     .reduce((memo, _, i) => {
       const value = input[`value${i}`];
-      const key = Number.isInteger(parseInt(value, 10)) ? value : i;
+      const key = Number.isInteger(parseInt(value, 10)) ? value : i + 1;
       if (!memo[key]) {
         return {
           ...memo,

@@ -25,6 +25,8 @@ typedef struct save_point_t {
 #define SAVEPOINT(A) {&(A), sizeof(A)}
 #define SAVEPOINTS_END {0, 0}
 
+extern uint16_t __rand_seed;
+
 const save_point_t save_points[] = {
     // variables (must be first, need for peeking)
     SAVEPOINT(script_memory),
@@ -42,6 +44,8 @@ const save_point_t save_points[] = {
     // actors
     SAVEPOINT(actors),
     SAVEPOINT(actors_active_head), SAVEPOINT(actors_inactive_head), SAVEPOINT(player_moving), SAVEPOINT(player_collision_actor),
+    // system
+    SAVEPOINT(__rand_seed),
     // terminator
     SAVEPOINTS_END
 };

@@ -9,6 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Changed
+
+- Updated to latest GBDK-2020
+- Save/restore RNG seed when saving/loading a game [untoxa](https://github.com/untoxa)
+- Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
+- Optimised Switch event codegen to use VM_SWITCH instruction
+- Optimised codegen to use a stack frame rather than push/pop
+
+### Fixed
+
+- Fixed Wait event in scene init scripts to happen after automatic fade in
+- Fixed issue where animated camera lock would be off by 8x8px
+
+## [3.0.3]
+
+### Added
+
 - Added event to determine if device is running on SGB
 - Added event to determine if device is a GBA
 - Added ability to choose from two keyboard layout options for tracker [@pau-tomas](https://github.com/pau-tomas)
@@ -19,6 +36,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added ability to see where automatic Fade In event will appear in Scene "On Init" script with option to disable or change speed
 - Added missing label in Actor Show event [@ReyAnthony](https://github.com/ReyAnthony)
 - Add vertical scrolling in last parallax viewport is Speed=1 [@um3k](https://github.com/um3k)
+- Add palette name to tile palette select based on current preview scene [@ReyAnthony](https://github.com/ReyAnthony)
+- Added event to manually seed random number generator
 
 ### Changed
 
@@ -28,6 +47,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changed default .uge template to be blank [MOL-IS-MOL](https://github.com/MOL-IS-MOL)
 - Updated to latest GBDK-2020
 - Improved Math Functions clamp to not require branching
+- Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
+- Updated Simplified Chinese localisation. [@wcxu21](https://github.com/wcxu21) 
 
 ### Fixed
 
@@ -50,6 +71,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix rendering of garbage when no scene has loaded yet [untoxa](https://github.com/untoxa)
 - Fix overlay hide [untoxa](https://github.com/untoxa)
 - Fix issue where walking events was incorrectly replacing actorIds with $self$
+- Fix issue with saving/loading patterns from UGE files [@pau-tomas](https://github.com/pau-tomas)
+- Fixed issue where changing player sprite mid scene would write over actor tiles (still an issue using "Replace Default Sprite" with a larger than initial)  
+- Fix playing note preview when adding to wave channel [@pau-tomas](https://github.com/pau-tomas)
+- Fixed some fields not being localised correctly (such as the top left Project View Button)
+- Fixed issue where random numbers were being seeded every call preventing them from being very random
 
 ## [3.0.2]
 

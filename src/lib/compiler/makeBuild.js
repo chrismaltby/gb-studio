@@ -86,17 +86,32 @@ const makeBuild = async ({
   };
 
   // Build source files in parallel
+  const childSet = new Set();
   const concurrency = cpuCount;
   await Promise.all(
     Array(concurrency)
       .fill(makeCommands.entries())
       .map(async (cursor) => {
         for (let [_, makeCommand] of cursor) {
-          progress(makeCommand.label);
-          await spawn(makeCommand.command, makeCommand.args, options, {
-            onLog: (msg) => progress(msg),
-            onError: (msg) => warnings(msg),
-          });
+          try {
+            progress(makeCommand.label);
+          } catch (e) {
+            for (let child of childSet) {
+              child.kill();
+            }
+            throw e;
+          }
+          const { child, completed } = spawn(
+            makeCommand.command,
+            makeCommand.args,
+            options,
+            {
+              onError: (msg) => warnings(msg),
+            }
+          );
+          childSet.add(child);
+          await completed;
+          childSet.delete(child);
         }
       })
   );
@@ -132,7 +147,7 @@ const makeBuild = async ({
     targetPlatform
   );
 
-  await spawn(linkCommand, linkArgs, options, {
+  const { completed: linkCompleted } = spawn(linkCommand, linkArgs, options, {
     onLog: (msg) => progress(msg),
     onError: (msg) => {
       if (msg.indexOf("Converted build") > -1) {
@@ -141,6 +156,7 @@ const makeBuild = async ({
       warnings(msg);
     },
   });
+  await linkCompleted;
 
   // Store /obj in cache
   await cacheObjData(buildRoot, tmpPath, env);

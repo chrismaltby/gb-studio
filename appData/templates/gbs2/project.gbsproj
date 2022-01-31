@@ -10156,6 +10156,11 @@
                     }
                 },
                 {
+                    "command": "EVENT_RNG_SEED",
+                    "args": {},
+                    "id": "8ad0321f-22d6-4648-ac0f-72703fe864a4"
+                },
+                {
                     "id": "19a94599-0006-4e3f-9049-c5087d230ed8",
                     "command": "EVENT_LOOP",
                     "args": {},

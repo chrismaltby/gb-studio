@@ -48,32 +48,32 @@ const validTools = [TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER];
 const tileTypes = [
   {
     key: "solid",
-    name: "Solid",
+    name: l10n("FIELD_SOLID"),
     flag: COLLISION_ALL,
   },
   {
     key: "top",
-    name: "Collision Top",
+    name: l10n("FIELD_COLLISION_TOP"),
     flag: COLLISION_TOP,
   },
   {
     key: "bottom",
-    name: "Collision Bottom",
+    name: l10n("FIELD_COLLISION_BOTTOM"),
     flag: COLLISION_BOTTOM,
   },
   {
     key: "left",
-    name: "Collision Left",
+    name: l10n("FIELD_COLLISION_LEFT"),
     flag: COLLISION_LEFT,
   },
   {
     key: "right",
-    name: "Collision Right",
+    name: l10n("FIELD_COLLISION_RIGHT"),
     flag: COLLISION_RIGHT,
   },
   {
     key: "ladder",
-    name: "Ladder",
+    name: l10n("FIELD_COLLISION_LADDER"),
     flag: TILE_PROP_LADDER,
   },
 ];

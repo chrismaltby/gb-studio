@@ -79,6 +79,11 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
               },
             ] as PaletteOption[])
           : ([] as PaletteOption[]),
+        {
+          value: DMG_PALETTE.id,
+          label: DMG_PALETTE.name,
+          palette: DMG_PALETTE as Palette,
+        },
         palettes.map((palette) => ({
           value: palette.id,
           label: palette.name,
@@ -96,7 +101,11 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
   ]);
 
   useEffect(() => {
-    setCurrentPalette(palettes.find((v) => v.id === value));
+    if (value === DMG_PALETTE.id) {
+      setCurrentPalette(DMG_PALETTE as Palette);
+    } else {
+      setCurrentPalette(palettes.find((v) => v.id === value));
+    }
   }, [palettes, value]);
 
   useEffect(() => {

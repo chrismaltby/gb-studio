@@ -88,6 +88,8 @@ export const PaletteIndexSelect: FC<PaletteIndexSelectProps> = ({
             }
           >
             {option.label}
+            {": "}
+            {option.palette?.name || DMG_PALETTE.name}
           </OptionLabelWithPreview>
         );
       }}
@@ -103,6 +105,8 @@ export const PaletteIndexSelect: FC<PaletteIndexSelectProps> = ({
             }
           >
             {currentValue?.label}
+            {": "}
+            {currentValue?.palette?.name || DMG_PALETTE.name}
           </SingleValueWithPreview>
         ),
       }}

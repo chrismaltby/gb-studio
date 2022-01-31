@@ -121,6 +121,43 @@ const changes: EngineChange[] = [
       "   * Remove optional macro args from sound instructions",
     modifiedFiles: ["include/vm.i", "src/core/interrupts.c"],
   },
+  {
+    version: "3.0.3-e3",
+    description:
+      "Updates:\n" +
+      "   * Fix issue where vertical parallax could write over tiles\n" +
+      "   * Merged sprites hide/show into single instruction\n" +
+      "   * Merged fade in/out into single instruction",
+    modifiedFiles: [
+      "include/vm.i",
+      "include/vm_gameboy.h",
+      "src/core/scroll.c",
+      "src/core/vm_gameboy.c",
+      "src/core/vm_instructions.c",
+    ],
+  },
+  {
+    version: "3.0.3-e4",
+    description:
+      "Updates:\n" +
+      "   * Allow reserving sprite tiles per scene for player\n" +
+      "   * Renamed exclusive_sprite to reserve_tiles",
+    modifiedFiles: ["include/gbs_types.i", "src/core/data_manager.c"],
+  },
+  {
+    version: "3.1.0-e0",
+    description:
+      "Updates:\n" +
+      "   * Store RNG seed in saved data\n" +
+      "   * Add support for VM_SWITCH instruction",
+    modifiedFiles: [
+      "include/vm.h",
+      "include/vm.i",
+      "src/core/load_save.c",
+      "src/core/vm.c",
+      "src/core/vm_instructions.c",
+    ],
+  },
 ];
 
 const ejectEngineChangelog = (currentVersion: string) => {

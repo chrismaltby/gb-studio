@@ -65,33 +65,21 @@ OP_VM_POP          = 0x02
         .db OP_VM_POP, #ARG0
 .endm
 
-; call by relative (one-byte) offset
-OP_VM_CALL_REL     = 0x03
-.macro VM_CALL_REL ARG0
-        .db OP_VM_CALL_REL, #(ARG0 - . - 1)
-.endm
-
 ; call by near address
 OP_VM_CALL         = 0x04
 .macro VM_CALL ARG0
         .db OP_VM_CALL, #>ARG0, #<ARG0
 .endm
 
-; return from relative or near call
+; return from near call
 OP_VM_RET          = 0x05
 .macro VM_RET
         .db OP_VM_RET, 0 
 .endm
 
-; return from relative or near call and clear n arguments on stack
+; return from near call and clear n arguments on stack
 .macro VM_RET_N ARG0
         .db OP_VM_RET, #<ARG0 
-.endm
-
-; loop by relative (one-byte) offset, counter is on stack, counter is removed on exit
-OP_VM_LOOP_REL     = 0x06
-.macro VM_LOOP_REL IDX, LABEL, NPOP
-        .db OP_VM_LOOP_REL, #<NPOP, #(LABEL - . - 3), #>IDX, #<IDX
 .endm
 
 ; loop by near address, counter is on stack, counter is removed on exit
@@ -100,10 +88,10 @@ OP_VM_LOOP         = 0x07
         .db OP_VM_LOOP, #<NPOP, #>LABEL, #<LABEL, #>IDX, #<IDX
 .endm
 
-; loop by relative (one-byte) offset
-OP_VM_JUMP_REL     = 0x08
-.macro VM_JUMP_REL ARG0
-        .db OP_VM_JUMP_REL, #(ARG0 - . - 1)
+; switch table
+OP_VM_SWITCH       = 0x08
+.macro VM_SWITCH IDX, SIZE, N
+        .db OP_VM_SWITCH, #<N, #<SIZE, #>IDX, #<IDX
 .endm
 
 ; loop by near address
@@ -325,9 +313,16 @@ OP_VM_SET_CONST_INT16 = 0x22
 .endm
 
 ; Initializes RNG seed
-OP_VM_RANDOMIZE       = 0x23
+OP_VM_INIT_RNG        = 0x23
+.macro VM_INIT_RNG IDX
+        .db OP_VM_INIT_RNG, #>IDX, #<IDX
+.endm
+
 .macro VM_RANDOMIZE
-        .db OP_VM_RANDOMIZE
+        VM_PUSH_CONST   0
+        VM_GET_UINT8    .ARG0, _DIV_REG
+        VM_INIT_RNG     .ARG0
+        VM_POP          1
 .endm
 
 ; Returns random value between MIN and MIN+LIMIT
@@ -661,14 +656,18 @@ OP_VM_OVERLAY_SET_SUBMAP = 0x4F
 
 ; --- GAMEBOY ------------------------------------------
 
-OP_VM_SHOW_SPRITES      = 0x50
-.macro VM_SHOW_SPRITES
-        .db OP_VM_SHOW_SPRITES
+OP_VM_SET_SPRITE_VISIBLE = 0x51
+.SPRITES_SHOW           = 0
+.SPRITES_HIDE           = 1
+.macro VM_SET_SPRITE_VISIBLE MODE
+        .db OP_VM_SET_SPRITE_VISIBLE, #<MODE 
 .endm
 
-OP_VM_HIDE_SPRITES      = 0x51
+.macro VM_SHOW_SPRITES
+        VM_SET_SPRITE_VISIBLE .SPRITES_SHOW
+.endm
 .macro VM_HIDE_SPRITES
-        .db OP_VM_HIDE_SPRITES
+        VM_SET_SPRITE_VISIBLE .SPRITES_HIDE
 .endm
 
 OP_VM_INPUT_WAIT        = 0x52
@@ -696,14 +695,28 @@ OP_VM_CONTEXT_PREPARE   = 0x55
         .db OP_VM_CONTEXT_PREPARE, #>ADDR, #<ADDR, #<BANK, #<SLOT
 .endm
 
-OP_VM_FADE_IN           = 0x56
-.macro VM_FADE_IN IS_MODAL
-        .db OP_VM_FADE_IN, #<IS_MODAL
+OP_VM_FADE              = 0x57
+.FADE_NONMODAL          = 0x00
+.FADE_MODAL             = 0x01
+.FADE_OUT               = 0x00
+.FADE_IN                = 0x02
+.macro VM_FADE FLAGS
+        .db OP_VM_FADE, #<FLAGS
 .endm
 
-OP_VM_FADE_OUT          = 0x57
+.macro VM_FADE_IN IS_MODAL
+        .if IS_MODAL
+                VM_FADE ^/(.FADE_IN | .FADE_MODAL)/
+        .else
+                VM_FADE ^/(.FADE_IN)/
+        .endif
+.endm
 .macro VM_FADE_OUT IS_MODAL
-        .db OP_VM_FADE_OUT, #<IS_MODAL
+        .if IS_MODAL
+                VM_FADE ^/(.FADE_OUT | .FADE_MODAL)/
+        .else
+                VM_FADE ^/(.FADE_OUT)/
+        .endif
 .endm
 
 ; Load script into timer context

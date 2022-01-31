@@ -890,8 +890,12 @@ export const precompileScenes = (
           event.command === EVENT_ACTOR_SET_SPRITE
         ) {
           let actorId = event.args.actorId;
-          if (actorId === "$self$" && actor) {
-            actorId = actor.id;
+          if (actorId === "$self$") {
+            if (actor) {
+              actorId = actor.id;
+            } else {
+              actorId = "player";
+            }
           }
           const sprite = usedSpritesLookup[event.args.spriteSheetId];
           actorsExclusiveLookup[actorId] = Math.max(
@@ -903,10 +907,17 @@ export const precompileScenes = (
         if (
           event.args &&
           event.args.spriteSheetId &&
-          event.command === EVENT_PLAYER_SET_SPRITE &&
-          event.args.persist
+          event.command === EVENT_PLAYER_SET_SPRITE
         ) {
-          playerSpritePersist = true;
+          const actorId = "player";
+          const sprite = usedSpritesLookup[event.args.spriteSheetId];
+          actorsExclusiveLookup[actorId] = Math.max(
+            actorsExclusiveLookup[actorId] || 0,
+            ((sprite ? sprite.numTiles : 0) || 0) * 2
+          );
+          if (event.args.persist) {
+            playerSpritePersist = true;
+          }
         }
       }
     );
@@ -1700,7 +1711,7 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
     `extern const UBYTE start_player_move_speed;\n` +
     `extern const UBYTE start_player_anim_tick;\n\n` +
     `extern const far_ptr_t ui_fonts[];\n\n` +
-    `void bootstrap_init() __banked;\n\n` +
+    `void bootstrap_init() BANKED;\n\n` +
     `#endif\n`;
 
   output[`states_defines.h`] =
