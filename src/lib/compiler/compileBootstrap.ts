@@ -73,7 +73,6 @@ ${avatarFonts
 
 ___bank_script_engine_init = 255
 .globl ___bank_script_engine_init
-.CURRENT_SCRIPT_BANK == ___bank_script_engine_init
 
 ${engineFields
   .filter(notDefine)
