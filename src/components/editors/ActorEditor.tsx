@@ -488,6 +488,14 @@ export const ActorEditor: FC<ActorEditorProps> = ({
                     />
                   </FormField>
                 </FormRow>
+                <FormRow>
+                  <CheckboxField
+                    name="actorSolid"
+                    label={l10n("FIELD_ACTOR_SOLID")}
+                    checked={actor.solid}
+                    onChange={onChangeFieldInput("solid")}
+                  />
+                </FormRow>
               </>
             )}
           </FormContainer>
