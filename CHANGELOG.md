@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Add VM_LOAD_TILESET and VM_OVERLAY_SET_MAP to gbvm [untoxa](https://github.com/untoxa)
+
 ### Changed
 
 - Updated to latest GBDK-2020
@@ -16,11 +18,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
 - Optimised Switch event codegen to use VM_SWITCH instruction
 - Optimised codegen to use a stack frame rather than push/pop
+- Improved randomize [untoxa](https://github.com/untoxa)
+- Improved gbspack error when data is over bank size limits
 
 ### Fixed
 
 - Fixed Wait event in scene init scripts to happen after automatic fade in
 - Fixed issue where animated camera lock would be off by 8x8px
+- Fix vertical shoot em up scene type [@um3k](https://github.com/um3k)
+- Fixed display of errors in game engine files while building
+
+### Removed
+
+- Removed .CURRENT_SCRIPT_BANK for gbvm scripts as results were unreliable
 
 ## [3.0.3]
 

@@ -106,6 +106,7 @@ const makeBuild = async ({
             makeCommand.args,
             options,
             {
+              onLog: (msg) => warnings(msg), // LCC writes errors to stdout
               onError: (msg) => warnings(msg),
             }
           );

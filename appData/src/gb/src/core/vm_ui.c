@@ -234,6 +234,26 @@ void vm_overlay_set_submap(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE w, UBYTE h
     set_xy_win_submap(image_ptr + offset, image_bank, image_tile_width, x, y, w, h);
 }
 
+void vm_overlay_set_map(SCRIPT_CTX * THIS, INT16 idx, UBYTE x, UBYTE y, UBYTE bank, const background_t * background) OLDCALL BANKED {
+    far_ptr_t tilemap;
+    UBYTE w = ReadBankedUBYTE((void *)&(background->width), bank);
+    UBYTE h = ReadBankedUBYTE((void *)&(background->height), bank);
+    _map_tile_offset = *(INT16 *)(VM_REF_TO_PTR(idx));
+#ifdef CGB
+    if (_is_CGB) {
+        ReadBankedFarPtr(&tilemap, (void *)&(background->cgb_tilemap_attr), bank);
+        if (tilemap.bank) {
+            VBK_REG = 1;
+            SetBankedWinTiles(x, y, w, h, tilemap.ptr, tilemap.bank);
+            VBK_REG = 0;
+        }
+    }
+#endif
+    ReadBankedFarPtr(&tilemap, (void *)&(background->tilemap), bank);
+    SetBankedWinTiles(x, y, w, h, tilemap.ptr, tilemap.bank);
+    _map_tile_offset = 0;
+}
+
 void vm_set_text_sound(SCRIPT_CTX * THIS, UBYTE frames, UBYTE channel) OLDCALL BANKED {
     text_sound_frames = frames;
     text_sound_ch = channel; 

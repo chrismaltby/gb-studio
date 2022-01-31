@@ -191,7 +191,15 @@ export const packObjectData = (
   const maxSize = Math.max(...areas.map((a) => a[1].size));
 
   if (BANK_SIZE < maxSize) {
-    throw new Error("Object file too large to fit in bank.");
+    const oversizedObjects = objects
+      .filter((object) => {
+        return object.banks.some((bank) => bank.size > BANK_SIZE);
+      })
+      .map((object) => `    ${Path.basename(object.filename)}`)
+      .join("\n");
+    throw new Error(
+      `Object files too large to fit in bank.\n${oversizedObjects}`
+    );
   }
 
   // Add the extra banks first
