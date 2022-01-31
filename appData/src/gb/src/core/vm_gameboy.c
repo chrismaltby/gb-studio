@@ -185,3 +185,22 @@ void vm_rumble(SCRIPT_CTX * THIS, UBYTE enable) OLDCALL BANKED {
     THIS;
     if (enable) *(UBYTE *)0x4000 |= RUMBLE_ENABLE; else *(UBYTE *)0x4000 &= (~RUMBLE_ENABLE);
 }
+
+void vm_load_tileset(SCRIPT_CTX * THIS, INT16 idx, UBYTE bank, const background_t * background) OLDCALL BANKED {
+    UBYTE base_tile = *(INT16 *)(VM_REF_TO_PTR(idx));
+    far_ptr_t tileset;
+#ifdef CGB
+    if (_is_CGB) {
+        ReadBankedFarPtr(&tileset, (void *)&(background->cgb_tileset), bank);
+        if (tileset.bank) {
+            VBK_REG = 1;
+            UWORD n_tiles = ReadBankedUWORD(&((tileset_t *)(tileset.ptr))->n_tiles, tileset.bank);
+            SetBankedBkgData(base_tile, n_tiles, ((tileset_t *)(tileset.ptr))->tiles, tileset.bank);
+            VBK_REG = 0;
+        }
+    }
+#endif
+    ReadBankedFarPtr(&tileset, (void *)&(background->tileset), bank);
+    UWORD n_tiles = ReadBankedUWORD(&((tileset_t *)(tileset.ptr))->n_tiles, tileset.bank);
+    SetBankedBkgData(base_tile, n_tiles, ((tileset_t *)(tileset.ptr))->tiles, tileset.bank);
+}
