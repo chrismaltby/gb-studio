@@ -215,7 +215,7 @@ void platform_update() BANKED {
 			new_pos.x = PLAYER.pos.x;
 			new_pos.y = new_y + 2;
 			hit_actor = actor_overlapping_bb(&PLAYER.bounds, &new_pos, &PLAYER, FALSE);
-			if (hit_actor != NULL && hit_actor->solid) {
+			if (hit_actor != NULL && hit_actor->collision_group) {
 				new_y = (((hit_actor->pos.y >> 4) + hit_actor->bounds.top - PLAYER.bounds.bottom) << 4) - 1;
                 grounded = TRUE;
                 pl_vel_y = 0;
@@ -242,7 +242,7 @@ void platform_update() BANKED {
 			new_pos.x = PLAYER.pos.x;
 			new_pos.y = new_y;
 			hit_actor = actor_overlapping_bb(&PLAYER.bounds, &new_pos, &PLAYER, FALSE);
-			if (hit_actor != NULL && hit_actor->solid) {
+			if (hit_actor != NULL && hit_actor->collision_group) {
 				new_y = (((hit_actor->pos.y >> 4) + hit_actor->bounds.bottom - PLAYER.bounds.top + 1) << 4);
                 pl_vel_y = 0;
 			}
@@ -267,7 +267,7 @@ void platform_update() BANKED {
 			new_pos.x = new_x;
 			new_pos.y = PLAYER.pos.y;
 			hit_actor = actor_overlapping_bb(&PLAYER.bounds, &new_pos, &PLAYER, FALSE);
-			if (hit_actor != NULL && hit_actor != standing_on && hit_actor->solid) {
+			if (hit_actor != NULL && hit_actor != standing_on && hit_actor->collision_group) {
 				new_x = (((hit_actor->pos.x >> 4) + hit_actor->bounds.left - PLAYER.bounds.right) << 4) - 1;
                 pl_vel_x = 0;
 			}
@@ -286,7 +286,7 @@ void platform_update() BANKED {
 			new_pos.x = new_x;
 			new_pos.y = PLAYER.pos.y;
 			hit_actor = actor_overlapping_bb(&PLAYER.bounds, &new_pos, &PLAYER, FALSE);
-			if (hit_actor != NULL && hit_actor != standing_on && hit_actor->solid) {
+			if (hit_actor != NULL && hit_actor != standing_on && hit_actor->collision_group) {
 				new_x = (((hit_actor->pos.x >> 4) + hit_actor->bounds.right - PLAYER.bounds.left + 1) << 4);
                 pl_vel_x = 0;
 			}
