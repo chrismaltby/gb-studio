@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add VM_LOAD_TILESET and VM_OVERLAY_SET_MAP to gbvm [untoxa](https://github.com/untoxa)
 - Add VM_ACTOR_MOVE_CANCEL [@um3k](https://github.com/um3k)
+- Allow using frames rather than seconds for wait/camera shake/attach timer script events
 
 ### Changed
 

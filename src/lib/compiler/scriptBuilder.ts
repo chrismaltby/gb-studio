@@ -2770,12 +2770,12 @@ class ScriptBuilder {
   // --------------------------------------------------------------------------
   // Timer
 
-  timerScriptSet = (duration = 10.0, script: ScriptEvent[]) => {
+  timerScriptSet = (frames = 600, script: ScriptEvent[]) => {
     this._addComment(`Timer Start`);
     const scriptRef = this._compileSubScript("timer", script);
     const ctx = 1;
     const TIMER_CYCLES = 16;
-    let durationTicks = ((60 * duration) / TIMER_CYCLES + 0.5) | 0;
+    let durationTicks = (frames / TIMER_CYCLES + 0.5) | 0;
     if (durationTicks <= 0) {
       durationTicks = 1;
     }
