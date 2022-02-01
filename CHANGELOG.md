@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add VM_LOAD_TILESET and VM_OVERLAY_SET_MAP to gbvm [untoxa](https://github.com/untoxa)
+- Add VM_ACTOR_MOVE_CANCEL [@um3k](https://github.com/um3k)
 
 ### Changed
 
@@ -20,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Optimised codegen to use a stack frame rather than push/pop
 - Improved randomize [untoxa](https://github.com/untoxa)
 - Improved gbspack error when data is over bank size limits
+- Update hUGEDriver [untoxa](https://github.com/untoxa)
 
 ### Fixed
 
@@ -27,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed issue where animated camera lock would be off by 8x8px
 - Fix vertical shoot em up scene type [@um3k](https://github.com/um3k)
 - Fixed display of errors in game engine files while building
+- Fix issue where activating an actor wouldn't trigger update script [untoxa](https://github.com/untoxa)
 
 ### Removed
 

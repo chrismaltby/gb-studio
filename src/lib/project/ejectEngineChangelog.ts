@@ -175,6 +175,26 @@ const changes: EngineChange[] = [
       "src/states/shmup.c",
     ],
   },
+  {
+    version: "3.1.0-e2",
+    description:
+      "Updates:\n" +
+      "   * Add VM_ACTOR_MOVE_CANCEL\n" +
+      "   * Update hUGEDriver\n" +
+      "   * Fix issue where activating an actor wouldn't trigger update script",
+    modifiedFiles: [
+      "include/gbs_types.h",
+      "include/hUGEDriver.h",
+      "include/hUGEDriverRoutines.h",
+      "include/vm.i",
+      "include/vm_actor.h",
+      "lib/hUGEDriver.lib",
+      "src/core/music_manager.c",
+      "src/core/vm.c",
+      "src/core/vm_actor.c",
+      "src/core/vm_instructions.c",
+    ],
+  },
 ];
 
 const ejectEngineChangelog = (currentVersion: string) => {
