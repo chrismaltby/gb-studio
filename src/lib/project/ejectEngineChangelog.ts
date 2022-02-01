@@ -158,6 +158,23 @@ const changes: EngineChange[] = [
       "src/core/vm_instructions.c",
     ],
   },
+  {
+    version: "3.1.0-e1",
+    description:
+      "Updates:\n" +
+      "   * Fix vertical shoot em up scene type\n" +
+      "   * Improved randomize\n" +
+      "   * Add VM_LOAD_TILESET and VM_OVERLAY_SET_MAP",
+    modifiedFiles: [
+      "include/vm.i",
+      "include/vm_gameboy.h",
+      "include/vm_ui.h",
+      "src/core/vm_gameboy.c",
+      "src/core/vm_instructions.c",
+      "src/core/vm_ui.c",
+      "src/states/shmup.c",
+    ],
+  },
 ];
 
 const ejectEngineChangelog = (currentVersion: string) => {
