@@ -70,12 +70,12 @@ void shmup_update() BANKED {
     } else {
         if (INPUT_LEFT) {
             player_moving = TRUE;
-            PLAYER.dir = DIR_LEFT;
+            new_dir = DIR_LEFT;
         } else if (INPUT_RIGHT) {
             player_moving = TRUE;
-            PLAYER.dir = DIR_RIGHT;
+            new_dir = DIR_RIGHT;
         } else {
-            PLAYER.dir = shooter_direction;
+            new_dir = shooter_direction;
         }
     }
 
