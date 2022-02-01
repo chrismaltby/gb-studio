@@ -1,10 +1,10 @@
 const l10n = require("../helpers/l10n").default;
 
-const id = "EVENT_ACTOR_INTERRUPT_MOVEMENT";
+const id = "EVENT_ACTOR_MOVE_CANCEL";
 const groups = ["EVENT_GROUP_ACTOR"];
 
 const autoLabel = (fetchArg) => {
-  return l10n("EVENT_ACTOR_INTERRUPT_MOVEMENT_LABEL", {
+  return l10n("EVENT_ACTOR_MOVE_CANCEL_LABEL", {
     actor: fetchArg("actorId"),
   });
 };
@@ -19,9 +19,9 @@ const fields = [
 ];
 
 const compile = (input, helpers) => {
-  const { actorSetActive, actorInterruptMovement } = helpers;
+  const { actorSetActive, actorMoveCancel } = helpers;
   actorSetActive(input.actorId);
-  actorInterruptMovement();
+  actorMoveCancel();
 };
 
 module.exports = {

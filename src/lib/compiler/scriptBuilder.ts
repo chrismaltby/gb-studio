@@ -1128,8 +1128,8 @@ class ScriptBuilder {
     this._addCmd("VM_ACTOR_MOVE_TO", addr);
   };
 
-  _actorInterruptMovement = (addr: string) => {
-    this._addCmd("VM_ACTOR_INTERRUPT_MOVEMENT", addr);
+  _actorMoveCancel = (addr: string) => {
+    this._addCmd("VM_ACTOR_MOVE_CANCEL", addr);
   };
 
   _actorGetPosition = (addr: string) => {
@@ -1868,9 +1868,9 @@ class ScriptBuilder {
     this._addNL();
   };
 
-  actorInterruptMovement = () => {
+  actorMoveCancel = () => {
     const actorRef = this._declareLocal("actor", 4);
-    this._actorInterruptMovement(this._localRef(actorRef));
+    this._actorMoveCancel(this._localRef(actorRef));
     this._addNL();
   };
 
