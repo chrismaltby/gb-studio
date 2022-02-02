@@ -195,6 +195,20 @@ const changes: EngineChange[] = [
       "src/core/vm_instructions.c",
     ],
   },
+  {
+    version: "3.1.0-e3",
+    description:
+      "Updates:\n" +
+      "   * Add disabled flag to actors\n" +
+      "   * Manually deactivating an actor will disable it preventing it from activating when coming back onscreen\n" +
+      "   * Manually activating an actor will enable it again",
+    modifiedFiles: [
+      "include/gbs_types.h",
+      "src/core/actor.c",
+      "src/core/data_manager.c",
+      "src/core/vm_actor.c",
+    ],
+  },
 ];
 
 const ejectEngineChangelog = (currentVersion: string) => {

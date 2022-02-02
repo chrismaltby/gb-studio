@@ -213,12 +213,16 @@ void vm_actor_move_cancel(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {
 
 void vm_actor_activate(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {    
     UBYTE * n_actor = VM_REF_TO_PTR(idx);
-    activate_actor(actors + *n_actor);
+    actor_t * actor = actors + *n_actor;
+    actor->disabled = FALSE;
+    activate_actor(actor);
 }
 
 void vm_actor_deactivate(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {    
     UBYTE * n_actor = VM_REF_TO_PTR(idx);
-    deactivate_actor(actors + *n_actor);
+    actor_t * actor = actors + *n_actor;
+    actor->disabled = TRUE;
+    deactivate_actor(actor);
 }
 
 void vm_actor_terminate_update(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {

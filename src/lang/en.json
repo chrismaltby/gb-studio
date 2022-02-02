@@ -698,6 +698,10 @@
   "EVENT_LINK_HOST": "Link: Host",
   "EVENT_LINK_TRANSFER": "Link: Transfer",
   "EVENT_RNG_SEED": "Seed Random Number Generator",
+  "EVENT_ACTOR_ACTIVATE": "Activate Actor",
+  "EVENT_ACTOR_DEACTIVATE": "Deactivate Actor",
+  "EVENT_ACTOR_ACTIVATE_LABEL": "Activate {actor}",
+  "EVENT_ACTOR_DEACTIVATE_LABEL": "Deactivate {actor}",
 
   "// 10": "Menu -----------------------------------------------------",
 

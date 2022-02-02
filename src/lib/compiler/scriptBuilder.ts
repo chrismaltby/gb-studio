@@ -2070,7 +2070,6 @@ class ScriptBuilder {
     this._addComment("Actor Show");
     this.actorSetById(id);
     this._actorSetHidden(this._localRef(actorRef), false);
-    this._actorActivate(this._localRef(actorRef));
     this._addNL();
   };
 
@@ -2079,6 +2078,21 @@ class ScriptBuilder {
     this._addComment("Actor Hide");
     this.actorSetById(id);
     this._actorSetHidden(this._localRef(actorRef), true);
+    this._addNL();
+  };
+
+  actorActivate = (id: string) => {
+    const actorRef = this._declareLocal("actor", 4);
+    this._addComment("Actor Activate");
+    this.actorSetById(id);
+    this._actorActivate(this._localRef(actorRef));
+    this._addNL();
+  };
+
+  actorDeactivate = (id: string) => {
+    const actorRef = this._declareLocal("actor", 4);
+    this._addComment("Actor Deactivate");
+    this.actorSetById(id);
     this._actorDeactivate(this._localRef(actorRef));
     this._addNL();
   };

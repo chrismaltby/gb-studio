@@ -281,7 +281,7 @@ UBYTE load_scene(const scene_t * scene, UBYTE bank, UBYTE init_data) BANKED {
         actors_inactive_head = 0;
 
         // Add player to inactive, then activate
-        PLAYER.enabled = FALSE;
+        PLAYER.active = FALSE;
         actors_active_tail = &PLAYER;
         DL_PUSH_HEAD(actors_inactive_head, actors_active_tail);
         activate_actor(&PLAYER);
@@ -303,7 +303,7 @@ UBYTE load_scene(const scene_t * scene, UBYTE bank, UBYTE init_data) BANKED {
                 }
                 load_animations((void *)actor->sprite.ptr, actor->sprite.bank, ANIM_SET_DEFAULT, actor->animations);
                 // add to inactive list by default 
-                actor->enabled = FALSE;
+                actor->active = FALSE;
                 DL_PUSH_HEAD(actors_inactive_head, actor);
 
                 // activate all pinned actors by default

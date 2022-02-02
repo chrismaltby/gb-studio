@@ -153,9 +153,9 @@ void deactivate_actor(actor_t *actor) BANKED {
         return;
     }
 #endif
-    if (!actor->enabled) return;
+    if (!actor->active) return;
     if (actor == &PLAYER) return;
-    actor->enabled = FALSE;
+    actor->active = FALSE;
     DL_REMOVE_ITEM(actors_active_head, actor);
     DL_PUSH_HEAD(actors_inactive_head, actor);
     if ((actor->hscript_update & SCRIPT_TERMINATED) == 0) {
@@ -176,8 +176,8 @@ void activate_actor(actor_t *actor) BANKED {
         return;
     }
 #endif
-    if (actor->enabled) return;
-    actor->enabled = TRUE;
+    if (actor->active || actor->disabled) return;
+    actor->active = TRUE;
     actor_set_anim_idle(actor);
     DL_REMOVE_ITEM(actors_inactive_head, actor);
     DL_PUSH_HEAD(actors_active_head, actor);

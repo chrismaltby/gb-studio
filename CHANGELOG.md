@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add VM_LOAD_TILESET and VM_OVERLAY_SET_MAP to gbvm [untoxa](https://github.com/untoxa)
 - Add VM_ACTOR_MOVE_CANCEL [@um3k](https://github.com/um3k)
 - Allow using frames rather than seconds for wait/camera shake/attach timer script events
+- Added events to Deactivate & Activate actors, similar to old hide/show but prevents update scripts from running on disabled actors
 
 ### Changed
 
@@ -23,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved randomize [untoxa](https://github.com/untoxa)
 - Improved gbspack error when data is over bank size limits
 - Update hUGEDriver [untoxa](https://github.com/untoxa)
+- Hide/show actor now ONLY hides/shows, update scripts & collisions are not affected (existing hide/show events migrated to deactivate/activate for compatibility)
 
 ### Fixed
 
