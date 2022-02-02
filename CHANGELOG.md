@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix vertical shoot em up scene type [@um3k](https://github.com/um3k)
 - Fixed display of errors in game engine files while building
 - Fix issue where activating an actor wouldn't trigger update script [untoxa](https://github.com/untoxa)
+- Fix issue where full magenta characters in font files didn't have zero width
 
 ### Removed
 

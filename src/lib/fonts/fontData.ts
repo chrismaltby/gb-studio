@@ -96,7 +96,7 @@ export const readFileToFontData = async (
   const uniqueTilesLookup: CharLookup = {};
   const charKeys: string[] = [];
   for (const char of chars) {
-    const key = hashChar(char.data);
+    const key = hashChar(char.data, char.width);
     if (!uniqueTilesLookup[key]) {
       uniqueTilesLookup[key] = char;
     }
@@ -152,7 +152,7 @@ export const charLookupToTileData = (lookup: CharLookup): Uint8Array => {
   return output;
 };
 
-const hashChar = (char: IndexedImage): string => {
+const hashChar = (char: IndexedImage, width: number): string => {
   // Will do for now...
-  return JSON.stringify(char.data);
+  return `${width}_${JSON.stringify(char.data)}`;
 };
