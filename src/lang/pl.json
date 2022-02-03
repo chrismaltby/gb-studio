@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 982220125",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 986220203",
  
  "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -698,7 +698,11 @@
   "EVENT_LINK_HOST": "Link: Hostuj",
   "EVENT_LINK_TRANSFER": "Link: Transfer",
   "EVENT_RNG_SEED": "Generator losowych liczb",
- 
+  "EVENT_ACTOR_ACTIVATE": "Aktywuj aktora",
+  "EVENT_ACTOR_DEACTIVATE": "Dezaktywuj aktora",
+  "EVENT_ACTOR_ACTIVATE_LABEL": "Aktywuj {actor}",
+  "EVENT_ACTOR_DEACTIVATE_LABEL": "Dezaktywuj {actor}",
+  
   "// 10": "Menu -----------------------------------------------------",
 
   "MENU_FILE": "Plik",
