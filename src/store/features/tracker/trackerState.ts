@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { PatternCell } from "lib/helpers/uge/song/PatternCell";
 import editorActions from "../editor/editorActions";
 
 export type PianoRollToolType = "pencil" | "eraser" | "selection" | null;
@@ -20,6 +21,7 @@ export interface TrackerState {
   hoverNote: number | null;
   startPlaybackPosition: [number, number];
   defaultStartPlaybackPosition: [number, number];
+  selectedPatternCells: number[];
 }
 
 export const initialState: TrackerState = {
@@ -39,6 +41,7 @@ export const initialState: TrackerState = {
   hoverNote: null,
   startPlaybackPosition: [0, 0],
   defaultStartPlaybackPosition: [0, 0],
+  selectedPatternCells: [],
 };
 
 const trackerSlice = createSlice({
@@ -75,6 +78,7 @@ const trackerSlice = createSlice({
       state.defaultInstruments = _action.payload;
     },
     setSelectedChannel: (state, _action: PayloadAction<number>) => {
+      state.selectedPatternCells = [];
       state.selectedChannel = _action.payload;
     },
     setVisibleChannels: (state, _action: PayloadAction<number[]>) => {
@@ -92,6 +96,9 @@ const trackerSlice = createSlice({
     ) => {
       state.startPlaybackPosition = _action.payload;
       state.defaultStartPlaybackPosition = _action.payload;
+    },
+    setSelectedPatternCells: (state, _action: PayloadAction<number[]>) => {
+      state.selectedPatternCells = _action.payload;
     },
   },
   extraReducers: (builder) =>

@@ -107,6 +107,7 @@ const SongGrid = styled.div`
 `;
 
 const RollPlaybackTracker = styled.div`
+  pointer-events: none;
   z-index: 0;
   width: ${CELL_SIZE - 1}px;
   height: ${CELL_SIZE * 12 * 6 + CELL_SIZE}px;
@@ -350,7 +351,7 @@ export const SongPianoRoll = ({
                   channelId={i}
                   active={selectedChannel === i}
                   patternId={patternId}
-                  patterns={song?.patterns[patternId]}
+                  pattern={song?.patterns[patternId]}
                   cellSize={CELL_SIZE}
                 />
               ))}
