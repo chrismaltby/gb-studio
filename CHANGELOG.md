@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved gbspack error when data is over bank size limits
 - Update hUGEDriver [untoxa](https://github.com/untoxa)
 - Hide/show actor now ONLY hides/shows, update scripts & collisions are not affected (existing hide/show events migrated to deactivate/activate for compatibility)
+- Generated scene/sprite/background/tile data now has deterministic symbols based on asset filenames allowing easier referencing from GBVM scripts
 
 ### Fixed
 

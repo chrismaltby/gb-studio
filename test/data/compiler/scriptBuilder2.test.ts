@@ -1,18 +1,28 @@
 import ScriptBuilder from "../../../src/lib/compiler/scriptBuilder";
 import { ScriptEvent } from "../../../src/store/features/entities/entitiesTypes";
-import { getDummyCompiledFont } from "../../dummydata";
+import {
+  dummyActor,
+  dummyPrecompiledBackground,
+  dummyPrecompiledSpriteSheet,
+  getDummyCompiledFont,
+} from "../../dummydata";
 
 test("Should be able to set active actor to player", () => {
   const output: string[] = [];
   const sb = new ScriptBuilder(output, {
     scene: {
       id: "scene1",
+      name: "Scene 1",
+      symbolName: "scene_1",
+      width: 20,
+      height: 18,
+      background: dummyPrecompiledBackground,
+      playerSprite: dummyPrecompiledSpriteSheet,
+      sprites: [],
+      parallax: [],
+      actorsExclusiveLookup: {},
       type: "TOPDOWN",
-      actors: [
-        {
-          id: "actor1",
-        },
-      ],
+      actors: [{ ...dummyActor, id: "actor1" }],
       triggers: [],
       projectiles: [],
     },
@@ -33,14 +43,19 @@ test("Should be able to set active actor to actor by id", () => {
   const sb = new ScriptBuilder(output, {
     scene: {
       id: "scene1",
+      name: "Scene 1",
+      symbolName: "scene_1",
+      width: 20,
+      height: 18,
+      background: dummyPrecompiledBackground,
+      playerSprite: dummyPrecompiledSpriteSheet,
+      sprites: [],
+      parallax: [],
+      actorsExclusiveLookup: {},
       type: "TOPDOWN",
       actors: [
-        {
-          id: "actor1",
-        },
-        {
-          id: "actor2",
-        },
+        { ...dummyActor, id: "actor1" },
+        { ...dummyActor, id: "actor2" },
       ],
       triggers: [],
       projectiles: [],
@@ -59,6 +74,15 @@ test("Should be able to move actor to new location", () => {
   const sb = new ScriptBuilder(output, {
     scene: {
       id: "scene1",
+      name: "Scene 1",
+      symbolName: "scene_1",
+      width: 20,
+      height: 18,
+      background: dummyPrecompiledBackground,
+      playerSprite: dummyPrecompiledSpriteSheet,
+      sprites: [],
+      parallax: [],
+      actorsExclusiveLookup: {},
       type: "TOPDOWN",
       actors: [],
       triggers: [],
@@ -81,6 +105,15 @@ test("Should be able to wait for N frames to pass", () => {
   const sb = new ScriptBuilder(output, {
     scene: {
       id: "scene1",
+      name: "Scene 1",
+      symbolName: "scene_1",
+      width: 20,
+      height: 18,
+      background: dummyPrecompiledBackground,
+      playerSprite: dummyPrecompiledSpriteSheet,
+      sprites: [],
+      parallax: [],
+      actorsExclusiveLookup: {},
       type: "TOPDOWN",
       actors: [],
       triggers: [],
@@ -101,12 +134,23 @@ test("Should be able to generate script string", () => {
   const sb = new ScriptBuilder(output, {
     scene: {
       id: "scene1",
+      name: "Scene 1",
+      symbolName: "scene_1",
+      width: 20,
+      height: 18,
+      background: dummyPrecompiledBackground,
+      playerSprite: dummyPrecompiledSpriteSheet,
+      sprites: [],
+      parallax: [],
+      actorsExclusiveLookup: {},
       type: "TOPDOWN",
       actors: [
         {
+          ...dummyActor,
           id: "actor1",
         },
         {
+          ...dummyActor,
           id: "actor2",
         },
       ],
@@ -151,6 +195,15 @@ test("Should be able to open dialogue boxes", async () => {
   const sb = new ScriptBuilder(output, {
     scene: {
       id: "scene1",
+      name: "Scene 1",
+      symbolName: "scene_1",
+      width: 20,
+      height: 18,
+      background: dummyPrecompiledBackground,
+      playerSprite: dummyPrecompiledSpriteSheet,
+      sprites: [],
+      parallax: [],
+      actorsExclusiveLookup: {},
       type: "TOPDOWN",
       actors: [],
       triggers: [],
@@ -195,6 +248,15 @@ test("Should be able to conditionally execute if variable is true with event arr
   const sb = new ScriptBuilder(output, {
     scene: {
       id: "scene1",
+      name: "Scene 1",
+      symbolName: "scene_1",
+      width: 20,
+      height: 18,
+      background: dummyPrecompiledBackground,
+      playerSprite: dummyPrecompiledSpriteSheet,
+      sprites: [],
+      parallax: [],
+      actorsExclusiveLookup: {},
       type: "TOPDOWN",
       actors: [],
       triggers: [],
@@ -261,12 +323,23 @@ test("Should be able to conditionally execute if variable is true with function 
   const sb = new ScriptBuilder(output, {
     scene: {
       id: "scene1",
+      name: "Scene 1",
+      symbolName: "scene_1",
+      width: 20,
+      height: 18,
+      background: dummyPrecompiledBackground,
+      playerSprite: dummyPrecompiledSpriteSheet,
+      sprites: [],
+      parallax: [],
+      actorsExclusiveLookup: {},
       type: "TOPDOWN",
       actors: [
         {
+          ...dummyActor,
           id: "actor1",
         },
         {
+          ...dummyActor,
           id: "actor2",
         },
       ],
@@ -343,20 +416,21 @@ test("Should be able to conditionally execute if variable is true with nested fu
   const sb = new ScriptBuilder(output, {
     scene: {
       id: "scene1",
+      name: "Scene 1",
+      symbolName: "scene_1",
+      width: 20,
+      height: 18,
+      background: dummyPrecompiledBackground,
+      playerSprite: dummyPrecompiledSpriteSheet,
+      sprites: [],
+      parallax: [],
+      actorsExclusiveLookup: {},
       type: "TOPDOWN",
       actors: [
-        {
-          id: "actor1",
-        },
-        {
-          id: "actor2",
-        },
-        {
-          id: "actor3",
-        },
-        {
-          id: "actor4",
-        },
+        { ...dummyActor, id: "actor1" },
+        { ...dummyActor, id: "actor2" },
+        { ...dummyActor, id: "actor3" },
+        { ...dummyActor, id: "actor4" },
       ],
       triggers: [],
       projectiles: [],
@@ -466,6 +540,15 @@ test("Should be able to define labels and jump", () => {
   const sb = new ScriptBuilder(output, {
     scene: {
       id: "scene1",
+      name: "Scene 1",
+      symbolName: "scene_1",
+      width: 20,
+      height: 18,
+      background: dummyPrecompiledBackground,
+      playerSprite: dummyPrecompiledSpriteSheet,
+      sprites: [],
+      parallax: [],
+      actorsExclusiveLookup: {},
       type: "TOPDOWN",
       actors: [],
       triggers: [],
@@ -499,12 +582,17 @@ test("Should throw if jump to label is not stack neutral", () => {
   const sb = new ScriptBuilder(output, {
     scene: {
       id: "scene1",
+      name: "Scene 1",
+      symbolName: "scene_1",
+      width: 20,
+      height: 18,
+      background: dummyPrecompiledBackground,
+      playerSprite: dummyPrecompiledSpriteSheet,
+      sprites: [],
+      parallax: [],
+      actorsExclusiveLookup: {},
       type: "TOPDOWN",
-      actors: [
-        {
-          id: "actor1",
-        },
-      ],
+      actors: [{ ...dummyActor, id: "actor1" }],
       triggers: [],
       projectiles: [],
     },
