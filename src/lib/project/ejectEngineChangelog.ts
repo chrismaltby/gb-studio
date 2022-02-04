@@ -209,6 +209,13 @@ const changes: EngineChange[] = [
       "src/core/vm_actor.c",
     ],
   },
+  {
+    version: "3.1.0-e4",
+    description:
+      "Updates:\n" +
+      "   * Fix bug where disabling the player would trigger rendering garbage",
+    modifiedFiles: ["src/core/actor.c", "src/core/vm_actor.c"],
+  },
 ];
 
 const ejectEngineChangelog = (currentVersion: string) => {
