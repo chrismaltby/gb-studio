@@ -213,8 +213,13 @@ const changes: EngineChange[] = [
     version: "3.1.0-e4",
     description:
       "Updates:\n" +
-      "   * Fix bug where disabling the player would trigger rendering garbage",
-    modifiedFiles: ["src/core/actor.c", "src/core/vm_actor.c"],
+      "   * Fix bug where disabling the player would trigger rendering garbage\n" +
+      "   * Remove unused spritesheet_0 header include in projectiles",
+    modifiedFiles: [
+      "src/core/actor.c",
+      "src/core/projectiles.c",
+      "src/core/vm_actor.c",
+    ],
   },
 ];
 
