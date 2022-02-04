@@ -58,6 +58,7 @@ void actors_init() BANKED {
 void player_init() BANKED {
     actor_set_anim_idle(&PLAYER);
     PLAYER.hidden = FALSE;
+    PLAYER.disabled = FALSE;
 }
 
 void actors_update() NONBANKED {
