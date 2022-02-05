@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import {
   DragSourceMonitor,
   DropTargetMonitor,
@@ -48,6 +48,8 @@ import { RelativePortal } from "ui/layout/RelativePortal";
 import AddScriptEventMenu from "./AddScriptEventMenu";
 import ScriptEventTitle from "./ScriptEventTitle";
 import useOnScreen from "ui/hooks/use-on-screen";
+import { ScriptEventSymbolsEditor } from "components/forms/symbols/ScriptEventSymbolsEditor";
+import { ScriptEventSymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
 
 interface ScriptEditorEventProps {
   id: string;
@@ -78,6 +80,7 @@ const ScriptEditorEvent = React.memo(
     const [rename, setRename] = useState(false);
     const [isAddOpen, setAddOpen] = useState(false);
     const [insertBefore, setInsertBefore] = useState(false);
+    const [showSymbols, setShowSymbols] = useState(false);
 
     const clipboardFormat = useSelector(
       (state: RootState) => state.clipboard.data?.format
@@ -325,6 +328,7 @@ const ScriptEditorEvent = React.memo(
 
     const isOpen = scriptEvent.args && !scriptEvent.args.__collapse;
     const isConditional = events[command]?.isConditional ?? false;
+    const editableSymbol = events[command]?.editableSymbol ?? false;
 
     return (
       <ScriptEventWrapper
@@ -420,6 +424,11 @@ const ScriptEditorEvent = React.memo(
                     <MenuItem onClick={toggleRename}>
                       {l10n("MENU_RENAME_EVENT")}
                     </MenuItem>
+                    {editableSymbol && (
+                      <MenuItem onClick={() => setShowSymbols(true)}>
+                        {l10n("FIELD_VIEW_GBVM_SYMBOLS")}
+                      </MenuItem>
+                    )}
                     <MenuItem onClick={toggleComment}>
                       {commented
                         ? l10n("MENU_ENABLE_EVENT")
@@ -478,6 +487,11 @@ const ScriptEditorEvent = React.memo(
               data-handler-id={handlerId}
             >
               <ScriptEditorEventHelper event={scriptEvent} />
+              {showSymbols && (
+                <ScriptEventSymbolEditorWrapper>
+                  <ScriptEventSymbolsEditor id={id} />
+                </ScriptEventSymbolEditorWrapper>
+              )}
               <ScriptEventForm
                 id={id}
                 entityId={entityId}

@@ -57,6 +57,10 @@ const loadProject = async (projectPath) => {
           ...background,
           id: oldBackground.id,
           _v: oldBackground._v,
+          symbol:
+            oldBackground?.symbol !== undefined
+              ? oldBackground.symbol
+              : background.symbol,
           tileColors:
             oldBackground?.tileColors !== undefined
               ? oldBackground.tileColors
@@ -88,6 +92,7 @@ const loadProject = async (projectPath) => {
         ...oldData,
         id,
         _v: oldData._v || sprite._v,
+        symbol: oldData?.symbol !== undefined ? oldData.symbol : sprite.symbol,
         filename: sprite.filename,
         name: oldData.name || sprite.name,
         canvasWidth: oldData.canvasWidth || 32,
@@ -138,6 +143,8 @@ const loadProject = async (projectPath) => {
           ...track,
           id: oldTrack.id,
           _v: oldTrack._v,
+          symbol:
+            oldTrack?.symbol !== undefined ? oldTrack.symbol : track.symbol,
           settings: {
             ...oldTrack.settings,
           },
@@ -159,6 +166,7 @@ const loadProject = async (projectPath) => {
         return {
           ...font,
           id: oldFont.id,
+          symbol: oldFont?.symbol !== undefined ? oldFont.symbol : font.symbol,
         };
       }
       return font;
@@ -195,6 +203,8 @@ const loadProject = async (projectPath) => {
         return {
           ...emote,
           id: oldEmote.id,
+          symbol:
+            oldEmote?.symbol !== undefined ? oldEmote.symbol : emote.symbol,
         };
       }
       return emote;

@@ -38,6 +38,7 @@ import {
 export const dummyScene: SceneData = {
   id: "",
   name: "Scene",
+  symbol: "scene_0",
   backgroundId: "",
   x: 0,
   y: 0,
@@ -62,6 +63,7 @@ export const dummySceneDenormalized: SceneDenormalized =
 export const dummyActor: Actor = {
   id: "dummyActor1",
   name: "",
+  symbol: "actor_0",
   spriteSheetId: "",
   x: 0,
   y: 0,
@@ -84,6 +86,7 @@ export const dummyActor: Actor = {
 export const dummyTrigger: Trigger = {
   id: "",
   name: "",
+  symbol: "trigger_0",
   x: 0,
   y: 0,
   width: 0,
@@ -100,21 +103,21 @@ export const dummyPalette: Palette = {
 
 export const dummyPrecompiledBackground: PrecompiledBackground = {
   id: "",
-  symbolName: "bg_1",
+  symbol: "bg_1",
   name: "",
   width: 1,
   height: 1,
   data: new Uint8Array(),
   tileset: {
-    symbolName: "ts_1",
+    symbol: "ts_1",
     data: new Uint8Array(),
   },
   tilemap: {
-    symbolName: "tm_1",
+    symbol: "tm_1",
     data: new Uint8Array(),
   },
   tilemapAttr: {
-    symbolName: "ta_1",
+    symbol: "ta_1",
     data: new Uint8Array(),
   },
 };
@@ -122,6 +125,7 @@ export const dummyPrecompiledBackground: PrecompiledBackground = {
 export const dummyBackground: Background = {
   id: "",
   name: "",
+  symbol: "bg_0",
   filename: "",
   width: 1,
   height: 1,
@@ -135,6 +139,7 @@ export const dummyBackground: Background = {
 export const dummySpriteSheet: SpriteSheet = {
   id: "",
   name: "",
+  symbol: "sprite_0",
   filename: "",
   numTiles: 1,
   checksum: "",
@@ -154,7 +159,7 @@ export const dummySpriteSheet: SpriteSheet = {
 
 export const dummyPrecompiledSpriteSheet: PrecompiledSprite = {
   id: "",
-  symbolName: "sprite_1",
+  symbol: "sprite_1",
   name: "",
   filename: "",
   canvasWidth: 32,
@@ -165,7 +170,7 @@ export const dummyPrecompiledSpriteSheet: PrecompiledSprite = {
   boundsHeight: 16,
   states: [],
   tileset: {
-    symbolName: "ts_1",
+    symbol: "ts_1",
     data: new Uint8Array(),
   },
   data: [],
@@ -178,6 +183,7 @@ export const dummyPrecompiledSpriteSheet: PrecompiledSprite = {
 export const dummyMusic: Music = {
   id: "",
   name: "",
+  symbol: "song_0",
   filename: "",
   inode: "2",
   _v: 0,
@@ -187,6 +193,7 @@ export const dummyMusic: Music = {
 export const dummyCustomEvent: CustomEvent = {
   id: "",
   name: "",
+  symbol: "script_0",
   description: "",
   variables: {},
   actors: {},
@@ -247,6 +254,7 @@ export const getDummyCompiledFont = async (): Promise<PrecompiledFontData> => {
       {
         id: "87d28862-ac4a-4f15-b678-d8d2e3e8787c",
         name: "gbs-mono",
+        symbol: "font_0",
         width: 128,
         height: 112,
         filename: "gbs-mono.png",

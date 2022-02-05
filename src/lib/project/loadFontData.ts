@@ -6,11 +6,13 @@ import { stat } from "fs";
 import { PNG } from "pngjs";
 
 import parseAssetPath from "../helpers/path/parseAssetPath";
+import { toValidSymbol } from "lib/helpers/symbols";
 
 export interface FontAssetData {
   id: string;
   plugin: string | undefined;
   name: string;
+  symbol: string;
   width: number;
   height: number;
   filename: string;
@@ -63,6 +65,7 @@ const loadFontData =
         id: uuid(),
         plugin,
         name,
+        symbol: toValidSymbol(`font_${name}`),
         width: size.width,
         height: size.height,
         filename: file,

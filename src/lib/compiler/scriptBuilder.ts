@@ -45,6 +45,7 @@ import {
   isUnionVariableValue,
 } from "store/features/entities/entitiesHelpers";
 import { lexText } from "lib/fonts/lexText";
+import { Reference } from "components/forms/ReferencesSelect";
 
 type ScriptOutput = string[];
 
@@ -2171,7 +2172,7 @@ class ScriptBuilder {
     const emote = emotes.find((e) => e.id === emoteId);
     if (emote) {
       this._addComment("Actor Emote");
-      this._actorEmote(this._localRef(actorRef), emote.symbolName);
+      this._actorEmote(this._localRef(actorRef), emote.symbol);
       this._addNL();
     }
   };
@@ -2182,7 +2183,7 @@ class ScriptBuilder {
     const sprite = sprites.find((s) => s.id === spriteSheetId);
     if (sprite) {
       this._addComment("Actor Set Spritesheet");
-      this._actorSetSpritesheet(this._localRef(actorRef), sprite.symbolName);
+      this._actorSetSpritesheet(this._localRef(actorRef), sprite.symbol);
       this._addNL();
     }
   };
@@ -2194,9 +2195,9 @@ class ScriptBuilder {
     if (sprite) {
       this._addComment("Player Set Spritesheet");
       this._setConst(this._localRef(actorRef), 0);
-      this._actorSetSpritesheet(this._localRef(actorRef), sprite.symbolName);
+      this._actorSetSpritesheet(this._localRef(actorRef), sprite.symbol);
       if (persist) {
-        const symbol = sprite.symbolName;
+        const symbol = sprite.symbol;
         this._setConst(`PLAYER_SPRITE_${scene.type}_BANK`, `___bank_${symbol}`);
         this._setConst(`PLAYER_SPRITE_${scene.type}_DATA`, `_${symbol}`);
       }
@@ -2766,10 +2767,11 @@ class ScriptBuilder {
   inputScriptSet = (
     input: string,
     override: boolean,
-    script: ScriptEvent[]
+    script: ScriptEvent[],
+    symbol?: string
   ) => {
     this._addComment(`Input Script Attach`);
-    const scriptRef = this._compileSubScript("input", script);
+    const scriptRef = this._compileSubScript("input", script, symbol);
     const inputValue = inputDec(input);
     let ctx = inputValue.toString(2).padStart(8, "0").indexOf("1") + 1;
     if (ctx <= 0) {
@@ -2789,9 +2791,9 @@ class ScriptBuilder {
   // --------------------------------------------------------------------------
   // Timer
 
-  timerScriptSet = (frames = 600, script: ScriptEvent[]) => {
+  timerScriptSet = (frames = 600, script: ScriptEvent[], symbol?: string) => {
     this._addComment(`Timer Start`);
-    const scriptRef = this._compileSubScript("timer", script);
+    const scriptRef = this._compileSubScript("timer", script, symbol);
     const ctx = 1;
     const TIMER_CYCLES = 16;
     let durationTicks = (frames / TIMER_CYCLES + 0.5) | 0;
@@ -2830,7 +2832,60 @@ class ScriptBuilder {
       return;
     }
 
+    const compiledCustomEvent = this.compileCustomEventScript(customEvent.id);
+    if (!compiledCustomEvent) {
+      return;
+    }
+
+    const { scriptRef, argsLen } = compiledCustomEvent;
+
     this._addComment(`Call Script: ${customEvent.name}`);
+
+    // Push args
+    const actorArgs = Object.values(customEvent.actors);
+    const variableArgs = Object.values(customEvent.variables);
+
+    if (actorArgs) {
+      for (const actorArg of actorArgs.reverse()) {
+        if (actorArg) {
+          const actorValue = input?.[`$actor[${actorArg.id}]$`] || "";
+          const actorIndex = this.getActorIndex(actorValue);
+          this._stackPushConst(actorIndex, `Actor ${actorArg.id}`);
+        }
+      }
+    }
+
+    if (variableArgs) {
+      for (const variableArg of variableArgs.reverse()) {
+        if (variableArg) {
+          const variableValue = input?.[`$variable[${variableArg.id}]$`] || "";
+          const variableAlias = this.getVariableAlias(variableValue);
+          this._stackPushConst(variableAlias, `Variable ${variableArg.id}`);
+        }
+      }
+    }
+
+    this._callFar(scriptRef, argsLen);
+    this._addNL();
+  };
+
+  compileReferencedAssets = (references: Reference[]) => {
+    const referencedCustomEventIds = references
+      .filter((r) => r.type === "script")
+      .map((r) => r.id);
+    for (const customEventId of referencedCustomEventIds) {
+      this.compileCustomEventScript(customEventId);
+    }
+  };
+
+  compileCustomEventScript = (customEventId: string) => {
+    const { customEvents } = this.options;
+    const customEvent = customEvents.find((ce) => ce.id === customEventId);
+
+    if (!customEvent) {
+      console.warn("Script not found", customEventId);
+      return;
+    }
 
     const argLookup: {
       actor: Dictionary<string>;
@@ -2871,10 +2926,7 @@ class ScriptBuilder {
     if (actorArgs) {
       for (const actorArg of actorArgs.reverse()) {
         if (actorArg) {
-          const actorValue = input?.[`$actor[${actorArg.id}]$`] || "";
-          const actorIndex = this.getActorIndex(actorValue);
-          const arg = registerArg("actor", actorArg.id);
-          this._stackPushConst(actorIndex, `Actor ${arg}`);
+          registerArg("actor", actorArg.id);
         }
       }
     }
@@ -2882,10 +2934,7 @@ class ScriptBuilder {
     if (variableArgs) {
       for (const variableArg of variableArgs.reverse()) {
         if (variableArg) {
-          const variableValue = input?.[`$variable[${variableArg.id}]$`] || "";
-          const variableAlias = this.getVariableAlias(variableValue);
-          const arg = registerArg("variable", variableArg.id);
-          this._stackPushConst(variableAlias, `Variable ${arg}`);
+          registerArg("variable", variableArg.id);
         }
       }
     }
@@ -2947,12 +2996,11 @@ class ScriptBuilder {
     const scriptRef = this._compileSubScript(
       "custom",
       script,
-      customEvent.name,
+      customEvent.symbol,
       { argLookup }
     );
 
-    this._callFar(scriptRef, argsLen);
-    this._addNL();
+    return { scriptRef, argsLen };
   };
 
   returnFar = () => {
@@ -3015,7 +3063,7 @@ class ScriptBuilder {
         this._actorSetDirection(this._localRef(actorRef), asmDir);
       }
       this._raiseException("EXCEPTION_CHANGE_SCENE", 3);
-      this._importFarPtrData(scene.symbolName);
+      this._importFarPtrData(scene.symbol);
       this._addNL();
     }
   };
@@ -3100,6 +3148,13 @@ class ScriptBuilder {
 
     const id = getVariableId(variable, entity);
 
+    const namedVariable = variablesLookup[id || "0"];
+    if (namedVariable && namedVariable.symbol) {
+      const symbol = namedVariable.symbol.toUpperCase();
+      variableAliasLookup[id] = symbol;
+      return symbol;
+    }
+
     // If already got an alias use that
     const existingAlias = variableAliasLookup[id || "0"];
     if (existingAlias) {
@@ -3122,7 +3177,7 @@ class ScriptBuilder {
       name = tempVariableName(num);
     } else {
       const num = toVariableNumber(variable || "0");
-      name = globalVariableName(num, variablesLookup);
+      name = num;
     }
 
     const alias = "VAR_" + toASMVar(name);
@@ -3499,9 +3554,13 @@ class ScriptBuilder {
     this._addNL();
   };
 
-  musicRoutineSet = (routine: number, script: ScriptEvent[]) => {
+  musicRoutineSet = (
+    routine: number,
+    script: ScriptEvent[],
+    symbol?: string
+  ) => {
     this._addComment(`Music Routine Attach`);
-    const scriptRef = this._compileSubScript("music", script);
+    const scriptRef = this._compileSubScript("music", script, symbol);
     const routineValue = Number(routine);
     this._musicRoutine(routineValue, scriptRef);
     this._addNL();
@@ -4237,11 +4296,11 @@ class ScriptBuilder {
   _compileSubScript = (
     type: "input" | "timer" | "music" | "custom",
     script: ScriptEvent[],
-    name?: string,
+    inputSymbol?: string,
     options?: Partial<ScriptBuilderOptions>
   ) => {
     const symbol = this._getAvailableSymbol(
-      name ? `script_${toCSymbol(name)}` : `script_${type}_0`
+      inputSymbol ? inputSymbol : `script_${type}_0`
     );
     const compiledSubScript = compileEntityEvents(symbol, script, {
       ...this.options,

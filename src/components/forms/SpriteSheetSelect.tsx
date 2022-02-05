@@ -19,7 +19,6 @@ import {
   SelectCommonProps,
 } from "ui/form/Select";
 import SpriteSheetCanvas from "../world/SpriteSheetCanvas";
-import l10n from "lib/helpers/l10n";
 
 interface SpriteSheetSelectProps extends SelectCommonProps {
   name: string;

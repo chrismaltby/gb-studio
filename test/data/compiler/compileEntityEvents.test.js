@@ -200,7 +200,7 @@ ___bank_testname = 255
 
 _testname::
         ; If Variable True
-        VM_IF_CONST .GT         VAR_VARIABLE_4, 0, 1$, 0
+        VM_IF_CONST .GT         VAR_4, 0, 1$, 0
         ; Text Dialogue
         VM_LOAD_TEXT            0
         .asciz "FALSE PATH"
@@ -285,7 +285,7 @@ ___bank_testname = 255
 
 _testname::
         ; If Variable True
-        VM_IF_CONST .GT         VAR_VARIABLE_4, 0, 1$, 0
+        VM_IF_CONST .GT         VAR_4, 0, 1$, 0
         ; Text Dialogue
         VM_LOAD_TEXT            0
         .asciz "FALSE PATH"

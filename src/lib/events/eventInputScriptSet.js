@@ -43,8 +43,13 @@ const fields = [
 ];
 
 const compile = (input, helpers) => {
-  const { inputScriptSet } = helpers;
-  inputScriptSet(input.input, input.override !== false, input.true);
+  const { inputScriptSet, event } = helpers;
+  inputScriptSet(
+    input.input,
+    input.override !== false,
+    input.true,
+    event.symbol
+  );
 };
 
 module.exports = {
@@ -53,5 +58,6 @@ module.exports = {
   groups,
   fields,
   compile,
+  editableSymbol: true,
   allowChildrenBeforeInitFade: true,
 };

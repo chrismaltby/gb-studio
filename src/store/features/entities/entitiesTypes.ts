@@ -47,6 +47,7 @@ export type ScriptEventParentType =
 export type ScriptEvent = {
   id: string;
   command: string;
+  symbol?: string;
   args?: Record<string, unknown>;
   children?: Dictionary<string[]>;
 };
@@ -75,6 +76,7 @@ export type ActorScriptKey = typeof actorScriptKeys[number];
 export type Actor = {
   id: string;
   name: string;
+  symbol: string;
   notes?: string;
   x: number;
   y: number;
@@ -118,6 +120,7 @@ export type TriggerScriptKey = typeof triggerScriptKeys[number];
 export type Trigger = {
   id: string;
   name: string;
+  symbol: string;
   notes?: string;
   x: number;
   y: number;
@@ -135,6 +138,7 @@ export type TriggerDenormalized = Omit<Trigger, "script" | "leaveScript"> & {
 export type Background = {
   id: string;
   name: string;
+  symbol: string;
   filename: string;
   width: number;
   height: number;
@@ -151,6 +155,7 @@ export type BackgroundData = Omit<Background, "_v" | "inode">;
 export type Font = {
   id: string;
   name: string;
+  symbol: string;
   filename: string;
   width: number;
   height: number;
@@ -165,6 +170,7 @@ export type FontData = Omit<Font, "mapping" | "_v" | "inode">;
 export type Avatar = {
   id: string;
   name: string;
+  symbol: string;
   filename: string;
   width: number;
   height: number;
@@ -178,6 +184,7 @@ export type AvatarData = Omit<Avatar, "_v" | "inode">;
 export type Emote = {
   id: string;
   name: string;
+  symbol: string;
   filename: string;
   width: number;
   height: number;
@@ -195,6 +202,7 @@ export type MusicSettings = {
 export type Music = {
   id: string;
   name: string;
+  symbol: string;
   filename: string;
   plugin?: string;
   settings: MusicSettings;
@@ -216,6 +224,7 @@ export type Palette = {
 export type Variable = {
   id: string;
   name: string;
+  symbol: string;
 };
 
 export type CustomEventVariable = {
@@ -232,6 +241,7 @@ export type CustomEventActor = {
 export type CustomEvent = {
   id: string;
   name: string;
+  symbol: string;
   description: string;
   variables: Dictionary<CustomEventVariable>;
   actors: Dictionary<CustomEventActor>;
@@ -294,6 +304,7 @@ export type SpriteAnimationData = Omit<SpriteAnimation, "frames"> & {
 export type SpriteSheet = {
   id: string;
   name: string;
+  symbol: string;
   filename: string;
   numTiles: number;
   plugin?: string;
@@ -333,6 +344,7 @@ export type Scene = {
   id: string;
   type: string;
   name: string;
+  symbol: string;
   notes?: string;
   labelColor?: string;
   x: number;

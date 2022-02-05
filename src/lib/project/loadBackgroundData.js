@@ -4,6 +4,7 @@ import uuid from "uuid/v4";
 import sizeOf from "image-size";
 import { stat } from "fs-extra";
 import parseAssetPath from "../helpers/path/parseAssetPath";
+import { toValidSymbol } from "lib/helpers/symbols";
 
 const TILE_SIZE = 8;
 
@@ -16,10 +17,12 @@ const loadBackgroundData = (projectRoot) => async (filename) => {
     const size = await sizeOfAsync(filename);
     const fileStat = await stat(filename, { bigint: true });
     const inode = fileStat.ino.toString();
+    const name = file.replace(/.png/i, "");
     return {
       id: uuid(),
       plugin,
-      name: file.replace(/.png/i, ""),
+      name,
+      symbol: toValidSymbol(`bg_${name}`),
       width: Math.min(Math.floor(size.width / TILE_SIZE), 255),
       height: Math.min(Math.floor(size.height / TILE_SIZE), 255),
       imageWidth: size.width,

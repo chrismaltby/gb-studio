@@ -765,6 +765,7 @@ test("Should be able to delete a variable name by setting blank value", () => {
         "1": {
           id: "1",
           name: "Var Name",
+          symbol: "VAR_1",
         },
       },
       ids: ["1"],
@@ -861,7 +862,13 @@ test("Should be able to add an actor to a scene with default values and variable
       id: "clipboard_id",
       name: "Clipboard Actor Name",
     },
-    variables: [{ id: "clipboard_id__L0", name: "Clipboard Variable Name" }],
+    variables: [
+      {
+        id: "clipboard_id__L0",
+        name: "Clipboard Variable Name",
+        symbol: "VAR_clipboard_id__L0",
+      },
+    ],
   });
 
   const newState = reducer(state, action);

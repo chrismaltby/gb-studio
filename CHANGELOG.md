@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add VM_ACTOR_MOVE_CANCEL [@um3k](https://github.com/um3k)
 - Allow using frames rather than seconds for wait/camera shake/attach timer script events
 - Added events to Deactivate & Activate actors, similar to old hide/show but prevents update scripts from running on disabled actors
+- Added ability to choose any referenced assets in GBVM script event forcing assets to be included within built project
+- Added ability to rename the GBVM symbol used for generated data files, accessible from "View GBVM Symbols" in right sidebar menu + GBVM event references section
+- Added syntax highlighting and line numbers to GBVM event code input
 
 ### Changed
 
@@ -25,7 +28,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved gbspack error when data is over bank size limits
 - Update hUGEDriver [untoxa](https://github.com/untoxa)
 - Hide/show actor now ONLY hides/shows, update scripts & collisions are not affected (existing hide/show events migrated to deactivate/activate for compatibility)
-- Generated scene/sprite/background/tile data now has deterministic symbols based on asset filenames allowing easier referencing from GBVM scripts
 
 ### Fixed
 
