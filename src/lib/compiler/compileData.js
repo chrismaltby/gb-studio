@@ -1249,6 +1249,8 @@ const compile = async (
 
   // Add event data
   const additionalScripts = {};
+  const additionalOutput = {};
+
   const eventPtrs = precompiled.sceneData.map((scene, sceneIndex) => {
     const compileScript = (
       script,
@@ -1326,6 +1328,7 @@ const compile = async (
         engineFields: precompiledEngineFields,
         output: [],
         additionalScripts,
+        additionalOutput,
         symbols,
       });
 
@@ -1539,6 +1542,10 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
   Object.values(additionalScripts).forEach((additional) => {
     output[`${additional.symbol}.s`] = additional.compiledScript;
     output[`${additional.symbol}.h`] = compileScriptHeader(additional.symbol);
+  });
+
+  Object.values(additionalOutput).forEach((additional) => {
+    output[additional.filename] = additional.data;
   });
 
   precompiled.usedTilesets.forEach((tileset) => {

@@ -102,6 +102,10 @@ interface ScriptBuilderOptions {
     symbol: string;
     compiledScript: string;
   }>;
+  additionalOutput: Dictionary<{
+    filename: string;
+    data: string;
+  }>;
   symbols: Dictionary<string>;
   argLookup: ScriptBuilderFunctionArgLookup;
   compileEvents: (self: ScriptBuilder, events: ScriptEvent[]) => void;
@@ -457,6 +461,7 @@ class ScriptBuilder {
       palettes: options.palettes || [],
       customEvents: options.customEvents || [],
       additionalScripts: options.additionalScripts || {},
+      additionalOutput: options.additionalOutput || {},
       symbols: options.symbols || {},
       argLookup: options.argLookup || { actor: {}, variable: {} },
       compileEvents: options.compileEvents || ((_self, _e) => {}),
@@ -4283,6 +4288,16 @@ class ScriptBuilder {
   compileEvents = (path: ScriptEvent[]) => {
     const { compileEvents } = this.options;
     compileEvents(this, path);
+  };
+
+  // --------------------------------------------------------------------------
+  // Dynamic asset files
+
+  writeAsset = (filename: string, data: string) => {
+    this.options.additionalOutput[filename] = {
+      filename,
+      data,
+    };
   };
 
   // --------------------------------------------------------------------------
