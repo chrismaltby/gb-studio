@@ -22,6 +22,7 @@ export interface TrackerState {
   startPlaybackPosition: [number, number];
   defaultStartPlaybackPosition: [number, number];
   selectedPatternCells: number[];
+  selection: [number, number, number, number];
 }
 
 export const initialState: TrackerState = {
@@ -42,6 +43,7 @@ export const initialState: TrackerState = {
   startPlaybackPosition: [0, 0],
   defaultStartPlaybackPosition: [0, 0],
   selectedPatternCells: [],
+  selection: [-1, -1, -1, -1],
 };
 
 const trackerSlice = createSlice({
@@ -67,6 +69,12 @@ const trackerSlice = createSlice({
     },
     setHoverNote: (state, action: PayloadAction<number | null>) => {
       state.hoverNote = action.payload;
+    },
+    setSelection: (
+      state,
+      action: PayloadAction<[number, number, number, number]>
+    ) => {
+      state.selection = action.payload;
     },
     setTool: (state, _action: PayloadAction<PianoRollToolType>) => {
       state.tool = _action.payload;

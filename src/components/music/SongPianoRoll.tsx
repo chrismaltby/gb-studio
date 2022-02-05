@@ -12,6 +12,7 @@ import { RollChannel } from "./RollChannel";
 import { RollChannelGrid } from "./RollChannelGrid";
 import { ipcRenderer } from "electron";
 import trackerActions from "store/features/tracker/trackerActions";
+import { RollChannelSelectionArea } from "./RollChannelSelectionArea";
 
 const CELL_SIZE = 14;
 const MAX_NOTE = 71;
@@ -355,6 +356,12 @@ export const SongPianoRoll = ({
                   cellSize={CELL_SIZE}
                 />
               ))}
+              <RollChannelSelectionArea
+                channelId={selectedChannel}
+                patternId={patternId}
+                pattern={song?.patterns[patternId]}
+                cellSize={CELL_SIZE}
+              />
             </SongGrid>
           </div>
         </div>

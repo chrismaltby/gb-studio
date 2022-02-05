@@ -143,20 +143,14 @@ export const RollChannelFwd = ({
         if (cell.note) {
           playNotePreview(song, channelId, cell.note, currentInstrument);
         }
-
         if (cell.note) {
-          if (e.shiftKey) {
-            const newSelectedPatterns = [...selectedPatternCells];
-            newSelectedPatterns.push(column);
-            dispatch(
-              trackerActions.setSelectedPatternCells(newSelectedPatterns)
-            );
-          } else {
+          if (selectedPatternCells.indexOf(column) === -1) {
             const newSelectedPatterns = [column];
             dispatch(
               trackerActions.setSelectedPatternCells(newSelectedPatterns)
             );
           }
+
           setIsMouseDown(true);
           setIsDragging(false);
           console.log("COLUMN", column);
@@ -180,36 +174,41 @@ export const RollChannelFwd = ({
     (e: any) => {
       const channel = parseInt(e.target.dataset["channel"]);
       if (!isNaN(channel) && tool === "pencil" && e.button === 0) {
-        const col = Math.floor(e.offsetX / cellSize);
-        const note = 12 * 6 - 1 - Math.floor(e.offsetY / cellSize);
-        const changes = {
-          instrument: defaultInstruments[channelId],
-          note: note,
-        };
-        dispatch(
-          trackerDocumentActions.editPatternCell({
-            patternId: patternId,
-            cell: [col, channelId],
-            changes: changes,
-          })
-        );
+        if (selectedPatternCells.length > 1) {
+          dispatch(trackerActions.setSelectedPatternCells([]));
+        } else {
+          const col = Math.floor(e.offsetX / cellSize);
+          const note = 12 * 6 - 1 - Math.floor(e.offsetY / cellSize);
+          const changes = {
+            instrument: defaultInstruments[channelId],
+            note: note,
+          };
+          dispatch(
+            trackerDocumentActions.editPatternCell({
+              patternId: patternId,
+              cell: [col, channelId],
+              changes: changes,
+            })
+          );
 
-        if (song) {
-          playNotePreview(song, channelId, note, currentInstrument);
+          if (song) {
+            playNotePreview(song, channelId, note, currentInstrument);
+          }
+
+          dispatch(trackerActions.setSelectedPatternCells([]));
+          setMoveNoteFrom(undefined);
         }
-
-        dispatch(trackerActions.setSelectedPatternCells([]));
-        setMoveNoteFrom(undefined);
       }
     },
     [
       tool,
+      selectedPatternCells.length,
+      dispatch,
       cellSize,
       defaultInstruments,
-      dispatch,
+      channelId,
       patternId,
       song,
-      channelId,
       currentInstrument,
     ]
   );
@@ -394,7 +393,7 @@ export const RollChannelFwd = ({
                   pointerEvents: isDragging ? "none" : "auto",
                   boxShadow:
                     isSelected && !isDragging ? "0 0 0px 2px #c92c61" : "",
-                  zIndex: isSelected ? 99 : 0,
+                  zIndex: isSelected ? 1 : 0,
                   opacity: isSelected && isDragging ? 0.6 : 1,
                 }}
               >

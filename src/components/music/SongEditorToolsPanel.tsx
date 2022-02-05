@@ -55,7 +55,6 @@ const FloatingPanelTools = styled(FloatingPanel)`
 
 const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
   const dispatch = useDispatch();
-  const projectRoot = useSelector((state: RootState) => state.document.root);
 
   const play = useSelector((state: RootState) => state.tracker.playing);
   const playerReady = useSelector(
@@ -153,6 +152,9 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
       if (e.target && (e.target as Node).nodeName === "INPUT") {
         return;
       }
+      if (e.shiftKey) {
+        setTool("selection");
+      }
       if (e.ctrlKey || e.shiftKey) {
         return;
       }
@@ -182,7 +184,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
         setDefaultInstruments(8);
       }
     },
-    [setDefaultInstruments, setPlaybackFromStart, view]
+    [setDefaultInstruments, setTool, setPlaybackFromStart, view]
   );
 
   const onKeyUp = useCallback(
@@ -190,8 +192,11 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
       if (!e.altKey) {
         setPlaybackFromStart(false);
       }
+      if (!e.shiftKey) {
+        setTool("pencil");
+      }
     },
-    [setPlaybackFromStart]
+    [setTool, setPlaybackFromStart]
   );
 
   useEffect(() => {
@@ -262,13 +267,13 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
             >
               <EraserIcon />
             </Button>
-            {/* <Button
+            <Button
               variant="transparent"
               onClick={() => setTool("selection")}
               active={tool === "selection"}
             >
               <SelectionIcon />
-            </Button>{" "} */}
+            </Button>
           </>
         ) : (
           ""
