@@ -345,7 +345,7 @@ export const SongPianoRoll = ({
                   </>
                 ))}
             </Piano>
-            <SongGrid tabIndex={0}>
+            <SongGrid>
               <RollChannelGrid cellSize={CELL_SIZE} />
               {v.map((i) => (
                 <RollChannel

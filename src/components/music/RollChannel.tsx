@@ -346,6 +346,51 @@ export const RollChannelFwd = ({
     };
   });
 
+  const onKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if ((e.target as HTMLElement)?.nodeName !== "BODY") {
+        return;
+      }
+      if (e.ctrlKey || e.metaKey) {
+        return;
+      }
+
+      if (e.key === "Backspace") {
+        if (pattern) {
+          const newPattern = cloneDeep(pattern);
+          console.log(newPattern, selectedPatternCells, channelId);
+          selectedPatternCells.forEach((i) => {
+            console.log(newPattern[i]);
+            newPattern[i].splice(channelId, 1, new PatternCell());
+          });
+          dispatch(trackerActions.setSelectedPatternCells([]));
+          console.log(patternId, newPattern);
+          dispatch(
+            trackerDocumentActions.editPattern({
+              patternId: patternId,
+              pattern: newPattern,
+            })
+          );
+        }
+      }
+      if (e.key === "Escape") {
+        dispatch(trackerActions.setSelectedPatternCells([]));
+        setIsDragging(false);
+      }
+    },
+    [channelId, dispatch, pattern, patternId, selectedPatternCells]
+  );
+
+  // Keyboard handlers
+  useEffect(() => {
+    if (active) {
+      window.addEventListener("keydown", onKeyDown);
+      return () => {
+        window.removeEventListener("keydown", onKeyDown);
+      };
+    }
+  }, [active, onKeyDown]);
+
   return (
     <Wrapper
       data-channel={channelId}
