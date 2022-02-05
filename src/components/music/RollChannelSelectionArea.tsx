@@ -108,8 +108,16 @@ export const RollChannelSelectionAreaFwd = ({
     (e: MouseEvent) => {
       if (gridRef.current && tool === "selection" && e.button === 0) {
         const bounds = gridRef.current.getBoundingClientRect();
-        const x = Math.floor((e.pageX - bounds.left) / cellSize) * cellSize;
-        const y = Math.floor((e.pageY - bounds.top) / cellSize) * cellSize;
+        const x = clamp(
+          Math.floor((e.pageX - bounds.left) / cellSize) * cellSize,
+          0,
+          63 * cellSize
+        );
+        const y = clamp(
+          Math.floor((e.pageY - bounds.top) / cellSize) * cellSize,
+          0,
+          12 * 6 * cellSize - cellSize
+        );
 
         const newSelectionRect = { x, y, width: cellSize, height: cellSize };
 
@@ -163,7 +171,6 @@ export const RollChannelSelectionAreaFwd = ({
         const width = Math.abs(selectionOrigin.x - x2);
         const height = Math.abs(selectionOrigin.y - y2);
 
-        console.log(x);
         setSelectionRect({ x, y, width, height });
 
         const selectedCells = selectCellsInRange([], selectionRect);
