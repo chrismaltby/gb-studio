@@ -320,10 +320,10 @@ export const RollChannelFwd = ({
             trackerActions.setSelectedPatternCells(renderSelectedPatternCells)
           );
         }
-        setIsDragging(false);
         setMoveNoteFrom({ note: 0, column: 0 });
         setMoveNoteTo({ note: 0, column: 0 });
       }
+      setIsDragging(false);
       setIsMouseDown(false);
     },
     [
