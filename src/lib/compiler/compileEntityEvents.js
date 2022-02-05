@@ -3,7 +3,7 @@ import ScriptBuilder from "./scriptBuilder";
 const STRING_NOT_FOUND = "STRING_NOT_FOUND";
 const VARIABLE_NOT_FOUND = "VARIABLE_NOT_FOUND";
 
-const compileEntityEvents = (scriptName, input = [], options = {}) => {
+const compileEntityEvents = (scriptSymbolName, input = [], options = {}) => {
   const {
     output = [],
     branch = false,
@@ -57,6 +57,7 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
             {
               ...options,
               ...scriptBuilder,
+              scriptSymbolName,
               event: subInput[i],
             }
           );
@@ -122,7 +123,7 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
       }
     }
 
-    return scriptBuilder.toScriptString(scriptName, lock);
+    return scriptBuilder.toScriptString(scriptSymbolName, lock);
   } catch (e) {
     throw new Error(
       `Compiling failed with error "${e}". ${JSON.stringify(location)}`

@@ -77,6 +77,7 @@ interface ScriptBuilderFunctionArgLookup {
 }
 
 interface ScriptBuilderOptions {
+  scriptSymbolName: string;
   scene: PrecompiledScene;
   sceneIndex: number;
   entityIndex: number;
@@ -437,6 +438,7 @@ class ScriptBuilder {
     this.output = output;
     this.options = {
       ...options,
+      scriptSymbolName: options.scriptSymbolName || "script_1",
       sceneIndex: options.sceneIndex || 0,
       entityIndex: options.entityIndex || 0,
       entityType: options.entityType || "scene",
