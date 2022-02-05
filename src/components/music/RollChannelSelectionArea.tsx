@@ -185,6 +185,23 @@ export const RollChannelSelectionAreaFwd = ({
     // setSelecting(false);
   }, []);
 
+  const onSelectAll = useCallback(
+    (_e) => {
+      const selection = window.getSelection();
+      if (!selection || selection.focusNode) {
+        return;
+      }
+      window.getSelection()?.empty();
+      const allPatternCells = pattern
+        ?.map((c, i) => {
+          return c[channelId].note ? i : undefined;
+        })
+        .filter((c) => c !== undefined) as number[];
+      dispatch(trackerActions.setSelectedPatternCells(allPatternCells));
+    },
+    [channelId, dispatch, pattern]
+  );
+
   useEffect(() => {
     window.addEventListener("mouseup", handleMouseUp);
     window.addEventListener("mousedown", handleMouseDown);
@@ -194,6 +211,14 @@ export const RollChannelSelectionAreaFwd = ({
       window.removeEventListener("mouseup", handleMouseUp);
       window.removeEventListener("mousedown", handleMouseDown);
       window.removeEventListener("mousemove", handleMouseMove);
+    };
+  });
+
+  useEffect(() => {
+    document.addEventListener("selectionchange", onSelectAll);
+
+    return () => {
+      document.removeEventListener("selectionchange", onSelectAll);
     };
   });
 
