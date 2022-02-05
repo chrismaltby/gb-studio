@@ -201,7 +201,7 @@ export const RollChannelSelectionAreaFwd = ({
       window.getSelection()?.empty();
       const allPatternCells = pattern
         ?.map((c, i) => {
-          return c[channelId].note ? i : undefined;
+          return c[channelId].note !== null ? i : undefined;
         })
         .filter((c) => c !== undefined) as number[];
       dispatch(trackerActions.setSelectedPatternCells(allPatternCells));

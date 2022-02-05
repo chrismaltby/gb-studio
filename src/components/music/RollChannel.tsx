@@ -259,21 +259,21 @@ export const RollChannelFwd = ({
                 new PatternCell()
               )[0];
               if (newPattern[i + deltaX]) {
-                newPatternCell.note = newPatternCell.note
-                  ? newPatternCell.note + deltaY
-                  : newPatternCell.note;
-                if (selectedPatternCells.indexOf(i - deltaX) < 0) {
+                newPatternCell.note =
+                  newPatternCell.note !== null
+                    ? (newPatternCell.note + deltaY + 12 * 6) % (12 * 6)
+                    : null;
+                if (selectedPatternCells.indexOf(i - deltaX) === -1) {
                   newPattern[i] = newPatternColumn;
                 }
                 newPattern[i + deltaX][channelId] = newPatternCell;
+              } else if (i + deltaX < 0 || i + deltaX >= 64) {
+                if (selectedPatternCells.indexOf(i - deltaX) === -1) {
+                  newPattern[i][channelId] = new PatternCell();
+                }
               }
             }
             setRenderPattern(newPattern);
-
-            console.log(
-              selectedPatternCells,
-              selectedPatternCells.map((i) => i + deltaX)
-            );
             setRenderSelectedPatternCells(
               selectedPatternCells.map((i) => i + deltaX)
             );
@@ -317,7 +317,9 @@ export const RollChannelFwd = ({
             })
           );
           dispatch(
-            trackerActions.setSelectedPatternCells(renderSelectedPatternCells)
+            trackerActions.setSelectedPatternCells(
+              renderSelectedPatternCells.filter((c) => c >= 0 && c < 64)
+            )
           );
         }
         setMoveNoteFrom({ note: 0, column: 0 });
