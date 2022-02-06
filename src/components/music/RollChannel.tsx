@@ -94,6 +94,7 @@ export const RollChannelFwd = ({
 
   const [isMouseDown, setIsMouseDown] = useState<boolean>(false);
   const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [clonePatternCells, setClonePatternCells] = useState<boolean>(false);
 
   const selectedPatternCells = useSelector(
     (state: RootState) => state.tracker.selectedPatternCells
@@ -112,6 +113,62 @@ export const RollChannelFwd = ({
   useEffect(() => {
     setRenderSelectedPatternCells(selectedPatternCells);
   }, [selectedPatternCells]);
+
+  const refreshRenderPattern = useCallback(
+    (newMoveNoteTo) => {
+      if (pattern) {
+        const columnFrom = moveNoteFrom?.column || 0;
+        const columnTo = newMoveNoteTo?.column || 0;
+        const columnDir = columnFrom > columnTo ? -1 : 1;
+        const deltaX = Math.abs(columnFrom - columnTo) * columnDir;
+
+        const noteFrom = moveNoteFrom?.note || 0;
+        const noteTo = newMoveNoteTo?.note || 0;
+        const noteDir = noteFrom > noteTo ? -1 : 1;
+        const deltaY = Math.abs(noteFrom - noteTo) * noteDir;
+
+        const newPattern = cloneDeep(pattern);
+        for (const i of selectedPatternCells) {
+          const newPatternColumn = cloneDeep(pattern[i]);
+          const newPatternCell = !clonePatternCells
+            ? newPatternColumn.splice(channelId, 1, new PatternCell())[0]
+            : { ...newPatternColumn[channelId] };
+          if (newPattern[i + deltaX]) {
+            newPatternCell.note =
+              newPatternCell.note !== null
+                ? (newPatternCell.note + deltaY + 12 * 6) % (12 * 6)
+                : null;
+            if (selectedPatternCells.indexOf(i - deltaX) === -1) {
+              newPattern[i] = newPatternColumn;
+            }
+            newPattern[i + deltaX][channelId] = newPatternCell;
+          } else if (i + deltaX < 0 || i + deltaX >= 64) {
+            if (selectedPatternCells.indexOf(i - deltaX) === -1) {
+              newPattern[i][channelId] = new PatternCell();
+            }
+          }
+        }
+        setRenderPattern(newPattern);
+        setRenderSelectedPatternCells(
+          selectedPatternCells.map((i) => i + deltaX)
+        );
+      }
+    },
+    [
+      channelId,
+      clonePatternCells,
+      moveNoteFrom?.column,
+      moveNoteFrom?.note,
+      pattern,
+      selectedPatternCells,
+    ]
+  );
+
+  useEffect(() => {
+    if (isDragging) {
+      refreshRenderPattern(moveNoteTo);
+    }
+  }, [isDragging, clonePatternCells, moveNoteTo, refreshRenderPattern]);
 
   const handleNoteClick = useCallback(
     (column: number, cell: PatternCell) => (e: any) => {
@@ -239,45 +296,7 @@ export const RollChannelFwd = ({
           };
           setMoveNoteTo(newMoveNoteTo);
 
-          if (pattern) {
-            const columnFrom = moveNoteFrom?.column || 0;
-            const columnTo = newMoveNoteTo?.column || 0;
-            const columnDir = columnFrom > columnTo ? -1 : 1;
-            const deltaX = Math.abs(columnFrom - columnTo) * columnDir;
-
-            const noteFrom = moveNoteFrom?.note || 0;
-            const noteTo = newMoveNoteTo?.note || 0;
-            const noteDir = noteFrom > noteTo ? -1 : 1;
-            const deltaY = Math.abs(noteFrom - noteTo) * noteDir;
-
-            const newPattern = cloneDeep(pattern);
-            for (const i of selectedPatternCells) {
-              const newPatternColumn = cloneDeep(pattern[i]);
-              const newPatternCell = newPatternColumn.splice(
-                channelId,
-                1,
-                new PatternCell()
-              )[0];
-              if (newPattern[i + deltaX]) {
-                newPatternCell.note =
-                  newPatternCell.note !== null
-                    ? (newPatternCell.note + deltaY + 12 * 6) % (12 * 6)
-                    : null;
-                if (selectedPatternCells.indexOf(i - deltaX) === -1) {
-                  newPattern[i] = newPatternColumn;
-                }
-                newPattern[i + deltaX][channelId] = newPatternCell;
-              } else if (i + deltaX < 0 || i + deltaX >= 64) {
-                if (selectedPatternCells.indexOf(i - deltaX) === -1) {
-                  newPattern[i][channelId] = new PatternCell();
-                }
-              }
-            }
-            setRenderPattern(newPattern);
-            setRenderSelectedPatternCells(
-              selectedPatternCells.map((i) => i + deltaX)
-            );
-          }
+          refreshRenderPattern(newMoveNoteTo);
         }
       }
     },
@@ -286,14 +305,12 @@ export const RollChannelFwd = ({
       hoverNote,
       isMouseDown,
       song,
-      selectedPatternCells,
+      selectedPatternCells.length,
       dispatch,
       moveNoteTo,
       channelId,
       currentInstrument,
-      pattern,
-      moveNoteFrom?.column,
-      moveNoteFrom?.note,
+      refreshRenderPattern,
     ]
   );
 
@@ -356,6 +373,9 @@ export const RollChannelFwd = ({
       if (e.ctrlKey || e.metaKey) {
         return;
       }
+      if (e.altKey) {
+        setClonePatternCells(true);
+      }
 
       if (e.key === "Backspace") {
         if (pattern) {
@@ -383,15 +403,23 @@ export const RollChannelFwd = ({
     [channelId, dispatch, pattern, patternId, selectedPatternCells]
   );
 
+  const onKeyUp = useCallback((e: KeyboardEvent) => {
+    if (!e.altKey) {
+      setClonePatternCells(false);
+    }
+  }, []);
+
   // Keyboard handlers
   useEffect(() => {
     if (active) {
       window.addEventListener("keydown", onKeyDown);
+      window.addEventListener("keyup", onKeyUp);
       return () => {
         window.removeEventListener("keydown", onKeyDown);
+        window.removeEventListener("keyup", onKeyUp);
       };
     }
-  }, [active, onKeyDown]);
+  }, [active, onKeyDown, onKeyUp]);
 
   return (
     <Wrapper
@@ -410,7 +438,7 @@ export const RollChannelFwd = ({
         handleMouseLeave(e.nativeEvent);
       }}
       style={{
-        cursor: isDragging ? "move" : "auto",
+        cursor: isDragging ? (clonePatternCells ? "copy" : "move") : "auto",
       }}
     >
       {renderPattern?.map((column: PatternCell[], columnIdx: number) => {
