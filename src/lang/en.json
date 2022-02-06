@@ -490,6 +490,10 @@
   "FIELD_SEARCH_SETTINGS": "Search Settings...",
   "FIELD_REPORT_BUG": "Report bug",
   "FIELD_RNG_SEED_DESCRIPTION": "Place this to run in response to user input to ensure random numbers change between playthroughs",
+  "FIELD_SOLID_TOP": "Top",
+  "FIELD_SOLID_BOTTOM": "Bottom",
+  "FIELD_SOLID_LEFT": "Left",
+  "FIELD_SOLID_RIGHT": "Right",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
