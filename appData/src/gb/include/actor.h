@@ -55,7 +55,7 @@ UBYTE actor_get_frame_offset(actor_t *actor) BANKED;
 actor_t *actor_at_tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip) BANKED;
 actor_t *actor_in_front_of_player(UBYTE grid_size, UBYTE inc_noclip) BANKED;
 actor_t *actor_overlapping_player(UBYTE inc_noclip) BANKED;
-actor_t *actor_overlapping_player_solid(UBYTE inc_noclip, actor_t *first_actor) BANKED;
+actor_t *actor_overlapping_player_solid(uint16_t new_x, uint16_t new_y, actor_t *first_actor, uint8_t mask) BANKED;
 actor_t *actor_overlapping_bb(bounding_box_t *bb, upoint16_t *offset, actor_t *ignore, UBYTE inc_noclip) BANKED;
 void actor_set_anim_idle(actor_t *actor) BANKED;
 void actor_set_anim_moving(actor_t *actor) BANKED;
