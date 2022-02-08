@@ -68,6 +68,8 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
   const view = useSelector((state: RootState) => state.tracker.view);
 
   const tool = useSelector((state: RootState) => state.tracker.tool);
+  const [previousTool, setPreviousTool] = useState<PianoRollToolType>();
+  const [tmpSelectionMode, setTmpSelectionMode] = useState(false);
 
   const defaultStartPlaybackPosition = useSelector(
     (state: RootState) => state.tracker.defaultStartPlaybackPosition
@@ -106,10 +108,11 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
   }, [dispatch, view]);
 
   const setTool = useCallback(
-    (tool: PianoRollToolType) => {
-      dispatch(trackerActions.setTool(tool));
+    (newTool: PianoRollToolType) => {
+      setPreviousTool(tool);
+      dispatch(trackerActions.setTool(newTool));
     },
-    [dispatch]
+    [dispatch, tool]
   );
 
   const saveSong = useCallback(() => {
@@ -152,7 +155,8 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
       if (e.target && (e.target as Node).nodeName === "INPUT") {
         return;
       }
-      if (e.shiftKey) {
+      if (!tmpSelectionMode && e.shiftKey) {
+        setTmpSelectionMode(true);
         setTool("selection");
       }
       if (e.ctrlKey || e.shiftKey) {
@@ -184,7 +188,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
         setDefaultInstruments(8);
       }
     },
-    [setDefaultInstruments, setTool, setPlaybackFromStart, view]
+    [tmpSelectionMode, view, setTool, setDefaultInstruments]
   );
 
   const onKeyUp = useCallback(
@@ -192,11 +196,12 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
       if (!e.altKey) {
         setPlaybackFromStart(false);
       }
-      if (!e.shiftKey) {
-        setTool("pencil");
+      if (tmpSelectionMode && !e.shiftKey) {
+        setTool(previousTool || "pencil");
+        setTmpSelectionMode(false);
       }
     },
-    [setTool, setPlaybackFromStart]
+    [tmpSelectionMode, setTool, previousTool]
   );
 
   useEffect(() => {

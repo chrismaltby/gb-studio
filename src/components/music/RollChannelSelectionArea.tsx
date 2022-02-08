@@ -72,6 +72,7 @@ export const RollChannelSelectionAreaFwd = ({
     useState<Position | undefined>();
   const [selectionRect, setSelectionRect] =
     useState<SelectionRect | undefined>();
+  const [addToSelection, setAddToSelection] = useState(false);
 
   const selectedPatternCells = useSelector(
     (state: RootState) => state.tracker.selectedPatternCells
@@ -126,7 +127,7 @@ export const RollChannelSelectionAreaFwd = ({
         const newSelectionRect = { x, y, width: cellSize, height: cellSize };
 
         const newSelectedPatterns = selectCellsInRange(
-          selectedPatternCells,
+          addToSelection ? selectedPatternCells : [],
           newSelectionRect
         );
 
@@ -136,7 +137,14 @@ export const RollChannelSelectionAreaFwd = ({
         dispatch(trackerActions.setSelectedPatternCells(newSelectedPatterns));
       }
     },
-    [cellSize, dispatch, selectCellsInRange, selectedPatternCells, tool]
+    [
+      cellSize,
+      dispatch,
+      selectCellsInRange,
+      selectedPatternCells,
+      tool,
+      addToSelection,
+    ]
   );
 
   const handleMouseUp = useCallback(
@@ -177,7 +185,10 @@ export const RollChannelSelectionAreaFwd = ({
 
         setSelectionRect({ x, y, width, height });
 
-        const selectedCells = selectCellsInRange([], selectionRect);
+        const selectedCells = selectCellsInRange(
+          addToSelection ? selectedPatternCells : [],
+          selectionRect
+        );
         dispatch(trackerActions.setSelectedPatternCells(selectedCells));
       }
     },
@@ -239,6 +250,31 @@ export const RollChannelSelectionAreaFwd = ({
       document.removeEventListener("selectionchange", onSelectAll);
     };
   });
+
+  const onKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.ctrlKey || e.metaKey) {
+      return;
+    }
+    if (e.shiftKey) {
+      setAddToSelection(true);
+    }
+  }, []);
+
+  const onKeyUp = useCallback((e: KeyboardEvent) => {
+    if (!e.shiftKey) {
+      setAddToSelection(false);
+    }
+  }, []);
+
+  // Keyboard handlers
+  useEffect(() => {
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keyup", onKeyUp);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keyup", onKeyUp);
+    };
+  }, [onKeyDown, onKeyUp]);
 
   return (
     <Wrapper
