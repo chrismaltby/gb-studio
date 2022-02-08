@@ -5,6 +5,10 @@ import { RootState } from "store/configureStore";
 import trackerActions from "store/features/tracker/trackerActions";
 import styled, { css } from "styled-components";
 
+type BlurableDOMElement = {
+  blur: () => void;
+};
+
 interface RollChannelSelectionAreaProps {
   channelId: number;
   patternId: number;
@@ -205,6 +209,13 @@ export const RollChannelSelectionAreaFwd = ({
         })
         .filter((c) => c !== undefined) as number[];
       dispatch(trackerActions.setSelectedPatternCells(allPatternCells));
+
+      // Blur any focused element to be able to use keyboard actions on the
+      // selection
+      const el = document.querySelector(":focus") as unknown as
+        | BlurableDOMElement
+        | undefined;
+      if (el && el.blur) el.blur();
     },
     [channelId, dispatch, pattern]
   );
