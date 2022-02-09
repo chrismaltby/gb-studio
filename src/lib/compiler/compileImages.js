@@ -2,7 +2,6 @@ import { assetFilename } from "../helpers/gbstudio";
 import getFileModifiedTime from "../helpers/fs/getModifiedTime";
 import { getBackgroundInfo } from "../helpers/validation";
 import {
-  mergeTileLookups,
   readFileToTilesDataArray,
   tileLookupToTileData,
   tileArrayToTileData,
@@ -97,57 +96,24 @@ const compileImages = async (
     return lastOutput;
   }
 
-  // Find smallest overlapping lookups
+  // Share identical tilesets
   for (let i = 0; i < imgs.length - 1; i++) {
     if (!tilesetLookups[i]) {
       continue;
     }
-    let minDiffLength = MAX_SIZE;
-    let minLookup = null;
-    let minIndex = null;
-
     for (let j = i + 1; j < imgs.length; j++) {
       if (!tilesetLookups[j]) {
         continue;
       }
-
-      const mergedLookup = mergeTileLookups([
-        tilesetLookups[i],
-        tilesetLookups[j],
-      ]);
-
-      const mergedLength = Object.keys(mergedLookup).length;
-      const aLength = Object.keys(tilesetLookups[i]).length;
-      const bLength = Object.keys(tilesetLookups[j]).length;
-
-      const diffLength = mergedLength - Math.max(aLength, bLength);
-
-      const maxAllowedDiff = Math.min(aLength, bLength) / 2;
+      if (tilesetLookups[i] === tilesetLookups[j]) {
+        continue;
+      }
 
       if (
-        mergedLength <= MAX_TILESET_TILES &&
-        diffLength < minDiffLength &&
-        diffLength < maxAllowedDiff
+        JSON.stringify(tilesetLookups[i]) === JSON.stringify(tilesetLookups[j])
       ) {
-        minLookup = mergedLookup;
-        minIndex = j;
-        minDiffLength = diffLength;
-        if (minDiffLength === 0) {
-          break;
-        }
+        tilesetLookups[j] = tilesetLookups[i];
       }
-    }
-
-    if (minIndex) {
-      for (let k = 0; k <= i; k++) {
-        if (
-          tilesetLookups[k] === tilesetLookups[i] ||
-          tilesetLookups[k] === tilesetLookups[minIndex]
-        ) {
-          tilesetLookups[k] = minLookup;
-        }
-      }
-      tilesetLookups[minIndex] = minLookup;
     }
   }
 

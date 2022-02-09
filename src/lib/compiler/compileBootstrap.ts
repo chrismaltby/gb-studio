@@ -1,20 +1,23 @@
 import { EngineFieldSchema } from "store/features/engine/engineState";
 import {
   ActorDirection,
-  Font,
   EngineFieldValue,
 } from "store/features/entities/entitiesTypes";
-import { avatarFontSymbol, fontSymbol, sceneSymbol } from "./compileData2";
+import {
+  avatarFontSymbol,
+  PrecompiledFontData,
+  PrecompiledScene,
+} from "./compileData2";
 import { dirEnum } from "./helpers";
 
 interface InitialState {
   startX: number;
   startY: number;
   startDirection: ActorDirection;
-  startSceneIndex: number;
+  startScene: PrecompiledScene;
   startMoveSpeed: number;
   startAnimSpeed: number;
-  fonts: Font[];
+  fonts: PrecompiledFontData[];
   avatarFonts: undefined[];
   engineFields: EngineFieldSchema[];
   engineFieldValues: EngineFieldValue[];
@@ -28,7 +31,7 @@ export const compileScriptEngineInit = ({
   startX,
   startY,
   startDirection,
-  startSceneIndex,
+  startScene,
   startMoveSpeed,
   startAnimSpeed,
   fonts,
@@ -50,16 +53,14 @@ _start_scene_y::
 _start_scene_dir:: 
         .db .${dirEnum(startDirection)}
 _start_scene::
-        IMPORT_FAR_PTR_DATA _${sceneSymbol(startSceneIndex)}
+        IMPORT_FAR_PTR_DATA _${startScene.symbolName}
 _start_player_move_speed:: 
         .db ${Math.round(startMoveSpeed * 16)}
 _start_player_anim_tick:: 
         .db ${startAnimSpeed}
 _ui_fonts:: 
 ${fonts
-  .map(
-    (_, fontIndex) => `        IMPORT_FAR_PTR_DATA _${fontSymbol(fontIndex)}`
-  )
+  .map((font) => `        IMPORT_FAR_PTR_DATA _${font.symbolName}`)
   .join("\n")}
 ${avatarFonts
   .map(

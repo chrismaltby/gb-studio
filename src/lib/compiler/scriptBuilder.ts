@@ -26,7 +26,11 @@ import shuntingYard from "../rpn/shuntingYard";
 import { PrecompiledFontData } from "./compileFonts";
 import { encodeString } from "../helpers/encodings";
 import { PrecompiledMusicTrack } from "./compileMusic";
-import { emoteSymbol, spriteSheetSymbol } from "./compileData2";
+import {
+  PrecompiledScene,
+  PrecompiledSprite,
+  PrecompiledEmote,
+} from "./compileData2";
 import { DMG_PALETTE } from "../../consts";
 import {
   isPropertyField,
@@ -73,21 +77,22 @@ interface ScriptBuilderFunctionArgLookup {
 }
 
 interface ScriptBuilderOptions {
-  scene: ScriptBuilderScene;
+  scriptSymbolName: string;
+  scene: PrecompiledScene;
   sceneIndex: number;
   entityIndex: number;
   entityType: ScriptBuilderEntityType;
   variablesLookup: VariablesLookup;
   variableAliasLookup: Dictionary<string>;
-  scenes: ScriptBuilderScene[];
-  sprites: ScriptBuilderEntity[];
+  scenes: PrecompiledScene[];
+  sprites: PrecompiledSprite[];
   statesOrder: string[];
   stateReferences: string[];
   fonts: PrecompiledFontData[];
   defaultFontId: string;
   music: PrecompiledMusicTrack[];
   avatars: ScriptBuilderEntity[];
-  emotes: ScriptBuilderEntity[];
+  emotes: PrecompiledEmote[];
   palettes: Palette[];
   customEvents: CustomEvent[];
   entity?: ScriptBuilderEntity;
@@ -96,6 +101,10 @@ interface ScriptBuilderOptions {
   additionalScripts: Dictionary<{
     symbol: string;
     compiledScript: string;
+  }>;
+  additionalOutput: Dictionary<{
+    filename: string;
+    data: string;
   }>;
   symbols: Dictionary<string>;
   argLookup: ScriptBuilderFunctionArgLookup;
@@ -433,6 +442,7 @@ class ScriptBuilder {
     this.output = output;
     this.options = {
       ...options,
+      scriptSymbolName: options.scriptSymbolName || "script_1",
       sceneIndex: options.sceneIndex || 0,
       entityIndex: options.entityIndex || 0,
       entityType: options.entityType || "scene",
@@ -451,6 +461,7 @@ class ScriptBuilder {
       palettes: options.palettes || [],
       customEvents: options.customEvents || [],
       additionalScripts: options.additionalScripts || {},
+      additionalOutput: options.additionalOutput || {},
       symbols: options.symbols || {},
       argLookup: options.argLookup || { actor: {}, variable: {} },
       compileEvents: options.compileEvents || ((_self, _e) => {}),
@@ -2070,7 +2081,6 @@ class ScriptBuilder {
     this._addComment("Actor Show");
     this.actorSetById(id);
     this._actorSetHidden(this._localRef(actorRef), false);
-    this._actorActivate(this._localRef(actorRef));
     this._addNL();
   };
 
@@ -2079,6 +2089,21 @@ class ScriptBuilder {
     this._addComment("Actor Hide");
     this.actorSetById(id);
     this._actorSetHidden(this._localRef(actorRef), true);
+    this._addNL();
+  };
+
+  actorActivate = (id: string) => {
+    const actorRef = this._declareLocal("actor", 4);
+    this._addComment("Actor Activate");
+    this.actorSetById(id);
+    this._actorActivate(this._localRef(actorRef));
+    this._addNL();
+  };
+
+  actorDeactivate = (id: string) => {
+    const actorRef = this._declareLocal("actor", 4);
+    this._addComment("Actor Deactivate");
+    this.actorSetById(id);
     this._actorDeactivate(this._localRef(actorRef));
     this._addNL();
   };
@@ -2143,10 +2168,10 @@ class ScriptBuilder {
   actorEmote = (emoteId: string) => {
     const actorRef = this._declareLocal("actor", 4);
     const { emotes } = this.options;
-    const emoteIndex = emotes.findIndex((e) => e.id === emoteId);
-    if (emoteIndex > -1) {
+    const emote = emotes.find((e) => e.id === emoteId);
+    if (emote) {
       this._addComment("Actor Emote");
-      this._actorEmote(this._localRef(actorRef), emoteSymbol(emoteIndex));
+      this._actorEmote(this._localRef(actorRef), emote.symbolName);
       this._addNL();
     }
   };
@@ -2154,13 +2179,10 @@ class ScriptBuilder {
   actorSetSprite = (spriteSheetId: string) => {
     const actorRef = this._declareLocal("actor", 4);
     const { sprites } = this.options;
-    const spriteIndex = sprites.findIndex((s) => s.id === spriteSheetId);
-    if (spriteIndex > -1) {
+    const sprite = sprites.find((s) => s.id === spriteSheetId);
+    if (sprite) {
       this._addComment("Actor Set Spritesheet");
-      this._actorSetSpritesheet(
-        this._localRef(actorRef),
-        spriteSheetSymbol(spriteIndex)
-      );
+      this._actorSetSpritesheet(this._localRef(actorRef), sprite.symbolName);
       this._addNL();
     }
   };
@@ -2168,16 +2190,13 @@ class ScriptBuilder {
   playerSetSprite = (spriteSheetId: string, persist: boolean) => {
     const actorRef = this._declareLocal("actor", 4);
     const { sprites, scene } = this.options;
-    const spriteIndex = sprites.findIndex((s) => s.id === spriteSheetId);
-    if (spriteIndex > -1) {
+    const sprite = sprites.find((s) => s.id === spriteSheetId);
+    if (sprite) {
       this._addComment("Player Set Spritesheet");
       this._setConst(this._localRef(actorRef), 0);
-      this._actorSetSpritesheet(
-        this._localRef(actorRef),
-        spriteSheetSymbol(spriteIndex)
-      );
+      this._actorSetSpritesheet(this._localRef(actorRef), sprite.symbolName);
       if (persist) {
-        const symbol = spriteSheetSymbol(spriteIndex);
+        const symbol = sprite.symbolName;
         this._setConst(`PLAYER_SPRITE_${scene.type}_BANK`, `___bank_${symbol}`);
         this._setConst(`PLAYER_SPRITE_${scene.type}_DATA`, `_${symbol}`);
       }
@@ -2770,12 +2789,12 @@ class ScriptBuilder {
   // --------------------------------------------------------------------------
   // Timer
 
-  timerScriptSet = (duration = 10.0, script: ScriptEvent[]) => {
+  timerScriptSet = (frames = 600, script: ScriptEvent[]) => {
     this._addComment(`Timer Start`);
     const scriptRef = this._compileSubScript("timer", script);
     const ctx = 1;
     const TIMER_CYCLES = 16;
-    let durationTicks = ((60 * duration) / TIMER_CYCLES + 0.5) | 0;
+    let durationTicks = (frames / TIMER_CYCLES + 0.5) | 0;
     if (durationTicks <= 0) {
       durationTicks = 1;
     }
@@ -2980,8 +2999,8 @@ class ScriptBuilder {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Load Scene");
     const { scenes } = this.options;
-    const sceneIndex = scenes.findIndex((s) => s.id === sceneId);
-    if (sceneIndex > -1) {
+    const scene = scenes.find((s) => s.id === sceneId);
+    if (scene) {
       this._setConstMemInt8(
         "fade_frames_per_step",
         fadeSpeeds[fadeSpeed] ?? 0x3
@@ -2996,7 +3015,7 @@ class ScriptBuilder {
         this._actorSetDirection(this._localRef(actorRef), asmDir);
       }
       this._raiseException("EXCEPTION_CHANGE_SCENE", 3);
-      this._importFarPtrData(`scene_${sceneIndex}`);
+      this._importFarPtrData(scene.symbolName);
       this._addNL();
     }
   };
@@ -4269,6 +4288,16 @@ class ScriptBuilder {
   compileEvents = (path: ScriptEvent[]) => {
     const { compileEvents } = this.options;
     compileEvents(this, path);
+  };
+
+  // --------------------------------------------------------------------------
+  // Dynamic asset files
+
+  writeAsset = (filename: string, data: string) => {
+    this.options.additionalOutput[filename] = {
+      filename,
+      data,
+    };
   };
 
   // --------------------------------------------------------------------------

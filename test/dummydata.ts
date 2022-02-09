@@ -30,6 +30,10 @@ import compileFonts, {
   PrecompiledFontData,
 } from "../src/lib/compiler/compileFonts";
 import { projectTemplatesRoot } from "../src/consts";
+import {
+  PrecompiledBackground,
+  PrecompiledSprite,
+} from "../src/lib/compiler/compileData2";
 
 export const dummyScene: SceneData = {
   id: "",
@@ -94,6 +98,27 @@ export const dummyPalette: Palette = {
   colors: ["", "", "", ""],
 };
 
+export const dummyPrecompiledBackground: PrecompiledBackground = {
+  id: "",
+  symbolName: "bg_1",
+  name: "",
+  width: 1,
+  height: 1,
+  data: new Uint8Array(),
+  tileset: {
+    symbolName: "ts_1",
+    data: new Uint8Array(),
+  },
+  tilemap: {
+    symbolName: "tm_1",
+    data: new Uint8Array(),
+  },
+  tilemapAttr: {
+    symbolName: "ta_1",
+    data: new Uint8Array(),
+  },
+};
+
 export const dummyBackground: Background = {
   id: "",
   name: "",
@@ -125,6 +150,29 @@ export const dummySpriteSheet: SpriteSheet = {
   animSpeed: 4,
   inode: "1",
   _v: 0,
+};
+
+export const dummyPrecompiledSpriteSheet: PrecompiledSprite = {
+  id: "",
+  symbolName: "sprite_1",
+  name: "",
+  filename: "",
+  canvasWidth: 32,
+  canvasHeight: 32,
+  boundsX: 0,
+  boundsY: 0,
+  boundsWidth: 16,
+  boundsHeight: 16,
+  states: [],
+  tileset: {
+    symbolName: "ts_1",
+    data: new Uint8Array(),
+  },
+  data: [],
+  tiles: [],
+  metasprites: [],
+  animationOffsets: [],
+  metaspritesOrder: [],
 };
 
 export const dummyMusic: Music = {

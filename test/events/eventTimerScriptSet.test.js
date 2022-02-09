@@ -7,11 +7,11 @@ test("Should be able to set a timer script", () => {
   compile(
     {
       duration: 5.0,
-      script: timeoutScript
+      script: timeoutScript,
     },
     {
-      timerScriptSet: mockTimerScriptSet
+      timerScriptSet: mockTimerScriptSet,
     }
   );
-  expect(mockTimerScriptSet).toBeCalledWith(5.0, timeoutScript);
+  expect(mockTimerScriptSet).toBeCalledWith(300, timeoutScript);
 });

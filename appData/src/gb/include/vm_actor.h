@@ -5,6 +5,7 @@
 #include "gbs_types.h"
 
 void vm_actor_move_to(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED;
+void vm_actor_move_cancel(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED;
 void vm_actor_activate(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED;
 void vm_actor_set_dir(SCRIPT_CTX * THIS, INT16 idx, direction_e dir) OLDCALL BANKED;
 void vm_actor_deactivate(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED;

@@ -10,7 +10,6 @@
 #include "linked_list.h"
 #include "game_time.h"
 #include "vm.h"
-#include "data/spritesheet_0.h"
 
 projectile_t projectiles[MAX_PROJECTILES];
 projectile_def_t projectile_defs[MAX_PROJECTILE_DEFS];

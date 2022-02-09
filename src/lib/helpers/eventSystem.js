@@ -16,7 +16,7 @@ const mapValues = (obj, fn) =>
 
 const mapEvents = (events = [], callback) => {
   return events.map((event) => {
-    if (event.children) {
+    if (event && event.children) {
       const newEvent = callback(event);
       return {
         ...newEvent,
@@ -25,6 +25,9 @@ const mapEvents = (events = [], callback) => {
           (childEvents) => mapEvents(childEvents, callback)
         ),
       };
+    }
+    if (!event) {
+      return event;
     }
     return callback(event);
   });

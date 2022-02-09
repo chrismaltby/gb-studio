@@ -21,7 +21,6 @@ test("should compile empty events", () => {
 
 ___bank_testname = 255
 .globl ___bank_testname
-.CURRENT_SCRIPT_BANK == ___bank_testname
 
 _testname::
         ; Stop Script
@@ -49,7 +48,6 @@ test("should collapse multiple end events", () => {
 
 ___bank_testname = 255
 .globl ___bank_testname
-.CURRENT_SCRIPT_BANK == ___bank_testname
 
 _testname::
         ; Stop Script
@@ -82,7 +80,6 @@ test("should output text command", async () => {
 
 ___bank_testname = 255
 .globl ___bank_testname
-.CURRENT_SCRIPT_BANK == ___bank_testname
 
 _testname::
         ; Text Dialogue
@@ -136,7 +133,6 @@ test("should output text with avatar command", async () => {
 
 ___bank_testname = 255
 .globl ___bank_testname
-.CURRENT_SCRIPT_BANK == ___bank_testname
 
 _testname::
         ; Text Dialogue
@@ -201,7 +197,6 @@ test("should allow conditional statements", async () => {
 
 ___bank_testname = 255
 .globl ___bank_testname
-.CURRENT_SCRIPT_BANK == ___bank_testname
 
 _testname::
         ; If Variable True
@@ -287,7 +282,6 @@ test("should allow commands after conditional", async () => {
 
 ___bank_testname = 255
 .globl ___bank_testname
-.CURRENT_SCRIPT_BANK == ___bank_testname
 
 _testname::
         ; If Variable True

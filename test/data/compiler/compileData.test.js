@@ -3,6 +3,7 @@ import compile, {
   precompileBackgrounds,
   precompileScenes,
 } from "../../../src/lib/compiler/compileData";
+import { safeSymbolNameGenerator } from "../../../src/lib/compiler/compileData2";
 import {
   EVENT_TEXT,
   EVENT_IF_TRUE,
@@ -425,6 +426,7 @@ test("should walk all scene events to build list of strings", () => {
 });
 
 test("should precompile image data", async () => {
+  const genSymbol = safeSymbolNameGenerator();
   const backgrounds = [
     {
       id: "2b",
@@ -459,7 +461,8 @@ test("should precompile image data", async () => {
     scenes,
     {},
     `${__dirname}/_files`,
-    `${__dirname}/_tmp`
+    `${__dirname}/_tmp`,
+    genSymbol
   );
   expect(usedBackgrounds).toHaveLength(1);
   expect(backgroundLookup["2b"]).toBe(backgrounds[0]);
@@ -467,6 +470,7 @@ test("should precompile image data", async () => {
 });
 
 test("should precompile scenes", async () => {
+  const genSymbol = safeSymbolNameGenerator();
   const scenes = [
     {
       id: "1",
@@ -518,7 +522,8 @@ test("should precompile scenes", async () => {
     {},
     defaultPlayerSprites,
     usedBackgrounds,
-    spriteData
+    spriteData,
+    genSymbol
   );
 
   expect(sceneData).toHaveLength(scenes.length);

@@ -643,7 +643,7 @@ void script_runner_init(UBYTE reset) BANKED {
 // execute a script in the new allocated context
 // actually, it initializes free context with bytecode and moves it into the active context chain
 SCRIPT_CTX * script_execute(UBYTE bank, UBYTE * pc, UWORD * handle, UBYTE nargs, ...) BANKED {
-    if (free_ctxs == 0) return NULL;
+    if (free_ctxs == NULL) return NULL;
 #ifdef SAFE_SCRIPT_EXECUTE
     if (pc == NULL) return NULL;
 #endif
@@ -664,8 +664,13 @@ SCRIPT_CTX * script_execute(UBYTE bank, UBYTE * pc, UWORD * handle, UBYTE nargs,
     tmp->flags = 0;
     // Clear update fn
     tmp->update_fn_bank = 0;
-    // add context to active list
-    tmp->next = first_ctx, first_ctx = tmp;
+    // append context to active list
+    tmp->next = NULL;
+    if (first_ctx) {
+         SCRIPT_CTX * idx = first_ctx;
+         while (idx->next) idx = idx->next;
+         idx->next = tmp;
+    } else first_ctx = tmp;
     // push threadlocals
     if (nargs) {
         va_list va;
@@ -714,7 +719,8 @@ UBYTE script_runner_update() NONBANKED {
             // update handle if present
             if (executing_ctx->hthread) *(executing_ctx->hthread) |= SCRIPT_TERMINATED;
             // script is finished, remove from linked list
-            if (old_executing_ctx) old_executing_ctx->next = executing_ctx->next; else first_ctx = executing_ctx->next;
+            if (old_executing_ctx) old_executing_ctx->next = executing_ctx->next; 
+            if (first_ctx == executing_ctx) first_ctx = executing_ctx->next;
             // add terminated context to free contexts list
             executing_ctx->next = free_ctxs, free_ctxs = executing_ctx;
             // next context

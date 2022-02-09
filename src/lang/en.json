@@ -650,7 +650,7 @@
   "EVENT_ACTOR_MOVE_TO_LABEL": "{actor} Move To {{x},{y}}",
   "EVENT_ACTOR_MOVE_RELATIVE_LABEL": "{actor} Move Relative By {{x},{y}}",
   "EVENT_TEXT_LABEL": "Display \"{text}\"",
-  "EVENT_WAIT_LABEL": "Wait For {time} Seconds",
+  "EVENT_WAIT_LABEL": "Wait For {time} {units}",
   "EVENT_INC_VALUE_LABEL": "Increment {variable} by 1",
   "EVENT_DEC_VALUE_LABEL": "Decrement {variable} by 1",
   "EVENT_IF_EXPRESSION_LABEL": "If {expression}",
@@ -678,7 +678,7 @@
   "EVENT_ACTOR_EMOTE_LABEL": "{actor} Emote {emote}",
   "EVENT_ACTOR_STOP_UPDATE_LABEL": "{actor} Stop \"On Update\" Script",
   "EVENT_CAMERA_MOVE_TO_LABEL": "Camera Move To {{x},{y}}",
-  "EVENT_CAMERA_SHAKE_LABEL": "Camera Shake {direction} For {time} Seconds",
+  "EVENT_CAMERA_SHAKE_LABEL": "Camera Shake {direction} For {time} {units}",
   "EVENT_CALL_CUSTOM_EVENT_LABEL": "Call Script: {script}",
   "EVENT_IF_INPUT_LABEL": "If Joypad {input} Held",
   "EVENT_SET_INPUT_SCRIPT_LABEL": "Attach Script To {input} Button",
@@ -702,6 +702,10 @@
   "EVENT_LINK_HOST": "Link: Host",
   "EVENT_LINK_TRANSFER": "Link: Transfer",
   "EVENT_RNG_SEED": "Seed Random Number Generator",
+  "EVENT_ACTOR_ACTIVATE": "Activate Actor",
+  "EVENT_ACTOR_DEACTIVATE": "Deactivate Actor",
+  "EVENT_ACTOR_ACTIVATE_LABEL": "Activate {actor}",
+  "EVENT_ACTOR_DEACTIVATE_LABEL": "Deactivate {actor}",
 
   "// 10": "Menu -----------------------------------------------------",
 

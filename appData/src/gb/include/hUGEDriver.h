@@ -1,6 +1,8 @@
 #ifndef HUGEDRIVER_H_INCLUDE
 #define HUGEDRIVER_H_INCLUDE
 
+#include <gbdk/platform.h>
+
 #define DN(A, B, C) (unsigned char)(A),(unsigned char)((B << 4) | (C >> 8)),(unsigned char)(C & 0xFF)
 
 #define C_3 0
@@ -78,7 +80,7 @@
 #define LAST_NOTE 72
 #define ___ 90
 
-typedef void (*hUGERoutine_t)(unsigned char param, unsigned char ch, unsigned char tick);
+typedef void (*hUGERoutine_t)(unsigned char param, unsigned char ch, unsigned char tick) OLDCALL;
 
 typedef struct hUGESong_t {
   unsigned char tempo;
@@ -90,21 +92,21 @@ typedef struct hUGESong_t {
 } hUGESong_t;
 
 // initialize the driver with song data
-void hUGE_init(const hUGESong_t * song);
-void hUGE_init_banked(const hUGESong_t * song) __banked;
+void hUGE_init(const hUGESong_t * song) OLDCALL;
+void hUGE_init_banked(const hUGESong_t * song) BANKED OLDCALL;
 
 // driver routine
-void hUGE_dosound();
-void hUGE_dosound_banked() __banked;
+void hUGE_dosound() OLDCALL;
+void hUGE_dosound_banked() BANKED OLDCALL;
 
 enum hUGE_channel_t {HT_CH1 = 0, HT_CH2, HT_CH3, HT_CH4};
 enum hUGE_mute_t    {HT_CH_PLAY = 0, HT_CH_MUTE};
 
-void hUGE_mute_channel(enum hUGE_channel_t ch, enum hUGE_mute_t mute);
-void hUGE_mute_channel_banked(enum hUGE_channel_t ch, enum hUGE_mute_t mute) __banked;
+void hUGE_mute_channel(enum hUGE_channel_t ch, enum hUGE_mute_t mute) OLDCALL;
+void hUGE_mute_channel_banked(enum hUGE_channel_t ch, enum hUGE_mute_t mute) BANKED OLDCALL;
 
-void hUGE_set_position(unsigned char pattern);
-void hUGE_set_position_banked(unsigned char pattern) __banked;
+void hUGE_set_position(unsigned char pattern) OLDCALL;
+void hUGE_set_position_banked(unsigned char pattern) BANKED OLDCALL;
 
 extern volatile unsigned char hUGE_current_wave;
 

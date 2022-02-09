@@ -20,7 +20,7 @@ import uniq from "lodash/uniq";
 const indexById = indexBy("id");
 
 export const LATEST_PROJECT_VERSION = "3.0.0";
-export const LATEST_PROJECT_MINOR_VERSION = "1";
+export const LATEST_PROJECT_MINOR_VERSION = "2";
 
 const ensureProjectAssetSync = (relativePath, { projectRoot }) => {
   const projectPath = `${projectRoot}/${relativePath}`;
@@ -1487,6 +1487,38 @@ const migrateFrom200r16Tor17Fonts = (data, projectRoot) => {
   };
 };
 
+/* Version 3.0.0 r2 migrates old hide/show events to deactivate/activate to better match previous functionality
+ */
+export const migrateFrom300r1To300r2Event = (event) => {
+  const migrateMeta = generateMigrateMeta(event);
+  if (event.args && event.command === "EVENT_ACTOR_HIDE") {
+    return migrateMeta({
+      ...event,
+      command: "EVENT_ACTOR_DEACTIVATE",
+    });
+  }
+  if (event.args && event.command === "EVENT_ACTOR_SHOW") {
+    return migrateMeta({
+      ...event,
+      command: "EVENT_ACTOR_ACTIVATE",
+    });
+  }
+  return event;
+};
+
+const migrateFrom300r1To300r2Events = (data) => {
+  return {
+    ...data,
+    scenes: mapScenesEvents(data.scenes, migrateFrom300r1To300r2Event),
+    customEvents: (data.customEvents || []).map((customEvent) => {
+      return {
+        ...customEvent,
+        script: mapEvents(customEvent.script, migrateFrom300r1To300r2Event),
+      };
+    }),
+  };
+};
+
 const migrateProject = (project, projectRoot) => {
   let data = { ...project };
   let version = project._version || "1.0.0";
@@ -1586,6 +1618,13 @@ const migrateProject = (project, projectRoot) => {
       data = migrateFrom200r16Tor17Fonts(data, projectRoot);
       version = "3.0.0";
       release = "1";
+    }
+  }
+
+  if (version === "3.0.0") {
+    if (release === "1") {
+      data = migrateFrom300r1To300r2Events(data);
+      release = "2";
     }
   }
 
