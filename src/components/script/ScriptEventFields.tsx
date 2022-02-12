@@ -5,6 +5,9 @@ import {
   ScriptEventFields as ScriptEventFieldsWrapper,
   ScriptEventFieldGroupWrapper,
 } from "ui/scripting/ScriptEvents";
+import { useSelector } from "react-redux";
+import { RootState } from "store/configureStore";
+import { soundSelectors } from "store/features/entities/entitiesState";
 
 interface ScriptEventFieldsProps {
   id: string;
@@ -28,6 +31,9 @@ const ScriptEventFields = ({
   fields,
   value,
 }: ScriptEventFieldsProps) => {
+  const soundsLookup = useSelector((state: RootState) =>
+    soundSelectors.selectEntities(state)
+  );
   return (
     <ScriptEventFieldsWrapper>
       {fields.map((field, fieldIndex) => {
@@ -38,6 +44,10 @@ const ScriptEventFields = ({
         if (field.conditions) {
           const showField = field.conditions.reduce((memo, condition) => {
             const keyValue = value?.[condition.key];
+            if (condition.soundType) {
+              const sound = soundsLookup[keyValue as string];
+              return memo && sound?.type === condition.soundType;
+            }
             return (
               memo &&
               (!condition.eq || keyValue === condition.eq) &&

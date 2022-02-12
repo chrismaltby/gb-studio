@@ -77,18 +77,18 @@ OP_VM_RET          = 0x05
         .db OP_VM_RET, 0 
 .endm
 
-; return from near call and clear n arguments on stack
-.macro VM_RET_N ARG0
-        .db OP_VM_RET, #<ARG0 
+; return from near call and remove N arguments on stack
+.macro VM_RET_N N
+        .db OP_VM_RET, #<N 
 .endm
 
-; loop by near address, counter is on stack, counter is removed on exit
+; loop by near address, IDX is a counter, remove N arguments on stack
 OP_VM_LOOP         = 0x07
-.macro VM_LOOP IDX, LABEL, NPOP
-        .db OP_VM_LOOP, #<NPOP, #>LABEL, #<LABEL, #>IDX, #<IDX
+.macro VM_LOOP IDX, LABEL, N
+        .db OP_VM_LOOP, #<N, #>LABEL, #<LABEL, #>IDX, #<IDX
 .endm
 
-; switch table
+; switch table IDX is a variable, SIZE is a size of a table, remove N arguments on stack 
 OP_VM_SWITCH       = 0x08
 .macro VM_SWITCH IDX, SIZE, N
         .db OP_VM_SWITCH, #<N, #<SIZE, #>IDX, #<IDX
@@ -106,21 +106,15 @@ OP_VM_CALL_FAR     = 0x0A
         .db OP_VM_CALL_FAR, #>ARG1, #<ARG1, #<ARG0
 .endm
 
-; rerurn from far call and clear n arguments on stack
+; rerurn from far call
 OP_VM_RET_FAR      = 0x0B
 .macro VM_RET_FAR
         .db OP_VM_RET_FAR, 0 
 .endm
 
-; rerurn from far call and clear n arguments on stack
-.macro VM_RET_FAR_N ARG0
-        .db OP_VM_RET_FAR, #<ARG0 
-.endm
-
-; returns game boy system time on VM stack
-OP_VM_GET_SYSTIME  = 0x0C
-.macro VM_GET_SYSTIME IDX
-        .db OP_VM_GET_SYSTIME, #>IDX, #<IDX
+; rerurn from far call and remove N arguments on stack
+.macro VM_RET_FAR_N N
+        .db OP_VM_RET_FAR, #<N 
 .endm
 
 ; invokes <bank>:<address> C function until it returns true
@@ -219,6 +213,10 @@ OP_VM_RPN          = 0x15
 .endm
 .macro .R_REF_IND ARG0
         .db -4
+        .dw #ARG0
+.endm
+.macro .R_REF_SET ARG0
+        .db -5
         .dw #ARG0
 .endm
 .macro .R_OPERATOR ARG0
@@ -628,16 +626,6 @@ OP_VM_CHOICE            = 0x48
         .db #<X, #<Y, #<iL, #<iR, #<iU, #<iD
 .endm
 
-OP_VM_LOAD_FRAME        = 0x49
-.macro VM_LOAD_FRAME BANK, ADDR
-        .db OP_VM_LOAD_FRAME, #>ADDR, #<ADDR, #<BANK
-.endm
-
-OP_VM_LOAD_CURSOR       = 0x4A
-.macro VM_LOAD_CURSOR BANK, ADDR
-        .db OP_VM_LOAD_CURSOR, #>ADDR, #<ADDR, #<BANK
-.endm
-
 OP_VM_SET_FONT          = 0x4B
 .macro VM_SET_FONT FONT_INDEX
         .db OP_VM_SET_FONT, #<FONT_INDEX
@@ -661,11 +649,20 @@ OP_VM_OVERLAY_SET_SCROLL = 0x4E
 .endm
 
 OP_VM_OVERLAY_SET_SUBMAP = 0x4F
-.macro VM_OVERLAY_SET_SUBMAP X, Y, W, H, SX, SY
-        .db OP_VM_OVERLAY_SET_SUBMAP, #<SY, #<SX, #<H, #<W, #<Y, #<X 
+.macro VM_OVERLAY_SET_SUBMAP X_IDX, Y_IDX, W, H, SX, SY
+        .db OP_VM_OVERLAY_SET_SUBMAP, #<SY, #<SX, #<H, #<W, #>Y_IDX, #<Y_IDX, #>X_IDX, #<X_IDX 
 .endm
 
 ; --- GAMEBOY ------------------------------------------
+
+OP_VM_LOAD_TILES        = 0x49
+.FRAME_TILE_ID          = 0xC0
+.FRAME_LENGTH           = 9
+.CURSOR_TILE_ID         = 0xCB
+.CURSOR_LENGTH          = 1
+.macro VM_LOAD_TILES ID, LEN, BANK, ADDR
+        .db OP_VM_LOAD_TILES, #>ADDR, #<ADDR, #<BANK, #<LEN, #<ID
+.endm
 
 OP_VM_LOAD_TILESET      = 0x50
 .macro VM_LOAD_TILESET IDX, BANK, BKG
@@ -712,8 +709,8 @@ OP_VM_CONTEXT_PREPARE   = 0x55
 .endm
 
 OP_VM_OVERLAY_SET_MAP   = 0x56
-.macro VM_OVERLAY_SET_MAP IDX, X, Y, BANK, BKG
-        .db OP_VM_OVERLAY_SET_MAP, #>BKG, #<BKG, #<BANK, #<Y, #<X, #>IDX, #<IDX
+.macro VM_OVERLAY_SET_MAP IDX, X_IDX, Y_IDX, BANK, BKG
+        .db OP_VM_OVERLAY_SET_MAP, #>BKG, #<BKG, #<BANK, #>Y_IDX, #<Y_IDX, #>X_IDX, #<X_IDX, #>IDX, #<IDX
 .endm
 
 OP_VM_FADE              = 0x57
@@ -824,23 +821,19 @@ OP_VM_SOUND_MASTERVOL   = 0x63
         .db OP_VM_SOUND_MASTERVOL, #<VOL
 .endm
 
-; Plays sound effect
-OP_VM_SOUND_PLAY        = 0x64
-.macro VM_SOUND_PLAY FRAMES, CH, A, B, C, D, E
-        .db OP_VM_SOUND_PLAY, #<CH, #<FRAMES
-        .db #<A, #<B, #<C, #<D, #<E    
-.endm
-
 ; Attach script to music event
 OP_VM_MUSIC_ROUTINE     = 0x65
 .macro VM_MUSIC_ROUTINE ROUTINE, BANK, ADDR
         .db OP_VM_MUSIC_ROUTINE, #>ADDR, #<ADDR, #<BANK, #<ROUTINE
 .endm
 
-; Plays waveform record
-OP_VM_WAVE_PLAY         = 0x66
-.macro VM_WAVE_PLAY FRAMES, BANK, ADDR, SIZE
-        .db OP_VM_WAVE_PLAY, #>SIZE, #<SIZE, #>ADDR, #<ADDR, #<BANK, #<FRAMES
+; Plays SFX
+OP_VM_SFX_PLAY          = 0x66
+.SFX_PRIORITY_MINIMAL   = 0
+.SFX_PRIORITY_NORMAL    = 4
+.SFX_PRIORITY_HIGH      = 8
+.macro VM_SFX_PLAY BANK, ADDR, MASK, PRIO
+        .db OP_VM_SFX_PLAY, #<PRIO, #<MASK, #>ADDR, #<ADDR, #<BANK
 .endm
 
 ; Sets music playback position
@@ -997,8 +990,6 @@ OP_VM_COS_SCALE         = 0x8A
 
 ; Set sound effect for text 
 OP_VM_SET_TEXT_SOUND    = 0x8B
-.macro VM_SET_TEXT_SOUND FRAMES, CH, A, B, C, D, E
-        .db OP_VM_SET_TEXT_SOUND, #<CH, #<FRAMES
-        .db #<A, #<B, #<C, #<D, #<E    
+.macro VM_SET_TEXT_SOUND BANK, ADDR, MASK
+        .db OP_VM_SET_TEXT_SOUND, #<MASK, #>ADDR, #<ADDR, #<BANK
 .endm
-

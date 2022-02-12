@@ -107,7 +107,6 @@ void vm_ret_far(SCRIPT_CTX * THIS, UBYTE n) OLDCALL BANKED;
 void vm_loop(SCRIPT_CTX * THIS, INT16 idx, UINT8 * pc, UBYTE n) OLDCALL BANKED;
 void vm_switch(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS, INT16 idx, UBYTE size, UBYTE n) OLDCALL NONBANKED;
 void vm_jump(SCRIPT_CTX * THIS, UBYTE * pc) OLDCALL BANKED;
-void vm_systime(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED;
 void vm_invoke(SCRIPT_CTX * THIS, UBYTE bank, UBYTE * fn, UBYTE nparams, INT16 idx) OLDCALL BANKED;
 void vm_beginthread(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS, UBYTE bank, UBYTE * pc, INT16 idx, UBYTE nargs) OLDCALL NONBANKED;
 void vm_if(SCRIPT_CTX * THIS, UBYTE condition, INT16 idxA, INT16 idxB, UBYTE * pc, UBYTE n) OLDCALL BANKED;

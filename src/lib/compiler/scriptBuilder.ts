@@ -12,6 +12,7 @@ import {
   CustomEvent,
   Palette,
   ScriptEvent,
+  Sound,
   Variable,
 } from "store/features/entities/entitiesTypes";
 import { Dictionary } from "@reduxjs/toolkit";
@@ -92,6 +93,7 @@ interface ScriptBuilderOptions {
   fonts: PrecompiledFontData[];
   defaultFontId: string;
   music: PrecompiledMusicTrack[];
+  sounds: Sound[];
   avatars: ScriptBuilderEntity[];
   emotes: PrecompiledEmote[];
   palettes: Palette[];
@@ -189,6 +191,12 @@ type ScriptBuilderLocalSymbol = {
   firstUse: number;
   lastUse: number;
 };
+
+type SFXPriority = "low" | "medium" | "high";
+type ASMSFXPriority =
+  | ".SFX_PRIORITY_MINIMAL"
+  | ".SFX_PRIORITY_NORMAL"
+  | ".SFX_PRIORITY_HIGH";
 
 // - Helpers --------------
 
@@ -289,6 +297,16 @@ const toASMCameraLock = (axis: ScriptBuilderAxis[]) => {
       axis.includes("y") ? ".CAMERA_LOCK_Y" : []
     )
   );
+};
+
+const toASMSoundPriority = (priority: SFXPriority): ASMSFXPriority => {
+  if (priority === "low") {
+    return ".SFX_PRIORITY_MINIMAL";
+  }
+  if (priority === "high") {
+    return ".SFX_PRIORITY_HIGH";
+  }
+  return ".SFX_PRIORITY_NORMAL";
 };
 
 const dirToAngle = (direction: string) => {
@@ -457,6 +475,7 @@ class ScriptBuilder {
       fonts: options.fonts || [],
       defaultFontId: options.defaultFontId || "",
       music: options.music || [],
+      sounds: options.sounds || [],
       avatars: options.avatars || [],
       emotes: options.emotes || [],
       palettes: options.palettes || [],
@@ -1547,25 +1566,59 @@ class ScriptBuilder {
     );
   };
 
-  _soundPlay = (
-    frames: number,
-    channel: number,
-    a: number,
-    b: number,
-    c: number,
-    d: number,
-    e: number
-  ) => {
+  _soundPlay = (symbol: string, priority: ASMSFXPriority) => {
     this._addCmd(
-      "VM_SOUND_PLAY",
-      frames,
-      channel,
-      decHex(a),
-      decHex(b),
-      decHex(c),
-      decHex(d),
-      decHex(e)
+      "VM_SFX_PLAY",
+      `___bank_${symbol}`,
+      `_${symbol}`,
+      `___mute_mask_${symbol}`,
+      priority
     );
+  };
+
+  _soundPlayBasic = (channel: number, frames: number, data: number[]) => {
+    const symbol = this._getAvailableSymbol("sound_legacy_0");
+
+    let output = "";
+
+    const channelMasks = [
+      "",
+      "0b11111000", // Channel 1
+      "0b01111001", // Channel 2
+      "0b11111010", // Channel 3
+      "0b01111011", // Channel 4
+    ];
+
+    for (let i = 0; i < frames; i += 4) {
+      const len = Math.min(4, frames - i);
+      const extraFrames = len * 4 - 1;
+      if (i === 0) {
+        output += `    ${decHex((extraFrames << 4) + 1)}, ${
+          channelMasks[channel]
+        },${data.map(decHex).join(",")},`;
+      } else {
+        output += `    ${decHex(extraFrames << 4)},`;
+      }
+      output += "\n";
+    }
+
+    this.writeAsset(
+      `sounds/${symbol}.c`,
+      `#pragma bank 255
+
+#include <gbdk/platform.h>
+#include <stdint.h>
+
+BANKREF(${symbol})
+const uint8_t ${symbol}[] = {
+  ${output}
+  0x01, 0b00101000, 0x00,0xc0,      //shut ch1
+  0x01, 0b00000111,                 //stop
+};
+void AT(0b00000100) __mute_mask_${symbol};`
+    );
+
+    return symbol;
   };
 
   _paletteLoad = (
@@ -3587,20 +3640,20 @@ class ScriptBuilder {
   // --------------------------------------------------------------------------
   // Sound
 
-  soundStartTone = (period = 1600, toneFrames = 30) => {
+  soundStartTone = (period = 1600, toneFrames = 30, priority: SFXPriority) => {
     this._addComment("Sound Play Tone");
-    this._soundPlay(
-      toneFrames,
-      1,
+    const symbol = this._soundPlayBasic(1, toneFrames, [
       0x00,
       (0x0 << 6) | 0x01,
       (0x0f << 4) | 0x00,
       period & 0x00ff,
-      0x80 | ((period & 0x0700) >> 8)
-    );
+      0x80 | ((period & 0x0700) >> 8),
+    ]);
+    this._soundPlay(symbol, toASMSoundPriority(priority));
+    this._addNL();
   };
 
-  soundPlayBeep = (pitch = 4) => {
+  soundPlayBeep = (pitch = 4, frames = 30, priority: SFXPriority) => {
     this._addComment("Sound Play Beep");
     let pitchValue = pitch - 1;
     if (pitchValue < 0) {
@@ -3610,21 +3663,43 @@ class ScriptBuilder {
       pitchValue = 7;
     }
     pitchValue = pitchValue & 0x07;
-
-    this._soundPlay(
-      30,
-      4,
+    const symbol = this._soundPlayBasic(4, frames, [
       0x01,
       (0x0f << 4) | 0x02,
       0x20 | 0x08 | pitchValue,
       0x80 | 0x40,
-      0x00
-    );
+    ]);
+    this._soundPlay(symbol, toASMSoundPriority(priority));
+    this._addNL();
   };
 
-  soundPlayCrash = () => {
+  soundPlayCrash = (frames = 30, priority: SFXPriority) => {
     this._addComment("Sound Play Crash");
-    this._soundPlay(30, 4, 0x01, (0x0f << 4) | 0x02, 0x13, 0x80, 0x00);
+    const symbol = this._soundPlayBasic(4, frames, [
+      0x01,
+      (0x0f << 4) | 0x02,
+      0x13,
+      0x80,
+    ]);
+    this._soundPlay(symbol, toASMSoundPriority(priority));
+    this._addNL();
+  };
+
+  soundPlay = (soundId: string, priority: SFXPriority, effect?: number) => {
+    this._addComment(`Sound Play`);
+    const { sounds } = this.options;
+    const sound = sounds.find((s) => s.id === soundId);
+    if (sound) {
+      this._soundPlay(
+        `${sound.symbol}${
+          sound.type === "fxhammer"
+            ? "_" + String(effect ?? 0).padStart(2, "0")
+            : ""
+        }`,
+        toASMSoundPriority(priority)
+      );
+    }
+    this._addNL();
   };
 
   // --------------------------------------------------------------------------
@@ -4375,6 +4450,10 @@ class ScriptBuilder {
       filename,
       data,
     };
+  };
+
+  makeSymbol = (name: string) => {
+    return this._getAvailableSymbol(name);
   };
 
   // --------------------------------------------------------------------------

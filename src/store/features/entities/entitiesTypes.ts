@@ -213,6 +213,19 @@ export type Music = {
 
 export type MusicData = Omit<Music, "_v" | "inode">;
 
+export type Sound = {
+  id: string;
+  name: string;
+  symbol: string;
+  filename: string;
+  plugin?: string;
+  type: "wav" | "vgm" | "fxhammer";
+  inode: string;
+  _v: number;
+};
+
+export type SoundData = Omit<Sound, "_v" | "inode">;
+
 export type Palette = {
   id: string;
   name: string;
@@ -396,6 +409,7 @@ export type ProjectEntitiesData = {
   palettes: Palette[];
   customEvents: CustomEvent[];
   music: MusicData[];
+  sounds: SoundData[];
   fonts: FontData[];
   avatars: AvatarData[];
   emotes: EmoteData[];
@@ -416,6 +430,7 @@ export interface EntitiesState {
   palettes: EntityState<Palette>;
   customEvents: EntityState<CustomEvent>;
   music: EntityState<Music>;
+  sounds: EntityState<Sound>;
   fonts: EntityState<Font>;
   avatars: EntityState<Avatar>;
   emotes: EntityState<Emote>;
@@ -437,6 +452,7 @@ export interface ScriptEventFieldCondition {
   gte?: unknown;
   lte?: unknown;
   in?: unknown[];
+  soundType?: unknown;
 }
 
 export interface ScriptEventFieldSchema {

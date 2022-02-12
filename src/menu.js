@@ -238,29 +238,36 @@ const buildMenu = async (plugins = []) => {
           },
         },
         {
-          label: l10n("MENU_PALETTES"),
+          label: l10n("MENU_SFX"),
           accelerator: "CommandOrControl+5",
+          click: () => {
+            notifyListeners("section", "sounds");
+          },
+        },
+        {
+          label: l10n("MENU_PALETTES"),
+          accelerator: "CommandOrControl+6",
           click: () => {
             notifyListeners("section", "palettes");
           },
         },
         {
           label: l10n("MENU_DIALOGUE_REVIEW"),
-          accelerator: "CommandOrControl+6",
+          accelerator: "CommandOrControl+7",
           click: () => {
             notifyListeners("section", "dialogue");
           },
         },
         {
           label: l10n("MENU_BUILD_AND_RUN"),
-          accelerator: "CommandOrControl+7",
+          accelerator: "CommandOrControl+8",
           click: () => {
             notifyListeners("section", "build");
           },
         },
         {
           label: l10n("MENU_SETTINGS"),
-          accelerator: "CommandOrControl+8",
+          accelerator: "CommandOrControl+9",
           click: () => {
             notifyListeners("section", "settings");
           },

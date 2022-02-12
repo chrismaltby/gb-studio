@@ -40,6 +40,7 @@ const sectionNames = {
   sprites: l10n("NAV_SPRITES"),
   backgrounds: l10n("NAV_BACKGROUNDS"),
   music: l10n("NAV_MUSIC"),
+  sounds: l10n("NAV_SFX"),
   palettes: l10n("NAV_PALETTES"),
   dialogue: l10n("NAV_DIALOGUE_REVIEW"),
   build: l10n("NAV_BUILD_AND_RUN"),
@@ -53,10 +54,11 @@ const sectionAccelerators = {
   sprites: "CommandOrControl+2",
   backgrounds: "CommandOrControl+3",
   music: "CommandOrControl+4",
-  palettes: "CommandOrControl+5",
-  dialogue: "CommandOrControl+6",
-  build: "CommandOrControl+7",
-  settings: "CommandOrControl+8",
+  sounds: "CommandOrControl+5",
+  palettes: "CommandOrControl+6",
+  dialogue: "CommandOrControl+7",
+  build: "CommandOrControl+8",
+  settings: "CommandOrControl+9",
 };
 
 const zoomSections = ["world", "sprites", "backgrounds", "ui"];

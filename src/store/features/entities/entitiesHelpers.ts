@@ -36,6 +36,7 @@ import {
   SceneScriptKey,
   TriggerScriptKey,
   triggerScriptKeys,
+  Sound,
 } from "./entitiesTypes";
 import {
   Dictionary,
@@ -60,6 +61,7 @@ export interface NormalisedEntities {
   spriteStates: Record<EntityId, SpriteState>;
   palettes: Record<EntityId, Palette>;
   music: Record<EntityId, Music>;
+  sounds: Record<EntityId, Sound>;
   fonts: Record<EntityId, Font>;
   avatars: Record<EntityId, Avatar>;
   emotes: Record<EntityId, Emote>;
@@ -75,6 +77,7 @@ export interface NormalisedResult {
   palettes: EntityId[];
   customEvents: EntityId[];
   music: EntityId[];
+  sounds: EntityId[];
   fonts: EntityId[];
   avatars: EntityId[];
   emotes: EntityId[];
@@ -102,6 +105,7 @@ const inodeToAssetCache: Dictionary<Asset> = {};
 
 const backgroundSchema = new schema.Entity("backgrounds");
 const musicSchema = new schema.Entity("music");
+const soundSchema = new schema.Entity("sounds");
 const fontSchema = new schema.Entity("fonts");
 const avatarSchema = new schema.Entity("avatars");
 const emoteSchema = new schema.Entity("emotes");
@@ -155,6 +159,7 @@ const projectSchema = {
   scenes: [sceneSchema],
   backgrounds: [backgroundSchema],
   music: [musicSchema],
+  sounds: [soundSchema],
   fonts: [fontSchema],
   avatars: [avatarSchema],
   emotes: [emoteSchema],
@@ -184,6 +189,7 @@ export const denormalizeEntities = (
     palettes: state.palettes.ids,
     customEvents: state.customEvents.ids,
     music: state.music.ids,
+    sounds: state.sounds.ids,
     fonts: state.fonts.ids,
     avatars: state.avatars.ids,
     emotes: state.emotes.ids,
@@ -210,6 +216,7 @@ export const denormalizeEntities = (
     palettes: state.palettes.entities as Record<EntityId, Palette>,
     customEvents: state.customEvents.entities as Record<EntityId, CustomEvent>,
     music: state.music.entities as Record<EntityId, Music>,
+    sounds: state.sounds.entities as Record<EntityId, Sound>,
     fonts: state.fonts.entities as Record<EntityId, Font>,
     avatars: state.avatars.entities as Record<EntityId, Avatar>,
     emotes: state.emotes.entities as Record<EntityId, Emote>,
@@ -563,6 +570,7 @@ const extractEntityStateSymbols = (state: EntitiesState) => {
     ...extractEntitySymbols(state.variables),
     ...extractEntitySymbols(state.customEvents),
     ...extractEntitySymbols(state.music),
+    ...extractEntitySymbols(state.sounds),
     ...extractEntitySymbols(state.scriptEvents),
   ];
 };
@@ -599,6 +607,7 @@ export const ensureSymbolsUnique = (state: EntitiesState) => {
   ensureEntitySymbolsUnique(state.variables, symbols);
   ensureEntitySymbolsUnique(state.customEvents, symbols);
   ensureEntitySymbolsUnique(state.music, symbols);
+  ensureEntitySymbolsUnique(state.sounds, symbols);
   ensureEntitySymbolsUnique(state.scriptEvents, symbols);
 };
 

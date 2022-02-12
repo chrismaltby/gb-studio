@@ -18,7 +18,7 @@ OBJDIR = obj
 REL_OBJDIR = obj/_rel
 
 
-CFLAGS = $(PLATFORM) -I$(TOP)include -Wa-I$(TOP)include
+CFLAGS = $(PLATFORM) -Wf"--peep-file $(TOP)ph/gbz80.rul" -I$(TOP)include -Wa-I$(TOP)include
 
 LFLAGS_NBANKS += -Wm-yoA -Wm-ya4
 LFLAGS_SYMBOLS = -Wl-j -Wl-m -Wl-w -Wm-yS

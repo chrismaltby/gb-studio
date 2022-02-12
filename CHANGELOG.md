@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added ability to rename the GBVM symbol used for generated data files, accessible from "View GBVM Symbols" in right sidebar menu + GBVM event references section
 - Added syntax highlighting and line numbers to GBVM event code input
 - Added event Actor Move Cancel to cancel any scripted movement currently running for a given actor [@um3k](https://github.com/um3k)
+- Add sound effects file support reading WAV (.wav), VGM (.vgm, .vgz) and FXHammer (.sav) files from assets/sounds folder
+- Add support for setting sound effects priority [untoxa](https://github.com/untoxa)
 
 ### Changed
 
@@ -41,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed typo in Japanese localisation [RYU-N2001](https://github.com/RYU-N2001)
 - Updated 32-bit Windows app to use correct 32-bit GBDK-2020 (again) [untoxa](https://github.com/untoxa)
 - Fixed issue where relative actor movement on left or top edge of scene would wrap around scene [@um3k](https://github.com/um3k)
+- Fix issue where soft reset could lead to UI tiles over scene tiles [untoxa](https://github.com/untoxa)
 
 ### Removed
 
