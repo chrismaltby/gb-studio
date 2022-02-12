@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed display of errors in game engine files while building
 - Fix issue where activating an actor wouldn't trigger update script [untoxa](https://github.com/untoxa)
 - Fix issue where full magenta characters in font files didn't have zero width
+- Fixed typo in Japanese localisation [RYU-N2001](https://github.com/RYU-N2001)
 
 ### Removed
 
