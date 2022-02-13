@@ -292,7 +292,7 @@ const preview = (note, type, instrument, square2, waves = []) => {
         NR43:
           bitpack(Math.abs(0xf - noteFreq) >> 7, 4) +
           (instrument.bit_count === 7 ? 1 : 0) +
-          bitpack(instrument.dividing_ratio, 3),
+          "000",
         NR44:
           "1" + // Initial
           (instrument.length !== null ? 1 : 0) +

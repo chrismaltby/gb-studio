@@ -408,7 +408,7 @@ export const saveUGESong = (song: Song): ArrayBuffer => {
 
     addUint32(0);
     addUint32(i.bit_count === 7 ? 1 : 0);
-    addUint32(i.dividing_ratio);
+    addUint32(0);
 
     for (const v of i.noise_macro) {
       addInt8(v);
