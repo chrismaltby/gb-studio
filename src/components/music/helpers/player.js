@@ -143,11 +143,11 @@ const play = (song) => {
 const preview = (note, type, instrument, square2, waves = []) => {
   console.log(note, instrument, square2);
   const noteFreq = note2freq[note];
-  
+
   if (waves.length === 0) {
     waves = current_song.waves;
   }
-  
+
   switch (type) {
     case "duty":
       if (!square2) {
