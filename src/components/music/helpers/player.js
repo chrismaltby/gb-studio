@@ -81,9 +81,9 @@ const initPlayer = (onInit) => {
       emulator.step("run");
       console.log(
         "RUN",
-        emulator.readMem(is_player_paused),
-        emulator.readMem(do_resume_player),
-        emulator.readMem(0xff0f)
+        `Is Player Paused: ${emulator.readMem(is_player_paused)}`,
+        `Do resume Player: ${emulator.readMem(do_resume_player)}`,
+        `OxFF0F: ${emulator.readMem(0xff0f)}`
       );
     };
     setInterval(updateTracker, 10);
@@ -104,40 +104,45 @@ const loadSong = (song) => {
 const play = (song) => {
   updateRom(song);
 
-  const ticks_per_row_addr = compiler.getRamSymbols().findIndex((v) => {
-    return v === "ticks_per_row";
+  const is_player_paused = compiler.getRamSymbols().findIndex((v) => {
+    return v === "is_player_paused";
   });
-  emulator.writeMem(ticks_per_row_addr, song.ticks_per_row);
+  if (emulator.readMem(is_player_paused) === 1) {
+    const ticks_per_row_addr = compiler.getRamSymbols().findIndex((v) => {
+      return v === "ticks_per_row";
+    });
+    emulator.writeMem(ticks_per_row_addr, song.ticks_per_row);
 
-  emulator.setChannel(0, channels[0]);
-  emulator.setChannel(1, channels[1]);
-  emulator.setChannel(2, channels[2]);
-  emulator.setChannel(3, channels[3]);
+    emulator.setChannel(0, channels[0]);
+    emulator.setChannel(1, channels[1]);
+    emulator.setChannel(2, channels[2]);
+    emulator.setChannel(3, channels[3]);
 
-  const current_order_addr = compiler.getRamSymbols().findIndex((v) => {
-    return v === "current_order";
-  });
-  const row_addr = compiler.getRamSymbols().findIndex((v) => {
-    return v === "row";
-  });
+    const current_order_addr = compiler.getRamSymbols().findIndex((v) => {
+      return v === "current_order";
+    });
+    const row_addr = compiler.getRamSymbols().findIndex((v) => {
+      return v === "row";
+    });
 
-  const do_resume_player = compiler.getRamSymbols().findIndex((v) => {
-    return v === "do_resume_player";
-  });
-  emulator.writeMem(do_resume_player, 1);
-  emulator.step("frame");
+    const do_resume_player = compiler.getRamSymbols().findIndex((v) => {
+      return v === "do_resume_player";
+    });
+    emulator.writeMem(do_resume_player, 1);
+    emulator.step("frame");
 
-  const updateUI = () => {
-    const old_row = current_row;
-    console.log([current_sequence, current_row]);
+    const updateUI = () => {
+      const old_row = current_row;
+      console.log(`Sequence: ${current_sequence}, Row: ${current_row}`);
 
-    current_sequence = emulator.readMem(current_order_addr) / 2;
-    current_row = emulator.readMem(row_addr);
-    if (old_row !== current_row) {
-      onIntervalCallback([current_sequence, current_row]);
-    }
-  };
-  update_handle = setInterval(updateUI, 15.625);
+      current_sequence = emulator.readMem(current_order_addr) / 2;
+      current_row = emulator.readMem(row_addr);
+      if (old_row !== current_row) {
+        onIntervalCallback([current_sequence, current_row]);
+      }
+    };
+    update_handle = setInterval(updateUI, 15.625);
+  }
 };
 
 const preview = (note, type, instrument, square2, waves = []) => {
