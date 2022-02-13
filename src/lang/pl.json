@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 986220203",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 996220213",
  
  "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -490,6 +490,16 @@
   "FIELD_SEARCH_SETTINGS": "Szukaj w ustawieniach",
   "FIELD_REPORT_BUG": "Zgłoś błąd",
   "FIELD_RNG_SEED_DESCRIPTION": "Umieść to, aby uruchomić w odpowiedzi na dane wejściowe użytkownika, zmianę losowych liczb między rozgrywkami",
+  "FIELD_REFERENCES": "Odniesienia",
+  "FIELD_ADD_REFERENCE": "Dodaj odniesienie",
+  "FIELD_EMOTES": "Emotki",
+  "FIELD_FONTS": "Czcionki (Fonts)",
+  "FIELD_BACKGROUNDS": "Tła",
+  "FIELD_SCENES": "Sceny",
+  "FIELD_VARIABLES": "Zmienne",
+  "FIELD_SCRIPTS": "Skrypty",
+  "FIELD_COPIED_TO_CLIPBOARD": "Skopiowano do schowka",
+  "FIELD_VIEW_GBVM_SYMBOLS": "Wyświetl symbole GBVM",
   
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
