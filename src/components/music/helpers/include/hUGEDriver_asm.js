@@ -1,7 +1,7 @@
 // https://github.com/chrismaltby/gbvm/blob/master/third-party/HUGE_TRACKER/hUGEDriver.asm
 
-export default `include "HARDWARE.INC"\n
-include "hUGE.inc"\n
+export default `include "include/hardware.inc"\n
+include "include/hUGE.inc"\n
 \n
 add_a_to_r16: MACRO\n
     add \\2\n
@@ -107,6 +107,7 @@ hUGE_NO_WAVE equ 100\n
 ;; Everything between this and 'end_zero' is zero-initialized by 'hUGE_init'\n
 start_zero:\n
 \n
+_hUGE_mute_mask::\n
 mute_channels: db\n
 current_order: db\n
 next_order: db\n
@@ -288,7 +289,7 @@ hUGE_mute_channel::\n
 \n
 ;;; Reads a pattern's current row.\n
 ;;; Param: BC = Pointer to the pattern\n
-;;; Param: [row] = Index of the current ro<\n
+;;; Param: [row] = Index of the current row\n
 ;;; Return: A = Note ID\n
 ;;; Return: B = Instrument (upper nibble) & effect code (lower nibble)\n
 ;;; Return: C = Effect parameter\n
@@ -626,14 +627,6 @@ fx_set_master_volume:\n
 ;;; Param: ZF = Set if and only if on tick 0\n
 ;;; Destroy: Anything the routine does\n
 fx_call_routine:\n
-;    sla c\n
-;    ld a, [routines]\n
-;    add c\n
-;    ld l, a\n
-;    ld a, [routines+1]\n
-;    adc 0\n
-;    ld h, a\n
-\n
     ld hl, routines\n
     ld a, $0f\n
     and c\n
@@ -1690,7 +1683,7 @@ ENDC\n
     ret\n
 \n
 note_table:\n
-include "hUGE_note_table.inc"\n
+include "include/hUGE_note_table.inc"\n
 \n
 \n
 IF DEF(GBDK)\n
