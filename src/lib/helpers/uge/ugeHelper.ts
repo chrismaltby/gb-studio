@@ -555,7 +555,9 @@ export const exportToC = (song: Song, trackName: string): string => {
     if (instr.length !== null) param1 |= 0x40;
     if (instr.bit_count === 7) param1 |= 0x80;
 
-    return `${decHex(param0)}, ${decHex(param1)}, 0, 0, 0, 0, 0, 0`;
+    return `${decHex(param0)}, ${decHex(param1)}, ${instr.noise_macro
+      .map((n) => n & 0xff)
+      .join(", ")}`;
   };
 
   const formatWave = function (wave: Uint8Array) {
