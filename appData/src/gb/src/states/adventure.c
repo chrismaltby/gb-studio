@@ -28,10 +28,12 @@ void adventure_init() BANKED {
 }
 
 void adventure_update() BANKED {
-    actor_t *hit_actor;
+    actor_t *hit_actor, *sol_actor;
     UBYTE tile_start, tile_end;
     UBYTE angle = 0;
     direction_e new_dir = DIR_NONE;
+    upoint16_t new_pos, sol_pos;
+    point16_t pl_vel;
 
     player_moving = FALSE;
 
@@ -71,11 +73,63 @@ void adventure_update() BANKED {
         angle = ANGLE_180DEG;
     }
 
+    hit_actor = NULL;
+    new_pos.x = PLAYER.pos.x;
+    new_pos.y = PLAYER.pos.y;
+    pl_vel.x = 0;
+    pl_vel.y = 0;
     if (player_moving) {
-        upoint16_t new_pos;
-        new_pos.x = PLAYER.pos.x;
-        new_pos.y = PLAYER.pos.y;
         point_translate_angle(&new_pos, angle, PLAYER.move_speed);
+        point_translate_angle_to_delta(&pl_vel, angle, PLAYER.move_speed);
+    }
+
+    sol_actor = PLAYER.prev;
+    while (sol_actor) {
+        if (!sol_actor->solid || !sol_actor->collision_enabled || 
+            ((UBYTE)((BYTE)(PLAYER.pos.x >> 8) - (BYTE)(sol_actor->pos.x >> 8) + 2) > 4) || 
+            ((UBYTE)((BYTE)(PLAYER.pos.y >> 8) - (BYTE)(sol_actor->pos.y >> 8) + 2) > 4)) {
+            sol_actor = sol_actor->prev;
+            continue;
+        }
+
+        sol_pos.x = new_pos.x;
+        sol_pos.y = PLAYER.pos.y;
+        
+        if ((sol_actor->solid & COLLISION_X)) {
+            if (bb_intersects_alt(&PLAYER.bounds, &sol_pos, &sol_actor->bounds, &sol_actor->pos)) {
+                if ((sol_actor->solid & COLLISION_LEFT) && ((sol_pos.x) <= (sol_actor->pos.x)) && (pl_vel.x >= sol_actor->vel.x)) {
+                    new_pos.x = sol_actor->pos.x + ((sol_actor->bounds.left - PLAYER.bounds.right) << 4) - 1;
+                    hit_actor = sol_actor->collision_group ? sol_actor : hit_actor;
+                } else if ((sol_actor->solid & COLLISION_RIGHT) && ((sol_pos.x) > (sol_actor->pos.x)) && (pl_vel.x < sol_actor->vel.x)) {
+                    new_pos.x = sol_actor->pos.x + ((sol_actor->bounds.right - PLAYER.bounds.left + 1) << 4) + 1;
+                    hit_actor = sol_actor->collision_group ? sol_actor : hit_actor;
+                }
+            }
+        }
+
+        sol_pos.x = new_pos.x;
+        sol_pos.y = new_pos.y;
+        
+        if ((sol_actor->solid & COLLISION_Y) && (hit_actor != sol_actor)) {
+           if (bb_intersects_alt(&PLAYER.bounds, &sol_pos, &sol_actor->bounds, &sol_actor->pos)) {
+                if ((sol_actor->solid & COLLISION_TOP)  && ((sol_pos.y) < (sol_actor->pos.y)) && (pl_vel.y < sol_actor->vel.y)) {
+                    new_pos.y = sol_actor->pos.y + ((sol_actor->bounds.top - PLAYER.bounds.bottom) << 4) - 1;
+                    hit_actor = sol_actor->collision_group ? sol_actor : hit_actor;
+                } else if ((sol_actor->solid & COLLISION_BOTTOM) && ((sol_pos.y) > (sol_actor->pos.y)) && (pl_vel.y > sol_actor->vel.y)) {
+                    new_pos.y = sol_actor->pos.y + ((sol_actor->bounds.bottom - PLAYER.bounds.top + 1) << 4) + 1;
+                    hit_actor = sol_actor->collision_group ? sol_actor : hit_actor;
+                }
+            }
+        }
+        
+        sol_actor = sol_actor->prev;
+    }
+
+        // if (hit_actor != NULL && hit_actor->collision_group) {
+        //     player_register_collision_with(sol_actor);
+        // }
+    
+    if (player_moving || hit_actor != NULL) {
 
         // Step X
         tile_start = (((PLAYER.pos.y >> 4) + PLAYER.bounds.top)    >> 3);
@@ -135,7 +189,6 @@ void adventure_update() BANKED {
         actor_set_anim_idle(&PLAYER);
     }
 
-    hit_actor = NULL;
     if (IS_FRAME_ODD) {
         // Check for trigger collisions
         if (trigger_activate_at_intersection(&PLAYER.bounds, &PLAYER.pos, FALSE)) {
@@ -144,7 +197,7 @@ void adventure_update() BANKED {
         }
 
         // Check for actor collisions
-        hit_actor = actor_overlapping_player(FALSE);
+        if (hit_actor == NULL) hit_actor = actor_overlapping_player(FALSE);
         if (hit_actor != NULL && hit_actor->collision_group) {
             player_register_collision_with(hit_actor);
         }

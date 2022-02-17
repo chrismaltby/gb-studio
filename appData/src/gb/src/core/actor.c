@@ -296,28 +296,6 @@ actor_t *actor_overlapping_player(UBYTE inc_noclip) BANKED {
     return NULL;
 }
 
-actor_t *actor_overlapping_player_solid(uint16_t new_x, uint16_t new_y, actor_t *first_actor, uint8_t mask) BANKED {
-    actor_t *actor = first_actor != NULL ? first_actor->prev : PLAYER.prev;
-    upoint16_t new_pos;
-    new_pos.x = new_x;
-    new_pos.y = new_y;
-
-    while (actor) {
-        if (!actor->collision_enabled && !(actor->solid & mask)) {
-            actor = actor->prev;
-            continue;
-        };
-
-        if (bb_intersects(&PLAYER.bounds, &new_pos, &actor->bounds, &actor->pos)) {
-            return actor;
-        }
-
-        actor = actor->prev;
-    }
-
-    return NULL;
-}
-
 actor_t *actor_overlapping_bb(bounding_box_t *bb, upoint16_t *offset, actor_t *ignore, UBYTE inc_noclip) BANKED {
     actor_t *actor = &PLAYER;
 
