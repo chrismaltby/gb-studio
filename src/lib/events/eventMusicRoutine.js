@@ -33,8 +33,8 @@ const fields = [
 ];
 
 const compile = (input, helpers) => {
-  const { musicRoutineSet } = helpers;
-  musicRoutineSet(input.routine, input.true);
+  const { musicRoutineSet, event } = helpers;
+  musicRoutineSet(input.routine, input.true, event.symbol);
 };
 
 module.exports = {
@@ -42,4 +42,6 @@ module.exports = {
   groups,
   fields,
   compile,
+  editableSymbol: true,
+  allowChildrenBeforeInitFade: true,
 };

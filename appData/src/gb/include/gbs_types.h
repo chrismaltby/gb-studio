@@ -43,11 +43,13 @@ typedef struct animation_t
 
 typedef struct actor_t
 {
-    bool enabled              : 1; 
+    bool active               : 1; 
     bool pinned               : 1;
     bool hidden               : 1;
+    bool disabled             : 1;
     bool anim_noloop          : 1;  
     bool collision_enabled    : 1;
+    bool movement_interrupt   : 1;
     upoint16_t pos;
     direction_e dir;
     bounding_box_t bounds;

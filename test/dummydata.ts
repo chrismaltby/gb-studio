@@ -30,10 +30,15 @@ import compileFonts, {
   PrecompiledFontData,
 } from "../src/lib/compiler/compileFonts";
 import { projectTemplatesRoot } from "../src/consts";
+import {
+  PrecompiledBackground,
+  PrecompiledSprite,
+} from "../src/lib/compiler/compileData2";
 
 export const dummyScene: SceneData = {
   id: "",
   name: "Scene",
+  symbol: "scene_0",
   backgroundId: "",
   x: 0,
   y: 0,
@@ -58,6 +63,7 @@ export const dummySceneDenormalized: SceneDenormalized =
 export const dummyActor: Actor = {
   id: "dummyActor1",
   name: "",
+  symbol: "actor_0",
   spriteSheetId: "",
   x: 0,
   y: 0,
@@ -80,6 +86,7 @@ export const dummyActor: Actor = {
 export const dummyTrigger: Trigger = {
   id: "",
   name: "",
+  symbol: "trigger_0",
   x: 0,
   y: 0,
   width: 0,
@@ -94,9 +101,31 @@ export const dummyPalette: Palette = {
   colors: ["", "", "", ""],
 };
 
+export const dummyPrecompiledBackground: PrecompiledBackground = {
+  id: "",
+  symbol: "bg_1",
+  name: "",
+  width: 1,
+  height: 1,
+  data: new Uint8Array(),
+  tileset: {
+    symbol: "ts_1",
+    data: new Uint8Array(),
+  },
+  tilemap: {
+    symbol: "tm_1",
+    data: new Uint8Array(),
+  },
+  tilemapAttr: {
+    symbol: "ta_1",
+    data: new Uint8Array(),
+  },
+};
+
 export const dummyBackground: Background = {
   id: "",
   name: "",
+  symbol: "bg_0",
   filename: "",
   width: 1,
   height: 1,
@@ -110,6 +139,7 @@ export const dummyBackground: Background = {
 export const dummySpriteSheet: SpriteSheet = {
   id: "",
   name: "",
+  symbol: "sprite_0",
   filename: "",
   numTiles: 1,
   checksum: "",
@@ -127,9 +157,33 @@ export const dummySpriteSheet: SpriteSheet = {
   _v: 0,
 };
 
+export const dummyPrecompiledSpriteSheet: PrecompiledSprite = {
+  id: "",
+  symbol: "sprite_1",
+  name: "",
+  filename: "",
+  canvasWidth: 32,
+  canvasHeight: 32,
+  boundsX: 0,
+  boundsY: 0,
+  boundsWidth: 16,
+  boundsHeight: 16,
+  states: [],
+  tileset: {
+    symbol: "ts_1",
+    data: new Uint8Array(),
+  },
+  data: [],
+  tiles: [],
+  metasprites: [],
+  animationOffsets: [],
+  metaspritesOrder: [],
+};
+
 export const dummyMusic: Music = {
   id: "",
   name: "",
+  symbol: "song_0",
   filename: "",
   inode: "2",
   _v: 0,
@@ -139,6 +193,7 @@ export const dummyMusic: Music = {
 export const dummyCustomEvent: CustomEvent = {
   id: "",
   name: "",
+  symbol: "script_0",
   description: "",
   variables: {},
   actors: {},
@@ -199,6 +254,7 @@ export const getDummyCompiledFont = async (): Promise<PrecompiledFontData> => {
       {
         id: "87d28862-ac4a-4f15-b678-d8d2e3e8787c",
         name: "gbs-mono",
+        symbol: "font_0",
         width: 128,
         height: 112,
         filename: "gbs-mono.png",

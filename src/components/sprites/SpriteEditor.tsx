@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { EditableText } from "ui/form/EditableText";
@@ -52,6 +52,8 @@ import { AnimationTypeSelect } from "../forms/AnimationTypeSelect";
 import { ObjPaletteSelect } from "../forms/ObjPaletteSelect";
 import { PaletteIndexSelect } from "../forms/PaletteIndexSelect";
 import AnimationStateSelect from "components/forms/AnimationStateSelect";
+import { SpriteSymbolsEditor } from "components/forms/symbols/SpriteSymbolsEditor";
+import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
 
 interface SpriteEditorProps {
   id: string;
@@ -92,6 +94,8 @@ export const SpriteEditor = ({
   );
 
   const selectedTileId = selectedTileIds[0];
+
+  const [showSymbols, setShowSymbols] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -356,6 +360,11 @@ export const SpriteEditor = ({
               menuDirection="right"
               onMouseDown={onFetchClipboard}
             >
+              {!metaspriteTile && !showSymbols && (
+                <MenuItem onClick={() => setShowSymbols(true)}>
+                  {l10n("FIELD_VIEW_GBVM_SYMBOLS")}
+                </MenuItem>
+              )}
               {selectedTileIds.length > 0 && (
                 <MenuItem onClick={onCopyTiles}>
                   {l10n("MENU_SPRITE_TILE_COPY")}
@@ -535,6 +544,15 @@ export const SpriteEditor = ({
 
           {!metaspriteTile && (
             <>
+              {showSymbols && (
+                <>
+                  <SymbolEditorWrapper>
+                    <SpriteSymbolsEditor id={sprite.id} />
+                  </SymbolEditorWrapper>
+                  <FormDivider />
+                </>
+              )}
+
               <FormRow>
                 <Label>{l10n("FIELD_CANVAS_SIZE")}</Label>
               </FormRow>

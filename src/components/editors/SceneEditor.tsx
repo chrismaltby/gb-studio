@@ -47,6 +47,9 @@ import {
 } from "store/features/clipboard/clipboardTypes";
 import { SCREEN_WIDTH } from "../../consts";
 import { ScriptEventAutoFadeDisabledWarning } from "components/script/ScriptEventAutoFade";
+import { SceneSymbolsEditor } from "components/forms/symbols/SceneSymbolsEditor";
+import { BackgroundSymbolsEditor } from "components/forms/symbols/BackgroundSymbolsEditor";
+import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
 
 interface SceneEditorProps {
   id: string;
@@ -180,6 +183,7 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
   const lockScriptEditor = useSelector(
     (state: RootState) => state.editor.lockScriptEditor
   );
+  const [showSymbols, setShowSymbols] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -431,6 +435,11 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
                     {l10n("FIELD_ADD_NOTES")}
                   </MenuItem>
                 )}
+                {!showSymbols && (
+                  <MenuItem onClick={() => setShowSymbols(true)}>
+                    {l10n("FIELD_VIEW_GBVM_SYMBOLS")}
+                  </MenuItem>
+                )}
                 <MenuItem onClick={onCopy}>{l10n("MENU_COPY_SCENE")}</MenuItem>
                 {clipboardFormat === ClipboardTypeScenes && (
                   <MenuItem onClick={onPaste}>
@@ -466,6 +475,16 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
                 </MenuItem>
               </DropdownButton>
             </FormHeader>
+
+            {showSymbols && (
+              <>
+                <SymbolEditorWrapper>
+                  <SceneSymbolsEditor id={scene.id} />
+                  <BackgroundSymbolsEditor id={scene.backgroundId} />
+                </SymbolEditorWrapper>
+                <FormDivider />
+              </>
+            )}
 
             {showNotes && (
               <FormRow>

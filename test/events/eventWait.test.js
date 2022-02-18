@@ -4,10 +4,10 @@ test("Should be able to wait for a second", () => {
   const mockWait = jest.fn();
   compile(
     {
-      time: 1
+      time: 1,
     },
     {
-      wait: mockWait
+      wait: mockWait,
     }
   );
   expect(mockWait).toBeCalledWith(60);
@@ -18,7 +18,7 @@ test("Should wait for half a second if time not set", () => {
   compile(
     {},
     {
-      wait: mockWait
+      wait: mockWait,
     }
   );
   expect(mockWait).toBeCalledWith(30);
@@ -28,12 +28,11 @@ test("Should be able to wait for one and a half seconds", () => {
   const mockWait = jest.fn();
   compile(
     {
-      time: 1.5
+      time: 1.5,
     },
     {
-      wait: mockWait
+      wait: mockWait,
     }
   );
-  expect(mockWait).toBeCalledWith(60);
-  expect(mockWait).toBeCalledWith(30);
+  expect(mockWait).toBeCalledWith(90);
 });

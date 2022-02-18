@@ -3,6 +3,7 @@ import { promisify } from "util";
 import uuidv4 from "uuid/v4";
 import { stat } from "fs-extra";
 import parseAssetPath from "../helpers/path/parseAssetPath";
+import { toValidSymbol } from "lib/helpers/symbols";
 
 const globAsync = promisify(glob);
 
@@ -10,10 +11,12 @@ const loadMusicData = (projectRoot) => async (filename) => {
   const { file, plugin } = parseAssetPath(filename, projectRoot, "music");
   const fileStat = await stat(filename, { bigint: true });
   const inode = fileStat.ino.toString();
+  const name = file.replace(/(.mod|.uge)/i, "");
   return {
     id: uuidv4(),
     plugin,
-    name: file.replace(/(.mod|.uge)/i, ""),
+    name,
+    symbol: toValidSymbol(`song_${name}`),
     filename: file,
     settings: {},
     type: file.endsWith(".uge") ? "uge" : "mod",

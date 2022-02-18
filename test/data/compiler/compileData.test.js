@@ -1,5 +1,4 @@
 import compile, {
-  precompileStrings,
   precompileBackgrounds,
   precompileScenes,
 } from "../../../src/lib/compiler/compileData";
@@ -7,7 +6,6 @@ import {
   EVENT_TEXT,
   EVENT_IF_TRUE,
   EVENT_SET_TRUE,
-  EVENT_END,
 } from "../../../src/lib/compiler/eventTypes";
 
 test("should compile simple project into files object", async () => {
@@ -24,6 +22,7 @@ test("should compile simple project into files object", async () => {
       {
         id: "1",
         name: "first_scene",
+        symbol: "scene_1",
         backgroundId: "2",
         width: 20,
         height: 18,
@@ -38,6 +37,7 @@ test("should compile simple project into files object", async () => {
         actors: [
           {
             id: "9",
+            symbol: "actor_9",
             spriteSheetId: "SPRITE_1",
             script: [
               {
@@ -56,6 +56,7 @@ test("should compile simple project into files object", async () => {
           },
           {
             id: "12",
+            symbol: "actor_12",
             spriteSheetId: "SPRITE_2",
             script: [
               {
@@ -70,6 +71,7 @@ test("should compile simple project into files object", async () => {
         triggers: [
           {
             id: "92",
+            symbol: "trigger_92",
             x: 1,
             y: 2,
             width: 5,
@@ -94,6 +96,7 @@ test("should compile simple project into files object", async () => {
       {
         id: "5",
         name: "second_scene",
+        symbol: "scene_2",
         backgroundId: "3",
         width: 32,
         height: 32,
@@ -108,6 +111,7 @@ test("should compile simple project into files object", async () => {
         actors: [
           {
             id: "10",
+            symbol: "actor_10",
             spriteSheetId: "SPRITE_1",
             script: [
               {
@@ -152,6 +156,7 @@ test("should compile simple project into files object", async () => {
       {
         id: "6",
         name: "third_scene",
+        symbol: "scene_3",
         backgroundId: "4",
         width: 20,
         height: 18,
@@ -179,6 +184,7 @@ test("should compile simple project into files object", async () => {
       {
         id: "9",
         name: "fourth_scene",
+        symbol: "scene_4",
         backgroundId: "7",
         width: 20,
         height: 18,
@@ -200,6 +206,7 @@ test("should compile simple project into files object", async () => {
       {
         id: "10",
         name: "fifth_scene",
+        symbol: "scene_5",
         backgroundId: "8",
         width: 20,
         height: 18,
@@ -215,6 +222,7 @@ test("should compile simple project into files object", async () => {
         triggers: [
           {
             id: "91",
+            symbol: "trigger_91",
             x: 1,
             y: 2,
             width: 5,
@@ -240,38 +248,54 @@ test("should compile simple project into files object", async () => {
     backgrounds: [
       {
         id: "2",
+        symbol: "bg_1",
         width: 20,
         height: 32,
+        imageWidth: 160,
+        imageHeight: 256,
         filename: "forest_clearing.png",
       },
       {
         id: "3",
+        symbol: "bg_2",
         width: 20,
         height: 18,
+        imageWidth: 160,
+        imageHeight: 256,
         filename: "mabe_house.png",
       },
       {
         id: "4",
+        symbol: "bg_3",
         width: 32,
         height: 32,
+        imageWidth: 256,
+        imageHeight: 256,
         filename: "village_street_night.png",
       },
       {
         id: "7",
+        symbol: "bg_4",
         width: 20,
         height: 18,
+        imageWidth: 160,
+        imageHeight: 256,
         filename: "home_bedroom_night.png",
       },
       {
         id: "8",
+        symbol: "bg_5",
         width: 20,
         height: 18,
+        imageWidth: 160,
+        imageHeight: 256,
         filename: "boss.png",
       },
     ],
     spriteSheets: [
       {
         id: "SPRITE_1",
+        symbol: "sprite_1",
         filename: "sprite_1.png",
         states: [
           {
@@ -292,6 +316,7 @@ test("should compile simple project into files object", async () => {
       },
       {
         id: "SPRITE_2",
+        symbol: "sprite_2",
         filename: "sprite_2.png",
         states: [
           {
@@ -312,6 +337,7 @@ test("should compile simple project into files object", async () => {
       },
       {
         id: "SPRITE_3",
+        symbol: "sprite_3",
         filename: "sprite_3.png",
         states: [
           {
@@ -335,6 +361,7 @@ test("should compile simple project into files object", async () => {
     fonts: [
       {
         id: "font1",
+        symbol: "font_1",
         filename: "gbs-mono.png",
       },
     ],
@@ -349,79 +376,6 @@ test("should compile simple project into files object", async () => {
     // }
   });
   expect(compiled).toBeInstanceOf(Object);
-});
-
-test("should walk all scene events to build list of strings", () => {
-  const scenes = [
-    {
-      id: "1",
-      actors: [
-        {
-          id: "2",
-          script: [
-            {
-              id: "3",
-              command: EVENT_IF_TRUE,
-              args: { variable: "9" },
-              children: {
-                true: [
-                  {
-                    id: "4",
-                    command: EVENT_TEXT,
-                    args: { text: "LINE 2" },
-                  },
-                  {
-                    id: "5",
-                    command: EVENT_END,
-                  },
-                ],
-                false: [
-                  {
-                    id: "6",
-                    command: EVENT_SET_TRUE,
-                    args: { variable: "9" },
-                  },
-                  {
-                    id: "7",
-                    command: EVENT_TEXT,
-                    args: { text: "LINE 1" },
-                  },
-                  {
-                    id: "8",
-                    command: EVENT_END,
-                  },
-                ],
-              },
-            },
-            {
-              id: "9",
-              command: EVENT_END,
-            },
-          ],
-        },
-      ],
-      triggers: [
-        {
-          id: "10",
-          script: [
-            {
-              id: "11",
-              command: EVENT_TEXT,
-              args: { text: "LINE 2" },
-            },
-            {
-              id: "12",
-              command: EVENT_TEXT,
-              args: { text: "LINE 3" },
-            },
-          ],
-          leaveScript: [],
-        },
-      ],
-    },
-  ];
-  const precompiledStrings = precompileStrings(scenes);
-  expect(precompiledStrings).toEqual(["LINE 2", "LINE 1", "LINE 3"]);
 });
 
 test("should precompile image data", async () => {

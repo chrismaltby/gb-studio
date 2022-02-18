@@ -61,7 +61,7 @@ void music_init(UBYTE preserve) BANKED {
 }
 
 #ifdef HUGE_TRACKER
-void hUGETrackerRoutine(unsigned char param, unsigned char ch, unsigned char tick) NONBANKED {
+void hUGETrackerRoutine(unsigned char param, unsigned char ch, unsigned char tick) NONBANKED OLDCALL {
     ch;
     if (tick) return; // return if not zero tick
     routine_queue_head++, routine_queue_head &= (MAX_ROUTINE_QUEUE_LEN - 1);

@@ -16,11 +16,12 @@ import uuid from "uuid";
 import { copySync, chmodSync } from "fs-extra";
 import { projectTemplatesRoot } from "../../consts";
 import uniq from "lodash/uniq";
+import { toValidSymbol } from "lib/helpers/symbols";
 
 const indexById = indexBy("id");
 
 export const LATEST_PROJECT_VERSION = "3.0.0";
-export const LATEST_PROJECT_MINOR_VERSION = "1";
+export const LATEST_PROJECT_MINOR_VERSION = "3";
 
 const ensureProjectAssetSync = (relativePath, { projectRoot }) => {
   const projectPath = `${projectRoot}/${relativePath}`;
@@ -1487,6 +1488,72 @@ const migrateFrom200r16Tor17Fonts = (data, projectRoot) => {
   };
 };
 
+/* Version 3.0.0 r2 migrates old hide/show events to deactivate/activate to better match previous functionality
+ */
+export const migrateFrom300r1To300r2Event = (event) => {
+  const migrateMeta = generateMigrateMeta(event);
+  if (event.args && event.command === "EVENT_ACTOR_HIDE") {
+    return migrateMeta({
+      ...event,
+      command: "EVENT_ACTOR_DEACTIVATE",
+    });
+  }
+  if (event.args && event.command === "EVENT_ACTOR_SHOW") {
+    return migrateMeta({
+      ...event,
+      command: "EVENT_ACTOR_ACTIVATE",
+    });
+  }
+  return event;
+};
+
+const migrateFrom300r1To300r2Events = (data) => {
+  return {
+    ...data,
+    scenes: mapScenesEvents(data.scenes, migrateFrom300r1To300r2Event),
+    customEvents: (data.customEvents || []).map((customEvent) => {
+      return {
+        ...customEvent,
+        script: mapEvents(customEvent.script, migrateFrom300r1To300r2Event),
+      };
+    }),
+  };
+};
+
+/* Version 3.0.0 r3 adds gbvm symbols to all entities
+ */
+export const migrateFrom300r2To300r3 = (data) => {
+  return {
+    ...data,
+    scenes: data.scenes.map((scene, sceneIndex) => {
+      return {
+        ...scene,
+        symbol: toValidSymbol(`scene_${scene.name || sceneIndex + 1}`),
+        actors: scene.actors.map((actor) => {
+          return {
+            ...actor,
+            symbol: toValidSymbol(`actor_${actor.name || 0}`),
+          };
+        }),
+        triggers: scene.triggers.map((trigger) => {
+          return {
+            ...trigger,
+            symbol: toValidSymbol(`trigger_${trigger.name || 0}`),
+          };
+        }),
+      };
+    }),
+    customEvents: data.customEvents.map((customEvent, customEventIndex) => {
+      return {
+        ...customEvent,
+        symbol: toValidSymbol(
+          `script_${customEvent.name || customEventIndex + 1}`
+        ),
+      };
+    }),
+  };
+};
+
 const migrateProject = (project, projectRoot) => {
   let data = { ...project };
   let version = project._version || "1.0.0";
@@ -1586,6 +1653,17 @@ const migrateProject = (project, projectRoot) => {
       data = migrateFrom200r16Tor17Fonts(data, projectRoot);
       version = "3.0.0";
       release = "1";
+    }
+  }
+
+  if (version === "3.0.0") {
+    if (release === "1") {
+      data = migrateFrom300r1To300r2Events(data);
+      release = "2";
+    }
+    if (release === "2") {
+      data = migrateFrom300r2To300r3(data);
+      release = "3";
     }
   }
 

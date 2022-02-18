@@ -16,6 +16,9 @@
 #define MOVE_ACTIVE                1
 #define MOVE_ALLOW_H               2
 #define MOVE_ALLOW_V               4
+#define TILE_FRACTION_MASK         0b1111111
+#define ONE_TILE_DISTANCE          128
+
 
 typedef struct act_move_to_t {
     UBYTE ID;
@@ -52,6 +55,7 @@ void vm_actor_move_to(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {
 
     if (THIS->flags == 0) {
         THIS->flags = MOVE_ACTIVE;
+        actor->movement_interrupt = FALSE;
 
         // Snap to nearest pixel before moving
         actor->pos.x = ((actor->pos.x >> 4) << 4);
@@ -99,6 +103,23 @@ void vm_actor_move_to(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {
                 }
             }
         }
+    }
+
+    // Interrupt actor movement
+    if (actor->movement_interrupt) {
+        // Set new X destination to next tile
+        if ((actor->pos.x < params->X) && (actor->pos.x & TILE_FRACTION_MASK)) {   // Bitmask to check for non-grid-aligned position
+            params->X = (actor->pos.x & ~TILE_FRACTION_MASK) + ONE_TILE_DISTANCE;  // If moving in positive direction, round up to next tile
+        } else {
+            params->X = actor->pos.x  & ~TILE_FRACTION_MASK;                       // Otherwise, round down
+        }
+        // Set new Y destination to next tile
+        if ((actor->pos.y < params->Y) && (actor->pos.y & TILE_FRACTION_MASK)) {
+            params->Y = (actor->pos.y & ~TILE_FRACTION_MASK) + ONE_TILE_DISTANCE;
+        } else {
+            params->Y = actor->pos.y  & ~TILE_FRACTION_MASK; 
+        }
+        actor->movement_interrupt = FALSE;
     }
 
     // Actor reached destination
@@ -183,14 +204,33 @@ void vm_actor_move_to(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {
     return;
 }
 
+void vm_actor_move_cancel(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {
+    UBYTE * n_actor = VM_REF_TO_PTR(idx);
+    actor_t * actor = actors + *n_actor;
+
+    actor->movement_interrupt = TRUE;
+}
+
 void vm_actor_activate(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {    
     UBYTE * n_actor = VM_REF_TO_PTR(idx);
-    activate_actor(actors + *n_actor);
+    actor_t * actor = actors + *n_actor;
+    if (actor == &PLAYER) {
+        actor->hidden = FALSE;
+    } else {
+        actor->disabled = FALSE;
+        activate_actor(actor);
+    }
 }
 
 void vm_actor_deactivate(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {    
     UBYTE * n_actor = VM_REF_TO_PTR(idx);
-    deactivate_actor(actors + *n_actor);
+    actor_t * actor = actors + *n_actor;
+    if (actor == &PLAYER) {
+        actor->hidden = TRUE;
+    } else {
+        actor->disabled = TRUE;
+        deactivate_actor(actor);
+    }
 }
 
 void vm_actor_terminate_update(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {

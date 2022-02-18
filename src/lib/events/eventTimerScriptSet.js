@@ -5,13 +5,50 @@ const groups = ["EVENT_GROUP_TIMER"];
 
 const fields = [
   {
-    key: "duration",
-    type: "number",
-    label: l10n("FIELD_TIMER_DURATION"),
-    min: 0.01,
-    max: 60,
-    step: 0.01,
-    defaultValue: 10.0,
+    type: "group",
+    fields: [
+      {
+        key: "duration",
+        type: "number",
+        label: l10n("FIELD_SECONDS"),
+        min: 0,
+        max: 60,
+        step: 0.1,
+        defaultValue: 0.5,
+        conditions: [
+          {
+            key: "units",
+            ne: "frames",
+          },
+        ],
+      },
+      {
+        key: "frames",
+        label: l10n("FIELD_FRAMES"),
+        type: "number",
+        min: 0,
+        max: 3600,
+        step: 16,
+        width: "50%",
+        defaultValue: 30,
+        conditions: [
+          {
+            key: "units",
+            eq: "frames",
+          },
+        ],
+      },
+      {
+        key: "units",
+        type: "selectbutton",
+        options: [
+          ["time", l10n("FIELD_SECONDS")],
+          ["frames", l10n("FIELD_FRAMES")],
+        ],
+        inline: true,
+        defaultValue: "time",
+      },
+    ],
   },
   {
     key: "__scriptTabs",
@@ -35,9 +72,15 @@ const fields = [
 ];
 
 const compile = (input, helpers) => {
-  const { timerScriptSet } = helpers;
-  let duration = typeof input.duration === "number" ? input.duration : 10.0;
-  timerScriptSet(duration, input.script);
+  const { timerScriptSet, event } = helpers;
+  let frames = 0;
+  if (input.units === "frames") {
+    frames = typeof input.frames === "number" ? input.frames : 30;
+  } else {
+    let duration = typeof input.duration === "number" ? input.duration : 10.0;
+    frames = Math.ceil(duration * 60);
+  }
+  timerScriptSet(frames, input.script, event.symbol);
 };
 
 module.exports = {
@@ -45,5 +88,6 @@ module.exports = {
   groups,
   fields,
   compile,
+  editableSymbol: true,
   allowChildrenBeforeInitFade: true,
 };

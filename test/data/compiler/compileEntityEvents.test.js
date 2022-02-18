@@ -21,7 +21,6 @@ test("should compile empty events", () => {
 
 ___bank_testname = 255
 .globl ___bank_testname
-.CURRENT_SCRIPT_BANK == ___bank_testname
 
 _testname::
         ; Stop Script
@@ -49,7 +48,6 @@ test("should collapse multiple end events", () => {
 
 ___bank_testname = 255
 .globl ___bank_testname
-.CURRENT_SCRIPT_BANK == ___bank_testname
 
 _testname::
         ; Stop Script
@@ -82,7 +80,6 @@ test("should output text command", async () => {
 
 ___bank_testname = 255
 .globl ___bank_testname
-.CURRENT_SCRIPT_BANK == ___bank_testname
 
 _testname::
         ; Text Dialogue
@@ -136,7 +133,6 @@ test("should output text with avatar command", async () => {
 
 ___bank_testname = 255
 .globl ___bank_testname
-.CURRENT_SCRIPT_BANK == ___bank_testname
 
 _testname::
         ; Text Dialogue
@@ -201,11 +197,10 @@ test("should allow conditional statements", async () => {
 
 ___bank_testname = 255
 .globl ___bank_testname
-.CURRENT_SCRIPT_BANK == ___bank_testname
 
 _testname::
         ; If Variable True
-        VM_IF_CONST .GT         VAR_VARIABLE_4, 0, 1$, 0
+        VM_IF_CONST .GT         VAR_4, 0, 1$, 0
         ; Text Dialogue
         VM_LOAD_TEXT            0
         .asciz "FALSE PATH"
@@ -287,11 +282,10 @@ test("should allow commands after conditional", async () => {
 
 ___bank_testname = 255
 .globl ___bank_testname
-.CURRENT_SCRIPT_BANK == ___bank_testname
 
 _testname::
         ; If Variable True
-        VM_IF_CONST .GT         VAR_VARIABLE_4, 0, 1$, 0
+        VM_IF_CONST .GT         VAR_4, 0, 1$, 0
         ; Text Dialogue
         VM_LOAD_TEXT            0
         .asciz "FALSE PATH"

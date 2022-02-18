@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { RelativePortal } from "ui/layout/RelativePortal";
 
@@ -36,28 +36,45 @@ export const Tooltip = styled.div`
 interface TooltipWrapperProps {
   children: React.ReactNode;
   tooltip: React.ReactNode;
+  open?: boolean;
 }
 
-export const TooltipWrapper = ({ children, tooltip }: TooltipWrapperProps) => {
-  const [isOpen, setOpen] = useState(false);
+export const TooltipWrapper = ({
+  children,
+  tooltip,
+  open,
+}: TooltipWrapperProps) => {
+  const [isOpen, setOpen] = useState(open);
   const timer = useRef<number | null>(null);
 
+  useEffect(() => {
+    if (open !== undefined) {
+      setOpen(open);
+    }
+  }, [open]);
+
   const onClick = useCallback(() => {
-    setOpen(true);
-  }, []);
+    if (open === undefined) {
+      setOpen(true);
+    }
+  }, [open]);
 
   const onHoverStart = useCallback(() => {
-    timer.current = setTimeout(() => {
-      setOpen(true);
-    }, 500);
-  }, []);
+    if (open === undefined) {
+      timer.current = setTimeout(() => {
+        setOpen(true);
+      }, 500);
+    }
+  }, [open]);
 
   const onHoverEnd = useCallback(() => {
-    if (timer.current) {
-      clearTimeout(timer.current);
+    if (open === undefined) {
+      if (timer.current) {
+        clearTimeout(timer.current);
+      }
+      setOpen(false);
     }
-    setOpen(false);
-  }, []);
+  }, [open]);
 
   return (
     <div onClick={onClick} onMouseOver={onHoverStart} onMouseOut={onHoverEnd}>

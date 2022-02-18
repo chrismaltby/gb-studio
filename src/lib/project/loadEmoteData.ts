@@ -4,13 +4,14 @@ import uuid from "uuid/v4";
 import { createReadStream } from "fs-extra";
 import { stat } from "fs";
 import { PNG } from "pngjs";
-
 import parseAssetPath from "../helpers/path/parseAssetPath";
+import { toValidSymbol } from "lib/helpers/symbols";
 
 export interface EmoteAssetData {
   id: string;
   plugin: string | undefined;
   name: string;
+  symbol: string;
   width: number;
   height: number;
   filename: string;
@@ -40,10 +41,12 @@ const loadEmoteData =
       const size = await sizeOfAsync(filename);
       const fileStat = await statAsync(filename, { bigint: true });
       const inode = fileStat.ino.toString();
+      const name = file.replace(/.png/i, "");
       return {
         id: uuid(),
         plugin,
-        name: file.replace(/.png/i, ""),
+        name,
+        symbol: toValidSymbol(`emote_${name}`),
         width: size.width,
         height: size.height,
         filename: file,

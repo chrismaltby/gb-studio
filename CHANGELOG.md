@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add VM_LOAD_TILESET and VM_OVERLAY_SET_MAP to gbvm [untoxa](https://github.com/untoxa)
+- Add VM_ACTOR_MOVE_CANCEL [@um3k](https://github.com/um3k)
+- Allow using frames rather than seconds for wait/camera shake/attach timer script events
+- Added events to Deactivate & Activate actors, similar to old hide/show but prevents update scripts from running on disabled actors
+- Added ability to choose any referenced assets in GBVM script event forcing assets to be included within built project
+- Added ability to rename the GBVM symbol used for generated data files, accessible from "View GBVM Symbols" in right sidebar menu + GBVM event references section
+- Added syntax highlighting and line numbers to GBVM event code input
 
 ### Changed
 
@@ -20,6 +26,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Optimised codegen to use a stack frame rather than push/pop
 - Improved randomize [untoxa](https://github.com/untoxa)
 - Improved gbspack error when data is over bank size limits
+- Update hUGEDriver [untoxa](https://github.com/untoxa)
+- Hide/show actor now ONLY hides/shows, update scripts & collisions are not affected (existing hide/show events migrated to deactivate/activate for compatibility)
 
 ### Fixed
 
@@ -27,6 +35,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed issue where animated camera lock would be off by 8x8px
 - Fix vertical shoot em up scene type [@um3k](https://github.com/um3k)
 - Fixed display of errors in game engine files while building
+- Fix issue where activating an actor wouldn't trigger update script [untoxa](https://github.com/untoxa)
+- Fix issue where full magenta characters in font files didn't have zero width
+- Fixed typo in Japanese localisation [RYU-N2001](https://github.com/RYU-N2001)
+- Updated 32-bit Windows app to use correct 32-bit GBDK-2020 (again) [untoxa](https://github.com/untoxa)
 
 ### Removed
 

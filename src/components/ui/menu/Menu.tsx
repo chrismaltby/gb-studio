@@ -37,6 +37,7 @@ export const MenuItem = styled.div<MenuItemProps>`
   align-items: center;
   padding: 5px 10px;
   font-size: ${(props) => props.theme.typography.menuFontSize};
+  white-space: nowrap;
 
   &:hover,
   &:focus {

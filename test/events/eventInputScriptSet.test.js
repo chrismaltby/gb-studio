@@ -8,11 +8,19 @@ test("Should be able to set an input script", () => {
     {
       input: ["a", "b"],
       persist: true,
-      true: truePath
+      true: truePath,
     },
     {
-      inputScriptSet: mockInputScriptSet
+      inputScriptSet: mockInputScriptSet,
+      event: {
+        symbol: "subscript_symbol",
+      },
     }
   );
-  expect(mockInputScriptSet).toBeCalledWith(["a", "b"], true, truePath);
+  expect(mockInputScriptSet).toBeCalledWith(
+    ["a", "b"],
+    true,
+    truePath,
+    "subscript_symbol"
+  );
 });

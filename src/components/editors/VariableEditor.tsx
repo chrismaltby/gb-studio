@@ -14,7 +14,7 @@ import {
 } from "store/features/entities/entitiesState";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { EditableText } from "ui/form/EditableText";
-import { FormContainer, FormHeader } from "ui/form/FormLayout";
+import { FormContainer, FormDivider, FormHeader } from "ui/form/FormLayout";
 import { MenuItem } from "ui/menu/Menu";
 import entitiesActions from "store/features/entities/entitiesActions";
 import editorActions from "store/features/editor/editorActions";
@@ -40,6 +40,8 @@ import {
   walkNormalisedSceneSpecificEvents,
   walkNormalisedTriggerEvents,
 } from "store/features/entities/entitiesHelpers";
+import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
+import { VariableReference } from "components/forms/ReferencesSelect";
 
 interface VariableEditorProps {
   id: string;
@@ -101,9 +103,13 @@ const onVariableEventContainingId =
     }
   };
 
-const UsesWrapper = styled.div`
+interface UsesWrapperProps {
+  showSymbols: boolean;
+}
+
+const UsesWrapper = styled.div<UsesWrapperProps>`
   position: absolute;
-  top: 38px;
+  top: ${(props) => (props.showSymbols ? `71px` : `38px`)};
   left: 0;
   bottom: 0;
   right: 0;
@@ -132,6 +138,7 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
   const scriptEventsLookup = useSelector((state: RootState) =>
     scriptEventSelectors.selectEntities(state)
   );
+  const [showSymbols, setShowSymbols] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -296,6 +303,11 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
               variant="transparent"
               menuDirection="right"
             >
+              {!showSymbols && (
+                <MenuItem onClick={() => setShowSymbols(true)}>
+                  {l10n("FIELD_VIEW_GBVM_SYMBOLS")}
+                </MenuItem>
+              )}
               <MenuItem onClick={onCopyVar}>
                 {l10n("MENU_VARIABLE_COPY_EMBED")}
               </MenuItem>
@@ -304,8 +316,19 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
               </MenuItem>
             </DropdownButton>
           </FormHeader>
+          {showSymbols && (
+            <>
+              <SymbolEditorWrapper>
+                <VariableReference id={id} />
+              </SymbolEditorWrapper>
+              <FormDivider />
+            </>
+          )}
         </FormContainer>
-        <UsesWrapper ref={ref as RefObject<HTMLDivElement>}>
+        <UsesWrapper
+          ref={ref as RefObject<HTMLDivElement>}
+          showSymbols={showSymbols}
+        >
           <SplitPaneHeader collapsed={false}>
             {l10n("SIDEBAR_VARIABLE_USES")}
           </SplitPaneHeader>
