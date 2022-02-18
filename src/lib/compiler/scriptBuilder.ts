@@ -1140,6 +1140,10 @@ class ScriptBuilder {
     this._addCmd("VM_ACTOR_MOVE_TO", addr);
   };
 
+  _actorMoveCancel = (addr: string) => {
+    this._addCmd("VM_ACTOR_MOVE_CANCEL", addr);
+  };
+
   _actorGetPosition = (addr: string) => {
     this._addCmd("VM_ACTOR_GET_POS", addr);
   };
@@ -1873,6 +1877,12 @@ class ScriptBuilder {
     );
     this._actorMoveTo(this._localRef(actorRef));
     this._assertStackNeutral(stackPtr);
+    this._addNL();
+  };
+
+  actorMoveCancel = () => {
+    const actorRef = this._declareLocal("actor", 4);
+    this._actorMoveCancel(this._localRef(actorRef));
     this._addNL();
   };
 
