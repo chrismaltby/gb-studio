@@ -1863,9 +1863,13 @@ class ScriptBuilder {
       .ref(this._localRef(actorRef, 1))
       .int16(x * 8 * 16)
       .operator(".ADD")
+      .int16(0)
+      .operator(".MAX")
       .ref(this._localRef(actorRef, 2))
       .int16(y * 8 * 16)
       .operator(".ADD")
+      .int16(0)
+      .operator(".MAX")
       .stop();
 
     this._set(this._localRef(actorRef, 1), ".ARG1");
@@ -1926,9 +1930,13 @@ class ScriptBuilder {
       .ref(this._localRef(actorRef, 1))
       .int16(x * 8 * 16)
       .operator(".ADD")
+      .int16(0)
+      .operator(".MAX")
       .ref(this._localRef(actorRef, 2))
       .int16(y * 8 * 16)
       .operator(".ADD")
+      .int16(0)
+      .operator(".MAX")
       .stop();
 
     this._set(this._localRef(actorRef, 1), ".ARG1");
