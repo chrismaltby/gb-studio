@@ -158,6 +158,69 @@ const changes: EngineChange[] = [
       "src/core/vm_instructions.c",
     ],
   },
+  {
+    version: "3.1.0-e1",
+    description:
+      "Updates:\n" +
+      "   * Fix vertical shoot em up scene type\n" +
+      "   * Improved randomize\n" +
+      "   * Add VM_LOAD_TILESET and VM_OVERLAY_SET_MAP",
+    modifiedFiles: [
+      "include/vm.i",
+      "include/vm_gameboy.h",
+      "include/vm_ui.h",
+      "src/core/vm_gameboy.c",
+      "src/core/vm_instructions.c",
+      "src/core/vm_ui.c",
+      "src/states/shmup.c",
+    ],
+  },
+  {
+    version: "3.1.0-e2",
+    description:
+      "Updates:\n" +
+      "   * Add VM_ACTOR_MOVE_CANCEL\n" +
+      "   * Update hUGEDriver\n" +
+      "   * Fix issue where activating an actor wouldn't trigger update script",
+    modifiedFiles: [
+      "include/gbs_types.h",
+      "include/hUGEDriver.h",
+      "include/hUGEDriverRoutines.h",
+      "include/vm.i",
+      "include/vm_actor.h",
+      "lib/hUGEDriver.lib",
+      "src/core/music_manager.c",
+      "src/core/vm.c",
+      "src/core/vm_actor.c",
+      "src/core/vm_instructions.c",
+    ],
+  },
+  {
+    version: "3.1.0-e3",
+    description:
+      "Updates:\n" +
+      "   * Add disabled flag to actors\n" +
+      "   * Manually deactivating an actor will disable it preventing it from activating when coming back onscreen\n" +
+      "   * Manually activating an actor will enable it again",
+    modifiedFiles: [
+      "include/gbs_types.h",
+      "src/core/actor.c",
+      "src/core/data_manager.c",
+      "src/core/vm_actor.c",
+    ],
+  },
+  {
+    version: "3.1.0-e4",
+    description:
+      "Updates:\n" +
+      "   * Fix bug where disabling the player would trigger rendering garbage\n" +
+      "   * Remove unused spritesheet_0 header include in projectiles",
+    modifiedFiles: [
+      "src/core/actor.c",
+      "src/core/projectiles.c",
+      "src/core/vm_actor.c",
+    ],
+  },
 ];
 
 const ejectEngineChangelog = (currentVersion: string) => {

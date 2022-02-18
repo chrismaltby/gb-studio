@@ -319,8 +319,14 @@ OP_VM_INIT_RNG        = 0x23
 .endm
 
 .macro VM_RANDOMIZE
-        VM_PUSH_CONST   0
+        VM_RESERVE      2
         VM_GET_UINT8    .ARG0, _DIV_REG
+        VM_GET_UINT8    .ARG1, _game_time
+        VM_RPN
+            .R_INT16    256
+            .R_OPERATOR .MUL
+            .R_OPERATOR .ADD
+            .R_STOP
         VM_INIT_RNG     .ARG0
         VM_POP          1
 .endm
@@ -428,6 +434,11 @@ OP_VM_ACTOR_MOVE_TO     = 0x30
 .ACTOR_ATTR_DIAGONAL    = 0x04
 .macro VM_ACTOR_MOVE_TO IDX
         .db OP_VM_ACTOR_MOVE_TO, #>IDX, #<IDX
+.endm
+
+OP_VM_ACTOR_MOVE_CANCEL = 0x88
+.macro VM_ACTOR_MOVE_CANCEL ACTOR
+        .db OP_VM_ACTOR_MOVE_CANCEL, #>ACTOR, #<ACTOR
 .endm
 
 OP_VM_ACTOR_ACTIVATE    = 0x31
@@ -656,6 +667,11 @@ OP_VM_OVERLAY_SET_SUBMAP = 0x4F
 
 ; --- GAMEBOY ------------------------------------------
 
+OP_VM_LOAD_TILESET      = 0x50
+.macro VM_LOAD_TILESET IDX, BANK, BKG
+        .db OP_VM_LOAD_TILESET, #>BKG, #<BKG, #<BANK, #>IDX, #<IDX
+.endm
+
 OP_VM_SET_SPRITE_VISIBLE = 0x51
 .SPRITES_SHOW           = 0
 .SPRITES_HIDE           = 1
@@ -693,6 +709,11 @@ OP_VM_INPUT_GET         = 0x54
 OP_VM_CONTEXT_PREPARE   = 0x55
 .macro VM_CONTEXT_PREPARE SLOT, BANK, ADDR
         .db OP_VM_CONTEXT_PREPARE, #>ADDR, #<ADDR, #<BANK, #<SLOT
+.endm
+
+OP_VM_OVERLAY_SET_MAP   = 0x56
+.macro VM_OVERLAY_SET_MAP IDX, X, Y, BANK, BKG
+        .db OP_VM_OVERLAY_SET_MAP, #>BKG, #<BKG, #<BANK, #<Y, #<X, #>IDX, #<IDX
 .endm
 
 OP_VM_FADE              = 0x57

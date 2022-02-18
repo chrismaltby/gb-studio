@@ -26,7 +26,11 @@ import shuntingYard from "../rpn/shuntingYard";
 import { PrecompiledFontData } from "./compileFonts";
 import { encodeString } from "../helpers/encodings";
 import { PrecompiledMusicTrack } from "./compileMusic";
-import { emoteSymbol, spriteSheetSymbol } from "./compileData2";
+import {
+  PrecompiledScene,
+  PrecompiledSprite,
+  PrecompiledEmote,
+} from "./compileData2";
 import { DMG_PALETTE } from "../../consts";
 import {
   isPropertyField,
@@ -41,6 +45,7 @@ import {
   isUnionVariableValue,
 } from "store/features/entities/entitiesHelpers";
 import { lexText } from "lib/fonts/lexText";
+import { Reference } from "components/forms/ReferencesSelect";
 
 type ScriptOutput = string[];
 
@@ -73,21 +78,22 @@ interface ScriptBuilderFunctionArgLookup {
 }
 
 interface ScriptBuilderOptions {
-  scene: ScriptBuilderScene;
+  scriptSymbolName: string;
+  scene: PrecompiledScene;
   sceneIndex: number;
   entityIndex: number;
   entityType: ScriptBuilderEntityType;
   variablesLookup: VariablesLookup;
   variableAliasLookup: Dictionary<string>;
-  scenes: ScriptBuilderScene[];
-  sprites: ScriptBuilderEntity[];
+  scenes: PrecompiledScene[];
+  sprites: PrecompiledSprite[];
   statesOrder: string[];
   stateReferences: string[];
   fonts: PrecompiledFontData[];
   defaultFontId: string;
   music: PrecompiledMusicTrack[];
   avatars: ScriptBuilderEntity[];
-  emotes: ScriptBuilderEntity[];
+  emotes: PrecompiledEmote[];
   palettes: Palette[];
   customEvents: CustomEvent[];
   entity?: ScriptBuilderEntity;
@@ -96,6 +102,10 @@ interface ScriptBuilderOptions {
   additionalScripts: Dictionary<{
     symbol: string;
     compiledScript: string;
+  }>;
+  additionalOutput: Dictionary<{
+    filename: string;
+    data: string;
   }>;
   symbols: Dictionary<string>;
   argLookup: ScriptBuilderFunctionArgLookup;
@@ -433,6 +443,7 @@ class ScriptBuilder {
     this.output = output;
     this.options = {
       ...options,
+      scriptSymbolName: options.scriptSymbolName || "script_1",
       sceneIndex: options.sceneIndex || 0,
       entityIndex: options.entityIndex || 0,
       entityType: options.entityType || "scene",
@@ -451,6 +462,7 @@ class ScriptBuilder {
       palettes: options.palettes || [],
       customEvents: options.customEvents || [],
       additionalScripts: options.additionalScripts || {},
+      additionalOutput: options.additionalOutput || {},
       symbols: options.symbols || {},
       argLookup: options.argLookup || { actor: {}, variable: {} },
       compileEvents: options.compileEvents || ((_self, _e) => {}),
@@ -1126,6 +1138,10 @@ class ScriptBuilder {
 
   _actorMoveTo = (addr: string) => {
     this._addCmd("VM_ACTOR_MOVE_TO", addr);
+  };
+
+  _actorMoveCancel = (addr: string) => {
+    this._addCmd("VM_ACTOR_MOVE_CANCEL", addr);
   };
 
   _actorGetPosition = (addr: string) => {
@@ -1868,6 +1884,12 @@ class ScriptBuilder {
     this._addNL();
   };
 
+  actorMoveCancel = () => {
+    const actorRef = this._declareLocal("actor", 4);
+    this._actorMoveCancel(this._localRef(actorRef));
+    this._addNL();
+  };
+
   actorSetPosition = (x = 0, y = 0) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Actor Set Position");
@@ -2078,7 +2100,6 @@ class ScriptBuilder {
     this._addComment("Actor Show");
     this.actorSetById(id);
     this._actorSetHidden(this._localRef(actorRef), false);
-    this._actorActivate(this._localRef(actorRef));
     this._addNL();
   };
 
@@ -2087,6 +2108,21 @@ class ScriptBuilder {
     this._addComment("Actor Hide");
     this.actorSetById(id);
     this._actorSetHidden(this._localRef(actorRef), true);
+    this._addNL();
+  };
+
+  actorActivate = (id: string) => {
+    const actorRef = this._declareLocal("actor", 4);
+    this._addComment("Actor Activate");
+    this.actorSetById(id);
+    this._actorActivate(this._localRef(actorRef));
+    this._addNL();
+  };
+
+  actorDeactivate = (id: string) => {
+    const actorRef = this._declareLocal("actor", 4);
+    this._addComment("Actor Deactivate");
+    this.actorSetById(id);
     this._actorDeactivate(this._localRef(actorRef));
     this._addNL();
   };
@@ -2151,10 +2187,10 @@ class ScriptBuilder {
   actorEmote = (emoteId: string) => {
     const actorRef = this._declareLocal("actor", 4);
     const { emotes } = this.options;
-    const emoteIndex = emotes.findIndex((e) => e.id === emoteId);
-    if (emoteIndex > -1) {
+    const emote = emotes.find((e) => e.id === emoteId);
+    if (emote) {
       this._addComment("Actor Emote");
-      this._actorEmote(this._localRef(actorRef), emoteSymbol(emoteIndex));
+      this._actorEmote(this._localRef(actorRef), emote.symbol);
       this._addNL();
     }
   };
@@ -2162,13 +2198,10 @@ class ScriptBuilder {
   actorSetSprite = (spriteSheetId: string) => {
     const actorRef = this._declareLocal("actor", 4);
     const { sprites } = this.options;
-    const spriteIndex = sprites.findIndex((s) => s.id === spriteSheetId);
-    if (spriteIndex > -1) {
+    const sprite = sprites.find((s) => s.id === spriteSheetId);
+    if (sprite) {
       this._addComment("Actor Set Spritesheet");
-      this._actorSetSpritesheet(
-        this._localRef(actorRef),
-        spriteSheetSymbol(spriteIndex)
-      );
+      this._actorSetSpritesheet(this._localRef(actorRef), sprite.symbol);
       this._addNL();
     }
   };
@@ -2176,16 +2209,13 @@ class ScriptBuilder {
   playerSetSprite = (spriteSheetId: string, persist: boolean) => {
     const actorRef = this._declareLocal("actor", 4);
     const { sprites, scene } = this.options;
-    const spriteIndex = sprites.findIndex((s) => s.id === spriteSheetId);
-    if (spriteIndex > -1) {
+    const sprite = sprites.find((s) => s.id === spriteSheetId);
+    if (sprite) {
       this._addComment("Player Set Spritesheet");
       this._setConst(this._localRef(actorRef), 0);
-      this._actorSetSpritesheet(
-        this._localRef(actorRef),
-        spriteSheetSymbol(spriteIndex)
-      );
+      this._actorSetSpritesheet(this._localRef(actorRef), sprite.symbol);
       if (persist) {
-        const symbol = spriteSheetSymbol(spriteIndex);
+        const symbol = sprite.symbol;
         this._setConst(`PLAYER_SPRITE_${scene.type}_BANK`, `___bank_${symbol}`);
         this._setConst(`PLAYER_SPRITE_${scene.type}_DATA`, `_${symbol}`);
       }
@@ -2755,10 +2785,11 @@ class ScriptBuilder {
   inputScriptSet = (
     input: string,
     override: boolean,
-    script: ScriptEvent[]
+    script: ScriptEvent[],
+    symbol?: string
   ) => {
     this._addComment(`Input Script Attach`);
-    const scriptRef = this._compileSubScript("input", script);
+    const scriptRef = this._compileSubScript("input", script, symbol);
     const inputValue = inputDec(input);
     let ctx = inputValue.toString(2).padStart(8, "0").indexOf("1") + 1;
     if (ctx <= 0) {
@@ -2778,12 +2809,12 @@ class ScriptBuilder {
   // --------------------------------------------------------------------------
   // Timer
 
-  timerScriptSet = (duration = 10.0, script: ScriptEvent[]) => {
+  timerScriptSet = (frames = 600, script: ScriptEvent[], symbol?: string) => {
     this._addComment(`Timer Start`);
-    const scriptRef = this._compileSubScript("timer", script);
+    const scriptRef = this._compileSubScript("timer", script, symbol);
     const ctx = 1;
     const TIMER_CYCLES = 16;
-    let durationTicks = ((60 * duration) / TIMER_CYCLES + 0.5) | 0;
+    let durationTicks = (frames / TIMER_CYCLES + 0.5) | 0;
     if (durationTicks <= 0) {
       durationTicks = 1;
     }
@@ -2819,7 +2850,60 @@ class ScriptBuilder {
       return;
     }
 
+    const compiledCustomEvent = this.compileCustomEventScript(customEvent.id);
+    if (!compiledCustomEvent) {
+      return;
+    }
+
+    const { scriptRef, argsLen } = compiledCustomEvent;
+
     this._addComment(`Call Script: ${customEvent.name}`);
+
+    // Push args
+    const actorArgs = Object.values(customEvent.actors);
+    const variableArgs = Object.values(customEvent.variables);
+
+    if (actorArgs) {
+      for (const actorArg of actorArgs.reverse()) {
+        if (actorArg) {
+          const actorValue = input?.[`$actor[${actorArg.id}]$`] || "";
+          const actorIndex = this.getActorIndex(actorValue);
+          this._stackPushConst(actorIndex, `Actor ${actorArg.id}`);
+        }
+      }
+    }
+
+    if (variableArgs) {
+      for (const variableArg of variableArgs.reverse()) {
+        if (variableArg) {
+          const variableValue = input?.[`$variable[${variableArg.id}]$`] || "";
+          const variableAlias = this.getVariableAlias(variableValue);
+          this._stackPushConst(variableAlias, `Variable ${variableArg.id}`);
+        }
+      }
+    }
+
+    this._callFar(scriptRef, argsLen);
+    this._addNL();
+  };
+
+  compileReferencedAssets = (references: Reference[]) => {
+    const referencedCustomEventIds = references
+      .filter((r) => r.type === "script")
+      .map((r) => r.id);
+    for (const customEventId of referencedCustomEventIds) {
+      this.compileCustomEventScript(customEventId);
+    }
+  };
+
+  compileCustomEventScript = (customEventId: string) => {
+    const { customEvents } = this.options;
+    const customEvent = customEvents.find((ce) => ce.id === customEventId);
+
+    if (!customEvent) {
+      console.warn("Script not found", customEventId);
+      return;
+    }
 
     const argLookup: {
       actor: Dictionary<string>;
@@ -2860,10 +2944,7 @@ class ScriptBuilder {
     if (actorArgs) {
       for (const actorArg of actorArgs.reverse()) {
         if (actorArg) {
-          const actorValue = input?.[`$actor[${actorArg.id}]$`] || "";
-          const actorIndex = this.getActorIndex(actorValue);
-          const arg = registerArg("actor", actorArg.id);
-          this._stackPushConst(actorIndex, `Actor ${arg}`);
+          registerArg("actor", actorArg.id);
         }
       }
     }
@@ -2871,10 +2952,7 @@ class ScriptBuilder {
     if (variableArgs) {
       for (const variableArg of variableArgs.reverse()) {
         if (variableArg) {
-          const variableValue = input?.[`$variable[${variableArg.id}]$`] || "";
-          const variableAlias = this.getVariableAlias(variableValue);
-          const arg = registerArg("variable", variableArg.id);
-          this._stackPushConst(variableAlias, `Variable ${arg}`);
+          registerArg("variable", variableArg.id);
         }
       }
     }
@@ -2936,12 +3014,11 @@ class ScriptBuilder {
     const scriptRef = this._compileSubScript(
       "custom",
       script,
-      customEvent.name,
+      customEvent.symbol,
       { argLookup }
     );
 
-    this._callFar(scriptRef, argsLen);
-    this._addNL();
+    return { scriptRef, argsLen };
   };
 
   returnFar = () => {
@@ -2988,8 +3065,8 @@ class ScriptBuilder {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Load Scene");
     const { scenes } = this.options;
-    const sceneIndex = scenes.findIndex((s) => s.id === sceneId);
-    if (sceneIndex > -1) {
+    const scene = scenes.find((s) => s.id === sceneId);
+    if (scene) {
       this._setConstMemInt8(
         "fade_frames_per_step",
         fadeSpeeds[fadeSpeed] ?? 0x3
@@ -3004,7 +3081,7 @@ class ScriptBuilder {
         this._actorSetDirection(this._localRef(actorRef), asmDir);
       }
       this._raiseException("EXCEPTION_CHANGE_SCENE", 3);
-      this._importFarPtrData(`scene_${sceneIndex}`);
+      this._importFarPtrData(scene.symbol);
       this._addNL();
     }
   };
@@ -3089,6 +3166,13 @@ class ScriptBuilder {
 
     const id = getVariableId(variable, entity);
 
+    const namedVariable = variablesLookup[id || "0"];
+    if (namedVariable && namedVariable.symbol) {
+      const symbol = namedVariable.symbol.toUpperCase();
+      variableAliasLookup[id] = symbol;
+      return symbol;
+    }
+
     // If already got an alias use that
     const existingAlias = variableAliasLookup[id || "0"];
     if (existingAlias) {
@@ -3111,7 +3195,7 @@ class ScriptBuilder {
       name = tempVariableName(num);
     } else {
       const num = toVariableNumber(variable || "0");
-      name = globalVariableName(num, variablesLookup);
+      name = num;
     }
 
     const alias = "VAR_" + toASMVar(name);
@@ -3488,9 +3572,13 @@ class ScriptBuilder {
     this._addNL();
   };
 
-  musicRoutineSet = (routine: number, script: ScriptEvent[]) => {
+  musicRoutineSet = (
+    routine: number,
+    script: ScriptEvent[],
+    symbol?: string
+  ) => {
     this._addComment(`Music Routine Attach`);
-    const scriptRef = this._compileSubScript("music", script);
+    const scriptRef = this._compileSubScript("music", script, symbol);
     const routineValue = Number(routine);
     this._musicRoutine(routineValue, scriptRef);
     this._addNL();
@@ -4226,11 +4314,11 @@ class ScriptBuilder {
   _compileSubScript = (
     type: "input" | "timer" | "music" | "custom",
     script: ScriptEvent[],
-    name?: string,
+    inputSymbol?: string,
     options?: Partial<ScriptBuilderOptions>
   ) => {
     const symbol = this._getAvailableSymbol(
-      name ? `script_${toCSymbol(name)}` : `script_${type}_0`
+      inputSymbol ? inputSymbol : `script_${type}_0`
     );
     const compiledSubScript = compileEntityEvents(symbol, script, {
       ...this.options,
@@ -4277,6 +4365,16 @@ class ScriptBuilder {
   compileEvents = (path: ScriptEvent[]) => {
     const { compileEvents } = this.options;
     compileEvents(this, path);
+  };
+
+  // --------------------------------------------------------------------------
+  // Dynamic asset files
+
+  writeAsset = (filename: string, data: string) => {
+    this.options.additionalOutput[filename] = {
+      filename,
+      data,
+    };
   };
 
   // --------------------------------------------------------------------------

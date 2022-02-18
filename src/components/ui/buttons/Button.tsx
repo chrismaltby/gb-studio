@@ -30,6 +30,8 @@ export const Button = styled.button<ButtonProps>`
   flex-shrink: 0;
 
   svg {
+    height: 17px;
+    width: 17px;
     max-width: 100%;
     max-height: 100%;
     fill: ${(props) => props.theme.colors.button.text};

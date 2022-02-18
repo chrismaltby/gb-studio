@@ -26,6 +26,7 @@ export interface EventHandler {
   groups?: string[];
   deprecated?: boolean;
   isConditional?: boolean;
+  editableSymbol?: boolean;
   compile: (input: unknown, helpers: unknown) => void;
 }
 

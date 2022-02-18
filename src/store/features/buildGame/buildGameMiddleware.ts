@@ -81,6 +81,7 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
             }
           },
           warnings: (message) => {
+            console.error(message);
             dispatch(consoleActions.stdErr(message));
           },
         });
@@ -123,6 +124,7 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
         dispatch(consoleActions.stdOut(`Build Time: ${buildTime}ms`));
         dispatch(consoleActions.completeConsole());
       } catch (e) {
+        console.error(e);
         if (typeof e === "string") {
           dispatch(navigationActions.setSection("build"));
           dispatch(consoleActions.stdErr(e));

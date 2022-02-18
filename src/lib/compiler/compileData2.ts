@@ -12,17 +12,19 @@ import { decHex32Val, hexDec, wrap8Bit } from "../helpers/8bit";
 import { PrecompiledSpriteSheetData } from "./compileSprites";
 import { dirEnum } from "./helpers";
 
-interface PrecompiledBackground {
+export interface PrecompiledBackground {
+  id: string;
+  symbol: string;
   name: string;
   width: number;
   height: number;
   data: Uint8Array;
-  tilesetIndex: number;
-  tilemapIndex: number;
-  tilemapAttrIndex: number;
+  tileset: PrecompiledTileData;
+  tilemap: PrecompiledTileData;
+  tilemapAttr: PrecompiledTileData;
 }
 
-interface PrecompiledProjectile {
+export interface PrecompiledProjectile {
   spriteSheetId: string;
   spriteStateId: string;
   speed: number;
@@ -31,13 +33,22 @@ interface PrecompiledProjectile {
   initialOffset: number;
   collisionGroup: string;
   collisionMask: string[];
+  hash: string;
 }
 
 interface AvatarData {
   data: Uint8Array;
 }
 
-interface EmoteData {
+export interface PrecompiledEmote {
+  id: string;
+  name: string;
+  symbol: string;
+  data: Uint8Array;
+}
+
+export interface PrecompiledTileData {
+  symbol: string;
   data: Uint8Array;
 }
 
@@ -45,20 +56,21 @@ interface Entity {
   name: string;
 }
 
-interface PrecompiledScene {
+export interface PrecompiledScene {
   id: string;
   name: string;
+  symbol: string;
   width: number;
   height: number;
   type: string;
-  backgroundIndex: number;
-  playerSpriteIndex: number;
+  background: PrecompiledBackground;
+  playerSprite: PrecompiledSprite;
   parallax: Array<{ height: number; speed: number }>;
   actorsExclusiveLookup: Dictionary<number>;
   actors: Actor[];
   triggers: Trigger[];
   projectiles: PrecompiledProjectile[];
-  sprites: number[];
+  sprites: PrecompiledSprite[];
 }
 
 interface PrecompiledSceneEventPtrs {
@@ -75,6 +87,15 @@ interface PrecompiledPalette {
   dmg: [string, string, string, string][];
   colors: [string, string, string, string][];
 }
+
+export type PrecompiledSprite = {
+  symbol: string;
+  tileset: PrecompiledTileData;
+} & PrecompiledSpriteSheetData;
+
+export type PrecompiledFontData = {
+  symbol: string;
+} & FontData;
 
 export const BACKGROUND_TYPE = "const struct background_t";
 export const SPRITESHEET_TYPE = "const struct spritesheet_t";
@@ -194,31 +215,11 @@ const bankRefExtern = (symbol: string): string => `BANKREF_EXTERN(${symbol})`;
 
 const bankRef = (symbol: string): string => `BANKREF(${symbol})`;
 
-const backgroundSymbol = (backgroundIndex: number): string =>
-  `background_${backgroundIndex}`;
-
-const tilemapSymbol = (tilemapIndex: number): string =>
-  `tilemap_${tilemapIndex}`;
-
-const tilemapAttrSymbol = (tilemapAttrIndex: number): string =>
-  `tilemap_attr_${tilemapAttrIndex}`;
-
-const tilesetSymbol = (tilesetIndex: number): string =>
-  `tileset_${tilesetIndex}`;
-
-export const spriteSheetSymbol = (spriteSheetIndex: number): string =>
-  `spritesheet_${spriteSheetIndex}`;
-
 export const paletteSymbol = (paletteIndex: number): string =>
   `palette_${paletteIndex}`;
 
-export const fontSymbol = (fontIndex: number): string => `font_${fontIndex}`;
-
 export const avatarFontSymbol = (avatarFontIndex: number): string =>
   `avatar_font_${avatarFontIndex}`;
-
-export const emoteSymbol = (emoteIndex: number): string =>
-  `emote_${emoteIndex}`;
 
 const toFlags = (flags: string[]): string =>
   flags.length > 0 ? flags.join(" | ") : "0";
@@ -245,23 +246,20 @@ ${bankRefExtern(symbol)}
 extern ${type} ${symbol}[];`
   );
 
-export const sceneSymbol = (sceneIndex: number): string =>
-  `scene_${sceneIndex}`;
+export const sceneActorsSymbol = (sceneSymbol: string): string =>
+  `${sceneSymbol}_actors`;
 
-export const sceneActorsSymbol = (sceneIndex: number): string =>
-  `scene_${sceneIndex}_actors`;
+export const sceneTriggersSymbol = (sceneSymbol: string): string =>
+  `${sceneSymbol}_triggers`;
 
-export const sceneTriggersSymbol = (sceneIndex: number): string =>
-  `scene_${sceneIndex}_triggers`;
+export const sceneSpritesSymbol = (sceneSymbol: string): string =>
+  `${sceneSymbol}_sprites`;
 
-export const sceneSpritesSymbol = (sceneIndex: number): string =>
-  `scene_${sceneIndex}_sprites`;
+export const sceneProjectilesSymbol = (sceneSymbol: string): string =>
+  `${sceneSymbol}_projectiles`;
 
-export const sceneProjectilesSymbol = (sceneIndex: number): string =>
-  `scene_${sceneIndex}_projectiles`;
-
-export const sceneCollisionsSymbol = (sceneIndex: number): string =>
-  `scene_${sceneIndex}_collisions`;
+export const sceneCollisionsSymbol = (sceneSymbol: string): string =>
+  `${sceneSymbol}_collisions`;
 
 export const scriptSymbol = (sceneIndex: number): string =>
   `script_${sceneIndex}`;
@@ -459,63 +457,64 @@ export const compileScene = (
     actorsPalette: number;
     eventPtrs: PrecompiledSceneEventPtrs[];
   }
-) =>
-  toStructDataFile(
+) => {
+  return toStructDataFile(
     SCENE_TYPE,
-    sceneSymbol(sceneIndex),
+    scene.symbol,
     `// Scene: ${sceneName(scene, sceneIndex)}`,
     // Data
     {
       width: scene.width,
       height: scene.height,
       type: `SCENE_TYPE_${scene.type}`,
-      background: toFarPtr(backgroundSymbol(scene.backgroundIndex)),
-      collisions: toFarPtr(sceneCollisionsSymbol(sceneIndex)),
+      background: toFarPtr(scene.background.symbol),
+      collisions: toFarPtr(sceneCollisionsSymbol(scene.symbol)),
       parallax_rows: compileParallax(
         scene.width > SCREEN_WIDTH ? scene.parallax : undefined
       ),
       palette: toFarPtr(paletteSymbol(bgPalette)),
       sprite_palette: toFarPtr(paletteSymbol(actorsPalette)),
       reserve_tiles: scene.actorsExclusiveLookup["player"] ?? 0,
-      player_sprite: toFarPtr(spriteSheetSymbol(scene.playerSpriteIndex)),
+      player_sprite: toFarPtr(scene.playerSprite.symbol),
       n_actors: scene.actors.length,
       n_triggers: scene.triggers.length,
       n_sprites: scene.sprites.length,
       n_projectiles: scene.projectiles.length,
       actors:
         scene.actors.length > 0
-          ? toFarPtr(sceneActorsSymbol(sceneIndex))
+          ? toFarPtr(sceneActorsSymbol(scene.symbol))
           : undefined,
       triggers:
         scene.triggers.length > 0
-          ? toFarPtr(sceneTriggersSymbol(sceneIndex))
+          ? toFarPtr(sceneTriggersSymbol(scene.symbol))
           : undefined,
       sprites:
         scene.sprites.length > 0
-          ? toFarPtr(sceneSpritesSymbol(sceneIndex))
+          ? toFarPtr(sceneSpritesSymbol(scene.symbol))
           : undefined,
       projectiles:
         scene.projectiles.length > 0
-          ? toFarPtr(sceneProjectilesSymbol(sceneIndex))
+          ? toFarPtr(sceneProjectilesSymbol(scene.symbol))
           : undefined,
       script_init: maybeScriptFarPtr(eventPtrs[sceneIndex].start),
       script_p_hit1: maybeScriptFarPtr(eventPtrs[sceneIndex].playerHit1),
     },
     // Dependencies
     ([] as string[]).concat(
-      backgroundSymbol(scene.backgroundIndex),
-      sceneCollisionsSymbol(sceneIndex),
+      scene.background.symbol,
+      sceneCollisionsSymbol(scene.symbol),
       paletteSymbol(bgPalette),
       paletteSymbol(actorsPalette),
-      spriteSheetSymbol(scene.playerSpriteIndex),
-      scene.actors.length ? sceneActorsSymbol(sceneIndex) : [],
-      scene.triggers.length > 0 ? sceneTriggersSymbol(sceneIndex) : [],
-      scene.sprites.length > 0 ? sceneSpritesSymbol(sceneIndex) : [],
-      scene.projectiles.length > 0 ? sceneProjectilesSymbol(sceneIndex) : [],
+      scene.playerSprite.symbol,
+      scene.actors.length ? sceneActorsSymbol(scene.symbol) : [],
+      scene.triggers.length > 0 ? sceneTriggersSymbol(scene.symbol) : [],
+      scene.sprites.length > 0 ? sceneSpritesSymbol(scene.symbol) : [],
+      scene.projectiles.length > 0 ? sceneProjectilesSymbol(scene.symbol) : [],
       maybeScriptDependency(eventPtrs[sceneIndex].start),
       maybeScriptDependency(eventPtrs[sceneIndex].playerHit1)
     )
   );
+};
 
 export const compileSceneHeader = (
   scene: PrecompiledScene,
@@ -523,7 +522,7 @@ export const compileSceneHeader = (
 ) =>
   toDataHeader(
     SCENE_TYPE,
-    sceneSymbol(sceneIndex),
+    scene.symbol,
     `// Scene: ${sceneName(scene, sceneIndex)}`
   );
 
@@ -558,21 +557,19 @@ export const compileBounds = ({
 export const compileSceneActors = (
   scene: PrecompiledScene,
   sceneIndex: number,
-  sprites: PrecompiledSpriteSheetData[],
+  sprites: PrecompiledSprite[],
   { eventPtrs }: { eventPtrs: PrecompiledSceneEventPtrs[] }
 ) => {
   const events = eventPtrs[sceneIndex];
 
   return toStructArrayDataFile(
     ACTOR_TYPE,
-    sceneActorsSymbol(sceneIndex),
+    sceneActorsSymbol(scene.symbol),
     `// Scene: ${sceneName(scene, sceneIndex)}\n// Actors`,
     filterNull(
       scene.actors.map((actor, actorIndex) => {
-        const sprite = sprites.find((s) => s.id === actor.spriteSheetId);
-        const spriteIndex = sprites.findIndex(
-          (s) => s.id === actor.spriteSheetId
-        );
+        const sprite =
+          sprites.find((s) => s.id === actor.spriteSheetId) || sprites[0];
         if (!sprite) return null;
         return {
           __comment: actorName(actor, actorIndex),
@@ -582,7 +579,7 @@ export const compileSceneActors = (
           },
           bounds: compileBounds(sprite),
           dir: dirEnum(actor.direction),
-          sprite: toFarPtr(spriteSheetSymbol(spriteIndex)),
+          sprite: toFarPtr(sprite.symbol),
           move_speed: Math.round(actor.moveSpeed * 16),
           anim_tick: actor.animSpeed,
           pinned: actor.isPinned ? "TRUE" : "FALSE",
@@ -597,11 +594,10 @@ export const compileSceneActors = (
     // Dependencies
     flatten(
       scene.actors.map((actor, actorIndex) => {
-        const spriteIndex = sprites.findIndex(
-          (s) => s.id === actor.spriteSheetId
-        );
+        const sprite =
+          sprites.find((s) => s.id === actor.spriteSheetId) || sprites[0];
         return ([] as string[]).concat(
-          spriteSheetSymbol(spriteIndex),
+          sprite.symbol,
           maybeScriptDependency(events.actorsMovement[actorIndex]),
           maybeScriptDependency(events.actors[actorIndex])
         );
@@ -616,7 +612,7 @@ export const compileSceneActorsHeader = (
 ) =>
   toArrayDataHeader(
     ACTOR_TYPE,
-    sceneActorsSymbol(sceneIndex),
+    sceneActorsSymbol(scene.symbol),
     `// Scene: ${sceneName(scene, sceneIndex)}\n// Actors`
   );
 
@@ -627,7 +623,7 @@ export const compileSceneTriggers = (
 ) =>
   toStructArrayDataFile(
     TRIGGER_TYPE,
-    sceneTriggersSymbol(sceneIndex),
+    sceneTriggersSymbol(scene.symbol),
     `// Scene: ${sceneName(scene, sceneIndex)}\n// Triggers`,
     scene.triggers.map((trigger, triggerIndex) => ({
       __comment: triggerName(trigger, triggerIndex),
@@ -654,7 +650,7 @@ export const compileSceneTriggersHeader = (
 ) =>
   toArrayDataHeader(
     TRIGGER_TYPE,
-    sceneTriggersSymbol(sceneIndex),
+    sceneTriggersSymbol(scene.symbol),
     `// Scene: ${sceneName(scene, sceneIndex)}\n// Triggers`
   );
 
@@ -664,13 +660,11 @@ export const compileSceneSprites = (
 ) =>
   toArrayDataFile(
     FARPTR_TYPE,
-    sceneSpritesSymbol(sceneIndex),
+    sceneSpritesSymbol(scene.symbol),
     `// Scene: ${sceneName(scene, sceneIndex)}\n// Sprites`,
-    scene.sprites.map((spriteIndex: number) =>
-      toFarPtr(spriteSheetSymbol(spriteIndex))
-    ),
+    scene.sprites.map((sprite) => toFarPtr(sprite.symbol)),
     1,
-    scene.sprites.map((spriteIndex: number) => spriteSheetSymbol(spriteIndex))
+    scene.sprites.map((sprite) => sprite.symbol)
   );
 
 export const compileSceneSpritesHeader = (
@@ -679,37 +673,27 @@ export const compileSceneSpritesHeader = (
 ) =>
   toArrayDataHeader(
     FARPTR_TYPE,
-    sceneSpritesSymbol(sceneIndex),
+    sceneSpritesSymbol(scene.symbol),
     `// Scene: ${sceneName(scene, sceneIndex)}\n// Sprites`
   );
 
 export const compileSceneProjectiles = (
   scene: PrecompiledScene,
   sceneIndex: number,
-  sprites: PrecompiledSpriteSheetData[]
+  sprites: PrecompiledSprite[]
 ) =>
   toStructArrayDataFile(
     PROJECTILE_TYPE,
-    sceneProjectilesSymbol(sceneIndex),
+    sceneProjectilesSymbol(scene.symbol),
     `// Scene: ${sceneName(scene, sceneIndex)}\n// Projectiles`,
     filterNull(
       scene.projectiles.map((projectile, projectileIndex) => {
-        const sprite = sprites.find((s) => s.id === projectile.spriteSheetId);
-        const spriteIndex = sprites.findIndex(
-          (s) => s.id === projectile.spriteSheetId
-        );
+        const sprite =
+          sprites.find((s) => s.id === projectile.spriteSheetId) || sprites[0];
         if (!sprite) return null;
-
-        const animIndex =
-          sprite.states.findIndex(
-            (st) => st.name === projectile.spriteStateId
-          ) ?? 0;
-        const animOffsets =
-          sprite.animationOffsets[animIndex * 8] || sprite.animationOffsets[0];
-
         return {
           __comment: `Projectile ${projectileIndex}`,
-          sprite: toFarPtr(spriteSheetSymbol(spriteIndex)),
+          sprite: toFarPtr(sprite.symbol),
           move_speed: Math.round(projectile.speed * 16),
           life_time: Math.round(projectile.lifeTime * 60),
           collision_group: toASMCollisionGroup(projectile.collisionGroup),
@@ -724,10 +708,9 @@ export const compileSceneProjectiles = (
     // Dependencies
     flatten(
       scene.projectiles.map((projectile) => {
-        const spriteIndex = sprites.findIndex(
-          (s) => s.id === projectile.spriteSheetId
-        );
-        return spriteSheetSymbol(spriteIndex);
+        const sprite =
+          sprites.find((s) => s.id === projectile.spriteSheetId) || sprites[0];
+        return sprite.symbol;
       })
     )
   );
@@ -738,7 +721,7 @@ export const compileSceneProjectilesHeader = (
 ) =>
   toArrayDataHeader(
     FARPTR_TYPE,
-    sceneProjectilesSymbol(sceneIndex),
+    sceneProjectilesSymbol(scene.symbol),
     `// Scene: ${sceneName(scene, sceneIndex)}\n// Projectiles`
   );
 
@@ -749,7 +732,7 @@ export const compileSceneCollisions = (
 ) =>
   toArrayDataFile(
     DATA_TYPE,
-    sceneCollisionsSymbol(sceneIndex),
+    sceneCollisionsSymbol(scene.symbol),
     `// Scene: ${sceneName(scene, sceneIndex)}\n// Collisions`,
     collisions.map(toHex),
     scene.width
@@ -761,33 +744,28 @@ export const compileSceneCollisionsHeader = (
 ) =>
   toArrayDataHeader(
     DATA_TYPE,
-    sceneCollisionsSymbol(sceneIndex),
+    sceneCollisionsSymbol(scene.symbol),
     `// Scene: ${sceneName(scene, sceneIndex)}\n// Collisions`
   );
 
-export const compileTileset = (tileset: Uint8Array, tilesetIndex: number) =>
+export const compileTileset = (tileset: PrecompiledTileData) =>
   toStructDataFile(
     TILESET_TYPE,
-    tilesetSymbol(tilesetIndex),
-    `// Tileset: ${tilesetIndex}`,
+    tileset.symbol,
+    `// Tileset: ${tileset.symbol}`,
     {
-      n_tiles: Math.ceil(tileset.length / 16),
-      tiles: Array.from(tileset.length > 0 ? tileset : [0]).map(toHex),
+      n_tiles: Math.ceil(tileset.data.length / 16),
+      tiles: Array.from(tileset.data.length > 0 ? tileset.data : [0]).map(
+        toHex
+      ),
     }
   );
 
-export const compileTilesetHeader = (
-  _tileset: Uint8Array,
-  tilesetIndex: number
-) =>
-  toDataHeader(
-    TILESET_TYPE,
-    tilesetSymbol(tilesetIndex),
-    `// Tileset: ${tilesetIndex}`
-  );
+export const compileTilesetHeader = (tileset: PrecompiledTileData) =>
+  toDataHeader(TILESET_TYPE, tileset.symbol, `// Tileset: ${tileset.symbol}`);
 
 export const compileSpriteSheet = (
-  spriteSheet: PrecompiledSpriteSheetData,
+  spriteSheet: PrecompiledSprite,
   spriteSheetIndex: number,
   {
     statesOrder,
@@ -803,9 +781,9 @@ export const compileSpriteSheet = (
 // SpriteSheet: ${spriteSheet.name}
   
 #include "gbs_types.h"
-#include "data/${tilesetSymbol(spriteSheet.tilesetIndex)}.h"
+#include "data/${spriteSheet.tileset.symbol}.h"
 
-${bankRef(spriteSheetSymbol(spriteSheetIndex))}
+${bankRef(spriteSheet.symbol)}
 
 ${stateReferences
   .map(
@@ -818,9 +796,9 @@ ${stateReferences
 
 ${spriteSheet.metasprites
   .map((metasprite, metaspriteIndex) => {
-    return `const metasprite_t ${spriteSheetSymbol(
-      spriteSheetIndex
-    )}_metasprite_${metaspriteIndex}[]  = {
+    return `const metasprite_t ${
+      spriteSheet.symbol
+    }_metasprite_${metaspriteIndex}[]  = {
     ${metasprite
       .map((tile) => `{ ${tile.y}, ${tile.x}, ${tile.tile}, ${tile.props} }`)
       .join(", ")}${metasprite.length > 0 ? ",\n    " : ""}{metasprite_end}
@@ -828,17 +806,13 @@ ${spriteSheet.metasprites
   })
   .join("\n\n")}
 
-const metasprite_t * const ${spriteSheetSymbol(
-    spriteSheetIndex
-  )}_metasprites[] = {
+const metasprite_t * const ${spriteSheet.symbol}_metasprites[] = {
 ${spriteSheet.metaspritesOrder
-  .map(
-    (index) => `    ${spriteSheetSymbol(spriteSheetIndex)}_metasprite_${index}`
-  )
+  .map((index) => `    ${spriteSheet.symbol}_metasprite_${index}`)
   .join(",\n")}
 };
 
-const struct animation_t ${spriteSheetSymbol(spriteSheetIndex)}_animations[] = {
+const struct animation_t ${spriteSheet.symbol}_animations[] = {
 ${spriteSheet.animationOffsets
   .map(
     (object) => `${" ".repeat(INDENT_SPACES)}{
@@ -848,24 +822,22 @@ ${" ".repeat(INDENT_SPACES)}}`
   .join(",\n")}
 };
 
-const UWORD ${spriteSheetSymbol(spriteSheetIndex)}_animations_lookup[] = {
+const UWORD ${spriteSheet.symbol}_animations_lookup[] = {
 ${Array.from(Array(maxState + 1).keys())
   .map((n) => `    SPRITE_${spriteSheetIndex}_${stateReferences[n]}`)
   .join(",\n")}
 };
 
-${SPRITESHEET_TYPE} ${spriteSheetSymbol(spriteSheetIndex)} = {
+${SPRITESHEET_TYPE} ${spriteSheet.symbol} = {
 ${toStructData(
   {
     n_metasprites: spriteSheet.metaspritesOrder.length,
     emote_origin: { x: 0, y: -spriteSheet.canvasHeight },
-    metasprites: `${spriteSheetSymbol(spriteSheetIndex)}_metasprites`,
-    animations: `${spriteSheetSymbol(spriteSheetIndex)}_animations`,
-    animations_lookup: `${spriteSheetSymbol(
-      spriteSheetIndex
-    )}_animations_lookup`,
+    metasprites: `${spriteSheet.symbol}_metasprites`,
+    animations: `${spriteSheet.symbol}_animations`,
+    animations_lookup: `${spriteSheet.symbol}_animations_lookup`,
     bounds: compileBounds(spriteSheet),
-    tileset: toFarPtr(tilesetSymbol(spriteSheet.tilesetIndex)),
+    tileset: toFarPtr(spriteSheet.tileset.symbol),
     cgb_tileset: "{ NULL, NULL }",
   },
 
@@ -875,19 +847,15 @@ ${toStructData(
 `;
 };
 
-export const compileSpriteSheetHeader = (
-  _spriteSheet: PrecompiledSpriteSheetData,
-  spriteSheetIndex: number
-) =>
+export const compileSpriteSheetHeader = (spriteSheet: PrecompiledSprite) =>
   toDataHeader(
     SPRITESHEET_TYPE,
-    spriteSheetSymbol(spriteSheetIndex),
-    `// SpriteSheet: ${spriteSheetIndex}`
+    spriteSheet.symbol,
+    `// SpriteSheet: ${spriteSheet.name}`
   );
 
 export const compileBackground = (
   background: PrecompiledBackground,
-  backgroundIndex: number,
   {
     color,
   }: {
@@ -896,71 +864,58 @@ export const compileBackground = (
 ) =>
   toStructDataFile(
     BACKGROUND_TYPE,
-    backgroundSymbol(backgroundIndex),
+    background.symbol,
     `// Background: ${background.name}`,
     {
       width: background.width,
       height: background.height,
-      tileset: toFarPtr(tilesetSymbol(background.tilesetIndex)),
+      tileset: toFarPtr(background.tileset.symbol),
       cgb_tileset: "{ NULL, NULL }",
-      tilemap: toFarPtr(tilemapSymbol(background.tilemapIndex)),
+      tilemap: toFarPtr(background.tilemap.symbol),
       cgb_tilemap_attr: color
-        ? toFarPtr(tilemapAttrSymbol(background.tilemapAttrIndex))
+        ? toFarPtr(background.tilemapAttr.symbol)
         : "{ NULL, NULL }",
     },
     ([] as string[]).concat(
-      tilesetSymbol(background.tilesetIndex),
-      tilemapSymbol(background.tilemapIndex),
-      color ? tilemapAttrSymbol(background.tilemapAttrIndex) : []
+      background.tileset.symbol,
+      background.tilemap.symbol,
+      color ? background.tilemapAttr.symbol : []
     )
   );
 
-export const compileBackgroundHeader = (
-  _background: PrecompiledBackground,
-  backgroundIndex: number
-) =>
+export const compileBackgroundHeader = (background: PrecompiledBackground) =>
   toDataHeader(
     BACKGROUND_TYPE,
-    backgroundSymbol(backgroundIndex),
-    `// Background: ${backgroundIndex}`
+    background.symbol,
+    `// Background: ${background.name}`
   );
 
-export const compileTilemap = (tilemap: number[], tilemapIndex: number) =>
+export const compileTilemap = (tilemap: PrecompiledTileData) =>
   toArrayDataFile(
     DATA_TYPE,
-    tilemapSymbol(tilemapIndex),
-    `// Tilemap ${tilemapIndex}`,
-    Array.from(tilemap).map(wrap8Bit).map(toHex),
+    tilemap.symbol,
+    `// Tilemap ${tilemap.symbol}`,
+    Array.from(tilemap.data).map(wrap8Bit).map(toHex),
     16
   );
 
-export const compileTilemapHeader = (tilemap: number[], tilemapIndex: number) =>
-  toArrayDataHeader(
-    DATA_TYPE,
-    tilemapSymbol(tilemapIndex),
-    `// Tilemap ${tilemapIndex}`
-  );
+export const compileTilemapHeader = (tilemap: PrecompiledTileData) =>
+  toArrayDataHeader(DATA_TYPE, tilemap.symbol, `// Tilemap ${tilemap.symbol}`);
 
-export const compileTilemapAttr = (
-  tilemapAttr: number[],
-  tilemapAttrIndex: number
-) =>
+export const compileTilemapAttr = (tilemapAttr: PrecompiledTileData) =>
   toArrayDataFile(
     DATA_TYPE,
-    tilemapAttrSymbol(tilemapAttrIndex),
-    `// Tilemap Attr ${tilemapAttrIndex}`,
-    Array.from(tilemapAttr).map(toHex),
+    tilemapAttr.symbol,
+    `// Tilemap Attr ${tilemapAttr.symbol}`,
+    Array.from(tilemapAttr.data).map(toHex),
     16
   );
 
-export const compileTilemapAttrHeader = (
-  tilemapAttr: number[],
-  tilemapAttrIndex: number
-) =>
+export const compileTilemapAttrHeader = (tilemapAttr: PrecompiledTileData) =>
   toArrayDataHeader(
     DATA_TYPE,
-    tilemapAttrSymbol(tilemapAttrIndex),
-    `// Tilemap Attr ${tilemapAttrIndex}`
+    tilemapAttr.symbol,
+    `// Tilemap Attr ${tilemapAttr.symbol}`
   );
 
 export const compileColor = (hex: string): string => {
@@ -1016,16 +971,13 @@ export const compilePaletteHeader = (
     `// Palette: ${paletteIndex}`
   );
 
-export const compileFont = (
-  font: FontData,
-  fontIndex: number
-) => `#pragma bank 255
+export const compileFont = (font: PrecompiledFontData) => `#pragma bank 255
 
 // Font: ${font.name}
   
 #include "gbs_types.h"
 
-static const UBYTE ${fontSymbol(fontIndex)}_table[] = {
+static const UBYTE ${font.symbol}_table[] = {
 ${chunk(Array.from(font.table.map(toHex)), 16)
   .map((r) => " ".repeat(INDENT_SPACES) + r.join(", "))
   .join(",\n")}
@@ -1033,7 +985,7 @@ ${chunk(Array.from(font.table.map(toHex)), 16)
 
 ${
   font.isVariableWidth
-    ? `static const UBYTE ${fontSymbol(fontIndex)}_widths[] = {
+    ? `static const UBYTE ${font.symbol}_widths[] = {
 ${chunk(Array.from(font.widths), 16)
   .map((r) => " ".repeat(INDENT_SPACES) + r.join(", "))
   .join(",\n")}
@@ -1041,28 +993,28 @@ ${chunk(Array.from(font.widths), 16)
 
 `
     : ""
-}static const UBYTE ${fontSymbol(fontIndex)}_bitmaps[] = {
+}static const UBYTE ${font.symbol}_bitmaps[] = {
 ${chunk(Array.from(Array.from(font.data).map(toHex)), 16)
   .map((r) => " ".repeat(INDENT_SPACES) + r.join(", "))
   .join(",\n")}
 };
 
-${bankRef(fontSymbol(fontIndex))}
-const font_desc_t ${fontSymbol(fontIndex)} = {
+${bankRef(font.symbol)}
+const font_desc_t ${font.symbol} = {
     ${toFlags([
       ...(true ? [FONT_FLAG_FONT_RECODE] : []),
       ...(font.isVariableWidth ? [FONT_FLAG_FONT_VWF] : []),
       ...(font.is1Bit && font.isVariableWidth ? [FONT_FLAG_FONT_VWF_1BIT] : []),
     ])}, 
     ${font.table.length <= 128 ? FONT_FLAG_FONT_RECODE_SIZE_7BIT : `0xFF`},
-    ${fontSymbol(fontIndex)}_table,
-    ${font.isVariableWidth ? `${fontSymbol(fontIndex)}_widths` : "NULL"},
-    ${fontSymbol(fontIndex)}_bitmaps
+    ${font.symbol}_table,
+    ${font.isVariableWidth ? `${font.symbol}_widths` : "NULL"},
+    ${font.symbol}_bitmaps
 };
 `;
 
-export const compileFontHeader = (data: FontData, fontIndex: number) =>
-  toArrayDataHeader(DATA_TYPE, fontSymbol(fontIndex), `// Font`);
+export const compileFontHeader = (font: PrecompiledFontData) =>
+  toArrayDataHeader(DATA_TYPE, font.symbol, `// Font ${font.name}`);
 
 export const compileAvatarFont = (
   avatars: AvatarData[],
@@ -1117,21 +1069,17 @@ export const compileFrameImage = (data: Uint8Array) =>
 export const compileFrameImageHeader = (_data: Uint8Array) =>
   toArrayDataHeader(DATA_TYPE, "frame_image", `// Frame`);
 
-export const compileEmote = (emote: EmoteData, emoteIndex: number) =>
+export const compileEmote = (emote: PrecompiledEmote) =>
   toArrayDataFile(
     DATA_TYPE,
-    emoteSymbol(emoteIndex),
-    `// Emote ${emoteIndex}`,
+    emote.symbol,
+    `// Emote ${emote.name}`,
     Array.from(emote.data).map(toHex),
     16
   );
 
-export const compileEmoteHeader = (emote: EmoteData, emoteIndex: number) =>
-  toArrayDataHeader(
-    DATA_TYPE,
-    emoteSymbol(emoteIndex),
-    `// Emote ${emoteIndex}`
-  );
+export const compileEmoteHeader = (emote: PrecompiledEmote) =>
+  toArrayDataHeader(DATA_TYPE, emote.symbol, `// Emote ${emote.name}`);
 
 export const compileCursorImage = (data: Uint8Array) =>
   toArrayDataFile(

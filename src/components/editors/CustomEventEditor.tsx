@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ScriptEditor from "../script/ScriptEditor";
 import { FormField } from "../library/Forms";
@@ -13,13 +13,15 @@ import { customEventSelectors } from "store/features/entities/entitiesState";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { Sidebar, SidebarColumn } from "ui/sidebars/Sidebar";
-import { FormContainer, FormHeader } from "ui/form/FormLayout";
+import { FormContainer, FormDivider, FormHeader } from "ui/form/FormLayout";
 import { EditableText } from "ui/form/EditableText";
 import { RootState } from "store/configureStore";
 import { CustomEvent } from "store/features/entities/entitiesTypes";
 import { StickyTabs, TabBar } from "ui/tabs/Tabs";
 import { Button } from "ui/buttons/Button";
 import { LockIcon, LockOpenIcon } from "ui/icons/Icons";
+import { CustomEventSymbolsEditor } from "components/forms/symbols/CustomEventSymbolsEditor";
+import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
 
 const customEventName = (customEvent: CustomEvent, customEventIndex: number) =>
   customEvent.name ? customEvent.name : `Script ${customEventIndex + 1}`;
@@ -47,6 +49,8 @@ const CustomEventEditor = ({ id, multiColumn }: CustomEventEditorProps) => {
   const lockScriptEditor = useSelector(
     (state: RootState) => state.editor.lockScriptEditor
   );
+
+  const [showSymbols, setShowSymbols] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -178,11 +182,26 @@ const CustomEventEditor = ({ id, multiColumn }: CustomEventEditorProps) => {
                 variant="transparent"
                 menuDirection="right"
               >
+                {!showSymbols && (
+                  <MenuItem onClick={() => setShowSymbols(true)}>
+                    {l10n("FIELD_VIEW_GBVM_SYMBOLS")}
+                  </MenuItem>
+                )}
                 <MenuItem onClick={onRemove}>
                   {l10n("MENU_DELETE_CUSTOM_EVENT")}
                 </MenuItem>
               </DropdownButton>
             </FormHeader>
+
+            {showSymbols && (
+              <>
+                <SymbolEditorWrapper>
+                  <CustomEventSymbolsEditor id={customEvent.id} />
+                </SymbolEditorWrapper>
+                <FormDivider />
+              </>
+            )}
+
             <FormField style={{}}>
               <label htmlFor="customEventDescription">
                 {l10n("FIELD_DESCRIPTION")}
