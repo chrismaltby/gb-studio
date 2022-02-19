@@ -12,15 +12,15 @@ interface SongRowProps {
   id: string;
   n: number;
   row: PatternCell[];
-  startCellId: number;
-  selectedCell: number | undefined;
-  isSelected: boolean;
+  fieldCount: number;
+  activeField: number | undefined;
+  isActive: boolean;
   isPlaying: boolean;
 }
 
 interface WrapperProps {
   n: number;
-  isSelected: boolean;
+  isActive: boolean;
   isPlaying: boolean;
   size?: "normal" | "small";
 }
@@ -53,7 +53,7 @@ const Wrapper = styled.span<WrapperProps>`
         `
       : ""}
   ${(props) =>
-    props.isSelected
+    props.isActive
       ? css`
           background-color: ${props.theme.colors.tracker.activeBackground};
         `
@@ -66,7 +66,7 @@ const Wrapper = styled.span<WrapperProps>`
       : ""}
 `;
 
-const Cell = styled.span<{ selected?: boolean }>`
+const Field = styled.span<{ selected?: boolean }>`
   :hover {
     box-shadow: 0px 0px 0px 2px rgba(255, 0, 0, 0.2) inset;
   }
@@ -80,25 +80,25 @@ const Cell = styled.span<{ selected?: boolean }>`
       : ""}
 `;
 
-const HCell = styled.span`
+const HeaderField = styled.span`
   margin: 0;
   padding: 0 4px;
   pointer-events: none;
 `;
 
-const NoteCell = styled(Cell)`
+const NoteField = styled(Field)`
   color: ${(props) => props.theme.colors.tracker.note};
 `;
 
-const InstrumentCell = styled(Cell)`
+const InstrumentField = styled(Field)`
   color: ${(props) => props.theme.colors.tracker.instrument};
 `;
 
-const EffectCodeCell = styled(Cell)`
+const EffectCodeField = styled(Field)`
   color: ${(props) => props.theme.colors.tracker.effectCode};
 `;
 
-const EffectParamCell = styled(Cell)`
+const EffectParamField = styled(Field)`
   color: ${(props) => props.theme.colors.tracker.effectParam};
 `;
 
@@ -108,64 +108,64 @@ const renderCounter = (n: number): string => {
 
 const SongRowFwd = React.forwardRef<HTMLSpanElement, SongRowProps>(
   (
-    { n, row, startCellId, selectedCell, isPlaying, isSelected }: SongRowProps,
+    { n, row, fieldCount, activeField, isPlaying, isActive }: SongRowProps,
     ref
   ) => {
     return (
       <div>
         <Wrapper
           isPlaying={isPlaying}
-          isSelected={isSelected}
+          isActive={isActive}
           n={n}
           size="small"
           data-row={n}
         >
-          <HCell id={`cell_${n}`}>{renderCounter(n)}</HCell>
+          <HeaderField id={`cell_${n}`}>{renderCounter(n)}</HeaderField>
         </Wrapper>
-        {row.map((cell, i) => {
+        {row.map((cell, channelId) => {
           const ret = (
-            <Wrapper isPlaying={isPlaying} isSelected={isSelected} n={n}>
-              <NoteCell
-                id={`cell_${n}_${i}_1`}
-                selected={selectedCell === startCellId}
-                ref={selectedCell === startCellId ? ref : null}
-                data-cellid={startCellId}
+            <Wrapper isPlaying={isPlaying} isActive={isActive} n={n}>
+              <NoteField
+                id={`cell_${n}_${channelId}_note`}
+                selected={activeField === fieldCount}
+                ref={activeField === fieldCount ? ref : null}
+                data-fieldid={fieldCount}
               >
                 {renderNote(cell.note)}
-              </NoteCell>
-              <InstrumentCell
-                id={`cell_${n}_${i}_2`}
-                selected={selectedCell === startCellId + 1}
-                ref={selectedCell === startCellId + 1 ? ref : null}
-                data-cellid={startCellId + 1}
+              </NoteField>
+              <InstrumentField
+                id={`cell_${n}_${channelId}_instrument`}
+                selected={activeField === fieldCount + 1}
+                ref={activeField === fieldCount + 1 ? ref : null}
+                data-fieldid={fieldCount + 1}
               >
                 {renderInstrument(cell.instrument)}
-              </InstrumentCell>
-              <EffectCodeCell
-                id={`cell_${n}_${i}_3`}
-                selected={selectedCell === startCellId + 2}
-                ref={selectedCell === startCellId + 2 ? ref : null}
-                data-cellid={startCellId + 2}
+              </InstrumentField>
+              <EffectCodeField
+                id={`cell_${n}_${channelId}_effectcode`}
+                selected={activeField === fieldCount + 2}
+                ref={activeField === fieldCount + 2 ? ref : null}
+                data-fieldid={fieldCount + 2}
                 style={{
                   paddingRight: 1,
                 }}
               >
                 {renderEffect(cell.effectcode)}
-              </EffectCodeCell>
-              <EffectParamCell
-                id={`cell_${n}_${i}_4`}
-                selected={selectedCell === startCellId + 3}
-                ref={selectedCell === startCellId + 3 ? ref : null}
-                data-cellid={startCellId + 3}
+              </EffectCodeField>
+              <EffectParamField
+                id={`cell_${n}_${channelId}_effectparam`}
+                selected={activeField === fieldCount + 3}
+                ref={activeField === fieldCount + 3 ? ref : null}
+                data-fieldid={fieldCount + 3}
                 style={{
                   paddingLeft: 1,
                 }}
               >
                 {renderEffectParam(cell.effectparam)}
-              </EffectParamCell>
+              </EffectParamField>
             </Wrapper>
           );
-          startCellId += 4;
+          fieldCount += 4;
           return ret;
         })}
       </div>
@@ -190,9 +190,9 @@ const arePropsEqual = (prevProps: SongRowProps, nextProps: SongRowProps) => {
   return (
     prevProps.id === nextProps.id &&
     prevProps.n === nextProps.n &&
-    prevProps.startCellId === nextProps.startCellId &&
-    prevProps.selectedCell === nextProps.selectedCell &&
-    prevProps.isSelected === nextProps.isSelected &&
+    prevProps.fieldCount === nextProps.fieldCount &&
+    prevProps.activeField === nextProps.activeField &&
+    prevProps.isActive === nextProps.isActive &&
     prevProps.isPlaying === nextProps.isPlaying
   );
 };

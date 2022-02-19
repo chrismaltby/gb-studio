@@ -22,9 +22,9 @@ interface SongTrackerProps {
   channelStatus: boolean[];
 }
 
-const COLUMN_CELLS = 4;
-const ROW_SIZE = COLUMN_CELLS * 4;
-const NUM_CELLS = ROW_SIZE * 64;
+const CHANNEL_FIELDS = 4;
+const ROW_SIZE = CHANNEL_FIELDS * 4;
+const NUM_FIELDS = ROW_SIZE * 64;
 
 const SongGrid = styled.div`
   white-space: nowrap;
@@ -86,7 +86,7 @@ export const SongTracker = ({
     };
   }, [setPlaybackState]);
 
-  const [selectedCell, setSelectedCell] = useState<number | undefined>();
+  const [activeField, setActiveField] = useState<number | undefined>();
 
   const playingRowRef = useRef<HTMLSpanElement>(null);
   useEffect(() => {
@@ -97,25 +97,25 @@ export const SongTracker = ({
     }
   }, [playing, playbackState]);
 
-  const selectedCellRef = useRef<HTMLSpanElement>(null);
+  const activeFieldRef = useRef<HTMLSpanElement>(null);
   useEffect(() => {
-    if (selectedCellRef && selectedCellRef.current) {
+    if (activeFieldRef && activeFieldRef.current) {
       if (!playing) {
-        scrollIntoView(selectedCellRef.current.parentElement as Element, {
+        scrollIntoView(activeFieldRef.current.parentElement as Element, {
           scrollMode: "if-needed",
           block: "nearest",
         });
       }
     }
-  }, [playing, selectedCell]);
+  }, [playing, activeField]);
 
   const handleMouseDown = useCallback(
     (e: any) => {
-      const cellId = e.target.dataset["cellid"];
+      const fieldId = e.target.dataset["fieldid"];
       const rowId = e.target.dataset["row"];
 
-      if (!!cellId) {
-        setSelectedCell(parseInt(cellId));
+      if (!!fieldId) {
+        setActiveField(parseInt(fieldId));
       } else if (rowId) {
         dispatch(
           trackerActions.setDefaultStartPlaybackPosition([
@@ -128,7 +128,7 @@ export const SongTracker = ({
           position: [sequenceId, parseInt(rowId)],
         });
       } else {
-        setSelectedCell(undefined);
+        setActiveField(undefined);
       }
     },
     [dispatch, sequenceId]
@@ -138,15 +138,15 @@ export const SongTracker = ({
     (e: KeyboardEvent) => {
       const editPatternCell =
         (type: keyof PatternCell) => (value: number | null) => {
-          if (selectedCell === undefined) {
+          if (activeField === undefined) {
             return;
           }
           dispatch(
             trackerDocumentActions.editPatternCell({
               patternId: patternId,
               cell: [
-                Math.floor(selectedCell / 16),
-                Math.floor(selectedCell / 4) % 4,
+                Math.floor(activeField / 16),
+                Math.floor(activeField / 4) % 4,
               ],
               changes: {
                 [type]: value,
@@ -156,24 +156,24 @@ export const SongTracker = ({
         };
 
       const transposeNoteCell = (value: number) => {
-        if (selectedCell === undefined) {
+        if (activeField === undefined) {
           return;
         }
         dispatch(
           trackerDocumentActions.transposeNoteCell({
             patternId: patternId,
-            cellId: selectedCell,
+            cellId: activeField,
             transpose: value,
           })
         );
       };
 
-      const editNoteCell = (value: number | null) => {
-        if (selectedCell === undefined) {
+      const editNoteField = (value: number | null) => {
+        if (activeField === undefined) {
           return;
         }
 
-        const channel = Math.floor(selectedCell / 4) % 4;
+        const channel = Math.floor(activeField / 4) % 4;
         const defaultInstrument = defaultInstruments[channel];
 
         if (song && value !== null) {
@@ -194,13 +194,13 @@ export const SongTracker = ({
         editPatternCell("instrument")(defaultInstrument);
 
         if (value !== null) {
-          setSelectedCell(selectedCell + ROW_SIZE * editStep);
+          setActiveField(activeField + ROW_SIZE * editStep);
         }
       };
 
-      const editInstrumentCell = (value: number | null) => {
-        if (selectedCellRef && selectedCellRef.current) {
-          const el = selectedCellRef.current;
+      const editInstrumentField = (value: number | null) => {
+        if (activeFieldRef && activeFieldRef.current) {
+          const el = activeFieldRef.current;
           let newValue = value;
           if (
             value !== null &&
@@ -216,13 +216,13 @@ export const SongTracker = ({
         }
       };
 
-      const editEffectCodeCell = (value: number | null) => {
+      const editEffectCodeField = (value: number | null) => {
         editPatternCell("effectcode")(value);
       };
 
-      const editEffectParamCell = (value: number | null) => {
-        if (selectedCellRef && selectedCellRef.current) {
-          const el = selectedCellRef.current;
+      const editEffectParamField = (value: number | null) => {
+        if (activeFieldRef && activeFieldRef.current) {
+          const el = activeFieldRef.current;
           let newValue = value;
           if (value !== null && el.innerText !== "..") {
             newValue = 16 * parseInt(el.innerText[1], 16) + value;
@@ -231,41 +231,43 @@ export const SongTracker = ({
         }
       };
 
-      if (selectedCell === undefined) {
+      if (activeField === undefined) {
         return;
       }
 
-      let tmpSelectedCell = selectedCell;
+      let tmpSelectedField = activeField;
 
       if (e.key === "ArrowLeft") {
         e.preventDefault();
-        tmpSelectedCell -= 1;
+        tmpSelectedField -= 1;
       }
       if (e.key === "ArrowRight") {
         e.preventDefault();
-        tmpSelectedCell += 1;
+        tmpSelectedField += 1;
       }
       if (e.key === "ArrowDown") {
         e.preventDefault();
-        tmpSelectedCell += ROW_SIZE;
+        tmpSelectedField += ROW_SIZE;
       }
       if (e.key === "ArrowUp") {
         e.preventDefault();
-        tmpSelectedCell -= ROW_SIZE;
+        tmpSelectedField -= ROW_SIZE;
       }
       if (e.key === "Tab") {
         e.preventDefault();
         if (e.shiftKey) {
-          tmpSelectedCell -= 4;
+          tmpSelectedField -= 4;
         } else {
-          tmpSelectedCell += 4;
+          tmpSelectedField += 4;
         }
       }
-      setSelectedCell(((tmpSelectedCell % NUM_CELLS) + NUM_CELLS) % NUM_CELLS);
+      setActiveField(
+        ((tmpSelectedField % NUM_FIELDS) + NUM_FIELDS) % NUM_FIELDS
+      );
 
       let currentFocus: KeyWhen = null;
 
-      if (selectedCell % 4 === 0) {
+      if (activeField % 4 === 0) {
         if (e.ctrlKey) {
           if (e.shiftKey) {
             if (e.key === "Q" || e.key === "+") return transposeNoteCell(12);
@@ -281,22 +283,22 @@ export const SongTracker = ({
 
         currentFocus = "noteColumnFocus";
       }
-      if ((selectedCell - 1) % 4 === 0) {
+      if ((activeField - 1) % 4 === 0) {
         currentFocus = "instrumentColumnFocus";
       }
-      if ((selectedCell - 2) % 4 === 0) {
+      if ((activeField - 2) % 4 === 0) {
         currentFocus = "effectCodeColumnFocus";
       }
-      if ((selectedCell - 3) % 4 === 0) {
+      if ((activeField - 3) % 4 === 0) {
         currentFocus = "effectParamColumnFocus";
       }
 
       if (currentFocus) {
         getKeys(e.key, currentFocus, {
-          editNoteCell,
-          editInstrumentCell,
-          editEffectCodeCell,
-          editEffectParamCell,
+          editNoteField,
+          editInstrumentField,
+          editEffectCodeField,
+          editEffectParamField,
         });
       }
     },
@@ -306,18 +308,18 @@ export const SongTracker = ({
       editStep,
       octaveOffset,
       patternId,
-      selectedCell,
+      activeField,
       song,
     ]
   );
 
   const handleKeysUp = useCallback(
     (_e: KeyboardEvent) => {
-      if (selectedCell) {
+      if (activeField) {
         // console.log(e.key);
       }
     },
-    [selectedCell]
+    [activeField]
   );
 
   useEffect(() => {
@@ -334,18 +336,18 @@ export const SongTracker = ({
 
   const onFocus = useCallback(
     (_e: React.FocusEvent<HTMLDivElement>) => {
-      if (!selectedCell) {
-        setSelectedCell(0);
+      if (!activeField) {
+        setActiveField(0);
       }
     },
-    [selectedCell, setSelectedCell]
+    [activeField, setActiveField]
   );
 
   const onBlur = useCallback(
     (_e: React.FocusEvent<HTMLDivElement>) => {
-      setSelectedCell(undefined);
+      setActiveField(undefined);
     },
-    [setSelectedCell]
+    [setActiveField]
   );
 
   return (
@@ -391,22 +393,22 @@ export const SongTracker = ({
       >
         <SongGrid tabIndex={0} onFocus={onFocus} onBlur={onBlur}>
           {song?.patterns[patternId]?.map((row: PatternCell[], i: number) => {
-            const isSelected =
-              selectedCell !== undefined &&
-              Math.floor(selectedCell / ROW_SIZE) === i;
+            const isActiveRow =
+              activeField !== undefined &&
+              Math.floor(activeField / ROW_SIZE) === i;
             const isPlaying =
               playbackState[0] === sequenceId && playbackState[1] === i;
             return (
-              <span ref={playbackState[1] === i ? playingRowRef : null}>
+              <span ref={isPlaying ? playingRowRef : null}>
                 <SongRow
                   id={`__${i}`}
                   n={i}
                   row={row}
-                  startCellId={i * ROW_SIZE}
-                  selectedCell={isSelected ? selectedCell : undefined}
-                  isSelected={isSelected}
+                  fieldCount={i * ROW_SIZE}
+                  activeField={isActiveRow ? activeField : undefined}
+                  isActive={isActiveRow}
                   isPlaying={isPlaying}
-                  ref={selectedCellRef}
+                  ref={activeFieldRef}
                 />
               </span>
             );
