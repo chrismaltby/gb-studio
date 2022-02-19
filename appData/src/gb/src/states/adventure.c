@@ -99,25 +99,25 @@ void adventure_update() BANKED {
             if (bb_intersects_alt(&PLAYER.bounds, &sol_pos, &sol_actor->bounds, &sol_actor->pos)) {
                 if ((sol_actor->solid & COLLISION_LEFT) && ((sol_pos.x) <= (sol_actor->pos.x)) && (pl_vel.x >= sol_actor->vel.x)) {
                     new_pos.x = sol_actor->pos.x + ((sol_actor->bounds.left - PLAYER.bounds.right) << 4) - 1;
-                    hit_actor = sol_actor->collision_group ? sol_actor : hit_actor;
+                    hit_actor = sol_actor;
                 } else if ((sol_actor->solid & COLLISION_RIGHT) && ((sol_pos.x) > (sol_actor->pos.x)) && (pl_vel.x < sol_actor->vel.x)) {
                     new_pos.x = sol_actor->pos.x + ((sol_actor->bounds.right - PLAYER.bounds.left + 1) << 4) + 1;
-                    hit_actor = sol_actor->collision_group ? sol_actor : hit_actor;
+                    hit_actor = sol_actor;
                 }
             }
         }
 
-        sol_pos.x = new_pos.x;
+        sol_pos.x = PLAYER.pos.x;
         sol_pos.y = new_pos.y;
         
         if ((sol_actor->solid & COLLISION_Y) && (hit_actor != sol_actor)) {
            if (bb_intersects_alt(&PLAYER.bounds, &sol_pos, &sol_actor->bounds, &sol_actor->pos)) {
                 if ((sol_actor->solid & COLLISION_TOP)  && ((sol_pos.y) < (sol_actor->pos.y)) && (pl_vel.y < sol_actor->vel.y)) {
                     new_pos.y = sol_actor->pos.y + ((sol_actor->bounds.top - PLAYER.bounds.bottom) << 4) - 1;
-                    hit_actor = sol_actor->collision_group ? sol_actor : hit_actor;
+                    hit_actor = sol_actor;
                 } else if ((sol_actor->solid & COLLISION_BOTTOM) && ((sol_pos.y) > (sol_actor->pos.y)) && (pl_vel.y > sol_actor->vel.y)) {
                     new_pos.y = sol_actor->pos.y + ((sol_actor->bounds.bottom - PLAYER.bounds.top + 1) << 4) + 1;
-                    hit_actor = sol_actor->collision_group ? sol_actor : hit_actor;
+                    hit_actor = sol_actor;
                 }
             }
         }
