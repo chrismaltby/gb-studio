@@ -199,6 +199,8 @@ export const RollChannelSelectionAreaFwd = ({
       selectionOrigin,
       cellSize,
       selectCellsInRange,
+      addToSelection,
+      selectedPatternCells,
       dispatch,
     ]
   );
@@ -233,12 +235,10 @@ export const RollChannelSelectionAreaFwd = ({
 
   useEffect(() => {
     window.addEventListener("mouseup", handleMouseUp);
-    window.addEventListener("mousedown", handleMouseDown);
     window.addEventListener("mousemove", handleMouseMove);
 
     return () => {
       window.removeEventListener("mouseup", handleMouseUp);
-      window.removeEventListener("mousedown", handleMouseDown);
       window.removeEventListener("mousemove", handleMouseMove);
     };
   });
@@ -283,6 +283,9 @@ export const RollChannelSelectionAreaFwd = ({
       cols={64}
       size={cellSize}
       canSelect={tool === "selection"}
+      onMouseDown={(e) => {
+        handleMouseDown(e.nativeEvent);
+      }}
       onMouseLeave={(e) => {
         handleMouseLeave(e.nativeEvent);
       }}
