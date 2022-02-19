@@ -19,6 +19,7 @@ export interface TrackerState {
   selectedChannel: number;
   visibleChannels: number[];
   hoverNote: number | null;
+  hoverColumn: number | null;
   startPlaybackPosition: [number, number];
   defaultStartPlaybackPosition: [number, number];
   selectedPatternCells: number[];
@@ -40,6 +41,7 @@ export const initialState: TrackerState = {
   selectedChannel: 0,
   visibleChannels: [0, 1, 2, 3],
   hoverNote: null,
+  hoverColumn: null,
   startPlaybackPosition: [0, 0],
   defaultStartPlaybackPosition: [0, 0],
   selectedPatternCells: [],
@@ -69,6 +71,9 @@ const trackerSlice = createSlice({
     },
     setHoverNote: (state, action: PayloadAction<number | null>) => {
       state.hoverNote = action.payload;
+    },
+    setHoverColumn: (state, action: PayloadAction<number | null>) => {
+      state.hoverColumn = action.payload;
     },
     setSelection: (
       state,

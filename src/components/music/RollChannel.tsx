@@ -9,8 +9,19 @@ import trackerDocumentActions from "store/features/trackerDocument/trackerDocume
 
 import { instrumentColors } from "./InstrumentSelect";
 import { ipcRenderer } from "electron";
-import { getInstrumentTypeByChannel, getInstrumentListByType } from "./helpers";
+import {
+  getInstrumentTypeByChannel,
+  getInstrumentListByType,
+  parsePatternToClipboard,
+  parseClipboardToPattern,
+} from "./helpers";
 import { cloneDeep } from "lodash";
+import clipboardActions from "store/features/clipboard/clipboardActions";
+import { clipboard } from "store/features/clipboard/clipboardHelpers";
+
+type BlurableDOMElement = {
+  blur: () => void;
+};
 
 interface RollChannelProps {
   channelId: number;
@@ -86,6 +97,9 @@ export const RollChannelFwd = ({
     (state: RootState) => state.tracker.defaultInstruments
   );
   const hoverNote = useSelector((state: RootState) => state.tracker.hoverNote);
+  const hoverColumn = useSelector(
+    (state: RootState) => state.tracker.hoverColumn
+  );
   const song = useSelector(
     (state: RootState) => state.trackerDocument.present.song
   );
@@ -105,6 +119,8 @@ export const RollChannelFwd = ({
   const [renderSelectedPatternCells, setRenderSelectedPatternCells] = useState<
     number[]
   >([]);
+
+  const [pastedPattern, setPastedPattern] = useState<PatternCell[][]>();
 
   useEffect(() => {
     setRenderPattern(pattern);
@@ -210,7 +226,6 @@ export const RollChannelFwd = ({
 
           setIsMouseDown(true);
           setIsDragging(false);
-          console.log("COLUMN", column);
           setMoveNoteFrom({ column: column, note: cell.note });
           setMoveNoteTo({ column: column, note: cell.note });
         }
@@ -255,16 +270,26 @@ export const RollChannelFwd = ({
           dispatch(trackerActions.setSelectedPatternCells([]));
           setMoveNoteFrom(undefined);
         }
+      } else if (pastedPattern && renderPattern) {
+        dispatch(
+          trackerDocumentActions.editPattern({
+            patternId: patternId,
+            pattern: renderPattern,
+          })
+        );
+        setPastedPattern(undefined);
       }
     },
     [
       tool,
+      pastedPattern,
+      renderPattern,
       selectedPatternCells.length,
       dispatch,
+      patternId,
       cellSize,
       defaultInstruments,
       channelId,
-      patternId,
       song,
       currentInstrument,
     ]
@@ -284,6 +309,10 @@ export const RollChannelFwd = ({
         dispatch(trackerActions.setHoverNote(newNote));
       }
 
+      if (newColumn !== hoverColumn) {
+        dispatch(trackerActions.setHoverColumn(newColumn));
+      }
+
       if (isMouseDown && song && selectedPatternCells.length > 0) {
         setIsDragging(true);
         if (moveNoteTo?.note !== newNote || moveNoteTo?.column !== newColumn) {
@@ -298,14 +327,39 @@ export const RollChannelFwd = ({
 
           refreshRenderPattern(newMoveNoteTo);
         }
+      } else if (pattern && pastedPattern) {
+        if (pastedPattern && hoverColumn !== null && hoverNote !== null) {
+          const newPattern = cloneDeep(pattern);
+
+          let columnOffset = 0;
+          let noteOffset = undefined;
+          for (const p of pastedPattern) {
+            const pastedPatternCell = { ...p[0] };
+            if (pastedPatternCell.note !== null) {
+              if (noteOffset === undefined) {
+                noteOffset = hoverNote - pastedPatternCell.note;
+              }
+              pastedPatternCell.note =
+                ((pastedPatternCell.note + noteOffset || 0) + 12 * 6) %
+                (12 * 6);
+              newPattern[(hoverColumn + columnOffset) % 64][channelId] =
+                pastedPatternCell;
+            }
+            columnOffset++;
+          }
+          setRenderPattern(newPattern);
+        }
       }
     },
     [
       cellSize,
       hoverNote,
+      hoverColumn,
       isMouseDown,
       song,
       selectedPatternCells.length,
+      pattern,
+      pastedPattern,
       dispatch,
       moveNoteTo,
       channelId,
@@ -398,9 +452,20 @@ export const RollChannelFwd = ({
       if (e.key === "Escape") {
         dispatch(trackerActions.setSelectedPatternCells([]));
         setIsDragging(false);
+        if (pastedPattern !== undefined) {
+          setPastedPattern(undefined);
+          setRenderPattern(pattern);
+        }
       }
     },
-    [channelId, dispatch, pattern, patternId, selectedPatternCells]
+    [
+      channelId,
+      dispatch,
+      pastedPattern,
+      pattern,
+      patternId,
+      selectedPatternCells,
+    ]
   );
 
   const onKeyUp = useCallback((e: KeyboardEvent) => {
@@ -420,6 +485,114 @@ export const RollChannelFwd = ({
       };
     }
   }, [active, onKeyDown, onKeyUp]);
+
+  const onCopy = useCallback(() => {
+    if (pattern) {
+      const parsedSelectedPattern = parsePatternToClipboard(
+        pattern,
+        channelId,
+        selectedPatternCells
+      );
+      dispatch(clipboardActions.copyText(parsedSelectedPattern));
+    }
+  }, [channelId, dispatch, pattern, selectedPatternCells]);
+
+  const onPaste = useCallback(() => {
+    if (pattern) {
+      const newPastedPattern = parseClipboardToPattern(clipboard.readText());
+
+      if (newPastedPattern && hoverColumn !== null && hoverNote !== null) {
+        const newPattern = cloneDeep(pattern);
+
+        let columnOffset = 0;
+        let noteOffset = 0;
+        for (const p of newPastedPattern) {
+          const pastedPatternCell = { ...p[0] };
+          if (pastedPatternCell.note !== null) {
+            if (noteOffset === 0) {
+              noteOffset = hoverNote - pastedPatternCell.note;
+            }
+            pastedPatternCell.note =
+              ((pastedPatternCell.note + noteOffset || 0) + 12 * 6) % (12 * 6);
+          }
+          newPattern[(hoverColumn + columnOffset) % 64][channelId] =
+            pastedPatternCell;
+          columnOffset++;
+        }
+        setRenderPattern(newPattern);
+      }
+      setPastedPattern(newPastedPattern);
+
+      // Blur any focused element to be able to use keyboard actions on the
+      // selection
+      const el = document.querySelector(":focus") as unknown as
+        | BlurableDOMElement
+        | undefined;
+      if (el && el.blur) el.blur();
+    }
+  }, [channelId, hoverColumn, hoverNote, pattern]);
+
+  const onPasteInPlace = useCallback(() => {
+    if (pattern) {
+      const newPastedPattern = parseClipboardToPattern(clipboard.readText());
+
+      if (newPastedPattern) {
+        const newPattern = Array(64)
+          .fill([
+            new PatternCell(),
+            new PatternCell(),
+            new PatternCell(),
+            new PatternCell(),
+          ])
+          .map((r, i) => {
+            console.log(i, channelId);
+            const row = [...pattern[i]];
+            const pastedRow = newPastedPattern[i];
+            if (pastedRow) {
+              if (pastedRow.length === 4) {
+                return pastedRow;
+              } else {
+                pastedRow.forEach((c, i) => {
+                  row[(channelId + i) % 4] = c;
+                });
+              }
+              return row;
+            }
+            return r;
+          });
+
+        console.log(newPattern);
+        dispatch(
+          trackerDocumentActions.editPattern({
+            patternId: patternId,
+            pattern: newPattern,
+          })
+        );
+      }
+
+      // Blur any focused element to be able to use keyboard actions on the
+      // selection
+      const el = document.querySelector(":focus") as unknown as
+        | BlurableDOMElement
+        | undefined;
+      if (el && el.blur) el.blur();
+    }
+  }, [channelId, dispatch, pattern, patternId]);
+
+  // Clipboard
+  useEffect(() => {
+    if (active) {
+      window.addEventListener("copy", onCopy);
+      window.addEventListener("paste", onPaste);
+      ipcRenderer.on("paste-in-place", onPasteInPlace);
+      return () => {
+        window.removeEventListener("copy", onCopy);
+        window.removeEventListener("paste", onPaste);
+        ipcRenderer.removeListener("paste-in-place", onPasteInPlace);
+      };
+    }
+    return () => {};
+  }, [onCopy, active, onPaste, onPasteInPlace]);
 
   return (
     <Wrapper

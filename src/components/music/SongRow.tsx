@@ -1,6 +1,12 @@
 import React from "react";
 import styled, { css } from "styled-components";
 import { PatternCell } from "lib/helpers/uge/song/PatternCell";
+import {
+  renderNote,
+  renderInstrument,
+  renderEffect,
+  renderEffectParam,
+} from "./helpers";
 
 interface SongRowProps {
   id: string;
@@ -98,41 +104,6 @@ const EffectParamCell = styled(Cell)`
 
 const renderCounter = (n: number): string => {
   return n?.toString().padStart(2, "0") || "__";
-};
-
-const noteName = [
-  "C-",
-  "C#",
-  "D-",
-  "D#",
-  "E-",
-  "F-",
-  "F#",
-  "G-",
-  "G#",
-  "A-",
-  "A#",
-  "B-",
-];
-const renderNote = (note: number | null): string => {
-  if (note === null) {
-    return "...";
-  }
-  const octave = ~~(note / 12) + 3;
-  return `${noteName[note % 12]}${octave}`;
-};
-
-const renderInstrument = (instrument: number | null): string => {
-  if (instrument === null) return "..";
-  return (instrument + 1).toString().padStart(2, "0") || "..";
-};
-
-const renderEffect = (effectcode: number | null): string => {
-  return effectcode?.toString(16).toUpperCase() || ".";
-};
-
-const renderEffectParam = (effectparam: number | null): string => {
-  return effectparam?.toString(16).toUpperCase().padStart(2, "0") || "..";
 };
 
 const SongRowFwd = React.forwardRef<HTMLSpanElement, SongRowProps>(
