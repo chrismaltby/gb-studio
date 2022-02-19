@@ -75,12 +75,6 @@ const trackerSlice = createSlice({
     setHoverColumn: (state, action: PayloadAction<number | null>) => {
       state.hoverColumn = action.payload;
     },
-    setSelection: (
-      state,
-      action: PayloadAction<[number, number, number, number]>
-    ) => {
-      state.selection = action.payload;
-    },
     setTool: (state, _action: PayloadAction<PianoRollToolType>) => {
       state.tool = _action.payload;
     },

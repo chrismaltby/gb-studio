@@ -180,6 +180,43 @@ export const RollChannelFwd = ({
     ]
   );
 
+  const refreshPastedPattern = useCallback(
+    (currentPastedPattern: PatternCell[][]) => {
+      if (
+        pattern &&
+        currentPastedPattern &&
+        hoverColumn !== null &&
+        hoverNote !== null
+      ) {
+        const newPattern = cloneDeep(pattern);
+
+        let columnOffset = 0;
+        let noteOffset = undefined;
+        for (const p of currentPastedPattern) {
+          const pastedPatternCell = { ...p[0] };
+          if (pastedPatternCell.note !== null) {
+            if (noteOffset === undefined) {
+              noteOffset = hoverNote - pastedPatternCell.note;
+            }
+            if (
+              hoverColumn + columnOffset >= 0 &&
+              hoverColumn + columnOffset < 64
+            ) {
+              pastedPatternCell.note =
+                ((pastedPatternCell.note + noteOffset || 0) + 12 * 6) %
+                (12 * 6);
+              newPattern[(hoverColumn + columnOffset) % 64][channelId] =
+                pastedPatternCell;
+            }
+          }
+          columnOffset++;
+        }
+        setRenderPattern(newPattern);
+      }
+    },
+    [channelId, hoverColumn, hoverNote, pattern]
+  );
+
   useEffect(() => {
     if (isDragging) {
       refreshRenderPattern(moveNoteTo);
@@ -328,27 +365,7 @@ export const RollChannelFwd = ({
           refreshRenderPattern(newMoveNoteTo);
         }
       } else if (pattern && pastedPattern) {
-        if (pastedPattern && hoverColumn !== null && hoverNote !== null) {
-          const newPattern = cloneDeep(pattern);
-
-          let columnOffset = 0;
-          let noteOffset = undefined;
-          for (const p of pastedPattern) {
-            const pastedPatternCell = { ...p[0] };
-            if (pastedPatternCell.note !== null) {
-              if (noteOffset === undefined) {
-                noteOffset = hoverNote - pastedPatternCell.note;
-              }
-              pastedPatternCell.note =
-                ((pastedPatternCell.note + noteOffset || 0) + 12 * 6) %
-                (12 * 6);
-              newPattern[(hoverColumn + columnOffset) % 64][channelId] =
-                pastedPatternCell;
-            }
-            columnOffset++;
-          }
-          setRenderPattern(newPattern);
-        }
+        refreshPastedPattern(pastedPattern);
       }
     },
     [
@@ -365,6 +382,7 @@ export const RollChannelFwd = ({
       channelId,
       currentInstrument,
       refreshRenderPattern,
+      refreshPastedPattern,
     ]
   );
 
@@ -500,26 +518,8 @@ export const RollChannelFwd = ({
   const onPaste = useCallback(() => {
     if (pattern) {
       const newPastedPattern = parseClipboardToPattern(clipboard.readText());
-
-      if (newPastedPattern && hoverColumn !== null && hoverNote !== null) {
-        const newPattern = cloneDeep(pattern);
-
-        let columnOffset = 0;
-        let noteOffset = 0;
-        for (const p of newPastedPattern) {
-          const pastedPatternCell = { ...p[0] };
-          if (pastedPatternCell.note !== null) {
-            if (noteOffset === 0) {
-              noteOffset = hoverNote - pastedPatternCell.note;
-            }
-            pastedPatternCell.note =
-              ((pastedPatternCell.note + noteOffset || 0) + 12 * 6) % (12 * 6);
-          }
-          newPattern[(hoverColumn + columnOffset) % 64][channelId] =
-            pastedPatternCell;
-          columnOffset++;
-        }
-        setRenderPattern(newPattern);
+      if (newPastedPattern) {
+        refreshPastedPattern(newPastedPattern);
       }
       setPastedPattern(newPastedPattern);
 
@@ -530,7 +530,7 @@ export const RollChannelFwd = ({
         | undefined;
       if (el && el.blur) el.blur();
     }
-  }, [channelId, hoverColumn, hoverNote, pattern]);
+  }, [pattern, refreshPastedPattern]);
 
   const onPasteInPlace = useCallback(() => {
     if (pattern) {
