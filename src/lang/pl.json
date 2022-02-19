@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 996220213",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 998220219",
  
  "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -586,6 +586,7 @@
   "EVENT_ACTOR_MOVE_TO": "Aktor: przesuń",
   "EVENT_ACTOR_MOVE_RELATIVE": "Aktor: przesuń (względnie)",
   "EVENT_ACTOR_MOVE_TO_VALUE": "Aktor: przesuń ze zmiennej",
+  "EVENT_ACTOR_MOVE_CANCEL": "Aktor: anuluj ruch",
   "EVENT_ACTOR_PUSH": "Aktor: odepchnij od gracza",
   "EVENT_ACTOR_EMOTE": "Aktor: chmurka z ikonką ",
   "EVENT_ACTOR_SHOW": "Aktor: pokaż (widzialny)",
@@ -655,6 +656,7 @@
   "EVENT_SET_MUSIC_ROUTINE": "Ustaw muzykę",
   "EVENT_ACTOR_MOVE_TO_LABEL": "{actor} przesuń na {{x},{y}}",
   "EVENT_ACTOR_MOVE_RELATIVE_LABEL": "{actor} przesuń względnie {{x},{y}}",
+  "EVENT_ACTOR_MOVE_CANCEL_LABEL": "{actor} anuluj ruch",
   "EVENT_TEXT_LABEL": "Wiadomość \"{text}\"",
   "EVENT_WAIT_LABEL": "Czekaj {time} {units}",
   "EVENT_INC_VALUE_LABEL": "Zmienna {variable} zwiększ o 1",
