@@ -4257,6 +4257,7 @@ class ScriptBuilder {
     this.setActorId(this._localRef(otherActorRef), otherId);
     this._actorGetPosition(this._localRef(otherActorRef));
     
+      // (x2-x1)^2 + (y2-y1)^2
       this._rpn() //
         .ref(this._localRef(otherActorRef, 1)) // X2
         .int16(8 * 16)
@@ -4265,7 +4266,6 @@ class ScriptBuilder {
         .int16(8 * 16)
         .operator(".DIV")
         .operator(".SUB")
-        .operator(".ABS")
         .ref(this._localRef(otherActorRef, 1)) // X2
         .int16(8 * 16)
         .operator(".DIV")
@@ -4273,7 +4273,6 @@ class ScriptBuilder {
         .int16(8 * 16)
         .operator(".DIV")
         .operator(".SUB")
-        .operator(".ABS")
         .operator(".MUL")
         .ref(this._localRef(otherActorRef, 2)) // Y2
         .int16(8 * 16)
@@ -4282,7 +4281,6 @@ class ScriptBuilder {
         .int16(8 * 16)
         .operator(".DIV")
         .operator(".SUB")
-        .operator(".ABS")
         .ref(this._localRef(otherActorRef, 2)) // Y2
         .int16(8 * 16)
         .operator(".DIV")
@@ -4290,7 +4288,6 @@ class ScriptBuilder {
         .int16(8 * 16)
         .operator(".DIV")
         .operator(".SUB")
-        .operator(".ABS")
         .operator(".MUL")
         .operator(".ADD")
         .int16(distanceSquared)
