@@ -23,7 +23,7 @@ const fields = [
     label: l10n("FIELD_DISTANCE_PU"),
     type: "number",
     min: 0,
-    max: 1023,
+    max: 181,
     width: "50%",
     defaultValue: 0,
   },
