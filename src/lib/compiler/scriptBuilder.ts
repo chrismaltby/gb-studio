@@ -4240,6 +4240,73 @@ class ScriptBuilder {
     this._addNL();
   };
 
+  ifActorDistanceFromActor = (
+    distance: number,
+    otherId: string,
+    truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
+    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+  ) => {
+    const actorRef = this._declareLocal("actor", 4);
+    const otherActorRef = this._declareLocal("other_actor", 3, true);
+    const falseLabel = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+    const distanceSquared = distance  * distance; 
+
+    this._addComment(`If Actor ${distance} pu from Actor`);
+    this._actorGetPosition(this._localRef(actorRef));
+    this.setActorId(this._localRef(otherActorRef), otherId);
+    this._actorGetPosition(this._localRef(otherActorRef));
+    
+      this._rpn() //
+        .ref(this._localRef(otherActorRef, 1)) // X2
+        .int16(8 * 16)
+        .operator(".DIV")
+        .ref(this._localRef(actorRef, 1)) // X1
+        .int16(8 * 16)
+        .operator(".DIV")
+        .operator(".SUB")
+        .operator(".ABS")
+        .ref(this._localRef(otherActorRef, 1)) // X2
+        .int16(8 * 16)
+        .operator(".DIV")
+        .ref(this._localRef(actorRef, 1)) // X1
+        .int16(8 * 16)
+        .operator(".DIV")
+        .operator(".SUB")
+        .operator(".ABS")
+        .operator(".MUL")
+        .ref(this._localRef(otherActorRef, 2)) // Y2
+        .int16(8 * 16)
+        .operator(".DIV")
+        .ref(this._localRef(actorRef, 2)) // Y1
+        .int16(8 * 16)
+        .operator(".DIV")
+        .operator(".SUB")
+        .operator(".ABS")
+        .ref(this._localRef(otherActorRef, 2)) // Y2
+        .int16(8 * 16)
+        .operator(".DIV")
+        .ref(this._localRef(actorRef, 2)) // Y1
+        .int16(8 * 16)
+        .operator(".DIV")
+        .operator(".SUB")
+        .operator(".ABS")
+        .operator(".MUL")
+        .operator(".ADD")
+        .int16(distanceSquared)
+        .operator(".LTE")
+        .stop();
+
+    this._ifConst(".EQ", ".ARG0", 0, falseLabel, 1);
+    this._addNL();
+    this._compilePath(truePath);
+    this._jump(endLabel);
+    this._label(falseLabel);
+    this._compilePath(falsePath);
+    this._label(endLabel);
+    this._addNL();
+  };
+
   caseVariableValue = (
     variable: string,
     cases: { [key: string]: ScriptEvent[] | ScriptBuilderPathFunction } = {},
