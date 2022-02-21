@@ -279,6 +279,7 @@ UBYTE load_scene(const scene_t * scene, UBYTE bank, UBYTE init_data) BANKED {
         // Load actors
         actors_active_head = 0;
         actors_inactive_head = 0;
+        active_solid_actors = 0;
 
         // Add player to inactive, then activate
         PLAYER.active = FALSE;

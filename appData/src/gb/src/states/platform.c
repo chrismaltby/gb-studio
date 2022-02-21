@@ -92,6 +92,7 @@ void platform_update() BANKED {
     actor_t *hit_actor, *sol_actor;
     upoint16_t new_pos;
     UBYTE p_half_width = (PLAYER.bounds.right - PLAYER.bounds.left) >> 1;
+    UBYTE solid_count;
 
     hit_actor = NULL;
 
@@ -209,7 +210,9 @@ void platform_update() BANKED {
         new_y = PLAYER.pos.y + (pl_vel_y >> 8);
 
         sol_actor = PLAYER.prev;
-        while (sol_actor) {
+        solid_count = active_solid_actors;
+        while (solid_count) {
+            if (sol_actor->solid) solid_count--;
             if (!sol_actor->solid || !sol_actor->collision_enabled || 
             ((UBYTE)((BYTE)(PLAYER.pos.x >> 8) - (BYTE)(sol_actor->pos.x >> 8) + 2) > 4) || 
             ((UBYTE)((BYTE)(PLAYER.pos.y >> 8) - (BYTE)(sol_actor->pos.y >> 8) + 2) > 4)) {
@@ -220,16 +223,16 @@ void platform_update() BANKED {
             new_pos.x = PLAYER.pos.x;
             new_pos.y = new_y;
             
-            if ((sol_actor->solid & COLLISION_Y) && bb_intersects(&PLAYER.bounds, &new_pos, &sol_actor->bounds, &sol_actor->pos)) {
+            if ((sol_actor->solid & COLLISION_Y) && bb_intersects_opt(&PLAYER.bounds, &new_pos, &sol_actor->bounds, &sol_actor->pos)) {
                 if ((sol_actor->solid & COLLISION_TOP) && ((sol_actor == standing_on) || ((pl_vel_y >> 8) >= sol_actor->vel.y)) &&
                 (new_y - sol_actor->pos.y + ((PLAYER.bounds.bottom - sol_actor->bounds.top) << 4) <= ((pl_vel_y >> 8) - sol_actor->vel.y))) {
                     new_y = sol_actor->pos.y + ((sol_actor->bounds.top - PLAYER.bounds.bottom) << 4) - 1;
                     grounded = TRUE;
                     standing_on = sol_actor;
                     hit_actor = sol_actor->collision_group ? sol_actor : hit_actor;
-                } else if ((sol_actor->solid & COLLISION_BOTTOM) && ((pl_vel_y >> 8) < sol_actor->vel.y) 
-                && (new_y - sol_actor->pos.y + ((PLAYER.bounds.top - sol_actor->bounds.bottom) << 4) >= ((pl_vel_y >> 8) - sol_actor->vel.y))) {
-                    new_y = sol_actor->pos.y + ((sol_actor->bounds.bottom - PLAYER.bounds.top + 1) << 4);
+                } else if ((sol_actor->solid & COLLISION_BOTTOM) && ((pl_vel_y >> 8) < sol_actor->vel.y) && 
+                (new_y - sol_actor->pos.y + ((PLAYER.bounds.top - sol_actor->bounds.bottom) << 4) >= ((pl_vel_y >> 8) - sol_actor->vel.y))) {
+                    new_y = sol_actor->pos.y + ((sol_actor->bounds.bottom - PLAYER.bounds.top + 1) << 4) + 1;
                     pl_vel_y = sol_actor->vel.y << 8;
                     hit_actor = sol_actor->collision_group ? sol_actor : hit_actor;
                 }
@@ -238,15 +241,15 @@ void platform_update() BANKED {
             new_pos.x = new_x;
             new_pos.y = PLAYER.pos.y;
 
-            if ((sol_actor->solid & COLLISION_X) && (sol_actor != standing_on) && bb_intersects(&PLAYER.bounds, &new_pos, &sol_actor->bounds, &sol_actor->pos)) {
-                if ((sol_actor->solid & COLLISION_LEFT) && ((pl_vel_x >> 8) >= sol_actor->vel.x) && 
+            if ((sol_actor->solid & COLLISION_X) && (sol_actor != standing_on) && bb_intersects_opt(&PLAYER.bounds, &new_pos, &sol_actor->bounds, &sol_actor->pos)) {
+                if ((sol_actor->solid & COLLISION_LEFT) && ((pl_vel_x >> 8) > sol_actor->vel.x) && 
                 ((new_x + PLAYER.bounds.left << 4) < (sol_actor->pos.x + sol_actor->bounds.left << 4))) {
                     new_x = sol_actor->pos.x + ((sol_actor->bounds.left - PLAYER.bounds.right) << 4) - 1;
                     pl_vel_x = 0;
                     hit_actor = sol_actor->collision_group ? sol_actor : hit_actor;
                 } else if ((sol_actor->solid & COLLISION_RIGHT) && ((pl_vel_x >> 8) <= sol_actor->vel.x) && 
                 ((new_x + PLAYER.bounds.right << 4) > (sol_actor->pos.x + sol_actor->bounds.right << 4))) {
-                    new_x = sol_actor->pos.x + ((sol_actor->bounds.right - PLAYER.bounds.left + 1) << 4);
+                    new_x = sol_actor->pos.x + ((sol_actor->bounds.right - PLAYER.bounds.left + 1) << 4) + 1;
                     pl_vel_x = 0;
                     hit_actor = sol_actor->collision_group ? sol_actor : hit_actor;
                 }
@@ -254,12 +257,12 @@ void platform_update() BANKED {
             
             sol_actor = sol_actor->prev;
         }
-        
+
         if (!grounded) {
             standing_on = NULL;
         }
 
-        // Step X
+               // Step X
         tile_start = (((PLAYER.pos.y >> 4) + PLAYER.bounds.top)    >> 3);
         tile_end   = (((PLAYER.pos.y >> 4) + PLAYER.bounds.bottom) >> 3) + 1;
         if (pl_vel_x > 0) {
@@ -272,10 +275,8 @@ void platform_update() BANKED {
                 }
                 tile_start++;
             }
-
             PLAYER.pos.x = MIN((image_width - 16) << 4, new_x);
         } else if (pl_vel_x < 0) {
-            // WORD new_x = PLAYER.pos.x + (pl_vel_x >> 8);
             UBYTE tile_x = ((new_x >> 4) + PLAYER.bounds.left) >> 3;
             while (tile_start != tile_end) {
                 if (tile_at(tile_x, tile_start) & COLLISION_RIGHT) {
@@ -285,30 +286,26 @@ void platform_update() BANKED {
                 }
                 tile_start++;
             }
-            
             PLAYER.pos.x = MAX(0, new_x);
         } else {
-            PLAYER.pos.x = new_x;
+            PLAYER.pos.x = MIN((image_width - 16) << 4, MAX(0, new_x));
         }
-        
+
         // Step Y
         tile_start = (((PLAYER.pos.x >> 4) + PLAYER.bounds.left)  >> 3);
         tile_end   = (((PLAYER.pos.x >> 4) + PLAYER.bounds.right) >> 3) + 1;
         if (pl_vel_y > 0) {
-            UBYTE tile_y;
-  
-            tile_y = ((new_y >> 4) + PLAYER.bounds.bottom) >> 3;  
+            UBYTE tile_y = ((new_y >> 4) + PLAYER.bounds.bottom) >> 3;
             while (tile_start != tile_end) {
                 if (tile_at(tile_start, tile_y) & COLLISION_TOP) {
                     new_y = ((((tile_y) << 3) - PLAYER.bounds.bottom) << 4) - 1;
                     grounded = TRUE;
+                    pl_vel_y = 0;
                     break;
                 }
                 tile_start++;
             }
-
         } else if (pl_vel_y < 0) {
-            // UWORD new_y = PLAYER.pos.y + (pl_vel_y >> 8);
             UBYTE tile_y = (((new_y >> 4) + PLAYER.bounds.top) >> 3);
             while (tile_start != tile_end) {
                 if (tile_at(tile_start, tile_y) & COLLISION_BOTTOM) {
@@ -319,15 +316,11 @@ void platform_update() BANKED {
                 tile_start++;
             }
         }
-
         
-        pl_vel_y = grounded ? 0 : pl_vel_y;
-
-        // PLAYER.pos.x = new_x;
         PLAYER.pos.y = new_y;
 
         // Clamp Y Velocity
-        pl_vel_y = MIN(pl_vel_y, plat_max_fall_vel);
+        pl_vel_y = grounded ? 0 : MIN(pl_vel_y, plat_max_fall_vel);
     }
 
     UBYTE tile_x_mid = ((PLAYER.pos.x >> 4) + ((PLAYER.bounds.right - PLAYER.bounds.left) >> 2)) >> 3;
