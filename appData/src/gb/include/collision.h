@@ -11,6 +11,8 @@
 #define COLLISION_LEFT 0x4
 #define COLLISION_RIGHT 0x8
 #define COLLISION_ALL 0xF
+#define COLLISION_X (COLLISION_LEFT | COLLISION_RIGHT)
+#define COLLISION_Y (COLLISION_TOP | COLLISION_BOTTOM)
 #define TILE_PROP_LADDER 0x10
 
 typedef struct bounding_box_t {
@@ -52,6 +54,17 @@ inline UBYTE bb_intersects(bounding_box_t *bb_a, upoint16_t *offset_a, bounding_
         ((offset_b->x >> 4) + bb_b->right  < (offset_a->x >> 4) + bb_a->left)) return FALSE;
     if (((offset_b->y >> 4) + bb_b->top    > (offset_a->y >> 4) + bb_a->bottom) ||
         ((offset_b->y >> 4) + bb_b->bottom < (offset_a->y >> 4) + bb_a->top)) return FALSE;
+    return TRUE;
+}
+
+// optimized function, needs testing and profiling. And why is 0xF the magic number?
+inline UBYTE bb_intersects_opt(bounding_box_t *bb_a, upoint16_t *offset_a, bounding_box_t *bb_b, upoint16_t *offset_b) {
+    BYTE ox = (((offset_b->x) - (offset_a->x) + 0xF) >> 4);
+    if (((ox + (bb_b->left - bb_a->right)) > 0) ||
+        ((ox + (bb_b->right - bb_a->left)) < 0)) return FALSE;
+    BYTE oy = (((offset_b->y) - (offset_a->y) + 0xF) >> 4);
+    if (((oy + (bb_b->top - bb_a->bottom)) > 0) ||
+        ((oy + (bb_b->bottom - bb_a->top)) < 0)) return FALSE;
     return TRUE;
 }
 
