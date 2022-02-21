@@ -117,7 +117,7 @@ export const SongTracker = ({
     }
     setSelectedTrackerFields(newSelectedTrackerFields);
     console.log(newSelectedTrackerFields);
-  }, [selectionRect]);
+  }, [selectionOrigin, selectionRect]);
 
   const [playbackState, setPlaybackState] = useState([0, 0]);
 
@@ -180,6 +180,10 @@ export const SongTracker = ({
 
       if (!!fieldId) {
         setActiveField(parseInt(fieldId));
+        if (!isSelecting) {
+          setSelectionOrigin(undefined);
+          setSelectionRect(undefined);
+        }
       } else if (rowId) {
         dispatch(
           trackerActions.setDefaultStartPlaybackPosition([
@@ -195,7 +199,7 @@ export const SongTracker = ({
         setActiveField(undefined);
       }
     },
-    [dispatch, sequenceId]
+    [dispatch, isSelecting, sequenceId]
   );
 
   const handleKeys = useCallback(
@@ -392,7 +396,7 @@ export const SongTracker = ({
         currentFocus = "effectParamColumnFocus";
       }
 
-      if (currentFocus) {
+      if (currentFocus && !e.metaKey && !e.ctrlKey && !e.altKey) {
         getKeys(e.key, currentFocus, {
           editNoteField,
           editInstrumentField,
@@ -427,6 +431,29 @@ export const SongTracker = ({
     [activeField]
   );
 
+  const onSelectAll = useCallback(
+    (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+
+      const selection = window.getSelection();
+      if (!selection || selection.focusNode) {
+        return;
+      }
+      window.getSelection()?.empty();
+
+      const offset = CHANNEL_FIELDS * channelId;
+      setSelectionOrigin({ x: offset, y: 0 });
+      setSelectionRect({
+        x: offset,
+        y: 0,
+        width: 3,
+        height: 63,
+      });
+    },
+    [channelId]
+  );
+
   useEffect(() => {
     window.addEventListener("keydown", handleKeys);
     window.addEventListener("keyup", handleKeysUp);
@@ -436,6 +463,14 @@ export const SongTracker = ({
       window.removeEventListener("keydown", handleKeys);
       window.removeEventListener("keyup", handleKeysUp);
       window.removeEventListener("mousedown", handleMouseDown);
+    };
+  });
+
+  useEffect(() => {
+    document.addEventListener("selectionchange", onSelectAll);
+
+    return () => {
+      document.removeEventListener("selectionchange", onSelectAll);
     };
   });
 

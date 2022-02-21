@@ -220,7 +220,8 @@ const arePropsEqual = (prevProps: SongRowProps, nextProps: SongRowProps) => {
     prevProps.isActive === nextProps.isActive &&
     prevProps.isPlaying === nextProps.isPlaying &&
     prevProps.selectedTrackerFields.length ===
-      nextProps.selectedTrackerFields.length
+      nextProps.selectedTrackerFields.length &&
+    prevProps.selectedTrackerFields[0] === nextProps.selectedTrackerFields[0]
   );
 };
 
