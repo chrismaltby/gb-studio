@@ -205,7 +205,7 @@ export const compileVGM = async (
 #include <gbdk/platform.h>
 #include <stdint.h>
 
-#define MUTE_MASK_${symbol} 0b00000100
+#define MUTE_MASK_${symbol} 0b${decBin(channelMuteMask)}
 
 BANKREF_EXTERN(${symbol})
 extern const uint8_t ${symbol}[];

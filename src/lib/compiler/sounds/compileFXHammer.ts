@@ -134,11 +134,11 @@ const uint8_t ${symbol}[] = {
   if (options.cutSound) {
     if (chMask & 2) {
       count += 1;
-      result += `0b00101001,${decHex(0)},${decHex(0xc0)}`;
+      result += `0b00101001,${decHex(0)},${decHex(0xc0)},`;
     }
     if (chMask & 8) {
       count += 1;
-      result += `0b00101011,${decHex(0)},${decHex(0xc0)}`;
+      result += `0b00101011,${decHex(0)},${decHex(0xc0)},`;
     }
   }
   if (options.usePan) {
