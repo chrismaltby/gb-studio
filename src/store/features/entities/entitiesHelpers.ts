@@ -1,5 +1,7 @@
 import { normalize, denormalize, schema, NormalizedSchema } from "normalizr";
 import isEqual from "lodash/isEqual";
+import pick from "lodash/pick";
+import cloneDeep from "lodash/cloneDeep";
 import {
   ProjectEntitiesData,
   EntitiesState,
@@ -34,9 +36,17 @@ import {
   SceneScriptKey,
   TriggerScriptKey,
   triggerScriptKeys,
+  Sound,
 } from "./entitiesTypes";
-import { Dictionary, EntityId } from "@reduxjs/toolkit";
+import {
+  Dictionary,
+  EntityAdapter,
+  EntityId,
+  EntityState,
+} from "@reduxjs/toolkit";
 import l10n from "lib/helpers/l10n";
+import { genSymbol, toValidSymbol } from "lib/helpers/symbols";
+import parseAssetPath from "lib/helpers/path/parseAssetPath";
 
 export interface NormalisedEntities {
   scenes: Record<EntityId, Scene>;
@@ -51,6 +61,7 @@ export interface NormalisedEntities {
   spriteStates: Record<EntityId, SpriteState>;
   palettes: Record<EntityId, Palette>;
   music: Record<EntityId, Music>;
+  sounds: Record<EntityId, Sound>;
   fonts: Record<EntityId, Font>;
   avatars: Record<EntityId, Avatar>;
   emotes: Record<EntityId, Emote>;
@@ -66,6 +77,7 @@ export interface NormalisedResult {
   palettes: EntityId[];
   customEvents: EntityId[];
   music: EntityId[];
+  sounds: EntityId[];
   fonts: EntityId[];
   avatars: EntityId[];
   emotes: EntityId[];
@@ -89,8 +101,11 @@ type WalkNormalizedOptions =
       };
     };
 
+const inodeToAssetCache: Dictionary<Asset> = {};
+
 const backgroundSchema = new schema.Entity("backgrounds");
 const musicSchema = new schema.Entity("music");
+const soundSchema = new schema.Entity("sounds");
 const fontSchema = new schema.Entity("fonts");
 const avatarSchema = new schema.Entity("avatars");
 const emoteSchema = new schema.Entity("emotes");
@@ -144,6 +159,7 @@ const projectSchema = {
   scenes: [sceneSchema],
   backgrounds: [backgroundSchema],
   music: [musicSchema],
+  sounds: [soundSchema],
   fonts: [fontSchema],
   avatars: [avatarSchema],
   emotes: [emoteSchema],
@@ -173,6 +189,7 @@ export const denormalizeEntities = (
     palettes: state.palettes.ids,
     customEvents: state.customEvents.ids,
     music: state.music.ids,
+    sounds: state.sounds.ids,
     fonts: state.fonts.ids,
     avatars: state.avatars.ids,
     emotes: state.emotes.ids,
@@ -199,6 +216,7 @@ export const denormalizeEntities = (
     palettes: state.palettes.entities as Record<EntityId, Palette>,
     customEvents: state.customEvents.entities as Record<EntityId, CustomEvent>,
     music: state.music.entities as Record<EntityId, Music>,
+    sounds: state.sounds.entities as Record<EntityId, Sound>,
     fonts: state.fonts.entities as Record<EntityId, Font>,
     avatars: state.avatars.entities as Record<EntityId, Avatar>,
     emotes: state.emotes.entities as Record<EntityId, Emote>,
@@ -524,7 +542,7 @@ export const actorName = (actor: Actor, actorIndex: number) => {
 };
 
 export const sceneName = (scene: Scene, sceneIndex: number) => {
-  return scene.name || `Scene ${sceneIndex + 1}`;
+  return scene.name || `${l10n("SCENE")} ${sceneIndex + 1}`;
 };
 
 export const customEventName = (
@@ -532,4 +550,183 @@ export const customEventName = (
   customEventIndex: number
 ) => {
   return customEvent.name || `${l10n("CUSTOM_EVENT")} ${customEventIndex + 1}`;
+};
+
+const extractEntitySymbols = (entities: EntityState<{ symbol?: string }>) => {
+  return Object.values(entities.entities).map(
+    (entity) => entity?.symbol
+  ) as string[];
+};
+
+const extractEntityStateSymbols = (state: EntitiesState) => {
+  return [
+    ...extractEntitySymbols(state.scenes),
+    ...extractEntitySymbols(state.actors),
+    ...extractEntitySymbols(state.triggers),
+    ...extractEntitySymbols(state.backgrounds),
+    ...extractEntitySymbols(state.spriteSheets),
+    ...extractEntitySymbols(state.emotes),
+    ...extractEntitySymbols(state.fonts),
+    ...extractEntitySymbols(state.variables),
+    ...extractEntitySymbols(state.customEvents),
+    ...extractEntitySymbols(state.music),
+    ...extractEntitySymbols(state.sounds),
+    ...extractEntitySymbols(state.scriptEvents),
+  ];
+};
+
+export const genEntitySymbol = (state: EntitiesState, name: string) => {
+  return genSymbol(name, extractEntityStateSymbols(state));
+};
+
+const ensureEntitySymbolsUnique = (
+  entities: EntityState<{ symbol?: string }>,
+  seenSymbols: string[]
+) => {
+  for (const entity of Object.values(entities.entities)) {
+    if (entity && entity.symbol) {
+      entity.symbol = toValidSymbol(entity.symbol);
+      if (seenSymbols.includes(entity.symbol)) {
+        const newSymbol = genSymbol(entity.symbol, seenSymbols);
+        entity.symbol = newSymbol;
+      }
+      seenSymbols.push(entity.symbol);
+    }
+  }
+};
+
+export const ensureSymbolsUnique = (state: EntitiesState) => {
+  const symbols: string[] = [];
+  ensureEntitySymbolsUnique(state.scenes, symbols);
+  ensureEntitySymbolsUnique(state.actors, symbols);
+  ensureEntitySymbolsUnique(state.triggers, symbols);
+  ensureEntitySymbolsUnique(state.backgrounds, symbols);
+  ensureEntitySymbolsUnique(state.spriteSheets, symbols);
+  ensureEntitySymbolsUnique(state.emotes, symbols);
+  ensureEntitySymbolsUnique(state.fonts, symbols);
+  ensureEntitySymbolsUnique(state.variables, symbols);
+  ensureEntitySymbolsUnique(state.customEvents, symbols);
+  ensureEntitySymbolsUnique(state.music, symbols);
+  ensureEntitySymbolsUnique(state.sounds, symbols);
+  ensureEntitySymbolsUnique(state.scriptEvents, symbols);
+};
+
+export const mergeAssetEntity = <T extends Asset & { inode: string }>(
+  entities: EntityState<T>,
+  entity: T,
+  keepProps: (keyof T)[]
+): T => {
+  const existingEntities = entities.ids.map(
+    (id) => entities.entities[id]
+  ) as T[];
+
+  // Check if asset already exists or was recently deleted
+  const existingAsset =
+    existingEntities.find(matchAsset(entity)) ||
+    inodeToAssetCache[entity.inode];
+
+  if (existingAsset) {
+    delete inodeToAssetCache[entity.inode];
+    const preferExisting = pick(existingAsset, keepProps);
+
+    return {
+      ...existingAsset,
+      ...entity,
+      ...preferExisting,
+    };
+  }
+
+  return entity;
+};
+
+export const storeRemovedAssetInInodeCache = <
+  T extends Asset & { inode: string }
+>(
+  filename: string,
+  projectRoot: string,
+  assetFolder: string,
+  entities: EntityState<T>
+): Asset => {
+  const { file, plugin } = parseAssetPath(filename, projectRoot, assetFolder);
+
+  const existingEntities = entities.ids.map(
+    (id) => entities.entities[id]
+  ) as T[];
+
+  const asset = {
+    filename: file,
+    plugin,
+  };
+
+  const existingAsset = existingEntities.find(matchAsset(asset));
+
+  if (existingAsset) {
+    // Store deleted asset in inode cache incase it was just being renamed
+    inodeToAssetCache[existingAsset.inode] = existingAsset;
+  }
+
+  return asset;
+};
+
+/**
+ * Upsert entity, preferring some props from existing entity where available
+ * @param entities entity state
+ * @param adapter entity adapter
+ * @param entity entity to upsert
+ * @param keepProps array of props to keep
+ */
+export const upsertAssetEntity = <
+  T extends Asset & { id: string; inode: string }
+>(
+  entities: EntityState<T>,
+  adapter: EntityAdapter<T>,
+  entity: T,
+  keepProps: (keyof T)[]
+) => {
+  adapter.upsertOne(entities, mergeAssetEntity(entities, entity, keepProps));
+};
+
+/**
+ * Search entities for matching asset and remove
+ * @param entities entity state
+ * @param adapter entity adapter
+ * @param asset asset to remove
+ */
+export const removeAssetEntity = <
+  T extends Asset & { id: string; inode: string }
+>(
+  entities: EntityState<T>,
+  adapter: EntityAdapter<T>,
+  asset: Asset
+) => {
+  const existingEntities = entities.ids.map(
+    (id) => entities.entities[id]
+  ) as T[];
+  const existingAsset = existingEntities.find(matchAsset(asset));
+  if (existingAsset) {
+    inodeToAssetCache[existingAsset.inode] = cloneDeep(existingAsset);
+    adapter.removeOne(entities, existingAsset.id);
+  }
+};
+
+export const updateEntitySymbol = <T extends { id: string; symbol?: string }>(
+  state: EntitiesState,
+  entities: EntityState<T>,
+  adapter: EntityAdapter<T>,
+  id: string,
+  inputSymbol: string
+) => {
+  const entity = entities.entities[id];
+  if (!entity || entity.symbol === inputSymbol) {
+    // Entity not found or symbol unchanged
+    return;
+  }
+  const symbol = genEntitySymbol(state, inputSymbol);
+  const changes = {
+    symbol,
+  } as Partial<T>;
+  adapter.updateOne(entities, {
+    id,
+    changes,
+  });
 };

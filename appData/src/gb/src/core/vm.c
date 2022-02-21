@@ -118,13 +118,6 @@ void vm_jump(SCRIPT_CTX * THIS, UBYTE * pc) OLDCALL BANKED {
     THIS->PC = pc;    
 }
 
-// returns systime 
-void vm_systime(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {
-    UWORD * A;
-    if (idx < 0) A = THIS->stack_ptr + idx; else A = script_memory + idx;
-    *A = sys_time;
-} 
-
 UBYTE wait_frames(void * THIS, UBYTE start, UWORD * stack_frame) OLDCALL BANKED {
     // we allocate one local variable (just write ahead of VM stack pointer, we have no interrupts, our local variables won't get spoiled)
     if (start) *((SCRIPT_CTX *)THIS)->stack_ptr = sys_time;
@@ -273,6 +266,12 @@ void vm_rpn(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS) OLDCALL NONBANK
         INT8 op = *(THIS->PC++);
         if (op < 0) {
             switch (op) {
+                case -5:
+                // set by reference
+                    idx = *((INT16 *)(THIS->PC)); 
+                    *((idx < 0) ? ARGS + idx : script_memory + idx) = *(--(THIS->stack_ptr));
+                    THIS->PC += 2;
+                    continue;
                 // indirect reference
                 case -4:
                     idx = *((INT16 *)(THIS->PC)); 
@@ -283,8 +282,7 @@ void vm_rpn(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS) OLDCALL NONBANK
                 // reference
                 case -3:
                     idx = *((INT16 *)(THIS->PC)); 
-                    if (idx < 0) A = ARGS + idx; else A = script_memory + idx;
-                    *(THIS->stack_ptr) = *A;
+                    *(THIS->stack_ptr) = *((idx < 0) ? ARGS + idx : script_memory + idx);
                     THIS->PC += 2;
                     break;
                 // int16

@@ -70,9 +70,13 @@ UBYTE * text_scroll_addr;
 UBYTE text_scroll_width, text_scroll_height;
 UBYTE text_scroll_fill;
 
-UBYTE text_sound_frames, text_sound_ch;
+UBYTE text_sound_mask;
 UBYTE text_sound_bank; 
 const UBYTE * text_sound_data;
+
+#ifdef CGB
+UBYTE overlay_priority;
+#endif
 
 void ui_init() BANKED {
     vwf_direction               = UI_PRINT_LEFTTORIGHT;
@@ -110,15 +114,20 @@ void ui_init() BANKED {
     text_scroll_height          = 8;
     text_scroll_fill            = ui_while_tile;
 
-    text_sound_frames           = 0;
-    text_sound_ch               = 0;
+    text_sound_bank             = SFX_STOP_BANK;
 
     ui_load_tiles();
+
+#ifdef CGB
+    overlay_priority            = S_PRIORITY;
+#endif
 }
 
 void ui_load_tiles() BANKED {
-    ui_load_frame_tiles(frame_image, BANK(frame_image));
-    ui_load_cursor_tile(cursor_image, BANK(cursor_image));
+    // load frame
+    SetBankedBkgData(ui_frame_tl_tiles, 9, frame_image, BANK(frame_image));
+    // load cursor
+    SetBankedBkgData(ui_cursor_tile, 1, cursor_image, BANK(cursor_image));
 
     memset(vwf_tile_data, TEXT_BKG_FILL_W, 16);
     set_bkg_data(ui_while_tile, 1, vwf_tile_data);
@@ -133,7 +142,7 @@ void ui_draw_frame(UBYTE x, UBYTE y, UBYTE width, UBYTE height) BANKED {
 #ifdef CGB
     if (_is_CGB) {
         VBK_REG = 1;
-        fill_win_rect(x, y, width, height, (UI_PALETTE & 0x07u));        
+        fill_win_rect(x, y, width, height, overlay_priority | (UI_PALETTE & 0x07u));        
         VBK_REG = 0;
     }
 #endif
@@ -250,7 +259,7 @@ inline void ui_set_tile(UBYTE * addr, UBYTE tile, UBYTE bank) {
 #ifdef CGB
     if (_is_CGB) {
         VBK_REG = 1;        
-        SetTile(addr, (bank) ? ((UI_PALETTE & 0x07u) | 0x08u) : (UI_PALETTE & 0x07u));
+        SetTile(addr, overlay_priority | ((bank) ? ((UI_PALETTE & 0x07u) | 0x08u) : (UI_PALETTE & 0x07u)));
         VBK_REG = 0;
     }
 #else
@@ -375,7 +384,7 @@ UBYTE ui_draw_text_buffer_char() BANKED {
 #ifdef CGB
                     if (_is_CGB) {
                         VBK_REG = 1;
-                        scroll_rect(text_scroll_addr, text_scroll_width, text_scroll_height, (UI_PALETTE & 0x07u));
+                        scroll_rect(text_scroll_addr, text_scroll_width, text_scroll_height, overlay_priority | (UI_PALETTE & 0x07u));
                         VBK_REG = 0;
                     }
 #endif
@@ -440,7 +449,7 @@ void ui_update() NONBANKED {
         letter_drawn = ui_draw_text_buffer_char();
     } while (((text_ff) || (text_draw_speed == 0)) && (!text_drawn));
     // play sound
-    if ((letter_drawn) && (text_sound_frames != 0)) sound_play(text_sound_frames, text_sound_ch, text_sound_bank, text_sound_data);
+    if ((letter_drawn) && (text_sound_bank != SFX_STOP_BANK)) music_play_sfx(text_sound_bank, text_sound_data, text_sound_mask, MUSIC_SFX_PRIORITY_NORMAL);
 }
 
 UBYTE ui_run_menu(menu_item_t * start_item, UBYTE bank, UBYTE options, UBYTE count) BANKED {
@@ -453,7 +462,7 @@ UBYTE ui_run_menu(menu_item_t * start_item, UBYTE bank, UBYTE options, UBYTE cou
 #ifdef CGB
     if (_is_CGB) {
         VBK_REG = 1;
-        set_win_tile_xy(current_menu_item.X, current_menu_item.Y, (UI_PALETTE & 0x07u));        
+        set_win_tile_xy(current_menu_item.X, current_menu_item.Y, overlay_priority | (UI_PALETTE & 0x07u));        
         VBK_REG = 0;
     }
 #endif
@@ -496,7 +505,7 @@ UBYTE ui_run_menu(menu_item_t * start_item, UBYTE bank, UBYTE options, UBYTE cou
 #ifdef CGB
         if (_is_CGB) {
             VBK_REG = 1;
-            set_win_tile_xy(current_menu_item.X, current_menu_item.Y, (UI_PALETTE & 0x07u));        
+            set_win_tile_xy(current_menu_item.X, current_menu_item.Y, overlay_priority | (UI_PALETTE & 0x07u));        
             VBK_REG = 0;
         }
 #endif
@@ -507,7 +516,7 @@ UBYTE ui_run_menu(menu_item_t * start_item, UBYTE bank, UBYTE options, UBYTE cou
 #ifdef CGB
         if (_is_CGB) {
             VBK_REG = 1;
-            set_win_tile_xy(current_menu_item.X, current_menu_item.Y, (UI_PALETTE & 0x07u));        
+            set_win_tile_xy(current_menu_item.X, current_menu_item.Y, overlay_priority | (UI_PALETTE & 0x07u));        
             VBK_REG = 0;
         }
 #endif

@@ -29,7 +29,7 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_jump,                   2}, // 0x09
     {vm_call_far,               3}, // 0x0A
     {vm_ret_far,                1}, // 0x0B
-    {vm_systime,                2}, // 0x0C
+    {0, 0},
     {vm_invoke,                 6}, // 0x0D
     {vm_beginthread,            6}, // 0x0E
     {vm_if,                     8}, // 0x0F
@@ -95,13 +95,13 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_overlay_show,           4}, // 0x46
     {vm_overlay_clear,          6}, // 0x47
     {vm_choice,                 4}, // 0x48
-    {vm_load_frame,             3}, // 0x49
-    {vm_load_cursor,            3}, // 0x4A
+    {vm_load_tiles,             5}, // 0x49
+    {0, 0},
     {vm_set_font,               1}, // 0x4B
     {vm_set_print_dir,          1}, // 0x4C
     {vm_overlay_scroll,         5}, // 0x4D
     {vm_overlay_set_scroll,     5}, // 0x4E
-    {vm_overlay_set_submap,     6}, // 0x4F
+    {vm_overlay_set_submap,     8}, // 0x4F
 
     // gameboy features instructions section
     {vm_load_tileset,           5}, // 0x50
@@ -110,7 +110,7 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_input_attach,           2}, // 0x53
     {vm_input_get,              3}, // 0x54
     {vm_context_prepare,        4}, // 0x55
-    {vm_overlay_set_map,        7}, // 0x56
+    {vm_overlay_set_map,        9}, // 0x56
     {vm_fade,                   1}, // 0x57
     {vm_timer_prepare,          4}, // 0x58
     {vm_timer_set,              2}, // 0x59
@@ -126,9 +126,9 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_music_stop,             0}, // 0x61
     {vm_music_mute,             1}, // 0x62
     {vm_sound_mastervol,        1}, // 0x63
-    {vm_sound_play,             2}, // 0x64
+    {0, 0},
     {vm_music_routine,          4}, // 0x65
-    {vm_wave_play,              6}, // 0x66
+    {vm_sfx_play,               5}, // 0x66
     {vm_music_setpos,           2}, // 0x67
     // scene stack instructions
     {vm_scene_push,             0}, // 0x68
@@ -181,5 +181,5 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_sin_scale,              5}, // 0x89 
     {vm_cos_scale,              5}, // 0x8A
 
-    {vm_set_text_sound,         2}  // 0x8B
+    {vm_set_text_sound,         4}  // 0x8B
 };

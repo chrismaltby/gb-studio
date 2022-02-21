@@ -13,7 +13,7 @@ test("Should be able to set active actor to player", () => {
     scene: {
       id: "scene1",
       name: "Scene 1",
-      symbolName: "scene_1",
+      symbol: "scene_1",
       width: 20,
       height: 18,
       background: dummyPrecompiledBackground,
@@ -44,7 +44,7 @@ test("Should be able to set active actor to actor by id", () => {
     scene: {
       id: "scene1",
       name: "Scene 1",
-      symbolName: "scene_1",
+      symbol: "scene_1",
       width: 20,
       height: 18,
       background: dummyPrecompiledBackground,
@@ -75,7 +75,7 @@ test("Should be able to move actor to new location", () => {
     scene: {
       id: "scene1",
       name: "Scene 1",
-      symbolName: "scene_1",
+      symbol: "scene_1",
       width: 20,
       height: 18,
       background: dummyPrecompiledBackground,
@@ -106,7 +106,7 @@ test("Should be able to wait for N frames to pass", () => {
     scene: {
       id: "scene1",
       name: "Scene 1",
-      symbolName: "scene_1",
+      symbol: "scene_1",
       width: 20,
       height: 18,
       background: dummyPrecompiledBackground,
@@ -135,7 +135,7 @@ test("Should be able to generate script string", () => {
     scene: {
       id: "scene1",
       name: "Scene 1",
-      symbolName: "scene_1",
+      symbol: "scene_1",
       width: 20,
       height: 18,
       background: dummyPrecompiledBackground,
@@ -196,7 +196,7 @@ test("Should be able to open dialogue boxes", async () => {
     scene: {
       id: "scene1",
       name: "Scene 1",
-      symbolName: "scene_1",
+      symbol: "scene_1",
       width: 20,
       height: 18,
       background: dummyPrecompiledBackground,
@@ -249,7 +249,7 @@ test("Should be able to conditionally execute if variable is true with event arr
     scene: {
       id: "scene1",
       name: "Scene 1",
-      symbolName: "scene_1",
+      symbol: "scene_1",
       width: 20,
       height: 18,
       background: dummyPrecompiledBackground,
@@ -304,7 +304,7 @@ ___bank_MY_SCRIPT = 255
 
 _MY_SCRIPT::
         ; If Variable True
-        VM_IF_CONST .GT         VAR_VARIABLE_1, 0, 1$, 0
+        VM_IF_CONST .GT         VAR_1, 0, 1$, 0
         VM_DEBUG                0
         .asciz "False Path"
         VM_JUMP                 2$
@@ -324,7 +324,7 @@ test("Should be able to conditionally execute if variable is true with function 
     scene: {
       id: "scene1",
       name: "Scene 1",
-      symbolName: "scene_1",
+      symbol: "scene_1",
       width: 20,
       height: 18,
       background: dummyPrecompiledBackground,
@@ -379,7 +379,7 @@ ___bank_MY_SCRIPT = 255
 
 _MY_SCRIPT::
         ; If Variable True
-        VM_IF_CONST .GT         VAR_VARIABLE_0, 0, 1$, 0
+        VM_IF_CONST .GT         VAR_0, 0, 1$, 0
         ; Text Dialogue
         VM_LOAD_TEXT            0
         .asciz "Goodbye World"
@@ -417,7 +417,7 @@ test("Should be able to conditionally execute if variable is true with nested fu
     scene: {
       id: "scene1",
       name: "Scene 1",
-      symbolName: "scene_1",
+      symbol: "scene_1",
       width: 20,
       height: 18,
       background: dummyPrecompiledBackground,
@@ -472,9 +472,9 @@ ___bank_MY_SCRIPT = 255
 
 _MY_SCRIPT::
         ; If Variable True
-        VM_IF_CONST .GT         VAR_VARIABLE_0, 0, 1$, 0
+        VM_IF_CONST .GT         VAR_0, 0, 1$, 0
         ; If Variable True
-        VM_IF_CONST .GT         VAR_VARIABLE_2, 0, 3$, 0
+        VM_IF_CONST .GT         VAR_2, 0, 3$, 0
         ; Text Dialogue
         VM_LOAD_TEXT            0
         .asciz "0=FALSE 2=FALSE"
@@ -502,7 +502,7 @@ _MY_SCRIPT::
         VM_JUMP                 2$
 1$:
         ; If Variable True
-        VM_IF_CONST .GT         VAR_VARIABLE_1, 0, 5$, 0
+        VM_IF_CONST .GT         VAR_1, 0, 5$, 0
         ; Text Dialogue
         VM_LOAD_TEXT            0
         .asciz "0=TRUE 1=FALSE"
@@ -541,7 +541,7 @@ test("Should be able to define labels and jump", () => {
     scene: {
       id: "scene1",
       name: "Scene 1",
-      symbolName: "scene_1",
+      symbol: "scene_1",
       width: 20,
       height: 18,
       background: dummyPrecompiledBackground,
@@ -583,7 +583,7 @@ test("Should throw if jump to label is not stack neutral", () => {
     scene: {
       id: "scene1",
       name: "Scene 1",
-      symbolName: "scene_1",
+      symbol: "scene_1",
       width: 20,
       height: 18,
       background: dummyPrecompiledBackground,

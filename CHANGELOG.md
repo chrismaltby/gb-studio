@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add VM_ACTOR_MOVE_CANCEL [@um3k](https://github.com/um3k)
 - Allow using frames rather than seconds for wait/camera shake/attach timer script events
 - Added events to Deactivate & Activate actors, similar to old hide/show but prevents update scripts from running on disabled actors
+- Added ability to choose any referenced assets in GBVM script event forcing assets to be included within built project
+- Added ability to rename the GBVM symbol used for generated data files, accessible from "View GBVM Symbols" in right sidebar menu + GBVM event references section
+- Added syntax highlighting and line numbers to GBVM event code input
+- Added event Actor Move Cancel to cancel any scripted movement currently running for a given actor [@um3k](https://github.com/um3k)
+- Add sound effects file support reading WAV (.wav), VGM (.vgm, .vgz) and FXHammer (.sav) files from assets/sounds folder
+- Add support for setting sound effects priority [untoxa](https://github.com/untoxa)
 
 ### Changed
 
@@ -25,7 +31,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved gbspack error when data is over bank size limits
 - Update hUGEDriver [untoxa](https://github.com/untoxa)
 - Hide/show actor now ONLY hides/shows, update scripts & collisions are not affected (existing hide/show events migrated to deactivate/activate for compatibility)
-- Generated scene/sprite/background/tile data now has deterministic symbols based on asset filenames allowing easier referencing from GBVM scripts
 
 ### Fixed
 
@@ -35,6 +40,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed display of errors in game engine files while building
 - Fix issue where activating an actor wouldn't trigger update script [untoxa](https://github.com/untoxa)
 - Fix issue where full magenta characters in font files didn't have zero width
+- Fixed typo in Japanese localisation [RYU-N2001](https://github.com/RYU-N2001)
+- Updated 32-bit Windows app to use correct 32-bit GBDK-2020 (again) [untoxa](https://github.com/untoxa)
+- Fixed issue where relative actor movement on left or top edge of scene would wrap around scene [@um3k](https://github.com/um3k)
+- Fix issue where soft reset could lead to UI tiles over scene tiles [untoxa](https://github.com/untoxa)
 
 ### Removed
 

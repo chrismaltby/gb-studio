@@ -7,6 +7,7 @@ import loadAllMusicData from "./loadMusicData";
 import loadAllFontData from "./loadFontData";
 import loadAllAvatarData from "./loadAvatarData";
 import loadAllEmoteData from "./loadEmoteData";
+import loadAllSoundData from "./loadSoundData";
 import migrateProject from "./migrateProject";
 import { indexByFn, indexBy } from "../helpers/array";
 
@@ -33,11 +34,12 @@ const loadProject = async (projectPath) => {
   const projectRoot = path.dirname(projectPath);
   const json = migrateProject(await fs.readJson(projectPath), projectRoot);
 
-  const [backgrounds, sprites, music, fonts, avatars, emotes] =
+  const [backgrounds, sprites, music, sounds, fonts, avatars, emotes] =
     await Promise.all([
       loadAllBackgroundData(projectRoot),
       loadAllSpriteData(projectRoot),
       loadAllMusicData(projectRoot),
+      loadAllSoundData(projectRoot),
       loadAllFontData(projectRoot),
       loadAllAvatarData(projectRoot),
       loadAllEmoteData(projectRoot),
@@ -57,6 +59,10 @@ const loadProject = async (projectPath) => {
           ...background,
           id: oldBackground.id,
           _v: oldBackground._v,
+          symbol:
+            oldBackground?.symbol !== undefined
+              ? oldBackground.symbol
+              : background.symbol,
           tileColors:
             oldBackground?.tileColors !== undefined
               ? oldBackground.tileColors
@@ -88,6 +94,7 @@ const loadProject = async (projectPath) => {
         ...oldData,
         id,
         _v: oldData._v || sprite._v,
+        symbol: oldData?.symbol !== undefined ? oldData.symbol : sprite.symbol,
         filename: sprite.filename,
         name: oldData.name || sprite.name,
         canvasWidth: oldData.canvasWidth || 32,
@@ -138,12 +145,35 @@ const loadProject = async (projectPath) => {
           ...track,
           id: oldTrack.id,
           _v: oldTrack._v,
+          symbol:
+            oldTrack?.symbol !== undefined ? oldTrack.symbol : track.symbol,
           settings: {
             ...oldTrack.settings,
           },
         };
       }
       return track;
+    })
+    .sort(sortByName);
+
+  // Merge stored sound effect data with file system data
+  const oldSoundByFilename = indexByFilename(json.sounds || []);
+  const oldSoundByInode = indexByInode(json.sounds || []);
+
+  const fixedSoundIds = sounds
+    .map((sound) => {
+      const oldSound =
+        oldSoundByFilename[elemKey(sound)] || oldSoundByInode[sound.inode];
+      if (oldSound) {
+        return {
+          ...sound,
+          id: oldSound.id,
+          _v: oldSound._v,
+          symbol:
+            oldSound?.symbol !== undefined ? oldSound.symbol : sound.symbol,
+        };
+      }
+      return sound;
     })
     .sort(sortByName);
 
@@ -159,6 +189,7 @@ const loadProject = async (projectPath) => {
         return {
           ...font,
           id: oldFont.id,
+          symbol: oldFont?.symbol !== undefined ? oldFont.symbol : font.symbol,
         };
       }
       return font;
@@ -195,6 +226,8 @@ const loadProject = async (projectPath) => {
         return {
           ...emote,
           id: oldEmote.id,
+          symbol:
+            oldEmote?.symbol !== undefined ? oldEmote.symbol : emote.symbol,
         };
       }
       return emote;
@@ -292,6 +325,7 @@ const loadProject = async (projectPath) => {
       backgrounds: fixedBackgroundIds,
       spriteSheets: fixedSpriteIds,
       music: fixedMusicIds,
+      sounds: fixedSoundIds,
       fonts: fixedFontIds,
       avatars: fixedAvatarIds,
       emotes: fixedEmoteIds,

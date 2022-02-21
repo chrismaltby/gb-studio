@@ -11,7 +11,14 @@ test("Should be able to set a timer script", () => {
     },
     {
       timerScriptSet: mockTimerScriptSet,
+      event: {
+        symbol: "subscript_symbol",
+      },
     }
   );
-  expect(mockTimerScriptSet).toBeCalledWith(300, timeoutScript);
+  expect(mockTimerScriptSet).toBeCalledWith(
+    300,
+    timeoutScript,
+    "subscript_symbol"
+  );
 });

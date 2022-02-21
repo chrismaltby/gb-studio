@@ -72,7 +72,7 @@ const fields = [
 ];
 
 const compile = (input, helpers) => {
-  const { timerScriptSet } = helpers;
+  const { timerScriptSet, event } = helpers;
   let frames = 0;
   if (input.units === "frames") {
     frames = typeof input.frames === "number" ? input.frames : 30;
@@ -80,7 +80,7 @@ const compile = (input, helpers) => {
     let duration = typeof input.duration === "number" ? input.duration : 10.0;
     frames = Math.ceil(duration * 60);
   }
-  timerScriptSet(frames, input.script);
+  timerScriptSet(frames, input.script, event.symbol);
 };
 
 module.exports = {
@@ -88,5 +88,6 @@ module.exports = {
   groups,
   fields,
   compile,
+  editableSymbol: true,
   allowChildrenBeforeInitFade: true,
 };

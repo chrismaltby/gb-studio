@@ -36,6 +36,7 @@ interface EntityListItemProps {
     | "animation"
     | "state"
     | "background"
+    | "sound"
     | "song"
     | "duty"
     | "wave"

@@ -5,7 +5,7 @@
 
 #include "compat.h"
 
-#define TO_FAR_PTR_T(A) {.bank = (char)&(__bank_ ## A), .ptr = (void *)&(A)}
+#define TO_FAR_PTR_T(A) {.bank = (UBYTE)&(__bank_ ## A), .ptr = (void *)&(A)}
 #define TO_FAR_ARGS(T, A) (T)(A).ptr, (A).bank
 
 #ifndef BANK
@@ -35,7 +35,7 @@ __endasm; \
 #endif
 
 typedef struct far_ptr_t {
-    UINT8 bank;
+    UBYTE bank;
     void * ptr;
 } far_ptr_t;
 

@@ -16,11 +16,12 @@ import uuid from "uuid";
 import { copySync, chmodSync } from "fs-extra";
 import { projectTemplatesRoot } from "../../consts";
 import uniq from "lodash/uniq";
+import { toValidSymbol } from "lib/helpers/symbols";
 
 const indexById = indexBy("id");
 
 export const LATEST_PROJECT_VERSION = "3.0.0";
-export const LATEST_PROJECT_MINOR_VERSION = "2";
+export const LATEST_PROJECT_MINOR_VERSION = "3";
 
 const ensureProjectAssetSync = (relativePath, { projectRoot }) => {
   const projectPath = `${projectRoot}/${relativePath}`;
@@ -1519,6 +1520,40 @@ const migrateFrom300r1To300r2Events = (data) => {
   };
 };
 
+/* Version 3.0.0 r3 adds gbvm symbols to all entities
+ */
+export const migrateFrom300r2To300r3 = (data) => {
+  return {
+    ...data,
+    scenes: data.scenes.map((scene, sceneIndex) => {
+      return {
+        ...scene,
+        symbol: toValidSymbol(`scene_${scene.name || sceneIndex + 1}`),
+        actors: scene.actors.map((actor) => {
+          return {
+            ...actor,
+            symbol: toValidSymbol(`actor_${actor.name || 0}`),
+          };
+        }),
+        triggers: scene.triggers.map((trigger) => {
+          return {
+            ...trigger,
+            symbol: toValidSymbol(`trigger_${trigger.name || 0}`),
+          };
+        }),
+      };
+    }),
+    customEvents: data.customEvents.map((customEvent, customEventIndex) => {
+      return {
+        ...customEvent,
+        symbol: toValidSymbol(
+          `script_${customEvent.name || customEventIndex + 1}`
+        ),
+      };
+    }),
+  };
+};
+
 const migrateProject = (project, projectRoot) => {
   let data = { ...project };
   let version = project._version || "1.0.0";
@@ -1625,6 +1660,10 @@ const migrateProject = (project, projectRoot) => {
     if (release === "1") {
       data = migrateFrom300r1To300r2Events(data);
       release = "2";
+    }
+    if (release === "2") {
+      data = migrateFrom300r2To300r3(data);
+      release = "3";
     }
   }
 

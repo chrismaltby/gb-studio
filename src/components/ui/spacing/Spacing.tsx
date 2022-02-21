@@ -20,3 +20,7 @@ export const FlexBreak = styled.div`
   margin: 0 !important;
   height: 0;
 `;
+
+export const FlexRow = styled.div`
+  display: flex;
+`;

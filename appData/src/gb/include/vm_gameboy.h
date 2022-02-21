@@ -34,6 +34,7 @@ void vm_replace_tile_xy(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE tileset_bank,
 #define RUMBLE_ENABLE 0x20u
 void vm_rumble(SCRIPT_CTX * THIS, UBYTE enable) OLDCALL BANKED;
 
+void vm_load_tiles(SCRIPT_CTX * THIS, UBYTE id, UBYTE len, UBYTE bank, UBYTE * offset) OLDCALL BANKED;
 void vm_load_tileset(SCRIPT_CTX * THIS, INT16 idx, UBYTE bank, const background_t * background) OLDCALL BANKED;
 
 #endif

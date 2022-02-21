@@ -108,6 +108,7 @@ jobs:
       - image: circleci/node:lts-buster
     working_directory: ~/repo
     steps:
+      - run: sudo apt-get -y update
       - run: sudo apt-get -y install fakeroot
       - run: sudo apt-get -y install rpm
       - attach_workspace:

@@ -235,7 +235,7 @@
   "EVENT_IF_SAVED_DATA": "もしゲームが保存されたら",
   "EVENT_ACTOR_SET_MOVEMENT_SPEED": "アクター: 移動速度を設定する",
   "EVENT_ACTOR_SET_ANIMATION_SPEED": "アクター: アニメーション速度を設定する",
-  "EVENT_TEXT_SET_ANIMATION_SPEED": "テキスト: アニメーション速度をsっていする",
+  "EVENT_TEXT_SET_ANIMATION_SPEED": "テキスト: アニメーション速度を設定する",
   "EVENT_SET_INPUT_SCRIPT": "ジョイパッド入力: ボタンにスクリプトを割り当てる",
   "EVENT_REMOVE_INPUT_SCRIPT": "ジョイパッド入力: 割り当てたスクリプトを削除する",
   "EVENT_ACTOR_SET_FRAME": "アクター: アニメーションフレームを設定する",
