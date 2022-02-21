@@ -78,6 +78,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
   const [playbackFromStart, setPlaybackFromStart] = useState(false);
 
   const togglePlay = useCallback(() => {
+    if (!playerReady) return;
     if (!play) {
       if (playbackFromStart) {
         ipcRenderer.send("music-data-send", {
@@ -89,7 +90,13 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
     } else {
       dispatch(trackerActions.pauseTracker());
     }
-  }, [defaultStartPlaybackPosition, dispatch, play, playbackFromStart]);
+  }, [
+    defaultStartPlaybackPosition,
+    dispatch,
+    play,
+    playbackFromStart,
+    playerReady,
+  ]);
 
   const stopPlayback = useCallback(() => {
     dispatch(trackerActions.stopTracker());
@@ -165,6 +172,13 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
       if (e.altKey) {
         setPlaybackFromStart(true);
       }
+      if (e.key === "`") {
+        toggleView();
+      }
+      if (e.code === "Space") {
+        e.preventDefault();
+        togglePlay();
+      }
       if (view !== "roll") {
         return;
       }
@@ -188,7 +202,14 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
         setDefaultInstruments(8);
       }
     },
-    [tmpSelectionMode, view, setTool, setDefaultInstruments]
+    [
+      tmpSelectionMode,
+      view,
+      setTool,
+      toggleView,
+      togglePlay,
+      setDefaultInstruments,
+    ]
   );
 
   const onKeyUp = useCallback(
