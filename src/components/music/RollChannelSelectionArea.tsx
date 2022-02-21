@@ -234,22 +234,25 @@ export const RollChannelSelectionAreaFwd = ({
   );
 
   useEffect(() => {
-    window.addEventListener("mouseup", handleMouseUp);
     window.addEventListener("mousemove", handleMouseMove);
-
     return () => {
-      window.removeEventListener("mouseup", handleMouseUp);
       window.removeEventListener("mousemove", handleMouseMove);
     };
-  });
+  }, [handleMouseMove]);
+
+  useEffect(() => {
+    window.addEventListener("mouseup", handleMouseUp);
+    return () => {
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [handleMouseUp]);
 
   useEffect(() => {
     document.addEventListener("selectionchange", onSelectAll);
-
     return () => {
       document.removeEventListener("selectionchange", onSelectAll);
     };
-  });
+  }, [onSelectAll]);
 
   const onKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.ctrlKey || e.metaKey) {
