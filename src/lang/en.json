@@ -506,6 +506,10 @@
   "FIELD_BASIC": "Basic",
   "FIELD_EFFECT_INDEX": "Effect Index",
   "FIELD_PRIORITY": "Priority",
+  "FIELD_SOLID_TOP": "Top",
+  "FIELD_SOLID_BOTTOM": "Bottom",
+  "FIELD_SOLID_LEFT": "Left",
+  "FIELD_SOLID_RIGHT": "Right",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
