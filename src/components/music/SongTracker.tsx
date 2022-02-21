@@ -11,15 +11,35 @@ import { SongRow } from "./SongRow";
 import scrollIntoView from "scroll-into-view-if-needed";
 import { SongGridHeaderCell } from "./SongGridHeaderCell";
 import { ipcRenderer } from "electron";
-import { getInstrumentTypeByChannel, getInstrumentListByType } from "./helpers";
+import {
+  getInstrumentTypeByChannel,
+  getInstrumentListByType,
+  parseClipboardToPattern,
+  parsePatternFieldsToClipboard,
+} from "./helpers";
 import { getKeys, KeyWhen } from "lib/keybindings/keyBindings";
 import trackerActions from "store/features/tracker/trackerActions";
+import clipboardActions from "store/features/clipboard/clipboardActions";
+import { clipboard } from "store/features/clipboard/clipboardHelpers";
+import { cloneDeep } from "lodash";
 
 interface SongTrackerProps {
   sequenceId: number;
   song: Song | null;
   height: number;
   channelStatus: boolean[];
+}
+
+interface SelectionRect {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+interface Position {
+  x: number;
+  y: number;
 }
 
 const CHANNEL_FIELDS = 4;
@@ -67,6 +87,37 @@ export const SongTracker = ({
   );
 
   const patternId = song?.sequence[sequenceId] || 0;
+  const pattern = song?.patterns[patternId];
+
+  const [selectedTrackerFields, setSelectedTrackerFields] =
+    useState<number[]>();
+  const [selectionOrigin, setSelectionOrigin] =
+    useState<Position | undefined>();
+  const [selectionRect, setSelectionRect] =
+    useState<SelectionRect | undefined>();
+  const [isSelecting, setIsSelecting] = useState(false);
+
+  useEffect(() => {
+    console.log(selectionRect);
+    const newSelectedTrackerFields = [];
+    if (selectionRect) {
+      for (
+        let i = selectionRect.x;
+        i <= selectionRect.x + selectionRect.width;
+        i++
+      ) {
+        for (
+          let j = selectionRect.y;
+          j <= selectionRect.y + selectionRect.height;
+          j++
+        ) {
+          newSelectedTrackerFields.push(j * ROW_SIZE + i);
+        }
+      }
+    }
+    setSelectedTrackerFields(newSelectedTrackerFields);
+    console.log(newSelectedTrackerFields);
+  }, [selectionRect]);
 
   const [playbackState, setPlaybackState] = useState([0, 0]);
 
@@ -87,6 +138,19 @@ export const SongTracker = ({
   }, [setPlaybackState]);
 
   const [activeField, setActiveField] = useState<number | undefined>();
+  const channelId = useSelector(
+    (state: RootState) => state.tracker.selectedChannel
+  );
+
+  useEffect(() => {
+    if (activeField) {
+      const newChannelId = Math.floor(
+        (activeField % ROW_SIZE) / CHANNEL_FIELDS
+      );
+      dispatch(trackerActions.setSelectedChannel(newChannelId));
+      console.log(newChannelId);
+    }
+  }, [activeField, dispatch]);
 
   const playingRowRef = useRef<HTMLSpanElement>(null);
   useEffect(() => {
@@ -231,39 +295,74 @@ export const SongTracker = ({
         }
       };
 
+      if (e.key === "Escape") {
+        e.preventDefault();
+        setSelectedTrackerFields(undefined);
+        setSelectionOrigin(undefined);
+      }
+
       if (activeField === undefined) {
         return;
       }
 
-      let tmpSelectedField = activeField;
+      let tmpActiveField = activeField;
 
       if (e.key === "ArrowLeft") {
         e.preventDefault();
-        tmpSelectedField -= 1;
+        tmpActiveField -= 1;
       }
       if (e.key === "ArrowRight") {
         e.preventDefault();
-        tmpSelectedField += 1;
+        tmpActiveField += 1;
       }
       if (e.key === "ArrowDown") {
         e.preventDefault();
-        tmpSelectedField += ROW_SIZE;
+        tmpActiveField += ROW_SIZE;
       }
       if (e.key === "ArrowUp") {
         e.preventDefault();
-        tmpSelectedField -= ROW_SIZE;
+        tmpActiveField -= ROW_SIZE;
       }
       if (e.key === "Tab") {
         e.preventDefault();
         if (e.shiftKey) {
-          tmpSelectedField -= 4;
+          tmpActiveField -= 4;
         } else {
-          tmpSelectedField += 4;
+          tmpActiveField += 4;
         }
       }
-      setActiveField(
-        ((tmpSelectedField % NUM_FIELDS) + NUM_FIELDS) % NUM_FIELDS
-      );
+      if (e.shiftKey && !isSelecting) {
+        setIsSelecting(true);
+        if (!selectionRect) {
+          const x = activeField % ROW_SIZE;
+          const y = Math.floor(activeField / ROW_SIZE);
+          setSelectionOrigin({
+            x,
+            y,
+          });
+        }
+      }
+      if (activeField !== tmpActiveField) {
+        const newActiveField =
+          ((tmpActiveField % NUM_FIELDS) + NUM_FIELDS) % NUM_FIELDS;
+
+        if (isSelecting && selectionOrigin) {
+          const x2 = newActiveField % ROW_SIZE;
+          const y2 = Math.floor(newActiveField / ROW_SIZE);
+
+          const x = Math.min(selectionOrigin.x, x2);
+          const y = Math.min(selectionOrigin.y, y2);
+          const width = Math.abs(selectionOrigin.x - x2);
+          const height = Math.abs(selectionOrigin.y - y2);
+
+          setSelectionRect({ x, y, width, height });
+        } else {
+          setSelectionOrigin(undefined);
+          setSelectionRect(undefined);
+        }
+
+        setActiveField(newActiveField);
+      }
 
       let currentFocus: KeyWhen = null;
 
@@ -303,20 +402,26 @@ export const SongTracker = ({
       }
     },
     [
-      defaultInstruments,
-      dispatch,
-      editStep,
-      octaveOffset,
-      patternId,
       activeField,
+      isSelecting,
+      dispatch,
+      patternId,
+      defaultInstruments,
       song,
+      octaveOffset,
+      editStep,
+      selectionRect,
+      selectionOrigin,
     ]
   );
 
   const handleKeysUp = useCallback(
-    (_e: KeyboardEvent) => {
+    (e: KeyboardEvent) => {
       if (activeField) {
         // console.log(e.key);
+      }
+      if (!e.shiftKey) {
+        setIsSelecting(false);
       }
     },
     [activeField]
@@ -349,6 +454,57 @@ export const SongTracker = ({
     },
     [setActiveField]
   );
+
+  const onCopy = useCallback(() => {
+    if (pattern && selectedTrackerFields) {
+      // const parsedSelectedPattern = parsePatternToClipboard(pattern);
+      const parsedSelectedPattern = parsePatternFieldsToClipboard(
+        pattern,
+        selectedTrackerFields
+      );
+      // console.log(parsedSelectedPattern);
+      dispatch(clipboardActions.copyText(parsedSelectedPattern));
+    }
+  }, [dispatch, pattern, selectedTrackerFields]);
+
+  const onPaste = useCallback(() => {
+    if (pattern) {
+      const newPastedPattern = parseClipboardToPattern(clipboard.readText());
+      if (
+        newPastedPattern &&
+        activeField !== undefined &&
+        channelId !== undefined
+      ) {
+        const startRow = Math.floor(activeField / ROW_SIZE);
+        const newPattern = cloneDeep(pattern);
+        for (let i = 0; i < newPastedPattern.length; i++) {
+          const pastedPatternCellRow = newPastedPattern[i];
+          for (let j = 0; j < 4 - channelId; j++) {
+            if (pastedPatternCellRow[j]) {
+              newPattern[startRow + i][channelId + j] = pastedPatternCellRow[j];
+            }
+          }
+        }
+        console.log(newPattern);
+        dispatch(
+          trackerDocumentActions.editPattern({
+            patternId: patternId,
+            pattern: newPattern,
+          })
+        );
+      }
+    }
+  }, [activeField, channelId, dispatch, pattern, patternId]);
+
+  // Clipboard
+  useEffect(() => {
+    window.addEventListener("copy", onCopy);
+    window.addEventListener("paste", onPaste);
+    return () => {
+      window.removeEventListener("copy", onCopy);
+      window.removeEventListener("paste", onPaste);
+    };
+  }, [onCopy, onPaste]);
 
   return (
     <div
@@ -392,7 +548,7 @@ export const SongTracker = ({
         }}
       >
         <SongGrid tabIndex={0} onFocus={onFocus} onBlur={onBlur}>
-          {song?.patterns[patternId]?.map((row: PatternCell[], i: number) => {
+          {pattern?.map((row: PatternCell[], i: number) => {
             const isActiveRow =
               activeField !== undefined &&
               Math.floor(activeField / ROW_SIZE) === i;
@@ -409,6 +565,9 @@ export const SongTracker = ({
                   isActive={isActiveRow}
                   isPlaying={isPlaying}
                   ref={activeFieldRef}
+                  selectedTrackerFields={
+                    !isPlaying ? selectedTrackerFields || [] : []
+                  }
                 />
               </span>
             );

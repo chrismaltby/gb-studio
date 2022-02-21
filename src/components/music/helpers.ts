@@ -3,6 +3,15 @@ import { Song } from "lib/helpers/uge/song/Song";
 import { InstrumentType } from "store/features/editor/editorState";
 import { noteNames } from "./helpers/music_constants";
 
+type PatternCellKey = keyof PatternCell;
+
+const patternCellFields: PatternCellKey[] = [
+  "note",
+  "instrument",
+  "effectcode",
+  "effectparam",
+];
+
 export const getInstrumentTypeByChannel = (
   channel: number
 ): InstrumentType | null => {
@@ -67,23 +76,38 @@ export const renderEffectParam = (effectparam: number | null): string => {
   return effectparam?.toString(16).toUpperCase().padStart(2, "0") || "..";
 };
 
+const patternCelltoString = (
+  p: PatternCell,
+  fields: PatternCellKey[] = ["note", "instrument", "effectcode", "effectparam"]
+) => {
+  return `|${renderNote(
+    fields.includes("note") ? p.note : null
+  )}${renderInstrument(
+    fields.includes("instrument") ? p.instrument : null
+  )}...${renderEffect(
+    fields.includes("effectcode") ? p.effectcode : null
+  )}${renderEffectParam(
+    fields.includes("effectparam") ? p.effectparam : null
+  )}`;
+};
+
 export const parsePatternToClipboard = (
   pattern: PatternCell[][],
-  channelId: number,
+  channelId?: number,
   selectedCells?: number[]
 ) => {
-  const patternCelltoString = (p: PatternCell) => {
-    return `|${renderNote(p.note)}${renderInstrument(
-      p.instrument
-    )}...${renderEffect(p.effectcode)}${renderEffectParam(p.effectparam)}`;
-  };
-
   let parsed: string[] = [];
 
   if (!selectedCells) {
     parsed = pattern.map((p) => {
-      const row = p[channelId];
-      return patternCelltoString(row);
+      if (channelId !== undefined) {
+        const row = p[channelId];
+        return patternCelltoString(row);
+      } else {
+        return `${patternCelltoString(p[0])}${patternCelltoString(
+          p[1]
+        )}${patternCelltoString(p[2])}${patternCelltoString(p[3])}`;
+      }
     });
   } else if (selectedCells.length > 0) {
     const sortedSelectedCells = [...selectedCells].sort((a, b) => a - b);
@@ -93,14 +117,49 @@ export const parsePatternToClipboard = (
       i <= sortedSelectedCells[sortedSelectedCells.length - 1];
       i++
     ) {
-      if (selectedCells.indexOf(i) > -1) {
-        parsed.push(patternCelltoString(pattern[i][channelId]));
-      } else {
-        parsed.push(patternCelltoString(new PatternCell()));
+      if (channelId !== undefined) {
+        if (selectedCells.indexOf(i) > -1) {
+          parsed.push(patternCelltoString(pattern[i][channelId]));
+        } else {
+          parsed.push(patternCelltoString(new PatternCell()));
+        }
       }
     }
   }
 
+  return parsed.join("\n");
+};
+
+export const parsePatternFieldsToClipboard = (
+  pattern: PatternCell[][],
+  selectedFields: number[]
+) => {
+  const parsed: string[] = [];
+
+  const w =
+    (selectedFields[selectedFields.length - 1] - selectedFields[0]) % 16;
+  const h = Math.floor(
+    (selectedFields[selectedFields.length - 1] - selectedFields[0]) / 16
+  );
+  const firstRow = Math.floor(selectedFields[0] / 16);
+  const firstColumn = selectedFields[0] % 16;
+
+  for (let i = firstRow; i <= firstRow + h; i++) {
+    let rowStr = "";
+    for (
+      let j = Math.floor(firstColumn / 4);
+      j <= Math.floor((firstColumn + w) / 4);
+      j++
+    ) {
+      const start = firstColumn - j * 4;
+      const end = w + 1;
+      rowStr += `${patternCelltoString(
+        pattern[i][j],
+        patternCellFields.slice(Math.max(0, start), start + end)
+      )}`;
+    }
+    parsed.push(rowStr);
+  }
   return parsed.join("\n");
 };
 

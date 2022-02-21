@@ -16,6 +16,7 @@ interface SongRowProps {
   activeField: number | undefined;
   isActive: boolean;
   isPlaying: boolean;
+  selectedTrackerFields: number[];
 }
 
 interface WrapperProps {
@@ -66,7 +67,7 @@ const Wrapper = styled.span<WrapperProps>`
       : ""}
 `;
 
-const Field = styled.span<{ selected?: boolean }>`
+const Field = styled.span<{ active?: boolean; selected?: boolean }>`
   :hover {
     box-shadow: 0px 0px 0px 2px rgba(255, 0, 0, 0.2) inset;
   }
@@ -75,7 +76,19 @@ const Field = styled.span<{ selected?: boolean }>`
   ${(props) =>
     props.selected
       ? css`
+          background-color: rgba(255, 0, 0, 0.2);
+        `
+      : ""}
+  ${(props) =>
+    props.active
+      ? css`
           background-color: white;
+        `
+      : ""}
+  ${(props) =>
+    props.active && props.selected
+      ? css`
+          box-shadow: 0px 0px 0px 2px rgba(255, 0, 0, 0.2) inset;
         `
       : ""}
 `;
@@ -108,7 +121,15 @@ const renderCounter = (n: number): string => {
 
 const SongRowFwd = React.forwardRef<HTMLSpanElement, SongRowProps>(
   (
-    { n, row, fieldCount, activeField, isPlaying, isActive }: SongRowProps,
+    {
+      n,
+      row,
+      fieldCount,
+      activeField,
+      isPlaying,
+      isActive,
+      selectedTrackerFields,
+    }: SongRowProps,
     ref
   ) => {
     return (
@@ -127,39 +148,43 @@ const SongRowFwd = React.forwardRef<HTMLSpanElement, SongRowProps>(
             <Wrapper isPlaying={isPlaying} isActive={isActive} n={n}>
               <NoteField
                 id={`cell_${n}_${channelId}_note`}
-                selected={activeField === fieldCount}
+                active={activeField === fieldCount}
                 ref={activeField === fieldCount ? ref : null}
                 data-fieldid={fieldCount}
+                selected={selectedTrackerFields.indexOf(fieldCount) > -1}
               >
                 {renderNote(cell.note)}
               </NoteField>
               <InstrumentField
                 id={`cell_${n}_${channelId}_instrument`}
-                selected={activeField === fieldCount + 1}
+                active={activeField === fieldCount + 1}
                 ref={activeField === fieldCount + 1 ? ref : null}
                 data-fieldid={fieldCount + 1}
+                selected={selectedTrackerFields.indexOf(fieldCount + 1) > -1}
               >
                 {renderInstrument(cell.instrument)}
               </InstrumentField>
               <EffectCodeField
                 id={`cell_${n}_${channelId}_effectcode`}
-                selected={activeField === fieldCount + 2}
+                active={activeField === fieldCount + 2}
                 ref={activeField === fieldCount + 2 ? ref : null}
                 data-fieldid={fieldCount + 2}
                 style={{
                   paddingRight: 1,
                 }}
+                selected={selectedTrackerFields.indexOf(fieldCount + 2) > -1}
               >
                 {renderEffect(cell.effectcode)}
               </EffectCodeField>
               <EffectParamField
                 id={`cell_${n}_${channelId}_effectparam`}
-                selected={activeField === fieldCount + 3}
+                active={activeField === fieldCount + 3}
                 ref={activeField === fieldCount + 3 ? ref : null}
                 data-fieldid={fieldCount + 3}
                 style={{
                   paddingLeft: 1,
                 }}
+                selected={selectedTrackerFields.indexOf(fieldCount + 3) > -1}
               >
                 {renderEffectParam(cell.effectparam)}
               </EffectParamField>
@@ -193,7 +218,9 @@ const arePropsEqual = (prevProps: SongRowProps, nextProps: SongRowProps) => {
     prevProps.fieldCount === nextProps.fieldCount &&
     prevProps.activeField === nextProps.activeField &&
     prevProps.isActive === nextProps.isActive &&
-    prevProps.isPlaying === nextProps.isPlaying
+    prevProps.isPlaying === nextProps.isPlaying &&
+    prevProps.selectedTrackerFields.length ===
+      nextProps.selectedTrackerFields.length
   );
 };
 
