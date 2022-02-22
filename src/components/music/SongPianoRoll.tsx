@@ -891,6 +891,8 @@ export const SongPianoRoll = ({
             pattern: newPattern,
           })
         );
+        setPastedPattern(undefined);
+        dispatch(trackerActions.setSelectedPatternCells([]));
       }
 
       // Blur any focused element to be able to use keyboard actions on the
