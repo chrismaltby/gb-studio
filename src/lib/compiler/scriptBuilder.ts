@@ -2761,18 +2761,18 @@ extern void __mute_mask_${symbol};
   // --------------------------------------------------------------------------
   // Camera
 
-  cameraMoveTo = (x = 0, y = 0, speed = 0) => {
+  cameraMoveTo = (x = 0, y = 0, speed = 0, units = "tiles") => {
     const cameraMoveArgsRef = this._declareLocal("camera_move_args", 2, true);
     this._addComment("Camera Move To");
     const xOffset = 80;
     const yOffset = 72;
     this._setConst(
       this._localRef(cameraMoveArgsRef, 0),
-      xOffset + Math.round(x * 8)
+      xOffset + Math.round(x * (units === "tiles" ? 8 : 1))
     );
     this._setConst(
       this._localRef(cameraMoveArgsRef, 1),
-      yOffset + Math.round(y * 8)
+      yOffset + Math.round(y * (units === "tiles" ? 8 : 1))
     );
     if (speed === 0) {
       this._cameraSetPos(this._localRef(cameraMoveArgsRef));
@@ -2786,20 +2786,31 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
-  cameraMoveToVariables = (variableX: string, variableY: string, speed = 0) => {
+  cameraMoveToVariables = (variableX: string, variableY: string, speed = 0, units = "tiles") => {
     this._addComment("Camera Move To Variables");
-    this._rpn() //
-      .refVariable(variableX)
-      .int16(8)
-      .operator(".MUL")
-      .int16(80)
-      .operator(".ADD")
-      .refVariable(variableY)
-      .int16(8)
-      .operator(".MUL")
-      .int16(72)
-      .operator(".ADD")
-      .stop();
+    if (units === "tiles") {
+      this._rpn() //
+        .refVariable(variableX)
+        .int16(8)
+        .operator(".MUL")
+        .int16(80)
+        .operator(".ADD")
+        .refVariable(variableY)
+        .int16(8)
+        .operator(".MUL")
+        .int16(72)
+        .operator(".ADD")
+        .stop();
+    } else {
+      this._rpn() //
+        .refVariable(variableX)
+        .int16(80)
+        .operator(".ADD")
+        .refVariable(variableY)
+        .int16(72)
+        .operator(".ADD")
+        .stop();
+    }
     if (speed === 0) {
       this._cameraSetPos(".ARG1");
     } else {
