@@ -26,8 +26,8 @@ interface WrapperProps {
 const Wrapper = styled.div<WrapperProps>`
   position: absolute;
   top: 0;
-  margin: 0 10px;
   z-index: 10;
+  margin: 0 40px 40px 10px;
   ${(props) => css`
     width: ${(1 + props.cols) * props.size}px;
     height: ${(1 + props.rows) * props.size}px;
