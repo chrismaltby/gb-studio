@@ -1973,26 +1973,26 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
-  actorSetPosition = (x = 0, y = 0) => {
+  actorSetPosition = (x = 0, y = 0, units = "tiles") => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Actor Set Position");
-    this._setConst(this._localRef(actorRef, 1), x * 8 * 16);
-    this._setConst(this._localRef(actorRef, 2), y * 8 * 16);
+    this._setConst(this._localRef(actorRef, 1), x * (units === "tiles" ? 8 : 1) * 16);
+    this._setConst(this._localRef(actorRef, 2), y * (units === "tiles" ? 8 : 1) * 16);
     this._actorSetPosition(this._localRef(actorRef));
     this._addNL();
   };
 
-  actorSetPositionToVariables = (variableX: string, variableY: string) => {
+  actorSetPositionToVariables = (variableX: string, variableY: string, units = "tiles") => {
     const actorRef = this._declareLocal("actor", 4);
     const stackPtr = this.stackPtr;
     this._addComment("Actor Set Position To Variables");
 
     this._rpn() //
       .refVariable(variableX)
-      .int16(8 * 16)
+      .int16((units === "tiles" ? 8 : 1) * 16)
       .operator(".MUL")
       .refVariable(variableY)
-      .int16(8 * 16)
+      .int16((units === "tiles" ? 8 : 1) * 16)
       .operator(".MUL")
       .stop();
 
@@ -2005,18 +2005,18 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
-  actorSetPositionRelative = (x = 0, y = 0) => {
+  actorSetPositionRelative = (x = 0, y = 0, units = "tiles") => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Actor Set Position Relative");
     this._actorGetPosition(this._localRef(actorRef));
     this._rpn() //
       .ref(this._localRef(actorRef, 1))
-      .int16(x * 8 * 16)
+      .int16(x * (units === "tiles" ? 8 : 1) * 16)
       .operator(".ADD")
       .int16(0)
       .operator(".MAX")
       .ref(this._localRef(actorRef, 2))
-      .int16(y * 8 * 16)
+      .int16(y * (units === "tiles" ? 8 : 1) * 16)
       .operator(".ADD")
       .int16(0)
       .operator(".MAX")

@@ -10,23 +10,37 @@ const fields = [
     defaultValue: "$self$",
   },
   {
-    key: "vectorX",
-    type: "variable",
-    label: l10n("FIELD_X"),
-    defaultValue: "LAST_VARIABLE",
+    key: "units",
+    type: "select",
+    options: [
+      ["tiles", l10n("FIELD_TILES")],
+      ["pixels", l10n("FIELD_PIXELS")],
+    ],
+    defaultValue: "tiles",
   },
   {
-    key: "vectorY",
-    type: "variable",
-    label: l10n("FIELD_Y"),
-    defaultValue: "LAST_VARIABLE",
+    type: "group",
+    fields: [
+      {
+        key: "vectorX",
+        type: "variable",
+        label: l10n("FIELD_X"),
+        defaultValue: "LAST_VARIABLE",
+      },
+      {
+        key: "vectorY",
+        type: "variable",
+        label: l10n("FIELD_Y"),
+        defaultValue: "LAST_VARIABLE",
+      },
+    ],
   },
 ];
 
 const compile = (input, helpers) => {
   const { actorSetActive, actorSetPositionToVariables } = helpers;
   actorSetActive(input.actorId);
-  actorSetPositionToVariables(input.vectorX, input.vectorY);
+  actorSetPositionToVariables(input.vectorX, input.vectorY, input.units);
 };
 
 module.exports = {
