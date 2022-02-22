@@ -653,13 +653,16 @@ export const SongPianoRoll = ({
 
   const handleMouseMove = useCallback(
     (e: any) => {
-      const newNote = 12 * 6 - 1 - Math.floor(e.offsetY / CELL_SIZE);
-      const newColumn = Math.floor(e.offsetX / CELL_SIZE);
+      if (!gridRef.current) return;
 
+      const bounds = gridRef.current.getBoundingClientRect();
+
+      const newColumn = Math.floor((e.pageX - bounds.left) / CELL_SIZE);
+      const newRow = Math.floor((e.pageY - bounds.top) / CELL_SIZE);
+      const newNote = 12 * 6 - 1 - newRow;
       if (newNote !== hoverNote) {
         dispatch(trackerActions.setHoverNote(newNote));
       }
-
       if (newColumn !== hoverColumn) {
         dispatch(trackerActions.setHoverColumn(newColumn));
       }
@@ -684,20 +687,10 @@ export const SongPianoRoll = ({
         tool === "selection" &&
         draggingSelection &&
         selectionRect &&
-        gridRef.current &&
         selectionOrigin
       ) {
-        const bounds = gridRef.current.getBoundingClientRect();
-        const x2 = clamp(
-          Math.floor((e.pageX - bounds.left) / CELL_SIZE) * CELL_SIZE,
-          0,
-          64 * CELL_SIZE
-        );
-        const y2 = clamp(
-          Math.floor((e.pageY - bounds.top) / CELL_SIZE) * CELL_SIZE,
-          0,
-          12 * 6 * CELL_SIZE
-        );
+        const x2 = clamp(newColumn * CELL_SIZE, 0, 64 * CELL_SIZE);
+        const y2 = clamp(newRow * CELL_SIZE, 0, 12 * 6 * CELL_SIZE);
 
         const x = Math.min(selectionOrigin.x, x2);
         const y = Math.min(selectionOrigin.y, y2);
@@ -1027,15 +1020,13 @@ export const SongPianoRoll = ({
                 ))}
             </Piano>
             <SongGrid
+              ref={gridRef}
               onMouseDown={(e) => {
                 handleMouseDown(e.nativeEvent);
               }}
               onMouseLeave={(e) => {
                 handleMouseLeave(e.nativeEvent);
               }}
-              // onMouseMove={(e) => {
-              //   handleMouseMove(e.nativeEvent);
-              // }}
               style={{
                 cursor: isDragging
                   ? clonePatternCells
@@ -1056,7 +1047,6 @@ export const SongPianoRoll = ({
                 />
               ))}
               <RollChannelSelectionArea
-                ref={gridRef}
                 cellSize={CELL_SIZE}
                 selectionRect={selectionRect}
               />
