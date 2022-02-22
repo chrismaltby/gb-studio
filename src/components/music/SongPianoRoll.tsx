@@ -533,19 +533,22 @@ export const SongPianoRoll = ({
         }
         // setMoveNoteFrom(undefined);
       } else if (e.button === 2 || (tool === "eraser" && e.button === 0)) {
-        dispatch(
-          trackerDocumentActions.editPatternCell({
-            patternId: patternId,
-            cell: [col, selectedChannel],
-            changes: {
-              instrument: null,
-              note: null,
-            },
-          })
-        );
-        const newSelectedCells = [...selectedPatternCells];
-        newSelectedCells.splice(col, 1);
-        dispatch(trackerActions.setSelectedPatternCells(newSelectedCells));
+        // If there's a note in position
+        if (cell && cell.note === note) {
+          dispatch(
+            trackerDocumentActions.editPatternCell({
+              patternId: patternId,
+              cell: [col, selectedChannel],
+              changes: {
+                instrument: null,
+                note: null,
+              },
+            })
+          );
+          const newSelectedCells = [...selectedPatternCells];
+          newSelectedCells.splice(col, 1);
+          dispatch(trackerActions.setSelectedPatternCells(newSelectedCells));
+        }
       } else if (tool === "selection" && e.button === 0) {
         // If there's a note in position
         if (cell && cell.note === note) {
