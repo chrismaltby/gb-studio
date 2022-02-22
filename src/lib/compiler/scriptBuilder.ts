@@ -4205,7 +4205,8 @@ extern void __mute_mask_${symbol};
     x: number,
     y: number,
     truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
-    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
+    units = "tiles"
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     const falseLabel = this.getNextLabel();
@@ -4214,10 +4215,10 @@ extern void __mute_mask_${symbol};
     this._actorGetPosition(this._localRef(actorRef));
     this._rpn()
       .ref(this._localRef(actorRef, 1))
-      .int16(x * 8 * 16)
+      .int16(x * (units === "tiles" ? 8 : 1) * 16)
       .operator(".EQ")
       .ref(this._localRef(actorRef, 2))
-      .int16(y * 8 * 16)
+      .int16(y * (units === "tiles" ? 8 : 1) * 16)
       .operator(".EQ")
       .operator(".AND")
       .stop();
