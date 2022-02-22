@@ -174,6 +174,12 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
         if (value === "ypos") {
           return l10n("FIELD_Y_POSITION").replace(/ /g, "");
         }
+        if (value === "pxpos") {
+          return l10n("FIELD_PX_POSITION").replace(/ /g, "");
+        }
+        if (value === "pypos") {
+          return l10n("FIELD_PY_POSITION").replace(/ /g, "");
+        }
         if (value === "direction") {
           return l10n("FIELD_DIRECTION").replace(/ /g, "");
         }

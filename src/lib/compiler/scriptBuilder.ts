@@ -2026,17 +2026,17 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
-  actorGetPosition = (variableX: string, variableY: string) => {
+  actorGetPosition = (variableX: string, variableY: string, units = "tiles") => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment(`Store Position In Variables`);
     this._actorGetPosition(this._localRef(actorRef));
 
     this._rpn() //
       .ref(this._localRef(actorRef, 1))
-      .int16(8 * 16)
+      .int16((units === "tiles" ? 8 : 1) * 16)
       .operator(".DIV")
       .ref(this._localRef(actorRef, 2))
-      .int16(8 * 16)
+      .int16((units === "tiles" ? 8 : 1) * 16)
       .operator(".DIV")
       .stop();
 
@@ -2046,14 +2046,14 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
-  actorGetPositionX = (variableX: string) => {
+  actorGetPositionX = (variableX: string, units = "tiles") => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment(`Store X Position In Variable`);
     this._actorGetPosition(this._localRef(actorRef));
 
     this._rpn() //
       .ref(this._localRef(actorRef, 1))
-      .int16(8 * 16)
+      .int16((units === "tiles" ? 8 : 1) * 16)
       .operator(".DIV")
       .stop();
 
@@ -2062,14 +2062,14 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
-  actorGetPositionY = (variableY: string) => {
+  actorGetPositionY = (variableY: string, units = "tiles") => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment(`Store Y Position In Variable`);
     this._actorGetPosition(this._localRef(actorRef));
 
     this._rpn() //
       .ref(this._localRef(actorRef, 2))
-      .int16(8 * 16)
+      .int16((units === "tiles" ? 8 : 1) * 16)
       .operator(".DIV")
       .stop();
 
@@ -3513,6 +3513,10 @@ extern void __mute_mask_${symbol};
       this.actorGetPositionX(variable);
     } else if (propertyValue === "ypos") {
       this.actorGetPositionY(variable);
+    } else if (propertyValue === "pxpos") {
+      this.actorGetPositionX(variable, "pixels");
+    } else if (propertyValue === "pypos") {
+      this.actorGetPositionY(variable, "pixels");
     } else if (propertyValue === "direction") {
       this.actorGetDirection(variable);
     } else if (propertyValue === "frame") {

@@ -106,6 +106,16 @@ export const PropertySelect = ({
               },
               {
                 ...actorOption,
+                label: l10n("FIELD_PX_POSITION"),
+                value: `${actorOption.value}:pxpos`,
+              },
+              {
+                ...actorOption,
+                label: l10n("FIELD_PY_POSITION"),
+                value: `${actorOption.value}:pypos`,
+              },
+              {
+                ...actorOption,
                 label: l10n("FIELD_DIRECTION"),
                 value: `${actorOption.value}:direction`,
               },
@@ -148,6 +158,18 @@ export const PropertySelect = ({
                 ...actorOption,
                 label: l10n("FIELD_Y_POSITION"),
                 value: `${actorOption.value}:ypos`,
+                menuSpriteSheetId: "",
+              },
+              {
+                ...actorOption,
+                label: l10n("FIELD_PX_POSITION"),
+                value: `${actorOption.value}:pxpos`,
+                menuSpriteSheetId: actorOption.spriteSheetId,
+              },
+              {
+                ...actorOption,
+                label: l10n("FIELD_PY_POSITION"),
+                value: `${actorOption.value}:pypos`,
                 menuSpriteSheetId: "",
               },
               {
