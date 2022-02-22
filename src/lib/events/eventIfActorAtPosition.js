@@ -8,8 +8,8 @@ const autoLabel = (fetchArg, input) => {
     return l10n("EVENT_IF_ACTOR_AT_POSITION_LABEL", {
       actor: fetchArg("actorId"),
       units: l10n("FIELD_PIXELS"),
-      x: fetchArg("x"),
-      y: fetchArg("y"),
+      x: fetchArg("px"),
+      y: fetchArg("py"),
     });
   }
   return l10n("EVENT_IF_ACTOR_AT_POSITION_LABEL", {

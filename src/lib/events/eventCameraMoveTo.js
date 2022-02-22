@@ -125,7 +125,7 @@ const compile = (input, helpers) => {
     variableFromUnion,
     temporaryEntityVariable,
   } = helpers;
-  if (input.units === "frames") {
+  if (input.units === "tiles") {
     if (input.x.type === "number" && input.y.type === "number") {
       cameraMoveTo(input.x.value, input.y.value, Number(input.speed), input.units);
     } else {

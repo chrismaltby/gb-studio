@@ -1881,13 +1881,14 @@ extern void __mute_mask_${symbol};
     x: number,
     y: number,
     useCollisions: boolean,
-    moveType: ScriptBuilderMoveType
+    moveType: ScriptBuilderMoveType,
+    units = "tiles"
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     const stackPtr = this.stackPtr;
     this._addComment("Actor Move To");
-    this._setConst(this._localRef(actorRef, 1), x * 8 * 16);
-    this._setConst(this._localRef(actorRef, 2), y * 8 * 16);
+    this._setConst(this._localRef(actorRef, 1), x * (units === "tiles" ? 8 : 1) * 16);
+    this._setConst(this._localRef(actorRef, 2), y * (units === "tiles" ? 8 : 1) * 16);
     this._setConst(
       this._localRef(actorRef, 3),
       toASMMoveFlags(moveType, useCollisions)
@@ -1901,7 +1902,8 @@ extern void __mute_mask_${symbol};
     variableX: string,
     variableY: string,
     useCollisions: boolean,
-    moveType: ScriptBuilderMoveType
+    moveType: ScriptBuilderMoveType,
+    units = "tiles"
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     const stackPtr = this.stackPtr;
@@ -1909,10 +1911,10 @@ extern void __mute_mask_${symbol};
 
     this._rpn() //
       .refVariable(variableX)
-      .int16(8 * 16)
+      .int16((units === "tiles" ? 8 : 1) * 16)
       .operator(".MUL")
       .refVariable(variableY)
-      .int16(8 * 16)
+      .int16((units === "tiles" ? 8 : 1) * 16)
       .operator(".MUL")
       .stop();
 
@@ -1933,7 +1935,8 @@ extern void __mute_mask_${symbol};
     x = 0,
     y = 0,
     useCollisions = false,
-    moveType: ScriptBuilderMoveType
+    moveType: ScriptBuilderMoveType,
+    units = "tiles"
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     const stackPtr = this.stackPtr;
@@ -1941,12 +1944,12 @@ extern void __mute_mask_${symbol};
     this._actorGetPosition(this._localRef(actorRef));
     this._rpn() //
       .ref(this._localRef(actorRef, 1))
-      .int16(x * 8 * 16)
+      .int16(x * (units === "tiles" ? 8 : 1) * 16)
       .operator(".ADD")
       .int16(0)
       .operator(".MAX")
       .ref(this._localRef(actorRef, 2))
-      .int16(y * 8 * 16)
+      .int16(y * (units === "tiles" ? 8 : 1) * 16)
       .operator(".ADD")
       .int16(0)
       .operator(".MAX")
