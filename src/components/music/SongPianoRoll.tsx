@@ -854,13 +854,8 @@ export const SongPianoRoll = ({
 
       if (newPastedPattern) {
         const newPattern = Array(64)
-          .fill([
-            new PatternCell(),
-            new PatternCell(),
-            new PatternCell(),
-            new PatternCell(),
-          ])
-          .map((r, i) => {
+          .fill("")
+          .map((_, i) => {
             console.log(i, selectedChannel);
             const row = [...pattern[i]];
             const pastedRow = newPastedPattern[i];
@@ -874,7 +869,12 @@ export const SongPianoRoll = ({
               }
               return row;
             }
-            return r;
+            return [
+              new PatternCell(),
+              new PatternCell(),
+              new PatternCell(),
+              new PatternCell(),
+            ];
           });
 
         console.log(newPattern);
