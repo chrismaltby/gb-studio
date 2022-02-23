@@ -91,6 +91,17 @@ const bitpack = (value, bitResolution) => {
   return missingValues + bitsString;
 };
 
+const note2noise = (note) => {
+  // https://docs.google.com/spreadsheets/d/1O9OTAHgLk1SUt972w88uVHp44w7HKEbS/edit#gid=75028951
+  // if A > 7 then begin
+  //   B := (A-4) div 4;
+  //   C := (A mod 4)+4;
+  //   A := (C or (B shl 4))
+  // end;
+  let pitch = 64 > note ? 63 - note : 192 + note;
+  return pitch > 7 ? (((pitch - 4) >> 2) << 4) + (pitch & 3) + 4 : pitch;
+};
+
 const initPlayer = (onInit) => {
   compiler.setLogCallback(console.log);
   compiler.setLinkOptions(["-t", "-w"]);
@@ -313,10 +324,11 @@ const preview = (note, type, instrument, square2, waves = []) => {
               : 0,
             3
           ),
-        NR43:
-          bitpack(Math.abs(0xf - noteFreq) >> 7, 4) +
-          (instrument.bit_count === 7 ? 1 : 0) +
-          "000",
+        NR43: bitpack(
+          note2noise(note + instrument.noise_macro[0]) +
+            (instrument.bit_count === 7 ? 16 : 0),
+          8
+        ),
         NR44:
           "1" + // Initial
           (instrument.length !== null ? 1 : 0) +
