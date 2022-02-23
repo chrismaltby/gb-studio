@@ -42,6 +42,8 @@ const rootReducer = combineReducers({
       );
     },
     ignoreInitialState: true,
+    undoType: "TRACKER_UNDO",
+    redoType: "TRACKER_REDO",
   }),
   project: undoable(combineReducers({ entities, settings, metadata }), {
     limit: 20,

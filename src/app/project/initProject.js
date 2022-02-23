@@ -115,11 +115,19 @@ const onSaveProjectAs = (event, pathName) => {
 };
 
 const onUndo = () => {
-  store.dispatch(ActionCreators.undo());
+  if (store.getState().trackerDocument.past.length > 0) {
+    store.dispatch({ type: "TRACKER_UNDO" });
+  } else {
+    store.dispatch(ActionCreators.undo());
+  }
 };
 
 const onRedo = () => {
-  store.dispatch(ActionCreators.redo());
+  if (store.getState().trackerDocument.future.length > 0) {
+    store.dispatch({ type: "TRACKER_REDO" });
+  } else {
+    store.dispatch(ActionCreators.redo());
+  }
 };
 
 const onSetSection = (event, section) => {
