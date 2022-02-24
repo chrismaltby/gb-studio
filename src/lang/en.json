@@ -513,7 +513,6 @@
   "FIELD_BASIC": "Basic",
   "FIELD_EFFECT_INDEX": "Effect Index",
   "FIELD_PRIORITY": "Priority",
-  "FIELD_SEARCH_INSTRUMENT": "Search instruments for the current channel",
   "FIELD_TEMPO_TOOLTIP":"Number of ticks per row",
 
   "// 7": "Asset Viewer ---------------------------------------------",
