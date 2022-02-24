@@ -200,6 +200,7 @@ export const SongEditor = () => {
               min={0}
               max={20}
               onChange={onChangeFieldInput("ticks_per_row")}
+              title={l10n("FIELD_TEMPO_TOOLTIP")}
             />
           </FormRow>
           {instrumentData ? (
