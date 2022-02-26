@@ -46,7 +46,7 @@ export default async (
   }
 
   if (profile) {
-    CFLAGS += " -Wf--profile";
+    CFLAGS += " -Wf--debug";
   }
 
   if (targetPlatform === "pocket") {
@@ -242,6 +242,7 @@ export const buildLinkFlags = (
   color = false,
   sgb = false,
   musicDriver = "gbtplayer",
+  profile = false,
   targetPlatform = "gb"
 ) => {
   const validName = name
@@ -270,6 +271,8 @@ export const buildLinkFlags = (
     sgb ? ["-Wm-ys"] : [],
     // Pocket
     targetPlatform === "pocket" ? ["-mgbz80:ap"] : [],
+    // Debug emulicious
+    profile ? ["-Wf--debug", "-Wl-y",] : [],
     // Music Driver
     musicDriver === "huge"
       ? // hugetracker

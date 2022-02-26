@@ -151,20 +151,18 @@ const BuildPage = () => {
             <Button onClick={onDeleteCache}>
               {l10n("BUILD_EMPTY_BUILD_CACHE")}
             </Button>
-            {process.env.NODE_ENV !== "production" && (
-              <>
-                <FixedSpacer width={10} />
-                <label htmlFor="enableProfile">
-                  <input
-                    id="enableProfile"
-                    type="checkbox"
-                    checked={profile}
-                    onChange={onToggleProfiling}
-                  />{" "}
-                  Enable BGB Profiling
-                </label>
-              </>
-            )}
+            <>
+              <FixedSpacer width={10} />
+              <label htmlFor="enableProfile">
+                <input
+                  id="enableProfile"
+                  type="checkbox"
+                  checked={profile}
+                  onChange={onToggleProfiling}
+                />{" "}
+                Enable Emulicious C debugging 
+              </label>
+            </>
           </>
         )}
 
