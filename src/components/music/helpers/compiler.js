@@ -89,13 +89,14 @@ function startCompile() {
 }
 
 function runRgbAsm(target) {
-  logFunction(`Running: rgbasm ${target} -o ${target}.o -Wall`);
+  logFunction(`Running: rgbasm -E ${target} -o output.o -Wall`);
   let objFile;
   return createRgbAsm({
     locateFile: locateFile(createRgbAsmModule),
-    arguments: [target, "-o", "output.o", "-Wall"],
+    arguments: ["-E", target, "-o", "output.o", "-Wall"],
     preRun: (m) => {
       const FS = m.FS;
+      FS.mkdir("include");
       for (const [key, value] of Object.entries(storage.getFiles())) {
         FS.writeFile(key, value);
       }
@@ -121,7 +122,7 @@ function runRgbLink(obj_files) {
   files.forEach((name) => {
     args.push(`${name}.o`);
   });
-  logFunction(`Running: ${args.join(" ")}`);
+  logFunction(`Running: rgblink ${args.join(" ")}`);
   return createRgbLink({
     locateFile: locateFile(createRgbLinkModule),
     arguments: args,

@@ -35,7 +35,7 @@ export const initialState: TrackerState = {
   tool: "pencil",
   defaultInstruments: [0, 0, 0, 0],
   selectedChannel: 0,
-  visibleChannels: [0],
+  visibleChannels: [0, 1, 2, 3],
   hoverNote: null,
   startPlaybackPosition: [0, 0],
   defaultStartPlaybackPosition: [0, 0],
