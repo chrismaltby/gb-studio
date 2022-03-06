@@ -7,23 +7,11 @@ import hUGE_note_table_inc from "./include/hUGE_note_table_inc";
 import player_asm from "./include/player_asm";
 
 const files = {
-  "HARDWARE.INC": hardware_inc,
-  "hUGE.inc": hUGE_inc,
+  "include/hardware.inc": hardware_inc,
+  "include/hUGE.inc": hUGE_inc,
+  "include/hUGE_note_table.inc": hUGE_note_table_inc,
   "hUGEDriver.asm": hugeDriver_asm,
-  "hUGE_note_table.inc": hUGE_note_table_inc,
-  "main.asm": player_asm,
-  //     "main.asm": `INCLUDE "hardware.inc"
-
-  // SECTION "entry", ROM0[$100]
-  //   jp start
-
-  // SECTION "main", ROM0[$150]
-  // start:
-  //   nop
-  // haltLoop:
-  //   halt
-  //   jr haltLoop
-  // `
+  "player.asm": player_asm,
 };
 
 const getFiles = () => files;

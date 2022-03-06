@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add sound effects file support reading WAV (.wav), VGM (.vgm, .vgz) and FXHammer (.sav) files from assets/sounds folder
 - Add support for setting sound effects priority [untoxa](https://github.com/untoxa)
 - Add ability to generate Emulicious debugging files [@RichardULZ](https://github.com/RichardULZ) 
+- Add tooltips to Song Editor tools [DeerTears](https://github.com/DeerTears)
 
 ### Changed
 
@@ -32,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved gbspack error when data is over bank size limits
 - Update hUGEDriver [untoxa](https://github.com/untoxa)
 - Hide/show actor now ONLY hides/shows, update scripts & collisions are not affected (existing hide/show events migrated to deactivate/activate for compatibility)
+- Updated Simplified Chinese localisation. [@wcxu21](https://github.com/wcxu21) 
 
 ### Fixed
 
@@ -45,10 +47,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated 32-bit Windows app to use correct 32-bit GBDK-2020 (again) [untoxa](https://github.com/untoxa)
 - Fixed issue where relative actor movement on left or top edge of scene would wrap around scene [@um3k](https://github.com/um3k)
 - Fix issue where soft reset could lead to UI tiles over scene tiles [untoxa](https://github.com/untoxa)
+- Fix compiling noise macros for UGE songs [@pau-tomas](https://github.com/pau-tomas)
+- Fix setting music editor preview start position to a different pattern [@pau-tomas](https://github.com/pau-tomas)
 
 ### Removed
 
 - Removed .CURRENT_SCRIPT_BANK for gbvm scripts as results were unreliable
+- Removed deprecated dividing ratio and shift clock fields from noise instrument editor [@pau-tomas](https://github.com/pau-tomas)
 
 ## [3.0.3]
 
