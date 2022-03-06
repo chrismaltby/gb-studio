@@ -62,11 +62,15 @@ extern UBYTE * text_scroll_addr;
 extern UBYTE text_scroll_width, text_scroll_height;
 extern UBYTE text_scroll_fill;
 
-extern UBYTE text_sound_frames, text_sound_ch;
+extern UBYTE text_sound_mask;
 extern UBYTE text_sound_bank; 
 extern const UBYTE * text_sound_data;
 
 extern const UBYTE ui_time_masks[];
+
+#ifdef CGB
+extern UBYTE overlay_priority;
+#endif
 
 void ui_init() BANKED;
 void ui_update() NONBANKED;  // critical path, NONBANKED for speed
@@ -100,13 +104,5 @@ inline void ui_move_to(UBYTE x, UBYTE y, BYTE speed) {
 }
 
 UBYTE ui_run_menu(menu_item_t * start_item, UBYTE bank, UBYTE options, UBYTE count) BANKED;
-
-inline void ui_load_frame_tiles(const UBYTE * offset, UBYTE bank) {
-    SetBankedBkgData(192, 9, offset, bank);
-}
-
-inline void ui_load_cursor_tile(const UBYTE * offset, UBYTE bank) {
-    SetBankedBkgData(ui_cursor_tile, 1, offset, bank);
-}
 
 #endif

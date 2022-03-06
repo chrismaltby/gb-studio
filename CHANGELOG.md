@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added ability to choose any referenced assets in GBVM script event forcing assets to be included within built project
 - Added ability to rename the GBVM symbol used for generated data files, accessible from "View GBVM Symbols" in right sidebar menu + GBVM event references section
 - Added syntax highlighting and line numbers to GBVM event code input
+- Added event Actor Move Cancel to cancel any scripted movement currently running for a given actor [@um3k](https://github.com/um3k)
+- Add sound effects file support reading WAV (.wav), VGM (.vgm, .vgz) and FXHammer (.sav) files from assets/sounds folder
+- Add support for setting sound effects priority [untoxa](https://github.com/untoxa)
+- Add tooltips to Song Editor tools [DeerTears](https://github.com/DeerTears)
 
 ### Changed
 
@@ -39,10 +43,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where full magenta characters in font files didn't have zero width
 - Fixed typo in Japanese localisation [RYU-N2001](https://github.com/RYU-N2001)
 - Updated 32-bit Windows app to use correct 32-bit GBDK-2020 (again) [untoxa](https://github.com/untoxa)
+- Fixed issue where relative actor movement on left or top edge of scene would wrap around scene [@um3k](https://github.com/um3k)
+- Fix issue where soft reset could lead to UI tiles over scene tiles [untoxa](https://github.com/untoxa)
+- Fix compiling noise macros for UGE songs [@pau-tomas](https://github.com/pau-tomas)
+- Fix setting music editor preview start position to a different pattern [@pau-tomas](https://github.com/pau-tomas)
 
 ### Removed
 
 - Removed .CURRENT_SCRIPT_BANK for gbvm scripts as results were unreliable
+- Removed deprecated dividing ratio and shift clock fields from noise instrument editor [@pau-tomas](https://github.com/pau-tomas)
 
 ## [3.0.3]
 

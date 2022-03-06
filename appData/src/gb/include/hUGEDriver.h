@@ -110,6 +110,8 @@ void hUGE_set_position_banked(unsigned char pattern) BANKED OLDCALL;
 
 extern volatile unsigned char hUGE_current_wave;
 
+extern volatile unsigned char hUGE_mute_mask;
+
 inline void hUGE_reset_wave() {
 	hUGE_current_wave = 100;
 }

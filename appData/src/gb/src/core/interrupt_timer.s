@@ -1,6 +1,6 @@
         .include        "global.s"
 
-        .globl  _music_update, _SIO_update
+        .globl  _music_play_isr, _SIO_update
 
         .area   _HEADER_TIMER (ABS)
 
@@ -17,7 +17,7 @@
         push bc
         push de
 
-        call _music_update
+        call _music_play_isr
         call _SIO_update
 
         pop de

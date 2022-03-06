@@ -21,6 +21,7 @@ import {
   fontSelectors,
   musicSelectors,
   sceneSelectors,
+  soundSelectors,
   spriteSheetSelectors,
   variableSelectors,
 } from "store/features/entities/entitiesState";
@@ -31,6 +32,7 @@ import {
   Font,
   Music,
   Scene,
+  Sound,
   SpriteSheet,
   Variable,
 } from "store/features/entities/entitiesTypes";
@@ -119,6 +121,14 @@ const musicToOption = (music: Music): EventOption => {
     label: music.name,
     value: music.id,
     referenceType: "music",
+  };
+};
+
+const soundToOption = (sound: Sound): EventOption => {
+  return {
+    label: sound.name,
+    value: sound.id,
+    referenceType: "sound",
   };
 };
 
@@ -342,6 +352,9 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
   const tracks = useSelector((state: RootState) =>
     musicSelectors.selectAll(state)
   );
+  const sounds = useSelector((state: RootState) =>
+    soundSelectors.selectAll(state)
+  );
   const musicDriver = useSelector(
     (state: RootState) => state.project.present.settings.musicDriver
   );
@@ -373,6 +386,10 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
           )
           .map(musicToOption)
           .sort(sortAlphabeticallyByLabel),
+      },
+      {
+        label: l10n("MENU_SFX"),
+        options: sounds.map(soundToOption).sort(sortAlphabeticallyByLabel),
       },
       {
         label: l10n("FIELD_SCENES"),
@@ -414,6 +431,7 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
     fonts,
     scenes,
     customEvents,
+    sounds,
   ]);
 
   const updateOptions = useCallback(() => {

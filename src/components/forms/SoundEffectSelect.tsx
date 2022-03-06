@@ -1,16 +1,20 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Option,
   Select,
   OptionLabelWithPreview,
   SingleValueWithPreview,
   SelectCommonProps,
+  OptGroup,
 } from "ui/form/Select";
 import { PlayIcon } from "ui/icons/Icons";
 import { Button } from "ui/buttons/Button";
 import soundfxActions from "store/features/soundfx/soundfxActions";
 import l10n from "lib/helpers/l10n";
+import { soundSelectors } from "store/features/entities/entitiesState";
+import uniq from "lodash/uniq";
+import { RootState } from "store/configureStore";
 
 interface SoundEffectSelectProps extends SelectCommonProps {
   name: string;
@@ -29,21 +33,6 @@ interface PlaySoundEffectProps extends SelectCommonProps {
   frequency?: number;
   duration?: number;
 }
-
-const options = [
-  {
-    label: l10n("FIELD_EFFECT_BEEP"),
-    value: "beep",
-  },
-  {
-    label: l10n("FIELD_EFFECT_TONE"),
-    value: "tone",
-  },
-  {
-    label: l10n("FIELD_EFFECT_CRASH"),
-    value: "crash",
-  },
-];
 
 export const PlaySoundEffect = ({
   effect,
@@ -94,14 +83,56 @@ export const SoundEffectSelect = ({
   ...selectProps
 }: SoundEffectSelectProps) => {
   const [currentValue, setCurrentValue] = useState<Option>();
+  const [options, setOptions] = useState<OptGroup[]>([]);
+
+  const sounds = useSelector((state: RootState) =>
+    soundSelectors.selectAll(state)
+  );
 
   useEffect(() => {
-    setCurrentValue(
-      options.find((option) => {
-        return option.value === value;
-      }) || options[0]
-    );
-  }, [value]);
+    const plugins = uniq(sounds.map((s) => s.plugin || "")).sort();
+    setOptions([
+      {
+        label: l10n("FIELD_BASIC"),
+        options: [
+          {
+            label: l10n("FIELD_EFFECT_BEEP"),
+            value: "beep",
+          },
+          {
+            label: l10n("FIELD_EFFECT_TONE"),
+            value: "tone",
+          },
+          {
+            label: l10n("FIELD_EFFECT_CRASH"),
+            value: "crash",
+          },
+        ],
+      },
+      ...plugins.map((pluginKey) => ({
+        label: pluginKey || l10n("FIELD_FILES"),
+        options: sounds
+          .filter((track) => (track.plugin || "") === pluginKey)
+          .map((track) => ({
+            label: track.name,
+            value: track.id,
+          })),
+      })),
+    ]);
+  }, [sounds]);
+
+  useEffect(() => {
+    let option: Option | null = null;
+    options.find((optGroup) => {
+      const foundOption = optGroup.options.find((opt) => opt.value === value);
+      if (foundOption) {
+        option = foundOption;
+        return true;
+      }
+      return false;
+    });
+    setCurrentValue(option || options[0]?.options[0]);
+  }, [options, value]);
 
   const onSelectChange = useCallback(
     (newValue: Option) => {

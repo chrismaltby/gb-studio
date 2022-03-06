@@ -7,7 +7,21 @@ const fields = [
   {
     key: "type",
     type: "soundEffect",
+    label: l10n("FIELD_SOUND_EFFECT"),
     defaultValue: "beep",
+    flexBasis: "60%",
+  },
+  {
+    key: "priority",
+    label: l10n("FIELD_PRIORITY"),
+    type: "select",
+    options: [
+      ["low", l10n("FIELD_LOW")],
+      ["medium", l10n("FIELD_MEDIUM")],
+      ["high", l10n("FIELD_HIGH")],
+    ],
+    defaultValue: "medium",
+    flexBasis: "15%",
   },
   {
     key: "pitch",
@@ -43,6 +57,12 @@ const fields = [
     key: "duration",
     type: "number",
     label: l10n("FIELD_DURATION"),
+    conditions: [
+      {
+        key: "type",
+        in: ["beep", "crash", "tone"],
+      },
+    ],
     min: 0,
     max: 4.25,
     step: 0.01,
@@ -52,18 +72,47 @@ const fields = [
     key: "wait",
     type: "checkbox",
     label: l10n("FIELD_WAIT_UNTIL_FINISHED"),
+    conditions: [
+      {
+        key: "type",
+        in: ["beep", "crash", "tone"],
+      },
+    ],
     defaultValue: true,
+    flexBasis: "100%",
+  },
+  {
+    key: "effect",
+    type: "number",
+    label: l10n("FIELD_EFFECT_INDEX"),
+    min: 0,
+    max: 60,
+    defaultValue: 0,
+    conditions: [
+      {
+        key: "type",
+        soundType: "fxhammer",
+      },
+    ],
   },
 ];
 
 const compile = (input, helpers) => {
-  const { soundPlayBeep, soundStartTone, soundPlayCrash, wait } = helpers;
-
+  const {
+    soundPlayBeep, //
+    soundStartTone,
+    soundPlayCrash,
+    soundPlay,
+    wait,
+  } = helpers;
+  let priority = input.priority || "medium";
   let seconds = typeof input.duration === "number" ? input.duration : 0.5;
+  let frames = seconds * 60;
+  let shouldWait = input.wait;
 
   if (input.type === "beep" || !input.type) {
     const pitch = typeof input.pitch === "number" ? input.pitch : 4;
-    soundPlayBeep(9 - pitch);
+    soundPlayBeep(9 - pitch, frames, priority);
   } else if (input.type === "tone") {
     const freq = typeof input.frequency === "number" ? input.frequency : 200;
     let period = (2048 - 131072 / freq + 0.5) | 0;
@@ -73,19 +122,16 @@ const compile = (input, helpers) => {
     if (period < 0) {
       period = 0;
     }
-    const toneFrames = Math.min(255, Math.ceil(seconds * 60));
-    soundStartTone(period, toneFrames);
+    soundStartTone(period, frames, priority);
   } else if (input.type === "crash") {
-    soundPlayCrash();
+    soundPlayCrash(frames, priority);
+  } else {
+    soundPlay(input.type, priority, input.effect);
+    shouldWait = false;
   }
 
-  // Convert seconds into frames (60fps)
-  if (input.wait) {
-    while (seconds > 0) {
-      const time = Math.min(seconds, 1);
-      wait(Math.ceil(60 * time));
-      seconds -= time;
-    }
+  if (shouldWait) {
+    wait(seconds * 60);
   }
 };
 

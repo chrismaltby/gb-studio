@@ -186,6 +186,11 @@ void vm_rumble(SCRIPT_CTX * THIS, UBYTE enable) OLDCALL BANKED {
     if (enable) *(UBYTE *)0x4000 |= RUMBLE_ENABLE; else *(UBYTE *)0x4000 &= (~RUMBLE_ENABLE);
 }
 
+void vm_load_tiles(SCRIPT_CTX * THIS, UBYTE id, UBYTE len, UBYTE bank, UBYTE * offset) OLDCALL BANKED {
+    THIS;
+    SetBankedBkgData(id, len, offset, bank);
+}
+
 void vm_load_tileset(SCRIPT_CTX * THIS, INT16 idx, UBYTE bank, const background_t * background) OLDCALL BANKED {
     UBYTE base_tile = *(INT16 *)(VM_REF_TO_PTR(idx));
     far_ptr_t tileset;

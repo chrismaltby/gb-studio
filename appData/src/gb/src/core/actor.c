@@ -6,11 +6,13 @@
 #include <gb/metasprites.h>
 #include <string.h>
 
+#include "system.h"
 #include "game_time.h"
 #include "scroll.h"
 #include "linked_list.h"
 #include "math.h"
 #include "collision.h"
+#include "ui.h"
 #include "vm.h"
 
 #ifdef STRICT
@@ -23,6 +25,13 @@
 #define ANIM_PAUSED                255
 
 #define BANK_EMOTE_METASPRITE 1
+
+#ifdef CGB 
+#define NO_OVERLAY_PRIORITY ((!_is_CGB) && ((overlay_priority & S_PRIORITY) == 0))
+#else
+#define NO_OVERLAY_PRIORITY (TRUE)
+#endif 
+
 
 const BYTE emote_offsets[] = {2, 1, 0, -1, -2, -3, -4, -5, -6, -5, -4, -3, -2, -1, 0};
 
@@ -102,7 +111,7 @@ void actors_update() NONBANKED {
             deactivate_actor(actor);
             actor = prev;
             continue;
-        } else if ((WX_REG != 7) && (WX_REG < (UINT8)screen_x + 8) && (WY_REG < (UINT8)(screen_y)-8)) {
+        } else if (NO_OVERLAY_PRIORITY && (WX_REG != 7) && (WX_REG < (UINT8)screen_x + 8) && (WY_REG < (UINT8)(screen_y) - 8)) {
             // Hide if under window (don't deactivate)
             actor = actor->prev;
             continue;

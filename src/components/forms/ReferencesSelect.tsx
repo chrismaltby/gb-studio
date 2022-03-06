@@ -14,6 +14,7 @@ import {
   fontSelectors,
   musicSelectors,
   sceneSelectors,
+  soundSelectors,
   spriteSheetSelectors,
   variableSelectors,
 } from "store/features/entities/entitiesState";
@@ -41,6 +42,7 @@ export type ReferenceType =
   | "sprite"
   | "font"
   | "music"
+  | "sound"
   | "emote"
   | "script"
   | "scene"
@@ -115,6 +117,8 @@ const ExtraReferences = styled.div`
 `;
 
 export const addBankRef = (symbol: string) => `___bank${symbol}, ${symbol}`;
+export const addBankRefAndMuteMask = (symbol: string) =>
+  `___bank${symbol}, ${symbol}, ___mute_mask${symbol}`;
 
 export const ReferencesSelect = ({
   value,
@@ -158,6 +162,7 @@ export const ReferencesSelect = ({
   const spriteRefs = value.filter((ref) => ref.type === "sprite");
   const variableRefs = value.filter((ref) => ref.type === "variable");
   const musicRefs = value.filter((ref) => ref.type === "music");
+  const soundRefs = value.filter((ref) => ref.type === "sound");
   const customEventRefs = value.filter((ref) => ref.type === "script");
   const fontRefs = value.filter((ref) => ref.type === "font");
   const sceneRefs = value.filter((ref) => ref.type === "scene");
@@ -252,6 +257,26 @@ export const ReferencesSelect = ({
                 );
               }}
               copyTransform={addBankRef}
+              onRemove={onRemove}
+            />
+          ))}
+          {soundRefs.length > 0 && (
+            <ReferenceSection>{l10n("FIELD_SOUNDS")}</ReferenceSection>
+          )}
+          {soundRefs.map((ref) => (
+            <AssetReference
+              key={ref.id}
+              id={ref.id}
+              selector={(state) => soundSelectors.selectById(state, ref.id)}
+              onRename={(symbol) => {
+                dispatch(
+                  entitiesActions.setSoundSymbol({
+                    soundId: ref.id,
+                    symbol,
+                  })
+                );
+              }}
+              copyTransform={addBankRefAndMuteMask}
               onRemove={onRemove}
             />
           ))}

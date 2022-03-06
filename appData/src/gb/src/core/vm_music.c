@@ -5,9 +5,10 @@
 #include "vm_music.h"
 #include "music_manager.h"
 
-void vm_music_play(SCRIPT_CTX * THIS, UBYTE track_bank, const TRACK_T *track, UBYTE loop) OLDCALL BANKED {
+void vm_music_play(SCRIPT_CTX * THIS, UBYTE track_bank, const TRACK_T * track, UBYTE loop) OLDCALL BANKED {
     THIS;
-    music_play(track, track_bank, loop);
+    music_global_mute_mask = 0;
+    music_load(track_bank, track, loop);
 }
 
 void vm_music_stop() BANKED {
@@ -16,8 +17,10 @@ void vm_music_stop() BANKED {
 
 void vm_music_mute(SCRIPT_CTX * THIS, UBYTE channels) OLDCALL BANKED {
     THIS;
-    music_mute(channels);
-    channel_mask = channels;
+    // TODO: mute channels
+    music_global_mute_mask = channels;
+    driver_set_mute_mask(channels);
+    music_sound_cut_mask(channels);
 }
 
 void vm_music_routine(SCRIPT_CTX * THIS, UBYTE routine, UBYTE bank, UBYTE * pc) OLDCALL BANKED {
@@ -37,12 +40,7 @@ void vm_sound_mastervol(SCRIPT_CTX * THIS, UBYTE volume) OLDCALL BANKED {
     NR50_REG = volume;
 }
 
-void vm_sound_play(SCRIPT_CTX * THIS, UBYTE frames, UBYTE channel) OLDCALL BANKED {
-    sound_play(frames, channel, THIS->bank, THIS->PC);
-    THIS->PC += ((channel == 3) ? 0x15 : 5); // skip regs and waveform, if playing on ch3
-}
-
-void vm_wave_play(SCRIPT_CTX * THIS, UBYTE frames, UBYTE bank, UBYTE * sample, UWORD size) OLDCALL BANKED {
+void vm_sfx_play(SCRIPT_CTX * THIS, UBYTE bank, UBYTE * offset, UBYTE channel_mask, UBYTE priority) OLDCALL BANKED {
     THIS;
-    wave_play(frames, bank, sample, size);
+    music_play_sfx(bank, offset, channel_mask, priority);
 }

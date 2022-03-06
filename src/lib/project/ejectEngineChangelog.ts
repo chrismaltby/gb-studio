@@ -221,6 +221,68 @@ const changes: EngineChange[] = [
       "src/core/vm_actor.c",
     ],
   },
+  {
+    version: "3.1.0-e5",
+    description:
+      "Updates:\n" +
+      "   * Update hUGEDriver.lib\n" +
+      "   * unify types in far_ptr_t and TO_FAR_PTR_T\n" +
+      "   * add .R_REF_SET macro for VM_RPN instruction to set by reference\n" +
+      "   * VM_OVERLAY_SET_SUBMAP and VM_OVERLAY_SET_MAP now accept X and Y coordinates from variables\n" +
+      "   * remove useless VM_GET_SYSTIME, use VM_GET_INT16 instead\n" +
+      "   * move ___sdcc_bcall_ehl trampoline to 0x0008, add ph rule that replace CALL with RST which save 2 bytes and 2 cycles each call\n" +
+      "   * new overlay_priority field that allow set priority CGB attributes bit for the UI by default and thus partially hide actors behind the partially visible window layer\n" +
+      "   * replace VM_LOAD_FRAME and VM_LOAD_CURSOR with universal VM_LOAD_TILES",
+    modifiedFiles: [
+      "include/bankdata.h",
+      "include/hUGEDriver.h",
+      "include/music_manager.h",
+      "include/sample_player.h",
+      "include/sfx_player.h",
+      "include/ui.h",
+      "include/vm.h",
+      "include/vm.i",
+      "include/vm_gameboy.h",
+      "include/vm_music.h",
+      "include/vm_ui.h",
+      "lib/hUGEDriver.lib",
+      "src/core/___sdcc_bcall_ehl.s",
+      "src/core/actor.c",
+      "src/core/core.c",
+      "src/core/data_manager.c",
+      "src/core/interrupt_timer.s",
+      "src/core/music_manager.c",
+      "src/core/sample_player.c",
+      "src/core/sfx_player.c",
+      "src/core/ui.c",
+      "src/core/vm.c",
+      "src/core/vm_gameboy.c",
+      "src/core/vm_instructions.c",
+      "src/core/vm_music.c",
+      "src/core/vm_ui.c",
+    ],
+  },
+  {
+    version: "3.1.0-e6",
+    description:
+      "Updates:\n" +
+      [
+        "   * Add support for sound effects priority",
+        "   * Fix issue where soft reset could lead to UI tiles over scene tiles",
+      ].join("\n"),
+    modifiedFiles: [
+      "include/music_manager.h",
+      "include/sfx_player.h",
+      "include/vm.i",
+      "include/vm_music.h",
+      "src/core/data_manager.c",
+      "src/core/music_manager.c",
+      "src/core/sfx_player.c",
+      "src/core/ui.c",
+      "src/core/vm_instructions.c",
+      "src/core/vm_music.c",
+    ],
+  },
 ];
 
 const ejectEngineChangelog = (currentVersion: string) => {

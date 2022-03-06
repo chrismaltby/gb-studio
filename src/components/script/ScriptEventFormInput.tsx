@@ -240,7 +240,10 @@ const ScriptEventFormInput = ({
       value,
       label: l10n(label),
     }));
-    const currentValue = options.find((o) => o.value === value) || options[0];
+    const currentValue =
+      options.find((o) =>
+        value ? o.value === value : o.value === defaultValue
+      ) || options[0];
     return (
       <Select
         id={id}
