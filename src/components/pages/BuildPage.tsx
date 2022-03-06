@@ -151,18 +151,16 @@ const BuildPage = () => {
             <Button onClick={onDeleteCache}>
               {l10n("BUILD_EMPTY_BUILD_CACHE")}
             </Button>
-            <>
-              <FixedSpacer width={10} />
-              <label htmlFor="enableProfile">
-                <input
-                  id="enableProfile"
-                  type="checkbox"
-                  checked={profile}
-                  onChange={onToggleProfiling}
-                />{" "}
-                Enable Emulicious C debugging 
-              </label>
-            </>
+            <FixedSpacer width={10} />
+            <label htmlFor="enableProfile">
+              <input
+                id="enableProfile"
+                type="checkbox"
+                checked={profile}
+                onChange={onToggleProfiling}
+              />{" "}
+              {l10n("FIELD_ENABLE_EMULICIOUS_DEBUGGING")}
+            </label>
           </>
         )}
 

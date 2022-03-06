@@ -506,6 +506,7 @@
   "FIELD_BASIC": "Basic",
   "FIELD_EFFECT_INDEX": "Effect Index",
   "FIELD_PRIORITY": "Priority",
+  "FIELD_ENABLE_EMULICIOUS_DEBUGGING": "Enable Emulicious C debugging",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
