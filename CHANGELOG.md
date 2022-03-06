@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added event Actor Move Cancel to cancel any scripted movement currently running for a given actor [@um3k](https://github.com/um3k)
 - Add sound effects file support reading WAV (.wav), VGM (.vgm, .vgz) and FXHammer (.sav) files from assets/sounds folder
 - Add support for setting sound effects priority [untoxa](https://github.com/untoxa)
+- Add tooltips to Song Editor tools [DeerTears](https://github.com/DeerTears)
 
 ### Changed
 
