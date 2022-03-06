@@ -4,10 +4,9 @@ Requires emulicious https://emulicious.net/
 vscode https://code.visualstudio.com/
 and the Emulicious Debugger extension https://marketplace.visualstudio.com/items?itemName=emulicious.emulicious-debugger  
 
-in VS Code, Configure emulicious debugger's "extension settings" and set the path, eg "C:\Emulicious\"
+in VS Code, Configure emulicious debugger's "extension settings" and set the path, eg "/usr/local/emulicious"
 
 Set your temporary folder in gbstudio to a convenient location in the prefrences (or here, since you found this file)
-Rename this folder from vscode to .vscode (you may need to close this file)
 Open this gbstudio temporary folder in vscode, 
 
 Generate a rom via the build or run buttons in gbstudio with "Enable Emulicious C debugging" checked
