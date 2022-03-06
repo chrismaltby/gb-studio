@@ -44,10 +44,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated 32-bit Windows app to use correct 32-bit GBDK-2020 (again) [untoxa](https://github.com/untoxa)
 - Fixed issue where relative actor movement on left or top edge of scene would wrap around scene [@um3k](https://github.com/um3k)
 - Fix issue where soft reset could lead to UI tiles over scene tiles [untoxa](https://github.com/untoxa)
+- Fix compiling noise macros for UGE songs [@pau-tomas](https://github.com/pau-tomas)
+- Fix setting music editor preview start position to a different pattern [@pau-tomas](https://github.com/pau-tomas)
 
 ### Removed
 
 - Removed .CURRENT_SCRIPT_BANK for gbvm scripts as results were unreliable
+- Removed deprecated dividing ratio and shift clock fields from noise instrument editor [@pau-tomas](https://github.com/pau-tomas)
 
 ## [3.0.3]
 
