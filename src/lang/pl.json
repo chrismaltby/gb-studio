@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1005220221",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1013220312",
  
  "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -50,7 +50,11 @@
   "TOOL_PALETTE_N": "Paleta {number}",
   "TOOL_SHOW_LAYERS": "Pokaż warstwy",
   "TOOL_HIDE_LAYERS": "Schowaj warstwy",
-  
+  "TOOL_PENCIL": "Ołówek",
+  "TOOL_ERASER": "Gumka",
+  "TOOL_TRACKER_VIEW": "Przełącz na tryb Trackera",
+  "TOOL_PIANO_ROLL_VIEW": "Przełącz na tryb Piano",
+  "TOOL_ADD_SONG_LABEL":"Dodaj nowy utwór",
   "// 5": "Editors --------------------------------------------------",
   "SIDEBAR_NAVIGATION": "Nawigator",
   "SIDEBAR_STARTING_SCENE": "Scena początkowa",
@@ -414,6 +418,9 @@
   "FIELD_NEXT_FRAME": "Następna klatka",
   "FIELD_PLAY": "Graj",
   "FIELD_PAUSE": "Pauza",
+  "FIELD_STOP": "Stop",
+  "FIELD_RESUME": "Wznowienie",
+  "FIELD_RESTART": "Restart",
   "FIELD_ONION_SKIN": "Skóra cebulowa",
   "FIELD_SHOW_GRID": "Wyświetl siatkę",
   "FIELD_PRECISION_SELECTION": "Wybór precyzji",
@@ -506,7 +513,8 @@
   "FIELD_BASIC": "Podstawa",
   "FIELD_EFFECT_INDEX": "Spis efektów",
   "FIELD_PRIORITY": "Pierwszeństwo",
-  
+  "FIELD_TEMPO_TOOLTIP":"Ilość ticków na wiersz",
+	
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
   "ASSET_EDIT": "Edytuj",
