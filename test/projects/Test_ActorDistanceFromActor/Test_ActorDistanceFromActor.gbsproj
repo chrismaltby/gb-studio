@@ -38,9 +38,13 @@
                             "command": "EVENT_IF_ACTOR_DISTANCE_FROM_ACTOR",
                             "args": {
                                 "actorId": "player",
-                                "distance": 7,
+                                "distance": {
+                                    "type": "number",
+                                    "value": 3
+                                },
                                 "otherActorId": "$self$",
-                                "__collapseElse": true
+                                "__collapseElse": true,
+                                "operator": "<="
                             },
                             "children": {
                                 "true": [
@@ -136,9 +140,12 @@
                             "command": "EVENT_IF_ACTOR_DISTANCE_FROM_ACTOR",
                             "args": {
                                 "actorId": "player",
-                                "distance": 6,
+                                "distance": {
+                                    "value": 10
+                                },
                                 "otherActorId": "$self$",
-                                "__collapseElse": true
+                                "__collapseElse": true,
+                                "operator": ">="
                             },
                             "children": {
                                 "true": [
@@ -1169,9 +1176,9 @@
         "defaultUIPaletteId": "default-ui",
         "playerPaletteId": "",
         "navigatorSplitSizes": [
-            588,
-            151,
-            151
+            623,
+            159,
+            159
         ],
         "showNavigator": true,
         "defaultFontId": "4bd653f0-e08d-424e-9e5b-c1f3aaa21e47",
