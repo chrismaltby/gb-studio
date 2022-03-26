@@ -4252,7 +4252,7 @@ class ScriptBuilder {
     const endLabel = this.getNextLabel();
     const distanceSquared = distance  * distance; 
 
-    this._addComment(`If Actor ${distance} pu from Actor`);
+    this._addComment(`If Actor ${distance} tiles from Actor`);
     this._actorGetPosition(this._localRef(actorRef));
     this.setActorId(this._localRef(otherActorRef), otherId);
     this._actorGetPosition(this._localRef(otherActorRef));

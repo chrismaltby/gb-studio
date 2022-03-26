@@ -21,11 +21,16 @@ const fields = [
   {
     key: "distance",
     label: l10n("FIELD_DISTANCE_PU"),
-    type: "number",
+    type: "union",
+    types: ["number", "variable"],
+    defaultType: "number",
     min: 0,
     max: 181,
     width: "50%",
-    defaultValue: 0,
+    defaultValue: {
+      number: 0,
+      variable: "LAST_VARIABLE",
+    },
   },
   {
     key: "otherActorId",
@@ -67,16 +72,34 @@ const fields = [
 ];
 
 const compile = (input, helpers) => {
-  const { actorSetActive, ifActorDistanceFromActor } = helpers;
+  const { 
+    actorSetActive, 
+    ifActorDistanceFromActor, 
+    variableFromUnion,
+    temporaryEntityVariable 
+  } = helpers;
+  
   const truePath = input.true;
   const falsePath = input.__disableElse ? [] : input.false;
-  actorSetActive(input.actorId);
-  ifActorDistanceFromActor(
-    input.distance,
-    input.otherActorId,
-    truePath,
-    falsePath
-  );
+  
+  if (input.distance.type === "number") {
+    actorSetActive(input.actorId);
+    ifActorDistanceFromActor(
+      input.distance.value,
+      input.otherActorId,
+      truePath,
+      falsePath
+    );
+  } else {
+    const distanceVar = variableFromUnion(input.distance, temporaryEntityVariable(0));
+    actorSetActive(input.actorId);
+    ifActorDistanceFromActor(
+      distanceVar,
+      input.otherActorId,
+      truePath,
+      falsePath
+    );
+  }
 };
 
 module.exports = {
