@@ -7,6 +7,7 @@ import {
   EVENT_OVERLAY_SHOW,
   EVENT_OVERLAY_MOVE_TO,
   EVENT_IF_ACTOR_AT_POSITION,
+  EVENT_IF_ACTOR_DISTANCE_FROM_ACTOR,
 } from "lib/compiler/eventTypes";
 
 const TILE_SIZE = 8;
@@ -65,6 +66,57 @@ class EventHelper extends Component {
           />
         </div>
       );
+    }
+
+    if (
+      event.command === EVENT_IF_ACTOR_DISTANCE_FROM_ACTOR
+    ) {
+      const distance = argValue(event.args.distance);
+      if (distance === undefined) {
+        return <div />;
+      }
+
+      const otherActorId = argValue(event.args.otherActorId);
+      if (otherActorId === undefined) {
+        return <div />;
+      }
+
+      const { scene, actorsLookup } = this.props;
+      if (otherActorId === "$self$") {
+        // Find the actor that is referenced in the current event
+        let actor = Object.values(actorsLookup)
+          .find((actor) => actor.updateScript.concat(actor.startScript).concat(actor.script).concat(actor.hit1Script).concat(actor.hit2Script).concat(actor.hit3Script).find((v) => v === this.props.event.id) !== undefined);
+
+        let { x, y } = actor;
+        let { width, height } = scene;
+
+        var tiles = [];
+        for (var xpos = 0; xpos < width; xpos++) {
+          for (var ypos = 0; ypos < height; ypos++) {
+            // distance formula 
+            let d = Math.sqrt(Math.pow(xpos - x, 2) + Math.pow(ypos - y, 2));
+            if (d <= distance) {
+              tiles.push({ xpos, ypos });
+            }
+          }
+        }
+
+        return (
+          <div className="EventHelper">
+            {tiles.map((v, i) => 
+              (<div
+                key={i}
+                className="EventHelper__PosMarker"
+                style={{
+                  left: (v.xpos || 0) * TILE_SIZE,
+                  top: (v.ypos || 0) * TILE_SIZE,
+                  opacity: 0.8,
+                }}
+              />)
+            )}
+          </div>
+        );
+      }
     }
 
     if (
