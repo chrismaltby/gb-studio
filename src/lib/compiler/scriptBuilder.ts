@@ -4242,6 +4242,7 @@ class ScriptBuilder {
 
   ifActorDistanceFromActor = (
     distance: number,
+    operator: ScriptBuilderComparisonOperator,
     otherId: string,
     truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
     falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
@@ -4252,7 +4253,7 @@ class ScriptBuilder {
     const endLabel = this.getNextLabel();
     const distanceSquared = distance  * distance; 
 
-    this._addComment(`If Actor ${distance} tiles from Actor`);
+    this._addComment(`If Actor ${operator} ${distance} tiles from Actor`);
     this._actorGetPosition(this._localRef(actorRef));
     this.setActorId(this._localRef(otherActorRef), otherId);
     this._actorGetPosition(this._localRef(otherActorRef));
@@ -4291,7 +4292,7 @@ class ScriptBuilder {
         .operator(".MUL")
         .operator(".ADD")
         .int16(distanceSquared)
-        .operator(".LTE")
+        .operator(operator)
         .stop();
 
     this._ifConst(".EQ", ".ARG0", 0, falseLabel, 1);

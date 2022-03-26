@@ -95,24 +95,54 @@ class EventHelper extends Component {
           for (var ypos = 0; ypos < height; ypos++) {
             // distance formula 
             let d = Math.sqrt(Math.pow(xpos - x, 2) + Math.pow(ypos - y, 2));
-            if (d <= distance) {
-              tiles.push({ xpos, ypos });
+
+            switch (event.args.operator) {
+              case "==":
+                if (d == distance) {
+                  tiles.push({ xpos, ypos });
+                }
+                break;
+              case "!=":
+                if (d != distance) {
+                  tiles.push({ xpos, ypos });
+                }
+                break;
+              case "<":
+                if (d < distance) {
+                  tiles.push({ xpos, ypos });
+                }
+                break;
+              case ">":
+                if (d > distance) {
+                  tiles.push({ xpos, ypos });
+                }
+                break;
+              case "<=":
+                if (d <= distance) {
+                  tiles.push({ xpos, ypos });
+                }
+                break;
+              case ">=":
+                if (d >= distance) {
+                  tiles.push({ xpos, ypos });
+                }
+                break;
             }
           }
         }
 
         return (
           <div className="EventHelper">
-            {tiles.map((v, i) => 
-              (<div
-                key={i}
-                className="EventHelper__PosMarker"
-                style={{
-                  left: (v.xpos || 0) * TILE_SIZE,
-                  top: (v.ypos || 0) * TILE_SIZE,
-                  opacity: 0.8,
-                }}
-              />)
+            {tiles.map((v, i) =>
+            (<div
+              key={i}
+              className="EventHelper__PosMarker"
+              style={{
+                left: (v.xpos || 0) * TILE_SIZE,
+                top: (v.ypos || 0) * TILE_SIZE,
+                opacity: 0.8,
+              }}
+            />)
             )}
           </div>
         );

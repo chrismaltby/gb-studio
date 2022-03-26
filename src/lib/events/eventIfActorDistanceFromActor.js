@@ -7,6 +7,7 @@ const autoLabel = (fetchArg) => {
   const distance = fetchArg("distance");
   return l10n("EVENT_IF_ACTOR_DISTANCE_FROM_ACTOR_LABEL", {
     actor: fetchArg("actorId"),
+    operator: fetchArg("operator"),
     distance,
     otherActor: fetchArg("otherActorId"),
   });
@@ -17,6 +18,12 @@ const fields = [
     key: "actorId",
     type: "actor",
     defaultValue: "player",
+  },
+  {
+    key: "operator",
+    type: "operator",
+    width: "50%",
+    defaultValue: "<=",
   },
   {
     key: "distance",
@@ -79,6 +86,16 @@ const compile = (input, helpers) => {
     temporaryEntityVariable 
   } = helpers;
   
+  const operationLookup = {
+    "==": ".EQ",
+    "!=": ".NE",
+    "<": ".LT",
+    ">": ".GT",
+    "<=": ".LTE",
+    ">=": ".GTE",
+  };
+  const operator = operationLookup[input.operator];
+
   const truePath = input.true;
   const falsePath = input.__disableElse ? [] : input.false;
   
@@ -86,6 +103,7 @@ const compile = (input, helpers) => {
     actorSetActive(input.actorId);
     ifActorDistanceFromActor(
       input.distance.value,
+      operator,
       input.otherActorId,
       truePath,
       falsePath
@@ -95,6 +113,7 @@ const compile = (input, helpers) => {
     actorSetActive(input.actorId);
     ifActorDistanceFromActor(
       distanceVar,
+      operator,
       input.otherActorId,
       truePath,
       falsePath
