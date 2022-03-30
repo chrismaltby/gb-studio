@@ -19,11 +19,11 @@ interface SceneTypeOption {
 }
 
 export const options: SceneTypeOption[] = [
-  { value: "TOPDOWN", label: l10n("GAMETYPE_TOP_DOWN") },
-  { value: "PLATFORM", label: l10n("GAMETYPE_PLATFORMER") },
+  { value: "TOPDOWN", label: l10n("GAMETYPE_TOPDOWN") },
+  { value: "PLATFORM", label: l10n("GAMETYPE_PLATFORM") },
   { value: "ADVENTURE", label: l10n("GAMETYPE_ADVENTURE") },
   { value: "SHMUP", label: l10n("GAMETYPE_SHMUP") },
-  { value: "POINTNCLICK", label: l10n("GAMETYPE_POINT_N_CLICK") },
+  { value: "POINTNCLICK", label: l10n("GAMETYPE_POINTNCLICK") },
   { value: "LOGO", label: l10n("GAMETYPE_LOGO") },
 ];
 

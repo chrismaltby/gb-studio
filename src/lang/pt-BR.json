@@ -582,9 +582,9 @@
 
   "// 19 ": "Game Type --------------------------------------------------",
 
-  "GAMETYPE_TOP_DOWN": "Top Down 2D",
-  "GAMETYPE_PLATFORMER": "Plataforma",
+  "GAMETYPE_TOPDOWN": "Top Down 2D",
+  "GAMETYPE_PLATFORM": "Plataforma",
   "GAMETYPE_ADVENTURE": "Aventura",
   "GAMETYPE_SHMUP": "Shoot Em' Up",
-  "GAMETYPE_POINT_N_CLICK": "Apontar e Clicar"
+  "GAMETYPE_POINTNCLICK": "Apontar e Clicar"
 }

@@ -32,25 +32,25 @@
 
 UBYTE grounded;
 UBYTE on_ladder;
-WORD pl_vel_x;
-WORD pl_vel_y;
-WORD plat_min_vel;
-WORD plat_walk_vel;
-WORD plat_climb_vel;
-WORD plat_run_vel;
-WORD plat_walk_acc;
-WORD plat_run_acc;
-WORD plat_dec;
-WORD plat_jump_vel;
-WORD plat_grav;
-WORD plat_hold_grav;
-WORD plat_max_fall_vel;
+WORD platform_vel_x;
+WORD platform_vel_y;
+WORD platform_min_vel;
+WORD platform_walk_vel;
+WORD platform_climb_vel;
+WORD platform_run_vel;
+WORD platform_walk_acc;
+WORD platform_run_acc;
+WORD platform_dec;
+WORD platform_jump_vel;
+WORD platform_grav;
+WORD platform_hold_grav;
+WORD platform_max_fall_vel;
 
 void platform_init() BANKED {
     UBYTE tile_x, tile_y;
 
-    pl_vel_x = 0;
-    pl_vel_y = plat_grav << 2;
+    platform_vel_x = 0;
+    platform_vel_y = platform_grav << 2;
 
     if (PLAYER.dir == DIR_UP || PLAYER.dir == DIR_DOWN) {
         PLAYER.dir = DIR_RIGHT;
@@ -91,18 +91,18 @@ void platform_update() BANKED {
     if (on_ladder) {
         // PLAYER.pos.x = 0;
         UBYTE tile_x_mid = ((PLAYER.pos.x >> 4) + PLAYER.bounds.left + p_half_width) >> 3; 
-        pl_vel_y = 0;
+        platform_vel_y = 0;
         if (INPUT_UP) {
             // Climb laddder
             UBYTE tile_y = ((PLAYER.pos.y >> 4) + PLAYER.bounds.top + 1) >> 3;
             if (tile_at(tile_x_mid, tile_y) & TILE_PROP_LADDER) {
-                pl_vel_y = -plat_climb_vel;
+                platform_vel_y = -platform_climb_vel;
             }
         } else if (INPUT_DOWN) {
             // Descend ladder
             UBYTE tile_y = ((PLAYER.pos.y >> 4) + PLAYER.bounds.bottom + 1) >> 3;
             if (tile_at(tile_x_mid, tile_y) & TILE_PROP_LADDER) {
-                pl_vel_y = plat_climb_vel;
+                platform_vel_y = platform_climb_vel;
             }
         } else if (INPUT_LEFT) {
             on_ladder = FALSE;
@@ -129,36 +129,36 @@ void platform_update() BANKED {
                 tile_start++;
             }
         }
-        PLAYER.pos.y += (pl_vel_y >> 8);
+        PLAYER.pos.y += (platform_vel_y >> 8);
     } else {
 
         // Horizontal Movement
         if (INPUT_LEFT) {
             if (INPUT_PLATFORM_RUN) {
-                pl_vel_x -= plat_run_acc;
-                pl_vel_x = CLAMP(pl_vel_x, -plat_run_vel, -plat_min_vel);
+                platform_vel_x -= platform_run_acc;
+                platform_vel_x = CLAMP(platform_vel_x, -platform_run_vel, -platform_min_vel);
             } else {
-                pl_vel_x -= plat_walk_acc;
-                pl_vel_x = CLAMP(pl_vel_x, -plat_walk_vel, -plat_min_vel);
+                platform_vel_x -= platform_walk_acc;
+                platform_vel_x = CLAMP(platform_vel_x, -platform_walk_vel, -platform_min_vel);
             } 
         } else if (INPUT_RIGHT) {
             if (INPUT_PLATFORM_RUN) {
-                pl_vel_x += plat_run_acc;
-                pl_vel_x = CLAMP(pl_vel_x, plat_min_vel, plat_run_vel);
+                platform_vel_x += platform_run_acc;
+                platform_vel_x = CLAMP(platform_vel_x, platform_min_vel, platform_run_vel);
             } else {
-                pl_vel_x += plat_walk_acc;
-                pl_vel_x = CLAMP(pl_vel_x, plat_min_vel, plat_walk_vel);
+                platform_vel_x += platform_walk_acc;
+                platform_vel_x = CLAMP(platform_vel_x, platform_min_vel, platform_walk_vel);
             }
         } else if (grounded) {
-            if (pl_vel_x < 0) {
-                pl_vel_x += plat_dec;
-                if (pl_vel_x > 0) {
-                    pl_vel_x = 0;
+            if (platform_vel_x < 0) {
+                platform_vel_x += platform_dec;
+                if (platform_vel_x > 0) {
+                    platform_vel_x = 0;
                 }
-            } else if (pl_vel_x > 0) {
-                pl_vel_x -= plat_dec;
-                if (pl_vel_x < 0) {
-                    pl_vel_x = 0;
+            } else if (platform_vel_x > 0) {
+                platform_vel_x -= platform_dec;
+                if (platform_vel_x < 0) {
+                    platform_vel_x = 0;
                 }
             }
         }
@@ -171,7 +171,7 @@ void platform_update() BANKED {
             if (tile_at(tile_x_mid, tile_y) & TILE_PROP_LADDER) {
                 PLAYER.pos.x = (((tile_x_mid << 3) + 4 - (PLAYER.bounds.left + p_half_width) << 4));
                 on_ladder = TRUE;
-                pl_vel_x = 0;
+                platform_vel_x = 0;
             }
         } else if (INPUT_DOWN) {
             // Grab downwards ladder
@@ -180,39 +180,39 @@ void platform_update() BANKED {
             if (tile_at(tile_x_mid, tile_y) & TILE_PROP_LADDER) {
                 PLAYER.pos.x = (((tile_x_mid << 3) + 4 - (PLAYER.bounds.left + p_half_width) << 4));
                 on_ladder = TRUE;
-                pl_vel_x = 0;
+                platform_vel_x = 0;
             }
         }
 
         // Gravity
-        if (INPUT_PLATFORM_JUMP && pl_vel_y < 0) {
-            pl_vel_y += plat_hold_grav;
+        if (INPUT_PLATFORM_JUMP && platform_vel_y < 0) {
+            platform_vel_y += platform_hold_grav;
         } else {
-            pl_vel_y += plat_grav;
+            platform_vel_y += platform_grav;
         }
 
         // Step X
         tile_start = (((PLAYER.pos.y >> 4) + PLAYER.bounds.top)    >> 3);
         tile_end   = (((PLAYER.pos.y >> 4) + PLAYER.bounds.bottom) >> 3) + 1;
-        if (pl_vel_x > 0) {
-            UWORD new_x = PLAYER.pos.x + (pl_vel_x >> 8);
+        if (platform_vel_x > 0) {
+            UWORD new_x = PLAYER.pos.x + (platform_vel_x >> 8);
             UBYTE tile_x = ((new_x >> 4) + PLAYER.bounds.right) >> 3;
             while (tile_start != tile_end) {
                 if (tile_at(tile_x, tile_start) & COLLISION_LEFT) {
                     new_x = (((tile_x << 3) - PLAYER.bounds.right) << 4) - 1;
-                    pl_vel_x = 0;
+                    platform_vel_x = 0;
                     break;
                 }
                 tile_start++;
             }
             PLAYER.pos.x = MIN((image_width - 16) << 4, new_x);
-        } else if (pl_vel_x < 0) {
-            WORD new_x = PLAYER.pos.x + (pl_vel_x >> 8);
+        } else if (platform_vel_x < 0) {
+            WORD new_x = PLAYER.pos.x + (platform_vel_x >> 8);
             UBYTE tile_x = ((new_x >> 4) + PLAYER.bounds.left) >> 3;
             while (tile_start != tile_end) {
                 if (tile_at(tile_x, tile_start) & COLLISION_RIGHT) {
                     new_x = ((((tile_x + 1) << 3) - PLAYER.bounds.left) << 4) + 1;
-                    pl_vel_x = 0;
+                    platform_vel_x = 0;
                     break;
                 }
                 tile_start++;
@@ -224,26 +224,26 @@ void platform_update() BANKED {
         grounded = FALSE;    
         tile_start = (((PLAYER.pos.x >> 4) + PLAYER.bounds.left)  >> 3);
         tile_end   = (((PLAYER.pos.x >> 4) + PLAYER.bounds.right) >> 3) + 1;
-        if (pl_vel_y > 0) {
-            UWORD new_y = PLAYER.pos.y + (pl_vel_y >> 8);
+        if (platform_vel_y > 0) {
+            UWORD new_y = PLAYER.pos.y + (platform_vel_y >> 8);
             UBYTE tile_y = ((new_y >> 4) + PLAYER.bounds.bottom) >> 3;
             while (tile_start != tile_end) {
                 if (tile_at(tile_start, tile_y) & COLLISION_TOP) {
                     new_y = ((((tile_y) << 3) - PLAYER.bounds.bottom) << 4) - 1;
                     grounded = TRUE;
-                    pl_vel_y = 0;
+                    platform_vel_y = 0;
                     break;
                 }
                 tile_start++;
             }
             PLAYER.pos.y = new_y;
-        } else if (pl_vel_y < 0) {
-            UWORD new_y = PLAYER.pos.y + (pl_vel_y >> 8);
+        } else if (platform_vel_y < 0) {
+            UWORD new_y = PLAYER.pos.y + (platform_vel_y >> 8);
             UBYTE tile_y = (((new_y >> 4) + PLAYER.bounds.top) >> 3);
             while (tile_start != tile_end) {
                 if (tile_at(tile_start, tile_y) & COLLISION_BOTTOM) {
                     new_y = ((((UBYTE)(tile_y + 1) << 3) - PLAYER.bounds.top) << 4) + 1;
-                    pl_vel_y = 0;
+                    platform_vel_y = 0;
                     break;
                 }
                 tile_start++;
@@ -252,7 +252,7 @@ void platform_update() BANKED {
         }
 
         // Clamp Y Velocity
-        pl_vel_y = MIN(pl_vel_y, plat_max_fall_vel);
+        platform_vel_y = MIN(platform_vel_y, platform_max_fall_vel);
     }
 
     UBYTE tile_x_mid = ((PLAYER.pos.x >> 4) + ((PLAYER.bounds.right - PLAYER.bounds.left) >> 2)) >> 3;
@@ -281,20 +281,20 @@ void platform_update() BANKED {
 
     // Jump
     if (INPUT_PRESSED(INPUT_PLATFORM_JUMP) && grounded && can_jump) {
-        pl_vel_y = -plat_jump_vel;
+        platform_vel_y = -platform_jump_vel;
         grounded = FALSE;
     }
 
     // Player animation
     if (on_ladder) {
         actor_set_anim(&PLAYER, ANIM_CLIMB);
-        if (pl_vel_y == 0) {
+        if (platform_vel_y == 0) {
             actor_stop_anim(&PLAYER);
         }
     } else if (grounded) {
-        if (pl_vel_x < 0) {
+        if (platform_vel_x < 0) {
             actor_set_dir(&PLAYER, DIR_LEFT, TRUE);
-        } else if (pl_vel_x > 0) {
+        } else if (platform_vel_x > 0) {
             actor_set_dir(&PLAYER, DIR_RIGHT, TRUE);
         } else {
             actor_set_anim_idle(&PLAYER);

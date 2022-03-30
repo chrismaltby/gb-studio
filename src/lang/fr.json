@@ -322,7 +322,7 @@
   "FIELD_MULTI_DIRECTION": "Quatre Directions",
   "FIELD_FIXED_DIRECTION_MOVEMENT": "Direction fixe + Mouvement",
   "FIELD_MULTI_DIRECTION_MOVEMENT": "Quatre Directions + Mouvement",
-  "FIELD_PLATFORMER_PLAYER": "Joueur Platformer",
+  "FIELD_PLATFORM_PLAYER": "Joueur Platformer",
   "FIELD_FLIP_RIGHT_TO_CREATE_LEFT": "Retourner à 'droite' pour créer des images orientées à 'gauche'",
   "FIELD_CANVAS_SIZE": "Taille du cadre",
   "FIELD_COLLISION_BOUNDING_BOX": "Boîte de délimitation des collisions",
@@ -910,11 +910,11 @@
 
   "// 19 ": "Game Type --------------------------------------------------",
 
-  "GAMETYPE_TOP_DOWN": "Top Down 2D",
-  "GAMETYPE_PLATFORMER": "Platformer",
+  "GAMETYPE_TOPDOWN": "Top Down 2D",
+  "GAMETYPE_PLATFORM": "Platformer",
   "GAMETYPE_ADVENTURE": "Aventure",
   "GAMETYPE_SHMUP": "Shoot Em' Up",
-  "GAMETYPE_POINT_N_CLICK": "Point and Click",
+  "GAMETYPE_POINTNCLICK": "Point and Click",
   "GAMETYPE_LOGO": "Logo",
 
   "// 20": "Compiler -----------------------------------------------------",

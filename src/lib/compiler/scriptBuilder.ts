@@ -2366,7 +2366,7 @@ extern void __mute_mask_${symbol};
     } else if (height === "high") {
       value = -0x6000;
     }
-    this._setConstMemInt16("pl_vel_y", value);
+    this._setConstMemInt16("platform_vel_y", value);
     this._addNL();
   };
 

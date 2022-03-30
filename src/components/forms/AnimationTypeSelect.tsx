@@ -39,13 +39,13 @@ const options: AnimationTypeOptGroup[] = [
     ],
   },
   {
-    label: l10n("GAMETYPE_PLATFORMER"),
+    label: l10n("GAMETYPE_PLATFORM"),
     options: [
-      { label: l10n("FIELD_PLATFORMER_PLAYER"), value: "platform_player" },
+      { label: l10n("FIELD_PLATFORM_PLAYER"), value: "platform_player" },
     ],
   },
   {
-    label: l10n("GAMETYPE_POINT_N_CLICK"),
+    label: l10n("GAMETYPE_POINTNCLICK"),
     options: [{ label: l10n("FIELD_CURSOR"), value: "cursor" }],
   },
 ];

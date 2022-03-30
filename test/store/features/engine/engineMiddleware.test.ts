@@ -44,7 +44,7 @@ test("Should be able to scan ejected engine for new fields", async () => {
       {
         cType: "WORD",
         defaultValue: 304,
-        group: "GAMETYPE_PLATFORMER",
+        group: "GAMETYPE_PLATFORM",
         key: "test_field_1",
         label: "FIELD_MIN_VEL",
         max: 16384,
@@ -54,7 +54,7 @@ test("Should be able to scan ejected engine for new fields", async () => {
       {
         cType: "UBYTE",
         defaultValue: 8,
-        group: "GAMETYPE_TOP_DOWN",
+        group: "GAMETYPE_TOPDOWN",
         key: "test_field_2",
         label: "FIELD_GRID_SIZE",
         options: [

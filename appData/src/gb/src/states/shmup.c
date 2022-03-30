@@ -12,14 +12,14 @@
 #include "trigger.h"
 #include "vm.h"
 
-#ifndef SHOOTER_HURT_IFRAMES
-#define SHOOTER_HURT_IFRAMES 10
+#ifndef SHMUP_HURT_IFRAMES
+#define SHMUP_HURT_IFRAMES 10
 #endif
 
-UINT8 shooter_scroll_speed = 16;
-UBYTE shooter_reached_end;
-UWORD shooter_dest;
-direction_e shooter_direction;
+UINT8 shmup_scroll_speed = 16;
+UBYTE shmup_reached_end;
+UWORD shmup_dest;
+direction_e shmup_direction;
 
 void shmup_init() BANKED {
 
@@ -28,27 +28,27 @@ void shmup_init() BANKED {
     camera_deadzone_x = 0;
     camera_deadzone_y = 0;
 
-    shooter_direction = PLAYER.dir;
+    shmup_direction = PLAYER.dir;
 
-    if (shooter_direction == DIR_LEFT) {
+    if (shmup_direction == DIR_LEFT) {
         // Right to left scrolling
         camera_offset_x = 48;
-        shooter_dest = (SCREEN_WIDTH_HALF + 48) << 4;
-    } else if (shooter_direction == DIR_RIGHT) {
+        shmup_dest = (SCREEN_WIDTH_HALF + 48) << 4;
+    } else if (shmup_direction == DIR_RIGHT) {
         // Left to right scrolling
         camera_offset_x = -64;
-        shooter_dest = (image_width - SCREEN_WIDTH_HALF - 64) << 4;
-    } else if (shooter_direction == DIR_UP) {
+        shmup_dest = (image_width - SCREEN_WIDTH_HALF - 64) << 4;
+    } else if (shmup_direction == DIR_UP) {
         // Bottom to top scrolling
         camera_offset_y = 48;
-        shooter_dest = (SCREEN_WIDTH_HALF + 40) << 4;
+        shmup_dest = (SCREEN_WIDTH_HALF + 40) << 4;
     } else {
         // Top to bottom scrolling
         camera_offset_y = -48;
-        shooter_dest = (image_height - SCREEN_WIDTH_HALF - 40) << 4;
+        shmup_dest = (image_height - SCREEN_WIDTH_HALF - 40) << 4;
     }
 
-    shooter_reached_end = FALSE;
+    shmup_reached_end = FALSE;
 }
 
 void shmup_update() BANKED {
@@ -57,7 +57,7 @@ void shmup_update() BANKED {
     direction_e new_dir = DIR_NONE;
     player_moving = FALSE;
 
-    if (IS_DIR_HORIZONTAL(shooter_direction)) {
+    if (IS_DIR_HORIZONTAL(shmup_direction)) {
         if (INPUT_UP) {
             player_moving = TRUE;
             new_dir = DIR_UP;
@@ -65,7 +65,7 @@ void shmup_update() BANKED {
             player_moving = TRUE;
             new_dir = DIR_DOWN;
         } else {
-            new_dir = shooter_direction;
+            new_dir = shmup_direction;
         }
     } else {
         if (INPUT_LEFT) {
@@ -75,7 +75,7 @@ void shmup_update() BANKED {
             player_moving = TRUE;
             new_dir = DIR_RIGHT;
         } else {
-            new_dir = shooter_direction;
+            new_dir = shmup_direction;
         }
     }
 
@@ -92,7 +92,7 @@ void shmup_update() BANKED {
         point_translate_dir(&new_pos, PLAYER.dir, PLAYER.move_speed);
 
         // Check for tile collisions
-        if (IS_DIR_HORIZONTAL(shooter_direction)) {
+        if (IS_DIR_HORIZONTAL(shmup_direction)) {
             // Step Y
             tile_start = (((PLAYER.pos.x >> 4) + PLAYER.bounds.left)  >> 3);
             tile_end   = (((PLAYER.pos.x >> 4) + PLAYER.bounds.right) >> 3) + 1;
@@ -146,22 +146,22 @@ void shmup_update() BANKED {
     }
 
     // Auto scroll background
-    if (!shooter_reached_end) {
-        point_translate_dir(&PLAYER.pos, shooter_direction, shooter_scroll_speed);
+    if (!shmup_reached_end) {
+        point_translate_dir(&PLAYER.pos, shmup_direction, shmup_scroll_speed);
 
         // Check if reached end of screen
-        if ((shooter_direction == DIR_RIGHT) && (PLAYER.pos.x > shooter_dest)) {
-            shooter_reached_end = TRUE;
-            PLAYER.pos.x = shooter_dest;
-        } else if ((shooter_direction == DIR_LEFT) && (PLAYER.pos.x < shooter_dest)) {
-            shooter_reached_end = TRUE;
-            PLAYER.pos.x = shooter_dest;
-        } else if ((shooter_direction == DIR_DOWN) && (PLAYER.pos.y > shooter_dest)) {
-            shooter_reached_end = TRUE;
-            PLAYER.pos.y = shooter_dest;
-        } else if ((shooter_direction == DIR_UP) && (PLAYER.pos.y < shooter_dest)) {
-            shooter_reached_end = TRUE;
-            PLAYER.pos.y = shooter_dest;
+        if ((shmup_direction == DIR_RIGHT) && (PLAYER.pos.x > shmup_dest)) {
+            shmup_reached_end = TRUE;
+            PLAYER.pos.x = shmup_dest;
+        } else if ((shmup_direction == DIR_LEFT) && (PLAYER.pos.x < shmup_dest)) {
+            shmup_reached_end = TRUE;
+            PLAYER.pos.x = shmup_dest;
+        } else if ((shmup_direction == DIR_DOWN) && (PLAYER.pos.y > shmup_dest)) {
+            shmup_reached_end = TRUE;
+            PLAYER.pos.y = shmup_dest;
+        } else if ((shmup_direction == DIR_UP) && (PLAYER.pos.y < shmup_dest)) {
+            shmup_reached_end = TRUE;
+            PLAYER.pos.y = shmup_dest;
         }
     }
 

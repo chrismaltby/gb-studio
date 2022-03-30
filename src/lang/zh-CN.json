@@ -333,7 +333,7 @@
   "FIELD_MULTI_DIRECTION": "四个方向",
   "FIELD_FIXED_DIRECTION_MOVEMENT": "固定方向 + 运动",
   "FIELD_MULTI_DIRECTION_MOVEMENT": "四个方向 + 运动",
-  "FIELD_PLATFORMER_PLAYER": "平台游戏玩家",
+  "FIELD_PLATFORM_PLAYER": "平台游戏玩家",
   "FIELD_FLIP_RIGHT_TO_CREATE_LEFT": "翻转“右”以创建“左”面帧",
   "FIELD_CANVAS_SIZE": "画布尺寸",
   "FIELD_COLLISION_BOUNDING_BOX": "碰撞边界框",
@@ -969,11 +969,11 @@
 
   "// 19 ": "Game Type --------------------------------------------------",
 
-  "GAMETYPE_TOP_DOWN": "自上而下的 2D 游戏",
-  "GAMETYPE_PLATFORMER": "平台游戏",
+  "GAMETYPE_TOPDOWN": "自上而下的 2D 游戏",
+  "GAMETYPE_PLATFORM": "平台游戏",
   "GAMETYPE_ADVENTURE": "冒险游戏",
   "GAMETYPE_SHMUP": "射击游戏",
-  "GAMETYPE_POINT_N_CLICK": "指向并单击",
+  "GAMETYPE_POINTNCLICK": "指向并单击",
   "GAMETYPE_LOGO": "标志",
 
   "// 20": "Compiler -----------------------------------------------------",

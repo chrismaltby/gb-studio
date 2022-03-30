@@ -334,7 +334,7 @@
   "FIELD_MULTI_DIRECTION": "Cztery kierunki",
   "FIELD_FIXED_DIRECTION_MOVEMENT": "Ustalony kierunek + Ruch",
   "FIELD_MULTI_DIRECTION_MOVEMENT": "Cztery kierunki + Ruch",
-  "FIELD_PLATFORMER_PLAYER": "Gracz platformowy",
+  "FIELD_PLATFORM_PLAYER": "Gracz platformowy",
   "FIELD_FLIP_RIGHT_TO_CREATE_LEFT": "Odbij klatki 'Prawej strony', aby stworzyć klatki 'Lewej strony'",
   "FIELD_CANVAS_SIZE": "Rozmiar płótna",
   "FIELD_COLLISION_BOUNDING_BOX": "Ramka ograniczająca kolizję",
@@ -978,11 +978,11 @@
   
   "// 19 ": "Game Type --------------------------------------------------",
 
-  "GAMETYPE_TOP_DOWN": "2D RPG (widok z góry - top down 2D)",
-  "GAMETYPE_PLATFORMER": "Platformówka",
+  "GAMETYPE_TOPDOWN": "2D RPG (widok z góry - top down 2D)",
+  "GAMETYPE_PLATFORM": "Platformówka",
   "GAMETYPE_ADVENTURE": "Przygodówka",
   "GAMETYPE_SHMUP": "Strzelanka (SHMUP)",
-  "GAMETYPE_POINT_N_CLICK": "Wskaż i kliknij (point and click)",
+  "GAMETYPE_POINTNCLICK": "Wskaż i kliknij (point and click)",
   "GAMETYPE_LOGO": "Logo",
   
   "// 20": "Compiler -----------------------------------------------------",

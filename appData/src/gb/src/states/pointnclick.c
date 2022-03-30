@@ -11,8 +11,8 @@
 #include "trigger.h"
 #include "vm.h"
 
-#ifndef POINT_N_CLICK_CAMERA_DEADZONE
-#define POINT_N_CLICK_CAMERA_DEADZONE 24
+#ifndef POINTNCLICK_CAMERA_DEADZONE
+#define POINTNCLICK_CAMERA_DEADZONE 24
 #endif
 
 UBYTE last_hit_trigger = MAX_TRIGGERS;
@@ -20,8 +20,8 @@ UBYTE last_hit_trigger = MAX_TRIGGERS;
 void pointnclick_init() BANKED {
     camera_offset_x = 0;
     camera_offset_y = 0;
-    camera_deadzone_x = POINT_N_CLICK_CAMERA_DEADZONE;
-    camera_deadzone_y = POINT_N_CLICK_CAMERA_DEADZONE;
+    camera_deadzone_x = POINTNCLICK_CAMERA_DEADZONE;
+    camera_deadzone_y = POINTNCLICK_CAMERA_DEADZONE;
     PLAYER.dir = DIR_RIGHT;
     actor_set_anim(&PLAYER, ANIM_CURSOR);
 }

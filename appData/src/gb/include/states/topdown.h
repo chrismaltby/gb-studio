@@ -1,5 +1,5 @@
-#ifndef STATE_TOP_DOWN_H
-#define STATE_TOP_DOWN_H
+#ifndef STATE_TOPDOWN_H
+#define STATE_TOPDOWN_H
 
 #include <gb/gb.h>
 

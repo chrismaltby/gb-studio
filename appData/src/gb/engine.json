@@ -4,7 +4,7 @@
     {
       "key": "INPUT_PLATFORM_JUMP",
       "label": "FIELD_INPUT_JUMP",
-      "group": "GAMETYPE_PLATFORMER",
+      "group": "GAMETYPE_PLATFORM",
       "type": "select",
       "options": [
         ["INPUT_A", "A"],
@@ -17,7 +17,7 @@
     {
       "key": "INPUT_PLATFORM_RUN",
       "label": "FIELD_INPUT_RUN",
-      "group": "GAMETYPE_PLATFORMER",
+      "group": "GAMETYPE_PLATFORM",
       "type": "select",
       "options": [
         ["INPUT_A", "A"],
@@ -29,7 +29,7 @@
     {
       "key": "INPUT_PLATFORM_INTERACT",
       "label": "FIELD_INPUT_INTERACT",
-      "group": "GAMETYPE_PLATFORMER",
+      "group": "GAMETYPE_PLATFORM",
       "type": "select",
       "options": [
         ["INPUT_A", "A"],
@@ -41,9 +41,9 @@
       "defaultValue": "INPUT_A"
     },        
     {
-      "key": "plat_min_vel",
+      "key": "platform_min_vel",
       "label": "FIELD_MIN_VEL",
-      "group": "GAMETYPE_PLATFORMER",
+      "group": "GAMETYPE_PLATFORM",
       "type": "slider",
       "cType": "WORD",
       "defaultValue": 304,
@@ -51,9 +51,9 @@
       "max": 16384
     },
     {
-      "key": "plat_walk_vel",
+      "key": "platform_walk_vel",
       "label": "FIELD_WALK_VEL",
-      "group": "GAMETYPE_PLATFORMER",
+      "group": "GAMETYPE_PLATFORM",
       "type": "slider",
       "cType": "WORD",
       "defaultValue": 6400,
@@ -61,9 +61,9 @@
       "max": 16384
     },
     {
-      "key": "plat_run_vel",
+      "key": "platform_run_vel",
       "label": "FIELD_RUN_VEL",
-      "group": "GAMETYPE_PLATFORMER",
+      "group": "GAMETYPE_PLATFORM",
       "type": "slider",
       "cType": "WORD",
       "defaultValue": 10496,
@@ -71,9 +71,9 @@
       "max": 16384
     },
     {
-      "key": "plat_climb_vel",
+      "key": "platform_climb_vel",
       "label": "FIELD_CLIMB_VEL",
-      "group": "GAMETYPE_PLATFORMER",
+      "group": "GAMETYPE_PLATFORM",
       "type": "slider",
       "cType": "WORD",
       "defaultValue": 4000,
@@ -81,9 +81,9 @@
       "max": 16384
     },    
     {
-      "key": "plat_walk_acc",
+      "key": "platform_walk_acc",
       "label": "FIELD_WALK_ACC",
-      "group": "GAMETYPE_PLATFORMER",
+      "group": "GAMETYPE_PLATFORM",
       "type": "slider",
       "cType": "WORD",
       "defaultValue": 152,
@@ -91,9 +91,9 @@
       "max": 768
     },
     {
-      "key": "plat_run_acc",
+      "key": "platform_run_acc",
       "label": "FIELD_RUN_ACC",
-      "group": "GAMETYPE_PLATFORMER",
+      "group": "GAMETYPE_PLATFORM",
       "type": "slider",
       "cType": "WORD",
       "defaultValue": 228,
@@ -101,9 +101,9 @@
       "max": 768
     },
     {
-      "key": "plat_dec",
+      "key": "platform_dec",
       "label": "FIELD_DECELERATION",
-      "group": "GAMETYPE_PLATFORMER",
+      "group": "GAMETYPE_PLATFORM",
       "type": "slider",
       "cType": "WORD",
       "defaultValue": 208,
@@ -111,9 +111,9 @@
       "max": 768
     },
     {
-      "key": "plat_jump_vel",
+      "key": "platform_jump_vel",
       "label": "FIELD_JUMP_VEL",
-      "group": "GAMETYPE_PLATFORMER",
+      "group": "GAMETYPE_PLATFORM",
       "type": "slider",
       "cType": "WORD",
       "defaultValue": 16384,
@@ -121,9 +121,9 @@
       "max": 32768
     },   
     {
-      "key": "plat_grav",
+      "key": "platform_grav",
       "label": "FIELD_GRAVITY",
-      "group": "GAMETYPE_PLATFORMER",
+      "group": "GAMETYPE_PLATFORM",
       "type": "slider",
       "cType": "WORD",
       "defaultValue": 1792,
@@ -131,9 +131,9 @@
       "max": 8192
     },   
     {
-      "key": "plat_hold_grav",
+      "key": "platform_hold_grav",
       "label": "FIELD_GRAVITY_JUMP",
-      "group": "GAMETYPE_PLATFORMER",
+      "group": "GAMETYPE_PLATFORM",
       "type": "slider",
       "cType": "WORD",
       "defaultValue": 512,
@@ -141,9 +141,9 @@
       "max": 8192
     },       
     {
-      "key": "plat_max_fall_vel",
+      "key": "platform_max_fall_vel",
       "label": "FIELD_MAX_FALL_VEL",
-      "group": "GAMETYPE_PLATFORMER",
+      "group": "GAMETYPE_PLATFORM",
       "type": "slider",
       "cType": "WORD",
       "defaultValue": 20000,
@@ -151,7 +151,7 @@
       "max": 24560
     },
     {
-      "key": "shooter_scroll_speed",
+      "key": "shmup_scroll_speed",
       "label": "FIELD_SCROLL_SPEED",
       "group": "GAMETYPE_SHMUP",
       "type": "slider",
@@ -163,7 +163,7 @@
     {
       "key": "INPUT_TOPDOWN_INTERACT",
       "label": "FIELD_INPUT_INTERACT",
-      "group": "GAMETYPE_TOP_DOWN",
+      "group": "GAMETYPE_TOPDOWN",
       "type": "select",
       "options": [
         ["INPUT_A", "A"],
@@ -175,7 +175,7 @@
     {
       "key": "topdown_grid",
       "label": "FIELD_GRID_SIZE",
-      "group": "GAMETYPE_TOP_DOWN",
+      "group": "GAMETYPE_TOPDOWN",
       "type": "select",
       "options": [
         [8, "FIELD_GRID_8PX"],
