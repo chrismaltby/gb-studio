@@ -4251,49 +4251,49 @@ class ScriptBuilder {
     const otherActorRef = this._declareLocal("other_actor", 3, true);
     const falseLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
-    const distanceSquared = distance  * distance; 
+    const distanceSquared = distance * distance;
 
     this._addComment(`If Actor ${operator} ${distance} tiles from Actor`);
     this._actorGetPosition(this._localRef(actorRef));
     this.setActorId(this._localRef(otherActorRef), otherId);
     this._actorGetPosition(this._localRef(otherActorRef));
-    
-      // (x2-x1)^2 + (y2-y1)^2
-      this._rpn() //
-        .ref(this._localRef(otherActorRef, 1)) // X2
-        .int16(8 * 16)
-        .operator(".DIV")
-        .ref(this._localRef(actorRef, 1)) // X1
-        .int16(8 * 16)
-        .operator(".DIV")
-        .operator(".SUB")
-        .ref(this._localRef(otherActorRef, 1)) // X2
-        .int16(8 * 16)
-        .operator(".DIV")
-        .ref(this._localRef(actorRef, 1)) // X1
-        .int16(8 * 16)
-        .operator(".DIV")
-        .operator(".SUB")
-        .operator(".MUL")
-        .ref(this._localRef(otherActorRef, 2)) // Y2
-        .int16(8 * 16)
-        .operator(".DIV")
-        .ref(this._localRef(actorRef, 2)) // Y1
-        .int16(8 * 16)
-        .operator(".DIV")
-        .operator(".SUB")
-        .ref(this._localRef(otherActorRef, 2)) // Y2
-        .int16(8 * 16)
-        .operator(".DIV")
-        .ref(this._localRef(actorRef, 2)) // Y1
-        .int16(8 * 16)
-        .operator(".DIV")
-        .operator(".SUB")
-        .operator(".MUL")
-        .operator(".ADD")
-        .int16(distanceSquared)
-        .operator(operator)
-        .stop();
+
+    // (x2-x1)^2 + (y2-y1)^2
+    this._rpn() //
+      .ref(this._localRef(otherActorRef, 1)) // X2
+      .int16(8 * 16)
+      .operator(".DIV")
+      .ref(this._localRef(actorRef, 1)) // X1
+      .int16(8 * 16)
+      .operator(".DIV")
+      .operator(".SUB")
+      .ref(this._localRef(otherActorRef, 1)) // X2
+      .int16(8 * 16)
+      .operator(".DIV")
+      .ref(this._localRef(actorRef, 1)) // X1
+      .int16(8 * 16)
+      .operator(".DIV")
+      .operator(".SUB")
+      .operator(".MUL")
+      .ref(this._localRef(otherActorRef, 2)) // Y2
+      .int16(8 * 16)
+      .operator(".DIV")
+      .ref(this._localRef(actorRef, 2)) // Y1
+      .int16(8 * 16)
+      .operator(".DIV")
+      .operator(".SUB")
+      .ref(this._localRef(otherActorRef, 2)) // Y2
+      .int16(8 * 16)
+      .operator(".DIV")
+      .ref(this._localRef(actorRef, 2)) // Y1
+      .int16(8 * 16)
+      .operator(".DIV")
+      .operator(".SUB")
+      .operator(".MUL")
+      .operator(".ADD")
+      .int16(distanceSquared)
+      .operator(operator)
+      .stop();
 
     this._ifConst(".EQ", ".ARG0", 0, falseLabel, 1);
     this._addNL();

@@ -68,9 +68,7 @@ class EventHelper extends Component {
       );
     }
 
-    if (
-      event.command === EVENT_IF_ACTOR_DISTANCE_FROM_ACTOR
-    ) {
+    if (event.command === EVENT_IF_ACTOR_DISTANCE_FROM_ACTOR) {
       const distance = argValue(event.args.distance);
       if (distance === undefined) {
         return <div />;
@@ -84,8 +82,16 @@ class EventHelper extends Component {
       const { scene, actorsLookup } = this.props;
       if (otherActorId === "$self$") {
         // Find the actor that is referenced in the current event
-        let actor = Object.values(actorsLookup)
-          .find((actor) => actor.updateScript.concat(actor.startScript).concat(actor.script).concat(actor.hit1Script).concat(actor.hit2Script).concat(actor.hit3Script).find((v) => v === this.props.event.id) !== undefined);
+        let actor = Object.values(actorsLookup).find(
+          (actor) =>
+            actor.updateScript
+              .concat(actor.startScript)
+              .concat(actor.script)
+              .concat(actor.hit1Script)
+              .concat(actor.hit2Script)
+              .concat(actor.hit3Script)
+              .find((v) => v === this.props.event.id) !== undefined
+        );
 
         let { x, y } = actor;
         let { width, height } = scene;
@@ -93,7 +99,7 @@ class EventHelper extends Component {
         var tiles = [];
         for (var xpos = 0; xpos < width; xpos++) {
           for (var ypos = 0; ypos < height; ypos++) {
-            // distance formula 
+            // distance formula
             let d = Math.sqrt(Math.pow(xpos - x, 2) + Math.pow(ypos - y, 2));
 
             switch (event.args.operator) {
@@ -133,17 +139,17 @@ class EventHelper extends Component {
 
         return (
           <div className="EventHelper">
-            {tiles.map((v, i) =>
-            (<div
-              key={i}
-              className="EventHelper__PosMarker"
-              style={{
-                left: (v.xpos || 0) * TILE_SIZE,
-                top: (v.ypos || 0) * TILE_SIZE,
-                opacity: 0.8,
-              }}
-            />)
-            )}
+            {tiles.map((v, i) => (
+              <div
+                key={i}
+                className="EventHelper__PosMarker"
+                style={{
+                  left: (v.xpos || 0) * TILE_SIZE,
+                  top: (v.ypos || 0) * TILE_SIZE,
+                  opacity: 0.8,
+                }}
+              />
+            ))}
           </div>
         );
       }

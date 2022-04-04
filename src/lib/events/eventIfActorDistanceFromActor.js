@@ -79,13 +79,13 @@ const fields = [
 ];
 
 const compile = (input, helpers) => {
-  const { 
-    actorSetActive, 
-    ifActorDistanceFromActor, 
+  const {
+    actorSetActive,
+    ifActorDistanceFromActor,
     variableFromUnion,
-    temporaryEntityVariable 
+    temporaryEntityVariable,
   } = helpers;
-  
+
   const operationLookup = {
     "==": ".EQ",
     "!=": ".NE",
@@ -98,7 +98,7 @@ const compile = (input, helpers) => {
 
   const truePath = input.true;
   const falsePath = input.__disableElse ? [] : input.false;
-  
+
   if (input.distance.type === "number") {
     actorSetActive(input.actorId);
     ifActorDistanceFromActor(
@@ -109,7 +109,10 @@ const compile = (input, helpers) => {
       falsePath
     );
   } else {
-    const distanceVar = variableFromUnion(input.distance, temporaryEntityVariable(0));
+    const distanceVar = variableFromUnion(
+      input.distance,
+      temporaryEntityVariable(0)
+    );
     actorSetActive(input.actorId);
     ifActorDistanceFromActor(
       distanceVar,
