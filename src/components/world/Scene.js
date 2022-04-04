@@ -152,7 +152,6 @@ class Scene extends Component {
       labelOffsetRight,
       parallaxHoverLayer,
       editable,
-      actorsLookup,
     } = this.props;
 
     const {
@@ -318,11 +317,7 @@ class Scene extends Component {
             ))}
           {event && (
             <div className="Scene__EventHelper">
-              <EventHelper
-                event={event}
-                scene={scene}
-                actorsLookup={actorsLookup}
-              />
+              <EventHelper event={event} scene={scene} />
             </div>
           )}
         </div>
@@ -532,7 +527,6 @@ function mapStateToProps(state, props) {
     labelOffsetLeft,
     labelOffsetRight,
     parallaxHoverLayer,
-    actorsLookup,
   };
 }
 

@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { connect } from "react-redux";
 import {
   EVENT_CAMERA_MOVE_TO,
   EVENT_ACTOR_MOVE_TO,
@@ -9,6 +10,7 @@ import {
   EVENT_IF_ACTOR_AT_POSITION,
   EVENT_IF_ACTOR_DISTANCE_FROM_ACTOR,
 } from "lib/compiler/eventTypes";
+import { actorSelectors } from "store/features/entities/entitiesState";
 
 const TILE_SIZE = 8;
 
@@ -79,80 +81,78 @@ class EventHelper extends Component {
         return <div />;
       }
 
-      const { scene, actorsLookup } = this.props;
+      const { scene, actorsLookup, editorActorId } = this.props;
+      // Find the actor that is referenced in the current event
+      let actor;
       if (otherActorId === "$self$") {
-        // Find the actor that is referenced in the current event
-        let actor = Object.values(actorsLookup).find(
-          (actor) =>
-            actor.updateScript
-              .concat(actor.startScript)
-              .concat(actor.script)
-              .concat(actor.hit1Script)
-              .concat(actor.hit2Script)
-              .concat(actor.hit3Script)
-              .find((v) => v === this.props.event.id) !== undefined
-        );
+        actor = actorsLookup[editorActorId];
+      } else {
+        actor = actorsLookup[otherActorId];
+      }
 
-        let { x, y } = actor;
-        let { width, height } = scene;
+      if (actor === undefined) {
+        return <div />;
+      }
 
-        var tiles = [];
-        for (var xpos = 0; xpos < width; xpos++) {
-          for (var ypos = 0; ypos < height; ypos++) {
-            // distance formula
-            let d = Math.sqrt(Math.pow(xpos - x, 2) + Math.pow(ypos - y, 2));
+      let { x, y } = actor;
+      let { width, height } = scene;
 
-            switch (event.args.operator) {
-              case "==":
-                if (d == distance) {
-                  tiles.push({ xpos, ypos });
-                }
-                break;
-              case "!=":
-                if (d != distance) {
-                  tiles.push({ xpos, ypos });
-                }
-                break;
-              case "<":
-                if (d < distance) {
-                  tiles.push({ xpos, ypos });
-                }
-                break;
-              case ">":
-                if (d > distance) {
-                  tiles.push({ xpos, ypos });
-                }
-                break;
-              case "<=":
-                if (d <= distance) {
-                  tiles.push({ xpos, ypos });
-                }
-                break;
-              case ">=":
-                if (d >= distance) {
-                  tiles.push({ xpos, ypos });
-                }
-                break;
-            }
+      var tiles = [];
+      for (var xpos = 0; xpos < width; xpos++) {
+        for (var ypos = 0; ypos < height; ypos++) {
+          // distance formula
+          let d = Math.sqrt(Math.pow(xpos - x, 2) + Math.pow(ypos - y, 2));
+
+          switch (event.args.operator) {
+            case "==":
+              if (d == distance) {
+                tiles.push({ xpos, ypos });
+              }
+              break;
+            case "!=":
+              if (d != distance) {
+                tiles.push({ xpos, ypos });
+              }
+              break;
+            case "<":
+              if (d < distance) {
+                tiles.push({ xpos, ypos });
+              }
+              break;
+            case ">":
+              if (d > distance) {
+                tiles.push({ xpos, ypos });
+              }
+              break;
+            case "<=":
+              if (d <= distance) {
+                tiles.push({ xpos, ypos });
+              }
+              break;
+            case ">=":
+              if (d >= distance) {
+                tiles.push({ xpos, ypos });
+              }
+              break;
           }
         }
-
-        return (
-          <div className="EventHelper">
-            {tiles.map((v, i) => (
-              <div
-                key={i}
-                className="EventHelper__PosMarker"
-                style={{
-                  left: (v.xpos || 0) * TILE_SIZE,
-                  top: (v.ypos || 0) * TILE_SIZE,
-                  opacity: 0.8,
-                }}
-              />
-            ))}
-          </div>
-        );
       }
+
+      return (
+        <div className="EventHelper">
+          {tiles.map((v, i) => (
+            <div
+              key={i}
+              className="EventHelper__PosMarker"
+              style={{
+                left: (v.xpos || 0) * TILE_SIZE,
+                top: (v.ypos || 0) * TILE_SIZE,
+                opacity: 0.8,
+              }}
+            />
+          ))}
+        </div>
+      );
     }
 
     if (
@@ -194,4 +194,15 @@ EventHelper.defaultProps = {
   event: {},
 };
 
-export default EventHelper;
+function mapStateToProps(state, props) {
+  const actorsLookup = actorSelectors.selectEntities(state);
+  const editorActorId =
+    state.editor.type === "actor" ? state.editor.entityId : undefined;
+  return {
+    ...props,
+    actorsLookup,
+    editorActorId,
+  };
+}
+
+export default connect(mapStateToProps, null)(EventHelper);
