@@ -63,7 +63,7 @@ _set_xy_win_submap::
         push    af
         ld      a, (hl+)
         ldh	(__current_bank),a
-        ld      (#0x2000), a
+        ld      (#rROMB0), a
 
         ld      a, (hl+)
         inc     hl
@@ -73,10 +73,12 @@ _set_xy_win_submap::
         dec     hl
         dec     hl
 
-        ld      a, (hl+)
-        ld      e, a
-        ld      a, (hl+)
+        ld      a, (hl+)        ; d = x
+        and     #0x1f
         ld      d, a
+        ld      a, (hl+)        ; e = y
+        and     #0x1f
+        ld      e, a
 
         ld      a, (hl+)
         ld      l, (hl)
@@ -86,7 +88,7 @@ _set_xy_win_submap::
         
         pop     af
         ldh	(__current_bank),a
-        ld      (#0x2000), a
+        ld      (#rROMB0), a
         ret
 
         ;; set window tile table from bc at xy = de of size wh = hl

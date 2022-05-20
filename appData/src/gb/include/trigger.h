@@ -5,7 +5,6 @@
 #include "gbs_types.h"
 #include "math.h"
 
-#define TRIGGER_BANK 1
 #define MAX_TRIGGERS 31
 #define MAX_ACTIVE_TRIGGERS 11
 #define NO_TRIGGER_COLLISON 0xFF

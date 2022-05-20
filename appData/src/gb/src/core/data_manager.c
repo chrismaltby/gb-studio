@@ -213,6 +213,9 @@ UBYTE load_scene(const scene_t * scene, UBYTE bank, UBYTE init_data) BANKED {
     collision_bank = scn.collisions.bank;
     collision_ptr = scn.collisions.ptr;
 
+    // Load UI tiles, they may be overwritten by the following load_background() 
+    ui_load_tiles();
+
     // Load background + tiles
     load_background(scn.background.ptr, scn.background.bank);
 
@@ -230,8 +233,6 @@ UBYTE load_scene(const scene_t * scene, UBYTE bank, UBYTE init_data) BANKED {
     projectiles_init();
 
     if (scene_type != SCENE_TYPE_LOGO) {
-        // Load UI tiles
-        ui_load_tiles();
         // Load player
         PLAYER.sprite = scn.player_sprite;
         UBYTE n_loaded = load_sprite(PLAYER.base_tile = 0, scn.player_sprite.ptr, scn.player_sprite.bank);

@@ -154,14 +154,14 @@ void projectile_launch(UBYTE index, upoint16_t *pos, UBYTE angle) BANKED {
 
         // Set correct projectile frames based on angle
         UBYTE dir = DIR_UP;
-        if (angle > 224) {
-            dir = DIR_UP;
-        } else if (angle > 160) {
-            dir = DIR_LEFT;
-        } else if (angle > 96) {
-            dir = DIR_DOWN;
-        } else if (angle > 32) {
-            dir = DIR_RIGHT;
+        if (angle <= 224) {
+            if (angle >= 160) {
+                dir = DIR_LEFT;
+            } else if (angle > 96) {
+                dir = DIR_DOWN;
+            } else if (angle >= 32) {
+                dir = DIR_RIGHT;
+            }
         }
         projectile->frame = projectile->def.animations[dir].start;
         projectile->frame_start = projectile->def.animations[dir].start;

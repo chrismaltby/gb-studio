@@ -103,11 +103,6 @@ void vm_overlay_setpos(SCRIPT_CTX * THIS, UBYTE pos_x, UBYTE pos_y) OLDCALL BANK
     ui_set_pos(pos_x << 3, pos_y << 3);
 }
 
-// hides overlayed window
-void vm_overlay_hide() OLDCALL BANKED {
-    ui_set_pos(0, MENU_CLOSED_Y);
-}
-
 // wait until overlay window reaches destination
 void vm_overlay_wait(SCRIPT_CTX * THIS, UBYTE is_modal, UBYTE wait_flags) OLDCALL BANKED {
     if (is_modal) {
@@ -181,7 +176,7 @@ void vm_overlay_show(SCRIPT_CTX * THIS, UBYTE pos_x, UBYTE pos_y, UBYTE color, U
 
 void vm_choice(SCRIPT_CTX * THIS, INT16 idx, UBYTE options, UBYTE count) OLDCALL BANKED {
     INT16 * v = VM_REF_TO_PTR(idx);
-    *v = (count) ? ui_run_menu((menu_item_t *)(THIS->PC), THIS->bank, options, count) : 0;
+    *v = (count) ? ui_run_menu((menu_item_t *)(THIS->PC), THIS->bank, options, count, MAX(1, MIN(count, *v))) : 0;
     THIS->PC += sizeof(menu_item_t) * count;
 }
 
@@ -191,15 +186,9 @@ void vm_set_font(SCRIPT_CTX * THIS, UBYTE font_index) OLDCALL BANKED {
     MemcpyBanked(&vwf_current_font_desc, ui_fonts[font_index].ptr, sizeof(font_desc_t), vwf_current_font_bank);
 }
 
-void vm_set_print_dir(SCRIPT_CTX * THIS, UBYTE print_dir) OLDCALL BANKED {
-    THIS;
-    vwf_direction = print_dir & 1;
-}
-
 void vm_overlay_scroll(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE w, UBYTE h, UBYTE color) OLDCALL BANKED {
     THIS;
     UBYTE * base_addr = GetWinAddr() + (y << 5) + x;
-    scroll_rect(base_addr, w, h, ((color) ? ui_while_tile : ui_black_tile));
 #ifdef CGB
     if (_is_CGB) {
         VBK_REG = 1;
@@ -207,6 +196,7 @@ void vm_overlay_scroll(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE w, UBYTE h, UB
         VBK_REG = 0;
     }
 #endif
+    scroll_rect(base_addr, w, h, ((color) ? ui_while_tile : ui_black_tile));
 }
 
 void set_xy_win_submap(const UBYTE * source, UBYTE bank, UBYTE width, UBYTE x, UBYTE y, UBYTE w, UBYTE h) OLDCALL;
@@ -218,7 +208,7 @@ void vm_overlay_set_submap(SCRIPT_CTX * THIS, INT16 x_idx, INT16 y_idx, UBYTE w,
 #ifdef CGB
     if (_is_CGB) {
         VBK_REG = 1;
-        set_xy_win_submap(image_attr_ptr + offset, image_bank, image_tile_width, x, y, w, h);
+        set_xy_win_submap(image_attr_ptr + offset, image_attr_bank, image_tile_width, x, y, w, h);
         VBK_REG = 0;
     }
 #endif

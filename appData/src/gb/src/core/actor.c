@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include "system.h"
+#include "interrupts.h"
 #include "game_time.h"
 #include "scroll.h"
 #include "linked_list.h"
@@ -111,7 +112,7 @@ void actors_update() NONBANKED {
             deactivate_actor(actor);
             actor = prev;
             continue;
-        } else if (NO_OVERLAY_PRIORITY && (WX_REG != 7) && (WX_REG < (UINT8)screen_x + 8) && (WY_REG < (UINT8)(screen_y) - 8)) {
+        } else if (NO_OVERLAY_PRIORITY && (!show_actors_on_overlay) && (WX_REG != MINWNDPOSX) && (WX_REG < (UINT8)screen_x + 8) && (WY_REG < (UINT8)(screen_y) - 8)) {
             // Hide if under window (don't deactivate)
             actor = actor->prev;
             continue;

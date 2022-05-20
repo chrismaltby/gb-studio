@@ -23,7 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Updated to latest GBDK-2020
+- Updated to latest [GBDK-2020](https://github.com/gbdk-2020/gbdk-2020)
+- Updated to latest [GBVM](https://github.com/chrismaltby/gbvm)
 - Save/restore RNG seed when saving/loading a game [untoxa](https://github.com/untoxa)
 - Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
 - Optimised Switch event codegen to use VM_SWITCH instruction
@@ -49,6 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix compiling noise macros for UGE songs [@pau-tomas](https://github.com/pau-tomas)
 - Fix setting music editor preview start position to a different pattern [@pau-tomas](https://github.com/pau-tomas)
 - Fix issue where projectiles launched at >224 degrees would be facing in wrong direction [@john-lay](https://github.com/john-lay)
+- Restore previously playing music when loading game data
 
 ### Removed
 
