@@ -48,6 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where soft reset could lead to UI tiles over scene tiles [untoxa](https://github.com/untoxa)
 - Fix compiling noise macros for UGE songs [@pau-tomas](https://github.com/pau-tomas)
 - Fix setting music editor preview start position to a different pattern [@pau-tomas](https://github.com/pau-tomas)
+- Fix issue where projectiles launched at >224 degrees would be facing in wrong direction [@john-lay](https://github.com/john-lay)
 
 ### Removed
 
