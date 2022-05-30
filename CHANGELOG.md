@@ -48,6 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated 32-bit Windows app to use correct 32-bit GBDK-2020 (again) [untoxa](https://github.com/untoxa)
 - Fixed issue where relative actor movement on left or top edge of scene would wrap around scene [@um3k](https://github.com/um3k)
 - Fix issue where soft reset could lead to UI tiles over scene tiles [untoxa](https://github.com/untoxa)
+- Fix issue where undoing from music editor would also undo global project changes [@pau-tomas](https://github.com/pau-tomas)
 - Fix compiling noise macros for UGE songs [@pau-tomas](https://github.com/pau-tomas)
 - Fix setting music editor preview start position to a different pattern [@pau-tomas](https://github.com/pau-tomas)
 - Fix issue where projectiles launched at >224 degrees would be facing in wrong direction [@john-lay](https://github.com/john-lay)
