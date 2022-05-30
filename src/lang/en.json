@@ -513,6 +513,7 @@
   "FIELD_BASIC": "Basic",
   "FIELD_EFFECT_INDEX": "Effect Index",
   "FIELD_PRIORITY": "Priority",
+  "FIELD_ENABLE_EMULICIOUS_DEBUGGING": "Enable Emulicious C debugging",
   "FIELD_TEMPO_TOOLTIP":"Number of ticks per row",
 
   "// 7": "Asset Viewer ---------------------------------------------",
