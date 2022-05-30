@@ -67,34 +67,6 @@ export const InstrumentNoiseEditor = ({
       <FormDivider />
 
       <FormRow>
-        <SliderField
-          name="shift_clock_mask"
-          label={l10n("FIELD_SHIFT_CLOCK_MASK")}
-          value={instrument.shift_clock_mask || 0}
-          min={0}
-          max={15}
-          onChange={(value) => {
-            onChangeField("shift_clock_mask")(value || 0);
-          }}
-        />
-      </FormRow>
-
-      <FormRow>
-        <SliderField
-          name="dividing_ratio"
-          label={l10n("FIELD_DIVIDING_RATIO")}
-          value={instrument.dividing_ratio || 0}
-          min={0}
-          max={7}
-          onChange={(value) => {
-            onChangeField("dividing_ratio")(value || 0);
-          }}
-        />
-      </FormRow>
-
-      <FormDivider />
-
-      <FormRow>
         <CheckboxField
           name="length"
           label={l10n("FIELD_BIT_COUNT")}

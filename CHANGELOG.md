@@ -19,10 +19,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added event Actor Move Cancel to cancel any scripted movement currently running for a given actor [@um3k](https://github.com/um3k)
 - Add sound effects file support reading WAV (.wav), VGM (.vgm, .vgz) and FXHammer (.sav) files from assets/sounds folder
 - Add support for setting sound effects priority [untoxa](https://github.com/untoxa)
+- Add ability to generate Emulicious debugging files [@RichardULZ](https://github.com/RichardULZ) 
+- Add tooltips to Song Editor tools [DeerTears](https://github.com/DeerTears)
 
 ### Changed
 
-- Updated to latest GBDK-2020
+- Updated to latest [GBDK-2020](https://github.com/gbdk-2020/gbdk-2020)
+- Updated to latest [GBVM](https://github.com/chrismaltby/gbvm)
 - Save/restore RNG seed when saving/loading a game [untoxa](https://github.com/untoxa)
 - Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
 - Optimised Switch event codegen to use VM_SWITCH instruction
@@ -31,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved gbspack error when data is over bank size limits
 - Update hUGEDriver [untoxa](https://github.com/untoxa)
 - Hide/show actor now ONLY hides/shows, update scripts & collisions are not affected (existing hide/show events migrated to deactivate/activate for compatibility)
+- Updated Simplified Chinese localisation. [@wcxu21](https://github.com/wcxu21) 
 
 ### Fixed
 
@@ -45,10 +49,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed issue where relative actor movement on left or top edge of scene would wrap around scene [@um3k](https://github.com/um3k)
 - Fix issue where soft reset could lead to UI tiles over scene tiles [untoxa](https://github.com/untoxa)
 - Fix issue where undoing from music editor would also undo global project changes [@pau-tomas](https://github.com/pau-tomas)
+- Fix compiling noise macros for UGE songs [@pau-tomas](https://github.com/pau-tomas)
+- Fix setting music editor preview start position to a different pattern [@pau-tomas](https://github.com/pau-tomas)
+- Fix issue where projectiles launched at >224 degrees would be facing in wrong direction [@john-lay](https://github.com/john-lay)
+- Restore previously playing music when loading game data
 
 ### Removed
 
 - Removed .CURRENT_SCRIPT_BANK for gbvm scripts as results were unreliable
+- Removed deprecated dividing ratio and shift clock fields from noise instrument editor [@pau-tomas](https://github.com/pau-tomas)
 
 ## [3.0.3]
 

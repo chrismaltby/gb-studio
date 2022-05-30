@@ -15,14 +15,14 @@ __asm
     ldhl  sp,	#6
     ld  a, (hl)
     ldh	(__current_bank), a
-    ld  (#0x2000), a
+    ld  (_rROMB0), a
 
     pop bc
     call  _set_bkg_data     ; preserves BC
 
     ld  a, (#__save)
     ldh (__current_bank), a
-    ld  (#0x2000), a
+    ld  (_rROMB0), a
     ld  h, b
     ld  l, c
     jp  (hl)
@@ -38,14 +38,14 @@ __asm
     ldhl  sp, #6
     ld  a, (hl)
     ldh	(__current_bank), a
-    ld  (#0x2000), a
+    ld  (_rROMB0), a
 
     pop bc
     call  _set_sprite_data    ; preserves BC
 
     ld  a, (#__save)
     ldh (__current_bank), a
-    ld  (#0x2000), a
+    ld  (_rROMB0), a
     ld  h, b
     ld  l, c
     jp  (hl)
@@ -61,14 +61,14 @@ __asm
     ldhl  sp, #8
     ld  a, (hl)
     ldh	(__current_bank), a
-    ld  (#0x2000), a
+    ld  (_rROMB0), a
 
     pop bc
     call  _set_bkg_tiles    ; preserves BC
 
     ld  a, (#__save)
     ldh (__current_bank), a
-    ld  (#0x2000), a
+    ld  (_rROMB0), a
     ld  h, b
     ld  l, c
     jp  (hl)
@@ -84,14 +84,14 @@ __asm
     ldhl  sp, #8
     ld  a, (hl)
     ldh	(__current_bank), a
-    ld  (#0x2000), a
+    ld  (_rROMB0), a
 
     pop bc
     call  _set_win_tiles    ; preserves BC
 
     ld  a, (#__save)
     ldh (__current_bank), a
-    ld  (#0x2000), a
+    ld  (_rROMB0), a
     ld  h, b
     ld  l, c
     jp  (hl)
@@ -107,7 +107,7 @@ __asm
     ldhl  sp, #6
     ld  a, (hl)
     ldh	(__current_bank), a
-    ld  (#0x2000), a
+    ld  (_rROMB0), a
 
     ldhl  sp, #2
     ld  a, (hl+)
@@ -128,7 +128,7 @@ __asm
 
     ld  a, (#__save)
     ldh (__current_bank), a
-    ld  (#0x2000), a
+    ld  (_rROMB0), a
     ret
 __endasm;  
 }
@@ -142,7 +142,7 @@ __asm
     ldhl  sp, #4
     ld  a, (hl-)
     ldh	(__current_bank), a
-    ld  (#0x2000), a
+    ld  (_rROMB0), a
 
     ld  a, (hl-)
     ld  l, (hl)
@@ -153,7 +153,7 @@ __asm
 
     ld  a, (#__save)
     ldh (__current_bank), a
-    ld  (#0x2000), a
+    ld  (_rROMB0), a
     ret
 __endasm;  
 }
@@ -167,14 +167,14 @@ __asm
     ldhl  sp, #8
     ld  a, (hl)
     ldh	(__current_bank), a
-    ld  (#0x2000), a
+    ld  (_rROMB0), a
 
     pop bc
     call  _memcpy           ; preserves BC
 
     ld  a, (#__save)
     ldh (__current_bank), a
-    ld  (#0x2000), a
+    ld  (_rROMB0), a
     ld  h, b
     ld  l, c
     jp  (hl)
@@ -190,14 +190,14 @@ __asm
     ldhl  sp, #8
     ld  a, (hl)
     ldh	(__current_bank), a
-    ld  (#0x2000), a
+    ld  (_rROMB0), a
 
     pop bc
     call  _set_data         ; preserves BC 
 
     ld  a, (#__save)
     ldh (__current_bank), a
-    ld  (#0x2000), a
+    ld  (_rROMB0), a
     ld  h, b
     ld  l, c
     jp  (hl)
