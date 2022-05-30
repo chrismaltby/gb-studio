@@ -70,7 +70,6 @@ const getPlayButtonLabel = (play: boolean, playbackFromStart: boolean) => {
 
 const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
   const dispatch = useDispatch();
-  const projectRoot = useSelector((state: RootState) => state.document.root);
 
   const play = useSelector((state: RootState) => state.tracker.playing);
   const playerReady = useSelector(
@@ -84,6 +83,8 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
   const view = useSelector((state: RootState) => state.tracker.view);
 
   const tool = useSelector((state: RootState) => state.tracker.tool);
+  const [previousTool, setPreviousTool] = useState<PianoRollToolType>();
+  const [tmpSelectionMode, setTmpSelectionMode] = useState(false);
 
   const defaultStartPlaybackPosition = useSelector(
     (state: RootState) => state.tracker.defaultStartPlaybackPosition
@@ -92,6 +93,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
   const [playbackFromStart, setPlaybackFromStart] = useState(false);
 
   const togglePlay = useCallback(() => {
+    if (!playerReady) return;
     if (!play) {
       if (playbackFromStart) {
         ipcRenderer.send("music-data-send", {
@@ -103,7 +105,13 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
     } else {
       dispatch(trackerActions.pauseTracker());
     }
-  }, [defaultStartPlaybackPosition, dispatch, play, playbackFromStart]);
+  }, [
+    defaultStartPlaybackPosition,
+    dispatch,
+    play,
+    playbackFromStart,
+    playerReady,
+  ]);
 
   const stopPlayback = useCallback(() => {
     dispatch(trackerActions.stopTracker());
@@ -122,10 +130,11 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
   }, [dispatch, view]);
 
   const setTool = useCallback(
-    (tool: PianoRollToolType) => {
-      dispatch(trackerActions.setTool(tool));
+    (newTool: PianoRollToolType) => {
+      setPreviousTool(tool);
+      dispatch(trackerActions.setTool(newTool));
     },
-    [dispatch]
+    [dispatch, tool]
   );
 
   const saveSong = useCallback(() => {
@@ -168,11 +177,22 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
       if (e.target && (e.target as Node).nodeName === "INPUT") {
         return;
       }
+      if (!tmpSelectionMode && e.shiftKey) {
+        setTmpSelectionMode(true);
+        setTool("selection");
+      }
       if (e.ctrlKey || e.shiftKey) {
         return;
       }
       if (e.altKey) {
         setPlaybackFromStart(true);
+      }
+      if (e.key === "`") {
+        toggleView();
+      }
+      if (e.code === "Space") {
+        e.preventDefault();
+        togglePlay();
       }
       if (view !== "roll") {
         return;
@@ -197,7 +217,14 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
         setDefaultInstruments(8);
       }
     },
-    [setDefaultInstruments, setPlaybackFromStart, view]
+    [
+      tmpSelectionMode,
+      view,
+      setTool,
+      toggleView,
+      togglePlay,
+      setDefaultInstruments,
+    ]
   );
 
   const onKeyUp = useCallback(
@@ -205,8 +232,12 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
       if (!e.altKey) {
         setPlaybackFromStart(false);
       }
+      if (tmpSelectionMode && !e.shiftKey) {
+        setTool(previousTool || "pencil");
+        setTmpSelectionMode(false);
+      }
     },
-    [setPlaybackFromStart]
+    [tmpSelectionMode, setTool, previousTool]
   );
 
   useEffect(() => {
@@ -289,13 +320,13 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
             >
               <EraserIcon />
             </Button>
-            {/* <Button
+            <Button
               variant="transparent"
               onClick={() => setTool("selection")}
               active={tool === "selection"}
             >
               <SelectionIcon />
-            </Button>{" "} */}
+            </Button>
           </>
         ) : (
           ""

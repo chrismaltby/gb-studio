@@ -21,6 +21,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support for setting sound effects priority [untoxa](https://github.com/untoxa)
 - Add ability to generate Emulicious debugging files [@RichardULZ](https://github.com/RichardULZ) 
 - Add tooltips to Song Editor tools [DeerTears](https://github.com/DeerTears)
+- Added Piano Roll selection tool (also accessible by holding Shift) allowing multiple notes to be dragged at once [@pau-tomas](https://github.com/pau-tomas)
+- Added copy paste support for notes in music editor with OpenMPT/hUGETracker compatible clipboard format [@pau-tomas](https://github.com/pau-tomas)
+- Added ability to select multiple cells in tracker editor by holding shift while pressing arrow keys [@pau-tomas](https://github.com/pau-tomas)
+- Added keyboard shortcut (Space bar) to toggle play/pause in music editor [@pau-tomas](https://github.com/pau-tomas)
 
 ### Changed
 

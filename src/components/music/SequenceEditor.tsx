@@ -6,6 +6,7 @@ import styled, { css } from "styled-components";
 import { Select } from "ui/form/Select";
 import { PlusIcon } from "ui/icons/Icons";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
+import trackerActions from "store/features/tracker/trackerActions";
 
 interface SequenceOption {
   value: number;
@@ -76,6 +77,7 @@ export const SequenceEditorFwd = ({
   );
   const setSequenceId = useCallback(
     (sequenceId: number) => {
+      dispatch(trackerActions.setSelectedPatternCells([]));
       dispatch(editorActions.setSelectedSequence(sequenceId));
     },
     [dispatch]
