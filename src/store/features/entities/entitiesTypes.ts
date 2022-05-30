@@ -238,6 +238,8 @@ export type Variable = {
   id: string;
   name: string;
   symbol: string;
+  isArray: boolean;
+  size: number;
 };
 
 export type CustomEventVariable = {

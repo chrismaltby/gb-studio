@@ -2033,15 +2033,41 @@ const renameVariable: CaseReducer<
   EntitiesState,
   PayloadAction<{ variableId: string; name: string }>
 > = (state, action) => {
+  const variable = localVariableSelectors.selectById(
+    state,
+    action.payload.variableId
+  );
   if (action.payload.name) {
     variablesAdapter.upsertOne(state.variables, {
       id: action.payload.variableId,
       name: action.payload.name,
       symbol: genEntitySymbol(state, `var_${action.payload.name}`),
+      isArray: false,
+      size: 1,
     });
-  } else {
+  } else if (variable && !variable.isArray) {
     variablesAdapter.removeOne(state.variables, action.payload.variableId);
   }
+};
+
+const editVariable: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ variableId: string; changes: Partial<Variable> }>
+> = (state, action) => {
+  const variable = localVariableSelectors.selectById(
+    state,
+    action.payload.variableId
+  );
+  const patch = { ...action.payload.changes };
+
+  if (!variable) {
+    return;
+  }
+
+  variablesAdapter.updateOne(state.variables, {
+    id: action.payload.variableId,
+    changes: patch,
+  });
 };
 
 /**************************************************************************
@@ -2858,6 +2884,7 @@ const entitiesSlice = createSlice({
      */
 
     renameVariable,
+    editVariable,
 
     /**************************************************************************
      * Palettes
@@ -3105,6 +3132,9 @@ const localMusicSelectors = musicAdapter.getSelectors(
 );
 const localSoundSelectors = soundsAdapter.getSelectors(
   (state: EntitiesState) => state.sounds
+);
+const localVariableSelectors = variablesAdapter.getSelectors(
+  (state: EntitiesState) => state.variables
 );
 
 // Global
