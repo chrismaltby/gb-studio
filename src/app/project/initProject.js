@@ -19,6 +19,7 @@ import errorActions from "store/features/error/errorActions";
 import initElectronL10n from "lib/helpers/initElectronL10n";
 import { clampSidebarWidth } from "lib/helpers/window/sidebar";
 import { initKeyBindings } from "lib/keybindings/keyBindings";
+import { TRACKER_REDO, TRACKER_UNDO } from "../../consts";
 
 initElectronL10n();
 
@@ -116,7 +117,7 @@ const onSaveProjectAs = (event, pathName) => {
 
 const onUndo = () => {
   if (store.getState().trackerDocument.past.length > 0) {
-    store.dispatch({ type: "TRACKER_UNDO" });
+    store.dispatch({ type: TRACKER_UNDO });
   } else {
     store.dispatch(ActionCreators.undo());
   }
@@ -124,7 +125,7 @@ const onUndo = () => {
 
 const onRedo = () => {
   if (store.getState().trackerDocument.future.length > 0) {
-    store.dispatch({ type: "TRACKER_REDO" });
+    store.dispatch({ type: TRACKER_REDO });
   } else {
     store.dispatch(ActionCreators.redo());
   }

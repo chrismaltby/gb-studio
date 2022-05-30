@@ -72,6 +72,9 @@ export const DMG_PALETTE = {
 export const TMP_VAR_1 = "T0";
 export const TMP_VAR_2 = "T1";
 
+export const TRACKER_UNDO = "TRACKER_UNDO";
+export const TRACKER_REDO = "TRACKER_REDO";
+
 export {
   engineRoot,
   buildToolsRoot,
