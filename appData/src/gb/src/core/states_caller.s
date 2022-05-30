@@ -27,7 +27,7 @@ state_call:
         
         ld a, (hl+)             ; load bank
         ldh (#__current_bank), a
-        ld (0x2000), a          ; switch to routine bank
+        ld (#rROMB0), a         ; switch to routine bank
         
         ld a, (hl+)
         ld h, (hl)
@@ -36,6 +36,6 @@ state_call:
 
         pop af       
         ldh (#__current_bank), a
-        ld (0x2000), a          ; restore bank
+        ld (#rROMB0), a         ; restore bank
         ret
         

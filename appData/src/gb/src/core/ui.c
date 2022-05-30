@@ -452,13 +452,13 @@ void ui_update() NONBANKED {
     if ((letter_drawn) && (text_sound_bank != SFX_STOP_BANK)) music_play_sfx(text_sound_bank, text_sound_data, text_sound_mask, MUSIC_SFX_PRIORITY_NORMAL);
 }
 
-UBYTE ui_run_menu(menu_item_t * start_item, UBYTE bank, UBYTE options, UBYTE count) BANKED {
+UBYTE ui_run_menu(menu_item_t * start_item, UBYTE bank, UBYTE options, UBYTE count, UBYTE start_index) BANKED {
     menu_item_t current_menu_item;
-    UBYTE current_index = 1u, next_index = 0u;
+    UBYTE current_index = ((options & MENU_SET_START) ? start_index : 1u), next_index = 0u;
     // copy first menu item
-    MemcpyBanked(&current_menu_item, start_item, sizeof(menu_item_t), bank);
-    // draw menu cursor
-    
+    MemcpyBanked(&current_menu_item, start_item + (current_index - 1u), sizeof(menu_item_t), bank);
+
+    // draw menu cursor    
 #ifdef CGB
     if (_is_CGB) {
         VBK_REG = 1;
@@ -467,6 +467,8 @@ UBYTE ui_run_menu(menu_item_t * start_item, UBYTE bank, UBYTE options, UBYTE cou
     }
 #endif
     set_win_tile_xy(current_menu_item.X, current_menu_item.Y, ui_cursor_tile);
+
+    // menu loop
     while (TRUE) {
         input_update();
         ui_update();
@@ -511,7 +513,7 @@ UBYTE ui_run_menu(menu_item_t * start_item, UBYTE bank, UBYTE options, UBYTE cou
 #endif
         set_win_tile_xy(current_menu_item.X, current_menu_item.Y, ui_bg_tile);
         // read menu data
-        MemcpyBanked(&current_menu_item, start_item + next_index - 1u, sizeof(menu_item_t), bank);
+        MemcpyBanked(&current_menu_item, start_item + current_index - 1u, sizeof(menu_item_t), bank);
         // put new cursor
 #ifdef CGB
         if (_is_CGB) {

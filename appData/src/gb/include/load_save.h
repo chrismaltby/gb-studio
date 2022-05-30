@@ -19,6 +19,6 @@ UBYTE data_load(UBYTE slot) BANKED;
 void data_clear(UBYTE slot) BANKED;
 
 // peek count VM variables from idx into dest
-UBYTE data_peek(UBYTE slot, UINT16 idx, UBYTE count, UINT16 * dest) BANKED;
+UBYTE data_peek(UBYTE slot, UINT16 idx, UWORD count, UINT16 * dest) BANKED;
 
 #endif

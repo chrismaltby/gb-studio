@@ -7,7 +7,8 @@
 #include "bankdata.h"
 
 #define MENU_CANCEL_LAST 1
-#define MENU_CANCEL_B 2
+#define MENU_CANCEL_B    2
+#define MENU_SET_START   4
 
 #define TEXT_BUFFER_START 0xCCu
 #define TEXT_BUFFER_START_BANK1 0xC0u
@@ -103,6 +104,6 @@ inline void ui_move_to(UBYTE x, UBYTE y, BYTE speed) {
     if (speed == UI_SPEED_INSTANT) win_pos_y = y, win_pos_x = x; else win_speed = speed;
 }
 
-UBYTE ui_run_menu(menu_item_t * start_item, UBYTE bank, UBYTE options, UBYTE count) BANKED;
+UBYTE ui_run_menu(menu_item_t * start_item, UBYTE bank, UBYTE options, UBYTE count, UBYTE start_index) BANKED;
 
 #endif
