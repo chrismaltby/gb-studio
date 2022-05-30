@@ -24,6 +24,7 @@ import { InstrumentSelect } from "./InstrumentSelect";
 import { Select } from "ui/form/Select";
 import { PianoRollToolType } from "store/features/tracker/trackerState";
 import { ipcRenderer } from "electron";
+import l10n from "lib/helpers/l10n";
 
 const octaveOffsetOptions: OctaveOffsetOptions[] = [0, 1, 2, 3].map((i) => ({
   value: i,
@@ -52,6 +53,20 @@ const FloatingPanelTools = styled(FloatingPanel)`
   left: 64px;
   z-index: 10;
 `;
+  
+const getPlayButtonLabel = (play: boolean, playbackFromStart: boolean) => {
+  if (play) {
+    return l10n("FIELD_PAUSE")
+  }
+  else {
+    if (playbackFromStart) {
+      return l10n("FIELD_RESTART")
+    }
+    else {
+      return l10n("FIELD_PLAY")
+    }
+  }
+}
 
 const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
   const dispatch = useDispatch();
@@ -242,7 +257,14 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
   return (
     <>
       <FloatingPanelSwitchView>
-        <Button variant="transparent" onClick={toggleView}>
+        <Button
+          variant="transparent"
+          onClick={toggleView}
+          title={view === "roll" ? (
+            l10n("TOOL_TRACKER_VIEW")) : (
+            l10n("TOOL_PIANO_ROLL_VIEW"))
+          }
+        >
           {view === "roll" ? <TrackerIcon /> : themePianoIcon}
         </Button>
       </FloatingPanelSwitchView>
@@ -252,6 +274,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
           variant="transparent"
           disabled={!selectedSong || !modified}
           onClick={saveSong}
+          title={l10n("FIELD_SAVE")}
         >
           <SaveIcon />
         </Button>
@@ -260,6 +283,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
           variant="transparent"
           disabled={!playerReady}
           onClick={togglePlay}
+          title = {getPlayButtonLabel(play, playbackFromStart) }
         >
           {play ? (
             <PauseIcon />
@@ -273,6 +297,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
           variant="transparent"
           disabled={!playerReady}
           onClick={stopPlayback}
+          title={l10n("FIELD_STOP")}
         >
           <StopIcon />
         </Button>
@@ -283,6 +308,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
               variant="transparent"
               onClick={() => setTool("pencil")}
               active={tool === "pencil"}
+              title={l10n("TOOL_PENCIL")}
             >
               <PencilIcon />
             </Button>
@@ -290,6 +316,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
               variant="transparent"
               onClick={() => setTool("eraser")}
               active={tool === "eraser"}
+              title={l10n("TOOL_ERASER")}
             >
               <EraserIcon />
             </Button>

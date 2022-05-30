@@ -137,7 +137,6 @@ export const precompileBackgrounds = async (
   customEventsLookup,
   projectRoot,
   tmpPath,
-  genSymbol,
   { warnings } = {}
 ) => {
   const usedTilemaps = [];

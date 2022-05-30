@@ -46,7 +46,7 @@ export default async (
   }
 
   if (profile) {
-    CFLAGS += " -Wf--profile";
+    CFLAGS += " -Wf--debug -Wl-y";
   }
 
   if (targetPlatform === "pocket") {
@@ -155,7 +155,14 @@ export const getBuildCommands = async (
       }
 
       if (profile) {
-        buildArgs.push("-Wf--profile");
+        buildArgs.push("-Wf--fverbose-asm");
+        buildArgs.push("-Wf--debug");
+        buildArgs.push("-Wl-m");
+        buildArgs.push("-Wl-w");
+        buildArgs.push("-Wl-y");
+        buildArgs.push("-DVM_DEBUG_OUTPUT");
+        buildArgs.push("-Wf--nolospre");
+        buildArgs.push("-Wf--nogcse");
       }
 
       if (targetPlatform === "pocket") {
@@ -242,6 +249,7 @@ export const buildLinkFlags = (
   color = false,
   sgb = false,
   musicDriver = "gbtplayer",
+  profile = false,
   targetPlatform = "gb"
 ) => {
   const validName = name
@@ -270,6 +278,8 @@ export const buildLinkFlags = (
     sgb ? ["-Wm-ys"] : [],
     // Pocket
     targetPlatform === "pocket" ? ["-mgbz80:ap"] : [],
+    // Debug emulicious
+    profile ? ["-Wf--debug", "-Wl-m", "-Wl-w", "-Wl-y"] : [],
     // Music Driver
     musicDriver === "huge"
       ? // hugetracker

@@ -86,29 +86,28 @@ export const compileWav = async (
   return {
     src: `#pragma bank 255
 
-    #include <gbdk/platform.h>
-    #include <stdint.h>
-    
-    BANKREF(${symbol})
-    const UINT8 ${symbol}[] = {
-    ${output}
-    1,0b00000111
-    };
-    void AT(0b00000100) __mute_mask_${symbol};
-    `,
+#include <gbdk/platform.h>
+#include <stdint.h>
+
+BANKREF(${symbol})
+const UINT8 ${symbol}[] = {
+${output}1,0b00000111
+};
+void AT(0b00000100) __mute_mask_${symbol};
+`,
     header: `#ifndef __${symbol}_INCLUDE__
-    #define __${symbol}_INCLUDE__
-    
-    #include <gbdk/platform.h>
-    #include <stdint.h>
-    
-    #define MUTE_MASK_${symbol} 0b00000100
-    
-    BANKREF_EXTERN(${symbol})
-    extern const uint8_t ${symbol}[];
-    extern void __mute_mask_${symbol};
-    
-    #endif
+#define __${symbol}_INCLUDE__
+
+#include <gbdk/platform.h>
+#include <stdint.h>
+
+#define MUTE_MASK_${symbol} 0b00000100
+
+BANKREF_EXTERN(${symbol})
+extern const uint8_t ${symbol}[];
+extern void __mute_mask_${symbol};
+
+#endif
     `,
   };
 };

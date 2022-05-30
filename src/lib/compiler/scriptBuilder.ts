@@ -1,5 +1,5 @@
 import { inputDec, textSpeedDec } from "./helpers";
-import { decHex, decOct, hexDec } from "../helpers/8bit";
+import { decBin, decHex, decOct, hexDec } from "../helpers/8bit";
 import trimlines from "../helpers/trimlines";
 import { is16BitCType } from "../helpers/engineFields";
 import {
@@ -1589,18 +1589,28 @@ class ScriptBuilder {
       "0b01111011", // Channel 4
     ];
 
+    const channelStopInstructions = [
+      "",
+      "0x01, 0b00101000, 0x00,0xc0,      //shut ch1",
+      "0x01, 0b00101001, 0x00,0xc0,      //shut ch2",
+      "0x01, 0b00101010, 0x00,0xc0,      //shut ch3",
+      "0x01, 0b00101011, 0x00,0xc0,      //shut ch4",
+    ];
+
     for (let i = 0; i < frames; i += 4) {
       const len = Math.min(4, frames - i);
       const extraFrames = len * 4 - 1;
       if (i === 0) {
-        output += `    ${decHex((extraFrames << 4) + 1)}, ${
+        output += `${decHex((extraFrames << 4) + 1)}, ${
           channelMasks[channel]
         },${data.map(decHex).join(",")},`;
       } else {
-        output += `    ${decHex(extraFrames << 4)},`;
+        output += `${decHex(extraFrames << 4)},`;
       }
       output += "\n";
     }
+
+    const muteMask = 1 << (channel - 1);
 
     this.writeAsset(
       `sounds/${symbol}.c`,
@@ -1611,11 +1621,28 @@ class ScriptBuilder {
 
 BANKREF(${symbol})
 const uint8_t ${symbol}[] = {
-  ${output}
-  0x01, 0b00101000, 0x00,0xc0,      //shut ch1
-  0x01, 0b00000111,                 //stop
+${output}${channelStopInstructions[channel]}
+0x01, 0b00000111,                 //stop
 };
-void AT(0b00000100) __mute_mask_${symbol};`
+void AT(0b${decBin(muteMask)}) __mute_mask_${symbol};`
+    );
+
+    this.writeAsset(
+      `${symbol}.h`,
+      `#ifndef __${symbol}_INCLUDE__
+#define __${symbol}_INCLUDE__
+
+#include <gbdk/platform.h>
+#include <stdint.h>
+
+#define MUTE_MASK_${symbol} 0b${decBin(muteMask)}
+
+BANKREF_EXTERN(${symbol})
+extern const uint8_t ${symbol}[];
+extern void __mute_mask_${symbol};
+
+#endif
+`
     );
 
     return symbol;
