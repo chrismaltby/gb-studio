@@ -2,11 +2,7 @@ import { inputDec, textSpeedDec } from "./helpers";
 import { decBin, decHex, decOct, hexDec } from "../helpers/8bit";
 import trimlines from "../helpers/trimlines";
 import { is16BitCType } from "../helpers/engineFields";
-import {
-  globalVariableName,
-  localVariableName,
-  tempVariableName,
-} from "../helpers/variables";
+import { localVariableName, tempVariableName } from "../helpers/variables";
 import {
   ActorDirection,
   CustomEvent,
@@ -3704,6 +3700,26 @@ extern void __mute_mask_${symbol};
       throw new Error(
         `Union value type "${JSON.stringify(unionValue)}" unknown.`
       );
+    }
+    throw new Error(
+      `Union index type "${JSON.stringify(indexValue)}" unknown.`
+    );
+  };
+
+  variableSetToArrayValue = (
+    variable: string,
+    arrayValue: string,
+    indexValue: ScriptBuilderUnionValue
+  ) => {
+    console.log("variableSetToArrayValue", {
+      variable,
+      arrayValue,
+      indexValue,
+    });
+    // Index is number type
+    if (indexValue.type === "number") {
+      // Index is variable type
+    } else if (indexValue.type === "variable") {
     }
     throw new Error(
       `Union index type "${JSON.stringify(indexValue)}" unknown.`
