@@ -2042,8 +2042,8 @@ const renameVariable: CaseReducer<
       id: action.payload.variableId,
       name: action.payload.name,
       symbol: genEntitySymbol(state, `var_${action.payload.name}`),
-      isArray: false,
-      size: 1,
+      isArray: variable?.isArray ?? false,
+      size: variable?.size ?? 1,
     });
   } else if (variable && !variable.isArray) {
     variablesAdapter.removeOne(state.variables, action.payload.variableId);
@@ -2061,13 +2061,32 @@ const editVariable: CaseReducer<
   const patch = { ...action.payload.changes };
 
   if (!variable) {
+    variablesAdapter.upsertOne(state.variables, {
+      id: action.payload.variableId,
+      name: "",
+      symbol: genEntitySymbol(state, `var_${action.payload.variableId}`),
+      isArray: false,
+      size: 1,
+      ...action.payload.changes,
+    });
+  }
+
+  if (!variable) {
     return;
   }
 
-  variablesAdapter.updateOne(state.variables, {
-    id: action.payload.variableId,
-    changes: patch,
-  });
+  if (
+    (patch.isArray === false ||
+      (patch.isArray === undefined && variable.isArray === false)) &&
+    (patch.name === "" || (patch.name === undefined && variable.name === ""))
+  ) {
+    variablesAdapter.removeOne(state.variables, action.payload.variableId);
+  } else {
+    variablesAdapter.updateOne(state.variables, {
+      id: action.payload.variableId,
+      changes: patch,
+    });
+  }
 };
 
 /**************************************************************************

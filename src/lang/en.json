@@ -515,6 +515,8 @@
   "FIELD_PRIORITY": "Priority",
   "FIELD_ENABLE_EMULICIOUS_DEBUGGING": "Enable Emulicious C debugging",
   "FIELD_TEMPO_TOOLTIP":"Number of ticks per row",
+  "FIELD_IS_ARRAY": "Is Array",
+  "FIELD_ARRAY_SIZE": "Array Size",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

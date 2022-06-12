@@ -14,7 +14,12 @@ import {
 } from "store/features/entities/entitiesState";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { EditableText } from "ui/form/EditableText";
-import { FormContainer, FormDivider, FormHeader } from "ui/form/FormLayout";
+import {
+  FormContainer,
+  FormDivider,
+  FormHeader,
+  FormRow,
+} from "ui/form/FormLayout";
 import { MenuItem } from "ui/menu/Menu";
 import entitiesActions from "store/features/entities/entitiesActions";
 import editorActions from "store/features/editor/editorActions";
@@ -25,6 +30,7 @@ import {
   Scene,
   ScriptEvent,
   Trigger,
+  Variable,
 } from "store/features/entities/entitiesTypes";
 import l10n from "lib/helpers/l10n";
 import { Sidebar, SidebarColumn } from "ui/sidebars/Sidebar";
@@ -42,6 +48,15 @@ import {
 } from "store/features/entities/entitiesHelpers";
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
 import { VariableReference } from "components/forms/ReferencesSelect";
+import { CheckboxField } from "ui/form/CheckboxField";
+import {
+  castAsBool,
+  castAsInt,
+  castWithMiddleware,
+  withDefaultNumber,
+  withinRange,
+} from "lib/helpers/castEventValue";
+import { NumberField } from "ui/form/NumberField";
 
 interface VariableEditorProps {
   id: string;
@@ -109,10 +124,11 @@ interface UsesWrapperProps {
 
 const UsesWrapper = styled.div<UsesWrapperProps>`
   position: absolute;
-  top: ${(props) => (props.showSymbols ? `71px` : `38px`)};
+  top: 134px;
   left: 0;
   bottom: 0;
   right: 0;
+  border-top: 1px solid ${(props) => props.theme.colors.input.border};
 `;
 
 const UseMessage = styled.div`
@@ -260,6 +276,32 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
     );
   };
 
+  const onChangeFieldInput =
+    <T extends keyof Variable>(
+      key: T,
+      castFn: (
+        e:
+          | React.ChangeEvent<HTMLInputElement>
+          | React.ChangeEvent<HTMLTextAreaElement>
+      ) => Variable[T]
+    ) =>
+    (
+      e:
+        | React.ChangeEvent<HTMLInputElement>
+        | React.ChangeEvent<HTMLTextAreaElement>
+    ) => {
+      const editValue = castFn(e);
+      console.log({ editValue, ect: e.currentTarget.value });
+      dispatch(
+        entitiesActions.editVariable({
+          variableId: id,
+          changes: {
+            [key]: editValue,
+          },
+        })
+      );
+    };
+
   const onCopyVar = () => {
     dispatch(clipboardActions.copyText(`$${globalVariableCode(id)}$`));
   };
@@ -324,6 +366,36 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
               <FormDivider />
             </>
           )}
+          <div key={id}>
+            <FormRow>
+              <CheckboxField
+                name="animated"
+                label={l10n("FIELD_IS_ARRAY")}
+                checked={variable?.isArray}
+                onChange={onChangeFieldInput("isArray", castAsBool)}
+              />
+            </FormRow>
+            {variable?.isArray && (
+              <FormRow>
+                <NumberField
+                  name="animated"
+                  label={l10n("FIELD_ARRAY_SIZE")}
+                  value={variable?.size}
+                  placeholder="1"
+                  min={1}
+                  max={255}
+                  onChange={onChangeFieldInput(
+                    "size",
+                    castWithMiddleware(
+                      castAsInt,
+                      withDefaultNumber(1),
+                      withinRange(1, 255)
+                    )
+                  )}
+                />
+              </FormRow>
+            )}
+          </div>
         </FormContainer>
         <UsesWrapper
           ref={ref as RefObject<HTMLDivElement>}
