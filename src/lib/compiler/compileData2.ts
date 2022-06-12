@@ -6,6 +6,7 @@ import {
   Actor,
   SceneParallaxLayer,
   Trigger,
+  Variable,
 } from "store/features/entities/entitiesTypes";
 import { FontData } from "../fonts/fontData";
 import { decHex32Val, hexDec, wrap8Bit } from "../helpers/8bit";
@@ -1098,16 +1099,22 @@ export const compileScriptHeader = (scriptName: string) =>
 
 export const compileGameGlobalsInclude = (
   variableAliasLookup: Dictionary<string>,
+  variablesLookup: Dictionary<Variable>,
   stateReferences: string[]
 ) => {
-  const variables = Object.values(variableAliasLookup) as string[];
+  const variableKeys = Object.keys(variableAliasLookup) as string[];
+  let offset = 0;
   return (
-    variables
-      .map((string, stringIndex) => {
-        return `${string} = ${stringIndex}\n`;
+    variableKeys
+      .map((key) => {
+        const thisOffset = offset;
+        const variable = variablesLookup[key];
+        const size = variable?.size ?? 1;
+        offset += size;
+        return `${variableAliasLookup[key]} = ${thisOffset}\n`;
       })
       .join("") +
-    `MAX_GLOBAL_VARS = ${variables.length}\n` +
+    `MAX_GLOBAL_VARS = ${offset}\n` +
     stateReferences
       .map((string, stringIndex) => {
         return `${string} = ${stringIndex}\n`;

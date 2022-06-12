@@ -20,12 +20,15 @@ interface NavigatorItem {
 const variableToNavigatorItem = (
   variable: Variable | undefined,
   variableCode: string
-): NavigatorItem => ({
-  id: variableCode,
-  name: variable?.name
+): NavigatorItem => {
+  const label = variable?.name
     ? variable.name
-    : globalVariableDefaultName(variableCode),
-});
+    : globalVariableDefaultName(variableCode);
+  return {
+    id: variableCode,
+    name: `${label}${variable?.isArray ? "[]" : ""}`,
+  };
+};
 
 const collator = new Intl.Collator(undefined, {
   numeric: true,

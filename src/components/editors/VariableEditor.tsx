@@ -124,7 +124,7 @@ interface UsesWrapperProps {
 
 const UsesWrapper = styled.div<UsesWrapperProps>`
   position: absolute;
-  top: 134px;
+  top: 167px;
   left: 0;
   bottom: 0;
   right: 0;
@@ -371,7 +371,7 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
               <CheckboxField
                 name="animated"
                 label={l10n("FIELD_IS_ARRAY")}
-                checked={variable?.isArray}
+                checked={variable?.isArray ?? false}
                 onChange={onChangeFieldInput("isArray", castAsBool)}
               />
             </FormRow>

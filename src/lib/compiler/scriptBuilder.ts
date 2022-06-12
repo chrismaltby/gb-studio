@@ -40,7 +40,6 @@ import {
   mapEvents,
 } from "../helpers/eventSystem";
 import compileEntityEvents from "./compileEntityEvents";
-import { toCSymbol } from "../helpers/cGeneration";
 import {
   isUnionPropertyValue,
   isUnionVariableValue,
@@ -770,6 +769,100 @@ class ScriptBuilder {
     }
   };
 
+  _setVariableArrayByNumToConst = (
+    variable: string,
+    index: number,
+    value: ScriptBuilderStackVariable
+  ) => {
+    const variableAlias = this.getVariableAlias(variable);
+    if (this._isArg(variableAlias)) {
+      const valueTmpRef = this._declareLocal("value_tmp", 1, true);
+      this._setConst(this._localRef(valueTmpRef), value);
+      this._setInd(
+        this._argRef(variableAlias, index),
+        this._localRef(valueTmpRef)
+      );
+    } else {
+      this._setConst(this._varOffset(variableAlias, index), value);
+    }
+  };
+
+  _setVariableArrayByNumToVar = (
+    variable: string,
+    index: number,
+    valueVariable: string
+  ) => {
+    const variableAlias = this.getVariableAlias(variable);
+    const valueAlias = this.getVariableAlias(valueVariable);
+
+    if (this._isArg(variableAlias)) {
+      this._setInd(this._argRef(variableAlias, index), valueAlias);
+    } else {
+      this._set(this._varOffset(variableAlias, index), valueAlias);
+    }
+  };
+
+  _setVariableArrayByVarToConst = (
+    variable: string,
+    indexVariable: string,
+    value: ScriptBuilderStackVariable
+  ) => {
+    const variableAlias = this.getVariableAlias(variable);
+    const valueTmpRef = this._declareLocal("value_tmp", 1, true);
+
+    this._setConst(this._localRef(valueTmpRef), value);
+
+    if (this._isArg(variableAlias)) {
+      this._rpn() //
+        .ref(this._argRef(variableAlias))
+        .refVariable(indexVariable)
+        .operator(".ADD")
+        .stop();
+    } else {
+      this._rpn() //
+        .int16(variableAlias)
+        .refVariable(indexVariable)
+        .operator(".ADD")
+        .stop();
+    }
+
+    this._setInd(".ARG0", this._localRef(valueTmpRef));
+    this._stackPop(1);
+  };
+
+  _setVariableArrayByVarToVar = (
+    variable: string,
+    indexVariable: string,
+    valueVariable: string
+  ) => {
+    const variableAlias = this.getVariableAlias(variable);
+    const valueAlias = this.getVariableAlias(valueVariable);
+
+    if (this._isArg(variableAlias)) {
+      this._rpn() //
+        .ref(this._argRef(variableAlias))
+        .refVariable(indexVariable)
+        .operator(".ADD")
+        .stop();
+    } else {
+      this._rpn() //
+        .int16(variableAlias)
+        .refVariable(indexVariable)
+        .operator(".ADD")
+        .stop();
+    }
+
+    const valueTmpRef = this._declareLocal("value_tmp", 1, true);
+    if (this._isArg(valueVariable)) {
+      this._getInd(this._localRef(valueTmpRef), this._argRef(valueVariable));
+      this._setInd(".ARG0", this._localRef(valueTmpRef));
+    } else {
+      this._setInd(".ARG0", valueAlias);
+    }
+
+    this._stackPop(1);
+  };
+
   _getInd = (
     location: ScriptBuilderStackVariable,
     value: ScriptBuilderStackVariable
@@ -1018,12 +1111,12 @@ class ScriptBuilder {
           return rpn.ref(variableAlias);
         }
       },
-      int8: (value: number) => {
+      int8: (value: number | string) => {
         rpnCmd(".R_INT8", value);
         stack.push(0);
         return rpn;
       },
-      int16: (value: number) => {
+      int16: (value: number | string) => {
         rpnCmd(".R_INT16", value);
         stack.push(0);
         return rpn;
@@ -1751,6 +1844,15 @@ extern void __mute_mask_${symbol};
       return `.${symbol}`;
     }
     return `^/(.${symbol}${offset !== 0 ? ` + ${offset}` : ""}${
+      this.stackPtr !== 0 ? ` - ${this.stackPtr}` : ""
+    })/`;
+  };
+
+  _varOffset = (symbol: string, offset = 0): string => {
+    if (this.stackPtr === 0 && offset === 0) {
+      return `${symbol}`;
+    }
+    return `^/(${symbol}${offset !== 0 ? ` + ${offset}` : ""}${
       this.stackPtr !== 0 ? ` - ${this.stackPtr}` : ""
     })/`;
   };
@@ -3543,6 +3645,69 @@ extern void __mute_mask_${symbol};
       return variable;
     }
     throw new Error(`Union type "${unionValue}" unknown.`);
+  };
+
+  variableArraySetToUnionValue = (
+    variable: string,
+    indexValue: ScriptBuilderUnionValue,
+    unionValue: ScriptBuilderUnionValue
+  ) => {
+    // Index is number type
+    if (indexValue.type === "number") {
+      // Value is number type
+      if (unionValue.type === "number") {
+        this._addComment("Array Set To Const By Const Index");
+        this._setVariableArrayByNumToConst(
+          variable,
+          indexValue.value ?? 0,
+          unionValue.value
+        );
+        this._addNL();
+        return variable;
+        // Value is variable type
+      } else if (unionValue.type === "variable") {
+        this._addComment("Array Set To Var By Const Index");
+        this._setVariableArrayByNumToVar(
+          variable,
+          indexValue.value ?? 0,
+          unionValue.value
+        );
+        this._addNL();
+        return variable;
+      }
+      throw new Error(
+        `Union value type "${JSON.stringify(unionValue)}" unknown.`
+      );
+      // Index is variable type
+    } else if (indexValue.type === "variable") {
+      // Value is number type
+      if (unionValue.type === "number") {
+        this._addComment("Array Set To Const By Var Index");
+        this._setVariableArrayByVarToConst(
+          variable,
+          indexValue.value,
+          unionValue.value
+        );
+        this._addNL();
+        return variable;
+      } else if (unionValue.type === "variable") {
+        // Value is variable type
+        this._addComment("Array Set To Var By Var Index");
+        this._setVariableArrayByVarToVar(
+          variable,
+          indexValue.value,
+          unionValue.value
+        );
+        this._addNL();
+        return variable;
+      }
+      throw new Error(
+        `Union value type "${JSON.stringify(unionValue)}" unknown.`
+      );
+    }
+    throw new Error(
+      `Union index type "${JSON.stringify(indexValue)}" unknown.`
+    );
   };
 
   temporaryEntityVariable = (index: number) => {

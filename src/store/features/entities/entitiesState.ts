@@ -2037,16 +2037,19 @@ const renameVariable: CaseReducer<
     state,
     action.payload.variableId
   );
-  if (action.payload.name) {
+  if (variable && !action.payload.name && !variable.isArray) {
+    variablesAdapter.removeOne(state.variables, action.payload.variableId);
+  } else {
     variablesAdapter.upsertOne(state.variables, {
       id: action.payload.variableId,
       name: action.payload.name,
-      symbol: genEntitySymbol(state, `var_${action.payload.name}`),
+      symbol: genEntitySymbol(
+        state,
+        `var_${action.payload.name || action.payload.variableId}`
+      ),
       isArray: variable?.isArray ?? false,
       size: variable?.size ?? 1,
     });
-  } else if (variable && !variable.isArray) {
-    variablesAdapter.removeOne(state.variables, action.payload.variableId);
   }
 };
 

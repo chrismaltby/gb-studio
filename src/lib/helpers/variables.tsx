@@ -154,10 +154,12 @@ export const tempVariableCode = (variable: string) => {
  */
 
 export const globalVariableName = (
-  variable: string,
+  variableId: string,
   variablesLookup: VariablesLookup
 ) => {
-  return variablesLookup[variable]?.name || globalVariableDefaultName(variable);
+  const variable = variablesLookup[variableId];
+  const label = variable?.name || globalVariableDefaultName(variableId);
+  return `${label}${variable?.isArray ? "[]" : ""}`;
 };
 
 export const globalVariableDefaultName = (variable: string) => {

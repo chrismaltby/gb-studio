@@ -1715,6 +1715,7 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
 
   output["game_globals.i"] = compileGameGlobalsInclude(
     variableAliasLookup,
+    variablesLookup,
     precompiled.stateReferences
   );
   output[`script_engine_init.s`] = compileScriptEngineInit({
