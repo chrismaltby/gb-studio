@@ -859,6 +859,72 @@ class ScriptBuilder {
     this._stackPop(1);
   };
 
+  _getVariableFromArrayByNum = (
+    destVariable: string,
+    srcVariable: string,
+    index: number
+  ) => {
+    const destVariableAlias = this.getVariableAlias(destVariable);
+    const srcVariableAlias = this.getVariableAlias(srcVariable);
+
+    let src = this._varOffset(srcVariableAlias, index);
+
+    if (this._isArg(srcVariableAlias)) {
+      this._rpn() //
+        .ref(this._argRef(srcVariableAlias))
+        .int16(index)
+        .operator(".ADD")
+        .stop();
+      this._stackPushInd(".ARG0");
+      src = ".ARG0";
+    }
+
+    if (this._isArg(destVariableAlias)) {
+      this._setInd(this._argRef(destVariableAlias), src);
+    } else {
+      this._set(destVariableAlias, src);
+    }
+
+    if (this._isArg(srcVariableAlias)) {
+      this._stackPop(2);
+    }
+  };
+
+  _getVariableFromArrayByVar = (
+    destVariable: string,
+    srcVariable: string,
+    indexVariable: string
+  ) => {
+    const destVariableAlias = this.getVariableAlias(destVariable);
+    const srcVariableAlias = this.getVariableAlias(srcVariable);
+
+    const src = ".ARG0";
+
+    if (this._isArg(srcVariableAlias)) {
+      this._rpn() //
+        .ref(this._argRef(srcVariableAlias))
+        .refInd(this._argRef(indexVariable))
+        .operator(".ADD")
+        .stop();
+      this._stackPushInd(".ARG0");
+    } else {
+      this._rpn() //
+        .int16(srcVariableAlias)
+        .refVariable(indexVariable)
+        .operator(".ADD")
+        .stop();
+      this._stackPushInd(".ARG0");
+    }
+
+    if (this._isArg(destVariableAlias)) {
+      this._setInd(this._argRef(destVariableAlias), src);
+    } else {
+      this._set(destVariableAlias, src);
+    }
+
+    this._stackPop(2);
+  };
+
   _getInd = (
     location: ScriptBuilderStackVariable,
     value: ScriptBuilderStackVariable
@@ -3711,15 +3777,18 @@ extern void __mute_mask_${symbol};
     arrayValue: string,
     indexValue: ScriptBuilderUnionValue
   ) => {
-    console.log("variableSetToArrayValue", {
-      variable,
-      arrayValue,
-      indexValue,
-    });
     // Index is number type
     if (indexValue.type === "number") {
+      this._addComment("Array Get Value By Const Index");
+      this._getVariableFromArrayByNum(variable, arrayValue, indexValue.value);
+      this._addNL();
+      return;
       // Index is variable type
     } else if (indexValue.type === "variable") {
+      this._addComment("Array Get Value By Var Index");
+      this._getVariableFromArrayByVar(variable, arrayValue, indexValue.value);
+      this._addNL();
+      return;
     }
     throw new Error(
       `Union index type "${JSON.stringify(indexValue)}" unknown.`

@@ -158,8 +158,7 @@ export const globalVariableName = (
   variablesLookup: VariablesLookup
 ) => {
   const variable = variablesLookup[variableId];
-  const label = variable?.name || globalVariableDefaultName(variableId);
-  return `${label}${variable?.isArray ? "[]" : ""}`;
+  return variable?.name || globalVariableDefaultName(variableId);
 };
 
 export const globalVariableDefaultName = (variable: string) => {
