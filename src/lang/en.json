@@ -517,6 +517,7 @@
   "FIELD_TEMPO_TOOLTIP":"Number of ticks per row",
   "FIELD_IS_ARRAY": "Is Array",
   "FIELD_ARRAY_SIZE": "Array Size",
+  "FIELD_INDEX": "Index",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -731,6 +732,8 @@
   "EVENT_ACTOR_DEACTIVATE": "Deactivate Actor",
   "EVENT_ACTOR_ACTIVATE_LABEL": "Activate {actor}",
   "EVENT_ACTOR_DEACTIVATE_LABEL": "Deactivate {actor}",
+  "EVENT_ARRAY_GET_LABEL": "{variable} = {arrayVariable}[{index}]",
+  "EVENT_ARRAY_SET_LABEL": "{variable}[{index}] = {value}",
 
   "// 10": "Menu -----------------------------------------------------",
 

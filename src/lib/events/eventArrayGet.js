@@ -6,15 +6,15 @@ const groups = ["EVENT_GROUP_VARIABLES"];
 const autoLabel = (fetchArg) => {
   return l10n("EVENT_ARRAY_GET_LABEL", {
     variable: fetchArg("variable"),
+    arrayVariable: fetchArg("arrayVariable"),
     index: fetchArg("index"),
-    value: fetchArg("value"),
   });
 };
 
 const fields = [
   {
     key: "variable",
-    label: "FIELD_SET_VARIABLE",
+    label: l10n("FIELD_SET_VARIABLE"),
     type: "variable",
     defaultValue: "LAST_VARIABLE",
   },
@@ -23,13 +23,13 @@ const fields = [
     fields: [
       {
         key: "arrayVariable",
-        label: "FIELD_FROM_VARIABLE",
+        label: l10n("FIELD_FROM_VARIABLE"),
         type: "variable",
         defaultValue: "LAST_VARIABLE",
       },
       {
         key: "index",
-        label: "FIELD_INDEX",
+        label: l10n("FIELD_INDEX"),
         type: "union",
         types: ["number", "variable"],
         defaultType: "number",

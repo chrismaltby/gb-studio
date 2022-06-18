@@ -17,13 +17,13 @@ const fields = [
     fields: [
       {
         key: "variable",
-        label: "FIELD_VARIABLE",
+        label: l10n("FIELD_SET_VARIABLE"),
         type: "variable",
         defaultValue: "LAST_VARIABLE",
       },
       {
         key: "index",
-        label: "FIELD_INDEX",
+        label: l10n("FIELD_INDEX"),
         type: "union",
         types: ["number", "variable"],
         defaultType: "number",
@@ -38,7 +38,7 @@ const fields = [
   },
   {
     key: "value",
-    label: "FIELD_SET_TO_VALUE",
+    label: l10n("FIELD_VALUE"),
     type: "union",
     types: ["number", "variable"],
     defaultType: "number",
