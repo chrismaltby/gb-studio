@@ -666,6 +666,10 @@ class ScriptBuilder {
     this._addCmd("VM_UNLOCK");
   };
 
+  _idle = () => {
+    this._addCmd("VM_IDLE");
+  };
+
   _raiseException = (exception: string, numArgs: number) => {
     this._addCmd("VM_RAISE", exception, numArgs);
   };
@@ -2526,6 +2530,12 @@ extern void __mute_mask_${symbol};
 
   // --------------------------------------------------------------------------
   // Timing
+
+  idle = (frames: number) => {
+    this._addComment("Idle");
+    this._idle();
+    this._addNL();
+  };
 
   nextFrameAwait = () => {
     this.wait(1);

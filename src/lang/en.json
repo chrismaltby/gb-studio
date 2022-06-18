@@ -515,6 +515,7 @@
   "FIELD_PRIORITY": "Priority",
   "FIELD_ENABLE_EMULICIOUS_DEBUGGING": "Enable Emulicious C debugging",
   "FIELD_TEMPO_TOOLTIP":"Number of ticks per row",
+  "FIELD_IDLE_LABEL": "Wait until next frame",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -729,6 +730,7 @@
   "EVENT_ACTOR_DEACTIVATE": "Deactivate Actor",
   "EVENT_ACTOR_ACTIVATE_LABEL": "Activate {actor}",
   "EVENT_ACTOR_DEACTIVATE_LABEL": "Deactivate {actor}",
+  "EVENT_IDLE": "Idle",
 
   "// 10": "Menu -----------------------------------------------------",
 
