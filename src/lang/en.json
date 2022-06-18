@@ -516,6 +516,10 @@
   "FIELD_ENABLE_EMULICIOUS_DEBUGGING": "Enable Emulicious C debugging",
   "FIELD_TEMPO_TOOLTIP":"Number of ticks per row",
   "FIELD_IDLE_LABEL": "Wait until next frame",
+  "FIELD_FOR": "For",
+  "FIELD_FROM": "From",
+  "FIELD_TO": "To",
+  "FIELD_INC_BY": "Inc By",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -583,6 +587,8 @@
   "EVENT_CHOICE": "Display Multiple Choice",
   "EVENT_RESET_VARIABLES": "Reset All Variables To 'False'",
   "EVENT_LOOP": "Loop",
+  "EVENT_LOOP_FOR": "Loop For",
+  "EVENT_LOOP_WHILE": "Loop While",
   "EVENT_GROUP": "Event Group",
   "EVENT_COMMENT": "Comment",
   "EVENT_DEFINE_LABEL": "Label: Define",
@@ -731,6 +737,8 @@
   "EVENT_ACTOR_ACTIVATE_LABEL": "Activate {actor}",
   "EVENT_ACTOR_DEACTIVATE_LABEL": "Deactivate {actor}",
   "EVENT_IDLE": "Idle",
+  "EVENT_LOOP_FOR_LABEL": "For ({variable} = {from}; {variable} <= {to}; {variable} += {inc})",
+  "EVENT_LOOP_WHILE_LABEL": "While ({expression})",
 
   "// 10": "Menu -----------------------------------------------------",
 

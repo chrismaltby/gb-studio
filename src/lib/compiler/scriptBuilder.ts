@@ -4027,6 +4027,22 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
+  whileExpression = (
+    expression: string,
+    truePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+  ) => {
+    const loopId = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+    this._addComment(`While ${this._expressionToHumanReadable(expression)}`);
+    this._label(loopId);
+    this._stackPushEvaluatedExpression(expression);
+    this._ifConst(".EQ", ".ARG0", 0, endLabel, 1);
+    this._compilePath(truePath);
+    this._jump(loopId);
+    this._label(endLabel);
+    this._addNL();
+  };
+
   ifVariableTrue = (
     variable: string,
     truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],

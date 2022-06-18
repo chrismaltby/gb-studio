@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added ability to select multiple cells in tracker editor by holding shift while pressing arrow keys [@pau-tomas](https://github.com/pau-tomas)
 - Added keyboard shortcut (Space bar) to toggle play/pause in music editor [@pau-tomas](https://github.com/pau-tomas)
 - Add Idle event to wait for a single frame using VM_IDLE
+- Add "Loop For" and "Loop While" events
 
 ### Changed
 
