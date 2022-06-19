@@ -4303,6 +4303,119 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
+    ifActorInRadiusVariables = (
+    actorId2: string,
+    x1: string,
+    y1: string,
+    x2: string,
+    y2: string,
+    truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
+    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
+    units: string
+  ) => {
+    const actorRef = this._declareLocal("actor", 4);
+    const otherActorRef = this._declareLocal("other_actor", 3, true);
+    const falseLabel = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+    this._addComment(`If Actor In Radius`);
+    this._actorGetPosition(this._localRef(actorRef));
+    this.setActorId(this._localRef(otherActorRef), actorId2);
+    this._actorGetPosition(this._localRef(otherActorRef));
+    if (units === "tiles") {
+      this._rpn()
+        // Up
+        .ref(this._localRef(actorRef, 2))
+        .ref(this._localRef(otherActorRef, 2))
+        .refVariable(y1)
+        .int16(128)
+        .operator(".MUL")
+        .operator(".SUB")
+        .operator(".GTE")
+
+        // Down
+        .ref(this._localRef(actorRef, 2))
+        .ref(this._localRef(otherActorRef, 2))
+        .refVariable(y2)
+        .int16(128)
+        .operator(".MUL")
+        .operator(".ADD")
+        .operator(".LTE")
+
+        // Left
+        .ref(this._localRef(actorRef, 1))
+        .ref(this._localRef(otherActorRef, 1))
+        .refVariable(x1)
+        .int16(128)
+        .operator(".MUL")
+        .operator(".SUB")
+        .operator(".GTE")
+
+        // Right
+        .ref(this._localRef(actorRef, 1))
+        .ref(this._localRef(otherActorRef, 1))
+        .refVariable(x2)
+        .int16(128)
+        .operator(".MUL")
+        .operator(".ADD")
+        .operator(".LTE")
+
+        .operator(".AND")
+        .operator(".AND")
+        .operator(".AND")
+        .stop();
+    } else {
+      this._rpn()
+        // Up
+        .ref(this._localRef(actorRef, 2))
+        .ref(this._localRef(otherActorRef, 2))
+        .refVariable(y1)
+        .int16(16)
+        .operator(".MUL")
+        .operator(".SUB")
+        .operator(".GTE")
+
+        // Down
+        .ref(this._localRef(actorRef, 2))
+        .ref(this._localRef(otherActorRef, 2))
+        .refVariable(y2)
+        .int16(16)
+        .operator(".MUL")
+        .operator(".ADD")
+        .operator(".LTE")
+
+        // Left
+        .ref(this._localRef(actorRef, 1))
+        .ref(this._localRef(otherActorRef, 1))
+        .refVariable(x1)
+        .int16(16)
+        .operator(".MUL")
+        .operator(".SUB")
+        .operator(".GTE")
+
+        // Right
+        .ref(this._localRef(actorRef, 1))
+        .ref(this._localRef(otherActorRef, 1))
+        .refVariable(x2)
+        .int16(16)
+        .operator(".MUL")
+        .operator(".ADD")
+        .operator(".LTE")
+
+        .operator(".AND")
+        .operator(".AND")
+        .operator(".AND")
+        .stop();
+    }
+    this._ifConst(".EQ", ".ARG0", 0, falseLabel, 1);
+    this._addNL();
+    this._compilePath(truePath);
+    this._jump(endLabel);
+    this._label(falseLabel);
+    this._compilePath(falsePath);
+    this._label(endLabel);
+    this._addNL();
+  };
+
   ifActorDirection = (
     direction: ActorDirection,
     truePath = [],
