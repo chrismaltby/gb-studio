@@ -40,6 +40,7 @@ export const IF_INPUT = "IF_INPUT";
 export const CHOICE = "CHOICE";
 export const ACTOR_PUSH = "ACTOR_PUSH";
 export const IF_ACTOR_AT_POSITION = "IF_ACTOR_AT_POSITION";
+export const IF_ACTOR_IN_RADIUS = "IF_ACTOR_IN_RADIUS";
 export const LOAD_DATA = "LOAD_DATA";
 export const SAVE_DATA = "SAVE_DATA";
 export const CLEAR_DATA = "CLEAR_DATA";
@@ -154,6 +155,7 @@ export const scriptCommands = [
   CHOICE,
   ACTOR_PUSH,
   IF_ACTOR_AT_POSITION,
+  IF_ACTOR_IN_RADIUS,
   LOAD_DATA,
   SAVE_DATA,
   CLEAR_DATA,
