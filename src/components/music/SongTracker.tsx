@@ -249,7 +249,7 @@ export const SongTracker = ({
           const instrumentList = getInstrumentListByType(song, instrumentType);
           ipcRenderer.send("music-data-send", {
             action: "preview",
-            note: value,
+            note: value + octaveOffset * 12,
             type: instrumentType,
             instrument: instrumentList[defaultInstrument],
             square2: channel === 1,
