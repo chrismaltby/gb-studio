@@ -1,11 +1,11 @@
 const l10n = require("../helpers/l10n").default;
 
-const id = "EVENT_IF_ACTOR_IN_RADIUS";
+const id = "EVENT_IF_ACTOR_IN_RANGE";
 const groups = ["EVENT_GROUP_CONTROL_FLOW", "EVENT_GROUP_ACTOR"];
 
 const autoLabel = (fetchArg, input) => {
   if (input.units === "pixels") {
-    return l10n("EVENT_IF_ACTOR_IN_RADIUS_LABEL", {
+    return l10n("EVENT_IF_ACTOR_IN_RANGE_LABEL", {
       actor1: fetchArg("actorId1"),
       actor2: fetchArg("actorId2"),
       units: l10n("FIELD_PIXELS"),
@@ -15,7 +15,7 @@ const autoLabel = (fetchArg, input) => {
       y2: fetchArg("py2"),
     });
   }
-  return l10n("EVENT_IF_ACTOR_IN_RADIUS_LABEL", {
+  return l10n("EVENT_IF_ACTOR_IN_RANGE_LABEL", {
     actor1: fetchArg("actorId1"),
     actor2: fetchArg("actorId2"),
     units: l10n("FIELD_TILES"),
@@ -247,29 +247,29 @@ const fields = [
 ];
 
 const compile = (input, helpers) => {
-  const { actorSetActive, ifActorInRadius, ifActorInRadiusVariables, temporaryEntityVariable, variableFromUnion } = helpers;
+  const { actorSetActive, ifActorInRange, ifActorInRangeVariables, temporaryEntityVariable, variableFromUnion } = helpers;
   const truePath = input.true;
   const falsePath = input.__disableElse ? [] : input.false;
   actorSetActive(input.actorId1);
   if (input.units === "tiles") {
     if (input.x1.type === "number" && input.y1.type === "number" && input.x2.type === "number" && input.y2.type === "number") {
-      ifActorInRadius(input.actorId2, input.x1.value, input.y1.value, input.x2.value, input.y2.value, truePath, falsePath, input.units);
+      ifActorInRange(input.actorId2, input.x1.value, input.y1.value, input.x2.value, input.y2.value, truePath, falsePath, input.units);
     } else {
       const x1Var = variableFromUnion(input.x1, temporaryEntityVariable(0));
       const y1Var = variableFromUnion(input.y1, temporaryEntityVariable(1));
       const x2Var = variableFromUnion(input.x2, temporaryEntityVariable(2));
       const y2Var = variableFromUnion(input.y2, temporaryEntityVariable(3));
-      ifActorInRadiusVariables(input.actorId2, x1Var, y1Var, x2Var, y2Var, truePath, falsePath, input.units);
+      ifActorInRangeVariables(input.actorId2, x1Var, y1Var, x2Var, y2Var, truePath, falsePath, input.units);
     }
   } else {
     if (input.px1.type === "number" && input.py1.type === "number" && input.px2.type === "number" && input.py2.type === "number") {
-      ifActorInRadius(input.actorId2, input.px1.value, input.py1.value, input.px2.value, input.py2.value, truePath, falsePath, input.units);
+      ifActorInRange(input.actorId2, input.px1.value, input.py1.value, input.px2.value, input.py2.value, truePath, falsePath, input.units);
     } else {
       const px1Var = variableFromUnion(input.px1, temporaryEntityVariable(0));
       const py1Var = variableFromUnion(input.py1, temporaryEntityVariable(1));
       const px2Var = variableFromUnion(input.px2, temporaryEntityVariable(2));
       const py2Var = variableFromUnion(input.py2, temporaryEntityVariable(3));
-      ifActorInRadiusVariables(input.actorId2, px1Var, py1Var, px2Var, py2Var, truePath, falsePath, input.units);
+      ifActorInRangeVariables(input.actorId2, px1Var, py1Var, px2Var, py2Var, truePath, falsePath, input.units);
     }
   }
 };

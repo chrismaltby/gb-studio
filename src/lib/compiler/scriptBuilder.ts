@@ -4242,7 +4242,7 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
-  ifActorInRadius = (
+  ifActorInRange = (
     actorId2: string,
     x1: number,
     y1: number,
@@ -4256,7 +4256,7 @@ extern void __mute_mask_${symbol};
     const otherActorRef = this._declareLocal("other_actor", 3, true);
     const falseLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
-    this._addComment(`If Actor In Radius`);
+    this._addComment(`If Actor In Range`);
     this._actorGetPosition(this._localRef(actorRef));
     this.setActorId(this._localRef(otherActorRef), actorId2);
     this._actorGetPosition(this._localRef(otherActorRef));
@@ -4303,7 +4303,7 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
-    ifActorInRadiusVariables = (
+    ifActorInRangeVariables = (
     actorId2: string,
     x1: string,
     y1: string,
@@ -4317,7 +4317,7 @@ extern void __mute_mask_${symbol};
     const otherActorRef = this._declareLocal("other_actor", 3, true);
     const falseLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
-    this._addComment(`If Actor In Radius`);
+    this._addComment(`If Actor In Range`);
     this._actorGetPosition(this._localRef(actorRef));
     this.setActorId(this._localRef(otherActorRef), actorId2);
     this._actorGetPosition(this._localRef(otherActorRef));
