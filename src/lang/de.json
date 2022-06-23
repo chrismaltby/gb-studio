@@ -297,7 +297,7 @@
   "FIELD_TRIGGERS_COUNT": "Diese Szene hat {triggerCount} von {maxTriggers} genutzt",
   "FIELD_WARNING": "Warnung",
   "FIELD_TMP_DIRECTORY": "Temporäres Verzeichnis",
-  "FIELD_TMP_DIRECTORY_INFO": "Der Ort, an dem temporäre Dateien während der Erstellung Ihres Spiels gespeichert werden.\nIf Wenn Sie Ihr Spiel aufgrund von Berechtigungsfehlern nicht erstellen können, können Sie dies in einen Ordner ändern, auf den Sie Zugriff haben.",
+  "FIELD_TMP_DIRECTORY_INFO": "Der Ort, an dem temporäre Dateien während der Erstellung Ihres Spiels gespeichert werden.\nWenn Sie Ihr Spiel aufgrund von Berechtigungsfehlern nicht erstellen können, können Sie dies in einen Ordner ändern, auf den Sie Zugriff haben.",
   "FIELD_DONT_MODIFY": "Nicht ändern",
   "FIELD_MIN_VEL": "Minimale Geschwindigkeit",
   "FIELD_WALK_VEL": "Geh-Geschwindigkeit",
