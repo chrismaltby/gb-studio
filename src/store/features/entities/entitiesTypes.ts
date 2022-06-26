@@ -496,7 +496,7 @@ export interface ScriptEventFieldSchema {
   postUpdate?: (
     newArgs: Record<string, unknown>,
     prevArgs: Record<string, unknown>
-  ) => void;
+  ) => void | Record<string, unknown>;
 }
 
 export type EntityKey = keyof EntitiesState;

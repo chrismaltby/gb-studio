@@ -30,6 +30,7 @@ import { RootState } from "store/configureStore";
 import {
   ActorDirection,
   ScriptEventFieldSchema,
+  UnionValue,
 } from "store/features/entities/entitiesTypes";
 import styled from "styled-components";
 import { Button } from "ui/buttons/Button";
@@ -120,10 +121,14 @@ const ScriptEventFormInput = ({
   );
 
   const onChangeUnionField = (newValue: unknown) => {
-    const prevValue = typeof value === "object" ? value : {};
+    const prevValue =
+      typeof value === "object"
+        ? (value as UnionValue | null)
+        : ({} as UnionValue);
     onChange(
       {
         ...prevValue,
+        type: prevValue?.type ?? field.defaultType,
         value: newValue,
       },
       index
@@ -413,7 +418,7 @@ const ScriptEventFormInput = ({
       <OffscreenSkeletonInput>
         <VariableSelect
           name={id}
-          value={String(value || "0")}
+          value={String(value || defaultValue || "0")}
           entityId={entityId}
           onChange={onChangeField}
           allowRename={allowRename}

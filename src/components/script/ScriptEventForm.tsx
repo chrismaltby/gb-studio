@@ -56,9 +56,16 @@ const getScriptEventFields = (
       Object.values(customEvent?.variables || []).map((v) => {
         return {
           label: `${v?.name || ""}`,
-          defaultValue: "LAST_VARIABLE",
           key: `$variable[${v?.id || ""}]$`,
-          type: "variable",
+          type: "union",
+          types: ["number", "variable"],
+          defaultType: "variable",
+          min: 0,
+          max: 255,
+          defaultValue: {
+            number: 0,
+            variable: "L0",
+          },
         };
       }) || [];
     const usedActors =
