@@ -10,13 +10,6 @@ if (process.platform !== "darwin") { // don't ignore on OSX
   optionalPlugins.push(new IgnorePlugin({ resourceRegExp: /^fsevents$/ }));
 }
 
-module.exports = {
-  // other webpack config options here...
-  plugins: [
-    ...optionalPlugins,
-  ],
-};
-
 rules.push({
   test: /\.css$/,
   use: [{ loader: "style-loader" }, { loader: "css-loader" }],
@@ -77,7 +70,13 @@ module.exports = {
       },
     },
   },
-  plugins: rendererPlugins,
+  plugins: [
+    ...optionalPlugins,
+  ],
+  plugins: [
+    rendererPlugins,
+    optionalPlugins
+  ],
   resolve: {
     extensions: [".js", ".ts", ".jsx", ".tsx", ".wasm", ".css"],
     alias: {
