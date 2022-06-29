@@ -3,6 +3,13 @@ const plugins = require("./webpack.plugins");
 const CopyPlugin = require("copy-webpack-plugin");
 const Path = require("path");
 
+const { IgnorePlugin } = require('webpack');
+
+const optionalPlugins = [];
+if (process.platform !== "darwin") {
+  optionalPlugins.push(new IgnorePlugin({ resourceRegExp: /^fsevents$/ }));
+}
+
 rules.push({
   test: /\.css$/,
   use: [{ loader: "style-loader" }, { loader: "css-loader" }],
@@ -10,6 +17,7 @@ rules.push({
 
 const rendererPlugins = [].concat(
   plugins,
+  ...optionalPlugins,
   new CopyPlugin({
     patterns: [{ from: "node_modules/vm2", to: "node_modules/vm2" }],
   })
@@ -75,6 +83,5 @@ module.exports = {
   },
   externals: {
     vm2: "vm2",
-    fsevents: "require('fsevents')",
   },
 };
