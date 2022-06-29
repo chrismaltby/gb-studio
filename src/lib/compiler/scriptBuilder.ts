@@ -68,14 +68,20 @@ type ScriptBuilderEntityType = "scene" | "actor" | "trigger";
 
 type ScriptBuilderStackVariable = string | number;
 
-type ScriptBuilderVariable = {
+type ScriptBuilderVariableData = {
   type: "variable" | "indirect";
   symbol: string;
 };
 
+type ScriptBuilderSimpleVariable = string | number;
+
+type ScriptBuilderVariable =
+  | ScriptBuilderSimpleVariable
+  | ScriptBuilderVariableData;
+
 interface ScriptBuilderFunctionArgLookup {
-  actor: Dictionary<ScriptBuilderVariable>;
-  variable: Dictionary<ScriptBuilderVariable>;
+  actor: Dictionary<ScriptBuilderVariableData>;
+  variable: Dictionary<ScriptBuilderVariableData>;
 }
 
 interface ScriptBuilderOptions {
@@ -728,9 +734,12 @@ class ScriptBuilder {
     this._addCmd("VM_SET_INDIRECT", location, value);
   };
 
-  _setVariable = (variable: string, value: ScriptBuilderStackVariable) => {
+  _setVariable = (
+    variable: ScriptBuilderVariable,
+    value: ScriptBuilderStackVariable
+  ) => {
     const variableAlias = this.getVariableAlias(variable);
-    if (this._isArg(variableAlias)) {
+    if (this._isIndirectVariable(variable)) {
       this._setInd(this._argRef(variableAlias), value);
     } else {
       this._set(variableAlias, value);
@@ -1021,9 +1030,9 @@ class ScriptBuilder {
         stack.push(0);
         return rpn;
       },
-      refVariable: (variable: string) => {
+      refVariable: (variable: ScriptBuilderVariable) => {
         const variableAlias = this.getVariableAlias(variable);
-        if (this._isArg(variableAlias)) {
+        if (this._isIndirectVariable(variableAlias)) {
           return rpn.refInd(this._argRef(variableAlias));
         } else {
           return rpn.ref(variableAlias);
@@ -1723,9 +1732,23 @@ extern void __mute_mask_${symbol};
     this._addCmd("VM_STOP");
   };
 
-  _isArg = (variable: ScriptBuilderStackVariable) => {
+  _isArg = (
+    variable: ScriptBuilderStackVariable | ScriptBuilderVariableData
+  ) => {
     return typeof variable === "string" && variable.startsWith("SCRIPT_ARG");
   };
+
+  _isVariableData(
+    x: ScriptBuilderStackVariable | ScriptBuilderVariableData
+  ): x is ScriptBuilderVariableData {
+    return typeof x === "object" && "symbol" in x;
+  }
+
+  _isIndirectVariable(
+    x: ScriptBuilderStackVariable | ScriptBuilderVariableData
+  ): boolean {
+    return this._isVariableData(x) && x.type === "indirect";
+  }
 
   _declareLocal = (
     symbol: string,
@@ -1765,7 +1788,7 @@ extern void __mute_mask_${symbol};
     if (this.stackPtr === 0 && offset === 0) {
       return `${symbol}`;
     }
-    return `^/(.${symbol}${offset !== 0 ? ` + ${offset}` : ""}${
+    return `^/(${symbol}${offset !== 0 ? ` + ${offset}` : ""}${
       this.stackPtr !== 0 ? ` - ${this.stackPtr}` : ""
     })/`;
   };
@@ -3042,8 +3065,8 @@ extern void __mute_mask_${symbol};
     }
 
     const argLookup: {
-      actor: Dictionary<ScriptBuilderVariable>;
-      variable: Dictionary<ScriptBuilderVariable>;
+      actor: Dictionary<ScriptBuilderVariableData>;
+      variable: Dictionary<ScriptBuilderVariableData>;
     } = {
       actor: {},
       variable: {},
@@ -3283,13 +3306,17 @@ extern void __mute_mask_${symbol};
     return index;
   };
 
-  getVariableAlias = (variable = "0"): string => {
-    if (this._isArg(variable)) {
-      return variable;
+  getVariableAlias = (variable: ScriptBuilderVariable = "0"): string => {
+    if (this._isVariableData(variable)) {
+      return variable.symbol;
     }
 
     if (variable === "") {
       variable = "L0";
+    }
+
+    if (typeof variable === "number") {
+      variable = String(variable);
     }
 
     // Lookup args if in V0-9 format
@@ -3362,7 +3389,7 @@ extern void __mute_mask_${symbol};
     return newAlias;
   };
 
-  variableInc = (variable: string) => {
+  variableInc = (variable: ScriptBuilderVariable) => {
     this._addComment("Variable Increment By 1");
     this._rpn() //
       .refVariable(variable)
