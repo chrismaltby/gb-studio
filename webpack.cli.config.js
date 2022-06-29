@@ -1,5 +1,6 @@
 const plugins = require("./webpack.plugins");
 const Path = require("path");
+const webpack = require("webpack");
 
 const srcPath = (subdir) => {
   return Path.join(__dirname, "src", subdir);
