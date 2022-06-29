@@ -757,31 +757,34 @@ class ScriptBuilder {
     }
   };
 
-  _setVariableToVariable = (variableA: string, variableB: string) => {
+  _setVariableToVariable = (
+    variableA: ScriptBuilderVariable,
+    variableB: ScriptBuilderVariable
+  ) => {
     const variableAliasA = this.getVariableAlias(variableA);
     const variableAliasB = this.getVariableAlias(variableB);
 
     let dest = variableAliasB;
 
-    if (this._isArg(variableAliasB)) {
+    if (this._isIndirectVariable(variableB)) {
       this._stackPushInd(this._argRef(variableAliasB));
       dest = ".ARG0";
     }
 
-    if (this._isArg(variableAliasA)) {
+    if (this._isIndirectVariable(variableA)) {
       this._setInd(this._argRef(variableAliasA), dest);
     } else {
       this._set(variableAliasA, dest);
     }
 
-    if (this._isArg(variableAliasB)) {
+    if (this._isIndirectVariable(variableB)) {
       this._stackPop(1);
     }
   };
 
   _setVariableConst = (variable: string, value: ScriptBuilderStackVariable) => {
     const variableAlias = this.getVariableAlias(variable);
-    if (this._isArg(variableAlias)) {
+    if (this._isIndirectVariable(variable)) {
       const valueTmpRef = this._declareLocal("value_tmp", 1, true);
       this._setConst(this._localRef(valueTmpRef), value);
       this._setInd(this._argRef(variableAlias), this._localRef(valueTmpRef));
@@ -1032,7 +1035,7 @@ class ScriptBuilder {
       },
       refVariable: (variable: ScriptBuilderVariable) => {
         const variableAlias = this.getVariableAlias(variable);
-        if (this._isIndirectVariable(variableAlias)) {
+        if (this._isIndirectVariable(variable)) {
           return rpn.refInd(this._argRef(variableAlias));
         } else {
           return rpn.ref(variableAlias);
@@ -1882,34 +1885,40 @@ extern void __mute_mask_${symbol};
   // --------------------------------------------------------------------------
   // Actors
 
-  setActorId = (addr: string, id: string) => {
-    const newIndex = this.getActorIndex(id);
-    if (typeof newIndex === "number") {
+  setActorId = (addr: string, id: ScriptBuilderVariable) => {
+    if (typeof id === "number") {
+      this.actorIndex = id;
+      this._setConst(addr, this.actorIndex);
+    } else if (typeof id === "string") {
+      const newIndex = this.getActorIndex(id);
       this.actorIndex = newIndex;
       this._setConst(addr, this.actorIndex);
     } else {
       this.actorIndex = -1;
-      this._set(addr, this._argRef(newIndex));
+      this._set(addr, this._argRef(id.symbol));
     }
   };
 
-  actorSetById = (id: string) => {
+  actorSetById = (id: ScriptBuilderVariable) => {
     const actorRef = this._declareLocal("actor", 4);
     this.setActorId(this._localRef(actorRef), id);
   };
 
-  actorPushById = (id: string) => {
-    const newIndex = this.getActorIndex(id);
-    if (typeof newIndex === "number") {
+  actorPushById = (id: ScriptBuilderVariable) => {
+    if (typeof id === "number") {
+      this.actorIndex = id;
+      this._stackPushConst(this.actorIndex);
+    } else if (typeof id === "string") {
+      const newIndex = this.getActorIndex(id);
       this.actorIndex = newIndex;
       this._stackPushConst(this.actorIndex);
     } else {
       this.actorIndex = -1;
-      this._stackPush(this._argRef(newIndex));
+      this._stackPush(this._argRef(id.symbol));
     }
   };
 
-  actorSetActive = (id: string) => {
+  actorSetActive = (id: ScriptBuilderVariable) => {
     this._addComment("Actor Set Active");
     this.actorSetById(id);
     this._addNL();
@@ -2992,7 +3001,7 @@ extern void __mute_mask_${symbol};
 
     const constArgLookup: Record<number, string> = {};
     if (variableArgs) {
-      for (const variableArg of variableArgs.reverse()) {
+      for (const variableArg of variableArgs) {
         if (variableArg) {
           const variableValue = input?.[`$variable[${variableArg.id}]$`] || "";
           if (
@@ -3283,10 +3292,7 @@ extern void __mute_mask_${symbol};
   // --------------------------------------------------------------------------
   // Variables
 
-  getActorIndex = (id: string): string | number => {
-    if (this._isArg(id)) {
-      return id;
-    }
+  getActorIndex = (id: string): number => {
     const { entity, entityType, scene } = this.options;
 
     if (id === "player" || (id === "$self$" && entityType !== "actor")) {
@@ -3401,7 +3407,7 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
-  variableDec = (variable: string) => {
+  variableDec = (variable: ScriptBuilderVariable) => {
     this._addComment("Variable Decrement By 1");
     this._rpn() //
       .refVariable(variable)
@@ -3431,7 +3437,10 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
-  variableCopy = (setVariable: string, otherVariable: string) => {
+  variableCopy = (
+    setVariable: ScriptBuilderVariable,
+    otherVariable: ScriptBuilderVariable
+  ) => {
     this._addComment("Variable Copy");
     this._setVariableToVariable(setVariable, otherVariable);
     this._addNL();
