@@ -6,9 +6,16 @@ const Path = require("path");
 const { IgnorePlugin } = require('webpack');
 
 const optionalPlugins = [];
-if (process.platform !== "darwin") {
+if (process.platform !== "darwin") { // don't ignore on OSX
   optionalPlugins.push(new IgnorePlugin({ resourceRegExp: /^fsevents$/ }));
 }
+
+module.exports = {
+  // other webpack config options here...
+  plugins: [
+    ...optionalPlugins,
+  ],
+};
 
 rules.push({
   test: /\.css$/,
