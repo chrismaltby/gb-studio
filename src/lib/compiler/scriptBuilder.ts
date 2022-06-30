@@ -748,7 +748,7 @@ class ScriptBuilder {
 
   _setToVariable = (location: ScriptBuilderStackVariable, variable: string) => {
     const variableAlias = this.getVariableAlias(variable);
-    if (this._isArg(variableAlias)) {
+    if (this._isIndirectVariable(variable)) {
       this._stackPushInd(this._argRef(variableAlias));
       this._set(location, ".ARG0");
       this._stackPop(1);
@@ -813,7 +813,7 @@ class ScriptBuilder {
   _setMemInt8ToVariable = (cVariable: string, variable: string) => {
     const variableAlias = this.getVariableAlias(variable);
     this._addDependency(cVariable);
-    if (this._isArg(variableAlias)) {
+    if (this._isIndirectVariable(variable)) {
       this._stackPushInd(this._argRef(variableAlias));
       this._setMemInt8(cVariable, ".ARG0");
       this._stackPop(1);
@@ -825,7 +825,7 @@ class ScriptBuilder {
   _setMemInt16ToVariable = (cVariable: string, variable: string) => {
     const variableAlias = this.getVariableAlias(variable);
     this._addDependency(cVariable);
-    if (this._isArg(variableAlias)) {
+    if (this._isIndirectVariable(variable)) {
       this._stackPushInd(this._argRef(variableAlias));
       this._setMemInt16(cVariable, ".ARG0");
       this._stackPop(1);
@@ -866,7 +866,7 @@ class ScriptBuilder {
 
   _setVariableMemInt8 = (variable: string, cVariable: string) => {
     const variableAlias = this.getVariableAlias(variable);
-    if (this._isArg(variableAlias)) {
+    if (this._isIndirectVariable(variable)) {
       const valueTmpRef = this._declareLocal("value_tmp", 1, true);
       this._getMemInt8(this._localRef(valueTmpRef), cVariable);
       this._setInd(this._argRef(variableAlias), this._localRef(valueTmpRef));
@@ -877,7 +877,7 @@ class ScriptBuilder {
 
   _setVariableMemInt16 = (variable: string, cVariable: string) => {
     const variableAlias = this.getVariableAlias(variable);
-    if (this._isArg(variableAlias)) {
+    if (this._isIndirectVariable(variable)) {
       const valueTmpRef = this._declareLocal("value_tmp", 1, true);
       this._getMemInt16(this._localRef(valueTmpRef), cVariable);
       this._setInd(this._argRef(variableAlias), this._localRef(valueTmpRef));
@@ -949,13 +949,13 @@ class ScriptBuilder {
     let pop = 0;
     let dest = variableAliasB;
 
-    if (this._isArg(variableAliasB)) {
+    if (this._isIndirectVariable(variableB)) {
       pop++;
       this._stackPushConst(0);
-      dest = this._isArg(variableAliasA) ? ".ARG1" : ".ARG0";
+      dest = this._isIndirectVariable(variableA) ? ".ARG1" : ".ARG0";
     }
 
-    if (this._isArg(variableAliasA)) {
+    if (this._isIndirectVariable(variableA)) {
       pop++;
       this._stackPushInd(this._argRef(variableAliasA));
       this._sioExchange(".ARG0", dest, packetSize);
@@ -963,7 +963,7 @@ class ScriptBuilder {
       this._sioExchange(variableAliasA, dest, packetSize);
     }
 
-    if (this._isArg(variableAliasB)) {
+    if (this._isIndirectVariable(variableB)) {
       this._setInd(this._argRef(variableAliasB), dest);
     }
 
@@ -1002,7 +1002,7 @@ class ScriptBuilder {
 
   _randVariable = (variable: string, min: number, range: number) => {
     const variableAlias = this.getVariableAlias(variable);
-    if (this._isArg(variableAlias)) {
+    if (this._isIndirectVariable(variable)) {
       const valueTmpRef = this._declareLocal("value_tmp", 1, true);
       this._addCmd("VM_RAND", this._localRef(valueTmpRef), min, range);
       this._setInd(this._argRef(variableAlias), this._localRef(valueTmpRef));
@@ -1119,7 +1119,7 @@ class ScriptBuilder {
     popNum: number
   ) => {
     const variableAlias = this.getVariableAlias(variable);
-    if (this._isArg(variableAlias)) {
+    if (this._isIndirectVariable(variable)) {
       this._stackPushInd(this._argRef(variableAlias));
       this._switch(".ARG0", switchCases, popNum + 1);
     } else {
@@ -1135,7 +1135,7 @@ class ScriptBuilder {
     popNum: number
   ) => {
     const variableAlias = this.getVariableAlias(variable);
-    if (this._isArg(variableAlias)) {
+    if (this._isIndirectVariable(variable)) {
       this._stackPushInd(this._argRef(variableAlias));
       this._ifConst(operator, ".ARG0", value, label, popNum + 1);
     } else {
@@ -1156,13 +1156,13 @@ class ScriptBuilder {
     let dest = variableAliasB;
     let pop = popNum;
 
-    if (this._isArg(variableAliasB)) {
+    if (this._isIndirectVariable(variableB)) {
       this._stackPushInd(this._argRef(variableAliasB));
-      dest = this._isArg(variableAliasA) ? ".ARG1" : ".ARG0";
+      dest = this._isIndirectVariable(variableA) ? ".ARG1" : ".ARG0";
       pop += 1;
     }
 
-    if (this._isArg(variableAliasA)) {
+    if (this._isIndirectVariable(variableA)) {
       this._stackPushInd(this._argRef(variableAliasA));
       this._if(operator, ".ARG0", dest, label, pop + 1);
     } else {
@@ -1204,7 +1204,7 @@ class ScriptBuilder {
 
   _actorGetDirectionToVariable = (addr: string, variable: string) => {
     const variableAlias = this.getVariableAlias(variable);
-    if (this._isArg(variableAlias)) {
+    if (this._isIndirectVariable(variable)) {
       const dirDestVarRef = this._declareLocal("dir_dest_var", 1, true);
       this._actorGetDirection(addr, this._localRef(dirDestVarRef));
       this._setInd(this._argRef(variableAlias), this._localRef(dirDestVarRef));
@@ -1735,10 +1735,11 @@ extern void __mute_mask_${symbol};
     this._addCmd("VM_STOP");
   };
 
-  _isArg = (
-    variable: ScriptBuilderStackVariable | ScriptBuilderVariableData
-  ) => {
-    return typeof variable === "string" && variable.startsWith("SCRIPT_ARG");
+  _isArg = (variable: ScriptBuilderStackVariable) => {
+    if (typeof variable === "string") {
+      return variable.startsWith(".SCRIPT_ARG");
+    }
+    return false;
   };
 
   _isVariableData(
@@ -2668,7 +2669,7 @@ extern void __mute_mask_${symbol};
     this._addComment("Text Multiple Choice");
 
     let dest = variableAlias;
-    if (this._isArg(variableAlias)) {
+    if (this._isIndirectVariable(variable)) {
       const menuResultRef = this._declareLocal("menu_result", 1, true);
       dest = this._localRef(menuResultRef);
     }
@@ -2684,7 +2685,7 @@ extern void __mute_mask_${symbol};
     this._overlayMoveTo(0, 18, ".OVERLAY_OUT_SPEED");
     this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
 
-    if (this._isArg(variableAlias)) {
+    if (this._isIndirectVariable(variable)) {
       this._setInd(this._argRef(variableAlias), dest);
     }
 
@@ -2692,13 +2693,13 @@ extern void __mute_mask_${symbol};
   };
 
   textMenu = (
-    setVariable: string,
+    variable: string,
     options: string[],
     layout = "menu",
     cancelOnLastOption = false,
     cancelOnB = false
   ) => {
-    const variableAlias = this.getVariableAlias(setVariable);
+    const variableAlias = this.getVariableAlias(variable);
     const optionsText = options.map(
       (option, index) => textCodeSetFont(0) + (option || `Item ${index + 1}`)
     );
@@ -2730,7 +2731,7 @@ extern void __mute_mask_${symbol};
     this._addComment("Text Menu");
 
     let dest = variableAlias;
-    if (this._isArg(variableAlias)) {
+    if (this._isIndirectVariable(variable)) {
       const menuResultRef = this._declareLocal("menu_result", 1, true);
       dest = this._localRef(menuResultRef);
     }
@@ -2785,7 +2786,7 @@ extern void __mute_mask_${symbol};
       this._overlayMoveTo(0, 18, ".OVERLAY_SPEED_INSTANT");
     }
 
-    if (this._isArg(variableAlias)) {
+    if (this._isIndirectVariable(variable)) {
       this._setInd(this._argRef(variableAlias), dest);
     }
 
