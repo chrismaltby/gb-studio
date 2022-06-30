@@ -13,15 +13,39 @@ import { customEventSelectors } from "store/features/entities/entitiesState";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { Sidebar, SidebarColumn } from "ui/sidebars/Sidebar";
-import { FormContainer, FormDivider, FormHeader } from "ui/form/FormLayout";
+import {
+  FormContainer,
+  FormDivider,
+  FormHeader,
+  FormRow,
+} from "ui/form/FormLayout";
 import { EditableText } from "ui/form/EditableText";
 import { RootState } from "store/configureStore";
 import { CustomEvent } from "store/features/entities/entitiesTypes";
 import { StickyTabs, TabBar } from "ui/tabs/Tabs";
 import { Button } from "ui/buttons/Button";
-import { LockIcon, LockOpenIcon } from "ui/icons/Icons";
+import { LockIcon, LockOpenIcon, AsteriskIcon } from "ui/icons/Icons";
 import { CustomEventSymbolsEditor } from "components/forms/symbols/CustomEventSymbolsEditor";
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
+import { Checkbox } from "ui/form/Checkbox";
+import { FlexRow } from "ui/spacing/Spacing";
+import { NoteField } from "ui/form/NoteField";
+import styled from "styled-components";
+
+const PassByReferenceHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 15px;
+  margin-right: 10px;
+  margin-top: 10px;
+
+  svg {
+    width: 10px;
+    height: 10px;
+  }
+`;
 
 const customEventName = (customEvent: CustomEvent, customEventIndex: number) =>
   customEvent.name ? customEvent.name : `Script ${customEventIndex + 1}`;
@@ -202,46 +226,57 @@ const CustomEventEditor = ({ id, multiColumn }: CustomEventEditorProps) => {
               </>
             )}
 
-            <FormField style={{}}>
-              <label htmlFor="customEventDescription">
-                {l10n("FIELD_DESCRIPTION")}
-                <textarea
-                  id="customEventDescription"
-                  rows={3}
-                  value={customEvent.description || ""}
-                  placeholder={l10n(
-                    "FIELD_CUSTOM_EVENT_DESCRIPTION_PLACEHOLDER"
-                  )}
-                  onChange={onEdit("description")}
-                />
-              </label>
-            </FormField>
+            <FormRow>
+              <NoteField
+                autofocus
+                value={customEvent.description || ""}
+                onChange={onEdit("description")}
+              />
+            </FormRow>
           </FormContainer>
           <div>
             <SidebarHeading title={l10n("SIDEBAR_PARAMETERS")} />
-            <FormField style={{}}>
-              <label>
-                {`Variables: ${Object.values(customEvent.variables).length}/10`}
-              </label>
-            </FormField>
+            <div style={{ display: "flex" }}>
+              <FormField style={{}}>
+                <label>
+                  <strong>{l10n("FIELD_VARIABLES")}:</strong>{" "}
+                  {`${Object.values(customEvent.variables).length}/10`}
+                </label>
+              </FormField>
+              <PassByReferenceHeader
+                title={l10n("FIELD_PASS_BY_REFERENCE_HEADER_TITLE")}
+              >
+                <AsteriskIcon />
+              </PassByReferenceHeader>
+            </div>
             {Object.values(customEvent.variables).map((variable, i) => {
               if (!variable) {
                 return null;
               }
               return (
                 <FormField key={variable.id} style={{}}>
-                  <input
-                    id={`variable[${i}]`}
-                    value={variable.name}
-                    placeholder="Variable Name"
-                    onChange={onEditVariableName(variable.id)}
-                  />
+                  <FlexRow>
+                    <input
+                      id={`variable[${i}]`}
+                      value={variable.name}
+                      placeholder="Variable Name"
+                      onChange={onEditVariableName(variable.id)}
+                    />
+                    <div style={{ marginTop: 2 }}>
+                      <Checkbox
+                        id={`variable[${i}].value`}
+                        name="passByValue"
+                        checked
+                      />
+                    </div>
+                  </FlexRow>
                 </FormField>
               );
             })}
             <FormField style={{}}>
               <label>
-                {`Actors: ${Object.values(customEvent.actors).length}/10`}
+                <strong>{l10n("FIELD_ACTORS")}:</strong>{" "}
+                {`${Object.values(customEvent.actors).length}/10`}
               </label>
             </FormField>
             {Object.values(customEvent.actors).map((actor, i) => {
