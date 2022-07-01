@@ -134,7 +134,7 @@ export const chunk = <T>(arr: T[], len?: number): T[][] => {
 };
 
 export const toHex = (n: number) =>
-  "0x" + n.toString(16).toUpperCase().padStart(2, "0");
+  "0x" + n.toString(16)?.toUpperCase().padStart(2, "0");
 
 export const sceneName = (scene: Entity, sceneIndex: number) =>
   scene.name || `Scene ${sceneIndex + 1}`;
@@ -226,7 +226,7 @@ const toFlags = (flags: string[]): string =>
 
 const toDataHeader = (type: string, symbol: string, comment: string) =>
   includeGuard(
-    symbol.toUpperCase(),
+    symbol?.toUpperCase(),
     `${comment}
 
 #include "gbs_types.h"
@@ -237,7 +237,7 @@ extern ${type} ${symbol};`
 
 const toArrayDataHeader = (type: string, symbol: string, comment: string) =>
   includeGuard(
-    symbol.toUpperCase(),
+    symbol?.toUpperCase(),
     `${comment}
 
 #include "gbs_types.h"
