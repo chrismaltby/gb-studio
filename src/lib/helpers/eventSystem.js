@@ -464,6 +464,9 @@ const isFieldVisible = (field, args) => {
 };
 
 const isVariableField = (cmd, fieldName, args) => {
+  if (fieldName.startsWith("$variable[")) {
+    return true;
+  }
   const field = getField(cmd, fieldName, args);
   return (
     field &&

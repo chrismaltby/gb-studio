@@ -68,8 +68,9 @@ type ScriptBuilderEntityType = "scene" | "actor" | "trigger";
 
 type ScriptBuilderStackVariable = string | number;
 
-type ScriptBuilderVariableData = {
-  type: "variable" | "indirect";
+type ScriptBuilderFunctionArg = {
+  type: "argument";
+  indirect: boolean;
   symbol: string;
 };
 
@@ -77,11 +78,11 @@ type ScriptBuilderSimpleVariable = string | number;
 
 type ScriptBuilderVariable =
   | ScriptBuilderSimpleVariable
-  | ScriptBuilderVariableData;
+  | ScriptBuilderFunctionArg;
 
 interface ScriptBuilderFunctionArgLookup {
-  actor: Dictionary<ScriptBuilderVariableData>;
-  variable: Dictionary<ScriptBuilderVariableData>;
+  actor: Dictionary<ScriptBuilderFunctionArg>;
+  variable: Dictionary<ScriptBuilderFunctionArg>;
 }
 
 interface ScriptBuilderOptions {
@@ -183,7 +184,7 @@ type ScriptBuilderUnionValue =
     }
   | {
       type: "variable";
-      value: string;
+      value: string | ScriptBuilderFunctionArg;
     };
 
 type ScriptBuilderPathFunction = () => void;
@@ -205,6 +206,10 @@ type ASMSFXPriority =
   | ".SFX_PRIORITY_HIGH";
 
 // - Helpers --------------
+
+const isObject = (value: unknown): value is Record<string, unknown> => {
+  return typeof value === "object" && value !== null;
+};
 
 const getActorIndex = (actorId: string, scene: ScriptBuilderScene) => {
   return (scene.actors || []).findIndex((a) => a.id === actorId) + 1;
@@ -1330,7 +1335,7 @@ class ScriptBuilder {
           if (!arg) {
             throw new Error("Cant find arg");
           }
-          if (arg.type === "indirect") {
+          if (this._isIndirectVariable(arg)) {
             const localRef = this._declareLocal(
               `text_arg${indirectVars.length}`,
               1,
@@ -1737,21 +1742,19 @@ extern void __mute_mask_${symbol};
 
   _isArg = (variable: ScriptBuilderStackVariable) => {
     if (typeof variable === "string") {
-      return variable.startsWith(".SCRIPT_ARG");
+      return variable.startsWith(".SCRIPT_INDIRECT_ARG");
     }
     return false;
   };
 
-  _isVariableData(
-    x: ScriptBuilderStackVariable | ScriptBuilderVariableData
-  ): x is ScriptBuilderVariableData {
-    return typeof x === "object" && "symbol" in x;
+  _isFunctionArg(x: unknown): x is ScriptBuilderFunctionArg {
+    return (
+      isObject(x) && typeof x["type"] === "string" && x.type === "argument"
+    );
   }
 
-  _isIndirectVariable(
-    x: ScriptBuilderStackVariable | ScriptBuilderVariableData
-  ): boolean {
-    return this._isVariableData(x) && x.type === "indirect";
+  _isIndirectVariable(x: ScriptBuilderVariable): boolean {
+    return this._isFunctionArg(x) && x.indirect;
   }
 
   _declareLocal = (
@@ -3046,7 +3049,11 @@ extern void __mute_mask_${symbol};
           } else if (variableValue && variableValue.type === "variable") {
             // Arg is a union variable
             const variableAlias = this.getVariableAlias(variableValue.value);
-            this._stackPushConst(variableAlias, `Variable ${variableArg.id}`);
+            if (this._isIndirectVariable(variableValue.value)) {
+              this._stackPush(this._argRef(variableAlias));
+            } else {
+              this._stackPushConst(variableAlias, `Variable ${variableArg.id}`);
+            }
           }
         }
       }
@@ -3075,8 +3082,8 @@ extern void __mute_mask_${symbol};
     }
 
     const argLookup: {
-      actor: Dictionary<ScriptBuilderVariableData>;
-      variable: Dictionary<ScriptBuilderVariableData>;
+      actor: Dictionary<ScriptBuilderFunctionArg>;
+      variable: Dictionary<ScriptBuilderFunctionArg>;
     } = {
       actor: {},
       variable: {},
@@ -3094,9 +3101,12 @@ extern void __mute_mask_${symbol};
       value: string
     ) => {
       if (!argLookup[type][value]) {
-        const newArg = `.SCRIPT_ARG_${numArgs}_${type}`.toUpperCase();
+        const newArg = `.SCRIPT_${
+          indirect ? "INDIRECT_" : ""
+        }ARG_${numArgs}_${type}`.toUpperCase();
         argLookup[type][value] = {
-          type: indirect ? "indirect" : "variable",
+          type: "argument",
+          indirect,
           symbol: newArg,
         };
         numArgs--;
@@ -3314,7 +3324,7 @@ extern void __mute_mask_${symbol};
   };
 
   getVariableAlias = (variable: ScriptBuilderVariable = "0"): string => {
-    if (this._isVariableData(variable)) {
+    if (this._isFunctionArg(variable)) {
       return variable.symbol;
     }
 
