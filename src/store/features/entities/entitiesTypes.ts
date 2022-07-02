@@ -243,6 +243,7 @@ export type Variable = {
 export type CustomEventVariable = {
   id: string;
   name: string;
+  passByReference: boolean;
   type?: "8bit" | "16bit";
 };
 

@@ -104,6 +104,32 @@ const CustomEventEditor = ({ id, multiColumn }: CustomEventEditorProps) => {
       );
     };
 
+  const onEditVariablePassByReference =
+    (key: string): React.ChangeEventHandler =>
+    (e) => {
+      if (!customEvent) {
+        return;
+      }
+      const variable = customEvent.variables[key];
+      if (!variable) {
+        return;
+      }
+
+      dispatch(
+        entitiesActions.editCustomEvent({
+          customEventId: customEvent.id,
+          changes: {
+            variables: Object.assign({}, customEvent.variables, {
+              [key]: {
+                ...variable,
+                passByReference: castEventValue(e),
+              },
+            }),
+          },
+        })
+      );
+    };
+
   const onEditActorName =
     (key: string): React.ChangeEventHandler =>
     (e) => {
@@ -189,6 +215,9 @@ const CustomEventEditor = ({ id, multiColumn }: CustomEventEditorProps) => {
     />
   );
 
+  const customEventVariables = Object.values(customEvent.variables);
+  const customEventActors = Object.values(customEvent.actors);
+
   return (
     <Sidebar onClick={selectSidebar} multiColumn={multiColumn}>
       {!lockScriptEditor && (
@@ -236,64 +265,75 @@ const CustomEventEditor = ({ id, multiColumn }: CustomEventEditorProps) => {
           </FormContainer>
           <div>
             <SidebarHeading title={l10n("SIDEBAR_PARAMETERS")} />
-            <div style={{ display: "flex" }}>
-              <FormField style={{}}>
-                <label>
-                  <strong>{l10n("FIELD_VARIABLES")}:</strong>{" "}
-                  {`${Object.values(customEvent.variables).length}/10`}
-                </label>
-              </FormField>
-              <PassByReferenceHeader
-                title={l10n("FIELD_PASS_BY_REFERENCE_HEADER_TITLE")}
-              >
-                <AsteriskIcon />
-              </PassByReferenceHeader>
-            </div>
-            {Object.values(customEvent.variables).map((variable, i) => {
-              if (!variable) {
-                return null;
-              }
-              return (
-                <FormField key={variable.id} style={{}}>
-                  <FlexRow>
-                    <input
-                      id={`variable[${i}]`}
-                      value={variable.name}
-                      placeholder="Variable Name"
-                      onChange={onEditVariableName(variable.id)}
-                    />
-                    <div style={{ marginTop: 2 }}>
-                      <Checkbox
-                        id={`variable[${i}].value`}
-                        name="passByValue"
-                        checked
+            {customEventVariables.length > 0 && (
+              <>
+                <div style={{ display: "flex" }}>
+                  <FormField style={{}}>
+                    <label>
+                      <strong>{l10n("FIELD_VARIABLES")}:</strong>{" "}
+                      {`${customEventVariables.length}/10`}
+                    </label>
+                  </FormField>
+                  <PassByReferenceHeader
+                    title={l10n("FIELD_PASS_BY_REFERENCE_HEADER_TITLE")}
+                  >
+                    <AsteriskIcon />
+                  </PassByReferenceHeader>
+                </div>
+                {customEventVariables.map((variable, i) => {
+                  if (!variable) {
+                    return null;
+                  }
+                  return (
+                    <FormField key={variable.id} style={{}}>
+                      <FlexRow>
+                        <input
+                          id={`variable[${i}]`}
+                          value={variable.name}
+                          placeholder="Variable Name"
+                          onChange={onEditVariableName(variable.id)}
+                        />
+                        <div style={{ marginTop: 2 }}>
+                          <Checkbox
+                            id={`variable[${i}].value`}
+                            name="passByValue"
+                            checked={variable.passByReference}
+                            onChange={onEditVariablePassByReference(
+                              variable.id
+                            )}
+                          />
+                        </div>
+                      </FlexRow>
+                    </FormField>
+                  );
+                })}
+              </>
+            )}
+            {customEventActors.length > 0 && (
+              <>
+                <FormField style={{}}>
+                  <label>
+                    <strong>{l10n("FIELD_ACTORS")}:</strong>{" "}
+                    {`${customEventActors.length}/10`}
+                  </label>
+                </FormField>
+                {customEventActors.map((actor, i) => {
+                  if (!actor) {
+                    return null;
+                  }
+                  return (
+                    <FormField key={actor.id} style={{}}>
+                      <input
+                        id={`actor[${i}]`}
+                        value={actor.name}
+                        placeholder="Actor Name"
+                        onChange={onEditActorName(actor.id)}
                       />
-                    </div>
-                  </FlexRow>
-                </FormField>
-              );
-            })}
-            <FormField style={{}}>
-              <label>
-                <strong>{l10n("FIELD_ACTORS")}:</strong>{" "}
-                {`${Object.values(customEvent.actors).length}/10`}
-              </label>
-            </FormField>
-            {Object.values(customEvent.actors).map((actor, i) => {
-              if (!actor) {
-                return null;
-              }
-              return (
-                <FormField key={actor.id} style={{}}>
-                  <input
-                    id={`actor[${i}]`}
-                    value={actor.name}
-                    placeholder="Actor Name"
-                    onChange={onEditActorName(actor.id)}
-                  />
-                </FormField>
-              );
-            })}
+                    </FormField>
+                  );
+                })}
+              </>
+            )}
           </div>
         </SidebarColumn>
       )}

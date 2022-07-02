@@ -558,7 +558,25 @@ class ScriptBuilder {
     cmd: string,
     ...args: Array<ScriptBuilderStackVariable>
   ) => {
-    this.output.push(this._padCmd(cmd, args.join(", "), 8, 24));
+    let comment = "";
+    const lastArg = args[args.length - 1];
+    // Check if lastArg was a comment
+    if (
+      typeof lastArg === "string" &&
+      (lastArg.startsWith(";") || lastArg === "")
+    ) {
+      comment = lastArg;
+      args.pop();
+    }
+    this.output.push(
+      this._padCmd(
+        cmd,
+        args.map((d) => this._offsetStackAddr(d)).join(", ") +
+          (comment ? ` ${comment}` : ""),
+        8,
+        24
+      )
+    );
   };
 
   private _prettyFormatCmd = (
@@ -689,28 +707,25 @@ class ScriptBuilder {
 
   _stackPushConst = (value: number | string, comment?: string) => {
     this.stackPtr++;
-    this._addCmd("VM_PUSH_CONST", value + (comment ? ` ; ${comment}` : ""));
+    this._addCmd("VM_PUSH_CONST", value, comment ? `; ${comment}` : "");
   };
 
-  _stackPush = (location: ScriptBuilderStackVariable) => {
+  _stackPush = (addr: ScriptBuilderStackVariable) => {
     this.stackPtr++;
-    this._addCmd("VM_PUSH_VALUE", location);
+    this._addCmd("VM_PUSH_VALUE", addr);
   };
 
-  _stackPushInd = (location: ScriptBuilderStackVariable) => {
+  _stackPushInd = (addr: ScriptBuilderStackVariable) => {
     this.stackPtr++;
-    this._addCmd("VM_PUSH_VALUE_IND", location);
+    this._addCmd("VM_PUSH_VALUE_IND", addr);
   };
 
   _stackPushReference = (
-    location: ScriptBuilderStackVariable,
+    addr: ScriptBuilderStackVariable,
     comment?: string
   ) => {
     this.stackPtr++;
-    this._addCmd(
-      "VM_PUSH_REFERENCE",
-      location + (comment ? ` ; ${comment}` : "")
-    );
+    this._addCmd("VM_PUSH_REFERENCE", addr, comment ? `; ${comment}` : "");
   };
 
   _stackPop = (num: number) => {
@@ -719,24 +734,24 @@ class ScriptBuilder {
   };
 
   _set = (
-    location: ScriptBuilderStackVariable,
+    addr: ScriptBuilderStackVariable,
     value: ScriptBuilderStackVariable
   ) => {
-    this._addCmd("VM_SET", location, value);
+    this._addCmd("VM_SET", addr, value);
   };
 
   _setConst = (
-    location: ScriptBuilderStackVariable,
+    addr: ScriptBuilderStackVariable,
     value: ScriptBuilderStackVariable
   ) => {
-    this._addCmd("VM_SET_CONST", location, value);
+    this._addCmd("VM_SET_CONST", addr, value);
   };
 
   _setInd = (
-    location: ScriptBuilderStackVariable,
+    addr: ScriptBuilderStackVariable,
     value: ScriptBuilderStackVariable
   ) => {
-    this._addCmd("VM_SET_INDIRECT", location, value);
+    this._addCmd("VM_SET_INDIRECT", addr, value);
   };
 
   _setVariable = (
@@ -745,20 +760,20 @@ class ScriptBuilder {
   ) => {
     const variableAlias = this.getVariableAlias(variable);
     if (this._isIndirectVariable(variable)) {
-      this._setInd(this._argRef(variableAlias), value);
+      this._setInd(variableAlias, value);
     } else {
       this._set(variableAlias, value);
     }
   };
 
-  _setToVariable = (location: ScriptBuilderStackVariable, variable: string) => {
+  _setToVariable = (addr: ScriptBuilderStackVariable, variable: string) => {
     const variableAlias = this.getVariableAlias(variable);
     if (this._isIndirectVariable(variable)) {
-      this._stackPushInd(this._argRef(variableAlias));
-      this._set(location, ".ARG0");
+      this._stackPushInd(variableAlias);
+      this._set(addr, ".ARG0");
       this._stackPop(1);
     } else {
-      this._set(location, variableAlias);
+      this._set(addr, variableAlias);
     }
   };
 
@@ -772,12 +787,12 @@ class ScriptBuilder {
     let dest = variableAliasB;
 
     if (this._isIndirectVariable(variableB)) {
-      this._stackPushInd(this._argRef(variableAliasB));
+      this._stackPushInd(variableAliasB);
       dest = ".ARG0";
     }
 
     if (this._isIndirectVariable(variableA)) {
-      this._setInd(this._argRef(variableAliasA), dest);
+      this._setInd(variableAliasA, dest);
     } else {
       this._set(variableAliasA, dest);
     }
@@ -791,35 +806,35 @@ class ScriptBuilder {
     const variableAlias = this.getVariableAlias(variable);
     if (this._isIndirectVariable(variable)) {
       const valueTmpRef = this._declareLocal("value_tmp", 1, true);
-      this._setConst(this._localRef(valueTmpRef), value);
-      this._setInd(this._argRef(variableAlias), this._localRef(valueTmpRef));
+      this._setConst(valueTmpRef, value);
+      this._setInd(variableAlias, valueTmpRef);
     } else {
       this._setConst(variableAlias, value);
     }
   };
 
   _getInd = (
-    location: ScriptBuilderStackVariable,
+    addr: ScriptBuilderStackVariable,
     value: ScriptBuilderStackVariable
   ) => {
-    this._addCmd("VM_GET_INDIRECT", location, value);
+    this._addCmd("VM_GET_INDIRECT", addr, value);
   };
 
-  _setMemInt8 = (cVariable: string, location: ScriptBuilderStackVariable) => {
+  _setMemInt8 = (cVariable: string, addr: ScriptBuilderStackVariable) => {
     this._addDependency(cVariable);
-    this._addCmd("VM_SET_INT8", `_${cVariable}`, location);
+    this._addCmd("VM_SET_INT8", `_${cVariable}`, addr);
   };
 
-  _setMemInt16 = (cVariable: string, location: ScriptBuilderStackVariable) => {
+  _setMemInt16 = (cVariable: string, addr: ScriptBuilderStackVariable) => {
     this._addDependency(cVariable);
-    this._addCmd("VM_SET_INT16", `_${cVariable}`, location);
+    this._addCmd("VM_SET_INT16", `_${cVariable}`, addr);
   };
 
   _setMemInt8ToVariable = (cVariable: string, variable: string) => {
     const variableAlias = this.getVariableAlias(variable);
     this._addDependency(cVariable);
     if (this._isIndirectVariable(variable)) {
-      this._stackPushInd(this._argRef(variableAlias));
+      this._stackPushInd(variableAlias);
       this._setMemInt8(cVariable, ".ARG0");
       this._stackPop(1);
     } else {
@@ -831,7 +846,7 @@ class ScriptBuilder {
     const variableAlias = this.getVariableAlias(variable);
     this._addDependency(cVariable);
     if (this._isIndirectVariable(variable)) {
-      this._stackPushInd(this._argRef(variableAlias));
+      this._stackPushInd(variableAlias);
       this._setMemInt16(cVariable, ".ARG0");
       this._stackPop(1);
     } else {
@@ -849,22 +864,22 @@ class ScriptBuilder {
     this._addCmd("VM_SET_CONST_INT16", `_${cVariable}`, value);
   };
 
-  _getMemUInt8 = (location: ScriptBuilderStackVariable, cVariable: string) => {
-    this._addCmd("VM_GET_UINT8", location, `_${cVariable}`);
+  _getMemUInt8 = (addr: ScriptBuilderStackVariable, cVariable: string) => {
+    this._addCmd("VM_GET_UINT8", addr, `_${cVariable}`);
   };
 
-  _getMemInt8 = (location: ScriptBuilderStackVariable, cVariable: string) => {
+  _getMemInt8 = (addr: ScriptBuilderStackVariable, cVariable: string) => {
     this._addCmd(
       "VM_GET_INT8",
-      location,
+      addr,
       cVariable.startsWith("^") ? cVariable : `_${cVariable}`
     );
   };
 
-  _getMemInt16 = (location: ScriptBuilderStackVariable, cVariable: string) => {
+  _getMemInt16 = (addr: ScriptBuilderStackVariable, cVariable: string) => {
     this._addCmd(
       "VM_GET_INT16",
-      location,
+      addr,
       cVariable.startsWith("^") ? cVariable : `_${cVariable}`
     );
   };
@@ -873,8 +888,8 @@ class ScriptBuilder {
     const variableAlias = this.getVariableAlias(variable);
     if (this._isIndirectVariable(variable)) {
       const valueTmpRef = this._declareLocal("value_tmp", 1, true);
-      this._getMemInt8(this._localRef(valueTmpRef), cVariable);
-      this._setInd(this._argRef(variableAlias), this._localRef(valueTmpRef));
+      this._getMemInt8(valueTmpRef, cVariable);
+      this._setInd(variableAlias, valueTmpRef);
     } else {
       this._getMemInt8(variableAlias, cVariable);
     }
@@ -884,8 +899,8 @@ class ScriptBuilder {
     const variableAlias = this.getVariableAlias(variable);
     if (this._isIndirectVariable(variable)) {
       const valueTmpRef = this._declareLocal("value_tmp", 1, true);
-      this._getMemInt16(this._localRef(valueTmpRef), cVariable);
-      this._setInd(this._argRef(variableAlias), this._localRef(valueTmpRef));
+      this._getMemInt16(valueTmpRef, cVariable);
+      this._setInd(variableAlias, valueTmpRef);
     } else {
       this._getMemInt16(variableAlias, cVariable);
     }
@@ -925,8 +940,8 @@ class ScriptBuilder {
     this._addCmd(`    .SAVE_SLOT ${slot}`);
   };
 
-  _pollLoaded = (location: ScriptBuilderStackVariable) => {
-    this._addCmd("VM_POLL_LOADED", location);
+  _pollLoaded = (addr: ScriptBuilderStackVariable) => {
+    this._addCmd("VM_POLL_LOADED", addr);
   };
 
   _sioSetMode = (
@@ -962,14 +977,14 @@ class ScriptBuilder {
 
     if (this._isIndirectVariable(variableA)) {
       pop++;
-      this._stackPushInd(this._argRef(variableAliasA));
+      this._stackPushInd(variableAliasA);
       this._sioExchange(".ARG0", dest, packetSize);
     } else {
       this._sioExchange(variableAliasA, dest, packetSize);
     }
 
     if (this._isIndirectVariable(variableB)) {
-      this._setInd(this._argRef(variableAliasB), dest);
+      this._setInd(variableAliasB, dest);
     }
 
     if (pop > 0) {
@@ -978,7 +993,9 @@ class ScriptBuilder {
   };
 
   _dw = (...data: Array<ScriptBuilderStackVariable>) => {
-    this._addCmd(`.dw ${data.join(", ")}`);
+    this._addCmd(
+      `.dw ${data.map((d) => this._rawOffsetStackAddr(d)).join(", ")}`
+    );
   };
 
   _label = (label: string) => {
@@ -997,22 +1014,18 @@ class ScriptBuilder {
     this._addCmd("VM_RANDOMIZE");
   };
 
-  _rand = (
-    location: ScriptBuilderStackVariable,
-    min: number,
-    range: number
-  ) => {
-    this._addCmd("VM_RAND", location, min, range);
+  _rand = (addr: ScriptBuilderStackVariable, min: number, range: number) => {
+    this._addCmd("VM_RAND", addr, min, range);
   };
 
   _randVariable = (variable: string, min: number, range: number) => {
     const variableAlias = this.getVariableAlias(variable);
     if (this._isIndirectVariable(variable)) {
       const valueTmpRef = this._declareLocal("value_tmp", 1, true);
-      this._addCmd("VM_RAND", this._localRef(valueTmpRef), min, range);
-      this._setInd(this._argRef(variableAlias), this._localRef(valueTmpRef));
+      this._rand(valueTmpRef, min, range);
+      this._setInd(variableAlias, valueTmpRef);
     } else {
-      this._addCmd("VM_RAND", variableAlias, min, range);
+      this._rand(variableAlias, min, range);
     }
   };
 
@@ -1024,24 +1037,31 @@ class ScriptBuilder {
       cmd: string,
       ...args: Array<ScriptBuilderStackVariable>
     ) => {
-      output.push(this._padCmd(cmd, args.join(", "), 12, 12));
+      output.push(
+        this._padCmd(
+          cmd,
+          args.map((d) => this._offsetStackAddr(d)).join(", "),
+          12,
+          12
+        )
+      );
     };
 
     const rpn = {
       ref: (variable: ScriptBuilderStackVariable) => {
-        rpnCmd(".R_REF ", variable);
+        rpnCmd(".R_REF", variable);
         stack.push(0);
         return rpn;
       },
       refInd: (variable: ScriptBuilderStackVariable) => {
-        rpnCmd(".R_REF_IND ", variable);
+        rpnCmd(".R_REF_IND", variable);
         stack.push(0);
         return rpn;
       },
       refVariable: (variable: ScriptBuilderVariable) => {
         const variableAlias = this.getVariableAlias(variable);
         if (this._isIndirectVariable(variable)) {
-          return rpn.refInd(this._argRef(variableAlias));
+          return rpn.refInd(variableAlias);
         } else {
           return rpn.ref(variableAlias);
         }
@@ -1085,10 +1105,7 @@ class ScriptBuilder {
     label: string,
     popNum: number
   ) => {
-    this._addCmd(
-      `VM_IF ${operator}`,
-      `${variableA}, ${variableB}, ${label}$, ${popNum}`
-    );
+    this._addCmd("VM_IF", operator, variableA, variableB, `${label}$`, popNum);
     this.stackPtr -= popNum;
   };
 
@@ -1099,10 +1116,7 @@ class ScriptBuilder {
     label: string,
     popNum: number
   ) => {
-    this._addCmd(
-      `VM_IF_CONST ${operator}`,
-      `${variable}, ${value}, ${label}$, ${popNum}`
-    );
+    this._addCmd("VM_IF_CONST", operator, variable, value, `${label}$`, popNum);
     this.stackPtr -= popNum;
   };
 
@@ -1111,7 +1125,7 @@ class ScriptBuilder {
     switchCases: [number, string][],
     popNum: number
   ) => {
-    this._addCmd(`VM_SWITCH`, `${variable}, ${switchCases.length}, ${popNum}`);
+    this._addCmd("VM_SWITCH", variable, switchCases.length, popNum);
     for (const switchCase of switchCases) {
       this._dw(...switchCase);
     }
@@ -1125,7 +1139,7 @@ class ScriptBuilder {
   ) => {
     const variableAlias = this.getVariableAlias(variable);
     if (this._isIndirectVariable(variable)) {
-      this._stackPushInd(this._argRef(variableAlias));
+      this._stackPushInd(variableAlias);
       this._switch(".ARG0", switchCases, popNum + 1);
     } else {
       this._switch(variableAlias, switchCases, popNum);
@@ -1141,7 +1155,7 @@ class ScriptBuilder {
   ) => {
     const variableAlias = this.getVariableAlias(variable);
     if (this._isIndirectVariable(variable)) {
-      this._stackPushInd(this._argRef(variableAlias));
+      this._stackPushInd(variableAlias);
       this._ifConst(operator, ".ARG0", value, label, popNum + 1);
     } else {
       this._ifConst(operator, variableAlias, value, label, popNum);
@@ -1162,13 +1176,13 @@ class ScriptBuilder {
     let pop = popNum;
 
     if (this._isIndirectVariable(variableB)) {
-      this._stackPushInd(this._argRef(variableAliasB));
+      this._stackPushInd(variableAliasB);
       dest = this._isIndirectVariable(variableA) ? ".ARG1" : ".ARG0";
       pop += 1;
     }
 
     if (this._isIndirectVariable(variableA)) {
-      this._stackPushInd(this._argRef(variableAliasA));
+      this._stackPushInd(variableAliasA);
       this._if(operator, ".ARG0", dest, label, pop + 1);
     } else {
       this._if(operator, variableAliasA, dest, label, pop);
@@ -1211,8 +1225,8 @@ class ScriptBuilder {
     const variableAlias = this.getVariableAlias(variable);
     if (this._isIndirectVariable(variable)) {
       const dirDestVarRef = this._declareLocal("dir_dest_var", 1, true);
-      this._actorGetDirection(addr, this._localRef(dirDestVarRef));
-      this._setInd(this._argRef(variableAlias), this._localRef(dirDestVarRef));
+      this._actorGetDirection(addr, dirDestVarRef);
+      this._setInd(variableAlias, dirDestVarRef);
     } else {
       this._actorGetDirection(addr, variableAlias);
     }
@@ -1345,9 +1359,9 @@ class ScriptBuilder {
               local: localRef,
               arg: arg.symbol,
             });
-            usedVariableAliases.push(this._localRef(localRef));
+            usedVariableAliases.push(this._rawOffsetStackAddr(localRef));
           } else {
-            usedVariableAliases.push(arg.symbol);
+            usedVariableAliases.push(this._rawOffsetStackAddr(arg.symbol));
           }
         } else {
           usedVariableAliases.push(
@@ -1378,10 +1392,7 @@ class ScriptBuilder {
 
     if (indirectVars.length > 0) {
       for (const indirectVar of indirectVars) {
-        this._getInd(
-          this._localRef(indirectVar.local),
-          this._argRef(indirectVar.arg)
-        );
+        this._getInd(indirectVar.local, indirectVar.arg);
       }
     }
 
@@ -1742,7 +1753,7 @@ extern void __mute_mask_${symbol};
 
   _isArg = (variable: ScriptBuilderStackVariable) => {
     if (typeof variable === "string") {
-      return variable.startsWith(".SCRIPT_INDIRECT_ARG");
+      return variable.startsWith(".SCRIPT_ARG_INDIRECT");
     }
     return false;
   };
@@ -1764,8 +1775,8 @@ extern void __mute_mask_${symbol};
   ): string => {
     const asmSymbolPostfix = symbol.toUpperCase().replace(/[^A-Z0-9]/g, "_");
     const asmSymbol = isTemporary
-      ? `LOCAL_TMP${Object.keys(this.localsLookup).length}_${asmSymbolPostfix}`
-      : `LOCAL_${asmSymbolPostfix}`;
+      ? `.LOCAL_TMP${Object.keys(this.localsLookup).length}_${asmSymbolPostfix}`
+      : `.LOCAL_${asmSymbolPostfix}`;
     if (this.localsLookup[asmSymbol] === undefined) {
       this.localsSize += size;
       this.localsLookup[asmSymbol] = {
@@ -1781,23 +1792,50 @@ extern void __mute_mask_${symbol};
     return asmSymbol;
   };
 
-  _localRef = (symbol: string, offset = 0): string => {
-    this.localsLookup[symbol].lastUse = this.output.length;
-    if (this.stackPtr === 0 && offset === 0) {
-      return `.${symbol}`;
-    }
-    return `^/(.${symbol}${offset !== 0 ? ` + ${offset}` : ""}${
-      this.stackPtr !== 0 ? ` - ${this.stackPtr}` : ""
-    })/`;
+  _localRef = (symbol: string, offset: number): string => {
+    return this._offsetStackAddr(symbol, offset);
   };
 
-  _argRef = (symbol: string, offset = 0): string => {
+  _argRef = (symbol: string, offset: number): string => {
+    return this._offsetStackAddr(symbol, offset);
+  };
+
+  _offsetStackAddr = (
+    symbol: ScriptBuilderStackVariable,
+    offset = 0
+  ): string => {
+    if (
+      typeof symbol === "number" ||
+      (symbol.indexOf(".SCRIPT_ARG_") !== 0 && symbol.indexOf(".LOCAL_") !== 0)
+    ) {
+      return String(symbol);
+    }
     if (this.stackPtr === 0 && offset === 0) {
       return `${symbol}`;
     }
     return `^/(${symbol}${offset !== 0 ? ` + ${offset}` : ""}${
       this.stackPtr !== 0 ? ` - ${this.stackPtr}` : ""
     })/`;
+  };
+
+  _rawOffsetStackAddr = (
+    symbol: ScriptBuilderStackVariable,
+    offset = 0
+  ): string => {
+    console.log("_rawOffsetStackAddr", symbol, offset);
+
+    if (
+      typeof symbol === "number" ||
+      (symbol.indexOf(".SCRIPT_ARG_") !== 0 && symbol.indexOf(".LOCAL_") !== 0)
+    ) {
+      return String(symbol);
+    }
+    if (this.stackPtr === 0 && offset === 0) {
+      return `${symbol}`;
+    }
+    return `(${symbol}${offset !== 0 ? ` + ${offset}` : ""}${
+      this.stackPtr !== 0 ? ` - ${this.stackPtr}` : ""
+    })`;
   };
 
   _packLocals = () => {
@@ -1899,13 +1937,13 @@ extern void __mute_mask_${symbol};
       this._setConst(addr, this.actorIndex);
     } else {
       this.actorIndex = -1;
-      this._set(addr, this._argRef(id.symbol));
+      this._set(addr, id.symbol);
     }
   };
 
   actorSetById = (id: ScriptBuilderVariable) => {
     const actorRef = this._declareLocal("actor", 4);
-    this.setActorId(this._localRef(actorRef), id);
+    this.setActorId(actorRef, id);
   };
 
   actorPushById = (id: ScriptBuilderVariable) => {
@@ -1918,7 +1956,7 @@ extern void __mute_mask_${symbol};
       this._stackPushConst(this.actorIndex);
     } else {
       this.actorIndex = -1;
-      this._stackPush(this._argRef(id.symbol));
+      this._stackPush(id.symbol);
     }
   };
 
@@ -1943,7 +1981,7 @@ extern void __mute_mask_${symbol};
       this._localRef(actorRef, 3),
       toASMMoveFlags(moveType, useCollisions)
     );
-    this._actorMoveTo(this._localRef(actorRef));
+    this._actorMoveTo(actorRef);
     this._assertStackNeutral(stackPtr);
     this._addNL();
   };
@@ -1975,7 +2013,7 @@ extern void __mute_mask_${symbol};
       this._localRef(actorRef, 3),
       toASMMoveFlags(moveType, useCollisions)
     );
-    this._actorMoveTo(this._localRef(actorRef));
+    this._actorMoveTo(actorRef);
     this._assertStackNeutral(stackPtr);
     this._addNL();
   };
@@ -1989,7 +2027,7 @@ extern void __mute_mask_${symbol};
     const actorRef = this._declareLocal("actor", 4);
     const stackPtr = this.stackPtr;
     this._addComment("Actor Move Relative");
-    this._actorGetPosition(this._localRef(actorRef));
+    this._actorGetPosition(actorRef);
     this._rpn() //
       .ref(this._localRef(actorRef, 1))
       .int16(x * 8 * 16)
@@ -2010,14 +2048,14 @@ extern void __mute_mask_${symbol};
       this._localRef(actorRef, 3),
       toASMMoveFlags(moveType, useCollisions)
     );
-    this._actorMoveTo(this._localRef(actorRef));
+    this._actorMoveTo(actorRef);
     this._assertStackNeutral(stackPtr);
     this._addNL();
   };
 
   actorMoveCancel = () => {
     const actorRef = this._declareLocal("actor", 4);
-    this._actorMoveCancel(this._localRef(actorRef));
+    this._actorMoveCancel(actorRef);
     this._addNL();
   };
 
@@ -2026,7 +2064,7 @@ extern void __mute_mask_${symbol};
     this._addComment("Actor Set Position");
     this._setConst(this._localRef(actorRef, 1), x * 8 * 16);
     this._setConst(this._localRef(actorRef, 2), y * 8 * 16);
-    this._actorSetPosition(this._localRef(actorRef));
+    this._actorSetPosition(actorRef);
     this._addNL();
   };
 
@@ -2048,7 +2086,7 @@ extern void __mute_mask_${symbol};
     this._set(this._localRef(actorRef, 2), ".ARG0");
     this._stackPop(2);
 
-    this._actorSetPosition(this._localRef(actorRef));
+    this._actorSetPosition(actorRef);
     this._assertStackNeutral(stackPtr);
     this._addNL();
   };
@@ -2056,7 +2094,7 @@ extern void __mute_mask_${symbol};
   actorSetPositionRelative = (x = 0, y = 0) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Actor Set Position Relative");
-    this._actorGetPosition(this._localRef(actorRef));
+    this._actorGetPosition(actorRef);
     this._rpn() //
       .ref(this._localRef(actorRef, 1))
       .int16(x * 8 * 16)
@@ -2073,14 +2111,14 @@ extern void __mute_mask_${symbol};
     this._set(this._localRef(actorRef, 1), ".ARG1");
     this._set(this._localRef(actorRef, 2), ".ARG0");
     this._stackPop(2);
-    this._actorSetPosition(this._localRef(actorRef));
+    this._actorSetPosition(actorRef);
     this._addNL();
   };
 
   actorGetPosition = (variableX: string, variableY: string) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment(`Store Position In Variables`);
-    this._actorGetPosition(this._localRef(actorRef));
+    this._actorGetPosition(actorRef);
 
     this._rpn() //
       .ref(this._localRef(actorRef, 1))
@@ -2100,7 +2138,7 @@ extern void __mute_mask_${symbol};
   actorGetPositionX = (variableX: string) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment(`Store X Position In Variable`);
-    this._actorGetPosition(this._localRef(actorRef));
+    this._actorGetPosition(actorRef);
 
     this._rpn() //
       .ref(this._localRef(actorRef, 1))
@@ -2116,7 +2154,7 @@ extern void __mute_mask_${symbol};
   actorGetPositionY = (variableY: string) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment(`Store Y Position In Variable`);
-    this._actorGetPosition(this._localRef(actorRef));
+    this._actorGetPosition(actorRef);
 
     this._rpn() //
       .ref(this._localRef(actorRef, 2))
@@ -2132,14 +2170,14 @@ extern void __mute_mask_${symbol};
   actorGetDirection = (variable: string) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment(`Store Direction In Variable`);
-    this._actorGetDirectionToVariable(this._localRef(actorRef), variable);
+    this._actorGetDirectionToVariable(actorRef, variable);
     this._addNL();
   };
 
   actorGetAnimFrame = (variable: string) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment(`Store Frame In Variable`);
-    this._actorGetAnimFrame(this._localRef(actorRef));
+    this._actorGetAnimFrame(actorRef);
     this._setVariable(variable, this._localRef(actorRef, 1));
     this._addNL();
   };
@@ -2156,20 +2194,17 @@ extern void __mute_mask_${symbol};
     const offset = continueUntilCollision ? 128 * 100 : 128 * 2;
 
     this._addComment("Actor Push");
-    this._setConst(this._localRef(actorRef), 0);
-    this._actorGetDirection(
-      this._localRef(actorRef),
-      this._localRef(pushDirectionVarRef)
-    );
-    this._setConst(this._localRef(actorRef), this.actorIndex);
-    this._actorGetPosition(this._localRef(actorRef));
+    this._setConst(actorRef, 0);
+    this._actorGetDirection(actorRef, pushDirectionVarRef);
+    this._setConst(actorRef, this.actorIndex);
+    this._actorGetPosition(actorRef);
 
     // prettier-ignore
-    this._ifConst(".EQ", this._localRef(pushDirectionVarRef), ".DIR_UP", upLabel, 0);
+    this._ifConst(".EQ", pushDirectionVarRef, ".DIR_UP", upLabel, 0);
     // prettier-ignore
-    this._ifConst(".EQ", this._localRef(pushDirectionVarRef), ".DIR_LEFT", leftLabel, 0);
+    this._ifConst(".EQ", pushDirectionVarRef, ".DIR_LEFT", leftLabel, 0);
     // prettier-ignore
-    this._ifConst(".EQ", this._localRef(pushDirectionVarRef), ".DIR_RIGHT", rightLabel, 0);
+    this._ifConst(".EQ", pushDirectionVarRef, ".DIR_RIGHT", rightLabel, 0);
 
     // Down
     this._rpn() //
@@ -2220,7 +2255,7 @@ extern void __mute_mask_${symbol};
     // End
     this._label(endLabel);
     this._setConst(this._localRef(actorRef, 3), ".ACTOR_ATTR_CHECK_COLL");
-    this._actorMoveTo(this._localRef(actorRef));
+    this._actorMoveTo(actorRef);
 
     this._assertStackNeutral(stackPtr);
     this._addNL();
@@ -2230,7 +2265,7 @@ extern void __mute_mask_${symbol};
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Actor Show");
     this.actorSetById(id);
-    this._actorSetHidden(this._localRef(actorRef), false);
+    this._actorSetHidden(actorRef, false);
     this._addNL();
   };
 
@@ -2238,7 +2273,7 @@ extern void __mute_mask_${symbol};
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Actor Hide");
     this.actorSetById(id);
-    this._actorSetHidden(this._localRef(actorRef), true);
+    this._actorSetHidden(actorRef, true);
     this._addNL();
   };
 
@@ -2246,7 +2281,7 @@ extern void __mute_mask_${symbol};
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Actor Activate");
     this.actorSetById(id);
-    this._actorActivate(this._localRef(actorRef));
+    this._actorActivate(actorRef);
     this._addNL();
   };
 
@@ -2254,7 +2289,7 @@ extern void __mute_mask_${symbol};
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Actor Deactivate");
     this.actorSetById(id);
-    this._actorDeactivate(this._localRef(actorRef));
+    this._actorDeactivate(actorRef);
     this._addNL();
   };
 
@@ -2266,21 +2301,21 @@ extern void __mute_mask_${symbol};
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Actor Set Bounds");
-    this._actorSetBounds(this._localRef(actorRef), left, right, top, bottom);
+    this._actorSetBounds(actorRef, left, right, top, bottom);
     this._addNL();
   };
 
   actorSetCollisions = (enabled: boolean) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Actor Set Collisions");
-    this._actorSetCollisionsEnabled(this._localRef(actorRef), enabled);
+    this._actorSetCollisionsEnabled(actorRef, enabled);
     this._addNL();
   };
 
   actorSetDirection = (direction: ActorDirection) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Actor Set Direction");
-    this._actorSetDirection(this._localRef(actorRef), toASMDir(direction));
+    this._actorSetDirection(actorRef, toASMDir(direction));
     this._addNL();
   };
 
@@ -2297,19 +2332,19 @@ extern void __mute_mask_${symbol};
     this._ifVariableConst(".EQ", variable, ".DIR_RIGHT", rightLabel, 0);
     this._ifVariableConst(".EQ", variable, ".DIR_UP", upLabel, 0);
     // Down
-    this._actorSetDirection(this._localRef(actorRef), ".DIR_DOWN");
+    this._actorSetDirection(actorRef, ".DIR_DOWN");
     this._jump(endLabel);
     // Left
     this._label(leftLabel);
-    this._actorSetDirection(this._localRef(actorRef), ".DIR_LEFT");
+    this._actorSetDirection(actorRef, ".DIR_LEFT");
     this._jump(endLabel);
     // Right
     this._label(rightLabel);
-    this._actorSetDirection(this._localRef(actorRef), ".DIR_RIGHT");
+    this._actorSetDirection(actorRef, ".DIR_RIGHT");
     this._jump(endLabel);
     // Up
     this._label(upLabel);
-    this._actorSetDirection(this._localRef(actorRef), ".DIR_UP");
+    this._actorSetDirection(actorRef, ".DIR_UP");
 
     this._label(endLabel);
     this._addNL();
@@ -2321,7 +2356,7 @@ extern void __mute_mask_${symbol};
     const emote = emotes.find((e) => e.id === emoteId);
     if (emote) {
       this._addComment("Actor Emote");
-      this._actorEmote(this._localRef(actorRef), emote.symbol);
+      this._actorEmote(actorRef, emote.symbol);
       this._addNL();
     }
   };
@@ -2332,7 +2367,7 @@ extern void __mute_mask_${symbol};
     const sprite = sprites.find((s) => s.id === spriteSheetId);
     if (sprite) {
       this._addComment("Actor Set Spritesheet");
-      this._actorSetSpritesheet(this._localRef(actorRef), sprite.symbol);
+      this._actorSetSpritesheet(actorRef, sprite.symbol);
       this._addNL();
     }
   };
@@ -2343,8 +2378,8 @@ extern void __mute_mask_${symbol};
     const sprite = sprites.find((s) => s.id === spriteSheetId);
     if (sprite) {
       this._addComment("Player Set Spritesheet");
-      this._setConst(this._localRef(actorRef), 0);
-      this._actorSetSpritesheet(this._localRef(actorRef), sprite.symbol);
+      this._setConst(actorRef, 0);
+      this._actorSetSpritesheet(actorRef, sprite.symbol);
       if (persist) {
         const symbol = sprite.symbol;
         this._setConst(`PLAYER_SPRITE_${scene.type}_BANK`, `___bank_${symbol}`);
@@ -2360,10 +2395,7 @@ extern void __mute_mask_${symbol};
     const stateIndex = statesOrder.indexOf(state);
     if (stateIndex > -1) {
       this._addComment("Actor Set Animation State");
-      this._actorSetAnimState(
-        this._localRef(actorRef),
-        stateReferences[stateIndex]
-      );
+      this._actorSetAnimState(actorRef, stateReferences[stateIndex]);
       this._addNL();
     }
   };
@@ -2371,14 +2403,14 @@ extern void __mute_mask_${symbol};
   actorSetMovementSpeed = (speed = 1) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Actor Set Movement Speed");
-    this._actorSetMoveSpeed(this._localRef(actorRef), Math.round(speed * 16));
+    this._actorSetMoveSpeed(actorRef, Math.round(speed * 16));
     this._addNL();
   };
 
   actorSetAnimationSpeed = (speed = 3) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Actor Set Animation Tick");
-    this._actorSetAnimTick(this._localRef(actorRef), speed);
+    this._actorSetAnimTick(actorRef, speed);
     this._addNL();
   };
 
@@ -2386,7 +2418,7 @@ extern void __mute_mask_${symbol};
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Actor Set Animation Frame");
     this._setConst(this._localRef(actorRef, 1), frame);
-    this._actorSetAnimFrame(this._localRef(actorRef));
+    this._actorSetAnimFrame(actorRef);
     this._addNL();
   };
 
@@ -2394,7 +2426,7 @@ extern void __mute_mask_${symbol};
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Actor Set Animation Frame To Variable");
     this._setToVariable(this._localRef(actorRef, 1), variable);
-    this._actorSetAnimFrame(this._localRef(actorRef));
+    this._actorSetAnimFrame(actorRef);
     this._addNL();
   };
 
@@ -2405,7 +2437,7 @@ extern void __mute_mask_${symbol};
   actorStopUpdate = () => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Actor Stop Update Script");
-    this._actorTerminateUpdate(this._localRef(actorRef));
+    this._actorTerminateUpdate(actorRef);
     this._addNL();
   };
 
@@ -2467,7 +2499,7 @@ extern void __mute_mask_${symbol};
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Direction");
-    this._actorGetPosition(this._localRef(actorRef));
+    this._actorGetPosition(actorRef);
     this._rpn() //
       .ref(this._localRef(actorRef, 1))
       .int16(x * 16)
@@ -2490,7 +2522,7 @@ extern void __mute_mask_${symbol};
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Angle");
-    this._actorGetPosition(this._localRef(actorRef));
+    this._actorGetPosition(actorRef);
     this._rpn() //
       .ref(this._localRef(actorRef, 1))
       .int16(x * 16)
@@ -2513,7 +2545,7 @@ extern void __mute_mask_${symbol};
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Angle");
-    this._actorGetPosition(this._localRef(actorRef));
+    this._actorGetPosition(actorRef);
     this._rpn() //
       .ref(this._localRef(actorRef, 1))
       .int16(x * 16)
@@ -2535,7 +2567,7 @@ extern void __mute_mask_${symbol};
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Source Actor Direction");
-    this._actorGetPosition(this._localRef(actorRef));
+    this._actorGetPosition(actorRef);
     this._rpn() //
       .ref(this._localRef(actorRef, 1))
       .int16(x * 16)
@@ -2545,7 +2577,7 @@ extern void __mute_mask_${symbol};
       .operator(".ADD")
       .int16(0)
       .stop();
-    this._actorGetAngle(this._localRef(actorRef), ".ARG0");
+    this._actorGetAngle(actorRef, ".ARG0");
     this._projectileLaunch(projectileIndex, ".ARG2");
     this._stackPop(3);
     this._addNL();
@@ -2559,7 +2591,7 @@ extern void __mute_mask_${symbol};
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Actor Direction");
-    this._actorGetPosition(this._localRef(actorRef));
+    this._actorGetPosition(actorRef);
     this._rpn() //
       .ref(this._localRef(actorRef, 1))
       .int16(x * 16)
@@ -2592,8 +2624,8 @@ extern void __mute_mask_${symbol};
     const waitArgsRef = this._declareLocal("wait_args", 1, true);
     const stackPtr = this.stackPtr;
     this._addComment("Wait N Frames");
-    this._setConst(this._localRef(waitArgsRef), frames);
-    this._invoke("wait_frames", 0, this._localRef(waitArgsRef));
+    this._setConst(waitArgsRef, frames);
+    this._invoke("wait_frames", 0, waitArgsRef);
     this._assertStackNeutral(stackPtr);
     this._addNL();
   };
@@ -2674,7 +2706,7 @@ extern void __mute_mask_${symbol};
     let dest = variableAlias;
     if (this._isIndirectVariable(variable)) {
       const menuResultRef = this._declareLocal("menu_result", 1, true);
-      dest = this._localRef(menuResultRef);
+      dest = menuResultRef;
     }
 
     this._loadStructuredText(choiceText);
@@ -2689,7 +2721,7 @@ extern void __mute_mask_${symbol};
     this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
 
     if (this._isIndirectVariable(variable)) {
-      this._setInd(this._argRef(variableAlias), dest);
+      this._setInd(variableAlias, dest);
     }
 
     this._addNL();
@@ -2736,7 +2768,7 @@ extern void __mute_mask_${symbol};
     let dest = variableAlias;
     if (this._isIndirectVariable(variable)) {
       const menuResultRef = this._declareLocal("menu_result", 1, true);
-      dest = this._localRef(menuResultRef);
+      dest = menuResultRef;
     }
 
     this._loadStructuredText(menuText);
@@ -2790,7 +2822,7 @@ extern void __mute_mask_${symbol};
     }
 
     if (this._isIndirectVariable(variable)) {
-      this._setInd(this._argRef(variableAlias), dest);
+      this._setInd(variableAlias, dest);
     }
 
     this._addNL();
@@ -2823,22 +2855,15 @@ extern void __mute_mask_${symbol};
     this._addComment("Camera Move To");
     const xOffset = 80;
     const yOffset = 72;
-    this._setConst(
-      this._localRef(cameraMoveArgsRef, 0),
-      xOffset + Math.round(x * 8)
-    );
+    this._setConst(cameraMoveArgsRef, xOffset + Math.round(x * 8));
     this._setConst(
       this._localRef(cameraMoveArgsRef, 1),
       yOffset + Math.round(y * 8)
     );
     if (speed === 0) {
-      this._cameraSetPos(this._localRef(cameraMoveArgsRef));
+      this._cameraSetPos(cameraMoveArgsRef);
     } else {
-      this._cameraMoveTo(
-        this._localRef(cameraMoveArgsRef),
-        speed,
-        ".CAMERA_UNLOCK"
-      );
+      this._cameraMoveTo(cameraMoveArgsRef, speed, ".CAMERA_UNLOCK");
     }
     this._addNL();
   };
@@ -2868,8 +2893,8 @@ extern void __mute_mask_${symbol};
   cameraLock = (speed = 0, axis: ScriptBuilderAxis[]) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Camera Lock");
-    this._setConst(this._localRef(actorRef), 0);
-    this._actorGetPosition(this._localRef(actorRef));
+    this._setConst(actorRef, 0);
+    this._actorGetPosition(actorRef);
     this._rpn() //
       .ref(this._localRef(actorRef, 1))
       .int16(16)
@@ -2896,7 +2921,7 @@ extern void __mute_mask_${symbol};
   ) => {
     const cameraShakeArgsRef = this._declareLocal("camera_shake_args", 2, true);
     this._addComment("Camera Shake");
-    this._setConst(this._localRef(cameraShakeArgsRef), frames);
+    this._setConst(cameraShakeArgsRef, frames);
     this._setConst(
       this._localRef(cameraShakeArgsRef, 1),
       unionFlags(
@@ -2906,7 +2931,7 @@ extern void __mute_mask_${symbol};
         )
       )
     );
-    this._invoke("camera_shake_frames", 0, this._localRef(cameraShakeArgsRef));
+    this._invoke("camera_shake_frames", 0, cameraShakeArgsRef);
     this._addNL();
   };
 
@@ -3006,14 +3031,14 @@ extern void __mute_mask_${symbol};
     const constArgLookup: Record<number, string> = {};
     if (variableArgs) {
       for (const variableArg of variableArgs) {
-        if (variableArg) {
+        if (variableArg && variableArg.passByReference) {
           const variableValue = input?.[`$variable[${variableArg.id}]$`] || "";
           if (
             typeof variableValue !== "string" &&
             variableValue.type === "number"
           ) {
             const argRef = this._declareLocal("arg", 1, true);
-            this._setConst(this._localRef(argRef), variableValue.value);
+            this._setConst(argRef, variableValue.value);
             constArgLookup[variableValue.value] = argRef;
           }
         }
@@ -3036,24 +3061,57 @@ extern void __mute_mask_${symbol};
       for (const variableArg of variableArgs.reverse()) {
         if (variableArg) {
           const variableValue = input?.[`$variable[${variableArg.id}]$`] || "";
-          if (typeof variableValue === "string") {
-            const variableAlias = this.getVariableAlias(variableValue);
-            this._stackPushConst(variableAlias, `Variable ${variableArg.id}`);
-          } else if (variableValue && variableValue.type === "number") {
-            // Arg is union number
-            const argRef = constArgLookup[variableValue.value];
-            this._stackPushReference(
-              this._localRef(argRef),
-              `Variable ${variableArg.id}`
-            );
-          } else if (variableValue && variableValue.type === "variable") {
-            // Arg is a union variable
-            const variableAlias = this.getVariableAlias(variableValue.value);
-            if (this._isIndirectVariable(variableValue.value)) {
-              this._stackPush(this._argRef(variableAlias));
-            } else {
+          if (variableArg.passByReference) {
+            // Pass by Reference ----------
+
+            if (typeof variableValue === "string") {
+              const variableAlias = this.getVariableAlias(variableValue);
               this._stackPushConst(variableAlias, `Variable ${variableArg.id}`);
+            } else if (variableValue && variableValue.type === "number") {
+              // Arg is union number
+              const argRef = constArgLookup[variableValue.value];
+              this._stackPushReference(argRef, `Variable ${variableArg.id}`);
+            } else if (variableValue && variableValue.type === "variable") {
+              // Arg is a union variable
+              const variableAlias = this.getVariableAlias(variableValue.value);
+              if (this._isIndirectVariable(variableValue.value)) {
+                this._stackPush(variableAlias);
+              } else {
+                // Arg union value is variable id
+                this._stackPushConst(
+                  variableAlias,
+                  `Variable ${variableArg.id}`
+                );
+              }
             }
+
+            // End of Pass by Reference ----------
+          } else {
+            // Pass by Value ----------
+
+            // Arg is variable id
+            if (typeof variableValue === "string") {
+              const variableAlias = this.getVariableAlias(variableValue);
+              this._stackPush(variableAlias);
+            } else if (variableValue && variableValue.type === "number") {
+              // Arg is union number
+              this._stackPushConst(
+                variableValue.value,
+                `Variable ${variableArg.id}`
+              );
+            } else if (variableValue && variableValue.type === "variable") {
+              // Arg is a union variable
+              const variableAlias = this.getVariableAlias(variableValue.value);
+              if (this._isIndirectVariable(variableValue.value)) {
+                // Arg union value is indirect variable id
+                this._stackPushInd(variableAlias);
+              } else {
+                // Arg union value is variable id
+                this._stackPush(variableAlias);
+              }
+            }
+
+            // End of Pass by Value ----------
           }
         }
       }
@@ -3101,9 +3159,9 @@ extern void __mute_mask_${symbol};
       value: string
     ) => {
       if (!argLookup[type][value]) {
-        const newArg = `.SCRIPT_${
+        const newArg = `.SCRIPT_ARG_${
           indirect ? "INDIRECT_" : ""
-        }ARG_${numArgs}_${type}`.toUpperCase();
+        }${numArgs}_${type}`.toUpperCase();
         argLookup[type][value] = {
           type: "argument",
           indirect,
@@ -3138,7 +3196,7 @@ extern void __mute_mask_${symbol};
     if (variableArgs) {
       for (const variableArg of variableArgs.reverse()) {
         if (variableArg) {
-          registerArg("variable", true, variableArg.id);
+          registerArg("variable", variableArg.passByReference, variableArg.id);
         }
       }
     }
@@ -3258,13 +3316,13 @@ extern void __mute_mask_${symbol};
         fadeSpeeds[fadeSpeed] ?? 0x3
       );
       this._fadeOut(true);
-      this._setConst(this._localRef(actorRef), 0);
+      this._setConst(actorRef, 0);
       this._setConst(this._localRef(actorRef, 1), x * 8 * 16);
       this._setConst(this._localRef(actorRef, 2), y * 8 * 16);
-      this._actorSetPosition(this._localRef(actorRef));
+      this._actorSetPosition(actorRef);
       const asmDir = toASMDir(direction);
       if (asmDir) {
-        this._actorSetDirection(this._localRef(actorRef), asmDir);
+        this._actorSetDirection(actorRef, asmDir);
       }
       this._raiseException("EXCEPTION_CHANGE_SCENE", 3);
       this._importFarPtrData(scene.symbol);
@@ -3526,14 +3584,14 @@ extern void __mute_mask_${symbol};
   ) => {
     const randRef = this._declareLocal("random_var", 1, true);
     this._addComment(`Variables ${operation} Random`);
-    this._rand(this._localRef(randRef), min, range);
+    this._rand(randRef, min, range);
     const rpn = this._rpn();
     if (clamp) {
       rpn.int16(0).int16(255);
     }
     rpn //
       .refVariable(variable)
-      .ref(this._localRef(randRef))
+      .ref(randRef)
       .operator(operation);
     if (clamp) {
       rpn.operator(".MIN").operator(".MAX");
@@ -4051,8 +4109,8 @@ extern void __mute_mask_${symbol};
     this._addComment(`Save Data to Slot ${slot}`);
     this._raiseException("EXCEPTION_SAVE", 1);
     this._saveSlot(slot);
-    this._pollLoaded(this._localRef(hasLoadedRef));
-    this._ifConst(".EQ", this._localRef(hasLoadedRef), 1, loadedLabel, 0);
+    this._pollLoaded(hasLoadedRef);
+    this._ifConst(".EQ", hasLoadedRef, 1, loadedLabel, 0);
     this._addNL();
     this._compilePath(onSavePath);
     this._label(loadedLabel);
@@ -4075,13 +4133,13 @@ extern void __mute_mask_${symbol};
       `Store ${variableSourceAlias} from save slot ${slot} into ${variableDestAlias}`
     );
     this._savePeek(
-      this._localRef(peekValueRef),
+      peekValueRef,
       variableDestAlias,
       variableSourceAlias,
       1,
       slot
     );
-    this._ifConst(".EQ", this._localRef(peekValueRef), 1, foundLabel, 0);
+    this._ifConst(".EQ", peekValueRef, 1, foundLabel, 0);
     this._setVariableConst(variableDest, 0);
     this._label(foundLabel);
     this._addNL();
@@ -4242,8 +4300,8 @@ extern void __mute_mask_${symbol};
     const trueLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
     this._addComment(`If Parameter ${parameter} Equals ${value}`);
-    this._getThreadLocal(this._localRef(paramValueRef), parameter);
-    this._ifConst(".EQ", this._localRef(paramValueRef), value, trueLabel, 0);
+    this._getThreadLocal(paramValueRef, parameter);
+    this._ifConst(".EQ", paramValueRef, value, trueLabel, 0);
     this._jump(endLabel);
     this._label(trueLabel);
     this._compilePath(truePath);
@@ -4257,8 +4315,8 @@ extern void __mute_mask_${symbol};
     const falseLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
     this._addComment(`If Color Supported`);
-    this._getMemUInt8(this._localRef(cpuValueRef), "_cpu");
-    this._ifConst(".NE", this._localRef(cpuValueRef), "0x11", falseLabel, 0);
+    this._getMemUInt8(cpuValueRef, "_cpu");
+    this._ifConst(".NE", cpuValueRef, "0x11", falseLabel, 0);
     this._addNL();
     this._compilePath(truePath);
     this._jump(endLabel);
@@ -4273,8 +4331,8 @@ extern void __mute_mask_${symbol};
     const falseLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
     this._addComment(`If Color Supported`);
-    this._getMemUInt8(this._localRef(isCGBRef), "_is_CGB");
-    this._ifConst(".NE", this._localRef(isCGBRef), 1, falseLabel, 0);
+    this._getMemUInt8(isCGBRef, "_is_CGB");
+    this._ifConst(".NE", isCGBRef, 1, falseLabel, 0);
     this._addNL();
     this._compilePath(truePath);
     this._jump(endLabel);
@@ -4289,8 +4347,8 @@ extern void __mute_mask_${symbol};
     const falseLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
     this._addComment(`If Device SGB`);
-    this._getMemUInt8(this._localRef(isSGBRef), "_is_SGB");
-    this._ifConst(".NE", this._localRef(isSGBRef), 1, falseLabel, 0);
+    this._getMemUInt8(isSGBRef, "_is_SGB");
+    this._ifConst(".NE", isSGBRef, 1, falseLabel, 0);
     this._addNL();
     this._compilePath(truePath);
     this._jump(endLabel);
@@ -4305,8 +4363,8 @@ extern void __mute_mask_${symbol};
     const falseLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
     this._addComment(`If Device GBA`);
-    this._getMemUInt8(this._localRef(isGBARef), "_is_GBA");
-    this._ifConst(".NE", this._localRef(isGBARef), 1, falseLabel, 0);
+    this._getMemUInt8(isGBARef, "_is_GBA");
+    this._ifConst(".NE", isGBARef, 1, falseLabel, 0);
     this._addNL();
     this._compilePath(truePath);
     this._jump(endLabel);
@@ -4326,7 +4384,7 @@ extern void __mute_mask_${symbol};
     const falseLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
     this._addComment(`If Actor At Position`);
-    this._actorGetPosition(this._localRef(actorRef));
+    this._actorGetPosition(actorRef);
     this._rpn()
       .ref(this._localRef(actorRef, 1))
       .int16(x * 8 * 16)
@@ -4356,17 +4414,8 @@ extern void __mute_mask_${symbol};
     const falseLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
     this._addComment(`If Actor Facing Direction`);
-    this._actorGetDirection(
-      this._localRef(actorRef),
-      this._localRef(actorDirRef)
-    );
-    this._ifConst(
-      ".NE",
-      this._localRef(actorDirRef),
-      toASMDir(direction),
-      falseLabel,
-      0
-    );
+    this._actorGetDirection(actorRef, actorDirRef);
+    this._ifConst(".NE", actorDirRef, toASMDir(direction), falseLabel, 0);
     this._addNL();
     this._compilePath(truePath);
     this._jump(endLabel);
@@ -4385,8 +4434,8 @@ extern void __mute_mask_${symbol};
     const trueLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
     this._addComment(`If Variable True`);
-    this._savePeek(this._localRef(savePeekRef), 0, 0, 0, slot);
-    this._ifConst(".EQ", this._localRef(savePeekRef), 1, trueLabel, 0);
+    this._savePeek(savePeekRef, 0, 0, 0, slot);
+    this._ifConst(".EQ", savePeekRef, 1, trueLabel, 0);
     this._addNL();
     this._compilePath(falsePath);
     this._jump(endLabel);
@@ -4405,9 +4454,9 @@ extern void __mute_mask_${symbol};
     const trueLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
     this._addComment(`If Input`);
-    this._getMemInt8(this._localRef(inputRef), "^/(_joypads + 1)/");
+    this._getMemInt8(inputRef, "^/(_joypads + 1)/");
     this._rpn() //
-      .ref(this._localRef(inputRef))
+      .ref(inputRef)
       .int8(inputDec(input))
       .operator(".B_AND")
       .stop();
@@ -4432,9 +4481,9 @@ extern void __mute_mask_${symbol};
     const falseLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
     this._addComment(`If Actor ${operation} Relative To Actor`);
-    this._actorGetPosition(this._localRef(actorRef));
-    this.setActorId(this._localRef(otherActorRef), otherId);
-    this._actorGetPosition(this._localRef(otherActorRef));
+    this._actorGetPosition(actorRef);
+    this.setActorId(otherActorRef, otherId);
+    this._actorGetPosition(otherActorRef);
     if (operation === "left") {
       this._rpn() //
         .ref(this._localRef(actorRef, 1)) // X1
@@ -4650,7 +4699,7 @@ ${
 }
 .area _CODE_255
 ${scriptArgVars}${scriptArgActors}${Object.keys(this.localsLookup)
-      .map((symbol) => `\n.${symbol} = -${this.localsLookup[symbol].addr}`)
+      .map((symbol) => `\n${symbol} = -${this.localsLookup[symbol].addr}`)
       .join("")}
 
 ___bank_${name} = 255
