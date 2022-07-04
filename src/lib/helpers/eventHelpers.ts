@@ -116,6 +116,7 @@ export const walkDenormalizedEvents = (
     }
     if (
       options?.customEvents &&
+      options.customEvents.maxDepth >= 0 &&
       scriptEvent.command === "EVENT_CALL_CUSTOM_EVENT"
     ) {
       const customEvent =

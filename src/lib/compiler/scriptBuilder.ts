@@ -118,6 +118,11 @@ interface ScriptBuilderOptions {
   }>;
   symbols: Dictionary<string>;
   argLookup: ScriptBuilderFunctionArgLookup;
+  maxDepth: number;
+  compiledCustomEventScriptCache: Dictionary<{
+    scriptRef: string;
+    argsLen: number;
+  }>;
   compileEvents: (self: ScriptBuilder, events: ScriptEvent[]) => void;
 }
 
@@ -491,6 +496,9 @@ class ScriptBuilder {
       additionalOutput: options.additionalOutput || {},
       symbols: options.symbols || {},
       argLookup: options.argLookup || { actor: {}, variable: {} },
+      maxDepth: options.maxDepth ?? 5,
+      compiledCustomEventScriptCache:
+        options.compiledCustomEventScriptCache ?? {},
       compileEvents: options.compileEvents || ((_self, _e) => {}),
       settings: options.settings || initialSettingsState,
     };
@@ -646,7 +654,17 @@ class ScriptBuilder {
           rpn = rpn.int16(token.value);
         } else if (token.type === "VAR") {
           const ref = token.symbol.replace(/\$/g, "");
-          rpn = rpn.refVariable(ref);
+          const variable = ref;
+          if (variable.match(/^V[0-9]$/)) {
+            const key = variable.replace(/V/, "");
+            const arg = this.options.argLookup.variable[key];
+            if (!arg) {
+              throw new Error("Cant find arg");
+            }
+            rpn = rpn.refVariable(arg);
+          } else {
+            rpn = rpn.refVariable(ref);
+          }
         } else if (token.type === "FUN") {
           const op = funToScriptOperator(token.function);
           rpn = rpn.operator(op);
@@ -706,31 +724,31 @@ class ScriptBuilder {
   };
 
   _stackPushConst = (value: number | string, comment?: string) => {
-    this.stackPtr++;
     this._addCmd("VM_PUSH_CONST", value, comment ? `; ${comment}` : "");
+    this.stackPtr++;
   };
 
   _stackPush = (addr: ScriptBuilderStackVariable) => {
-    this.stackPtr++;
     this._addCmd("VM_PUSH_VALUE", addr);
+    this.stackPtr++;
   };
 
   _stackPushInd = (addr: ScriptBuilderStackVariable) => {
-    this.stackPtr++;
     this._addCmd("VM_PUSH_VALUE_IND", addr);
+    this.stackPtr++;
   };
 
   _stackPushReference = (
     addr: ScriptBuilderStackVariable,
     comment?: string
   ) => {
-    this.stackPtr++;
     this._addCmd("VM_PUSH_REFERENCE", addr, comment ? `; ${comment}` : "");
+    this.stackPtr++;
   };
 
   _stackPop = (num: number) => {
-    this.stackPtr -= num;
     this._addCmd("VM_POP", num);
+    this.stackPtr -= num;
   };
 
   _set = (
@@ -3131,12 +3149,17 @@ extern void __mute_mask_${symbol};
   };
 
   compileCustomEventScript = (customEventId: string) => {
-    const { customEvents } = this.options;
+    const { customEvents, compiledCustomEventScriptCache } = this.options;
     const customEvent = customEvents.find((ce) => ce.id === customEventId);
 
     if (!customEvent) {
       console.warn("Script not found", customEventId);
       return;
+    }
+
+    const cachedResult = compiledCustomEventScriptCache[customEventId];
+    if (cachedResult) {
+      return cachedResult;
     }
 
     const argLookup: {
@@ -3255,14 +3278,17 @@ extern void __mute_mask_${symbol};
       }
     );
 
-    const scriptRef = this._compileSubScript(
-      "custom",
-      script,
-      customEvent.symbol,
-      { argLookup }
+    // Generate symbol and cache it before compiling script to allow recursive function calls to work
+    const symbol = this._getAvailableSymbol(
+      customEvent.symbol ? customEvent.symbol : `script_custom_0`,
+      false
     );
+    const result = { scriptRef: symbol, argsLen };
+    compiledCustomEventScriptCache[customEventId] = result;
 
-    return { scriptRef, argsLen };
+    this._compileSubScript("custom", script, symbol, { argLookup });
+
+    return result;
   };
 
   returnFar = () => {
@@ -4570,17 +4596,21 @@ extern void __mute_mask_${symbol};
     }
   };
 
-  _getAvailableSymbol = (name: string) => {
+  _getAvailableSymbol = (name: string, register = true) => {
     const { symbols } = this.options;
     if (!symbols[name]) {
-      symbols[name] = name;
+      if (register) {
+        symbols[name] = name;
+      }
       return name;
     }
     let counter = 0;
     while (true) {
       const newName = `${name.replace(/_[0-9]+$/, "")}_${counter}`;
       if (!symbols[newName]) {
-        symbols[newName] = newName;
+        if (register) {
+          symbols[newName] = newName;
+        }
         return newName;
       }
       counter++;
@@ -4601,15 +4631,20 @@ extern void __mute_mask_${symbol};
     const symbol = this._getAvailableSymbol(
       inputSymbol ? inputSymbol : `script_${type}_0`
     );
-    const compiledSubScript = compileEntityEvents(symbol, script, {
-      ...this.options,
-      ...options,
-      output: [],
-      loop: false,
-      lock: false,
-      init: false,
-      isFunction: type === "custom",
-    });
+    const compiledSubScript = compileEntityEvents(
+      symbol,
+      this.options.maxDepth >= 0 ? script : [],
+      {
+        ...this.options,
+        ...options,
+        output: [],
+        loop: false,
+        lock: false,
+        init: false,
+        isFunction: type === "custom",
+        maxDepth: this.options.maxDepth - 1,
+      }
+    );
     const key = compiledSubScript.replace(new RegExp(symbol, "g"), type);
     const existing = this.options.additionalScripts[key];
     if (existing) {
