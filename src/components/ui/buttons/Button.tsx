@@ -22,7 +22,7 @@ export const Button = styled.button<ButtonProps>`
   height: 28px;
   min-width: 24px;
   white-space: nowrap;
-  padding: 0px 15px;
+  padding: 0px 10px;
   box-sizing: border-box;
   font-weight: normal;
   border-width: 1px;
