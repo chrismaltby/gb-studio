@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import events from "lib/events";
 import {
   isActorField,
@@ -29,6 +29,7 @@ import { Actor } from "store/features/entities/entitiesTypes";
 import styled from "styled-components";
 import { fadeIn } from "ui/animations/animations";
 import { animLabelLookup } from "components/forms/AnimationSpeedSelect";
+import { ScriptEditorContext } from "./ScriptEditorContext";
 
 interface ScriptEventTitleProps {
   command: string;
@@ -57,6 +58,7 @@ const customEventActorsLookup = keyBy(
 );
 
 const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
+  const context = useContext(ScriptEditorContext);
   const localisedCommand = l10n(command);
   const eventName =
     localisedCommand !== command
@@ -113,14 +115,14 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
 
   useEffect(() => {
     const variables = namedVariablesByContext(
-      editorType,
+      context,
       entityId,
       variablesLookup,
       customEvent
     );
     const namedLookup = keyBy(variables, "id");
     setNamedVariablesLookup(namedLookup);
-  }, [entityId, variablesLookup, editorType, customEvent]);
+  }, [entityId, variablesLookup, context, customEvent]);
 
   useEffect(() => {
     if (events[command]?.autoLabel) {
@@ -146,7 +148,7 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
         return fieldType;
       };
       const actorNameForId = (value: unknown) => {
-        if (editorType === "customEvent" && customEvent) {
+        if (context === "script" && customEvent) {
           return (
             customEvent.actors[value as string]?.name ||
             customEventActorsLookup[value as string]?.name ||

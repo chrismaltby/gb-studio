@@ -12,8 +12,7 @@ import { RelativePortal } from "../layout/RelativePortal";
 import { SelectMenu, selectMenuStyleProps } from "./Select";
 import { VariableSelect } from "../../forms/VariableSelect";
 import l10n from "lib/helpers/l10n";
-import { useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import { ScriptEditorContextType } from "components/script/ScriptEditorContext";
 
 const varRegex = /\$([VLT0-9][0-9]*)\$/g;
 
@@ -277,6 +276,7 @@ export interface MathTextareaProps {
   entityId: string;
   placeholder?: string;
   variables: NamedVariable[];
+  context: ScriptEditorContextType;
   onChange: (newValue: string) => void;
 }
 
@@ -297,9 +297,9 @@ export const MathTextarea: FC<MathTextareaProps> = ({
   entityId,
   variables,
   placeholder,
+  context,
 }) => {
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
-  const editorType = useSelector((state: RootState) => state.editor.type);
   const [variablesLookup, setVariablesLookup] = useState<
     Dictionary<NamedVariable>
   >({});
@@ -310,7 +310,7 @@ export const MathTextarea: FC<MathTextareaProps> = ({
     setVariablesLookup(keyBy(variables, "code"));
   }, [variables]);
 
-  const debouncedEvalutate = useRef<(value: string) => void>(
+  const debouncedEvaluate = useRef<(value: string) => void>(
     debounce((val) => {
       try {
         const tokens = tokenize(val);
@@ -318,14 +318,18 @@ export const MathTextarea: FC<MathTextareaProps> = ({
           shuntingYard(tokens);
         }
         setError("");
-      } catch (e) {
-        console.error(e.message);
-        setError(e.message);
+      } catch (e: unknown) {
+        if (e instanceof Error) {
+          console.error(e.message);
+          setError(e.message);
+        } else {
+          console.error(String(e));
+        }
       }
     }, 300)
   );
 
-  useEffect(() => debouncedEvalutate.current(value), [value]);
+  useEffect(() => debouncedEvaluate.current(value), [value]);
 
   return (
     <MathTextareaWrapper>
@@ -349,7 +353,7 @@ export const MathTextarea: FC<MathTextareaProps> = ({
                   const newValue = value.replace(varRegex, (match) => {
                     if (matches === editMode.index) {
                       matches++;
-                      if (editorType !== "customEvent") {
+                      if (context !== "script") {
                         return editMode.type === "var"
                           ? `$${newId.padStart(2, "0")}$`
                           : `#${newId.padStart(2, "0")}#`;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, FC } from "react";
+import React, { useState, useEffect, FC, useContext } from "react";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 import { MathTextarea } from "ui/form/MathTextarea";
@@ -8,6 +8,7 @@ import {
 } from "store/features/entities/entitiesState";
 import { RootState } from "store/configureStore";
 import { NamedVariable, namedVariablesByContext } from "lib/helpers/variables";
+import { ScriptEditorContext } from "./ScriptEditorContext";
 
 interface ScriptEventFormMathAreaProps {
   id?: string;
@@ -24,8 +25,8 @@ const ScriptEventFormMathArea: FC<ScriptEventFormMathAreaProps> = ({
   onChange,
   entityId,
 }) => {
+  const context = useContext(ScriptEditorContext);
   const [variables, setVariables] = useState<NamedVariable[]>([]);
-  const editorType = useSelector((state: RootState) => state.editor.type);
   const variablesLookup = useSelector((state: RootState) =>
     variableSelectors.selectEntities(state)
   );
@@ -35,14 +36,9 @@ const ScriptEventFormMathArea: FC<ScriptEventFormMathAreaProps> = ({
 
   useEffect(() => {
     setVariables(
-      namedVariablesByContext(
-        editorType,
-        entityId,
-        variablesLookup,
-        customEvent
-      )
+      namedVariablesByContext(context, entityId, variablesLookup, customEvent)
     );
-  }, [entityId, variablesLookup, editorType, customEvent]);
+  }, [entityId, variablesLookup, context, customEvent]);
 
   return (
     <MathTextarea
@@ -52,6 +48,7 @@ const ScriptEventFormMathArea: FC<ScriptEventFormMathAreaProps> = ({
       onChange={onChange}
       variables={variables}
       placeholder={placeholder}
+      context={context}
     />
   );
 };

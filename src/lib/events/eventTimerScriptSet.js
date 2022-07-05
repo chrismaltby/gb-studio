@@ -62,6 +62,7 @@ const fields = [
     key: "script",
     label: l10n("FIELD_ON_TIMER_TICK"),
     type: "events",
+    allowedContexts: ["global", "entity"],
     conditions: [
       {
         key: "__scriptTabs",

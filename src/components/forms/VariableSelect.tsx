@@ -1,4 +1,4 @@
-import React, { useState, useEffect, FC } from "react";
+import React, { useState, useEffect, FC, useContext } from "react";
 import {
   Select as DefaultSelect,
   Option,
@@ -26,6 +26,7 @@ import { Dictionary } from "@reduxjs/toolkit";
 import { keyBy } from "lodash";
 import { EditorSelectionType } from "store/features/editor/editorState";
 import editorActions from "store/features/editor/editorActions";
+import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 
 interface VariableSelectProps extends SelectCommonProps {
   id?: string;
@@ -170,6 +171,7 @@ export const VariableSelect: FC<VariableSelectProps> = ({
   allowRename,
   ...selectProps
 }) => {
+  const context = useContext(ScriptEditorContext);
   const [renameVisible, setRenameVisible] = useState(false);
   const [editValue, setEditValue] = useState("");
   const [renameId, setRenameId] = useState("");
@@ -195,7 +197,7 @@ export const VariableSelect: FC<VariableSelectProps> = ({
 
   useEffect(() => {
     const variables = namedVariablesByContext(
-      editorType,
+      context,
       entityId,
       variablesLookup,
       customEvent
@@ -209,7 +211,7 @@ export const VariableSelect: FC<VariableSelectProps> = ({
         label: `${v.name}`,
       }));
       const filteredOptions =
-        type === "16bit" && editorType !== "customEvent"
+        type === "16bit" && context !== "script"
           ? options.filter((o) => {
               return namedLookup[nextVariable(o.value)];
             })
@@ -221,7 +223,7 @@ export const VariableSelect: FC<VariableSelectProps> = ({
     });
     setVariables(variables);
     setOptions(groupedOptions);
-  }, [entityId, variablesLookup, editorType, customEvent, type]);
+  }, [entityId, variablesLookup, context, customEvent, type]);
 
   useEffect(() => {
     setCurrentVariable(variables.find((v) => v.id === value));

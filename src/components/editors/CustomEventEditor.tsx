@@ -31,6 +31,7 @@ import { InputGroup, InputGroupAppend } from "ui/form/InputGroup";
 import { Input } from "ui/form/Input";
 import { SidebarHeader } from "ui/form/SidebarHeader";
 import { Label } from "ui/form/Label";
+import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 
 const customEventName = (customEvent: CustomEvent, customEventIndex: number) =>
   customEvent.name ? customEvent.name : `Script ${customEventIndex + 1}`;
@@ -368,12 +369,14 @@ const CustomEventEditor = ({ id, multiColumn }: CustomEventEditorProps) => {
             }
           />
         </StickyTabs>
-        <ScriptEditor
-          value={customEvent.script}
-          type="customEvent"
-          entityId={customEvent.id}
-          scriptKey={"script"}
-        />
+        <ScriptEditorContext.Provider value="script">
+          <ScriptEditor
+            value={customEvent.script}
+            type="customEvent"
+            entityId={customEvent.id}
+            scriptKey={"script"}
+          />
+        </ScriptEditorContext.Provider>
       </SidebarColumn>
     </Sidebar>
   );

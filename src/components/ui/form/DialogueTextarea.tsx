@@ -9,12 +9,10 @@ import CustomMention from "./CustomMention";
 import { RelativePortal } from "../layout/RelativePortal";
 import { FontSelect } from "../../forms/FontSelect";
 import { VariableSelect } from "../../forms/VariableSelect";
-import { EditorSelectionType } from "store/features/editor/editorState";
 import { TextSpeedSelect } from "../../forms/TextSpeedSelect";
 import { SelectMenu, selectMenuStyleProps } from "./Select";
 import l10n from "lib/helpers/l10n";
-import { useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import { ScriptEditorContextType } from "components/script/ScriptEditorContext";
 
 const varRegex = /\$([VLT0-9][0-9]*)\$/g;
 const charRegex = /#([VLT0-9][0-9]*)#/g;
@@ -225,7 +223,7 @@ export interface DialogueTextareaProps {
   value: string;
   placeholder?: string;
   variables: NamedVariable[];
-  editorType: EditorSelectionType;
+  context: ScriptEditorContextType;
   entityId: string;
   fonts: Font[];
   maxlength?: number;
@@ -250,6 +248,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
   fonts,
   entityId,
   placeholder,
+  context,
 }) => {
   const [variablesLookup, setVariablesLookup] = useState<
     Dictionary<NamedVariable>
@@ -260,7 +259,6 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
     Dictionary<SuggestionDataItem>
   >({});
   const [editMode, setEditMode] = useState<EditModeOptions>();
-  const editorType = useSelector((state: RootState) => state.editor.type);
 
   useEffect(() => {
     setVariablesLookup(keyBy(variables, "code"));
@@ -337,9 +335,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
                 onChange={(newId) => {
                   let matches = 0;
                   const newVar =
-                    editorType === "customEvent"
-                      ? `V${newId}`
-                      : newId.padStart(2, "0");
+                    context === "script" ? `V${newId}` : newId.padStart(2, "0");
                   const newValue = value.replace(
                     editMode.type === "var" ? varRegex : charRegex,
                     (match) => {
