@@ -329,7 +329,6 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
               <VariableSelect
                 name="replaceVar"
                 value={editMode.id}
-                type="8bit"
                 allowRename={false}
                 entityId={entityId}
                 onChange={(newId) => {

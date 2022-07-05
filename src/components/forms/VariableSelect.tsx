@@ -16,15 +16,11 @@ import {
   groupVariables,
   NamedVariable,
   namedVariablesByContext,
-  nextVariable,
 } from "lib/helpers/variables";
 import { CheckIcon, PencilIcon } from "ui/icons/Icons";
 import { Input } from "ui/form/Input";
 import entitiesActions from "store/features/entities/entitiesActions";
 import l10n from "lib/helpers/l10n";
-import { Dictionary } from "@reduxjs/toolkit";
-import { keyBy } from "lodash";
-import { EditorSelectionType } from "store/features/editor/editorState";
 import editorActions from "store/features/editor/editorActions";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 
@@ -32,7 +28,6 @@ interface VariableSelectProps extends SelectCommonProps {
   id?: string;
   name: string;
   value?: string;
-  type?: "8bit" | "16bit";
   entityId: string;
   allowRename?: boolean;
   onChange: (newValue: string) => void;
@@ -45,10 +40,6 @@ const Wrapper = styled.div`
 const Select = styled(DefaultSelect)`
   .CustomSelect__control {
   }
-`;
-
-const OtherVariable = styled.span`
-  opacity: 0.5;
 `;
 
 const VariableRenameInput = styled(Input)`
@@ -137,35 +128,8 @@ export const VariableToken = styled.span`
   color: ${(props) => props.theme.colors.input.background};
 `;
 
-const formatOptionLabel =
-  (
-    type: "8bit" | "16bit",
-    editorType: EditorSelectionType,
-    namedVariablesLookup: Dictionary<NamedVariable>
-  ) =>
-  (option: Option) => {
-    let otherVariable = "";
-    if (type === "16bit") {
-      if (editorType === "customEvent") {
-        otherVariable = `${option.label}+1`;
-      } else {
-        otherVariable =
-          namedVariablesLookup[nextVariable(option.value)]?.name || "";
-      }
-    }
-    return (
-      <>
-        {option.label}
-        {type === "16bit" && otherVariable && (
-          <OtherVariable> & {otherVariable}</OtherVariable>
-        )}
-      </>
-    );
-  };
-
 export const VariableSelect: FC<VariableSelectProps> = ({
   value,
-  type = "8bit",
   onChange,
   entityId,
   allowRename,
@@ -176,9 +140,6 @@ export const VariableSelect: FC<VariableSelectProps> = ({
   const [editValue, setEditValue] = useState("");
   const [renameId, setRenameId] = useState("");
   const [variables, setVariables] = useState<NamedVariable[]>([]);
-  const [namedVariablesLookup, setNamedVariablesLookup] = useState<
-    Dictionary<NamedVariable>
-  >({});
   const [options, setOptions] = useState<OptGroup[]>([]);
   const [currentVariable, setCurrentVariable] = useState<NamedVariable>();
   const [currentValue, setCurrentValue] = useState<Option>();
@@ -202,28 +163,20 @@ export const VariableSelect: FC<VariableSelectProps> = ({
       variablesLookup,
       customEvent
     );
-    const namedLookup = keyBy(variables, "id");
-    setNamedVariablesLookup(namedLookup);
     const groupedVariables = groupVariables(variables);
     const groupedOptions: OptGroup[] = groupedVariables.map((g) => {
       const options = g.variables.map((v) => ({
         value: v.id,
         label: `${v.name}`,
       }));
-      const filteredOptions =
-        type === "16bit" && context !== "script"
-          ? options.filter((o) => {
-              return namedLookup[nextVariable(o.value)];
-            })
-          : options;
       return {
         label: g.name,
-        options: filteredOptions,
+        options,
       };
     });
     setVariables(variables);
     setOptions(groupedOptions);
-  }, [entityId, variablesLookup, context, customEvent, type]);
+  }, [entityId, variablesLookup, context, customEvent]);
 
   useEffect(() => {
     setCurrentVariable(variables.find((v) => v.id === value));
@@ -281,20 +234,7 @@ export const VariableSelect: FC<VariableSelectProps> = ({
       }
     }
 
-    if (type === "16bit" && value === renameId) {
-      // If editing 16-bit rename the second variable
-      // once finished editing the first
-      const next = namedVariablesLookup[nextVariable(value)];
-      if (next) {
-        setEditValue(next.name);
-        setRenameId(next.id);
-        setRenameVisible(true);
-      } else {
-        setRenameVisible(false);
-      }
-    } else {
-      setRenameVisible(false);
-    }
+    setRenameVisible(false);
   };
 
   const onJumpToVariable = (
@@ -330,11 +270,6 @@ export const VariableSelect: FC<VariableSelectProps> = ({
           onChange={(newValue: Option) => {
             onChange(newValue.value);
           }}
-          formatOptionLabel={formatOptionLabel(
-            type,
-            editorType,
-            namedVariablesLookup
-          )}
           {...selectProps}
         />
       )}

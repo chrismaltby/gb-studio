@@ -345,7 +345,6 @@ export const MathTextarea: FC<MathTextareaProps> = ({
               <VariableSelect
                 name="replaceVar"
                 value={editMode.id}
-                type="8bit"
                 allowRename={false}
                 entityId={entityId}
                 onChange={(newId) => {

@@ -36,13 +36,7 @@ test("Should use default variable name with not renamed", () => {
   } as unknown as Store<RootState, AnyAction>;
 
   render(
-    <VariableSelect
-      name="test"
-      type="8bit"
-      entityId=""
-      value="0"
-      onChange={() => {}}
-    />,
+    <VariableSelect name="test" entityId="" value="0" onChange={() => {}} />,
     store,
     {}
   );
@@ -84,7 +78,6 @@ test("Should use default custom event variable name with not renamed", () => {
   render(
     <VariableSelect
       name="test"
-      type="8bit"
       entityId="customEvent1"
       value="0"
       onChange={() => {}}
@@ -128,13 +121,7 @@ test("Should use renamed variable", () => {
   } as unknown as Store<RootState, AnyAction>;
 
   render(
-    <VariableSelect
-      name="test"
-      type="8bit"
-      entityId=""
-      value="0"
-      onChange={() => {}}
-    />,
+    <VariableSelect name="test" entityId="" value="0" onChange={() => {}} />,
     store,
     {}
   );
@@ -181,7 +168,6 @@ test("Should use renamed variable for custom event", () => {
   render(
     <VariableSelect
       name="test"
-      type="8bit"
       entityId="customEvent1"
       value="0"
       onChange={() => {}}
@@ -228,7 +214,6 @@ test("Should be able to rename variable", async () => {
   render(
     <VariableSelect
       name="test"
-      type="8bit"
       entityId=""
       value="0"
       onChange={() => {}}
@@ -295,7 +280,6 @@ test("Should cancel rename when Escape is pressed", async () => {
   render(
     <VariableSelect
       name="test"
-      type="8bit"
       entityId=""
       value="0"
       onChange={() => {}}
@@ -358,7 +342,6 @@ test("Should complete rename when Escape is pressed", async () => {
   render(
     <VariableSelect
       name="test"
-      type="8bit"
       entityId=""
       value="0"
       onChange={() => {}}
