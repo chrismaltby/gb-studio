@@ -24,7 +24,8 @@ import {
   WaveInstrument,
 } from "store/features/trackerDocument/trackerDocumentTypes";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
-import { MenuDivider, MenuItem } from "components/library/Menu";
+import { MenuItem } from "components/library/Menu";
+import { PatternCellEditor } from "./PatternCellEditor";
 
 type Instrument = DutyInstrument | NoiseInstrument | WaveInstrument;
 
@@ -152,6 +153,12 @@ export const SongEditor = () => {
     );
   }, [dispatch, sequenceId]);
 
+  const selectedPatternCells = useSelector(
+    (state: RootState) => state.tracker.selectedPatternCells
+  );
+
+  const patternId = song?.sequence[sequenceId] || 0;
+
   if (!song) {
     return null;
   }
@@ -203,7 +210,13 @@ export const SongEditor = () => {
               title={l10n("FIELD_TEMPO_TOOLTIP")}
             />
           </FormRow>
-          {instrumentData ? (
+          {selectedPatternCells.length === 1 ? (
+            <PatternCellEditor
+              id={selectedPatternCells[0]}
+              patternId={patternId}
+              pattern={song?.patterns[patternId][selectedPatternCells[0]]}
+            />
+          ) : instrumentData ? (
             <>
               <FormDivider />
               <FormHeader>

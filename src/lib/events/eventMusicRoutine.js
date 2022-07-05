@@ -9,7 +9,7 @@ const fields = [
     type: "number",
     defaultValue: 0,
     min: 0,
-    max: 4,
+    max: 3,
   },
   {
     key: "__scriptTabs",

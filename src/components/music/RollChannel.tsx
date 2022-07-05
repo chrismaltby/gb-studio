@@ -52,6 +52,7 @@ export const RollChannelFwd = ({
   cellSize,
   isDragging,
 }: RollChannelProps) => {
+  let lastNote: number | null = null;
   return (
     <Wrapper active={active} rows={12 * 6} cols={64} size={cellSize}>
       {renderPattern?.map((column: PatternCell[], columnIdx: number) => {
@@ -60,6 +61,7 @@ export const RollChannelFwd = ({
         const cell = column[channelId];
 
         if (cell && cell.note !== null) {
+          lastNote = cell.note;
           return (
             <>
               <Note
@@ -135,6 +137,35 @@ export const RollChannelFwd = ({
                 ""
               )}
             </>
+          );
+        } else if (
+          lastNote !== null &&
+          cell &&
+          (cell.effectcode !== null || cell.effectparam !== null) &&
+          cell.note === null
+        ) {
+          return (
+            <Note
+              data-type="note"
+              data-column={columnIdx}
+              key={`note_${columnIdx}_${channelId}`}
+              size={cellSize}
+              className={
+                cell.instrument !== null
+                  ? `label--${instrumentColors[cell.instrument]}`
+                  : ""
+              }
+              style={{
+                left: `${columnIdx * cellSize}px`,
+                width: cellSize,
+                bottom: `${(lastNote % (12 * 6)) * cellSize - 1}px`,
+                pointerEvents: "none",
+                boxShadow: isSelected ? "0 0 0px 2px #c92c61" : "",
+                zIndex: isSelected ? 1 : 0,
+              }}
+            >
+              {cell.effectcode?.toString(16).toUpperCase()}
+            </Note>
           );
         }
         return "";
