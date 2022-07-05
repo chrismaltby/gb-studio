@@ -150,7 +150,7 @@ const ScriptEventFormInput = ({
               ]
             : undefined;
         if (defaultUnionValue === "LAST_VARIABLE") {
-          replaceValue = editorType === "customEvent" ? "0" : "L0";
+          replaceValue = editorType === "customEvent" ? "V0" : "L0";
         } else if (defaultUnionValue !== undefined) {
           replaceValue = defaultUnionValue;
         }

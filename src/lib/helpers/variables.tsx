@@ -1,6 +1,7 @@
 import uniq from "lodash/uniq";
 import { EditorSelectionType } from "store/features/editor/editorState";
 import { CustomEvent, Variable } from "store/features/entities/entitiesTypes";
+import l10n from "./l10n";
 
 const arrayNStrings = (n: number) =>
   Array.from(Array(n).keys()).map((n) => String(n));
@@ -35,8 +36,8 @@ export const namedVariablesByContext = (
   customEvent: CustomEvent | undefined
 ): NamedVariable[] => {
   if (context === "customEvent") {
-    if (customEvent) {
-      return namedCustomEventVariables(customEvent);
+    if (customEvent && variablesLookup) {
+      return namedCustomEventVariables(customEvent, variablesLookup);
     }
     return [];
   }
@@ -47,17 +48,23 @@ export const namedVariablesByContext = (
 };
 
 export const namedCustomEventVariables = (
-  customEvent: CustomEvent
+  customEvent: CustomEvent,
+  variablesLookup: VariablesLookup
 ): NamedVariable[] => {
-  if (customEvent) {
-    return customEventVariables.map((variable) => ({
-      id: variable,
+  return ([] as NamedVariable[]).concat(
+    customEventVariables.map((variable) => ({
+      id: customEventVariableCode(variable),
       code: customEventVariableCode(variable),
       name: customEventVariableName(variable, customEvent),
-      group: "",
-    }));
-  }
-  return [];
+      group: l10n("SIDEBAR_PARAMETERS"),
+    })),
+    allVariables.map((variable) => ({
+      id: variable,
+      code: globalVariableCode(variable),
+      name: globalVariableName(variable, variablesLookup),
+      group: l10n("FIELD_GLOBAL"),
+    }))
+  );
 };
 
 export const namedEntityVariables = (
