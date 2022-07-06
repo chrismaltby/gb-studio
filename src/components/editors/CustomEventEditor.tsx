@@ -284,14 +284,14 @@ const CustomEventEditor = ({ id, multiColumn }: CustomEventEditorProps) => {
                             label={
                               <span style={{ minWidth: 40, textAlign: "left" }}>
                                 {variable.passByReference
-                                  ? l10n("FIELD_PASS_BY_VALUE_SHORT")
-                                  : l10n("FIELD_PASS_BY_REFERENCE_SHORT")}
+                                  ? l10n("FIELD_PASS_BY_REFERENCE_SHORT")
+                                  : l10n("FIELD_PASS_BY_VALUE_SHORT")}
                               </span>
                             }
                             title={
                               variable.passByReference
-                                ? l10n("FIELD_PASS_BY_VALUE_DESCRIPTION")
-                                : l10n("FIELD_PASS_BY_REFERENCE_DESCRIPTION")
+                                ? l10n("FIELD_PASS_BY_REFERENCE_DESCRIPTION")
+                                : l10n("FIELD_PASS_BY_VALUE_DESCRIPTION")
                             }
                           >
                             <MenuItem
