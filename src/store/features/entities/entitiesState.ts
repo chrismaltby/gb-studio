@@ -70,6 +70,7 @@ import {
 } from "./entitiesHelpers";
 import spriteActions from "../sprite/spriteActions";
 import { isVariableCustomEvent } from "lib/compiler/scriptBuilder";
+import { eventLookup } from "lib/events";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
@@ -2195,7 +2196,7 @@ const refreshCustomEventArgs: CaseReducer<
         };
       }
       Object.keys(args).forEach((arg) => {
-        if (isVariableField(scriptEvent.command, arg, args)) {
+        if (isVariableField(scriptEvent.command, arg, args, eventLookup)) {
           const addVariable = (variable: string) => {
             const letter = String.fromCharCode(
               "A".charCodeAt(0) + parseInt(variable[1])
@@ -2220,7 +2221,7 @@ const refreshCustomEventArgs: CaseReducer<
             addVariable(variable);
           }
         }
-        if (isPropertyField(scriptEvent.command, arg, args)) {
+        if (isPropertyField(scriptEvent.command, arg, args, eventLookup)) {
           const addPropertyActor = (property: string) => {
             const actor = property && property.replace(/:.*/, "");
             if (actor !== "player" && actor !== "$self$") {

@@ -42,6 +42,7 @@ import {
 } from "store/features/entities/entitiesHelpers";
 import { lexText } from "lib/fonts/lexText";
 import { Reference } from "components/forms/ReferencesSelect";
+import { eventLookup } from "lib/events";
 
 type ScriptOutput = string[];
 
@@ -3244,7 +3245,7 @@ extern void __mute_mask_${symbol};
         Object.keys(e.args).forEach((arg) => {
           const argValue = e.args[arg];
           // Update variable fields
-          if (isVariableField(e.command, arg, e.args)) {
+          if (isVariableField(e.command, arg, e.args, eventLookup)) {
             if (
               isUnionVariableValue(argValue) &&
               argValue.value &&
@@ -3262,7 +3263,7 @@ extern void __mute_mask_${symbol};
             }
           }
           // Update property fields
-          if (isPropertyField(e.command, arg, e.args)) {
+          if (isPropertyField(e.command, arg, e.args, eventLookup)) {
             const replacePropertyValueActor = (p: string) => {
               const actorValue = p.replace(/:.*/, "");
               if (actorValue === "player") {
@@ -3282,7 +3283,7 @@ extern void __mute_mask_${symbol};
           }
           // Update actor fields
           if (
-            isActorField(e.command, arg, e.args) &&
+            isActorField(e.command, arg, e.args, eventLookup) &&
             typeof argValue === "string"
           ) {
             e.args[arg] = getArg("actor", argValue); // input[`$variable[${argValue}]$`];

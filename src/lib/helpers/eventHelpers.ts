@@ -39,19 +39,20 @@ export const patchEventArgs = (
 
   const patchArgs: Record<string, unknown> = {};
   eventSchema.fields.forEach((field) => {
+    const key = field.key ?? "";
     if (field.type === type) {
-      if (replacements[args[field.key] as string]) {
-        patchArgs[field.key] = replacements[args[field.key] as string];
+      if (replacements[args[key] as string]) {
+        patchArgs[key] = replacements[args[key] as string];
       }
     } else if (
       type === "actor" &&
-      (args[field.key] as { type?: string })?.type === "property"
+      (args[key] as { type?: string })?.type === "property"
     ) {
       const propertyParts = (
-        (args[field.key] as { value?: string })?.value || ""
+        (args[key] as { value?: string })?.value || ""
       ).split(":");
       if (propertyParts.length === 2) {
-        patchArgs[field.key] = {
+        patchArgs[key] = {
           type: "property",
           value: `${replacements[propertyParts[0]]}:${propertyParts[1]}`,
         };

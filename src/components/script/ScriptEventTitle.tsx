@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import events from "lib/events";
+import events, { eventLookup } from "lib/events";
 import {
   isActorField,
   isPropertyField,
@@ -282,11 +282,11 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
         const value =
           (argValue || fieldDefault || fieldPlaceholder) ?? argValue;
 
-        if (isActorField(command, key, args)) {
+        if (isActorField(command, key, args, eventLookup)) {
           return actorNameForId(value);
-        } else if (isVariableField(command, key, args)) {
+        } else if (isVariableField(command, key, args, eventLookup)) {
           return variableNameForId(value);
-        } else if (isPropertyField(command, key, args)) {
+        } else if (isPropertyField(command, key, args, eventLookup)) {
           const propertyParts = String(value).split(":");
           return `${actorNameForId(propertyParts[0])}.${propertyNameForId(
             propertyParts[1]
