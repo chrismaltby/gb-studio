@@ -133,7 +133,7 @@ const RollPlaybackTracker = styled.div`
   position: absolute;
   top: 0;
   bottom: 0;
-  left: -10px;
+  left: ${30 + 10 + 1 - 10}px;
   &::before {
     content: "";
     position: absolute;
@@ -149,8 +149,9 @@ const RollPlaybackTracker = styled.div`
 const SongGridHeader = styled.div<SongGridHeaderProps>`
   position: sticky;
   top: 0;
-  left: ${30 + 10 + 1}px;
+  left: 0;
   right: 0;
+  padding-left: ${30 + 10 + 1}px;
   z-index: 10;
   ${(props) => css`
     width: ${props.cols * CELL_SIZE}px;
@@ -164,6 +165,7 @@ const SongGridHeader = styled.div<SongGridHeaderProps>`
     background-size: ${CELL_SIZE * 8}px ${CELL_SIZE / 3}px;
     background-repeat: repeat-x;
     background-position-y: center;
+    background-position-x: ${30 + 10 + 1}px;
     border-bottom: 1px solid #808080;
     margin-bottom: -1px;
     border-right: 2px solid ${props.theme.colors.document.background};
@@ -936,12 +938,13 @@ export const SongPianoRoll = ({
             zIndex: 1,
           }}
         >
-          <SongGridHeader
-            cols={64}
-            onMouseDown={(e) => {
-              setPlaybackPosition(e.nativeEvent);
-            }}
-          >
+          <SongGridHeader cols={64}>
+            <div
+              style={{ height: "100%" }}
+              onMouseDown={(e) => {
+                setPlaybackPosition(e.nativeEvent);
+              }}
+            ></div>
             <RollPlaybackTracker
               ref={playingRowRef}
               style={{
