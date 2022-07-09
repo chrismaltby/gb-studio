@@ -43,6 +43,7 @@ import {
 import { lexText } from "lib/fonts/lexText";
 import { Reference } from "components/forms/ReferencesSelect";
 import { eventLookup } from "lib/events";
+import { clone } from "lib/helpers/clone";
 
 type ScriptOutput = string[];
 
@@ -82,8 +83,8 @@ type ScriptBuilderVariable =
   | ScriptBuilderFunctionArg;
 
 interface ScriptBuilderFunctionArgLookup {
-  actor: Dictionary<ScriptBuilderFunctionArg>;
-  variable: Dictionary<ScriptBuilderFunctionArg>;
+  actor: Map<string, ScriptBuilderFunctionArg>;
+  variable: Map<string, ScriptBuilderFunctionArg>;
 }
 
 interface ScriptBuilderOptions {
@@ -504,7 +505,7 @@ class ScriptBuilder {
       additionalScripts: options.additionalScripts || {},
       additionalOutput: options.additionalOutput || {},
       symbols: options.symbols || {},
-      argLookup: options.argLookup || { actor: {}, variable: {} },
+      argLookup: options.argLookup || { actor: new Map(), variable: new Map() },
       maxDepth: options.maxDepth ?? 5,
       compiledCustomEventScriptCache:
         options.compiledCustomEventScriptCache ?? {},
@@ -665,8 +666,8 @@ class ScriptBuilder {
           const ref = token.symbol.replace(/\$/g, "");
           const variable = ref;
           if (variable.match(/^V[0-9]$/)) {
-            const key = variable.replace(/V/, "");
-            const arg = this.options.argLookup.variable[key];
+            const key = variable;
+            const arg = this.options.argLookup.variable.get(key);
             if (!arg) {
               throw new Error("Cant find arg");
             }
@@ -1371,8 +1372,8 @@ class ScriptBuilder {
       } else if (token.type === "variable" || token.type === "char") {
         const variable = token.variableId;
         if (variable.match(/^V[0-9]$/)) {
-          const key = variable.replace(/V/, "");
-          const arg = this.options.argLookup.variable[key];
+          const key = variable;
+          const arg = this.options.argLookup.variable.get(key);
           if (!arg) {
             throw new Error("Cant find arg");
           }
@@ -1849,8 +1850,6 @@ extern void __mute_mask_${symbol};
     symbol: ScriptBuilderStackVariable,
     offset = 0
   ): string => {
-    console.log("_rawOffsetStackAddr", symbol, offset);
-
     if (
       typeof symbol === "number" ||
       (symbol.indexOf(".SCRIPT_ARG_") !== 0 && symbol.indexOf(".LOCAL_") !== 0)
@@ -3073,7 +3072,7 @@ extern void __mute_mask_${symbol};
     }
 
     if (actorArgs) {
-      for (const actorArg of actorArgs.reverse()) {
+      for (const actorArg of clone(actorArgs).reverse()) {
         if (actorArg) {
           const actorValue = input?.[`$actor[${actorArg.id}]$`] || "";
           if (typeof actorValue === "string") {
@@ -3085,7 +3084,7 @@ extern void __mute_mask_${symbol};
     }
 
     if (variableArgs) {
-      for (const variableArg of variableArgs.reverse()) {
+      for (const variableArg of clone(variableArgs).reverse()) {
         if (variableArg) {
           const variableValue = input?.[`$variable[${variableArg.id}]$`] || "";
           if (variableArg.passByReference) {
@@ -3172,11 +3171,11 @@ extern void __mute_mask_${symbol};
     }
 
     const argLookup: {
-      actor: Dictionary<ScriptBuilderFunctionArg>;
-      variable: Dictionary<ScriptBuilderFunctionArg>;
+      actor: Map<string, ScriptBuilderFunctionArg>;
+      variable: Map<string, ScriptBuilderFunctionArg>;
     } = {
-      actor: {},
-      variable: {},
+      actor: new Map(),
+      variable: new Map(),
     };
 
     // Push args
@@ -3190,18 +3189,18 @@ extern void __mute_mask_${symbol};
       indirect: boolean,
       value: string
     ) => {
-      if (!argLookup[type][value]) {
+      if (!argLookup[type].get(value)) {
         const newArg = `.SCRIPT_ARG_${
           indirect ? "INDIRECT_" : ""
         }${numArgs}_${type}`.toUpperCase();
-        argLookup[type][value] = {
+        argLookup[type].set(value, {
           type: "argument",
           indirect,
           symbol: newArg,
-        };
+        });
         numArgs--;
       }
-      return argLookup[type][value];
+      return argLookup[type].get(value);
     };
 
     const getArg = (type: "actor" | "variable", value: string) => {
@@ -3211,14 +3210,14 @@ extern void __mute_mask_${symbol};
       if (type === "actor" && value === "$self$") {
         return "player";
       }
-      if (!argLookup[type][value]) {
+      if (!argLookup[type].get(value)) {
         throw new Error("Unknown arg " + type + " " + value);
       }
-      return argLookup[type][value];
+      return argLookup[type].get(value);
     };
 
     if (actorArgs) {
-      for (const actorArg of actorArgs.reverse()) {
+      for (const actorArg of clone(actorArgs).reverse()) {
         if (actorArg) {
           registerArg("actor", false, actorArg.id);
         }
@@ -3226,7 +3225,7 @@ extern void __mute_mask_${symbol};
     }
 
     if (variableArgs) {
-      for (const variableArg of variableArgs.reverse()) {
+      for (const variableArg of clone(variableArgs).reverse()) {
         if (variableArg) {
           registerArg("variable", variableArg.passByReference, variableArg.id);
         }
@@ -3439,7 +3438,7 @@ extern void __mute_mask_${symbol};
     // Lookup args if in V0-9 format
     if (variable.match(/^V[0-9]$/)) {
       const key = variable.replace(/V/, "");
-      const arg = this.options.argLookup.variable[key];
+      const arg = this.options.argLookup.variable.get(key);
       if (!arg) {
         throw new Error("Cant find arg: " + arg);
       }
@@ -4721,20 +4720,19 @@ extern void __mute_mask_${symbol};
 
     const reserveMem = this._calcLocalsSize();
 
-    const scriptArgVars = Object.values(this.options.argLookup.variable)
+    const scriptArgVars = Array.from(this.options.argLookup.variable.values())
+      .reverse()
       .map((arg, index) =>
         arg ? `\n${arg.symbol} = -${3 + reserveMem + index}` : ""
       )
       .join("");
 
-    const scriptArgActors = Object.values(this.options.argLookup.actor)
+    const scriptArgActors = Array.from(this.options.argLookup.actor.values())
+      .reverse()
       .map((arg, index) =>
         arg
           ? `\n${arg.symbol} = -${
-              3 +
-              reserveMem +
-              index +
-              Object.keys(this.options.argLookup.variable).length
+              3 + reserveMem + index + this.options.argLookup.variable.size
             }`
           : ""
       )
