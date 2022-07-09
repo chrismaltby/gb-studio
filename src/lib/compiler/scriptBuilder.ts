@@ -3427,9 +3427,6 @@ extern void __mute_mask_${symbol};
       return variable.symbol;
     }
 
-    if (variable === "") {
-      variable = "L0";
-    }
 
     if (typeof variable === "number") {
       variable = String(variable);
