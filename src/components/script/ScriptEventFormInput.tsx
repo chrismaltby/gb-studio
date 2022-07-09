@@ -24,7 +24,7 @@ import { SpriteSheetSelect } from "components/forms/SpriteSheetSelect";
 import { VariableSelect } from "components/forms/VariableSelect";
 import castEventValue from "lib/helpers/castEventValue";
 import l10n from "lib/helpers/l10n";
-import React, { useCallback } from "react";
+import React, { useCallback, useContext } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "store/configureStore";
 import {
@@ -44,6 +44,7 @@ import ToggleButtons from "ui/form/ToggleButtons";
 import { BlankIcon, CheckIcon, ConnectIcon } from "ui/icons/Icons";
 import { MenuItem, MenuItemIcon } from "ui/menu/Menu";
 import { OffscreenSkeletonInput } from "ui/skeleton/Skeleton";
+import { ScriptEditorContext } from "./ScriptEditorContext";
 import ScriptEventFormMathArea from "./ScriptEventFormMatharea";
 import ScriptEventFormTextArea from "./ScriptEventFormTextarea";
 
@@ -99,7 +100,7 @@ const ScriptEventFormInput = ({
     (state: RootState) =>
       state.project.present.settings.defaultSpritePaletteIds || []
   );
-  const editorType = useSelector((state: RootState) => state.editor.type);
+  const context = useContext(ScriptEditorContext);
 
   const onChangeField = useCallback(
     (e: unknown) => {
@@ -150,7 +151,13 @@ const ScriptEventFormInput = ({
               ]
             : undefined;
         if (defaultUnionValue === "LAST_VARIABLE") {
-          replaceValue = editorType === "customEvent" ? "V0" : "L0";
+          if (context === "script") {
+            replaceValue = "V0";
+          } else if (context === "entity") {
+            replaceValue = "L0";
+          } else {
+            replaceValue = "0";
+          }
         } else if (defaultUnionValue !== undefined) {
           replaceValue = defaultUnionValue;
         }
@@ -163,7 +170,7 @@ const ScriptEventFormInput = ({
         );
       }
     },
-    [editorType, field.defaultValue, index, onChange, value]
+    [context, field.defaultValue, index, onChange, value]
   );
 
   if (type === "textarea") {
@@ -414,11 +421,21 @@ const ScriptEventFormInput = ({
       </OffscreenSkeletonInput>
     );
   } else if (type === "variable") {
+    let fallbackValue = defaultValue;
+    if (fallbackValue === "LAST_VARIABLE") {
+      if (context === "script") {
+        fallbackValue = "V0";
+      } else if (context === "entity") {
+        fallbackValue = "L0";
+      } else {
+        fallbackValue = "0";
+      }
+    }
     return (
       <OffscreenSkeletonInput>
         <VariableSelect
           name={id}
-          value={String(value || defaultValue || "0")}
+          value={String(value || fallbackValue || "0")}
           entityId={entityId}
           onChange={onChangeField}
           allowRename={allowRename}

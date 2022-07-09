@@ -27,64 +27,37 @@ export interface EngineFieldSyncResult {
 
 export const engineFieldsEmitter = new EventEmitter.EventEmitter();
 
-engineFieldsEmitter.on("TEST", () => {
-  console.log("GOT TEST");
-});
-
-engineFieldsEmitter.emit("TEST");
-
 const getEngineFieldSchemas = (engineFields: EngineFieldSchema[]) => {
   const fields: EngineFieldSchemaLookup = {};
 
   engineFields.forEach((engineField) => {
     const fieldType = engineField.type || "number";
 
-    const updateValueField = is16BitCType(engineField.cType)
-      ? {
-          key: "value",
-          type: "union",
-          checkboxLabel: l10n(engineField.label),
-          types: [fieldType, "variable"],
-          defaultType: fieldType,
-          min: clampToCType(
-            setDefault(engineField.min, -Infinity),
-            engineField.cType
-          ),
-          max: clampToCType(
-            setDefault(engineField.max, Infinity),
-            engineField.cType
-          ),
-          options: engineField.options || [],
-          defaultValue: {
-            [fieldType]: engineField.defaultValue || 0,
-            variable: "0",
-          },
-        }
-      : {
-          key: "value",
-          type: "union",
-          checkboxLabel: l10n(engineField.label),
-          types: [fieldType, "variable"],
-          defaultType: fieldType,
-          min: clampToCType(
-            setDefault(engineField.min, -Infinity),
-            engineField.cType
-          ),
-          max: clampToCType(
-            setDefault(engineField.max, Infinity),
-            engineField.cType
-          ),
-          options: engineField.options || [],
-          defaultValue: {
-            [fieldType]: engineField.defaultValue || 0,
-            variable: "0",
-          },
-        };
+    const updateValueField = {
+      key: "value",
+      type: "union",
+      checkboxLabel: l10n(engineField.label),
+      types: [fieldType, "variable"],
+      defaultType: fieldType,
+      min: clampToCType(
+        setDefault(engineField.min, -Infinity),
+        engineField.cType
+      ),
+      max: clampToCType(
+        setDefault(engineField.max, Infinity),
+        engineField.cType
+      ),
+      options: engineField.options || [],
+      defaultValue: {
+        [fieldType]: engineField.defaultValue || 0,
+        variable: "LAST_VARIABLE",
+      },
+    };
 
     const storeValueField = {
       key: "value",
       type: "variable",
-      defaultValue: "0",
+      defaultValue: "LAST_VARIABLE",
     };
 
     fields[engineField.key] = {
