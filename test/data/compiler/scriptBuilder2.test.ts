@@ -304,7 +304,7 @@ ___bank_MY_SCRIPT = 255
 
 _MY_SCRIPT::
         ; If Variable True
-        VM_IF_CONST .GT         VAR_1, 0, 1$, 0
+        VM_IF_CONST             .GT, VAR_1, 0, 1$, 0
         VM_DEBUG                0
         .asciz "False Path"
         VM_JUMP                 2$
@@ -379,7 +379,7 @@ ___bank_MY_SCRIPT = 255
 
 _MY_SCRIPT::
         ; If Variable True
-        VM_IF_CONST .GT         VAR_0, 0, 1$, 0
+        VM_IF_CONST             .GT, VAR_0, 0, 1$, 0
         ; Text Dialogue
         VM_LOAD_TEXT            0
         .asciz "Goodbye World"
@@ -472,9 +472,9 @@ ___bank_MY_SCRIPT = 255
 
 _MY_SCRIPT::
         ; If Variable True
-        VM_IF_CONST .GT         VAR_0, 0, 1$, 0
+        VM_IF_CONST             .GT, VAR_0, 0, 1$, 0
         ; If Variable True
-        VM_IF_CONST .GT         VAR_2, 0, 3$, 0
+        VM_IF_CONST             .GT, VAR_2, 0, 3$, 0
         ; Text Dialogue
         VM_LOAD_TEXT            0
         .asciz "0=FALSE 2=FALSE"
@@ -502,7 +502,7 @@ _MY_SCRIPT::
         VM_JUMP                 2$
 1$:
         ; If Variable True
-        VM_IF_CONST .GT         VAR_1, 0, 5$, 0
+        VM_IF_CONST             .GT, VAR_1, 0, 5$, 0
         ; Text Dialogue
         VM_LOAD_TEXT            0
         .asciz "0=TRUE 1=FALSE"

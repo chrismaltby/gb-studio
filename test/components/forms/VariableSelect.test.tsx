@@ -7,6 +7,7 @@ import { VariableSelect } from "../../../src/components/forms/VariableSelect";
 import { render, screen, fireEvent } from "../../react-utils";
 import { AnyAction, Store } from "@reduxjs/toolkit";
 import { RootState } from "../../../src/store/configureStore";
+import { ScriptEditorContext } from "../../../src/components/script/ScriptEditorContext";
 
 test("Should use default variable name with not renamed", () => {
   const state = {
@@ -76,12 +77,14 @@ test("Should use default custom event variable name with not renamed", () => {
   } as unknown as Store<RootState, AnyAction>;
 
   render(
-    <VariableSelect
-      name="test"
-      entityId="customEvent1"
-      value="0"
-      onChange={() => {}}
-    />,
+    <ScriptEditorContext.Provider value="script">
+      <VariableSelect
+        name="test"
+        entityId="customEvent1"
+        value="V0"
+        onChange={() => {}}
+      />
+    </ScriptEditorContext.Provider>,
     store,
     {}
   );
@@ -141,8 +144,8 @@ test("Should use renamed variable for custom event", () => {
               customEvent1: {
                 id: "customEvent1",
                 variables: {
-                  "0": {
-                    id: "0",
+                  V0: {
+                    id: "V0",
                     name: "My Custom Event Variable",
                   },
                 },
@@ -166,12 +169,14 @@ test("Should use renamed variable for custom event", () => {
   } as unknown as Store<RootState, AnyAction>;
 
   render(
-    <VariableSelect
-      name="test"
-      entityId="customEvent1"
-      value="0"
-      onChange={() => {}}
-    />,
+    <ScriptEditorContext.Provider value="script">
+      <VariableSelect
+        name="test"
+        entityId="customEvent1"
+        value="V0"
+        onChange={() => {}}
+      />
+    </ScriptEditorContext.Provider>,
     store,
     {}
   );

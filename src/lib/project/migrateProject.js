@@ -18,7 +18,6 @@ import { copySync, chmodSync } from "fs-extra";
 import { projectTemplatesRoot } from "../../consts";
 import uniq from "lodash/uniq";
 import { toValidSymbol } from "lib/helpers/symbols";
-import { eventLookup } from "lib/events";
 
 const indexById = indexBy("id");
 
@@ -1561,6 +1560,8 @@ export const migrateFrom300r2To300r3 = (data) => {
  * to distinguish from global variables
  */
 export const migrateFrom300r3To310r1ScriptEvent = (event) => {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const eventLookup = require("lib/events").eventLookup;
   const migrateMeta = generateMigrateMeta(event);
   if (event.args) {
     const newArgs = Object.keys(event.args).reduce(

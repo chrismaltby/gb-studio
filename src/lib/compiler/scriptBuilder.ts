@@ -42,7 +42,6 @@ import {
 } from "store/features/entities/entitiesHelpers";
 import { lexText } from "lib/fonts/lexText";
 import { Reference } from "components/forms/ReferencesSelect";
-import { eventLookup } from "lib/events";
 import { clone } from "lib/helpers/clone";
 import {
   defaultVariableForContext,
@@ -3163,6 +3162,8 @@ extern void __mute_mask_${symbol};
   };
 
   compileCustomEventScript = (customEventId: string) => {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const eventLookup = require("lib/events").eventLookup;
     const { customEvents, compiledCustomEventScriptCache } = this.options;
     const customEvent = customEvents.find((ce) => ce.id === customEventId);
 

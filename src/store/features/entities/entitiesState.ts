@@ -70,7 +70,6 @@ import {
 } from "./entitiesHelpers";
 import spriteActions from "../sprite/spriteActions";
 import { isVariableCustomEvent } from "lib/compiler/scriptBuilder";
-import { eventLookup } from "lib/events";
 import { sortByKey } from "lib/helpers/sortByKey";
 
 const MIN_SCENE_X = 60;
@@ -2154,6 +2153,9 @@ const refreshCustomEventArgs: CaseReducer<
   if (!customEvent) {
     return;
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const eventLookup = require("lib/events").eventLookup;
 
   const variables = {} as Dictionary<CustomEventVariable>;
   const actors = {} as Dictionary<CustomEventActor>;
