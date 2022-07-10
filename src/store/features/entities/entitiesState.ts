@@ -71,6 +71,7 @@ import {
 import spriteActions from "../sprite/spriteActions";
 import { isVariableCustomEvent } from "lib/compiler/scriptBuilder";
 import { eventLookup } from "lib/events";
+import { sortByKey } from "lib/helpers/sortByKey";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
@@ -2271,7 +2272,7 @@ const refreshCustomEventArgs: CaseReducer<
     }
   );
 
-  customEvent.variables = variables;
+  customEvent.variables = sortByKey(variables);
   customEvent.actors = actors;
 };
 
