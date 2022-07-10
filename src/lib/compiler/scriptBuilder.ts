@@ -44,6 +44,7 @@ import { lexText } from "lib/fonts/lexText";
 import { Reference } from "components/forms/ReferencesSelect";
 import { eventLookup } from "lib/events";
 import { clone } from "lib/helpers/clone";
+import { ScriptEditorContextType } from "components/script/ScriptEditorContext";
 
 type ScriptOutput = string[];
 
@@ -88,6 +89,7 @@ interface ScriptBuilderFunctionArgLookup {
 }
 
 interface ScriptBuilderOptions {
+  context: ScriptEditorContextType;
   scriptSymbolName: string;
   scene: PrecompiledScene;
   sceneIndex: number;
@@ -483,6 +485,7 @@ class ScriptBuilder {
     this.output = output;
     this.options = {
       ...options,
+      context: options.context || "entity",
       scriptSymbolName: options.scriptSymbolName || "script_1",
       sceneIndex: options.sceneIndex || 0,
       entityIndex: options.entityIndex || 0,
@@ -3422,11 +3425,21 @@ extern void __mute_mask_${symbol};
     return index;
   };
 
-  getVariableAlias = (variable: ScriptBuilderVariable = "0"): string => {
+  getVariableAlias = (variable: ScriptBuilderVariable = ""): string => {
     if (this._isFunctionArg(variable)) {
       return variable.symbol;
     }
 
+    // Set correct default variable for missing vars based on script context
+    if (variable === "") {
+      if (this.options.context === "entity") {
+        variable = "L0";
+      } else if (this.options.context === "script") {
+        variable = "V0";
+      } else {
+        variable = "0";
+      }
+    }
 
     if (typeof variable === "number") {
       variable = String(variable);
@@ -3434,8 +3447,7 @@ extern void __mute_mask_${symbol};
 
     // Lookup args if in V0-9 format
     if (variable.match(/^V[0-9]$/)) {
-      const key = variable.replace(/V/, "");
-      const arg = this.options.argLookup.variable.get(key);
+      const arg = this.options.argLookup.variable.get(variable);
       if (!arg) {
         throw new Error("Cant find arg: " + arg);
       }
@@ -4643,6 +4655,13 @@ extern void __mute_mask_${symbol};
     const symbol = this._getAvailableSymbol(
       inputSymbol ? inputSymbol : `script_${type}_0`
     );
+    // Set script context to calculate default value for missing vars
+    let context: ScriptEditorContextType = this.options.context;
+    if (type === "custom") {
+      context = "script";
+    } else if (context === "script") {
+      context = "global";
+    }
     const compiledSubScript = compileEntityEvents(
       symbol,
       this.options.maxDepth >= 0 ? script : [],
@@ -4653,6 +4672,7 @@ extern void __mute_mask_${symbol};
         loop: false,
         lock: false,
         init: false,
+        context,
         isFunction: type === "custom",
         maxDepth: this.options.maxDepth - 1,
       }
