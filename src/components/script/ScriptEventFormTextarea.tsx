@@ -52,7 +52,6 @@ const ScriptEventFormTextArea: FC<ScriptEventFormTextAreaProps> = ({
       value={value || ""}
       onChange={onChange}
       variables={variables}
-      context={context}
       entityId={entityId}
       fonts={fonts}
       placeholder={placeholder}

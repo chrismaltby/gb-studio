@@ -48,7 +48,6 @@ const ScriptEventFormMathArea: FC<ScriptEventFormMathAreaProps> = ({
       onChange={onChange}
       variables={variables}
       placeholder={placeholder}
-      context={context}
     />
   );
 };

@@ -12,7 +12,6 @@ import { VariableSelect } from "../../forms/VariableSelect";
 import { TextSpeedSelect } from "../../forms/TextSpeedSelect";
 import { SelectMenu, selectMenuStyleProps } from "./Select";
 import l10n from "lib/helpers/l10n";
-import { ScriptEditorContextType } from "components/script/ScriptEditorContext";
 
 const varRegex = /\$([VLT0-9][0-9]*)\$/g;
 const charRegex = /#([VLT0-9][0-9]*)#/g;
@@ -223,7 +222,6 @@ export interface DialogueTextareaProps {
   value: string;
   placeholder?: string;
   variables: NamedVariable[];
-  context: ScriptEditorContextType;
   entityId: string;
   fonts: Font[];
   maxlength?: number;
@@ -248,7 +246,6 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
   fonts,
   entityId,
   placeholder,
-  context,
 }) => {
   const [variablesLookup, setVariablesLookup] = useState<
     Dictionary<NamedVariable>
@@ -333,8 +330,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
                 entityId={entityId}
                 onChange={(newId) => {
                   let matches = 0;
-                  const newVar =
-                    context === "script" ? `V${newId}` : newId.padStart(2, "0");
+                  const newVar = newId.padStart(2, "0");
                   const newValue = value.replace(
                     editMode.type === "var" ? varRegex : charRegex,
                     (match) => {
