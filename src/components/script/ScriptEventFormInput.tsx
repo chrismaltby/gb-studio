@@ -44,7 +44,10 @@ import ToggleButtons from "ui/form/ToggleButtons";
 import { BlankIcon, CheckIcon, ConnectIcon } from "ui/icons/Icons";
 import { MenuItem, MenuItemIcon } from "ui/menu/Menu";
 import { OffscreenSkeletonInput } from "ui/skeleton/Skeleton";
-import { ScriptEditorContext } from "./ScriptEditorContext";
+import {
+  defaultVariableForContext,
+  ScriptEditorContext,
+} from "./ScriptEditorContext";
 import ScriptEventFormMathArea from "./ScriptEventFormMatharea";
 import ScriptEventFormTextArea from "./ScriptEventFormTextarea";
 
@@ -151,13 +154,7 @@ const ScriptEventFormInput = ({
               ]
             : undefined;
         if (defaultUnionValue === "LAST_VARIABLE") {
-          if (context === "script") {
-            replaceValue = "V0";
-          } else if (context === "entity") {
-            replaceValue = "L0";
-          } else {
-            replaceValue = "0";
-          }
+          replaceValue = defaultVariableForContext(context);
         } else if (defaultUnionValue !== undefined) {
           replaceValue = defaultUnionValue;
         }
@@ -423,13 +420,7 @@ const ScriptEventFormInput = ({
   } else if (type === "variable") {
     let fallbackValue = defaultValue;
     if (fallbackValue === "LAST_VARIABLE") {
-      if (context === "script") {
-        fallbackValue = "V0";
-      } else if (context === "entity") {
-        fallbackValue = "L0";
-      } else {
-        fallbackValue = "0";
-      }
+      fallbackValue = defaultVariableForContext(context);
     }
     return (
       <OffscreenSkeletonInput>

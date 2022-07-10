@@ -44,7 +44,10 @@ import { lexText } from "lib/fonts/lexText";
 import { Reference } from "components/forms/ReferencesSelect";
 import { eventLookup } from "lib/events";
 import { clone } from "lib/helpers/clone";
-import { ScriptEditorContextType } from "components/script/ScriptEditorContext";
+import {
+  defaultVariableForContext,
+  ScriptEditorContextType,
+} from "components/script/ScriptEditorContext";
 
 type ScriptOutput = string[];
 
@@ -3432,13 +3435,7 @@ extern void __mute_mask_${symbol};
 
     // Set correct default variable for missing vars based on script context
     if (variable === "") {
-      if (this.options.context === "entity") {
-        variable = "L0";
-      } else if (this.options.context === "script") {
-        variable = "V0";
-      } else {
-        variable = "0";
-      }
+      variable = defaultVariableForContext(this.options.context);
     }
 
     if (typeof variable === "number") {

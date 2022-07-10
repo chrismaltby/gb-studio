@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import cloneDeep from "lodash/cloneDeep";
 import { OptGroup } from "ui/form/Select";
 import events, { EventHandler } from "lib/events";
@@ -27,6 +33,10 @@ import {
 } from "store/features/entities/entitiesState";
 import { EVENT_TEXT } from "lib/compiler/eventTypes";
 import { useDebounce } from "ui/hooks/use-debounce";
+import {
+  defaultVariableForContext,
+  ScriptEditorContext,
+} from "./ScriptEditorContext";
 
 interface AddScriptEventMenuProps {
   parentType: ScriptEventParentType;
@@ -446,7 +456,7 @@ const AddScriptEventMenu = ({
   const lastEmoteId = useSelector(
     (state: RootState) => emoteSelectors.selectIds(state)[0]
   );
-  const scope = useSelector((state: RootState) => state.editor.type);
+  const context = useContext(ScriptEditorContext);
 
   useEffect(() => {
     if (selectedCategoryIndex === -1) {
@@ -615,7 +625,7 @@ const AddScriptEventMenu = ({
           data: [
             instanciateScriptEvent(newEvent, {
               defaultActorId: "player",
-              defaultVariableId: scope === "customEvent" ? "V0" : "L0",
+              defaultVariableId: defaultVariableForContext(context),
               defaultMusicId: String(lastMusicId),
               defaultSceneId: String(lastSceneId),
               defaultSpriteId: String(lastSpriteId),
@@ -629,8 +639,10 @@ const AddScriptEventMenu = ({
     },
     [
       before,
+      context,
       dispatch,
       insertId,
+      lastEmoteId,
       lastMusicId,
       lastSceneId,
       lastSpriteId,
@@ -638,7 +650,6 @@ const AddScriptEventMenu = ({
       parentId,
       parentKey,
       parentType,
-      scope,
     ]
   );
 
