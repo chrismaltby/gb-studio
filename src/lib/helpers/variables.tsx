@@ -125,7 +125,7 @@ export const customEventVariableName = (
   variable: string,
   customEvent: CustomEvent
 ): string => {
-  const customEventVariable = customEvent.variables[variable];
+  const customEventVariable = customEvent.variables[`V${variable}`];
   if (customEventVariable) {
     return customEventVariable.name;
   }
