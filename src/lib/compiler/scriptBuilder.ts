@@ -4242,6 +4242,136 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
+  ifActorInRange = (
+    actorId2: string,
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
+    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
+    units: string
+  ) => {
+    const actorRef = this._declareLocal("actor", 4);
+    const otherActorRef = this._declareLocal("other_actor", 3, true);
+    const falseLabel = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+    this._addComment(`If Actor In Range`);
+    this._actorGetPosition(this._localRef(actorRef));
+    this.setActorId(this._localRef(otherActorRef), actorId2);
+    this._actorGetPosition(this._localRef(otherActorRef));
+    this._rpn()
+      // Up
+      .ref(this._localRef(otherActorRef, 2))
+      .int16(y1 * (units === "tiles" ? 8 : 1) * 16)
+      .operator(".SUB")
+      .ref(this._localRef(actorRef, 2))
+      .operator(".LTE")
+
+      // Down
+      .ref(this._localRef(otherActorRef, 2))
+      .int16(y2 * (units === "tiles" ? 8 : 1) * 16)
+      .operator(".ADD")
+      .ref(this._localRef(actorRef, 2))
+      .operator(".GTE")
+      .operator(".AND")
+
+      // Left
+      .ref(this._localRef(otherActorRef, 1))
+      .int16(x1 * (units === "tiles" ? 8 : 1) * 16)
+      .operator(".SUB")
+      .ref(this._localRef(actorRef, 1))
+      .operator(".LTE")
+      .operator(".AND")
+
+      // Right
+      .ref(this._localRef(otherActorRef, 1))
+      .int16(x2 * (units === "tiles" ? 8 : 1) * 16)
+      .operator(".ADD")
+      .ref(this._localRef(actorRef, 1))
+      .operator(".GTE")
+      .operator(".AND")
+
+      .stop();
+    this._ifConst(".EQ", ".ARG0", 0, falseLabel, 1);
+    this._addNL();
+    this._compilePath(truePath);
+    this._jump(endLabel);
+    this._label(falseLabel);
+    this._compilePath(falsePath);
+    this._label(endLabel);
+    this._addNL();
+  };
+
+  ifActorInRangeVariables = (
+    actorId2: string,
+    x1: string,
+    y1: string,
+    x2: string,
+    y2: string,
+    truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
+    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
+    units: string
+  ) => {
+    const actorRef = this._declareLocal("actor", 4);
+    const otherActorRef = this._declareLocal("other_actor", 3, true);
+    const falseLabel = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+    this._addComment(`If Actor In Range`);
+    this._actorGetPosition(this._localRef(actorRef));
+    this.setActorId(this._localRef(otherActorRef), actorId2);
+    this._actorGetPosition(this._localRef(otherActorRef));
+    this._rpn()
+      // Up
+      .ref(this._localRef(otherActorRef, 2))
+      .refVariable(y1)
+      .int16((units === "tiles" ? 8 : 1) * 16)
+      .operator(".MUL")
+      .operator(".SUB")
+      .ref(this._localRef(actorRef, 2))
+      .operator(".LTE")
+
+      // Down
+      .ref(this._localRef(otherActorRef, 2))
+      .refVariable(y2)
+      .int16((units === "tiles" ? 8 : 1) * 16)
+      .operator(".MUL")
+      .operator(".ADD")
+      .ref(this._localRef(actorRef, 2))
+      .operator(".GTE")
+      .operator(".AND")
+
+      // Left
+      .ref(this._localRef(otherActorRef, 1))
+      .refVariable(x1)
+      .int16((units === "tiles" ? 8 : 1) * 16)
+      .operator(".MUL")
+      .operator(".SUB")
+      .ref(this._localRef(actorRef, 1))
+      .operator(".LTE")
+      .operator(".AND")
+
+      // Right
+      .ref(this._localRef(otherActorRef, 1))
+      .refVariable(x2)
+      .int16((units === "tiles" ? 8 : 1) * 16)
+      .operator(".MUL")
+      .operator(".ADD")
+      .ref(this._localRef(actorRef, 1))
+      .operator(".GTE")
+      .operator(".AND")
+      
+      .stop();
+    this._ifConst(".EQ", ".ARG0", 0, falseLabel, 1);
+    this._addNL();
+    this._compilePath(truePath);
+    this._jump(endLabel);
+    this._label(falseLabel);
+    this._compilePath(falsePath);
+    this._label(endLabel);
+    this._addNL();
+  };
+
   ifActorDirection = (
     direction: ActorDirection,
     truePath = [],
