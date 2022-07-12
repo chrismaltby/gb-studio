@@ -19,7 +19,6 @@ import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import useSplitPane from "ui/hooks/use-split-pane";
 import styled from "styled-components";
 import { SplitPaneVerticalDivider } from "ui/splitpane/SplitPaneDivider";
-import { instrumentColors } from "./InstrumentSelect";
 import { NoSongsMessage } from "./NoSongsMessage";
 import { assetFilename } from "lib/helpers/gbstudio";
 import { addNewSongFile } from "store/features/trackerDocument/trackerDocumentState";
@@ -95,7 +94,7 @@ const instrumentToNavigatorItem =
       type,
       instrumentId: `${instrument.index}`,
       isGroup: false,
-      labelColor: instrumentColors[instrument.index],
+      labelColor: `instrument-${instrument.index}`,
     };
   };
 

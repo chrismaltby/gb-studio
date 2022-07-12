@@ -2,8 +2,6 @@ import React from "react";
 import styled, { css } from "styled-components";
 import { PatternCell } from "lib/helpers/uge/song/PatternCell";
 
-import { instrumentColors } from "./InstrumentSelect";
-
 interface RollChannelProps {
   channelId: number;
   renderPattern: PatternCell[][];

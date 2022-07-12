@@ -2,8 +2,6 @@ import React from "react";
 import styled, { css } from "styled-components";
 import { PatternCell } from "lib/helpers/uge/song/PatternCell";
 
-import { instrumentColors } from "./InstrumentSelect";
-
 interface RollChannelProps {
   channelId: number;
   active: boolean;
@@ -72,7 +70,7 @@ export const RollChannelFwd = ({
                 size={cellSize}
                 className={
                   cell.instrument !== null
-                    ? `label--${instrumentColors[cell.instrument]}`
+                    ? `label--instrument-${cell.instrument}`
                     : ""
                 }
                 style={{
@@ -96,7 +94,7 @@ export const RollChannelFwd = ({
                     size={cellSize}
                     className={
                       cell.instrument !== null
-                        ? `label--${instrumentColors[cell.instrument]}`
+                        ? `label--instrument-${cell.instrument}`
                         : ""
                     }
                     style={{
@@ -117,7 +115,7 @@ export const RollChannelFwd = ({
                     size={cellSize}
                     className={
                       cell.instrument !== null
-                        ? `label--${instrumentColors[cell.instrument]}`
+                        ? `label--instrument-${cell.instrument}`
                         : ""
                     }
                     style={{

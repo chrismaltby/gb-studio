@@ -8,25 +8,6 @@ import {
   SelectCommonProps,
 } from "ui/form/Select";
 
-export const instrumentColors = [
-  "red",
-  "orange",
-  "yellow",
-  "green",
-  "blue",
-  "purple",
-  "gray",
-  "cyan",
-  "red-alt",
-  "orange-alt",
-  "yellow-alt",
-  "green-alt",
-  "blue-alt",
-  "purple-alt",
-  "gray-alt",
-  "cyan-alt",
-];
-
 const instruments = Array(15)
   .fill("")
   .map((_, i) => ({
@@ -39,7 +20,7 @@ interface LabelColorProps {
 }
 
 const LabelColor = styled.div.attrs<LabelColorProps>((props) => ({
-  className: `label--${props.color}`,
+  className: `label--instrument-${props.color}`,
 }))`
   width: 10px;
   height: 10px;
@@ -111,22 +92,14 @@ export const InstrumentSelect: FC<InstrumentSelectProps> = ({
       onChange={onSelectChange}
       formatOptionLabel={(option: Option) => {
         return (
-          <OptionLabelWithPreview
-            preview={
-              <LabelColor color={instrumentColors[parseInt(option.value)]} />
-            }
-          >
+          <OptionLabelWithPreview preview={<LabelColor color={option.value} />}>
             {option.label}
           </OptionLabelWithPreview>
         );
       }}
       components={{
         SingleValue: () => (
-          <SingleValueWithPreview
-            preview={
-              <LabelColor color={instrumentColors[parseInt(value || "")]} />
-            }
-          >
+          <SingleValueWithPreview preview={<LabelColor color={value || ""} />}>
             {currentValue?.label}
           </SingleValueWithPreview>
         ),
