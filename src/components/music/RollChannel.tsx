@@ -23,9 +23,9 @@ interface WrapperProps {
 const Wrapper = styled.div<WrapperProps>`
   position: absolute;
   top: 0;
-  margin: 0 40px 40px 10px;
 
   ${(props) => css`
+    margin: 0 ${3 * props.size}px ${2 * props.size}px 10px;
     width: ${props.cols * props.size}px;
     height: ${props.rows * props.size}px;
     opacity: ${props.active ? 1 : 0.3};
@@ -86,7 +86,7 @@ export const RollChannelFwd = ({
                   opacity: isSelected && isDragging ? 0.6 : 1,
                 }}
               >
-                {cell.effectcode?.toString(16).toUpperCase()}
+                {/* {cell.effectcode?.toString(16).toUpperCase()} */}
               </Note>
               {cell.effectcode === 0 ? (
                 <>
@@ -137,35 +137,6 @@ export const RollChannelFwd = ({
                 ""
               )}
             </>
-          );
-        } else if (
-          lastNote !== null &&
-          cell &&
-          (cell.effectcode !== null || cell.effectparam !== null) &&
-          cell.note === null
-        ) {
-          return (
-            <Note
-              data-type="note"
-              data-column={columnIdx}
-              key={`note_${columnIdx}_${channelId}`}
-              size={cellSize}
-              className={
-                cell.instrument !== null
-                  ? `label--${instrumentColors[cell.instrument]}`
-                  : ""
-              }
-              style={{
-                left: `${columnIdx * cellSize}px`,
-                width: cellSize,
-                bottom: `${(lastNote % (12 * 6)) * cellSize - 1}px`,
-                pointerEvents: "none",
-                boxShadow: isSelected ? "0 0 0px 2px #c92c61" : "",
-                zIndex: isSelected ? 1 : 0,
-              }}
-            >
-              {cell.effectcode?.toString(16).toUpperCase()}
-            </Note>
           );
         }
         return "";

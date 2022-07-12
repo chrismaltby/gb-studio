@@ -1,9 +1,13 @@
 /* eslint-disable camelcase */
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { PatternCell } from "lib/helpers/uge/song/PatternCell";
 import editorActions from "../editor/editorActions";
 
-export type PianoRollToolType = "pencil" | "eraser" | "selection" | null;
+export type PianoRollToolType =
+  | "pencil"
+  | "eraser"
+  | "selection"
+  | "effects"
+  | null;
 export interface TrackerState {
   // status: "loading" | "error" | "loaded" | null,
   // error?: string;

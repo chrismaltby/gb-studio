@@ -14,6 +14,7 @@ import {
   PianoInverseIcon,
   StopIcon,
   PlayStartIcon,
+  WandIcon,
 } from "ui/icons/Icons";
 import FloatingPanel, { FloatingPanelDivider } from "ui/panels/FloatingPanel";
 import trackerActions from "store/features/tracker/trackerActions";
@@ -325,6 +326,13 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
               active={tool === "selection"}
             >
               <SelectionIcon />
+            </Button>
+            <Button
+              variant="transparent"
+              onClick={() => setTool("effects")}
+              active={tool === "effects"}
+            >
+              <WandIcon />
             </Button>
           </>
         ) : (

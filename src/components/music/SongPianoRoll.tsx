@@ -23,8 +23,10 @@ import {
   getInstrumentListByType,
   getInstrumentTypeByChannel,
 } from "./helpers";
+import { RollChannelEffectRow } from "./RollChannelEffectRow";
+import { WandIcon } from "ui/icons/Icons";
 
-const CELL_SIZE = 14;
+const CELL_SIZE = 16;
 const MAX_NOTE = 71;
 
 interface SongPianoRollProps {
@@ -40,6 +42,10 @@ interface PianoKeyProps {
 }
 
 interface SongGridHeaderProps {
+  cols: number;
+}
+
+interface SongGridFooterProps {
   cols: number;
 }
 
@@ -170,6 +176,43 @@ const SongGridHeader = styled.div<SongGridHeaderProps>`
     margin-bottom: -1px;
     border-right: 2px solid ${props.theme.colors.document.background};
   `}
+`;
+
+const SongGridFooter = styled.div<SongGridFooterProps>`
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  ${(props) => css`
+    width: calc(${props.cols * CELL_SIZE}px + ${30 + 10 + 1}px);
+    height: ${2 * CELL_SIZE}px;
+    border-top: 1px solid #808080;
+    border-right: 2px solid #808080;
+    background-color: ${props.theme.colors.sidebar.background};
+    box-shadow: ${(props) => props.theme.colors.card.boxShadow};
+  `}
+`;
+
+const FooterIcon = styled.div`
+  position: sticky;
+  left: 0;
+  height: ${CELL_SIZE * 2}px;
+  width: ${30 + 1}px;
+  background-color:  ${(props) => props.theme.colors.sidebar.background};
+  justify-content: center;
+  z-index: 6;
+  display: flex;
+
+  svg {
+    height: 20px;
+    width: 20px;
+    max-width: 100%;
+    max-height: 100%;
+    fill: ${(props) => props.theme.colors.button.text};
+    margin: auto;
+  }
+}}
 `;
 
 type BlurableDOMElement = {
@@ -598,6 +641,23 @@ export const SongPianoRoll = ({
           setSelectionRect(newSelectionRect);
           setDraggingSelection(true);
           dispatch(trackerActions.setSelectedPatternCells(newSelectedPatterns));
+        }
+      } else if (tool === "effects" && e.button === 0) {
+        if (cell && cell.note !== note) {
+          const changes = {
+            effectcode: 0,
+            effectparam: 0,
+          };
+          dispatch(
+            trackerDocumentActions.editPatternCell({
+              patternId: patternId,
+              cell: [col, selectedChannel],
+              changes: changes,
+            })
+          );
+        }
+        if (!selectedPatternCells.includes(col)) {
+          dispatch(trackerActions.setSelectedPatternCells([col]));
         }
       }
     },
@@ -1055,6 +1115,16 @@ export const SongPianoRoll = ({
               />
             </SongGrid>
           </div>
+          <SongGridFooter cols={64}>
+            <FooterIcon>
+              <WandIcon />
+            </FooterIcon>
+            <RollChannelEffectRow
+              channelId={selectedChannel}
+              renderPattern={renderPattern || []}
+              cellSize={CELL_SIZE}
+            />
+          </SongGridFooter>
         </div>
       </div>
       <SplitPaneVerticalDivider />
