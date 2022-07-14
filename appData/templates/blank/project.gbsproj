@@ -1,13 +1,14 @@
 {
     "name": "___PROJECT_NAME___",
     "author": "___AUTHOR___",
-    "_version": "3.0.0",
-    "_release": "1",
+    "_version": "3.1.0",
+    "_release": "0",
     "scenes": [],
     "backgrounds": [
         {
             "id": "1e5f9d6a-bdbc-43e6-8c34-22f5bb5dea05",
             "name": "placeholder",
+            "symbol": "bg_placeholder",
             "width": 20,
             "height": 18,
             "imageWidth": 160,
@@ -20,6 +21,7 @@
         {
             "id": "11b5452b-187c-43a3-afb1-a1f4f74ffda2",
             "name": "actor",
+            "symbol": "sprite_actor",
             "numFrames": 3,
             "type": "actor",
             "filename": "actor.png",
@@ -201,6 +203,7 @@
         {
             "id": "581d34d0-9591-4e6e-a609-1d94f203b0cd",
             "name": "actor_animated",
+            "symbol": "sprite_actor_animated",
             "numFrames": 6,
             "type": "actor_animated",
             "filename": "actor_animated.png",
@@ -556,6 +559,7 @@
         {
             "id": "daf95270-e30d-423b-9ee7-990ae29f57f6",
             "name": "static",
+            "symbol": "sprite_static",
             "numFrames": 1,
             "type": "static",
             "filename": "static.png",
@@ -824,15 +828,18 @@
         {
             "id": "f50428ab-a084-4591-9bba-2ba10fe7b1c6",
             "name": "template",
+            "symbol": "song_template",
             "filename": "template.mod",
             "settings": {},
             "type": "mod"
         }
     ],
+    "sounds": [],
     "fonts": [
         {
             "id": "4bd653f0-e08d-424e-9e5b-c1f3aaa21e47",
             "name": "GBS Mono",
+            "symbol": "font_gbs_mono",
             "width": 128,
             "height": 112,
             "filename": "gbs-mono.png"
@@ -840,6 +847,7 @@
         {
             "id": "8ed435d9-51cb-44e7-8b0d-ca85e63ca427",
             "name": "GBS Variable Width",
+            "symbol": "font_gbs_variable_width",
             "width": 128,
             "height": 112,
             "filename": "gbs-var.png"
@@ -850,6 +858,7 @@
         {
             "id": "9df5f63f-ea47-447e-9b14-cb2dbafb697d",
             "name": "anger",
+            "symbol": "emote_anger",
             "width": 16,
             "height": 16,
             "filename": "anger.png"
@@ -857,6 +866,7 @@
         {
             "id": "edf96d29-9a08-4813-b2d3-46e0996f89f2",
             "name": "love",
+            "symbol": "emote_love",
             "width": 16,
             "height": 16,
             "filename": "love.png"
@@ -864,6 +874,7 @@
         {
             "id": "f1be2ac3-04ab-482a-8b83-99ffba1a89cd",
             "name": "music",
+            "symbol": "emote_music",
             "width": 16,
             "height": 16,
             "filename": "music.png"
@@ -871,6 +882,7 @@
         {
             "id": "d508e529-57eb-458b-9782-66f318243c32",
             "name": "pause",
+            "symbol": "emote_pause",
             "width": 16,
             "height": 16,
             "filename": "pause.png"
@@ -878,6 +890,7 @@
         {
             "id": "70a4ce25-1fe4-4ab1-aee9-21255e70fb76",
             "name": "question",
+            "symbol": "emote_question",
             "width": 16,
             "height": 16,
             "filename": "question.png"
@@ -885,6 +898,7 @@
         {
             "id": "56423c9c-dca0-4f5b-ad92-28e9660d50f1",
             "name": "shock",
+            "symbol": "emote_shock",
             "width": 16,
             "height": 16,
             "filename": "shock.png"
@@ -892,6 +906,7 @@
         {
             "id": "2d4b251d-0241-40eb-98e1-e396b236772c",
             "name": "sleep",
+            "symbol": "emote_sleep",
             "width": 16,
             "height": 16,
             "filename": "sleep.png"
@@ -899,6 +914,7 @@
         {
             "id": "3c769dca-51f3-426c-942f-71c4d3af6202",
             "name": "sweat",
+            "symbol": "emote_sweat",
             "width": 16,
             "height": 16,
             "filename": "sweat.png"

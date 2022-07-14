@@ -32,6 +32,7 @@ import { LockIcon, LockOpenIcon } from "ui/icons/Icons";
 import { ClipboardTypeTriggers } from "store/features/clipboard/clipboardTypes";
 import { TriggerSymbolsEditor } from "components/forms/symbols/TriggerSymbolsEditor";
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
+import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 
 interface TriggerEditorProps {
   id: string;
@@ -335,12 +336,14 @@ export const TriggerEditor = ({
             />
           )}
         </StickyTabs>
-        <ScriptEditor
-          value={trigger[scriptKey] || []}
-          type="trigger"
-          entityId={trigger.id}
-          scriptKey={scriptKey}
-        />
+        <ScriptEditorContext.Provider value="entity">
+          <ScriptEditor
+            value={trigger[scriptKey] || []}
+            type="trigger"
+            entityId={trigger.id}
+            scriptKey={scriptKey}
+          />
+        </ScriptEditorContext.Provider>
       </SidebarColumn>
     </Sidebar>
   );

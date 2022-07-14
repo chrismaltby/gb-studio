@@ -27,6 +27,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added keyboard shortcut (Space bar) to toggle play/pause in music editor [@pau-tomas](https://github.com/pau-tomas)
 - Add Idle event to wait for a single frame using VM_IDLE
 - Add "Loop For" and "Loop While" events
+- Add ability to pass number values as parameters when calling scripts [@pau-tomas](https://github.com/pau-tomas)
+- Add ability to access global variables from within scripts [@pau-tomas](https://github.com/pau-tomas)
+- Add ability to set script parameters to be passed by reference or by value (previously was always by reference)
 
 ### Changed
 
@@ -41,6 +44,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update hUGEDriver [untoxa](https://github.com/untoxa)
 - Hide/show actor now ONLY hides/shows, update scripts & collisions are not affected (existing hide/show events migrated to deactivate/activate for compatibility)
 - Updated Simplified Chinese localisation. [@wcxu21](https://github.com/wcxu21) 
+- List of "Variable Uses" now calculated in background thread to reduce pause while reading large projects
+- Timer, input and music scripts set from within a custom script no longer allow the script parameters to be used as they were not working, global variables can now be used instead.
 
 ### Fixed
 

@@ -24,12 +24,13 @@ import { SpriteSheetSelect } from "components/forms/SpriteSheetSelect";
 import { VariableSelect } from "components/forms/VariableSelect";
 import castEventValue from "lib/helpers/castEventValue";
 import l10n from "lib/helpers/l10n";
-import React, { useCallback } from "react";
+import React, { useCallback, useContext } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "store/configureStore";
 import {
   ActorDirection,
   ScriptEventFieldSchema,
+  UnionValue,
 } from "store/features/entities/entitiesTypes";
 import styled from "styled-components";
 import { Button } from "ui/buttons/Button";
@@ -43,6 +44,10 @@ import ToggleButtons from "ui/form/ToggleButtons";
 import { BlankIcon, CheckIcon, ConnectIcon } from "ui/icons/Icons";
 import { MenuItem, MenuItemIcon } from "ui/menu/Menu";
 import { OffscreenSkeletonInput } from "ui/skeleton/Skeleton";
+import {
+  defaultVariableForContext,
+  ScriptEditorContext,
+} from "./ScriptEditorContext";
 import ScriptEventFormMathArea from "./ScriptEventFormMatharea";
 import ScriptEventFormTextArea from "./ScriptEventFormTextarea";
 
@@ -98,7 +103,7 @@ const ScriptEventFormInput = ({
     (state: RootState) =>
       state.project.present.settings.defaultSpritePaletteIds || []
   );
-  const editorType = useSelector((state: RootState) => state.editor.type);
+  const context = useContext(ScriptEditorContext);
 
   const onChangeField = useCallback(
     (e: unknown) => {
@@ -120,10 +125,14 @@ const ScriptEventFormInput = ({
   );
 
   const onChangeUnionField = (newValue: unknown) => {
-    const prevValue = typeof value === "object" ? value : {};
+    const prevValue =
+      typeof value === "object"
+        ? (value as UnionValue | null)
+        : ({} as UnionValue);
     onChange(
       {
         ...prevValue,
+        type: prevValue?.type ?? field.defaultType,
         value: newValue,
       },
       index
@@ -145,7 +154,7 @@ const ScriptEventFormInput = ({
               ]
             : undefined;
         if (defaultUnionValue === "LAST_VARIABLE") {
-          replaceValue = editorType === "customEvent" ? "0" : "L0";
+          replaceValue = defaultVariableForContext(context);
         } else if (defaultUnionValue !== undefined) {
           replaceValue = defaultUnionValue;
         }
@@ -158,7 +167,7 @@ const ScriptEventFormInput = ({
         );
       }
     },
-    [editorType, field.defaultValue, index, onChange, value]
+    [context, field.defaultValue, index, onChange, value]
   );
 
   if (type === "textarea") {
@@ -409,11 +418,15 @@ const ScriptEventFormInput = ({
       </OffscreenSkeletonInput>
     );
   } else if (type === "variable") {
+    let fallbackValue = defaultValue;
+    if (fallbackValue === "LAST_VARIABLE") {
+      fallbackValue = defaultVariableForContext(context);
+    }
     return (
       <OffscreenSkeletonInput>
         <VariableSelect
           name={id}
-          value={String(value || "0")}
+          value={String(value || fallbackValue || "0")}
           entityId={entityId}
           onChange={onChangeField}
           allowRename={allowRename}

@@ -8,7 +8,6 @@ import warningsMiddleware from "./features/warnings/warningsMiddleware";
 import undoMiddleware from "./features/undo/undoMiddleware";
 import clipboardMiddleware from "./features/clipboard/clipboardMiddleware";
 import projectMiddleware from "./features/project/projectMiddleware";
-import engineMiddleware from "./features/engine/engineMiddleware";
 import spriteMiddleware from "./features/sprite/spriteMiddleware";
 import throttleMiddleware from "./features/throttle/throttleMiddleware";
 import trackerDocumentMiddleware from "./features/trackerDocument/trackerDocumentMiddleware";
@@ -30,7 +29,6 @@ const store = configureStore({
     electronMiddleware,
     projectMiddleware,
     entitiesMiddleware,
-    engineMiddleware,
     spriteMiddleware,
     buildGameMiddleware,
     musicMiddleware,

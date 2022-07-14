@@ -9,12 +9,9 @@ import CustomMention from "./CustomMention";
 import { RelativePortal } from "../layout/RelativePortal";
 import { FontSelect } from "../../forms/FontSelect";
 import { VariableSelect } from "../../forms/VariableSelect";
-import { EditorSelectionType } from "store/features/editor/editorState";
 import { TextSpeedSelect } from "../../forms/TextSpeedSelect";
 import { SelectMenu, selectMenuStyleProps } from "./Select";
 import l10n from "lib/helpers/l10n";
-import { useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
 
 const varRegex = /\$([VLT0-9][0-9]*)\$/g;
 const charRegex = /#([VLT0-9][0-9]*)#/g;
@@ -225,7 +222,6 @@ export interface DialogueTextareaProps {
   value: string;
   placeholder?: string;
   variables: NamedVariable[];
-  editorType: EditorSelectionType;
   entityId: string;
   fonts: Font[];
   maxlength?: number;
@@ -260,7 +256,6 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
     Dictionary<SuggestionDataItem>
   >({});
   const [editMode, setEditMode] = useState<EditModeOptions>();
-  const editorType = useSelector((state: RootState) => state.editor.type);
 
   useEffect(() => {
     setVariablesLookup(keyBy(variables, "code"));
@@ -331,15 +326,11 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
               <VariableSelect
                 name="replaceVar"
                 value={editMode.id}
-                type="8bit"
                 allowRename={false}
                 entityId={entityId}
                 onChange={(newId) => {
                   let matches = 0;
-                  const newVar =
-                    editorType === "customEvent"
-                      ? `V${newId}`
-                      : newId.padStart(2, "0");
+                  const newVar = newId.padStart(2, "0");
                   const newValue = value.replace(
                     editMode.type === "var" ? varRegex : charRegex,
                     (match) => {

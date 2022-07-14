@@ -45,7 +45,7 @@ const fields = [
         min: -32768,
         max: 32767,
         defaultValue: {
-          number: 0,
+          number: 10,
           variable: "LAST_VARIABLE",
         },
       },
@@ -58,7 +58,7 @@ const fields = [
         min: -32768,
         max: 32767,
         defaultValue: {
-          number: 0,
+          number: 1,
           variable: "LAST_VARIABLE",
         },
       },
