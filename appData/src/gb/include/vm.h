@@ -10,6 +10,15 @@
 
 #include "compat.h"
 
+#define FN_ARG0 -1
+#define FN_ARG1 -2
+#define FN_ARG2 -3
+#define FN_ARG3 -4
+#define FN_ARG4 -5
+#define FN_ARG5 -6
+#define FN_ARG6 -7
+#define FN_ARG7 -8
+
 #if defined(NINTENDO)
 #define STEP_FUNC_ATTR OLDCALL PRESERVES_REGS(b, c) 
 typedef UWORD DUMMY0_t;

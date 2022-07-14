@@ -10,7 +10,8 @@ const uint8_t * sfx_play_sample;
 uint8_t sfx_frame_skip;
 
 uint8_t sfx_play_isr() NONBANKED NAKED OLDCALL {
-#if defined(__SDCC) && defined(NINTENDO) 
+#if defined(__SDCC)
+#if defined(NINTENDO) 
 __asm
 .macro copy_reg ?lbl
         sla b
@@ -83,14 +84,8 @@ lbl:
         cp #6
         jr nz, 4$                   ; just load waveform, not play
 
-        ld c, #_NR30_REG
-        ld a, #0x80                 ; retrigger wave channel
-        ldh (c),a
-        xor a
-        ldh (c), a
-
         ld a, #0x80             
-        ldh (c),a
+        ldh (_NR30_REG),a
         ld a, #0xFE                 ; length of wave
         ldh (_NR31_REG),a
         ld a, #0x20                 ; volume
@@ -136,5 +131,12 @@ lbl:
 
         ret
 __endasm;
+#else
+__asm
+        xor a
+        ld l, a
+        ret
+__endasm;
+#endif
 #endif
 }
