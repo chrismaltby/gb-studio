@@ -1825,6 +1825,14 @@ extern void __mute_mask_${symbol};
     return asmSymbol;
   };
 
+  // Mark a local as being used to make sure locals required at the same time don't
+  // overlap in memory after being packed by _packLocals()
+  _markLocalUse = (asmSymbol: string) => {
+    if (this.localsLookup[asmSymbol]) {
+      this.localsLookup[asmSymbol].lastUse = this.output.length;
+    }
+  };
+
   _localRef = (symbol: string, offset: number): string => {
     return this._offsetStackAddr(symbol, offset);
   };
@@ -3102,6 +3110,7 @@ extern void __mute_mask_${symbol};
               // Arg is union number
               const argRef = constArgLookup[variableValue.value];
               this._stackPushReference(argRef, `Variable ${variableArg.id}`);
+              this._markLocalUse(argRef);
             } else if (variableValue && variableValue.type === "variable") {
               // Arg is a union variable
               const variableAlias = this.getVariableAlias(variableValue.value);
