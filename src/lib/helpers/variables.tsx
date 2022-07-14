@@ -101,7 +101,7 @@ export const namedGlobalVariables = (
       id: variable,
       code: globalVariableCode(variable),
       name: globalVariableName(variable, variablesLookup),
-      group: "",
+      group: l10n("FIELD_GLOBAL"),
     }))
   );
 };
