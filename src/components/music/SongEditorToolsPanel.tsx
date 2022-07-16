@@ -327,13 +327,6 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
             >
               <SelectionIcon />
             </Button>
-            <Button
-              variant="transparent"
-              onClick={() => setTool("effects")}
-              active={tool === "effects"}
-            >
-              <WandIcon />
-            </Button>
           </>
         ) : (
           ""

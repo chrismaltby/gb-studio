@@ -1,8 +1,14 @@
-import React from "react";
+import React, { useCallback } from "react";
 import styled, { css } from "styled-components";
 import { PatternCell } from "lib/helpers/uge/song/PatternCell";
+import pattern from "lib/vendor/scriptracker/pattern";
+import trackerActions from "store/features/tracker/trackerActions";
+import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "store/configureStore";
 
 interface RollChannelProps {
+  patternId: number;
   channelId: number;
   renderPattern: PatternCell[][];
   cellSize: number;
@@ -61,14 +67,81 @@ const Note = styled.div<NoteProps>`
 `;
 
 export const RollChannelEffectRowFwd = ({
+  patternId,
   channelId,
   renderPattern,
   cellSize,
 }: RollChannelProps) => {
+  const dispatch = useDispatch();
+  const tool = useSelector((state: RootState) => state.tracker.tool);
+
+  const selectedEffectCell = useSelector(
+    (state: RootState) => state.tracker.selectedEffectCell
+  );
+
+  // Mouse
+  const handleMouseDown = useCallback(
+    (e: any) => {
+      if (!renderPattern) return;
+      const col = Math.floor(e.offsetX / cellSize);
+      const cell = renderPattern[col][channelId];
+
+      if (e.button === 0) {
+        // If there's a note in position
+        if (cell && cell.note) {
+          dispatch(trackerActions.setSelectedEffectCell(col));
+        }
+        if (
+          cell &&
+          (cell.note === null ||
+            cell.effectcode === null ||
+            cell.effectparam === null)
+        ) {
+          const changes = {
+            effectcode: 0,
+            effectparam: 0,
+          };
+          dispatch(
+            trackerDocumentActions.editPatternCell({
+              patternId: patternId,
+              cell: [col, channelId],
+              changes: changes,
+            })
+          );
+          dispatch(trackerActions.setSelectedEffectCell(col));
+        }
+      } else if (e.button === 2 || (tool === "eraser" && e.button === 0)) {
+        // If there's a note in position
+        if (cell && (cell.effectcode !== null || cell.effectparam !== null)) {
+          dispatch(
+            trackerDocumentActions.editPatternCell({
+              patternId: patternId,
+              cell: [col, channelId],
+              changes: {
+                effectcode: null,
+                effectparam: null,
+              },
+            })
+          );
+          dispatch(trackerActions.setSelectedEffectCell(null));
+        }
+      }
+    },
+    [renderPattern, cellSize, channelId, tool, dispatch, patternId]
+  );
+
   return (
-    <Wrapper rows={12 * 6} cols={64} size={cellSize}>
+    <Wrapper
+      rows={12 * 6}
+      cols={64}
+      size={cellSize}
+      onMouseDown={(e) => {
+        handleMouseDown(e.nativeEvent);
+      }}
+    >
       {renderPattern?.map((column: PatternCell[], columnIdx: number) => {
         const cell = column[channelId];
+        const isSelected = selectedEffectCell === columnIdx;
         if (cell && (cell.effectcode !== null || cell.effectparam !== null)) {
           return (
             <Note
@@ -81,6 +154,8 @@ export const RollChannelEffectRowFwd = ({
                 width: cellSize,
                 bottom: `0px`,
                 pointerEvents: "none",
+                boxShadow: isSelected ? "0 0 0px 2px #c92c61" : "",
+                zIndex: isSelected ? 1 : 0,
               }}
             >
               {cell.effectcode?.toString(16).toUpperCase()}

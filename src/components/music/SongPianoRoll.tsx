@@ -185,9 +185,9 @@ const SongGridFooter = styled.div<SongGridFooterProps>`
   right: 0;
   z-index: 5;
   ${(props) => css`
+    margin-top: ${CELL_SIZE / 2}px;
     width: calc(${props.cols * CELL_SIZE}px + ${30 + 10 + 1}px);
     height: ${2 * CELL_SIZE}px;
-    border-top: 1px solid #808080;
     border-right: 2px solid #808080;
     background-color: ${props.theme.colors.sidebar.background};
     box-shadow: ${(props) => props.theme.colors.card.boxShadow};
@@ -641,23 +641,6 @@ export const SongPianoRoll = ({
           setSelectionRect(newSelectionRect);
           setDraggingSelection(true);
           dispatch(trackerActions.setSelectedPatternCells(newSelectedPatterns));
-        }
-      } else if (tool === "effects" && e.button === 0) {
-        if (cell && cell.note !== note) {
-          const changes = {
-            effectcode: 0,
-            effectparam: 0,
-          };
-          dispatch(
-            trackerDocumentActions.editPatternCell({
-              patternId: patternId,
-              cell: [col, selectedChannel],
-              changes: changes,
-            })
-          );
-        }
-        if (!selectedPatternCells.includes(col)) {
-          dispatch(trackerActions.setSelectedPatternCells([col]));
         }
       }
     },
@@ -1120,6 +1103,7 @@ export const SongPianoRoll = ({
               <WandIcon />
             </FooterIcon>
             <RollChannelEffectRow
+              patternId={patternId}
               channelId={selectedChannel}
               renderPattern={renderPattern || []}
               cellSize={CELL_SIZE}

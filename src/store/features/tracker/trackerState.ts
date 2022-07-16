@@ -2,12 +2,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import editorActions from "../editor/editorActions";
 
-export type PianoRollToolType =
-  | "pencil"
-  | "eraser"
-  | "selection"
-  | "effects"
-  | null;
+export type PianoRollToolType = "pencil" | "eraser" | "selection" | null;
 export interface TrackerState {
   // status: "loading" | "error" | "loaded" | null,
   // error?: string;
@@ -28,6 +23,7 @@ export interface TrackerState {
   defaultStartPlaybackPosition: [number, number];
   selectedPatternCells: number[];
   selection: [number, number, number, number];
+  selectedEffectCell: number | null;
 }
 
 export const initialState: TrackerState = {
@@ -50,6 +46,7 @@ export const initialState: TrackerState = {
   defaultStartPlaybackPosition: [0, 0],
   selectedPatternCells: [],
   selection: [-1, -1, -1, -1],
+  selectedEffectCell: null,
 };
 
 const trackerSlice = createSlice({
@@ -90,6 +87,7 @@ const trackerSlice = createSlice({
     },
     setSelectedChannel: (state, _action: PayloadAction<number>) => {
       state.selectedPatternCells = [];
+      state.selectedEffectCell = null;
       state.selectedChannel = _action.payload;
     },
     setVisibleChannels: (state, _action: PayloadAction<number[]>) => {
@@ -109,7 +107,12 @@ const trackerSlice = createSlice({
       state.defaultStartPlaybackPosition = _action.payload;
     },
     setSelectedPatternCells: (state, _action: PayloadAction<number[]>) => {
+      state.selectedEffectCell = null;
       state.selectedPatternCells = _action.payload;
+    },
+    setSelectedEffectCell: (state, _action: PayloadAction<number | null>) => {
+      state.selectedPatternCells = [];
+      state.selectedEffectCell = _action.payload;
     },
   },
   extraReducers: (builder) =>

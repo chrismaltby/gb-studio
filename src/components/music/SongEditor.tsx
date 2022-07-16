@@ -153,8 +153,8 @@ export const SongEditor = () => {
     );
   }, [dispatch, sequenceId]);
 
-  const selectedPatternCells = useSelector(
-    (state: RootState) => state.tracker.selectedPatternCells
+  const selectedEffectCell = useSelector(
+    (state: RootState) => state.tracker.selectedEffectCell
   );
 
   const patternId = song?.sequence[sequenceId] || 0;
@@ -210,11 +210,11 @@ export const SongEditor = () => {
               title={l10n("FIELD_TEMPO_TOOLTIP")}
             />
           </FormRow>
-          {selectedPatternCells.length === 1 ? (
+          {selectedEffectCell !== null ? (
             <PatternCellEditor
-              id={selectedPatternCells[0]}
+              id={selectedEffectCell}
               patternId={patternId}
-              pattern={song?.patterns[patternId][selectedPatternCells[0]]}
+              pattern={song?.patterns[patternId][selectedEffectCell]}
             />
           ) : instrumentData ? (
             <>

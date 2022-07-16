@@ -50,7 +50,6 @@ export const RollChannelFwd = ({
   cellSize,
   isDragging,
 }: RollChannelProps) => {
-  let lastNote: number | null = null;
   return (
     <Wrapper active={active} rows={12 * 6} cols={64} size={cellSize}>
       {renderPattern?.map((column: PatternCell[], columnIdx: number) => {
@@ -59,7 +58,6 @@ export const RollChannelFwd = ({
         const cell = column[channelId];
 
         if (cell && cell.note !== null) {
-          lastNote = cell.note;
           return (
             <>
               <Note
