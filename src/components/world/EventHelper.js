@@ -27,8 +27,8 @@ class EventHelper extends Component {
 
     if (event.command === EVENT_CAMERA_MOVE_TO) {
       const units = argValue(event.args.units);
-      const x = units === "pixels" ? argValue(event.args.px) : argValue(event.args.x);
-      const y = units === "pixels" ? argValue(event.args.py) : argValue(event.args.y);
+      const x = argValue(event.args.x);
+      const y = argValue(event.args.y);
       if (x === undefined && y === undefined) {
         return <div />;
       }
@@ -51,8 +51,8 @@ class EventHelper extends Component {
       event.command === EVENT_IF_ACTOR_AT_POSITION
     ) {
       const units = argValue(event.args.units);
-      const x = units === "pixels" ? argValue(event.args.px) : argValue(event.args.x);
-      const y = units === "pixels" ? argValue(event.args.py) : argValue(event.args.y);
+      const x = argValue(event.args.x);
+      const y = argValue(event.args.y);
       if (x === undefined && y === undefined) {
         return <div />;
       }

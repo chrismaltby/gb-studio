@@ -171,6 +171,7 @@ const ScriptEventFormField = memo(
                 value={value[valueIndex]}
                 args={scriptEvent?.args || {}}
                 onChange={onChange}
+                onChangeArg={setArgValue}
               />
               <div className="ScriptEventForm__BtnRow">
                 {valueIndex !== 0 && (
@@ -201,6 +202,7 @@ const ScriptEventFormField = memo(
           value={value}
           args={scriptEvent?.args || {}}
           onChange={onChange}
+          onChangeArg={setArgValue}
         />
       );
 

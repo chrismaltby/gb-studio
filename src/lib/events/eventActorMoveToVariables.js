@@ -11,15 +11,6 @@ const fields = [
     defaultValue: "$self$",
   },
   {
-    key: "units",
-    type: "select",
-    options: [
-      ["tiles", l10n("FIELD_TILES")],
-      ["pixels", l10n("FIELD_PIXELS")],
-    ],
-    defaultValue: "tiles",
-  },
-  {
     type: "group",
     fields: [
       {
@@ -41,7 +32,7 @@ const fields = [
 const compile = (input, helpers) => {
   const { actorSetActive, actorMoveToVariables } = helpers;
   actorSetActive(input.actorId);
-  actorMoveToVariables(input.vectorX, input.vectorY, input.units);
+  actorMoveToVariables(input.vectorX, input.vectorY, "tiles");
 };
 
 module.exports = {

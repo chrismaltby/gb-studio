@@ -457,6 +457,9 @@ export interface ScriptEventFieldCondition {
   soundType?: unknown;
 }
 
+export const unitTypes = ["tiles", "pixels", "time", "frames"] as const;
+export type UnitType = typeof unitTypes[number];
+
 export interface ScriptEventFieldSchema {
   label?: string | React.ReactNode;
   checkboxLabel?: string;
@@ -490,6 +493,9 @@ export interface ScriptEventFieldSchema {
   fields?: ScriptEventFieldSchema[];
   inline?: boolean;
   allowedContexts?: ScriptEditorContextType[];
+  unitsField?: string;
+  unitsDefault?: UnitType;
+  unitsAllowed?: UnitType[];
   filter?: (value: unknown) => boolean;
   updateFn?: (
     newValue: unknown,

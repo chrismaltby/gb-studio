@@ -145,7 +145,7 @@ const MathTextareaWrapper = styled.div`
   .MentionsInput__highlighter {
     color: ${(props) => props.theme.colors.input.text} !important;
     font-family: monospace;
-    font-size: 12px;
+    font-size: ${(props) => props.theme.typography.fontSize};
     font-stretch: 100%;
     font-style: normal;
     font-variant-caps: normal;
@@ -209,6 +209,7 @@ const MathTextareaWrapper = styled.div`
     display: flex;
     align-items: center;
     padding: 5px 10px;
+    font-size: ${(props) => props.theme.typography.menuFontSize};
     &:focus {
       background: ${(props) => props.theme.colors.menu.hoverBackground};
       outline: none;

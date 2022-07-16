@@ -4,19 +4,12 @@ const id = "EVENT_IF_ACTOR_AT_POSITION";
 const groups = ["EVENT_GROUP_CONTROL_FLOW", "EVENT_GROUP_ACTOR"];
 
 const autoLabel = (fetchArg, input) => {
-  if (input.units === "pixels") {
-    return l10n("EVENT_IF_ACTOR_AT_POSITION_LABEL", {
-      actor: fetchArg("actorId"),
-      units: l10n("FIELD_PIXELS"),
-      x: fetchArg("px"),
-      y: fetchArg("py"),
-    });
-  }
+  const unitPostfix =
+    input.units === "pixels" ? l10n("FIELD_PIXELS_SHORT") : "";
   return l10n("EVENT_IF_ACTOR_AT_POSITION_LABEL", {
     actor: fetchArg("actorId"),
-    units: l10n("FIELD_TILES"),
-    x: fetchArg("x"),
-    y: fetchArg("y"),
+    x: `${fetchArg("x")}${unitPostfix}`,
+    y: `${fetchArg("y")}${unitPostfix}`,
   });
 };
 
@@ -28,22 +21,7 @@ const fields = [
     defaultValue: "$self$",
   },
   {
-    key: "units",
-    type: "select",
-    options: [
-      ["tiles", l10n("FIELD_TILES")],
-      ["pixels", l10n("FIELD_PIXELS")],
-    ],
-    defaultValue: "tiles",
-  },
-  {
     type: "group",
-    conditions: [
-      {
-        key: "units",
-        eq: "tiles",
-      },
-    ],
     fields: [
       {
         key: "x",
@@ -53,6 +31,9 @@ const fields = [
         max: 255,
         width: "50%",
         defaultValue: 0,
+        unitsField: "units",
+        unitsDefault: "tiles",
+        unitsAllowed: ["tiles", "pixels"],
       },
       {
         key: "y",
@@ -62,35 +43,9 @@ const fields = [
         max: 255,
         width: "50%",
         defaultValue: 0,
-      },
-    ],
-  },
-  {
-    type: "group",
-    conditions: [
-      {
-        key: "units",
-        eq: "pixels",
-      },
-    ],
-    fields: [
-      {
-        key: "px",
-        label: l10n("FIELD_X"),
-        type: "number",
-        min: 0,
-        max: 2040,
-        width: "50%",
-        defaultValue: 0,
-      },
-      {
-        key: "py",
-        label: l10n("FIELD_Y"),
-        type: "number",
-        min: 0,
-        max: 2040,
-        width: "50%",
-        defaultValue: 0,
+        unitsField: "units",
+        unitsDefault: "tiles",
+        unitsAllowed: ["tiles", "pixels"],
       },
     ],
   },
@@ -133,7 +88,7 @@ const compile = (input, helpers) => {
   const truePath = input.true;
   const falsePath = input.__disableElse ? [] : input.false;
   actorSetActive(input.actorId);
-  ifActorAtPosition(input.units === "tiles" ? input.x : input.px, input.units === "tiles" ? input.y : input.py, truePath, falsePath, input.units);
+  ifActorAtPosition(input.x, input.y, truePath, falsePath, input.units);
 };
 
 module.exports = {

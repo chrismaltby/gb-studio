@@ -25,7 +25,10 @@ import {
   customEventName,
   sceneName,
 } from "store/features/entities/entitiesHelpers";
-import { Actor } from "store/features/entities/entitiesTypes";
+import {
+  Actor,
+  ScriptEventFieldSchema,
+} from "store/features/entities/entitiesTypes";
 import styled from "styled-components";
 import { fadeIn } from "ui/animations/animations";
 import { animLabelLookup } from "components/forms/AnimationSpeedSelect";
@@ -56,6 +59,27 @@ const customEventActorsLookup = keyBy(
   })),
   "id"
 );
+
+const fieldsIndexByKey = (
+  fields: ScriptEventFieldSchema[]
+): Dictionary<ScriptEventFieldSchema> => {
+  const lookup: Dictionary<ScriptEventFieldSchema> = {};
+  const addField = (field: ScriptEventFieldSchema) => {
+    if (field.key) {
+      lookup[field.key] = field;
+    }
+    if (field.type === "group" && field.fields) {
+      for (const subField of field.fields) {
+        addField(subField);
+      }
+    }
+  };
+
+  for (const field of fields) {
+    addField(field);
+  }
+  return lookup;
+};
 
 const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
   const context = useContext(ScriptEditorContext);
@@ -126,7 +150,7 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
 
   useEffect(() => {
     if (events[command]?.autoLabel) {
-      const fieldLookup = keyBy(events[command]?.fields || [], "key");
+      const fieldLookup = fieldsIndexByKey(events[command]?.fields || []);
 
       const extractValue = (arg: unknown): unknown => {
         if (
@@ -284,9 +308,7 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
               ]
             : fieldLookup[key]?.defaultValue;
         const fieldPlaceholder = fieldLookup[key]?.placeholder;
-
-        const value =
-          (argValue || fieldDefault || fieldPlaceholder) ?? argValue;
+        const value = argValue ?? fieldDefault ?? fieldPlaceholder ?? argValue;
 
         if (isActorField(command, key, args, eventLookup)) {
           return actorNameForId(value);
@@ -341,6 +363,7 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
     emotes,
     customEventsLookup,
     customEvents,
+    context,
   ]);
 
   return <Wrapper>{String(labelName || autoName || eventName)}</Wrapper>;
