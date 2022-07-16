@@ -485,13 +485,21 @@ void vm_call_native(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS, UINT8 b
     dummy0; dummy1; THIS; bank; ptr; // suppress warnings
 #if defined(__SDCC) && defined(NINTENDO) 
 __asm
-        lda hl, 8(sp)
+        ldhl sp, #6
+        ld a, (hl+)
+        ld h, (hl)
+        ld l, a
+        push hl
+
+        ldhl sp, #10
         ld a, (hl+)
         ld e, a
         ld a, (hl+)
         ld h, (hl)
         ld l, a
-        jp ___sdcc_bcall_ehl
+        call ___sdcc_bcall_ehl
+        add sp, #2
+        ret
 __endasm;
 #endif
 }

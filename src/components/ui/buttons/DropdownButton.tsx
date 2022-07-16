@@ -56,6 +56,10 @@ export const Wrapper = styled.div`
 export const ArrowWrapper = styled.div`
   margin-right: -5px;
   margin-top: -1px;
+  min-width: 8px;
+  &:not(:first-child) {
+    padding-left: 5px;
+  }
   &&&& > svg {
     transform: rotate(180deg);
     height: 8px;

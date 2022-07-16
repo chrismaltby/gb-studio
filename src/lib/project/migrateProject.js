@@ -7,6 +7,7 @@ import {
   filterEvents,
   walkScenesEvents,
   walkEvents,
+  isVariableField,
 } from "../helpers/eventSystem";
 import generateRandomWalkScript from "../movement/generateRandomWalkScript";
 import generateRandomLookScript from "../movement/generateRandomLookScript";
@@ -20,8 +21,8 @@ import { toValidSymbol } from "lib/helpers/symbols";
 
 const indexById = indexBy("id");
 
-export const LATEST_PROJECT_VERSION = "3.0.0";
-export const LATEST_PROJECT_MINOR_VERSION = "3";
+export const LATEST_PROJECT_VERSION = "3.1.0";
+export const LATEST_PROJECT_MINOR_VERSION = "0";
 
 const ensureProjectAssetSync = (relativePath, { projectRoot }) => {
   const projectPath = `${projectRoot}/${relativePath}`;
@@ -1554,6 +1555,119 @@ export const migrateFrom300r2To300r3 = (data) => {
   };
 };
 
+/* Version 3.1.0 r1 updates custom events to allow global variables
+ * Need to make sure all variable inputs are prefixed with V
+ * to distinguish from global variables
+ */
+export const migrateFrom300r3To310r1ScriptEvent = (event) => {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const eventLookup = require("lib/events").eventLookup;
+  const migrateMeta = generateMigrateMeta(event);
+  if (event.args) {
+    const newArgs = Object.keys(event.args).reduce(
+      (memo, key) => {
+        if (isVariableField(event.command, key, event.args, eventLookup)) {
+          const value = event.args[key];
+          if (typeof value === "string") {
+            memo[key] = `V${value}`;
+          } else if (typeof value === "object" && value.type === "variable") {
+            memo[key] = {
+              ...value,
+              value: `V${value.value}`,
+            };
+          }
+        }
+        return memo;
+      },
+      { ...event.args }
+    );
+    return migrateMeta({
+      ...event,
+      args: newArgs,
+    });
+  }
+  return event;
+};
+
+/* Version 3.1.0 r1 updates custom events to use union inputs
+ * Engine Field store needs missing inputs setting to "0" as new script context sensitive defaults change previous logic for missing values
+ */
+export const migrateFrom300r3To310r1Event = (event, customEvents) => {
+  const migrateMeta = generateMigrateMeta(event);
+  if (event.args && event.command === "EVENT_CALL_CUSTOM_EVENT") {
+    const customEvent = customEvents.find(
+      (c) => c.id === event.args.customEventId
+    );
+    if (!customEvent) {
+      return event;
+    }
+    // Migrate custom event variable args to union type + set default for missing values to "0"
+    const newArgs = Object.values(customEvent.variables).reduce(
+      (memo, variable) => {
+        const oldKey = `$variable[${variable.id}]$`;
+        const newKey = `$variable[V${variable.id}]$`;
+        memo[newKey] = {
+          type: "variable",
+          value: event.args[oldKey] ?? "0",
+        };
+        delete memo[oldKey];
+        return memo;
+      },
+      { ...event.args }
+    );
+    return migrateMeta({
+      ...event,
+      args: newArgs,
+    });
+  } else if (event.command === "EVENT_ENGINE_FIELD_STORE") {
+    // Set default variable for missing engine field store values to "0"
+    const newArgs = {
+      ...event.args,
+      value: event.args?.value ?? "0",
+    };
+    return migrateMeta({
+      ...event,
+      args: newArgs,
+    });
+  }
+  return event;
+};
+
+/* Version 3.1.0 r1 updates custom events to use union inputs and allows global variables
+ * used from within scripts
+ */
+export const migrateFrom300r3To310r1 = (data) => {
+  return {
+    ...data,
+    scenes: mapScenesEvents(data.scenes, (e) =>
+      migrateFrom300r3To310r1Event(e, data.customEvents)
+    ),
+    customEvents: data.customEvents.map((customEvent) => {
+      return {
+        ...customEvent,
+        variables: Object.values(customEvent.variables).reduce(
+          (memo, variable) => {
+            const newId = `V${variable.id}`;
+            memo[newId] = {
+              ...variable,
+              id: newId,
+              passByReference: true,
+            };
+            return memo;
+          },
+          {}
+        ),
+        script: mapEvents(customEvent.script, (e) =>
+          migrateFrom300r3To310r1Event(
+            migrateFrom300r3To310r1ScriptEvent(e),
+            data.customEvents
+          )
+        ),
+      };
+    }),
+  };
+};
+
 const migrateProject = (project, projectRoot) => {
   let data = { ...project };
   let version = project._version || "1.0.0";
@@ -1664,6 +1778,11 @@ const migrateProject = (project, projectRoot) => {
     if (release === "2") {
       data = migrateFrom300r2To300r3(data);
       release = "3";
+    }
+    if (release === "3") {
+      data = migrateFrom300r3To310r1(data);
+      version = "3.1.0";
+      release = "1";
     }
   }
 

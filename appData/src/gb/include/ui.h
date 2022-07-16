@@ -40,6 +40,10 @@ extern UBYTE win_speed;
 extern UBYTE text_drawn;
 extern UBYTE text_wait;
 
+#define TEXT_OPT_DEFAULT 0
+#define TEXT_OPT_PRESERVE_POS 1
+
+extern UBYTE text_options;
 extern UBYTE text_in_speed;
 extern UBYTE text_out_speed;
 extern UBYTE text_draw_speed;

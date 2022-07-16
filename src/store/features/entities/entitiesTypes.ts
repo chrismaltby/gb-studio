@@ -1,4 +1,5 @@
 import { EntityState, Dictionary } from "@reduxjs/toolkit";
+import { ScriptEditorContextType } from "components/script/ScriptEditorContext";
 
 export type ActorDirection = "up" | "down" | "left" | "right";
 export type SpriteType = "static" | "animated" | "actor" | "actor_animated";
@@ -243,6 +244,7 @@ export type Variable = {
 export type CustomEventVariable = {
   id: string;
   name: string;
+  passByReference: boolean;
   type?: "8bit" | "16bit";
 };
 
@@ -487,6 +489,7 @@ export interface ScriptEventFieldSchema {
   types?: string[];
   fields?: ScriptEventFieldSchema[];
   inline?: boolean;
+  allowedContexts?: ScriptEditorContextType[];
   filter?: (value: unknown) => boolean;
   updateFn?: (
     newValue: unknown,
@@ -496,7 +499,7 @@ export interface ScriptEventFieldSchema {
   postUpdate?: (
     newArgs: Record<string, unknown>,
     prevArgs: Record<string, unknown>
-  ) => void;
+  ) => void | Record<string, unknown>;
 }
 
 export type EntityKey = keyof EntitiesState;

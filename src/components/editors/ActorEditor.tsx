@@ -43,6 +43,7 @@ import { ClipboardTypeActors } from "store/features/clipboard/clipboardTypes";
 import { ActorSymbolsEditor } from "components/forms/symbols/ActorSymbolsEditor";
 import { SpriteSymbolsEditor } from "components/forms/symbols/SpriteSymbolsEditor";
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
+import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 
 interface ActorEditorProps {
   id: string;
@@ -550,12 +551,14 @@ export const ActorEditor: FC<ActorEditorProps> = ({
             />
           )}
         </StickyTabs>
-        <ScriptEditor
-          value={actor[scriptKey]}
-          type="actor"
-          entityId={actor.id}
-          scriptKey={scriptKey}
-        />
+        <ScriptEditorContext.Provider value="entity">
+          <ScriptEditor
+            value={actor[scriptKey]}
+            type="actor"
+            entityId={actor.id}
+            scriptKey={scriptKey}
+          />
+        </ScriptEditorContext.Provider>
       </SidebarColumn>
     </Sidebar>
   );

@@ -5,7 +5,7 @@
   "bugs": {
     "url": "https://github.com/chrismaltby/gb-studio/issues"
   },
-  "version": "3.0.3",
+  "version": "3.1.0-alpha.0",
   "description": "Visual retro game maker",
   "main": ".webpack/main",
   "scripts": {
@@ -112,6 +112,7 @@
   },
   "devDependencies": {
     "@electron-forge/cli": "6.0.0-beta.57",
+    "@reforged/maker-appimage": "^1.1.3",
     "@electron-forge/maker-deb": "6.0.0-beta.57",
     "@electron-forge/maker-rpm": "6.0.0-beta.57",
     "@electron-forge/maker-squirrel": "6.0.0-beta.57",

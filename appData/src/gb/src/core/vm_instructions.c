@@ -13,6 +13,7 @@
 #include "vm_sgb.h"
 #include "vm_sio.h"
 #include "vm_load_save.h"
+#include "vm_gbprinter.h"
 
 // here we define all VM instructions: their handlers and parameter lengths in bytes
 // this array must be nonbanked as well as STEP_VM()
@@ -87,7 +88,7 @@ const SCRIPT_CMD script_cmds[] = {
 
     // user interface instructions section
     {vm_load_text,              1}, // 0x40
-    {vm_display_text,           0}, // 0x41
+    {vm_display_text,           1}, // 0x41
     {vm_overlay_setpos,         2}, // 0x42
     {0, 0},
     {vm_overlay_wait,           2}, // 0x44
@@ -98,10 +99,10 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_load_tiles,             5}, // 0x49
     {0, 0},
     {vm_set_font,               1}, // 0x4B
-    {0, 0},
+    {vm_overlay_set_submap_ex,  2}, // 0x4C
     {vm_overlay_scroll,         5}, // 0x4D
     {vm_overlay_set_scroll,     5}, // 0x4E
-    {vm_overlay_set_submap,     8}, // 0x4F
+    {vm_overlay_set_submap,     6}, // 0x4F
 
     // gameboy features instructions section
     {vm_load_tileset,           5}, // 0x50
@@ -181,5 +182,9 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_sin_scale,              5}, // 0x89 
     {vm_cos_scale,              5}, // 0x8A
 
-    {vm_set_text_sound,         4}  // 0x8B
+    {vm_set_text_sound,         4}, // 0x8B
+
+    // GBPrinter functions
+    {vm_print_detect,           3}, // 0x8C
+    {vm_print_overlay,          4}  // 0x8D
 };

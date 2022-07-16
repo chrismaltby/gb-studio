@@ -336,6 +336,33 @@ const changes: EngineChange[] = [
       "src/core/vm_ui.c",
     ],
   },
+  {
+    version: "3.1.0-e8",
+    description:
+      "Updates:\n" +
+      [
+        "   * Add GB Printer support",
+        "   * Add instruction VM_CALL_NATIVE to call native C functions from script",
+        "   * Fix issue where actors would play idle animation during scripted movement",
+        "   * Remove unnecessary additional re-triggering of ch3 in the SFX engine",
+      ].join("\n"),
+    modifiedFiles: [
+      "src/gb/include/gbprinter.h",
+      "src/gb/include/ui.h",
+      "src/gb/include/vm.h",
+      "src/gb/include/vm.i",
+      "src/gb/include/vm_gbprinter.h",
+      "src/gb/include/vm_ui.h",
+      "src/gb/src/core/gbprinter.c",
+      "src/gb/src/core/sfx_player.c",
+      "src/gb/src/core/ui.c",
+      "src/gb/src/core/vm.c",
+      "src/gb/src/core/vm_actor.c",
+      "src/gb/src/core/vm_gbprinter.c",
+      "src/gb/src/core/vm_instructions.c",
+      "src/gb/src/core/vm_ui.c",
+    ],
+  },
 ];
 
 const ejectEngineChangelog = (currentVersion: string) => {
