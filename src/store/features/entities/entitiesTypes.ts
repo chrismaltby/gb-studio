@@ -457,8 +457,13 @@ export interface ScriptEventFieldCondition {
   soundType?: unknown;
 }
 
-export const unitTypes = ["tiles", "pixels", "time", "frames"] as const;
+export const distanceUnitTypes = ["tiles", "pixels"] as const;
+export const timeUnitTypes = ["time", "frames"] as const;
+export const unitTypes = [...distanceUnitTypes, ...timeUnitTypes] as const;
+
 export type UnitType = typeof unitTypes[number];
+export type DistanceUnitType = typeof distanceUnitTypes[number];
+export type TimeUnitType = typeof timeUnitTypes[number];
 
 export interface ScriptEventFieldSchema {
   label?: string | React.ReactNode;

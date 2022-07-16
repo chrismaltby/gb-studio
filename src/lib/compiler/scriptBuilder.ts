@@ -9,6 +9,7 @@ import {
   Palette,
   ScriptEvent,
   Sound,
+  DistanceUnitType,
   Variable,
 } from "store/features/entities/entitiesTypes";
 import { Dictionary } from "@reduxjs/toolkit";
@@ -2010,7 +2011,7 @@ extern void __mute_mask_${symbol};
     y: number,
     useCollisions: boolean,
     moveType: ScriptBuilderMoveType,
-    units = "tiles"
+    units: DistanceUnitType = "tiles"
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     const stackPtr = this.stackPtr;
@@ -2037,7 +2038,7 @@ extern void __mute_mask_${symbol};
     variableY: string,
     useCollisions: boolean,
     moveType: ScriptBuilderMoveType,
-    units = "tiles"
+    units: DistanceUnitType = "tiles"
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     const stackPtr = this.stackPtr;
@@ -2070,7 +2071,7 @@ extern void __mute_mask_${symbol};
     y = 0,
     useCollisions = false,
     moveType: ScriptBuilderMoveType,
-    units = "tiles"
+    units: DistanceUnitType = "tiles"
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     const stackPtr = this.stackPtr;
@@ -2107,7 +2108,7 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
-  actorSetPosition = (x = 0, y = 0, units: "tiles" | "pixels" = "tiles") => {
+  actorSetPosition = (x = 0, y = 0, units: DistanceUnitType = "tiles") => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Actor Set Position");
 
@@ -2127,7 +2128,7 @@ extern void __mute_mask_${symbol};
   actorSetPositionToVariables = (
     variableX: string,
     variableY: string,
-    units = "tiles"
+    units: DistanceUnitType = "tiles"
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     const stackPtr = this.stackPtr;
@@ -2151,7 +2152,11 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
-  actorSetPositionRelative = (x = 0, y = 0, units = "tiles") => {
+  actorSetPositionRelative = (
+    x = 0,
+    y = 0,
+    units: DistanceUnitType = "tiles"
+  ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Actor Set Position Relative");
     this._actorGetPosition(actorRef);
@@ -2178,7 +2183,7 @@ extern void __mute_mask_${symbol};
   actorGetPosition = (
     variableX: string,
     variableY: string,
-    units = "tiles"
+    units: DistanceUnitType = "tiles"
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment(`Store Position In Variables`);
@@ -2199,7 +2204,10 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
-  actorGetPositionX = (variableX: string, units = "tiles") => {
+  actorGetPositionX = (
+    variableX: string,
+    units: DistanceUnitType = "tiles"
+  ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment(`Store X Position In Variable`);
     this._actorGetPosition(actorRef);
@@ -2215,7 +2223,10 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
-  actorGetPositionY = (variableY: string, units = "tiles") => {
+  actorGetPositionY = (
+    variableY: string,
+    units: DistanceUnitType = "tiles"
+  ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment(`Store Y Position In Variable`);
     this._actorGetPosition(actorRef);
@@ -2914,7 +2925,12 @@ extern void __mute_mask_${symbol};
   // --------------------------------------------------------------------------
   // Camera
 
-  cameraMoveTo = (x = 0, y = 0, speed = 0, units = "tiles") => {
+  cameraMoveTo = (
+    x = 0,
+    y = 0,
+    speed = 0,
+    units: DistanceUnitType = "tiles"
+  ) => {
     const cameraMoveArgsRef = this._declareLocal("camera_move_args", 2, true);
     this._addComment("Camera Move To");
     const xOffset = 80;
@@ -2940,7 +2956,7 @@ extern void __mute_mask_${symbol};
     variableX: string,
     variableY: string,
     speed = 0,
-    units = "tiles"
+    units: DistanceUnitType = "tiles"
   ) => {
     this._addComment("Camera Move To Variables");
     if (units === "tiles") {
@@ -4485,7 +4501,7 @@ extern void __mute_mask_${symbol};
     y: number,
     truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
     falsePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
-    units = "tiles"
+    units: DistanceUnitType = "tiles"
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     const falseLabel = this.getNextLabel();
