@@ -44,6 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update hUGEDriver [untoxa](https://github.com/untoxa)
 - Hide/show actor now ONLY hides/shows, update scripts & collisions are not affected (existing hide/show events migrated to deactivate/activate for compatibility)
 - Updated Simplified Chinese localisation. [@wcxu21](https://github.com/wcxu21) 
+- Updated German localisation. [@attackemartin](https://github.com/attackemartin)
 - List of "Variable Uses" now calculated in background thread to reduce pause while reading large projects
 - Timer, input and music scripts set from within a custom script no longer allow the script parameters to be used as they were not working, global variables can now be used instead.
 
