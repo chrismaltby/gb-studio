@@ -19,6 +19,7 @@ script_event_t music_events[4];
 volatile uint8_t music_current_track_bank;
 uint8_t music_mute_flag, music_mute_mask;
 const TRACK_T * music_next_track;
+const TRACK_T * music_current_track;
 uint8_t music_play_isr_counter;
 uint8_t music_play_isr_pause;
 uint8_t music_global_mute_mask;

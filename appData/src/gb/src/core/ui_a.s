@@ -91,7 +91,7 @@ _ui_print_shift_char::
         push af
         ld a, (hl-)
         ldh (__current_bank), a
-        ld  (#0x2000), a
+        ld  (#rROMB0), a
 
         ld a, (hl-)
         ld d, a
@@ -179,7 +179,7 @@ _ui_print_shift_char::
 
         pop af
         ldh (__current_bank),a
-        ld  (#0x2000), a
+        ld  (#rROMB0), a
 
         ret
 

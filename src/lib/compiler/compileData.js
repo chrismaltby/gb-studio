@@ -137,7 +137,6 @@ export const precompileBackgrounds = async (
   customEventsLookup,
   projectRoot,
   tmpPath,
-  genSymbol,
   { warnings } = {}
 ) => {
   const usedTilemaps = [];
@@ -1231,6 +1230,7 @@ const compile = async (
   // Add event data
   const additionalScripts = {};
   const additionalOutput = {};
+  const compiledCustomEventScriptCache = {};
 
   const eventPtrs = precompiled.sceneData.map((scene, sceneIndex) => {
     const compileScript = (
@@ -1313,6 +1313,7 @@ const compile = async (
         additionalScripts,
         additionalOutput,
         symbols,
+        compiledCustomEventScriptCache,
       });
 
       output[`${scriptName}.s`] = compiledScript;

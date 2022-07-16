@@ -27,9 +27,11 @@ const trackerMiddleware: ThunkMiddleware<RootState> =
         switch (option) {
           case 0: // Save and continue
             store.dispatch(saveSongFile());
+            store.dispatch({ type: "@@TRACKER_INIT" });
             break;
           case 1: // continue without saving
             store.dispatch(trackerDocumentActions.unloadSong());
+            store.dispatch({ type: "@@TRACKER_INIT" });
             break;
           case 2: // cancel
           default:

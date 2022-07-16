@@ -36,6 +36,7 @@ UBYTE text_drawn;
 UBYTE current_text_speed;
 UBYTE text_wait;
 
+UBYTE text_options;
 UBYTE text_in_speed;
 UBYTE text_out_speed;
 UBYTE text_draw_speed;
@@ -84,14 +85,13 @@ void ui_init() BANKED {
     vwf_current_font_bank       = ui_fonts[0].bank;
     MemcpyBanked(&vwf_current_font_desc, ui_fonts[0].ptr, sizeof(font_desc_t), vwf_current_font_bank);
 
+    text_options                = TEXT_OPT_DEFAULT;
     text_in_speed               = 0;
     text_out_speed              = 0;
     text_ff_joypad              = TRUE;
     text_bkg_fill               = TEXT_BKG_FILL_W;
 
     ui_text_ptr                 = 0;
-    ui_dest_ptr                 = 0;
-    ui_dest_base                = 0;
 
     vwf_current_offset          = 0;
 
@@ -107,7 +107,7 @@ void ui_init() BANKED {
     text_draw_speed             = 1;
     current_text_speed          = 0;
 
-    text_render_base_addr       = GetWinAddr();
+    ui_dest_ptr = ui_dest_base  = (text_render_base_addr = GetWinAddr()) + 32 + 1;
 
     text_scroll_addr            = GetWinAddr();
     text_scroll_width           = 20; 
@@ -291,11 +291,12 @@ UBYTE ui_draw_text_buffer_char() BANKED {
         // current char pointer
         ui_text_ptr = ui_text_data;
         // VRAM destination
-        ui_dest_base = text_render_base_addr + 32 + 1; // gotoxy(1,1)
-        if (vwf_direction == UI_PRINT_RIGHTTOLEFT) ui_dest_base += 17;
-        // with and initial pos correction
-        // initialize current pointer with corrected base value
-        ui_dest_ptr = ui_dest_base;
+        if ((text_options & TEXT_OPT_PRESERVE_POS) == 0) {
+            ui_dest_base = text_render_base_addr + 32 + 1;                  // gotoxy(1,1)
+            if (vwf_direction == UI_PRINT_RIGHTTOLEFT) ui_dest_base += 17;  // right_to_left initial pos correction
+            // initialize current pointer with corrected base value
+            ui_dest_ptr = ui_dest_base;
+        }
         // tileno destination
         ui_print_reset();
     }
@@ -452,13 +453,13 @@ void ui_update() NONBANKED {
     if ((letter_drawn) && (text_sound_bank != SFX_STOP_BANK)) music_play_sfx(text_sound_bank, text_sound_data, text_sound_mask, MUSIC_SFX_PRIORITY_NORMAL);
 }
 
-UBYTE ui_run_menu(menu_item_t * start_item, UBYTE bank, UBYTE options, UBYTE count) BANKED {
+UBYTE ui_run_menu(menu_item_t * start_item, UBYTE bank, UBYTE options, UBYTE count, UBYTE start_index) BANKED {
     menu_item_t current_menu_item;
-    UBYTE current_index = 1u, next_index = 0u;
+    UBYTE current_index = ((options & MENU_SET_START) ? start_index : 1u), next_index = 0u;
     // copy first menu item
-    MemcpyBanked(&current_menu_item, start_item, sizeof(menu_item_t), bank);
-    // draw menu cursor
-    
+    MemcpyBanked(&current_menu_item, start_item + (current_index - 1u), sizeof(menu_item_t), bank);
+
+    // draw menu cursor    
 #ifdef CGB
     if (_is_CGB) {
         VBK_REG = 1;
@@ -467,6 +468,8 @@ UBYTE ui_run_menu(menu_item_t * start_item, UBYTE bank, UBYTE options, UBYTE cou
     }
 #endif
     set_win_tile_xy(current_menu_item.X, current_menu_item.Y, ui_cursor_tile);
+
+    // menu loop
     while (TRUE) {
         input_update();
         ui_update();
@@ -511,7 +514,7 @@ UBYTE ui_run_menu(menu_item_t * start_item, UBYTE bank, UBYTE options, UBYTE cou
 #endif
         set_win_tile_xy(current_menu_item.X, current_menu_item.Y, ui_bg_tile);
         // read menu data
-        MemcpyBanked(&current_menu_item, start_item + next_index - 1u, sizeof(menu_item_t), bank);
+        MemcpyBanked(&current_menu_item, start_item + current_index - 1u, sizeof(menu_item_t), bank);
         // put new cursor
 #ifdef CGB
         if (_is_CGB) {

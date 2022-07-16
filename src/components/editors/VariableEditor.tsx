@@ -1,4 +1,4 @@
-import React, { FC, RefObject, useEffect, useState } from "react";
+import React, { FC, RefObject, useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   globalVariableCode,
@@ -19,90 +19,26 @@ import { MenuItem } from "ui/menu/Menu";
 import entitiesActions from "store/features/entities/entitiesActions";
 import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
-import { isVariableField } from "lib/helpers/eventSystem";
-import {
-  Actor,
-  Scene,
-  ScriptEvent,
-  Trigger,
-} from "store/features/entities/entitiesTypes";
 import l10n from "lib/helpers/l10n";
 import { Sidebar, SidebarColumn } from "ui/sidebars/Sidebar";
 import { FlatList } from "ui/lists/FlatList";
 import { EntityListItem } from "ui/lists/EntityListItem";
-import { Dictionary } from "@reduxjs/toolkit";
 import useDimensions from "react-cool-dimensions";
 import styled from "styled-components";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
-import {
-  isUnionValue,
-  walkNormalisedActorEvents,
-  walkNormalisedSceneSpecificEvents,
-  walkNormalisedTriggerEvents,
-} from "store/features/entities/entitiesHelpers";
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
 import { VariableReference } from "components/forms/ReferencesSelect";
+import VariableUsesWorker, {
+  VariableUse,
+  VariableUseResult,
+} from "./VariableUses.worker";
+import { eventLookup } from "lib/events";
+
+const worker = new VariableUsesWorker();
 
 interface VariableEditorProps {
   id: string;
 }
-
-type VariableUse = {
-  id: string;
-  name: string;
-  sceneId: string;
-  scene: Scene;
-  sceneIndex: number;
-  event: ScriptEvent;
-} & (
-  | {
-      type: "scene";
-    }
-  | {
-      type: "actor";
-      actor: Actor;
-      actorIndex: number;
-      scene: Scene;
-      sceneIndex: number;
-    }
-  | {
-      type: "trigger";
-      trigger: Trigger;
-      triggerIndex: number;
-      scene: Scene;
-      sceneIndex: number;
-    }
-);
-
-const sceneName = (scene: Scene, sceneIndex: number) =>
-  scene.name ? scene.name : `Scene ${sceneIndex + 1}`;
-
-const actorName = (actor: Actor, actorIndex: number) =>
-  actor.name ? actor.name : `Actor ${actorIndex + 1}`;
-
-const triggerName = (trigger: Trigger, triggerIndex: number) =>
-  trigger.name ? trigger.name : `Trigger ${triggerIndex + 1}`;
-
-const onVariableEventContainingId =
-  (id: string, callback: (event: ScriptEvent) => void) =>
-  (event: ScriptEvent) => {
-    if (event.args) {
-      for (const arg in event.args) {
-        if (isVariableField(event.command, arg, event.args)) {
-          const argValue = event.args[arg];
-          if (
-            argValue === id ||
-            (isUnionValue(argValue) &&
-              argValue.type === "variable" &&
-              argValue.value === id)
-          ) {
-            callback(event);
-          }
-        }
-      }
-    }
-  };
-
 interface UsesWrapperProps {
   showSymbols: boolean;
 }
@@ -121,6 +57,7 @@ const UseMessage = styled.div`
 `;
 
 export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
+  const [fetching, setFetching] = useState(true);
   const { ref, height } = useDimensions();
   const variable = useSelector((state: RootState) =>
     variableSelectors.selectById(state, id)
@@ -142,112 +79,34 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
 
   const dispatch = useDispatch();
 
+  const onWorkerComplete = useCallback(
+    (e: MessageEvent<VariableUseResult>) => {
+      if (e.data.id === id) {
+        setFetching(false);
+        setVariableUses(e.data.uses);
+      }
+    },
+    [id]
+  );
+
   useEffect(() => {
-    const uses: VariableUse[] = [];
-    const useLookup: Dictionary<boolean> = {};
+    worker.addEventListener("message", onWorkerComplete);
+    return () => {
+      worker.removeEventListener("message", onWorkerComplete);
+    };
+  }, [onWorkerComplete]);
 
-    for (let sceneIndex = 0; sceneIndex < scenes.length; sceneIndex++) {
-      const scene = scenes[sceneIndex];
-      walkNormalisedSceneSpecificEvents(
-        scene,
-        scriptEventsLookup,
-        undefined,
-        onVariableEventContainingId(id, (event: ScriptEvent) => {
-          if (!useLookup[scene.id]) {
-            uses.push({
-              id: scene.id,
-              name: sceneName(scene, sceneIndex),
-              event,
-              type: "scene",
-              scene,
-              sceneIndex,
-              sceneId: scene.id,
-            });
-            useLookup[scene.id] = true;
-          }
-        })
-      );
-      for (let actorIndex = 0; actorIndex < scenes.length; actorIndex++) {
-        const actorId = scene.actors[actorIndex];
-        const actor = actorsLookup[actorId];
-        if (actor) {
-          walkNormalisedActorEvents(
-            actor,
-            scriptEventsLookup,
-            undefined,
-            onVariableEventContainingId(id, (event: ScriptEvent) => {
-              if (!useLookup[scene.id]) {
-                uses.push({
-                  id: scene.id,
-                  name: sceneName(scene, sceneIndex),
-                  event,
-                  type: "scene",
-                  scene,
-                  sceneIndex,
-                  sceneId: scene.id,
-                });
-                useLookup[scene.id] = true;
-              }
-              if (!useLookup[actor.id]) {
-                uses.push({
-                  id: actor.id,
-                  name: actorName(actor, actorIndex),
-                  event,
-                  type: "actor",
-                  actor,
-                  actorIndex,
-                  scene,
-                  sceneIndex,
-                  sceneId: scene.id,
-                });
-                useLookup[actor.id] = true;
-              }
-            })
-          );
-        }
-      }
-      for (let triggerIndex = 0; triggerIndex < scenes.length; triggerIndex++) {
-        const triggerId = scene.triggers[triggerIndex];
-        const trigger = triggersLookup[triggerId];
-        if (trigger) {
-          walkNormalisedTriggerEvents(
-            trigger,
-            scriptEventsLookup,
-            undefined,
-            onVariableEventContainingId(id, (event: ScriptEvent) => {
-              if (!useLookup[scene.id]) {
-                uses.push({
-                  id: scene.id,
-                  name: sceneName(scene, sceneIndex),
-                  event,
-                  type: "scene",
-                  scene,
-                  sceneIndex,
-                  sceneId: scene.id,
-                });
-                useLookup[scene.id] = true;
-              }
-              if (!useLookup[trigger.id]) {
-                uses.push({
-                  id: trigger.id,
-                  name: triggerName(trigger, triggerIndex),
-                  event,
-                  type: "trigger",
-                  trigger,
-                  triggerIndex,
-                  scene,
-                  sceneIndex,
-                  sceneId: scene.id,
-                });
-                useLookup[trigger.id] = true;
-              }
-            })
-          );
-        }
-      }
-    }
-
-    setVariableUses(uses);
+  useEffect(() => {
+    setFetching(true);
+    worker.postMessage({
+      id,
+      variableId: id,
+      scenes,
+      actorsLookup,
+      triggersLookup,
+      scriptEventsLookup,
+      eventLookup,
+    });
   }, [scenes, actorsLookup, triggersLookup, id, scriptEventsLookup]);
 
   const onRename = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -332,21 +191,31 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
           <SplitPaneHeader collapsed={false}>
             {l10n("SIDEBAR_VARIABLE_USES")}
           </SplitPaneHeader>
-          {variableUses.length > 0 ? (
-            <FlatList
-              items={variableUses}
-              height={height - 30}
-              setSelectedId={setSelectedId}
-              children={({ item }) =>
-                item.type === "scene" ? (
-                  <EntityListItem item={item} type={item.type} />
-                ) : (
-                  <EntityListItem item={item} type={item.type} nestLevel={1} />
-                )
-              }
-            />
+          {fetching ? (
+            <UseMessage>...</UseMessage>
           ) : (
-            <UseMessage>{l10n("FIELD_VARIABLE_NOT_USED")}</UseMessage>
+            <>
+              {variableUses.length > 0 ? (
+                <FlatList
+                  items={variableUses}
+                  height={height - 30}
+                  setSelectedId={setSelectedId}
+                  children={({ item }) =>
+                    item.type === "scene" ? (
+                      <EntityListItem item={item} type={item.type} />
+                    ) : (
+                      <EntityListItem
+                        item={item}
+                        type={item.type}
+                        nestLevel={1}
+                      />
+                    )
+                  }
+                />
+              ) : (
+                <UseMessage>{l10n("FIELD_VARIABLE_NOT_USED")}</UseMessage>
+              )}
+            </>
           )}
         </UsesWrapper>
       </SidebarColumn>

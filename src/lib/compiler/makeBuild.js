@@ -145,6 +145,7 @@ const makeBuild = async ({
     settings.customColorsEnabled,
     settings.sgbEnabled,
     settings.musicDriver,
+    profile,
     targetPlatform
   );
 

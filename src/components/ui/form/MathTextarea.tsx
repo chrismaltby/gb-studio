@@ -12,8 +12,6 @@ import { RelativePortal } from "../layout/RelativePortal";
 import { SelectMenu, selectMenuStyleProps } from "./Select";
 import { VariableSelect } from "../../forms/VariableSelect";
 import l10n from "lib/helpers/l10n";
-import { useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
 
 const varRegex = /\$([VLT0-9][0-9]*)\$/g;
 
@@ -282,7 +280,6 @@ export interface MathTextareaProps {
 
 type EditModeOptions =
   | {
-      type: "var";
       id: string;
       index: number;
       x: number;
@@ -299,7 +296,6 @@ export const MathTextarea: FC<MathTextareaProps> = ({
   placeholder,
 }) => {
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
-  const editorType = useSelector((state: RootState) => state.editor.type);
   const [variablesLookup, setVariablesLookup] = useState<
     Dictionary<NamedVariable>
   >({});
@@ -310,7 +306,7 @@ export const MathTextarea: FC<MathTextareaProps> = ({
     setVariablesLookup(keyBy(variables, "code"));
   }, [variables]);
 
-  const debouncedEvalutate = useRef<(value: string) => void>(
+  const debouncedEvaluate = useRef<(value: string) => void>(
     debounce((val) => {
       try {
         const tokens = tokenize(val);
@@ -318,14 +314,18 @@ export const MathTextarea: FC<MathTextareaProps> = ({
           shuntingYard(tokens);
         }
         setError("");
-      } catch (e) {
-        console.error(e.message);
-        setError(e.message);
+      } catch (e: unknown) {
+        if (e instanceof Error) {
+          console.error(e.message);
+          setError(e.message);
+        } else {
+          console.error(String(e));
+        }
       }
     }, 300)
   );
 
-  useEffect(() => debouncedEvalutate.current(value), [value]);
+  useEffect(() => debouncedEvaluate.current(value), [value]);
 
   return (
     <MathTextareaWrapper>
@@ -337,40 +337,29 @@ export const MathTextarea: FC<MathTextareaProps> = ({
           zIndex={10000}
         >
           <SelectMenu>
-            {editMode.type === "var" && (
-              <VariableSelect
-                name="replaceVar"
-                value={editMode.id}
-                type="8bit"
-                allowRename={false}
-                entityId={entityId}
-                onChange={(newId) => {
-                  let matches = 0;
-                  const newValue = value.replace(varRegex, (match) => {
-                    if (matches === editMode.index) {
-                      matches++;
-                      if (editorType !== "customEvent") {
-                        return editMode.type === "var"
-                          ? `$${newId.padStart(2, "0")}$`
-                          : `#${newId.padStart(2, "0")}#`;
-                      } else {
-                        return editMode.type === "var"
-                          ? `$V${newId}$`
-                          : `#V${newId}#`;
-                      }
-                    }
+            <VariableSelect
+              name="replaceVar"
+              value={editMode.id}
+              allowRename={false}
+              entityId={entityId}
+              onChange={(newId) => {
+                let matches = 0;
+                const newValue = value.replace(varRegex, (match) => {
+                  if (matches === editMode.index) {
                     matches++;
-                    return match;
-                  });
-                  onChange(newValue);
-                  setEditMode(undefined);
-                }}
-                onBlur={() => {
-                  setEditMode(undefined);
-                }}
-                {...selectMenuStyleProps}
-              />
-            )}
+                    return `$${newId.padStart(2, "0")}$`;
+                  }
+                  matches++;
+                  return match;
+                });
+                onChange(newValue);
+                setEditMode(undefined);
+              }}
+              onBlur={() => {
+                setEditMode(undefined);
+              }}
+              {...selectMenuStyleProps}
+            />
           </SelectMenu>
         </RelativePortal>
       )}
@@ -405,7 +394,6 @@ export const MathTextarea: FC<MathTextareaProps> = ({
             const rect = input.getBoundingClientRect();
             const rect2 = e.currentTarget.getBoundingClientRect();
             setEditMode({
-              type: "var",
               id: id.replace(/^0/, ""),
               index,
               x: rect2.left - rect.left,

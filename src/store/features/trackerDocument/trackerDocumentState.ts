@@ -252,6 +252,24 @@ const trackerSlice = createSlice({
         patterns: patterns,
       };
     },
+    editPattern: (
+      state,
+      _action: PayloadAction<{
+        patternId: number;
+        pattern: PatternCell[][];
+      }>
+    ) => {
+      if (!state.song) {
+        return;
+      }
+      const patternId = _action.payload.patternId;
+      const patterns = cloneDeep(state.song.patterns);
+      patterns[patternId] = _action.payload.pattern;
+      state.song = {
+        ...state.song,
+        patterns,
+      };
+    },
     editWaveform: (
       state,
       _action: PayloadAction<{ index: number; waveForm: Uint8Array }>

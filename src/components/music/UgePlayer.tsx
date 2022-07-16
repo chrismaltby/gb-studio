@@ -57,6 +57,7 @@ export const UgePlayer = ({ data, onChannelStatusUpdate }: UgePlayerProps) => {
 
   useEffect(() => {
     if (play) {
+      console.log("PLAY");
       ipcRenderer.send("music-data-send", {
         action: "play",
         song: data,

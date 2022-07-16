@@ -50,6 +50,7 @@ import { ScriptEventAutoFadeDisabledWarning } from "components/script/ScriptEven
 import { SceneSymbolsEditor } from "components/forms/symbols/SceneSymbolsEditor";
 import { BackgroundSymbolsEditor } from "components/forms/symbols/BackgroundSymbolsEditor";
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
+import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 
 interface SceneEditorProps {
   id: string;
@@ -703,13 +704,15 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
         {scene.autoFadeSpeed === null && scriptKey === "script" && (
           <ScriptEventAutoFadeDisabledWarning />
         )}
-        <ScriptEditor
-          value={scene[scriptKey]}
-          type="scene"
-          entityId={scene.id}
-          scriptKey={scriptKey}
-          showAutoFadeIndicator={scriptKey === "script"}
-        />
+        <ScriptEditorContext.Provider value="entity">
+          <ScriptEditor
+            value={scene[scriptKey]}
+            type="scene"
+            entityId={scene.id}
+            scriptKey={scriptKey}
+            showAutoFadeIndicator={scriptKey === "script"}
+          />
+        </ScriptEditorContext.Provider>
       </SidebarColumn>
     </Sidebar>
   );

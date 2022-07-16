@@ -82,6 +82,14 @@ OP_VM_RET          = 0x05
         .db OP_VM_RET, #<N 
 .endm
 
+; get byte or word by far pointer into variable
+OP_VM_GET_FAR      = 0x06
+.GET_BYTE          = 0
+.GET_WORD          = 1
+.macro VM_GET_FAR IDX, SIZE, BANK, ADDR
+        .db OP_VM_GET_FAR, #>ADDR, #<ADDR, #<BANK, #<SIZE, #>IDX, #<IDX
+.endm
+
 ; loop by near address, IDX is a counter, remove N arguments on stack
 OP_VM_LOOP         = 0x07
 .macro VM_LOOP IDX, LABEL, N
@@ -415,7 +423,7 @@ OP_VM_MEMCPY          = 0x77
 ; Reads count variables from save slot into dest and puts result of the operation into res
 OP_VM_SAVE_PEEK         = 0x2E
 .macro VM_SAVE_PEEK RES, DEST, SOUR, COUNT, SLOT
-        .db OP_VM_SAVE_PEEK, #<SLOT, #<COUNT, #>SOUR, #<SOUR, #>DEST, #<DEST, #>RES, #<RES
+        .db OP_VM_SAVE_PEEK, #<SLOT, #>COUNT, #<COUNT, #>SOUR, #<SOUR, #>DEST, #<DEST, #>RES, #<RES
 .endm
 
 ; Erases data in save slot
@@ -556,8 +564,13 @@ OP_VM_LOAD_TEXT         = 0x40
 .endm
 
 OP_VM_DISPLAY_TEXT      = 0x41
+.DISPLAY_DEFAULT        = 0
+.DISPLAY_PRESERVE_POS   = 1
+.macro VM_DISPLAY_TEXT_EX OPTIONS
+        .db OP_VM_DISPLAY_TEXT, #<OPTIONS
+.endm
 .macro VM_DISPLAY_TEXT
-        .db OP_VM_DISPLAY_TEXT
+        VM_DISPLAY_TEXT_EX .DISPLAY_DEFAULT
 .endm
 
 OP_VM_SWITCH_TEXT_LAYER = 0x85
@@ -573,9 +586,9 @@ OP_VM_OVERLAY_SETPOS    = 0x42
         .db OP_VM_OVERLAY_SETPOS, #<Y, #<X
 .endm
 
-OP_VM_OVERLAY_HIDE      = 0x43
+.MENU_CLOSED_Y          = 0x12
 .macro VM_OVERLAY_HIDE
-        .db OP_VM_OVERLAY_HIDE
+        VM_OVERLAY_SETPOS 0, .MENU_CLOSED_Y
 .endm
 
 OP_VM_OVERLAY_WAIT      = 0x44
@@ -619,6 +632,7 @@ OP_VM_CHOICE            = 0x48
 .UI_MENU_STANDARD       = 0
 .UI_MENU_LAST_0         = 1
 .UI_MENU_CANCEL_B       = 2
+.UI_MENU_SET_START      = 4
 .macro VM_CHOICE IDX, OPTIONS, COUNT
         .db OP_VM_CHOICE, #<COUNT, #<OPTIONS, #>IDX, #<IDX
 .endm
@@ -631,11 +645,15 @@ OP_VM_SET_FONT          = 0x4B
         .db OP_VM_SET_FONT, #<FONT_INDEX
 .endm
 
-OP_VM_SET_PRINT_DIR     = 0x4C
 .UI_PRINT_LEFTTORIGHT   = 0
 .UI_PRINT_RIGHTTOLEFT   = 1
 .macro VM_SET_PRINT_DIR DIRECTION
-        .db OP_VM_SET_PRINT_DIR, #<DIRECTION
+        VM_SET_CONST_UINT8 _vwf_direction, ^/DIRECTION & 1/
+.endm
+
+OP_VM_OVERLAY_SET_SUBMAP_EX = 0x4C
+.macro VM_OVERLAY_SET_SUBMAP_EX PARAMS_IDX
+        .db OP_VM_OVERLAY_SET_SUBMAP_EX, #>PARAMS_IDX, #<PARAMS_IDX 
 .endm
 
 OP_VM_OVERLAY_SCROLL    = 0x4D
@@ -649,8 +667,8 @@ OP_VM_OVERLAY_SET_SCROLL = 0x4E
 .endm
 
 OP_VM_OVERLAY_SET_SUBMAP = 0x4F
-.macro VM_OVERLAY_SET_SUBMAP X_IDX, Y_IDX, W, H, SX, SY
-        .db OP_VM_OVERLAY_SET_SUBMAP, #<SY, #<SX, #<H, #<W, #>Y_IDX, #<Y_IDX, #>X_IDX, #<X_IDX 
+.macro VM_OVERLAY_SET_SUBMAP X, Y, W, H, SX, SY
+        .db OP_VM_OVERLAY_SET_SUBMAP, #<SY, #<SX, #<H, #<W, #<Y, #<X 
 .endm
 
 ; --- GAMEBOY ------------------------------------------
@@ -992,4 +1010,18 @@ OP_VM_COS_SCALE         = 0x8A
 OP_VM_SET_TEXT_SOUND    = 0x8B
 .macro VM_SET_TEXT_SOUND BANK, ADDR, MASK
         .db OP_VM_SET_TEXT_SOUND, #<MASK, #>ADDR, #<ADDR, #<BANK
+.endm
+
+; --- GB PRINTER -------------------------------------
+
+; Detect printer
+OP_VM_PRINTER_DETECT    = 0x8C
+.macro VM_PRINTER_DETECT ERROR, DELAY
+        .db OP_VM_PRINTER_DETECT, #<DELAY, #>ERROR, #<ERROR
+.endm
+
+; Print up to HEIGHT rows of the overlay window (must be multiple of 2)
+OP_VM_PRINT_OVERLAY     = 0x8D
+.macro VM_PRINT_OVERLAY ERROR, START, HEIGHT
+        .db OP_VM_PRINT_OVERLAY, #<HEIGHT, #<START, #>ERROR, #<ERROR
 .endm

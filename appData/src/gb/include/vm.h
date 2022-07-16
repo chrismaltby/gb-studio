@@ -10,6 +10,15 @@
 
 #include "compat.h"
 
+#define FN_ARG0 -1
+#define FN_ARG1 -2
+#define FN_ARG2 -3
+#define FN_ARG3 -4
+#define FN_ARG4 -5
+#define FN_ARG5 -6
+#define FN_ARG6 -7
+#define FN_ARG7 -8
+
 #if defined(NINTENDO)
 #define STEP_FUNC_ATTR OLDCALL PRESERVES_REGS(b, c) 
 typedef UWORD DUMMY0_t;
@@ -125,6 +134,7 @@ void vm_get_tlocal(SCRIPT_CTX * THIS, INT16 idxA, INT16 idxB) OLDCALL BANKED;
 void vm_get_uint8(SCRIPT_CTX * THIS, INT16 idxA, UINT8 * addr) OLDCALL BANKED;
 void vm_get_int8(SCRIPT_CTX * THIS, INT16 idxA, INT8 * addr) OLDCALL BANKED;
 void vm_get_int16(SCRIPT_CTX * THIS, INT16 idxA, INT16 * addr) OLDCALL BANKED;
+void vm_get_far(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS, INT16 idxA, UBYTE size, UBYTE bank, UBYTE * addr) OLDCALL NONBANKED;
 void vm_set_uint8(SCRIPT_CTX * THIS, UINT8 * addr, INT16 idxA) OLDCALL BANKED;
 void vm_set_int8(SCRIPT_CTX * THIS, INT8 * addr, INT16 idxA) OLDCALL BANKED;
 void vm_set_int16(SCRIPT_CTX * THIS, INT16 * addr, INT16 idxA) OLDCALL BANKED;

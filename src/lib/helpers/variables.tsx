@@ -1,6 +1,7 @@
+import { ScriptEditorContextType } from "components/script/ScriptEditorContext";
 import uniq from "lodash/uniq";
-import { EditorSelectionType } from "store/features/editor/editorState";
 import { CustomEvent, Variable } from "store/features/entities/entitiesTypes";
+import l10n from "./l10n";
 
 const arrayNStrings = (n: number) =>
   Array.from(Array(n).keys()).map((n) => String(n));
@@ -29,35 +30,41 @@ export interface VariableGroup {
  */
 
 export const namedVariablesByContext = (
-  context: EditorSelectionType,
+  context: ScriptEditorContextType,
   entityId: string,
-  variablesLookup: VariablesLookup | undefined,
+  variablesLookup: VariablesLookup,
   customEvent: CustomEvent | undefined
 ): NamedVariable[] => {
-  if (context === "customEvent") {
+  if (context === "script") {
     if (customEvent) {
-      return namedCustomEventVariables(customEvent);
+      return namedCustomEventVariables(customEvent, variablesLookup);
     }
     return [];
-  }
-  if (variablesLookup) {
+  } else if (context === "entity") {
     return namedEntityVariables(entityId, variablesLookup);
+  } else {
+    return namedGlobalVariables(variablesLookup);
   }
-  return [];
 };
 
 export const namedCustomEventVariables = (
-  customEvent: CustomEvent
+  customEvent: CustomEvent,
+  variablesLookup: VariablesLookup
 ): NamedVariable[] => {
-  if (customEvent) {
-    return customEventVariables.map((variable) => ({
-      id: variable,
+  return ([] as NamedVariable[]).concat(
+    customEventVariables.map((variable) => ({
+      id: customEventVariableCode(variable),
       code: customEventVariableCode(variable),
       name: customEventVariableName(variable, customEvent),
-      group: "",
-    }));
-  }
-  return [];
+      group: l10n("SIDEBAR_PARAMETERS"),
+    })),
+    allVariables.map((variable) => ({
+      id: variable,
+      code: globalVariableCode(variable),
+      name: globalVariableName(variable, variablesLookup),
+      group: l10n("FIELD_GLOBAL"),
+    }))
+  );
 };
 
 export const namedEntityVariables = (
@@ -69,19 +76,32 @@ export const namedEntityVariables = (
       id: localVariableCode(variable),
       code: localVariableCode(variable),
       name: localVariableName(variable, entityId, variablesLookup),
-      group: "Local",
+      group: l10n("FIELD_LOCAL"),
     })),
     tempVariables.map((variable) => ({
       id: tempVariableCode(variable),
       code: tempVariableCode(variable),
       name: tempVariableName(variable),
-      group: "Temporary",
+      group: l10n("FIELD_TEMPORARY"),
     })),
     allVariables.map((variable) => ({
       id: variable,
       code: globalVariableCode(variable),
       name: globalVariableName(variable, variablesLookup),
-      group: "Global",
+      group: l10n("FIELD_GLOBAL"),
+    }))
+  );
+};
+
+export const namedGlobalVariables = (
+  variablesLookup: VariablesLookup
+): NamedVariable[] => {
+  return ([] as NamedVariable[]).concat(
+    allVariables.map((variable) => ({
+      id: variable,
+      code: globalVariableCode(variable),
+      name: globalVariableName(variable, variablesLookup),
+      group: l10n("FIELD_GLOBAL"),
     }))
   );
 };
@@ -105,7 +125,7 @@ export const customEventVariableName = (
   variable: string,
   customEvent: CustomEvent
 ): string => {
-  const customEventVariable = customEvent.variables[variable];
+  const customEventVariable = customEvent.variables[`V${variable}`];
   if (customEventVariable) {
     return customEventVariable.name;
   }
