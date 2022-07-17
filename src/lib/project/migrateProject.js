@@ -1552,6 +1552,12 @@ export const migrateFrom300r2To300r3 = (data) => {
         ),
       };
     }),
+    variables: data.variables.map((variable, variableIndex) => {
+      return {
+        ...variable,
+        symbol: toValidSymbol(`var_${variable.name || variableIndex + 1}`),
+      };
+    }),
   };
 };
 

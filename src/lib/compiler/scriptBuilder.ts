@@ -2,7 +2,11 @@ import { inputDec, textSpeedDec } from "./helpers";
 import { decBin, decHex, decOct, hexDec } from "../helpers/8bit";
 import trimlines from "../helpers/trimlines";
 import { is16BitCType } from "../helpers/engineFields";
-import { localVariableName, tempVariableName } from "../helpers/variables";
+import {
+  globalVariableDefaultName,
+  localVariableName,
+  tempVariableName,
+} from "../helpers/variables";
 import {
   ActorDirection,
   CustomEvent,
@@ -3473,7 +3477,7 @@ extern void __mute_mask_${symbol};
     const id = getVariableId(variable, entity);
 
     const namedVariable = variablesLookup[id || "0"];
-    if (namedVariable && namedVariable.symbol) {
+    if (namedVariable && namedVariable.symbol && !isVariableLocal(variable)) {
       const symbol = namedVariable.symbol.toUpperCase();
       variableAliasLookup[id] = symbol;
       return symbol;
@@ -3501,7 +3505,7 @@ extern void __mute_mask_${symbol};
       name = tempVariableName(num);
     } else {
       const num = toVariableNumber(variable || "0");
-      name = num;
+      name = globalVariableDefaultName(num);
     }
 
     const alias = "VAR_" + toASMVar(name);
