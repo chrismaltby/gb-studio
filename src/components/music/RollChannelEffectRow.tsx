@@ -1,7 +1,6 @@
 import React, { useCallback } from "react";
 import styled, { css } from "styled-components";
 import { PatternCell } from "lib/helpers/uge/song/PatternCell";
-import pattern from "lib/vendor/scriptracker/pattern";
 import trackerActions from "store/features/tracker/trackerActions";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import { useDispatch, useSelector } from "react-redux";
@@ -22,13 +21,14 @@ interface WrapperProps {
 }
 
 const Wrapper = styled.div<WrapperProps>`
+  font-family: monospace;
   position: absolute;
   left: ${30 + 10 + 1}px;
 
   ${(props) => css`
     top: ${props.size / 2}px;
     width: ${props.cols * props.size}px;
-    height: ${props.size}px;
+    height: ${props.size - 1}px;
 
     border-top: 1px solid #808080;
     border-bottom: 1px solid #808080;
@@ -56,6 +56,7 @@ const Wrapper = styled.div<WrapperProps>`
 
 interface NoteProps {
   size: number;
+  isSelected?: boolean;
 }
 
 const Note = styled.div<NoteProps>`
@@ -64,6 +65,11 @@ const Note = styled.div<NoteProps>`
   border: 1px solid black;
   text-align: center;
   line-height: 1.1em;
+  pointer-events: none;
+  box-shadow: ${(props) =>
+    props.isSelected ? `0 0 0px 2px ${props.theme.colors.highlight}` : ""};
+  z-index: ${(props) => (props.isSelected ? 1 : 0)};
+  background-color: ${(props) => props.theme.colors.button.activeBackground};
 `;
 
 export const RollChannelEffectRowFwd = ({
@@ -88,18 +94,10 @@ export const RollChannelEffectRowFwd = ({
 
       if (e.button === 0) {
         // If there's a note in position
-        if (cell && cell.note) {
-          dispatch(trackerActions.setSelectedEffectCell(col));
-        }
-        if (
-          cell &&
-          (cell.note === null ||
-            cell.effectcode === null ||
-            cell.effectparam === null)
-        ) {
+        if (cell) {
           const changes = {
-            effectcode: 0,
-            effectparam: 0,
+            effectcode: cell.effectcode !== null ? cell.effectcode : 0,
+            effectparam: cell.effectparam !== null ? cell.effectparam : 0,
           };
           dispatch(
             trackerDocumentActions.editPatternCell({
@@ -149,13 +147,11 @@ export const RollChannelEffectRowFwd = ({
               data-column={columnIdx}
               key={`fx_${columnIdx}_${channelId}`}
               size={cellSize}
+              isSelected={isSelected}
               style={{
                 left: `${columnIdx * cellSize}px`,
                 width: cellSize,
-                bottom: `0px`,
-                pointerEvents: "none",
-                boxShadow: isSelected ? "0 0 0px 2px #c92c61" : "",
-                zIndex: isSelected ? 1 : 0,
+                bottom: `-1px`,
               }}
             >
               {cell.effectcode?.toString(16).toUpperCase()}

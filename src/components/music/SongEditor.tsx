@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { EditableText } from "ui/form/EditableText";
@@ -26,6 +26,7 @@ import {
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import { MenuItem } from "components/library/Menu";
 import { PatternCellEditor } from "./PatternCellEditor";
+import trackerActions from "store/features/tracker/trackerActions";
 
 type Instrument = DutyInstrument | NoiseInstrument | WaveInstrument;
 
@@ -76,6 +77,9 @@ export const SongEditor = () => {
   const selectedInstrument = useSelector(
     (state: RootState) => state.editor.selectedInstrument
   );
+  useEffect(() => {
+    dispatch(trackerActions.setSelectedEffectCell(null));
+  }, [dispatch, selectedInstrument]);
   const sequenceId = useSelector(
     (state: RootState) => state.editor.selectedSequence
   );

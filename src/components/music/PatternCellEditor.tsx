@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import {
@@ -9,7 +9,7 @@ import {
 } from "ui/form/FormLayout";
 import { RootState } from "store/configureStore";
 import { PatternCell } from "lib/helpers/uge/song/PatternCell";
-import { Select, Option } from "ui/form/Select";
+import { Select, Option, OptionLabelWithInfo } from "ui/form/Select";
 import l10n from "lib/helpers/l10n";
 import { SliderField } from "ui/form/SliderField";
 import { CheckboxField } from "ui/form/CheckboxField";
@@ -19,77 +19,135 @@ import clamp from "lib/helpers/clamp";
 import { VibratoWaveformPreview } from "./VibratoWaveformPreview";
 import styled from "styled-components";
 import { SidebarHeader } from "ui/form/SidebarHeader";
+import { renderNote } from "./helpers";
+
+type EffectCodeOption = {
+  value: number | null;
+  label: string;
+  info?: string;
+};
+
+type EffectCodeOptionGroup = {
+  label: string;
+  options: EffectCodeOption[];
+};
 
 const effectCodeOptions = [
   {
-    value: null,
-    label: l10n("FIELD_NO_EFFECT"),
+    label: "",
+    options: [
+      {
+        value: null,
+        label: l10n("FIELD_NO_EFFECT"),
+      },
+    ],
   },
   {
-    value: 0,
-    label: "Arpeggio",
+    label: "Pitch",
+    options: [
+      {
+        value: 0,
+        label: "Arpeggio",
+        info: "0xy",
+      },
+      {
+        value: 1,
+        label: "Portamento Up",
+        info: "1xx",
+      },
+      {
+        value: 2,
+        label: "Portamento Down",
+        info: "2xx",
+      },
+      {
+        value: 3,
+        label: "Tone Portamento",
+        info: "3xx",
+      },
+      {
+        value: 4,
+        label: "Vibrato",
+        info: "4xy",
+      },
+    ],
   },
   {
-    value: 1,
-    label: "Portamento Up",
+    label: "Volume",
+    options: [
+      {
+        value: 5,
+        label: "Set Master Volume",
+        info: "5xx",
+      },
+      {
+        value: 10,
+        label: "Volume Slide",
+        info: "Axy",
+      },
+      {
+        value: 12,
+        label: "Set Volume",
+        info: "Cev",
+      },
+      {
+        value: 8,
+        label: "Set Panning",
+        info: "8xx",
+      },
+    ],
   },
   {
-    value: 2,
-    label: "Portamento Down",
+    label: "Note",
+    options: [
+      {
+        value: 7,
+        label: "Note Delay",
+        info: "7xx",
+      },
+      {
+        value: 14,
+        label: "Note Cut",
+        info: "Exx",
+      },
+    ],
   },
   {
-    value: 3,
-    label: "Tone Portamento",
+    label: "Position",
+    options: [
+      {
+        value: 11,
+        label: "Position Jump",
+        info: "Bxx",
+      },
+      {
+        value: 13,
+        label: "Pattern Break",
+        info: "Dxx",
+      },
+    ],
   },
   {
-    value: 4,
-    label: "Vibrato",
+    label: "Other",
+    options: [
+      {
+        value: 6,
+        label: "Call Routine",
+        info: "6xx",
+      },
+      {
+        value: 9,
+        label: "Set Duty Cycle",
+        info: "9xx",
+      },
+      {
+        value: 15,
+        label: "Set Speed",
+        info: "Fxx",
+      },
+    ],
   },
-  {
-    value: 5,
-    label: "Set Master Volume",
-  },
-  {
-    value: 6,
-    label: "Call Routine",
-  },
-  {
-    value: 7,
-    label: "Note Delay",
-  },
-  {
-    value: 8,
-    label: "Set Panning",
-  },
-  {
-    value: 9,
-    label: "Set Duty Cycle",
-  },
-  {
-    value: 10,
-    label: "Volume Slide",
-  },
-  {
-    value: 11,
-    label: "Position Jump",
-  },
-  {
-    value: 12,
-    label: "Set Volume",
-  },
-  {
-    value: 13,
-    label: "Pattern Break",
-  },
-  {
-    value: 14,
-    label: "Note Cut",
-  },
-  {
-    value: 15,
-    label: "Set Speed",
-  },
-];
+] as EffectCodeOptionGroup[];
 
 const dutyOptions = [
   {
@@ -196,6 +254,15 @@ const waveformOptions = [
   },
 ];
 
+const noteOptions = Array(72)
+  .fill("")
+  .map((_, i) => {
+    return {
+      value: i,
+      label: renderNote(i),
+    };
+  });
+
 const VibrateWaveFormOptionWrapper = styled.div`
   display: flex;
   white-space: nowrap;
@@ -221,13 +288,27 @@ export const PatternCellEditor = ({
     (state: RootState) => state.tracker.selectedChannel
   );
 
-  const selectedEffectCode = effectCodeOptions.find(
-    (i) => i.value === pattern[selectedChannel].effectcode
-  );
+  const [selectedEffectCode, setSelectedEffectCode] =
+    useState<EffectCodeOption>();
+  useEffect(() => {
+    let option: EffectCodeOption | null = null;
+    effectCodeOptions.find((optGroup) => {
+      const foundOption = optGroup.options.find(
+        (opt) => opt.value === pattern[selectedChannel].effectcode
+      );
+      if (foundOption) {
+        option = foundOption;
+        return true;
+      }
+      return false;
+    });
+    setSelectedEffectCode(option || effectCodeOptions[0]?.options[0]);
+  }, [pattern, selectedChannel, selectedEffectCode]);
 
   const renderEffectEditor = (
+    note: number | null,
     effectcode: number | null,
-    effectparam?: number | null
+    effectparam: number | null
   ) => {
     const effectparams = {
       x: (effectparam || 0) >> 4,
@@ -276,18 +357,32 @@ export const PatternCellEditor = ({
       case 1: // Portamento Up
       case 2: // Portamento Down
       case 3: // Tone Portamento
+        const selectedNoteOption = noteOptions.find((i) => i.value === note);
+
         return (
-          <FormRow>
-            <SliderField
-              name="effectparam"
-              value={effectparam || 0}
-              min={0}
-              max={255}
-              onChange={(value) => {
-                onChangeField("effectparam")(value || 0);
-              }}
-            />
-          </FormRow>
+          <>
+            <FormRow>
+              <FormField name="note">
+                <Select
+                  name="note"
+                  value={selectedNoteOption}
+                  options={noteOptions}
+                  onChange={onChangeFieldSelect("note")}
+                />
+              </FormField>
+            </FormRow>
+            <FormRow>
+              <SliderField
+                name="effectparam"
+                value={effectparam || 0}
+                min={0}
+                max={255}
+                onChange={(value) => {
+                  onChangeField("effectparam")(value || 0);
+                }}
+              />
+            </FormRow>
+          </>
         );
       case 5: // Set Master Volume
         return (
@@ -619,19 +714,24 @@ export const PatternCellEditor = ({
     <T extends keyof PatternCell>(key: T) =>
     (e: { value: number; label: string }) => {
       const editValue = e.value;
+
+      const newChanges = {} as Partial<PatternCell>;
+
+      newChanges[key] = editValue;
+      if (key === "effectcode" && editValue === null) {
+        newChanges["effectparam"] = null;
+      }
+
       dispatch(
         trackerDocumentActions.editPatternCell({
           patternId: patternId,
           cell: [id, selectedChannel],
-          changes: {
-            [key]: editValue,
-          },
+          changes: newChanges,
         })
       );
     };
 
-  const effectcode = pattern[selectedChannel].effectcode;
-  const effectparam = pattern[selectedChannel].effectparam;
+  const { note, effectcode, effectparam } = pattern[selectedChannel];
 
   return (
     <>
@@ -646,10 +746,26 @@ export const PatternCellEditor = ({
             value={selectedEffectCode}
             options={effectCodeOptions}
             onChange={onChangeFieldSelect("effectcode")}
+            formatOptionLabel={(
+              option: {
+                value: number;
+                label: string;
+                info: string;
+              },
+              { context }: { context: "menu" | "value" }
+            ) => {
+              return (
+                <OptionLabelWithInfo
+                  info={context === "menu" ? option.info : ""}
+                >
+                  {option.label}
+                </OptionLabelWithInfo>
+              );
+            }}
           />
         </FormField>
       </FormRow>
-      {renderEffectEditor(effectcode, effectparam)}
+      {renderEffectEditor(note, effectcode, effectparam)}
     </>
   );
 };
