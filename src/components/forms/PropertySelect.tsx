@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Actor } from "store/features/entities/entitiesTypes";
+import { Actor, UnitType } from "store/features/entities/entitiesTypes";
 import { RootState } from "store/configureStore";
 import {
   OptGroup,
@@ -18,11 +18,16 @@ import {
 import { actorName } from "store/features/entities/entitiesHelpers";
 import l10n from "lib/helpers/l10n";
 import SpriteSheetCanvas from "components/world/SpriteSheetCanvas";
+import styled from "styled-components";
+import { UnitsSelectButtonInputOverlay } from "./UnitsSelectButtonInputOverlay";
 
 interface PropertySelectProps {
   name: string;
   value: string;
   onChange: (newValue: string) => void;
+  units?: UnitType;
+  unitsAllowed?: UnitType[];
+  onChangeUnits?: (newUnits: UnitType) => void;
 }
 
 type ActorOption = Option & {
@@ -39,10 +44,17 @@ const allCustomEventActors = Array.from(Array(10).keys()).map((i) => ({
   name: `Actor ${String.fromCharCode("A".charCodeAt(0) + i)}`,
 }));
 
+const Wrapper = styled.div`
+  position: relative;
+`;
+
 export const PropertySelect = ({
   name,
   value,
   onChange,
+  units,
+  unitsAllowed,
+  onChangeUnits,
 }: PropertySelectProps) => {
   const [options, setOptions] = useState<ActorOptGroup[]>([]);
   const [currentValue, setCurrentValue] = useState<ActorOption>();
@@ -164,7 +176,7 @@ export const PropertySelect = ({
                 ...actorOption,
                 label: l10n("FIELD_PX_POSITION"),
                 value: `${actorOption.value}:pxpos`,
-                menuSpriteSheetId: actorOption.spriteSheetId,
+                menuSpriteSheetId: "",
               },
               {
                 ...actorOption,
@@ -180,7 +192,7 @@ export const PropertySelect = ({
               },
               {
                 ...actorOption,
-                label: l10n("FIELD_ANIMATION_FRAME"),
+                label: l10n("FIELD_FRAME"),
                 value: `${actorOption.value}:frame`,
                 menuSpriteSheetId: "",
               },
@@ -214,40 +226,53 @@ export const PropertySelect = ({
   }, [options, value]);
 
   return (
-    <Select
-      name={name}
-      value={currentValue}
-      options={options}
-      onChange={(newValue: ActorOption) => {
-        onChange?.(newValue.value);
-      }}
-      formatOptionLabel={(option: ActorOption) => {
-        return option.menuSpriteSheetId !== undefined ? (
-          <OptionLabelWithPreview
-            preview={
-              <SpriteSheetCanvas spriteSheetId={option.menuSpriteSheetId} />
-            }
-          >
-            {option.label}
-          </OptionLabelWithPreview>
-        ) : (
-          option.label
-        );
-      }}
-      components={{
-        SingleValue: () =>
-          currentValue?.spriteSheetId !== undefined ? (
-            <SingleValueWithPreview
+    <Wrapper>
+      <Select
+        name={name}
+        value={currentValue}
+        options={options}
+        onChange={(newValue: ActorOption) => {
+          onChange?.(newValue.value);
+        }}
+        formatOptionLabel={(option: ActorOption) => {
+          return option.menuSpriteSheetId !== undefined ? (
+            <OptionLabelWithPreview
               preview={
-                <SpriteSheetCanvas spriteSheetId={currentValue.spriteSheetId} />
+                <SpriteSheetCanvas spriteSheetId={option.menuSpriteSheetId} />
               }
             >
-              {currentValue?.label}
-            </SingleValueWithPreview>
+              {option.label}
+            </OptionLabelWithPreview>
           ) : (
-            currentValue?.label
-          ),
-      }}
-    />
+            option.label
+          );
+        }}
+        components={{
+          SingleValue: () =>
+            currentValue?.spriteSheetId !== undefined ? (
+              <SingleValueWithPreview
+                preview={
+                  <SpriteSheetCanvas
+                    spriteSheetId={currentValue.spriteSheetId}
+                  />
+                }
+              >
+                {currentValue?.label}
+              </SingleValueWithPreview>
+            ) : (
+              currentValue?.label
+            ),
+        }}
+      />
+      {units && (
+        <UnitsSelectButtonInputOverlay
+          parentValue={(currentValue && `$${currentValue.label}`) ?? ""}
+          parentValueOffset={16}
+          value={units}
+          allowedValues={unitsAllowed}
+          onChange={onChangeUnits}
+        />
+      )}
+    </Wrapper>
   );
 };

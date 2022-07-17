@@ -9,6 +9,7 @@ import { MenuItem, MenuItemIcon } from "ui/menu/Menu";
 
 interface UnitsSelectButtonInputOverlayProps {
   parentValue?: string;
+  parentValueOffset?: number;
   value?: UnitType;
   allowedValues?: UnitType[];
   onChange?: (newValue: UnitType) => void;
@@ -39,7 +40,11 @@ const UnitsWrapper = styled.div`
   pointer-events: none;
 `;
 
-const HiddenValue = styled.div`
+interface HiddenValueProps {
+  offset: number;
+}
+
+const HiddenValue = styled.div<HiddenValueProps>`
   padding: 2px;
   opacity: 0;
   font-size: ${(props) => props.theme.typography.fontSize};
@@ -47,6 +52,7 @@ const HiddenValue = styled.div`
   padding-right: 5px;
   box-sizing: border-box;
   pointer-events: none;
+  margin-right: ${(props) => props.offset}px;
 `;
 
 const Units = styled.div`
@@ -66,6 +72,7 @@ const Units = styled.div`
 
 export const UnitsSelectButtonInputOverlay = ({
   parentValue,
+  parentValueOffset = 0,
   value,
   allowedValues,
   onChange,
@@ -74,7 +81,7 @@ export const UnitsSelectButtonInputOverlay = ({
   const currentValue = value && unitTypeButtonNames[value];
   return (
     <UnitsWrapper>
-      <HiddenValue>{parentValue}</HiddenValue>
+      <HiddenValue offset={parentValueOffset}>{parentValue}</HiddenValue>
       <Units>
         <DropdownButton
           label={currentValue}

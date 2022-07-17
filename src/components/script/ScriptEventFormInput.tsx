@@ -632,6 +632,11 @@ const ScriptEventFormInput = ({
           name={id}
           value={String(value ?? "")}
           onChange={onChangeField}
+          units={
+            (args[field.unitsField || ""] || field.unitsDefault) as UnitType
+          }
+          unitsAllowed={field.unitsAllowed}
+          onChangeUnits={onChangeUnits}
         />
       </OffscreenSkeletonInput>
     );
