@@ -4688,13 +4688,7 @@ extern void __mute_mask_${symbol};
         maxDepth: this.options.maxDepth - 1,
       }
     );
-    const key = compiledSubScript.replace(new RegExp(symbol, "g"), type);
-    const existing = this.options.additionalScripts[key];
-    if (existing) {
-      this._deregisterSymbol(symbol);
-      return existing.symbol;
-    }
-    this.options.additionalScripts[key] = {
+    this.options.additionalScripts[symbol] = {
       symbol,
       compiledScript: compiledSubScript,
     };
