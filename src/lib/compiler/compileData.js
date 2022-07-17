@@ -946,6 +946,7 @@ export const precompileScenes = (
 
     return {
       ...scene,
+      playerSpriteSheetId: playerSprite.id,
       background,
       actors,
       sprites: sceneSpriteIds.reduce((memo, spriteId) => {
