@@ -2497,11 +2497,11 @@ extern void __mute_mask_${symbol};
   };
 
   actorInvoke = () => {
-    const { scene, scenes } = this.options;
-    const sceneIndex = scenes.indexOf(scene);
-    if (this.actorIndex > 0) {
+    const { scene } = this.options;
+    const actor = scene.actors[this.actorIndex];
+    if (actor && actor.script.length > 0) {
       this._addComment("Invoke Actor Interact Script");
-      this._callFar(`script_s${sceneIndex}a${this.actorIndex - 1}_interact`, 0);
+      this._callFar(`${actor.symbol}_interact`, 0);
     }
   };
 
