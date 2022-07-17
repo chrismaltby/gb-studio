@@ -51,15 +51,10 @@ const fields = [
   },
   {
     key: "moveType",
-    label: l10n("FIELD_MOVEMENT_TYPE"),
-    type: "select",
-    options: [
-      ["horizontal", "↔ " + l10n("FIELD_HORIZONTAL_FIRST")],
-      ["vertical", "↕ " + l10n("FIELD_VERTICAL_FIRST")],
-      ["diagonal", "⤡ " + l10n("FIELD_DIAGONAL")],
-    ],
+    type: "moveType",
     defaultValue: "horizontal",
-    width: "50%",
+    flexBasis: 30,
+    flexGrow: 0,
   },
   {
     key: "useCollisions",

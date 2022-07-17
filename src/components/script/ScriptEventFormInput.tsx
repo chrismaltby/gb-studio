@@ -12,6 +12,7 @@ import EngineFieldSelect from "components/forms/EngineFieldSelect";
 import { FadeSpeedSelect } from "components/forms/FadeSpeedSelect";
 import InputPicker from "components/forms/InputPicker";
 import { MovementSpeedSelect } from "components/forms/MovementSpeedSelect";
+import { MovementTypeSelect } from "components/forms/MovementTypeSelect";
 import { MusicSelect } from "components/forms/MusicSelect";
 import { OperatorSelect } from "components/forms/OperatorSelect";
 import { OverlayColorSelect } from "components/forms/OverlayColorSelect";
@@ -29,6 +30,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "store/configureStore";
 import {
   ActorDirection,
+  MovementType,
   ScriptEventFieldSchema,
   UnionValue,
   UnitType,
@@ -501,6 +503,15 @@ const ScriptEventFormInput = ({
           name={id}
           value={Number(value ?? 1)}
           allowNone={field.allowNone}
+          onChange={onChangeField}
+        />
+      </OffscreenSkeletonInput>
+    );
+  } else if (type === "moveType") {
+    return (
+      <OffscreenSkeletonInput>
+        <MovementTypeSelect
+          value={value as MovementType | undefined}
           onChange={onChangeField}
         />
       </OffscreenSkeletonInput>

@@ -645,6 +645,24 @@ export const AsteriskIcon = () => (
   </svg>
 );
 
+export const CursorHorizontalIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <path d="M6 11v-4l-6 5 6 5v-4h12v4l6-5-6-5v4z" />
+  </svg>
+);
+
+export const CursorVeticalIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <path d="M13 6h4l-5-6-5 6h4v12h-4l5 6 5-6h-4z" />
+  </svg>
+);
+
+export const CursorDiagonalIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <path d="M8.465 7.05l2.828-3.05h-7.293v7.293l3.051-2.829 8.484 8.486-2.828 3.05h7.293v-7.292l-3.051 2.828z" />
+  </svg>
+);
+
 export const SadIcon = () => (
   <svg width="1096" height="974" viewBox="0 0 1096 974" version="1.1">
     <defs>

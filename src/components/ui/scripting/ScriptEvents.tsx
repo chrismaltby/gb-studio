@@ -260,7 +260,7 @@ export const ScriptEventFields = styled.div`
   & > * {
     flex-grow: 1;
     flex-grow: 1;
-    flex-basis: 220px;
+    flex-basis: 300px;
     margin: 5px;
     max-width: calc(100% - 10px);
   }

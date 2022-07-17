@@ -465,6 +465,9 @@ export type UnitType = typeof unitTypes[number];
 export type DistanceUnitType = typeof distanceUnitTypes[number];
 export type TimeUnitType = typeof timeUnitTypes[number];
 
+export const movementTypes = ["horizontal", "vertical", "diagonal"] as const;
+export type MovementType = typeof movementTypes[number];
+
 export interface ScriptEventFieldSchema {
   label?: string | React.ReactNode;
   checkboxLabel?: string;
@@ -476,7 +479,8 @@ export interface ScriptEventFieldSchema {
   conditions?: ScriptEventFieldCondition[];
   toggleLabel?: string;
   width?: string;
-  flexBasis?: string;
+  flexBasis?: string | number;
+  flexGrow?: number;
   values?: Record<string, string>;
   alignCheckbox?: boolean;
   placeholder?: string;

@@ -210,7 +210,7 @@ const ScriptEventFormField = memo(
       return (
         <ScriptEventField
           halfWidth={field.width === "50%"}
-          style={{ flexBasis: field.flexBasis }}
+          style={{ flexBasis: field.flexBasis, flexGrow: field.flexGrow }}
         >
           <ToggleableFormField
             name={genKey(scriptEventId, field.key || "")}
@@ -228,7 +228,7 @@ const ScriptEventFormField = memo(
       <ScriptEventField
         halfWidth={field.width === "50%"}
         inline={field.inline}
-        style={{ flexBasis: field.flexBasis }}
+        style={{ flexBasis: field.flexBasis, flexGrow: field.flexGrow }}
       >
         <FormField
           name={genKey(scriptEventId, field.key || "")}
