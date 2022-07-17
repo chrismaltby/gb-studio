@@ -2,7 +2,11 @@ import { inputDec, textSpeedDec } from "./helpers";
 import { decBin, decHex, decOct, hexDec } from "../helpers/8bit";
 import trimlines from "../helpers/trimlines";
 import { is16BitCType } from "../helpers/engineFields";
-import { localVariableName, tempVariableName } from "../helpers/variables";
+import {
+  globalVariableDefaultName,
+  localVariableName,
+  tempVariableName,
+} from "../helpers/variables";
 import {
   ActorDirection,
   CustomEvent,
@@ -2493,11 +2497,11 @@ extern void __mute_mask_${symbol};
   };
 
   actorInvoke = () => {
-    const { scene, scenes } = this.options;
-    const sceneIndex = scenes.indexOf(scene);
-    if (this.actorIndex > 0) {
+    const { scene } = this.options;
+    const actor = scene.actors[this.actorIndex];
+    if (actor && actor.script.length > 0) {
       this._addComment("Invoke Actor Interact Script");
-      this._callFar(`script_s${sceneIndex}a${this.actorIndex - 1}_interact`, 0);
+      this._callFar(`${actor.symbol}_interact`, 0);
     }
   };
 
@@ -3473,7 +3477,7 @@ extern void __mute_mask_${symbol};
     const id = getVariableId(variable, entity);
 
     const namedVariable = variablesLookup[id || "0"];
-    if (namedVariable && namedVariable.symbol) {
+    if (namedVariable && namedVariable.symbol && !isVariableLocal(variable)) {
       const symbol = namedVariable.symbol.toUpperCase();
       variableAliasLookup[id] = symbol;
       return symbol;
@@ -3501,7 +3505,7 @@ extern void __mute_mask_${symbol};
       name = tempVariableName(num);
     } else {
       const num = toVariableNumber(variable || "0");
-      name = num;
+      name = globalVariableDefaultName(num);
     }
 
     const alias = "VAR_" + toASMVar(name);
@@ -4684,13 +4688,7 @@ extern void __mute_mask_${symbol};
         maxDepth: this.options.maxDepth - 1,
       }
     );
-    const key = compiledSubScript.replace(new RegExp(symbol, "g"), type);
-    const existing = this.options.additionalScripts[key];
-    if (existing) {
-      this._deregisterSymbol(symbol);
-      return existing.symbol;
-    }
-    this.options.additionalScripts[key] = {
+    this.options.additionalScripts[symbol] = {
       symbol,
       compiledScript: compiledSubScript,
     };

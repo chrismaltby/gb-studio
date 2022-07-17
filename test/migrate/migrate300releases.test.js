@@ -9,10 +9,12 @@ test("should not fail on empty project", () => {
   const oldProject = {
     scenes: [],
     customEvents: [],
+    variables: [],
   };
   expect(migrateFrom300r2To300r3(oldProject)).toEqual({
     scenes: [],
     customEvents: [],
+    variables: [],
   });
 });
 
@@ -26,6 +28,7 @@ test("should add generated symbols to scenes based on scene name", () => {
       },
     ],
     customEvents: [],
+    variables: [],
   };
   expect(migrateFrom300r2To300r3(oldProject)).toEqual({
     scenes: [
@@ -37,6 +40,7 @@ test("should add generated symbols to scenes based on scene name", () => {
       },
     ],
     customEvents: [],
+    variables: [],
   });
 });
 
@@ -55,6 +59,7 @@ test("should add generate the same symbol for two scenes with the same name (thi
       },
     ],
     customEvents: [],
+    variables: [],
   };
   expect(migrateFrom300r2To300r3(oldProject)).toEqual({
     scenes: [
@@ -72,6 +77,7 @@ test("should add generate the same symbol for two scenes with the same name (thi
       },
     ],
     customEvents: [],
+    variables: [],
   });
 });
 
@@ -90,6 +96,7 @@ test("should generate symbol based on index for scenes with empty name", () => {
       },
     ],
     customEvents: [],
+    variables: [],
   };
   expect(migrateFrom300r2To300r3(oldProject)).toEqual({
     scenes: [
@@ -107,6 +114,7 @@ test("should generate symbol based on index for scenes with empty name", () => {
       },
     ],
     customEvents: [],
+    variables: [],
   });
 });
 
@@ -118,6 +126,7 @@ test("should add generated symbols to custom events based on name", () => {
         name: "Hello World",
       },
     ],
+    variables: [],
   };
   expect(migrateFrom300r2To300r3(oldProject)).toEqual({
     scenes: [],
@@ -127,6 +136,7 @@ test("should add generated symbols to custom events based on name", () => {
         symbol: "script_hello_world",
       },
     ],
+    variables: [],
   });
 });
 
@@ -141,6 +151,7 @@ test("should generate symbol based on index for custom events with empty name", 
         name: "",
       },
     ],
+    variables: [],
   };
   expect(migrateFrom300r2To300r3(oldProject)).toEqual({
     scenes: [],
@@ -154,6 +165,7 @@ test("should generate symbol based on index for custom events with empty name", 
         symbol: "script_2",
       },
     ],
+    variables: [],
   });
 });
 
@@ -181,6 +193,7 @@ test("should add generated symbols to actors and triggers based on name", () => 
       },
     ],
     customEvents: [],
+    variables: [],
   };
   expect(migrateFrom300r2To300r3(oldProject)).toEqual({
     scenes: [
@@ -210,6 +223,7 @@ test("should add generated symbols to actors and triggers based on name", () => 
       },
     ],
     customEvents: [],
+    variables: [],
   });
 });
 

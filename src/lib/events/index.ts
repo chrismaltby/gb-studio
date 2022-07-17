@@ -30,7 +30,7 @@ export interface EventHandler {
   ) => string;
   fields: ScriptEventFieldSchema[];
   name?: string;
-  groups?: string[];
+  groups?: string[] | string;
   deprecated?: boolean;
   isConditional?: boolean;
   editableSymbol?: boolean;

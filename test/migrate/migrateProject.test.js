@@ -108,6 +108,7 @@ test("should migrate conditional events from 1.0.0 to 2.0.0", () => {
     backgrounds: [],
     customEvents: [],
     spriteSheets: [],
+    variables: [],
     engineFieldValues: [
       {
         id: "fade_style",
@@ -153,6 +154,7 @@ test("should migrate conditional events from 1.2.0 to 2.0.0", () => {
     ],
     backgrounds: [],
     spriteSheets: [],
+    variables: [],
   };
   const newProject = JSON.parse(JSON.stringify(migrateProject(oldProject)));
   expect(newProject).toEqual({
@@ -229,5 +231,6 @@ test("should migrate conditional events from 1.2.0 to 2.0.0", () => {
         value: 0,
       },
     ],
+    variables: [],
   });
 });

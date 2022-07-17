@@ -182,9 +182,17 @@ const eventToOption =
     const localisedKey = l10n(event.id); //.replace(/[^:*]*:[ ]*/g, "");
     const name =
       localisedKey !== event.id ? localisedKey : event.name || event.id;
-    const groupName = (("groups" in event && event.groups) || [])
-      .map((key) => l10n(key))
-      .join(" ");
+
+    let eventGroups: string[] = [];
+    if ("groups" in event) {
+      if (Array.isArray(event.groups)) {
+        eventGroups = event.groups;
+      } else if (typeof event.groups === "string") {
+        eventGroups = [event.groups];
+      }
+    }
+
+    const groupName = eventGroups.map((key) => l10n(key)).join(" ");
 
     return {
       label: name,
