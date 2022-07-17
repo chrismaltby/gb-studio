@@ -53,20 +53,18 @@ const FloatingPanelTools = styled(FloatingPanel)`
   left: 64px;
   z-index: 10;
 `;
-  
+
 const getPlayButtonLabel = (play: boolean, playbackFromStart: boolean) => {
   if (play) {
-    return l10n("FIELD_PAUSE")
-  }
-  else {
+    return l10n("FIELD_PAUSE");
+  } else {
     if (playbackFromStart) {
-      return l10n("FIELD_RESTART")
-    }
-    else {
-      return l10n("FIELD_PLAY")
+      return l10n("FIELD_RESTART");
+    } else {
+      return l10n("FIELD_PLAY");
     }
   }
-}
+};
 
 const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
   const dispatch = useDispatch();
@@ -260,9 +258,10 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
         <Button
           variant="transparent"
           onClick={toggleView}
-          title={view === "roll" ? (
-            l10n("TOOL_TRACKER_VIEW")) : (
-            l10n("TOOL_PIANO_ROLL_VIEW"))
+          title={
+            view === "roll"
+              ? l10n("TOOL_TRACKER_VIEW")
+              : l10n("TOOL_PIANO_ROLL_VIEW")
           }
         >
           {view === "roll" ? <TrackerIcon /> : themePianoIcon}
@@ -283,7 +282,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
           variant="transparent"
           disabled={!playerReady}
           onClick={togglePlay}
-          title = {getPlayButtonLabel(play, playbackFromStart) }
+          title={getPlayButtonLabel(play, playbackFromStart)}
         >
           {play ? (
             <PauseIcon />
