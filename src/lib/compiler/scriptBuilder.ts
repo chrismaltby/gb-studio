@@ -2519,12 +2519,12 @@ extern void __mute_mask_${symbol};
     this._actorTerminateUpdate(actorRef);
     this._addNL();
   };
-  
+
   actorStartUpdate = () => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Actor Start Update Script");
-    this._actorDeactivate(this._localRef(actorRef));
-    this._actorActivate(this._localRef(actorRef));
+    this._actorDeactivate(actorRef);
+    this._actorActivate(actorRef);
     this._addNL();
   };
 
