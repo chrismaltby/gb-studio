@@ -16,33 +16,44 @@ const autoLabel = (fetchArg) => {
 const fields = [
   {
     key: "actorId",
+    label: l10n("ACTOR"),
     type: "actor",
     defaultValue: "player",
+    width: "50%",
   },
   {
-    key: "operator",
-    type: "operator",
-    width: "50%",
-    defaultValue: "<=",
-  },
-  {
-    key: "distance",
-    label: l10n("FIELD_DISTANCE_PU"),
-    type: "union",
-    types: ["number", "variable"],
-    defaultType: "number",
-    min: 0,
-    max: 181,
-    width: "50%",
-    defaultValue: {
-      number: 0,
-      variable: "LAST_VARIABLE",
-    },
+    type: "group",
+    fields: [
+      {
+        key: "operator",
+        label: l10n("FIELD_COMPARISON"),
+        type: "operator",
+        width: "50%",
+        defaultValue: "<=",
+      },
+      {
+        key: "distance",
+        label: l10n("FIELD_DISTANCE_PU"),
+        type: "union",
+        types: ["number", "variable"],
+        defaultType: "number",
+        min: 0,
+        max: 181,
+        width: "50%",
+        unitsDefault: "tiles",
+        defaultValue: {
+          number: 0,
+          variable: "LAST_VARIABLE",
+        },
+      },
+    ],
   },
   {
     key: "otherActorId",
+    label: l10n("FIELD_FROM"),
     type: "actor",
     defaultValue: "$self$",
+    width: "50%",
   },
   {
     key: "true",

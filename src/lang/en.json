@@ -535,6 +535,7 @@
   "FIELD_PASS_BY_REFERENCE_DESCRIPTION": "This variable is being passed by reference, any changes to the variable within the script will also change the variable from outside of the script",
   "FIELD_UNITS": "Units",
   "FIELD_PIXELS_SHORT": "px",
+  "FIELD_COMPARISON": "Comparison",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
