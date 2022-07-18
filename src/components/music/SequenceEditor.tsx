@@ -203,7 +203,7 @@ export const SequenceEditorFwd = ({
             selected={i === sequenceId}
             active={playingSequence === i}
           >
-            <div style={{ padding: "0 0 2px 2px" }}>{i}:</div>
+            <div style={{ padding: "0 0 2px 2px" }}>{i + 1}:</div>
             <Select
               value={sequenceOptions.find((i) => i.value === item)}
               options={sequenceOptions}

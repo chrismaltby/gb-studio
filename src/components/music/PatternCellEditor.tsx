@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
-import {
-  FormDivider,
-  FormField,
-  FormHeader,
-  FormRow,
-} from "ui/form/FormLayout";
+import { FormField, FormRow, FormSectionTitle } from "ui/form/FormLayout";
 import { RootState } from "store/configureStore";
 import { PatternCell } from "lib/helpers/uge/song/PatternCell";
 import { Select, Option, OptionLabelWithInfo } from "ui/form/Select";
@@ -18,7 +13,6 @@ import { Input } from "ui/form/Input";
 import clamp from "lib/helpers/clamp";
 import { VibratoWaveformPreview } from "./VibratoWaveformPreview";
 import styled from "styled-components";
-import { SidebarHeader } from "ui/form/SidebarHeader";
 import { renderNote } from "./helpers";
 
 type EffectCodeOption = {
@@ -81,14 +75,14 @@ const effectCodeOptions = [
         info: "5xx",
       },
       {
-        value: 10,
-        label: "Volume Slide",
-        info: "Axy",
-      },
-      {
         value: 12,
         label: "Set Volume",
         info: "Cev",
+      },
+      {
+        value: 10,
+        label: "Volume Slide",
+        info: "Axy",
       },
       {
         value: 8,
@@ -332,6 +326,7 @@ export const PatternCellEditor = ({
           <>
             <FormRow>
               <SliderField
+                label={l10n("FIELD_FIRST_NOTE_PLUS_SEMITONE")}
                 name="effectparamsX"
                 value={effectparams["x"]}
                 min={0}
@@ -343,6 +338,7 @@ export const PatternCellEditor = ({
             </FormRow>
             <FormRow>
               <SliderField
+                label={l10n("FIELD_SECOND_NOTE_PLUS_SEMITONE")}
                 name="effectparamsY"
                 value={effectparams["y"]}
                 min={0}
@@ -361,18 +357,23 @@ export const PatternCellEditor = ({
 
         return (
           <>
-            <FormRow>
-              <FormField name="note">
-                <Select
-                  name="note"
-                  value={selectedNoteOption}
-                  options={noteOptions}
-                  onChange={onChangeFieldSelect("note")}
-                />
-              </FormField>
-            </FormRow>
+            {effectcode === 3 ? (
+              <FormRow>
+                <FormField name="note" label={l10n("FIELD_TOWARDS_NOTE")}>
+                  <Select
+                    name="note"
+                    value={selectedNoteOption}
+                    options={noteOptions}
+                    onChange={onChangeFieldSelect("note")}
+                  />
+                </FormField>
+              </FormRow>
+            ) : (
+              ""
+            )}
             <FormRow>
               <SliderField
+                label={l10n("FIELD_UNITS_PER_TICK")}
                 name="effectparam"
                 value={effectparam || 0}
                 min={0}
@@ -391,7 +392,7 @@ export const PatternCellEditor = ({
               <SliderField
                 name="effectparamsX"
                 value={effectparams["x"]}
-                label={l10n("FIELD_VOLUME_LEFT")}
+                label={l10n("FIELD_LEFT_SPEAKER")}
                 min={0}
                 max={15}
                 onChange={(value) => {
@@ -403,7 +404,7 @@ export const PatternCellEditor = ({
               <SliderField
                 name="effectparamsY"
                 value={effectparams["y"]}
-                label={l10n("FIELD_VOLUME_RIGHT")}
+                label={l10n("FIELD_RIGHT_SPEAKER")}
                 min={0}
                 max={15}
                 onChange={(value) => {
@@ -460,7 +461,7 @@ export const PatternCellEditor = ({
         );
         return (
           <FormRow>
-            <FormField name="effectparam" label={l10n("FIELD_ROUTINE")}>
+            <FormField name="effectparam">
               <Select
                 name="effectparam"
                 value={selectedRoutine}
@@ -476,6 +477,7 @@ export const PatternCellEditor = ({
         return (
           <FormRow>
             <SliderField
+              label={l10n("FIELD_TICKS")}
               name="effectparam"
               value={effectparam || 0}
               min={0}
@@ -512,19 +514,23 @@ export const PatternCellEditor = ({
         return (
           <>
             <FormRow>
-              <Label style={{ width: "100%" }}>Left</Label>
-              <Label style={{ width: "100%" }}>Right</Label>
+              <Label style={{ width: "100%" }}>
+                {l10n("FIELD_LEFT_SPEAKER")}
+              </Label>
+              <Label style={{ width: "100%" }}>
+                {l10n("FIELD_RIGHT_SPEAKER")}
+              </Label>
             </FormRow>
             <FormRow>
               {renderPanningFieldCheckbox(
                 "y",
-                "FIELD_DUTY_1",
+                "Duty 1",
                 "left_panning_field_duty_1",
                 0x1
               )}
               {renderPanningFieldCheckbox(
                 "x",
-                "FIELD_DUTY_1",
+                "Duty 1",
                 "right_panning_field_duty_1",
                 0x1
               )}
@@ -532,13 +538,13 @@ export const PatternCellEditor = ({
             <FormRow>
               {renderPanningFieldCheckbox(
                 "y",
-                "FIELD_DUTY_2",
+                "Duty 2",
                 "left_panning_field_duty_2",
                 0x2
               )}
               {renderPanningFieldCheckbox(
                 "x",
-                "FIELD_DUTY_2",
+                "Duty 2",
                 "right_panning_field_duty_2",
                 0x2
               )}
@@ -546,13 +552,13 @@ export const PatternCellEditor = ({
             <FormRow>
               {renderPanningFieldCheckbox(
                 "y",
-                "FIELD_WAVE",
+                "Wave",
                 "left_panning_field_wave",
                 0x4
               )}
               {renderPanningFieldCheckbox(
                 "x",
-                "FIELD_WAVE",
+                "Wave",
                 "right_panning_field_wave",
                 0x4
               )}
@@ -560,13 +566,13 @@ export const PatternCellEditor = ({
             <FormRow>
               {renderPanningFieldCheckbox(
                 "y",
-                "FIELD_NOISE",
+                "Noise",
                 "left_panning_field_noise",
                 0x8
               )}
               {renderPanningFieldCheckbox(
                 "x",
-                "FIELD_NOISE",
+                "Noise",
                 "right_panning_field_noise",
                 0x8
               )}
@@ -577,7 +583,7 @@ export const PatternCellEditor = ({
         const selectedDuty = dutyOptions.find((i) => i.value === effectparam);
         return (
           <FormRow>
-            <FormField name="effectparam" label={l10n("FIELD_DUTY")}>
+            <FormField name="effectparam">
               <Select
                 name="effectparam"
                 value={selectedDuty}
@@ -592,6 +598,7 @@ export const PatternCellEditor = ({
           <>
             <FormRow>
               <SliderField
+                label={l10n("FIELD_VOLUME_UP")}
                 name="effectparamsX"
                 value={effectparams["x"]}
                 min={0}
@@ -603,6 +610,7 @@ export const PatternCellEditor = ({
             </FormRow>
             <FormRow>
               <SliderField
+                label={l10n("FIELD_VOLUME_DOWN")}
                 name="effectparamsY"
                 value={effectparams["y"]}
                 min={0}
@@ -615,60 +623,116 @@ export const PatternCellEditor = ({
           </>
         );
       case 11: // Position Jump
+        const positionJumpInputValue =
+          effectparam !== undefined
+            ? String(clamp(effectparam || 0, 0, 64))
+            : "";
         return (
-          <FormRow>
-            <Input
-              type="number"
-              min={0}
-              max={63}
-              placeholder="0"
-              value={effectparam || 0}
-              onChange={(e) => {
-                onChangeField("effectparam")(
-                  clamp(e.currentTarget.valueAsNumber, 0, 63)
-                );
-              }}
-            ></Input>
-          </FormRow>
+          <>
+            <FormRow>
+              <Label>{l10n("FIELD_TO_PATTERN")}</Label>
+            </FormRow>
+            <FormRow>
+              <Input
+                type="number"
+                min={0}
+                max={63}
+                placeholder="0"
+                value={positionJumpInputValue}
+                onChange={(e) => {
+                  const newValue =
+                    e.currentTarget.value.length > 0
+                      ? clamp(parseInt(e.currentTarget.value), 0, 63)
+                      : 0;
+                  onChangeField("effectparam")(newValue);
+                }}
+              ></Input>
+            </FormRow>
+            {effectparam === 0 ? (
+              <FormRow>
+                <Label>{l10n("FIELD_JUMP_TO_NEXT_PATTERN")}</Label>
+              </FormRow>
+            ) : (
+              ""
+            )}
+          </>
         );
       case 12: // Set Volume
         return (
-          <FormRow>
-            <SliderField
-              name="effectparam"
-              label={l10n("FIELD_VOLUME")}
-              value={effectparam || 7}
-              min={0}
-              max={15}
-              onChange={(value) => {
-                onChangeField("effectparam")(value || 0);
-              }}
-            />
-          </FormRow>
+          <>
+            <FormRow>
+              <SliderField
+                name="effectparamsY"
+                label={l10n("FIELD_VOLUME")}
+                value={effectparams["y"] ?? 7}
+                min={0}
+                max={15}
+                onChange={(value) => {
+                  onChangeParamField("y")(value ?? 0);
+                }}
+              />
+            </FormRow>
+            <FormRow>
+              <CheckboxField
+                label="Change Envelope"
+                name={""}
+                checked={effectparams["x"] !== 0}
+                onChange={(e) => {
+                  onChangeParamField("x")(e.target.checked ? 8 : 0);
+                }}
+              />
+            </FormRow>
+            <FormRow>
+              {effectparams["x"] !== 0 ? (
+                <SliderField
+                  name="effectparamsX"
+                  value={(effectparams["x"] || 0) - 8}
+                  min={-7}
+                  max={7}
+                  onChange={(value) => {
+                    onChangeParamField("x")((value || 0) + 8);
+                  }}
+                />
+              ) : (
+                ""
+              )}
+            </FormRow>
+          </>
         );
       case 13: // Pattern Break
+        const patternBreakInputValue =
+          effectparam !== undefined
+            ? String(clamp(effectparam || 0, 0, 64))
+            : "";
         return (
-          <FormRow>
-            <Input
-              type="number"
-              min={0}
-              max={63}
-              placeholder="0"
-              value={effectparam || 0}
-              onChange={(e) => {
-                onChangeField("effectparam")(
-                  clamp(e.currentTarget.valueAsNumber, 0, 63)
-                );
-              }}
-            ></Input>
-          </FormRow>
+          <>
+            <FormRow>
+              <Label>{l10n("FIELD_START_ROW")}</Label>
+            </FormRow>
+            <FormRow>
+              <Input
+                type="number"
+                min={0}
+                max={63}
+                placeholder="0"
+                value={patternBreakInputValue}
+                onChange={(e) => {
+                  const newValue =
+                    e.currentTarget.value.length > 0
+                      ? clamp(parseInt(e.currentTarget.value), 0, 63)
+                      : null;
+                  onChangeField("effectparam")(newValue);
+                }}
+              ></Input>
+            </FormRow>
+          </>
         );
       case 14: // Note Cut
         return (
           <FormRow>
             <SliderField
               name="effectparam"
-              label={l10n("FIELD_NOTE_CUT")}
+              label={l10n("FIELD_TICKS")}
               value={effectparam || 0}
               min={0}
               max={255}
@@ -683,7 +747,7 @@ export const PatternCellEditor = ({
           <FormRow>
             <SliderField
               name="effectparam"
-              label={l10n("FIELD_SPEED")}
+              label={l10n("FIELD_TICKS_PER_ROW")}
               value={effectparam || 0}
               min={0}
               max={255}
@@ -735,12 +799,9 @@ export const PatternCellEditor = ({
 
   return (
     <>
-      <FormDivider />
-      <FormHeader>
-        <SidebarHeader>{l10n("FIELD_NOTE_EFFECT")}</SidebarHeader>
-      </FormHeader>{" "}
+      <FormSectionTitle>{l10n("FIELD_EFFECT")}</FormSectionTitle>
       <FormRow>
-        <FormField name="effect_code" label={l10n("FIELD_EFFECT")}>
+        <FormField name="effect_code">
           <Select
             name="effect_code"
             value={selectedEffectCode}

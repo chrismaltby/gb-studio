@@ -16,12 +16,12 @@ const fields = [
     type: "tabs",
     defaultValue: "trigger",
     values: {
-      trigger: l10n("FIELD_ON_TRIGGER"),
+      trigger: l10n("FIELD_ON_CALL"),
     },
   },
   {
     key: "true",
-    label: l10n("FIELD_ON_TRIGGER"),
+    label: l10n("FIELD_ON_CALL"),
     type: "events",
     allowedContexts: ["global", "entity"],
     conditions: [

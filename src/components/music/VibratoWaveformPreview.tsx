@@ -25,7 +25,7 @@ export const VibratoWaveformPreview = ({
           points={path}
           stroke={defaultColor}
           fill="none"
-          stroke-width="1"
+          strokeWidth="1"
         />
       </svg>
     </div>
