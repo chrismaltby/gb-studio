@@ -93,6 +93,7 @@ const compile = (input, helpers) => {
   const {
     actorSetActive,
     ifActorDistanceFromActor,
+    ifActorDistanceVariableFromActor,
     variableFromUnion,
     temporaryEntityVariable,
   } = helpers;
@@ -125,7 +126,7 @@ const compile = (input, helpers) => {
       temporaryEntityVariable(0)
     );
     actorSetActive(input.actorId);
-    ifActorDistanceFromActor(
+    ifActorDistanceVariableFromActor(
       distanceVar,
       operator,
       input.otherActorId,

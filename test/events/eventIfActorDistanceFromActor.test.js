@@ -3,6 +3,7 @@ import { compile } from "../../src/lib/events/eventIfActorDistanceFromActor";
 test("Should be able to conditionally execute if actor is within range of actor", () => {
   const mockActorSetActive = jest.fn();
   const mockIfActorDistanceFromActor = jest.fn();
+  const mockIfActorDistanceVariableFromActor = jest.fn();
   const mockVariableFromUnion = jest.fn().mockReturnValue(10);
   const mockTemporaryEntityVariable  = jest.fn().mockReturnValue("ok");
   const truePath = [{ command: "EVENT_END", id: "abc" }];
@@ -46,14 +47,14 @@ test("Should be able to conditionally execute if actor is within range of actor"
     },
     {
       actorSetActive: mockActorSetActive,
-      ifActorDistanceFromActor: mockIfActorDistanceFromActor,
+      ifActorDistanceVariableFromActor: mockIfActorDistanceVariableFromActor,
       variableFromUnion: mockVariableFromUnion,
       temporaryEntityVariable: mockTemporaryEntityVariable
     }
   );
   
   expect(mockActorSetActive).toBeCalledWith("actor1");
-  expect(mockIfActorDistanceFromActor).toBeCalledWith(10, ".EQ", "actor2", truePath, falsePath);
+  expect(mockIfActorDistanceVariableFromActor).toBeCalledWith(10, ".EQ", "actor2", truePath, falsePath);
   expect(mockVariableFromUnion).toBeCalledWith(variable, "ok");
   expect(mockTemporaryEntityVariable).toBeCalledWith(0);
 });
