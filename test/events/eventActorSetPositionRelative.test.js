@@ -8,14 +8,15 @@ test("Should set player position relatively", () => {
     {
       actorId: "player",
       x: 5,
-      y: 9
+      y: 9,
+      units: "tiles",
     },
     {
       scene: { actors: [] },
       actorSetActive: mockactorSetActive,
-      actorSetPositionRelative: mockActorSetPositionRelative
+      actorSetPositionRelative: mockActorSetPositionRelative,
     }
   );
   expect(mockactorSetActive).toBeCalledWith("player");
-  expect(mockActorSetPositionRelative).toBeCalledWith(5, 9);
+  expect(mockActorSetPositionRelative).toBeCalledWith(5, 9, "tiles");
 });
