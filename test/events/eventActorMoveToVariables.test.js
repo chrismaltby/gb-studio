@@ -8,15 +8,15 @@ test("Should move player position to variables", () => {
     {
       actorId: "player",
       vectorX: "0",
-      vectorY: "1"
+      vectorY: "1",
     },
     {
       scene: { actors: [] },
       variables: ["0", "1"],
       actorSetActive: mockactorSetActive,
-      actorMoveToVariables: mockActorMoveToVariables
+      actorMoveToVariables: mockActorMoveToVariables,
     }
   );
   expect(mockactorSetActive).toBeCalledWith("player");
-  expect(mockActorMoveToVariables).toBeCalledWith("0", "1");
+  expect(mockActorMoveToVariables).toBeCalledWith("0", "1", "tiles");
 });

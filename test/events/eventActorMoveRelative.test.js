@@ -10,14 +10,21 @@ test("Should move player relatively", () => {
       x: 5,
       y: 9,
       moveType: "horizontal",
-      useCollisions: true      
+      useCollisions: true,
+      units: "tiles",
     },
     {
       scene: { actors: [] },
       actorSetActive: mockactorSetActive,
-      actorMoveRelative: mockActorMoveRelative
-    },
+      actorMoveRelative: mockActorMoveRelative,
+    }
   );
   expect(mockactorSetActive).toBeCalledWith("player");
-  expect(mockActorMoveRelative).toBeCalledWith(5, 9, true, "horizontal");
+  expect(mockActorMoveRelative).toBeCalledWith(
+    5,
+    9,
+    true,
+    "horizontal",
+    "tiles"
+  );
 });
