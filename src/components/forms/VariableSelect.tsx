@@ -194,14 +194,14 @@ export const VariableSelect: FC<VariableSelectProps> = ({
     if (currentVariable) {
       setCurrentValue({
         value: currentVariable.id,
-        label: `${currentVariable.name}`,
+        label: `$${currentVariable.name}`,
       });
     }
   }, [currentVariable]);
 
   const onRenameStart = () => {
     if (currentValue) {
-      setEditValue(currentValue.label);
+      setEditValue(currentValue.label.replace(/^\$/, ""));
       setRenameId(currentValue.value);
       setRenameVisible(true);
     }
@@ -273,10 +273,7 @@ export const VariableSelect: FC<VariableSelectProps> = ({
         />
       ) : (
         <Select
-          value={{
-            ...currentValue,
-            label: currentValue && `$${currentValue.label}`,
-          }}
+          value={currentValue}
           options={options}
           onChange={(newValue: Option) => {
             onChange(newValue.value);
@@ -302,7 +299,7 @@ export const VariableSelect: FC<VariableSelectProps> = ({
         ))}
       {units && (
         <UnitsSelectButtonInputOverlay
-          parentValue={(currentValue && `$${currentValue.label}`) ?? ""}
+          parentValue={(currentValue && currentValue.label) ?? ""}
           value={units}
           allowedValues={unitsAllowed}
           onChange={onChangeUnits}
