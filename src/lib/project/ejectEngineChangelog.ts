@@ -363,6 +363,21 @@ const changes: EngineChange[] = [
       "src/gb/src/core/vm_ui.c",
     ],
   },
+  {
+    version: "3.1.0-e9",
+    description:
+      "Updates:\n" +
+      [
+        "   * Fix an issue where fading out mid-scene would cause game to hang",
+      ].join("\n"),
+    modifiedFiles: [
+      "src/gb/src/core/fade_manager.c",
+      "src/gb/src/core/interrupts.c",
+      "src/gb/src/core/scroll.c",
+      "src/gb/src/core/vm.c",
+      "src/gb/src/states/topdown.c",
+    ],
+  },
 ];
 
 const ejectEngineChangelog = (currentVersion: string) => {

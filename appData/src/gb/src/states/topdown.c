@@ -52,7 +52,7 @@ void topdown_update() BANKED {
             // Landed on a trigger
             return;
         }
-        
+
         // Check input to set player movement
         if (INPUT_RECENT_LEFT) {
             player_moving = TRUE;

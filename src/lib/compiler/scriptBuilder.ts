@@ -2520,6 +2520,14 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
+  actorStartUpdate = () => {
+    const actorRef = this._declareLocal("actor", 4);
+    this._addComment("Actor Start Update Script");
+    this._actorDeactivate(actorRef);
+    this._actorActivate(actorRef);
+    this._addNL();
+  };
+
   playerBounce = (height: "low" | "medium" | "high") => {
     this._addComment("Player Bounce");
     let value = -0x4000;

@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ability to use pixel values for actor and camera movement [@Y0UR-U5ERNAME](https://github.com/Y0UR-U5ERNAME)
 - Add ability to view & change units used for time and distances inline within number and variable inputs
 - Add event "If Actor Distance From Actor" to check if one actor is within a certain range of another [@juliusl](https://github.com/juliusl)
+- Add event "Start Actor's 'On Update' Script" [@patrickmollohan](https://github.com/patrickmollohan)
 
 ### Changed
 
@@ -69,6 +70,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where projectiles launched at >224 degrees would be facing in wrong direction [@john-lay](https://github.com/john-lay)
 - Restore previously playing music when loading game data
 - Fix issue where new patterns added to songs in music editor would not be played until song was reloaded [@pau-tomas](https://github.com/pau-tomas)
+- Fix an issue where fading out mid-scene would cause game to hang [untoxa](https://github.com/untoxa)
 
 ### Removed
 
