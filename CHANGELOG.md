@@ -68,6 +68,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix setting music editor preview start position to a different pattern [@pau-tomas](https://github.com/pau-tomas)
 - Fix issue where projectiles launched at >224 degrees would be facing in wrong direction [@john-lay](https://github.com/john-lay)
 - Restore previously playing music when loading game data
+- Fix issue where new patterns added to songs in music editor would not be played until song was reloaded [@pau-tomas](https://github.com/pau-tomas)
 
 ### Removed
 
