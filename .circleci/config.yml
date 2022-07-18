@@ -111,6 +111,7 @@ jobs:
       - run: sudo apt-get -y update
       - run: sudo apt-get -y install fakeroot
       - run: sudo apt-get -y install rpm
+      - run: sudo apt-get -y install squashfs-tools
       - attach_workspace:
           at: ~/
       - checkout
