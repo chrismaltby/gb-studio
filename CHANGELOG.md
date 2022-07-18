@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ability to use pixel values for actor and camera movement [@Y0UR-U5ERNAME](https://github.com/Y0UR-U5ERNAME)
 - Add ability to view & change units used for time and distances inline within number and variable inputs
 - Add event "If Actor Distance From Actor" to check if one actor is within a certain range of another [@juliusl](https://github.com/juliusl)
+- Add event "Start Actor's 'On Update' Script" [@patrickmollohan](https://github.com/patrickmollohan)
 
 ### Changed
 
