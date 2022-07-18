@@ -118,13 +118,6 @@ void vm_jump(SCRIPT_CTX * THIS, UBYTE * pc) OLDCALL BANKED {
     THIS->PC = pc;    
 }
 
-// returns systime 
-void vm_systime(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {
-    UWORD * A;
-    if (idx < 0) A = THIS->stack_ptr + idx; else A = script_memory + idx;
-    *A = sys_time;
-} 
-
 UBYTE wait_frames(void * THIS, UBYTE start, UWORD * stack_frame) OLDCALL BANKED {
     // we allocate one local variable (just write ahead of VM stack pointer, we have no interrupts, our local variables won't get spoiled)
     if (start) *((SCRIPT_CTX *)THIS)->stack_ptr = sys_time;
@@ -273,6 +266,12 @@ void vm_rpn(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS) OLDCALL NONBANK
         INT8 op = *(THIS->PC++);
         if (op < 0) {
             switch (op) {
+                case -5:
+                // set by reference
+                    idx = *((INT16 *)(THIS->PC)); 
+                    *((idx < 0) ? ARGS + idx : script_memory + idx) = *(--(THIS->stack_ptr));
+                    THIS->PC += 2;
+                    continue;
                 // indirect reference
                 case -4:
                     idx = *((INT16 *)(THIS->PC)); 
@@ -283,8 +282,7 @@ void vm_rpn(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS) OLDCALL NONBANK
                 // reference
                 case -3:
                     idx = *((INT16 *)(THIS->PC)); 
-                    if (idx < 0) A = ARGS + idx; else A = script_memory + idx;
-                    *(THIS->stack_ptr) = *A;
+                    *(THIS->stack_ptr) = *((idx < 0) ? ARGS + idx : script_memory + idx);
                     THIS->PC += 2;
                     break;
                 // int16
@@ -357,23 +355,33 @@ void vm_idle(SCRIPT_CTX * THIS) OLDCALL BANKED {
     THIS->waitable = TRUE;
 }
 
-// gets unsigned int8 from RAM by address
+// gets unsigned int8 by address
 void vm_get_uint8(SCRIPT_CTX * THIS, INT16 idxA, UINT8 * addr) OLDCALL BANKED {
     INT16 * A;
     if (idxA < 0) A = THIS->stack_ptr + idxA; else A = script_memory + idxA;
     *A = *addr;
 }
-// gets int8 from RAM by address
+// gets int8 by address
 void vm_get_int8(SCRIPT_CTX * THIS, INT16 idxA, INT8 * addr) OLDCALL BANKED {
     INT16 * A;
     if (idxA < 0) A = THIS->stack_ptr + idxA; else A = script_memory + idxA;
     *A = *addr;
 }
-// gets int16 from RAM by address
+// gets int16 by address
 void vm_get_int16(SCRIPT_CTX * THIS, INT16 idxA, INT16 * addr) OLDCALL BANKED {
     INT16 * A;
     if (idxA < 0) A = THIS->stack_ptr + idxA; else A = script_memory + idxA;
     *A = *addr;
+}
+// gets int8 or int16 by far address
+void vm_get_far(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS, INT16 idxA, UBYTE size, UBYTE bank, UBYTE * addr) OLDCALL NONBANKED {
+    dummy0; dummy1;
+    UINT16 * A;
+    if (idxA < 0) A = THIS->stack_ptr + idxA; else A = script_memory + idxA;
+    UBYTE _save = _current_bank;        // we must preserve current bank, 
+    SWITCH_ROM(bank);             // then switch to bytecode bank
+    *A = (size == 0) ? *((UBYTE *)addr) : *((UINT16 *)addr);
+    SWITCH_ROM(_save);
 }
 // sets unsigned int8 in RAM by address
 void vm_set_uint8(SCRIPT_CTX * THIS, UINT8 * addr, INT16 idxA) OLDCALL BANKED {
@@ -477,13 +485,21 @@ void vm_call_native(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS, UINT8 b
     dummy0; dummy1; THIS; bank; ptr; // suppress warnings
 #if defined(__SDCC) && defined(NINTENDO) 
 __asm
-        lda hl, 8(sp)
+        ldhl sp, #6
+        ld a, (hl+)
+        ld h, (hl)
+        ld l, a
+        push hl
+
+        ldhl sp, #10
         ld a, (hl+)
         ld e, a
         ld a, (hl+)
         ld h, (hl)
         ld l, a
-        jp ___sdcc_bcall_ehl
+        call ___sdcc_bcall_ehl
+        add sp, #2
+        ret
 __endasm;
 #endif
 }
@@ -522,7 +538,7 @@ __asm
 
         ld a, e
         ldh (__current_bank), a
-        ld (0x2000), a          ; switch bank with vm code
+        ld (_rROMB0), a         ; switch bank with vm code
         
         ld a, (hl+)             ; load current command and return if terminator
         ld e, a
@@ -591,7 +607,7 @@ __asm
 
         ld a, #<b_vm_call       ; a = script_bank (all script functions in one bank: take any complimantary symbol)
         ldh (__current_bank), a
-        ld (0x2000), a          ; switch bank with functions
+        ld (_rROMB0), a         ; switch bank with functions
 
         rst 0x20                ; call hl
 
@@ -606,7 +622,7 @@ __asm
 3$:     
         pop af
         ldh (__current_bank), a
-        ld (0x2000), a          ; restore bank
+        ld (_rROMB0), a         ; restore bank
 
         ret
 __endasm;

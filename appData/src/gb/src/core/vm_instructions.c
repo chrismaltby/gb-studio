@@ -13,6 +13,7 @@
 #include "vm_sgb.h"
 #include "vm_sio.h"
 #include "vm_load_save.h"
+#include "vm_gbprinter.h"
 
 // here we define all VM instructions: their handlers and parameter lengths in bytes
 // this array must be nonbanked as well as STEP_VM()
@@ -23,13 +24,13 @@ const SCRIPT_CMD script_cmds[] = {
     {0, 0},
     {vm_call,                   2}, // 0x04
     {vm_ret,                    1}, // 0x05
-    {0, 0},
+    {vm_get_far,                6}, // 0x06
     {vm_loop,                   5}, // 0x07
     {vm_switch,                 4}, // 0x08
     {vm_jump,                   2}, // 0x09
     {vm_call_far,               3}, // 0x0A
     {vm_ret_far,                1}, // 0x0B
-    {vm_systime,                2}, // 0x0C
+    {0, 0},
     {vm_invoke,                 6}, // 0x0D
     {vm_beginthread,            6}, // 0x0E
     {vm_if,                     8}, // 0x0F
@@ -64,7 +65,7 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_push_reference,         2}, // 0x2C 
     {vm_call_native,            3}, // 0x2D
     // load/save instrunctions section
-    {vm_save_peek,              8}, // 0x2E
+    {vm_save_peek,              9}, // 0x2E
     {vm_save_clear,             1}, // 0x2F
 
     // actor instructions section
@@ -87,18 +88,18 @@ const SCRIPT_CMD script_cmds[] = {
 
     // user interface instructions section
     {vm_load_text,              1}, // 0x40
-    {vm_display_text,           0}, // 0x41
+    {vm_display_text,           1}, // 0x41
     {vm_overlay_setpos,         2}, // 0x42
-    {vm_overlay_hide,           0}, // 0x43
+    {0, 0},
     {vm_overlay_wait,           2}, // 0x44
     {vm_overlay_move_to,        3}, // 0x45
     {vm_overlay_show,           4}, // 0x46
     {vm_overlay_clear,          6}, // 0x47
     {vm_choice,                 4}, // 0x48
-    {vm_load_frame,             3}, // 0x49
-    {vm_load_cursor,            3}, // 0x4A
+    {vm_load_tiles,             5}, // 0x49
+    {0, 0},
     {vm_set_font,               1}, // 0x4B
-    {vm_set_print_dir,          1}, // 0x4C
+    {vm_overlay_set_submap_ex,  2}, // 0x4C
     {vm_overlay_scroll,         5}, // 0x4D
     {vm_overlay_set_scroll,     5}, // 0x4E
     {vm_overlay_set_submap,     6}, // 0x4F
@@ -110,7 +111,7 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_input_attach,           2}, // 0x53
     {vm_input_get,              3}, // 0x54
     {vm_context_prepare,        4}, // 0x55
-    {vm_overlay_set_map,        7}, // 0x56
+    {vm_overlay_set_map,        9}, // 0x56
     {vm_fade,                   1}, // 0x57
     {vm_timer_prepare,          4}, // 0x58
     {vm_timer_set,              2}, // 0x59
@@ -126,9 +127,9 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_music_stop,             0}, // 0x61
     {vm_music_mute,             1}, // 0x62
     {vm_sound_mastervol,        1}, // 0x63
-    {vm_sound_play,             2}, // 0x64
+    {0, 0},
     {vm_music_routine,          4}, // 0x65
-    {vm_wave_play,              6}, // 0x66
+    {vm_sfx_play,               5}, // 0x66
     {vm_music_setpos,           2}, // 0x67
     // scene stack instructions
     {vm_scene_push,             0}, // 0x68
@@ -181,5 +182,9 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_sin_scale,              5}, // 0x89 
     {vm_cos_scale,              5}, // 0x8A
 
-    {vm_set_text_sound,         2}  // 0x8B
+    {vm_set_text_sound,         4}, // 0x8B
+
+    // GBPrinter functions
+    {vm_print_detect,           3}, // 0x8C
+    {vm_print_overlay,          4}  // 0x8D
 };

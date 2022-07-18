@@ -3,7 +3,7 @@ import { ThemeInterface } from "./ThemeInterface";
 const darkTheme: ThemeInterface = {
   type: "dark",
   typography: {
-    fontSize: "12px",
+    fontSize: "11px",
     menuFontSize: "12px",
     toolbarFontSize: "13px",
   },

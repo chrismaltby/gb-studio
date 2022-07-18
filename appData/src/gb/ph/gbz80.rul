@@ -1,0 +1,10 @@
+replace {
+call ___sdcc_call_hl
+} by {
+rst	0x20  ; ___sdcc_call_hl
+}
+replace {
+call ___sdcc_bcall_ehl
+} by {
+rst	0x08  ; ___sdcc_bcall_ehl
+}

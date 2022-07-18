@@ -408,7 +408,7 @@ export const saveUGESong = (song: Song): ArrayBuffer => {
 
     addUint32(0);
     addUint32(i.bit_count === 7 ? 1 : 0);
-    addUint32(i.dividing_ratio);
+    addUint32(0);
 
     for (const v of i.noise_macro) {
       addInt8(v);
@@ -555,7 +555,9 @@ export const exportToC = (song: Song, trackName: string): string => {
     if (instr.length !== null) param1 |= 0x40;
     if (instr.bit_count === 7) param1 |= 0x80;
 
-    return `${decHex(param0)}, ${decHex(param1)}, 0, 0, 0, 0, 0, 0`;
+    return `${decHex(param0)}, ${decHex(param1)}, ${instr.noise_macro
+      .map((n) => n & 0xff)
+      .join(", ")}`;
   };
 
   const formatWave = function (wave: Uint8Array) {

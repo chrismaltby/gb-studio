@@ -3,7 +3,7 @@ import { ThemeInterface } from "./ThemeInterface";
 const lightTheme: ThemeInterface = {
   type: "light",
   typography: {
-    fontSize: "12px",
+    fontSize: "11px",
     menuFontSize: "12px",
     toolbarFontSize: "13px",
   },

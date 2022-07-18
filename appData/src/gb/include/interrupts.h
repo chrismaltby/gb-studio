@@ -2,6 +2,7 @@
 #define INTERRUPTS_H_INCLUDE
 
 extern UINT8 hide_sprites;
+extern UBYTE show_actors_on_overlay;
 
 void simple_LCD_isr();
 void fullscreen_LCD_isr();

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, FC } from "react";
+import React, { useState, useEffect, FC, useContext } from "react";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 import { DialogueTextarea } from "ui/form/DialogueTextarea";
@@ -9,6 +9,7 @@ import {
 } from "store/features/entities/entitiesState";
 import { RootState } from "store/configureStore";
 import { NamedVariable, namedVariablesByContext } from "lib/helpers/variables";
+import { ScriptEditorContext } from "./ScriptEditorContext";
 
 interface ScriptEventFormTextAreaProps {
   id?: string;
@@ -27,12 +28,11 @@ const ScriptEventFormTextArea: FC<ScriptEventFormTextAreaProps> = ({
   onChange,
   entityId,
 }) => {
+  const context = useContext(ScriptEditorContext);
   const [variables, setVariables] = useState<NamedVariable[]>([]);
   const fonts = useSelector((state: RootState) =>
     fontSelectors.selectAll(state)
   );
-
-  const editorType = useSelector((state: RootState) => state.editor.type);
   const variablesLookup = useSelector((state: RootState) =>
     variableSelectors.selectEntities(state)
   );
@@ -42,14 +42,9 @@ const ScriptEventFormTextArea: FC<ScriptEventFormTextAreaProps> = ({
 
   useEffect(() => {
     setVariables(
-      namedVariablesByContext(
-        editorType,
-        entityId,
-        variablesLookup,
-        customEvent
-      )
+      namedVariablesByContext(context, entityId, variablesLookup, customEvent)
     );
-  }, [entityId, variablesLookup, editorType, customEvent]);
+  }, [entityId, variablesLookup, context, customEvent]);
 
   return (
     <DialogueTextarea
@@ -57,7 +52,6 @@ const ScriptEventFormTextArea: FC<ScriptEventFormTextAreaProps> = ({
       value={value || ""}
       onChange={onChange}
       variables={variables}
-      editorType={editorType}
       entityId={entityId}
       fonts={fonts}
       placeholder={placeholder}

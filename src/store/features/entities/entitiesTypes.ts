@@ -1,4 +1,5 @@
 import { EntityState, Dictionary } from "@reduxjs/toolkit";
+import { ScriptEditorContextType } from "components/script/ScriptEditorContext";
 
 export type ActorDirection = "up" | "down" | "left" | "right";
 export type SpriteType = "static" | "animated" | "actor" | "actor_animated";
@@ -213,6 +214,19 @@ export type Music = {
 
 export type MusicData = Omit<Music, "_v" | "inode">;
 
+export type Sound = {
+  id: string;
+  name: string;
+  symbol: string;
+  filename: string;
+  plugin?: string;
+  type: "wav" | "vgm" | "fxhammer";
+  inode: string;
+  _v: number;
+};
+
+export type SoundData = Omit<Sound, "_v" | "inode">;
+
 export type Palette = {
   id: string;
   name: string;
@@ -230,6 +244,7 @@ export type Variable = {
 export type CustomEventVariable = {
   id: string;
   name: string;
+  passByReference: boolean;
   type?: "8bit" | "16bit";
 };
 
@@ -396,6 +411,7 @@ export type ProjectEntitiesData = {
   palettes: Palette[];
   customEvents: CustomEvent[];
   music: MusicData[];
+  sounds: SoundData[];
   fonts: FontData[];
   avatars: AvatarData[];
   emotes: EmoteData[];
@@ -416,6 +432,7 @@ export interface EntitiesState {
   palettes: EntityState<Palette>;
   customEvents: EntityState<CustomEvent>;
   music: EntityState<Music>;
+  sounds: EntityState<Sound>;
   fonts: EntityState<Font>;
   avatars: EntityState<Avatar>;
   emotes: EntityState<Emote>;
@@ -437,7 +454,19 @@ export interface ScriptEventFieldCondition {
   gte?: unknown;
   lte?: unknown;
   in?: unknown[];
+  soundType?: unknown;
 }
+
+export const distanceUnitTypes = ["tiles", "pixels"] as const;
+export const timeUnitTypes = ["time", "frames"] as const;
+export const unitTypes = [...distanceUnitTypes, ...timeUnitTypes] as const;
+
+export type UnitType = typeof unitTypes[number];
+export type DistanceUnitType = typeof distanceUnitTypes[number];
+export type TimeUnitType = typeof timeUnitTypes[number];
+
+export const movementTypes = ["horizontal", "vertical", "diagonal"] as const;
+export type MovementType = typeof movementTypes[number];
 
 export interface ScriptEventFieldSchema {
   label?: string | React.ReactNode;
@@ -450,7 +479,8 @@ export interface ScriptEventFieldSchema {
   conditions?: ScriptEventFieldCondition[];
   toggleLabel?: string;
   width?: string;
-  flexBasis?: string;
+  flexBasis?: string | number;
+  flexGrow?: number;
   values?: Record<string, string>;
   alignCheckbox?: boolean;
   placeholder?: string;
@@ -471,6 +501,10 @@ export interface ScriptEventFieldSchema {
   types?: string[];
   fields?: ScriptEventFieldSchema[];
   inline?: boolean;
+  allowedContexts?: ScriptEditorContextType[];
+  unitsField?: string;
+  unitsDefault?: UnitType;
+  unitsAllowed?: UnitType[];
   filter?: (value: unknown) => boolean;
   updateFn?: (
     newValue: unknown,
@@ -480,7 +514,7 @@ export interface ScriptEventFieldSchema {
   postUpdate?: (
     newArgs: Record<string, unknown>,
     prevArgs: Record<string, unknown>
-  ) => void;
+  ) => void | Record<string, unknown>;
 }
 
 export type EntityKey = keyof EntitiesState;

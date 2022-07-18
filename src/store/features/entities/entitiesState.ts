@@ -52,6 +52,7 @@ import {
   SpriteState,
   ScriptEventsRef,
   ScriptEventParentType,
+  Sound,
 } from "./entitiesTypes";
 import {
   normalizeEntities,
@@ -68,6 +69,8 @@ import {
   updateEntitySymbol,
 } from "./entitiesHelpers";
 import spriteActions from "../sprite/spriteActions";
+import { isVariableCustomEvent } from "lib/compiler/scriptBuilder";
+import { sortByKey } from "lib/helpers/sortByKey";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
@@ -91,6 +94,9 @@ const spriteStatesAdapter = createEntityAdapter<SpriteState>();
 const palettesAdapter = createEntityAdapter<Palette>();
 const customEventsAdapter = createEntityAdapter<CustomEvent>();
 const musicAdapter = createEntityAdapter<Music>({
+  sortComparer: sortByFilename,
+});
+const soundsAdapter = createEntityAdapter<Sound>({
   sortComparer: sortByFilename,
 });
 const fontsAdapter = createEntityAdapter<Font>({
@@ -119,6 +125,7 @@ export const initialState: EntitiesState = {
   palettes: palettesAdapter.getInitialState(),
   customEvents: customEventsAdapter.getInitialState(),
   music: musicAdapter.getInitialState(),
+  sounds: soundsAdapter.getInitialState(),
   fonts: fontsAdapter.getInitialState(),
   avatars: avatarsAdapter.getInitialState(),
   emotes: emotesAdapter.getInitialState(),
@@ -222,6 +229,7 @@ const loadProject: CaseReducer<
   spriteStatesAdapter.setAll(state.spriteStates, entities.spriteStates || {});
   palettesAdapter.setAll(state.palettes, entities.palettes || {});
   musicAdapter.setAll(state.music, entities.music || {});
+  soundsAdapter.setAll(state.sounds, entities.sounds || {});
   fontsAdapter.setAll(state.fonts, entities.fonts || {});
   avatarsAdapter.setAll(state.avatars, entities.avatars || {});
   emotesAdapter.setAll(state.emotes, entities.emotes || {});
@@ -402,6 +410,46 @@ const removeMusic: CaseReducer<
   }>
 > = (state, action) => {
   removeAssetEntity(state.music, musicAdapter, action.payload);
+};
+
+/**************************************************************************
+ * Sounds
+ */
+
+const loadSound: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    data: Sound;
+  }>
+> = (state, action) => {
+  upsertAssetEntity(state.sounds, soundsAdapter, action.payload.data, [
+    "id",
+    "symbol",
+  ]);
+  ensureSymbolsUnique(state);
+};
+
+const setSoundSymbol: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ soundId: string; symbol: string }>
+> = (state, action) => {
+  updateEntitySymbol(
+    state,
+    state.sounds,
+    soundsAdapter,
+    action.payload.soundId,
+    action.payload.symbol
+  );
+};
+
+const removeSound: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    filename: string;
+    plugin?: string;
+  }>
+> = (state, action) => {
+  removeAssetEntity(state.sounds, soundsAdapter, action.payload);
 };
 
 /**************************************************************************
@@ -2106,6 +2154,9 @@ const refreshCustomEventArgs: CaseReducer<
     return;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const eventLookup = require("lib/events").eventLookup;
+
   const variables = {} as Dictionary<CustomEventVariable>;
   const actors = {} as Dictionary<CustomEventActor>;
   const oldVariables = customEvent.variables;
@@ -2148,24 +2199,32 @@ const refreshCustomEventArgs: CaseReducer<
         };
       }
       Object.keys(args).forEach((arg) => {
-        if (isVariableField(scriptEvent.command, arg, args)) {
+        if (isVariableField(scriptEvent.command, arg, args, eventLookup)) {
           const addVariable = (variable: string) => {
             const letter = String.fromCharCode(
-              "A".charCodeAt(0) + parseInt(variable)
+              "A".charCodeAt(0) + parseInt(variable[1])
             );
             variables[variable] = {
               id: variable,
               name: oldVariables[variable]?.name || `Variable ${letter}`,
+              passByReference: oldVariables[variable]?.passByReference ?? true,
             };
           };
           const variable = args[arg];
-          if (isUnionVariableValue(variable) && variable.value) {
+          if (
+            isUnionVariableValue(variable) &&
+            variable.value &&
+            isVariableCustomEvent(variable.value)
+          ) {
             addVariable(variable.value);
-          } else if (typeof variable === "string") {
+          } else if (
+            typeof variable === "string" &&
+            isVariableCustomEvent(variable)
+          ) {
             addVariable(variable);
           }
         }
-        if (isPropertyField(scriptEvent.command, arg, args)) {
+        if (isPropertyField(scriptEvent.command, arg, args, eventLookup)) {
           const addPropertyActor = (property: string) => {
             const actor = property && property.replace(/:.*/, "");
             if (actor !== "player" && actor !== "$self$") {
@@ -2201,9 +2260,12 @@ const refreshCustomEventArgs: CaseReducer<
               const letter = String.fromCharCode(
                 "A".charCodeAt(0) + parseInt(variable, 10)
               ).toUpperCase();
-              variables[variable] = {
-                id: variable,
-                name: oldVariables[variable]?.name || `Variable ${letter}`,
+              const variableId = `V${variable}`;
+              variables[variableId] = {
+                id: variableId,
+                name: oldVariables[variableId]?.name || `Variable ${letter}`,
+                passByReference:
+                  oldVariables[variable]?.passByReference ?? true,
               };
             });
           }
@@ -2212,7 +2274,7 @@ const refreshCustomEventArgs: CaseReducer<
     }
   );
 
-  customEvent.variables = variables;
+  customEvent.variables = sortByKey(variables);
   customEvent.actors = actors;
 };
 
@@ -2910,6 +2972,12 @@ const entitiesSlice = createSlice({
     setMusicSymbol,
 
     /**************************************************************************
+     * Sounds
+     */
+
+    setSoundSymbol,
+
+    /**************************************************************************
      * Emote
      */
 
@@ -2938,6 +3006,8 @@ const entitiesSlice = createSlice({
       .addCase(spriteActions.detectSpriteComplete, loadDetectedSprite)
       .addCase(projectActions.loadMusic.fulfilled, loadMusic)
       .addCase(projectActions.removeMusic.fulfilled, removeMusic)
+      .addCase(projectActions.loadSound.fulfilled, loadSound)
+      .addCase(projectActions.removeSound.fulfilled, removeSound)
       .addCase(projectActions.loadFont.fulfilled, loadFont)
       .addCase(projectActions.removeFont.fulfilled, removeFont)
       .addCase(projectActions.loadAvatar.fulfilled, loadAvatar)
@@ -3049,6 +3119,9 @@ const localPaletteSelectors = palettesAdapter.getSelectors(
 const localMusicSelectors = musicAdapter.getSelectors(
   (state: EntitiesState) => state.music
 );
+const localSoundSelectors = soundsAdapter.getSelectors(
+  (state: EntitiesState) => state.sounds
+);
 
 // Global
 export const actorSelectors = actorsAdapter.getSelectors(
@@ -3089,6 +3162,9 @@ export const customEventSelectors = customEventsAdapter.getSelectors(
 );
 export const musicSelectors = musicAdapter.getSelectors(
   (state: RootState) => state.project.present.entities.music
+);
+export const soundSelectors = soundsAdapter.getSelectors(
+  (state: RootState) => state.project.present.entities.sounds
 );
 export const fontSelectors = fontsAdapter.getSelectors(
   (state: RootState) => state.project.present.entities.fonts

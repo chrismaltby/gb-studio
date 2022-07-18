@@ -14,6 +14,7 @@ import {
   FontData,
   AvatarData,
   EmoteData,
+  Sound,
 } from "../entities/entitiesTypes";
 import type { RootState } from "store/configureStore";
 import loadProjectData from "lib/project/loadProjectData";
@@ -29,6 +30,7 @@ import parseAssetPath from "lib/helpers/path/parseAssetPath";
 import { denormalizeEntities } from "../entities/entitiesHelpers";
 import { loadAvatarData } from "lib/project/loadAvatarData";
 import { loadEmoteData } from "lib/project/loadEmoteData";
+import { loadSoundData } from "lib/project/loadSoundData";
 
 let saving = false;
 
@@ -242,6 +244,43 @@ const removeMusic = createAsyncThunk<
 });
 
 /**************************************************************************
+ * Sound Effects
+ */
+
+const loadSound = createAsyncThunk<{ data: Sound }, string>(
+  "project/loadSound",
+  async (filename, thunkApi) => {
+    const state = thunkApi.getState() as RootState;
+
+    const projectRoot = state.document && state.document.root;
+    const data = (await loadSoundData(projectRoot)(filename)) as
+      | Sound
+      | undefined;
+
+    if (!data) {
+      throw new Error("Unable to load sound effect");
+    }
+
+    return {
+      data,
+    };
+  }
+);
+
+const removeSound = createAsyncThunk<
+  { filename: string; plugin?: string },
+  string
+>("project/removeSound", async (filename, thunkApi) => {
+  const state = thunkApi.getState() as RootState;
+  const projectRoot = state.document && state.document.root;
+  const { file, plugin } = parseAssetPath(filename, projectRoot, "sounds");
+  return {
+    filename: file,
+    plugin,
+  };
+});
+
+/**************************************************************************
  * Fonts
  */
 
@@ -427,6 +466,8 @@ export default {
   removeSprite,
   loadMusic,
   removeMusic,
+  loadSound,
+  removeSound,
   loadFont,
   removeFont,
   loadAvatar,

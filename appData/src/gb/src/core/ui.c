@@ -36,6 +36,7 @@ UBYTE text_drawn;
 UBYTE current_text_speed;
 UBYTE text_wait;
 
+UBYTE text_options;
 UBYTE text_in_speed;
 UBYTE text_out_speed;
 UBYTE text_draw_speed;
@@ -70,9 +71,13 @@ UBYTE * text_scroll_addr;
 UBYTE text_scroll_width, text_scroll_height;
 UBYTE text_scroll_fill;
 
-UBYTE text_sound_frames, text_sound_ch;
+UBYTE text_sound_mask;
 UBYTE text_sound_bank; 
 const UBYTE * text_sound_data;
+
+#ifdef CGB
+UBYTE overlay_priority;
+#endif
 
 void ui_init() BANKED {
     vwf_direction               = UI_PRINT_LEFTTORIGHT;
@@ -80,14 +85,13 @@ void ui_init() BANKED {
     vwf_current_font_bank       = ui_fonts[0].bank;
     MemcpyBanked(&vwf_current_font_desc, ui_fonts[0].ptr, sizeof(font_desc_t), vwf_current_font_bank);
 
+    text_options                = TEXT_OPT_DEFAULT;
     text_in_speed               = 0;
     text_out_speed              = 0;
     text_ff_joypad              = TRUE;
     text_bkg_fill               = TEXT_BKG_FILL_W;
 
     ui_text_ptr                 = 0;
-    ui_dest_ptr                 = 0;
-    ui_dest_base                = 0;
 
     vwf_current_offset          = 0;
 
@@ -103,22 +107,27 @@ void ui_init() BANKED {
     text_draw_speed             = 1;
     current_text_speed          = 0;
 
-    text_render_base_addr       = GetWinAddr();
+    ui_dest_ptr = ui_dest_base  = (text_render_base_addr = GetWinAddr()) + 32 + 1;
 
     text_scroll_addr            = GetWinAddr();
     text_scroll_width           = 20; 
     text_scroll_height          = 8;
     text_scroll_fill            = ui_while_tile;
 
-    text_sound_frames           = 0;
-    text_sound_ch               = 0;
+    text_sound_bank             = SFX_STOP_BANK;
 
     ui_load_tiles();
+
+#ifdef CGB
+    overlay_priority            = S_PRIORITY;
+#endif
 }
 
 void ui_load_tiles() BANKED {
-    ui_load_frame_tiles(frame_image, BANK(frame_image));
-    ui_load_cursor_tile(cursor_image, BANK(cursor_image));
+    // load frame
+    SetBankedBkgData(ui_frame_tl_tiles, 9, frame_image, BANK(frame_image));
+    // load cursor
+    SetBankedBkgData(ui_cursor_tile, 1, cursor_image, BANK(cursor_image));
 
     memset(vwf_tile_data, TEXT_BKG_FILL_W, 16);
     set_bkg_data(ui_while_tile, 1, vwf_tile_data);
@@ -133,7 +142,7 @@ void ui_draw_frame(UBYTE x, UBYTE y, UBYTE width, UBYTE height) BANKED {
 #ifdef CGB
     if (_is_CGB) {
         VBK_REG = 1;
-        fill_win_rect(x, y, width, height, (UI_PALETTE & 0x07u));        
+        fill_win_rect(x, y, width, height, overlay_priority | (UI_PALETTE & 0x07u));        
         VBK_REG = 0;
     }
 #endif
@@ -250,7 +259,7 @@ inline void ui_set_tile(UBYTE * addr, UBYTE tile, UBYTE bank) {
 #ifdef CGB
     if (_is_CGB) {
         VBK_REG = 1;        
-        SetTile(addr, (bank) ? ((UI_PALETTE & 0x07u) | 0x08u) : (UI_PALETTE & 0x07u));
+        SetTile(addr, overlay_priority | ((bank) ? ((UI_PALETTE & 0x07u) | 0x08u) : (UI_PALETTE & 0x07u)));
         VBK_REG = 0;
     }
 #else
@@ -282,11 +291,12 @@ UBYTE ui_draw_text_buffer_char() BANKED {
         // current char pointer
         ui_text_ptr = ui_text_data;
         // VRAM destination
-        ui_dest_base = text_render_base_addr + 32 + 1; // gotoxy(1,1)
-        if (vwf_direction == UI_PRINT_RIGHTTOLEFT) ui_dest_base += 17;
-        // with and initial pos correction
-        // initialize current pointer with corrected base value
-        ui_dest_ptr = ui_dest_base;
+        if ((text_options & TEXT_OPT_PRESERVE_POS) == 0) {
+            ui_dest_base = text_render_base_addr + 32 + 1;                  // gotoxy(1,1)
+            if (vwf_direction == UI_PRINT_RIGHTTOLEFT) ui_dest_base += 17;  // right_to_left initial pos correction
+            // initialize current pointer with corrected base value
+            ui_dest_ptr = ui_dest_base;
+        }
         // tileno destination
         ui_print_reset();
     }
@@ -375,7 +385,7 @@ UBYTE ui_draw_text_buffer_char() BANKED {
 #ifdef CGB
                     if (_is_CGB) {
                         VBK_REG = 1;
-                        scroll_rect(text_scroll_addr, text_scroll_width, text_scroll_height, (UI_PALETTE & 0x07u));
+                        scroll_rect(text_scroll_addr, text_scroll_width, text_scroll_height, overlay_priority | (UI_PALETTE & 0x07u));
                         VBK_REG = 0;
                     }
 #endif
@@ -440,24 +450,26 @@ void ui_update() NONBANKED {
         letter_drawn = ui_draw_text_buffer_char();
     } while (((text_ff) || (text_draw_speed == 0)) && (!text_drawn));
     // play sound
-    if ((letter_drawn) && (text_sound_frames != 0)) sound_play(text_sound_frames, text_sound_ch, text_sound_bank, text_sound_data);
+    if ((letter_drawn) && (text_sound_bank != SFX_STOP_BANK)) music_play_sfx(text_sound_bank, text_sound_data, text_sound_mask, MUSIC_SFX_PRIORITY_NORMAL);
 }
 
-UBYTE ui_run_menu(menu_item_t * start_item, UBYTE bank, UBYTE options, UBYTE count) BANKED {
+UBYTE ui_run_menu(menu_item_t * start_item, UBYTE bank, UBYTE options, UBYTE count, UBYTE start_index) BANKED {
     menu_item_t current_menu_item;
-    UBYTE current_index = 1u, next_index = 0u;
+    UBYTE current_index = ((options & MENU_SET_START) ? start_index : 1u), next_index = 0u;
     // copy first menu item
-    MemcpyBanked(&current_menu_item, start_item, sizeof(menu_item_t), bank);
-    // draw menu cursor
-    
+    MemcpyBanked(&current_menu_item, start_item + (current_index - 1u), sizeof(menu_item_t), bank);
+
+    // draw menu cursor    
 #ifdef CGB
     if (_is_CGB) {
         VBK_REG = 1;
-        set_win_tile_xy(current_menu_item.X, current_menu_item.Y, (UI_PALETTE & 0x07u));        
+        set_win_tile_xy(current_menu_item.X, current_menu_item.Y, overlay_priority | (UI_PALETTE & 0x07u));        
         VBK_REG = 0;
     }
 #endif
     set_win_tile_xy(current_menu_item.X, current_menu_item.Y, ui_cursor_tile);
+
+    // menu loop
     while (TRUE) {
         input_update();
         ui_update();
@@ -496,18 +508,18 @@ UBYTE ui_run_menu(menu_item_t * start_item, UBYTE bank, UBYTE options, UBYTE cou
 #ifdef CGB
         if (_is_CGB) {
             VBK_REG = 1;
-            set_win_tile_xy(current_menu_item.X, current_menu_item.Y, (UI_PALETTE & 0x07u));        
+            set_win_tile_xy(current_menu_item.X, current_menu_item.Y, overlay_priority | (UI_PALETTE & 0x07u));        
             VBK_REG = 0;
         }
 #endif
         set_win_tile_xy(current_menu_item.X, current_menu_item.Y, ui_bg_tile);
         // read menu data
-        MemcpyBanked(&current_menu_item, start_item + next_index - 1u, sizeof(menu_item_t), bank);
+        MemcpyBanked(&current_menu_item, start_item + current_index - 1u, sizeof(menu_item_t), bank);
         // put new cursor
 #ifdef CGB
         if (_is_CGB) {
             VBK_REG = 1;
-            set_win_tile_xy(current_menu_item.X, current_menu_item.Y, (UI_PALETTE & 0x07u));        
+            set_win_tile_xy(current_menu_item.X, current_menu_item.Y, overlay_priority | (UI_PALETTE & 0x07u));        
             VBK_REG = 0;
         }
 #endif

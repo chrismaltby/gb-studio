@@ -121,7 +121,7 @@ test("Should get variable name for custom event when provided", () => {
   expect(
     customEventVariableName("5", {
       variables: {
-        5: {
+        V5: {
           name: "My Variable Name",
         },
       },
@@ -133,7 +133,7 @@ test("Should get default variable name for custom event when no custom name prov
   expect(
     customEventVariableName("5", {
       variables: {
-        6: {
+        V6: {
           name: "My Variable Name",
         },
       },
@@ -142,64 +142,80 @@ test("Should get default variable name for custom event when no custom name prov
 });
 
 test("Should be able to extract named variables from custom event", () => {
-    expect(namedCustomEventVariables({
+  expect(
+    namedCustomEventVariables(
+      {
         variables: {
-            0: {
-                name: "First"
-            },
-            1: {
-                name: "Second"
-            }
-        }
-    })).toEqual([{
-        id: "0",
-        code: "V0",
-        name: "First",
-        group: ""
-    },{
-        id: "1",
-        code: "V1",
-        name: "Second",
-        group: ""
-    },{
-        id: "2",
-        code: "V2",
-        name: "Variable C",
-        group: ""
-    },{
-        id: "3",
-        code: "V3",
-        name: "Variable D",
-        group: ""
-    },{
-        id: "4",
-        code: "V4",
-        name: "Variable E",
-        group: ""
-    },{
-        id: "5",
-        code: "V5",
-        name: "Variable F",
-        group: ""
-    },{
-        id: "6",
-        code: "V6",
-        name: "Variable G",
-        group: ""
-    },{
-        id: "7",
-        code: "V7",
-        name: "Variable H",
-        group: ""
-    },{
-        id: "8",
-        code: "V8",
-        name: "Variable I",
-        group: ""
-    },{
-        id: "9",
-        code: "V9",
-        name: "Variable J",
-        group: ""
-    }])
-})
+          V0: {
+            name: "First",
+          },
+          V1: {
+            name: "Second",
+          },
+        },
+      },
+      {}
+    ).slice(0, 10)
+  ).toEqual([
+    {
+      id: "V0",
+      code: "V0",
+      name: "First",
+      group: "Parameters",
+    },
+    {
+      id: "V1",
+      code: "V1",
+      name: "Second",
+      group: "Parameters",
+    },
+    {
+      id: "V2",
+      code: "V2",
+      name: "Variable C",
+      group: "Parameters",
+    },
+    {
+      id: "V3",
+      code: "V3",
+      name: "Variable D",
+      group: "Parameters",
+    },
+    {
+      id: "V4",
+      code: "V4",
+      name: "Variable E",
+      group: "Parameters",
+    },
+    {
+      id: "V5",
+      code: "V5",
+      name: "Variable F",
+      group: "Parameters",
+    },
+    {
+      id: "V6",
+      code: "V6",
+      name: "Variable G",
+      group: "Parameters",
+    },
+    {
+      id: "V7",
+      code: "V7",
+      name: "Variable H",
+      group: "Parameters",
+    },
+    {
+      id: "V8",
+      code: "V8",
+      name: "Variable I",
+      group: "Parameters",
+    },
+    {
+      id: "V9",
+      code: "V9",
+      name: "Variable J",
+      group: "Parameters",
+    },
+  ]);
+});

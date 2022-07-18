@@ -77,6 +77,8 @@ import {
 import copy from "lib/helpers/fsCopy";
 import { ensureDir } from "fs-extra";
 import Path from "path";
+import { determineUsedAssets } from "./precompile/determineUsedAssets";
+import { compileSound, compileSoundHeader } from "./sounds/compileSound";
 
 const indexById = indexBy("id");
 
@@ -94,6 +96,7 @@ export const EVENT_MSG_PRE_EMOTES = "Preparing emotes...";
 export const EVENT_MSG_PRE_SCENES = "Preparing scenes...";
 export const EVENT_MSG_PRE_EVENTS = "Preparing events...";
 export const EVENT_MSG_PRE_MUSIC = "Preparing music...";
+export const EVENT_MSG_PRE_SOUNDS = "Preparing sounds...";
 export const EVENT_MSG_PRE_FONTS = "Preparing fonts...";
 
 export const EVENT_MSG_PRE_COMPLETE = "Preparation complete";
@@ -128,53 +131,12 @@ const ensureProjectAsset = async (relativePath, { projectRoot, warnings }) => {
 
 // #region precompile
 
-export const precompileVariables = (
-  variablesLookup,
-  scenes,
-  customEventsLookup
-) => {
-  const usedVariables = [];
-  const usedVariablesLookup = {};
-
-  const addVariable = (id) => {
-    const variable = variablesLookup[id];
-    if (variable && !usedVariablesLookup[id]) {
-      usedVariables.push(variable);
-      usedVariablesLookup[id] = variable;
-    }
-  };
-
-  walkDenormalizedScenesEvents(
-    scenes,
-    {
-      customEvents: {
-        lookup: customEventsLookup,
-        maxDepth: MAX_NESTED_SCRIPT_DEPTH,
-      },
-    },
-    (cmd) => {
-      if (eventHasArg(cmd, "references") && cmd.args.references) {
-        const referencedIds = cmd.args.references
-          .filter((ref) => ref.type === "variable")
-          .map((ref) => ref.id);
-        for (const id of referencedIds) {
-          addVariable(id);
-        }
-      }
-    }
-  );
-  return {
-    usedVariables,
-  };
-};
-
 export const precompileBackgrounds = async (
   backgrounds,
   scenes,
   customEventsLookup,
   projectRoot,
   tmpPath,
-  genSymbol,
   { warnings } = {}
 ) => {
   const usedTilemaps = [];
@@ -984,6 +946,7 @@ export const precompileScenes = (
 
     return {
       ...scene,
+      playerSpriteSheetId: playerSprite.id,
       background,
       actors,
       sprites: sceneSpriteIds.reduce((memo, spriteId) => {
@@ -1024,13 +987,17 @@ const precompile = async (
 ) => {
   const customEventsLookup = keyBy(projectData.customEvents, "id");
   const variablesLookup = keyBy(projectData.variables, "id");
+  const soundsLookup = keyBy(projectData.sounds, "id");
+
+  const usedAssets = determineUsedAssets({
+    scenes: projectData.scenes,
+    customEventsLookup,
+    variablesLookup,
+    soundsLookup,
+  });
 
   progress(EVENT_MSG_PRE_VARIABLES);
-  const { usedVariables } = precompileVariables(
-    variablesLookup,
-    projectData.scenes,
-    customEventsLookup
-  );
+  const usedVariables = Object.values(usedAssets.usedVariablesLookup);
 
   progress(EVENT_MSG_PRE_IMAGES);
   const {
@@ -1141,6 +1108,8 @@ const precompile = async (
     }
   );
 
+  const usedSounds = Object.values(usedAssets.usedSoundsLookup);
+
   progress(EVENT_MSG_PRE_COMPLETE);
 
   return {
@@ -1156,6 +1125,7 @@ const precompile = async (
     statesOrder,
     stateReferences,
     usedMusic,
+    usedSounds,
     usedFonts,
     sceneData,
     frameTiles,
@@ -1261,6 +1231,7 @@ const compile = async (
   // Add event data
   const additionalScripts = {};
   const additionalOutput = {};
+  const compiledCustomEventScriptCache = {};
 
   const eventPtrs = precompiled.sceneData.map((scene, sceneIndex) => {
     const compileScript = (
@@ -1314,6 +1285,7 @@ const compile = async (
         sceneIndex,
         scenes: precompiled.sceneData,
         music: precompiled.usedMusic,
+        sounds: precompiled.usedSounds,
         fonts: precompiled.usedFonts,
         defaultFontId: projectData.settings.defaultFontId,
         sprites: precompiled.usedSprites,
@@ -1342,6 +1314,7 @@ const compile = async (
         additionalScripts,
         additionalOutput,
         symbols,
+        compiledCustomEventScriptCache,
       });
 
       output[`${scriptName}.s`] = compiledScript;
@@ -1732,6 +1705,16 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
     progress,
     warnings,
   });
+
+  // Add sound data
+  for (const sound of precompiled.usedSounds) {
+    const { src: compiledSoundSrc, header: compiledSoundHeader } =
+      await compileSound(sound, {
+        projectRoot,
+      });
+    output[`sounds/${sound.symbol}.c`] = compiledSoundSrc;
+    output[`${sound.symbol}.h`] = compiledSoundHeader;
+  }
 
   output["game_globals.i"] = compileGameGlobalsInclude(
     variableAliasLookup,

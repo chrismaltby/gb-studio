@@ -5,7 +5,7 @@
   "bugs": {
     "url": "https://github.com/chrismaltby/gb-studio/issues"
   },
-  "version": "3.0.3",
+  "version": "3.1.0-alpha.0",
   "description": "Visual retro game maker",
   "main": ".webpack/main",
   "scripts": {
@@ -42,6 +42,7 @@
     "@octokit/rest": "^16.25.4",
     "@reduxjs/toolkit": "^1.4.0",
     "@types/classnames": "^2.2.10",
+    "@types/node-gzip": "^1.1.0",
     "@types/pngjs": "^6.0.0",
     "@types/prismjs": "^1.26.0",
     "@types/react-helmet": "^6.1.0",
@@ -70,10 +71,11 @@
     "image-size": "^1.0.0",
     "json-loader": "^0.5.7",
     "lodash": "^4.17.21",
+    "node-gzip": "^1.1.2",
     "normalizr": "^3.4.0",
     "open": "^7.3.0",
     "pngjs": "^6.0.0",
-    "prismjs": "^1.26.0",
+    "prismjs": "^1.27.0",
     "prop-types": "^15.7.2",
     "raw-loader": "^4.0.0",
     "react": "^17.0.2",
@@ -105,10 +107,12 @@
     "styled-components": "^5.2.0",
     "ts-flood-fill": "^1.0.2",
     "uuid": "^3.3.2",
-    "vm2": "3.9.4"
+    "vm2": "3.9.4",
+    "wavefile": "^11.0.0"
   },
   "devDependencies": {
     "@electron-forge/cli": "6.0.0-beta.57",
+    "@reforged/maker-appimage": "^1.1.3",
     "@electron-forge/maker-deb": "6.0.0-beta.57",
     "@electron-forge/maker-rpm": "6.0.0-beta.57",
     "@electron-forge/maker-squirrel": "6.0.0-beta.57",

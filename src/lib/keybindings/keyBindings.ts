@@ -2,10 +2,10 @@ import { defaultKeys, milkytrackerKeys, openMPTKeys } from "./defaultKeys";
 import settings from "electron-settings";
 
 interface KeyCommands {
-  editNoteCell?: (...args: any[]) => void;
-  editInstrumentCell?: (...args: any[]) => void;
-  editEffectCodeCell?: (...args: any[]) => void;
-  editEffectParamCell?: (...args: any[]) => void;
+  editNoteField?: (...args: any[]) => void;
+  editInstrumentField?: (...args: any[]) => void;
+  editEffectCodeField?: (...args: any[]) => void;
+  editEffectParamField?: (...args: any[]) => void;
 }
 
 export type KeyWhen =

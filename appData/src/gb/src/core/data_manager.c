@@ -56,23 +56,17 @@ void load_init() BANKED {
 }
 
 void load_bkg_tileset(const tileset_t* tiles, UBYTE bank) BANKED {
-    static UBYTE prev_bank = 0;
-    static const tileset_t* prev_tiles = NULL;
-
-    if ((bank == prev_bank) && (tiles == prev_tiles)) return;
-
-    prev_bank = bank; prev_tiles = tiles;
     if ((!bank) || (!tiles)) return;
 
-    UWORD n_tiles = ReadBankedUWORD(&(prev_tiles->n_tiles), prev_bank);
+    UWORD n_tiles = ReadBankedUWORD(&(tiles->n_tiles), bank);
 
     // load first background chunk, align to zero tile
-    UBYTE * data = prev_tiles->tiles;
+    UBYTE * data = tiles->tiles;
     if (n_tiles < 128) {
-        if ((UBYTE)n_tiles) SetBankedBkgData(0, n_tiles, data, prev_bank);
+        if ((UBYTE)n_tiles) SetBankedBkgData(0, n_tiles, data, bank);
         return;    
     }
-    SetBankedBkgData(0, 128, data, prev_bank);
+    SetBankedBkgData(0, 128, data, bank);
     n_tiles -= 128; data += 128 * 16;
 
     // load second background chunk
@@ -80,22 +74,22 @@ void load_bkg_tileset(const tileset_t* tiles, UBYTE bank) BANKED {
         if (n_tiles < 65) {
             #ifdef ALLOC_BKG_TILES_TOWARDS_SPR
                 // new allocation style, align to 192-th tile
-                if ((UBYTE)n_tiles) SetBankedBkgData(192 - n_tiles, n_tiles, data, prev_bank);
+                if ((UBYTE)n_tiles) SetBankedBkgData(192 - n_tiles, n_tiles, data, bank);
             #else
                 // old allocation style, align to 128-th tile
-                if ((UBYTE)n_tiles) SetBankedBkgData(128, n_tiles, data, prev_bank);
+                if ((UBYTE)n_tiles) SetBankedBkgData(128, n_tiles, data, bank);
             #endif
         } else {
             // if greater than 64 allow overflow into UI, align to 128-th tile
-            if ((UBYTE)n_tiles) SetBankedBkgData(128, n_tiles, data, prev_bank);
+            if ((UBYTE)n_tiles) SetBankedBkgData(128, n_tiles, data, bank);
         }
         return;
     }
-    SetBankedBkgData(128, 128, data, prev_bank);
+    SetBankedBkgData(128, 128, data, bank);
     n_tiles -= 128; data += 128 * 16; 
     
     // if more than 256 - then it's a 360-tile logo, load rest to sprite area
-    if ((UBYTE)n_tiles) SetBankedSpriteData(0, n_tiles, data, prev_bank);
+    if ((UBYTE)n_tiles) SetBankedSpriteData(0, n_tiles, data, bank);
 }
 
 void load_background(const background_t* background, UBYTE bank) BANKED {
@@ -204,8 +198,6 @@ UBYTE load_scene(const scene_t * scene, UBYTE bank, UBYTE init_data) BANKED {
     UBYTE i, tile_allocation_hiwater;
     scene_t scn;
 
-    ui_load_tiles();
-
     MemcpyBanked(&scn, scene, sizeof(scn), bank);
 
     current_scene.bank = bank;
@@ -220,6 +212,9 @@ UBYTE load_scene(const scene_t * scene, UBYTE bank, UBYTE init_data) BANKED {
 
     collision_bank = scn.collisions.bank;
     collision_ptr = scn.collisions.ptr;
+
+    // Load UI tiles, they may be overwritten by the following load_background() 
+    ui_load_tiles();
 
     // Load background + tiles
     load_background(scn.background.ptr, scn.background.bank);
@@ -239,16 +234,14 @@ UBYTE load_scene(const scene_t * scene, UBYTE bank, UBYTE init_data) BANKED {
 
     if (scene_type != SCENE_TYPE_LOGO) {
         // Load player
-        PLAYER.base_tile = 0;
         PLAYER.sprite = scn.player_sprite;
-        tile_allocation_hiwater = load_sprite(PLAYER.base_tile, scn.player_sprite.ptr, scn.player_sprite.bank);
-        UBYTE n_loaded = load_sprite(PLAYER.base_tile, scn.player_sprite.ptr, scn.player_sprite.bank);
+        UBYTE n_loaded = load_sprite(PLAYER.base_tile = 0, scn.player_sprite.ptr, scn.player_sprite.bank);
         tile_allocation_hiwater = (n_loaded > scn.reserve_tiles) ? n_loaded : scn.reserve_tiles; 
         load_animations(scn.player_sprite.ptr, scn.player_sprite.bank, ANIM_SET_DEFAULT, PLAYER.animations);
         load_bounds(scn.player_sprite.ptr, scn.player_sprite.bank, &PLAYER.bounds);
     } else {
         // no player on logo, but still some little amount of actors may be present
-        tile_allocation_hiwater = 0x68;
+        PLAYER.base_tile = tile_allocation_hiwater = 0x68;
         PLAYER.sprite = spritesheet_none_far;
         memset(PLAYER.animations, 0, sizeof(PLAYER.animations));
     }
@@ -277,8 +270,8 @@ UBYTE load_scene(const scene_t * scene, UBYTE bank, UBYTE init_data) BANKED {
         player_moving = FALSE;
 
         // Load actors
-        actors_active_head = 0;
-        actors_inactive_head = 0;
+        actors_active_head = NULL;
+        actors_inactive_head = NULL;
 
         // Add player to inactive, then activate
         PLAYER.active = FALSE;

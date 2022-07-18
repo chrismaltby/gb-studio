@@ -7,11 +7,16 @@ import loadAllMusicData from "./loadMusicData";
 import loadAllFontData from "./loadFontData";
 import loadAllAvatarData from "./loadAvatarData";
 import loadAllEmoteData from "./loadEmoteData";
+import loadAllSoundData from "./loadSoundData";
 import migrateProject from "./migrateProject";
 import { indexByFn, indexBy } from "../helpers/array";
 
+const toUnixFilename = (filename) => {
+  return filename.replace(/\\/g, "/");
+};
+
 const elemKey = (elem) => {
-  return (elem.plugin ? `${elem.plugin}/` : "") + elem.filename;
+  return (elem.plugin ? `${elem.plugin}/` : "") + toUnixFilename(elem.filename);
 };
 
 const indexByFilename = indexByFn(elemKey);
@@ -33,11 +38,12 @@ const loadProject = async (projectPath) => {
   const projectRoot = path.dirname(projectPath);
   const json = migrateProject(await fs.readJson(projectPath), projectRoot);
 
-  const [backgrounds, sprites, music, fonts, avatars, emotes] =
+  const [backgrounds, sprites, music, sounds, fonts, avatars, emotes] =
     await Promise.all([
       loadAllBackgroundData(projectRoot),
       loadAllSpriteData(projectRoot),
       loadAllMusicData(projectRoot),
+      loadAllSoundData(projectRoot),
       loadAllFontData(projectRoot),
       loadAllAvatarData(projectRoot),
       loadAllEmoteData(projectRoot),
@@ -151,6 +157,27 @@ const loadProject = async (projectPath) => {
         };
       }
       return track;
+    })
+    .sort(sortByName);
+
+  // Merge stored sound effect data with file system data
+  const oldSoundByFilename = indexByFilename(json.sounds || []);
+  const oldSoundByInode = indexByInode(json.sounds || []);
+
+  const fixedSoundIds = sounds
+    .map((sound) => {
+      const oldSound =
+        oldSoundByFilename[elemKey(sound)] || oldSoundByInode[sound.inode];
+      if (oldSound) {
+        return {
+          ...sound,
+          id: oldSound.id,
+          _v: oldSound._v,
+          symbol:
+            oldSound?.symbol !== undefined ? oldSound.symbol : sound.symbol,
+        };
+      }
+      return sound;
     })
     .sort(sortByName);
 
@@ -302,6 +329,7 @@ const loadProject = async (projectPath) => {
       backgrounds: fixedBackgroundIds,
       spriteSheets: fixedSpriteIds,
       music: fixedMusicIds,
+      sounds: fixedSoundIds,
       fonts: fixedFontIds,
       avatars: fixedAvatarIds,
       emotes: fixedEmoteIds,
