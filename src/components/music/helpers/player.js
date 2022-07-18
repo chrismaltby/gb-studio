@@ -126,7 +126,8 @@ const initPlayer = (onInit) => {
         "RUN",
         `Is Player Paused: ${isPlayerPaused()}`,
         `Do resume Player: ${emulator.readMem(do_resume_player)}`,
-        `OxFF0F: ${emulator.readMem(0xff0f)}`
+        `OxFF0F: ${emulator.readMem(0xff0f)}`,
+        `Order Count: ${emulator.readMem(getMemAddress("order_cnt"))}`
       );
     };
     setInterval(updateTracker, 10);
@@ -159,6 +160,9 @@ const play = (song) => {
 
     const current_order_addr = getMemAddress("current_order");
     const row_addr = getMemAddress("row");
+
+    const order_cnt_addr = getMemAddress("order_cnt");
+    emulator.writeMem(order_cnt_addr, song.sequence.length * 2);
 
     doResume();
 
