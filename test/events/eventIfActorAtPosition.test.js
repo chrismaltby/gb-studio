@@ -10,14 +10,21 @@ test("Should be able to conditionally execute if actor is at a position", () => 
       actorId: "player",
       x: 4,
       y: 8,
+      units: "tiles",
       true: truePath,
-      false: falsePath
+      false: falsePath,
     },
     {
       actorSetActive: mockactorSetActive,
-      ifActorAtPosition: mockIfActorAtPosition
+      ifActorAtPosition: mockIfActorAtPosition,
     }
   );
   expect(mockactorSetActive).toBeCalledWith("player");
-  expect(mockIfActorAtPosition).toBeCalledWith(4, 8, truePath, falsePath);
+  expect(mockIfActorAtPosition).toBeCalledWith(
+    4,
+    8,
+    truePath,
+    falsePath,
+    "tiles"
+  );
 });

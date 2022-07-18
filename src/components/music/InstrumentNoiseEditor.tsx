@@ -6,7 +6,6 @@ import trackerDocumentActions from "store/features/trackerDocument/trackerDocume
 import { NoiseInstrument } from "store/features/trackerDocument/trackerDocumentTypes";
 import { CheckboxField } from "ui/form/CheckboxField";
 import { FormDivider, FormRow } from "ui/form/FormLayout";
-import { SliderField } from "ui/form/SliderField";
 import { InstrumentLengthForm } from "./InstrumentLengthForm";
 import { InstrumentVolumeEditor } from "./InstrumentVolumeEditor";
 import { NoiseMacroEditorForm } from "./NoiseMacroEditorForm";
@@ -68,7 +67,7 @@ export const InstrumentNoiseEditor = ({
 
       <FormRow>
         <CheckboxField
-          name="length"
+          name="bit_count"
           label={l10n("FIELD_BIT_COUNT")}
           checked={instrument.bit_count === 7}
           onChange={(e) => {

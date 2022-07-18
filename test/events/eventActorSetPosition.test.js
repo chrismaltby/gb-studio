@@ -9,19 +9,20 @@ test("Should set player position", () => {
       actorId: "player",
       x: {
         type: "number",
-        value: 5
+        value: 5,
       },
       y: {
         type: "number",
-        value: 9
-      }
+        value: 9,
+      },
+      units: "tiles",
     },
     {
       scene: { actors: [] },
       actorSetActive: mockactorSetActive,
-      actorSetPosition: mockActorSetPosition
+      actorSetPosition: mockActorSetPosition,
     }
   );
   expect(mockactorSetActive).toBeCalledWith("player");
-  expect(mockActorSetPosition).toBeCalledWith(5, 9);
+  expect(mockActorSetPosition).toBeCalledWith(5, 9, "tiles");
 });

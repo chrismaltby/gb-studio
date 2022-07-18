@@ -564,8 +564,13 @@ OP_VM_LOAD_TEXT         = 0x40
 .endm
 
 OP_VM_DISPLAY_TEXT      = 0x41
+.DISPLAY_DEFAULT        = 0
+.DISPLAY_PRESERVE_POS   = 1
+.macro VM_DISPLAY_TEXT_EX OPTIONS
+        .db OP_VM_DISPLAY_TEXT, #<OPTIONS
+.endm
 .macro VM_DISPLAY_TEXT
-        .db OP_VM_DISPLAY_TEXT
+        VM_DISPLAY_TEXT_EX .DISPLAY_DEFAULT
 .endm
 
 OP_VM_SWITCH_TEXT_LAYER = 0x85
@@ -646,6 +651,11 @@ OP_VM_SET_FONT          = 0x4B
         VM_SET_CONST_UINT8 _vwf_direction, ^/DIRECTION & 1/
 .endm
 
+OP_VM_OVERLAY_SET_SUBMAP_EX = 0x4C
+.macro VM_OVERLAY_SET_SUBMAP_EX PARAMS_IDX
+        .db OP_VM_OVERLAY_SET_SUBMAP_EX, #>PARAMS_IDX, #<PARAMS_IDX 
+.endm
+
 OP_VM_OVERLAY_SCROLL    = 0x4D
 .macro VM_OVERLAY_SCROLL X, Y, W, H, COLOR
         .db OP_VM_OVERLAY_SCROLL, #<COLOR, #<H, #<W, #<Y, #<X 
@@ -657,8 +667,8 @@ OP_VM_OVERLAY_SET_SCROLL = 0x4E
 .endm
 
 OP_VM_OVERLAY_SET_SUBMAP = 0x4F
-.macro VM_OVERLAY_SET_SUBMAP X_IDX, Y_IDX, W, H, SX, SY
-        .db OP_VM_OVERLAY_SET_SUBMAP, #<SY, #<SX, #<H, #<W, #>Y_IDX, #<Y_IDX, #>X_IDX, #<X_IDX 
+.macro VM_OVERLAY_SET_SUBMAP X, Y, W, H, SX, SY
+        .db OP_VM_OVERLAY_SET_SUBMAP, #<SY, #<SX, #<H, #<W, #<Y, #<X 
 .endm
 
 ; --- GAMEBOY ------------------------------------------
@@ -1000,4 +1010,18 @@ OP_VM_COS_SCALE         = 0x8A
 OP_VM_SET_TEXT_SOUND    = 0x8B
 .macro VM_SET_TEXT_SOUND BANK, ADDR, MASK
         .db OP_VM_SET_TEXT_SOUND, #<MASK, #>ADDR, #<ADDR, #<BANK
+.endm
+
+; --- GB PRINTER -------------------------------------
+
+; Detect printer
+OP_VM_PRINTER_DETECT    = 0x8C
+.macro VM_PRINTER_DETECT ERROR, DELAY
+        .db OP_VM_PRINTER_DETECT, #<DELAY, #>ERROR, #<ERROR
+.endm
+
+; Print up to HEIGHT rows of the overlay window (must be multiple of 2)
+OP_VM_PRINT_OVERLAY     = 0x8D
+.macro VM_PRINT_OVERLAY ERROR, START, HEIGHT
+        .db OP_VM_PRINT_OVERLAY, #<HEIGHT, #<START, #>ERROR, #<ERROR
 .endm

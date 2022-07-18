@@ -14,11 +14,13 @@ UBYTE hide_sprites = FALSE;
 UBYTE show_actors_on_overlay = FALSE;
 UBYTE overlay_cut_scanline = LYC_SYNC_VALUE; 
 
-void remove_LCD_ISRs() CRITICAL BANKED {
-    remove_LCD(parallax_LCD_isr);
-    remove_LCD(simple_LCD_isr);
-    remove_LCD(fullscreen_LCD_isr);
-    LCDC_REG &= ~LCDCF_BG8000;
+void remove_LCD_ISRs() BANKED {
+    CRITICAL {
+        remove_LCD(parallax_LCD_isr);
+        remove_LCD(simple_LCD_isr);
+        remove_LCD(fullscreen_LCD_isr);
+        LCDC_REG &= ~LCDCF_BG8000;
+    }
 }
 
 void simple_LCD_isr() NONBANKED {

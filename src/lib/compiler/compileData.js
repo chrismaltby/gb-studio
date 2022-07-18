@@ -946,6 +946,7 @@ export const precompileScenes = (
 
     return {
       ...scene,
+      playerSpriteSheetId: playerSprite.id,
       background,
       actors,
       sprites: sceneSpriteIds.reduce((memo, spriteId) => {
@@ -1230,6 +1231,7 @@ const compile = async (
   // Add event data
   const additionalScripts = {};
   const additionalOutput = {};
+  const compiledCustomEventScriptCache = {};
 
   const eventPtrs = precompiled.sceneData.map((scene, sceneIndex) => {
     const compileScript = (
@@ -1312,6 +1314,7 @@ const compile = async (
         additionalScripts,
         additionalOutput,
         symbols,
+        compiledCustomEventScriptCache,
       });
 
       output[`${scriptName}.s`] = compiledScript;

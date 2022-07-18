@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import ScriptEventFormField from "./ScriptEventFormField";
 import { ScriptEventFieldSchema } from "store/features/entities/entitiesTypes";
 import {
@@ -8,6 +8,7 @@ import {
 import { useSelector } from "react-redux";
 import { RootState } from "store/configureStore";
 import { soundSelectors } from "store/features/entities/entitiesState";
+import { ScriptEditorContext } from "./ScriptEditorContext";
 
 interface ScriptEventFieldsProps {
   id: string;
@@ -31,6 +32,8 @@ const ScriptEventFields = ({
   fields,
   value,
 }: ScriptEventFieldsProps) => {
+  const context = useContext(ScriptEditorContext);
+
   const soundsLookup = useSelector((state: RootState) =>
     soundSelectors.selectEntities(state)
   );
@@ -65,10 +68,21 @@ const ScriptEventFields = ({
         }
 
         if (field.type === "events") {
-          return renderEvents(
+          const events = renderEvents(
             field.key || "",
             typeof field.label === "string" ? field.label : ""
           );
+          if (field.allowedContexts) {
+            if (!field.allowedContexts.includes(context)) {
+              const newContext = field.allowedContexts[0];
+              return (
+                <ScriptEditorContext.Provider value={newContext}>
+                  {events}
+                </ScriptEditorContext.Provider>
+              );
+            }
+          }
+          return events;
         }
 
         if (field.type === "group" && field.fields) {

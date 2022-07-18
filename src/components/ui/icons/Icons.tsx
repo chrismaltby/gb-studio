@@ -635,6 +635,34 @@ export const CopyIcon = () => (
   </svg>
 );
 
+export const AsteriskIcon = () => (
+  <svg version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 455 455">
+    <polygon
+      points="347.49,227 454.5,165.212 394.508,61.288 287.5,123.077 287.5,0 167.5,0 167.5,123.077 60.492,61.288 
+	0.499,165.212 107.51,227 0.5,288.788 60.492,392.712 167.5,330.923 167.5,455 287.5,455 287.5,330.923 394.508,392.712 
+	454.501,288.788 "
+    />
+  </svg>
+);
+
+export const CursorHorizontalIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <path d="M6 11v-4l-6 5 6 5v-4h12v4l6-5-6-5v4z" />
+  </svg>
+);
+
+export const CursorVeticalIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <path d="M13 6h4l-5-6-5 6h4v12h-4l5 6 5-6h-4z" />
+  </svg>
+);
+
+export const CursorDiagonalIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <path d="M8.465 7.05l2.828-3.05h-7.293v7.293l3.051-2.829 8.484 8.486-2.828 3.05h7.293v-7.292l-3.051 2.828z" />
+  </svg>
+);
+
 export const SadIcon = () => (
   <svg width="1096" height="974" viewBox="0 0 1096 974" version="1.1">
     <defs>
