@@ -107,12 +107,12 @@ class EventHelper extends Component {
 
           switch (event.args.operator) {
             case "==":
-              if (d == distance) {
+              if (d === distance) {
                 tiles.push({ xpos, ypos });
               }
               break;
             case "!=":
-              if (d != distance) {
+              if (d !== distance) {
                 tiles.push({ xpos, ypos });
               }
               break;
@@ -136,6 +136,8 @@ class EventHelper extends Component {
                 tiles.push({ xpos, ypos });
               }
               break;
+            default: {
+            }
           }
         }
       }
