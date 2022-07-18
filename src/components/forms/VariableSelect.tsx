@@ -23,6 +23,8 @@ import entitiesActions from "store/features/entities/entitiesActions";
 import l10n from "lib/helpers/l10n";
 import editorActions from "store/features/editor/editorActions";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
+import { UnitsSelectButtonInputOverlay } from "./UnitsSelectButtonInputOverlay";
+import { UnitType } from "store/features/entities/entitiesTypes";
 
 interface VariableSelectProps extends SelectCommonProps {
   id?: string;
@@ -31,6 +33,9 @@ interface VariableSelectProps extends SelectCommonProps {
   entityId: string;
   allowRename?: boolean;
   onChange: (newValue: string) => void;
+  units?: UnitType;
+  unitsAllowed?: UnitType[];
+  onChangeUnits?: (newUnits: UnitType) => void;
 }
 
 const Wrapper = styled.div`
@@ -133,6 +138,9 @@ export const VariableSelect: FC<VariableSelectProps> = ({
   onChange,
   entityId,
   allowRename,
+  units,
+  unitsAllowed,
+  onChangeUnits,
   ...selectProps
 }) => {
   const context = useContext(ScriptEditorContext);
@@ -265,7 +273,10 @@ export const VariableSelect: FC<VariableSelectProps> = ({
         />
       ) : (
         <Select
-          value={currentValue}
+          value={{
+            ...currentValue,
+            label: currentValue && `$${currentValue.label}`,
+          }}
           options={options}
           onChange={(newValue: Option) => {
             onChange(newValue.value);
@@ -289,6 +300,14 @@ export const VariableSelect: FC<VariableSelectProps> = ({
             <PencilIcon />
           </VariableRenameButton>
         ))}
+      {units && (
+        <UnitsSelectButtonInputOverlay
+          parentValue={(currentValue && `$${currentValue.label}`) ?? ""}
+          value={units}
+          allowedValues={unitsAllowed}
+          onChange={onChangeUnits}
+        />
+      )}
     </Wrapper>
   );
 };

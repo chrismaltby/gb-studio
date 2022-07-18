@@ -13,6 +13,7 @@ import {
   Palette,
   ScriptEvent,
   Sound,
+  DistanceUnitType,
   Variable,
 } from "store/features/entities/entitiesTypes";
 import { Dictionary } from "@reduxjs/toolkit";
@@ -2013,13 +2014,20 @@ extern void __mute_mask_${symbol};
     x: number,
     y: number,
     useCollisions: boolean,
-    moveType: ScriptBuilderMoveType
+    moveType: ScriptBuilderMoveType,
+    units: DistanceUnitType = "tiles"
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     const stackPtr = this.stackPtr;
     this._addComment("Actor Move To");
-    this._setConst(this._localRef(actorRef, 1), x * 8 * 16);
-    this._setConst(this._localRef(actorRef, 2), y * 8 * 16);
+    this._setConst(
+      this._localRef(actorRef, 1),
+      x * (units === "tiles" ? 8 : 1) * 16
+    );
+    this._setConst(
+      this._localRef(actorRef, 2),
+      y * (units === "tiles" ? 8 : 1) * 16
+    );
     this._setConst(
       this._localRef(actorRef, 3),
       toASMMoveFlags(moveType, useCollisions)
@@ -2033,7 +2041,8 @@ extern void __mute_mask_${symbol};
     variableX: string,
     variableY: string,
     useCollisions: boolean,
-    moveType: ScriptBuilderMoveType
+    moveType: ScriptBuilderMoveType,
+    units: DistanceUnitType = "tiles"
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     const stackPtr = this.stackPtr;
@@ -2041,10 +2050,10 @@ extern void __mute_mask_${symbol};
 
     this._rpn() //
       .refVariable(variableX)
-      .int16(8 * 16)
+      .int16((units === "tiles" ? 8 : 1) * 16)
       .operator(".MUL")
       .refVariable(variableY)
-      .int16(8 * 16)
+      .int16((units === "tiles" ? 8 : 1) * 16)
       .operator(".MUL")
       .stop();
 
@@ -2065,7 +2074,8 @@ extern void __mute_mask_${symbol};
     x = 0,
     y = 0,
     useCollisions = false,
-    moveType: ScriptBuilderMoveType
+    moveType: ScriptBuilderMoveType,
+    units: DistanceUnitType = "tiles"
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     const stackPtr = this.stackPtr;
@@ -2073,12 +2083,12 @@ extern void __mute_mask_${symbol};
     this._actorGetPosition(actorRef);
     this._rpn() //
       .ref(this._localRef(actorRef, 1))
-      .int16(x * 8 * 16)
+      .int16(x * (units === "tiles" ? 8 : 1) * 16)
       .operator(".ADD")
       .int16(0)
       .operator(".MAX")
       .ref(this._localRef(actorRef, 2))
-      .int16(y * 8 * 16)
+      .int16(y * (units === "tiles" ? 8 : 1) * 16)
       .operator(".ADD")
       .int16(0)
       .operator(".MAX")
@@ -2102,26 +2112,38 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
-  actorSetPosition = (x = 0, y = 0) => {
+  actorSetPosition = (x = 0, y = 0, units: DistanceUnitType = "tiles") => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Actor Set Position");
-    this._setConst(this._localRef(actorRef, 1), x * 8 * 16);
-    this._setConst(this._localRef(actorRef, 2), y * 8 * 16);
+
+    this._setConst(
+      this._localRef(actorRef, 1),
+      x * (units === "tiles" ? 8 : 1) * 16
+    );
+    this._setConst(
+      this._localRef(actorRef, 2),
+      y * (units === "tiles" ? 8 : 1) * 16
+    );
     this._actorSetPosition(actorRef);
+
     this._addNL();
   };
 
-  actorSetPositionToVariables = (variableX: string, variableY: string) => {
+  actorSetPositionToVariables = (
+    variableX: string,
+    variableY: string,
+    units: DistanceUnitType = "tiles"
+  ) => {
     const actorRef = this._declareLocal("actor", 4);
     const stackPtr = this.stackPtr;
     this._addComment("Actor Set Position To Variables");
 
     this._rpn() //
       .refVariable(variableX)
-      .int16(8 * 16)
+      .int16((units === "tiles" ? 8 : 1) * 16)
       .operator(".MUL")
       .refVariable(variableY)
-      .int16(8 * 16)
+      .int16((units === "tiles" ? 8 : 1) * 16)
       .operator(".MUL")
       .stop();
 
@@ -2134,18 +2156,22 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
-  actorSetPositionRelative = (x = 0, y = 0) => {
+  actorSetPositionRelative = (
+    x = 0,
+    y = 0,
+    units: DistanceUnitType = "tiles"
+  ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Actor Set Position Relative");
     this._actorGetPosition(actorRef);
     this._rpn() //
       .ref(this._localRef(actorRef, 1))
-      .int16(x * 8 * 16)
+      .int16(x * (units === "tiles" ? 8 : 1) * 16)
       .operator(".ADD")
       .int16(0)
       .operator(".MAX")
       .ref(this._localRef(actorRef, 2))
-      .int16(y * 8 * 16)
+      .int16(y * (units === "tiles" ? 8 : 1) * 16)
       .operator(".ADD")
       .int16(0)
       .operator(".MAX")
@@ -2158,17 +2184,21 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
-  actorGetPosition = (variableX: string, variableY: string) => {
+  actorGetPosition = (
+    variableX: string,
+    variableY: string,
+    units: DistanceUnitType = "tiles"
+  ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment(`Store Position In Variables`);
     this._actorGetPosition(actorRef);
 
     this._rpn() //
       .ref(this._localRef(actorRef, 1))
-      .int16(8 * 16)
+      .int16((units === "tiles" ? 8 : 1) * 16)
       .operator(".DIV")
       .ref(this._localRef(actorRef, 2))
-      .int16(8 * 16)
+      .int16((units === "tiles" ? 8 : 1) * 16)
       .operator(".DIV")
       .stop();
 
@@ -2178,14 +2208,17 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
-  actorGetPositionX = (variableX: string) => {
+  actorGetPositionX = (
+    variableX: string,
+    units: DistanceUnitType = "tiles"
+  ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment(`Store X Position In Variable`);
     this._actorGetPosition(actorRef);
 
     this._rpn() //
       .ref(this._localRef(actorRef, 1))
-      .int16(8 * 16)
+      .int16((units === "tiles" ? 8 : 1) * 16)
       .operator(".DIV")
       .stop();
 
@@ -2194,14 +2227,17 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
-  actorGetPositionY = (variableY: string) => {
+  actorGetPositionY = (
+    variableY: string,
+    units: DistanceUnitType = "tiles"
+  ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment(`Store Y Position In Variable`);
     this._actorGetPosition(actorRef);
 
     this._rpn() //
       .ref(this._localRef(actorRef, 2))
-      .int16(8 * 16)
+      .int16((units === "tiles" ? 8 : 1) * 16)
       .operator(".DIV")
       .stop();
 
@@ -2893,15 +2929,24 @@ extern void __mute_mask_${symbol};
   // --------------------------------------------------------------------------
   // Camera
 
-  cameraMoveTo = (x = 0, y = 0, speed = 0) => {
+  cameraMoveTo = (
+    x = 0,
+    y = 0,
+    speed = 0,
+    units: DistanceUnitType = "tiles"
+  ) => {
     const cameraMoveArgsRef = this._declareLocal("camera_move_args", 2, true);
     this._addComment("Camera Move To");
     const xOffset = 80;
     const yOffset = 72;
-    this._setConst(cameraMoveArgsRef, xOffset + Math.round(x * 8));
+
+    this._setConst(
+      cameraMoveArgsRef,
+      xOffset + Math.round(x * (units === "tiles" ? 8 : 1))
+    );
     this._setConst(
       this._localRef(cameraMoveArgsRef, 1),
-      yOffset + Math.round(y * 8)
+      yOffset + Math.round(y * (units === "tiles" ? 8 : 1))
     );
     if (speed === 0) {
       this._cameraSetPos(cameraMoveArgsRef);
@@ -2911,20 +2956,36 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
-  cameraMoveToVariables = (variableX: string, variableY: string, speed = 0) => {
+  cameraMoveToVariables = (
+    variableX: string,
+    variableY: string,
+    speed = 0,
+    units: DistanceUnitType = "tiles"
+  ) => {
     this._addComment("Camera Move To Variables");
-    this._rpn() //
-      .refVariable(variableX)
-      .int16(8)
-      .operator(".MUL")
-      .int16(80)
-      .operator(".ADD")
-      .refVariable(variableY)
-      .int16(8)
-      .operator(".MUL")
-      .int16(72)
-      .operator(".ADD")
-      .stop();
+    if (units === "tiles") {
+      this._rpn() //
+        .refVariable(variableX)
+        .int16(8)
+        .operator(".MUL")
+        .int16(80)
+        .operator(".ADD")
+        .refVariable(variableY)
+        .int16(8)
+        .operator(".MUL")
+        .int16(72)
+        .operator(".ADD")
+        .stop();
+    } else {
+      this._rpn() //
+        .refVariable(variableX)
+        .int16(80)
+        .operator(".ADD")
+        .refVariable(variableY)
+        .int16(72)
+        .operator(".ADD")
+        .stop();
+    }
     if (speed === 0) {
       this._cameraSetPos(".ARG1");
     } else {
@@ -3735,6 +3796,10 @@ extern void __mute_mask_${symbol};
       this.actorGetPositionX(variable);
     } else if (propertyValue === "ypos") {
       this.actorGetPositionY(variable);
+    } else if (propertyValue === "pxpos") {
+      this.actorGetPositionX(variable, "pixels");
+    } else if (propertyValue === "pypos") {
+      this.actorGetPositionY(variable, "pixels");
     } else if (propertyValue === "direction") {
       this.actorGetDirection(variable);
     } else if (propertyValue === "frame") {
@@ -4439,7 +4504,8 @@ extern void __mute_mask_${symbol};
     x: number,
     y: number,
     truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
-    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
+    units: DistanceUnitType = "tiles"
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     const falseLabel = this.getNextLabel();
@@ -4448,10 +4514,10 @@ extern void __mute_mask_${symbol};
     this._actorGetPosition(actorRef);
     this._rpn()
       .ref(this._localRef(actorRef, 1))
-      .int16(x * 8 * 16)
+      .int16(x * (units === "tiles" ? 8 : 1) * 16)
       .operator(".EQ")
       .ref(this._localRef(actorRef, 2))
-      .int16(y * 8 * 16)
+      .int16(y * (units === "tiles" ? 8 : 1) * 16)
       .operator(".EQ")
       .operator(".AND")
       .stop();

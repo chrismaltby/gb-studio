@@ -26,6 +26,7 @@ class EventHelper extends Component {
     const { event } = this.props;
 
     if (event.command === EVENT_CAMERA_MOVE_TO) {
+      const units = argValue(event.args.units);
       const x = argValue(event.args.x);
       const y = argValue(event.args.y);
       if (x === undefined && y === undefined) {
@@ -36,8 +37,8 @@ class EventHelper extends Component {
           <div
             className="EventHelper__CameraPos"
             style={{
-              left: (x || 0) * TILE_SIZE,
-              top: (y || 0) * TILE_SIZE,
+              left: (x || 0) * (units === "pixels" ? 1 : TILE_SIZE),
+              top: (y || 0) * (units === "pixels" ? 1 : TILE_SIZE),
             }}
           />
         </div>
@@ -49,6 +50,7 @@ class EventHelper extends Component {
       event.command === EVENT_ACTOR_SET_POSITION ||
       event.command === EVENT_IF_ACTOR_AT_POSITION
     ) {
+      const units = argValue(event.args.units);
       const x = argValue(event.args.x);
       const y = argValue(event.args.y);
       if (x === undefined && y === undefined) {
@@ -59,8 +61,8 @@ class EventHelper extends Component {
           <div
             className="EventHelper__PosMarker"
             style={{
-              left: (x || 0) * TILE_SIZE,
-              top: (y || 0) * TILE_SIZE,
+              left: (x || 0) * (units === "pixels" ? 1 : TILE_SIZE),
+              top: (y || 0) * (units === "pixels" ? 1 : TILE_SIZE),
             }}
           />
         </div>

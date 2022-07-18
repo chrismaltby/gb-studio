@@ -30,6 +30,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ability to pass number values as parameters when calling scripts [@pau-tomas](https://github.com/pau-tomas)
 - Add ability to access global variables from within scripts [@pau-tomas](https://github.com/pau-tomas)
 - Add ability to set script parameters to be passed by reference or by value (previously was always by reference)
+- Add ability to use pixel values for actor and camera movement [@Y0UR-U5ERNAME](https://github.com/Y0UR-U5ERNAME)
+- Add ability to view & change units used for time and distances inline within number and variable inputs
 
 ### Changed
 

@@ -74,6 +74,7 @@ export const MenuItemIcon = styled.div<MenuItemProps>`
   svg {
     width: 12px;
     height: 12px;
+    fill: ${(props) => props.theme.colors.text};
   }
   &:nth-child(1) {
     margin-left: -5px;

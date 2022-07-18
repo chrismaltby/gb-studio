@@ -34,6 +34,7 @@ export const Button = styled.button<ButtonProps>`
     width: 17px;
     max-width: 100%;
     max-height: 100%;
+    min-width: 17px;
     fill: ${(props) => props.theme.colors.button.text};
     opacity: ${(props) => (props.disabled ? 0.3 : 1)};
   }

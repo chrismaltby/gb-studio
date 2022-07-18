@@ -12,6 +12,7 @@ import EngineFieldSelect from "components/forms/EngineFieldSelect";
 import { FadeSpeedSelect } from "components/forms/FadeSpeedSelect";
 import InputPicker from "components/forms/InputPicker";
 import { MovementSpeedSelect } from "components/forms/MovementSpeedSelect";
+import { MovementTypeSelect } from "components/forms/MovementTypeSelect";
 import { MusicSelect } from "components/forms/MusicSelect";
 import { OperatorSelect } from "components/forms/OperatorSelect";
 import { OverlayColorSelect } from "components/forms/OverlayColorSelect";
@@ -29,8 +30,10 @@ import { useSelector } from "react-redux";
 import { RootState } from "store/configureStore";
 import {
   ActorDirection,
+  MovementType,
   ScriptEventFieldSchema,
   UnionValue,
+  UnitType,
 } from "store/features/entities/entitiesTypes";
 import styled from "styled-components";
 import { Button } from "ui/buttons/Button";
@@ -38,6 +41,7 @@ import { DropdownButton } from "ui/buttons/DropdownButton";
 import { CheckboxField } from "ui/form/CheckboxField";
 import { CodeEditor } from "ui/form/CodeEditor";
 import { Input } from "ui/form/Input";
+import { NumberInput } from "ui/form/NumberInput";
 import { Select } from "ui/form/Select";
 import { SliderField } from "ui/form/SliderField";
 import ToggleButtons from "ui/form/ToggleButtons";
@@ -62,6 +66,7 @@ interface ScriptEventFormInputProps {
   args: Record<string, unknown>;
   allowRename?: boolean;
   onChange: (newValue: unknown, valueIndex?: number | undefined) => void;
+  onChangeArg: (key: string, newValue: unknown) => void;
 }
 
 const ConnectButton = styled.div`
@@ -93,6 +98,7 @@ const ScriptEventFormInput = ({
   index,
   defaultValue,
   onChange,
+  onChangeArg,
   allowRename = true,
 }: ScriptEventFormInputProps) => {
   const defaultBackgroundPaletteIds = useSelector(
@@ -122,6 +128,15 @@ const ScriptEventFormInput = ({
       onChange(newValue, index);
     },
     [args, field, index, onChange, type, value]
+  );
+
+  const onChangeUnits = useCallback(
+    (e: UnitType) => {
+      if (field.unitsField) {
+        onChangeArg(field.unitsField, e);
+      }
+    },
+    [field.unitsField, onChangeArg]
   );
 
   const onChangeUnionField = (newValue: unknown) => {
@@ -209,7 +224,7 @@ const ScriptEventFormInput = ({
     );
   } else if (type === "number") {
     return (
-      <Input
+      <NumberInput
         id={id}
         type="number"
         value={String(value !== undefined && value !== null ? value : "")}
@@ -218,6 +233,9 @@ const ScriptEventFormInput = ({
         step={field.step}
         placeholder={String(field.placeholder || defaultValue)}
         onChange={onChangeField}
+        units={(args[field.unitsField || ""] || field.unitsDefault) as UnitType}
+        unitsAllowed={field.unitsAllowed}
+        onChangeUnits={onChangeUnits}
       />
     );
   } else if (type === "slider") {
@@ -430,6 +448,11 @@ const ScriptEventFormInput = ({
           entityId={entityId}
           onChange={onChangeField}
           allowRename={allowRename}
+          units={
+            (args[field.unitsField || ""] || field.unitsDefault) as UnitType
+          }
+          unitsAllowed={field.unitsAllowed}
+          onChangeUnits={onChangeUnits}
         />
       </OffscreenSkeletonInput>
     );
@@ -480,6 +503,15 @@ const ScriptEventFormInput = ({
           name={id}
           value={Number(value ?? 1)}
           allowNone={field.allowNone}
+          onChange={onChangeField}
+        />
+      </OffscreenSkeletonInput>
+    );
+  } else if (type === "moveType") {
+    return (
+      <OffscreenSkeletonInput>
+        <MovementTypeSelect
+          value={value as MovementType | undefined}
           onChange={onChangeField}
         />
       </OffscreenSkeletonInput>
@@ -600,6 +632,11 @@ const ScriptEventFormInput = ({
           name={id}
           value={String(value ?? "")}
           onChange={onChangeField}
+          units={
+            (args[field.unitsField || ""] || field.unitsDefault) as UnitType
+          }
+          unitsAllowed={field.unitsAllowed}
+          onChangeUnits={onChangeUnits}
         />
       </OffscreenSkeletonInput>
     );
@@ -629,6 +666,7 @@ const ScriptEventFormInput = ({
             allowRename={false}
             args={args}
             onChange={onChangeUnionField}
+            onChangeArg={onChangeArg}
           />
         </div>
         <ConnectButton>
