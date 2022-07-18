@@ -83,21 +83,27 @@ export const UnitsSelectButtonInputOverlay = ({
     <UnitsWrapper>
       <HiddenValue offset={parentValueOffset}>{parentValue}</HiddenValue>
       <Units>
-        <DropdownButton
-          label={currentValue}
-          showArrow={false}
-          size="small"
-          variant="transparent"
-        >
-          {allValues.map((item) => (
-            <MenuItem key={item} onClick={() => onChange?.(item)}>
-              <MenuItemIcon>
-                {value === item ? <CheckIcon /> : <BlankIcon />}
-              </MenuItemIcon>
-              {unitTypeNames[item]}
-            </MenuItem>
-          ))}
-        </DropdownButton>
+        {allowedValues ? (
+          <DropdownButton
+            label={currentValue}
+            showArrow={false}
+            size="small"
+            variant="transparent"
+          >
+            {allValues.map((item) => (
+              <MenuItem key={item} onClick={() => onChange?.(item)}>
+                <MenuItemIcon>
+                  {value === item ? <CheckIcon /> : <BlankIcon />}
+                </MenuItemIcon>
+                {unitTypeNames[item]}
+              </MenuItem>
+            ))}
+          </DropdownButton>
+        ) : (
+          <Button size="small" variant="transparent">
+            {currentValue}
+          </Button>
+        )}
       </Units>
     </UnitsWrapper>
   );
