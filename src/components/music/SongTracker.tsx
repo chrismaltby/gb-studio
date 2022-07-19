@@ -322,10 +322,52 @@ export const SongTracker = ({
         }
       };
 
+      const deleteSelectedTrackerFields = () => {
+        if (pattern && selectedTrackerFields) {
+          const newPattern = cloneDeep(pattern);
+          for (let i = 0; i < selectedTrackerFields.length; i++) {
+            const field = selectedTrackerFields[i];
+            const newPatternCell = {
+              ...newPattern[Math.floor(field / 16)][Math.floor(field / 4) % 4],
+            };
+
+            if (field % 4 === 0) {
+              newPatternCell.note = null;
+            }
+            if ((field - 1) % 4 === 0) {
+              newPatternCell.instrument = null;
+            }
+            if ((field - 2) % 4 === 0) {
+              newPatternCell.effectcode = null;
+            }
+            if ((field - 3) % 4 === 0) {
+              newPatternCell.effectparam = null;
+            }
+
+            newPattern[Math.floor(field / 16)][Math.floor(field / 4) % 4] =
+              newPatternCell;
+          }
+          dispatch(
+            trackerDocumentActions.editPattern({
+              patternId: patternId,
+              pattern: newPattern,
+            })
+          );
+        }
+      };
+
       if (e.key === "Escape") {
         e.preventDefault();
         setSelectedTrackerFields(undefined);
         setSelectionOrigin(undefined);
+      }
+
+      if (e.key === "Backspace") {
+        if (selectedTrackerFields && selectedTrackerFields.length > 0) {
+          e.preventDefault();
+          deleteSelectedTrackerFields();
+          return;
+        }
       }
 
       if (activeField === undefined) {
@@ -437,6 +479,8 @@ export const SongTracker = ({
       song,
       octaveOffset,
       editStep,
+      pattern,
+      selectedTrackerFields,
       selectionRect,
       selectionOrigin,
     ]
