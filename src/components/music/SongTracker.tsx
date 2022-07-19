@@ -156,7 +156,11 @@ export const SongTracker = ({
   useEffect(() => {
     if (playingRowRef && playingRowRef.current) {
       if (playing) {
-        playingRowRef.current.scrollIntoView();
+        playingRowRef.current.scrollIntoView({
+          behavior: "auto",
+          block: "center",
+          inline: "nearest",
+        });
       }
     }
   }, [playing, playbackState]);
@@ -179,9 +183,28 @@ export const SongTracker = ({
       const rowId = e.target.dataset["row"];
 
       if (!!fieldId) {
-        setActiveField(parseInt(fieldId));
-        if (!isSelecting) {
-          setSelectionOrigin(undefined);
+        if (e.shiftKey) {
+          setIsSelecting(true);
+
+          const newActiveField =
+            ((parseInt(fieldId) % NUM_FIELDS) + NUM_FIELDS) % NUM_FIELDS;
+
+          if (selectionOrigin) {
+            const x2 = newActiveField % ROW_SIZE;
+            const y2 = Math.floor(newActiveField / ROW_SIZE);
+
+            const x = Math.min(selectionOrigin.x, x2);
+            const y = Math.min(selectionOrigin.y, y2);
+            const width = Math.abs(selectionOrigin.x - x2);
+            const height = Math.abs(selectionOrigin.y - y2);
+            setSelectionRect({ x, y, width, height });
+          }
+          setActiveField(parseInt(fieldId));
+        } else {
+          setActiveField(parseInt(fieldId));
+          const x = parseInt(fieldId) % ROW_SIZE;
+          const y = Math.floor(parseInt(fieldId) / ROW_SIZE);
+          setSelectionOrigin({ x, y });
           setSelectionRect(undefined);
         }
       } else if (rowId) {
@@ -199,7 +222,7 @@ export const SongTracker = ({
         setActiveField(undefined);
       }
     },
-    [dispatch, isSelecting, sequenceId]
+    [dispatch, selectionOrigin, sequenceId]
   );
 
   const handleKeys = useCallback(
