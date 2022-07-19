@@ -197,7 +197,7 @@ export const TriggerEditor = ({
 
   const scriptButton = (
     <ScriptEditorDropdownButton
-      value={trigger.script}
+      value={trigger[scriptKey]}
       type="trigger"
       entityId={trigger.id}
       scriptKey={scriptKey}
