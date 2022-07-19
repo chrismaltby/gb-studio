@@ -1621,6 +1621,10 @@ class ScriptBuilder {
     this._addCmd("VM_CAMERA_MOVE_TO", addr, speed, lock);
   };
 
+  _cameraGetPos = (addr: string) => {
+    this._addCmd("VM_CAMERA_GET_POS", addr);
+  };
+
   _cameraSetPos = (addr: string) => {
     this._addCmd("VM_CAMERA_SET_POS", addr);
   };
@@ -3000,6 +3004,39 @@ extern void __mute_mask_${symbol};
       this._cameraMoveTo(".ARG1", speed, ".CAMERA_UNLOCK");
     }
     this._stackPop(2);
+  };
+
+  cameraMoveRelative = (
+    x = 0,
+    y = 0,
+    speed = 0,
+    units: DistanceUnitType = "tiles"
+  ) => {
+    const cameraRef = this._declareLocal("camera", 2, true);
+    const cameraMoveArgsRef = this._declareLocal("camera_move_args", 2, true);
+    this._addComment("Camera Move Relative");
+
+    this._cameraGetPos(cameraRef);
+    this._rpn()
+      .ref(this._localRef(cameraRef, 0))
+      .int16(x * (units === "tiles" ? 8 : 1))
+      .operator(".ADD")
+
+      .ref(this._localRef(cameraRef, 1))
+      .int16(y * (units === "tiles" ? 8 : 1))
+      .operator(".ADD")
+      .stop();
+
+    this._set(this._localRef(cameraMoveArgsRef, 0), ".ARG1");
+    this._set(this._localRef(cameraMoveArgsRef, 1), ".ARG0");
+    this._stackPop(2);
+
+    if (speed === 0) {
+      this._cameraSetPos(cameraMoveArgsRef);
+    } else {
+      this._cameraMoveTo(cameraMoveArgsRef, speed, ".CAMERA_UNLOCK");
+    }
+    this._addNL();
   };
 
   cameraLock = (speed = 0, axis: ScriptBuilderAxis[]) => {
