@@ -581,7 +581,7 @@ export const SongTracker = ({
         for (let i = 0; i < newPastedPattern.length; i++) {
           const pastedPatternCellRow = newPastedPattern[i];
           for (let j = 0; j < 4 - channelId; j++) {
-            if (pastedPatternCellRow[j]) {
+            if (pastedPatternCellRow[j] && newPattern[startRow + i]) {
               newPattern[startRow + i][channelId + j] = pastedPatternCellRow[j];
             }
           }
