@@ -2711,7 +2711,7 @@ extern void __mute_mask_${symbol};
     const waitArgsRef = this._declareLocal("wait_args", 1, true);
     const stackPtr = this.stackPtr;
     this._addComment("Wait N Frames");
-    this._setConst(waitArgsRef, frames);
+    this._setConst(waitArgsRef, Math.round(frames));
     this._invoke("wait_frames", 0, waitArgsRef);
     this._assertStackNeutral(stackPtr);
     this._addNL();

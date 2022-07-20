@@ -131,7 +131,7 @@ const compile = (input, helpers) => {
   }
 
   if (shouldWait) {
-    wait(seconds * 60);
+    wait(Math.round(seconds * 60));
   }
 };
 
