@@ -166,9 +166,14 @@ export default () => {
   };
 
   const onChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newName = e.currentTarget.value;
+    var newName = e.currentTarget.value;
+    if (newName.endsWith(".")) {
+      newName = newName.replace(/.$/,"");
+      setNameError(l10n("ERROR_PROJECT_NAME_ENDING_PERIOD"));
+    } else {
+      setNameError("");
+    }
     setName(newName);
-    setNameError("");
   };
 
   const onChangePath = (e: React.ChangeEvent<HTMLInputElement>) => {
