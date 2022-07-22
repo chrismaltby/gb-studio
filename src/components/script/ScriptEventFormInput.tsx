@@ -15,6 +15,7 @@ import { MovementSpeedSelect } from "components/forms/MovementSpeedSelect";
 import { MovementTypeSelect } from "components/forms/MovementTypeSelect";
 import { MusicSelect } from "components/forms/MusicSelect";
 import { OperatorSelect } from "components/forms/OperatorSelect";
+import { MathOperatorSelect } from "components/forms/MathOperatorSelect";
 import { OverlayColorSelect } from "components/forms/OverlayColorSelect";
 import { PaletteSelect } from "components/forms/PaletteSelect";
 import { PropertySelect } from "components/forms/PropertySelect";
@@ -567,6 +568,16 @@ const ScriptEventFormInput = ({
     return (
       <OffscreenSkeletonInput>
         <OperatorSelect
+          name={id}
+          value={String(value ?? "")}
+          onChange={onChangeField}
+        />
+      </OffscreenSkeletonInput>
+    );
+  } else if (type === "math_operator") {
+    return (
+      <OffscreenSkeletonInput>
+        <MathOperatorSelect
           name={id}
           value={String(value ?? "")}
           onChange={onChangeField}

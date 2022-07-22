@@ -536,6 +536,7 @@
   "FIELD_UNITS": "Units",
   "FIELD_PIXELS_SHORT": "px",
   "FIELD_COMPARISON": "Comparison",
+  "FIELD_OPERATION": "Operation",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -757,7 +758,7 @@
   "EVENT_ACTOR_ACTIVATE_LABEL": "Activate {actor}",
   "EVENT_ACTOR_DEACTIVATE_LABEL": "Deactivate {actor}",
   "EVENT_IDLE": "Idle",
-  "EVENT_LOOP_FOR_LABEL": "For ({variable} = {from}; {variable} <= {to}; {variable} += {inc})",
+  "EVENT_LOOP_FOR_LABEL": "For ({variable} = {from}; {variable} {comparison} {to}; {variable} {operation} {val})",
   "EVENT_LOOP_WHILE_LABEL": "While ({expression})",
 
   "// 10": "Menu -----------------------------------------------------",
