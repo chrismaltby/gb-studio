@@ -605,6 +605,7 @@
   "EVENT_LOOP": "Loop",
   "EVENT_LOOP_FOR": "Loop For",
   "EVENT_LOOP_WHILE": "Loop While",
+  "EVENT_LOOP_DO_WHILE": "Loop Do While",
   "EVENT_GROUP": "Event Group",
   "EVENT_COMMENT": "Comment",
   "EVENT_DEFINE_LABEL": "Label: Define",
@@ -759,6 +760,7 @@
   "EVENT_IDLE": "Idle",
   "EVENT_LOOP_FOR_LABEL": "For ({variable} = {from}; {variable} <= {to}; {variable} += {inc})",
   "EVENT_LOOP_WHILE_LABEL": "While ({expression})",
+  "EVENT_LOOP_DO_WHILE_LABEL": "Do While ({expression})",
 
   "// 10": "Menu -----------------------------------------------------",
 
