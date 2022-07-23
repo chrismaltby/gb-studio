@@ -759,6 +759,8 @@
   "EVENT_IDLE": "Idle",
   "EVENT_LOOP_FOR_LABEL": "For ({variable} = {from}; {variable} <= {to}; {variable} += {inc})",
   "EVENT_LOOP_WHILE_LABEL": "While ({expression})",
+  "EVENT_IF_CURRENT_SCENE_IS": "If Current Scene Is",
+  "EVENT_IF_CURRENT_SCENE_IS_LABEL": "If Current Scene Is {scene}",
 
   "// 10": "Menu -----------------------------------------------------",
 
