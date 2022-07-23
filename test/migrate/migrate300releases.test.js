@@ -3,6 +3,7 @@ import {
   migrateFrom300r3To310r1ScriptEvent,
   migrateFrom300r3To310r1Event,
   migrateFrom300r3To310r1,
+  migrateFrom310r1To310r2Event,
 } from "../../src/lib/project/migrateProject";
 
 test("should not fail on empty project", () => {
@@ -450,5 +451,47 @@ test("should migrate custom event definitions", () => {
         ],
       },
     ],
+  });
+});
+
+test("should migrate projectiles to default new fields to true", () => {
+  const oldEvent = {
+    command: "EVENT_LAUNCH_PROJECTILE",
+    args: {
+      spriteSheetId: "32c48a4d-6ce6-4aca-a23a-a6300b5c9e3b",
+      actorId: "0",
+      direction: "left",
+      speed: 1,
+      collisionGroup: "1",
+      collisionMask: ["player"],
+      animSpeed: 7,
+      lifeTime: 1,
+      directionType: "direction",
+      angleVariable: "0",
+      angle: 0,
+      otherActorId: "$self$",
+    },
+    id: "event-1",
+  };
+  const customEvents = [];
+  expect(migrateFrom310r1To310r2Event(oldEvent, customEvents)).toEqual({
+    command: "EVENT_LAUNCH_PROJECTILE",
+    args: {
+      spriteSheetId: "32c48a4d-6ce6-4aca-a23a-a6300b5c9e3b",
+      actorId: "0",
+      direction: "left",
+      speed: 1,
+      collisionGroup: "1",
+      collisionMask: ["player"],
+      animSpeed: 7,
+      lifeTime: 1,
+      directionType: "direction",
+      angleVariable: "0",
+      angle: 0,
+      otherActorId: "$self$",
+      loopAnim: true,
+      destroyOnHit: true,
+    },
+    id: "event-1",
   });
 });

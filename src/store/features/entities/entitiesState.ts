@@ -825,6 +825,7 @@ const addActor: CaseReducer<
     animSpeed: 15,
     paletteId: "",
     isPinned: false,
+    persistent: false,
     collisionGroup: "",
     ...(action.payload.defaults || {}),
     symbol: genEntitySymbol(state, "actor_0"),

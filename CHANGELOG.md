@@ -34,6 +34,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ability to view & change units used for time and distances inline within number and variable inputs
 - Add event "If Actor Distance From Actor" to check if one actor is within a certain range of another [@juliusl](https://github.com/juliusl)
 - Add event "Start Actor's 'On Update' Script" [@patrickmollohan](https://github.com/patrickmollohan)
+- Add "Keep Running While Offscreen" option to actor "On Update" scripts
+- Add ability to prevent projectiles being destroyed on collision and to prevent projectile animation from looping [untoxa](https://github.com/untoxa)
 
 ### Changed
 
@@ -51,6 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated German localisation. [@attackemartin](https://github.com/attackemartin)
 - List of "Variable Uses" now calculated in background thread to reduce pause while reading large projects
 - Timer, input and music scripts set from within a custom script no longer allow the script parameters to be used as they were not working, global variables can now be used instead.
+- Optimised actors_update() and vm_actor_move_to() to improve CPU usage
 
 ### Fixed
 

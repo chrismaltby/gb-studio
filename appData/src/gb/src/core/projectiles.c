@@ -25,7 +25,7 @@ void projectiles_init() BANKED {
     }
 }
 
-static UBYTE _save_bank; 
+static UBYTE _save_bank;
 static projectile_t *projectile;
 static projectile_t *prev_projectile;
 
@@ -34,7 +34,7 @@ void projectiles_update() NONBANKED {
 
     projectile = projectiles_active_head;
     prev_projectile = NULL;
-    
+
     _save_bank = _current_bank;
 
     while (projectile) {
@@ -47,7 +47,7 @@ void projectiles_update() NONBANKED {
             continue;
         }
         projectile->def.life_time--;
-    
+
         // Check reached animation tick frame
         if ((game_time & projectile->def.anim_tick) == 0) {
             projectile->frame++;
@@ -55,6 +55,8 @@ void projectiles_update() NONBANKED {
             if (projectile->frame == projectile->frame_end) {
                 if (!projectile->anim_noloop) {
                     projectile->frame = projectile->frame_start;
+                } else {
+                    projectile->frame--;
                 }
             }
         }
@@ -67,16 +69,17 @@ void projectiles_update() NONBANKED {
             actor_t *hit_actor = actor_overlapping_bb(&projectile->def.bounds, &projectile->pos, NULL, FALSE);
             if (hit_actor && (hit_actor->collision_group & projectile->def.collision_mask)) {
                 // Hit! - Fire collision script here
-                if (hit_actor->script.bank) {
-                    script_execute(hit_actor->script.bank, hit_actor->script.ptr, 0, 1, (UWORD)(projectile->def.collision_group));
+                if ((hit_actor->script.bank) && (hit_actor->hscript_hit & SCRIPT_TERMINATED)) {
+                    script_execute(hit_actor->script.bank, hit_actor->script.ptr, &(hit_actor->hscript_hit), 1, (UWORD)(projectile->def.collision_group));
                 }
-
-                // Remove projectile
-                next = projectile->next;
-                LL_REMOVE_ITEM(projectiles_active_head, projectile, prev_projectile);
-                LL_PUSH_HEAD(projectiles_inactive_head, projectile);
-                projectile = next;
-                continue;            
+                if (!projectile->strong) {
+                    // Remove projectile
+                    next = projectile->next;
+                    LL_REMOVE_ITEM(projectiles_active_head, projectile, prev_projectile);
+                    LL_PUSH_HEAD(projectiles_inactive_head, projectile);
+                    projectile = next;
+                    continue;
+                }
             }
         }
 
@@ -94,7 +97,7 @@ void projectiles_update() NONBANKED {
 
         SWITCH_ROM(projectile->def.sprite.bank);
         spritesheet_t *sprite = projectile->def.sprite.ptr;
-    
+
         allocated_hardware_sprites += move_metasprite(
             *(sprite->metasprites + projectile->frame),
             projectile->def.base_tile,
@@ -110,7 +113,7 @@ void projectiles_update() NONBANKED {
     SWITCH_ROM(_save_bank);
 }
 
-void projectiles_render() NONBANKED {    
+void projectiles_render() NONBANKED {
     projectile = projectiles_active_head;
     prev_projectile = NULL;
 
@@ -131,7 +134,7 @@ void projectiles_render() NONBANKED {
 
         SWITCH_ROM(projectile->def.sprite.bank);
         spritesheet_t *sprite = projectile->def.sprite.ptr;
-    
+
         allocated_hardware_sprites += move_metasprite(
             *(sprite->metasprites + projectile->frame),
             projectile->def.base_tile,
@@ -147,7 +150,7 @@ void projectiles_render() NONBANKED {
     SWITCH_ROM(_save_bank);
 }
 
-void projectile_launch(UBYTE index, upoint16_t *pos, UBYTE angle) BANKED {    
+void projectile_launch(UBYTE index, upoint16_t *pos, UBYTE angle, UBYTE flags) BANKED {
     projectile_t *projectile = projectiles_inactive_head;
     if (projectile) {
         memcpy(&projectile->def, &projectile_defs[index], sizeof(projectile_def_t));
@@ -163,10 +166,17 @@ void projectile_launch(UBYTE index, upoint16_t *pos, UBYTE angle) BANKED {
                 dir = DIR_RIGHT;
             }
         }
+
+        // set projectile flags
+        projectile->anim_noloop = (flags & PROJECTILE_ANIM_NOLOOP);
+        projectile->strong = (flags & PROJECTILE_STRONG);
+
+        // set animation
         projectile->frame = projectile->def.animations[dir].start;
         projectile->frame_start = projectile->def.animations[dir].start;
         projectile->frame_end = projectile->def.animations[dir].end + 1;
 
+        // set coordinates
         UINT16 initial_offset = projectile->def.initial_offset;
         projectile->pos.x = pos->x;
         projectile->pos.y = pos->y;
@@ -176,12 +186,12 @@ void projectile_launch(UBYTE index, upoint16_t *pos, UBYTE angle) BANKED {
         // Offset by initial amount
         while (initial_offset > 0xFFu) {
             projectile->pos.x += ((sinv * (UINT8)(0xFF)) >> 7);
-            projectile->pos.y -= ((cosv * (UINT8)(0xFF)) >> 7); 
-            initial_offset -= 0xFFu;           
+            projectile->pos.y -= ((cosv * (UINT8)(0xFF)) >> 7);
+            initial_offset -= 0xFFu;
         }
         if (initial_offset > 0) {
             projectile->pos.x += ((sinv * (UINT8)(initial_offset)) >> 7);
-            projectile->pos.y -= ((cosv * (UINT8)(initial_offset)) >> 7); 
+            projectile->pos.y -= ((cosv * (UINT8)(initial_offset)) >> 7);
         }
 
         point_translate_angle_to_delta(&projectile->delta_pos, angle, projectile->def.move_speed);

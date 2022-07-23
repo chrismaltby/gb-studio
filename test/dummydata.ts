@@ -74,6 +74,7 @@ export const dummyActor: Actor = {
   animSpeed: 3,
   moveSpeed: 1,
   isPinned: false,
+  persistent: false,
   collisionGroup: "",
   script: [],
   startScript: [],

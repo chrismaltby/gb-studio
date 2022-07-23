@@ -55,7 +55,7 @@
   "TOOL_TRACKER_VIEW": "Switch to Tracker view",
   "TOOL_PIANO_ROLL_VIEW": "Switch to Piano Roll view",
   "TOOL_ADD_SONG_LABEL":"Add new song",
-  
+
   "// 5": "Editors --------------------------------------------------",
   "SIDEBAR_NAVIGATION": "Navigation",
   "SIDEBAR_STARTING_SCENE": "Starting Scene",
@@ -536,6 +536,9 @@
   "FIELD_UNITS": "Units",
   "FIELD_PIXELS_SHORT": "px",
   "FIELD_COMPARISON": "Comparison",
+  "FIELD_LOOP_ANIMATION": "Loop Animation",
+  "FIELD_DESTROY_ON_HIT": "Destroy On Hit",
+  "FIELD_KEEP_RUNNING_WHILE_OFFSCREEN": "Keep Running While Offscreen",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

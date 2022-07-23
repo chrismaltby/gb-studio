@@ -13,18 +13,23 @@
 
 #define EMOTE_TOTAL_FRAMES         60
 #define MOVE_INACTIVE              0
-#define MOVE_ACTIVE                1
-#define MOVE_ALLOW_H               2
-#define MOVE_ALLOW_V               4
+#define MOVE_ALLOW_H               1
+#define MOVE_ALLOW_V               2
+#define MOVE_DIR_H                 4
+#define MOVE_DIR_V                 8
+#define MOVE_ACTIVE_H              16
+#define MOVE_ACTIVE_V              32
+#define MOVE_FINISHED_H            64
+#define MOVE_FINISHED_V            128
 #define TILE_FRACTION_MASK         0b1111111
 #define ONE_TILE_DISTANCE          128
 
 
 typedef struct act_move_to_t {
     UBYTE ID;
-    UBYTE _pad0; 
+    UBYTE _pad0;
     INT16 X, Y;
-    UBYTE ATTR; 
+    UBYTE ATTR;
 } act_move_to_t;
 
 typedef struct act_set_pos_t {
@@ -39,13 +44,13 @@ typedef struct act_set_frame_t {
 
 typedef struct gbs_farptr_t {
     UBYTE BANK;
-    UBYTE _pad0; 
+    UBYTE _pad0;
     const void * DATA;
 } gbs_farptr_t;
 
 void vm_actor_move_to(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {
     actor_t *actor;
-    direction_e new_dir = DIR_DOWN;
+    static direction_e new_dir = DIR_DOWN;
 
     // indicate waitable state of context
     THIS->waitable = 1;
@@ -54,30 +59,21 @@ void vm_actor_move_to(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {
     actor = actors + params->ID;
 
     if (THIS->flags == 0) {
-        THIS->flags = MOVE_ACTIVE;
         actor->movement_interrupt = FALSE;
-        
+
         // Switch to moving animation frames
         actor_set_anim_moving(actor);
 
         // Snap to nearest pixel before moving
-        actor->pos.x = ((actor->pos.x >> 4) << 4);
-        actor->pos.y = ((actor->pos.y >> 4) << 4);
+        actor->pos.x = actor->pos.x & 0xFFF0;
+        actor->pos.y = actor->pos.y & 0xFFF0;
 
         if (CHK_FLAG(params->ATTR, ACTOR_ATTR_DIAGONAL)) {
             SET_FLAG(THIS->flags, MOVE_ALLOW_H | MOVE_ALLOW_V);
         } if (CHK_FLAG(params->ATTR, ACTOR_ATTR_H_FIRST)) {
-            if (actor->pos.x != params->X) {
-                SET_FLAG(THIS->flags, MOVE_ALLOW_H);
-            } else {
-                SET_FLAG(THIS->flags, MOVE_ALLOW_V);
-            }            
+            SET_FLAG(THIS->flags, MOVE_ALLOW_H);
         } else {
-            if (actor->pos.y != params->Y) {
-                SET_FLAG(THIS->flags, MOVE_ALLOW_V);
-            } else {
-                SET_FLAG(THIS->flags, MOVE_ALLOW_H);
-            }
+            SET_FLAG(THIS->flags, MOVE_ALLOW_V);
         }
 
         // Check for collisions in path
@@ -106,6 +102,25 @@ void vm_actor_move_to(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {
                 }
             }
         }
+
+        // Actor already at destination
+        if ((actor->pos.x == params->X) && (actor->pos.y == params->Y)) {
+            THIS->flags = MOVE_INACTIVE;
+            actor_set_anim_idle(actor);
+            return;
+        }
+
+        // Initialise movement directions
+        if (actor->pos.x > params->X) {
+            // Move left
+            SET_FLAG(THIS->flags, MOVE_DIR_H);
+            actor_set_dir(actor, DIR_LEFT, TRUE);
+        }
+        if (actor->pos.y > params->Y) {
+            // Move up
+            SET_FLAG(THIS->flags, MOVE_DIR_V);
+            actor_set_dir(actor, DIR_UP, TRUE);
+        }
     }
 
     // Interrupt actor movement
@@ -120,87 +135,84 @@ void vm_actor_move_to(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {
         if ((actor->pos.y < params->Y) && (actor->pos.y & TILE_FRACTION_MASK)) {
             params->Y = (actor->pos.y & ~TILE_FRACTION_MASK) + ONE_TILE_DISTANCE;
         } else {
-            params->Y = actor->pos.y  & ~TILE_FRACTION_MASK; 
+            params->Y = actor->pos.y  & ~TILE_FRACTION_MASK;
         }
         actor->movement_interrupt = FALSE;
     }
 
-    // Actor reached destination
-    if ((actor->pos.x == params->X) && (actor->pos.y == params->Y)) {
-        THIS->flags = MOVE_INACTIVE;
-        actor_set_anim_idle(actor);
-        return;
-    }
-
     // Move in X Axis
-    if (CHK_FLAG(THIS->flags, MOVE_ALLOW_H) && (actor->pos.x != params->X)) {
-        if (actor->pos.x < params->X) {
-            new_dir = DIR_RIGHT;
-        } else if (actor->pos.x > params->X) {
-            new_dir = DIR_LEFT;
-        }
-        
+    if (CHK_FLAG(THIS->flags, MOVE_ALLOW_H)) {
+        // Get hoizontal direction from flags
+        new_dir = CHK_FLAG(THIS->flags, MOVE_DIR_H) ? DIR_LEFT : DIR_RIGHT;
+
         // Move actor
         point_translate_dir(&actor->pos, new_dir, actor->move_speed);
 
         // Check for actor collision
         if (CHK_FLAG(params->ATTR, ACTOR_ATTR_CHECK_COLL) && !CHK_FLAG(THIS->flags, MOVE_ALLOW_V) && actor_overlapping_bb(&actor->bounds, &actor->pos, actor, FALSE)) {
-            point_translate_dir(&actor->pos, FLIPPED_DIR(new_dir), actor->move_speed);   
+            point_translate_dir(&actor->pos, FLIPPED_DIR(new_dir), actor->move_speed);
             THIS->flags = 0;
             actor_set_anim_idle(actor);
             return;
         }
 
-        // Check if overshot destination
-        if (new_dir == DIR_LEFT &&  (actor->pos.x < params->X)) {
-            actor->pos.x = params->X;
-        } else if (new_dir == DIR_RIGHT && (actor->pos.x > params->X)) {
-            actor->pos.x = params->X;
+        // If first frame moving in this direction update actor direction
+        if (!CHK_FLAG(THIS->flags, MOVE_ACTIVE_H)) {
+            SET_FLAG(THIS->flags, MOVE_ACTIVE_H);
+            actor_set_dir(actor, new_dir, TRUE);
         }
 
-        // Reached Horizontal Destination
-        if (actor->pos.x == params->X) {
-            SET_FLAG(THIS->flags, MOVE_ALLOW_V);
+        // Check if overshot destination
+        if (
+            (new_dir == DIR_LEFT && (actor->pos.x <= params->X)) || // Overshot left
+            (new_dir == DIR_RIGHT && (actor->pos.x >= params->X))   // Overshot right
+        ) {
+            // Reached Horizontal Destination
+            actor->pos.x = params->X;
+            SET_FLAG(THIS->flags, MOVE_ALLOW_V | MOVE_FINISHED_H);
             CLR_FLAG(THIS->flags, MOVE_ALLOW_H);
-        }        
+        }
     }
 
     // Move in Y Axis
-    if (CHK_FLAG(THIS->flags, MOVE_ALLOW_V) && (actor->pos.y != params->Y)) {
-        if (actor->pos.y < params->Y) {
-            new_dir = DIR_DOWN;
-        } else if (actor->pos.y > params->Y) {
-            new_dir = DIR_UP;
-        }
-        
+    if (CHK_FLAG(THIS->flags, MOVE_ALLOW_V)) {
+        // Get vertical direction from flags
+        new_dir = CHK_FLAG(THIS->flags, MOVE_DIR_V) ? DIR_UP : DIR_DOWN;
+
         // Move actor
         point_translate_dir(&actor->pos, new_dir, actor->move_speed);
 
         // Check for actor collision
         if (CHK_FLAG(params->ATTR, ACTOR_ATTR_CHECK_COLL) && actor_overlapping_bb(&actor->bounds, &actor->pos, actor, FALSE)) {
-            point_translate_dir(&actor->pos, FLIPPED_DIR(new_dir), actor->move_speed);   
+            point_translate_dir(&actor->pos, FLIPPED_DIR(new_dir), actor->move_speed);
             THIS->flags = 0;
             actor_set_anim_idle(actor);
             return;
         }
 
-        // Check if overshot destination
-        if (new_dir == DIR_UP && (actor->pos.y < params->Y)) {
-            actor->pos.y = params->Y;
-        } else if (new_dir == DIR_DOWN &&  (actor->pos.y > params->Y)) {
-            actor->pos.y = params->Y;
+        // If first frame moving in this direction update actor direction
+        if (!CHK_FLAG(THIS->flags, MOVE_ACTIVE_V)) {
+            SET_FLAG(THIS->flags, MOVE_ACTIVE_V);
+            actor_set_dir(actor, new_dir, TRUE);
         }
 
-        // Reached Vertical Destination
-        if (actor->pos.y == params->Y) {
-            SET_FLAG(THIS->flags, MOVE_ALLOW_H);
+        // Check if overshot destination
+        if (
+            (new_dir == DIR_UP && (actor->pos.y <= params->Y)) || // Overshot above
+            (new_dir == DIR_DOWN &&  (actor->pos.y >= params->Y)) // Overshot below
+         ) {
+            actor->pos.y = params->Y;
+            SET_FLAG(THIS->flags, MOVE_ALLOW_H | MOVE_FINISHED_V);
             CLR_FLAG(THIS->flags, MOVE_ALLOW_V);
         }
     }
 
-    // If changed direction, trigger actor rerender
-    if (actor->dir != new_dir) {
-        actor_set_dir(actor, new_dir, TRUE);        
+    // Actor reached destination
+    // if ((actor->pos.x == params->X) && (actor->pos.y == params->Y)) {
+    if (CHK_FLAG(THIS->flags, MOVE_FINISHED_H) && CHK_FLAG(THIS->flags, MOVE_FINISHED_V)) {
+        THIS->flags = MOVE_INACTIVE;
+        actor_set_anim_idle(actor);
+        return;
     }
 
     THIS->PC -= (INSTRUCTION_SIZE + sizeof(idx));
@@ -214,7 +226,7 @@ void vm_actor_move_cancel(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {
     actor->movement_interrupt = TRUE;
 }
 
-void vm_actor_activate(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {    
+void vm_actor_activate(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {
     UBYTE * n_actor = VM_REF_TO_PTR(idx);
     actor_t * actor = actors + *n_actor;
     if (actor == &PLAYER) {
@@ -225,7 +237,7 @@ void vm_actor_activate(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {
     }
 }
 
-void vm_actor_deactivate(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {    
+void vm_actor_deactivate(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {
     UBYTE * n_actor = VM_REF_TO_PTR(idx);
     actor_t * actor = actors + *n_actor;
     if (actor == &PLAYER) {
@@ -260,7 +272,7 @@ void vm_actor_set_anim(SCRIPT_CTX * THIS, INT16 idx, INT16 idx_anim) OLDCALL BAN
 
 void vm_actor_set_pos(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {
     actor_t *actor;
-    
+
     act_set_pos_t * params = VM_REF_TO_PTR(idx);
     actor = actors + (UBYTE)(params->ID);
 
@@ -270,7 +282,7 @@ void vm_actor_set_pos(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {
 
 void vm_actor_get_pos(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {
     actor_t *actor;
-    
+
     act_set_pos_t * params = VM_REF_TO_PTR(idx);
     actor = actors + (UBYTE)(params->ID);
 
@@ -281,7 +293,7 @@ void vm_actor_get_pos(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {
 void vm_actor_get_dir(SCRIPT_CTX * THIS, INT16 idx, INT16 dest) OLDCALL BANKED {
     UWORD * A;
     actor_t *actor;
-    
+
     act_set_pos_t * params = VM_REF_TO_PTR(idx);
     actor = actors + (UBYTE)(params->ID);
 
@@ -292,7 +304,7 @@ void vm_actor_get_dir(SCRIPT_CTX * THIS, INT16 idx, INT16 dest) OLDCALL BANKED {
 void vm_actor_get_angle(SCRIPT_CTX * THIS, INT16 idx, INT16 dest) OLDCALL BANKED {
     UWORD * A;
     actor_t *actor;
-    
+
     act_set_pos_t * params = VM_REF_TO_PTR(idx);
     actor = actors + (UBYTE)(params->ID);
 
@@ -302,7 +314,7 @@ void vm_actor_get_angle(SCRIPT_CTX * THIS, INT16 idx, INT16 dest) OLDCALL BANKED
 
 void vm_actor_emote(SCRIPT_CTX * THIS, INT16 idx, UBYTE emote_tiles_bank, const unsigned char *emote_tiles) OLDCALL BANKED {
 
-    // on first call load emote sprite 
+    // on first call load emote sprite
     if (THIS->flags == 0) {
         UBYTE * n_actor = VM_REF_TO_PTR(idx);
         THIS->flags = 1;
@@ -348,7 +360,7 @@ void vm_actor_replace_tile(SCRIPT_CTX * THIS, INT16 idx, UBYTE target_tile, UBYT
     SetBankedSpriteData(actor->base_tile + target_tile, length, tileset->tiles + (start_tile << 4), tileset_bank);
 }
 
-void vm_actor_set_hidden(SCRIPT_CTX * THIS, INT16 idx, UBYTE hidden) OLDCALL BANKED {    
+void vm_actor_set_hidden(SCRIPT_CTX * THIS, INT16 idx, UBYTE hidden) OLDCALL BANKED {
     actor_t *actor;
     UBYTE * n_actor = VM_REF_TO_PTR(idx);
     actor = actors + *n_actor;
