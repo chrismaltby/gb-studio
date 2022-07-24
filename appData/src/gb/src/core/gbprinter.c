@@ -9,7 +9,7 @@
 const uint8_t PRINTER_INIT[]    = { sizeof(PRINTER_INIT),  0x88,0x33,0x01,0x00,0x00,0x00,0x01,0x00,0x00,0x00 };
 const uint8_t PRINTER_STATUS[]  = { sizeof(PRINTER_STATUS),0x88,0x33,0x0F,0x00,0x00,0x00,0x0F,0x00,0x00,0x00 };
 const uint8_t PRINTER_EOF[]     = { sizeof(PRINTER_EOF),   0x88,0x33,0x04,0x00,0x00,0x00,0x04,0x00,0x00,0x00 };
-const uint8_t PRINTER_START[]   = { sizeof(PRINTER_START), 0x88,0x33,0x02,0x00,0x04,0x00,0x01,0x03,0xE4,0x7F,0x6D,0x01,0x00,0x00 };
+const uint8_t PRINTER_START[]   = { sizeof(PRINTER_START), 0x88,0x33,0x02,0x00,0x04,0x00,0x01,0x00,0xE4,0x7F,0x6A,0x01,0x00,0x00 };
 
 uint16_t printer_status;
 uint8_t printer_tile_num, printer_packet_num;
@@ -38,7 +38,7 @@ uint8_t printer_print_tile(const uint8_t *tiledata, uint8_t num_packets) {
         const uint8_t * data = PRINT_TILE;
         for (uint8_t i = sizeof(PRINT_TILE); i != 0; i--) printer_send_receive(*data++);
         printer_CRC = 0x04 + 0x80 + 0x02;
-    }          
+    }
 
     for(uint8_t i = 0x10; i != 0; i--, tiledata++) {
         printer_CRC += *tiledata;
@@ -98,7 +98,7 @@ uint8_t gbprinter_print_overlay(uint8_t start, uint8_t rows) BANKED {
             }
             get_win_data(tileno, 1, tile_data);
             VBK_REG = 0;
-#else 
+#else
             get_win_data(tileno, 1, tile_data);
 #endif
             if ((error = printer_print_tile(tile_data, packets)) & STATUS_MASK_ERRORS) return error;
@@ -106,4 +106,4 @@ uint8_t gbprinter_print_overlay(uint8_t start, uint8_t rows) BANKED {
     }
     if ((error = printer_wait(SECONDS(1), STATUS_BUSY, STATUS_BUSY)) & STATUS_MASK_ERRORS) return error;
     return printer_wait(SECONDS(30), STATUS_BUSY, 0);
-} 
+}

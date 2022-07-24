@@ -126,19 +126,24 @@ const fields = [
     defaultValue: 0,
   },
   {
-    key: "speed",
-    label: l10n("FIELD_SPEED"),
-    type: "moveSpeed",
-    allowNone: true,
-    defaultValue: 2,
-    width: "50%",
-  },
-  {
-    key: "animSpeed",
-    label: l10n("FIELD_ANIMATION_SPEED"),
-    type: "animSpeed",
-    defaultValue: 15,
-    width: "50%",
+    type: "group",
+    fields: [
+      {
+        key: "speed",
+        label: l10n("FIELD_SPEED"),
+        type: "moveSpeed",
+        allowNone: true,
+        defaultValue: 2,
+        width: "50%",
+      },
+      {
+        key: "animSpeed",
+        label: l10n("FIELD_ANIMATION_SPEED"),
+        type: "animSpeed",
+        defaultValue: 15,
+        width: "50%",
+      },
+    ],
   },
   {
     key: "lifeTime",
@@ -149,6 +154,25 @@ const fields = [
     step: 0.1,
     width: "50%",
     defaultValue: 1,
+  },
+  {
+    type: "group",
+    fields: [
+      {
+        key: "loopAnim",
+        label: l10n("FIELD_LOOP_ANIMATION"),
+        type: "checkbox",
+        alignCheckbox: true,
+        defaultValue: true,
+      },
+      {
+        key: "destroyOnHit",
+        label: l10n("FIELD_DESTROY_ON_HIT"),
+        type: "checkbox",
+        alignCheckbox: true,
+        defaultValue: true,
+      },
+    ],
   },
   {
     type: "group",
@@ -200,26 +224,45 @@ const compile = (input, helpers) => {
       projectileIndex,
       input.x,
       input.y,
-      input.direction
+      input.direction,
+      input.destroyOnHit,
+      input.loopAnim
     );
   } else if (input.directionType === "angle") {
-    launchProjectileInAngle(projectileIndex, input.x, input.y, input.angle);
+    launchProjectileInAngle(
+      projectileIndex,
+      input.x,
+      input.y,
+      input.angle,
+      input.destroyOnHit,
+      input.loopAnim
+    );
   } else if (input.directionType === "anglevar") {
     launchProjectileInAngleVariable(
       projectileIndex,
       input.x,
       input.y,
-      input.angleVariable
+      input.angleVariable,
+      input.destroyOnHit,
+      input.loopAnim
     );
   } else if (input.directionType === "actor") {
     if (input.actorId === input.otherActorId) {
-      launchProjectileInSourceActorDirection(projectileIndex, input.x, input.y);
+      launchProjectileInSourceActorDirection(
+        projectileIndex,
+        input.x,
+        input.y,
+        input.destroyOnHit,
+        input.loopAnim
+      );
     } else {
       launchProjectileInActorDirection(
         projectileIndex,
         input.x,
         input.y,
-        input.otherActorId
+        input.otherActorId,
+        input.destroyOnHit,
+        input.loopAnim
       );
     }
   }

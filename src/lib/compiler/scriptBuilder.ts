@@ -334,6 +334,15 @@ const toASMCameraLock = (axis: ScriptBuilderAxis[]) => {
   );
 };
 
+const toProjectileFlags = (destroyOnHit: boolean, loopAnim: boolean) => {
+  return unionFlags(
+    ([] as string[]).concat(
+      !destroyOnHit ? ".PROJECTILE_STRONG" : [],
+      !loopAnim ? ".PROJECTILE_ANIM_ONCE" : []
+    )
+  );
+};
+
 const toASMSoundPriority = (priority: SFXPriority): ASMSFXPriority => {
   if (priority === "low") {
     return ".SFX_PRIORITY_MINIMAL";
@@ -1104,12 +1113,12 @@ class ScriptBuilder {
           return rpn.ref(variableAlias);
         }
       },
-      int8: (value: number) => {
+      int8: (value: number | string) => {
         rpnCmd(".R_INT8", value);
         stack.push(0);
         return rpn;
       },
-      int16: (value: number) => {
+      int16: (value: number | string) => {
         rpnCmd(".R_INT16", value);
         stack.push(0);
         return rpn;
@@ -1773,6 +1782,10 @@ extern void __mute_mask_${symbol};
       // Args are popped by called script with ret_far_n
       this.stackPtr -= argsLen;
     }
+  };
+
+  _callNative = (symbol: string) => {
+    this._addCmd("VM_CALL_NATIVE", `b_${symbol}`, `_${symbol}`);
   };
 
   _returnFar = () => {
@@ -2578,26 +2591,38 @@ extern void __mute_mask_${symbol};
     return projectileIndex;
   };
 
+  _rpnProjectilePosArgs = (actorRef: string, x = 0, y = 0) => {
+    this._actorGetPosition(actorRef);
+    const rpn = this._rpn();
+    rpn.ref(this._localRef(actorRef, 1));
+    if (x) {
+      rpn.int16(x * 16).operator(".ADD");
+    }
+    rpn.ref(this._localRef(actorRef, 2));
+    if (y) {
+      rpn.int16(-y * 16).operator(".ADD");
+    }
+    return rpn;
+  };
+
   launchProjectileInDirection = (
     projectileIndex: number,
     x = 0,
     y = 0,
-    direction: string
+    direction: string,
+    destroyOnHit = false,
+    loopAnim = false
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Direction");
     this._actorGetPosition(actorRef);
-    this._rpn() //
-      .ref(this._localRef(actorRef, 1))
-      .int16(x * 16)
-      .operator(".ADD")
-      .ref(this._localRef(actorRef, 2))
-      .int16(-y * 16)
-      .operator(".ADD")
+    const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
+    rpn
       .int16(dirToAngle(direction))
+      .int16(toProjectileFlags(destroyOnHit, loopAnim))
       .stop();
-    this._projectileLaunch(projectileIndex, ".ARG2");
-    this._stackPop(3);
+    this._projectileLaunch(projectileIndex, ".ARG3");
+    this._stackPop(4);
     this._addNL();
   };
 
@@ -2605,22 +2630,20 @@ extern void __mute_mask_${symbol};
     projectileIndex: number,
     x = 0,
     y = 0,
-    angle: number
+    angle: number,
+    destroyOnHit = false,
+    loopAnim = false
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Angle");
     this._actorGetPosition(actorRef);
-    this._rpn() //
-      .ref(this._localRef(actorRef, 1))
-      .int16(x * 16)
-      .operator(".ADD")
-      .ref(this._localRef(actorRef, 2))
-      .int16(-y * 16)
-      .operator(".ADD")
+    const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
+    rpn
       .int16(Math.round(angle % 256))
+      .int16(toProjectileFlags(destroyOnHit, loopAnim))
       .stop();
-    this._projectileLaunch(projectileIndex, ".ARG2");
-    this._stackPop(3);
+    this._projectileLaunch(projectileIndex, ".ARG3");
+    this._stackPop(4);
     this._addNL();
   };
 
@@ -2628,45 +2651,40 @@ extern void __mute_mask_${symbol};
     projectileIndex: number,
     x = 0,
     y = 0,
-    angleVariable: string
+    angleVariable: string,
+    destroyOnHit = false,
+    loopAnim = false
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Angle");
     this._actorGetPosition(actorRef);
-    this._rpn() //
-      .ref(this._localRef(actorRef, 1))
-      .int16(x * 16)
-      .operator(".ADD")
-      .ref(this._localRef(actorRef, 2))
-      .int16(-y * 16)
-      .operator(".ADD")
+    const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
+    rpn
       .refVariable(angleVariable)
+      .int16(toProjectileFlags(destroyOnHit, loopAnim))
       .stop();
-    this._projectileLaunch(projectileIndex, ".ARG2");
-    this._stackPop(3);
+    this._projectileLaunch(projectileIndex, ".ARG3");
+    this._stackPop(4);
     this._addNL();
   };
 
   launchProjectileInSourceActorDirection = (
     projectileIndex: number,
     x = 0,
-    y = 0
+    y = 0,
+    destroyOnHit = false,
+    loopAnim = false
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Source Actor Direction");
-    this._actorGetPosition(actorRef);
-    this._rpn() //
-      .ref(this._localRef(actorRef, 1))
-      .int16(x * 16)
-      .operator(".ADD")
-      .ref(this._localRef(actorRef, 2))
-      .int16(-y * 16)
-      .operator(".ADD")
-      .int16(0)
+    const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
+    rpn
+      .int16(0) // Save space for direction
+      .int16(toProjectileFlags(destroyOnHit, loopAnim))
       .stop();
-    this._actorGetAngle(actorRef, ".ARG0");
-    this._projectileLaunch(projectileIndex, ".ARG2");
-    this._stackPop(3);
+    this._actorGetAngle(actorRef, ".ARG1");
+    this._projectileLaunch(projectileIndex, ".ARG3");
+    this._stackPop(4);
     this._addNL();
   };
 
@@ -2674,23 +2692,22 @@ extern void __mute_mask_${symbol};
     projectileIndex: number,
     x = 0,
     y = 0,
-    actorId: string
+    actorId: string,
+    destroyOnHit = false,
+    loopAnim = false
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Actor Direction");
     this._actorGetPosition(actorRef);
-    this._rpn() //
-      .ref(this._localRef(actorRef, 1))
-      .int16(x * 16)
-      .operator(".ADD")
-      .ref(this._localRef(actorRef, 2))
-      .int16(-y * 16)
-      .operator(".ADD")
+    const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
+    rpn
+      .int16(0) // Save space for direction
+      .int16(toProjectileFlags(destroyOnHit, loopAnim))
       .stop();
-    this.actorPushById(actorId);
-    this._actorGetAngle(".ARG0", ".ARG0");
-    this._projectileLaunch(projectileIndex, ".ARG2");
-    this._stackPop(3);
+    this.setActorId(".ARG1", actorId);
+    this._actorGetAngle(".ARG1", ".ARG1");
+    this._projectileLaunch(projectileIndex, ".ARG3");
+    this._stackPop(4);
     this._addNL();
   };
 

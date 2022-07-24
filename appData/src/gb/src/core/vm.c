@@ -715,6 +715,19 @@ UBYTE script_terminate(UBYTE ID) BANKED {
     return FALSE;
 }
 
+// detach script from the monitoring handle
+UBYTE script_detach_hthread(UBYTE ID) BANKED {
+    static SCRIPT_CTX * ctx;
+    ctx = first_ctx;
+    while (ctx) {
+        if (ctx->ID == ID) {
+            ctx->hthread = 0;
+            return TRUE;
+        } else ctx = ctx->next;
+    }
+    return FALSE;
+}
+
 // process all contexts
 // executes one command in each active context
 UBYTE script_runner_update() NONBANKED {

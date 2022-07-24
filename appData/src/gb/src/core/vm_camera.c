@@ -77,9 +77,9 @@ UBYTE camera_shake_frames(void * THIS, UBYTE start, UWORD * stack_frame) OLDCALL
             if (value > 10) value -= 10;
             scroll_offset_y = value - 5;
         }
-        ((SCRIPT_CTX *)THIS)->waitable = TRUE; 
+        ((SCRIPT_CTX *)THIS)->waitable = TRUE;
         return FALSE;
     }
-    scroll_offset_x = scroll_offset_y = 0; 
+    scroll_offset_x = scroll_offset_y = 0;
     return TRUE;
 }

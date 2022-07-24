@@ -21,10 +21,10 @@ typedef enum {
     SCENE_TYPE_LOGO
 } scene_type_e;
 
-typedef enum { 
-    LCD_simple, 
-    LCD_parallax, 
-    LCD_fullscreen 
+typedef enum {
+    LCD_simple,
+    LCD_parallax,
+    LCD_fullscreen
 } LCD_isr_e;
 
 typedef enum {
@@ -43,13 +43,14 @@ typedef struct animation_t
 
 typedef struct actor_t
 {
-    bool active               : 1; 
+    bool active               : 1;
     bool pinned               : 1;
     bool hidden               : 1;
     bool disabled             : 1;
-    bool anim_noloop          : 1;  
+    bool anim_noloop          : 1;
     bool collision_enabled    : 1;
     bool movement_interrupt   : 1;
+    bool persistent           : 1;
     upoint16_t pos;
     direction_e dir;
     bounding_box_t bounds;
@@ -64,7 +65,7 @@ typedef struct actor_t
     animation_t animations[8];
     far_ptr_t sprite;
     far_ptr_t script, script_update;
-    uint16_t hscript_update;
+    uint16_t hscript_update, hscript_hit;
 
     // Collisions
     collision_group_e collision_group;
@@ -89,13 +90,13 @@ typedef struct scene_t {
     uint8_t n_actors, n_triggers, n_projectiles, n_sprites;
     uint8_t reserve_tiles;
     far_ptr_t player_sprite;
-    far_ptr_t background, collisions; 
+    far_ptr_t background, collisions;
     far_ptr_t palette, sprite_palette;
     far_ptr_t script_init, script_p_hit1;
     far_ptr_t sprites;
     far_ptr_t actors;
     far_ptr_t triggers;
-    far_ptr_t projectiles;    
+    far_ptr_t projectiles;
     parallax_row_t parallax_rows[3];
 } scene_t;
 
@@ -108,7 +109,7 @@ typedef struct background_t {
 } background_t;
 
 typedef struct tileset_t {
-    uint16_t n_tiles;                  // actual amount of 8x8 tiles in tiles[] array 
+    uint16_t n_tiles;                  // actual amount of 8x8 tiles in tiles[] array
     uint8_t tiles[];
 } tileset_t;
 
@@ -139,12 +140,13 @@ typedef struct projectile_def_t
 
 typedef struct projectile_t
 {
-    bool anim_noloop          : 1;  
+    bool anim_noloop          : 1;
+    bool strong               : 1;
     upoint16_t pos;
     point16_t delta_pos;
     uint8_t frame;
     uint8_t frame_start;
-    uint8_t frame_end;    
+    uint8_t frame_end;
     projectile_def_t def;
     struct projectile_t *next;
 } projectile_t;
@@ -185,7 +187,7 @@ typedef struct menu_item_t {
 #define CGB_PALETTE(C0, C1, C2, C3) {C0, C1, C2, C3}
 #define CGB_COLOR(R, G, B) ((uint16_t)(((R) & 0x1f) | (((G) & 0x1f) << 5) | (((B) & 0x1f) << 10)))
 
-typedef struct palette_entry_t { 
+typedef struct palette_entry_t {
     uint16_t c0, c1, c2, c3;
 } palette_entry_t;
 

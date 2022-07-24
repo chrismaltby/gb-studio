@@ -89,6 +89,7 @@ export type Actor = {
   direction: ActorDirection;
   animate: boolean;
   isPinned: boolean;
+  persistent: boolean;
   collisionGroup: string;
   script: string[];
   startScript: string[];
