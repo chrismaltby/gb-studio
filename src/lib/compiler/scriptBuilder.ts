@@ -4588,11 +4588,7 @@ extern void __mute_mask_${symbol};
     const { scene } = this.options;
     this._addComment(`If Current Scene Is`);
 
-    if (scene.id === sceneId) {
-      this._compilePath(truePath);
-    } else {
-      this._compilePath(falsePath);
-    }
+    (scene.id === sceneId) ? this._compilePath(truePath) : this._compilePath(falsePath);
     
     this._addNL();
   };
