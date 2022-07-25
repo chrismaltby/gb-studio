@@ -1,6 +1,7 @@
 import React, { FC } from "react";
 import l10n from "lib/helpers/l10n";
 import { Select, SelectCommonProps } from "ui/form/Select";
+import { FlexGrow, FlexRow } from "ui/spacing/Spacing";
 
 interface MathOperatorSelectProps extends SelectCommonProps {
   name: string;
@@ -35,6 +36,17 @@ export const MathOperatorSelect: FC<MathOperatorSelectProps> = ({
       options={options}
       onChange={(newValue: MathOperatorOption) => {
         onChange?.(newValue.value);
+      }}
+      formatOptionLabel={(option: MathOperatorOption) => {
+        return (
+          <FlexRow>
+            <FlexGrow>{option.label}</FlexGrow>
+            {option.value}
+          </FlexRow>
+        );
+      }}
+      components={{
+        SingleValue: () => currentValue?.value,
       }}
       {...selectProps}
     />

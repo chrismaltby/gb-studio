@@ -574,7 +574,7 @@ const ScriptEventFormInput = ({
         />
       </OffscreenSkeletonInput>
     );
-  } else if (type === "math_operator") {
+  } else if (type === "mathOperator") {
     return (
       <OffscreenSkeletonInput>
         <MathOperatorSelect

@@ -20,7 +20,6 @@ const fields = [
     label: l10n("FIELD_FOR"),
     type: "variable",
     defaultValue: "LAST_VARIABLE",
-    width: "50%",
   },
   {
     type: "group",
@@ -58,6 +57,7 @@ const fields = [
         },
       },
     ],
+    flexBasis: 200,
   },
   {
     type: "group",
@@ -65,12 +65,12 @@ const fields = [
       {
         key: "operation",
         label: l10n("FIELD_OPERATION"),
-        type: "math_operator",
+        type: "mathOperator",
         defaultValue: "+=",
       },
       {
         key: "val",
-        label: l10n("FIELD_BY_VALUE"),
+        label: l10n("FIELD_VALUE"),
         type: "union",
         types: ["number", "variable"],
         defaultType: "number",
@@ -82,6 +82,7 @@ const fields = [
         },
       },
     ],
+    flexBasis: 150,
   },
   {
     key: "true",
