@@ -1981,6 +1981,22 @@ extern void __mute_mask_${symbol};
     this._addCmd("VM_RESERVE", size);
   };
 
+  _rtcStart = (start: string) => {
+    this._addCmd("VM_RTC_START", start);
+  };
+
+  _rtcLatch = () => {
+    this._addCmd("VM_RTC_LATCH");
+  };
+
+  _rtcGet = (variableAlias: string, unit: string) => {
+    this._addCmd("VM_RTC_GET", variableAlias, unit);
+  };
+
+  _rtcSet = (value: string, unit: string) => {
+    this._addCmd("VM_RTC_SET", value, unit);
+  };
+
   // --------------------------------------------------------------------------
   // Actors
 
@@ -4803,6 +4819,57 @@ extern void __mute_mask_${symbol};
     this._label(falseLabel);
     this._compilePath(falsePath);
     this._label(endLabel);
+    this._addNL();
+  };
+
+  rtcStart = () => {
+    this._addComment("Start RTC");
+    this._rtcStart(".RTC_START");
+    this._addNL();
+  };
+
+  rtcStop = () => {
+    this._addComment("Stop RTC");
+    this._rtcStart(".RTC_STOP");
+    this._addNL();
+  };
+
+  rtcGet = (variableAlias: string, unit: string) => {
+    this._addComment("Store RTC Time In Variable");
+    this._rtcLatch();
+    this._rtcGet(variableAlias, unit);
+    this._addNL();
+  };
+
+  rtcGetAll = (dayVar: string, hourVar: string, minVar: string, secVar: string) => {
+    this._addComment("Store All RTC Times In Variables");
+    this._rtcLatch();
+    this._rtcGet(dayVar, ".RTC_DAYS");
+    this._rtcGet(hourVar, ".RTC_HOURS");
+    this._rtcGet(minVar, ".RTC_MINUTES");
+    this._rtcGet(secVar, ".RTC_SECONDS");
+    this._addNL();
+  };
+
+  rtcSet = (value: 0, unit: string) => {
+    this._addComment("Set RTC Time");
+    this._rtcLatch();
+    this._stackPushConst(value, "Time");
+    this._rtcSet(".ARG0", unit);
+    this._stackPop(1);
+    this._addNL();
+  };
+
+  rtcSetToVariable = (variableAlias: string, unit: string) => {
+    this._addComment("Set RTC Time To Variable");
+    this._rtcLatch();
+    if (this._isIndirectVariable(variableAlias)) {
+      this._stackPushInd(variableAlias);
+    } else {
+      this._stackPush(variableAlias);
+    }
+    this._rtcSet(".ARG0", unit);
+    this._stackPop(1);
     this._addNL();
   };
 

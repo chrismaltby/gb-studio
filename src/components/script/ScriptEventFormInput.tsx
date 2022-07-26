@@ -23,6 +23,7 @@ import { Reference, ReferencesSelect } from "components/forms/ReferencesSelect";
 import { SceneSelect } from "components/forms/SceneSelect";
 import { SoundEffectSelect } from "components/forms/SoundEffectSelect";
 import { SpriteSheetSelect } from "components/forms/SpriteSheetSelect";
+import { TimeSelect } from "components/forms/TimeSelect";
 import { VariableSelect } from "components/forms/VariableSelect";
 import castEventValue from "lib/helpers/castEventValue";
 import l10n from "lib/helpers/l10n";
@@ -577,6 +578,16 @@ const ScriptEventFormInput = ({
     return (
       <OffscreenSkeletonInput>
         <OperatorSelect
+          name={id}
+          value={String(value ?? "")}
+          onChange={onChangeField}
+        />
+      </OffscreenSkeletonInput>
+    );
+  } else if (type === "time") {
+    return (
+      <OffscreenSkeletonInput>
+        <TimeSelect
           name={id}
           value={String(value ?? "")}
           onChange={onChangeField}

@@ -134,6 +134,14 @@ export const EVENT_CALL_CUSTOM_EVENT = "EVENT_CALL_CUSTOM_EVENT";
 export const EVENT_ENGINE_FIELD_SET = "EVENT_ENGINE_FIELD_SET";
 export const EVENT_ENGINE_FIELD_STORE = "EVENT_ENGINE_FIELD_STORE";
 
+// Real Time Clock (RTC)
+export const EVENT_RTC_START = "EVENT_RTC_START";
+export const EVENT_RTC_STOP = "EVENT_RTC_STOP";
+export const EVENT_RTC_GET = "EVENT_RTC_GET";
+export const EVENT_RTC_GET_ALL = "EVENT_RTC_GET_ALL";
+export const EVENT_RTC_SET = "EVENT_RTC_SET";
+export const EVENT_RTC_SET_ALL = "EVENT_RTC_SET_ALL";
+
 export const EventsOnlyForActors = [EVENT_ACTOR_PUSH];
 export const EventsHidden = [
   EVENT_MATH_ADD,
