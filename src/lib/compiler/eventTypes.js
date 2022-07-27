@@ -137,6 +137,7 @@ export const EVENT_ENGINE_FIELD_STORE = "EVENT_ENGINE_FIELD_STORE";
 // Real Time Clock (RTC)
 export const EVENT_RTC_START = "EVENT_RTC_START";
 export const EVENT_RTC_STOP = "EVENT_RTC_STOP";
+export const EVENT_RTC_RESET = "EVENT_RTC_RESET";
 export const EVENT_RTC_GET = "EVENT_RTC_GET";
 export const EVENT_RTC_GET_ALL = "EVENT_RTC_GET_ALL";
 export const EVENT_RTC_SET = "EVENT_RTC_SET";

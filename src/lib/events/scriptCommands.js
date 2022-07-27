@@ -113,6 +113,7 @@ export const ENGINE_FIELD_STORE = "ENGINE_FIELD_STORE";
 export const ENGINE_FIELD_STORE_WORD = "ENGINE_FIELD_STORE_WORD";
 export const RTC_START = "RTC_START";
 export const RTC_STOP = "RTC_STOP";
+export const RTC_RESET = "RTC_RESET";
 export const RTC_GET = "RTC_GET";
 export const RTC_GET_ALL = "RTC_GET_ALL";
 export const RTC_SET = "RTC_SET";
@@ -234,6 +235,7 @@ export const scriptCommands = [
   ENGINE_FIELD_STORE_WORD,
   RTC_START,
   RTC_STOP,
+  RTC_RESET,
   RTC_GET,
   RTC_GET_ALL,
   RTC_SET,

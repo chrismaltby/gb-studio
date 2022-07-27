@@ -545,6 +545,7 @@
   "FIELD_KEEP_RUNNING_WHILE_OFFSCREEN": "Keep Running While Offscreen",
   "FIELD_RTC_START": "Start the Real Time Clock (RTC)",
   "FIELD_RTC_STOP": "Stop the Real Time Clock (RTC)",
+  "FIELD_RTC_RESET": "Clears and resets the Real Time Clock (RTC)",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -771,6 +772,7 @@
   "EVENT_LOOP_WHILE_LABEL": "While ({expression})",
   "EVENT_RTC_START": "Start Clock (RTC)",
   "EVENT_RTC_STOP": "Stop Clock (RTC)",
+  "EVENT_RTC_RESET": "Reset Clock (RTC)",
   "EVENT_RTC_GET": "Store Time In Variable (RTC)",
   "EVENT_RTC_GET_ALL": "Store All Times In Variables (RTC)",
   "EVENT_RTC_SET": "Set Time (RTC)",
