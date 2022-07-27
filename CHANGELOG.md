@@ -39,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support for engine plugins, individual C or ASM files placed in `PROJECT_PATH/plugins/PLUGIN_NAME/engine/src/` replacing or adding partial parts of the game engine
 - Add support for partial engine files in `PROJECT_PATH/assets/engine` missing files will be pulled from the default game engine
 - Add support for calling C functions directly from GBVM with `VM_CALL_NATIVE`, in conjunction engine plugins allows creation of plugin events which call new native C functions
+- Add compile time warning if too many unique projectiles are within a scene
 
 ### Changed
 

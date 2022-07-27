@@ -16,6 +16,7 @@ import {
   MAX_TRIGGERS,
   DMG_PALETTE,
   MAX_NESTED_SCRIPT_DEPTH,
+  MAX_PROJECTILES,
 } from "../../consts";
 import compileSprites from "./compileSprites";
 import compileAvatars from "./compileAvatars";
@@ -943,6 +944,17 @@ export const precompileScenes = (
       .map((a) => a.spriteSheetId);
 
     const sceneSpriteIds = [].concat(actorSpriteIds, eventSpriteIds);
+
+    if (projectiles.length > MAX_PROJECTILES) {
+      warnings(
+        l10n("WARNING_TOO_MANY_UNIQUE_PROJECTILES", {
+          name: scene.name,
+          num: projectiles.length,
+          max: MAX_PROJECTILES,
+        })
+      );
+      projectiles.splice(MAX_PROJECTILES);
+    }
 
     return {
       ...scene,
