@@ -25,9 +25,11 @@ import {
 } from "./helpers";
 import { RollChannelEffectRow } from "./RollChannelEffectRow";
 import { WandIcon } from "ui/icons/Icons";
+import { RollChannelHover } from "./RollChannelHover";
 
 const CELL_SIZE = 16;
 const MAX_NOTE = 71;
+const GRID_MARGIN = 10;
 
 interface SongPianoRollProps {
   sequenceId: number;
@@ -615,7 +617,8 @@ export const SongPianoRoll = ({
         } else if (gridRef.current) {
           const bounds = gridRef.current.getBoundingClientRect();
           const x = clamp(
-            Math.floor((e.pageX - bounds.left) / CELL_SIZE) * CELL_SIZE,
+            Math.floor((e.pageX - bounds.left - GRID_MARGIN) / CELL_SIZE) *
+              CELL_SIZE,
             0,
             63 * CELL_SIZE
           );
@@ -702,7 +705,9 @@ export const SongPianoRoll = ({
 
       const bounds = gridRef.current.getBoundingClientRect();
 
-      const newColumn = Math.floor((e.pageX - bounds.left) / CELL_SIZE);
+      const newColumn = Math.floor(
+        (e.pageX - bounds.left - GRID_MARGIN) / CELL_SIZE
+      );
       const newRow = Math.floor((e.pageY - bounds.top) / CELL_SIZE);
       const newNote = 12 * 6 - 1 - newRow;
       if (newNote !== hoverNote) {
@@ -1082,6 +1087,11 @@ export const SongPianoRoll = ({
               }}
             >
               <RollChannelGrid cellSize={CELL_SIZE} />
+              <RollChannelHover
+                cellSize={CELL_SIZE}
+                hoverColumn={hoverColumn}
+                hoverRow={hoverNote}
+              />
               {v.map((i) => (
                 <RollChannel
                   channelId={i}
