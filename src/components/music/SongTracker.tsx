@@ -361,7 +361,7 @@ export const SongTracker = ({
         setSelectionOrigin(undefined);
       }
 
-      if (e.key === "Backspace") {
+      if (e.key === "Backspace" || e.key === "Delete") {
         if (selectedTrackerFields && selectedTrackerFields.length > 0) {
           e.preventDefault();
           deleteSelectedTrackerFields();
