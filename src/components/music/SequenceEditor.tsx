@@ -158,7 +158,7 @@ export const SequenceEditorFwd = ({
         setSequenceId(
           ((id % sequence.length) + sequence.length) % sequence.length
         );
-      } else if (e.key === "Backspace") {
+      } else if (e.key === "Backspace" || e.key === "Delete") {
         onRemoveSequence();
       }
     },

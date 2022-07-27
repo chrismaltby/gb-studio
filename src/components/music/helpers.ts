@@ -187,7 +187,7 @@ export const parseClipboardToPattern = (clipboard: string) => {
           );
           const note = noteNames.indexOf(c.substring(0, 3));
           patternCell.note = note === -1 ? null : note;
-          patternCell.instrument = strToInt(c.substring(3, 5), 16, -1);
+          patternCell.instrument = strToInt(c.substring(3, 5), 10, -1);
           patternCell.effectcode = strToInt(c.substring(8, 9), 16);
           patternCell.effectparam = strToInt(c.substring(9, 11), 16);
           return patternCell;

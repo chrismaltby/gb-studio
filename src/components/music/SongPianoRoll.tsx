@@ -813,7 +813,7 @@ export const SongPianoRoll = ({
         setAddToSelection(true);
       }
 
-      if (e.key === "Backspace") {
+      if (e.key === "Backspace" || e.key === "Delete") {
         if (pattern) {
           const newPattern = cloneDeep(pattern);
           console.log(newPattern, selectedPatternCells, selectedChannel);
