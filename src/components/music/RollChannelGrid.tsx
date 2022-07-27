@@ -14,9 +14,9 @@ interface WrapperProps {
 const Wrapper = styled.div<WrapperProps>`
   position: absolute;
   top: 0;
-  margin: 0 40px 40px 10px;
 
   ${(props) => css`
+    margin: 0 ${3 * props.size}px ${2 * props.size}px 10px;
     width: ${props.cols * props.size}px;
     height: ${props.rows * props.size}px;
     background-image: linear-gradient(
