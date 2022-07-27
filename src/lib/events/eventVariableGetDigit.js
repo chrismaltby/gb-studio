@@ -26,7 +26,7 @@ const fields = [
         key: "val",
         label: l10n("FIELD_VALUE"),
         type: "union",
-        types: ["number", "variable"],
+        types: ["number", "variable", "property"],
         defaultType: "number",
         min: -32768,
         max: 32767,
@@ -34,6 +34,7 @@ const fields = [
         defaultValue: {
           number: 0,
           variable: "LAST_VARIABLE",
+          property: "$self$:xpos",
         },
       },
       {
@@ -54,11 +55,12 @@ const fields = [
 ];
 
 const compile = (input, helpers) => {
-  const { getDigit, getDigitVariable } = helpers;
+  const { getDigit, getDigitVariable, variableFromUnion, temporaryEntityVariable } = helpers;
   if (input.val.type === "number") {
-  	getDigit(input.val.value, input.digit, input.variable);
+    getDigit(input.val.value, input.digit, input.variable);
   } else {
-  	getDigitVariable(input.val.value, input.digit, input.variable);
+    const value = variableFromUnion(input.val, temporaryEntityVariable(0));
+    getDigitVariable(value, input.digit, input.variable);
   }
 };
 
