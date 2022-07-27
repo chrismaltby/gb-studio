@@ -69,7 +69,7 @@ const fields = [
         defaultValue: "+=",
       },
       {
-        key: "val",
+        key: "value",
         label: l10n("FIELD_VALUE"),
         type: "union",
         types: ["number", "variable"],
@@ -125,14 +125,14 @@ const compile = (input, helpers) => {
   const loopId = getNextLabel();
   let ifOp = input.to.type === "number" ? ifVariableValue : ifVariableCompare;
   let performOp =
-    input.val.type === "number" ? variableValueOperation : variablesOperation;
+    input.value.type === "number" ? variableValueOperation : variablesOperation;
   let setOp = input.from.type === "number" ? variableSetToValue : variableCopy;
 
   setOp(input.variable, input.from.value);
   labelDefine(loopId);
   ifOp(input.variable, comparison, input.to.value, () => {
     compileEvents(input.true);
-    performOp(input.variable, operation, input.val.value);
+    performOp(input.variable, operation, input.value.value);
     labelGoto(loopId);
   });
 };
