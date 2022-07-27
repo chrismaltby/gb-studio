@@ -22,7 +22,7 @@ import { toValidSymbol } from "lib/helpers/symbols";
 const indexById = indexBy("id");
 
 export const LATEST_PROJECT_VERSION = "3.1.0";
-export const LATEST_PROJECT_MINOR_VERSION = "2";
+export const LATEST_PROJECT_MINOR_VERSION = "3";
 
 const ensureProjectAssetSync = (relativePath, { projectRoot }) => {
   const projectPath = `${projectRoot}/${relativePath}`;
@@ -1704,6 +1704,37 @@ const migrateFrom310r1To310r2Events = (data) => {
   };
 };
 
+/* Version 3.1.0 r3 updates For Loops to include comparison and operation selectors
+ */
+export const migrateFrom310r2To310r3Event = (event) => {
+  const migrateMeta = generateMigrateMeta(event);
+  if (event.args && event.command === "EVENT_LOOP_FOR") {
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        comparison: "<=",
+        operation: "+=",
+        value: event.args.inc,
+      },
+    });
+  }
+  return event;
+};
+
+const migrateFrom310r2To310r3Events = (data) => {
+  return {
+    ...data,
+    scenes: mapScenesEvents(data.scenes, migrateFrom310r2To310r3Event),
+    customEvents: (data.customEvents || []).map((customEvent) => {
+      return {
+        ...customEvent,
+        script: mapEvents(customEvent.script, migrateFrom310r2To310r3Event),
+      };
+    }),
+  };
+};
+
 const migrateProject = (project, projectRoot) => {
   let data = { ...project };
   let version = project._version || "1.0.0";
@@ -1826,6 +1857,10 @@ const migrateProject = (project, projectRoot) => {
     if (release === "0" || release === "1") {
       data = migrateFrom310r1To310r2Events(data);
       release = "2";
+    }
+    if (release === "2") {
+      data = migrateFrom310r2To310r3Events(data);
+      release = "3";
     }
   }
 

@@ -539,6 +539,7 @@
   "FIELD_LOOP_ANIMATION": "Loop Animation",
   "FIELD_DESTROY_ON_HIT": "Destroy On Hit",
   "FIELD_KEEP_RUNNING_WHILE_OFFSCREEN": "Keep Running While Offscreen",
+  "FIELD_OPERATION": "Operation",
   "FIELD_ON_CALL": "On Call",
   "FIELD_EFFECT": "Effect",
   "FIELD_NO_EFFECT": "No Effect",
@@ -777,7 +778,7 @@
   "EVENT_ACTOR_ACTIVATE_LABEL": "Activate {actor}",
   "EVENT_ACTOR_DEACTIVATE_LABEL": "Deactivate {actor}",
   "EVENT_IDLE": "Idle",
-  "EVENT_LOOP_FOR_LABEL": "For ({variable} = {from}; {variable} <= {to}; {variable} += {inc})",
+  "EVENT_LOOP_FOR_LABEL": "For ({variable} = {from}; {variable} {comparison} {to}; {variable} {operation} {val})",
   "EVENT_LOOP_WHILE_LABEL": "While ({expression})",
 
   "// 10": "Menu -----------------------------------------------------",
