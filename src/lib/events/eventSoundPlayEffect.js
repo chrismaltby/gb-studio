@@ -14,7 +14,7 @@ const fields = [
   {
     key: "priority",
     label: l10n("FIELD_PRIORITY"),
-    type: "select",
+    type: "priority",
     options: [
       ["low", l10n("FIELD_LOW")],
       ["medium", l10n("FIELD_MEDIUM")],

@@ -330,7 +330,7 @@ const preview = (note, type, instrument, square2, waves = []) => {
           ),
         NR43: bitpack(
           note2noise(note + instrument.noise_macro[0]) +
-            (instrument.bit_count === 7 ? 16 : 0),
+            (instrument.bit_count === 7 ? 8 : 0),
           8
         ),
         NR44:
@@ -361,7 +361,7 @@ const preview = (note, type, instrument, square2, waves = []) => {
   }
   timeoutId = setTimeout(() => {
     emulator.writeMem(NR12, 0);
-    // emulator.writeMem(NR22, 0);
+    emulator.writeMem(NR22, 0);
     emulator.writeMem(NR30, 0);
     emulator.writeMem(NR42, 0);
   }, 3000);
@@ -392,9 +392,11 @@ const setStartPosition = (position) => {
 
   const new_order_addr = getMemAddress("new_order");
   const new_row_addr = getMemAddress("new_row");
+  const huge_tick = getMemAddress("tick");
 
   emulator.writeMem(new_order_addr, position[0] * 2);
   emulator.writeMem(new_row_addr, position[1]);
+  emulator.writeMem(huge_tick, 0);
 
   if (wasPlaying) {
     doResume();

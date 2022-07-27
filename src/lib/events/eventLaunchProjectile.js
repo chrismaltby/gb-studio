@@ -219,6 +219,9 @@ const compile = (input, helpers) => {
     input.collisionGroup,
     input.collisionMask
   );
+  if (projectileIndex < 0) {
+    return;
+  }
   if (input.directionType === "direction") {
     launchProjectileInDirection(
       projectileIndex,

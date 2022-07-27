@@ -18,6 +18,7 @@ import { OperatorSelect } from "components/forms/OperatorSelect";
 import { MathOperatorSelect } from "components/forms/MathOperatorSelect";
 import { OverlayColorSelect } from "components/forms/OverlayColorSelect";
 import { PaletteSelect } from "components/forms/PaletteSelect";
+import { Priority, PrioritySelect } from "components/forms/PrioritySelect";
 import { PropertySelect } from "components/forms/PropertySelect";
 import { Reference, ReferencesSelect } from "components/forms/ReferencesSelect";
 import { SceneSelect } from "components/forms/SceneSelect";
@@ -513,6 +514,15 @@ const ScriptEventFormInput = ({
       <OffscreenSkeletonInput>
         <MovementTypeSelect
           value={value as MovementType | undefined}
+          onChange={onChangeField}
+        />
+      </OffscreenSkeletonInput>
+    );
+  } else if (type === "priority") {
+    return (
+      <OffscreenSkeletonInput>
+        <PrioritySelect
+          value={value as Priority | undefined}
           onChange={onChangeField}
         />
       </OffscreenSkeletonInput>
