@@ -111,6 +111,7 @@ export const ENGINE_FIELD_UPDATE_VAR = "ENGINE_FIELD_UPDATE_VAR";
 export const ENGINE_FIELD_UPDATE_VAR_WORD = "ENGINE_FIELD_UPDATE_VAR_WORD";
 export const ENGINE_FIELD_STORE = "ENGINE_FIELD_STORE";
 export const ENGINE_FIELD_STORE_WORD = "ENGINE_FIELD_STORE_WORD";
+export const GET_DIGIT = "GET_DIGIT";
 
 export const scriptCommands = [
   END,
@@ -226,6 +227,7 @@ export const scriptCommands = [
   ENGINE_FIELD_UPDATE_VAR_WORD,
   ENGINE_FIELD_STORE,
   ENGINE_FIELD_STORE_WORD,
+  GET_DIGIT,
 ];
 
 export const commandIndex = (key) => {

@@ -539,6 +539,12 @@
   "FIELD_LOOP_ANIMATION": "Loop Animation",
   "FIELD_DESTROY_ON_HIT": "Destroy On Hit",
   "FIELD_KEEP_RUNNING_WHILE_OFFSCREEN": "Keep Running While Offscreen",
+  "FIELD_DIGIT": "Digit",
+  "FIELD_ONES": "Ones",
+  "FIELD_TENS": "Tens",
+  "FIELD_HUNDREDS": "Hundreds",
+  "FIELD_THOUSANDS": "Thousands",
+  "FIELD_TEN_THOUSANDS": "Ten Thousands",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -762,6 +768,8 @@
   "EVENT_IDLE": "Idle",
   "EVENT_LOOP_FOR_LABEL": "For ({variable} = {from}; {variable} <= {to}; {variable} += {inc})",
   "EVENT_LOOP_WHILE_LABEL": "While ({expression})",
+  "EVENT_GET_DIGIT": "Store Digit In Variable",
+  "EVENT_GET_DIGIT_LABEL": "Store {digit} Digit Of {value} In {variable}",
 
   "// 10": "Menu -----------------------------------------------------",
 

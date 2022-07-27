@@ -4806,6 +4806,35 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
+  getDigit = (
+    value: 0,
+    digit: 1,
+    variable: string
+  ) => {
+    this._addComment("Store Digit In Variable");
+    this._setVariableConst(variable, Math.floor((Math.abs(value) / digit) % 10));
+    this._addNL();
+  };
+
+  getDigitVariable = (
+    value: string,
+    digit: 1,
+    variable: string
+  ) => {
+    this._addComment("Store Digit In Variable");
+    this._rpn()
+      .refVariable(value)
+      .operator(".ABS")
+      .int16(digit)
+      .operator(".DIV")
+      .int16(10)
+      .operator(".MOD")
+      .stop()
+    this._setVariable(variable, ".ARG0");
+    this._stackPop(1);
+    this._addNL();
+  };
+
   caseVariableValue = (
     variable: string,
     cases: { [key: string]: ScriptEvent[] | ScriptBuilderPathFunction } = {},

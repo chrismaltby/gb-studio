@@ -6,6 +6,7 @@ import { BackgroundSelect } from "components/forms/BackgroundSelect";
 import { CameraSpeedSelect } from "components/forms/CameraSpeedSelect";
 import CollisionMaskPicker from "components/forms/CollisionMaskPicker";
 import { CustomEventSelect } from "components/forms/CustomEventSelect";
+import { DigitSelect } from "components/forms/DigitSelect";
 import DirectionPicker from "components/forms/DirectionPicker";
 import { EmoteSelect } from "components/forms/EmoteSelect";
 import EngineFieldSelect from "components/forms/EngineFieldSelect";
@@ -579,6 +580,16 @@ const ScriptEventFormInput = ({
         <OperatorSelect
           name={id}
           value={String(value ?? "")}
+          onChange={onChangeField}
+        />
+      </OffscreenSkeletonInput>
+    );
+  } else if (type === "digit") {
+    return (
+      <OffscreenSkeletonInput>
+        <DigitSelect
+          name={id}
+          value={Number(value)}
           onChange={onChangeField}
         />
       </OffscreenSkeletonInput>
