@@ -143,6 +143,18 @@ export const PropertySelect = ({
     } else if (sceneActorIds) {
       setOptions(
         [
+          ...(editorType === "actor" && selfActor && selfIndex !== undefined
+            ? [
+                {
+                  label: `${l10n("FIELD_SELF")} (${actorName(
+                    selfActor,
+                    selfIndex
+                  )})`,
+                  value: "$self$",
+                  spriteSheetId: selfActor.spriteSheetId,
+                },
+              ]
+            : []),
           {
             label: "Player",
             value: "player",
