@@ -600,6 +600,7 @@ menu.on("checkUpdates", () => {
 menu.on("openMusic", () => {
   if (musicWindow) {
     musicWindow.show();
+    musicWindow.webContents.openDevTools();
   } else {
     dialog.showErrorBox(
       "No music process running",

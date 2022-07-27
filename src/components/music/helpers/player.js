@@ -77,18 +77,13 @@ const doResume = () => {
 
 const bitpack = (value, bitResolution) => {
   const bitsString = Math.abs(value || 0).toString(2);
-  if (bitsString.length > bitResolution) {
-    throw Error(
-      `value must be between 0 and ${Math.pow(2, bitResolution) - 1}`
-    );
-  }
 
   let missingValues = "";
   for (let i = 0; i < bitResolution - bitsString.length; i++) {
     missingValues = missingValues + "0";
   }
 
-  return missingValues + bitsString;
+  return missingValues + bitsString.slice(0, bitResolution);
 };
 
 const note2noise = (note) => {
@@ -130,7 +125,7 @@ const initPlayer = (onInit) => {
         `Order Count: ${emulator.readMem(getMemAddress("order_cnt"))}`
       );
     };
-    setInterval(updateTracker, 10);
+    setInterval(updateTracker, 1000/64);
   });
 };
 
@@ -339,6 +334,22 @@ const preview = (note, type, instrument, square2, waves = []) => {
           "000000",
       };
 
+      emulator.step("frame");
+      let noiseStep = 0;
+      clearInterval(noiseTimer);
+      const noiseTimer = setInterval(() => {
+        if (noiseStep > 5) {
+          clearInterval(noiseTimer);
+          return;
+        }
+        console.log("noise macro step = " + noiseStep);
+        emulator.writeMem(NR43, 
+          note2noise(note + instrument.noise_macro[noiseStep]) +
+          (instrument.bit_count === 7 ? 8 : 0), 8
+        );
+        noiseStep++;
+      }, 1000/64);
+
       console.log("-------------");
       console.log(`NR41`, regs.NR41, parseInt(regs.NR41, 2));
       console.log(`NR42`, regs.NR42, parseInt(regs.NR42, 2));
@@ -364,7 +375,7 @@ const preview = (note, type, instrument, square2, waves = []) => {
     emulator.writeMem(NR22, 0);
     emulator.writeMem(NR30, 0);
     emulator.writeMem(NR42, 0);
-  }, 3000);
+  }, 2000);
 };
 
 const stop = (position) => {
