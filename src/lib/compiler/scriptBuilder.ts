@@ -4829,7 +4829,7 @@ extern void __mute_mask_${symbol};
       .operator(".DIV")
       .int16(10)
       .operator(".MOD")
-      .stop()
+      .stop();
     this._setVariable(variable, ".ARG0");
     this._stackPop(1);
     this._addNL();
