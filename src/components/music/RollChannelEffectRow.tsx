@@ -91,13 +91,14 @@ export const RollChannelEffectRowFwd = ({
       if (!renderPattern) return;
       const col = Math.floor(e.offsetX / cellSize);
       const cell = renderPattern[col][channelId];
+      const lastCell = renderPattern[selectedEffectCell || 0][channelId];
 
-      if (e.button === 0) {
+      if (e.button === 0 && tool !== "eraser") {
         // If there's a note in position
         if (cell) {
           const changes = {
-            effectcode: cell.effectcode !== null ? cell.effectcode : 0,
-            effectparam: cell.effectparam !== null ? cell.effectparam : 0,
+            effectcode: cell.effectcode !== null ? cell.effectcode : lastCell.effectcode || 0,
+            effectparam: cell.effectparam !== null ? cell.effectparam : lastCell.effectparam || 0,
           };
           dispatch(
             trackerDocumentActions.editPatternCell({
@@ -107,6 +108,14 @@ export const RollChannelEffectRowFwd = ({
             })
           );
           dispatch(trackerActions.setSelectedEffectCell(col));
+          // Dispatch twice preserve effect param data when not arpeggio
+          dispatch(
+            trackerDocumentActions.editPatternCell({
+              patternId: patternId,
+              cell: [col, channelId],
+              changes: changes,
+            })
+          );
         }
       } else if (e.button === 2 || (tool === "eraser" && e.button === 0)) {
         // If there's a note in position
@@ -121,7 +130,7 @@ export const RollChannelEffectRowFwd = ({
               },
             })
           );
-          dispatch(trackerActions.setSelectedEffectCell(null));
+          //dispatch(trackerActions.setSelectedEffectCell(null));
         }
       }
     },
