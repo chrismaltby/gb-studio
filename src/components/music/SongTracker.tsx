@@ -98,7 +98,6 @@ export const SongTracker = ({
   const [isSelecting, setIsSelecting] = useState(false);
 
   useEffect(() => {
-    console.log(selectionRect);
     const newSelectedTrackerFields = [];
     if (selectionRect) {
       for (
@@ -116,7 +115,7 @@ export const SongTracker = ({
       }
     }
     setSelectedTrackerFields(newSelectedTrackerFields);
-    console.log(newSelectedTrackerFields);
+    //console.log("new selection within rect: " + newSelectedTrackerFields);
   }, [selectionOrigin, selectionRect]);
 
   const [playbackState, setPlaybackState] = useState([0, 0]);
@@ -148,7 +147,10 @@ export const SongTracker = ({
         (activeField % ROW_SIZE) / CHANNEL_FIELDS
       );
       dispatch(trackerActions.setSelectedChannel(newChannelId));
-      console.log(newChannelId);
+      if (activeField % CHANNEL_FIELDS >= 2) {
+        dispatch(trackerActions.setSelectedEffectCell(Math.floor(activeField / ROW_SIZE)));
+      }
+      //console.log("use effect channel id " + (activeField % CHANNEL_FIELDS) + " active " + activeField);
     }
   }, [activeField, dispatch]);
 
