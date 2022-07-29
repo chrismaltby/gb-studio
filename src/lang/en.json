@@ -557,6 +557,8 @@
   "FIELD_TO_PATTERN": "To Pattern",
   "FIELD_JUMP_TO_NEXT_PATTERN": "Jump To Next Pattern",
   "FIELD_START_ROW": "Start Row",
+  "FIELD_RUMBLE_ON": "Turn on the rumble motor",
+  "FIELD_RUMBLE_OFF": "Turn off the rumble motor",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -590,6 +592,7 @@
   "EVENT_GROUP_MUSIC": "Music & Sound Effects",
   "EVENT_GROUP_DIALOGUE": "Dialogue & Menus",
   "EVENT_GROUP_TIMER": "Timer",
+  "EVENT_GROUP_RUMBLE": "Rumble",
   "EVENT_SWITCH_SCENE": "Change Scene",
   "EVENT_WAIT": "Wait",
   "EVENT_CAMERA_SHAKE": "Camera Shake",
@@ -780,6 +783,8 @@
   "EVENT_IDLE": "Idle",
   "EVENT_LOOP_FOR_LABEL": "For ({variable} = {from}; {variable} {comparison} {to}; {variable} {operation} {val})",
   "EVENT_LOOP_WHILE_LABEL": "While ({expression})",
+  "EVENT_RUMBLE_ON": "Rumble On",
+  "EVENT_RUMBLE_OFF": "Rumble Off",
 
   "// 10": "Menu -----------------------------------------------------",
 

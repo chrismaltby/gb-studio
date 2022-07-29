@@ -1981,6 +1981,16 @@ extern void __mute_mask_${symbol};
     this._addCmd("VM_RESERVE", size);
   };
 
+  _rumble = (enable: number) => {
+    const { settings } = this.options;
+    const cart = settings.cartType;
+    const rumbleAddr = {
+      "mbc3": 0x20,
+      "mbc5": 0x08
+    };
+    this._addCmd("VM_RUMBLE", rumbleAddr[cart], enable);
+  };
+
   // --------------------------------------------------------------------------
   // Actors
 
@@ -4803,6 +4813,18 @@ extern void __mute_mask_${symbol};
     this._label(falseLabel);
     this._compilePath(falsePath);
     this._label(endLabel);
+    this._addNL();
+  };
+
+  rumbleOn = () => {
+    this._addComment("Rumble On");
+    this._rumble(1);
+    this._addNL();
+  };
+
+  rumbleOff = () => {
+    this._addComment("Rumble Off");
+    this._rumble(0);
     this._addNL();
   };
 

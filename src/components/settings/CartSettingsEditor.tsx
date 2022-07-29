@@ -23,11 +23,11 @@ interface CartTypeOption {
 const cartOptions: CartTypeOption[] = [
   {
     value: "mbc5",
-    label: "MBC5",
+    label: "MBC5 (Rumble + RAM + Battery)",
   },
   {
     value: "mbc3",
-    label: "MBC3",
+    label: "MBC3 (Timer + RAM + Battery)",
   },
 ];
 
