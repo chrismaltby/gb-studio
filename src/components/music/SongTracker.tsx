@@ -21,7 +21,7 @@ import { getKeys, KeyWhen } from "lib/keybindings/keyBindings";
 import trackerActions from "store/features/tracker/trackerActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import { clipboard } from "store/features/clipboard/clipboardHelpers";
-import { cloneDeep } from "lodash";
+import { cloneDeep, mergeWith } from "lodash";
 
 interface SongTrackerProps {
   sequenceId: number;
@@ -113,6 +113,8 @@ export const SongTracker = ({
           newSelectedTrackerFields.push(j * ROW_SIZE + i);
         }
       }
+    } else if (selectionOrigin) {
+      newSelectedTrackerFields.push(selectionOrigin.y * ROW_SIZE + selectionOrigin.x);
     }
     setSelectedTrackerFields(newSelectedTrackerFields);
     //console.log("new selection within rect: " + newSelectedTrackerFields);
@@ -565,7 +567,6 @@ export const SongTracker = ({
         pattern,
         selectedTrackerFields
       );
-      // console.log(parsedSelectedPattern);
       dispatch(clipboardActions.copyText(parsedSelectedPattern));
     }
   }, [dispatch, pattern, selectedTrackerFields]);
@@ -584,7 +585,9 @@ export const SongTracker = ({
           const pastedPatternCellRow = newPastedPattern[i];
           for (let j = 0; j < 4 - channelId; j++) {
             if (pastedPatternCellRow[j] && newPattern[startRow + i]) {
-              newPattern[startRow + i][channelId + j] = pastedPatternCellRow[j];
+              newPattern[startRow + i][channelId + j] = 
+                mergeWith(newPattern[startRow + i][channelId + j], 
+                pastedPatternCellRow[j], (o, s) => (s === -9) ? o : s)
             }
           }
         }
