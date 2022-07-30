@@ -229,6 +229,29 @@ export const SongTracker = ({
     [dispatch, selectionOrigin, sequenceId]
   );
 
+  const handleMouseUp = useCallback(
+    (e: any) => {
+      const fieldId = e.target.dataset["fieldid"];
+
+      if (!!fieldId) {
+        const newActiveField =
+          ((parseInt(fieldId) % NUM_FIELDS) + NUM_FIELDS) % NUM_FIELDS;
+
+        if (selectionOrigin) {
+          const x2 = newActiveField % ROW_SIZE;
+          const y2 = Math.floor(newActiveField / ROW_SIZE);
+
+          const x = Math.min(selectionOrigin.x, x2);
+          const y = Math.min(selectionOrigin.y, y2);
+          const width = Math.abs(selectionOrigin.x - x2);
+          const height = Math.abs(selectionOrigin.y - y2);
+          setSelectionRect({ x, y, width, height });
+        }
+      }
+    },
+    [dispatch, selectionOrigin, sequenceId]
+  );
+
   const handleKeys = useCallback(
     (e: KeyboardEvent) => {
       const editPatternCell =
@@ -528,11 +551,13 @@ export const SongTracker = ({
     window.addEventListener("keydown", handleKeys);
     window.addEventListener("keyup", handleKeysUp);
     window.addEventListener("mousedown", handleMouseDown);
+    window.addEventListener("mouseup", handleMouseUp);
 
     return () => {
       window.removeEventListener("keydown", handleKeys);
       window.removeEventListener("keyup", handleKeysUp);
       window.removeEventListener("mousedown", handleMouseDown);
+      window.removeEventListener("mouseup", handleMouseUp);
     };
   });
 
