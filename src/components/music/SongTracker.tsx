@@ -144,7 +144,7 @@ export const SongTracker = ({
   );
 
   useEffect(() => {
-    if (activeField) {
+    if (activeField !== undefined) {
       const newChannelId = Math.floor(
         (activeField % ROW_SIZE) / CHANNEL_FIELDS
       );
@@ -598,13 +598,17 @@ export const SongTracker = ({
 
   const onPaste = useCallback(() => {
     if (pattern) {
+      const tempActiveField = activeField !== undefined ? activeField : 
+        selectionOrigin ? (selectionOrigin.y * ROW_SIZE + selectionOrigin.x) : 0;
+      if (activeField === undefined) {
+        setActiveField(tempActiveField);
+      }
       const newPastedPattern = parseClipboardToPattern(clipboard.readText());
       if (
         newPastedPattern &&
-        activeField !== undefined &&
         channelId !== undefined
       ) {
-        const startRow = Math.floor(activeField / ROW_SIZE);
+        const startRow = Math.floor(tempActiveField / ROW_SIZE);
         const newPattern = cloneDeep(pattern);
         for (let i = 0; i < newPastedPattern.length; i++) {
           const pastedPatternCellRow = newPastedPattern[i];
