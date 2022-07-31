@@ -1,5 +1,5 @@
 {
-  "version": "3.1.0-e10",
+  "version": "3.1.0-e11",
   "fields": [
     {
       "key": "INPUT_PLATFORM_JUMP",
@@ -25,7 +25,7 @@
       ],
       "cType": "define",
       "defaultValue": "INPUT_B"
-    }, 
+    },
     {
       "key": "INPUT_PLATFORM_INTERACT",
       "label": "FIELD_INPUT_INTERACT",
@@ -35,11 +35,11 @@
         ["INPUT_A", "A"],
         ["INPUT_B", "B"],
         ["INPUT_UP", "FIELD_DIRECTION_UP"],
-        ["INPUT_DOWN", "FIELD_DIRECTION_DOWN"]        
+        ["INPUT_DOWN", "FIELD_DIRECTION_DOWN"]
       ],
       "cType": "define",
       "defaultValue": "INPUT_A"
-    },        
+    },
     {
       "key": "plat_min_vel",
       "label": "FIELD_MIN_VEL",
@@ -79,7 +79,7 @@
       "defaultValue": 4000,
       "min": 0,
       "max": 16384
-    },    
+    },
     {
       "key": "plat_walk_acc",
       "label": "FIELD_WALK_ACC",
@@ -119,7 +119,7 @@
       "defaultValue": 16384,
       "min": 0,
       "max": 32768
-    },   
+    },
     {
       "key": "plat_grav",
       "label": "FIELD_GRAVITY",
@@ -129,7 +129,7 @@
       "defaultValue": 1792,
       "min": 0,
       "max": 8192
-    },   
+    },
     {
       "key": "plat_hold_grav",
       "label": "FIELD_GRAVITY_JUMP",
@@ -139,7 +139,7 @@
       "defaultValue": 512,
       "min": 0,
       "max": 8192
-    },       
+    },
     {
       "key": "plat_max_fall_vel",
       "label": "FIELD_MAX_FALL_VEL",
@@ -171,7 +171,7 @@
       ],
       "cType": "define",
       "defaultValue": "INPUT_A"
-    },    
+    },
     {
       "key": "topdown_grid",
       "label": "FIELD_GRID_SIZE",

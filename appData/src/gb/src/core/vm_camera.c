@@ -9,20 +9,16 @@
 #include "scroll.h"
 #include "game_time.h"
 
-typedef struct cam_move_to_t {
+typedef struct camera_position_t {
     INT16 X, Y;
-} cam_move_to_t;
-
-typedef struct cam_set_pos_t {
-    INT16 X, Y;
-} cam_set_pos_t;
+} camera_position_t;
 
 void vm_camera_move_to(SCRIPT_CTX * THIS, INT16 idx, UBYTE speed, UBYTE after_lock_camera) OLDCALL BANKED {
 
     // indicate waitable state of context
     THIS->waitable = 1;
 
-    cam_move_to_t * params = VM_REF_TO_PTR(idx);
+    camera_position_t * params = VM_REF_TO_PTR(idx);
 
     // Disable camera lock
     camera_settings &= ~(CAMERA_LOCK_FLAG);
@@ -52,7 +48,7 @@ void vm_camera_move_to(SCRIPT_CTX * THIS, INT16 idx, UBYTE speed, UBYTE after_lo
 }
 
 void vm_camera_set_pos(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {
-    cam_set_pos_t * params = VM_REF_TO_PTR(idx);
+    camera_position_t * params = VM_REF_TO_PTR(idx);
     camera_x = params->X;
     camera_y = params->Y;
 

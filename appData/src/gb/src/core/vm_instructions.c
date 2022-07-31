@@ -34,7 +34,7 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_invoke,                 6}, // 0x0D
     {vm_beginthread,            6}, // 0x0E
     {vm_if,                     8}, // 0x0F
-    {vm_push_value_ind,         2}, // 0x11 
+    {vm_push_value_ind,         2}, // 0x11
     {vm_push_value,             2}, // 0x11
     {vm_reserve,                1}, // 0x12
     {vm_set,                    4}, // 0x13
@@ -62,7 +62,7 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_get_indirect,           4}, // 0x29
     {vm_test_terminate,         1}, // 0x2A
     {vm_poll_loaded,            2}, // 0x2B
-    {vm_push_reference,         2}, // 0x2C 
+    {vm_push_reference,         2}, // 0x2C
     {vm_call_native,            3}, // 0x2D
     // load/save instrunctions section
     {vm_save_peek,              9}, // 0x2E
@@ -80,11 +80,11 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_actor_set_spritesheet,  5}, // 0x38
     {vm_actor_replace_tile,     8}, // 0x39
     {vm_actor_get_pos,          2}, // 0x3A
-    {vm_actor_set_hidden,       3}, // 0x3B
+    {0, 0},
     {vm_actor_get_dir,          4}, // 0x3C
     {vm_actor_set_anim_tick,    3}, // 0x3D
     {vm_actor_set_move_speed,   3}, // 0x3E
-    {vm_actor_set_coll_enabled, 3}, // 0x3F
+    {vm_actor_set_flags,        4}, // 0x3F
 
     // user interface instructions section
     {vm_load_text,              1}, // 0x40
@@ -173,13 +173,13 @@ const SCRIPT_CMD script_cmds[] = {
 
     {vm_actor_get_anim_frame,   2}, // 0x83
     {vm_actor_set_anim_set,     4}, // 0x84
-    {vm_switch_text_layer,      1}, // 0x85 
+    {vm_switch_text_layer,      1}, // 0x85
     {vm_actor_get_angle,        4}, // 0x86
     {vm_actor_set_spritesheet_by_ref, 4}, // 0x87
     {vm_actor_move_cancel,      2}, //0x88
 
     // trigonometry instructions section
-    {vm_sin_scale,              5}, // 0x89 
+    {vm_sin_scale,              5}, // 0x89
     {vm_cos_scale,              5}, // 0x8A
 
     {vm_set_text_sound,         4}, // 0x8B
