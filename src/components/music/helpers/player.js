@@ -140,9 +140,14 @@ const loadSong = (song) => {
   stop();
 };
 
-const play = (song) => {
+const play = (song, position) => {
   console.log("PLAY");
   updateRom(song);
+
+  if (position) {
+    console.log("POS", position);
+    setStartPosition(position);
+  }
 
   if (isPlayerPaused()) {
     const ticks_per_row_addr = getMemAddress("ticks_per_row");

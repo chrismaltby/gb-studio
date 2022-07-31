@@ -47,6 +47,7 @@ async function playUGE(filename: string, _settings: MusicSettings) {
       ipcRenderer.send("music-data-send", {
         action: "play",
         song: data,
+        position: [0, 0],
       });
     }
   };
