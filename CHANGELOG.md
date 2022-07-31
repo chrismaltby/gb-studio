@@ -83,6 +83,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where selecting "Wait until finished" on sound effect events could cause broken scripts containing decimal wait values
 - Fix selecting properties on "Self" such as position and direction [@pau-tomas](https://github.com/pau-tomas)
 - Fix issue where renaming sprite files would lose any attached metadata
+- Prevent user from creating projects ending with a period [@patrickmollohan](https://github.com/patrickmollohan)
 
 ### Removed
 
