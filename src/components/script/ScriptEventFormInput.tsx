@@ -591,6 +591,10 @@ const ScriptEventFormInput = ({
         <DigitSelect
           name={id}
           value={Number(value)}
+          onChange={onChangeField}
+        />
+      </OffscreenSkeletonInput>
+    );
   } else if (type === "mathOperator") {
     return (
       <OffscreenSkeletonInput>
