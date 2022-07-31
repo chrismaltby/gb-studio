@@ -137,6 +137,7 @@ export const EVENT_ENGINE_FIELD_STORE = "EVENT_ENGINE_FIELD_STORE";
 // Rumble
 export const EVENT_RUMBLE_ON = "EVENT_RUMBLE_ON";
 export const EVENT_RUMBLE_OFF = "EVENT_RUMBLE_OFF";
+export const EVENT_RUMBLE_FOR = "EVENT_RUMBLE_FOR";
 
 export const EventsOnlyForActors = [EVENT_ACTOR_PUSH];
 export const EventsHidden = [

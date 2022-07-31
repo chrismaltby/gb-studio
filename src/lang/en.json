@@ -785,6 +785,8 @@
   "EVENT_LOOP_WHILE_LABEL": "While ({expression})",
   "EVENT_RUMBLE_ON": "Rumble On",
   "EVENT_RUMBLE_OFF": "Rumble Off",
+  "EVENT_RUMBLE_FOR": "Rumble For",
+  "EVENT_RUMBLE_FOR_LABEL": "Rumble For {time} {units}",
 
   "// 10": "Menu -----------------------------------------------------",
 

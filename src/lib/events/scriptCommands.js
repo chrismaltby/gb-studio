@@ -113,6 +113,7 @@ export const ENGINE_FIELD_STORE = "ENGINE_FIELD_STORE";
 export const ENGINE_FIELD_STORE_WORD = "ENGINE_FIELD_STORE_WORD";
 export const RUMBLE_ON = "RUMBLE_ON";
 export const RUMBLE_OFF = "RUMBLE_OFF";
+export const RUMBLE_FOR = "RUMBLE_FOR";
 
 export const scriptCommands = [
   END,
@@ -230,6 +231,7 @@ export const scriptCommands = [
   ENGINE_FIELD_STORE_WORD,
   RUMBLE_ON,
   RUMBLE_OFF,
+  RUMBLE_FOR,
 ];
 
 export const commandIndex = (key) => {
