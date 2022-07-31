@@ -546,12 +546,13 @@ export const SongTracker = ({
   const handleWheel = useCallback(
     (e: any) => {
       if (e.ctrlKey) {
+        const delta = e.deltaY === 0 ? e.deltaX : e.deltaY;
         if (e.shiftKey) {
-          if (e.deltaY < 0) return transposeSelectedTrackerFields(1,true);
-          if (e.deltaY > 0) return transposeSelectedTrackerFields(-1,true);
+          if (delta < 0) return transposeSelectedTrackerFields(1,true);
+          if (delta > 0) return transposeSelectedTrackerFields(-1,true);
         } else {
-          if (e.deltaY < 0) return transposeSelectedTrackerFields(1,false);
-          if (e.deltaY > 0) return transposeSelectedTrackerFields(-1,false);
+          if (delta < 0) return transposeSelectedTrackerFields(1,false);
+          if (delta > 0) return transposeSelectedTrackerFields(-1,false);
         }
         return;
       }
