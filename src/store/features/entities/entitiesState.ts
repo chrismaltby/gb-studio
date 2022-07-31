@@ -17,7 +17,7 @@ import {
   DRAG_TRIGGER,
   DRAG_ACTOR,
 } from "../../../consts";
-import { isVariableField, isPropertyField } from "lib/helpers/eventSystem";
+import { isActorField, isVariableField, isPropertyField } from "lib/helpers/eventSystem";
 import clamp from "lib/helpers/clamp";
 import { RootState } from "store/configureStore";
 import settingsActions from "../settings/settingsActions";
@@ -2167,35 +2167,27 @@ const refreshCustomEventArgs: CaseReducer<
       const args = scriptEvent.args;
       if (!args) return;
       if (args.__comment) return;
-      if (
-        args.actorId &&
-        args.actorId !== "player" &&
-        args.actorId !== "$self$" &&
-        typeof args.actorId === "string"
-      ) {
-        const letter = String.fromCharCode(
-          "A".charCodeAt(0) + parseInt(args.actorId)
-        );
-        actors[args.actorId] = {
-          id: args.actorId,
-          name: oldActors[args.actorId]?.name || `Actor ${letter}`,
-        };
-      }
-      if (
-        args.otherActorId &&
-        args.otherActorId !== "player" &&
-        args.otherActorId !== "$self$" &&
-        typeof args.otherActorId === "string"
-      ) {
-        const letter = String.fromCharCode(
-          "A".charCodeAt(0) + parseInt(args.otherActorId)
-        );
-        actors[args.otherActorId] = {
-          id: args.otherActorId,
-          name: oldActors[args.otherActorId]?.name || `Actor ${letter}`,
-        };
-      }
       Object.keys(args).forEach((arg) => {
+        if (isActorField(scriptEvent.command, arg, args, eventLookup)) {
+          const addActor = (actor: string) => {
+            const letter = String.fromCharCode(
+              "A".charCodeAt(0) + parseInt(actor)
+            );
+            actors[actor] = {
+              id: actor,
+              name: oldActors[actor]?.name || `Actor ${letter}`,
+            };
+          };
+          const actor = args[arg];
+          if (
+            actor &&
+            actor !== "player" &&
+            actor !== "$self$" &&
+            typeof actor === "string"
+          ) {
+            addActor(actor);
+          }
+        }
         if (isVariableField(scriptEvent.command, arg, args, eventLookup)) {
           const addVariable = (variable: string) => {
             const letter = String.fromCharCode(
