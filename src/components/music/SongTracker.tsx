@@ -21,7 +21,7 @@ import { getKeys, KeyWhen } from "lib/keybindings/keyBindings";
 import trackerActions from "store/features/tracker/trackerActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import { clipboard } from "store/features/clipboard/clipboardHelpers";
-import { cloneDeep, mergeWith } from "lodash";
+import { clamp, cloneDeep, mergeWith } from "lodash";
 
 interface SongTrackerProps {
   sequenceId: number;
@@ -181,6 +181,44 @@ export const SongTracker = ({
     }
   }, [playing, activeField]);
 
+  const transposeSelectedTrackerFields = (change: number, large: boolean) => {
+    if (pattern && selectedTrackerFields) {
+      const newPattern = cloneDeep(pattern);
+      for (let i = 0; i < selectedTrackerFields.length; i++) {
+        const field = selectedTrackerFields[i];
+        const newPatternCell = {
+          ...newPattern[Math.floor(field / 16)][Math.floor(field / 4) % 4],
+        };
+
+        if (field % 4 === 0 && newPatternCell.note !== null) {
+          newPatternCell.note = 
+          clamp(newPatternCell.note + (large ? change * 12 : change), 0, 71);
+        }
+        if (field % 4 === 1 && newPatternCell.instrument !== null) {
+          newPatternCell.instrument =
+          clamp(newPatternCell.instrument + (large ? change * 10 : change), 0, 14);
+        }
+        if (field % 4 === 2 && newPatternCell.effectcode !== null) {
+          newPatternCell.effectcode =  
+          clamp(newPatternCell.effectcode + change, 0, 15);
+        }
+        if (field % 4 === 3 && newPatternCell.effectparam !== null) {
+          newPatternCell.effectparam =
+          clamp(newPatternCell.effectparam + (large ? change * 16 : change), 0, 255);
+        }
+
+        newPattern[Math.floor(field / 16)][Math.floor(field / 4) % 4] =
+          newPatternCell;
+      }
+      dispatch(
+        trackerDocumentActions.editPattern({
+          patternId: patternId,
+          pattern: newPattern,
+        })
+      );
+    }
+  };
+  
   const handleMouseDown = useCallback(
     (e: any) => {
       const fieldId = e.target.dataset["fieldid"];
@@ -273,18 +311,6 @@ export const SongTracker = ({
           );
         };
 
-      const transposeNoteCell = (value: number) => {
-        if (activeField === undefined) {
-          return;
-        }
-        dispatch(
-          trackerDocumentActions.transposeNoteCell({
-            patternId: patternId,
-            cellId: activeField,
-            transpose: value,
-          })
-        );
-      };
 
       const editNoteField = (value: number | null) => {
         if (activeField === undefined) {
@@ -461,30 +487,24 @@ export const SongTracker = ({
 
       let currentFocus: KeyWhen = null;
 
-      if (activeField % 4 === 0) {
-        if (e.ctrlKey) {
-          if (e.shiftKey) {
-            if (e.key === "Q" || e.key === "+") return transposeNoteCell(12);
-            if (e.key === "A" || e.key === "_") return transposeNoteCell(-12);
-          } else {
-            if (e.key === "q" || e.key === "=") return transposeNoteCell(1);
-            if (e.key === "a" || e.key === "-") return transposeNoteCell(-1);
-          }
-          return;
-        } else if (e.metaKey) {
-          return;
-        }
+      switch(activeField % 4) {
+        case 0: currentFocus = "noteColumnFocus"; break;
+        case 1: currentFocus = "instrumentColumnFocus"; break;
+        case 2: currentFocus = "effectCodeColumnFocus"; break;
+        case 3: currentFocus = "effectParamColumnFocus"; break;
+      }
 
-        currentFocus = "noteColumnFocus";
-      }
-      if ((activeField - 1) % 4 === 0) {
-        currentFocus = "instrumentColumnFocus";
-      }
-      if ((activeField - 2) % 4 === 0) {
-        currentFocus = "effectCodeColumnFocus";
-      }
-      if ((activeField - 3) % 4 === 0) {
-        currentFocus = "effectParamColumnFocus";
+      if (e.ctrlKey) {
+        if (e.shiftKey) {
+          if (e.key === "Q" || e.key === "+") return transposeSelectedTrackerFields(1,true);
+          if (e.key === "A" || e.key === "_") return transposeSelectedTrackerFields(-1,true);
+        } else {
+          if (e.key === "q" || e.key === "=") return transposeSelectedTrackerFields(1,false);
+          if (e.key === "a" || e.key === "-") return transposeSelectedTrackerFields(-1,false);
+        }
+        return;
+      } else if (e.metaKey) {
+        return;
       }
 
       if (currentFocus && !e.metaKey && !e.ctrlKey && !e.altKey) {
@@ -524,6 +544,23 @@ export const SongTracker = ({
     [activeField]
   );
 
+  const handleWheel = useCallback(
+    (e: any) => {
+      console.log("wheel");
+      if (e.ctrlKey) {
+        if (e.shiftKey) {
+          if (e.deltaY < 0) return transposeSelectedTrackerFields(1,true);
+          if (e.deltaY > 0) return transposeSelectedTrackerFields(-1,true);
+        } else {
+          if (e.deltaY < 0) return transposeSelectedTrackerFields(1,false);
+          if (e.deltaY > 0) return transposeSelectedTrackerFields(-1,false);
+        }
+        return;
+      }
+    },
+    [activeField, selectionRect, pattern]
+  );
+
   const onSelectAll = useCallback(
     (e) => {
       e.stopPropagation();
@@ -552,12 +589,14 @@ export const SongTracker = ({
     window.addEventListener("keyup", handleKeysUp);
     window.addEventListener("mousedown", handleMouseDown);
     window.addEventListener("mouseup", handleMouseUp);
+    window.addEventListener("wheel", handleWheel);
 
     return () => {
       window.removeEventListener("keydown", handleKeys);
       window.removeEventListener("keyup", handleKeysUp);
       window.removeEventListener("mousedown", handleMouseDown);
       window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("wheel", handleWheel);
     };
   });
 
