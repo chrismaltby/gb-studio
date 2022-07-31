@@ -117,7 +117,6 @@ export const SongTracker = ({
       newSelectedTrackerFields.push(selectionOrigin.y * ROW_SIZE + selectionOrigin.x);
     }
     setSelectedTrackerFields(newSelectedTrackerFields);
-    //console.log("new selection within rect: " + newSelectedTrackerFields);
   }, [selectionOrigin, selectionRect]);
 
   const [playbackState, setPlaybackState] = useState([0, 0]);
@@ -152,7 +151,6 @@ export const SongTracker = ({
       if (activeField % CHANNEL_FIELDS >= 2) {
         dispatch(trackerActions.setSelectedEffectCell(Math.floor(activeField / ROW_SIZE)));
       }
-      //console.log("use effect channel id " + (activeField % CHANNEL_FIELDS) + " active " + activeField);
     }
   }, [activeField, dispatch]);
 
@@ -181,7 +179,7 @@ export const SongTracker = ({
     }
   }, [playing, activeField]);
 
-  const transposeSelectedTrackerFields = (change: number, large: boolean) => {
+  const transposeSelectedTrackerFields = useCallback((change: number, large: boolean) => {
     if (pattern && selectedTrackerFields) {
       const newPattern = cloneDeep(pattern);
       for (let i = 0; i < selectedTrackerFields.length; i++) {
@@ -217,7 +215,7 @@ export const SongTracker = ({
         })
       );
     }
-  };
+  }, [dispatch, pattern, patternId, selectedTrackerFields]);
   
   const handleMouseDown = useCallback(
     (e: any) => {
@@ -529,6 +527,7 @@ export const SongTracker = ({
       selectedTrackerFields,
       selectionRect,
       selectionOrigin,
+      transposeSelectedTrackerFields,
     ]
   );
 
@@ -546,7 +545,6 @@ export const SongTracker = ({
 
   const handleWheel = useCallback(
     (e: any) => {
-      console.log("wheel");
       if (e.ctrlKey) {
         if (e.shiftKey) {
           if (e.deltaY < 0) return transposeSelectedTrackerFields(1,true);
@@ -558,7 +556,7 @@ export const SongTracker = ({
         return;
       }
     },
-    [activeField, selectionRect, pattern]
+    [transposeSelectedTrackerFields]
   );
 
   const onSelectAll = useCallback(

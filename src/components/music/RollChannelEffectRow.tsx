@@ -130,11 +130,18 @@ export const RollChannelEffectRowFwd = ({
               },
             })
           );
-          //dispatch(trackerActions.setSelectedEffectCell(null));
         }
       }
     },
-    [renderPattern, cellSize, channelId, tool, dispatch, patternId]
+    [
+      renderPattern,
+      cellSize,
+      channelId,
+      tool,
+      dispatch,
+      patternId,
+      selectedEffectCell,
+    ]
   );
 
   return (
