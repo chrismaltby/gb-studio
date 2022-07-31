@@ -1,29 +1,28 @@
 import React, { FC } from "react";
 import l10n from "lib/helpers/l10n";
 import { Select, SelectCommonProps } from "ui/form/Select";
-import { FlexRow, FlexGrow } from "ui/spacing/Spacing";
+import { FlexGrow, FlexRow } from "ui/spacing/Spacing";
 
-interface OperatorSelectProps extends SelectCommonProps {
+interface MathOperatorSelectProps extends SelectCommonProps {
   name: string;
   value?: string | null;
   onChange?: (newValue: string | null) => void;
 }
 
-interface OperatorOption {
+interface MathOperatorOption {
   value: string;
   label: string;
 }
 
-const options: OperatorOption[] = [
-  { value: "==", label: l10n("FIELD_EQ") },
-  { value: "!=", label: l10n("FIELD_NE") },
-  { value: "<", label: l10n("FIELD_LT") },
-  { value: ">", label: l10n("FIELD_GT") },
-  { value: "<=", label: l10n("FIELD_LTE") },
-  { value: ">=", label: l10n("FIELD_GTE") },
+const options: MathOperatorOption[] = [
+  { value: "+=", label: l10n("FIELD_ADD_VALUE") },
+  { value: "-=", label: l10n("FIELD_SUB_VALUE") },
+  { value: "*=", label: l10n("FIELD_MUL_VARIABLE") },
+  { value: "/=", label: l10n("FIELD_DIV_VARIABLE") },
+  { value: "%=", label: l10n("FIELD_MOD_VARIABLE") },
 ];
 
-export const OperatorSelect: FC<OperatorSelectProps> = ({
+export const MathOperatorSelect: FC<MathOperatorSelectProps> = ({
   name,
   value,
   onChange,
@@ -35,10 +34,10 @@ export const OperatorSelect: FC<OperatorSelectProps> = ({
       name={name}
       value={currentValue}
       options={options}
-      onChange={(newValue: OperatorOption) => {
+      onChange={(newValue: MathOperatorOption) => {
         onChange?.(newValue.value);
       }}
-      formatOptionLabel={(option: OperatorOption) => {
+      formatOptionLabel={(option: MathOperatorOption) => {
         return (
           <FlexRow>
             <FlexGrow>{option.label}</FlexGrow>
@@ -54,7 +53,7 @@ export const OperatorSelect: FC<OperatorSelectProps> = ({
   );
 };
 
-OperatorSelect.defaultProps = {
+MathOperatorSelect.defaultProps = {
   name: undefined,
-  value: "==",
+  value: "+=",
 };

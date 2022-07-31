@@ -404,6 +404,24 @@ const changes: EngineChange[] = [
       "src/core/vm_projectiles.c",
     ],
   },
+  {
+    version: "3.1.0-e11",
+    description:
+      "Updates:\n" +
+      [
+        "   * Fix issue where actors would switch direction at last frame of vm_actor_move_to",
+        "   * Moved all actor flags instructions into single VM_ACTOR_SET_FLAGS with macros for compatibility with old instructions",
+        "   * Tidied actor and camera manipulation structs",
+      ].join("\n"),
+    modifiedFiles: [
+      "include/actor.h",
+      "include/vm.i",
+      "include/vm_actor.h",
+      "src/core/vm_actor.c",
+      "src/core/vm_camera.c",
+      "src/core/vm_instructions.c",
+    ],
+  },
 ];
 
 const ejectEngineChangelog = (currentVersion: string) => {

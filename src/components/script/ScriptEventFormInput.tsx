@@ -16,6 +16,7 @@ import { MovementSpeedSelect } from "components/forms/MovementSpeedSelect";
 import { MovementTypeSelect } from "components/forms/MovementTypeSelect";
 import { MusicSelect } from "components/forms/MusicSelect";
 import { OperatorSelect } from "components/forms/OperatorSelect";
+import { MathOperatorSelect } from "components/forms/MathOperatorSelect";
 import { OverlayColorSelect } from "components/forms/OverlayColorSelect";
 import { PaletteSelect } from "components/forms/PaletteSelect";
 import { Priority, PrioritySelect } from "components/forms/PrioritySelect";
@@ -590,6 +591,12 @@ const ScriptEventFormInput = ({
         <DigitSelect
           name={id}
           value={Number(value)}
+  } else if (type === "mathOperator") {
+    return (
+      <OffscreenSkeletonInput>
+        <MathOperatorSelect
+          name={id}
+          value={String(value ?? "")}
           onChange={onChangeField}
         />
       </OffscreenSkeletonInput>

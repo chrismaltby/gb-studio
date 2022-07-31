@@ -156,7 +156,11 @@ export const SongTracker = ({
   useEffect(() => {
     if (playingRowRef && playingRowRef.current) {
       if (playing) {
-        playingRowRef.current.scrollIntoView();
+        playingRowRef.current.scrollIntoView({
+          behavior: "auto",
+          block: "center",
+          inline: "nearest",
+        });
       }
     }
   }, [playing, playbackState]);
@@ -179,9 +183,28 @@ export const SongTracker = ({
       const rowId = e.target.dataset["row"];
 
       if (!!fieldId) {
-        setActiveField(parseInt(fieldId));
-        if (!isSelecting) {
-          setSelectionOrigin(undefined);
+        if (e.shiftKey) {
+          setIsSelecting(true);
+
+          const newActiveField =
+            ((parseInt(fieldId) % NUM_FIELDS) + NUM_FIELDS) % NUM_FIELDS;
+
+          if (selectionOrigin) {
+            const x2 = newActiveField % ROW_SIZE;
+            const y2 = Math.floor(newActiveField / ROW_SIZE);
+
+            const x = Math.min(selectionOrigin.x, x2);
+            const y = Math.min(selectionOrigin.y, y2);
+            const width = Math.abs(selectionOrigin.x - x2);
+            const height = Math.abs(selectionOrigin.y - y2);
+            setSelectionRect({ x, y, width, height });
+          }
+          setActiveField(parseInt(fieldId));
+        } else {
+          setActiveField(parseInt(fieldId));
+          const x = parseInt(fieldId) % ROW_SIZE;
+          const y = Math.floor(parseInt(fieldId) / ROW_SIZE);
+          setSelectionOrigin({ x, y });
           setSelectionRect(undefined);
         }
       } else if (rowId) {
@@ -199,7 +222,7 @@ export const SongTracker = ({
         setActiveField(undefined);
       }
     },
-    [dispatch, isSelecting, sequenceId]
+    [dispatch, selectionOrigin, sequenceId]
   );
 
   const handleKeys = useCallback(
@@ -259,9 +282,8 @@ export const SongTracker = ({
         editPatternCell("note")(
           value === null ? null : value + octaveOffset * 12
         );
-        editPatternCell("instrument")(defaultInstrument);
-
         if (value !== null) {
+          editPatternCell("instrument")(defaultInstrument);
           setActiveField(activeField + ROW_SIZE * editStep);
         }
       };
@@ -299,10 +321,52 @@ export const SongTracker = ({
         }
       };
 
+      const deleteSelectedTrackerFields = () => {
+        if (pattern && selectedTrackerFields) {
+          const newPattern = cloneDeep(pattern);
+          for (let i = 0; i < selectedTrackerFields.length; i++) {
+            const field = selectedTrackerFields[i];
+            const newPatternCell = {
+              ...newPattern[Math.floor(field / 16)][Math.floor(field / 4) % 4],
+            };
+
+            if (field % 4 === 0) {
+              newPatternCell.note = null;
+            }
+            if ((field - 1) % 4 === 0) {
+              newPatternCell.instrument = null;
+            }
+            if ((field - 2) % 4 === 0) {
+              newPatternCell.effectcode = null;
+            }
+            if ((field - 3) % 4 === 0) {
+              newPatternCell.effectparam = null;
+            }
+
+            newPattern[Math.floor(field / 16)][Math.floor(field / 4) % 4] =
+              newPatternCell;
+          }
+          dispatch(
+            trackerDocumentActions.editPattern({
+              patternId: patternId,
+              pattern: newPattern,
+            })
+          );
+        }
+      };
+
       if (e.key === "Escape") {
         e.preventDefault();
         setSelectedTrackerFields(undefined);
         setSelectionOrigin(undefined);
+      }
+
+      if (e.key === "Backspace" || e.key === "Delete") {
+        if (selectedTrackerFields && selectedTrackerFields.length > 0) {
+          e.preventDefault();
+          deleteSelectedTrackerFields();
+          return;
+        }
       }
 
       if (activeField === undefined) {
@@ -414,6 +478,8 @@ export const SongTracker = ({
       song,
       octaveOffset,
       editStep,
+      pattern,
+      selectedTrackerFields,
       selectionRect,
       selectionOrigin,
     ]
@@ -515,7 +581,7 @@ export const SongTracker = ({
         for (let i = 0; i < newPastedPattern.length; i++) {
           const pastedPatternCellRow = newPastedPattern[i];
           for (let j = 0; j < 4 - channelId; j++) {
-            if (pastedPatternCellRow[j]) {
+            if (pastedPatternCellRow[j] && newPattern[startRow + i]) {
               newPattern[startRow + i][channelId + j] = pastedPatternCellRow[j];
             }
           }

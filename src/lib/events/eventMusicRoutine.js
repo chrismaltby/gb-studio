@@ -9,19 +9,19 @@ const fields = [
     type: "number",
     defaultValue: 0,
     min: 0,
-    max: 4,
+    max: 3,
   },
   {
     key: "__scriptTabs",
     type: "tabs",
     defaultValue: "trigger",
     values: {
-      trigger: l10n("FIELD_ON_TRIGGER"),
+      trigger: l10n("FIELD_ON_CALL"),
     },
   },
   {
     key: "true",
-    label: l10n("FIELD_ON_TRIGGER"),
+    label: l10n("FIELD_ON_CALL"),
     type: "events",
     allowedContexts: ["global", "entity"],
     conditions: [
