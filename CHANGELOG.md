@@ -41,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support for calling C functions directly from GBVM with `VM_CALL_NATIVE`, in conjunction engine plugins allows creation of plugin events which call new native C functions
 - Add compile time warning if too many unique projectiles are within a scene
 - Add effect editor to music editor piano roll [@pau-tomas](https://github.com/pau-tomas)
+- Add noise macro preview for music editor [@RichardULZ](https://github.com/RichardULZ)
 
 ### Changed
 
