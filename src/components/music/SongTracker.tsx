@@ -546,6 +546,7 @@ export const SongTracker = ({
   const handleWheel = useCallback(
     (e: any) => {
       if (e.ctrlKey) {
+        e.preventDefault();
         const delta = e.deltaY === 0 ? e.deltaX : e.deltaY;
         if (e.shiftKey) {
           if (delta < 0) return transposeSelectedTrackerFields(1,true);
@@ -588,7 +589,7 @@ export const SongTracker = ({
     window.addEventListener("keyup", handleKeysUp);
     window.addEventListener("mousedown", handleMouseDown);
     window.addEventListener("mouseup", handleMouseUp);
-    window.addEventListener("wheel", handleWheel);
+    window.addEventListener("wheel", handleWheel, { passive:false });
 
     return () => {
       window.removeEventListener("keydown", handleKeys);
