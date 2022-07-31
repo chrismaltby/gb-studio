@@ -57,7 +57,7 @@ const fields = [
         defaultValue: {
           number: 0,
           variable: "LAST_VARIABLE",
-          property: "$self$:xpos",
+          property: "$self$:ypos",
         },
       },
     ],

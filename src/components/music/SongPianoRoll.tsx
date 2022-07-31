@@ -23,9 +23,13 @@ import {
   getInstrumentListByType,
   getInstrumentTypeByChannel,
 } from "./helpers";
+import { RollChannelEffectRow } from "./RollChannelEffectRow";
+import { WandIcon } from "ui/icons/Icons";
+import { RollChannelHover } from "./RollChannelHover";
 
-const CELL_SIZE = 14;
+const CELL_SIZE = 16;
 const MAX_NOTE = 71;
+const GRID_MARGIN = 10;
 
 interface SongPianoRollProps {
   sequenceId: number;
@@ -40,6 +44,10 @@ interface PianoKeyProps {
 }
 
 interface SongGridHeaderProps {
+  cols: number;
+}
+
+interface SongGridFooterProps {
   cols: number;
 }
 
@@ -133,7 +141,7 @@ const RollPlaybackTracker = styled.div`
   position: absolute;
   top: 0;
   bottom: 0;
-  left: -10px;
+  left: ${30 + 10 + 1 - 10}px;
   &::before {
     content: "";
     position: absolute;
@@ -149,8 +157,9 @@ const RollPlaybackTracker = styled.div`
 const SongGridHeader = styled.div<SongGridHeaderProps>`
   position: sticky;
   top: 0;
-  left: ${30 + 10 + 1}px;
+  left: 0;
   right: 0;
+  padding-left: ${30 + 10 + 1}px;
   z-index: 10;
   ${(props) => css`
     width: ${props.cols * CELL_SIZE}px;
@@ -164,10 +173,48 @@ const SongGridHeader = styled.div<SongGridHeaderProps>`
     background-size: ${CELL_SIZE * 8}px ${CELL_SIZE / 3}px;
     background-repeat: repeat-x;
     background-position-y: center;
+    background-position-x: ${30 + 10 + 1}px;
     border-bottom: 1px solid #808080;
     margin-bottom: -1px;
     border-right: 2px solid ${props.theme.colors.document.background};
   `}
+`;
+
+const SongGridFooter = styled.div<SongGridFooterProps>`
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  ${(props) => css`
+    margin-top: ${CELL_SIZE / 2}px;
+    width: calc(${props.cols * CELL_SIZE}px + ${30 + 10 + 1}px);
+    height: ${2 * CELL_SIZE}px;
+    border-right: 2px solid #808080;
+    background-color: ${props.theme.colors.sidebar.background};
+    box-shadow: ${(props) => props.theme.colors.card.boxShadow};
+  `}
+`;
+
+const FooterIcon = styled.div`
+  position: sticky;
+  left: 0;
+  height: ${CELL_SIZE * 2}px;
+  width: ${30 + 1}px;
+  background-color:  ${(props) => props.theme.colors.sidebar.background};
+  justify-content: center;
+  z-index: 6;
+  display: flex;
+
+  svg {
+    height: 20px;
+    width: 20px;
+    max-width: 100%;
+    max-height: 100%;
+    fill: ${(props) => props.theme.colors.button.text};
+    margin: auto;
+  }
+}}
 `;
 
 type BlurableDOMElement = {
@@ -570,7 +617,8 @@ export const SongPianoRoll = ({
         } else if (gridRef.current) {
           const bounds = gridRef.current.getBoundingClientRect();
           const x = clamp(
-            Math.floor((e.pageX - bounds.left) / CELL_SIZE) * CELL_SIZE,
+            Math.floor((e.pageX - bounds.left - GRID_MARGIN) / CELL_SIZE) *
+              CELL_SIZE,
             0,
             63 * CELL_SIZE
           );
@@ -657,7 +705,9 @@ export const SongPianoRoll = ({
 
       const bounds = gridRef.current.getBoundingClientRect();
 
-      const newColumn = Math.floor((e.pageX - bounds.left) / CELL_SIZE);
+      const newColumn = Math.floor(
+        (e.pageX - bounds.left - GRID_MARGIN) / CELL_SIZE
+      );
       const newRow = Math.floor((e.pageY - bounds.top) / CELL_SIZE);
       const newNote = 12 * 6 - 1 - newRow;
       if (newNote !== hoverNote) {
@@ -763,7 +813,7 @@ export const SongPianoRoll = ({
         setAddToSelection(true);
       }
 
-      if (e.key === "Backspace") {
+      if (e.key === "Backspace" || e.key === "Delete") {
         if (pattern) {
           const newPattern = cloneDeep(pattern);
           console.log(newPattern, selectedPatternCells, selectedChannel);
@@ -936,12 +986,13 @@ export const SongPianoRoll = ({
             zIndex: 1,
           }}
         >
-          <SongGridHeader
-            cols={64}
-            onMouseDown={(e) => {
-              setPlaybackPosition(e.nativeEvent);
-            }}
-          >
+          <SongGridHeader cols={64}>
+            <div
+              style={{ height: "100%" }}
+              onMouseDown={(e) => {
+                setPlaybackPosition(e.nativeEvent);
+              }}
+            ></div>
             <RollPlaybackTracker
               ref={playingRowRef}
               style={{
@@ -1036,6 +1087,11 @@ export const SongPianoRoll = ({
               }}
             >
               <RollChannelGrid cellSize={CELL_SIZE} />
+              <RollChannelHover
+                cellSize={CELL_SIZE}
+                hoverColumn={hoverColumn}
+                hoverRow={hoverNote}
+              />
               {v.map((i) => (
                 <RollChannel
                   channelId={i}
@@ -1052,6 +1108,17 @@ export const SongPianoRoll = ({
               />
             </SongGrid>
           </div>
+          <SongGridFooter cols={64}>
+            <FooterIcon>
+              <WandIcon />
+            </FooterIcon>
+            <RollChannelEffectRow
+              patternId={patternId}
+              channelId={selectedChannel}
+              renderPattern={renderPattern || []}
+              cellSize={CELL_SIZE}
+            />
+          </SongGridFooter>
         </div>
       </div>
       <SplitPaneVerticalDivider />

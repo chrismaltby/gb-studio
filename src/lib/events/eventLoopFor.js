@@ -7,8 +7,10 @@ const autoLabel = (fetchArg) => {
   return l10n("EVENT_LOOP_FOR_LABEL", {
     variable: fetchArg("variable"),
     from: fetchArg("from"),
+    comparison: fetchArg("comparison"),
     to: fetchArg("to"),
-    inc: fetchArg("inc"),
+    operation: fetchArg("operation"),
+    val: fetchArg("val"),
   });
 };
 
@@ -18,7 +20,6 @@ const fields = [
     label: l10n("FIELD_FOR"),
     type: "variable",
     defaultValue: "LAST_VARIABLE",
-    width: "50%",
   },
   {
     type: "group",
@@ -37,6 +38,12 @@ const fields = [
         },
       },
       {
+        key: "comparison",
+        label: l10n("FIELD_COMPARISON"),
+        type: "operator",
+        defaultValue: "<=",
+      },
+      {
         key: "to",
         label: l10n("FIELD_TO"),
         type: "union",
@@ -49,9 +56,21 @@ const fields = [
           variable: "LAST_VARIABLE",
         },
       },
+    ],
+    flexBasis: 200,
+  },
+  {
+    type: "group",
+    fields: [
       {
-        key: "inc",
-        label: l10n("FIELD_INC_BY"),
+        key: "operation",
+        label: l10n("FIELD_OPERATION"),
+        type: "mathOperator",
+        defaultValue: "+=",
+      },
+      {
+        key: "value",
+        label: l10n("FIELD_VALUE"),
         type: "union",
         types: ["number", "variable"],
         defaultType: "number",
@@ -63,6 +82,7 @@ const fields = [
         },
       },
     ],
+    flexBasis: 150,
   },
   {
     key: "true",
@@ -83,17 +103,36 @@ const compile = (input, helpers) => {
     variableSetToValue,
     variableCopy,
   } = helpers;
+  const comparisonLookup = {
+    "==": ".EQ",
+    "!=": ".NE",
+    "<": ".LT",
+    ">": ".GT",
+    "<=": ".LTE",
+    ">=": ".GTE",
+  };
+  const comparison = comparisonLookup[input.comparison];
+
+  const operationLookup = {
+    "+=": ".ADD",
+    "-=": ".SUB",
+    "*=": ".MUL",
+    "/=": ".DIV",
+    "%=": ".MOD",
+  };
+  const operation = operationLookup[input.operation];
+
   const loopId = getNextLabel();
   let ifOp = input.to.type === "number" ? ifVariableValue : ifVariableCompare;
-  let addOp =
-    input.inc.type === "number" ? variableValueOperation : variablesOperation;
+  let performOp =
+    input.value.type === "number" ? variableValueOperation : variablesOperation;
   let setOp = input.from.type === "number" ? variableSetToValue : variableCopy;
 
   setOp(input.variable, input.from.value);
   labelDefine(loopId);
-  ifOp(input.variable, ".LTE", input.to.value, () => {
+  ifOp(input.variable, comparison, input.to.value, () => {
     compileEvents(input.true);
-    addOp(input.variable, ".ADD", input.inc.value);
+    performOp(input.variable, operation, input.value.value);
     labelGoto(loopId);
   });
 };

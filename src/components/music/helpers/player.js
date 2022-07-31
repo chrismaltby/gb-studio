@@ -77,18 +77,13 @@ const doResume = () => {
 
 const bitpack = (value, bitResolution) => {
   const bitsString = Math.abs(value || 0).toString(2);
-  if (bitsString.length > bitResolution) {
-    throw Error(
-      `value must be between 0 and ${Math.pow(2, bitResolution) - 1}`
-    );
-  }
 
   let missingValues = "";
   for (let i = 0; i < bitResolution - bitsString.length; i++) {
     missingValues = missingValues + "0";
   }
 
-  return missingValues + bitsString;
+  return missingValues + bitsString.slice(0, bitResolution);
 };
 
 const note2noise = (note) => {
@@ -130,7 +125,7 @@ const initPlayer = (onInit) => {
         `Order Count: ${emulator.readMem(getMemAddress("order_cnt"))}`
       );
     };
-    setInterval(updateTracker, 10);
+    setInterval(updateTracker, 1000/64);
   });
 };
 
@@ -330,7 +325,7 @@ const preview = (note, type, instrument, square2, waves = []) => {
           ),
         NR43: bitpack(
           note2noise(note + instrument.noise_macro[0]) +
-            (instrument.bit_count === 7 ? 16 : 0),
+            (instrument.bit_count === 7 ? 8 : 0),
           8
         ),
         NR44:
@@ -338,6 +333,22 @@ const preview = (note, type, instrument, square2, waves = []) => {
           (instrument.length !== null ? 1 : 0) +
           "000000",
       };
+
+      emulator.step("frame");
+      let noiseStep = 0;
+      clearInterval(noiseTimer);
+      const noiseTimer = setInterval(() => {
+        if (noiseStep > 5) {
+          clearInterval(noiseTimer);
+          return;
+        }
+        console.log("noise macro step = " + noiseStep);
+        emulator.writeMem(NR43, 
+          note2noise(note + instrument.noise_macro[noiseStep]) +
+          (instrument.bit_count === 7 ? 8 : 0), 8
+        );
+        noiseStep++;
+      }, 1000/64);
 
       console.log("-------------");
       console.log(`NR41`, regs.NR41, parseInt(regs.NR41, 2));
@@ -361,10 +372,10 @@ const preview = (note, type, instrument, square2, waves = []) => {
   }
   timeoutId = setTimeout(() => {
     emulator.writeMem(NR12, 0);
-    // emulator.writeMem(NR22, 0);
+    emulator.writeMem(NR22, 0);
     emulator.writeMem(NR30, 0);
     emulator.writeMem(NR42, 0);
-  }, 3000);
+  }, 2000);
 };
 
 const stop = (position) => {
@@ -392,9 +403,11 @@ const setStartPosition = (position) => {
 
   const new_order_addr = getMemAddress("new_order");
   const new_row_addr = getMemAddress("new_row");
+  const huge_tick = getMemAddress("tick");
 
   emulator.writeMem(new_order_addr, position[0] * 2);
   emulator.writeMem(new_row_addr, position[1]);
+  emulator.writeMem(huge_tick, 0);
 
   if (wasPlaying) {
     doResume();

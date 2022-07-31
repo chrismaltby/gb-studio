@@ -587,7 +587,7 @@ const MetaspriteEditor = ({
       if (e.key === "z") {
         flipYSelectedTiles();
       }
-      if (e.key === "Backspace") {
+      if (e.key === "Backspace" || e.key === "Delete") {
         removeSelectedTiles();
       }
     },
