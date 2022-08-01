@@ -3428,8 +3428,7 @@ extern void __mute_mask_${symbol};
 
   returnFar = () => {
     const argsSize =
-      Object.keys(this.options.argLookup.variable).length +
-      Object.keys(this.options.argLookup.actor).length;
+      this.options.argLookup.variable.size + this.options.argLookup.actor.size;
     if (argsSize === 0) {
       this._returnFar();
     } else {
