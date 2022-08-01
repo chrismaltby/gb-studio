@@ -134,6 +134,7 @@ interface ScriptBuilderOptions {
     scriptRef: string;
     argsLen: number;
   }>;
+  compiledAssetsCache: Dictionary<string>;
   compileEvents: (self: ScriptBuilder, events: ScriptEvent[]) => void;
 }
 
@@ -528,6 +529,7 @@ class ScriptBuilder {
       maxDepth: options.maxDepth ?? 5,
       compiledCustomEventScriptCache:
         options.compiledCustomEventScriptCache ?? {},
+      compiledAssetsCache: options.compiledAssetsCache ?? {},
       compileEvents: options.compileEvents || ((_self, _e) => {}),
       settings: options.settings || initialSettingsState,
     };
@@ -1666,9 +1668,12 @@ class ScriptBuilder {
     );
   };
 
-  _soundPlayBasic = (channel: number, frames: number, data: number[]) => {
-    const symbol = this._getAvailableSymbol("sound_legacy_0");
-
+  _soundPlayBasic = (
+    channel: number,
+    frames: number,
+    data: number[]
+  ): string => {
+    const { compiledAssetsCache } = this.options;
     let output = "";
 
     const channelMasks = [
@@ -1699,6 +1704,13 @@ class ScriptBuilder {
       }
       output += "\n";
     }
+
+    const cachedSymbol = compiledAssetsCache[output];
+    if (cachedSymbol) {
+      return cachedSymbol;
+    }
+
+    const symbol = this._getAvailableSymbol("sound_legacy_0");
 
     const muteMask = 1 << (channel - 1);
 
@@ -1734,6 +1746,8 @@ extern void __mute_mask_${symbol};
 #endif
 `
     );
+
+    compiledAssetsCache[output] = symbol;
 
     return symbol;
   };

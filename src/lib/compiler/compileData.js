@@ -1244,6 +1244,7 @@ const compile = async (
   const additionalScripts = {};
   const additionalOutput = {};
   const compiledCustomEventScriptCache = {};
+  const compiledAssetsCache = {};
 
   const eventPtrs = precompiled.sceneData.map((scene, sceneIndex) => {
     const compileScript = (
@@ -1327,6 +1328,7 @@ const compile = async (
         additionalOutput,
         symbols,
         compiledCustomEventScriptCache,
+        compiledAssetsCache,
       });
 
       output[`${scriptName}.s`] = compiledScript;

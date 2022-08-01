@@ -85,6 +85,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix selecting properties on "Self" such as position and direction [@pau-tomas](https://github.com/pau-tomas)
 - Fix issue where renaming sprite files would lose any attached metadata
 - Prevent user from creating projects ending with a period [@patrickmollohan](https://github.com/patrickmollohan)
+- Fix issue where using multiple identical sound events in a project would store the data in the ROM duplicated once for every sound effect call
 
 ### Removed
 
