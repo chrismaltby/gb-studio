@@ -1995,6 +1995,18 @@ extern void __mute_mask_${symbol};
     this._addCmd("VM_RESERVE", size);
   };
 
+  _getTileXY = (index: string, x: string, y: string) => {
+    this._addCmd("VM_GET_TILE_XY", index, x, y);
+  };
+
+  _replaceTile = (tile: string, bank: string, tileset: string, index: string) => {
+    this._addCmd("VM_REPLACE_TILE", tile, bank, tileset, index, 1);
+  };
+
+  _replaceTileXY = (x: number, y: number, bank: string, tileset: string, index: string) => {
+    this._addCmd("VM_REPLACE_TILE_XY", x, y, bank, tileset, index);
+  };
+
   // --------------------------------------------------------------------------
   // Actors
 
@@ -4817,6 +4829,40 @@ extern void __mute_mask_${symbol};
     this._compilePath(falsePath);
     this._label(endLabel);
     this._addNL();
+  };
+
+  replaceBackgroundTile = (x: number, y: number, sceneId: string, tileIndex: number) => {
+    const { scenes } = this.options;
+    const scene = scenes.find((s) => s.id === sceneId);
+    if (scene) {
+      this._addComment("Replace Background Tiles");
+      const tileset = scene.background.tileset.symbol;
+      this._stackPushConst(tileIndex);
+      this._replaceTileXY(x, y, `___bank_${tileset}`, `_${tileset}`, ".ARG0");
+      this._stackPop(1);
+      this._addNL();
+    }
+  };
+
+  replaceBackgroundTileVariables = (x: string, y: string, sceneId: string, tileIndex: string) => {
+    const { scenes } = this.options;
+    const scene = scenes.find((s) => s.id === sceneId);
+    if (scene) {
+      this._addComment("Replace Background Tiles With Variables");
+      const tileRef = this._declareLocal("tile", 2, true);
+      const tileset = scene.background.tileset.symbol;
+      
+      this._rpn()
+        .refVariable(x)
+        .refVariable(y)
+        .refVariable(tileIndex)
+        .stop();
+      
+      this._getTileXY(tileRef, ".ARG2", ".ARG1");
+      this._replaceTile(tileRef, `___bank_${tileset}`, `_${tileset}`, ".ARG0");
+      this._stackPop(3);
+      this._addNL();
+    }
   };
 
   caseVariableValue = (
