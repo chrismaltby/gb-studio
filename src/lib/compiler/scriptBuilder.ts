@@ -1621,8 +1621,12 @@ class ScriptBuilder {
     this._addCmd("VM_CAMERA_MOVE_TO", addr, speed, lock);
   };
 
+  _cameraGetDrawScroll = (addr: string) => {
+    this._addCmd("VM_CAMERA_GET", addr, ".CAMERA_DRAW_SCROLL");
+  };
+
   _cameraGetPos = (addr: string) => {
-    this._addCmd("VM_CAMERA_GET_POS", addr);
+    this._addCmd("VM_CAMERA_GET", addr, ".CAMERA_POS");
   };
 
   _cameraSetPos = (addr: string) => {
