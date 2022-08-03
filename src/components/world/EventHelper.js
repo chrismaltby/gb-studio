@@ -160,6 +160,27 @@ class EventHelper extends Component {
     }
 
     if (
+      event.command === EVENT_REPLACE_BACKGROUND_TILE
+    ) {
+      const x = argValue(event.args.x);
+      const y = argValue(event.args.y);
+      if (x === undefined && y === undefined) {
+        return <div />;
+      }
+      return (
+        <div className="EventHelper">
+          <div
+            className="EventHelper__TileMarker"
+            style={{
+              left: (x || 0) * TILE_SIZE,
+              top: (y || 0) * TILE_SIZE,
+            }}
+          />
+        </div>
+      );
+    }
+
+    if (
       event.command === EVENT_OVERLAY_SHOW ||
       event.command === EVENT_OVERLAY_MOVE_TO
     ) {
