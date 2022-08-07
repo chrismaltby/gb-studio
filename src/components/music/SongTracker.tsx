@@ -636,21 +636,23 @@ export const SongTracker = ({
       }
       window.getSelection()?.empty();
 
-      /*/ Select single channel (expose with modifier key?)
-      const offset = CHANNEL_FIELDS * channelId;
-      setSelectionOrigin({ x: offset, y: 0 });
-      setSelectionRect({
-        x: offset,
-        y: 0,
-        width: 3,
-        height: 63,
-      });
-      /*/
-      /// Select all channels
-      setSelectionOrigin({ x: 0, y: 0 });
-      setSelectionRect({x: 0, y: 0, width: 15, height: 63,});
+      if (!selectionRect) {
+      // Select single channel
+        const offset = CHANNEL_FIELDS * channelId;
+        setSelectionOrigin({ x: offset, y: 0 });
+        setSelectionRect({
+          x: offset,
+          y: 0,
+          width: 3,
+          height: 63,
+        });
+      } else {
+      // Select all channels
+        setSelectionOrigin({ x: 0, y: 0 });
+        setSelectionRect({x: 0, y: 0, width: 15, height: 63,});
+      }
     },
-    [channelId]
+    [channelId, selectionRect]
   );
 
   useEffect(() => {
