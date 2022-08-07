@@ -226,7 +226,35 @@ export const SongTracker = ({
       );
     }
   }, [dispatch, pattern, patternId, selectedTrackerFields]);
-  
+
+  const deleteSelectedTrackerFields = useCallback(() => {
+    if (pattern && selectedTrackerFields) {
+      const newPattern = cloneDeep(pattern);
+      for (let i = 0; i < selectedTrackerFields.length; i++) {
+        const field = selectedTrackerFields[i];
+        const newPatternCell = {
+          ...newPattern[Math.floor(field / 16)][Math.floor(field / 4) % 4],
+        };
+
+        switch(field % 4) {
+          case 0: newPatternCell.note = null; break;
+          case 1: newPatternCell.instrument = null; break;
+          case 2: newPatternCell.effectcode = null; break;
+          case 3: newPatternCell.effectparam = null; break;
+        }
+
+        newPattern[Math.floor(field / 16)][Math.floor(field / 4) % 4] =
+          newPatternCell;
+      }
+      dispatch(
+        trackerDocumentActions.editPattern({
+          patternId: patternId,
+          pattern: newPattern,
+        })
+      );
+    }
+  }, [dispatch, pattern, patternId, selectedTrackerFields]);
+
   const handleMouseDown = useCallback(
     (e: any) => {
       const fieldId = e.target.dataset["fieldid"];
@@ -395,40 +423,6 @@ export const SongTracker = ({
         }
       };
 
-      const deleteSelectedTrackerFields = () => {
-        if (pattern && selectedTrackerFields) {
-          const newPattern = cloneDeep(pattern);
-          for (let i = 0; i < selectedTrackerFields.length; i++) {
-            const field = selectedTrackerFields[i];
-            const newPatternCell = {
-              ...newPattern[Math.floor(field / 16)][Math.floor(field / 4) % 4],
-            };
-
-            if (field % 4 === 0) {
-              newPatternCell.note = null;
-            }
-            if ((field - 1) % 4 === 0) {
-              newPatternCell.instrument = null;
-            }
-            if ((field - 2) % 4 === 0) {
-              newPatternCell.effectcode = null;
-            }
-            if ((field - 3) % 4 === 0) {
-              newPatternCell.effectparam = null;
-            }
-
-            newPattern[Math.floor(field / 16)][Math.floor(field / 4) % 4] =
-              newPatternCell;
-          }
-          dispatch(
-            trackerDocumentActions.editPattern({
-              patternId: patternId,
-              pattern: newPattern,
-            })
-          );
-        }
-      };
-
       if (e.key === "Escape") {
         e.preventDefault();
         setSelectedTrackerFields(undefined);
@@ -551,6 +545,7 @@ export const SongTracker = ({
       selectionRect,
       selectionOrigin,
       transposeSelectedTrackerFields,
+      deleteSelectedTrackerFields,
     ]
   );
 
@@ -660,6 +655,17 @@ export const SongTracker = ({
     }
   }, [dispatch, pattern, selectedTrackerFields]);
 
+  const onCut = useCallback(() => {
+    if (pattern && selectedTrackerFields) {
+      const parsedSelectedPattern = parsePatternFieldsToClipboard(
+        pattern,
+        selectedTrackerFields
+      );
+      dispatch(clipboardActions.copyText(parsedSelectedPattern));
+      deleteSelectedTrackerFields();
+    }
+  }, [dispatch, pattern, selectedTrackerFields]);
+
   const onPaste = useCallback(() => {
     if (pattern) {
       const tempActiveField = activeField !== undefined ? activeField : 
@@ -698,12 +704,14 @@ export const SongTracker = ({
   // Clipboard
   useEffect(() => {
     window.addEventListener("copy", onCopy);
+    window.addEventListener("cut", onCut);
     window.addEventListener("paste", onPaste);
     return () => {
       window.removeEventListener("copy", onCopy);
+      window.removeEventListener("cut", onCut);
       window.removeEventListener("paste", onPaste);
     };
-  }, [onCopy, onPaste]);
+  }, [onCopy, onCut, onPaste]);
 
   return (
     <div
