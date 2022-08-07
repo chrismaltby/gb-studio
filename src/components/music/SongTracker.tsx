@@ -255,6 +255,39 @@ export const SongTracker = ({
     }
   }, [dispatch, pattern, patternId, selectedTrackerFields]);
 
+  const insertTrackerFields = useCallback((uninsert: Boolean) => {
+    if (pattern && activeField) {
+      const newChannelId = Math.floor(
+        (activeField % ROW_SIZE) / CHANNEL_FIELDS
+      );
+      const startRow = Math.floor(activeField / ROW_SIZE);
+      const newPattern = cloneDeep(pattern);
+      if (uninsert) {
+        for (let i = startRow; i < 63; i++) {
+          newPattern[i][newChannelId] =
+            newPattern[(i + 1)][newChannelId];
+        }
+      } else {
+        for (let i = 63; i > startRow; i--) {
+          newPattern[i][newChannelId] =
+            newPattern[(i - 1)][newChannelId];
+        }
+      }
+      newPattern[uninsert ? 63 : startRow][newChannelId] = {
+        note:  null,
+        instrument:  null,
+        effectcode:  null,
+        effectparam:  null,
+      };
+      dispatch(
+        trackerDocumentActions.editPattern({
+          patternId: patternId,
+          pattern: newPattern,
+        })
+      );
+    }
+  }, [dispatch, pattern, patternId, activeField]);
+
   const handleMouseDown = useCallback(
     (e: any) => {
       const fieldId = e.target.dataset["fieldid"];
@@ -430,9 +463,21 @@ export const SongTracker = ({
       }
 
       if (e.key === "Backspace" || e.key === "Delete") {
+        if ((e.shiftKey || e.ctrlKey) && activeField) {
+          e.preventDefault();
+          insertTrackerFields(true);
+          return;
+        } 
         if (selectedTrackerFields && selectedTrackerFields.length > 0) {
           e.preventDefault();
           deleteSelectedTrackerFields();
+          return;
+        }
+      }
+
+      if (e.key === "Insert" || e.key === "Enter") {
+        if (activeField) {
+          insertTrackerFields(false);
           return;
         }
       }
@@ -546,6 +591,7 @@ export const SongTracker = ({
       selectionOrigin,
       transposeSelectedTrackerFields,
       deleteSelectedTrackerFields,
+      insertTrackerFields,
     ]
   );
 
