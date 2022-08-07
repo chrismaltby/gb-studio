@@ -559,8 +559,8 @@ export const SongTracker = ({
           if (e.key === "Q" || e.key === "+") return transposeSelectedTrackerFields(1,true);
           if (e.key === "A" || e.key === "_") return transposeSelectedTrackerFields(-1,true);
         } else {
-          if (e.key === "q" || e.key === "=") return transposeSelectedTrackerFields(1,false);
-          if (e.key === "a" || e.key === "-") return transposeSelectedTrackerFields(-1,false);
+          if (e.key === "=") return transposeSelectedTrackerFields(1,false);
+          if (e.key === "-") return transposeSelectedTrackerFields(-1,false);
         }
         return;
       } else if (e.metaKey) {
