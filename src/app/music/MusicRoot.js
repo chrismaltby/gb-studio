@@ -5,7 +5,7 @@ const log = (log) => {
   console.log(log);
 };
 
-player.initPlayer((file) => {
+const onPlayerInit = (file) => {
   if (!file) {
     log(`COMPILE ERROR`);
   } else {
@@ -15,7 +15,11 @@ player.initPlayer((file) => {
       action: "initialized",
     });
   }
-});
+};
+
+const sfx = decodeURIComponent(window.location.hash).slice(1);
+
+player.initPlayer(onPlayerInit, sfx);
 
 player.setOnIntervalCallback((playbackUpdate) => {
   log(playbackUpdate);
@@ -43,6 +47,13 @@ ipcRenderer.on("music-data", (event, d) => {
       ipcRenderer.send("music-data-receive", {
         action: "log",
         message: "playing",
+      });
+      break;
+    case "play-sound":
+      player.playSound();
+      ipcRenderer.send("music-data-receive", {
+        action: "log",
+        message: "playing SFX",
       });
       break;
     case "stop":

@@ -57,6 +57,8 @@ export const PlaySoundEffect = ({
         dispatch(soundfxActions.playSoundFxTone({ frequency, duration }));
       } else if (effect === "crash") {
         dispatch(soundfxActions.playSoundFxCrash());
+      } else if (effect !== undefined) {
+        dispatch(soundfxActions.playSoundFx({ effect }));
       }
     },
     [dispatch, duration, effect, frequency, pitch]
