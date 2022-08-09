@@ -780,6 +780,8 @@
   "EVENT_IDLE": "Idle",
   "EVENT_LOOP_FOR_LABEL": "For ({variable} = {from}; {variable} {comparison} {to}; {variable} {operation} {val})",
   "EVENT_LOOP_WHILE_LABEL": "While ({expression})",
+  "EVENT_SET_MASTER_VOLUME": "Set Master Volume",
+  "EVENT_SET_MASTER_VOLUME_LABEL": "Set Volume: Left Speaker {left}, Right Speaker {right}",
 
   "// 10": "Menu -----------------------------------------------------",
 
