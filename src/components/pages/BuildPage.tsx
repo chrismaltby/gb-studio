@@ -6,6 +6,7 @@ import l10n from "lib/helpers/l10n";
 import editorActions from "store/features/editor/editorActions";
 import consoleActions from "store/features/console/consoleActions";
 import buildGameActions from "store/features/buildGame/buildGameActions";
+import settingsActions from "store/features/settings/settingsActions";
 import { FixedSpacer, FlexGrow } from "ui/spacing/Spacing";
 import { RootState } from "store/configureStore";
 
@@ -53,6 +54,7 @@ const BuildPage = () => {
   const warnings = useSelector((state: RootState) => state.console.warnings);
   const status = useSelector((state: RootState) => state.console.status);
   const profile = useSelector((state: RootState) => state.editor.profile);
+  const exportOpenFolder = useSelector((state: RootState) => state.project.present.settings.exportOpenFolder);
 
   // Only show the latest 500 lines during build
   // show full output on complete
@@ -81,6 +83,10 @@ const BuildPage = () => {
   const onClear = useCallback(() => {
     dispatch(consoleActions.clearConsole());
   }, [dispatch]);
+
+  const onToggleExportOpenFolder = useCallback(() => {
+    dispatch(settingsActions.setExportOpenFolder(!exportOpenFolder));
+  }, [dispatch, exportOpenFolder]);
 
   const onToggleProfiling = useCallback(() => {
     dispatch(editorActions.setProfiling(!profile));
@@ -151,6 +157,15 @@ const BuildPage = () => {
             <Button onClick={onDeleteCache}>
               {l10n("BUILD_EMPTY_BUILD_CACHE")}
             </Button>
+            <label htmlFor="exportOpenFolder">
+              <input
+                id="exportOpenFolder"
+                type="checkbox"
+                checked={exportOpenFolder}
+                onChange={onToggleExportOpenFolder}
+              />{" "}
+              {l10n("FIELD_OPEN_FOLDER_AFTER_EXPORT")}
+            </label>
             <FixedSpacer width={10} />
             <label htmlFor="enableProfile">
               <input

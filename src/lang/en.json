@@ -557,6 +557,7 @@
   "FIELD_TO_PATTERN": "To Pattern",
   "FIELD_JUMP_TO_NEXT_PATTERN": "Jump To Next Pattern",
   "FIELD_START_ROW": "Start Row",
+  "FIELD_OPEN_FOLDER_AFTER_EXPORT": "Open Build Folder After Export",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

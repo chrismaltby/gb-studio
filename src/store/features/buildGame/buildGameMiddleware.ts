@@ -48,6 +48,7 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
         const sgbEnabled = state.project.present.settings.sgbEnabled;
         const outputRoot = Path.normalize(`${getTmp()}/${buildUUID}`);
         const engineFields = state.engine.fields;
+        const exportOpenFolder = state.project.present.settings.exportOpenFolder;
 
         await rmdir(outputRoot);
 
@@ -91,7 +92,9 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
             `${outputRoot}/build/${buildType}`,
             `${projectRoot}/build/${buildType}`
           );
-          remote.shell.openItem(`${projectRoot}/build/${buildType}`);
+          if (exportOpenFolder) {
+            remote.shell.openItem(`${projectRoot}/build/${buildType}`);
+          }
           dispatch(consoleActions.stdOut("-"));
           dispatch(
             consoleActions.stdOut(
