@@ -4005,8 +4005,10 @@ extern void __mute_mask_${symbol};
   };
 
   setMasterVolume = (leftSpeaker: number, rightSpeaker: number) => {
+    this._addComment("Set Master Volume");
     const volume = (rightSpeaker * 16) + leftSpeaker;
     this._setMasterVolume(volume);
+    this._addNL();
   };
 
   // --------------------------------------------------------------------------
