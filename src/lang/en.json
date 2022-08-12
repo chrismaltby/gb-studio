@@ -465,6 +465,7 @@
   "FIELD_ANGLE_VARIABLE": "Angle Variable",
   "FIELD_DIRECTION_VARIABLE": "Direction Variable",
   "FIELD_ACTOR_DIRECTION": "Actor Direction",
+  "FIELD_ACTOR_POSITION": "Actor Position",
   "FIELD_LIFE_TIME": "Life Time",
   "FIELD_LOCK_AXIS": "Lock Axis",
   "FIELD_FROM_SAVE_SLOT": "From Save Slot",

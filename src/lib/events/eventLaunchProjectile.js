@@ -67,6 +67,18 @@ const fields = [
         ],
       },
       {
+        key: "otherActorId",
+        label: l10n("FIELD_DIRECTION"),
+        type: "actor",
+        defaultValue: "$self$",
+        conditions: [
+          {
+            key: "directionType",
+            eq: "actorPos",
+          },
+        ],
+      },
+      {
         key: "direction",
         label: l10n("FIELD_DIRECTION"),
         type: "direction",
@@ -108,6 +120,7 @@ const fields = [
         options: [
           ["direction", l10n("FIELD_FIXED_DIRECTION")],
           ["actor", l10n("FIELD_ACTOR_DIRECTION")],
+          ["actorPos", l10n("FIELD_ACTOR_POSITION")],
           ["angle", l10n("FIELD_ANGLE")],
           ["anglevar", l10n("FIELD_ANGLE_VARIABLE")],
         ],
@@ -205,6 +218,7 @@ const compile = (input, helpers) => {
     launchProjectileInSourceActorDirection,
     launchProjectileInActorDirection,
     launchProjectileInAngleVariable,
+    launchProjectileAtActor,
     actorSetActive,
   } = helpers;
 
@@ -268,6 +282,15 @@ const compile = (input, helpers) => {
         input.loopAnim
       );
     }
+  } else if (input.directionType === "actorPos") {
+    launchProjectileAtActor(
+      projectileIndex,
+      input.x,
+      input.y,
+      input.otherActorId,
+      input.destroyOnHit,
+      input.loopAnim
+    );
   }
 };
 

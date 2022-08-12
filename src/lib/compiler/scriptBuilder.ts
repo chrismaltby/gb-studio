@@ -176,6 +176,7 @@ type ScriptBuilderRPNOperation =
   | ".ABS"
   | ".MIN"
   | ".MAX"
+  | ".ATAN2"
   | ScriptBuilderComparisonOperator;
 
 type ScriptBuilderOverlayMoveSpeed =
@@ -2720,6 +2721,40 @@ extern void __mute_mask_${symbol};
       .stop();
     this.setActorId(".ARG1", actorId);
     this._actorGetAngle(".ARG1", ".ARG1");
+    this._projectileLaunch(projectileIndex, ".ARG3");
+    this._stackPop(4);
+    this._addNL();
+  };
+
+  launchProjectileAtActor = (
+    projectileIndex: number,
+    x = 0,
+    y = 0,
+    otherActorId: string,
+    destroyOnHit = false,
+    loopAnim = false
+  ) => {
+    const actorRef = this._declareLocal("actor", 4);
+    const otherActorRef = this._declareLocal("other_actor", 3, true);
+    this._addComment("Launch Projectile At Actor");
+    this._actorGetPosition(actorRef);
+    this.setActorId(otherActorRef, otherActorId);
+    this._actorGetPosition(otherActorRef);
+    const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
+    rpn
+      .ref(this._localRef(otherActorRef, 2))
+      .ref(this._localRef(actorRef, 2))
+      .operator(".SUB")
+      .int16(8 * 16)
+      .operator(".DIV")
+      .ref(this._localRef(otherActorRef, 1))
+      .ref(this._localRef(actorRef, 1))
+      .operator(".SUB")
+      .int16(8 * 16)
+      .operator(".DIV")
+      .operator(".ATAN2")
+      .int16(toProjectileFlags(destroyOnHit, loopAnim))
+      .stop();
     this._projectileLaunch(projectileIndex, ".ARG3");
     this._stackPop(4);
     this._addNL();
