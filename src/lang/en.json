@@ -55,6 +55,7 @@
   "TOOL_TRACKER_VIEW": "Switch to Tracker view",
   "TOOL_PIANO_ROLL_VIEW": "Switch to Piano Roll view",
   "TOOL_ADD_SONG_LABEL": "Add new song",
+  "TOOL_SYNC_INSTRUMENT_NAVIGATOR": "Use selected instrument when adding notes",
 
   "// 5": "Editors --------------------------------------------------",
   "SIDEBAR_NAVIGATION": "Navigation",
