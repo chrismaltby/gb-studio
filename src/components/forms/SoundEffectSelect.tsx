@@ -23,6 +23,7 @@ interface SoundEffectSelectProps extends SelectCommonProps {
   pitch?: number;
   frequency?: number;
   duration?: number;
+  effectIndex?: number;
 }
 
 type EffectType = "beep" | "tone" | "crash";
@@ -32,6 +33,7 @@ interface PlaySoundEffectProps extends SelectCommonProps {
   pitch?: number;
   frequency?: number;
   duration?: number;
+  effectIndex?: number;
 }
 
 export const PlaySoundEffect = ({
@@ -39,6 +41,7 @@ export const PlaySoundEffect = ({
   pitch = 4,
   frequency = 200,
   duration = 0.5,
+  effectIndex = 0,
 }: PlaySoundEffectProps) => {
   const dispatch = useDispatch();
 
@@ -58,10 +61,10 @@ export const PlaySoundEffect = ({
       } else if (effect === "crash") {
         dispatch(soundfxActions.playSoundFxCrash());
       } else if (effect !== undefined) {
-        dispatch(soundfxActions.playSoundFx({ effect }));
+        dispatch(soundfxActions.playSoundFx({ effect, effectIndex }));
       }
     },
-    [dispatch, duration, effect, frequency, pitch]
+    [dispatch, duration, effect, effectIndex, frequency, pitch]
   );
 
   return (
@@ -82,6 +85,7 @@ export const SoundEffectSelect = ({
   pitch,
   duration,
   frequency,
+  effectIndex,
   ...selectProps
 }: SoundEffectSelectProps) => {
   const [currentValue, setCurrentValue] = useState<Option>();
@@ -157,6 +161,7 @@ export const SoundEffectSelect = ({
                 pitch={pitch}
                 duration={duration}
                 frequency={frequency}
+                effectIndex={effectIndex}
               />
             }
           >
@@ -173,6 +178,7 @@ export const SoundEffectSelect = ({
                 pitch={pitch}
                 duration={duration}
                 frequency={frequency}
+                effectIndex={effectIndex}
               />
             }
           >

@@ -18,6 +18,7 @@ import { compileWav } from "lib/compiler/sounds/compileWav";
 import { Sound } from "../entities/entitiesTypes";
 import { compileVGM } from "lib/compiler/sounds/compileVGM";
 import { CompileSoundOptions } from "lib/compiler/sounds/compileSound";
+import { compileFXHammerSingle } from "lib/compiler/sounds/compileFXHammer";
 
 let oscillator: OscillatorNode | undefined = undefined;
 let bufferSource: AudioBufferSourceNode | undefined = undefined;
@@ -42,7 +43,11 @@ function play(filename: string) {
     });
 }
 
-async function playSound(sound: Sound, { projectRoot }: CompileSoundOptions) {
+async function playSound(
+  sound: Sound,
+  effectIndex: number,
+  { projectRoot }: CompileSoundOptions
+) {
   const filename = assetFilename(projectRoot, "sounds", sound);
 
   let sfx = "";
@@ -51,8 +56,11 @@ async function playSound(sound: Sound, { projectRoot }: CompileSoundOptions) {
   } else if (sound.type === "vgm") {
     ({ output: sfx } = await compileVGM(filename, "asm"));
   } else if (sound.type === "fxhammer") {
-    // PREVIEW NOT IMPLEMENTED
-    return;
+    ({ output: sfx } = await compileFXHammerSingle(
+      filename,
+      effectIndex,
+      "asm"
+    ));
   }
 
   console.log("SFX", sfx);
@@ -97,7 +105,7 @@ const soundfxMiddleware: Middleware<Dispatch, RootState> =
       const sound = soundSelectors.selectById(state, action.payload.effect);
       if (sound) {
         const projectRoot = state.document.root;
-        playSound(sound, { projectRoot });
+        playSound(sound, action.payload.effectIndex, { projectRoot });
       }
     } else if (actions.pauseSoundFx.match(action)) {
       pause();
