@@ -556,7 +556,7 @@ export const SongTracker = ({
 
       if (e.ctrlKey) {
         if (e.shiftKey) {
-          if (e.key === "Q" || e.key === "+") return transposeSelectedTrackerFields(1,true);
+          if (e.key === "Q" || e.key === "+" || e.key === "=") return transposeSelectedTrackerFields(1,true);
           if (e.key === "A" || e.key === "_") return transposeSelectedTrackerFields(-1,true);
         } else {
           if (e.key === "=") return transposeSelectedTrackerFields(1,false);
