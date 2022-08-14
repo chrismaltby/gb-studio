@@ -5,6 +5,9 @@
 
 #include "system.h"
 #include "vm.h"
+
+#include "vm_ui.h"
+
 #include "ui.h"
 #include "input.h"
 #include "scroll.h"
@@ -13,16 +16,18 @@
 #include "data_manager.h"
 #include "data/data_bootstrap.h"
 
+BANKREF(VM_UI)
+
 typedef struct set_submap_params_t {
     UBYTE x;
     UBYTE _pad0;
     UBYTE y;
     UBYTE _pad1;
-    UBYTE w; 
+    UBYTE w;
     UBYTE _pad2;
-    UBYTE h; 
+    UBYTE h;
     UBYTE _pad3;
-    UBYTE scene_x; 
+    UBYTE scene_x;
     UBYTE _pad4;
     UBYTE scene_y;
 } set_submap_params_t;
@@ -46,10 +51,10 @@ void vm_load_text(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS, UBYTE nar
 
     UBYTE _save = _current_bank;
     SWITCH_ROM(THIS->bank);
-    
+
     const INT16 * args = (INT16 *)THIS->PC;
     const unsigned char * s = THIS->PC + (nargs << 1);
-    unsigned char * d = ui_text_data; 
+    unsigned char * d = ui_text_data;
     INT16 idx;
 
     while (*s) {
@@ -57,7 +62,7 @@ void vm_load_text(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS, UBYTE nar
             idx = *((INT16 *)VM_REF_TO_PTR(*args));
             switch (*++s) {
                 // variable value of fixed width, zero padded
-                case 'D': 
+                case 'D':
                     d += itoa_format(idx, d, *++s - '0');
                     break;
                 // variable value
@@ -174,10 +179,10 @@ void vm_overlay_clear(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE w, UBYTE h, UBY
 #ifdef CGB
         if (_is_CGB) {
             VBK_REG = 1;
-            fill_win_rect(x, y, w, h, overlay_priority | (UI_PALETTE & 0x07u));        
+            fill_win_rect(x, y, w, h, overlay_priority | (UI_PALETTE & 0x07u));
             VBK_REG = 0;
         }
-#endif    
+#endif
         fill_win_rect(x, y, w, h, ((color) ? ui_while_tile : ui_black_tile));
         if (options & UI_AUTOSCROLL) vm_overlay_set_scroll(THIS, x, y, w, h, color);
     }
@@ -198,6 +203,7 @@ void vm_choice(SCRIPT_CTX * THIS, INT16 idx, UBYTE options, UBYTE count) OLDCALL
 
 void vm_set_font(SCRIPT_CTX * THIS, UBYTE font_index) OLDCALL BANKED {
     THIS;
+    vwf_current_font_idx = font_index;
     vwf_current_font_bank = ui_fonts[font_index].bank;
     MemcpyBanked(&vwf_current_font_desc, ui_fonts[font_index].ptr, sizeof(font_desc_t), vwf_current_font_bank);
 }
@@ -267,7 +273,7 @@ void vm_overlay_set_map(SCRIPT_CTX * THIS, INT16 idx, INT16 x_idx, INT16 y_idx, 
 
 void vm_set_text_sound(SCRIPT_CTX * THIS, UBYTE bank, UBYTE * offset, UBYTE channel_mask) OLDCALL BANKED {
     THIS;
-    text_sound_bank = bank;  
+    text_sound_bank = bank;
     text_sound_data = offset;
-    text_sound_mask = channel_mask; 
+    text_sound_mask = channel_mask;
 }

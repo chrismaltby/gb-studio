@@ -4,6 +4,8 @@
 
 #include "load_save.h"
 
+BANKREF(VM_LOAD_SAVE)
+
 void vm_save_clear(SCRIPT_CTX * THIS, UBYTE slot) OLDCALL BANKED {
     THIS;
     data_clear(slot);

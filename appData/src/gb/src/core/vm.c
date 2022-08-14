@@ -9,6 +9,8 @@
 #include "vm.h"
 #include "math.h"
 
+BANKREF(VM_MAIN)
+
 // instructions global registry
 extern const SCRIPT_CMD script_cmds[];
 
@@ -515,6 +517,7 @@ void vm_memcpy(SCRIPT_CTX * THIS, INT16 idxA, INT16 idxB, INT16 count) OLDCALL B
 // executes one step in the passed context
 // return zero if script end
 // bank with VM code must be active
+static UBYTE current_fn_bank;
 UBYTE VM_STEP(SCRIPT_CTX * CTX) NAKED NONBANKED STEP_FUNC_ATTR {
     CTX;
 #if defined(__SDCC) && defined(NINTENDO)
@@ -548,17 +551,18 @@ __asm
         push bc                 ; store bc
         push hl
 
-        ld d, #0
-        ld h, d
+        ld h, #0
         ld l, e
         add hl, hl
-        add hl, de              ; hl = de * sizeof(SCRIPT_CMD)
+        add hl, hl              ; hl = de * sizeof(SCRIPT_CMD)
         dec hl
         ld de, #_script_cmds
         add hl, de              ; hl = &script_cmds[command].args_len
 
         ld a, (hl-)
         ld e, a                 ; e = args_len
+        ld a, (hl-)
+        ld (_current_fn_bank), a
         ld a, (hl-)
         ld b, a
         ld c, (hl)              ; bc = fn
@@ -605,7 +609,7 @@ __asm
         push de                 ; not used
         push de                 ; de: args_len
 
-        ld a, #<b_vm_call       ; a = script_bank (all script functions in one bank: take any complimantary symbol)
+        ld a, (_current_fn_bank)    ; a = script_bank
         ldh (__current_bank), a
         ld (_rROMB0), a         ; switch bank with functions
 

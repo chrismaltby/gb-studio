@@ -59,6 +59,7 @@ extern unsigned char ui_text_data[TEXT_MAX_LENGTH];
 extern UBYTE vwf_direction;
 extern font_desc_t vwf_current_font_desc;
 extern UBYTE vwf_current_font_bank;
+extern UBYTE vwf_current_font_idx;
 extern UBYTE vwf_tile_data[16 * 2];
 
 extern UBYTE * text_render_base_addr;
@@ -68,7 +69,7 @@ extern UBYTE text_scroll_width, text_scroll_height;
 extern UBYTE text_scroll_fill;
 
 extern UBYTE text_sound_mask;
-extern UBYTE text_sound_bank; 
+extern UBYTE text_sound_bank;
 extern const UBYTE * text_sound_data;
 
 extern const UBYTE ui_time_masks[];
@@ -80,7 +81,7 @@ extern UBYTE overlay_priority;
 void ui_init() BANKED;
 void ui_update() NONBANKED;  // critical path, NONBANKED for speed
 
-void ui_load_tiles() BANKED; 
+void ui_load_tiles() BANKED;
 
 #define UI_WAIT_WINDOW  1
 #define UI_WAIT_TEXT    2

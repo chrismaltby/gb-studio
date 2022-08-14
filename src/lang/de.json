@@ -54,7 +54,7 @@
   "TOOL_ERASER": "Radiergummi",
   "TOOL_TRACKER_VIEW": "Umschalten auf Tracker-Ansicht",
   "TOOL_PIANO_ROLL_VIEW": "Umschalten auf Notenrollen-Ansicht",
-  "TOOL_ADD_SONG_LABEL":"Neuen Song hinzufügen",
+  "TOOL_ADD_SONG_LABEL": "Neuen Song hinzufügen",
 
   "// 5": "Editors --------------------------------------------------",
   "SIDEBAR_NAVIGATION": "Navigation",
@@ -515,7 +515,7 @@
   "FIELD_EFFECT_INDEX": "Effekt Index",
   "FIELD_PRIORITY": "Priorität",
   "FIELD_ENABLE_EMULICIOUS_DEBUGGING": "Emulicious C-Debugging einschalten",
-  "FIELD_TEMPO_TOOLTIP":"Anzahl der Ticks pro Zeile",
+  "FIELD_TEMPO_TOOLTIP": "Anzahl der Ticks pro Zeile",
   "FIELD_IDLE_LABEL": "Warte bis zum nächsten Frame",
   "FIELD_FOR": "Für",
   "FIELD_FROM": "Von",

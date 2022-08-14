@@ -5,6 +5,8 @@
 
 #include "vm.h"
 
+BANKREF_EXTERN(VM_LOAD_SAVE)
+
 // sets signature of save slot to zero
 void vm_save_clear(SCRIPT_CTX * THIS, UBYTE slot) OLDCALL BANKED;
 

@@ -16,12 +16,14 @@
 #include "data_manager.h"
 #include "interrupts.h"
 
+BANKREF(VM_GAMEBOY)
+
 void vm_set_sprites_visible(SCRIPT_CTX * THIS, UBYTE mode) OLDCALL BANKED {
     THIS;
     if (hide_sprites = mode) SHOW_SPRITES; else HIDE_SPRITES;
 }
 
-void vm_input_wait(SCRIPT_CTX * THIS, UBYTE mask) OLDCALL BANKED { 
+void vm_input_wait(SCRIPT_CTX * THIS, UBYTE mask) OLDCALL BANKED {
     if ((joy != last_joy) && (joy & mask)) return;
     THIS->waitable = 1;
     THIS->PC -= INSTRUCTION_SIZE + sizeof(mask);
@@ -30,7 +32,7 @@ void vm_input_wait(SCRIPT_CTX * THIS, UBYTE mask) OLDCALL BANKED {
 void vm_context_prepare(SCRIPT_CTX * THIS, UBYTE slot, UBYTE bank, UBYTE * pc) OLDCALL BANKED {
     THIS;
     script_event_t * event = &input_events[(slot - 1) & 7];
-    event->script_bank = bank; 
+    event->script_bank = bank;
     event->script_addr = pc;
 }
 
@@ -50,13 +52,13 @@ void vm_input_detach(SCRIPT_CTX * THIS, UBYTE mask) OLDCALL BANKED {
     }
 }
 
-void vm_input_get(SCRIPT_CTX * THIS, INT16 idx, UBYTE joyid) OLDCALL BANKED { 
+void vm_input_get(SCRIPT_CTX * THIS, INT16 idx, UBYTE joyid) OLDCALL BANKED {
     INT16 * A = VM_REF_TO_PTR(idx);
     *A = joypads.joypads[joyid];
 }
 
 void vm_fade(SCRIPT_CTX * THIS, UBYTE mode) OLDCALL BANKED {
-    THIS; 
+    THIS;
     if (mode & FADE_DIR_IN) {
         if (mode & FADE_MODE_MODAL) fade_in_modal(); else fade_in();
     } else {
@@ -67,7 +69,7 @@ void vm_fade(SCRIPT_CTX * THIS, UBYTE mode) OLDCALL BANKED {
 void vm_timer_prepare(SCRIPT_CTX * THIS, UBYTE timer, UBYTE bank, UBYTE * pc) OLDCALL BANKED {
     THIS;
     script_event_t * event = &timer_events[(timer - 1) & 3];
-    event->script_bank = bank; 
+    event->script_bank = bank;
     event->script_addr = pc;
 }
 
@@ -125,9 +127,9 @@ void vm_replace_tile(SCRIPT_CTX * THIS, INT16 idx_target_tile, UBYTE tileset_ban
 }
 
 void vm_poll(SCRIPT_CTX * THIS, INT16 idx, INT16 res, UBYTE event_mask) OLDCALL BANKED {
-    INT16 * result_mask = VM_REF_TO_PTR(idx); 
+    INT16 * result_mask = VM_REF_TO_PTR(idx);
     INT16 * result = VM_REF_TO_PTR(res);
-    if (event_mask & POLL_EVENT_INPUT) { 
+    if (event_mask & POLL_EVENT_INPUT) {
         if (joy != last_joy) {
             *result_mask = POLL_EVENT_INPUT;
             *result = joy;
@@ -136,7 +138,7 @@ void vm_poll(SCRIPT_CTX * THIS, INT16 idx, INT16 res, UBYTE event_mask) OLDCALL 
     }
     if (event_mask & POLL_EVENT_MUSIC) {
         UBYTE poll_res = music_events_poll();
-        if (poll_res) { 
+        if (poll_res) {
             *result_mask = POLL_EVENT_MUSIC;
             *result = poll_res;
             return;
@@ -166,9 +168,9 @@ void vm_replace_tile_xy(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE tileset_bank,
         } else {
             ofs = 0x8800 + ((target_tile - 128) << 4);
         }
-        MemcpyVRAMBanked((void *)ofs, tileset->tiles + (start_tile << 4), 16, tileset_bank);   
+        MemcpyVRAMBanked((void *)ofs, tileset->tiles + (start_tile << 4), 16, tileset_bank);
         return;
-    } 
+    }
 
 #ifdef CGB
     if (_is_CGB) {

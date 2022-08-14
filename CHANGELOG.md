@@ -42,6 +42,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add compile time warning if too many unique projectiles are within a scene
 - Add effect editor to music editor piano roll [@pau-tomas](https://github.com/pau-tomas)
 - Add noise macro preview for music editor [@RichardULZ](https://github.com/RichardULZ)
+- Display channel specific instrument names on instrument select dropdown [@pau-tomas](https://github.com/pau-tomas)
+- Allow editing effects from tracker editor [@RichardULZ](https://github.com/RichardULZ)
+- Allow transposing selected notes in tracker with Ctrl/Ctrl+Shift and Mousewheel or "+" / "-" keys [@RichardULZ](https://github.com/RichardULZ)
 
 ### Changed
 
@@ -60,6 +63,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - List of "Variable Uses" now calculated in background thread to reduce pause while reading large projects
 - Timer, input and music scripts set from within a custom script no longer allow the script parameters to be used as they were not working, global variables can now be used instead.
 - Optimised actors_update() and vm_actor_move_to() to improve CPU usage
+- Improve music editor copy/paste with ModPlug compatible clipboard [@RichardULZ](https://github.com/RichardULZ)
 
 ### Fixed
 

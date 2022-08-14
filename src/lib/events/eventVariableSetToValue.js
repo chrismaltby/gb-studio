@@ -46,7 +46,6 @@ const compile = (input, helpers) => {
       const { variableSetToValue } = helpers;
       variableSetToValue(input.variable, value);
     }
-
   } else {
     variableSetToUnionValue(input.variable, input.value);
   }
