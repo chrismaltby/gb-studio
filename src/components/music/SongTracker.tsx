@@ -115,7 +115,9 @@ export const SongTracker = ({
         }
       }
     } else if (selectionOrigin) {
-      newSelectedTrackerFields.push(selectionOrigin.y * ROW_SIZE + selectionOrigin.x);
+      newSelectedTrackerFields.push(
+        selectionOrigin.y * ROW_SIZE + selectionOrigin.x
+      );
     }
     setSelectedTrackerFields(newSelectedTrackerFields);
   }, [selectionOrigin, selectionRect]);
@@ -159,7 +161,11 @@ export const SongTracker = ({
       );
       dispatch(trackerActions.setSelectedChannel(newChannelId));
       if (activeField % CHANNEL_FIELDS >= 2) {
-        dispatch(trackerActions.setSelectedEffectCell(Math.floor(activeField / ROW_SIZE)));
+        dispatch(
+          trackerActions.setSelectedEffectCell(
+            Math.floor(activeField / ROW_SIZE)
+          )
+        );
       }
     }
   }, [activeField, dispatch]);
@@ -189,43 +195,58 @@ export const SongTracker = ({
     }
   }, [playing, activeField]);
 
-  const transposeSelectedTrackerFields = useCallback((change: number, large: boolean) => {
-    if (pattern && selectedTrackerFields) {
-      const newPattern = cloneDeep(pattern);
-      for (let i = 0; i < selectedTrackerFields.length; i++) {
-        const field = selectedTrackerFields[i];
-        const newPatternCell = {
-          ...newPattern[Math.floor(field / 16)][Math.floor(field / 4) % 4],
-        };
+  const transposeSelectedTrackerFields = useCallback(
+    (change: number, large: boolean) => {
+      if (pattern && selectedTrackerFields) {
+        const newPattern = cloneDeep(pattern);
+        for (let i = 0; i < selectedTrackerFields.length; i++) {
+          const field = selectedTrackerFields[i];
+          const newPatternCell = {
+            ...newPattern[Math.floor(field / 16)][Math.floor(field / 4) % 4],
+          };
 
-        if (field % 4 === 0 && newPatternCell.note !== null) {
-          newPatternCell.note = 
-          clamp(newPatternCell.note + (large ? change * 12 : change), 0, 71);
-        }
-        if (field % 4 === 1 && newPatternCell.instrument !== null) {
-          newPatternCell.instrument =
-          clamp(newPatternCell.instrument + (large ? change * 10 : change), 0, 14);
-        }
-        if (field % 4 === 2 && newPatternCell.effectcode !== null) {
-          newPatternCell.effectcode =  
-          clamp(newPatternCell.effectcode + change, 0, 15);
-        }
-        if (field % 4 === 3 && newPatternCell.effectparam !== null) {
-          newPatternCell.effectparam =
-          clamp(newPatternCell.effectparam + (large ? change * 16 : change), 0, 255);
-        }
+          if (field % 4 === 0 && newPatternCell.note !== null) {
+            newPatternCell.note = clamp(
+              newPatternCell.note + (large ? change * 12 : change),
+              0,
+              71
+            );
+          }
+          if (field % 4 === 1 && newPatternCell.instrument !== null) {
+            newPatternCell.instrument = clamp(
+              newPatternCell.instrument + (large ? change * 10 : change),
+              0,
+              14
+            );
+          }
+          if (field % 4 === 2 && newPatternCell.effectcode !== null) {
+            newPatternCell.effectcode = clamp(
+              newPatternCell.effectcode + change,
+              0,
+              15
+            );
+          }
+          if (field % 4 === 3 && newPatternCell.effectparam !== null) {
+            newPatternCell.effectparam = clamp(
+              newPatternCell.effectparam + (large ? change * 16 : change),
+              0,
+              255
+            );
+          }
 
-        newPattern[Math.floor(field / 16)][Math.floor(field / 4) % 4] =
-          newPatternCell;
+          newPattern[Math.floor(field / 16)][Math.floor(field / 4) % 4] =
+            newPatternCell;
+        }
+        dispatch(
+          trackerDocumentActions.editPattern({
+            patternId: patternId,
+            pattern: newPattern,
+          })
+        );
       }
-      dispatch(
-        trackerDocumentActions.editPattern({
-          patternId: patternId,
-          pattern: newPattern,
-        })
-      );
-    }
-  }, [dispatch, pattern, patternId, selectedTrackerFields]);
+    },
+    [dispatch, pattern, patternId, selectedTrackerFields]
+  );
 
   const deleteSelectedTrackerFields = useCallback(() => {
     if (pattern && selectedTrackerFields) {
@@ -236,11 +257,19 @@ export const SongTracker = ({
           ...newPattern[Math.floor(field / 16)][Math.floor(field / 4) % 4],
         };
 
-        switch(field % 4) {
-          case 0: newPatternCell.note = null; break;
-          case 1: newPatternCell.instrument = null; break;
-          case 2: newPatternCell.effectcode = null; break;
-          case 3: newPatternCell.effectparam = null; break;
+        switch (field % 4) {
+          case 0:
+            newPatternCell.note = null;
+            break;
+          case 1:
+            newPatternCell.instrument = null;
+            break;
+          case 2:
+            newPatternCell.effectcode = null;
+            break;
+          case 3:
+            newPatternCell.effectparam = null;
+            break;
         }
 
         newPattern[Math.floor(field / 16)][Math.floor(field / 4) % 4] =
@@ -255,38 +284,39 @@ export const SongTracker = ({
     }
   }, [dispatch, pattern, patternId, selectedTrackerFields]);
 
-  const insertTrackerFields = useCallback((uninsert: Boolean) => {
-    if (pattern && activeField) {
-      const newChannelId = Math.floor(
-        (activeField % ROW_SIZE) / CHANNEL_FIELDS
-      );
-      const startRow = Math.floor(activeField / ROW_SIZE);
-      const newPattern = cloneDeep(pattern);
-      if (uninsert) {
-        for (let i = startRow; i < 63; i++) {
-          newPattern[i][newChannelId] =
-            newPattern[(i + 1)][newChannelId];
+  const insertTrackerFields = useCallback(
+    (uninsert: Boolean) => {
+      if (pattern && activeField) {
+        const newChannelId = Math.floor(
+          (activeField % ROW_SIZE) / CHANNEL_FIELDS
+        );
+        const startRow = Math.floor(activeField / ROW_SIZE);
+        const newPattern = cloneDeep(pattern);
+        if (uninsert) {
+          for (let i = startRow; i < 63; i++) {
+            newPattern[i][newChannelId] = newPattern[i + 1][newChannelId];
+          }
+        } else {
+          for (let i = 63; i > startRow; i--) {
+            newPattern[i][newChannelId] = newPattern[i - 1][newChannelId];
+          }
         }
-      } else {
-        for (let i = 63; i > startRow; i--) {
-          newPattern[i][newChannelId] =
-            newPattern[(i - 1)][newChannelId];
-        }
+        newPattern[uninsert ? 63 : startRow][newChannelId] = {
+          note: null,
+          instrument: null,
+          effectcode: null,
+          effectparam: null,
+        };
+        dispatch(
+          trackerDocumentActions.editPattern({
+            patternId: patternId,
+            pattern: newPattern,
+          })
+        );
       }
-      newPattern[uninsert ? 63 : startRow][newChannelId] = {
-        note:  null,
-        instrument:  null,
-        effectcode:  null,
-        effectparam:  null,
-      };
-      dispatch(
-        trackerDocumentActions.editPattern({
-          patternId: patternId,
-          pattern: newPattern,
-        })
-      );
-    }
-  }, [dispatch, pattern, patternId, activeField]);
+    },
+    [dispatch, pattern, patternId, activeField]
+  );
 
   const handleMouseDown = useCallback(
     (e: any) => {
@@ -393,7 +423,6 @@ export const SongTracker = ({
           );
         };
 
-
       const editNoteField = (value: number | null) => {
         if (activeField === undefined) {
           return;
@@ -467,7 +496,7 @@ export const SongTracker = ({
           e.preventDefault();
           insertTrackerFields(true);
           return;
-        } 
+        }
         if (selectedTrackerFields && selectedTrackerFields.length > 0) {
           e.preventDefault();
           deleteSelectedTrackerFields();
@@ -547,20 +576,30 @@ export const SongTracker = ({
 
       let currentFocus: KeyWhen = null;
 
-      switch(activeField % 4) {
-        case 0: currentFocus = "noteColumnFocus"; break;
-        case 1: currentFocus = "instrumentColumnFocus"; break;
-        case 2: currentFocus = "effectCodeColumnFocus"; break;
-        case 3: currentFocus = "effectParamColumnFocus"; break;
+      switch (activeField % 4) {
+        case 0:
+          currentFocus = "noteColumnFocus";
+          break;
+        case 1:
+          currentFocus = "instrumentColumnFocus";
+          break;
+        case 2:
+          currentFocus = "effectCodeColumnFocus";
+          break;
+        case 3:
+          currentFocus = "effectParamColumnFocus";
+          break;
       }
 
       if (e.ctrlKey) {
         if (e.shiftKey) {
-          if (e.key === "Q" || e.key === "+" || e.key === "=") return transposeSelectedTrackerFields(1,true);
-          if (e.key === "A" || e.key === "_") return transposeSelectedTrackerFields(-1,true);
+          if (e.key === "Q" || e.key === "+" || e.key === "=")
+            return transposeSelectedTrackerFields(1, true);
+          if (e.key === "A" || e.key === "_")
+            return transposeSelectedTrackerFields(-1, true);
         } else {
-          if (e.key === "=") return transposeSelectedTrackerFields(1,false);
-          if (e.key === "-") return transposeSelectedTrackerFields(-1,false);
+          if (e.key === "=") return transposeSelectedTrackerFields(1, false);
+          if (e.key === "-") return transposeSelectedTrackerFields(-1, false);
         }
         return;
       } else if (e.metaKey) {
@@ -613,11 +652,11 @@ export const SongTracker = ({
         e.preventDefault();
         const delta = e.deltaY === 0 ? e.deltaX : e.deltaY;
         if (e.shiftKey) {
-          if (delta < 0) return transposeSelectedTrackerFields(1,true);
-          if (delta > 0) return transposeSelectedTrackerFields(-1,true);
+          if (delta < 0) return transposeSelectedTrackerFields(1, true);
+          if (delta > 0) return transposeSelectedTrackerFields(-1, true);
         } else {
-          if (delta < 0) return transposeSelectedTrackerFields(1,false);
-          if (delta > 0) return transposeSelectedTrackerFields(-1,false);
+          if (delta < 0) return transposeSelectedTrackerFields(1, false);
+          if (delta > 0) return transposeSelectedTrackerFields(-1, false);
         }
         return;
       }
@@ -637,7 +676,7 @@ export const SongTracker = ({
       window.getSelection()?.empty();
 
       if (!selectionRect) {
-      // Select single channel
+        // Select single channel
         const offset = CHANNEL_FIELDS * channelId;
         setSelectionOrigin({ x: offset, y: 0 });
         setSelectionRect({
@@ -647,9 +686,9 @@ export const SongTracker = ({
           height: 63,
         });
       } else {
-      // Select all channels
+        // Select all channels
         setSelectionOrigin({ x: 0, y: 0 });
-        setSelectionRect({x: 0, y: 0, width: 15, height: 63,});
+        setSelectionRect({ x: 0, y: 0, width: 15, height: 63 });
       }
     },
     [channelId, selectionRect]
@@ -661,7 +700,7 @@ export const SongTracker = ({
     window.addEventListener("mousedown", handleMouseDown);
     window.addEventListener("mouseup", handleMouseUp);
     window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("wheel", handleWheel, { passive:false });
+    window.addEventListener("wheel", handleWheel, { passive: false });
 
     return () => {
       window.removeEventListener("keydown", handleKeys);
@@ -721,25 +760,28 @@ export const SongTracker = ({
 
   const onPaste = useCallback(() => {
     if (pattern) {
-      const tempActiveField = activeField !== undefined ? activeField : 
-        selectionOrigin ? selectionOrigin.y * ROW_SIZE + selectionOrigin.x : 0;
+      const tempActiveField =
+        activeField !== undefined
+          ? activeField
+          : selectionOrigin
+          ? selectionOrigin.y * ROW_SIZE + selectionOrigin.x
+          : 0;
       if (activeField === undefined) {
         setActiveField(tempActiveField);
       }
       const newPastedPattern = parseClipboardToPattern(clipboard.readText());
-      if (
-        newPastedPattern &&
-        channelId !== undefined
-      ) {
+      if (newPastedPattern && channelId !== undefined) {
         const startRow = Math.floor(tempActiveField / ROW_SIZE);
         const newPattern = cloneDeep(pattern);
         for (let i = 0; i < newPastedPattern.length; i++) {
           const pastedPatternCellRow = newPastedPattern[i];
           for (let j = 0; j < 4 - channelId; j++) {
             if (pastedPatternCellRow[j] && newPattern[startRow + i]) {
-              newPattern[startRow + i][channelId + j] = 
-                mergeWith(newPattern[startRow + i][channelId + j], 
-                pastedPatternCellRow[j], (o, s) => (s === -9 ? o : s));
+              newPattern[startRow + i][channelId + j] = mergeWith(
+                newPattern[startRow + i][channelId + j],
+                pastedPatternCellRow[j],
+                (o, s) => (s === -9 ? o : s)
+              );
             }
           }
         }

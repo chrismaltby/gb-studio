@@ -3,8 +3,8 @@
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
   "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1066220729",
- 
- "// 1": "UI -------------------------------------------------------",
+
+  "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
   "TRIGGER": "Rozruch",
   "SCENE": "Scena",
@@ -22,7 +22,7 @@
   "NAV_DIALOGUE_REVIEW": "Podgląd dialogów",
   "NAV_BUILD_AND_RUN": "Zbuduj i uruchom",
   "NAV_SETTINGS": "Ustawienia",
-  
+
   "// 3": "Toolbar --------------------------------------------------",
   "TOOLBAR_MODIFIED": "zmodyfikowano",
   "TOOLBAR_ZOOM_IN": "Przybliżenie",
@@ -35,7 +35,7 @@
   "TOOLBAR_EXPORT_POCKET": "Eksportuj do urządzenia Poket",
   "TOOLBAR_RUN": "Uruchom",
   "TOOLBAR_SEARCH": "Szukaj...",
-  
+
   "// 4": "Tools ----------------------------------------------------",
   "TOOL_SELECT_LABEL": "Zaznacz",
   "TOOL_ADD_LABEL": "Dodaj",
@@ -54,8 +54,8 @@
   "TOOL_ERASER": "Gumka",
   "TOOL_TRACKER_VIEW": "Przełącz na tryb Trackera",
   "TOOL_PIANO_ROLL_VIEW": "Przełącz na tryb Piano",
-  "TOOL_ADD_SONG_LABEL":"Dodaj nowy utwór",
-  
+  "TOOL_ADD_SONG_LABEL": "Dodaj nowy utwór",
+
   "// 5": "Editors --------------------------------------------------",
   "SIDEBAR_NAVIGATION": "Nawigator",
   "SIDEBAR_STARTING_SCENE": "Scena początkowa",
@@ -78,7 +78,7 @@
   "SIDEBAR_SCENES": "Sceny",
   "SIDEBAR_VARIABLES": "Zmienne",
   "SIDEBAR_VARIABLE_USES": "Zastosowanie zmiennej",
-  
+
   "// 6": "Form Fields ----------------------------------------------",
   "FIELD_NAME": "Nazwa",
   "FIELD_DESCRIPTION": "Opis",
@@ -521,7 +521,7 @@
   "FIELD_EFFECT_INDEX": "Spis efektów",
   "FIELD_PRIORITY": "Pierwszeństwo",
   "FIELD_ENABLE_EMULICIOUS_DEBUGGING": "Włącz debugowanie emulacyjne C",
-  "FIELD_TEMPO_TOOLTIP":"Ilość ticków na wiersz",
+  "FIELD_TEMPO_TOOLTIP": "Ilość ticków na wiersz",
   "FIELD_IDLE_LABEL": "Czekaj na kolejną klatkę",
   "FIELD_FOR": "Przez",
   "FIELD_FROM": "Od",
@@ -557,12 +557,12 @@
   "FIELD_TO_PATTERN": "Do wzoru",
   "FIELD_JUMP_TO_NEXT_PATTERN": "Skok do następnego wzoru",
   "FIELD_START_ROW": "Rozpocznij wiersz",
-	
+
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
   "ASSET_EDIT": "Edytuj",
   "ASSET_ADD": "Dodaj",
- 
+
   "// 8": "Build ----------------------------------------------------",
   "BUILD_RUN": "Uruchom",
   "BUILD_EXPORT_ROM": "Eksportuj jako ROM",
@@ -572,8 +572,8 @@
   "BUILD_EMPTY_BUILD_CACHE": "Pusta kompilacja pamięci (Cache)",
   "BUILD_CANCEL": "Anuluj kompilację",
   "BUILD_CANCELLING": "Anulowanie kompilacji",
-  "BUILD_CANCELLED": "Kompilacja anulowana",  
- 
+  "BUILD_CANCELLED": "Kompilacja anulowana",
+
   "// 9": "Scripting Events -----------------------------------------",
   "EVENT_GROUP_ACTOR": "Aktor",
   "EVENT_GROUP_CAMERA": "Kamera",
@@ -589,7 +589,7 @@
   "EVENT_GROUP_VARIABLES": "Zmienne",
   "EVENT_GROUP_MUSIC": "Muzyka i dźwięk",
   "EVENT_GROUP_DIALOGUE": "Tekst i menu",
-  "EVENT_GROUP_TIMER": "Stoper",  
+  "EVENT_GROUP_TIMER": "Stoper",
   "EVENT_SWITCH_SCENE": "Scena: zmień scenę (teleport)",
   "EVENT_WAIT": "Czekaj",
   "EVENT_CAMERA_SHAKE": "Kamera: wstrząs ekranu",
@@ -889,7 +889,7 @@
   "MENU_SELECT_ALL": "Zaznacz wszystko",
   "MENU_WINDOW": "Okno",
   "MENU_HELP": "Pomoc",
-  
+
   "// 11": "Warnings -----------------------------------------------------",
 
   "WARNING_BACKGROUND_TOO_SMALL": "Tło jest za małe, minimalne wymiary dla tła to: 160px x 144px",
@@ -913,7 +913,7 @@
   "WARNING_NO_PLAYER_SET_FOR_SCENE_TYPE": "Nie ustawiono domyślnej grafiki gracza dla scen \"{type}\". Opcję tę należy określić w sekcji \"Ustawienia\".",
   "WARNING_LOGO_ENTITIES": "Scena z logo nie może zawierać aktorów ani rozruchów",
   "WARNING_TOO_MANY_UNIQUE_PROJECTILES": "Duża ilość pocisków na scenie: \"{name}\". Scena zawiera {num} pocisków, natomiast maksymalna ilość wynosi {max}.",
- 
+
   "// 12": "Errors -------------------------------------------------------",
 
   "ERROR_PLEASE_ENTER_PROJECT_NAME": "Wprowadź nazwę projektu",
@@ -926,7 +926,7 @@
   "ERROR_PLEASE_SELECT_A_DIFFERENT_LOCATION": "Wybierz inną lokalizację",
   "ERROR_PROJECT_PATH_INVALID": "Niepoprawna ścieżka folderu",
   "ERROR_MISSING_FONTS": "Brak czcionki w folderze projektu assets/fonts. Przykładowa czcionka zostama tam przekopiowana, w celu jej użycia.",
- 
+
   "// 13": "Splash -------------------------------------------------------",
 
   "SPLASH_NEW": "Nowy",
@@ -946,7 +946,7 @@
   "SPLASH_CREATING": "Tworzenie",
   "SPLASH_CLEAR_RECENT": "Usuń ostatnie otwarte projekty",
   "SPLASH_NO_RECENT_PROJECTS": "Ostatnio nie otwarto żadnych projektów.",
- 
+
   "// 14": "Dialogue Review ------------------------------------------------",
 
   "DIALOGUE_REVIEW": "Przegląd dialogu",
@@ -954,7 +954,7 @@
   "DIALOGUE_LINES": ": wierszy",
   "DIALOGUE_WORD": ": wyrazy",
   "DIALOGUE_WORDS": ": wyrazy",
- 
+
   "// 15": "Dialogs ------------------------------------------------------",
 
   "DIALOG_SAVE_CHANGES": "Czy chcesz zapisać wprowadzone zmiany w projekcie \"{name}\"?",
@@ -1004,8 +1004,8 @@
   "DIALOG_CONTINUE_WITHOUT_SAVING": "Kontynuuj bez zapisywania",
   "DIALOG_SAVE_AND_CONTINUE": "Zapisz i kontynuuj",
   "DIALOG_MIGRATION_GUIDE": "Otwórz przewodnik migracji",
-  
-  "// 16": "Settings ----------------------------------------------------", 
+
+  "// 16": "Settings ----------------------------------------------------",
 
   "SETTINGS": "Ustawienia",
   "SETTINGS_SCENES": ": ilość scen",
@@ -1023,11 +1023,11 @@
   "SETTINGS_ENGINE": "Silnik",
   "SETTINGS_PLAYER_DEFAULT_SPRITES": "Domyślna grafika gracza",
   "SETTINGS_MUSIC_DRIVER": "Sterownik muzyczny",
-  
+
   "// 17 ": "Palettes ---------------------------------------------------",
 
   "PALETTES_EDITOR": "Edytor palet",
-  
+
   "// 18 ": "Error ------------------------------------------------------",
 
   "ERROR_TITLE": "GB Studio napotkało błąd",
@@ -1036,7 +1036,7 @@
   "ERROR_CLOSE": "Zamknij",
   "ERROR_UNABLE_TO_SAVE_MUSIC_FILE": "Nie można zapisać pliku muzycznego",
   "ERROR_UNABLE_TO_SAVE_MUSIC_FILE_DESC": "Dokładnie sprawdź, czy edytowany plik nie jest ustawiony jako tylko do odczytu",
-  
+
   "// 19 ": "Game Type --------------------------------------------------",
 
   "GAMETYPE_TOP_DOWN": "2D RPG (top down 2D)",
@@ -1045,13 +1045,13 @@
   "GAMETYPE_SHMUP": "Strzelanka (SHMUP)",
   "GAMETYPE_POINT_N_CLICK": "Wskaż i kliknij (point and click)",
   "GAMETYPE_LOGO": "Logo",
-  
+
   "// 20": "Compiler -----------------------------------------------------",
 
   "COMPILER_COMPILING": "Kompilacja",
   "COMPILER_LINKING": "Łączenie",
   "COMPILER_PACKING": "Pakowanie danych",
-  
+
   "// 21": "Messages -----------------------------------------------------",
 
   "MESSAGE_NO_SONGS_FOUND": "Nie znaleziono muzyki",

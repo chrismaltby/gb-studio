@@ -97,8 +97,14 @@ export const RollChannelEffectRowFwd = ({
         // If there's a note in position
         if (cell) {
           const changes = {
-            effectcode: cell.effectcode !== null ? cell.effectcode : lastCell.effectcode || 0,
-            effectparam: cell.effectparam !== null ? cell.effectparam : lastCell.effectparam || 0,
+            effectcode:
+              cell.effectcode !== null
+                ? cell.effectcode
+                : lastCell.effectcode || 0,
+            effectparam:
+              cell.effectparam !== null
+                ? cell.effectparam
+                : lastCell.effectparam || 0,
           };
           dispatch(
             trackerDocumentActions.editPatternCell({
