@@ -187,7 +187,6 @@ export const compileFXHammer = async (
   for (let effectnum = 0; effectnum < 0x3c; effectnum++) {
     const channels = file[0x300 + effectnum];
     if (channels !== 0) {
-      console.log("channels", channels, "effectnum", effectnum);
       const { output: effectOutput, channelMuteMask: effectMuteMask } =
         compileFXHammerEffect(
           channels,
