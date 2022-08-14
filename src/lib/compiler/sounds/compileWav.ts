@@ -29,6 +29,12 @@ export const compileWav = async (
     wavFmt = wav.fmt as WaveFileFmt;
   }
 
+  // Convert to 8bit if not already
+  if (wavFmt.bitsPerSample !== 8) {
+    wav.toBitDepth("8");
+    wavFmt = wav.fmt as WaveFileFmt;
+  }
+
   if (
     // wavFmt.numChannels !== 1 ||
     // wavFmt.bitsPerSample !== 8 ||
