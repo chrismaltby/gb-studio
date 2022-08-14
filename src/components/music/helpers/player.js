@@ -125,7 +125,7 @@ const initPlayer = (onInit) => {
         `Order Count: ${emulator.readMem(getMemAddress("order_cnt"))}`
       );
     };
-    setInterval(updateTracker, 1000/64);
+    setInterval(updateTracker, 1000 / 64);
   });
 };
 
@@ -140,9 +140,14 @@ const loadSong = (song) => {
   stop();
 };
 
-const play = (song) => {
+const play = (song, position) => {
   console.log("PLAY");
   updateRom(song);
+
+  if (position) {
+    console.log("POS", position);
+    setStartPosition(position);
+  }
 
   if (isPlayerPaused()) {
     const ticks_per_row_addr = getMemAddress("ticks_per_row");
@@ -343,12 +348,14 @@ const preview = (note, type, instrument, square2, waves = []) => {
           return;
         }
         console.log("noise macro step = " + noiseStep);
-        emulator.writeMem(NR43, 
+        emulator.writeMem(
+          NR43,
           note2noise(note + instrument.noise_macro[noiseStep]) +
-          (instrument.bit_count === 7 ? 8 : 0), 8
+            (instrument.bit_count === 7 ? 8 : 0),
+          8
         );
         noiseStep++;
-      }, 1000/64);
+      }, 1000 / 64);
 
       console.log("-------------");
       console.log(`NR41`, regs.NR41, parseInt(regs.NR41, 2));

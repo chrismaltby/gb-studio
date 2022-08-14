@@ -39,7 +39,7 @@ ipcRenderer.on("music-data", (event, d) => {
       });
       break;
     case "play":
-      player.play(d.song);
+      player.play(d.song, d.position);
       ipcRenderer.send("music-data-receive", {
         action: "log",
         message: "playing",
