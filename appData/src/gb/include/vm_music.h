@@ -1,8 +1,12 @@
 #ifndef _VM_MUSIC_H_INCLUDE
 #define _VM_MUSIC_H_INCLUDE
 
+#include <gb/gb.h>
+
 #include "vm.h"
 #include "music_manager.h"
+
+BANKREF_EXTERN(VM_MUSIC)
 
 void vm_music_play(SCRIPT_CTX * THIS, UBYTE track_bank, const TRACK_T *track, UBYTE loop) OLDCALL BANKED;
 void vm_music_stop() OLDCALL BANKED;

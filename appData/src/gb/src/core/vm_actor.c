@@ -1,4 +1,4 @@
-#pragma bank 2
+#pragma bank 3
 
 #include "vm_actor.h"
 
@@ -10,6 +10,8 @@
 #include "scroll.h"
 #include "math.h"
 #include "macro.h"
+
+BANKREF(VM_ACTOR)
 
 #define EMOTE_TOTAL_FRAMES         60
 #define MOVE_INACTIVE              0

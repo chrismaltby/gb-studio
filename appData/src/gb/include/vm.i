@@ -1006,6 +1006,11 @@ OP_VM_PROJECTILE_LAUNCH  = 0x80
         .db OP_VM_PROJECTILE_LAUNCH, #>IDX, #<IDX, #<TYPE
 .endm
 
+OP_VM_PROJECTILE_LOAD_TYPE = 0x81
+.macro VM_PROJECTILE_LOAD_TYPE TYPE, BANK, ADDR
+        .db OP_VM_PROJECTILE_LOAD_TYPE, #>ADDR, #<ADDR, #<BANK, #<TYPE
+.endm
+
 ; --- MATH -------------------------------------------
 
 OP_VM_SIN_SCALE         = 0x89

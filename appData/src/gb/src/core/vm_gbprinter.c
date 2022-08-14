@@ -6,6 +6,8 @@
 
 #include "gbprinter.h"
 
+BANKREF(VM_GBPRINTER)
+
 void vm_print_detect(SCRIPT_CTX * THIS, INT16 idx, UBYTE delay) OLDCALL BANKED {
     uint16_t * error = VM_REF_TO_PTR(idx);
     uint8_t IE = IE_REG;
