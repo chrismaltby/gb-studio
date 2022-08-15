@@ -111,7 +111,7 @@ const compileEntityEvents = (scriptSymbolName, input = [], options = {}) => {
   try {
     if (!branch) {
       scriptBuilder._packLocals();
-      if (loop && input.length > 0) {
+      if (loop && input.length > 0 && output.length > 1) {
         scriptBuilder.idle();
         scriptBuilder._jump(loopId);
       }
