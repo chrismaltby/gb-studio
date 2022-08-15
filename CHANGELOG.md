@@ -45,6 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Display channel specific instrument names on instrument select dropdown [@pau-tomas](https://github.com/pau-tomas)
 - Allow editing effects from tracker editor [@RichardULZ](https://github.com/RichardULZ)
 - Allow transposing selected notes in tracker with Ctrl/Ctrl+Shift and Mousewheel or "+" / "-" keys [@RichardULZ](https://github.com/RichardULZ)
+- Add sound effects preview from dropdowns [@pau-tomas](https://github.com/pau-tomas)
 
 ### Changed
 
