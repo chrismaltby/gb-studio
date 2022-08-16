@@ -11,19 +11,20 @@ const autoLabel = (fetchArg) => {
 
 const fields = [
   {
-    label: l10n("FIELD_TIMER_RESTART"),
-  },
-  {
     key: "timer",
     label: l10n("FIELD_TIMER"),
-    type: "select",
+    type: "togglebuttons",
     options: [
-      [1, `${l10n("FIELD_TIMER")} 1`],
-      [2, `${l10n("FIELD_TIMER")} 2`],
-      [3, `${l10n("FIELD_TIMER")} 3`],
-      [4, `${l10n("FIELD_TIMER")} 4`],
+      [1, "1", `${l10n("FIELD_TIMER")} 1`],
+      [2, "2", `${l10n("FIELD_TIMER")} 2`],
+      [3, "3", `${l10n("FIELD_TIMER")} 3`],
+      [4, "4", `${l10n("FIELD_TIMER")} 4`],
     ],
-    defaultValue: 1
+    allowNone: false,
+    defaultValue: 1,
+  },
+  {
+    label: l10n("FIELD_TIMER_RESTART"),
   },
 ];
 
