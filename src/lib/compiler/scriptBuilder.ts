@@ -3114,10 +3114,9 @@ extern void __mute_mask_${symbol};
   // --------------------------------------------------------------------------
   // Timer
 
-  timerScriptSet = (frames = 600, script: ScriptEvent[], symbol?: string) => {
+  timerScriptSet = (frames = 600, script: ScriptEvent[], symbol?: string, timer = 1) => {
     this._addComment(`Timer Start`);
     const scriptRef = this._compileSubScript("timer", script, symbol);
-    const ctx = 1;
     const TIMER_CYCLES = 16;
     let durationTicks = (frames / TIMER_CYCLES + 0.5) | 0;
     if (durationTicks <= 0) {
@@ -3126,21 +3125,19 @@ extern void __mute_mask_${symbol};
     if (durationTicks >= 256) {
       durationTicks = 255;
     }
-    this._timerContextPrepare(scriptRef, ctx);
-    this._timerStart(ctx, durationTicks);
+    this._timerContextPrepare(scriptRef, timer);
+    this._timerStart(timer, durationTicks);
     this._addNL();
   };
 
-  timerRestart = () => {
+  timerRestart = (timer = 1) => {
     this._addComment(`Timer Restart`);
-    const ctx = 1;
-    this._timerReset(ctx);
+    this._timerReset(timer);
   };
 
-  timerDisable = () => {
+  timerDisable = (timer = 1) => {
     this._addComment(`Timer Disable`);
-    const ctx = 1;
-    this._timerStop(ctx);
+    this._timerStop(timer);
   };
 
   // --------------------------------------------------------------------------
