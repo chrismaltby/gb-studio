@@ -23,6 +23,8 @@
 
 #define ANIM_SET_DEFAULT      0
 
+BANKREF_EXTERN(ACTOR)
+
 typedef enum {
   CHECK_DIR_LEFT = 1,
   CHECK_DIR_RIGHT,

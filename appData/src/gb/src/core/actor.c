@@ -1,4 +1,4 @@
-#pragma bank 1
+#pragma bank 255
 
 #include "actor.h"
 
@@ -32,14 +32,13 @@
 #define ACTOR_BOUNDS_TILE16_HALF   3u
 
 
-#define BANK_EMOTE_METASPRITE 1
-
 #ifdef CGB
 #define NO_OVERLAY_PRIORITY ((!_is_CGB) && ((overlay_priority & S_PRIORITY) == 0))
 #else
 #define NO_OVERLAY_PRIORITY (TRUE)
 #endif
 
+BANKREF(ACTOR)
 
 const BYTE emote_offsets[] = {2, 1, 0, -1, -2, -3, -4, -5, -6, -5, -4, -3, -2, -1, 0};
 
@@ -97,7 +96,7 @@ void actors_update() NONBANKED {
         screen_x = (emote_actor->pos.x >> 4) - scroll_x + 8 + sprite->emote_origin.x;
         screen_y = (emote_actor->pos.y >> 4) - scroll_y + 8 + sprite->emote_origin.y;
 
-        SWITCH_ROM(BANK_EMOTE_METASPRITE); // bank of emote_offsets[] and emote_metasprite[]
+        SWITCH_ROM(BANK(ACTOR));  // bank of emote_offsets[] and emote_metasprite[]
         if (emote_timer < EMOTE_BOUNCE_FRAMES) {
             screen_y += emote_offsets[emote_timer];
         }

@@ -8,10 +8,10 @@ __itoa_fmt_len::
 .itoa_fmt_buf::
     .ds 0x03
 
-    .area   _CODE_2
+    .area   _CODE_255
 
 .globl b_itoa_fmt
-b_itoa_fmt = 2
+b_itoa_fmt = 255
 
 _itoa_fmt::
     push    BC

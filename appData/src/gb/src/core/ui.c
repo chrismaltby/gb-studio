@@ -1,3 +1,4 @@
+// must be in the same bank with ui_a.s
 #pragma bank 1
 
 #include <string.h>
@@ -41,7 +42,7 @@ UBYTE text_in_speed;
 UBYTE text_out_speed;
 UBYTE text_draw_speed;
 UBYTE text_ff_joypad;
-UBYTE text_ff; 
+UBYTE text_ff;
 UBYTE text_bkg_fill;
 
 unsigned char ui_text_data[TEXT_MAX_LENGTH];
@@ -72,7 +73,7 @@ UBYTE text_scroll_width, text_scroll_height;
 UBYTE text_scroll_fill;
 
 UBYTE text_sound_mask;
-UBYTE text_sound_bank; 
+UBYTE text_sound_bank;
 const UBYTE * text_sound_data;
 
 #ifdef CGB
@@ -110,7 +111,7 @@ void ui_init() BANKED {
     ui_dest_ptr = ui_dest_base  = (text_render_base_addr = GetWinAddr()) + 32 + 1;
 
     text_scroll_addr            = GetWinAddr();
-    text_scroll_width           = 20; 
+    text_scroll_width           = 20;
     text_scroll_height          = 8;
     text_scroll_fill            = ui_while_tile;
 
@@ -142,7 +143,7 @@ void ui_draw_frame(UBYTE x, UBYTE y, UBYTE width, UBYTE height) BANKED {
 #ifdef CGB
     if (_is_CGB) {
         VBK_REG = 1;
-        fill_win_rect(x, y, width, height, overlay_priority | (UI_PALETTE & 0x07u));        
+        fill_win_rect(x, y, width, height, overlay_priority | (UI_PALETTE & 0x07u));
         VBK_REG = 0;
     }
 #endif
@@ -223,7 +224,7 @@ UBYTE ui_print_render(const unsigned char ch) {
                 ui_print_shift_char(vwf_tile_data + 16u, bitmap, vwf_current_font_bank);
             }
         } else {
-            UBYTE dx = (8u - vwf_current_offset);      
+            UBYTE dx = (8u - vwf_current_offset);
             vwf_current_rotate =  (width < dx) ? (dx - width) : (width - dx) | 0x80u;
             UWORD masks = ui_print_make_mask_rl(width, vwf_current_offset);
             vwf_current_mask = (UBYTE)masks;
@@ -244,7 +245,7 @@ UBYTE ui_print_render(const unsigned char ch) {
             ui_next_tile();
             if (vwf_current_offset) ui_load_wram_tile(vwf_tile_data);
             return TRUE;
-        } 
+        }
         return FALSE;
     } else {
         if (vwf_current_offset) ui_next_tile();
@@ -258,7 +259,7 @@ UBYTE ui_print_render(const unsigned char ch) {
 inline void ui_set_tile(UBYTE * addr, UBYTE tile, UBYTE bank) {
 #ifdef CGB
     if (_is_CGB) {
-        VBK_REG = 1;        
+        VBK_REG = 1;
         SetTile(addr, overlay_priority | ((bank) ? ((UI_PALETTE & 0x07u) | 0x08u) : (UI_PALETTE & 0x07u)));
         VBK_REG = 0;
     }
@@ -305,7 +306,7 @@ UBYTE ui_draw_text_buffer_char() BANKED {
     while (TRUE) {
         switch (*ui_text_ptr) {
             case 0x00: {
-                ui_text_ptr = 0; 
+                ui_text_ptr = 0;
                 text_drawn = TRUE;
                 if (vwf_current_font_idx != current_font_idx) {
                     const far_ptr_t * font = ui_fonts + vwf_current_font_idx;
@@ -334,7 +335,7 @@ UBYTE ui_draw_text_buffer_char() BANKED {
                 break;
             }
             case 0x03:
-                // gotoxy 
+                // gotoxy
                 ui_dest_ptr = ui_dest_base = text_render_base_addr + (*++ui_text_ptr - 1u) + (*++ui_text_ptr - 1u) * 32u;
                 if (vwf_current_offset) ui_print_reset();
                 break;
@@ -359,7 +360,7 @@ UBYTE ui_draw_text_buffer_char() BANKED {
                 if (text_draw_speed == 0) {
                     ui_text_ptr++;
                     break;
-                } 
+                }
                 // wait for key press (parameter is a mask)
                 if ((joy & ~last_joy) & *++ui_text_ptr) {
                     text_ff_joypad = current_text_ff_joypad;
@@ -402,7 +403,7 @@ UBYTE ui_draw_text_buffer_char() BANKED {
                 break;
             case 0x05:
                 // escape symbol
-                ui_text_ptr++; 
+                ui_text_ptr++;
                 // fall down to default
             default:
                 if (ui_print_render(*ui_text_ptr)) {
@@ -459,11 +460,11 @@ UBYTE ui_run_menu(menu_item_t * start_item, UBYTE bank, UBYTE options, UBYTE cou
     // copy first menu item
     MemcpyBanked(&current_menu_item, start_item + (current_index - 1u), sizeof(menu_item_t), bank);
 
-    // draw menu cursor    
+    // draw menu cursor
 #ifdef CGB
     if (_is_CGB) {
         VBK_REG = 1;
-        set_win_tile_xy(current_menu_item.X, current_menu_item.Y, overlay_priority | (UI_PALETTE & 0x07u));        
+        set_win_tile_xy(current_menu_item.X, current_menu_item.Y, overlay_priority | (UI_PALETTE & 0x07u));
         VBK_REG = 0;
     }
 #endif
@@ -473,7 +474,7 @@ UBYTE ui_run_menu(menu_item_t * start_item, UBYTE bank, UBYTE options, UBYTE cou
     while (TRUE) {
         input_update();
         ui_update();
-        
+
         toggle_shadow_OAM();
         camera_update();
         scroll_update();
@@ -508,7 +509,7 @@ UBYTE ui_run_menu(menu_item_t * start_item, UBYTE bank, UBYTE options, UBYTE cou
 #ifdef CGB
         if (_is_CGB) {
             VBK_REG = 1;
-            set_win_tile_xy(current_menu_item.X, current_menu_item.Y, overlay_priority | (UI_PALETTE & 0x07u));        
+            set_win_tile_xy(current_menu_item.X, current_menu_item.Y, overlay_priority | (UI_PALETTE & 0x07u));
             VBK_REG = 0;
         }
 #endif
@@ -519,7 +520,7 @@ UBYTE ui_run_menu(menu_item_t * start_item, UBYTE bank, UBYTE options, UBYTE cou
 #ifdef CGB
         if (_is_CGB) {
             VBK_REG = 1;
-            set_win_tile_xy(current_menu_item.X, current_menu_item.Y, overlay_priority | (UI_PALETTE & 0x07u));        
+            set_win_tile_xy(current_menu_item.X, current_menu_item.Y, overlay_priority | (UI_PALETTE & 0x07u));
             VBK_REG = 0;
         }
 #endif
@@ -533,7 +534,7 @@ void ui_run_modal(UBYTE wait_flags) BANKED {
     UBYTE fail;
     do {
         fail = FALSE;
-    
+
         if (wait_flags & UI_WAIT_WINDOW)
             if ((win_pos_x != win_dest_pos_x) || (win_pos_y != win_dest_pos_y)) fail = TRUE;
         if (wait_flags & UI_WAIT_TEXT)
@@ -546,7 +547,7 @@ void ui_run_modal(UBYTE wait_flags) BANKED {
             if (!INPUT_ANY_PRESSED) fail = TRUE;
 
         if (!fail) return;
-        
+
         ui_update();
 
         toggle_shadow_OAM();
@@ -559,5 +560,5 @@ void ui_run_modal(UBYTE wait_flags) BANKED {
         game_time++;
         wait_vbl_done();
         input_update();
-    } while (fail);    
+    } while (fail);
 }

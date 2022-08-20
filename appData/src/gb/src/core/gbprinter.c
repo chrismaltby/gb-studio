@@ -1,4 +1,4 @@
-#pragma bank 4
+#pragma bank 255
 
 #include "system.h"
 #include "scroll.h"

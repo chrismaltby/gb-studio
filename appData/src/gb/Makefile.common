@@ -25,7 +25,7 @@ LFLAGS_SYMBOLS = -Wl-j -Wl-m -Wl-w -Wm-yS
 
 LFLAGS = $(PLATFORM) -Wm-yt$(CART_MBC) $(LFLAGS_NBANKS) $(LFLAGS_SYMBOLS) -Wl-klib -Wl-g.STACK=0xDF00 -Wi-e
 
-PACKFLAGS = -b 5 -f 255 -e rel -c
+PACKFLAGS = -b 1 -f 255 -e rel -c
 
 EMUFLAGS = \
 	-set "Color0=E8E8E8" \
@@ -115,6 +115,7 @@ hUGE:
 GBT:
 	$(eval CFLAGS += -DGBT_PLAYER)
 	$(eval LFLAGS += -Wl-l$(TOP)lib/gbt_player.lib)
+	$(eval PACKFLAGS += -s 1:7F3)
 	@echo "Enable GBTPlayer"
 
 directories:	$(ROM_BUILD_DIR) $(OBJDIR) $(REL_OBJDIR)
