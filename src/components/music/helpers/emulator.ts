@@ -1,58 +1,60 @@
-/* eslint-disable camelcase */
-import Binjgb from "../../../../appData/wasm/binjgb/binjgb";
-import BinjgbModule from "../../../../appData/wasm/binjgb/binjgb.wasm";
+import { Binjgb, BinjgbModule } from "./WasmModuleWrapper";
 
-let emu;
-let rom_ptr;
-let rom_size = 0;
-let canvas_ctx;
-let canvas_image_data;
-let audio_ctx;
-let audio_time;
-let serial_callback = null;
+type SerialCallback = (v: any) => void;
 
-const audio_buffer_size = 2048;
+type StepTypes = "single" | "frame" | "run";
+
+let emu: any;
+let romPtr: number;
+let romSize = 0;
+let canvasCtx: CanvasRenderingContext2D | null;
+let canvasImageData: ImageData;
+let audioCtx: AudioContext;
+let audioTime: number;
+let serialCallback: SerialCallback;
+
+const audioBufferSize = 2048;
 
 /* see: 
   https://gist.github.com/surma/b2705b6cca29357ebea1c9e6e15684cc
   https://github.com/webpack/webpack/issues/7352
 */
-const locateFile = (module) => (path) => {
+const locateFile = (module: any) => (path: string) => {
   if (path.endsWith(".wasm")) {
     return module;
   }
   return path;
 };
 
-let Module;
+let Module: any;
 Binjgb({
   locateFile: locateFile(BinjgbModule),
-}).then((module) => {
+}).then((module: any) => {
   Module = module;
 });
 
-const init = (canvas, rom_data) => {
+const init = (canvas: HTMLCanvasElement | null, romData: Uint8Array) => {
   console.log("INIT EMULATOR");
   if (isAvailable()) destroy();
 
-  if (typeof audio_ctx == "undefined") audio_ctx = new AudioContext();
+  if (typeof audioCtx == "undefined") audioCtx = new AudioContext();
 
-  let required_size = ((rom_data.length - 1) | 0x3fff) + 1;
-  if (required_size < 0x8000) required_size = 0x8000;
-  if (rom_size < required_size) {
-    if (typeof rom_ptr != "undefined") Module._free(rom_ptr);
-    rom_ptr = Module._malloc(required_size);
-    rom_size = required_size;
+  let requiredSize = ((romData.length - 1) | 0x3fff) + 1;
+  if (requiredSize < 0x8000) requiredSize = 0x8000;
+  if (romSize < requiredSize) {
+    if (typeof romPtr != "undefined") Module._free(romPtr);
+    romPtr = Module._malloc(requiredSize);
+    romSize = requiredSize;
   }
-  for (let n = 0; n < rom_size; n++) Module.HEAP8[rom_ptr + n] = 0;
-  for (let n = 0; n < rom_data.length; n++)
-    Module.HEAP8[rom_ptr + n] = rom_data[n];
+  for (let n = 0; n < romSize; n++) Module.HEAP8[romPtr + n] = 0;
+  for (let n = 0; n < romData.length; n++)
+    Module.HEAP8[romPtr + n] = romData[n];
 
   emu = Module._emulator_new_simple(
-    rom_ptr,
-    rom_size,
-    audio_ctx.sampleRate,
-    audio_buffer_size
+    romPtr,
+    romSize,
+    audioCtx.sampleRate,
+    audioBufferSize
   );
   Module._emulator_set_bw_palette_simple(
     emu,
@@ -81,26 +83,28 @@ const init = (canvas, rom_data) => {
   Module._emulator_set_default_joypad_callback(emu, 0);
 
   if (canvas) {
-    canvas_ctx = canvas.getContext("2d");
-    canvas_image_data = canvas_ctx.createImageData(canvas.width, canvas.height);
+    canvasCtx = canvas.getContext("2d");
+    if (canvasCtx) {
+      canvasImageData = canvasCtx.createImageData(canvas.width, canvas.height);
+    }
   }
 
-  audio_ctx.resume();
-  audio_time = audio_ctx.currentTime;
+  audioCtx.resume();
+  audioTime = audioCtx.currentTime;
 };
 
-const updateRom = (rom_data) => {
+const updateRom = (romData: Uint8Array) => {
   if (!isAvailable()) {
     console.log("UPDATE ROM: NOT AVAILABLE");
     return false;
   }
 
-  let required_size = ((rom_data.length - 1) | 0x3fff) + 1;
-  if (required_size < 0x8000) required_size = 0x8000;
-  if (rom_size < required_size) return false;
-  for (let n = 0; n < rom_size; n++) Module.HEAP8[rom_ptr + n] = 0;
-  for (let n = 0; n < rom_data.length; n++)
-    Module.HEAP8[rom_ptr + n] = rom_data[n];
+  let requiredSize = ((romData.length - 1) | 0x3fff) + 1;
+  if (requiredSize < 0x8000) requiredSize = 0x8000;
+  if (romSize < requiredSize) return false;
+  for (let n = 0; n < romSize; n++) Module.HEAP8[romPtr + n] = 0;
+  for (let n = 0; n < romData.length; n++)
+    Module.HEAP8[romPtr + n] = romData[n];
   return true;
 };
 
@@ -112,11 +116,11 @@ const destroy = () => {
 
 const isAvailable = () => typeof emu != "undefined";
 
-const step = (step_type) => {
+const step = (stepType: StepTypes) => {
   if (!isAvailable()) return;
   let ticks = Module._emulator_get_ticks_f64(emu);
-  if (step_type === "single") ticks += 1;
-  else if (step_type === "frame") ticks += 70224;
+  if (stepType === "single") ticks += 1;
+  else if (stepType === "frame") ticks += 70224;
   while (true) {
     const result = Module._emulator_run_until_f64(emu, ticks);
     if (result & 2) processAudioBuffer();
@@ -126,11 +130,11 @@ const step = (step_type) => {
     if (result & 16)
       // Illegal instruction
       return true;
-    if (result !== 2 && step_type !== "run") return false;
-    if (step_type === "run") {
+    if (result !== 2 && stepType !== "run") return false;
+    if (stepType === "run") {
       if (result & 4) {
         // Sync to the audio buffer, make sure we have 100ms of audio data buffered.
-        if (audio_time < audio_ctx.currentTime + 0.1) ticks += 70224;
+        if (audioTime < audioCtx.currentTime + 0.1) ticks += 70224;
         else return false;
       }
     }
@@ -144,32 +148,36 @@ const renderScreen = () => {
     Module._get_frame_buffer_ptr(emu),
     Module._get_frame_buffer_size(emu)
   );
-  canvas_image_data.data.set(buffer);
-  canvas_ctx.putImageData(canvas_image_data, 0, 0);
+  canvasImageData.data.set(buffer);
+  canvasCtx?.putImageData(canvasImageData, 0, 0);
 };
 
-const renderVRam = (canvas) => {
+const renderVRam = (canvas: HTMLCanvasElement) => {
   if (!isAvailable()) return;
   const ctx = canvas.getContext("2d");
-  const image_data = canvas_ctx.createImageData(256, 256);
-  const ptr = Module._malloc(4 * 256 * 256);
-  Module._emulator_render_vram(emu, ptr);
-  const buffer = new Uint8Array(Module.HEAP8.buffer, ptr, 4 * 256 * 256);
-  image_data.data.set(buffer);
-  ctx.putImageData(image_data, 0, 0);
-  Module._free(ptr);
+  if (canvasCtx) {
+    const imageData = canvasCtx.createImageData(256, 256);
+    const ptr = Module._malloc(4 * 256 * 256);
+    Module._emulator_render_vram(emu, ptr);
+    const buffer = new Uint8Array(Module.HEAP8.buffer, ptr, 4 * 256 * 256);
+    imageData?.data.set(buffer);
+    ctx?.putImageData(imageData, 0, 0);
+    Module._free(ptr);
+  }
 };
 
-const renderBackground = (canvas, type) => {
+const renderBackground = (canvas: HTMLCanvasElement, type: any) => {
   if (!isAvailable()) return;
   const ctx = canvas.getContext("2d");
-  const image_data = canvas_ctx.createImageData(256, 256);
-  const ptr = Module._malloc(4 * 256 * 256);
-  Module._emulator_render_background(emu, ptr, type);
-  const buffer = new Uint8Array(Module.HEAP8.buffer, ptr, 4 * 256 * 256);
-  image_data.data.set(buffer);
-  ctx.putImageData(image_data, 0, 0);
-  Module._free(ptr);
+  if (canvasCtx) {
+    const imageData = canvasCtx.createImageData(256, 256);
+    const ptr = Module._malloc(4 * 256 * 256);
+    Module._emulator_render_background(emu, ptr, type);
+    const buffer = new Uint8Array(Module.HEAP8.buffer, ptr, 4 * 256 * 256);
+    imageData?.data.set(buffer);
+    ctx?.putImageData(imageData, 0, 0);
+    Module._free(ptr);
+  }
 };
 
 const getWRam = () => {
@@ -187,7 +195,7 @@ const getHRam = () => {
 };
 
 const getPC = () => Module._emulator_get_PC(emu);
-const setPC = (pc) => Module._emulator_set_PC(emu, pc);
+const setPC = (pc: number) => Module._emulator_set_PC(emu, pc);
 const getSP = () => Module._emulator_get_SP(emu);
 const getA = () => Module._emulator_get_A(emu);
 const getBC = () => Module._emulator_get_BC(emu);
@@ -203,11 +211,11 @@ const getFlags = () => {
   if (flags & 0x40) result += "N ";
   return result;
 };
-const readMem = (addr) => {
+const readMem = (addr: number) => {
   if (!isAvailable()) return 0xff;
   return Module._emulator_read_mem(emu, addr);
 };
-const writeMem = (addr, data) => {
+const writeMem = (addr: number, data: number) => {
   if (!isAvailable()) {
     console.log("WRITE MEM NOT AVAILABLE");
     return;
@@ -216,7 +224,7 @@ const writeMem = (addr, data) => {
   return Module._emulator_write_mem(emu, addr, data);
 };
 
-const setBreakpoint = (pc) => {
+const setBreakpoint = (pc: number) => {
   if (!isAvailable()) return;
   Module._emulator_set_breakpoint(emu, pc);
 };
@@ -225,7 +233,7 @@ const clearBreakpoints = () => {
   Module._emulator_clear_breakpoints(emu);
 };
 
-const setKeyPad = (key, down) => {
+const setKeyPad = (key: string, down: boolean) => {
   if (!isAvailable()) return;
   if (key === "right") Module._set_joyp_right(emu, down);
   if (key === "left") Module._set_joyp_left(emu, down);
@@ -237,46 +245,38 @@ const setKeyPad = (key, down) => {
   if (key === "start") Module._set_joyp_start(emu, down);
 };
 
-const setChannel = (channel, muted) => {
+const setChannel = (channel: number, muted: boolean) => {
   if (!isAvailable()) return muted;
   return Module._set_audio_channel_mute(emu, channel, muted);
 };
 
-const setSerialCallback = (callback) => {
-  serial_callback = callback;
-};
-
-const serialCallback = (value) => {
-  if (serial_callback) serial_callback(value);
+const setSerialCallback = (callback: SerialCallback) => {
+  serialCallback = callback;
 };
 
 function processAudioBuffer() {
-  if (audio_time < audio_ctx.currentTime) audio_time = audio_ctx.currentTime;
+  if (audioTime < audioCtx.currentTime) audioTime = audioCtx.currentTime;
 
-  const input_buffer = new Uint8Array(
+  const inputBuffer = new Uint8Array(
     Module.HEAP8.buffer,
     Module._get_audio_buffer_ptr(emu),
     Module._get_audio_buffer_capacity(emu)
   );
   const volume = 0.5;
-  const buffer = audio_ctx.createBuffer(
-    2,
-    audio_buffer_size,
-    audio_ctx.sampleRate
-  );
+  const buffer = audioCtx.createBuffer(2, audioBufferSize, audioCtx.sampleRate);
   const channel0 = buffer.getChannelData(0);
   const channel1 = buffer.getChannelData(1);
 
-  for (let i = 0; i < audio_buffer_size; i++) {
-    channel0[i] = (input_buffer[2 * i] * volume) / 255;
-    channel1[i] = (input_buffer[2 * i + 1] * volume) / 255;
+  for (let i = 0; i < audioBufferSize; i++) {
+    channel0[i] = (inputBuffer[2 * i] * volume) / 255;
+    channel1[i] = (inputBuffer[2 * i + 1] * volume) / 255;
   }
-  const bufferSource = audio_ctx.createBufferSource();
+  const bufferSource = audioCtx.createBufferSource();
   bufferSource.buffer = buffer;
-  bufferSource.connect(audio_ctx.destination);
-  bufferSource.start(audio_time);
-  const buffer_sec = audio_buffer_size / audio_ctx.sampleRate;
-  audio_time += buffer_sec;
+  bufferSource.connect(audioCtx.destination);
+  bufferSource.start(audioTime);
+  const bufferSec = audioBufferSize / audioCtx.sampleRate;
+  audioTime += bufferSec;
 }
 
 export default {

@@ -6,6 +6,9 @@ import createRgbAsmModule from "../../../../appData/wasm/rgbds/rgbasm.wasm";
 import createRgbLinkModule from "../../../../appData/wasm/rgbds/rgblink.wasm";
 import createRgbFixModule from "../../../../appData/wasm/rgbds/rgbfix.wasm";
 
+import Binjgb from "../../../../appData/wasm/binjgb/binjgb";
+import BinjgbModule from "../../../../appData/wasm/binjgb/binjgb.wasm";
+
 export {
   createRgbAsm,
   createRgbLink,
@@ -13,4 +16,6 @@ export {
   createRgbAsmModule,
   createRgbLinkModule,
   createRgbFixModule,
+  Binjgb,
+  BinjgbModule,
 };
