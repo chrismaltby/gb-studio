@@ -1,7 +1,5 @@
 import { Binjgb, BinjgbModule } from "./WasmModuleWrapper";
 
-type SerialCallback = (v: any) => void;
-
 type StepTypes = "single" | "frame" | "run";
 
 let emu: any;
@@ -11,7 +9,6 @@ let canvasCtx: CanvasRenderingContext2D | null;
 let canvasImageData: ImageData;
 let audioCtx: AudioContext;
 let audioTime: number;
-let serialCallback: SerialCallback;
 
 const audioBufferSize = 2048;
 
@@ -141,76 +138,6 @@ const step = (stepType: StepTypes) => {
   }
 };
 
-const renderScreen = () => {
-  if (!isAvailable()) return;
-  const buffer = new Uint8Array(
-    Module.HEAP8.buffer,
-    Module._get_frame_buffer_ptr(emu),
-    Module._get_frame_buffer_size(emu)
-  );
-  canvasImageData.data.set(buffer);
-  canvasCtx?.putImageData(canvasImageData, 0, 0);
-};
-
-const renderVRam = (canvas: HTMLCanvasElement) => {
-  if (!isAvailable()) return;
-  const ctx = canvas.getContext("2d");
-  if (canvasCtx) {
-    const imageData = canvasCtx.createImageData(256, 256);
-    const ptr = Module._malloc(4 * 256 * 256);
-    Module._emulator_render_vram(emu, ptr);
-    const buffer = new Uint8Array(Module.HEAP8.buffer, ptr, 4 * 256 * 256);
-    imageData?.data.set(buffer);
-    ctx?.putImageData(imageData, 0, 0);
-    Module._free(ptr);
-  }
-};
-
-const renderBackground = (canvas: HTMLCanvasElement, type: any) => {
-  if (!isAvailable()) return;
-  const ctx = canvas.getContext("2d");
-  if (canvasCtx) {
-    const imageData = canvasCtx.createImageData(256, 256);
-    const ptr = Module._malloc(4 * 256 * 256);
-    Module._emulator_render_background(emu, ptr, type);
-    const buffer = new Uint8Array(Module.HEAP8.buffer, ptr, 4 * 256 * 256);
-    imageData?.data.set(buffer);
-    ctx?.putImageData(imageData, 0, 0);
-    Module._free(ptr);
-  }
-};
-
-const getWRam = () => {
-  if (!isAvailable()) return;
-
-  const ptr = Module._emulator_get_wram_ptr(emu);
-  return new Uint8Array(Module.HEAP8.buffer, ptr, 0x8000);
-};
-
-const getHRam = () => {
-  if (!isAvailable()) return;
-
-  const ptr = Module._emulator_get_hram_ptr(emu);
-  return new Uint8Array(Module.HEAP8.buffer, ptr, 0x7f);
-};
-
-const getPC = () => Module._emulator_get_PC(emu);
-const setPC = (pc: number) => Module._emulator_set_PC(emu, pc);
-const getSP = () => Module._emulator_get_SP(emu);
-const getA = () => Module._emulator_get_A(emu);
-const getBC = () => Module._emulator_get_BC(emu);
-const getDE = () => Module._emulator_get_DE(emu);
-const getHL = () => Module._emulator_get_HL(emu);
-
-const getFlags = () => {
-  const flags = Module._emulator_get_F(emu);
-  let result = "";
-  if (flags & 0x80) result += "Z ";
-  if (flags & 0x10) result += "C ";
-  if (flags & 0x20) result += "H ";
-  if (flags & 0x40) result += "N ";
-  return result;
-};
 const readMem = (addr: number) => {
   if (!isAvailable()) return 0xff;
   return Module._emulator_read_mem(emu, addr);
@@ -224,34 +151,9 @@ const writeMem = (addr: number, data: number) => {
   return Module._emulator_write_mem(emu, addr, data);
 };
 
-const setBreakpoint = (pc: number) => {
-  if (!isAvailable()) return;
-  Module._emulator_set_breakpoint(emu, pc);
-};
-const clearBreakpoints = () => {
-  if (!isAvailable()) return;
-  Module._emulator_clear_breakpoints(emu);
-};
-
-const setKeyPad = (key: string, down: boolean) => {
-  if (!isAvailable()) return;
-  if (key === "right") Module._set_joyp_right(emu, down);
-  if (key === "left") Module._set_joyp_left(emu, down);
-  if (key === "up") Module._set_joyp_up(emu, down);
-  if (key === "down") Module._set_joyp_down(emu, down);
-  if (key === "a") Module._set_joyp_A(emu, down);
-  if (key === "b") Module._set_joyp_B(emu, down);
-  if (key === "select") Module._set_joyp_select(emu, down);
-  if (key === "start") Module._set_joyp_start(emu, down);
-};
-
 const setChannel = (channel: number, muted: boolean) => {
   if (!isAvailable()) return muted;
   return Module._set_audio_channel_mute(emu, channel, muted);
-};
-
-const setSerialCallback = (callback: SerialCallback) => {
-  serialCallback = callback;
 };
 
 function processAudioBuffer() {
