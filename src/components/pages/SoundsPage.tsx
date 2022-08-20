@@ -113,7 +113,7 @@ const SoundsPage = () => {
         }}
       >
         <div style={{ flexGrow: 1, position: "relative" }}>
-          <SoundViewer file={sound} />
+          {sound && <SoundViewer file={sound} />}
         </div>
       </div>
     </Wrapper>
