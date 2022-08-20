@@ -1,12 +1,10 @@
 import { Binjgb, BinjgbModule } from "./WasmModuleWrapper";
 
-type StepTypes = "single" | "frame" | "run";
+type StepType = "single" | "frame" | "run";
 
 let emu: any;
 let romPtr: number;
 let romSize = 0;
-let canvasCtx: CanvasRenderingContext2D | null;
-let canvasImageData: ImageData;
 let audioCtx: AudioContext;
 let audioTime: number;
 
@@ -30,7 +28,7 @@ Binjgb({
   Module = module;
 });
 
-const init = (canvas: HTMLCanvasElement | null, romData: Uint8Array) => {
+const init = (romData: Uint8Array) => {
   console.log("INIT EMULATOR");
   if (isAvailable()) destroy();
 
@@ -53,39 +51,6 @@ const init = (canvas: HTMLCanvasElement | null, romData: Uint8Array) => {
     audioCtx.sampleRate,
     audioBufferSize
   );
-  Module._emulator_set_bw_palette_simple(
-    emu,
-    0,
-    0xffc2f0c4,
-    0xffa8b95a,
-    0xff6e601e,
-    0xff001b2d
-  );
-  Module._emulator_set_bw_palette_simple(
-    emu,
-    1,
-    0xffc2f0c4,
-    0xffa8b95a,
-    0xff6e601e,
-    0xff001b2d
-  );
-  Module._emulator_set_bw_palette_simple(
-    emu,
-    2,
-    0xffc2f0c4,
-    0xffa8b95a,
-    0xff6e601e,
-    0xff001b2d
-  );
-  Module._emulator_set_default_joypad_callback(emu, 0);
-
-  if (canvas) {
-    canvasCtx = canvas.getContext("2d");
-    if (canvasCtx) {
-      canvasImageData = canvasCtx.createImageData(canvas.width, canvas.height);
-    }
-  }
-
   audioCtx.resume();
   audioTime = audioCtx.currentTime;
 };
@@ -113,7 +78,7 @@ const destroy = () => {
 
 const isAvailable = () => typeof emu != "undefined";
 
-const step = (stepType: StepTypes) => {
+const step = (stepType: StepType) => {
   if (!isAvailable()) return;
   let ticks = Module._emulator_get_ticks_f64(emu);
   if (stepType === "single") ticks += 1;
@@ -142,6 +107,7 @@ const readMem = (addr: number) => {
   if (!isAvailable()) return 0xff;
   return Module._emulator_read_mem(emu, addr);
 };
+
 const writeMem = (addr: number, data: number) => {
   if (!isAvailable()) {
     console.log("WRITE MEM NOT AVAILABLE");

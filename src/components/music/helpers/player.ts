@@ -85,7 +85,7 @@ const initPlayer = (onInit: (file: any) => void, sfx?: string) => {
     if (onInit) {
       onInit(file);
     }
-    emulator.init(null, romFile);
+    emulator.init(romFile);
 
     const doResumePlayerAddr = getMemAddress("do_resume_player");
 
