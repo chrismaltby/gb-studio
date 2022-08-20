@@ -9,17 +9,11 @@ const fields = [
     type: "music",
     defaultValue: "LAST_MUSIC",
   },
-  {
-    key: "loop",
-    label: l10n("FIELD_LOOP"),
-    type: "checkbox",
-    defaultValue: true,
-  },
 ];
 
 const compile = (input, helpers) => {
   const { musicPlay } = helpers;
-  musicPlay(input.musicId, input.loop);
+  musicPlay(input.musicId);
 };
 
 module.exports = {

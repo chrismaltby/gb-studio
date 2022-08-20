@@ -97,6 +97,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Removed .CURRENT_SCRIPT_BANK for gbvm scripts as results were unreliable
 - Removed deprecated dividing ratio and shift clock fields from noise instrument editor [@pau-tomas](https://github.com/pau-tomas)
+- Removed loop option on music play event, doesn't work for hUGEDriver and was broken on GBTPlayer. Instead add an empty pattern with an infinite loop (using effect Bxx) to the tracks you want to not loop.
 
 ## [3.0.3]
 
