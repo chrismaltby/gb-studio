@@ -53,9 +53,6 @@ const doResume = () => {
 };
 
 const initPlayer = (onInit: (file: any) => void, sfx?: string) => {
-  compiler.setLogCallback(console.log);
-  compiler.setLinkOptions(["-t", "-w"]);
-
   // Load an empty song
   let songFile = `include "include/hUGE.inc"
     
@@ -81,29 +78,31 @@ const initPlayer = (onInit: (file: any) => void, sfx?: string) => {
   }
   storage.update("song.asm", songFile);
 
-  compiler.compile(
-    (file: Uint8Array, _startAddress: number, _addrToLine: any) => {
-      romFile = file;
-      if (onInit) {
-        onInit(file);
-      }
-      emulator.init(null, romFile);
+  const onCompileDone = (file?: Uint8Array) => {
+    if (!file) return;
 
-      const doResumePlayerAddr = getMemAddress("do_resume_player");
-
-      const updateTracker = () => {
-        emulator.step("run");
-        console.log(
-          "RUN",
-          `Is Player Paused: ${isPlayerPaused()}`,
-          `Do resume Player: ${emulator.readMem(doResumePlayerAddr)}`,
-          `OxFF0F: ${emulator.readMem(0xff0f)}`,
-          `Order Count: ${emulator.readMem(getMemAddress("order_cnt"))}`
-        );
-      };
-      setInterval(updateTracker, 1000 / 64);
+    romFile = file;
+    if (onInit) {
+      onInit(file);
     }
-  );
+    emulator.init(null, romFile);
+
+    const doResumePlayerAddr = getMemAddress("do_resume_player");
+
+    const updateTracker = () => {
+      emulator.step("run");
+      console.log(
+        "RUN",
+        `Is Player Paused: ${isPlayerPaused()}`,
+        `Do resume Player: ${emulator.readMem(doResumePlayerAddr)}`,
+        `OxFF0F: ${emulator.readMem(0xff0f)}`,
+        `Order Count: ${emulator.readMem(getMemAddress("order_cnt"))}`
+      );
+    };
+    setInterval(updateTracker, 1000 / 64);
+  };
+
+  compiler.compile(["-t", "-w"], onCompileDone, console.log);
 };
 
 const setChannel = (channel: number, muted: boolean) => {
