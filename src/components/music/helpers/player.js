@@ -170,10 +170,10 @@ const play = (song, position) => {
     setStartPosition(position);
   }
 
-  if (isPlayerPaused()) {
-    const ticks_per_row_addr = getMemAddress("ticks_per_row");
-    emulator.writeMem(ticks_per_row_addr, song.ticks_per_row);
+  const ticks_per_row_addr = getMemAddress("ticks_per_row");
+  emulator.writeMem(ticks_per_row_addr, song.ticks_per_row);
 
+  if (isPlayerPaused()) {
     emulator.setChannel(0, channels[0]);
     emulator.setChannel(1, channels[1]);
     emulator.setChannel(2, channels[2]);
