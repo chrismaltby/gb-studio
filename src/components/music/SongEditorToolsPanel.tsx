@@ -14,7 +14,6 @@ import {
   PianoInverseIcon,
   StopIcon,
   PlayStartIcon,
-  WandIcon,
 } from "ui/icons/Icons";
 import FloatingPanel, { FloatingPanelDivider } from "ui/panels/FloatingPanel";
 import trackerActions from "store/features/tracker/trackerActions";

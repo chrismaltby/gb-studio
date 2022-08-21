@@ -61,19 +61,19 @@ export const InstrumentSelect: FC<InstrumentSelectProps> = ({
     if (song) {
       switch (instrumentType) {
         case "duty":
-          instruments = song?.duty_instruments.map((instrument, i) => ({
+          instruments = song?.duty_instruments.map((instrument) => ({
             value: `${instrument.index}`,
             label: instrument.name || `Duty ${instrument.index + 1}`,
           }));
           break;
         case "wave":
-          instruments = song?.wave_instruments.map((instrument, i) => ({
+          instruments = song?.wave_instruments.map((instrument) => ({
             value: `${instrument.index}`,
             label: instrument.name || `Wave ${instrument.index + 1}`,
           }));
           break;
         case "noise":
-          instruments = song?.noise_instruments.map((instrument, i) => ({
+          instruments = song?.noise_instruments.map((instrument) => ({
             value: `${instrument.index}`,
             label: instrument.name || `Noise ${instrument.index + 1}`,
           }));

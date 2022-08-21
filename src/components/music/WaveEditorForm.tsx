@@ -149,7 +149,7 @@ export const WaveEditorForm = ({ waveId, onChange }: WaveEditorFormProps) => {
       }
     };
 
-    const handleMouseUp = (e: any) => {
+    const handleMouseUp = (_e: any) => {
       if (mousedown) {
         mousedown = false;
         onEditWave(newWaves);
