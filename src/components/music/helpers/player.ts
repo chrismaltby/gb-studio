@@ -4,25 +4,30 @@ import emulator from "./emulator";
 import { Song } from "lib/helpers/uge/song/Song";
 import { lo, hi } from "lib/helpers/8bit";
 
-let updateHandle: number | undefined;
-let romFile: Uint8Array;
+type PlaybackPosition = [number, number];
+
 let currentSong: Song | null = null;
+
+let onSongProgressIntervalId: number | undefined;
+let romFile: Uint8Array;
 
 let currentSequence = -1;
 let currentRow = -1;
 
 const channels = [false, false, false, false];
 
-let onIntervalCallback = (_updateData: number[]) => {};
+let onIntervalCallback = (_updateData: PlaybackPosition) => {};
 
-const getMemAddress = (sym: string) => {
-  return compiler.getRamSymbols().findIndex((v) => {
-    return v === sym;
-  });
+const getRamAddress = (sym: string) => {
+  return compiler.getRamSymbols().indexOf(sym);
+};
+
+const getRomAddress = (sym: string) => {
+  return compiler.getRomSymbols().indexOf(sym);
 };
 
 const isPlayerPaused = () => {
-  const isPlayerPausedAddr = getMemAddress("is_player_paused");
+  const isPlayerPausedAddr = getRamAddress("is_player_paused");
   return emulator.readMem(isPlayerPausedAddr) === 1;
 };
 
@@ -41,7 +46,7 @@ const doPause = () => {
 };
 
 const doResume = () => {
-  const doResumePlayerAddr = getMemAddress("do_resume_player");
+  const doResumePlayerAddr = getRamAddress("do_resume_player");
   emulator.writeMem(doResumePlayerAddr, 1);
 
   while (isPlayerPaused()) {
@@ -52,7 +57,7 @@ const doResume = () => {
   console.log("RESUMED");
 };
 
-const initPlayer = (onInit: (file: any) => void, sfx?: string) => {
+const initPlayer = (onInit: (file: Uint8Array) => void, sfx?: string) => {
   // Load an empty song
   let songFile = `include "include/hUGE.inc"
     
@@ -87,7 +92,7 @@ const initPlayer = (onInit: (file: any) => void, sfx?: string) => {
     }
     emulator.init(romFile);
 
-    const doResumePlayerAddr = getMemAddress("do_resume_player");
+    const doResumePlayerAddr = getRamAddress("do_resume_player");
 
     const updateTracker = () => {
       emulator.step("run");
@@ -96,7 +101,7 @@ const initPlayer = (onInit: (file: any) => void, sfx?: string) => {
         `Is Player Paused: ${isPlayerPaused()}`,
         `Do resume Player: ${emulator.readMem(doResumePlayerAddr)}`,
         `OxFF0F: ${emulator.readMem(0xff0f)}`,
-        `Order Count: ${emulator.readMem(getMemAddress("order_cnt"))}`
+        `Order Count: ${emulator.readMem(getRamAddress("order_cnt"))}`
       );
     };
     setInterval(updateTracker, 1000 / 64);
@@ -116,7 +121,7 @@ const loadSong = (song: Song) => {
   stop();
 };
 
-const play = (song: Song, position: number[]) => {
+const play = (song: Song, position?: PlaybackPosition) => {
   console.log("PLAY");
   updateRom(song);
 
@@ -125,7 +130,7 @@ const play = (song: Song, position: number[]) => {
     setStartPosition(position);
   }
 
-  const ticksPerRowAddr = getMemAddress("ticks_per_row");
+  const ticksPerRowAddr = getRamAddress("ticks_per_row");
   emulator.writeMem(ticksPerRowAddr, song.ticks_per_row);
 
   if (isPlayerPaused()) {
@@ -134,10 +139,10 @@ const play = (song: Song, position: number[]) => {
     emulator.setChannel(2, channels[2]);
     emulator.setChannel(3, channels[3]);
 
-    const currentOrderAddr = getMemAddress("current_order");
-    const rowAddr = getMemAddress("row");
+    const currentOrderAddr = getRamAddress("current_order");
+    const rowAddr = getRamAddress("row");
 
-    const orderCntAddr = getMemAddress("order_cnt");
+    const orderCntAddr = getRamAddress("order_cnt");
     emulator.writeMem(orderCntAddr, song.sequence.length * 2);
 
     doResume();
@@ -151,7 +156,7 @@ const play = (song: Song, position: number[]) => {
         onIntervalCallback([currentSequence, currentRow]);
       }
     };
-    updateHandle = setInterval(updateUI, 1000 / 64);
+    onSongProgressIntervalId = setInterval(updateUI, 1000 / 64);
   }
 };
 
@@ -160,9 +165,9 @@ const playSound = () => {
 
   console.log("=======SFX=======");
 
-  const mySfxAddr = compiler.getRomSymbols().indexOf("my_sfx");
-  const sfxPlayBankAddr = getMemAddress("_sfx_play_bank");
-  const sfxPlaySampleAddr = getMemAddress("_sfx_play_sample");
+  const mySfxAddr = getRomAddress("my_sfx");
+  const sfxPlayBankAddr = getRamAddress("_sfx_play_bank");
+  const sfxPlaySampleAddr = getRamAddress("_sfx_play_sample");
 
   console.log(
     mySfxAddr,
@@ -198,7 +203,7 @@ const playSound = () => {
   }, 1000 / 64);
 };
 
-const stop = (position?: number[]) => {
+const stop = (position?: PlaybackPosition) => {
   console.log("STOP!");
 
   if (!isPlayerPaused()) {
@@ -209,11 +214,11 @@ const stop = (position?: number[]) => {
     setStartPosition(position);
   }
 
-  clearInterval(updateHandle);
-  updateHandle = undefined;
+  clearInterval(onSongProgressIntervalId);
+  onSongProgressIntervalId = undefined;
 };
 
-const setStartPosition = (position: number[]) => {
+const setStartPosition = (position: PlaybackPosition) => {
   let wasPlaying = false;
 
   if (!isPlayerPaused()) {
@@ -221,9 +226,9 @@ const setStartPosition = (position: number[]) => {
     doPause();
   }
 
-  const newOrderAddr = getMemAddress("new_order");
-  const newRowAddr = getMemAddress("new_row");
-  const tickAddr = getMemAddress("tick");
+  const newOrderAddr = getRamAddress("new_order");
+  const newRowAddr = getRamAddress("new_row");
+  const tickAddr = getRamAddress("tick");
 
   emulator.writeMem(newOrderAddr, position[0] * 2);
   emulator.writeMem(newRowAddr, position[1]);
@@ -237,9 +242,16 @@ const setStartPosition = (position: number[]) => {
 const updateRom = (song: Song) => {
   currentSong = song;
 
-  let addr = compiler.getRomSymbols().indexOf("SONG_DESCRIPTOR");
+  const addr = getRomAddress("SONG_DESCRIPTOR");
 
-  const buf = new Uint8Array(romFile.buffer);
+  patchRom(romFile, song, addr);
+
+  emulator.updateRom(romFile);
+};
+
+function patchRom(targetRomFile: Uint8Array, song: Song, startAddr: number) {
+  const buf = new Uint8Array(targetRomFile.buffer);
+  let addr = startAddr;
 
   buf[addr] = song.ticks_per_row;
   let headerIdx = addr + 1;
@@ -350,9 +362,7 @@ const updateRom = (song: Song) => {
       buf[orderAddr++] = patternAddr[song.sequence[n]] >> 8;
     }
   }
-
-  emulator.updateRom(romFile);
-};
+}
 
 const getCurrentSong = () => currentSong;
 
@@ -365,7 +375,7 @@ export default {
   setChannel,
   setStartPosition,
   getCurrentSong,
-  setOnIntervalCallback: (cb: (position: number[]) => void) => {
+  setOnIntervalCallback: (cb: (position: PlaybackPosition) => void) => {
     onIntervalCallback = cb;
   },
 };
