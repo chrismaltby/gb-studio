@@ -256,7 +256,7 @@ export const buildLinkFlags = (
     .toUpperCase()
     .replace(/[^A-Z]*/g, "")
     .substring(0, 15);
-  const cart = cartType === "mbc3" ? "0x10" : "0x1B";
+  const cart = cartType === "mbc3" ? "0x10" : "0x1E";
   return [].concat(
     // General
     [

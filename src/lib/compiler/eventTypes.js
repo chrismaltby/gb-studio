@@ -134,6 +134,11 @@ export const EVENT_CALL_CUSTOM_EVENT = "EVENT_CALL_CUSTOM_EVENT";
 export const EVENT_ENGINE_FIELD_SET = "EVENT_ENGINE_FIELD_SET";
 export const EVENT_ENGINE_FIELD_STORE = "EVENT_ENGINE_FIELD_STORE";
 
+// Rumble
+export const EVENT_RUMBLE_ON = "EVENT_RUMBLE_ON";
+export const EVENT_RUMBLE_OFF = "EVENT_RUMBLE_OFF";
+export const EVENT_RUMBLE_FOR = "EVENT_RUMBLE_FOR";
+
 export const EventsOnlyForActors = [EVENT_ACTOR_PUSH];
 export const EventsHidden = [
   EVENT_MATH_ADD,

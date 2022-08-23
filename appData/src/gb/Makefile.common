@@ -105,7 +105,7 @@ MBC3:
 	$(eval CART_MBC = 0x10)
 	@echo "Using MBC3"
 MBC5:
-	$(eval CART_MBC = 0x1B)
+	$(eval CART_MBC = 0x1E)
 	@echo "Using MBC5"
 
 hUGE:
