@@ -557,6 +557,10 @@
   "FIELD_TO_PATTERN": "To Pattern",
   "FIELD_JUMP_TO_NEXT_PATTERN": "Jump To Next Pattern",
   "FIELD_START_ROW": "Start Row",
+  "FIELD_REPLACE_TILE_AT": "Replace Tile At",
+  "FIELD_REPLACE_TILE_WARNING": "Note: this will replace ALL instances of the selected tile in the scene!",
+  "FIELD_TILESET": "Tileset",
+  "FIELD_TILE_INDEX": "Tile Index",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -780,6 +784,8 @@
   "EVENT_IDLE": "Idle",
   "EVENT_LOOP_FOR_LABEL": "For ({variable} = {from}; {variable} {comparison} {to}; {variable} {operation} {val})",
   "EVENT_LOOP_WHILE_LABEL": "While ({expression})",
+  "EVENT_REPLACE_BACKGROUND_TILE": "Replace Background Tile",
+  "EVENT_REPLACE_BACKGROUND_TILE_LABEL": "Replace Tile At {{x}, {y}} With Tile {index} From {scene}",
 
   "// 10": "Menu -----------------------------------------------------",
 

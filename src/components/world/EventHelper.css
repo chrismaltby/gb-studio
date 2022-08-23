@@ -19,6 +19,13 @@
   background: red;
 }
 
+.EventHelper__TileMarker {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: red;
+}
+
 .EventHelper__OverlayPos {
   position: absolute;
   top: 50%;
