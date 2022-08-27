@@ -506,6 +506,7 @@ export interface ScriptEventFieldSchema {
   unitsField?: string;
   unitsDefault?: UnitType;
   unitsAllowed?: UnitType[];
+  hideLabel?: boolean;
   filter?: (value: unknown) => boolean;
   updateFn?: (
     newValue: unknown,

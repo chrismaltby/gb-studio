@@ -138,6 +138,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_IF_ACTOR_DISTANCE_FROM_ACTOR_DESC"),
   autoLabel,
   groups,
   fields,
