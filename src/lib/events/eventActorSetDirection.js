@@ -13,11 +13,15 @@ const autoLabel = (fetchArg) => {
 const fields = [
   {
     key: "actorId",
+    label: l10n("ACTOR"),
+    description: l10n("FIELD_ACTOR_UPDATE_DESC"),
     type: "actor",
     defaultValue: "$self$",
   },
   {
     key: "direction",
+    label: l10n("FIELD_DIRECTION"),
+    description: l10n("FIELD_DIRECTION_DESC"),
     type: "union",
     types: ["direction", "variable", "property"],
     defaultType: "direction",
@@ -56,6 +60,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_ACTOR_SET_DIRECTION_DESC"),
   autoLabel,
   groups,
   fields,

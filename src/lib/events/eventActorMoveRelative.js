@@ -27,7 +27,7 @@ const fields = [
       {
         key: "x",
         label: l10n("FIELD_X"),
-        description: l10n("FIELD_X_DESC"),
+        description: l10n("FIELD_X_RELATIVE_DESC"),
         type: "number",
         min: -31,
         max: 31,
@@ -40,7 +40,7 @@ const fields = [
       {
         key: "y",
         label: l10n("FIELD_Y"),
-        description: l10n("FIELD_Y_DESC"),
+        description: l10n("FIELD_Y_RELATIVE_DESC"),
         type: "number",
         min: -31,
         max: 31,
