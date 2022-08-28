@@ -333,7 +333,7 @@
   "FIELD_LOCK_SCRIPT_EDITOR": "Lock Script Editor",
   "FIELD_UNLOCK_SCRIPT_EDITOR": "Unlock Script Editor",
   "FIELD_DEFAULT_IMAGE_EDITOR": "Default Image Editor",
-  "FIELD_DEFAULT_MUSIC_EDITOR": "Default Music Editor",
+  "FIELD_DEFAULT_MUSIC_EDITOR": "Default Music Editor (.mod files)",
   "FIELD_UI_ELEMENTS_SCALING": "UI Elements Scaling",
   "FIELD_SYSTEM_DEFAULT": "System Default",
   "FIELD_CHOOSE_APPLICATION": "Choose Application",
@@ -558,6 +558,11 @@
   "FIELD_TO_PATTERN": "To Pattern",
   "FIELD_JUMP_TO_NEXT_PATTERN": "Jump To Next Pattern",
   "FIELD_START_ROW": "Start Row",
+  "FIELD_MUSIC_FORMAT": "Music Format",
+  "FIELD_HUGE_DRIVER_INFO": "hUGETracker",
+  "FIELD_GBT_PLAYER_INFO": "GBT Player",
+  "FIELD_HUGE_DRIVER_NOTE": "Supports playing, creating and editing music in .uge format.",
+  "FIELD_GBT_PLAYER_NOTE": "Supports playing music in .mod format.",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -1023,7 +1028,7 @@
   "SETTINGS_FADE": "Fade Options",
   "SETTINGS_ENGINE": "Engine",
   "SETTINGS_PLAYER_DEFAULT_SPRITES": "Default Player Sprites",
-  "SETTINGS_MUSIC_DRIVER": "Music Driver",
+  "SETTINGS_MUSIC": "Music",
 
   "// 17 ": "Palettes ---------------------------------------------------",
 
@@ -1056,12 +1061,12 @@
   "// 21": "Messages -----------------------------------------------------",
 
   "MESSAGE_NO_SONGS_FOUND": "No songs found",
-  "MESSAGE_ADD_UGE_FILES": "Please add .uge files to the project assets/music folder. You can also create a new song with the + button above.",
+  "MESSAGE_ADD_UGE_FILES": "Please add .uge files to the project assets/music folder or create a new song with the + button above.",
   "MESSAGE_WHAT_ABOUT_MOD": "What about .mod files?",
-  "MESSAGE_USE_MOD_FILES": "In order to use .mod files in your project you should change the current music driver from hUGEDriver to GBT Player. You can change this later in 'Settings'.",
-  "MESSAGE_ENABLE_GBT": "Enable GBT Player",
+  "MESSAGE_USE_MOD_FILES": "In order to use .mod files in your project you should change the current music format from UGE to MOD. You can change this at any time in 'Settings'.",
+  "MESSAGE_ENABLE_GBT": "Enable MOD file format",
   "MESSAGE_ADD_MOD_FILES": "Please add .mod files to the project assets/music folder.",
   "MESSAGE_WHAT_ABOUT_UGE": "What about .uge files?",
-  "MESSAGE_USE_UGE_FILES": "To use .uge files in your project, change the music driver from GBT Player to hUGEDriver in 'Settings'.",
-  "MESSAGE_ENABLE_HUGE": "Enable hUGEDriver"
+  "MESSAGE_USE_UGE_FILES": "To use .uge files in your project, change the music format from MOD to UGE in 'Settings'. You can change this at any time in 'Settings'.",
+  "MESSAGE_ENABLE_HUGE": "Enable UGE file format"
 }
