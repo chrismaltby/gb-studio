@@ -240,6 +240,7 @@ const ScriptEventFormField = memo(
               ? label
               : ""
           }
+          title={field.description}
           alignCheckbox={field.alignCheckbox}
         >
           {inputField}
