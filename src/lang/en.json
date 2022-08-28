@@ -267,7 +267,7 @@
   "FIELD_PY_POSITION": "Pixel Y",
   "FIELD_PIXELS": "Pixels",
   "FIELD_USE_COLLISIONS": "Use Collisions",
-  "FIELD_USE_COLLISIONS_DESC": "Set if collisions with both scene and actors be taken into account while moving.",
+  "FIELD_USE_COLLISIONS_DESC": "Set if collisions with both scene and actors should be taken into account while moving.",
   "FIELD_ORDER": "Order",
   "FIELD_HORIZONTAL_FIRST": "Horizontal First",
   "FIELD_VERTICAL_FIRST": "Vertical First",
