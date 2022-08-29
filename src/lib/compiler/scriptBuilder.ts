@@ -1658,6 +1658,10 @@ class ScriptBuilder {
     );
   };
 
+  _setMasterVolume = (volume: number) => {
+    this._addCmd("VM_SOUND_MASTERVOL", volume);
+  };
+
   _soundPlay = (symbol: string, priority: ASMSFXPriority) => {
     this._addCmd(
       "VM_SFX_PLAY",
@@ -3997,6 +4001,13 @@ extern void __mute_mask_${symbol};
     const scriptRef = this._compileSubScript("music", script, symbol);
     const routineValue = Number(routine);
     this._musicRoutine(routineValue, scriptRef);
+    this._addNL();
+  };
+
+  setMasterVolume = (leftSpeaker: number, rightSpeaker: number) => {
+    this._addComment("Set Master Volume");
+    const volume = (rightSpeaker * 16) + leftSpeaker;
+    this._setMasterVolume(volume);
     this._addNL();
   };
 
