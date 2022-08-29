@@ -13,6 +13,7 @@ const fields = [
   {
     key: "input",
     label: l10n("FIELD_ANY_OF"),
+    description: l10n("FIELD_INPUT_MULTIPLE_DESC"),
     type: "input",
     defaultValue: ["a", "b"],
   },
@@ -25,6 +26,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_AWAIT_INPUT_DESC"),
   autoLabel,
   groups,
   fields,
