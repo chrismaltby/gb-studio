@@ -14,17 +14,23 @@ const autoLabel = (fetchArg) => {
 const fields = [
   {
     key: "variable",
+    label: l10n("FIELD_VARIABLE"),
+    description: l10n("FIELD_VARIABLE_DESC"),
     type: "variable",
     defaultValue: "LAST_VARIABLE",
   },
   {
     key: "operator",
+    label: l10n("FIELD_COMPARISON"),
+    description: l10n("FIELD_COMPARISON_DESC"),
     type: "operator",
     width: "50%",
     defaultValue: "==",
   },
   {
     key: "comparator",
+    label: l10n("FIELD_VALUE"),
+    description: l10n("FIELD_VALUE_COMPARE_DESC"),
     type: "number",
     min: -32768,
     max: 32767,
@@ -34,6 +40,7 @@ const fields = [
   {
     key: "true",
     label: l10n("FIELD_TRUE"),
+    description: l10n("FIELD_TRUE_DESC"),
     type: "events",
   },
   {
@@ -51,6 +58,7 @@ const fields = [
   {
     key: "false",
     label: l10n("FIELD_FALSE"),
+    description: l10n("FIELD_FALSE_DESC"),
     conditions: [
       {
         key: "__collapseElse",
@@ -90,6 +98,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_IF_VALUE_DESC"),
   autoLabel,
   groups,
   fields,
