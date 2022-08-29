@@ -49,6 +49,7 @@ const fields = [
   {
     key: "flag1",
     label: l10n("FIELD_FLAG_1"),
+    description: l10n("FIELD_FLAG_SET_N_DESC", { n: 1 }),
     type: "checkbox",
     width: "50%",
     flexBasis: "40%",
@@ -57,6 +58,7 @@ const fields = [
   {
     key: "flag2",
     label: l10n("FIELD_FLAG_2"),
+    description: l10n("FIELD_FLAG_SET_N_DESC", { n: 2 }),
     type: "checkbox",
     width: "50%",
     flexBasis: "40%",
@@ -65,6 +67,7 @@ const fields = [
   {
     key: "flag3",
     label: l10n("FIELD_FLAG_3"),
+    description: l10n("FIELD_FLAG_SET_N_DESC", { n: 3 }),
     type: "checkbox",
     width: "50%",
     flexBasis: "40%",
@@ -73,6 +76,8 @@ const fields = [
   {
     key: "flag4",
     label: l10n("FIELD_FLAG_4"),
+    description: l10n("FIELD_FLAG_SET_N_DESC", { n: 4 }),
+    hideFromDocs: true,
     type: "checkbox",
     width: "50%",
     flexBasis: "40%",
@@ -81,6 +86,8 @@ const fields = [
   {
     key: "flag5",
     label: l10n("FIELD_FLAG_5"),
+    description: l10n("FIELD_FLAG_SET_N_DESC", { n: 5 }),
+    hideFromDocs: true,
     type: "checkbox",
     width: "50%",
     flexBasis: "40%",
@@ -89,6 +96,8 @@ const fields = [
   {
     key: "flag6",
     label: l10n("FIELD_FLAG_6"),
+    description: l10n("FIELD_FLAG_SET_N_DESC", { n: 6 }),
+    hideFromDocs: true,
     type: "checkbox",
     width: "50%",
     flexBasis: "40%",
@@ -97,6 +106,8 @@ const fields = [
   {
     key: "flag7",
     label: l10n("FIELD_FLAG_7"),
+    description: l10n("FIELD_FLAG_SET_N_DESC", { n: 7 }),
+    hideFromDocs: true,
     type: "checkbox",
     width: "50%",
     flexBasis: "40%",
@@ -105,6 +116,8 @@ const fields = [
   {
     key: "flag8",
     label: l10n("FIELD_FLAG_8"),
+    description: l10n("FIELD_FLAG_SET_N_DESC", { n: 8 }),
+    hideFromDocs: true,
     type: "checkbox",
     width: "50%",
     flexBasis: "40%",
@@ -113,6 +126,8 @@ const fields = [
   {
     key: "flag9",
     label: l10n("FIELD_FLAG_9"),
+    description: l10n("FIELD_FLAG_SET_N_DESC", { n: 9 }),
+    hideFromDocs: true,
     type: "checkbox",
     width: "50%",
     flexBasis: "40%",
@@ -121,6 +136,8 @@ const fields = [
   {
     key: "flag10",
     label: l10n("FIELD_FLAG_10"),
+    description: l10n("FIELD_FLAG_SET_N_DESC", { n: 10 }),
+    hideFromDocs: true,
     type: "checkbox",
     width: "50%",
     flexBasis: "40%",
@@ -129,6 +146,8 @@ const fields = [
   {
     key: "flag11",
     label: l10n("FIELD_FLAG_11"),
+    description: l10n("FIELD_FLAG_SET_N_DESC", { n: 11 }),
+    hideFromDocs: true,
     type: "checkbox",
     width: "50%",
     flexBasis: "40%",
@@ -137,6 +156,8 @@ const fields = [
   {
     key: "flag12",
     label: l10n("FIELD_FLAG_12"),
+    description: l10n("FIELD_FLAG_SET_N_DESC", { n: 12 }),
+    hideFromDocs: true,
     type: "checkbox",
     width: "50%",
     flexBasis: "40%",
@@ -145,6 +166,8 @@ const fields = [
   {
     key: "flag13",
     label: l10n("FIELD_FLAG_13"),
+    description: l10n("FIELD_FLAG_SET_N_DESC", { n: 13 }),
+    hideFromDocs: true,
     type: "checkbox",
     width: "50%",
     flexBasis: "40%",
@@ -153,6 +176,8 @@ const fields = [
   {
     key: "flag14",
     label: l10n("FIELD_FLAG_14"),
+    description: l10n("FIELD_FLAG_SET_N_DESC", { n: 14 }),
+    hideFromDocs: true,
     type: "checkbox",
     width: "50%",
     flexBasis: "40%",
@@ -161,6 +186,8 @@ const fields = [
   {
     key: "flag15",
     label: l10n("FIELD_FLAG_15"),
+    description: l10n("FIELD_FLAG_SET_N_DESC", { n: 15 }),
+    hideFromDocs: true,
     type: "checkbox",
     width: "50%",
     flexBasis: "40%",
@@ -169,6 +196,8 @@ const fields = [
   {
     key: "flag16",
     label: l10n("FIELD_FLAG_16"),
+    description: l10n("FIELD_FLAG_SET_N_DESC", { n: 16 }),
+    hideFromDocs: true,
     type: "checkbox",
     width: "50%",
     flexBasis: "40%",
@@ -200,6 +229,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_ADD_FLAGS_DESC"),
   autoLabel,
   groups,
   fields,
