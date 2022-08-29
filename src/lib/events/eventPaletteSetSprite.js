@@ -1,9 +1,13 @@
+const l10n = require("../helpers/l10n").default;
+
 const id = "EVENT_PALETTE_SET_SPRITE";
 const groups = ["EVENT_GROUP_COLOR"];
 
 const fields = [
   {
     key: "palette0",
+    label: l10n("FIELD_PALETTES"),
+    description: l10n("FIELD_PALETTES_DESC"),
     type: "palette",
     defaultValue: "keep",
     paletteType: "sprite",
@@ -84,6 +88,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_PALETTE_SET_SPRITE_DESC"),
   groups,
   fields,
   compile,

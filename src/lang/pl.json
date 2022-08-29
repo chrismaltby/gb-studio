@@ -208,7 +208,7 @@
   "FIELD_FLAG": "Flaga",
   "FIELD_FLAG_N": "Flaga {n}",
   "FIELD_FREQUENCY": "Częstotliwość w Hz",
-  "FIELD_DURATION": "Czas trwania w sekundach",
+  "FIELD_DURATION": "Czas trwania",
   "FIELD_PITCH": "Ton",
   "FIELD_SOUND_PLAY_CRASH": "Odtwórz dźwięk symbolu awarii",
   "FIELD_SET_TIMER": "Ustaw skrypt na powtarzanie stopera",

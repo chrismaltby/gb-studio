@@ -57,6 +57,8 @@ const fields = [
     key: "duration",
     type: "number",
     label: l10n("FIELD_DURATION"),
+    unitsField: "units",
+    unitsDefault: "time",
     conditions: [
       {
         key: "type",
