@@ -8,6 +8,7 @@ export const SET_FALSE = "SET_FALSE";
 export const ACTOR_SET_DIRECTION = "ACTOR_SET_DIRECTION";
 export const ACTOR_SET_ACTIVE = "ACTOR_SET_ACTIVE";
 export const CAMERA_MOVE_TO = "CAMERA_MOVE_TO";
+export const CAMERA_MOVE_RELATIVE = "CAMERA_MOVE_RELATIVE";
 export const CAMERA_LOCK = "CAMERA_LOCK";
 export const WAIT = "WAIT";
 export const FADE_OUT = "FADE_OUT";
@@ -123,6 +124,7 @@ export const scriptCommands = [
   ACTOR_SET_DIRECTION,
   ACTOR_SET_ACTIVE,
   CAMERA_MOVE_TO,
+  CAMERA_MOVE_RELATIVE,
   CAMERA_LOCK,
   WAIT,
   FADE_OUT,
