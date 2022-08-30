@@ -598,6 +598,7 @@
   "FIELD_OPERATION_FOR_DESC": "The operation to use for combining a value with the counter variable after each loop.",
   "FIELD_OPERATION_MATH_FUNC_DESC": "The operation to use for modifying the variable value.",
   "FIELD_ON_CALL": "On Call",
+  "FIELD_ON_CALL_ROUTINE_DESC": "The script to run when the routine is called.",
   "FIELD_EFFECT": "Effect",
   "FIELD_NO_EFFECT": "No Effect",
   "FIELD_LEFT_SPEAKER": "Left Speaker",
@@ -666,6 +667,8 @@
   "FIELD_FILL_COLOR": "Fill Color",
   "FIELD_FILL_COLOR_OVERLAY_DESC": "The color to fill the overlay with, either black or white.",
   "FIELD_SCENE_DESC": "The scene to transition to.",
+  "FIELD_SONG": "Song",
+  "FIELD_SONG_DESC": "The song to play.",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -815,7 +818,9 @@
   "EVENT_AWAIT_INPUT": "Pause Script Until Input Pressed",
   "EVENT_AWAIT_INPUT_DESC": "Pauses the script until one of the specified joypad buttons are pressed.",
   "EVENT_MUSIC_PLAY": "Play Music Track",
+  "EVENT_MUSIC_PLAY_DESC": "Plays a music file. If you play a new song while another song is playing, the old song will stop automatically.",
   "EVENT_MUSIC_STOP": "Stop Music",
+  "EVENT_MUSIC_STOP_DESC": "Stops any currently playing music.",
   "EVENT_STOP": "Stop Script",
   "EVENT_STOP_DESC": "Stops the current script from running.",
   "EVENT_LOAD_DATA": "Game Data Load",
@@ -915,6 +920,7 @@
   "EVENT_CALL_CUSTOM_EVENT": "Call Script",
   "EVENT_CALL_CUSTOM_EVENT_DESC": "Call one of your custom scripts. Once you have chosen a script you will be able to hook up any parameters required.",
   "EVENT_SET_MUSIC_ROUTINE": "Set Music Routine",
+  "EVENT_SET_MUSIC_ROUTINE_DESC": "Attach a script to one of the four music routines that can be triggered from a .uge file. In the music editor you are able to use the call routine effect in your songs to trigger these scripts in time to music.",
   "EVENT_ACTOR_MOVE_TO_LABEL": "{actor} Move To {{x},{y}}",
   "EVENT_ACTOR_MOVE_RELATIVE_LABEL": "{actor} Move Relative By {{x},{y}}",
   "EVENT_ACTOR_MOVE_CANCEL_LABEL": "{actor} Move Cancel",
@@ -988,6 +994,8 @@
   "FIELD_EXPRESSION_DESC": "The expression to evaluate.",
   "FIELD_VALUE_SWITCH_DESC": "The value to compare the variable with for running this branch of the script.",
   "FIELD_VALUE_SET_DESC": "The value to set the selected variable to.",
+  "FIELD_ROUTINE": "Routine",
+  "FIELD_ROUTINE_DESC": "The music routine, either 0, 1, 2 or 3.",
 
   "// 10": "Menu -----------------------------------------------------",
 
