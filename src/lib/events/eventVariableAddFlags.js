@@ -40,6 +40,8 @@ const autoLabel = (fetchArg, input) => {
 const fields = [
   {
     key: "variable",
+    label: l10n("FIELD_VARIABLE"),
+    description: l10n("FIELD_VARIABLE_DESC"),
     type: "variable",
     defaultValue: "LAST_VARIABLE",
   },

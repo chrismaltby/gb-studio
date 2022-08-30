@@ -13,11 +13,15 @@ const autoLabel = (fetchArg) => {
 const fields = [
   {
     key: "variable",
+    label: l10n("FIELD_VARIABLE"),
+    description: l10n("FIELD_VARIABLE_DESC"),
     type: "variable",
     defaultValue: "LAST_VARIABLE",
   },
   {
     key: "value",
+    label: l10n("FIELD_VALUE"),
+    description: l10n("FIELD_VALUE_SET_DESC"),
     type: "union",
     types: ["number", "variable", "property"],
     defaultType: "number",
@@ -53,6 +57,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_SET_VALUE_DESC"),
   autoLabel,
   groups,
   fields,

@@ -13,6 +13,8 @@ const autoLabel = (fetchArg) => {
 const fields = [
   {
     key: "variable",
+    label: l10n("FIELD_VARIABLE"),
+    description: l10n("FIELD_VARIABLE_DESC"),
     type: "variable",
     defaultValue: "LAST_VARIABLE",
   },
@@ -25,6 +27,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_SET_FALSE_DESC"),
   autoLabel,
   groups,
   fields,
