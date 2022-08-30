@@ -5,25 +5,34 @@ const groups = ["EVENT_GROUP_SCREEN"];
 
 const fields = [
   {
-    key: "x",
-    label: l10n("FIELD_X"),
-    type: "number",
-    min: 0,
-    max: 20,
-    defaultValue: 0,
-    width: "50%",
-  },
-  {
-    key: "y",
-    label: l10n("FIELD_Y"),
-    type: "number",
-    min: 0,
-    max: 18,
-    defaultValue: 0,
-    width: "50%",
+    type: "group",
+    fields: [
+      {
+        key: "x",
+        label: l10n("FIELD_X"),
+        description: l10n("FIELD_X_DESC"),
+        type: "number",
+        min: 0,
+        max: 20,
+        defaultValue: 0,
+        width: "50%",
+      },
+      {
+        key: "y",
+        label: l10n("FIELD_Y"),
+        description: l10n("FIELD_Y_DESC"),
+        type: "number",
+        min: 0,
+        max: 18,
+        defaultValue: 0,
+        width: "50%",
+      },
+    ],
   },
   {
     key: "speed",
+    label: l10n("FIELD_SPEED"),
+    description: l10n("FIELD_SPEED_DESC"),
     type: "cameraSpeed",
     defaultValue: "0",
   },
@@ -36,6 +45,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_OVERLAY_MOVE_TO_DESC"),
   groups,
   fields,
   compile,
