@@ -41289,7 +41289,7 @@
                                     {
                                         "command": "EVENT_SET_TRUE",
                                         "args": {
-                                            "variable": "18"
+                                            "variable": "17"
                                         },
                                         "id": "f89dabf9-73d5-43de-a4fb-518a792c8dab"
                                     }
@@ -41310,7 +41310,7 @@
                                     {
                                         "command": "EVENT_SET_FALSE",
                                         "args": {
-                                            "variable": "18"
+                                            "variable": "17"
                                         },
                                         "id": "09ae63e7-d877-4a35-b473-eb0a8b505008"
                                     }
@@ -41368,7 +41368,7 @@
                                     {
                                         "command": "EVENT_SET_TRUE",
                                         "args": {
-                                            "variable": "18"
+                                            "variable": "17"
                                         },
                                         "id": "dd32bcb9-67c6-4a48-b722-3f18141967f8"
                                     }
@@ -41389,7 +41389,7 @@
                                     {
                                         "command": "EVENT_SET_FALSE",
                                         "args": {
-                                            "variable": "18"
+                                            "variable": "17"
                                         },
                                         "id": "8b5551d0-767f-44c6-b760-8f2003eb693a"
                                     }
@@ -41424,7 +41424,7 @@
                         {
                             "command": "EVENT_IF_FALSE",
                             "args": {
-                                "variable": "18",
+                                "variable": "17",
                                 "__collapseElse": false
                             },
                             "children": {
@@ -41472,7 +41472,7 @@
                         {
                             "command": "EVENT_IF_TRUE",
                             "args": {
-                                "variable": "18",
+                                "variable": "17",
                                 "__collapseElse": false
                             },
                             "children": {
