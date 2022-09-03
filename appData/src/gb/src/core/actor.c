@@ -137,7 +137,7 @@ void actors_update() NONBANKED {
                 }
                 // Deactivate if offscreen
                 actor_t * prev = actor->prev;
-                deactivate_actor(actor);
+                if (!VM_ISLOCKED()) deactivate_actor(actor);
                 actor = prev;
                 continue;
             }

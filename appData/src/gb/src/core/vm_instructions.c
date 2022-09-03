@@ -88,7 +88,7 @@ const SCRIPT_CMD script_cmds[] = {
 
     // user interface instructions section
     {vm_load_text,                      BANK(VM_UI),            1}, // 0x40
-    {vm_display_text,                   BANK(VM_UI),            1}, // 0x41
+    {vm_display_text,                   BANK(VM_UI),            2}, // 0x41
     {vm_overlay_setpos,                 BANK(VM_UI),            2}, // 0x42
     {0, 0, 0},
     {vm_overlay_wait,                   BANK(VM_UI),            2}, // 0x44
@@ -186,5 +186,5 @@ const SCRIPT_CMD script_cmds[] = {
 
     // GBPrinter functions
     {vm_print_detect,                   BANK(VM_GBPRINTER),     3}, // 0x8C
-    {vm_print_overlay,                  BANK(VM_GBPRINTER),     4}  // 0x8D
+    {vm_print_overlay,                  BANK(VM_GBPRINTER),     5}  // 0x8D
 };

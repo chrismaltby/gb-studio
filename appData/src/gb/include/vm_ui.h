@@ -9,7 +9,7 @@
 BANKREF_EXTERN(VM_UI)
 
 void vm_load_text(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS, UBYTE nargs) OLDCALL NONBANKED;
-void vm_display_text(SCRIPT_CTX * THIS, UBYTE options) OLDCALL BANKED;
+void vm_display_text(SCRIPT_CTX * THIS, UBYTE options, UBYTE start_tile) OLDCALL BANKED;
 void vm_switch_text_layer(SCRIPT_CTX * THIS, UBYTE target) OLDCALL BANKED;
 
 void vm_overlay_setpos(SCRIPT_CTX * THIS, UBYTE pos_x, UBYTE pos_y) OLDCALL BANKED;

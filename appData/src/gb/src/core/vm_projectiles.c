@@ -25,6 +25,6 @@ void vm_projectile_load_type(SCRIPT_CTX * THIS, UBYTE type, UBYTE projectile_def
     far_ptr_t scene_sprites;
     ReadBankedFarPtr(&scene_sprites, (const unsigned char *)&((scene_t *)current_scene.ptr)->sprites, current_scene.bank);
     MemcpyBanked(current_def, projectile_def, sizeof(projectile_def_t), projectile_def_bank);
-    UBYTE idx = IndexOfFarPtr(scene_sprites.ptr, scene_sprites.bank, sprites_len, &projectile_def->sprite);
+    UBYTE idx = IndexOfFarPtr(scene_sprites.ptr, scene_sprites.bank, sprites_len, &current_def->sprite);
     current_def->base_tile = (idx < sprites_len) ? scene_sprites_base_tiles[idx] : 0;
 }
