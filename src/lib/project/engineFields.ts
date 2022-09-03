@@ -72,7 +72,7 @@ const getEngineFieldSchemas = (engineFields: EngineFieldSchema[]) => {
 export const initEngineFields = async (projectRoot: string) => {
   const defaultEngineJsonPath = Path.join(engineRoot, "gb", "engine.json");
   const localEngineJsonPath = Path.join(
-    Path.dirname(projectRoot),
+    projectRoot,
     "assets",
     "engine",
     "engine.json"
