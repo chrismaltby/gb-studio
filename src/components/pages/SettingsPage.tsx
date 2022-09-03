@@ -201,7 +201,7 @@ const SettingsPage: FC = () => {
               {l10n("MENU_UI_ELEMENTS")}
             </SettingsMenuItem>
             <SettingsMenuItem onClick={onMenuItem("settingsMusic")}>
-              {l10n("SETTINGS_MUSIC_DRIVER")}
+              {l10n("SETTINGS_MUSIC")}
             </SettingsMenuItem>
             {groupedFields.map((group) => (
               <SettingsMenuItem
@@ -522,22 +522,29 @@ const SettingsPage: FC = () => {
 
         <SearchableCard
           searchTerm={searchTerm}
-          searchMatches={[l10n("SETTINGS_MUSIC_DRIVER")]}
+          searchMatches={[l10n("SETTINGS_MUSIC"), l10n("FIELD_MUSIC_FORMAT")]}
         >
           <CardAnchor id="settingsMusic" />
-          <CardHeading>{l10n("SETTINGS_MUSIC_DRIVER")}</CardHeading>
+          <CardHeading>{l10n("SETTINGS_MUSIC")}</CardHeading>
 
           <SearchableSettingRow
             searchTerm={searchTerm}
-            searchMatches={[l10n("SETTINGS_MUSIC_DRIVER")]}
+            searchMatches={[l10n("FIELD_MUSIC_FORMAT")]}
           >
-            <SettingRowLabel>{l10n("SETTINGS_MUSIC_DRIVER")}</SettingRowLabel>
+            <SettingRowLabel>{l10n("FIELD_MUSIC_FORMAT")}</SettingRowLabel>
             <SettingRowInput>
-              <MusicDriverSelect
-                name="musicDriver"
-                value={musicDriver || ""}
-                onChange={onEditSetting("musicDriver")}
-              />
+              <FormField style={undefined}>
+                <MusicDriverSelect
+                  name="musicDriver"
+                  value={musicDriver || ""}
+                  onChange={onEditSetting("musicDriver")}
+                />
+                {musicDriver !== "gbt" ? (
+                  <FormInfo>{l10n("FIELD_HUGE_DRIVER_NOTE")}</FormInfo>
+                ) : (
+                  <FormInfo>{l10n("FIELD_GBT_PLAYER_NOTE")}</FormInfo>
+                )}
+              </FormField>
             </SettingRowInput>
           </SearchableSettingRow>
         </SearchableCard>

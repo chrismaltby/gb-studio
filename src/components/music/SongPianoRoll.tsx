@@ -904,7 +904,7 @@ export const SongPianoRoll = ({
         })
       );
     }
-  }, [selectedChannel, dispatch, pattern, selectedPatternCells]);
+  }, [pattern, selectedChannel, selectedPatternCells, dispatch, patternId]);
 
   const onPaste = useCallback(() => {
     if (pattern) {

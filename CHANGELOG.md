@@ -47,6 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Allow transposing selected notes in tracker with Ctrl/Ctrl+Shift and Mousewheel or "+" / "-" keys [@RichardULZ](https://github.com/RichardULZ)
 - Add sound effects preview from dropdowns [@pau-tomas](https://github.com/pau-tomas)
 - Add tooltips to all script event labels (also used to auto generate documentation for new site)
+- Add "Music House" to the color sample project with examples of music and sound effects [@pau-tomas](https://github.com/pau-tomas)
 
 ### Changed
 

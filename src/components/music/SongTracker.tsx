@@ -285,7 +285,7 @@ export const SongTracker = ({
   }, [dispatch, pattern, patternId, selectedTrackerFields]);
 
   const insertTrackerFields = useCallback(
-    (uninsert: Boolean) => {
+    (uninsert: boolean) => {
       if (pattern && activeField) {
         const newChannelId = Math.floor(
           (activeField % ROW_SIZE) / CHANNEL_FIELDS
@@ -369,7 +369,7 @@ export const SongTracker = ({
   );
 
   const handleMouseUp = useCallback(
-    (e: any) => {
+    (_e: any) => {
       if (isMouseDown) {
         setIsMouseDown(false);
       }
@@ -624,7 +624,6 @@ export const SongTracker = ({
       song,
       octaveOffset,
       editStep,
-      pattern,
       selectedTrackerFields,
       selectionRect,
       selectionOrigin,
@@ -756,7 +755,7 @@ export const SongTracker = ({
       dispatch(clipboardActions.copyText(parsedSelectedPattern));
       deleteSelectedTrackerFields();
     }
-  }, [dispatch, pattern, selectedTrackerFields]);
+  }, [deleteSelectedTrackerFields, dispatch, pattern, selectedTrackerFields]);
 
   const onPaste = useCallback(() => {
     if (pattern) {
