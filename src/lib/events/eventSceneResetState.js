@@ -16,6 +16,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_SCENE_RESET_STATE_DESC"),
   groups,
   fields,
   compile,

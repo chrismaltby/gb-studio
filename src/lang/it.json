@@ -178,7 +178,7 @@
   "FIELD_FLAG_15": "Contrassegno 15",
   "FIELD_FLAG_16": "Contrassegno 16",
   "FIELD_FREQUENCY": "Frequenza in hz",
-  "FIELD_DURATION": "Durata in secondi",
+  "FIELD_DURATION": "Durata",
   "FIELD_PITCH": "Tono",
   "FIELD_SOUND_PLAY_CRASH": "Esegui suono di simbolo crash",
   "FIELD_SET_TIMER": "Inizializza lo script del timer a ripetizione",

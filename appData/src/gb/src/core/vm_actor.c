@@ -1,4 +1,4 @@
-#pragma bank 3
+#pragma bank 255
 
 #include "vm_actor.h"
 

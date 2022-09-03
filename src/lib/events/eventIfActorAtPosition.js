@@ -17,6 +17,7 @@ const fields = [
   {
     key: "actorId",
     label: l10n("ACTOR"),
+    description: l10n("FIELD_ACTOR_CHECK_DESC"),
     type: "actor",
     defaultValue: "$self$",
   },
@@ -26,6 +27,7 @@ const fields = [
       {
         key: "x",
         label: l10n("FIELD_X"),
+        description: l10n("FIELD_X_DESC"),
         type: "number",
         min: 0,
         max: 255,
@@ -38,6 +40,7 @@ const fields = [
       {
         key: "y",
         label: l10n("FIELD_Y"),
+        description: l10n("FIELD_Y_DESC"),
         type: "number",
         min: 0,
         max: 255,
@@ -52,6 +55,7 @@ const fields = [
   {
     key: "true",
     label: l10n("FIELD_TRUE"),
+    description: l10n("FIELD_TRUE_DESC"),
     type: "events",
   },
   {
@@ -69,6 +73,7 @@ const fields = [
   {
     key: "false",
     label: l10n("FIELD_FALSE"),
+    description: l10n("FIELD_FALSE_DESC"),
     conditions: [
       {
         key: "__collapseElse",
@@ -93,6 +98,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_IF_ACTOR_AT_POSITION_DESC"),
   autoLabel,
   groups,
   fields,

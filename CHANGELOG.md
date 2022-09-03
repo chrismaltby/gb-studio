@@ -46,6 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Allow editing effects from tracker editor [@RichardULZ](https://github.com/RichardULZ)
 - Allow transposing selected notes in tracker with Ctrl/Ctrl+Shift and Mousewheel or "+" / "-" keys [@RichardULZ](https://github.com/RichardULZ)
 - Add sound effects preview from dropdowns [@pau-tomas](https://github.com/pau-tomas)
+- Add tooltips to all script event labels (also used to auto generate documentation for new site)
 
 ### Changed
 
@@ -97,6 +98,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Removed .CURRENT_SCRIPT_BANK for gbvm scripts as results were unreliable
 - Removed deprecated dividing ratio and shift clock fields from noise instrument editor [@pau-tomas](https://github.com/pau-tomas)
+- Removed loop option on music play event, doesn't work for hUGEDriver and was broken on GBTPlayer. Instead add an empty pattern with an infinite loop (using effect Bxx) to the tracks you want to not loop.
 
 ## [3.0.3]
 

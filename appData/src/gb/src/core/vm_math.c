@@ -1,4 +1,4 @@
-#pragma bank 2
+#pragma bank 255
 
 #include "vm_math.h"
 

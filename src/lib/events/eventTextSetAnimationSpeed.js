@@ -6,6 +6,7 @@ const groups = ["EVENT_GROUP_DIALOGUE"];
 const fields = [
   {
     label: l10n("TEXT_SPEED_IN"),
+    description: l10n("TEXT_SPEED_IN_DESC"),
     key: "speedIn",
     type: "cameraSpeed",
     defaultValue: 1,
@@ -13,6 +14,7 @@ const fields = [
   },
   {
     label: l10n("TEXT_SPEED_OUT"),
+    description: l10n("TEXT_SPEED_OUT_DESC"),
     key: "speedOut",
     type: "cameraSpeed",
     defaultValue: 1,
@@ -20,6 +22,7 @@ const fields = [
   },
   {
     label: l10n("TEXT_SPEED"),
+    description: l10n("TEXT_SPEED_DESC"),
     key: "speed",
     type: "cameraSpeed",
     defaultValue: 1,
@@ -27,6 +30,7 @@ const fields = [
   {
     type: "checkbox",
     label: l10n("FIELD_ALLOW_FASTFORWARD"),
+    description: l10n("FIELD_ALLOW_FASTFORWARD_DESC"),
     key: "allowFastForward",
     defaultValue: true,
     alignCheckbox: true,
@@ -42,6 +46,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_TEXT_SET_ANIMATION_SPEED_DESC"),
   groups,
   fields,
   compile,

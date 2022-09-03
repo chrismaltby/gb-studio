@@ -18,6 +18,7 @@ const fields = [
   {
     key: "actorId",
     label: l10n("ACTOR"),
+    description: l10n("FIELD_ACTOR_MOVE_DESC"),
     type: "actor",
     defaultValue: "$self$",
   },
@@ -27,6 +28,7 @@ const fields = [
       {
         key: "x",
         label: l10n("FIELD_X"),
+        description: l10n("FIELD_X_DESC"),
         type: "union",
         types: ["number", "variable", "property"],
         defaultType: "number",
@@ -45,6 +47,7 @@ const fields = [
       {
         key: "y",
         label: l10n("FIELD_Y"),
+        description: l10n("FIELD_Y_DESC"),
         type: "union",
         types: ["number", "variable", "property"],
         defaultType: "number",
@@ -64,6 +67,9 @@ const fields = [
   },
   {
     key: "moveType",
+    label: l10n("FIELD_MOVE_TYPE"),
+    description: l10n("FIELD_MOVE_TYPE_DESC"),
+    hideLabel: true,
     type: "moveType",
     defaultValue: "horizontal",
     flexBasis: 30,
@@ -72,6 +78,7 @@ const fields = [
   {
     key: "useCollisions",
     label: l10n("FIELD_USE_COLLISIONS"),
+    description: l10n("FIELD_USE_COLLISIONS_DESC"),
     width: "50%",
     alignCheckbox: true,
     type: "checkbox",
@@ -114,6 +121,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_ACTOR_MOVE_TO_DESC"),
   autoLabel,
   groups,
   weight,

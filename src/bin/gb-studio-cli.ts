@@ -142,7 +142,7 @@ const main = async (
 const getEngineFields = async (projectRoot: string) => {
   const defaultEngineJsonPath = Path.join(engineRoot, "gb", "engine.json");
   const localEngineJsonPath = Path.join(
-    Path.dirname(projectRoot),
+    projectRoot,
     "assets",
     "engine",
     "engine.json"

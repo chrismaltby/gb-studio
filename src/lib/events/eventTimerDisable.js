@@ -16,6 +16,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_TIMER_DISABLE_DESC"),
   groups,
   fields,
   compile,
