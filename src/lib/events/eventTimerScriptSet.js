@@ -10,7 +10,8 @@ const fields = [
       {
         key: "duration",
         type: "number",
-        label: l10n("FIELD_SECONDS"),
+        label: l10n("FIELD_TIME_INTERVAL"),
+        description: l10n("FIELD_TIME_INTERVAL_TIMER_DESC"),
         min: 0,
         max: 60,
         step: 0.1,
@@ -27,7 +28,8 @@ const fields = [
       },
       {
         key: "frames",
-        label: l10n("FIELD_FRAMES"),
+        label: l10n("FIELD_TIME_INTERVAL"),
+        description: l10n("FIELD_TIME_INTERVAL_TIMER_DESC"),
         type: "number",
         min: 0,
         max: 3600,
@@ -57,6 +59,7 @@ const fields = [
   {
     key: "script",
     label: l10n("FIELD_ON_TIMER_TICK"),
+    description: l10n("FIELD_ON_TIMER_TICK_DESC"),
     type: "events",
     allowedContexts: ["global", "entity"],
     conditions: [
@@ -82,6 +85,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_SET_TIMER_SCRIPT_DESC"),
   groups,
   fields,
   compile,

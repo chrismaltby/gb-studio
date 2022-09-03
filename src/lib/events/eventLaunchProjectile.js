@@ -11,12 +11,14 @@ const fields = [
         key: "spriteSheetId",
         type: "sprite",
         label: l10n("FIELD_SPRITE_SHEET"),
+        description: l10n("FIELD_SPRITE_SHEET_PROJECTILE_DESC"),
         defaultValue: "LAST_SPRITE",
       },
       {
         key: "spriteStateId",
         type: "animationstate",
         label: l10n("FIELD_ANIMATION_STATE"),
+        description: l10n("FIELD_ANIMATION_STATE_DESC"),
         defaultValue: "",
       },
     ],
@@ -25,6 +27,7 @@ const fields = [
     key: "actorId",
     type: "actor",
     label: l10n("FIELD_SOURCE"),
+    description: l10n("FIELD_ACTOR_PROJECTILE_SOURCE_DESC"),
     defaultValue: "$self$",
   },
   {
@@ -33,6 +36,7 @@ const fields = [
       {
         key: "x",
         label: l10n("FIELD_OFFSET_X"),
+        description: l10n("FIELD_PROJECTILE_OFFSET_X_DESC"),
         type: "number",
         min: -256,
         max: 256,
@@ -42,6 +46,7 @@ const fields = [
       {
         key: "y",
         label: l10n("FIELD_OFFSET_Y"),
+        description: l10n("FIELD_PROJECTILE_OFFSET_Y_DESC"),
         type: "number",
         min: -256,
         max: 256,
@@ -57,6 +62,7 @@ const fields = [
       {
         key: "otherActorId",
         label: l10n("FIELD_DIRECTION"),
+        description: l10n("FIELD_PROJECTILE_DIRECTION_DESC"),
         type: "actor",
         defaultValue: "$self$",
         conditions: [
@@ -69,6 +75,7 @@ const fields = [
       {
         key: "direction",
         label: l10n("FIELD_DIRECTION"),
+        description: l10n("FIELD_PROJECTILE_DIRECTION_DESC"),
         type: "direction",
         defaultValue: "right",
         conditions: [
@@ -81,6 +88,7 @@ const fields = [
       {
         key: "angle",
         label: l10n("FIELD_ANGLE"),
+        description: l10n("FIELD_PROJECTILE_ANGLE_DESC"),
         type: "number",
         defaultValue: 0,
         conditions: [
@@ -93,6 +101,7 @@ const fields = [
       {
         key: "angleVariable",
         label: l10n("FIELD_ANGLE"),
+        description: l10n("FIELD_PROJECTILE_ANGLE_DESC"),
         type: "variable",
         defaultValue: "LAST_VARIABLE",
         conditions: [
@@ -119,6 +128,7 @@ const fields = [
   {
     key: "initialOffset",
     label: l10n("FIELD_DIRECTION_OFFSET"),
+    description: l10n("FIELD_PROJECTILE_OFFSET_DESC"),
     type: "number",
     min: 0,
     max: 256,
@@ -131,6 +141,7 @@ const fields = [
       {
         key: "speed",
         label: l10n("FIELD_SPEED"),
+        description: l10n("FIELD_SPEED_DESC"),
         type: "moveSpeed",
         allowNone: true,
         defaultValue: 2,
@@ -139,6 +150,7 @@ const fields = [
       {
         key: "animSpeed",
         label: l10n("FIELD_ANIMATION_SPEED"),
+        description: l10n("FIELD_ANIMATION_SPEED_DESC"),
         type: "animSpeed",
         defaultValue: 15,
         width: "50%",
@@ -148,6 +160,7 @@ const fields = [
   {
     key: "lifeTime",
     label: l10n("FIELD_LIFE_TIME"),
+    description: l10n("FIELD_PROJECTILE_LIFE_TIME_DESC"),
     type: "number",
     min: 0,
     max: 4,
@@ -161,6 +174,7 @@ const fields = [
       {
         key: "loopAnim",
         label: l10n("FIELD_LOOP_ANIMATION"),
+        description: l10n("FIELD_LOOP_ANIMATION_DESC"),
         type: "checkbox",
         alignCheckbox: true,
         defaultValue: true,
@@ -168,6 +182,7 @@ const fields = [
       {
         key: "destroyOnHit",
         label: l10n("FIELD_DESTROY_ON_HIT"),
+        description: l10n("FIELD_PROJECTILE_DESTROY_ON_HIT_DESC"),
         type: "checkbox",
         alignCheckbox: true,
         defaultValue: true,
@@ -180,6 +195,7 @@ const fields = [
       {
         key: "collisionGroup",
         label: l10n("FIELD_COLLISION_GROUP"),
+        description: l10n("FIELD_COLLISION_GROUP_DESC"),
         type: "collisionMask",
         width: "50%",
         includePlayer: false,
@@ -188,6 +204,7 @@ const fields = [
       {
         key: "collisionMask",
         label: l10n("FIELD_COLLIDE_WITH"),
+        description: l10n("FIELD_COLLIDE_WITH_DESC"),
         type: "collisionMask",
         width: "50%",
         includePlayer: true,
@@ -273,6 +290,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_LAUNCH_PROJECTILE_DESC"),
   groups,
   fields,
   compile,

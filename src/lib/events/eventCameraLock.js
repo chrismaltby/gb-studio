@@ -8,6 +8,7 @@ const fields = [
     key: "speed",
     width: "50%",
     label: l10n("FIELD_SPEED"),
+    description: l10n("FIELD_SPEED_PLUS_INSTANT_DESC"),
     type: "cameraSpeed",
     defaultValue: 0,
   },
@@ -15,6 +16,7 @@ const fields = [
     key: "axis",
     width: "50%",
     label: l10n("FIELD_LOCK_AXIS"),
+    description: l10n("FIELD_LOCK_AXIS_DESC"),
     type: "togglebuttons",
     options: [
       ["x", "H", l10n("FIELD_HORIZONTAL")],
@@ -33,6 +35,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_CAMERA_LOCK_DESC"),
   groups,
   fields,
   compile,

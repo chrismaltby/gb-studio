@@ -6,6 +6,8 @@ const groups = ["EVENT_GROUP_MUSIC"];
 const fields = [
   {
     key: "musicId",
+    label: l10n("FIELD_SONG"),
+    description: l10n("FIELD_SONG_DESC"),
     type: "music",
     defaultValue: "LAST_MUSIC",
   },
@@ -18,6 +20,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_MUSIC_PLAY_DESC"),
   groups,
   fields,
   compile,

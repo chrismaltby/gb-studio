@@ -530,6 +530,30 @@ const changes: EngineChange[] = [
       "src/states/topdown.c",
     ],
   },
+  {
+    version: "3.1.0-e14",
+    description:
+      "Updates\n" +
+      [
+        "   * VM_PRINT_OVERLAY now accept MARGIN paremeter: feed N lines after printing, use 0x03 for the last print in the batch",
+        "   * Add ability to start text rendering from the arbitrary tile != 0 (in the VRAM bank 0 only if CGB)",
+        "   * Fix back resolving of base tile when loading projectile default",
+      ].join("\n"),
+    modifiedFiles: [
+      "include/gbprinter.h",
+      "include/ui.h",
+      "include/vm.i",
+      "include/vm_gbprinter.h",
+      "include/vm_ui.h",
+      "src/core/actor.c",
+      "src/core/gbprinter.c",
+      "src/core/ui.c",
+      "src/core/vm_gbprinter.c",
+      "src/core/vm_instructions.c",
+      "src/core/vm_projectiles.c",
+      "src/core/vm_ui.c",
+    ],
+  },
 ];
 
 const ejectEngineChangelog = (currentVersion: string) => {

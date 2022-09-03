@@ -22,12 +22,14 @@ const fields = [].concat(
     {
       key: "variable",
       label: l10n("FIELD_SET_VARIABLE"),
+      description: l10n("FIELD_VARIABLE_DESC"),
       type: "variable",
       defaultValue: "LAST_VARIABLE",
     },
     {
       key: "items",
       label: l10n("FIELD_NUMBER_OF_OPTIONS"),
+      description: l10n("FIELD_NUMBER_OF_OPTIONS_DESC"),
       type: "number",
       min: 2,
       max: 8,
@@ -45,6 +47,10 @@ const fields = [].concat(
         {
           key: `option${i + 1}`,
           label: l10n("FIELD_SET_TO_VALUE_IF", { value: String(i + 1) }),
+          description: l10n("FIELD_SET_TO_VALUE_IF_MENU_DESC", {
+            value: String(i + 1),
+          }),
+          hideFromDocs: i >= 2,
           type: "text",
           defaultValue: "",
           placeholder: l10n("FIELD_ITEM", { value: String(i + 1) }),
@@ -58,6 +64,10 @@ const fields = [].concat(
         {
           key: `option${i + 1}`,
           label: l10n("FIELD_SET_TO_VALUE_IF", { value: String(i + 1) }),
+          description: l10n("FIELD_SET_TO_VALUE_IF_MENU_DESC", {
+            value: String(i + 1),
+          }),
+          hideFromDocs: i >= 2,
           type: "text",
           defaultValue: "",
           placeholder: l10n("FIELD_ITEM", { value: String(i + 1) }),
@@ -75,6 +85,8 @@ const fields = [].concat(
         {
           key: `option${i + 1}`,
           label: l10n("FIELD_SET_TO_VALUE_IF", { value: "0" }),
+          description: l10n("FIELD_SET_TO_VALUE_IF_MENU_DESC", { value: "0" }),
+          hideFromDocs: true,
           type: "text",
           defaultValue: "",
           placeholder: l10n("FIELD_ITEM", { value: String(i + 1) }),
@@ -98,12 +110,14 @@ const fields = [].concat(
   {
     type: "checkbox",
     label: l10n("FIELD_LAST_OPTION_CANCELS"),
+    description: l10n("FIELD_LAST_OPTION_CANCELS_DESC"),
     key: "cancelOnLastOption",
     alignCheckbox: true,
   },
   {
     type: "checkbox",
     label: l10n("FIELD_CANCEL_IF_B"),
+    description: l10n("FIELD_CANCEL_IF_B_DESC"),
     key: "cancelOnB",
     defaultValue: true,
     alignCheckbox: true,
@@ -112,6 +126,7 @@ const fields = [].concat(
     key: "layout",
     type: "select",
     label: l10n("FIELD_LAYOUT"),
+    description: l10n("FIELD_LAYOUT_MENU_DESC"),
     options: [
       ["dialogue", l10n("FIELD_LAYOUT_DIALOGUE")],
       ["menu", l10n("FIELD_LAYOUT_MENU")],
@@ -142,6 +157,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_MENU_DESC"),
   autoLabel,
   groups,
   fields,

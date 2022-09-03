@@ -13,17 +13,22 @@ const autoLabel = (fetchArg) => {
 const fields = [
   {
     key: "actorId",
+    label: l10n("ACTOR"),
+    description: l10n("FIELD_ACTOR_CHECK_DESC"),
     type: "actor",
     defaultValue: "$self$",
   },
   {
     key: "direction",
+    label: l10n("FIELD_DIRECTION"),
+    description: l10n("FIELD_DIRECTION_DESC"),
     type: "direction",
     defaultValue: "up",
   },
   {
     key: "true",
     label: l10n("FIELD_TRUE"),
+    description: l10n("FIELD_TRUE_DESC"),
     type: "events",
   },
   {
@@ -41,6 +46,7 @@ const fields = [
   {
     key: "false",
     label: l10n("FIELD_FALSE"),
+    description: l10n("FIELD_FALSE_DESC"),
     conditions: [
       {
         key: "__collapseElse",
@@ -65,6 +71,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_IF_ACTOR_DIRECTION_DESC"),
   autoLabel,
   groups,
   fields,

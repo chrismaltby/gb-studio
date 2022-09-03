@@ -202,7 +202,7 @@
   "FIELD_FLAG": "标志",
   "FIELD_FLAG_N": "标志 {n}",
   "FIELD_FREQUENCY": "频率 (Hz)",
-  "FIELD_DURATION": "持续时间（以秒为单位）",
+  "FIELD_DURATION": "持续时间",
   "FIELD_PITCH": "音调",
   "FIELD_SOUND_PLAY_CRASH": "播放碰撞符号声音",
   "FIELD_SET_TIMER": "设置重复定时器脚本",

@@ -15,6 +15,7 @@ const fields = [
   {
     key: "actorId",
     label: l10n("ACTOR"),
+    description: l10n("FIELD_ACTOR_CHECK_DESC"),
     type: "actor",
     defaultValue: "$self$",
   },
@@ -25,6 +26,7 @@ const fields = [
         key: "vectorX",
         type: "variable",
         label: l10n("FIELD_X"),
+        description: l10n("FIELD_X_VARIABLE_DESC"),
         defaultValue: "LAST_VARIABLE",
         width: "50%",
         unitsField: "units",
@@ -35,6 +37,7 @@ const fields = [
         key: "vectorY",
         type: "variable",
         label: l10n("FIELD_Y"),
+        description: l10n("FIELD_Y_VARIABLE_DESC"),
         defaultValue: "LAST_VARIABLE",
         width: "50%",
         unitsField: "units",
@@ -53,6 +56,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_ACTOR_GET_POSITION_DESC"),
   autoLabel,
   groups,
   fields,

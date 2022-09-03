@@ -13,6 +13,7 @@ const fields = [
   {
     key: "fadeSpeed",
     label: l10n("FIELD_FADE_SPEED"),
+    description: l10n("FIELD_SPEED_FADE_DESC"),
     type: "fadeSpeed",
     defaultValue: "2",
     width: "50%",
@@ -27,6 +28,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_SCENE_POP_STATE_DESC"),
   groups,
   fields,
   compile,

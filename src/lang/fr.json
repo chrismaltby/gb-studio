@@ -191,7 +191,7 @@
   "FIELD_FLAG": "Indicateur",
   "FIELD_FLAG_N": "Indicateur {n}",
   "FIELD_FREQUENCY": "Fréquence en Hz",
-  "FIELD_DURATION": "Durée en secondes",
+  "FIELD_DURATION": "Durée",
   "FIELD_PITCH": "Hauteur",
   "FIELD_SOUND_PLAY_CRASH": "Jouer le son du symbole de crash",
   "FIELD_SET_TIMER": "Définir le script de la répétition du minuteur",

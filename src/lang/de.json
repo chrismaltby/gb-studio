@@ -208,7 +208,7 @@
   "FIELD_FLAG": "Flag",
   "FIELD_FLAG_N": "Flag {n}",
   "FIELD_FREQUENCY": "Frequenz in Hz",
-  "FIELD_DURATION": "Duration in seconds",
+  "FIELD_DURATION": "Duration",
   "FIELD_PITCH": "Tonhöhe",
   "FIELD_SOUND_PLAY_CRASH": "Crash-Sound abspielen",
   "FIELD_SET_TIMER": "Wiederholungszeitgeber-Skript einstellen",

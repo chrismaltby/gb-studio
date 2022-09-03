@@ -199,7 +199,7 @@
   "FIELD_FLAG": "Marcador",
   "FIELD_FLAG_N": "Flag {n}",
   "FIELD_FREQUENCY": "Frequência em hz",
-  "FIELD_DURATION": "Duração em Segundos",
+  "FIELD_DURATION": "Duração",
   "FIELD_PITCH": "Pitch",
   "FIELD_SOUND_PLAY_CRASH": "Reproduzir som de crash symbol ",
   "FIELD_SET_TIMER": "Definir Script de Temporizador repetitivo",

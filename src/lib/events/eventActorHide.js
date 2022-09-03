@@ -13,6 +13,7 @@ const fields = [
   {
     key: "actorId",
     label: l10n("ACTOR"),
+    description: l10n("FIELD_ACTOR_HIDE_DESC"),
     type: "actor",
     defaultValue: "$self$",
   },
@@ -25,6 +26,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_ACTOR_HIDE_DESC"),
   autoLabel,
   groups,
   fields,

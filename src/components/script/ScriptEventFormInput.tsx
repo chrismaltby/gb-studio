@@ -258,6 +258,7 @@ const ScriptEventFormInput = ({
       <CheckboxField
         name={id}
         label={String(field.checkboxLabel || field.label)}
+        title={field.description}
         checked={
           typeof value === "boolean" ? value : Boolean(defaultValue || false)
         }
