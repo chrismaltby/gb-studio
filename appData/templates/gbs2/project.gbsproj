@@ -41433,9 +41433,9 @@
                                         "command": "EVENT_TEXT",
                                         "args": {
                                             "text": [
-                                                "Welcome to the \nMusic House!",
+                                                "Welcome to the\nMusic House!",
                                                 "Try the instruments to\nplay some tunes",
-                                                "And use the machines at \nthe back to play some \nsound effects"
+                                                "And use the machines at\nthe back to play some\nsound effects"
                                             ],
                                             "avatarId": ""
                                         },
