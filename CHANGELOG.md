@@ -49,6 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add tooltips to all script event labels (also used to auto generate documentation for new site)
 - Add "Music House" to the color sample project with examples of music and sound effects [@pau-tomas](https://github.com/pau-tomas). Music and sound effects by Tronimal.
 - Add new song template for UGE songs, with new default instruments. Song created by Tronimal.
+- Add support for extending engine.json from plugins [@pau-tomas](https://github.com/pau-tomas)
 
 ### Changed
 
