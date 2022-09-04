@@ -41716,7 +41716,7 @@
                             "command": "EVENT_TEXT",
                             "args": {
                                 "text": [
-                                    "This keyboard plays \na song with a drum base"
+                                    "This drumkit plays \na song with a drum base"
                                 ]
                             }
                         }
