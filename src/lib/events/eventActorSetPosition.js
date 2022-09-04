@@ -74,14 +74,15 @@ const compile = (input, helpers) => {
     variableFromUnion,
     temporaryEntityVariable,
   } = helpers;
-  actorSetActive(input.actorId);
   if (input.x.type === "number" && input.y.type === "number") {
     // If all inputs are numbers use fixed implementation
+    actorSetActive(input.actorId);
     actorSetPosition(input.x.value, input.y.value, input.units);
   } else {
     // If any value is not a number transfer values into variables and use variable implementation
     const xVar = variableFromUnion(input.x, temporaryEntityVariable(0));
     const yVar = variableFromUnion(input.y, temporaryEntityVariable(1));
+    actorSetActive(input.actorId);
     actorSetPositionToVariables(xVar, yVar, input.units);
   }
 };
