@@ -100,6 +100,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issues with build caching which was requiring cache to be cleared regularly if variable references were changed
 - Fix issue where Drag world mode and Paste event mode could become stuck if using Alt+Tab to switch windows while active
 - Fix issue using single "$" and "#" characters in dialogue
+- Fix issue when setting actor's position to another actor's position using properties [@patrickmollohan](https://github.com/patrickmollohan)
+- Fix issue using actor properties from within custom scripts
 
 ### Removed
 
