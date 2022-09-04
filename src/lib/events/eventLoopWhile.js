@@ -16,6 +16,8 @@ const autoLabel = (fetchArg, args) => {
 const fields = [
   {
     key: "expression",
+    label: l10n("FIELD_EXPRESSION"),
+    description: l10n("FIELD_EXPRESSION_DESC"),
     type: "matharea",
     rows: 5,
     placeholder: "e.g. $health >= 0...",
@@ -35,6 +37,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_LOOP_WHILE_DESC"),
   autoLabel,
   groups,
   fields,

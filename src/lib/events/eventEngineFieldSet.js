@@ -16,6 +16,8 @@ const autoLabel = (fetchArg, input) => {
 const fields = [
   {
     type: "engineField",
+    label: l10n("FIELD_ENGINE_FIELD"),
+    description: l10n("FIELD_ENGINE_FIELD_SET_DESC"),
     key: "engineFieldKey",
     postUpdate: (newArgs, prevArgs) => {
       // Reset value if engine field changed
@@ -42,6 +44,8 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_ENGINE_FIELD_SET_DESC"),
+  references: ["/docs/settings/#engine-settings"],
   autoLabel,
   groups,
   fields,

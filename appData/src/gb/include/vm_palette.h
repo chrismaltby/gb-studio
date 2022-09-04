@@ -6,6 +6,8 @@
 #include "vm.h"
 #include "palette.h"
 
+BANKREF_EXTERN(VM_PALETTE)
+
 #define PALETTE_COMMIT 1u
 #define PALETTE_BKG    2u
 #define PALETTE_SPRITE 4u

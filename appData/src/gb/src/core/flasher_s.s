@@ -1,9 +1,9 @@
         .include "global.s"
-                
+
         .globl __start_save
         .globl __current_bank
 
-        .area   _CODE_4
+        .area   _CODE_255
 
 .macro .wb addr, val
         ld a, val
@@ -30,7 +30,7 @@ _flash_data_routine:
         ld      h, #0x40                        ; two SRAM banks are saved into one ROM bank.
         bit     0, c
         jr      z,0$
-        set     5, h 
+        set     5, h
 0$:
         xor     a
         ld      l, a                            ; destination HL == 0x4000 or HL == 0x6000
@@ -66,7 +66,7 @@ _flash_data_routine:
         dec     b
         jr      nz, 2$
 
-        ld      e, #0                           ; fail                  
+        ld      e, #0                           ; fail
         jr      5$
 3$:
         inc     de                              ; next source
@@ -85,15 +85,17 @@ _flash_data_routine:
         pop     af
         ld      (#rROMB0), a                    ; restore bank
 
-        ei 
+        ei
 
         pop     bc
         ret
 
 _end_flash_data_routine:
 
+.globl b_save_sram_banks
+b_save_sram_banks = 255
 _save_sram_banks::
-        lda     hl, 2(sp)
+        lda     hl, 6(sp)
         ld      b, (hl)
 
         lda     hl, 0(sp)
@@ -129,13 +131,13 @@ _save_sram_banks::
 
         ld      a, e
         or      a
-        jr      z, 2$   
+        jr      z, 2$
 
         pop     af
         sub     #1
         jr      nc, 1$
 
-        push    af      
+        push    af
 2$:
         pop     af
 3$:
@@ -152,7 +154,7 @@ _erase_flash_sector_routine:
         push    af                              ; save current bank
 
         .wb     #rRAMG, #0x00                   ; disable SRAM
-        
+
         .wb     #rROMB0, #__start_save
 
         .wb     #0x4000, #0xF0                  ; reset?
@@ -194,6 +196,8 @@ _erase_flash_sector_routine:
         ret
 _end_erase_flash_sector_routine:
 
+.globl b_erase_flash
+b_erase_flash = 255
 _erase_flash::
         lda     hl, 0(sp)
         ld      d, h

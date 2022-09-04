@@ -1,4 +1,4 @@
-#pragma bank 3
+#pragma bank 255
 
 #include "data/states_defines.h"
 #include "states/adventure.h"

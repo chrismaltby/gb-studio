@@ -17,6 +17,7 @@ const fields = [
   {
     key: "actorId",
     label: l10n("ACTOR"),
+    description: l10n("FIELD_ACTOR_UPDATE_DESC"),
     type: "actor",
     defaultValue: "$self$",
   },
@@ -26,6 +27,7 @@ const fields = [
       {
         key: "x",
         label: l10n("FIELD_X"),
+        description: l10n("FIELD_X_DESC"),
         type: "union",
         types: ["number", "variable", "property"],
         defaultType: "number",
@@ -44,6 +46,7 @@ const fields = [
       {
         key: "y",
         label: l10n("FIELD_Y"),
+        description: l10n("FIELD_Y_DESC"),
         type: "union",
         types: ["number", "variable", "property"],
         defaultType: "number",
@@ -85,6 +88,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_ACTOR_SET_POSITION_DESC"),
   autoLabel,
   groups,
   fields,

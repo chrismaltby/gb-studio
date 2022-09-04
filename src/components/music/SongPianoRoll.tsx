@@ -880,6 +880,32 @@ export const SongPianoRoll = ({
     }
   }, [selectedChannel, dispatch, pattern, selectedPatternCells]);
 
+  const onCut = useCallback(() => {
+    if (pattern) {
+      const parsedSelectedPattern = parsePatternToClipboard(
+        pattern,
+        selectedChannel,
+        selectedPatternCells
+      );
+      dispatch(clipboardActions.copyText(parsedSelectedPattern));
+      //delete selection
+      const newPattern = cloneDeep(pattern);
+      console.log(newPattern, selectedPatternCells, selectedChannel);
+      selectedPatternCells.forEach((i) => {
+        console.log(newPattern[i]);
+        newPattern[i].splice(selectedChannel, 1, new PatternCell());
+      });
+      dispatch(trackerActions.setSelectedPatternCells([]));
+      console.log(patternId, newPattern);
+      dispatch(
+        trackerDocumentActions.editPattern({
+          patternId: patternId,
+          pattern: newPattern,
+        })
+      );
+    }
+  }, [pattern, selectedChannel, selectedPatternCells, dispatch, patternId]);
+
   const onPaste = useCallback(() => {
     if (pattern) {
       const newPastedPattern = parseClipboardToPattern(clipboard.readText());
@@ -949,14 +975,16 @@ export const SongPianoRoll = ({
 
   useEffect(() => {
     window.addEventListener("copy", onCopy);
+    window.addEventListener("cut", onCut);
     window.addEventListener("paste", onPaste);
     ipcRenderer.on("paste-in-place", onPasteInPlace);
     return () => {
       window.removeEventListener("copy", onCopy);
+      window.removeEventListener("cut", onCut);
       window.removeEventListener("paste", onPaste);
       ipcRenderer.removeListener("paste-in-place", onPasteInPlace);
     };
-  }, [onCopy, onPaste, onPasteInPlace]);
+  }, [onCopy, onCut, onPaste, onPasteInPlace]);
 
   const v = [
     selectedChannel,

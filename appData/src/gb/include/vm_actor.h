@@ -1,8 +1,12 @@
 #ifndef _VM_ACTOR_H_INCLUDE
 #define _VM_ACTOR_H_INCLUDE
 
+#include <gb/gb.h>
+
 #include "vm.h"
 #include "gbs_types.h"
+
+BANKREF_EXTERN(VM_ACTOR)
 
 #define ACTOR_ATTR_H_FIRST    0x01
 #define ACTOR_ATTR_CHECK_COLL 0x02

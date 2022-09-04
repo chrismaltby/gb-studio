@@ -42,6 +42,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add compile time warning if too many unique projectiles are within a scene
 - Add effect editor to music editor piano roll [@pau-tomas](https://github.com/pau-tomas)
 - Add noise macro preview for music editor [@RichardULZ](https://github.com/RichardULZ)
+- Display channel specific instrument names on instrument select dropdown [@pau-tomas](https://github.com/pau-tomas)
+- Allow editing effects from tracker editor [@RichardULZ](https://github.com/RichardULZ)
+- Allow transposing selected notes in tracker with Ctrl/Ctrl+Shift and Mousewheel or "+" / "-" keys [@RichardULZ](https://github.com/RichardULZ)
+- Add sound effects preview from dropdowns [@pau-tomas](https://github.com/pau-tomas)
+- Add tooltips to all script event labels (also used to auto generate documentation for new site)
+- Add "Music House" to the color sample project with examples of music and sound effects [@pau-tomas](https://github.com/pau-tomas)
+- Add support for extending engine.json from plugins [@pau-tomas](https://github.com/pau-tomas)
 
 ### Changed
 
@@ -60,6 +67,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - List of "Variable Uses" now calculated in background thread to reduce pause while reading large projects
 - Timer, input and music scripts set from within a custom script no longer allow the script parameters to be used as they were not working, global variables can now be used instead.
 - Optimised actors_update() and vm_actor_move_to() to improve CPU usage
+- Improve music editor copy/paste with ModPlug compatible clipboard [@RichardULZ](https://github.com/RichardULZ)
 
 ### Fixed
 
@@ -87,11 +95,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Prevent user from creating projects ending with a period [@patrickmollohan](https://github.com/patrickmollohan)
 - Fix issue where using multiple identical sound events in a project would store the data in the ROM duplicated once for every sound effect call
 - Fix plat_jump_vel maximum value in engine.json [@patrickmollohan](https://github.com/patrickmollohan)
+- Fix issue where a commented out actor update script would cause slow down while the actor is onscreen
+- Fix issues with build caching which was requiring cache to be cleared regularly if variable references were changed
+- Fix issue where Drag world mode and Paste event mode could become stuck if using Alt+Tab to switch windows while active
 
 ### Removed
 
 - Removed .CURRENT_SCRIPT_BANK for gbvm scripts as results were unreliable
 - Removed deprecated dividing ratio and shift clock fields from noise instrument editor [@pau-tomas](https://github.com/pau-tomas)
+- Removed loop option on music play event, doesn't work for hUGEDriver and was broken on GBTPlayer. Instead add an empty pattern with an infinite loop (using effect Bxx) to the tracks you want to not loop.
 
 ## [3.0.3]
 

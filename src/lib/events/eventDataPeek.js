@@ -7,6 +7,7 @@ const fields = [
   {
     key: "variableDest",
     label: l10n("FIELD_SET_VARIABLE"),
+    description: l10n("FIELD_VARIABLE_SET_DESC"),
     type: "variable",
     defaultValue: "LAST_VARIABLE",
   },
@@ -16,12 +17,14 @@ const fields = [
       {
         key: "variableSource",
         label: l10n("FIELD_TO_VARIABLE"),
+        description: l10n("FIELD_VARIABLE_READ_DESC"),
         type: "variable",
         defaultValue: "LAST_VARIABLE",
       },
       {
         key: "saveSlot",
         label: l10n("FIELD_FROM_SAVE_SLOT"),
+        description: l10n("FIELD_SAVE_SLOT_DESC"),
         type: "togglebuttons",
         options: [
           [
@@ -54,6 +57,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_PEEK_DATA_DESC"),
   groups,
   fields,
   compile,

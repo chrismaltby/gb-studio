@@ -1,6 +1,6 @@
 {
   "RTL": false,
-  
+
   "GBSTUDIO_DESCRIPTION": "视觉复古游戏制造商",
   "GBSTUDIO_COPYRIGHT": "在 MIT 许可证下分发。",
 
@@ -202,7 +202,7 @@
   "FIELD_FLAG": "标志",
   "FIELD_FLAG_N": "标志 {n}",
   "FIELD_FREQUENCY": "频率 (Hz)",
-  "FIELD_DURATION": "持续时间（以秒为单位）",
+  "FIELD_DURATION": "持续时间",
   "FIELD_PITCH": "音调",
   "FIELD_SOUND_PLAY_CRASH": "播放碰撞符号声音",
   "FIELD_SET_TIMER": "设置重复定时器脚本",
@@ -696,8 +696,8 @@
   "EVENT_SET_VALUE_LABEL": "{variable} = {value}",
   "EVENT_ENGINE_FIELD_SET_LABEL": "引擎字段 {engineField} 设置为 {value}",
   "EVENT_ENGINE_FIELD_STORE_LABEL": "在变量 {variable} 中存储引擎字段 {engineField}",
-  "EVENT_ADD_FLAGS_LABEL": "添加标志 {flags} 到 {variable}", 
-  "EVENT_SET_FLAGS_LABEL": "在 {variable} 中设置标志 {flags}", 
+  "EVENT_ADD_FLAGS_LABEL": "添加标志 {flags} 到 {variable}",
+  "EVENT_SET_FLAGS_LABEL": "在 {variable} 中设置标志 {flags}",
   "EVENT_CLEAR_FLAGS_LABEL": "从 {variable} 清除标志 {flags}",
   "EVENT_IF_FLAGS_COMPARE_LABEL": "如果 {variable} 有标志 {flag}",
   "EVENT_IF_TRUE_LABEL": "如果 {variable} 为 “True”",
@@ -994,4 +994,3 @@
   "MESSAGE_USE_UGE_FILES": "要在您的项目中使用 .uge 文件，请在“设置”中将音乐驱动程序从 GBT 播放器更改为 hUGEDriver。",
   "MESSAGE_ENABLE_HUGE": "启用 hUGEDriver"
 }
-

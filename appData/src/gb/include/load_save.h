@@ -6,6 +6,8 @@
 #define SRAM_BANKS_TO_SAVE 3
 #define SRAM_BANK_SIZE 0x2000
 
+BANKREF_EXTERN(VM_LOAD_SAVE)
+
 // initializes saving capabilities
 void data_init() BANKED;
 

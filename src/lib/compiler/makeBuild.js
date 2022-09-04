@@ -121,10 +121,17 @@ const makeBuild = async ({
 
   progress(`${l10n("COMPILER_PACKING")}...`);
   const { cartSize } = await gbspack(await getPackFiles(buildRoot), {
-    bankOffset: 5,
+    bankOffset: 1,
     filter: 255,
     extension: "rel",
     additional: settings.batterylessEnabled ? 4 : 0,
+    reserve:
+      settings.musicDriver !== "huge"
+        ? {
+            // Reserve space in bank1 for gbt_player.lib
+            1: 0x7f3,
+          }
+        : {},
   });
 
   // Link ROM ---

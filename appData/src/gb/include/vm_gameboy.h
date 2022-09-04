@@ -1,8 +1,12 @@
 #ifndef _VM_gameboy_H_INCLUDE
 #define _VM_gameboy_H_INCLUDE
 
+#include <gb/gb.h>
+
 #include "vm.h"
 #include "gbs_types.h"
+
+BANKREF_EXTERN(VM_GAMEBOY)
 
 void vm_set_sprites_visible(SCRIPT_CTX * THIS, UBYTE mode) OLDCALL BANKED;
 void vm_input_wait(SCRIPT_CTX * THIS, UBYTE mask) OLDCALL BANKED;

@@ -24,6 +24,7 @@ import {
   NR23,
   NR24,
 } from "./music_constants";
+import { hi, lo } from "lib/helpers/8bit";
 
 let update_handle = null;
 let rom_file = null;
@@ -97,14 +98,34 @@ const note2noise = (note) => {
   return pitch > 7 ? (((pitch - 4) >> 2) << 4) + (pitch & 3) + 4 : pitch;
 };
 
-const initPlayer = (onInit) => {
+const initPlayer = (onInit, sfx) => {
   compiler.setLogCallback(console.log);
   compiler.setLinkOptions(["-t", "-w"]);
 
-  storage.update(
-    "song.asm",
-    'SECTION "song", ROM0[$1000]\nSONG_DESCRIPTOR:: ds $8000 - @'
-  );
+  // Load an empty song
+  let songFile = `include "include/hUGE.inc"
+    
+  SECTION "song", ROM0[$1000]
+  
+  SONG_DESCRIPTOR::
+  db 7  ; tempo
+  dw song_order_cnt
+  dw song_order1, song_order1, song_order1, song_order1
+  dw 0, 0, 0
+  dw 0
+  dw 0
+  
+  song_order_cnt: db 1
+  song_order1: dw P0
+  
+  P0:
+   dn ___,0,$B01
+   
+  `;
+  if (sfx) {
+    songFile += `my_sfx:: db ${sfx}`;
+  }
+  storage.update("song.asm", songFile);
 
   compiler.compile((file, start_address, addr_to_line) => {
     rom_file = file;
@@ -125,7 +146,7 @@ const initPlayer = (onInit) => {
         `Order Count: ${emulator.readMem(getMemAddress("order_cnt"))}`
       );
     };
-    setInterval(updateTracker, 1000/64);
+    setInterval(updateTracker, 1000 / 64);
   });
 };
 
@@ -140,14 +161,19 @@ const loadSong = (song) => {
   stop();
 };
 
-const play = (song) => {
+const play = (song, position) => {
   console.log("PLAY");
   updateRom(song);
 
-  if (isPlayerPaused()) {
-    const ticks_per_row_addr = getMemAddress("ticks_per_row");
-    emulator.writeMem(ticks_per_row_addr, song.ticks_per_row);
+  if (position) {
+    console.log("POS", position);
+    setStartPosition(position);
+  }
 
+  const ticks_per_row_addr = getMemAddress("ticks_per_row");
+  emulator.writeMem(ticks_per_row_addr, song.ticks_per_row);
+
+  if (isPlayerPaused()) {
     emulator.setChannel(0, channels[0]);
     emulator.setChannel(1, channels[1]);
     emulator.setChannel(2, channels[2]);
@@ -172,6 +198,49 @@ const play = (song) => {
     };
     update_handle = setInterval(updateUI, 15.625);
   }
+};
+
+const playSound = () => {
+  doPause();
+
+  console.log("=======SFX=======");
+
+  const my_sfx_addr = compiler.getRomSymbols().indexOf("my_sfx");
+  const sfx_play_bank_addr = getMemAddress("_sfx_play_bank");
+  const sfx_play_sample_addr = getMemAddress("_sfx_play_sample");
+
+  console.log(
+    my_sfx_addr,
+    emulator.readMem(sfx_play_bank_addr),
+    emulator.readMem(sfx_play_sample_addr),
+    emulator.readMem(sfx_play_sample_addr + 1),
+    sfx_play_sample_addr,
+    sfx_play_bank_addr
+  );
+  emulator.writeMem(sfx_play_bank_addr, 1);
+
+  emulator.writeMem(sfx_play_sample_addr, lo(my_sfx_addr));
+  emulator.writeMem(sfx_play_sample_addr + 1, hi(my_sfx_addr));
+
+  const b0 = emulator.readMem(sfx_play_sample_addr);
+  const b1 = emulator.readMem(sfx_play_sample_addr + 1);
+  const v = (b1 << 8) | b0;
+  console.log("SFX", v, b0, b1);
+
+  console.log("=======SFX=======");
+  doResume();
+
+  const sfx_update = setInterval(() => {
+    const b0 = emulator.readMem(sfx_play_sample_addr);
+    const b1 = emulator.readMem(sfx_play_sample_addr + 1);
+    const v = (b1 << 8) | b0;
+
+    console.log("SFX", v, b0, b1);
+    if (v === 0) {
+      doPause();
+      clearInterval(sfx_update);
+    }
+  }, 1000 / 64);
 };
 
 const preview = (note, type, instrument, square2, waves = []) => {
@@ -343,12 +412,14 @@ const preview = (note, type, instrument, square2, waves = []) => {
           return;
         }
         console.log("noise macro step = " + noiseStep);
-        emulator.writeMem(NR43, 
+        emulator.writeMem(
+          NR43,
           note2noise(note + instrument.noise_macro[noiseStep]) +
-          (instrument.bit_count === 7 ? 8 : 0), 8
+            (instrument.bit_count === 7 ? 8 : 0),
+          8
         );
         noiseStep++;
-      }, 1000/64);
+      }, 1000 / 64);
 
       console.log("-------------");
       console.log(`NR41`, regs.NR41, parseInt(regs.NR41, 2));
@@ -538,6 +609,7 @@ export default {
   initPlayer,
   loadSong,
   play,
+  playSound,
   stop,
   preview,
   setChannel,
@@ -545,4 +617,5 @@ export default {
   setOnIntervalCallback: (cb) => {
     onIntervalCallback = cb;
   },
+  getRomFile: () => rom_file,
 };

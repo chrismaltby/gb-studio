@@ -8,12 +8,14 @@ const fields = [
     key: "type",
     type: "soundEffect",
     label: l10n("FIELD_SOUND_EFFECT"),
+    description: l10n("FIELD_SOUND_EFFECT_PLAY_DESC"),
     defaultValue: "beep",
     flexBasis: "60%",
   },
   {
     key: "priority",
     label: l10n("FIELD_PRIORITY"),
+    description: l10n("FIELD_PRIORITY_SOUND_DESC"),
     type: "priority",
     options: [
       ["low", l10n("FIELD_LOW")],
@@ -27,6 +29,7 @@ const fields = [
     key: "pitch",
     type: "number",
     label: l10n("FIELD_PITCH"),
+    description: l10n("FIELD_PITCH_DESC"),
     conditions: [
       {
         key: "type",
@@ -42,6 +45,7 @@ const fields = [
     key: "frequency",
     type: "number",
     label: l10n("FIELD_FREQUENCY"),
+    description: l10n("FIELD_FREQUENCY_DESC"),
     conditions: [
       {
         key: "type",
@@ -57,6 +61,9 @@ const fields = [
     key: "duration",
     type: "number",
     label: l10n("FIELD_DURATION"),
+    description: l10n("FIELD_DURATION_SOUND_DESC"),
+    unitsField: "units",
+    unitsDefault: "time",
     conditions: [
       {
         key: "type",
@@ -72,6 +79,7 @@ const fields = [
     key: "wait",
     type: "checkbox",
     label: l10n("FIELD_WAIT_UNTIL_FINISHED"),
+    description: l10n("FIELD_WAIT_UNTIL_FINISHED_SOUND_DESC"),
     conditions: [
       {
         key: "type",
@@ -85,6 +93,7 @@ const fields = [
     key: "effect",
     type: "number",
     label: l10n("FIELD_EFFECT_INDEX"),
+    description: l10n("FIELD_EFFECT_INDEX_DESC"),
     min: 0,
     max: 60,
     defaultValue: 0,
@@ -137,6 +146,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_SOUND_PLAY_EFFECT_DESC"),
   groups,
   fields,
   compile,

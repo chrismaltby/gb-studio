@@ -1,16 +1,21 @@
-#pragma bank 2
+#pragma bank 255
 
 #include "vm.h"
 #include "vm_exceptions.h"
+
+#include "vm_scene.h"
+
 #include "actor.h"
 #include "bankdata.h"
 #include "data_manager.h"
+
+BANKREF(VM_SCENE)
 
 void vm_scene_push() OLDCALL BANKED {
     scene_stack_ptr->scene = current_scene;
     scene_stack_ptr->pos = PLAYER.pos;
     scene_stack_ptr->dir = PLAYER.dir;
-    scene_stack_ptr++; 
+    scene_stack_ptr++;
 }
 
 static void raise_change_scene_exception() {

@@ -1,10 +1,12 @@
-#pragma bank 2
+#pragma bank 255
 
-#include "vm_math.h"
+#include "vm_rtc.h"
 
 #include "vm.h"
 
 #include "rtc.h"
+
+BANKREF(VM_RTC)
 
 void vm_rtc_latch() OLDCALL BANKED {
     RTC_LATCH();

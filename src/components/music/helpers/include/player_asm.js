@@ -48,7 +48,7 @@ new_row::      db   ; new position within the pattern (can be changed while paus
 \n
 SECTION "sample playback", WRAM0\n
 _sfx_play_bank::   db   ; bank of the SFX\n
-_sfx_play_sample:: db   ; pointer to SFX\n
+_sfx_play_sample:: dw   ; pointer to SFX\n
 _sfx_frame_skip:   db\n
 \n
 call_counter:      db\n

@@ -27,6 +27,7 @@ const fields = [
     type: "avatar",
     toggleLabel: l10n("FIELD_ADD_TEXT_AVATAR"),
     label: l10n("FIELD_TEXT_AVATAR"),
+    description: l10n("FIELD_TEXT_AVATAR_DESC"),
     defaultValue: "",
     optional: true,
   },
@@ -39,6 +40,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_TEXT_DESC"),
   autoLabel,
   groups,
   fields,

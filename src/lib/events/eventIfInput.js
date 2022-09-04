@@ -13,12 +13,14 @@ const fields = [
   {
     key: "input",
     label: l10n("FIELD_ANY_OF"),
+    description: l10n("FIELD_INPUT_MULTIPLE_DESC"),
     type: "input",
     defaultValue: ["a", "b"],
   },
   {
     key: "true",
     label: l10n("FIELD_TRUE"),
+    description: l10n("FIELD_TRUE_DESC"),
     type: "events",
   },
   {
@@ -36,6 +38,7 @@ const fields = [
   {
     key: "false",
     label: l10n("FIELD_FALSE"),
+    description: l10n("FIELD_FALSE_DESC"),
     conditions: [
       {
         key: "__collapseElse",
@@ -59,6 +62,8 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_IF_INPUT_DESC"),
+  references: ["/docs/scripting/script-glossary/input#attach-script-to-button"],
   autoLabel,
   groups,
   fields,
