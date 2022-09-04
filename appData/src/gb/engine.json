@@ -118,7 +118,7 @@
       "cType": "WORD",
       "defaultValue": 16384,
       "min": 0,
-      "max": 32768
+      "max": 32767
     },
     {
       "key": "plat_grav",
