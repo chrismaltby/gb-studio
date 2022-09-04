@@ -96,6 +96,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where using multiple identical sound events in a project would store the data in the ROM duplicated once for every sound effect call
 - Fix issue where a commented out actor update script would cause slow down while the actor is onscreen
 - Fix issues with build caching which was requiring cache to be cleared regularly if variable references were changed
+- Fix issue where Drag world mode and Paste event mode could become stuck if using Alt+Tab to switch windows while active
 
 ### Removed
 
