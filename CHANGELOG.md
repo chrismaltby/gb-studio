@@ -48,6 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add sound effects preview from dropdowns [@pau-tomas](https://github.com/pau-tomas)
 - Add tooltips to all script event labels (also used to auto generate documentation for new site)
 - Add "Music House" to the color sample project with examples of music and sound effects [@pau-tomas](https://github.com/pau-tomas)
+- Add support for extending engine.json from plugins [@pau-tomas](https://github.com/pau-tomas)
 
 ### Changed
 
