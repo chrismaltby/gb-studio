@@ -59,7 +59,10 @@ const generateIncludesLookup = async (buildIncludeRoot) => {
   const includesLookup = {};
   for (const filePath of allIncludeFiles) {
     const fileContents = await readFile(filePath, "utf8");
-    includesLookup[Path.relative(buildIncludeRoot, filePath)] = {
+    const key = Path.relative(buildIncludeRoot, filePath)
+      .split(Path.sep)
+      .join(Path.posix.sep);
+    includesLookup[key] = {
       contents: fileContents,
       referencedFiles: referencedFiles(fileContents),
       checksum: checksumString(fileContents),
