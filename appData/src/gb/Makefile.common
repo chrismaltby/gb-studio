@@ -115,7 +115,7 @@ hUGE:
 GBT:
 	$(eval CFLAGS += -DGBT_PLAYER)
 	$(eval LFLAGS += -Wl-l$(TOP)lib/gbt_player.lib)
-	$(eval PACKFLAGS += -s 1:7F3)
+	$(eval PACKFLAGS += -s 1:800)
 	@echo "Enable GBTPlayer"
 
 directories:	$(ROM_BUILD_DIR) $(OBJDIR) $(REL_OBJDIR)

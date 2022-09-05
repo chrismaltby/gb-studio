@@ -554,6 +554,17 @@ const changes: EngineChange[] = [
       "src/core/vm_ui.c",
     ],
   },
+  {
+    version: "3.1.0-e15",
+    description:
+      "Updates\n" +
+      [
+        "   * Improved documentation within vm.i",
+        "   * Fix text rolling buffer for DMG",
+        "   * Fix wraparound bug in check_collision_in_direction",
+      ].join("\n"),
+    modifiedFiles: ["include/vm.i", "src/core/actor.c", "src/core/vm_ui.c"],
+  },
 ];
 
 const ejectEngineChangelog = (currentVersion: string) => {

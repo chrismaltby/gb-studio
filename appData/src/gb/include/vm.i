@@ -47,97 +47,131 @@ EXCEPTION_LOAD          = 4
 .PARAM16 = -19
 
 
-; stops execution of context
 OP_VM_STOP         = 0x00
+;-- Stops execution of context
 .macro VM_STOP
         .db OP_VM_STOP
 .endm
 
-; push immediate value onto VM stack
 OP_VM_PUSH_CONST   = 0x01
+;-- Pushes immediate value to the top of the VM stack
+; @param ARG0 immediate value to be pushed
 .macro VM_PUSH_CONST ARG0
         .db OP_VM_PUSH_CONST, #>ARG0, #<ARG0
 .endm
 
-; removes ARG0 values from VM stack
 OP_VM_POP          = 0x02
+;-- Removes the top values from the VM stack
+; @param ARG0 number of values to be removed from the stack
 .macro VM_POP ARG0
         .db OP_VM_POP, #ARG0
 .endm
 
-; call by near address
 OP_VM_CALL         = 0x04
+;-- Call script by near address
+; @param ARG0 address of the script subroutine
 .macro VM_CALL ARG0
         .db OP_VM_CALL, #>ARG0, #<ARG0
 .endm
 
-; return from near call
 OP_VM_RET          = 0x05
+;-- Returns from the near call
 .macro VM_RET
         .db OP_VM_RET, 0
 .endm
 
-; return from near call and remove N arguments on stack
+;-- Returns from the near call and clear N arguments on stack
+; @param N number of arguments to be removed from the stack
 .macro VM_RET_N N
         .db OP_VM_RET, #<N
 .endm
 
-; get byte or word by far pointer into variable
 OP_VM_GET_FAR      = 0x06
 .GET_BYTE          = 0
 .GET_WORD          = 1
+;-- Get byte or word by the far pointer into variable
+; @param IDX Target variable
+; @param SIZE Size of the ojject to be acquired:
+;   `.GET_BYTE`  - get 8-bit value
+;   `.GET_WORD`  - get 16-bit value
+; @param BANK Bank number of the object
+; @param ADDR Address of the object
 .macro VM_GET_FAR IDX, SIZE, BANK, ADDR
         .db OP_VM_GET_FAR, #>ADDR, #<ADDR, #<BANK, #<SIZE, #>IDX, #<IDX
 .endm
 
-; loop by near address, IDX is a counter, remove N arguments on stack
 OP_VM_LOOP         = 0x07
+;-- Loops while variable is not zero, by the near address
+; @param IDX Loop counter variable
+; @param LABEL Jump label for the next iteration
+; @param N amount of values to be removed from stack on exit
 .macro VM_LOOP IDX, LABEL, N
         .db OP_VM_LOOP, #<N, #>LABEL, #<LABEL, #>IDX, #<IDX
 .endm
 
-; switch table IDX is a variable, SIZE is a size of a table, remove N arguments on stack
 OP_VM_SWITCH       = 0x08
+.macro .CASE VAL, LBL
+        .dw #VAL, #LBL
+.endm
+;-- Compares variable with a set of values, and if equal jump to the specified label.
+; values for testing may be defined with the .CASE macro, where VAL parameter is a value for testing and LBL is a jump label
+; @param IDX variable for compare
+; @param SIZE amount of entries for test.
+; @param N amount of values to de cleaned from stack on exit
 .macro VM_SWITCH IDX, SIZE, N
         .db OP_VM_SWITCH, #<N, #<SIZE, #>IDX, #<IDX
 .endm
 
-; loop by near address
 OP_VM_JUMP         = 0x09
+;-- Jumps to near address
+; @param ARG0 jump label
 .macro VM_JUMP ARG0
         .db OP_VM_JUMP, #>ARG0, #<ARG0
 .endm
 
-; call far (inter-bank call)
 OP_VM_CALL_FAR     = 0x0A
+;-- Call far routine (inter-bank call)
+; @param ARG0 Bank number of the routine
+; @param ARG1 Address of the routine
 .macro VM_CALL_FAR ARG0, ARG1
         .db OP_VM_CALL_FAR, #>ARG1, #<ARG1, #<ARG0
 .endm
 
-; rerurn from far call
 OP_VM_RET_FAR      = 0x0B
+;-- Rerurn from the far call
 .macro VM_RET_FAR
         .db OP_VM_RET_FAR, 0
 .endm
 
-; rerurn from far call and remove N arguments on stack
+;-- Rerurn from the far call and remove N arguments from stack
+; @param N Number of arguments to be removed from stack
 .macro VM_RET_FAR_N N
         .db OP_VM_RET_FAR, #<N
 .endm
 
-; invokes <bank>:<address> C function until it returns true
 OP_VM_INVOKE       = 0x0D
+;-- Invokes C function until it returns true.
+; @param ARG0 Bank number of the function
+; @param ARG1 Address of the function, currently 2 functions are implemented:
+;   `_wait_frames`   - wait for N vblank intervals
+;   `_camera_shake`  - shake camera N times
+; @param ARG2 Number of arguments to be removed from stack on return
+; @param ARG3 Points the first parameter to be passed into the C function
 .macro VM_INVOKE ARG0, ARG1, ARG2, ARG3
         .db OP_VM_INVOKE, #>ARG3, #<ARG3, #<ARG2, #>ARG1, #<ARG1, #<ARG0
 .endm
 
-; spawns a thread in a separate context
 OP_VM_BEGINTHREAD  = 0x0E
+;-- Spawns a thread in a separate context
+; @param BANK Bank number of a thread function
+; @param THREADPROC Address of a thread function
+; @param HTHREAD Variable that receives the thread handle
+; @param NARGS Amount of values from the stack to be copied into the stack of the new context
 .macro VM_BEGINTHREAD BANK, THREADPROC, HTHREAD, NARGS
         .db OP_VM_BEGINTHREAD, #<NARGS, #>HTHREAD, #<HTHREAD, #>THREADPROC, #<THREADPROC, #<BANK
 .endm
 
-; condition
+
 OP_VM_IF           = 0x0F
 .EQ                = 1
 .LT                = 2
@@ -145,43 +179,59 @@ OP_VM_IF           = 0x0F
 .GT                = 4
 .GTE               = 5
 .NE                = 6
-.AND               = 7
-.OR                = 8
+;-- Compares two variables using for condition.
+; @param CONDITION Condition for test:
+;   `.EQ`   - variables are equal
+;   `.LT`   - A is lower than B
+;   `.LTE`  - A is lower or equal than B
+;   `.GT`   - A is greater than B
+;   `.GTE`  - A is greater or equal than B
+;   `.NE`   - A is not equal to B
+; @param IDXA A variable
+; @param IDXB B variable
+; @param LABEL Jump label when result is TRUE
+; @param N Number of values to be removed from stack if the result is true
 .macro VM_IF CONDITION, IDXA, IDXB, LABEL, N
         .db OP_VM_IF, #<N, #>LABEL, #<LABEL, #>IDXB, #<IDXB, #>IDXA, #<IDXA, #<CONDITION
 .endm
 
-; pushes a value on VM stack or a global indirectly from an index in the variable on VM stack or in a global onto VM stack
 OP_VM_PUSH_VALUE_IND = 0x10
+;-- Pushes a value on VM stack or a global indirectly from an index in the variable
+; @param ARG0 variable that contains the index of the variable to be pushed on stack
 .macro VM_PUSH_VALUE_IND ARG0
         .db OP_VM_PUSH_VALUE_IND, #>ARG0, #<ARG0
 .endm
 
-; pushes a value on VM stack or a global onto VM stack
 OP_VM_PUSH_VALUE   = 0x11
+;-- Pushes a value of the variable onto stack
+; @param ARG0 variable to be pushed
 .macro VM_PUSH_VALUE ARG0
         .db OP_VM_PUSH_VALUE, #>ARG0, #<ARG0
 .endm
 
-; similar to pop
 OP_VM_RESERVE      = 0x12
+;-- Reserves or disposes amount of values on stack
+; @param ARG0 positive value - amount of variables to be reserved on stack, negative value - amount of variables to be popped from stack
 .macro VM_RESERVE ARG0
         .db OP_VM_RESERVE, #<ARG0
 .endm
 
-; assignes a value on VM stack or a global to a value on VM stack or a global
 OP_VM_SET         = 0x13
+;-- Assigns variable B to variable A
+; @param IDXA Variable A
+; @param IDXB Variable B
 .macro VM_SET IDXA, IDXB
         .db OP_VM_SET, #>IDXB, #<IDXB, #>IDXA, #<IDXA
 .endm
 
-; assignes a value on VM stack or a global to immediate
 OP_VM_SET_CONST   = 0x14
+;-- Assigns immediate value to the variable
+; @param IDX Target variable
+; @param VAL Source immediate value
 .macro VM_SET_CONST IDX, VAL
         .db OP_VM_SET_CONST, #>VAL, #<VAL, #>IDX, #<IDX
 .endm
 
-; rpn calculator, returns result on VM stack
 OP_VM_RPN          = 0x15
 .ADD               = '+'
 .SUB               = '-'
@@ -202,9 +252,10 @@ OP_VM_RPN          = 0x15
 ;.GT                = 4
 ;.GTE               = 5
 ;.NE                = 6
-;.AND               = 7
-;.OR                = 8
+.AND               = 7
+.OR                = 8
 .NOT               = 9
+;-- Reverse Polish Notation (RPN) calculator, returns result(s) on the VM stack
 .macro VM_RPN
         .db OP_VM_RPN
 .endm
@@ -234,96 +285,130 @@ OP_VM_RPN          = 0x15
         .db 0
 .endm
 
-; joins a thread
 OP_VM_JOIN       = 0x16
+;-- Joins a thread
+; @param IDX Thread handle for joining
 .macro VM_JOIN IDX
         .db OP_VM_JOIN, #>IDX, #<IDX
 .endm
 
-; kills a thread
 OP_VM_TERMINATE  = 0x17
+;-- Kills a thread
+; @param IDX Thread handle for killing
 .macro VM_TERMINATE IDX
         .db OP_VM_TERMINATE, #>IDX, #<IDX
 .endm
 
-; signals runner that context in a waitable state
 OP_VM_IDLE      = 0x18
+;-- Signals thread runner, that context is in a waitable state
 .macro VM_IDLE
         .db OP_VM_IDLE
 .endm
 
-; gets thread local variable. non-negative index of second argument points to
-; a thread local variable (parameters, passed into thread)
 OP_VM_GET_TLOCAL= 0x19
+;-- Gets thread local variable.
+; @param IDXA Target variable
+; @param IDXB Thread local variable index
 .macro VM_GET_TLOCAL IDXA, IDXB
         .db OP_VM_GET_TLOCAL, #>IDXB, #<IDXB, #>IDXA, #<IDXA
 .endm
 
-; compares variable or value on stack with a constant
 OP_VM_IF_CONST  = 0x1A
+;-- Compares a variable to an immediate value
+; @param CONDITION Condition for test:
+;   `.EQ`   - variables are equal
+;   `.LT`   - A is lower than B
+;   `.LTE`  - A is lower or equal than B
+;   `.GT`   - A is greater than B
+;   `.GTE`  - A is greater or equal than B
+;   `.NE`   - A is not equal to B
+; @param IDXA A variable
+; @param B immediate value to be compared with
+; @param LABEL Jump label when result is TRUE
+; @param N Number of values to be removed from stack if the result is true
 .macro VM_IF_CONST CONDITION, IDXA, B, LABEL, N
         .db OP_VM_IF_CONST, #<N, #>LABEL, #<LABEL, #>B, #<B, #>IDXA, #<IDXA, #<CONDITION
 .endm
 
-; gets unsigned int8 from WRAM. second argument is an address of unsigned int8
 OP_VM_GET_UINT8 = 0x1B
+;-- Gets unsigned int8 from WRAM
+; @param IDXA Target variable
+; @param ADDR Address of the unsigned 8-bit value in WRAM
 .macro VM_GET_UINT8 IDXA, ADDR
         .db OP_VM_GET_UINT8, #>ADDR, #<ADDR, #>IDXA, #<IDXA
 .endm
 
-; gets int8 from WRAM. second argument is an address of int8
 OP_VM_GET_INT8  = 0x1C
+;-- Gets signed int8 from WRAM
+; @param IDXA Target variable
+; @param ADDR Address of the signed 8-bit value in WRAM
 .macro VM_GET_INT8 IDXA, ADDR
         .db OP_VM_GET_INT8, #>ADDR, #<ADDR, #>IDXA, #<IDXA
 .endm
 
-; gets int16 from WRAM. second argument is an address of int16
 OP_VM_GET_INT16  = 0x1D
+;-- Gets signed int16 from WRAM
+; @param IDXA Target variable
+; @param ADDR Address of the signed 16-bit value in WRAM
 .macro VM_GET_INT16 IDXA, ADDR
         .db OP_VM_GET_INT16, #>ADDR, #<ADDR, #>IDXA, #<IDXA
 .endm
 
-; sets unsigned int8 in WRAM. first argument is an address of unsigned int8
 OP_VM_SET_UINT8 = 0x1E
+;-- Sets unsigned int8 in WRAM from variable
+; @param ADDR Address of the unsigned 8-bit value in WRAM
+; @param IDXA Source variable
 .macro VM_SET_UINT8 ADDR, IDXA
         .db OP_VM_SET_UINT8, #>IDXA, #<IDXA, #>ADDR, #<ADDR
 .endm
 
-; sets int8 in WRAM. first argument is an address of int8
 OP_VM_SET_INT8  = 0x1F
+;-- Sets signed int8 in WRAM from variable
+; @param ADDR Address of the signed 8-bit value in WRAM
+; @param IDXA Source variable
 .macro VM_SET_INT8 ADDR, IDXA
         .db OP_VM_SET_INT8, #>IDXA, #<IDXA, #>ADDR, #<ADDR
 .endm
 
-; sets int16 in WRAM. first argument is an address of int16
 OP_VM_SET_INT16  = 0x20
+;-- Sets signed int16 in WRAM from variable
+; @param ADDR Address of the signed 16-bit value in WRAM
+; @param IDXA Source variable
 .macro VM_SET_INT16 ADDR, IDXA
         .db OP_VM_SET_INT16, #>IDXA, #<IDXA, #>ADDR, #<ADDR
 .endm
 
-; sets int8 in WRAM to a const. first argument is an address of int8
 OP_VM_SET_CONST_INT8 = 0x21
+;-- Sets signed int8 in WRAM to the immediate value
+; @param ADDR Address of the signed 8-bit value in WRAM
+; @param V Immediate value
 .macro VM_SET_CONST_INT8 ADDR, V
         .db OP_VM_SET_CONST_INT8, #<V, #>ADDR, #<ADDR
 .endm
 
-; sets unsigned int8 in WRAM to a const. first argument is an address of unsigned int8
+;-- Sets unsigned int8 in WRAM to the immediate value
+; @param ADDR Address of the unsigned 8-bit value in WRAM
+; @param V Immediate value
 .macro VM_SET_CONST_UINT8 ADDR, V
         .db OP_VM_SET_CONST_INT8, #<V, #>ADDR, #<ADDR
 .endm
 
-; sets int16 in WRAM to a const. first argument is an address of int16
 OP_VM_SET_CONST_INT16 = 0x22
+;-- Sets signed int16 in WRAM to the immediate value
+; @param ADDR Address of the signed 16-bit value in WRAM
+; @param V Immediate value
 .macro VM_SET_CONST_INT16 ADDR, V
         .db OP_VM_SET_CONST_INT16, #>V, #<V, #>ADDR, #<ADDR
 .endm
 
-; Initializes RNG seed
 OP_VM_INIT_RNG        = 0x23
+;-- Initializes RNG seed with the value from the variable
+; @param IDX Seed value
 .macro VM_INIT_RNG IDX
         .db OP_VM_INIT_RNG, #>IDX, #<IDX
 .endm
 
+;-- Initializes RNG seed
 .macro VM_RANDOMIZE
         VM_RESERVE      2
         VM_GET_UINT8    .ARG0, _DIV_REG
@@ -337,8 +422,11 @@ OP_VM_INIT_RNG        = 0x23
         VM_POP          1
 .endm
 
-; Returns random value between MIN and MIN+LIMIT
 OP_VM_RAND            = 0x24
+;-- Returns random value between MIN and MIN + LIMIT
+; @param IDX Target variable
+; @param MIN Minimal random value
+; @param LIMIT range of the random values
 .macro VM_RAND IDX, MIN, LIMIT
         .db OP_VM_RAND
         .db #>(LIMIT | (LIMIT >> 1) | (LIMIT >> 2) | (LIMIT >> 3) | (LIMIT >> 4) | (LIMIT >> 5) | (LIMIT >> 6) | (LIMIT >> 7) | (LIMIT >> 8) | (LIMIT >> 9) | (LIMIT >> 10) | (LIMIT >> 11) | (LIMIT >> 12) | (LIMIT >> 13) | (LIMIT >> 14) | (LIMIT >> 15))
@@ -346,69 +434,91 @@ OP_VM_RAND            = 0x24
         .db #>LIMIT, #<LIMIT, #>MIN, #<MIN, #>IDX, #<IDX
 .endm
 
-; Locks VM
 OP_VM_LOCK            = 0x25
+;-- Disable switching of VM threads
 .macro VM_LOCK
         .db OP_VM_LOCK
 .endm
 
-; Unlocks VM
 OP_VM_UNLOCK          = 0x26
+;-- Enable switching of VM threads
 .macro VM_UNLOCK
         .db OP_VM_UNLOCK
 .endm
 
-; Raises VM exception
+;-- Raises an exception
+; @param CODE Exception code:
+;   `EXCEPTION_RESET`        - Resets the device.
+;   `EXCEPTION_CHANGE_SCENE` - Changes to a new scene.
+;   `EXCEPTION_SAVE`         - Saves the state of the game.
+;   `EXCEPTION_LOAD`         - Loads the saved state of the game.
+; @param SIZE Length of the parameters to be passed into the exception handler
 OP_VM_RAISE           = 0x27
 .macro VM_RAISE CODE, SIZE
         .db OP_VM_RAISE, #<SIZE, #<CODE
 .endm
 
-; assignes a value on VM stack or a global indirectly to a value on VM stack ar a global
 OP_VM_SET_INDIRECT    = 0x28
+;-- Assigns variable that is addressed indirectly to the other variable
+; @param IDXA Variable that contains the index of the target variable
+; @param IDXB Source variable that contains the value to be assigned
 .macro VM_SET_INDIRECT IDXA, IDXB
         .db OP_VM_SET_INDIRECT, #>IDXB, #<IDXB, #>IDXA, #<IDXA
 .endm
 
-; assignes a value on VM stack or a global to a value on VM stack ar a global indirectly
 OP_VM_GET_INDIRECT    = 0x29
+;-- Assigns a variable to the value of variable that is addressed indirectly
+; @param IDXA Target variable
+; @param IDXB Variable that contains the index of the source variable
 .macro VM_GET_INDIRECT IDXA, IDXB
         .db OP_VM_GET_INDIRECT, #>IDXB, #<IDXB, #>IDXA, #<IDXA
 .endm
 
-; Terminates unit-testing immediately
 OP_VM_TEST_TERMINATE  = 0x2A
 .TEST_WAIT_VBL        = 1
+;-- Terminates unit-testing immediately
+; @param FLAGS terminate flags:
+;   `.TEST_WAIT_VBL` wait for VBlank before terminating
 .macro VM_TEST_TERMINATE FLAGS
         .db OP_VM_TEST_TERMINATE, #<FLAGS
 .endm
 
-; Checks that VM state was restored and reset the restore flag
 OP_VM_POLL_LOADED     = 0x2B
+;-- Checks that VM state was restored and reset the restore flag
+; @param IDX Target result variable
 .macro VM_POLL_LOADED IDX
         .db OP_VM_POLL_LOADED, #>IDX, #<IDX
 .endm
 
-; Translates idx into absolute index and pushes result to VM stack
 OP_VM_PUSH_REFERENCE  = 0x2C
+;-- Translates IDX into absolute index and pushes result to VM stack
+; @param IDX index of the variable
 .macro VM_PUSH_REFERENCE IDX
         .db OP_VM_PUSH_REFERENCE, #>IDX, #<IDX
 .endm
 
-; call native code by far pointer
 OP_VM_CALL_NATIVE     = 0x2D
+;-- Calls native code by the far pointer
+; @param BANK Bank number of the native routine
+; @param PTR Address of the native routine
 .macro VM_CALL_NATIVE BANK, PTR
         .db OP_VM_CALL_NATIVE, #>PTR, #<PTR, #<BANK
 .endm
 
-; clear VM memory
 OP_VM_MEMSET          = 0x76
+;-- Clear VM memory
+; @param DEST First variable to be cleared
+; @param VALUE Variable containing the value to be filled with
+; @param COUNT Number of variables to be filled
 .macro VM_MEMSET DEST, VALUE, COUNT
         .db OP_VM_MEMSET, #>COUNT, #<COUNT, #>VALUE, #<VALUE, #>DEST, #<DEST
 .endm
 
-; copy VM memory
 OP_VM_MEMCPY          = 0x77
+;-- copy VM memory
+; @param DEST First destination variable
+; @param SOUR First source variable
+; @param COUNT Number of variables to be copied
 .macro VM_MEMCPY DEST, SOUR, COUNT
         .db OP_VM_MEMCPY, #>COUNT, #<COUNT, #>SOUR, #<SOUR, #>DEST, #<DEST
 .endm
@@ -420,14 +530,20 @@ OP_VM_MEMCPY          = 0x77
 .macro .SAVE_SLOT SLOT
         .db #<SLOT
 .endm
-; Reads count variables from save slot into dest and puts result of the operation into res
 OP_VM_SAVE_PEEK         = 0x2E
+;-- Reads variables from the save slot
+; @param RES Result of the operation
+; @param DEST First destination variable to be read into
+; @param SOUR First source variable in the save slot
+; @param COUNT Number of variables to be read
+; @param SLOT Save slot number
 .macro VM_SAVE_PEEK RES, DEST, SOUR, COUNT, SLOT
         .db OP_VM_SAVE_PEEK, #<SLOT, #>COUNT, #<COUNT, #>SOUR, #<SOUR, #>DEST, #<DEST, #>RES, #<RES
 .endm
 
-; Erases data in save slot
 OP_VM_SAVE_CLEAR         = 0x2F
+;-- Erases data in save slot
+; @param SLOT Slot number
 .macro VM_SAVE_CLEAR SLOT
         .db OP_VM_SAVE_CLEAR, #<SLOT
 .endm
@@ -570,6 +686,43 @@ OP_VM_ACTOR_SET_ANIM_SET        = 0x84
 
 ; --- UI ------------------------------------------
 
+;-- Loads a text in memory
+; @param ARG0 Amount of arguments that are passed before the null-terminated string
+;
+; The text string is defined using the `.asciz` command:
+;
+; ```
+; VM_LOAD_TEXT   0
+;   .asciz "text to render"
+; ```
+;
+; #### Displaying variables:
+; The following format specifiers allow to render variables as part of the text:
+; * `%d`  Render a variable value
+; * `%Dn` Render a variable value with `n` length
+; * `%c`  Render a character based on the variable value
+
+; The variables need to be defined before the `.asciz` call using `.dw` followed by a list of `N` variables in the order they'll be rendered.
+
+; ```
+; VM_LOAD_TEXT   3
+;   .dw VAR_0, VAR_1, VAR_1
+;   .asciz "Var 0 is %d, Var 1 is %d, Var 2 is %d"
+; ```
+
+; #### Escape Sequences:
+
+; The text string can contain escape sequence that modify the behavior or apparence of the text.
+
+; * `\001\x` Sets the text speed for the next characters in the current text. `x` is a value between `1` and `8` that represents the number of frames between the render of a character using `2^(x-2)`.
+; * `\002\x` Sets the text font
+; * `\003\x\y` Sets the position for the next character
+; * `\004\x\y` Sets the position for the next character relative to the last character
+; * `\005\` TBD
+; * `\006\mask` Wait for input to continue to the next character.
+; * `\007\n` Inverts the colors of the following characters.
+; * `\n` Next line
+; * `\r` Scroll text one line up
 OP_VM_LOAD_TEXT         = 0x40
 .macro VM_LOAD_TEXT ARG0
         .db OP_VM_LOAD_TEXT, #<ARG0
@@ -579,9 +732,15 @@ OP_VM_DISPLAY_TEXT      = 0x41
 .DISPLAY_DEFAULT        = 0
 .DISPLAY_PRESERVE_POS   = 1
 .TEXT_TILE_CONTINUE     = 0xFF
+;-- Renders the text in the defined layer (overlay, by default)
+; @param OPTIONS Text rendering options:
+;   `.DISPLAY_DEFAULT`      - default behavior
+;   `.DISPLAY_PRESERVE_POS` - preserve text position
+; @param START_TILE Tile number within the text rendering area to be rendered from; use .TEXT_TILE_CONTINUE to proceed from the current position
 .macro VM_DISPLAY_TEXT_EX OPTIONS, START_TILE
         .db OP_VM_DISPLAY_TEXT, #<START_TILE, #<OPTIONS
 .endm
+;-- Renders the text in the defined layer (obsolete)
 .macro VM_DISPLAY_TEXT
         VM_DISPLAY_TEXT_EX .DISPLAY_DEFAULT, .TEXT_TILE_CONTINUE
 .endm
@@ -589,17 +748,24 @@ OP_VM_DISPLAY_TEXT      = 0x41
 OP_VM_SWITCH_TEXT_LAYER = 0x85
 .TEXT_LAYER_BKG         = 0
 .TEXT_LAYER_WIN         = 1
+;-- Changes the `LAYER` where the text will be rendered.
+; @param LAYER
+;   `.TEXT_LAYER_BKG`    - Render text in the background layer
+;   `.TEXT_LAYER_WIN`    - Render text in the overlay layer
 .macro VM_SWITCH_TEXT_LAYER LAYER
         .db OP_VM_SWITCH_TEXT_LAYER, #<LAYER
 .endm
 
-
 OP_VM_OVERLAY_SETPOS    = 0x42
+;-- Set position of the overlay window in tiles
+; @param X X-coordinate of the overlay window in tiles
+; @param Y Y-coordinate of the overlay window in tiles
 .macro VM_OVERLAY_SETPOS X, Y
         .db OP_VM_OVERLAY_SETPOS, #<Y, #<X
 .endm
 
 .MENU_CLOSED_Y          = 0x12
+;-- Hide the overlay window
 .macro VM_OVERLAY_HIDE
         VM_OVERLAY_SETPOS 0, .MENU_CLOSED_Y
 .endm
@@ -613,6 +779,15 @@ OP_VM_OVERLAY_WAIT      = 0x44
 .UI_WAIT_BTN_A          = 4
 .UI_WAIT_BTN_B          = 8
 .UI_WAIT_BTN_ANY        = 16
+;-- Wait for the UI operation(s) completion
+; @param IS_MODAL indicates whether the operation is modal: .UI_MODAL, or not: .UI_NONMODAL
+; @param WAIT_FLAGS bit field, set of events to be waited for:
+;   `.UI_WAIT_NONE`     - No wait
+;   `.UI_WAIT_WINDOW`   - Wait until the window moved to its final position
+;   `.UI_WAIT_TEXT`     - Wait until all the text finished rendering
+;   `.UI_WAIT_BTN_A`    - Wait until "A" is pressed
+;   `.UI_WAIT_BTN_B`    - Wait until "B" is pressed
+;   `.UI_WAIT_BTN_ANY`  - Wait until any button is pressed
 .macro VM_OVERLAY_WAIT IS_MODAL, WAIT_FLAGS
         .db OP_VM_OVERLAY_WAIT, #<WAIT_FLAGS, #<IS_MODAL
 .endm
@@ -623,6 +798,13 @@ OP_VM_OVERLAY_MOVE_TO   = 0x45
 .OVERLAY_OUT_SPEED      = -2
 .OVERLAY_TEXT_OUT_SPEED = -2    ; obsolete
 .OVERLAY_SPEED_INSTANT  = -3
+;-- Animated move of the overlay window to the new position
+; @param X X-coordinate of the new position
+; @param Y Y-coordinate of the new position
+; @param SPEED speed of the movement:
+;   `.OVERLAY_IN_SPEED`       - default speed for appearing of the overlay
+;   `.OVERLAY_OUT_SPEED`      - default speed for disappearing of the overlay
+;   `.OVERLAY_SPEED_INSTANT`  - instant movement
 .macro VM_OVERLAY_MOVE_TO X, Y, SPEED
         .db OP_VM_OVERLAY_MOVE_TO, #<SPEED, #<Y, #<X
 .endm
@@ -632,11 +814,31 @@ OP_VM_OVERLAY_SHOW      = 0x46
 .UI_COLOR_WHITE         = 1
 .UI_DRAW_FRAME          = 1
 .UI_AUTO_SCROLL         = 2
+;-- Show the overlay window
+; @param X X-coordinate of the new position
+; @param Y Y-coordinate of the new position
+; @param COLOR initial color of the overlay window:
+;   `.UI_COLOR_BLACK`     - black overlay window
+;   `.UI_COLOR_WHITE`     - white overlay window
+; @param OPTIONS display options:
+;   `.UI_DRAW_FRAME`      - draw overlay frame
+;   `.UI_AUTO_SCROLL`     - set automatic text scroll area; text will be scrolled up when printing more lines than the overlay height.
 .macro VM_OVERLAY_SHOW X, Y, COLOR, OPTIONS
         .db OP_VM_OVERLAY_SHOW, #<OPTIONS, #<COLOR, #<Y, #<X
 .endm
 
 OP_VM_OVERLAY_CLEAR     = 0x47
+;-- Clear the rectangle area of the overlay window
+; @param X X-Coordinate in tiles of the upper left corner
+; @param Y Y-Coordinate in tiles of the upper left corner
+; @param W Width in tiles of the rectangle area
+; @param H Height in tiles of the rectangle area
+; @param COLOR initial color of the overlay window:
+;   `.UI_COLOR_BLACK`     - black overlay window
+;   `.UI_COLOR_WHITE`     - white overlay window
+; @param OPTIONS display options:
+;   `.UI_DRAW_FRAME`      - draw overlay frame
+;   `.UI_AUTO_SCROLL`     - set automatic text scroll area; text will be scrolled up when printing more lines than the overlay height.
 .macro VM_OVERLAY_CLEAR X, Y, W, H, COLOR, OPTIONS
         .db OP_VM_OVERLAY_CLEAR, #<OPTIONS, #<COLOR, #<H, #<W, #<Y, #<X
 .endm
@@ -646,40 +848,92 @@ OP_VM_CHOICE            = 0x48
 .UI_MENU_LAST_0         = 1
 .UI_MENU_CANCEL_B       = 2
 .UI_MENU_SET_START      = 4
-.macro VM_CHOICE IDX, OPTIONS, COUNT
-        .db OP_VM_CHOICE, #<COUNT, #<OPTIONS, #>IDX, #<IDX
-.endm
 .macro .MENUITEM X, Y, iL, iR, iU, iD
         .db #<X, #<Y, #<iL, #<iR, #<iU, #<iD
 .endm
+;-- Execute menu
+; @param IDX Variable that receive the result of the menu execution
+; @param OPTIONS bit field, set of the possible menu options:
+;   `.UI_MENU_STANDARD`    - default menu behavior
+;   `.UI_MENU_LAST_0`      - last item return result of 0
+;   `.UI_MENU_CANCEL_B`    - B button cancels the menu execution
+;   `.UI_MENU_SET_START`   - if set IDX may contain the initial item index
+; @param COUNT number of menu items
+;
+; instruction must be followed by the COUNT of .MENUITEM definitions:
+; .MENUITEM X, Y, iL, iR, iU, iD
+; where:
+;   `X` - X-Coordinate of the cursor pointer in tiles
+;   `Y` - Y-Coordinate of the cursor pointer in tiles
+;   `iL` - menu item number, where the cursor must move, when you press LEFT
+;   `iR` - menu item number, where the cursor must move, when you press RIGHT
+;   `iU` - menu item number, where the cursor must move, when you press UP
+;   `iD` - menu item number, where the cursor must move, when you press DOWN
+.macro VM_CHOICE IDX, OPTIONS, COUNT
+        .db OP_VM_CHOICE, #<COUNT, #<OPTIONS, #>IDX, #<IDX
+.endm
 
 OP_VM_SET_FONT          = 0x4B
+;-- Sets active font
+; @param FONT_INDEX the index of the font to be activated
 .macro VM_SET_FONT FONT_INDEX
         .db OP_VM_SET_FONT, #<FONT_INDEX
 .endm
 
 .UI_PRINT_LEFTTORIGHT   = 0
 .UI_PRINT_RIGHTTOLEFT   = 1
+;-- Sets print direction
+; @param DIRECTION direction of the text rendering:
+;   `.UI_PRINT_LEFTTORIGHT`  - text is rendered from left to right (left justify)
+;   `.UI_PRINT_RIGHTTOLEFT`  - text is rendered from right to left (right justify)
 .macro VM_SET_PRINT_DIR DIRECTION
         VM_SET_CONST_UINT8 _vwf_direction, ^/DIRECTION & 1/
 .endm
 
 OP_VM_OVERLAY_SET_SUBMAP_EX = 0x4C
+;-- Copies rectange area of the background map onto the overlay window
+; @param PARAMS_IDX points to the beginning of the pseudo-structure that contains these members:
+;    `x`       - X-Coordinate within the overlay window in tiles
+;    `y`       - Y-Coordinate tithin the overlay window in tiles
+;    `w`       - Width of the copied area in tiles
+;    `h`       - Height of the copied area in tiles
+;    `scene_x` - X-Coordinate within the background map in tiles
+;    `scene_y` - Y-Coordinate within the background map in tiles
 .macro VM_OVERLAY_SET_SUBMAP_EX PARAMS_IDX
         .db OP_VM_OVERLAY_SET_SUBMAP_EX, #>PARAMS_IDX, #<PARAMS_IDX
 .endm
 
 OP_VM_OVERLAY_SCROLL    = 0x4D
+;-- Scrolls the rectangle area
+; @param X X-Coordinate of the upper left corner in tiles
+; @param Y Y-Coordinate of the upper left corner in tiles
+; @param W Width of the area in tiles
+; @param H Height of the area in tiles
+; @param COLOR Color of the empty row of tiles that appear at the bottom of the scroll area
 .macro VM_OVERLAY_SCROLL X, Y, W, H, COLOR
         .db OP_VM_OVERLAY_SCROLL, #<COLOR, #<H, #<W, #<Y, #<X
 .endm
 
 OP_VM_OVERLAY_SET_SCROLL = 0x4E
+;-- Defines the scroll area for the overlay
+; When the text overflows that area it'll scroll up by 1 row
+; @param X X-Coordinate of the upper left corner in tiles
+; @param Y Y-Coordinate of the upper left corner in tiles
+; @param W Width of the area in tiles
+; @param H Height of the area in tiles
+; @param COLOR Color of the empty row of tiles that appear at the bottom of the scroll area
 .macro VM_OVERLAY_SET_SCROLL X, Y, W, H, COLOR
         .db OP_VM_OVERLAY_SET_SCROLL, #<COLOR, #<H, #<W, #<Y, #<X
 .endm
 
 OP_VM_OVERLAY_SET_SUBMAP = 0x4F
+;-- Copies a rectange area of tiles from the scene background
+; @param X X-Coordinate within the overlay window of the upper left corner in tiles
+; @param Y Y-Coordinate within the overlay window of the upper left corner in tiles
+; @param W Width of the area in tiles
+; @param H Height of the area in tiles
+; @param SX X-Coordinate within the level background map
+; @param SY Y-Coordinate within the level background map
 .macro VM_OVERLAY_SET_SUBMAP X, Y, W, H, SX, SY
         .db OP_VM_OVERLAY_SET_SUBMAP, #<SY, #<SX, #<H, #<W, #<Y, #<X
 .endm
@@ -695,6 +949,7 @@ OP_VM_LOAD_TILES        = 0x49
         .db OP_VM_LOAD_TILES, #>ADDR, #<ADDR, #<BANK, #<LEN, #<ID
 .endm
 
+; Loads a new tileset into the background VRAM tiles starting at a given tile id (`IDX`).
 OP_VM_LOAD_TILESET      = 0x50
 .macro VM_LOAD_TILESET IDX, BANK, BKG
         .db OP_VM_LOAD_TILESET, #>BKG, #<BKG, #<BANK, #>IDX, #<IDX
@@ -774,7 +1029,7 @@ OP_VM_TIMER_PREPARE     = 0x58
         .db OP_VM_TIMER_PREPARE, #>ADDR, #<ADDR, #<BANK, #<TIMER
 .endm
 
-; Start a timer calling once every interval*16 frames
+; Start a timer calling once every `INTERVAL` * 16 frames
 OP_VM_TIMER_SET         = 0x59
 .macro VM_TIMER_SET TIMER, INTERVAL
         .db OP_VM_TIMER_SET, #<INTERVAL, #<TIMER
@@ -840,13 +1095,32 @@ OP_VM_MUSIC_STOP        = 0x61
         .db OP_VM_MUSIC_STOP
 .endm
 
-; Mutes/unmutes channels by mask
+; Mutes/unmutes channels using `MASK`. The 4 lower bits of the mask represent the 4 audio channels.
+
+; | `Mask`   | Channel 1 | Channel 2 | Channel 3 | Channel 4 |
+; | -------- | --------- | --------- | --------- | --------- |
+; | `0b0000` | Muted     | Muted     | Muted     | Muted     |
+; | `0b0001` | Muted     | Muted     | Muted     | Not Muted |
+; | `0b0010` | Muted     | Muted     | Not Muted | Muted     |
+; | `0b0011` | Muted     | Muted     | Not Muted | Not Muted |
+; | `0b0100` | Muted     | Not Muted | Muted     | Muted     |
+; | `0b0101` | Muted     | Not Muted | Muted     | Not Muted |
+; | `0b0110` | Muted     | Not Muted | Not Muted | Muted     |
+; | `0b0111` | Muted     | Not Muted | Not Muted | Not Muted |
+; | `0b1000` | Not Muted | Muted     | Muted     | Muted     |
+; | `0b1001` | Not Muted | Muted     | Muted     | Not Muted |
+; | `0b1010` | Not Muted | Muted     | Not Muted | Muted     |
+; | `0b1011` | Not Muted | Muted     | Not Muted | Not Muted |
+; | `0b1100` | Not Muted | Not Muted | Muted     | Muted     |
+; | `0b1101` | Not Muted | Not Muted | Muted     | Not Muted |
+; | `0b1110` | Not Muted | Not Muted | Not Muted | Muted     |
+; | `0b1111` | Not Muted | Not Muted | Not Muted | Not Muted |
 OP_VM_MUSIC_MUTE        = 0x62
 .macro VM_MUSIC_MUTE MASK
         .db OP_VM_MUSIC_MUTE, #<MASK
 .endm
 
-; Sets master volume
+; Sets master volume to `VOL`
 OP_VM_SOUND_MASTERVOL   = 0x63
 .macro VM_SOUND_MASTERVOL VOL
         .db OP_VM_SOUND_MASTERVOL, #<VOL
@@ -858,7 +1132,7 @@ OP_VM_MUSIC_ROUTINE     = 0x65
         .db OP_VM_MUSIC_ROUTINE, #>ADDR, #<ADDR, #<BANK, #<ROUTINE
 .endm
 
-; Plays SFX
+; Play a sound effect asset
 OP_VM_SFX_PLAY          = 0x66
 .SFX_PRIORITY_MINIMAL   = 0
 .SFX_PRIORITY_NORMAL    = 4
@@ -875,21 +1149,36 @@ OP_VM_MUSIC_SETPOS      = 0x67
 
 ; --- SCENES -------------------------------
 
+; To load a new scene raise a `EXCEPTION_CHANGE_SCENE` exception using `VM_RAISE`.
+
+; The scene to load is defined using `IMPORT_FAR_PTR_DATA` followed by the scene symbol.
+
+; For example to load `scene 10`:
+
+; ```
+; VM_RAISE  	EXCEPTION_CHANGE_SCENE, 3
+;   IMPORT_FAR_PTR_DATA _scene_10
+; ```
+
+; Pushes the current scene to the scene stack.
 OP_VM_SCENE_PUSH        = 0x68
 .macro VM_SCENE_PUSH
         .db OP_VM_SCENE_PUSH
 .endm
 
+; Removes the last scene from the scene stack an loads it.
 OP_VM_SCENE_POP         = 0x69
 .macro VM_SCENE_POP
         .db OP_VM_SCENE_POP
 .endm
 
+; Removes all scenes from the scene stack and loads the first one.
 OP_VM_SCENE_POP_ALL     = 0x6A
 .macro VM_SCENE_POP_ALL
         .db OP_VM_SCENE_POP_ALL
 .endm
 
+; Removes all the scenes from the scene stack.
 OP_VM_SCENE_STACK_RESET = 0x6B
 .macro VM_SCENE_STACK_RESET
         .db OP_VM_SCENE_STACK_RESET
@@ -913,6 +1202,14 @@ OP_VM_SIO_EXCHANGE      = 0x6D
 ; --- CAMERA -------------------------------
 
 OP_VM_CAMERA_MOVE_TO     = 0x70
+;-- Moves the camera to the new position
+; @param IDX Start of the pseudo-structure which contains the new camera position
+; @param SPEED Speed of the camera movement
+; @param AFTER_LOCK Lock status of the camera after the movement
+;   `.CAMERA_LOCK`   - lock camera by X and Y
+;   `.CAMERA_LOCK_X` - lock camera by X
+;   `.CAMERA_LOCK_Y` - lock camera by Y
+;   `.CAMERA_UNLOCK` - unlock camera
 .macro VM_CAMERA_MOVE_TO IDX, SPEED, AFTER_LOCK
         .db OP_VM_CAMERA_MOVE_TO, #<AFTER_LOCK, #<SPEED, #>IDX, #<IDX
 .endm
@@ -923,6 +1220,8 @@ OP_VM_CAMERA_MOVE_TO     = 0x70
 .CAMERA_UNLOCK           = 0b00000000
 
 OP_VM_CAMERA_SET_POS     = 0x71
+;-- Sets the camera position
+; @param IDX Start of the pseudo-structure which contains the new camera position
 .macro VM_CAMERA_SET_POS IDX
         .db OP_VM_CAMERA_SET_POS, #>IDX, #<IDX
 .endm
@@ -932,32 +1231,47 @@ OP_VM_CAMERA_SET_POS     = 0x71
 
 ; --- RTC ----------------------------------
 
-; Latch RTC value for access
 OP_VM_RTC_LATCH          = 0x78
+;-- Latch RTC value for access
 .macro VM_RTC_LATCH
         .db OP_VM_RTC_LATCH
 .endm
 
-; Read RTC value
 OP_VM_RTC_GET            = 0x79
 .RTC_SECONDS             = 0x00
 .RTC_MINUTES             = 0x01
 .RTC_HOURS               = 0x02
 .RTC_DAYS                = 0x03
+;-- Read RTC value
+; @param IDX Target variable
+; @param WHAT RTC value to be read
+;   `.RTC_SECONDS` - Seconds
+;   `.RTC_MINUTES` - Minutes
+;   `.RTC_HOURS`   - Hours
+;   `.RTC_DAYS`    - Days
 .macro VM_RTC_GET IDX, WHAT
         .db OP_VM_RTC_GET, #<WHAT, #>IDX, #<IDX
 .endm
 
-; Write RTC value
 OP_VM_RTC_SET            = 0x7A
+;-- Write RTC value
+; @param IDX Source variable
+; @param WHAT RTC value to be written
+;   `.RTC_SECONDS` - Seconds
+;   `.RTC_MINUTES` - Minutes
+;   `.RTC_HOURS`   - Hours
+;   `.RTC_DAYS`    - Days
 .macro VM_RTC_SET IDX, WHAT
         .db OP_VM_RTC_SET, #<WHAT, #>IDX, #<IDX
 .endm
 
-; Start or stop RTC
 OP_VM_RTC_START          = 0x7B
 .RTC_STOP                = 0
 .RTC_START               = 1
+;-- Start or stop RTC
+; @param START Start or stop flag
+;   `.RTC_STOP`    - stop RTC
+;   `.RTC_START`   - start RTC
 .macro VM_RTC_START START
         .db OP_VM_RTC_START, #<START
 .endm
@@ -985,7 +1299,14 @@ OP_VM_LOAD_PALETTE       = 0x7C
 
 ; --- SGB -----------------------------------------
 
-; transfers SGB packet(s)
+;-- Transfers SGB packet(s). Data of variable length is placed after this instruction, for example:
+;
+; ```
+; VM_SGB_TRANSFER
+;     .db ((0x04 << 3) | 1), 1, 0x07, ((0x01 << 4) | (0x02 << 2) | 0x03), 5,5, 10,10,  0, 0, 0, 0, 0, 0, 0, 0 ; ATTR_BLK packet
+; ```
+;
+; SGB packet size is a multiple of 16 bytes and encoded in the packet itself.
 OP_VM_SGB_TRANSFER       = 0x7E
 .macro VM_SGB_TRANSFER
         .db OP_VM_SGB_TRANSFER
@@ -994,6 +1315,8 @@ OP_VM_SGB_TRANSFER       = 0x7E
 ; --- RUMBLE --------------------------------------
 
 OP_VM_RUMBLE             = 0x7F
+;-- Enables or disables rumble on a cart that has that function
+; @param ENABLE 1 - enable or 0 - disable
 .macro VM_RUMBLE ENABLE
         .db OP_VM_RUMBLE, #<ENABLE
 .endm
@@ -1026,22 +1349,31 @@ OP_VM_COS_SCALE         = 0x8A
 
 ; --- TEXT SOUND -------------------------------------
 
-; Set sound effect for text
 OP_VM_SET_TEXT_SOUND    = 0x8B
+;-- Set the sound effect for the text output
+; @param BANK Bank number of the effect
+; @param ADDR Address of the effect
+; @param MASK Mute mask of the effect
 .macro VM_SET_TEXT_SOUND BANK, ADDR, MASK
         .db OP_VM_SET_TEXT_SOUND, #<MASK, #>ADDR, #<ADDR, #<BANK
 .endm
 
 ; --- GB PRINTER -------------------------------------
 
-; Detect printer
 OP_VM_PRINTER_DETECT    = 0x8C
+;-- Detect printer
+; @param ERROR Target variable that receives the result of detection
+; @param DELAY Detection timeout
 .macro VM_PRINTER_DETECT ERROR, DELAY
         .db OP_VM_PRINTER_DETECT, #<DELAY, #>ERROR, #<ERROR
 .endm
 
-; Print up to HEIGHT rows of the overlay window (must be multiple of 2)
 OP_VM_PRINT_OVERLAY     = 0x8D
+;-- Print up to HEIGHT rows of the overlay window (must be multiple of 2)
+; @param ERROR Target variable that receives the result of printing
+; @param START Start line of the overlay window
+; @param HEIGHT Amount of lines to print
+; @param MARGIN Lines to feed after the printing is finished
 .macro VM_PRINT_OVERLAY ERROR, START, HEIGHT, MARGIN
         .db OP_VM_PRINT_OVERLAY, #<MARGIN, #<HEIGHT, #<START, #>ERROR, #<ERROR
 .endm

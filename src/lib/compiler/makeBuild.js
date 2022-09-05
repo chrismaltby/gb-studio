@@ -129,7 +129,7 @@ const makeBuild = async ({
       settings.musicDriver !== "huge"
         ? {
             // Reserve space in bank1 for gbt_player.lib
-            1: 0x7f3,
+            1: 0x800,
           }
         : {},
   });

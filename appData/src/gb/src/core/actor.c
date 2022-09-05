@@ -383,7 +383,7 @@ void actors_handle_player_collision() BANKED {
 }
 
 UWORD check_collision_in_direction(UWORD start_x, UWORD start_y, bounding_box_t *bounds, UWORD end_pos, col_check_dir_e check_dir) BANKED {
-    UBYTE tx1, ty1, tx2, ty2, tt;
+    WORD tx1, ty1, tx2, ty2, tt;
     switch (check_dir) {
         case CHECK_DIR_LEFT:  // Check left
             tx1 = (((start_x >> 4) + bounds->left) >> 3);
