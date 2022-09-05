@@ -1096,7 +1096,7 @@ OP_VM_MUSIC_STOP        = 0x61
 .endm
 
 ; Mutes/unmutes channels using `MASK`. The 4 lower bits of the mask represent the 4 audio channels.
-
+;
 ; | `Mask`   | Channel 1 | Channel 2 | Channel 3 | Channel 4 |
 ; | -------- | --------- | --------- | --------- | --------- |
 ; | `0b0000` | Muted     | Muted     | Muted     | Muted     |
