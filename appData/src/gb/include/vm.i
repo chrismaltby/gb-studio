@@ -46,6 +46,8 @@ EXCEPTION_LOAD          = 4
 .PARAM15 = -18
 .PARAM16 = -19
 
+; ------------------------------------------------------
+; @section Core
 
 OP_VM_STOP         = 0x00
 ;-- Stops execution of context
@@ -55,23 +57,23 @@ OP_VM_STOP         = 0x00
 
 OP_VM_PUSH_CONST   = 0x01
 ;-- Pushes immediate value to the top of the VM stack
-; @param ARG0 immediate value to be pushed
-.macro VM_PUSH_CONST ARG0
-        .db OP_VM_PUSH_CONST, #>ARG0, #<ARG0
+; @param VAL immediate value to be pushed
+.macro VM_PUSH_CONST VAL
+        .db OP_VM_PUSH_CONST, #>VAL, #<VAL
 .endm
 
 OP_VM_POP          = 0x02
 ;-- Removes the top values from the VM stack
-; @param ARG0 number of values to be removed from the stack
-.macro VM_POP ARG0
-        .db OP_VM_POP, #ARG0
+; @param N number of values to be removed from the stack
+.macro VM_POP N
+        .db OP_VM_POP, #N
 .endm
 
 OP_VM_CALL         = 0x04
 ;-- Call script by near address
-; @param ARG0 address of the script subroutine
-.macro VM_CALL ARG0
-        .db OP_VM_CALL, #>ARG0, #<ARG0
+; @param ADDR address of the script subroutine
+.macro VM_CALL ADDR
+        .db OP_VM_CALL, #>ADDR, #<ADDR
 .endm
 
 OP_VM_RET          = 0x05
@@ -110,11 +112,11 @@ OP_VM_LOOP         = 0x07
 .endm
 
 OP_VM_SWITCH       = 0x08
-.macro .CASE VAL, LBL
-        .dw #VAL, #LBL
+.macro .CASE VAL, LABEL
+        .dw #VAL, #LABEL
 .endm
 ;-- Compares variable with a set of values, and if equal jump to the specified label.
-; values for testing may be defined with the .CASE macro, where VAL parameter is a value for testing and LBL is a jump label
+; values for testing may be defined with the .CASE macro, where VAL parameter is a value for testing and LABEL is a jump label
 ; @param IDX variable for compare
 ; @param SIZE amount of entries for test.
 ; @param N amount of values to de cleaned from stack on exit
@@ -125,25 +127,25 @@ OP_VM_SWITCH       = 0x08
 OP_VM_JUMP         = 0x09
 ;-- Jumps to near address
 ; @param ARG0 jump label
-.macro VM_JUMP ARG0
-        .db OP_VM_JUMP, #>ARG0, #<ARG0
+.macro VM_JUMP LABEL
+        .db OP_VM_JUMP, #>LABEL, #<LABEL
 .endm
 
 OP_VM_CALL_FAR     = 0x0A
 ;-- Call far routine (inter-bank call)
-; @param ARG0 Bank number of the routine
-; @param ARG1 Address of the routine
-.macro VM_CALL_FAR ARG0, ARG1
-        .db OP_VM_CALL_FAR, #>ARG1, #<ARG1, #<ARG0
+; @param BANK Bank number of the routine
+; @param ADDR Address of the routine
+.macro VM_CALL_FAR BANK, ADDR
+        .db OP_VM_CALL_FAR, #>ADDR, #<ADDR, #<BANK
 .endm
 
 OP_VM_RET_FAR      = 0x0B
-;-- Rerurn from the far call
+;-- Return from the far call
 .macro VM_RET_FAR
         .db OP_VM_RET_FAR, 0
 .endm
 
-;-- Rerurn from the far call and remove N arguments from stack
+;-- Return from the far call and remove N arguments from stack
 ; @param N Number of arguments to be removed from stack
 .macro VM_RET_FAR_N N
         .db OP_VM_RET_FAR, #<N
@@ -151,14 +153,14 @@ OP_VM_RET_FAR      = 0x0B
 
 OP_VM_INVOKE       = 0x0D
 ;-- Invokes C function until it returns true.
-; @param ARG0 Bank number of the function
-; @param ARG1 Address of the function, currently 2 functions are implemented:
+; @param BANK Bank number of the function
+; @param ADDR Address of the function, currently 2 functions are implemented:
 ;   `_wait_frames`   - wait for N vblank intervals
 ;   `_camera_shake`  - shake camera N times
-; @param ARG2 Number of arguments to be removed from stack on return
-; @param ARG3 Points the first parameter to be passed into the C function
-.macro VM_INVOKE ARG0, ARG1, ARG2, ARG3
-        .db OP_VM_INVOKE, #>ARG3, #<ARG3, #<ARG2, #>ARG1, #<ARG1, #<ARG0
+; @param N Number of arguments to be removed from stack on return
+; @param PARAMS Points the first parameter to be passed into the C function
+.macro VM_INVOKE BANK, ADDR, N, PARAMS
+        .db OP_VM_INVOKE, #>PARAMS, #<PARAMS, #<N, #>ADDR, #<ADDR, #<BANK
 .endm
 
 OP_VM_BEGINTHREAD  = 0x0E
@@ -197,23 +199,23 @@ OP_VM_IF           = 0x0F
 
 OP_VM_PUSH_VALUE_IND = 0x10
 ;-- Pushes a value on VM stack or a global indirectly from an index in the variable
-; @param ARG0 variable that contains the index of the variable to be pushed on stack
-.macro VM_PUSH_VALUE_IND ARG0
-        .db OP_VM_PUSH_VALUE_IND, #>ARG0, #<ARG0
+; @param IDX variable that contains the index of the variable to be pushed on stack
+.macro VM_PUSH_VALUE_IND IDX
+        .db OP_VM_PUSH_VALUE_IND, #>IDX, #<IDX
 .endm
 
 OP_VM_PUSH_VALUE   = 0x11
 ;-- Pushes a value of the variable onto stack
-; @param ARG0 variable to be pushed
-.macro VM_PUSH_VALUE ARG0
-        .db OP_VM_PUSH_VALUE, #>ARG0, #<ARG0
+; @param IDX variable to be pushed
+.macro VM_PUSH_VALUE IDX
+        .db OP_VM_PUSH_VALUE, #>IDX, #<IDX
 .endm
 
 OP_VM_RESERVE      = 0x12
 ;-- Reserves or disposes amount of values on stack
-; @param ARG0 positive value - amount of variables to be reserved on stack, negative value - amount of variables to be popped from stack
-.macro VM_RESERVE ARG0
-        .db OP_VM_RESERVE, #<ARG0
+; @param N positive value - amount of variables to be reserved on stack, negative value - amount of variables to be popped from stack
+.macro VM_RESERVE N
+        .db OP_VM_RESERVE, #<N
 .endm
 
 OP_VM_SET         = 0x13
@@ -526,6 +528,7 @@ OP_VM_MEMCPY          = 0x77
 ; --- engine-specific instructions ------------------------------------------
 
 ; --- LOAD/SAVE --------------------------------------
+; @section Load and Save
 
 .macro .SAVE_SLOT SLOT
         .db #<SLOT
@@ -549,21 +552,35 @@ OP_VM_SAVE_CLEAR         = 0x2F
 .endm
 
 ; --- ACTOR ------------------------------------------
+; @section Actor
 
 OP_VM_ACTOR_MOVE_TO             = 0x30
 .ACTOR_ATTR_H_FIRST             = 0x01
 .ACTOR_ATTR_CHECK_COLL          = 0x02
 .ACTOR_ATTR_DIAGONAL            = 0x04
+;-- Move actor to the new position
+; @param IDX points to the beginning of the pseudo-structure that contains these members:
+;    `ID`   - Actor number
+;    `X`    - New X-coordinate of the actor
+;    `Y`    - New Y-coordinate of the actor
+;    `ATTR` - Bit flags:
+;       `.ACTOR_ATTR_H_FIRST`    - move horizontal first
+;       `.ACTOR_ATTR_CHECK_COLL` - respect collisions
+;       `.ACTOR_ATTR_DIAGONAL`   - allow diagonal movement
 .macro VM_ACTOR_MOVE_TO IDX
         .db OP_VM_ACTOR_MOVE_TO, #>IDX, #<IDX
 .endm
 
 OP_VM_ACTOR_MOVE_CANCEL         = 0x88
+;-- Cancel movement of actor
+; @param ACTOR Variable that contains the actor number
 .macro VM_ACTOR_MOVE_CANCEL ACTOR
         .db OP_VM_ACTOR_MOVE_CANCEL, #>ACTOR, #<ACTOR
 .endm
 
 OP_VM_ACTOR_ACTIVATE            = 0x31
+;-- Activate the actor
+; @param ACTOR Variable that contains the actor number
 .macro VM_ACTOR_ACTIVATE ACTOR
         .db OP_VM_ACTOR_ACTIVATE, #>ACTOR, #<ACTOR
 .endm
@@ -573,71 +590,131 @@ OP_VM_ACTOR_SET_DIR             = 0x32
 .DIR_RIGHT                      = 1
 .DIR_UP                         = 2
 .DIR_LEFT                       = 3
+;-- Set direction of the actor
+; @param ACTOR Variable that contains the actor number
+; @param DIR one of these directions:
+;   `.DIR_DOWN`   - actor faces down
+;   `.DIR_RIGHT`  - actor faces right
+;   `.DIR_UP`     - actor faces up
+;   `.DIR_LEFT`   - actor faces left
 .macro VM_ACTOR_SET_DIR ACTOR, DIR
         .db OP_VM_ACTOR_SET_DIR, #<DIR, #>ACTOR, #<ACTOR
 .endm
 
 OP_VM_ACTOR_DEACTIVATE          = 0x33
+;-- Deactivate the actor
+; @param ACTOR Variable that contains the actor number
 .macro VM_ACTOR_DEACTIVATE ACTOR
         .db OP_VM_ACTOR_DEACTIVATE, #>ACTOR, #<ACTOR
 .endm
 
 OP_VM_ACTOR_SET_ANIM            = 0x34
+;-- Set actor animation
+; @param ACTOR Variable that contains the actor number
+; @param ANIM Animation number
 .macro VM_ACTOR_SET_ANIM ACTOR, ANIM
         .db OP_VM_ACTOR_SET_ANIM, #>ANIM, #<ANIM, #>ACTOR, #<ACTOR
 .endm
 
 OP_VM_ACTOR_SET_POS             = 0x35
+;-- Set new actor position
+; @param IDX points to the beginning of the pseudo-structure that contains these members:
+;    `ID`   - Actor number
+;    `X`    - New X-coordinate of the actor
+;    `Y`    - New Y-coordinate of the actor
 .macro VM_ACTOR_SET_POS IDX
         .db OP_VM_ACTOR_SET_POS, #>IDX, #<IDX
 .endm
 
 OP_VM_ACTOR_EMOTE               = 0x36
+;-- Set actor emotion
+; @param ACTOR Variable that contains the actor number
+; @param AVATAR_BANK Bank of the avatar image
+; @param AVATAR Address of the avatar image
 .macro VM_ACTOR_EMOTE ACTOR, AVATAR_BANK, AVATAR
         .db OP_VM_ACTOR_EMOTE, #>AVATAR, #<AVATAR, #<AVATAR_BANK, #>ACTOR, #<ACTOR
 .endm
 
 OP_VM_ACTOR_SET_BOUNDS          = 0x37
+;-- Set actor bounding box
+; @param ACTOR Variable that contains the actor number
+; @param LEFT Left boundary of the bounding box
+; @param RIGHT Right boundary of the bounding box
+; @param TOP Top boundary of the bounding box
+; @param BOTTOM Bottom boundary of the bounding box
 .macro VM_ACTOR_SET_BOUNDS ACTOR, LEFT, RIGHT, TOP, BOTTOM
         .db OP_VM_ACTOR_SET_BOUNDS, #<BOTTOM, #<TOP, #<RIGHT, #<LEFT, #>ACTOR, #<ACTOR
 .endm
 
 OP_VM_ACTOR_SET_SPRITESHEET     = 0x38
+;-- Set actor spritesheet
+; @param ACTOR Variable that contains the actor number
+; @param SHEET_BANK Bank of the sprite sheet
+; @param SHEET Address of the sprite sheet
 .macro VM_ACTOR_SET_SPRITESHEET ACTOR, SHEET_BANK, SHEET
         .db OP_VM_ACTOR_SET_SPRITESHEET, #>SHEET, #<SHEET, #<SHEET_BANK, #>ACTOR, #<ACTOR
 .endm
 
 OP_VM_ACTOR_SET_SPRITESHEET_BY_REF     = 0x87
+;-- Set actor spritesheet using far the pointer in variables
+; @param ACTOR Variable that contains the actor number
+; @param FAR_PTR points to the pseudo-struct that contains the address of the sprite sheet:
+;   `BANK` - Bank of the sprite sheet
+;   `DATA` - Address of the sprite sheet
 .macro VM_ACTOR_SET_SPRITESHEET_BY_REF ACTOR, FAR_PTR
         .db OP_VM_ACTOR_SET_SPRITESHEET_BY_REF, #>FAR_PTR, #<FAR_PTR, #>ACTOR, #<ACTOR
 .endm
 
 OP_VM_ACTOR_REPLACE_TILE        = 0x39
+;-- Replace tile in the actor spritesheet
+; @param ACTOR Variable that contains the actor number
+; @param TARGET_TILE Tile number for replacement
+; @param TILEDATA_BANK Bank of the tile data
+; @param TILEDATA Address of the tile data
+; @param START Start tile in the tile data array
+; @param LEN Amount of tiles for replacing
 .macro VM_ACTOR_REPLACE_TILE ACTOR, TARGET_TILE, TILEDATA_BANK, TILEDATA, START, LEN
         .db OP_VM_ACTOR_REPLACE_TILE, #<LEN, #<START, #>TILEDATA, #<TILEDATA, #<TILEDATA_BANK, #<TARGET_TILE, #>ACTOR, #<ACTOR
 .endm
 
 OP_VM_ACTOR_GET_POS             = 0x3A
+;-- Get actor position
+; @param IDX points to the beginning of the pseudo-structure that contains these members:
+;    `ID`   - Actor number
+;    `X`    - X-coordinate of the actor
+;    `Y`    - Y-coordinate of the actor
 .macro VM_ACTOR_GET_POS IDX
         .db OP_VM_ACTOR_GET_POS, #>IDX, #<IDX
 .endm
 
 OP_VM_ACTOR_GET_DIR             = 0x3C
+;-- Get direction of the actor
+; @param IDX Variable that contains the actor number
+; @param DEST Target variable that receive the actor direction
 .macro VM_ACTOR_GET_DIR IDX, DEST
         .db OP_VM_ACTOR_GET_DIR, #>DEST, #<DEST, #>IDX, #<IDX
 .endm
 
 OP_VM_ACTOR_GET_ANGLE           = 0x86
+;-- Get actor angle
+; @param IDX Variable that contains the actor number
+; @param DEST Target variable that receive the actor angle
 .macro VM_ACTOR_GET_ANGLE IDX, DEST
         .db OP_VM_ACTOR_GET_ANGLE, #>DEST, #<DEST, #>IDX, #<IDX
 .endm
 
 OP_VM_ACTOR_SET_ANIM_TICK       = 0x3D
+;-- Set actor animation tick
+; @param ACTOR Variable that contains the actor number
+; @param TICK Animation tick
 .macro VM_ACTOR_SET_ANIM_TICK ACTOR, TICK
         .db OP_VM_ACTOR_SET_ANIM_TICK, #<TICK, #>ACTOR, #<ACTOR
 .endm
 
 OP_VM_ACTOR_SET_MOVE_SPEED      = 0x3E
+;-- Set actor move speed
+; @param ACTOR Variable that contains the actor number
+; @param SPEED Actor move speed
 .macro VM_ACTOR_SET_MOVE_SPEED ACTOR, SPEED
         .db OP_VM_ACTOR_SET_MOVE_SPEED, #<SPEED, #>ACTOR, #<ACTOR
 .endm
@@ -648,46 +725,75 @@ OP_VM_ACTOR_SET_FLAGS           = 0x3F
 .ACTOR_FLAG_ANIM_NOLOOP         = 0x04
 .ACTOR_FLAG_COLLISION           = 0x08
 .ACTOR_FLAG_PERSISTENT          = 0x10
+;-- Set actor flags
+; @param ACTOR Variable that contains the actor number
+; @param FLAGS bit values to be set or cleared:
+;   `.ACTOR_FLAG_PINNED`      - pin/unpin the actor
+;   `.ACTOR_FLAG_HIDDEN`      - hide/show actor
+;   `.ACTOR_FLAG_ANIM_NOLOOP` - disable animation loop
+;   `.ACTOR_FLAG_COLLISION`   - disable/enable collision
+;   `.ACTOR_FLAG_PERSISTENT`  - set persistent actor flag
+; @param MASK bit mask of values to be set or cleared
 .macro VM_ACTOR_SET_FLAGS ACTOR, FLAGS, MASK
         .db OP_VM_ACTOR_SET_FLAGS, #<MASK, #<FLAGS, #>ACTOR, #<ACTOR
 .endm
 
 .ACTOR_VISIBLE                  = 0
 .ACTOR_HIDDEN                   = 1
+;-- Hide/show actor
+; @param ACTOR Variable that contains the actor number
+; @param HIDDEN `.ACTOR_VISIBLE` shows actor, `.ACTOR_HIDDEN` hides the actor
 .macro VM_ACTOR_SET_HIDDEN ACTOR, HIDDEN
         VM_ACTOR_SET_FLAGS ACTOR, ^/(HIDDEN << 1)/, .ACTOR_FLAG_HIDDEN
 .endm
 
 .ACTOR_COLLISION_DISABLED       = 0
 .ACTOR_COLLISION_ENABLED        = 1
+;-- Enable/disable actor collisions
+; @param ACTOR Variable that contains the actor number
+; @param ENABLED `.ACTOR_COLLISION_DISABLED` disables actor collision, `.ACTOR_COLLISION_ENABLED` enables actor collision
 .macro VM_ACTOR_SET_COLL_ENABLED ACTOR, ENABLED
         VM_ACTOR_SET_FLAGS ACTOR, ^/(ENABLED << 3)/, .ACTOR_FLAG_COLLISION
 .endm
 
 OP_VM_ACTOR_TERMINATE_UPDATE    = 0x74
+;-- Terminates the actor update script
+; @param ACTOR Variable that contains the actor number
 .macro VM_ACTOR_TERMINATE_UPDATE ACTOR
         .db OP_VM_ACTOR_TERMINATE_UPDATE, #>ACTOR, #<ACTOR
 .endm
 
 OP_VM_ACTOR_SET_ANIM_FRAME      = 0x75
+;-- Set animation frame for the actor
+; @param ACTOR pseudo-struct that contains these members:
+;    `ID`    - Actor number
+;    `FRAME` - Animation frame
 .macro VM_ACTOR_SET_ANIM_FRAME ACTOR
         .db OP_VM_ACTOR_SET_ANIM_FRAME, #>ACTOR, #<ACTOR
 .endm
 
 OP_VM_ACTOR_GET_ANIM_FRAME      = 0x83
+;-- Get animation frame of the actor
+; @param ACTOR pseudo-struct that contains these members:
+;    `ID`    - Actor number
+;    `FRAME` - Animation frame
 .macro VM_ACTOR_GET_ANIM_FRAME ACTOR
         .db OP_VM_ACTOR_GET_ANIM_FRAME, #>ACTOR, #<ACTOR
 .endm
 
 OP_VM_ACTOR_SET_ANIM_SET        = 0x84
+;-- Set animation frame for the actor
+; @param ACTOR Variable that contains the actor number
+; @param OFFSET Animation set number
 .macro VM_ACTOR_SET_ANIM_SET ACTOR, OFFSET
         .db OP_VM_ACTOR_SET_ANIM_SET, #>OFFSET, #<OFFSET, #>ACTOR, #<ACTOR
 .endm
 
 ; --- UI ------------------------------------------
+; @section UI
 
 ;-- Loads a text in memory
-; @param ARG0 Amount of arguments that are passed before the null-terminated string
+; @param NARGS Amount of arguments that are passed before the null-terminated string
 ;
 ; The text string is defined using the `.asciz` command:
 ;
@@ -724,8 +830,8 @@ OP_VM_ACTOR_SET_ANIM_SET        = 0x84
 ; * `\n` Next line
 ; * `\r` Scroll text one line up
 OP_VM_LOAD_TEXT         = 0x40
-.macro VM_LOAD_TEXT ARG0
-        .db OP_VM_LOAD_TEXT, #<ARG0
+.macro VM_LOAD_TEXT NARGS
+        .db OP_VM_LOAD_TEXT, #<NARGS
 .endm
 
 OP_VM_DISPLAY_TEXT      = 0x41
@@ -829,8 +935,8 @@ OP_VM_OVERLAY_SHOW      = 0x46
 
 OP_VM_OVERLAY_CLEAR     = 0x47
 ;-- Clear the rectangle area of the overlay window
-; @param X X-Coordinate in tiles of the upper left corner
-; @param Y Y-Coordinate in tiles of the upper left corner
+; @param X X-coordinate in tiles of the upper left corner
+; @param Y Y-coordinate in tiles of the upper left corner
 ; @param W Width in tiles of the rectangle area
 ; @param H Height in tiles of the rectangle area
 ; @param COLOR initial color of the overlay window:
@@ -863,12 +969,12 @@ OP_VM_CHOICE            = 0x48
 ; instruction must be followed by the COUNT of .MENUITEM definitions:
 ; .MENUITEM X, Y, iL, iR, iU, iD
 ; where:
-;   `X` - X-Coordinate of the cursor pointer in tiles
-;   `Y` - Y-Coordinate of the cursor pointer in tiles
-;   `iL` - menu item number, where the cursor must move, when you press LEFT
-;   `iR` - menu item number, where the cursor must move, when you press RIGHT
-;   `iU` - menu item number, where the cursor must move, when you press UP
-;   `iD` - menu item number, where the cursor must move, when you press DOWN
+;   `X` - X-coordinate of the cursor pointer in tiles
+;   `Y` - Y-coordinate of the cursor pointer in tiles
+;   `iL` - menu item number where the cursor must move when you press LEFT
+;   `iR` - menu item number where the cursor must move when you press RIGHT
+;   `iU` - menu item number where the cursor must move when you press UP
+;   `iD` - menu item number where the cursor must move when you press DOWN
 .macro VM_CHOICE IDX, OPTIONS, COUNT
         .db OP_VM_CHOICE, #<COUNT, #<OPTIONS, #>IDX, #<IDX
 .endm
@@ -893,8 +999,8 @@ OP_VM_SET_FONT          = 0x4B
 OP_VM_OVERLAY_SET_SUBMAP_EX = 0x4C
 ;-- Copies rectange area of the background map onto the overlay window
 ; @param PARAMS_IDX points to the beginning of the pseudo-structure that contains these members:
-;    `x`       - X-Coordinate within the overlay window in tiles
-;    `y`       - Y-Coordinate tithin the overlay window in tiles
+;    `x`       - X-coordinate within the overlay window in tiles
+;    `y`       - Y-coordinate tithin the overlay window in tiles
 ;    `w`       - Width of the copied area in tiles
 ;    `h`       - Height of the copied area in tiles
 ;    `scene_x` - X-Coordinate within the background map in tiles
@@ -905,8 +1011,8 @@ OP_VM_OVERLAY_SET_SUBMAP_EX = 0x4C
 
 OP_VM_OVERLAY_SCROLL    = 0x4D
 ;-- Scrolls the rectangle area
-; @param X X-Coordinate of the upper left corner in tiles
-; @param Y Y-Coordinate of the upper left corner in tiles
+; @param X X-coordinate of the upper left corner in tiles
+; @param Y Y-coordinate of the upper left corner in tiles
 ; @param W Width of the area in tiles
 ; @param H Height of the area in tiles
 ; @param COLOR Color of the empty row of tiles that appear at the bottom of the scroll area
@@ -915,10 +1021,9 @@ OP_VM_OVERLAY_SCROLL    = 0x4D
 .endm
 
 OP_VM_OVERLAY_SET_SCROLL = 0x4E
-;-- Defines the scroll area for the overlay
-; When the text overflows that area it'll scroll up by 1 row
-; @param X X-Coordinate of the upper left corner in tiles
-; @param Y Y-Coordinate of the upper left corner in tiles
+;-- Defines the scroll area for the overlay. When the text overflows that area it'll scroll up by 1 row
+; @param X X-coordinate of the upper left corner in tiles
+; @param Y Y-coordinate of the upper left corner in tiles
 ; @param W Width of the area in tiles
 ; @param H Height of the area in tiles
 ; @param COLOR Color of the empty row of tiles that appear at the bottom of the scroll area
@@ -928,17 +1033,18 @@ OP_VM_OVERLAY_SET_SCROLL = 0x4E
 
 OP_VM_OVERLAY_SET_SUBMAP = 0x4F
 ;-- Copies a rectange area of tiles from the scene background
-; @param X X-Coordinate within the overlay window of the upper left corner in tiles
-; @param Y Y-Coordinate within the overlay window of the upper left corner in tiles
+; @param X X-coordinate within the overlay window of the upper left corner in tiles
+; @param Y Y-coordinate within the overlay window of the upper left corner in tiles
 ; @param W Width of the area in tiles
 ; @param H Height of the area in tiles
-; @param SX X-Coordinate within the level background map
-; @param SY Y-Coordinate within the level background map
+; @param SX X-coordinate within the level background map
+; @param SY Y-coordinate within the level background map
 .macro VM_OVERLAY_SET_SUBMAP X, Y, W, H, SX, SY
         .db OP_VM_OVERLAY_SET_SUBMAP, #<SY, #<SX, #<H, #<W, #<Y, #<X
 .endm
 
 ; --- GAMEBOY ------------------------------------------
+; @section Game Boy
 
 OP_VM_LOAD_TILES        = 0x49
 .FRAME_TILE_ID          = 0xC0
@@ -999,6 +1105,9 @@ OP_VM_OVERLAY_SET_MAP   = 0x56
         .db OP_VM_OVERLAY_SET_MAP, #>BKG, #<BKG, #<BANK, #>Y_IDX, #<Y_IDX, #>X_IDX, #<X_IDX, #>IDX, #<IDX
 .endm
 
+; ------------------------------------------------------
+; @section Screen Fade
+
 OP_VM_FADE              = 0x57
 .FADE_NONMODAL          = 0x00
 .FADE_MODAL             = 0x01
@@ -1023,6 +1132,9 @@ OP_VM_FADE              = 0x57
         .endif
 .endm
 
+; ------------------------------------------------------
+; @section Timer
+
 ; Load script into timer context
 OP_VM_TIMER_PREPARE     = 0x58
 .macro VM_TIMER_PREPARE TIMER, BANK, ADDR
@@ -1046,6 +1158,9 @@ OP_VM_TIMER_RESET         = 0x73
 .macro VM_TIMER_RESET TIMER
         .db OP_VM_TIMER_RESET, #<TIMER
 .endm
+
+; ------------------------------------------------------
+; @section Game Boy
 
 OP_VM_GET_TILE_XY       = 0x5A
 .macro VM_GET_TILE_XY TILE_IDX, X_IDX, Y_IDX
@@ -1080,24 +1195,30 @@ OP_VM_INPUT_DETACH      = 0x5F
 .endm
 
 ; --- MUSIC AND SOUND -------------------------------
+; @section Music and Sound
 
-; Starts playing of music track
 OP_VM_MUSIC_PLAY        = 0x60
 .MUSIC_NO_LOOP          = 0
 .MUSIC_LOOP             = 1
+;-- Starts playing of music track
+; @param BANK Bank number of the track
+; @param ADDR Address of the track
+; @param LOOP If the track will loop on end (`.MUSIC_LOOP`) or not (`.MUSIC_NO_LOOP`)
 .macro VM_MUSIC_PLAY TRACK_BANK, TRACK, LOOP
         .db OP_VM_MUSIC_PLAY, #<LOOP, #>TRACK, #<TRACK, #<TRACK_BANK
 .endm
 
-; Stops playing of music track
 OP_VM_MUSIC_STOP        = 0x61
+;-- Stops playing of music track
 .macro VM_MUSIC_STOP
         .db OP_VM_MUSIC_STOP
 .endm
 
-; Mutes/unmutes channels using `MASK`. The 4 lower bits of the mask represent the 4 audio channels.
+OP_VM_MUSIC_MUTE        = 0x62
+;-- Mutes/unmutes mysic channels.
+; @param MASK Mute Mask. The 4 lower bits represent the 4 audio channels.
 ;
-; | `Mask`   | Channel 1 | Channel 2 | Channel 3 | Channel 4 |
+; | `MASK`   | Channel 1 | Channel 2 | Channel 3 | Channel 4 |
 ; | -------- | --------- | --------- | --------- | --------- |
 ; | `0b0000` | Muted     | Muted     | Muted     | Muted     |
 ; | `0b0001` | Muted     | Muted     | Muted     | Not Muted |
@@ -1115,76 +1236,79 @@ OP_VM_MUSIC_STOP        = 0x61
 ; | `0b1101` | Not Muted | Not Muted | Muted     | Not Muted |
 ; | `0b1110` | Not Muted | Not Muted | Not Muted | Muted     |
 ; | `0b1111` | Not Muted | Not Muted | Not Muted | Not Muted |
-OP_VM_MUSIC_MUTE        = 0x62
 .macro VM_MUSIC_MUTE MASK
         .db OP_VM_MUSIC_MUTE, #<MASK
 .endm
 
-; Sets master volume to `VOL`
 OP_VM_SOUND_MASTERVOL   = 0x63
+;-- Sets master volume
+; @param VOL The volume value
 .macro VM_SOUND_MASTERVOL VOL
         .db OP_VM_SOUND_MASTERVOL, #<VOL
 .endm
 
-; Attach script to music event
 OP_VM_MUSIC_ROUTINE     = 0x65
+;-- Attach script to music event
+; @param ROUTINE The routine Id. An integer between 0 and 3.
+; @param BANK Bank number of the routine
+; @param ADDR Address of the routine
 .macro VM_MUSIC_ROUTINE ROUTINE, BANK, ADDR
         .db OP_VM_MUSIC_ROUTINE, #>ADDR, #<ADDR, #<BANK, #<ROUTINE
 .endm
 
-; Play a sound effect asset
 OP_VM_SFX_PLAY          = 0x66
 .SFX_PRIORITY_MINIMAL   = 0
 .SFX_PRIORITY_NORMAL    = 4
 .SFX_PRIORITY_HIGH      = 8
+;-- Play a sound effect asset
+; @param BANK Bank number of the effect
+; @param ADDR Address of the effect
+; @param MASK Mute mask of the effect
+; @param PRIO Priority of the sound effect. Effects with higher priority will cancel the ones with less priority:
+;   `.SFX_PRIORITY_MINIMAL` - Minmium priority for playback
+;   `.SFX_PRIORITY_NORMAL`  - Normal priority for playback0
+;   `.SFX_PRIORITY_HIGH`    - High priority for playback
 .macro VM_SFX_PLAY BANK, ADDR, MASK, PRIO
         .db OP_VM_SFX_PLAY, #<PRIO, #<MASK, #>ADDR, #<ADDR, #<BANK
 .endm
 
-; Sets music playback position
 OP_VM_MUSIC_SETPOS      = 0x67
+;-- Sets playback position for the current song.
+; @param PATTERN    - The pattern to set the song position to
+; @param ROW        - The row to set the song position to
 .macro VM_MUSIC_SETPOS PATTERN, ROW
         .db OP_VM_MUSIC_SETPOS, #<ROW, #<PATTERN
 .endm
 
 ; --- SCENES -------------------------------
+; @section Scenes
 
-; To load a new scene raise a `EXCEPTION_CHANGE_SCENE` exception using `VM_RAISE`.
-
-; The scene to load is defined using `IMPORT_FAR_PTR_DATA` followed by the scene symbol.
-
-; For example to load `scene 10`:
-
-; ```
-; VM_RAISE  	EXCEPTION_CHANGE_SCENE, 3
-;   IMPORT_FAR_PTR_DATA _scene_10
-; ```
-
-; Pushes the current scene to the scene stack.
 OP_VM_SCENE_PUSH        = 0x68
+;-- Pushes the current scene to the scene stack.
 .macro VM_SCENE_PUSH
         .db OP_VM_SCENE_PUSH
 .endm
 
-; Removes the last scene from the scene stack an loads it.
 OP_VM_SCENE_POP         = 0x69
+;-- Removes the last scene from the scene stack an loads it.
 .macro VM_SCENE_POP
         .db OP_VM_SCENE_POP
 .endm
 
-; Removes all scenes from the scene stack and loads the first one.
 OP_VM_SCENE_POP_ALL     = 0x6A
+;-- Removes all scenes from the scene stack and loads the first one.
 .macro VM_SCENE_POP_ALL
         .db OP_VM_SCENE_POP_ALL
 .endm
 
-; Removes all the scenes from the scene stack.
 OP_VM_SCENE_STACK_RESET = 0x6B
+;-- Removes all the scenes from the scene stack.
 .macro VM_SCENE_STACK_RESET
         .db OP_VM_SCENE_STACK_RESET
 .endm
 
 ; --- SIO ----------------------------------
+; @section SIO
 
 OP_VM_SIO_SET_MODE      = 0x6C
 .SIO_MODE_NONE          = 0
@@ -1200,10 +1324,13 @@ OP_VM_SIO_EXCHANGE      = 0x6D
 .endm
 
 ; --- CAMERA -------------------------------
+; @section Camera
 
 OP_VM_CAMERA_MOVE_TO     = 0x70
 ;-- Moves the camera to the new position
-; @param IDX Start of the pseudo-structure which contains the new camera position
+; @param IDX Start of the pseudo-structure which contains the new camera position:
+;    `X` - X-coordinate of the camera position
+;    `Y` - Y-coordinate of the camera position
 ; @param SPEED Speed of the camera movement
 ; @param AFTER_LOCK Lock status of the camera after the movement
 ;   `.CAMERA_LOCK`   - lock camera by X and Y
@@ -1221,7 +1348,9 @@ OP_VM_CAMERA_MOVE_TO     = 0x70
 
 OP_VM_CAMERA_SET_POS     = 0x71
 ;-- Sets the camera position
-; @param IDX Start of the pseudo-structure which contains the new camera position
+; @param IDX Start of the pseudo-structure which contains the new camera position:
+;    `X` - X-coordinate of the camera position
+;    `Y` - Y-coordinate of the camera position
 .macro VM_CAMERA_SET_POS IDX
         .db OP_VM_CAMERA_SET_POS, #>IDX, #<IDX
 .endm
@@ -1230,6 +1359,7 @@ OP_VM_CAMERA_SET_POS     = 0x71
 .CAMERA_SHAKE_Y          = 2
 
 ; --- RTC ----------------------------------
+; @section RTC
 
 OP_VM_RTC_LATCH          = 0x78
 ;-- Latch RTC value for access
@@ -1277,6 +1407,7 @@ OP_VM_RTC_START          = 0x7B
 .endm
 
 ; --- COLOR ---------------------------------------
+; @section Color
 
 OP_VM_LOAD_PALETTE       = 0x7C
 .PALETTE_COMMIT          = 1
@@ -1298,6 +1429,7 @@ OP_VM_LOAD_PALETTE       = 0x7C
 .endm
 
 ; --- SGB -----------------------------------------
+; @section SGB
 
 ;-- Transfers SGB packet(s). Data of variable length is placed after this instruction, for example:
 ;
@@ -1313,6 +1445,7 @@ OP_VM_SGB_TRANSFER       = 0x7E
 .endm
 
 ; --- RUMBLE --------------------------------------
+; @section Rumble
 
 OP_VM_RUMBLE             = 0x7F
 ;-- Enables or disables rumble on a cart that has that function
@@ -1322,6 +1455,7 @@ OP_VM_RUMBLE             = 0x7F
 .endm
 
 ; --- PROJECTILES ---------------------------------
+; @section Projectiles
 
 OP_VM_PROJECTILE_LAUNCH  = 0x80
 .PROJECTILE_ANIM_ONCE    = 0x01
@@ -1336,6 +1470,7 @@ OP_VM_PROJECTILE_LOAD_TYPE = 0x81
 .endm
 
 ; --- MATH -------------------------------------------
+; @section Math
 
 OP_VM_SIN_SCALE         = 0x89
 .macro VM_SIN_SCALE IDX, IDX_ANGLE, SCALE
@@ -1348,6 +1483,7 @@ OP_VM_COS_SCALE         = 0x8A
 .endm
 
 ; --- TEXT SOUND -------------------------------------
+; @section Text Sound
 
 OP_VM_SET_TEXT_SOUND    = 0x8B
 ;-- Set the sound effect for the text output
@@ -1359,6 +1495,7 @@ OP_VM_SET_TEXT_SOUND    = 0x8B
 .endm
 
 ; --- GB PRINTER -------------------------------------
+; @section GB Printer
 
 OP_VM_PRINTER_DETECT    = 0x8C
 ;-- Detect printer
