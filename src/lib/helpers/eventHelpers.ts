@@ -170,6 +170,7 @@ export const walkDenormalizedTriggerEvents = (
   };
   walk(trigger.script);
   walk(trigger.leaveScript);
+  walk(trigger.updateScript);
 };
 
 export const walkDenormalizedSceneSpecificEvents = (

@@ -116,7 +116,11 @@ export type ActorDenormalized = Omit<
   hit3Script: ScriptEventDenormalized[];
 };
 
-export const triggerScriptKeys = ["script", "leaveScript"] as const;
+export const triggerScriptKeys = [
+  "script",
+  "leaveScript",
+  "updateScript",
+] as const;
 export type TriggerScriptKey = typeof triggerScriptKeys[number];
 
 export type Trigger = {
@@ -130,11 +134,16 @@ export type Trigger = {
   height: number;
   script: string[];
   leaveScript: string[];
+  updateScript: string[];
 };
 
-export type TriggerDenormalized = Omit<Trigger, "script" | "leaveScript"> & {
+export type TriggerDenormalized = Omit<
+  Trigger,
+  "script" | "leaveScript" | "updateScript"
+> & {
   script: ScriptEventDenormalized[];
   leaveScript: ScriptEventDenormalized[];
+  updateScript: ScriptEventDenormalized[];
 };
 
 export type Background = {

@@ -1735,6 +1735,25 @@ const migrateFrom310r2To310r3Events = (data) => {
   };
 };
 
+/* Version 3.1.0 r2 to r3 Triggers migration to include the on move script
+ */
+export const migrateFrom310r3To310r4Triggers = (data) => {
+  return {
+    ...data,
+    scenes: data.scenes.map((scene) => {
+      return {
+        ...scene,
+        triggers: scene.triggers.map((trigger) => {
+          return {
+            ...trigger,
+            updateScript: trigger.updateScript || [],
+          };
+        }),
+      };
+    }),
+  };
+};
+
 const migrateProject = (project, projectRoot) => {
   let data = { ...project };
   let version = project._version || "1.0.0";
@@ -1836,7 +1855,6 @@ const migrateProject = (project, projectRoot) => {
       release = "1";
     }
   }
-
   if (version === "3.0.0") {
     if (release === "1") {
       data = migrateFrom300r1To300r2Events(data);
@@ -1860,6 +1878,10 @@ const migrateProject = (project, projectRoot) => {
     }
     if (release === "2") {
       data = migrateFrom310r2To310r3Events(data);
+      release = "3";
+    }
+    if (release === "3") {
+      data = migrateFrom310r3To310r4Triggers(data);
       release = "3";
     }
   }

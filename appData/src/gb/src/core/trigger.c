@@ -8,6 +8,8 @@ UBYTE triggers_len = 0;
 UBYTE last_trigger_tx;
 UBYTE last_trigger_ty;
 UBYTE last_trigger;
+UWORD last_pos_tx;
+UWORD last_pos_ty;
 
 void trigger_reset() BANKED {
     last_trigger_tx = 0;
@@ -70,14 +72,20 @@ UBYTE trigger_activate_at_intersection(bounding_box_t *bb, upoint16_t *offset, U
     UBYTE hit_trigger = trigger_at_intersection(bb, offset);
     UBYTE trigger_script_called = FALSE;
 
-    // Don't reactivate trigger if not changed tile
     if (!force && (last_trigger == hit_trigger)) {
-        return FALSE;
+        if ((last_pos_tx != offset->x >> 3 || last_pos_ty != offset->y >> 3) && hit_trigger != NO_TRIGGER_COLLISON && triggers[hit_trigger].script_flags & TRIGGER_HAS_UPDATE_SCRIPT) {
+            last_pos_tx = offset->x >> 3;
+            last_pos_ty = offset->y >> 3;
+            
+            script_execute(triggers[hit_trigger].script.bank, triggers[hit_trigger].script.ptr, 0, 1, 3);
+
+            return TRUE;
+        } else {
+            return FALSE;
+        }
     }
 
-    if (last_trigger != NO_TRIGGER_COLLISON && 
-        (hit_trigger == NO_TRIGGER_COLLISON || hit_trigger != last_trigger)) {
-        
+    if (last_trigger != NO_TRIGGER_COLLISON && hit_trigger != last_trigger) {
         if (hit_trigger != NO_TRIGGER_COLLISON && triggers[hit_trigger].script_flags & TRIGGER_HAS_ENTER_SCRIPT) {
             script_execute(triggers[hit_trigger].script.bank, triggers[hit_trigger].script.ptr, 0, 1, 1);
             trigger_script_called = TRUE;

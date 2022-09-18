@@ -50,11 +50,12 @@ interface ScriptHandlers {
   leave: ScriptHandler;
 }
 
-type TriggerScriptKey = "script" | "leaveScript";
+type TriggerScriptKey = "script" | "leaveScript" | "updateScript";
 
 const scriptTabs = {
   trigger: l10n("SIDEBAR_ON_ENTER"),
   leave: l10n("SIDEBAR_ON_LEAVE"),
+  update: l10n("SIDEBAR_ON_MOVE"),
 } as const;
 
 const pointNClickScriptTabs = {
@@ -67,6 +68,9 @@ const getScriptKey = (tab: keyof typeof scriptTabs): TriggerScriptKey => {
   }
   if (tab === "leave") {
     return "leaveScript";
+  }
+  if (tab === "update") {
+    return "updateScript";
   }
   return "script";
 };
