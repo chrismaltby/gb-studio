@@ -134,7 +134,7 @@
     "@typescript-eslint/parser": "^4.25.0",
     "babel-eslint": "^10.1.0",
     "css-loader": "^3.0.0",
-    "electron": "8.5.5",
+    "electron": "15.5.5",
     "eslint": "^7.21.0",
     "eslint-config-airbnb": "^18.1.0",
     "eslint-config-prettier": "^6.11.0",
