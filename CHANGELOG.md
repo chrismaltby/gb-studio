@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Updated Simplified Chinese localisation. [@wcxu21](https://github.com/wcxu21)
+
 ### Fixed
 
 - Fixed issue where piano roll would scroll vertically when switching patterns [@pau-tomas](https://github.com/pau-tomas)
