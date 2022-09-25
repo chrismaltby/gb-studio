@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+### Changed
+
+- Updated Simplified Chinese localisation. [@wcxu21](https://github.com/wcxu21)
+
+### Fixed
+
+- Fixed issue where piano roll would scroll vertically when switching patterns [@pau-tomas](https://github.com/pau-tomas)
+
+### Removed
+
 ## [3.1.0] - 2022-09-11
 
 ### Added
