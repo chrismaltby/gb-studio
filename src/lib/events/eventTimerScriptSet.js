@@ -13,6 +13,7 @@ const fields = [
   {
     key: "timer",
     label: l10n("FIELD_TIMER"),
+    description: l10n("FIELD_TIMER_DESC"),
     type: "togglebuttons",
     options: [
       [1, "1", `${l10n("FIELD_TIMER")} 1`],
