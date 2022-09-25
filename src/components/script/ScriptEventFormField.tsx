@@ -233,10 +233,14 @@ const ScriptEventFormField = memo(
         <FormField
           name={genKey(scriptEventId, field.key || "")}
           label={
-            label && field.type !== "checkbox" && field.type !== "group"
+            label &&
+            field.type !== "checkbox" &&
+            field.type !== "group" &&
+            !field.hideLabel
               ? label
               : ""
           }
+          title={field.description}
           alignCheckbox={field.alignCheckbox}
         >
           {inputField}

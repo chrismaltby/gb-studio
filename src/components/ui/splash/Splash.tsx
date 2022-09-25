@@ -168,6 +168,7 @@ export const SplashOpenButton = styled(Button).attrs(() => ({
   variant: "transparent",
 }))`
   color: ${(props) => props.theme.colors.text};
+  font-size: 13px;
   justify-content: flex-start;
   padding: 5px;
   margin: 15px;

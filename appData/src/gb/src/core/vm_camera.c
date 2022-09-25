@@ -1,4 +1,4 @@
-#pragma bank 2
+#pragma bank 255
 
 #include <rand.h>
 
@@ -8,6 +8,8 @@
 #include "camera.h"
 #include "scroll.h"
 #include "game_time.h"
+
+BANKREF(VM_CAMERA)
 
 typedef struct camera_position_t {
     INT16 X, Y;

@@ -1,4 +1,4 @@
-#pragma bank 4
+#pragma bank 255
 
 #include <gbdk/platform.h>
 #include <stdint.h>

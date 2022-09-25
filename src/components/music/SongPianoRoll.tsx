@@ -5,7 +5,6 @@ import { Song } from "lib/helpers/uge/song/Song";
 import { RootState } from "store/configureStore";
 import { SplitPaneVerticalDivider } from "ui/splitpane/SplitPaneDivider";
 import { SequenceEditor } from "./SequenceEditor";
-import scrollIntoView from "scroll-into-view-if-needed";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import l10n from "lib/helpers/l10n";
 import { RollChannel } from "./RollChannel";
@@ -313,10 +312,9 @@ export const SongPianoRoll = ({
   useEffect(() => {
     if (playingRowRef && playingRowRef.current) {
       if (playing) {
-        scrollIntoView(playingRowRef.current, {
-          scrollMode: "if-needed",
+        playingRowRef.current.scrollIntoView({
           block: "nearest",
-          inline: "end",
+          inline: "center",
         });
       }
     }
@@ -880,6 +878,32 @@ export const SongPianoRoll = ({
     }
   }, [selectedChannel, dispatch, pattern, selectedPatternCells]);
 
+  const onCut = useCallback(() => {
+    if (pattern) {
+      const parsedSelectedPattern = parsePatternToClipboard(
+        pattern,
+        selectedChannel,
+        selectedPatternCells
+      );
+      dispatch(clipboardActions.copyText(parsedSelectedPattern));
+      //delete selection
+      const newPattern = cloneDeep(pattern);
+      console.log(newPattern, selectedPatternCells, selectedChannel);
+      selectedPatternCells.forEach((i) => {
+        console.log(newPattern[i]);
+        newPattern[i].splice(selectedChannel, 1, new PatternCell());
+      });
+      dispatch(trackerActions.setSelectedPatternCells([]));
+      console.log(patternId, newPattern);
+      dispatch(
+        trackerDocumentActions.editPattern({
+          patternId: patternId,
+          pattern: newPattern,
+        })
+      );
+    }
+  }, [pattern, selectedChannel, selectedPatternCells, dispatch, patternId]);
+
   const onPaste = useCallback(() => {
     if (pattern) {
       const newPastedPattern = parseClipboardToPattern(clipboard.readText());
@@ -949,14 +973,16 @@ export const SongPianoRoll = ({
 
   useEffect(() => {
     window.addEventListener("copy", onCopy);
+    window.addEventListener("cut", onCut);
     window.addEventListener("paste", onPaste);
     ipcRenderer.on("paste-in-place", onPasteInPlace);
     return () => {
       window.removeEventListener("copy", onCopy);
+      window.removeEventListener("cut", onCut);
       window.removeEventListener("paste", onPaste);
       ipcRenderer.removeListener("paste-in-place", onPasteInPlace);
     };
-  }, [onCopy, onPaste, onPasteInPlace]);
+  }, [onCopy, onCut, onPaste, onPasteInPlace]);
 
   const v = [
     selectedChannel,
@@ -993,8 +1019,14 @@ export const SongPianoRoll = ({
                 setPlaybackPosition(e.nativeEvent);
               }}
             ></div>
-            <RollPlaybackTracker
+            <div
               ref={playingRowRef}
+              style={{
+                width: "1px",
+                transform: `translateX(${playbackState[1] * CELL_SIZE}px)`,
+              }}
+            ></div>
+            <RollPlaybackTracker
               style={{
                 display: playbackState[0] === sequenceId ? "" : "none",
                 transform: `translateX(${10 + playbackState[1] * CELL_SIZE}px)`,

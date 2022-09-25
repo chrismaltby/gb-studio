@@ -36,6 +36,7 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   autoLabel,
+  description: l10n("EVENT_TIMER_RESTART_DESC"),
   groups,
   fields,
   compile,

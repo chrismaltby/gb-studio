@@ -26,6 +26,7 @@ const compile = () => {};
 
 module.exports = {
   id,
+  description: l10n("EVENT_COMMENT_DESC"),
   autoLabel,
   groups,
   fields,

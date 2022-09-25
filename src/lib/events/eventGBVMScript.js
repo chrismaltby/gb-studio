@@ -6,6 +6,8 @@ const groups = ["EVENT_GROUP_MISC"];
 const fields = [
   {
     key: "script",
+    label: l10n("FIELD_SCRIPT"),
+    description: l10n("FIELD_SCRIPT_DESC"),
     type: "code",
     flexBasis: "100%",
   },
@@ -13,6 +15,7 @@ const fields = [
     key: "references",
     type: "references",
     label: l10n("FIELD_REFERENCES"),
+    description: l10n("FIELD_REFERENCES_DESC"),
   },
 ];
 
@@ -28,6 +31,8 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_GBVM_SCRIPT_DESC"),
+  references: ["/docs/scripting/gbvm/", "/docs/scripting/gbvm/gbvm-operations"],
   groups,
   fields,
   compile,

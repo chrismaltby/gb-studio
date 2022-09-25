@@ -6,26 +6,35 @@ const groups = ["EVENT_GROUP_SCREEN"];
 const fields = [
   {
     key: "color",
+    label: l10n("FIELD_FILL_COLOR"),
+    description: l10n("FIELD_FILL_COLOR_OVERLAY_DESC"),
     type: "overlayColor",
     defaultValue: "black",
   },
   {
-    key: "x",
-    label: l10n("FIELD_X"),
-    type: "number",
-    min: 0,
-    max: 20,
-    defaultValue: 0,
-    width: "50%",
-  },
-  {
-    key: "y",
-    label: l10n("FIELD_Y"),
-    type: "number",
-    min: 0,
-    max: 18,
-    defaultValue: 0,
-    width: "50%",
+    type: "group",
+    fields: [
+      {
+        key: "x",
+        label: l10n("FIELD_X"),
+        description: l10n("FIELD_X_DESC"),
+        type: "number",
+        min: 0,
+        max: 20,
+        defaultValue: 0,
+        width: "50%",
+      },
+      {
+        key: "y",
+        label: l10n("FIELD_Y"),
+        description: l10n("FIELD_Y_DESC"),
+        type: "number",
+        min: 0,
+        max: 18,
+        defaultValue: 0,
+        width: "50%",
+      },
+    ],
   },
 ];
 
@@ -36,6 +45,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_OVERLAY_SHOW_DESC"),
   groups,
   fields,
   compile,

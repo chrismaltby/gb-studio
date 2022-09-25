@@ -830,6 +830,9 @@ const AddScriptEventMenu = ({
                   }
                   onMouseOver={() => setSelectedIndex(optionIndex)}
                   onClick={() => onSelectOption(optionIndex)}
+                  title={
+                    "event" in option ? option.event.description : undefined
+                  }
                 >
                   {option.label}
                   {"options" in option ? (
@@ -879,6 +882,7 @@ const AddScriptEventMenu = ({
                     selected={selectedIndex === childOptionIndex}
                     onMouseOver={() => setSelectedIndex(childOptionIndex)}
                     onClick={() => onSelectOption(childOptionIndex)}
+                    title={childOption.event.description}
                   >
                     {childOption.label}
                     <FlexGrow />

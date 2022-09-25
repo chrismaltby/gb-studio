@@ -3386,7 +3386,10 @@ extern void __mute_mask_${symbol};
                 return p;
               }
               const newActorValue = getArg("actor", actorValue);
-              return p.replace(/.*:/, `${newActorValue}:`);
+              return {
+                value: newActorValue,
+                property: p.replace(/.*:/, ""),
+              };
             };
             if (isUnionPropertyValue(argValue) && argValue.value) {
               e.args[arg] = {
@@ -3823,9 +3826,25 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
-  variableSetToProperty = (variable: string, property: string) => {
-    const actorValue = property && property.replace(/:.*/, "");
-    const propertyValue = property && property.replace(/.*:/, "");
+  variableSetToProperty = (
+    variable: string,
+    property: string | { value: ScriptBuilderVariable; property: string }
+  ) => {
+    let actorValue: ScriptBuilderVariable;
+    let propertyValue: string;
+
+    if (!property) {
+      return;
+    }
+
+    if (typeof property === "object") {
+      actorValue = property.value;
+      propertyValue = property.property;
+    } else {
+      actorValue = property.replace(/:.*/, "");
+      propertyValue = property.replace(/.*:/, "");
+    }
+
     this.actorSetById(actorValue);
     if (propertyValue === "xpos") {
       this.actorGetPositionX(variable);

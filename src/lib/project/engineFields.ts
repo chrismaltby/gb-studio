@@ -1,12 +1,13 @@
 import EventEmitter from "events";
 import Path from "path";
-import { readJSON } from "fs-extra";
+import { readJSON, pathExists } from "fs-extra";
 import { EngineFieldSchema } from "store/features/engine/engineState";
 import { engineRoot } from "../../consts";
 import l10n from "lib/helpers/l10n";
-import { clampToCType, is16BitCType } from "lib/helpers/engineFields";
+import { clampToCType } from "lib/helpers/engineFields";
 import { setDefault } from "lib/helpers/setDefault";
 import { ScriptEventFieldSchema } from "store/features/entities/entitiesTypes";
+import glob from "glob";
 
 interface EngineData {
   fields?: EngineFieldSchema[];
@@ -72,11 +73,12 @@ const getEngineFieldSchemas = (engineFields: EngineFieldSchema[]) => {
 export const initEngineFields = async (projectRoot: string) => {
   const defaultEngineJsonPath = Path.join(engineRoot, "gb", "engine.json");
   const localEngineJsonPath = Path.join(
-    Path.dirname(projectRoot),
+    projectRoot,
     "assets",
     "engine",
     "engine.json"
   );
+  const pluginsPath = Path.join(projectRoot, "plugins");
 
   let defaultEngine: EngineData = {};
   let localEngine: EngineData = {};
@@ -93,6 +95,19 @@ export const initEngineFields = async (projectRoot: string) => {
     fields = localEngine.fields;
   } else if (defaultEngine && defaultEngine.fields) {
     fields = defaultEngine.fields;
+  }
+
+  const enginePlugins = glob.sync(`${pluginsPath}/*/engine`);
+  for (const enginePluginPath of enginePlugins) {
+    const englinePluginJsonPath = Path.join(enginePluginPath, "engine.json");
+    if (await pathExists(englinePluginJsonPath)) {
+      try {
+        const pluginEngine = await readJSON(englinePluginJsonPath);
+        fields = fields.concat(pluginEngine.fields);
+      } catch(e) {
+        console.warn(e);
+      }
+    }
   }
 
   engineFieldsEmitter.emit("sync", {

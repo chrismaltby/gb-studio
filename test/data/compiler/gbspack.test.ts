@@ -159,7 +159,7 @@ describe("Filenames", () => {
 
 describe("Pack", () => {
   it("should pack areas", () => {
-    let input = [
+    const input = [
       {
         filename: "a.o",
         contents: "hello world",
@@ -187,7 +187,7 @@ describe("Pack", () => {
         ],
       },
     ];
-    const output = packObjectData(input, 255, 0, true);
+    const output = packObjectData(input, 255, 0, true, {});
     expect(output[0].filename).toEqual("a.o");
     expect(output[1].filename).toEqual("b.o");
     expect(output[0].replacements[0].from).toEqual(1);
@@ -202,8 +202,52 @@ describe("Pack", () => {
     expect(output[1].replacements[2].to).toEqual(2);
   });
 
+  it("should pack areas avoiding reserved", () => {
+    const input = [
+      {
+        filename: "a.o",
+        contents: "hello world",
+        banks: [
+          { size: 5, bank: 1 },
+          {
+            size: 16380,
+            bank: 255,
+          },
+        ],
+      },
+      {
+        filename: "b.o",
+        contents: "second file",
+        banks: [
+          { size: 15, bank: 2 },
+          {
+            size: 500,
+            bank: 255,
+          },
+          {
+            size: 40,
+            bank: 255,
+          },
+        ],
+      },
+    ];
+    const output = packObjectData(input, 255, 0, true, { 1: 16300 });
+    expect(output[0].filename).toEqual("a.o");
+    expect(output[1].filename).toEqual("b.o");
+    expect(output[0].replacements[0].from).toEqual(1);
+    expect(output[0].replacements[0].to).toEqual(1);
+    expect(output[0].replacements[1].from).toEqual(255);
+    expect(output[0].replacements[1].to).toEqual(3);
+    expect(output[1].replacements[0].from).toEqual(255);
+    expect(output[1].replacements[0].to).toEqual(1);
+    expect(output[1].replacements[1].from).toEqual(2);
+    expect(output[1].replacements[1].to).toEqual(2);
+    expect(output[1].replacements[2].from).toEqual(255);
+    expect(output[1].replacements[2].to).toEqual(2);
+  });
+
   it("should pack areas mbc1", () => {
-    let input = [
+    const input = [
       {
         filename: "a.o",
         contents: "hello world",
@@ -231,7 +275,7 @@ describe("Pack", () => {
         ],
       },
     ];
-    let output = packObjectData(input, 255, 31, true);
+    const output = packObjectData(input, 255, 31, true, {});
     expect(output[0].filename).toEqual("a.o");
     expect(output[1].filename).toEqual("b.o");
     expect(output[0].replacements[0].from).toEqual(1);
@@ -247,7 +291,7 @@ describe("Pack", () => {
   });
 
   it("should calculate max pack bank", () => {
-    let input = [
+    const input = [
       {
         filename: "a.o",
         contents: "hello world",
@@ -275,7 +319,7 @@ describe("Pack", () => {
         ],
       },
     ];
-    let output = packObjectData(input, 255, 35, true);
+    const output = packObjectData(input, 255, 35, true, {});
     expect(getPatchMaxBank(output)).toEqual(37);
   });
 });
