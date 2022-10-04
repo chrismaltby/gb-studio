@@ -78,7 +78,7 @@ UBYTE trigger_activate_at_intersection(bounding_box_t *bb, upoint16_t *offset, U
     if (last_trigger != NO_TRIGGER_COLLISON && 
         (hit_trigger == NO_TRIGGER_COLLISON || hit_trigger != last_trigger)) {
 
-    	if (triggers[last_trigger].script_flags & TRIGGER_HAS_LEAVE_SCRIPT) {
+        if (triggers[last_trigger].script_flags & TRIGGER_HAS_LEAVE_SCRIPT) {
             script_execute(
                 triggers[last_trigger].script.bank, 
                 triggers[last_trigger].script.ptr, 0, 1, 2);
