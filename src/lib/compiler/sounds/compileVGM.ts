@@ -1,9 +1,15 @@
 import { readFile } from "fs-extra";
-import { decBin, decHex } from "lib/helpers/8bit";
-import { CompiledSound } from "./compileSound";
+import { decBin, decHexVal } from "lib/helpers/8bit";
 import { ungzip } from "node-gzip";
 
 const MIN_VGM_VERSION = 0x161;
+
+type CompileOutputFmt = "c" | "asm";
+
+type CompiledSoundOutput = {
+  output: string;
+  channelMuteMask: number;
+};
 
 interface VGMOptions {
   delay: number;
@@ -18,8 +24,14 @@ interface VGMOptions {
 
 export const compileVGM = async (
   filename: string,
-  symbol: string
-): Promise<CompiledSound> => {
+  fmt: CompileOutputFmt = "c"
+): Promise<CompiledSoundOutput> => {
+  const decHex = ((fmt?: CompileOutputFmt) => (v: number) => {
+    const prefix = fmt === "asm" ? "$" : "0x";
+    return `${prefix}${decHexVal(v)}`;
+  })(fmt);
+  const binPrefix = fmt === "asm" ? "%" : "0b";
+
   const options: VGMOptions = {
     delay: 0,
   };
@@ -86,7 +98,7 @@ export const compileVGM = async (
   let row: Record<number, Record<number, number>> = {};
   while (data) {
     if (data === 0x66) {
-      output += `1,0b${decBin(7)}`;
+      output += `1,${binPrefix}${decBin(7)}`;
       break;
     } else if (data === 0xb3) {
       let addr = read();
@@ -131,7 +143,7 @@ export const compileVGM = async (
         let val = pop(ch, 3) ?? -1;
         if (val !== -1 && !options.noInit) {
           count += 1;
-          result += `0b00100100,${decHex(val)},`;
+          result += `${binPrefix}00100100,${decHex(val)},`;
         }
         let mask = 4;
         let tmp = "";
@@ -144,7 +156,7 @@ export const compileVGM = async (
         }
         if (mask !== 4) {
           count += 1;
-          result += `0b${decBin(mask)},${tmp}`;
+          result += `${binPrefix}${decBin(mask)},${tmp}`;
         }
       }
 
@@ -158,7 +170,7 @@ export const compileVGM = async (
           tmp += `${decHex(val)},`;
         }
         count += 1;
-        result += `0b${decBin(mask)},${tmp}`;
+        result += `${binPrefix}${decBin(mask)},${tmp}`;
       }
 
       //  NR1x, NR2x, NR3x, NR4x regs
@@ -176,7 +188,7 @@ export const compileVGM = async (
           }
           if (mask !== j && (mask & 0b00001000) !== 0) {
             count += 1;
-            result += `0b${decBin(mask)},${tmp}`;
+            result += `${binPrefix}${decBin(mask)},${tmp}`;
             channelMuteMask |= 1 << j;
           }
         }
@@ -186,7 +198,10 @@ export const compileVGM = async (
       count |= Math.max(0, options.delay + delay - 1) << 4;
 
       // output result
-      result = `${decHex(count)},${result}\n`;
+      result = `${decHex(count)},${result}`;
+      if (fmt === "c") {
+        result += "\n";
+      }
 
       output += result;
 
@@ -198,33 +213,7 @@ export const compileVGM = async (
     data = read();
   }
 
-  return {
-    header: `#ifndef __${symbol}_INCLUDE__
-#define __${symbol}_INCLUDE__
-
-#include <gbdk/platform.h>
-#include <stdint.h>
-
-#define MUTE_MASK_${symbol} 0b${decBin(channelMuteMask)}
-
-BANKREF_EXTERN(${symbol})
-extern const uint8_t ${symbol}[];
-extern void __mute_mask_${symbol};
-
-#endif
-    `,
-    src: `#pragma bank 255
-
-#include <gbdk/platform.h>
-#include <stdint.h>
-
-BANKREF(${symbol})
-const uint8_t ${symbol}[] = {
-${output}
-};
-void AT(0b${decBin(channelMuteMask)}) __mute_mask_${symbol};
-  `,
-  };
+  return { output, channelMuteMask };
 };
 
 const unpackString = (data: number[]): string => {
@@ -263,21 +252,4 @@ const pop = <T extends unknown, K extends keyof T>(obj: T, key: K) => {
     delete obj[key];
     return value;
   }
-};
-
-export const compileVGMHeader = (symbol: string) => {
-  return `#ifndef __${symbol}_INCLUDE__
-  #define __${symbol}_INCLUDE__
-  
-  #include <gbdk/platform.h>
-  #include <stdint.h>
-  
-  #define MUTE_MASK_${symbol} 0b00000100
-  
-  BANKREF_EXTERN(${symbol})
-  extern const uint8_t ${symbol}[];
-  extern void __mute_mask_${symbol};
-  
-  #endif
-  `;
 };

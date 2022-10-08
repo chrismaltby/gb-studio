@@ -13,11 +13,15 @@ const autoLabel = (fetchArg) => {
 const fields = [
   {
     key: "actorId",
+    label: l10n("ACTOR"),
+    description: l10n("FIELD_ACTOR_UPDATE_DESC"),
     type: "actor",
     defaultValue: "$self$",
   },
   {
     key: "spriteSheetId",
+    label: l10n("FIELD_SPRITE_SHEET"),
+    description: l10n("FIELD_SPRITE_SHEET_ACTOR_DESC"),
     type: "sprite",
     defaultValue: "LAST_SPRITE",
   },
@@ -31,6 +35,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_ACTOR_SET_SPRITE_DESC"),
   autoLabel,
   groups,
   fields,

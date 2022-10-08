@@ -8,10 +8,6 @@
 #define MAX_ACTORS            21
 #define MAX_ACTORS_ACTIVE     12
 
-#define ACTOR_ATTR_H_FIRST    0x01
-#define ACTOR_ATTR_CHECK_COLL 0x02
-#define ACTOR_ATTR_DIAGONAL   0x04
-
 #define PLAYER                actors[0]
 #define ON_8PX_GRID(A)        ( MOD_8((A).x >> 4) == 0 &&  MOD_8((A).y >> 4) == 0)
 #define ON_16PX_GRID(A)       (MOD_16((A).x >> 4) == 0 && MOD_16((A).y >> 4) == 8)
@@ -26,6 +22,8 @@
 #define ANIM_CURSOR_HOVER     1
 
 #define ANIM_SET_DEFAULT      0
+
+BANKREF_EXTERN(ACTOR)
 
 typedef enum {
   CHECK_DIR_LEFT = 1,

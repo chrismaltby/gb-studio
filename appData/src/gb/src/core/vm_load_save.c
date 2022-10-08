@@ -1,8 +1,10 @@
-#pragma bank 2
+#pragma bank 255
 
 #include "vm.h"
 
 #include "load_save.h"
+
+BANKREF(VM_LOAD_SAVE)
 
 void vm_save_clear(SCRIPT_CTX * THIS, UBYTE slot) OLDCALL BANKED {
     THIS;

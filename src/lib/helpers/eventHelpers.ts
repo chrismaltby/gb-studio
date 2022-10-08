@@ -325,3 +325,10 @@ export const calculateAutoFadeEventIdDenormalised = (
   }
   return fadeEventId;
 };
+
+export const isEmptyScript = (script: ScriptEventDenormalized[]) => {
+  if (script.length === 0) {
+    return true;
+  }
+  return script.every((scriptEvent) => scriptEvent?.args?.__comment);
+};

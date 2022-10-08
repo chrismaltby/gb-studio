@@ -134,6 +134,7 @@ interface ScriptBuilderOptions {
     scriptRef: string;
     argsLen: number;
   }>;
+  compiledAssetsCache: Dictionary<string>;
   compileEvents: (self: ScriptBuilder, events: ScriptEvent[]) => void;
 }
 
@@ -334,6 +335,15 @@ const toASMCameraLock = (axis: ScriptBuilderAxis[]) => {
   );
 };
 
+const toProjectileFlags = (destroyOnHit: boolean, loopAnim: boolean) => {
+  return unionFlags(
+    ([] as string[]).concat(
+      !destroyOnHit ? ".PROJECTILE_STRONG" : [],
+      !loopAnim ? ".PROJECTILE_ANIM_ONCE" : []
+    )
+  );
+};
+
 const toASMSoundPriority = (priority: SFXPriority): ASMSFXPriority => {
   if (priority === "low") {
     return ".SFX_PRIORITY_MINIMAL";
@@ -519,6 +529,7 @@ class ScriptBuilder {
       maxDepth: options.maxDepth ?? 5,
       compiledCustomEventScriptCache:
         options.compiledCustomEventScriptCache ?? {},
+      compiledAssetsCache: options.compiledAssetsCache ?? {},
       compileEvents: options.compileEvents || ((_self, _e) => {}),
       settings: options.settings || initialSettingsState,
     };
@@ -1104,12 +1115,12 @@ class ScriptBuilder {
           return rpn.ref(variableAlias);
         }
       },
-      int8: (value: number) => {
+      int8: (value: number | string) => {
         rpnCmd(".R_INT8", value);
         stack.push(0);
         return rpn;
       },
-      int16: (value: number) => {
+      int16: (value: number | string) => {
         rpnCmd(".R_INT16", value);
         stack.push(0);
         return rpn;
@@ -1657,9 +1668,12 @@ class ScriptBuilder {
     );
   };
 
-  _soundPlayBasic = (channel: number, frames: number, data: number[]) => {
-    const symbol = this._getAvailableSymbol("sound_legacy_0");
-
+  _soundPlayBasic = (
+    channel: number,
+    frames: number,
+    data: number[]
+  ): string => {
+    const { compiledAssetsCache } = this.options;
     let output = "";
 
     const channelMasks = [
@@ -1690,6 +1704,13 @@ class ScriptBuilder {
       }
       output += "\n";
     }
+
+    const cachedSymbol = compiledAssetsCache[output];
+    if (cachedSymbol) {
+      return cachedSymbol;
+    }
+
+    const symbol = this._getAvailableSymbol("sound_legacy_0");
 
     const muteMask = 1 << (channel - 1);
 
@@ -1725,6 +1746,8 @@ extern void __mute_mask_${symbol};
 #endif
 `
     );
+
+    compiledAssetsCache[output] = symbol;
 
     return symbol;
   };
@@ -1773,6 +1796,10 @@ extern void __mute_mask_${symbol};
       // Args are popped by called script with ret_far_n
       this.stackPtr -= argsLen;
     }
+  };
+
+  _callNative = (symbol: string) => {
+    this._addCmd("VM_CALL_NATIVE", `b_${symbol}`, `_${symbol}`);
   };
 
   _returnFar = () => {
@@ -2578,26 +2605,38 @@ extern void __mute_mask_${symbol};
     return projectileIndex;
   };
 
+  _rpnProjectilePosArgs = (actorRef: string, x = 0, y = 0) => {
+    this._actorGetPosition(actorRef);
+    const rpn = this._rpn();
+    rpn.ref(this._localRef(actorRef, 1));
+    if (x) {
+      rpn.int16(x * 16).operator(".ADD");
+    }
+    rpn.ref(this._localRef(actorRef, 2));
+    if (y) {
+      rpn.int16(-y * 16).operator(".ADD");
+    }
+    return rpn;
+  };
+
   launchProjectileInDirection = (
     projectileIndex: number,
     x = 0,
     y = 0,
-    direction: string
+    direction: string,
+    destroyOnHit = false,
+    loopAnim = false
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Direction");
     this._actorGetPosition(actorRef);
-    this._rpn() //
-      .ref(this._localRef(actorRef, 1))
-      .int16(x * 16)
-      .operator(".ADD")
-      .ref(this._localRef(actorRef, 2))
-      .int16(-y * 16)
-      .operator(".ADD")
+    const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
+    rpn
       .int16(dirToAngle(direction))
+      .int16(toProjectileFlags(destroyOnHit, loopAnim))
       .stop();
-    this._projectileLaunch(projectileIndex, ".ARG2");
-    this._stackPop(3);
+    this._projectileLaunch(projectileIndex, ".ARG3");
+    this._stackPop(4);
     this._addNL();
   };
 
@@ -2605,22 +2644,20 @@ extern void __mute_mask_${symbol};
     projectileIndex: number,
     x = 0,
     y = 0,
-    angle: number
+    angle: number,
+    destroyOnHit = false,
+    loopAnim = false
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Angle");
     this._actorGetPosition(actorRef);
-    this._rpn() //
-      .ref(this._localRef(actorRef, 1))
-      .int16(x * 16)
-      .operator(".ADD")
-      .ref(this._localRef(actorRef, 2))
-      .int16(-y * 16)
-      .operator(".ADD")
+    const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
+    rpn
       .int16(Math.round(angle % 256))
+      .int16(toProjectileFlags(destroyOnHit, loopAnim))
       .stop();
-    this._projectileLaunch(projectileIndex, ".ARG2");
-    this._stackPop(3);
+    this._projectileLaunch(projectileIndex, ".ARG3");
+    this._stackPop(4);
     this._addNL();
   };
 
@@ -2628,45 +2665,40 @@ extern void __mute_mask_${symbol};
     projectileIndex: number,
     x = 0,
     y = 0,
-    angleVariable: string
+    angleVariable: string,
+    destroyOnHit = false,
+    loopAnim = false
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Angle");
     this._actorGetPosition(actorRef);
-    this._rpn() //
-      .ref(this._localRef(actorRef, 1))
-      .int16(x * 16)
-      .operator(".ADD")
-      .ref(this._localRef(actorRef, 2))
-      .int16(-y * 16)
-      .operator(".ADD")
+    const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
+    rpn
       .refVariable(angleVariable)
+      .int16(toProjectileFlags(destroyOnHit, loopAnim))
       .stop();
-    this._projectileLaunch(projectileIndex, ".ARG2");
-    this._stackPop(3);
+    this._projectileLaunch(projectileIndex, ".ARG3");
+    this._stackPop(4);
     this._addNL();
   };
 
   launchProjectileInSourceActorDirection = (
     projectileIndex: number,
     x = 0,
-    y = 0
+    y = 0,
+    destroyOnHit = false,
+    loopAnim = false
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Source Actor Direction");
-    this._actorGetPosition(actorRef);
-    this._rpn() //
-      .ref(this._localRef(actorRef, 1))
-      .int16(x * 16)
-      .operator(".ADD")
-      .ref(this._localRef(actorRef, 2))
-      .int16(-y * 16)
-      .operator(".ADD")
-      .int16(0)
+    const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
+    rpn
+      .int16(0) // Save space for direction
+      .int16(toProjectileFlags(destroyOnHit, loopAnim))
       .stop();
-    this._actorGetAngle(actorRef, ".ARG0");
-    this._projectileLaunch(projectileIndex, ".ARG2");
-    this._stackPop(3);
+    this._actorGetAngle(actorRef, ".ARG1");
+    this._projectileLaunch(projectileIndex, ".ARG3");
+    this._stackPop(4);
     this._addNL();
   };
 
@@ -2674,23 +2706,22 @@ extern void __mute_mask_${symbol};
     projectileIndex: number,
     x = 0,
     y = 0,
-    actorId: string
+    actorId: string,
+    destroyOnHit = false,
+    loopAnim = false
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Actor Direction");
     this._actorGetPosition(actorRef);
-    this._rpn() //
-      .ref(this._localRef(actorRef, 1))
-      .int16(x * 16)
-      .operator(".ADD")
-      .ref(this._localRef(actorRef, 2))
-      .int16(-y * 16)
-      .operator(".ADD")
+    const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
+    rpn
+      .int16(0) // Save space for direction
+      .int16(toProjectileFlags(destroyOnHit, loopAnim))
       .stop();
-    this.actorPushById(actorId);
-    this._actorGetAngle(".ARG0", ".ARG0");
-    this._projectileLaunch(projectileIndex, ".ARG2");
-    this._stackPop(3);
+    this.setActorId(".ARG1", actorId);
+    this._actorGetAngle(".ARG1", ".ARG1");
+    this._projectileLaunch(projectileIndex, ".ARG3");
+    this._stackPop(4);
     this._addNL();
   };
 
@@ -3083,10 +3114,9 @@ extern void __mute_mask_${symbol};
   // --------------------------------------------------------------------------
   // Timer
 
-  timerScriptSet = (frames = 600, script: ScriptEvent[], symbol?: string) => {
+  timerScriptSet = (frames = 600, script: ScriptEvent[], symbol?: string, timer = 1) => {
     this._addComment(`Timer Start`);
     const scriptRef = this._compileSubScript("timer", script, symbol);
-    const ctx = 1;
     const TIMER_CYCLES = 16;
     let durationTicks = (frames / TIMER_CYCLES + 0.5) | 0;
     if (durationTicks <= 0) {
@@ -3095,21 +3125,19 @@ extern void __mute_mask_${symbol};
     if (durationTicks >= 256) {
       durationTicks = 255;
     }
-    this._timerContextPrepare(scriptRef, ctx);
-    this._timerStart(ctx, durationTicks);
+    this._timerContextPrepare(scriptRef, timer);
+    this._timerStart(timer, durationTicks);
     this._addNL();
   };
 
-  timerRestart = () => {
+  timerRestart = (timer = 1) => {
     this._addComment(`Timer Restart`);
-    const ctx = 1;
-    this._timerReset(ctx);
+    this._timerReset(timer);
   };
 
-  timerDisable = () => {
+  timerDisable = (timer = 1) => {
     this._addComment(`Timer Disable`);
-    const ctx = 1;
-    this._timerStop(ctx);
+    this._timerStop(timer);
   };
 
   // --------------------------------------------------------------------------
@@ -3358,7 +3386,10 @@ extern void __mute_mask_${symbol};
                 return p;
               }
               const newActorValue = getArg("actor", actorValue);
-              return p.replace(/.*:/, `${newActorValue}:`);
+              return {
+                value: newActorValue,
+                property: p.replace(/.*:/, ""),
+              };
             };
             if (isUnionPropertyValue(argValue) && argValue.value) {
               e.args[arg] = {
@@ -3397,8 +3428,7 @@ extern void __mute_mask_${symbol};
 
   returnFar = () => {
     const argsSize =
-      Object.keys(this.options.argLookup.variable).length +
-      Object.keys(this.options.argLookup.actor).length;
+      this.options.argLookup.variable.size + this.options.argLookup.actor.size;
     if (argsSize === 0) {
       this._returnFar();
     } else {
@@ -3796,9 +3826,25 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
-  variableSetToProperty = (variable: string, property: string) => {
-    const actorValue = property && property.replace(/:.*/, "");
-    const propertyValue = property && property.replace(/.*:/, "");
+  variableSetToProperty = (
+    variable: string,
+    property: string | { value: ScriptBuilderVariable; property: string }
+  ) => {
+    let actorValue: ScriptBuilderVariable;
+    let propertyValue: string;
+
+    if (!property) {
+      return;
+    }
+
+    if (typeof property === "object") {
+      actorValue = property.value;
+      propertyValue = property.property;
+    } else {
+      actorValue = property.replace(/:.*/, "");
+      propertyValue = property.replace(/.*:/, "");
+    }
+
     this.actorSetById(actorValue);
     if (propertyValue === "xpos") {
       this.actorGetPositionX(variable);

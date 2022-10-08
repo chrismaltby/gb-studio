@@ -158,7 +158,7 @@ export const SequenceEditorFwd = ({
         setSequenceId(
           ((id % sequence.length) + sequence.length) % sequence.length
         );
-      } else if (e.key === "Backspace") {
+      } else if (e.key === "Backspace" || e.key === "Delete") {
         onRemoveSequence();
       }
     },
@@ -203,7 +203,7 @@ export const SequenceEditorFwd = ({
             selected={i === sequenceId}
             active={playingSequence === i}
           >
-            <div style={{ padding: "0 0 2px 2px" }}>{i}:</div>
+            <div style={{ padding: "0 0 2px 2px" }}>{i + 1}:</div>
             <Select
               value={sequenceOptions.find((i) => i.value === item)}
               options={sequenceOptions}

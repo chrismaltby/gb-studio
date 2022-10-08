@@ -87,7 +87,10 @@ const ScriptEventFields = ({
 
         if (field.type === "group" && field.fields) {
           return (
-            <ScriptEventFieldGroupWrapper halfWidth={field.width === "50%"}>
+            <ScriptEventFieldGroupWrapper
+              halfWidth={field.width === "50%"}
+              style={{ flexBasis: field.flexBasis, flexGrow: field.flexGrow }}
+            >
               <ScriptEventFields
                 id={id}
                 entityId={entityId}

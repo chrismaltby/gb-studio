@@ -7,12 +7,15 @@ const fields = [].concat(
   [
     {
       key: "variable",
+      label: l10n("FIELD_VARIABLE"),
+      description: l10n("FIELD_VARIABLE_DESC"),
       type: "variable",
       defaultValue: "LAST_VARIABLE",
     },
     {
       key: "choices",
       label: l10n("FIELD_NUMBER_OF_OPTIONS"),
+      description: l10n("FIELD_NUMBER_OF_OPTIONS_DESC"),
       type: "number",
       min: 1,
       max: 16,
@@ -37,6 +40,7 @@ const fields = [].concat(
       arr.push({
         key: `value${i}`,
         label: l10n("FIELD_VALUE"),
+        description: l10n("FIELD_VALUE_SWITCH_DESC"),
         conditions: [
           {
             key: `__collapseCase${i}`,
@@ -121,6 +125,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_SWITCH_DESC"),
   groups,
   fields,
   compile,

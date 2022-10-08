@@ -350,11 +350,7 @@ const removeSprite: CaseReducer<
     plugin?: string;
   }>
 > = (state, action) => {
-  const spriteSheets = localSpriteSheetSelectors.selectAll(state);
-  const existingAsset = spriteSheets.find(matchAsset(action.payload));
-  if (existingAsset) {
-    spriteSheetsAdapter.removeOne(state.spriteSheets, existingAsset.id);
-  }
+  removeAssetEntity(state.spriteSheets, spriteSheetsAdapter, action.payload);
 };
 
 const loadMusic: CaseReducer<
@@ -825,6 +821,7 @@ const addActor: CaseReducer<
     animSpeed: 15,
     paletteId: "",
     isPinned: false,
+    persistent: false,
     collisionGroup: "",
     ...(action.payload.defaults || {}),
     symbol: genEntitySymbol(state, "actor_0"),

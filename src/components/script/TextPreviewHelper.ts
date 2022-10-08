@@ -170,8 +170,6 @@ export const drawText = (
       drawCharCode(DOLLAR_CHAR);
     } else if (token.type === "char") {
       drawCharCode(HASH_CHAR);
-      drawCharCode(HASH_CHAR);
-      drawCharCode(HASH_CHAR);
     } else if (token.type === "font") {
       const newFont = fontsData[token.fontId];
       if (newFont) {

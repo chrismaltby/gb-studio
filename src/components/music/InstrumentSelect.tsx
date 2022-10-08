@@ -1,4 +1,7 @@
 import React, { FC, useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "store/configureStore";
+import { InstrumentType } from "store/features/editor/editorState";
 import styled from "styled-components";
 import {
   Option,
@@ -8,38 +11,19 @@ import {
   SelectCommonProps,
 } from "ui/form/Select";
 
-export const instrumentColors = [
-  "red",
-  "orange",
-  "yellow",
-  "green",
-  "blue",
-  "purple",
-  "gray",
-  "cyan",
-  "red-alt",
-  "orange-alt",
-  "yellow-alt",
-  "green-alt",
-  "blue-alt",
-  "purple-alt",
-  "gray-alt",
-  "cyan-alt",
-];
-
-const instruments = Array(15)
+const defaultInstrumentOptions = Array(15)
   .fill("")
   .map((_, i) => ({
-    id: `${i}`,
-    name: `Instrument ${i + 1}`,
-  }));
+    value: `${i}`,
+    label: `Instrument ${i + 1}`,
+  })) as Option[];
 
 interface LabelColorProps {
   color: string;
 }
 
 const LabelColor = styled.div.attrs<LabelColorProps>((props) => ({
-  className: `label--${props.color}`,
+  className: `label--instrument-${props.color}`,
 }))`
   width: 10px;
   height: 10px;
@@ -55,50 +39,64 @@ interface InstrumentSelectProps extends SelectCommonProps {
   optional?: boolean;
   optionalLabel?: string;
   optionalDefaultInstrumentId?: string;
+  instrumentType?: InstrumentType;
 }
 
 export const InstrumentSelect: FC<InstrumentSelectProps> = ({
   value,
+  instrumentType,
   onChange,
   ...selectProps
 }) => {
   const [options, setOptions] = useState<Option[]>([]);
-  const [currentInstrument, setCurrentInstrument] =
-    useState<{ id: string; name: string }>();
+  const [currentInstrument, setCurrentInstrument] = useState<Option>();
   const [currentValue, setCurrentValue] = useState<Option>();
 
-  useEffect(() => {
-    setOptions(
-      ([] as Option[]).concat(
-        [] as Option[],
-        instruments.map((instrument) => ({
-          value: instrument.id,
-          label: instrument.name,
-        }))
-      )
-    );
-  }, []);
+  const song = useSelector(
+    (state: RootState) => state.trackerDocument.present.song
+  );
 
   useEffect(() => {
-    setCurrentInstrument(instruments.find((v) => v.id === value));
-  }, [value]);
+    let instruments = defaultInstrumentOptions;
+    if (song) {
+      switch (instrumentType) {
+        case "duty":
+          instruments = song?.duty_instruments.map((instrument) => ({
+            value: `${instrument.index}`,
+            label: instrument.name || `Duty ${instrument.index + 1}`,
+          }));
+          break;
+        case "wave":
+          instruments = song?.wave_instruments.map((instrument) => ({
+            value: `${instrument.index}`,
+            label: instrument.name || `Wave ${instrument.index + 1}`,
+          }));
+          break;
+        case "noise":
+          instruments = song?.noise_instruments.map((instrument) => ({
+            value: `${instrument.index}`,
+            label: instrument.name || `Noise ${instrument.index + 1}`,
+          }));
+          break;
+      }
+    }
+    setOptions(([] as Option[]).concat([] as Option[], instruments));
+  }, [instrumentType, song]);
+
+  useEffect(() => {
+    setCurrentInstrument(options.find((v) => v.value === value));
+  }, [options, value]);
 
   useEffect(() => {
     if (currentInstrument) {
-      setCurrentValue({
-        value: currentInstrument.id,
-        label: `${currentInstrument.name}`,
-      });
+      setCurrentValue(currentInstrument);
     } else {
-      const firstInstrument = instruments[0];
+      const firstInstrument = options[0];
       if (firstInstrument) {
-        setCurrentValue({
-          value: firstInstrument.id,
-          label: `${firstInstrument.name}`,
-        });
+        setCurrentValue(firstInstrument);
       }
     }
-  }, [currentInstrument]);
+  }, [currentInstrument, options]);
 
   const onSelectChange = (newValue: Option) => {
     onChange?.(newValue.value);
@@ -111,22 +109,14 @@ export const InstrumentSelect: FC<InstrumentSelectProps> = ({
       onChange={onSelectChange}
       formatOptionLabel={(option: Option) => {
         return (
-          <OptionLabelWithPreview
-            preview={
-              <LabelColor color={instrumentColors[parseInt(option.value)]} />
-            }
-          >
+          <OptionLabelWithPreview preview={<LabelColor color={option.value} />}>
             {option.label}
           </OptionLabelWithPreview>
         );
       }}
       components={{
         SingleValue: () => (
-          <SingleValueWithPreview
-            preview={
-              <LabelColor color={instrumentColors[parseInt(value || "")]} />
-            }
-          >
+          <SingleValueWithPreview preview={<LabelColor color={value || ""} />}>
             {currentValue?.label}
           </SingleValueWithPreview>
         ),

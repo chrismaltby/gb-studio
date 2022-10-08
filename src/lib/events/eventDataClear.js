@@ -10,6 +10,7 @@ const fields = [
   {
     key: "saveSlot",
     label: l10n("FIELD_SAVE_SLOT"),
+    description: l10n("FIELD_SAVE_SLOT_DESC"),
     type: "togglebuttons",
     options: [
       [
@@ -40,6 +41,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_CLEAR_DATA_DESC"),
   groups,
   fields,
   compile,

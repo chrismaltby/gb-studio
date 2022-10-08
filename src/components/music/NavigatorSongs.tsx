@@ -14,15 +14,16 @@ import {
   WaveInstrument,
 } from "store/features/trackerDocument/trackerDocumentTypes";
 import { Button } from "ui/buttons/Button";
-import { PlusIcon } from "ui/icons/Icons";
+import { ArrowLeftRightIcon, PlusIcon } from "ui/icons/Icons";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import useSplitPane from "ui/hooks/use-split-pane";
 import styled from "styled-components";
 import { SplitPaneVerticalDivider } from "ui/splitpane/SplitPaneDivider";
-import { instrumentColors } from "./InstrumentSelect";
 import { NoSongsMessage } from "./NoSongsMessage";
 import { assetFilename } from "lib/helpers/gbstudio";
 import { addNewSongFile } from "store/features/trackerDocument/trackerDocumentState";
+import trackerActions from "store/features/tracker/trackerActions";
+import settings from "electron-settings";
 
 const COLLAPSED_SIZE = 30;
 
@@ -95,7 +96,7 @@ const instrumentToNavigatorItem =
       type,
       instrumentId: `${instrument.index}`,
       isGroup: false,
-      labelColor: instrumentColors[instrument.index],
+      labelColor: `instrument-${instrument.index}`,
     };
   };
 
@@ -253,8 +254,27 @@ export const NavigatorSongs = ({
     isOpen,
   ]);
 
+  const [syncInstruments, setSyncInstruments] = useState(true);
+  useEffect(() => {
+    setSyncInstruments(
+      (settings.get("trackerSidebarSyncInstruments") ?? true) as boolean
+    );
+  }, []);
+  const handleSyncInstruments = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      e.stopPropagation();
+
+      setSyncInstruments(!syncInstruments);
+      settings.set("trackerSidebarSyncInstruments", !syncInstruments);
+    },
+    [syncInstruments]
+  );
+
   const selectedInstrument = useSelector(
     (state: RootState) => state.editor.selectedInstrument
+  );
+  const selectedChannel = useSelector(
+    (state: RootState) => state.tracker.selectedChannel
   );
   const setSelectedInstrument = useCallback(
     (id: string, item: InstrumentNavigatorItem) => {
@@ -264,8 +284,33 @@ export const NavigatorSongs = ({
           type: item.type,
         })
       );
+
+      if (!item.isGroup && syncInstruments) {
+        let newSelectedChannel = 0;
+        switch (item.type) {
+          case "duty":
+            newSelectedChannel = selectedChannel === 1 ? 1 : 0;
+            break;
+          case "wave":
+            newSelectedChannel = 2;
+            break;
+          case "noise":
+            newSelectedChannel = 3;
+            break;
+        }
+        dispatch(trackerActions.setSelectedChannel(newSelectedChannel));
+        const newDefaultInstrument = parseInt(item.instrumentId);
+        dispatch(
+          trackerActions.setDefaultInstruments([
+            newDefaultInstrument,
+            newDefaultInstrument,
+            newDefaultInstrument,
+            newDefaultInstrument,
+          ])
+        );
+      }
     },
-    [dispatch]
+    [dispatch, selectedChannel, syncInstruments]
   );
 
   const [splitSizes, setSplitSizes] = useState([100, 200]);
@@ -336,6 +381,16 @@ export const NavigatorSongs = ({
             <SplitPaneHeader
               onToggle={() => togglePane(1)}
               collapsed={Math.floor(splitSizes[1]) <= COLLAPSED_SIZE}
+              buttons={
+                <Button
+                  variant={syncInstruments ? "primary" : "transparent"}
+                  size="small"
+                  title={l10n("TOOL_SYNC_INSTRUMENT_NAVIGATOR")}
+                  onClick={handleSyncInstruments}
+                >
+                  <ArrowLeftRightIcon />
+                </Button>
+              }
             >
               {l10n("FIELD_INSTRUMENTS")}
             </SplitPaneHeader>

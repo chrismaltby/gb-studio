@@ -16,6 +16,7 @@ import {
   MAX_TRIGGERS,
   DMG_PALETTE,
   MAX_NESTED_SCRIPT_DEPTH,
+  MAX_PROJECTILES,
 } from "../../consts";
 import compileSprites from "./compileSprites";
 import compileAvatars from "./compileAvatars";
@@ -71,6 +72,7 @@ import { chunk } from "../helpers/array2";
 import { toProjectileHash } from "./scriptBuilder";
 import {
   calculateAutoFadeEventIdDenormalised,
+  isEmptyScript,
   walkDenormalizedSceneEvents,
   walkDenormalizedScenesEvents,
 } from "lib/helpers/eventHelpers";
@@ -944,6 +946,17 @@ export const precompileScenes = (
 
     const sceneSpriteIds = [].concat(actorSpriteIds, eventSpriteIds);
 
+    if (projectiles.length > MAX_PROJECTILES) {
+      warnings(
+        l10n("WARNING_TOO_MANY_UNIQUE_PROJECTILES", {
+          name: scene.name,
+          num: projectiles.length,
+          max: MAX_PROJECTILES,
+        })
+      );
+      projectiles.splice(MAX_PROJECTILES);
+    }
+
     return {
       ...scene,
       playerSpriteSheetId: playerSprite.id,
@@ -1232,6 +1245,7 @@ const compile = async (
   const additionalScripts = {};
   const additionalOutput = {};
   const compiledCustomEventScriptCache = {};
+  const compiledAssetsCache = {};
 
   const eventPtrs = precompiled.sceneData.map((scene, sceneIndex) => {
     const compileScript = (
@@ -1273,7 +1287,7 @@ const compile = async (
       scriptName = `${entity.symbol}_${scriptTypeCode}`;
 
       if (
-        script.length === 0 &&
+        isEmptyScript(script) &&
         // Generate scene init for empty script if autoFade is not disabled
         (scriptTypeCode !== "init" || scene.autoFadeSpeed === null)
       ) {
@@ -1315,6 +1329,7 @@ const compile = async (
         additionalOutput,
         symbols,
         compiledCustomEventScriptCache,
+        compiledAssetsCache,
       });
 
       output[`${scriptName}.s`] = compiledScript;

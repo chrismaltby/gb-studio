@@ -21,8 +21,8 @@ import { toValidSymbol } from "lib/helpers/symbols";
 
 const indexById = indexBy("id");
 
-export const LATEST_PROJECT_VERSION = "3.1.0";
-export const LATEST_PROJECT_MINOR_VERSION = "0";
+export const LATEST_PROJECT_VERSION = "3.1.1";
+export const LATEST_PROJECT_MINOR_VERSION = "1";
 
 const ensureProjectAssetSync = (relativePath, { projectRoot }) => {
   const projectPath = `${projectRoot}/${relativePath}`;
@@ -1674,6 +1674,101 @@ export const migrateFrom300r3To310r1 = (data) => {
   };
 };
 
+/* Version 3.1.0 r2 updates projectile events to set new fields as true by default
+ */
+export const migrateFrom310r1To310r2Event = (event) => {
+  const migrateMeta = generateMigrateMeta(event);
+  if (event.args && event.command === "EVENT_LAUNCH_PROJECTILE") {
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        loopAnim: true,
+        destroyOnHit: true,
+      },
+    });
+  }
+  return event;
+};
+
+const migrateFrom310r1To310r2Events = (data) => {
+  return {
+    ...data,
+    scenes: mapScenesEvents(data.scenes, migrateFrom310r1To310r2Event),
+    customEvents: (data.customEvents || []).map((customEvent) => {
+      return {
+        ...customEvent,
+        script: mapEvents(customEvent.script, migrateFrom310r1To310r2Event),
+      };
+    }),
+  };
+};
+
+/* Version 3.1.0 r3 updates For Loops to include comparison and operation selectors
+ */
+export const migrateFrom310r2To310r3Event = (event) => {
+  const migrateMeta = generateMigrateMeta(event);
+  if (event.args && event.command === "EVENT_LOOP_FOR") {
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        comparison: "<=",
+        operation: "+=",
+        value: event.args.inc,
+      },
+    });
+  }
+  return event;
+};
+
+const migrateFrom310r2To310r3Events = (data) => {
+  return {
+    ...data,
+    scenes: mapScenesEvents(data.scenes, migrateFrom310r2To310r3Event),
+    customEvents: (data.customEvents || []).map((customEvent) => {
+      return {
+        ...customEvent,
+        script: mapEvents(customEvent.script, migrateFrom310r2To310r3Event),
+      };
+    }),
+  };
+};
+
+/* Version 3.1.1 r1 updates timer events to include a timer context value defaulting to 1
+ */
+export const migrateFrom310r3To311r1Event = (event) => {
+  const migrateMeta = generateMigrateMeta(event);
+  if (
+    event.args &&
+    (event.command === "EVENT_SET_TIMER_SCRIPT" ||
+      event.command === "EVENT_TIMER_RESTART" ||
+      event.command === "EVENT_TIMER_DISABLE")
+  ) {
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        timer: event.args.timer || 1,
+      },
+    });
+  }
+  return event;
+};
+
+const migrateFrom310r3To311r1Events = (data) => {
+  return {
+    ...data,
+    scenes: mapScenesEvents(data.scenes, migrateFrom310r3To311r1Event),
+    customEvents: (data.customEvents || []).map((customEvent) => {
+      return {
+        ...customEvent,
+        script: mapEvents(customEvent.script, migrateFrom310r3To311r1Event),
+      };
+    }),
+  };
+};
+
 const migrateProject = (project, projectRoot) => {
   let data = { ...project };
   let version = project._version || "1.0.0";
@@ -1789,6 +1884,28 @@ const migrateProject = (project, projectRoot) => {
       data = migrateFrom300r3To310r1(data);
       version = "3.1.0";
       release = "1";
+    }
+  }
+
+  if (version === "3.1.0") {
+    if (release === "0" || release === "1") {
+      data = migrateFrom310r1To310r2Events(data);
+      release = "2";
+    }
+    if (release === "2") {
+      data = migrateFrom310r2To310r3Events(data);
+      release = "3";
+    }
+    if (release === "3") {
+      version = "3.1.1";
+      release = "1";
+    }
+  }
+
+  if (version === "3.1.1") {
+    if (release === "1") {
+      data = migrateFrom310r3To311r1Events(data);
+      release = "2";
     }
   }
 

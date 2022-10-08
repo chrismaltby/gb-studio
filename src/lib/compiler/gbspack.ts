@@ -9,6 +9,7 @@ interface PackArgs {
   mbc1?: boolean; // Use MBC1 hardware (skip banks 0x20, 0x40 and 0x60)
   additional?: number; // Reserve N additional banks at end of cart for batteryless saving (default 0)
   verbose?: boolean;
+  reserve?: Record<number, number>;
 }
 
 interface PackResult {
@@ -170,7 +171,8 @@ export const packObjectData = (
   objects: ObjectData[],
   filter: number,
   bankOffset: number,
-  mbc1: boolean
+  mbc1: boolean,
+  reserve: Record<number, number>
 ): ObjectPatch[] => {
   const banks: Bank[] = [];
 
@@ -230,7 +232,8 @@ export const packObjectData = (
   for (let bankIndex = 0; bankIndex < banks.length; bankIndex++) {
     const bank = banks[bankIndex];
     const size = bank.objects.reduce((a, b) => a + b[1].size, 0);
-    if (size > BANK_SIZE) {
+    const reserved = reserve[bankIndex + 1] ?? 0;
+    if (size + reserved > BANK_SIZE) {
       throw new Error(
         `Bank overflow in ${
           bankIndex + 1
@@ -256,9 +259,10 @@ export const packObjectData = (
 
         // Calculate current size of bank
         const res = bank.objects.reduce((a, b) => a + b[1].size, 0);
+        const reserved = reserve[bankNo] ?? 0;
 
         // If can fit store it here
-        if (res + area[1].size <= BANK_SIZE) {
+        if (res + area[1].size + reserved <= BANK_SIZE) {
           bank.objects.push([...area]);
           stored = true;
           break;
@@ -266,7 +270,8 @@ export const packObjectData = (
       }
       // No room in existing banks, create a new bank
       if (!stored) {
-        if (area[1].size > BANK_SIZE) {
+        const nextReserved = reserve[bankNo + 1] ?? 0;
+        if (area[1].size + nextReserved > BANK_SIZE) {
           throw new Error(`Oversized ${area[1].size}`);
         }
 
@@ -342,6 +347,7 @@ export const gbspack = async (
   const ext = args.extension ?? "o";
   const mbc1 = args.mbc1 ?? false;
   const verbose = args.verbose ?? false;
+  const reserve = args.reserve ?? {};
 
   if (verbose) {
     console.log(`Starting at bank=${bankOffset}`);
@@ -366,7 +372,7 @@ export const gbspack = async (
   }
 
   // Pack object data into banks
-  const packed = packObjectData(objects, filter, bankOffset, mbc1);
+  const packed = packObjectData(objects, filter, bankOffset, mbc1, reserve);
 
   const maxBankNo = getPatchMaxBank(packed) + additional;
 

@@ -8,6 +8,7 @@ const fields = [
     key: "height",
     type: "select",
     label: l10n("FIELD_HEIGHT"),
+    description: l10n("FIELD_BOUNCE_HEIGHT_DESC"),
     options: [
       ["low", l10n("FIELD_LOW")],
       ["medium", l10n("FIELD_MEDIUM")],
@@ -27,6 +28,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_PLAYER_BOUNCE_DESC"),
   groups,
   fields,
   compile,

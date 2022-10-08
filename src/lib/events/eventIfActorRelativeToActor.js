@@ -23,11 +23,15 @@ const autoLabel = (fetchArg) => {
 const fields = [
   {
     key: "actorId",
+    label: l10n("ACTOR"),
+    description: l10n("FIELD_ACTOR_CHECK_DESC"),
     type: "actor",
     defaultValue: "player",
   },
   {
     key: "operation",
+    label: l10n("FIELD_COMPARISON"),
+    description: l10n("FIELD_COMPARISON_RELATIVE_DESC"),
     type: "select",
     options: [
       ["up", l10n("FIELD_IS_ABOVE")],
@@ -40,12 +44,15 @@ const fields = [
   },
   {
     key: "otherActorId",
+    label: l10n("FIELD_OTHER_ACTOR"),
+    description: l10n("FIELD_ACTOR_RELATIVE_DESC"),
     type: "actor",
     defaultValue: "$self$",
   },
   {
     key: "true",
     label: l10n("FIELD_TRUE"),
+    description: l10n("FIELD_TRUE_DESC"),
     type: "events",
   },
   {
@@ -63,6 +70,7 @@ const fields = [
   {
     key: "false",
     label: l10n("FIELD_FALSE"),
+    description: l10n("FIELD_FALSE_DESC"),
     conditions: [
       {
         key: "__collapseElse",
@@ -92,6 +100,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_IF_ACTOR_RELATIVE_TO_ACTOR_DESC"),
   autoLabel,
   groups,
   fields,

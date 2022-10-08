@@ -34,13 +34,15 @@
 ___HandleCrash::
         push    hl
         ld      hl, #.MBC_ROM_PAGE
-        ld      (hl), #4
+        ld      (hl), #b___HandleCrash_banked
         pop     hl
         jp      ___HandleCrash_banked 
 
 
-        .area   _CODE_4
-        
+        .area   _CODE_255
+.globl b___HandleCrash_banked
+b___HandleCrash_banked = 255
+
 ___HandleCrash_banked::
 
         ; We will use VRAM as scratch, since we are going to overwrite it for

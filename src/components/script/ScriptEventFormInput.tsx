@@ -15,8 +15,10 @@ import { MovementSpeedSelect } from "components/forms/MovementSpeedSelect";
 import { MovementTypeSelect } from "components/forms/MovementTypeSelect";
 import { MusicSelect } from "components/forms/MusicSelect";
 import { OperatorSelect } from "components/forms/OperatorSelect";
+import { MathOperatorSelect } from "components/forms/MathOperatorSelect";
 import { OverlayColorSelect } from "components/forms/OverlayColorSelect";
 import { PaletteSelect } from "components/forms/PaletteSelect";
+import { Priority, PrioritySelect } from "components/forms/PrioritySelect";
 import { PropertySelect } from "components/forms/PropertySelect";
 import { Reference, ReferencesSelect } from "components/forms/ReferencesSelect";
 import { SceneSelect } from "components/forms/SceneSelect";
@@ -256,6 +258,7 @@ const ScriptEventFormInput = ({
       <CheckboxField
         name={id}
         label={String(field.checkboxLabel || field.label)}
+        title={field.description}
         checked={
           typeof value === "boolean" ? value : Boolean(defaultValue || false)
         }
@@ -516,6 +519,15 @@ const ScriptEventFormInput = ({
         />
       </OffscreenSkeletonInput>
     );
+  } else if (type === "priority") {
+    return (
+      <OffscreenSkeletonInput>
+        <PrioritySelect
+          value={value as Priority | undefined}
+          onChange={onChangeField}
+        />
+      </OffscreenSkeletonInput>
+    );
   } else if (type === "animSpeed") {
     return (
       <AnimationSpeedSelect
@@ -573,6 +585,16 @@ const ScriptEventFormInput = ({
         />
       </OffscreenSkeletonInput>
     );
+  } else if (type === "mathOperator") {
+    return (
+      <OffscreenSkeletonInput>
+        <MathOperatorSelect
+          name={id}
+          value={String(value ?? "")}
+          onChange={onChangeField}
+        />
+      </OffscreenSkeletonInput>
+    );
   } else if (type === "music") {
     return (
       <OffscreenSkeletonInput>
@@ -593,6 +615,7 @@ const ScriptEventFormInput = ({
           duration={argValue(args.duration) as number | undefined}
           pitch={argValue(args.pitch) as number | undefined}
           frequency={argValue(args.frequency) as number | undefined}
+          effectIndex={argValue(args.effect) as number | undefined}
         />
       </OffscreenSkeletonInput>
     );

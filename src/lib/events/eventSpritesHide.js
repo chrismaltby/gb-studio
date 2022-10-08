@@ -16,6 +16,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_HIDE_SPRITES_DESC"),
   groups,
   fields,
   compile,

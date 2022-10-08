@@ -406,7 +406,7 @@ ${chunk(array, perLine)
 export const dataArrayToC = (name: string, data: [number]): string => {
   return `#pragma bank 255
 ${bankRef(name)}
-  
+
 const unsigned char ${name}[] = {
 ${data}
 };`;
@@ -583,6 +583,7 @@ export const compileSceneActors = (
           move_speed: Math.round(actor.moveSpeed * 16),
           anim_tick: actor.animSpeed,
           pinned: actor.isPinned ? "TRUE" : "FALSE",
+          persistent: actor.persistent ? "TRUE" : "FALSE",
           collision_group: toASMCollisionGroup(actor.collisionGroup),
           collision_enabled: actor.isPinned ? "FALSE" : "TRUE",
           script_update: maybeScriptFarPtr(events.actorsMovement[actorIndex]),
@@ -779,7 +780,7 @@ export const compileSpriteSheet = (
   );
   return `#pragma bank 255
 // SpriteSheet: ${spriteSheet.name}
-  
+
 #include "gbs_types.h"
 #include "data/${spriteSheet.tileset.symbol}.h"
 
@@ -954,7 +955,7 @@ ${palette.colors
     (paletteColors: string[]) =>
       `        CGB_PALETTE(${paletteColors.map(compileColor).join(", ")})`
   )
-  .join(",\n")} 
+  .join(",\n")}
     }`
         : ""
     }
@@ -974,7 +975,7 @@ export const compilePaletteHeader = (
 export const compileFont = (font: PrecompiledFontData) => `#pragma bank 255
 
 // Font: ${font.name}
-  
+
 #include "gbs_types.h"
 
 static const UBYTE ${font.symbol}_table[] = {
@@ -1005,7 +1006,7 @@ const font_desc_t ${font.symbol} = {
       ...(true ? [FONT_FLAG_FONT_RECODE] : []),
       ...(font.isVariableWidth ? [FONT_FLAG_FONT_VWF] : []),
       ...(font.is1Bit && font.isVariableWidth ? [FONT_FLAG_FONT_VWF_1BIT] : []),
-    ])}, 
+    ])},
     ${font.table.length <= 128 ? FONT_FLAG_FONT_RECODE_SIZE_7BIT : `0xFF`},
     ${font.symbol}_table,
     ${font.isVariableWidth ? `${font.symbol}_widths` : "NULL"},
@@ -1020,9 +1021,9 @@ export const compileAvatarFont = (
   avatars: AvatarData[],
   avatarFontIndex: number
 ) => `#pragma bank 255
-  
+
 // Avatar Font ${avatarFontIndex}
-  
+
 #include "gbs_types.h"
 
 static const UBYTE ${avatarFontSymbol(avatarFontIndex)}_table[] = {
@@ -1039,10 +1040,10 @@ ${chunk(avatars.map((a) => Array.from(a.data).map(toHex)).flat(), 16)
   .map((r) => " ".repeat(INDENT_SPACES) + r.join(", "))
   .join(",\n")}
 };
-  
+
 ${bankRef(avatarFontSymbol(avatarFontIndex))}
 const font_desc_t ${avatarFontSymbol(avatarFontIndex)} = {
-    ${toFlags([FONT_FLAG_FONT_RECODE])}, 
+    ${toFlags([FONT_FLAG_FONT_RECODE])},
     0x3F,
     ${avatarFontSymbol(avatarFontIndex)}_table,
     NULL,

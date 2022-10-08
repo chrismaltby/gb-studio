@@ -120,37 +120,69 @@ const GlobalStyle = createGlobalStyle`
     background: #00bcd4;
   }
 
-  .label--red-alt {
-    background: #b71c1c;
+  // Island Joy 16 Palette by Kerrie Lake
+  // https://lospec.com/palette-list/island-joy-16
+
+  .label--instrument-0 {
+    background: #6df7c1;
   }
 
-  .label--orange-alt {
-    background: #e65100;
+  .label--instrument-1 {
+    background: #11adc1;
   }
 
-  .label--yellow-alt {
-    background: #f57f17;
+  .label--instrument-2 {
+    background: #606c81;
   }
 
-  .label--green-alt {
-    background: #1b5e20;
+  .label--instrument-3 {
+    background: #393457;
   }
 
-  .label--blue-alt {
-    background: #0d47a1;
+  .label--instrument-4 {
+   background: #1e8875;
   }
 
-  .label--purple-alt {
-    background: #4a148c;
+  .label--instrument-5 {
+   background: #5bb361;
   }
 
-  .label--gray-alt {
-    background: #424242;
+  .label--instrument-6 {
+    background: #a1e55a;
   }
 
-  .label-cyan-alt {
-    background: #006064;
+  .label--instrument-7 {
+    background: #f7e476;
   }
-`;
+
+  .label--instrument-8 {
+    background: #f99252;
+  }
+
+  .label--instrument-9 {
+    background: #cb4d68;
+  }
+
+  .label--instrument-10 {
+    background: #6a3771;
+  }
+
+  .label--instrument-11 {
+    background: #c92464;
+  }
+
+  .label--instrument-12 {
+    background: #f48cb6;
+  }
+
+  .label--instrument-13 {
+    background: #f7b69e;
+  }
+
+  .label--instrument-14 {
+    background: #9b9c82;
+  }
+
+  `;
 
 export default GlobalStyle;

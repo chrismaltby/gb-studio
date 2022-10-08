@@ -24,6 +24,7 @@ import {
   NR23,
   NR24,
 } from "./music_constants";
+import { hi, lo } from "lib/helpers/8bit";
 
 let update_handle = null;
 let rom_file = null;
@@ -77,18 +78,13 @@ const doResume = () => {
 
 const bitpack = (value, bitResolution) => {
   const bitsString = Math.abs(value || 0).toString(2);
-  if (bitsString.length > bitResolution) {
-    throw Error(
-      `value must be between 0 and ${Math.pow(2, bitResolution) - 1}`
-    );
-  }
 
   let missingValues = "";
   for (let i = 0; i < bitResolution - bitsString.length; i++) {
     missingValues = missingValues + "0";
   }
 
-  return missingValues + bitsString;
+  return missingValues + bitsString.slice(0, bitResolution);
 };
 
 const note2noise = (note) => {
@@ -102,14 +98,34 @@ const note2noise = (note) => {
   return pitch > 7 ? (((pitch - 4) >> 2) << 4) + (pitch & 3) + 4 : pitch;
 };
 
-const initPlayer = (onInit) => {
+const initPlayer = (onInit, sfx) => {
   compiler.setLogCallback(console.log);
   compiler.setLinkOptions(["-t", "-w"]);
 
-  storage.update(
-    "song.asm",
-    'SECTION "song", ROM0[$1000]\nSONG_DESCRIPTOR:: ds $8000 - @'
-  );
+  // Load an empty song
+  let songFile = `include "include/hUGE.inc"
+    
+  SECTION "song", ROM0[$1000]
+  
+  SONG_DESCRIPTOR::
+  db 7  ; tempo
+  dw song_order_cnt
+  dw song_order1, song_order1, song_order1, song_order1
+  dw 0, 0, 0
+  dw 0
+  dw 0
+  
+  song_order_cnt: db 1
+  song_order1: dw P0
+  
+  P0:
+   dn ___,0,$B01
+   
+  `;
+  if (sfx) {
+    songFile += `my_sfx:: db ${sfx}`;
+  }
+  storage.update("song.asm", songFile);
 
   compiler.compile((file, start_address, addr_to_line) => {
     rom_file = file;
@@ -130,7 +146,7 @@ const initPlayer = (onInit) => {
         `Order Count: ${emulator.readMem(getMemAddress("order_cnt"))}`
       );
     };
-    setInterval(updateTracker, 10);
+    setInterval(updateTracker, 1000 / 64);
   });
 };
 
@@ -145,14 +161,19 @@ const loadSong = (song) => {
   stop();
 };
 
-const play = (song) => {
+const play = (song, position) => {
   console.log("PLAY");
   updateRom(song);
 
-  if (isPlayerPaused()) {
-    const ticks_per_row_addr = getMemAddress("ticks_per_row");
-    emulator.writeMem(ticks_per_row_addr, song.ticks_per_row);
+  if (position) {
+    console.log("POS", position);
+    setStartPosition(position);
+  }
 
+  const ticks_per_row_addr = getMemAddress("ticks_per_row");
+  emulator.writeMem(ticks_per_row_addr, song.ticks_per_row);
+
+  if (isPlayerPaused()) {
     emulator.setChannel(0, channels[0]);
     emulator.setChannel(1, channels[1]);
     emulator.setChannel(2, channels[2]);
@@ -177,6 +198,49 @@ const play = (song) => {
     };
     update_handle = setInterval(updateUI, 15.625);
   }
+};
+
+const playSound = () => {
+  doPause();
+
+  console.log("=======SFX=======");
+
+  const my_sfx_addr = compiler.getRomSymbols().indexOf("my_sfx");
+  const sfx_play_bank_addr = getMemAddress("_sfx_play_bank");
+  const sfx_play_sample_addr = getMemAddress("_sfx_play_sample");
+
+  console.log(
+    my_sfx_addr,
+    emulator.readMem(sfx_play_bank_addr),
+    emulator.readMem(sfx_play_sample_addr),
+    emulator.readMem(sfx_play_sample_addr + 1),
+    sfx_play_sample_addr,
+    sfx_play_bank_addr
+  );
+  emulator.writeMem(sfx_play_bank_addr, 1);
+
+  emulator.writeMem(sfx_play_sample_addr, lo(my_sfx_addr));
+  emulator.writeMem(sfx_play_sample_addr + 1, hi(my_sfx_addr));
+
+  const b0 = emulator.readMem(sfx_play_sample_addr);
+  const b1 = emulator.readMem(sfx_play_sample_addr + 1);
+  const v = (b1 << 8) | b0;
+  console.log("SFX", v, b0, b1);
+
+  console.log("=======SFX=======");
+  doResume();
+
+  const sfx_update = setInterval(() => {
+    const b0 = emulator.readMem(sfx_play_sample_addr);
+    const b1 = emulator.readMem(sfx_play_sample_addr + 1);
+    const v = (b1 << 8) | b0;
+
+    console.log("SFX", v, b0, b1);
+    if (v === 0) {
+      doPause();
+      clearInterval(sfx_update);
+    }
+  }, 1000 / 64);
 };
 
 const preview = (note, type, instrument, square2, waves = []) => {
@@ -330,7 +394,7 @@ const preview = (note, type, instrument, square2, waves = []) => {
           ),
         NR43: bitpack(
           note2noise(note + instrument.noise_macro[0]) +
-            (instrument.bit_count === 7 ? 16 : 0),
+            (instrument.bit_count === 7 ? 8 : 0),
           8
         ),
         NR44:
@@ -338,6 +402,24 @@ const preview = (note, type, instrument, square2, waves = []) => {
           (instrument.length !== null ? 1 : 0) +
           "000000",
       };
+
+      emulator.step("frame");
+      let noiseStep = 0;
+      clearInterval(noiseTimer);
+      const noiseTimer = setInterval(() => {
+        if (noiseStep > 5) {
+          clearInterval(noiseTimer);
+          return;
+        }
+        console.log("noise macro step = " + noiseStep);
+        emulator.writeMem(
+          NR43,
+          note2noise(note + instrument.noise_macro[noiseStep]) +
+            (instrument.bit_count === 7 ? 8 : 0),
+          8
+        );
+        noiseStep++;
+      }, 1000 / 64);
 
       console.log("-------------");
       console.log(`NR41`, regs.NR41, parseInt(regs.NR41, 2));
@@ -361,10 +443,10 @@ const preview = (note, type, instrument, square2, waves = []) => {
   }
   timeoutId = setTimeout(() => {
     emulator.writeMem(NR12, 0);
-    // emulator.writeMem(NR22, 0);
+    emulator.writeMem(NR22, 0);
     emulator.writeMem(NR30, 0);
     emulator.writeMem(NR42, 0);
-  }, 3000);
+  }, 2000);
 };
 
 const stop = (position) => {
@@ -392,9 +474,11 @@ const setStartPosition = (position) => {
 
   const new_order_addr = getMemAddress("new_order");
   const new_row_addr = getMemAddress("new_row");
+  const huge_tick = getMemAddress("tick");
 
   emulator.writeMem(new_order_addr, position[0] * 2);
   emulator.writeMem(new_row_addr, position[1]);
+  emulator.writeMem(huge_tick, 0);
 
   if (wasPlaying) {
     doResume();
@@ -525,6 +609,7 @@ export default {
   initPlayer,
   loadSong,
   play,
+  playSound,
   stop,
   preview,
   setChannel,
@@ -532,4 +617,5 @@ export default {
   setOnIntervalCallback: (cb) => {
     onIntervalCallback = cb;
   },
+  getRomFile: () => rom_file,
 };

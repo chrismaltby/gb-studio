@@ -42,7 +42,8 @@
   opacity: 1;
 }
 
-.ScriptEventForm__Btn:hover, .ScriptEventForm__Btn:focus {
+.ScriptEventForm__Btn:hover,
+.ScriptEventForm__Btn:focus {
   background: rgba(128, 128, 128, 0.5);
   opacity: 1;
 }

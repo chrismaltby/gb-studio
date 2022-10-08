@@ -89,6 +89,7 @@ export type Actor = {
   direction: ActorDirection;
   animate: boolean;
   isPinned: boolean;
+  persistent: boolean;
   collisionGroup: string;
   script: string[];
   startScript: string[];
@@ -505,6 +506,8 @@ export interface ScriptEventFieldSchema {
   unitsField?: string;
   unitsDefault?: UnitType;
   unitsAllowed?: UnitType[];
+  hideLabel?: boolean;
+  description?: string;
   filter?: (value: unknown) => boolean;
   updateFn?: (
     newValue: unknown,
