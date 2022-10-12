@@ -5,7 +5,6 @@ import { Song } from "lib/helpers/uge/song/Song";
 import { RootState } from "store/configureStore";
 import { SplitPaneVerticalDivider } from "ui/splitpane/SplitPaneDivider";
 import { SequenceEditor } from "./SequenceEditor";
-import scrollIntoView from "scroll-into-view-if-needed";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import l10n from "lib/helpers/l10n";
 import { RollChannel } from "./RollChannel";
@@ -313,10 +312,9 @@ export const SongPianoRoll = ({
   useEffect(() => {
     if (playingRowRef && playingRowRef.current) {
       if (playing) {
-        scrollIntoView(playingRowRef.current, {
-          scrollMode: "if-needed",
+        playingRowRef.current.scrollIntoView({
           block: "nearest",
-          inline: "end",
+          inline: "center",
         });
       }
     }
@@ -1021,8 +1019,14 @@ export const SongPianoRoll = ({
                 setPlaybackPosition(e.nativeEvent);
               }}
             ></div>
-            <RollPlaybackTracker
+            <div
               ref={playingRowRef}
+              style={{
+                width: "1px",
+                transform: `translateX(${playbackState[1] * CELL_SIZE}px)`,
+              }}
+            ></div>
+            <RollPlaybackTracker
               style={{
                 display: playbackState[0] === sequenceId ? "" : "none",
                 transform: `translateX(${10 + playbackState[1] * CELL_SIZE}px)`,

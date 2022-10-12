@@ -6,8 +6,22 @@ test("Should be able to disable timer", () => {
   compile(
     {},
     {
-      timerRestart: mockTimerRestart
+      timerRestart: mockTimerRestart,
     }
   );
-  expect(mockTimerRestart).toBeCalledWith();
+  expect(mockTimerRestart).toBeCalledWith(undefined);
+});
+
+test("Should be able to disable numbered timer", () => {
+  const mockTimerRestart = jest.fn();
+
+  compile(
+    {
+      timer: 3,
+    },
+    {
+      timerRestart: mockTimerRestart,
+    }
+  );
+  expect(mockTimerRestart).toBeCalledWith(3);
 });

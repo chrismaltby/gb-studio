@@ -3,7 +3,27 @@ const l10n = require("../helpers/l10n").default;
 const id = "EVENT_SET_TIMER_SCRIPT";
 const groups = ["EVENT_GROUP_TIMER"];
 
+const autoLabel = (fetchArg) => {
+  return l10n("EVENT_SET_TIMER_SCRIPT_LABEL", {
+    timer: fetchArg("timer"),
+  });
+};
+
 const fields = [
+  {
+    key: "timer",
+    label: l10n("FIELD_TIMER"),
+    description: l10n("FIELD_TIMER_DESC"),
+    type: "togglebuttons",
+    options: [
+      [1, "1", `${l10n("FIELD_TIMER")} 1`],
+      [2, "2", `${l10n("FIELD_TIMER")} 2`],
+      [3, "3", `${l10n("FIELD_TIMER")} 3`],
+      [4, "4", `${l10n("FIELD_TIMER")} 4`],
+    ],
+    allowNone: false,
+    defaultValue: 1,
+  },
   {
     type: "group",
     fields: [
@@ -80,11 +100,12 @@ const compile = (input, helpers) => {
     let duration = typeof input.duration === "number" ? input.duration : 10.0;
     frames = Math.ceil(duration * 60);
   }
-  timerScriptSet(frames, input.script, event.symbol);
+  timerScriptSet(frames, input.script, event.symbol, input.timer);
 };
 
 module.exports = {
   id,
+  autoLabel,
   description: l10n("EVENT_SET_TIMER_SCRIPT_DESC"),
   groups,
   fields,
