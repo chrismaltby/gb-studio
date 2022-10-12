@@ -16,6 +16,8 @@ import {
   DRAG_DESTINATION,
   DRAG_TRIGGER,
   DRAG_ACTOR,
+  TILE_COLOR_PROPS,
+  TILE_COLOR_PALETTE,
 } from "../../../consts";
 import { isVariableField, isPropertyField } from "lib/helpers/eventSystem";
 import clamp from "lib/helpers/clamp";
@@ -1946,6 +1948,7 @@ const paintColor: CaseReducer<
       y: number;
       paletteIndex: number;
       brush: Brush;
+      isTileProp: boolean;
     } & ({ drawLine: false } | { drawLine: true; endX: number; endY: number })
   >
 > = (state, action) => {
@@ -1957,6 +1960,7 @@ const paintColor: CaseReducer<
     return;
   }
 
+  const isTileProp = action.payload.isTileProp;
   const brush = action.payload.brush;
   const drawSize = brush === "16px" ? 2 : 1;
   const tileColorsSize = Math.ceil(background.width * background.height);
@@ -1975,7 +1979,19 @@ const paintColor: CaseReducer<
 
   const setValue = (x: number, y: number, value: number) => {
     const tileColorIndex = background.width * y + x;
-    tileColors[tileColorIndex] = value;
+    let newValue = value;
+    if (isTileProp) {
+      // If is prop keep previous color value
+      newValue =
+        (tileColors[tileColorIndex] & TILE_COLOR_PALETTE) +
+        (value & TILE_COLOR_PROPS);
+    } else if (value !== 0) {
+      // If is color keep prop unless erasing
+      newValue =
+        (value & TILE_COLOR_PALETTE) +
+        (tileColors[tileColorIndex] & TILE_COLOR_PROPS);
+    }
+    tileColors[tileColorIndex] = newValue;
   };
 
   const isInBounds = (x: number, y: number) => {

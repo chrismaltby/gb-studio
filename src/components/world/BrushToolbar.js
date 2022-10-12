@@ -24,6 +24,7 @@ import {
   COLLISION_RIGHT,
   COLLISION_ALL,
   TILE_PROP_LADDER,
+  TILE_COLOR_PROP_PRIORITY,
 } from "../../consts";
 import PaletteBlock from "../library/PaletteBlock";
 import { PaletteShape } from "store/stateShape";
@@ -304,6 +305,19 @@ class BrushToolbar extends Component {
                 />
               </div>
             ))}
+          {showPalettes && <div className="BrushToolbar__Divider" />}
+          {showPalettes && (
+            <div
+              onClick={this.setSelectedPalette(TILE_COLOR_PROP_PRIORITY)}
+              className={cx("BrushToolbar__Item", {
+                "BrushToolbar__Item--Selected":
+                  TILE_COLOR_PROP_PRIORITY === selectedPalette,
+              })}
+              title={l10n("TOOL_PRIORITY")}
+            >
+              {l10n("TOOL_PRIORITY")}
+            </div>
+          )}
           {showPalettes && <div className="BrushToolbar__Divider" />}
           {showTileTypes && (
             <>
