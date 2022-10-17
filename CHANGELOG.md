@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add ability to choose timer context in timer events allowing up to four timers to be used per scene [@patrickmollohan](https://github.com/patrickmollohan)
+- Add event "If Current Scene Is" to allow conditionally running scripts based on the current scene [@patrickmollohan](https://github.com/patrickmollohan)
 
 ### Changed
 
