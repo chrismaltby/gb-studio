@@ -254,7 +254,6 @@ class SceneCursor extends Component {
         return;
       }
 
-      const brushSize = selectedBrush === BRUSH_16PX ? 2 : 1;
       this.isTileProp = selectedPalette & TILE_COLOR_PROPS;
       this.drawTile = 0;
 
@@ -475,16 +474,8 @@ class SceneCursor extends Component {
   };
 
   onColorsMove = (_e) => {
-    const {
-      x,
-      y,
-      enabled,
-      sceneId,
-      backgroundId,
-      selectedPalette,
-      selectedBrush,
-      paintColor,
-    } = this.props;
+    const { x, y, enabled, sceneId, backgroundId, selectedBrush, paintColor } =
+      this.props;
     if (enabled && (this.currentX !== x || this.currentY !== y)) {
       if (this.drawLine) {
         if (this.startX === undefined || this.startY === undefined) {
