@@ -921,7 +921,9 @@ class ScriptBuilder {
     this._addCmd(
       "VM_GET_INT8",
       addr,
-      cVariable.startsWith("^") ? cVariable : `_${cVariable}`
+      cVariable.startsWith("^") || cVariable.startsWith("_")
+        ? cVariable
+        : `_${cVariable}`
     );
   };
 
@@ -929,7 +931,9 @@ class ScriptBuilder {
     this._addCmd(
       "VM_GET_INT16",
       addr,
-      cVariable.startsWith("^") ? cVariable : `_${cVariable}`
+      cVariable.startsWith("^") || cVariable.startsWith("_")
+        ? cVariable
+        : `_${cVariable}`
     );
   };
 
@@ -4624,6 +4628,49 @@ extern void __mute_mask_${symbol};
     this._compilePath(truePath);
     this._label(endLabel);
     this._addNL();
+  };
+
+  ifCurrentSceneIs = (
+    sceneId: string,
+    truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
+    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+  ) => {
+    const { scenes } = this.options;
+    const scene = scenes.find((s) => s.id === sceneId);
+    const symbol = scene?.symbol;
+
+    this._addComment(`If Current Scene Is ${symbol}`);
+
+    if (symbol) {
+      const falseLabel = this.getNextLabel();
+      const endLabel = this.getNextLabel();
+
+      const bankRef = this._declareLocal("bank", 1, true);
+      const addrRef = this._declareLocal("addr", 1, true);
+
+      this._getMemInt8(bankRef, "_current_scene");
+      this._getMemInt16(addrRef, "^/(_current_scene+1)/");
+
+      this._rpn()
+        .ref(bankRef)
+        .int8(`___bank_${symbol}`)
+        .operator(".EQ")
+        .ref(addrRef)
+        .int16(`_${symbol}`)
+        .operator(".EQ")
+        .operator(".AND")
+        .stop();
+      this._ifConst(".EQ", ".ARG0", 0, falseLabel, 1);
+      this._addNL();
+      this._compilePath(truePath);
+      this._jump(endLabel);
+      this._label(falseLabel);
+      this._compilePath(falsePath);
+      this._label(endLabel);
+      this._addNL();
+    } else {
+      this._compilePath(falsePath);
+    }
   };
 
   ifInput = (

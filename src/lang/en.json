@@ -1017,6 +1017,8 @@
   "EVENT_IDLE_DESC": "Pause the script for a single frame.",
   "EVENT_LOOP_FOR_LABEL": "For ({variable} = {from}; {variable} {comparison} {to}; {variable} {operation} {val})",
   "EVENT_LOOP_WHILE_LABEL": "While ({expression})",
+  "EVENT_IF_CURRENT_SCENE_IS": "If Current Scene Is",
+  "EVENT_IF_CURRENT_SCENE_IS_LABEL": "If Current Scene Is {scene}",
   "FIELD_EXPRESSION": "Expression",
   "FIELD_EXPRESSION_DESC": "The expression to evaluate.",
   "FIELD_VALUE_SWITCH_DESC": "The value to compare the variable with for running this branch of the script.",
