@@ -56,6 +56,7 @@
   "TOOL_PIANO_ROLL_VIEW": "Switch to Piano Roll view",
   "TOOL_ADD_SONG_LABEL": "Add new song",
   "TOOL_SYNC_INSTRUMENT_NAVIGATOR": "Use selected instrument when adding notes",
+  "TOOL_TILE_PRIORITY": "Tile Priority",
 
   "// 5": "Editors --------------------------------------------------",
   "SIDEBAR_NAVIGATION": "Navigation",

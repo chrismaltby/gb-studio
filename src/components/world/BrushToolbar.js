@@ -9,6 +9,7 @@ import {
   SquareIconSmall,
   EyeOpenIcon,
   EyeClosedIcon,
+  PriorityTileIcon,
 } from "ui/icons/Icons";
 import {
   TOOL_COLORS,
@@ -313,9 +314,9 @@ class BrushToolbar extends Component {
                 "BrushToolbar__Item--Selected":
                   TILE_COLOR_PROP_PRIORITY === selectedPalette,
               })}
-              title={l10n("TOOL_PRIORITY")}
+              title={l10n("TOOL_TILE_PRIORITY")}
             >
-              {l10n("TOOL_PRIORITY")}
+              <PriorityTileIcon />
             </div>
           )}
           {showPalettes && <div className="BrushToolbar__Divider" />}

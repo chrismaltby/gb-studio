@@ -30,8 +30,10 @@ const ScenePriorityMap = ({
           const tile = tileColors[tileIndex];
           if ((tile & TILE_COLOR_PROP_PRIORITY) === TILE_COLOR_PROP_PRIORITY) {
             ctx.fillStyle = "rgba(40,250,40,0.3)";
-            ctx.fillRect(xi * TILE_SIZE, yi * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+          } else {
+            ctx.fillStyle = "rgba(40,40,40,0.6)";
           }
+          ctx.fillRect(xi * TILE_SIZE, yi * TILE_SIZE, TILE_SIZE, TILE_SIZE);
         }
       }
     }
