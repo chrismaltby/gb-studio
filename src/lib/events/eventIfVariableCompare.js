@@ -14,23 +14,30 @@ const autoLabel = (fetchArg) => {
 const fields = [
   {
     key: "vectorX",
+    label: l10n("FIELD_VARIABLE"),
+    description: l10n("FIELD_VARIABLE_DESC"),
     type: "variable",
     defaultValue: "LAST_VARIABLE",
   },
   {
     key: "operator",
+    label: l10n("FIELD_COMPARISON"),
+    description: l10n("FIELD_COMPARISON_DESC"),
     type: "operator",
     width: "50%",
     defaultValue: "==",
   },
   {
     key: "vectorY",
+    label: l10n("FIELD_OTHER_VARIABLE"),
+    description: l10n("FIELD_VARIABLE_COMPARE_DESC"),
     type: "variable",
     defaultValue: "LAST_VARIABLE",
   },
   {
     key: "true",
     label: l10n("FIELD_TRUE"),
+    description: l10n("FIELD_TRUE_DESC"),
     type: "events",
   },
   {
@@ -48,6 +55,7 @@ const fields = [
   {
     key: "false",
     label: l10n("FIELD_FALSE"),
+    description: l10n("FIELD_FALSE_DESC"),
     conditions: [
       {
         key: "__collapseElse",
@@ -87,6 +95,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_IF_VALUE_COMPARE_DESC"),
   autoLabel,
   groups,
   fields,

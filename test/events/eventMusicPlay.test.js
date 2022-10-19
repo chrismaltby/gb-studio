@@ -6,26 +6,11 @@ test("Should be able to play music", () => {
   compile(
     {
       musicId: "1",
-      loop: false
+      loop: false,
     },
     {
-      musicPlay: mockMusicPlay
+      musicPlay: mockMusicPlay,
     }
   );
-  expect(mockMusicPlay).toBeCalledWith("1", false);
-});
-
-test("Should be able to loop music", () => {
-  const mockMusicPlay = jest.fn();
-
-  compile(
-    {
-      musicId: "1",
-      loop: true
-    },
-    {
-      musicPlay: mockMusicPlay
-    }
-  );
-  expect(mockMusicPlay).toBeCalledWith("1", true);
+  expect(mockMusicPlay).toBeCalledWith("1");
 });

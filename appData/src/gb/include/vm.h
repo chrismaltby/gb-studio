@@ -10,6 +10,8 @@
 
 #include "compat.h"
 
+BANKREF_EXTERN(VM_MAIN)
+
 #define FN_ARG0 -1
 #define FN_ARG1 -2
 #define FN_ARG2 -3
@@ -31,8 +33,9 @@ typedef UWORD DUMMY1_t;
 
 typedef void * SCRIPT_CMD_FN;
 
-typedef struct _SCRIPT_CMD {
+typedef struct SCRIPT_CMD {
     SCRIPT_CMD_FN fn;
+    UBYTE fn_bank;
     UBYTE args_len;
 } SCRIPT_CMD;
 

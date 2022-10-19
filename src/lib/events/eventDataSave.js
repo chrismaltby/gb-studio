@@ -10,6 +10,7 @@ const fields = [
   {
     key: "saveSlot",
     label: l10n("FIELD_SAVE_SLOT"),
+    description: l10n("FIELD_SAVE_SLOT_DESC"),
     type: "togglebuttons",
     options: [
       [
@@ -42,6 +43,7 @@ const fields = [
   {
     key: "true",
     label: l10n("FIELD_ON_SAVE"),
+    description: l10n("FIELD_ON_SAVE_DESC"),
     type: "events",
   },
 ];
@@ -53,6 +55,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_SAVE_DATA_DESC"),
   groups,
   fields,
   compile,

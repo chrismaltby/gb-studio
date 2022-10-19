@@ -9,6 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Add ability to choose timer context in timer events allowing up to four timers to be used per scene [@patrickmollohan](https://github.com/patrickmollohan)
+- Add event "If Current Scene Is" to allow conditionally running scripts based on the current scene [@patrickmollohan](https://github.com/patrickmollohan)
+- Add ability to set background tile priority for Color games using Priorty tool in colorize section. Priority tiles appear above sprites
+
+### Changed
+
+- Updated Simplified Chinese localisation. [@wcxu21](https://github.com/wcxu21)
+- Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
+
+### Fixed
+
+- Fixed issue where piano roll would scroll vertically when switching patterns [@pau-tomas](https://github.com/pau-tomas)
+- Fix issue where editing a custom script could cause variables to switch back to pass by reference
+
+### Removed
+
+## [3.1.0] - 2022-09-11
+
+### Added
+
 - Add VM_LOAD_TILESET and VM_OVERLAY_SET_MAP to gbvm [@untoxa](https://github.com/untoxa)
 - Add VM_ACTOR_MOVE_CANCEL [@um3k](https://github.com/um3k)
 - Allow using frames rather than seconds for wait/camera shake/attach timer script events
@@ -42,6 +62,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add compile time warning if too many unique projectiles are within a scene
 - Add effect editor to music editor piano roll [@pau-tomas](https://github.com/pau-tomas)
 - Add noise macro preview for music editor [@RichardULZ](https://github.com/RichardULZ)
+- Display channel specific instrument names on instrument select dropdown [@pau-tomas](https://github.com/pau-tomas)
+- Allow editing effects from tracker editor [@RichardULZ](https://github.com/RichardULZ)
+- Allow transposing selected notes in tracker with Ctrl/Ctrl+Shift and Mousewheel or "+" / "-" keys [@RichardULZ](https://github.com/RichardULZ)
+- Add sound effects preview from dropdowns [@pau-tomas](https://github.com/pau-tomas)
+- Add tooltips to all script event labels (also used to auto generate documentation for new site)
+- Add "Music House" to the color sample project with examples of music and sound effects [@pau-tomas](https://github.com/pau-tomas). Music and sound effects by Tronimal.
+- Add new song template for UGE songs, with new default instruments. Song created by Tronimal.
+- Add support for extending engine.json from plugins [@pau-tomas](https://github.com/pau-tomas)
 
 ### Changed
 
@@ -60,6 +88,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - List of "Variable Uses" now calculated in background thread to reduce pause while reading large projects
 - Timer, input and music scripts set from within a custom script no longer allow the script parameters to be used as they were not working, global variables can now be used instead.
 - Optimised actors_update() and vm_actor_move_to() to improve CPU usage
+- Improve music editor copy/paste with ModPlug compatible clipboard [@RichardULZ](https://github.com/RichardULZ)
 
 ### Fixed
 
@@ -86,11 +115,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where renaming sprite files would lose any attached metadata
 - Prevent user from creating projects ending with a period [@patrickmollohan](https://github.com/patrickmollohan)
 - Fix issue where using multiple identical sound events in a project would store the data in the ROM duplicated once for every sound effect call
+- Fix plat_jump_vel maximum value in engine.json [@patrickmollohan](https://github.com/patrickmollohan)
+- Fix issue where a commented out actor update script would cause slow down while the actor is onscreen
+- Fix issues with build caching which was requiring cache to be cleared regularly if variable references were changed
+- Fix issue where Drag world mode and Paste event mode could become stuck if using Alt+Tab to switch windows while active
+- Fix issue using single "$" and "#" characters in dialogue
+- Fix issue when setting actor's position to another actor's position using properties [@patrickmollohan](https://github.com/patrickmollohan)
+- Fix issue using actor properties from within custom scripts
 
 ### Removed
 
 - Removed .CURRENT_SCRIPT_BANK for gbvm scripts as results were unreliable
 - Removed deprecated dividing ratio and shift clock fields from noise instrument editor [@pau-tomas](https://github.com/pau-tomas)
+- Removed loop option on music play event, doesn't work for hUGEDriver and was broken on GBTPlayer. Instead add an empty pattern with an infinite loop (using effect Bxx) to the tracks you want to not loop.
 
 ## [3.0.3]
 

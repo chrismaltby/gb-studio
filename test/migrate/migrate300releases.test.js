@@ -4,6 +4,7 @@ import {
   migrateFrom300r3To310r1Event,
   migrateFrom300r3To310r1,
   migrateFrom310r1To310r2Event,
+  migrateFrom310r3To311r1Event,
 } from "../../src/lib/project/migrateProject";
 
 test("should not fail on empty project", () => {
@@ -493,5 +494,52 @@ test("should migrate projectiles to default new fields to true", () => {
       destroyOnHit: true,
     },
     id: "event-1",
+  });
+});
+
+test("should add timer contexts to timer scripts", () => {
+  const oldEvent1 = {
+    command: "EVENT_SET_TIMER_SCRIPT",
+    args: {
+      duration: 0.5,
+      frames: 30,
+    },
+    children: [],
+    id: "event-1",
+  };
+  const oldEvent2 = {
+    command: "EVENT_TIMER_RESTART",
+    args: {},
+    id: "event-2",
+  };
+  const oldEvent3 = {
+    command: "EVENT_TIMER_DISABLE",
+    args: {},
+    id: "event-3",
+  };
+  const customEvents = [];
+  expect(migrateFrom310r3To311r1Event(oldEvent1, customEvents)).toEqual({
+    command: "EVENT_SET_TIMER_SCRIPT",
+    args: {
+      duration: 0.5,
+      frames: 30,
+      timer: 1,
+    },
+    children: [],
+    id: "event-1",
+  });
+  expect(migrateFrom310r3To311r1Event(oldEvent2, customEvents)).toEqual({
+    command: "EVENT_TIMER_RESTART",
+    args: {
+      timer: 1,
+    },
+    id: "event-2",
+  });
+  expect(migrateFrom310r3To311r1Event(oldEvent3, customEvents)).toEqual({
+    command: "EVENT_TIMER_DISABLE",
+    args: {
+      timer: 1,
+    },
+    id: "event-3",
   });
 });

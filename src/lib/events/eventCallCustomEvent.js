@@ -12,6 +12,8 @@ const autoLabel = (fetchArg) => {
 const fields = [
   {
     type: "customEvent",
+    label: l10n("CUSTOM_EVENT"),
+    description: l10n("FIELD_SCRIPT_CALL_DESC"),
     key: "customEventId",
   },
   {
@@ -26,6 +28,8 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_CALL_CUSTOM_EVENT_DESC"),
+  references: ["/docs/scripting/custom-scripts"],
   autoLabel,
   groups,
   fields,

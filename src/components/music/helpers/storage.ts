@@ -12,11 +12,11 @@ const files = {
   "include/hUGE_note_table.inc": hUGE_note_table_inc,
   "hUGEDriver.asm": hugeDriver_asm,
   "player.asm": player_asm,
-};
+} as Record<string, Uint8Array | string>;
 
 const getFiles = () => files;
 
-const update = (name, code) => {
+const update = (name: string, code: ArrayBuffer | string | null) => {
   if (typeof name !== "undefined") {
     if (code === null) {
       delete files[name];
