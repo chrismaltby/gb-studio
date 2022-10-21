@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useMemo } from "react";
 import { useSelector } from "react-redux";
 import events, {
   engineFieldUpdateEvents,
@@ -125,7 +125,6 @@ const ScriptEventForm = ({
   altBg,
   renderEvents,
 }: ScriptEventFormProps) => {
-  const [fields, setFields] = useState<ScriptEventFieldSchema[]>([]);
   const scriptEvent = useSelector((state: RootState) =>
     scriptEventSelectors.selectById(state, id)
   );
@@ -136,12 +135,16 @@ const ScriptEventForm = ({
   const command = scriptEvent?.command;
   const value = scriptEvent?.args;
 
-  useEffect(() => {
+  const fields = useMemo(() => {
     if (command) {
-      setFields(
-        getScriptEventFields(command, value || {}, customEvents, engineFields)
+      return getScriptEventFields(
+        command,
+        value || {},
+        customEvents,
+        engineFields
       );
     }
+    return [];
   }, [command, value, customEvents, engineFields]);
 
   if (!scriptEvent) {
