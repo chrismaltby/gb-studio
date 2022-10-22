@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1308220925",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1311221022",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -56,6 +56,7 @@
   "TOOL_PIANO_ROLL_VIEW": "Przełącz na tryb Piano",
   "TOOL_ADD_SONG_LABEL": "Dodaj nowy utwór",
   "TOOL_SYNC_INSTRUMENT_NAVIGATOR": "Użyj wybranego instrumentu podczas dodawania nut",
+  "TOOL_TILE_PRIORITY": "Pierwszeństwo tafli",
 
   "// 5": "Editors --------------------------------------------------",
   "SIDEBAR_NAVIGATION": "Nawigator",
@@ -466,7 +467,7 @@
   "FIELD_UI_PALETTE_NOTE": "Uwaga: GB Paleta tła #8 odpowiada również za elementy UI (interfejsu użytkownika) takie jak okna i menu",
   "FIELD_EMOTE_PALETTE_NOTE": "Uwaga: GB Paleta obiektów #8 jest używana również do emotikonów",
   "FIELD_SGB_PALETTE_NOTE": "Uwaga: Domyślna paleta dla Super GB jest współdziedziczona z paletą kolorów GB nr #5, zmiana którejkolwiek z nich spowoduje aktualizację dla drugiej wartość.",
-  "FIELD_CART_BATTERYLESS": "Włącz oszczędzanie baterii (tylko karty Flash)",
+  "FIELD_CART_BATTERYLESS": "Włącz zapis bez baterii (tylko karty flash)",
   "FIELD_ANIMATION_SETTINGS": "Ustawienie animacji",
   "FIELD_DUPLICATE": "Duplikuj",
   "FIELD_PREVIOUS_FRAME": "Poprzednia klatka",
@@ -1016,6 +1017,8 @@
   "EVENT_IDLE_DESC": "Polecenie zatrzyma wykonanie skryptu na pojedyńczą klatkę.",
   "EVENT_LOOP_FOR_LABEL": "Dla ({variable} = {from}; {variable} {comparison} {to}; {variable} {operation} {val})",
   "EVENT_LOOP_WHILE_LABEL": "Podczas ({expression})",
+  "EVENT_IF_CURRENT_SCENE_IS": "Warunek aktualna scena",
+  "EVENT_IF_CURRENT_SCENE_IS_LABEL": "Warunek aktualna scena to {scene}",
   "FIELD_EXPRESSION": "Wyrażenie",
   "FIELD_EXPRESSION_DESC": "Wprowadź wyrażenie do oceny.",
   "FIELD_VALUE_SWITCH_DESC": "Wartość do porównania zmiennej w celu uruchomienia tej gałęzi skryptu.",
