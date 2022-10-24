@@ -206,3 +206,8 @@ export const StickyTabs = styled.div`
   z-index: 1;
   background: ${(props) => props.theme.colors.sidebar.background};
 `;
+
+export const TabSettings = styled.div`
+  background-color: ${(props) => props.theme.colors.input.background};
+  padding: 10px;
+`;

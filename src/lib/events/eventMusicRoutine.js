@@ -6,23 +6,27 @@ const groups = ["EVENT_GROUP_MUSIC"];
 const fields = [
   {
     key: "routine",
+    label: l10n("FIELD_ROUTINE"),
+    description: l10n("FIELD_ROUTINE_DESC"),
     type: "number",
     defaultValue: 0,
     min: 0,
-    max: 4,
+    max: 3,
   },
   {
     key: "__scriptTabs",
     type: "tabs",
     defaultValue: "trigger",
     values: {
-      trigger: l10n("FIELD_ON_TRIGGER"),
+      trigger: l10n("FIELD_ON_CALL"),
     },
   },
   {
     key: "true",
-    label: l10n("FIELD_ON_TRIGGER"),
+    label: l10n("FIELD_ON_CALL"),
+    description: l10n("FIELD_ON_CALL_ROUTINE_DESC"),
     type: "events",
+    allowedContexts: ["global", "entity"],
     conditions: [
       {
         key: "__scriptTabs",
@@ -39,6 +43,8 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_SET_MUSIC_ROUTINE_DESC"),
+  references: ["/docs/assets/music/music-huge#effects"],
   groups,
   fields,
   compile,

@@ -1,9 +1,11 @@
-#pragma bank 2
+#pragma bank 255
 
 #include <stdarg.h>
 
 #include "vm_music.h"
 #include "music_manager.h"
+
+BANKREF(VM_MUSIC)
 
 void vm_music_play(SCRIPT_CTX * THIS, UBYTE track_bank, const TRACK_T * track, UBYTE loop) OLDCALL BANKED {
     THIS;
@@ -11,7 +13,7 @@ void vm_music_play(SCRIPT_CTX * THIS, UBYTE track_bank, const TRACK_T * track, U
     music_load(track_bank, track, loop);
 }
 
-void vm_music_stop() BANKED {
+void vm_music_stop() OLDCALL BANKED {
     music_stop();
 }
 
@@ -26,7 +28,7 @@ void vm_music_mute(SCRIPT_CTX * THIS, UBYTE channels) OLDCALL BANKED {
 void vm_music_routine(SCRIPT_CTX * THIS, UBYTE routine, UBYTE bank, UBYTE * pc) OLDCALL BANKED {
     THIS;
     script_event_t * event = &music_events[routine & 0x03];
-    event->script_bank = bank; 
+    event->script_bank = bank;
     event->script_addr = pc;
 }
 

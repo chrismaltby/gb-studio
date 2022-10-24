@@ -23,11 +23,15 @@ const fields = [
       {
         key: "time",
         type: "number",
-        label: l10n("FIELD_SECONDS"),
+        label: l10n("FIELD_DURATION"),
+        description: l10n("FIELD_DURATION_WAIT_DESC"),
         min: 0,
         max: 60,
         step: 0.1,
         defaultValue: 0.5,
+        unitsField: "units",
+        unitsDefault: "time",
+        unitsAllowed: ["time", "frames"],
         conditions: [
           {
             key: "units",
@@ -37,28 +41,22 @@ const fields = [
       },
       {
         key: "frames",
-        label: l10n("FIELD_FRAMES"),
+        label: l10n("FIELD_DURATION"),
+        description: l10n("FIELD_DURATION_WAIT_DESC"),
         type: "number",
         min: 0,
         max: 3600,
         width: "50%",
         defaultValue: 30,
+        unitsField: "units",
+        unitsDefault: "time",
+        unitsAllowed: ["time", "frames"],
         conditions: [
           {
             key: "units",
             eq: "frames",
           },
         ],
-      },
-      {
-        key: "units",
-        type: "selectbutton",
-        options: [
-          ["time", l10n("FIELD_SECONDS")],
-          ["frames", l10n("FIELD_FRAMES")],
-        ],
-        inline: true,
-        defaultValue: "time",
       },
     ],
   },
@@ -80,6 +78,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_WAIT_DESC"),
   autoLabel,
   groups,
   fields,

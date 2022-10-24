@@ -30,6 +30,8 @@ import {
   COLLISION_ALL,
   TILE_PROPS,
   MIDDLE_MOUSE,
+  TILE_COLOR_PROPS,
+  TILE_COLOR_PALETTE,
 } from "../../consts";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 
@@ -252,6 +254,24 @@ class SceneCursor extends Component {
         return;
       }
 
+      this.isTileProp = selectedPalette & TILE_COLOR_PROPS;
+      this.drawTile = 0;
+
+      // If any tile under brush is currently not filled then
+      // paint tileColors rather than remove them
+      if (selectedPalette & TILE_COLOR_PROPS) {
+        // If drawing props replace but keep tileColors
+        const tileProp = selectedPalette & TILE_COLOR_PROPS;
+        const currentProp = hoverPalette & TILE_COLOR_PROPS;
+        if (currentProp !== tileProp) {
+          this.drawTile = tileProp;
+        } else {
+          this.drawTile = hoverPalette & TILE_COLOR_PALETTE;
+        }
+      } else {
+        this.drawTile = selectedPalette;
+      }
+
       if (selectedBrush === BRUSH_FILL) {
         paintColor({
           brush: selectedBrush,
@@ -259,7 +279,8 @@ class SceneCursor extends Component {
           backgroundId,
           x,
           y,
-          paletteIndex: selectedPalette,
+          paletteIndex: this.drawTile,
+          isTileProp: this.isTileProp,
         });
       } else {
         if (
@@ -275,8 +296,9 @@ class SceneCursor extends Component {
             y: this.startY,
             endX: x,
             endY: y,
-            paletteIndex: selectedPalette,
+            paletteIndex: this.drawTile,
             drawLine: true,
+            isTileProp: this.isTileProp,
           });
           this.startX = x;
           this.startY = y;
@@ -289,7 +311,8 @@ class SceneCursor extends Component {
             backgroundId,
             x,
             y,
-            paletteIndex: selectedPalette,
+            paletteIndex: this.drawTile,
+            isTileProp: this.isTileProp,
           });
         }
         window.addEventListener("mousemove", this.onColorsMove);
@@ -451,16 +474,8 @@ class SceneCursor extends Component {
   };
 
   onColorsMove = (_e) => {
-    const {
-      x,
-      y,
-      enabled,
-      sceneId,
-      backgroundId,
-      selectedPalette,
-      selectedBrush,
-      paintColor,
-    } = this.props;
+    const { x, y, enabled, sceneId, backgroundId, selectedBrush, paintColor } =
+      this.props;
     if (enabled && (this.currentX !== x || this.currentY !== y)) {
       if (this.drawLine) {
         if (this.startX === undefined || this.startY === undefined) {
@@ -488,7 +503,8 @@ class SceneCursor extends Component {
           y: this.startY,
           endX: x1,
           endY: y1,
-          paletteIndex: selectedPalette,
+          paletteIndex: this.drawTile,
+          isTileProp: this.isTileProp,
           drawLine: true,
         });
         this.startX = x1;
@@ -508,7 +524,8 @@ class SceneCursor extends Component {
           y: this.startY,
           endX: x1,
           endY: y1,
-          paletteIndex: selectedPalette,
+          paletteIndex: this.drawTile,
+          isTileProp: this.isTileProp,
           drawLine: true,
         });
         this.startX = x1;

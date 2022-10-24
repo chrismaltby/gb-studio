@@ -23,6 +23,7 @@ const fields = [
   {
     key: "variable",
     label: l10n("FIELD_SET_VARIABLE"),
+    description: l10n("FIELD_VARIABLE_DESC"),
     type: "variable",
     defaultValue: "LAST_VARIABLE",
   },
@@ -32,6 +33,7 @@ const fields = [
   {
     key: "trueText",
     label: l10n("FIELD_SET_TRUE_IF"),
+    description: l10n("FIELD_SET_TRUE_IF_DESC"),
     type: "text",
     updateFn: trimChoiceItem,
     defaultValue: "",
@@ -40,6 +42,7 @@ const fields = [
   {
     key: "falseText",
     label: l10n("FIELD_SET_FALSE_IF"),
+    description: l10n("FIELD_SET_FALSE_IF_DESC"),
     type: "text",
     updateFn: trimChoiceItem,
     defaultValue: "",
@@ -55,6 +58,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_CHOICE_DESC"),
   autoLabel,
   groups,
   fields,

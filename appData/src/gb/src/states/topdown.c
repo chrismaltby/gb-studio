@@ -1,4 +1,4 @@
-#pragma bank 3
+#pragma bank 255
 
 #include "data/states_defines.h"
 #include "states/topdown.h"
@@ -52,7 +52,7 @@ void topdown_update() BANKED {
             // Landed on a trigger
             return;
         }
-        
+
         // Check input to set player movement
         if (INPUT_RECENT_LEFT) {
             player_moving = TRUE;

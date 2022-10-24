@@ -1,4 +1,4 @@
-#pragma bank 1
+#pragma bank 255
 
 #include <gb/gb.h>
 
@@ -12,12 +12,15 @@
 
 UBYTE hide_sprites = FALSE;
 UBYTE show_actors_on_overlay = FALSE;
+UBYTE overlay_cut_scanline = LYC_SYNC_VALUE; 
 
-void remove_LCD_ISRs() CRITICAL BANKED {
-    remove_LCD(parallax_LCD_isr);
-    remove_LCD(simple_LCD_isr);
-    remove_LCD(fullscreen_LCD_isr);
-    LCDC_REG &= ~LCDCF_BG8000;
+void remove_LCD_ISRs() BANKED {
+    CRITICAL {
+        remove_LCD(parallax_LCD_isr);
+        remove_LCD(simple_LCD_isr);
+        remove_LCD(fullscreen_LCD_isr);
+        LCDC_REG &= ~LCDCF_BG8000;
+    }
 }
 
 void simple_LCD_isr() NONBANKED {
@@ -28,13 +31,22 @@ void simple_LCD_isr() NONBANKED {
             if (WY_REG < MENU_CLOSED_Y) LYC_REG = WY_REG - 1; 
         } else {
             if ((WX_REG == MINWNDPOSX) && (show_actors_on_overlay == FALSE)) HIDE_SPRITES;
+            LYC_REG = overlay_cut_scanline;
         }
     } else {
-        if ((WX_REG == MINWNDPOSX) && (show_actors_on_overlay == FALSE)) {
+        if (LYC_REG < overlay_cut_scanline) {
+            if ((WX_REG == MINWNDPOSX) && (show_actors_on_overlay == FALSE)) {
+                while (STAT_REG & STATF_BUSY) ;
+                HIDE_SPRITES;
+            }
+            LYC_REG = overlay_cut_scanline;
+        } else { 
             while (STAT_REG & STATF_BUSY) ;
-            HIDE_SPRITES;
+            HIDE_WIN;
+            if (!hide_sprites) SHOW_SPRITES;
+            LYC_REG = LYC_SYNC_VALUE;
+            return;
         }
-        LYC_REG = LYC_SYNC_VALUE;
     }
 }
 

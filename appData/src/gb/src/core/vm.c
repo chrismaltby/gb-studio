@@ -1,4 +1,4 @@
-#pragma bank 2
+#pragma bank 255
 
 #include <string.h>
 #include <stdlib.h>
@@ -9,17 +9,19 @@
 #include "vm.h"
 #include "math.h"
 
+BANKREF(VM_MAIN)
+
 // instructions global registry
 extern const SCRIPT_CMD script_cmds[];
 
-// contexts for executing scripts 
+// contexts for executing scripts
 // ScriptRunnerInit(), ExecuteScript(), ScriptRunnerUpdate() manipulate these contexts
 SCRIPT_CTX CTXS[VM_MAX_CONTEXTS];
 SCRIPT_CTX * first_ctx, * free_ctxs;
 // context pointers for script_runner
 SCRIPT_CTX * old_executing_ctx, * executing_ctx;
 
-// lock state 
+// lock state
 UBYTE vm_lock_state;
 // loaded state
 UBYTE vm_loaded_state;
@@ -39,7 +41,7 @@ const void * vm_exception_params_offset;
 // call absolute instruction
 void vm_call(SCRIPT_CTX * THIS, UBYTE * pc) OLDCALL BANKED {
     *(THIS->stack_ptr++) = (UWORD)THIS->PC;
-    THIS->PC = pc;    
+    THIS->PC = pc;
 }
 // return instruction returns to a point where call was invoked
 void vm_ret(SCRIPT_CTX * THIS, UBYTE n) OLDCALL BANKED {
@@ -71,7 +73,7 @@ void vm_ret_far(SCRIPT_CTX * THIS, UBYTE n) OLDCALL BANKED {
 void vm_push(SCRIPT_CTX * THIS, UWORD value) OLDCALL BANKED {
     *(THIS->stack_ptr++) = value;
 }
-// cleans up to n words from stack and returns last one 
+// cleans up to n words from stack and returns last one
  UWORD vm_pop(SCRIPT_CTX * THIS, UBYTE n) OLDCALL BANKED {
     if (n) THIS->stack_ptr -= n;
     return *(THIS->stack_ptr);
@@ -82,7 +84,7 @@ void vm_loop(SCRIPT_CTX * THIS, INT16 idx, UINT8 * pc, UBYTE n) OLDCALL BANKED {
     UWORD * counter;
     if (idx < 0) counter = THIS->stack_ptr + idx; else counter = script_memory + idx;
     if (*counter) {
-        THIS->PC = pc, (*counter)--; 
+        THIS->PC = pc, (*counter)--;
     } else {
         if (n) THIS->stack_ptr -= n;
     }
@@ -96,7 +98,7 @@ void vm_switch(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS, INT16 idx, U
     if (idx < 0) value = *(THIS->stack_ptr + idx); else value = *(script_memory + idx);
     if (n) THIS->stack_ptr -= n;        // dispose values on VM stack if required
 
-    UBYTE _save = _current_bank;        // we must preserve current bank, 
+    UBYTE _save = _current_bank;        // we must preserve current bank,
     SWITCH_ROM(THIS->bank);             // then switch to bytecode bank
 
     table = (INT16 *)(THIS->PC);
@@ -104,18 +106,18 @@ void vm_switch(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS, INT16 idx, U
         if (value == *table++) {
             THIS->PC = (UBYTE *)(*table);   // condition met, perform jump
             SWITCH_ROM(_save);              // restore bank
-            return; 
+            return;
         } else table++;
         size--;
     }
 
-    SWITCH_ROM(_save);                  // restore bank    
+    SWITCH_ROM(_save);                  // restore bank
     THIS->PC = (UBYTE *)table;          // make PC point to the next instruction command
 }
 
 // jump absolute
 void vm_jump(SCRIPT_CTX * THIS, UBYTE * pc) OLDCALL BANKED {
-    THIS->PC = pc;    
+    THIS->PC = pc;
 }
 
 UBYTE wait_frames(void * THIS, UBYTE start, UWORD * stack_frame) OLDCALL BANKED {
@@ -137,7 +139,7 @@ void vm_invoke(SCRIPT_CTX * THIS, UBYTE bank, UBYTE * fn, UBYTE nparams, INT16 i
     }
     // call handler again, wait condition is not met
     THIS->PC -= (INSTRUCTION_SIZE + sizeof(bank) + sizeof(fn) + sizeof(nparams) + sizeof(idx));
-} 
+}
 
 // runs script in a new thread
 void vm_beginthread(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS, UBYTE bank, UBYTE * pc, INT16 idx, UBYTE nargs) OLDCALL NONBANKED {
@@ -148,7 +150,7 @@ void vm_beginthread(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS, UBYTE b
     // initialize thread locals if any
     if (!(nargs)) return;
     if (ctx) {
-        UBYTE _save = _current_bank;        // we must preserve current bank, 
+        UBYTE _save = _current_bank;        // we must preserve current bank,
         SWITCH_ROM(THIS->bank);             // then switch to bytecode bank
         for (UBYTE i = nargs; i != 0; i--) {
             INT16 A = *((INT16 *)THIS->PC);
@@ -159,13 +161,13 @@ void vm_beginthread(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS, UBYTE b
         SWITCH_ROM(_save);
     }
 }
-// 
+//
 void vm_join(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {
     UWORD * A;
     if (idx < 0) A = THIS->stack_ptr + idx; else A = script_memory + idx;
     if (!(*A >> 8)) THIS->PC -= (INSTRUCTION_SIZE + sizeof(idx)), THIS->waitable = TRUE;
 }
-// 
+//
 void vm_terminate(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {
     UWORD * A;
     if (idx < 0) A = THIS->stack_ptr + idx; else A = script_memory + idx;
@@ -222,7 +224,7 @@ void vm_push_value_ind(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {
     THIS->stack_ptr++;
 }
 // translates idx into absolute index and pushes result to VM stack
-// if idx >= 0 then idx it is pushed as is, else idx is translated into the absolute index from the beginning of script_memory[]  
+// if idx >= 0 then idx it is pushed as is, else idx is translated into the absolute index from the beginning of script_memory[]
 void vm_push_reference(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {
     *(THIS->stack_ptr) = ((idx < 0) ? ((((UWORD)(THIS->stack_ptr) - (UWORD)script_memory) >> 1) + idx) : idx);
     THIS->stack_ptr++;
@@ -231,7 +233,7 @@ void vm_push_reference(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {
 void vm_reserve(SCRIPT_CTX * THIS, INT8 ofs) OLDCALL BANKED {
     THIS->stack_ptr += ofs;
 }
-// sets value on stack indexed by idxA to value on stack indexed by idxB 
+// sets value on stack indexed by idxA to value on stack indexed by idxB
 void vm_set(SCRIPT_CTX * THIS, INT16 idxA, INT16 idxB) OLDCALL BANKED {
     INT16 * A, * B;
     if (idxA < 0) A = THIS->stack_ptr + idxA; else A = script_memory + idxA;
@@ -244,7 +246,7 @@ void vm_set_const(SCRIPT_CTX * THIS, INT16 idx, UWORD value) OLDCALL BANKED {
     if (idx < 0) A = THIS->stack_ptr + idx; else A = script_memory + idx;
     *A = value;
 }
-// sets value on stack indexed by idxA to value on stack indexed by idxB 
+// sets value on stack indexed by idxA to value on stack indexed by idxB
 void vm_get_tlocal(SCRIPT_CTX * THIS, INT16 idxA, INT16 idxB) OLDCALL BANKED {
     INT16 * A, * B;
     if (idxA < 0) A = THIS->stack_ptr + idxA; else A = script_memory + idxA;
@@ -258,7 +260,7 @@ void vm_rpn(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS) OLDCALL NONBANK
     INT16 * A, * B, * ARGS;
     INT16 idx;
 
-    UBYTE _save = _current_bank;        // we must preserve current bank, 
+    UBYTE _save = _current_bank;        // we must preserve current bank,
     SWITCH_ROM(THIS->bank);             // then switch to bytecode bank
 
     ARGS = THIS->stack_ptr;
@@ -268,31 +270,31 @@ void vm_rpn(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS) OLDCALL NONBANK
             switch (op) {
                 case -5:
                 // set by reference
-                    idx = *((INT16 *)(THIS->PC)); 
+                    idx = *((INT16 *)(THIS->PC));
                     *((idx < 0) ? ARGS + idx : script_memory + idx) = *(--(THIS->stack_ptr));
                     THIS->PC += 2;
                     continue;
                 // indirect reference
                 case -4:
-                    idx = *((INT16 *)(THIS->PC)); 
+                    idx = *((INT16 *)(THIS->PC));
                     idx = *((idx < 0) ? ARGS + idx : script_memory + idx);
                     *(THIS->stack_ptr) = *((idx < 0) ? ARGS + idx : script_memory + idx);
                     THIS->PC += 2;
                     break;
                 // reference
                 case -3:
-                    idx = *((INT16 *)(THIS->PC)); 
+                    idx = *((INT16 *)(THIS->PC));
                     *(THIS->stack_ptr) = *((idx < 0) ? ARGS + idx : script_memory + idx);
                     THIS->PC += 2;
                     break;
                 // int16
-                case -2: 
+                case -2:
                     *(THIS->stack_ptr) = *((UWORD *)(THIS->PC));
                     THIS->PC += 2;
                     break;
                 // int8
                 case -1:
-                    op = *(THIS->PC++); 
+                    op = *(THIS->PC++);
                     *(THIS->stack_ptr) = op;
                     break;
                 default:
@@ -355,23 +357,33 @@ void vm_idle(SCRIPT_CTX * THIS) OLDCALL BANKED {
     THIS->waitable = TRUE;
 }
 
-// gets unsigned int8 from RAM by address
+// gets unsigned int8 by address
 void vm_get_uint8(SCRIPT_CTX * THIS, INT16 idxA, UINT8 * addr) OLDCALL BANKED {
     INT16 * A;
     if (idxA < 0) A = THIS->stack_ptr + idxA; else A = script_memory + idxA;
     *A = *addr;
 }
-// gets int8 from RAM by address
+// gets int8 by address
 void vm_get_int8(SCRIPT_CTX * THIS, INT16 idxA, INT8 * addr) OLDCALL BANKED {
     INT16 * A;
     if (idxA < 0) A = THIS->stack_ptr + idxA; else A = script_memory + idxA;
     *A = *addr;
 }
-// gets int16 from RAM by address
+// gets int16 by address
 void vm_get_int16(SCRIPT_CTX * THIS, INT16 idxA, INT16 * addr) OLDCALL BANKED {
     INT16 * A;
     if (idxA < 0) A = THIS->stack_ptr + idxA; else A = script_memory + idxA;
     *A = *addr;
+}
+// gets int8 or int16 by far address
+void vm_get_far(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS, INT16 idxA, UBYTE size, UBYTE bank, UBYTE * addr) OLDCALL NONBANKED {
+    dummy0; dummy1;
+    UINT16 * A;
+    if (idxA < 0) A = THIS->stack_ptr + idxA; else A = script_memory + idxA;
+    UBYTE _save = _current_bank;        // we must preserve current bank,
+    SWITCH_ROM(bank);             // then switch to bytecode bank
+    *A = (size == 0) ? *((UBYTE *)addr) : *((UINT16 *)addr);
+    SWITCH_ROM(_save);
 }
 // sets unsigned int8 in RAM by address
 void vm_set_uint8(SCRIPT_CTX * THIS, UINT8 * addr, INT16 idxA) OLDCALL BANKED {
@@ -409,7 +421,7 @@ void vm_init_rng(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {
     initrand(*A);
 }
 
-// sets value on stack indexed by idx to random value from given range 0 <= n < limit, mask is calculated by macro 
+// sets value on stack indexed by idx to random value from given range 0 <= n < limit, mask is calculated by macro
 void vm_rand(SCRIPT_CTX * THIS, INT16 idx, UINT16 min, UINT16 limit, UINT16 mask) OLDCALL BANKED {
     UINT16 value = randw() & mask;
     if (value >= limit) value -= limit;
@@ -463,7 +475,7 @@ void vm_get_indirect(SCRIPT_CTX * THIS, INT16 idxA, INT16 idxB) OLDCALL BANKED {
     // assign
     *A = *B;
 }
-// returns "loaded" flag and reset it 
+// returns "loaded" flag and reset it
 void vm_poll_loaded(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {
     UWORD * A;
     if (idx < 0) A = THIS->stack_ptr + idx; else A = script_memory + idx;
@@ -473,15 +485,23 @@ void vm_poll_loaded(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {
 // call native function by far pointer;
 void vm_call_native(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS, UINT8 bank, const void * ptr) OLDCALL NONBANKED NAKED {
     dummy0; dummy1; THIS; bank; ptr; // suppress warnings
-#if defined(__SDCC) && defined(NINTENDO) 
+#if defined(__SDCC) && defined(NINTENDO)
 __asm
-        lda hl, 8(sp)
+        ldhl sp, #6
+        ld a, (hl+)
+        ld h, (hl)
+        ld l, a
+        push hl
+
+        ldhl sp, #10
         ld a, (hl+)
         ld e, a
         ld a, (hl+)
         ld h, (hl)
         ld l, a
-        jp ___sdcc_bcall_ehl
+        call ___sdcc_bcall_ehl
+        add sp, #2
+        ret
 __endasm;
 #endif
 }
@@ -497,15 +517,16 @@ void vm_memcpy(SCRIPT_CTX * THIS, INT16 idxA, INT16 idxB, INT16 count) OLDCALL B
 // executes one step in the passed context
 // return zero if script end
 // bank with VM code must be active
+static UBYTE current_fn_bank;
 UBYTE VM_STEP(SCRIPT_CTX * CTX) NAKED NONBANKED STEP_FUNC_ATTR {
     CTX;
-#if defined(__SDCC) && defined(NINTENDO) 
+#if defined(__SDCC) && defined(NINTENDO)
 __asm
         lda hl, 2(sp)
         ld a, (hl+)
         ld h, (hl)
         ld l, a
-        
+
         inc hl
         inc hl
 
@@ -520,8 +541,8 @@ __asm
 
         ld a, e
         ldh (__current_bank), a
-        ld (0x2000), a          ; switch bank with vm code
-        
+        ld (_rROMB0), a         ; switch bank with vm code
+
         ld a, (hl+)             ; load current command and return if terminator
         ld e, a
         or a
@@ -530,17 +551,18 @@ __asm
         push bc                 ; store bc
         push hl
 
-        ld d, #0
-        ld h, d
+        ld h, #0
         ld l, e
         add hl, hl
-        add hl, de              ; hl = de * sizeof(SCRIPT_CMD)
+        add hl, hl              ; hl = de * sizeof(SCRIPT_CMD)
         dec hl
         ld de, #_script_cmds
         add hl, de              ; hl = &script_cmds[command].args_len
 
         ld a, (hl-)
         ld e, a                 ; e = args_len
+        ld a, (hl-)
+        ld (_current_fn_bank), a
         ld a, (hl-)
         ld b, a
         ld c, (hl)              ; bc = fn
@@ -554,7 +576,7 @@ __asm
         inc sp
 4$:
         jr z, 1$                ; only one arg?
-2$:                             
+2$:
         ld a, (hl+)
         push af
         inc sp
@@ -587,9 +609,9 @@ __asm
         push de                 ; not used
         push de                 ; de: args_len
 
-        ld a, #<b_vm_call       ; a = script_bank (all script functions in one bank: take any complimantary symbol)
+        ld a, (_current_fn_bank)    ; a = script_bank
         ldh (__current_bank), a
-        ld (0x2000), a          ; switch bank with functions
+        ld (_rROMB0), a         ; switch bank with functions
 
         rst 0x20                ; call hl
 
@@ -601,10 +623,10 @@ __asm
         pop bc                  ; restore bc
 
         ld e, #1                ; command executed
-3$:     
+3$:
         pop af
         ldh (__current_bank), a
-        ld (0x2000), a          ; restore bank
+        ld (_rROMB0), a         ; restore bank
 
         ret
 __endasm;
@@ -684,14 +706,27 @@ SCRIPT_CTX * script_execute(UBYTE bank, UBYTE * pc, UWORD * handle, UBYTE nargs,
 // terminate script by ID
 UBYTE script_terminate(UBYTE ID) BANKED {
     static SCRIPT_CTX * ctx;
-    ctx = first_ctx; 
+    ctx = first_ctx;
     while (ctx) {
         if (ctx->ID == ID) {
             if (ctx->hthread) {
                 *(ctx->hthread) |= SCRIPT_TERMINATED;
-                ctx->hthread = 0; 
-            } 
+                ctx->hthread = 0;
+            }
             return ctx->terminated = TRUE;
+        } else ctx = ctx->next;
+    }
+    return FALSE;
+}
+
+// detach script from the monitoring handle
+UBYTE script_detach_hthread(UBYTE ID) BANKED {
+    static SCRIPT_CTX * ctx;
+    ctx = first_ctx;
+    while (ctx) {
+        if (ctx->ID == ID) {
+            ctx->hthread = 0;
+            return TRUE;
         } else ctx = ctx->next;
     }
     return FALSE;
@@ -705,7 +740,7 @@ UBYTE script_runner_update() NONBANKED {
 
     // if locked then execute last context until it is unlocked or terminated
     if (!vm_lock_state) old_executing_ctx = 0, executing_ctx = first_ctx;
-    
+
     waitable = TRUE;
     counter = INSTRUCTIONS_PER_QUANT;
     while (executing_ctx) {
@@ -717,7 +752,7 @@ UBYTE script_runner_update() NONBANKED {
             // update handle if present
             if (executing_ctx->hthread) *(executing_ctx->hthread) |= SCRIPT_TERMINATED;
             // script is finished, remove from linked list
-            if (old_executing_ctx) old_executing_ctx->next = executing_ctx->next; 
+            if (old_executing_ctx) old_executing_ctx->next = executing_ctx->next;
             if (first_ctx == executing_ctx) first_ctx = executing_ctx->next;
             // add terminated context to free contexts list
             executing_ctx->next = free_ctxs, free_ctxs = executing_ctx;
@@ -726,12 +761,12 @@ UBYTE script_runner_update() NONBANKED {
         } else {
             // check exception
             if (vm_exception_code) return RUNNER_EXCEPTION;
-            // loop until waitable state or quant is expired 
+            // loop until waitable state or quant is expired
             if (!(executing_ctx->waitable) && (counter--)) continue;
             // exit while loop if context switching is locked
             if (vm_lock_state) break;
             // switch to the next context
-            waitable &= executing_ctx->waitable; 
+            waitable &= executing_ctx->waitable;
             old_executing_ctx = executing_ctx, executing_ctx = executing_ctx->next;
             counter = INSTRUCTIONS_PER_QUANT;
         }

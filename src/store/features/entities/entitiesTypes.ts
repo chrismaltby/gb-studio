@@ -1,4 +1,5 @@
 import { EntityState, Dictionary } from "@reduxjs/toolkit";
+import { ScriptEditorContextType } from "components/script/ScriptEditorContext";
 
 export type ActorDirection = "up" | "down" | "left" | "right";
 export type SpriteType = "static" | "animated" | "actor" | "actor_animated";
@@ -88,6 +89,7 @@ export type Actor = {
   direction: ActorDirection;
   animate: boolean;
   isPinned: boolean;
+  persistent: boolean;
   collisionGroup: string;
   script: string[];
   startScript: string[];
@@ -248,6 +250,7 @@ export type Variable = {
 export type CustomEventVariable = {
   id: string;
   name: string;
+  passByReference: boolean;
   type?: "8bit" | "16bit";
 };
 
@@ -460,6 +463,17 @@ export interface ScriptEventFieldCondition {
   soundType?: unknown;
 }
 
+export const distanceUnitTypes = ["tiles", "pixels"] as const;
+export const timeUnitTypes = ["time", "frames"] as const;
+export const unitTypes = [...distanceUnitTypes, ...timeUnitTypes] as const;
+
+export type UnitType = typeof unitTypes[number];
+export type DistanceUnitType = typeof distanceUnitTypes[number];
+export type TimeUnitType = typeof timeUnitTypes[number];
+
+export const movementTypes = ["horizontal", "vertical", "diagonal"] as const;
+export type MovementType = typeof movementTypes[number];
+
 export interface ScriptEventFieldSchema {
   label?: string | React.ReactNode;
   checkboxLabel?: string;
@@ -471,7 +485,8 @@ export interface ScriptEventFieldSchema {
   conditions?: ScriptEventFieldCondition[];
   toggleLabel?: string;
   width?: string;
-  flexBasis?: string;
+  flexBasis?: string | number;
+  flexGrow?: number;
   values?: Record<string, string>;
   alignCheckbox?: boolean;
   placeholder?: string;
@@ -492,6 +507,12 @@ export interface ScriptEventFieldSchema {
   types?: string[];
   fields?: ScriptEventFieldSchema[];
   inline?: boolean;
+  allowedContexts?: ScriptEditorContextType[];
+  unitsField?: string;
+  unitsDefault?: UnitType;
+  unitsAllowed?: UnitType[];
+  hideLabel?: boolean;
+  description?: string;
   filter?: (value: unknown) => boolean;
   updateFn?: (
     newValue: unknown,
@@ -501,7 +522,7 @@ export interface ScriptEventFieldSchema {
   postUpdate?: (
     newArgs: Record<string, unknown>,
     prevArgs: Record<string, unknown>
-  ) => void;
+  ) => void | Record<string, unknown>;
 }
 
 export type EntityKey = keyof EntitiesState;

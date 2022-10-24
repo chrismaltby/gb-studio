@@ -2,6 +2,7 @@
 
         .globl _vwf_current_rotate, _vwf_current_mask, _vwf_inverse_map, _vwf_tile_data
 
+        ; must be in the same bank with ui.c
         .area _CODE_1
 
 _ui_swap_tiles::
@@ -86,20 +87,20 @@ _ui_time_masks::
 
 _ui_print_shift_char::
         ldhl sp, #6
-        
+
         ldh a, (__current_bank)
         push af
         ld a, (hl-)
         ldh (__current_bank), a
-        ld  (#0x2000), a
+        ld  (#rROMB0), a
 
         ld a, (hl-)
         ld d, a
         ld a, (hl-)
-        ld e, a 
+        ld e, a
         ld a, (hl-)
         ld l, (hl)
-        ld h, a 
+        ld h, a
 
         ld a, #8
 3$:
@@ -179,7 +180,7 @@ _ui_print_shift_char::
 
         pop af
         ldh (__current_bank),a
-        ld  (#0x2000), a
+        ld  (#rROMB0), a
 
         ret
 

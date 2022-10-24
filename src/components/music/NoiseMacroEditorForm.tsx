@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from "react";
-import { useDispatch } from "react-redux";
 import { FormRow } from "ui/form/FormLayout";
 
 interface NoiseMacroEditorFormProps {
@@ -11,8 +10,6 @@ export const NoiseMacroEditorForm = ({
   macros,
   onChange,
 }: NoiseMacroEditorFormProps) => {
-  const dispatch = useDispatch();
-
   const canvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -43,7 +40,7 @@ export const NoiseMacroEditorForm = ({
         ctx.strokeStyle = "#333";
         ctx.lineWidth = 1;
 
-        for (let i = 0; i <= macros.length; i++) {
+        for (let i = 0; i <= noiseMacros.length; i++) {
           ctx.moveTo(5 + (i * drawWidth) / 6, 0);
           ctx.lineTo(5 + (i * drawWidth) / 6, canvas.height);
         }
@@ -133,7 +130,7 @@ export const NoiseMacroEditorForm = ({
       }
     };
 
-    const handleMouseUp = (e: any) => {
+    const handleMouseUp = (_e: any) => {
       if (mousedown) {
         mousedown = false;
         onChange(newMacros);

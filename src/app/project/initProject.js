@@ -19,6 +19,11 @@ import errorActions from "store/features/error/errorActions";
 import initElectronL10n from "lib/helpers/initElectronL10n";
 import { clampSidebarWidth } from "lib/helpers/window/sidebar";
 import { initKeyBindings } from "lib/keybindings/keyBindings";
+import { TRACKER_REDO, TRACKER_UNDO } from "../../consts";
+import {
+  initEngineFields,
+  engineFieldsEmitter,
+} from "lib/project/engineFields";
 
 initElectronL10n();
 
@@ -42,38 +47,43 @@ const projectPath = urlParams.get("path");
 if (projectPath) {
   const projectRoot = Path.dirname(projectPath);
   store.dispatch(projectActions.openProject(projectPath));
-  store.dispatch(engineActions.scanEngine(projectPath));
+
   initPlugins(projectRoot);
+  initEngineFields(projectRoot);
+  initKeyBindings();
+
+  watchProject(projectPath, {
+    onAddSprite: (f) => store.dispatch(projectActions.loadSprite(f)),
+    onAddBackground: (f) => store.dispatch(projectActions.loadBackground(f)),
+    onAddMusic: (f) => store.dispatch(projectActions.loadMusic(f)),
+    onAddSound: (f) => store.dispatch(projectActions.loadSound(f)),
+    onAddFont: (f) => store.dispatch(projectActions.loadFont(f)),
+    onAddAvatar: (f) => store.dispatch(projectActions.loadAvatar(f)),
+    onAddEmote: (f) => store.dispatch(projectActions.loadEmote(f)),
+    onChangedSprite: (f) => store.dispatch(projectActions.loadSprite(f)),
+    onChangedBackground: (f) =>
+      store.dispatch(projectActions.loadBackground(f)),
+    onChangedMusic: (f) => store.dispatch(projectActions.loadMusic(f)),
+    onChangedSound: (f) => store.dispatch(projectActions.loadSound(f)),
+    onChangedFont: (f) => store.dispatch(projectActions.loadFont(f)),
+    onChangedAvatar: (f) => store.dispatch(projectActions.loadAvatar(f)),
+    onChangedEmote: (f) => store.dispatch(projectActions.loadEmote(f)),
+    onRemoveSprite: (f) => store.dispatch(projectActions.removeSprite(f)),
+    onRemoveBackground: (f) =>
+      store.dispatch(projectActions.removeBackground(f)),
+    onRemoveMusic: (f) => store.dispatch(projectActions.removeMusic(f)),
+    onRemoveSound: (f) => store.dispatch(projectActions.removeSound(f)),
+    onRemoveFont: (f) => store.dispatch(projectActions.removeFont(f)),
+    onRemoveAvatar: (f) => store.dispatch(projectActions.removeAvatar(f)),
+    onRemoveEmote: (f) => store.dispatch(projectActions.removeEmote(f)),
+    onChangedUI: (_f) => store.dispatch(projectActions.loadUI()),
+    onChangedEngineSchema: (_f) => initEngineFields(projectRoot),
+  });
+
+  engineFieldsEmitter.on("sync", (res) => {
+    store.dispatch(engineActions.setEngineFields(res.fields));
+  });
 }
-
-initKeyBindings();
-
-watchProject(projectPath, {
-  onAddSprite: (f) => store.dispatch(projectActions.loadSprite(f)),
-  onAddBackground: (f) => store.dispatch(projectActions.loadBackground(f)),
-  onAddMusic: (f) => store.dispatch(projectActions.loadMusic(f)),
-  onAddSound: (f) => store.dispatch(projectActions.loadSound(f)),
-  onAddFont: (f) => store.dispatch(projectActions.loadFont(f)),
-  onAddAvatar: (f) => store.dispatch(projectActions.loadAvatar(f)),
-  onAddEmote: (f) => store.dispatch(projectActions.loadEmote(f)),
-  onChangedSprite: (f) => store.dispatch(projectActions.loadSprite(f)),
-  onChangedBackground: (f) => store.dispatch(projectActions.loadBackground(f)),
-  onChangedMusic: (f) => store.dispatch(projectActions.loadMusic(f)),
-  onChangedSound: (f) => store.dispatch(projectActions.loadSound(f)),
-  onChangedFont: (f) => store.dispatch(projectActions.loadFont(f)),
-  onChangedAvatar: (f) => store.dispatch(projectActions.loadAvatar(f)),
-  onChangedEmote: (f) => store.dispatch(projectActions.loadEmote(f)),
-  onRemoveSprite: (f) => store.dispatch(projectActions.removeSprite(f)),
-  onRemoveBackground: (f) => store.dispatch(projectActions.removeBackground(f)),
-  onRemoveMusic: (f) => store.dispatch(projectActions.removeMusic(f)),
-  onRemoveSound: (f) => store.dispatch(projectActions.removeSound(f)),
-  onRemoveFont: (f) => store.dispatch(projectActions.removeFont(f)),
-  onRemoveAvatar: (f) => store.dispatch(projectActions.removeAvatar(f)),
-  onRemoveEmote: (f) => store.dispatch(projectActions.removeEmote(f)),
-  onChangedUI: (_f) => store.dispatch(projectActions.loadUI()),
-  onChangedEngineSchema: (_f) =>
-    store.dispatch(engineActions.scanEngine(projectPath)),
-});
 
 window.ActionCreators = ActionCreators;
 window.store = store;
@@ -115,11 +125,19 @@ const onSaveProjectAs = (event, pathName) => {
 };
 
 const onUndo = () => {
-  store.dispatch(ActionCreators.undo());
+  if (store.getState().trackerDocument.past.length > 0) {
+    store.dispatch({ type: TRACKER_UNDO });
+  } else {
+    store.dispatch(ActionCreators.undo());
+  }
 };
 
 const onRedo = () => {
-  store.dispatch(ActionCreators.redo());
+  if (store.getState().trackerDocument.future.length > 0) {
+    store.dispatch({ type: TRACKER_REDO });
+  } else {
+    store.dispatch(ActionCreators.redo());
+  }
 };
 
 const onSetSection = (event, section) => {

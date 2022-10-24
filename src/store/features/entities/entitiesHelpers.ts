@@ -374,6 +374,7 @@ export const walkNormalisedScriptEvents = (
       }
       if (
         options?.customEvents &&
+        options.customEvents.maxDepth >= 0 &&
         scriptEvent.command === "EVENT_CALL_CUSTOM_EVENT"
       ) {
         const customEvent =
@@ -539,6 +540,10 @@ export const isCustomEventEqual = (
 
 export const actorName = (actor: Actor, actorIndex: number) => {
   return actor.name || `${l10n("ACTOR")} ${actorIndex + 1}`;
+};
+
+export const triggerName = (trigger: Trigger, triggerIndex: number) => {
+  return trigger.name || `${l10n("TRIGGER")} ${triggerIndex + 1}`;
 };
 
 export const sceneName = (scene: Scene, sceneIndex: number) => {

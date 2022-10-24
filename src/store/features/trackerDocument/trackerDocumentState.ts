@@ -252,6 +252,24 @@ const trackerSlice = createSlice({
         patterns: patterns,
       };
     },
+    editPattern: (
+      state,
+      _action: PayloadAction<{
+        patternId: number;
+        pattern: PatternCell[][];
+      }>
+    ) => {
+      if (!state.song) {
+        return;
+      }
+      const patternId = _action.payload.patternId;
+      const patterns = cloneDeep(state.song.patterns);
+      patterns[patternId] = _action.payload.pattern;
+      state.song = {
+        ...state.song,
+        patterns,
+      };
+    },
     editWaveform: (
       state,
       _action: PayloadAction<{ index: number; waveForm: Uint8Array }>
@@ -350,39 +368,6 @@ const trackerSlice = createSlice({
         };
       }
     },
-    transposeNoteCell: (
-      state,
-      _action: PayloadAction<{
-        patternId: number;
-        cellId: number;
-        transpose: number;
-      }>
-    ) => {
-      if (!state.song) {
-        return;
-      }
-
-      const patternId = _action.payload.patternId;
-      const rowId = Math.floor(_action.payload.cellId / 16);
-      const colId = Math.floor(_action.payload.cellId / 4) % 4;
-      const patternCell = state.song.patterns[patternId][rowId][colId];
-
-      const newNote =
-        patternCell.note === null
-          ? 0
-          : patternCell.note + _action.payload.transpose;
-
-      const patterns = [...state.song.patterns];
-      patterns[patternId][rowId][colId] = {
-        ...patternCell,
-        note: ((newNote % NUM_NOTES) + NUM_NOTES) % NUM_NOTES,
-      };
-
-      state.song = {
-        ...state.song,
-        patterns: patterns,
-      };
-    },
   },
   extraReducers: (builder) =>
     builder
@@ -417,7 +402,6 @@ const trackerSlice = createSlice({
       .addMatcher(
         (action: AnyAction): action is AnyAction =>
           action.type.startsWith("tracker/edit") ||
-          action.type.startsWith("tracker/transpose") ||
           action.type.startsWith("tracker/addSequence") ||
           action.type.startsWith("tracker/removeSequence"),
         (state, _action) => {

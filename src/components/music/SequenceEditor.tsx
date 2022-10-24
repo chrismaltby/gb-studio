@@ -6,6 +6,7 @@ import styled, { css } from "styled-components";
 import { Select } from "ui/form/Select";
 import { PlusIcon } from "ui/icons/Icons";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
+import trackerActions from "store/features/tracker/trackerActions";
 
 interface SequenceOption {
   value: number;
@@ -76,6 +77,7 @@ export const SequenceEditorFwd = ({
   );
   const setSequenceId = useCallback(
     (sequenceId: number) => {
+      dispatch(trackerActions.setSelectedPatternCells([]));
       dispatch(editorActions.setSelectedSequence(sequenceId));
     },
     [dispatch]
@@ -156,7 +158,7 @@ export const SequenceEditorFwd = ({
         setSequenceId(
           ((id % sequence.length) + sequence.length) % sequence.length
         );
-      } else if (e.key === "Backspace") {
+      } else if (e.key === "Backspace" || e.key === "Delete") {
         onRemoveSequence();
       }
     },
@@ -201,7 +203,7 @@ export const SequenceEditorFwd = ({
             selected={i === sequenceId}
             active={playingSequence === i}
           >
-            <div style={{ padding: "0 0 2px 2px" }}>{i}:</div>
+            <div style={{ padding: "0 0 2px 2px" }}>{i + 1}:</div>
             <Select
               value={sequenceOptions.find((i) => i.value === item)}
               options={sequenceOptions}

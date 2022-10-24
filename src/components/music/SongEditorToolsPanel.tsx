@@ -24,6 +24,8 @@ import { InstrumentSelect } from "./InstrumentSelect";
 import { Select } from "ui/form/Select";
 import { PianoRollToolType } from "store/features/tracker/trackerState";
 import { ipcRenderer } from "electron";
+import l10n from "lib/helpers/l10n";
+import { InstrumentType } from "store/features/editor/editorState";
 
 const octaveOffsetOptions: OctaveOffsetOptions[] = [0, 1, 2, 3].map((i) => ({
   value: i,
@@ -53,9 +55,20 @@ const FloatingPanelTools = styled(FloatingPanel)`
   z-index: 10;
 `;
 
+const getPlayButtonLabel = (play: boolean, playbackFromStart: boolean) => {
+  if (play) {
+    return l10n("FIELD_PAUSE");
+  } else {
+    if (playbackFromStart) {
+      return l10n("FIELD_RESTART");
+    } else {
+      return l10n("FIELD_PLAY");
+    }
+  }
+};
+
 const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
   const dispatch = useDispatch();
-  const projectRoot = useSelector((state: RootState) => state.document.root);
 
   const play = useSelector((state: RootState) => state.tracker.playing);
   const playerReady = useSelector(
@@ -69,6 +82,8 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
   const view = useSelector((state: RootState) => state.tracker.view);
 
   const tool = useSelector((state: RootState) => state.tracker.tool);
+  const [previousTool, setPreviousTool] = useState<PianoRollToolType>();
+  const [tmpSelectionMode, setTmpSelectionMode] = useState(false);
 
   const defaultStartPlaybackPosition = useSelector(
     (state: RootState) => state.tracker.defaultStartPlaybackPosition
@@ -77,6 +92,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
   const [playbackFromStart, setPlaybackFromStart] = useState(false);
 
   const togglePlay = useCallback(() => {
+    if (!playerReady) return;
     if (!play) {
       if (playbackFromStart) {
         ipcRenderer.send("music-data-send", {
@@ -88,7 +104,13 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
     } else {
       dispatch(trackerActions.pauseTracker());
     }
-  }, [defaultStartPlaybackPosition, dispatch, play, playbackFromStart]);
+  }, [
+    defaultStartPlaybackPosition,
+    dispatch,
+    play,
+    playbackFromStart,
+    playerReady,
+  ]);
 
   const stopPlayback = useCallback(() => {
     dispatch(trackerActions.stopTracker());
@@ -107,10 +129,11 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
   }, [dispatch, view]);
 
   const setTool = useCallback(
-    (tool: PianoRollToolType) => {
-      dispatch(trackerActions.setTool(tool));
+    (newTool: PianoRollToolType) => {
+      setPreviousTool(tool);
+      dispatch(trackerActions.setTool(newTool));
     },
-    [dispatch]
+    [dispatch, tool]
   );
 
   const saveSong = useCallback(() => {
@@ -153,11 +176,22 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
       if (e.target && (e.target as Node).nodeName === "INPUT") {
         return;
       }
+      if (!tmpSelectionMode && e.shiftKey) {
+        setTmpSelectionMode(true);
+        setTool("selection");
+      }
       if (e.ctrlKey || e.shiftKey) {
         return;
       }
       if (e.altKey) {
         setPlaybackFromStart(true);
+      }
+      if (e.key === "`") {
+        toggleView();
+      }
+      if (e.code === "Space") {
+        e.preventDefault();
+        togglePlay();
       }
       if (view !== "roll") {
         return;
@@ -182,7 +216,14 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
         setDefaultInstruments(8);
       }
     },
-    [setDefaultInstruments, setPlaybackFromStart, view]
+    [
+      tmpSelectionMode,
+      view,
+      setTool,
+      toggleView,
+      togglePlay,
+      setDefaultInstruments,
+    ]
   );
 
   const onKeyUp = useCallback(
@@ -190,8 +231,12 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
       if (!e.altKey) {
         setPlaybackFromStart(false);
       }
+      if (tmpSelectionMode && !e.shiftKey) {
+        setTool(previousTool || "pencil");
+        setTmpSelectionMode(false);
+      }
     },
-    [setPlaybackFromStart]
+    [tmpSelectionMode, setTool, previousTool]
   );
 
   useEffect(() => {
@@ -203,6 +248,33 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
     };
   });
 
+  const song = useSelector(
+    (state: RootState) => state.trackerDocument.present.song
+  );
+  const selectedChannel = useSelector(
+    (state: RootState) => state.tracker.selectedChannel
+  );
+  const [instrumentType, setInstrumentType] =
+    useState<InstrumentType | undefined>();
+  useEffect(() => {
+    if (view === "roll") {
+      switch (selectedChannel) {
+        case 0:
+        case 1:
+          setInstrumentType("duty");
+          break;
+        case 2:
+          setInstrumentType("wave");
+          break;
+        case 3:
+          setInstrumentType("noise");
+          break;
+      }
+    } else {
+      setInstrumentType(undefined);
+    }
+  }, [view, setInstrumentType, song, selectedChannel]);
+
   const themeContext = useContext(ThemeContext);
 
   const themePianoIcon =
@@ -211,7 +283,15 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
   return (
     <>
       <FloatingPanelSwitchView>
-        <Button variant="transparent" onClick={toggleView}>
+        <Button
+          variant="transparent"
+          onClick={toggleView}
+          title={
+            view === "roll"
+              ? l10n("TOOL_TRACKER_VIEW")
+              : l10n("TOOL_PIANO_ROLL_VIEW")
+          }
+        >
           {view === "roll" ? <TrackerIcon /> : themePianoIcon}
         </Button>
       </FloatingPanelSwitchView>
@@ -221,6 +301,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
           variant="transparent"
           disabled={!selectedSong || !modified}
           onClick={saveSong}
+          title={l10n("FIELD_SAVE")}
         >
           <SaveIcon />
         </Button>
@@ -229,6 +310,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
           variant="transparent"
           disabled={!playerReady}
           onClick={togglePlay}
+          title={getPlayButtonLabel(play, playbackFromStart)}
         >
           {play ? (
             <PauseIcon />
@@ -242,6 +324,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
           variant="transparent"
           disabled={!playerReady}
           onClick={stopPlayback}
+          title={l10n("FIELD_STOP")}
         >
           <StopIcon />
         </Button>
@@ -252,6 +335,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
               variant="transparent"
               onClick={() => setTool("pencil")}
               active={tool === "pencil"}
+              title={l10n("TOOL_PENCIL")}
             >
               <PencilIcon />
             </Button>
@@ -259,16 +343,17 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
               variant="transparent"
               onClick={() => setTool("eraser")}
               active={tool === "eraser"}
+              title={l10n("TOOL_ERASER")}
             >
               <EraserIcon />
             </Button>
-            {/* <Button
+            <Button
               variant="transparent"
               onClick={() => setTool("selection")}
               active={tool === "selection"}
             >
               <SelectionIcon />
-            </Button>{" "} */}
+            </Button>
           </>
         ) : (
           ""
@@ -280,6 +365,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
           onChange={(newValue) => {
             setDefaultInstruments(parseInt(newValue));
           }}
+          instrumentType={instrumentType}
         />
         {view === "tracker" ? (
           <>

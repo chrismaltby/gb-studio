@@ -1,4 +1,4 @@
-#pragma bank 3
+#pragma bank 255
 
 #include "data/states_defines.h"
 #include "states/platform.h"
@@ -214,8 +214,8 @@ void platform_update() BANKED {
         while (solid_count) {
             if (sol_actor->solid) solid_count--;
             if (!sol_actor->solid || !sol_actor->collision_enabled || 
-            ((UBYTE)((BYTE)(PLAYER.pos.x >> 8) - (BYTE)(sol_actor->pos.x >> 8) + 2) > 4) || 
-            ((UBYTE)((BYTE)(PLAYER.pos.y >> 8) - (BYTE)(sol_actor->pos.y >> 8) + 2) > 4)) {
+            ((UBYTE)((BYTE)(PLAYER.pos.x >> 8) - (BYTE)(sol_actor->pos.x >> 8) + 3) > 6) || 
+            ((UBYTE)((BYTE)(PLAYER.pos.y >> 8) - (BYTE)(sol_actor->pos.y >> 8) + 3) > 6)) {
                 sol_actor = sol_actor->prev;
                 continue;
             }

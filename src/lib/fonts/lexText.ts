@@ -42,12 +42,17 @@ export const lexText = (inputText: string): Token[] => {
     if (inputText[i] === "$") {
       const variableMatch = inputText
         .substring(i)
-        .match(/(\$L[0-9]\$|\$T[0-1]\$|\$V[0-9]\$|\$[0-9]+\$)/)?.[0];
+        .match(/^(\$L[0-9]\$|\$T[0-1]\$|\$V[0-9]\$|\$[0-9]+\$)/)?.[0];
       if (variableMatch) {
         i += variableMatch.length - 1;
         tokens.push({
           type: "variable",
           variableId: variableMatch.replace(/\$/g, ""),
+        });
+      } else {
+        tokens.push({
+          type: "text",
+          value: inputText[i],
         });
       }
       continue;
@@ -56,12 +61,17 @@ export const lexText = (inputText: string): Token[] => {
     if (inputText[i] === "#") {
       const variableMatch = inputText
         .substring(i)
-        .match(/(#L[0-9]#|#T[0-1]#|#V[0-9]#|#[0-9]+#)/)?.[0];
+        .match(/^(#L[0-9]#|#T[0-1]#|#V[0-9]#|#[0-9]+#)/)?.[0];
       if (variableMatch) {
         i += variableMatch.length - 1;
         tokens.push({
           type: "char",
           variableId: variableMatch.replace(/#/g, ""),
+        });
+      } else {
+        tokens.push({
+          type: "text",
+          value: inputText[i],
         });
       }
       continue;

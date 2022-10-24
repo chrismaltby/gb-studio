@@ -13,6 +13,10 @@ extern projectile_def_t projectile_defs[MAX_PROJECTILES];
 void projectiles_init() BANKED;
 void projectiles_update() NONBANKED;
 void projectiles_render() NONBANKED;
-void projectile_launch(UBYTE index, upoint16_t *pos, UBYTE angle) BANKED;
+
+#define PROJECTILE_ANIM_NOLOOP 0x01
+#define PROJECTILE_STRONG 0x02
+
+void projectile_launch(UBYTE index, upoint16_t *pos, UBYTE angle, UBYTE flags) BANKED;
 
 #endif

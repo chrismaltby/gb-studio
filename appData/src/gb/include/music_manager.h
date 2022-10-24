@@ -61,6 +61,7 @@ extern script_event_t music_events[4];
 extern volatile uint8_t music_current_track_bank;
 extern uint8_t music_mute_mask;
 extern const TRACK_T * music_next_track;
+extern const TRACK_T * music_current_track;
 extern uint8_t music_global_mute_mask;
 extern uint8_t music_sfx_priority;
 
@@ -87,7 +88,8 @@ void music_play_isr();
 
 inline void music_load(uint8_t bank, const TRACK_T * data, uint8_t loop) {
     loop;
-    music_current_track_bank = MUSIC_STOP_BANK, music_next_track = data; music_current_track_bank = bank;
+    if ((bank == music_current_track_bank) && (data == music_current_track)) return;
+    music_current_track_bank = MUSIC_STOP_BANK, music_current_track = data, music_next_track = data; music_current_track_bank = bank;
 }
 
 void music_pause(uint8_t pause);

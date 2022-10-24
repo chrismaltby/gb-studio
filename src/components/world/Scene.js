@@ -23,6 +23,7 @@ import {
   TOOL_ERASER,
   DMG_PALETTE,
   MIDDLE_MOUSE,
+  TILE_COLOR_PROP_PRIORITY,
 } from "../../consts";
 import { getCachedObject } from "lib/helpers/cache";
 import SceneInfo from "./SceneInfo";
@@ -36,6 +37,7 @@ import {
 } from "store/features/entities/entitiesState";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
+import ScenePriorityMap from "./ScenePriorityMap";
 
 const TILE_SIZE = 8;
 
@@ -148,6 +150,7 @@ class Scene extends Component {
       sceneFiltered,
       showEntities,
       showCollisions,
+      showPriorityMap,
       labelOffsetLeft,
       labelOffsetRight,
       parallaxHoverLayer,
@@ -241,6 +244,17 @@ class Scene extends Component {
               />
             </div>
           )}
+
+          {image && showPriorityMap && (
+            <div className="Scene__Collisions">
+              <ScenePriorityMap
+                width={width}
+                height={height}
+                tileColors={tileColors}
+              />
+            </div>
+          )}
+
           {selected && parallaxHoverLayer !== undefined && scene.parallax && (
             <div
               style={{
@@ -398,6 +412,7 @@ function mapStateToProps(state, props) {
   const dragging = selected && editorDragging;
   const hovered = state.editor.hover.sceneId === props.id;
   const tool = state.editor.tool;
+  const selectedPalette = state.editor.selectedPalette;
 
   const { worldSidebarWidth: sidebarWidth } = state.editor;
 
@@ -448,6 +463,8 @@ function mapStateToProps(state, props) {
   const showCollisions =
     (tool !== TOOL_COLORS || showLayers) &&
     (settings.showCollisions || tool === TOOL_COLLISIONS);
+  const showPriorityMap =
+    tool === TOOL_COLORS && selectedPalette === TILE_COLOR_PROP_PRIORITY;
 
   const palettesLookup = paletteSelectors.selectEntities(state);
   const defaultBackgroundPaletteIds =
@@ -524,6 +541,7 @@ function mapStateToProps(state, props) {
     spritePalettes,
     showEntities,
     showCollisions,
+    showPriorityMap,
     labelOffsetLeft,
     labelOffsetRight,
     parallaxHoverLayer,

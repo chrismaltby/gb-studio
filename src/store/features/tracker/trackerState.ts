@@ -18,8 +18,12 @@ export interface TrackerState {
   selectedChannel: number;
   visibleChannels: number[];
   hoverNote: number | null;
+  hoverColumn: number | null;
   startPlaybackPosition: [number, number];
   defaultStartPlaybackPosition: [number, number];
+  selectedPatternCells: number[];
+  selection: [number, number, number, number];
+  selectedEffectCell: number | null;
 }
 
 export const initialState: TrackerState = {
@@ -35,10 +39,14 @@ export const initialState: TrackerState = {
   tool: "pencil",
   defaultInstruments: [0, 0, 0, 0],
   selectedChannel: 0,
-  visibleChannels: [0],
+  visibleChannels: [0, 1, 2, 3],
   hoverNote: null,
+  hoverColumn: null,
   startPlaybackPosition: [0, 0],
   defaultStartPlaybackPosition: [0, 0],
+  selectedPatternCells: [],
+  selection: [-1, -1, -1, -1],
+  selectedEffectCell: null,
 };
 
 const trackerSlice = createSlice({
@@ -65,6 +73,9 @@ const trackerSlice = createSlice({
     setHoverNote: (state, action: PayloadAction<number | null>) => {
       state.hoverNote = action.payload;
     },
+    setHoverColumn: (state, action: PayloadAction<number | null>) => {
+      state.hoverColumn = action.payload;
+    },
     setTool: (state, _action: PayloadAction<PianoRollToolType>) => {
       state.tool = _action.payload;
     },
@@ -75,6 +86,8 @@ const trackerSlice = createSlice({
       state.defaultInstruments = _action.payload;
     },
     setSelectedChannel: (state, _action: PayloadAction<number>) => {
+      state.selectedPatternCells = [];
+      state.selectedEffectCell = null;
       state.selectedChannel = _action.payload;
     },
     setVisibleChannels: (state, _action: PayloadAction<number[]>) => {
@@ -92,6 +105,14 @@ const trackerSlice = createSlice({
     ) => {
       state.startPlaybackPosition = _action.payload;
       state.defaultStartPlaybackPosition = _action.payload;
+    },
+    setSelectedPatternCells: (state, _action: PayloadAction<number[]>) => {
+      state.selectedEffectCell = null;
+      state.selectedPatternCells = _action.payload;
+    },
+    setSelectedEffectCell: (state, _action: PayloadAction<number | null>) => {
+      state.selectedPatternCells = [];
+      state.selectedEffectCell = _action.payload;
     },
   },
   extraReducers: (builder) =>

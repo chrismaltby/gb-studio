@@ -1,22 +1,14 @@
-import React, { useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React from "react";
 import styled, { css } from "styled-components";
 import { PatternCell } from "lib/helpers/uge/song/PatternCell";
-import { Song } from "lib/helpers/uge/song/Song";
-import { RootState } from "store/configureStore";
-import trackerActions from "store/features/tracker/trackerActions";
-import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
-
-import { instrumentColors } from "./InstrumentSelect";
-import { ipcRenderer } from "electron";
-import { getInstrumentTypeByChannel, getInstrumentListByType } from "./helpers";
 
 interface RollChannelProps {
   channelId: number;
-  active?: boolean;
-  patternId: number;
-  patterns?: PatternCell[][];
+  active: boolean;
+  renderPattern: PatternCell[][];
+  renderSelectedPatternCells: number[];
   cellSize: number;
+  isDragging: boolean;
 }
 
 interface WrapperProps {
@@ -29,8 +21,9 @@ interface WrapperProps {
 const Wrapper = styled.div<WrapperProps>`
   position: absolute;
   top: 0;
-  margin: 0 10px;
+
   ${(props) => css`
+    margin: 0 ${3 * props.size}px ${2 * props.size}px 10px;
     width: ${props.cols * props.size}px;
     height: ${props.rows * props.size}px;
     opacity: ${props.active ? 1 : 0.3};
@@ -52,139 +45,44 @@ const Note = styled.div<NoteProps>`
 export const RollChannelFwd = ({
   channelId,
   active,
-  patternId,
-  patterns,
+  renderPattern,
+  renderSelectedPatternCells,
   cellSize,
+  isDragging,
 }: RollChannelProps) => {
-  const dispatch = useDispatch();
-
-  const tool = useSelector((state: RootState) => state.tracker.tool);
-  const defaultInstruments = useSelector(
-    (state: RootState) => state.tracker.defaultInstruments
-  );
-  const hoverNote = useSelector((state: RootState) => state.tracker.hoverNote);
-  const song = useSelector(
-    (state: RootState) => state.trackerDocument.present.song
-  );
-
-  const removeNote = useCallback(
-    (channel: number, column: number) => (e: any) => {
-      if (e.button === 2 || (tool === "eraser" && e.button === 0)) {
-        dispatch(
-          trackerDocumentActions.editPatternCell({
-            patternId: patternId,
-            cell: [column, channel],
-            changes: {
-              instrument: null,
-              note: null,
-            },
-          })
-        );
-      } else if (tool === "pencil" && e.button === 0) {
-        dispatch(
-          trackerDocumentActions.editPatternCell({
-            patternId: patternId,
-            cell: [column, channel],
-            changes: { instrument: defaultInstruments[channel] },
-          })
-        );
-      }
-    },
-    [defaultInstruments, dispatch, patternId, tool]
-  );
-
-  const handleMouseDown = useCallback(
-    (e: any) => {
-      const channel = parseInt(e.target.dataset["channel"]);
-      if (!isNaN(channel) && tool === "pencil" && e.button === 0) {
-        const col = Math.floor(e.offsetX / cellSize);
-        const note = 12 * 6 - 1 - Math.floor(e.offsetY / cellSize);
-        const changes = {
-          instrument: defaultInstruments[channel],
-          note: note,
-        };
-        dispatch(
-          trackerDocumentActions.editPatternCell({
-            patternId: patternId,
-            cell: [col, channel],
-            changes: changes,
-          })
-        );
-
-        if (song) {
-          const instrumentType = getInstrumentTypeByChannel(channel) || "duty";
-          const instrumentList = getInstrumentListByType(song, instrumentType);
-          ipcRenderer.send("music-data-send", {
-            action: "preview",
-            note: note,
-            type: instrumentType,
-            instrument: instrumentList[defaultInstruments[channel]],
-            square2: channel === 1,
-          });
-        }
-      }
-    },
-    [tool, cellSize, defaultInstruments, dispatch, patternId, song]
-  );
-
-  const handleMouseMove = useCallback(
-    (e: MouseEvent) => {
-      const note = 12 * 6 - 1 - Math.floor(e.offsetY / cellSize);
-      if (note !== hoverNote) {
-        dispatch(trackerActions.setHoverNote(note));
-      }
-    },
-    [hoverNote, cellSize, dispatch]
-  );
-
-  const handleMouseLeave = useCallback(
-    (_e: MouseEvent) => {
-      if (hoverNote) {
-        dispatch(trackerActions.setHoverNote(null));
-      }
-    },
-    [hoverNote, dispatch]
-  );
-
   return (
-    <Wrapper
-      data-channel={channelId}
-      active={active}
-      rows={12 * 6}
-      cols={64}
-      size={cellSize}
-      onMouseDown={(e) => {
-        handleMouseDown(e.nativeEvent);
-      }}
-      onMouseMove={(e) => {
-        handleMouseMove(e.nativeEvent);
-      }}
-      onMouseLeave={(e) => {
-        handleMouseLeave(e.nativeEvent);
-      }}
-    >
-      {patterns?.map((column: PatternCell[], columnIdx: number) => {
+    <Wrapper active={active} rows={12 * 6} cols={64} size={cellSize}>
+      {renderPattern?.map((column: PatternCell[], columnIdx: number) => {
+        const isSelected =
+          active && renderSelectedPatternCells.indexOf(columnIdx) > -1;
         const cell = column[channelId];
 
-        if (cell.note !== null) {
+        if (cell && cell.note !== null) {
           return (
             <>
               <Note
+                data-type="note"
+                data-note={cell.note}
+                data-column={columnIdx}
                 key={`note_${columnIdx}_${channelId}`}
-                onMouseDown={removeNote(channelId, columnIdx)}
                 size={cellSize}
                 className={
                   cell.instrument !== null
-                    ? `label--${instrumentColors[cell.instrument]}`
+                    ? `label--instrument-${cell.instrument}`
                     : ""
                 }
                 style={{
                   left: `${columnIdx * cellSize}px`,
                   width: cellSize,
                   bottom: `${(cell.note % (12 * 6)) * cellSize - 1}px`,
+                  pointerEvents: "none",
+                  boxShadow:
+                    isSelected && !isDragging ? "0 0 0px 2px #c92c61" : "",
+                  zIndex: isSelected ? 1 : 0,
+                  opacity: isSelected && isDragging ? 0.6 : 1,
                 }}
               >
-                {cell.effectcode?.toString(16).toUpperCase()}
+                {/* {cell.effectcode?.toString(16).toUpperCase()} */}
               </Note>
               {cell.effectcode === 0 ? (
                 <>
@@ -194,7 +92,7 @@ export const RollChannelFwd = ({
                     size={cellSize}
                     className={
                       cell.instrument !== null
-                        ? `label--${instrumentColors[cell.instrument]}`
+                        ? `label--instrument-${cell.instrument}`
                         : ""
                     }
                     style={{
@@ -215,7 +113,7 @@ export const RollChannelFwd = ({
                     size={cellSize}
                     className={
                       cell.instrument !== null
-                        ? `label--${instrumentColors[cell.instrument]}`
+                        ? `label--instrument-${cell.instrument}`
                         : ""
                     }
                     style={{

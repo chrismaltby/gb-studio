@@ -17,12 +17,16 @@ const autoLabel = (fetchArg, args) => {
 const fields = [
   {
     key: "variable",
+    label: l10n("FIELD_VARIABLE"),
+    description: l10n("FIELD_VARIABLE_DESC"),
     type: "variable",
     defaultValue: "LAST_VARIABLE",
     width: "50%",
   },
   {
     key: "expression",
+    label: l10n("FIELD_EXPRESSION"),
+    description: l10n("FIELD_EXPRESSION_DESC"),
     type: "matharea",
     rows: 5,
     placeholder: "e.g. 5 + (6 * $health)...",
@@ -37,6 +41,8 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_VARIABLE_MATH_EVALUATE_DESC"),
+  references: ["/docs/scripting/math-expressions"],
   autoLabel,
   groups,
   fields,

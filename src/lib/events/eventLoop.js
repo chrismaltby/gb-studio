@@ -1,3 +1,5 @@
+const l10n = require("../helpers/l10n").default;
+
 const id = "EVENT_LOOP";
 const groups = ["EVENT_GROUP_CONTROL_FLOW"];
 
@@ -18,6 +20,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_LOOP_DESC"),
   groups,
   fields,
   compile,

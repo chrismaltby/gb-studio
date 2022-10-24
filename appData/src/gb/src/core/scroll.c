@@ -1,4 +1,4 @@
-#pragma bank 1
+#pragma bank 255
 
 #include "scroll.h"
 
@@ -176,29 +176,8 @@ UBYTE scroll_viewport(parallax_row_t * port) {
 }
 
 void scroll_repaint() BANKED {
-    // this looks overcomplicated, what's this for?!
-    if (!fade_style) {
-        DISPLAY_OFF;
-    } else if (!fade_timer == 0) {
-        // Immediately set all palettes black while screen renders.
-#ifdef CGB
-        if (_is_CGB) {
-            CGBZeroPalette(BCPS_REG_ADDR);
-            CGBZeroPalette(OCPS_REG_ADDR);
-        } else
-#endif
-        OBP0_REG = 0xFF, BGP_REG = 0xFF;
-    }
-
     scroll_reset();
     scroll_update();
-
-    DISPLAY_ON;
-
-    if (!fade_timer == 0) {
-        // Screen palate to nornmal if not fading
-        fade_applypalettechange();
-    }
 }
 
 void scroll_render_rows(INT16 scroll_x, INT16 scroll_y, BYTE row_offset, BYTE n_rows) {

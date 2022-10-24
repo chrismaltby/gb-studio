@@ -6,7 +6,6 @@ import trackerDocumentActions from "store/features/trackerDocument/trackerDocume
 import { NoiseInstrument } from "store/features/trackerDocument/trackerDocumentTypes";
 import { CheckboxField } from "ui/form/CheckboxField";
 import { FormDivider, FormRow } from "ui/form/FormLayout";
-import { SliderField } from "ui/form/SliderField";
 import { InstrumentLengthForm } from "./InstrumentLengthForm";
 import { InstrumentVolumeEditor } from "./InstrumentVolumeEditor";
 import { NoiseMacroEditorForm } from "./NoiseMacroEditorForm";
@@ -58,8 +57,8 @@ export const InstrumentNoiseEditor = ({
       <FormDivider />
 
       <InstrumentVolumeEditor
-        initial_volume={instrument.initial_volume}
-        volume_sweep_change={instrument.volume_sweep_change}
+        initialVolume={instrument.initial_volume}
+        volumeSweepChange={instrument.volume_sweep_change}
         length={instrument.length}
         onChange={onChangeField}
       />
@@ -67,36 +66,8 @@ export const InstrumentNoiseEditor = ({
       <FormDivider />
 
       <FormRow>
-        <SliderField
-          name="shift_clock_mask"
-          label={l10n("FIELD_SHIFT_CLOCK_MASK")}
-          value={instrument.shift_clock_mask || 0}
-          min={0}
-          max={15}
-          onChange={(value) => {
-            onChangeField("shift_clock_mask")(value || 0);
-          }}
-        />
-      </FormRow>
-
-      <FormRow>
-        <SliderField
-          name="dividing_ratio"
-          label={l10n("FIELD_DIVIDING_RATIO")}
-          value={instrument.dividing_ratio || 0}
-          min={0}
-          max={7}
-          onChange={(value) => {
-            onChangeField("dividing_ratio")(value || 0);
-          }}
-        />
-      </FormRow>
-
-      <FormDivider />
-
-      <FormRow>
         <CheckboxField
-          name="length"
+          name="bit_count"
           label={l10n("FIELD_BIT_COUNT")}
           checked={instrument.bit_count === 7}
           onChange={(e) => {

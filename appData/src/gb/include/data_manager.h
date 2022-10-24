@@ -21,10 +21,12 @@ extern UBYTE sprites_len;
 extern UBYTE actors_len;
 extern LCD_isr_e scene_LCD_type;
 
-#define SCENE_STACK_SIZE 8
-
+#define SCENE_STACK_SIZE    8
 extern scene_stack_item_t scene_stack[SCENE_STACK_SIZE];
 extern scene_stack_item_t * scene_stack_ptr;
+
+#define MAX_SCENE_SPRITES   64
+extern UBYTE scene_sprites_base_tiles[MAX_SCENE_SPRITES];
 
 void load_init() BANKED;
 UBYTE load_scene(const scene_t * scene, UBYTE bank, UBYTE init_data) BANKED;

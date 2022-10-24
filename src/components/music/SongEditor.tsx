@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { EditableText } from "ui/form/EditableText";
@@ -24,7 +24,9 @@ import {
   WaveInstrument,
 } from "store/features/trackerDocument/trackerDocumentTypes";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
-import { MenuDivider, MenuItem } from "components/library/Menu";
+import { MenuItem } from "components/library/Menu";
+import { PatternCellEditor } from "./PatternCellEditor";
+import trackerActions from "store/features/tracker/trackerActions";
 
 type Instrument = DutyInstrument | NoiseInstrument | WaveInstrument;
 
@@ -75,6 +77,9 @@ export const SongEditor = () => {
   const selectedInstrument = useSelector(
     (state: RootState) => state.editor.selectedInstrument
   );
+  useEffect(() => {
+    dispatch(trackerActions.setSelectedEffectCell(null));
+  }, [dispatch, selectedInstrument]);
   const sequenceId = useSelector(
     (state: RootState) => state.editor.selectedSequence
   );
@@ -152,6 +157,12 @@ export const SongEditor = () => {
     );
   }, [dispatch, sequenceId]);
 
+  const selectedEffectCell = useSelector(
+    (state: RootState) => state.tracker.selectedEffectCell
+  );
+
+  const patternId = song?.sequence[sequenceId] || 0;
+
   if (!song) {
     return null;
   }
@@ -200,9 +211,16 @@ export const SongEditor = () => {
               min={0}
               max={20}
               onChange={onChangeFieldInput("ticks_per_row")}
+              title={l10n("FIELD_TEMPO_TOOLTIP")}
             />
           </FormRow>
-          {instrumentData ? (
+          {selectedEffectCell !== null ? (
+            <PatternCellEditor
+              id={selectedEffectCell}
+              patternId={patternId}
+              pattern={song?.patterns[patternId][selectedEffectCell]}
+            />
+          ) : instrumentData ? (
             <>
               <FormDivider />
               <FormHeader>

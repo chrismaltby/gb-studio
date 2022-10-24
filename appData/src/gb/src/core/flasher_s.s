@@ -1,12 +1,9 @@
+        .include "global.s"
+
         .globl __start_save
         .globl __current_bank
-        .globl _memcpy
 
-.ENABLE_RAM_MBC5        = 0x0000 
-.MBC1_ROM_PAGE          = 0x2000
-.MBC1_RAM_PAGE          = 0x4000
-
-        .area   _CODE_4
+        .area   _CODE_255
 
 .macro .wb addr, val
         ld a, val
@@ -28,12 +25,12 @@ _flash_data_routine:
 
         srl     a
         add     #__start_save
-        ld      (#.MBC1_ROM_PAGE), a            ; switch ROM bank
+        ld      (#rROMB0), a                    ; switch ROM bank
 
         ld      h, #0x40                        ; two SRAM banks are saved into one ROM bank.
         bit     0, c
         jr      z,0$
-        set     5, h 
+        set     5, h
 0$:
         xor     a
         ld      l, a                            ; destination HL == 0x4000 or HL == 0x6000
@@ -42,12 +39,12 @@ _flash_data_routine:
         ld      e, a
 
 1$:
-        .wb     #.ENABLE_RAM_MBC5, #0x0A        ; enable SRAM
-        .wb     #.MBC1_RAM_PAGE, c              ; switch SRAM
+        .wb     #rRAMG, #0x0A                   ; enable SRAM
+        .wb     #rRAMB, c                       ; switch SRAM
         ld      a, (de)                         ; read byte
         ld      b, a
 
-        .wb     #.ENABLE_RAM_MBC5, #0x00        ; disable SRAM
+        .wb     #rRAMG, #0x00                   ; disable SRAM
 
         .wb     #0x0AAA, #0xA9
         .wb     #0x0555, #0x56
@@ -69,7 +66,7 @@ _flash_data_routine:
         dec     b
         jr      nz, 2$
 
-        ld      e, #0                           ; fail                  
+        ld      e, #0                           ; fail
         jr      5$
 3$:
         inc     de                              ; next source
@@ -83,10 +80,10 @@ _flash_data_routine:
 5$:
         .wb     #0x4000, #0xF0                  ; reset?
 
-        .wb     #.ENABLE_RAM_MBC5, #0x0A        ; enable SRAM back
+        .wb     #rRAMG, #0x0A                   ; enable SRAM back
 
         pop     af
-        ld      (#.MBC1_ROM_PAGE), a            ; restore bank
+        ld      (#rROMB0), a                    ; restore bank
 
         ei
 
@@ -95,29 +92,34 @@ _flash_data_routine:
 
 _end_flash_data_routine:
 
+.globl b_save_sram_banks
+b_save_sram_banks = 255
 _save_sram_banks::
-        push    bc
-        lda     hl, 4(sp)
+        lda     hl, 6(sp)
         ld      b, (hl)
+
+        lda     hl, 0(sp)
+        ld      d, h
+        ld      e, l                            ; de = sp
 
         ld      hl, #(_flash_data_routine - _end_flash_data_routine)
         add     hl, sp
         ld      sp, hl                          ; allocate ram on stack for the routine
-        
-        ld      de, #(_end_flash_data_routine - _flash_data_routine)
         push    de
-        ld      de, #_flash_data_routine
-        push    de
-        push    hl
-        call    _memcpy                         ; copy routine onto stack
-        ld      a, b
-        pop     bc                              ; address of the routine on stack
-        add     sp, #4                          ; remove src and len
 
-        ld      e, #0
+        push    hl                              ; save routine address
+
+        ld      c, #(_end_flash_data_routine - _flash_data_routine)
+        ld      de, #_flash_data_routine
+        rst     0x30                            ; copy up to 256 bytes in C from DE to HL
+
+        ld      a, b
+        pop     bc                              ; restore routine address into bc
+
+        ld      e, #0                           ; result
         sub     #1
-        jr      c, 3$
-        and     #3
+        jr      c, 3$                           ; copy zero banks?
+        and     #3                              ; max 4 banks
 1$:
         push    af
 
@@ -129,21 +131,20 @@ _save_sram_banks::
 
         ld      a, e
         or      a
-        jr      z, 2$   
+        jr      z, 2$
 
         pop     af
         sub     #1
         jr      nc, 1$
 
-        push    af      
+        push    af
 2$:
         pop     af
 3$:
-        ld      hl, #(_end_flash_data_routine - _flash_data_routine)
-        add     hl, sp
+
+        pop     hl
         ld      sp, hl
 
-        pop     bc
         ret
 
 _erase_flash_sector_routine:
@@ -152,9 +153,9 @@ _erase_flash_sector_routine:
         ldh     a, (#__current_bank)
         push    af                              ; save current bank
 
-        .wb     #.ENABLE_RAM_MBC5, #0x00        ; disable SRAM
-        
-        .wb     #.MBC1_ROM_PAGE, #__start_save
+        .wb     #rRAMG, #0x00                   ; disable SRAM
+
+        .wb     #rROMB0, #__start_save
 
         .wb     #0x4000, #0xF0                  ; reset?
         .wb     #0x0AAA, #0xA9
@@ -170,6 +171,11 @@ _erase_flash_sector_routine:
         cp      #0xFF
         jr      z, 2$                           ; check byte
 
+        push    hl
+        pop     hl
+        push    hl
+        pop     hl                              ; delay 4+3+4+3=14
+
         dec     e
         jr      nz, 1$
         dec     d
@@ -180,34 +186,38 @@ _erase_flash_sector_routine:
 2$:
         ld      e, #1                           ; success
 3$:
-        .wb     #.ENABLE_RAM_MBC5, #0x0A        ; enable SRAM back
+        .wb     #rRAMG, #0x0A                   ; enable SRAM back
 
         pop     af
-        ld      (#.MBC1_ROM_PAGE), a            ; restore bank
+        ld      (#rROMB0), a                    ; restore bank
 
         ei
 
         ret
 _end_erase_flash_sector_routine:
 
+.globl b_erase_flash
+b_erase_flash = 255
 _erase_flash::
+        lda     hl, 0(sp)
+        ld      d, h
+        ld      e, l                            ; de = sp
+
         ld      hl, #(_erase_flash_sector_routine - _end_erase_flash_sector_routine)
         add     hl, sp
         ld      sp, hl                          ; allocate ram on stack for the routine
 
-        ld      de, #(_end_erase_flash_sector_routine - _erase_flash_sector_routine)
-        push    de
-        ld      de, #_erase_flash_sector_routine
         push    de
         push    hl
-        call    _memcpy                         ; copy routine onto stack
-        pop     hl                              ; address of the routine on stack
-        add     sp, #4                          ; remove src, len
 
+        ld      c, #(_end_erase_flash_sector_routine - _erase_flash_sector_routine)
+        ld      de, #_erase_flash_sector_routine
+        rst     0x30                            ; copy up to 256 bytes in C from DE to HL
+
+        pop     hl
         rst     0x20                            ; call routine on stack using call hl
 
-        ld      hl, #(_end_erase_flash_sector_routine - _erase_flash_sector_routine)
-        add     hl, sp
+        pop     hl
         ld      sp, hl
 
         ret

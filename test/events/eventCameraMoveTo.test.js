@@ -14,10 +14,11 @@ test("Should be able to move camera position", () => {
         value: 9,
       },
       speed: 1,
+      units: "tiles",
     },
     {
       cameraMoveTo: mockCameraMoveTo,
     }
   );
-  expect(mockCameraMoveTo).toBeCalledWith(5, 9, 1);
+  expect(mockCameraMoveTo).toBeCalledWith(5, 9, 1, "tiles");
 });

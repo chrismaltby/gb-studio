@@ -1,7 +1,13 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import cloneDeep from "lodash/cloneDeep";
 import { OptGroup } from "ui/form/Select";
-import events, { EventField, EventHandler } from "lib/events";
+import events, { EventHandler } from "lib/events";
 import l10n from "lib/helpers/l10n";
 import styled, { css } from "styled-components";
 import { Menu, MenuGroup, MenuItem } from "ui/menu/Menu";
@@ -15,6 +21,7 @@ import settingsActions from "store/features/settings/settingsActions";
 import { RootState } from "store/configureStore";
 import {
   ScriptEvent,
+  ScriptEventFieldSchema,
   ScriptEventParentType,
 } from "store/features/entities/entitiesTypes";
 import entitiesActions from "store/features/entities/entitiesActions";
@@ -26,6 +33,10 @@ import {
 } from "store/features/entities/entitiesState";
 import { EVENT_TEXT } from "lib/compiler/eventTypes";
 import { useDebounce } from "ui/hooks/use-debounce";
+import {
+  defaultVariableForContext,
+  ScriptEditorContext,
+} from "./ScriptEditorContext";
 
 interface AddScriptEventMenuProps {
   parentType: ScriptEventParentType;
@@ -83,8 +94,11 @@ const instanciateScriptEvent = (
     defaultArgs,
   }: InstanciateOptions
 ): Omit<ScriptEvent, "id"> => {
-  const flattenFields = (fields: EventField[], memo: EventField[] = []) => {
-    const addFields = (fields: EventField[]) => {
+  const flattenFields = (
+    fields: ScriptEventFieldSchema[],
+    memo: ScriptEventFieldSchema[] = []
+  ) => {
+    const addFields = (fields: ScriptEventFieldSchema[]) => {
       for (const field of fields) {
         memo.push(field);
         if (field.type === "group" && field.fields) {
@@ -132,9 +146,10 @@ const instanciateScriptEvent = (
           };
         }
         if (replaceValue !== null) {
+          const key = field.key ?? "";
           return {
             ...memo,
-            [field.key]: memo[field.key] ?? replaceValue,
+            [key]: memo[key] ?? replaceValue,
           };
         }
 
@@ -147,9 +162,10 @@ const instanciateScriptEvent = (
   const children =
     childFields.length > 0
       ? childFields.reduce((memo, field) => {
+          const key = field.key ?? "";
           return {
             ...memo,
-            [field.key]: [],
+            [key]: [],
           };
         }, {} as Dictionary<string[]>)
       : undefined;
@@ -166,9 +182,17 @@ const eventToOption =
     const localisedKey = l10n(event.id); //.replace(/[^:*]*:[ ]*/g, "");
     const name =
       localisedKey !== event.id ? localisedKey : event.name || event.id;
-    const groupName = (("groups" in event && event.groups) || [])
-      .map((key) => l10n(key))
-      .join(" ");
+
+    let eventGroups: string[] = [];
+    if ("groups" in event) {
+      if (Array.isArray(event.groups)) {
+        eventGroups = event.groups;
+      } else if (typeof event.groups === "string") {
+        eventGroups = [event.groups];
+      }
+    }
+
+    const groupName = eventGroups.map((key) => l10n(key)).join(" ");
 
     return {
       label: name,
@@ -440,7 +464,7 @@ const AddScriptEventMenu = ({
   const lastEmoteId = useSelector(
     (state: RootState) => emoteSelectors.selectIds(state)[0]
   );
-  const scope = useSelector((state: RootState) => state.editor.type);
+  const context = useContext(ScriptEditorContext);
 
   useEffect(() => {
     if (selectedCategoryIndex === -1) {
@@ -609,7 +633,7 @@ const AddScriptEventMenu = ({
           data: [
             instanciateScriptEvent(newEvent, {
               defaultActorId: "player",
-              defaultVariableId: scope === "customEvent" ? "0" : "L0",
+              defaultVariableId: defaultVariableForContext(context),
               defaultMusicId: String(lastMusicId),
               defaultSceneId: String(lastSceneId),
               defaultSpriteId: String(lastSpriteId),
@@ -623,8 +647,10 @@ const AddScriptEventMenu = ({
     },
     [
       before,
+      context,
       dispatch,
       insertId,
+      lastEmoteId,
       lastMusicId,
       lastSceneId,
       lastSpriteId,
@@ -632,7 +658,6 @@ const AddScriptEventMenu = ({
       parentId,
       parentKey,
       parentType,
-      scope,
     ]
   );
 
@@ -805,6 +830,9 @@ const AddScriptEventMenu = ({
                   }
                   onMouseOver={() => setSelectedIndex(optionIndex)}
                   onClick={() => onSelectOption(optionIndex)}
+                  title={
+                    "event" in option ? option.event.description : undefined
+                  }
                 >
                   {option.label}
                   {"options" in option ? (
@@ -854,6 +882,7 @@ const AddScriptEventMenu = ({
                     selected={selectedIndex === childOptionIndex}
                     onMouseOver={() => setSelectedIndex(childOptionIndex)}
                     onClick={() => onSelectOption(childOptionIndex)}
+                    title={childOption.event.description}
                   >
                     {childOption.label}
                     <FlexGrow />

@@ -11,8 +11,12 @@ import loadAllSoundData from "./loadSoundData";
 import migrateProject from "./migrateProject";
 import { indexByFn, indexBy } from "../helpers/array";
 
+const toUnixFilename = (filename) => {
+  return filename.replace(/\\/g, "/");
+};
+
 const elemKey = (elem) => {
-  return (elem.plugin ? `${elem.plugin}/` : "") + elem.filename;
+  return (elem.plugin ? `${elem.plugin}/` : "") + toUnixFilename(elem.filename);
 };
 
 const indexByFilename = indexByFn(elemKey);

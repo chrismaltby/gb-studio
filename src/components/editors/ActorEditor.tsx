@@ -37,12 +37,13 @@ import { MovementSpeedSelect } from "../forms/MovementSpeedSelect";
 import CollisionMaskPicker from "../forms/CollisionMaskPicker";
 import { KeysMatching } from "lib/helpers/types";
 import { NoteField } from "ui/form/NoteField";
-import { StickyTabs, TabBar } from "ui/tabs/Tabs";
+import { StickyTabs, TabBar, TabSettings } from "ui/tabs/Tabs";
 import { Button } from "ui/buttons/Button";
 import { ClipboardTypeActors } from "store/features/clipboard/clipboardTypes";
 import { ActorSymbolsEditor } from "components/forms/symbols/ActorSymbolsEditor";
 import { SpriteSymbolsEditor } from "components/forms/symbols/SpriteSymbolsEditor";
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
+import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 
 interface ActorEditorProps {
   id: string;
@@ -546,7 +547,9 @@ export const ActorEditor: FC<ActorEditorProps> = ({
               value={scriptMode as CollisionTab}
               values={collisionTabs}
               onChange={onChangeScriptMode}
-              overflowActiveTab={scriptMode === "hit"}
+              overflowActiveTab={
+                scriptMode === "hit" || scriptMode === "update"
+              }
               buttons={
                 <>
                   {lockButton}
@@ -559,6 +562,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({
               value={scriptMode as DefaultTab}
               values={defaultTabs}
               onChange={onChangeScriptMode}
+              overflowActiveTab={scriptMode === "update"}
               buttons={
                 <>
                   {lockButton}
@@ -575,13 +579,26 @@ export const ActorEditor: FC<ActorEditorProps> = ({
               onChange={onChangeScriptModeSecondary}
             />
           )}
+          {scriptMode === "update" && (
+            <TabSettings>
+              <CheckboxField
+                name="persistent"
+                label={l10n("FIELD_KEEP_RUNNING_WHILE_OFFSCREEN")}
+                checked={actor.persistent}
+                onChange={onChangeFieldInput("persistent")}
+              />
+            </TabSettings>
+          )}
         </StickyTabs>
-        <ScriptEditor
-          value={actor[scriptKey]}
-          type="actor"
-          entityId={actor.id}
-          scriptKey={scriptKey}
-        />
+
+        <ScriptEditorContext.Provider value="entity">
+          <ScriptEditor
+            value={actor[scriptKey]}
+            type="actor"
+            entityId={actor.id}
+            scriptKey={scriptKey}
+          />
+        </ScriptEditorContext.Provider>
       </SidebarColumn>
     </Sidebar>
   );

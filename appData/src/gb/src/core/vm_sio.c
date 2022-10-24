@@ -1,10 +1,14 @@
-#pragma bank 2
+#pragma bank 255
 
 #include <string.h>
 
 #include "vm.h"
 
+#include "vm_sio.h"
+
 #include "sio.h"
+
+BANKREF(VM_SIO)
 
 #define PACKET_SEND_INIT 1
 #define PACKET_SEND_DONE 2
@@ -13,7 +17,7 @@
 #define PACKET_RECV_DONE 8
 
 #define EXCHANGE_STARTED 0
-#define EXCHANGE_COMPLETED (PACKET_SEND_INIT | PACKET_SEND_DONE | PACKET_RECV_INIT | PACKET_RECV_DONE) 
+#define EXCHANGE_COMPLETED (PACKET_SEND_INIT | PACKET_SEND_DONE | PACKET_RECV_INIT | PACKET_RECV_DONE)
 
 UBYTE exchange_state = EXCHANGE_COMPLETED;
 
@@ -34,7 +38,7 @@ void vm_sio_exchange(SCRIPT_CTX * THIS, INT16 idxA, INT16 idxB, UBYTE len) OLDCA
     if (exchange_state == EXCHANGE_COMPLETED) exchange_state = EXCHANGE_STARTED;
     // process transfer states
     switch (link_operation_mode) {
-        case LINK_MODE_MASTER: 
+        case LINK_MODE_MASTER:
             if ((exchange_state & PACKET_SEND_INIT) == 0) {
                 if (len > LINK_MAX_PACKET_LENGTH) len = LINK_MAX_PACKET_LENGTH;
 
@@ -63,7 +67,7 @@ void vm_sio_exchange(SCRIPT_CTX * THIS, INT16 idxA, INT16 idxB, UBYTE len) OLDCA
                 link_packet_sent = link_packet_received = FALSE;
                 exchange_state |= PACKET_RECV_INIT;
             } else if ((exchange_state & PACKET_RECV_DONE) == 0) {
-                if (link_packet_received) { 
+                if (link_packet_received) {
                     if (len > LINK_MAX_PACKET_LENGTH) len = LINK_MAX_PACKET_LENGTH;
 
                     data = VM_REF_TO_PTR(idxB);

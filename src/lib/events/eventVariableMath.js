@@ -40,11 +40,15 @@ const autoLabel = (fetchArg, input) => {
 const fields = [
   {
     key: "vectorX",
+    label: l10n("FIELD_VARIABLE"),
+    description: l10n("FIELD_VARIABLE_DESC"),
     type: "variable",
     defaultValue: "LAST_VARIABLE",
   },
   {
     key: "operation",
+    label: l10n("FIELD_OPERATION"),
+    description: l10n("FIELD_OPERATION_MATH_FUNC_DESC"),
     type: "select",
     options: [
       ["set", l10n("FIELD_SET_TO")],
@@ -59,6 +63,8 @@ const fields = [
   },
   {
     key: "other",
+    label: l10n("FIELD_VALUE"),
+    description: l10n("FIELD_VALUE_MATH_FUNC_DESC"),
     type: "select",
     options: [
       ["true", l10n("FIELD_TRUE")],
@@ -95,39 +101,49 @@ const fields = [
     defaultValue: "0",
   },
   {
-    key: "minValue",
-    type: "number",
-    conditions: [
+    type: "group",
+    fields: [
       {
-        key: "other",
-        eq: "rnd",
+        key: "minValue",
+        type: "number",
+        conditions: [
+          {
+            key: "other",
+            eq: "rnd",
+          },
+        ],
+        min: -32768,
+        max: 32767,
+        label: l10n("FIELD_MIN_VALUE"),
+        description: l10n("FIELD_MIN_VALUE_RAND_DESC"),
+        hideFromDocs: true,
+        defaultValue: "0",
+        width: "50%",
+      },
+      {
+        key: "maxValue",
+        type: "number",
+        conditions: [
+          {
+            key: "other",
+            eq: "rnd",
+          },
+        ],
+        min: -32768,
+        max: 32767,
+        label: l10n("FIELD_MAX_VALUE"),
+        description: l10n("FIELD_MAX_VALUE_RAND_DESC"),
+        hideFromDocs: true,
+        defaultValue: "32767",
+        width: "50%",
       },
     ],
-    min: -32768,
-    max: 32767,
-    label: l10n("FIELD_MIN_VALUE"),
-    defaultValue: "0",
-    width: "50%",
-  },
-  {
-    key: "maxValue",
-    type: "number",
-    conditions: [
-      {
-        key: "other",
-        eq: "rnd",
-      },
-    ],
-    min: -32768,
-    max: 32767,
-    label: l10n("FIELD_MAX_VALUE"),
-    defaultValue: "32767",
-    width: "50%",
   },
   {
     key: "clamp",
     type: "checkbox",
     label: l10n("FIELD_CLAMP"),
+    hideFromDocs: true,
     conditions: [
       {
         key: "operation",
@@ -194,6 +210,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_VARIABLE_MATH_DESC"),
   autoLabel,
   groups,
   fields,

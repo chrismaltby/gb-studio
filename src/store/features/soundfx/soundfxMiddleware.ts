@@ -11,6 +11,14 @@ import { RootState } from "store/configureStore";
 import musicActions from "../music/musicActions";
 import navigationActions from "../navigation/navigationActions";
 import actions from "./soundfxActions";
+import { soundSelectors } from "../entities/entitiesState";
+import { assetFilename } from "lib/helpers/gbstudio";
+import { ipcRenderer } from "electron";
+import { compileWav } from "lib/compiler/sounds/compileWav";
+import { Sound } from "../entities/entitiesTypes";
+import { compileVGM } from "lib/compiler/sounds/compileVGM";
+import { CompileSoundOptions } from "lib/compiler/sounds/compileSound";
+import { compileFXHammerSingle } from "lib/compiler/sounds/compileFXHammer";
 
 let oscillator: OscillatorNode | undefined = undefined;
 let bufferSource: AudioBufferSourceNode | undefined = undefined;
@@ -35,6 +43,39 @@ function play(filename: string) {
     });
 }
 
+async function playSound(
+  sound: Sound,
+  effectIndex: number,
+  { projectRoot }: CompileSoundOptions
+) {
+  const filename = assetFilename(projectRoot, "sounds", sound);
+
+  let sfx = "";
+  if (sound.type === "wav") {
+    sfx = await compileWav(filename, "asm");
+  } else if (sound.type === "vgm") {
+    ({ output: sfx } = await compileVGM(filename, "asm"));
+  } else if (sound.type === "fxhammer") {
+    ({ output: sfx } = await compileFXHammerSingle(
+      filename,
+      effectIndex,
+      "asm"
+    ));
+  }
+
+  console.log("SFX", sfx);
+
+  const listener = async (_event: any, d: any) => {
+    if (d.action === "initialized") {
+      ipcRenderer.send("music-data-send", {
+        action: "play-sound",
+      });
+    }
+  };
+  ipcRenderer.once("music-data", listener);
+  ipcRenderer.send("open-music", sfx);
+}
+
 function pause() {
   if (oscillator) {
     stopTone(oscillator);
@@ -47,7 +88,7 @@ function pause() {
 }
 
 const soundfxMiddleware: Middleware<Dispatch, RootState> =
-  (_store) => (next) => (action) => {
+  (store) => (next) => (action) => {
     if (actions.playSoundFxBeep.match(action)) {
       pause();
       play(`effect_beep_${action.payload.pitch}.mp3`);
@@ -59,6 +100,13 @@ const soundfxMiddleware: Middleware<Dispatch, RootState> =
       );
     } else if (actions.playSoundFxCrash.match(action)) {
       play("effect_crash.mp3");
+    } else if (actions.playSoundFx.match(action)) {
+      const state = store.getState();
+      const sound = soundSelectors.selectById(state, action.payload.effect);
+      if (sound) {
+        const projectRoot = state.document.root;
+        playSound(sound, action.payload.effectIndex, { projectRoot });
+      }
     } else if (actions.pauseSoundFx.match(action)) {
       pause();
     } else if (

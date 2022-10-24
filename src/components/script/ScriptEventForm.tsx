@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useMemo } from "react";
 import { useSelector } from "react-redux";
 import events, {
   engineFieldUpdateEvents,
@@ -56,9 +56,16 @@ const getScriptEventFields = (
       Object.values(customEvent?.variables || []).map((v) => {
         return {
           label: `${v?.name || ""}`,
-          defaultValue: "LAST_VARIABLE",
           key: `$variable[${v?.id || ""}]$`,
-          type: "variable",
+          type: "union",
+          types: ["number", "variable"],
+          defaultType: "variable",
+          min: -32768,
+          max: 32767,
+          defaultValue: {
+            number: 0,
+            variable: "LAST_VARIABLE",
+          },
         };
       }) || [];
     const usedActors =
@@ -118,7 +125,6 @@ const ScriptEventForm = ({
   altBg,
   renderEvents,
 }: ScriptEventFormProps) => {
-  const [fields, setFields] = useState<ScriptEventFieldSchema[]>([]);
   const scriptEvent = useSelector((state: RootState) =>
     scriptEventSelectors.selectById(state, id)
   );
@@ -129,12 +135,16 @@ const ScriptEventForm = ({
   const command = scriptEvent?.command;
   const value = scriptEvent?.args;
 
-  useEffect(() => {
+  const fields = useMemo(() => {
     if (command) {
-      setFields(
-        getScriptEventFields(command, value || {}, customEvents, engineFields)
+      return getScriptEventFields(
+        command,
+        value || {},
+        customEvents,
+        engineFields
       );
     }
+    return [];
   }, [command, value, customEvents, engineFields]);
 
   if (!scriptEvent) {

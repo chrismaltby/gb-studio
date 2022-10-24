@@ -30,6 +30,7 @@ const SCREEN_WIDTH = 20;
 const SCREEN_HEIGHT = 18;
 const MAX_ONSCREEN = 10;
 const MAX_NESTED_SCRIPT_DEPTH = 5;
+export const MAX_PROJECTILES = 5;
 
 const MIDDLE_MOUSE = 2;
 
@@ -58,6 +59,10 @@ export const COLLISION_ALL = 0xf;
 export const TILE_PROP_LADDER = 0x10;
 export const TILE_PROPS = 0xf0;
 
+export const TILE_COLOR_PALETTE = 0x7;
+export const TILE_COLOR_PROPS = 0xf8;
+export const TILE_COLOR_PROP_PRIORITY = 0x80;
+
 export const DRAG_PLAYER = "DRAG_PLAYER";
 export const DRAG_DESTINATION = "DRAG_DESTINATION";
 export const DRAG_ACTOR = "DRAG_ACTOR";
@@ -71,6 +76,9 @@ export const DMG_PALETTE = {
 
 export const TMP_VAR_1 = "T0";
 export const TMP_VAR_2 = "T1";
+
+export const TRACKER_UNDO = "TRACKER_UNDO";
+export const TRACKER_REDO = "TRACKER_REDO";
 
 export {
   engineRoot,

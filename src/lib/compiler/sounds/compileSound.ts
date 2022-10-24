@@ -1,10 +1,11 @@
+import { decBin } from "lib/helpers/8bit";
 import { assetFilename } from "lib/helpers/gbstudio";
 import { Sound } from "store/features/entities/entitiesTypes";
 import { compileFXHammer } from "./compileFXHammer";
 import { compileVGM } from "./compileVGM";
 import { compileWav } from "./compileWav";
 
-interface CompileSoundOptions {
+export interface CompileSoundOptions {
   projectRoot: string;
 }
 
@@ -13,16 +14,56 @@ export interface CompiledSound {
   header: string;
 }
 
-export const compileSound = (
+const compileSoundFiles = async (
+  rawData: string,
+  muteMask: string,
+  symbol: string
+): Promise<CompiledSound> => {
+  return {
+    src: `#pragma bank 255
+  
+  #include <gbdk/platform.h>
+  #include <stdint.h>
+  
+  BANKREF(${symbol})
+  const UINT8 ${symbol}[] = {
+  ${rawData}
+  };
+  void AT(${muteMask}) __mute_mask_${symbol};
+  `,
+    header: `#ifndef __${symbol}_INCLUDE__
+  #define __${symbol}_INCLUDE__
+  
+  #include <gbdk/platform.h>
+  #include <stdint.h>
+  
+  #define MUTE_MASK_${symbol} ${muteMask}
+  
+  BANKREF_EXTERN(${symbol})
+  extern const uint8_t ${symbol}[];
+  extern void __mute_mask_${symbol};
+  
+  #endif
+      `,
+  };
+};
+
+export const compileSound = async (
   sound: Sound,
   { projectRoot }: CompileSoundOptions
 ): Promise<CompiledSound> => {
   const assetPath = assetFilename(projectRoot, "sounds", sound);
 
   if (sound.type === "wav") {
-    return compileWav(assetPath, sound.symbol);
+    const rawData = await compileWav(assetPath);
+    return compileSoundFiles(rawData, "0b00000100", sound.symbol);
   } else if (sound.type === "vgm") {
-    return compileVGM(assetPath, sound.symbol);
+    const rawData = await compileVGM(assetPath);
+    return compileSoundFiles(
+      rawData.output,
+      `0b${decBin(rawData.channelMuteMask)}`,
+      sound.symbol
+    );
   } else if (sound.type === "fxhammer") {
     return compileFXHammer(assetPath, sound.symbol);
   }

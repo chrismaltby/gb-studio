@@ -6,6 +6,8 @@
 #define SRAM_BANKS_TO_SAVE 3
 #define SRAM_BANK_SIZE 0x2000
 
+BANKREF_EXTERN(VM_LOAD_SAVE)
+
 // initializes saving capabilities
 void data_init() BANKED;
 
@@ -19,6 +21,6 @@ UBYTE data_load(UBYTE slot) BANKED;
 void data_clear(UBYTE slot) BANKED;
 
 // peek count VM variables from idx into dest
-UBYTE data_peek(UBYTE slot, UINT16 idx, UBYTE count, UINT16 * dest) BANKED;
+UBYTE data_peek(UBYTE slot, UINT16 idx, UWORD count, UINT16 * dest) BANKED;
 
 #endif
