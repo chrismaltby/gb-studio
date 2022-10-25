@@ -28,7 +28,6 @@ BANKREF(VM_ACTOR)
 #define TILE_FRACTION_MASK         0b1111111
 #define ONE_TILE_DISTANCE          128
 
-
 typedef struct act_move_to_t {
     INT16 ID;
     INT16 X, Y;
@@ -152,11 +151,14 @@ void vm_actor_move_to(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {
 
         // Move actor
         point_translate_dir(&actor->pos, new_dir, actor->move_speed);
+        actor->vel.x = (new_dir == DIR_RIGHT) ? actor->move_speed : -actor->move_speed;
 
         // Check for actor collision
         if (CHK_FLAG(params->ATTR, ACTOR_ATTR_CHECK_COLL) && actor_overlapping_bb(&actor->bounds, &actor->pos, actor, FALSE)) {
             point_translate_dir(&actor->pos, FLIPPED_DIR(new_dir), actor->move_speed);
             THIS->flags = 0;
+            actor->vel.x = 0;
+            actor->vel.y = 0;
             actor_set_anim_idle(actor);
             return;
         }
@@ -186,11 +188,14 @@ void vm_actor_move_to(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {
 
         // Move actor
         point_translate_dir(&actor->pos, new_dir, actor->move_speed);
+        actor->vel.y = (new_dir == DIR_DOWN) ? actor->move_speed : -actor->move_speed;
 
         // Check for actor collision
         if (CHK_FLAG(params->ATTR, ACTOR_ATTR_CHECK_COLL) && actor_overlapping_bb(&actor->bounds, &actor->pos, actor, FALSE)) {
             point_translate_dir(&actor->pos, FLIPPED_DIR(new_dir), actor->move_speed);
             THIS->flags = 0;
+            actor->vel.x = 0;
+            actor->vel.y = 0;
             actor_set_anim_idle(actor);
             return;
         }
@@ -215,6 +220,8 @@ void vm_actor_move_to(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {
     // Actor reached destination
     if (!CHK_FLAG(THIS->flags, MOVE_NEEDED_H | MOVE_NEEDED_V)) {
         THIS->flags = MOVE_INACTIVE;
+        actor->vel.x = 0;
+        actor->vel.y = 0;
         actor_set_anim_idle(actor);
         return;
     }

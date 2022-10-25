@@ -836,6 +836,11 @@ const addActor: CaseReducer<
     id: action.payload.actorId,
     x: clamp(action.payload.x, 0, scene.width - 2),
     y: clamp(action.payload.y, 0, scene.height - 1),
+    solid: 0,
+    solidTop: false,
+    solidBottom: false,
+    solidLeft: false,
+    solidRight: false,
   };
 
   // Add to scene

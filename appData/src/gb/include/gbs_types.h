@@ -52,6 +52,7 @@ typedef struct actor_t
     bool movement_interrupt   : 1;
     bool persistent           : 1;
     upoint16_t pos;
+    point8_t vel;
     direction_e dir;
     bounding_box_t bounds;
     uint8_t base_tile;
@@ -69,6 +70,7 @@ typedef struct actor_t
 
     // Collisions
     collision_group_e collision_group;
+    uint8_t solid  			  : 4; // direction mask support
 
     // Linked list
     struct actor_t *next;

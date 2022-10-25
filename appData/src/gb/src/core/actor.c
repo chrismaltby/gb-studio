@@ -58,6 +58,7 @@ UBYTE player_iframes;
 actor_t * player_collision_actor;
 actor_t * emote_actor;
 UBYTE emote_timer;
+UBYTE active_solid_actors;
 
 UBYTE allocated_hardware_sprites;
 
@@ -67,6 +68,7 @@ void actors_init() BANKED {
     player_iframes          = 0;
     player_collision_actor  = NULL;
     emote_actor             = NULL;
+    active_solid_actors     = 0;
 
     memset(actors, 0, sizeof(actors));
 }
@@ -198,6 +200,7 @@ void deactivate_actor(actor_t *actor) BANKED {
     if (!actor->active) return;
     if (actor == &PLAYER) return;
     actor->active = FALSE;
+    if (actor->solid) active_solid_actors--;
     DL_REMOVE_ITEM(actors_active_head, actor);
     DL_PUSH_HEAD(actors_inactive_head, actor);
     if ((actor->hscript_update & SCRIPT_TERMINATED) == 0) {
@@ -224,6 +227,7 @@ void activate_actor(actor_t *actor) BANKED {
     if (actor->active || actor->disabled) return;
     actor->active = TRUE;
     actor_set_anim_idle(actor);
+    if (actor->solid) active_solid_actors++;
     DL_REMOVE_ITEM(actors_inactive_head, actor);
     DL_PUSH_HEAD(actors_active_head, actor);
     actor->hscript_update = SCRIPT_TERMINATED;

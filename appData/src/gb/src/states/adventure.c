@@ -2,6 +2,7 @@
 
 #include "data/states_defines.h"
 #include "states/adventure.h"
+#include <stdlib.h>
 
 #include "actor.h"
 #include "camera.h"
@@ -28,10 +29,12 @@ void adventure_init() BANKED {
 }
 
 void adventure_update() BANKED {
-    actor_t *hit_actor;
+    actor_t *hit_actor, *sol_actor;
     UBYTE tile_start, tile_end;
     UBYTE angle = 0;
     direction_e new_dir = DIR_NONE;
+    upoint16_t new_pos, sol_pos;
+    point16_t pl_vel;
 
     player_moving = FALSE;
 
@@ -71,19 +74,83 @@ void adventure_update() BANKED {
         angle = ANGLE_180DEG;
     }
 
+    hit_actor = NULL;
+    new_pos.x = PLAYER.pos.x;
+    new_pos.y = PLAYER.pos.y;
+    pl_vel.x = 0;
+    pl_vel.y = 0;
     if (player_moving) {
-        upoint16_t new_pos;
-        new_pos.x = PLAYER.pos.x;
-        new_pos.y = PLAYER.pos.y;
+        // If the player is moving, calculate the new location based on their angle of movement
         point_translate_angle(&new_pos, angle, PLAYER.move_speed);
+        point_translate_angle_to_delta(&pl_vel, angle, PLAYER.move_speed);
+    }
 
+    sol_actor = PLAYER.prev;
+    UBYTE solid_count = active_solid_actors;
+    // Loop over solids in the scene
+    while (solid_count) {
+        if (sol_actor->solid) solid_count--;
+        // Skip to the next solid if the solid we're examining is not close enough to collide with
+        if (!sol_actor->solid || !sol_actor->collision_enabled || 
+            ((UBYTE)((BYTE)(PLAYER.pos.x >> 8) - (BYTE)(sol_actor->pos.x >> 8) + 3) > 6) || 
+            ((UBYTE)((BYTE)(PLAYER.pos.y >> 8) - (BYTE)(sol_actor->pos.y >> 8) + 3) > 6)) {
+            // sol_actor->hidden = TRUE; // Hide the solid for debugging purposes
+            sol_actor = sol_actor->prev;
+            continue;
+        }
+        // sol_actor->hidden = FALSE; // Unhide the solid for debugging purposes
+
+        // Store the offset location of the player (we can't just use the current player position because we care about where we're moving to, not where we are)
+        sol_pos.x = new_pos.x;
+        sol_pos.y = PLAYER.pos.y;
+        
+        if ((sol_actor->solid & COLLISION_X)) { // Verify the solid can be collided with on the X axis
+            if (bb_intersects_opt(&PLAYER.bounds, &sol_pos, &sol_actor->bounds, &sol_actor->pos)) { // Check if the player's and the solid's bounding boxes overlap
+                if ((sol_actor->solid & COLLISION_LEFT) && ((sol_pos.x) < (sol_actor->pos.x))) { // Verify that the solid has left collisions enabled, that the player is to the left of the solid, and that if both player and solid are moving with a velocity that the player is moving faster (which means the two will actually collide)
+                    if (abs(PLAYER.pos.x - (sol_actor->pos.x + ((sol_actor->bounds.left - PLAYER.bounds.right) << 4))) <= (abs(pl_vel.x) + abs(sol_actor->vel.x))) {
+                        new_pos.x = sol_actor->pos.x + ((sol_actor->bounds.left - PLAYER.bounds.right) << 4) - 1; // Position the player to the left of the solid
+                        hit_actor = sol_actor; // Log the solid actor we're colliding with
+                    }
+                } else if ((sol_actor->solid & COLLISION_RIGHT) && ((sol_pos.x) > (sol_actor->pos.x))) { // Verify that the solid has right collisions enabled, that the player is to the right of the solid, and that if both player and solid are moving with a velocity that the player is moving faster (which means the two will actually collide)
+                    if (abs(PLAYER.pos.x - (sol_actor->pos.x + ((sol_actor->bounds.right - PLAYER.bounds.left + 1) << 4))) <= (abs(pl_vel.x) + abs(sol_actor->vel.x))) {
+                        new_pos.x = sol_actor->pos.x + ((sol_actor->bounds.right - PLAYER.bounds.left + 1) << 4) + 1; // Position the player to the right of the solid
+                        hit_actor = sol_actor; // Log the solid actor we're colliding with
+                    }
+                }
+            }
+        }
+
+        // Update the stored offset location of the player so we can check for collisions on the Y axis
+        sol_pos.x = PLAYER.pos.x;
+        sol_pos.y = new_pos.y;
+        
+        if ((sol_actor->solid & COLLISION_Y) && sol_actor != hit_actor) { // Verify the solid can be collided with on the Y axis and that we haven't already collided on the X axis
+            if (bb_intersects_opt(&PLAYER.bounds, &sol_pos, &sol_actor->bounds, &sol_actor->pos)) { // Check if the player's and the solid's bounding boxes overlap
+                if ((sol_actor->solid & COLLISION_TOP) && ((sol_pos.y) < (sol_actor->pos.y))) { // Verify that the solid has top collisions enabled, that the player is above the solid, and that if both player and solid are moving with a velocity that the player is moving faster (which means the two will actually collide)
+                    if (abs(PLAYER.pos.y - (sol_actor->pos.y + ((sol_actor->bounds.top - PLAYER.bounds.bottom) << 4))) <= (abs(pl_vel.y) + abs(sol_actor->vel.y))) {
+                        new_pos.y = sol_actor->pos.y + ((sol_actor->bounds.top - PLAYER.bounds.bottom) << 4) - 1; // Position the player above the solid
+                        hit_actor = sol_actor; // Log the solid actor we're colliding with
+                    }
+                } else if ((sol_actor->solid & COLLISION_BOTTOM) && ((sol_pos.y) > (sol_actor->pos.y))) { // Verify that the solid has bottom collisions enabled, that the player is below the solid, and that if both player and solid are moving with a velocity that the player is moving faster (which means the two will actually collide)
+                    if (abs(PLAYER.pos.y - (sol_actor->pos.y + ((sol_actor->bounds.bottom - PLAYER.bounds.top + 1) << 4))) <= (abs(pl_vel.y) + abs(sol_actor->vel.y))) {
+                        new_pos.y = sol_actor->pos.y + ((sol_actor->bounds.bottom - PLAYER.bounds.top + 1) << 4) + 1; // Position the player below the solid
+                        hit_actor = sol_actor; // Log the solid actor we're colliding with
+                    }
+                }
+            }
+        }
+        
+        sol_actor = sol_actor->prev;
+    }
+    
+    // Apply the new, post-collision calculated position to the player
+    if (player_moving || hit_actor != NULL) {
         // Step X
         tile_start = (((PLAYER.pos.y >> 4) + PLAYER.bounds.top)    >> 3);
         tile_end   = (((PLAYER.pos.y >> 4) + PLAYER.bounds.bottom) >> 3) + 1;
         if (angle < ANGLE_180DEG) {
             UBYTE tile_x = ((new_pos.x >> 4) + PLAYER.bounds.right) >> 3;
             while (tile_start != tile_end) {
-
                 if (tile_at(tile_x, tile_start) & COLLISION_LEFT) {
                     new_pos.x = (((tile_x << 3) - PLAYER.bounds.right) << 4) - 1;           
                     break;
@@ -135,7 +202,6 @@ void adventure_update() BANKED {
         actor_set_anim_idle(&PLAYER);
     }
 
-    hit_actor = NULL;
     if (IS_FRAME_ODD) {
         // Check for trigger collisions
         if (trigger_activate_at_intersection(&PLAYER.bounds, &PLAYER.pos, FALSE)) {
@@ -144,7 +210,7 @@ void adventure_update() BANKED {
         }
 
         // Check for actor collisions
-        hit_actor = actor_overlapping_player(FALSE);
+        if (hit_actor == NULL) hit_actor = actor_overlapping_player(FALSE);
         if (hit_actor != NULL && hit_actor->collision_group) {
             player_register_collision_with(hit_actor);
         }

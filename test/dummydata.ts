@@ -82,6 +82,11 @@ export const dummyActor: Actor = {
   hit1Script: [],
   hit2Script: [],
   hit3Script: [],
+  solidTop: false,
+  solidBottom: false,
+  solidLeft: false,
+  solidRight: false,
+  solid: 0,
 };
 
 export const dummyTrigger: Trigger = {
