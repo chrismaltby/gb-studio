@@ -20,6 +20,4 @@ extern WORD plat_grav;
 extern WORD plat_hold_grav;
 extern WORD plat_max_fall_vel;
 
-extern BYTE standing_on_overlap;
-
 #endif
