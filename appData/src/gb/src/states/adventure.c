@@ -105,7 +105,7 @@ void adventure_update() BANKED {
         
         if ((sol_actor->solid & COLLISION_X)) { // Verify the solid can be collided with on the X axis
             if (bb_intersects_opt(&PLAYER.bounds, &sol_pos, &sol_actor->bounds, &sol_actor->pos)) { // Check if the player's and the solid's bounding boxes overlap
-                if ((sol_actor->solid & COLLISION_LEFT) && ((sol_pos.x) < (sol_actor->pos.x)) && (pl_vel.x > sol_actor->vel.x)) { // Verify that the solid has left collisions enabled, that the player is to the left of the solid, and that if both player and solid are moving with a velocity that the player is moving faster (which means the two will actually collide)
+                if ((sol_actor->solid & COLLISION_LEFT) && ((sol_pos.x) < (sol_actor->pos.x)) && () && (pl_vel.x > sol_actor->vel.x)) { // Verify that the solid has left collisions enabled, that the player is to the left of the solid, and that if both player and solid are moving with a velocity that the player is moving faster (which means the two will actually collide)
                     new_pos.x = sol_actor->pos.x + ((sol_actor->bounds.left - PLAYER.bounds.right) << 4) - 1; // Position the player to the left of the solid
                     hit_actor = sol_actor; // Log the solid actor we're colliding with
                 } else if ((sol_actor->solid & COLLISION_RIGHT) && ((sol_pos.x) > (sol_actor->pos.x)) && (pl_vel.x < sol_actor->vel.x)) { // Verify that the solid has right collisions enabled, that the player is to the right of the solid, and that if both player and solid are moving with a velocity that the player is moving faster (which means the two will actually collide)
@@ -119,8 +119,7 @@ void adventure_update() BANKED {
         sol_pos.x = PLAYER.pos.x;
         sol_pos.y = new_pos.y;
         
-        //if ((sol_actor->solid & COLLISION_Y) && sol_actor != hit_actor) { // Verify the solid can be collided with on the Y axis and that we haven't already collided on the X axis
-        if ((sol_actor->solid & COLLISION_Y)) { // Verify the solid can be collided with on the Y axis and that we haven't already collided on the X axis
+        if ((sol_actor->solid & COLLISION_Y) && sol_actor != hit_actor) { // Verify the solid can be collided with on the Y axis and that we haven't already collided on the X axis
            if (bb_intersects_opt(&PLAYER.bounds, &sol_pos, &sol_actor->bounds, &sol_actor->pos)) { // check if the player's and the solid's bounding boxes overlap
                 if ((sol_actor->solid & COLLISION_TOP) && ((sol_pos.y) < (sol_actor->pos.y)) && (pl_vel.y < sol_actor->vel.y)) { // Verify that the solid has top collisions enabled, that the player is above the solid, and that if both player and solid are moving with a velocity that the player is moving faster (which means the two will actually collide)
                     new_pos.y = sol_actor->pos.y + ((sol_actor->bounds.top - PLAYER.bounds.bottom) << 4) - 1; // Position the player above the solid
