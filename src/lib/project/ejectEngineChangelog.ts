@@ -565,6 +565,15 @@ const changes: EngineChange[] = [
       ].join("\n"),
     modifiedFiles: ["include/vm.i", "src/core/actor.c", "src/core/vm_ui.c"],
   },
+  {
+    version: "3.2.0-e0",
+    description:
+      "Updates\n" +
+      [
+        "   * Fix issue where loading a scene containing projectiles or dynamically modified sprites could cause graphical corruption",
+      ].join("\n"),
+    modifiedFiles: ["include/projectiles.h", "src/core/data_manager.c"],
+  },
 ];
 
 const ejectEngineChangelog = (currentVersion: string) => {
