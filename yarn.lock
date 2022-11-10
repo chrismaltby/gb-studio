@@ -990,10 +990,10 @@
     xterm-addon-fit "^0.5.0"
     xterm-addon-search "^0.8.0"
 
-"@electron/get@^1.0.1", "@electron/get@^1.9.0":
-  version "1.12.4"
-  resolved "https://registry.yarnpkg.com/@electron/get/-/get-1.12.4.tgz#a5971113fc1bf8fa12a8789dc20152a7359f06ab"
-  integrity sha512-6nr9DbJPUR9Xujw6zD3y+rS95TyItEVM0NVjt1EehY2vUWfIgPiIPVHxCvaTS0xr2B+DRxovYVKbuOWqC35kjg==
+"@electron/get@^1.13.0", "@electron/get@^1.6.0", "@electron/get@^1.9.0":
+  version "1.14.1"
+  resolved "https://registry.yarnpkg.com/@electron/get/-/get-1.14.1.tgz#16ba75f02dffb74c23965e72d617adc721d27f40"
+  integrity sha512-BrZYyL/6m0ZXz/lDxy/nlVhQz+WF+iPS6qXolEU8atw7h6v1aYkjwJZ63m+bJMBTxDE66X+r2tPS4a/8C82sZw==
   dependencies:
     debug "^4.1.1"
     env-paths "^2.2.0"
@@ -1003,23 +1003,7 @@
     semver "^6.2.0"
     sumchecker "^3.0.1"
   optionalDependencies:
-    global-agent "^2.0.2"
-    global-tunnel-ng "^2.7.1"
-
-"@electron/get@^1.6.0":
-  version "1.10.0"
-  resolved "https://registry.yarnpkg.com/@electron/get/-/get-1.10.0.tgz#258fdda22bbd5a247e0b663ba9c525dedc1bdfff"
-  integrity sha512-hlueNXU51c3CwQjBw/i5fwt+VfQgSQVUTdicpCHkhEjNZaa4CXJ5W1GaxSwtLE2dvRmAHjpIjUMHTqJ53uojfg==
-  dependencies:
-    debug "^4.1.1"
-    env-paths "^2.2.0"
-    fs-extra "^8.1.0"
-    got "^9.6.0"
-    progress "^2.0.3"
-    sanitize-filename "^1.6.2"
-    sumchecker "^3.0.1"
-  optionalDependencies:
-    global-agent "^2.0.2"
+    global-agent "^3.0.0"
     global-tunnel-ng "^2.7.1"
 
 "@electron/universal@^1.2.1":
@@ -1883,15 +1867,10 @@
   dependencies:
     "@types/node" "*"
 
-"@types/node@*":
-  version "13.13.4"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-13.13.4.tgz#1581d6c16e3d4803eb079c87d4ac893ee7501c2c"
-  integrity sha512-x26ur3dSXgv5AwKS0lNfbjpCakGIduWU1DU91Zz58ONRWrIKGunmZBNv4P7N+e27sJkiGDsw/3fT4AtsqQBrBA==
-
-"@types/node@^12.0.12":
-  version "12.20.4"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.20.4.tgz#73687043dd00fcb6962c60fbf499553a24d6bdf2"
-  integrity sha512-xRCgeE0Q4pT5UZ189TJ3SpYuX/QGl6QIAOAIeDSbAVAd2gX1NxSZup4jNVK7cxIeP8KDSbJgcckun495isP1jQ==
+"@types/node@*", "@types/node@^16.11.26":
+  version "16.18.3"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.18.3.tgz#d7f7ba828ad9e540270f01ce00d391c54e6e0abc"
+  integrity sha512-jh6m0QUhIRcZpNv7Z/rpN+ZWXOicUUQbSoWks7Htkbb9IjFQj4kzcX/xFCkjstCj5flMsN8FiSvt+q+Tcs4Llg==
 
 "@types/node@^7.0.12":
   version "7.10.6"
@@ -3652,11 +3631,6 @@ core-js-pure@^3.0.0:
   resolved "https://registry.yarnpkg.com/core-js-pure/-/core-js-pure-3.6.5.tgz#c79e75f5e38dbc85a662d91eea52b8256d53b813"
   integrity sha512-lacdXOimsiD0QyNf9BC/mxivNJ/ybBGJXQFKzRekp1WTHoVUWsUHEn+2T8GJAzzIhyOuXA+gOxCVN3l+5PLPUA==
 
-core-js@^3.6.5:
-  version "3.9.1"
-  resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.9.1.tgz#cec8de593db8eb2a85ffb0dbdeb312cb6e5460ae"
-  integrity sha512-gSjRvzkxQc1zjM/5paAmL4idJBFzuJoo+jDjF1tStYFMV2ERfD02HhahhCGXUyHxQRG4yFKVSdO6g62eoRMcDg==
-
 core-util-is@1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/core-util-is/-/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
@@ -4527,13 +4501,13 @@ electron-winstaller@^5.0.0:
     lodash.template "^4.2.2"
     temp "^0.9.0"
 
-electron@8.5.5:
-  version "8.5.5"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-8.5.5.tgz#17b12bd70139c0099f750fc5de0d480bf03acb96"
-  integrity sha512-e355H+tRDial0m+X2v+l+0SnaATAPw4sNjv9qmdk/6MJz/glteVJwVJEnxTjPfEELIJSChrBWDBVpjdDvoBF4Q==
+electron@18.3.7:
+  version "18.3.7"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-18.3.7.tgz#a22a23d63811d067c8e33abc5674122408319265"
+  integrity sha512-SDvX0VYejR1xw9PrJyvnyiDcuIhdzFVaA1NaRN2LEWXr5R6mEFl8NVTM+i5dtxMm2SHP/FPnkvmsWZs6MHijqg==
   dependencies:
-    "@electron/get" "^1.0.1"
-    "@types/node" "^12.0.12"
+    "@electron/get" "^1.13.0"
+    "@types/node" "^16.11.26"
     extract-zip "^1.0.3"
 
 emittery@^0.8.1:
@@ -5767,13 +5741,12 @@ glob@^8.0.1:
     minimatch "^5.0.1"
     once "^1.3.0"
 
-global-agent@^2.0.2:
-  version "2.1.12"
-  resolved "https://registry.yarnpkg.com/global-agent/-/global-agent-2.1.12.tgz#e4ae3812b731a9e81cbf825f9377ef450a8e4195"
-  integrity sha512-caAljRMS/qcDo69X9BfkgrihGUgGx44Fb4QQToNQjsiWh+YlQ66uqYVAdA8Olqit+5Ng0nkz09je3ZzANMZcjg==
+global-agent@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/global-agent/-/global-agent-3.0.0.tgz#ae7cd31bd3583b93c5a16437a1afe27cc33a1ab6"
+  integrity sha512-PT6XReJ+D07JvGoxQMkT6qji/jVNfX/h364XHZOWeRzy64sSFr+xJ5OX7LI3b4MPQzdL4H8Y8M0xzPpsVMwA8Q==
   dependencies:
     boolean "^3.0.1"
-    core-js "^3.6.5"
     es6-error "^4.1.1"
     matcher "^3.0.0"
     roarr "^2.15.3"
@@ -10098,13 +10071,6 @@ safe-regex@^1.1.0:
   resolved "https://registry.yarnpkg.com/safer-buffer/-/safer-buffer-2.1.2.tgz#44fa161b0187b9549dd84bb91802f9bd8385cd6a"
   integrity sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==
 
-sanitize-filename@^1.6.2:
-  version "1.6.3"
-  resolved "https://registry.yarnpkg.com/sanitize-filename/-/sanitize-filename-1.6.3.tgz#755ebd752045931977e30b2025d340d7c9090378"
-  integrity sha512-y/52Mcy7aw3gRm7IrcGDFx/bCk4AhRh2eI9luHOQM86nZsqwiRkkq2GekHXBBD+SmPidc8i2PqtYZl+pWJ8Oeg==
-  dependencies:
-    truncate-utf8-bytes "^1.0.0"
-
 sax@^1.2.4:
   version "1.2.4"
   resolved "https://registry.yarnpkg.com/sax/-/sax-1.2.4.tgz#2816234e2378bddc4e5354fab5caa895df7100d9"
@@ -11227,13 +11193,6 @@ trim-repeated@^1.0.0:
   dependencies:
     escape-string-regexp "^1.0.2"
 
-truncate-utf8-bytes@^1.0.0:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/truncate-utf8-bytes/-/truncate-utf8-bytes-1.0.2.tgz#405923909592d56f78a5818434b0b78489ca5f2b"
-  integrity sha1-QFkjkJWS1W94pYGENLC3hInKXys=
-  dependencies:
-    utf8-byte-length "^1.0.1"
-
 ts-flood-fill@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/ts-flood-fill/-/ts-flood-fill-1.0.2.tgz#7ea23ca701028e1d0830d853a03bc43d736b95fc"
@@ -11493,11 +11452,6 @@ username@^5.1.0:
   dependencies:
     execa "^1.0.0"
     mem "^4.3.0"
-
-utf8-byte-length@^1.0.1:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/utf8-byte-length/-/utf8-byte-length-1.0.4.tgz#f45f150c4c66eee968186505ab93fcbb8ad6bf61"
-  integrity sha1-9F8VDExm7uloGGUFq5P8u4rWv2E=
 
 util-deprecate@^1.0.1, util-deprecate@~1.0.1:
   version "1.0.2"
