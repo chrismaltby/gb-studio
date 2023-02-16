@@ -92,6 +92,10 @@ const compileFXHammerEffect = (
 
     if (options.usePan) {
       const currentPan = 0b01010101 | ch2pan | ch4pan;
+      // Failsafes to avoid muting channels
+      if (ch2pan == 0) currentPan |= 0b00100010; 
+      if (ch4pan == 0) currentPan |= 0b10001000;
+      
       if (oldPan !== currentPan) {
         count += 1;
         result += `,${binPrefix}01000100,${decHex(currentPan)}`;
