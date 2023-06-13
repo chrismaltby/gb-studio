@@ -92,12 +92,17 @@ export const saveSongFile = createAsyncThunk<void, void>(
     }
 
     const song = state.trackerDocument.present.song;
-    const buffer = saveUGESong(song);
-    await writeFileWithBackupAsync(
-      song.filename,
-      new Uint8Array(buffer),
-      "utf8"
-    );
+    try {
+      const buffer = saveUGESong(song);
+      await writeFileWithBackupAsync(
+        song.filename,
+        new Uint8Array(buffer),
+        "utf8"
+      );
+    } catch (e) {
+      console.log(e);
+      throw new Error(e);
+    }
   }
 );
 

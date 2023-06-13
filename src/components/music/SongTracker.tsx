@@ -301,12 +301,7 @@ export const SongTracker = ({
             newPattern[i][newChannelId] = newPattern[i - 1][newChannelId];
           }
         }
-        newPattern[uninsert ? 63 : startRow][newChannelId] = {
-          note: null,
-          instrument: null,
-          effectcode: null,
-          effectparam: null,
-        };
+        newPattern[uninsert ? 63 : startRow][newChannelId] = new PatternCell();
         dispatch(
           trackerDocumentActions.editPattern({
             patternId: patternId,
