@@ -617,9 +617,28 @@ export const exportToC = (song: Song, trackName: string): string => {
     )})`;
   };
 
-  const formatSubPatternCell = function (cell: SubPatternCell) {
+  const formatSubpattern = function (
+    instr: DutyInstrument | WaveInstrument | NoiseInstrument,
+    type: "duty" | "wave" | "noise"
+  ) {
+    if (instr.subpattern_enabled) {
+      data += `static const unsigned char ${type}_${instr.index}_subpattern[] = {\n`;
+      for (let idx = 0; idx < instr.subpattern.length; idx++) {
+        const cell = instr.subpattern[idx];
+        data += `    ${formatSubPatternCell(
+          cell,
+          idx === instr.subpattern.length - 1
+        )},\n`;
+      }
+      data += "};\n";
+    }
+  };
+  const formatSubPatternCell = function (
+    cell: SubPatternCell,
+    isLast: boolean
+  ) {
     const note = cell.note ?? "___";
-    const jump = cell.jump ?? 0;
+    const jump = cell.jump !== null && isLast ? 1 : cell.jump ?? 0;
     let effect_code = 0;
     let effect_param = 0;
     if (cell.effectcode !== null) {
@@ -736,31 +755,13 @@ static const unsigned char order_cnt = ${song.sequence.length * 2};
     data += "};\n";
   }
   for (const instr of song.duty_instruments) {
-    if (instr.subpattern_enabled) {
-      data += `static const unsigned char duty_${instr.index}_subpattern[] = {\n`;
-      for (const cell of instr.subpattern) {
-        data += `    ${formatSubPatternCell(cell)},\n`;
-      }
-      data += "};\n";
-    }
+    formatSubpattern(instr, "duty");
   }
   for (const instr of song.wave_instruments) {
-    if (instr.subpattern_enabled) {
-      data += `static const unsigned char wave_${instr.index}_subpattern[] = {\n`;
-      for (const cell of instr.subpattern) {
-        data += `    ${formatSubPatternCell(cell)},\n`;
-      }
-      data += "};\n";
-    }
+    formatSubpattern(instr, "wave");
   }
   for (const instr of song.noise_instruments) {
-    if (instr.subpattern_enabled) {
-      data += `static const unsigned char noise_${instr.index}_subpattern[] = {\n`;
-      for (const cell of instr.subpattern) {
-        data += `    ${formatSubPatternCell(cell)},\n`;
-      }
-      data += "};\n";
-    }
+    formatSubpattern(instr, "noise");
   }
   for (let track = 0; track < 4; track++)
     data += `static const unsigned char* const order${
