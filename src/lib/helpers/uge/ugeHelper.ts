@@ -619,15 +619,15 @@ export const exportToC = (song: Song, trackName: string): string => {
 
   const formatSubPatternCell = function (cell: SubPatternCell) {
     const note = cell.note !== null ? noteConsts[cell.note] : "___";
-    let instrument = 0;
+    let jump = 0;
     let effect_code = 0;
     let effect_param = 0;
-    if (cell.jump !== null) instrument = cell.jump + 1;
+    if (cell.jump !== null) jump = cell.jump + 1;
     if (cell.effectcode !== null) {
       effect_code = cell.effectcode;
       effect_param = cell.effectparam || 0;
     }
-    return `DN(${note}, ${instrument}, ${decHex(
+    return `DN(${note}, ${jump}, ${decHex(
       (effect_code << 8) | effect_param,
       3
     )})`;

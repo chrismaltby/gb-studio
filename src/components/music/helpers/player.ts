@@ -412,7 +412,7 @@ function patchRom(targetRomFile: Uint8Array, song: Song, startAddr: number) {
     const instr = song.duty_instruments[n];
 
     if (instr.subpattern_enabled) {
-      subpatternAddr[`DutySP${n}`] = addr;
+      subpatternAddr[`DutySP${instr.index}`] = addr;
 
       const pattern = song.duty_instruments[n].subpattern;
 
@@ -431,7 +431,7 @@ function patchRom(targetRomFile: Uint8Array, song: Song, startAddr: number) {
     const instr = song.wave_instruments[n];
 
     if (instr.subpattern_enabled) {
-      subpatternAddr[`WaveSP${n}`] = addr;
+      subpatternAddr[`WaveSP${instr.index}`] = addr;
 
       const pattern = song.wave_instruments[n].subpattern;
 
@@ -450,7 +450,7 @@ function patchRom(targetRomFile: Uint8Array, song: Song, startAddr: number) {
     const instr = song.noise_instruments[n];
 
     if (instr.subpattern_enabled) {
-      subpatternAddr[`NoiseSP${n}`] = addr;
+      subpatternAddr[`NoiseSP${instr.index}`] = addr;
 
       const pattern = song.noise_instruments[n].subpattern;
 
@@ -464,8 +464,6 @@ function patchRom(targetRomFile: Uint8Array, song: Song, startAddr: number) {
       }
     }
   }
-
-  console.log(subpatternAddr);
 
   for (let n = 0; n < song.duty_instruments.length; n++) {
     const instr = song.duty_instruments[n];
@@ -487,7 +485,7 @@ function patchRom(targetRomFile: Uint8Array, song: Song, startAddr: number) {
     buf[addr + n * (4 + 2) + 0] = nr10;
     buf[addr + n * (4 + 2) + 1] = nr11;
     buf[addr + n * (4 + 2) + 2] = nr12;
-    buf[addr + n * (4 + 2) + 3] = subpatternAddr[`DutySP${n}`] ?? 0;
+    buf[addr + n * (4 + 2) + 3] = subpatternAddr[`DutySP${instr.index}`] ?? 0;
     buf[addr + n * (4 + 2) + 5] = nr14;
   }
   // write the pointer to the duty instruments to the first instruments header index
@@ -506,7 +504,7 @@ function patchRom(targetRomFile: Uint8Array, song: Song, startAddr: number) {
     buf[addr + n * (4 + 2) + 0] = nr31;
     buf[addr + n * (4 + 2) + 1] = nr32;
     buf[addr + n * (4 + 2) + 2] = waveNR;
-    buf[addr + n * (4 + 2) + 3] = subpatternAddr[`WaveSP${n}`] ?? 0;
+    buf[addr + n * (4 + 2) + 3] = subpatternAddr[`WaveSP${instr.index}`] ?? 0;
     buf[addr + n * (4 + 2) + 5] = nr34;
   }
   // write the pointer to the wave instruments to the second instruments header index
@@ -527,7 +525,7 @@ function patchRom(targetRomFile: Uint8Array, song: Song, startAddr: number) {
     if (instr.bit_count === 7) param1 |= 0x80;
 
     buf[addr + n * (4 + 2) + 0] = nr42;
-    buf[addr + n * (4 + 2) + 1] = subpatternAddr[`NoiseSP${n}`] ?? 0;
+    buf[addr + n * (4 + 2) + 1] = subpatternAddr[`NoiseSP${instr.index}`] ?? 0;
     buf[addr + n * (4 + 2) + 3] = param1;
     buf[addr + n * (4 + 2) + 4] = 0;
     buf[addr + n * (4 + 2) + 5] = 0;
