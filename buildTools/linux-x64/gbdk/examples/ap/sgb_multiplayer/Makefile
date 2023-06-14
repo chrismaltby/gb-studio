@@ -1,4 +1,4 @@
-CC	= ../../../bin/lcc -mgbz80:ap -Wl-j -Wm-yS -Wm-ys
+CC	= ../../../bin/lcc -msm83:ap -Wl-j -Wm-yS -Wm-ys
 
 BINS	= sgb_multiplayer.pocket
 

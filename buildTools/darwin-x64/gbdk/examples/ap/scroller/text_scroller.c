@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include <gb/bgb_emu.h>
+#include <gb/emu_debug.h>
 
 const uint8_t scanline_offsets_tbl[] = {0, 1, 2, 3, 3, 2, 1, 0, 0, 1, 2, 3, 3, 2, 1, 0};
 const uint8_t * scanline_offsets = scanline_offsets_tbl;

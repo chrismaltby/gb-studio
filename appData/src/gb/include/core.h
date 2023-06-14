@@ -1,9 +1,9 @@
 #ifndef _CORE_H_INCLUDE
 #define _CORE_H_INCLUDE
 
-#include <gb/gb.h>
+#include <gbdk/platform.h>
 
-void core_reset() BANKED;
-void core_run() BANKED;
+void core_reset(void) BANKED;
+void core_run(void) BANKED;
 
 #endif

@@ -42,7 +42,7 @@ $(OBJDIR)/%.o:	$(RESDIR)/%.c
 $(OBJDIR)/%.o:	$(SRCDIR)/%.s
 	$(LCC) $(LCCFLAGS) -c -o $@ $<
 
-# If needed, compile .c files i n"src/" to .s assembly files
+# If needed, compile .c files in "src/" to .s assembly files
 # (not required if .c is compiled directly to .o)
 $(OBJDIR)/%.s:	$(SRCDIR)/%.c
 	$(LCC) $(LCCFLAGS) -S -o $@ $<

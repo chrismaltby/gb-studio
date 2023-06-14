@@ -1,4 +1,4 @@
-CC	= ../../../bin/lcc -mgbz80:ap -Wm-yc -Wl-j -Wm-yS
+CC	= ../../../bin/lcc -msm83:ap -Wm-yc -Wl-j -Wm-yS
 
 BINS	= dscan.pocket
 

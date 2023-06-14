@@ -1,6 +1,6 @@
 #pragma bank 255
 
-#include <gb/gb.h>
+#include <gbdk/platform.h>
 
 #include "interrupts.h"
 
@@ -14,7 +14,7 @@ UBYTE hide_sprites = FALSE;
 UBYTE show_actors_on_overlay = FALSE;
 UBYTE overlay_cut_scanline = LYC_SYNC_VALUE; 
 
-void remove_LCD_ISRs() BANKED {
+void remove_LCD_ISRs(void) BANKED {
     CRITICAL {
         remove_LCD(parallax_LCD_isr);
         remove_LCD(simple_LCD_isr);
@@ -23,7 +23,7 @@ void remove_LCD_ISRs() BANKED {
     }
 }
 
-void simple_LCD_isr() NONBANKED {
+void simple_LCD_isr(void) NONBANKED {
     if (LYC_REG == LYC_SYNC_VALUE) {
         SCX_REG = draw_scroll_x;
         SCY_REG = draw_scroll_y;
@@ -50,7 +50,7 @@ void simple_LCD_isr() NONBANKED {
     }
 }
 
-void fullscreen_LCD_isr() NONBANKED {
+void fullscreen_LCD_isr(void) NONBANKED {
     if (LYC_REG == LYC_SYNC_VALUE) {
         LCDC_REG &= ~LCDCF_BG8000;
         SCX_REG = draw_scroll_x;
@@ -63,7 +63,7 @@ void fullscreen_LCD_isr() NONBANKED {
     }
 }
 
-void VBL_isr() NONBANKED {
+void VBL_isr(void) NONBANKED {
     WX_REG = win_pos_x + MINWNDPOSX;
     if ((WY_REG = win_pos_y) < MENU_CLOSED_Y) SHOW_WIN; else HIDE_WIN;
     if (hide_sprites) HIDE_SPRITES; else SHOW_SPRITES;

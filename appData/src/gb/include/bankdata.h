@@ -1,7 +1,7 @@
 #ifndef BANK_DATA_H
 #define BANK_DATA_H
 
-#include <gb/gb.h>
+#include <gbdk/platform.h>
 
 #include "compat.h"
 
@@ -12,7 +12,7 @@
 #define BANK(VARNAME) ( (UBYTE) & __bank_ ## VARNAME )
 #endif
 #ifndef BANKREF
-#define BANKREF(VARNAME) void __func_ ## VARNAME() BANKED NAKED { \
+#define BANKREF(VARNAME) void __func_ ## VARNAME(void) BANKED NAKED { \
 __asm \
     .local b___func_ ## VARNAME \
     ___bank_ ## VARNAME = b___func_ ## VARNAME \
@@ -91,7 +91,7 @@ void SetBankedWinTiles(UINT8 x, UINT8 y, UINT8 w, UINT8 h, const unsigned char *
  * @param ptr memory address of data within bank
  * @param bank bank to read from
  */
-void ReadBankedFarPtr(far_ptr_t * dest, const unsigned char *ptr, UBYTE bank) OLDCALL PRESERVES_REGS(b, c);
+void ReadBankedFarPtr(far_ptr_t * dest, const unsigned char *ptr, UBYTE bank);
 
 /**
  * Read UWORD from banked memory location (non-reentrant!)
@@ -100,7 +100,7 @@ void ReadBankedFarPtr(far_ptr_t * dest, const unsigned char *ptr, UBYTE bank) OL
  * @param bank bank to read from
  * @return value stored in banked location
  */
-UWORD ReadBankedUWORD(const unsigned char *ptr, UBYTE bank) OLDCALL PRESERVES_REGS(b, c);
+UWORD ReadBankedUWORD(const unsigned char *ptr, UBYTE bank);
 
 /**
  * Read UBYTE from banked memory location (non-reentrant!)
@@ -121,7 +121,7 @@ inline UBYTE ReadBankedUBYTE(const unsigned char *ptr, UBYTE bank) {
  * @param n number of bytes to fetch from bank
  * @param bank bank to read from
  */
-void MemcpyBanked(void* to, const void* from, size_t n, UBYTE bank) OLDCALL;
+void MemcpyBanked(void* to, const void* from, size_t n, UBYTE bank);
 
 /**
  * memcpy data from banked memory location (non-reentrant!) to VRAM
@@ -131,7 +131,7 @@ void MemcpyBanked(void* to, const void* from, size_t n, UBYTE bank) OLDCALL;
  * @param n number of bytes to fetch from bank
  * @param bank bank to read from
  */
-void MemcpyVRAMBanked(void* to, const void* from, size_t n, UBYTE bank) OLDCALL;
+void MemcpyVRAMBanked(void* to, const void* from, size_t n, UBYTE bank);
 
 /**
  * returns the index of pointer from the list

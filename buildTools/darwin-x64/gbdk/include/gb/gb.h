@@ -126,7 +126,7 @@
 
     Example:
     \code{.c}
-    REG_BGP = DMG_PALETTE(DMG_BLACK, DMG_DARK_GRAY, DMG_LITE_GRAY, DMG_WHITE);
+    BGP_REG = DMG_PALETTE(DMG_BLACK, DMG_DARK_GRAY, DMG_LITE_GRAY, DMG_WHITE);
     \endcode
 
     @see OBP0_REG, OBP1_REG, BGP_REG
@@ -198,21 +198,28 @@ void remove_SIO(int_handler h) OLDCALL;
 */
 void remove_JOY(int_handler h) OLDCALL;
 
-/** Adds a V-blank interrupt handler.
+/** Adds a Vertical Blanking interrupt handler.
 
     @param h  The handler to be called whenever a V-blank
     interrupt occurs.
 
-    Up to 4 handlers may be added, with the last added being
-    called last.  If the @ref remove_VBL function is to be called,
-    only three may be added.
+    Up to 4 handlers may be added, with the last added
+    being called last.
 
-    Do not use @ref CRITICAL and @ref INTERRUPT attributes for a
-    function added via add_VBL() (or LCD, etc). The attributes
-    are only required when constructing a bare jump from the
-    interrupt vector itself.
+    __Do not__ use the function definition attributes
+    @ref CRITICAL and @ref INTERRUPT when declaring
+    ISR functions added via add_VBL() (or LCD, etc).
+    Those attributes are only required when constructing
+    a bare jump from the interrupt vector itself (such as
+    with @ref ISR_VECTOR()).
 
-    Note: The default VBL is installed automatically.
+    ISR handlers added using add_VBL()/etc are instead
+    called via the GBDK ISR dispatcher which makes
+    the extra function attributes unecessary.
+
+    Note: The default GBDK VBL is installed automatically.
+
+    @see ISR_VECTOR()
 */
 void add_VBL(int_handler h) OLDCALL;
 
@@ -221,6 +228,9 @@ void add_VBL(int_handler h) OLDCALL;
     Called when the LCD interrupt occurs, which is normally
     when @ref LY_REG == @ref LYC_REG.
 
+    Up to 3 handlers may be added, with the last added
+    being called last.
+
     There are various reasons for this interrupt to occur
     as described by the @ref STAT_REG register ($FF41). One very
     popular reason is to indicate to the user when the
@@ -228,8 +238,23 @@ void add_VBL(int_handler h) OLDCALL;
     This can be useful for dynamically controlling the
     @ref SCX_REG / @ref SCY_REG registers ($FF43/$FF42) to perform
     special video effects.
+    
+    __Do not__ use the function definition attributes
+    @ref CRITICAL and @ref INTERRUPT when declaring
+    ISR functions added via add_VBL() (or LCD, etc).
+    Those attributes are only required when constructing
+    a bare jump from the interrupt vector itself (such as
+    with @ref ISR_VECTOR()).
 
-    @see add_VBL
+    ISR handlers added using add_VBL()/etc are instead
+    called via the GBDK ISR dispatcher which makes
+    the extra function attributes unecessary.
+
+    If this ISR is to be called once per each scanline then
+    make sure that the time it takes to execute is less
+    than the duration of a scanline.
+
+    @see add_VBL, nowait_int_handler, ISR_VECTOR()
 */
 void add_LCD(int_handler h) OLDCALL;
 
@@ -240,13 +265,16 @@ void add_LCD(int_handler h) OLDCALL;
     This interrupt occurs when the @ref TIMA_REG
     register ($FF05) changes from $FF to $00.
 
+    Up to 4 handlers may be added, with the last added
+    being called last.
+
     @see add_VBL
-    @see set_interrupts() with TIM_IFLAG
+    @see set_interrupts() with TIM_IFLAG, ISR_VECTOR()
 */
 void add_TIM(int_handler h) OLDCALL;
 
-/** Adds a timer interrupt handler, that could be 
-    interrupted by the other interrupts, 
+/** Adds a timer interrupt handler, that could be
+    interrupted by the other interrupts,
     as well as itself, if it runs too slow.
 
     Can not be used together with @ref add_TIM
@@ -254,8 +282,11 @@ void add_TIM(int_handler h) OLDCALL;
     This interrupt occurs when the @ref TIMA_REG
     register ($FF05) changes from $FF to $00.
 
+    Up to 4 handlers may be added, with the last added
+    being called last.
+
     @see add_VBL
-    @see set_interrupts() with TIM_IFLAG
+    @see set_interrupts() with TIM_IFLAG, ISR_VECTOR()
 */
 void add_low_priority_TIM(int_handler h) OLDCALL;
 
@@ -263,6 +294,9 @@ void add_low_priority_TIM(int_handler h) OLDCALL;
 
     This interrupt occurs when a serial transfer has
     completed on the game link port.
+
+    Up to 4 handlers may be added, with the last added
+    being called last.
 
     @see send_byte, receive_byte(), add_VBL()
     @see set_interrupts() with SIO_IFLAG
@@ -278,6 +312,9 @@ void add_SIO(int_handler h) OLDCALL;
     software should expect this interrupt to occur one
     or more times for every button press and one or more
     times for every button release.
+
+    Up to 4 handlers may be added, with the last added
+    being called last.
 
     @see joypad(), add_VBL()
 */
@@ -420,9 +457,15 @@ extern volatile uint8_t _io_out;
 
 
 
-/** Tracks current active ROM bank @see SWITCH_ROM_MBC1(), SWITCH_ROM_MBC5()
+/** Tracks current active ROM bank
+
+    The active bank number is not tracked by @ref _current_bank when
+    @ref SWITCH_ROM_MBC5_8M is used.
+
     This variable is updated automatically when you call SWITCH_ROM_MBC1 or
-    SWITCH_ROM_MBC5, or call a BANKED function.
+    SWITCH_ROM_MBC5, SWITCH_ROM(), or call a BANKED function.
+
+    @see SWITCH_ROM_MBC1(), SWITCH_ROM_MBC5(), SWITCH_ROM()
 */
 __REG _current_bank;
 #define CURRENT_BANK _current_bank
@@ -472,20 +515,35 @@ __endasm; \
 #define BANKREF_EXTERN(VARNAME) extern const void __bank_ ## VARNAME;
 
 /** Makes MEGADUCK MBC switch the active ROM bank
-    @param b   ROM bank to switch to
+    @param b   ROM bank to switch to (max `3` for 64K, or `7` for 128K)
 */
 #define SWITCH_ROM_MEGADUCK(b) \
-  _current_bank = (b), *(uint8_t *)0x0001 = (b)
+  _current_bank = (b), *(volatile uint8_t *)0x0001 = (b)
 
 
 /** Makes MBC1 and other compatible MBCs switch the active ROM bank
     @param b   ROM bank to switch to
+
+    For MBC1 some banks in it's range are unavailable
+    (typically 0x20, 0x40, 0x60).
+
+    See pandocs for more details https://gbdev.io/pandocs/MBC1
 */
 #define SWITCH_ROM_MBC1(b) \
-  _current_bank = (b), *(uint8_t *)0x2000 = (b)
+  _current_bank = (b), *(volatile uint8_t *)0x2000 = (b)
 
 /** Makes default platform MBC switch the active ROM bank
     @param b   ROM bank to switch to (max 255)
+
+    \li When used with MBC1 the max bank is Bank 31 (512K).
+    \li When used with MBC5 the max bank is Bank 255 (4MB).
+    \li To use the full 8MB size of MBC5 see @ref SWITCH_ROM_MBC5_8M().
+
+    \li For MBC1 some banks in it's range are unavailable
+    (typically 0x20, 0x40, 0x60).
+
+    Note: Using @ref SWITCH_ROM_MBC5_8M() should not be mixed with using
+          @ref SWITCH_ROM_MBC5() and @ref SWITCH_ROM().
 
     @see SWITCH_ROM_MBC1, SWITCH_ROM_MBC5, SWITCH_ROM_MEGADUCK
 */
@@ -499,7 +557,7 @@ __endasm; \
     @param b   SRAM bank to switch to
 */
 #define SWITCH_RAM_MBC1(b) \
-  *(uint8_t *)0x4000 = (b)
+  *(volatile uint8_t *)0x4000 = (b)
 
 /** Switches SRAM bank on MBC1 and other compaticle MBCs
     @param b   SRAM bank to switch to
@@ -511,58 +569,72 @@ __endasm; \
 /** Enables SRAM on MBC1
 */
 #define ENABLE_RAM_MBC1 \
-  *(uint8_t *)0x0000 = 0x0A
+  *(volatile uint8_t *)0x0000 = 0x0A
 
 #define ENABLE_RAM ENABLE_RAM_MBC1
 
 /** Disables SRAM on MBC1
 */
 #define DISABLE_RAM_MBC1 \
-  *(uint8_t *)0x0000 = 0x00
+  *(volatile uint8_t *)0x0000 = 0x00
 
 #define DISABLE_RAM DISABLE_RAM_MBC1
 
 #define SWITCH_16_8_MODE_MBC1 \
-  *(uint8_t *)0x6000 = 0x00
+  *(volatile uint8_t *)0x6000 = 0x00
 
 #define SWITCH_4_32_MODE_MBC1 \
-  *(uint8_t *)0x6000 = 0x01
+  *(volatile uint8_t *)0x6000 = 0x01
 
-/** Makes MBC5 switch to the active ROM bank; only 4M roms are supported, @see SWITCH_ROM_MBC5_8M()
-    @param b   ROM bank to switch to
+/** Makes MBC5 switch to the active ROM bank
+    @param b   ROM bank to switch to (max 255)
+
+    Supports up to ROM bank 255 (4 MB).
+
+    @ref SWITCH_ROM_MBC5_8M may be used if the full 8MB size is needed.
+
+    Note: Using @ref SWITCH_ROM_MBC5_8M() should not be mixed with using
+          @ref SWITCH_ROM_MBC5() and @ref SWITCH_ROM().
 
     Note the order used here. Writing the other way around on a MBC1 always selects bank 1
 */
 #define SWITCH_ROM_MBC5(b) \
   _current_bank = (b), \
-  *(uint8_t *)0x3000 = 0, \
-  *(uint8_t *)0x2000 = (b)
+  *(volatile uint8_t *)0x3000 = 0, \
+  *(volatile uint8_t *)0x2000 = (b)
 
-/** Makes MBC5 to switch the active ROM bank; active bank number is not tracked by _current_bank if you use this macro
+/** Makes MBC5 to switch the active ROM bank using the full 8MB size.
     @see _current_bank
     @param b   ROM bank to switch to
+
+    This is an alternate to @ref SWITCH_ROM_MBC5 which is limited to 4MB.
+
+    Note:
+    \li Banked SDCC calls are not supported if you use this macro.
+    \li The active bank number is not tracked by @ref _current_bank if you use this macro.
+    \li Using @ref SWITCH_ROM_MBC5_8M() should not be mixed with using @ref SWITCH_ROM_MBC5() and @ref SWITCH_ROM().
 
     Note the order used here. Writing the other way around on a MBC1 always selects bank 1
 */
 #define SWITCH_ROM_MBC5_8M(b) \
-  *(uint8_t *)0x3000 = ((uint16_t)(b) >> 8), \
-  *(uint8_t *)0x2000 = (b)
+  *(volatile uint8_t *)0x3000 = ((uint16_t)(b) >> 8), \
+  *(volatile uint8_t *)0x2000 = (b)
 
 /** Switches SRAM bank on MBC5
     @param b   SRAM bank to switch to
 */
 #define SWITCH_RAM_MBC5(b) \
-  *(uint8_t *)0x4000 = (b)
+  *(volatile uint8_t *)0x4000 = (b)
 
 /** Enables SRAM on MBC5
 */
 #define ENABLE_RAM_MBC5 \
-  *(uint8_t *)0x0000 = 0x0A
+  *(volatile uint8_t *)0x0000 = 0x0A
 
 /** Disables SRAM on MBC5
 */
 #define DISABLE_RAM_MBC5 \
-  *(uint8_t *)0x0000 = 0x00
+  *(volatile uint8_t *)0x0000 = 0x00
 
 
 
@@ -570,7 +642,7 @@ __endasm; \
     Uses no timers or interrupts, and can be called with
     interrupts disabled
  */
-void delay(uint16_t d) OLDCALL;
+void delay(uint16_t d) PRESERVES_REGS(h, l);
 
 
 
@@ -584,7 +656,7 @@ void delay(uint16_t d) OLDCALL;
 
     @see J_START, J_SELECT, J_A, J_B, J_UP, J_DOWN, J_LEFT, J_RIGHT
 */
-uint8_t joypad() OLDCALL PRESERVES_REGS(b, c, h, l);
+uint8_t joypad() PRESERVES_REGS(b, c, h, l);
 
 /** Waits until at least one of the buttons given in mask are pressed.
 
@@ -598,7 +670,7 @@ uint8_t joypad() OLDCALL PRESERVES_REGS(b, c, h, l);
     @see joypad
     @see J_START, J_SELECT, J_A, J_B, J_UP, J_DOWN, J_LEFT, J_RIGHT
 */
-uint8_t waitpad(uint8_t mask) OLDCALL PRESERVES_REGS(b, c);
+uint8_t waitpad(uint8_t mask) PRESERVES_REGS(b, c, h, l);
 
 /** Waits for the directional pad and all buttons to be released.
 
@@ -639,7 +711,7 @@ uint8_t joypad_init(uint8_t npads, joypads_t * joypads) OLDCALL;
 
     @see joypad_init(), joypads_t
 */
-void joypad_ex(joypads_t * joypads) OLDCALL PRESERVES_REGS(b, c);
+void joypad_ex(joypads_t * joypads) PRESERVES_REGS(b, c);
 
 
 
@@ -674,6 +746,10 @@ inline void disable_interrupts() PRESERVES_REGS(a, b, c, d, e, h, l) {
 /** Clears any pending interrupts and sets the interrupt mask
     register IO to flags.
     @param flags	A logical OR of *_IFLAGS
+
+    @note: This disables and then re-enables interrupts so it
+           must be used outside of a critical section.
+
     @see enable_interrupts(), disable_interrupts()
     @see VBL_IFLAG, LCD_IFLAG, TIM_IFLAG, SIO_IFLAG, JOY_IFLAG
 */
@@ -748,8 +824,14 @@ void hiramcpy(uint8_t dst, const void *src, uint8_t n) OLDCALL PRESERVES_REGS(b,
 #define HIDE_BKG \
   LCDC_REG&=~LCDCF_BGON
 
-/** Turns on the window layer
+/** Turns on the Window layer
     Sets bit 5 of the LCDC register to 1.
+
+    This only controls Window visibility. If either
+    the Background layer (which the window is part of)
+    or the Display are not turned then the Window contents
+    will not be visible. Those can be turned on using
+    @ref SHOW_BKG and @ref DISPLAY_ON.
 */
 #define SHOW_WIN \
   LCDC_REG|=LCDCF_WINON
@@ -768,6 +850,8 @@ void hiramcpy(uint8_t dst, const void *src, uint8_t n) OLDCALL PRESERVES_REGS(b,
 
 /** Turns off the sprites layer.
     Clears bit 1 of the LCDC register to 0.
+
+    @see hide_sprite, hide_sprites_range
 */
 #define HIDE_SPRITES \
   LCDC_REG&=~LCDCF_OBJON
@@ -800,7 +884,7 @@ void set_vram_byte(uint8_t * addr, uint8_t v) OLDCALL PRESERVES_REGS(b, c);
  * @param addr address to read from
  * @return read value
  */
-uint8_t get_vram_byte(uint8_t * addr) OLDCALL PRESERVES_REGS(b, c);
+uint8_t get_vram_byte(uint8_t * addr) PRESERVES_REGS(b, c, h, l);
 
 
 /**
@@ -817,7 +901,35 @@ inline void set_2bpp_palette(uint16_t palette) {
 }
 
 extern uint16_t _current_1bpp_colors;
+
+/** Sets the Foreground and Background colors used by the set_*_1bpp_*() functions
+    @param fgcolor  Foreground color
+    @param bgcolor  Background color
+    @param mode     Draw Mode
+
+    See @ref set_1bpp_colors for details.
+*/
 void set_1bpp_colors_ex(uint8_t fgcolor, uint8_t bgcolor, uint8_t mode) OLDCALL;
+
+/** Sets the Foreground and Background colors used by the set_*_1bpp_*() functions
+    @param fgcolor  Foreground color to use
+    @param bgcolor  Background color to use
+
+    The default colors are:
+    \li Foreground: DMG_BLACK
+    \li Background: DMG_WHITE
+
+    Example:
+    \code{.c}
+    // Use DMG_BLACK as the Foreground color and DMG_LITE_GRAY
+    // as the Background color when loading 1bpp tile data.
+    set_1bpp_colors(DMG_BLACK, DMG_LITE_GRAY);
+    \endcode
+
+
+    @see DMG_BLACK, DMG_DARK_GRAY, DMG_LITE_GRAY, DMG_WHITE
+    @see set_bkg_1bpp_data, set_win_1bpp_data, set_sprite_1bpp_data
+*/
 inline void set_1bpp_colors(uint8_t fgcolor, uint8_t bgcolor) {
     set_1bpp_colors_ex(fgcolor, bgcolor, 0);
 }
@@ -834,8 +946,8 @@ inline void set_1bpp_colors(uint8_t fgcolor, uint8_t bgcolor) {
     Note: Sprite Tiles 128-255 share the same memory region as Background Tiles 128-255.
 
     GBC only: @ref VBK_REG determines which bank of Background tile patterns are written to.
-    \li VBK_REG=0 indicates the first bank
-    \li VBK_REG=1 indicates the second
+    \li VBK_REG = @ref VBK_BANK_0 indicates the first bank
+    \li VBK_REG = @ref VBK_BANK_1 indicates the second
 
     @see set_win_data, set_tile_data
 */
@@ -852,10 +964,13 @@ void set_bkg_data(uint8_t first_tile, uint8_t nb_tiles, const uint8_t *data) OLD
     which gets expanded into 2 bits-per-pixel.
 
     For a given bit that represent a pixel:
-    \li 0 will be expanded into color 0
-    \li 1 will be expanded into color 1, 2 or 3 depending on color argument
+    \li 0 will be expanded into the Background color
+    \li 1 will be expanded into the Foreground color
+
+    See @ref set_1bpp_colors for details about setting the Foreground and Background colors.
 
     @see SHOW_BKG, HIDE_BKG, set_bkg_tiles
+    @see set_win_1bpp_data, set_sprite_1bpp_data
 */
 void set_bkg_1bpp_data(uint8_t first_tile, uint8_t nb_tiles, const uint8_t *data) OLDCALL PRESERVES_REGS(b, c);
 
@@ -900,8 +1015,8 @@ void get_bkg_data(uint8_t first_tile, uint8_t nb_tiles, uint8_t *data) OLDCALL P
     Note: Patterns 128-255 overlap with patterns 128-255 of the sprite Tile Pattern table.
 
     GBC only: @ref VBK_REG determines whether Tile Numbers or Tile Attributes get set.
-    \li VBK_REG=0 Tile Numbers are written
-    \li VBK_REG=1 Tile Attributes are written
+    \li VBK_REG = @ref VBK_TILES Tile Numbers are written
+    \li VBK_REG = @ref VBK_ATTRIBUTES Tile Attributes are written
 
     GBC Tile Attributes are defined as:
     \li Bit 7 - Priority flag. When this is set, it puts the tile above the sprites
@@ -934,6 +1049,24 @@ void set_bkg_tiles(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *ti
 
 extern uint8_t _map_tile_offset;
 
+/** Sets a rectangular region of Background Tile Map.
+    The offset value in __base_tile__ is added to
+    the tile ID for each map entry.
+
+    @param x      X Start position in Background Map tile coordinates. Range 0 - 31
+    @param y      Y Start position in Background Map tile coordinates. Range 0 - 31
+    @param w      Width of area to set in tiles. Range 1 - 32
+    @param h      Height of area to set in tiles. Range 1 - 32
+    @param tiles  Pointer to source tile map data
+    @param base_tile Offset each tile ID entry of the source map by this value. Range 1 - 255
+
+    This is identical to @ref set_bkg_tiles() except that it
+    adds the __base_tile__ parameter for when a tile map's tiles don't
+    start at index zero. (For example, the tiles used by the map
+    range from 100 -> 120 in VRAM instead of 0 -> 20).
+
+    @see set_bkg_tiles for more details
+*/
 inline void set_bkg_based_tiles(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *tiles, uint8_t base_tile) {
     _map_tile_offset = base_tile;
     set_bkg_tiles(x, y, w, h, tiles);
@@ -945,8 +1078,8 @@ inline void set_bkg_based_tiles(uint8_t x, uint8_t y, uint8_t w, uint8_t h, cons
     from a source tile map. Useful for scrolling implementations of maps
     larger than 32 x 32 tiles.
 
-    @param x      X Start position in Background Map tile coordinates. Range 0 - 31
-    @param y      Y Start position in Background Map tile coordinates. Range 0 - 31
+    @param x      X Start position in both the Source Tile Map and hardware Background Map tile coordinates. Range 0 - 255
+    @param y      Y Start position in both the Source Tile Map and hardware Background Map tile coordinates. Range 0 - 255
     @param w      Width of area to set in tiles. Range 1 - 255
     @param h      Height of area to set in tiles. Range 1 - 255
     @param map    Pointer to source tile map data
@@ -955,6 +1088,23 @@ inline void set_bkg_based_tiles(uint8_t x, uint8_t y, uint8_t w, uint8_t h, cons
     Entries are copied from __map__ to the Background Tile Map starting at
     __x__, __y__ writing across for __w__ tiles and down for __h__ tiles,
     using __map_w__ as the rowstride for the source tile map.
+
+    The __x__ and __y__ parameters are in Source Tile Map tile
+    coordinates. The location tiles will be written to on the
+    hardware Background Map is derived from those, but only uses
+    the lower 5 bits of each axis, for range of 0-31 (they are
+    bit-masked: `x & 0x1F` and `y & 0x1F`). As a result the two
+    coordinate systems are aligned together.
+
+    In order to transfer tile map data in a way where the
+    coordinate systems are not aligned, an offset from the
+    Source Tile Map pointer can be passed in:
+    `(map_ptr + x + (y * map_width))`.
+
+    For example, if you want the tile id at `1,2` from the source map to
+    show up at `0,0` on the hardware Background Map (instead of at `1,2`)
+    then modify the pointer address that is passed in:
+    `map_ptr + 1 + (2 * map_width)`
 
     Use this instead of @ref set_bkg_tiles when the source map is wider than
     32 tiles or when writing a width that does not match the source map width.
@@ -976,33 +1126,23 @@ void set_bkg_submap(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *m
 extern uint8_t _submap_tile_offset;
 
 /** Sets a rectangular area of the Background Tile Map using a sub-region
-    from a source tile map and base_tile tile ID offset. Useful for scrolling 
-    implementations of maps larger than 32 x 32 tiles.
+    from a source tile map. The offset value in __base_tile__ is added to
+    the tile ID for each map entry.
 
-    @param x      X Start position in Background Map tile coordinates. Range 0 - 31
-    @param y      Y Start position in Background Map tile coordinates. Range 0 - 31
-    @param w      Width of area to set in tiles. Range 1 - 255
-    @param h      Height of area to set in tiles. Range 1 - 255
-    @param map    Pointer to source tile map data
-    @param map_w  Width of source tile map in tiles. Range 1 - 255
-    @param base_tile Offset each tile ID of submap by this value
+    @param x         X Start position in both the Source Tile Map and hardware Background Map tile coordinates. Range 0 - 255
+    @param y         Y Start position in both the Source Tile Map and hardware Background Map tile coordinates. Range 0 - 255
+    @param w         Width of area to set in tiles. Range 1 - 255
+    @param h         Height of area to set in tiles. Range 1 - 255
+    @param map       Pointer to source tile map data
+    @param map_w     Width of source tile map in tiles. Range 1 - 255
+    @param base_tile Offset each tile ID entry of the source map by this value. Range 1 - 255
 
-    Entries are copied from __map__ to the Background Tile Map starting at
-    __x__, __y__ writing across for __w__ tiles and down for __h__ tiles,
-    using __map_w__ as the rowstride for the source tile map.
+    This is identical to @ref set_bkg_submap() except that it
+    adds the __base_tile__ parameter for when a tile map's tiles don't
+    start at index zero. (For example, the tiles used by the map
+    range from 100 -> 120 in VRAM instead of 0 -> 20).
 
-    Use this instead of @ref set_bkg_tiles when the source map is wider than
-    32 tiles or when writing a width that does not match the source map width.
-
-    One byte per source tile map entry.
-
-    Writes that exceed coordinate 31 on the x or y axis will wrap around to
-    the Left and Top edges.
-
-    See @ref set_bkg_tiles for setting CGB attribute maps with @ref VBK_REG.
-
-    @see SHOW_BKG
-    @see set_bkg_data, set_bkg_tiles, set_win_submap, set_tiles
+    @see set_bkg_submap for more details
 */
 inline void set_bkg_based_submap(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *map, uint8_t map_w, uint8_t base_tile) {
     _submap_tile_offset = base_tile;
@@ -1114,7 +1254,14 @@ void set_win_data(uint8_t first_tile, uint8_t nb_tiles, const uint8_t *data) OLD
     This is the same as @ref set_bkg_1bpp_data, since the Window Layer and
     Background Layer share the same Tile pattern data.
 
-    @see set_bkg_data, set_bkg_1bpp_data, set_win_data
+    For a given bit that represent a pixel:
+    \li 0 will be expanded into the Background color
+    \li 1 will be expanded into the Foreground color
+
+    See @ref set_1bpp_colors for details about setting the Foreground and Background colors.
+
+    @see set_bkg_data, set_bkg_1bpp_data, set_win_data, set_1bpp_colors
+    @see set_bkg_1bpp_data, set_sprite_1bpp_data
 */
 void set_win_1bpp_data(uint8_t first_tile, uint8_t nb_tiles, const uint8_t *data) OLDCALL PRESERVES_REGS(b, c);
 
@@ -1157,8 +1304,8 @@ void get_win_data(uint8_t first_tile, uint8_t nb_tiles, uint8_t *data) OLDCALL P
     Note: Patterns 128-255 overlap with patterns 128-255 of the sprite Tile Pattern table.
 
     GBC only: @ref VBK_REG determines whether Tile Numbers or Tile Attributes get set.
-    \li VBK_REG=0 Tile Numbers are written
-    \li VBK_REG=1 Tile Attributes are written
+    \li VBK_REG = @ref VBK_TILES Tile Numbers are written
+    \li VBK_REG = @ref VBK_ATTRIBUTES Tile Attributes are written
 
     For more details about GBC Tile Attributes see @ref set_bkg_tiles.
 
@@ -1167,6 +1314,24 @@ void get_win_data(uint8_t first_tile, uint8_t nb_tiles, uint8_t *data) OLDCALL P
 void set_win_tiles(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *tiles) OLDCALL PRESERVES_REGS(b, c);
 
 
+/** Sets a rectangular region of the Window Tile Map.
+    The offset value in __base_tile__ is added to
+    the tile ID for each map entry.
+
+    @param x      X Start position in Window Map tile coordinates. Range 0 - 31
+    @param y      Y Start position in Window Map tile coordinates. Range 0 - 31
+    @param w      Width of area to set in tiles. Range 1 - 32
+    @param h      Height of area to set in tiles. Range 1 - 32
+    @param tiles  Pointer to source tile map data
+    @param base_tile Offset each tile ID entry of the source map by this value. Range 1 - 255
+
+    This is identical to @ref set_win_tiles() except that it
+    adds the __base_tile__ parameter for when a tile map's tiles don't
+    start at index zero. (For example, the tiles used by the map
+    range from 100 -> 120 in VRAM instead of 0 -> 20).
+
+    @see set_win_tiles for more details
+*/
 inline void set_win_based_tiles(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *tiles, uint8_t base_tile) {
     _map_tile_offset = base_tile;
     set_win_tiles(x, y, w, h, tiles);
@@ -1176,8 +1341,8 @@ inline void set_win_based_tiles(uint8_t x, uint8_t y, uint8_t w, uint8_t h, cons
 /** Sets a rectangular area of the Window Tile Map using a sub-region
     from a source tile map.
 
-    @param x      X Start position in Window Map tile coordinates. Range 0 - 31
-    @param y      Y Start position in Wimdpw Map tile coordinates. Range 0 - 31
+    @param x      X Start position in both the Source Tile Map and hardware Window Map tile coordinates. Range 0 - 255
+    @param y      Y Start position in both the Source Tile Map and hardware Window Map tile coordinates. Range 0 - 255
     @param w      Width of area to set in tiles. Range 1 - 255
     @param h      Height of area to set in tiles. Range 1 - 255
     @param map    Pointer to source tile map data
@@ -1187,6 +1352,23 @@ inline void set_win_based_tiles(uint8_t x, uint8_t y, uint8_t w, uint8_t h, cons
     __x__, __y__ writing across for __w__ tiles and down for __h__ tiles,
     using __map_w__ as the rowstride for the source tile map.
 
+    The __x__ and __y__ parameters are in Source Tile Map tile
+    coordinates. The location tiles will be written to on the
+    hardware Background Map is derived from those, but only uses
+    the lower 5 bits of each axis, for range of 0-31 (they are
+    bit-masked: `x & 0x1F` and `y & 0x1F`). As a result the two
+    coordinate systems are aligned together.
+
+    In order to transfer tile map data in a way where the
+    coordinate systems are not aligned, an offset from the
+    Source Tile Map pointer can be passed in:
+    `(map_ptr + x + (y * map_width))`.
+
+    For example, if you want the tile id at `1,2` from the source map to
+    show up at `0,0` on the hardware Background Map (instead of at `1,2`)
+    then modify the pointer address that is passed in:
+    `map_ptr + 1 + (2 * map_width)`
+
     Use this instead of @ref set_win_tiles when the source map is wider than
     32 tiles or when writing a width that does not match the source map width.
 
@@ -1196,8 +1378,8 @@ inline void set_win_based_tiles(uint8_t x, uint8_t y, uint8_t w, uint8_t h, cons
     the Left and Top edges.
 
     GBC only: @ref VBK_REG determines whether Tile Numbers or Tile Attributes get set.
-    \li VBK_REG=0 Tile Numbers are written
-    \li VBK_REG=1 Tile Attributes are written
+    \li VBK_REG = @ref VBK_TILES Tile Numbers are written
+    \li VBK_REG = @ref VBK_ATTRIBUTES Tile Attributes are written
 
     See @ref set_bkg_tiles for details about CGB attribute maps with @ref VBK_REG.
 
@@ -1207,35 +1389,23 @@ void set_win_submap(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *m
 
 
 /** Sets a rectangular area of the Window Tile Map using a sub-region
-    from a source tile map and base_tile tile ID offset
+    from a source tile map. The offset value in __base_tile__ is added
+    to the tile ID for each map entry.
 
-    @param x         X Start position in Window Map tile coordinates. Range 0 - 31
-    @param y         Y Start position in Wimdpw Map tile coordinates. Range 0 - 31
+    @param x         X Start position in both the Source Tile Map and hardware Window Map tile coordinates. Range 0 - 255
+    @param y         Y Start position in both the Source Tile Map and hardware Window Map tile coordinates. Range 0 - 255
     @param w         Width of area to set in tiles. Range 1 - 255
     @param h         Height of area to set in tiles. Range 1 - 255
     @param map       Pointer to source tile map data
     @param map_w     Width of source tile map in tiles. Range 1 - 255
-    @param base_tile Offset each tile ID of submap by this value
+    @param base_tile Offset each tile ID entry of the source map by this value. Range 1 - 255
 
-    Entries are copied from __map__ to the Window Tile Map starting at
-    __x__, __y__ writing across for __w__ tiles and down for __h__ tiles,
-    using __map_w__ as the rowstride for the source tile map.
+    This is identical to @ref set_win_submap() except that it
+    adds the __base_tile__ parameter for when a tile map's tiles don't
+    start at index zero. (For example, the tiles used by the map
+    range from 100 -> 120 in VRAM instead of 0 -> 20).
 
-    Use this instead of @ref set_win_tiles when the source map is wider than
-    32 tiles or when writing a width that does not match the source map width.
-
-    One byte per source tile map entry.
-
-    Writes that exceed coordinate 31 on the x or y axis will wrap around to
-    the Left and Top edges.
-
-    GBC only: @ref VBK_REG determines whether Tile Numbers or Tile Attributes get set.
-    \li VBK_REG=0 Tile Numbers are written
-    \li VBK_REG=1 Tile Attributes are written
-
-    See @ref set_bkg_tiles for details about CGB attribute maps with @ref VBK_REG.
-
-    @see SHOW_WIN, HIDE_WIN, set_win_tiles, set_bkg_submap, set_bkg_tiles, set_bkg_data, set_tiles
+    @see set_win_submap for more details
 **/
 inline void set_win_based_submap(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *map, uint8_t map_w, uint8_t base_tile) {
     _submap_tile_offset = base_tile;
@@ -1326,8 +1496,8 @@ inline void scroll_win(int8_t x, int8_t y) {
     Note: Sprite Tiles 128-255 share the same memory region as Background Tiles 128-255.
 
     GBC only: @ref VBK_REG determines which bank of Background tile patterns are written to.
-    \li VBK_REG=0 indicates the first bank
-    \li VBK_REG=1 indicates the second
+    \li VBK_REG = @ref VBK_BANK_0 indicates the first bank
+    \li VBK_REG = @ref VBK_BANK_1 indicates the second
 */
 void set_sprite_data(uint8_t first_tile, uint8_t nb_tiles, const uint8_t *data) OLDCALL PRESERVES_REGS(b, c);
 #define set_sprite_2bpp_data set_sprite_data
@@ -1342,10 +1512,13 @@ void set_sprite_data(uint8_t first_tile, uint8_t nb_tiles, const uint8_t *data) 
     which gets expanded into 2 bits-per-pixel.
 
     For a given bit that represent a pixel:
-    \li 0 will be expanded into color 0
-    \li 1 will be expanded into color 3
+    \li 0 will be expanded into the Background color
+    \li 1 will be expanded into the Foreground color
+
+    See @ref set_1bpp_colors for details about setting the Foreground and Background colors.
 
     @see SHOW_SPRITES, HIDE_SPRITES, set_sprite_tile
+    @see set_bkg_1bpp_data, set_win_1bpp_data
 */
 void set_sprite_1bpp_data(uint8_t first_tile, uint8_t nb_tiles, const uint8_t *data) OLDCALL PRESERVES_REGS(b, c);
 
@@ -1523,6 +1696,8 @@ inline void scroll_sprite(uint8_t nb, int8_t x, int8_t y) {
 /** Hides sprite number __nb__ by moving it to zero position by Y.
 
     @param nb  Sprite number, range 0 - 39
+
+    @see hide_sprites_range, HIDE_SPRITES
  */
 inline void hide_sprite(uint8_t nb) {
     shadow_OAM[nb].y = 0;
@@ -1540,8 +1715,8 @@ inline void hide_sprite(uint8_t nb) {
     Copies __len__ bytes from a buffer at __data__ to VRAM starting at __vram_addr__.
 
     GBC only: @ref VBK_REG determines which bank of Background tile patterns are written to.
-    \li VBK_REG=0 indicates the first bank
-    \li VBK_REG=1 indicates the second
+    \li VBK_REG = @ref VBK_BANK_0 indicates the first bank
+    \li VBK_REG = @ref VBK_BANK_1 indicates the second
 
     @see set_bkg_data, set_win_data, set_bkg_tiles, set_win_tiles, set_tile_data, set_tiles
 */
@@ -1558,8 +1733,8 @@ void set_data(uint8_t *vram_addr, const uint8_t *data, uint16_t len) OLDCALL PRE
     Copies __len__ bytes from VRAM starting at __vram_addr__ into a buffer at __data__.
 
     GBC only: @ref VBK_REG determines which bank of Background tile patterns are written to.
-    \li VBK_REG=0 indicates the first bank
-    \li VBK_REG=1 indicates the second
+    \li VBK_REG = @ref VBK_BANK_0 indicates the first bank
+    \li VBK_REG = @ref VBK_BANK_1 indicates the second
 
     @see get_bkg_data, get_win_data, get_bkg_tiles, get_win_tiles, get_tiles
 */
@@ -1574,8 +1749,8 @@ void get_data(uint8_t *data, uint8_t *vram_addr, uint16_t len) OLDCALL PRESERVES
     Copies __len__ bytes from or to VRAM starting at __sour__ into a buffer or to VRAM at __dest__.
 
     GBC only: @ref VBK_REG determines which bank of Background tile patterns are written to.
-    \li VBK_REG=0 indicates the first bank
-    \li VBK_REG=1 indicates the second
+    \li VBK_REG = @ref VBK_BANK_0 indicates the first bank
+    \li VBK_REG = @ref VBK_BANK_1 indicates the second
 */
 void vmemcpy(uint8_t *dest, uint8_t *sour, uint16_t len) OLDCALL PRESERVES_REGS(b, c);
 
@@ -1599,12 +1774,12 @@ void vmemcpy(uint8_t *dest, uint8_t *sour, uint16_t len) OLDCALL PRESERVES_REGS(
     There are two 32x32 Tile Maps in VRAM at addresses 9800h-9BFFh and 9C00h-9FFFh.
 
     GBC only: @ref VBK_REG determines whether Tile Numbers or Tile Attributes get set.
-    \li VBK_REG=0 Tile Numbers are written
-    \li VBK_REG=1 Tile Attributes are written
+    \li VBK_REG = @ref VBK_TILES Tile Numbers are written
+    \li VBK_REG = @ref VBK_ATTRIBUTES Tile Attributes are written
 
     @see set_bkg_tiles, set_win_tiles
 */
-void set_tiles(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t *vram_addr, const uint8_t *tiles) OLDCALL PRESERVES_REGS(b, c);
+void set_tiles(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t *vram_addr, const uint8_t *tiles) OLDCALL;
 
 /** Sets VRAM Tile Pattern data starting from given base address
     without taking into account the state of LCDC bit 4.
@@ -1639,7 +1814,7 @@ void set_tile_data(uint8_t first_tile, uint8_t nb_tiles, const uint8_t *data, ui
 
     @see get_bkg_tiles, get_win_tiles
 */
-void get_tiles(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t *vram_addr, uint8_t *tiles) OLDCALL PRESERVES_REGS(b, c);
+void get_tiles(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t *vram_addr, uint8_t *tiles) OLDCALL;
 
 
 /** Sets VRAM Tile Pattern data in the native format

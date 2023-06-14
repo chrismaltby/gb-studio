@@ -49,6 +49,15 @@ uint8_t sgb_check() OLDCALL PRESERVES_REGS(b, c);
     See the `sgb_border` GBDK example project for a
     demo of how to use these the sgb functions.
 
+    When using the SGB with a PAL SNES, a delay should be added
+    just after program startup such as:
+
+    \code{.c}
+    // Wait 4 frames
+    // For PAL SNES this delay is required on startup
+    for (uint8_t i = 4; i != 0; i--) wait_vbl_done();
+    \endcode
+
     @see sgb_check()
 */
 void sgb_transfer(uint8_t * packet) OLDCALL PRESERVES_REGS(b, c);

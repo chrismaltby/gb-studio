@@ -1,4 +1,4 @@
-CC	= ../../../bin/lcc -mgbz80:ap -Wl-j -Wm-yS
+CC	= ../../../bin/lcc -msm83:ap -Wl-j -Wm-yS
 
 BINS	= text_scroller.pocket
 

@@ -17,7 +17,7 @@
 
 UBYTE last_hit_trigger = MAX_TRIGGERS;
 
-void pointnclick_init() BANKED {
+void pointnclick_init(void) BANKED {
     camera_offset_x = 0;
     camera_offset_y = 0;
     camera_deadzone_x = POINT_N_CLICK_CAMERA_DEADZONE;
@@ -26,7 +26,7 @@ void pointnclick_init() BANKED {
     actor_set_anim(&PLAYER, ANIM_CURSOR);
 }
 
-void pointnclick_update() BANKED {
+void pointnclick_update(void) BANKED {
     UBYTE angle, hit_trigger, is_hover_trigger, is_hover_actor;
     actor_t *hit_actor;
 

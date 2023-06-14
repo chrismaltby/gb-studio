@@ -9,7 +9,7 @@ GBDK_HOME = ../../../
 
 LCC = $(GBDK_HOME)bin/lcc 
 
-LCCFLAGS = -mgbz80:ap
+LCCFLAGS = -msm83:ap
 # You can set flags for LCC here
 # For example, you can uncomment the line below to turn on debug output
 # LCCFLAGS += -debug
@@ -43,7 +43,7 @@ $(OBJDIR)/%.o:	$(RESDIR)/%.c
 $(OBJDIR)/%.o:	$(SRCDIR)/%.s
 	$(LCC) $(LCCFLAGS) -c -o $@ $<
 
-# If needed, compile .c files i n"src/" to .s assembly files
+# If needed, compile .c files in "src/" to .s assembly files
 # (not required if .c is compiled directly to .o)
 $(OBJDIR)/%.s:	$(SRCDIR)/%.c
 	$(LCC) $(LCCFLAGS) -S -o $@ $<

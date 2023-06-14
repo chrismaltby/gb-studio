@@ -106,9 +106,11 @@ static uint8_t __move_metasprite_hvflip(uint8_t id, uint8_t x, uint8_t y) OLDCAL
 static void __hide_metasprite(uint8_t id) OLDCALL;
 
 /**
- * Hides all hardware sprites in range from <= X < to
- * @param from start OAM index
- * @param to finish OAM index
+    Hides all hardware sprites in range from <= X < to
+    @param from start OAM index
+    @param to finish OAM index
+
+    @see hide_sprite
  */
 void hide_sprites_range(UINT8 from, UINT8 to) OLDCALL PRESERVES_REGS(b, c);
 

@@ -503,6 +503,10 @@ typedef uint16_t palette_color_t;
 #endif
 
 void set_default_palette();
+inline void cgb_compatibility() {
+    set_default_palette();
+}
+
 inline void cpu_fast() {}
 
 void set_palette_entry(uint8_t palette, uint8_t entry, uint16_t rgb_data) Z88DK_CALLEE PRESERVES_REGS(iyh, iyl);

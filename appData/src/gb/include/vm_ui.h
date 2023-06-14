@@ -1,7 +1,8 @@
 #ifndef _VM_UI_H_INCLUDE
 #define _VM_UI_H_INCLUDE
 
-#include <gb/gb.h>
+#include <gbdk/platform.h>
+
 #include "vm.h"
 
 #include "gbs_types.h"
