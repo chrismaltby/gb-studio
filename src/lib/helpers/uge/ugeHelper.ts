@@ -618,11 +618,10 @@ export const exportToC = (song: Song, trackName: string): string => {
   };
 
   const formatSubPatternCell = function (cell: SubPatternCell) {
-    const note = cell.note !== null ? noteConsts[cell.note] : "___";
-    let jump = 0;
+    const note = cell.note ?? "___";
+    const jump = cell.jump ?? 0;
     let effect_code = 0;
     let effect_param = 0;
-    if (cell.jump !== null) jump = cell.jump + 1;
     if (cell.effectcode !== null) {
       effect_code = cell.effectcode;
       effect_param = cell.effectparam || 0;
