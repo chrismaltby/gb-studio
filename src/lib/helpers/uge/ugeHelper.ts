@@ -633,59 +633,62 @@ export const exportToC = (song: Song, trackName: string): string => {
   };
 
   const formatDutyInstrument = function (instr: DutyInstrument) {
-    const nr10 =
+    const sweep =
       (instr.frequency_sweep_time << 4) |
       (instr.frequency_sweep_shift < 0 ? 0x08 : 0x00) |
       Math.abs(instr.frequency_sweep_shift);
-    const nr11 =
+    const len_duty =
       (instr.duty_cycle << 6) |
       ((instr.length !== null ? 64 - instr.length : 0) & 0x3f);
-    let nr12 =
+    let envelope =
       (instr.initial_volume << 4) |
       (instr.volume_sweep_change > 0 ? 0x08 : 0x00);
     if (instr.volume_sweep_change !== 0) {
-      nr12 |= 8 - Math.abs(instr.volume_sweep_change);
+      envelope |= 8 - Math.abs(instr.volume_sweep_change);
     }
     let subpatternRef: 0 | string = 0;
     if (instr.subpattern_enabled) {
       subpatternRef = `duty_${instr.index}_subpattern`;
     }
-    const nr14 = 0x80 | (instr.length !== null ? 0x40 : 0);
-    return `{ ${decHex(nr10)}, ${decHex(nr11)}, ${decHex(
-      nr12
-    )}, ${subpatternRef}, ${decHex(nr14)} }`;
+    const highmask = 0x80 | (instr.length !== null ? 0x40 : 0);
+
+    return `{ ${decHex(sweep)}, ${decHex(len_duty)}, ${decHex(
+      envelope
+    )}, ${subpatternRef}, ${decHex(highmask)} }`;
   };
 
   const formatWaveInstrument = function (instr: WaveInstrument) {
-    const nr31 = (instr.length !== null ? instr.length : 0) & 0xff;
-    const nr32 = instr.volume << 5;
-    const wave_nr = instr.wave_index;
-    const nr34 = 0x80 | (instr.length !== null ? 0x40 : 0);
+    const length = (instr.length !== null ? instr.length : 0) & 0xff;
+    const volume = instr.volume << 5;
+    const waveform = instr.wave_index;
     let subpatternRef: 0 | string = 0;
     if (instr.subpattern_enabled) {
       subpatternRef = `wave_${instr.index}_subpattern`;
     }
-    return `{ ${decHex(nr31)}, ${decHex(nr32)}, ${decHex(
-      wave_nr
-    )}, ${subpatternRef}, ${decHex(nr34)} }`;
+    const highmask = 0x80 | (instr.length !== null ? 0x40 : 0);
+
+    return `{ ${decHex(length)}, ${decHex(volume)}, ${decHex(
+      waveform
+    )}, ${subpatternRef}, ${decHex(highmask)} }`;
   };
 
   const formatNoiseInstrument = function (instr: NoiseInstrument) {
-    let param0 =
+    let envelope =
       (instr.initial_volume << 4) |
       (instr.volume_sweep_change > 0 ? 0x08 : 0x00);
     if (instr.volume_sweep_change !== 0)
-      param0 |= 8 - Math.abs(instr.volume_sweep_change);
-    let param1 = (instr.length !== null ? 64 - instr.length : 0) & 0x3f;
-    if (instr.length !== null) param1 |= 0x40;
-    if (instr.bit_count === 7) param1 |= 0x80;
-
+      envelope |= 8 - Math.abs(instr.volume_sweep_change);
     let subpatternRef: 0 | string = 0;
     if (instr.subpattern_enabled) {
       subpatternRef = `noise_${instr.index}_subpattern`;
     }
+    let highmask = (instr.length !== null ? 64 - instr.length : 0) & 0x3f;
+    if (instr.length !== null) highmask |= 0x40;
+    if (instr.bit_count === 7) highmask |= 0x80;
 
-    return `{ ${decHex(param0)}, ${subpatternRef}, ${decHex(param1)}, 0, 0 }`;
+    return `{ ${decHex(envelope)}, ${subpatternRef}, ${decHex(
+      highmask
+    )}, 0, 0 }`;
   };
 
   const formatWave = function (wave: Uint8Array) {
