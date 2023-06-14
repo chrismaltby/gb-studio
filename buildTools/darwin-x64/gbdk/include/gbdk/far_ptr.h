@@ -77,7 +77,7 @@ union __far_ptr {
         uint16_t seg;
     } segofs;
     struct {
-        void (*fn)();
+        void (*fn)(void);
         uint16_t seg;
     } segfn;
 };
@@ -86,7 +86,7 @@ extern volatile FAR_PTR __call_banked_ptr;
 extern volatile void * __call_banked_addr;
 extern volatile uint8_t __call_banked_bank;
 
-void __call__banked();
+void __call__banked(void);
 
 /** Obtain a far pointer at runtime
     @param ofs    Memory address within the given Segment (Bank)
@@ -94,6 +94,6 @@ void __call__banked();
 
     @returns A far pointer (type @ref FAR_PTR)
 */
-uint32_t to_far_ptr(void* ofs, uint16_t seg) OLDCALL;
+uint32_t to_far_ptr(void* ofs, uint16_t seg);
 
 #endif

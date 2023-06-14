@@ -2,7 +2,7 @@
 
 #include "vm_gameboy.h"
 
-#include <gb/metasprites.h>
+#include <gbdk/metasprites.h>
 
 #include "system.h"
 #include "vm.h"

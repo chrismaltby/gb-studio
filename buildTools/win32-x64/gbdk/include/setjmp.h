@@ -55,7 +55,7 @@
 typedef unsigned char jmp_buf[6]; /* 2 for the stack pointer, 2 for the return address, 2 for the frame pointer. */
 #elif defined (__SDCC_ds390) || defined (__SDCC_stm8) && defined (__SDCC_MODEL_LARGE)
 typedef unsigned char jmp_buf[5]; /* 2 for the stack pointer, 3 for the return address. */
-#elif defined (__SDCC_stm8) || defined (__SDCC_gbz80) || defined (__SDCC_hc08) || defined (__SDCC_s08)
+#elif defined (__SDCC_stm8) || defined (__SDCC_sm83) || defined (__SDCC_hc08) || defined (__SDCC_s08)
 typedef unsigned char jmp_buf[4]; /* 2 for the stack pointer, 2 for the return address. */
 #elif defined (__SDCC_pdk13) || defined (__SDCC_pdk14) || defined (__SDCC_pdk15)
 typedef unsigned char jmp_buf[3]; /* 1 for the stack pointer, 2 for the return address. */

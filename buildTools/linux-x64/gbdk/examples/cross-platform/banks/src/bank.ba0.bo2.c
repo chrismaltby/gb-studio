@@ -4,7 +4,7 @@
 
 int var_2;  /* In external RAM bank 0 */
 
-void bank_2() BANKED /* In ROM bank 2 */
+void bank_2(void) BANKED /* In ROM bank 2 */
 {
   puts("I'm in ROM bank 2");
 }

@@ -16,9 +16,14 @@
     @param sour   Pointer to source gb-compressed data
     @param dest   Pointer to destination buffer/address
 
-    @see gb_decompress_bkg_data, gb_decompress_win_data, gb_decompress_sprite_data
+    Will decompress __all__ of it's data to destination without
+    stopping until the end of compressed data is reached. It is
+    not possible to set a limit, so ensure the destination buffer
+    has sufficient space to avoid an overflow.
+
+    @see gb_decompress_bkg_data, gb_decompress_win_data, gb_decompress_sprite_data, rle_decompress
  */
-uint16_t gb_decompress(const uint8_t * sour, uint8_t * dest) OLDCALL PRESERVES_REGS(b, c);
+uint16_t gb_decompress(const uint8_t * sour, uint8_t * dest);
 
 
 /** gb-decompress background tiles into VRAM
@@ -28,9 +33,14 @@ uint16_t gb_decompress(const uint8_t * sour, uint8_t * dest) OLDCALL PRESERVES_R
 
     Note: This function avoids writes during modes 2 & 3
 
+    Will decompress __all__ of it's data to destination without
+    stopping until the end of compressed data is reached. It is
+    not possible to set a limit, so ensure the destination buffer
+    has sufficient space to avoid an overflow.
+
     @see gb_decompress_bkg_data, gb_decompress_win_data, gb_decompress_sprite_data
 */
-void gb_decompress_bkg_data(uint8_t first_tile, const uint8_t * sour) OLDCALL PRESERVES_REGS(b, c);
+void gb_decompress_bkg_data(uint8_t first_tile, const uint8_t * sour);
 
 
 /** gb-decompress window tiles into VRAM
@@ -43,9 +53,14 @@ void gb_decompress_bkg_data(uint8_t first_tile, const uint8_t * sour) OLDCALL PR
 
     Note: This function avoids writes during modes 2 & 3
 
+    Will decompress __all__ of it's data to destination without
+    stopping until the end of compressed data is reached. It is
+    not possible to set a limit, so ensure the destination buffer
+    has sufficient space to avoid an overflow.
+
     @see gb_decompress, gb_decompress_bkg_data, gb_decompress_sprite_data
  */
-void gb_decompress_win_data(uint8_t first_tile, const uint8_t * sour) OLDCALL PRESERVES_REGS(b, c);
+void gb_decompress_win_data(uint8_t first_tile, const uint8_t * sour);
 
 
 /** gb-decompress sprite tiles into VRAM
@@ -55,8 +70,13 @@ void gb_decompress_win_data(uint8_t first_tile, const uint8_t * sour) OLDCALL PR
 
     Note: This function avoids writes during modes 2 & 3
 
+    Will decompress __all__ of it's data to destination without
+    stopping until the end of compressed data is reached. It is
+    not possible to set a limit, so ensure the destination buffer
+    has sufficient space to avoid an overflow.
+
     @see gb_decompress, gb_decompress_bkg_data, gb_decompress_win_data
  */
-void gb_decompress_sprite_data(uint8_t first_tile, const uint8_t * sour) OLDCALL PRESERVES_REGS(b, c);
+void gb_decompress_sprite_data(uint8_t first_tile, const uint8_t * sour);
 
 #endif

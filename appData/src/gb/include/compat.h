@@ -1,7 +1,7 @@
 #ifndef _COMPAT_H_INCLUDE
 #define _COMPAT_H_INCLUDE
 
-#include <gb/gb.h>
+#include <gbdk/platform.h>
 
 #ifndef OLDCALL
 #if __SDCC_REVISION >= 12608

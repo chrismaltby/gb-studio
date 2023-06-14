@@ -1,3 +1,4 @@
+#include <gbdk/platform.h>
 #include <string.h>
 
 #include "compat.h"
@@ -98,25 +99,19 @@ __asm
 __endasm;
 }
 
-void ReadBankedFarPtr(far_ptr_t * dest, const unsigned char *ptr, UBYTE bank) OLDCALL NONBANKED PRESERVES_REGS(b, c) NAKED {
+void ReadBankedFarPtr(far_ptr_t * dest, const unsigned char *ptr, UBYTE bank) NONBANKED NAKED {
     dest; ptr; bank;
 __asm
     ldh a, (__current_bank)
     ld  (#__save), a
 
-    ldhl  sp, #6
+    ldhl sp, #2
     ld  a, (hl)
     ldh	(__current_bank), a
     ld  (_rROMB0), a
 
-    ldhl  sp, #2
-    ld  a, (hl+)
-    ld  e, a
-    ld  a, (hl+)
-    ld  d, a
-    ld  a, (hl+)
-    ld  h, (hl)
-    ld  l, a
+    ld h, b
+    ld l, c
 
     .rept 2
       ld  a, (hl+)
@@ -129,27 +124,29 @@ __asm
     ld  a, (#__save)
     ldh (__current_bank), a
     ld  (_rROMB0), a
-    ret
+
+    pop hl
+    inc sp
+    jp  (hl)
 __endasm;
 }
 
-UWORD ReadBankedUWORD(const unsigned char *ptr, UBYTE bank) OLDCALL NONBANKED PRESERVES_REGS(b, c) NAKED {
+UWORD ReadBankedUWORD(const unsigned char *ptr, UBYTE bank) NONBANKED NAKED {
     ptr; bank;
 __asm
+    ld  c, a
     ldh a, (__current_bank)
     ld  (#__save), a
 
-    ldhl  sp, #4
-    ld  a, (hl-)
+    ld  a, c
     ldh	(__current_bank), a
     ld  (_rROMB0), a
 
-    ld  a, (hl-)
-    ld  l, (hl)
-    ld  h, a
-    ld  a, (hl+)
-    ld  e, a
-    ld  d, (hl)
+    ld h, d
+    ld l, e
+    ld a, (hl+)
+    ld c, a
+    ld b, (hl)
 
     ld  a, (#__save)
     ldh (__current_bank), a
@@ -158,50 +155,18 @@ __asm
 __endasm;
 }
 
-void MemcpyBanked(void* to, const void* from, size_t n, UBYTE bank) OLDCALL NONBANKED NAKED {
-    to; from; n; bank;
-__asm
-    ldh a, (__current_bank)
-    ld  (#__save), a
-
-    ldhl  sp, #8
-    ld  a, (hl)
-    ldh	(__current_bank), a
-    ld  (_rROMB0), a
-
-    pop bc
-    call  _memcpy           ; preserves BC
-
-    ld  a, (#__save)
-    ldh (__current_bank), a
-    ld  (_rROMB0), a
-    ld  h, b
-    ld  l, c
-    jp  (hl)
-__endasm;
+void MemcpyBanked(void* to, const void* from, size_t n, UBYTE bank) NONBANKED {
+    _save = CURRENT_BANK;
+    SWITCH_ROM(bank);
+    memcpy(to, from, n);
+    SWITCH_ROM(_save);
 }
 
-void MemcpyVRAMBanked(void* to, const void* from, size_t n, UBYTE bank) OLDCALL NONBANKED NAKED {
-    to; from; n; bank;
-__asm
-    ldh a, (__current_bank)
-    ld  (#__save), a
-
-    ldhl  sp, #8
-    ld  a, (hl)
-    ldh	(__current_bank), a
-    ld  (_rROMB0), a
-
-    pop bc
-    call  _set_data         ; preserves BC
-
-    ld  a, (#__save)
-    ldh (__current_bank), a
-    ld  (_rROMB0), a
-    ld  h, b
-    ld  l, c
-    jp  (hl)
-__endasm;
+void MemcpyVRAMBanked(void* to, const void* from, size_t n, UBYTE bank) NONBANKED {
+    _save = CURRENT_BANK;
+    SWITCH_ROM(bank);
+    set_data(to, from, n);
+    SWITCH_ROM(_save);
 }
 
 UBYTE IndexOfFarPtr(const far_ptr_t * list, UBYTE bank, UBYTE count, const far_ptr_t * item) NONBANKED {

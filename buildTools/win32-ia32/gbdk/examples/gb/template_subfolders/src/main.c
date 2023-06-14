@@ -4,7 +4,7 @@
 #include "../res/dungeon_tiles.h"
 
 
-void init_gfx() {
+void init_gfx(void) {
     // Load Background tiles and then map
     set_bkg_data(0, 79u, dungeon_tiles);
     set_bkg_tiles(0, 0, 32u, 32u, dungeon_mapPLN0);
@@ -26,6 +26,6 @@ void main(void)
 
 
 		// Done processing, yield CPU and wait for start of next frame
-        wait_vbl_done();
+        vsync();
     }
 }
