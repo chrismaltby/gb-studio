@@ -205,4 +205,4 @@ workflows:
                 - main
                 - v3alpha
                 - v2beta
-                - uge-tracker
+                - uge_v6
