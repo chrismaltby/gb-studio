@@ -154,7 +154,7 @@ workflows:
                 - main
                 - v3alpha
                 - v2beta
-                - uge-tracker
+                - uge_v6
       - "make:win32":
           requires:
             - checkout
@@ -166,7 +166,7 @@ workflows:
                 - main
                 - v3alpha
                 - v2beta
-                - uge-tracker
+                - uge_v6
       - "make:win64":
           requires:
             - checkout
@@ -178,7 +178,7 @@ workflows:
                 - main
                 - v3alpha
                 - v2beta
-                - uge-tracker
+                - uge_v6
       - "make:linux":
           requires:
             - checkout
@@ -190,7 +190,7 @@ workflows:
                 - main
                 - v3alpha
                 - v2beta
-                - uge-tracker
+                - uge_v6
       - "upload_artifacts":
           requires:
             - "make:mac"
