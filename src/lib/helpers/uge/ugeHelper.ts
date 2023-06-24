@@ -16,32 +16,40 @@ interface InstrumentMap {
 }
 
 export const loadUGESong = (data: ArrayBuffer): Song | null => {
+  const uint8data = new Uint8Array(data);
+
+  const readUint32 = () => {
+    return new Uint32Array(data.slice(offset, (offset += 4)))[0];
+  };
+
+  const readUint8 = () => {
+    return uint8data[offset++];
+  };
+
+  const td = new TextDecoder();
+  const readText = () => {
+    const text = td.decode(
+      data.slice(offset + 1, offset + 1 + uint8data[offset])
+    );
+    offset += 256;
+    return text;
+  };
+
   console.log(data);
   const song = new Song();
 
   // TODO: Sanity checks on data.
   // TODO: Use `DataView` object instead of loads of Uint32Arrays
   let offset = 0;
-  const version = new Uint32Array(data.slice(offset, offset + 4))[0];
+  const version = readUint32();
   console.log(`! uge version: ${version}`);
   if (version < 0 || version > 6) {
     throw new Error(`UGE version ${version} is not supported by GB Studio`);
   }
 
-  const uint8data = new Uint8Array(data);
-  offset += 4;
-
-  const td = new TextDecoder();
-  song.name = td.decode(data.slice(offset + 1, offset + 1 + uint8data[offset]));
-  offset += 256;
-  song.artist = td.decode(
-    data.slice(offset + 1, offset + 1 + uint8data[offset])
-  );
-  offset += 256;
-  song.comment = td.decode(
-    data.slice(offset + 1, offset + 1 + uint8data[offset])
-  );
-  offset += 256;
+  song.name = readText();
+  song.artist = readText();
+  song.comment = readText();
 
   const instrument_count = version < 3 ? 15 : 45;
   const duty_instrument_mapping: InstrumentMap = {};
@@ -49,28 +57,19 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
   const noise_instrument_mapping: InstrumentMap = {};
 
   for (let n = 0; n < instrument_count; n++) {
-    const type = new Uint32Array(data.slice(offset, offset + 4))[0];
-    offset += 4;
-    const name = td.decode(
-      data.slice(offset + 1, offset + 1 + uint8data[offset])
-    );
-    offset += 256;
+    const type = readUint32();
+    const name = readText();
 
     console.log(name);
 
-    let length = new Uint32Array(data.slice(offset, offset + 4))[0];
-    offset += 4;
-    const length_enabled = uint8data[offset];
-    offset += 1;
-    let initial_volume = uint8data[offset];
+    let length = readUint32();
+    const length_enabled = readUint8();
+    let initial_volume = readUint8();
     if (initial_volume > 15) {
       initial_volume = 15; // ??? bug in the song files?
     }
-    offset += 1;
-    const volume_direction = uint8data[offset];
-    offset += 4;
-    let volume_sweep_amount = uint8data[offset];
-    offset += 1;
+    const volume_direction = readUint32();
+    let volume_sweep_amount = readUint8();
     if (volume_sweep_amount !== 0) {
       volume_sweep_amount = 8 - volume_sweep_amount;
     }
@@ -78,50 +77,33 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
       volume_sweep_amount = -volume_sweep_amount;
     }
 
-    const freq_sweep_time = new Uint32Array(data.slice(offset, offset + 4))[0];
-    offset += 4;
-    const freq_sweep_direction = new Uint32Array(
-      data.slice(offset, offset + 4)
-    )[0];
-    offset += 4;
-    let freq_sweep_shift = new Uint32Array(data.slice(offset, offset + 4))[0];
-    offset += 4;
+    const freq_sweep_time = readUint32();
+    const freq_sweep_direction = readUint32();
+    let freq_sweep_shift = readUint32();
     if (freq_sweep_direction) {
       freq_sweep_shift = -freq_sweep_shift;
     }
 
-    const duty = uint8data[offset];
-    offset += 1;
+    const duty = readUint8();
 
-    const wave_output_level = new Uint32Array(
-      data.slice(offset, offset + 4)
-    )[0];
-    offset += 4;
-    const wave_waveform_index = new Uint32Array(
-      data.slice(offset, offset + 4)
-    )[0];
-    offset += 4;
+    const wave_output_level = readUint32();
+    const wave_waveform_index = readUint32();
 
     let subpattern_enabled = 0,
       noise_counter_step = 0;
     const subpattern: SubPatternCell[] = [];
     if (version >= 6) {
-      noise_counter_step = new Uint32Array(data.slice(offset, offset + 4))[0];
-      offset += 4;
+      noise_counter_step = readUint32();
 
-      subpattern_enabled = uint8data[offset];
-      offset += 1;
+      subpattern_enabled = readUint8();
 
       for (let m = 0; m < 64; m++) {
-        const note = new Uint32Array(data.slice(offset, (offset += 4)))[0];
+        const note = readUint32();
         // unused uint32 field. increase offset by 4.
         offset += 4;
-        const jump = new Uint32Array(data.slice(offset, (offset += 4)))[0];
-        const effectcode = new Uint32Array(
-          data.slice(offset, (offset += 4))
-        )[0];
-        const effectparam = uint8data[offset];
-        offset += 1;
+        const jump = readUint32();
+        const effectcode = readUint32();
+        const effectparam = readUint8();
 
         subpattern.push({
           note: note === 90 ? null : note,
@@ -138,16 +120,14 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
     if (version < 6) {
       // unused uint32 field. increase offset by 4.
       offset += 4;
-      noise_counter_step = new Uint32Array(data.slice(offset, offset + 4))[0];
-      offset += 4;
+      noise_counter_step = readUint32();
       // unused uint32 field. increase offset by 4.
       offset += 4;
       if (version >= 4) {
         for (let n = 0; n < 6; n++) {
-          const uint8ref = uint8data[offset];
+          const uint8ref = readUint8();
           const int8ref = uint8ref > 0x7f ? uint8ref - 0x100 : uint8ref;
           noise_macro.push(int8ref);
-          offset += 1;
         }
       }
     }
@@ -261,15 +241,11 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
     if (version < 3) offset += 1; // older versions have an off-by-one error
   }
 
-  song.ticks_per_row = new Uint32Array(data.slice(offset, offset + 4))[0];
-  offset += 4;
+  song.ticks_per_row = readUint32();
 
   if (version >= 6) {
-    song.timer_enabled = uint8data[offset] !== 0;
-    offset += 1;
-
-    song.timer_divider = new Uint32Array(data.slice(offset, offset + 4))[0];
-    offset += 4;
+    song.timer_enabled = readUint8() !== 0;
+    song.timer_divider = readUint32();
   }
 
   const pattern_count = new Uint32Array(data.slice(offset, offset + 4))[0];
@@ -282,8 +258,7 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
     let patternId = 0;
     const pattern = [];
     if (version >= 5) {
-      patternId = new Uint32Array(data.slice(offset, offset + 4))[0];
-      offset += 4;
+      patternId = readUint32();
     } else {
       patternId = n;
     }
@@ -293,19 +268,15 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
           data.slice(offset, offset + 3 * 4)
         );
         offset += 3 * 4;
-        const effectparam = uint8data[offset];
-        offset += 1;
+        const effectparam = readUint8();
 
         pattern.push([note, instrument, effectcode, effectparam]);
       } else if (version >= 6) {
         const [note, instrument, unused, effectcode] = new Int32Array(
           data.slice(offset, offset + 4 * 4)
         );
-        console.log("@@@!!!!");
-
         offset += 4 * 4;
-        const effectparam = uint8data[offset];
-        offset += 1;
+        const effectparam = readUint8();
 
         pattern.push([note, instrument, effectcode, effectparam]);
       }
@@ -324,8 +295,7 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
 
   const orders = [];
   for (let n = 0; n < 4; n++) {
-    const order_count = new Uint32Array(data.slice(offset, offset + 4))[0]; // The amount of pattern orders stored in the file has an off-by-one.
-    offset += 4;
+    const order_count = readUint32(); // The amount of pattern orders stored in the file has an off-by-one.
     orders.push(
       new Uint32Array(data.slice(offset, offset + 4 * (order_count - 1)))
     );
