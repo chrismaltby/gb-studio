@@ -120,7 +120,8 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
         const effectcode = new Uint32Array(
           data.slice(offset, (offset += 4))
         )[0];
-        const effectparam = uint8data[++offset];
+        const effectparam = uint8data[offset];
+        offset += 1;
 
         subpattern.push({
           note: note === 90 ? null : note,
