@@ -594,12 +594,9 @@ export const exportToC = (song: Song, trackName: string): string => {
   ) {
     if (instr.subpattern_enabled) {
       data += `static const unsigned char ${type}_${instr.index}_subpattern[] = {\n`;
-      for (let idx = 0; idx < instr.subpattern.length; idx++) {
+      for (let idx = 0; idx < 32; idx++) {
         const cell = instr.subpattern[idx];
-        data += `    ${formatSubPatternCell(
-          cell,
-          idx === instr.subpattern.length - 1
-        )},\n`;
+        data += `    ${formatSubPatternCell(cell, idx === 32 - 1)},\n`;
       }
       data += "};\n";
     }

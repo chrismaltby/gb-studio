@@ -423,8 +423,8 @@ function patchRom(targetRomFile: Uint8Array, song: Song, startAddr: number) {
     if (instr.subpattern_enabled) {
       subpatternAddr[`DutySP${instr.index}`] = addr;
       const pattern = song.duty_instruments[n].subpattern;
-      for (let idx = 0; idx < pattern.length; idx++) {
-        writeSubPatternCell(pattern[idx], idx === pattern.length - 1);
+      for (let idx = 0; idx < 32; idx++) {
+        writeSubPatternCell(pattern[idx], idx === 32 - 1);
       }
     }
   }
@@ -434,8 +434,8 @@ function patchRom(targetRomFile: Uint8Array, song: Song, startAddr: number) {
     if (instr.subpattern_enabled) {
       subpatternAddr[`WaveSP${instr.index}`] = addr;
       const pattern = song.wave_instruments[n].subpattern;
-      for (let idx = 0; idx < pattern.length; idx++) {
-        writeSubPatternCell(pattern[idx], idx === pattern.length - 1);
+      for (let idx = 0; idx < 32; idx++) {
+        writeSubPatternCell(pattern[idx], idx === 32 - 1);
       }
     }
   }
@@ -445,8 +445,8 @@ function patchRom(targetRomFile: Uint8Array, song: Song, startAddr: number) {
     if (instr.subpattern_enabled) {
       subpatternAddr[`NoiseSP${instr.index}`] = addr;
       const pattern = song.noise_instruments[n].subpattern;
-      for (let idx = 0; idx < pattern.length; idx++) {
-        writeSubPatternCell(pattern[idx], idx === pattern.length - 1);
+      for (let idx = 0; idx < 32; idx++) {
+        writeSubPatternCell(pattern[idx], idx === 32 - 1);
       }
     }
   }

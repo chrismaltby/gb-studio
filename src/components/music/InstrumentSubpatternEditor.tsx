@@ -132,6 +132,8 @@ export const InstrumentSubpatternEditor = ({
   enabled,
   subpattern,
 }: InstrumentSubpatternEditorProps) => {
+  const renderSubpattern = subpattern.slice(0, 32);
+
   return (
     <>
       <FormRow>
@@ -144,7 +146,7 @@ export const InstrumentSubpatternEditor = ({
 
       {enabled ? (
         <SubpatternGrid>
-          {subpattern.map((s, i) => {
+          {renderSubpattern.map((s, i) => {
             return (
               <div style={{ display: "flex", flexDirection: "row" }}>
                 <SubpatternRow
