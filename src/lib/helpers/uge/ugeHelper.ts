@@ -15,6 +15,25 @@ interface InstrumentMap {
   [index: number]: number;
 }
 
+interface InstrumentData {
+  idx: number;
+  type: number;
+  name: string;
+  length: number;
+  length_enabled: number;
+  initial_volume: number;
+  volume_sweep_amount: number;
+  freq_sweep_time: number;
+  freq_sweep_shift: number;
+  duty: number;
+  wave_output_level: number;
+  wave_waveform_index: number;
+  subpattern_enabled: number;
+  subpattern: SubPatternCell[];
+  noise_counter_step: number;
+  noise_macro: number[];
+}
+
 export const loadUGESong = (data: ArrayBuffer): Song | null => {
   const uint8data = new Uint8Array(data);
 
@@ -52,17 +71,15 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
   song.comment = readText();
 
   const instrument_count = version < 3 ? 15 : 45;
-  const duty_instrument_mapping: InstrumentMap = {};
-  const wave_instrument_mapping: InstrumentMap = {};
-  const noise_instrument_mapping: InstrumentMap = {};
 
+  const instrumentData: Array<InstrumentData> = [];
   for (let n = 0; n < instrument_count; n++) {
     const type = readUint32();
     const name = readText();
 
     console.log(name);
 
-    let length = readUint32();
+    const length = readUint32();
     const length_enabled = readUint8();
     let initial_volume = readUint8();
     if (initial_volume > 15) {
@@ -89,8 +106,9 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
     const wave_output_level = readUint32();
     const wave_waveform_index = readUint32();
 
-    let subpattern_enabled = 0,
-      noise_counter_step = 0;
+    let subpattern_enabled = 0;
+    let noise_counter_step = 0;
+
     const subpattern: SubPatternCell[] = [];
     if (version >= 6) {
       noise_counter_step = readUint32();
@@ -99,8 +117,7 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
 
       for (let m = 0; m < 64; m++) {
         const note = readUint32();
-        // unused uint32 field. increase offset by 4.
-        offset += 4;
+        offset += 4; // unused uint32 field. increase offset by 4.
         const jump = readUint32();
         const effectcode = readUint32();
         const effectparam = readUint8();
@@ -118,11 +135,9 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
 
     const noise_macro = [];
     if (version < 6) {
-      // unused uint32 field. increase offset by 4.
-      offset += 4;
+      offset += 4; // unused uint32 field. increase offset by 4.
       noise_counter_step = readUint32();
-      // unused uint32 field. increase offset by 4.
-      offset += 4;
+      offset += 4; // unused uint32 field. increase offset by 4.
       if (version >= 4) {
         for (let n = 0; n < 6; n++) {
           const uint8ref = readUint8();
@@ -132,109 +147,26 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
       }
     }
 
-    if (type === 0) {
-      length = 64 - length;
-
-      const instr = {} as DutyInstrument;
-      if (length_enabled) {
-        instr.length = length;
-      } else {
-        instr.length = null;
-      }
-
-      instr.name = name;
-      instr.duty_cycle = duty;
-      instr.initial_volume = initial_volume;
-      instr.volume_sweep_change = volume_sweep_amount;
-
-      instr.frequency_sweep_time = freq_sweep_time;
-      instr.frequency_sweep_shift = freq_sweep_shift;
-
-      if (version >= 6) {
-        instr.subpattern_enabled = subpattern_enabled !== 0;
-        instr.subpattern = subpattern;
-      } else {
-        instr.subpattern_enabled = false;
-        instr.subpattern = [...Array(64)].map(() => new SubPatternCell());
-      }
-
-      duty_instrument_mapping[(n % 15) + 1] = song.duty_instruments.length;
-      song.addDutyInstrument(instr);
-    } else if (type === 1) {
-      length = 256 - length;
-
-      const instr = {} as WaveInstrument;
-      if (length_enabled) {
-        instr.length = length;
-      } else {
-        instr.length = null;
-      }
-
-      instr.name = name;
-      instr.volume = wave_output_level;
-      instr.wave_index = wave_waveform_index;
-
-      if (version >= 6) {
-        instr.subpattern_enabled = subpattern_enabled !== 0;
-        instr.subpattern = subpattern;
-      } else {
-        instr.subpattern_enabled = false;
-        instr.subpattern = [...Array(64)].map(() => new SubPatternCell());
-      }
-
-      wave_instrument_mapping[(n % 15) + 1] = song.wave_instruments.length;
-      song.addWaveInstrument(instr);
-    } else if (type === 2) {
-      length = 64 - length;
-
-      const instr = {} as NoiseInstrument;
-      if (length_enabled) {
-        instr.length = length;
-      } else {
-        instr.length = null;
-      }
-
-      instr.name = name;
-      instr.initial_volume = initial_volume;
-      instr.volume_sweep_change = volume_sweep_amount;
-
-      if (version < 6) {
-        instr.bit_count = noise_counter_step ? 7 : 15;
-        if (version >= 4) {
-          instr.noise_macro = noise_macro;
-        } else {
-          instr.noise_macro = [0, 0, 0, 0, 0, 0];
-        }
-      }
-
-      if (version >= 6) {
-        instr.subpattern_enabled = subpattern_enabled !== 0;
-        instr.subpattern = subpattern;
-      } else {
-        if (noise_macro.length === 0) {
-          instr.subpattern_enabled = false;
-          instr.subpattern = [...Array(64)].map(() => new SubPatternCell());
-        } else {
-          console.log("HAS NOISE MACRO");
-          instr.subpattern_enabled = true;
-          instr.subpattern = [...Array(64)].map(() => new SubPatternCell());
-          // @TODO: Finish migration from noise macro to subpattern
-          // based on https://github.com/SuperDisk/hUGETracker/blob/9e31f807ba7dde5b502e36d58f4e027b9e42571f/src/song.pas#L733
-          for (let n = 0; n < 6; n++) {
-            instr.subpattern[n].note = noise_macro[n] + 36;
-          }
-          // @TODO: get ticks_per_row at this point
-          // const wrapPoint = Math.min(ticks_per_row, 7);
-          // instr.subpattern[wrapPoint - 1].jump = wrapPoint;
-        }
-      }
-
-      noise_instrument_mapping[(n % 15) + 1] = song.noise_instruments.length;
-      song.addNoiseInstrument(instr);
-    } else {
-      throw Error(`Invalid instrument type ${type} [${n}, "${name}"]`);
-    }
+    instrumentData.push({
+      idx: n,
+      type,
+      name,
+      length,
+      length_enabled,
+      initial_volume,
+      volume_sweep_amount,
+      freq_sweep_time,
+      freq_sweep_shift,
+      duty,
+      wave_output_level,
+      wave_waveform_index,
+      subpattern_enabled,
+      subpattern,
+      noise_counter_step,
+      noise_macro,
+    });
   }
+
   for (let n = 0; n < 16; n++) {
     song.waves.push(Uint8Array.from(uint8data.slice(offset, offset + 32)));
     offset += 32;
@@ -302,6 +234,128 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
     offset += 4 * order_count;
   }
   // TODO: If version > 1 then custom routines follow.
+
+  // Add instruments
+  const duty_instrument_mapping: InstrumentMap = {};
+  const wave_instrument_mapping: InstrumentMap = {};
+  const noise_instrument_mapping: InstrumentMap = {};
+  instrumentData.forEach((instrument: InstrumentData) => {
+    const {
+      idx,
+      type,
+      name,
+      length,
+      length_enabled,
+      initial_volume,
+      volume_sweep_amount,
+      freq_sweep_time,
+      freq_sweep_shift,
+      duty,
+      wave_output_level,
+      wave_waveform_index,
+      subpattern_enabled,
+      subpattern,
+      noise_counter_step,
+      noise_macro,
+    } = instrument;
+
+    if (type === 0) {
+      const instr = {} as DutyInstrument;
+
+      if (length_enabled) {
+        instr.length = 64 - length;
+      } else {
+        instr.length = null;
+      }
+
+      instr.name = name;
+      instr.duty_cycle = duty;
+      instr.initial_volume = initial_volume;
+      instr.volume_sweep_change = volume_sweep_amount;
+
+      instr.frequency_sweep_time = freq_sweep_time;
+      instr.frequency_sweep_shift = freq_sweep_shift;
+
+      if (version >= 6) {
+        instr.subpattern_enabled = subpattern_enabled !== 0;
+        instr.subpattern = subpattern;
+      } else {
+        instr.subpattern_enabled = false;
+        instr.subpattern = [...Array(64)].map(() => new SubPatternCell());
+      }
+
+      duty_instrument_mapping[(idx % 15) + 1] = song.duty_instruments.length;
+      song.addDutyInstrument(instr);
+    } else if (type === 1) {
+      const instr = {} as WaveInstrument;
+
+      if (length_enabled) {
+        instr.length = 256 - length;
+      } else {
+        instr.length = null;
+      }
+
+      instr.name = name;
+      instr.volume = wave_output_level;
+      instr.wave_index = wave_waveform_index;
+
+      if (version >= 6) {
+        instr.subpattern_enabled = subpattern_enabled !== 0;
+        instr.subpattern = subpattern;
+      } else {
+        instr.subpattern_enabled = false;
+        instr.subpattern = [...Array(64)].map(() => new SubPatternCell());
+      }
+
+      wave_instrument_mapping[(idx % 15) + 1] = song.wave_instruments.length;
+      song.addWaveInstrument(instr);
+    } else if (type === 2) {
+      const instr = {} as NoiseInstrument;
+
+      if (length_enabled) {
+        instr.length = 64 - length;
+      } else {
+        instr.length = null;
+      }
+
+      instr.name = name;
+      instr.initial_volume = initial_volume;
+      instr.volume_sweep_change = volume_sweep_amount;
+
+      if (version < 6) {
+        instr.bit_count = noise_counter_step ? 7 : 15;
+        if (version >= 4) {
+          instr.noise_macro = noise_macro;
+        } else {
+          instr.noise_macro = [0, 0, 0, 0, 0, 0];
+        }
+      }
+
+      if (version >= 6) {
+        instr.subpattern_enabled = subpattern_enabled !== 0;
+        instr.subpattern = subpattern;
+      } else {
+        if (noise_macro.length === 0) {
+          instr.subpattern_enabled = false;
+          instr.subpattern = [...Array(64)].map(() => new SubPatternCell());
+        } else {
+          console.log("HAS NOISE MACRO");
+          instr.subpattern_enabled = true;
+          instr.subpattern = [...Array(64)].map(() => new SubPatternCell());
+          for (let n = 0; n < 6; n++) {
+            instr.subpattern[n].note = noise_macro[n] + 36;
+          }
+          const wrapPoint = Math.min(song.ticks_per_row, 7);
+          instr.subpattern[wrapPoint - 1].jump = wrapPoint;
+        }
+      }
+
+      noise_instrument_mapping[(idx % 15) + 1] = song.noise_instruments.length;
+      song.addNoiseInstrument(instr);
+    } else {
+      throw Error(`Invalid instrument type ${type} [${idx}, "${name}"]`);
+    }
+  });
 
   // Create proper flat patterns
   for (let n = 0; n < orders[0].length; n++) {
