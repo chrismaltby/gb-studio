@@ -322,8 +322,8 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
       instr.initial_volume = initial_volume;
       instr.volume_sweep_change = volume_sweep_amount;
 
+      instr.bit_count = noise_counter_step ? 7 : 15;
       if (version < 6) {
-        instr.bit_count = noise_counter_step ? 7 : 15;
         if (version >= 4) {
           instr.noise_macro = noise_macro;
         } else {
