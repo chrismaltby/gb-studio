@@ -707,7 +707,7 @@ export const InstrumentSubpatternEditor = ({
 
   const onSelectAll = useCallback(
     (e) => {
-      if (!activeField) {
+      if (activeField === undefined) {
         return;
       }
 
@@ -741,7 +741,7 @@ export const InstrumentSubpatternEditor = ({
 
   const onFocus = useCallback(
     (_e: React.FocusEvent<HTMLDivElement>) => {
-      if (!activeField) {
+      if (activeField === undefined) {
         setActiveField(0);
       }
       dispatch(trackerActions.setSubpatternEditorFocus(true));
@@ -758,7 +758,7 @@ export const InstrumentSubpatternEditor = ({
   );
 
   const onCopy = useCallback(() => {
-    if (!activeField) {
+    if (activeField === undefined) {
       return;
     }
     if (subpattern && selectedTrackerFields) {
@@ -771,7 +771,7 @@ export const InstrumentSubpatternEditor = ({
   }, [activeField, dispatch, selectedTrackerFields, subpattern]);
 
   const onCut = useCallback(() => {
-    if (!activeField) {
+    if (activeField === undefined) {
       return;
     }
     if (subpattern && selectedTrackerFields) {
