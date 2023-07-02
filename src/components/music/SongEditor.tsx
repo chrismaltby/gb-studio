@@ -298,6 +298,8 @@ export const SongEditor: FC<SongEditorProps> = ({ multiColumn }) => {
                   <InstrumentSubpatternEditor
                     enabled={instrumentData.subpattern_enabled}
                     subpattern={instrumentData.subpattern}
+                    instrumentId={instrumentData.index}
+                    instrumentType={selectedInstrument.type}
                   />
                 )}
               </InstrumentEditorWrapper>

@@ -11,12 +11,11 @@ import { SongRow } from "./SongRow";
 import scrollIntoView from "scroll-into-view-if-needed";
 import { SongGridHeaderCell } from "./SongGridHeaderCell";
 import { ipcRenderer } from "electron";
+import { getInstrumentTypeByChannel, getInstrumentListByType } from "./helpers";
 import {
-  getInstrumentTypeByChannel,
-  getInstrumentListByType,
   parseClipboardToPattern,
   parsePatternFieldsToClipboard,
-} from "./helpers";
+} from "./musicClipboardHelpers";
 import { getKeys, KeyWhen } from "lib/keybindings/keyBindings";
 import trackerActions from "store/features/tracker/trackerActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
@@ -707,12 +706,13 @@ export const SongTracker = ({
   });
 
   useEffect(() => {
-    document.addEventListener("selectionchange", onSelectAll);
-
-    return () => {
-      document.removeEventListener("selectionchange", onSelectAll);
-    };
-  });
+    if (activeField) {
+      document.addEventListener("selectionchange", onSelectAll);
+      return () => {
+        document.removeEventListener("selectionchange", onSelectAll);
+      };
+    }
+  }, [activeField, onSelectAll]);
 
   const onFocus = useCallback(
     (_e: React.FocusEvent<HTMLDivElement>) => {
@@ -723,12 +723,11 @@ export const SongTracker = ({
     [activeField, setActiveField]
   );
 
-  const onBlur = useCallback(
-    (_e: React.FocusEvent<HTMLDivElement>) => {
-      setActiveField(undefined);
-    },
-    [setActiveField]
-  );
+  const onBlur = useCallback((_e: React.FocusEvent<HTMLDivElement>) => {
+    setActiveField(undefined);
+    setSelectionOrigin(undefined);
+    setSelectionRect(undefined);
+  }, []);
 
   const onCopy = useCallback(() => {
     if (pattern && selectedTrackerFields) {
@@ -792,15 +791,17 @@ export const SongTracker = ({
 
   // Clipboard
   useEffect(() => {
-    window.addEventListener("copy", onCopy);
-    window.addEventListener("cut", onCut);
-    window.addEventListener("paste", onPaste);
-    return () => {
-      window.removeEventListener("copy", onCopy);
-      window.removeEventListener("cut", onCut);
-      window.removeEventListener("paste", onPaste);
-    };
-  }, [onCopy, onCut, onPaste]);
+    if (activeField) {
+      window.addEventListener("copy", onCopy);
+      window.addEventListener("cut", onCut);
+      window.addEventListener("paste", onPaste);
+      return () => {
+        window.removeEventListener("copy", onCopy);
+        window.removeEventListener("cut", onCut);
+        window.removeEventListener("paste", onPaste);
+      };
+    }
+  }, [activeField, onCopy, onCut, onPaste]);
 
   return (
     <div

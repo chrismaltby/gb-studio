@@ -16,12 +16,11 @@ import { PatternCell } from "lib/helpers/uge/song/PatternCell";
 import { cloneDeep } from "lodash";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
+import { getInstrumentListByType, getInstrumentTypeByChannel } from "./helpers";
 import {
   parsePatternToClipboard,
   parseClipboardToPattern,
-  getInstrumentListByType,
-  getInstrumentTypeByChannel,
-} from "./helpers";
+} from "./musicClipboardHelpers";
 import { RollChannelEffectRow } from "./RollChannelEffectRow";
 import { WandIcon } from "ui/icons/Icons";
 import { RollChannelHover } from "./RollChannelHover";
