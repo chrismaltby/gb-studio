@@ -117,6 +117,9 @@ export const SongTracker = ({
   const startPlaybackPosition = useSelector(
     (state: RootState) => state.tracker.startPlaybackPosition
   );
+  const subpatternEditorFocus = useSelector(
+    (state: RootState) => state.tracker.subpatternEditorFocus
+  );
 
   const patternId = song?.sequence[sequenceId] || 0;
   const pattern = song?.patterns[patternId];
@@ -703,14 +706,23 @@ export const SongTracker = ({
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("wheel", handleWheel);
     };
-  });
+  }, [
+    handleKeyDown,
+    handleKeyUp,
+    handleMouseDown,
+    handleMouseMove,
+    handleMouseUp,
+    handleWheel,
+  ]);
 
   useEffect(() => {
-    document.addEventListener("selectionchange", onSelectAll);
-    return () => {
-      document.removeEventListener("selectionchange", onSelectAll);
-    };
-  }, [onSelectAll]);
+    if (!subpatternEditorFocus) {
+      document.addEventListener("selectionchange", onSelectAll);
+      return () => {
+        document.removeEventListener("selectionchange", onSelectAll);
+      };
+    }
+  }, [onSelectAll, subpatternEditorFocus]);
 
   const onFocus = useCallback(
     (_e: React.FocusEvent<HTMLDivElement>) => {
@@ -789,15 +801,17 @@ export const SongTracker = ({
 
   // Clipboard
   useEffect(() => {
-    window.addEventListener("copy", onCopy);
-    window.addEventListener("cut", onCut);
-    window.addEventListener("paste", onPaste);
-    return () => {
-      window.removeEventListener("copy", onCopy);
-      window.removeEventListener("cut", onCut);
-      window.removeEventListener("paste", onPaste);
-    };
-  }, [onCopy, onCut, onPaste]);
+    if (!subpatternEditorFocus) {
+      window.addEventListener("copy", onCopy);
+      window.addEventListener("cut", onCut);
+      window.addEventListener("paste", onPaste);
+      return () => {
+        window.removeEventListener("copy", onCopy);
+        window.removeEventListener("cut", onCut);
+        window.removeEventListener("paste", onPaste);
+      };
+    }
+  }, [onCopy, onCut, onPaste, subpatternEditorFocus]);
 
   return (
     <div

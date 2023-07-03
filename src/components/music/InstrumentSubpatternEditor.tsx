@@ -848,6 +848,33 @@ export const InstrumentSubpatternEditor = ({
     };
   }, [onCopy, onCut, onPaste]);
 
+  const onChangeField = useCallback(
+    (editValue: boolean) => {
+      const payload = {
+        instrumentId: instrumentId,
+        changes: {
+          // eslint-disable-next-line camelcase
+          subpattern_enabled: editValue,
+        },
+      };
+      switch (instrumentType) {
+        case "duty": {
+          dispatch(trackerDocumentActions.editDutyInstrument(payload));
+          break;
+        }
+        case "wave": {
+          dispatch(trackerDocumentActions.editWaveInstrument(payload));
+          break;
+        }
+        case "noise": {
+          dispatch(trackerDocumentActions.editNoiseInstrument(payload));
+          break;
+        }
+      }
+    },
+    [dispatch, instrumentId, instrumentType]
+  );
+
   const renderSubpattern = [...subpattern].slice(0, 32);
 
   return (
@@ -857,6 +884,9 @@ export const InstrumentSubpatternEditor = ({
           label={l10n("FIELD_SUBPATTERN_ENBALED")}
           name="length"
           checked={enabled}
+          onChange={(e) => {
+            onChangeField(e.target.checked);
+          }}
         />
       </FormRow>
       <SubpatternGrid tabIndex={0} onFocus={onFocus} onBlur={onBlur}>
