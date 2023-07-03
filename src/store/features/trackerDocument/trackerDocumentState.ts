@@ -321,7 +321,10 @@ const trackerSlice = createSlice({
       }
 
       newSubPattern[row] = { ...newSubPatternCell, ...patch };
-      instruments[instrumentId].subpattern = newSubPattern;
+      const newInstrument = { ...instruments[instrumentId] };
+      newInstrument.subpattern = newSubPattern;
+
+      instruments[instrumentId] = newInstrument;
 
       switch (_action.payload.instrumentType) {
         case "duty":
