@@ -1,0 +1,20 @@
+node_modules
+out
+.eslintcache
+src/data/src/gb/build
+src/data/src/gb/include/banks.h
+src/data/src/gb/src/data
+src/data/output
+coverage
+.cache
+.parcelCache
+/.vscode
+/dist
+.DS_Store
+test/projects/*/build
+
+# Webpack
+.webpack/
+
+# IDEs
+.idea/

@@ -33,6 +33,73 @@ Or to run from source, clone this repo then:
 > npm start
 ```
 
+## Build with Docker
+
+With [Docker](https://docs.docker.com/get-docker/) installed and running, run the following commands to build the electron app to the out directory. Next, clone and navigate to the gb-studio source code locally. ***Note: ~30min build time***
+
+```bash
+# Start a docker container with node installed, and the source code mounted at /workspace
+docker run -it --rm \
+    -v ${PWD}:/workspace \
+    -w /workspace \
+    --entrypoint bash \
+    circleci/node:lts-bullseye
+
+# Install dependencies
+sudo sudo dpkg --add-architecture i386 \
+    && sudo apt-get update \
+    && sudo apt-get install -y fakeroot rpm squashfs-tools wine libwine wine32 mono-devel tree \
+    && sudo yarn \
+    && npm install \
+    && npm install --legacy-peer-deps \
+    && npm install --force
+
+# Build GB Studio (linux)
+sudo yarn make:linux
+
+# Build GB Studio (mac)
+sudo yarn make:mac
+
+# Build GB Studio (windows)
+sudo yarn make:win
+
+# Build GB Studio (windows 32bit)
+sudo yarn make:win32
+
+# Example output/builds
+circleci@0f13a4c6cbcf:/workspace$ tree out/make/
+out/make/
+├── AppImage
+│   └── x64
+│       └── GB Studio-3.1.0-x64.AppImage
+├── deb
+│   └── x64
+│       └── gb-studio_3.1.0_amd64.deb
+├── rpm
+│   └── x64
+│       └── gb-studio-3.1.0-1.x86_64.rpm
+├── squirrel.windows
+│   ├── ia32
+│   │   ├── GB Studio-3.1.0 Setup.exe
+│   │   ├── RELEASES
+│   │   └── gb_studio-3.1.0-full.nupkg
+│   └── x64
+│       ├── GB Studio-3.1.0 Setup.exe
+│       ├── RELEASES
+│       └── gb_studio-3.1.0-full.nupkg
+└── zip
+    ├── darwin
+    │   └── x64
+    │       └── GB Studio-darwin-x64-3.1.0.zip
+    └── win32
+        ├── ia32
+        │   └── GB Studio-win32-ia32-3.1.0.zip
+        └── x64
+            └── GB Studio-win32-x64-3.1.0.zip
+
+15 directories, 12 files
+```
+
 ## GB Studio CLI 
 
 Install GB Studio from source as above then
