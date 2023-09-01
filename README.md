@@ -46,7 +46,7 @@ docker run -it --rm \
     circleci/node:lts-bullseye
 
 # Install dependencies
-sudo sudo dpkg --add-architecture i386 \
+sudo dpkg --add-architecture i386 \
     && sudo apt-get update \
     && sudo apt-get install -y fakeroot rpm squashfs-tools wine libwine wine32 mono-devel tree \
     && sudo yarn \
