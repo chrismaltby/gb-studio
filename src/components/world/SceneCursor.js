@@ -190,6 +190,8 @@ class SceneCursor extends Component {
                 (selectedTileType & COLLISION_ALL)
               ) {
                 this.drawTile = selectedTileType;
+              } else {
+                this.drawTile = scene.collisions[collisionIndex] & TILE_PROPS;
               }
             } else if (selectedTileType & TILE_PROPS) {
               // If drawing props replace but keep collisions
@@ -206,14 +208,19 @@ class SceneCursor extends Component {
         }
       }
       if (selectedBrush === BRUSH_FILL) {
+        const projectRoot = this.props.projectRoot;
         paintCollision({
-          brush: selectedBrush,
+          brush: "magic",
           sceneId,
+          projectRoot,
           x,
           y,
           value: this.drawTile,
           isTileProp: this.isTileProp,
         });
+        console.log(sceneId);
+        //asyncCall(backgroundId);
+
       } else {
         if (
           this.drawLine &&
@@ -586,6 +593,7 @@ class SceneCursor extends Component {
 }
 
 SceneCursor.propTypes = {
+  projectRoot: PropTypes.string.isRequired,
   x: PropTypes.number.isRequired,
   y: PropTypes.number.isRequired,
   entityId: PropTypes.string,
@@ -674,6 +682,7 @@ function mapStateToProps(state, props) {
     backgroundId,
     showLayers,
     hoverPalette,
+    projectRoot: state.document && state.document.root,
   };
 }
 

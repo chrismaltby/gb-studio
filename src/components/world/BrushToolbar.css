@@ -1,6 +1,5 @@
 .BrushToolbar {
   position: absolute;
-  height: 36px;
   left: 56px;
   top: -45px;
   background-color: var(--sidebar-bg-color);
@@ -9,6 +8,7 @@
   padding: 0 4px;
   transition: top 0.2s ease-in-out;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
 }
 
@@ -140,4 +140,105 @@
   top: 4px;
   border-top: 4px solid green;
   border-bottom: 4px solid green;
+}
+
+.BrushToolbar__Tile--slopeDR::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  display: block;
+  background-color: green;
+  clip-path: polygon(0% 100%, 100% 0%, 100% 100%);
+}
+
+.BrushToolbar__Tile--slopeDL::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  display: block;
+  background-color: green;
+  clip-path: polygon(0% 100%, 0% 0%, 100% 100%);
+}
+
+.BrushToolbar__Tile--slopeUR::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  display: block;
+  background-color: yellow;
+  clip-path: polygon(0% 0%, 100% 100%, 100% 0%);
+}
+
+.BrushToolbar__Tile--slopeUL::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  display: block;
+  background-color: yellow;
+  clip-path: polygon(0% 0%, 0% 100%, 100% 0%);
+}
+
+.BrushToolbar__Tile--slopeDR1::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  display: block;
+  background-color: green;
+  clip-path: polygon(0% 100%, 100% 50%, 100% 100%);
+}
+
+.BrushToolbar__Tile--slopeDR2::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  display: block;
+  background-color: green;
+  clip-path: polygon(0% 50%, 100% 0%, 100% 50%);
+}
+
+.BrushToolbar__Tile--slopeDL1::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  display: block;
+  background-color: green;
+  clip-path: polygon(0% 100%, 0% 50%, 100% 100%);
+}
+
+.BrushToolbar__Tile--slopeDL2::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  display: block;
+  background-color: green;
+  clip-path: polygon(0% 50%, 0% 0%, 100% 50%);
+}
+
+.BrushToolbar__Tile--slope10::before {
+  padding: 3px;
+  content: "10";
+}
+
+.BrushToolbar__Tile--slope11::before {
+  padding: 4px;
+  content: "11";
+}
+
+.BrushToolbar__Tile--slope12::before {
+  padding: 3px;
+  content: " 12";
+}
+
+.BrushToolbar__Tile--slope13::before {
+  padding: 3px;
+  content: " 13";
+}
+
+.BrushToolbar__Tile--slope14::before {
+  padding: 3px;
+  content: "14";
+}
+.BrushToolbar__Tile--slope15::before {
+  padding: 3px;
+  content: "15";
 }

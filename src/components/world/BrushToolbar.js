@@ -78,6 +78,76 @@ const tileTypes = [
     name: l10n("FIELD_COLLISION_LADDER"),
     flag: TILE_PROP_LADDER,
   },
+  {
+    key: "slopeDR",
+    name: l10n("FIELD_COLLISION_SLOPE_DR"),
+    flag: 32,
+  },
+  {
+    key: "slopeDL",
+    name: l10n("FIELD_COLLISION_SLOPE_DL"),
+    flag: 48,
+  },
+  {
+    key: "slopeUR",
+    name: l10n("FIELD_COLLISION_SLOPE_UR"),
+    flag: 64,
+  },
+  {
+    key: "slopeUL",
+    name: l10n("FIELD_COLLISION_SLOPE_UL"),
+    flag: 80,
+  },
+  {
+    key: "slopeDR1",
+    name: l10n("FIELD_COLLISION_SLOPE_DR1"),
+    flag: 96,
+  },
+  {
+    key: "slopeDR2",
+    name: l10n("FIELD_COLLISION_SLOPE_DR2"),
+    flag: 112,
+  },
+  {
+    key: "slopeDL2",
+    name: l10n("FIELD_COLLISION_SLOPE_DL2"),
+    flag: 128,
+  },
+  {
+    key: "slopeDL1",
+    name: l10n("FIELD_COLLISION_SLOPE_DL1"),
+    flag: 144,
+  },
+  {
+    key: "slope10",
+    name: l10n("FIELD_COLLISION_SPARE_10"),
+    flag: 160,
+  },
+  {
+    key: "slope11",
+    name: l10n("FIELD_COLLISION_SPARE_11"),
+    flag: 176,
+  },
+  {
+    key: "slope12",
+    name: l10n("FIELD_COLLISION_SPARE_12"),
+    flag: 192,
+  },
+  {
+    key: "slope13",
+    name: l10n("FIELD_COLLISION_SPARE_13"),
+    flag: 208,
+  },
+  {
+    key: "slope14",
+    name: l10n("FIELD_COLLISION_SPARE_14"),
+    flag: 224,
+  },
+  {
+    key: "slope15",
+    name: l10n("FIELD_COLLISION_SPARE_15"),
+    flag: 240,
+  },
 ];
 
 const collisionDirectionFlags = [
@@ -350,13 +420,11 @@ class BrushToolbar extends Component {
                   onClick={this.setSelectedPalette(tileTypeIndex + 5)}
                   className={cx("BrushToolbar__Item", {
                     "BrushToolbar__Item--Selected":
-                      tileType.flag === COLLISION_ALL
-                        ? selectedTileType === tileType.flag
-                        : selectedTileType !== COLLISION_ALL &&
-                          selectedTileType & tileType.flag,
+                    selectedTileType === tileType.flag
                   })}
                   title={`${tileType.name} (${tileTypeIndex + 5 + 1})`}
                 >
+                  
                   <div
                     className={cx(
                       "BrushToolbar__Tile",

@@ -24,7 +24,7 @@ import clamp from "lib/helpers/clamp";
 import { RootState } from "store/configureStore";
 import settingsActions from "../settings/settingsActions";
 import uuid from "uuid";
-import { paint, paintLine, floodFill } from "lib/helpers/paint";
+import { paint, paintLine, floodFill, paintMagic } from "lib/helpers/paint";
 import { Brush } from "../editor/editorState";
 import projectActions from "../project/projectActions";
 import {
@@ -1841,6 +1841,7 @@ const paintCollision: CaseReducer<
   PayloadAction<
     {
       sceneId: string;
+      projectRoot: string;
       x: number;
       y: number;
       value: number;
@@ -1898,7 +1899,17 @@ const paintCollision: CaseReducer<
 
   const equal = (a: number, b: number) => a === b;
 
-  if (brush === "fill") {
+  if (brush === "magic") {
+    paintMagic(
+      background,
+      action.payload.projectRoot,
+      action.payload.x,
+      action.payload.y,
+      action.payload.value,
+      setValue,
+      isInBounds
+    );
+  } else if (brush === "fill") {
     floodFill(
       action.payload.x,
       action.payload.y,

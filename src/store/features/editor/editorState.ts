@@ -25,7 +25,7 @@ export type Tool =
   | "eraser"
   | "select";
 
-export type Brush = "8px" | "16px" | "fill";
+export type Brush = "8px" | "16px" | "fill" | "magic";
 
 export type EditorSelectionType =
   | "world"
