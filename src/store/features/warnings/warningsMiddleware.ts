@@ -28,6 +28,7 @@ const warningsMiddleware: Middleware<Dispatch, RootState> =
                   is360: action.payload.is360,
                   warnings: info.warnings,
                   numTiles: info.numTiles,
+                  lookup: info.lookup,
                 })
               );
             }

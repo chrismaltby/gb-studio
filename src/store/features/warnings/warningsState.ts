@@ -5,6 +5,7 @@ interface CachedWarnings {
   is360: boolean;
   warnings: string[];
   numTiles: number;
+  lookup: Uint8Array;
   timestamp: number;
 }
 
@@ -38,6 +39,7 @@ const warningsSlice = createSlice({
         is360: boolean;
         warnings: string[];
         numTiles: number;
+        lookup: Uint8Array,
       }>
     ) => {
       state.backgroundsLoading = false;
@@ -46,6 +48,7 @@ const warningsSlice = createSlice({
         is360: action.payload.is360,
         warnings: action.payload.warnings,
         numTiles: action.payload.numTiles,
+        lookup: action.payload.lookup,
         timestamp: Date.now(),
       };
     },

@@ -9,6 +9,7 @@ import {
   BrickIcon,
   PaintIcon,
 } from "ui/icons/Icons";
+import warningsActions from "store/features/warnings/warningsActions";
 import {
   backgroundSelectors,
   sceneSelectors,
@@ -34,6 +35,7 @@ import {
   TILE_COLOR_PALETTE,
 } from "../../consts";
 import clipboardActions from "store/features/clipboard/clipboardActions";
+import { isEmpty, isNull } from "lodash";
 
 class SceneCursor extends Component {
   constructor() {
@@ -99,6 +101,7 @@ class SceneCursor extends Component {
       addTrigger,
       sceneId,
       backgroundId,
+      tileLookup,
       scene,
       actorDefaults,
       triggerDefaults,
@@ -208,19 +211,18 @@ class SceneCursor extends Component {
         }
       }
       if (selectedBrush === BRUSH_FILL) {
-        const projectRoot = this.props.projectRoot;
+        console.log("HELLO THERE!!!! IM ABOUT TO DO MAGIC COLLISIONS!", tileLookup);
+        if (!isEmpty(tileLookup)) {
         paintCollision({
           brush: "magic",
           sceneId,
-          projectRoot,
+          tileLookup,
           x,
           y,
           value: this.drawTile,
           isTileProp: this.isTileProp,
         });
-        console.log(sceneId);
-        //asyncCall(backgroundId);
-
+      }
       } else {
         if (
           this.drawLine &&
@@ -280,15 +282,19 @@ class SceneCursor extends Component {
       }
 
       if (selectedBrush === BRUSH_FILL) {
+        console.log("HELLO THERE!!!! IM ABOUT TO MAGIC COLOUR", tileLookup);
+        if (!isEmpty(tileLookup)) {
         paintColor({
-          brush: selectedBrush,
+          brush: "magic",
           sceneId,
           backgroundId,
+          tileLookup,
           x,
           y,
           paletteIndex: this.drawTile,
           isTileProp: this.isTileProp,
         });
+      }
       } else {
         if (
           this.drawLine &&
@@ -330,14 +336,18 @@ class SceneCursor extends Component {
         this.drawTile = 0;
         this.isTileProp = false;
         if (selectedBrush === BRUSH_FILL) {
+          console.log("HELLO THERE!!!! IM ABOUT TO MAGIC ERASE", tileLookup);
+          if (!isEmpty(tileLookup)) {
           paintCollision({
             brush: selectedBrush,
             sceneId,
+            tileLookup,
             x,
             y,
             value: 0,
             isTileProp: this.isTileProp,
           });
+        }
         } else {
           if (
             this.drawLine &&
@@ -593,7 +603,6 @@ class SceneCursor extends Component {
 }
 
 SceneCursor.propTypes = {
-  projectRoot: PropTypes.string.isRequired,
   x: PropTypes.number.isRequired,
   y: PropTypes.number.isRequired,
   entityId: PropTypes.string,
@@ -646,12 +655,14 @@ function mapStateToProps(state, props) {
   const scenesLookup = sceneSelectors.selectEntities(state);
   const scene = scenesLookup[props.sceneId];
   let backgroundId = "";
+  let tileLookup;
 
   let hoverPalette = -1;
   const hoverScene = sceneSelectors.selectById(
     state,
     state.editor.hover.sceneId
   );
+  
   if (hoverScene) {
     const background = backgroundSelectors.selectById(
       state,
@@ -662,6 +673,14 @@ function mapStateToProps(state, props) {
       hoverPalette = Array.isArray(background.tileColors)
         ? background.tileColors[x + y * scene.width] || 0
         : 0;
+      if (selectedBrush === BRUSH_FILL) {
+        const backgroundWarningsLookup = state.warnings.backgrounds;
+      if (!isEmpty(backgroundWarningsLookup[backgroundId])) {
+      tileLookup = (backgroundWarningsLookup[backgroundId].lookup);
+      }
+    }
+      //(!isEmpty(backgroundWarningsLookup))
+      //selectedBrush === BRUSH_FILL & 
     }
   }
 
@@ -680,9 +699,9 @@ function mapStateToProps(state, props) {
     showCollisions,
     scene,
     backgroundId,
+    tileLookup,
     showLayers,
     hoverPalette,
-    projectRoot: state.document && state.document.root,
   };
 }
 
@@ -703,6 +722,7 @@ const mapDispatchToProps = {
   editDestinationPosition: entitiesActions.editDestinationPosition,
   editSearchTerm: editorActions.editSearchTerm,
   setSelectedPalette: editorActions.setSelectedPalette,
+  checkBackgroundWarnings: warningsActions.checkBackgroundWarnings,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SceneCursor);

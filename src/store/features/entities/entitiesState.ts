@@ -1841,7 +1841,7 @@ const paintCollision: CaseReducer<
   PayloadAction<
     {
       sceneId: string;
-      projectRoot: string;
+      tileLookup: Uint8Array;
       x: number;
       y: number;
       value: number;
@@ -1901,8 +1901,8 @@ const paintCollision: CaseReducer<
 
   if (brush === "magic") {
     paintMagic(
-      background,
-      action.payload.projectRoot,
+      background.width,
+      action.payload.tileLookup,
       action.payload.x,
       action.payload.y,
       action.payload.value,
@@ -1955,6 +1955,7 @@ const paintColor: CaseReducer<
     {
       backgroundId: string;
       sceneId: string;
+      tileLookup: Uint8Array;
       x: number;
       y: number;
       paletteIndex: number;
@@ -2011,7 +2012,18 @@ const paintColor: CaseReducer<
 
   const equal = (a: number, b: number) => a === b;
 
-  if (brush === "fill") {
+  if (brush === "magic") {
+    console.log(action.payload.paletteIndex);
+    paintMagic(
+      background.width,
+      action.payload.tileLookup,
+      action.payload.x,
+      action.payload.y,
+      action.payload.paletteIndex,
+      setValue,
+      isInBounds
+    );
+  } else if (brush === "fill") {
     floodFill(
       action.payload.x,
       action.payload.y,
