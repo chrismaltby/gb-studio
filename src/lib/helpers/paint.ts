@@ -1,6 +1,10 @@
 import { floodFill } from "ts-flood-fill";
 import { assetFilename } from "./gbstudio";
-import { readFileToTilesDataArray, toTileLookup, tilesAndLookupToTilemap } from "../tiles/tileData";
+import {
+  readFileToTilesDataArray,
+  toTileLookup,
+  tilesAndLookupToTilemap,
+} from "../tiles/tileData";
 import { Background } from "store/features/entities/entitiesTypes";
 
 type SetValueFn<T> = (x: number, y: number, value: T) => void;
@@ -69,22 +73,18 @@ const paintMagic = <T>(
   setValue: SetValueFn<T>,
   isInBounds: InBoundsFn
 ) => {
-    const tileindex = (bgWidth * y + x);
-    console.log(tileLookup);
-    const targetTileID = tileLookup[tileindex];
-    let x1 = x;
-    let y1 = y;
-    tileLookup.forEach((element, index) => {
-      if (element == targetTileID)
-      {
-        x1 = index % bgWidth;
-        y1 = (index / bgWidth >> 0);
-        paint(x1, y1, 1, value, setValue, isInBounds);
-      }
-    });
-}
+  const tileindex = bgWidth * y + x;
+  console.log(tileLookup);
+  const targetTileID = tileLookup[tileindex];
+  let x1 = x;
+  let y1 = y;
+  tileLookup.forEach((element, index) => {
+    if (element == targetTileID) {
+      x1 = index % bgWidth;
+      y1 = (index / bgWidth) >> 0;
+      paint(x1, y1, 1, value, setValue, isInBounds);
+    }
+  });
+};
 
-  
-  
-  
 export { paint, paintLine, floodFill, paintMagic };

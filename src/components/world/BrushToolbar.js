@@ -5,6 +5,7 @@ import { connect } from "react-redux";
 import l10n from "lib/helpers/l10n";
 import {
   PaintBucketIcon,
+  WandIcon,
   SquareIcon,
   SquareIconSmall,
   EyeOpenIcon,
@@ -18,6 +19,7 @@ import {
   BRUSH_8PX,
   BRUSH_16PX,
   BRUSH_FILL,
+  BRUSH_MAGIC,
   DMG_PALETTE,
   COLLISION_TOP,
   COLLISION_BOTTOM,
@@ -79,72 +81,72 @@ const tileTypes = [
     flag: TILE_PROP_LADDER,
   },
   {
-    key: "slopeDR",
-    name: l10n("FIELD_COLLISION_SLOPE_DR"),
+    key: "slope45R",
+    name: l10n("FIELD_COLLISION_SLOPE_45R"),
     flag: 32,
   },
   {
-    key: "slopeDL",
-    name: l10n("FIELD_COLLISION_SLOPE_DL"),
+    key: "slope45L",
+    name: l10n("FIELD_COLLISION_SLOPE_45L"),
     flag: 48,
   },
   {
-    key: "slopeUR",
-    name: l10n("FIELD_COLLISION_SLOPE_UR"),
+    key: "slope_Shallow_R1",
+    name: l10n("FIELD_COLLISION_SLOPE_SHALLOW_R1"),
     flag: 64,
   },
   {
-    key: "slopeUL",
-    name: l10n("FIELD_COLLISION_SLOPE_UL"),
+    key: "slope_Shallow_R2",
+    name: l10n("FIELD_COLLISION_SLOPE_SHALLOW_R2"),
     flag: 80,
   },
   {
-    key: "slopeDR1",
-    name: l10n("FIELD_COLLISION_SLOPE_DR1"),
+    key: "slope_Shallow_L2",
+    name: l10n("FIELD_COLLISION_SLOPE_SHALLOW_L2"),
     flag: 96,
   },
   {
-    key: "slopeDR2",
-    name: l10n("FIELD_COLLISION_SLOPE_DR2"),
+    key: "slope_Shallow_L1",
+    name: l10n("FIELD_COLLISION_SLOPE_SHALLOW_L1"),
     flag: 112,
   },
   {
-    key: "slopeDL2",
-    name: l10n("FIELD_COLLISION_SLOPE_DL2"),
+    key: "slope_Steep_R1",
+    name: l10n("FIELD_COLLISION_SLOPE_STEEP_R1"),
     flag: 128,
   },
   {
-    key: "slopeDL1",
-    name: l10n("FIELD_COLLISION_SLOPE_DL1"),
+    key: "slope_Steep_R2",
+    name: l10n("FIELD_COLLISION_SLOPE_STEEP_R2"),
     flag: 144,
   },
   {
-    key: "slope10",
-    name: l10n("FIELD_COLLISION_SPARE_10"),
+    key: "slope_Steep_L2",
+    name: l10n("FIELD_COLLISION_SLOPE_STEEP_L2"),
     flag: 160,
   },
   {
-    key: "slope11",
-    name: l10n("FIELD_COLLISION_SPARE_11"),
+    key: "slope_Steep_L1",
+    name: l10n("FIELD_COLLISION_SLOPE_STEEP_L1"),
     flag: 176,
   },
   {
-    key: "slope12",
+    key: "spare_12",
     name: l10n("FIELD_COLLISION_SPARE_12"),
     flag: 192,
   },
   {
-    key: "slope13",
+    key: "spare_13",
     name: l10n("FIELD_COLLISION_SPARE_13"),
     flag: 208,
   },
   {
-    key: "slope14",
+    key: "spare_14",
     name: l10n("FIELD_COLLISION_SPARE_14"),
     flag: 224,
   },
   {
-    key: "slope15",
+    key: "spare_15",
     name: l10n("FIELD_COLLISION_SPARE_15"),
     flag: 240,
   },
@@ -355,6 +357,15 @@ class BrushToolbar extends Component {
           >
             <PaintBucketIcon />
           </div>
+          <div
+            onClick={this.setBrush(BRUSH_MAGIC)}
+            className={cx("BrushToolbar__Item", {
+              "BrushToolbar__Item--Selected": selectedBrush === BRUSH_MAGIC,
+            })}
+            title={`${l10n("TOOL_MAGIC")} (0)`}
+          >
+            <WandIcon />
+          </div>
           <div className="BrushToolbar__Divider" />
           {showPalettes &&
             paletteIndexes.map((paletteIndex) => (
@@ -496,7 +507,7 @@ class BrushToolbar extends Component {
 
 BrushToolbar.propTypes = {
   visible: PropTypes.bool.isRequired,
-  selectedBrush: PropTypes.oneOf([BRUSH_8PX, BRUSH_16PX, BRUSH_FILL])
+  selectedBrush: PropTypes.oneOf([BRUSH_8PX, BRUSH_16PX, BRUSH_FILL, BRUSH_MAGIC])
     .isRequired,
   showLayers: PropTypes.bool.isRequired,
   showPalettes: PropTypes.bool.isRequired,

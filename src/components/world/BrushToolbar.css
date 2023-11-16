@@ -142,43 +142,25 @@
   border-bottom: 4px solid green;
 }
 
-.BrushToolbar__Tile--slopeDR::before {
+.BrushToolbar__Tile--slope45R::before {
   content: "";
   width: 20px;
   height: 20px;
   display: block;
-  background-color: green;
+  background-color: blue;
   clip-path: polygon(0% 100%, 100% 0%, 100% 100%);
 }
 
-.BrushToolbar__Tile--slopeDL::before {
+.BrushToolbar__Tile--slope45L::before {
   content: "";
   width: 20px;
   height: 20px;
   display: block;
-  background-color: green;
+  background-color: blue;
   clip-path: polygon(0% 100%, 0% 0%, 100% 100%);
 }
 
-.BrushToolbar__Tile--slopeUR::before {
-  content: "";
-  width: 20px;
-  height: 20px;
-  display: block;
-  background-color: yellow;
-  clip-path: polygon(0% 0%, 100% 100%, 100% 0%);
-}
-
-.BrushToolbar__Tile--slopeUL::before {
-  content: "";
-  width: 20px;
-  height: 20px;
-  display: block;
-  background-color: yellow;
-  clip-path: polygon(0% 0%, 0% 100%, 100% 0%);
-}
-
-.BrushToolbar__Tile--slopeDR1::before {
+.BrushToolbar__Tile--slope_Shallow_R1::before {
   content: "";
   width: 20px;
   height: 20px;
@@ -187,7 +169,7 @@
   clip-path: polygon(0% 100%, 100% 50%, 100% 100%);
 }
 
-.BrushToolbar__Tile--slopeDR2::before {
+.BrushToolbar__Tile--slope_Shallow_R2::before {
   content: "";
   width: 20px;
   height: 20px;
@@ -196,7 +178,7 @@
   clip-path: polygon(0% 50%, 100% 0%, 100% 50%);
 }
 
-.BrushToolbar__Tile--slopeDL1::before {
+.BrushToolbar__Tile--slope_Shallow_L1::before {
   content: "";
   width: 20px;
   height: 20px;
@@ -205,7 +187,7 @@
   clip-path: polygon(0% 100%, 0% 50%, 100% 100%);
 }
 
-.BrushToolbar__Tile--slopeDL2::before {
+.BrushToolbar__Tile--slope_Shallow_L2::before {
   content: "";
   width: 20px;
   height: 20px;
@@ -214,31 +196,57 @@
   clip-path: polygon(0% 50%, 0% 0%, 100% 50%);
 }
 
-.BrushToolbar__Tile--slope10::before {
-  padding: 3px;
-  content: "10";
+.BrushToolbar__Tile--slope_Steep_R1::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  display: block;
+  background-color: fuchsia;
+  clip-path: polygon(0% 100%, 50% 25%, 50% 100%);
 }
 
-.BrushToolbar__Tile--slope11::before {
-  padding: 4px;
-  content: "11";
+.BrushToolbar__Tile--slope_Steep_R2::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  display: block;
+  background-color: fuchsia;
+  clip-path: polygon(50% 75%, 100% 0%, 100% 75%);
 }
 
-.BrushToolbar__Tile--slope12::before {
+.BrushToolbar__Tile--slope_Steep_L2::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  display: block;
+  background-color: cyan;
+  clip-path: polygon(50% 75%, 0% 0%, 0% 75%);
+}
+
+.BrushToolbar__Tile--slope_Steep_L1::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  display: block;
+  background-color: cyan;
+  clip-path: polygon(100% 100%, 50% 25%, 50% 100%);
+}
+
+.BrushToolbar__Tile--spare_12::before {
   padding: 3px;
   content: " 12";
 }
 
-.BrushToolbar__Tile--slope13::before {
+.BrushToolbar__Tile--spare_13::before {
   padding: 3px;
   content: " 13";
 }
 
-.BrushToolbar__Tile--slope14::before {
+.BrushToolbar__Tile--spare_14::before {
   padding: 3px;
   content: "14";
 }
-.BrushToolbar__Tile--slope15::before {
+.BrushToolbar__Tile--spare_15::before {
   padding: 3px;
   content: "15";
 }

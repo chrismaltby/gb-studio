@@ -37,7 +37,7 @@ const SceneCollisions = ({
         for (let xi = 0; xi < width; xi++) {
           const collisionIndex = width * yi + xi;
           const tile = collisions[collisionIndex];
-          const tileprop = (tile >> 4);
+          const tileprop = tile >> 4;
           if ((tile & COLLISION_ALL) === COLLISION_ALL) {
             ctx.fillStyle = "rgba(250,40,40,0.6)";
             ctx.fillRect(xi * TILE_SIZE, yi * TILE_SIZE, TILE_SIZE, TILE_SIZE);
@@ -80,92 +80,108 @@ const SceneCollisions = ({
             }
           }
           if (tileprop) {
-          switch (tileprop) {
-            case 1: // Ladder
-            ctx.fillStyle = "rgba(0,128,0,0.6)";
-            ctx.fillRect(
-              (xi + 0.0) * TILE_SIZE,
-              yi * TILE_SIZE,
-              TILE_SIZE * 0.2,
-              TILE_SIZE
-            );
-            ctx.fillRect(
-              (xi + 0.8) * TILE_SIZE,
-              yi * TILE_SIZE,
-              TILE_SIZE * 0.2,
-              TILE_SIZE
-            );
-            ctx.fillRect(
-              xi * TILE_SIZE,
-              (yi + 0.4) * TILE_SIZE,
-              TILE_SIZE,
-              TILE_SIZE * 0.2
-            );
-              break;
-            case 2: // slope right
-              ctx.strokeStyle = "rgba(0,0,255,0.6)";
-              ctx.beginPath();
-              ctx.moveTo((xi + 0) * TILE_SIZE, (yi + 1) * TILE_SIZE);
-              ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 0) * TILE_SIZE);
-              ctx.stroke(); // Render the path
-              break;
-            case 3: // slope left
-            ctx.strokeStyle = "rgba(0,0,255,0.6)";
-              ctx.beginPath();
-              ctx.moveTo((xi + 0) * TILE_SIZE, (yi + 0) * TILE_SIZE);
-              ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 1) * TILE_SIZE);
-              ctx.stroke(); // Render the path
-              break;
-            case 4: // slope Upper right
-            ctx.strokeStyle = "rgba(255,255,0,0.6)";
-              ctx.beginPath();
-              ctx.moveTo((xi + 1) * TILE_SIZE, (yi + 1) * TILE_SIZE);
-              ctx.lineTo((xi + 0) * TILE_SIZE, (yi + 0) * TILE_SIZE);
-              ctx.stroke(); // Render the path
-              break;
-            case 5: // slope Upper left
-            ctx.strokeStyle = "rgba(255,255,0,0.6)";
-              ctx.beginPath();
-              ctx.moveTo((xi + 1) * TILE_SIZE, (yi + 0) * TILE_SIZE);
-              ctx.lineTo((xi + 0) * TILE_SIZE, (yi + 1) * TILE_SIZE);
-              ctx.stroke(); // Render the path
-              break;
-            case 6: // slope right shalow1
-            ctx.strokeStyle = "rgba(0,128,0,0.6)";
-              ctx.beginPath();
-              ctx.moveTo((xi + 0) * TILE_SIZE, (yi + 1) * TILE_SIZE);
-              ctx.lineTo((xi + 1) * TILE_SIZE, (yi + .5) * TILE_SIZE);
-              ctx.stroke(); // Render the path
-              break;
-            case 7: // slope right shalow2
-            ctx.strokeStyle = "rgba(0,128,0,0.6)";
-              ctx.beginPath();
-              ctx.moveTo((xi + 0) * TILE_SIZE, (yi + .5) * TILE_SIZE);
-              ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 0) * TILE_SIZE);
-              ctx.stroke(); // Render the path
-              break;
-            case 8: // slope left shalow2
-            ctx.strokeStyle = "rgba(0,128,0,0.6)";
-              ctx.beginPath();
-              ctx.moveTo((xi + 1) * TILE_SIZE, (yi + .5) * TILE_SIZE);
-              ctx.lineTo((xi + 0) * TILE_SIZE, (yi + 0) * TILE_SIZE);
-              ctx.stroke(); // Render the path
-              break;
-            case 9: // slope left shalow1
-            ctx.strokeStyle = "rgba(0,128,0,0.6)";
-              ctx.beginPath();
-              ctx.moveTo((xi + 1) * TILE_SIZE, (yi + 1) * TILE_SIZE);
-              ctx.lineTo((xi + 0) * TILE_SIZE, (yi + .5) * TILE_SIZE);
-              ctx.stroke(); // Render the path
-              break;
-          
-            default:
-              ctx.fillStyle = "rgba(0,128,0,1)";
-              ctx.fillText(tileprop.toString(), 
-              (xi) * TILE_SIZE, 
-              (yi + .9) * TILE_SIZE);
-              break;
-          }
+            switch (tileprop) {
+              case 1: // Ladder
+                ctx.fillStyle = "rgba(0,128,0,0.6)";
+                ctx.fillRect(
+                  (xi + 0.0) * TILE_SIZE,
+                  yi * TILE_SIZE,
+                  TILE_SIZE * 0.2,
+                  TILE_SIZE
+                );
+                ctx.fillRect(
+                  (xi + 0.8) * TILE_SIZE,
+                  yi * TILE_SIZE,
+                  TILE_SIZE * 0.2,
+                  TILE_SIZE
+                );
+                ctx.fillRect(
+                  xi * TILE_SIZE,
+                  (yi + 0.4) * TILE_SIZE,
+                  TILE_SIZE,
+                  TILE_SIZE * 0.2
+                );
+                break;
+              case 2: // slope right
+                ctx.strokeStyle = "rgba(0,0,255,0.6)";
+                ctx.beginPath();
+                ctx.moveTo((xi + 0) * TILE_SIZE, (yi + 1) * TILE_SIZE);
+                ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 0) * TILE_SIZE);
+                ctx.stroke(); // Render the path
+                break;
+              case 3: // slope left
+                ctx.strokeStyle = "rgba(0,0,255,0.6)";
+                ctx.beginPath();
+                ctx.moveTo((xi + 0) * TILE_SIZE, (yi + 0) * TILE_SIZE);
+                ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 1) * TILE_SIZE);
+                ctx.stroke(); // Render the path
+                break;
+              case 4: // slope right shalow1
+                ctx.strokeStyle = "rgba(0,0,255,0.6)";
+                ctx.beginPath();
+                ctx.moveTo((xi + 0) * TILE_SIZE, (yi + 1) * TILE_SIZE);
+                ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
+                ctx.stroke(); // Render the path
+                break;
+              case 5: // slope right shalow2
+                ctx.strokeStyle = "rgba(0,0,255,0.6)";
+                ctx.beginPath();
+                ctx.moveTo((xi + 0) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
+                ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 0) * TILE_SIZE);
+                ctx.stroke(); // Render the path
+                break;
+              case 6: // slope left shalow2
+                ctx.strokeStyle = "rgba(0,0,255,0.6)";
+                ctx.beginPath();
+                ctx.moveTo((xi + 1) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
+                ctx.lineTo((xi + 0) * TILE_SIZE, (yi + 0) * TILE_SIZE);
+                ctx.stroke(); // Render the path
+                break;
+              case 7: // slope left shalow1
+                ctx.strokeStyle = "rgba(0,0,255,0.6)";
+                ctx.beginPath();
+                ctx.moveTo((xi + 1) * TILE_SIZE, (yi + 1) * TILE_SIZE);
+                ctx.lineTo((xi + 0) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
+                ctx.stroke(); // Render the path
+                break;
+              case 8: // slope right steep1
+                ctx.strokeStyle = "rgba(0,0,255,0.6)";
+                ctx.beginPath();
+                ctx.moveTo((xi + 0) * TILE_SIZE, (yi + 1) * TILE_SIZE);
+                ctx.lineTo((xi + 0.5) * TILE_SIZE, (yi + 0) * TILE_SIZE);
+                ctx.stroke(); // Render the path
+                break;
+              case 9: // slope right steep2
+                ctx.strokeStyle = "rgba(0,0,255,0.6)";
+                ctx.beginPath();
+                ctx.moveTo((xi + 0.5) * TILE_SIZE, (yi + 1) * TILE_SIZE);
+                ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 0) * TILE_SIZE);
+                ctx.stroke(); // Render the path
+                break;
+              case 10: // slope left steep2
+                ctx.strokeStyle = "rgba(0,0,255,0.6)";
+                ctx.beginPath();
+                ctx.moveTo((xi + 0) * TILE_SIZE, (yi + 0) * TILE_SIZE);
+                ctx.lineTo((xi + 0.5) * TILE_SIZE, (yi + 1) * TILE_SIZE);
+                ctx.stroke(); // Render the path
+                break;
+              case 11: // slope left steep1
+                ctx.strokeStyle = "rgba(0,0,255,0.6)";
+                ctx.beginPath();
+                ctx.moveTo((xi + 0.5) * TILE_SIZE, (yi + 0) * TILE_SIZE);
+                ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 1) * TILE_SIZE);
+                ctx.stroke(); // Render the path
+                break;
+
+              default:
+                ctx.fillStyle = "rgba(0,128,0,1)";
+                ctx.fillText(
+                  tileprop.toString(),
+                  xi * TILE_SIZE,
+                  (yi + 0.9) * TILE_SIZE
+                );
+                break;
+            }
           }
         }
       }

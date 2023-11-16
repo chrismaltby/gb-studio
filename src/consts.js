@@ -45,6 +45,7 @@ export const TOOL_ERASER = "eraser";
 export const BRUSH_8PX = "8px";
 export const BRUSH_16PX = "16px";
 export const BRUSH_FILL = "fill";
+export const BRUSH_MAGIC = "magic";
 
 export const SPRITE_TYPE_STATIC = "static";
 export const SPRITE_TYPE_ACTOR = "actor";

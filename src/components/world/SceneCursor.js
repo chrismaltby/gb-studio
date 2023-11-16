@@ -26,6 +26,7 @@ import {
   TOOL_TRIGGERS,
   TOOL_ACTORS,
   BRUSH_FILL,
+  BRUSH_MAGIC,
   BRUSH_16PX,
   TOOL_SELECT,
   COLLISION_ALL,
@@ -211,18 +212,27 @@ class SceneCursor extends Component {
         }
       }
       if (selectedBrush === BRUSH_FILL) {
-        console.log("HELLO THERE!!!! IM ABOUT TO DO MAGIC COLLISIONS!", tileLookup);
+          paintCollision({
+            brush: selectedBrush,
+            sceneId,
+            x,
+            y,
+            value: this.drawTile,
+            isTileProp: this.isTileProp,
+          });
+      } else if (selectedBrush === BRUSH_MAGIC) {
+        console.log("IM ABOUT TO DO MAGIC COLLISIONS!", tileLookup);
         if (!isEmpty(tileLookup)) {
-        paintCollision({
-          brush: "magic",
-          sceneId,
-          tileLookup,
-          x,
-          y,
-          value: this.drawTile,
-          isTileProp: this.isTileProp,
-        });
-      }
+          paintCollision({
+            brush: "magic",
+            sceneId,
+            tileLookup,
+            x,
+            y,
+            value: this.drawTile,
+            isTileProp: this.isTileProp,
+          });
+        }
       } else {
         if (
           this.drawLine &&
@@ -282,19 +292,28 @@ class SceneCursor extends Component {
       }
 
       if (selectedBrush === BRUSH_FILL) {
-        console.log("HELLO THERE!!!! IM ABOUT TO MAGIC COLOUR", tileLookup);
-        if (!isEmpty(tileLookup)) {
-        paintColor({
-          brush: "magic",
+        paintCollision({
+          brush: selectedBrush,
           sceneId,
-          backgroundId,
-          tileLookup,
           x,
           y,
-          paletteIndex: this.drawTile,
+          value: this.drawTile,
           isTileProp: this.isTileProp,
         });
-      }
+    } else if (selectedBrush === BRUSH_MAGIC) {
+        console.log("HELLO THERE!!!! IM ABOUT TO MAGIC COLOUR", tileLookup);
+        if (!isEmpty(tileLookup)) {
+          paintColor({
+            brush: "magic",
+            sceneId,
+            backgroundId,
+            tileLookup,
+            x,
+            y,
+            paletteIndex: this.drawTile,
+            isTileProp: this.isTileProp,
+          });
+        }
       } else {
         if (
           this.drawLine &&
@@ -336,18 +355,27 @@ class SceneCursor extends Component {
         this.drawTile = 0;
         this.isTileProp = false;
         if (selectedBrush === BRUSH_FILL) {
-          console.log("HELLO THERE!!!! IM ABOUT TO MAGIC ERASE", tileLookup);
-          if (!isEmpty(tileLookup)) {
           paintCollision({
             brush: selectedBrush,
             sceneId,
-            tileLookup,
             x,
             y,
-            value: 0,
+            value: this.drawTile,
             isTileProp: this.isTileProp,
           });
-        }
+      } else if (selectedBrush === BRUSH_MAGIC) {
+          console.log("IM ABOUT TO MAGIC ERASE", tileLookup);
+          if (!isEmpty(tileLookup)) {
+            paintCollision({
+              brush: selectedBrush,
+              sceneId,
+              tileLookup,
+              x,
+              y,
+              value: 0,
+              isTileProp: this.isTileProp,
+            });
+          }
         } else {
           if (
             this.drawLine &&
@@ -662,7 +690,7 @@ function mapStateToProps(state, props) {
     state,
     state.editor.hover.sceneId
   );
-  
+
   if (hoverScene) {
     const background = backgroundSelectors.selectById(
       state,
@@ -673,14 +701,12 @@ function mapStateToProps(state, props) {
       hoverPalette = Array.isArray(background.tileColors)
         ? background.tileColors[x + y * scene.width] || 0
         : 0;
-      if (selectedBrush === BRUSH_FILL) {
+      if (selectedBrush === BRUSH_MAGIC) {
         const backgroundWarningsLookup = state.warnings.backgrounds;
-      if (!isEmpty(backgroundWarningsLookup[backgroundId])) {
-      tileLookup = (backgroundWarningsLookup[backgroundId].lookup);
+        if (!isEmpty(backgroundWarningsLookup[backgroundId])) {
+          tileLookup = backgroundWarningsLookup[backgroundId].lookup;
+        }
       }
-    }
-      //(!isEmpty(backgroundWarningsLookup))
-      //selectedBrush === BRUSH_FILL & 
     }
   }
 
