@@ -212,14 +212,14 @@ class SceneCursor extends Component {
         }
       }
       if (selectedBrush === BRUSH_FILL) {
-          paintCollision({
-            brush: selectedBrush,
-            sceneId,
-            x,
-            y,
-            value: this.drawTile,
-            isTileProp: this.isTileProp,
-          });
+        paintCollision({
+          brush: selectedBrush,
+          sceneId,
+          x,
+          y,
+          value: this.drawTile,
+          isTileProp: this.isTileProp,
+        });
       } else if (selectedBrush === BRUSH_MAGIC) {
         console.log("IM ABOUT TO DO MAGIC COLLISIONS!", tileLookup);
         if (!isEmpty(tileLookup)) {
@@ -300,7 +300,7 @@ class SceneCursor extends Component {
           value: this.drawTile,
           isTileProp: this.isTileProp,
         });
-    } else if (selectedBrush === BRUSH_MAGIC) {
+      } else if (selectedBrush === BRUSH_MAGIC) {
         console.log("HELLO THERE!!!! IM ABOUT TO MAGIC COLOUR", tileLookup);
         if (!isEmpty(tileLookup)) {
           paintColor({
@@ -363,7 +363,7 @@ class SceneCursor extends Component {
             value: this.drawTile,
             isTileProp: this.isTileProp,
           });
-      } else if (selectedBrush === BRUSH_MAGIC) {
+        } else if (selectedBrush === BRUSH_MAGIC) {
           console.log("IM ABOUT TO MAGIC ERASE", tileLookup);
           if (!isEmpty(tileLookup)) {
             paintCollision({

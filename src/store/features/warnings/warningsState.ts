@@ -39,7 +39,7 @@ const warningsSlice = createSlice({
         is360: boolean;
         warnings: string[];
         numTiles: number;
-        lookup: Uint8Array,
+        lookup: Uint8Array;
       }>
     ) => {
       state.backgroundsLoading = false;

@@ -431,11 +431,10 @@ class BrushToolbar extends Component {
                   onClick={this.setSelectedPalette(tileTypeIndex + 5)}
                   className={cx("BrushToolbar__Item", {
                     "BrushToolbar__Item--Selected":
-                    selectedTileType === tileType.flag
+                      selectedTileType === tileType.flag,
                   })}
                   title={`${tileType.name} (${tileTypeIndex + 5 + 1})`}
                 >
-                  
                   <div
                     className={cx(
                       "BrushToolbar__Tile",
@@ -507,8 +506,12 @@ class BrushToolbar extends Component {
 
 BrushToolbar.propTypes = {
   visible: PropTypes.bool.isRequired,
-  selectedBrush: PropTypes.oneOf([BRUSH_8PX, BRUSH_16PX, BRUSH_FILL, BRUSH_MAGIC])
-    .isRequired,
+  selectedBrush: PropTypes.oneOf([
+    BRUSH_8PX,
+    BRUSH_16PX,
+    BRUSH_FILL,
+    BRUSH_MAGIC,
+  ]).isRequired,
   showLayers: PropTypes.bool.isRequired,
   showPalettes: PropTypes.bool.isRequired,
   showTileTypes: PropTypes.bool.isRequired,
