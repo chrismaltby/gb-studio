@@ -46,6 +46,7 @@ import { Brush } from "store/features/editor/editorState";
 import { RootState } from "store/configureStore";
 import { cloneDeep } from "lodash";
 import { NavigationSection } from "store/features/navigation/navigationState";
+import styled, { css } from "styled-components";
 
 const paletteIndexes = [0, 1, 2, 3, 4, 5, 6, 7];
 const validTools = [TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER];
@@ -177,6 +178,73 @@ function useHiglightPalette() {
 
   return highlightPalette;
 }
+
+interface BrushToolbarWrapperProps {
+  visible: boolean;
+}
+
+const BrushToolbarWrapper = styled.div<BrushToolbarWrapperProps>`
+  position: absolute;
+  left: 56px;
+  top: ${(props) => (props.visible ? "10px" : "-45px")};
+  background-color: var(--sidebar-bg-color);
+  border: 1px solid var(--sidebar-edge-color);
+  border-radius: 4px;
+  padding: 0 4px;
+  transition: top 0.2s ease-in-out;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+
+  svg {
+    fill: var(--main-text-color);
+    width: 20px;
+  }
+`;
+
+interface BrushToolbarItemWrapperProps {
+  selected: boolean;
+}
+
+const BrushToolbarItem = styled.div<BrushToolbarItemWrapperProps>`
+  position: relative;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  ${(props) =>
+    props.selected
+      ? css`
+          background-color: var(--sidebar-selected-color);
+        `
+      : ""}
+
+  :hover {
+    background-color: ${(props) =>
+      props.selected
+        ? "var(--sidebar-selected-color)"
+        : "var(--sidebar-hover-color);"};
+  }
+`;
+
+const BrushToolbarDivider = styled.div`
+  background-color: var(--sidebar-edge-color);
+  min-width: 1px;
+  align-self: stretch;
+  margin: 5px 5px;
+`;
+
+const BrushToolbarCollisionTile = styled.div`
+  position: relative;
+  background-color: var(--input-bg-color);
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--input-bg-color);
+  box-sizing: border-box;
+  border-radius: 4px;
+}`;
 
 const BrushToolbar = () => {
   const dispatch = useDispatch();
@@ -361,54 +429,44 @@ const BrushToolbar = () => {
 
   return (
     <>
-      <div className={cx("BrushToolbar", { "BrushToolbar--Visible": visible })}>
-        <div
+      <BrushToolbarWrapper visible={visible} className={cx("BrushToolbar")}>
+        {/* // <div className={cx("BrushToolbar", { "BrushToolbar--Visible": visible })}> */}
+        <BrushToolbarItem
           onClick={() => setBrush(BRUSH_8PX)}
-          className={cx("BrushToolbar__Item", {
-            "BrushToolbar__Item--Selected": selectedBrush === BRUSH_8PX,
-          })}
+          selected={selectedBrush === BRUSH_8PX}
           title={`${l10n("TOOL_BRUSH", { size: "8px" })} (8)`}
         >
           <SquareIconSmall />
-        </div>
-        <div
+        </BrushToolbarItem>
+        <BrushToolbarItem
           onClick={() => setBrush(BRUSH_16PX)}
-          className={cx("BrushToolbar__Item", {
-            "BrushToolbar__Item--Selected": selectedBrush === BRUSH_16PX,
-          })}
+          selected={selectedBrush === BRUSH_16PX}
           title={`${l10n("TOOL_BRUSH", { size: "16px" })} (9)`}
         >
           <SquareIcon />
-        </div>
-        <div
+        </BrushToolbarItem>
+        <BrushToolbarItem
           onClick={() => setBrush(BRUSH_FILL)}
-          className={cx("BrushToolbar__Item", {
-            "BrushToolbar__Item--Selected": selectedBrush === BRUSH_FILL,
-          })}
+          selected={selectedBrush === BRUSH_FILL}
           title={`${l10n("TOOL_FILL")} (0)`}
         >
           <PaintBucketIcon />
-        </div>
-        <div
+        </BrushToolbarItem>
+        <BrushToolbarItem
           onClick={() => setBrush(BRUSH_MAGIC)}
-          className={cx("BrushToolbar__Item", {
-            "BrushToolbar__Item--Selected": selectedBrush === BRUSH_MAGIC,
-          })}
+          selected={selectedBrush === BRUSH_MAGIC}
           title={`${l10n("TOOL_MAGIC")} (0)`}
         >
           <WandIcon />
-        </div>
-        <div className="BrushToolbar__Divider" />
+        </BrushToolbarItem>
+        <BrushToolbarDivider />
         {showPalettes &&
           paletteIndexes.map((paletteIndex) => (
-            <div
+            <BrushToolbarItem
               key={paletteIndex}
               onClick={setSelectedPalette(paletteIndex)}
               onMouseDown={startReplacePalette(paletteIndex)}
-              className={cx("BrushToolbar__Item", {
-                "BrushToolbar__Item--Selected":
-                  paletteIndex === selectedPalette,
-              })}
+              selected={paletteIndex === selectedPalette}
               title={`${l10n("TOOL_PALETTE_N", {
                 number: paletteIndex + 1,
               })} (${paletteIndex + 1}) - ${palettes[paletteIndex]?.name}`}
@@ -417,79 +475,64 @@ const BrushToolbar = () => {
                 colors={palettes[paletteIndex]?.colors ?? []}
                 highlight={paletteIndex === highlightPalette}
               />
-            </div>
+            </BrushToolbarItem>
           ))}
-        {showPalettes && <div className="BrushToolbar__Divider" />}
+        {showPalettes && <BrushToolbarDivider />}
         {showPalettes && (
-          <div
+          <BrushToolbarItem
             onClick={setSelectedPalette(TILE_COLOR_PROP_PRIORITY)}
-            className={cx("BrushToolbar__Item", {
-              "BrushToolbar__Item--Selected":
-                TILE_COLOR_PROP_PRIORITY === selectedPalette,
-            })}
+            selected={TILE_COLOR_PROP_PRIORITY === selectedPalette}
             title={l10n("TOOL_TILE_PRIORITY")}
           >
             <PriorityTileIcon />
-          </div>
+          </BrushToolbarItem>
         )}
-        {showPalettes && <div className="BrushToolbar__Divider" />}
+        {showPalettes && <BrushToolbarDivider />}
         {showTileTypes && (
           <>
             {tileTypes.slice(0, 5).map((tileType, tileTypeIndex) => (
-              <div
+              <BrushToolbarItem
                 key={tileType.name}
                 onClick={setSelectedPalette(tileTypeIndex)}
-                className={cx("BrushToolbar__Item", {
-                  "BrushToolbar__Item--Selected":
-                    tileType.flag === COLLISION_ALL
-                      ? selectedTileType === tileType.flag
-                      : selectedTileType !== COLLISION_ALL &&
-                        selectedTileType & tileType.flag,
-                })}
+                selected={
+                  tileType.flag === COLLISION_ALL
+                    ? selectedTileType === tileType.flag
+                    : selectedTileType !== COLLISION_ALL &&
+                      !!(selectedTileType & tileType.flag)
+                }
                 title={`${tileType.name} (${tileTypeIndex + 1})`}
               >
-                <div
-                  className={cx(
-                    "BrushToolbar__Tile",
-                    `BrushToolbar__Tile--${tileType.key}`
-                  )}
+                <BrushToolbarCollisionTile
+                  className={`BrushToolbar__Tile--${tileType.key}`}
                 />
-              </div>
+              </BrushToolbarItem>
             ))}
-            <div className="BrushToolbar__Divider" />
+            <BrushToolbarDivider />
             {tileTypes.slice(5).map((tileType, tileTypeIndex) => (
-              <div
+              <BrushToolbarItem
                 key={tileType.name}
                 onClick={setSelectedPalette(tileTypeIndex + 5)}
-                className={cx("BrushToolbar__Item", {
-                  "BrushToolbar__Item--Selected":
-                    selectedTileType === tileType.flag,
-                })}
+                selected={selectedTileType === tileType.flag}
                 title={`${tileType.name} (${tileTypeIndex + 5 + 1})`}
               >
-                <div
-                  className={cx(
-                    "BrushToolbar__Tile",
-                    `BrushToolbar__Tile--${tileType.key}`
-                  )}
+                <BrushToolbarCollisionTile
+                  className={`BrushToolbar__Tile--${tileType.key}`}
                 />
-              </div>
+              </BrushToolbarItem>
             ))}
-            <div className="BrushToolbar__Divider" />
+            <BrushToolbarDivider />
           </>
         )}
-        <div
+        <BrushToolbarItem
           onClick={toggleShowLayers}
-          className={cx("BrushToolbar__Item", {
-            "BrushToolbar__Item--Selected": !showLayers,
-          })}
+          selected={!showLayers}
           title={`${
             showLayers ? l10n("TOOL_HIDE_LAYERS") : l10n("TOOL_SHOW_LAYERS")
           } (-)`}
         >
           {showLayers ? <EyeOpenIcon /> : <EyeClosedIcon />}
-        </div>
-      </div>
+        </BrushToolbarItem>
+      </BrushToolbarWrapper>
       {modalColorIndex > -1 && (
         <>
           <ModalFade onClick={closePaletteModal} />
