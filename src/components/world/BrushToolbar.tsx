@@ -30,7 +30,6 @@ import {
 } from "../../consts";
 import PaletteBlock from "../library/PaletteBlock";
 import Modal, { ModalFade, ModalContent } from "../library/Modal";
-import Button from "../library/Button";
 import { FormField } from "../library/Forms";
 import editorActions from "store/features/editor/editorActions";
 import {
@@ -46,7 +45,12 @@ import { Brush } from "store/features/editor/editorState";
 import { RootState } from "store/configureStore";
 import { cloneDeep } from "lodash";
 import { NavigationSection } from "store/features/navigation/navigationState";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
+import FloatingPanel, {
+  FloatingPanelBreak,
+  FloatingPanelDivider,
+} from "ui/panels/FloatingPanel";
+import { Button } from "ui/buttons/Button";
 
 const paletteIndexes = [0, 1, 2, 3, 4, 5, 6, 7];
 const validTools = [TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER];
@@ -183,57 +187,14 @@ interface BrushToolbarWrapperProps {
   visible: boolean;
 }
 
-const BrushToolbarWrapper = styled.div<BrushToolbarWrapperProps>`
+const BrushToolbarWrapper = styled(FloatingPanel)<BrushToolbarWrapperProps>`
   position: absolute;
   left: 56px;
   top: ${(props) => (props.visible ? "10px" : "-45px")};
-  background-color: var(--sidebar-bg-color);
-  border: 1px solid var(--sidebar-edge-color);
-  border-radius: 4px;
-  padding: 0 4px;
   transition: top 0.2s ease-in-out;
-  display: flex;
+  z-index: 10;
   flex-wrap: wrap;
-  align-items: center;
-
-  svg {
-    fill: var(--main-text-color);
-    width: 20px;
-  }
-`;
-
-interface BrushToolbarItemWrapperProps {
-  selected: boolean;
-}
-
-const BrushToolbarItem = styled.div<BrushToolbarItemWrapperProps>`
-  position: relative;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  ${(props) =>
-    props.selected
-      ? css`
-          background-color: var(--sidebar-selected-color);
-        `
-      : ""}
-
-  :hover {
-    background-color: ${(props) =>
-      props.selected
-        ? "var(--sidebar-selected-color)"
-        : "var(--sidebar-hover-color);"};
-  }
-`;
-
-const BrushToolbarDivider = styled.div`
-  background-color: var(--sidebar-edge-color);
-  min-width: 1px;
-  align-self: stretch;
-  margin: 5px 5px;
+  margin-right: 10px;
 `;
 
 const BrushToolbarCollisionTile = styled.div`
@@ -431,42 +392,47 @@ const BrushToolbar = () => {
     <>
       <BrushToolbarWrapper visible={visible} className={cx("BrushToolbar")}>
         {/* // <div className={cx("BrushToolbar", { "BrushToolbar--Visible": visible })}> */}
-        <BrushToolbarItem
+        <Button
+          variant="transparent"
           onClick={() => setBrush(BRUSH_8PX)}
-          selected={selectedBrush === BRUSH_8PX}
+          active={selectedBrush === BRUSH_8PX}
           title={`${l10n("TOOL_BRUSH", { size: "8px" })} (8)`}
         >
           <SquareIconSmall />
-        </BrushToolbarItem>
-        <BrushToolbarItem
+        </Button>
+        <Button
+          variant="transparent"
           onClick={() => setBrush(BRUSH_16PX)}
-          selected={selectedBrush === BRUSH_16PX}
+          active={selectedBrush === BRUSH_16PX}
           title={`${l10n("TOOL_BRUSH", { size: "16px" })} (9)`}
         >
           <SquareIcon />
-        </BrushToolbarItem>
-        <BrushToolbarItem
+        </Button>
+        <Button
+          variant="transparent"
           onClick={() => setBrush(BRUSH_FILL)}
-          selected={selectedBrush === BRUSH_FILL}
+          active={selectedBrush === BRUSH_FILL}
           title={`${l10n("TOOL_FILL")} (0)`}
         >
           <PaintBucketIcon />
-        </BrushToolbarItem>
-        <BrushToolbarItem
+        </Button>
+        <Button
+          variant="transparent"
           onClick={() => setBrush(BRUSH_MAGIC)}
-          selected={selectedBrush === BRUSH_MAGIC}
+          active={selectedBrush === BRUSH_MAGIC}
           title={`${l10n("TOOL_MAGIC")} (0)`}
         >
           <WandIcon />
-        </BrushToolbarItem>
-        <BrushToolbarDivider />
+        </Button>
+        <FloatingPanelDivider />
         {showPalettes &&
           paletteIndexes.map((paletteIndex) => (
-            <BrushToolbarItem
+            <Button
+              variant="transparent"
               key={paletteIndex}
               onClick={setSelectedPalette(paletteIndex)}
               onMouseDown={startReplacePalette(paletteIndex)}
-              selected={paletteIndex === selectedPalette}
+              active={paletteIndex === selectedPalette}
               title={`${l10n("TOOL_PALETTE_N", {
                 number: paletteIndex + 1,
               })} (${paletteIndex + 1}) - ${palettes[paletteIndex]?.name}`}
@@ -475,26 +441,28 @@ const BrushToolbar = () => {
                 colors={palettes[paletteIndex]?.colors ?? []}
                 highlight={paletteIndex === highlightPalette}
               />
-            </BrushToolbarItem>
+            </Button>
           ))}
-        {showPalettes && <BrushToolbarDivider />}
+        {showPalettes && <FloatingPanelDivider />}
         {showPalettes && (
-          <BrushToolbarItem
+          <Button
+            variant="transparent"
             onClick={setSelectedPalette(TILE_COLOR_PROP_PRIORITY)}
-            selected={TILE_COLOR_PROP_PRIORITY === selectedPalette}
+            active={TILE_COLOR_PROP_PRIORITY === selectedPalette}
             title={l10n("TOOL_TILE_PRIORITY")}
           >
             <PriorityTileIcon />
-          </BrushToolbarItem>
+          </Button>
         )}
-        {showPalettes && <BrushToolbarDivider />}
+        {showPalettes && <FloatingPanelDivider />}
         {showTileTypes && (
           <>
             {tileTypes.slice(0, 5).map((tileType, tileTypeIndex) => (
-              <BrushToolbarItem
+              <Button
+                variant="transparent"
                 key={tileType.name}
                 onClick={setSelectedPalette(tileTypeIndex)}
-                selected={
+                active={
                   tileType.flag === COLLISION_ALL
                     ? selectedTileType === tileType.flag
                     : selectedTileType !== COLLISION_ALL &&
@@ -505,33 +473,49 @@ const BrushToolbar = () => {
                 <BrushToolbarCollisionTile
                   className={`BrushToolbar__Tile--${tileType.key}`}
                 />
-              </BrushToolbarItem>
+              </Button>
             ))}
-            <BrushToolbarDivider />
-            {tileTypes.slice(5).map((tileType, tileTypeIndex) => (
-              <BrushToolbarItem
+            <FloatingPanelDivider />
+            {tileTypes.slice(5, 6).map((tileType, tileTypeIndex) => (
+              <Button
+                variant="transparent"
                 key={tileType.name}
                 onClick={setSelectedPalette(tileTypeIndex + 5)}
-                selected={selectedTileType === tileType.flag}
+                active={selectedTileType === tileType.flag}
                 title={`${tileType.name} (${tileTypeIndex + 5 + 1})`}
               >
                 <BrushToolbarCollisionTile
                   className={`BrushToolbar__Tile--${tileType.key}`}
                 />
-              </BrushToolbarItem>
+              </Button>
             ))}
-            <BrushToolbarDivider />
+            <FloatingPanelBreak />
+            {tileTypes.slice(6).map((tileType, tileTypeIndex) => (
+              <Button
+                variant="transparent"
+                key={tileType.name}
+                onClick={setSelectedPalette(tileTypeIndex + 6)}
+                active={selectedTileType === tileType.flag}
+                title={`${tileType.name}`}
+              >
+                <BrushToolbarCollisionTile
+                  className={`BrushToolbar__Tile--${tileType.key}`}
+                />
+              </Button>
+            ))}
+            <FloatingPanelDivider />
           </>
         )}
-        <BrushToolbarItem
+        <Button
+          variant="transparent"
           onClick={toggleShowLayers}
-          selected={!showLayers}
+          active={!showLayers}
           title={`${
             showLayers ? l10n("TOOL_HIDE_LAYERS") : l10n("TOOL_SHOW_LAYERS")
           } (-)`}
         >
           {showLayers ? <EyeOpenIcon /> : <EyeClosedIcon />}
-        </BrushToolbarItem>
+        </Button>
       </BrushToolbarWrapper>
       {modalColorIndex > -1 && (
         <>
@@ -557,7 +541,8 @@ const BrushToolbar = () => {
             </FormField>
             <ModalContent>
               <Button
-                small
+                variant="normal"
+                size="small"
                 onClick={() => {
                   setSection("palettes");
                   setNavigationId(
@@ -566,8 +551,6 @@ const BrushToolbar = () => {
                       ""
                   );
                 }}
-                transparent={undefined}
-                large={undefined}
               >
                 {l10n("FIELD_EDIT_PALETTES")}
               </Button>
