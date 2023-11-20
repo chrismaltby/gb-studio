@@ -9,7 +9,6 @@ import {
   BrickIcon,
   PaintIcon,
 } from "ui/icons/Icons";
-import assetsActions from "store/features/assets/assetsActions";
 import {
   backgroundSelectors,
   sceneSelectors,
@@ -36,7 +35,6 @@ import {
   TILE_COLOR_PALETTE,
 } from "../../consts";
 import clipboardActions from "store/features/clipboard/clipboardActions";
-import { isEmpty, isNull } from "lodash";
 
 class SceneCursor extends Component {
   constructor() {
@@ -221,8 +219,7 @@ class SceneCursor extends Component {
           isTileProp: this.isTileProp,
         });
       } else if (selectedBrush === BRUSH_MAGIC) {
-        console.log("IM ABOUT TO DO MAGIC COLLISIONS!", tileLookup);
-        if (!isEmpty(tileLookup)) {
+        if (tileLookup) {
           paintCollision({
             brush: "magic",
             sceneId,
@@ -303,8 +300,7 @@ class SceneCursor extends Component {
           isTileProp: this.isTileProp,
         });
       } else if (selectedBrush === BRUSH_MAGIC) {
-        console.log("HELLO THERE!!!! IM ABOUT TO MAGIC COLOUR", tileLookup);
-        if (!isEmpty(tileLookup)) {
+        if (tileLookup) {
           paintColor({
             brush: "magic",
             sceneId,
@@ -368,8 +364,7 @@ class SceneCursor extends Component {
             isTileProp: this.isTileProp,
           });
         } else if (selectedBrush === BRUSH_MAGIC) {
-          console.log("IM ABOUT TO MAGIC ERASE", tileLookup);
-          if (!isEmpty(tileLookup)) {
+          if (tileLookup) {
             paintCollision({
               brush: selectedBrush,
               sceneId,
@@ -708,9 +703,9 @@ function mapStateToProps(state, props) {
         ? background.tileColors[x + y * scene.width] || 0
         : 0;
       if (selectedBrush === BRUSH_MAGIC) {
-        const backgroundWarningsLookup = state.assets.backgrounds;
-        if (!isEmpty(backgroundWarningsLookup[backgroundId])) {
-          tileLookup = backgroundWarningsLookup[backgroundId].lookup;
+        const backgroundAssetsLookup = state.assets.backgrounds;
+        if (backgroundAssetsLookup[backgroundId]) {
+          tileLookup = backgroundAssetsLookup[backgroundId].lookup;
         }
       }
     }
@@ -754,7 +749,6 @@ const mapDispatchToProps = {
   editDestinationPosition: entitiesActions.editDestinationPosition,
   editSearchTerm: editorActions.editSearchTerm,
   setSelectedPalette: editorActions.setSelectedPalette,
-  loadBackgroundAssetInfo: assetsActions.loadBackgroundAssetInfo,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SceneCursor);
