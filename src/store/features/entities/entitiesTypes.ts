@@ -97,6 +97,11 @@ export type Actor = {
   hit1Script: string[];
   hit2Script: string[];
   hit3Script: string[];
+  solidTop: boolean;
+  solidBottom: boolean;
+  solidLeft: boolean;
+  solidRight: boolean;
+  solid: number;
 };
 
 export type ActorDenormalized = Omit<
