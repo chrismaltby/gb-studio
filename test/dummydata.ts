@@ -20,7 +20,7 @@ import { initialState as initialMusicState } from "../src/store/features/music/m
 import { initialState as initialNavigationState } from "../src/store/features/navigation/navigationState";
 import { initialState as initialDocumentState } from "../src/store/features/document/documentState";
 import { initialState as initialErrorState } from "../src/store/features/error/errorState";
-import { initialState as initialWarningsState } from "../src/store/features/warnings/warningsState";
+import { initialState as initialAssetsState } from "../src/store/features/assets/assetsState";
 import { initialState as initialEngineState } from "../src/store/features/engine/engineState";
 import { initialState as initialClipboardState } from "../src/store/features/clipboard/clipboardState";
 import { initialState as initialSpriteState } from "../src/store/features/sprite/spriteState";
@@ -291,8 +291,8 @@ export const dummyRootState: RootState = {
   error: {
     ...initialErrorState,
   },
-  warnings: {
-    ...initialWarningsState,
+  assets: {
+    ...initialAssetsState,
   },
   engine: {
     ...initialEngineState,

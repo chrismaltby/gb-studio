@@ -9,7 +9,7 @@ import {
   BrickIcon,
   PaintIcon,
 } from "ui/icons/Icons";
-import warningsActions from "store/features/warnings/warningsActions";
+import assetsActions from "store/features/assets/assetsActions";
 import {
   backgroundSelectors,
   sceneSelectors,
@@ -702,7 +702,7 @@ function mapStateToProps(state, props) {
         ? background.tileColors[x + y * scene.width] || 0
         : 0;
       if (selectedBrush === BRUSH_MAGIC) {
-        const backgroundWarningsLookup = state.warnings.backgrounds;
+        const backgroundWarningsLookup = state.assets.backgrounds;
         if (!isEmpty(backgroundWarningsLookup[backgroundId])) {
           tileLookup = backgroundWarningsLookup[backgroundId].lookup;
         }
@@ -748,7 +748,7 @@ const mapDispatchToProps = {
   editDestinationPosition: entitiesActions.editDestinationPosition,
   editSearchTerm: editorActions.editSearchTerm,
   setSelectedPalette: editorActions.setSelectedPalette,
-  checkBackgroundWarnings: warningsActions.checkBackgroundWarnings,
+  loadBackgroundAssetInfo: assetsActions.loadBackgroundAssetInfo,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SceneCursor);

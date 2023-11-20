@@ -1,15 +1,15 @@
 import reducer, {
   initialState,
-  WarningsState,
-} from "../../../../src/store/features/warnings/warningsState";
-import actions from "../../../../src/store/features/warnings/warningsActions";
+  AssetsState,
+} from "../../../../src/store/features/assets/assetsState";
+import actions from "../../../../src/store/features/assets/assetsActions";
 
 test("Should set loading flag while fetching background warnings", () => {
-  const state: WarningsState = {
+  const state: AssetsState = {
     ...initialState,
     backgroundsLoading: false,
   };
-  const action = actions.checkBackgroundWarnings({
+  const action = actions.loadBackgroundAssetInfo({
     backgroundId: "bg1",
     is360: false,
   });
@@ -18,16 +18,17 @@ test("Should set loading flag while fetching background warnings", () => {
 });
 
 test("Should be able to set background warnings", () => {
-  const state: WarningsState = {
+  const state: AssetsState = {
     ...initialState,
     backgroundsLoading: true,
     backgrounds: {},
   };
-  const action = actions.setBackgroundWarnings({
+  const action = actions.setBackgroundAssetInfo({
     id: "bg1",
     warnings: ["warning 1", "warning 2"],
     numTiles: 10,
     is360: false,
+    lookup: new Uint8Array(),
   });
   const newState = reducer(state, action);
   expect(newState.backgroundsLoading).toBe(false);
@@ -42,7 +43,7 @@ test("Should be able to set background warnings", () => {
 });
 
 test("Should replace existing warnings", () => {
-  const state: WarningsState = {
+  const state: AssetsState = {
     ...initialState,
     backgroundsLoading: true,
     backgrounds: {
@@ -52,14 +53,16 @@ test("Should replace existing warnings", () => {
         numTiles: 10,
         is360: false,
         timestamp: 0,
+        lookup: new Uint8Array(),
       },
     },
   };
-  const action = actions.setBackgroundWarnings({
+  const action = actions.setBackgroundAssetInfo({
     id: "bg1",
     warnings: ["warning 3"],
     numTiles: 15,
     is360: false,
+    lookup: new Uint8Array(),
   });
   const newState = reducer(state, action);
   expect(newState.backgroundsLoading).toBe(false);

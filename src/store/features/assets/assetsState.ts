@@ -1,29 +1,29 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface CachedWarnings {
+type BackgroundAsset = {
   id: string;
   is360: boolean;
   warnings: string[];
   numTiles: number;
   lookup: Uint8Array;
   timestamp: number;
-}
+};
 
-export interface WarningsState {
+export interface AssetsState {
   backgroundsLoading: boolean;
-  backgrounds: Record<string, CachedWarnings>;
+  backgrounds: Record<string, BackgroundAsset>;
 }
 
-export const initialState: WarningsState = {
+export const initialState: AssetsState = {
   backgroundsLoading: false,
   backgrounds: {},
 };
 
-const warningsSlice = createSlice({
-  name: "warnings",
+const assetsSlice = createSlice({
+  name: "assets",
   initialState,
   reducers: {
-    checkBackgroundWarnings: (
+    loadBackgroundAssetInfo: (
       state,
       _action: PayloadAction<{
         backgroundId: string;
@@ -32,7 +32,7 @@ const warningsSlice = createSlice({
     ) => {
       state.backgroundsLoading = true;
     },
-    setBackgroundWarnings: (
+    setBackgroundAssetInfo: (
       state,
       action: PayloadAction<{
         id: string;
@@ -55,6 +55,6 @@ const warningsSlice = createSlice({
   },
 });
 
-export const { actions, reducer } = warningsSlice;
+export const { actions, reducer } = assetsSlice;
 
 export default reducer;
