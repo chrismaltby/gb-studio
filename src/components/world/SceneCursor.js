@@ -232,6 +232,8 @@ class SceneCursor extends Component {
             value: this.drawTile,
             isTileProp: this.isTileProp,
           });
+        } else {
+          selectScene({ sceneId });
         }
       } else {
         if (
@@ -313,6 +315,8 @@ class SceneCursor extends Component {
             paletteIndex: this.drawTile,
             isTileProp: this.isTileProp,
           });
+        } else {
+          selectScene({ sceneId });
         }
       } else {
         if (
@@ -375,6 +379,8 @@ class SceneCursor extends Component {
               value: 0,
               isTileProp: this.isTileProp,
             });
+          } else {
+            selectScene({ sceneId });
           }
         } else {
           if (
