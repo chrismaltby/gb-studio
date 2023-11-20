@@ -71,6 +71,6 @@ char *gets(char *s) OLDCALL;
 
 /** getchar() Reads and returns a single character from stdin.
  */
-char getchar() OLDCALL;
+char getchar(void) OLDCALL;
 
 #endif

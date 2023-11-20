@@ -14,6 +14,7 @@
 #define NONBANKED		__nonbanked  /**< Placed in the non-banked lower 16K region (bank 0), regardless of the bank selected by it's source file. */
 #define BANKED			__banked     /**< The function will use banked sdcc calls, and is placed in the bank selected by it's source file (or compiler switches). */
 #define REENTRANT		             /**< Needed for mos6502 target when functions take too many parameters. */
+#define NO_OVERLAY_LOCALS            /**< Optimization for mos6502 target, indicating locals won't conflict with compiler's overlay segment */
 
 /**  Use to create a block of code which should execute with interrupts temporarily turned off.
 

@@ -14,14 +14,11 @@
 
         ;; MBC Equates
 
-        .MBC1_ROM_PAGE  = 0x2000 ; Address to write to for MBC1 switching
-        .MBC_ROM_PAGE   = 0x2000 ; Default platform MBC rom switching address
-
         rRAMG           = 0x0000 ; $0000->$1fff
         rROMB0          = 0x2000 ; $2000->$2fff
         rROMB1          = 0x3000 ; $3000->$3fff - If more than 256 ROM banks are present.
         rRAMB           = 0x4000 ; $4000->$5fff - Bit 3 enables rumble (if present)
-        
+
         ;;  Keypad
         .START          = 0x80
         .SELECT         = 0x40
@@ -35,7 +32,7 @@
         .P14            = 0x10
         .P15            = 0x20
 
-        ;;  Screen dimensions 
+        ;;  Screen dimensions
         .MAXCURSPOSX    = 0x13  ; In tiles
         .MAXCURSPOSY    = 0x11
 
@@ -47,17 +44,17 @@
         .MAXWNDPOSY     = 0x8F
 
         ;; Hardware registers
- 
+
         .P1             = 0x00  ; Joystick: 1.1.P15.P14.P13.P12.P11.P10
         rP1             = 0xFF00
-        
+
         P1F_5           = 0b00100000 ; P15 out port, set to 0 to get buttons
         P1F_4           = 0b00010000 ; P14 out port, set to 0 to get dpad
         P1F_3           = 0b00001000 ; P13 in port
         P1F_2           = 0b00000100 ; P12 in port
         P1F_1           = 0b00000010 ; P11 in port
         P1F_0           = 0b00000001 ; P10 in port
-        
+
         P1F_GET_DPAD    = 0b00100000
         P1F_GET_BTN     = 0b00010000
         P1F_GET_NONE    = 0b00110000
@@ -76,7 +73,7 @@
 
         .TMA            = 0x06  ; Timer modulo
         rTMA            = 0xFF06
-        
+
         .TAC            = 0x07  ; Timer control
         rTAC            = 0xFF07
 
@@ -89,7 +86,7 @@
 
         .IF             = 0x0F  ; Interrupt flags: 0.0.0.JST.SIO.TIM.LCD.VBL
         rIF             = 0xFF0F
-        
+
         .NR10           = 0x10  ; Sound register
         rNR10           = 0xFF10
         rAUD1SWEEP      = 0xFF10
@@ -104,7 +101,7 @@
         .NR12           = 0x12  ; Sound register
         rNR12           = 0xFF12
         rAUD1ENV        = 0xFF12
-        
+
         .NR13           = 0x13  ; Sound register
         rNR13           = 0xFF13
         rAUD1LOW        = 0xFF13
@@ -287,21 +284,21 @@
 
         .HDMA2          = 0x52  ; DMA control 2
         rHDMA2          = 0xFF52
-        
+
         .HDMA3          = 0x53  ; DMA control 3
         rHDMA3          = 0xFF53
-        
+
         .HDMA4          = 0x54  ; DMA control 4
         rHDMA4          = 0xFF54
-        
+
         .HDMA5          = 0x55  ; DMA control 5
         rHDMA5          = 0xFF55
-        
+
         HDMA5F_MODE_GP  = 0b00000000 ; General Purpose DMA (W)
         HDMA5F_MODE_HBL = 0b10000000 ; HBlank DMA (W)
 
         HDMA5F_BUSY     = 0b10000000 ; 0=Busy (DMA still in progress), 1=Transfer complete (R)
-        
+
         .RP             = 0x56  ; IR port
         rRP             = 0xFF56
 
@@ -312,7 +309,7 @@
 
         .BCPS           = 0x68  ; BG color palette specification
         rBCPS           = 0xFF68
-        
+
         BCPSF_AUTOINC   = 0b10000000 ; Auto Increment (0=Disabled, 1=Increment after Writing)
 
         .BCPD           = 0x69  ; BG color palette data
@@ -320,18 +317,18 @@
 
         .OCPS           = 0x6A  ; OBJ color palette specification
         rOCPS           = 0xFF6A
-        
+
         OCPSF_AUTOINC   = 0b10000000 ; Auto Increment (0=Disabled, 1=Increment after Writing)
 
         .OCPD           = 0x6B  ; OBJ color palette data
         rOCPD           = 0xFF6B
-        
+
         .SVBK           = 0x70  ; WRAM bank
         rSVBK           = 0xFF70
         rSMBK           = 0xFF70
 
         rPCM12          = 0xFF76
-        
+
         rPCM34          = 0xFF77
 
         .IE             = 0xFF  ; Interrupt enable
@@ -350,21 +347,21 @@
         IEF_VBLANK      = 0b00000001 ; V-Blank
 
         ;; Flags common to multiple sound channels
-        
+
         AUDLEN_DUTY_12_5 = 0b00000000 ; 12.5%
         AUDLEN_DUTY_25   = 0b01000000 ; 25%
         AUDLEN_DUTY_50   = 0b10000000 ; 50%
         AUDLEN_DUTY_75   = 0b11000000 ; 75%
-                            
+
         AUDENV_UP       = 0b00001000
         AUDENV_DOWN     = 0b00000000
-                            
+
         AUDHIGH_RESTART    = 0b10000000
         AUDHIGH_LENGTH_ON  = 0b01000000
         AUDHIGH_LENGTH_OFF = 0b00000000
 
         ;; OAM related constants
-        
+
         OAM_COUNT       = 40  ; number of OAM entries in OAM RAM
 
         OAMF_PRI        = 0b10000000 ; Priority
@@ -413,7 +410,7 @@
         ;; CPU detection
         .DMG_TYPE       = 0x01 ; Original GB or Super GB
         .MGB_TYPE       = 0xFF ; Pocket GB or Super GB 2
-        .CGB_TYPE       = 0x11 ; Color GB        
+        .CGB_TYPE       = 0x11 ; Color GB
 
         ;; GBDK library screen modes
 
@@ -423,7 +420,7 @@
         .T_MODE_INOUT   = 0x03  ; Text mode with input
         .M_NO_SCROLL    = 0x04  ; Disables scrolling of the screen in text mode
         .M_NO_INTERP    = 0x08  ; Disables special character interpretation
-        
+
         ;; Status codes for IO
         .IO_IDLE        = 0x00
         .IO_SENDING     = 0x01
@@ -435,7 +432,7 @@
         .DT_RECEIVING   = 0x55
 
         ;; Table of routines for modes
-        .MODE_TABLE     = 0x01E0
+        .MODE_TABLE     = 0x00F0
 
         ;; C related
         ;; Overheap of a banked call.  Used for parameters
@@ -445,7 +442,7 @@
 
         .globl  __current_bank
         .globl  __shadow_OAM_base
-        
+
         ;; Global variables
         .globl  .mode
 
@@ -453,15 +450,13 @@
         .globl  __is_GBA
 
         ;; Global routines
-;       .globl  .set_mode       ;; don't link mode.o by default
-
         .globl  .reset
 
         .globl  .display_off
 
         .globl  .wait_vbl_done
 
-        ;; Interrupt routines 
+        ;; Interrupt routines
         .globl  .add_VBL
 ;       .globl  .add_LCD        ;; don't link LCD.o by default
 ;       .globl  .add_TIM        ;; don't link TIM.o by default
@@ -473,7 +468,7 @@
         .globl  _shadow_OAM
         .globl  .refresh_OAM
 
-        ;; Main user routine    
+        ;; Main user routine
         .globl  _main
 
         ;; Macro definitions
@@ -481,6 +476,12 @@
 .macro WAIT_STAT ?lbl
 lbl:    LDH     A, (.STAT)
         AND     #STATF_BUSY     ; Check if in LCD modes 0 or 1
+        JR      NZ, lbl
+.endm
+
+.macro WAIT_STAT_HL ?lbl
+        LD      HL, #rSTAT
+lbl:    BIT     #STATF_B_BUSY, (HL)
         JR      NZ, lbl
 .endm
 

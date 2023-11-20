@@ -6,14 +6,14 @@
 // Include for using ISR_VECTOR()
 #include <gb/isr.h>
 
-void init_gfx();
+void init_gfx(void);
 
 // Wobble Look up Table
 const uint8_t scanline_offsets_tbl[] = {0, 1, 2, 3, 3, 2, 1, 0, 0, 1, 2, 3, 3, 2, 1, 0};
 const uint8_t * scanline_offsets = scanline_offsets_tbl;
 
 // Create the ISR Function
-void scanline_isr() CRITICAL INTERRUPT {
+void scanline_isr(void) CRITICAL INTERRUPT {
     SCX_REG = scanline_offsets[LY_REG & (uint8_t)7];
 }
 // Then set the LCD Status (scanline) interrupt to call the ISR function
@@ -26,7 +26,7 @@ ISR_VECTOR(VECTOR_STAT, scanline_isr)
 //    an ISR vector to the same location.
 
 
-void main() {
+void main(void) {
 
     // Load the background image
     init_gfx();
@@ -39,7 +39,7 @@ void main() {
     SHOW_BKG;
 
     while (TRUE) {
-        wait_vbl_done();        
+        vsync();        
         scanline_offsets = &scanline_offsets_tbl[(uint8_t)(sys_time >> 2) & 0x07u];
     }
 }
@@ -70,7 +70,7 @@ INCBIN_EXTERN(blank_tile_data)
 #define LOGO_MAP_X      (20u - LOGO_MAP_WIDTH) / 2u  // Center on X axis
 #define LOGO_MAP_Y      (18u - LOGO_MAP_HEIGHT) / 2u // Center on Y axis
 
-void init_gfx() {
+void init_gfx(void) {
     // Load a single clear background tile at location 0x80 and clear/fill the map with it
     set_bkg_data(0x80u, 1u, blank_tile_data); // The first 0x80u here is the tile ID
     fill_bkg_rect(0u, 0u, DEVICE_SCREEN_BUFFER_WIDTH, DEVICE_SCREEN_BUFFER_HEIGHT, 0x80u);   // The last 0x80u here is the tile ID 

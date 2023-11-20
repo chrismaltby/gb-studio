@@ -21,7 +21,7 @@
 
     @see rle_decompress
  */
-uint8_t rle_init(void * data) OLDCALL;
+uint8_t rle_init(void * data);
 
 /** Decompress RLE compressed data into __dest__ for length __len__ bytes
 
@@ -37,7 +37,7 @@ uint8_t rle_init(void * data) OLDCALL;
 
     @see rle_init
  */
-uint8_t rle_decompress(void * dest, uint8_t len) OLDCALL;
+uint8_t rle_decompress(void * dest, uint8_t len);
 #elif defined(__TARGET_sms) || defined(__TARGET_gg)
 uint8_t rle_init(void * data) Z88DK_FASTCALL;
 uint8_t rle_decompress(void * dest, uint8_t len) Z88DK_CALLEE;

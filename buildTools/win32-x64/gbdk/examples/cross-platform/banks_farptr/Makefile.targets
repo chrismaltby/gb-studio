@@ -48,3 +48,8 @@ gg-clean:
 gg:
 	${MAKE} build-target PORT=z80 PLAT=gg EXT=gg
 
+
+nes-clean:
+	${MAKE} clean-target EXT=nes
+nes:
+	${MAKE} build-target PORT=mos6502 PLAT=nes EXT=nes

@@ -11,9 +11,10 @@
 
 #ifdef __SDCC
 
-#define NONBANKED	            /**< Currently a no-op for mos6502 target. */
-#define BANKED		            /**< Currently a no-op for mos6502 target. */
-#define REENTRANT	__reentrant /**< Needed for mos6502 target when functions take too many parameters. */
+#define NONBANKED			__nonbanked
+#define BANKED				__banked
+#define REENTRANT			__reentrant /**< Needed for mos6502 target when functions take too many parameters. */
+#define NO_OVERLAY_LOCALS	__no_overlay_locals /**< Optimization for mos6502 target, indicating locals won't conflict with compiler's overlay segment */
 
 /**  Use to create a block of code which should execute with interrupts temporarily turned off.
 

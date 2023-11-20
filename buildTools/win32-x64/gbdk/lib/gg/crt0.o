@@ -1,5 +1,5 @@
 XL3
-H 16 areas 2E global symbols
+H 16 areas 2F global symbols
 M Runtime
 S l__DATA Ref000000
 S _main Ref000000
@@ -28,6 +28,7 @@ A _HEADER6 size 6C flags 8 addr 80
 S .init Def000080
 A _HOME size 38 flags 0 addr 0
 S .wait_vbl_done Def000026
+S _vsync Def000026
 S .memcpy_simple Def000020
 S .memset_simple Def000017
 S _wait_vbl_done Def000026
@@ -175,6 +176,8 @@ T 26 00 00
 R 00 00 09 00
 T 26 00 00
 R 00 00 09 00
+T 26 00 00
+R 00 00 09 00
 T 26 00 00 3A 01 00 E6 40 C8 AF 32 0D 00
 R 00 00 09 00 00 04 11 00 00 0B 11 00
 T 30 00 00
@@ -275,7 +278,7 @@ T 11 00 00
 R 00 00 11 00
 T 11 00 00
 R 00 00 11 00
-T 00 00 00 06 E0 FF FF FF FF FF F0 00 00 FF 00 00
+T 00 00 00 06 E0 F7 FF FF BF FF F0 00 00 FF 00 00
 R 00 00 0D 00
 T 0D 00 00 00 00 00 00 00 00 03
 R 00 00 0D 00 8B 05 06 00

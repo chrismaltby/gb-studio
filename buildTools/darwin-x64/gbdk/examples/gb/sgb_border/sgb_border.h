@@ -17,7 +17,7 @@
     \code{.c}
     // Wait 4 frames
     // For PAL SNES this delay is required on startup
-    for (uint8_t i = 4; i != 0; i--) wait_vbl_done();
+    for (uint8_t i = 4; i != 0; i--) vsync();
     \endcode
 */
 void set_sgb_border(unsigned char * tiledata, size_t tiledata_size,

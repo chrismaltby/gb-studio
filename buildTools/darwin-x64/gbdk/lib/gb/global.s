@@ -14,9 +14,6 @@
 
         ;; MBC Equates
 
-        .MBC1_ROM_PAGE  = 0x2000 ; Address to write to for MBC1 switching
-        .MBC_ROM_PAGE   = 0x2000 ; Default platform MBC rom switching address
-
         rRAMG           = 0x0000 ; $0000->$1fff
         rROMB0          = 0x2000 ; $2000->$2fff
         rROMB1          = 0x3000 ; $3000->$3fff - If more than 256 ROM banks are present.
@@ -435,7 +432,7 @@
         .DT_RECEIVING   = 0x55
 
         ;; Table of routines for modes
-        .MODE_TABLE     = 0x01E0
+        .MODE_TABLE     = 0x00F0
 
         ;; C related
         ;; Overheap of a banked call.  Used for parameters
@@ -453,8 +450,6 @@
         .globl  __is_GBA
 
         ;; Global routines
-;       .globl  .set_mode       ;; don't link mode.o by default
-
         .globl  .reset
 
         .globl  .display_off
@@ -481,6 +476,12 @@
 .macro WAIT_STAT ?lbl
 lbl:    LDH     A, (.STAT)
         AND     #STATF_BUSY     ; Check if in LCD modes 0 or 1
+        JR      NZ, lbl
+.endm
+
+.macro WAIT_STAT_HL ?lbl
+        LD      HL, #rSTAT
+lbl:    BIT     #STATF_B_BUSY, (HL)
         JR      NZ, lbl
 .endm
 

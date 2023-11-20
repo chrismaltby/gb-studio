@@ -23,7 +23,7 @@ void main(void)
 {
   uint8_t _saved_bank;
 
-  #ifndef MSXDOS // TODO
+  #if !defined(MSXDOS) && !defined(NINTENDO_NES) // TODO
   set_default_palette();
   #endif
   printf("Program Start...\n\n");
@@ -53,7 +53,7 @@ void main(void)
   //
 
   // Save the currently active bank
-  _saved_bank = _current_bank;
+  _saved_bank = CURRENT_BANK;
 
   // Switch to the desired one
   SWITCH_ROM(BANK(some_const_var_4));
@@ -71,6 +71,6 @@ void main(void)
   while(1) {
 
     // Yield CPU till the end of each frame
-    wait_vbl_done();
+    vsync();
   }
 }

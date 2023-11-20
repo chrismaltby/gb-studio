@@ -19,9 +19,7 @@
         .JOY_P2_LATCH   = 0b00001000
 
         .VDP_VRAM       = 0x4000
-        .VDP_TILEMAP    = 0x7800
         .VDP_CRAM       = 0xC000
-        .VDP_SAT        = 0x7F00
 
         .VDP_SAT_TERM   = 0xD0
 
@@ -80,6 +78,7 @@
         .VDP_R5         = 0b10000101
 
         .R5_SAT_0x3F00  = 0xFF
+        .R5_SAT_0x1F00  = 0xBF
         .R5_SAT_MASK    = 0b10000001
 
         .VDP_R6         = 0b10000110

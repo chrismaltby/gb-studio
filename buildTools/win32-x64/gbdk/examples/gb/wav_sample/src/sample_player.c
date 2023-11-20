@@ -4,7 +4,7 @@ UINT8 play_bank = 1;
 const UINT8 * play_sample = 0;
 UINT16 play_length = 0;
 
-void play_isr() __nonbanked __naked {
+void play_isr(void) __nonbanked __naked {
     __asm
         ld hl, #_play_length    ; something left to play?
         ld a, (hl+)
@@ -20,31 +20,37 @@ void play_isr() __nonbanked __naked {
         ld a, (#__current_bank) ; save bank and switch
         ld e, a
         ld a, (#_play_bank)
-        ld (#0x2000), a
+        ld (_rROMB0), a
+
+        ldh a, (_NR51_REG)
+        ld c, a
+        and #0b10111011
+        ldh (_NR51_REG), a
 
         xor a
-        ldh (_NR30_REG),a       
+        ldh (_NR30_REG), a       
 
-_wave_addr = 0xFF30
-        .rept 16
+        .irp ofs,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
             ld a, (hl+)
-            ldh (_wave_addr), a
-_wave_addr = _wave_addr + 1
+            ldh (__AUD3WAVERAM+ofs), a
         .endm
 
         ld a, #0x80             
-        ldh (_NR30_REG),a
+        ldh (_NR30_REG), a
         ld a, #0xFE             ; length of wave
-        ldh (_NR31_REG),a
+        ldh (_NR31_REG), a
         ld a, #0x20             ; volume
-        ldh (_NR32_REG),a
+        ldh (_NR32_REG), a
         xor a                   ; low freq bits are zero
-        ldh (_NR33_REG),a
+        ldh (_NR33_REG), a
         ld a, #0xC7             ; start; no loop; high freq bits are 111
-        ldh (_NR34_REG),a       
+        ldh (_NR34_REG), a       
+
+        ld a, c
+        ldh (_NR51_REG), a
 
         ld a, e                 ; restore bank
-        ld (#0x2000), a
+        ld (_rROMB0), a
 
         ld a, l                 ; save current position
         ld (#_play_sample), a

@@ -51,13 +51,13 @@ extern uint16_t __rand_seed;
 
     @ref initrand() should be used to initialize the random number generator before using rand()
  */
-uint8_t rand() OLDCALL;
+uint8_t rand(void) OLDCALL;
 
 /** Returns a random word (16 bit) value.
 
     @ref initrand() should be used to initialize the random number generator before using rand()
  */
-uint16_t randw() OLDCALL;
+uint16_t randw(void) OLDCALL;
 
 /** Random generator using the linear lagged additive method
 
@@ -78,6 +78,6 @@ void initarand(uint16_t seed) Z88DK_FASTCALL;
 
     @ref initarand() should be used to initialize the random number generator before using arand()
  */
-uint8_t arand() OLDCALL;
+uint8_t arand(void) OLDCALL;
 
 #endif

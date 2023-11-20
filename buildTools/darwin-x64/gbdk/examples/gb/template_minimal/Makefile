@@ -9,7 +9,8 @@ GBDK_HOME = ../../../
 LCC = $(GBDK_HOME)bin/lcc 
 
 # You can uncomment the line below to turn on debug output
-# LCC = $(LCC) -debug
+# LCCFLAGS += -debug # Uncomment to enable debug output
+# LCCFLAGS += -v     # Uncomment for lcc verbose output
 
 # You can set the name of the .gb ROM file here
 PROJECTNAME    = Example
@@ -26,7 +27,7 @@ compile.bat: Makefile
 
 # Compile and link all source files in a single call to LCC
 $(BINS):	$(CSOURCES) $(ASMSOURCES)
-	$(LCC) -o $@ $(CSOURCES) $(ASMSOURCES)
+	$(LCC) $(LCCFLAGS) -o $@ $(CSOURCES) $(ASMSOURCES)
 
 clean:
 	rm -f *.o *.lst *.map *.gb *.ihx *.sym *.cdb *.adb *.asm

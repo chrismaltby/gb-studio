@@ -24,14 +24,16 @@
 
 #ifdef __SDCC
 #define PRESERVES_REGS(...) __preserves_regs(__VA_ARGS__)
-#define NAKED   __naked
-#define SFR     __sfr
-#define AT(A)   __at(A)
+#define NAKED    __naked
+#define SFR      __sfr
+#define AT(A)    __at(A)
+#define NORETURN _Noreturn
 #else
 #define PRESERVES_REGS(...)
 #define NAKED
 #define SFR
 #define AT(A)
+#define NORETURN
 #endif
 
 #ifndef NONBANKED

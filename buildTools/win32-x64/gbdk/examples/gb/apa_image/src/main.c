@@ -26,7 +26,7 @@ void main(void)
     SHOW_BKG;
 
     // Then load the palettes at the start of a new frame
-    wait_vbl_done();
+    vsync();
     if (_cpu == CGB_TYPE) {
         set_bkg_palette(BKGF_CGB_PAL0, CGB_ONE_PAL, scenery_palettes);
     } else {
@@ -38,6 +38,6 @@ void main(void)
     while(1) {
         // Main processing goes here
         // Done processing, yield CPU and wait for start of next frame
-        wait_vbl_done();
+        vsync();
     }
 }

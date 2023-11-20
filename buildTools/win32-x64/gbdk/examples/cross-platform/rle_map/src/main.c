@@ -19,7 +19,7 @@ uint8_t data[MAP_DATA_HEIGHT];  // Collision map buffer
 uint8_t scrollpos = 0;              // Scroll position in pixels
 uint8_t datapos = 0;                // x position in tiles inside the collision map
 
-void main() {
+void main(void) {
     if(DEVICE_SCREEN_BUFFER_WIDTH == DEVICE_SCREEN_WIDTH)
     {
         // On platforms where screen buffer has no more space than physical screen,
@@ -52,10 +52,10 @@ void main() {
     scrollpos = 1;
     while(TRUE) {
 
-        wait_vbl_done();
+        vsync();
 
         // Scroll one pixel to the right
-        // (This should be done as close to wait_vbl_done and before
+        // (This should be done as close to vsync and before
         // the map drawing below to avoid tearing at the top of the screen)
         scrollpos++;
         move_bkg(scrollpos, 0);

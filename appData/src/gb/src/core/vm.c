@@ -325,6 +325,8 @@ void vm_rpn(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS) OLDCALL NONBANK
                 case '&': *A = *A  &  *B; break;
                 case '|': *A = *A  |  *B; break;
                 case '^': *A = *A  ^  *B; break;
+                case 'L': *A = *(uint16_t *)A << (*B & 0x0f); break;
+                case 'R': *A = *(uint16_t *)A >> (*B & 0x0f); break;
                 // funcs
                 case 'm': *A = (*A < *B) ? *A : *B; break;  // min
                 case 'M': *A = (*A > *B) ? *A : *B; break;  // max
@@ -508,8 +510,8 @@ __endasm;
 }
 // memset for VM variables
 void vm_memset(SCRIPT_CTX * THIS, INT16 idx, INT16 value, INT16 count) OLDCALL BANKED {
-    memset(VM_REF_TO_PTR(idx), value, count << 1);
-}
+    for (INT16 i = 0, *v = VM_REF_TO_PTR(idx); i != count; i++) *v++ = value;
+ }
 // memcpy for VM variables
 void vm_memcpy(SCRIPT_CTX * THIS, INT16 idxA, INT16 idxB, INT16 count) OLDCALL BANKED {
     memcpy(VM_REF_TO_PTR(idxA), VM_REF_TO_PTR(idxB), count << 1);

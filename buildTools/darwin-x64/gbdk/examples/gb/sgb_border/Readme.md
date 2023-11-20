@@ -13,3 +13,13 @@ png2asset is used for converting the border.
   * https://gbdev.io/pandocs/SGB_Functions.html
   * https://gbdev.io/pandocs/SGB_Color_Palettes.html
 
+When using the SGB with a PAL SNES, a delay should be added just after program startup such as:
+
+```
+    // Wait 4 frames
+    // For PAL SNES this delay is required on startup
+    for (uint8_t i = 4; i != 0; i--) wait_vbl_done();
+```
+
+
+

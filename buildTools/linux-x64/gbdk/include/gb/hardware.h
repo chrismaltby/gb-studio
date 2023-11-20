@@ -13,7 +13,7 @@
 #define __BYTE_REG extern volatile UBYTE
 #define __REG extern volatile SFR
 
-/** Memoty map */
+/** Memory map */
 
 __BYTES _VRAM[];
 __BYTES _VRAM8000[];
@@ -56,6 +56,19 @@ __REG SB_REG;           /**< Serial IO data buffer */
 #define rSB SB_REG
 __REG SC_REG;           /**< Serial IO control register */
 #define rSC SC_REG
+
+#define SIOF_XFER_START     0b10000000 /**< Serial IO: Start Transfer. Automatically cleared at the end of transfer */
+#define SIOF_CLOCK_INT      0b00000001 /**< Serial IO: Use Internal clock */
+#define SIOF_CLOCK_EXT      0b00000000 /**< Serial IO: Use External clock */
+#define SIOF_SPEED_1X       0b00000000 /**< Serial IO: If internal clock then 8KHz mode, 1KB/s (16Khz in CGB high-speed mode, 2KB/s) */
+#define SIOF_SPEED_32X      0b00000010 /**< Serial IO: **CGB-Mode ONLY** If internal clock then 256KHz mode, 32KB/s (512KHz in CGB high-speed mode, 64KB/s) */
+#define SIOF_B_CLOCK        0
+#define SIOF_B_SPEED        1
+#define SIOF_B_XFER_START   7
+#define SCF_START           SIOF_XFER_START
+#define SCF_SOURCE          SIOF_CLOCK_INT
+#define SCF_SPEED           SIOF_SPEED_32X
+
 __REG DIV_REG;          /**< Divider register */
 #define rDIV DIV_REG
 __REG TIMA_REG;         /**< Timer counter */
@@ -71,15 +84,6 @@ __REG TAC_REG;          /**< Timer control */
 #define TACF_16KHZ  0b00000011
 #define TACF_65KHZ  0b00000010
 #define TACF_262KHZ 0b00000001
-
-#define SIOF_CLOCK_EXT  0b00000000 /**< Serial IO: Use External clock */
-#define SIOF_CLOCK_INT  0b00000001 /**< Serial IO: Use Internal clock */
-#define SIOF_SPEED_1X   0b00000000 /**< Serial IO: If internal clock then 8KHz mode, 1KB/s (16Khz in CGB high-speed mode, 2KB/s) */
-#define SIOF_SPEED_32X  0b00000010 /**< Serial IO: **CGB-Mode ONLY** If internal clock then 256KHz mode, 32KB/s (512KHz in CGB high-speed mode, 64KB/s) */
-#define SIOF_XFER_START 0b10000000 /**< Serial IO: Start Transfer. Automatically cleared at the end of transfer */
-#define SIOF_B_CLOCK      0
-#define SIOF_B_SPEED      1
-#define SIOF_B_XFER_START 7
 
 __REG IF_REG;           /**< Interrupt flags: 0.0.0.JOY.SIO.TIM.LCD.VBL */
 #define rIF IF_REG
@@ -292,11 +296,11 @@ __REG LYC_REG;          /**< LY compare */
 #define rLYC LYC_REG
 __REG DMA_REG;          /**< DMA transfer */
 #define rDMA DMA_REG
-__REG BGP_REG;          /**< BG palette data */
+__REG BGP_REG;          /**< Set and Read the Background palette. \n \n Example with the DMG_PALETTE() helper function and constants: \n BGP_REG = DMG_PALETTE(DMG_BLACK, DMG_DARK_GRAY, DMG_LITE_GRAY, DMG_WHITE); */
 #define rBGP BGP_REG
-__REG OBP0_REG;         /**< OBJ palette 0 data */
+__REG OBP0_REG;         /**< Set and Read the OBJ (Sprite) palette 0. \n \n The first color entry is always transparent.  \n \n Example with the DMG_PALETTE() helper function and constants: \n OBP0_REG = DMG_PALETTE(DMG_BLACK, DMG_DARK_GRAY, DMG_LITE_GRAY, DMG_WHITE); */
 #define rOBP0 OBP0_REG
-__REG OBP1_REG;         /**< OBJ palette 1 data */
+__REG OBP1_REG;         /**< Set and Read the OBJ (Sprite) palette 1. \n \n The first color entry is always transparent.  \n \n Example with the DMG_PALETTE() helper function and constants: \n OBP1_REG = DMG_PALETTE(DMG_BLACK, DMG_DARK_GRAY, DMG_LITE_GRAY, DMG_WHITE); */
 #define rOBP1 OBP1_REG
 __REG WY_REG;           /**< Window Y coordinate */
 #define rWY WY_REG
@@ -369,7 +373,7 @@ __REG OCPS_REG;         /**< OBJ color palette specification */
 #define OCPSF_AUTOINC 0b10000000
 __REG OCPD_REG;         /**< OBJ color palette data */
 #define rOCPD OCPD_REG
-__REG SVBK_REG;         /**< WRAM bank */
+__REG SVBK_REG;         /**< Selects the WRAM upper region bank (CGB Only). WRAM Banking is NOT officially supported in GBDK and SDCC. The stack must be moved and other special care taken. */
 #define rSVBK SVBK_REG
 #define rSMBK SVBK_REG
 

@@ -189,23 +189,23 @@ void show_level( uint8_t i )
   set_level( i );
 }
 
-void show_gover()
+void show_gover(void)
 {
   set_bkg_tiles(  6, 9, 8, 1, (unsigned char *)msg_gover );
   pf = DEF_PF;
 }
 
-void show_pause()
+void show_pause(void)
 {
   set_bkg_tiles(  6, 9, 8, 1, (unsigned char *)msg_pause );
 }
 
-void hide_msg()
+void hide_msg(void)
 {
   set_bkg_tiles(  6, 9, 8, 1, (unsigned char *)msg_start );
 }
 
-void init_score()
+void init_score(void)
 {
   ps = 0;
   show_score( ps );
@@ -213,7 +213,7 @@ void init_score()
   show_level( pl );
 }
 
-void init_screen()
+void init_screen(void)
 {
   uint8_t n;
 
@@ -257,7 +257,7 @@ void init_screen()
   }
 }
 
-void init_player()
+void init_player(void)
 {
   pf = 0; px = DEF_PX;
   set_sprite_tile( 0, 0 );
@@ -268,7 +268,7 @@ void init_player()
   move_sprite( 1, px+8, DEF_PY );
 }
 
-void init_tama()
+void init_tama(void)
 {
   uint8_t i;
 
@@ -282,7 +282,7 @@ void init_tama()
   }
 }
 
-void init_enemy()
+void init_enemy(void)
 {
   uint8_t i;
 
@@ -297,7 +297,7 @@ void init_enemy()
   }
 }
 
-void init_kirai()
+void init_kirai(void)
 {
   uint8_t i;
 
@@ -311,7 +311,7 @@ void init_kirai()
 }
 
 /* player */
-void player()
+void player(void)
 {
   uint8_t key;
   uint8_t i;
@@ -430,7 +430,7 @@ void player()
 }
 
 /* bombs */
-void bombs()
+void bombs(void)
 {
    uint8_t i;
 
@@ -450,7 +450,7 @@ void bombs()
 }
 
 /* enemys */
-void enemys()
+void enemys(void)
 {
   uint8_t i, j;
 
@@ -689,7 +689,7 @@ void enemys()
 }
 
 /* kirai */
-void kirai()
+void kirai(void)
 {
   uint8_t i;
 
@@ -722,7 +722,7 @@ void kirai()
 /*--------------------------------------------------------------------------*
  | main program                                                             |
  *--------------------------------------------------------------------------*/
-void main()
+void main(void)
 {
   disable_interrupts();
   DISPLAY_OFF;

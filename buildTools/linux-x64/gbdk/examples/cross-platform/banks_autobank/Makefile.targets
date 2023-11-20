@@ -53,3 +53,7 @@ msxdos-clean:
 msxdos:
 	${MAKE} build-target PORT=z80 PLAT=msxdos EXT=com
 
+nes-clean:
+	${MAKE} clean-target EXT=nes
+nes:
+	${MAKE} build-target PORT=mos6502 PLAT=nes EXT=nes

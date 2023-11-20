@@ -36,8 +36,13 @@
 #define SGB_OBJ_TRN 0x18U   /**< SGB Command: Transfer OBJ attributes to SNES OAM memory */
 
 
-/** Returns a non-null value if running on Super GameBoy */
-uint8_t sgb_check() OLDCALL PRESERVES_REGS(b, c);
+/** Returns a non-zero value if running on a Super GameBoy
+
+    Since sgb_check() uses @ref sgb_transfer(), the same
+    delay at startup requirement applies to ensure correct
+    operation on PAL SNES. See @ref sgb_transfer() for details.
+ * */
+uint8_t sgb_check(void) OLDCALL PRESERVES_REGS(b, c);
 
 /** Transfer a SGB packet
 

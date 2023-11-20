@@ -49,14 +49,6 @@ void scroll_update(void) BANKED;
 void scroll_repaint(void) BANKED;
 
 /**
- * Set vram tile at memory location to a value
- * 
- * @param r address of tile to write to
- * @param t new tile value
- */
-void SetTile(UBYTE * r, UINT8 t) OLDCALL PRESERVES_REGS(b, c);
-
-/**
  * Get base address of window map
  */
 UINT8 * GetWinAddr(void) OLDCALL PRESERVES_REGS(b, c, h, l);
@@ -65,22 +57,6 @@ UINT8 * GetWinAddr(void) OLDCALL PRESERVES_REGS(b, c, h, l);
  * Get base address of background map
  */
 UINT8 * GetBkgAddr(void) OLDCALL PRESERVES_REGS(b, c, h, l);
-
-/**
- * Set single tile t on window layer at x,y
- * @param x X-coordinate
- * @param y Y-coordinate
- * @param t tile index
- */ 
-UBYTE * set_win_tile_xy(UBYTE x, UBYTE y, UBYTE t) OLDCALL PRESERVES_REGS(b, c);
-
-/**
- * Set single tile t on background layer at x,y
- * @param x X-coordinate
- * @param y Y-coordinate
- * @param t tile index
- */ 
-UBYTE * set_bkg_tile_xy(UBYTE x, UBYTE y, UBYTE t) OLDCALL PRESERVES_REGS(b, c);
 
 /**
  * Scrolls rectangle area of VRAM filemap by base address 1 row up

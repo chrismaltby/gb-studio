@@ -1,5 +1,5 @@
 XL3
-H E areas 30 global symbols
+H E areas 31 global symbols
 M Runtime
 S l__DATA Ref000000
 S _main Ref000000
@@ -19,6 +19,7 @@ S _shadow_VDP_R0 Def000349
 S _shadow_VDP_R1 Def00034A
 S _shadow_VDP_R2 Def00034B
 S _shadow_VDP_R3 Def00034C
+S _vsync Def0001DC
 S .mode Def000356
 S _shadow_VDP_R4 Def00034D
 S .shadow_VDP_end Def000351
@@ -253,6 +254,8 @@ T CC 01 00 DD 7E 22 77 23 DD 7E 23 77 3E 01 32
 R 00 00 00 00
 T D8 01 00 DE 00 B7 C9
 R 00 00 00 00 00 03 00 00
+T DC 01 00
+R 00 00 00 00
 T DC 01 00
 R 00 00 00 00
 T DC 01 00

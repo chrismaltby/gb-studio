@@ -1,14 +1,23 @@
+        ;; Transfer buffer (lower half of hardware stack)
+        __vram_transfer_buffer = 0x100
+        ;; Number of 8-cycles available each frame for transfer buffer
+        VRAM_DELAY_CYCLES_X8  = 167
+
         ;;  Keypad
-        .UP             = 0x10
-        .DOWN           = 0x20
-        .LEFT           = 0x40
-        .RIGHT          = 0x80
-        .A              = 0x01
-        .B              = 0x02
-        .SELECT         = 0x04
-        .START          = 0x08
+        .UP             = 0x08
+        .DOWN           = 0x04
+        .LEFT           = 0x02
+        .RIGHT          = 0x01
+        .A              = 0x80
+        .B              = 0x40
+        .SELECT         = 0x20
+        .START          = 0x10
 
         ;;  Screen dimensions (in tiles)
+        .DEVICE_SCREEN_WIDTH            = 32
+        .DEVICE_SCREEN_HEIGHT           = 30
+        .DEVICE_SCREEN_BUFFER_WIDTH     = 32
+        .DEVICE_SCREEN_BUFFER_HEIGHT    = 30
         .MAXCURSPOSX    = 31
         .MAXCURSPOSY    = 29
 
@@ -19,6 +28,10 @@
         PPU_NT0         = 0x2000
         PPU_AT0         = 0x23C0
 
+        ATTRIBUTE_WIDTH                = 16
+        ATTRIBUTE_HEIGHT               = 15
+        ATTRIBUTE_PACKED_WIDTH         = 8
+        ATTRIBUTE_PACKED_HEIGHT        = 8
         ATTRIBUTE_MASK_TL = 0b00000011
         ATTRIBUTE_MASK_TR = 0b00001100
         ATTRIBUTE_MASK_BL = 0b00110000
@@ -97,7 +110,7 @@
 
         ;; Global variables
         .globl  .mode
-        .globl  .tmp
+        .define .tmp "__TEMP"
 
         .globl _shadow_PPUCTRL, _shadow_PPUMASK
         .globl _bkg_scroll_x, _bkg_scroll_y
@@ -111,10 +124,9 @@
 
         .globl  .display_off, .display_on
         .globl  .wait_vbl_done
-        .globl  .writeNametableByte
 
         ;; Symbols defined at link time
-        .globl _shadow_OAM, _vram_transfer_buffer
+        .globl _shadow_OAM, __vram_transfer_buffer
 
         ;; Main user routine
         .globl  _main

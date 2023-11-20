@@ -102,6 +102,7 @@ extern UBYTE shadow_VDP_R4;
 extern UBYTE shadow_VDP_R5;
 
 #define R5_SAT_0x3F00  0xFF
+#define R5_SAT_0x1F00  0xBF
 #define R5_SAT_MASK    0b10000001
 
 #define VDP_R6         0b10000110

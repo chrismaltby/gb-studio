@@ -1,5 +1,5 @@
 REM Automatically generated from Makefile
-mkdir -p obj res
+mkdir obj res
 ..\..\..\bin\lcc  -Wl-yt1 -Wl-yo4 -c -o obj\samptest.o src\samptest.c
 ..\..\..\bin\lcc  -Wl-yt1 -Wl-yo4 -c -o obj\samples_bank3.o src\samples_bank3.c
 ..\..\..\bin\lcc  -Wl-yt1 -Wl-yo4 -c -o obj\samples_bank2.o src\samples_bank2.c

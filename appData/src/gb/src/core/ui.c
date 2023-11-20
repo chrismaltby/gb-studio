@@ -267,13 +267,13 @@ inline void ui_set_tile(UBYTE * addr, UBYTE tile, UBYTE bank) {
 #ifdef CGB
     if (_is_CGB) {
         VBK_REG = 1;
-        SetTile(addr, overlay_priority | ((bank) ? ((text_palette & 0x07u) | 0x08u) : (text_palette & 0x07u)));
+        set_vram_byte(addr, overlay_priority | ((bank) ? ((text_palette & 0x07u) | 0x08u) : (text_palette & 0x07u)));
         VBK_REG = 0;
     }
 #else
     bank;
 #endif
-    SetTile(addr, tile);
+    set_vram_byte(addr, tile);
 }
 
 UBYTE ui_draw_text_buffer_char(void) BANKED {

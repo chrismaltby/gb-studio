@@ -7,7 +7,7 @@
 #include "samples_bank3.h" 
 
 
-void main()
+void main(void)
 {
 
     NR52_REG = 0x80u;
@@ -27,12 +27,12 @@ void main()
         UINT8 j = joypad();
         if (j & J_A) {
             play_sample1();
-            while (joypad() & J_A) wait_vbl_done();
+            while (joypad() & J_A) vsync();
         } else
         if (j & J_B) {
             play_sample2();
-            while (joypad() & J_B) wait_vbl_done();
+            while (joypad() & J_B) vsync();
         }
-        wait_vbl_done();
+        vsync();
     }
 }

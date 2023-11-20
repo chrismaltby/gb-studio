@@ -9,7 +9,7 @@ extern const uint8_t some_const_var_1;
 BANKREF_EXTERN(some_const_var_1)
 
 // Reference for a banked function
-void func_1() BANKED;
+void func_1(void) BANKED;
 BANKREF_EXTERN(func_1)
 
 #endif

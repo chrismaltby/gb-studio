@@ -12,7 +12,7 @@
 
 UBYTE hide_sprites = FALSE;
 UBYTE show_actors_on_overlay = FALSE;
-UBYTE overlay_cut_scanline = LYC_SYNC_VALUE; 
+UBYTE overlay_cut_scanline = LYC_SYNC_VALUE;
 
 void remove_LCD_ISRs(void) BANKED {
     CRITICAL {
@@ -28,7 +28,7 @@ void simple_LCD_isr(void) NONBANKED {
         SCX_REG = draw_scroll_x;
         SCY_REG = draw_scroll_y;
         if (WY_REG) {
-            if (WY_REG < MENU_CLOSED_Y) LYC_REG = WY_REG - 1; 
+            if (WY_REG < MENU_CLOSED_Y) LYC_REG = WY_REG - 1;
         } else {
             if ((WX_REG == MINWNDPOSX) && (show_actors_on_overlay == FALSE)) HIDE_SPRITES;
             LYC_REG = overlay_cut_scanline;
@@ -40,9 +40,9 @@ void simple_LCD_isr(void) NONBANKED {
                 HIDE_SPRITES;
             }
             LYC_REG = overlay_cut_scanline;
-        } else { 
+        } else {
             while (STAT_REG & STATF_BUSY) ;
-            HIDE_WIN;
+            WX_REG = 0, HIDE_WIN;
             if (!hide_sprites) SHOW_SPRITES;
             LYC_REG = LYC_SYNC_VALUE;
             return;
@@ -55,7 +55,7 @@ void fullscreen_LCD_isr(void) NONBANKED {
         LCDC_REG &= ~LCDCF_BG8000;
         SCX_REG = draw_scroll_x;
         SCY_REG = draw_scroll_y;
-        LYC_REG = (9 * 8) - 1;    
+        LYC_REG = (9 * 8) - 1;
     } else {
         while (STAT_REG & STATF_BUSY) ;
         LCDC_REG |= LCDCF_BG8000;
@@ -64,8 +64,7 @@ void fullscreen_LCD_isr(void) NONBANKED {
 }
 
 void VBL_isr(void) NONBANKED {
-    WX_REG = win_pos_x + MINWNDPOSX;
-    if ((WY_REG = win_pos_y) < MENU_CLOSED_Y) SHOW_WIN; else HIDE_WIN;
+    if ((WY_REG = win_pos_y) < MENU_CLOSED_Y) WX_REG = (win_pos_x + MINWNDPOSX), SHOW_WIN; else WX_REG = 0, HIDE_WIN;
     if (hide_sprites) HIDE_SPRITES; else SHOW_SPRITES;
     scroll_shadow_update();
 }
