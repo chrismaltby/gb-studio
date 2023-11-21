@@ -303,7 +303,7 @@ class Scene extends Component {
               />
             </div>
           )}
-          {editable && (
+          {editable && (hovered || selected) && (
             <SceneCursor
               sceneId={id}
               enabled={hovered}

@@ -10,6 +10,7 @@ import {
   EyeOpenIcon,
   EyeClosedIcon,
   PriorityTileIcon,
+  SlopeIcon,
 } from "ui/icons/Icons";
 import {
   TOOL_COLORS,
@@ -27,6 +28,7 @@ import {
   COLLISION_ALL,
   TILE_PROP_LADDER,
   TILE_COLOR_PROP_PRIORITY,
+  BRUSH_SLOPE,
 } from "../../consts";
 import PaletteBlock from "../library/PaletteBlock";
 import Modal, { ModalFade, ModalContent } from "../library/Modal";
@@ -217,7 +219,6 @@ const BrushToolbar = () => {
     sceneSelectors.selectById(state, sceneId)
   );
   const selectedTool = useSelector((state: RootState) => state.editor.tool);
-
   const visible = validTools.includes(selectedTool);
   const showPalettes = selectedTool === TOOL_COLORS;
   const showTileTypes = selectedTool === TOOL_COLLISIONS;
@@ -420,10 +421,20 @@ const BrushToolbar = () => {
           variant="transparent"
           onClick={() => setBrush(BRUSH_MAGIC)}
           active={selectedBrush === BRUSH_MAGIC}
-          title={`${l10n("TOOL_MAGIC")} (0)`}
+          title={`${l10n("TOOL_MAGIC")}`}
         >
           <WandIcon />
         </Button>
+        {showTileTypes && (
+          <Button
+            variant="transparent"
+            onClick={() => setBrush(BRUSH_SLOPE)}
+            active={selectedBrush === BRUSH_SLOPE}
+            title={`${l10n("TOOL_SLOPE")}`}
+          >
+            <SlopeIcon />
+          </Button>
+        )}
         <FloatingPanelDivider />
         {showPalettes &&
           paletteIndexes.map((paletteIndex) => (

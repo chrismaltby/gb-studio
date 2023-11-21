@@ -6,6 +6,7 @@ import {
   DRAG_TRIGGER,
   DRAG_DESTINATION,
   DRAG_PLAYER,
+  BRUSH_SLOPE,
 } from "../../../consts";
 import { zoomIn, zoomOut } from "lib/helpers/zoom";
 import { Actor, Trigger, SceneData, Variable } from "../entities/entitiesTypes";
@@ -25,7 +26,7 @@ export type Tool =
   | "eraser"
   | "select";
 
-export type Brush = "8px" | "16px" | "fill" | "magic";
+export type Brush = "8px" | "16px" | "fill" | "magic" | "slope";
 
 export type EditorSelectionType =
   | "world"
@@ -203,6 +204,13 @@ const editorSlice = createSlice({
       state.triggerDefaults = undefined;
       state.sceneDefaults = undefined;
       state.pasteMode = false;
+      // Reset to 8px brush is current brush not supported
+      if (
+        state.selectedBrush === BRUSH_SLOPE &&
+        action.payload.tool !== "collisions"
+      ) {
+        state.selectedBrush = BRUSH_8PX;
+      }
     },
 
     setPasteMode: (state, action: PayloadAction<boolean>) => {

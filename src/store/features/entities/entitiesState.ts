@@ -1841,13 +1841,13 @@ const paintCollision: CaseReducer<
   PayloadAction<
     {
       sceneId: string;
-      tileLookup: Uint8Array;
+      tileLookup?: Uint8Array;
       x: number;
       y: number;
       value: number;
       brush: Brush;
       isTileProp: boolean;
-    } & ({ drawLine: false } | { drawLine: true; endX: number; endY: number })
+    } & ({ drawLine?: false } | { drawLine: true; endX: number; endY: number })
   >
 > = (state, action) => {
   const scene = localSceneSelectors.selectById(state, action.payload.sceneId);
@@ -1899,7 +1899,7 @@ const paintCollision: CaseReducer<
 
   const equal = (a: number, b: number) => a === b;
 
-  if (brush === "magic") {
+  if (brush === "magic" && action.payload.tileLookup) {
     paintMagic(
       background.width,
       action.payload.tileLookup,
@@ -1955,13 +1955,13 @@ const paintColor: CaseReducer<
     {
       backgroundId: string;
       sceneId: string;
-      tileLookup: Uint8Array;
+      tileLookup?: Uint8Array;
       x: number;
       y: number;
       paletteIndex: number;
       brush: Brush;
       isTileProp: boolean;
-    } & ({ drawLine: false } | { drawLine: true; endX: number; endY: number })
+    } & ({ drawLine?: false } | { drawLine: true; endX: number; endY: number })
   >
 > = (state, action) => {
   const background = localBackgroundSelectors.selectById(
@@ -2012,8 +2012,7 @@ const paintColor: CaseReducer<
 
   const equal = (a: number, b: number) => a === b;
 
-  if (brush === "magic") {
-    console.log(action.payload.paletteIndex);
+  if (brush === "magic" && action.payload.tileLookup) {
     paintMagic(
       background.width,
       action.payload.tileLookup,
