@@ -160,7 +160,7 @@ class World extends Component {
     if (e.ctrlKey || e.shiftKey || e.metaKey) {
       return;
     }
-    if (e.code === "Space" || e.key === "Alt") {
+    if (e.code === "Space") {
       this.setState({ dragMode: true });
       e.preventDefault();
     }
@@ -248,6 +248,7 @@ class World extends Component {
   startWorldDragIfAltOrMiddleClick = (e) => {
     const { dragMode } = this.state;
     if (dragMode || e.nativeEvent.which === MIDDLE_MOUSE) {
+      e.preventDefault();
       this.worldDragging = true;
       e.stopPropagation();
     }

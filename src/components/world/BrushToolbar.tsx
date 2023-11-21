@@ -28,16 +28,17 @@ import {
   COLLISION_ALL,
   TILE_PROP_LADDER,
   TILE_COLOR_PROP_PRIORITY,
-  SLOPE_45_RIGHT,
-  SLOPE_22_RIGHT_BOT,
-  SLOPE_22_RIGHT_TOP,
-  SLOPE_67_RIGHT_BOT,
-  SLOPE_67_RIGHT_TOP,
-  SLOPE_45_LEFT,
-  SLOPE_22_LEFT_BOT,
-  SLOPE_22_LEFT_TOP,
-  SLOPE_67_LEFT_BOT,
-  SLOPE_67_LEFT_TOP,
+  COLLISION_SLOPE_45_RIGHT,
+  COLLISION_SLOPE_22_RIGHT_BOT,
+  COLLISION_SLOPE_22_RIGHT_TOP,
+  COLLISION_SLOPE_67_RIGHT_BOT,
+  COLLISION_SLOPE_67_RIGHT_TOP,
+  COLLISION_SLOPE_45_LEFT,
+  COLLISION_SLOPE_22_LEFT_BOT,
+  COLLISION_SLOPE_22_LEFT_TOP,
+  COLLISION_SLOPE_67_LEFT_BOT,
+  COLLISION_SLOPE_67_LEFT_TOP,
+  COLLISION_SLOPE_VALUES,
   BRUSH_SLOPE,
 } from "../../consts";
 import PaletteBlock from "../library/PaletteBlock";
@@ -99,53 +100,63 @@ const tileTypes = [
   },
   {
     key: "slope_45_right",
-    name: l10n("FIELD_SLOPE_45_RIGHT"),
-    flag: SLOPE_45_RIGHT,
+    name: l10n("FIELD_COLLISION_SLOPE_45_RIGHT"),
+    flag: COLLISION_SLOPE_45_RIGHT,
+    extra: COLLISION_BOTTOM | COLLISION_RIGHT,
   },
   {
     key: "slope_45_left",
-    name: l10n("FIELD_SLOPE_45_LEFT"),
-    flag: SLOPE_45_LEFT,
+    name: l10n("FIELD_COLLISION_SLOPE_45_LEFT"),
+    flag: COLLISION_SLOPE_45_LEFT,
+    extra: COLLISION_BOTTOM | COLLISION_LEFT,
   },
   {
     key: "slope_22_right_bot",
-    name: l10n("FIELD_SLOPE_22_RIGHT_BOT"),
-    flag: SLOPE_22_RIGHT_BOT,
+    name: l10n("FIELD_COLLISION_SLOPE_22_RIGHT_BOT"),
+    flag: COLLISION_SLOPE_22_RIGHT_BOT,
+    extra: COLLISION_BOTTOM,
   },
   {
     key: "slope_22_right_top",
-    name: l10n("FIELD_SLOPE_22_RIGHT_TOP"),
-    flag: SLOPE_22_RIGHT_TOP,
+    name: l10n("FIELD_COLLISION_SLOPE_22_RIGHT_TOP"),
+    flag: COLLISION_SLOPE_22_RIGHT_TOP,
+    extra: COLLISION_BOTTOM | COLLISION_RIGHT,
   },
   {
     key: "slope_22_left_top",
-    name: l10n("FIELD_SLOPE_22_LEFT_TOP"),
-    flag: SLOPE_22_LEFT_TOP,
+    name: l10n("FIELD_COLLISION_SLOPE_22_LEFT_TOP"),
+    flag: COLLISION_SLOPE_22_LEFT_TOP,
+    extra: COLLISION_BOTTOM | COLLISION_LEFT,
   },
   {
     key: "slope_22_left_bot",
-    name: l10n("FIELD_SLOPE_22_LEFT_BOT"),
-    flag: SLOPE_22_LEFT_BOT,
+    name: l10n("FIELD_COLLISION_SLOPE_22_LEFT_BOT"),
+    flag: COLLISION_SLOPE_22_LEFT_BOT,
+    extra: COLLISION_BOTTOM,
   },
   {
     key: "slope_67_right_bot",
-    name: l10n("FIELD_SLOPE_67_RIGHT_BOT"),
-    flag: SLOPE_67_RIGHT_BOT,
+    name: l10n("FIELD_COLLISION_SLOPE_67_RIGHT_BOT"),
+    flag: COLLISION_SLOPE_67_RIGHT_BOT,
+    extra: COLLISION_BOTTOM | COLLISION_RIGHT,
   },
   {
     key: "slope_67_right_top",
-    name: l10n("FIELD_SLOPE_67_RIGHT_TOP"),
-    flag: SLOPE_67_RIGHT_TOP,
+    name: l10n("FIELD_COLLISION_SLOPE_67_RIGHT_TOP"),
+    flag: COLLISION_SLOPE_67_RIGHT_TOP,
+    extra: COLLISION_RIGHT,
   },
   {
     key: "slope_67_left_top",
-    name: l10n("FIELD_SLOPE_67_LEFT_TOP"),
-    flag: SLOPE_67_LEFT_TOP,
+    name: l10n("FIELD_COLLISION_SLOPE_67_LEFT_TOP"),
+    flag: COLLISION_SLOPE_67_LEFT_TOP,
+    extra: COLLISION_LEFT,
   },
   {
     key: "slope_67_left_bot",
-    name: l10n("FIELD_SLOPE_67_LEFT_BOT"),
-    flag: SLOPE_67_LEFT_BOT,
+    name: l10n("FIELD_COLLISION_SLOPE_67_LEFT_BOT"),
+    flag: COLLISION_SLOPE_67_LEFT_BOT,
+    extra: COLLISION_BOTTOM | COLLISION_LEFT,
   },
   {
     key: "spare_12",
@@ -272,6 +283,15 @@ const BrushToolbar = () => {
             })
           );
         }
+      } else if (
+        e.shiftKey &&
+        COLLISION_SLOPE_VALUES.includes(tileTypes[index].flag)
+      ) {
+        dispatch(
+          editorActions.setSelectedTileType({
+            tileType: tileTypes[index].flag | (tileTypes[index].extra ?? 0),
+          })
+        );
       } else {
         dispatch(
           editorActions.setSelectedTileType({ tileType: tileTypes[index].flag })
@@ -516,7 +536,7 @@ const BrushToolbar = () => {
                 variant="transparent"
                 key={tileType.name}
                 onClick={setSelectedPalette(tileTypeIndex + 6)}
-                active={selectedTileType === tileType.flag}
+                active={(selectedTileType & 0xf0) === tileType.flag}
                 title={`${tileType.name}`}
               >
                 <BrushToolbarCollisionTile

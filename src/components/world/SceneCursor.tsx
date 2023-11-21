@@ -825,6 +825,9 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
       if (e.nativeEvent.which === MIDDLE_MOUSE) {
         return;
       }
+      if (!e.shiftKey) {
+        data.current.drawLine = false;
+      }
 
       data.current.lockX = undefined;
       data.current.lockY = undefined;
@@ -840,7 +843,12 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
       } else if (tool === "triggers") {
         onMouseDownTrigger();
       } else if (tool === "collisions") {
-        onMouseDownCollisions();
+        if (e.nativeEvent.which === 3) {
+          // right mouse always erase
+          onMouseDownEraser();
+        } else {
+          onMouseDownCollisions();
+        }
       } else if (tool === "colors") {
         onMouseDownColors(e);
       } else if (tool === "eraser") {

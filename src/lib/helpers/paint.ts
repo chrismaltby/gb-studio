@@ -1,11 +1,4 @@
 import { floodFill } from "ts-flood-fill";
-import { assetFilename } from "./gbstudio";
-import {
-  readFileToTilesDataArray,
-  toTileLookup,
-  tilesAndLookupToTilemap,
-} from "../tiles/tileData";
-import { Background } from "store/features/entities/entitiesTypes";
 
 type SetValueFn<T> = (x: number, y: number, value: T) => void;
 type InBoundsFn = (x: number, y: number) => boolean;

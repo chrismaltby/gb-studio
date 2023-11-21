@@ -1885,8 +1885,14 @@ const paintCollision: CaseReducer<
     const tileIndex = background.width * y + x;
     let newValue = value;
     if (isTileProp) {
-      // If is prop keep previous collision value
-      newValue = (collisions[tileIndex] & COLLISION_ALL) + (value & TILE_PROPS);
+      if (value & 0x0f) {
+        // If is prop and one way, overwrite both
+        newValue = value;
+      } else {
+        // If is prop keep previous collision value
+        newValue =
+          (collisions[tileIndex] & COLLISION_ALL) + (value & TILE_PROPS);
+      }
     } else if (value !== 0 && !isSlope(newValue)) {
       // If is collision keep prop unless erasing
       newValue = (value & COLLISION_ALL) + (collisions[tileIndex] & TILE_PROPS);
