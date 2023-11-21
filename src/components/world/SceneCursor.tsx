@@ -31,6 +31,9 @@ import {
   TILE_COLOR_PROPS,
   TILE_COLOR_PALETTE,
   BRUSH_SLOPE,
+  BRUSH_8PX,
+  COLLISION_SLOPE_45_LEFT,
+  COLLISION_SLOPE_45_RIGHT,
 } from "../../consts";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import { RootState } from "store/configureStore";
@@ -41,9 +44,9 @@ interface SceneCursorProps {
   enabled: boolean;
 }
 
-const SceneCursor = (props: SceneCursorProps) => {
+const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
   const dispatch = useDispatch();
-  const { sceneId, enabled, sceneFiltered } = props;
+  const cursorRef = useRef<HTMLDivElement>(null);
   const {
     x,
     y,
@@ -77,6 +80,7 @@ const SceneCursor = (props: SceneCursorProps) => {
     drawTile: number;
     isTileProp: boolean;
     isPainting: boolean;
+    slopeDirection: "left" | "right";
   }>({
     startX: 0,
     startY: 0,
@@ -84,6 +88,7 @@ const SceneCursor = (props: SceneCursorProps) => {
     drawTile: 0,
     isTileProp: false,
     isPainting: false,
+    slopeDirection: "left",
   });
   const scene = useSelector((state: RootState) =>
     sceneSelectors.selectById(state, hoverSceneId)
@@ -105,6 +110,9 @@ const SceneCursor = (props: SceneCursorProps) => {
       ? state.assets.backgrounds[background?.id ?? ""]?.lookup
       : undefined
   );
+
+  const [previewSlopeDirection, setPreviewSlopeDirection] =
+    useState<typeof data.current.slopeDirection>("left");
 
   const onKeyDown = useCallback(
     (e) => {
@@ -170,7 +178,29 @@ const SceneCursor = (props: SceneCursorProps) => {
       enabled &&
       (data.current.currentX !== x || data.current.currentY !== y)
     ) {
-      if (data.current.drawLine) {
+      if (selectedBrush === BRUSH_SLOPE) {
+        const diffX = x - data.current.startX;
+        const diffY = y - data.current.startY;
+        if (
+          (data.current.slopeDirection === "right" && diffX === -diffY) ||
+          (data.current.slopeDirection === "left" && diffX === diffY)
+        ) {
+          dispatch(
+            entitiesActions.paintCollision({
+              brush: BRUSH_8PX,
+              sceneId,
+              x: data.current.startX,
+              y: data.current.startY,
+              endX: x,
+              endY: y,
+              value: data.current.drawTile,
+              isTileProp: false,
+              drawLine: true,
+              tileLookup,
+            })
+          );
+        }
+      } else if (data.current.drawLine) {
         if (
           data.current.startX === undefined ||
           data.current.startY === undefined
@@ -325,6 +355,20 @@ const SceneCursor = (props: SceneCursorProps) => {
     y,
   ]);
 
+  const onMouseMoveSlopeSelect = useCallback(
+    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      if (cursorRef.current && !data.current.isPainting) {
+        const { left, top, width, height } =
+          cursorRef.current.getBoundingClientRect();
+        const x = e.clientX - left;
+        const y = e.clientY - top;
+        data.current.slopeDirection = x <= width * 0.5 ? "left" : "right";
+        setPreviewSlopeDirection(data.current.slopeDirection);
+      }
+    },
+    []
+  );
+
   const onMouseMove = useCallback(() => {
     if (sceneId !== hoverSceneId) {
       return;
@@ -474,7 +518,6 @@ const SceneCursor = (props: SceneCursorProps) => {
         })
       );
     } else if (selectedBrush === BRUSH_MAGIC) {
-      console.log("COLLISIONS", tileLookup);
       if (tileLookup) {
         dispatch(
           entitiesActions.paintCollision({
@@ -493,7 +536,26 @@ const SceneCursor = (props: SceneCursorProps) => {
     } else if (selectedBrush === BRUSH_SLOPE) {
       data.current.startX = x;
       data.current.startY = y;
+      data.current.isPainting = true;
+
+      if (data.current.slopeDirection === "left") {
+        data.current.drawTile = COLLISION_SLOPE_45_LEFT;
+      } else if (data.current.slopeDirection === "right") {
+        data.current.drawTile = COLLISION_SLOPE_45_RIGHT;
+      }
+
       // @TODO
+      dispatch(
+        entitiesActions.paintCollision({
+          brush: BRUSH_8PX,
+          sceneId,
+          x,
+          y,
+          value: data.current.drawTile,
+          isTileProp: false,
+          tileLookup,
+        })
+      );
     } else {
       if (
         data.current.drawLine &&
@@ -806,6 +868,7 @@ const SceneCursor = (props: SceneCursorProps) => {
   }
   return (
     <div
+      ref={cursorRef}
       className={cx("SceneCursor", {
         "SceneCursor--AddActor": tool === TOOL_ACTORS,
         "SceneCursor--AddTrigger": tool === TOOL_TRIGGERS,
@@ -818,12 +881,20 @@ const SceneCursor = (props: SceneCursorProps) => {
             tool === TOOL_ERASER) &&
           selectedBrush === BRUSH_16PX,
       })}
+      onMouseMove={onMouseMoveSlopeSelect}
       onMouseDown={onMouseDown}
       style={{
         top: y * 8,
         left: x * 8,
       }}
     >
+      {tool === TOOL_COLLISIONS && selectedBrush === BRUSH_SLOPE && (
+        <div
+          className={`SceneCursor__Tile SceneCursor__Tile--${
+            previewSlopeDirection === "left" ? "slope45L" : "slope45R"
+          }`}
+        />
+      )}
       {(tool === TOOL_ACTORS ||
         tool === TOOL_TRIGGERS ||
         tool === TOOL_ERASER ||

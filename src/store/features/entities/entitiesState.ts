@@ -69,6 +69,7 @@ import {
   removeAssetEntity,
   upsertAssetEntity,
   updateEntitySymbol,
+  isSlope,
 } from "./entitiesHelpers";
 import spriteActions from "../sprite/spriteActions";
 import { isVariableCustomEvent } from "lib/compiler/scriptBuilder";
@@ -1886,7 +1887,7 @@ const paintCollision: CaseReducer<
     if (isTileProp) {
       // If is prop keep previous collision value
       newValue = (collisions[tileIndex] & COLLISION_ALL) + (value & TILE_PROPS);
-    } else if (value !== 0) {
+    } else if (value !== 0 && !isSlope(newValue)) {
       // If is collision keep prop unless erasing
       newValue = (value & COLLISION_ALL) + (collisions[tileIndex] & TILE_PROPS);
     }
