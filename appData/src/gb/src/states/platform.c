@@ -32,20 +32,20 @@
 #ifndef COLLISION_SLOPE_45_RIGHT
 #define COLLISION_SLOPE_45_RIGHT 0x20
 #endif
-#ifndef COLLISION_SLOPE_45_LEFT
-#define COLLISION_SLOPE_45_LEFT 0x30
-#endif
 #ifndef COLLISION_SLOPE_225_RIGHT_BOT
-#define COLLISION_SLOPE_225_RIGHT_BOT 0x40
+#define COLLISION_SLOPE_225_RIGHT_BOT 0x30
 #endif
 #ifndef COLLISION_SLOPE_225_RIGHT_TOP
-#define COLLISION_SLOPE_225_RIGHT_TOP 0x50
+#define COLLISION_SLOPE_225_RIGHT_TOP 0x40
+#endif
+#ifndef COLLISION_SLOPE_45_LEFT
+#define COLLISION_SLOPE_45_LEFT 0x70
 #endif
 #ifndef COLLISION_SLOPE_225_LEFT_BOT
-#define COLLISION_SLOPE_225_LEFT_BOT 0x70
+#define COLLISION_SLOPE_225_LEFT_BOT 0x80
 #endif
 #ifndef COLLISION_SLOPE_225_LEFT_TOP
-#define COLLISION_SLOPE_225_LEFT_TOP 0x60
+#define COLLISION_SLOPE_225_LEFT_TOP 0x90
 #endif
 #ifndef COLLISION_SLOPE
 #define COLLISION_SLOPE (COLLISION_SLOPE_45_LEFT | COLLISION_SLOPE_45_RIGHT | COLLISION_SLOPE_225_LEFT_BOT | COLLISION_SLOPE_225_RIGHT_BOT | COLLISION_SLOPE_225_RIGHT_TOP | COLLISION_SLOPE_225_LEFT_TOP)
@@ -245,12 +245,9 @@ void platform_update() BANKED {
                 if (col & COLLISION_LEFT) {
                     // only ignore collisions if there is a slope on this y column somewhere
                     if (slope_on_y || tile_start == slope_y) {
-                        if ((on_slope & COLLISION_SLOPE) == COLLISION_SLOPE_45_RIGHT ||
-                            (on_slope & COLLISION_SLOPE) == COLLISION_SLOPE_225_RIGHT_BOT ||
-                            (on_slope & COLLISION_SLOPE) == COLLISION_SLOPE_225_RIGHT_TOP ||
-                            (prev_on_slope & COLLISION_SLOPE) == COLLISION_SLOPE_45_RIGHT ||
-                            (prev_on_slope & COLLISION_SLOPE) == COLLISION_SLOPE_225_RIGHT_BOT ||
-                            (prev_on_slope & COLLISION_SLOPE) == COLLISION_SLOPE_225_RIGHT_TOP
+                        // if slope was facing right
+                        if ((on_slope > COLLISION_SLOPE_45_LEFT) ||
+                            (prev_on_slope > COLLISION_SLOPE_45_LEFT)
                             )
                             {
                             if (tile_start <= slope_y) {
@@ -260,12 +257,9 @@ void platform_update() BANKED {
                         }
                     }
                     if (slope_on_y) {
-                        if ((on_slope & COLLISION_SLOPE) == COLLISION_SLOPE_45_LEFT ||
-                            (on_slope & COLLISION_SLOPE) == COLLISION_SLOPE_225_LEFT_BOT ||
-                            (on_slope & COLLISION_SLOPE) == COLLISION_SLOPE_225_LEFT_TOP ||
-                            (prev_on_slope & COLLISION_SLOPE) == COLLISION_SLOPE_45_LEFT ||
-                            (prev_on_slope & COLLISION_SLOPE) == COLLISION_SLOPE_225_LEFT_BOT ||
-                            (prev_on_slope & COLLISION_SLOPE) == COLLISION_SLOPE_225_LEFT_TOP
+                        // if slope was facing left
+                        if ((on_slope <= COLLISION_SLOPE_45_LEFT) ||
+                            (prev_on_slope <= COLLISION_SLOPE_45_LEFT)
                             )
                             {
                             if (tile_start >= slope_y) {
@@ -304,12 +298,9 @@ void platform_update() BANKED {
                 if (col & COLLISION_RIGHT) {
                     // only ignore collisions if there is a slope on this y column somewhere
                     if (slope_on_y || tile_start == slope_y) {
-                        if ((on_slope & COLLISION_SLOPE) == COLLISION_SLOPE_45_LEFT ||
-                            (on_slope & COLLISION_SLOPE) == COLLISION_SLOPE_225_LEFT_BOT ||
-                            (on_slope & COLLISION_SLOPE) == COLLISION_SLOPE_225_LEFT_TOP ||
-                            (prev_on_slope & COLLISION_SLOPE) == COLLISION_SLOPE_45_LEFT ||
-                            (prev_on_slope & COLLISION_SLOPE) == COLLISION_SLOPE_225_LEFT_BOT ||
-                            (prev_on_slope & COLLISION_SLOPE) == COLLISION_SLOPE_225_LEFT_TOP
+                        // if slope was facing left
+                        if ((on_slope <= COLLISION_SLOPE_45_LEFT) ||
+                            (prev_on_slope <= COLLISION_SLOPE_45_LEFT)
                             )
                             {
                             if (tile_start <= slope_y) {
@@ -319,12 +310,9 @@ void platform_update() BANKED {
                         }
                     }
                     if (slope_on_y) {
-                        if ((on_slope & COLLISION_SLOPE) == COLLISION_SLOPE_45_RIGHT ||
-                            (on_slope & COLLISION_SLOPE) == COLLISION_SLOPE_225_RIGHT_BOT ||
-                            (on_slope & COLLISION_SLOPE) == COLLISION_SLOPE_225_RIGHT_TOP ||
-                            (prev_on_slope & COLLISION_SLOPE) == COLLISION_SLOPE_45_RIGHT ||
-                            (prev_on_slope & COLLISION_SLOPE) == COLLISION_SLOPE_225_RIGHT_BOT ||
-                            (prev_on_slope & COLLISION_SLOPE) == COLLISION_SLOPE_225_RIGHT_TOP
+                        // if slope was facing right
+                        if ((on_slope > COLLISION_SLOPE_45_LEFT) ||
+                            (prev_on_slope > COLLISION_SLOPE_45_LEFT)
                             )
                             {
                             if (tile_start >= slope_y) {

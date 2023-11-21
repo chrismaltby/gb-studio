@@ -109,67 +109,67 @@ const SceneCollisions = ({
                 ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 0) * TILE_SIZE);
                 ctx.stroke(); // Render the path
                 break;
-              case 3: // slope left
-                ctx.strokeStyle = "rgba(0,0,255,0.6)";
-                ctx.beginPath();
-                ctx.moveTo((xi + 0) * TILE_SIZE, (yi + 0) * TILE_SIZE);
-                ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 1) * TILE_SIZE);
-                ctx.stroke(); // Render the path
-                break;
-              case 4: // slope right shalow1
+              case 3: // slope right shalow BOT
                 ctx.strokeStyle = "rgba(0,0,255,0.6)";
                 ctx.beginPath();
                 ctx.moveTo((xi + 0) * TILE_SIZE, (yi + 1) * TILE_SIZE);
                 ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
                 ctx.stroke(); // Render the path
                 break;
-              case 5: // slope right shalow2
+              case 4: // slope right shalow TOP
                 ctx.strokeStyle = "rgba(0,0,255,0.6)";
                 ctx.beginPath();
                 ctx.moveTo((xi + 0) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
                 ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 0) * TILE_SIZE);
                 ctx.stroke(); // Render the path
                 break;
-              case 6: // slope left shalow2
-                ctx.strokeStyle = "rgba(0,0,255,0.6)";
-                ctx.beginPath();
-                ctx.moveTo((xi + 1) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
-                ctx.lineTo((xi + 0) * TILE_SIZE, (yi + 0) * TILE_SIZE);
-                ctx.stroke(); // Render the path
-                break;
-              case 7: // slope left shalow1
-                ctx.strokeStyle = "rgba(0,0,255,0.6)";
-                ctx.beginPath();
-                ctx.moveTo((xi + 1) * TILE_SIZE, (yi + 1) * TILE_SIZE);
-                ctx.lineTo((xi + 0) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
-                ctx.stroke(); // Render the path
-                break;
-              case 8: // slope right steep1
+              case 5: // slope right steep BOT
                 ctx.strokeStyle = "rgba(0,0,255,0.6)";
                 ctx.beginPath();
                 ctx.moveTo((xi + 0) * TILE_SIZE, (yi + 1) * TILE_SIZE);
                 ctx.lineTo((xi + 0.5) * TILE_SIZE, (yi + 0) * TILE_SIZE);
                 ctx.stroke(); // Render the path
                 break;
-              case 9: // slope right steep2
+              case 6: // slope right steep TOP
                 ctx.strokeStyle = "rgba(0,0,255,0.6)";
                 ctx.beginPath();
                 ctx.moveTo((xi + 0.5) * TILE_SIZE, (yi + 1) * TILE_SIZE);
                 ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 0) * TILE_SIZE);
                 ctx.stroke(); // Render the path
                 break;
-              case 10: // slope left steep2
+              case 7: // slope left
                 ctx.strokeStyle = "rgba(0,0,255,0.6)";
                 ctx.beginPath();
                 ctx.moveTo((xi + 0) * TILE_SIZE, (yi + 0) * TILE_SIZE);
-                ctx.lineTo((xi + 0.5) * TILE_SIZE, (yi + 1) * TILE_SIZE);
+                ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 1) * TILE_SIZE);
                 ctx.stroke(); // Render the path
                 break;
-              case 11: // slope left steep1
+              case 8: // slope left shalow BOT
+                ctx.strokeStyle = "rgba(0,0,255,0.6)";
+                ctx.beginPath();
+                ctx.moveTo((xi + 1) * TILE_SIZE, (yi + 1) * TILE_SIZE);
+                ctx.lineTo((xi + 0) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
+                ctx.stroke(); // Render the path
+                break;
+              case 9: // slope left shalow TOP
+                ctx.strokeStyle = "rgba(0,0,255,0.6)";
+                ctx.beginPath();
+                ctx.moveTo((xi + 1) * TILE_SIZE, (yi + 0.5) * TILE_SIZE);
+                ctx.lineTo((xi + 0) * TILE_SIZE, (yi + 0) * TILE_SIZE);
+                ctx.stroke(); // Render the path
+                break;
+              case 10: // slope left steep BOT
                 ctx.strokeStyle = "rgba(0,0,255,0.6)";
                 ctx.beginPath();
                 ctx.moveTo((xi + 0.5) * TILE_SIZE, (yi + 0) * TILE_SIZE);
                 ctx.lineTo((xi + 1) * TILE_SIZE, (yi + 1) * TILE_SIZE);
+                ctx.stroke(); // Render the path
+                break;
+              case 11: // slope left steepTOP
+                ctx.strokeStyle = "rgba(0,0,255,0.6)";
+                ctx.beginPath();
+                ctx.moveTo((xi + 0) * TILE_SIZE, (yi + 0) * TILE_SIZE);
+                ctx.lineTo((xi + 0.5) * TILE_SIZE, (yi + 1) * TILE_SIZE);
                 ctx.stroke(); // Render the path
                 break;
 

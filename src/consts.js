@@ -78,6 +78,17 @@ export const COLLISION_ALL = 0xf;
 export const TILE_PROP_LADDER = 0x10;
 export const TILE_PROPS = 0xf0;
 
+export const SLOPE_45_RIGHT = 0x20;
+export const SLOPE_22_RIGHT_BOT = 0x30;
+export const SLOPE_22_RIGHT_TOP = 0x40;
+export const SLOPE_67_RIGHT_BOT = 0x50;
+export const SLOPE_67_RIGHT_TOP = 0x60;
+export const SLOPE_45_LEFT = 0x70;
+export const SLOPE_22_LEFT_BOT = 0x80;
+export const SLOPE_22_LEFT_TOP = 0x90;
+export const SLOPE_67_LEFT_BOT = 0xa0;
+export const SLOPE_67_LEFT_TOP = 0xb0;
+
 export const TILE_COLOR_PALETTE = 0x7;
 export const TILE_COLOR_PROPS = 0xf8;
 export const TILE_COLOR_PROP_PRIORITY = 0x80;
