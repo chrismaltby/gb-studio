@@ -139,7 +139,7 @@ export interface EditorState {
 }
 
 export const initialState: EditorState = {
-  tool: "collisions",
+  tool: "select",
   pasteMode: false,
   type: "world",
   worldFocus: false,
@@ -171,7 +171,7 @@ export const initialState: EditorState = {
   worldViewHeight: 0,
   selectedPalette: 0,
   selectedTileType: COLLISION_ALL,
-  selectedBrush: BRUSH_SLOPE,
+  selectedBrush: BRUSH_8PX,
   showLayers: true,
   lastScriptTab: "",
   lastScriptTabScene: "",
