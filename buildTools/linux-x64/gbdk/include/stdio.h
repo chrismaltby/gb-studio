@@ -15,7 +15,7 @@
     @param c            Character to print
  */
 
-void putchar(char c) OLDCALL;
+void putchar(char c) OLDCALL REENTRANT;
 
 /** Print the string and arguments given by format to stdout.
 
@@ -38,7 +38,7 @@ void putchar(char c) OLDCALL;
     the function.
     See @ref docs_chars_varargs for more details.
  */
-void printf(const char *format, ...) OLDCALL REENTRANT;
+void printf(const char *format, ...);
 
 /** Print the string and arguments given by format to a buffer.
 
@@ -52,7 +52,7 @@ void printf(const char *format, ...) OLDCALL REENTRANT;
     the function.
     See @ref docs_chars_varargs for more details.
  */
-void sprintf(char *str, const char *format, ...) OLDCALL REENTRANT;
+void sprintf(char *str, const char *format, ...);
 
 /** puts() writes the string __s__ and a trailing newline to stdout.
 */

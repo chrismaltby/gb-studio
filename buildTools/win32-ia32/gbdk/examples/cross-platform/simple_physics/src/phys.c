@@ -1,12 +1,13 @@
+
 // A simple sub-pixel / fixed point example
-// Postion values are calculated as 16 bit numbers and their
+// Position values are calculated as 16 bit numbers and their
 // lower 4 bits are dropped when applying them to the sprite
 
 #include <gbdk/platform.h>
 
 #include <stdint.h>
 
-const uint8_t sprite_data[] = { 
+const uint8_t sprite_data[] = {
     0x3C,0x3C,0x42,0x7E,0x99,0xFF,0xA9,0xFF,0x89,0xFF,0x89,0xFF,0x42,0x7E,0x3C,0x3C,
     0x3C,0x3C,0x42,0x7E,0xB9,0xFF,0x89,0xFF,0x91,0xFF,0xB9,0xFF,0x42,0x7E,0x3C,0x3C,
     0x3C,0x3C,0x42,0x7E,0x99,0xFF,0x89,0xFF,0x99,0xFF,0x89,0xFF,0x5A,0x7E,0x3C,0x3C,
@@ -15,8 +16,8 @@ const uint8_t sprite_data[] = {
 };
 
 // update user input macro
-#define INPUT_PROCESS (old_joy=joy,joy=joypad()) 
-// check putton down
+#define INPUT_PROCESS (old_joy=joy,joy=joypad())
+// check button down
 #define INPUT_KEY(key) (joy&(key))
 // check button press
 #define INPUT_KEYPRESS(key) ((joy & ~old_joy) & (key))
@@ -48,20 +49,20 @@ void main(void) {
 #endif
     // load tile data into VRAM
     set_sprite_data(0, 4, sprite_data);
-    
+
     // set sprite tile
     set_sprite_tile(0, 0);
 
     // show bkg and sprites
     SHOW_BKG; SHOW_SPRITES;
- 
+
     PosX = PosY = PIXELS_TO_SUBPIXELS(64);
     SpdX = SpdY = PIXELS_TO_SUBPIXELS(0);
 
-    while(TRUE) {        
+    while(TRUE) {
         // poll joypads
         INPUT_PROCESS;
-        
+
         // check d-pad and change the object speed
         if (INPUT_KEY(J_UP)) {
             SpdY -= Y_ACCELERATION_IN_SUBPIXELS;
@@ -83,14 +84,14 @@ void main(void) {
         }
 
         // change coordinates of the object
-        PosX += SpdX, PosY += SpdY; 
+        PosX += SpdX, PosY += SpdY;
 
         // Translate to pixels and move sprite
         move_sprite(0, SUBPIXELS_TO_PIXELS(PosX), SUBPIXELS_TO_PIXELS(PosY));
 
         // decelerate Y and X
-        if (SpdY < 0) SpdY++; else if (SpdY) SpdY--; 
-        if (SpdX < 0) SpdX++; else if (SpdX) SpdX--; 
+        if (SpdY < 0) SpdY++; else if (SpdY) SpdY--;
+        if (SpdX < 0) SpdX++; else if (SpdX) SpdX--;
 
         // Done processing, yield CPU and wait for start of next frame (VBlank)
         vsync();
