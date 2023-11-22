@@ -25,7 +25,7 @@ INCBIN_EXTERN(blank_tile_data)
 #define LOGO_MAP_X      (20u - LOGO_MAP_WIDTH) / 2u  // Center on X axis
 #define LOGO_MAP_Y      (18u - LOGO_MAP_HEIGHT) / 2u // Center on Y axis
 
-void init_gfx() {
+void init_gfx(void) {
     // Load a single clear background tile at location 0x80 and clear/fill the map with it
     set_bkg_data(0x80u, 1u, blank_tile_data); // The first 0x80u here is the tile ID
     fill_bkg_rect(0u, 0u, DEVICE_SCREEN_WIDTH, DEVICE_SCREEN_HEIGHT, 0x80u);   // The last 0x80u here is the tile ID 
@@ -53,6 +53,6 @@ void main(void)
         // Game main loop processing goes here
 
         // Done processing, yield CPU and wait for start of next frame
-        wait_vbl_done();
+        vsync();
     }
 }

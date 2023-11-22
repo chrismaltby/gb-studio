@@ -15,6 +15,10 @@ uint8_t buffer[4096];
 
 void main(void)
 {  
+#if defined(SEGA)
+    __WRITE_VDP_REG(VDP_R2, R2_MAP_0x3800);
+    __WRITE_VDP_REG(VDP_R5, R5_SAT_0x3F00);
+#endif
     // Decompress the map tiles into the background tile vram.
     //
     // Notice that the number of tiles isn't specified. The amount 
@@ -34,7 +38,7 @@ void main(void)
         // Main loop processing goes here
 
         // Done processing, yield CPU and wait for start of next frame
-        wait_vbl_done();
+        vsync();
     }
 }
 

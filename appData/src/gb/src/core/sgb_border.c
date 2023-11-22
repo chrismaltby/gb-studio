@@ -1,7 +1,7 @@
 #pragma bank 255
 
-#include <gb/gb.h>
-#include <gb/sgb.h>
+#include <gbdk/platform.h>
+
 #include <string.h>
 
 #include "sgb_border.h"

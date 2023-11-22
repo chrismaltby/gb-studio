@@ -1,7 +1,7 @@
 #ifndef SCENE_H
 #define SCENE_H
 
-#include <gb/gb.h>
+#include <gbdk/platform.h>
 #include "gbs_types.h"
 
 extern far_ptr_t current_scene;
@@ -28,11 +28,11 @@ extern scene_stack_item_t * scene_stack_ptr;
 #define MAX_SCENE_SPRITES   64
 extern UBYTE scene_sprites_base_tiles[MAX_SCENE_SPRITES];
 
-void load_init() BANKED;
+void load_init(void) BANKED;
 UBYTE load_scene(const scene_t * scene, UBYTE bank, UBYTE init_data) BANKED;
 
 UBYTE load_sprite(UBYTE sprite_offset, const spritesheet_t * sprite, UBYTE bank) BANKED;
-void load_player() BANKED;
+void load_player(void) BANKED;
 void load_emote(const unsigned char * tiles, UBYTE bank) BANKED;
 void load_animations(const spritesheet_t *sprite, UBYTE bank, UWORD animation_set, animation_t * res_animations) NONBANKED;
 void load_bounds(const spritesheet_t * sprite, UBYTE bank, bounding_box_t * res_bounds) BANKED;

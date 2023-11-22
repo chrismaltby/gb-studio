@@ -19,7 +19,7 @@
 
 UBYTE topdown_grid;
 
-void topdown_init() BANKED {
+void topdown_init(void) BANKED {
     camera_offset_x = 0;
     camera_offset_y = 0;
     camera_deadzone_x = 0;
@@ -35,7 +35,7 @@ void topdown_init() BANKED {
     }
 }
 
-void topdown_update() BANKED {
+void topdown_update(void) BANKED {
     actor_t *hit_actor;
     UBYTE tile_start, tile_end;
     direction_e new_dir = DIR_NONE;

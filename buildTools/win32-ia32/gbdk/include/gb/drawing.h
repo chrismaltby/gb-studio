@@ -2,7 +2,7 @@
     All Points Addressable (APA) mode drawing library.
 
     Drawing routines originally by Pascal Felber
-    Legendary overhall by Jon Fuge <jonny@q-continuum.demon.co.uk>
+    Legendary overhall by Jon Fuge : https://github.com/jf1452
     Commenting by Michael Hope
 
     Note: The standard text printf() and putchar() cannot be used
@@ -138,8 +138,21 @@ void wrtchr(char chr) OLDCALL;
     @see wrtchr() */
 void gotogxy(uint8_t x, uint8_t y) OLDCALL;
 
-/** Set the current __foreground__ colour (for pixels), __background__ colour, and
-   draw __mode__ */
+/** Set the current __forecolor__ colour, __backcolor__ colour, and
+   draw __mode__
+
+    @param forecolor    The primary drawing color (outlines of
+                        rectangles with @ref box(), letter color
+                        with @ref gprintf(), etc).
+    @param backcolor    Secondary or background color where applicable
+                        (fill color of rectangles with @ref box() when
+                        @ref M_FILL is specifed, background color of text
+                        with @ref gprintf(), etc).
+    @param mode         Drawing style to use. Several settings are available
+                        `SOLID`, `OR`, `XOR`, `AND`.
+
+   In order to completely overwrite existing pixels use `SOLID` for __mode__
+*/
 void color(uint8_t forecolor, uint8_t backcolor, uint8_t mode) OLDCALL;
 
 #endif /* __DRAWING_H */

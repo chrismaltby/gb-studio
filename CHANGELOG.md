@@ -12,11 +12,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ability to choose timer context in timer events allowing up to four timers to be used per scene [@patrickmollohan](https://github.com/patrickmollohan)
 - Add event "If Current Scene Is" to allow conditionally running scripts based on the current scene [@patrickmollohan](https://github.com/patrickmollohan)
 - Add ability to set background tile priority for Color games using Priorty tool in colorize section. Priority tiles appear above sprites
+- Add support for UGE v6 to music editor [@pau-tomas](https://github.com/pau-tomas)
+- Subpattern editor added to Instrument Editor [@pau-tomas](https://github.com/pau-tomas)
 
 ### Changed
 
 - Updated Simplified Chinese localisation. [@wcxu21](https://github.com/wcxu21)
 - Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
+- Update to latest [GBVM](https://github.com/chrismaltby/gbvm)
 
 ### Fixed
 
