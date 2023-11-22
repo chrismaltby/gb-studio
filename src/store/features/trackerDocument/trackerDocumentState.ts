@@ -19,6 +19,8 @@ import {
 } from "./trackerDocumentTypes";
 import { projectTemplatesRoot } from "../../../consts";
 import copy from "lib/helpers/fsCopy";
+import { SubPatternCell } from "lib/helpers/uge/song/SubPatternCell";
+import { InstrumentType } from "../editor/editorState";
 
 export interface TrackerDocumentState {
   status: "loading" | "error" | "loaded" | null;
@@ -92,12 +94,17 @@ export const saveSongFile = createAsyncThunk<void, void>(
     }
 
     const song = state.trackerDocument.present.song;
-    const buffer = saveUGESong(song);
-    await writeFileWithBackupAsync(
-      song.filename,
-      new Uint8Array(buffer),
-      "utf8"
-    );
+    try {
+      const buffer = saveUGESong(song);
+      await writeFileWithBackupAsync(
+        song.filename,
+        new Uint8Array(buffer),
+        "utf8"
+      );
+    } catch (e) {
+      console.log(e);
+      throw new Error(e);
+    }
   }
 );
 
@@ -269,6 +276,124 @@ const trackerSlice = createSlice({
         ...state.song,
         patterns,
       };
+    },
+    editSubPatternCell: (
+      state,
+      _action: PayloadAction<{
+        instrumentType: InstrumentType;
+        instrumentId: number;
+        cell: [number, number];
+        changes: Partial<SubPatternCell>;
+      }>
+    ) => {
+      if (!state.song) {
+        return;
+      }
+
+      let instruments: DutyInstrument[] | WaveInstrument[] | NoiseInstrument[];
+      switch (_action.payload.instrumentType) {
+        case "duty":
+          instruments = [...state.song.duty_instruments];
+          break;
+        case "wave":
+          instruments = [...state.song.wave_instruments];
+          break;
+        case "noise":
+          instruments = [...state.song.noise_instruments];
+          break;
+      }
+      const instrumentId = _action.payload.instrumentId;
+      const [row, col] = _action.payload.cell;
+
+      const newSubPattern = [...instruments[instrumentId].subpattern];
+      console.log(newSubPattern);
+      const newSubPatternCell = { ...newSubPattern[row] };
+      let patch = { ..._action.payload.changes };
+      if (
+        patch.effectcode &&
+        patch.effectcode !== null &&
+        newSubPatternCell.effectparam === null
+      ) {
+        patch = {
+          ...patch,
+          effectparam: 0,
+        };
+      }
+
+      newSubPattern[row] = { ...newSubPatternCell, ...patch };
+      const newInstrument = { ...instruments[instrumentId] };
+      newInstrument.subpattern = newSubPattern;
+
+      instruments[instrumentId] = newInstrument;
+
+      switch (_action.payload.instrumentType) {
+        case "duty":
+          state.song = {
+            ...state.song,
+            duty_instruments: instruments as DutyInstrument[],
+          };
+          break;
+        case "wave":
+          state.song = {
+            ...state.song,
+            wave_instruments: instruments as WaveInstrument[],
+          };
+          break;
+        case "noise":
+          state.song = {
+            ...state.song,
+            noise_instruments: instruments as NoiseInstrument[],
+          };
+          break;
+      }
+    },
+    editSubPattern: (
+      state,
+      _action: PayloadAction<{
+        instrumentId: number;
+        instrumentType: "duty" | "wave" | "noise";
+        subpattern: SubPatternCell[];
+      }>
+    ) => {
+      if (!state.song) {
+        return;
+      }
+      let instruments: DutyInstrument[] | WaveInstrument[] | NoiseInstrument[];
+      switch (_action.payload.instrumentType) {
+        case "duty":
+          instruments = [...state.song.duty_instruments];
+          break;
+        case "wave":
+          instruments = [...state.song.wave_instruments];
+          break;
+        case "noise":
+          instruments = [...state.song.noise_instruments];
+          break;
+      }
+
+      const instrumentId = _action.payload.instrumentId;
+      instruments[instrumentId].subpattern = _action.payload.subpattern;
+
+      switch (_action.payload.instrumentType) {
+        case "duty":
+          state.song = {
+            ...state.song,
+            duty_instruments: instruments as DutyInstrument[],
+          };
+          break;
+        case "wave":
+          state.song = {
+            ...state.song,
+            wave_instruments: instruments as WaveInstrument[],
+          };
+          break;
+        case "noise":
+          state.song = {
+            ...state.song,
+            noise_instruments: instruments as NoiseInstrument[],
+          };
+          break;
+      }
     },
     editWaveform: (
       state,

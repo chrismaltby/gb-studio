@@ -574,6 +574,16 @@ const changes: EngineChange[] = [
       ].join("\n"),
     modifiedFiles: ["include/projectiles.h", "src/core/data_manager.c"],
   },
+  {
+    version: "3.2.0-e1",
+    description:
+      "Updates\n" +
+      [
+        "   * Update to use latest GBDK-2020",
+        "   * Update to latest hUGEDriver",
+      ].join("\n"),
+    modifiedFiles: ["All of them (sorry)"],
+  },
 ];
 
 const ejectEngineChangelog = (currentVersion: string) => {

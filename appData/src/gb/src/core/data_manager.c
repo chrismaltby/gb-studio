@@ -50,7 +50,7 @@ scene_stack_item_t * scene_stack_ptr;
 
 UBYTE scene_sprites_base_tiles[MAX_SCENE_SPRITES];
 
-void load_init() BANKED {
+void load_init(void) BANKED {
     actors_len = 0;
     player_sprite_len = 0;
     scene_stack_ptr = scene_stack;
@@ -145,7 +145,7 @@ UBYTE load_sprite(UBYTE sprite_offset, const spritesheet_t * sprite, UBYTE bank)
 }
 
 void load_animations(const spritesheet_t *sprite, UBYTE bank, UWORD animation_set, animation_t * res_animations) NONBANKED {
-    UBYTE _save = _current_bank;
+    UBYTE _save = CURRENT_BANK;
     SWITCH_ROM(bank);
     memcpy(res_animations, sprite->animations + sprite->animations_lookup[animation_set], sizeof(animation_t) * 8);
     SWITCH_ROM(_save);
@@ -337,7 +337,7 @@ UBYTE load_scene(const scene_t * scene, UBYTE bank, UBYTE init_data) BANKED {
     return FALSE;
 }
 
-void load_player() BANKED {
+void load_player(void) BANKED {
     PLAYER.pos.x = start_scene_x;
     PLAYER.pos.y = start_scene_y;
     PLAYER.dir = start_scene_dir;

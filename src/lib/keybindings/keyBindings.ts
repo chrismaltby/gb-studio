@@ -6,6 +6,8 @@ interface KeyCommands {
   editInstrumentField?: (...args: any[]) => void;
   editEffectCodeField?: (...args: any[]) => void;
   editEffectParamField?: (...args: any[]) => void;
+  editOffsetField?: (...args: any[]) => void;
+  editJumpField?: (...args: any[]) => void;
 }
 
 export type KeyWhen =
@@ -13,7 +15,9 @@ export type KeyWhen =
   | "noteColumnFocus"
   | "instrumentColumnFocus"
   | "effectCodeColumnFocus"
-  | "effectParamColumnFocus";
+  | "effectParamColumnFocus"
+  | "offsetColumnFocus"
+  | "jumpColumnFocus";
 
 export interface KeyBinding {
   key: string;

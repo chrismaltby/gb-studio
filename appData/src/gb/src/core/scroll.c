@@ -19,8 +19,8 @@ void set_bkg_submap(UINT8 x, UINT8 y, UINT8 w, UINT8 h, const unsigned char *map
 
 void scroll_queue_row(UBYTE x, UBYTE y);
 void scroll_queue_col(UBYTE x, UBYTE y);
-void scroll_load_pending_row();
-void scroll_load_pending_col();
+void scroll_load_pending_row(void);
+void scroll_load_pending_col(void);
 void scroll_load_row(UBYTE x, UBYTE y);
 void scroll_load_col(UBYTE x, UBYTE y, UBYTE height);
 void scroll_render_rows(INT16 scroll_x, INT16 scroll_y, BYTE row_offset, BYTE n_rows);
@@ -41,7 +41,7 @@ UBYTE pending_w_i;
 INT16 current_row, new_row;
 INT16 current_col, new_col;
 
-void scroll_init() BANKED {
+void scroll_init(void) BANKED {
     draw_scroll_x   = 0;
     draw_scroll_y   = 0;
     scroll_x_max    = 0;
@@ -51,7 +51,7 @@ void scroll_init() BANKED {
     scroll_reset();
 }
 
-void scroll_reset() BANKED {
+void scroll_reset(void) BANKED {
     pending_w_i     = 0;
     pending_h_i     = 0;
     scroll_x        = 0x7FFF;
@@ -60,7 +60,7 @@ void scroll_reset() BANKED {
     game_time       = 0; // was in scroll_render_rows() - that is insane, here is not the best place either 
 }
 
-void scroll_update() BANKED {
+void scroll_update(void) BANKED {
     INT16 x, y;
     UBYTE render = FALSE;
 
@@ -175,7 +175,7 @@ UBYTE scroll_viewport(parallax_row_t * port) {
     }
 }
 
-void scroll_repaint() BANKED {
+void scroll_repaint(void) BANKED {
     scroll_reset();
     scroll_update();
 }
@@ -224,8 +224,8 @@ void scroll_queue_col(UBYTE x, UBYTE y) {
 }
 
 /* Update pending (up to 5) rows */
-void scroll_load_pending_row() NONBANKED {
-    UINT8 _save = _current_bank;
+void scroll_load_pending_row(void) NONBANKED {
+    UINT8 _save = CURRENT_BANK;
     UBYTE width = MIN(pending_w_i, PENDING_BATCH_SIZE);
 
 #ifdef CGB
@@ -248,7 +248,7 @@ void scroll_load_pending_row() NONBANKED {
 
 
 void scroll_load_row(UBYTE x, UBYTE y) NONBANKED {
-    UINT8 _save = _current_bank;
+    UINT8 _save = CURRENT_BANK;
 
 #ifdef CGB
     if (_is_CGB) {  // Color Column Load
@@ -266,7 +266,7 @@ void scroll_load_row(UBYTE x, UBYTE y) NONBANKED {
 }
 
 void scroll_load_col(UBYTE x, UBYTE y, UBYTE height) NONBANKED {
-    UINT8 _save = _current_bank;
+    UINT8 _save = CURRENT_BANK;
  
 #ifdef CGB
     if (_is_CGB) {  // Color Column Load
@@ -283,8 +283,8 @@ void scroll_load_col(UBYTE x, UBYTE y, UBYTE height) NONBANKED {
     SWITCH_ROM(_save);
 }
 
-void scroll_load_pending_col() NONBANKED {
-    UINT8 _save = _current_bank;
+void scroll_load_pending_col(void) NONBANKED {
+    UINT8 _save = CURRENT_BANK;
     UBYTE height = MIN(pending_h_i, PENDING_BATCH_SIZE);
 
     SWITCH_ROM(image_bank);

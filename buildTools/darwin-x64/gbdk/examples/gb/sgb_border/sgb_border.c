@@ -13,6 +13,8 @@
 
 #define SGB_TRANSFER(A,B) map_buf[0]=(A),map_buf[1]=(B),sgb_transfer(map_buf) 
 
+// The display must be turned on before calling this function
+// (with @ref DISPLAY_ON).
 void set_sgb_border(unsigned char * tiledata, size_t tiledata_size,
                     unsigned char * tilemap, size_t tilemap_size,
                     unsigned char * palette, size_t palette_size) {

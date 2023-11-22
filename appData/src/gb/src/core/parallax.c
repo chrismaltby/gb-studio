@@ -1,6 +1,7 @@
 #pragma bank 255
 
-#include <gb/hardware.h>
+#include <gbdk/platform.h>
+
 #include <string.h>
 
 #include "parallax.h"
@@ -9,11 +10,12 @@ parallax_row_t parallax_rows[3];
 parallax_row_t * parallax_row;
 
 static const parallax_row_t parallax_rows_defaults[3] = { PARALLAX_STEP(0, 2, 2), PARALLAX_STEP(2, 4, 1), PARALLAX_STEP(4, 0, 0)}; 
-void parallax_init() BANKED {
+
+void parallax_init(void) BANKED {
     memcpy(parallax_rows, parallax_rows_defaults, sizeof(parallax_rows)); 
 }
 
-void parallax_LCD_isr() NONBANKED NAKED {
+void parallax_LCD_isr(void) NONBANKED NAKED {
 __asm
         ld hl, #_parallax_row
         ld a, (hl+)

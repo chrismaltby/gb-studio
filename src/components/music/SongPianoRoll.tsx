@@ -16,12 +16,11 @@ import { PatternCell } from "lib/helpers/uge/song/PatternCell";
 import { cloneDeep } from "lodash";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
+import { getInstrumentListByType, getInstrumentTypeByChannel } from "./helpers";
 import {
   parsePatternToClipboard,
   parseClipboardToPattern,
-  getInstrumentListByType,
-  getInstrumentTypeByChannel,
-} from "./helpers";
+} from "./musicClipboardHelpers";
 import { RollChannelEffectRow } from "./RollChannelEffectRow";
 import { WandIcon } from "ui/icons/Icons";
 import { RollChannelHover } from "./RollChannelHover";
@@ -270,6 +269,9 @@ export const SongPianoRoll = ({
   const startPlaybackPosition = useSelector(
     (state: RootState) => state.tracker.startPlaybackPosition
   );
+  const subpatternEditorFocus = useSelector(
+    (state: RootState) => state.tracker.subpatternEditorFocus
+  );
 
   const patternId = song?.sequence[sequenceId] || 0;
   const pattern = song?.patterns[patternId];
@@ -435,11 +437,13 @@ export const SongPianoRoll = ({
   );
 
   useEffect(() => {
-    document.addEventListener("selectionchange", onSelectAll);
-    return () => {
-      document.removeEventListener("selectionchange", onSelectAll);
-    };
-  }, [onSelectAll]);
+    if (!subpatternEditorFocus) {
+      document.addEventListener("selectionchange", onSelectAll);
+      return () => {
+        document.removeEventListener("selectionchange", onSelectAll);
+      };
+    }
+  }, [onSelectAll, subpatternEditorFocus]);
 
   const refreshRenderPattern = useCallback(
     (newMoveNoteTo) => {
@@ -972,17 +976,19 @@ export const SongPianoRoll = ({
   }, [selectedChannel, dispatch, pattern, patternId]);
 
   useEffect(() => {
-    window.addEventListener("copy", onCopy);
-    window.addEventListener("cut", onCut);
-    window.addEventListener("paste", onPaste);
-    ipcRenderer.on("paste-in-place", onPasteInPlace);
-    return () => {
-      window.removeEventListener("copy", onCopy);
-      window.removeEventListener("cut", onCut);
-      window.removeEventListener("paste", onPaste);
-      ipcRenderer.removeListener("paste-in-place", onPasteInPlace);
-    };
-  }, [onCopy, onCut, onPaste, onPasteInPlace]);
+    if (!subpatternEditorFocus) {
+      window.addEventListener("copy", onCopy);
+      window.addEventListener("cut", onCut);
+      window.addEventListener("paste", onPaste);
+      ipcRenderer.on("paste-in-place", onPasteInPlace);
+      return () => {
+        window.removeEventListener("copy", onCopy);
+        window.removeEventListener("cut", onCut);
+        window.removeEventListener("paste", onPaste);
+        ipcRenderer.removeListener("paste-in-place", onPasteInPlace);
+      };
+    }
+  }, [onCopy, onCut, onPaste, onPasteInPlace, subpatternEditorFocus]);
 
   const v = [
     selectedChannel,
