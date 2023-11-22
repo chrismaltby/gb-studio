@@ -31,12 +31,10 @@ import {
   TILE_COLOR_PROPS,
   TILE_COLOR_PALETTE,
   BRUSH_SLOPE,
-  BRUSH_8PX,
-  COLLISION_SLOPE_45_LEFT,
-  COLLISION_SLOPE_45_RIGHT,
 } from "../../consts";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import { RootState } from "store/configureStore";
+import { calculateSlope } from "lib/helpers/slope";
 
 interface SceneCursorProps {
   sceneId: string;
@@ -80,7 +78,9 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     drawTile: number;
     isTileProp: boolean;
     isPainting: boolean;
-    slopeDirection: "left" | "right";
+    isDrawingSlope: boolean;
+    slopeDirectionHorizontal: "left" | "right";
+    slopeDirectionVertical: "left" | "right";
   }>({
     startX: 0,
     startY: 0,
@@ -88,7 +88,9 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     drawTile: 0,
     isTileProp: false,
     isPainting: false,
-    slopeDirection: "left",
+    isDrawingSlope: false,
+    slopeDirectionHorizontal: "left",
+    slopeDirectionVertical: "left",
   });
   const scene = useSelector((state: RootState) =>
     sceneSelectors.selectById(state, hoverSceneId)
@@ -109,15 +111,12 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     scene && Array.isArray(scene.collisions)
       ? scene.collisions[x + y * scene.width] || 0
       : 0;
-  
+
   const tileLookup = useSelector((state: RootState) =>
     selectedBrush === BRUSH_MAGIC
       ? state.assets.backgrounds[background?.id ?? ""]?.lookup
       : undefined
   );
-
-  const [previewSlopeDirection, setPreviewSlopeDirection] =
-    useState<typeof data.current.slopeDirection>("left");
 
   const onKeyDown = useCallback(
     (e) => {
@@ -179,33 +178,61 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
   }, [dispatch, entityId, x, y]);
 
   const onMouseMoveCollisions = useCallback(() => {
-    if (
-      enabled &&
-      (data.current.currentX !== x || data.current.currentY !== y)
-    ) {
-      if (selectedBrush === BRUSH_SLOPE) {
-        const diffX = x - data.current.startX;
-        const diffY = y - data.current.startY;
-        if (
-          (data.current.slopeDirection === "right" && diffX === -diffY) ||
-          (data.current.slopeDirection === "left" && diffX === diffY)
-        ) {
-          dispatch(
-            entitiesActions.paintCollision({
-              brush: BRUSH_8PX,
-              sceneId,
-              x: data.current.startX,
-              y: data.current.startY,
-              endX: x,
-              endY: y,
-              value: data.current.drawTile,
-              isTileProp: false,
-              drawLine: true,
-              tileLookup,
-            })
-          );
-        }
-      } else if (data.current.drawLine) {
+    if (!enabled) {
+      return;
+    }
+
+    if (selectedBrush === BRUSH_SLOPE) {
+      const diffX = x - data.current.startX;
+      const diffY = y - data.current.startY;
+
+      data.current.isDrawingSlope = true;
+
+      const { endX, endY, slopeIncline } = calculateSlope(
+        data.current.startX,
+        data.current.startY,
+        x,
+        y,
+        data.current.slopeDirectionHorizontal,
+        data.current.slopeDirectionVertical
+      );
+
+      dispatch(
+        editorActions.setSlopePreview({
+          sceneId,
+          slopePreview: {
+            startX: data.current.startX,
+            startY: data.current.startY,
+            endX,
+            endY,
+            offset: data.current.drawLine,
+            slopeIncline,
+          },
+        })
+      );
+
+      if (
+        (data.current.slopeDirectionHorizontal === "right" &&
+          diffX === -diffY) ||
+        (data.current.slopeDirectionHorizontal === "left" && diffX === diffY)
+      ) {
+        // dispatch(
+        //   entitiesActions.paintCollision({
+        //     brush: BRUSH_8PX,
+        //     sceneId,
+        //     x: data.current.startX,
+        //     y: data.current.startY,
+        //     endX: x,
+        //     endY: y,
+        //     value: data.current.drawTile,
+        //     isTileProp: false,
+        //     drawLine: true,
+        //     tileLookup,
+        //   })
+        // );
+      }
+    } else if (data.current.currentX !== x || data.current.currentY !== y) {
+      if (data.current.drawLine) {
         if (
           data.current.startX === undefined ||
           data.current.startY === undefined
@@ -360,15 +387,27 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     y,
   ]);
 
+  // const setSlopeDirection = useDebounce((direction: "left" | "right") => {
+  //   data.current.slopeDirection = direction;
+  //   setPreviewSlopeDirection(data.current.slopeDirection);
+  // }, 200);
+
   const onMouseMoveSlopeSelect = useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-      if (cursorRef.current && !data.current.isPainting) {
+      if (cursorRef.current && data.current.isPainting) {
         const { left, top, width, height } =
           cursorRef.current.getBoundingClientRect();
         const x = e.clientX - left;
         const y = e.clientY - top;
-        data.current.slopeDirection = x <= width * 0.5 ? "left" : "right";
-        setPreviewSlopeDirection(data.current.slopeDirection);
+        data.current.slopeDirectionHorizontal =
+          y > height * 0.5 ? "left" : "right";
+        data.current.slopeDirectionVertical =
+          x <= width * 0.5 ? "left" : "right";
+
+        // setPreviewSlopeDirection(data.current.slopeDirection);
+
+        // setSlopeDirection(x <= width * 0.5 ? "left" : "right");
+        // setSlopeDirection(y <= height * 0.5 ? "left" : "right");
       }
     },
     []
@@ -399,15 +438,43 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
   ]);
 
   const onMouseUp = useCallback(() => {
-    if (sceneId !== hoverSceneId) {
-      return;
-    }
     if (tool === "triggers") {
+      if (sceneId !== hoverSceneId) {
+        return;
+      }
       dispatch(editorActions.setTool({ tool: "select" }));
       setResize(false);
     }
+    if (data.current.isDrawingSlope) {
+      const { endX, endY, slopeIncline } = calculateSlope(
+        data.current.startX,
+        data.current.startY,
+        x,
+        y,
+        data.current.slopeDirectionHorizontal,
+        data.current.slopeDirectionVertical
+      );
+
+      dispatch(
+        entitiesActions.paintSlopeCollision({
+          sceneId,
+          startX: data.current.startX,
+          startY: data.current.startY,
+          endX,
+          endY,
+          offset: data.current.drawLine,
+          slopeIncline,
+          slopeDirection:
+            Math.sign(endX - data.current.startX) ===
+            Math.sign(data.current.startY - endY)
+              ? "right"
+              : "left",
+        })
+      );
+    }
     data.current.isPainting = false;
-  }, [dispatch, hoverSceneId, sceneId, tool]);
+    data.current.isDrawingSlope = false;
+  }, [dispatch, hoverSceneId, sceneId, tool, x, y]);
 
   useEffect(() => {
     window.addEventListener("mousemove", onMouseMove);
@@ -469,131 +536,56 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
 
   const onMouseDownCollisions = useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    if (e.altKey) {
-      data.current.drawTile = hoverCollision;
-      dispatch(
-        editorActions.setSelectedTileType({ tileType: hoverCollision })
-      );
-      return;
-    }
-    if (!scene) {
-      return;
-    }
-    if (
-      !data.current.drawLine ||
-      data.current.startX === undefined ||
-      data.current.startY === undefined
-    ) {
-      const brushSize = selectedBrush === BRUSH_16PX ? 2 : 1;
-      data.current.drawTile = 0;
-      data.current.isTileProp = (selectedTileType & TILE_PROPS) !== 0;
+      if (e.altKey) {
+        data.current.drawTile = hoverCollision;
+        dispatch(
+          editorActions.setSelectedTileType({ tileType: hoverCollision })
+        );
+        return;
+      }
+      if (!scene) {
+        return;
+      }
+      if (
+        !data.current.drawLine ||
+        data.current.startX === undefined ||
+        data.current.startY === undefined
+      ) {
+        const brushSize = selectedBrush === BRUSH_16PX ? 2 : 1;
+        data.current.drawTile = 0;
+        data.current.isTileProp = (selectedTileType & TILE_PROPS) !== 0;
 
-      // If any tile under brush is currently not filled then
-      // paint collisions rather than remove them
-      for (let xi = x; xi < x + brushSize; xi++) {
-        for (let yi = y; yi < y + brushSize; yi++) {
-          const collisionIndex = scene.width * yi + xi;
-          if (selectedTileType & COLLISION_ALL) {
-            // If drawing collisions replace existing collision if selected is different
-            if (
-              (scene.collisions[collisionIndex] & COLLISION_ALL) !==
-              (selectedTileType & COLLISION_ALL)
-            ) {
-              data.current.drawTile = selectedTileType;
-            } else {
-              data.current.drawTile =
-                scene.collisions[collisionIndex] & TILE_PROPS;
-            }
-          } else if (selectedTileType & TILE_PROPS) {
-            // If drawing props replace but keep collisions
-            const tileProp = selectedTileType & TILE_PROPS;
-            const currentProp = scene.collisions[collisionIndex] & TILE_PROPS;
-            if (currentProp !== tileProp) {
-              data.current.drawTile = tileProp;
-            } else {
-              data.current.drawTile =
-                scene.collisions[collisionIndex] & COLLISION_ALL;
+        // If any tile under brush is currently not filled then
+        // paint collisions rather than remove them
+        for (let xi = x; xi < x + brushSize; xi++) {
+          for (let yi = y; yi < y + brushSize; yi++) {
+            const collisionIndex = scene.width * yi + xi;
+            if (selectedTileType & COLLISION_ALL) {
+              // If drawing collisions replace existing collision if selected is different
+              if (
+                (scene.collisions[collisionIndex] & COLLISION_ALL) !==
+                (selectedTileType & COLLISION_ALL)
+              ) {
+                data.current.drawTile = selectedTileType;
+              } else {
+                data.current.drawTile =
+                  scene.collisions[collisionIndex] & TILE_PROPS;
+              }
+            } else if (selectedTileType & TILE_PROPS) {
+              // If drawing props replace but keep collisions
+              const tileProp = selectedTileType & TILE_PROPS;
+              const currentProp = scene.collisions[collisionIndex] & TILE_PROPS;
+              if (currentProp !== tileProp) {
+                data.current.drawTile = tileProp;
+              } else {
+                data.current.drawTile =
+                  scene.collisions[collisionIndex] & COLLISION_ALL;
+              }
             }
           }
         }
       }
-    }
-    if (selectedBrush === BRUSH_FILL) {
-      dispatch(
-        entitiesActions.paintCollision({
-          brush: selectedBrush,
-          sceneId,
-          x,
-          y,
-          value: data.current.drawTile,
-          isTileProp: data.current.isTileProp,
-          tileLookup,
-        })
-      );
-    } else if (selectedBrush === BRUSH_MAGIC) {
-      if (tileLookup) {
-        dispatch(
-          entitiesActions.paintCollision({
-            brush: "magic",
-            sceneId,
-            tileLookup,
-            x,
-            y,
-            value: data.current.drawTile,
-            isTileProp: data.current.isTileProp,
-          })
-        );
-      } else {
-        dispatch(editorActions.selectScene({ sceneId }));
-      }
-    } else if (selectedBrush === BRUSH_SLOPE) {
-      data.current.startX = x;
-      data.current.startY = y;
-      data.current.isPainting = true;
-
-      if (data.current.slopeDirection === "left") {
-        data.current.drawTile = COLLISION_SLOPE_45_LEFT;
-      } else if (data.current.slopeDirection === "right") {
-        data.current.drawTile = COLLISION_SLOPE_45_RIGHT;
-      }
-
-      // @TODO
-      dispatch(
-        entitiesActions.paintCollision({
-          brush: BRUSH_8PX,
-          sceneId,
-          x,
-          y,
-          value: data.current.drawTile,
-          isTileProp: false,
-          tileLookup,
-        })
-      );
-    } else {
-      if (
-        data.current.drawLine &&
-        data.current.startX !== undefined &&
-        data.current.startY !== undefined
-      ) {
-        dispatch(
-          entitiesActions.paintCollision({
-            brush: selectedBrush,
-            sceneId,
-            x: data.current.startX,
-            y: data.current.startY,
-            endX: x,
-            endY: y,
-            value: data.current.drawTile,
-            isTileProp: data.current.isTileProp,
-            drawLine: true,
-            tileLookup,
-          })
-        );
-        data.current.startX = x;
-        data.current.startY = y;
-      } else {
-        data.current.startX = x;
-        data.current.startY = y;
+      if (selectedBrush === BRUSH_FILL) {
         dispatch(
           entitiesActions.paintCollision({
             brush: selectedBrush,
@@ -605,19 +597,113 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
             tileLookup,
           })
         );
+      } else if (selectedBrush === BRUSH_MAGIC) {
+        if (tileLookup) {
+          dispatch(
+            entitiesActions.paintCollision({
+              brush: "magic",
+              sceneId,
+              tileLookup,
+              x,
+              y,
+              value: data.current.drawTile,
+              isTileProp: data.current.isTileProp,
+            })
+          );
+        } else {
+          dispatch(editorActions.selectScene({ sceneId }));
+        }
+      } else if (selectedBrush === BRUSH_SLOPE) {
+        data.current.startX = x;
+        data.current.startY = y;
+        data.current.isPainting = true;
+
+        // if (data.current.slopeDirectionHorizontal === "left") {
+        //   data.current.drawTile = COLLISION_SLOPE_45_LEFT;
+        // } else if (data.current.slopeDirectionHorizontal === "right") {
+        //   data.current.drawTile = COLLISION_SLOPE_45_RIGHT;
+        // }
+
+        dispatch(
+          editorActions.setSlopePreview({
+            sceneId,
+            slopePreview: undefined,
+            // slopePreview: {
+            //   startX: x,
+            //   startY: y,
+            //   endX: x,
+            //   endY: y,
+            //   offset: data.current.drawLine,
+            //   slopeDirectionHorizontal: data.current.slopeDirectionHorizontal,
+            //   slopeDirectionVertical: data.current.slopeDirectionVertical,
+            // },
+          })
+        );
+        // dispatch(editorActions.selectScene({ sceneId }));
+
+        // dispatch(
+        //   entitiesActions.paintCollision({
+        //     brush: BRUSH_8PX,
+        //     sceneId,
+        //     x,
+        //     y,
+        //     value: data.current.drawTile,
+        //     isTileProp: false,
+        //     tileLookup,
+        //   })
+        // );
+      } else {
+        if (
+          data.current.drawLine &&
+          data.current.startX !== undefined &&
+          data.current.startY !== undefined
+        ) {
+          dispatch(
+            entitiesActions.paintCollision({
+              brush: selectedBrush,
+              sceneId,
+              x: data.current.startX,
+              y: data.current.startY,
+              endX: x,
+              endY: y,
+              value: data.current.drawTile,
+              isTileProp: data.current.isTileProp,
+              drawLine: true,
+              tileLookup,
+            })
+          );
+          data.current.startX = x;
+          data.current.startY = y;
+        } else {
+          data.current.startX = x;
+          data.current.startY = y;
+          dispatch(
+            entitiesActions.paintCollision({
+              brush: selectedBrush,
+              sceneId,
+              x,
+              y,
+              value: data.current.drawTile,
+              isTileProp: data.current.isTileProp,
+              tileLookup,
+            })
+          );
+        }
+        data.current.isPainting = true;
       }
-      data.current.isPainting = true;
-    }
-  }, [
-    dispatch,
-    scene,
-    sceneId,
-    selectedBrush,
-    selectedTileType,
-    tileLookup,
-    x,
-    y,
-  ]);
+    },
+    [
+      dispatch,
+      hoverCollision,
+      scene,
+      sceneId,
+      selectedBrush,
+      selectedTileType,
+      tileLookup,
+      x,
+      y,
+    ]
+  );
 
   const onMouseDownColors = useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -909,13 +995,13 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
         left: x * 8,
       }}
     >
-      {tool === TOOL_COLLISIONS && selectedBrush === BRUSH_SLOPE && (
+      {/* {tool === TOOL_COLLISIONS && selectedBrush === BRUSH_SLOPE && (
         <div
           className={`SceneCursor__Tile SceneCursor__Tile--${
             previewSlopeDirection === "left" ? "slope45L" : "slope45R"
           }`}
         />
-      )}
+      )} */}
       {(tool === TOOL_ACTORS ||
         tool === TOOL_TRIGGERS ||
         tool === TOOL_ERASER ||

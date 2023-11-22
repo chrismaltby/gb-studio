@@ -57,6 +57,17 @@ export interface SelectedInstrument {
   type: InstrumentType;
 }
 
+export type SlopeIncline = "medium" | "shallow" | "steep";
+
+export interface SlopePreview {
+  startX: number;
+  startY: number;
+  endX: number;
+  endY: number;
+  offset: boolean;
+  slopeIncline: SlopeIncline;
+}
+
 export interface EditorState {
   tool: Tool;
   pasteMode: boolean;
@@ -124,10 +135,11 @@ export interface EditorState {
   selectedInstrument: SelectedInstrument;
   selectedSequence: number;
   precisionTileMode: boolean;
+  slopePreview?: SlopePreview;
 }
 
 export const initialState: EditorState = {
-  tool: "select",
+  tool: "collisions",
   pasteMode: false,
   type: "world",
   worldFocus: false,
@@ -159,7 +171,7 @@ export const initialState: EditorState = {
   worldViewHeight: 0,
   selectedPalette: 0,
   selectedTileType: COLLISION_ALL,
-  selectedBrush: BRUSH_8PX,
+  selectedBrush: BRUSH_SLOPE,
   showLayers: true,
   lastScriptTab: "",
   lastScriptTabScene: "",
@@ -192,6 +204,7 @@ export const initialState: EditorState = {
   },
   selectedSequence: 0,
   precisionTileMode: false,
+  slopePreview: undefined,
 };
 
 const editorSlice = createSlice({
@@ -679,6 +692,17 @@ const editorSlice = createSlice({
     setPrecisionTileMode: (state, action: PayloadAction<boolean>) => {
       state.precisionTileMode = action.payload;
     },
+
+    setSlopePreview: (
+      state,
+      action: PayloadAction<{
+        sceneId: string;
+        slopePreview?: SlopePreview;
+      }>
+    ) => {
+      state.scene = action.payload.sceneId;
+      state.slopePreview = action.payload.slopePreview;
+    },
   },
   extraReducers: (builder) =>
     builder
@@ -781,6 +805,10 @@ const editorSlice = createSlice({
         state.selectedAnimationId = action.payload.spriteAnimations[0].id;
         state.selectedMetaspriteId =
           action.payload.spriteAnimations[0].frames[0];
+      })
+      // When painting slope stop slope preview
+      .addCase(entitiesActions.paintSlopeCollision, (state) => {
+        state.slopePreview = undefined;
       })
       // When UI changes increment UI version number
       .addMatcher(

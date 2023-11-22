@@ -18,6 +18,16 @@ import {
   DRAG_ACTOR,
   TILE_COLOR_PROPS,
   TILE_COLOR_PALETTE,
+  COLLISION_SLOPE_45_LEFT,
+  COLLISION_SLOPE_45_RIGHT,
+  COLLISION_SLOPE_22_LEFT_BOT,
+  COLLISION_SLOPE_22_RIGHT_BOT,
+  COLLISION_SLOPE_67_LEFT_BOT,
+  COLLISION_SLOPE_67_RIGHT_BOT,
+  COLLISION_SLOPE_22_LEFT_TOP,
+  COLLISION_SLOPE_22_RIGHT_TOP,
+  COLLISION_SLOPE_67_LEFT_TOP,
+  COLLISION_SLOPE_67_RIGHT_TOP,
 } from "../../../consts";
 import { isVariableField, isPropertyField } from "lib/helpers/eventSystem";
 import clamp from "lib/helpers/clamp";
@@ -25,7 +35,7 @@ import { RootState } from "store/configureStore";
 import settingsActions from "../settings/settingsActions";
 import uuid from "uuid";
 import { paint, paintLine, floodFill, paintMagic } from "lib/helpers/paint";
-import { Brush } from "../editor/editorState";
+import { Brush, SlopeIncline } from "../editor/editorState";
 import projectActions from "../project/projectActions";
 import {
   EntitiesState,
@@ -1956,6 +1966,139 @@ const paintCollision: CaseReducer<
   });
 };
 
+const paintSlopeCollision: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    sceneId: string;
+    startX: number;
+    startY: number;
+    endX: number;
+    endY: number;
+    offset: boolean;
+    slopeIncline: SlopeIncline;
+    slopeDirection: "left" | "right";
+  }>
+> = (state, action) => {
+  const scene = localSceneSelectors.selectById(state, action.payload.sceneId);
+  if (!scene) {
+    return;
+  }
+  const background = localBackgroundSelectors.selectById(
+    state,
+    scene.backgroundId
+  );
+  if (!background) {
+    return;
+  }
+
+  const { slopeIncline, slopeDirection, offset } = action.payload;
+
+  let startX = action.payload.startX;
+  let startY = action.payload.startY;
+  let endX = action.payload.endX;
+  let endY = action.payload.endY;
+
+  if (offset) {
+    // If slope is offset (holding shift key) then modify the
+    // line start/end tiles to ensure the line is painted correctly
+    if (slopeIncline === "steep") {
+      endX += endX < startX ? -0.5 : 0.5;
+      startY += endY > startY ? -1 : 1;
+    } else if (slopeIncline === "shallow") {
+      endY += endY < startY ? -0.5 : 0.5;
+      startX += endX > startX ? -1 : 1;
+    }
+  }
+
+  const roundEndX = endX > startX ? Math.floor(endX) : Math.ceil(endX);
+  const roundEndY = endY > startY ? Math.floor(endY) : Math.ceil(endY);
+
+  const collisionsSize = Math.ceil(background.width * background.height);
+  const collisions = scene.collisions.slice(0, collisionsSize);
+
+  // Fill collisions array if too small for image
+  if (collisions.length < collisionsSize) {
+    for (let i = collisions.length; i < collisionsSize; i++) {
+      collisions[i] = 0;
+    }
+  }
+
+  const setValue = (x: number, y: number, value: number) => {
+    // Don't draw last tile
+    if (x === roundEndX && y === roundEndY) {
+      return;
+    }
+
+    // Don't draw first tile when offsetting
+    if (offset && x === startX && y === startY) {
+      return;
+    }
+
+    const tileIndex = background.width * y + x;
+    let newValue = value;
+    if (slopeIncline === "medium") {
+      // Medium incline slope uses 45deg tiles using slope direction
+      if (slopeDirection === "left") {
+        newValue = COLLISION_SLOPE_45_LEFT;
+      } else {
+        newValue = COLLISION_SLOPE_45_RIGHT;
+      }
+    } else if (slopeIncline === "shallow") {
+      // Shallow incline slope uses the 22deg tiles using slope direction
+      // alternating between the two 22deg tiles depending on position on line
+      const oddTile = (startX % 2 !== x % 2) !== endY > startY;
+
+      if (slopeDirection === "left") {
+        newValue = oddTile
+          ? COLLISION_SLOPE_22_LEFT_TOP
+          : COLLISION_SLOPE_22_LEFT_BOT;
+      } else {
+        newValue = oddTile
+          ? COLLISION_SLOPE_22_RIGHT_TOP
+          : COLLISION_SLOPE_22_RIGHT_BOT;
+      }
+    } else if (slopeIncline === "steep") {
+      // Steep incline slope uses the 67deg tiles using slope direction
+      // alternating between the two 67deg tiles depending on position on line
+      const oddTile = (startY % 2 !== y % 2) !== endY > startY;
+
+      if (slopeDirection === "left") {
+        newValue = oddTile
+          ? COLLISION_SLOPE_67_LEFT_TOP
+          : COLLISION_SLOPE_67_LEFT_BOT;
+      } else {
+        newValue = oddTile
+          ? COLLISION_SLOPE_67_RIGHT_TOP
+          : COLLISION_SLOPE_67_RIGHT_BOT;
+      }
+    }
+
+    collisions[tileIndex] = newValue;
+  };
+
+  const isInBounds = (x: number, y: number) => {
+    return x >= 0 && x < background.width && y >= 0 && y < background.height;
+  };
+
+  paintLine(
+    startX,
+    startY,
+    roundEndX,
+    roundEndY,
+    1,
+    COLLISION_ALL,
+    setValue,
+    isInBounds
+  );
+
+  scenesAdapter.updateOne(state.scenes, {
+    id: action.payload.sceneId,
+    changes: {
+      collisions,
+    },
+  });
+};
+
 const paintColor: CaseReducer<
   EntitiesState,
   PayloadAction<
@@ -2735,6 +2878,7 @@ const entitiesSlice = createSlice({
     removeScene,
     moveScene,
     paintCollision,
+    paintSlopeCollision,
     paintColor,
 
     /**************************************************************************
