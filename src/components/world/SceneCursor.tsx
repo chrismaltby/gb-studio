@@ -105,6 +105,11 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
       ? background.tileColors[x + y * scene.width] || 0
       : 0;
 
+  const hoverCollision =
+    scene && Array.isArray(scene.collisions)
+      ? scene.collisions[x + y * scene.width] || 0
+      : 0;
+  
   const tileLookup = useSelector((state: RootState) =>
     selectedBrush === BRUSH_MAGIC
       ? state.assets.backgrounds[background?.id ?? ""]?.lookup
@@ -462,7 +467,15 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     setResize(true);
   }, [dispatch, pasteMode, sceneId, triggerDefaults, x, y]);
 
-  const onMouseDownCollisions = useCallback(() => {
+  const onMouseDownCollisions = useCallback(
+    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (e.altKey) {
+      data.current.drawTile = hoverCollision;
+      dispatch(
+        editorActions.setSelectedTileType({ tileType: hoverCollision })
+      );
+      return;
+    }
     if (!scene) {
       return;
     }
@@ -847,7 +860,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
           // right mouse always erase
           onMouseDownEraser();
         } else {
-          onMouseDownCollisions();
+          onMouseDownCollisions(e);
         }
       } else if (tool === "colors") {
         onMouseDownColors(e);
