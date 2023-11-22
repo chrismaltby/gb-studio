@@ -61,16 +61,7 @@ const SceneSlopePreview = ({
 
       if (!ctx) return;
 
-      ctx.fillStyle = "rgba(250,40,40,0.6)";
       ctx.strokeStyle = "rgba(0,0,255,0.6)";
-
-      ctx.fillRect(
-        // Start tile
-        startX * TILE_SIZE,
-        startY * TILE_SIZE,
-        TILE_SIZE,
-        TILE_SIZE
-      );
 
       let lineStartX = 0;
       let lineStartY = 0;

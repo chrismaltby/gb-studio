@@ -16,6 +16,8 @@ export type SettingsState = {
   startDirection: ActorDirection;
   showCollisions: boolean;
   showConnections: ShowConnectionsSetting;
+  showCollisionSlopeTiles: boolean;
+  showCollisionExtraTiles: boolean;
   worldScrollX: number;
   worldScrollY: number;
   zoom: number;
@@ -65,6 +67,8 @@ export const initialState: SettingsState = {
   startDirection: "down",
   showCollisions: true,
   showConnections: "selected",
+  showCollisionSlopeTiles: false,
+  showCollisionExtraTiles: false,
   worldScrollX: 0,
   worldScrollY: 0,
   zoom: 100,

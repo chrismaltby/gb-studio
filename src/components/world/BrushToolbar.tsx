@@ -64,6 +64,9 @@ import FloatingPanel, {
   FloatingPanelDivider,
 } from "ui/panels/FloatingPanel";
 import { Button } from "ui/buttons/Button";
+import { DropdownButton } from "ui/buttons/DropdownButton";
+import { MenuItem } from "ui/menu/Menu";
+import { Checkbox } from "ui/form/Checkbox";
 
 const paletteIndexes = [0, 1, 2, 3, 4, 5, 6, 7];
 const validTools = [TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER];
@@ -243,6 +246,12 @@ const BrushToolbar = () => {
   const visible = validTools.includes(selectedTool);
   const showPalettes = selectedTool === TOOL_COLORS;
   const showTileTypes = selectedTool === TOOL_COLLISIONS;
+  const showCollisionSlopeTiles = useSelector(
+    (state: RootState) => state.project.present.settings.showCollisionSlopeTiles
+  );
+  const showCollisionExtraTiles = useSelector(
+    (state: RootState) => state.project.present.settings.showCollisionExtraTiles
+  );
 
   const setBrush = (brush: Brush) => {
     dispatch(editorActions.setBrush({ brush: brush }));
@@ -367,6 +376,22 @@ const BrushToolbar = () => {
     },
     [defaultBackgroundPaletteIds, dispatch, modalColorIndex, scene, sceneId]
   );
+
+  const onToggleViewSlopeTiles = useCallback(() => {
+    dispatch(
+      settingsActions.editSettings({
+        showCollisionSlopeTiles: !showCollisionSlopeTiles,
+      })
+    );
+  }, [dispatch, showCollisionSlopeTiles]);
+
+  const onToggleViewExtraTiles = useCallback(() => {
+    dispatch(
+      settingsActions.editSettings({
+        showCollisionExtraTiles: !showCollisionExtraTiles,
+      })
+    );
+  }, [dispatch, showCollisionExtraTiles]);
 
   const onMouseUp = () => {
     if (timerRef.current) {
@@ -530,20 +555,45 @@ const BrushToolbar = () => {
                 />
               </Button>
             ))}
-            <FloatingPanelBreak />
-            {tileTypes.slice(6).map((tileType, tileTypeIndex) => (
-              <Button
-                variant="transparent"
-                key={tileType.name}
-                onClick={setSelectedPalette(tileTypeIndex + 6)}
-                active={(selectedTileType & 0xf0) === tileType.flag}
-                title={`${tileType.name}`}
-              >
-                <BrushToolbarCollisionTile
-                  className={`BrushToolbar__Tile--${tileType.key}`}
-                />
-              </Button>
-            ))}
+
+            {showCollisionSlopeTiles && (
+              <>
+                <FloatingPanelDivider />
+
+                {tileTypes.slice(6, 16).map((tileType, tileTypeIndex) => (
+                  <Button
+                    variant="transparent"
+                    key={tileType.name}
+                    onClick={setSelectedPalette(tileTypeIndex + 6)}
+                    active={(selectedTileType & 0xf0) === tileType.flag}
+                    title={`${tileType.name}`}
+                  >
+                    <BrushToolbarCollisionTile
+                      className={`BrushToolbar__Tile--${tileType.key}`}
+                    />
+                  </Button>
+                ))}
+              </>
+            )}
+
+            {showCollisionExtraTiles && (
+              <>
+                <FloatingPanelDivider />
+                {tileTypes.slice(16).map((tileType, tileTypeIndex) => (
+                  <Button
+                    variant="transparent"
+                    key={tileType.name}
+                    onClick={setSelectedPalette(tileTypeIndex + 6)}
+                    active={(selectedTileType & 0xf0) === tileType.flag}
+                    title={`${tileType.name}`}
+                  >
+                    <BrushToolbarCollisionTile
+                      className={`BrushToolbar__Tile--${tileType.key}`}
+                    />
+                  </Button>
+                ))}
+              </>
+            )}
             <FloatingPanelDivider />
           </>
         )}
@@ -557,6 +607,29 @@ const BrushToolbar = () => {
         >
           {showLayers ? <EyeOpenIcon /> : <EyeClosedIcon />}
         </Button>
+
+        <DropdownButton
+          size="small"
+          variant="transparent"
+          menuDirection="right"
+        >
+          <MenuItem onClick={onToggleViewSlopeTiles}>
+            <Checkbox
+              id="showCollisionSlopeTiles"
+              name="showCollisionSlopeTiles"
+              checked={showCollisionSlopeTiles}
+            />
+            {` ${l10n("VIEW_SLOPE_TILES")}`}
+          </MenuItem>
+          <MenuItem onClick={onToggleViewExtraTiles}>
+            <Checkbox
+              id="showCollisionSlopeTiles"
+              name="showCollisionSlopeTiles"
+              checked={showCollisionExtraTiles}
+            />
+            {` ${l10n("VIEW_EXTRA_TILES")}`}
+          </MenuItem>
+        </DropdownButton>
       </BrushToolbarWrapper>
       {modalColorIndex > -1 && (
         <>
