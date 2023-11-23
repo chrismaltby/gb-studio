@@ -65,7 +65,7 @@ extern const void __bank_ ## VARNAME;
     Use @ref INCBIN_EXTERN() within another source file
     to make the variable and it's data accesible there.
 */
-#define INCBIN(VARNAME, FILEPATH) void __func_ ## VARNAME() __banked __naked { \
+#define INCBIN(VARNAME, FILEPATH) void __func_ ## VARNAME(void) __banked __naked { \
 __asm \
 _ ## VARNAME:: \
 1$: \
@@ -80,5 +80,3 @@ __endasm; \
 }
 
 #endif // _INCBIN_H
-
-

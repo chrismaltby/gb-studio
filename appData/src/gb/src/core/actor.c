@@ -2,8 +2,9 @@
 
 #include "actor.h"
 
-#include <gb/gb.h>
-#include <gb/metasprites.h>
+#include <gbdk/platform.h>
+#include <gbdk/metasprites.h>
+
 #include <string.h>
 
 #include "system.h"
@@ -61,7 +62,7 @@ UBYTE emote_timer;
 
 UBYTE allocated_hardware_sprites;
 
-void actors_init() BANKED {
+void actors_init(void) BANKED {
     actors_active_tail = actors_active_head = actors_inactive_head = NULL;
     player_moving           = FALSE;
     player_iframes          = 0;
@@ -71,14 +72,14 @@ void actors_init() BANKED {
     memset(actors, 0, sizeof(actors));
 }
 
-void player_init() BANKED {
+void player_init(void) BANKED {
     actor_set_anim_idle(&PLAYER);
     PLAYER.hidden = FALSE;
     PLAYER.disabled = FALSE;
 }
 
-void actors_update() NONBANKED {
-    UBYTE _save = _current_bank;
+void actors_update(void) NONBANKED {
+    UBYTE _save = CURRENT_BANK;
     static actor_t *actor;
     static uint8_t screen_tile16_x, screen_tile16_y;
     static uint8_t actor_tile16_x, actor_tile16_y;
@@ -360,7 +361,7 @@ actor_t *actor_overlapping_bb(bounding_box_t *bb, upoint16_t *offset, actor_t *i
     return NULL;
 }
 
-void actors_handle_player_collision() BANKED {
+void actors_handle_player_collision(void) BANKED {
     if (player_iframes == 0 && player_collision_actor != NULL) {
         if (player_collision_actor->collision_group) {
             // Execute scene player hit scripts based on actor's collision group

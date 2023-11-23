@@ -379,15 +379,15 @@ fixed wspx, wspy;   /* Window speed (fixed point) */
 fixed sposx, sposy; /* Sprite position (fixed point) */
 fixed sspx, sspy;   /* Sprite speed (fixed point) */
 
-void fade();
-void scroll();
-void door();
-void animate_sprite();
-void tile_sprite();
-void place_sprite();
+void fade(void);
+void scroll(void);
+void door(void);
+void animate_sprite(void);
+void tile_sprite(void);
+void place_sprite(void);
 
 /* Fade the screen (off and on) */
-void fade()
+void fade(void)
 {
   if(color == 0)
     return;
@@ -412,7 +412,7 @@ void fade()
 }
 
 /* Scroll the background, the window and the sprite */
-void scroll()
+void scroll(void)
 {
   /* Update background */
   bposx.w += bspx.w;
@@ -453,7 +453,7 @@ void scroll()
 }
 
 /* Open and close the door */
-void door()
+void door(void)
 {
   if(doorstate == OPENING) {
     doorpos++;
@@ -471,7 +471,7 @@ void door()
 }
 
 /* Animate sprite */
-void animate_sprite()
+void animate_sprite(void)
 {
   if((time&0x07) == 0) {
     sframe++;
@@ -482,7 +482,7 @@ void animate_sprite()
 }
 
 /* Set sprite tiles */
-void tile_sprite()
+void tile_sprite(void)
 {
   uint8_t s;
 
@@ -492,13 +492,13 @@ void tile_sprite()
 }
 
 /* Place sprite */
-void place_sprite()
+void place_sprite(void)
 {
   move_sprite(0, sposx.b.h, sposy.b.h);
   move_sprite(1, sposx.b.h+8, sposy.b.h);
 }
 
-void main()
+void main(void)
 {
   uint8_t i, j;
 
@@ -583,7 +583,7 @@ void main()
   while(1) {
     /* Skip four VBLs (slow down animation) */
     for(i = 0; i < 4; i++)
-      wait_vbl_done();
+      vsync();
     time++;
     fade();
     door();

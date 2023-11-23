@@ -102,6 +102,7 @@ extern UBYTE shadow_VDP_R4;
 extern UBYTE shadow_VDP_R5;
 
 #define R5_SAT_0x3F00  0xFF
+#define R5_SAT_0x1F00  0xBF
 #define R5_SAT_MASK    0b10000001
 
 #define VDP_R6         0b10000110
@@ -185,6 +186,9 @@ extern const UBYTE _SYSTEM;
 
 extern volatile UBYTE VDP_ATTR_SHIFT;
 
+#define VBK_TILES       0
+#define VBK_ATTRIBUTES  1
+
 #define VDP_SAT_TERM   0xD0
 
 #if defined(__TARGET_sms)
@@ -197,6 +201,8 @@ extern volatile UBYTE VDP_ATTR_SHIFT;
 #define DEVICE_SCREEN_MAP_ENTRY_SIZE 2
 #define DEVICE_SPRITE_PX_OFFSET_X 0
 #define DEVICE_SPRITE_PX_OFFSET_Y -1
+#define DEVICE_WINDOW_PX_OFFSET_X 0
+#define DEVICE_WINDOW_PX_OFFSET_Y 0
 #elif defined(__TARGET_gg)
 #define DEVICE_SCREEN_X_OFFSET 6
 #define DEVICE_SCREEN_Y_OFFSET 3
@@ -207,6 +213,8 @@ extern volatile UBYTE VDP_ATTR_SHIFT;
 #define DEVICE_SCREEN_MAP_ENTRY_SIZE 2
 #define DEVICE_SPRITE_PX_OFFSET_X 48
 #define DEVICE_SPRITE_PX_OFFSET_Y 23
+#define DEVICE_WINDOW_PX_OFFSET_X 0
+#define DEVICE_WINDOW_PX_OFFSET_Y 0
 #else
 #error Unrecognized port
 #endif

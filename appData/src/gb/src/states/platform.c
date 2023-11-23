@@ -46,7 +46,7 @@ WORD plat_grav;
 WORD plat_hold_grav;
 WORD plat_max_fall_vel;
 
-void platform_init() BANKED {
+void platform_init(void) BANKED {
     UBYTE tile_x, tile_y;
 
     pl_vel_x = 0;
@@ -82,7 +82,7 @@ void platform_init() BANKED {
     game_time = 0;
 }
 
-void platform_update() BANKED {
+void platform_update(void) BANKED {
     UBYTE tile_start, tile_end;
     actor_t *hit_actor;
     UBYTE p_half_width = (PLAYER.bounds.right - PLAYER.bounds.left) >> 1;

@@ -565,6 +565,25 @@ const changes: EngineChange[] = [
       ].join("\n"),
     modifiedFiles: ["include/vm.i", "src/core/actor.c", "src/core/vm_ui.c"],
   },
+  {
+    version: "3.2.0-e0",
+    description:
+      "Updates\n" +
+      [
+        "   * Fix issue where loading a scene containing projectiles or dynamically modified sprites could cause graphical corruption",
+      ].join("\n"),
+    modifiedFiles: ["include/projectiles.h", "src/core/data_manager.c"],
+  },
+  {
+    version: "3.2.0-e1",
+    description:
+      "Updates\n" +
+      [
+        "   * Update to use latest GBDK-2020",
+        "   * Update to latest hUGEDriver",
+      ].join("\n"),
+    modifiedFiles: ["All of them (sorry)"],
+  },
 ];
 
 const ejectEngineChangelog = (currentVersion: string) => {
