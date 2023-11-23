@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1311230613",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1314231123",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -80,6 +80,8 @@
   "SIDEBAR_SCENES": "Sceny",
   "SIDEBAR_VARIABLES": "Zmienne",
   "SIDEBAR_VARIABLE_USES": "Zastosowanie zmiennej",
+  "SIDEBAR_INSTRUMENT": "Instrument",
+  "SIDEBAR_SUBPATTERN": "Podwzór",
 
   "// 6": "Form Fields ----------------------------------------------",
   "FIELD_NAME": "Nazwa",
@@ -455,6 +457,7 @@
   "FIELD_SHIFT_CLOCK_MASK": "Przesunięcie maski zegara",
   "FIELD_DIVIDING_RATIO": "Stosunek podziału",
   "FIELD_BIT_COUNT": "7-bitowy licznik",
+  "FIELD_SUBPATTERN_ENBALED": "Włącz podwzór",
   "FIELD_INPUT_JUMP": "Przycisk skoku",
   "FIELD_INPUT_RUN": "Przycisk biegu",
   "FIELD_INPUT_INTERACT": "Przycisk interakcji",
