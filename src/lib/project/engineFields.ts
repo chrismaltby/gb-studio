@@ -39,10 +39,10 @@ export const loadEngineFields = async (
 
   const enginePlugins = glob.sync(`${pluginsPath}/*/engine`);
   for (const enginePluginPath of enginePlugins) {
-    const englinePluginJsonPath = Path.join(enginePluginPath, "engine.json");
-    if (await pathExists(englinePluginJsonPath)) {
+    const enginePluginJsonPath = Path.join(enginePluginPath, "engine.json");
+    if (await pathExists(enginePluginJsonPath)) {
       try {
-        const pluginEngine = await readJSON(englinePluginJsonPath);
+        const pluginEngine = await readJSON(enginePluginJsonPath);
         if (pluginEngine.fields && pluginEngine.fields.length > 0) {
           fields = fields.concat(pluginEngine.fields);
         }
