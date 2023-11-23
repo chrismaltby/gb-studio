@@ -4,7 +4,7 @@ Use this directory to store libraries and helpers that are not dependant on any 
 
 Ideally the majority of libraries should exist here and only the parts of libraries that depend on the file system or specific APIs from Electron should be in lib/ or renderer/lib
 
-Files in this directory 
+Files in this directory
 
 - CANNOT import functions from lib
 - CANNOT import functions from renderer/lib
