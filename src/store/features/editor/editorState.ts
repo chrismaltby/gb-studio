@@ -276,6 +276,7 @@ const editorSlice = createSlice({
       state.scene = action.payload.sceneId;
       state.previewAsSceneId = action.payload.sceneId;
       state.worldFocus = true;
+      state.entityId = "";
     },
 
     selectCustomEvent: (
