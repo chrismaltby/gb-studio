@@ -10,7 +10,10 @@ import {
   EVENT_IF_ACTOR_AT_POSITION,
   EVENT_IF_ACTOR_DISTANCE_FROM_ACTOR,
 } from "lib/compiler/eventTypes";
-import { actorSelectors } from "store/features/entities/entitiesState";
+import {
+  actorSelectors,
+  scriptEventSelectors,
+} from "store/features/entities/entitiesState";
 
 const TILE_SIZE = 8;
 
@@ -202,8 +205,15 @@ function mapStateToProps(state, props) {
   const actorsLookup = actorSelectors.selectEntities(state);
   const editorActorId =
     state.editor.type === "actor" ? state.editor.entityId : undefined;
+  const scriptEventsLookup = scriptEventSelectors.selectEntities(state);
+
+  const sceneEventVisible =
+    state.editor.eventId && state.editor.scene === props.scene.id;
+  const event = sceneEventVisible && scriptEventsLookup[state.editor.eventId];
+
   return {
     ...props,
+    event,
     actorsLookup,
     editorActorId,
   };
