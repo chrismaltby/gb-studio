@@ -34,6 +34,7 @@ import {
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import ScenePriorityMap from "./ScenePriorityMap";
+import { SceneEventHelper } from "./SceneEventHelper";
 
 const TILE_SIZE = 8;
 
@@ -326,7 +327,7 @@ class Scene extends Component {
             ))}
           {selected && (
             <div className="Scene__EventHelper">
-              <EventHelper scene={scene} />
+              <SceneEventHelper scene={scene} />
             </div>
           )}
         </div>
