@@ -844,7 +844,7 @@ export const precompileScenes = (
 
     let playerSprite = usedSprites.find((s) => s.id === playerSpriteSheetId);
 
-    if (!playerSprite) {
+    if (!playerSprite && scene.type !== "LOGO") {
       warnings(
         l10n("WARNING_NO_PLAYER_SET_FOR_SCENE_TYPE", { type: scene.type })
       );
@@ -959,7 +959,7 @@ export const precompileScenes = (
 
     return {
       ...scene,
-      playerSpriteSheetId: playerSprite.id,
+      playerSpriteSheetId: playerSprite ? playerSprite.id : undefined,
       background,
       actors,
       sprites: sceneSpriteIds.reduce((memo, spriteId) => {
