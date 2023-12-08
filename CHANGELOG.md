@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated Simplified Chinese localisation. [@wcxu21](https://github.com/wcxu21)
 - Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
 - Update to latest [GBVM](https://github.com/chrismaltby/gbvm)
+- Rename "Obj Palette" in sprite editor to "Monochrome Palette" to make its purpose clearer, now includes palette preview [@pau-tomas](https://github.com/pau-tomas)
 
 ### Fixed
 
