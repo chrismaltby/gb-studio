@@ -189,15 +189,20 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
 
   const dispatch = useDispatch();
 
-  const logoSceneForBackground = useSelector((state: RootState) =>
-    sceneSelectors
-      .selectAll(state)
-      .find(
-        (s) =>
-          s.id !== scene?.id &&
-          s.backgroundId === scene?.backgroundId &&
-          s.type === "LOGO"
-      )
+  const logoSceneForBackground = useSelector(
+    (state: RootState) =>
+      // If current scene is logo don't bother searching for the background being used in other logo scenes
+      scene?.type !== "LOGO" &&
+      // Search for uses of the background within logo scenes
+      // @todo Cache a lookup of logo backgroundIds to scenes (or just one scene) where they're used, store in redux
+      sceneSelectors
+        .selectAll(state)
+        .find(
+          (s) =>
+            s.id !== scene?.id &&
+            s.backgroundId === scene?.backgroundId &&
+            s.type === "LOGO"
+        )
   );
 
   const onChangeScriptMode = (mode: keyof ScriptHandlers) => {
