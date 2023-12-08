@@ -678,6 +678,7 @@ const editorSlice = createSlice({
       .addCase(entitiesActions.addScene, (state, action) => {
         state.type = "scene";
         state.scene = action.payload.sceneId;
+        state.entityId = "";
         state.worldFocus = true;
       })
       .addCase(entitiesActions.addActor, (state, action) => {
@@ -741,6 +742,7 @@ const editorSlice = createSlice({
       .addCase(settingsActions.editPlayerStartAt, (state, action) => {
         state.scene = action.payload.sceneId;
         state.type = "scene";
+        state.entityId = "";
         state.worldFocus = true;
       })
       // Force React Select dropdowns to reload with new name
@@ -792,6 +794,7 @@ const editorSlice = createSlice({
         (state, action) => {
           state.type = "scene";
           state.scene = action.payload.sceneId;
+          state.entityId = "";
           state.worldFocus = true;
         }
       ),
