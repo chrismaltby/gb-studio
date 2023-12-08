@@ -27,6 +27,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where editing a custom script could cause variables to switch back to pass by reference
 - Fix issue where loading a scene containing projectiles or dynamically modified sprites could cause graphical corruption [@untoxa](https://github.com/untoxa)
 
+### Performance
+
+- Performance improvements in ScriptEditorEventHelper, no longer rerenders all scenes when updating [@pau-tomas](https://github.com/pau-tomas)
+
 ### Removed
 
 ## [3.1.0] - 2022-09-11
