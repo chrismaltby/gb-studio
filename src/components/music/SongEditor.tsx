@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { EditableText } from "ui/form/EditableText";
@@ -24,9 +24,29 @@ import {
   WaveInstrument,
 } from "store/features/trackerDocument/trackerDocumentTypes";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
-import { MenuDivider, MenuItem } from "components/library/Menu";
+import { MenuItem } from "components/library/Menu";
+import { PatternCellEditor } from "./PatternCellEditor";
+import trackerActions from "store/features/tracker/trackerActions";
+import { StickyTabs, TabBar } from "ui/tabs/Tabs";
+import { InstrumentSubpatternEditor } from "./InstrumentSubpatternEditor";
+import styled from "styled-components";
 
 type Instrument = DutyInstrument | NoiseInstrument | WaveInstrument;
+
+const instrumentEditorTabs = {
+  main: l10n("SIDEBAR_INSTRUMENT"),
+  subpattern: l10n("SIDEBAR_SUBPATTERN"),
+} as const;
+
+type InstrumentEditorTab = keyof typeof instrumentEditorTabs;
+
+interface SongEditorProps {
+  multiColumn: boolean;
+}
+
+const InstrumentEditorWrapper = styled.div`
+  padding-top: 10px;
+`;
 
 const renderInstrumentEditor = (
   type: string,
@@ -70,11 +90,14 @@ const instrumentName = (instrument: Instrument, type: string) => {
     : `${typeName} ${instrument.index + 1}`;
 };
 
-export const SongEditor = () => {
+export const SongEditor: FC<SongEditorProps> = ({ multiColumn }) => {
   const dispatch = useDispatch();
   const selectedInstrument = useSelector(
     (state: RootState) => state.editor.selectedInstrument
   );
+  useEffect(() => {
+    dispatch(trackerActions.setSelectedEffectCell(null));
+  }, [dispatch, selectedInstrument]);
   const sequenceId = useSelector(
     (state: RootState) => state.editor.selectedSequence
   );
@@ -152,13 +175,26 @@ export const SongEditor = () => {
     );
   }, [dispatch, sequenceId]);
 
+  const selectedEffectCell = useSelector(
+    (state: RootState) => state.tracker.selectedEffectCell
+  );
+
+  const patternId = song?.sequence[sequenceId] || 0;
+
+  const [instrumentEditorTab, setInstrumentEditorTab] =
+    useState<InstrumentEditorTab>("main");
+  const onInstrumentEditorChange = useCallback((mode: InstrumentEditorTab) => {
+    console.log(mode);
+    setInstrumentEditorTab(mode);
+  }, []);
+
   if (!song) {
     return null;
   }
 
   return (
-    <Sidebar onClick={selectSidebar}>
-      <SidebarColumn>
+    <Sidebar onClick={selectSidebar} multiColumn={multiColumn}>
+      <SidebarColumn style={{ maxWidth: multiColumn ? 300 : undefined }}>
         <FormContainer>
           <FormHeader>
             <EditableText
@@ -203,9 +239,19 @@ export const SongEditor = () => {
               title={l10n("FIELD_TEMPO_TOOLTIP")}
             />
           </FormRow>
-          {instrumentData ? (
+        </FormContainer>
+      </SidebarColumn>
+      <SidebarColumn>
+        <FormContainer>
+          {selectedEffectCell !== null ? (
+            <PatternCellEditor
+              id={selectedEffectCell}
+              patternId={patternId}
+              pattern={song?.patterns[patternId][selectedEffectCell]}
+            />
+          ) : instrumentData ? (
             <>
-              <FormDivider />
+              {!multiColumn ? <FormDivider /> : ""}
               <FormHeader>
                 <EditableText
                   name="instrumentName"
@@ -230,11 +276,33 @@ export const SongEditor = () => {
                 </MenuItem> */}
                 </DropdownButton>
               </FormHeader>
-              {renderInstrumentEditor(
-                selectedInstrument.type,
-                instrumentData,
-                song.waves
-              )}
+
+              <StickyTabs>
+                <TabBar
+                  value={instrumentEditorTab}
+                  values={instrumentEditorTabs}
+                  onChange={onInstrumentEditorChange}
+                  overflowActiveTab={instrumentEditorTab === "main"}
+                />
+              </StickyTabs>
+              <InstrumentEditorWrapper>
+                {instrumentEditorTab === "main" ? (
+                  <SidebarColumn>
+                    {renderInstrumentEditor(
+                      selectedInstrument.type,
+                      instrumentData,
+                      song.waves
+                    )}
+                  </SidebarColumn>
+                ) : (
+                  <InstrumentSubpatternEditor
+                    enabled={instrumentData.subpattern_enabled}
+                    subpattern={instrumentData.subpattern}
+                    instrumentId={instrumentData.index}
+                    instrumentType={selectedInstrument.type}
+                  />
+                )}
+              </InstrumentEditorWrapper>
             </>
           ) : (
             ""

@@ -1,9 +1,11 @@
 #ifndef _VM_LOAD_SAVE_H_INCLUDE
 #define _VM_LOAD_SAVE_H_INCLUDE
 
-#include <gb/gb.h>
+#include <gbdk/platform.h>
 
 #include "vm.h"
+
+BANKREF_EXTERN(VM_LOAD_SAVE)
 
 // sets signature of save slot to zero
 void vm_save_clear(SCRIPT_CTX * THIS, UBYTE slot) OLDCALL BANKED;

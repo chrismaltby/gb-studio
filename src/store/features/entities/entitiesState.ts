@@ -16,8 +16,10 @@ import {
   DRAG_DESTINATION,
   DRAG_TRIGGER,
   DRAG_ACTOR,
+  TILE_COLOR_PROPS,
+  TILE_COLOR_PALETTE,
 } from "../../../consts";
-import { isVariableField, isPropertyField } from "lib/helpers/eventSystem";
+import { isActorField, isVariableField, isPropertyField } from "lib/helpers/eventSystem";
 import clamp from "lib/helpers/clamp";
 import { RootState } from "store/configureStore";
 import settingsActions from "../settings/settingsActions";
@@ -69,6 +71,8 @@ import {
   updateEntitySymbol,
 } from "./entitiesHelpers";
 import spriteActions from "../sprite/spriteActions";
+import { isVariableCustomEvent } from "lib/compiler/scriptBuilder";
+import { sortByKey } from "lib/helpers/sortByKey";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
@@ -348,11 +352,7 @@ const removeSprite: CaseReducer<
     plugin?: string;
   }>
 > = (state, action) => {
-  const spriteSheets = localSpriteSheetSelectors.selectAll(state);
-  const existingAsset = spriteSheets.find(matchAsset(action.payload));
-  if (existingAsset) {
-    spriteSheetsAdapter.removeOne(state.spriteSheets, existingAsset.id);
-  }
+  removeAssetEntity(state.spriteSheets, spriteSheetsAdapter, action.payload);
 };
 
 const loadMusic: CaseReducer<
@@ -823,6 +823,7 @@ const addActor: CaseReducer<
     animSpeed: 15,
     paletteId: "",
     isPinned: false,
+    persistent: false,
     collisionGroup: "",
     ...(action.payload.defaults || {}),
     symbol: genEntitySymbol(state, "actor_0"),
@@ -1947,6 +1948,7 @@ const paintColor: CaseReducer<
       y: number;
       paletteIndex: number;
       brush: Brush;
+      isTileProp: boolean;
     } & ({ drawLine: false } | { drawLine: true; endX: number; endY: number })
   >
 > = (state, action) => {
@@ -1958,6 +1960,7 @@ const paintColor: CaseReducer<
     return;
   }
 
+  const isTileProp = action.payload.isTileProp;
   const brush = action.payload.brush;
   const drawSize = brush === "16px" ? 2 : 1;
   const tileColorsSize = Math.ceil(background.width * background.height);
@@ -1976,7 +1979,19 @@ const paintColor: CaseReducer<
 
   const setValue = (x: number, y: number, value: number) => {
     const tileColorIndex = background.width * y + x;
-    tileColors[tileColorIndex] = value;
+    let newValue = value;
+    if (isTileProp) {
+      // If is prop keep previous color value
+      newValue =
+        (tileColors[tileColorIndex] & TILE_COLOR_PALETTE) +
+        (value & TILE_COLOR_PROPS);
+    } else if (value !== 0) {
+      // If is color keep prop unless erasing
+      newValue =
+        (value & TILE_COLOR_PALETTE) +
+        (tileColors[tileColorIndex] & TILE_COLOR_PROPS);
+    }
+    tileColors[tileColorIndex] = newValue;
   };
 
   const isInBounds = (x: number, y: number) => {
@@ -2152,6 +2167,9 @@ const refreshCustomEventArgs: CaseReducer<
     return;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const eventLookup = require("lib/events").eventLookup;
+
   const variables = {} as Dictionary<CustomEventVariable>;
   const actors = {} as Dictionary<CustomEventActor>;
   const oldVariables = customEvent.variables;
@@ -2165,53 +2183,53 @@ const refreshCustomEventArgs: CaseReducer<
       const args = scriptEvent.args;
       if (!args) return;
       if (args.__comment) return;
-      if (
-        args.actorId &&
-        args.actorId !== "player" &&
-        args.actorId !== "$self$" &&
-        typeof args.actorId === "string"
-      ) {
-        const letter = String.fromCharCode(
-          "A".charCodeAt(0) + parseInt(args.actorId)
-        );
-        actors[args.actorId] = {
-          id: args.actorId,
-          name: oldActors[args.actorId]?.name || `Actor ${letter}`,
-        };
-      }
-      if (
-        args.otherActorId &&
-        args.otherActorId !== "player" &&
-        args.otherActorId !== "$self$" &&
-        typeof args.otherActorId === "string"
-      ) {
-        const letter = String.fromCharCode(
-          "A".charCodeAt(0) + parseInt(args.otherActorId)
-        );
-        actors[args.otherActorId] = {
-          id: args.otherActorId,
-          name: oldActors[args.otherActorId]?.name || `Actor ${letter}`,
-        };
-      }
       Object.keys(args).forEach((arg) => {
-        if (isVariableField(scriptEvent.command, arg, args)) {
+        if (isActorField(scriptEvent.command, arg, args, eventLookup)) {
+          const addActor = (actor: string) => {
+            const letter = String.fromCharCode(
+              "A".charCodeAt(0) + parseInt(actor)
+            );
+            actors[actor] = {
+              id: actor,
+              name: oldActors[actor]?.name || `Actor ${letter}`,
+            };
+          };
+          const actor = args[arg];
+          if (
+            actor &&
+            actor !== "player" &&
+            actor !== "$self$" &&
+            typeof actor === "string"
+          ) {
+            addActor(actor);
+          }
+        }
+        if (isVariableField(scriptEvent.command, arg, args, eventLookup)) {
           const addVariable = (variable: string) => {
             const letter = String.fromCharCode(
-              "A".charCodeAt(0) + parseInt(variable)
+              "A".charCodeAt(0) + parseInt(variable[1])
             );
             variables[variable] = {
               id: variable,
               name: oldVariables[variable]?.name || `Variable ${letter}`,
+              passByReference: oldVariables[variable]?.passByReference ?? true,
             };
           };
           const variable = args[arg];
-          if (isUnionVariableValue(variable) && variable.value) {
+          if (
+            isUnionVariableValue(variable) &&
+            variable.value &&
+            isVariableCustomEvent(variable.value)
+          ) {
             addVariable(variable.value);
-          } else if (typeof variable === "string") {
+          } else if (
+            typeof variable === "string" &&
+            isVariableCustomEvent(variable)
+          ) {
             addVariable(variable);
           }
         }
-        if (isPropertyField(scriptEvent.command, arg, args)) {
+        if (isPropertyField(scriptEvent.command, arg, args, eventLookup)) {
           const addPropertyActor = (property: string) => {
             const actor = property && property.replace(/:.*/, "");
             if (actor !== "player" && actor !== "$self$") {
@@ -2247,9 +2265,12 @@ const refreshCustomEventArgs: CaseReducer<
               const letter = String.fromCharCode(
                 "A".charCodeAt(0) + parseInt(variable, 10)
               ).toUpperCase();
-              variables[variable] = {
-                id: variable,
-                name: oldVariables[variable]?.name || `Variable ${letter}`,
+              const variableId = `V${variable}`;
+              variables[variableId] = {
+                id: variableId,
+                name: oldVariables[variableId]?.name || `Variable ${letter}`,
+                passByReference:
+                  oldVariables[variableId]?.passByReference ?? true,
               };
             });
           }
@@ -2258,7 +2279,7 @@ const refreshCustomEventArgs: CaseReducer<
     }
   );
 
-  customEvent.variables = variables;
+  customEvent.variables = sortByKey(variables);
   customEvent.actors = actors;
 };
 

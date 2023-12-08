@@ -11,6 +11,7 @@ import {
   makefileInjectToolsPath,
 } from "./buildMakeScript";
 import ensureBuildTools from "./ensureBuildTools";
+import glob from "glob";
 
 const rmdir = promisify(rimraf);
 
@@ -35,6 +36,7 @@ const ejectBuild = async ({
 } = {}) => {
   const corePath = `${engineRoot}/${projectType}`;
   const localCorePath = `${projectRoot}/assets/engine`;
+  const pluginsPath = `${projectRoot}/plugins`;
   const expectedEngineMetaPath = `${corePath}/engine.json`;
   const buildToolsPath = await ensureBuildTools(tmpPath);
   const { settings } = projectData;
@@ -64,10 +66,13 @@ const ejectBuild = async ({
           ejectedEngineVersionLegacyPath
         );
       } catch (e2) {
-        ejectedEngineVersion = "2.0.0-e1";
+        ejectedEngineVersion = "";
       }
     }
-    if (ejectedEngineVersion !== expectedEngineVersion) {
+    if (
+      ejectedEngineVersion &&
+      ejectedEngineVersion !== expectedEngineVersion
+    ) {
       warnings(
         `${l10n("WARNING_ENGINE_OUT_OF_DATE", {
           ejectedEngineVersion,
@@ -77,6 +82,15 @@ const ejectBuild = async ({
     }
   } catch (e) {
     progress("Local engine not found, using default engine");
+  }
+
+  progress("Looking for engine plugins in plugins/*/engine");
+  const enginePlugins = glob.sync(`${pluginsPath}/*/engine`);
+  for (const enginePluginPath of enginePlugins) {
+    progress(
+      `Using engine plugin: ${Path.relative(pluginsPath, enginePluginPath)}`
+    );
+    await copy(enginePluginPath, outputRoot);
   }
 
   // Modify engineField defines

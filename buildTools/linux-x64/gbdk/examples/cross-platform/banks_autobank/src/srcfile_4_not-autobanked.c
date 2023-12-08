@@ -9,12 +9,12 @@
 const uint8_t some_const_var_4 = 4;
 BANKREF(some_const_var_4)
 
-void some_4() BANKED
+void func_4(void) BANKED
 {
     printf("Func4 not autobank\n"
-           " is in ROM bank %u\n", _current_bank);
+           " is in ROM bank %u\n", CURRENT_BANK);
 }
-BANKREF(some_4)
+BANKREF(func_4)
 
 // A big constant array to take up space
 static const unsigned char local_const_4[] = {

@@ -1,10 +1,13 @@
-#pragma bank 2
+#pragma bank 255
 
 #include <string.h>
 #include <stdlib.h>
 
 #include "system.h"
 #include "vm.h"
+
+#include "vm_ui.h"
+
 #include "ui.h"
 #include "input.h"
 #include "scroll.h"
@@ -12,6 +15,23 @@
 #include "bankdata.h"
 #include "data_manager.h"
 #include "data/data_bootstrap.h"
+
+BANKREF(VM_UI)
+
+typedef struct set_submap_params_t {
+    UBYTE x;
+    UBYTE _pad0;
+    UBYTE y;
+    UBYTE _pad1;
+    UBYTE w;
+    UBYTE _pad2;
+    UBYTE h;
+    UBYTE _pad3;
+    UBYTE scene_x;
+    UBYTE _pad4;
+    UBYTE scene_y;
+} set_submap_params_t;
+
 
 void ui_draw_frame(UBYTE x, UBYTE y, UBYTE width, UBYTE height) BANKED;
 
@@ -29,12 +49,12 @@ inline UBYTE itoa_format(INT16 v, UBYTE * d, UBYTE dlen) {
 void vm_load_text(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS, UBYTE nargs) OLDCALL NONBANKED {
     dummy0; dummy1; // suppress warnings
 
-    UBYTE _save = _current_bank;
+    UBYTE _save = CURRENT_BANK;
     SWITCH_ROM(THIS->bank);
-    
+
     const INT16 * args = (INT16 *)THIS->PC;
     const unsigned char * s = THIS->PC + (nargs << 1);
-    unsigned char * d = ui_text_data; 
+    unsigned char * d = ui_text_data;
     INT16 idx;
 
     while (*s) {
@@ -42,7 +62,7 @@ void vm_load_text(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS, UBYTE nar
             idx = *((INT16 *)VM_REF_TO_PTR(*args));
             switch (*++s) {
                 // variable value of fixed width, zero padded
-                case 'D': 
+                case 'D':
                     d += itoa_format(idx, d, *++s - '0');
                     break;
                 // variable value
@@ -84,11 +104,29 @@ void vm_load_text(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS, UBYTE nar
 }
 
 // start displaying text
-void vm_display_text(SCRIPT_CTX * THIS) OLDCALL BANKED {
+void vm_display_text(SCRIPT_CTX * THIS, UBYTE options, UBYTE start_tile) OLDCALL BANKED {
     THIS;
 
     INPUT_RESET;
+    text_options = options;
     text_drawn = text_wait = text_ff = FALSE;
+
+#ifdef CGB
+        if (_is_CGB) {
+            if (start_tile >= (UBYTE)((0x100 - TEXT_BUFFER_START) + (0x100 - TEXT_BUFFER_START_BANK1))) {
+                return;
+            } else if (start_tile >= (UBYTE)(0x100 - TEXT_BUFFER_START)) {
+                ui_set_start_tile(TEXT_BUFFER_START_BANK1 + (start_tile - (UBYTE)(0x100 - TEXT_BUFFER_START)), 1);
+            } else {
+                ui_set_start_tile(TEXT_BUFFER_START + start_tile, 0);
+            }
+        } else {
+#endif
+            if (start_tile < (UBYTE)(0x100 - TEXT_BUFFER_START)) ui_set_start_tile(TEXT_BUFFER_START + start_tile, 0);
+#ifdef CGB
+        }
+#endif
+
 }
 
 // switch text rendering to window or background
@@ -158,10 +196,10 @@ void vm_overlay_clear(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE w, UBYTE h, UBY
 #ifdef CGB
         if (_is_CGB) {
             VBK_REG = 1;
-            fill_win_rect(x, y, w, h, overlay_priority | (UI_PALETTE & 0x07u));        
+            fill_win_rect(x, y, w, h, overlay_priority | (text_palette & 0x07u));
             VBK_REG = 0;
         }
-#endif    
+#endif
         fill_win_rect(x, y, w, h, ((color) ? ui_while_tile : ui_black_tile));
         if (options & UI_AUTOSCROLL) vm_overlay_set_scroll(THIS, x, y, w, h, color);
     }
@@ -182,6 +220,7 @@ void vm_choice(SCRIPT_CTX * THIS, INT16 idx, UBYTE options, UBYTE count) OLDCALL
 
 void vm_set_font(SCRIPT_CTX * THIS, UBYTE font_index) OLDCALL BANKED {
     THIS;
+    vwf_current_font_idx = font_index;
     vwf_current_font_bank = ui_fonts[font_index].bank;
     MemcpyBanked(&vwf_current_font_desc, ui_fonts[font_index].ptr, sizeof(font_desc_t), vwf_current_font_bank);
 }
@@ -192,7 +231,7 @@ void vm_overlay_scroll(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE w, UBYTE h, UB
 #ifdef CGB
     if (_is_CGB) {
         VBK_REG = 1;
-        scroll_rect(base_addr, w, h, overlay_priority | (UI_PALETTE & 0x07u));
+        scroll_rect(base_addr, w, h, overlay_priority | (text_palette & 0x07u));
         VBK_REG = 0;
     }
 #endif
@@ -201,10 +240,9 @@ void vm_overlay_scroll(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE w, UBYTE h, UB
 
 void set_xy_win_submap(const UBYTE * source, UBYTE bank, UBYTE width, UBYTE x, UBYTE y, UBYTE w, UBYTE h) OLDCALL;
 
-void vm_overlay_set_submap(SCRIPT_CTX * THIS, INT16 x_idx, INT16 y_idx, UBYTE w, UBYTE h, UBYTE scene_x, UBYTE scene_y) OLDCALL BANKED {
+void vm_overlay_set_submap(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE w, UBYTE h, UBYTE scene_x, UBYTE scene_y) OLDCALL BANKED {
+    THIS;
     UWORD offset = (scene_y * image_tile_width) + scene_x;
-    UBYTE x = *((x_idx < 0) ? THIS->stack_ptr + x_idx : script_memory + x_idx);
-    UBYTE y = *((y_idx < 0) ? THIS->stack_ptr + y_idx : script_memory + y_idx);
 #ifdef CGB
     if (_is_CGB) {
         VBK_REG = 1;
@@ -215,13 +253,25 @@ void vm_overlay_set_submap(SCRIPT_CTX * THIS, INT16 x_idx, INT16 y_idx, UBYTE w,
     set_xy_win_submap(image_ptr + offset, image_bank, image_tile_width, x, y, w, h);
 }
 
+void vm_overlay_set_submap_ex(SCRIPT_CTX * THIS, INT16 params_idx) OLDCALL BANKED {
+    set_submap_params_t * params = VM_REF_TO_PTR(params_idx);
+    UWORD offset = (params->scene_y * image_tile_width) + params->scene_x;
+#ifdef CGB
+    if (_is_CGB) {
+        VBK_REG = 1;
+        set_xy_win_submap(image_attr_ptr + offset, image_attr_bank, image_tile_width, params->x, params->y, params->w, params->h);
+        VBK_REG = 0;
+    }
+#endif
+    set_xy_win_submap(image_ptr + offset, image_bank, image_tile_width, params->x, params->y, params->w, params->h);
+}
+
 void vm_overlay_set_map(SCRIPT_CTX * THIS, INT16 idx, INT16 x_idx, INT16 y_idx, UBYTE bank, const background_t * background) OLDCALL BANKED {
     far_ptr_t tilemap;
     UBYTE x = *((x_idx < 0) ? THIS->stack_ptr + x_idx : script_memory + x_idx);
     UBYTE y = *((y_idx < 0) ? THIS->stack_ptr + y_idx : script_memory + y_idx);
     UBYTE w = ReadBankedUBYTE((void *)&(background->width), bank);
     UBYTE h = ReadBankedUBYTE((void *)&(background->height), bank);
-    _map_tile_offset = *(INT16 *)(VM_REF_TO_PTR(idx));
 #ifdef CGB
     if (_is_CGB) {
         ReadBankedFarPtr(&tilemap, (void *)&(background->cgb_tilemap_attr), bank);
@@ -232,6 +282,7 @@ void vm_overlay_set_map(SCRIPT_CTX * THIS, INT16 idx, INT16 x_idx, INT16 y_idx, 
         }
     }
 #endif
+    _map_tile_offset = *(INT16 *)(VM_REF_TO_PTR(idx));
     ReadBankedFarPtr(&tilemap, (void *)&(background->tilemap), bank);
     SetBankedWinTiles(x, y, w, h, tilemap.ptr, tilemap.bank);
     _map_tile_offset = 0;
@@ -239,7 +290,7 @@ void vm_overlay_set_map(SCRIPT_CTX * THIS, INT16 idx, INT16 x_idx, INT16 y_idx, 
 
 void vm_set_text_sound(SCRIPT_CTX * THIS, UBYTE bank, UBYTE * offset, UBYTE channel_mask) OLDCALL BANKED {
     THIS;
-    text_sound_bank = bank;  
+    text_sound_bank = bank;
     text_sound_data = offset;
-    text_sound_mask = channel_mask; 
+    text_sound_mask = channel_mask;
 }

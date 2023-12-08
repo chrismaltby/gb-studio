@@ -132,8 +132,8 @@ export const InstrumentDutyEditor = ({
       <FormDivider />
 
       <InstrumentVolumeEditor
-        initial_volume={instrument.initial_volume}
-        volume_sweep_change={instrument.volume_sweep_change}
+        initialVolume={instrument.initial_volume}
+        volumeSweepChange={instrument.volume_sweep_change}
         length={instrument.length}
         onChange={onChangeField}
       />

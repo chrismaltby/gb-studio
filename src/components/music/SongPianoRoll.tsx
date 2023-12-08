@@ -5,7 +5,6 @@ import { Song } from "lib/helpers/uge/song/Song";
 import { RootState } from "store/configureStore";
 import { SplitPaneVerticalDivider } from "ui/splitpane/SplitPaneDivider";
 import { SequenceEditor } from "./SequenceEditor";
-import scrollIntoView from "scroll-into-view-if-needed";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import l10n from "lib/helpers/l10n";
 import { RollChannel } from "./RollChannel";
@@ -17,15 +16,18 @@ import { PatternCell } from "lib/helpers/uge/song/PatternCell";
 import { cloneDeep } from "lodash";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
+import { getInstrumentListByType, getInstrumentTypeByChannel } from "./helpers";
 import {
   parsePatternToClipboard,
   parseClipboardToPattern,
-  getInstrumentListByType,
-  getInstrumentTypeByChannel,
-} from "./helpers";
+} from "./musicClipboardHelpers";
+import { RollChannelEffectRow } from "./RollChannelEffectRow";
+import { WandIcon } from "ui/icons/Icons";
+import { RollChannelHover } from "./RollChannelHover";
 
-const CELL_SIZE = 14;
+const CELL_SIZE = 16;
 const MAX_NOTE = 71;
+const GRID_MARGIN = 10;
 
 interface SongPianoRollProps {
   sequenceId: number;
@@ -40,6 +42,10 @@ interface PianoKeyProps {
 }
 
 interface SongGridHeaderProps {
+  cols: number;
+}
+
+interface SongGridFooterProps {
   cols: number;
 }
 
@@ -133,7 +139,7 @@ const RollPlaybackTracker = styled.div`
   position: absolute;
   top: 0;
   bottom: 0;
-  left: -10px;
+  left: ${30 + 10 + 1 - 10}px;
   &::before {
     content: "";
     position: absolute;
@@ -149,8 +155,9 @@ const RollPlaybackTracker = styled.div`
 const SongGridHeader = styled.div<SongGridHeaderProps>`
   position: sticky;
   top: 0;
-  left: ${30 + 10 + 1}px;
+  left: 0;
   right: 0;
+  padding-left: ${30 + 10 + 1}px;
   z-index: 10;
   ${(props) => css`
     width: ${props.cols * CELL_SIZE}px;
@@ -164,10 +171,48 @@ const SongGridHeader = styled.div<SongGridHeaderProps>`
     background-size: ${CELL_SIZE * 8}px ${CELL_SIZE / 3}px;
     background-repeat: repeat-x;
     background-position-y: center;
+    background-position-x: ${30 + 10 + 1}px;
     border-bottom: 1px solid #808080;
     margin-bottom: -1px;
     border-right: 2px solid ${props.theme.colors.document.background};
   `}
+`;
+
+const SongGridFooter = styled.div<SongGridFooterProps>`
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  ${(props) => css`
+    margin-top: ${CELL_SIZE / 2}px;
+    width: calc(${props.cols * CELL_SIZE}px + ${30 + 10 + 1}px);
+    height: ${2 * CELL_SIZE}px;
+    border-right: 2px solid #808080;
+    background-color: ${props.theme.colors.sidebar.background};
+    box-shadow: ${(props) => props.theme.colors.card.boxShadow};
+  `}
+`;
+
+const FooterIcon = styled.div`
+  position: sticky;
+  left: 0;
+  height: ${CELL_SIZE * 2}px;
+  width: ${30 + 1}px;
+  background-color:  ${(props) => props.theme.colors.sidebar.background};
+  justify-content: center;
+  z-index: 6;
+  display: flex;
+
+  svg {
+    height: 20px;
+    width: 20px;
+    max-width: 100%;
+    max-height: 100%;
+    fill: ${(props) => props.theme.colors.button.text};
+    margin: auto;
+  }
+}}
 `;
 
 type BlurableDOMElement = {
@@ -224,6 +269,9 @@ export const SongPianoRoll = ({
   const startPlaybackPosition = useSelector(
     (state: RootState) => state.tracker.startPlaybackPosition
   );
+  const subpatternEditorFocus = useSelector(
+    (state: RootState) => state.tracker.subpatternEditorFocus
+  );
 
   const patternId = song?.sequence[sequenceId] || 0;
   const pattern = song?.patterns[patternId];
@@ -266,10 +314,9 @@ export const SongPianoRoll = ({
   useEffect(() => {
     if (playingRowRef && playingRowRef.current) {
       if (playing) {
-        scrollIntoView(playingRowRef.current, {
-          scrollMode: "if-needed",
+        playingRowRef.current.scrollIntoView({
           block: "nearest",
-          inline: "end",
+          inline: "center",
         });
       }
     }
@@ -390,11 +437,13 @@ export const SongPianoRoll = ({
   );
 
   useEffect(() => {
-    document.addEventListener("selectionchange", onSelectAll);
-    return () => {
-      document.removeEventListener("selectionchange", onSelectAll);
-    };
-  }, [onSelectAll]);
+    if (!subpatternEditorFocus) {
+      document.addEventListener("selectionchange", onSelectAll);
+      return () => {
+        document.removeEventListener("selectionchange", onSelectAll);
+      };
+    }
+  }, [onSelectAll, subpatternEditorFocus]);
 
   const refreshRenderPattern = useCallback(
     (newMoveNoteTo) => {
@@ -570,7 +619,8 @@ export const SongPianoRoll = ({
         } else if (gridRef.current) {
           const bounds = gridRef.current.getBoundingClientRect();
           const x = clamp(
-            Math.floor((e.pageX - bounds.left) / CELL_SIZE) * CELL_SIZE,
+            Math.floor((e.pageX - bounds.left - GRID_MARGIN) / CELL_SIZE) *
+              CELL_SIZE,
             0,
             63 * CELL_SIZE
           );
@@ -657,7 +707,9 @@ export const SongPianoRoll = ({
 
       const bounds = gridRef.current.getBoundingClientRect();
 
-      const newColumn = Math.floor((e.pageX - bounds.left) / CELL_SIZE);
+      const newColumn = Math.floor(
+        (e.pageX - bounds.left - GRID_MARGIN) / CELL_SIZE
+      );
       const newRow = Math.floor((e.pageY - bounds.top) / CELL_SIZE);
       const newNote = 12 * 6 - 1 - newRow;
       if (newNote !== hoverNote) {
@@ -763,7 +815,7 @@ export const SongPianoRoll = ({
         setAddToSelection(true);
       }
 
-      if (e.key === "Backspace") {
+      if (e.key === "Backspace" || e.key === "Delete") {
         if (pattern) {
           const newPattern = cloneDeep(pattern);
           console.log(newPattern, selectedPatternCells, selectedChannel);
@@ -829,6 +881,32 @@ export const SongPianoRoll = ({
       dispatch(clipboardActions.copyText(parsedSelectedPattern));
     }
   }, [selectedChannel, dispatch, pattern, selectedPatternCells]);
+
+  const onCut = useCallback(() => {
+    if (pattern) {
+      const parsedSelectedPattern = parsePatternToClipboard(
+        pattern,
+        selectedChannel,
+        selectedPatternCells
+      );
+      dispatch(clipboardActions.copyText(parsedSelectedPattern));
+      //delete selection
+      const newPattern = cloneDeep(pattern);
+      console.log(newPattern, selectedPatternCells, selectedChannel);
+      selectedPatternCells.forEach((i) => {
+        console.log(newPattern[i]);
+        newPattern[i].splice(selectedChannel, 1, new PatternCell());
+      });
+      dispatch(trackerActions.setSelectedPatternCells([]));
+      console.log(patternId, newPattern);
+      dispatch(
+        trackerDocumentActions.editPattern({
+          patternId: patternId,
+          pattern: newPattern,
+        })
+      );
+    }
+  }, [pattern, selectedChannel, selectedPatternCells, dispatch, patternId]);
 
   const onPaste = useCallback(() => {
     if (pattern) {
@@ -898,15 +976,19 @@ export const SongPianoRoll = ({
   }, [selectedChannel, dispatch, pattern, patternId]);
 
   useEffect(() => {
-    window.addEventListener("copy", onCopy);
-    window.addEventListener("paste", onPaste);
-    ipcRenderer.on("paste-in-place", onPasteInPlace);
-    return () => {
-      window.removeEventListener("copy", onCopy);
-      window.removeEventListener("paste", onPaste);
-      ipcRenderer.removeListener("paste-in-place", onPasteInPlace);
-    };
-  }, [onCopy, onPaste, onPasteInPlace]);
+    if (!subpatternEditorFocus) {
+      window.addEventListener("copy", onCopy);
+      window.addEventListener("cut", onCut);
+      window.addEventListener("paste", onPaste);
+      ipcRenderer.on("paste-in-place", onPasteInPlace);
+      return () => {
+        window.removeEventListener("copy", onCopy);
+        window.removeEventListener("cut", onCut);
+        window.removeEventListener("paste", onPaste);
+        ipcRenderer.removeListener("paste-in-place", onPasteInPlace);
+      };
+    }
+  }, [onCopy, onCut, onPaste, onPasteInPlace, subpatternEditorFocus]);
 
   const v = [
     selectedChannel,
@@ -936,14 +1018,21 @@ export const SongPianoRoll = ({
             zIndex: 1,
           }}
         >
-          <SongGridHeader
-            cols={64}
-            onMouseDown={(e) => {
-              setPlaybackPosition(e.nativeEvent);
-            }}
-          >
-            <RollPlaybackTracker
+          <SongGridHeader cols={64}>
+            <div
+              style={{ height: "100%" }}
+              onMouseDown={(e) => {
+                setPlaybackPosition(e.nativeEvent);
+              }}
+            ></div>
+            <div
               ref={playingRowRef}
+              style={{
+                width: "1px",
+                transform: `translateX(${playbackState[1] * CELL_SIZE}px)`,
+              }}
+            ></div>
+            <RollPlaybackTracker
               style={{
                 display: playbackState[0] === sequenceId ? "" : "none",
                 transform: `translateX(${10 + playbackState[1] * CELL_SIZE}px)`,
@@ -1036,6 +1125,11 @@ export const SongPianoRoll = ({
               }}
             >
               <RollChannelGrid cellSize={CELL_SIZE} />
+              <RollChannelHover
+                cellSize={CELL_SIZE}
+                hoverColumn={hoverColumn}
+                hoverRow={hoverNote}
+              />
               {v.map((i) => (
                 <RollChannel
                   channelId={i}
@@ -1052,6 +1146,17 @@ export const SongPianoRoll = ({
               />
             </SongGrid>
           </div>
+          <SongGridFooter cols={64}>
+            <FooterIcon>
+              <WandIcon />
+            </FooterIcon>
+            <RollChannelEffectRow
+              patternId={patternId}
+              channelId={selectedChannel}
+              renderPattern={renderPattern || []}
+              cellSize={CELL_SIZE}
+            />
+          </SongGridFooter>
         </div>
       </div>
       <SplitPaneVerticalDivider />

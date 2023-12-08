@@ -346,7 +346,7 @@ const MusicPageUge = () => {
               position: "relative",
             }}
           >
-            <SongEditor />
+            <SongEditor multiColumn={rightPaneWidth >= 500} />
           </div>
         </>
       ) : (

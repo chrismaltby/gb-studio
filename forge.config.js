@@ -15,6 +15,10 @@ module.exports = {
       platforms: ["darwin", "win32"],
     },
     {
+      name: "@reforged/maker-appimage",
+      config: {},
+    },
+    {
       name: "@electron-forge/maker-deb",
       config: {},
     },

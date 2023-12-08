@@ -12,6 +12,8 @@ const autoLabel = (fetchArg) => {
 const fields = [
   {
     key: "input",
+    label: l10n("FIELD_BUTTON"),
+    description: l10n("FIELD_BUTTON_DESC"),
     type: "input",
     defaultValue: ["b"],
   },
@@ -19,6 +21,7 @@ const fields = [
     key: "override",
     type: "checkbox",
     label: l10n("FIELD_OVERRIDE_DEFAULT_BUTTON_ACTION"),
+    description: l10n("FIELD_OVERRIDE_DEFAULT_BUTTON_ACTION_DESC"),
     defaultValue: true,
   },
   {
@@ -32,7 +35,9 @@ const fields = [
   {
     key: "true",
     label: l10n("FIELD_ON_PRESS"),
+    description: l10n("FIELD_ON_PRESS_DESC"),
     type: "events",
+    allowedContexts: ["global", "entity"],
     conditions: [
       {
         key: "__scriptTabs",
@@ -54,6 +59,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_SET_INPUT_SCRIPT_DESC"),
   autoLabel,
   groups,
   fields,

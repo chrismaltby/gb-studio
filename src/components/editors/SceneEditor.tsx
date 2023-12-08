@@ -50,6 +50,8 @@ import { ScriptEventAutoFadeDisabledWarning } from "components/script/ScriptEven
 import { SceneSymbolsEditor } from "components/forms/symbols/SceneSymbolsEditor";
 import { BackgroundSymbolsEditor } from "components/forms/symbols/BackgroundSymbolsEditor";
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
+import { ScriptEditorContext } from "components/script/ScriptEditorContext";
+import Alert, { AlertItem } from "components/library/Alert";
 
 interface SceneEditorProps {
   id: string;
@@ -186,6 +188,22 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
   const [showSymbols, setShowSymbols] = useState(false);
 
   const dispatch = useDispatch();
+
+  const logoSceneForBackground = useSelector(
+    (state: RootState) =>
+      // If current scene is logo don't bother searching for the background being used in other logo scenes
+      scene?.type !== "LOGO" &&
+      // Search for uses of the background within logo scenes
+      // @todo Cache a lookup of logo backgroundIds to scenes (or just one scene) where they're used, store in redux
+      sceneSelectors
+        .selectAll(state)
+        .find(
+          (s) =>
+            s.id !== scene?.id &&
+            s.backgroundId === scene?.backgroundId &&
+            s.type === "LOGO"
+        )
+  );
 
   const onChangeScriptMode = (mode: keyof ScriptHandlers) => {
     setScriptMode(mode);
@@ -536,6 +554,15 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
 
             <FormRow>
               <BackgroundWarnings id={scene.backgroundId} />
+              {logoSceneForBackground && (
+                <Alert variant="warning">
+                  <AlertItem>
+                    {l10n("WARNING_BACKGROUND_LOGO_REUSED", {
+                      name: logoSceneForBackground.name,
+                    })}
+                  </AlertItem>
+                </Alert>
+              )}
             </FormRow>
 
             {showParallaxOptions && (
@@ -613,65 +640,70 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
                 <FormDivider />
               </>
             )}
-
-            <FormRow>
-              <FormField
-                name="playerSpriteSheetId"
-                label={l10n("FIELD_PLAYER_SPRITE_SHEET")}
-              >
-                <SpriteSheetSelectButton
-                  name="playerSpriteSheetId"
-                  value={scene.playerSpriteSheetId}
-                  direction={isStartingScene ? startDirection : "down"}
-                  paletteId={undefined}
-                  onChange={onChangeField("playerSpriteSheetId")}
-                  includeInfo
-                  optional
-                  optionalLabel={l10n("FIELD_SCENE_TYPE_DEFAULT")}
-                  optionalValue={defaultPlayerSprites[scene.type]}
-                />
-              </FormField>
-            </FormRow>
-
-            {isStartingScene && (
+            {scene.type !== "LOGO" && (
               <>
-                <FormDivider />
-                <FormRow>
-                  <Label htmlFor="startX">{l10n("FIELD_START_POSITION")}</Label>
-                </FormRow>
-                <FormRow>
-                  <CoordinateInput
-                    name="startX"
-                    coordinate="x"
-                    value={startX}
-                    placeholder="0"
-                    min={0}
-                    max={scene.width - 2}
-                    onChange={onChangeSettingFieldInput("startX")}
-                  />
-                  <CoordinateInput
-                    name="startY"
-                    coordinate="y"
-                    value={startY}
-                    placeholder="0"
-                    min={0}
-                    max={scene.height - 1}
-                    onChange={onChangeSettingFieldInput("startY")}
-                  />
-                </FormRow>
-
                 <FormRow>
                   <FormField
-                    name="actorDirection"
-                    label={l10n("FIELD_DIRECTION")}
+                    name="playerSpriteSheetId"
+                    label={l10n("FIELD_PLAYER_SPRITE_SHEET")}
                   >
-                    <DirectionPicker
-                      id="actorDirection"
-                      value={startDirection}
-                      onChange={onChangeSettingFieldInput("startDirection")}
+                    <SpriteSheetSelectButton
+                      name="playerSpriteSheetId"
+                      value={scene.playerSpriteSheetId}
+                      direction={isStartingScene ? startDirection : "down"}
+                      paletteId={undefined}
+                      onChange={onChangeField("playerSpriteSheetId")}
+                      includeInfo
+                      optional
+                      optionalLabel={l10n("FIELD_SCENE_TYPE_DEFAULT")}
+                      optionalValue={defaultPlayerSprites[scene.type]}
                     />
                   </FormField>
                 </FormRow>
+
+                {isStartingScene && (
+                  <>
+                    <FormDivider />
+                    <FormRow>
+                      <Label htmlFor="startX">
+                        {l10n("FIELD_START_POSITION")}
+                      </Label>
+                    </FormRow>
+                    <FormRow>
+                      <CoordinateInput
+                        name="startX"
+                        coordinate="x"
+                        value={startX}
+                        placeholder="0"
+                        min={0}
+                        max={scene.width - 2}
+                        onChange={onChangeSettingFieldInput("startX")}
+                      />
+                      <CoordinateInput
+                        name="startY"
+                        coordinate="y"
+                        value={startY}
+                        placeholder="0"
+                        min={0}
+                        max={scene.height - 1}
+                        onChange={onChangeSettingFieldInput("startY")}
+                      />
+                    </FormRow>
+
+                    <FormRow>
+                      <FormField
+                        name="actorDirection"
+                        label={l10n("FIELD_DIRECTION")}
+                      >
+                        <DirectionPicker
+                          id="actorDirection"
+                          value={startDirection}
+                          onChange={onChangeSettingFieldInput("startDirection")}
+                        />
+                      </FormField>
+                    </FormRow>
+                  </>
+                )}
               </>
             )}
           </FormContainer>
@@ -703,13 +735,15 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
         {scene.autoFadeSpeed === null && scriptKey === "script" && (
           <ScriptEventAutoFadeDisabledWarning />
         )}
-        <ScriptEditor
-          value={scene[scriptKey]}
-          type="scene"
-          entityId={scene.id}
-          scriptKey={scriptKey}
-          showAutoFadeIndicator={scriptKey === "script"}
-        />
+        <ScriptEditorContext.Provider value="entity">
+          <ScriptEditor
+            value={scene[scriptKey]}
+            type="scene"
+            entityId={scene.id}
+            scriptKey={scriptKey}
+            showAutoFadeIndicator={scriptKey === "script"}
+          />
+        </ScriptEditorContext.Provider>
       </SidebarColumn>
     </Sidebar>
   );

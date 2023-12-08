@@ -5,7 +5,7 @@
 
 extern volatile OAM_item_t shadow_OAM2[40];
 
-inline void toggle_shadow_OAM() {
+inline void toggle_shadow_OAM(void) {
     if (_shadow_OAM_base == (UBYTE)((UWORD)&shadow_OAM >> 8)) { 
         __render_shadow_OAM = (UBYTE)((UWORD)&shadow_OAM2 >> 8); 
     } else { 
@@ -13,7 +13,7 @@ inline void toggle_shadow_OAM() {
     }
     allocated_hardware_sprites = 0;
 }
-inline void activate_shadow_OAM() {
+inline void activate_shadow_OAM(void) {
     hide_sprites_range(allocated_hardware_sprites, MAX_HARDWARE_SPRITES);
     _shadow_OAM_base = __render_shadow_OAM;
 }

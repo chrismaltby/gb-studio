@@ -9,21 +9,22 @@ test("Should set move player to position", () => {
       actorId: "player",
       x: {
         type: "number",
-        value: 5
+        value: 5,
       },
       y: {
         type: "number",
-        value: 9
+        value: 9,
       },
       moveType: "horizontal",
-      useCollisions: true
+      useCollisions: true,
+      units: "tiles",
     },
     {
       scene: { actors: [] },
       actorSetActive: mockactorSetActive,
-      actorMoveTo: mockActorMoveTo
+      actorMoveTo: mockActorMoveTo,
     }
   );
   expect(mockactorSetActive).toBeCalledWith("player");
-  expect(mockActorMoveTo).toBeCalledWith(5, 9, true, "horizontal");
+  expect(mockActorMoveTo).toBeCalledWith(5, 9, true, "horizontal", "tiles");
 });

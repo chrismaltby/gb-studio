@@ -6,7 +6,6 @@ import getCoords from "lib/helpers/getCoords";
 import Actor from "./Actor";
 import Trigger from "./Trigger";
 import SceneCollisions from "./SceneCollisions";
-import { normalizedFindSceneEvent } from "lib/helpers/eventSystem";
 import EventHelper from "./EventHelper";
 import {
   SceneShape,
@@ -23,19 +22,19 @@ import {
   TOOL_ERASER,
   DMG_PALETTE,
   MIDDLE_MOUSE,
+  TILE_COLOR_PROP_PRIORITY,
 } from "../../consts";
 import { getCachedObject } from "lib/helpers/cache";
 import SceneInfo from "./SceneInfo";
 import {
   sceneSelectors,
-  actorSelectors,
-  triggerSelectors,
   backgroundSelectors,
   paletteSelectors,
-  scriptEventSelectors,
 } from "store/features/entities/entitiesState";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
+import ScenePriorityMap from "./ScenePriorityMap";
+import { SceneEventHelper } from "./SceneEventHelper";
 
 const TILE_SIZE = 8;
 
@@ -137,7 +136,6 @@ class Scene extends Component {
       visible,
       sceneName,
       image,
-      event,
       width,
       height,
       projectRoot,
@@ -148,6 +146,7 @@ class Scene extends Component {
       sceneFiltered,
       showEntities,
       showCollisions,
+      showPriorityMap,
       labelOffsetLeft,
       labelOffsetRight,
       parallaxHoverLayer,
@@ -241,6 +240,17 @@ class Scene extends Component {
               />
             </div>
           )}
+
+          {image && showPriorityMap && (
+            <div className="Scene__Collisions">
+              <ScenePriorityMap
+                width={width}
+                height={height}
+                tileColors={tileColors}
+              />
+            </div>
+          )}
+
           {selected && parallaxHoverLayer !== undefined && scene.parallax && (
             <div
               style={{
@@ -315,9 +325,9 @@ class Scene extends Component {
                 editable={editable}
               />
             ))}
-          {event && (
+          {selected && (
             <div className="Scene__EventHelper">
-              <EventHelper event={event} scene={scene} />
+              <SceneEventHelper scene={scene} />
             </div>
           )}
         </div>
@@ -379,10 +389,7 @@ function mapStateToProps(state, props) {
     parallaxHoverLayer,
   } = state.editor;
 
-  const actorsLookup = actorSelectors.selectEntities(state);
-  const triggersLookup = triggerSelectors.selectEntities(state);
   const backgroundsLookup = backgroundSelectors.selectEntities(state);
-  const scriptEventsLookup = scriptEventSelectors.selectEntities(state);
 
   const settings = state.project.present.settings;
 
@@ -390,14 +397,11 @@ function mapStateToProps(state, props) {
 
   const image = backgroundsLookup[scene.backgroundId];
 
-  const sceneEventVisible =
-    state.editor.eventId && state.editor.scene === props.id;
-  const event = sceneEventVisible && scriptEventsLookup[state.editor.eventId];
-
   const selected = sceneId === props.id;
   const dragging = selected && editorDragging;
   const hovered = state.editor.hover.sceneId === props.id;
   const tool = state.editor.tool;
+  const selectedPalette = state.editor.selectedPalette;
 
   const { worldSidebarWidth: sidebarWidth } = state.editor;
 
@@ -448,6 +452,8 @@ function mapStateToProps(state, props) {
   const showCollisions =
     (tool !== TOOL_COLORS || showLayers) &&
     (settings.showCollisions || tool === TOOL_COLLISIONS);
+  const showPriorityMap =
+    tool === TOOL_COLORS && selectedPalette === TILE_COLOR_PROP_PRIORITY;
 
   const palettesLookup = paletteSelectors.selectEntities(state);
   const defaultBackgroundPaletteIds =
@@ -510,7 +516,6 @@ function mapStateToProps(state, props) {
     visible,
     projectRoot: state.document && state.document.root,
     prefab: undefined,
-    event,
     image,
     width: image ? image.width : 32,
     height: image ? image.height : 32,
@@ -524,6 +529,7 @@ function mapStateToProps(state, props) {
     spritePalettes,
     showEntities,
     showCollisions,
+    showPriorityMap,
     labelOffsetLeft,
     labelOffsetRight,
     parallaxHoverLayer,

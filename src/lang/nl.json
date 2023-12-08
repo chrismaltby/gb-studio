@@ -178,7 +178,7 @@
   "FIELD_FLAG_15": "Vlag 15",
   "FIELD_FLAG_16": "Vlag 16",
   "FIELD_FREQUENCY": "Frequentie in hz",
-  "FIELD_DURATION": "Duur in seconden",
+  "FIELD_DURATION": "Duur",
   "FIELD_PITCH": "Toonhoogte",
   "FIELD_SOUND_PLAY_CRASH": "Speel een crashbekken-geluidje",
   "FIELD_SET_TIMER": "Stel een herhalende timer in voor een script",

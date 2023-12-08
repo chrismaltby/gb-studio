@@ -1,4 +1,4 @@
-#include <gb/gb.h>
+#include <gbdk/platform.h>
 
 // System fields
 UBYTE _is_CGB, _is_SGB;

@@ -1,9 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ScriptEditor from "../script/ScriptEditor";
-import { FormField } from "../library/Forms";
 import l10n from "lib/helpers/l10n";
-import { SidebarHeading } from "./Sidebar";
 import castEventValue from "lib/helpers/castEventValue";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { MenuItem } from "ui/menu/Menu";
@@ -13,7 +11,12 @@ import { customEventSelectors } from "store/features/entities/entitiesState";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { Sidebar, SidebarColumn } from "ui/sidebars/Sidebar";
-import { FormContainer, FormDivider, FormHeader } from "ui/form/FormLayout";
+import {
+  FormContainer,
+  FormDivider,
+  FormHeader,
+  FormRow,
+} from "ui/form/FormLayout";
 import { EditableText } from "ui/form/EditableText";
 import { RootState } from "store/configureStore";
 import { CustomEvent } from "store/features/entities/entitiesTypes";
@@ -22,6 +25,13 @@ import { Button } from "ui/buttons/Button";
 import { LockIcon, LockOpenIcon } from "ui/icons/Icons";
 import { CustomEventSymbolsEditor } from "components/forms/symbols/CustomEventSymbolsEditor";
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
+import { Checkbox } from "ui/form/Checkbox";
+import { NoteField } from "ui/form/NoteField";
+import { InputGroup, InputGroupAppend } from "ui/form/InputGroup";
+import { Input } from "ui/form/Input";
+import { SidebarHeader } from "ui/form/SidebarHeader";
+import { Label } from "ui/form/Label";
+import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 
 const customEventName = (customEvent: CustomEvent, customEventIndex: number) =>
   customEvent.name ? customEvent.name : `Script ${customEventIndex + 1}`;
@@ -79,6 +89,33 @@ const CustomEventEditor = ({ id, multiColumn }: CustomEventEditorProps) => {
         })
       );
     };
+
+  const onEditVariablePassByReference = (
+    key: string,
+    passByReference: boolean
+  ) => {
+    if (!customEvent) {
+      return;
+    }
+    const variable = customEvent.variables[key];
+    if (!variable) {
+      return;
+    }
+
+    dispatch(
+      entitiesActions.editCustomEvent({
+        customEventId: customEvent.id,
+        changes: {
+          variables: Object.assign({}, customEvent.variables, {
+            [key]: {
+              ...variable,
+              passByReference,
+            },
+          }),
+        },
+      })
+    );
+  };
 
   const onEditActorName =
     (key: string): React.ChangeEventHandler =>
@@ -165,6 +202,9 @@ const CustomEventEditor = ({ id, multiColumn }: CustomEventEditorProps) => {
     />
   );
 
+  const customEventVariables = Object.values(customEvent.variables);
+  const customEventActors = Object.values(customEvent.actors);
+
   return (
     <Sidebar onClick={selectSidebar} multiColumn={multiColumn}>
       {!lockScriptEditor && (
@@ -202,63 +242,118 @@ const CustomEventEditor = ({ id, multiColumn }: CustomEventEditorProps) => {
               </>
             )}
 
-            <FormField style={{}}>
-              <label htmlFor="customEventDescription">
-                {l10n("FIELD_DESCRIPTION")}
-                <textarea
-                  id="customEventDescription"
-                  rows={3}
-                  value={customEvent.description || ""}
-                  placeholder={l10n(
-                    "FIELD_CUSTOM_EVENT_DESCRIPTION_PLACEHOLDER"
-                  )}
-                  onChange={onEdit("description")}
-                />
-              </label>
-            </FormField>
+            <FormRow>
+              <NoteField
+                autofocus
+                value={customEvent.description || ""}
+                onChange={onEdit("description")}
+              />
+            </FormRow>
           </FormContainer>
           <div>
-            <SidebarHeading title={l10n("SIDEBAR_PARAMETERS")} />
-            <FormField style={{}}>
-              <label>
-                {`Variables: ${Object.values(customEvent.variables).length}/10`}
-              </label>
-            </FormField>
-            {Object.values(customEvent.variables).map((variable, i) => {
-              if (!variable) {
-                return null;
-              }
-              return (
-                <FormField key={variable.id} style={{}}>
-                  <input
-                    id={`variable[${i}]`}
-                    value={variable.name}
-                    placeholder="Variable Name"
-                    onChange={onEditVariableName(variable.id)}
-                  />
-                </FormField>
-              );
-            })}
-            <FormField style={{}}>
-              <label>
-                {`Actors: ${Object.values(customEvent.actors).length}/10`}
-              </label>
-            </FormField>
-            {Object.values(customEvent.actors).map((actor, i) => {
-              if (!actor) {
-                return null;
-              }
-              return (
-                <FormField key={actor.id} style={{}}>
-                  <input
-                    id={`actor[${i}]`}
-                    value={actor.name}
-                    placeholder="Actor Name"
-                    onChange={onEditActorName(actor.id)}
-                  />
-                </FormField>
-              );
-            })}
+            {(customEventVariables.length > 0 ||
+              customEventActors.length > 0) && (
+              <FormHeader>
+                <SidebarHeader>{l10n("SIDEBAR_PARAMETERS")}</SidebarHeader>
+              </FormHeader>
+            )}
+            {customEventVariables.length > 0 && (
+              <>
+                <FormRow>
+                  <Label htmlFor="variable[0]">
+                    <strong>{l10n("FIELD_VARIABLES")}:</strong>{" "}
+                    {`${customEventVariables.length}/10`}
+                  </Label>
+                </FormRow>
+
+                {customEventVariables.map((variable, i) => {
+                  if (!variable) {
+                    return null;
+                  }
+                  return (
+                    <FormRow key={variable.id}>
+                      <InputGroup>
+                        <Input
+                          id={`variable[${i}]`}
+                          value={variable.name}
+                          placeholder="Variable Name"
+                          onChange={onEditVariableName(variable.id)}
+                        />
+                        <InputGroupAppend>
+                          <DropdownButton
+                            label={
+                              <span style={{ minWidth: 40, textAlign: "left" }}>
+                                {variable.passByReference
+                                  ? l10n("FIELD_PASS_BY_REFERENCE_SHORT")
+                                  : l10n("FIELD_PASS_BY_VALUE_SHORT")}
+                              </span>
+                            }
+                            title={
+                              variable.passByReference
+                                ? l10n("FIELD_PASS_BY_REFERENCE_DESCRIPTION")
+                                : l10n("FIELD_PASS_BY_VALUE_DESCRIPTION")
+                            }
+                          >
+                            <MenuItem
+                              onClick={() =>
+                                onEditVariablePassByReference(
+                                  variable.id,
+                                  false
+                                )
+                              }
+                            >
+                              <Checkbox
+                                id="byVal"
+                                name="byVal"
+                                checked={!variable.passByReference}
+                              />
+                              {l10n("FIELD_PASS_BY_VALUE")}
+                            </MenuItem>
+                            <MenuItem
+                              onClick={() =>
+                                onEditVariablePassByReference(variable.id, true)
+                              }
+                            >
+                              <Checkbox
+                                id="byRef"
+                                name="byRef"
+                                checked={variable.passByReference}
+                              />
+                              {l10n("FIELD_PASS_BY_REFERENCE")}
+                            </MenuItem>
+                          </DropdownButton>
+                        </InputGroupAppend>
+                      </InputGroup>
+                    </FormRow>
+                  );
+                })}
+              </>
+            )}
+            {customEventActors.length > 0 && (
+              <>
+                <FormRow>
+                  <Label htmlFor="actor[0]">
+                    <strong>{l10n("FIELD_ACTORS")}:</strong>{" "}
+                    {`${customEventActors.length}/10`}
+                  </Label>
+                </FormRow>
+                {customEventActors.map((actor, i) => {
+                  if (!actor) {
+                    return null;
+                  }
+                  return (
+                    <FormRow key={actor.id}>
+                      <Input
+                        id={`actor[${i}]`}
+                        value={actor.name}
+                        placeholder="Actor Name"
+                        onChange={onEditActorName(actor.id)}
+                      />
+                    </FormRow>
+                  );
+                })}
+              </>
+            )}
           </div>
         </SidebarColumn>
       )}
@@ -274,12 +369,14 @@ const CustomEventEditor = ({ id, multiColumn }: CustomEventEditorProps) => {
             }
           />
         </StickyTabs>
-        <ScriptEditor
-          value={customEvent.script}
-          type="customEvent"
-          entityId={customEvent.id}
-          scriptKey={"script"}
-        />
+        <ScriptEditorContext.Provider value="script">
+          <ScriptEditor
+            value={customEvent.script}
+            type="customEvent"
+            entityId={customEvent.id}
+            scriptKey={"script"}
+          />
+        </ScriptEditorContext.Provider>
       </SidebarColumn>
     </Sidebar>
   );

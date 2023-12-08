@@ -1,9 +1,10 @@
-#pragma bank 1
+#pragma bank 255
 
 #include "actor.h"
 
-#include <gb/gb.h>
-#include <gb/metasprites.h>
+#include <gbdk/platform.h>
+#include <gbdk/metasprites.h>
+
 #include <string.h>
 
 #include "system.h"
@@ -25,14 +26,20 @@
 #define EMOTE_TILE                 124
 #define ANIM_PAUSED                255
 
-#define BANK_EMOTE_METASPRITE 1
+#define TILE16_OFFSET              64u
+#define SCREEN_TILE16_W            10u
+#define SCREEN_TILE16_H            9u
+#define ACTOR_BOUNDS_TILE16        6u
+#define ACTOR_BOUNDS_TILE16_HALF   3u
 
-#ifdef CGB 
+
+#ifdef CGB
 #define NO_OVERLAY_PRIORITY ((!_is_CGB) && ((overlay_priority & S_PRIORITY) == 0))
 #else
 #define NO_OVERLAY_PRIORITY (TRUE)
-#endif 
+#endif
 
+BANKREF(ACTOR)
 
 const BYTE emote_offsets[] = {2, 1, 0, -1, -2, -3, -4, -5, -6, -5, -4, -3, -2, -1, 0};
 
@@ -55,7 +62,7 @@ UBYTE emote_timer;
 
 UBYTE allocated_hardware_sprites;
 
-void actors_init() BANKED {
+void actors_init(void) BANKED {
     actors_active_tail = actors_active_head = actors_inactive_head = NULL;
     player_moving           = FALSE;
     player_iframes          = 0;
@@ -65,15 +72,24 @@ void actors_init() BANKED {
     memset(actors, 0, sizeof(actors));
 }
 
-void player_init() BANKED {
+void player_init(void) BANKED {
     actor_set_anim_idle(&PLAYER);
     PLAYER.hidden = FALSE;
     PLAYER.disabled = FALSE;
 }
 
-void actors_update() NONBANKED {
-    UBYTE _save = _current_bank;
+void actors_update(void) NONBANKED {
+    UBYTE _save = CURRENT_BANK;
     static actor_t *actor;
+    static uint8_t screen_tile16_x, screen_tile16_y;
+    static uint8_t actor_tile16_x, actor_tile16_y;
+
+    // Convert scroll pos to 16px tile coordinates
+    // allowing full range of scene to be represented in 7 bits
+    // offset by 64 to allow signed comparisions on
+    // unsigned int values (is faster)
+    screen_tile16_x = (draw_scroll_x >> 4) + TILE16_OFFSET;
+    screen_tile16_y = (draw_scroll_y >> 4) + TILE16_OFFSET;
 
     if (emote_actor) {
         SWITCH_ROM(emote_actor->sprite.bank);
@@ -81,44 +97,59 @@ void actors_update() NONBANKED {
         screen_x = (emote_actor->pos.x >> 4) - scroll_x + 8 + sprite->emote_origin.x;
         screen_y = (emote_actor->pos.y >> 4) - scroll_y + 8 + sprite->emote_origin.y;
 
-        SWITCH_ROM(BANK_EMOTE_METASPRITE); // bank of emote_offsets[] and emote_metasprite[]
+        SWITCH_ROM(BANK(ACTOR));  // bank of emote_offsets[] and emote_metasprite[]
         if (emote_timer < EMOTE_BOUNCE_FRAMES) {
             screen_y += emote_offsets[emote_timer];
-        }             
+        }
         allocated_hardware_sprites += move_metasprite(
             emote_metasprite,
             EMOTE_TILE,
             allocated_hardware_sprites,
             screen_x,
             screen_y
-        );        
+        );
     }
 
     actor = actors_active_tail;
     while (actor) {
-        if (actor->pinned) 
+        if (actor->pinned) {
             screen_x = (actor->pos.x >> 4) + 8, screen_y = (actor->pos.y >> 4) + 8;
-        else 
+        } else {
             screen_x = (actor->pos.x >> 4) - draw_scroll_x + 8, screen_y = (actor->pos.y >> 4) - draw_scroll_y + 8;
+            // Bottom right coordinate of actor in 16px tile coordinates
+            // Subtract bounding box estimate width/height
+            // and offset by 64 to allow signed comparisons with screen tiles
+            actor_tile16_x = (actor->pos.x >> 8) + ACTOR_BOUNDS_TILE16_HALF + TILE16_OFFSET;
+            actor_tile16_y = (actor->pos.y >> 8) + ACTOR_BOUNDS_TILE16_HALF + TILE16_OFFSET;
 
-        if (
-            // Offscreen horizontally
-            ((screen_x > 168) && (screen_x < 256 - actor->bounds.right)) ||
-            // or offscreen vertically
-            ((screen_y > 160) && (screen_y < 256 + actor->bounds.top))
-        ) {
-            // Deactivate if offscreen
-            actor_t * prev = actor->prev;
-            deactivate_actor(actor);
-            actor = prev;
-            continue;
-        } else if (NO_OVERLAY_PRIORITY && (!show_actors_on_overlay) && (WX_REG != MINWNDPOSX) && (WX_REG < (UINT8)screen_x + 8) && (WY_REG < (UINT8)(screen_y) - 8)) {
+            if (
+                // Actor right edge < screen left edge
+                (actor_tile16_x < screen_tile16_x) ||
+                // Actor left edge > screen right edge
+                (actor_tile16_x - ACTOR_BOUNDS_TILE16 - SCREEN_TILE16_W > screen_tile16_x) ||
+                // Actor bottom edge < screen top edge
+                (actor_tile16_y < screen_tile16_y) ||
+                // Actor top edge > screen bottom edge
+                (actor_tile16_y - ACTOR_BOUNDS_TILE16 - SCREEN_TILE16_H > screen_tile16_y)
+            ) {
+                if (actor->persistent) {
+                    actor = actor->prev;
+                    continue;
+                }
+                // Deactivate if offscreen
+                actor_t * prev = actor->prev;
+                if (!VM_ISLOCKED()) deactivate_actor(actor);
+                actor = prev;
+                continue;
+            }
+        }
+        if (NO_OVERLAY_PRIORITY && (!show_actors_on_overlay) && (WX_REG != MINWNDPOSX) && (WX_REG < (UINT8)screen_x + 8) && (WY_REG < (UINT8)(screen_y) - 8)) {
             // Hide if under window (don't deactivate)
             actor = actor->prev;
             continue;
         } else if (actor->hidden) {
             actor = actor->prev;
-            continue;            
+            continue;
         }
 
         // Check reached animation tick frame
@@ -127,7 +158,8 @@ void actors_update() NONBANKED {
             // Check reached end of animation
             if (actor->frame == actor->frame_end) {
                 if (actor->anim_noloop) {
-                    // TODO: execute onAnimationEnd here
+                    actor->frame--;
+                    // TODO: execute onAnimationEnd here + set to ANIM_PAUSED?
                 } else {
                     actor->frame = actor->frame_start;
                 }
@@ -136,7 +168,7 @@ void actors_update() NONBANKED {
 
         SWITCH_ROM(actor->sprite.bank);
         spritesheet_t *sprite = actor->sprite.ptr;
-        
+
         allocated_hardware_sprites += move_metasprite(
             *(sprite->metasprites + actor->frame),
             actor->base_tile,
@@ -172,6 +204,9 @@ void deactivate_actor(actor_t *actor) BANKED {
     if ((actor->hscript_update & SCRIPT_TERMINATED) == 0) {
         script_terminate(actor->hscript_update);
     }
+    if ((actor->hscript_hit & SCRIPT_TERMINATED) == 0) {
+        script_detach_hthread(actor->hscript_hit);
+    }
 }
 
 void activate_actor(actor_t *actor) BANKED {
@@ -196,6 +231,7 @@ void activate_actor(actor_t *actor) BANKED {
     if (actor->script_update.bank) {
         script_execute(actor->script_update.bank, actor->script_update.ptr, &(actor->hscript_update), 0);
     }
+    actor->hscript_hit = SCRIPT_TERMINATED;
 }
 
 void activate_actors_in_row(UBYTE x, UBYTE y) BANKED {
@@ -214,7 +250,7 @@ void activate_actors_in_row(UBYTE x, UBYTE y) BANKED {
             }
         }
         actor = actor->next;
-    }    
+    }
 }
 
 void activate_actors_in_col(UBYTE x, UBYTE y) BANKED {
@@ -325,7 +361,7 @@ actor_t *actor_overlapping_bb(bounding_box_t *bb, upoint16_t *offset, actor_t *i
     return NULL;
 }
 
-void actors_handle_player_collision() BANKED {
+void actors_handle_player_collision(void) BANKED {
     if (player_iframes == 0 && player_collision_actor != NULL) {
         if (player_collision_actor->collision_group) {
             // Execute scene player hit scripts based on actor's collision group
@@ -344,11 +380,11 @@ void actors_handle_player_collision() BANKED {
     } else if (player_iframes != 0) {
         player_iframes--;
     }
-    player_collision_actor = NULL; 
+    player_collision_actor = NULL;
 }
 
 UWORD check_collision_in_direction(UWORD start_x, UWORD start_y, bounding_box_t *bounds, UWORD end_pos, col_check_dir_e check_dir) BANKED {
-    UBYTE tx1, ty1, tx2, ty2, tt;
+    WORD tx1, ty1, tx2, ty2, tt;
     switch (check_dir) {
         case CHECK_DIR_LEFT:  // Check left
             tx1 = (((start_x >> 4) + bounds->left) >> 3);

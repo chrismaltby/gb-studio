@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Actor, ActorDirection } from "store/features/entities/entitiesTypes";
 import { RootState } from "store/configureStore";
@@ -17,6 +17,7 @@ import {
 import { actorName } from "store/features/entities/entitiesHelpers";
 import l10n from "lib/helpers/l10n";
 import SpriteSheetCanvas from "components/world/SpriteSheetCanvas";
+import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 
 interface ActorSelectProps {
   name: string;
@@ -43,10 +44,10 @@ export const ActorSelect = ({
   direction,
   frame,
 }: ActorSelectProps) => {
+  const context = useContext(ScriptEditorContext);
+  const editorType = useSelector((state: RootState) => state.editor.type);
   const [options, setOptions] = useState<ActorOption[]>([]);
   const [currentValue, setCurrentValue] = useState<ActorOption>();
-
-  const editorType = useSelector((state: RootState) => state.editor.type);
   const sceneId = useSelector((state: RootState) => state.editor.scene);
   const sceneType = useSelector(
     (state: RootState) => sceneSelectors.selectById(state, sceneId)?.type
@@ -76,7 +77,7 @@ export const ActorSelect = ({
     scenePlayerSpriteSheetId || (sceneType && defaultPlayerSprites[sceneType]);
 
   useEffect(() => {
-    if (editorType === "customEvent" && customEvent) {
+    if (context === "script" && customEvent) {
       setOptions([
         {
           label: "Player",
@@ -90,7 +91,7 @@ export const ActorSelect = ({
           };
         }),
       ]);
-    } else if (sceneActorIds) {
+    } else if (context === "entity" && sceneActorIds) {
       setOptions([
         ...(editorType === "actor" && selfActor && selfIndex !== undefined
           ? [
@@ -120,9 +121,18 @@ export const ActorSelect = ({
           };
         }),
       ]);
+    } else {
+      setOptions([
+        {
+          label: "Player",
+          value: "player",
+          spriteSheetId: playerSpriteSheetId,
+        },
+      ]);
     }
   }, [
     actorsLookup,
+    context,
     contextEntityId,
     customEvent,
     editorType,

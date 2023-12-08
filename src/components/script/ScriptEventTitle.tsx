@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import events from "lib/events";
+import React, { useContext, useEffect, useState } from "react";
+import events, { eventLookup } from "lib/events";
 import {
   isActorField,
   isPropertyField,
@@ -25,10 +25,14 @@ import {
   customEventName,
   sceneName,
 } from "store/features/entities/entitiesHelpers";
-import { Actor } from "store/features/entities/entitiesTypes";
+import {
+  Actor,
+  ScriptEventFieldSchema,
+} from "store/features/entities/entitiesTypes";
 import styled from "styled-components";
 import { fadeIn } from "ui/animations/animations";
 import { animLabelLookup } from "components/forms/AnimationSpeedSelect";
+import { ScriptEditorContext } from "./ScriptEditorContext";
 
 interface ScriptEventTitleProps {
   command: string;
@@ -56,7 +60,29 @@ const customEventActorsLookup = keyBy(
   "id"
 );
 
+const fieldsIndexByKey = (
+  fields: ScriptEventFieldSchema[]
+): Dictionary<ScriptEventFieldSchema> => {
+  const lookup: Dictionary<ScriptEventFieldSchema> = {};
+  const addField = (field: ScriptEventFieldSchema) => {
+    if (field.key) {
+      lookup[field.key] = field;
+    }
+    if (field.type === "group" && field.fields) {
+      for (const subField of field.fields) {
+        addField(subField);
+      }
+    }
+  };
+
+  for (const field of fields) {
+    addField(field);
+  }
+  return lookup;
+};
+
 const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
+  const context = useContext(ScriptEditorContext);
   const localisedCommand = l10n(command);
   const eventName =
     localisedCommand !== command
@@ -113,18 +139,18 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
 
   useEffect(() => {
     const variables = namedVariablesByContext(
-      editorType,
+      context,
       entityId,
       variablesLookup,
       customEvent
     );
     const namedLookup = keyBy(variables, "id");
     setNamedVariablesLookup(namedLookup);
-  }, [entityId, variablesLookup, editorType, customEvent]);
+  }, [entityId, variablesLookup, context, customEvent]);
 
   useEffect(() => {
     if (events[command]?.autoLabel) {
-      const fieldLookup = keyBy(events[command]?.fields || [], "key");
+      const fieldLookup = fieldsIndexByKey(events[command]?.fields || []);
 
       const extractValue = (arg: unknown): unknown => {
         if (
@@ -146,7 +172,7 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
         return fieldType;
       };
       const actorNameForId = (value: unknown) => {
-        if (editorType === "customEvent" && customEvent) {
+        if (context === "script" && customEvent) {
           return (
             customEvent.actors[value as string]?.name ||
             customEventActorsLookup[value as string]?.name ||
@@ -173,6 +199,12 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
         }
         if (value === "ypos") {
           return l10n("FIELD_Y_POSITION").replace(/ /g, "");
+        }
+        if (value === "pxpos") {
+          return l10n("FIELD_PX_POSITION").replace(/ /g, "");
+        }
+        if (value === "pypos") {
+          return l10n("FIELD_PY_POSITION").replace(/ /g, "");
         }
         if (value === "direction") {
           return l10n("FIELD_DIRECTION").replace(/ /g, "");
@@ -276,15 +308,13 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
               ]
             : fieldLookup[key]?.defaultValue;
         const fieldPlaceholder = fieldLookup[key]?.placeholder;
+        const value = argValue ?? fieldDefault ?? fieldPlaceholder ?? argValue;
 
-        const value =
-          (argValue || fieldDefault || fieldPlaceholder) ?? argValue;
-
-        if (isActorField(command, key, args)) {
+        if (isActorField(command, key, args, eventLookup)) {
           return actorNameForId(value);
-        } else if (isVariableField(command, key, args)) {
+        } else if (isVariableField(command, key, args, eventLookup)) {
           return variableNameForId(value);
-        } else if (isPropertyField(command, key, args)) {
+        } else if (isPropertyField(command, key, args, eventLookup)) {
           const propertyParts = String(value).split(":");
           return `${actorNameForId(propertyParts[0])}.${propertyNameForId(
             propertyParts[1]
@@ -333,6 +363,7 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
     emotes,
     customEventsLookup,
     customEvents,
+    context,
   ]);
 
   return <Wrapper>{String(labelName || autoName || eventName)}</Wrapper>;

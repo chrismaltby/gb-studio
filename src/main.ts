@@ -299,7 +299,7 @@ const createPlay = async (url: string, sgb: boolean) => {
   });
 };
 
-const createMusic = async (open?: boolean) => {
+const createMusic = async (sfx?: string) => {
   if (!musicWindow) {
     // Create the browser window.
     musicWindow = new BrowserWindow({
@@ -316,19 +316,10 @@ const createMusic = async (open?: boolean) => {
     });
   }
 
-  // Only show the window in development environment
-  // otherwise keep it as a background process
-  if (
-    open
-    // Only show the window in development environment
-    // otherwise keep it as a background process
-    // || isDevMode || process.env.NODE_ENV === "development"
-  ) {
-    musicWindow.show();
-  }
-
   musicWindow.setMenu(null);
-  musicWindow.loadURL(`${MUSIC_WINDOW_WEBPACK_ENTRY}`);
+  musicWindow.loadURL(
+    `${MUSIC_WINDOW_WEBPACK_ENTRY}#${encodeURIComponent(sfx ?? "")}`
+  );
 
   musicWindow.on("closed", () => {
     musicWindow = null;
@@ -499,8 +490,8 @@ ipcMain.on(
   }
 );
 
-ipcMain.on("open-music", async () => {
-  createMusic();
+ipcMain.on("open-music", async (_event, sfx) => {
+  createMusic(sfx);
 });
 
 ipcMain.on("window-zoom", (_, zoomType: number) => {
@@ -600,6 +591,7 @@ menu.on("checkUpdates", () => {
 menu.on("openMusic", () => {
   if (musicWindow) {
     musicWindow.show();
+    musicWindow.webContents.openDevTools();
   } else {
     dialog.showErrorBox(
       "No music process running",

@@ -6,7 +6,6 @@ import trackerDocumentActions from "store/features/trackerDocument/trackerDocume
 import { NoiseInstrument } from "store/features/trackerDocument/trackerDocumentTypes";
 import { CheckboxField } from "ui/form/CheckboxField";
 import { FormDivider, FormRow } from "ui/form/FormLayout";
-import { SliderField } from "ui/form/SliderField";
 import { InstrumentLengthForm } from "./InstrumentLengthForm";
 import { InstrumentVolumeEditor } from "./InstrumentVolumeEditor";
 import { NoiseMacroEditorForm } from "./NoiseMacroEditorForm";
@@ -58,8 +57,8 @@ export const InstrumentNoiseEditor = ({
       <FormDivider />
 
       <InstrumentVolumeEditor
-        initial_volume={instrument.initial_volume}
-        volume_sweep_change={instrument.volume_sweep_change}
+        initialVolume={instrument.initial_volume}
+        volumeSweepChange={instrument.volume_sweep_change}
         length={instrument.length}
         onChange={onChangeField}
       />
@@ -68,7 +67,7 @@ export const InstrumentNoiseEditor = ({
 
       <FormRow>
         <CheckboxField
-          name="length"
+          name="bit_count"
           label={l10n("FIELD_BIT_COUNT")}
           checked={instrument.bit_count === 7}
           onChange={(e) => {
@@ -79,10 +78,14 @@ export const InstrumentNoiseEditor = ({
         />
       </FormRow>
 
-      <NoiseMacroEditorForm
-        macros={instrument.noise_macro}
-        onChange={onChangeField("noise_macro")}
-      />
+      {instrument.noise_macro ? (
+        <NoiseMacroEditorForm
+          macros={instrument.noise_macro}
+          onChange={onChangeField("noise_macro")}
+        />
+      ) : (
+        ""
+      )}
 
       <FormDivider />
 

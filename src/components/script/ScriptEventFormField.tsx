@@ -171,6 +171,7 @@ const ScriptEventFormField = memo(
                 value={value[valueIndex]}
                 args={scriptEvent?.args || {}}
                 onChange={onChange}
+                onChangeArg={setArgValue}
               />
               <div className="ScriptEventForm__BtnRow">
                 {valueIndex !== 0 && (
@@ -201,6 +202,7 @@ const ScriptEventFormField = memo(
           value={value}
           args={scriptEvent?.args || {}}
           onChange={onChange}
+          onChangeArg={setArgValue}
         />
       );
 
@@ -208,7 +210,7 @@ const ScriptEventFormField = memo(
       return (
         <ScriptEventField
           halfWidth={field.width === "50%"}
-          style={{ flexBasis: field.flexBasis }}
+          style={{ flexBasis: field.flexBasis, flexGrow: field.flexGrow }}
         >
           <ToggleableFormField
             name={genKey(scriptEventId, field.key || "")}
@@ -226,15 +228,19 @@ const ScriptEventFormField = memo(
       <ScriptEventField
         halfWidth={field.width === "50%"}
         inline={field.inline}
-        style={{ flexBasis: field.flexBasis }}
+        style={{ flexBasis: field.flexBasis, flexGrow: field.flexGrow }}
       >
         <FormField
           name={genKey(scriptEventId, field.key || "")}
           label={
-            label && field.type !== "checkbox" && field.type !== "group"
+            label &&
+            field.type !== "checkbox" &&
+            field.type !== "group" &&
+            !field.hideLabel
               ? label
               : ""
           }
+          title={field.description}
           alignCheckbox={field.alignCheckbox}
         >
           {inputField}

@@ -1,7 +1,7 @@
 #ifndef _VM_H_INCLUDE
 #define _VM_H_INCLUDE
 
-#include <gb/gb.h>
+#include <gbdk/platform.h>
 #include <gbdk/far_ptr.h>
 
 #ifdef VM_DEBUG_OUTPUT
@@ -10,8 +10,19 @@
 
 #include "compat.h"
 
+BANKREF_EXTERN(VM_MAIN)
+
+#define FN_ARG0 -1
+#define FN_ARG1 -2
+#define FN_ARG2 -3
+#define FN_ARG3 -4
+#define FN_ARG4 -5
+#define FN_ARG5 -6
+#define FN_ARG6 -7
+#define FN_ARG7 -8
+
 #if defined(NINTENDO)
-#define STEP_FUNC_ATTR OLDCALL PRESERVES_REGS(b, c) 
+#define STEP_FUNC_ATTR
 typedef UWORD DUMMY0_t;
 typedef UWORD DUMMY1_t;
 #elif defined(SEGA)
@@ -22,8 +33,9 @@ typedef UWORD DUMMY1_t;
 
 typedef void * SCRIPT_CMD_FN;
 
-typedef struct _SCRIPT_CMD {
-    SCRIPT_CMD_FN fn;  
+typedef struct SCRIPT_CMD {
+    SCRIPT_CMD_FN fn;
+    UBYTE fn_bank;
     UBYTE args_len;
 } SCRIPT_CMD;
 
@@ -35,7 +47,7 @@ typedef UBYTE (*SCRIPT_UPDATE_FN)(void * THIS, UBYTE start, UWORD * stack_frame)
 typedef struct SCRIPT_CTX {
     const UBYTE * PC;
     UBYTE bank;
-    // linked list of contexts for cooperative multitasking
+    // linked list of contexts for the multitasking
     struct SCRIPT_CTX * next;
     // update function
     void * update_fn;
@@ -80,14 +92,14 @@ typedef struct SCRIPT_CTX {
 // shared context memory
 extern UWORD script_memory[VM_HEAP_SIZE + (VM_MAX_CONTEXTS * VM_CONTEXT_STACK_SIZE)];  // maximum stack depth is 16 words
 
-// contexts for executing scripts 
+// contexts for executing scripts
 // ScriptRunnerInit(), ExecuteScript(), ScriptRunnerUpdate() manipulate these contexts
 extern SCRIPT_CTX CTXS[VM_MAX_CONTEXTS];
 extern SCRIPT_CTX * first_ctx, * free_ctxs;
 // context pointers for script_runner
 extern SCRIPT_CTX * old_executing_ctx, * executing_ctx;
 
-// lock state 
+// lock state
 extern UBYTE vm_lock_state;
 // loaded state
 extern UBYTE vm_loaded_state;
@@ -149,11 +161,11 @@ void vm_memcpy(SCRIPT_CTX * THIS, INT16 idxA, INT16 idxB, INT16 count) OLDCALL B
 UBYTE VM_STEP(SCRIPT_CTX * CTX) NAKED NONBANKED STEP_FUNC_ATTR;
 
 // return TRUE if VM is in locked state
-inline UBYTE VM_ISLOCKED() {
+inline UBYTE VM_ISLOCKED(void) {
     return (vm_lock_state != 0);
-} 
+}
 
-// enable check for pointer in script_execute(), disabled by default 
+// enable check for pointer in script_execute(), disabled by default
 // #define SAFE_SCRIPT_EXECUTE
 
 // initialize script runner contexts
@@ -161,7 +173,9 @@ void script_runner_init(UBYTE reset) BANKED;
 // execute a script in the new allocated context
 SCRIPT_CTX * script_execute(UBYTE bank, UBYTE * pc, UWORD * handle, UBYTE nargs, ...) BANKED;
 // terminate script by ID; returns non zero if no such thread is running
-UBYTE script_terminate(UBYTE ID) BANKED; 
+UBYTE script_terminate(UBYTE ID) BANKED;
+// detach script from the monitoring variable
+UBYTE script_detach_hthread(UBYTE ID) BANKED;
 
 #define RUNNER_DONE 0
 #define RUNNER_IDLE 1
@@ -171,6 +185,6 @@ UBYTE script_terminate(UBYTE ID) BANKED;
 #define EXCEPTION_CODE_NONE 0
 
 // process all contexts
-UBYTE script_runner_update() NONBANKED;
+UBYTE script_runner_update(void) NONBANKED;
 
 #endif

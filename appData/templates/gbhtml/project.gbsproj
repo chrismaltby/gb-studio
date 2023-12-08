@@ -1,8 +1,8 @@
 {
     "name": "___PROJECT_NAME___",
     "author": "___AUTHOR___",
-    "_version": "3.0.0",
-    "_release": "1",
+    "_version": "3.1.0",
+    "_release": "0",
     "scenes": [
         {
             "id": "94c18861-b352-4f49-a64d-52f2e3415077",
@@ -38,7 +38,8 @@
                     "hit2Script": [],
                     "hit3Script": [],
                     "updateScript": [],
-                    "collisionGroup": ""
+                    "collisionGroup": "",
+                    "symbol": "actor_0"
                 },
                 {
                     "id": "e63a0fb5-2d9e-4a85-9ba0-e711e6de6cdc",
@@ -65,7 +66,8 @@
                     "hit3Script": [],
                     "updateScript": [],
                     "moveSpeed": 1,
-                    "collisionGroup": ""
+                    "collisionGroup": "",
+                    "symbol": "actor_1"
                 },
                 {
                     "id": "d12d5092-2716-441d-bab0-0e15fe715f5e",
@@ -85,7 +87,8 @@
                     "hit3Script": [],
                     "updateScript": [],
                     "moveSpeed": 1,
-                    "collisionGroup": ""
+                    "collisionGroup": "",
+                    "symbol": "actor_2"
                 },
                 {
                     "id": "c73c195d-5cc8-4417-bdb0-b0c55c4b6188",
@@ -279,7 +282,8 @@
                     "hit3Script": [],
                     "moveSpeed": 1,
                     "animSpeed": 15,
-                    "collisionGroup": ""
+                    "collisionGroup": "",
+                    "symbol": "actor_3"
                 },
                 {
                     "id": "076a0612-024a-426a-85fc-3e1054b9f74e",
@@ -313,7 +317,8 @@
                     "hit3Script": [],
                     "updateScript": [],
                     "moveSpeed": 1,
-                    "collisionGroup": ""
+                    "collisionGroup": "",
+                    "symbol": "actor_4"
                 },
                 {
                     "id": "a85c4ba5-9bc0-4daa-94bc-4ef68a690659",
@@ -377,7 +382,8 @@
                     "updateScript": [],
                     "moveSpeed": 1,
                     "animSpeed": 15,
-                    "collisionGroup": ""
+                    "collisionGroup": "",
+                    "symbol": "actor_5"
                 },
                 {
                     "id": "5cf6eb6c-be62-4efc-9cbb-14a8efac21a8",
@@ -421,7 +427,8 @@
                     "updateScript": [],
                     "moveSpeed": 1,
                     "animSpeed": 15,
-                    "collisionGroup": ""
+                    "collisionGroup": "",
+                    "symbol": "actor_6"
                 }
             ],
             "triggers": [
@@ -445,7 +452,8 @@
                             }
                         }
                     ],
-                    "leaveScript": []
+                    "leaveScript": [],
+                    "symbol": "trigger_0"
                 },
                 {
                     "x": 24,
@@ -467,7 +475,8 @@
                         }
                     ],
                     "id": "4916f378-602b-4df7-a453-baeaaad59c3c",
-                    "leaveScript": []
+                    "leaveScript": [],
+                    "symbol": "trigger_1"
                 },
                 {
                     "x": 10,
@@ -489,7 +498,8 @@
                         }
                     ],
                     "id": "fc139bcd-a16b-4151-a9de-7b7e88e437d6",
-                    "leaveScript": []
+                    "leaveScript": [],
+                    "symbol": "trigger_2"
                 }
             ],
             "collisions": [
@@ -1530,7 +1540,8 @@
             "playerHit1Script": [],
             "playerHit2Script": [],
             "playerHit3Script": [],
-            "type": "TOPDOWN"
+            "type": "TOPDOWN",
+            "symbol": "scene_outside"
         },
         {
             "id": "5e64882f-8ce6-423e-b582-70fdb2142ff6",
@@ -1557,7 +1568,8 @@
                     "hit2Script": [],
                     "hit3Script": [],
                     "updateScript": [],
-                    "collisionGroup": ""
+                    "collisionGroup": "",
+                    "symbol": "actor_7"
                 },
                 {
                     "id": "025c7320-2eb1-4209-bf74-c1eef183ecc8",
@@ -1577,7 +1589,8 @@
                     "hit2Script": [],
                     "hit3Script": [],
                     "updateScript": [],
-                    "collisionGroup": ""
+                    "collisionGroup": "",
+                    "symbol": "actor_8"
                 },
                 {
                     "id": "15d7cf30-df3a-427b-883a-996b605edb40",
@@ -1625,7 +1638,8 @@
                     "hit3Script": [],
                     "updateScript": [],
                     "moveSpeed": 1,
-                    "collisionGroup": ""
+                    "collisionGroup": "",
+                    "symbol": "actor_9"
                 },
                 {
                     "id": "e807b22f-7477-471b-b3b3-53b699df82ab",
@@ -1643,7 +1657,8 @@
                     "hit2Script": [],
                     "hit3Script": [],
                     "updateScript": [],
-                    "collisionGroup": ""
+                    "collisionGroup": "",
+                    "symbol": "actor_10"
                 },
                 {
                     "id": "ee80f72c-ec7c-46d1-9653-23b16fcce2d9",
@@ -1663,7 +1678,8 @@
                     "hit2Script": [],
                     "hit3Script": [],
                     "updateScript": [],
-                    "collisionGroup": ""
+                    "collisionGroup": "",
+                    "symbol": "actor_11"
                 },
                 {
                     "id": "b5594786-5675-48cf-b382-18b6341b855c",
@@ -1731,7 +1747,8 @@
                     "hit2Script": [],
                     "hit3Script": [],
                     "updateScript": [],
-                    "collisionGroup": ""
+                    "collisionGroup": "",
+                    "symbol": "actor_12"
                 }
             ],
             "triggers": [
@@ -1755,7 +1772,8 @@
                         }
                     ],
                     "id": "ec1bdb23-06f3-4053-9295-cc79ba27985b",
-                    "leaveScript": []
+                    "leaveScript": [],
+                    "symbol": "trigger_3"
                 }
             ],
             "collisions": [
@@ -2132,7 +2150,8 @@
             "playerHit1Script": [],
             "playerHit2Script": [],
             "playerHit3Script": [],
-            "type": "TOPDOWN"
+            "type": "TOPDOWN",
+            "symbol": "scene_cave"
         },
         {
             "id": "1b7f9ffd-2bbb-470b-9189-c2ac435d2a55",
@@ -2209,7 +2228,8 @@
                     "updateScript": [],
                     "moveSpeed": 1,
                     "animSpeed": 15,
-                    "collisionGroup": ""
+                    "collisionGroup": "",
+                    "symbol": "actor_13"
                 },
                 {
                     "id": "9603b702-aa07-4ad7-8906-16112f308854",
@@ -2270,7 +2290,8 @@
                     "hit3Script": [],
                     "updateScript": [],
                     "moveSpeed": 1,
-                    "collisionGroup": ""
+                    "collisionGroup": "",
+                    "symbol": "actor_radio"
                 },
                 {
                     "id": "26bced35-c28a-4394-907e-d657789afdb5",
@@ -2297,7 +2318,8 @@
                     "hit3Script": [],
                     "updateScript": [],
                     "moveSpeed": 1,
-                    "collisionGroup": ""
+                    "collisionGroup": "",
+                    "symbol": "actor_14"
                 },
                 {
                     "id": "4e43d51b-f316-480c-818d-1ad4016f27ef",
@@ -2324,7 +2346,8 @@
                     "hit3Script": [],
                     "updateScript": [],
                     "moveSpeed": 1,
-                    "collisionGroup": ""
+                    "collisionGroup": "",
+                    "symbol": "actor_15"
                 },
                 {
                     "id": "dc9e5886-f39c-4480-a543-c0436b79bb67",
@@ -2358,7 +2381,8 @@
                     "hit3Script": [],
                     "updateScript": [],
                     "moveSpeed": 1,
-                    "collisionGroup": ""
+                    "collisionGroup": "",
+                    "symbol": "actor_16"
                 }
             ],
             "triggers": [
@@ -2382,7 +2406,8 @@
                         }
                     ],
                     "id": "d8200245-5aa1-4e8b-aa30-1a13bd2a9e1a",
-                    "leaveScript": []
+                    "leaveScript": [],
+                    "symbol": "trigger_4"
                 }
             ],
             "collisions": [
@@ -2759,7 +2784,8 @@
             "playerHit1Script": [],
             "playerHit2Script": [],
             "playerHit3Script": [],
-            "type": "TOPDOWN"
+            "type": "TOPDOWN",
+            "symbol": "scene_house"
         },
         {
             "id": "8a52b387-2a88-4741-8d4e-ca56acea4672",
@@ -2840,7 +2866,8 @@
                     "hit3Script": [],
                     "updateScript": [],
                     "moveSpeed": 1,
-                    "collisionGroup": ""
+                    "collisionGroup": "",
+                    "symbol": "actor_17"
                 }
             ],
             "triggers": [],
@@ -3882,7 +3909,8 @@
             "playerHit1Script": [],
             "playerHit2Script": [],
             "playerHit3Script": [],
-            "type": "TOPDOWN"
+            "type": "TOPDOWN",
+            "symbol": "scene_stars"
         },
         {
             "id": "382961a1-e615-4b92-92a7-f1a791b50b7a",
@@ -4259,7 +4287,7 @@
             "script": [
                 {
                     "id": "8343c54c-07a1-4d30-892c-91db234b8d9b",
-                    "command": "EVENT_ACTOR_HIDE",
+                    "command": "EVENT_ACTOR_DEACTIVATE",
                     "args": {
                         "actorId": "player"
                     }
@@ -4304,7 +4332,8 @@
             "playerHit1Script": [],
             "playerHit2Script": [],
             "playerHit3Script": [],
-            "type": "TOPDOWN"
+            "type": "TOPDOWN",
+            "symbol": "scene_logo"
         },
         {
             "id": "4912bee2-387a-472f-ae4f-6679b6149517",
@@ -4320,7 +4349,7 @@
             "script": [
                 {
                     "id": "ff79b819-b435-4ef8-af20-07302038959f",
-                    "command": "EVENT_ACTOR_HIDE",
+                    "command": "EVENT_ACTOR_DEACTIVATE",
                     "args": {
                         "actorId": "player"
                     }
@@ -4417,7 +4446,8 @@
             "playerHit1Script": [],
             "playerHit2Script": [],
             "playerHit3Script": [],
-            "type": "TOPDOWN"
+            "type": "TOPDOWN",
+            "symbol": "scene_title_screen"
         },
         {
             "id": "3509d273-bf7e-4946-89ce-a489df5a449d",
@@ -4475,7 +4505,8 @@
                     "hit3Script": [],
                     "updateScript": [],
                     "moveSpeed": 1,
-                    "collisionGroup": ""
+                    "collisionGroup": "",
+                    "symbol": "actor_18"
                 },
                 {
                     "id": "27de6d44-f7c0-48df-a952-2c87471bbfd4",
@@ -4556,7 +4587,8 @@
                     "hit2Script": [],
                     "hit3Script": [],
                     "updateScript": [],
-                    "collisionGroup": ""
+                    "collisionGroup": "",
+                    "symbol": "actor_ice_block"
                 },
                 {
                     "id": "7c2b0a86-4cc1-46f4-9b4a-6ea987300848",
@@ -4584,7 +4616,8 @@
                     "hit2Script": [],
                     "hit3Script": [],
                     "updateScript": [],
-                    "collisionGroup": ""
+                    "collisionGroup": "",
+                    "symbol": "actor_rock_3"
                 },
                 {
                     "id": "f7bb6ed5-39b2-4f30-a66b-c2a62619d29c",
@@ -4612,7 +4645,8 @@
                     "hit2Script": [],
                     "hit3Script": [],
                     "updateScript": [],
-                    "collisionGroup": ""
+                    "collisionGroup": "",
+                    "symbol": "actor_rock_2"
                 },
                 {
                     "id": "417dfd42-2e13-4850-92e8-c52efe866116",
@@ -4640,7 +4674,8 @@
                     "hit2Script": [],
                     "hit3Script": [],
                     "updateScript": [],
-                    "collisionGroup": ""
+                    "collisionGroup": "",
+                    "symbol": "actor_rock_1"
                 }
             ],
             "triggers": [
@@ -4664,7 +4699,8 @@
                             }
                         }
                     ],
-                    "leaveScript": []
+                    "leaveScript": [],
+                    "symbol": "trigger_5"
                 }
             ],
             "collisions": [
@@ -5744,7 +5780,8 @@
             "playerHit1Script": [],
             "playerHit2Script": [],
             "playerHit3Script": [],
-            "type": "TOPDOWN"
+            "type": "TOPDOWN",
+            "symbol": "scene_underground"
         },
         {
             "id": "fd223a5f-7148-4705-98a7-b0ef56cb5c74",
@@ -5772,7 +5809,8 @@
                     "hit2Script": [],
                     "hit3Script": [],
                     "updateScript": [],
-                    "collisionGroup": ""
+                    "collisionGroup": "",
+                    "symbol": "actor_quest1"
                 },
                 {
                     "id": "044598b7-a634-427d-9c88-e998fabe8d9a",
@@ -5791,7 +5829,8 @@
                     "hit2Script": [],
                     "hit3Script": [],
                     "updateScript": [],
-                    "collisionGroup": ""
+                    "collisionGroup": "",
+                    "symbol": "actor_quest2"
                 },
                 {
                     "id": "6d80f0f6-047d-4494-811d-5f526e58959e",
@@ -5810,7 +5849,8 @@
                     "hit2Script": [],
                     "hit3Script": [],
                     "updateScript": [],
-                    "collisionGroup": ""
+                    "collisionGroup": "",
+                    "symbol": "actor_quest3"
                 },
                 {
                     "id": "51558c54-c7e2-46d1-9015-f7b83a6a4ff4",
@@ -5829,7 +5869,8 @@
                     "hit2Script": [],
                     "hit3Script": [],
                     "updateScript": [],
-                    "collisionGroup": ""
+                    "collisionGroup": "",
+                    "symbol": "actor_quest4"
                 },
                 {
                     "id": "62ecd9f0-005a-402f-8ad0-8ec8c3b514f3",
@@ -5848,7 +5889,8 @@
                     "hit2Script": [],
                     "hit3Script": [],
                     "updateScript": [],
-                    "collisionGroup": ""
+                    "collisionGroup": "",
+                    "symbol": "actor_quest5"
                 },
                 {
                     "id": "4c9409a4-0872-486e-a1a1-5b74caaa6960",
@@ -5867,7 +5909,8 @@
                     "hit2Script": [],
                     "hit3Script": [],
                     "updateScript": [],
-                    "collisionGroup": ""
+                    "collisionGroup": "",
+                    "symbol": "actor_quest6"
                 }
             ],
             "triggers": [],
@@ -5875,7 +5918,7 @@
             "script": [
                 {
                     "id": "4238f3cb-81b4-4f62-882f-f9f03f16eb3e",
-                    "command": "EVENT_ACTOR_HIDE",
+                    "command": "EVENT_ACTOR_DEACTIVATE",
                     "args": {
                         "actorId": "player"
                     }
@@ -6069,13 +6112,15 @@
             "playerHit1Script": [],
             "playerHit2Script": [],
             "playerHit3Script": [],
-            "type": "TOPDOWN"
+            "type": "TOPDOWN",
+            "symbol": "scene_menu"
         }
     ],
     "backgrounds": [
         {
             "id": "6fad1892-bcb2-4924-bd1c-1e4d03dfeabb",
             "name": "cave",
+            "symbol": "bg_cave",
             "width": 20,
             "height": 18,
             "imageWidth": 160,
@@ -6086,6 +6131,7 @@
         {
             "id": "b340b9a2-2865-4e05-91c0-148846a693c8",
             "name": "house",
+            "symbol": "bg_house",
             "width": 20,
             "height": 18,
             "imageWidth": 160,
@@ -6096,6 +6142,7 @@
         {
             "id": "f8b1c7ad-7bb2-44b2-8189-175ae8698f11",
             "name": "logo",
+            "symbol": "bg_logo",
             "width": 20,
             "height": 18,
             "imageWidth": 160,
@@ -6106,6 +6153,7 @@
         {
             "id": "b49ea566-b022-478c-979d-ec3ee255fdc5",
             "name": "menu",
+            "symbol": "bg_menu",
             "width": 20,
             "height": 18,
             "imageWidth": 160,
@@ -6116,6 +6164,7 @@
         {
             "id": "1b7fa267-d716-40f0-b0d0-f4f966610e07",
             "name": "outside",
+            "symbol": "bg_outside",
             "width": 32,
             "height": 32,
             "imageWidth": 256,
@@ -6126,6 +6175,7 @@
         {
             "id": "40fda058-df90-4205-a239-fe77bce4fa79",
             "name": "stars",
+            "symbol": "bg_stars",
             "width": 32,
             "height": 32,
             "imageWidth": 256,
@@ -6136,6 +6186,7 @@
         {
             "id": "f047ff0e-58ad-49fc-bd2b-ec84fc1f7ab3",
             "name": "titlescreen",
+            "symbol": "bg_titlescreen",
             "width": 20,
             "height": 18,
             "imageWidth": 160,
@@ -6146,6 +6197,7 @@
         {
             "id": "f3102db4-2273-411d-b33f-4d6f65959c60",
             "name": "underground",
+            "symbol": "bg_underground",
             "width": 32,
             "height": 32,
             "imageWidth": 256,
@@ -6158,6 +6210,7 @@
         {
             "id": "1e27bb8e-c805-435a-8b87-05b4f50da4f0",
             "name": "cat",
+            "symbol": "sprite_cat",
             "numFrames": 1,
             "type": "static",
             "filename": "cat.png",
@@ -6285,6 +6338,7 @@
         {
             "id": "f0c3033d-e82a-407d-9fe2-3d5da4f59c09",
             "name": "checkbox",
+            "symbol": "sprite_checkbox",
             "numFrames": 3,
             "type": "actor",
             "filename": "checkbox.png",
@@ -6466,6 +6520,7 @@
         {
             "id": "17219846-cda9-4e84-bdfa-c3ff105d42cc",
             "name": "dog",
+            "symbol": "sprite_dog",
             "numFrames": 1,
             "type": "static",
             "filename": "dog.png",
@@ -6593,6 +6648,7 @@
         {
             "id": "ede130e6-013a-42d1-a786-1aed3fd3cf32",
             "name": "duck",
+            "symbol": "sprite_duck",
             "numFrames": 2,
             "type": "animated",
             "filename": "duck.png",
@@ -6751,6 +6807,7 @@
         {
             "id": "f2610e3c-8ff9-42fa-a9bb-d1591031fa17",
             "name": "fire",
+            "symbol": "sprite_fire",
             "numFrames": 4,
             "type": "animated",
             "filename": "fire.png",
@@ -6971,6 +7028,7 @@
         {
             "id": "09ad70c6-3ce5-4b97-9e96-466221418a45",
             "name": "ice",
+            "symbol": "sprite_ice",
             "numFrames": 1,
             "type": "static",
             "filename": "ice.png",
@@ -7098,6 +7156,7 @@
         {
             "id": "dfa75239-299d-41fe-a6cd-9e9438da1938",
             "name": "npc001",
+            "symbol": "sprite_npc001",
             "numFrames": 3,
             "type": "actor",
             "filename": "npc001.png",
@@ -7279,6 +7338,7 @@
         {
             "id": "40dcd163-9f72-4861-8131-b01eb9baa000",
             "name": "npc002",
+            "symbol": "sprite_npc002",
             "numFrames": 3,
             "type": "actor",
             "filename": "npc002.png",
@@ -7460,6 +7520,7 @@
         {
             "id": "52ad34df-f245-4b2a-b94c-a82af1002871",
             "name": "npc003",
+            "symbol": "sprite_npc003",
             "numFrames": 6,
             "type": "actor_animated",
             "filename": "npc003.png",
@@ -7815,6 +7876,7 @@
         {
             "id": "ac1e8ef4-ffe6-47cd-b16f-9af5da77ec26",
             "name": "player",
+            "symbol": "sprite_player",
             "numFrames": 6,
             "type": "actor_animated",
             "filename": "player.png",
@@ -8170,6 +8232,7 @@
         {
             "id": "a0442b6a-634f-44da-9962-77938e3ed839",
             "name": "radio",
+            "symbol": "sprite_radio",
             "numFrames": 1,
             "type": "static",
             "filename": "radio.png",
@@ -8297,6 +8360,7 @@
         {
             "id": "3939e8d2-3987-4a22-953e-f1d82134eccf",
             "name": "rock",
+            "symbol": "sprite_rock",
             "numFrames": 1,
             "type": "static",
             "filename": "rock.png",
@@ -8424,6 +8488,7 @@
         {
             "id": "e20ce140-53a5-4b1b-9964-138ba0c86925",
             "name": "sage",
+            "symbol": "sprite_sage",
             "numFrames": 1,
             "type": "static",
             "filename": "sage.png",
@@ -8551,6 +8616,7 @@
         {
             "id": "000a6dde-cb60-436e-b357-30a529daa139",
             "name": "savepoint",
+            "symbol": "sprite_savepoint",
             "numFrames": 2,
             "type": "animated",
             "filename": "savepoint.png",
@@ -8709,6 +8775,7 @@
         {
             "id": "30b8266a-0533-4f90-bd33-e97dc1d498ea",
             "name": "signpost",
+            "symbol": "sprite_signpost",
             "numFrames": 1,
             "type": "static",
             "filename": "signpost.png",
@@ -8836,6 +8903,7 @@
         {
             "id": "e9e61bf7-88fd-491d-ae01-4b7f76909108",
             "name": "torch",
+            "symbol": "sprite_torch",
             "numFrames": 1,
             "type": "static",
             "filename": "torch.png",
@@ -9150,13 +9218,15 @@
                         ]
                     }
                 }
-            ]
+            ],
+            "symbol": "script_init_menu"
         }
     ],
     "music": [
         {
             "id": "e2eb6dec-2800-4df9-a6c9-214f42e6b070",
             "name": "Rulz_GonaSpace",
+            "symbol": "song_rulz_gonaspace",
             "filename": "Rulz_GonaSpace.uge",
             "settings": {},
             "type": "uge"
@@ -9164,6 +9234,7 @@
         {
             "id": "f50428ab-a084-4591-9bba-2ba10fe7b1c6",
             "name": "template",
+            "symbol": "song_template",
             "filename": "template.mod",
             "settings": {
                 "disableSpeedConversion": false
@@ -9173,15 +9244,18 @@
         {
             "id": "14d7162f-cc7f-4a48-8b56-7932b5ab486e",
             "name": "template",
+            "symbol": "song_template_0",
             "filename": "template.uge",
             "settings": {},
             "type": "uge"
         }
     ],
+    "sounds": [],
     "fonts": [
         {
             "id": "26fa15df-3318-44ad-8bfd-feff8ba7991d",
             "name": "GBS Mono",
+            "symbol": "font_gbs_mono",
             "width": 128,
             "height": 112,
             "filename": "gbs-mono.png"
@@ -9189,6 +9263,7 @@
         {
             "id": "877fede5-f95b-4f58-9340-b36e19c33ae2",
             "name": "GBS Variable Width",
+            "symbol": "font_gbs_variable_width",
             "width": 128,
             "height": 112,
             "filename": "gbs-var.png"
@@ -9199,6 +9274,7 @@
         {
             "id": "603fd18d-674c-4360-9f57-5fb4b935b442",
             "name": "anger",
+            "symbol": "emote_anger",
             "width": 16,
             "height": 16,
             "filename": "anger.png"
@@ -9206,6 +9282,7 @@
         {
             "id": "a0fb64c2-d665-4f58-8739-f4dc78519733",
             "name": "love",
+            "symbol": "emote_love",
             "width": 16,
             "height": 16,
             "filename": "love.png"
@@ -9213,6 +9290,7 @@
         {
             "id": "148fba14-ff4c-45df-9e8d-28fe05e15cc6",
             "name": "music",
+            "symbol": "emote_music",
             "width": 16,
             "height": 16,
             "filename": "music.png"
@@ -9220,6 +9298,7 @@
         {
             "id": "a12f6e9c-2bb1-4164-8d5b-4dbdda4bdceb",
             "name": "pause",
+            "symbol": "emote_pause",
             "width": 16,
             "height": 16,
             "filename": "pause.png"
@@ -9227,6 +9306,7 @@
         {
             "id": "2f2806af-f8a6-44fd-9d03-09a44d0059f7",
             "name": "question",
+            "symbol": "emote_question",
             "width": 16,
             "height": 16,
             "filename": "question.png"
@@ -9234,6 +9314,7 @@
         {
             "id": "da932101-c304-4f21-8dc9-0f5dc6178727",
             "name": "shock",
+            "symbol": "emote_shock",
             "width": 16,
             "height": 16,
             "filename": "shock.png"
@@ -9241,6 +9322,7 @@
         {
             "id": "01da2ac5-b5d8-4366-b82a-c7edd487856d",
             "name": "sleep",
+            "symbol": "emote_sleep",
             "width": 16,
             "height": 16,
             "filename": "sleep.png"
@@ -9248,6 +9330,7 @@
         {
             "id": "cd2b9271-f689-4fe2-8fda-3ccc443b4c21",
             "name": "sweat",
+            "symbol": "emote_sweat",
             "width": 16,
             "height": 16,
             "filename": "sweat.png"

@@ -2,8 +2,6 @@ import React from "react";
 import styled, { css } from "styled-components";
 import { PatternCell } from "lib/helpers/uge/song/PatternCell";
 
-import { instrumentColors } from "./InstrumentSelect";
-
 interface RollChannelProps {
   channelId: number;
   active: boolean;
@@ -23,9 +21,9 @@ interface WrapperProps {
 const Wrapper = styled.div<WrapperProps>`
   position: absolute;
   top: 0;
-  margin: 0 40px 40px 10px;
 
   ${(props) => css`
+    margin: 0 ${3 * props.size}px ${2 * props.size}px 10px;
     width: ${props.cols * props.size}px;
     height: ${props.rows * props.size}px;
     opacity: ${props.active ? 1 : 0.3};
@@ -70,7 +68,7 @@ export const RollChannelFwd = ({
                 size={cellSize}
                 className={
                   cell.instrument !== null
-                    ? `label--${instrumentColors[cell.instrument]}`
+                    ? `label--instrument-${cell.instrument}`
                     : ""
                 }
                 style={{
@@ -84,7 +82,7 @@ export const RollChannelFwd = ({
                   opacity: isSelected && isDragging ? 0.6 : 1,
                 }}
               >
-                {cell.effectcode?.toString(16).toUpperCase()}
+                {/* {cell.effectcode?.toString(16).toUpperCase()} */}
               </Note>
               {cell.effectcode === 0 ? (
                 <>
@@ -94,7 +92,7 @@ export const RollChannelFwd = ({
                     size={cellSize}
                     className={
                       cell.instrument !== null
-                        ? `label--${instrumentColors[cell.instrument]}`
+                        ? `label--instrument-${cell.instrument}`
                         : ""
                     }
                     style={{
@@ -115,7 +113,7 @@ export const RollChannelFwd = ({
                     size={cellSize}
                     className={
                       cell.instrument !== null
-                        ? `label--${instrumentColors[cell.instrument]}`
+                        ? `label--instrument-${cell.instrument}`
                         : ""
                     }
                     style={{

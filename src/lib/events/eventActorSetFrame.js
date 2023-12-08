@@ -14,12 +14,14 @@ const fields = [
   {
     key: "actorId",
     label: l10n("ACTOR"),
+    description: l10n("FIELD_ACTOR_UPDATE_DESC"),
     type: "actor",
     defaultValue: "$self$",
   },
   {
     key: "frame",
     label: l10n("FIELD_ANIMATION_FRAME"),
+    description: l10n("FIELD_ANIMATION_FRAME_DESC"),
     type: "union",
     types: ["number", "variable", "property"],
     defaultType: "number",
@@ -53,6 +55,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_ACTOR_SET_FRAME_DESC"),
   autoLabel,
   groups,
   fields,

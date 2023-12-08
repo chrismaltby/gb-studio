@@ -143,7 +143,7 @@ const SpriteAnimationTimeline = ({
         onSetFrame(frames[0]);
       } else if (e.key === "End") {
         onSetFrame(frames[frames.length - 1]);
-      } else if (e.key === "Backspace") {
+      } else if (e.key === "Backspace" || e.key === "Delete") {
         onDeleteFrame();
       }
     },

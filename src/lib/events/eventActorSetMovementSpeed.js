@@ -13,11 +13,15 @@ const autoLabel = (fetchArg) => {
 const fields = [
   {
     key: "actorId",
+    label: l10n("ACTOR"),
+    description: l10n("FIELD_ACTOR_UPDATE_DESC"),
     type: "actor",
     defaultValue: "$self$",
   },
   {
     key: "speed",
+    label: l10n("FIELD_SPEED"),
+    description: l10n("FIELD_SPEED_DESC"),
     type: "moveSpeed",
     defaultValue: 1,
   },
@@ -31,6 +35,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_ACTOR_SET_MOVEMENT_SPEED_DESC"),
   autoLabel,
   groups,
   fields,

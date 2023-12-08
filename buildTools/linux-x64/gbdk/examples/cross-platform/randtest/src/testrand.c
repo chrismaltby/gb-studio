@@ -13,14 +13,14 @@
 
 void main(void)
 {
+    puts("press A...");
+    waitpad(J_A);
+    initarand(sys_time);
     while(TRUE) {
-        puts("press A...");
-        waitpad(J_A);
-        initarand(sys_time);
+        waitpadup();
         for (uint8_t i = 0; i != 16; i++) 
             printf("rand=%hx arand=%hx\n", (uint8_t)rand(), (uint8_t)arand());
+        puts("press A...");
+        waitpad(J_A);
     }
 }
-
-    
-    

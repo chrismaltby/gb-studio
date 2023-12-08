@@ -65,7 +65,7 @@ export const Select = styled(WindowedSelect).attrs((props) => ({
     background: ${(props) => props.theme.colors.input.background};
     color: ${(props) => props.theme.colors.input.text};
     border: 1px solid ${(props) => props.theme.colors.input.border};
-    font-size: 11px;
+    font-size: ${(props) => props.theme.typography.fontSize};
     border-radius: ${(props) => props.theme.borderRadius}px;
   }
 
