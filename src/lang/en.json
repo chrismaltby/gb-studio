@@ -494,7 +494,7 @@
   "FIELD_SEND_TO_BACK": "Send To Back",
   "FIELD_FLIP_HORIZONTAL": "Flip Horizontal",
   "FIELD_FLIP_VERTICAL": "Flip Vertical",
-  "FIELD_OBJ_PALETTE": "Obj Palette",
+  "FIELD_MONOCHROME_PALETTE": "Monochrome Palette",
   "FIELD_COLOR_PALETTE": "Color Palette",
   "FIELD_EDIT_IMAGE": "Edit Image",
   "FIELD_UNIQUE": "Unique",
