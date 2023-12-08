@@ -1,7 +1,7 @@
 #ifndef ACTOR_H
 #define ACTOR_H
 
-#include <gb/gb.h>
+#include <gbdk/platform.h>
 #include "bankdata.h"
 #include "gbs_types.h"
 
@@ -23,6 +23,8 @@
 
 #define ANIM_SET_DEFAULT      0
 
+BANKREF_EXTERN(ACTOR)
+
 typedef enum {
   CHECK_DIR_LEFT = 1,
   CHECK_DIR_RIGHT,
@@ -41,8 +43,8 @@ extern UBYTE emote_timer;
 
 extern UBYTE allocated_hardware_sprites;
 
-void actors_init() BANKED;
-void actors_update() NONBANKED;
+void actors_init(void) BANKED;
+void actors_update(void) NONBANKED;
 void deactivate_actor(actor_t *actor) BANKED;
 void activate_actor(actor_t *actor) BANKED;
 void actor_set_frames(actor_t *actor, UBYTE frame_start, UBYTE frame_end) BANKED;
@@ -69,10 +71,10 @@ inline void actor_stop_anim(actor_t *actor) {
 inline void player_register_collision_with(actor_t *actor) {
     player_collision_actor = actor;
 }
-void actors_handle_player_collision() BANKED;
+void actors_handle_player_collision(void) BANKED;
 UWORD check_collision_in_direction(UWORD start_x, UWORD start_y, bounding_box_t *bounds, UWORD end_pos, col_check_dir_e check_dir) BANKED;
 void activate_actors_in_row(UBYTE x, UBYTE y) BANKED;
 void activate_actors_in_col(UBYTE x, UBYTE y) BANKED;
-void player_init() BANKED;
+void player_init(void) BANKED;
 
 #endif

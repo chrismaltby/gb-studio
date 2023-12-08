@@ -1,7 +1,7 @@
 #ifndef SCROLL_H
 #define SCROLL_H
 
-#include <gb/gb.h>
+#include <gbdk/platform.h>
 
 #include "compat.h"
 #include "parallax.h"
@@ -31,56 +31,32 @@ extern UINT8 pending_h_i;
 /**
  * Resets scroll settings on engine start
  */
-void scroll_reset() BANKED;
+void scroll_reset(void) BANKED;
 
 /**
  * Initialise scroll variables, call on scene load
  */
-void scroll_init() BANKED;
+void scroll_init(void) BANKED;
 
 /**
  * Update scroll position and load in any newly visible background tiles and actors
  */
-void scroll_update() BANKED;
+void scroll_update(void) BANKED;
 
 /**
  * Resets scroll and update the whole screen 
  */
-void scroll_repaint() BANKED;
-
-/**
- * Set vram tile at memory location to a value
- * 
- * @param r address of tile to write to
- * @param t new tile value
- */
-void SetTile(UBYTE * r, UINT8 t) OLDCALL PRESERVES_REGS(b, c);
+void scroll_repaint(void) BANKED;
 
 /**
  * Get base address of window map
  */
-UINT8 * GetWinAddr() OLDCALL PRESERVES_REGS(b, c, h, l);
+UINT8 * GetWinAddr(void) OLDCALL PRESERVES_REGS(b, c, h, l);
 
 /**
  * Get base address of background map
  */
-UINT8 * GetBkgAddr() OLDCALL PRESERVES_REGS(b, c, h, l);
-
-/**
- * Set single tile t on window layer at x,y
- * @param x X-coordinate
- * @param y Y-coordinate
- * @param t tile index
- */ 
-UBYTE * set_win_tile_xy(UBYTE x, UBYTE y, UBYTE t) OLDCALL PRESERVES_REGS(b, c);
-
-/**
- * Set single tile t on background layer at x,y
- * @param x X-coordinate
- * @param y Y-coordinate
- * @param t tile index
- */ 
-UBYTE * set_bkg_tile_xy(UBYTE x, UBYTE y, UBYTE t) OLDCALL PRESERVES_REGS(b, c);
+UINT8 * GetBkgAddr(void) OLDCALL PRESERVES_REGS(b, c, h, l);
 
 /**
  * Scrolls rectangle area of VRAM filemap by base address 1 row up
@@ -95,7 +71,7 @@ void scroll_rect(UBYTE * base_addr, UBYTE w, UBYTE h, UBYTE fill) OLDCALL BANKED
  * copies scroll position variables into double buffered copies
  * which are used for actual scrolling next frame
  */
-inline void scroll_shadow_update() {
+inline void scroll_shadow_update(void) {
     parallax_rows[0].scx = parallax_rows[0].shadow_scx;
     parallax_rows[1].scx = parallax_rows[1].shadow_scx;
     parallax_rows[2].scx = parallax_rows[2].shadow_scx;

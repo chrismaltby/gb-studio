@@ -47,6 +47,7 @@ class World extends Component {
       passive: false,
     });
     window.addEventListener("resize", this.onWindowResize);
+    window.addEventListener("blur", this.onWindowBlur);
 
     const viewContents = this.scrollContentsRef.current;
     // Set zoom ratio on component mount incase it wasn't at 100%
@@ -127,6 +128,7 @@ class World extends Component {
     window.removeEventListener("click", this.onClick);
     window.removeEventListener("mouseup", this.onMouseUp);
     window.removeEventListener("mousewheel", this.onMouseWheel);
+    window.removeEventListener("blur", this.onWindowBlur);
   }
 
   onCopy = (e) => {
@@ -231,6 +233,10 @@ class World extends Component {
         this.blockWheelZoom = null;
       }, 60);
     }
+  };
+
+  onWindowBlur = (e) => {
+    this.setState({ dragMode: false });
   };
 
   startWorldDrag = (_e) => {

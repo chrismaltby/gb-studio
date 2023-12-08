@@ -445,6 +445,12 @@ export const PriorityHighIcon = () => (
   </svg>
 );
 
+export const PriorityTileIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <path d="M12 0l-12 12 12 12 12-12-12-12zm-1 6h2v8h-2v-8zm1 12.25c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25z" />
+  </svg>
+);
+
 export const EraserIcon = () => (
   <svg
     width="24"

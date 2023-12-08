@@ -20,6 +20,7 @@ const fields = [
       {
         key: "x",
         label: l10n("FIELD_X"),
+        description: l10n("FIELD_X_DESC"),
         type: "union",
         types: ["number", "variable", "property"],
         defaultType: "number",
@@ -38,6 +39,7 @@ const fields = [
       {
         key: "y",
         label: l10n("FIELD_Y"),
+        description: l10n("FIELD_Y_DESC"),
         type: "union",
         types: ["number", "variable", "property"],
         defaultType: "number",
@@ -58,6 +60,7 @@ const fields = [
   {
     key: "speed",
     label: l10n("FIELD_SPEED"),
+    description: l10n("FIELD_SPEED_PLUS_INSTANT_DESC"),
     type: "cameraSpeed",
     defaultValue: 0,
   },
@@ -87,6 +90,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_CAMERA_MOVE_TO_DESC"),
   autoLabel,
   groups,
   fields,

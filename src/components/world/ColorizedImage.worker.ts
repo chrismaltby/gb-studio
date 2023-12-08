@@ -23,6 +23,7 @@ interface CacheRecord {
 }
 
 const cache: Record<string, CacheRecord> = {};
+const TILE_COLOR_PALETTE = 0x7;
 
 workerCtx.onmessage = async (evt) => {
   const id = evt.data.id;
@@ -79,7 +80,8 @@ workerCtx.onmessage = async (evt) => {
   for (let t = 0; t < tilesLength; t++) {
     const tX = t % tileWidth;
     const tY = Math.floor(t / tileWidth);
-    const palette = palettesRGB[tiles[t]] || palettesRGB[0];
+    const palette =
+      palettesRGB[tiles[t] & TILE_COLOR_PALETTE] || palettesRGB[0];
     const p1X = tX * 8;
     const p2X = p1X + 8;
     const p1Y = tY * 8;

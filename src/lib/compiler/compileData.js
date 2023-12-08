@@ -72,6 +72,7 @@ import { chunk } from "../helpers/array2";
 import { toProjectileHash } from "./scriptBuilder";
 import {
   calculateAutoFadeEventIdDenormalised,
+  isEmptyScript,
   walkDenormalizedSceneEvents,
   walkDenormalizedScenesEvents,
 } from "lib/helpers/eventHelpers";
@@ -843,7 +844,7 @@ export const precompileScenes = (
 
     let playerSprite = usedSprites.find((s) => s.id === playerSpriteSheetId);
 
-    if (!playerSprite) {
+    if (!playerSprite && scene.type !== "LOGO") {
       warnings(
         l10n("WARNING_NO_PLAYER_SET_FOR_SCENE_TYPE", { type: scene.type })
       );
@@ -958,7 +959,7 @@ export const precompileScenes = (
 
     return {
       ...scene,
-      playerSpriteSheetId: playerSprite.id,
+      playerSpriteSheetId: playerSprite ? playerSprite.id : undefined,
       background,
       actors,
       sprites: sceneSpriteIds.reduce((memo, spriteId) => {
@@ -1244,6 +1245,7 @@ const compile = async (
   const additionalScripts = {};
   const additionalOutput = {};
   const compiledCustomEventScriptCache = {};
+  const compiledAssetsCache = {};
 
   const eventPtrs = precompiled.sceneData.map((scene, sceneIndex) => {
     const compileScript = (
@@ -1285,7 +1287,7 @@ const compile = async (
       scriptName = `${entity.symbol}_${scriptTypeCode}`;
 
       if (
-        script.length === 0 &&
+        isEmptyScript(script) &&
         // Generate scene init for empty script if autoFade is not disabled
         (scriptTypeCode !== "init" || scene.autoFadeSpeed === null)
       ) {
@@ -1327,6 +1329,7 @@ const compile = async (
         additionalOutput,
         symbols,
         compiledCustomEventScriptCache,
+        compiledAssetsCache,
       });
 
       output[`${scriptName}.s`] = compiledScript;
@@ -1756,7 +1759,7 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
     `extern const UBYTE start_player_move_speed;\n` +
     `extern const UBYTE start_player_anim_tick;\n\n` +
     `extern const far_ptr_t ui_fonts[];\n\n` +
-    `void bootstrap_init() BANKED;\n\n` +
+    `void bootstrap_init(void) BANKED;\n\n` +
     `#endif\n`;
 
   output[`states_defines.h`] =

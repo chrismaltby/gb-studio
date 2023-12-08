@@ -1,3 +1,4 @@
+// must be in the same bank with ui_a.s
 #pragma bank 1
 
 #include <string.h>
@@ -41,7 +42,7 @@ UBYTE text_in_speed;
 UBYTE text_out_speed;
 UBYTE text_draw_speed;
 UBYTE text_ff_joypad;
-UBYTE text_ff; 
+UBYTE text_ff;
 UBYTE text_bkg_fill;
 
 unsigned char ui_text_data[TEXT_MAX_LENGTH];
@@ -72,14 +73,13 @@ UBYTE text_scroll_width, text_scroll_height;
 UBYTE text_scroll_fill;
 
 UBYTE text_sound_mask;
-UBYTE text_sound_bank; 
+UBYTE text_sound_bank;
 const UBYTE * text_sound_data;
 
-#ifdef CGB
 UBYTE overlay_priority;
-#endif
+UBYTE text_palette;
 
-void ui_init() BANKED {
+void ui_init(void) BANKED {
     vwf_direction               = UI_PRINT_LEFTTORIGHT;
     vwf_current_font_idx        = 0;
     vwf_current_font_bank       = ui_fonts[0].bank;
@@ -110,7 +110,7 @@ void ui_init() BANKED {
     ui_dest_ptr = ui_dest_base  = (text_render_base_addr = GetWinAddr()) + 32 + 1;
 
     text_scroll_addr            = GetWinAddr();
-    text_scroll_width           = 20; 
+    text_scroll_width           = 20;
     text_scroll_height          = 8;
     text_scroll_fill            = ui_while_tile;
 
@@ -120,10 +120,11 @@ void ui_init() BANKED {
 
 #ifdef CGB
     overlay_priority            = S_PRIORITY;
+    text_palette                = UI_DEFAULT_PALETTE;
 #endif
 }
 
-void ui_load_tiles() BANKED {
+void ui_load_tiles(void) BANKED {
     // load frame
     SetBankedBkgData(ui_frame_tl_tiles, 9, frame_image, BANK(frame_image));
     // load cursor
@@ -142,7 +143,7 @@ void ui_draw_frame(UBYTE x, UBYTE y, UBYTE width, UBYTE height) BANKED {
 #ifdef CGB
     if (_is_CGB) {
         VBK_REG = 1;
-        fill_win_rect(x, y, width, height, overlay_priority | (UI_PALETTE & 0x07u));        
+        fill_win_rect(x, y, width, height, overlay_priority | (text_palette & 0x07u));
         VBK_REG = 0;
     }
 #endif
@@ -177,7 +178,7 @@ inline void ui_load_wram_tile(const UBYTE * tiledata) {
 #endif
 }
 
-inline void ui_next_tile() {
+inline void ui_next_tile(void) {
     ui_prev_tile_bank = ui_current_tile_bank;
     ui_prev_tile = ui_current_tile++;
     if (ui_current_tile) return;
@@ -194,8 +195,15 @@ inline void ui_next_tile() {
 #endif
 }
 
-void ui_print_reset() {
+void ui_print_reset(void) {
     if (vwf_current_offset) ui_next_tile();
+    vwf_current_offset = 0;
+    memset(vwf_tile_data, text_bkg_fill, sizeof(vwf_tile_data));
+}
+
+void ui_set_start_tile(UBYTE start_tile, UBYTE start_tile_bank) BANKED {
+    ui_prev_tile = ui_current_tile = start_tile;
+    ui_prev_tile_bank = ui_current_tile_bank = start_tile_bank;
     vwf_current_offset = 0;
     memset(vwf_tile_data, text_bkg_fill, sizeof(vwf_tile_data));
 }
@@ -203,7 +211,7 @@ void ui_print_reset() {
 void ui_print_shift_char(void * dest, const void * src, UBYTE bank) OLDCALL;
 UWORD ui_print_make_mask_lr(UBYTE width, UBYTE ofs) OLDCALL;
 UWORD ui_print_make_mask_rl(UBYTE width, UBYTE ofs) OLDCALL;
-void ui_swap_tiles();
+void ui_swap_tiles(void);
 
 UBYTE ui_print_render(const unsigned char ch) {
     UBYTE letter = (vwf_current_font_desc.attr & FONT_RECODE) ? ReadBankedUBYTE(vwf_current_font_desc.recode_table + (ch & vwf_current_font_desc.mask), vwf_current_font_bank) : ch;
@@ -223,7 +231,7 @@ UBYTE ui_print_render(const unsigned char ch) {
                 ui_print_shift_char(vwf_tile_data + 16u, bitmap, vwf_current_font_bank);
             }
         } else {
-            UBYTE dx = (8u - vwf_current_offset);      
+            UBYTE dx = (8u - vwf_current_offset);
             vwf_current_rotate =  (width < dx) ? (dx - width) : (width - dx) | 0x80u;
             UWORD masks = ui_print_make_mask_rl(width, vwf_current_offset);
             vwf_current_mask = (UBYTE)masks;
@@ -244,7 +252,7 @@ UBYTE ui_print_render(const unsigned char ch) {
             ui_next_tile();
             if (vwf_current_offset) ui_load_wram_tile(vwf_tile_data);
             return TRUE;
-        } 
+        }
         return FALSE;
     } else {
         if (vwf_current_offset) ui_next_tile();
@@ -258,20 +266,20 @@ UBYTE ui_print_render(const unsigned char ch) {
 inline void ui_set_tile(UBYTE * addr, UBYTE tile, UBYTE bank) {
 #ifdef CGB
     if (_is_CGB) {
-        VBK_REG = 1;        
-        SetTile(addr, overlay_priority | ((bank) ? ((UI_PALETTE & 0x07u) | 0x08u) : (UI_PALETTE & 0x07u)));
+        VBK_REG = 1;
+        set_vram_byte(addr, overlay_priority | ((bank) ? ((text_palette & 0x07u) | 0x08u) : (text_palette & 0x07u)));
         VBK_REG = 0;
     }
 #else
     bank;
 #endif
-    SetTile(addr, tile);
+    set_vram_byte(addr, tile);
 }
 
-UBYTE ui_draw_text_buffer_char() BANKED {
+UBYTE ui_draw_text_buffer_char(void) BANKED {
     static UBYTE current_font_idx, current_text_bkg_fill, current_vwf_direction, current_text_ff_joypad, current_text_draw_speed;
 
-    if ((text_ff_joypad) && (INPUT_A_OR_B_PRESSED)) text_ff = TRUE;
+//    if ((text_ff_joypad) && (INPUT_A_OR_B_PRESSED)) text_ff = TRUE;
 
     if ((!text_ff) && (text_wait)) {
         text_wait--;
@@ -305,7 +313,7 @@ UBYTE ui_draw_text_buffer_char() BANKED {
     while (TRUE) {
         switch (*ui_text_ptr) {
             case 0x00: {
-                ui_text_ptr = 0; 
+                ui_text_ptr = 0;
                 text_drawn = TRUE;
                 if (vwf_current_font_idx != current_font_idx) {
                     const far_ptr_t * font = ui_fonts + vwf_current_font_idx;
@@ -334,7 +342,7 @@ UBYTE ui_draw_text_buffer_char() BANKED {
                 break;
             }
             case 0x03:
-                // gotoxy 
+                // gotoxy
                 ui_dest_ptr = ui_dest_base = text_render_base_addr + (*++ui_text_ptr - 1u) + (*++ui_text_ptr - 1u) * 32u;
                 if (vwf_current_offset) ui_print_reset();
                 break;
@@ -352,22 +360,25 @@ UBYTE ui_draw_text_buffer_char() BANKED {
                 // wait for input cancels fast forward
                 if (text_ff) {
                     text_ff = FALSE;
-                    text_ff_joypad = FALSE;
                     INPUT_RESET;
                 }
+                text_ff_joypad = FALSE;
+                // point to the button mask
+                ui_text_ptr++;
                 // if high speed then skip waiting
-                if (text_draw_speed == 0) {
-                    ui_text_ptr++;
-                    break;
-                } 
-                // wait for key press (parameter is a mask)
-                if ((joy & ~last_joy) & *++ui_text_ptr) {
-                    text_ff_joypad = current_text_ff_joypad;
-                    INPUT_RESET;
-                    break;
+                if (text_draw_speed) {
+                    // wait for key press (parameter is a mask)
+                    if (INPUT_PRESSED(*ui_text_ptr)) {
+                        // mask matches
+                        text_ff_joypad = current_text_ff_joypad;
+                        INPUT_RESET;
+                    } else {
+                        // go back to 0x06 control code
+                        ui_text_ptr--;
+                        return FALSE;
+                    }
                 }
-                ui_text_ptr--;
-                return FALSE;
+                break;
             case 0x07:
                 // set text color
                 text_bkg_fill = (*++ui_text_ptr & 1u) ? TEXT_BKG_FILL_W : TEXT_BKG_FILL_B;
@@ -378,14 +389,22 @@ UBYTE ui_draw_text_buffer_char() BANKED {
                 break;
             case 0x09:
                 break;
-            case '\r':
+            case '\n':  // 0x0a
+                // carriage return
+                ui_dest_ptr = ui_dest_base += 32u;
+                if (vwf_current_offset) ui_print_reset();
+                break;
+            case 0x0b:
+                text_palette = (*++ui_text_ptr & 0x07);
+                break;
+            case '\r':  // 0x0d
                 // line feed
                 if ((ui_dest_ptr + 32u) > (UBYTE *)((((UWORD)text_scroll_addr + ((UWORD)text_scroll_height << 5)) & 0xFFE0) - 1)) {
                     scroll_rect(text_scroll_addr, text_scroll_width, text_scroll_height, text_scroll_fill);
 #ifdef CGB
                     if (_is_CGB) {
                         VBK_REG = 1;
-                        scroll_rect(text_scroll_addr, text_scroll_width, text_scroll_height, overlay_priority | (UI_PALETTE & 0x07u));
+                        scroll_rect(text_scroll_addr, text_scroll_width, text_scroll_height, overlay_priority | (text_palette & 0x07u));
                         VBK_REG = 0;
                     }
 #endif
@@ -395,14 +414,9 @@ UBYTE ui_draw_text_buffer_char() BANKED {
                 }
                 if (vwf_current_offset) ui_print_reset();
                 break;
-            case '\n':
-                // carriage return
-                ui_dest_ptr = ui_dest_base += 32u;
-                if (vwf_current_offset) ui_print_reset();
-                break;
             case 0x05:
                 // escape symbol
-                ui_text_ptr++; 
+                ui_text_ptr++;
                 // fall down to default
             default:
                 if (ui_print_render(*ui_text_ptr)) {
@@ -417,8 +431,8 @@ UBYTE ui_draw_text_buffer_char() BANKED {
     }
 }
 
-void ui_update() NONBANKED {
-    UBYTE is_moving = FALSE;
+void ui_update(void) NONBANKED {
+    UBYTE flag = FALSE;
 
     // y should always move first
     if (win_pos_y != win_dest_pos_y) {
@@ -427,7 +441,7 @@ void ui_update() NONBANKED {
             // move window up/down
             if (win_pos_y < win_dest_pos_y) win_pos_y += interval; else win_pos_y -= interval;
         }
-        is_moving = TRUE;
+        flag = TRUE;
     }
     if (win_pos_x != win_dest_pos_x) {
         if ((game_time & ui_time_masks[win_speed]) == 0) {
@@ -435,22 +449,25 @@ void ui_update() NONBANKED {
             // move window left/right
             if (win_pos_x < win_dest_pos_x) win_pos_x += interval; else win_pos_x -= interval;
         }
-        is_moving = TRUE;
+        flag = TRUE;
     }
 
     // don't draw text while moving
-    if (is_moving) return;
+    if (flag) return;
     // all drawn - nothing to do
     if (text_drawn) return;
     // too fast - wait
-    if ((!INPUT_A_OR_B_PRESSED) && (game_time & current_text_speed)) return;
+    if ((text_ff_joypad) && (INPUT_A_OR_B_PRESSED)) {
+        text_ff = TRUE;
+    } else {
+        if (game_time & current_text_speed) return;
+    }
     // render next char
-    UBYTE letter_drawn;
     do {
-        letter_drawn = ui_draw_text_buffer_char();
+        flag = ui_draw_text_buffer_char();
     } while (((text_ff) || (text_draw_speed == 0)) && (!text_drawn));
     // play sound
-    if ((letter_drawn) && (text_sound_bank != SFX_STOP_BANK)) music_play_sfx(text_sound_bank, text_sound_data, text_sound_mask, MUSIC_SFX_PRIORITY_NORMAL);
+    if ((flag) && (text_sound_bank != SFX_STOP_BANK)) music_play_sfx(text_sound_bank, text_sound_data, text_sound_mask, MUSIC_SFX_PRIORITY_NORMAL);
 }
 
 UBYTE ui_run_menu(menu_item_t * start_item, UBYTE bank, UBYTE options, UBYTE count, UBYTE start_index) BANKED {
@@ -459,11 +476,11 @@ UBYTE ui_run_menu(menu_item_t * start_item, UBYTE bank, UBYTE options, UBYTE cou
     // copy first menu item
     MemcpyBanked(&current_menu_item, start_item + (current_index - 1u), sizeof(menu_item_t), bank);
 
-    // draw menu cursor    
+    // draw menu cursor
 #ifdef CGB
     if (_is_CGB) {
         VBK_REG = 1;
-        set_win_tile_xy(current_menu_item.X, current_menu_item.Y, overlay_priority | (UI_PALETTE & 0x07u));        
+        set_win_tile_xy(current_menu_item.X, current_menu_item.Y, overlay_priority | (text_palette & 0x07u));
         VBK_REG = 0;
     }
 #endif
@@ -473,7 +490,7 @@ UBYTE ui_run_menu(menu_item_t * start_item, UBYTE bank, UBYTE options, UBYTE cou
     while (TRUE) {
         input_update();
         ui_update();
-        
+
         toggle_shadow_OAM();
         camera_update();
         scroll_update();
@@ -508,7 +525,7 @@ UBYTE ui_run_menu(menu_item_t * start_item, UBYTE bank, UBYTE options, UBYTE cou
 #ifdef CGB
         if (_is_CGB) {
             VBK_REG = 1;
-            set_win_tile_xy(current_menu_item.X, current_menu_item.Y, overlay_priority | (UI_PALETTE & 0x07u));        
+            set_win_tile_xy(current_menu_item.X, current_menu_item.Y, overlay_priority | (text_palette & 0x07u));
             VBK_REG = 0;
         }
 #endif
@@ -519,7 +536,7 @@ UBYTE ui_run_menu(menu_item_t * start_item, UBYTE bank, UBYTE options, UBYTE cou
 #ifdef CGB
         if (_is_CGB) {
             VBK_REG = 1;
-            set_win_tile_xy(current_menu_item.X, current_menu_item.Y, overlay_priority | (UI_PALETTE & 0x07u));        
+            set_win_tile_xy(current_menu_item.X, current_menu_item.Y, overlay_priority | (text_palette & 0x07u));
             VBK_REG = 0;
         }
 #endif
@@ -533,7 +550,7 @@ void ui_run_modal(UBYTE wait_flags) BANKED {
     UBYTE fail;
     do {
         fail = FALSE;
-    
+
         if (wait_flags & UI_WAIT_WINDOW)
             if ((win_pos_x != win_dest_pos_x) || (win_pos_y != win_dest_pos_y)) fail = TRUE;
         if (wait_flags & UI_WAIT_TEXT)
@@ -546,7 +563,7 @@ void ui_run_modal(UBYTE wait_flags) BANKED {
             if (!INPUT_ANY_PRESSED) fail = TRUE;
 
         if (!fail) return;
-        
+
         ui_update();
 
         toggle_shadow_OAM();
@@ -559,5 +576,5 @@ void ui_run_modal(UBYTE wait_flags) BANKED {
         game_time++;
         wait_vbl_done();
         input_update();
-    } while (fail);    
+    } while (fail);
 }

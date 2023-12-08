@@ -149,13 +149,19 @@ const AddButton = ({
     }
   }, []);
 
+  const handleBlur = useCallback(() => {
+    setPasteMode(false);
+  }, []);
+
   useEffect(() => {
     window.addEventListener("keydown", handleKeys);
     window.addEventListener("keyup", handleKeysUp);
+    window.addEventListener("blur", handleBlur);
 
     return () => {
       window.removeEventListener("keydown", handleKeys);
       window.removeEventListener("keyup", handleKeysUp);
+      window.removeEventListener("blur", handleBlur);
     };
   });
 

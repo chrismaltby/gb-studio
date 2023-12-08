@@ -134,6 +134,7 @@ interface ScriptBuilderOptions {
     scriptRef: string;
     argsLen: number;
   }>;
+  compiledAssetsCache: Dictionary<string>;
   compileEvents: (self: ScriptBuilder, events: ScriptEvent[]) => void;
 }
 
@@ -528,6 +529,7 @@ class ScriptBuilder {
       maxDepth: options.maxDepth ?? 5,
       compiledCustomEventScriptCache:
         options.compiledCustomEventScriptCache ?? {},
+      compiledAssetsCache: options.compiledAssetsCache ?? {},
       compileEvents: options.compileEvents || ((_self, _e) => {}),
       settings: options.settings || initialSettingsState,
     };
@@ -919,7 +921,9 @@ class ScriptBuilder {
     this._addCmd(
       "VM_GET_INT8",
       addr,
-      cVariable.startsWith("^") ? cVariable : `_${cVariable}`
+      cVariable.startsWith("^") || cVariable.startsWith("_")
+        ? cVariable
+        : `_${cVariable}`
     );
   };
 
@@ -927,7 +931,9 @@ class ScriptBuilder {
     this._addCmd(
       "VM_GET_INT16",
       addr,
-      cVariable.startsWith("^") ? cVariable : `_${cVariable}`
+      cVariable.startsWith("^") || cVariable.startsWith("_")
+        ? cVariable
+        : `_${cVariable}`
     );
   };
 
@@ -1666,9 +1672,12 @@ class ScriptBuilder {
     );
   };
 
-  _soundPlayBasic = (channel: number, frames: number, data: number[]) => {
-    const symbol = this._getAvailableSymbol("sound_legacy_0");
-
+  _soundPlayBasic = (
+    channel: number,
+    frames: number,
+    data: number[]
+  ): string => {
+    const { compiledAssetsCache } = this.options;
     let output = "";
 
     const channelMasks = [
@@ -1699,6 +1708,13 @@ class ScriptBuilder {
       }
       output += "\n";
     }
+
+    const cachedSymbol = compiledAssetsCache[output];
+    if (cachedSymbol) {
+      return cachedSymbol;
+    }
+
+    const symbol = this._getAvailableSymbol("sound_legacy_0");
 
     const muteMask = 1 << (channel - 1);
 
@@ -1734,6 +1750,8 @@ extern void __mute_mask_${symbol};
 #endif
 `
     );
+
+    compiledAssetsCache[output] = symbol;
 
     return symbol;
   };
@@ -3100,10 +3118,9 @@ extern void __mute_mask_${symbol};
   // --------------------------------------------------------------------------
   // Timer
 
-  timerScriptSet = (frames = 600, script: ScriptEvent[], symbol?: string) => {
+  timerScriptSet = (frames = 600, script: ScriptEvent[], symbol?: string, timer = 1) => {
     this._addComment(`Timer Start`);
     const scriptRef = this._compileSubScript("timer", script, symbol);
-    const ctx = 1;
     const TIMER_CYCLES = 16;
     let durationTicks = (frames / TIMER_CYCLES + 0.5) | 0;
     if (durationTicks <= 0) {
@@ -3112,21 +3129,19 @@ extern void __mute_mask_${symbol};
     if (durationTicks >= 256) {
       durationTicks = 255;
     }
-    this._timerContextPrepare(scriptRef, ctx);
-    this._timerStart(ctx, durationTicks);
+    this._timerContextPrepare(scriptRef, timer);
+    this._timerStart(timer, durationTicks);
     this._addNL();
   };
 
-  timerRestart = () => {
+  timerRestart = (timer = 1) => {
     this._addComment(`Timer Restart`);
-    const ctx = 1;
-    this._timerReset(ctx);
+    this._timerReset(timer);
   };
 
-  timerDisable = () => {
+  timerDisable = (timer = 1) => {
     this._addComment(`Timer Disable`);
-    const ctx = 1;
-    this._timerStop(ctx);
+    this._timerStop(timer);
   };
 
   // --------------------------------------------------------------------------
@@ -3375,7 +3390,10 @@ extern void __mute_mask_${symbol};
                 return p;
               }
               const newActorValue = getArg("actor", actorValue);
-              return p.replace(/.*:/, `${newActorValue}:`);
+              return {
+                value: newActorValue,
+                property: p.replace(/.*:/, ""),
+              };
             };
             if (isUnionPropertyValue(argValue) && argValue.value) {
               e.args[arg] = {
@@ -3414,8 +3432,7 @@ extern void __mute_mask_${symbol};
 
   returnFar = () => {
     const argsSize =
-      Object.keys(this.options.argLookup.variable).length +
-      Object.keys(this.options.argLookup.actor).length;
+      this.options.argLookup.variable.size + this.options.argLookup.actor.size;
     if (argsSize === 0) {
       this._returnFar();
     } else {
@@ -3813,9 +3830,25 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
-  variableSetToProperty = (variable: string, property: string) => {
-    const actorValue = property && property.replace(/:.*/, "");
-    const propertyValue = property && property.replace(/.*:/, "");
+  variableSetToProperty = (
+    variable: string,
+    property: string | { value: ScriptBuilderVariable; property: string }
+  ) => {
+    let actorValue: ScriptBuilderVariable;
+    let propertyValue: string;
+
+    if (!property) {
+      return;
+    }
+
+    if (typeof property === "object") {
+      actorValue = property.value;
+      propertyValue = property.property;
+    } else {
+      actorValue = property.replace(/:.*/, "");
+      propertyValue = property.replace(/.*:/, "");
+    }
+
     this.actorSetById(actorValue);
     if (propertyValue === "xpos") {
       this.actorGetPositionX(variable);
@@ -4595,6 +4628,49 @@ extern void __mute_mask_${symbol};
     this._compilePath(truePath);
     this._label(endLabel);
     this._addNL();
+  };
+
+  ifCurrentSceneIs = (
+    sceneId: string,
+    truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
+    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+  ) => {
+    const { scenes } = this.options;
+    const scene = scenes.find((s) => s.id === sceneId);
+    const symbol = scene?.symbol;
+
+    this._addComment(`If Current Scene Is ${symbol}`);
+
+    if (symbol) {
+      const falseLabel = this.getNextLabel();
+      const endLabel = this.getNextLabel();
+
+      const bankRef = this._declareLocal("bank", 1, true);
+      const addrRef = this._declareLocal("addr", 1, true);
+
+      this._getMemInt8(bankRef, "_current_scene");
+      this._getMemInt16(addrRef, "^/(_current_scene+1)/");
+
+      this._rpn()
+        .ref(bankRef)
+        .int8(`___bank_${symbol}`)
+        .operator(".EQ")
+        .ref(addrRef)
+        .int16(`_${symbol}`)
+        .operator(".EQ")
+        .operator(".AND")
+        .stop();
+      this._ifConst(".EQ", ".ARG0", 0, falseLabel, 1);
+      this._addNL();
+      this._compilePath(truePath);
+      this._jump(endLabel);
+      this._label(falseLabel);
+      this._compilePath(falsePath);
+      this._label(endLabel);
+      this._addNL();
+    } else {
+      this._compilePath(falsePath);
+    }
   };
 
   ifInput = (

@@ -57,8 +57,8 @@ export const InstrumentNoiseEditor = ({
       <FormDivider />
 
       <InstrumentVolumeEditor
-        initial_volume={instrument.initial_volume}
-        volume_sweep_change={instrument.volume_sweep_change}
+        initialVolume={instrument.initial_volume}
+        volumeSweepChange={instrument.volume_sweep_change}
         length={instrument.length}
         onChange={onChangeField}
       />
@@ -78,10 +78,14 @@ export const InstrumentNoiseEditor = ({
         />
       </FormRow>
 
-      <NoiseMacroEditorForm
-        macros={instrument.noise_macro}
-        onChange={onChangeField("noise_macro")}
-      />
+      {instrument.noise_macro ? (
+        <NoiseMacroEditorForm
+          macros={instrument.noise_macro}
+          onChange={onChangeField("noise_macro")}
+        />
+      ) : (
+        ""
+      )}
 
       <FormDivider />
 

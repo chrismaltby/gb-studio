@@ -16,6 +16,8 @@ const autoLabel = (fetchArg, args) => {
 const fields = [
   {
     key: "expression",
+    label: l10n("FIELD_EXPRESSION"),
+    description: l10n("FIELD_EXPRESSION_DESC"),
     type: "matharea",
     rows: 5,
     placeholder: "e.g. $health >= 0...",
@@ -24,6 +26,7 @@ const fields = [
   {
     key: "true",
     label: l10n("FIELD_TRUE"),
+    description: l10n("FIELD_TRUE_DESC"),
     type: "events",
   },
   {
@@ -41,6 +44,7 @@ const fields = [
   {
     key: "false",
     label: l10n("FIELD_FALSE"),
+    description: l10n("FIELD_FALSE_DESC"),
     conditions: [
       {
         key: "__collapseElse",
@@ -64,6 +68,8 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_IF_EXPRESSION_DESC"),
+  references: ["/docs/scripting/math-expressions"],
   autoLabel,
   groups,
   fields,

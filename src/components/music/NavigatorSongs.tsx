@@ -257,7 +257,7 @@ export const NavigatorSongs = ({
   const [syncInstruments, setSyncInstruments] = useState(true);
   useEffect(() => {
     setSyncInstruments(
-      settings.get("trackerSidebarSyncInstruments") as boolean
+      (settings.get("trackerSidebarSyncInstruments") ?? true) as boolean
     );
   }, []);
   const handleSyncInstruments = useCallback(
@@ -385,7 +385,7 @@ export const NavigatorSongs = ({
                 <Button
                   variant={syncInstruments ? "primary" : "transparent"}
                   size="small"
-                  title={l10n("TOOL_ADD_SONG_LABEL")}
+                  title={l10n("TOOL_SYNC_INSTRUMENT_NAVIGATOR")}
                   onClick={handleSyncInstruments}
                 >
                   <ArrowLeftRightIcon />

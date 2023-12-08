@@ -31,7 +31,8 @@ const fields = [
       {
         key: "time",
         type: "number",
-        label: l10n("FIELD_SECONDS"),
+        label: l10n("FIELD_DURATION"),
+        description: l10n("FIELD_DURATION_SHAKE_DESC"),
         min: 0,
         max: 60,
         step: 0.1,
@@ -48,7 +49,8 @@ const fields = [
       },
       {
         key: "frames",
-        label: l10n("FIELD_FRAMES"),
+        label: l10n("FIELD_DURATION"),
+        description: l10n("FIELD_DURATION_SHAKE_DESC"),
         type: "number",
         min: 0,
         max: 3600,
@@ -66,6 +68,9 @@ const fields = [
       },
       {
         key: "shakeDirection",
+        label: l10n("FIELD_MOVE_TYPE"),
+        description: l10n("FIELD_MOVE_TYPE_SHAKE_DESC"),
+        hideLabel: true,
         type: "moveType",
         defaultValue: "horizontal",
         flexBasis: 30,
@@ -112,6 +117,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_CAMERA_SHAKE_DESC"),
   autoLabel,
   groups,
   fields,

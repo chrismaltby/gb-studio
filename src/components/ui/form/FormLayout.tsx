@@ -89,6 +89,7 @@ export const FormFieldInfo = styled.div`
 export interface FormFieldProps {
   readonly name: string;
   readonly label?: string | React.ReactNode;
+  readonly title?: string;
   readonly info?: string;
   readonly alignCheckbox?: boolean;
   readonly variant?: "normal" | "error";
@@ -97,13 +98,18 @@ export interface FormFieldProps {
 export const FormField: FC<FormFieldProps> = ({
   name,
   label,
+  title,
   info,
   variant,
   alignCheckbox,
   children,
 }) => (
   <FormFieldWrapper variant={variant} alignCheckbox={alignCheckbox}>
-    {label && <Label htmlFor={name}>{label}</Label>}
+    {label && (
+      <Label htmlFor={name} title={title}>
+        {label}
+      </Label>
+    )}
     {children}
     {info && <FormFieldInfo>{info}</FormFieldInfo>}
   </FormFieldWrapper>

@@ -9,6 +9,7 @@ import { RootState } from "store/configureStore";
 import editorActions from "store/features/editor/editorActions";
 import { soundSelectors } from "store/features/entities/entitiesState";
 import { NavigatorSounds } from "components/sounds/NavigatorSounds";
+import { SoundViewer } from "components/sounds/SoundViewer";
 
 const Wrapper = styled.div`
   display: flex;
@@ -111,7 +112,9 @@ const SoundsPage = () => {
           flexDirection: "column",
         }}
       >
-        <div style={{ flexGrow: 1, position: "relative" }}></div>
+        <div style={{ flexGrow: 1, position: "relative" }}>
+          {sound && <SoundViewer file={sound} />}
+        </div>
       </div>
     </Wrapper>
   );

@@ -40,6 +40,7 @@ export const EVENT_LOOP = "EVENT_LOOP";
 export const EVENT_GROUP = "EVENT_GROUP";
 export const EVENT_MENU = "EVENT_MENU";
 export const EVENT_COMMENT = "EVENT_COMMENT";
+export const EVENT_IF_CURRENT_SCENE_IS = "EVENT_IF_CURRENT_SCENE_IS";
 
 // Background Scripts
 export const EVENT_SET_INPUT_SCRIPT = "EVENT_SET_INPUT_SCRIPT";

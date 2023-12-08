@@ -15,7 +15,7 @@
     @param c            Character to print
  */
 
-void putchar(char c) OLDCALL;
+void putchar(char c) OLDCALL REENTRANT;
 
 /** Print the string and arguments given by format to stdout.
 
@@ -33,11 +33,12 @@ void putchar(char c) OLDCALL;
     \li \%x (unsigned int as hex)
     \li \%s (string)
 
-    Warning: to correctly pass chars for printing as chars, they *must*
-    be explicitly re-cast as such when calling the function.
+    Warning: to correctly pass parameters (such as chars, ints, etc)
+    __all of them should always be explicitly cast__ as when calling
+    the function.
     See @ref docs_chars_varargs for more details.
  */
-void printf(const char *format, ...) OLDCALL;
+void printf(const char *format, ...);
 
 /** Print the string and arguments given by format to a buffer.
 
@@ -45,8 +46,13 @@ void printf(const char *format, ...) OLDCALL;
     @param format	The format string as per @ref printf
 
     Does not return the number of characters printed.
+
+    Warning: to correctly pass parameters (such as chars, ints, etc)
+    __all of them should always be explicitly cast__ as when calling
+    the function.
+    See @ref docs_chars_varargs for more details.
  */
-void sprintf(char *str, const char *format, ...) OLDCALL;
+void sprintf(char *str, const char *format, ...);
 
 /** puts() writes the string __s__ and a trailing newline to stdout.
 */
@@ -65,6 +71,6 @@ char *gets(char *s) OLDCALL;
 
 /** getchar() Reads and returns a single character from stdin.
  */
-char getchar() OLDCALL;
+char getchar(void) OLDCALL;
 
 #endif

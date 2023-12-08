@@ -1,4 +1,4 @@
-CC	= ../../../bin/lcc -Wa-l -Wl-m -Wl-j
+CC	= ../../../bin/lcc -Wl-j -Wm-yS
 
 BINS	= lcd_isr_wobble.gb
 
@@ -6,7 +6,7 @@ all:	$(BINS)
 
 compile.bat: Makefile
 	@echo "REM Automatically generated from Makefile" > compile.bat
-	@make -sn | sed y/\\//\\\\/ | grep -v make >> compile.bat
+	@make -sn | sed y/\\//\\\\/ | sed s/mkdir\ -p\/mkdir\/ | grep -v make >> compile.bat
 
 # Compile and link single file in one pass
 %.gb:	%.c

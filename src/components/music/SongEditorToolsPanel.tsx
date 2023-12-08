@@ -14,7 +14,6 @@ import {
   PianoInverseIcon,
   StopIcon,
   PlayStartIcon,
-  WandIcon,
 } from "ui/icons/Icons";
 import FloatingPanel, { FloatingPanelDivider } from "ui/panels/FloatingPanel";
 import trackerActions from "store/features/tracker/trackerActions";
@@ -26,6 +25,7 @@ import { Select } from "ui/form/Select";
 import { PianoRollToolType } from "store/features/tracker/trackerState";
 import { ipcRenderer } from "electron";
 import l10n from "lib/helpers/l10n";
+import { InstrumentType } from "store/features/editor/editorState";
 
 const octaveOffsetOptions: OctaveOffsetOptions[] = [0, 1, 2, 3].map((i) => ({
   value: i,
@@ -73,6 +73,9 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
   const play = useSelector((state: RootState) => state.tracker.playing);
   const playerReady = useSelector(
     (state: RootState) => state.tracker.playerReady
+  );
+  const subpatternEditorFocus = useSelector(
+    (state: RootState) => state.tracker.subpatternEditorFocus
   );
 
   const modified = useSelector(
@@ -196,29 +199,32 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
       if (view !== "roll") {
         return;
       }
-      if (e.code === "Digit1") {
-        setDefaultInstruments(0);
-      } else if (e.code === "Digit2") {
-        setDefaultInstruments(1);
-      } else if (e.code === "Digit3") {
-        setDefaultInstruments(2);
-      } else if (e.code === "Digit4") {
-        setDefaultInstruments(3);
-      } else if (e.code === "Digit5") {
-        setDefaultInstruments(4);
-      } else if (e.code === "Digit6") {
-        setDefaultInstruments(5);
-      } else if (e.code === "Digit7") {
-        setDefaultInstruments(6);
-      } else if (e.code === "Digit8") {
-        setDefaultInstruments(7);
-      } else if (e.code === "Digit9") {
-        setDefaultInstruments(8);
+      if (!subpatternEditorFocus) {
+        if (e.code === "Digit1") {
+          setDefaultInstruments(0);
+        } else if (e.code === "Digit2") {
+          setDefaultInstruments(1);
+        } else if (e.code === "Digit3") {
+          setDefaultInstruments(2);
+        } else if (e.code === "Digit4") {
+          setDefaultInstruments(3);
+        } else if (e.code === "Digit5") {
+          setDefaultInstruments(4);
+        } else if (e.code === "Digit6") {
+          setDefaultInstruments(5);
+        } else if (e.code === "Digit7") {
+          setDefaultInstruments(6);
+        } else if (e.code === "Digit8") {
+          setDefaultInstruments(7);
+        } else if (e.code === "Digit9") {
+          setDefaultInstruments(8);
+        }
       }
     },
     [
       tmpSelectionMode,
       view,
+      subpatternEditorFocus,
       setTool,
       toggleView,
       togglePlay,
@@ -247,6 +253,33 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
       window.removeEventListener("keyup", onKeyUp);
     };
   });
+
+  const song = useSelector(
+    (state: RootState) => state.trackerDocument.present.song
+  );
+  const selectedChannel = useSelector(
+    (state: RootState) => state.tracker.selectedChannel
+  );
+  const [instrumentType, setInstrumentType] =
+    useState<InstrumentType | undefined>();
+  useEffect(() => {
+    if (view === "roll") {
+      switch (selectedChannel) {
+        case 0:
+        case 1:
+          setInstrumentType("duty");
+          break;
+        case 2:
+          setInstrumentType("wave");
+          break;
+        case 3:
+          setInstrumentType("noise");
+          break;
+      }
+    } else {
+      setInstrumentType(undefined);
+    }
+  }, [view, setInstrumentType, song, selectedChannel]);
 
   const themeContext = useContext(ThemeContext);
 
@@ -338,6 +371,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
           onChange={(newValue) => {
             setDefaultInstruments(parseInt(newValue));
           }}
+          instrumentType={instrumentType}
         />
         {view === "tracker" ? (
           <>

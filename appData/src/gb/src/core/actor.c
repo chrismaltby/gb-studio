@@ -1,9 +1,10 @@
-#pragma bank 1
+#pragma bank 255
 
 #include "actor.h"
 
-#include <gb/gb.h>
-#include <gb/metasprites.h>
+#include <gbdk/platform.h>
+#include <gbdk/metasprites.h>
+
 #include <string.h>
 
 #include "system.h"
@@ -32,14 +33,13 @@
 #define ACTOR_BOUNDS_TILE16_HALF   3u
 
 
-#define BANK_EMOTE_METASPRITE 1
-
 #ifdef CGB
 #define NO_OVERLAY_PRIORITY ((!_is_CGB) && ((overlay_priority & S_PRIORITY) == 0))
 #else
 #define NO_OVERLAY_PRIORITY (TRUE)
 #endif
 
+BANKREF(ACTOR)
 
 const BYTE emote_offsets[] = {2, 1, 0, -1, -2, -3, -4, -5, -6, -5, -4, -3, -2, -1, 0};
 
@@ -62,7 +62,7 @@ UBYTE emote_timer;
 
 UBYTE allocated_hardware_sprites;
 
-void actors_init() BANKED {
+void actors_init(void) BANKED {
     actors_active_tail = actors_active_head = actors_inactive_head = NULL;
     player_moving           = FALSE;
     player_iframes          = 0;
@@ -72,14 +72,14 @@ void actors_init() BANKED {
     memset(actors, 0, sizeof(actors));
 }
 
-void player_init() BANKED {
+void player_init(void) BANKED {
     actor_set_anim_idle(&PLAYER);
     PLAYER.hidden = FALSE;
     PLAYER.disabled = FALSE;
 }
 
-void actors_update() NONBANKED {
-    UBYTE _save = _current_bank;
+void actors_update(void) NONBANKED {
+    UBYTE _save = CURRENT_BANK;
     static actor_t *actor;
     static uint8_t screen_tile16_x, screen_tile16_y;
     static uint8_t actor_tile16_x, actor_tile16_y;
@@ -97,7 +97,7 @@ void actors_update() NONBANKED {
         screen_x = (emote_actor->pos.x >> 4) - scroll_x + 8 + sprite->emote_origin.x;
         screen_y = (emote_actor->pos.y >> 4) - scroll_y + 8 + sprite->emote_origin.y;
 
-        SWITCH_ROM(BANK_EMOTE_METASPRITE); // bank of emote_offsets[] and emote_metasprite[]
+        SWITCH_ROM(BANK(ACTOR));  // bank of emote_offsets[] and emote_metasprite[]
         if (emote_timer < EMOTE_BOUNCE_FRAMES) {
             screen_y += emote_offsets[emote_timer];
         }
@@ -138,7 +138,7 @@ void actors_update() NONBANKED {
                 }
                 // Deactivate if offscreen
                 actor_t * prev = actor->prev;
-                deactivate_actor(actor);
+                if (!VM_ISLOCKED()) deactivate_actor(actor);
                 actor = prev;
                 continue;
             }
@@ -361,7 +361,7 @@ actor_t *actor_overlapping_bb(bounding_box_t *bb, upoint16_t *offset, actor_t *i
     return NULL;
 }
 
-void actors_handle_player_collision() BANKED {
+void actors_handle_player_collision(void) BANKED {
     if (player_iframes == 0 && player_collision_actor != NULL) {
         if (player_collision_actor->collision_group) {
             // Execute scene player hit scripts based on actor's collision group
@@ -384,7 +384,7 @@ void actors_handle_player_collision() BANKED {
 }
 
 UWORD check_collision_in_direction(UWORD start_x, UWORD start_y, bounding_box_t *bounds, UWORD end_pos, col_check_dir_e check_dir) BANKED {
-    UBYTE tx1, ty1, tx2, ty2, tt;
+    WORD tx1, ty1, tx2, ty2, tt;
     switch (check_dir) {
         case CHECK_DIR_LEFT:  // Check left
             tx1 = (((start_x >> 4) + bounds->left) >> 3);

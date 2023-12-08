@@ -1,11 +1,12 @@
 import { ipcRenderer } from "electron";
-import player from "components/music/helpers/player.js";
+import player from "components/music/helpers/player.ts";
+import { playNotePreview } from "components/music/helpers/notePreview";
 
 const log = (log) => {
   console.log(log);
 };
 
-player.initPlayer((file) => {
+const onPlayerInit = (file) => {
   if (!file) {
     log(`COMPILE ERROR`);
   } else {
@@ -15,7 +16,11 @@ player.initPlayer((file) => {
       action: "initialized",
     });
   }
-});
+};
+
+const sfx = decodeURIComponent(window.location.hash).slice(1);
+
+player.initPlayer(onPlayerInit, sfx);
 
 player.setOnIntervalCallback((playbackUpdate) => {
   log(playbackUpdate);
@@ -39,10 +44,17 @@ ipcRenderer.on("music-data", (event, d) => {
       });
       break;
     case "play":
-      player.play(d.song);
+      player.play(d.song, d.position);
       ipcRenderer.send("music-data-receive", {
         action: "log",
         message: "playing",
+      });
+      break;
+    case "play-sound":
+      player.playSound();
+      ipcRenderer.send("music-data-receive", {
+        action: "log",
+        message: "playing SFX",
       });
       break;
     case "stop":
@@ -69,13 +81,11 @@ ipcRenderer.on("music-data", (event, d) => {
       });
       break;
     case "preview":
-      player.preview(
-        d.note,
-        d.type,
-        d.instrument,
-        d.square2,
-        d.waveForms || []
-      );
+      let waves = d.waveForms || [];
+      if (waves.length === 0) {
+        waves = player.getCurrentSong().waves;
+      }
+      playNotePreview(d.note, d.type, d.instrument, d.square2, waves);
       ipcRenderer.send("music-data-receive", {
         action: "log",
         message: "preview",

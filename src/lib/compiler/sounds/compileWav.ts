@@ -1,8 +1,9 @@
 import { readFile } from "fs-extra";
-import { decHex } from "lib/helpers/8bit";
+import { decHexVal } from "lib/helpers/8bit";
 import clamp from "lib/helpers/clamp";
 import { WaveFile } from "wavefile";
-import { CompiledSound } from "./compileSound";
+
+type CompileOutputFmt = "c" | "asm";
 
 type WaveFileFmt = {
   numChannels: number;
@@ -12,11 +13,17 @@ type WaveFileFmt = {
 
 export const compileWav = async (
   filename: string,
-  symbol: string
-): Promise<CompiledSound> => {
+  fmt: CompileOutputFmt = "c"
+): Promise<string> => {
+  const decHex = (v: number, fmt?: CompileOutputFmt) => {
+    const prefix = fmt === "asm" ? "$" : "0x";
+    return `${prefix}${decHexVal(v)}`;
+  };
+  const binPrefix = fmt === "asm" ? "%" : "0b";
+
   const file = await readFile(filename);
 
-  let wav = new WaveFile(file);
+  const wav = new WaveFile(file);
 
   let wavFmt = wav.fmt as WaveFileFmt;
 
@@ -26,6 +33,12 @@ export const compileWav = async (
   // Resample is sample rate is wrong
   if (wavFmt.sampleRate < 8000 || wavFmt.sampleRate > 8192) {
     wav.toSampleRate(8000);
+    wavFmt = wav.fmt as WaveFileFmt;
+  }
+
+  // Convert to 8bit if not already
+  if (wavFmt.bitsPerSample !== 8) {
+    wav.toBitDepth("8");
     wavFmt = wav.fmt as WaveFileFmt;
   }
 
@@ -39,8 +52,6 @@ export const compileWav = async (
     throw new Error("Unsupport wav");
   }
 
-  let result = "";
-  let output = "";
   //   const rawData: Float64Array = wav.getSamples(true);
   let data: Float64Array = wav.getSamples(true);
 
@@ -60,6 +71,9 @@ export const compileWav = async (
     data = newData;
   }
 
+  let result = "";
+  let output = "";
+
   const dataLength = data.length - (data.length % 32);
   let c = 0;
   let cnt = 0;
@@ -69,11 +83,14 @@ export const compileWav = async (
     //
     c = ((c << 4) | (data[i] >> 4)) & 0xff;
     if (flag) {
-      result += decHex(c); //sEMIT.format(c);
+      result += decHex(c, fmt); //sEMIT.format(c);
       cnt += 1;
       if (cnt % 16 === 0) {
-        result = `1,0b00000110,${result},\n`;
+        result = `${decHex(1, fmt)},${binPrefix}00000110,${result},`;
         // outf.write(bytes(result, "ascii"));
+        if (fmt === "c") {
+          result += "\n";
+        }
         output += result;
         result = "";
       } else {
@@ -82,32 +99,5 @@ export const compileWav = async (
     }
     flag = !flag;
   }
-
-  return {
-    src: `#pragma bank 255
-
-#include <gbdk/platform.h>
-#include <stdint.h>
-
-BANKREF(${symbol})
-const UINT8 ${symbol}[] = {
-${output}1,0b00000111
-};
-void AT(0b00000100) __mute_mask_${symbol};
-`,
-    header: `#ifndef __${symbol}_INCLUDE__
-#define __${symbol}_INCLUDE__
-
-#include <gbdk/platform.h>
-#include <stdint.h>
-
-#define MUTE_MASK_${symbol} 0b00000100
-
-BANKREF_EXTERN(${symbol})
-extern const uint8_t ${symbol}[];
-extern void __mute_mask_${symbol};
-
-#endif
-    `,
-  };
+  return `${output}${decHex(1, fmt)},${binPrefix}00000111`;
 };
