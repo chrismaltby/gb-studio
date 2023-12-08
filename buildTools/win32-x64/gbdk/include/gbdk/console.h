@@ -20,13 +20,13 @@ void gotoxy(uint8_t x, uint8_t y) OLDCALL;
 
     @see gotoxy()
  */
-uint8_t posx() OLDCALL;
+uint8_t posx(void) OLDCALL;
 
 /** Returns the current Y position of the cursor.
 
     @see gotoxy()
  */
-uint8_t posy() OLDCALL;
+uint8_t posy(void) OLDCALL;
 
 /** Writes out a single character at the current cursor
     position.
@@ -39,7 +39,7 @@ void setchar(char c) OLDCALL;
 
 /** Clears the screen
 */
-void cls();
+void cls(void);
 
 
 #endif /* _CONSOLE_H */

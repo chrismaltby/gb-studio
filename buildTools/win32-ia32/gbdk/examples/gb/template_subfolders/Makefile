@@ -11,7 +11,9 @@ LCC = $(GBDK_HOME)bin/lcc
 
 # You can set flags for LCC here
 # For example, you can uncomment the line below to turn on debug output
-# LCCFLAGS = -debug
+# LCCFLAGS += -debug # Uncomment to enable debug output
+# LCCFLAGS += -v     # Uncomment for lcc verbose output
+
 
 # You can set the name of the .gb ROM file here
 PROJECTNAME    = Example
@@ -28,7 +30,7 @@ all:	prepare $(BINS)
 
 compile.bat: Makefile
 	@echo "REM Automatically generated from Makefile" > compile.bat
-	@make -sn | sed y/\\//\\\\/ | grep -v make >> compile.bat
+	@make -sn | sed y/\\//\\\\/ | sed s/mkdir\ -p\/mkdir\/ | grep -v make >> compile.bat
 
 # Compile .c files in "src/" to .o object files
 $(OBJDIR)/%.o:	$(SRCDIR)/%.c
@@ -42,7 +44,7 @@ $(OBJDIR)/%.o:	$(RESDIR)/%.c
 $(OBJDIR)/%.o:	$(SRCDIR)/%.s
 	$(LCC) $(LCCFLAGS) -c -o $@ $<
 
-# If needed, compile .c files i n"src/" to .s assembly files
+# If needed, compile .c files in "src/" to .s assembly files
 # (not required if .c is compiled directly to .o)
 $(OBJDIR)/%.s:	$(SRCDIR)/%.c
 	$(LCC) $(LCCFLAGS) -S -o $@ $<

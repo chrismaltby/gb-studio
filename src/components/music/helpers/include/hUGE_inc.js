@@ -1,9 +1,9 @@
 // https://raw.githubusercontent.com/untoxa/hUGEBuild/master/include/hUGE.inc
 
-export default `dn: MACRO ;; (note, instr, effect)\n
-    db \\1\n
-    db ((\\2 << 4) | (\\3 >> 8))\n
-    db LOW(\\3)\n
+export default `MACRO dn ;; (note, instr, effect)\n
+db (\1 | ((\2 & %00010000) << 3))\n
+db (((\2 << 4) & $FF) | (\3 >> 8))\n
+db LOW(\3)\n
 ENDM\n
 \n
 C_3 EQU 0\n
@@ -79,4 +79,5 @@ A_8 EQU 69\n
 A#8 EQU 70\n
 B_8 EQU 71\n
 LAST_NOTE EQU 72\n
-___ EQU 90 ; the default "no note" value\n`;
+___ EQU 90 ; the default "no note" value\n
+NO_NOTE EQU ___`;

@@ -1,9 +1,6 @@
 #pragma bank 255
 
-#include <gb/gb.h>
-#ifdef SGB
-    #include <gb/sgb.h>
-#endif
+#include <gbdk/platform.h>
 
 #include <string.h>
 #include <rand.h>
@@ -40,9 +37,9 @@
 extern void __bank_bootstrap_script;
 extern const UBYTE bootstrap_script[];
 
-extern void core_reset_hook(); 
+extern void core_reset_hook(void); 
 
-void core_reset() BANKED {
+void core_reset(void) BANKED {
     // cleanup core stuff
     SIO_init();
     input_init();
@@ -59,7 +56,7 @@ void core_reset() BANKED {
     music_init_events(FALSE);
 }
 
-void process_VM() {
+void process_VM(void) {
     while (TRUE) {
         switch (script_runner_update()) {
             case RUNNER_DONE:
@@ -180,7 +177,7 @@ void process_VM() {
     }
 }
 
-void core_run() BANKED {
+void core_run(void) BANKED {
 #ifdef SGB
     for (UBYTE i = 4; i != 0; i--) wait_vbl_done(); // this delay is required for PAL SNES
     _is_SGB = sgb_check();

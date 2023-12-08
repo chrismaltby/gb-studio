@@ -1,7 +1,7 @@
 #ifndef COLLISIONS_H
 #define COLLISIONS_H
 
-#include <gb/gb.h>
+#include <gbdk/platform.h>
 
 #include "math.h"
 #include "bankdata.h"

@@ -1,7 +1,7 @@
 #ifndef _LOADSAVE_H_INCLUDE
 #define _LOADSAVE_H_INCLUDE
 
-#include <gb/gb.h>
+#include <gbdk/platform.h>
 
 #define SRAM_BANKS_TO_SAVE 3
 #define SRAM_BANK_SIZE 0x2000
@@ -9,7 +9,7 @@
 BANKREF_EXTERN(VM_LOAD_SAVE)
 
 // initializes saving capabilities
-void data_init() BANKED;
+void data_init(void) BANKED;
 
 // save state to SRAM
 void data_save(UBYTE slot) BANKED;

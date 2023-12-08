@@ -1,7 +1,7 @@
 #ifndef __SGBBORDER_H_INCLUDE
 #define __SGBBORDER_H_INCLUDE
 
-#include <gb/gb.h>
+#include <gbdk/platform.h>
 
 #define SNES_RGB(R,G,B) (UINT16)((B) << 10 | (G) << 5 | (R))
 

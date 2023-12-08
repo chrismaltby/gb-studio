@@ -3,6 +3,7 @@ import storage from "./storage";
 import emulator from "./emulator";
 import { Song } from "lib/helpers/uge/song/Song";
 import { lo, hi } from "lib/helpers/8bit";
+import { SubPatternCell } from "lib/helpers/uge/song/SubPatternCell";
 
 type PlaybackPosition = [number, number];
 
@@ -249,7 +250,7 @@ const updateRom = (song: Song) => {
   emulator.updateRom(romFile);
 };
 
-function patchRom(targetRomFile: Uint8Array, song: Song, startAddr: number) {
+function patchRom_v5(targetRomFile: Uint8Array, song: Song, startAddr: number) {
   const buf = new Uint8Array(targetRomFile.buffer);
   let addr = startAddr;
 
@@ -339,6 +340,208 @@ function patchRom(targetRomFile: Uint8Array, song: Song, startAddr: number) {
         (song.waves[n][idx * 2] << 4) | song.waves[n][idx * 2 + 1];
   }
   addAddr(16 * 16);
+
+  for (let track = 0; track < 4; track++) {
+    const patternAddr = [];
+    for (let n = 0; n < song.patterns.length; n++) {
+      const pattern = song.patterns[n];
+      patternAddr.push(addr);
+
+      for (let idx = 0; idx < pattern.length; idx++) {
+        const cell = pattern[idx][track];
+        buf[addr++] = cell.note !== null ? cell.note : 90;
+        buf[addr++] =
+          ((cell.instrument !== null ? cell.instrument + 1 : 0) << 4) |
+          (cell.effectcode !== null ? cell.effectcode : 0);
+        buf[addr++] = cell.effectparam !== null ? cell.effectparam : 0;
+      }
+    }
+
+    let orderAddr = ordersAddr[track];
+    for (let n = 0; n < song.sequence.length; n++) {
+      buf[orderAddr++] = patternAddr[song.sequence[n]] & 0xff;
+      buf[orderAddr++] = patternAddr[song.sequence[n]] >> 8;
+    }
+  }
+}
+
+function patchRom(targetRomFile: Uint8Array, song: Song, startAddr: number) {
+  console.log("PATCH ROM");
+  const buf = new Uint8Array(targetRomFile.buffer);
+
+  let addr = startAddr;
+  let headerIndex = addr;
+
+  function writeCurrentAddress() {
+    buf[headerIndex + 0] = addr & 0xff;
+    buf[headerIndex + 1] = addr >> 8;
+    headerIndex += 2;
+  }
+
+  // write ticks_per_row (1 byte)
+  buf[addr] = song.ticks_per_row;
+  headerIndex += 1; // move header index to the order_cnt pointer position
+  addr += 1;
+
+  /* skip the set of header indexes to:
+    - order count (1 word)
+    - orders (4 words)
+    - instruments (3 words)
+    - routines (1 word) 
+    - waves (1 word)
+  */
+  addr += 20;
+
+  // write the order_cnt value in memory (1 byte)
+  buf[addr] = song.sequence.length * 2;
+  // write the address to the order_cnt in the order_cnt header index
+  writeCurrentAddress();
+  addr += 1;
+
+  const ordersAddr = [];
+  for (let n = 0; n < 4; n++) {
+    // store the address to the order definition to use later
+    ordersAddr.push(addr);
+    // write the address in the orderN header index
+    writeCurrentAddress();
+    // skip the definition of the order (64 words)
+    addr += 64 * 2;
+  }
+
+  const writeSubPatternCell = (cell: SubPatternCell, isLast: boolean) => {
+    const jump = cell.jump !== null && isLast ? 1 : cell.jump ?? 0;
+
+    buf[addr++] = cell.note ?? 90;
+    buf[addr++] = (jump << 4) | (cell.effectcode ?? 0);
+    buf[addr++] = cell.effectparam ?? 0;
+  };
+
+  const subpatternAddr: { [idx: string]: number } = {};
+
+  for (let n = 0; n < song.duty_instruments.length; n++) {
+    const instr = song.duty_instruments[n];
+    if (instr.subpattern_enabled) {
+      subpatternAddr[`DutySP${instr.index}`] = addr;
+      const pattern = song.duty_instruments[n].subpattern;
+      for (let idx = 0; idx < 32; idx++) {
+        writeSubPatternCell(pattern[idx], idx === 32 - 1);
+      }
+    }
+  }
+
+  for (let n = 0; n < song.wave_instruments.length; n++) {
+    const instr = song.wave_instruments[n];
+    if (instr.subpattern_enabled) {
+      subpatternAddr[`WaveSP${instr.index}`] = addr;
+      const pattern = song.wave_instruments[n].subpattern;
+      for (let idx = 0; idx < 32; idx++) {
+        writeSubPatternCell(pattern[idx], idx === 32 - 1);
+      }
+    }
+  }
+
+  for (let n = 0; n < song.noise_instruments.length; n++) {
+    const instr = song.noise_instruments[n];
+    if (instr.subpattern_enabled) {
+      subpatternAddr[`NoiseSP${instr.index}`] = addr;
+      const pattern = song.noise_instruments[n].subpattern;
+      for (let idx = 0; idx < 32; idx++) {
+        writeSubPatternCell(pattern[idx], idx === 32 - 1);
+      }
+    }
+  }
+
+  console.log(subpatternAddr);
+
+  for (let n = 0; n < song.duty_instruments.length; n++) {
+    const instr = song.duty_instruments[n];
+
+    const sweep =
+      (instr.frequency_sweep_time << 4) |
+      (instr.frequency_sweep_shift < 0 ? 0x08 : 0x00) |
+      Math.abs(instr.frequency_sweep_shift);
+    const lenDuty =
+      (instr.duty_cycle << 6) |
+      ((instr.length !== null ? 64 - instr.length : 0) & 0x3f);
+    let envelope =
+      (instr.initial_volume << 4) |
+      (instr.volume_sweep_change > 0 ? 0x08 : 0x00);
+    if (instr.volume_sweep_change !== 0)
+      envelope |= 8 - Math.abs(instr.volume_sweep_change);
+    const subpattern = subpatternAddr[`DutySP${instr.index}`] ?? 0;
+    const highmask = 0x80 | (instr.length !== null ? 0x40 : 0);
+
+    buf[addr + n * (4 + 2) + 0] = sweep;
+    buf[addr + n * (4 + 2) + 1] = lenDuty;
+    buf[addr + n * (4 + 2) + 2] = envelope;
+    buf[addr + n * (4 + 2) + 3] = subpattern & 0xff;
+    buf[addr + n * (4 + 2) + 4] = subpattern >> 8;
+    buf[addr + n * (4 + 2) + 5] = highmask;
+  }
+  // write the pointer to the duty instruments to the first instruments header index
+  writeCurrentAddress();
+  // skip the duty instruments definition (16 * (3 bytes + 1 word + 1 byte) per instrument)
+  addr += 16 * (4 + 2);
+
+  for (let n = 0; n < song.wave_instruments.length; n++) {
+    const instr = song.wave_instruments[n];
+
+    const length = (instr.length !== null ? instr.length : 0) & 0xff;
+    const volume = instr.volume << 5;
+    const waveForm = instr.wave_index;
+    const subpattern = subpatternAddr[`WaveSP${instr.index}`] ?? 0;
+    const highmask = 0x80 | (instr.length !== null ? 0x40 : 0);
+
+    buf[addr + n * (4 + 2) + 0] = length;
+    buf[addr + n * (4 + 2) + 1] = volume;
+    buf[addr + n * (4 + 2) + 2] = waveForm;
+    buf[addr + n * (4 + 2) + 3] = subpattern & 0xff;
+    buf[addr + n * (4 + 2) + 4] = subpattern >> 8;
+    buf[addr + n * (4 + 2) + 5] = highmask;
+  }
+  // write the pointer to the wave instruments to the second instruments header index
+  writeCurrentAddress();
+  // skip the wave instruments definition (16 * (3 bytes + 1 word + 1 byte) per instrument)
+  addr += 16 * (4 + 2);
+
+  for (let n = 0; n < song.noise_instruments.length; n++) {
+    const instr = song.noise_instruments[n];
+
+    let envelope =
+      (instr.initial_volume << 4) |
+      (instr.volume_sweep_change > 0 ? 0x08 : 0x00);
+    if (instr.volume_sweep_change !== 0)
+      envelope |= 8 - Math.abs(instr.volume_sweep_change);
+    const subpattern = subpatternAddr[`NoiseSP${instr.index}`] ?? 0;
+    let highmask = (instr.length !== null ? 64 - instr.length : 0) & 0x3f;
+    if (instr.length !== null) highmask |= 0x40;
+    if (instr.bit_count === 7) highmask |= 0x80;
+
+    buf[addr + n * (4 + 2) + 0] = envelope;
+    buf[addr + n * (4 + 2) + 1] = subpattern & 0xff;
+    buf[addr + n * (4 + 2) + 2] = subpattern >> 8;
+    buf[addr + n * (4 + 2) + 3] = highmask;
+    buf[addr + n * (4 + 2) + 4] = 0;
+    buf[addr + n * (4 + 2) + 5] = 0;
+  }
+  // write the pointer to the noise instruments to the third instruments header index
+  writeCurrentAddress();
+  // skip the noise instruments definition (16 * (1 byte + 1 word + 3 bytes) per instrument)
+  addr += 16 * (4 + 2);
+
+  // write 0 to the routines header index
+  buf[headerIndex + 0] = 0;
+  buf[headerIndex + 1] = 0;
+  headerIndex += 2;
+
+  for (let n = 0; n < song.waves.length; n++) {
+    for (let idx = 0; idx < 16; idx++)
+      buf[addr + n * 16 + idx] =
+        (song.waves[n][idx * 2] << 4) | song.waves[n][idx * 2 + 1];
+  }
+  // write the pointer to the waves definition to the waves header index
+  writeCurrentAddress();
+  addr += 16 * 16;
 
   for (let track = 0; track < 4; track++) {
     const patternAddr = [];
