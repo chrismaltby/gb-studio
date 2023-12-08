@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1314231123",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1315231208",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -1147,6 +1147,7 @@
   "WARNING_BACKGROUND_TOO_TALL": "Tło jest zbyt wysokie. Posiada {height}px, a maksymalna wartość to {maxHeight}px",
   "WARNING_BACKGROUND_TOO_MANY_PIXELS": "Tło zawiera zbyt dużo pixeli. Zawiera {numPixels} ({width}px * {height}px), a może mieć {maxPixels}",
   "WARNING_BACKGROUND_TOO_MANY_TILES": "Tło zawiera zbyt wiele unikalnych tafli 8x8px (posiada {tilesetLenght}, gdzie limit wynosi {maxTilesetLenght}). Tło może wyświetlać się nie poprawnie. Rozważ zmniejszenie ilości szczegółów na tym obrazie.",
+  "WARNING_BACKGROUND_LOGO_REUSED": "Tło jest użyte w scenie logo (\"{name}\") i może nie być wyświetlane poprawnie. Rozważ użycie innego tła.",
   "WARNING_MUSIC_TOO_LARGE": "Utwór muzyczny {filename} jest zbyt duża, aby zmieścić się w pamięci ({bytes} bajtów, a maksimum to {maxBytes}). Rozważ zmniejszenie wzorów (patterns) w danym pliku.",
   "WARNING_ENGINE_OUT_OF_DATE": "Wysunięty silnik jest nieaktualny (znaleziono \"{ejectedEngineVersion}\", a najnowszy to \"{expectedEngineVersion}\").\nMożesz napotkać problemy, jeśli nie wysuniesz silnika ponownie.",
   "WARNING_MISSING_UPDATES": "Brakujące aktualizacje",
@@ -1159,7 +1160,7 @@
   "WARNING_TRIGGERS_LIMIT": "Scena zawiera zbyt wiele rozruchów, niektóre zostaną pominięte podczas gry.",
   "WARNING_LOGO_WRONG_SIZE": "Scena zawierająca logo muszą mieć wymiary 160x144 pikseli",
   "WARNING_NO_PLAYER_SET_FOR_SCENE_TYPE": "Nie ustawiono domyślnej grafiki gracza dla scen \"{type}\". Opcję tę należy określić w sekcji \"Ustawienia\".",
-  "WARNING_LOGO_ENTITIES": "Scena z logo nie może zawierać aktorów ani rozruchów",
+  "WARNING_LOGO_ENTITIES": "Scena z logo nie może zawierać rozruchów",
   "WARNING_TOO_MANY_UNIQUE_PROJECTILES": "Duża ilość pocisków na scenie: \"{name}\". Scena zawiera {num} pocisków, natomiast maksymalna ilość wynosi {max}.",
 
   "// 12": "Errors -------------------------------------------------------",
