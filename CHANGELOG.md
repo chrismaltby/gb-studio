@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ability to set background tile priority for Color games using Priorty tool in colorize section. Priority tiles appear above sprites
 - Add support for UGE v6 to music editor [@pau-tomas](https://github.com/pau-tomas)
 - Subpattern editor added to Instrument Editor [@pau-tomas](https://github.com/pau-tomas)
+- Add warning when trying to reuse background from a logo scene [@pau-tomas](https://github.com/pau-tomas)
 
 ### Changed
 
