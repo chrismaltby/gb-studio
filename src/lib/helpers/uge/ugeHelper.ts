@@ -125,10 +125,9 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
         subpattern.push({
           note: note === 90 ? null : note,
           jump,
-          effectcode:
-            effectcode === 0 && effectparam === 90 ? null : effectcode,
+          effectcode: effectcode === 0 && effectparam === 0 ? null : effectcode,
           effectparam:
-            effectcode === 0 && effectparam === 90 ? null : effectparam,
+            effectcode === 0 && effectparam === 0 ? null : effectparam,
         });
       }
     }
@@ -456,7 +455,7 @@ export const saveUGESong = (song: Song): ArrayBuffer => {
       addUint32(0);
       addUint32(subpattern.jump ?? 0);
       addUint32(subpattern.effectcode ?? 0);
-      addUint8(subpattern.effectparam ?? 90);
+      addUint8(subpattern.effectparam ?? 0);
     }
   }
   function addDutyInstrument(type: number, i: DutyInstrument) {

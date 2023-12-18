@@ -119,6 +119,9 @@ export const InstrumentWaveEditor = ({
           {l10n("FIELD_TEST_INSTRUMENT")}
         </Button>
       </FormRow>
+      {instrument.subpattern_enabled && (
+        <FormRow>{l10n("MESSAGE_NOT_PREVIEW_SUBPATTERN")}</FormRow>
+      )}
     </>
   );
 };

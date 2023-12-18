@@ -11,6 +11,8 @@ import { InstrumentVolumeEditor } from "./InstrumentVolumeEditor";
 import { NoiseMacroEditorForm } from "./NoiseMacroEditorForm";
 import { ipcRenderer } from "electron";
 import { Button } from "ui/buttons/Button";
+import { SubPatternCell } from "lib/helpers/uge/song/SubPatternCell";
+import { cloneDeep } from "lodash";
 
 interface InstrumentNoiseEditorProps {
   id: string;
@@ -37,6 +39,21 @@ export const InstrumentNoiseEditor = ({
       );
     };
 
+  const onChangeSubpattern = (macros: number[]) => {
+    const newSubPattern = cloneDeep(instrument.subpattern);
+    macros.forEach((value, i) => {
+      newSubPattern[i].note = value + 36;
+    });
+
+    dispatch(
+      trackerDocumentActions.editSubPattern({
+        instrumentId: instrument.index,
+        instrumentType: "noise",
+        subpattern: newSubPattern,
+      })
+    );
+  };
+
   const onTestInstrument = () => {
     ipcRenderer.send("music-data-send", {
       action: "preview",
@@ -46,6 +63,14 @@ export const InstrumentNoiseEditor = ({
       square2: false,
     });
   };
+
+  const noiseMacros = !instrument.subpattern_enabled
+    ? []
+    : instrument.subpattern
+        // .slice(0, 6)
+        .map((subpatternCell: SubPatternCell) =>
+          subpatternCell && subpatternCell.note ? subpatternCell.note - 36 : 0
+        );
 
   return (
     <>
@@ -78,11 +103,14 @@ export const InstrumentNoiseEditor = ({
         />
       </FormRow>
 
-      {instrument.noise_macro ? (
-        <NoiseMacroEditorForm
-          macros={instrument.noise_macro}
-          onChange={onChangeField("noise_macro")}
-        />
+      {/* Disable the noise macro preview for now. In the future it should edit the subpattern visually  */}
+      {false ? ( // {instrument.noise_macro ? (
+        <>
+          <NoiseMacroEditorForm
+            macros={noiseMacros}
+            onChange={onChangeSubpattern}
+          />
+        </>
       ) : (
         ""
       )}
@@ -94,6 +122,9 @@ export const InstrumentNoiseEditor = ({
           {l10n("FIELD_TEST_INSTRUMENT")}
         </Button>
       </FormRow>
+      {instrument.subpattern_enabled && (
+        <FormRow>{l10n("MESSAGE_NOT_PREVIEW_SUBPATTERN")}</FormRow>
+      )}
     </>
   );
 };

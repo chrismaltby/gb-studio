@@ -1322,5 +1322,6 @@
   "MESSAGE_ADD_MOD_FILES": "Please add .mod files to the project assets/music folder.",
   "MESSAGE_WHAT_ABOUT_UGE": "What about .uge files?",
   "MESSAGE_USE_UGE_FILES": "To use .uge files in your project, change the music format from MOD to UGE in 'Settings'. You can change this at any time in 'Settings'.",
-  "MESSAGE_ENABLE_HUGE": "Enable UGE file format"
+  "MESSAGE_ENABLE_HUGE": "Enable UGE file format",
+  "MESSAGE_NOT_PREVIEW_SUBPATTERN": "Instrument and note preview might not be accurate when subpattern is enabled."
 }
