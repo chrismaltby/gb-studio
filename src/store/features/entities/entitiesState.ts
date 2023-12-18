@@ -22,14 +22,14 @@ import {
   COLLISION_SLOPE_45_RIGHT,
   COLLISION_SLOPE_22_LEFT_BOT,
   COLLISION_SLOPE_22_RIGHT_BOT,
-  COLLISION_SLOPE_67_LEFT_BOT,
-  COLLISION_SLOPE_67_RIGHT_BOT,
   COLLISION_SLOPE_22_LEFT_TOP,
   COLLISION_SLOPE_22_RIGHT_TOP,
-  COLLISION_SLOPE_67_LEFT_TOP,
-  COLLISION_SLOPE_67_RIGHT_TOP,
 } from "../../../consts";
-import { isActorField, isVariableField, isPropertyField } from "lib/helpers/eventSystem";
+import {
+  isActorField,
+  isVariableField,
+  isPropertyField,
+} from "lib/helpers/eventSystem";
 import clamp from "lib/helpers/clamp";
 import { RootState } from "store/configureStore";
 import settingsActions from "../settings/settingsActions";
@@ -2056,20 +2056,6 @@ const paintSlopeCollision: CaseReducer<
         newValue = oddTile
           ? COLLISION_SLOPE_22_RIGHT_TOP
           : COLLISION_SLOPE_22_RIGHT_BOT;
-      }
-    } else if (slopeIncline === "steep") {
-      // Steep incline slope uses the 67deg tiles using slope direction
-      // alternating between the two 67deg tiles depending on position on line
-      const oddTile = (startY % 2 !== y % 2) !== endY > startY;
-
-      if (slopeDirection === "left") {
-        newValue = oddTile
-          ? COLLISION_SLOPE_67_LEFT_TOP
-          : COLLISION_SLOPE_67_LEFT_BOT;
-      } else {
-        newValue = oddTile
-          ? COLLISION_SLOPE_67_RIGHT_TOP
-          : COLLISION_SLOPE_67_RIGHT_BOT;
       }
     }
 

@@ -31,13 +31,9 @@ import {
   COLLISION_SLOPE_45_RIGHT,
   COLLISION_SLOPE_22_RIGHT_BOT,
   COLLISION_SLOPE_22_RIGHT_TOP,
-  COLLISION_SLOPE_67_RIGHT_BOT,
-  COLLISION_SLOPE_67_RIGHT_TOP,
   COLLISION_SLOPE_45_LEFT,
   COLLISION_SLOPE_22_LEFT_BOT,
   COLLISION_SLOPE_22_LEFT_TOP,
-  COLLISION_SLOPE_67_LEFT_BOT,
-  COLLISION_SLOPE_67_LEFT_TOP,
   COLLISION_SLOPE_VALUES,
   BRUSH_SLOPE,
 } from "../../consts";
@@ -59,10 +55,7 @@ import { RootState } from "store/configureStore";
 import { cloneDeep } from "lodash";
 import { NavigationSection } from "store/features/navigation/navigationState";
 import styled from "styled-components";
-import FloatingPanel, {
-  FloatingPanelBreak,
-  FloatingPanelDivider,
-} from "ui/panels/FloatingPanel";
+import FloatingPanel, { FloatingPanelDivider } from "ui/panels/FloatingPanel";
 import { Button } from "ui/buttons/Button";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { MenuItem } from "ui/menu/Menu";
@@ -138,47 +131,43 @@ const tileTypes = [
     extra: COLLISION_BOTTOM,
   },
   {
-    key: "slope_67_right_bot",
-    name: l10n("FIELD_COLLISION_SLOPE_67_RIGHT_BOT"),
-    flag: COLLISION_SLOPE_67_RIGHT_BOT,
-    extra: COLLISION_BOTTOM | COLLISION_RIGHT,
+    key: "spare_08",
+    name: l10n("FIELD_COLLISION_SPARE", { tile: 8 }),
+    flag: 0x80,
   },
   {
-    key: "slope_67_right_top",
-    name: l10n("FIELD_COLLISION_SLOPE_67_RIGHT_TOP"),
-    flag: COLLISION_SLOPE_67_RIGHT_TOP,
-    extra: COLLISION_RIGHT,
+    key: "spare_09",
+    name: l10n("FIELD_COLLISION_SPARE", { tile: 9 }),
+    flag: 0x90,
   },
   {
-    key: "slope_67_left_top",
-    name: l10n("FIELD_COLLISION_SLOPE_67_LEFT_TOP"),
-    flag: COLLISION_SLOPE_67_LEFT_TOP,
-    extra: COLLISION_LEFT,
+    key: "spare_10",
+    name: l10n("FIELD_COLLISION_SPARE", { tile: 10 }),
+    flag: 0xa0,
   },
   {
-    key: "slope_67_left_bot",
-    name: l10n("FIELD_COLLISION_SLOPE_67_LEFT_BOT"),
-    flag: COLLISION_SLOPE_67_LEFT_BOT,
-    extra: COLLISION_BOTTOM | COLLISION_LEFT,
+    key: "spare_11",
+    name: l10n("FIELD_COLLISION_SPARE", { tile: 11 }),
+    flag: 0xb0,
   },
   {
     key: "spare_12",
-    name: l10n("FIELD_COLLISION_SPARE_12"),
+    name: l10n("FIELD_COLLISION_SPARE", { tile: 12 }),
     flag: 0xc0,
   },
   {
     key: "spare_13",
-    name: l10n("FIELD_COLLISION_SPARE_13"),
+    name: l10n("FIELD_COLLISION_SPARE", { tile: 13 }),
     flag: 0xd0,
   },
   {
     key: "spare_14",
-    name: l10n("FIELD_COLLISION_SPARE_14"),
+    name: l10n("FIELD_COLLISION_SPARE", { tile: 14 }),
     flag: 0xe0,
   },
   {
     key: "spare_15",
-    name: l10n("FIELD_COLLISION_SPARE_15"),
+    name: l10n("FIELD_COLLISION_SPARE", { tile: 15 }),
     flag: 0xf0,
   },
 ];
@@ -560,7 +549,7 @@ const BrushToolbar = () => {
               <>
                 <FloatingPanelDivider />
 
-                {tileTypes.slice(6, 16).map((tileType, tileTypeIndex) => (
+                {tileTypes.slice(6, 12).map((tileType, tileTypeIndex) => (
                   <Button
                     variant="transparent"
                     key={tileType.name}
@@ -579,11 +568,11 @@ const BrushToolbar = () => {
             {showCollisionExtraTiles && (
               <>
                 <FloatingPanelDivider />
-                {tileTypes.slice(16).map((tileType, tileTypeIndex) => (
+                {tileTypes.slice(12).map((tileType, tileTypeIndex) => (
                   <Button
                     variant="transparent"
                     key={tileType.name}
-                    onClick={setSelectedPalette(tileTypeIndex + 6)}
+                    onClick={setSelectedPalette(tileTypeIndex + 12)}
                     active={(selectedTileType & 0xf0) === tileType.flag}
                     title={`${tileType.name}`}
                   >

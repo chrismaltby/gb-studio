@@ -554,6 +554,7 @@
   "FIELD_COLLISION_BOTTOM": "Collision Bottom",
   "FIELD_COLLISION_LEFT": "Collision Left",
   "FIELD_COLLISION_RIGHT": "Collision Right",
+  "FIELD_COLLISION_SPARE": "Spare {tile}",
   "FIELD_RESET_PALETTE": "Reset Palette",
   "FIELD_REMOVE_PALETTE": "Remove Palette",
   "FIELD_DEFAULT_BACKGROUND_PALETTES": "Default Background Palettes",
