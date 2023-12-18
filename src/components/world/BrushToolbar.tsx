@@ -521,7 +521,7 @@ const BrushToolbar = () => {
           </Button>
         )}
         {showPalettes && <FloatingPanelDivider />}
-        {showTileTypes && (
+        {selectedBrush !== BRUSH_SLOPE && showTileTypes && (
           <>
             {tileTypes.slice(0, 5).map((tileType, tileTypeIndex) => (
               <Button
@@ -608,29 +608,32 @@ const BrushToolbar = () => {
           {showLayers ? <EyeOpenIcon /> : <EyeClosedIcon />}
         </Button>
 
-        <DropdownButton
-          size="small"
-          variant="transparent"
-          menuDirection="right"
-        >
-          <MenuItem onClick={onToggleViewSlopeTiles}>
-            <Checkbox
-              id="showCollisionSlopeTiles"
-              name="showCollisionSlopeTiles"
-              checked={showCollisionSlopeTiles}
-            />
-            {` ${l10n("VIEW_SLOPE_TILES")}`}
-          </MenuItem>
-          <MenuItem onClick={onToggleViewExtraTiles}>
-            <Checkbox
-              id="showCollisionSlopeTiles"
-              name="showCollisionSlopeTiles"
-              checked={showCollisionExtraTiles}
-            />
-            {` ${l10n("VIEW_EXTRA_TILES")}`}
-          </MenuItem>
-        </DropdownButton>
+        {selectedBrush !== BRUSH_SLOPE && showTileTypes && (
+          <DropdownButton
+            size="small"
+            variant="transparent"
+            menuDirection="right"
+          >
+            <MenuItem onClick={onToggleViewSlopeTiles}>
+              <Checkbox
+                id="showCollisionSlopeTiles"
+                name="showCollisionSlopeTiles"
+                checked={showCollisionSlopeTiles}
+              />
+              {` ${l10n("VIEW_SLOPE_TILES")}`}
+            </MenuItem>
+            <MenuItem onClick={onToggleViewExtraTiles}>
+              <Checkbox
+                id="showCollisionSlopeTiles"
+                name="showCollisionSlopeTiles"
+                checked={showCollisionExtraTiles}
+              />
+              {` ${l10n("VIEW_EXTRA_TILES")}`}
+            </MenuItem>
+          </DropdownButton>
+        )}
       </BrushToolbarWrapper>
+
       {modalColorIndex > -1 && (
         <>
           <ModalFade onClick={closePaletteModal} />
