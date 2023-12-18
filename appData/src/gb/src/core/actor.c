@@ -23,7 +23,6 @@
 #endif
 
 #define EMOTE_BOUNCE_FRAMES        15
-#define EMOTE_TILE                 124
 #define ANIM_PAUSED                255
 
 #define TILE16_OFFSET              64u
@@ -60,6 +59,7 @@ actor_t * player_collision_actor;
 actor_t * emote_actor;
 UBYTE emote_timer;
 
+UBYTE allocated_sprite_tiles;
 UBYTE allocated_hardware_sprites;
 
 void actors_init(void) BANKED {
@@ -103,7 +103,7 @@ void actors_update(void) NONBANKED {
         }
         allocated_hardware_sprites += move_metasprite(
             emote_metasprite,
-            EMOTE_TILE,
+            allocated_sprite_tiles,
             allocated_hardware_sprites,
             screen_x,
             screen_y
