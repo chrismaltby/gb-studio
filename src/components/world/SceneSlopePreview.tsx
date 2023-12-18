@@ -98,6 +98,22 @@ const SceneSlopePreview = ({
         lineEndX += signX * 0.5 * TILE_SIZE;
       }
 
+      if (lineStartY === lineEndY && offset) {
+        // Bottom collision
+        ctx.strokeStyle = "rgba(255,250,40,0.6)";
+        lineStartY += TILE_SIZE - 1;
+        lineEndY += TILE_SIZE - 1;
+      }
+      if (lineStartX === lineEndX && offset) {
+        // Right collision
+        ctx.strokeStyle = "rgba(40,250,250,0.6)";
+        lineStartX += TILE_SIZE - 1;
+        lineEndX += TILE_SIZE - 1;
+      } else if (lineStartX === lineEndX) {
+        // Left collision
+        ctx.strokeStyle = "rgba(250,40,250,0.6)";
+      }
+
       ctx.moveTo(lineStartX, lineStartY);
       ctx.lineTo(lineEndX, lineEndY);
       ctx.stroke();

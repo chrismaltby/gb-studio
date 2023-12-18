@@ -7,7 +7,8 @@ export const calculateSlope = (
   endX: number,
   endY: number,
   slopeDirectionHorizontal: "left" | "right",
-  slopeDirectionVertical: "left" | "right"
+  slopeDirectionVertical: "left" | "right",
+  wallMode: boolean
 ) => {
   let newEndX = endX;
   let newEndY = endY;
@@ -18,7 +19,15 @@ export const calculateSlope = (
   const signX = Math.sign(diffX);
   let signY = Math.sign(diffY);
 
-  if (areRelativelyEqual(Math.abs(diffX), Math.abs(diffY), 0.4)) {
+  if (wallMode) {
+    if (Math.abs(diffY) > Math.abs(diffX)) {
+      // Vertical
+      newEndX = startX;
+    } else {
+      // Horizontal
+      newEndY = startY;
+    }
+  } else if (areRelativelyEqual(Math.abs(diffX), Math.abs(diffY), 0.4)) {
     // drawing 45 degree line
     const length = Math.max(Math.abs(diffX), Math.abs(diffY));
     newEndX = startX + Math.sign(diffX) * length;

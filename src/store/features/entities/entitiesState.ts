@@ -24,6 +24,10 @@ import {
   COLLISION_SLOPE_22_RIGHT_BOT,
   COLLISION_SLOPE_22_LEFT_TOP,
   COLLISION_SLOPE_22_RIGHT_TOP,
+  COLLISION_TOP,
+  COLLISION_BOTTOM,
+  COLLISION_RIGHT,
+  COLLISION_LEFT,
 } from "../../../consts";
 import {
   isActorField,
@@ -1997,17 +2001,18 @@ const paintSlopeCollision: CaseReducer<
   let startY = action.payload.startY;
   let endX = action.payload.endX;
   let endY = action.payload.endY;
+  let skipFirstTile = false;
 
-  if (offset) {
-    // If slope is offset (holding shift key) then modify the
-    // line start/end tiles to ensure the line is painted correctly
-    if (slopeIncline === "steep") {
-      endX += endX < startX ? -0.5 : 0.5;
-      startY += endY > startY ? -1 : 1;
-    } else if (slopeIncline === "shallow") {
-      endY += endY < startY ? -0.5 : 0.5;
-      startX += endX > startX ? -1 : 1;
-    }
+  // If slope is offset (holding shift key) then modify the
+  // line start/end tiles to ensure the line is painted correctly
+  if (offset && slopeIncline === "steep") {
+    endX += endX < startX ? -0.5 : 0.5;
+    startY += endY > startY ? -1 : 1;
+    skipFirstTile = true;
+  } else if (offset && slopeIncline === "shallow") {
+    endY += endY < startY ? -0.5 : 0.5;
+    startX += endX > startX ? -1 : 1;
+    skipFirstTile = true;
   }
 
   const roundEndX = endX > startX ? Math.floor(endX) : Math.ceil(endX);
@@ -2029,14 +2034,23 @@ const paintSlopeCollision: CaseReducer<
       return;
     }
 
-    // Don't draw first tile when offsetting
-    if (offset && x === startX && y === startY) {
+    // Don't draw first tile when offsetting shallow & steep slopes
+    if (skipFirstTile && x === startX && y === startY) {
       return;
     }
 
     const tileIndex = background.width * y + x;
     let newValue = value;
-    if (slopeIncline === "medium") {
+
+    if (startY === endY && offset) {
+      newValue = COLLISION_BOTTOM;
+    } else if (startY === endY) {
+      newValue = COLLISION_TOP;
+    } else if (startX === endX && offset) {
+      newValue = COLLISION_RIGHT;
+    } else if (startX === endX) {
+      newValue = COLLISION_LEFT;
+    } else if (slopeIncline === "medium") {
       // Medium incline slope uses 45deg tiles using slope direction
       if (slopeDirection === "left") {
         newValue = COLLISION_SLOPE_45_LEFT;

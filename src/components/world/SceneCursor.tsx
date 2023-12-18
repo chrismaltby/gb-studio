@@ -75,6 +75,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     currentX?: number;
     currentY?: number;
     drawLine: boolean;
+    drawWall: boolean;
     drawTile: number;
     isTileProp: boolean;
     isPainting: boolean;
@@ -85,6 +86,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     startX: 0,
     startY: 0,
     drawLine: false,
+    drawWall: false,
     drawTile: 0,
     isTileProp: false,
     isPainting: false,
@@ -118,6 +120,33 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
       : undefined
   );
 
+  const recalculateSlopePreview = useCallback(() => {
+    if (data.current.isDrawingSlope) {
+      const { endX, endY, slopeIncline } = calculateSlope(
+        data.current.startX,
+        data.current.startY,
+        x,
+        y,
+        data.current.slopeDirectionHorizontal,
+        data.current.slopeDirectionVertical,
+        data.current.drawWall
+      );
+      dispatch(
+        editorActions.setSlopePreview({
+          sceneId,
+          slopePreview: {
+            startX: data.current.startX,
+            startY: data.current.startY,
+            endX,
+            endY,
+            offset: data.current.drawLine,
+            slopeIncline,
+          },
+        })
+      );
+    }
+  }, [dispatch, sceneId, x, y]);
+
   const onKeyDown = useCallback(
     (e) => {
       if (e.target.nodeName !== "BODY") {
@@ -125,6 +154,10 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
       }
       if (e.shiftKey) {
         data.current.drawLine = true;
+      }
+      if (e.ctrlKey) {
+        data.current.drawWall = true;
+        recalculateSlopePreview();
       }
       if (e.ctrlKey || e.shiftKey || e.metaKey) {
         return;
@@ -136,17 +169,24 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
         }
       }
     },
-    [dispatch, enabled, sceneId, x, y]
+    [dispatch, enabled, recalculateSlopePreview, sceneId, x, y]
   );
 
-  const onKeyUp = useCallback((e) => {
-    if (e.target.nodeName !== "BODY") {
-      return;
-    }
-    if (!e.shiftKey) {
-      data.current.drawLine = false;
-    }
-  }, []);
+  const onKeyUp = useCallback(
+    (e) => {
+      if (e.target.nodeName !== "BODY") {
+        return;
+      }
+      if (!e.shiftKey) {
+        data.current.drawLine = false;
+      }
+      if (!e.ctrlKey) {
+        data.current.drawWall = false;
+        recalculateSlopePreview();
+      }
+    },
+    [recalculateSlopePreview]
+  );
 
   // Keyboard handlers
   useEffect(() => {
@@ -194,7 +234,8 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
         x,
         y,
         data.current.slopeDirectionHorizontal,
-        data.current.slopeDirectionVertical
+        data.current.slopeDirectionVertical,
+        data.current.drawWall
       );
 
       dispatch(
@@ -421,7 +462,8 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
         x,
         y,
         data.current.slopeDirectionHorizontal,
-        data.current.slopeDirectionVertical
+        data.current.slopeDirectionVertical,
+        data.current.drawWall
       );
 
       dispatch(
