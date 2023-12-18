@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support for UGE v6 to music editor [@pau-tomas](https://github.com/pau-tomas)
 - Subpattern editor added to Instrument Editor [@pau-tomas](https://github.com/pau-tomas)
 - Add warning when trying to reuse background from a logo scene [@pau-tomas](https://github.com/pau-tomas)
+- Add descriptive README files to asset folders in new projects [@pau-tomas](https://github.com/pau-tomas)
 
 ### Changed
 
