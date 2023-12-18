@@ -15,7 +15,7 @@ export const calculateSlope = (
 
   const diffX = newEndX - startX;
   const diffY = newEndY - startY;
-  let signX = Math.sign(diffX);
+  const signX = Math.sign(diffX);
   let signY = Math.sign(diffY);
 
   if (areRelativelyEqual(Math.abs(diffX), Math.abs(diffY), 0.4)) {
@@ -26,18 +26,11 @@ export const calculateSlope = (
     slopeIncline = "medium";
   } else {
     if (Math.abs(diffY) > Math.abs(diffX)) {
-      // Steep slope
-      slopeIncline = "steep";
+      // Steep slope - Create 45 deg for now
       const length = Math.max(Math.abs(diffX), Math.abs(diffY));
-      if (startX === endX) {
-        if (slopeDirectionVertical === "left") {
-          signX = -1;
-        } else {
-          signX = 1;
-        }
-      }
-      newEndX = startX + signX * length * 0.5;
-      newEndY = startY + signY * length;
+      newEndX = startX + (Math.sign(diffX) || 1) * length;
+      newEndY = startY + Math.sign(diffY) * length;
+      slopeIncline = "medium";
     } else {
       // Shallow slope
       slopeIncline = "shallow";

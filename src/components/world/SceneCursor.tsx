@@ -210,27 +210,6 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
           },
         })
       );
-
-      if (
-        (data.current.slopeDirectionHorizontal === "right" &&
-          diffX === -diffY) ||
-        (data.current.slopeDirectionHorizontal === "left" && diffX === diffY)
-      ) {
-        // dispatch(
-        //   entitiesActions.paintCollision({
-        //     brush: BRUSH_8PX,
-        //     sceneId,
-        //     x: data.current.startX,
-        //     y: data.current.startY,
-        //     endX: x,
-        //     endY: y,
-        //     value: data.current.drawTile,
-        //     isTileProp: false,
-        //     drawLine: true,
-        //     tileLookup,
-        //   })
-        // );
-      }
     } else if (data.current.currentX !== x || data.current.currentY !== y) {
       if (data.current.drawLine) {
         if (
@@ -387,11 +366,6 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     y,
   ]);
 
-  // const setSlopeDirection = useDebounce((direction: "left" | "right") => {
-  //   data.current.slopeDirection = direction;
-  //   setPreviewSlopeDirection(data.current.slopeDirection);
-  // }, 200);
-
   const onMouseMoveSlopeSelect = useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
       if (cursorRef.current && data.current.isPainting) {
@@ -403,11 +377,6 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
           y > height * 0.5 ? "left" : "right";
         data.current.slopeDirectionVertical =
           x <= width * 0.5 ? "left" : "right";
-
-        // setPreviewSlopeDirection(data.current.slopeDirection);
-
-        // setSlopeDirection(x <= width * 0.5 ? "left" : "right");
-        // setSlopeDirection(y <= height * 0.5 ? "left" : "right");
       }
     },
     []
@@ -617,41 +586,12 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
         data.current.startX = x;
         data.current.startY = y;
         data.current.isPainting = true;
-
-        // if (data.current.slopeDirectionHorizontal === "left") {
-        //   data.current.drawTile = COLLISION_SLOPE_45_LEFT;
-        // } else if (data.current.slopeDirectionHorizontal === "right") {
-        //   data.current.drawTile = COLLISION_SLOPE_45_RIGHT;
-        // }
-
         dispatch(
           editorActions.setSlopePreview({
             sceneId,
             slopePreview: undefined,
-            // slopePreview: {
-            //   startX: x,
-            //   startY: y,
-            //   endX: x,
-            //   endY: y,
-            //   offset: data.current.drawLine,
-            //   slopeDirectionHorizontal: data.current.slopeDirectionHorizontal,
-            //   slopeDirectionVertical: data.current.slopeDirectionVertical,
-            // },
           })
         );
-        // dispatch(editorActions.selectScene({ sceneId }));
-
-        // dispatch(
-        //   entitiesActions.paintCollision({
-        //     brush: BRUSH_8PX,
-        //     sceneId,
-        //     x,
-        //     y,
-        //     value: data.current.drawTile,
-        //     isTileProp: false,
-        //     tileLookup,
-        //   })
-        // );
       } else {
         if (
           data.current.drawLine &&
@@ -995,13 +935,6 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
         left: x * 8,
       }}
     >
-      {/* {tool === TOOL_COLLISIONS && selectedBrush === BRUSH_SLOPE && (
-        <div
-          className={`SceneCursor__Tile SceneCursor__Tile--${
-            previewSlopeDirection === "left" ? "slope45L" : "slope45R"
-          }`}
-        />
-      )} */}
       {(tool === TOOL_ACTORS ||
         tool === TOOL_TRIGGERS ||
         tool === TOOL_ERASER ||
