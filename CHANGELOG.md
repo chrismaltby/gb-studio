@@ -14,18 +14,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ability to set background tile priority for Color games using Priorty tool in colorize section. Priority tiles appear above sprites
 - Add support for UGE v6 to music editor [@pau-tomas](https://github.com/pau-tomas)
 - Subpattern editor added to Instrument Editor [@pau-tomas](https://github.com/pau-tomas)
+- Add warning when trying to reuse background from a logo scene [@pau-tomas](https://github.com/pau-tomas)
+- Add descriptive README files to asset folders in new projects [@pau-tomas](https://github.com/pau-tomas)
 
 ### Changed
 
 - Updated Simplified Chinese localisation. [@wcxu21](https://github.com/wcxu21)
 - Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
 - Update to latest [GBVM](https://github.com/chrismaltby/gbvm)
+- Rename "Obj Palette" in sprite editor to "Monochrome Palette" to make its purpose clearer, now includes palette preview [@pau-tomas](https://github.com/pau-tomas)
+- Allow actor fields that aren't named "actorId" or "otherActorId" to be in custom scripts [@patrickmollohan](https://github.com/patrickmollohan)
 
 ### Fixed
 
 - Fixed issue where piano roll would scroll vertically when switching patterns [@pau-tomas](https://github.com/pau-tomas)
 - Fix issue where editing a custom script could cause variables to switch back to pass by reference
 - Fix issue where loading a scene containing projectiles or dynamically modified sprites could cause graphical corruption [@untoxa](https://github.com/untoxa)
+- Fix issue where script event title would show wrong local variable name for scenes [@pau-tomas](https://github.com/pau-tomas)
+- Fix muting bug with FXH parser [@coffeevalenbat](https://github.com/coffeevalenbat)
+
+### Performance
+
+- Performance improvements in ScriptEditorEventHelper, no longer rerenders all scenes when updating [@pau-tomas](https://github.com/pau-tomas)
 
 ### Removed
 

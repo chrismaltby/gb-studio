@@ -6,7 +6,6 @@ import getCoords from "lib/helpers/getCoords";
 import Actor from "./Actor";
 import Trigger from "./Trigger";
 import SceneCollisions from "./SceneCollisions";
-import { normalizedFindSceneEvent } from "lib/helpers/eventSystem";
 import EventHelper from "./EventHelper";
 import {
   SceneShape,
@@ -29,16 +28,14 @@ import { getCachedObject } from "lib/helpers/cache";
 import SceneInfo from "./SceneInfo";
 import {
   sceneSelectors,
-  actorSelectors,
-  triggerSelectors,
   backgroundSelectors,
   paletteSelectors,
-  scriptEventSelectors,
 } from "store/features/entities/entitiesState";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import ScenePriorityMap from "./ScenePriorityMap";
 import SceneSlopePreview from "./SceneSlopePreview";
+import { SceneEventHelper } from "./SceneEventHelper";
 
 const TILE_SIZE = 8;
 
@@ -140,7 +137,6 @@ class Scene extends Component {
       visible,
       sceneName,
       image,
-      event,
       width,
       height,
       projectRoot,
@@ -338,9 +334,9 @@ class Scene extends Component {
                 editable={editable}
               />
             ))}
-          {event && (
+          {selected && (
             <div className="Scene__EventHelper">
-              <EventHelper event={event} scene={scene} />
+              <SceneEventHelper scene={scene} />
             </div>
           )}
         </div>
@@ -403,20 +399,13 @@ function mapStateToProps(state, props) {
     slopePreview,
   } = state.editor;
 
-  const actorsLookup = actorSelectors.selectEntities(state);
-  const triggersLookup = triggerSelectors.selectEntities(state);
   const backgroundsLookup = backgroundSelectors.selectEntities(state);
-  const scriptEventsLookup = scriptEventSelectors.selectEntities(state);
 
   const settings = state.project.present.settings;
 
   const scene = sceneSelectors.selectById(state, props.id);
 
   const image = backgroundsLookup[scene.backgroundId];
-
-  const sceneEventVisible =
-    state.editor.eventId && state.editor.scene === props.id;
-  const event = sceneEventVisible && scriptEventsLookup[state.editor.eventId];
 
   const selected = sceneId === props.id;
   const dragging = selected && editorDragging;
@@ -537,7 +526,6 @@ function mapStateToProps(state, props) {
     visible,
     projectRoot: state.document && state.document.root,
     prefab: undefined,
-    event,
     image,
     width: image ? image.width : 32,
     height: image ? image.height : 32,

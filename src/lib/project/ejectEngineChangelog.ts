@@ -584,6 +584,22 @@ const changes: EngineChange[] = [
       ].join("\n"),
     modifiedFiles: ["All of them (sorry)"],
   },
+  {
+    version: "3.2.0-e2",
+    description:
+      "Updates\n" +
+      [
+        "   * Dyanamically allocate emote tiles",
+        "   * Fix GBT_player crash with new GBDK-2020",
+      ].join("\n"),
+    modifiedFiles: [
+      "include/actor.h",
+      "include/gbt_player.h",
+      "src/core/actor.c",
+      "src/core/data_manager.c",
+      "src/core/vm.c",
+    ],
+  },
 ];
 
 const ejectEngineChangelog = (currentVersion: string) => {

@@ -74,7 +74,7 @@ void vm_push(SCRIPT_CTX * THIS, UWORD value) OLDCALL BANKED {
     *(THIS->stack_ptr++) = value;
 }
 // cleans up to n words from stack and returns last one
- UWORD vm_pop(SCRIPT_CTX * THIS, UBYTE n) OLDCALL BANKED {
+UWORD vm_pop(SCRIPT_CTX * THIS, UBYTE n) OLDCALL BANKED {
     if (n) THIS->stack_ptr -= n;
     return *(THIS->stack_ptr);
 }
