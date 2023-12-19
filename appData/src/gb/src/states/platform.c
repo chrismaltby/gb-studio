@@ -36,36 +36,27 @@
 #define COLLISION_SLOPE_45_RIGHT 0x20
 #endif
 #ifndef COLLISION_SLOPE_225_RIGHT_BOT
-#define COLLISION_SLOPE_225_RIGHT_BOT 0x30
+#define COLLISION_SLOPE_225_RIGHT_BOT 0x40
 #endif
 #ifndef COLLISION_SLOPE_225_RIGHT_TOP
-#define COLLISION_SLOPE_225_RIGHT_TOP 0x40
-#endif
-#ifndef COLLISION_SLOPE_675_RIGHT_BOT
-#define COLLISION_SLOPE_675_RIGHT_BOT 0x50
-#endif
-#ifndef COLLISION_SLOPE_675_RIGHT_TOP
-#define COLLISION_SLOPE_675_RIGHT_TOP 0x60
+#define COLLISION_SLOPE_225_RIGHT_TOP 0x60
 #endif
 #ifndef COLLISION_SLOPE_45_LEFT
-#define COLLISION_SLOPE_45_LEFT 0x70
+#define COLLISION_SLOPE_45_LEFT 0x30
 #endif
 #ifndef COLLISION_SLOPE_225_LEFT_BOT
-#define COLLISION_SLOPE_225_LEFT_BOT 0x80
+#define COLLISION_SLOPE_225_LEFT_BOT 0x50
 #endif
 #ifndef COLLISION_SLOPE_225_LEFT_TOP
-#define COLLISION_SLOPE_225_LEFT_TOP 0x90
-#endif
-#ifndef COLLISION_SLOPE_675_LEFT_BOT
-#define COLLISION_SLOPE_675_LEFT_BOT 0xA0
-#endif
-#ifndef COLLISION_SLOPE_675_LEFT_TOP
-#define COLLISION_SLOPE_675_LEFT_TOP 0xB0
+#define COLLISION_SLOPE_225_LEFT_TOP 0x70
 #endif
 #ifndef COLLISION_SLOPE
 #define COLLISION_SLOPE 0xF0
 #endif
 
+#define IS_ON_SLOPE(t) ((t) & 0x60)
+#define IS_SLOPE_LEFT(t) ((t) & 0x10)
+#define IS_SLOPE_RIGHT(t) (((t) & 0x10) == 0)
 
 UBYTE grounded;
 UBYTE on_slope;
@@ -244,9 +235,7 @@ void platform_update(void) BANKED {
             tile_y   = (((PLAYER.pos.y >> 4) + PLAYER.bounds.bottom) >> 3);
             UBYTE tile_x_mid = ((new_x >> 4) + PLAYER.bounds.left + p_half_width + 1) >> 3; 
             col_mid = tile_at(tile_x_mid, tile_y);
-            if (
-                ((col_mid >= COLLISION_SLOPE_45_RIGHT))
-                ) {
+            if (IS_ON_SLOPE(col_mid)) {
                 on_slope = col_mid;
                 slope_y = tile_y;
             }
@@ -254,7 +243,7 @@ void platform_update(void) BANKED {
             UBYTE slope_on_y = FALSE;
             while (tile_start != tile_end) {
                 col = tile_at(tile_x, tile_start);
-                if (col >= COLLISION_SLOPE_45_RIGHT) {
+                if (IS_ON_SLOPE(col)) {
                     slope_on_y = TRUE;
                 }
 
@@ -262,8 +251,8 @@ void platform_update(void) BANKED {
                     // only ignore collisions if there is a slope on this y column somewhere
                     if (slope_on_y || tile_start == slope_y) {
                         // Right slope
-                        if ((on_slope >= COLLISION_SLOPE_45_RIGHT && on_slope < COLLISION_SLOPE_45_LEFT) ||
-                            (prev_on_slope >= COLLISION_SLOPE_45_RIGHT && prev_on_slope < COLLISION_SLOPE_45_LEFT)
+                        if ((IS_ON_SLOPE(on_slope) && IS_SLOPE_RIGHT(on_slope)) ||
+                            (IS_ON_SLOPE(prev_on_slope) && IS_SLOPE_RIGHT(prev_on_slope))
                             )
                             {
                             if (tile_start <= slope_y) {
@@ -274,8 +263,8 @@ void platform_update(void) BANKED {
                     }
                     if (slope_on_y) {
                         // Left slope
-                        if ((on_slope >= COLLISION_SLOPE_45_LEFT) ||
-                            (prev_on_slope >= COLLISION_SLOPE_45_LEFT)
+                        if ((IS_SLOPE_LEFT(on_slope)) ||
+                            (IS_SLOPE_LEFT(prev_on_slope))
                             )
                             {
                             if (tile_start >= slope_y) {
@@ -296,9 +285,7 @@ void platform_update(void) BANKED {
             tile_y   = (((PLAYER.pos.y >> 4) + PLAYER.bounds.bottom) >> 3);
             UBYTE tile_x_mid = ((new_x >> 4) + PLAYER.bounds.left + p_half_width + 1) >> 3; 
             col_mid = tile_at(tile_x_mid, tile_y);
-            if (
-                ((col_mid >= COLLISION_SLOPE_45_RIGHT))
-                ) {
+            if (IS_ON_SLOPE(col_mid)) {
                 on_slope = col_mid;
                 slope_y = tile_y;
             }
@@ -307,7 +294,7 @@ void platform_update(void) BANKED {
             UBYTE slope_on_y = FALSE;
             while (tile_start != tile_end) {
                 col = tile_at(tile_x, tile_start);
-                if (col >= COLLISION_SLOPE_45_RIGHT) {
+                if (IS_ON_SLOPE(col)) {
                     slope_on_y = TRUE;
                 }
 
@@ -315,8 +302,8 @@ void platform_update(void) BANKED {
                     // only ignore collisions if there is a slope on this y column somewhere
                     if (slope_on_y || tile_start == slope_y) {
                         // Left slope
-                        if ((on_slope >= COLLISION_SLOPE_45_LEFT) ||
-                            (prev_on_slope >= COLLISION_SLOPE_45_LEFT)
+                        if (IS_ON_SLOPE(on_slope) ||
+                            IS_ON_SLOPE(prev_on_slope)
                             )
                             {
                             if (tile_start <= slope_y) {
@@ -327,8 +314,8 @@ void platform_update(void) BANKED {
                     }
                     if (slope_on_y) {
                         // Right slope
-                        if ((on_slope >= COLLISION_SLOPE_45_RIGHT && on_slope < COLLISION_SLOPE_45_LEFT) ||
-                            (prev_on_slope >= COLLISION_SLOPE_45_RIGHT && prev_on_slope < COLLISION_SLOPE_45_LEFT)
+                        if ((IS_ON_SLOPE(on_slope) && IS_SLOPE_RIGHT(on_slope)) ||
+                            (IS_ON_SLOPE(prev_on_slope) && IS_SLOPE_RIGHT(prev_on_slope))
                             )
                             {
                             if (tile_start >= slope_y) {
@@ -367,17 +354,13 @@ void platform_update(void) BANKED {
                 UWORD tile_x_coord = (x_mid_coord >> 3) << 3;
                 UWORD x_offset = x_mid_coord - tile_x_coord;
                 UWORD slope_y_coord = 0;
-                if (col >= COLLISION_SLOPE_45_RIGHT) {
+                if (IS_ON_SLOPE(col)) {
                     if ((col & COLLISION_SLOPE) == COLLISION_SLOPE_45_RIGHT) {
                         slope_y_coord = (((tile_y << 3) + (8 - x_offset) - PLAYER.bounds.bottom) << 4) - 1;
                     } else if ((col & COLLISION_SLOPE) == COLLISION_SLOPE_225_RIGHT_BOT) {
                         slope_y_coord = (((tile_y << 3) + (8 - (x_offset >> 1)) - PLAYER.bounds.bottom) << 4) - 1;
                     } else if ((col & COLLISION_SLOPE) == COLLISION_SLOPE_225_RIGHT_TOP) {
                         slope_y_coord = (((tile_y << 3) + (4 - (x_offset >> 1)) - PLAYER.bounds.bottom) << 4) - 1;
-                    } else if ((col & COLLISION_SLOPE) == COLLISION_SLOPE_675_RIGHT_BOT) {
-                        slope_y_coord = (((tile_y << 3) + (8 - (x_offset << 1)) - PLAYER.bounds.bottom) << 4) - 1;
-                    } else if ((col & COLLISION_SLOPE) == COLLISION_SLOPE_675_RIGHT_TOP) {
-                        slope_y_coord = (((tile_y << 3) + (8 - ((x_offset - 4) << 1)) - PLAYER.bounds.bottom) << 4) - 1;
                     }
 
                     else if ((col & COLLISION_SLOPE) == COLLISION_SLOPE_45_LEFT) {
@@ -386,10 +369,6 @@ void platform_update(void) BANKED {
                         slope_y_coord = (((tile_y << 3) + (x_offset >> 1) - PLAYER.bounds.bottom + 4) << 4) - 1;
                     } else if ((col & COLLISION_SLOPE) == COLLISION_SLOPE_225_LEFT_TOP) {
                         slope_y_coord = (((tile_y << 3) + (x_offset >> 1) - PLAYER.bounds.bottom) << 4) - 1;
-                    } else if ((col & COLLISION_SLOPE) == COLLISION_SLOPE_675_LEFT_BOT) {
-                        slope_y_coord = (((tile_y << 3) + ((x_offset - 4) << 1) - PLAYER.bounds.bottom) << 4) - 1;
-                    } else if ((col & COLLISION_SLOPE) == COLLISION_SLOPE_675_LEFT_TOP) {
-                        slope_y_coord = (((tile_y << 3) + (x_offset << 1) - PLAYER.bounds.bottom) << 4) - 1;
                     }
                 }
 
