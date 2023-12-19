@@ -297,7 +297,7 @@ export const SongPianoRoll = ({
 
   const setPlaybackPosition = useCallback(
     (e: any) => {
-      const col = Math.floor(e.offsetX / CELL_SIZE);
+      const col = clamp(Math.floor(e.offsetX / CELL_SIZE), 0, 63);
 
       dispatch(
         trackerActions.setDefaultStartPlaybackPosition([sequenceId, col])
@@ -537,7 +537,7 @@ export const SongPianoRoll = ({
   const handleMouseDown = useCallback(
     (e: any) => {
       if (!pattern) return;
-      const col = Math.floor(e.offsetX / CELL_SIZE);
+      const col = clamp(Math.floor(e.offsetX / CELL_SIZE), 0, 63);
       const note = 12 * 6 - 1 - Math.floor(e.offsetY / CELL_SIZE);
       const cell = pattern[col][selectedChannel];
 
