@@ -13,6 +13,7 @@ import { ipcRenderer } from "electron";
 import { Button } from "ui/buttons/Button";
 import { SubPatternCell } from "lib/helpers/uge/song/SubPatternCell";
 import { cloneDeep } from "lodash";
+import Alert, { AlertItem } from "components/library/Alert";
 
 interface InstrumentNoiseEditorProps {
   id: string;
@@ -123,7 +124,11 @@ export const InstrumentNoiseEditor = ({
         </Button>
       </FormRow>
       {instrument.subpattern_enabled && (
-        <FormRow>{l10n("MESSAGE_NOT_PREVIEW_SUBPATTERN")}</FormRow>
+        <FormRow>
+          <Alert variant="info">
+            <AlertItem>{l10n("MESSAGE_NOT_PREVIEW_SUBPATTERN")}</AlertItem>
+          </Alert>
+        </FormRow>
       )}
     </>
   );
