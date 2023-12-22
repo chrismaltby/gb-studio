@@ -247,6 +247,8 @@ export const dummyProjectData: ProjectData = {
     cartType: "mbc5",
     batterylessEnabled: false,
     favoriteEvents: [],
+    showCollisionSlopeTiles: false,
+    showCollisionExtraTiles: false,
   },
 };
 
