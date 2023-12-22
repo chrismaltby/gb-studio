@@ -227,7 +227,7 @@ void platform_update(void) BANKED {
         tile_start = (((PLAYER.pos.y >> 4) + PLAYER.bounds.top)    >> 3);
         tile_end   = (((PLAYER.pos.y >> 4) + PLAYER.bounds.bottom) >> 3) + 1;
         UWORD old_x = PLAYER.pos.x;
-        UWORD new_x = PLAYER.pos.x + (pl_vel_x >> 8);
+        WORD new_x = PLAYER.pos.x + (pl_vel_x >> 8);
         UBYTE tile_x = 0;
         UBYTE col_mid = 0;
         if (pl_vel_x > 0) {
