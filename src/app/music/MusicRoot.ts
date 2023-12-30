@@ -1,12 +1,12 @@
 import { ipcRenderer } from "electron";
-import player from "components/music/helpers/player.ts";
+import player from "components/music/helpers/player";
 import { playNotePreview } from "components/music/helpers/notePreview";
 
-const log = (log) => {
+const log = (log: any) => {
   console.log(log);
 };
 
-const onPlayerInit = (file) => {
+const onPlayerInit = (file: Uint8Array) => {
   if (!file) {
     log(`COMPILE ERROR`);
   } else {
@@ -83,7 +83,7 @@ ipcRenderer.on("music-data", (event, d) => {
     case "preview":
       let waves = d.waveForms || [];
       if (waves.length === 0) {
-        waves = player.getCurrentSong().waves;
+        waves = player.getCurrentSong()?.waves;
       }
       playNotePreview(d.note, d.type, d.instrument, d.square2, waves);
       ipcRenderer.send("music-data-receive", {

@@ -12,7 +12,7 @@ import entitiesActions from "store/features/entities/entitiesActions";
 import settingsActions from "store/features/settings/settingsActions";
 import navigationActions from "store/features/navigation/navigationActions";
 import projectActions from "store/features/project/projectActions";
-import buildGameActions from "store/features/buildGame/buildGameActions";
+import buildGameActions, {BuildType, ProjectExportType} from "store/features/buildGame/buildGameActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import engineActions from "store/features/engine/engineActions";
 import errorActions from "store/features/error/errorActions";
@@ -24,6 +24,8 @@ import {
   initEngineFields,
   engineFieldsEmitter,
 } from "lib/project/engineFields";
+import {ZoomSection} from "store/features/editor/editorState";
+import {NavigationSection} from "store/features/navigation/navigationState";
 
 initElectronL10n();
 
@@ -38,7 +40,7 @@ const actions = {
 
 const vmActions = mapValues(actions, (_fn, key) => {
   // Strip proxy object from VM2 output
-  return (payload) => actions[key](JSON.parse(JSON.stringify(payload)));
+  return (payload: any) => (actions as any)[key](JSON.parse(JSON.stringify(payload)));
 });
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -120,7 +122,7 @@ const onSaveAndCloseProject = async () => {
   window.close();
 };
 
-const onSaveProjectAs = (event, pathName) => {
+const onSaveProjectAs = (event: any, pathName: string) => {
   store.dispatch(projectActions.saveProject(pathName));
 };
 
@@ -140,7 +142,7 @@ const onRedo = () => {
   }
 };
 
-const onSetSection = (event, section) => {
+const onSetSection = (event: any, section: NavigationSection) => {
   store.dispatch(navigationActions.setSection(section));
 };
 
@@ -148,7 +150,7 @@ const onReloadAssets = () => {
   store.dispatch(projectActions.reloadAssets());
 };
 
-const onUpdateSetting = (event, setting, value) => {
+const onUpdateSetting = (event: any, setting: string, value: any) => {
   store.dispatch(
     settingsActions.editSettings({
       [setting]: value,
@@ -156,22 +158,22 @@ const onUpdateSetting = (event, setting, value) => {
   );
 };
 
-const onZoom = (event, zoomType) => {
+const onZoom = (event: any, zoomType: "in"|"out") => {
   const state = store.getState();
   if (zoomType === "in") {
-    store.dispatch(editorActions.zoomIn({ section: state.navigation.section }));
+    store.dispatch(editorActions.zoomIn({ section: state.navigation.section as ZoomSection }));
   } else if (zoomType === "out") {
     store.dispatch(
-      editorActions.zoomOut({ section: state.navigation.section })
+      editorActions.zoomOut({ section: state.navigation.section as ZoomSection })
     );
   } else {
     store.dispatch(
-      editorActions.zoomReset({ section: state.navigation.section })
+      editorActions.zoomReset({ section: state.navigation.section as ZoomSection })
     );
   }
 };
 
-const onWindowZoom = (event, zoomLevel) => {
+const onWindowZoom = (event: any, zoomLevel: number) => {
   webFrame.setZoomLevel(zoomLevel);
 };
 
@@ -179,12 +181,12 @@ const onRun = () => {
   store.dispatch(buildGameActions.buildGame());
 };
 
-const onBuild = (event, buildType, eject) => {
+const onBuild = (event: any, buildType: BuildType, eject: boolean) => {
   store.dispatch(
     buildGameActions.buildGame({
       buildType,
       exportBuild: !eject,
-      ejectBuild: eject,
+      // fixme: ejectBuild: eject,
     })
   );
 };
@@ -193,21 +195,21 @@ const onEjectEngine = () => {
   store.dispatch(buildGameActions.ejectEngine());
 };
 
-const onExportProject = (_event, exportType) => {
+const onExportProject = (_event: any, exportType: ProjectExportType) => {
   store.dispatch(buildGameActions.exportProject(exportType));
 };
 
-const onPluginRun = (_event, pluginId) => {
+const onPluginRun = (_event: any, pluginId: string) => {
   if (plugins.menu[pluginId] && plugins.menu[pluginId].run) {
-    plugins.menu[pluginId].run(store, vmActions);
+    plugins.menu[pluginId].run!(store, vmActions);
   }
 };
 
-const onPasteInPlace = (_event) => {
+const onPasteInPlace = () => {
   store.dispatch(clipboardActions.pasteClipboardEntityInPlace());
 };
 
-const onKeyBindingsUpdate = (_event) => {
+const onKeyBindingsUpdate = () => {
   initKeyBindings();
 };
 
@@ -235,16 +237,16 @@ const navigatorSidebarWidth = settings.get("navigatorSidebarWidth");
 
 if (worldSidebarWidth) {
   store.dispatch(
-    editorActions.resizeWorldSidebar(clampSidebarWidth(worldSidebarWidth))
+    editorActions.resizeWorldSidebar(clampSidebarWidth(worldSidebarWidth as number))
   );
 }
 if (filesSidebarWidth) {
   store.dispatch(
-    editorActions.resizeFilesSidebar(clampSidebarWidth(filesSidebarWidth))
+    editorActions.resizeFilesSidebar(clampSidebarWidth(filesSidebarWidth as number))
   );
 }
 if (navigatorSidebarWidth) {
-  store.dispatch(editorActions.resizeNavigatorSidebar(navigatorSidebarWidth));
+  store.dispatch(editorActions.resizeNavigatorSidebar(navigatorSidebarWidth as number));
 }
 
 window.addEventListener(
@@ -279,8 +281,8 @@ window.addEventListener("keydown", (e) => {
 
 // Prevent mousewheel from accidentally changing focused number fields
 document.body.addEventListener("mousewheel", () => {
-  if (document.activeElement.type === "number") {
-    document.activeElement.blur();
+  if ((document.activeElement as any).type === "number") {
+    (document.activeElement as any).blur();
   }
 });
 

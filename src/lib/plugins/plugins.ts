@@ -3,29 +3,35 @@ import glob from "glob";
 import Path from "path";
 import chokidar from "chokidar";
 import EventEmitter from "events";
-import { ipcRenderer } from "electron";
+import {ipcRenderer} from "electron";
+import configureStore from "store/configureStore";
 
 // eslint-disable-next-line no-undef
 const VM2 = __non_webpack_require__("vm2");
 const NodeVM = VM2.NodeVM;
 
+// @ts-ignore
 const pluginEmitter = new EventEmitter();
 
 const plugins = {
-  events: [],
-  menu: [],
+  events: {} as Record<string, string>,
+  menu: {} as Record<string, {
+    run?: (
+      store: typeof configureStore,
+      actions: Record<string, (payload: any) => any>,
+    ) => void
+  }>,
 };
 
 const vm = new NodeVM({
   timeout: 1000,
   sandbox: {},
-  compiler: (code) => {
+  compiler: (code: string) => {
     // Convert es6 style modules to commonjs
-    let moduleCode = code;
-    moduleCode = code.replace(/(^|\n)(\S\s)*export /g, "");
+    let moduleCode = code.replace(/(^|\n)(\S\s)*export /g, "");
     if (moduleCode.indexOf("module.exports") === -1) {
-      const moduleExports = code
-        .match(/export [a-z]* [a-zA-Z_$][0-9a-zA-Z_$]*]*/g)
+      const moduleExports = (code
+        .match(/export [a-z]* [a-zA-Z_$][0-9a-zA-Z_$]*]*/g) ?? [])
         .map((c) => c.replace(/.* /, ""));
       moduleCode += `\nmodule.exports = { ${moduleExports.join(", ")} };`;
     }
@@ -33,7 +39,7 @@ const vm = new NodeVM({
   },
 });
 
-const loadPlugin = (projectRoot, path) => {
+const loadPlugin = (projectRoot: string, path: string) => {
   try {
     const pluginCode = fs.readFileSync(path, "utf8");
     const plugin = vm.run(pluginCode);
@@ -41,7 +47,7 @@ const loadPlugin = (projectRoot, path) => {
       throw new Error(`Event plugin ${path} is missing id`);
     }
     plugin.isConditional =
-      plugin.fields && !!plugin.fields.find((f) => f.type === "events");
+      plugin.fields && !!plugin.fields.find((f: { type: string }) => f.type === "events");
     plugin.plugin = Path.relative(`${projectRoot}/plugins`, path).split(
       Path.sep
     )[0];
@@ -53,7 +59,7 @@ const loadPlugin = (projectRoot, path) => {
   }
 };
 
-const initPlugins = (projectRoot) => {
+const initPlugins = (projectRoot: string) => {
   const pluginEventHandlerPaths = projectRoot
     ? glob.sync(`${projectRoot}/plugins/**/events/event*.js`)
     : [];
@@ -61,8 +67,8 @@ const initPlugins = (projectRoot) => {
     ? glob.sync(`${projectRoot}/plugins/**/menu/menu*.js`)
     : [];
 
-  const pluginEventFilepaths = {};
-  const pluginMenuFilepaths = {};
+  const pluginEventFilepaths = {} as Record<string, string>;
+  const pluginMenuFilepaths = {} as Record<string, string>;
 
   plugins.events = pluginEventHandlerPaths.reduce((memo, path) => {
     const plugin = loadPlugin(projectRoot, path);
@@ -114,7 +120,7 @@ const initPlugins = (projectRoot) => {
         if (!plugin || oldPluginId !== plugin.id) {
           pluginEventFilepaths[path] = oldPluginId;
           delete plugins.events[oldPluginId];
-          pluginEmitter.emit("remove-event", { id: oldPluginId });
+          pluginEmitter.emit("remove-event", {id: oldPluginId});
         }
         if (!plugin) {
           return;
@@ -127,7 +133,7 @@ const initPlugins = (projectRoot) => {
         const pluginId = pluginEventFilepaths[path];
         delete plugins.events[pluginId];
         delete pluginEventFilepaths[path];
-        pluginEmitter.emit("remove-event", { id: pluginId });
+        pluginEmitter.emit("remove-event", {id: pluginId});
       });
 
     chokidar
@@ -150,7 +156,7 @@ const initPlugins = (projectRoot) => {
         if (!plugin || oldPluginId !== plugin.id) {
           pluginMenuFilepaths[path] = oldPluginId;
           delete plugins.menu[oldPluginId];
-          pluginEmitter.emit("remove-menu", { id: oldPluginId });
+          pluginEmitter.emit("remove-menu", {id: oldPluginId});
         }
         if (!plugin) {
           ipcRenderer.send("set-menu-plugins", plugins.menu);
@@ -165,11 +171,11 @@ const initPlugins = (projectRoot) => {
         const pluginId = pluginMenuFilepaths[path];
         delete plugins.menu[pluginId];
         delete pluginMenuFilepaths[path];
-        pluginEmitter.emit("remove-menu", { id: pluginId });
+        pluginEmitter.emit("remove-menu", {id: pluginId});
         ipcRenderer.send("set-menu-plugins", plugins.menu);
       });
   }
 };
 
 export default plugins;
-export { pluginEmitter, initPlugins };
+export {pluginEmitter, initPlugins};

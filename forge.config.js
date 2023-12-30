@@ -58,7 +58,7 @@ module.exports = {
           entryPoints: [
             {
               html: "./src/app/project/project.html",
-              js: "./src/app/project/ProjectRoot.js",
+              js: "./src/app/project/ProjectRoot.tsx",
               name: "main_window",
               additionalChunks: [
                 "vendor-react",
@@ -70,7 +70,7 @@ module.exports = {
             },
             {
               html: "./src/app/splash/splash.html",
-              js: "./src/app/splash/SplashRoot.js",
+              js: "./src/app/splash/SplashRoot.tsx",
               name: "splash_window",
               additionalChunks: [
                 "vendor-react",
@@ -80,7 +80,7 @@ module.exports = {
             },
             {
               html: "./src/app/preferences/preferences.html",
-              js: "./src/app/preferences/PreferencesRoot.js",
+              js: "./src/app/preferences/PreferencesRoot.tsx",
               name: "preferences_window",
               additionalChunks: [
                 "vendor-react",
@@ -90,7 +90,7 @@ module.exports = {
             },
             {
               html: "./src/app/music/music.html",
-              js: "./src/app/music/MusicRoot.js",
+              js: "./src/app/music/MusicRoot.ts",
               name: "music_window",
               additionalChunks: [
                 "vendor-react",

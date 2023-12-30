@@ -22,7 +22,7 @@
       "lib/*": [ "./lib/*" ],
       "ui/*": [ "./components/ui/*" ],
       "components/*": [ "./components/*" ]
-    }
+    },
   },
   "include": ["src"]
 }
