@@ -1,19 +1,54 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
+import React, {ChangeEvent, Component} from "react";
+import {connect} from "react-redux";
 import cx from "classnames";
 import Button from "../library/Button";
-import { HelpIcon } from "ui/icons/Icons";
+import {HelpIcon} from "ui/icons/Icons";
 import l10n from "lib/helpers/l10n";
-import { groupBy } from "lib/helpers/array";
+import {groupBy} from "lib/helpers/array";
 import editorActions from "store/features/editor/editorActions";
 import navigationActions from "store/features/navigation/navigationActions";
-import { clampSidebarWidth } from "lib/helpers/window/sidebar";
+import {clampSidebarWidth} from "lib/helpers/window/sidebar";
+import {RootState} from "store/configureStore";
 
 const groupByPlugin = groupBy("plugin");
 
-class FilesSidebar extends Component {
-  constructor(props) {
+interface File {
+  id: string;
+  name: string;
+  plugin?: string;
+}
+
+interface StateProps {
+  resizeFilesSidebar: (width: number) => void;
+  setNavigationId: (id: string) => void;
+  onSearch: (query: string) => void;
+  width: number;
+  files: Array<File>;
+  selectedFile: {
+    id: string;
+    name: string;
+  };
+  onAdd: () => void;
+  query: string;
+}
+
+interface State {
+  dragging: boolean;
+}
+
+
+class FilesSidebar extends Component<StateProps, State> {
+  static defaultProps = {
+    width: 300,
+    selectedFile: {
+      id: "",
+      name: "",
+    },
+    onAdd: undefined,
+  };
+  private readonly dragHandler: React.RefObject<HTMLDivElement>;
+
+  constructor(props: StateProps) {
     super(props);
     this.state = {
       dragging: false,
@@ -38,7 +73,7 @@ class FilesSidebar extends Component {
   };
 
   onMouseUp = () => {
-    const { dragging } = this.state;
+    const {dragging} = this.state;
     if (dragging) {
       this.setState({
         dragging: false,
@@ -46,21 +81,21 @@ class FilesSidebar extends Component {
     }
   };
 
-  onMouseMove = (event) => {
-    const { resizeFilesSidebar } = this.props;
-    const { dragging } = this.state;
+  onMouseMove = (event: MouseEvent) => {
+    const {resizeFilesSidebar} = this.props;
+    const {dragging} = this.state;
     if (dragging) {
       resizeFilesSidebar(clampSidebarWidth(window.innerWidth - event.pageX));
     }
   };
 
-  onSearch = (e) => {
-    const { onSearch } = this.props;
+  onSearch = (e: ChangeEvent<HTMLInputElement>) => {
+    const {onSearch} = this.props;
     onSearch(e.currentTarget.value);
   };
 
-  renderFile = (file) => {
-    const { selectedFile, setNavigationId } = this.props;
+  renderFile = (file: File) => {
+    const {selectedFile, setNavigationId} = this.props;
     return (
       <div
         key={file.id}
@@ -75,7 +110,7 @@ class FilesSidebar extends Component {
   };
 
   render() {
-    const { files, onAdd, query, width } = this.props;
+    const {files, onAdd, query, width} = this.props;
 
     const groupedFiles = groupByPlugin(files);
 
@@ -87,7 +122,7 @@ class FilesSidebar extends Component {
           onMouseDown={this.onMouseDown}
           onMouseUp={this.onMouseUp}
         />
-        <div className="FilesSidebar" style={{ width }}>
+        <div className="FilesSidebar" style={{width}}>
           <div className="FilesSidebar__Search">
             <input
               autoFocus
@@ -97,7 +132,7 @@ class FilesSidebar extends Component {
             />
             {onAdd && (
               <Button onClick={onAdd} title={l10n("MENU_DOCUMENTATION")}>
-                <HelpIcon />
+                <HelpIcon/>
               </Button>
             )}
           </div>
@@ -120,36 +155,8 @@ class FilesSidebar extends Component {
   }
 }
 
-FilesSidebar.propTypes = {
-  resizeFilesSidebar: PropTypes.func.isRequired,
-  setNavigationId: PropTypes.func.isRequired,
-  onSearch: PropTypes.func.isRequired,
-  width: PropTypes.number,
-  files: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired,
-    })
-  ).isRequired,
-  selectedFile: PropTypes.shape({
-    id: PropTypes.string,
-    name: PropTypes.string,
-  }),
-  onAdd: PropTypes.func,
-  query: PropTypes.string.isRequired,
-};
-
-FilesSidebar.defaultProps = {
-  width: 300,
-  selectedFile: {
-    id: "",
-    name: "",
-  },
-  onAdd: undefined,
-};
-
-function mapStateToProps(state) {
-  const { filesSidebarWidth: width } = state.editor;
+function mapStateToProps(state: RootState) {
+  const {filesSidebarWidth: width} = state.editor;
   return {
     width,
   };

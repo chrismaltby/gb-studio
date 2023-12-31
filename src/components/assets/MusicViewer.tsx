@@ -1,14 +1,36 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
+import React, {ChangeEvent, Component} from "react";
+import {connect} from "react-redux";
 import Button from "../library/Button";
-import { PlayIcon, PauseIcon } from "ui/icons/Icons";
+import {PauseIcon, PlayIcon} from "ui/icons/Icons";
 import l10n from "lib/helpers/l10n";
 import musicActions from "store/features/music/musicActions";
 import electronActions from "store/features/electron/electronActions";
 import entitiesActions from "store/features/entities/entitiesActions";
+import {RootState} from "store/configureStore";
 
-class MusicViewer extends Component {
+interface StateProps {
+  projectRoot: string;
+  file: {
+    id: string;
+    filename: string;
+    settings: {
+      disableSpeedConversion: boolean;
+    };
+  };
+  sidebarWidth: number;
+  playing: boolean;
+}
+
+interface ActionProps {
+  play: (args: { musicId: string }) => void;
+  pause: () => void;
+  openFile: (args: { filename: string; type: "image" | "music" }) => void;
+  editMusicSettings: (args: { musicId: string; changes: any }) => void;
+}
+
+type Props = StateProps & ActionProps;
+
+class MusicViewer extends Component<Props> {
   componentDidMount() {
     window.addEventListener("keydown", this.onKeyDown);
   }
@@ -18,7 +40,7 @@ class MusicViewer extends Component {
   }
 
   onOpen = () => {
-    const { projectRoot, file, openFile } = this.props;
+    const {projectRoot, file, openFile} = this.props;
     openFile({
       filename: `${projectRoot}/assets/music/${file.filename}`,
       type: "music",
@@ -26,19 +48,19 @@ class MusicViewer extends Component {
   };
 
   onPlay = () => {
-    const { file, play } = this.props;
+    const {file, play} = this.props;
     if (file) {
-      play({ musicId: file.id });
+      play({musicId: file.id});
     }
   };
 
   onPause = () => {
-    const { pause } = this.props;
+    const {pause} = this.props;
     pause();
   };
 
-  onKeyDown = (e) => {
-    const { playing } = this.props;
+  onKeyDown = (e: KeyboardEvent) => {
+    const {playing} = this.props;
     if (e.key === "Enter") {
       if (playing) {
         this.onPause();
@@ -48,8 +70,8 @@ class MusicViewer extends Component {
     }
   };
 
-  onChangeSpeedConversion = (e) => {
-    const { file, editMusicSettings } = this.props;
+  onChangeSpeedConversion = (e: ChangeEvent<HTMLInputElement>) => {
+    const {file, editMusicSettings} = this.props;
     editMusicSettings({
       musicId: file.id,
       changes: {
@@ -59,18 +81,18 @@ class MusicViewer extends Component {
   };
 
   render() {
-    const { file, playing, sidebarWidth } = this.props;
+    const {file, playing, sidebarWidth} = this.props;
     return (
-      <div className="MusicViewer" style={{ right: sidebarWidth }}>
+      <div className="MusicViewer" style={{right: sidebarWidth}}>
         {file && (
           <div className="MusicViewer__Content">
             {playing ? (
               <Button large transparent onClick={this.onPause}>
-                <PauseIcon />
+                <PauseIcon/>
               </Button>
             ) : (
               <Button large transparent onClick={this.onPlay}>
-                <PlayIcon />
+                <PlayIcon/>
               </Button>
             )}
             <div className="MusicViewer__Filename">{file.filename}</div>
@@ -86,7 +108,7 @@ class MusicViewer extends Component {
                       false
                     }
                   />
-                  <div className="FormCheckbox" />
+                  <div className="FormCheckbox"/>
                   {l10n("FIELD_MUSIC_DISABLE_SPEED_CONVERSION")}
                 </label>
               </div>
@@ -94,7 +116,7 @@ class MusicViewer extends Component {
           </div>
         )}
         {file && (
-          <div className="ImageViewer__Edit" style={{ right: 10 }}>
+          <div className="ImageViewer__Edit" style={{right: 10}}>
             <Button onClick={this.onOpen}>{l10n("ASSET_EDIT")}</Button>
           </div>
         )}
@@ -103,33 +125,13 @@ class MusicViewer extends Component {
   }
 }
 
-MusicViewer.propTypes = {
-  projectRoot: PropTypes.string.isRequired,
-  file: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    filename: PropTypes.string.isRequired,
-    settings: PropTypes.shape({
-      disableSpeedConversion: PropTypes.bool,
-    }),
-  }),
-  sidebarWidth: PropTypes.number.isRequired,
-  playing: PropTypes.bool.isRequired,
-  play: PropTypes.func.isRequired,
-  pause: PropTypes.func.isRequired,
-  openFile: PropTypes.func.isRequired,
-  editMusicSettings: PropTypes.func.isRequired,
-};
-
-MusicViewer.defaultProps = {
-  file: {},
-};
-
-function mapStateToProps(state) {
-  const { filesSidebarWidth: sidebarWidth } = state.editor;
+function mapStateToProps(state: RootState, ownProps: any): StateProps {
+  const {filesSidebarWidth: sidebarWidth} = state.editor;
   return {
     projectRoot: state.document && state.document.root,
     playing: state.music.playing,
     sidebarWidth,
+    file: ownProps.file,
   };
 }
 

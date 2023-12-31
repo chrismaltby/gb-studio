@@ -68,6 +68,7 @@ export const PaletteShape = PropTypes.shape({
   colors: PropTypes.arrayOf(PropTypes.string).isRequired,
 });
 
+
 export const ProjectShape = PropTypes.shape({
   name: PropTypes.string,
   author: PropTypes.string,
@@ -93,6 +94,15 @@ export const ErrorShape = PropTypes.shape({
   line: PropTypes.number,
   col: PropTypes.number,
 });
+
+export interface InternalError {
+  visible: boolean;
+  message: string;
+  filename: string;
+  stackTrace: string;
+  line: number;
+  col: number;
+}
 
 export const EventValueShape = PropTypes.oneOfType([
   PropTypes.number,
