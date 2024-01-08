@@ -600,6 +600,13 @@ const changes: EngineChange[] = [
       "src/core/vm.c",
     ],
   },
+  {
+    version: "3.2.0-e3",
+    description:
+      "Updates\n" +
+      ["   * Add support for slopes to platform scenes"].join("\n"),
+    modifiedFiles: ["src/states/platform.c"],
+  },
 ];
 
 const ejectEngineChangelog = (currentVersion: string) => {
