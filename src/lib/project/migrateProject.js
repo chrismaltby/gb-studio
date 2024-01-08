@@ -21,7 +21,7 @@ import { toValidSymbol } from "lib/helpers/symbols";
 
 const indexById = indexBy("id");
 
-export const LATEST_PROJECT_VERSION = "3.1.1";
+export const LATEST_PROJECT_VERSION = "3.2.0";
 export const LATEST_PROJECT_MINOR_VERSION = "1";
 
 const ensureProjectAssetSync = (relativePath, { projectRoot }) => {
@@ -1906,6 +1906,10 @@ const migrateProject = (project, projectRoot) => {
     if (release === "1") {
       data = migrateFrom310r3To311r1Events(data);
       release = "2";
+    }
+    if (release === "2") {
+      version = "3.2.0";
+      release = "1";
     }
   }
 
