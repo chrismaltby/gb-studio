@@ -263,8 +263,8 @@ void platform_update(void) BANKED {
                     }
                     if (slope_on_y) {
                         // Left slope
-                        if ((IS_SLOPE_LEFT(on_slope)) ||
-                            (IS_SLOPE_LEFT(prev_on_slope))
+                        if ((IS_ON_SLOPE(on_slope) && IS_SLOPE_LEFT(on_slope)) ||
+                            (IS_ON_SLOPE(prev_on_slope) && IS_SLOPE_LEFT(prev_on_slope))
                             )
                             {
                             if (tile_start >= slope_y) {
@@ -302,8 +302,8 @@ void platform_update(void) BANKED {
                     // only ignore collisions if there is a slope on this y column somewhere
                     if (slope_on_y || tile_start == slope_y) {
                         // Left slope
-                        if (IS_ON_SLOPE(on_slope) ||
-                            IS_ON_SLOPE(prev_on_slope)
+                        if ((IS_ON_SLOPE(on_slope) && IS_SLOPE_LEFT(on_slope)) ||
+                            (IS_ON_SLOPE(prev_on_slope) && IS_SLOPE_LEFT(prev_on_slope))                            
                             )
                             {
                             if (tile_start <= slope_y) {
