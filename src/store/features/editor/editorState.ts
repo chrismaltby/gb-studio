@@ -6,6 +6,7 @@ import {
   DRAG_TRIGGER,
   DRAG_DESTINATION,
   DRAG_PLAYER,
+  BRUSH_SLOPE,
 } from "../../../consts";
 import { zoomIn, zoomOut } from "lib/helpers/zoom";
 import { Actor, Trigger, SceneData, Variable } from "../entities/entitiesTypes";
@@ -25,7 +26,7 @@ export type Tool =
   | "eraser"
   | "select";
 
-export type Brush = "8px" | "16px" | "fill";
+export type Brush = "8px" | "16px" | "fill" | "magic" | "slope";
 
 export type EditorSelectionType =
   | "world"
@@ -54,6 +55,17 @@ export type InstrumentType = "duty" | "wave" | "noise";
 export interface SelectedInstrument {
   id: string;
   type: InstrumentType;
+}
+
+export type SlopeIncline = "medium" | "shallow" | "steep";
+
+export interface SlopePreview {
+  startX: number;
+  startY: number;
+  endX: number;
+  endY: number;
+  offset: boolean;
+  slopeIncline: SlopeIncline;
 }
 
 export interface EditorState {
@@ -123,6 +135,7 @@ export interface EditorState {
   selectedInstrument: SelectedInstrument;
   selectedSequence: number;
   precisionTileMode: boolean;
+  slopePreview?: SlopePreview;
 }
 
 export const initialState: EditorState = {
@@ -191,6 +204,7 @@ export const initialState: EditorState = {
   },
   selectedSequence: 0,
   precisionTileMode: false,
+  slopePreview: undefined,
 };
 
 const editorSlice = createSlice({
@@ -203,6 +217,13 @@ const editorSlice = createSlice({
       state.triggerDefaults = undefined;
       state.sceneDefaults = undefined;
       state.pasteMode = false;
+      // Reset to 8px brush is current brush not supported
+      if (
+        state.selectedBrush === BRUSH_SLOPE &&
+        action.payload.tool !== "collisions"
+      ) {
+        state.selectedBrush = BRUSH_8PX;
+      }
     },
 
     setPasteMode: (state, action: PayloadAction<boolean>) => {
@@ -672,6 +693,17 @@ const editorSlice = createSlice({
     setPrecisionTileMode: (state, action: PayloadAction<boolean>) => {
       state.precisionTileMode = action.payload;
     },
+
+    setSlopePreview: (
+      state,
+      action: PayloadAction<{
+        sceneId: string;
+        slopePreview?: SlopePreview;
+      }>
+    ) => {
+      state.scene = action.payload.sceneId;
+      state.slopePreview = action.payload.slopePreview;
+    },
   },
   extraReducers: (builder) =>
     builder
@@ -776,6 +808,10 @@ const editorSlice = createSlice({
         state.selectedAnimationId = action.payload.spriteAnimations[0].id;
         state.selectedMetaspriteId =
           action.payload.spriteAnimations[0].frames[0];
+      })
+      // When painting slope stop slope preview
+      .addCase(entitiesActions.paintSlopeCollision, (state) => {
+        state.slopePreview = undefined;
       })
       // When UI changes increment UI version number
       .addMatcher(

@@ -2994,7 +2994,7 @@ extern void __mute_mask_${symbol};
     if (speed === 0) {
       this._cameraSetPos(cameraMoveArgsRef);
     } else {
-      this._cameraMoveTo(cameraMoveArgsRef, speed, ".CAMERA_UNLOCK");
+      this._cameraMoveTo(cameraMoveArgsRef, speed - 1, ".CAMERA_UNLOCK");
     }
     this._addNL();
   };

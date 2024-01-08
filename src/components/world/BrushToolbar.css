@@ -1,71 +1,3 @@
-.BrushToolbar {
-  position: absolute;
-  height: 36px;
-  left: 56px;
-  top: -45px;
-  background-color: var(--sidebar-bg-color);
-  border: 1px solid var(--sidebar-edge-color);
-  border-radius: 4px;
-  padding: 0 4px;
-  transition: top 0.2s ease-in-out;
-  display: flex;
-  align-items: center;
-}
-
-.BrushToolbar--Visible {
-  top: 10px;
-}
-
-.BrushToolbar__Item {
-  position: relative;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.BrushToolbar svg {
-  fill: var(--main-text-color);
-  width: 20px;
-}
-
-.BrushToolbar__Item:hover {
-  background-color: var(--sidebar-hover-color);
-}
-
-.BrushToolbar__Item--Selected,
-.BrushToolbar__Item--Selected:hover {
-  background-color: var(--sidebar-selected-color);
-}
-
-.BrushToolbar__Divider {
-  background-color: var(--sidebar-edge-color);
-  min-width: 1px;
-  align-self: stretch;
-  margin: 5px 5px;
-}
-
-.BrushToolbar__ModalFade {
-  position: fixed;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  background-color: rgba(255, 0, 0, 0.1);
-  z-index: 10000;
-}
-
-.BrushToolbar__Tile {
-  position: relative;
-  background-color: var(--input-bg-color);
-  width: 24px;
-  height: 24px;
-  border: 1px solid var(--input-bg-color);
-  box-sizing: border-box;
-  border-radius: 4px;
-}
-
 .BrushToolbar__Tile--solid::before {
   content: "";
   display: block;
@@ -140,4 +72,133 @@
   top: 4px;
   border-top: 4px solid green;
   border-bottom: 4px solid green;
+}
+
+.BrushToolbar__Tile--slope_45_right::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  display: block;
+  background-color: blue;
+  clip-path: polygon(0% 100%, 100% 0%, 100% 100%);
+}
+
+.BrushToolbar__Tile--slope_45_left::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  display: block;
+  background-color: blue;
+  clip-path: polygon(0% 100%, 0% 0%, 100% 100%);
+}
+
+.BrushToolbar__Tile--slope_22_right_bot::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  display: block;
+  background-color: green;
+  clip-path: polygon(0% 100%, 100% 50%, 100% 100%);
+}
+
+.BrushToolbar__Tile--slope_22_right_top::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  display: block;
+  background-color: green;
+  clip-path: polygon(0% 50%, 100% 0%, 100% 50%);
+}
+
+.BrushToolbar__Tile--slope_22_left_bot::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  display: block;
+  background-color: green;
+  clip-path: polygon(0% 100%, 0% 50%, 100% 100%);
+}
+
+.BrushToolbar__Tile--slope_22_left_top::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  display: block;
+  background-color: green;
+  clip-path: polygon(0% 50%, 0% 0%, 100% 50%);
+}
+
+.BrushToolbar__Tile--slope_67_right_bot::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  display: block;
+  background-color: fuchsia;
+  clip-path: polygon(0% 100%, 50% 25%, 50% 100%);
+}
+
+.BrushToolbar__Tile--slope_67_right_top::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  display: block;
+  background-color: fuchsia;
+  clip-path: polygon(50% 75%, 100% 0%, 100% 75%);
+}
+
+.BrushToolbar__Tile--slope_67_left_bot::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  display: block;
+  background-color: cyan;
+  clip-path: polygon(100% 100%, 50% 25%, 50% 100%);
+}
+
+.BrushToolbar__Tile--slope_67_left_top::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  display: block;
+  background-color: cyan;
+  clip-path: polygon(50% 75%, 0% 0%, 0% 75%);
+}
+
+.BrushToolbar__Tile--spare_08::before {
+  padding: 3px;
+  content: " 8";
+}
+
+.BrushToolbar__Tile--spare_09::before {
+  padding: 3px;
+  content: " 9";
+}
+
+.BrushToolbar__Tile--spare_10::before {
+  padding: 3px;
+  content: " 10";
+}
+
+.BrushToolbar__Tile--spare_11::before {
+  padding: 3px;
+  content: " 11";
+}
+
+.BrushToolbar__Tile--spare_12::before {
+  padding: 3px;
+  content: " 12";
+}
+
+.BrushToolbar__Tile--spare_13::before {
+  padding: 3px;
+  content: " 13";
+}
+
+.BrushToolbar__Tile--spare_14::before {
+  padding: 3px;
+  content: "14";
+}
+.BrushToolbar__Tile--spare_15::before {
+  padding: 3px;
+  content: "15";
 }

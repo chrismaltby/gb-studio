@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Subpattern editor added to Instrument Editor [@pau-tomas](https://github.com/pau-tomas)
 - Add warning when trying to reuse background from a logo scene [@pau-tomas](https://github.com/pau-tomas)
 - Add descriptive README files to asset folders in new projects [@pau-tomas](https://github.com/pau-tomas)
+- Add slope brush when drawing collisions
+- Add magic brush when painting tiles and drawing collisions, updates all tiles matching the one clicked [@RichardULZ](https://github.com/RichardULZ)
+- Add support for slopes to platform scenes [@Canight](https://github.com/Canite) [@gearfo](https://gearfo.itch.io/) [@Gumpy Function](https://www.gumpyfunction.com/)
 
 ### Changed
 

@@ -34,6 +34,7 @@ import {
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import ScenePriorityMap from "./ScenePriorityMap";
+import SceneSlopePreview from "./SceneSlopePreview";
 import { SceneEventHelper } from "./SceneEventHelper";
 
 const TILE_SIZE = 8;
@@ -150,6 +151,7 @@ class Scene extends Component {
       labelOffsetLeft,
       labelOffsetRight,
       parallaxHoverLayer,
+      slopePreview,
       editable,
     } = this.props;
 
@@ -238,6 +240,13 @@ class Scene extends Component {
                 height={height}
                 collisions={collisions}
               />
+              {selected && slopePreview && (
+                <SceneSlopePreview
+                  width={width}
+                  height={height}
+                  slopePreview={slopePreview}
+                />
+              )}
             </div>
           )}
 
@@ -299,7 +308,7 @@ class Scene extends Component {
               />
             </div>
           )}
-          {editable && (
+          {editable && (hovered || selected) && (
             <SceneCursor
               sceneId={id}
               enabled={hovered}
@@ -387,6 +396,7 @@ function mapStateToProps(state, props) {
     dragging: editorDragging,
     showLayers,
     parallaxHoverLayer,
+    slopePreview,
   } = state.editor;
 
   const backgroundsLookup = backgroundSelectors.selectEntities(state);
@@ -533,6 +543,7 @@ function mapStateToProps(state, props) {
     labelOffsetLeft,
     labelOffsetRight,
     parallaxHoverLayer,
+    slopePreview,
   };
 }
 

@@ -1,12 +1,12 @@
 import { Middleware, Action, Dispatch } from "@reduxjs/toolkit";
 import { getBackgroundInfo } from "lib/helpers/validation";
-import actions from "./warningsActions";
+import actions from "./assetsActions";
 import { RootState } from "store/configureStore";
 import { backgroundSelectors } from "../entities/entitiesState";
 
-const warningsMiddleware: Middleware<Dispatch, RootState> =
+const assetsMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => (action: Action) => {
-    if (actions.checkBackgroundWarnings.match(action)) {
+    if (actions.loadBackgroundAssetInfo.match(action)) {
       const state = store.getState();
       const backgroundsLookup = backgroundSelectors.selectEntities(state);
       const background = backgroundsLookup[action.payload.backgroundId];
@@ -14,7 +14,7 @@ const warningsMiddleware: Middleware<Dispatch, RootState> =
 
       if (background) {
         const cachedWarnings =
-          state.warnings.backgrounds[action.payload.backgroundId];
+          state.assets.backgrounds[action.payload.backgroundId];
         if (
           !cachedWarnings ||
           cachedWarnings.timestamp < background._v ||
@@ -23,11 +23,12 @@ const warningsMiddleware: Middleware<Dispatch, RootState> =
           getBackgroundInfo(background, action.payload.is360, projectRoot).then(
             (info) => {
               store.dispatch(
-                actions.setBackgroundWarnings({
+                actions.setBackgroundAssetInfo({
                   id: action.payload.backgroundId,
                   is360: action.payload.is360,
                   warnings: info.warnings,
                   numTiles: info.numTiles,
+                  lookup: info.lookup,
                 })
               );
             }
@@ -38,4 +39,4 @@ const warningsMiddleware: Middleware<Dispatch, RootState> =
     return next(action);
   };
 
-export default warningsMiddleware;
+export default assetsMiddleware;

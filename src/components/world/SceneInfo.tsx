@@ -116,7 +116,7 @@ const SceneInfo = () => {
   );
   const backgroundNumTiles = useSelector(
     (state: RootState) =>
-      state.warnings.backgrounds[scene?.backgroundId || ""]?.numTiles
+      state.assets.backgrounds[scene?.backgroundId || ""]?.numTiles
   );
   const [tileCount, setTileCount] = useState(0);
   const [actorWarnings, setActorWarnings] = useState<string[]>([]);

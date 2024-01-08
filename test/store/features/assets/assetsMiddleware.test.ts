@@ -1,6 +1,6 @@
 import { mocked } from "ts-jest/utils";
-import middleware from "../../../../src/store/features/warnings/warningsMiddleware";
-import actions from "../../../../src/store/features/warnings/warningsActions";
+import middleware from "../../../../src/store/features/assets/assetsMiddleware";
+import actions from "../../../../src/store/features/assets/assetsActions";
 import { RootState } from "../../../../src/store/configureStore";
 import { dummyBackground } from "../../../dummydata";
 import { MiddlewareAPI, Dispatch, AnyAction } from "@reduxjs/toolkit";
@@ -11,11 +11,12 @@ const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0));
 jest.mock("../../../../src/lib/helpers/validation");
 const mockedGetBackgroundWarnings = mocked(getBackgroundInfo, true);
 
-test("Should trigger call to check background warnings", async () => {
+test("Should trigger call to check background assets", async () => {
   mockedGetBackgroundWarnings.mockClear();
   mockedGetBackgroundWarnings.mockResolvedValue({
     numTiles: 10,
     warnings: ["Warning 1"],
+    lookup: new Uint8Array(),
   });
 
   const store = {
@@ -23,7 +24,7 @@ test("Should trigger call to check background warnings", async () => {
       document: {
         root: "/root/path/",
       },
-      warnings: {
+      assets: {
         backgrounds: {},
       },
       project: {
@@ -46,7 +47,7 @@ test("Should trigger call to check background warnings", async () => {
   } as unknown as MiddlewareAPI<Dispatch<AnyAction>, RootState>;
 
   const next = jest.fn();
-  const action = actions.checkBackgroundWarnings({
+  const action = actions.loadBackgroundAssetInfo({
     backgroundId: "bg1",
     is360: false,
   });
@@ -57,20 +58,22 @@ test("Should trigger call to check background warnings", async () => {
 
   expect(mockedGetBackgroundWarnings).toHaveBeenCalled();
   expect(store.dispatch).toHaveBeenCalledWith(
-    actions.setBackgroundWarnings({
+    actions.setBackgroundAssetInfo({
       id: "bg1",
       numTiles: 10,
       is360: false,
       warnings: ["Warning 1"],
+      lookup: new Uint8Array(),
     })
   );
 });
 
-test("Should not trigger call to check background warnings if already cached warnings", async () => {
+test("Should not trigger call to check background assets if already cached assets", async () => {
   mockedGetBackgroundWarnings.mockClear();
   mockedGetBackgroundWarnings.mockResolvedValue({
     numTiles: 10,
     warnings: ["Warning 1"],
+    lookup: new Uint8Array(),
   });
 
   const store = {
@@ -78,11 +81,11 @@ test("Should not trigger call to check background warnings if already cached war
       document: {
         root: "/root/path/",
       },
-      warnings: {
+      assets: {
         backgrounds: {
           bg1: {
             id: "bg1",
-            warnings: ["Warning 2"],
+            assets: ["Warning 2"],
             is360: false,
             timestamp: 100,
           },
@@ -109,7 +112,7 @@ test("Should not trigger call to check background warnings if already cached war
   } as unknown as MiddlewareAPI<Dispatch<AnyAction>, RootState>;
 
   const next = jest.fn();
-  const action = actions.checkBackgroundWarnings({
+  const action = actions.loadBackgroundAssetInfo({
     backgroundId: "bg1",
     is360: false,
   });
@@ -122,11 +125,12 @@ test("Should not trigger call to check background warnings if already cached war
   expect(store.dispatch).not.toHaveBeenCalled();
 });
 
-test("Should trigger call to check background warnings if cache has expired", async () => {
+test("Should trigger call to check background assets if cache has expired", async () => {
   mockedGetBackgroundWarnings.mockClear();
   mockedGetBackgroundWarnings.mockResolvedValue({
     numTiles: 10,
     warnings: ["Warning 1"],
+    lookup: new Uint8Array(),
   });
 
   const store = {
@@ -134,11 +138,11 @@ test("Should trigger call to check background warnings if cache has expired", as
       document: {
         root: "/root/path/",
       },
-      warnings: {
+      assets: {
         backgrounds: {
           bg1: {
             id: "bg1",
-            warnings: ["Warning 2"],
+            assets: ["Warning 2"],
             timestamp: 100,
           },
         },
@@ -164,7 +168,7 @@ test("Should trigger call to check background warnings if cache has expired", as
   } as unknown as MiddlewareAPI<Dispatch<AnyAction>, RootState>;
 
   const next = jest.fn();
-  const action = actions.checkBackgroundWarnings({
+  const action = actions.loadBackgroundAssetInfo({
     backgroundId: "bg1",
     is360: false,
   });
@@ -175,11 +179,12 @@ test("Should trigger call to check background warnings if cache has expired", as
 
   expect(mockedGetBackgroundWarnings).toHaveBeenCalled();
   expect(store.dispatch).toHaveBeenCalledWith(
-    actions.setBackgroundWarnings({
+    actions.setBackgroundAssetInfo({
       id: "bg1",
       numTiles: 10,
       is360: false,
       warnings: ["Warning 1"],
+      lookup: new Uint8Array(),
     })
   );
 });
