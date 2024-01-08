@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import cx from "classnames";
 import l10n from "lib/helpers/l10n";
@@ -305,21 +311,27 @@ const BrushToolbar = () => {
     (state: RootState) =>
       state.project.present.settings.defaultBackgroundPaletteIds
   );
-  const palettes = paletteIndexes.map((paletteIndex) => {
-    if (!scene) {
-      return (
-        palettesLookup[defaultBackgroundPaletteIds[paletteIndex]] || DMG_PALETTE
-      );
-    }
-    if (scene.paletteIds && scene.paletteIds[paletteIndex] === "dmg") {
-      return DMG_PALETTE;
-    }
-    return (
-      palettesLookup[scene.paletteIds[paletteIndex]] ||
-      palettesLookup[defaultBackgroundPaletteIds[paletteIndex]] ||
-      DMG_PALETTE
-    );
-  });
+  const palettes = useMemo(
+    () =>
+      paletteIndexes.map((paletteIndex) => {
+        if (!scene) {
+          return (
+            palettesLookup[defaultBackgroundPaletteIds[paletteIndex]] ||
+            DMG_PALETTE
+          );
+        }
+        if (scene.paletteIds && scene.paletteIds[paletteIndex] === "dmg") {
+          return DMG_PALETTE;
+        }
+        return (
+          (scene.paletteIds &&
+            palettesLookup[scene.paletteIds[paletteIndex]]) ||
+          palettesLookup[defaultBackgroundPaletteIds[paletteIndex]] ||
+          DMG_PALETTE
+        );
+      }),
+    [defaultBackgroundPaletteIds, palettesLookup, scene]
+  );
 
   const [modalColorIndex, setModalColorIndex] = useState<number>(-1);
   const openReplacePalette = (paletteIndex: number) => () => {
