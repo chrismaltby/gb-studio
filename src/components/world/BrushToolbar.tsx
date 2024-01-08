@@ -621,7 +621,7 @@ const BrushToolbar = () => {
                 name="showCollisionSlopeTiles"
                 checked={showCollisionSlopeTiles}
               />
-              {` ${l10n("VIEW_SLOPE_TILES")}`}
+              {` ${l10n("FIELD_VIEW_SLOPE_TILES")}`}
             </MenuItem>
             <MenuItem onClick={onToggleViewExtraTiles}>
               <Checkbox
@@ -629,7 +629,7 @@ const BrushToolbar = () => {
                 name="showCollisionSlopeTiles"
                 checked={showCollisionExtraTiles}
               />
-              {` ${l10n("VIEW_EXTRA_TILES")}`}
+              {` ${l10n("FIELD_VIEW_EXTRA_TILES")}`}
             </MenuItem>
           </DropdownButton>
         )}
