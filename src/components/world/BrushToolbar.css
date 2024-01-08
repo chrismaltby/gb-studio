@@ -164,6 +164,26 @@
   clip-path: polygon(50% 75%, 0% 0%, 0% 75%);
 }
 
+.BrushToolbar__Tile--spare_08::before {
+  padding: 3px;
+  content: " 8";
+}
+
+.BrushToolbar__Tile--spare_09::before {
+  padding: 3px;
+  content: " 9";
+}
+
+.BrushToolbar__Tile--spare_10::before {
+  padding: 3px;
+  content: " 10";
+}
+
+.BrushToolbar__Tile--spare_11::before {
+  padding: 3px;
+  content: " 11";
+}
+
 .BrushToolbar__Tile--spare_12::before {
   padding: 3px;
   content: " 12";
