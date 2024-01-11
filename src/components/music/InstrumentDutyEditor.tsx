@@ -10,6 +10,7 @@ import { InstrumentLengthForm } from "./InstrumentLengthForm";
 import { InstrumentVolumeEditor } from "./InstrumentVolumeEditor";
 import { ipcRenderer } from "electron";
 import { Button } from "ui/buttons/Button";
+import Alert, { AlertItem } from "components/library/Alert";
 
 const dutyOptions = [
   {
@@ -185,7 +186,11 @@ export const InstrumentDutyEditor = ({
         </Button>
       </FormRow>
       {instrument.subpattern_enabled && (
-        <FormRow>{l10n("MESSAGE_NOT_PREVIEW_SUBPATTERN")}</FormRow>
+        <FormRow>
+          <Alert variant="info">
+            <AlertItem>{l10n("MESSAGE_NOT_PREVIEW_SUBPATTERN")}</AlertItem>
+          </Alert>
+        </FormRow>
       )}
     </>
   );
