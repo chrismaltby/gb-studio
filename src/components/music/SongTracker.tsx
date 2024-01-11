@@ -184,14 +184,6 @@ export const SongTracker = ({
   }
 
   const activeFieldRef = useRef<HTMLSpanElement>(null);
-  if (activeFieldRef && activeFieldRef.current) {
-    if (!playing) {
-      scrollIntoView(activeFieldRef.current.parentElement as Element, {
-        scrollMode: "if-needed",
-        block: "nearest",
-      });
-    }
-  }
 
   const transposeSelectedTrackerFields = useCallback(
     (change: number, large: boolean) => {
@@ -575,6 +567,15 @@ export const SongTracker = ({
         }
 
         setActiveField(newActiveField);
+
+        if (activeFieldRef && activeFieldRef.current) {
+          if (!playing) {
+            scrollIntoView(activeFieldRef.current.parentElement as Element, {
+              scrollMode: "if-needed",
+              block: "nearest",
+            });
+          }
+        }
       }
 
       let currentFocus: KeyWhen = null;
@@ -628,11 +629,12 @@ export const SongTracker = ({
       octaveOffset,
       editStep,
       selectedTrackerFields,
+      insertTrackerFields,
+      deleteSelectedTrackerFields,
       selectionRect,
       selectionOrigin,
+      playing,
       transposeSelectedTrackerFields,
-      deleteSelectedTrackerFields,
-      insertTrackerFields,
     ]
   );
 
