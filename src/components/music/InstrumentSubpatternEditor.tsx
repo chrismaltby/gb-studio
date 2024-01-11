@@ -191,8 +191,8 @@ const renderJump = (n: number | null): string => {
 
 const renderOffset = (n: number | null): string => {
   if (n === null) return "...";
-  if (n - 32 >= 0) return `+${(n - 32).toString().padStart(2, "0")}`;
-  return `-${Math.abs(n - 32)
+  if (n - 36 >= 0) return `+${(n - 36).toString().padStart(2, "0")}`;
+  return `-${Math.abs(n - 36)
     .toString()
     .padStart(2, "0")}`;
 };
@@ -401,11 +401,11 @@ export const InstrumentSubpatternEditor = ({
               if (el.innerText !== "...") {
                 newValue = Math.min(
                   10 * parseInt(el.innerText[2], 10) + value,
-                  32
+                  36
                 );
               }
           }
-          editSubPatternCell("note")(parseInt(`${newValue ?? 90}`) + 32);
+          editSubPatternCell("note")(parseInt(`${newValue ?? 90}`) + 36);
         }
       };
 
