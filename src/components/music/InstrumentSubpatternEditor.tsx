@@ -17,7 +17,7 @@ import {
 } from "./musicClipboardHelpers";
 import { KeyWhen, getKeys } from "lib/keybindings/keyBindings";
 import { Position } from "lib/sprite/spriteData";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import trackerActions from "store/features/tracker/trackerActions";
 import { SelectionRect } from "./SongPianoRoll";
 import scrollIntoView from "scroll-into-view-if-needed";
@@ -25,6 +25,7 @@ import trackerDocumentActions from "store/features/trackerDocument/trackerDocume
 import { cloneDeep, mergeWith } from "lodash";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import { clipboard } from "store/features/clipboard/clipboardHelpers";
+import { RootState } from "store/configureStore";
 
 const CHANNEL_FIELDS = 4;
 const ROW_SIZE = CHANNEL_FIELDS * 1;
@@ -190,8 +191,8 @@ const renderJump = (n: number | null): string => {
 
 const renderOffset = (n: number | null): string => {
   if (n === null) return "...";
-  if (n - 32 >= 0) return `+${(n - 32).toString().padStart(2, "0")}`;
-  return `-${Math.abs(n - 32)
+  if (n - 36 >= 0) return `+${(n - 36).toString().padStart(2, "0")}`;
+  return `-${Math.abs(n - 36)
     .toString()
     .padStart(2, "0")}`;
 };
@@ -217,6 +218,10 @@ export const InstrumentSubpatternEditor = ({
   );
 
   const [activeField, setActiveField] = useState<number | undefined>();
+
+  const subpatternEditorFocus = useSelector(
+    (state: RootState) => state.tracker.subpatternEditorFocus
+  );
 
   const activeFieldRef = useRef<HTMLSpanElement>(null);
   if (activeFieldRef && activeFieldRef.current) {
@@ -396,11 +401,11 @@ export const InstrumentSubpatternEditor = ({
               if (el.innerText !== "...") {
                 newValue = Math.min(
                   10 * parseInt(el.innerText[2], 10) + value,
-                  32
+                  36
                 );
               }
           }
-          editSubPatternCell("note")(parseInt(`${newValue ?? 90}`) + 32);
+          editSubPatternCell("note")(parseInt(`${newValue ?? 90}`) + 36);
         }
       };
 
@@ -838,15 +843,17 @@ export const InstrumentSubpatternEditor = ({
 
   // Clipboard
   useEffect(() => {
-    window.addEventListener("copy", onCopy);
-    window.addEventListener("cut", onCut);
-    window.addEventListener("paste", onPaste);
-    return () => {
-      window.removeEventListener("copy", onCopy);
-      window.removeEventListener("cut", onCut);
-      window.removeEventListener("paste", onPaste);
-    };
-  }, [onCopy, onCut, onPaste]);
+    if (subpatternEditorFocus) {
+      window.addEventListener("copy", onCopy);
+      window.addEventListener("cut", onCut);
+      window.addEventListener("paste", onPaste);
+      return () => {
+        window.removeEventListener("copy", onCopy);
+        window.removeEventListener("cut", onCut);
+        window.removeEventListener("paste", onPaste);
+      };
+    }
+  }, [onCopy, onCut, onPaste, subpatternEditorFocus]);
 
   const onChangeField = useCallback(
     (editValue: boolean) => {

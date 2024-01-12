@@ -420,34 +420,34 @@ function patchRom(targetRomFile: Uint8Array, song: Song, startAddr: number) {
 
   for (let n = 0; n < song.duty_instruments.length; n++) {
     const instr = song.duty_instruments[n];
-    if (instr.subpattern_enabled) {
-      subpatternAddr[`DutySP${instr.index}`] = addr;
-      const pattern = song.duty_instruments[n].subpattern;
-      for (let idx = 0; idx < 32; idx++) {
-        writeSubPatternCell(pattern[idx], idx === 32 - 1);
-      }
+    subpatternAddr[`DutySP${instr.index}`] = instr.subpattern_enabled
+      ? addr
+      : 0;
+    const pattern = song.duty_instruments[n].subpattern;
+    for (let idx = 0; idx < 32; idx++) {
+      writeSubPatternCell(pattern[idx], idx === 32 - 1);
     }
   }
 
   for (let n = 0; n < song.wave_instruments.length; n++) {
     const instr = song.wave_instruments[n];
-    if (instr.subpattern_enabled) {
-      subpatternAddr[`WaveSP${instr.index}`] = addr;
-      const pattern = song.wave_instruments[n].subpattern;
-      for (let idx = 0; idx < 32; idx++) {
-        writeSubPatternCell(pattern[idx], idx === 32 - 1);
-      }
+    subpatternAddr[`WaveSP${instr.index}`] = instr.subpattern_enabled
+      ? addr
+      : 0;
+    const pattern = song.wave_instruments[n].subpattern;
+    for (let idx = 0; idx < 32; idx++) {
+      writeSubPatternCell(pattern[idx], idx === 32 - 1);
     }
   }
 
   for (let n = 0; n < song.noise_instruments.length; n++) {
     const instr = song.noise_instruments[n];
-    if (instr.subpattern_enabled) {
-      subpatternAddr[`NoiseSP${instr.index}`] = addr;
-      const pattern = song.noise_instruments[n].subpattern;
-      for (let idx = 0; idx < 32; idx++) {
-        writeSubPatternCell(pattern[idx], idx === 32 - 1);
-      }
+    subpatternAddr[`NoiseSP${instr.index}`] = instr.subpattern_enabled
+      ? addr
+      : 0;
+    const pattern = song.noise_instruments[n].subpattern;
+    for (let idx = 0; idx < 32; idx++) {
+      writeSubPatternCell(pattern[idx], idx === 32 - 1);
     }
   }
 

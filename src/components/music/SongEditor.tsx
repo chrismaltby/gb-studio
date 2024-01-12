@@ -263,18 +263,18 @@ export const SongEditor: FC<SongEditorProps> = ({ multiColumn }) => {
                   onChange={onChangeInstrumentName(selectedInstrument.type)}
                 />
 
-                <DropdownButton
+                {/* <DropdownButton
                   size="small"
                   variant="transparent"
                   menuDirection="right"
                 >
-                  {/* <MenuItem onClick={onCopyVar}>
+                  <MenuItem onClick={onCopyVar}>
                   {l10n("MENU_VARIABLE_COPY_EMBED")}
                 </MenuItem>
                 <MenuItem onClick={onCopyChar}>
                   {l10n("MENU_VARIABLE_COPY_EMBED_CHAR")}
-                </MenuItem> */}
-                </DropdownButton>
+                </MenuItem>
+                </DropdownButton> */}
               </FormHeader>
 
               <StickyTabs>

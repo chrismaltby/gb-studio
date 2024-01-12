@@ -156,6 +156,7 @@ workflows:
                 - v2beta
                 - uge_v6
                 - brushtoolbar-ts
+                - uge_v6_fixes
       - "make:win32":
           requires:
             - checkout
@@ -169,6 +170,7 @@ workflows:
                 - v2beta
                 - uge_v6
                 - brushtoolbar-ts
+                - uge_v6_fixes
       - "make:win64":
           requires:
             - checkout
@@ -182,6 +184,7 @@ workflows:
                 - v2beta
                 - uge_v6
                 - brushtoolbar-ts
+                - uge_v6_fixes
       - "make:linux":
           requires:
             - checkout
@@ -195,6 +198,7 @@ workflows:
                 - v2beta
                 - uge_v6
                 - brushtoolbar-ts
+                - uge_v6_fixes
       - "upload_artifacts":
           requires:
             - "make:mac"
@@ -211,3 +215,4 @@ workflows:
                 - v2beta
                 - uge_v6
                 - brushtoolbar-ts
+                - uge_v6_fixes
