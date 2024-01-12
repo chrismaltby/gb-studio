@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1315231208",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1326240109",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -57,6 +57,8 @@
   "TOOL_ADD_SONG_LABEL": "Dodaj nowy utwór",
   "TOOL_SYNC_INSTRUMENT_NAVIGATOR": "Użyj wybranego instrumentu podczas dodawania nut",
   "TOOL_TILE_PRIORITY": "Pierwszeństwo tafli",
+  "TOOL_MAGIC": "Magiczny pędzel",
+  "TOOL_SLOPE": "Pędzel pochylny",
 
   "// 5": "Editors --------------------------------------------------",
   "SIDEBAR_NAVIGATION": "Nawigator",
@@ -549,11 +551,18 @@
   "FIELD_AUTOMATIC_FADE_IN_DISABLED": "Automatyczne przenikanie jest wyłączone dla tej sceny",
   "FIELD_AUTOMATIC_FADE_IN_DISABLED_INFO": "Musisz manualnie dodać zdarzenie \"{eventName}\" .",
   "FIELD_LADDER": "Drabina",
+  "FIELD_COLLISION_SLOPE_45_RIGHT": "Pochylenie 45° prawo",
+  "FIELD_COLLISION_SLOPE_22_RIGHT_BOT": "Pochylenie 22.5° prawo dół",
+  "FIELD_COLLISION_SLOPE_22_RIGHT_TOP": "Pochylenie 22.5° prawo góra",
+  "FIELD_COLLISION_SLOPE_45_LEFT": "Pochylenie 45° lewo",
+  "FIELD_COLLISION_SLOPE_22_LEFT_BOT": "Pochylenie 22.5° lewo dół",
+  "FIELD_COLLISION_SLOPE_22_LEFT_TOP": "Pochylenie 22.5° lewo góra",
   "FIELD_SOLID": "Kolizja pełna",
   "FIELD_COLLISION_TOP": "Kolizja: góra",
   "FIELD_COLLISION_BOTTOM": "Kolizja: dół",
   "FIELD_COLLISION_LEFT": "Kolizja: lewo",
   "FIELD_COLLISION_RIGHT": "Kolizja: prawo",
+  "FIELD_COLLISION_SPARE": "Kolizja: zapasowa {tile}",
   "FIELD_RESET_PALETTE": "Resetuj paletę",
   "FIELD_REMOVE_PALETTE": "Usuń paletę",
   "FIELD_DEFAULT_BACKGROUND_PALETTES": "Domyślna paleta tła",
@@ -691,7 +700,9 @@
   "FIELD_SONG_DESC": "Wybierz muzykę do odtworzenia.",
   "FIELD_SCRIPT": "Skrypt (GBVM)",
   "FIELD_SCRIPT_DESC": "Polecenie uruchomi prawidłowy skrypt GBVM do wykonania.",
-
+  "FIELD_VIEW_SLOPE_TILES": "Wyświetl tafly pochyłe",
+  "FIELD_VIEW_EXTRA_TILES": "Wyświetl tafly dodatkowe",
+  
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
   "ASSET_EDIT": "Edytuj",
