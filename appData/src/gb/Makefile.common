@@ -63,7 +63,7 @@ all:	settings directories BUILD
 .SECONDARY:	$(OBJS)
 
 AP:
-	$(eval PLATFORM = -mgbz80:ap)
+	$(eval PLATFORM = -msm83:ap)
 	$(eval TARGET = $(patsubst %.gb,%.pocket,$(TARGET)))
 	@echo "Analogue pocket build"
 
