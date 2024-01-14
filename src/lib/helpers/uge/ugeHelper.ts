@@ -54,7 +54,6 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
     return text;
   };
 
-  console.log(data);
   const song = new Song();
 
   // TODO: Sanity checks on data.
@@ -76,8 +75,6 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
   for (let n = 0; n < instrument_count; n++) {
     const type = readUint32();
     const name = readText();
-
-    console.log(name);
 
     const length = readUint32();
     const length_enabled = readUint8();
@@ -334,18 +331,21 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
         instr.subpattern_enabled = subpattern_enabled !== 0;
         instr.subpattern = subpattern;
       } else {
+        /* 
+          Older versions of the uge format had a noise macro field for the noise instrument that needs to be migrated to the subpattern.
+        */
         if (noise_macro.length === 0) {
+          // if noise macro is empty create an empty subpattern and disable
+          // subpattern for this instrument
           instr.subpattern_enabled = false;
           instr.subpattern = [...Array(64)].map(() => new SubPatternCell());
         } else {
-          console.log("HAS NOISE MACRO");
+          // if noise macro is not empty migrate to the subpattern
           instr.subpattern_enabled = true;
-          instr.subpattern = [...Array(64)].map(() => new SubPatternCell());
-          for (let n = 0; n < 6; n++) {
-            instr.subpattern[n].note = noise_macro[n] + 36;
-          }
-          const wrapPoint = Math.min(song.ticks_per_row, 7);
-          instr.subpattern[wrapPoint - 1].jump = wrapPoint;
+          instr.subpattern = subpatternFromNoiseMacro(
+            instr.noise_macro ?? [],
+            song.ticks_per_row
+          );
         }
       }
 
@@ -418,7 +418,6 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
   //     idx += 1;
   // }
 
-  console.log(song);
   return song;
 };
 
@@ -824,4 +823,17 @@ const hUGESong_t ${trackName}_Data = {
 };
 `;
   return data;
+};
+
+const subpatternFromNoiseMacro = function (
+  noise_macro: number[],
+  ticks_per_row: number
+) {
+  const subpattern = [...Array(64)].map(() => new SubPatternCell());
+  for (let n = 0; n < 6; n++) {
+    subpattern[n + 1].note = noise_macro[n] + 36;
+  }
+  const wrapPoint = Math.min(ticks_per_row, 7);
+  subpattern[wrapPoint - 1].jump = wrapPoint;
+  return subpattern;
 };
