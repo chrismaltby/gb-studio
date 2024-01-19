@@ -32,6 +32,9 @@ export type NoiseInstrument = {
   volume_sweep_change: number;
   dividing_ratio: number;
   bit_count: 7 | 15;
+  /**
+   * @deprecated noise macros aren't used starting uge v6
+   */
   noise_macro?: number[];
   subpattern_enabled: boolean;
   subpattern: SubPatternCell[];
