@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1326240109",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1327240112",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -1322,5 +1322,6 @@
   "MESSAGE_ADD_MOD_FILES": "Dodaj pliki .mod do folderu projektu assets/music.",
   "MESSAGE_WHAT_ABOUT_UGE": "Odtwarzanie plików .uge?",
   "MESSAGE_USE_UGE_FILES": "W celu użycia plików .uge należy w projekcie zmienić sterownik muzyczny z GTP Player na hUGEDriver. Opcję tę można zmienić w 'Ustawieniach'.",
-  "MESSAGE_ENABLE_HUGE": "Włącz hUGEDriver"
+  "MESSAGE_ENABLE_HUGE": "Włącz hUGEDriver",
+  "MESSAGE_NOT_PREVIEW_SUBPATTERN": "Podgląd dla instrumentów i nut może być nieprecyzyjny, gdy podwzór jest włączony."
 }
