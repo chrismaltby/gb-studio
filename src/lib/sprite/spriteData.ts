@@ -64,7 +64,7 @@ enum Color {
 }
 
 export const spriteDataIndexFn: ImageIndexFunction = (r, g, b, _a) => {
-  if ((g > 249 && r < 180 && b < 20) || (b >= 200 && g < 20)) {
+  if ((g > 249 && r < 180 && b < 20) || (b >= 200 && g < 20) || _a < 200) {
     return Color.Transparent;
   } else if (g >= 205) {
     return Color.Light;

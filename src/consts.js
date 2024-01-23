@@ -45,6 +45,8 @@ export const TOOL_ERASER = "eraser";
 export const BRUSH_8PX = "8px";
 export const BRUSH_16PX = "16px";
 export const BRUSH_FILL = "fill";
+export const BRUSH_MAGIC = "magic";
+export const BRUSH_SLOPE = "slope";
 
 export const SPRITE_TYPE_STATIC = "static";
 export const SPRITE_TYPE_ACTOR = "actor";
@@ -55,9 +57,35 @@ export const COLLISION_TOP = 0x1;
 export const COLLISION_BOTTOM = 0x2;
 export const COLLISION_LEFT = 0x4;
 export const COLLISION_RIGHT = 0x8;
+
 export const COLLISION_ALL = 0xf;
 export const TILE_PROP_LADDER = 0x10;
 export const TILE_PROPS = 0xf0;
+
+export const TILE_PROP_SLOPE_45 = 0x20;
+export const TILE_PROP_SLOPE_22_BOT = 0x40;
+export const TILE_PROP_SLOPE_22_TOP = 0x60;
+export const TILE_PROP_SLOPE_LEFT = 0x10;
+
+export const COLLISION_SLOPE_45_RIGHT = TILE_PROP_SLOPE_45;
+export const COLLISION_SLOPE_22_RIGHT_BOT = TILE_PROP_SLOPE_22_BOT;
+export const COLLISION_SLOPE_22_RIGHT_TOP = TILE_PROP_SLOPE_22_TOP;
+export const COLLISION_SLOPE_45_LEFT =
+  TILE_PROP_SLOPE_45 | TILE_PROP_SLOPE_LEFT;
+export const COLLISION_SLOPE_22_LEFT_BOT =
+  TILE_PROP_SLOPE_22_BOT | TILE_PROP_SLOPE_LEFT;
+export const COLLISION_SLOPE_22_LEFT_TOP =
+  TILE_PROP_SLOPE_22_TOP | TILE_PROP_SLOPE_LEFT;
+
+export const COLLISION_SLOPE_VALUES = [
+  COLLISION_SLOPE_45_RIGHT,
+  COLLISION_SLOPE_22_RIGHT_BOT,
+  COLLISION_SLOPE_22_RIGHT_TOP,
+  COLLISION_SLOPE_45_LEFT,
+  COLLISION_SLOPE_22_LEFT_BOT,
+  COLLISION_SLOPE_22_LEFT_TOP,
+];
+
 
 export const TILE_COLOR_PALETTE = 0x7;
 export const TILE_COLOR_PROPS = 0xf8;

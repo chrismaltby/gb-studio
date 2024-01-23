@@ -484,7 +484,10 @@ export const SpriteEditor = ({
               <FormDivider />
 
               <FormRow>
-                <FormField name="objPalette" label={l10n("FIELD_OBJ_PALETTE")}>
+                <FormField
+                  name="objPalette"
+                  label={l10n("FIELD_MONOCHROME_PALETTE")}
+                >
                   <ObjPaletteSelect
                     name="objPalette"
                     value={metaspriteTile.objPalette}

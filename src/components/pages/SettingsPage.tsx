@@ -442,26 +442,28 @@ const SettingsPage: FC = () => {
         >
           <CardAnchor id="settingsPlayer" />
           <CardHeading>{l10n("SETTINGS_PLAYER_DEFAULT_SPRITES")}</CardHeading>
-          {sceneTypes.map((sceneType) => (
-            <SearchableSettingRow
-              key={sceneType.value}
-              searchTerm={searchTerm}
-              searchMatches={[sceneType.label]}
-            >
-              <SettingRowLabel>{sceneType.label}</SettingRowLabel>
-              <SettingRowInput>
-                <SpriteSheetSelect
-                  name={`defaultPlayerSprite__${sceneType.value}`}
-                  value={defaultPlayerSprites[sceneType.value] || ""}
-                  optional
-                  optionalLabel={l10n("FIELD_NONE")}
-                  onChange={(value) =>
-                    onEditDefaultPlayerSprites(sceneType.value, value)
-                  }
-                />
-              </SettingRowInput>
-            </SearchableSettingRow>
-          ))}
+          {sceneTypes
+            .filter((s) => s.value !== "LOGO")
+            .map((sceneType) => (
+              <SearchableSettingRow
+                key={sceneType.value}
+                searchTerm={searchTerm}
+                searchMatches={[sceneType.label]}
+              >
+                <SettingRowLabel>{sceneType.label}</SettingRowLabel>
+                <SettingRowInput>
+                  <SpriteSheetSelect
+                    name={`defaultPlayerSprite__${sceneType.value}`}
+                    value={defaultPlayerSprites[sceneType.value] || ""}
+                    optional
+                    optionalLabel={l10n("FIELD_NONE")}
+                    onChange={(value) =>
+                      onEditDefaultPlayerSprites(sceneType.value, value)
+                    }
+                  />
+                </SettingRowInput>
+              </SearchableSettingRow>
+            ))}
         </SearchableCard>
 
         <SearchableCard

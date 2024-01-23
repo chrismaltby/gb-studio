@@ -47,6 +47,7 @@ import {
 import l10n from "lib/helpers/l10n";
 import { genSymbol, toValidSymbol } from "lib/helpers/symbols";
 import parseAssetPath from "lib/helpers/path/parseAssetPath";
+import { COLLISION_SLOPE_VALUES } from "../../../consts";
 
 export interface NormalisedEntities {
   scenes: Record<EntityId, Scene>;
@@ -734,4 +735,8 @@ export const updateEntitySymbol = <T extends { id: string; symbol?: string }>(
     id,
     changes,
   });
+};
+
+export const isSlope = (value: number) => {
+  return COLLISION_SLOPE_VALUES.includes(value);
 };

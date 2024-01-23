@@ -702,6 +702,12 @@ export const ArrowLeftRightIcon = () => (
   </svg>
 );
 
+export const SlopeIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <path d="M24 22h-24l24-20z" />
+  </svg>
+);
+
 export const SadIcon = () => (
   <svg width="1096" height="974" viewBox="0 0 1096 974" version="1.1">
     <defs>

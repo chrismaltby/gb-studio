@@ -1,7 +1,7 @@
 #ifndef UI_H
 #define UI_H
 
-#include <gb/gb.h>
+#include <gbdk/platform.h>
 
 #include "gbs_types.h"
 #include "bankdata.h"
@@ -17,11 +17,11 @@
 #define TEXT_BKG_FILL_B 0xffu
 #define TEXT_MAX_LENGTH 255
 
-#define UI_PALETTE 7
+#define UI_DEFAULT_PALETTE 7
 
 #define MENU_OPEN_Y 112
 #define WIN_LEFT_X 7
-#define MENU_CLOSED_Y (MAXWNDPOSY + 1U)
+#define MENU_CLOSED_Y (UBYTE)(MAXWNDPOSY + 1U)
 #define MENU_LAYOUT_INITIAL_X 88
 #define MENU_CANCEL_ON_LAST_OPTION 0x01U
 #define MENU_CANCEL_ON_B_PRESSED 0x02U
@@ -76,12 +76,13 @@ extern const UBYTE ui_time_masks[];
 
 #ifdef CGB
 extern UBYTE overlay_priority;
+extern UBYTE text_palette;
 #endif
 
-void ui_init() BANKED;
-void ui_update() NONBANKED;  // critical path, NONBANKED for speed
+void ui_init(void) BANKED;
+void ui_update(void) NONBANKED;  // critical path, NONBANKED for speed
 
-void ui_load_tiles() BANKED;
+void ui_load_tiles(void) BANKED;
 
 void ui_set_start_tile(UBYTE start_tile, UBYTE start_tile_bank) BANKED;
 

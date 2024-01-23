@@ -74,7 +74,7 @@ void vm_push(SCRIPT_CTX * THIS, UWORD value) OLDCALL BANKED {
     *(THIS->stack_ptr++) = value;
 }
 // cleans up to n words from stack and returns last one
- UWORD vm_pop(SCRIPT_CTX * THIS, UBYTE n) OLDCALL BANKED {
+UWORD vm_pop(SCRIPT_CTX * THIS, UBYTE n) OLDCALL BANKED {
     if (n) THIS->stack_ptr -= n;
     return *(THIS->stack_ptr);
 }
@@ -98,7 +98,7 @@ void vm_switch(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS, INT16 idx, U
     if (idx < 0) value = *(THIS->stack_ptr + idx); else value = *(script_memory + idx);
     if (n) THIS->stack_ptr -= n;        // dispose values on VM stack if required
 
-    UBYTE _save = _current_bank;        // we must preserve current bank,
+    UBYTE _save = CURRENT_BANK;         // we must preserve current bank,
     SWITCH_ROM(THIS->bank);             // then switch to bytecode bank
 
     table = (INT16 *)(THIS->PC);
@@ -150,7 +150,7 @@ void vm_beginthread(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS, UBYTE b
     // initialize thread locals if any
     if (!(nargs)) return;
     if (ctx) {
-        UBYTE _save = _current_bank;        // we must preserve current bank,
+        UBYTE _save = CURRENT_BANK;         // we must preserve current bank,
         SWITCH_ROM(THIS->bank);             // then switch to bytecode bank
         for (UBYTE i = nargs; i != 0; i--) {
             INT16 A = *((INT16 *)THIS->PC);
@@ -260,7 +260,7 @@ void vm_rpn(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS) OLDCALL NONBANK
     INT16 * A, * B, * ARGS;
     INT16 idx;
 
-    UBYTE _save = _current_bank;        // we must preserve current bank,
+    UBYTE _save = CURRENT_BANK;         // we must preserve current bank,
     SWITCH_ROM(THIS->bank);             // then switch to bytecode bank
 
     ARGS = THIS->stack_ptr;
@@ -325,9 +325,12 @@ void vm_rpn(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS) OLDCALL NONBANK
                 case '&': *A = *A  &  *B; break;
                 case '|': *A = *A  |  *B; break;
                 case '^': *A = *A  ^  *B; break;
+                case 'L': *A = *(uint16_t *)A << (*B & 0x0f); break;
+                case 'R': *A = *(uint16_t *)A >> (*B & 0x0f); break;
                 // funcs
                 case 'm': *A = (*A < *B) ? *A : *B; break;  // min
                 case 'M': *A = (*A > *B) ? *A : *B; break;  // max
+                case 'T': *A = atan2((WORD)*A, (WORD)*B); break;
                 // unary
                 case '@': *B = abs(*B); continue;
                 case '~': *B = ~(*B);   continue;
@@ -380,7 +383,7 @@ void vm_get_far(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS, INT16 idxA,
     dummy0; dummy1;
     UINT16 * A;
     if (idxA < 0) A = THIS->stack_ptr + idxA; else A = script_memory + idxA;
-    UBYTE _save = _current_bank;        // we must preserve current bank,
+    UBYTE _save = CURRENT_BANK;   // we must preserve current bank,
     SWITCH_ROM(bank);             // then switch to bytecode bank
     *A = (size == 0) ? *((UBYTE *)addr) : *((UINT16 *)addr);
     SWITCH_ROM(_save);
@@ -507,8 +510,8 @@ __endasm;
 }
 // memset for VM variables
 void vm_memset(SCRIPT_CTX * THIS, INT16 idx, INT16 value, INT16 count) OLDCALL BANKED {
-    memset(VM_REF_TO_PTR(idx), value, count << 1);
-}
+    for (INT16 i = 0, *v = VM_REF_TO_PTR(idx); i != count; i++) *v++ = value;
+ }
 // memcpy for VM variables
 void vm_memcpy(SCRIPT_CTX * THIS, INT16 idxA, INT16 idxB, INT16 count) OLDCALL BANKED {
     memcpy(VM_REF_TO_PTR(idxA), VM_REF_TO_PTR(idxB), count << 1);
@@ -522,24 +525,20 @@ UBYTE VM_STEP(SCRIPT_CTX * CTX) NAKED NONBANKED STEP_FUNC_ATTR {
     CTX;
 #if defined(__SDCC) && defined(NINTENDO)
 __asm
-        lda hl, 2(sp)
-        ld a, (hl+)
-        ld h, (hl)
+        ld b, d
+        ld c, e                 ; bc = THIS
+
+        ld a, (de)
         ld l, a
-
-        inc hl
-        inc hl
-
-        ld a, (hl-)
-        ld e, a
-        ld a, (hl-)
-        ld l, (hl)
-        ld h, a
+        inc de
+        ld a, (de)
+        ld h, a                 ; hl offset of the script
+        inc de
 
         ldh a, (__current_bank)
         push af
 
-        ld a, e
+        ld a, (de)              ; bank of the script
         ldh (__current_bank), a
         ld (_rROMB0), a         ; switch bank with vm code
 
@@ -591,7 +590,7 @@ __asm
         ld b, h
         ld c, l                 ; bc points to the next VM instruction
 
-        lda hl, 8(sp)
+        lda hl, 2(sp)
         add hl, de              ; add correction
         ld a, (hl+)
         ld h, (hl)
@@ -618,15 +617,15 @@ __asm
         pop hl                  ; hl: args_len
         add hl, sp
         ld sp, hl               ; deallocate args_len bytes from the stack
-        add sp, #4              ; deallocate dummy word and THIS
-
-        pop bc                  ; restore bc
+        add sp, #6              ; deallocate dummy word and THIS twice
 
         ld e, #1                ; command executed
 3$:
         pop af
         ldh (__current_bank), a
         ld (_rROMB0), a         ; restore bank
+
+        ld a, e
 
         ret
 __endasm;
@@ -734,7 +733,7 @@ UBYTE script_detach_hthread(UBYTE ID) BANKED {
 
 // process all contexts
 // executes one command in each active context
-UBYTE script_runner_update() NONBANKED {
+UBYTE script_runner_update(void) NONBANKED {
     static UBYTE waitable;
     static UBYTE counter;
 

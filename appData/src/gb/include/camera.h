@@ -1,7 +1,7 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include <gb/gb.h>
+#include <gbdk/platform.h>
 
 #define SCREEN_WIDTH 160
 #define SCREEN_HEIGHT 144
@@ -21,8 +21,8 @@ extern BYTE camera_deadzone_x;
 extern BYTE camera_deadzone_y;
 extern UBYTE camera_settings;
 
-void camera_init() BANKED;
-void camera_reset() BANKED;
-void camera_update() NONBANKED;
+void camera_init(void) BANKED;
+void camera_reset(void) BANKED;
+void camera_update(void) NONBANKED;
 
 #endif

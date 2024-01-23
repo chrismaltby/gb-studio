@@ -1,7 +1,7 @@
 #ifndef _VM_LOAD_SAVE_H_INCLUDE
 #define _VM_LOAD_SAVE_H_INCLUDE
 
-#include <gb/gb.h>
+#include <gbdk/platform.h>
 
 #include "vm.h"
 

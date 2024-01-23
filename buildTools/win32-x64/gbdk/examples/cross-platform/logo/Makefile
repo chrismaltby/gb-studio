@@ -7,29 +7,26 @@ PNG2ASSETS = $(GBDK_HOME)bin/png2asset
 # Set platforms to build here, spaced separated. (These are in the separate Makefile.targets)
 # They can also be built/cleaned individually: "make gg" and "make gg-clean"
 # Possible are: gb gbc pocket megaduck sms gg
-TARGETS=gb gbc pocket megaduck sms gg
+TARGETS=gb gbc pocket megaduck sms gg nes
 
 # Configure platform specific LCC flags here:
-LCCFLAGS_gb      = -Wl-yt0x1B # Set an MBC for banking (1B-ROM+MBC5+RAM+BATT)
-LCCFLAGS_pocket  = -Wl-yt0x1B # Usually the same as required for .gb
-LCCFLAGS_duck    = -Wl-yt0x1B # Usually the same as required for .gb
-LCCFLAGS_gbc     = -Wl-yt0x1B -Wm-yc # Same as .gb with: -Wm-yc (gb & gbc) or Wm-yC (gbc exclusive)
+LCCFLAGS_gb      = -Wl-yt0x1B -autobank # Set an MBC for banking (1B-ROM+MBC5+RAM+BATT)
+LCCFLAGS_pocket  = -Wl-yt0x1B -autobank # Usually the same as required for .gb
+LCCFLAGS_duck    = -Wl-yt0x1B -autobank # Usually the same as required for .gb
+LCCFLAGS_gbc     = -Wl-yt0x1B -Wm-yc -autobank # Same as .gb with: -Wm-yc (gb & gbc) or Wm-yC (gbc exclusive)
 LCCFLAGS_sms     =
 LCCFLAGS_gg      =
+LCCFLAGS_nes     =
 
 LCCFLAGS += $(LCCFLAGS_$(EXT)) # This adds the current platform specific LCC Flags
 
-LCCFLAGS += -Wl-j -Wm-yoA -Wm-ya4 -autobank -Wb-ext=.rel -Wb-v # MBC + Autobanking related flags
+LCCFLAGS += -Wl-j -Wm-yoA -Wm-ya4 -Wb-ext=.rel -Wb-v # MBC + Autobanking related flags
 # LCCFLAGS += -debug # Uncomment to enable debug output
 # LCCFLAGS += -v     # Uncomment for lcc verbose output
 
-RESFLAGS_DMG  = -map -noflip -bpp 2 -max_palettes 1 -pack_mode gb
-RESFLAGS_CGB  = -map -use_map_attributes -bpp 2 -max_palettes 1 -pack_mode gb
-RESFLAGS_SEGA = -map -use_map_attributes -bpp 4 -max_palettes 2 -pack_mode sms 
-
 RESFLAGS += $(RESFLAGS_$(TYP))
 
-CFLAGS += -Wf-I$(OBJDIR) -DSYSTEM_$(TYP)
+CFLAGS += -I$(OBJDIR) -DSYSTEM_$(TYP)
 
 # You can set the name of the ROM file here
 PROJECTNAME = logo
@@ -45,13 +42,17 @@ BINS	    = $(OBJDIR)/$(PROJECTNAME).$(EXT)
 IMAGES      = $(foreach dir,$(RESDIR),$(notdir $(wildcard $(dir)/*.png)))
 CSOURCES    = $(foreach dir,$(SRCDIR),$(notdir $(wildcard $(dir)/*.c)))
 ASMSOURCES  = $(foreach dir,$(SRCDIR),$(notdir $(wildcard $(dir)/*.s)))
-OBJS        = $(IMAGES:%.png=$(OBJDIR)/%.c) $(CSOURCES:%.c=$(OBJDIR)/%.o) $(ASMSOURCES:%.s=$(OBJDIR)/%.o)
+OBJS        = $(IMAGES:%.png=$(OBJDIR)/%.o) $(CSOURCES:%.c=$(OBJDIR)/%.o) $(ASMSOURCES:%.s=$(OBJDIR)/%.o)
 
 # Builds all targets sequentially
 all: $(TARGETS)
 
-$(OBJDIR)/%.c: $(RESDIR)/%.png
-	$(PNG2ASSETS) $< $(RESFLAGS) -c $@
+.SECONDEXPANSION:
+$(OBJDIR)/%.c: $(RESDIR)/%.png $$(wildcard $(RESDIR)/gfx/$(PLAT)/backgrounds/%.png.meta)
+	$(PNG2ASSETS) $< `cat <$<.meta 2>/dev/null` -c $@
+
+$(OBJDIR)/%.o:	$(OBJDIR)/%.c
+	$(LCC) $(CFLAGS) -c -o $@ $<
 
 # Compile .c files in "src/" to .o object files
 $(OBJDIR)/%.o:	$(SRCDIR)/%.c
@@ -65,7 +66,7 @@ $(OBJDIR)/%.o:	$(RESDIR)/%.c
 $(OBJDIR)/%.o:	$(SRCDIR)/%.s
 	$(LCC) $(CFLAGS) -c -o $@ $<
 
-# If needed, compile .c files i n"src/" to .s assembly files
+# If needed, compile .c files in "src/" to .s assembly files
 # (not required if .c is compiled directly to .o)
 $(OBJDIR)/%.s:	$(SRCDIR)/%.c
 	$(LCC) $(CFLAGS) -S -o $@ $<

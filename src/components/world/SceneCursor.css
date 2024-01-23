@@ -69,3 +69,94 @@
   top: -8px;
   left: 0px;
 }
+
+.SceneCursor__Tile--slope45R::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  display: block;
+  background-color: blue;
+  clip-path: polygon(0% 100%, 100% 0%, 100% 100%);
+}
+
+.SceneCursor__Tile--slope45L::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  display: block;
+  background-color: blue;
+  clip-path: polygon(0% 100%, 0% 0%, 100% 100%);
+}
+
+.SceneCursor__Tile--slope_Shallow_R1::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  display: block;
+  background-color: green;
+  clip-path: polygon(0% 100%, 100% 50%, 100% 100%);
+}
+
+.SceneCursor__Tile--slope_Shallow_R2::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  display: block;
+  background-color: green;
+  clip-path: polygon(0% 50%, 100% 0%, 100% 50%);
+}
+
+.SceneCursor__Tile--slope_Shallow_L1::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  display: block;
+  background-color: green;
+  clip-path: polygon(0% 100%, 0% 50%, 100% 100%);
+}
+
+.SceneCursor__Tile--slope_Shallow_L2::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  display: block;
+  background-color: green;
+  clip-path: polygon(0% 50%, 0% 0%, 100% 50%);
+}
+
+.SceneCursor__Tile--slope_Steep_R1::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  display: block;
+  background-color: fuchsia;
+  clip-path: polygon(0% 100%, 50% 25%, 50% 100%);
+}
+
+.SceneCursor__Tile--slope_Steep_R2::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  display: block;
+  background-color: fuchsia;
+  clip-path: polygon(50% 75%, 100% 0%, 100% 75%);
+}
+
+.SceneCursor__Tile--slope_Steep_L2::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  display: block;
+  background-color: cyan;
+  clip-path: polygon(50% 75%, 0% 0%, 0% 75%);
+}
+
+.SceneCursor__Tile--slope_Steep_L1::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  display: block;
+  background-color: cyan;
+  clip-path: polygon(100% 100%, 50% 25%, 50% 100%);
+}
+

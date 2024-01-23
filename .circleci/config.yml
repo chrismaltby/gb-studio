@@ -154,7 +154,9 @@ workflows:
                 - main
                 - v3alpha
                 - v2beta
-                - uge-tracker
+                - uge_v6
+                - brushtoolbar-ts
+                - uge_v6_fixes
       - "make:win32":
           requires:
             - checkout
@@ -166,7 +168,9 @@ workflows:
                 - main
                 - v3alpha
                 - v2beta
-                - uge-tracker
+                - uge_v6
+                - brushtoolbar-ts
+                - uge_v6_fixes
       - "make:win64":
           requires:
             - checkout
@@ -178,7 +182,9 @@ workflows:
                 - main
                 - v3alpha
                 - v2beta
-                - uge-tracker
+                - uge_v6
+                - brushtoolbar-ts
+                - uge_v6_fixes
       - "make:linux":
           requires:
             - checkout
@@ -190,7 +196,9 @@ workflows:
                 - main
                 - v3alpha
                 - v2beta
-                - uge-tracker
+                - uge_v6
+                - brushtoolbar-ts
+                - uge_v6_fixes
       - "upload_artifacts":
           requires:
             - "make:mac"
@@ -205,4 +213,6 @@ workflows:
                 - main
                 - v3alpha
                 - v2beta
-                - uge-tracker
+                - uge_v6
+                - brushtoolbar-ts
+                - uge_v6_fixes

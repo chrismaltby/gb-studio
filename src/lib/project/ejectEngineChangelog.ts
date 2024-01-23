@@ -574,6 +574,39 @@ const changes: EngineChange[] = [
       ].join("\n"),
     modifiedFiles: ["include/projectiles.h", "src/core/data_manager.c"],
   },
+  {
+    version: "3.2.0-e1",
+    description:
+      "Updates\n" +
+      [
+        "   * Update to use latest GBDK-2020",
+        "   * Update to latest hUGEDriver",
+      ].join("\n"),
+    modifiedFiles: ["All of them (sorry)"],
+  },
+  {
+    version: "3.2.0-e2",
+    description:
+      "Updates\n" +
+      [
+        "   * Dyanamically allocate emote tiles",
+        "   * Fix GBT_player crash with new GBDK-2020",
+      ].join("\n"),
+    modifiedFiles: [
+      "include/actor.h",
+      "include/gbt_player.h",
+      "src/core/actor.c",
+      "src/core/data_manager.c",
+      "src/core/vm.c",
+    ],
+  },
+  {
+    version: "3.2.0-e3",
+    description:
+      "Updates\n" +
+      ["   * Add support for slopes to platform scenes"].join("\n"),
+    modifiedFiles: ["src/states/platform.c"],
+  },
 ];
 
 const ejectEngineChangelog = (currentVersion: string) => {

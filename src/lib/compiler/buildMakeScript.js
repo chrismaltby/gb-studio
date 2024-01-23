@@ -50,7 +50,7 @@ export default async (
   }
 
   if (targetPlatform === "pocket") {
-    CFLAGS += " -mgbz80:ap";
+    CFLAGS += " -msm83:ap";
   }
 
   const srcRoot = `${buildRoot}/src/**/*.@(c|s)`;
@@ -166,7 +166,7 @@ export const getBuildCommands = async (
       }
 
       if (targetPlatform === "pocket") {
-        buildArgs.push("-mgbz80:ap");
+        buildArgs.push("-msm83:ap");
       }
 
       buildArgs.push(
@@ -277,7 +277,7 @@ export const buildLinkFlags = (
     // SGB
     sgb ? ["-Wm-ys"] : [],
     // Pocket
-    targetPlatform === "pocket" ? ["-mgbz80:ap"] : [],
+    targetPlatform === "pocket" ? ["-msm83:ap"] : [],
     // Debug emulicious
     profile ? ["-Wf--debug", "-Wl-m", "-Wl-w", "-Wl-y"] : [],
     // Music Driver

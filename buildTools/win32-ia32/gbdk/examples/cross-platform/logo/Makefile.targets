@@ -16,25 +16,25 @@ clean-target:
 gb-clean:
 	${MAKE} clean-target EXT=gb
 gb:
-	${MAKE} build-target PORT=gbz80 PLAT=gb EXT=gb TYP=DMG
+	${MAKE} build-target PORT=sm83 PLAT=gb EXT=gb TYP=DMG
 
 
 gbc-clean:
 	${MAKE} clean-target EXT=gbc
 gbc:
-	${MAKE} build-target PORT=gbz80 PLAT=gb EXT=gbc TYP=CGB
+	${MAKE} build-target PORT=sm83 PLAT=gb EXT=gbc TYP=CGB
 
 
 pocket-clean:
 	${MAKE} clean-target EXT=pocket
 pocket:
-	${MAKE} build-target PORT=gbz80 PLAT=ap EXT=pocket TYP=DMG
+	${MAKE} build-target PORT=sm83 PLAT=ap EXT=pocket TYP=DMG
 
 
 megaduck-clean:
 	${MAKE} clean-target EXT=duck
 megaduck:
-	${MAKE} build-target PORT=gbz80 PLAT=duck EXT=duck TYP=DMG
+	${MAKE} build-target PORT=sm83 PLAT=duck EXT=duck TYP=DMG
 
 
 sms-clean:
@@ -48,3 +48,8 @@ gg-clean:
 gg:
 	${MAKE} build-target PORT=z80 PLAT=gg EXT=gg TYP=SEGA
 
+
+nes-clean:
+	${MAKE} clean-target EXT=nes
+nes:
+	${MAKE} build-target PORT=mos6502 PLAT=nes EXT=nes TYP=NES

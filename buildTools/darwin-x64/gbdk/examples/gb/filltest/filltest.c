@@ -1,5 +1,5 @@
 /* Sample Program to demonstrate the drawing functions in GBDK */
-/* Jon Fuge jonny@q-continuum.demon.co.uk */
+/* Jon Fuge : https://github.com/jf1452 */
 
 #include <gb/gb.h>
 #include <stdint.h>

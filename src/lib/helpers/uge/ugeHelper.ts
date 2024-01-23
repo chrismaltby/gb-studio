@@ -6,6 +6,7 @@ import {
 } from "store/features/trackerDocument/trackerDocumentTypes";
 import { PatternCell } from "./song/PatternCell";
 import { Song } from "./song/Song";
+import { SubPatternCell } from "./song/SubPatternCell";
 
 // prettier-ignore
 const noteConsts = ["C_3","Cs3","D_3","Ds3","E_3","F_3","Fs3","G_3","Gs3","A_3","As3","B_3","C_4","Cs4","D_4","Ds4","E_4","F_4","Fs4","G_4","Gs4","A_4","As4","B_4","C_5","Cs5","D_5","Ds5","E_5","F_5","Fs5","G_5","Gs5","A_5","As5","B_5","C_6","Cs6","D_6","Ds6","E_6","F_6","Fs6","G_6","Gs6","A_6","As6","B_6","C_7","Cs7","D_7","Ds7","E_7","F_7","Fs7","G_7","Gs7","A_7","As7","B_7","C_8","Cs8","D_8","Ds8","E_8","F_8","Fs8","G_8","Gs8","A_8","As8","B_8"];
@@ -14,113 +15,251 @@ interface InstrumentMap {
   [index: number]: number;
 }
 
+interface InstrumentData {
+  idx: number;
+  type: number;
+  name: string;
+  length: number;
+  length_enabled: number;
+  initial_volume: number;
+  volume_sweep_amount: number;
+  freq_sweep_time: number;
+  freq_sweep_shift: number;
+  duty: number;
+  wave_output_level: number;
+  wave_waveform_index: number;
+  subpattern_enabled: number;
+  subpattern: SubPatternCell[];
+  noise_counter_step: number;
+  noise_macro: number[];
+}
+
 export const loadUGESong = (data: ArrayBuffer): Song | null => {
-  console.log(data);
+  const uint8data = new Uint8Array(data);
+
+  const readUint32 = () => {
+    return new Uint32Array(data.slice(offset, (offset += 4)))[0];
+  };
+
+  const readUint8 = () => {
+    return uint8data[offset++];
+  };
+
+  const td = new TextDecoder();
+  const readText = () => {
+    const text = td.decode(
+      data.slice(offset + 1, offset + 1 + uint8data[offset])
+    );
+    offset += 256;
+    return text;
+  };
+
   const song = new Song();
 
   // TODO: Sanity checks on data.
   // TODO: Use `DataView` object instead of loads of Uint32Arrays
   let offset = 0;
-  const version = new Uint32Array(data.slice(offset, offset + 4))[0];
+  const version = readUint32();
   console.log(`! uge version: ${version}`);
-  if (version < 0 || version > 5) {
+  if (version < 0 || version > 6) {
     throw new Error(`UGE version ${version} is not supported by GB Studio`);
   }
 
-  const uint8data = new Uint8Array(data);
-  offset += 4;
-
-  const td = new TextDecoder();
-  song.name = td.decode(data.slice(offset + 1, offset + 1 + uint8data[offset]));
-  offset += 256;
-  song.artist = td.decode(
-    data.slice(offset + 1, offset + 1 + uint8data[offset])
-  );
-  offset += 256;
-  song.comment = td.decode(
-    data.slice(offset + 1, offset + 1 + uint8data[offset])
-  );
-  offset += 256;
+  song.name = readText();
+  song.artist = readText();
+  song.comment = readText();
 
   const instrument_count = version < 3 ? 15 : 45;
-  const duty_instrument_mapping: InstrumentMap = {};
-  const wave_instrument_mapping: InstrumentMap = {};
-  const noise_instrument_mapping: InstrumentMap = {};
 
+  const instrumentData: Array<InstrumentData> = [];
   for (let n = 0; n < instrument_count; n++) {
-    const type = new Uint32Array(data.slice(offset, offset + 4))[0];
-    offset += 4;
-    const name = td.decode(
-      data.slice(offset + 1, offset + 1 + uint8data[offset])
-    );
-    offset += 256;
+    const type = readUint32();
+    const name = readText();
 
-    let length = new Uint32Array(data.slice(offset, offset + 4))[0];
-    offset += 4;
-    const length_enabled = uint8data[offset];
-    offset += 1;
-    let initial_volume = uint8data[offset];
-    if (initial_volume > 15) initial_volume = 15; // ??? bug in the song files?
-    offset += 1;
-    const volume_direction = uint8data[offset];
-    offset += 4;
-    let volume_sweep_amount = uint8data[offset];
-    offset += 1;
-    if (volume_sweep_amount !== 0)
+    const length = readUint32();
+    const length_enabled = readUint8();
+    let initial_volume = readUint8();
+    if (initial_volume > 15) {
+      initial_volume = 15; // ??? bug in the song files?
+    }
+    const volume_direction = readUint32();
+    let volume_sweep_amount = readUint8();
+    if (volume_sweep_amount !== 0) {
       volume_sweep_amount = 8 - volume_sweep_amount;
-    if (volume_direction) volume_sweep_amount = -volume_sweep_amount;
+    }
+    if (volume_direction) {
+      volume_sweep_amount = -volume_sweep_amount;
+    }
 
-    const freq_sweep_time = new Uint32Array(data.slice(offset, offset + 4))[0];
-    offset += 4;
-    const freq_sweep_direction = new Uint32Array(
-      data.slice(offset, offset + 4)
-    )[0];
-    offset += 4;
-    let freq_sweep_shift = new Uint32Array(data.slice(offset, offset + 4))[0];
-    offset += 4;
+    const freq_sweep_time = readUint32();
+    const freq_sweep_direction = readUint32();
+    let freq_sweep_shift = readUint32();
     if (freq_sweep_direction) {
       freq_sweep_shift = -freq_sweep_shift;
     }
 
-    const duty = uint8data[offset];
-    offset += 1;
+    const duty = readUint8();
 
-    const wave_output_level = new Uint32Array(
-      data.slice(offset, offset + 4)
-    )[0];
-    offset += 4;
-    const wave_waveform_index = new Uint32Array(
-      data.slice(offset, offset + 4)
-    )[0];
-    offset += 4;
-    const noise_shift_clock_frequency = new Uint32Array(
-      data.slice(offset, offset + 4)
-    )[0];
-    offset += 4;
-    const noise_counter_step = new Uint32Array(
-      data.slice(offset, offset + 4)
-    )[0];
-    offset += 4;
-    const noise_dividing_ratio = new Uint32Array(
-      data.slice(offset, offset + 4)
-    )[0];
-    offset += 4;
-    const noise_macro = [];
-    if (version >= 4) {
-      for (let n = 0; n < 6; n++) {
-        const uint8ref = uint8data[offset];
-        const int8ref = uint8ref > 0x7f ? uint8ref - 0x100 : uint8ref;
-        noise_macro.push(int8ref);
-        offset += 1;
+    const wave_output_level = readUint32();
+    const wave_waveform_index = readUint32();
+
+    let subpattern_enabled = 0;
+    let noise_counter_step = 0;
+
+    const subpattern: SubPatternCell[] = [];
+    if (version >= 6) {
+      noise_counter_step = readUint32();
+
+      subpattern_enabled = readUint8();
+
+      for (let m = 0; m < 64; m++) {
+        const note = readUint32();
+        offset += 4; // unused uint32 field. increase offset by 4.
+        const jump = readUint32();
+        const effectcode = readUint32();
+        const effectparam = readUint8();
+
+        subpattern.push({
+          note: note === 90 ? null : note,
+          jump,
+          effectcode: effectcode === 0 && effectparam === 0 ? null : effectcode,
+          effectparam:
+            effectcode === 0 && effectparam === 0 ? null : effectparam,
+        });
       }
     }
 
-    if (type === 0) {
-      length = 64 - length;
+    const noise_macro = [];
+    if (version < 6) {
+      offset += 4; // unused uint32 field. increase offset by 4.
+      noise_counter_step = readUint32();
+      offset += 4; // unused uint32 field. increase offset by 4.
+      if (version >= 4) {
+        for (let n = 0; n < 6; n++) {
+          const uint8ref = readUint8();
+          const int8ref = uint8ref > 0x7f ? uint8ref - 0x100 : uint8ref;
+          noise_macro.push(int8ref);
+        }
+      }
+    }
 
+    instrumentData.push({
+      idx: n,
+      type,
+      name,
+      length,
+      length_enabled,
+      initial_volume,
+      volume_sweep_amount,
+      freq_sweep_time,
+      freq_sweep_shift,
+      duty,
+      wave_output_level,
+      wave_waveform_index,
+      subpattern_enabled,
+      subpattern,
+      noise_counter_step,
+      noise_macro,
+    });
+  }
+
+  for (let n = 0; n < 16; n++) {
+    song.waves.push(Uint8Array.from(uint8data.slice(offset, offset + 32)));
+    offset += 32;
+    if (version < 3) offset += 1; // older versions have an off-by-one error
+  }
+
+  song.ticks_per_row = readUint32();
+
+  if (version >= 6) {
+    song.timer_enabled = readUint8() !== 0;
+    song.timer_divider = readUint32();
+  }
+
+  const pattern_count = new Uint32Array(data.slice(offset, offset + 4))[0];
+  if (offset + pattern_count * 13 * 64 > data.byteLength) {
+    throw new Error(`Song has too many patterns (${pattern_count})`);
+  }
+  offset += 4;
+  const patterns = [];
+  for (let n = 0; n < pattern_count; n++) {
+    let patternId = 0;
+    const pattern = [];
+    if (version >= 5) {
+      patternId = readUint32();
+    } else {
+      patternId = n;
+    }
+    for (let m = 0; m < 64; m++) {
+      if (version < 6) {
+        const [note, instrument, effectcode] = new Int32Array(
+          data.slice(offset, offset + 3 * 4)
+        );
+        offset += 3 * 4;
+        const effectparam = readUint8();
+
+        pattern.push([note, instrument, effectcode, effectparam]);
+      } else if (version >= 6) {
+        const [note, instrument, unused, effectcode] = new Int32Array(
+          data.slice(offset, offset + 4 * 4)
+        );
+        offset += 4 * 4;
+        const effectparam = readUint8();
+
+        pattern.push([note, instrument, effectcode, effectparam]);
+      }
+    }
+    /*
+     If there's a repeated pattern it probably means the song was saved
+     with an old version of GB Studio (3.0.2 or earlier) that didn't save the
+     unique pattern ids and instead expected them to always be consecutive.
+    */
+    if (version === 5 && patterns[patternId]) {
+      patterns[n] = pattern;
+    } else {
+      patterns[patternId] = pattern;
+    }
+  }
+
+  const orders = [];
+  for (let n = 0; n < 4; n++) {
+    const order_count = readUint32(); // The amount of pattern orders stored in the file has an off-by-one.
+    orders.push(
+      new Uint32Array(data.slice(offset, offset + 4 * (order_count - 1)))
+    );
+    offset += 4 * order_count;
+  }
+  // TODO: If version > 1 then custom routines follow.
+
+  // Add instruments
+  const duty_instrument_mapping: InstrumentMap = {};
+  const wave_instrument_mapping: InstrumentMap = {};
+  const noise_instrument_mapping: InstrumentMap = {};
+  instrumentData.forEach((instrument: InstrumentData) => {
+    const {
+      idx,
+      type,
+      name,
+      length,
+      length_enabled,
+      initial_volume,
+      volume_sweep_amount,
+      freq_sweep_time,
+      freq_sweep_shift,
+      duty,
+      wave_output_level,
+      wave_waveform_index,
+      subpattern_enabled,
+      subpattern,
+      noise_counter_step,
+      noise_macro,
+    } = instrument;
+
+    if (type === 0) {
       const instr = {} as DutyInstrument;
+
       if (length_enabled) {
-        instr.length = length;
+        instr.length = 64 - length;
       } else {
         instr.length = null;
       }
@@ -133,14 +272,21 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
       instr.frequency_sweep_time = freq_sweep_time;
       instr.frequency_sweep_shift = freq_sweep_shift;
 
-      duty_instrument_mapping[(n % 15) + 1] = song.duty_instruments.length;
+      if (version >= 6) {
+        instr.subpattern_enabled = subpattern_enabled !== 0;
+        instr.subpattern = subpattern;
+      } else {
+        instr.subpattern_enabled = false;
+        instr.subpattern = [...Array(64)].map(() => new SubPatternCell());
+      }
+
+      duty_instrument_mapping[(idx % 15) + 1] = song.duty_instruments.length;
       song.addDutyInstrument(instr);
     } else if (type === 1) {
-      length = 256 - length;
-
       const instr = {} as WaveInstrument;
+
       if (length_enabled) {
-        instr.length = length;
+        instr.length = 256 - length;
       } else {
         instr.length = null;
       }
@@ -149,14 +295,21 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
       instr.volume = wave_output_level;
       instr.wave_index = wave_waveform_index;
 
-      wave_instrument_mapping[(n % 15) + 1] = song.wave_instruments.length;
+      if (version >= 6) {
+        instr.subpattern_enabled = subpattern_enabled !== 0;
+        instr.subpattern = subpattern;
+      } else {
+        instr.subpattern_enabled = false;
+        instr.subpattern = [...Array(64)].map(() => new SubPatternCell());
+      }
+
+      wave_instrument_mapping[(idx % 15) + 1] = song.wave_instruments.length;
       song.addWaveInstrument(instr);
     } else if (type === 2) {
-      length = 64 - length;
-
       const instr = {} as NoiseInstrument;
+
       if (length_enabled) {
-        instr.length = length;
+        instr.length = 64 - length;
       } else {
         instr.length = null;
       }
@@ -165,77 +318,43 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
       instr.initial_volume = initial_volume;
       instr.volume_sweep_change = volume_sweep_amount;
 
-      instr.shift_clock_mask = noise_shift_clock_frequency;
-      instr.dividing_ratio = noise_dividing_ratio;
       instr.bit_count = noise_counter_step ? 7 : 15;
-      if (version >= 4) {
-        instr.noise_macro = noise_macro;
-      } else {
-        instr.noise_macro = [0, 0, 0, 0, 0, 0];
+      if (version < 6) {
+        if (version >= 4) {
+          instr.noise_macro = noise_macro;
+        } else {
+          instr.noise_macro = [0, 0, 0, 0, 0, 0];
+        }
       }
 
-      noise_instrument_mapping[(n % 15) + 1] = song.noise_instruments.length;
+      if (version >= 6) {
+        instr.subpattern_enabled = subpattern_enabled !== 0;
+        instr.subpattern = subpattern;
+      } else {
+        /* 
+          Older versions of the uge format had a noise macro field for the noise instrument that needs to be migrated to the subpattern.
+        */
+        if (noise_macro.length === 0) {
+          // if noise macro is empty create an empty subpattern and disable
+          // subpattern for this instrument
+          instr.subpattern_enabled = false;
+          instr.subpattern = [...Array(64)].map(() => new SubPatternCell());
+        } else {
+          // if noise macro is not empty migrate to the subpattern
+          instr.subpattern_enabled = true;
+          instr.subpattern = subpatternFromNoiseMacro(
+            instr.noise_macro ?? [],
+            song.ticks_per_row
+          );
+        }
+      }
+
+      noise_instrument_mapping[(idx % 15) + 1] = song.noise_instruments.length;
       song.addNoiseInstrument(instr);
     } else {
-      throw Error(`Invalid instrument type ${type} [${n}, "${name}"]`);
+      throw Error(`Invalid instrument type ${type} [${idx}, "${name}"]`);
     }
-  }
-  for (let n = 0; n < 16; n++) {
-    song.waves.push(Uint8Array.from(uint8data.slice(offset, offset + 32)));
-    offset += 32;
-    if (version < 3) offset += 1; // older versions have an off-by-one error
-  }
-
-  song.ticks_per_row = new Uint32Array(data.slice(offset, offset + 4))[0];
-  offset += 4;
-
-  const pattern_count = new Uint32Array(data.slice(offset, offset + 4))[0];
-  if (offset + pattern_count * 13 * 64 > data.byteLength) {
-    throw new Error(`Song has too many patterns (${pattern_count})`);
-  }
-  offset += 4;
-  const patterns = [];
-  for (let n = 0; n < pattern_count; n++) {
-    let patternId = 0;
-    const pattern = [];
-    if (version >= 5) {
-      patternId = new Uint32Array(data.slice(offset, offset + 4))[0];
-      offset += 4;
-    } else {
-      patternId = n;
-    }
-    for (let m = 0; m < 64; m++) {
-      const [note, instrument, effectcode] = new Int32Array(
-        data.slice(offset, offset + 12)
-      );
-      offset += 12;
-      const effectparam = uint8data[offset];
-      offset += 1;
-
-      pattern.push([note, instrument, effectcode, effectparam]);
-    }
-    /*
-     If there's a repeated pattern it probably means the song was saved
-     with an old version of GB Studio (3.0.2 or earlier) that didn't saved the
-     unique pattern ids and instead expected them to always be consecutive.
-    */
-    if (version === 5 && patterns[patternId]) {
-      patterns[n] = pattern;
-    } else {
-      patterns[patternId] = pattern;
-    }
-  }
-
-  const orders = [];
-  for (let n = 0; n < 4; n++) {
-    const order_count = new Uint32Array(data.slice(offset, offset + 4))[0]; // The amount of pattern orders stored in the file has an off-by-one.
-    offset += 4;
-    orders.push(
-      new Uint32Array(data.slice(offset, offset + 4 * (order_count - 1)))
-    );
-    offset += 4 * order_count;
-  }
-  // TODO: If version > 1 then custom routines follow.
+  });
 
   // Create proper flat patterns
   for (let n = 0; n < orders[0].length; n++) {
@@ -299,7 +418,6 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
   //     idx += 1;
   // }
 
-  console.log(song);
   return song;
 };
 
@@ -327,6 +445,18 @@ export const saveUGESong = (song: Song): ArrayBuffer => {
     te.encodeInto(s, new Uint8Array(buffer, idx, idx + 255));
     idx += 255;
   }
+
+  function addSubpattern(i: DutyInstrument | WaveInstrument | NoiseInstrument) {
+    addInt8(i.subpattern_enabled ? 1 : 0);
+    for (let n = 0; n < 64; n++) {
+      const subpattern = i.subpattern[n];
+      addUint32(subpattern.note ?? 90);
+      addUint32(0);
+      addUint32(subpattern.jump ?? 0);
+      addUint32(subpattern.effectcode ?? 0);
+      addUint8(subpattern.effectparam ?? 0);
+    }
+  }
   function addDutyInstrument(type: number, i: DutyInstrument) {
     addUint32(type);
 
@@ -349,12 +479,8 @@ export const saveUGESong = (song: Song): ArrayBuffer => {
     addUint32(0);
 
     addUint32(0);
-    addUint32(0);
-    addUint32(0);
 
-    for (let n = 0; n < 6; n++) {
-      addInt8(0);
-    }
+    addSubpattern(i);
   }
 
   function addWaveInstrument(type: number, i: WaveInstrument) {
@@ -377,12 +503,8 @@ export const saveUGESong = (song: Song): ArrayBuffer => {
     addUint32(i.wave_index);
 
     addUint32(0);
-    addUint32(0);
-    addUint32(0);
 
-    for (let n = 0; n < 6; n++) {
-      addInt8(0);
-    }
+    addSubpattern(i);
   }
 
   function addNoiseInstrument(type: number, i: NoiseInstrument) {
@@ -406,16 +528,12 @@ export const saveUGESong = (song: Song): ArrayBuffer => {
     addUint32(0);
     addUint32(0);
 
-    addUint32(0);
     addUint32(i.bit_count === 7 ? 1 : 0);
-    addUint32(0);
 
-    for (const v of i.noise_macro) {
-      addInt8(v);
-    }
+    addSubpattern(i);
   }
 
-  addUint32(5); // version
+  addUint32(6); // version
   addShortString(song.name);
   addShortString(song.artist);
   addShortString(song.comment);
@@ -436,6 +554,10 @@ export const saveUGESong = (song: Song): ArrayBuffer => {
   }
   addUint32(song.ticks_per_row);
 
+  addInt8(song.timer_enabled ? 1 : 0);
+
+  addUint32(song.timer_divider);
+
   addUint32(song.patterns.length * 4);
   let patternKey = 0;
   for (const pattern of song.patterns) {
@@ -445,6 +567,7 @@ export const saveUGESong = (song: Song): ArrayBuffer => {
         const t = pattern[m][track];
         addUint32(t.note === null ? 90 : t.note);
         addUint32(t.instrument === null ? 0 : t.instrument + 1);
+        addUint32(0);
         addUint32(t.effectcode === null ? 0 : t.effectcode);
         addUint8(t.effectparam === null ? 0 : t.effectparam);
       }
@@ -517,47 +640,94 @@ export const exportToC = (song: Song, trackName: string): string => {
     )})`;
   };
 
+  const formatSubpattern = function (
+    instr: DutyInstrument | WaveInstrument | NoiseInstrument,
+    type: "duty" | "wave" | "noise"
+  ) {
+    if (instr.subpattern_enabled) {
+      data += `static const unsigned char ${type}_${instr.index}_subpattern[] = {\n`;
+      for (let idx = 0; idx < 32; idx++) {
+        const cell = instr.subpattern[idx];
+        data += `    ${formatSubPatternCell(cell, idx === 32 - 1)},\n`;
+      }
+      data += "};\n";
+    }
+  };
+  const formatSubPatternCell = function (
+    cell: SubPatternCell,
+    isLast: boolean
+  ) {
+    const note = cell.note ?? "___";
+    const jump = cell.jump !== null && isLast ? 1 : cell.jump ?? 0;
+    let effect_code = 0;
+    let effect_param = 0;
+    if (cell.effectcode !== null) {
+      effect_code = cell.effectcode;
+      effect_param = cell.effectparam || 0;
+    }
+    return `DN(${note}, ${jump}, ${decHex(
+      (effect_code << 8) | effect_param,
+      3
+    )})`;
+  };
+
   const formatDutyInstrument = function (instr: DutyInstrument) {
-    const nr10 =
+    const sweep =
       (instr.frequency_sweep_time << 4) |
       (instr.frequency_sweep_shift < 0 ? 0x08 : 0x00) |
       Math.abs(instr.frequency_sweep_shift);
-    const nr11 =
+    const len_duty =
       (instr.duty_cycle << 6) |
       ((instr.length !== null ? 64 - instr.length : 0) & 0x3f);
-    let nr12 =
+    let envelope =
       (instr.initial_volume << 4) |
       (instr.volume_sweep_change > 0 ? 0x08 : 0x00);
     if (instr.volume_sweep_change !== 0) {
-      nr12 |= 8 - Math.abs(instr.volume_sweep_change);
+      envelope |= 8 - Math.abs(instr.volume_sweep_change);
     }
-    const nr14 = 0x80 | (instr.length !== null ? 0x40 : 0);
-    return `${decHex(nr10)}, ${decHex(nr11)}, ${decHex(nr12)}, ${decHex(nr14)}`;
+    let subpatternRef: 0 | string = 0;
+    if (instr.subpattern_enabled) {
+      subpatternRef = `duty_${instr.index}_subpattern`;
+    }
+    const highmask = 0x80 | (instr.length !== null ? 0x40 : 0);
+
+    return `{ ${decHex(sweep)}, ${decHex(len_duty)}, ${decHex(
+      envelope
+    )}, ${subpatternRef}, ${decHex(highmask)} }`;
   };
 
   const formatWaveInstrument = function (instr: WaveInstrument) {
-    const nr31 = (instr.length !== null ? instr.length : 0) & 0xff;
-    const nr32 = instr.volume << 5;
-    const wave_nr = instr.wave_index;
-    const nr34 = 0x80 | (instr.length !== null ? 0x40 : 0);
-    return `${decHex(nr31)}, ${decHex(nr32)}, ${decHex(wave_nr)}, ${decHex(
-      nr34
-    )}`;
+    const length = (instr.length !== null ? instr.length : 0) & 0xff;
+    const volume = instr.volume << 5;
+    const waveform = instr.wave_index;
+    let subpatternRef: 0 | string = 0;
+    if (instr.subpattern_enabled) {
+      subpatternRef = `wave_${instr.index}_subpattern`;
+    }
+    const highmask = 0x80 | (instr.length !== null ? 0x40 : 0);
+
+    return `{ ${decHex(length)}, ${decHex(volume)}, ${decHex(
+      waveform
+    )}, ${subpatternRef}, ${decHex(highmask)} }`;
   };
 
   const formatNoiseInstrument = function (instr: NoiseInstrument) {
-    let param0 =
+    let envelope =
       (instr.initial_volume << 4) |
       (instr.volume_sweep_change > 0 ? 0x08 : 0x00);
     if (instr.volume_sweep_change !== 0)
-      param0 |= 8 - Math.abs(instr.volume_sweep_change);
-    let param1 = (instr.length !== null ? 64 - instr.length : 0) & 0x3f;
-    if (instr.length !== null) param1 |= 0x40;
-    if (instr.bit_count === 7) param1 |= 0x80;
+      envelope |= 8 - Math.abs(instr.volume_sweep_change);
+    let subpatternRef: 0 | string = 0;
+    if (instr.subpattern_enabled) {
+      subpatternRef = `noise_${instr.index}_subpattern`;
+    }
+    let highmask = (instr.length !== null ? 64 - instr.length : 0) & 0x3f;
+    if (instr.length !== null) highmask |= 0x40;
+    if (instr.bit_count === 7) highmask |= 0x80;
 
-    return `${decHex(param0)}, ${decHex(param1)}, ${instr.noise_macro
-      .map((n) => n & 0xff)
-      .join(", ")}`;
+    return `{ ${decHex(envelope)}, ${subpatternRef}, ${decHex(
+      highmask
+    )}, 0, 0 }`;
   };
 
   const formatWave = function (wave: Uint8Array) {
@@ -604,21 +774,30 @@ static const unsigned char order_cnt = ${song.sequence.length * 2};
     }
     data += "};\n";
   }
+  for (const instr of song.duty_instruments) {
+    formatSubpattern(instr, "duty");
+  }
+  for (const instr of song.wave_instruments) {
+    formatSubpattern(instr, "wave");
+  }
+  for (const instr of song.noise_instruments) {
+    formatSubpattern(instr, "noise");
+  }
   for (let track = 0; track < 4; track++)
     data += `static const unsigned char* const order${
       track + 1
     }[] = {${getSequenceMappingFor(track)}};\n`;
-  data += "static const unsigned char duty_instruments[] = {\n";
+  data += "static const hUGEDutyInstr_t duty_instruments[] = {\n";
   for (const instr of song.duty_instruments) {
     data += `    ${formatDutyInstrument(instr)},\n`;
   }
   data += "};\n";
-  data += "static const unsigned char wave_instruments[] = {\n";
+  data += "static const hUGEWaveInstr_t wave_instruments[] = {\n";
   for (const instr of song.wave_instruments) {
     data += `    ${formatWaveInstrument(instr)},\n`;
   }
   data += "};\n";
-  data += "static const unsigned char noise_instruments[] = {\n";
+  data += "static const hUGENoiseInstr_t noise_instruments[] = {\n";
   for (const instr of song.noise_instruments) {
     data += `    ${formatNoiseInstrument(instr)},\n`;
   }
@@ -644,4 +823,17 @@ const hUGESong_t ${trackName}_Data = {
 };
 `;
   return data;
+};
+
+const subpatternFromNoiseMacro = function (
+  noise_macro: number[],
+  ticks_per_row: number
+) {
+  const subpattern = [...Array(64)].map(() => new SubPatternCell());
+  for (let n = 0; n < 6; n++) {
+    subpattern[n + 1].note = noise_macro[n] + 36;
+  }
+  const wrapPoint = Math.min(ticks_per_row, 7);
+  subpattern[wrapPoint - 1].jump = wrapPoint;
+  return subpattern;
 };

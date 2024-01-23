@@ -5,7 +5,7 @@ import { assetFilename } from "lib/helpers/gbstudio";
 import l10n from "lib/helpers/l10n";
 import { RootState } from "store/configureStore";
 import { backgroundSelectors } from "store/features/entities/entitiesState";
-import warningsActions from "store/features/warnings/warningsActions";
+import assetsActions from "store/features/assets/assetsActions";
 import { SelectMenu, selectMenuStyleProps } from "ui/form/Select";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import { BackgroundSelect } from "./BackgroundSelect";
@@ -154,14 +154,14 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [buttonFocus, setButtonFocus] = useState<boolean>(false);
   const numTiles = useSelector(
-    (state: RootState) => state.warnings.backgrounds[value || ""]?.numTiles
+    (state: RootState) => state.assets.backgrounds[value || ""]?.numTiles
   );
   const dispatch = useDispatch();
 
   useEffect(() => {
     if (value) {
       dispatch(
-        warningsActions.checkBackgroundWarnings({
+        assetsActions.loadBackgroundAssetInfo({
           backgroundId: value,
           is360,
         })

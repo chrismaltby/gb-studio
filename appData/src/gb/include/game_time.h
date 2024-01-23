@@ -1,7 +1,7 @@
 #ifndef GAME_TIME_H
 #define GAME_TIME_H
 
-#include <gb/gb.h>
+#include <gbdk/platform.h>
 
 #define IS_FRAME_256 ((game_time & 0xFF) == 0)
 #define IS_FRAME_128 ((game_time & 0x7F) == 0)
