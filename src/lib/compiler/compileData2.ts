@@ -696,6 +696,10 @@ export const compileSceneProjectiles = (
         const sprite =
           sprites.find((s) => s.id === projectile.spriteSheetId) || sprites[0];
         if (!sprite) return null;
+        const stateIndex = sprite.states.findIndex(
+          (state) => state.name === projectile.spriteStateId
+        );
+        const startAnim = stateIndex > 0 ? stateIndex * 8 : 0;
         return {
           __comment: `Projectile ${projectileIndex}`,
           sprite: toFarPtr(sprite.symbol),
@@ -705,7 +709,7 @@ export const compileSceneProjectiles = (
           collision_mask: toASMCollisionMask(projectile.collisionMask),
           bounds: compileBounds(sprite),
           anim_tick: projectile.animSpeed,
-          animations: sprite.animationOffsets.slice(0, 4),
+          animations: sprite.animationOffsets.slice(startAnim, startAnim + 4),
           initial_offset: Math.round((projectile.initialOffset || 0) * 16),
         };
       })
