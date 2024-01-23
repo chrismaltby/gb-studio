@@ -73,6 +73,13 @@ Pull the latest code and run make:cli again, yarn link is only needed for the fi
     > gb-studio-cli make:rom path/to/project.gbsproj out/game.gb
     ```
     Make a ROM file from gbsproj
+
+- **Make Pocket**
+    ```bash
+    > gb-studio-cli make:pocket path/to/project.gbsproj out/game.pocket
+    ```
+    Make a Pocket file from gbsproj
+
 - **Make Web**
     ```bash
     > gb-studio-cli make:web path/to/project.gbsproj out/

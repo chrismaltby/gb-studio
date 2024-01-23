@@ -19,7 +19,7 @@ interface EngineData {
   fields?: EngineFieldSchema[];
 }
 
-type Command = "export" | "make:rom" | "make:web";
+type Command = "export" | "make:rom" | "make:pocket" | "make:web";
 
 const main = async (
   command: Command,
@@ -98,6 +98,19 @@ const main = async (
       warnings,
     });
     const romTmpPath = Path.join(tmpBuildDir, "build", "rom", "game.gb");
+    await copy(romTmpPath, destination); 
+  } else if (command === "make:pocket") {
+    // Export ROM to destination
+    await makeBuild({
+      buildRoot: tmpBuildDir,
+      tmpPath,
+      data: project,
+      profile: false,
+      buildType: "pocket",
+      progress,
+      warnings,
+    });
+    const romTmpPath = Path.join(tmpBuildDir, "build", "rom", "game.pocket");
     await copy(romTmpPath, destination);
   } else if (command === "make:web") {
     // Export web build to destination
@@ -179,6 +192,13 @@ program
   .description("Build a ROM from project file")
   .action((source, destination) => {
     main("make:rom", source, destination);
+  });
+
+program
+  .command("make:pocket <projectFile> <destination.pocket>")
+  .description("Build a Pocket from project file")
+  .action((source, destination) => {
+    main("make:pocket", source, destination);
   });
 
 program
