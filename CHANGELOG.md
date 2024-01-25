@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add magic brush when painting tiles and drawing collisions, updates all tiles matching the one clicked [@RichardULZ](https://github.com/RichardULZ)
 - Add support for slopes to platform scenes [@Canight](https://github.com/Canite) [@gearfo](https://gearfo.itch.io/) [@Gumpy Function](https://www.gumpyfunction.com/)
 - Add ability to make Analogue Pocket builds using CLI tool [@SalvatoreTosti](https://github.com/SalvatoreTosti)
+- Add warning when using engine plugins built on older versions of GB Studio
 
 ### Changed
 

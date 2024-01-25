@@ -90,6 +90,30 @@ const ejectBuild = async ({
     progress(
       `Using engine plugin: ${Path.relative(pluginsPath, enginePluginPath)}`
     );
+    const pluginName = Path.basename(Path.dirname(enginePluginPath));
+    try {
+      const pluginEngineMetaPath = `${enginePluginPath}/engine.json`;
+      const pluginEngineVersion = await readEngineVersion(pluginEngineMetaPath);
+      if (!pluginEngineVersion) {
+        throw new Error("Missing plugin engine version");
+      }
+      if (pluginEngineVersion !== expectedEngineVersion) {
+        warnings(
+          `${l10n("WARNING_ENGINE_PLUGIN_OUT_OF_DATE", {
+            pluginName,
+            pluginEngineVersion,
+            expectedEngineVersion,
+          })}`
+        );
+      }
+    } catch (e) {
+      warnings(
+        `${l10n("WARNING_ENGINE_PLUGIN_MISSING_MANIFEST", {
+          pluginName,
+          expectedEngineVersion,
+        })}`
+      );
+    }
     await copy(enginePluginPath, outputRoot);
   }
 
