@@ -38,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where script event title would show wrong local variable name for scenes [@pau-tomas](https://github.com/pau-tomas)
 - Fix muting bug with FXH parser [@coffeevalenbat](https://github.com/coffeevalenbat)
 - Fix issue where Animation State value for projectiles was being ignored
+- Fix issue where falling on to ladder while holding dpad down could sometimes cause player to get stuck
 
 ### Performance
 

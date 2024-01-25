@@ -57,6 +57,7 @@
 #define IS_ON_SLOPE(t) ((t) & 0x60)
 #define IS_SLOPE_LEFT(t) ((t) & 0x10)
 #define IS_SLOPE_RIGHT(t) (((t) & 0x10) == 0)
+#define IS_LADDER(t) (((t) & 0xF0) == 0x10)
 
 UBYTE grounded;
 UBYTE on_slope;
@@ -92,7 +93,7 @@ void platform_init(void) BANKED {
     grounded = FALSE;
 
     // If starting tile was a ladder start scene attached to it
-    if (tile_at(tile_x, tile_y - 1) & TILE_PROP_LADDER) {
+    if (IS_LADDER(tile_at(tile_x, tile_y - 1))) {
         // Snap to ladder
         UBYTE p_half_width = (PLAYER.bounds.right - PLAYER.bounds.left) >> 1;
         PLAYER.pos.x = (((tile_x << 3) + 4 - (PLAYER.bounds.left + p_half_width) << 4));
@@ -125,13 +126,13 @@ void platform_update(void) BANKED {
         pl_vel_y = 0;
         if (INPUT_UP) {
             // Climb laddder
-            if (tile_at(tile_x_mid, tile_y) & TILE_PROP_LADDER) {
+            if (IS_LADDER(tile_at(tile_x_mid, tile_y))) {
                 pl_vel_y = -plat_climb_vel;
             }
         } else if (INPUT_DOWN) {
             // Descend ladder
             tile_y = ((PLAYER.pos.y >> 4) + PLAYER.bounds.bottom + 1) >> 3;
-            if (tile_at(tile_x_mid, tile_y) & TILE_PROP_LADDER) {
+            if (IS_LADDER(tile_at(tile_x_mid, tile_y))) {
                 pl_vel_y = plat_climb_vel;
             }
         } else if (INPUT_LEFT) {
@@ -198,16 +199,16 @@ void platform_update(void) BANKED {
             // Grab upwards ladder
             tile_y   = (((PLAYER.pos.y >> 4) + PLAYER.bounds.top) >> 3);
             col = tile_at(tile_x_mid, tile_y);
-            if ((col & COLLISION_SLOPE) == COLLISION_LADDER) {
+            if (IS_LADDER(col)) {
                 PLAYER.pos.x = (((tile_x_mid << 3) + 4 - (PLAYER.bounds.left + p_half_width) << 4));
                 on_ladder = TRUE;
                 pl_vel_x = 0;
             }
         } else if (INPUT_DOWN) {
             // Grab downwards ladder
-            tile_y   = (((PLAYER.pos.y >> 4) + PLAYER.bounds.bottom) >> 3) + 1;
+            tile_y = ((PLAYER.pos.y >> 4) + PLAYER.bounds.bottom + 1) >> 3;
             col = tile_at(tile_x_mid, tile_y);
-            if ((col & COLLISION_SLOPE) == COLLISION_LADDER) {
+            if (IS_LADDER(col)) {
                 PLAYER.pos.x = (((tile_x_mid << 3) + 4 - (PLAYER.bounds.left + p_half_width) << 4));
                 on_ladder = TRUE;
                 pl_vel_x = 0;

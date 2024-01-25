@@ -604,7 +604,10 @@ const changes: EngineChange[] = [
     version: "3.2.0-e3",
     description:
       "Updates\n" +
-      ["   * Add support for slopes to platform scenes"].join("\n"),
+      [
+        "   * Add support for slopes to platform scenes",
+        "   * Fix issue where falling on to ladder while holding dpad down could sometimes cause player to get stuck",
+      ].join("\n"),
     modifiedFiles: ["src/states/platform.c"],
   },
 ];
