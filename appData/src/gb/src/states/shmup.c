@@ -130,7 +130,7 @@ void shmup_update(void) BANKED {
                     }
                     tile_start++;
                 }
-                PLAYER.pos.x = MIN((image_width - 16) << 4, new_pos.x);
+                PLAYER.pos.x = MIN((image_width - PLAYER.bounds.right - 1) << 4, new_pos.x);
             } else {
                 UBYTE tile_x = ((new_pos.x >> 4) + PLAYER.bounds.left) >> 3;
                 while (tile_start != tile_end) {

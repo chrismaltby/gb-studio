@@ -280,7 +280,7 @@ void platform_update(void) BANKED {
                 }
                 tile_start++;
             }
-            PLAYER.pos.x = MIN((image_width - 16) << 4, new_x);
+            PLAYER.pos.x = MIN((image_width - PLAYER.bounds.right - 1) << 4, new_x);
         } else if (pl_vel_x < 0) {
             tile_x = ((new_x >> 4) + PLAYER.bounds.left) >> 3;
             tile_y   = (((PLAYER.pos.y >> 4) + PLAYER.bounds.bottom) >> 3);
