@@ -30,11 +30,11 @@ import actions from "./electronActions";
 import open from "open";
 
 const electronMiddleware: Middleware<Dispatch, RootState> =
-  (store) => (next) => (action) => {
+  (store) => (next) => async (action) => {
     if (actions.openHelp.match(action)) {
       ipcRenderer.send("open-help", action.payload);
     } else if (actions.openFolder.match(action)) {
-      remote.shell.openItem(action.payload);
+      await remote.shell.openPath(action.payload);
     } else if (actions.openFile.match(action)) {
       if (action.payload.type === "image") {
         const app = String(settings.get("imageEditorPath") || "") || undefined;
@@ -43,7 +43,7 @@ const electronMiddleware: Middleware<Dispatch, RootState> =
         const app = String(settings.get("musicEditorPath") || "") || undefined;
         open(action.payload.filename, { app });
       } else {
-        remote.shell.openItem(action.payload.filename);
+        await remote.shell.openPath(action.payload.filename);
       }
     } else if (editorActions.resizeWorldSidebar.match(action)) {
       settings.set("worldSidebarWidth", action.payload);

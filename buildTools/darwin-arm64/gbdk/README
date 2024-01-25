@@ -1,0 +1,98 @@
+
+        ------------------------------------------------------
+        GBDK-2020 - https://github.com/gbdk-2020/gbdk-2020
+        ------------------------------------------------------
+
+What's New
+------------
+See the "ChangeLog" included in the root folder of the GBDK install.
+
+
+
+New Releases
+------------
+Check for new releases online:
+https://github.com/gbdk-2020/gbdk-2020/releases
+
+
+
+Setup:
+------------
+
+=== Windows ===
+
+* Unzip to a folder of your choice (which you've probably already done)
+    Suggested location: c:\gbdk\
+
+* Recommended but not required: Add the gbdk 'bin' sub-directory to your
+  system path using the Windows System control panel
+
+* Open a command line and compile the examples by running "compile.bat" in
+  the "examples\gb" sub-directory:
+    cd c:\gbdk\examples\gb
+    compile.bat
+
+
+=== Linux ===
+
+* Unzip to a folder of your choice (which you've probably already done)
+    Suggested location: /opt/gbdk/
+
+* Recommended but not required: Add the gbdk 'bin' sub-directory to your shell path
+    Run from command line (only lasts for that session): export GBDKDIR=/opt/gbdk
+    Or add that to your shell defaults (permanent)
+
+* Open a command line and compile the examples by running "make" in
+  the "examples\gb" sub-directory:
+    cd /opt/gbdk/examples/gb
+    make
+
+
+
+GBDK is now ready for use.
+
+It's recommended to check out the Getting Started docs: 
+https://gbdk-2020.github.io/gbdk-2020/docs/api/docs_getting_started.html
+
+
+
+Reporting problems and feature requests
+---------------------------------------
+1.  Make sure that you have read this README fully.
+
+2.  Check the online docs, including the Getting Started section
+    https://gbdk-2020.github.io/gbdk-2020/docs/api
+    https://gbdk-2020.github.io/gbdk-2020/docs/api/docs_links_and_tools.html#links_help_and_community
+
+3.  Make sure you have the latest version
+    https://github.com/gbdk-2020/gbdk-2020/releases
+
+4.  Check if anyone else has already reported or solved the problem
+    https://github.com/gbdk-2020/gbdk-2020/issues?q=is%3Aissue+is%3Aclosed
+
+5.  Ask for help online
+    https://github.com/gbdk-2020/gbdk-2020#discord-servers
+
+
+Documentation
+-------------
+
+Library documentation:
+* https://gbdk-2020.github.io/gbdk-2020/docs/api
+
+Pandocs
+* https://gbdev.io/pandocs/
+
+Other useful links:
+* https://gbdk-2020.github.io/gbdk-2020/docs/api/docs_getting_started.html
+
+* https://gbdk-2020.github.io/gbdk-2020/docs/api/docs_links_and_tools.html#links_help_and_community
+    
+
+
+History
+-------------
+
+Original work on GBDK (pre-2020) was by:
+
+Pascal Felber, Lars Malmborg, Michael Hope (and perhaps others)
