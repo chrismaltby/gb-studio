@@ -147,6 +147,12 @@ export const FlatList = <T extends FlatListItem>({
     }
   };
 
+  const handleClickOutside = (e: MouseEvent) => {
+    if (ref.current && hasFocus && !ref.current.contains(e.target as Node)) {
+      setHasFocus(false);
+    }
+  };
+
   const setFocus = (id: string) => {
     if (ref.current) {
       const el = ref.current.querySelector('[data-id="' + id + '"]');
@@ -158,8 +164,10 @@ export const FlatList = <T extends FlatListItem>({
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeys);
+    window.addEventListener("mousedown", handleClickOutside);
     return () => {
       window.removeEventListener("keydown", handleKeys);
+      window.removeEventListener("mousedown", handleClickOutside);
     };
   });
 
