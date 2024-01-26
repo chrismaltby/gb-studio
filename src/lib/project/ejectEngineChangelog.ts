@@ -608,11 +608,13 @@ const changes: EngineChange[] = [
         "   * Add support for slopes to platform scenes",
         "   * Fix issue where falling on to ladder while holding dpad down could sometimes cause player to get stuck",
         "   * Fix bounds check for right screen edge when player isn't 16px wide",
+        "   * Fix VM_REPLACE_TILE_XY to allow tiles larger than 255 for logo scene type",
       ].join("\n"),
     modifiedFiles: [
       "src/states/adventure.c",
       "src/states/platform.c",
       "src/states/shmup.c",
+      "src/core/vm_gameboy.c",
     ],
   },
 ];

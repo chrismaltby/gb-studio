@@ -41,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where Animation State value for projectiles was being ignored
 - Fix issue where falling on to ladder while holding dpad down could sometimes cause player to get stuck
 - Fix bounds check for right screen edge when player isn't 16px wide
+- Fix VM_REPLACE_TILE_XY to allow tiles larger than 255 for logo scene type
 
 ### Performance
 
