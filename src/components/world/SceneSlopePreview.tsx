@@ -98,13 +98,27 @@ const SceneSlopePreview = ({
         lineEndX += signX * 0.5 * TILE_SIZE;
       }
 
-      if (lineStartY === lineEndY && offset) {
+      if (
+        lineStartY === lineEndY &&
+        // Drag left to right for top collision
+        // Drag right to left for bottom collision
+        // Shift to toggle
+        ((lineStartX > lineEndX && !offset) ||
+          (lineStartX <= lineEndX && offset))
+      ) {
         // Bottom collision
         ctx.strokeStyle = "rgba(255,250,40,0.6)";
         lineStartY += TILE_SIZE - 1;
         lineEndY += TILE_SIZE - 1;
       }
-      if (lineStartX === lineEndX && offset) {
+      if (
+        lineStartX === lineEndX &&
+        // Drag top to bottom for left collision
+        // Drag bottom to top for right collision
+        // Shift to toggle
+        ((lineStartY > lineEndY && !offset) ||
+          (lineStartY <= lineEndY && offset))
+      ) {
         // Right collision
         ctx.strokeStyle = "rgba(40,250,250,0.6)";
         lineStartX += TILE_SIZE - 1;

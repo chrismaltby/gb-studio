@@ -2042,11 +2042,23 @@ const paintSlopeCollision: CaseReducer<
     const tileIndex = background.width * y + x;
     let newValue = value;
 
-    if (startY === endY && offset) {
+    if (
+      startY === endY &&
+      // Drag left to right for top collision
+      // Drag right to left for bottom collision
+      // Shift to toggle
+      ((startX > endX && !offset) || (startX <= endX && offset))
+    ) {
       newValue = COLLISION_BOTTOM;
     } else if (startY === endY) {
       newValue = COLLISION_TOP;
-    } else if (startX === endX && offset) {
+    } else if (
+      startX === endX &&
+      // Drag top to bottom for left collision
+      // Drag bottom to top for right collision
+      // Shift to toggle
+      ((startY > endY && !offset) || (startY <= endY && offset))
+    ) {
       newValue = COLLISION_RIGHT;
     } else if (startX === endX) {
       newValue = COLLISION_LEFT;
