@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update to latest [GBVM](https://github.com/chrismaltby/gbvm)
 - Rename "Obj Palette" in sprite editor to "Monochrome Palette" to make its purpose clearer, now includes palette preview [@pau-tomas](https://github.com/pau-tomas)
 - Allow actor fields that aren't named "actorId" or "otherActorId" to be in custom scripts [@patrickmollohan](https://github.com/patrickmollohan)
+- Fix issue where editing a variable's name in sidebar would sometimes cause a different variable to become selected
 
 ### Fixed
 
