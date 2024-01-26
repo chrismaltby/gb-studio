@@ -5,14 +5,18 @@
 
 # If you move this project you can change the directory 
 # to match your GBDK root directory (ex: GBDK_HOME = "C:/GBDK/"
-GBDK_HOME = ../../../
+ifndef GBDK_HOME
+	GBDK_HOME = ../../../
+endif
 
 LCC = $(GBDK_HOME)bin/lcc
 PNG2ASSET = $(GBDK_HOME)bin/png2asset
 
-# You can set flags for LCC here
-# For example, you can uncomment the line below to turn on debug output
-# LCCFLAGS += -debug
+# GBDK_DEBUG = ON
+ifdef GBDK_DEBUG
+	LCCFLAGS += -debug -v
+endif
+
 
 # Add directory where image gets converted into (obj/)
 # So they can be included with "#include <res/somefile.h>"
@@ -60,7 +64,7 @@ $(RESOBJSRC)/%.c:	$(RESDIR)/%.png
 # Compile the pngs that were converted to .c files
 # .c files in obj/res/ -> .o files in obj/
 $(OBJDIR)/%.o:	$(RESOBJSRC)/%.c
-	$(LCC) $(CFLAGS) -c -o $@ $<
+	$(LCC) $(LCCFLAGS) $(CFLAGS) -c -o $@ $<
 
 # Compile .c files in "src/" to .o object files
 $(OBJDIR)/%.o:	$(SRCDIR)/%.c
@@ -68,7 +72,7 @@ $(OBJDIR)/%.o:	$(SRCDIR)/%.c
 
 # Compile .c files in "res/" to .o object files
 $(OBJDIR)/%.o:	$(RESDIR)/%.c
-	$(LCC) $(CFLAGS) -c -o $@ $<
+	$(LCC) $(LCCFLAGS) $(CFLAGS) -c -o $@ $<
 
 # Compile .s assembly files in "src/" to .o object files
 $(OBJDIR)/%.o:	$(SRCDIR)/%.s

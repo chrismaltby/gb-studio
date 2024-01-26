@@ -1,7 +1,19 @@
-CC	= ../../../bin/lcc -Wa-l -Wl-m -Wl-j
+# If you move this project you can change the directory
+# to match your GBDK root directory (ex: GBDK_HOME = "C:/GBDK/"
+ifndef GBDK_HOME
+	GBDK_HOME = ../../../
+endif
+
+LCC = $(GBDK_HOME)bin/lcc -Wa-l -Wl-m -Wl-j
 
 BINS	= sound.gb sound.duck
 # BINS	= sound.gb sound.duck sound.pocket
+
+# GBDK_DEBUG = ON
+ifdef GBDK_DEBUG
+	LCCFLAGS += -debug -v
+endif
+
 
 all:	$(BINS)
 
@@ -11,16 +23,16 @@ compile.bat: Makefile
 
 # Compile and link single file in one pass
 %.gb:	%.c
-	$(CC) -msm83:gb -o $@ $<
+	$(LCC) $(LCCFLAGS) -msm83:gb -o $@ $<
 
 # Build megaduck version with -m port:plat flag
 %.duck:	%.c
-	$(CC) -msm83:duck -o $@ $<
+	$(LCC) $(LCCFLAGS) -msm83:duck -o $@ $<
 
 # Build analogue pocket version with -m port:plat flag
 %.pocket:	%.c
-	$(CC) -msm83:ap -o $@ $<
+	$(LCC) $(LCCFLAGS) -msm83:ap -o $@ $<
 
 clean:
-	rm -f *.o *.lst *.map *.duck *.pocket *.gb *~ *.rel *.cdb *.ihx *.lnk *.sym *.asm *.noi
+	rm -f *.o *.lst *.map *.duck *.pocket *.gb *~ *.rel *.cdb *.ihx *.lnk *.sym *.asm *.noi *.rst
 

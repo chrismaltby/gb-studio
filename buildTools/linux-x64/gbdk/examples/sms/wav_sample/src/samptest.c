@@ -22,14 +22,16 @@ void main(void) {
     uint8_t bank_save;
     while (true) {
         PROCESS_INPUT();
+
         if (KEY_PRESSED(J_A)) {
-            bank_save = _current_bank;
+            bank_save = CURRENT_BANK;
             SWITCH_ROM(BANK(cowbell_8bit_pcm_unsigned));
             play_sample(cowbell_8bit_pcm_unsigned, sizeof(cowbell_8bit_pcm_unsigned));
             cut_sample(SFX_CH_1 | SFX_CH_2 | SFX_CH_3);
             SWITCH_ROM(bank_save);
+
         } else if (KEY_PRESSED(J_B)) {
-            bank_save = _current_bank;
+            bank_save = CURRENT_BANK;
             SWITCH_ROM(BANK(risset_drum_8bit_pcm_unsigned));
             play_sample(risset_drum_8bit_pcm_unsigned, sizeof(risset_drum_8bit_pcm_unsigned));
             cut_sample(SFX_CH_1 | SFX_CH_2 | SFX_CH_3);

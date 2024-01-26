@@ -38,7 +38,7 @@ __BYTE_REG rRAMB;
 
 /** IO Registers */
 
-__REG P1_REG;           /**< Joystick: 1.1.P15.P14.P13.P12.P11.P10 */
+__REG P1_REG;           /**< Joystick register @see joypad(), add_JOY(), IEF_HILO, P1F_5, P1F_4, P1F_3, P1F_2, P1F_1, P1F_0, P1F_GET_DPAD, P1F_GET_BTN, P1F_GET_NONE */
 #define rP1 P1_REG
 
 #define P1F_5 0b00100000
@@ -85,7 +85,7 @@ __REG TAC_REG;          /**< Timer control */
 #define TACF_65KHZ  0b00000010
 #define TACF_262KHZ 0b00000001
 
-__REG IF_REG;           /**< Interrupt flags: 0.0.0.JOY.SIO.TIM.LCD.VBL */
+__REG IF_REG;           /**< Interrupt flags: @ref IEF_HILO, @ref IEF_SERIAL, @ref IEF_TIMER, @ref IEF_STAT, @ref IEF_VBLANK */
 #define rIF IF_REG
 
 __REG NR10_REG;         /**< Sound Channel 1 Sweep */
@@ -386,11 +386,11 @@ __REG PCM34_REG;        /**< Sound channel 3&4 PCM amplitude (R) */
 __REG IE_REG;           /**< Interrupt enable */
 #define rIE IE_REG
 
-#define IEF_HILO   0b00010000
-#define IEF_SERIAL 0b00001000
-#define IEF_TIMER  0b00000100
-#define IEF_STAT   0b00000010
-#define IEF_VBLANK 0b00000001
+#define IEF_HILO   0b00010000  /**< Joypad interrupt enable flag */
+#define IEF_SERIAL 0b00001000  /**< Serial interrupt enable flag */
+#define IEF_TIMER  0b00000100  /**< Timer  interrupt enable flag */
+#define IEF_STAT   0b00000010  /**< Stat   interrupt enable flag */
+#define IEF_VBLANK 0b00000001  /**< VBlank interrupt enable flag */
 
 
 /* Square wave duty cycle */

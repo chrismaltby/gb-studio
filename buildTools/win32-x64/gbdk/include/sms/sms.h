@@ -743,8 +743,8 @@ inline uint8_t get_sprite_tile(uint8_t nb) {
     return shadow_OAM[0x41+(nb << 1)];
 }
 
-/** Function has no affect on sms. 
-    
+/** Function has no affect on sms.
+
   This function is only here to enable game portability
 */
 
@@ -788,7 +788,7 @@ inline void move_sprite(uint8_t nb, uint8_t x, uint8_t y) {
 inline void scroll_sprite(uint8_t nb, int8_t x, int8_t y) {
     uint8_t new_y = shadow_OAM[nb] + y;
     shadow_OAM[nb] = (new_y < VDP_SAT_TERM) ? new_y : 0xC0;
-    shadow_OAM[0x40+(nb << 1)] = x;
+    shadow_OAM[0x40+(nb << 1)] += x;
 }
 
 

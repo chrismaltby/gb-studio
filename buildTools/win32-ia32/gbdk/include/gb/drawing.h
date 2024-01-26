@@ -110,7 +110,7 @@ void plot_point(uint8_t x, uint8_t y) OLDCALL;
 void switch_data(uint8_t x, uint8_t y, uint8_t *src, uint8_t *dst) OLDCALL;
 
 /** Draw a full screen image at __data__ */
-void draw_image(uint8_t *data) OLDCALL;
+void draw_image(uint8_t *data);
 
 /** Draw a line in the current drawing mode and colour from __x1,y1__ to __x2,y2__ */
 void line(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2) OLDCALL;

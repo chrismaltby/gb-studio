@@ -173,51 +173,71 @@ void set_camera(void)
     old_camera_x = camera_x, old_camera_y = camera_y;
 }
 
-void main(void){
-    DISPLAY_OFF;
-    //set_bkg_data(0, 241u, bigmap_tiles);
+
+void init_camera(uint8_t x, uint8_t y) {
+
+    // Set up tile data
     set_native_tile_data(0, bigmap_TILE_COUNT, bigmap_tiles);
     
-#if defined(SEGA)
-    __WRITE_VDP_REG(VDP_R2, R2_MAP_0x3800);
-    __WRITE_VDP_REG(VDP_R5, R5_SAT_0x3F00);
-    set_palette(0, bigmap_PALETTE_COUNT, bigmap_palettes);
-#elif defined(GAMEBOY)
-    if (_cpu == CGB_TYPE) {
-        set_bkg_palette(BKGF_CGB_PAL0, bigmap_PALETTE_COUNT, bigmap_palettes);
-    }
-#elif defined(NINTENDO_NES)
-    set_bkg_palette(0, bigmap_PALETTE_COUNT, bigmap_palettes);
-#endif 
+    // Set up color palettes
+    #if defined(SEGA)
+        __WRITE_VDP_REG(VDP_R2, R2_MAP_0x3800);
+        __WRITE_VDP_REG(VDP_R5, R5_SAT_0x3F00);
+        set_palette(0, bigmap_PALETTE_COUNT, bigmap_palettes);
+    #elif defined(GAMEBOY)
+        if (_cpu == CGB_TYPE) {
+            set_bkg_palette(BKGF_CGB_PAL0, bigmap_PALETTE_COUNT, bigmap_palettes);
+        }
+    #elif defined(NINTENDO_NES)
+        set_bkg_palette(0, bigmap_PALETTE_COUNT, bigmap_palettes);
+    #endif 
 
-    map_pos_x = map_pos_y = 0; 
+
+    // Initial camera position in pixels set here.
+    camera_x = x;
+    camera_y = y;
+    // Enforce map limits on initial camera position
+    if (camera_x > camera_max_x) camera_x = camera_max_x;
+    if (camera_y > camera_max_y) camera_y = camera_max_y;
+    old_camera_x = camera_x; old_camera_y = camera_y;
+
+    map_pos_x = camera_x >> 3;
+    map_pos_y = camera_y >> 3;
     old_map_pos_x = old_map_pos_y = 255;
+    move_bkg(camera_x, WRAP_SCROLL_Y(camera_y + SCROLL_Y_OFFSET));
+
+    // Draw the initial map view for the whole screen
     set_submap_indices(
         map_pos_x,
         map_pos_y,
-        DEVICE_SCREEN_WIDTH,
-        DEVICE_SCREEN_HEIGHT,
+        MIN(DEVICE_SCREEN_WIDTH + 1u, bigmap_mapWidth - map_pos_x),
+        MIN(DEVICE_SCREEN_HEIGHT + 1u, bigmap_mapHeight - map_pos_y),
         bigmap_map,
         bigmap_mapWidth);
+
     set_submap_attributes(
         map_pos_x,
         map_pos_y,
-        DEVICE_SCREEN_WIDTH,
-        DEVICE_SCREEN_HEIGHT,
+        MIN(DEVICE_SCREEN_WIDTH + 1u, bigmap_mapWidth - map_pos_x),
+        MIN(DEVICE_SCREEN_HEIGHT + 1u, bigmap_mapHeight - map_pos_y),
         bigmap_map_attributes,
         bigmap_mapWidth);
-    camera_x = camera_y = 0;
-    old_camera_x = camera_x; old_camera_y = camera_y;
 
     redraw = FALSE;
 
     move_bkg(camera_x, WRAP_SCROLL_Y(camera_y + SCROLL_Y_OFFSET));
-#if DEVICE_SCREEN_BUFFER_WIDTH == DEVICE_SCREEN_WIDTH
+    #if DEVICE_SCREEN_BUFFER_WIDTH == DEVICE_SCREEN_WIDTH
         // On platforms where screen buffer has no more space than physical screen,
         // the next map column will be written to the leftmost screen column.
         // So we blank the leftmost column to hide visual artifacts where possible.
         HIDE_LEFT_COLUMN;
-#endif
+    #endif
+}
+
+void main(void){
+    DISPLAY_OFF;
+    init_camera(0, 0);
+
     SHOW_BKG;
     DISPLAY_ON;
     while (TRUE) {

@@ -131,7 +131,7 @@ void hicolor_start(const hicolor_data * p_hicolor, uint8_t hicolor_bank) NONBANK
     if (!p_hicolor) return;
     hicolor_palettes_bank = hicolor_bank;
 
-    uint8_t bank_save = _current_bank;
+    uint8_t bank_save = CURRENT_BANK;
     if (hicolor_bank) SWITCH_ROM(hicolor_bank);
 
     // Copy address of palette into local var used by HiColor ISR

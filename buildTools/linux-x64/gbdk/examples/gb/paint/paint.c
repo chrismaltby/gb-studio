@@ -34,7 +34,7 @@ typedef struct cursor_info_
 {
   uint8_t data_idx; /* Index of data in the data array */
   uint8_t w, h; /* Size (in tiles) */
-  uint8_t hot_x, hot_y; /* Position of hot point, relatice to top-left of sprite (in pixels) */
+  uint8_t hot_x, hot_y; /* Position of hot point, relative to top-left of sprite (in pixels) */
 } cursor_info;
 
 const icon_info icons[] =

@@ -7,7 +7,7 @@ To use them, include the automatically generated header file (based on the png f
 
 For the current GBDK example ISR implementation there is a limit of 6 sprites per line before the hi-color timing breaks down and there start to be background artifacts.
 
-# Pallete ISR
+# Palette ISR
 The new palette update ISR is contributed by Toxa
 https://github.com/untoxa
 

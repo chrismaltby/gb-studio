@@ -434,13 +434,13 @@ lbl:
 .endm
 
 .macro DISABLE_VBLANK_COPY
-        ld a, #1
-        ld (__shadow_OAM_OFF), a
+        ld hl, #__shadow_OAM_OFF
+        inc (hl)
 .endm
 
 .macro ENABLE_VBLANK_COPY
-        xor a
-        ld (__shadow_OAM_OFF), a
+        ld hl, #__shadow_OAM_OFF
+        dec (hl)
 .endm
 
 .macro ADD_A_REG16 regH regL

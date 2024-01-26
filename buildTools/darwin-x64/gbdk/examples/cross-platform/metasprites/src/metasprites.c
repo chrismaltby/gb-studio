@@ -190,8 +190,9 @@ void main(void) {
     #endif
     DISPLAY_ON;
 
-    // Set initial position, zero out speed
-    PosX = PosY = 96 << 4;
+    // Set initial position to the center of the screen, zero out speed
+    PosX = (DEVICE_SCREEN_PX_WIDTH / 2) << 4;
+    PosY = (DEVICE_SCREEN_PX_HEIGHT / 2) << 4;
     SpdX = SpdY = 0;
 
     hide = 0; jitter = 0; idx = 0; rot = 0;
@@ -255,36 +256,36 @@ void main(void) {
             uint8_t subpal = rot >> 2;
             switch (rot & 0x3) {
                 case 1:
-                    hiwater = move_metasprite_flipy(    sprite_metasprites[idx],
-                                                        TILE_NUM_START + get_tile_offset(0, 1),
-                                                        subpal,
-                                                        SPR_NUM_START,
-                                                        (PosX >> 4),
-                                                        (PosY >> 4));
+                    hiwater = move_metasprite_flipy( sprite_metasprites[idx],
+                                                     TILE_NUM_START + get_tile_offset(0, 1),
+                                                     subpal,
+                                                     SPR_NUM_START,
+                                                     DEVICE_SPRITE_PX_OFFSET_X + (PosX >> 4),
+                                                     DEVICE_SPRITE_PX_OFFSET_Y + (PosY >> 4));
                     break;
                 case 2:
-                    hiwater = move_metasprite_flipxy(   sprite_metasprites[idx],
-                                                        TILE_NUM_START + get_tile_offset(1, 1),
-                                                        subpal,
-                                                        SPR_NUM_START,
-                                                        (PosX >> 4),
-                                                        (PosY >> 4));
+                    hiwater = move_metasprite_flipxy(sprite_metasprites[idx],
+                                                     TILE_NUM_START + get_tile_offset(1, 1),
+                                                     subpal,
+                                                     SPR_NUM_START,
+                                                     DEVICE_SPRITE_PX_OFFSET_X + (PosX >> 4),
+                                                     DEVICE_SPRITE_PX_OFFSET_Y + (PosY >> 4));
                     break;
                 case 3:
-                    hiwater = move_metasprite_flipx(sprite_metasprites[idx],
-                                                    TILE_NUM_START + get_tile_offset(1, 0),
-                                                    subpal,
-                                                    SPR_NUM_START,
-                                                    (PosX >> 4),
-                                                    (PosY >> 4));
+                    hiwater = move_metasprite_flipx( sprite_metasprites[idx],
+                                                     TILE_NUM_START + get_tile_offset(1, 0),
+                                                     subpal,
+                                                     SPR_NUM_START,
+                                                     DEVICE_SPRITE_PX_OFFSET_X + (PosX >> 4),
+                                                     DEVICE_SPRITE_PX_OFFSET_Y + (PosY >> 4));
                     break;
                 default:
-                    hiwater = move_metasprite_ex(   sprite_metasprites[idx],
-                                                    TILE_NUM_START + get_tile_offset(0, 0),
-                                                    subpal,
-                                                    SPR_NUM_START,
-                                                    (PosX >> 4),
-                                                    (PosY >> 4));
+                    hiwater = move_metasprite_ex(    sprite_metasprites[idx],
+                                                     TILE_NUM_START + get_tile_offset(0, 0),
+                                                     subpal,
+                                                     SPR_NUM_START,
+                                                     DEVICE_SPRITE_PX_OFFSET_X + (PosX >> 4),
+                                                     DEVICE_SPRITE_PX_OFFSET_Y + (PosY >> 4));
                     break;
             };
         }

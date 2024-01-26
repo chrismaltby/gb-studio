@@ -51,6 +51,15 @@
     How to use sprite property flags with metasprites:
     - Primary method: Use the `base_prop` parameter for the
       move_metasprite_*() functions.
+      - For more details about the properties on the Game Boy see: https://gbdev.io/pandocs/OAM.html#byte-3--attributesflags
+      - This can be left at zero for defaults
+      - Various `OAMF_*` flags can be used depending on the platform:
+        - @ref OAMF_BANK0, @ref OAMF_BANK1
+        - @ref OAMF_CGB_PAL0, @ref OAMF_CGB_PAL1, @ref OAMF_CGB_PAL2, @ref OAMF_CGB_PAL3,
+          @ref OAMF_CGB_PAL4, @ref OAMF_CGB_PAL5, @ref OAMF_CGB_PAL6, @ref OAMF_CGB_PAL7,
+        - @ref OAMF_PAL0, @ref OAMF_PAL1,
+        - @ref OAMF_PALMASK, @ref OAMF_PRI, @ref OAMF_XFLIP, @ref OAMF_YFLIP
+
     - Alternate method: The metasprite structures can have the
       property flags modified before compilation (such as with
       `-sp <props>` in the @ref utility_png2asset "png2asset" tool).
@@ -122,7 +131,7 @@ static void __hide_metasprite(uint8_t id);
 
     @see hide_sprite, MAX_HARDWARE_SPRITES
  */
-void hide_sprites_range(UINT8 from, UINT8 to);
+void hide_sprites_range(uint8_t from, uint8_t to);
 
 /** Moves metasprite to the absolute position x and y
 

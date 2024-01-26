@@ -14,7 +14,9 @@ void main(void) {
     set_sprite_data(0, 4, sprite_data);
     for (uint8_t i = 0; i < 4; i++) {
         set_sprite_tile(i, i);
-        move_sprite(i, (i << 3) + 64, 64);
+        move_sprite(i,
+                    DEVICE_SPRITE_PX_OFFSET_X + (i << 3) + ((DEVICE_SCREEN_PX_WIDTH - (4 * 8)) / 2), 
+                    DEVICE_SPRITE_PX_OFFSET_Y + ((DEVICE_SCREEN_PX_HEIGHT - 8) / 2));
     }
     SHOW_SPRITES;
 

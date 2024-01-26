@@ -14,8 +14,9 @@ const frame_desc_t * current_frame = frames;        // pointer to the current an
 
 void LCD_ISR(void) {
     static bool odd_even_frame = false;
-    uint8_t _save = _current_bank;
+    uint8_t _save = CURRENT_BANK;
     SWITCH_ROM(current_frame->bank);
+
     if (odd_even_frame = !odd_even_frame) {
         LCDC_REG &= ~LCDCF_BG8000;
         hblank_copy_destination = _VRAM8000;

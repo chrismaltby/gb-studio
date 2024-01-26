@@ -1,6 +1,18 @@
-CC	= ../../../bin/lcc -Wa-l -Wl-m -Wl-j
+# If you move this project you can change the directory
+# to match your GBDK root directory (ex: GBDK_HOME = "C:/GBDK/"
+ifndef GBDK_HOME
+	GBDK_HOME = ../../../
+endif
+
+LCC = $(GBDK_HOME)bin/lcc -Wa-l -Wl-m -Wl-j
 
 BINS	= comm.gb
+
+# GBDK_DEBUG = ON
+ifdef GBDK_DEBUG
+	LCCFLAGS += -debug -v
+endif
+
 
 all:	$(BINS)
 
@@ -10,8 +22,8 @@ compile.bat: Makefile
 
 # Compile and link single file in one pass
 %.gb:	%.c
-	$(CC) -o $@ $<
+	$(LCC) $(LCCFLAGS) -o $@ $<
 
 clean:
-	rm -f *.o *.lst *.map *.gb *~ *.rel *.cdb *.ihx *.lnk *.sym *.asm *.noi
+	rm -f *.o *.lst *.map *.gb *~ *.rel *.cdb *.ihx *.lnk *.sym *.asm *.noi *.rst
 

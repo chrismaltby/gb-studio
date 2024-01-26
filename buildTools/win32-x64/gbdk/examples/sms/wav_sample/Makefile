@@ -5,13 +5,20 @@
 
 # If you move this project you can change the directory 
 # to match your GBDK root directory (ex: GBDK_HOME = "C:/GBDK/"
-GBDK_HOME = ../../../
+ifndef GBDK_HOME
+	GBDK_HOME = ../../../
+endif
 
 LCC = $(GBDK_HOME)bin/lcc 
 
+
+# GBDK_DEBUG = ON
+ifdef GBDK_DEBUG
+	LCCFLAGS += -debug -v
+endif
+
 # You can set flags for LCC here
 # For example, you can uncomment the line below to turn on debug output
-# LCCFLAGS += -debug
 LCCFLAGS += -mz80:sms -autobank
 
 # You can set the name of the .gb ROM file here

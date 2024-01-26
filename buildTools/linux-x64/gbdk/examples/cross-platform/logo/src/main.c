@@ -17,11 +17,13 @@ void main(void) {
 #endif
 
     set_bkg_native_data(0, GBDK_2020_logo_TILE_COUNT, GBDK_2020_logo_tiles);
+#if !defined(SYSTEM_SEGA)
     set_bkg_attributes((DEVICE_SCREEN_WIDTH - (GBDK_2020_logo_WIDTH >> 3)) >> 1,
                        (DEVICE_SCREEN_HEIGHT - (GBDK_2020_logo_HEIGHT >> 3)) >> 1,
                        GBDK_2020_logo_WIDTH >> 3,
                        GBDK_2020_logo_HEIGHT >> 3,
                        GBDK_2020_logo_map_attributes);
+#endif
     set_tile_map((DEVICE_SCREEN_WIDTH - (GBDK_2020_logo_WIDTH >> 3)) >> 1,
                  (DEVICE_SCREEN_HEIGHT - (GBDK_2020_logo_HEIGHT >> 3)) >> 1,
                  GBDK_2020_logo_WIDTH >> 3,

@@ -9,7 +9,7 @@ extern const unsigned int earth_data_size;
 const uint8_t tilemap[] = {2, 4, 6, 8, 3, 5, 7, 9};
 const uint16_t tilemapw[] = {2, 4, 6, 8, 3, 5, 7, 9};
 
-uint16_t banked_func(uint8_t be, uint8_t ef) __banked;
+uint16_t banked_func(uint8_t be, uint8_t ef) BANKED;
 
 int16_t x = 8 << 4, y = 0;
 int8_t xspd = 0, yspd  = 0;

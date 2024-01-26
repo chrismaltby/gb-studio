@@ -59,11 +59,17 @@ extern const void __bank_ ## VARNAME;
 
     The variable name is not modified and can be used as-is.
 
-    @see INCBIN_SIZE() for obtaining the size of the included data.
-    @see BANK() for obtaining the bank number of the included data.
+    The INCBIN() macro will declare the @ref BANK() and @ref INCBIN_SIZE()
+    helper symbols. Then if @ref INCBIN_EXTERN() is used in the header then
+    those helper macros can be used in the application code.
+    - @ref INCBIN_SIZE() for obtaining the size of the included data.
+    - @ref BANK() for obtaining the bank number of the included data.
 
     Use @ref INCBIN_EXTERN() within another source file
-    to make the variable and it's data accesible there.
+    to make the variable and it's data accessible there.
+
+==============
+
 */
 #define INCBIN(VARNAME, FILEPATH) void __func_ ## VARNAME(void) __banked __naked { \
 __asm \

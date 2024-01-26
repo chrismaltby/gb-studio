@@ -63,7 +63,7 @@ void main(void) {
                 hicolor_bank = hicolors[img_select].bank;
                 p_hicolor = (const hicolor_data *)hicolors[img_select].ptr;
 
-                uint8_t bank_save = _current_bank;
+                uint8_t bank_save = CURRENT_BANK;
                 if (hicolor_bank) SWITCH_ROM(hicolor_bank);
 
                 // Reset Y scroll and set scroll range based on converted image height

@@ -61,7 +61,7 @@ static void __hide_metasprite(uint8_t id) OLDCALL;
  * @param from start OAM index
  * @param to finish OAM index
  */
-void hide_sprites_range(UINT8 from, UINT8 to) OLDCALL;
+void hide_sprites_range(uint8_t from, uint8_t to) OLDCALL;
 
 /** Moves metasprite to the absolute position x and y
 

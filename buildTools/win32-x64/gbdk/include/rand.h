@@ -16,12 +16,11 @@
     The seed should be different each time, otherwise the same pseudo-random
     sequence will be generated.
 
-    The DIV Register (@ref DIV_REG) is sometimes used as a seed,
-    particularly if read at some variable point in time (such
-    as when the player presses a button).
+    One way to do this is sampling (@ref DIV_REG) up to 2 times (high byte of
+    seed value then the low byte) at variable, non-deterministic points in time
+    (such as when the player presses buttons on the title screen or in a menu).
 
-    Only needs to be called once to initialize, but may be called
-    again to re-initialize with the same or a different seed.
+    It only needs to be called once to be initialized.
 
     @see rand(), randw()
 */
