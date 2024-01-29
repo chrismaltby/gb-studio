@@ -71,6 +71,7 @@ module.exports = {
       components: srcPath("components"),
       lib: srcPath("lib"),
       ui: srcPath("components/ui"),
+      renderer: srcPath("renderer"),
     },
   },
   externals: {

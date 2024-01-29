@@ -59,6 +59,9 @@ module.exports = {
             {
               html: "./src/app/project/project.html",
               js: "./src/app/project/ProjectRoot.js",
+              preload: {
+                js: "./src/app/project/preload.ts",
+              },
               name: "main_window",
               additionalChunks: [
                 "vendor-react",
@@ -71,6 +74,9 @@ module.exports = {
             {
               html: "./src/app/splash/splash.html",
               js: "./src/app/splash/SplashRoot.js",
+              preload: {
+                js: "./src/app/splash/preload.ts",
+              },
               name: "splash_window",
               additionalChunks: [
                 "vendor-react",
@@ -81,6 +87,9 @@ module.exports = {
             {
               html: "./src/app/preferences/preferences.html",
               js: "./src/app/preferences/PreferencesRoot.js",
+              preload: {
+                js: "./src/app/project/preload.ts",
+              },
               name: "preferences_window",
               additionalChunks: [
                 "vendor-react",
@@ -91,6 +100,9 @@ module.exports = {
             {
               html: "./src/app/music/music.html",
               js: "./src/app/music/MusicRoot.js",
+              preload: {
+                js: "./src/app/project/preload.ts",
+              },
               name: "music_window",
               additionalChunks: [
                 "vendor-react",
