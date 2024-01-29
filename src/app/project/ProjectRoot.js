@@ -5,9 +5,10 @@ import store from "store/configureStore";
 import App from "components/app/App";
 import AppContainerDnD from "components/app/AppContainerDnD";
 import ThemeProvider from "ui/theme/ThemeProvider";
-import "lib/electron/handleFullScreen";
-import "lib/helpers/handleTheme";
 import GlobalStyle from "ui/globalStyle";
+import { initL10N } from "renderer/lib/l10n";
+import { initTheme } from "renderer/lib/theme";
+import "lib/electron/handleFullScreen";
 import "./initProject";
 import "../../styles/App.css";
 
@@ -25,7 +26,11 @@ const render = () => {
   );
 };
 
-render();
+(async () => {
+  await initL10N();
+  await initTheme();
+  render();
+})();
 
 if (module.hot) {
   module.hot.accept(render);

@@ -2,12 +2,9 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { AppContainer } from "react-hot-loader";
 import Splash from "components/app/Splash";
-import initElectronL10n from "lib/helpers/initElectronL10n";
-import "lib/electron/handleFullScreen";
-import "lib/helpers/handleTheme";
+import { initL10N } from "renderer/lib/l10n";
 import "../../styles/App.css";
-
-initElectronL10n();
+import { initTheme } from "renderer/lib/theme";
 
 window.addEventListener("error", (error) => {
   if (error.message.indexOf("dead code elimination") > -1) {
@@ -46,7 +43,11 @@ const render = () => {
   );
 };
 
-render();
+(async () => {
+  await initL10N();
+  await initTheme();
+  render();
+})();
 
 if (module.hot) {
   module.hot.accept(render);

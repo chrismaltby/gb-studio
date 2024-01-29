@@ -14,7 +14,7 @@ interface L10NParams {
 
 const localesPath = `${localesRoot}/*.json`;
 
-const l10nStrings: L10NLookup = en;
+const l10nStrings: L10NLookup = { ...en };
 
 export const locales = glob
   .sync(localesPath)
@@ -45,6 +45,11 @@ export const replaceParams = (string: string, params: L10NParams) => {
 };
 
 export const loadLanguage = (locale: string) => {
+  // Reset back to en defaults before loading
+  for (const key in en) {
+    l10nStrings[key] = (en as L10NLookup)[key];
+  }
+
   if (locale && locale !== "en") {
     try {
       const translation = JSON.parse(
@@ -74,3 +79,4 @@ export const isRTL = (): boolean => {
 };
 
 export default translate;
+export { l10nStrings };

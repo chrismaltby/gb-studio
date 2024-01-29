@@ -13,7 +13,7 @@
         "moduleDirectory": [
           "node_modules",
           "src",
-          "src/renderer/components",
+          "src/components",
           "src/renderer",
           "./"
         ]
@@ -103,6 +103,17 @@
         ]
       }
     },
+    {
+      "files": ["src/renderer/lib/api/setup.ts"],
+      "rules": {
+        "@typescript-eslint/no-restricted-imports": [
+          "error",
+          {
+            "paths": ["fs", "fs-extra"]
+          }
+        ]
+      }
+    },    
     {
       "files": ["src/main/**", "src/lib/**"],
       "rules": {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Path from "path";
 import { ipcRenderer, remote } from "electron";
 import settings from "electron-settings";
@@ -35,17 +35,15 @@ import { FormField, FormRow } from "ui/form/FormLayout";
 import { TextField } from "ui/form/TextField";
 import { CloseIcon, DotsIcon } from "ui/icons/Icons";
 import { Button } from "ui/buttons/Button";
-import l10n from "lib/helpers/l10n";
 import contributors from "../../../contributors.json";
 import gbs2Preview from "../../assets/templatePreview/gbs2.mp4";
 import gbhtmlPreview from "../../assets/templatePreview/gbhtml.mp4";
 import blankPreview from "../../assets/templatePreview/blank.png";
 import useWindowFocus from "ui/hooks/use-window-focus";
-import initElectronL10n from "lib/helpers/initElectronL10n";
+import l10n from "renderer/lib/l10n";
 
 // Make sure localisation has loaded so that
 // l10n function can be used at top level
-initElectronL10n();
 
 const { dialog, shell } = remote;
 
@@ -67,30 +65,6 @@ type TemplateInfo = {
 
 const splashTabs = ["new", "recent"] as const;
 type SplashTabSection = typeof splashTabs[number];
-
-const templates: TemplateInfo[] = [
-  {
-    id: "gbs2",
-    name: l10n("SPLASH_SAMPLE_PROJECT"),
-    preview: gbs2Preview,
-    videoPreview: true,
-    description: l10n("SPLASH_SAMPLE_PROJECT_DESCRIPTION"),
-  },
-  {
-    id: "gbhtml",
-    name: `${l10n("SPLASH_SAMPLE_PROJECT")} (GBS 1.0)`,
-    preview: gbhtmlPreview,
-    videoPreview: true,
-    description: l10n("SPLASH_SAMPLE_PROJECT_ORIGINAL_DESCRIPTION"),
-  },
-  {
-    id: "blank",
-    name: l10n("SPLASH_BLANK_PROJECT"),
-    preview: blankPreview,
-    videoPreview: false,
-    description: l10n("SPLASH_BLANK_PROJECT_DESCRIPTION"),
-  },
-];
 
 const getLastUsedPath = () => {
   const storedPath = String(settings.get("__lastUsedPath"));
@@ -119,7 +93,7 @@ const toSplashTab = (tab: string): SplashTabSection => {
   return "new";
 };
 
-export default () => {
+export const Splash = () => {
   const urlParams = new URLSearchParams(window.location.search);
   const forceTab = urlParams.get("tab");
   const initialTab = toSplashTab(forceTab || getLastUsedTab());
@@ -134,6 +108,33 @@ export default () => {
   const [pathError, setPathError] = useState("");
   const [creating, setCreating] = useState(false);
   const windowFocus = useWindowFocus();
+
+  const templates: TemplateInfo[] = useMemo(
+    () => [
+      {
+        id: "gbs2",
+        name: l10n("SPLASH_SAMPLE_PROJECT"),
+        preview: gbs2Preview,
+        videoPreview: true,
+        description: l10n("SPLASH_SAMPLE_PROJECT_DESCRIPTION"),
+      },
+      {
+        id: "gbhtml",
+        name: `${l10n("SPLASH_SAMPLE_PROJECT")} (GBS 1.0)`,
+        preview: gbhtmlPreview,
+        videoPreview: true,
+        description: l10n("SPLASH_SAMPLE_PROJECT_ORIGINAL_DESCRIPTION"),
+      },
+      {
+        id: "blank",
+        name: l10n("SPLASH_BLANK_PROJECT"),
+        preview: blankPreview,
+        videoPreview: false,
+        description: l10n("SPLASH_BLANK_PROJECT_DESCRIPTION"),
+      },
+    ],
+    []
+  );
 
   useEffect(() => {
     ipcRenderer.send("request-recent-projects");
@@ -367,3 +368,5 @@ export default () => {
     </ThemeProvider>
   );
 };
+
+export default Splash;

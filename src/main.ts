@@ -1,4 +1,11 @@
-import { app, BrowserWindow, ipcMain, dialog, shell } from "electron";
+import {
+  app,
+  BrowserWindow,
+  ipcMain,
+  dialog,
+  shell,
+  nativeTheme,
+} from "electron";
 import windowStateKeeper from "electron-window-state";
 import settings from "electron-settings";
 import Path from "path";
@@ -6,12 +13,15 @@ import { stat } from "fs-extra";
 import menu from "./menu";
 import { checkForUpdate } from "lib/helpers/updateChecker";
 import switchLanguageDialog from "lib/electron/dialog/switchLanguageDialog";
-import l10n, { locales } from "lib/helpers/l10n";
-import initElectronL10n from "lib/helpers/initElectronL10n";
+import l10n, { l10nStrings, locales } from "lib/helpers/l10n";
+import initElectronL10n, {
+  forceL10nReload,
+} from "lib/helpers/initElectronL10n";
 import installExtension, {
   REACT_DEVELOPER_TOOLS,
   REDUX_DEVTOOLS,
 } from "electron-devtools-installer";
+import { toThemeId } from "shared/lib/theme";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -520,6 +530,15 @@ ipcMain.on("music-data-receive", (_event, data) => {
   }
 });
 
+ipcMain.handle("get-l10n-strings", () => l10nStrings);
+ipcMain.handle("get-theme", () => {
+  const themeId = toThemeId(
+    settings.get?.("theme"),
+    nativeTheme.shouldUseDarkColors
+  );
+  return themeId;
+});
+
 menu.on("new", async () => {
   newProject();
 });
@@ -614,14 +633,16 @@ menu.on("updateSetting", (setting: string, value: string | boolean) => {
     menu.ref().getMenuItemById("themeDefault").checked = value === undefined;
     menu.ref().getMenuItemById("themeLight").checked = value === "light";
     menu.ref().getMenuItemById("themeDark").checked = value === "dark";
-    splashWindow && splashWindow.webContents.send("update-theme", value);
-    mainWindow && mainWindow.webContents.send("update-theme", value);
+    const newThemeId = toThemeId(value, nativeTheme.shouldUseDarkColors);
+    splashWindow && splashWindow.webContents.send("update-theme", newThemeId);
+    mainWindow && mainWindow.webContents.send("update-theme", newThemeId);
   } else if (setting === "locale") {
     menu.ref().getMenuItemById("localeDefault").checked = value === undefined;
     for (const locale of locales) {
       menu.ref().getMenuItemById(`locale-${locale}`).checked = value === locale;
     }
     switchLanguageDialog();
+    forceL10nReload();
   } else {
     if (setting === "showConnections") {
       menu.ref().getMenuItemById("showConnectionsAll").checked =
@@ -633,6 +654,15 @@ menu.on("updateSetting", (setting: string, value: string | boolean) => {
     }
     mainWindow && mainWindow.webContents.send("updateSetting", setting, value);
   }
+});
+
+nativeTheme?.on("updated", () => {
+  const themeId = toThemeId(
+    settings.get?.("theme"),
+    nativeTheme.shouldUseDarkColors
+  );
+  splashWindow && splashWindow.webContents.send("update-theme", themeId);
+  mainWindow && mainWindow.webContents.send("update-theme", themeId);
 });
 
 const newProject = async () => {
