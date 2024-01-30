@@ -22,6 +22,7 @@ import installExtension, {
   REDUX_DEVTOOLS,
 } from "electron-devtools-installer";
 import { toThemeId } from "shared/lib/theme";
+import type { JsonValue } from "shared/types";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -538,6 +539,12 @@ ipcMain.handle("get-theme", () => {
   );
   return themeId;
 });
+
+ipcMain.handle("settings-get", (_, key: string) => settings.get(key));
+ipcMain.handle("settings-set", (_, key: string, value: JsonValue) =>
+  settings.set(key, value)
+);
+ipcMain.handle("settings-delete", (_, key: string) => settings.delete(key));
 
 menu.on("new", async () => {
   newProject();

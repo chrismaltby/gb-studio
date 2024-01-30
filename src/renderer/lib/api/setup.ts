@@ -1,5 +1,6 @@
 import { ipcRenderer } from "electron";
 import type { ThemeId } from "shared/lib/theme";
+import type { JsonValue } from "shared/types";
 
 interface L10NLookup {
   [key: string]: string | boolean | undefined;
@@ -18,6 +19,12 @@ const APISetup = {
       ipcRenderer.on("update-theme", (_, themeId: ThemeId) =>
         callback(themeId)
       ),
+  },
+  settings: {
+    get: (key: string) => ipcRenderer.invoke("settings-get", key),
+    set: (key: string, value: JsonValue) =>
+      ipcRenderer.invoke("settings-set", key, value),
+    delete: (key: string) => ipcRenderer.invoke("settings-delete", key),
   },
 };
 

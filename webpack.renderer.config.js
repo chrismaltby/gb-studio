@@ -73,6 +73,8 @@ module.exports = {
       ui: srcPath("components/ui"),
       renderer: srcPath("renderer"),
       shared: srcPath("shared"),
+      assets: srcPath("assets"),
+      "contributors.json": Path.join(__dirname, "contributors.json"),
     },
   },
   externals: {

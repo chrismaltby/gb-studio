@@ -21,7 +21,8 @@
       "store/*": [ "./store/*" ],
       "lib/*": [ "./lib/*" ],
       "ui/*": [ "./components/ui/*" ],
-      "components/*": [ "./components/*" ]
+      "components/*": [ "./components/*" ],
+      "contributors.json": ["../contributors.json"]
     }
   },
   "include": ["src"]

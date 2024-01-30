@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Path from "path";
 import { ipcRenderer, remote } from "electron";
-import settings from "electron-settings";
 import FocusLock, { AutoFocusInside } from "react-focus-lock";
 import { FlexGrow } from "ui/spacing/Spacing";
 import {
@@ -17,6 +16,7 @@ import {
   SplashEasterEggButton,
   SplashForm,
   SplashInfoMessage,
+  SplashLoading,
   SplashLogo,
   SplashOpenButton,
   SplashProject,
@@ -33,14 +33,15 @@ import ThemeProvider from "ui/theme/ThemeProvider";
 import logoFile from "ui/icons/GBStudioLogo.png";
 import { FormField, FormRow } from "ui/form/FormLayout";
 import { TextField } from "ui/form/TextField";
-import { CloseIcon, DotsIcon } from "ui/icons/Icons";
+import { CloseIcon, DotsIcon, LoadingIcon } from "ui/icons/Icons";
 import { Button } from "ui/buttons/Button";
-import contributors from "../../../contributors.json";
-import gbs2Preview from "../../assets/templatePreview/gbs2.mp4";
-import gbhtmlPreview from "../../assets/templatePreview/gbhtml.mp4";
-import blankPreview from "../../assets/templatePreview/blank.png";
+import contributors from "contributors.json";
+import gbs2Preview from "assets/templatePreview/gbs2.mp4";
+import gbhtmlPreview from "assets/templatePreview/gbhtml.mp4";
+import blankPreview from "assets/templatePreview/blank.png";
 import useWindowFocus from "ui/hooks/use-window-focus";
 import l10n from "renderer/lib/l10n";
+import API from "renderer/lib/api";
 
 // Make sure localisation has loaded so that
 // l10n function can be used at top level
@@ -66,8 +67,8 @@ type TemplateInfo = {
 const splashTabs = ["new", "recent"] as const;
 type SplashTabSection = typeof splashTabs[number];
 
-const getLastUsedPath = () => {
-  const storedPath = String(settings.get("__lastUsedPath"));
+const getLastUsedPath = async () => {
+  const storedPath = String(await API.settings.get("__lastUsedPath"));
   if (storedPath && storedPath !== "undefined") {
     return Path.normalize(storedPath);
   }
@@ -75,15 +76,15 @@ const getLastUsedPath = () => {
 };
 
 const setLastUsedPath = (path: string) => {
-  settings.set("__lastUsedPath", path);
+  API.settings.set("__lastUsedPath", path);
 };
 
-const getLastUsedTab = () => {
-  return String(settings.get("__lastUsedSplashTab")) || "info";
+const getLastUsedTab = async () => {
+  return String(await API.settings.get("__lastUsedSplashTab")) || "info";
 };
 
 const setLastUsedTab = (tab: string) => {
-  settings.set("__lastUsedSplashTab", tab);
+  API.settings.set("__lastUsedSplashTab", tab);
 };
 
 const toSplashTab = (tab: string): SplashTabSection => {
@@ -94,20 +95,29 @@ const toSplashTab = (tab: string): SplashTabSection => {
 };
 
 export const Splash = () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const forceTab = urlParams.get("tab");
-  const initialTab = toSplashTab(forceTab || getLastUsedTab());
-
+  const [loading, setLoading] = useState(true);
   const [templateId, setTemplateId] = useState("gbs2");
-  const [section, setSection] = useState<SplashTabSection>(initialTab);
+  const [section, setSection] = useState<SplashTabSection>();
   const [openCredits, setOpenCredits] = useState(false);
   const [recentProjects, setRecentProjects] = useState<ProjectInfo[]>([]);
   const [name, setName] = useState<string>(l10n("SPLASH_DEFAULT_PROJECT_NAME"));
-  const [path, setPath] = useState<string>(getLastUsedPath());
+  const [path, setPath] = useState<string>("");
   const [nameError, setNameError] = useState("");
   const [pathError, setPathError] = useState("");
   const [creating, setCreating] = useState(false);
   const windowFocus = useWindowFocus();
+
+  useEffect(() => {
+    async function fetchData() {
+      setPath(await getLastUsedPath());
+      const urlParams = new URLSearchParams(window.location.search);
+      const forceTab = urlParams.get("tab");
+      const initialTab = toSplashTab(forceTab || (await getLastUsedTab()));
+      setSection(initialTab);
+      setLoading(false);
+    }
+    fetchData();
+  }, []);
 
   const templates: TemplateInfo[] = useMemo(
     () => [
@@ -244,12 +254,17 @@ export const Splash = () => {
             <SplashEasterEggButton onClick={() => setOpenCredits(true)} />
           </SplashLogo>
           <SplashAppTitle />
-          <SplashTab selected={section === "new"} onClick={onSetTab("new")}>
+          <SplashTab
+            selected={section === "new"}
+            onClick={onSetTab("new")}
+            disabled={loading}
+          >
             {l10n("SPLASH_NEW")}
           </SplashTab>
           <SplashTab
             selected={section === "recent"}
             onClick={onSetTab("recent")}
+            disabled={loading}
           >
             {l10n("SPLASH_RECENT")}
           </SplashTab>
@@ -261,6 +276,14 @@ export const Splash = () => {
             {l10n("SPLASH_OPEN")}
           </SplashOpenButton>
         </SplashSidebar>
+
+        {loading && !section && (
+          <SplashContent>
+            <SplashLoading>
+              <LoadingIcon />
+            </SplashLoading>
+          </SplashContent>
+        )}
 
         {section === "new" && (
           <SplashContent>
