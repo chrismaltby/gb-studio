@@ -73,7 +73,7 @@ module.exports = {
             },
             {
               html: "./src/app/splash/splash.html",
-              js: "./src/app/splash/SplashRoot.js",
+              js: "./src/app/splash/SplashRoot.tsx",
               preload: {
                 js: "./src/app/splash/preload.ts",
               },
