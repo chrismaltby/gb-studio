@@ -26,6 +26,11 @@ const APISetup = {
       ipcRenderer.invoke("settings-set", key, value),
     delete: (key: string) => ipcRenderer.invoke("settings-delete", key),
   },
+  project: {
+    getRecentProjects: (): Promise<string[]> =>
+      ipcRenderer.invoke("get-recent-projects"),
+    clearRecentProjects: () => ipcRenderer.invoke("clear-recent-projects"),
+  },
 };
 
 export default APISetup;

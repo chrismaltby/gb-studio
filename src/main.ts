@@ -22,7 +22,7 @@ import installExtension, {
   REDUX_DEVTOOLS,
 } from "electron-devtools-installer";
 import { toThemeId } from "shared/lib/theme";
-import type { JsonValue } from "shared/types";
+import { isStringArray, JsonValue } from "shared/types";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -418,7 +418,13 @@ ipcMain.on("request-recent-projects", async (_event) => {
     );
 });
 
-ipcMain.on("clear-recent-projects", async (_event) => {
+ipcMain.handle("get-recent-projects", async () => {
+  const recentProjects = settings.get("recentProjects");
+  if (!isStringArray(recentProjects)) return [];
+  return recentProjects;
+});
+
+ipcMain.handle("clear-recent-projects", async (_event) => {
   settings.set("recentProjects", []);
   app.clearRecentDocuments();
 });

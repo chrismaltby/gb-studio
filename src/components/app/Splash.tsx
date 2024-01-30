@@ -109,6 +109,15 @@ export const Splash = () => {
 
   useEffect(() => {
     async function fetchData() {
+      setRecentProjects(
+        (await API.project.getRecentProjects())
+          .map((projectPath) => ({
+            name: Path.basename(projectPath),
+            dir: Path.dirname(projectPath),
+            path: projectPath,
+          }))
+          .reverse()
+      );
       setPath(await getLastUsedPath());
       const urlParams = new URLSearchParams(window.location.search);
       const forceTab = urlParams.get("tab");
@@ -145,23 +154,6 @@ export const Splash = () => {
     ],
     []
   );
-
-  useEffect(() => {
-    ipcRenderer.send("request-recent-projects");
-    ipcRenderer.once("recent-projects", (_, projectPaths: string[]) => {
-      if (projectPaths && projectPaths.length > 0) {
-        setRecentProjects(
-          projectPaths
-            .map((projectPath: string) => ({
-              name: Path.basename(projectPath),
-              dir: Path.dirname(projectPath),
-              path: projectPath,
-            }))
-            .reverse()
-        );
-      }
-    });
-  }, []);
 
   const onSetTab = (tab: SplashTabSection) => () => {
     setSection(tab);
@@ -241,7 +233,7 @@ export const Splash = () => {
 
   const clearRecent = () => {
     setRecentProjects([]);
-    ipcRenderer.send("clear-recent-projects");
+    API.project.clearRecentProjects();
   };
 
   return (
