@@ -3,7 +3,6 @@ import ReactDOM from "react-dom";
 import { AppContainer } from "react-hot-loader";
 import Splash from "components/app/Splash";
 import { initL10N } from "renderer/lib/l10n";
-import "../../styles/App.css";
 import { initTheme } from "renderer/lib/theme";
 
 window.addEventListener("error", (error) => {
