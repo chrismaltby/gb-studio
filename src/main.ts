@@ -547,10 +547,12 @@ ipcMain.handle("get-theme", () => {
 });
 
 ipcMain.handle("settings-get", (_, key: string) => settings.get(key));
-ipcMain.handle("settings-set", (_, key: string, value: JsonValue) =>
-  settings.set(key, value)
-);
-ipcMain.handle("settings-delete", (_, key: string) => settings.delete(key));
+ipcMain.handle("settings-set", (_, key: string, value: JsonValue) => {
+  settings.set(key, value);
+});
+ipcMain.handle("settings-delete", (_, key: string) => {
+  settings.delete(key);
+});
 
 menu.on("new", async () => {
   newProject();
