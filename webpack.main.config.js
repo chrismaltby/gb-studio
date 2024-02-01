@@ -35,6 +35,7 @@ module.exports = {
       lib: srcPath("lib"),
       ui: srcPath("components/ui"),
       shared: srcPath("shared"),
+      consts: srcPath("consts.ts"),
     },
   },
   externals: {

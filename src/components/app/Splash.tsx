@@ -200,7 +200,7 @@ export const Splash = () => {
       setCreating(true);
       const projectPath = await createProject({
         name,
-        target: templateId,
+        template: templateId,
         path,
       });
       API.project.openProject(projectPath);

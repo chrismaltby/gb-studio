@@ -86,7 +86,6 @@ export const COLLISION_SLOPE_VALUES = [
   COLLISION_SLOPE_22_LEFT_TOP,
 ];
 
-
 export const TILE_COLOR_PALETTE = 0x7;
 export const TILE_COLOR_PROPS = 0xf8;
 export const TILE_COLOR_PROP_PRIORITY = 0x80;
@@ -107,6 +106,8 @@ export const TMP_VAR_2 = "T1";
 
 export const TRACKER_UNDO = "TRACKER_UNDO";
 export const TRACKER_REDO = "TRACKER_REDO";
+
+export const ERR_PROJECT_EXISTS = "ERR_PROJECT_EXISTS";
 
 export {
   engineRoot,

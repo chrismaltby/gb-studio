@@ -74,6 +74,7 @@ module.exports = {
       renderer: srcPath("renderer"),
       shared: srcPath("shared"),
       assets: srcPath("assets"),
+      consts: srcPath("consts.ts"),
       "contributors.json": Path.join(__dirname, "contributors.json"),
     },
   },
