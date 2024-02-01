@@ -24,6 +24,7 @@ import installExtension, {
 import { toThemeId } from "shared/lib/theme";
 import { isString, isStringArray, JsonValue } from "shared/types";
 import getTmp from "lib/helpers/getTmp";
+import createProject, { CreateProjectInput } from "lib/project/createProject";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -477,6 +478,10 @@ ipcMain.handle("get-documents-path", async (_event) => {
 ipcMain.handle("get-tmp-path", async () => {
   return getTmp();
 });
+
+ipcMain.handle("create-project", async (_event, input: CreateProjectInput) =>
+  createProject(input)
+);
 
 ipcMain.on("project-loaded", (_event, settings) => {
   const { showCollisions, showConnections, showNavigator } = settings;

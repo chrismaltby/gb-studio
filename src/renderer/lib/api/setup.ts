@@ -1,4 +1,5 @@
 import { ipcRenderer } from "electron";
+import type { CreateProjectInput } from "lib/project/createProject";
 import type { ThemeId } from "shared/lib/theme";
 import type { JsonValue } from "shared/types";
 
@@ -44,6 +45,8 @@ const APISetup = {
     openProjectPicker: () => ipcRenderer.send("open-project-picker"),
     openProject: (projectPath: string) =>
       ipcRenderer.send("open-project", { projectPath }),
+    createProject: (input: CreateProjectInput) =>
+      ipcRenderer.invoke("create-project", input),
   },
 };
 

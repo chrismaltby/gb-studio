@@ -26,7 +26,6 @@ import {
   SplashTemplateSelect,
   SplashWrapper,
 } from "ui/splash/Splash";
-import createProject, { ERR_PROJECT_EXISTS } from "lib/project/createProject";
 import GlobalStyle from "ui/globalStyle";
 import ThemeProvider from "ui/theme/ThemeProvider";
 import logoFile from "ui/icons/GBStudioLogo.png";
@@ -41,6 +40,7 @@ import blankPreview from "assets/templatePreview/blank.png";
 import useWindowFocus from "ui/hooks/use-window-focus";
 import l10n from "renderer/lib/l10n";
 import API from "renderer/lib/api";
+import { ERR_PROJECT_EXISTS } from "consts";
 
 declare const DOCS_URL: string;
 
@@ -198,26 +198,28 @@ export const Splash = () => {
 
     try {
       setCreating(true);
-      const projectPath = await createProject({
+      const projectPath = await API.project.createProject({
         name,
         template: templateId,
         path,
       });
       API.project.openProject(projectPath);
     } catch (err) {
-      console.error(err);
-      if (err === ERR_PROJECT_EXISTS) {
-        setNameError(l10n("ERROR_PROJECT_ALREADY_EXISTS"));
-        setCreating(false);
-      } else if (
-        String(err.message).startsWith("ENOTDIR") ||
-        String(err.message).startsWith("EEXIST")
-      ) {
-        setPathError(l10n("ERROR_PROJECT_PATH_INVALID"));
-        setCreating(false);
-      } else {
-        setPathError(err.message);
-        setCreating(false);
+      if (err instanceof Error) {
+        if (err.message.includes(ERR_PROJECT_EXISTS)) {
+          setNameError(l10n("ERROR_PROJECT_ALREADY_EXISTS"));
+          setCreating(false);
+        } else if (
+          err.message.includes("ENOTDIR") ||
+          err.message.includes("EEXIST") ||
+          err.message.includes("EROFS")
+        ) {
+          setPathError(l10n("ERROR_PROJECT_PATH_INVALID"));
+          setCreating(false);
+        } else {
+          setPathError(err.message);
+          setCreating(false);
+        }
       }
     }
   };
