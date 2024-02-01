@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Path from "path";
-import { ipcRenderer, remote } from "electron";
 import FocusLock, { AutoFocusInside } from "react-focus-lock";
 import { FlexGrow } from "ui/spacing/Spacing";
 import {
@@ -43,11 +42,6 @@ import useWindowFocus from "ui/hooks/use-window-focus";
 import l10n from "renderer/lib/l10n";
 import API from "renderer/lib/api";
 
-// Make sure localisation has loaded so that
-// l10n function can be used at top level
-
-const { dialog, shell } = remote;
-
 declare const DOCS_URL: string;
 
 type ProjectInfo = {
@@ -72,7 +66,7 @@ const getLastUsedPath = async () => {
   if (storedPath && storedPath !== "undefined") {
     return Path.normalize(storedPath);
   }
-  return remote.app.getPath("documents");
+  return API.paths.getDocumentsPath();
 };
 
 const setLastUsedPath = (path: string) => {
@@ -161,11 +155,11 @@ export const Splash = () => {
   };
 
   const onOpen = () => {
-    ipcRenderer.send("open-project-picker");
+    API.project.openProjectPicker();
   };
 
   const onOpenRecent = (projectPath: string) => () => {
-    ipcRenderer.send("open-project", { projectPath });
+    API.project.openProject(projectPath);
   };
 
   const onChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -182,13 +176,10 @@ export const Splash = () => {
   };
 
   const onSelectFolder = async () => {
-    const path = await dialog.showOpenDialog({
-      properties: ["openDirectory"],
-    });
-    if (path.filePaths[0]) {
-      const newPath = Path.normalize(`${path.filePaths}/`);
-      setLastUsedPath(newPath);
-      setPath(newPath);
+    const directory = await API.dialog.chooseDirectory();
+    if (directory) {
+      setLastUsedPath(directory);
+      setPath(directory);
       setPathError("");
     }
   };
@@ -212,7 +203,7 @@ export const Splash = () => {
         target: templateId,
         path,
       });
-      ipcRenderer.send("open-project", { projectPath });
+      API.project.openProject(projectPath);
     } catch (err) {
       console.error(err);
       if (err === ERR_PROJECT_EXISTS) {
@@ -260,7 +251,7 @@ export const Splash = () => {
           >
             {l10n("SPLASH_RECENT")}
           </SplashTab>
-          <SplashTab onClick={() => shell.openExternal(DOCS_URL)}>
+          <SplashTab onClick={() => API.app.openExternal(DOCS_URL)}>
             {l10n("SPLASH_DOCUMENTATION")}
           </SplashTab>
           <FlexGrow />
@@ -363,7 +354,7 @@ export const Splash = () => {
                 <SplashCreditsContributor
                   key={contributor.id}
                   contributor={contributor}
-                  onClick={() => shell.openExternal(contributor.html_url)}
+                  onClick={() => API.app.openExternal(contributor.html_url)}
                 />
               ))}
             </SplashCreditsContent>

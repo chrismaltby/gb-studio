@@ -9,6 +9,9 @@ interface L10NLookup {
 const APISetup = {
   platform: process.platform,
   test: () => console.log("Hello World"),
+  app: {
+    openExternal: (path: string) => ipcRenderer.invoke("open-external", path),
+  },
   l10n: {
     getL10NStrings: (): Promise<L10NLookup> =>
       ipcRenderer.invoke("get-l10n-strings"),
@@ -20,16 +23,27 @@ const APISetup = {
         callback(themeId)
       ),
   },
+  paths: {
+    getDocumentsPath: () => ipcRenderer.invoke("get-documents-path"),
+    getTmpPath: () => ipcRenderer.invoke("get-tmp-path"),
+  },
   settings: {
     get: (key: string) => ipcRenderer.invoke("settings-get", key),
     set: (key: string, value: JsonValue) =>
       ipcRenderer.invoke("settings-set", key, value),
     delete: (key: string) => ipcRenderer.invoke("settings-delete", key),
   },
+  dialog: {
+    chooseDirectory: (): Promise<string | undefined> =>
+      ipcRenderer.invoke("open-directory-picker"),
+  },
   project: {
     getRecentProjects: (): Promise<string[]> =>
       ipcRenderer.invoke("get-recent-projects"),
     clearRecentProjects: () => ipcRenderer.invoke("clear-recent-projects"),
+    openProjectPicker: () => ipcRenderer.send("open-project-picker"),
+    openProject: (projectPath: string) =>
+      ipcRenderer.send("open-project", { projectPath }),
   },
 };
 

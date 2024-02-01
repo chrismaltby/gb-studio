@@ -98,7 +98,7 @@
                 "message": "Replace components/ui/ with just ui/"
               }
             ],
-            "paths": ["fs", "fs-extra", "electron-settings", "electron", "path"]
+            "paths": ["fs", "fs-extra", "electron-settings", "electron"]
           }
         ]
       }

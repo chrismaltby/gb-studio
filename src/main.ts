@@ -22,7 +22,8 @@ import installExtension, {
   REDUX_DEVTOOLS,
 } from "electron-devtools-installer";
 import { toThemeId } from "shared/lib/theme";
-import { isStringArray, JsonValue } from "shared/types";
+import { isString, isStringArray, JsonValue } from "shared/types";
+import getTmp from "lib/helpers/getTmp";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -437,6 +438,28 @@ ipcMain.on("open-play", async (_event, url, sgb) => {
   createPlay(url, sgb);
 });
 
+ipcMain.handle("open-external", async (_event, url) => {
+  if (!isString(url)) throw new Error("Invalid URL");
+  const allowedExternalDomains = [
+    "https://www.gbstudio.dev",
+    "https://www.itch.io",
+    "https://github.com",
+  ];
+  const match = allowedExternalDomains.some((domain) => url.startsWith(domain));
+  if (!match) throw new Error("URL not allowed");
+  shell.openExternal(url);
+});
+
+ipcMain.handle("open-directory-picker", async () => {
+  const selection = await dialog.showOpenDialogSync({
+    properties: ["openDirectory"],
+  });
+  if (selection && selection[0]) {
+    return Path.normalize(`${selection[0]}/`);
+  }
+  return undefined;
+});
+
 ipcMain.on("document-modified", () => {
   mainWindow?.setDocumentEdited(true);
   documentEdited = true; // For Windows
@@ -445,6 +468,14 @@ ipcMain.on("document-modified", () => {
 ipcMain.on("document-unmodified", () => {
   mainWindow?.setDocumentEdited(false);
   documentEdited = false; // For Windows
+});
+
+ipcMain.handle("get-documents-path", async (_event) => {
+  return app.getPath("documents");
+});
+
+ipcMain.handle("get-tmp-path", async () => {
+  return getTmp();
 });
 
 ipcMain.on("project-loaded", (_event, settings) => {
