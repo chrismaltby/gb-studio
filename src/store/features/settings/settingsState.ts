@@ -56,6 +56,7 @@ export type SettingsState = {
   cartType: CartType;
   batterylessEnabled: boolean;
   favoriteEvents: string[];
+  exportOpenFolder: boolean;
 };
 
 export const initialState: SettingsState = {
@@ -107,6 +108,7 @@ export const initialState: SettingsState = {
   cartType: "mbc5",
   batterylessEnabled: false,
   favoriteEvents: ["EVENT_TEXT", "EVENT_SWITCH_SCENE"],
+  exportOpenFolder: true,
 };
 
 const settingsSlice = createSlice({
@@ -138,6 +140,10 @@ const settingsSlice = createSlice({
     ) => {
       state.defaultPlayerSprites[action.payload.sceneType] =
         action.payload.spriteSheetId;
+    },
+
+    setExportOpenFolder: (state, action: PayloadAction<boolean>) => {
+      state.exportOpenFolder = action.payload;
     },
 
     setShowNavigator: (state, action: PayloadAction<boolean>) => {
