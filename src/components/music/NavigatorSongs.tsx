@@ -23,7 +23,7 @@ import { NoSongsMessage } from "./NoSongsMessage";
 import { assetFilename } from "lib/helpers/gbstudio";
 import { addNewSongFile } from "store/features/trackerDocument/trackerDocumentState";
 import trackerActions from "store/features/tracker/trackerActions";
-import settings from "electron-settings";
+import API from "renderer/lib/api";
 
 const COLLAPSED_SIZE = 30;
 
@@ -256,16 +256,18 @@ export const NavigatorSongs = ({
 
   const [syncInstruments, setSyncInstruments] = useState(true);
   useEffect(() => {
-    setSyncInstruments(
-      (settings.get("trackerSidebarSyncInstruments") ?? true) as boolean
-    );
+    (async function set() {
+      const syncedInstrumentSetting =
+        (await API.settings.get("trackerSidebarSyncInstruments")) ?? true;
+      setSyncInstruments(syncedInstrumentSetting as boolean);
+    })();
   }, []);
   const handleSyncInstruments = useCallback(
     (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
       e.stopPropagation();
 
       setSyncInstruments(!syncInstruments);
-      settings.set("trackerSidebarSyncInstruments", !syncInstruments);
+      API.settings.set("trackerSidebarSyncInstruments", !syncInstruments);
     },
     [syncInstruments]
   );
