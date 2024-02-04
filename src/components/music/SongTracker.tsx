@@ -19,6 +19,7 @@ import { SongGridHeaderCell } from "./SongGridHeaderCell";
 import { IpcRendererEvent } from "electron";
 import { getInstrumentTypeByChannel, getInstrumentListByType } from "./helpers";
 import {
+  NO_CHANGE_ON_PASTE,
   parseClipboardToPattern,
   parsePatternFieldsToClipboard,
 } from "./musicClipboardHelpers";
@@ -786,7 +787,7 @@ export const SongTracker = ({
               newPattern[startRow + i][channelId + j] = mergeWith(
                 newPattern[startRow + i][channelId + j],
                 pastedPatternCellRow[j],
-                (o, s) => (s === -9 ? o : s)
+                (o, s) => (s === NO_CHANGE_ON_PASTE ? o : s)
               );
             }
           }

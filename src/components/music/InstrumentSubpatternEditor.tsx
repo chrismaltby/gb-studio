@@ -12,6 +12,7 @@ import { CheckboxField } from "ui/form/CheckboxField";
 import { FormRow } from "ui/form/FormLayout";
 import { renderEffect, renderEffectParam } from "./helpers";
 import {
+  NO_CHANGE_ON_PASTE,
   parseClipboardToSubPattern,
   parseSubPatternFieldsToClipboard,
 } from "./musicClipboardHelpers";
@@ -817,7 +818,7 @@ export const InstrumentSubpatternEditor = ({
               newPattern[startRow + i] = mergeWith(
                 newPattern[startRow + i],
                 pastedPatternCellRow[j],
-                (o, s) => (s === -9 ? o : s)
+                (o, s) => (s === NO_CHANGE_ON_PASTE ? o : s)
               );
             }
           }
