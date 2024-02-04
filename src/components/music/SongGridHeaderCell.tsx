@@ -1,5 +1,5 @@
-import { ipcRenderer } from "electron";
 import React, { useCallback } from "react";
+import API from "renderer/lib/api";
 import styled, { css } from "styled-components";
 import { Button } from "ui/buttons/Button";
 import { AudioOffIcon, AudioOnIcon } from "ui/icons/Icons";
@@ -44,7 +44,7 @@ export const SongGridHeaderCell = ({
   muted,
 }: SongGridHeaderCellProps) => {
   const setMute = useCallback(() => {
-    ipcRenderer.send("music-data-send", {
+    API.music.sendMusicData({
       action: "set-mute",
       channel: channel,
       muted: !muted,

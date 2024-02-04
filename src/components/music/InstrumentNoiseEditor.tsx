@@ -9,11 +9,11 @@ import { FormDivider, FormRow } from "ui/form/FormLayout";
 import { InstrumentLengthForm } from "./InstrumentLengthForm";
 import { InstrumentVolumeEditor } from "./InstrumentVolumeEditor";
 import { NoiseMacroEditorForm } from "./NoiseMacroEditorForm";
-import { ipcRenderer } from "electron";
 import { Button } from "ui/buttons/Button";
 import { SubPatternCell } from "lib/helpers/uge/song/SubPatternCell";
 import { cloneDeep } from "lodash";
 import Alert, { AlertItem } from "components/library/Alert";
+import API from "renderer/lib/api";
 
 interface InstrumentNoiseEditorProps {
   id: string;
@@ -56,7 +56,7 @@ export const InstrumentNoiseEditor = ({
   };
 
   const onTestInstrument = () => {
-    ipcRenderer.send("music-data-send", {
+    API.music.sendMusicData({
       action: "preview",
       note: 24, // C_5
       type: "noise",

@@ -16,7 +16,7 @@ import { SequenceEditor } from "./SequenceEditor";
 import { SongRow } from "./SongRow";
 import scrollIntoView from "scroll-into-view-if-needed";
 import { SongGridHeaderCell } from "./SongGridHeaderCell";
-import { IpcRendererEvent, ipcRenderer } from "electron";
+import { IpcRendererEvent } from "electron";
 import { getInstrumentTypeByChannel, getInstrumentListByType } from "./helpers";
 import {
   parseClipboardToPattern,
@@ -27,6 +27,7 @@ import trackerActions from "store/features/tracker/trackerActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import { clipboard } from "store/features/clipboard/clipboardHelpers";
 import { clamp, cloneDeep, mergeWith } from "lodash";
+import API from "renderer/lib/api";
 
 function getSelectedTrackerFields(
   selectionRect: SelectionRect | undefined,
@@ -150,10 +151,10 @@ export const SongTracker = ({
         setPlaybackState(d.update);
       }
     };
-    ipcRenderer.on("music-data", listener);
+    API.music.musicDataSubscribe(listener);
 
     return () => {
-      ipcRenderer.removeListener("music-data", listener);
+      API.music.musicDataUnsubscribe(listener);
     };
   }, [setPlaybackState]);
 
@@ -346,7 +347,7 @@ export const SongTracker = ({
             parseInt(rowId),
           ])
         );
-        ipcRenderer.send("music-data-send", {
+        API.music.sendMusicData({
           action: "position",
           position: [sequenceId, parseInt(rowId)],
         });
@@ -429,7 +430,7 @@ export const SongTracker = ({
         if (song && value !== null) {
           const instrumentType = getInstrumentTypeByChannel(channel) || "duty";
           const instrumentList = getInstrumentListByType(song, instrumentType);
-          ipcRenderer.send("music-data-send", {
+          API.music.sendMusicData({
             action: "preview",
             note: value + octaveOffset * 12,
             type: instrumentType,

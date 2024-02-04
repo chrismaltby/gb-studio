@@ -24,6 +24,7 @@ import {
 import { RollChannelEffectRow } from "./RollChannelEffectRow";
 import { WandIcon } from "ui/icons/Icons";
 import { RollChannelHover } from "./RollChannelHover";
+import API from "renderer/lib/api";
 
 const CELL_SIZE = 16;
 const MAX_NOTE = 71;
@@ -248,7 +249,7 @@ const playNotePreview = (
 ) => {
   const instrumentType = getInstrumentTypeByChannel(channel) || "duty";
   const instrumentList = getInstrumentListByType(song, instrumentType);
-  ipcRenderer.send("music-data-send", {
+  API.music.sendMusicData({
     action: "preview",
     note: note,
     type: instrumentType,
@@ -288,10 +289,10 @@ export const SongPianoRoll = ({
         setPlaybackState(d.update);
       }
     };
-    ipcRenderer.on("music-data", listener);
+    API.music.musicDataSubscribe(listener);
 
     return () => {
-      ipcRenderer.removeListener("music-data", listener);
+      API.music.musicDataUnsubscribe(listener);
     };
   }, [setPlaybackState]);
 
@@ -302,7 +303,7 @@ export const SongPianoRoll = ({
       dispatch(
         trackerActions.setDefaultStartPlaybackPosition([sequenceId, col])
       );
-      ipcRenderer.send("music-data-send", {
+      API.music.sendMusicData({
         action: "position",
         position: [sequenceId, col],
       });

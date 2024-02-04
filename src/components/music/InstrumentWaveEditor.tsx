@@ -7,9 +7,9 @@ import { FormDivider, FormField, FormRow } from "ui/form/FormLayout";
 import { Select } from "ui/form/Select";
 import { InstrumentLengthForm } from "./InstrumentLengthForm";
 import { WaveEditorForm } from "./WaveEditorForm";
-import { ipcRenderer } from "electron";
 import { Button } from "ui/buttons/Button";
 import Alert, { AlertItem } from "components/library/Alert";
+import API from "renderer/lib/api";
 
 const volumeOptions = [
   {
@@ -76,7 +76,7 @@ export const InstrumentWaveEditor = ({
     };
 
   const onTestInstrument = () => {
-    ipcRenderer.send("music-data-send", {
+    API.music.sendMusicData({
       action: "preview",
       note: 24, // C_5
       type: "wave",

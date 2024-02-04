@@ -11,6 +11,7 @@ import { InstrumentVolumeEditor } from "./InstrumentVolumeEditor";
 import { ipcRenderer } from "electron";
 import { Button } from "ui/buttons/Button";
 import Alert, { AlertItem } from "components/library/Alert";
+import API from "renderer/lib/api";
 
 const dutyOptions = [
   {
@@ -114,7 +115,7 @@ export const InstrumentDutyEditor = ({
     };
 
   const onTestInstrument = () => {
-    ipcRenderer.send("music-data-send", {
+    API.music.sendMusicData({
       action: "preview",
       note: 24, // C_5
       type: "duty",

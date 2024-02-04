@@ -1,9 +1,9 @@
-import { ipcRenderer } from "electron";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Song } from "lib/helpers/uge/song/Song";
 import { RootState } from "store/configureStore";
 import trackerActions from "store/features/tracker/trackerActions";
+import API from "renderer/lib/api";
 
 interface UgePlayerProps {
   data: Song | null;
@@ -14,9 +14,9 @@ export const UgePlayer = ({ data, onChannelStatusUpdate }: UgePlayerProps) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    ipcRenderer.send("open-music");
+    API.music.openMusic();
     return function close() {
-      ipcRenderer.send("close-music");
+      API.music.closeMusic();
     };
   }, []);
 
@@ -26,7 +26,7 @@ export const UgePlayer = ({ data, onChannelStatusUpdate }: UgePlayerProps) => {
     const listener = (_event: any, d: any) => {
       switch (d.action) {
         case "initialized":
-          ipcRenderer.send("music-data-send", {
+          API.music.sendMusicData({
             action: "load-song",
             song: data,
           });
@@ -48,22 +48,22 @@ export const UgePlayer = ({ data, onChannelStatusUpdate }: UgePlayerProps) => {
       }
     };
 
-    ipcRenderer.on("music-data", listener);
+    API.music.musicDataSubscribe(listener);
 
     return () => {
-      ipcRenderer.removeListener("music-data", listener);
+      API.music.musicDataUnsubscribe(listener);
     };
   }, [onChannelStatusUpdate, play, data, dispatch]);
 
   useEffect(() => {
     if (play) {
       console.log("PLAY");
-      ipcRenderer.send("music-data-send", {
+      API.music.sendMusicData({
         action: "play",
         song: data,
       });
     } else {
-      ipcRenderer.send("music-data-send", {
+      API.music.sendMusicData({
         action: "stop",
       });
     }
