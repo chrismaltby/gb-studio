@@ -77,6 +77,12 @@ const APISetup = {
     musicDataUnsubscribe: (listener: (_event: any, data: any) => void) =>
       ipcRenderer.removeListener("music-data", listener),
   },
+  clipboard: {
+    addPasteInPlaceListener: (listener: () => void) =>
+      ipcRenderer.on("paste-in-place", listener),
+    removePasteInPlaceListener: (listener: () => void) =>
+      ipcRenderer.removeListener("paste-in-place", listener),
+  },
 };
 
 export default APISetup;

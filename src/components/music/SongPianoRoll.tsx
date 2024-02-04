@@ -981,12 +981,12 @@ export const SongPianoRoll = ({
       window.addEventListener("copy", onCopy);
       window.addEventListener("cut", onCut);
       window.addEventListener("paste", onPaste);
-      ipcRenderer.on("paste-in-place", onPasteInPlace);
+      API.clipboard.addPasteInPlaceListener(onPasteInPlace);
       return () => {
         window.removeEventListener("copy", onCopy);
         window.removeEventListener("cut", onCut);
         window.removeEventListener("paste", onPaste);
-        ipcRenderer.removeListener("paste-in-place", onPasteInPlace);
+        API.clipboard.removePasteInPlaceListener(onPasteInPlace);
       };
     }
   }, [onCopy, onCut, onPaste, onPasteInPlace, subpatternEditorFocus]);
