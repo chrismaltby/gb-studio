@@ -22,7 +22,7 @@ import {
   parseClipboardToPattern,
   parsePatternFieldsToClipboard,
 } from "./musicClipboardHelpers";
-import { getKeys, KeyWhen } from "lib/keybindings/keyBindings";
+import { getKeys, KeyWhen } from "renderer/lib/keybindings/keyBindings";
 import trackerActions from "store/features/tracker/trackerActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import { clipboard } from "store/features/clipboard/clipboardHelpers";

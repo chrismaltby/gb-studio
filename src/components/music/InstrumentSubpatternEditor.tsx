@@ -15,7 +15,7 @@ import {
   parseClipboardToSubPattern,
   parseSubPatternFieldsToClipboard,
 } from "./musicClipboardHelpers";
-import { KeyWhen, getKeys } from "lib/keybindings/keyBindings";
+import { KeyWhen, getKeys } from "renderer/lib/keybindings/keyBindings";
 import { useDispatch, useSelector } from "react-redux";
 import trackerActions from "store/features/tracker/trackerActions";
 import { SelectionRect } from "./SongPianoRoll";
