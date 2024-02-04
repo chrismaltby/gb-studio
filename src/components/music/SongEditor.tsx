@@ -15,7 +15,7 @@ import { Input } from "ui/form/Input";
 import { InstrumentDutyEditor } from "./InstrumentDutyEditor";
 import { InstrumentWaveEditor } from "./InstrumentWaveEditor";
 import { InstrumentNoiseEditor } from "./InstrumentNoiseEditor";
-import { Song } from "lib/helpers/uge/song/Song";
+import { Song } from "renderer/lib/uge/song/Song";
 import castEventValue from "lib/helpers/castEventValue";
 import l10n from "lib/helpers/l10n";
 import {

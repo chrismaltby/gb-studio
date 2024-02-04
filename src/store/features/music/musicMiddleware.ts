@@ -9,7 +9,7 @@ import { assetFilename } from "lib/helpers/gbstudio";
 import { MusicSettings } from "../entities/entitiesTypes";
 import { ipcRenderer } from "electron";
 import { readFile } from "fs-extra";
-import { loadUGESong } from "lib/helpers/uge/ugeHelper";
+import { loadUGESong } from "renderer/lib/uge/ugeHelper";
 import toArrayBuffer from "lib/helpers/toArrayBuffer";
 
 let modPlayer: ScripTracker;

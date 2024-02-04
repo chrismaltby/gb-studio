@@ -7,8 +7,8 @@ import React, {
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import { PatternCell } from "lib/helpers/uge/song/PatternCell";
-import { Song } from "lib/helpers/uge/song/Song";
+import { PatternCell } from "renderer/lib/uge/song/PatternCell";
+import { Song } from "renderer/lib/uge/song/Song";
 import { RootState } from "store/configureStore";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import { SplitPaneHorizontalDivider } from "ui/splitpane/SplitPaneDivider";

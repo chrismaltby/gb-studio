@@ -8,9 +8,9 @@ import {
 import { pathExists, readFile } from "fs-extra";
 import cloneDeep from "lodash/cloneDeep";
 import { writeFileWithBackupAsync } from "lib/helpers/fs/writeFileWithBackup";
-import { PatternCell } from "lib/helpers/uge/song/PatternCell";
-import { Song } from "lib/helpers/uge/song/Song";
-import { loadUGESong, saveUGESong } from "lib/helpers/uge/ugeHelper";
+import { PatternCell } from "renderer/lib/uge/song/PatternCell";
+import { Song } from "renderer/lib/uge/song/Song";
+import { loadUGESong, saveUGESong } from "renderer/lib/uge/ugeHelper";
 import { RootState } from "store/configureStore";
 import {
   DutyInstrument,
@@ -19,7 +19,7 @@ import {
 } from "./trackerDocumentTypes";
 import { projectTemplatesRoot } from "../../../consts";
 import copy from "lib/helpers/fsCopy";
-import { SubPatternCell } from "lib/helpers/uge/song/SubPatternCell";
+import { SubPatternCell } from "renderer/lib/uge/song/SubPatternCell";
 import { InstrumentType } from "../editor/editorState";
 
 export interface TrackerDocumentState {

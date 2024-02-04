@@ -1,5 +1,5 @@
 import l10n from "lib/helpers/l10n";
-import { SubPatternCell } from "lib/helpers/uge/song/SubPatternCell";
+import { SubPatternCell } from "renderer/lib/uge/song/SubPatternCell";
 import React, {
   useCallback,
   useEffect,

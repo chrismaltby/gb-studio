@@ -8,7 +8,6 @@ import { Select } from "ui/form/Select";
 import { SliderField } from "ui/form/SliderField";
 import { InstrumentLengthForm } from "./InstrumentLengthForm";
 import { InstrumentVolumeEditor } from "./InstrumentVolumeEditor";
-import { ipcRenderer } from "electron";
 import { Button } from "ui/buttons/Button";
 import Alert, { AlertItem } from "components/library/Alert";
 import API from "renderer/lib/api";

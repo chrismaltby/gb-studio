@@ -1,6 +1,6 @@
-import { PatternCell } from "lib/helpers/uge/song/PatternCell";
+import { PatternCell } from "renderer/lib/uge/song/PatternCell";
 import { noteNames } from "./helpers/music_constants";
-import { SubPatternCell } from "lib/helpers/uge/song/SubPatternCell";
+import { SubPatternCell } from "renderer/lib/uge/song/SubPatternCell";
 import {
   renderNote,
   renderInstrument,
