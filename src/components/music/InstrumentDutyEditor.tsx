@@ -1,6 +1,5 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import l10n from "lib/helpers/l10n";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import { DutyInstrument } from "store/features/trackerDocument/trackerDocumentTypes";
 import { FormDivider, FormField, FormRow } from "ui/form/FormLayout";
@@ -11,6 +10,7 @@ import { InstrumentVolumeEditor } from "./InstrumentVolumeEditor";
 import { Button } from "ui/buttons/Button";
 import Alert, { AlertItem } from "components/library/Alert";
 import API from "renderer/lib/api";
+import l10n from "renderer/lib/l10n";
 
 const dutyOptions = [
   {
