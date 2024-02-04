@@ -16,7 +16,6 @@ import {
   parseSubPatternFieldsToClipboard,
 } from "./musicClipboardHelpers";
 import { KeyWhen, getKeys } from "lib/keybindings/keyBindings";
-import { Position } from "lib/sprite/spriteData";
 import { useDispatch, useSelector } from "react-redux";
 import trackerActions from "store/features/tracker/trackerActions";
 import { SelectionRect } from "./SongPianoRoll";
@@ -26,6 +25,7 @@ import { cloneDeep, mergeWith } from "lodash";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import { clipboard } from "store/features/clipboard/clipboardHelpers";
 import { RootState } from "store/configureStore";
+import { Position } from "./SongTracker";
 
 const CHANNEL_FIELDS = 4;
 const ROW_SIZE = CHANNEL_FIELDS * 1;

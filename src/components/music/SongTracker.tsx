@@ -69,7 +69,7 @@ interface SelectionRect {
   height: number;
 }
 
-interface Position {
+export interface Position {
   x: number;
   y: number;
 }
