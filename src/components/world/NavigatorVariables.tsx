@@ -5,7 +5,10 @@ import { variableSelectors } from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
 import editorActions from "store/features/editor/editorActions";
 import { Variable } from "store/features/entities/entitiesTypes";
-import { allVariables, globalVariableDefaultName } from "lib/helpers/variables";
+import {
+  allVariables,
+  globalVariableDefaultName,
+} from "renderer/lib/helpers/variables";
 import { EntityListItem } from "ui/lists/EntityListItem";
 
 interface NavigatorVariablesProps {

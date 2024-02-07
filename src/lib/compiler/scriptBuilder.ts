@@ -6,7 +6,7 @@ import {
   globalVariableDefaultName,
   localVariableName,
   tempVariableName,
-} from "../helpers/variables";
+} from "../../renderer/lib/helpers/variables";
 import {
   ActorDirection,
   CustomEvent,
@@ -3118,7 +3118,12 @@ extern void __mute_mask_${symbol};
   // --------------------------------------------------------------------------
   // Timer
 
-  timerScriptSet = (frames = 600, script: ScriptEvent[], symbol?: string, timer = 1) => {
+  timerScriptSet = (
+    frames = 600,
+    script: ScriptEvent[],
+    symbol?: string,
+    timer = 1
+  ) => {
     this._addComment(`Timer Start`);
     const scriptRef = this._compileSubScript("timer", script, symbol);
     const TIMER_CYCLES = 16;

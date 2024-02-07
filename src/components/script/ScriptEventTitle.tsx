@@ -6,7 +6,10 @@ import {
   isVariableField,
 } from "lib/helpers/eventSystem";
 import l10n from "lib/helpers/l10n";
-import { NamedVariable, namedVariablesByContext } from "lib/helpers/variables";
+import {
+  NamedVariable,
+  namedVariablesByContext,
+} from "renderer/lib/helpers/variables";
 import { Dictionary } from "@reduxjs/toolkit";
 import { useSelector } from "react-redux";
 import { RootState } from "store/configureStore";

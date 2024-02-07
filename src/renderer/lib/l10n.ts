@@ -33,6 +33,11 @@ export const replaceParams = (string: string, params: L10NParams) => {
 };
 
 const l10n = (key: string, params?: L10NParams): string => {
+  if (!hasInit) {
+    console.warn(
+      `L10N used in renderer before initialisation for key "${key}"`
+    );
+  }
   const l10nString = l10nStrings[key] || key;
   if (typeof l10nString === "string") {
     if (params) {

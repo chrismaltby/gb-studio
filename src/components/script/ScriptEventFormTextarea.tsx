@@ -8,7 +8,10 @@ import {
   variableSelectors,
 } from "store/features/entities/entitiesState";
 import { RootState } from "store/configureStore";
-import { NamedVariable, namedVariablesByContext } from "lib/helpers/variables";
+import {
+  NamedVariable,
+  namedVariablesByContext,
+} from "renderer/lib/helpers/variables";
 import { ScriptEditorContext } from "./ScriptEditorContext";
 
 interface ScriptEventFormTextAreaProps {

@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   globalVariableCode,
   globalVariableDefaultName,
-} from "lib/helpers/variables";
+} from "renderer/lib/helpers/variables";
 import { RootState } from "store/configureStore";
 import {
   actorSelectors,
