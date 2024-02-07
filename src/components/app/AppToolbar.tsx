@@ -3,7 +3,6 @@ import { Helmet } from "react-helmet";
 import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash/debounce";
 import l10n from "renderer/lib/l10n";
-import { zoomForSection } from "lib/helpers/gbstudio";
 import editorActions from "store/features/editor/editorActions";
 import navigationActions from "store/features/navigation/navigationActions";
 import electronActions from "store/features/electron/electronActions";
@@ -26,7 +25,10 @@ import {
 } from "ui/icons/Icons";
 import { RootState } from "store/configureStore";
 import type { NavigationSection } from "store/features/navigation/navigationState";
-import type { ZoomSection } from "store/features/editor/editorState";
+import {
+  getZoomForSection,
+  ZoomSection,
+} from "store/features/editor/editorState";
 import useWindowFocus from "ui/hooks/use-window-focus";
 import useWindowSize from "ui/hooks/use-window-size";
 
@@ -53,8 +55,9 @@ const AppToolbar: FC = () => {
   );
   const section = useSelector((state: RootState) => state.navigation.section);
   const zoom = useSelector((state: RootState) =>
-    zoomForSection(section, state.editor)
+    getZoomForSection(state, section)
   );
+
   const initalSearchTerm = useSelector(
     (state: RootState) => state.editor.searchTerm
   );
