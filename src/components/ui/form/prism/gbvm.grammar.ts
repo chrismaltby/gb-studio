@@ -1,4 +1,4 @@
-export default {
+const gbvmGrammar = {
   comment: {
     pattern: /;.*/,
     greedy: true,
@@ -18,3 +18,5 @@ export default {
     pattern: /VAR_([^ ]*)/,
   },
 };
+
+export default gbvmGrammar;
