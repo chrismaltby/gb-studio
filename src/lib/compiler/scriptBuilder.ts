@@ -22,9 +22,9 @@ import {
   initialState as initialSettingsState,
   SettingsState,
 } from "store/features/settings/settingsState";
-import { FunctionSymbol, OperatorSymbol } from "../rpn/types";
-import tokenize from "../rpn/tokenizer";
-import shuntingYard from "../rpn/shuntingYard";
+import { FunctionSymbol, OperatorSymbol } from "shared/lib/rpn/types";
+import tokenize from "shared/lib/rpn/tokenizer";
+import shuntingYard from "shared/lib/rpn/shuntingYard";
 import { PrecompiledFontData } from "./compileFonts";
 import { encodeString } from "../helpers/encodings";
 import { PrecompiledMusicTrack } from "./compileMusic";
