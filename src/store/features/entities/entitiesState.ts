@@ -74,7 +74,6 @@ import {
   normalizeEntities,
   sortByFilename,
   swap,
-  matchAsset,
   isUnionVariableValue,
   isUnionPropertyValue,
   walkNormalisedScriptEvents,

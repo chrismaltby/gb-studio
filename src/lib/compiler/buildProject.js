@@ -2,7 +2,7 @@ import fs from "fs-extra";
 import compile from "./compileData";
 import ejectBuild from "./ejectBuild";
 import makeBuild from "./makeBuild";
-import { binjgbRoot, emulatorRoot } from "../../consts";
+import { binjgbRoot } from "../../consts";
 import copy from "../helpers/fsCopy";
 
 const buildProject = async (

@@ -13,7 +13,7 @@ import { SceneSelect } from "../forms/SceneSelect";
 import { SelectMenu, selectMenuStyleProps } from "ui/form/Select";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import { sceneName } from "lib/compiler/compileData2";
-import { Tooltip, TooltipWrapper } from "ui/tooltips/Tooltip";
+import { TooltipWrapper } from "ui/tooltips/Tooltip";
 import { FixedSpacer } from "ui/spacing/Spacing";
 
 interface MetaspriteEditorPreviewSettingsProps {

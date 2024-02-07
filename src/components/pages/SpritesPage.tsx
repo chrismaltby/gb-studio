@@ -17,7 +17,6 @@ import {
 } from "ui/splitpane/SplitPaneDivider";
 import { RootState } from "store/configureStore";
 import editorActions from "store/features/editor/editorActions";
-import settingsActions from "store/features/settings/settingsActions";
 import { SpriteEditor } from "../sprites/SpriteEditor";
 import { NavigatorSprites } from "../sprites/NavigatorSprites";
 import {

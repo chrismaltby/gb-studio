@@ -17,8 +17,6 @@ import { ErrorShape } from "store/stateShape";
 import LoadingPane from "../library/LoadingPane";
 import { DropZone } from "ui/upload/DropZone";
 import projectActions from "store/features/project/projectActions";
-import { ipcRenderer } from "electron";
-import settings from "electron-settings";
 import SoundsPage from "components/pages/SoundsPage";
 
 class App extends Component {

@@ -6,7 +6,6 @@ import getCoords from "lib/helpers/getCoords";
 import Actor from "./Actor";
 import Trigger from "./Trigger";
 import SceneCollisions from "./SceneCollisions";
-import EventHelper from "./EventHelper";
 import {
   SceneShape,
   EventShape,
