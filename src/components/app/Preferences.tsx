@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Path from "path";
-import getTmp from "lib/helpers/getTmp";
 import ThemeProvider from "ui/theme/ThemeProvider";
 import GlobalStyle from "ui/globalStyle";
 import { PreferencesWrapper } from "ui/preferences/Preferences";
@@ -48,7 +47,7 @@ const Preferences = () => {
 
   useEffect(() => {
     async function fetchData() {
-      setTmpPath(getTmp(false));
+      setTmpPath(await API.paths.getTmpPath());
       setImageEditorPath(
         ensureString(await API.settings.get("imageEditorPath"), "")
       );
@@ -119,9 +118,9 @@ const Preferences = () => {
     }
   };
 
-  const onRestoreDefaultTmpPath = () => {
+  const onRestoreDefaultTmpPath = async () => {
     API.settings.delete("tmpDir");
-    setTmpPath(getTmp(false));
+    setTmpPath(await API.paths.getTmpPath());
   };
 
   return (

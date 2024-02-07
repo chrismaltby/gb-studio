@@ -25,8 +25,9 @@ const APISetup = {
       ),
   },
   paths: {
-    getDocumentsPath: () => ipcRenderer.invoke("get-documents-path"),
-    getTmpPath: () => ipcRenderer.invoke("get-tmp-path"),
+    getDocumentsPath: (): Promise<string> =>
+      ipcRenderer.invoke("get-documents-path"),
+    getTmpPath: (): Promise<string> => ipcRenderer.invoke("get-tmp-path"),
   },
   settings: {
     get: (key: string): Promise<unknown> =>
