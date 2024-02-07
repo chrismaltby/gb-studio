@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Path from "path";
 import getTmp from "lib/helpers/getTmp";
 import ThemeProvider from "ui/theme/ThemeProvider";
@@ -36,16 +36,6 @@ const zoomOptions: Options[] = [
   { value: 3.80178, label: `200%` },
 ];
 
-const trackerKeyBindingsOptions: Options[] = [
-  { value: 0, label: l10n("FIELD_UI_LINEAR") },
-  { value: 1, label: l10n("FIELD_UI_PIANO") },
-];
-
-const trackerKeyBindingsOptionsInfo: string[] = [
-  l10n("FIELD_UI_LINEAR_INFO"),
-  l10n("FIELD_UI_PIANO_INFO"),
-];
-
 const Preferences = () => {
   const pathError = "";
   const [tmpPath, setTmpPath] = useState<string>("");
@@ -55,10 +45,6 @@ const Preferences = () => {
   const [trackerKeyBindings, setTrackerKeyBindings] = useState<number>(0);
 
   const currentZoomValue = zoomOptions.find((o) => o.value === zoomLevel);
-
-  const currentTrackerKeyBindings = trackerKeyBindingsOptions.find(
-    (o) => o.value === trackerKeyBindings
-  );
 
   useEffect(() => {
     async function fetchData() {
@@ -76,6 +62,23 @@ const Preferences = () => {
     }
     fetchData();
   }, []);
+
+  const trackerKeyBindingsOptions: Options[] = useMemo(
+    () => [
+      { value: 0, label: l10n("FIELD_UI_LINEAR") },
+      { value: 1, label: l10n("FIELD_UI_PIANO") },
+    ],
+    []
+  );
+
+  const trackerKeyBindingsOptionsInfo: string[] = useMemo(
+    () => [l10n("FIELD_UI_LINEAR_INFO"), l10n("FIELD_UI_PIANO_INFO")],
+    []
+  );
+
+  const currentTrackerKeyBindings = trackerKeyBindingsOptions.find(
+    (o) => o.value === trackerKeyBindings
+  );
 
   const onChangeTmpPath = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newPath = e.currentTarget.value;
