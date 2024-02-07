@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import styled, { css } from "styled-components";
-import { ThemeInterface } from "../theme/ThemeInterface";
+import { ThemeInterface } from "ui/theme/ThemeInterface";
 
 export interface MenuProps {
   readonly children?: ReactNode;

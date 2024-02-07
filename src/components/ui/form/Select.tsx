@@ -3,7 +3,7 @@ import WindowedSelect from "react-windowed-select";
 import CRSelect from "react-select/creatable";
 import React, { CSSProperties, FC, ReactNode } from "react";
 import { setDefault } from "lib/helpers/setDefault";
-import { SearchIcon } from "../icons/Icons";
+import { SearchIcon } from "ui/icons/Icons";
 import l10n from "lib/helpers/l10n";
 export { components } from "react-select";
 

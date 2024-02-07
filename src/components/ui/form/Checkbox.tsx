@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 import styled from "styled-components";
-import { MenuItem } from "../menu/Menu";
+import { MenuItem } from "ui/menu/Menu";
 
 export interface CheckboxProps {
   readonly id: string;

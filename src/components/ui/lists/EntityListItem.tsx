@@ -13,7 +13,7 @@ import {
   SongIcon,
   FolderFilledIcon,
   BackgroundIcon,
-} from "../icons/Icons";
+} from "ui/icons/Icons";
 
 interface EntityListItemWrapperProps {
   nestLevel?: number;

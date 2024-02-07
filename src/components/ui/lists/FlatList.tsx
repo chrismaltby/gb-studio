@@ -2,7 +2,7 @@ import throttle from "lodash/throttle";
 import React, { CSSProperties, useEffect, useRef, useState } from "react";
 import { FixedSizeList as List } from "react-window";
 import styled from "styled-components";
-import { ThemeInterface } from "../theme/ThemeInterface";
+import { ThemeInterface } from "ui/theme/ThemeInterface";
 import { ListItem } from "./ListItem";
 
 export interface FlatListItem {
