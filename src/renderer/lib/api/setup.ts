@@ -1,7 +1,11 @@
 import { ipcRenderer } from "electron";
 import type { CreateProjectInput } from "lib/project/createProject";
 import type { ThemeId } from "shared/lib/theme";
-import type { JsonValue } from "shared/types";
+import {
+  ensurePromisedNumber,
+  ensurePromisedString,
+  JsonValue,
+} from "shared/types";
 
 interface L10NLookup {
   [key: string]: string | boolean | undefined;
@@ -32,6 +36,10 @@ const APISetup = {
   settings: {
     get: (key: string): Promise<unknown> =>
       ipcRenderer.invoke("settings-get", key),
+    getString: (key: string, fallback: string): Promise<string> =>
+      ensurePromisedString(ipcRenderer.invoke("settings-get", key), fallback),
+    getNumber: (key: string, fallback: number): Promise<number> =>
+      ensurePromisedNumber(ipcRenderer.invoke("settings-get", key), fallback),
     set: (key: string, value: JsonValue) =>
       ipcRenderer.invoke("settings-set", key, value),
     delete: (key: string) => ipcRenderer.invoke("settings-delete", key),

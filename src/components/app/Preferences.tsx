@@ -13,7 +13,6 @@ import { ipcRenderer } from "electron";
 import { OptionLabelWithInfo, Select } from "ui/form/Select";
 import API from "renderer/lib/api";
 import l10n from "renderer/lib/l10n";
-import { ensureNumber, ensureString } from "shared/types";
 
 interface Options {
   value: number;
@@ -46,15 +45,11 @@ const Preferences = () => {
   useEffect(() => {
     async function fetchData() {
       setTmpPath(await API.paths.getTmpPath());
-      setImageEditorPath(
-        ensureString(await API.settings.get("imageEditorPath"), "")
-      );
-      setMusicEditorPath(
-        ensureString(await API.settings.get("musicEditorPath"), "")
-      );
-      setZoomLevel(ensureNumber(await API.settings.get("zoomLevel"), 0));
+      setImageEditorPath(await API.settings.getString("imageEditorPath", ""));
+      setMusicEditorPath(await API.settings.getString("musicEditorPath", ""));
+      setZoomLevel(await API.settings.getNumber("zoomLevel", 0));
       setTrackerKeyBindings(
-        ensureNumber(await API.settings.get("trackerKeyBindings"), 0)
+        await API.settings.getNumber("trackerKeyBindings", 0)
       );
     }
     fetchData();
