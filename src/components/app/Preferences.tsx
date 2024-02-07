@@ -9,13 +9,11 @@ import { Button } from "ui/buttons/Button";
 import { DotsIcon } from "ui/icons/Icons";
 import { FixedSpacer, FlexGrow } from "ui/spacing/Spacing";
 import { AppSelect } from "ui/form/AppSelect";
-import { ipcRenderer, remote } from "electron";
+import { ipcRenderer } from "electron";
 import { OptionLabelWithInfo, Select } from "ui/form/Select";
 import API from "renderer/lib/api";
 import l10n from "renderer/lib/l10n";
 import { ensureNumber, ensureString } from "shared/types";
-
-const { dialog } = remote;
 
 interface Options {
   value: number;
@@ -108,11 +106,9 @@ const Preferences = () => {
   };
 
   const onSelectTmpFolder = async () => {
-    const path = await dialog.showOpenDialog({
-      properties: ["openDirectory"],
-    });
-    if (path.filePaths[0]) {
-      const newPath = Path.normalize(`${path.filePaths[0]}/`);
+    const path = await API.dialog.chooseDirectory();
+    if (path) {
+      const newPath = Path.normalize(`${path}/`);
       setTmpPath(newPath);
       API.settings.set("tmpDir", newPath);
     }
