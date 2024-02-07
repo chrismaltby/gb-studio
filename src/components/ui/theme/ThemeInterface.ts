@@ -7,6 +7,7 @@ export interface ThemeInterface {
   };
   colors: {
     text: string;
+    background: string;
     secondaryText: string;
     highlight: string;
     highlightText: string;

@@ -4,7 +4,6 @@ import { AppContainer } from "react-hot-loader";
 import Preferences from "components/app/Preferences";
 import { initL10N } from "renderer/lib/l10n";
 import { initTheme } from "renderer/lib/theme";
-import "../../styles/App.css";
 
 const render = () => {
   ReactDOM.render(

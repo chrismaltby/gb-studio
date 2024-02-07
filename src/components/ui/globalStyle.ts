@@ -17,6 +17,8 @@ const GlobalStyle = createGlobalStyle`
     font-size: 13px;
     user-select: none;
     caret-color: ${(props) => props.theme.colors.highlight};
+    background: ${(props) => props.theme.colors.background};
+    color: ${(props) => props.theme.colors.text};
   }
 
   #App {
