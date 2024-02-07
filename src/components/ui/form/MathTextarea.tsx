@@ -2,7 +2,7 @@ import React, { FC, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { MentionsInput, Mention, SuggestionDataItem } from "react-mentions";
 import CustomMention from "./CustomMention";
-import { NamedVariable } from "renderer/lib/helpers/variables";
+import { NamedVariable } from "renderer/lib/variables";
 import keyBy from "lodash/keyBy";
 import { Dictionary } from "@reduxjs/toolkit";
 import debounce from "lodash/debounce";
