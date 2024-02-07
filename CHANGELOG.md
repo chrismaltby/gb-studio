@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fix sound effects previews in editor not matching how they sound in game [@pau-tomas](https://github.com/pau-tomas)
+- Fix crash when typing "!S" into dialogue events
 
 ## [3.2.0] - 2024-01-29
 
