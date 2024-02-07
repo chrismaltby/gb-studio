@@ -80,7 +80,7 @@ export const lexText = (inputText: string): Token[] => {
     if (
       inputText[i] === "!" &&
       inputText[i + 1] === "S" &&
-      inputText[i + 2].match(/[0-5]/) &&
+      inputText[i + 2]?.match(/[0-5]/) &&
       inputText[i + 3] === "!"
     ) {
       const speed = Number(inputText[i + 2]);
