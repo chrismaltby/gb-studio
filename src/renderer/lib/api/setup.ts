@@ -47,6 +47,8 @@ const APISetup = {
   dialog: {
     chooseDirectory: (): Promise<string | undefined> =>
       ipcRenderer.invoke("open-directory-picker"),
+    chooseFile: (): Promise<string | undefined> =>
+      ipcRenderer.invoke("open-file-picker"),
   },
   project: {
     getRecentProjects: (): Promise<string[]> =>

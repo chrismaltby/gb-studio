@@ -461,6 +461,16 @@ ipcMain.handle("open-directory-picker", async () => {
   return undefined;
 });
 
+ipcMain.handle("open-file-picker", async () => {
+  const selection = await dialog.showOpenDialog({
+    properties: ["openFile"],
+  });
+  if (selection && selection.filePaths[0]) {
+    return Path.normalize(selection.filePaths[0]);
+  }
+  return undefined;
+});
+
 ipcMain.on("document-modified", () => {
   mainWindow?.setDocumentEdited(true);
   documentEdited = true; // For Windows
