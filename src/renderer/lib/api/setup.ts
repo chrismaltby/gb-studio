@@ -29,7 +29,8 @@ const APISetup = {
     getTmpPath: () => ipcRenderer.invoke("get-tmp-path"),
   },
   settings: {
-    get: (key: string) => ipcRenderer.invoke("settings-get", key),
+    get: (key: string): Promise<unknown> =>
+      ipcRenderer.invoke("settings-get", key),
     set: (key: string, value: JsonValue) =>
       ipcRenderer.invoke("settings-set", key, value),
     delete: (key: string) => ipcRenderer.invoke("settings-delete", key),

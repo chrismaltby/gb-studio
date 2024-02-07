@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import Path from "path";
-import settings from "electron-settings";
-import l10n from "lib/helpers/l10n";
 import getTmp from "lib/helpers/getTmp";
 import ThemeProvider from "ui/theme/ThemeProvider";
 import GlobalStyle from "ui/globalStyle";
@@ -14,6 +12,9 @@ import { FixedSpacer, FlexGrow } from "ui/spacing/Spacing";
 import { AppSelect } from "ui/form/AppSelect";
 import { ipcRenderer, remote } from "electron";
 import { OptionLabelWithInfo, Select } from "ui/form/Select";
+import API from "renderer/lib/api";
+import l10n from "renderer/lib/l10n";
+import { ensureNumber, ensureString } from "shared/types";
 
 const { dialog } = remote;
 
@@ -60,38 +61,47 @@ const Preferences = () => {
   );
 
   useEffect(() => {
-    setTmpPath(getTmp(false));
-    setImageEditorPath(String(settings.get("imageEditorPath") || ""));
-    setMusicEditorPath(String(settings.get("musicEditorPath") || ""));
-    setZoomLevel(Number(settings.get("zoomLevel") || 0));
-    setTrackerKeyBindings(Number(settings.get("trackerKeyBindings") || 0));
+    async function fetchData() {
+      setTmpPath(getTmp(false));
+      setImageEditorPath(
+        ensureString(await API.settings.get("imageEditorPath"), "")
+      );
+      setMusicEditorPath(
+        ensureString(await API.settings.get("musicEditorPath"), "")
+      );
+      setZoomLevel(ensureNumber(await API.settings.get("zoomLevel"), 0));
+      setTrackerKeyBindings(
+        ensureNumber(await API.settings.get("trackerKeyBindings"), 0)
+      );
+    }
+    fetchData();
   }, []);
 
   const onChangeTmpPath = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newPath = e.currentTarget.value;
     setTmpPath(newPath);
-    settings.set("tmpDir", newPath);
+    API.settings.set("tmpDir", newPath);
   };
 
   const onChangeImageEditorPath = (path: string) => {
     setImageEditorPath(path);
-    settings.set("imageEditorPath", path);
+    API.settings.set("imageEditorPath", path);
   };
 
   const onChangeMusicEditorPath = (path: string) => {
     setMusicEditorPath(path);
-    settings.set("musicEditorPath", path);
+    API.settings.set("musicEditorPath", path);
   };
 
   const onChangeZoomLevel = (zoomLevel: number) => {
     setZoomLevel(zoomLevel);
-    settings.set("zoomLevel", zoomLevel);
+    API.settings.set("zoomLevel", zoomLevel);
     ipcRenderer.send("window-zoom", zoomLevel);
   };
 
   const onChangeTrackerKeyBindings = (trackerKeyBindings: number) => {
     setTrackerKeyBindings(trackerKeyBindings);
-    settings.set("trackerKeyBindings", trackerKeyBindings);
+    API.settings.set("trackerKeyBindings", trackerKeyBindings);
     ipcRenderer.send("keybindings-updated");
   };
 
@@ -102,12 +112,12 @@ const Preferences = () => {
     if (path.filePaths[0]) {
       const newPath = Path.normalize(`${path.filePaths[0]}/`);
       setTmpPath(newPath);
-      settings.set("tmpDir", newPath);
+      API.settings.set("tmpDir", newPath);
     }
   };
 
   const onRestoreDefaultTmpPath = () => {
-    settings.delete("tmpDir");
+    API.settings.delete("tmpDir");
     setTmpPath(getTmp(false));
   };
 
