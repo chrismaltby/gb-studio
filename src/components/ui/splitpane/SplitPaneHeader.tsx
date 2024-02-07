@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
 import styled, { css } from "styled-components";
-import { Button } from "../buttons/Button";
+import { Button } from "ui/buttons/Button";
 import { CaretDownIcon, CaretRightIcon } from "ui/icons/Icons";
 
 interface SplitPaneHeaderProps {

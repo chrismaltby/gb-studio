@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { CardHeading } from "../cards/Card";
+import { CardHeading } from "ui/cards/Card";
 
 export const SettingRow = styled.div`
   display: flex;
