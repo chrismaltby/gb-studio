@@ -29,3 +29,9 @@
   display: flex;
   align-items: center;
 }
+
+.MusicViewer__Edit {
+  position: fixed;
+  top: 48px;
+  right: 310px;
+}
