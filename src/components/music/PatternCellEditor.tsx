@@ -10,7 +10,7 @@ import { SliderField } from "ui/form/SliderField";
 import { CheckboxField } from "ui/form/CheckboxField";
 import { Label } from "ui/form/Label";
 import { Input } from "ui/form/Input";
-import clamp from "lib/helpers/clamp";
+import clamp from "shared/lib/helpers/clamp";
 import { VibratoWaveformPreview } from "./VibratoWaveformPreview";
 import styled from "styled-components";
 import { renderNote } from "./helpers";
