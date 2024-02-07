@@ -24,6 +24,7 @@ import {
   initEngineFields,
   engineFieldsEmitter,
 } from "lib/project/engineFields";
+import API from "renderer/lib/api";
 
 initElectronL10n();
 
@@ -174,6 +175,9 @@ const onZoom = (event, zoomType) => {
 const onWindowZoom = (event, zoomLevel) => {
   webFrame.setZoomLevel(zoomLevel);
 };
+API.settings.app.getUIScale().then((zoomLevel) => {
+  webFrame.setZoomLevel(zoomLevel);
+});
 
 const onRun = () => {
   store.dispatch(buildGameActions.buildGame());

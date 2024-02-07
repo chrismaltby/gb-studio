@@ -43,6 +43,14 @@ const APISetup = {
     set: (key: string, value: JsonValue) =>
       ipcRenderer.invoke("settings-set", key, value),
     delete: (key: string) => ipcRenderer.invoke("settings-delete", key),
+    app: {
+      setUIScale: (scale: number) => ipcRenderer.invoke("set-ui-scale", scale),
+      getUIScale: () => APISetup.settings.getNumber("zoomLevel", 0),
+      setTrackerKeyBindings: (value: number) =>
+        ipcRenderer.invoke("set-tracker-keybindings", value),
+      getTrackerKeyBindings: () =>
+        APISetup.settings.getNumber("trackerKeyBindings", 0),
+    },
   },
   dialog: {
     chooseDirectory: (): Promise<string | undefined> =>

@@ -9,7 +9,6 @@ import { Button } from "ui/buttons/Button";
 import { DotsIcon } from "ui/icons/Icons";
 import { FixedSpacer, FlexGrow } from "ui/spacing/Spacing";
 import { AppSelect } from "ui/form/AppSelect";
-import { ipcRenderer } from "electron";
 import { OptionLabelWithInfo, Select } from "ui/form/Select";
 import API from "renderer/lib/api";
 import l10n from "renderer/lib/l10n";
@@ -47,10 +46,8 @@ const Preferences = () => {
       setTmpPath(await API.paths.getTmpPath());
       setImageEditorPath(await API.settings.getString("imageEditorPath", ""));
       setMusicEditorPath(await API.settings.getString("musicEditorPath", ""));
-      setZoomLevel(await API.settings.getNumber("zoomLevel", 0));
-      setTrackerKeyBindings(
-        await API.settings.getNumber("trackerKeyBindings", 0)
-      );
+      setZoomLevel(await API.settings.app.getUIScale());
+      setTrackerKeyBindings(await API.settings.app.getTrackerKeyBindings());
     }
     fetchData();
   }, []);
@@ -90,14 +87,12 @@ const Preferences = () => {
 
   const onChangeZoomLevel = (zoomLevel: number) => {
     setZoomLevel(zoomLevel);
-    API.settings.set("zoomLevel", zoomLevel);
-    ipcRenderer.send("window-zoom", zoomLevel);
+    API.settings.app.setUIScale(zoomLevel);
   };
 
   const onChangeTrackerKeyBindings = (trackerKeyBindings: number) => {
     setTrackerKeyBindings(trackerKeyBindings);
-    API.settings.set("trackerKeyBindings", trackerKeyBindings);
-    ipcRenderer.send("keybindings-updated");
+    API.settings.app.setTrackerKeyBindings(trackerKeyBindings);
   };
 
   const onSelectTmpFolder = async () => {

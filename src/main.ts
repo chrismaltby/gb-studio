@@ -557,12 +557,14 @@ ipcMain.on("open-music", async (_event, sfx) => {
   createMusic(sfx);
 });
 
-ipcMain.on("window-zoom", (_, zoomType: number) => {
-  mainWindow && mainWindow.webContents.send("windowZoom", zoomType);
+ipcMain.handle("set-ui-scale", (_, scale: number) => {
+  settings.set("zoomLevel", scale);
+  mainWindow && mainWindow.webContents.send("windowZoom", scale);
 });
 
-ipcMain.on("keybindings-updated", (_, zoomType: number) => {
-  mainWindow && mainWindow.webContents.send("keybindings-update", zoomType);
+ipcMain.handle("set-tracker-keybindings", (_, value: number) => {
+  settings.set("trackerKeyBindings", value);
+  mainWindow && mainWindow.webContents.send("keybindings-update", value);
 });
 
 ipcMain.on("close-music", async () => {
