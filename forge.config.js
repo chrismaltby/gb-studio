@@ -86,7 +86,7 @@ module.exports = {
             },
             {
               html: "./src/app/preferences/preferences.html",
-              js: "./src/app/preferences/PreferencesRoot.js",
+              js: "./src/app/preferences/PreferencesRoot.tsx",
               preload: {
                 js: "./src/app/project/preload.ts",
               },
