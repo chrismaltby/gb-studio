@@ -1,0 +1,10 @@
+{
+  "entry": [
+    "src/main.{js,ts}",
+    "src/app/*/*Root.{js,jsx,ts,tsx}",
+    "src/app/*/preload.{js,ts}",
+    "src/bin/*.{js,ts}"
+  ],
+  "project": ["src/**/*.{js,ts,jsx,tsx}"],
+  "ignore": ["src/lib/events/**"]
+}
