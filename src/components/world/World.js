@@ -20,6 +20,7 @@ import {
 import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import entitiesActions from "store/features/entities/entitiesActions";
+import { sceneName } from "store/features/entities/entitiesHelpers";
 
 class World extends Component {
   constructor(props) {
@@ -439,10 +440,10 @@ function mapStateToProps(state) {
 
   const matchingScenes = searchTerm
     ? scenes.filter((scene, sceneIndex) => {
-        const sceneName = scenesLookup[scene].name || `Scene ${sceneIndex + 1}`;
+        const name = sceneName(scenesLookup[scene], sceneIndex);
         return (
           searchTerm === scene ||
-          sceneName.toUpperCase().indexOf(searchTerm.toUpperCase()) !== -1
+          name.toUpperCase().indexOf(searchTerm.toUpperCase()) !== -1
         );
       })
     : [];

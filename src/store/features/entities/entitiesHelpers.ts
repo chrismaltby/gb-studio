@@ -540,16 +540,23 @@ export const isCustomEventEqual = (
 };
 
 export const actorName = (actor: Actor, actorIndex: number) => {
-  return actor.name || `${l10n("ACTOR")} ${actorIndex + 1}`;
+  return actor.name || defaultLocalisedActorName(actorIndex);
 };
 
 export const triggerName = (trigger: Trigger, triggerIndex: number) => {
-  return trigger.name || `${l10n("TRIGGER")} ${triggerIndex + 1}`;
+  return trigger.name || defaultLocalisedTriggerName(triggerIndex);
 };
 
 export const sceneName = (scene: Scene, sceneIndex: number) => {
-  return scene.name || `${l10n("SCENE")} ${sceneIndex + 1}`;
+  return scene.name || defaultLocalisedSceneName(sceneIndex);
 };
+
+export const defaultLocalisedActorName = (actorIndex: number) =>
+  `${l10n("ACTOR")} ${actorIndex + 1}`;
+export const defaultLocalisedTriggerName = (triggerIndex: number) =>
+  `${l10n("TRIGGER")} ${triggerIndex + 1}`;
+export const defaultLocalisedSceneName = (sceneIndex: number) =>
+  `${l10n("SCENE")} ${sceneIndex + 1}`;
 
 export const customEventName = (
   customEvent: CustomEvent,

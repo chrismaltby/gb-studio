@@ -44,6 +44,7 @@ import { ActorSymbolsEditor } from "components/forms/symbols/ActorSymbolsEditor"
 import { SpriteSymbolsEditor } from "components/forms/symbols/SpriteSymbolsEditor";
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
+import { actorName } from "store/features/entities/entitiesHelpers";
 
 interface ActorEditorProps {
   id: string;
@@ -75,9 +76,6 @@ type ActorScriptKey =
   | "hit1Script"
   | "hit2Script"
   | "hit3Script";
-
-const actorName = (actor: Actor, actorIndex: number) =>
-  actor.name ? actor.name : `Actor ${actorIndex + 1}`;
 
 const defaultTabs = {
   interact: l10n("SIDEBAR_ON_INTERACT"),
