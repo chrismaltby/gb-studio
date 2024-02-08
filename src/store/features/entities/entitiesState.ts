@@ -84,6 +84,8 @@ import {
   upsertAssetEntity,
   updateEntitySymbol,
   isSlope,
+  sceneName,
+  defaultLocalisedSceneName,
 } from "./entitiesHelpers";
 import spriteActions from "../sprite/spriteActions";
 import { isVariableCustomEvent } from "lib/compiler/scriptBuilder";
@@ -642,7 +644,7 @@ const addScene: CaseReducer<
   const background = localBackgroundSelectors.selectById(state, backgroundId);
 
   const newScene: Scene = {
-    name: `Scene ${scenesTotal + 1}`,
+    name: defaultLocalisedSceneName(scenesTotal),
     backgroundId,
     width: Math.max(MIN_SCENE_WIDTH, background?.width || 0),
     height: Math.max(MIN_SCENE_HEIGHT, background?.height || 0),

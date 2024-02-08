@@ -14,6 +14,9 @@ import {
   scriptEventSelectors,
 } from "store/features/entities/entitiesState";
 import {
+  actorName,
+  sceneName,
+  triggerName,
   walkNormalisedActorEvents,
   walkNormalisedSceneSpecificEvents,
   walkNormalisedTriggerEvents,
@@ -47,7 +50,7 @@ class DialoguePage extends Component {
     const sortedScenes = scenes
       .map((scene, sceneIndex) => ({
         id: scene.id,
-        name: scene.name || `Scene ${sceneIndex + 1}`,
+        name: sceneName(scene, sceneIndex),
       }))
       .sort((a, b) =>
         a.name.localeCompare(b.name, undefined, {
@@ -111,11 +114,11 @@ class DialoguePage extends Component {
           </p>
         </PageHeader>
         <PageContent>
-          {sortedScenes.map((scene, sceneIndex) => (
+          {sortedScenes.map((scene) => (
             <DialogueReviewScene
               id={scene.id}
               key={scene.id}
-              sceneIndex={sceneIndex}
+              sceneIndex={scenes.findIndex((s) => s.id === scene.id)}
               open={openScenes.includes(scene.id)}
               onToggle={this.onToggleScene(scene.id)}
             />
@@ -154,8 +157,8 @@ function mapStateToProps(state) {
             entityType: "actor",
             entity: actor,
             entityIndex: actorIndex,
-            entityName: actor.name || `Actor ${actorIndex + 1}`,
-            sceneName: scene.name || `Scene ${sceneIndex + 1}`,
+            entityName: actorName(actor, actorIndex),
+            sceneName: sceneName(scene, sceneIndex),
             line: cmd,
           });
         }
@@ -174,8 +177,8 @@ function mapStateToProps(state) {
               entityType: "trigger",
               entity: trigger,
               entityIndex: triggerIndex,
-              entityName: trigger.name || `Trigger ${triggerIndex + 1}`,
-              sceneName: scene.name || `Scene ${sceneIndex + 1}`,
+              entityName: triggerName(trigger, triggerIndex),
+              sceneName: sceneName(scene, sceneIndex),
               line: cmd,
             });
           }
@@ -193,8 +196,8 @@ function mapStateToProps(state) {
             entityType: "scene",
             entity: scene,
             entityIndex: sceneIndex,
-            entityName: scene.name,
-            sceneName: scene.name,
+            entityName: sceneName(scene, sceneIndex),
+            sceneName: sceneName(scene, sceneIndex),
             line: cmd,
           });
         }

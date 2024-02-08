@@ -19,6 +19,9 @@ import navigationActions from "store/features/navigation/navigationActions";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import {
+  actorName,
+  sceneName,
+  triggerName,
   walkNormalisedActorEvents,
   walkNormalisedSceneSpecificEvents,
   walkNormalisedTriggerEvents,
@@ -59,7 +62,7 @@ class DialogueReviewScene extends Component {
         <div className="DialogueReviewScene__SceneName">
           <h2 onClick={onToggle}>
             <ArrowIcon />
-            {scene.name || `Scene ${sceneIndex + 1}`}
+            {sceneName(scene, sceneIndex)}
           </h2>
           <Button small onClick={this.onSearch}>
             <SearchIcon />
@@ -119,8 +122,8 @@ function mapStateToProps(state, props) {
           entityType: "actor",
           entity: actor,
           entityIndex: actorIndex,
-          entityName: actor.name || `Actor ${actorIndex + 1}`,
-          sceneName: scene.name || `Scene ${sceneIndex + 1}`,
+          entityName: actorName(actor, actorIndex),
+          sceneName: sceneName(scene, sceneIndex),
           line: cmd,
         });
       }
@@ -139,8 +142,8 @@ function mapStateToProps(state, props) {
             entityType: "trigger",
             entity: trigger,
             entityIndex: triggerIndex,
-            entityName: trigger.name || `Trigger ${triggerIndex + 1}`,
-            sceneName: scene.name || `Scene ${sceneIndex + 1}`,
+            entityName: triggerName(trigger, triggerIndex),
+            sceneName: sceneName(scene, sceneIndex),
             line: cmd,
           });
         }
@@ -158,8 +161,8 @@ function mapStateToProps(state, props) {
           entityType: "scene",
           entity: scene,
           entityIndex: sceneIndex,
-          entityName: scene.name,
-          sceneName: scene.name,
+          entityName: sceneName(scene, sceneIndex),
+          sceneName: sceneName(scene, sceneIndex),
           line: cmd,
         });
       }

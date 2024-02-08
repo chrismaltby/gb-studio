@@ -21,7 +21,10 @@ import {
 import styled, { css } from "styled-components";
 import { TooltipWrapper } from "ui/tooltips/Tooltip";
 import l10n from "lib/helpers/l10n";
-import { walkNormalisedSceneEvents } from "store/features/entities/entitiesHelpers";
+import {
+  actorName,
+  walkNormalisedSceneEvents,
+} from "store/features/entities/entitiesHelpers";
 import { SpriteSheet } from "store/features/entities/entitiesTypes";
 import clamp from "shared/lib/helpers/clamp";
 import { useDebounce } from "ui/hooks/use-debounce";
@@ -325,10 +328,10 @@ const SceneInfo = () => {
             ) {
               const near = cachedCheckScreenAt(x, y);
               if (near > MAX_ONSCREEN) {
-                const actorName = actor.name || `Actor ${i + 1}`;
+                const name = actorName(actor, i);
                 console.log("TOO CLOSE");
                 newActorWarnings.push(
-                  l10n("WARNING_TOO_MANY_ONSCREEN_ACTORS", { actorName })
+                  l10n("WARNING_TOO_MANY_ONSCREEN_ACTORS", { actorName: name })
                 );
                 newActorWarnings.push(
                   l10n("WARNING_ONSCREEN_ACTORS_LIMIT", {

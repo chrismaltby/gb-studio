@@ -11,6 +11,11 @@ import editorActions from "store/features/editor/editorActions";
 import { Actor, Scene, Trigger } from "store/features/entities/entitiesTypes";
 import { EntityListItem } from "ui/lists/EntityListItem";
 import useToggleableList from "ui/hooks/use-toggleable-list";
+import {
+  actorName,
+  sceneName,
+  triggerName,
+} from "store/features/entities/entitiesHelpers";
 
 interface NavigatorScenesProps {
   height: number;
@@ -30,7 +35,7 @@ const sceneToNavigatorItem = (
 ): SceneNavigatorItem => ({
   id: scene.id,
   sceneId: scene.id,
-  name: scene.name ? scene.name : `Scene ${sceneIndex + 1}`,
+  name: sceneName(scene, sceneIndex),
   type: "scene",
   labelColor: scene.labelColor,
 });
@@ -41,7 +46,7 @@ const actorToNavigatorItem = (
 ): SceneNavigatorItem => ({
   id: actor.id,
   sceneId: scene.id,
-  name: actor.name ? actor.name : `Actor ${scene.actors.indexOf(actor.id) + 1}`,
+  name: actorName(actor, scene.actors.indexOf(actor.id)),
   type: "actor",
 });
 
@@ -51,9 +56,7 @@ const triggerToNavigatorItem = (
 ): SceneNavigatorItem => ({
   id: trigger.id,
   sceneId: scene.id,
-  name: trigger.name
-    ? trigger.name
-    : `Trigger ${scene.triggers.indexOf(trigger.id) + 1}`,
+  name: triggerName(trigger, scene.triggers.indexOf(trigger.id)),
   type: "trigger",
 });
 
