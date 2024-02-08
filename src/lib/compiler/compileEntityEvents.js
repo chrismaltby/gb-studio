@@ -33,13 +33,7 @@ const compileEntityEvents = (scriptSymbolName, input = [], options = {}) => {
     }),
   };
 
-  let hasInit = false;
-
-  const compileEventsWithScriptBuilder = (
-    scriptBuilder,
-    subInput = [],
-    isBranch = false
-  ) => {
+  const compileEventsWithScriptBuilder = (scriptBuilder, subInput = []) => {
     // eslint-disable-next-line global-require
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const events = require("../events").default;

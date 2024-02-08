@@ -9,9 +9,6 @@ import {
   toTileLookup,
 } from "../tiles/tileData";
 
-const MAX_SIZE = 9999999999;
-const MAX_TILESET_TILES = 16 * 12;
-
 const imageBuildCache = {};
 
 let lastOutput = null;

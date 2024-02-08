@@ -108,8 +108,6 @@ export const saveSongFile = createAsyncThunk<void, void>(
   }
 );
 
-const NUM_NOTES = 72;
-
 const trackerSlice = createSlice({
   name: "tracker",
   initialState,
@@ -303,7 +301,7 @@ const trackerSlice = createSlice({
           break;
       }
       const instrumentId = _action.payload.instrumentId;
-      const [row, col] = _action.payload.cell;
+      const [row, _col] = _action.payload.cell;
 
       const newSubPattern = [...instruments[instrumentId].subpattern];
       console.log(newSubPattern);

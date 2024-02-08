@@ -1256,9 +1256,7 @@ const compile = async (
       lock,
       scriptType
     ) => {
-      let entityCode = "";
       let scriptTypeCode = "interact";
-
       let scriptName = "script";
 
       if (entityType === "actor") {
@@ -1269,10 +1267,8 @@ const compile = async (
           hit2Script: "hit2",
           hit3Script: "hit3",
         };
-        entityCode = `a${entityIndex}`;
         scriptTypeCode = scriptLookup[scriptType] || scriptTypeCode;
       } else if (entityType === "trigger") {
-        entityCode = `t${entityIndex}`;
         scriptTypeCode = "interact";
       } else if (entityType === "scene") {
         const scriptLookup = {

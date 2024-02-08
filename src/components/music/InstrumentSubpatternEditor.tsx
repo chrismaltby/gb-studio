@@ -593,7 +593,7 @@ export const InstrumentSubpatternEditor = ({
   const handleWheel = useCallback((e: WheelEvent) => {
     if (e.ctrlKey) {
       e.preventDefault();
-      const delta = e.deltaY === 0 ? e.deltaX : e.deltaY;
+      const _delta = e.deltaY === 0 ? e.deltaX : e.deltaY;
       if (e.shiftKey) {
         // if (delta < 0) return transposeSelectedTrackerFields(1, true);
         // if (delta > 0) return transposeSelectedTrackerFields(-1, true);

@@ -70,7 +70,6 @@ interface EventOptGroup {
 
 const MENU_HEADER_HEIGHT = 68;
 const MENU_ITEM_HEIGHT = 25;
-const MENU_GROUP_HEIGHT = 25;
 
 const backgroundToOption = (background: Background): EventOption => {
   return {

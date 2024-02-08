@@ -200,7 +200,7 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
 
         pattern.push([note, instrument, effectcode, effectparam]);
       } else if (version >= 6) {
-        const [note, instrument, unused, effectcode] = new Int32Array(
+        const [note, instrument, _unused, effectcode] = new Int32Array(
           data.slice(offset, offset + 4 * 4)
         );
         offset += 4 * 4;

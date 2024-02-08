@@ -223,9 +223,6 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     }
 
     if (selectedBrush === BRUSH_SLOPE) {
-      const diffX = x - data.current.startX;
-      const diffY = y - data.current.startY;
-
       data.current.isDrawingSlope = true;
 
       const { endX, endY, slopeIncline } = calculateSlope(

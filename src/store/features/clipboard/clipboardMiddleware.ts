@@ -186,7 +186,6 @@ const generateTriggerInsertActions = (
   y: number
 ): AnyAction[] => {
   const actions: AnyAction[] = [];
-  const scriptEventIds = trigger.script;
   const addTriggerAction = entitiesActions.addTrigger({
     sceneId,
     x,
