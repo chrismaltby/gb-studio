@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import MusicViewer from "../assets/MusicViewer";
 import { musicSelectors } from "store/features/entities/entitiesState";
 import styled, { ThemeContext } from "styled-components";
 import { RootState } from "store/configureStore";
@@ -13,6 +12,7 @@ import {
   modFilter,
   NavigatorModSongs,
 } from "components/music/NavigatorModSongs";
+import ModViewer from "components/music/ModViewer";
 
 const Wrapper = styled.div`
   display: flex;
@@ -117,7 +117,7 @@ const MusicPageMod = () => {
         }}
       >
         <div style={{ flexGrow: 1, position: "relative" }}>
-          {track && <MusicViewer file={track} />}
+          <ModViewer trackId={track?.id || ""} />
         </div>
       </div>
     </Wrapper>
