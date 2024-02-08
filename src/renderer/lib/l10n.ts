@@ -38,7 +38,7 @@ const l10n = (key: string, params?: L10NParams): string => {
       `L10N used in renderer before initialisation for key "${key}"`
     );
   }
-  const l10nString = l10nStrings[key] || key;
+  const l10nString = l10nStrings[key] ?? key;
   if (typeof l10nString === "string") {
     if (params) {
       return replaceParams(l10nString, params);
