@@ -586,6 +586,11 @@ export const SplashProjectWrapper = styled.button`
     background: ${(props) => props.theme.colors.input.activeBackground};
   }
 
+  :focus {
+    background: transparent;
+    box-shadow: inset 0 0 0px 2px #c92c61;
+  }
+
   :last-child {
     margin-bottom: 0;
   }

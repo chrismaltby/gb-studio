@@ -236,7 +236,10 @@ export const Splash = () => {
         <SplashSidebar>
           <SplashLogo>
             <img src={logoFile} alt="GB Studio" />
-            <SplashEasterEggButton onClick={() => setOpenCredits(true)} />
+            <SplashEasterEggButton
+              onClick={() => setOpenCredits(true)}
+              tabIndex={-1}
+            />
           </SplashLogo>
           <SplashAppTitle />
           <SplashTab
