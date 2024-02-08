@@ -103,7 +103,9 @@ export const initEngineFields = async (projectRoot: string) => {
     if (await pathExists(englinePluginJsonPath)) {
       try {
         const pluginEngine = await readJSON(englinePluginJsonPath);
-        fields = fields.concat(pluginEngine.fields);
+        if (pluginEngine.fields && pluginEngine.fields.length > 0) {
+          fields = fields.concat(pluginEngine.fields);
+        }
       } catch (e) {
         console.warn(e);
       }
