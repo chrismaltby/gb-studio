@@ -5,12 +5,12 @@ import soundfxActions from "../soundfx/soundfxActions";
 import navigationActions from "../navigation/navigationActions";
 import actions from "./musicActions";
 import { musicSelectors } from "../entities/entitiesState";
-import { assetFilename } from "lib/helpers/gbstudio";
 import { MusicSettings } from "../entities/entitiesTypes";
 import { ipcRenderer } from "electron";
 import { readFile } from "fs-extra";
 import { loadUGESong } from "lib/helpers/uge/ugeHelper";
 import toArrayBuffer from "lib/helpers/toArrayBuffer";
+import { assetFilename } from "shared/lib/helpers/assets";
 
 let modPlayer: ScripTracker;
 

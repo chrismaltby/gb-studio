@@ -5,7 +5,6 @@ import cloneDeep from "lodash/cloneDeep";
 import {
   ProjectEntitiesData,
   EntitiesState,
-  Asset,
   SpriteSheet,
   Metasprite,
   MetaspriteTile,
@@ -48,6 +47,7 @@ import l10n from "lib/helpers/l10n";
 import { genSymbol, toValidSymbol } from "lib/helpers/symbols";
 import parseAssetPath from "lib/helpers/path/parseAssetPath";
 import { COLLISION_SLOPE_VALUES } from "consts";
+import { Asset } from "shared/lib/helpers/assets";
 
 export interface NormalisedEntities {
   scenes: Record<EntityId, Scene>;

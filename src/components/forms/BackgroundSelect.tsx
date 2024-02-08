@@ -1,7 +1,6 @@
 import React, { FC, useState, useEffect } from "react";
 import uniq from "lodash/uniq";
 import { useSelector } from "react-redux";
-import { assetFilename } from "lib/helpers/gbstudio";
 import { backgroundSelectors } from "store/features/entities/entitiesState";
 import {
   OptGroup,
@@ -14,6 +13,7 @@ import {
 import { Background } from "store/features/entities/entitiesTypes";
 import { RootState } from "store/configureStore";
 import styled from "styled-components";
+import { assetFilename } from "shared/lib/helpers/assets";
 
 interface BackgroundSelectProps extends SelectCommonProps {
   name: string;
@@ -91,18 +91,19 @@ export const BackgroundSelect: FC<BackgroundSelectProps> = ({
       options={options}
       onChange={onSelectChange}
       formatOptionLabel={(option: Option) => {
+        const background = backgroundsLookup[option.value];
         return (
           <OptionLabelWithPreview
             preview={
               <Thumbnail
                 style={{
                   backgroundImage:
-                    backgroundsLookup[option.value] &&
+                    background &&
                     `url("file://${assetFilename(
                       projectRoot,
                       "backgrounds",
-                      backgroundsLookup[option.value]
-                    )}?_v=${backgroundsLookup[option.value]?._v}")`,
+                      background
+                    )}?_v=${background?._v}")`,
                 }}
               />
             }

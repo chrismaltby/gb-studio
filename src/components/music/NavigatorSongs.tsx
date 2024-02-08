@@ -20,10 +20,10 @@ import useSplitPane from "ui/hooks/use-split-pane";
 import styled from "styled-components";
 import { SplitPaneVerticalDivider } from "ui/splitpane/SplitPaneDivider";
 import { NoSongsMessage } from "./NoSongsMessage";
-import { assetFilename } from "lib/helpers/gbstudio";
 import { addNewSongFile } from "store/features/trackerDocument/trackerDocumentState";
 import trackerActions from "store/features/tracker/trackerActions";
 import settings from "electron-settings";
+import { assetFilename } from "shared/lib/helpers/assets";
 
 const COLLAPSED_SIZE = 30;
 

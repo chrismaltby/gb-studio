@@ -12,13 +12,13 @@ import musicActions from "../music/musicActions";
 import navigationActions from "../navigation/navigationActions";
 import actions from "./soundfxActions";
 import { soundSelectors } from "../entities/entitiesState";
-import { assetFilename } from "lib/helpers/gbstudio";
 import { ipcRenderer } from "electron";
 import { compileWav } from "lib/compiler/sounds/compileWav";
 import { Sound } from "../entities/entitiesTypes";
 import { compileVGM } from "lib/compiler/sounds/compileVGM";
 import { CompileSoundOptions } from "lib/compiler/sounds/compileSound";
 import { compileFXHammerSingle } from "lib/compiler/sounds/compileFXHammer";
+import { assetFilename } from "shared/lib/helpers/assets";
 
 let oscillator: OscillatorNode | undefined = undefined;
 let bufferSource: AudioBufferSourceNode | undefined = undefined;

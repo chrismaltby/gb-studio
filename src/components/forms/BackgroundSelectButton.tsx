@@ -1,7 +1,6 @@
 import React, { FC, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled, { css } from "styled-components";
-import { assetFilename } from "lib/helpers/gbstudio";
 import l10n from "lib/helpers/l10n";
 import { RootState } from "store/configureStore";
 import { backgroundSelectors } from "store/features/entities/entitiesState";
@@ -9,6 +8,7 @@ import assetsActions from "store/features/assets/assetsActions";
 import { SelectMenu, selectMenuStyleProps } from "ui/form/Select";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import { BackgroundSelect } from "./BackgroundSelect";
+import { assetFilename } from "shared/lib/helpers/assets";
 
 interface BackgroundSelectProps {
   name: string;

@@ -43,17 +43,3 @@ export const directionToFrame = (direction, numFrames) => {
   }
   return frames * 2;
 };
-
-export const assetFilename = (projectRoot, assetType, asset) => {
-  return (
-    asset.plugin
-      ? Path.join(
-          projectRoot,
-          "plugins",
-          asset.plugin,
-          assetType,
-          asset.filename
-        )
-      : Path.join(projectRoot, "assets", assetType, asset.filename)
-  ).replace(/\\/g, "/");
-};

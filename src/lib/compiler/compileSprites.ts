@@ -1,5 +1,4 @@
 import promiseLimit from "../helpers/promiseLimit2";
-import { assetFilename } from "../helpers/gbstudio";
 import {
   optimiseTiles,
   indexedImageTo2bppSpriteData,
@@ -14,6 +13,7 @@ import {
   SpriteAnimationType,
 } from "store/features/entities/entitiesTypes";
 import { IndexedImage } from "../tiles/indexedImage";
+import { assetFilename } from "shared/lib/helpers/assets";
 
 const S_PALETTE = 0x10;
 const S_FLIPX = 0x20;

@@ -12,7 +12,6 @@ import {
   BackgroundShape,
   PaletteShape,
 } from "store/stateShape";
-import { assetFilename } from "lib/helpers/gbstudio";
 import SceneCursor from "./SceneCursor";
 import ColorizedImage from "./ColorizedImage";
 import {
@@ -36,6 +35,7 @@ import ScenePriorityMap from "./ScenePriorityMap";
 import SceneSlopePreview from "./SceneSlopePreview";
 import { SceneEventHelper } from "./SceneEventHelper";
 import { sceneName } from "store/features/entities/entitiesHelpers";
+import { assetFilename } from "shared/lib/helpers/assets";
 
 const TILE_SIZE = 8;
 

@@ -1,4 +1,4 @@
-import { assetFilename } from "../helpers/gbstudio";
+import { assetFilename } from "shared/lib/helpers/assets";
 import getFileModifiedTime from "../helpers/fs/getModifiedTime";
 import { getBackgroundInfo } from "../helpers/validation";
 import {

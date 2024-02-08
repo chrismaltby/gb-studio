@@ -19,7 +19,6 @@ import editorActions from "store/features/editor/editorActions";
 import { NavigatorSongs } from "../music/NavigatorSongs";
 import { SongTracker } from "../music/SongTracker";
 import { musicSelectors } from "store/features/entities/entitiesState";
-import { assetFilename } from "lib/helpers/gbstudio";
 import { SongEditor } from "../music/SongEditor";
 import SongEditorToolsPanel from "../music/SongEditorToolsPanel";
 import SongEditorRightToolsPanel from "../music/SongEditorRightToolsPanel";
@@ -30,6 +29,7 @@ import l10n from "lib/helpers/l10n";
 import { clampSidebarWidth } from "lib/helpers/window/sidebar";
 import { UgePlayer } from "components/music/UgePlayer";
 import trackerActions from "store/features/tracker/trackerActions";
+import { assetFilename } from "shared/lib/helpers/assets";
 
 const Wrapper = styled.div`
   display: flex;

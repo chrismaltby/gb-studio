@@ -8,7 +8,6 @@ import {
   SpriteSheet,
   SpriteState,
 } from "store/features/entities/entitiesTypes";
-import { assetFilename } from "../helpers/gbstudio";
 import DetectSpriteWorker, { DetectSpriteResult } from "./detectSprite.worker";
 import {
   Position,
@@ -17,6 +16,7 @@ import {
   SpriteCluster,
   SpriteTileLocation,
 } from "./spriteData";
+import { assetFilename } from "shared/lib/helpers/assets";
 
 interface DetectedSprite {
   spriteSheetId: string;

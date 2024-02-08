@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { assetFilename } from "lib/helpers/gbstudio";
 import { RootState } from "store/configureStore";
 import { SpriteTileSelection } from "store/features/editor/editorState";
 import { spriteSheetSelectors } from "store/features/entities/entitiesState";
@@ -10,6 +9,7 @@ import { roundDown8 } from "lib/helpers/8bit";
 import styled from "styled-components";
 import l10n from "lib/helpers/l10n";
 import electronActions from "store/features/electron/electronActions";
+import { assetFilename } from "shared/lib/helpers/assets";
 
 const PillWrapper = styled.div`
   position: absolute;

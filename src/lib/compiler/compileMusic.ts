@@ -1,10 +1,10 @@
 import childProcess from "child_process";
 import Path from "path";
 import { checksumFile, checksumString } from "../helpers/checksum";
-import { assetFilename } from "../helpers/gbstudio";
 import { readFile, ensureDir, pathExists, writeFile, unlink } from "fs-extra";
 import ensureBuildTools from "./ensureBuildTools";
 import { exportToC, loadUGESong } from "../helpers/uge/ugeHelper";
+import { assetFilename } from "shared/lib/helpers/assets";
 
 export interface PrecompiledMusicTrack {
   id: string;
