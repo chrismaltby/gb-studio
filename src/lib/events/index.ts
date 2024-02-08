@@ -5,7 +5,7 @@ import {
   engineFieldsEmitter,
   EngineFieldSyncResult,
 } from "lib/project/engineFields";
-import { eventsRoot } from "../../consts";
+import { eventsRoot } from "consts";
 import * as l10n from "../helpers/l10n";
 import * as eventHelpers from "./helpers";
 import * as gbStudioHelpers from "../helpers/gbstudio";

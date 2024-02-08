@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { DMG_PALETTE } from "../../consts";
+import { DMG_PALETTE } from "consts";
 import { assetFilename } from "lib/helpers/gbstudio";
 import { RootState } from "store/configureStore";
 import { emoteSelectors } from "store/features/entities/entitiesState";

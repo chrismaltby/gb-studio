@@ -2,7 +2,7 @@ import fs from "fs-extra";
 import rimraf from "rimraf";
 import { promisify } from "util";
 import Path from "path";
-import { engineRoot } from "../../consts";
+import { engineRoot } from "consts";
 import copy from "../helpers/fsCopy";
 import ejectEngineChangelog from "../project/ejectEngineChangelog";
 import l10n from "../helpers/l10n";

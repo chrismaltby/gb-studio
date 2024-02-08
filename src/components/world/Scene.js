@@ -22,7 +22,7 @@ import {
   DMG_PALETTE,
   MIDDLE_MOUSE,
   TILE_COLOR_PROP_PRIORITY,
-} from "../../consts";
+} from "consts";
 import { getCachedObject } from "lib/helpers/cache";
 import SceneInfo from "./SceneInfo";
 import {

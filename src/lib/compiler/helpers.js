@@ -1,4 +1,4 @@
-import { SPRITE_TYPE_STATIC } from "../../consts";
+import { SPRITE_TYPE_STATIC } from "consts";
 
 const DIR_LOOKUP = {
   down: 1,

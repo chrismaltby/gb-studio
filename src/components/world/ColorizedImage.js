@@ -4,7 +4,7 @@ import debounce from "lodash/debounce";
 // eslint-disable-next-line import/no-unresolved
 import ColorizedImageWorker from "./ColorizedImage.worker";
 import { PaletteShape } from "store/stateShape";
-import { DMG_PALETTE } from "../../consts";
+import { DMG_PALETTE } from "consts";
 
 const workerPool = [];
 for (let i = 0; i < navigator.hardwareConcurrency; i++) {

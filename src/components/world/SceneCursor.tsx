@@ -31,7 +31,7 @@ import {
   TILE_COLOR_PROPS,
   TILE_COLOR_PALETTE,
   BRUSH_SLOPE,
-} from "../../consts";
+} from "consts";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import { RootState } from "store/configureStore";
 import { calculateSlope } from "lib/helpers/slope";

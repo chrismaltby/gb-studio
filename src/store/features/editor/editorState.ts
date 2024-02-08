@@ -12,7 +12,7 @@ import {
   DRAG_DESTINATION,
   DRAG_PLAYER,
   BRUSH_SLOPE,
-} from "../../../consts";
+} from "consts";
 import { zoomIn, zoomOut } from "lib/helpers/zoom";
 import { Actor, Trigger, SceneData, Variable } from "../entities/entitiesTypes";
 import navigationActions from "../navigation/navigationActions";

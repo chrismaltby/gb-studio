@@ -17,7 +17,7 @@ import {
   NoiseInstrument,
   WaveInstrument,
 } from "./trackerDocumentTypes";
-import { projectTemplatesRoot } from "../../../consts";
+import { projectTemplatesRoot } from "consts";
 import copy from "lib/helpers/fsCopy";
 import { SubPatternCell } from "lib/helpers/uge/song/SubPatternCell";
 import { InstrumentType } from "../editor/editorState";

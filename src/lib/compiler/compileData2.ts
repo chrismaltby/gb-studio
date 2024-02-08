@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import { Dictionary } from "@reduxjs/toolkit";
 import flatten from "lodash/flatten";
-import { SCREEN_WIDTH } from "../../consts";
+import { SCREEN_WIDTH } from "consts";
 import {
   Actor,
   SceneParallaxLayer,

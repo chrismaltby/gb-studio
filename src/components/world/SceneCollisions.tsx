@@ -13,7 +13,7 @@ import {
   COLLISION_SLOPE_45_LEFT,
   COLLISION_SLOPE_22_LEFT_TOP,
   COLLISION_SLOPE_22_LEFT_BOT,
-} from "../../consts";
+} from "consts";
 
 const TILE_SIZE = 8;
 

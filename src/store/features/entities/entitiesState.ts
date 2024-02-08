@@ -28,7 +28,7 @@ import {
   COLLISION_BOTTOM,
   COLLISION_RIGHT,
   COLLISION_LEFT,
-} from "../../../consts";
+} from "consts";
 import {
   isActorField,
   isVariableField,

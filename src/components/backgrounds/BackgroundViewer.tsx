@@ -9,7 +9,7 @@ import {
 } from "store/features/entities/entitiesState";
 import ColorizedImage from "components/world/ColorizedImage";
 import { assetFilename } from "lib/helpers/gbstudio";
-import { DMG_PALETTE } from "../../consts";
+import { DMG_PALETTE } from "consts";
 import { Palette } from "store/features/entities/entitiesTypes";
 
 interface MetaspriteEditorProps {

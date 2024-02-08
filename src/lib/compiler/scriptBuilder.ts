@@ -33,7 +33,7 @@ import {
   PrecompiledSprite,
   PrecompiledEmote,
 } from "./compileData2";
-import { DMG_PALETTE } from "../../consts";
+import { DMG_PALETTE } from "consts";
 import {
   isPropertyField,
   isVariableField,

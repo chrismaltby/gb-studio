@@ -1,7 +1,7 @@
 import fs from "fs";
 import glob from "glob";
 import Path from "path";
-import { localesRoot } from "../../consts";
+import { localesRoot } from "consts";
 
 interface EncodingData {
   name: string;

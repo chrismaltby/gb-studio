@@ -6,7 +6,7 @@ import {
   MAX_TRIGGERS,
   SCREEN_HEIGHT,
   SCREEN_WIDTH,
-} from "../../consts";
+} from "consts";
 import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "store/configureStore";

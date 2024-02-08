@@ -42,7 +42,7 @@ import {
   COLLISION_SLOPE_22_LEFT_TOP,
   COLLISION_SLOPE_VALUES,
   BRUSH_SLOPE,
-} from "../../consts";
+} from "consts";
 import PaletteBlock from "../library/PaletteBlock";
 import Modal, { ModalFade, ModalContent } from "../library/Modal";
 import { FormField } from "../library/Forms";

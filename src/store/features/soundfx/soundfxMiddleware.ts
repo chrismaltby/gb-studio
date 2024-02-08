@@ -5,7 +5,7 @@ import {
   stopBuffer,
   decodeAudioData,
 } from "lib/soundfx/soundfx";
-import { assetsRoot } from "../../../consts";
+import { assetsRoot } from "consts";
 import { Dispatch, Middleware } from "@reduxjs/toolkit";
 import { RootState } from "store/configureStore";
 import musicActions from "../music/musicActions";
