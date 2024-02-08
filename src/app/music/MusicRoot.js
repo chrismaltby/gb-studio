@@ -1,5 +1,5 @@
 import { ipcRenderer } from "electron";
-import player from "components/music/helpers/player.ts";
+import player from "components/music/helpers/player";
 import { playNotePreview } from "components/music/helpers/notePreview";
 
 const log = (log) => {
