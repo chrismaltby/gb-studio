@@ -7,7 +7,7 @@ import {
   tilemapSymbol,
   tilemapAttrSymbol,
 } from "shared/lib/helpers/symbols";
-import { addBankRef, AssetReference } from "../ReferencesSelect";
+import { addBankRef, AssetReference } from "components/forms/ReferencesSelect";
 
 interface BackgroundSymbolsEditorProps {
   id: string;

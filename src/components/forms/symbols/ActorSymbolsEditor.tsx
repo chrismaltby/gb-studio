@@ -6,7 +6,7 @@ import {
   interactScriptSymbol,
   updateScriptSymbol,
 } from "shared/lib/helpers/symbols";
-import { addBankRef, AssetReference } from "../ReferencesSelect";
+import { addBankRef, AssetReference } from "components/forms/ReferencesSelect";
 
 interface ActorSymbolsEditorProps {
   id: string;

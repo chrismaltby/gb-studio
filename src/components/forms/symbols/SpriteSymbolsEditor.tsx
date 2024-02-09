@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { spriteSheetSelectors } from "store/features/entities/entitiesState";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { tilesetSymbol } from "shared/lib/helpers/symbols";
-import { addBankRef, AssetReference } from "../ReferencesSelect";
+import { addBankRef, AssetReference } from "components/forms/ReferencesSelect";
 
 interface SpriteSymbolsEditorProps {
   id: string;
