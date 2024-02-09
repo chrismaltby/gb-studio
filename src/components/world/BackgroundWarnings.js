@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import Alert, { AlertItem } from "../library/Alert";
+import Alert, { AlertItem } from "components/library/Alert";
 import assetsActions from "store/features/assets/assetsActions";
 import { backgroundSelectors } from "store/features/entities/entitiesState";
 

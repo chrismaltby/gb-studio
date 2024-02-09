@@ -13,7 +13,7 @@ import {
 } from "store/features/entities/entitiesTypes";
 import { SelectMenu, selectMenuStyleProps } from "ui/form/Select";
 import { RelativePortal } from "ui/layout/RelativePortal";
-import SpriteSheetCanvas from "../world/SpriteSheetCanvas";
+import SpriteSheetCanvas from "components/world/SpriteSheetCanvas";
 import { SpriteSheetSelect } from "./SpriteSheetSelect";
 
 interface SpriteSheetSelectProps {

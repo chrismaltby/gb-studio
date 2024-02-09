@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import Solver from "3x3-equation-solver";
 import cx from "classnames";
 import l10n from "renderer/lib/l10n";
-import { FormField } from "../library/Forms";
+import { FormField } from "components/library/Forms";
 import ColorSlider from "./ColorSlider";
 import { paletteSelectors } from "store/features/entities/entitiesState";
 import entitiesActions from "store/features/entities/entitiesActions";

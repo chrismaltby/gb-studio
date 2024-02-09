@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import PageHeader from "../library/PageHeader";
-import PageContent from "../library/PageContent";
+import PageHeader from "components/library/PageHeader";
+import PageContent from "components/library/PageContent";
 import { EVENT_TEXT } from "lib/compiler/eventTypes";
 import l10n from "renderer/lib/l10n";
 import { SceneShape, ActorShape, EventShape } from "store/stateShape";

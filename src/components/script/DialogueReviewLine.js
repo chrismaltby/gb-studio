@@ -1,7 +1,7 @@
 /* eslint-disable react/no-array-index-key */
 import React from "react";
 import PropTypes from "prop-types";
-import { Textarea } from "../library/Forms";
+import { Textarea } from "components/library/Forms";
 import { textNumLines } from "lib/helpers/trimlines";
 import l10n from "renderer/lib/l10n";
 import { SceneShape, ActorShape, EventShape } from "store/stateShape";

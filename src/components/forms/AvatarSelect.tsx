@@ -10,7 +10,7 @@ import {
   SingleValueWithPreview,
   SelectCommonProps,
 } from "ui/form/Select";
-import { AvatarCanvas } from "../world/AvatarCanvas";
+import { AvatarCanvas } from "components/world/AvatarCanvas";
 
 interface AvatarSelectProps extends SelectCommonProps {
   name: string;

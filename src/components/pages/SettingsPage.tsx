@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Path from "path";
-import { FormField } from "../library/Forms";
+import { FormField } from "components/library/Forms";
 import l10n from "renderer/lib/l10n";
 import castEventValue from "renderer/lib/helpers/castEventValue";
 import CustomControlsPicker from "../forms/CustomControlsPicker";

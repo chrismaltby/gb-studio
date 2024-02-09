@@ -43,9 +43,9 @@ import {
   COLLISION_SLOPE_VALUES,
   BRUSH_SLOPE,
 } from "consts";
-import PaletteBlock from "../library/PaletteBlock";
-import Modal, { ModalFade, ModalContent } from "../library/Modal";
-import { FormField } from "../library/Forms";
+import PaletteBlock from "components/library/PaletteBlock";
+import Modal, { ModalFade, ModalContent } from "components/library/Modal";
+import { FormField } from "components/library/Forms";
 import editorActions from "store/features/editor/editorActions";
 import {
   backgroundSelectors,
