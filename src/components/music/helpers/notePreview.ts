@@ -26,7 +26,7 @@ import {
   NR23,
   NR24,
   AUD3_WAVE_RAM,
-} from "../constants";
+} from "components/music/constants";
 
 let previewTimeoutId: number | null = null;
 

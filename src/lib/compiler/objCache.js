@@ -2,7 +2,7 @@ import glob from "glob";
 import Path from "path";
 import { promisify } from "util";
 import { ensureDir, copyFile, readFile, pathExists } from "fs-extra";
-import { checksumString } from "../helpers/checksum";
+import { checksumString } from "lib/helpers/checksum";
 
 const globAsync = promisify(glob);
 

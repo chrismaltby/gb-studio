@@ -9,7 +9,7 @@ import {
   readFileToIndexedImage,
   sliceIndexedImage,
   toIndex,
-} from "../tiles/indexedImage";
+} from "lib/tiles/indexedImage";
 
 const TILE_SIZE = 8;
 

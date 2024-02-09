@@ -4,7 +4,7 @@ import settings from "electron-settings";
 import semverValid from "semver/functions/valid";
 import semverGt from "semver/functions/gt";
 import { LATEST_PROJECT_VERSION } from "./migrateProject";
-import l10n from "../helpers/l10n";
+import l10n from "lib/helpers/l10n";
 
 const dialog = remote && remote.dialog;
 

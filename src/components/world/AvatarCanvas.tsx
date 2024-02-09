@@ -5,7 +5,7 @@ import { RootState } from "store/configureStore";
 import { avatarSelectors } from "store/features/entities/entitiesState";
 import SpriteSliceCanvasWorker, {
   SpriteSliceCanvasResult,
-} from "../sprites/preview/SpriteSliceCanvas.worker";
+} from "components/sprites/preview/SpriteSliceCanvas.worker";
 import { assetFilename } from "shared/lib/helpers/assets";
 
 interface AvatarCanvasProps {

@@ -7,7 +7,7 @@ import {
   SceneParallaxLayer,
   Trigger,
 } from "store/features/entities/entitiesTypes";
-import { FontData } from "../fonts/fontData";
+import { FontData } from "lib/fonts/fontData";
 import { decHex32Val, hexDec, wrap8Bit } from "shared/lib/helpers/8bit";
 import { PrecompiledSpriteSheetData } from "./compileSprites";
 import { dirEnum } from "./helpers";

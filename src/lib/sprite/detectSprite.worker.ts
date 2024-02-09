@@ -1,4 +1,4 @@
-import { imageToIndexedImage } from "../tiles/indexedImage";
+import { imageToIndexedImage } from "lib/tiles/indexedImage";
 import {
   indexedImageToSprites,
   spriteAlignmentOffsets,

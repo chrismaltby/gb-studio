@@ -1,6 +1,6 @@
 import electron from "electron";
-import { AssetFolder } from "../../project/assets";
-import l10n from "../../helpers/l10n";
+import { AssetFolder } from "lib/project/assets";
+import l10n from "lib/helpers/l10n";
 
 const dialog = electron.remote ? electron.remote.dialog : electron.dialog;
 

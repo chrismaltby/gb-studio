@@ -1,18 +1,18 @@
-import promiseLimit from "../helpers/promiseLimit2";
+import promiseLimit from "lib/helpers/promiseLimit2";
 import {
   optimiseTiles,
   indexedImageTo2bppSpriteData,
-} from "../sprite/spriteData";
+} from "lib/sprite/spriteData";
 import {
   animationMapBySpriteType,
   toEngineOrder,
-} from "../../components/sprites/helpers";
+} from "components/sprites/helpers";
 import {
   MetaspriteTile,
   ObjPalette,
   SpriteAnimationType,
 } from "store/features/entities/entitiesTypes";
-import { IndexedImage } from "../tiles/indexedImage";
+import { IndexedImage } from "lib/tiles/indexedImage";
 import { assetFilename } from "shared/lib/helpers/assets";
 
 const S_PALETTE = 0x10;

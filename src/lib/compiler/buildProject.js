@@ -3,7 +3,7 @@ import compile from "./compileData";
 import ejectBuild from "./ejectBuild";
 import makeBuild from "./makeBuild";
 import { binjgbRoot } from "consts";
-import copy from "../helpers/fsCopy";
+import copy from "lib/helpers/fsCopy";
 
 const buildProject = async (
   data,

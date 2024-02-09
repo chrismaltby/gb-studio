@@ -5,7 +5,7 @@ import {
   readFileToIndexedImage,
   sliceIndexedImage,
   toIndex,
-} from "../tiles/indexedImage";
+} from "lib/tiles/indexedImage";
 
 export type AssetFolder = "backgrounds" | "fonts" | "music" | "sprites";
 

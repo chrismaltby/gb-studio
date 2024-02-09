@@ -48,9 +48,9 @@ import {
   ClipboardTypeSpriteState,
 } from "store/features/clipboard/clipboardTypes";
 import { CheckboxField } from "ui/form/CheckboxField";
-import { AnimationTypeSelect } from "../forms/AnimationTypeSelect";
-import { ObjPaletteSelect } from "../forms/ObjPaletteSelect";
-import { PaletteIndexSelect } from "../forms/PaletteIndexSelect";
+import { AnimationTypeSelect } from "components/forms/AnimationTypeSelect";
+import { ObjPaletteSelect } from "components/forms/ObjPaletteSelect";
+import { PaletteIndexSelect } from "components/forms/PaletteIndexSelect";
 import AnimationStateSelect from "components/forms/AnimationStateSelect";
 import { SpriteSymbolsEditor } from "components/forms/symbols/SpriteSymbolsEditor";
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";

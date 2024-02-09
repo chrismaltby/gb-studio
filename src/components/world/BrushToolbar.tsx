@@ -55,7 +55,7 @@ import {
 import settingsActions from "store/features/settings/settingsActions";
 import navigationActions from "store/features/navigation/navigationActions";
 import entitiesActions from "store/features/entities/entitiesActions";
-import { PaletteSelect } from "../forms/PaletteSelect";
+import { PaletteSelect } from "components/forms/PaletteSelect";
 import { Brush } from "store/features/editor/editorState";
 import { RootState } from "store/configureStore";
 import { cloneDeep } from "lodash";

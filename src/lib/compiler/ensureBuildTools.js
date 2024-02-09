@@ -2,7 +2,7 @@ import fs from "fs-extra";
 import rimraf from "rimraf";
 import { promisify } from "util";
 import { buildToolsRoot } from "consts";
-import copy from "../helpers/fsCopy";
+import copy from "lib/helpers/fsCopy";
 
 const rmdir = promisify(rimraf);
 

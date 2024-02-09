@@ -1,16 +1,16 @@
 import glob from "glob";
 import fs from "fs";
-import plugins, { pluginEmitter } from "../plugins/plugins";
+import plugins, { pluginEmitter } from "lib/plugins/plugins";
 import {
   engineFieldsEmitter,
   EngineFieldSyncResult,
 } from "lib/project/engineFields";
 import { eventsRoot } from "consts";
-import * as l10n from "../helpers/l10n";
+import * as l10n from "lib/helpers/l10n";
 import * as eventHelpers from "./helpers";
-import * as gbStudioHelpers from "../helpers/gbstudio";
-import * as eventSystemHelpers from "../helpers/eventSystem";
-import * as compileEntityEvents from "../compiler/compileEntityEvents";
+import * as gbStudioHelpers from "lib/helpers/gbstudio";
+import * as eventSystemHelpers from "lib/helpers/eventSystem";
+import * as compileEntityEvents from "lib/compiler/compileEntityEvents";
 import trimLines from "shared/lib/helpers/trimlines";
 import { ScriptEventFieldSchema } from "store/features/entities/entitiesTypes";
 import { Dictionary } from "@reduxjs/toolkit";

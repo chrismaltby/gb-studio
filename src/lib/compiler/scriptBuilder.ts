@@ -1,7 +1,7 @@
 import { inputDec, textSpeedDec } from "./helpers";
 import { decBin, decHex, decOct, hexDec } from "shared/lib/helpers/8bit";
 import trimlines from "shared/lib/helpers/trimlines";
-import { is16BitCType } from "../helpers/engineFields";
+import { is16BitCType } from "lib/helpers/engineFields";
 import {
   globalVariableDefaultName,
   localVariableName,
@@ -26,7 +26,7 @@ import { FunctionSymbol, OperatorSymbol } from "shared/lib/rpn/types";
 import tokenize from "shared/lib/rpn/tokenizer";
 import shuntingYard from "shared/lib/rpn/shuntingYard";
 import { PrecompiledFontData } from "./compileFonts";
-import { encodeString } from "../helpers/encodings";
+import { encodeString } from "lib/helpers/encodings";
 import { PrecompiledMusicTrack } from "./compileMusic";
 import {
   PrecompiledScene,
@@ -39,7 +39,7 @@ import {
   isVariableField,
   isActorField,
   mapEvents,
-} from "../helpers/eventSystem";
+} from "lib/helpers/eventSystem";
 import compileEntityEvents from "./compileEntityEvents";
 import {
   isUnionPropertyValue,

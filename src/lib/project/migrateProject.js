@@ -1,5 +1,5 @@
 /* eslint-disable no-nested-ternary */
-import { indexBy } from "../helpers/array";
+import { indexBy } from "lib/helpers/array";
 import {
   mapScenesEvents,
   mapEvents,
@@ -8,11 +8,11 @@ import {
   walkScenesEvents,
   walkEvents,
   isVariableField,
-} from "../helpers/eventSystem";
-import generateRandomWalkScript from "../movement/generateRandomWalkScript";
-import generateRandomLookScript from "../movement/generateRandomLookScript";
+} from "lib/helpers/eventSystem";
+import generateRandomWalkScript from "lib/movement/generateRandomWalkScript";
+import generateRandomLookScript from "lib/movement/generateRandomLookScript";
 import { COLLISION_ALL, DMG_PALETTE } from "consts";
-import { EVENT_END } from "../compiler/eventTypes";
+import { EVENT_END } from "lib/compiler/eventTypes";
 import uuid from "uuid";
 import { copySync, chmodSync } from "fs-extra";
 import { projectTemplatesRoot } from "consts";
