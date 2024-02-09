@@ -16,6 +16,7 @@ import {
 import { Scene } from "store/features/entities/entitiesTypes";
 import { RootState } from "store/configureStore";
 import styled from "styled-components";
+import l10n from "renderer/lib/l10n";
 
 const TILE_SIZE = 8;
 

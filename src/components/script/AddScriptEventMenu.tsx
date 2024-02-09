@@ -8,7 +8,7 @@ import React, {
 import cloneDeep from "lodash/cloneDeep";
 import { OptGroup } from "ui/form/Select";
 import events, { EventHandler } from "lib/events";
-import l10n from "renderer/lib/l10n";
+import l10n, { L10NKey } from "renderer/lib/l10n";
 import styled, { css } from "styled-components";
 import { Menu, MenuGroup, MenuItem } from "ui/menu/Menu";
 import { CaretRightIcon, StarIcon } from "ui/icons/Icons";
@@ -179,7 +179,7 @@ const instanciateScriptEvent = (
 const eventToOption =
   (favorites: string[]) =>
   (event: EventHandler): EventOption => {
-    const localisedKey = l10n(event.id); //.replace(/[^:*]*:[ ]*/g, "");
+    const localisedKey = l10n(event.id as L10NKey); //.replace(/[^:*]*:[ ]*/g, "");
     const name =
       localisedKey !== event.id ? localisedKey : event.name || event.id;
 
@@ -192,7 +192,7 @@ const eventToOption =
       }
     }
 
-    const groupName = eventGroups.map((key) => l10n(key)).join(" ");
+    const groupName = eventGroups.map((key) => l10n(key as L10NKey)).join(" ");
 
     return {
       label: name,
@@ -531,7 +531,7 @@ const AddScriptEventMenu = ({
         }),
       groupKeys
         .map((key: string) => ({
-          label: key === "" ? l10n("EVENT_GROUP_MISC") : l10n(key),
+          label: key === "" ? l10n("EVENT_GROUP_MISC") : l10n(key as L10NKey),
           options: (groupedEvents[key] || [])
             .map(eventToOption(favoriteEvents))
             .sort(sortAlphabeticallyByLabel),

@@ -563,6 +563,7 @@
   "FIELD_COLLISION_LEFT": "Collision Left",
   "FIELD_COLLISION_RIGHT": "Collision Right",
   "FIELD_COLLISION_SPARE": "Spare {tile}",
+  "FIELD_COLLISION_LADDER": "Ladder",
   "FIELD_RESET_PALETTE": "Reset Palette",
   "FIELD_REMOVE_PALETTE": "Remove Palette",
   "FIELD_DEFAULT_BACKGROUND_PALETTES": "Default Background Palettes",
@@ -702,6 +703,7 @@
   "FIELD_SCRIPT_DESC": "A valid GBVM Script to execute.",
   "FIELD_VIEW_SLOPE_TILES": "View Slope Tiles",
   "FIELD_VIEW_EXTRA_TILES": "View Extra Tiles",
+  "FIELD_SOUNDS": "Sounds",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

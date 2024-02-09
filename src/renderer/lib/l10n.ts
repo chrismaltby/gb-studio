@@ -1,4 +1,5 @@
 import API from "./api";
+import en from "../../lang/en.json";
 
 interface L10NLookup {
   [key: string]: string | boolean | undefined;
@@ -7,6 +8,8 @@ interface L10NLookup {
 export interface L10NParams {
   [key: string]: string | number | undefined;
 }
+
+export type L10NKey = keyof typeof en;
 
 export const l10nStrings: L10NLookup = {};
 let hasInit = false;
@@ -32,7 +35,7 @@ export const replaceParams = (string: string, params: L10NParams) => {
   return outputString;
 };
 
-const l10n = (key: string, params?: L10NParams): string => {
+const l10n = (key: L10NKey, params?: L10NParams): string => {
   if (!hasInit && process.env.NODE_ENV !== "test") {
     console.warn(
       `L10N used in renderer before initialisation for key "${key}"`

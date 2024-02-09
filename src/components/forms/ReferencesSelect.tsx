@@ -261,7 +261,7 @@ export const ReferencesSelect = ({
             />
           ))}
           {soundRefs.length > 0 && (
-            <ReferenceSection>{l10n("FIELD_SOUNDS")}</ReferenceSection>
+            <ReferenceSection>{l10n("MENU_SFX")}</ReferenceSection>
           )}
           {soundRefs.map((ref) => (
             <AssetReference

@@ -26,7 +26,7 @@ import { SoundEffectSelect } from "components/forms/SoundEffectSelect";
 import { SpriteSheetSelect } from "components/forms/SpriteSheetSelect";
 import { VariableSelect } from "components/forms/VariableSelect";
 import castEventValue from "renderer/lib/helpers/castEventValue";
-import l10n from "renderer/lib/l10n";
+import l10n, { L10NKey } from "renderer/lib/l10n";
 import React, { useCallback, useContext } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "store/configureStore";
@@ -268,7 +268,7 @@ const ScriptEventFormInput = ({
   } else if (type === "select") {
     const options = (field.options || []).map(([value, label]) => ({
       value,
-      label: l10n(label),
+      label: l10n(label as L10NKey),
     }));
     const currentValue =
       options.find((o) =>

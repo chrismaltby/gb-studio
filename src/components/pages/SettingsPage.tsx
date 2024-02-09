@@ -8,7 +8,7 @@ import React, {
 import { useDispatch, useSelector } from "react-redux";
 import Path from "path";
 import { FormField } from "components/library/Forms";
-import l10n from "renderer/lib/l10n";
+import l10n, { L10NKey } from "renderer/lib/l10n";
 import castEventValue from "renderer/lib/helpers/castEventValue";
 import CustomControlsPicker from "components/forms/CustomControlsPicker";
 import { PaletteSelect } from "components/forms/PaletteSelect";
@@ -215,7 +215,7 @@ const SettingsPage: FC = () => {
                 key={group.name}
                 onClick={onMenuItem(`settings${group.name}`)}
               >
-                {l10n(group.name)}
+                {l10n(group.name as L10NKey)}
               </SettingsMenuItem>
             ))}
             <SettingsMenuItem onClick={onMenuItem("settingsControls")}>

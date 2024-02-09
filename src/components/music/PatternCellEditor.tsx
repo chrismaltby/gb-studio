@@ -5,7 +5,7 @@ import { FormField, FormRow, FormSectionTitle } from "ui/form/FormLayout";
 import { RootState } from "store/configureStore";
 import { PatternCell } from "renderer/lib/uge/song/PatternCell";
 import { Select, Option, OptionLabelWithInfo } from "ui/form/Select";
-import l10n from "renderer/lib/l10n";
+import l10n, { L10NKey } from "renderer/lib/l10n";
 import { SliderField } from "ui/form/SliderField";
 import { CheckboxField } from "ui/form/CheckboxField";
 import { Label } from "ui/form/Label";
@@ -500,7 +500,7 @@ export const PatternCellEditor = ({
         ) => {
           return (
             <CheckboxField
-              label={l10n(label)}
+              label={l10n(label as L10NKey)}
               name={name}
               checked={(effectparams[param] & value) === value}
               onChange={(e) => {
