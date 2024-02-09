@@ -9,21 +9,21 @@ export const varCharRegex = new RegExp("#[VLT]?[0-9]+#", "g");
 export const commandRegex = new RegExp("\\!S[0-5]\\!", "g");
 export const newlineRegex = new RegExp("\n", "g");
 
-export const dummyText = (text) => {
+export const dummyText = (text: string) => {
   return text
     .replace(varRegex, "$$$$$")
     .replace(varCharRegex, "#")
     .replace(commandRegex, "");
 };
 
-export const lineLength = (line) => {
+export const lineLength = (line: string) => {
   return line
     .replace(varRegex, "255")
     .replace(varCharRegex, "C")
     .replace(commandRegex, "").length;
 };
 
-export const totalLength = (line) => {
+export const totalLength = (line: string) => {
   return line
     .replace(newlineRegex, "")
     .replace(varRegex, "255")
@@ -31,7 +31,7 @@ export const totalLength = (line) => {
     .replace(commandRegex, "").length;
 };
 
-const cropLine = (line, maxLength) => {
+const cropLine = (line: string, maxLength: number): string => {
   const len = lineLength(line);
   if (len <= maxLength) {
     return line;
@@ -42,11 +42,11 @@ const cropLine = (line, maxLength) => {
 };
 
 const trimlines = (
-  string,
+  string: string,
   maxCharsPerLine = CHARS_PER_LINE,
   maxLines = LINE_MAX,
   maxTotal = CHARS_MAX_TOTAL
-) => {
+): string => {
   let lengthCount = 0;
 
   return (
@@ -63,7 +63,7 @@ const trimlines = (
         if (lineIndex < maxLines - 1) {
           // Crop to last space if possible
           if (cropped.indexOf(" ") > -1) {
-            while (cropped.indexOf(" " > -1)) {
+            while (cropped.indexOf(" ") > -1) {
               const lastBreakSymbol = cropped.lastIndexOf(" ");
               cropped = cropped.substring(0, lastBreakSymbol);
               if (lineLength(cropped) <= maxCharsPerLine) {
@@ -97,7 +97,7 @@ const trimlines = (
   );
 };
 
-export const textNumLines = (string) =>
+export const textNumLines = (string: string) =>
   Math.max(LINE_MIN, (string || "").split("\n").length);
 
 export default trimlines;
