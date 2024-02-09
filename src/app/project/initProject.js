@@ -17,7 +17,7 @@ import clipboardActions from "store/features/clipboard/clipboardActions";
 import engineActions from "store/features/engine/engineActions";
 import errorActions from "store/features/error/errorActions";
 import initElectronL10n from "lib/helpers/initElectronL10n";
-import { clampSidebarWidth } from "lib/helpers/window/sidebar";
+import { clampSidebarWidth } from "renderer/lib/window/sidebar";
 import { initKeyBindings } from "renderer/lib/keybindings/keyBindings";
 import { TRACKER_REDO, TRACKER_UNDO } from "consts";
 import {

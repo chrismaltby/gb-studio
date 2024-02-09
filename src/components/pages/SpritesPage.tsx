@@ -34,7 +34,7 @@ import MetaspriteEditorToolsPanel from "../sprites/MetaspriteEditorToolsPanel";
 import { ZoomButton } from "ui/buttons/ZoomButton";
 import MetaspriteEditorPreviewSettings from "../sprites/MetaspriteEditorPreviewSettings";
 import spriteActions from "store/features/sprite/spriteActions";
-import { clampSidebarWidth } from "lib/helpers/window/sidebar";
+import { clampSidebarWidth } from "renderer/lib/window/sidebar";
 import useSorted from "ui/hooks/use-sorted";
 import { Button } from "ui/buttons/Button";
 import { TargetIcon } from "ui/icons/Icons";

@@ -20,7 +20,7 @@ import projectActions from "../project/projectActions";
 import settingsActions from "../settings/settingsActions";
 import entitiesActions from "../entities/entitiesActions";
 import spriteActions from "../sprite/spriteActions";
-import { MIN_SIDEBAR_WIDTH } from "lib/helpers/window/sidebar";
+import { MIN_SIDEBAR_WIDTH } from "renderer/lib/window/sidebar";
 import type { NavigationSection } from "../navigation/navigationState";
 import type { RootState } from "store/configureStore";
 
