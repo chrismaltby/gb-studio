@@ -1,4 +1,4 @@
-import { genSymbol, toValidSymbol } from "../../src/lib/helpers/symbols";
+import { genSymbol, toValidSymbol } from "../../src/shared/lib/helpers/symbols";
 
 test("Should replace spaces with underscores", () => {
   expect(toValidSymbol("hello world")).toBe("hello_world");
