@@ -3,7 +3,7 @@ import l10n from "lib/helpers/l10n";
 
 const dialog = electron.remote ? electron.remote.dialog : electron.dialog;
 
-export default () => {
+const confirmEjectEngineDialog = () => {
   const dialogOptions = {
     type: "info",
     buttons: [l10n("DIALOG_EJECT"), l10n("DIALOG_CANCEL")],
@@ -16,3 +16,5 @@ export default () => {
 
   return dialog.showMessageBoxSync(dialogOptions);
 };
+
+export default confirmEjectEngineDialog;

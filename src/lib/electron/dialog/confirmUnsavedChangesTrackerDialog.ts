@@ -3,7 +3,7 @@ import l10n from "lib/helpers/l10n";
 
 const dialog = electron.remote ? electron.remote.dialog : electron.dialog;
 
-export default (name) => {
+const confirmUnsavedChangesTrackerDialog = (name: string) => {
   const dialogOptions = {
     type: "info",
     buttons: [
@@ -20,3 +20,5 @@ export default (name) => {
 
   return dialog.showMessageBoxSync(dialogOptions);
 };
+
+export default confirmUnsavedChangesTrackerDialog;

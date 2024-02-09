@@ -3,8 +3,11 @@ import l10n from "lib/helpers/l10n";
 
 const dialog = electron.remote ? electron.remote.dialog : electron.dialog;
 
-export default (name, sceneNames, count) => {
-  // eslint-disable-next-line global-require
+const confirmDeleteCustomEvent = (
+  name: string,
+  sceneNames: string[],
+  count: number
+) => {
   const dialogOptions = {
     type: "info",
     buttons: [l10n("DIALOG_DELETE"), l10n("DIALOG_CANCEL")],
@@ -22,3 +25,5 @@ export default (name, sceneNames, count) => {
 
   return dialog.showMessageBoxSync(dialogOptions);
 };
+
+export default confirmDeleteCustomEvent;

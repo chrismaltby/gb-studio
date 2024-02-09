@@ -3,7 +3,7 @@ import l10n from "lib/helpers/l10n";
 
 const dialog = electron.remote ? electron.remote.dialog : electron.dialog;
 
-export default () => {
+const switchLanguageDialog = () => {
   const dialogOptions = {
     type: "info",
     buttons: [l10n("DIALOG_OK")],
@@ -15,3 +15,5 @@ export default () => {
 
   dialog.showMessageBoxSync(dialogOptions);
 };
+
+export default switchLanguageDialog;
