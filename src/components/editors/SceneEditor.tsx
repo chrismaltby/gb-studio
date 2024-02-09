@@ -1,11 +1,10 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import ScriptEditor from "../script/ScriptEditor";
+import ScriptEditor from "components/script/ScriptEditor";
 import castEventValue from "renderer/lib/helpers/castEventValue";
-import l10n from "lib/helpers/l10n";
 import { WorldEditor } from "./WorldEditor";
-import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
-import BackgroundWarnings from "../world/BackgroundWarnings";
+import ScriptEditorDropdownButton from "components/script/ScriptEditorDropdownButton";
+import BackgroundWarnings from "components/world/BackgroundWarnings";
 import { sceneSelectors } from "store/features/entities/entitiesState";
 import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
@@ -25,12 +24,12 @@ import { Scene, ScriptEvent } from "store/features/entities/entitiesTypes";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { NoteField } from "ui/form/NoteField";
-import { SceneTypeSelect } from "../forms/SceneTypeSelect";
-import { BackgroundSelectButton } from "../forms/BackgroundSelectButton";
-import { PaletteSelectButton } from "../forms/PaletteSelectButton";
+import { SceneTypeSelect } from "components/forms/SceneTypeSelect";
+import { BackgroundSelectButton } from "components/forms/BackgroundSelectButton";
+import { PaletteSelectButton } from "components/forms/PaletteSelectButton";
 import { LabelButton, LabelColor } from "ui/buttons/LabelButton";
 import { CoordinateInput } from "ui/form/CoordinateInput";
-import DirectionPicker from "../forms/DirectionPicker";
+import DirectionPicker from "components/forms/DirectionPicker";
 import { SettingsState } from "store/features/settings/settingsState";
 import { StickyTabs, TabBar } from "ui/tabs/Tabs";
 import { Label } from "ui/form/Label";
@@ -38,8 +37,8 @@ import { Button } from "ui/buttons/Button";
 import { LockIcon, LockOpenIcon, ParallaxIcon } from "ui/icons/Icons";
 import ParallaxSelect, {
   defaultValues as parallaxDefaultValues,
-} from "../forms/ParallaxSelect";
-import { SpriteSheetSelectButton } from "../forms/SpriteSheetSelectButton";
+} from "components/forms/ParallaxSelect";
+import { SpriteSheetSelectButton } from "components/forms/SpriteSheetSelectButton";
 import styled from "styled-components";
 import {
   ClipboardTypePaletteIds,
@@ -53,6 +52,7 @@ import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrappe
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import Alert, { AlertItem } from "components/library/Alert";
 import { sceneName } from "store/features/entities/entitiesHelpers";
+import l10n from "renderer/lib/l10n";
 
 interface SceneEditorProps {
   id: string;
@@ -93,20 +93,12 @@ const PaletteButtons = styled.div`
   }
 `;
 
-const scriptTabs = {
-  start: l10n("SIDEBAR_ON_INIT"),
-  hit: l10n("SIDEBAR_ON_PLAYER_HIT"),
-} as const;
-
-const scriptSecondaryTabs = {
-  hit1: l10n("FIELD_COLLISION_GROUP_N", { n: 1 }),
-  hit2: l10n("FIELD_COLLISION_GROUP_N", { n: 2 }),
-  hit3: l10n("FIELD_COLLISION_GROUP_N", { n: 3 }),
-} as const;
+type ScriptTab = "start" | "hit";
+type SecondaryTab = "hit1" | "hit2" | "hit3";
 
 const getScriptKey = (
-  primaryTab: keyof typeof scriptTabs,
-  secondaryTab: keyof typeof scriptSecondaryTabs
+  primaryTab: ScriptTab,
+  secondaryTab: SecondaryTab
 ): SceneScriptKey => {
   if (primaryTab === "start") {
     return "script";
@@ -160,6 +152,23 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
   const defaultPlayerSprites = useSelector(
     (state: RootState) => state.project.present.settings.defaultPlayerSprites
   );
+  const scriptTabs: Record<ScriptTab, string> = useMemo(
+    () => ({
+      start: l10n("SIDEBAR_ON_INIT"),
+      hit: l10n("SIDEBAR_ON_PLAYER_HIT"),
+    }),
+    []
+  );
+
+  const scriptSecondaryTabs: Record<SecondaryTab, string> = useMemo(
+    () => ({
+      hit1: l10n("FIELD_COLLISION_GROUP_N", { n: 1 }),
+      hit2: l10n("FIELD_COLLISION_GROUP_N", { n: 2 }),
+      hit3: l10n("FIELD_COLLISION_GROUP_N", { n: 3 }),
+    }),
+    []
+  );
+
   const tabs = Object.keys(scriptTabs);
   const secondaryTabs = Object.keys(scriptSecondaryTabs);
 
