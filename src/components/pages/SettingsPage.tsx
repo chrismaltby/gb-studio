@@ -10,17 +10,17 @@ import Path from "path";
 import { FormField } from "components/library/Forms";
 import l10n from "renderer/lib/l10n";
 import castEventValue from "renderer/lib/helpers/castEventValue";
-import CustomControlsPicker from "../forms/CustomControlsPicker";
-import { PaletteSelect } from "../forms/PaletteSelect";
+import CustomControlsPicker from "components/forms/CustomControlsPicker";
+import { PaletteSelect } from "components/forms/PaletteSelect";
 import { Button } from "ui/buttons/Button";
 import { SettingsState } from "store/features/settings/settingsState";
 import settingsActions from "store/features/settings/settingsActions";
 import navigationActions from "store/features/navigation/navigationActions";
-import EngineFieldsEditor from "../settings/EngineFieldsEditor";
+import EngineFieldsEditor from "components/settings/EngineFieldsEditor";
 import { Checkbox } from "ui/form/Checkbox";
 import { Input } from "ui/form/Input";
 import { RootState } from "store/configureStore";
-import { useGroupedEngineFields } from "../settings/useGroupedEngineFields";
+import { useGroupedEngineFields } from "components/settings/useGroupedEngineFields";
 import { NavigationSection } from "store/features/navigation/navigationState";
 import { Textarea } from "ui/form/Textarea";
 import useWindowSize from "ui/hooks/use-window-size";
@@ -30,19 +30,19 @@ import {
   SettingsMenuItem,
   SettingsPageWrapper,
   SettingsSearchWrapper,
-} from "../settings/SettingsLayout";
+} from "components/settings/SettingsLayout";
 import { CardAnchor, CardButtons, CardHeading } from "ui/cards/Card";
 import { SearchableSettingRow } from "ui/form/SearchableSettingRow";
 import { SettingRowInput, SettingRowLabel } from "ui/form/SettingRow";
 import { SearchableCard } from "ui/cards/SearchableCard";
-import { FontSelect } from "../forms/FontSelect";
-import { getOptions as getSceneTypeOptions } from "../forms/SceneTypeSelect";
-import { SpriteSheetSelect } from "../forms/SpriteSheetSelect";
-import { ColorAnimationText } from "../settings/ColorAnimationText";
-import { MusicDriverSelect } from "../forms/MusicDriverSelect";
+import { FontSelect } from "components/forms/FontSelect";
+import { getOptions as getSceneTypeOptions } from "components/forms/SceneTypeSelect";
+import { SpriteSheetSelect } from "components/forms/SpriteSheetSelect";
+import { ColorAnimationText } from "components/settings/ColorAnimationText";
+import { MusicDriverSelect } from "components/forms/MusicDriverSelect";
 import { FormInfo } from "ui/form/FormInfo";
 import electronActions from "store/features/electron/electronActions";
-import CartSettingsEditor from "../settings/CartSettingsEditor";
+import CartSettingsEditor from "components/settings/CartSettingsEditor";
 import { UIAssetPreview } from "components/forms/UIAssetPreviewButton";
 
 const SettingsPage: FC = () => {
