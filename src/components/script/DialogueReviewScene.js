@@ -5,7 +5,6 @@ import cx from "classnames";
 import { connect } from "react-redux";
 import { SceneShape, ActorShape, EventShape } from "store/stateShape";
 import { ArrowIcon, SearchIcon } from "ui/icons/Icons";
-import { EVENT_TEXT } from "lib/compiler/eventTypes";
 import DialogueReviewLine from "./DialogueReviewLine";
 import Button from "components/library/Button";
 import {
@@ -25,6 +24,7 @@ import {
   walkNormalisedSceneSpecificEvents,
   walkNormalisedTriggerEvents,
 } from "store/features/entities/entitiesHelpers";
+import { EVENT_TEXT } from "consts";
 
 class DialogueReviewScene extends Component {
   onChange = (id) => (value) => {

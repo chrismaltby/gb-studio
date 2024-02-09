@@ -31,12 +31,12 @@ import {
   sceneSelectors,
   spriteSheetSelectors,
 } from "store/features/entities/entitiesState";
-import { EVENT_TEXT } from "lib/compiler/eventTypes";
 import { useDebounce } from "ui/hooks/use-debounce";
 import {
   defaultVariableForContext,
   ScriptEditorContext,
 } from "./ScriptEditorContext";
+import { EVENT_TEXT } from "consts";
 
 interface AddScriptEventMenuProps {
   parentType: ScriptEventParentType;

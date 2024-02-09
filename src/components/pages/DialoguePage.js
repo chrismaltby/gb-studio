@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import PageHeader from "components/library/PageHeader";
 import PageContent from "components/library/PageContent";
-import { EVENT_TEXT } from "lib/compiler/eventTypes";
 import l10n from "renderer/lib/l10n";
 import { SceneShape, ActorShape, EventShape } from "store/stateShape";
 import DialogueReviewScene from "../script/DialogueReviewScene";
@@ -21,6 +20,7 @@ import {
   walkNormalisedSceneSpecificEvents,
   walkNormalisedTriggerEvents,
 } from "store/features/entities/entitiesHelpers";
+import { EVENT_TEXT } from "consts";
 
 class DialoguePage extends Component {
   constructor(props) {

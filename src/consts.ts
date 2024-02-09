@@ -109,6 +109,8 @@ export const TRACKER_REDO = "TRACKER_REDO";
 
 export const ERR_PROJECT_EXISTS = "ERR_PROJECT_EXISTS";
 
+export const EVENT_TEXT = "EVENT_TEXT";
+
 export {
   engineRoot,
   buildToolsRoot,
