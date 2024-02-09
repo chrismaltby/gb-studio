@@ -5,7 +5,7 @@ import PageHeader from "components/library/PageHeader";
 import PageContent from "components/library/PageContent";
 import l10n from "renderer/lib/l10n";
 import { SceneShape, ActorShape, EventShape } from "store/stateShape";
-import DialogueReviewScene from "../script/DialogueReviewScene";
+import DialogueReviewScene from "components/script/DialogueReviewScene";
 import {
   sceneSelectors,
   actorSelectors,

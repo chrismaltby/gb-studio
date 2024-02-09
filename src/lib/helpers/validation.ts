@@ -5,7 +5,7 @@ import {
   readFileToTilesDataArray,
   toTileLookup,
   tilesAndLookupToTilemap,
-} from "../tiles/tileData";
+} from "lib/tiles/tileData";
 import { assetFilename } from "shared/lib/helpers/assets";
 
 const MAX_IMAGE_WIDTH = 2040;

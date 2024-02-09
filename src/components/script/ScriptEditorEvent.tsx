@@ -39,7 +39,7 @@ import ScriptEventForm from "./ScriptEventForm";
 import l10n from "renderer/lib/l10n";
 import events from "lib/events";
 import { ScriptEditorEventHelper } from "./ScriptEditorEventHelper";
-import ItemTypes from "lib/dnd/itemTypes";
+import ItemTypes from "renderer/lib/dnd/itemTypes";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { MenuDivider, MenuItem, MenuOverlay } from "ui/menu/Menu";
 import clipboardActions from "store/features/clipboard/clipboardActions";

@@ -5,7 +5,7 @@ import { createReadStream, readJson } from "fs-extra";
 import { stat } from "fs";
 import { PNG } from "pngjs";
 
-import parseAssetPath from "../helpers/path/parseAssetPath";
+import parseAssetPath from "lib/helpers/path/parseAssetPath";
 import { toValidSymbol } from "shared/lib/helpers/symbols";
 
 export interface FontAssetData {

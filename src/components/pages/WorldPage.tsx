@@ -3,7 +3,7 @@ import styled, { ThemeContext } from "styled-components";
 import World from "components/world/World";
 import ToolPicker from "components/world/ToolPicker";
 import BrushToolbar from "components/world/BrushToolbar";
-import EditorSidebar from "../editors/EditorSidebar";
+import EditorSidebar from "components/editors/EditorSidebar";
 import StatusBar from "components/world/StatusBar";
 import useResizable from "ui/hooks/use-resizable";
 import useWindowSize from "ui/hooks/use-window-size";

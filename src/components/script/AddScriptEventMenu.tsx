@@ -422,7 +422,7 @@ const notDeprecated = (a: { deprecated?: boolean }) => {
   return !a.deprecated;
 };
 
-const identity = <T extends unknown>(i: T): T => i;
+const identity = <T,>(i: T): T => i;
 
 const AddScriptEventMenu = ({
   parentId,
