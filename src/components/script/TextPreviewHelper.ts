@@ -1,7 +1,7 @@
 import { Font } from "store/features/entities/entitiesTypes";
 import { lexText } from "shared/lib/compiler/lexText";
-import { encodeChar } from "lib/helpers/encodings";
 import { assetFilename } from "shared/lib/helpers/assets";
+import { encodeChar } from "shared/lib/helpers/fonts";
 
 export interface FontData {
   id: string;

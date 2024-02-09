@@ -26,7 +26,6 @@ import { FunctionSymbol, OperatorSymbol } from "shared/lib/rpn/types";
 import tokenize from "shared/lib/rpn/tokenizer";
 import shuntingYard from "shared/lib/rpn/shuntingYard";
 import { PrecompiledFontData } from "./compileFonts";
-import { encodeString } from "lib/helpers/encodings";
 import { PrecompiledMusicTrack } from "./compileMusic";
 import {
   PrecompiledScene,
@@ -52,6 +51,7 @@ import {
   defaultVariableForContext,
   ScriptEditorContextType,
 } from "components/script/ScriptEditorContext";
+import { encodeString } from "shared/lib/helpers/fonts";
 
 type ScriptOutput = string[];
 
