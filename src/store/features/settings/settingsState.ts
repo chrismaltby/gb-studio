@@ -56,6 +56,18 @@ export type SettingsState = {
   cartType: CartType;
   batterylessEnabled: boolean;
   favoriteEvents: string[];
+  customColorsWhite: string;
+  customColorsLight: string;
+  customColorsDark: string;
+  customColorsBlack: string;
+  customControlsUp: string[];
+  customControlsDown: string[];
+  customControlsLeft: string[];
+  customControlsRight: string[];
+  customControlsA: string[];
+  customControlsB: string[];
+  customControlsStart: string[];
+  customControlsSelect: string[];
 };
 
 export const initialState: SettingsState = {
@@ -107,6 +119,18 @@ export const initialState: SettingsState = {
   cartType: "mbc5",
   batterylessEnabled: false,
   favoriteEvents: ["EVENT_TEXT", "EVENT_SWITCH_SCENE"],
+  customColorsWhite: "E8F8E0",
+  customColorsLight: "B0F088",
+  customColorsDark: "509878",
+  customColorsBlack: "202850",
+  customControlsUp: ["ArrowUp", "w"],
+  customControlsDown: ["ArrowDown", "s"],
+  customControlsLeft: ["ArrowLeft", "a"],
+  customControlsRight: ["ArrowRight", "d"],
+  customControlsA: ["Alt", "z", "j"],
+  customControlsB: ["Control", "k", "x"],
+  customControlsStart: ["Enter"],
+  customControlsSelect: ["Shift"],
 };
 
 const settingsSlice = createSlice({

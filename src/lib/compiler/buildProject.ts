@@ -4,20 +4,32 @@ import ejectBuild from "./ejectBuild";
 import makeBuild from "./makeBuild";
 import { binjgbRoot } from "consts";
 import copy from "lib/helpers/fsCopy";
+import type { ProjectData } from "store/features/project/projectActions";
+import type { EngineFieldSchema } from "store/features/engine/engineState";
+
+type BuildOptions = {
+  buildType: "rom" | "web" | "pocket";
+  projectRoot: string;
+  tmpPath: string;
+  profile: boolean;
+  engineFields: EngineFieldSchema[];
+  outputRoot: string;
+  progress: (msg: string) => void;
+  warnings: (msg: string) => void;
+};
 
 const buildProject = async (
-  data,
+  data: ProjectData,
   {
     buildType = "rom",
     projectRoot = "/tmp",
     tmpPath = "/tmp",
     profile = false,
     engineFields = [],
-    exportBuild = false,
     outputRoot = "/tmp/testing",
-    progress = (_msg) => {},
-    warnings = (_msg) => {},
-  } = {}
+    progress = (_msg: string) => {},
+    warnings = (_msg: string) => {},
+  }: BuildOptions
 ) => {
   const compiledData = await compile(data, {
     projectRoot,
@@ -51,7 +63,7 @@ const buildProject = async (
       `${outputRoot}/build/rom/game.gb`,
       `${outputRoot}/build/web/rom/game.gb`
     );
-    const sanitize = (s) => String(s || "").replace(/["<>]/g, "");
+    const sanitize = (s: string) => String(s || "").replace(/["<>]/g, "");
     const projectName = sanitize(data.name);
     const author = sanitize(data.author);
     const colorsHead = data.settings.customColorsEnabled

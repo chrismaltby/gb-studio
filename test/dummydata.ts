@@ -249,6 +249,18 @@ export const dummyProjectData: ProjectData = {
     favoriteEvents: [],
     showCollisionSlopeTiles: false,
     showCollisionExtraTiles: false,
+    customColorsWhite: "E8F8E0",
+    customColorsLight: "B0F088",
+    customColorsDark: "509878",
+    customColorsBlack: "202850",
+    customControlsUp: ["ArrowUp", "w"],
+    customControlsDown: ["ArrowDown", "s"],
+    customControlsLeft: ["ArrowLeft", "a"],
+    customControlsRight: ["ArrowRight", "d"],
+    customControlsA: ["Alt", "z", "j"],
+    customControlsB: ["Control", "k", "x"],
+    customControlsStart: ["Enter"],
+    customControlsSelect: ["Shift"],
   },
 };
 
