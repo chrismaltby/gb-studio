@@ -264,49 +264,53 @@ const BrushToolbar = () => {
 
   const highlightPalette = useHiglightPalette();
 
-  const setSelectedPalette = (index: number) => (e: any) => {
-    if (showPalettes) {
-      dispatch(editorActions.setSelectedPalette({ paletteIndex: index }));
-    }
-    if (showTileTypes && tileTypes[index]) {
-      if (
-        e.shiftKey &&
-        collisionDirectionFlags.includes(tileTypes[index].flag)
-      ) {
+  const setSelectedPalette =
+    (index: number) =>
+    (e: KeyboardEvent | React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      if (showPalettes) {
+        dispatch(editorActions.setSelectedPalette({ paletteIndex: index }));
+      }
+      if (showTileTypes && tileTypes[index]) {
         if (
-          selectedTileType !== tileTypes[index].flag &&
-          selectedTileType & tileTypes[index].flag
+          e.shiftKey &&
+          collisionDirectionFlags.includes(tileTypes[index].flag)
+        ) {
+          if (
+            selectedTileType !== tileTypes[index].flag &&
+            selectedTileType & tileTypes[index].flag
+          ) {
+            dispatch(
+              editorActions.setSelectedTileType({
+                tileType:
+                  selectedTileType & COLLISION_ALL & ~tileTypes[index].flag,
+              })
+            );
+          } else {
+            dispatch(
+              editorActions.setSelectedTileType({
+                tileType:
+                  (selectedTileType & COLLISION_ALL) | tileTypes[index].flag,
+              })
+            );
+          }
+        } else if (
+          e.shiftKey &&
+          COLLISION_SLOPE_VALUES.includes(tileTypes[index].flag)
         ) {
           dispatch(
             editorActions.setSelectedTileType({
-              tileType:
-                selectedTileType & COLLISION_ALL & ~tileTypes[index].flag,
+              tileType: tileTypes[index].flag | (tileTypes[index].extra ?? 0),
             })
           );
         } else {
           dispatch(
             editorActions.setSelectedTileType({
-              tileType:
-                (selectedTileType & COLLISION_ALL) | tileTypes[index].flag,
+              tileType: tileTypes[index].flag,
             })
           );
         }
-      } else if (
-        e.shiftKey &&
-        COLLISION_SLOPE_VALUES.includes(tileTypes[index].flag)
-      ) {
-        dispatch(
-          editorActions.setSelectedTileType({
-            tileType: tileTypes[index].flag | (tileTypes[index].extra ?? 0),
-          })
-        );
-      } else {
-        dispatch(
-          editorActions.setSelectedTileType({ tileType: tileTypes[index].flag })
-        );
       }
-    }
-  };
+    };
 
   const palettesLookup = useSelector((state: RootState) =>
     paletteSelectors.selectEntities(state)
