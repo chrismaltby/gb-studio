@@ -1,4 +1,4 @@
-import { hex2GBCrgb } from "lib/helpers/color";
+import { hex2GBCrgb } from "shared/lib/helpers/color";
 
 // eslint-disable-next-line no-restricted-globals
 const workerCtx: Worker = self as unknown as Worker;

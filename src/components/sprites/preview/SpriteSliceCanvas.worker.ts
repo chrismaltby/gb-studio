@@ -1,4 +1,4 @@
-import { colorizeSpriteData } from "lib/helpers/color";
+import { colorizeSpriteData } from "shared/lib/helpers/color";
 
 // eslint-disable-next-line no-restricted-globals
 const workerCtx: Worker = self as unknown as Worker;
