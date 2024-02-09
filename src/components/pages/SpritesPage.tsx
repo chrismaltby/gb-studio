@@ -28,7 +28,7 @@ import MetaspriteEditor from "../sprites/MetaspriteEditor";
 import SpriteTilePalette from "../sprites/SpriteTilePalette";
 import SpriteAnimationTimeline from "../sprites/SpriteAnimationTimeline";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
-import l10n from "lib/helpers/l10n";
+import l10n from "renderer/lib/l10n";
 import { getAnimationNameById } from "../sprites/helpers";
 import MetaspriteEditorToolsPanel from "../sprites/MetaspriteEditorToolsPanel";
 import { ZoomButton } from "ui/buttons/ZoomButton";

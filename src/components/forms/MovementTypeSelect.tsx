@@ -1,5 +1,5 @@
-import React, { FC } from "react";
-import l10n from "lib/helpers/l10n";
+import React, { FC, useMemo } from "react";
+import l10n from "renderer/lib/l10n";
 import {
   MovementType,
   movementTypes,
@@ -27,12 +27,6 @@ const movementTypeIconsLookup: Record<MovementType, JSX.Element> = {
   diagonal: <CursorDiagonalIcon />,
 };
 
-const movementTypeNamesLookup: Record<MovementType, string> = {
-  horizontal: l10n("FIELD_HORIZONTAL_FIRST"),
-  vertical: l10n("FIELD_VERTICAL_FIRST"),
-  diagonal: l10n("FIELD_DIAGONAL"),
-};
-
 const MenuSpacer = styled.div`
   width: 10px;
 `;
@@ -46,6 +40,15 @@ export const MovementTypeSelect: FC<MovementTypeSelectProps> = ({
   ) : (
     <CursorHorizontalIcon />
   );
+  const movementTypeNamesLookup: Record<MovementType, string> = useMemo(
+    () => ({
+      horizontal: l10n("FIELD_HORIZONTAL_FIRST"),
+      vertical: l10n("FIELD_VERTICAL_FIRST"),
+      diagonal: l10n("FIELD_DIAGONAL"),
+    }),
+    []
+  );
+
   const title = `${l10n("FIELD_MOVEMENT_TYPE")}${value ? ": " : ""}${
     value ? movementTypeNamesLookup[value] : ""
   }`;

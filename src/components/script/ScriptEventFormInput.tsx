@@ -26,7 +26,7 @@ import { SoundEffectSelect } from "components/forms/SoundEffectSelect";
 import { SpriteSheetSelect } from "components/forms/SpriteSheetSelect";
 import { VariableSelect } from "components/forms/VariableSelect";
 import castEventValue from "renderer/lib/helpers/castEventValue";
-import l10n from "lib/helpers/l10n";
+import l10n from "renderer/lib/l10n";
 import React, { useCallback, useContext } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "store/configureStore";

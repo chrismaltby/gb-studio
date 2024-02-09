@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import l10n from "lib/helpers/l10n";
+import l10n from "renderer/lib/l10n";
 import Button from "./Button";
 import { ErrorShape } from "store/stateShape";
 import { SadIcon } from "ui/icons/Icons";

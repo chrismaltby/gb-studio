@@ -1,37 +1,13 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import l10n from "lib/helpers/l10n";
+import l10n from "renderer/lib/l10n";
 import { Button } from "ui/buttons/Button";
 import settingsActions from "store/features/settings/settingsActions";
 import { Input } from "ui/form/Input";
 import { SearchableSettingRow } from "ui/form/SearchableSettingRow";
 import { CardButtons } from "ui/cards/Card";
 import { SettingRowInput, SettingRowLabel } from "ui/form/SettingRow";
-import initElectronL10n from "lib/helpers/initElectronL10n";
-
-// Make sure localisation has loaded so that
-// l10n function can be used at top level
-initElectronL10n();
-
-const directions = [
-  {
-    key: "up",
-    label: l10n("FIELD_DIRECTION_UP"),
-  },
-  {
-    key: "down",
-    label: l10n("FIELD_DIRECTION_DOWN"),
-  },
-  {
-    key: "left",
-    label: l10n("FIELD_DIRECTION_LEFT"),
-  },
-  {
-    key: "right",
-    label: l10n("FIELD_DIRECTION_RIGHT"),
-  },
-];
 
 const buttons = [
   { key: "a", label: "A" },
@@ -72,6 +48,24 @@ class CustomControlsPicker extends Component {
   constructor() {
     super();
     this.inputRef = React.createRef();
+    this.directions = [
+      {
+        key: "up",
+        label: l10n("FIELD_DIRECTION_UP"),
+      },
+      {
+        key: "down",
+        label: l10n("FIELD_DIRECTION_DOWN"),
+      },
+      {
+        key: "left",
+        label: l10n("FIELD_DIRECTION_LEFT"),
+      },
+      {
+        key: "right",
+        label: l10n("FIELD_DIRECTION_RIGHT"),
+      },
+    ];
   }
 
   onKeyDown = (input) => (e) => {
@@ -134,7 +128,7 @@ class CustomControlsPicker extends Component {
     const { settings, searchTerm } = this.props;
     return (
       <>
-        {directions.map((direction) => (
+        {this.directions.map((direction) => (
           <SearchableSettingRow
             key={direction.key}
             searchTerm={searchTerm}

@@ -1,8 +1,14 @@
-import React, { FC, useCallback, useLayoutEffect, useState } from "react";
+import React, {
+  FC,
+  useCallback,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Path from "path";
 import { FormField } from "../library/Forms";
-import l10n from "lib/helpers/l10n";
+import l10n from "renderer/lib/l10n";
 import castEventValue from "renderer/lib/helpers/castEventValue";
 import CustomControlsPicker from "../forms/CustomControlsPicker";
 import { PaletteSelect } from "../forms/PaletteSelect";
@@ -30,7 +36,7 @@ import { SearchableSettingRow } from "ui/form/SearchableSettingRow";
 import { SettingRowInput, SettingRowLabel } from "ui/form/SettingRow";
 import { SearchableCard } from "ui/cards/SearchableCard";
 import { FontSelect } from "../forms/FontSelect";
-import { options as sceneTypes } from "../forms/SceneTypeSelect";
+import { getOptions as getSceneTypeOptions } from "../forms/SceneTypeSelect";
 import { SpriteSheetSelect } from "../forms/SpriteSheetSelect";
 import { ColorAnimationText } from "../settings/ColorAnimationText";
 import { MusicDriverSelect } from "../forms/MusicDriverSelect";
@@ -60,6 +66,7 @@ const SettingsPage: FC = () => {
     },
     [dispatch]
   );
+  const sceneTypes = useMemo(getSceneTypeOptions, []);
   const windowSize = useWindowSize();
   const showMenu = (windowSize.width || 0) >= 750;
 

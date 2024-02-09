@@ -14,7 +14,7 @@ import { SplitPaneHorizontalDivider } from "ui/splitpane/SplitPaneDivider";
 import { RootState } from "store/configureStore";
 import editorActions from "store/features/editor/editorActions";
 import { paletteSelectors } from "store/features/entities/entitiesState";
-import l10n from "lib/helpers/l10n";
+import l10n from "renderer/lib/l10n";
 import { Button } from "ui/buttons/Button";
 import CustomPalettePicker from "components/forms/CustomPalettePicker";
 import { NavigatorPalettes } from "components/palettes/NavigatorPalettes";

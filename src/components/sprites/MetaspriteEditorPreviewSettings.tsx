@@ -8,7 +8,7 @@ import {
   spriteSheetSelectors,
 } from "store/features/entities/entitiesState";
 import editorActions from "store/features/editor/editorActions";
-import l10n from "lib/helpers/l10n";
+import l10n from "renderer/lib/l10n";
 import { SceneSelect } from "../forms/SceneSelect";
 import { SelectMenu, selectMenuStyleProps } from "ui/form/Select";
 import { RelativePortal } from "ui/layout/RelativePortal";

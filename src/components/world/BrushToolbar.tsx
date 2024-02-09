@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import cx from "classnames";
-import l10n from "lib/helpers/l10n";
+import l10n from "renderer/lib/l10n";
 import {
   PaintBucketIcon,
   WandIcon,
@@ -69,114 +69,6 @@ import { Checkbox } from "ui/form/Checkbox";
 
 const paletteIndexes = [0, 1, 2, 3, 4, 5, 6, 7];
 const validTools = [TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER];
-const tileTypes = [
-  {
-    key: "solid",
-    name: l10n("FIELD_SOLID"),
-    flag: COLLISION_ALL,
-  },
-  {
-    key: "top",
-    name: l10n("FIELD_COLLISION_TOP"),
-    flag: COLLISION_TOP,
-  },
-  {
-    key: "bottom",
-    name: l10n("FIELD_COLLISION_BOTTOM"),
-    flag: COLLISION_BOTTOM,
-  },
-  {
-    key: "left",
-    name: l10n("FIELD_COLLISION_LEFT"),
-    flag: COLLISION_LEFT,
-  },
-  {
-    key: "right",
-    name: l10n("FIELD_COLLISION_RIGHT"),
-    flag: COLLISION_RIGHT,
-  },
-  {
-    key: "ladder",
-    name: l10n("FIELD_COLLISION_LADDER"),
-    flag: TILE_PROP_LADDER,
-  },
-  {
-    key: "slope_45_right",
-    name: l10n("FIELD_COLLISION_SLOPE_45_RIGHT"),
-    flag: COLLISION_SLOPE_45_RIGHT,
-    extra: COLLISION_BOTTOM | COLLISION_RIGHT,
-  },
-  {
-    key: "slope_45_left",
-    name: l10n("FIELD_COLLISION_SLOPE_45_LEFT"),
-    flag: COLLISION_SLOPE_45_LEFT,
-    extra: COLLISION_BOTTOM | COLLISION_LEFT,
-  },
-  {
-    key: "slope_22_right_bot",
-    name: l10n("FIELD_COLLISION_SLOPE_22_RIGHT_BOT"),
-    flag: COLLISION_SLOPE_22_RIGHT_BOT,
-    extra: COLLISION_BOTTOM,
-  },
-  {
-    key: "slope_22_right_top",
-    name: l10n("FIELD_COLLISION_SLOPE_22_RIGHT_TOP"),
-    flag: COLLISION_SLOPE_22_RIGHT_TOP,
-    extra: COLLISION_BOTTOM | COLLISION_RIGHT,
-  },
-  {
-    key: "slope_22_left_top",
-    name: l10n("FIELD_COLLISION_SLOPE_22_LEFT_TOP"),
-    flag: COLLISION_SLOPE_22_LEFT_TOP,
-    extra: COLLISION_BOTTOM | COLLISION_LEFT,
-  },
-  {
-    key: "slope_22_left_bot",
-    name: l10n("FIELD_COLLISION_SLOPE_22_LEFT_BOT"),
-    flag: COLLISION_SLOPE_22_LEFT_BOT,
-    extra: COLLISION_BOTTOM,
-  },
-  {
-    key: "spare_08",
-    name: l10n("FIELD_COLLISION_SPARE", { tile: 8 }),
-    flag: 0x80,
-  },
-  {
-    key: "spare_09",
-    name: l10n("FIELD_COLLISION_SPARE", { tile: 9 }),
-    flag: 0x90,
-  },
-  {
-    key: "spare_10",
-    name: l10n("FIELD_COLLISION_SPARE", { tile: 10 }),
-    flag: 0xa0,
-  },
-  {
-    key: "spare_11",
-    name: l10n("FIELD_COLLISION_SPARE", { tile: 11 }),
-    flag: 0xb0,
-  },
-  {
-    key: "spare_12",
-    name: l10n("FIELD_COLLISION_SPARE", { tile: 12 }),
-    flag: 0xc0,
-  },
-  {
-    key: "spare_13",
-    name: l10n("FIELD_COLLISION_SPARE", { tile: 13 }),
-    flag: 0xd0,
-  },
-  {
-    key: "spare_14",
-    name: l10n("FIELD_COLLISION_SPARE", { tile: 14 }),
-    flag: 0xe0,
-  },
-  {
-    key: "spare_15",
-    name: l10n("FIELD_COLLISION_SPARE", { tile: 15 }),
-    flag: 0xf0,
-  },
-];
 
 const collisionDirectionFlags = [
   COLLISION_TOP,
@@ -246,6 +138,118 @@ const BrushToolbar = () => {
   );
   const showCollisionExtraTiles = useSelector(
     (state: RootState) => state.project.present.settings.showCollisionExtraTiles
+  );
+
+  const tileTypes = useMemo(
+    () => [
+      {
+        key: "solid",
+        name: l10n("FIELD_SOLID"),
+        flag: COLLISION_ALL,
+      },
+      {
+        key: "top",
+        name: l10n("FIELD_COLLISION_TOP"),
+        flag: COLLISION_TOP,
+      },
+      {
+        key: "bottom",
+        name: l10n("FIELD_COLLISION_BOTTOM"),
+        flag: COLLISION_BOTTOM,
+      },
+      {
+        key: "left",
+        name: l10n("FIELD_COLLISION_LEFT"),
+        flag: COLLISION_LEFT,
+      },
+      {
+        key: "right",
+        name: l10n("FIELD_COLLISION_RIGHT"),
+        flag: COLLISION_RIGHT,
+      },
+      {
+        key: "ladder",
+        name: l10n("FIELD_COLLISION_LADDER"),
+        flag: TILE_PROP_LADDER,
+      },
+      {
+        key: "slope_45_right",
+        name: l10n("FIELD_COLLISION_SLOPE_45_RIGHT"),
+        flag: COLLISION_SLOPE_45_RIGHT,
+        extra: COLLISION_BOTTOM | COLLISION_RIGHT,
+      },
+      {
+        key: "slope_45_left",
+        name: l10n("FIELD_COLLISION_SLOPE_45_LEFT"),
+        flag: COLLISION_SLOPE_45_LEFT,
+        extra: COLLISION_BOTTOM | COLLISION_LEFT,
+      },
+      {
+        key: "slope_22_right_bot",
+        name: l10n("FIELD_COLLISION_SLOPE_22_RIGHT_BOT"),
+        flag: COLLISION_SLOPE_22_RIGHT_BOT,
+        extra: COLLISION_BOTTOM,
+      },
+      {
+        key: "slope_22_right_top",
+        name: l10n("FIELD_COLLISION_SLOPE_22_RIGHT_TOP"),
+        flag: COLLISION_SLOPE_22_RIGHT_TOP,
+        extra: COLLISION_BOTTOM | COLLISION_RIGHT,
+      },
+      {
+        key: "slope_22_left_top",
+        name: l10n("FIELD_COLLISION_SLOPE_22_LEFT_TOP"),
+        flag: COLLISION_SLOPE_22_LEFT_TOP,
+        extra: COLLISION_BOTTOM | COLLISION_LEFT,
+      },
+      {
+        key: "slope_22_left_bot",
+        name: l10n("FIELD_COLLISION_SLOPE_22_LEFT_BOT"),
+        flag: COLLISION_SLOPE_22_LEFT_BOT,
+        extra: COLLISION_BOTTOM,
+      },
+      {
+        key: "spare_08",
+        name: l10n("FIELD_COLLISION_SPARE", { tile: 8 }),
+        flag: 0x80,
+      },
+      {
+        key: "spare_09",
+        name: l10n("FIELD_COLLISION_SPARE", { tile: 9 }),
+        flag: 0x90,
+      },
+      {
+        key: "spare_10",
+        name: l10n("FIELD_COLLISION_SPARE", { tile: 10 }),
+        flag: 0xa0,
+      },
+      {
+        key: "spare_11",
+        name: l10n("FIELD_COLLISION_SPARE", { tile: 11 }),
+        flag: 0xb0,
+      },
+      {
+        key: "spare_12",
+        name: l10n("FIELD_COLLISION_SPARE", { tile: 12 }),
+        flag: 0xc0,
+      },
+      {
+        key: "spare_13",
+        name: l10n("FIELD_COLLISION_SPARE", { tile: 13 }),
+        flag: 0xd0,
+      },
+      {
+        key: "spare_14",
+        name: l10n("FIELD_COLLISION_SPARE", { tile: 14 }),
+        flag: 0xe0,
+      },
+      {
+        key: "spare_15",
+        name: l10n("FIELD_COLLISION_SPARE", { tile: 15 }),
+        flag: 0xf0,
+      },
+    ],
+    []
   );
 
   const setBrush = (brush: Brush) => {

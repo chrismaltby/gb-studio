@@ -1,11 +1,6 @@
-import React, { FC } from "react";
-import l10n from "lib/helpers/l10n";
+import React, { FC, useMemo } from "react";
 import { Select } from "ui/form/Select";
-import initElectronL10n from "lib/helpers/initElectronL10n";
-
-// Make sure localisation has loaded so that
-// l10n function can be used at top level
-initElectronL10n();
+import l10n from "renderer/lib/l10n";
 
 interface SceneTypeSelectProps {
   name: string;
@@ -18,7 +13,7 @@ interface SceneTypeOption {
   label: string;
 }
 
-export const options: SceneTypeOption[] = [
+export const getOptions: () => SceneTypeOption[] = () => [
   { value: "TOPDOWN", label: l10n("GAMETYPE_TOP_DOWN") },
   { value: "PLATFORM", label: l10n("GAMETYPE_PLATFORMER") },
   { value: "ADVENTURE", label: l10n("GAMETYPE_ADVENTURE") },
@@ -32,6 +27,7 @@ export const SceneTypeSelect: FC<SceneTypeSelectProps> = ({
   value,
   onChange,
 }) => {
+  const options = useMemo(getOptions, []);
   const currentValue = options.find((o) => o.value === value);
   return (
     <Select

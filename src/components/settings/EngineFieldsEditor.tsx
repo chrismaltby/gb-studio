@@ -7,7 +7,7 @@ import {
 import { engineFieldValueSelectors } from "store/features/entities/entitiesState";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { Button } from "ui/buttons/Button";
-import l10n from "lib/helpers/l10n";
+import l10n from "renderer/lib/l10n";
 import { SliderField } from "ui/form/SliderField";
 import { useGroupedEngineFields } from "./useGroupedEngineFields";
 import { CardAnchor, CardButtons, CardHeading } from "ui/cards/Card";
