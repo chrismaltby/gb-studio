@@ -6,8 +6,18 @@ import l10n from "lib/helpers/l10n";
 
 const globAsync = promisify(glob);
 
-export default async (
-  buildRoot,
+type BuildOptions = {
+  customColorsEnabled: boolean;
+  sgb: boolean;
+  musicDriver: string;
+  profile: boolean;
+  platform: string;
+  batteryless: boolean;
+  targetPlatform: "gb" | "pocket";
+};
+
+const buildMakeScript = async (
+  buildRoot: string,
   {
     customColorsEnabled,
     sgb,
@@ -16,7 +26,7 @@ export default async (
     platform,
     batteryless,
     targetPlatform,
-  }
+  }: BuildOptions
 ) => {
   const cmds = platform === "win32" ? [""] : ["#!/bin/bash", "set -e"];
   const objFiles = [];
@@ -56,7 +66,7 @@ export default async (
   const srcRoot = `${buildRoot}/src/**/*.@(c|s)`;
   const buildFiles = await globAsync(srcRoot);
 
-  const addCommand = (label, cmd) => {
+  const addCommand = (label: string, cmd: string) => {
     if (platform === "win32") {
       cmds.push(`@echo ${label}`);
       cmds.push(`@${cmd}`);
@@ -94,7 +104,7 @@ export default async (
 };
 
 export const getBuildCommands = async (
-  buildRoot,
+  buildRoot: string,
   {
     customColorsEnabled,
     sgb,
@@ -103,7 +113,7 @@ export const getBuildCommands = async (
     platform,
     batteryless,
     targetPlatform,
-  }
+  }: BuildOptions
 ) => {
   const srcRoot = `${buildRoot}/src/**/*.@(c|s)`;
   const buildFiles = await globAsync(srcRoot);
@@ -189,7 +199,7 @@ export const getBuildCommands = async (
   return output;
 };
 
-export const buildPackFile = async (buildRoot) => {
+export const buildPackFile = async (buildRoot: string) => {
   const output = [];
   const srcRoot = `${buildRoot}/src/**/*.@(c|s)`;
   const buildFiles = await globAsync(srcRoot);
@@ -203,7 +213,7 @@ export const buildPackFile = async (buildRoot) => {
   return output.join("\n");
 };
 
-export const getPackFiles = async (buildRoot) => {
+export const getPackFiles = async (buildRoot: string) => {
   const output = [];
   const srcRoot = `${buildRoot}/src/**/*.@(c|s)`;
   const buildFiles = await globAsync(srcRoot);
@@ -217,7 +227,7 @@ export const getPackFiles = async (buildRoot) => {
   return output;
 };
 
-export const buildLinkFile = async (buildRoot, cartSize) => {
+export const buildLinkFile = async (buildRoot: string, cartSize: number) => {
   const output = [`-g __start_save=${cartSize - 4}`];
   const srcRoot = `${buildRoot}/src/**/*.@(c|s)`;
   const buildFiles = await globAsync(srcRoot);
@@ -231,8 +241,8 @@ export const buildLinkFile = async (buildRoot, cartSize) => {
   return output.join("\n");
 };
 
-export const buildPackFlags = (packFilePath, batteryless = false) => {
-  return [].concat(
+export const buildPackFlags = (packFilePath: string, batteryless = false) => {
+  return ([] as Array<string | number>).concat(
     // General
     ["-b", 5, "-f", 255, "-e", "rel", "-c"],
     // Batteryless
@@ -243,9 +253,9 @@ export const buildPackFlags = (packFilePath, batteryless = false) => {
 };
 
 export const buildLinkFlags = (
-  linkFile,
+  linkFile: string,
   name = "GBSTUDIO",
-  cartType,
+  cartType: string,
   color = false,
   sgb = false,
   musicDriver = "gbtplayer",
@@ -257,7 +267,7 @@ export const buildLinkFlags = (
     .replace(/[^A-Z]*/g, "")
     .substring(0, 15);
   const cart = cartType === "mbc3" ? "0x10" : "0x1B";
-  return [].concat(
+  return ([] as Array<string>).concat(
     // General
     [
       `-Wm-yt${cart}`,
@@ -293,7 +303,10 @@ export const buildLinkFlags = (
   );
 };
 
-export const makefileInjectToolsPath = async (filename, buildToolsPath) => {
+export const makefileInjectToolsPath = async (
+  filename: string,
+  buildToolsPath: string
+) => {
   const makefile = await readFile(filename, "utf8");
   const updatedMakefile = makefile.replace(
     /GBSTOOLS_DIR =.*/,
@@ -311,7 +324,7 @@ export const buildMakeDotBuildFile = ({
 }) => {
   return (
     `settings: ` +
-    []
+    ([] as Array<string>)
       .concat(
         color ? ["CGB"] : ["DMG"],
         sgb ? ["SGB"] : [],
@@ -322,3 +335,5 @@ export const buildMakeDotBuildFile = ({
       .join(" ")
   );
 };
+
+export default buildMakeScript;
