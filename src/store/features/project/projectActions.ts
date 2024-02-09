@@ -456,7 +456,7 @@ const saveProject = createAsyncThunk<void, string | undefined>(
   }
 );
 
-export default {
+const projectActions = {
   openProject,
   closeProject,
   loadProject,
@@ -479,3 +479,5 @@ export default {
   reloadAssets,
   saveProject,
 };
+
+export default projectActions;

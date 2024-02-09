@@ -32,9 +32,11 @@ const exportProject = createAction<ProjectExportType>(
   "buildGame/exportProject"
 );
 
-export default {
+const buildGameActions = {
   buildGame,
   deleteBuildCache,
   ejectEngine,
   exportProject,
 };
+
+export default buildGameActions;

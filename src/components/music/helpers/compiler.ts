@@ -271,7 +271,7 @@ function buildDone(romFile: Uint8Array, mapFile: string) {
   }
 }
 
-export default {
+const compiler = {
   compile: (
     options: string[],
     onCompileDone: CompileDoneCallback,
@@ -292,3 +292,5 @@ export default {
   getRomSymbols: () => romSymbols,
   getRamSymbols: () => ramSymbols,
 };
+
+export default compiler;

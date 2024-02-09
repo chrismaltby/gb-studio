@@ -12,9 +12,11 @@ const showErrorBox = createAction<{ title: string; content: string }>(
   "electron/showErrorBox"
 );
 
-export default {
+const electronActions = {
   openHelp,
   openFolder,
   openFile,
   showErrorBox,
 };
+
+export default electronActions;

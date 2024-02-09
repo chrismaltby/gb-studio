@@ -8,10 +8,12 @@ const playSoundFx =
   createAction<{ effect: string; effectIndex: number }>("soundfx/playSfx");
 const pauseSoundFx = createAction("soundfx/pause");
 
-export default {
+const soundfxActions = {
   playSoundFxBeep,
   playSoundFxTone,
   playSoundFxCrash,
   playSoundFx,
   pauseSoundFx,
 };
+
+export default soundfxActions;

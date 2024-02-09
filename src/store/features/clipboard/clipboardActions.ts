@@ -162,7 +162,7 @@ const pasteClipboardEntityInPlace =
     }
   };
 
-export default {
+const clipboardActions = {
   ...actions,
   fetchClipboard,
   copyText,
@@ -186,3 +186,5 @@ export default {
   pasteActorAt,
   pasteSceneAt,
 };
+
+export default clipboardActions;

@@ -549,7 +549,7 @@ const buildMenu = async (plugins = []) => {
   Menu.setApplicationMenu(menu);
 };
 
-export default {
+const appMenu = {
   on,
   off,
   ref: () => menu,
@@ -557,3 +557,5 @@ export default {
     buildMenu(plugins);
   },
 };
+
+export default appMenu;

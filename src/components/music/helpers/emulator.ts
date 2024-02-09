@@ -147,7 +147,7 @@ function processAudioBuffer() {
   audioTime += bufferSec;
 }
 
-export default {
+const emulator = {
   init,
   writeMem,
   readMem,
@@ -155,3 +155,5 @@ export default {
   updateRom,
   setChannel,
 };
+
+export default emulator;
