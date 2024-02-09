@@ -4,7 +4,7 @@ import uuid from "uuid/v4";
 import sizeOf from "image-size";
 import { stat } from "fs-extra";
 import parseAssetPath from "../helpers/path/parseAssetPath";
-import { toValidSymbol } from "lib/helpers/symbols";
+import { toValidSymbol } from "shared/lib/helpers/symbols";
 
 const TILE_SIZE = 8;
 

@@ -17,7 +17,7 @@ import uuid from "uuid";
 import { copySync, chmodSync } from "fs-extra";
 import { projectTemplatesRoot } from "consts";
 import uniq from "lodash/uniq";
-import { toValidSymbol } from "lib/helpers/symbols";
+import { toValidSymbol } from "shared/lib/helpers/symbols";
 
 const indexById = indexBy("id");
 

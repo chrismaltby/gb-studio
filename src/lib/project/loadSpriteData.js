@@ -6,7 +6,7 @@ import { stat } from "fs-extra";
 import parseAssetPath from "../helpers/path/parseAssetPath";
 import { spriteTypeFromNumFrames } from "../helpers/gbstudio";
 import { checksumFile } from "../helpers/checksum";
-import { toValidSymbol } from "lib/helpers/symbols";
+import { toValidSymbol } from "shared/lib/helpers/symbols";
 
 const FRAME_SIZE = 16;
 

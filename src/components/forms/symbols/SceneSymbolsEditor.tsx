@@ -2,7 +2,7 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import { sceneSelectors } from "store/features/entities/entitiesState";
 import entitiesActions from "store/features/entities/entitiesActions";
-import { initScriptSymbol } from "lib/helpers/symbols";
+import { initScriptSymbol } from "shared/lib/helpers/symbols";
 import { addBankRef, AssetReference } from "../ReferencesSelect";
 
 interface SceneSymbolsEditorProps {

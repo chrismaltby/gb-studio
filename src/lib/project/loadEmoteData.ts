@@ -5,7 +5,7 @@ import { createReadStream } from "fs-extra";
 import { stat } from "fs";
 import { PNG } from "pngjs";
 import parseAssetPath from "../helpers/path/parseAssetPath";
-import { toValidSymbol } from "lib/helpers/symbols";
+import { toValidSymbol } from "shared/lib/helpers/symbols";
 
 export interface EmoteAssetData {
   id: string;

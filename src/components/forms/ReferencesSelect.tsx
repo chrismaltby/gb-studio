@@ -28,7 +28,7 @@ import {
   tilemapAttrSymbol,
   tilemapSymbol,
   tilesetSymbol,
-} from "lib/helpers/symbols";
+} from "shared/lib/helpers/symbols";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import { TooltipWrapper } from "ui/tooltips/Tooltip";
 import { MenuOverlay } from "ui/menu/Menu";
