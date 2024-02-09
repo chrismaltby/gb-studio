@@ -2,7 +2,7 @@ import fs from "fs-extra";
 import os from "os";
 import isElectron from "./isElectron";
 
-export default (create = true) => {
+const getTmp = (create = true) => {
   let tmpPath = os.tmpdir();
   if (isElectron()) {
     // eslint-disable-next-line global-require
@@ -26,3 +26,5 @@ export default (create = true) => {
   }
   return tmpPath;
 };
+
+export default getTmp;

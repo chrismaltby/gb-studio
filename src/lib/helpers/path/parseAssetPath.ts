@@ -1,6 +1,10 @@
 import Path from "path";
 
-export default (filename, projectRoot, assetFolder) => {
+const parseAssetPath = (
+  filename: string,
+  projectRoot: string,
+  assetFolder: string
+) => {
   const relativePath = Path.relative(projectRoot, filename);
   const plugin = relativePath.startsWith("plugins")
     ? relativePath.split(Path.sep)[1]
@@ -14,3 +18,5 @@ export default (filename, projectRoot, assetFolder) => {
     file,
   };
 };
+
+export default parseAssetPath;

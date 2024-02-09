@@ -1,6 +1,6 @@
 import React from "react";
 
-export default () => (
+const WorldHelp = () => (
   <div className="WorldHelp">
     <svg
       width="51px"
@@ -23,3 +23,5 @@ export default () => (
     </div>
   </div>
 );
+
+export default WorldHelp;

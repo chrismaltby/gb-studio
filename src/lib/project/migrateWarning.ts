@@ -8,21 +8,21 @@ import l10n from "lib/helpers/l10n";
 
 const dialog = remote && remote.dialog;
 
-export const needsUpdate = (currentVersion) => {
+export const needsUpdate = (currentVersion: string) => {
   if (semverValid(currentVersion) && semverValid(LATEST_PROJECT_VERSION)) {
     return semverGt(LATEST_PROJECT_VERSION, currentVersion);
   }
   return false;
 };
 
-export const fromFuture = (currentVersion) => {
+export const fromFuture = (currentVersion: string) => {
   if (semverValid(currentVersion) && semverValid(LATEST_PROJECT_VERSION)) {
     return semverGt(currentVersion, LATEST_PROJECT_VERSION);
   }
   return false;
 };
 
-export default async (projectPath) => {
+const migrateWarning = async (projectPath: string) => {
   const project = await fs.readJson(projectPath);
   let currentVersion = project._version || "1.0.0";
   if (currentVersion === "1") {
@@ -97,3 +97,5 @@ export default async (projectPath) => {
   }
   return false;
 };
+
+export default migrateWarning;
