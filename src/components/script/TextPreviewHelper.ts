@@ -1,5 +1,5 @@
 import { Font } from "store/features/entities/entitiesTypes";
-import { lexText } from "lib/fonts/lexText";
+import { lexText } from "shared/lib/compiler/lexText";
 import { encodeChar } from "lib/helpers/encodings";
 import { assetFilename } from "shared/lib/helpers/assets";
 
