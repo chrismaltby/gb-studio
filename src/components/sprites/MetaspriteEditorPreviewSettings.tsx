@@ -12,9 +12,9 @@ import l10n from "renderer/lib/l10n";
 import { SceneSelect } from "components/forms/SceneSelect";
 import { SelectMenu, selectMenuStyleProps } from "ui/form/Select";
 import { RelativePortal } from "ui/layout/RelativePortal";
-import { sceneName } from "lib/compiler/compileData2";
 import { TooltipWrapper } from "ui/tooltips/Tooltip";
 import { FixedSpacer } from "ui/spacing/Spacing";
+import { sceneName } from "store/features/entities/entitiesHelpers";
 
 interface MetaspriteEditorPreviewSettingsProps {
   spriteSheetId: string;
