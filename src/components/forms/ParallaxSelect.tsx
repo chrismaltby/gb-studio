@@ -135,7 +135,7 @@ const updateParallaxHeight = (
     return v;
   });
 
-  // Calculcate new total height
+  // Calculate new total height
   const layersHeight = newValue.reduce((memo, layer, layerIndex) => {
     if (layerIndex < newValue.length - 1) {
       return memo + layer.height;
@@ -215,6 +215,10 @@ const ParallaxSelect = ({
     [dispatch]
   );
 
+  const lastLayerHeight = value?.reduce((memo, value) => {
+    return memo - value.height;
+  }, sceneHeight);
+
   return (
     <div>
       <Select
@@ -242,7 +246,7 @@ const ParallaxSelect = ({
                   min={1}
                   value={
                     layerIndex === value.length - 1
-                      ? sceneHeight
+                      ? lastLayerHeight
                       : layer.height || undefined
                   }
                   placeholder="1"
