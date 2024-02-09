@@ -34,7 +34,7 @@ import {
 } from "consts";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import { RootState } from "store/configureStore";
-import { calculateSlope } from "lib/helpers/slope";
+import { calculateSlope } from "shared/lib/helpers/slope";
 
 interface SceneCursorProps {
   sceneId: string;

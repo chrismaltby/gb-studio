@@ -1,4 +1,4 @@
-import { SlopeIncline } from "store/features/editor/editorState";
+import type { SlopeIncline } from "store/features/editor/editorState";
 import { areRelativelyEqual } from "./math";
 
 export const calculateSlope = (
