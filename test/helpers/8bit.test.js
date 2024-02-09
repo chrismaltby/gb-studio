@@ -1,4 +1,4 @@
-import { decBin, decHex, hi, lo } from "../../src/lib/helpers/8bit";
+import { decBin, decHex, hi, lo } from "shared/lib/helpers/8bit";
 
 test("Should convert decimal to 8 bit binary", () => {
   expect(decBin(1)).toBe("00000001");
