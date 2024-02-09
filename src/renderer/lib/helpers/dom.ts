@@ -1,4 +1,4 @@
-export default function getCoords(elem) {
+export const getDOMElementCoords = (elem: Element) => {
   const box = elem.getBoundingClientRect();
 
   const body = document.body;
@@ -14,4 +14,4 @@ export default function getCoords(elem) {
   const left = box.left + scrollLeft - clientLeft;
 
   return { top: Math.round(top), left: Math.round(left) };
-}
+};

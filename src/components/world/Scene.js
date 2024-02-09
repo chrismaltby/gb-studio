@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import cx from "classnames";
-import getCoords from "lib/helpers/getCoords";
 import Actor from "./Actor";
 import Trigger from "./Trigger";
 import SceneCollisions from "./SceneCollisions";
@@ -36,6 +35,7 @@ import SceneSlopePreview from "./SceneSlopePreview";
 import { SceneEventHelper } from "./SceneEventHelper";
 import { sceneName } from "store/features/entities/entitiesHelpers";
 import { assetFilename } from "shared/lib/helpers/assets";
+import { getDOMElementCoords } from "renderer/lib/helpers/dom";
 
 const TILE_SIZE = 8;
 
@@ -76,7 +76,7 @@ class Scene extends Component {
       sceneHover,
       hovered,
     } = this.props;
-    const pos = getCoords(e.currentTarget);
+    const pos = getDOMElementCoords(e.currentTarget);
     const x = e.pageX - pos.left;
     const y = e.pageY - pos.top;
     const tX = Math.floor(x / (8 * zoomRatio));
