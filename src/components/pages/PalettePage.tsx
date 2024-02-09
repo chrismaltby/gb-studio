@@ -20,7 +20,7 @@ import CustomPalettePicker from "components/forms/CustomPalettePicker";
 import { NavigatorPalettes } from "components/palettes/NavigatorPalettes";
 import PageHeader from "components/library/PageHeader";
 import entitiesActions from "store/features/entities/entitiesActions";
-import castEventValue from "lib/helpers/castEventValue";
+import castEventValue from "renderer/lib/helpers/castEventValue";
 
 const Wrapper = styled.div`
   display: flex;

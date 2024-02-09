@@ -1,4 +1,6 @@
-export default (event) => {
+// @TODO Replace all uses of this with something typesafe
+
+const castEventValue = (event) => {
   const el = event && event.currentTarget;
   let value = el ? el.value : event;
   if (value !== undefined && el && el.type === "number") {
@@ -30,3 +32,5 @@ export default (event) => {
   }
   return value;
 };
+
+export default castEventValue;
