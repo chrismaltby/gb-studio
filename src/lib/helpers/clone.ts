@@ -4,9 +4,7 @@ export const clone = <T>(input: T): T => {
   return JSON.parse(JSON.stringify(input));
 };
 
-export const cloneDictionary = <T extends unknown>(
-  dictionary: Dictionary<T>
-): Dictionary<T> =>
+export const cloneDictionary = <T>(dictionary: Dictionary<T>): Dictionary<T> =>
   Object.keys(dictionary).reduce((memo, key) => {
     const value = dictionary[key];
     if (value) {

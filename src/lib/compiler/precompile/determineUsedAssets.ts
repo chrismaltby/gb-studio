@@ -26,10 +26,7 @@ export const determineUsedAssets = ({
   const usedSoundsLookup: Dictionary<Sound> = {};
 
   const addAssetById =
-    <T extends unknown>(
-      assetLookup: Dictionary<T>,
-      usedLookup: Dictionary<T>
-    ) =>
+    <T>(assetLookup: Dictionary<T>, usedLookup: Dictionary<T>) =>
     (id: string) => {
       const asset = assetLookup[id];
       if (asset && !usedLookup[id]) {

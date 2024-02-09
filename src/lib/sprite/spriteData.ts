@@ -1163,10 +1163,7 @@ export const roundDown8 = (v: number): number => Math.floor(v / 8) * 8;
 export const roundUp16 = (x: number): number => Math.ceil(x / 16) * 16;
 export const roundUp8 = (x: number): number => Math.ceil(x / 8) * 8;
 
-const uniqWith = <T extends unknown>(
-  arr: T[],
-  comparator: (a: T, b: T) => boolean
-) => {
+const uniqWith = <T>(arr: T[], comparator: (a: T, b: T) => boolean) => {
   const uniques = [];
   for (const a of arr) {
     if (uniques.findIndex((u) => comparator(a, u)) === -1) {

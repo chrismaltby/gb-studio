@@ -262,11 +262,8 @@ export const sortByFilename = (a: Asset, b: Asset) => {
   return 0;
 };
 
-export const swap = <T extends unknown>(
-  x: number,
-  y: number,
-  [...xs]: T[]
-): T[] => (xs.length > 1 ? (([xs[x], xs[y]] = [xs[y], xs[x]]), xs) : xs);
+export const swap = <T>(x: number, y: number, [...xs]: T[]): T[] =>
+  xs.length > 1 ? (([xs[x], xs[y]] = [xs[y], xs[x]]), xs) : xs;
 
 export const isUnionValue = (input: unknown): input is UnionValue => {
   if (typeof input !== "object") {
