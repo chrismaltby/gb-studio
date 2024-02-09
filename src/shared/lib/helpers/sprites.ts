@@ -1,4 +1,4 @@
-const maxSpriteTilesForBackgroundTilesLength = (
+export const maxSpriteTilesForBackgroundTilesLength = (
   backgroundTilesLength: number
 ) => {
   if (backgroundTilesLength <= 128) {
@@ -9,5 +9,3 @@ const maxSpriteTilesForBackgroundTilesLength = (
   }
   return 64;
 };
-
-export default maxSpriteTilesForBackgroundTilesLength;
