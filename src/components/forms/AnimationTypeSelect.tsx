@@ -76,7 +76,7 @@ export const AnimationTypeSelect: FC<AnimationTypeSelectProps> = ({
         }
       }
     }
-  }, [value]);
+  }, [options, value]);
 
   return (
     <Select

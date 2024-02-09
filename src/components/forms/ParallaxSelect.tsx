@@ -206,7 +206,7 @@ const ParallaxSelect = ({
         options.find((o) => o.value === value.length) || options[0];
       setSelectValue(selectValue);
     }
-  }, [value]);
+  }, [options, value]);
 
   const setHoverLayer = useCallback(
     (layer: number | undefined) => {
