@@ -11,7 +11,7 @@ import * as eventHelpers from "./helpers";
 import * as gbStudioHelpers from "../helpers/gbstudio";
 import * as eventSystemHelpers from "../helpers/eventSystem";
 import * as compileEntityEvents from "../compiler/compileEntityEvents";
-import trimLines from "../helpers/trimlines";
+import trimLines from "shared/lib/helpers/trimlines";
 import { ScriptEventFieldSchema } from "store/features/entities/entitiesTypes";
 import { Dictionary } from "@reduxjs/toolkit";
 import { clone, cloneDictionary } from "lib/helpers/clone";
@@ -50,7 +50,8 @@ const vm = new NodeVM({
       "../helpers/gbstudio": gbStudioHelpers,
       "../helpers/eventSystem": eventSystemHelpers,
       "../compiler/compileEntityEvents": compileEntityEvents,
-      "../helpers/trimlines": trimLines,
+      "../helpers/trimlines": trimLines, // @TODO Add deprecated warning when using this import
+      "shared/lib/helpers/trimlines": trimLines,
     },
   },
 });

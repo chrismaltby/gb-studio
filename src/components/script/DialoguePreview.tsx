@@ -2,7 +2,7 @@ import keyBy from "lodash/keyBy";
 import uniq from "lodash/uniq";
 import React, { FC, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import { textNumLines } from "lib/helpers/trimlines";
+import { textNumLines } from "shared/lib/helpers/trimlines";
 import { RootState } from "store/configureStore";
 import {
   avatarSelectors,

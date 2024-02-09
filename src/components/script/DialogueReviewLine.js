@@ -2,7 +2,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Textarea } from "components/library/Forms";
-import { textNumLines } from "lib/helpers/trimlines";
+import { textNumLines } from "shared/lib/helpers/trimlines";
 import l10n from "renderer/lib/l10n";
 import { SceneShape, ActorShape, EventShape } from "store/stateShape";
 

@@ -1,4 +1,4 @@
-import trimlines from "../../src/lib/helpers/trimlines";
+import trimlines from "shared/lib/helpers/trimlines";
 
 test("shouldn't modify strings under line limit", () => {
   expect(trimlines("012345678901234567")).toBe("012345678901234567", 18);

@@ -1,6 +1,6 @@
 import { inputDec, textSpeedDec } from "./helpers";
 import { decBin, decHex, decOct, hexDec } from "shared/lib/helpers/8bit";
-import trimlines from "../helpers/trimlines";
+import trimlines from "shared/lib/helpers/trimlines";
 import { is16BitCType } from "../helpers/engineFields";
 import {
   globalVariableDefaultName,
