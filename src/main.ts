@@ -184,11 +184,11 @@ const createWindow = async (projectPath: string) => {
   });
 
   mainWindow.on("enter-full-screen", () => {
-    mainWindow?.webContents.send("enter-full-screen");
+    mainWindow?.webContents.send("is-full-screen-changed", true);
   });
 
   mainWindow.on("leave-full-screen", () => {
-    mainWindow?.webContents.send("leave-full-screen");
+    mainWindow?.webContents.send("is-full-screen-changed", false);
   });
 
   mainWindow.on("page-title-updated", (e, title) => {
@@ -398,16 +398,6 @@ ipcMain.on("open-project", async (_event, arg) => {
   openProject(projectPath);
 });
 
-ipcMain.on("check-full-screen", async (_event, _arg) => {
-  if (mainWindow) {
-    if (mainWindow.isFullScreen()) {
-      mainWindow.webContents.send("enter-full-screen");
-    } else {
-      mainWindow.webContents.send("leave-full-screen");
-    }
-  }
-});
-
 ipcMain.on("open-project-picker", async (_event, _arg) => {
   openProjectPicker();
 });
@@ -600,6 +590,13 @@ ipcMain.handle("settings-set", (_, key: string, value: JsonValue) => {
 });
 ipcMain.handle("settings-delete", (_, key: string) => {
   settings.delete(key);
+});
+
+ipcMain.handle("get-is-full-screen", async () => {
+  if (mainWindow) {
+    return mainWindow.isFullScreen();
+  }
+  return false;
 });
 
 menu.on("new", async () => {

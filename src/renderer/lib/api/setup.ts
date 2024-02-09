@@ -1,4 +1,4 @@
-import { ipcRenderer } from "electron";
+import { ipcRenderer, IpcRendererEvent } from "electron";
 import type { CreateProjectInput } from "lib/project/createProject";
 import type { ThemeId } from "shared/lib/theme";
 import {
@@ -16,6 +16,11 @@ const APISetup = {
   test: () => console.log("Hello World"),
   app: {
     openExternal: (path: string) => ipcRenderer.invoke("open-external", path),
+    getIsFullScreen: (): Promise<boolean> =>
+      ipcRenderer.invoke("get-is-full-screen"),
+    onIsFullScreenChange: (
+      listener: (event: IpcRendererEvent, isFullScreen: boolean) => void
+    ) => ipcRenderer.on("is-full-screen-changed", listener),
   },
   l10n: {
     getL10NStrings: (): Promise<L10NLookup> =>

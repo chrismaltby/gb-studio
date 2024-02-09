@@ -8,9 +8,9 @@ import ThemeProvider from "ui/theme/ThemeProvider";
 import GlobalStyle from "ui/globalStyle";
 import { initL10N } from "renderer/lib/l10n";
 import { initTheme } from "renderer/lib/theme";
-import "lib/electron/handleFullScreen";
 import "./initProject";
 import "../../styles/App.css";
+import { initFullScreenDetector } from "renderer/lib/handleFullScreen";
 
 const render = () => {
   ReactDOM.render(
@@ -29,6 +29,7 @@ const render = () => {
 (async () => {
   await initL10N();
   await initTheme();
+  await initFullScreenDetector();
   render();
 })();
 
