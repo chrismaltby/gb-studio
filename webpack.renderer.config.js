@@ -75,6 +75,7 @@ module.exports = {
       shared: srcPath("shared"),
       assets: srcPath("assets"),
       consts: srcPath("consts.ts"),
+      wasm: Path.join(__dirname, "appData/wasm"),
       "contributors.json": Path.join(__dirname, "contributors.json"),
     },
   },

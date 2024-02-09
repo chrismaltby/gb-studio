@@ -15,6 +15,7 @@
           "src",
           "src/components",
           "src/renderer",
+          "appData",
           "./"
         ]
       }
