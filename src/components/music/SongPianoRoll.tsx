@@ -1,18 +1,18 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled, { css } from "styled-components";
-import { Song } from "lib/helpers/uge/song/Song";
+import { Song } from "renderer/lib/uge/song/Song";
 import { RootState } from "store/configureStore";
 import { SplitPaneVerticalDivider } from "ui/splitpane/SplitPaneDivider";
 import { SequenceEditor } from "./SequenceEditor";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
-import l10n from "lib/helpers/l10n";
+import l10n from "renderer/lib/l10n";
 import { RollChannel } from "./RollChannel";
 import { RollChannelGrid } from "./RollChannelGrid";
 import { RollChannelSelectionArea } from "./RollChannelSelectionArea";
 import { clipboard, ipcRenderer } from "electron";
 import trackerActions from "store/features/tracker/trackerActions";
-import { PatternCell } from "lib/helpers/uge/song/PatternCell";
+import { PatternCell } from "renderer/lib/uge/song/PatternCell";
 import { cloneDeep } from "lodash";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
@@ -24,6 +24,7 @@ import {
 import { RollChannelEffectRow } from "./RollChannelEffectRow";
 import { WandIcon } from "ui/icons/Icons";
 import { RollChannelHover } from "./RollChannelHover";
+import API from "renderer/lib/api";
 
 const CELL_SIZE = 16;
 const MAX_NOTE = 71;
@@ -248,7 +249,7 @@ const playNotePreview = (
 ) => {
   const instrumentType = getInstrumentTypeByChannel(channel) || "duty";
   const instrumentList = getInstrumentListByType(song, instrumentType);
-  ipcRenderer.send("music-data-send", {
+  API.music.sendMusicData({
     action: "preview",
     note: note,
     type: instrumentType,
@@ -288,10 +289,10 @@ export const SongPianoRoll = ({
         setPlaybackState(d.update);
       }
     };
-    ipcRenderer.on("music-data", listener);
+    API.music.musicDataSubscribe(listener);
 
     return () => {
-      ipcRenderer.removeListener("music-data", listener);
+      API.music.musicDataUnsubscribe(listener);
     };
   }, [setPlaybackState]);
 
@@ -302,7 +303,7 @@ export const SongPianoRoll = ({
       dispatch(
         trackerActions.setDefaultStartPlaybackPosition([sequenceId, col])
       );
-      ipcRenderer.send("music-data-send", {
+      API.music.sendMusicData({
         action: "position",
         position: [sequenceId, col],
       });
@@ -980,12 +981,12 @@ export const SongPianoRoll = ({
       window.addEventListener("copy", onCopy);
       window.addEventListener("cut", onCut);
       window.addEventListener("paste", onPaste);
-      ipcRenderer.on("paste-in-place", onPasteInPlace);
+      API.clipboard.addPasteInPlaceListener(onPasteInPlace);
       return () => {
         window.removeEventListener("copy", onCopy);
         window.removeEventListener("cut", onCut);
         window.removeEventListener("paste", onPaste);
-        ipcRenderer.removeListener("paste-in-place", onPasteInPlace);
+        API.clipboard.removePasteInPlaceListener(onPasteInPlace);
       };
     }
   }, [onCopy, onCut, onPaste, onPasteInPlace, subpatternEditorFocus]);

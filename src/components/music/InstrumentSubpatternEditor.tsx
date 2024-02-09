@@ -1,5 +1,5 @@
-import l10n from "lib/helpers/l10n";
-import { SubPatternCell } from "lib/helpers/uge/song/SubPatternCell";
+import l10n from "renderer/lib/l10n";
+import { SubPatternCell } from "renderer/lib/uge/song/SubPatternCell";
 import React, {
   useCallback,
   useEffect,
@@ -12,11 +12,11 @@ import { CheckboxField } from "ui/form/CheckboxField";
 import { FormRow } from "ui/form/FormLayout";
 import { renderEffect, renderEffectParam } from "./helpers";
 import {
+  NO_CHANGE_ON_PASTE,
   parseClipboardToSubPattern,
   parseSubPatternFieldsToClipboard,
 } from "./musicClipboardHelpers";
-import { KeyWhen, getKeys } from "lib/keybindings/keyBindings";
-import { Position } from "lib/sprite/spriteData";
+import { KeyWhen, getKeys } from "renderer/lib/keybindings/keyBindings";
 import { useDispatch, useSelector } from "react-redux";
 import trackerActions from "store/features/tracker/trackerActions";
 import { SelectionRect } from "./SongPianoRoll";
@@ -26,6 +26,7 @@ import { cloneDeep, mergeWith } from "lodash";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import { clipboard } from "store/features/clipboard/clipboardHelpers";
 import { RootState } from "store/configureStore";
+import { Position } from "./SongTracker";
 
 const CHANNEL_FIELDS = 4;
 const ROW_SIZE = CHANNEL_FIELDS * 1;
@@ -817,7 +818,7 @@ export const InstrumentSubpatternEditor = ({
               newPattern[startRow + i] = mergeWith(
                 newPattern[startRow + i],
                 pastedPatternCellRow[j],
-                (o, s) => (s === -9 ? o : s)
+                (o, s) => (s === NO_CHANGE_ON_PASTE ? o : s)
               );
             }
           }

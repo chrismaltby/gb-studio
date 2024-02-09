@@ -68,6 +68,21 @@ const APISetup = {
     createProject: (input: CreateProjectInput) =>
       ipcRenderer.invoke("create-project", input),
   },
+  music: {
+    openMusic: () => ipcRenderer.send("open-music"),
+    closeMusic: () => ipcRenderer.send("close-music"),
+    sendMusicData: (data: any) => ipcRenderer.send("music-data-send", data),
+    musicDataSubscribe: (listener: (_event: any, data: any) => void) =>
+      ipcRenderer.on("music-data", listener),
+    musicDataUnsubscribe: (listener: (_event: any, data: any) => void) =>
+      ipcRenderer.removeListener("music-data", listener),
+  },
+  clipboard: {
+    addPasteInPlaceListener: (listener: () => void) =>
+      ipcRenderer.on("paste-in-place", listener),
+    removePasteInPlaceListener: (listener: () => void) =>
+      ipcRenderer.removeListener("paste-in-place", listener),
+  },
 };
 
 export default APISetup;

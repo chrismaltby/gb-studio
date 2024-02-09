@@ -4,7 +4,7 @@ import { checksumFile, checksumString } from "../helpers/checksum";
 import { assetFilename } from "../helpers/gbstudio";
 import { readFile, ensureDir, pathExists, writeFile, unlink } from "fs-extra";
 import ensureBuildTools from "./ensureBuildTools";
-import { exportToC, loadUGESong } from "../helpers/uge/ugeHelper";
+import { exportToC, loadUGESong } from "../../renderer/lib/uge/ugeHelper";
 
 export interface PrecompiledMusicTrack {
   id: string;

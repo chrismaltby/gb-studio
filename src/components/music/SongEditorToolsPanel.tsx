@@ -23,9 +23,9 @@ import { saveSongFile } from "store/features/trackerDocument/trackerDocumentStat
 import { InstrumentSelect } from "./InstrumentSelect";
 import { Select } from "ui/form/Select";
 import { PianoRollToolType } from "store/features/tracker/trackerState";
-import { ipcRenderer } from "electron";
-import l10n from "lib/helpers/l10n";
+import l10n from "renderer/lib/l10n";
 import { InstrumentType } from "store/features/editor/editorState";
+import API from "renderer/lib/api";
 
 const octaveOffsetOptions: OctaveOffsetOptions[] = [0, 1, 2, 3].map((i) => ({
   value: i,
@@ -98,7 +98,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
     if (!playerReady) return;
     if (!play) {
       if (playbackFromStart) {
-        ipcRenderer.send("music-data-send", {
+        API.music.sendMusicData({
           action: "position",
           position: defaultStartPlaybackPosition,
         });
@@ -117,7 +117,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
 
   const stopPlayback = useCallback(() => {
     dispatch(trackerActions.stopTracker());
-    ipcRenderer.send("music-data-send", {
+    API.music.sendMusicData({
       action: "stop",
       position: defaultStartPlaybackPosition,
     });
