@@ -1,5 +1,4 @@
 /* eslint-disable import/prefer-default-export */
-import Path from "path";
 import { SPRITE_TYPE_STATIC } from "consts";
 
 export const spriteTypeFromNumFrames = (numFrames) => {

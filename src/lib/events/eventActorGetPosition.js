@@ -3,7 +3,7 @@ const l10n = require("../helpers/l10n").default;
 const id = "EVENT_ACTOR_GET_POSITION";
 const groups = ["EVENT_GROUP_ACTOR", "EVENT_GROUP_VARIABLES"];
 
-const autoLabel = (fetchArg, input) => {
+const autoLabel = (fetchArg, _input) => {
   return l10n("EVENT_ACTOR_GET_POSITION_LABEL", {
     actor: fetchArg("actorId"),
     x: fetchArg("vectorX"),
