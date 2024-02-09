@@ -1,4 +1,4 @@
-import { decBin } from "lib/helpers/8bit";
+import { decBin } from "shared/lib/helpers/8bit";
 import { Sound } from "store/features/entities/entitiesTypes";
 import { compileFXHammer } from "./compileFXHammer";
 import { compileVGM } from "./compileVGM";

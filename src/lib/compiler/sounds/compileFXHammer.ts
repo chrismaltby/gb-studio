@@ -1,5 +1,5 @@
 import { readFile } from "fs-extra";
-import { decBin, decHexVal } from "lib/helpers/8bit";
+import { decBin, decHexVal } from "shared/lib/helpers/8bit";
 import { CompiledSound } from "./compileSound";
 
 type CompileOutputFmt = "c" | "asm";

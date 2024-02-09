@@ -1,4 +1,4 @@
-import { decHex, decHexVal } from "./8bit";
+import { decHex, decHexVal } from "shared/lib/helpers/8bit";
 
 export const C_NAME_INVALID = "C_NAME_INVALID";
 export const C_DATA_EMPTY = "C_DATA_EMPTY";

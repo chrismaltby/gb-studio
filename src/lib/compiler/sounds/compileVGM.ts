@@ -1,5 +1,5 @@
 import { readFile } from "fs-extra";
-import { decBin, decHexVal } from "lib/helpers/8bit";
+import { decBin, decHexVal } from "shared/lib/helpers/8bit";
 import { ungzip } from "node-gzip";
 
 const MIN_VGM_VERSION = 0x161;
