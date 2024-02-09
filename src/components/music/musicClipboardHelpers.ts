@@ -1,12 +1,14 @@
-import { PatternCell } from "lib/helpers/uge/song/PatternCell";
-import { noteNames } from "./helpers/music_constants";
-import { SubPatternCell } from "lib/helpers/uge/song/SubPatternCell";
+import { PatternCell } from "renderer/lib/uge/song/PatternCell";
+import { noteStringsForClipboard } from "./constants";
+import { SubPatternCell } from "renderer/lib/uge/song/SubPatternCell";
 import {
   renderNote,
   renderInstrument,
   renderEffect,
   renderEffectParam,
 } from "./helpers";
+
+export const NO_CHANGE_ON_PASTE = -9;
 
 export type PatternCellKey = keyof PatternCell;
 export const patternCellFields: PatternCellKey[] = [
@@ -135,16 +137,26 @@ export const parseClipboardToPattern = (clipboard: string) => {
             c.substring(8, 9),
             c.substring(9, 11),
           ];
-          // Send -9 to not change parameter when merging
-          const note = noteNames.indexOf(cellString[0]);
+          // Send NO_CHANGE_ON_PASTE to not change parameter when merging
+          const note = noteStringsForClipboard.indexOf(cellString[0]);
           patternCell.note =
-            cellString[0] !== "   " ? (note === -1 ? null : note) : -9;
+            cellString[0] !== "   "
+              ? note === -1
+                ? null
+                : note
+              : NO_CHANGE_ON_PASTE;
           patternCell.instrument =
-            cellString[1] !== "  " ? strToInt(cellString[1], 10, -1) : -9;
+            cellString[1] !== "  "
+              ? strToInt(cellString[1], 10, -1)
+              : NO_CHANGE_ON_PASTE;
           patternCell.effectcode =
-            cellString[2] !== " " ? strToInt(cellString[2], 16) : -9;
+            cellString[2] !== " "
+              ? strToInt(cellString[2], 16)
+              : NO_CHANGE_ON_PASTE;
           patternCell.effectparam =
-            cellString[3] !== "  " ? strToInt(cellString[3], 16) : -9;
+            cellString[3] !== "  "
+              ? strToInt(cellString[3], 16)
+              : NO_CHANGE_ON_PASTE;
           return patternCell;
         });
       }
@@ -222,16 +234,26 @@ export const parseClipboardToSubPattern = (clipboard: string) => {
             c.substring(8, 9),
             c.substring(9, 11),
           ];
-          // Send -9 to not change parameter when merging
-          const note = noteNames.indexOf(cellString[0]);
+          // Send NO_CHANGE_ON_PASTE to not change parameter when merging
+          const note = noteStringsForClipboard.indexOf(cellString[0]);
           patternCell.note =
-            cellString[0] !== "   " ? (note === -1 ? null : note) : -9;
+            cellString[0] !== "   "
+              ? note === -1
+                ? null
+                : note
+              : NO_CHANGE_ON_PASTE;
           patternCell.jump =
-            cellString[1] !== "  " ? strToInt(cellString[1], 10, -1) : -9;
+            cellString[1] !== "  "
+              ? strToInt(cellString[1], 10, -1)
+              : NO_CHANGE_ON_PASTE;
           patternCell.effectcode =
-            cellString[2] !== " " ? strToInt(cellString[2], 16) : -9;
+            cellString[2] !== " "
+              ? strToInt(cellString[2], 16)
+              : NO_CHANGE_ON_PASTE;
           patternCell.effectparam =
-            cellString[3] !== "  " ? strToInt(cellString[3], 16) : -9;
+            cellString[3] !== "  "
+              ? strToInt(cellString[3], 16)
+              : NO_CHANGE_ON_PASTE;
           return patternCell;
         });
       }

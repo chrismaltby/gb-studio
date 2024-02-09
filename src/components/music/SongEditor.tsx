@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { EditableText } from "ui/form/EditableText";
@@ -15,9 +15,9 @@ import { Input } from "ui/form/Input";
 import { InstrumentDutyEditor } from "./InstrumentDutyEditor";
 import { InstrumentWaveEditor } from "./InstrumentWaveEditor";
 import { InstrumentNoiseEditor } from "./InstrumentNoiseEditor";
-import { Song } from "lib/helpers/uge/song/Song";
+import { Song } from "renderer/lib/uge/song/Song";
 import castEventValue from "lib/helpers/castEventValue";
-import l10n from "lib/helpers/l10n";
+import l10n from "renderer/lib/l10n";
 import {
   DutyInstrument,
   NoiseInstrument,
@@ -33,12 +33,8 @@ import styled from "styled-components";
 
 type Instrument = DutyInstrument | NoiseInstrument | WaveInstrument;
 
-const instrumentEditorTabs = {
-  main: l10n("SIDEBAR_INSTRUMENT"),
-  subpattern: l10n("SIDEBAR_SUBPATTERN"),
-} as const;
-
-type InstrumentEditorTab = keyof typeof instrumentEditorTabs;
+type InstrumentEditorTab = "main" | "subpattern";
+type InstrumentEditorTabs = { [key in InstrumentEditorTab]: string };
 
 interface SongEditorProps {
   multiColumn: boolean;
@@ -187,6 +183,15 @@ export const SongEditor: FC<SongEditorProps> = ({ multiColumn }) => {
     console.log(mode);
     setInstrumentEditorTab(mode);
   }, []);
+
+  const instrumentEditorTabs = useMemo(
+    () =>
+      ({
+        main: l10n("SIDEBAR_INSTRUMENT"),
+        subpattern: l10n("SIDEBAR_SUBPATTERN"),
+      } as InstrumentEditorTabs),
+    []
+  );
 
   if (!song) {
     return null;

@@ -1,5 +1,5 @@
+import API from "renderer/lib/api";
 import { defaultKeys, milkytrackerKeys, openMPTKeys } from "./defaultKeys";
-import settings from "electron-settings";
 
 interface KeyCommands {
   editNoteField?: (...args: any[]) => void;
@@ -41,8 +41,10 @@ export const getKeys = (key: string, when: KeyWhen, cmds: KeyCommands) => {
   }
 };
 
-export const initKeyBindings = () => {
-  keyBindings = defaultKeys.concat(
-    settings.get("trackerKeyBindings") === 1 ? milkytrackerKeys : openMPTKeys
-  );
+export const initKeyBindings = async () => {
+  const customTrackerKeyBindings =
+    (await API.settings.get("trackerKeyBindings")) === 1
+      ? milkytrackerKeys
+      : openMPTKeys;
+  keyBindings = defaultKeys.concat(customTrackerKeyBindings);
 };

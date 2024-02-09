@@ -7,8 +7,8 @@ import React, {
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import { PatternCell } from "lib/helpers/uge/song/PatternCell";
-import { Song } from "lib/helpers/uge/song/Song";
+import { PatternCell } from "renderer/lib/uge/song/PatternCell";
+import { Song } from "renderer/lib/uge/song/Song";
 import { RootState } from "store/configureStore";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import { SplitPaneHorizontalDivider } from "ui/splitpane/SplitPaneDivider";
@@ -16,17 +16,19 @@ import { SequenceEditor } from "./SequenceEditor";
 import { SongRow } from "./SongRow";
 import scrollIntoView from "scroll-into-view-if-needed";
 import { SongGridHeaderCell } from "./SongGridHeaderCell";
-import { IpcRendererEvent, ipcRenderer } from "electron";
+import { IpcRendererEvent } from "electron";
 import { getInstrumentTypeByChannel, getInstrumentListByType } from "./helpers";
 import {
+  NO_CHANGE_ON_PASTE,
   parseClipboardToPattern,
   parsePatternFieldsToClipboard,
 } from "./musicClipboardHelpers";
-import { getKeys, KeyWhen } from "lib/keybindings/keyBindings";
+import { getKeys, KeyWhen } from "renderer/lib/keybindings/keyBindings";
 import trackerActions from "store/features/tracker/trackerActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import { clipboard } from "store/features/clipboard/clipboardHelpers";
 import { clamp, cloneDeep, mergeWith } from "lodash";
+import API from "renderer/lib/api";
 
 function getSelectedTrackerFields(
   selectionRect: SelectionRect | undefined,
@@ -69,7 +71,7 @@ interface SelectionRect {
   height: number;
 }
 
-interface Position {
+export interface Position {
   x: number;
   y: number;
 }
@@ -150,10 +152,10 @@ export const SongTracker = ({
         setPlaybackState(d.update);
       }
     };
-    ipcRenderer.on("music-data", listener);
+    API.music.musicDataSubscribe(listener);
 
     return () => {
-      ipcRenderer.removeListener("music-data", listener);
+      API.music.musicDataUnsubscribe(listener);
     };
   }, [setPlaybackState]);
 
@@ -346,7 +348,7 @@ export const SongTracker = ({
             parseInt(rowId),
           ])
         );
-        ipcRenderer.send("music-data-send", {
+        API.music.sendMusicData({
           action: "position",
           position: [sequenceId, parseInt(rowId)],
         });
@@ -429,7 +431,7 @@ export const SongTracker = ({
         if (song && value !== null) {
           const instrumentType = getInstrumentTypeByChannel(channel) || "duty";
           const instrumentList = getInstrumentListByType(song, instrumentType);
-          ipcRenderer.send("music-data-send", {
+          API.music.sendMusicData({
             action: "preview",
             note: value + octaveOffset * 12,
             type: instrumentType,
@@ -785,7 +787,7 @@ export const SongTracker = ({
               newPattern[startRow + i][channelId + j] = mergeWith(
                 newPattern[startRow + i][channelId + j],
                 pastedPatternCellRow[j],
-                (o, s) => (s === -9 ? o : s)
+                (o, s) => (s === NO_CHANGE_ON_PASTE ? o : s)
               );
             }
           }

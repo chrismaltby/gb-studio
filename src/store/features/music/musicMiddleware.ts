@@ -8,7 +8,7 @@ import { musicSelectors } from "../entities/entitiesState";
 import { MusicSettings } from "../entities/entitiesTypes";
 import { ipcRenderer } from "electron";
 import { readFile } from "fs-extra";
-import { loadUGESong } from "lib/helpers/uge/ugeHelper";
+import { loadUGESong } from "renderer/lib/uge/ugeHelper";
 import toArrayBuffer from "lib/helpers/toArrayBuffer";
 import { assetFilename } from "shared/lib/helpers/assets";
 
