@@ -83,7 +83,6 @@ import {
   upsertAssetEntity,
   updateEntitySymbol,
   isSlope,
-  sceneName,
   defaultLocalisedSceneName,
 } from "./entitiesHelpers";
 import spriteActions from "../sprite/spriteActions";

@@ -10,7 +10,7 @@ import l10n from "renderer/lib/l10n";
 import { RollChannel } from "./RollChannel";
 import { RollChannelGrid } from "./RollChannelGrid";
 import { RollChannelSelectionArea } from "./RollChannelSelectionArea";
-import { clipboard, ipcRenderer } from "electron";
+import { clipboard } from "electron";
 import trackerActions from "store/features/tracker/trackerActions";
 import { PatternCell } from "renderer/lib/uge/song/PatternCell";
 import { cloneDeep } from "lodash";
