@@ -28,6 +28,10 @@ const functionSymbols = [
     id: "max(",
     display: "max(",
   },
+  {
+    id: "atan2(",
+    display: "atan2(",
+  },
 ];
 
 const functionSearch = (search: string) => {

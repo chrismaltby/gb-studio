@@ -421,6 +421,8 @@ const funToScriptOperator = (
       return ".MAX";
     case "abs":
       return ".ABS";
+    case "atan2":
+      return ".ATAN2";
   }
   assertUnreachable(fun);
 };
@@ -2634,7 +2636,6 @@ extern void __mute_mask_${symbol};
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Direction");
-    this._actorGetPosition(actorRef);
     const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
     rpn
       .int16(dirToAngle(direction))
@@ -2655,7 +2656,6 @@ extern void __mute_mask_${symbol};
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Angle");
-    this._actorGetPosition(actorRef);
     const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
     rpn
       .int16(Math.round(angle % 256))
@@ -2676,7 +2676,6 @@ extern void __mute_mask_${symbol};
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Angle");
-    this._actorGetPosition(actorRef);
     const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
     rpn
       .refVariable(angleVariable)
@@ -2717,7 +2716,6 @@ extern void __mute_mask_${symbol};
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Actor Direction");
-    this._actorGetPosition(actorRef);
     const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
     rpn
       .int16(0) // Save space for direction
