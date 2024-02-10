@@ -54,6 +54,9 @@ export const getPrecedence = (token: Token): number => {
       case "+":
       case "-":
         return 11;
+      case "<<":
+      case ">>":
+        return 10;
       case "<":
       case ">":
       case ">=":

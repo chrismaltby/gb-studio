@@ -183,6 +183,8 @@ type ScriptBuilderRPNOperation =
   | ".MIN"
   | ".MAX"
   | ".ATAN2"
+  | ".SHL"
+  | ".SHR"
   | ScriptBuilderComparisonOperator;
 
 type ScriptBuilderOverlayMoveSpeed =
@@ -400,6 +402,10 @@ const toScriptOperator = (
       return ".AND";
     case "||":
       return ".OR";
+    case "<<":
+      return ".SHL";
+    case ">>":
+      return ".SHR";
   }
   assertUnreachable(operator);
 };
