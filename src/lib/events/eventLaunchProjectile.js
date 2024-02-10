@@ -89,8 +89,10 @@ const fields = [
         key: "angle",
         label: l10n("FIELD_ANGLE"),
         description: l10n("FIELD_PROJECTILE_ANGLE_DESC"),
-        type: "number",
+        type: "angle",
         defaultValue: 0,
+        min: -256,
+        max: 256,
         conditions: [
           {
             key: "directionType",

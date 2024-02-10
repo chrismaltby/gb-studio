@@ -56,6 +56,7 @@ import {
 } from "./ScriptEditorContext";
 import ScriptEventFormMathArea from "./ScriptEventFormMatharea";
 import ScriptEventFormTextArea from "./ScriptEventFormTextarea";
+import { AngleInput } from "ui/form/AngleInput";
 
 interface ScriptEventFormInputProps {
   id: string;
@@ -463,6 +464,20 @@ const ScriptEventFormInput = ({
     return (
       <OffscreenSkeletonInput>
         <DirectionPicker id={id} value={value} onChange={onChangeField} />
+      </OffscreenSkeletonInput>
+    );
+  } else if (type === "angle") {
+    return (
+      <OffscreenSkeletonInput>
+        <AngleInput
+          id={id}
+          value={String(value !== undefined && value !== null ? value : "")}
+          min={field.min}
+          max={field.max}
+          step={field.step}
+          placeholder={String(field.placeholder || defaultValue)}
+          onChange={onChangeField}
+        />
       </OffscreenSkeletonInput>
     );
   } else if (type === "collisionMask") {
