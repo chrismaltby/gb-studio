@@ -73,18 +73,6 @@ const fields = [
         ],
       },
       {
-        key: "otherActorId",
-        label: l10n("FIELD_DIRECTION"),
-        type: "actor",
-        defaultValue: "$self$",
-        conditions: [
-          {
-            key: "directionType",
-            eq: "actorPos",
-          },
-        ],
-      },
-      {
         key: "direction",
         label: l10n("FIELD_DIRECTION"),
         description: l10n("FIELD_PROJECTILE_DIRECTION_DESC"),
@@ -124,12 +112,25 @@ const fields = [
         ],
       },
       {
+        key: "targetActorId",
+        label: l10n("FIELD_TARGET"),
+        description: l10n("FIELD_PROJECTILE_TARGET_DESC"),
+        type: "actor",
+        defaultValue: "$self$",
+        conditions: [
+          {
+            key: "directionType",
+            eq: "target",
+          },
+        ],
+      },
+      {
         key: "directionType",
         type: "selectbutton",
         options: [
           ["direction", l10n("FIELD_FIXED_DIRECTION")],
           ["actor", l10n("FIELD_ACTOR_DIRECTION")],
-          ["actorPos", l10n("FIELD_ACTOR_POSITION")],
+          ["target", l10n("FIELD_ACTOR_TARGET")],
           ["angle", l10n("FIELD_ANGLE")],
           ["anglevar", l10n("FIELD_ANGLE_VARIABLE")],
         ],
@@ -235,7 +236,7 @@ const compile = (input, helpers) => {
     launchProjectileInSourceActorDirection,
     launchProjectileInActorDirection,
     launchProjectileInAngleVariable,
-    launchProjectileAtActor,
+    launchProjectileTowardsActor,
     actorSetActive,
   } = helpers;
 
@@ -299,15 +300,25 @@ const compile = (input, helpers) => {
         input.loopAnim
       );
     }
-  } else if (input.directionType === "actorPos") {
-    launchProjectileAtActor(
-      projectileIndex,
-      input.x,
-      input.y,
-      input.otherActorId,
-      input.destroyOnHit,
-      input.loopAnim
-    );
+  } else if (input.directionType === "target") {
+    if (input.actorId === input.targetActorId) {
+      launchProjectileInSourceActorDirection(
+        projectileIndex,
+        input.x,
+        input.y,
+        input.destroyOnHit,
+        input.loopAnim
+      );
+    } else {
+      launchProjectileTowardsActor(
+        projectileIndex,
+        input.x,
+        input.y,
+        input.targetActorId,
+        input.destroyOnHit,
+        input.loopAnim
+      );
+    }
   }
 };
 

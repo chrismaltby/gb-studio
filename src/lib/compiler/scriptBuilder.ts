@@ -2730,7 +2730,7 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
-  launchProjectileAtActor = (
+  launchProjectileTowardsActor = (
     projectileIndex: number,
     x = 0,
     y = 0,
@@ -2740,8 +2740,7 @@ extern void __mute_mask_${symbol};
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     const otherActorRef = this._declareLocal("other_actor", 3, true);
-    this._addComment("Launch Projectile At Actor");
-    this._actorGetPosition(actorRef);
+    this._addComment("Launch Projectile Towards Actor");
     this.setActorId(otherActorRef, otherActorId);
     this._actorGetPosition(otherActorRef);
     const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
