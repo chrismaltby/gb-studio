@@ -222,6 +222,13 @@ type ASMSFXPriority =
   | ".SFX_PRIORITY_NORMAL"
   | ".SFX_PRIORITY_HIGH";
 
+type ScriptBuilderActorFlags =
+  | ".ACTOR_FLAG_PINNED"
+  | ".ACTOR_FLAG_HIDDEN"
+  | ".ACTOR_FLAG_ANIM_NOLOOP"
+  | ".ACTOR_FLAG_COLLISION"
+  | ".ACTOR_FLAG_PERSISTENT";
+
 // - Helpers --------------
 
 const isObject = (value: unknown): value is Record<string, unknown> => {
@@ -1342,6 +1349,19 @@ class ScriptBuilder {
 
   _actorTerminateUpdate = (addr: string) => {
     this._addCmd("VM_ACTOR_TERMINATE_UPDATE", addr);
+  };
+
+  _actorSetFlags = (
+    addr: string,
+    flags: ScriptBuilderActorFlags[],
+    mask: ScriptBuilderActorFlags[]
+  ) => {
+    this._addCmd(
+      "VM_ACTOR_SET_FLAGS",
+      addr,
+      unionFlags(flags),
+      unionFlags(mask)
+    );
   };
 
   _projectileLaunch = (index: number, addr: string) => {
@@ -2499,13 +2519,18 @@ extern void __mute_mask_${symbol};
     }
   };
 
-  actorSetState = (state: string) => {
+  actorSetState = (state: string, animLoop?: true) => {
     const actorRef = this._declareLocal("actor", 4);
     const { statesOrder, stateReferences } = this.options;
     const stateIndex = statesOrder.indexOf(state);
     if (stateIndex > -1) {
       this._addComment("Actor Set Animation State");
       this._actorSetAnimState(actorRef, stateReferences[stateIndex]);
+      this._actorSetFlags(
+        actorRef,
+        animLoop ? [] : [".ACTOR_FLAG_ANIM_NOLOOP"],
+        [".ACTOR_FLAG_ANIM_NOLOOP"]
+      );
       this._addNL();
     }
   };
