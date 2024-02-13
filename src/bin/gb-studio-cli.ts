@@ -12,6 +12,7 @@ import initElectronL10N from "lib/lang/initElectronL10N";
 import { loadEngineFields } from "lib/project/engineFields";
 import loadAllScriptEventHandlers from "lib/project/loadScriptEventHandlers";
 import { validateEjectedBuild } from "lib/compiler/validate/validateEjectedBuild";
+import { loadSceneTypes } from "lib/project/sceneTypes";
 
 const rmdir = promisify(rimraf);
 
@@ -35,6 +36,7 @@ const main = async (
 
   // Load engine fields
   const engineFields = await loadEngineFields(projectRoot);
+  const sceneTypes = await loadSceneTypes(projectRoot);
 
   // Use OS default tmp
   const tmpPath = os.tmpdir();
@@ -57,6 +59,7 @@ const main = async (
     projectRoot,
     engineFields,
     scriptEventHandlers,
+    sceneTypes,
     tmpPath,
     progress,
     warnings,

@@ -196,5 +196,31 @@
       "cType": "UBYTE",
       "defaultValue": 0
     }
+  ],
+  "types": [
+    {
+      "key": "TOPDOWN",
+      "label": "GAMETYPE_TOP_DOWN"
+    },
+    {
+      "key": "PLATFORM",
+      "label": "GAMETYPE_PLATFORMER"
+    },
+    {
+      "key": "ADVENTURE",
+      "label": "GAMETYPE_ADVENTURE"
+    },
+    {
+      "key": "SHMUP",
+      "label": "GAMETYPE_SHMUP"
+    },
+    {
+      "key": "POINTNCLICK",
+      "label": "GAMETYPE_POINT_N_CLICK"
+    },
+    {
+      "key": "LOGO",
+      "label": "GAMETYPE_LOGO"
+    }
   ]
 }

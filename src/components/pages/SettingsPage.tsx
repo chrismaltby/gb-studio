@@ -36,7 +36,6 @@ import { SearchableSettingRow } from "ui/form/SearchableSettingRow";
 import { SettingRowInput, SettingRowLabel } from "ui/form/SettingRow";
 import { SearchableCard } from "ui/cards/SearchableCard";
 import { FontSelect } from "components/forms/FontSelect";
-import { getOptions as getSceneTypeOptions } from "components/forms/SceneTypeSelect";
 import { SpriteSheetSelect } from "components/forms/SpriteSheetSelect";
 import { ColorAnimationText } from "components/settings/ColorAnimationText";
 import { MusicDriverSelect } from "components/forms/MusicDriverSelect";
@@ -52,6 +51,7 @@ const SettingsPage: FC = () => {
   const dispatch = useAppDispatch();
   const projectRoot = useAppSelector((state) => state.document.root);
   const settings = useAppSelector((state) => state.project.present.settings);
+  const sceneTypes = useAppSelector((state) => state.engine.sceneTypes);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [scrollToId, setScrollToId] = useState<string>("");
   const groupedFields = useGroupedEngineFields();
@@ -67,7 +67,6 @@ const SettingsPage: FC = () => {
     },
     [dispatch]
   );
-  const sceneTypes = useMemo(getSceneTypeOptions, []);
   const windowSize = useWindowSize();
   const showMenu = (windowSize.width || 0) >= 750;
 
@@ -463,28 +462,28 @@ const SettingsPage: FC = () => {
         >
           <CardAnchor id="settingsPlayer" />
           <CardHeading>{l10n("SETTINGS_PLAYER_DEFAULT_SPRITES")}</CardHeading>
-          {sceneTypes
-            .filter((s) => s.value !== "LOGO")
-            .map((sceneType) => (
-              <SearchableSettingRow
-                key={sceneType.value}
-                searchTerm={searchTerm}
-                searchMatches={[sceneType.label]}
-              >
-                <SettingRowLabel>{sceneType.label}</SettingRowLabel>
-                <SettingRowInput>
-                  <SpriteSheetSelect
-                    name={`defaultPlayerSprite__${sceneType.value}`}
-                    value={defaultPlayerSprites[sceneType.value] || ""}
-                    optional
-                    optionalLabel={l10n("FIELD_NONE")}
-                    onChange={(value) =>
-                      onEditDefaultPlayerSprites(sceneType.value, value)
-                    }
-                  />
-                </SettingRowInput>
-              </SearchableSettingRow>
-            ))}
+          {sceneTypes.map((sceneType) => (
+            <SearchableSettingRow
+              key={sceneType.key}
+              searchTerm={searchTerm}
+              searchMatches={[l10n(sceneType.label as L10NKey)]}
+            >
+              <SettingRowLabel>
+                {l10n(sceneType.label as L10NKey)}
+              </SettingRowLabel>
+              <SettingRowInput>
+                <SpriteSheetSelect
+                  name={`defaultPlayerSprite__${sceneType.key}`}
+                  value={defaultPlayerSprites[sceneType.key] || ""}
+                  optional
+                  optionalLabel={l10n("FIELD_NONE")}
+                  onChange={(value) =>
+                    onEditDefaultPlayerSprites(sceneType.key, value)
+                  }
+                />
+              </SettingRowInput>
+            </SearchableSettingRow>
+          ))}
         </SearchableCard>
 
         <SearchableCard

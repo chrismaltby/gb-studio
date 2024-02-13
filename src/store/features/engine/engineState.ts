@@ -19,16 +19,24 @@ export type EngineFieldSchema = {
   file?: string;
 };
 
+export type SceneTypeSchema = {
+  key: string;
+  label: string;
+  file: string;
+};
+
 export interface EngineState {
   loaded: boolean;
   fields: EngineFieldSchema[];
   lookup: Dictionary<EngineFieldSchema>;
+  sceneTypes: SceneTypeSchema[];
 }
 
 export const initialState: EngineState = {
   loaded: false,
   fields: [],
   lookup: {},
+  sceneTypes: [],
 };
 
 const engineSlice = createSlice({
@@ -39,6 +47,9 @@ const engineSlice = createSlice({
       state.fields = action.payload;
       state.lookup = keyBy(action.payload, "key");
     },
+    setScenetypes: (state, action: PayloadAction<SceneTypeSchema[]>) => {
+      state.sceneTypes = action.payload;
+    },
   },
   extraReducers: (builder) =>
     builder
@@ -48,6 +59,7 @@ const engineSlice = createSlice({
       .addCase(projectActions.loadProject.fulfilled, (state, action) => {
         state.fields = action.payload.engineFields;
         state.lookup = keyBy(action.payload.engineFields, "key");
+        state.sceneTypes = action.payload.sceneTypes;
         state.loaded = true;
       }),
 });
