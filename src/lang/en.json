@@ -704,6 +704,8 @@
   "FIELD_VIEW_SLOPE_TILES": "View Slope Tiles",
   "FIELD_VIEW_EXTRA_TILES": "View Extra Tiles",
   "FIELD_SOUNDS": "Sounds",
+  "FIELD_MAGNITUDE": "Magnitude",
+  "FIELD_MAGNITUDE_DESC": "The amount of camera movement during a camera shake.",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
