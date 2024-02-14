@@ -22,7 +22,7 @@ import { toValidSymbol } from "shared/lib/helpers/symbols";
 const indexById = indexBy("id");
 
 export const LATEST_PROJECT_VERSION = "3.2.0";
-export const LATEST_PROJECT_MINOR_VERSION = "1";
+export const LATEST_PROJECT_MINOR_VERSION = "2";
 
 const ensureProjectAssetSync = (relativePath, { projectRoot }) => {
   const projectPath = `${projectRoot}/${relativePath}`;
