@@ -24,6 +24,18 @@ export const isNumber = (value: unknown): value is number => {
   return typeof value === "number";
 };
 
+export const isUndefined = (value: unknown): value is undefined => {
+  return value === undefined;
+};
+
+export const isMaybeString = (value: unknown): value is string | undefined => {
+  return isString(value) || isUndefined(value);
+};
+
+export const isMaybeNumber = (value: unknown): value is number | undefined => {
+  return isNumber(value) || isUndefined(value);
+};
+
 export const ensureType = <T>(
   value: unknown,
   fallback: T,
@@ -57,3 +69,6 @@ export const ensureNumber = ensureTypeGenerator(isNumber);
 
 export const ensurePromisedString = ensurePromisedTypeGenerator(isString);
 export const ensurePromisedNumber = ensurePromisedTypeGenerator(isNumber);
+
+export const ensureMaybeString = ensureTypeGenerator(isMaybeString);
+export const ensureMaybeNumber = ensureTypeGenerator(isMaybeNumber);

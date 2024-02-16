@@ -16,7 +16,7 @@ import {
 import { Scene } from "store/features/entities/entitiesTypes";
 import { RootState } from "store/configureStore";
 import styled from "styled-components";
-import l10n from "renderer/lib/l10n";
+import { ensureMaybeNumber, ensureMaybeString } from "shared/types";
 
 const TILE_SIZE = 8;
 
@@ -51,12 +51,13 @@ const OverlayPos = styled.div`
   background: blue;
 `;
 
-const argValue = (arg: any) => {
-  if (arg && arg.value) {
-    if (arg.type === "variable" || arg.type === "property") {
+const argValue = (arg: unknown): unknown => {
+  const unionArg = arg as { value: unknown; type: unknown };
+  if (unionArg && unionArg.value !== undefined) {
+    if (unionArg.type === "variable" || unionArg.type === "property") {
       return undefined;
     }
-    return arg.value;
+    return unionArg.value;
   }
   return arg;
 };
@@ -87,8 +88,8 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
 
   if (event.command === EVENT_CAMERA_MOVE_TO) {
     const units = argValue(event.args?.units);
-    const x = argValue(event.args?.x);
-    const y = argValue(event.args?.y);
+    const x = ensureMaybeNumber(argValue(event.args?.x), 0);
+    const y = ensureMaybeNumber(argValue(event.args?.y), 0);
     if (x === undefined && y === undefined) {
       return <div />;
     }
@@ -110,8 +111,8 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
     event.command === EVENT_IF_ACTOR_AT_POSITION
   ) {
     const units = argValue(event.args?.units);
-    const x = argValue(event.args?.x);
-    const y = argValue(event.args?.y);
+    const x = ensureMaybeNumber(argValue(event.args?.x), 0);
+    const y = ensureMaybeNumber(argValue(event.args?.y), 0);
     if (x === undefined && y === undefined) {
       return <div />;
     }
@@ -128,12 +129,16 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
   }
 
   if (event.command === EVENT_IF_ACTOR_DISTANCE_FROM_ACTOR) {
-    const distance = argValue(event.args?.distance);
+    const distance = ensureMaybeNumber(argValue(event.args?.distance), 0);
+
     if (distance === undefined) {
       return <div />;
     }
 
-    const otherActorId = argValue(event.args?.otherActorId);
+    const otherActorId = ensureMaybeString(
+      argValue(event.args?.otherActorId),
+      ""
+    );
     if (otherActorId === undefined) {
       return <div />;
     }
@@ -216,8 +221,8 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
     event.command === EVENT_OVERLAY_SHOW ||
     event.command === EVENT_OVERLAY_MOVE_TO
   ) {
-    const x = argValue(event.args?.x);
-    const y = argValue(event.args?.y);
+    const x = ensureMaybeNumber(argValue(event.args?.x), 0);
+    const y = ensureMaybeNumber(argValue(event.args?.y), 0);
     const color = argValue(event.args?.color);
     if (x === undefined && y === undefined) {
       return <div />;
