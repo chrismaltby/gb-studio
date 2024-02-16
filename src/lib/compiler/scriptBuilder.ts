@@ -2522,7 +2522,7 @@ extern void __mute_mask_${symbol};
     }
   };
 
-  actorSetState = (state: string, animLoop?: true) => {
+  actorSetState = (state: string, animLoop = true) => {
     const actorRef = this._declareLocal("actor", 4);
     const { statesOrder, stateReferences } = this.options;
     const stateIndex = statesOrder.indexOf(state);
@@ -3165,7 +3165,7 @@ extern void __mute_mask_${symbol};
       .stop();
     this._set(this._localRef(cameraShakeArgsRef, 2), ".ARG0");
     this._stackPop(1);
-    
+
     this._invoke("camera_shake_frames", 0, cameraShakeArgsRef);
     this._addNL();
   };

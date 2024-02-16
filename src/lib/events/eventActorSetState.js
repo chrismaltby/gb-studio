@@ -40,7 +40,7 @@ const fields = [
 const compile = (input, helpers) => {
   const { actorSetActive, actorSetState } = helpers;
   actorSetActive(input.actorId);
-  actorSetState(input.spriteStateId, input.loopAnim ?? true);
+  actorSetState(input.spriteStateId, input.loopAnim);
 };
 
 module.exports = {
