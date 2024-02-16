@@ -108,7 +108,7 @@ export const WaveEditorForm = ({ waveId, onChange }: WaveEditorFormProps) => {
       }
     };
 
-    const handleMouseMove = (e: any) => {
+    const handleMouseMove = (e: MouseEvent) => {
       if (e.target !== canvasRef.current) {
         return;
       }
@@ -143,13 +143,13 @@ export const WaveEditorForm = ({ waveId, onChange }: WaveEditorFormProps) => {
       }
     };
 
-    const handleMouseDown = (e: any) => {
+    const handleMouseDown = (e: MouseEvent) => {
       if (e.target === canvasRef.current) {
         mousedown = true;
       }
     };
 
-    const handleMouseUp = (_e: any) => {
+    const handleMouseUp = (_e: MouseEvent) => {
       if (mousedown) {
         mousedown = false;
         onEditWave(newWaves);

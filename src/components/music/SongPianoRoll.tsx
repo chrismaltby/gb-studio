@@ -537,7 +537,7 @@ export const SongPianoRoll = ({
 
   // Mouse
   const handleMouseDown = useCallback(
-    (e: any) => {
+    (e: MouseEvent) => {
       if (!pattern) return;
       const col = clamp(Math.floor(e.offsetX / CELL_SIZE), 0, 63);
       const note = 12 * 6 - 1 - Math.floor(e.offsetY / CELL_SIZE);
@@ -704,7 +704,7 @@ export const SongPianoRoll = ({
   );
 
   const handleMouseMove = useCallback(
-    (e: any) => {
+    (e: MouseEvent) => {
       if (!gridRef.current) return;
 
       const bounds = gridRef.current.getBoundingClientRect();

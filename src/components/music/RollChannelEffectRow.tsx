@@ -87,7 +87,7 @@ export const RollChannelEffectRowFwd = ({
 
   // Mouse
   const handleMouseDown = useCallback(
-    (e: any) => {
+    (e: MouseEvent) => {
       if (!renderPattern) return;
       const col = Math.floor(e.offsetX / cellSize);
       const cell = renderPattern[col][channelId];
