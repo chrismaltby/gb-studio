@@ -6,7 +6,7 @@ import {
 import {
   animationMapBySpriteType,
   toEngineOrder,
-} from "components/sprites/helpers";
+} from "shared/lib/sprites/helpers";
 import {
   MetaspriteTile,
   ObjPalette,

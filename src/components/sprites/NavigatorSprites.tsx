@@ -30,9 +30,9 @@ import useToggleableList from "ui/hooks/use-toggleable-list";
 import {
   AnimationType,
   filterAnimationsBySpriteType,
-  getAnimationNameForType,
   getAnimationTypeByIndex,
-} from "./helpers";
+} from "shared/lib/sprites/helpers";
+import { getAnimationNameForType } from "renderer/lib/sprites/spriteL10NHelpers";
 
 interface NavigatorSpritesProps {
   height: number;
