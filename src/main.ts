@@ -632,7 +632,7 @@ menu.on("redo", async () => {
   mainWindow && mainWindow.webContents.send("redo");
 });
 
-menu.on("section", async (section: string) => {
+menu.on("section", async (section) => {
   mainWindow && mainWindow.webContents.send("section", section);
 });
 
@@ -640,7 +640,7 @@ menu.on("reloadAssets", () => {
   mainWindow && mainWindow.webContents.send("reloadAssets");
 });
 
-menu.on("zoom", (zoomType: string) => {
+menu.on("zoom", (zoomType) => {
   mainWindow && mainWindow.webContents.send("zoom", zoomType);
 });
 
@@ -648,7 +648,7 @@ menu.on("run", () => {
   mainWindow && mainWindow.webContents.send("run");
 });
 
-menu.on("build", (buildType: string) => {
+menu.on("build", (buildType) => {
   mainWindow && mainWindow.webContents.send("build", buildType);
 });
 
@@ -692,33 +692,46 @@ menu.on("preferences", () => {
   }
 });
 
-menu.on("updateSetting", (setting: string, value: string | boolean) => {
-  settings.set(setting, value);
-  if (setting === "theme") {
-    menu.ref().getMenuItemById("themeDefault").checked = value === undefined;
-    menu.ref().getMenuItemById("themeLight").checked = value === "light";
-    menu.ref().getMenuItemById("themeDark").checked = value === "dark";
-    const newThemeId = toThemeId(value, nativeTheme.shouldUseDarkColors);
-    splashWindow && splashWindow.webContents.send("update-theme", newThemeId);
-    mainWindow && mainWindow.webContents.send("update-theme", newThemeId);
-  } else if (setting === "locale") {
-    menu.ref().getMenuItemById("localeDefault").checked = value === undefined;
-    for (const locale of locales) {
-      menu.ref().getMenuItemById(`locale-${locale}`).checked = value === locale;
-    }
-    switchLanguageDialog();
-    forceL10nReload();
-  } else {
-    if (setting === "showConnections") {
-      menu.ref().getMenuItemById("showConnectionsAll").checked =
-        value === "all";
-      menu.ref().getMenuItemById("showConnectionsSelected").checked =
-        value === "selected" || value === true;
-      menu.ref().getMenuItemById("showConnectionsNone").checked =
-        value === false;
-    }
-    mainWindow && mainWindow.webContents.send("updateSetting", setting, value);
+menu.on("updateTheme", (value) => {
+  settings.set("theme", value as JsonValue);
+  menu.ref().getMenuItemById("themeDefault").checked = value === undefined;
+  menu.ref().getMenuItemById("themeLight").checked = value === "light";
+  menu.ref().getMenuItemById("themeDark").checked = value === "dark";
+  const newThemeId = toThemeId(value, nativeTheme.shouldUseDarkColors);
+  splashWindow && splashWindow.webContents.send("update-theme", newThemeId);
+  mainWindow && mainWindow.webContents.send("update-theme", newThemeId);
+});
+
+menu.on("updateLocale", (value) => {
+  settings.set("locale", value as JsonValue);
+  menu.ref().getMenuItemById("localeDefault").checked = value === undefined;
+  for (const locale of locales) {
+    menu.ref().getMenuItemById(`locale-${locale}`).checked = value === locale;
   }
+  switchLanguageDialog();
+  forceL10nReload();
+});
+
+menu.on("updateShowCollisions", (value) => {
+  settings.set("showCollisions", value as JsonValue);
+  mainWindow &&
+    mainWindow.webContents.send("updateSetting", "showCollisions", value);
+});
+
+menu.on("updateShowConnections", (value) => {
+  settings.set("showConnections", value as JsonValue);
+  menu.ref().getMenuItemById("showConnectionsAll").checked = value === "all";
+  menu.ref().getMenuItemById("showConnectionsSelected").checked =
+    value === "selected" || value === true;
+  menu.ref().getMenuItemById("showConnectionsNone").checked = value === false;
+  mainWindow &&
+    mainWindow.webContents.send("updateSetting", "showConnections", value);
+});
+
+menu.on("updateShowNavigator", (value) => {
+  settings.set("showNavigator", value as JsonValue);
+  mainWindow &&
+    mainWindow.webContents.send("updateSetting", "showNavigator", value);
 });
 
 nativeTheme?.on("updated", () => {

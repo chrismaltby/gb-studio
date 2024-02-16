@@ -1,14 +1,49 @@
 import openAboutWindow from "about-window";
 import settings from "electron-settings";
-import { app, Menu, shell } from "electron";
+import {
+  app,
+  Menu,
+  MenuItem,
+  MenuItemConstructorOptions,
+  shell,
+} from "electron";
 import { assetsRoot } from "./consts";
 import l10n, { locales } from "lib/helpers/l10n";
 
+declare const COMMITHASH: string;
+
 const isDevMode = process.execPath.match(/[\\/]electron/);
 
-let menu;
+let menu: Menu;
 
-const listeners = {
+type MenuListenerFn = (arg: unknown) => void;
+type MenuListenerKey =
+  | "new"
+  | "open"
+  | "project"
+  | "save"
+  | "saveAs"
+  | "checkUpdates"
+  | "undo"
+  | "redo"
+  | "section"
+  | "zoom"
+  | "reloadAssets"
+  | "updateTheme"
+  | "updateLocale"
+  | "updateShowCollisions"
+  | "updateShowConnections"
+  | "updateShowNavigator"
+  | "run"
+  | "build"
+  | "ejectEngine"
+  | "exportProjectSrc"
+  | "exportProjectData"
+  | "pasteInPlace"
+  | "preferences"
+  | "openMusic";
+
+const listeners: Record<MenuListenerKey, MenuListenerFn[]> = {
   new: [],
   open: [],
   project: [],
@@ -20,7 +55,11 @@ const listeners = {
   section: [],
   zoom: [],
   reloadAssets: [],
-  updateSetting: [],
+  updateTheme: [],
+  updateLocale: [],
+  updateShowCollisions: [],
+  updateShowConnections: [],
+  updateShowNavigator: [],
   run: [],
   build: [],
   ejectEngine: [],
@@ -31,17 +70,17 @@ const listeners = {
   openMusic: [],
 };
 
-const notifyListeners = (event, ...data) => {
+const notifyListeners = (event: MenuListenerKey, value?: unknown) => {
   for (const fn of listeners[event]) {
-    fn(...data);
+    fn(value);
   }
 };
 
-const on = (event, fn) => {
+const on = (event: MenuListenerKey, fn: MenuListenerFn) => {
   listeners[event].push(fn);
 };
 
-const off = (event, fn) => {
+const off = (event: MenuListenerKey, fn: MenuListenerFn) => {
   listeners[event] = listeners[event].filter((f) => f !== fn);
 };
 
@@ -58,8 +97,8 @@ const openAbout = () => {
   });
 };
 
-const buildMenu = async (plugins = []) => {
-  const template = [
+const buildMenu = async (plugins: MenuItemConstructorOptions[] = []) => {
+  const template: MenuItemConstructorOptions[] = [
     {
       label: l10n("MENU_FILE"),
       submenu: [
@@ -140,7 +179,7 @@ const buildMenu = async (plugins = []) => {
           },
         },
         { role: "delete", label: l10n("MENU_DELETE") },
-        { role: "selectall", label: l10n("MENU_SELECT_ALL") },
+        { role: "selectAll", label: l10n("MENU_SELECT_ALL") },
       ],
     },
     {
@@ -282,7 +321,7 @@ const buildMenu = async (plugins = []) => {
               type: "checkbox",
               checked: settings.get("theme") === undefined,
               click() {
-                notifyListeners("updateSetting", "theme", undefined);
+                notifyListeners("updateTheme", undefined);
               },
             },
             { type: "separator" },
@@ -292,7 +331,7 @@ const buildMenu = async (plugins = []) => {
               type: "checkbox",
               checked: settings.get("theme") === "light",
               click() {
-                notifyListeners("updateSetting", "theme", "light");
+                notifyListeners("updateTheme", "light");
               },
             },
             {
@@ -301,14 +340,14 @@ const buildMenu = async (plugins = []) => {
               type: "checkbox",
               checked: settings.get("theme") === "dark",
               click() {
-                notifyListeners("updateSetting", "theme", "dark");
+                notifyListeners("updateTheme", "dark");
               },
             },
           ],
         },
         {
           label: l10n("MENU_LANGUAGE"),
-          submenu: [].concat(
+          submenu: ([] as MenuItemConstructorOptions[]).concat(
             [
               {
                 id: "localeDefault",
@@ -316,7 +355,7 @@ const buildMenu = async (plugins = []) => {
                 type: "checkbox",
                 checked: settings.get("locale") === undefined,
                 click() {
-                  notifyListeners("updateSetting", "locale", undefined);
+                  notifyListeners("updateLocale", undefined);
                 },
               },
               { type: "separator" },
@@ -328,7 +367,7 @@ const buildMenu = async (plugins = []) => {
                 type: "checkbox",
                 checked: settings.get("locale") === locale,
                 click() {
-                  notifyListeners("updateSetting", "locale", locale);
+                  notifyListeners("updateLocale", locale);
                 },
               };
             })
@@ -340,8 +379,8 @@ const buildMenu = async (plugins = []) => {
           label: l10n("MENU_SHOW_COLLISIONS"),
           type: "checkbox",
           checked: true,
-          click: (item) => {
-            notifyListeners("updateSetting", "showCollisions", item.checked);
+          click: (item: MenuItem) => {
+            notifyListeners("updateShowCollisions", item.checked);
           },
         },
         {
@@ -353,7 +392,7 @@ const buildMenu = async (plugins = []) => {
               type: "checkbox",
               checked: settings.get("showConnections") === "all",
               click() {
-                notifyListeners("updateSetting", "showConnections", "all");
+                notifyListeners("updateShowConnections", "all");
               },
             },
             {
@@ -364,7 +403,7 @@ const buildMenu = async (plugins = []) => {
                 settings.get("showConnections") === "selected" ||
                 settings.get("showConnections") === true,
               click() {
-                notifyListeners("updateSetting", "showConnections", "selected");
+                notifyListeners("updateShowConnections", "selected");
               },
             },
             { type: "separator" },
@@ -374,7 +413,7 @@ const buildMenu = async (plugins = []) => {
               type: "checkbox",
               checked: settings.get("showConnections") === false,
               click() {
-                notifyListeners("updateSetting", "showConnections", false);
+                notifyListeners("updateShowConnections", false);
               },
             },
           ],
@@ -384,8 +423,8 @@ const buildMenu = async (plugins = []) => {
           label: l10n("MENU_SHOW_NAVIGATOR"),
           checked: settings.get("showNavigator") !== false,
           type: "checkbox",
-          click: (item) => {
-            notifyListeners("updateSetting", "showNavigator", item.checked);
+          click: (item: MenuItem) => {
+            notifyListeners("updateShowNavigator", item.checked);
           },
         },
         { type: "separator" },
@@ -446,21 +485,24 @@ const buildMenu = async (plugins = []) => {
   }
 
   if (isDevMode) {
-    template[template.length - 3].submenu.push({ type: "separator" });
-    template[template.length - 3].submenu.push({
-      label: "Debug",
-      submenu: [
-        { role: "reload" },
-        { role: "forcereload" },
-        { role: "toggledevtools" },
-        {
-          label: l10n("MENU_OPEN_MUSIC_PROCESS_WINDOW"),
-          click: () => {
-            notifyListeners("openMusic");
+    const submenu = template[template.length - 3].submenu || [];
+    if ("push" in submenu) {
+      submenu.push({ type: "separator" });
+      submenu.push({
+        label: "Debug",
+        submenu: [
+          { role: "reload" },
+          { role: "forceReload" },
+          { role: "toggleDevTools" },
+          {
+            label: l10n("MENU_OPEN_MUSIC_PROCESS_WINDOW"),
+            click: () => {
+              notifyListeners("openMusic");
+            },
           },
-        },
-      ],
-    });
+        ],
+      });
+    }
   }
 
   if (process.platform === "darwin") {
@@ -491,7 +533,7 @@ const buildMenu = async (plugins = []) => {
         { role: "services" },
         { type: "separator" },
         { role: "hide" },
-        { role: "hideothers" },
+        { role: "hideOthers" },
         { role: "unhide" },
         { type: "separator" },
         { role: "quit" },
@@ -499,13 +541,16 @@ const buildMenu = async (plugins = []) => {
     });
 
     // Edit menu
-    template[2].submenu.push(
-      { type: "separator" },
-      {
-        label: l10n("MENU_SPEECH"),
-        submenu: [{ role: "startspeaking" }, { role: "stopspeaking" }],
-      }
-    );
+    const editSubmenu = template[2].submenu;
+    if (editSubmenu && "push" in editSubmenu) {
+      editSubmenu.push(
+        { type: "separator" },
+        {
+          label: l10n("MENU_SPEECH"),
+          submenu: [{ role: "startSpeaking" }, { role: "stopSpeaking" }],
+        }
+      );
+    }
 
     // Window menu
     template[template.length - 2].submenu = [
@@ -516,33 +561,39 @@ const buildMenu = async (plugins = []) => {
     ];
   } else {
     // About menu item for Windows / Linux
-    template[template.length - 1].submenu.push(
-      { type: "separator" },
-      {
-        label: l10n("MENU_ABOUT"),
-        click() {
-          openAbout();
+    const aboutSubmenu = template[template.length - 1].submenu;
+    if (aboutSubmenu && "push" in aboutSubmenu) {
+      aboutSubmenu.push(
+        { type: "separator" },
+        {
+          label: l10n("MENU_ABOUT"),
+          click() {
+            openAbout();
+          },
         },
-      },
-      {
-        label: l10n("MENU_CHECK_FOR_UPDATES"),
-        click: () => {
-          notifyListeners("checkUpdates");
-        },
-      }
-    );
+        {
+          label: l10n("MENU_CHECK_FOR_UPDATES"),
+          click: () => {
+            notifyListeners("checkUpdates");
+          },
+        }
+      );
+    }
 
     // Edit Preferences for Windows / Linux
-    template[1].submenu.push(
-      { type: "separator" },
-      {
-        label: l10n("MENU_PREFERENCES"),
-        accelerator: "CommandOrControl+,",
-        click: () => {
-          notifyListeners("preferences");
-        },
-      }
-    );
+    const editSubmenu = template[1].submenu;
+    if (editSubmenu && "push" in editSubmenu) {
+      editSubmenu.push(
+        { type: "separator" },
+        {
+          label: l10n("MENU_PREFERENCES"),
+          accelerator: "CommandOrControl+,",
+          click: () => {
+            notifyListeners("preferences");
+          },
+        }
+      );
+    }
   }
 
   menu = Menu.buildFromTemplate(template);
@@ -553,7 +604,7 @@ const appMenu = {
   on,
   off,
   ref: () => menu,
-  buildMenu: (plugins) => {
+  buildMenu: (plugins: MenuItemConstructorOptions[]) => {
     buildMenu(plugins);
   },
 };
