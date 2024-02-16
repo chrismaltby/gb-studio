@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add angle selector input showing degrees for GBVM angle values [@pau-tomas](https://github.com/pau-tomas)
 - Add support for atan2 function in math expressions [@pau-tomas](https://github.com/pau-tomas)
 - Add magnitude field to camera shake event [@patrickmollohan](https://github.com/patrickmollohan)
+- Add checkbox to toggle if new animation should loop when using Set Actor Animation State event [@pau-tomas](https://github.com/pau-tomas)
 
 ### Changed
 
