@@ -46,7 +46,7 @@ let ramSymbols: Array<string | null> = [];
 let linkOptions: string[] = [];
 
 const lineNumberRegex = /([\w.]+)[\w.:~]*\(([0-9]+)\)/gi;
-const symRegex = /^\s*\$([0-9a-f]+) = ([\w\.]+)/;
+const symRegex = /^\s*\$([0-9a-f]+) = ([\w.]+)/;
 const sectionTypeBankRegex = /^\s*(\w+) bank #(\d+)/;
 const sectionRegex = /^\s*SECTION: \$([0-9a-f]+)-\$([0-9a-f]+)/;
 const slackRegex = /^\s*SLACK: \$([0-9a-f]+) bytes/;
