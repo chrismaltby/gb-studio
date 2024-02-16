@@ -29,6 +29,7 @@ import clipboardActions from "store/features/clipboard/clipboardActions";
 import { clipboard } from "store/features/clipboard/clipboardHelpers";
 import { clamp, cloneDeep, mergeWith } from "lodash";
 import API from "renderer/lib/api";
+import { MusicDataPacket } from "shared/lib/music/types";
 
 function getSelectedTrackerFields(
   selectionRect: SelectionRect | undefined,
@@ -147,7 +148,7 @@ export const SongTracker = ({
     setPlaybackState(startPlaybackPosition);
   }, [setPlaybackState, startPlaybackPosition]);
   useEffect(() => {
-    const listener = (_event: IpcRendererEvent, d: any) => {
+    const listener = (_event: IpcRendererEvent, d: MusicDataPacket) => {
       if (d.action === "update") {
         setPlaybackState(d.update);
       }

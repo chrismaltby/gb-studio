@@ -25,6 +25,7 @@ import { RollChannelEffectRow } from "./RollChannelEffectRow";
 import { WandIcon } from "ui/icons/Icons";
 import { RollChannelHover } from "./RollChannelHover";
 import API from "renderer/lib/api";
+import { MusicDataPacket } from "shared/lib/music/types";
 
 const CELL_SIZE = 16;
 const MAX_NOTE = 71;
@@ -284,7 +285,7 @@ export const SongPianoRoll = ({
   }, [setPlaybackState, startPlaybackPosition]);
 
   useEffect(() => {
-    const listener = (_event: any, d: any) => {
+    const listener = (_event: unknown, d: MusicDataPacket) => {
       if (d.action === "update") {
         setPlaybackState(d.update);
       }
@@ -297,7 +298,7 @@ export const SongPianoRoll = ({
   }, [setPlaybackState]);
 
   const setPlaybackPosition = useCallback(
-    (e: any) => {
+    (e: MouseEvent) => {
       const col = clamp(Math.floor(e.offsetX / CELL_SIZE), 0, 63);
 
       dispatch(

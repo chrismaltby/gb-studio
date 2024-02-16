@@ -11,6 +11,7 @@ import { readFile } from "fs-extra";
 import { loadUGESong } from "renderer/lib/uge/ugeHelper";
 import toArrayBuffer from "lib/helpers/toArrayBuffer";
 import { assetFilename } from "shared/lib/helpers/assets";
+import { MusicDataPacket } from "shared/lib/music/types";
 
 let modPlayer: ScripTracker;
 
@@ -42,7 +43,7 @@ function playMOD(filename: string, settings: MusicSettings) {
 async function playUGE(filename: string, _settings: MusicSettings) {
   const fileData = toArrayBuffer(await readFile(filename));
   const data = loadUGESong(fileData);
-  const listener = async (_event: any, d: any) => {
+  const listener = async (event: unknown, d: MusicDataPacket) => {
     if (d.action === "initialized") {
       ipcRenderer.send("music-data-send", {
         action: "play",

@@ -19,6 +19,7 @@ import { compileVGM } from "lib/compiler/sounds/compileVGM";
 import { CompileSoundOptions } from "lib/compiler/sounds/compileSound";
 import { compileFXHammerSingle } from "lib/compiler/sounds/compileFXHammer";
 import { assetFilename } from "shared/lib/helpers/assets";
+import { MusicDataPacket } from "shared/lib/music/types";
 
 let oscillator: OscillatorNode | undefined = undefined;
 let bufferSource: AudioBufferSourceNode | undefined = undefined;
@@ -65,7 +66,7 @@ async function playSound(
 
   console.log("SFX", sfx);
 
-  const listener = async (_event: any, d: any) => {
+  const listener = async (_event: unknown, d: MusicDataPacket) => {
     if (d.action === "initialized") {
       ipcRenderer.send("music-data-send", {
         action: "play-sound",

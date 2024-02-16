@@ -1,5 +1,6 @@
 import { ipcRenderer, IpcRendererEvent } from "electron";
 import type { CreateProjectInput } from "lib/project/createProject";
+import { MusicDataPacket } from "shared/lib/music/types";
 import type { ThemeId } from "shared/lib/theme";
 import {
   ensurePromisedNumber,
@@ -76,11 +77,14 @@ const APISetup = {
   music: {
     openMusic: () => ipcRenderer.send("open-music"),
     closeMusic: () => ipcRenderer.send("close-music"),
-    sendMusicData: (data: any) => ipcRenderer.send("music-data-send", data),
-    musicDataSubscribe: (listener: (_event: any, data: any) => void) =>
-      ipcRenderer.on("music-data", listener),
-    musicDataUnsubscribe: (listener: (_event: any, data: any) => void) =>
-      ipcRenderer.removeListener("music-data", listener),
+    sendMusicData: (data: MusicDataPacket) =>
+      ipcRenderer.send("music-data-send", data),
+    musicDataSubscribe: (
+      listener: (event: IpcRendererEvent, data: MusicDataPacket) => void
+    ) => ipcRenderer.on("music-data", listener),
+    musicDataUnsubscribe: (
+      listener: (event: IpcRendererEvent, data: MusicDataPacket) => void
+    ) => ipcRenderer.removeListener("music-data", listener),
   },
   clipboard: {
     addPasteInPlaceListener: (listener: () => void) =>
