@@ -36,6 +36,7 @@ module.exports = {
     alias: {
       store: srcPath("store"),
       components: srcPath("components"),
+      lang: srcPath("lang"),
       lib: srcPath("lib"),
       ui: srcPath("components/ui"),
       shared: srcPath("shared"),

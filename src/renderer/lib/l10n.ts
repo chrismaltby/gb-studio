@@ -1,5 +1,5 @@
 import API from "./api";
-import en from "../../lang/en.json";
+import en from "lang/en.json";
 
 interface L10NLookup {
   [key: string]: string | boolean | undefined;

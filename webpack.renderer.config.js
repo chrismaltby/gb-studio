@@ -69,6 +69,7 @@ module.exports = {
       "react-dom": "@hot-loader/react-dom",
       store: srcPath("store"),
       components: srcPath("components"),
+      lang: srcPath("lang"),
       lib: srcPath("lib"),
       ui: srcPath("components/ui"),
       renderer: srcPath("renderer"),
