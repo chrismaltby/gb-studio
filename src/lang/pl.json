@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1331240210",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1336240216",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -522,6 +522,8 @@
   "FIELD_ANGLE_VARIABLE": "Kąt-zmienna",
   "FIELD_DIRECTION_VARIABLE": "Kierunek-zmienna",
   "FIELD_ACTOR_DIRECTION": "Kierunek aktora",
+  "FIELD_ACTOR_TARGET": "Aktor docelowy",
+  "FIELD_TARGET": "Cel",
   "FIELD_LIFE_TIME": "Czas (życie)",
   "FIELD_PROJECTILE_LIFE_TIME_DESC": "Ustawienie czasu w sekundach dla życia pocisków (czas trwania).",
   "FIELD_LOCK_AXIS": "Zablokuj oś",
@@ -680,6 +682,7 @@
   "FIELD_PROJECTILE_OFFSET_DESC": "Odległość, o jaką pocisk powinien przemieścić się od pozycji startowej w kierunku wystrzelenia, zanim stanie się widoczny.",
   "FIELD_PROJECTILE_DIRECTION_DESC": "Kierunek wystrzelenia pocisku. Może być ustalonym kierunkiem lub opartym na aktualnym kierunku aktora.",
   "FIELD_PROJECTILE_ANGLE_DESC": "Kąt wystrzelenia pocisku.",
+  "FIELD_PROJECTILE_TARGET_DESC": "Aktor, w stronę którego zostanie wystrzelony pocisk.",
   "FIELD_BOUNCE_HEIGHT_DESC": "Wysokość odbicia gracza.",
   "FIELD_SCRIPT_CALL_DESC": "Skrypt do uruchomienia.",
   "FIELD_OTHER_VARIABLE": "Inna zmienna",
@@ -704,6 +707,8 @@
   "FIELD_VIEW_SLOPE_TILES": "Wyświetl tafly pochyłe",
   "FIELD_VIEW_EXTRA_TILES": "Wyświetl tafly dodatkowe",
   "FIELD_SOUNDS": "Dźwięki",
+  "FIELD_MAGNITUDE": "Wstrząs",
+  "FIELD_MAGNITUDE_DESC": "Stopień ruchu kamery podczas wstrząsu.",
   
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
