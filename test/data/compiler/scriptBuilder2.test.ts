@@ -605,3 +605,117 @@ test("Should throw if jump to label is not stack neutral", () => {
   sb._stackPop(1);
   expect(() => sb._jump("abc")).toThrow();
 });
+
+test("Should be able to set an actor's state with looping animation", () => {
+  const output: string[] = [];
+  const sb = new ScriptBuilder(output, {
+    scene: {
+      id: "scene1",
+      name: "Scene 1",
+      symbol: "scene_1",
+      width: 20,
+      height: 18,
+      background: dummyPrecompiledBackground,
+      playerSprite: dummyPrecompiledSpriteSheet,
+      sprites: [],
+      parallax: [],
+      actorsExclusiveLookup: {},
+      type: "TOPDOWN",
+      actors: [{ ...dummyActor, id: "actor1" }],
+      triggers: [],
+      projectiles: [],
+    },
+    entity: {
+      id: "actor1",
+    },
+    statesOrder: ["", "state1", "state2"],
+    stateReferences: ["STATE_DEFAULT", "STATE_1", "STATE_2"],
+  });
+  sb.actorSetActive("actor1");
+  sb.actorSetState("state1", true);
+  expect(output).toEqual([
+    "        ; Actor Set Active",
+    "        VM_SET_CONST            .LOCAL_ACTOR, 1",
+    "",
+    "        ; Actor Set Animation State",
+    "        VM_ACTOR_SET_ANIM_SET   .LOCAL_ACTOR, STATE_1",
+    "        VM_ACTOR_SET_FLAGS      .LOCAL_ACTOR, 0, .ACTOR_FLAG_ANIM_NOLOOP",
+    "",
+  ]);
+});
+
+test("Should be able to set an actor's state with one-shot animation", () => {
+  const output: string[] = [];
+  const sb = new ScriptBuilder(output, {
+    scene: {
+      id: "scene1",
+      name: "Scene 1",
+      symbol: "scene_1",
+      width: 20,
+      height: 18,
+      background: dummyPrecompiledBackground,
+      playerSprite: dummyPrecompiledSpriteSheet,
+      sprites: [],
+      parallax: [],
+      actorsExclusiveLookup: {},
+      type: "TOPDOWN",
+      actors: [{ ...dummyActor, id: "actor1" }],
+      triggers: [],
+      projectiles: [],
+    },
+    entity: {
+      id: "actor1",
+    },
+    statesOrder: ["", "state1", "state2"],
+    stateReferences: ["STATE_DEFAULT", "STATE_1", "STATE_2"],
+  });
+  sb.actorSetActive("actor1");
+  sb.actorSetState("state1", false);
+  expect(output).toEqual([
+    "        ; Actor Set Active",
+    "        VM_SET_CONST            .LOCAL_ACTOR, 1",
+    "",
+    "        ; Actor Set Animation State",
+    "        VM_ACTOR_SET_ANIM_SET   .LOCAL_ACTOR, STATE_1",
+    "        VM_ACTOR_SET_FLAGS      .LOCAL_ACTOR, .ACTOR_FLAG_ANIM_NOLOOP, .ACTOR_FLAG_ANIM_NOLOOP",
+    "",
+  ]);
+});
+
+test("Should default actor's state to use looping animation if loop value not provided", () => {
+  const output: string[] = [];
+  const sb = new ScriptBuilder(output, {
+    scene: {
+      id: "scene1",
+      name: "Scene 1",
+      symbol: "scene_1",
+      width: 20,
+      height: 18,
+      background: dummyPrecompiledBackground,
+      playerSprite: dummyPrecompiledSpriteSheet,
+      sprites: [],
+      parallax: [],
+      actorsExclusiveLookup: {},
+      type: "TOPDOWN",
+      actors: [{ ...dummyActor, id: "actor1" }],
+      triggers: [],
+      projectiles: [],
+    },
+    entity: {
+      id: "actor1",
+    },
+    statesOrder: ["", "state1", "state2"],
+    stateReferences: ["STATE_DEFAULT", "STATE_1", "STATE_2"],
+  });
+  sb.actorSetActive("actor1");
+  sb.actorSetState("state1");
+  expect(output).toEqual([
+    "        ; Actor Set Active",
+    "        VM_SET_CONST            .LOCAL_ACTOR, 1",
+    "",
+    "        ; Actor Set Animation State",
+    "        VM_ACTOR_SET_ANIM_SET   .LOCAL_ACTOR, STATE_1",
+    "        VM_ACTOR_SET_FLAGS      .LOCAL_ACTOR, 0, .ACTOR_FLAG_ANIM_NOLOOP",
+    "",
+  ]);
+});
