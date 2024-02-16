@@ -3096,9 +3096,10 @@ extern void __mute_mask_${symbol};
   cameraShake = (
     shouldShakeX: boolean,
     shouldShakeY: boolean,
-    frames: number
+    frames: number,
+    magnitude: number
   ) => {
-    const cameraShakeArgsRef = this._declareLocal("camera_shake_args", 2, true);
+    const cameraShakeArgsRef = this._declareLocal("camera_shake_args", 3, true);
     this._addComment("Camera Shake");
     this._setConst(cameraShakeArgsRef, frames);
     this._setConst(
@@ -3110,6 +3111,36 @@ extern void __mute_mask_${symbol};
         )
       )
     );
+    this._setConst(this._localRef(cameraShakeArgsRef, 2), magnitude);
+    this._invoke("camera_shake_frames", 0, cameraShakeArgsRef);
+    this._addNL();
+  };
+
+  cameraShakeVariables = (
+    shouldShakeX: boolean,
+    shouldShakeY: boolean,
+    frames: number,
+    magnitude: string
+  ) => {
+    const cameraShakeArgsRef = this._declareLocal("camera_shake_args", 3, true);
+    this._addComment("Camera Shake");
+    this._setConst(cameraShakeArgsRef, frames);
+    this._setConst(
+      this._localRef(cameraShakeArgsRef, 1),
+      unionFlags(
+        ([] as string[]).concat(
+          shouldShakeX ? ".CAMERA_SHAKE_X" : [],
+          shouldShakeY ? ".CAMERA_SHAKE_Y" : []
+        )
+      )
+    );
+
+    this._rpn() //
+      .refVariable(magnitude)
+      .stop();
+    this._set(this._localRef(cameraShakeArgsRef, 2), ".ARG0");
+    this._stackPop(1);
+    
     this._invoke("camera_shake_frames", 0, cameraShakeArgsRef);
     this._addNL();
   };
