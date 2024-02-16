@@ -1771,7 +1771,7 @@ const migrateFrom310r3To311r1Events = (data) => {
 
 /* Version 3.2.0 r2 updates the camera shake event to include a magnitude value defaulting to 5
  */
- export const migrateFrom230r1To320r2Event = (event) => {
+export const migrateFrom320r1To320r2Event = (event) => {
   const migrateMeta = generateMigrateMeta(event);
 
   if (event.args && event.command === "EVENT_CAMERA_SHAKE") {
@@ -1793,11 +1793,11 @@ const migrateFrom310r3To311r1Events = (data) => {
 const migrateFrom320r1To320r2Events = (data) => {
   return {
     ...data,
-    scenes: mapScenesEvents(data.scenes, migrateFrom230r1To320r2Event),
+    scenes: mapScenesEvents(data.scenes, migrateFrom320r1To320r2Event),
     customEvents: (data.customEvents || []).map((customEvent) => {
       return {
         ...customEvent,
-        script: mapEvents(customEvent.script, migrateFrom230r1To320r2Event),
+        script: mapEvents(customEvent.script, migrateFrom320r1To320r2Event),
       };
     }),
   };
