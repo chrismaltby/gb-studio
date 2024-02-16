@@ -1,15 +1,6 @@
 import React, { FC } from "react";
 import { useSelector } from "react-redux";
 import {
-  EVENT_CAMERA_MOVE_TO,
-  EVENT_ACTOR_MOVE_TO,
-  EVENT_ACTOR_SET_POSITION,
-  EVENT_OVERLAY_SHOW,
-  EVENT_OVERLAY_MOVE_TO,
-  EVENT_IF_ACTOR_AT_POSITION,
-  EVENT_IF_ACTOR_DISTANCE_FROM_ACTOR,
-} from "lib/compiler/eventTypes";
-import {
   actorSelectors,
   scriptEventSelectors,
 } from "store/features/entities/entitiesState";
@@ -17,6 +8,15 @@ import { Scene } from "store/features/entities/entitiesTypes";
 import { RootState } from "store/configureStore";
 import styled from "styled-components";
 import { ensureMaybeNumber, ensureMaybeString } from "shared/types";
+import {
+  EVENT_ACTOR_MOVE_TO,
+  EVENT_ACTOR_SET_POSITION,
+  EVENT_CAMERA_MOVE_TO,
+  EVENT_IF_ACTOR_AT_POSITION,
+  EVENT_IF_ACTOR_DISTANCE_FROM_ACTOR,
+  EVENT_OVERLAY_MOVE_TO,
+  EVENT_OVERLAY_SHOW,
+} from "consts";
 
 const TILE_SIZE = 8;
 
