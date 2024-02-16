@@ -16,7 +16,6 @@ import { SequenceEditor } from "./SequenceEditor";
 import { SongRow } from "./SongRow";
 import scrollIntoView from "scroll-into-view-if-needed";
 import { SongGridHeaderCell } from "./SongGridHeaderCell";
-import { IpcRendererEvent } from "electron";
 import { getInstrumentTypeByChannel, getInstrumentListByType } from "./helpers";
 import {
   NO_CHANGE_ON_PASTE,
@@ -148,7 +147,7 @@ export const SongTracker = ({
     setPlaybackState(startPlaybackPosition);
   }, [setPlaybackState, startPlaybackPosition]);
   useEffect(() => {
-    const listener = (_event: IpcRendererEvent, d: MusicDataPacket) => {
+    const listener = (_event: unknown, d: MusicDataPacket) => {
       if (d.action === "update") {
         setPlaybackState(d.update);
       }
