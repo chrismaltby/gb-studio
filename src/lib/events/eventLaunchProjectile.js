@@ -89,8 +89,10 @@ const fields = [
         key: "angle",
         label: l10n("FIELD_ANGLE"),
         description: l10n("FIELD_PROJECTILE_ANGLE_DESC"),
-        type: "number",
+        type: "angle",
         defaultValue: 0,
+        min: -256,
+        max: 256,
         conditions: [
           {
             key: "directionType",
@@ -112,11 +114,25 @@ const fields = [
         ],
       },
       {
+        key: "targetActorId",
+        label: l10n("FIELD_TARGET"),
+        description: l10n("FIELD_PROJECTILE_TARGET_DESC"),
+        type: "actor",
+        defaultValue: "$self$",
+        conditions: [
+          {
+            key: "directionType",
+            eq: "target",
+          },
+        ],
+      },
+      {
         key: "directionType",
         type: "selectbutton",
         options: [
           ["direction", l10n("FIELD_FIXED_DIRECTION")],
           ["actor", l10n("FIELD_ACTOR_DIRECTION")],
+          ["target", l10n("FIELD_ACTOR_TARGET")],
           ["angle", l10n("FIELD_ANGLE")],
           ["anglevar", l10n("FIELD_ANGLE_VARIABLE")],
         ],
@@ -222,6 +238,7 @@ const compile = (input, helpers) => {
     launchProjectileInSourceActorDirection,
     launchProjectileInActorDirection,
     launchProjectileInAngleVariable,
+    launchProjectileTowardsActor,
     actorSetActive,
   } = helpers;
 
@@ -281,6 +298,25 @@ const compile = (input, helpers) => {
         input.x,
         input.y,
         input.otherActorId,
+        input.destroyOnHit,
+        input.loopAnim
+      );
+    }
+  } else if (input.directionType === "target") {
+    if (input.actorId === input.targetActorId) {
+      launchProjectileInSourceActorDirection(
+        projectileIndex,
+        input.x,
+        input.y,
+        input.destroyOnHit,
+        input.loopAnim
+      );
+    } else {
+      launchProjectileTowardsActor(
+        projectileIndex,
+        input.x,
+        input.y,
+        input.targetActorId,
         input.destroyOnHit,
         input.loopAnim
       );

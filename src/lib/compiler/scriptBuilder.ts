@@ -176,6 +176,7 @@ type ScriptBuilderRPNOperation =
   | ".ABS"
   | ".MIN"
   | ".MAX"
+  | ".ATAN2"
   | ScriptBuilderComparisonOperator;
 
 type ScriptBuilderOverlayMoveSpeed =
@@ -420,6 +421,8 @@ const funToScriptOperator = (
       return ".MAX";
     case "abs":
       return ".ABS";
+    case "atan2":
+      return ".ATAN2";
   }
   assertUnreachable(fun);
 };
@@ -2633,7 +2636,6 @@ extern void __mute_mask_${symbol};
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Direction");
-    this._actorGetPosition(actorRef);
     const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
     rpn
       .int16(dirToAngle(direction))
@@ -2654,7 +2656,6 @@ extern void __mute_mask_${symbol};
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Angle");
-    this._actorGetPosition(actorRef);
     const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
     rpn
       .int16(Math.round(angle % 256))
@@ -2675,7 +2676,6 @@ extern void __mute_mask_${symbol};
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Angle");
-    this._actorGetPosition(actorRef);
     const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
     rpn
       .refVariable(angleVariable)
@@ -2716,7 +2716,6 @@ extern void __mute_mask_${symbol};
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Actor Direction");
-    this._actorGetPosition(actorRef);
     const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
     rpn
       .int16(0) // Save space for direction
@@ -2724,6 +2723,39 @@ extern void __mute_mask_${symbol};
       .stop();
     this.setActorId(".ARG1", actorId);
     this._actorGetAngle(".ARG1", ".ARG1");
+    this._projectileLaunch(projectileIndex, ".ARG3");
+    this._stackPop(4);
+    this._addNL();
+  };
+
+  launchProjectileTowardsActor = (
+    projectileIndex: number,
+    x = 0,
+    y = 0,
+    otherActorId: string,
+    destroyOnHit = false,
+    loopAnim = false
+  ) => {
+    const actorRef = this._declareLocal("actor", 4);
+    const otherActorRef = this._declareLocal("other_actor", 3, true);
+    this._addComment("Launch Projectile Towards Actor");
+    this.setActorId(otherActorRef, otherActorId);
+    this._actorGetPosition(otherActorRef);
+    const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
+    rpn
+      .ref(this._localRef(otherActorRef, 2))
+      .ref(this._localRef(actorRef, 2))
+      .operator(".SUB")
+      .int16(8 * 16)
+      .operator(".DIV")
+      .ref(this._localRef(otherActorRef, 1))
+      .ref(this._localRef(actorRef, 1))
+      .operator(".SUB")
+      .int16(8 * 16)
+      .operator(".DIV")
+      .operator(".ATAN2")
+      .int16(toProjectileFlags(destroyOnHit, loopAnim))
+      .stop();
     this._projectileLaunch(projectileIndex, ".ARG3");
     this._stackPop(4);
     this._addNL();
@@ -3064,9 +3096,10 @@ extern void __mute_mask_${symbol};
   cameraShake = (
     shouldShakeX: boolean,
     shouldShakeY: boolean,
-    frames: number
+    frames: number,
+    magnitude: number
   ) => {
-    const cameraShakeArgsRef = this._declareLocal("camera_shake_args", 2, true);
+    const cameraShakeArgsRef = this._declareLocal("camera_shake_args", 3, true);
     this._addComment("Camera Shake");
     this._setConst(cameraShakeArgsRef, frames);
     this._setConst(
@@ -3078,6 +3111,36 @@ extern void __mute_mask_${symbol};
         )
       )
     );
+    this._setConst(this._localRef(cameraShakeArgsRef, 2), magnitude);
+    this._invoke("camera_shake_frames", 0, cameraShakeArgsRef);
+    this._addNL();
+  };
+
+  cameraShakeVariables = (
+    shouldShakeX: boolean,
+    shouldShakeY: boolean,
+    frames: number,
+    magnitude: string
+  ) => {
+    const cameraShakeArgsRef = this._declareLocal("camera_shake_args", 3, true);
+    this._addComment("Camera Shake");
+    this._setConst(cameraShakeArgsRef, frames);
+    this._setConst(
+      this._localRef(cameraShakeArgsRef, 1),
+      unionFlags(
+        ([] as string[]).concat(
+          shouldShakeX ? ".CAMERA_SHAKE_X" : [],
+          shouldShakeY ? ".CAMERA_SHAKE_Y" : []
+        )
+      )
+    );
+
+    this._rpn() //
+      .refVariable(magnitude)
+      .stop();
+    this._set(this._localRef(cameraShakeArgsRef, 2), ".ARG0");
+    this._stackPop(1);
+    
     this._invoke("camera_shake_frames", 0, cameraShakeArgsRef);
     this._addNL();
   };
