@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support for atan2 function in math expressions [@pau-tomas](https://github.com/pau-tomas)
 - Add magnitude field to camera shake event [@patrickmollohan](https://github.com/patrickmollohan)
 
+### Changed
+
+- Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
+
 ### Fixed
 
 - Fix sound effects previews in editor not matching how they sound in game [@pau-tomas](https://github.com/pau-tomas)
