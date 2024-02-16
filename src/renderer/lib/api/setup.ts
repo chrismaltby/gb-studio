@@ -91,6 +91,7 @@ const APISetup = {
       ipcRenderer.on("paste-in-place", listener),
     removePasteInPlaceListener: (listener: () => void) =>
       ipcRenderer.removeListener("paste-in-place", listener),
+    readText: (): Promise<string> => ipcRenderer.invoke("clipboard-read-text"),
   },
 };
 

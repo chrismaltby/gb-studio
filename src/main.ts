@@ -5,6 +5,7 @@ import {
   dialog,
   shell,
   nativeTheme,
+  clipboard,
 } from "electron";
 import windowStateKeeper from "electron-window-state";
 import settings from "electron-settings";
@@ -597,6 +598,10 @@ ipcMain.handle("get-is-full-screen", async () => {
     return mainWindow.isFullScreen();
   }
   return false;
+});
+
+ipcMain.handle("clipboard-read-text", () => {
+  return clipboard.readText();
 });
 
 menu.on("new", async () => {

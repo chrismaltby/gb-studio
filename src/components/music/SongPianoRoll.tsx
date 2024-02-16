@@ -10,7 +10,6 @@ import l10n from "renderer/lib/l10n";
 import { RollChannel } from "./RollChannel";
 import { RollChannelGrid } from "./RollChannelGrid";
 import { RollChannelSelectionArea } from "./RollChannelSelectionArea";
-import { clipboard } from "electron";
 import trackerActions from "store/features/tracker/trackerActions";
 import { PatternCell } from "renderer/lib/uge/song/PatternCell";
 import { cloneDeep } from "lodash";
@@ -910,9 +909,11 @@ export const SongPianoRoll = ({
     }
   }, [pattern, selectedChannel, selectedPatternCells, dispatch, patternId]);
 
-  const onPaste = useCallback(() => {
+  const onPaste = useCallback(async () => {
     if (pattern) {
-      const newPastedPattern = parseClipboardToPattern(clipboard.readText());
+      const newPastedPattern = parseClipboardToPattern(
+        await API.clipboard.readText()
+      );
       if (newPastedPattern) {
         refreshPastedPattern(newPastedPattern);
       }
@@ -928,9 +929,11 @@ export const SongPianoRoll = ({
     }
   }, [dispatch, pattern, refreshPastedPattern]);
 
-  const onPasteInPlace = useCallback(() => {
+  const onPasteInPlace = useCallback(async () => {
     if (pattern) {
-      const newPastedPattern = parseClipboardToPattern(clipboard.readText());
+      const newPastedPattern = parseClipboardToPattern(
+        await API.clipboard.readText()
+      );
 
       if (newPastedPattern) {
         const newPattern = Array(64)
