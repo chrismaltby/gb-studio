@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1329240125",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1331240210",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -563,6 +563,7 @@
   "FIELD_COLLISION_LEFT": "Kolizja: lewo",
   "FIELD_COLLISION_RIGHT": "Kolizja: prawo",
   "FIELD_COLLISION_SPARE": "Kolizja: zapasowa {tile}",
+  "FIELD_COLLISION_LADDER": "Kolizja: drabina",
   "FIELD_RESET_PALETTE": "Resetuj paletę",
   "FIELD_REMOVE_PALETTE": "Usuń paletę",
   "FIELD_DEFAULT_BACKGROUND_PALETTES": "Domyślna paleta tła",
@@ -702,6 +703,7 @@
   "FIELD_SCRIPT_DESC": "Polecenie uruchomi prawidłowy skrypt GBVM do wykonania.",
   "FIELD_VIEW_SLOPE_TILES": "Wyświetl tafly pochyłe",
   "FIELD_VIEW_EXTRA_TILES": "Wyświetl tafly dodatkowe",
+  "FIELD_SOUNDS": "Dźwięki",
   
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",

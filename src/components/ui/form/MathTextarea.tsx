@@ -28,6 +28,10 @@ const functionSymbols = [
     id: "max(",
     display: "max(",
   },
+  {
+    id: "atan2(",
+    display: "atan2(",
+  },
 ];
 
 const functionSearch = (search: string) => {
@@ -404,7 +408,7 @@ export const MathTextarea: FC<MathTextareaProps> = ({
         />
         <Mention
           className="Mentions__TokenFun"
-          trigger={/((m|mi|ma|ab)*)$/}
+          trigger={/((m|mi|ma|ab|at)*)$/}
           data={functionSearch}
           markup="__id__)"
           regex={/(min|max|abs)/}

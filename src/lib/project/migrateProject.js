@@ -22,7 +22,7 @@ import { toValidSymbol } from "shared/lib/helpers/symbols";
 const indexById = indexBy("id");
 
 export const LATEST_PROJECT_VERSION = "3.2.0";
-export const LATEST_PROJECT_MINOR_VERSION = "1";
+export const LATEST_PROJECT_MINOR_VERSION = "2";
 
 const ensureProjectAssetSync = (relativePath, { projectRoot }) => {
   const projectPath = `${projectRoot}/${relativePath}`;
@@ -1769,6 +1769,40 @@ const migrateFrom310r3To311r1Events = (data) => {
   };
 };
 
+/* Version 3.2.0 r2 updates the camera shake event to include a magnitude value defaulting to 5
+ */
+export const migrateFrom320r1To320r2Event = (event) => {
+  const migrateMeta = generateMigrateMeta(event);
+
+  if (event.args && event.command === "EVENT_CAMERA_SHAKE") {
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        magnitude: {
+          type: "number",
+          value: 5,
+        },
+      },
+    });
+  }
+
+  return event;
+};
+
+const migrateFrom320r1To320r2Events = (data) => {
+  return {
+    ...data,
+    scenes: mapScenesEvents(data.scenes, migrateFrom320r1To320r2Event),
+    customEvents: (data.customEvents || []).map((customEvent) => {
+      return {
+        ...customEvent,
+        script: mapEvents(customEvent.script, migrateFrom320r1To320r2Event),
+      };
+    }),
+  };
+};
+
 const migrateProject = (project, projectRoot) => {
   let data = { ...project };
   let version = project._version || "1.0.0";
@@ -1910,6 +1944,13 @@ const migrateProject = (project, projectRoot) => {
     if (release === "2") {
       version = "3.2.0";
       release = "1";
+    }
+  }
+
+  if (version === "3.2.0") {
+    if (release === "1") {
+      data = migrateFrom320r1To320r2Events(data);
+      release = "2";
     }
   }
 
