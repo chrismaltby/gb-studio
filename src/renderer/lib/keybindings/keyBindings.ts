@@ -2,12 +2,12 @@ import API from "renderer/lib/api";
 import { defaultKeys, milkytrackerKeys, openMPTKeys } from "./defaultKeys";
 
 interface KeyCommands {
-  editNoteField?: (...args: any[]) => void;
-  editInstrumentField?: (...args: any[]) => void;
-  editEffectCodeField?: (...args: any[]) => void;
-  editEffectParamField?: (...args: any[]) => void;
-  editOffsetField?: (...args: any[]) => void;
-  editJumpField?: (...args: any[]) => void;
+  editNoteField?: (value: number | null) => void;
+  editInstrumentField?: (value: number | null) => void;
+  editEffectCodeField?: (value: number | null) => void;
+  editEffectParamField?: (value: number | null) => void;
+  editOffsetField?: (value: "+" | "-" | number | null) => void;
+  editJumpField?: (value: number | null) => void;
 }
 
 export type KeyWhen =
@@ -19,12 +19,19 @@ export type KeyWhen =
   | "offsetColumnFocus"
   | "jumpColumnFocus";
 
-export interface KeyBinding {
-  key: string;
-  command: keyof KeyCommands;
-  args: any;
-  when: KeyWhen;
-}
+export type KeyBinding =
+  | {
+      key: string;
+      command: "editOffsetField";
+      args: "+" | "-" | number | null;
+      when: KeyWhen;
+    }
+  | {
+      key: string;
+      command: keyof Omit<KeyCommands, "editOffsetField">;
+      args: number | null;
+      when: KeyWhen;
+    };
 
 let keyBindings: KeyBinding[] = [];
 
@@ -34,9 +41,16 @@ export const getKeys = (key: string, when: KeyWhen, cmds: KeyCommands) => {
     .filter((k) => k.key === key && k.when === when)[0];
 
   if (pressedKey) {
-    const command = cmds[pressedKey.command];
-    if (command) {
-      command(pressedKey.args);
+    if (pressedKey.command === "editOffsetField") {
+      const command = cmds[pressedKey.command];
+      if (command) {
+        command(pressedKey.args);
+      }
+    } else {
+      const command = cmds[pressedKey.command];
+      if (command) {
+        command(pressedKey.args);
+      }
     }
   }
 };

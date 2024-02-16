@@ -1,6 +1,6 @@
 import { KeyBinding } from "./keyBindings";
 
-export const defaultKeys = [
+export const defaultKeys: KeyBinding[] = [
   // Instrument Code
   {
     key: "0",
@@ -451,9 +451,9 @@ export const defaultKeys = [
     args: null,
     when: "effectParamColumnFocus",
   },
-] as KeyBinding[];
+];
 
-export const openMPTKeys = [
+export const openMPTKeys: KeyBinding[] = [
   {
     key: "q",
     command: "editNoteField",
@@ -672,9 +672,9 @@ export const openMPTKeys = [
     args: null,
     when: "noteColumnFocus",
   },
-] as KeyBinding[];
+];
 
-export const milkytrackerKeys = [
+export const milkytrackerKeys: KeyBinding[] = [
   {
     key: "q",
     command: "editNoteField",
@@ -909,4 +909,4 @@ export const milkytrackerKeys = [
     args: null,
     when: "noteColumnFocus",
   },
-] as KeyBinding[];
+];
