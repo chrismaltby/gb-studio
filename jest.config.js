@@ -10,6 +10,7 @@ module.exports = {
     consts: "<rootDir>/src/consts.ts",
     "^store/(.*)$": "<rootDir>/src/store/$1",
     "^components/(.*)$": "<rootDir>/src/components/$1",
+    "^lang/(.*)$": "<rootDir>/src/lang/$1",
     "^lib/(.*)$": "<rootDir>/src/lib/$1",
     "^ui(.*)$": "<rootDir>/src/components/ui/$1",
     "^renderer(.*)$": "<rootDir>/src/renderer/$1",
