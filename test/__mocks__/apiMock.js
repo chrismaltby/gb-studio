@@ -9,6 +9,13 @@ const APIMock = {
     getTheme: () => Promise.resolve("light"),
     onChange: () => {},
   },
+  music: {
+    openMusic: () => {},
+    closeMusic: () => {},
+    sendMusicData: () => {},
+    musicDataSubscribe: () => {},
+    musicDataUnsubscribe: () => {},
+  },
 };
 
 export default APIMock;
