@@ -244,6 +244,8 @@ OP_VM_RPN          = 0x15
 .B_OR              = '|'
 .B_XOR             = '^'
 .B_NOT             = '~'
+.SHL               = 'L'
+.SHR               = 'R'
 .ABS               = '@'
 .MIN               = 'm'
 .MAX               = 'M'
@@ -263,7 +265,8 @@ OP_VM_RPN          = 0x15
         .db OP_VM_RPN
 .endm
 .macro .R_INT8 ARG0
-        .db -1, #<ARG0
+        .db -1
+        .db #<ARG0
 .endm
 .macro .R_INT16 ARG0
         .db -2
@@ -280,6 +283,23 @@ OP_VM_RPN          = 0x15
 .macro .R_REF_SET ARG0
         .db -5
         .dw #ARG0
+.endm
+.macro .R_REF_SET_IND ARG0
+        .db -6
+        .dw #ARG0
+.endm
+.MEM_I8            = 'i'
+.MEM_U8            = 'u'
+.MEM_I16           = 'I'
+.macro .R_REF_MEM TYP, ADDR
+        .db -7
+        .db #<TYP
+        .dw #ADDR
+.endm
+.macro .R_REF_MEM_SET TYP, ADDR
+        .db -8
+        .db #<TYP
+        .dw #ADDR
 .endm
 .macro .R_OPERATOR ARG0
         .db ARG0
@@ -333,75 +353,94 @@ OP_VM_IF_CONST  = 0x1A
         .db OP_VM_IF_CONST, #<N, #>LABEL, #<LABEL, #>B, #<B, #>IDXA, #<IDXA, #<CONDITION
 .endm
 
-OP_VM_GET_UINT8 = 0x1B
 ;-- Gets unsigned int8 from WRAM
 ; @param IDXA Target variable
 ; @param ADDR Address of the unsigned 8-bit value in WRAM
 .macro VM_GET_UINT8 IDXA, ADDR
-        .db OP_VM_GET_UINT8, #>ADDR, #<ADDR, #>IDXA, #<IDXA
+        VM_RPN
+            .R_REF_MEM .MEM_U8, ^!ADDR!
+            .R_REF_SET ^!IDXA!
+            .R_STOP
 .endm
 
-OP_VM_GET_INT8  = 0x1C
 ;-- Gets signed int8 from WRAM
 ; @param IDXA Target variable
 ; @param ADDR Address of the signed 8-bit value in WRAM
 .macro VM_GET_INT8 IDXA, ADDR
-        .db OP_VM_GET_INT8, #>ADDR, #<ADDR, #>IDXA, #<IDXA
+        VM_RPN
+            .R_REF_MEM .MEM_I8, ^!ADDR!
+            .R_REF_SET ^!IDXA!
+            .R_STOP
 .endm
 
-OP_VM_GET_INT16  = 0x1D
 ;-- Gets signed int16 from WRAM
 ; @param IDXA Target variable
 ; @param ADDR Address of the signed 16-bit value in WRAM
 .macro VM_GET_INT16 IDXA, ADDR
-        .db OP_VM_GET_INT16, #>ADDR, #<ADDR, #>IDXA, #<IDXA
+        VM_RPN
+            .R_REF_MEM .MEM_I16, ^!ADDR!
+            .R_REF_SET ^!IDXA!
+            .R_STOP
 .endm
 
-OP_VM_SET_UINT8 = 0x1E
 ;-- Sets unsigned int8 in WRAM from variable
 ; @param ADDR Address of the unsigned 8-bit value in WRAM
 ; @param IDXA Source variable
 .macro VM_SET_UINT8 ADDR, IDXA
-        .db OP_VM_SET_UINT8, #>IDXA, #<IDXA, #>ADDR, #<ADDR
+        VM_RPN
+            .R_REF ^!IDXA!
+            .R_REF_MEM_SET .MEM_U8, ^!ADDR!
+            .R_STOP
 .endm
 
-OP_VM_SET_INT8  = 0x1F
 ;-- Sets signed int8 in WRAM from variable
 ; @param ADDR Address of the signed 8-bit value in WRAM
 ; @param IDXA Source variable
 .macro VM_SET_INT8 ADDR, IDXA
-        .db OP_VM_SET_INT8, #>IDXA, #<IDXA, #>ADDR, #<ADDR
+        VM_RPN
+            .R_REF ^!IDXA!
+            .R_REF_MEM_SET .MEM_I8, ^!ADDR!
+            .R_STOP
 .endm
 
-OP_VM_SET_INT16  = 0x20
 ;-- Sets signed int16 in WRAM from variable
 ; @param ADDR Address of the signed 16-bit value in WRAM
 ; @param IDXA Source variable
 .macro VM_SET_INT16 ADDR, IDXA
-        .db OP_VM_SET_INT16, #>IDXA, #<IDXA, #>ADDR, #<ADDR
+        VM_RPN
+            .R_REF ^!IDXA!
+            .R_REF_MEM_SET .MEM_I16, ^!ADDR!
+            .R_STOP
 .endm
 
-OP_VM_SET_CONST_INT8 = 0x21
 ;-- Sets signed int8 in WRAM to the immediate value
 ; @param ADDR Address of the signed 8-bit value in WRAM
-; @param V Immediate value
-.macro VM_SET_CONST_INT8 ADDR, V
-        .db OP_VM_SET_CONST_INT8, #<V, #>ADDR, #<ADDR
+; @param VAL Immediate value
+.macro VM_SET_CONST_INT8 ADDR, VAL
+        VM_RPN
+            .R_INT8 ^!VAL!
+            .R_REF_MEM_SET .MEM_I8, ^!ADDR!
+            .R_STOP
 .endm
 
 ;-- Sets unsigned int8 in WRAM to the immediate value
 ; @param ADDR Address of the unsigned 8-bit value in WRAM
-; @param V Immediate value
-.macro VM_SET_CONST_UINT8 ADDR, V
-        .db OP_VM_SET_CONST_INT8, #<V, #>ADDR, #<ADDR
+; @param VAL Immediate value
+.macro VM_SET_CONST_UINT8 ADDR, VAL
+        VM_RPN
+            .R_INT8 ^!VAL!
+            .R_REF_MEM_SET .MEM_U8, ^!ADDR!
+            .R_STOP
 .endm
 
-OP_VM_SET_CONST_INT16 = 0x22
 ;-- Sets signed int16 in WRAM to the immediate value
 ; @param ADDR Address of the signed 16-bit value in WRAM
-; @param V Immediate value
-.macro VM_SET_CONST_INT16 ADDR, V
-        .db OP_VM_SET_CONST_INT16, #>V, #<V, #>ADDR, #<ADDR
+; @param VAL Immediate value
+.macro VM_SET_CONST_INT16 ADDR, VAL
+        VM_RPN
+            .R_INT16 ^!VAL!
+            .R_REF_MEM_SET .MEM_I16, ^!ADDR!
+            .R_STOP
 .endm
 
 OP_VM_INIT_RNG        = 0x23
@@ -413,10 +452,9 @@ OP_VM_INIT_RNG        = 0x23
 
 ;-- Initializes RNG seed
 .macro VM_RANDOMIZE
-        VM_RESERVE      2
-        VM_GET_UINT8    .ARG0, _DIV_REG
-        VM_GET_UINT8    .ARG1, _game_time
         VM_RPN
+            .R_REF_MEM .MEM_U8, _DIV_REG
+            .R_REF_MEM .MEM_U8, _game_time
             .R_INT16    256
             .R_OPERATOR .MUL
             .R_OPERATOR .ADD
@@ -830,10 +868,13 @@ OP_VM_ACTOR_SET_ANIM_SET        = 0x84
 ; * `\002\x` Sets the text font
 ; * `\003\x\y` Sets the position for the next character
 ; * `\004\x\y` Sets the position for the next character relative to the last character
-; * `\005\` TBD
+; * `\005` Escape the next character
 ; * `\006\mask` Wait for input to continue to the next character.
 ; * `\007\n` Inverts the colors of the following characters.
+; * `\010\x` Switch left to right / right to left printing
+; * `\011` Zero width symbol
 ; * `\n` Next line
+; * `\013\x` Set UI palette number to x
 ; * `\r` Scroll text one line up
 OP_VM_LOAD_TEXT         = 0x40
 .macro VM_LOAD_TEXT NARGS
