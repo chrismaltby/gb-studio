@@ -27,25 +27,21 @@ export const UgePlayer = ({ data, onChannelStatusUpdate }: UgePlayerProps) => {
     const listener = (_event: unknown, d: MusicDataPacket) => {
       switch (d.action) {
         case "initialized":
-          API.music.sendMusicData({
-            action: "load-song",
-            song: data,
-          });
+          if (data) {
+            API.music.sendMusicData({
+              action: "load-song",
+              song: data,
+            });
+          }
           break;
         case "loaded":
           dispatch(trackerActions.playerReady(true));
           break;
         case "muted":
-          const message = d.message;
           if (onChannelStatusUpdate) {
-            onChannelStatusUpdate(message.channels);
+            onChannelStatusUpdate(d.channels);
           }
           break;
-        case "update":
-        case "log":
-          break;
-        default:
-          console.log(`Action ${d.action} not supported`);
       }
     };
 
@@ -57,7 +53,7 @@ export const UgePlayer = ({ data, onChannelStatusUpdate }: UgePlayerProps) => {
   }, [onChannelStatusUpdate, play, data, dispatch]);
 
   useEffect(() => {
-    if (play) {
+    if (play && data) {
       console.log("PLAY");
       API.music.sendMusicData({
         action: "play",
