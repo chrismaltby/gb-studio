@@ -59,7 +59,7 @@ export const RollChannelFwd = ({
 
         if (cell && cell.note !== null) {
           return (
-            <>
+            <React.Fragment key={`note_${columnIdx}_${channelId}`}>
               <Note
                 data-type="note"
                 data-note={cell.note}
@@ -132,7 +132,7 @@ export const RollChannelFwd = ({
               ) : (
                 ""
               )}
-            </>
+            </React.Fragment>
           );
         }
         return "";

@@ -905,7 +905,7 @@ export const InstrumentSubpatternEditor = ({
             Math.floor(activeField / ROW_SIZE) === i;
           const renderSelectedTrackerFields = selectedTrackerFields ?? [];
           return (
-            <SubpatternRow>
+            <SubpatternRow key={`subpattern_${i}`}>
               <SubpatternRowGroup
                 n={i}
                 size="small"

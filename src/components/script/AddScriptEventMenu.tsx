@@ -814,7 +814,7 @@ const AddScriptEventMenu = ({
         >
           <SelectMenuOptions ref={rootOptionsRef}>
             {options.map((option, optionIndex) => (
-              <>
+              <React.Fragment key={option.label}>
                 {option.groupLabel && (
                   <MenuGroup key={option.groupLabel}>
                     {option.groupLabel}
@@ -868,7 +868,7 @@ const AddScriptEventMenu = ({
                     </>
                   )}
                 </MenuItem>
-              </>
+              </React.Fragment>
             ))}
           </SelectMenuOptions>
           <SelectMenuOptions ref={childOptionsRef}>

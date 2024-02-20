@@ -75,7 +75,7 @@ const ScriptEditor = React.memo(
         {value.map(
           (id, index) =>
             index < renderTo && (
-              <>
+              <React.Fragment key={`event_row_${id}_${index}`}>
                 {showAutoFadeIndicator && id === autoFadeEventId && (
                   <ScriptEventAutoFade />
                 )}
@@ -88,7 +88,7 @@ const ScriptEditor = React.memo(
                   parentKey={scriptKey}
                   entityId={entityId}
                 />
-              </>
+              </React.Fragment>
             )
         )}
         {showAutoFadeIndicator && autoFadeEventId === "" && (

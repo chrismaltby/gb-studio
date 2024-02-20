@@ -608,7 +608,7 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
         >
           <SelectMenuOptions ref={rootOptionsRef}>
             {options.map((option, optionIndex) => (
-              <>
+              <React.Fragment key={option.label}>
                 {option.groupLabel && (
                   <MenuGroup key={option.groupLabel}>
                     {option.groupLabel}
@@ -636,7 +636,7 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
                     </>
                   )}
                 </MenuItem>
-              </>
+              </React.Fragment>
             ))}
           </SelectMenuOptions>
           <SelectMenuOptions ref={childOptionsRef}>

@@ -1056,7 +1056,7 @@ export const SongPianoRoll = ({
               {Array(6)
                 .fill("")
                 .map((_, i) => (
-                  <>
+                  <React.Fragment key={`pianokey_${i}`}>
                     <PianoKey
                       color="white"
                       highlight={hoverNote === MAX_NOTE - i * 12}
@@ -1110,7 +1110,7 @@ export const SongPianoRoll = ({
                     >
                       C{8 - i}
                     </PianoKey>
-                  </>
+                  </React.Fragment>
                 ))}
             </Piano>
             <SongGrid
@@ -1137,6 +1137,7 @@ export const SongPianoRoll = ({
               />
               {v.map((i) => (
                 <RollChannel
+                  key={`roll_channel_${i}`}
                   channelId={i}
                   active={selectedChannel === i}
                   renderPattern={renderPattern || []}
