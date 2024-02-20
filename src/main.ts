@@ -10,7 +10,7 @@ import {
 import windowStateKeeper from "electron-window-state";
 import settings from "electron-settings";
 import Path from "path";
-import { stat } from "fs-extra";
+import { remove, stat } from "fs-extra";
 import menu from "./menu";
 import { checkForUpdate } from "lib/helpers/updateChecker";
 import switchLanguageDialog from "lib/electron/dialog/switchLanguageDialog";
@@ -535,6 +535,11 @@ ipcMain.handle("get-tmp-path", async () => {
 ipcMain.handle("create-project", async (_event, input: CreateProjectInput) =>
   createProject(input)
 );
+
+ipcMain.handle("build:delete-cache", async (_event) => {
+  const cacheRoot = Path.normalize(`${getTmp()}/_gbscache`);
+  await remove(cacheRoot);
+});
 
 ipcMain.on("project-loaded", (_event, settings) => {
   const { showCollisions, showConnections, showNavigator } = settings;

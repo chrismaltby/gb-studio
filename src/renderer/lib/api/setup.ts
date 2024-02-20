@@ -31,6 +31,7 @@ const APISetup = {
     onIsFullScreenChange: (
       listener: (event: IpcRendererEvent, isFullScreen: boolean) => void
     ) => ipcRenderer.on("is-full-screen-changed", listener),
+    deleteBuildCache: () => ipcRenderer.invoke("build:delete-cache"),
   },
   l10n: {
     getL10NStrings: (): Promise<L10NLookup> =>

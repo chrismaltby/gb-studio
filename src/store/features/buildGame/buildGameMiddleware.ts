@@ -14,7 +14,8 @@ import { statSync } from "fs-extra";
 import confirmEjectEngineReplaceDialog from "lib/electron/dialog/confirmEjectEngineReplaceDialog";
 import ejectEngineToDir from "lib/project/ejectEngineToDir";
 import actions from "./buildGameActions";
-import l10n from "lib/helpers/l10n";
+import l10n from "renderer/lib/l10n";
+import API from "renderer/lib/api";
 
 const rmdir = promisify(rimraf);
 
@@ -147,8 +148,7 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
       }
     } else if (actions.deleteBuildCache.match(action)) {
       const dispatch = store.dispatch.bind(store);
-      const cacheRoot = Path.normalize(`${getTmp()}/_gbscache`);
-      await rmdir(cacheRoot);
+      await API.app.deleteBuildCache();
       dispatch(consoleActions.clearConsole());
       dispatch(consoleActions.stdOut("Cleared GB Studio caches"));
     } else if (actions.ejectEngine.match(action)) {
