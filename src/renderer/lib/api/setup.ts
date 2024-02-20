@@ -1,6 +1,9 @@
 import { ipcRenderer, IpcRendererEvent } from "electron";
 import type { CreateProjectInput } from "lib/project/createProject";
-import { MusicDataPacket } from "shared/lib/music/types";
+import {
+  MusicDataPacket,
+  MusicDataReceivePacket,
+} from "shared/lib/music/types";
 import type { ThemeId } from "shared/lib/theme";
 import {
   ensurePromisedNumber,
@@ -79,6 +82,8 @@ const APISetup = {
     closeMusic: () => ipcRenderer.send("close-music"),
     sendMusicData: (data: MusicDataPacket) =>
       ipcRenderer.send("music-data-send", data),
+    receiveMusicData: (data: MusicDataReceivePacket) =>
+      ipcRenderer.send("music-data-receive", data),
     musicDataSubscribe: (
       listener: (event: IpcRendererEvent, data: MusicDataPacket) => void
     ) => ipcRenderer.on("music-data", listener),

@@ -44,6 +44,9 @@ export const SongGridHeaderCell = ({
   muted,
 }: SongGridHeaderCellProps) => {
   const setMute = useCallback(() => {
+    if (channel === undefined) {
+      return;
+    }
     API.music.sendMusicData({
       action: "set-mute",
       channel: channel,

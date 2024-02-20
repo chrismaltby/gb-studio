@@ -99,7 +99,7 @@ module.exports = {
             },
             {
               html: "./src/app/music/music.html",
-              js: "./src/app/music/MusicRoot.js",
+              js: "./src/app/music/MusicRoot.tsx",
               preload: {
                 js: "./src/app/project/preload.ts",
               },

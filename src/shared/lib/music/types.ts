@@ -22,6 +22,9 @@ export type MusicDataPacket =
       position?: [number, number];
     }
   | {
+      action: "play-sound";
+    }
+  | {
       action: "stop";
       position?: [number, number];
     }
@@ -43,7 +46,7 @@ export type MusicDataPacket =
     }
   | {
       action: "set-mute";
-      channel?: number;
+      channel: number;
       muted: boolean;
     }
   | {
@@ -53,4 +56,24 @@ export type MusicDataPacket =
   | {
       action: "log";
       message: string;
+    };
+
+export type MusicDataReceivePacket =
+  | {
+      action: "initialized";
+    }
+  | {
+      action: "log";
+      message: string;
+    }
+  | {
+      action: "loaded";
+    }
+  | {
+      action: "update";
+      update: [number, number];
+    }
+  | {
+      action: "muted";
+      channels: boolean[];
     };
