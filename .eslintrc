@@ -69,7 +69,7 @@
   },
   "overrides": [
     {
-      "files": ["src/renderer/**", "src/components/**"],
+      "files": ["src/renderer/**", "src/components/**", "src/store/**", "src/app/**"],
       "rules": {
         "@typescript-eslint/no-restricted-imports": [
           "error",
