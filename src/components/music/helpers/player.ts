@@ -1,9 +1,9 @@
 import compiler from "./compiler";
 import storage from "./storage";
 import emulator from "./emulator";
-import { Song } from "renderer/lib/uge/song/Song";
+import { Song } from "shared/lib/uge/song/Song";
 import { lo, hi } from "shared/lib/helpers/8bit";
-import { SubPatternCell } from "renderer/lib/uge/song/SubPatternCell";
+import { SubPatternCell } from "shared/lib/uge/song/SubPatternCell";
 
 type PlaybackPosition = [number, number];
 

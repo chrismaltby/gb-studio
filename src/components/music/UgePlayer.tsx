@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Song } from "renderer/lib/uge/song/Song";
+import { Song } from "shared/lib/uge/song/Song";
 import { RootState } from "store/configureStore";
 import trackerActions from "store/features/tracker/trackerActions";
 import API from "renderer/lib/api";

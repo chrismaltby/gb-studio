@@ -3,7 +3,7 @@ import Path from "path";
 import { checksumFile, checksumString } from "lib/helpers/checksum";
 import { readFile, ensureDir, pathExists, writeFile, unlink } from "fs-extra";
 import ensureBuildTools from "./ensureBuildTools";
-import { exportToC, loadUGESong } from "../../renderer/lib/uge/ugeHelper";
+import { exportToC, loadUGESong } from "shared/lib/uge/ugeHelper";
 import { assetFilename } from "shared/lib/helpers/assets";
 
 export interface PrecompiledMusicTrack {

@@ -29,6 +29,10 @@ import createProject, { CreateProjectInput } from "lib/project/createProject";
 import open from "open";
 import confirmEnableColorDialog from "lib/electron/dialog/confirmEnableColorDialog";
 import confirmDeleteCustomEvent from "lib/electron/dialog/confirmDeleteCustomEvent";
+import type { ProjectData } from "store/features/project/projectActions";
+import type { BuildOptions } from "renderer/lib/api/setup";
+import buildProject from "lib/compiler/buildProject";
+import copy from "lib/helpers/fsCopy";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -63,6 +67,7 @@ let documentEdited = false;
 let documentName = "";
 let mainWindowCloseCancelled = false;
 let keepOpen = false;
+let projectPath = "";
 
 const isDevMode = !!process.execPath.match(/[\\/]electron/);
 
@@ -145,7 +150,7 @@ const createPreferences = async () => {
   });
 };
 
-const createWindow = async (projectPath: string) => {
+const createProjectWindow = async () => {
   const mainWindowState = windowStateKeeper({
     defaultWidth: 1000,
     defaultHeight: 800,
@@ -661,6 +666,84 @@ ipcMain.handle("clipboard-read-text", () => {
   return clipboard.readText();
 });
 
+ipcMain.on(
+  "project:build",
+  async (event, project: ProjectData, options: BuildOptions) => {
+    const { exportBuild, buildType } = options;
+
+    const buildStartTime = Date.now();
+    const buildUUID = "_gbsbuild";
+    const projectRoot = Path.dirname(projectPath);
+    const outputRoot = Path.normalize(`${getTmp()}/${buildUUID}`);
+    const colorEnabled = project.settings.customColorsEnabled;
+    const sgbEnabled = project.settings.sgbEnabled;
+
+    await buildProject(project, {
+      ...options,
+      projectRoot,
+      outputRoot,
+      tmpPath: getTmp(),
+      progress: (message) => {
+        // Detect if build was cancelled and stop current build
+        // const state = store.getState();
+        // if (
+        //   state.console.status === "cancelled" ||
+        //   state.console.status === "complete"
+        // ) {
+        //   throw new Error(l10n("BUILD_CANCELLED"));
+        // }
+
+        if (
+          message !== "'" &&
+          message.indexOf("unknown or unsupported #pragma") === -1
+        ) {
+          mainWindow?.webContents.send("build:log", message);
+        }
+      },
+      warnings: (message) => {
+        mainWindow?.webContents.send("build:error", message);
+      },
+    });
+
+    if (exportBuild) {
+      await copy(
+        `${outputRoot}/build/${buildType}`,
+        `${projectRoot}/build/${buildType}`
+      );
+      shell.openItem(`${projectRoot}/build/${buildType}`);
+      mainWindow?.webContents.send("build:log", `-`);
+      mainWindow?.webContents.send(
+        "build:log",
+        `Success! ${
+          buildType === "web"
+            ? `Site is ready at ${Path.normalize(
+                `${projectRoot}/build/web/index.html`
+              )}`
+            : `ROM is ready at ${Path.normalize(
+                `${projectRoot}/build/rom/game.gb`
+              )}`
+        }`
+      );
+    }
+
+    if (buildType === "web" && !exportBuild) {
+      mainWindow?.webContents.send("build:log", `-`);
+      mainWindow?.webContents.send(
+        "build:log",
+        `Success! Starting emulator...`
+      );
+      createPlay(
+        `file://${outputRoot}/build/web/index.html`,
+        sgbEnabled && !colorEnabled
+      );
+    }
+
+    const buildTime = Date.now() - buildStartTime;
+    mainWindow?.webContents.send("build:log", `Build Time: ${buildTime}ms`);
+    mainWindow?.webContents.send("build:complete");
+  }
+);
+
 menu.on("new", async () => {
   newProject();
 });
@@ -851,8 +934,8 @@ const switchProject = async () => {
   keepOpen = false;
 };
 
-const openProject = async (projectPath: string) => {
-  const ext = Path.extname(projectPath);
+const openProject = async (newProjectPath: string) => {
+  const ext = Path.extname(newProjectPath);
   if (validProjectExt.indexOf(ext) === -1) {
     dialog.showErrorBox(
       l10n("ERROR_INVALID_FILE_TYPE"),
@@ -862,7 +945,7 @@ const openProject = async (projectPath: string) => {
   }
 
   try {
-    await stat(projectPath);
+    await stat(newProjectPath);
   } catch (e) {
     dialog.showErrorBox(
       l10n("ERROR_MISSING_PROJECT"),
@@ -871,6 +954,7 @@ const openProject = async (projectPath: string) => {
     return;
   }
 
+  projectPath = newProjectPath;
   addRecentProject(projectPath);
 
   keepOpen = true;
@@ -879,7 +963,7 @@ const openProject = async (projectPath: string) => {
     mainWindow.close();
     await waitUntilWindowClosed();
   }
-  await createWindow(projectPath);
+  await createProjectWindow();
   if (splashWindow) {
     splashWindow.close();
   }

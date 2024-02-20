@@ -28,7 +28,6 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
       const dispatch = store.dispatch.bind(store);
 
       const { buildType, exportBuild } = action.payload;
-      const buildStartTime = Date.now();
 
       if (state.console.status === "cancelled") {
         // Wait until cancel is complete before allowing another build
@@ -42,13 +41,18 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
 
       dispatch(consoleActions.startConsole());
 
+      const project = denormalizeProject(state.project.present);
+      const engineFields = state.engine.fields;
+
+      API.project.build(project, {
+        buildType,
+        engineFields,
+        profile: state.editor.profile,
+        exportBuild,
+      });
+
+      /*
       try {
-        const projectRoot = state.document && state.document.root;
-        const project = denormalizeProject(state.project.present);
-        const colorEnabled = state.project.present.settings.customColorsEnabled;
-        const sgbEnabled = state.project.present.settings.sgbEnabled;
-        const outputRoot = Path.normalize(`${getTmp()}/${buildUUID}`);
-        const engineFields = state.engine.fields;
 
         await rmdir(outputRoot);
 
@@ -146,6 +150,7 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
           dispatch(consoleActions.stdOut("Reloaded GB Studio Compiler"));
         });
       }
+      */
     } else if (actions.deleteBuildCache.match(action)) {
       const dispatch = store.dispatch.bind(store);
       await API.app.deleteBuildCache();

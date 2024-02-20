@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import {
+import type {
   DutyInstrument,
   NoiseInstrument,
   WaveInstrument,
@@ -7,7 +7,7 @@ import {
 import { PatternCell } from "./song/PatternCell";
 import { Song } from "./song/Song";
 import { SubPatternCell } from "./song/SubPatternCell";
-import { noteGBDKDefines } from "components/music/constants";
+import { noteGBDKDefines } from "shared/lib/music/constants";
 
 interface InstrumentMap {
   [index: number]: number;
@@ -45,9 +45,13 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
 
   const td = new TextDecoder();
   const readText = () => {
-    const text = td.decode(
-      data.slice(offset + 1, offset + 1 + uint8data[offset])
-    );
+    const len = uint8data[offset];
+    let text = "";
+    if (len > 0) {
+      // Need to check string length > 0 here to prevent
+      // ERR_ENCODING_INVALID_ENCODED_DATA when this is run from Electron main process
+      text = td.decode(data.slice(offset + 1, offset + 1 + len));
+    }
     offset += 256;
     return text;
   };

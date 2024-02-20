@@ -16,6 +16,7 @@ import buildGameActions from "store/features/buildGame/buildGameActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import engineActions from "store/features/engine/engineActions";
 import errorActions from "store/features/error/errorActions";
+import consoleActions from "store/features/console/consoleActions";
 import initElectronL10n from "lib/helpers/initElectronL10n";
 import { clampSidebarWidth } from "renderer/lib/window/sidebar";
 import { initKeyBindings } from "renderer/lib/keybindings/keyBindings";
@@ -297,4 +298,16 @@ store.subscribe(() => {
     ipcRenderer.send("document-unmodified", {});
   }
   modified = state.document.modified;
+});
+
+API.project.onBuildLog((_event, message) => {
+  store.dispatch(consoleActions.stdOut(message));
+});
+
+API.project.onBuildError((_event, message) => {
+  store.dispatch(consoleActions.stdErr(message));
+});
+
+API.project.onBuildComplete((_event, message) => {
+  store.dispatch(consoleActions.completeConsole());
 });

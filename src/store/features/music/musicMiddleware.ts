@@ -7,7 +7,7 @@ import actions from "./musicActions";
 import { musicSelectors } from "../entities/entitiesState";
 import { MusicSettings } from "../entities/entitiesTypes";
 import { readFile } from "fs-extra";
-import { loadUGESong } from "renderer/lib/uge/ugeHelper";
+import { loadUGESong } from "shared/lib/uge/ugeHelper";
 import toArrayBuffer from "lib/helpers/toArrayBuffer";
 import { assetFilename } from "shared/lib/helpers/assets";
 import { MusicDataPacket } from "shared/lib/music/types";

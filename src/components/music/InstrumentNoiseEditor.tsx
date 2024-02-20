@@ -10,7 +10,7 @@ import { InstrumentLengthForm } from "./InstrumentLengthForm";
 import { InstrumentVolumeEditor } from "./InstrumentVolumeEditor";
 import { NoiseMacroEditorForm } from "./NoiseMacroEditorForm";
 import { Button } from "ui/buttons/Button";
-import { SubPatternCell } from "renderer/lib/uge/song/SubPatternCell";
+import { SubPatternCell } from "shared/lib/uge/song/SubPatternCell";
 import { cloneDeep } from "lodash";
 import Alert, { AlertItem } from "components/library/Alert";
 import API from "renderer/lib/api";

@@ -1,6 +1,6 @@
-import { PatternCell } from "renderer/lib/uge/song/PatternCell";
-import { noteStringsForClipboard } from "./constants";
-import { SubPatternCell } from "renderer/lib/uge/song/SubPatternCell";
+import { PatternCell } from "shared/lib/uge/song/PatternCell";
+import { noteStringsForClipboard } from "../../shared/lib/music/constants";
+import { SubPatternCell } from "shared/lib/uge/song/SubPatternCell";
 import {
   renderNote,
   renderInstrument,

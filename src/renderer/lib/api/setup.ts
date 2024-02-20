@@ -10,11 +10,20 @@ import {
   ensurePromisedString,
   JsonValue,
 } from "shared/types";
+import { EngineFieldSchema } from "store/features/engine/engineState";
+import { ProjectData } from "store/features/project/projectActions";
 import { SettingsState } from "store/features/settings/settingsState";
 
 interface L10NLookup {
   [key: string]: string | boolean | undefined;
 }
+
+export type BuildOptions = {
+  buildType: "rom" | "web" | "pocket";
+  profile: boolean;
+  engineFields: EngineFieldSchema[];
+  exportBuild: boolean;
+};
 
 const APISetup = {
   platform: process.platform,
@@ -103,6 +112,16 @@ const APISetup = {
     setShowNavigator: (value: boolean) =>
       ipcRenderer.send("set-show-navigator", value),
     close: () => ipcRenderer.invoke("close-project"),
+    build: (data: ProjectData, options: BuildOptions) =>
+      ipcRenderer.send("project:build", data, options),
+    onBuildLog: (
+      listener: (event: IpcRendererEvent, message: string) => void
+    ) => ipcRenderer.on("build:log", listener),
+    onBuildError: (
+      listener: (event: IpcRendererEvent, message: string) => void
+    ) => ipcRenderer.on("build:error", listener),
+    onBuildComplete: (listener: (event: IpcRendererEvent) => void) =>
+      ipcRenderer.on("build:complete", listener),
   },
   music: {
     openMusic: () => ipcRenderer.send("open-music"),

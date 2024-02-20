@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled, { css } from "styled-components";
-import { Song } from "renderer/lib/uge/song/Song";
+import { Song } from "shared/lib/uge/song/Song";
 import { RootState } from "store/configureStore";
 import { SplitPaneVerticalDivider } from "ui/splitpane/SplitPaneDivider";
 import { SequenceEditor } from "./SequenceEditor";
@@ -11,7 +11,7 @@ import { RollChannel } from "./RollChannel";
 import { RollChannelGrid } from "./RollChannelGrid";
 import { RollChannelSelectionArea } from "./RollChannelSelectionArea";
 import trackerActions from "store/features/tracker/trackerActions";
-import { PatternCell } from "renderer/lib/uge/song/PatternCell";
+import { PatternCell } from "shared/lib/uge/song/PatternCell";
 import { cloneDeep } from "lodash";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";

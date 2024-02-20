@@ -1,4 +1,4 @@
-import type { Song } from "renderer/lib/uge/song/Song";
+import type { Song } from "shared/lib/uge/song/Song";
 import type {
   DutyInstrument,
   NoiseInstrument,

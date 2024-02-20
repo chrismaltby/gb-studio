@@ -1,4 +1,4 @@
-import { Song } from "renderer/lib/uge/song/Song";
+import { Song } from "shared/lib/uge/song/Song";
 import { InstrumentType } from "store/features/editor/editorState";
 
 export const getInstrumentTypeByChannel = (

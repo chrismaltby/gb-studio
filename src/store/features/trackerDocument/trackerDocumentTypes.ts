@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import { SubPatternCell } from "renderer/lib/uge/song/SubPatternCell";
+import { SubPatternCell } from "shared/lib/uge/song/SubPatternCell";
 
 export type DutyInstrument = {
   index: number;
