@@ -26,6 +26,9 @@ import { toThemeId } from "shared/lib/theme";
 import { isString, isStringArray, JsonValue } from "shared/types";
 import getTmp from "lib/helpers/getTmp";
 import createProject, { CreateProjectInput } from "lib/project/createProject";
+import open from "open";
+import confirmEnableColorDialog from "lib/electron/dialog/confirmEnableColorDialog";
+import confirmDeleteCustomEvent from "lib/electron/dialog/confirmDeleteCustomEvent";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -422,12 +425,39 @@ ipcMain.handle("clear-recent-projects", async (_event) => {
   app.clearRecentDocuments();
 });
 
-ipcMain.on("open-help", async (_event, helpPage) => {
+ipcMain.handle("open-help", async (_event, helpPage) => {
+  if (!isString(helpPage)) throw new Error("Invalid URL");
   openHelp(helpPage);
 });
 
 ipcMain.on("open-play", async (_event, url, sgb) => {
   createPlay(url, sgb);
+});
+
+ipcMain.handle("open-folder", async (_event, path) => {
+  if (!isString(path)) throw new Error("Invalid Path");
+  // @TODO Confirm that folder is within project
+  shell.openItem(path);
+});
+
+ipcMain.handle("open-image", async (_event, path) => {
+  if (!isString(path)) throw new Error("Invalid Path");
+  // @TODO Confirm that folder is within project
+  const app = String(settings.get("imageEditorPath") || "") || undefined;
+  open(path, { app });
+});
+
+ipcMain.handle("open-mod", async (_event, path) => {
+  if (!isString(path)) throw new Error("Invalid Path");
+  // @TODO Confirm that folder is within project
+  const app = String(settings.get("musicEditorPath") || "") || undefined;
+  open(path, { app });
+});
+
+ipcMain.handle("open-file", async (_event, path) => {
+  if (!isString(path)) throw new Error("Invalid Path");
+  // @TODO Confirm that folder is within project
+  shell.openItem(path);
 });
 
 ipcMain.handle("open-external", async (_event, url) => {
@@ -460,6 +490,28 @@ ipcMain.handle("open-file-picker", async () => {
     return Path.normalize(selection.filePaths[0]);
   }
   return undefined;
+});
+
+ipcMain.handle(
+  "dialog:show-error",
+  (_event, title: string, content: string) => {
+    dialog.showErrorBox(title, content);
+  }
+);
+
+ipcMain.handle("dialog:confirm-color", async () => {
+  return confirmEnableColorDialog();
+});
+
+ipcMain.handle(
+  "dialog:confirm-delete-custom-event",
+  async (_event, name: string, sceneNames: string[], count: number) => {
+    return confirmDeleteCustomEvent(name, sceneNames, count);
+  }
+);
+
+ipcMain.handle("close-project", () => {
+  mainWindow?.close();
 });
 
 ipcMain.on("document-modified", () => {

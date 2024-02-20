@@ -1,56 +1,48 @@
-import { ipcRenderer, remote } from "electron";
-import settings from "electron-settings";
 import uniq from "lodash/uniq";
-import confirmDeleteCustomEvent from "lib/electron/dialog/confirmDeleteCustomEvent";
-import confirmEnableColorDialog from "lib/electron/dialog/confirmEnableColorDialog";
 import {
   walkEvents,
   walkSceneSpecificEvents,
   walkActorEvents,
-  filterEvents,
 } from "lib/helpers/eventSystem";
-import { EVENT_CALL_CUSTOM_EVENT } from "lib/compiler/eventTypes";
-import l10n from "lib/helpers/l10n";
-import editorActions from "../editor/editorActions";
-import { getSettings } from "../settings/settingsState";
-import settingsActions from "../settings/settingsActions";
+import editorActions from "store/features/editor/editorActions";
+import { getSettings } from "store/features/settings/settingsState";
+import settingsActions from "store/features/settings/settingsActions";
 import { Dispatch, Middleware } from "@reduxjs/toolkit";
 import { RootState } from "store/configureStore";
-import projectActions from "../project/projectActions";
+import projectActions from "store/features/project/projectActions";
 import {
   customEventSelectors,
   sceneSelectors,
   actorSelectors,
   triggerSelectors,
-} from "../entities/entitiesState";
-import { ScriptEvent } from "../entities/entitiesTypes";
-import entitiesActions from "../entities/entitiesActions";
-import { Dictionary } from "lodash";
+  scriptEventSelectors,
+} from "store/features/entities/entitiesState";
+import entitiesActions from "store/features/entities/entitiesActions";
 import actions from "./electronActions";
-import open from "open";
+import API from "renderer/lib/api";
+import { EVENT_CALL_CUSTOM_EVENT } from "consts";
+import l10n from "renderer/lib/l10n";
 
 const electronMiddleware: Middleware<Dispatch, RootState> =
-  (store) => (next) => (action) => {
+  (store) => (next) => async (action) => {
     if (actions.openHelp.match(action)) {
-      ipcRenderer.send("open-help", action.payload);
+      API.app.openHelp(action.payload);
     } else if (actions.openFolder.match(action)) {
-      remote.shell.openItem(action.payload);
+      API.app.openFolder(action.payload);
     } else if (actions.openFile.match(action)) {
       if (action.payload.type === "image") {
-        const app = String(settings.get("imageEditorPath") || "") || undefined;
-        open(action.payload.filename, { app });
+        API.app.openImageFile(action.payload.filename);
       } else if (action.payload.type === "music") {
-        const app = String(settings.get("musicEditorPath") || "") || undefined;
-        open(action.payload.filename, { app });
+        API.app.openModFile(action.payload.filename);
       } else {
-        remote.shell.openItem(action.payload.filename);
+        API.app.openFile(action.payload.filename);
       }
     } else if (editorActions.resizeWorldSidebar.match(action)) {
-      settings.set("worldSidebarWidth", action.payload);
+      API.settings.set("worldSidebarWidth", action.payload);
     } else if (editorActions.resizeFilesSidebar.match(action)) {
-      settings.set("filesSidebarWidth", action.payload);
+      API.settings.set("filesSidebarWidth", action.payload);
     } else if (editorActions.resizeNavigatorSidebar.match(action)) {
-      settings.set("navigatorSidebarWidth", action.payload);
+      API.settings.set("navigatorSidebarWidth", action.payload);
     } else if (
       editorActions.setTool.match(action) &&
       action.payload.tool === "colors"
@@ -58,26 +50,27 @@ const electronMiddleware: Middleware<Dispatch, RootState> =
       const state = store.getState();
       const projectSettings = getSettings(state);
       if (!projectSettings.customColorsEnabled) {
-        const cancel = confirmEnableColorDialog();
-        if (cancel) {
-          return;
-        }
-        store.dispatch(
-          settingsActions.editSettings({
-            customColorsEnabled: true,
-          })
-        );
+        API.dialog.confirmEnableColorDialog().then((cancel) => {
+          if (cancel) {
+            return;
+          }
+          store.dispatch(
+            settingsActions.editSettings({
+              customColorsEnabled: true,
+            })
+          );
+          store.dispatch(action);
+        });
+        return;
       }
     } else if (projectActions.loadProject.fulfilled.match(action)) {
-      ipcRenderer.send("project-loaded", action.payload.data.settings);
+      API.project.initProjectSettings(action.payload.data.settings);
     } else if (settingsActions.setShowNavigator.match(action)) {
-      ipcRenderer.send("set-show-navigator", action.payload);
+      API.project.setShowNavigator(action.payload);
     } else if (projectActions.loadProject.rejected.match(action)) {
-      const window = remote.getCurrentWindow();
-      window.close();
+      API.project.close();
     } else if (projectActions.closeProject.match(action)) {
-      const window = remote.getCurrentWindow();
-      window.close();
+      API.project.close();
     } else if (entitiesActions.removeCustomEvent.match(action)) {
       const state = store.getState();
       const customEvent = customEventSelectors.selectById(
@@ -97,23 +90,19 @@ const electronMiddleware: Middleware<Dispatch, RootState> =
       const scenesLookup = sceneSelectors.selectEntities(state);
       const actorsLookup = actorSelectors.selectEntities(state);
       const triggersLookup = triggerSelectors.selectEntities(state);
-      const usedScenes = {} as Dictionary<{
-        sceneId: string;
-        eventIds: string[];
-      }>;
-      const usedActors = {} as Dictionary<{
-        sceneId: string;
-        eventIds: string[];
-      }>;
-      const usedTriggers = {} as Dictionary<{
-        sceneId: string;
-        eventIds: string[];
-      }>;
-      const usedSceneIds = [] as string[];
+      const scriptEventsLookup = scriptEventSelectors.selectEntities(state);
 
-      const isThisEvent = (event: ScriptEvent) =>
-        event.command === EVENT_CALL_CUSTOM_EVENT &&
-        event.args?.customEventId === action.payload.customEventId;
+      const usedSceneIds = [] as string[];
+      const usedEventIds = [] as string[];
+
+      const isThisEvent = (eventId: string) => {
+        const event = scriptEventsLookup[eventId];
+        return (
+          event &&
+          event.command === EVENT_CALL_CUSTOM_EVENT &&
+          event.args?.customEventId === action.payload.customEventId
+        );
+      };
 
       const sceneName = (sceneId: string) => {
         const scene = scenesLookup[sceneId];
@@ -123,45 +112,27 @@ const electronMiddleware: Middleware<Dispatch, RootState> =
 
       // Check for uses of this custom event in project
       scenes.forEach((scene) => {
-        walkSceneSpecificEvents(scene, (event: ScriptEvent) => {
-          if (isThisEvent(event)) {
-            if (!usedScenes[scene.id]) {
-              usedScenes[scene.id] = {
-                sceneId: scene.id,
-                eventIds: [],
-              };
-            }
-            usedScenes[scene.id].eventIds.push(event.id);
+        walkSceneSpecificEvents(scene, (eventId: string) => {
+          if (isThisEvent(eventId)) {
             usedSceneIds.push(scene.id);
+            usedEventIds.push(eventId);
           }
         });
         scene.actors.forEach((actorId) => {
-          walkActorEvents(actorsLookup[actorId], (event: ScriptEvent) => {
-            if (isThisEvent(event)) {
-              if (!usedActors[actorId]) {
-                usedActors[actorId] = {
-                  sceneId: scene.id,
-                  eventIds: [],
-                };
-              }
-              usedActors[actorId].eventIds.push(event.id);
+          walkActorEvents(actorsLookup[actorId], (eventId: string) => {
+            if (isThisEvent(eventId)) {
               usedSceneIds.push(scene.id);
+              usedEventIds.push(eventId);
             }
           });
         });
         scene.triggers.forEach((triggerId) => {
           const trigger = triggersLookup[triggerId];
           trigger &&
-            walkEvents(trigger.script, (event: ScriptEvent) => {
-              if (isThisEvent(event)) {
-                if (!usedTriggers[triggerId]) {
-                  usedTriggers[triggerId] = {
-                    sceneId: scene.id,
-                    eventIds: [],
-                  };
-                }
-                usedTriggers[triggerId].eventIds.push(event.id);
+            walkEvents(trigger.script, (eventId: string) => {
+              if (isThisEvent(eventId)) {
                 usedSceneIds.push(scene.id);
+                usedEventIds.push(eventId);
               }
             });
         });
@@ -175,111 +146,36 @@ const electronMiddleware: Middleware<Dispatch, RootState> =
         ).sort();
 
         // Display confirmation and stop delete if cancelled
-        const cancel = confirmDeleteCustomEvent(
-          customEventName,
-          sceneNames,
-          usedTotal
-        );
-        if (cancel) {
-          return;
-        }
+        API.dialog
+          .confirmDeleteCustomEvent(customEventName, sceneNames, usedTotal)
+          .then((cancel) => {
+            if (cancel) {
+              return;
+            }
 
-        // Remove used instances in scenes
-        Object.keys(usedScenes).forEach((sceneId) => {
-          const eventIds = usedScenes[sceneId].eventIds;
+            // Remove any references to this custom event
+            for (const usedEventId of usedEventIds) {
+              store.dispatch(
+                entitiesActions.editScriptEvent({
+                  scriptEventId: usedEventId,
+                  changes: {
+                    args: {
+                      customEventId: "",
+                    },
+                  },
+                })
+              );
+            }
 
-          const filter = (event: ScriptEvent) => !eventIds.includes(event.id);
-
-          store.dispatch(
-            entitiesActions.editScene({
-              sceneId,
-              changes: {
-                script: filterEvents(
-                  scenesLookup[sceneId]?.script || [],
-                  filter
-                ),
-                playerHit1Script: filterEvents(
-                  scenesLookup[sceneId]?.playerHit1Script || [],
-                  filter
-                ),
-                playerHit2Script: filterEvents(
-                  scenesLookup[sceneId]?.playerHit2Script || [],
-                  filter
-                ),
-                playerHit3Script: filterEvents(
-                  scenesLookup[sceneId]?.playerHit3Script || [],
-                  filter
-                ),
-              },
-            })
-          );
-        });
-        // Remove used instances in actors
-        Object.keys(usedActors).forEach((actorId) => {
-          const eventIds = usedActors[actorId].eventIds;
-
-          const filter = (event: ScriptEvent) => !eventIds.includes(event.id);
-
-          store.dispatch(
-            entitiesActions.editActor({
-              actorId,
-              changes: {
-                script: filterEvents(
-                  actorsLookup[actorId]?.script || [],
-                  filter
-                ),
-                startScript: filterEvents(
-                  actorsLookup[actorId]?.startScript || [],
-                  filter
-                ),
-                updateScript: filterEvents(
-                  actorsLookup[actorId]?.updateScript || [],
-                  filter
-                ),
-                hit1Script: filterEvents(
-                  actorsLookup[actorId]?.hit1Script || [],
-                  filter
-                ),
-                hit2Script: filterEvents(
-                  actorsLookup[actorId]?.hit2Script || [],
-                  filter
-                ),
-                hit3Script: filterEvents(
-                  actorsLookup[actorId]?.hit3Script || [],
-                  filter
-                ),
-              },
-            })
-          );
-        });
-        // Remove used instances in triggers
-        Object.keys(usedTriggers).forEach((triggerId) => {
-          const eventIds = usedTriggers[triggerId].eventIds;
-
-          const filter = (event: ScriptEvent) => !eventIds.includes(event.id);
-
-          store.dispatch(
-            entitiesActions.editTrigger({
-              triggerId,
-              changes: {
-                script: filterEvents(
-                  triggersLookup[triggerId]?.script || [],
-                  filter
-                ),
-                leaveScript: filterEvents(
-                  triggersLookup[triggerId]?.leaveScript || [],
-                  filter
-                ),
-              },
-            })
-          );
-        });
+            return next(action);
+          });
+        return;
       }
     } else if (actions.showErrorBox.match(action)) {
-      remote.dialog.showErrorBox(action.payload.title, action.payload.content);
+      API.dialog.showError(action.payload.title, action.payload.content);
     }
 
-    next(action);
+    return next(action);
   };
 
 export default electronMiddleware;

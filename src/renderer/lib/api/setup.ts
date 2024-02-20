@@ -10,6 +10,7 @@ import {
   ensurePromisedString,
   JsonValue,
 } from "shared/types";
+import { SettingsState } from "store/features/settings/settingsState";
 
 interface L10NLookup {
   [key: string]: string | boolean | undefined;
@@ -20,6 +21,11 @@ const APISetup = {
   test: () => console.log("Hello World"),
   app: {
     openExternal: (path: string) => ipcRenderer.invoke("open-external", path),
+    openHelp: (helpPage: string) => ipcRenderer.invoke("open-help", helpPage),
+    openFolder: (path: string) => ipcRenderer.invoke("open-folder", path),
+    openImageFile: (path: string) => ipcRenderer.invoke("open-image", path),
+    openModFile: (path: string) => ipcRenderer.invoke("open-mod", path),
+    openFile: (path: string) => ipcRenderer.invoke("open-file", path),
     getIsFullScreen: (): Promise<boolean> =>
       ipcRenderer.invoke("get-is-full-screen"),
     onIsFullScreenChange: (
@@ -66,6 +72,21 @@ const APISetup = {
       ipcRenderer.invoke("open-directory-picker"),
     chooseFile: (): Promise<string | undefined> =>
       ipcRenderer.invoke("open-file-picker"),
+    showError: (title: string, content: string) =>
+      ipcRenderer.invoke("dialog:show-error", title, content),
+    confirmEnableColorDialog: (): Promise<number | false> =>
+      ipcRenderer.invoke("dialog:confirm-color"),
+    confirmDeleteCustomEvent: (
+      name: string,
+      sceneNames: string[],
+      count: number
+    ): Promise<number | false> =>
+      ipcRenderer.invoke(
+        "dialog:confirm-delete-custom-event",
+        name,
+        sceneNames,
+        count
+      ),
   },
   project: {
     getRecentProjects: (): Promise<string[]> =>
@@ -76,6 +97,11 @@ const APISetup = {
       ipcRenderer.send("open-project", { projectPath }),
     createProject: (input: CreateProjectInput) =>
       ipcRenderer.invoke("create-project", input),
+    initProjectSettings: (settings: SettingsState) =>
+      ipcRenderer.send("project-loaded", settings),
+    setShowNavigator: (value: boolean) =>
+      ipcRenderer.send("set-show-navigator", value),
+    close: () => ipcRenderer.invoke("close-project"),
   },
   music: {
     openMusic: () => ipcRenderer.send("open-music"),
