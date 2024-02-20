@@ -11,14 +11,14 @@ export type MusicDataPacket =
     }
   | {
       action: "load-song";
-      song?: Song | null;
+      song: Song;
     }
   | {
       action: "loaded";
     }
   | {
       action: "play";
-      song?: Song | null;
+      song: Song;
       position?: [number, number];
     }
   | {
@@ -39,9 +39,7 @@ export type MusicDataPacket =
     }
   | {
       action: "muted";
-      message: {
-        channels: boolean[];
-      };
+      channels: boolean[];
     }
   | {
       action: "set-mute";
@@ -54,4 +52,5 @@ export type MusicDataPacket =
     }
   | {
       action: "log";
+      message: string;
     };

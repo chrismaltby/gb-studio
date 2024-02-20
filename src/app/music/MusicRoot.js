@@ -75,9 +75,7 @@ ipcRenderer.on("music-data", (event, d) => {
       const channels = player.setChannel(d.channel, d.muted);
       ipcRenderer.send("music-data-receive", {
         action: "muted",
-        message: {
-          channels,
-        },
+        channels,
       });
       break;
     case "preview":
