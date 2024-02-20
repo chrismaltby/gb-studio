@@ -151,7 +151,6 @@
     "git-revision-webpack-plugin": "^5.0.0",
     "jest": "^27.0.3",
     "jest-extended": "^0.11.5",
-    "knip": "^4.5.0",
     "node-loader": "^2.0.0",
     "prettier": "2.3.0",
     "style-loader": "^2.0.0",
