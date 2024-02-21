@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import styled from "styled-components";
 
 export type ToggleButtonGroupOption<T> = {
@@ -9,10 +9,19 @@ export type ToggleButtonGroupOption<T> = {
 
 export type ToggleButtonGroupProps<T> = {
   name: string;
-  value: T;
   options: ToggleButtonGroupOption<T>[];
-  onChange: (newValue: T) => void;
-};
+} & (
+  | {
+      multiple: true;
+      value: T[];
+      onChange: (newValue: T[]) => void;
+    }
+  | {
+      multiple?: false;
+      value: T;
+      onChange: (newValue: T) => void;
+    }
+);
 
 const Wrapper = styled.div`
   display: flex;
@@ -27,11 +36,12 @@ const Wrapper = styled.div`
   height: 28px;
 
   & > * {
+    box-sizing: border-box;
     border-right: 1px solid ${(props) => props.theme.colors.input.border};
   }
 
   & > *:last-child {
-    border-right: 0;
+    border-right: 1px solid transparent;
   }
 `;
 
@@ -56,6 +66,7 @@ const Label = styled.label`
   box-sizing: border-box;
   padding: 5px;
   position: relative;
+  border: 1px solid transparent;
 
   ${Option}:first-child > & {
     border-top-left-radius: 3px;
@@ -100,19 +111,36 @@ const Label = styled.label`
 
 export const ToggleButtonGroup = <T,>({
   name,
-  value,
   options,
-  onChange,
+  ...props
 }: ToggleButtonGroupProps<T>) => {
+  const onChange = useCallback(
+    (value: T) => {
+      if (props.multiple) {
+        if (props.value.includes(value)) {
+          props.onChange(props.value.filter((i) => i !== value));
+        } else {
+          props.onChange(([] as T[]).concat(props.value, value));
+        }
+      } else {
+        props.onChange(value);
+      }
+    },
+    [props]
+  );
   return (
     <Wrapper>
       {options.map((option) => (
         <Option key={String(option.value)}>
           <Input
             id={`${name}__${option.value}`}
-            type="radio"
+            type={props.multiple ? "checkbox" : "radio"}
             name={name}
-            checked={option.value === value}
+            checked={
+              props.multiple
+                ? props.value.includes(option.value)
+                : option.value === props.value
+            }
             onChange={() => onChange(option.value)}
           />
           <Label htmlFor={`${name}__${option.value}`} title={option.title}>

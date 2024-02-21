@@ -57,6 +57,7 @@ import {
 import ScriptEventFormMathArea from "./ScriptEventFormMatharea";
 import ScriptEventFormTextArea from "./ScriptEventFormTextarea";
 import { AngleInput } from "ui/form/AngleInput";
+import { isStringArray } from "shared/types";
 
 interface ScriptEventFormInputProps {
   id: string;
@@ -496,7 +497,15 @@ const ScriptEventFormInput = ({
       </OffscreenSkeletonInput>
     );
   } else if (type === "input") {
-    return <InputPicker id={id} value={value} onChange={onChangeField} />;
+    if (isStringArray(value)) {
+      return (
+        <InputPicker id={id} value={value} onChange={onChangeField} multiple />
+      );
+    } else {
+      return (
+        <InputPicker id={id} value={String(value)} onChange={onChangeField} />
+      );
+    }
   } else if (type === "fadeSpeed") {
     return (
       <OffscreenSkeletonInput>
