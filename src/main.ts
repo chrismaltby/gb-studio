@@ -680,6 +680,10 @@ ipcMain.handle("clipboard-read-text", () => {
   return clipboard.readText();
 });
 
+ipcMain.handle("clipboard:write-text", (_, value: string) => {
+  return clipboard.writeText(value);
+});
+
 ipcMain.handle(
   "project:build",
   async (event, project: ProjectData, options: BuildOptions) => {
