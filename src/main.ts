@@ -10,7 +10,7 @@ import {
 import windowStateKeeper from "electron-window-state";
 import settings from "electron-settings";
 import Path from "path";
-import { remove, stat } from "fs-extra";
+import { remove, stat, statSync } from "fs-extra";
 import menu from "./menu";
 import { checkForUpdate } from "lib/helpers/updateChecker";
 import switchLanguageDialog from "lib/electron/dialog/switchLanguageDialog";
@@ -33,6 +33,14 @@ import type { ProjectData } from "store/features/project/projectActions";
 import type { BuildOptions } from "renderer/lib/api/setup";
 import buildProject from "lib/compiler/buildProject";
 import copy from "lib/helpers/fsCopy";
+import confirmEjectEngineDialog from "lib/electron/dialog/confirmEjectEngineDialog";
+import confirmEjectEngineReplaceDialog from "lib/electron/dialog/confirmEjectEngineReplaceDialog";
+import ejectEngineToDir from "lib/project/ejectEngineToDir";
+import type { ProjectExportType } from "store/features/buildGame/buildGameActions";
+import { buildUUID } from "consts";
+import type { EngineFieldSchema } from "store/features/engine/engineState";
+import compileData from "lib/compiler/compileData";
+import ejectBuild from "lib/compiler/ejectBuild";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -68,6 +76,7 @@ let documentName = "";
 let mainWindowCloseCancelled = false;
 let keepOpen = false;
 let projectPath = "";
+let cancelBuild = false;
 
 const isDevMode = !!process.execPath.match(/[\\/]electron/);
 
@@ -246,6 +255,11 @@ const createProjectWindow = async () => {
     }
   });
 };
+
+const buildLog = (msg: string) =>
+  mainWindow?.webContents.send("build:log", msg);
+const buildErr = (msg: string) =>
+  mainWindow?.webContents.send("build:error", msg);
 
 const waitUntilWindowClosed = (): Promise<void> => {
   return new Promise((resolve, reject) => {
@@ -666,81 +680,196 @@ ipcMain.handle("clipboard-read-text", () => {
   return clipboard.readText();
 });
 
-ipcMain.on(
+ipcMain.handle(
   "project:build",
   async (event, project: ProjectData, options: BuildOptions) => {
-    const { exportBuild, buildType } = options;
+    cancelBuild = false;
 
+    const { exportBuild, buildType } = options;
     const buildStartTime = Date.now();
-    const buildUUID = "_gbsbuild";
     const projectRoot = Path.dirname(projectPath);
     const outputRoot = Path.normalize(`${getTmp()}/${buildUUID}`);
     const colorEnabled = project.settings.customColorsEnabled;
     const sgbEnabled = project.settings.sgbEnabled;
 
-    await buildProject(project, {
-      ...options,
-      projectRoot,
-      outputRoot,
-      tmpPath: getTmp(),
-      progress: (message) => {
-        // Detect if build was cancelled and stop current build
-        // const state = store.getState();
-        // if (
-        //   state.console.status === "cancelled" ||
-        //   state.console.status === "complete"
-        // ) {
-        //   throw new Error(l10n("BUILD_CANCELLED"));
-        // }
+    try {
+      await buildProject(project, {
+        ...options,
+        projectRoot,
+        outputRoot,
+        tmpPath: getTmp(),
+        progress: (message) => {
+          if (cancelBuild) {
+            throw new Error(l10n("BUILD_CANCELLED"));
+          }
+          if (
+            message !== "'" &&
+            message.indexOf("unknown or unsupported #pragma") === -1
+          ) {
+            buildLog(message);
+          }
+        },
+        warnings: (message) => {
+          buildErr(message);
+        },
+      });
 
+      if (exportBuild) {
+        await copy(
+          `${outputRoot}/build/${buildType}`,
+          `${projectRoot}/build/${buildType}`
+        );
+        shell.openItem(`${projectRoot}/build/${buildType}`);
+        buildLog(`-`);
+        mainWindow?.webContents.send(
+          "build:log",
+          `Success! ${
+            buildType === "web"
+              ? `Site is ready at ${Path.normalize(
+                  `${projectRoot}/build/web/index.html`
+                )}`
+              : `ROM is ready at ${Path.normalize(
+                  `${projectRoot}/build/rom/game.gb`
+                )}`
+          }`
+        );
+      }
+
+      if (buildType === "web" && !exportBuild) {
+        buildLog(`-`);
+        mainWindow?.webContents.send(
+          "build:log",
+          `Success! Starting emulator...`
+        );
+        createPlay(
+          `file://${outputRoot}/build/web/index.html`,
+          sgbEnabled && !colorEnabled
+        );
+      }
+
+      const buildTime = Date.now() - buildStartTime;
+      buildLog(`Build Time: ${buildTime}ms`);
+    } catch (e) {
+      if (typeof e === "string") {
+        buildErr(e);
+      } else if (e instanceof Error) {
+        buildErr(e.toString());
+      }
+      throw e;
+    }
+  }
+);
+
+ipcMain.handle("project:build-cancel", () => {
+  cancelBuild = true;
+});
+
+ipcMain.handle("project:engine-eject", () => {
+  const cancel = confirmEjectEngineDialog();
+
+  if (cancel) {
+    return;
+  }
+
+  const projectRoot = Path.dirname(projectPath);
+  const outputDir = Path.join(projectRoot, "assets", "engine");
+
+  let ejectedEngineExists;
+  try {
+    statSync(outputDir);
+    ejectedEngineExists = true;
+  } catch (e) {
+    ejectedEngineExists = false;
+  }
+
+  if (ejectedEngineExists) {
+    const cancel2 = confirmEjectEngineReplaceDialog();
+    if (cancel2) {
+      return;
+    }
+  }
+
+  ejectEngineToDir(outputDir).then(() => {
+    shell.openItem(outputDir);
+  });
+});
+
+ipcMain.handle(
+  "project:export",
+  async (
+    event,
+    project: ProjectData,
+    engineFields: EngineFieldSchema[],
+    exportType: ProjectExportType
+  ) => {
+    const buildStartTime = Date.now();
+
+    try {
+      const projectRoot = Path.dirname(projectPath);
+      const outputRoot = Path.normalize(`${getTmp()}/${buildUUID}`);
+
+      const progress = (message: string) => {
         if (
           message !== "'" &&
           message.indexOf("unknown or unsupported #pragma") === -1
         ) {
-          mainWindow?.webContents.send("build:log", message);
+          buildLog(message);
         }
-      },
-      warnings: (message) => {
-        mainWindow?.webContents.send("build:error", message);
-      },
-    });
+      };
+      const warnings = (message: string) => {
+        buildErr(message);
+      };
 
-    if (exportBuild) {
-      await copy(
-        `${outputRoot}/build/${buildType}`,
-        `${projectRoot}/build/${buildType}`
-      );
-      shell.openItem(`${projectRoot}/build/${buildType}`);
-      mainWindow?.webContents.send("build:log", `-`);
-      mainWindow?.webContents.send(
-        "build:log",
-        `Success! ${
-          buildType === "web"
-            ? `Site is ready at ${Path.normalize(
-                `${projectRoot}/build/web/index.html`
-              )}`
-            : `ROM is ready at ${Path.normalize(
-                `${projectRoot}/build/rom/game.gb`
-              )}`
-        }`
-      );
+      const tmpPath = getTmp();
+
+      // Compile project data
+      const compiledData = await compileData(project, {
+        projectRoot,
+        engineFields,
+        tmpPath,
+        progress,
+        warnings,
+      });
+
+      // Export compiled data to a folder
+      await ejectBuild({
+        projectRoot,
+        tmpPath,
+        projectData: project,
+        engineFields,
+        outputRoot,
+        compiledData,
+        progress,
+        warnings,
+      });
+
+      const exportRoot = `${projectRoot}/build/src`;
+
+      if (exportType === "data") {
+        const dataSrcTmpPath = Path.join(outputRoot, "src", "data");
+        const dataSrcOutPath = Path.join(exportRoot, "src", "data");
+        const dataIncludeTmpPath = Path.join(outputRoot, "include", "data");
+        const dataIncludeOutPath = Path.join(exportRoot, "include", "data");
+        await remove(dataSrcOutPath);
+        await remove(dataIncludeOutPath);
+        await copy(dataSrcTmpPath, dataSrcOutPath);
+        await copy(dataIncludeTmpPath, dataIncludeOutPath);
+      } else {
+        await copy(outputRoot, exportRoot);
+      }
+
+      const buildTime = Date.now() - buildStartTime;
+      buildLog(`Build Time: ${buildTime}ms`);
+
+      shell.openItem(exportRoot);
+    } catch (e) {
+      if (typeof e === "string") {
+        buildErr(e);
+      } else if (e instanceof Error) {
+        buildErr(e.toString());
+      }
+      throw e;
     }
-
-    if (buildType === "web" && !exportBuild) {
-      mainWindow?.webContents.send("build:log", `-`);
-      mainWindow?.webContents.send(
-        "build:log",
-        `Success! Starting emulator...`
-      );
-      createPlay(
-        `file://${outputRoot}/build/web/index.html`,
-        sgbEnabled && !colorEnabled
-      );
-    }
-
-    const buildTime = Date.now() - buildStartTime;
-    mainWindow?.webContents.send("build:log", `Build Time: ${buildTime}ms`);
-    mainWindow?.webContents.send("build:complete");
   }
 );
 

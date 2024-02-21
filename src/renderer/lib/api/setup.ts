@@ -1,6 +1,6 @@
 import { ipcRenderer, IpcRendererEvent } from "electron";
 import type { CreateProjectInput } from "lib/project/createProject";
-import {
+import type {
   MusicDataPacket,
   MusicDataReceivePacket,
 } from "shared/lib/music/types";
@@ -10,9 +10,10 @@ import {
   ensurePromisedString,
   JsonValue,
 } from "shared/types";
-import { EngineFieldSchema } from "store/features/engine/engineState";
-import { ProjectData } from "store/features/project/projectActions";
-import { SettingsState } from "store/features/settings/settingsState";
+import type { ProjectExportType } from "store/features/buildGame/buildGameActions";
+import type { EngineFieldSchema } from "store/features/engine/engineState";
+import type { ProjectData } from "store/features/project/projectActions";
+import type { SettingsState } from "store/features/settings/settingsState";
 
 interface L10NLookup {
   [key: string]: string | boolean | undefined;
@@ -113,7 +114,8 @@ const APISetup = {
       ipcRenderer.send("set-show-navigator", value),
     close: () => ipcRenderer.invoke("close-project"),
     build: (data: ProjectData, options: BuildOptions) =>
-      ipcRenderer.send("project:build", data, options),
+      ipcRenderer.invoke("project:build", data, options),
+    buildCancel: () => ipcRenderer.invoke("project:build-cancel"),
     onBuildLog: (
       listener: (event: IpcRendererEvent, message: string) => void
     ) => ipcRenderer.on("build:log", listener),
@@ -122,6 +124,12 @@ const APISetup = {
     ) => ipcRenderer.on("build:error", listener),
     onBuildComplete: (listener: (event: IpcRendererEvent) => void) =>
       ipcRenderer.on("build:complete", listener),
+    ejectEngine: () => ipcRenderer.invoke("project:engine-eject"),
+    exportProject: (
+      data: ProjectData,
+      engineFields: EngineFieldSchema[],
+      exportType: ProjectExportType
+    ) => ipcRenderer.invoke("project:export", data, engineFields, exportType),
   },
   music: {
     openMusic: () => ipcRenderer.send("open-music"),

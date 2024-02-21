@@ -12,6 +12,7 @@ if (isDist) {
   rootDir = path.normalize(`${__dirname}/../`);
 }
 
+export const buildUUID = "_gbsbuild";
 const engineRoot = path.normalize(`${rootDir}/appData/src`);
 const buildToolsRoot = path.normalize(`${rootDir}/buildTools`);
 const emulatorRoot = path.normalize(`${rootDir}/appData/js-emulator`);

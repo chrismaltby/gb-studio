@@ -307,7 +307,3 @@ API.project.onBuildLog((_event, message) => {
 API.project.onBuildError((_event, message) => {
   store.dispatch(consoleActions.stdErr(message));
 });
-
-API.project.onBuildComplete((_event, message) => {
-  store.dispatch(consoleActions.completeConsole());
-});
