@@ -12,7 +12,7 @@ import * as gbStudioHelpers from "lib/helpers/gbstudio";
 import * as eventSystemHelpers from "lib/helpers/eventSystem";
 import * as compileEntityEvents from "lib/compiler/compileEntityEvents";
 import trimLines from "shared/lib/helpers/trimlines";
-import { ScriptEventFieldSchema } from "store/features/entities/entitiesTypes";
+import type { ScriptEventFieldSchema } from "store/features/entities/entitiesTypes";
 import { Dictionary } from "@reduxjs/toolkit";
 import { clone, cloneDictionary } from "lib/helpers/clone";
 import {

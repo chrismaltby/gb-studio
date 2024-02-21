@@ -2,7 +2,7 @@ import { Dictionary } from "@reduxjs/toolkit";
 import { EVENT_FADE_IN } from "lib/compiler/eventTypes";
 import { EventHandler } from "lib/events";
 import { walkNormalisedScriptEvents } from "store/features/entities/entitiesHelpers";
-import {
+import type {
   ActorDenormalized,
   CustomEventDenormalized,
   SceneDenormalized,

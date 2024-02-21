@@ -1,4 +1,4 @@
-import { MetaspriteTile } from "store/features/entities/entitiesTypes";
+import type { MetaspriteTile } from "store/features/entities/entitiesTypes";
 import {
   cloneIndexedImage,
   flipIndexedImageX,

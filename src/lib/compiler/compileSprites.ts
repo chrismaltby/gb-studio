@@ -7,7 +7,7 @@ import {
   animationMapBySpriteType,
   toEngineOrder,
 } from "shared/lib/sprites/helpers";
-import {
+import type {
   MetaspriteTile,
   ObjPalette,
   SpriteAnimationType,

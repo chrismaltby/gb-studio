@@ -2,7 +2,7 @@
 import { Dictionary } from "@reduxjs/toolkit";
 import flatten from "lodash/flatten";
 import { SCREEN_WIDTH } from "consts";
-import {
+import type {
   Actor,
   SceneParallaxLayer,
   Trigger,
