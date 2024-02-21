@@ -122,8 +122,6 @@ const APISetup = {
     onBuildError: (
       listener: (event: IpcRendererEvent, message: string) => void
     ) => ipcRenderer.on("build:error", listener),
-    onBuildComplete: (listener: (event: IpcRendererEvent) => void) =>
-      ipcRenderer.on("build:complete", listener),
     ejectEngine: () => ipcRenderer.invoke("project:engine-eject"),
     exportProject: (
       data: ProjectData,
