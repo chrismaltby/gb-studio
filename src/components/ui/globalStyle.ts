@@ -241,7 +241,7 @@ const GlobalStyle = createGlobalStyle`
     height: 100%;
   }
   
-  .GlobalError__Buttons .Button {
+  .GlobalError__Buttons * {
     margin: 20px 10px;
   }
   

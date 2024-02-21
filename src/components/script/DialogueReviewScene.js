@@ -6,7 +6,6 @@ import { connect } from "react-redux";
 import { SceneShape, ActorShape, EventShape } from "store/stateShape";
 import { ArrowIcon, SearchIcon } from "ui/icons/Icons";
 import DialogueReviewLine from "./DialogueReviewLine";
-import Button from "components/library/Button";
 import {
   sceneSelectors,
   actorSelectors,
@@ -25,6 +24,7 @@ import {
   walkNormalisedTriggerEvents,
 } from "store/features/entities/entitiesHelpers";
 import { EVENT_TEXT } from "consts";
+import { Button } from "ui/buttons/Button";
 
 class DialogueReviewScene extends Component {
   onChange = (id) => (value) => {
@@ -63,7 +63,7 @@ class DialogueReviewScene extends Component {
             <ArrowIcon />
             {sceneName(scene, sceneIndex)}
           </h2>
-          <Button small onClick={this.onSearch}>
+          <Button size="small" onClick={this.onSearch}>
             <SearchIcon />
           </Button>
         </div>

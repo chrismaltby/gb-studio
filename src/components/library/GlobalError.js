@@ -2,10 +2,10 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import l10n from "renderer/lib/l10n";
-import Button from "./Button";
 import { ErrorShape } from "store/stateShape";
 import { SadIcon } from "ui/icons/Icons";
 import electronActions from "store/features/electron/electronActions";
+import { Button } from "ui/buttons/Button";
 
 class GlobalError extends Component {
   constructor() {
