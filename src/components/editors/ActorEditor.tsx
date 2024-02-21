@@ -448,7 +448,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({
                   <DirectionPicker
                     id="actorDirection"
                     value={actor.direction}
-                    onChange={onChangeFieldInput("direction")}
+                    onChange={onChangeField("direction")}
                   />
                 </FormField>
               )}

@@ -463,7 +463,11 @@ const ScriptEventFormInput = ({
   } else if (type === "direction") {
     return (
       <OffscreenSkeletonInput>
-        <DirectionPicker id={id} value={value} onChange={onChangeField} />
+        <DirectionPicker
+          id={id}
+          value={value as ActorDirection | undefined}
+          onChange={onChangeField}
+        />
       </OffscreenSkeletonInput>
     );
   } else if (type === "angle") {

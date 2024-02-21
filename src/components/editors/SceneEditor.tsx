@@ -253,6 +253,16 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
       );
     };
 
+  const onChangeSettingField =
+    <T extends keyof SettingsState>(key: T) =>
+    (editValue: SettingsState[T]) => {
+      dispatch(
+        settingsActions.editSettings({
+          [key]: editValue,
+        })
+      );
+    };
+
   const onChangeSettingFieldInput =
     (key: keyof SettingsState) =>
     (
@@ -705,7 +715,7 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
                         <DirectionPicker
                           id="actorDirection"
                           value={startDirection}
-                          onChange={onChangeSettingFieldInput("startDirection")}
+                          onChange={onChangeSettingField("startDirection")}
                         />
                       </FormField>
                     </FormRow>
