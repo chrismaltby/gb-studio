@@ -1,6 +1,6 @@
 import uuid from "uuid";
 import { animationIndexBySpriteType } from "shared/lib/sprites/helpers";
-import {
+import type {
   Metasprite,
   MetaspriteTile,
   SpriteAnimation,
