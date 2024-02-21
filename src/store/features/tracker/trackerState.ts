@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import editorActions from "../editor/editorActions";
+import editorActions from "store/features/editor/editorActions";
 
 export type PianoRollToolType = "pencil" | "eraser" | "selection" | null;
 export interface TrackerState {

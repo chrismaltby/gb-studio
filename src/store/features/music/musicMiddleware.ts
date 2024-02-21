@@ -1,11 +1,11 @@
 import { Dispatch, Middleware } from "@reduxjs/toolkit";
 import ScripTracker from "lib/vendor/scriptracker/scriptracker";
 import { RootState } from "store/configureStore";
-import soundfxActions from "../soundfx/soundfxActions";
-import navigationActions from "../navigation/navigationActions";
+import soundfxActions from "store/features/soundfx/soundfxActions";
+import navigationActions from "store/features/navigation/navigationActions";
 import actions from "./musicActions";
-import { musicSelectors } from "../entities/entitiesState";
-import { MusicSettings } from "../entities/entitiesTypes";
+import { musicSelectors } from "store/features/entities/entitiesState";
+import { MusicSettings } from "store/features/entities/entitiesTypes";
 import { readFile } from "fs-extra";
 import { loadUGESong } from "shared/lib/uge/ugeHelper";
 import toArrayBuffer from "lib/helpers/toArrayBuffer";

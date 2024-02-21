@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import entitiesActions from "../entities/entitiesActions";
-import consoleActions from "../console/consoleActions";
+import entitiesActions from "store/features/entities/entitiesActions";
+import consoleActions from "store/features/console/consoleActions";
 
 export type NavigationSection =
   | "world"

@@ -1,12 +1,12 @@
 import { ThunkMiddleware } from "redux-thunk";
 import confirmUnsavedChangesTrackerDialog from "lib/electron/dialog/confirmUnsavedChangesTrackerDialog";
 import { RootState } from "store/configureStore";
-import editorActions from "../editor/editorActions";
-import { musicSelectors } from "../entities/entitiesState";
-import navigationActions from "../navigation/navigationActions";
+import editorActions from "store/features/editor/editorActions";
+import { musicSelectors } from "store/features/entities/entitiesState";
+import navigationActions from "store/features/navigation/navigationActions";
 import { saveSongFile } from "./trackerDocumentState";
 import trackerDocumentActions from "./trackerDocumentActions";
-import electronActions from "../electron/electronActions";
+import electronActions from "store/features/electron/electronActions";
 import l10n from "lib/helpers/l10n";
 
 const trackerMiddleware: ThunkMiddleware<RootState> =

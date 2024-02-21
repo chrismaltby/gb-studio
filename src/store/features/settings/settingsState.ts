@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "store/configureStore";
-import { ActorDirection } from "../entities/entitiesTypes";
-import projectActions from "../project/projectActions";
+import { ActorDirection } from "store/features/entities/entitiesTypes";
+import projectActions from "store/features/project/projectActions";
 
 export type ShowConnectionsSetting = "all" | "selected" | true | false;
 export type MusicDriverSetting = "huge" | "gbt";

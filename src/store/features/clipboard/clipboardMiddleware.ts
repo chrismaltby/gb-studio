@@ -13,7 +13,7 @@ import {
   scriptEventSelectors,
   generateScriptEventInsertActions,
   sceneSelectors,
-} from "../entities/entitiesState";
+} from "store/features/entities/entitiesState";
 import {
   Actor,
   CustomEvent,
@@ -24,10 +24,10 @@ import {
   SpriteAnimation,
   Trigger,
   Variable,
-} from "../entities/entitiesTypes";
+} from "store/features/entities/entitiesTypes";
 import actions from "./clipboardActions";
-import entitiesActions from "../entities/entitiesActions";
-import editorActions from "../editor/editorActions";
+import entitiesActions from "store/features/entities/entitiesActions";
+import editorActions from "store/features/editor/editorActions";
 import confirmReplaceCustomEvent from "lib/electron/dialog/confirmReplaceCustomEvent";
 import { clipboard, copy, pasteAny } from "./clipboardHelpers";
 import {
@@ -52,7 +52,7 @@ import {
   walkNormalisedTriggerEvents,
   walkSceneScriptsKeys,
   walkTriggerScriptsKeys,
-} from "../entities/entitiesHelpers";
+} from "store/features/entities/entitiesHelpers";
 import keyBy from "lodash/keyBy";
 import { patchEventArgs } from "lib/helpers/eventHelpers";
 import { EVENT_CALL_CUSTOM_EVENT } from "lib/compiler/eventTypes";

@@ -20,7 +20,7 @@ import {
 import { projectTemplatesRoot } from "consts";
 import copy from "lib/helpers/fsCopy";
 import { SubPatternCell } from "shared/lib/uge/song/SubPatternCell";
-import { InstrumentType } from "../editor/editorState";
+import { InstrumentType } from "store/features/editor/editorState";
 
 export interface TrackerDocumentState {
   status: "loading" | "error" | "loaded" | null;

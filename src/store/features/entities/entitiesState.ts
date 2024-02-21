@@ -36,11 +36,11 @@ import {
 } from "lib/helpers/eventSystem";
 import clamp from "shared/lib/helpers/clamp";
 import { RootState } from "store/configureStore";
-import settingsActions from "../settings/settingsActions";
+import settingsActions from "store/features/settings/settingsActions";
 import uuid from "uuid";
 import { paint, paintLine, floodFill, paintMagic } from "lib/helpers/paint";
-import { Brush, SlopeIncline } from "../editor/editorState";
-import projectActions from "../project/projectActions";
+import { Brush, SlopeIncline } from "store/features/editor/editorState";
+import projectActions from "store/features/project/projectActions";
 import {
   EntitiesState,
   Actor,
@@ -85,7 +85,7 @@ import {
   isSlope,
   defaultLocalisedSceneName,
 } from "./entitiesHelpers";
-import spriteActions from "../sprite/spriteActions";
+import spriteActions from "store/features/sprite/spriteActions";
 import { isVariableCustomEvent } from "lib/compiler/scriptBuilder";
 import { sortByKey } from "lib/helpers/sortByKey";
 

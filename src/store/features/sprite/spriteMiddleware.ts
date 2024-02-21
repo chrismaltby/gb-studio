@@ -1,18 +1,18 @@
 import { Dispatch, Middleware } from "@reduxjs/toolkit";
 import { RootState } from "store/configureStore";
 import actions from "./spriteActions";
-import projectActions from "../project/projectActions";
+import projectActions from "store/features/project/projectActions";
 import {
   metaspriteSelectors,
   metaspriteTileSelectors,
   spriteAnimationSelectors,
   spriteStateSelectors,
   spriteSheetSelectors,
-} from "../entities/entitiesState";
-import entitiesActions from "../entities/entitiesActions";
+} from "store/features/entities/entitiesState";
+import entitiesActions from "store/features/entities/entitiesActions";
 import { detectClassic } from "lib/sprite/detect";
 import { compileSprite } from "lib/compiler/compileSprites";
-import { denormalizeSprite } from "../entities/entitiesHelpers";
+import { denormalizeSprite } from "store/features/entities/entitiesHelpers";
 
 const spriteMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => async (action) => {

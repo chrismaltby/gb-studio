@@ -8,13 +8,13 @@ import {
 import { assetsRoot } from "consts";
 import { Dispatch, Middleware } from "@reduxjs/toolkit";
 import { RootState } from "store/configureStore";
-import musicActions from "../music/musicActions";
-import navigationActions from "../navigation/navigationActions";
+import musicActions from "store/features/music/musicActions";
+import navigationActions from "store/features/navigation/navigationActions";
 import actions from "./soundfxActions";
-import { soundSelectors } from "../entities/entitiesState";
+import { soundSelectors } from "store/features/entities/entitiesState";
 import { ipcRenderer } from "electron";
 import { compileWav } from "lib/compiler/sounds/compileWav";
-import { Sound } from "../entities/entitiesTypes";
+import { Sound } from "store/features/entities/entitiesTypes";
 import { compileVGM } from "lib/compiler/sounds/compileVGM";
 import { CompileSoundOptions } from "lib/compiler/sounds/compileSound";
 import { compileFXHammerSingle } from "lib/compiler/sounds/compileFXHammer";

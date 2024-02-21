@@ -14,14 +14,19 @@ import {
   BRUSH_SLOPE,
 } from "consts";
 import { zoomIn, zoomOut } from "lib/helpers/zoom";
-import { Actor, Trigger, SceneData, Variable } from "../entities/entitiesTypes";
-import navigationActions from "../navigation/navigationActions";
-import projectActions from "../project/projectActions";
-import settingsActions from "../settings/settingsActions";
-import entitiesActions from "../entities/entitiesActions";
-import spriteActions from "../sprite/spriteActions";
+import {
+  Actor,
+  Trigger,
+  SceneData,
+  Variable,
+} from "store/features/entities/entitiesTypes";
+import navigationActions from "store/features/navigation/navigationActions";
+import projectActions from "store/features/project/projectActions";
+import settingsActions from "store/features/settings/settingsActions";
+import entitiesActions from "store/features/entities/entitiesActions";
+import spriteActions from "store/features/sprite/spriteActions";
 import { MIN_SIDEBAR_WIDTH } from "renderer/lib/window/sidebar";
-import type { NavigationSection } from "../navigation/navigationState";
+import type { NavigationSection } from "store/features/navigation/navigationState";
 import type { RootState } from "store/configureStore";
 
 export type Tool =

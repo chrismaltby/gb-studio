@@ -15,7 +15,7 @@ import clipboard from "./features/clipboard/clipboardState";
 import sprite from "./features/sprite/spriteState";
 import tracker from "./features/tracker/trackerState";
 import trackerDocument from "./features/trackerDocument/trackerDocumentState";
-import { TRACKER_REDO, TRACKER_UNDO } from "../consts";
+import { TRACKER_REDO, TRACKER_UNDO } from "consts";
 
 let lastEntityUndoStateTime = 0;
 const UNDO_THROTTLE = 300;

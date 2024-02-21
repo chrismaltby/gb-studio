@@ -4,10 +4,10 @@ import {
   sceneSelectors,
   actorSelectors,
   triggerSelectors,
-} from "../entities/entitiesState";
-import { ScriptEventParentType } from "../entities/entitiesTypes";
+} from "store/features/entities/entitiesState";
+import { ScriptEventParentType } from "store/features/entities/entitiesTypes";
 import { RootState } from "store/configureStore";
-import editorActions from "../editor/editorActions";
+import editorActions from "store/features/editor/editorActions";
 import { pasteAny } from "./clipboardHelpers";
 import {
   ClipboardTypeActors,
