@@ -1,12 +1,12 @@
 import EventEmitter from "events";
 import Path from "path";
 import { readJSON, pathExists } from "fs-extra";
-import { EngineFieldSchema } from "store/features/engine/engineState";
+import type { EngineFieldSchema } from "store/features/engine/engineState";
 import { engineRoot } from "consts";
 import l10n from "lib/helpers/l10n";
 import { clampToCType } from "lib/helpers/engineFields";
 import { setDefault } from "shared/lib/helpers/setDefault";
-import { ScriptEventFieldSchema } from "store/features/entities/entitiesTypes";
+import type { ScriptEventFieldSchema } from "store/features/entities/entitiesTypes";
 import glob from "glob";
 
 interface EngineData {
