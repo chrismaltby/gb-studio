@@ -7,7 +7,6 @@ import React, {
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Path from "path";
-import { FormField } from "components/library/Forms";
 import l10n, { L10NKey } from "renderer/lib/l10n";
 import castEventValue from "renderer/lib/helpers/castEventValue";
 import CustomControlsPicker from "components/forms/CustomControlsPicker";
@@ -44,6 +43,8 @@ import { FormInfo } from "ui/form/FormInfo";
 import electronActions from "store/features/electron/electronActions";
 import CartSettingsEditor from "components/settings/CartSettingsEditor";
 import { UIAssetPreview } from "components/forms/UIAssetPreviewButton";
+import { FormField } from "ui/form/FormLayout";
+import { FixedSpacer } from "ui/spacing/Spacing";
 
 const SettingsPage: FC = () => {
   const dispatch = useDispatch();
@@ -269,13 +270,7 @@ const SettingsPage: FC = () => {
                 <SettingRowInput>
                   <div>
                     {[0, 1, 2, 3, 4, 5, 6, 7].map((index) => (
-                      <FormField
-                        key={index}
-                        style={{
-                          padding: 0,
-                          paddingBottom: index === 7 ? 0 : 3,
-                        }}
-                      >
+                      <FormField key={index} name={`scenePalette${index}`}>
                         <PaletteSelect
                           name={`scenePalette${index}`}
                           prefix={`${index + 1}:`}
@@ -291,6 +286,7 @@ const SettingsPage: FC = () => {
                         {sgbEnabled && index === 4 && (
                           <FormInfo>{l10n("FIELD_SGB_PALETTE_NOTE")}</FormInfo>
                         )}
+                        {index !== 7 && <FixedSpacer height={3} />}
                         {index === 7 && (
                           <FormInfo>{l10n("FIELD_UI_PALETTE_NOTE")}</FormInfo>
                         )}
@@ -310,13 +306,7 @@ const SettingsPage: FC = () => {
                 <SettingRowInput>
                   <div key={JSON.stringify(defaultSpritePaletteIds)}>
                     {[0, 1, 2, 3, 4, 5, 6, 7].map((index) => (
-                      <FormField
-                        key={index}
-                        style={{
-                          padding: 0,
-                          paddingBottom: index === 7 ? 0 : 3,
-                        }}
-                      >
+                      <FormField key={index} name={`spritePalette${index}`}>
                         <PaletteSelect
                           name={`spritePalette${index}`}
                           prefix={`${index + 1}:`}
@@ -329,6 +319,7 @@ const SettingsPage: FC = () => {
                             onEditSpritePaletteId(index, e);
                           }}
                         />
+                        {index !== 7 && <FixedSpacer height={3} />}
                         {index === 7 && (
                           <FormInfo>
                             {l10n("FIELD_EMOTE_PALETTE_NOTE")}
@@ -386,11 +377,7 @@ const SettingsPage: FC = () => {
                 </SettingRowLabel>
                 <SettingRowInput>
                   <div>
-                    <FormField
-                      style={{
-                        padding: 0,
-                      }}
-                    >
+                    <FormField name="scenePalette">
                       <PaletteSelect
                         name="scenePalette"
                         value={
@@ -424,11 +411,7 @@ const SettingsPage: FC = () => {
                 </SettingRowLabel>
                 <SettingRowInput>
                   <div>
-                    <FormField
-                      style={{
-                        padding: 0,
-                      }}
-                    >
+                    <FormField name="sgbBorder">
                       <UIAssetPreview
                         path="sgb/border.png"
                         onClick={() => {
@@ -542,7 +525,7 @@ const SettingsPage: FC = () => {
           >
             <SettingRowLabel>{l10n("FIELD_MUSIC_FORMAT")}</SettingRowLabel>
             <SettingRowInput>
-              <FormField style={undefined}>
+              <FormField name="musicDriver">
                 <MusicDriverSelect
                   name="musicDriver"
                   value={musicDriver || ""}
