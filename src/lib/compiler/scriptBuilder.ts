@@ -7,7 +7,7 @@ import {
   localVariableName,
   tempVariableName,
 } from "shared/lib/variables/variableNames";
-import {
+import type {
   ActorDirection,
   CustomEvent,
   Palette,
@@ -17,7 +17,7 @@ import {
   Variable,
 } from "store/features/entities/entitiesTypes";
 import { Dictionary } from "@reduxjs/toolkit";
-import { EngineFieldSchema } from "store/features/engine/engineState";
+import type { EngineFieldSchema } from "store/features/engine/engineState";
 import {
   initialState as initialSettingsState,
   SettingsState,
@@ -45,7 +45,7 @@ import {
   isUnionVariableValue,
 } from "store/features/entities/entitiesHelpers";
 import { lexText } from "shared/lib/compiler/lexText";
-import { Reference } from "components/forms/ReferencesSelect";
+import type { Reference } from "components/forms/ReferencesSelect";
 import { clone } from "lib/helpers/clone";
 import {
   defaultVariableForContext,
