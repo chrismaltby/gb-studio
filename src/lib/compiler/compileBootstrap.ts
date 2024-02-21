@@ -1,5 +1,5 @@
-import { EngineFieldSchema } from "store/features/engine/engineState";
-import {
+import type { EngineFieldSchema } from "store/features/engine/engineState";
+import type {
   ActorDirection,
   EngineFieldValue,
 } from "store/features/entities/entitiesTypes";
