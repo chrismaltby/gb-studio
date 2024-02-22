@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import cx from "classnames";
 import WorldActor from "./ActorView";
-import Trigger from "./Trigger";
+import TriggerView from "./TriggerView";
 import SceneCollisions from "./SceneCollisions";
 import {
   SceneShape,
@@ -317,7 +317,7 @@ class Scene extends Component {
           )}
           {showEntities &&
             triggers.map((triggerId) => (
-              <Trigger
+              <TriggerView
                 key={triggerId}
                 id={triggerId}
                 sceneId={id}
