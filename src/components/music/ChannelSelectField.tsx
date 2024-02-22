@@ -10,7 +10,7 @@ import {
   EyeOpenIcon,
 } from "ui/icons/Icons";
 import styled from "styled-components";
-import { ipcRenderer } from "electron";
+import API from "renderer/lib/api";
 
 interface ChannelSelectFieldProps {
   name: string;
@@ -77,7 +77,7 @@ export const ChannelSelectField = ({
   );
 
   const setMute = useCallback(() => {
-    ipcRenderer.send("music-data-send", {
+    API.music.sendMusicData({
       action: "set-mute",
       channel: index,
       muted: !muted,

@@ -5,8 +5,9 @@ import { variableSelectors } from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
 import editorActions from "store/features/editor/editorActions";
 import { Variable } from "store/features/entities/entitiesTypes";
-import { allVariables, globalVariableDefaultName } from "lib/helpers/variables";
+import { allVariables } from "renderer/lib/variables";
 import { EntityListItem } from "ui/lists/EntityListItem";
+import { globalVariableDefaultName } from "shared/lib/variables/variableNames";
 
 interface NavigatorVariablesProps {
   height: number;

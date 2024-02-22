@@ -1,10 +1,9 @@
 import keyBy from "lodash/keyBy";
-import { eventHasArg } from "../helpers/eventSystem";
+import { eventHasArg } from "lib/helpers/eventSystem";
 import compileImages from "./compileImages";
-import { indexBy } from "../helpers/array";
+import { indexBy } from "lib/helpers/array";
 import compileEntityEvents from "./compileEntityEvents";
 import {
-  EVENT_TEXT,
   EVENT_MUSIC_PLAY,
   EVENT_END,
   EVENT_PLAYER_SET_SPRITE,
@@ -17,12 +16,12 @@ import {
   DMG_PALETTE,
   MAX_NESTED_SCRIPT_DEPTH,
   MAX_PROJECTILES,
-} from "../../consts";
+} from "consts";
 import compileSprites from "./compileSprites";
 import compileAvatars from "./compileAvatars";
 import compileEmotes from "./compileEmotes";
 import compileFonts from "./compileFonts";
-import { precompileEngineFields } from "../helpers/engineFields";
+import { precompileEngineFields } from "lib/helpers/engineFields";
 import {
   compileBackground,
   compileBackgroundHeader,
@@ -64,11 +63,11 @@ import {
   compileSaveSignature,
 } from "./compileData2";
 import compileSGBImage from "./sgb";
-import { readFileToTilesData } from "../tiles/tileData";
-import l10n from "../helpers/l10n";
+import { readFileToTilesData } from "lib/tiles/tileData";
+import l10n from "lib/helpers/l10n";
 import { compileScriptEngineInit } from "./compileBootstrap";
 import { compileMusicTracks, compileMusicHeader } from "./compileMusic";
-import { chunk } from "../helpers/array2";
+import { chunk } from "lib/helpers/array2";
 import { toProjectileHash } from "./scriptBuilder";
 import {
   calculateAutoFadeEventIdDenormalised,
@@ -80,7 +79,7 @@ import copy from "lib/helpers/fsCopy";
 import { ensureDir } from "fs-extra";
 import Path from "path";
 import { determineUsedAssets } from "./precompile/determineUsedAssets";
-import { compileSound, compileSoundHeader } from "./sounds/compileSound";
+import { compileSound } from "./sounds/compileSound";
 
 const indexById = indexBy("id");
 
@@ -844,7 +843,7 @@ export const precompileScenes = (
 
     let playerSprite = usedSprites.find((s) => s.id === playerSpriteSheetId);
 
-    if (!playerSprite) {
+    if (!playerSprite && scene.type !== "LOGO") {
       warnings(
         l10n("WARNING_NO_PLAYER_SET_FOR_SCENE_TYPE", { type: scene.type })
       );
@@ -959,7 +958,7 @@ export const precompileScenes = (
 
     return {
       ...scene,
-      playerSpriteSheetId: playerSprite.id,
+      playerSpriteSheetId: playerSprite ? playerSprite.id : undefined,
       background,
       actors,
       sprites: sceneSpriteIds.reduce((memo, spriteId) => {
@@ -1257,9 +1256,7 @@ const compile = async (
       lock,
       scriptType
     ) => {
-      let entityCode = "";
       let scriptTypeCode = "interact";
-
       let scriptName = "script";
 
       if (entityType === "actor") {
@@ -1270,10 +1267,8 @@ const compile = async (
           hit2Script: "hit2",
           hit3Script: "hit3",
         };
-        entityCode = `a${entityIndex}`;
         scriptTypeCode = scriptLookup[scriptType] || scriptTypeCode;
       } else if (entityType === "trigger") {
-        entityCode = `t${entityIndex}`;
         scriptTypeCode = "interact";
       } else if (entityType === "scene") {
         const scriptLookup = {
@@ -1759,7 +1754,7 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
     `extern const UBYTE start_player_move_speed;\n` +
     `extern const UBYTE start_player_anim_tick;\n\n` +
     `extern const far_ptr_t ui_fonts[];\n\n` +
-    `void bootstrap_init() BANKED;\n\n` +
+    `void bootstrap_init(void) BANKED;\n\n` +
     `#endif\n`;
 
   output[`states_defines.h`] =

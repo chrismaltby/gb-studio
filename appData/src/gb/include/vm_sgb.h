@@ -1,8 +1,7 @@
 #ifndef _VM_SGB_H_INCLUDE
 #define _VM_SGB_H_INCLUDE
 
-#include <gb/gb.h>
-#include <gb/sgb.h>
+#include <gbdk/platform.h>
 
 #include "vm.h"
 

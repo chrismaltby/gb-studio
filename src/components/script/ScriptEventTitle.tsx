@@ -5,8 +5,8 @@ import {
   isPropertyField,
   isVariableField,
 } from "lib/helpers/eventSystem";
-import l10n from "lib/helpers/l10n";
-import { NamedVariable, namedVariablesByContext } from "lib/helpers/variables";
+import l10n, { L10NKey } from "renderer/lib/l10n";
+import { NamedVariable, namedVariablesByContext } from "renderer/lib/variables";
 import { Dictionary } from "@reduxjs/toolkit";
 import { useSelector } from "react-redux";
 import { RootState } from "store/configureStore";
@@ -31,7 +31,7 @@ import {
 } from "store/features/entities/entitiesTypes";
 import styled from "styled-components";
 import { fadeIn } from "ui/animations/animations";
-import { animLabelLookup } from "components/forms/AnimationSpeedSelect";
+import { getAnimLabel } from "components/forms/AnimationSpeedSelect";
 import { ScriptEditorContext } from "./ScriptEditorContext";
 
 interface ScriptEventTitleProps {
@@ -83,7 +83,7 @@ const fieldsIndexByKey = (
 
 const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
   const context = useContext(ScriptEditorContext);
-  const localisedCommand = l10n(command);
+  const localisedCommand = l10n(command as L10NKey);
   const eventName =
     localisedCommand !== command
       ? localisedCommand
@@ -270,7 +270,7 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
         return l10nInput(value);
       };
       const animSpeedForValue = (value: unknown) => {
-        return animLabelLookup[value as number] || String(value);
+        return getAnimLabel(value as number) || String(value);
       };
       const spriteForValue = (value: unknown) => {
         return (

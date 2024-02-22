@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store/configureStore";
 import {
@@ -19,23 +19,21 @@ import entitiesActions from "store/features/entities/entitiesActions";
 import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import { Actor, ScriptEvent } from "store/features/entities/entitiesTypes";
-import l10n from "lib/helpers/l10n";
 import { Sidebar, SidebarColumn } from "ui/sidebars/Sidebar";
 import { CoordinateInput } from "ui/form/CoordinateInput";
 import { Checkbox } from "ui/form/Checkbox";
 import { LockIcon, LockOpenIcon, PinIcon } from "ui/icons/Icons";
-import castEventValue from "lib/helpers/castEventValue";
+import castEventValue from "renderer/lib/helpers/castEventValue";
 import { CheckboxField } from "ui/form/CheckboxField";
-import DirectionPicker from "../forms/DirectionPicker";
-import { DMG_PALETTE } from "../../consts";
-import { SpriteSheetSelectButton } from "../forms/SpriteSheetSelectButton";
+import DirectionPicker from "components/forms/DirectionPicker";
+import { DMG_PALETTE } from "consts";
+import { SpriteSheetSelectButton } from "components/forms/SpriteSheetSelectButton";
 import { WorldEditor } from "./WorldEditor";
-import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
-import ScriptEditor from "../script/ScriptEditor";
-import { AnimationSpeedSelect } from "../forms/AnimationSpeedSelect";
-import { MovementSpeedSelect } from "../forms/MovementSpeedSelect";
-import CollisionMaskPicker from "../forms/CollisionMaskPicker";
-import { KeysMatching } from "lib/helpers/types";
+import ScriptEditorDropdownButton from "components/script/ScriptEditorDropdownButton";
+import ScriptEditor from "components/script/ScriptEditor";
+import { AnimationSpeedSelect } from "components/forms/AnimationSpeedSelect";
+import { MovementSpeedSelect } from "components/forms/MovementSpeedSelect";
+import CollisionMaskPicker from "components/forms/CollisionMaskPicker";
 import { NoteField } from "ui/form/NoteField";
 import { StickyTabs, TabBar, TabSettings } from "ui/tabs/Tabs";
 import { Button } from "ui/buttons/Button";
@@ -44,6 +42,9 @@ import { ActorSymbolsEditor } from "components/forms/symbols/ActorSymbolsEditor"
 import { SpriteSymbolsEditor } from "components/forms/symbols/SpriteSymbolsEditor";
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
+import { actorName } from "store/features/entities/entitiesHelpers";
+import l10n from "renderer/lib/l10n";
+import { KeysMatching } from "shared/types";
 
 interface ActorEditorProps {
   id: string;
@@ -76,31 +77,9 @@ type ActorScriptKey =
   | "hit2Script"
   | "hit3Script";
 
-const actorName = (actor: Actor, actorIndex: number) =>
-  actor.name ? actor.name : `Actor ${actorIndex + 1}`;
-
-const defaultTabs = {
-  interact: l10n("SIDEBAR_ON_INTERACT"),
-  start: l10n("SIDEBAR_ON_INIT"),
-  update: l10n("SIDEBAR_ON_UPDATE"),
-} as const;
-
-const collisionTabs = {
-  hit: l10n("SIDEBAR_ON_HIT"),
-  start: l10n("SIDEBAR_ON_INIT"),
-  update: l10n("SIDEBAR_ON_UPDATE"),
-} as const;
-
-const hitTabs = {
-  hitPlayer: l10n("FIELD_PLAYER"),
-  hit1: l10n("FIELD_COLLISION_GROUP_N", { n: 1 }),
-  hit2: l10n("FIELD_COLLISION_GROUP_N", { n: 2 }),
-  hit3: l10n("FIELD_COLLISION_GROUP_N", { n: 3 }),
-} as const;
-
-type DefaultTab = keyof typeof defaultTabs;
-type CollisionTab = keyof typeof collisionTabs;
-type HitTab = keyof typeof hitTabs;
+type DefaultTab = "interact" | "start" | "update";
+type CollisionTab = "hit" | "start" | "update";
+type HitTab = "hitPlayer" | "hit1" | "hit2" | "hit3";
 
 const getScriptKey = (
   primaryTab: DefaultTab | CollisionTab,
@@ -144,9 +123,52 @@ export const ActorEditor: FC<ActorEditorProps> = ({
   const clipboardFormat = useSelector(
     (state: RootState) => state.clipboard.data?.format
   );
+  const scene = useSelector((state: RootState) =>
+    sceneSelectors.selectById(state, sceneId)
+  );
+  const defaultSpritePaletteId = useSelector(
+    (state: RootState) =>
+      state.project.present.settings.defaultSpritePaletteId || DMG_PALETTE.id
+  );
+  const colorsEnabled = useSelector(
+    (state: RootState) => state.project.present.settings.customColorsEnabled
+  );
+  const lockScriptEditor = useSelector(
+    (state: RootState) => state.editor.lockScriptEditor
+  );
+
+  const actorIndex = scene?.actors.indexOf(id) || 0;
+
+  const defaultTabs: Record<DefaultTab, string> = useMemo(
+    () => ({
+      interact: l10n("SIDEBAR_ON_INTERACT"),
+      start: l10n("SIDEBAR_ON_INIT"),
+      update: l10n("SIDEBAR_ON_UPDATE"),
+    }),
+    []
+  );
+
+  const collisionTabs: Record<CollisionTab, string> = useMemo(
+    () => ({
+      hit: l10n("SIDEBAR_ON_HIT"),
+      start: l10n("SIDEBAR_ON_INIT"),
+      update: l10n("SIDEBAR_ON_UPDATE"),
+    }),
+    []
+  );
+
+  const hitTabs: Record<HitTab, string> = useMemo(
+    () => ({
+      hitPlayer: l10n("FIELD_PLAYER"),
+      hit1: l10n("FIELD_COLLISION_GROUP_N", { n: 1 }),
+      hit2: l10n("FIELD_COLLISION_GROUP_N", { n: 2 }),
+      hit3: l10n("FIELD_COLLISION_GROUP_N", { n: 3 }),
+    }),
+    []
+  );
+
   const tabs = Object.keys(actor?.collisionGroup ? collisionTabs : defaultTabs);
   const secondaryTabs = Object.keys(hitTabs);
-
   const lastScriptTab = useSelector(
     (state: RootState) => state.editor.lastScriptTab
   );
@@ -165,22 +187,6 @@ export const ActorEditor: FC<ActorEditorProps> = ({
     keyof ScriptHandlers["hit"]
   >(initialSecondaryTab as keyof ScriptHandlers["hit"]);
 
-  const scene = useSelector((state: RootState) =>
-    sceneSelectors.selectById(state, sceneId)
-  );
-  const defaultSpritePaletteId = useSelector(
-    (state: RootState) =>
-      state.project.present.settings.defaultSpritePaletteId || DMG_PALETTE.id
-  );
-  const colorsEnabled = useSelector(
-    (state: RootState) => state.project.present.settings.customColorsEnabled
-  );
-  const lockScriptEditor = useSelector(
-    (state: RootState) => state.editor.lockScriptEditor
-  );
-
-  const actorIndex = scene?.actors.indexOf(id) || 0;
-
   // Make sure currently selected script tab is availble
   // when collision group is modified otherwise use first available tab
   useEffect(() => {
@@ -190,7 +196,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({
     if (!tabs.includes(scriptMode)) {
       setScriptMode(tabs[0] as keyof ScriptHandlers);
     }
-  }, [scriptMode, actor?.collisionGroup]);
+  }, [scriptMode, actor?.collisionGroup, collisionTabs, defaultTabs]);
 
   const [showSymbols, setShowSymbols] = useState(false);
 

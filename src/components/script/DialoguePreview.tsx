@@ -2,14 +2,14 @@ import keyBy from "lodash/keyBy";
 import uniq from "lodash/uniq";
 import React, { FC, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import { assetFilename } from "lib/helpers/gbstudio";
-import { textNumLines } from "lib/helpers/trimlines";
+import { textNumLines } from "shared/lib/helpers/trimlines";
 import { RootState } from "store/configureStore";
 import {
   avatarSelectors,
   fontSelectors,
 } from "store/features/entities/entitiesState";
 import { loadFont, drawFrame, drawText, FontData } from "./TextPreviewHelper";
+import { assetFilename } from "shared/lib/helpers/assets";
 
 interface DialoguePreviewProps {
   text: string;

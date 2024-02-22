@@ -18,7 +18,7 @@ import {
   SingleValueWithPreview,
   SelectCommonProps,
 } from "ui/form/Select";
-import SpriteSheetCanvas from "../world/SpriteSheetCanvas";
+import SpriteSheetCanvas from "components/world/SpriteSheetCanvas";
 
 interface SpriteSheetSelectProps extends SelectCommonProps {
   name: string;

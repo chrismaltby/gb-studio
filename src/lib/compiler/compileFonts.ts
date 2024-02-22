@@ -1,6 +1,6 @@
-import { assetFilename } from "../helpers/gbstudio";
-import { FontAssetData } from "../project/loadFontData";
-import { FontData, readFileToFontData } from "../fonts/fontData";
+import { FontAssetData } from "lib/project/loadFontData";
+import { FontData, readFileToFontData } from "lib/fonts/fontData";
+import { assetFilename } from "shared/lib/helpers/assets";
 
 export type PrecompiledFontData = FontAssetData & FontData;
 

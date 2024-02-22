@@ -2,7 +2,7 @@ import { combineReducers } from "redux";
 import undoable from "redux-undo";
 import console from "./features/console/consoleState";
 import music from "./features/music/musicState";
-import warnings from "./features/warnings/warningsState";
+import assets from "./features/assets/assetsState";
 import entities from "./features/entities/entitiesState";
 import document from "./features/document/documentState";
 import editor from "./features/editor/editorState";
@@ -60,7 +60,7 @@ const rootReducer = combineReducers({
     initTypes: ["@@redux/INIT", "@@INIT"],
   }),
   error,
-  warnings,
+  assets,
 });
 
 export default rootReducer;

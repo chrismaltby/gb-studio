@@ -1,14 +1,14 @@
 /* eslint-disable camelcase */
 import { Dictionary } from "@reduxjs/toolkit";
 import flatten from "lodash/flatten";
-import { SCREEN_WIDTH } from "../../consts";
+import { SCREEN_WIDTH } from "consts";
 import {
   Actor,
   SceneParallaxLayer,
   Trigger,
 } from "store/features/entities/entitiesTypes";
-import { FontData } from "../fonts/fontData";
-import { decHex32Val, hexDec, wrap8Bit } from "../helpers/8bit";
+import { FontData } from "lib/fonts/fontData";
+import { decHex32Val, hexDec, wrap8Bit } from "shared/lib/helpers/8bit";
 import { PrecompiledSpriteSheetData } from "./compileSprites";
 import { dirEnum } from "./helpers";
 
@@ -64,7 +64,7 @@ export interface PrecompiledScene {
   height: number;
   type: string;
   background: PrecompiledBackground;
-  playerSprite: PrecompiledSprite;
+  playerSprite?: PrecompiledSprite;
   parallax: Array<{ height: number; speed: number }>;
   actorsExclusiveLookup: Dictionary<number>;
   actors: Actor[];
@@ -458,6 +458,10 @@ export const compileScene = (
     eventPtrs: PrecompiledSceneEventPtrs[];
   }
 ) => {
+  const playerSpriteSymbol = scene.playerSprite
+    ? scene.playerSprite.symbol
+    : "spritesheet_none";
+
   return toStructDataFile(
     SCENE_TYPE,
     scene.symbol,
@@ -475,7 +479,7 @@ export const compileScene = (
       palette: toFarPtr(paletteSymbol(bgPalette)),
       sprite_palette: toFarPtr(paletteSymbol(actorsPalette)),
       reserve_tiles: scene.actorsExclusiveLookup["player"] ?? 0,
-      player_sprite: toFarPtr(scene.playerSprite.symbol),
+      player_sprite: toFarPtr(playerSpriteSymbol),
       n_actors: scene.actors.length,
       n_triggers: scene.triggers.length,
       n_sprites: scene.sprites.length,
@@ -505,7 +509,7 @@ export const compileScene = (
       sceneCollisionsSymbol(scene.symbol),
       paletteSymbol(bgPalette),
       paletteSymbol(actorsPalette),
-      scene.playerSprite.symbol,
+      playerSpriteSymbol,
       scene.actors.length ? sceneActorsSymbol(scene.symbol) : [],
       scene.triggers.length > 0 ? sceneTriggersSymbol(scene.symbol) : [],
       scene.sprites.length > 0 ? sceneSpritesSymbol(scene.symbol) : [],
@@ -692,6 +696,10 @@ export const compileSceneProjectiles = (
         const sprite =
           sprites.find((s) => s.id === projectile.spriteSheetId) || sprites[0];
         if (!sprite) return null;
+        const stateIndex = sprite.states.findIndex(
+          (state) => state.name === projectile.spriteStateId
+        );
+        const startAnim = stateIndex > 0 ? stateIndex * 8 : 0;
         return {
           __comment: `Projectile ${projectileIndex}`,
           sprite: toFarPtr(sprite.symbol),
@@ -701,7 +709,7 @@ export const compileSceneProjectiles = (
           collision_mask: toASMCollisionMask(projectile.collisionMask),
           bounds: compileBounds(sprite),
           anim_tick: projectile.animSpeed,
-          animations: sprite.animationOffsets.slice(0, 4),
+          animations: sprite.animationOffsets.slice(startAnim, startAnim + 4),
           initial_offset: Math.round((projectile.initialOffset || 0) * 16),
         };
       })

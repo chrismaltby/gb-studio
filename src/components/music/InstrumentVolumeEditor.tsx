@@ -1,14 +1,20 @@
 import React, { useEffect, useRef } from "react";
-import l10n from "lib/helpers/l10n";
+import l10n from "renderer/lib/l10n";
 import { FormRow } from "ui/form/FormLayout";
 import { SliderField } from "ui/form/SliderField";
+
+type EditableInstrument = {
+  initial_volume: number;
+  volume_sweep_change: number;
+};
 
 interface InstrumentVolumeEditorProps {
   initialVolume: number;
   volumeSweepChange: number;
   length: number | null;
-  // onChange: <T extends keyof (DutyInstrument | NoiseInstrument)>(key: T) => (editValue: (DutyInstrument[T] | NoiseInstrument[T])) => void;
-  onChange: (key: any) => (editValue: any) => void;
+  onChange: <T extends keyof EditableInstrument>(
+    key: T
+  ) => (editValue: EditableInstrument[T]) => void;
 }
 
 export const InstrumentVolumeEditor = ({

@@ -1,12 +1,11 @@
 /* eslint-disable jsx-a11y/label-has-for */
 import React, { FC, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { SceneSelect } from "../forms/SceneSelect";
-import DirectionPicker from "../forms/DirectionPicker";
-import castEventValue from "lib/helpers/castEventValue";
-import l10n from "lib/helpers/l10n";
-import { MovementSpeedSelect } from "../forms/MovementSpeedSelect";
-import { AnimationSpeedSelect } from "../forms/AnimationSpeedSelect";
+import { SceneSelect } from "components/forms/SceneSelect";
+import DirectionPicker from "components/forms/DirectionPicker";
+import castEventValue from "renderer/lib/helpers/castEventValue";
+import { MovementSpeedSelect } from "components/forms/MovementSpeedSelect";
+import { AnimationSpeedSelect } from "components/forms/AnimationSpeedSelect";
 import settingsActions from "store/features/settings/settingsActions";
 import metadataActions from "store/features/metadata/metadataActions";
 import { sceneSelectors } from "store/features/entities/entitiesState";
@@ -32,6 +31,7 @@ import { NoteField } from "ui/form/NoteField";
 import { TextField } from "ui/form/TextField";
 import { CheckboxField } from "ui/form/CheckboxField";
 import { Button } from "ui/buttons/Button";
+import l10n from "renderer/lib/l10n";
 
 export const WorldEditor: FC = () => {
   const metadata = useSelector(

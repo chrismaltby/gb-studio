@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { UploadIcon } from "../icons/Icons";
+import { UploadIcon } from "ui/icons/Icons";
 
 export const DropZone = styled.div.attrs((_props) => ({
   children: <UploadIcon />,

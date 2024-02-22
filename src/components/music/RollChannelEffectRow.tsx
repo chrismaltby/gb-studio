@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import styled, { css } from "styled-components";
-import { PatternCell } from "lib/helpers/uge/song/PatternCell";
+import { PatternCell } from "renderer/lib/uge/song/PatternCell";
 import trackerActions from "store/features/tracker/trackerActions";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import { useDispatch, useSelector } from "react-redux";
@@ -87,7 +87,7 @@ export const RollChannelEffectRowFwd = ({
 
   // Mouse
   const handleMouseDown = useCallback(
-    (e: any) => {
+    (e: MouseEvent) => {
       if (!renderPattern) return;
       const col = Math.floor(e.offsetX / cellSize);
       const cell = renderPattern[col][channelId];

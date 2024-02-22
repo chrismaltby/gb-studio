@@ -21,7 +21,10 @@
       "store/*": [ "./store/*" ],
       "lib/*": [ "./lib/*" ],
       "ui/*": [ "./components/ui/*" ],
-      "components/*": [ "./components/*" ]
+      "components/*": [ "./components/*" ],
+      "lang/*": [ "./lang/*" ],
+      "wasm/*": ["../appData/wasm/*" ],
+      "contributors.json": ["../contributors.json"]
     }
   },
   "include": ["src"]

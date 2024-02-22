@@ -6,6 +6,7 @@ const Alert = ({ variant, children }) => (
   <div
     className={cx("Alert", {
       "Alert-Warning": variant === "warning",
+      "Alert-Info": variant === "info",
     })}
   >
     {children}
@@ -15,7 +16,7 @@ const Alert = ({ variant, children }) => (
 const AlertItem = ({ children }) => <div className="AlertItem">{children}</div>;
 
 Alert.propTypes = {
-  variant: PropTypes.oneOf(["warning"]),
+  variant: PropTypes.oneOf(["warning", "info"]),
   children: PropTypes.node,
 };
 

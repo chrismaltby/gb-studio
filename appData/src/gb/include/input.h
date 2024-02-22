@@ -1,7 +1,7 @@
 #ifndef INPUT_H
 #define INPUT_H
 
-#include <gb/gb.h>
+#include <gbdk/platform.h>
 
 #ifdef SGB
     #define MAX_JOYPADS 2
@@ -42,7 +42,7 @@
 #define INPUT_B (joy & J_B)
 
 /* TRUE if A OR B button is being held */
-#define INPUT_A_OR_B ((joy & (J_A | J_B)) != 0)
+#define INPUT_A_OR_B (joy & (J_A | J_B))
 
 /* TRUE if Start button is being held */
 #define INPUT_START (joy & J_START)
@@ -51,37 +51,37 @@
 #define INPUT_SELECT (joy & J_SELECT)
 
 /* TRUE on first frame that any button is pressed */
-#define INPUT_ANY_PRESSED (joy && !last_joy)
+#define INPUT_ANY_PRESSED (joy & ~last_joy)
 
 /* TRUE on first frame that left is pressed on dpad  */
-#define INPUT_LEFT_PRESSED ((joy & J_LEFT) && !(last_joy & J_LEFT))
+#define INPUT_LEFT_PRESSED ((joy & ~last_joy) & J_LEFT)
 
 /* TRUE on first frame that right is pressed on dpad  */
-#define INPUT_RIGHT_PRESSED ((joy & J_RIGHT) && !(last_joy & J_RIGHT))
+#define INPUT_RIGHT_PRESSED ((joy & ~last_joy) & J_RIGHT)
 
 /* TRUE on first frame that up is pressed on dpad  */
-#define INPUT_UP_PRESSED ((joy & J_UP) && !(last_joy & J_UP))
+#define INPUT_UP_PRESSED ((joy & ~last_joy) & J_UP)
 
 /* TRUE on first frame that down is pressed on dpad  */
-#define INPUT_DOWN_PRESSED ((joy & J_DOWN) && !(last_joy & J_DOWN))
+#define INPUT_DOWN_PRESSED ((joy & ~last_joy) & J_DOWN)
 
 /* TRUE on first frame that button is pressed */
-#define INPUT_PRESSED(btn) ((joy & btn) && !(last_joy & btn)) 
+#define INPUT_PRESSED(btn) ((joy & ~last_joy) & (btn))
 
 /* TRUE on first frame that A button is pressed */
-#define INPUT_A_PRESSED ((joy & J_A) && !(last_joy & J_A))
+#define INPUT_A_PRESSED ((joy & ~last_joy) & J_A)
 
 /* TRUE on first frame that B button is pressed */
-#define INPUT_B_PRESSED ((joy & J_B) && !(last_joy & J_B))
+#define INPUT_B_PRESSED ((joy & ~last_joy) & J_B)
 
 /* TRUE on first frame that A OR B button is pressed */
-#define INPUT_A_OR_B_PRESSED (((joy & (J_A | J_B)) != 0) && ((last_joy & (J_A | J_B)) == 0))
+#define INPUT_A_OR_B_PRESSED ((joy & ~last_joy) & (J_A | J_B))
 
 /* TRUE on first frame that Start button is pressed */
-#define INPUT_START_PRESSED ((joy & J_START) && !(last_joy & J_START))
+#define INPUT_START_PRESSED ((joy & ~last_joy) & J_START)
 
 /* TRUE on first frame that Select button is pressed */
-#define INPUT_SELECT_PRESSED ((joy & J_SELECT) && !(last_joy & J_SELECT))
+#define INPUT_SELECT_PRESSED ((joy & ~last_joy) & J_SELECT)
 
 #define INPUT_SOFT_RESTART (joy == (J_A | J_B | J_START | J_SELECT))
 
@@ -90,14 +90,15 @@
 
 #define NUM_INPUTS 8
 
-#define INPUT_DPAD 0xF
+#define INPUT_DPAD (J_UP | J_DOWN | J_LEFT | J_RIGHT)
+
 
 extern joypads_t joypads;
 extern UBYTE frame_joy;
 extern UBYTE last_joy;
 extern UBYTE recent_joy;
 
-void input_init() BANKED;
-void input_update() NONBANKED;
+void input_init(void) BANKED;
+void input_update(void) NONBANKED;
 
 #endif

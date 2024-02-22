@@ -1,7 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Path from "path";
-import { ipcRenderer, remote } from "electron";
-import settings from "electron-settings";
 import FocusLock, { AutoFocusInside } from "react-focus-lock";
 import { FlexGrow } from "ui/spacing/Spacing";
 import {
@@ -17,6 +15,7 @@ import {
   SplashEasterEggButton,
   SplashForm,
   SplashInfoMessage,
+  SplashLoading,
   SplashLogo,
   SplashOpenButton,
   SplashProject,
@@ -27,27 +26,21 @@ import {
   SplashTemplateSelect,
   SplashWrapper,
 } from "ui/splash/Splash";
-import createProject, { ERR_PROJECT_EXISTS } from "lib/project/createProject";
 import GlobalStyle from "ui/globalStyle";
 import ThemeProvider from "ui/theme/ThemeProvider";
 import logoFile from "ui/icons/GBStudioLogo.png";
 import { FormField, FormRow } from "ui/form/FormLayout";
 import { TextField } from "ui/form/TextField";
-import { CloseIcon, DotsIcon } from "ui/icons/Icons";
+import { CloseIcon, DotsIcon, LoadingIcon } from "ui/icons/Icons";
 import { Button } from "ui/buttons/Button";
-import l10n from "lib/helpers/l10n";
-import contributors from "../../../contributors.json";
-import gbs2Preview from "../../assets/templatePreview/gbs2.mp4";
-import gbhtmlPreview from "../../assets/templatePreview/gbhtml.mp4";
-import blankPreview from "../../assets/templatePreview/blank.png";
+import contributors from "contributors.json";
+import gbs2Preview from "assets/templatePreview/gbs2.mp4";
+import gbhtmlPreview from "assets/templatePreview/gbhtml.mp4";
+import blankPreview from "assets/templatePreview/blank.png";
 import useWindowFocus from "ui/hooks/use-window-focus";
-import initElectronL10n from "lib/helpers/initElectronL10n";
-
-// Make sure localisation has loaded so that
-// l10n function can be used at top level
-initElectronL10n();
-
-const { dialog, shell } = remote;
+import l10n from "renderer/lib/l10n";
+import API from "renderer/lib/api";
+import { ERR_PROJECT_EXISTS } from "consts";
 
 declare const DOCS_URL: string;
 
@@ -68,48 +61,24 @@ type TemplateInfo = {
 const splashTabs = ["new", "recent"] as const;
 type SplashTabSection = typeof splashTabs[number];
 
-const templates: TemplateInfo[] = [
-  {
-    id: "gbs2",
-    name: l10n("SPLASH_SAMPLE_PROJECT"),
-    preview: gbs2Preview,
-    videoPreview: true,
-    description: l10n("SPLASH_SAMPLE_PROJECT_DESCRIPTION"),
-  },
-  {
-    id: "gbhtml",
-    name: `${l10n("SPLASH_SAMPLE_PROJECT")} (GBS 1.0)`,
-    preview: gbhtmlPreview,
-    videoPreview: true,
-    description: l10n("SPLASH_SAMPLE_PROJECT_ORIGINAL_DESCRIPTION"),
-  },
-  {
-    id: "blank",
-    name: l10n("SPLASH_BLANK_PROJECT"),
-    preview: blankPreview,
-    videoPreview: false,
-    description: l10n("SPLASH_BLANK_PROJECT_DESCRIPTION"),
-  },
-];
-
-const getLastUsedPath = () => {
-  const storedPath = String(settings.get("__lastUsedPath"));
+const getLastUsedPath = async () => {
+  const storedPath = String(await API.settings.get("__lastUsedPath"));
   if (storedPath && storedPath !== "undefined") {
     return Path.normalize(storedPath);
   }
-  return remote.app.getPath("documents");
+  return API.paths.getDocumentsPath();
 };
 
 const setLastUsedPath = (path: string) => {
-  settings.set("__lastUsedPath", path);
+  API.settings.set("__lastUsedPath", path);
 };
 
-const getLastUsedTab = () => {
-  return String(settings.get("__lastUsedSplashTab")) || "info";
+const getLastUsedTab = async () => {
+  return String(await API.settings.get("__lastUsedSplashTab")) || "info";
 };
 
 const setLastUsedTab = (tab: string) => {
-  settings.set("__lastUsedSplashTab", tab);
+  API.settings.set("__lastUsedSplashTab", tab);
 };
 
 const toSplashTab = (tab: string): SplashTabSection => {
@@ -119,38 +88,66 @@ const toSplashTab = (tab: string): SplashTabSection => {
   return "new";
 };
 
-export default () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const forceTab = urlParams.get("tab");
-  const initialTab = toSplashTab(forceTab || getLastUsedTab());
-
+export const Splash = () => {
+  const [loading, setLoading] = useState(true);
   const [templateId, setTemplateId] = useState("gbs2");
-  const [section, setSection] = useState<SplashTabSection>(initialTab);
+  const [section, setSection] = useState<SplashTabSection>();
   const [openCredits, setOpenCredits] = useState(false);
   const [recentProjects, setRecentProjects] = useState<ProjectInfo[]>([]);
   const [name, setName] = useState<string>(l10n("SPLASH_DEFAULT_PROJECT_NAME"));
-  const [path, setPath] = useState<string>(getLastUsedPath());
+  const [path, setPath] = useState<string>("");
   const [nameError, setNameError] = useState("");
   const [pathError, setPathError] = useState("");
   const [creating, setCreating] = useState(false);
   const windowFocus = useWindowFocus();
 
   useEffect(() => {
-    ipcRenderer.send("request-recent-projects");
-    ipcRenderer.once("recent-projects", (_, projectPaths: string[]) => {
-      if (projectPaths && projectPaths.length > 0) {
-        setRecentProjects(
-          projectPaths
-            .map((projectPath: string) => ({
-              name: Path.basename(projectPath),
-              dir: Path.dirname(projectPath),
-              path: projectPath,
-            }))
-            .reverse()
-        );
-      }
-    });
+    async function fetchData() {
+      setRecentProjects(
+        (await API.project.getRecentProjects())
+          .map((projectPath) => ({
+            name: Path.basename(projectPath),
+            dir: Path.dirname(projectPath),
+            path: projectPath,
+          }))
+          .reverse()
+      );
+      setPath(await getLastUsedPath());
+      const urlParams = new URLSearchParams(window.location.search);
+      const forceTab = urlParams.get("tab");
+      const initialTab = toSplashTab(forceTab || (await getLastUsedTab()));
+      setSection(initialTab);
+      setLoading(false);
+    }
+    fetchData();
   }, []);
+
+  const templates: TemplateInfo[] = useMemo(
+    () => [
+      {
+        id: "gbs2",
+        name: l10n("SPLASH_SAMPLE_PROJECT"),
+        preview: gbs2Preview,
+        videoPreview: true,
+        description: l10n("SPLASH_SAMPLE_PROJECT_DESCRIPTION"),
+      },
+      {
+        id: "gbhtml",
+        name: `${l10n("SPLASH_SAMPLE_PROJECT")} (GBS 1.0)`,
+        preview: gbhtmlPreview,
+        videoPreview: true,
+        description: l10n("SPLASH_SAMPLE_PROJECT_ORIGINAL_DESCRIPTION"),
+      },
+      {
+        id: "blank",
+        name: l10n("SPLASH_BLANK_PROJECT"),
+        preview: blankPreview,
+        videoPreview: false,
+        description: l10n("SPLASH_BLANK_PROJECT_DESCRIPTION"),
+      },
+    ],
+    []
+  );
 
   const onSetTab = (tab: SplashTabSection) => () => {
     setSection(tab);
@@ -158,11 +155,11 @@ export default () => {
   };
 
   const onOpen = () => {
-    ipcRenderer.send("open-project-picker");
+    API.project.openProjectPicker();
   };
 
   const onOpenRecent = (projectPath: string) => () => {
-    ipcRenderer.send("open-project", { projectPath });
+    API.project.openProject(projectPath);
   };
 
   const onChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -179,13 +176,10 @@ export default () => {
   };
 
   const onSelectFolder = async () => {
-    const path = await dialog.showOpenDialog({
-      properties: ["openDirectory"],
-    });
-    if (path.filePaths[0]) {
-      const newPath = Path.normalize(`${path.filePaths}/`);
-      setLastUsedPath(newPath);
-      setPath(newPath);
+    const directory = await API.dialog.chooseDirectory();
+    if (directory) {
+      setLastUsedPath(directory);
+      setPath(directory);
       setPathError("");
     }
   };
@@ -204,33 +198,35 @@ export default () => {
 
     try {
       setCreating(true);
-      const projectPath = await createProject({
+      const projectPath = await API.project.createProject({
         name,
-        target: templateId,
+        template: templateId,
         path,
       });
-      ipcRenderer.send("open-project", { projectPath });
+      API.project.openProject(projectPath);
     } catch (err) {
-      console.error(err);
-      if (err === ERR_PROJECT_EXISTS) {
-        setNameError(l10n("ERROR_PROJECT_ALREADY_EXISTS"));
-        setCreating(false);
-      } else if (
-        String(err.message).startsWith("ENOTDIR") ||
-        String(err.message).startsWith("EEXIST")
-      ) {
-        setPathError(l10n("ERROR_PROJECT_PATH_INVALID"));
-        setCreating(false);
-      } else {
-        setPathError(err.message);
-        setCreating(false);
+      if (err instanceof Error) {
+        if (err.message.includes(ERR_PROJECT_EXISTS)) {
+          setNameError(l10n("ERROR_PROJECT_ALREADY_EXISTS"));
+          setCreating(false);
+        } else if (
+          err.message.includes("ENOTDIR") ||
+          err.message.includes("EEXIST") ||
+          err.message.includes("EROFS")
+        ) {
+          setPathError(l10n("ERROR_PROJECT_PATH_INVALID"));
+          setCreating(false);
+        } else {
+          setPathError(err.message);
+          setCreating(false);
+        }
       }
     }
   };
 
   const clearRecent = () => {
     setRecentProjects([]);
-    ipcRenderer.send("clear-recent-projects");
+    API.project.clearRecentProjects();
   };
 
   return (
@@ -240,19 +236,27 @@ export default () => {
         <SplashSidebar>
           <SplashLogo>
             <img src={logoFile} alt="GB Studio" />
-            <SplashEasterEggButton onClick={() => setOpenCredits(true)} />
+            <SplashEasterEggButton
+              onClick={() => setOpenCredits(true)}
+              tabIndex={-1}
+            />
           </SplashLogo>
           <SplashAppTitle />
-          <SplashTab selected={section === "new"} onClick={onSetTab("new")}>
+          <SplashTab
+            selected={section === "new"}
+            onClick={onSetTab("new")}
+            disabled={loading}
+          >
             {l10n("SPLASH_NEW")}
           </SplashTab>
           <SplashTab
             selected={section === "recent"}
             onClick={onSetTab("recent")}
+            disabled={loading}
           >
             {l10n("SPLASH_RECENT")}
           </SplashTab>
-          <SplashTab onClick={() => shell.openExternal(DOCS_URL)}>
+          <SplashTab onClick={() => API.app.openExternal(DOCS_URL)}>
             {l10n("SPLASH_DOCUMENTATION")}
           </SplashTab>
           <FlexGrow />
@@ -260,6 +264,14 @@ export default () => {
             {l10n("SPLASH_OPEN")}
           </SplashOpenButton>
         </SplashSidebar>
+
+        {loading && !section && (
+          <SplashContent>
+            <SplashLoading>
+              <LoadingIcon />
+            </SplashLoading>
+          </SplashContent>
+        )}
 
         {section === "new" && (
           <SplashContent>
@@ -347,7 +359,7 @@ export default () => {
                 <SplashCreditsContributor
                   key={contributor.id}
                   contributor={contributor}
-                  onClick={() => shell.openExternal(contributor.html_url)}
+                  onClick={() => API.app.openExternal(contributor.html_url)}
                 />
               ))}
             </SplashCreditsContent>
@@ -367,3 +379,5 @@ export default () => {
     </ThemeProvider>
   );
 };
+
+export default Splash;

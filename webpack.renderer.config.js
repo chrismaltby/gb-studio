@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const rules = require("./webpack.rules");
 const plugins = require("./webpack.plugins");
 const CopyPlugin = require("copy-webpack-plugin");
@@ -69,8 +70,15 @@ module.exports = {
       "react-dom": "@hot-loader/react-dom",
       store: srcPath("store"),
       components: srcPath("components"),
+      lang: srcPath("lang"),
       lib: srcPath("lib"),
       ui: srcPath("components/ui"),
+      renderer: srcPath("renderer"),
+      shared: srcPath("shared"),
+      assets: srcPath("assets"),
+      consts: srcPath("consts.ts"),
+      wasm: Path.join(__dirname, "appData/wasm"),
+      "contributors.json": Path.join(__dirname, "contributors.json"),
     },
   },
   externals: {

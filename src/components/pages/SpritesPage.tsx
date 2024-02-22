@@ -17,29 +17,28 @@ import {
 } from "ui/splitpane/SplitPaneDivider";
 import { RootState } from "store/configureStore";
 import editorActions from "store/features/editor/editorActions";
-import settingsActions from "store/features/settings/settingsActions";
-import { SpriteEditor } from "../sprites/SpriteEditor";
-import { NavigatorSprites } from "../sprites/NavigatorSprites";
+import { SpriteEditor } from "components/sprites/SpriteEditor";
+import { NavigatorSprites } from "components/sprites/NavigatorSprites";
 import {
   spriteAnimationSelectors,
   spriteSheetSelectors,
   spriteStateSelectors,
 } from "store/features/entities/entitiesState";
-import MetaspriteEditor from "../sprites/MetaspriteEditor";
-import SpriteTilePalette from "../sprites/SpriteTilePalette";
-import SpriteAnimationTimeline from "../sprites/SpriteAnimationTimeline";
+import MetaspriteEditor from "components/sprites/MetaspriteEditor";
+import SpriteTilePalette from "components/sprites/SpriteTilePalette";
+import SpriteAnimationTimeline from "components/sprites/SpriteAnimationTimeline";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
-import l10n from "lib/helpers/l10n";
-import { getAnimationNameById } from "../sprites/helpers";
-import MetaspriteEditorToolsPanel from "../sprites/MetaspriteEditorToolsPanel";
+import l10n from "renderer/lib/l10n";
+import MetaspriteEditorToolsPanel from "components/sprites/MetaspriteEditorToolsPanel";
 import { ZoomButton } from "ui/buttons/ZoomButton";
-import MetaspriteEditorPreviewSettings from "../sprites/MetaspriteEditorPreviewSettings";
+import MetaspriteEditorPreviewSettings from "components/sprites/MetaspriteEditorPreviewSettings";
 import spriteActions from "store/features/sprite/spriteActions";
-import { clampSidebarWidth } from "lib/helpers/window/sidebar";
+import { clampSidebarWidth } from "renderer/lib/window/sidebar";
 import useSorted from "ui/hooks/use-sorted";
 import { Button } from "ui/buttons/Button";
 import { TargetIcon } from "ui/icons/Icons";
 import { FixedSpacer } from "ui/spacing/Spacing";
+import { getAnimationNameById } from "renderer/lib/sprites/spriteL10NHelpers";
 
 const Wrapper = styled.div`
   display: flex;

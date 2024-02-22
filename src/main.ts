@@ -1,4 +1,12 @@
-import { app, BrowserWindow, ipcMain, dialog, shell } from "electron";
+import {
+  app,
+  BrowserWindow,
+  ipcMain,
+  dialog,
+  shell,
+  nativeTheme,
+  clipboard,
+} from "electron";
 import windowStateKeeper from "electron-window-state";
 import settings from "electron-settings";
 import Path from "path";
@@ -6,12 +14,18 @@ import { stat } from "fs-extra";
 import menu from "./menu";
 import { checkForUpdate } from "lib/helpers/updateChecker";
 import switchLanguageDialog from "lib/electron/dialog/switchLanguageDialog";
-import l10n, { locales } from "lib/helpers/l10n";
-import initElectronL10n from "lib/helpers/initElectronL10n";
+import l10n, { l10nStrings, locales } from "lib/helpers/l10n";
+import initElectronL10n, {
+  forceL10nReload,
+} from "lib/helpers/initElectronL10n";
 import installExtension, {
   REACT_DEVELOPER_TOOLS,
   REDUX_DEVTOOLS,
 } from "electron-devtools-installer";
+import { toThemeId } from "shared/lib/theme";
+import { isString, isStringArray, JsonValue } from "shared/types";
+import getTmp from "lib/helpers/getTmp";
+import createProject, { CreateProjectInput } from "lib/project/createProject";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -171,11 +185,11 @@ const createWindow = async (projectPath: string) => {
   });
 
   mainWindow.on("enter-full-screen", () => {
-    mainWindow?.webContents.send("enter-full-screen");
+    mainWindow?.webContents.send("is-full-screen-changed", true);
   });
 
   mainWindow.on("leave-full-screen", () => {
-    mainWindow?.webContents.send("leave-full-screen");
+    mainWindow?.webContents.send("is-full-screen-changed", false);
   });
 
   mainWindow.on("page-title-updated", (e, title) => {
@@ -385,16 +399,6 @@ ipcMain.on("open-project", async (_event, arg) => {
   openProject(projectPath);
 });
 
-ipcMain.on("check-full-screen", async (_event, _arg) => {
-  if (mainWindow) {
-    if (mainWindow.isFullScreen()) {
-      mainWindow.webContents.send("enter-full-screen");
-    } else {
-      mainWindow.webContents.send("leave-full-screen");
-    }
-  }
-});
-
 ipcMain.on("open-project-picker", async (_event, _arg) => {
   openProjectPicker();
 });
@@ -407,7 +411,13 @@ ipcMain.on("request-recent-projects", async (_event) => {
     );
 });
 
-ipcMain.on("clear-recent-projects", async (_event) => {
+ipcMain.handle("get-recent-projects", async () => {
+  const recentProjects = settings.get("recentProjects");
+  if (!isStringArray(recentProjects)) return [];
+  return recentProjects;
+});
+
+ipcMain.handle("clear-recent-projects", async (_event) => {
   settings.set("recentProjects", []);
   app.clearRecentDocuments();
 });
@@ -420,6 +430,38 @@ ipcMain.on("open-play", async (_event, url, sgb) => {
   createPlay(url, sgb);
 });
 
+ipcMain.handle("open-external", async (_event, url) => {
+  if (!isString(url)) throw new Error("Invalid URL");
+  const allowedExternalDomains = [
+    "https://www.gbstudio.dev",
+    "https://www.itch.io",
+    "https://github.com",
+  ];
+  const match = allowedExternalDomains.some((domain) => url.startsWith(domain));
+  if (!match) throw new Error("URL not allowed");
+  shell.openExternal(url);
+});
+
+ipcMain.handle("open-directory-picker", async () => {
+  const selection = await dialog.showOpenDialogSync({
+    properties: ["openDirectory"],
+  });
+  if (selection && selection[0]) {
+    return Path.normalize(`${selection[0]}/`);
+  }
+  return undefined;
+});
+
+ipcMain.handle("open-file-picker", async () => {
+  const selection = await dialog.showOpenDialog({
+    properties: ["openFile"],
+  });
+  if (selection && selection.filePaths[0]) {
+    return Path.normalize(selection.filePaths[0]);
+  }
+  return undefined;
+});
+
 ipcMain.on("document-modified", () => {
   mainWindow?.setDocumentEdited(true);
   documentEdited = true; // For Windows
@@ -429,6 +471,18 @@ ipcMain.on("document-unmodified", () => {
   mainWindow?.setDocumentEdited(false);
   documentEdited = false; // For Windows
 });
+
+ipcMain.handle("get-documents-path", async (_event) => {
+  return app.getPath("documents");
+});
+
+ipcMain.handle("get-tmp-path", async () => {
+  return getTmp();
+});
+
+ipcMain.handle("create-project", async (_event, input: CreateProjectInput) =>
+  createProject(input)
+);
 
 ipcMain.on("project-loaded", (_event, settings) => {
   const { showCollisions, showConnections, showNavigator } = settings;
@@ -494,12 +548,14 @@ ipcMain.on("open-music", async (_event, sfx) => {
   createMusic(sfx);
 });
 
-ipcMain.on("window-zoom", (_, zoomType: number) => {
-  mainWindow && mainWindow.webContents.send("windowZoom", zoomType);
+ipcMain.handle("set-ui-scale", (_, scale: number) => {
+  settings.set("zoomLevel", scale);
+  mainWindow && mainWindow.webContents.send("windowZoom", scale);
 });
 
-ipcMain.on("keybindings-updated", (_, zoomType: number) => {
-  mainWindow && mainWindow.webContents.send("keybindings-update", zoomType);
+ipcMain.handle("set-tracker-keybindings", (_, value: number) => {
+  settings.set("trackerKeyBindings", value);
+  mainWindow && mainWindow.webContents.send("keybindings-update", value);
 });
 
 ipcMain.on("close-music", async () => {
@@ -518,6 +574,34 @@ ipcMain.on("music-data-receive", (_event, data) => {
   if (mainWindow) {
     mainWindow.webContents.send("music-data", data);
   }
+});
+
+ipcMain.handle("get-l10n-strings", () => l10nStrings);
+ipcMain.handle("get-theme", () => {
+  const themeId = toThemeId(
+    settings.get?.("theme"),
+    nativeTheme.shouldUseDarkColors
+  );
+  return themeId;
+});
+
+ipcMain.handle("settings-get", (_, key: string) => settings.get(key));
+ipcMain.handle("settings-set", (_, key: string, value: JsonValue) => {
+  settings.set(key, value);
+});
+ipcMain.handle("settings-delete", (_, key: string) => {
+  settings.delete(key);
+});
+
+ipcMain.handle("get-is-full-screen", async () => {
+  if (mainWindow) {
+    return mainWindow.isFullScreen();
+  }
+  return false;
+});
+
+ipcMain.handle("clipboard-read-text", () => {
+  return clipboard.readText();
 });
 
 menu.on("new", async () => {
@@ -548,7 +632,7 @@ menu.on("redo", async () => {
   mainWindow && mainWindow.webContents.send("redo");
 });
 
-menu.on("section", async (section: string) => {
+menu.on("section", async (section) => {
   mainWindow && mainWindow.webContents.send("section", section);
 });
 
@@ -556,7 +640,7 @@ menu.on("reloadAssets", () => {
   mainWindow && mainWindow.webContents.send("reloadAssets");
 });
 
-menu.on("zoom", (zoomType: string) => {
+menu.on("zoom", (zoomType) => {
   mainWindow && mainWindow.webContents.send("zoom", zoomType);
 });
 
@@ -564,7 +648,7 @@ menu.on("run", () => {
   mainWindow && mainWindow.webContents.send("run");
 });
 
-menu.on("build", (buildType: string) => {
+menu.on("build", (buildType) => {
   mainWindow && mainWindow.webContents.send("build", buildType);
 });
 
@@ -608,31 +692,55 @@ menu.on("preferences", () => {
   }
 });
 
-menu.on("updateSetting", (setting: string, value: string | boolean) => {
-  settings.set(setting, value);
-  if (setting === "theme") {
-    menu.ref().getMenuItemById("themeDefault").checked = value === undefined;
-    menu.ref().getMenuItemById("themeLight").checked = value === "light";
-    menu.ref().getMenuItemById("themeDark").checked = value === "dark";
-    splashWindow && splashWindow.webContents.send("update-theme", value);
-    mainWindow && mainWindow.webContents.send("update-theme", value);
-  } else if (setting === "locale") {
-    menu.ref().getMenuItemById("localeDefault").checked = value === undefined;
-    for (const locale of locales) {
-      menu.ref().getMenuItemById(`locale-${locale}`).checked = value === locale;
-    }
-    switchLanguageDialog();
-  } else {
-    if (setting === "showConnections") {
-      menu.ref().getMenuItemById("showConnectionsAll").checked =
-        value === "all";
-      menu.ref().getMenuItemById("showConnectionsSelected").checked =
-        value === "selected" || value === true;
-      menu.ref().getMenuItemById("showConnectionsNone").checked =
-        value === false;
-    }
-    mainWindow && mainWindow.webContents.send("updateSetting", setting, value);
+menu.on("updateTheme", (value) => {
+  settings.set("theme", value as JsonValue);
+  menu.ref().getMenuItemById("themeDefault").checked = value === undefined;
+  menu.ref().getMenuItemById("themeLight").checked = value === "light";
+  menu.ref().getMenuItemById("themeDark").checked = value === "dark";
+  const newThemeId = toThemeId(value, nativeTheme.shouldUseDarkColors);
+  splashWindow && splashWindow.webContents.send("update-theme", newThemeId);
+  mainWindow && mainWindow.webContents.send("update-theme", newThemeId);
+});
+
+menu.on("updateLocale", (value) => {
+  settings.set("locale", value as JsonValue);
+  menu.ref().getMenuItemById("localeDefault").checked = value === undefined;
+  for (const locale of locales) {
+    menu.ref().getMenuItemById(`locale-${locale}`).checked = value === locale;
   }
+  switchLanguageDialog();
+  forceL10nReload();
+});
+
+menu.on("updateShowCollisions", (value) => {
+  settings.set("showCollisions", value as JsonValue);
+  mainWindow &&
+    mainWindow.webContents.send("updateSetting", "showCollisions", value);
+});
+
+menu.on("updateShowConnections", (value) => {
+  settings.set("showConnections", value as JsonValue);
+  menu.ref().getMenuItemById("showConnectionsAll").checked = value === "all";
+  menu.ref().getMenuItemById("showConnectionsSelected").checked =
+    value === "selected" || value === true;
+  menu.ref().getMenuItemById("showConnectionsNone").checked = value === false;
+  mainWindow &&
+    mainWindow.webContents.send("updateSetting", "showConnections", value);
+});
+
+menu.on("updateShowNavigator", (value) => {
+  settings.set("showNavigator", value as JsonValue);
+  mainWindow &&
+    mainWindow.webContents.send("updateSetting", "showNavigator", value);
+});
+
+nativeTheme?.on("updated", () => {
+  const themeId = toThemeId(
+    settings.get?.("theme"),
+    nativeTheme.shouldUseDarkColors
+  );
+  splashWindow && splashWindow.webContents.send("update-theme", themeId);
+  mainWindow && mainWindow.webContents.send("update-theme", themeId);
 });
 
 const newProject = async () => {

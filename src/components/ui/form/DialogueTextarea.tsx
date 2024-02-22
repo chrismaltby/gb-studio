@@ -1,50 +1,28 @@
-import React, { FC, useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  FC,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import styled from "styled-components";
 import { MentionsInput, SuggestionDataItem } from "react-mentions";
-import { NamedVariable } from "lib/helpers/variables";
+import { NamedVariable } from "renderer/lib/variables";
 import keyBy from "lodash/keyBy";
 import { Dictionary } from "@reduxjs/toolkit";
 import { Font } from "store/features/entities/entitiesTypes";
 import CustomMention from "./CustomMention";
-import { RelativePortal } from "../layout/RelativePortal";
-import { FontSelect } from "../../forms/FontSelect";
-import { VariableSelect } from "../../forms/VariableSelect";
-import { TextSpeedSelect } from "../../forms/TextSpeedSelect";
+import { RelativePortal } from "ui/layout/RelativePortal";
+import { FontSelect } from "components/forms/FontSelect";
+import { VariableSelect } from "components/forms/VariableSelect";
+import { TextSpeedSelect } from "components/forms/TextSpeedSelect";
 import { SelectMenu, selectMenuStyleProps } from "./Select";
-import l10n from "lib/helpers/l10n";
+import l10n from "renderer/lib/l10n";
 
 const varRegex = /\$([VLT0-9][0-9]*)\$/g;
 const charRegex = /#([VLT0-9][0-9]*)#/g;
 const speedRegex = /!(S[0-5]+)!/g;
-
-const speedCodes = [
-  {
-    id: "S0",
-    display: `${l10n("FIELD_INSTANT")}`,
-  },
-  {
-    id: "S1",
-    display: `${l10n("FIELD_SPEED")}\u00a01`,
-  },
-  {
-    id: "S2",
-    display: `${l10n("FIELD_SPEED")}\u00a02`,
-  },
-  {
-    id: "S3",
-    display: `${l10n("FIELD_SPEED")}\u00a03`,
-  },
-  {
-    id: "S4",
-    display: `${l10n("FIELD_SPEED")}\u00a04`,
-  },
-  {
-    id: "S5",
-    display: `${l10n("FIELD_SPEED")}\u00a05`,
-  },
-];
-
-const speedCodeLookup = keyBy(speedCodes, "id");
 
 const DialogueTextareaWrapper = styled.div`
   position: relative;
@@ -257,6 +235,38 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
     Dictionary<SuggestionDataItem>
   >({});
   const [editMode, setEditMode] = useState<EditModeOptions>();
+
+  const speedCodes = useMemo(
+    () => [
+      {
+        id: "S0",
+        display: `${l10n("FIELD_INSTANT")}`,
+      },
+      {
+        id: "S1",
+        display: `${l10n("FIELD_SPEED")}\u00a01`,
+      },
+      {
+        id: "S2",
+        display: `${l10n("FIELD_SPEED")}\u00a02`,
+      },
+      {
+        id: "S3",
+        display: `${l10n("FIELD_SPEED")}\u00a03`,
+      },
+      {
+        id: "S4",
+        display: `${l10n("FIELD_SPEED")}\u00a04`,
+      },
+      {
+        id: "S5",
+        display: `${l10n("FIELD_SPEED")}\u00a05`,
+      },
+    ],
+    []
+  );
+
+  const speedCodeLookup = useMemo(() => keyBy(speedCodes, "id"), [speedCodes]);
 
   useEffect(() => {
     setVariablesLookup(keyBy(variables, "code"));

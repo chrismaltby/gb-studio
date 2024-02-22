@@ -1,12 +1,11 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import ScriptEditor from "../script/ScriptEditor";
-import castEventValue from "lib/helpers/castEventValue";
+import ScriptEditor from "components/script/ScriptEditor";
+import castEventValue from "renderer/lib/helpers/castEventValue";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
-import l10n from "lib/helpers/l10n";
 import { WorldEditor } from "./WorldEditor";
-import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
+import ScriptEditorDropdownButton from "components/script/ScriptEditorDropdownButton";
 import {
   triggerSelectors,
   sceneSelectors,
@@ -33,6 +32,8 @@ import { ClipboardTypeTriggers } from "store/features/clipboard/clipboardTypes";
 import { TriggerSymbolsEditor } from "components/forms/symbols/TriggerSymbolsEditor";
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
+import { triggerName } from "store/features/entities/entitiesHelpers";
+import l10n from "renderer/lib/l10n";
 
 interface TriggerEditorProps {
   id: string;
@@ -52,16 +53,10 @@ interface ScriptHandlers {
 
 type TriggerScriptKey = "script" | "leaveScript";
 
-const scriptTabs = {
-  trigger: l10n("SIDEBAR_ON_ENTER"),
-  leave: l10n("SIDEBAR_ON_LEAVE"),
-} as const;
+type DefaultTab = "trigger" | "leave";
+type PointNClickTab = "trigger";
 
-const pointNClickScriptTabs = {
-  trigger: l10n("SIDEBAR_ON_INTERACT"),
-} as const;
-
-const getScriptKey = (tab: keyof typeof scriptTabs): TriggerScriptKey => {
+const getScriptKey = (tab: DefaultTab): TriggerScriptKey => {
   if (tab === "trigger") {
     return "script";
   }
@@ -70,11 +65,6 @@ const getScriptKey = (tab: keyof typeof scriptTabs): TriggerScriptKey => {
   }
   return "script";
 };
-
-const triggerName = (trigger: Trigger, triggerIndex: number) =>
-  trigger.name ? trigger.name : `Trigger ${triggerIndex + 1}`;
-
-const tabs = Object.keys(scriptTabs);
 
 export const TriggerEditor = ({
   id,
@@ -95,6 +85,23 @@ export const TriggerEditor = ({
   const lastScriptTab = useSelector(
     (state: RootState) => state.editor.lastScriptTabTrigger
   );
+
+  const scriptTabs: Record<DefaultTab, string> = useMemo(
+    () => ({
+      trigger: l10n("SIDEBAR_ON_ENTER"),
+      leave: l10n("SIDEBAR_ON_LEAVE"),
+    }),
+    []
+  );
+
+  const pointNClickScriptTabs: Record<PointNClickTab, string> = useMemo(
+    () => ({
+      trigger: l10n("SIDEBAR_ON_INTERACT"),
+    }),
+    []
+  );
+
+  const tabs = Object.keys(scriptTabs);
 
   const initialTab = tabs.includes(lastScriptTab) ? lastScriptTab : tabs[0];
 

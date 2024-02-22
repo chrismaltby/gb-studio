@@ -1,6 +1,6 @@
 import styled, { css } from "styled-components";
 import { Select } from "ui/form/Select";
-import { Button } from "../buttons/Button";
+import { Button } from "ui/buttons/Button";
 
 interface FloatingPanelProps {
   vertical?: boolean;
@@ -60,6 +60,11 @@ export const FloatingPanelDivider = styled.div`
   min-height: 1px;
   align-self: stretch;
   margin: 5px 5px;
+`;
+
+export const FloatingPanelBreak = styled.div`
+  flex-basis: 100%;
+  height: 0;
 `;
 
 export default FloatingPanel;

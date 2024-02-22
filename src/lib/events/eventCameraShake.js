@@ -78,10 +78,25 @@ const fields = [
       },
     ],
   },
+  {
+    key: "magnitude",
+    label: l10n("FIELD_MAGNITUDE"),
+    description: l10n("FIELD_MAGNITUDE_DESC"),
+    type: "union",
+    types: ["number", "variable", "property"],
+    defaultType: "number",
+    min: 1,
+    max: 255,
+    defaultValue: {
+      number: 5,
+      variable: "LAST_VARIABLE",
+      property: "$self$:xpos",
+    },
+  },
 ];
 
 const compile = (input, helpers) => {
-  const { cameraShake } = helpers;
+  const { cameraShake, cameraShakeVariables, variableFromUnion, temporaryEntityVariable } = helpers;
   let frames = 0;
   if (input.units === "frames") {
     frames = typeof input.frames === "number" ? input.frames : 30;
@@ -110,8 +125,16 @@ const compile = (input, helpers) => {
       shouldShakeX = true;
       shouldShakeY = false;
   }
-  if (frames > 0) {
-    cameraShake(shouldShakeX, shouldShakeY, frames);
+
+  if (input.magnitude.type === "number") {
+    if (frames > 0) {
+      cameraShake(shouldShakeX, shouldShakeY, frames, input.magnitude.value);
+    }
+  } else {
+    const magnitudeVar = variableFromUnion(input.magnitude, temporaryEntityVariable(0));
+    if (frames > 0) {
+      cameraShakeVariables(shouldShakeX, shouldShakeY, frames, magnitudeVar);
+    }
   }
 };
 

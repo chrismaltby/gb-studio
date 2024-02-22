@@ -10,7 +10,7 @@ import {
   TOOL_COLORS,
   TOOL_COLLISIONS,
   TOOL_ERASER,
-} from "../../consts";
+} from "consts";
 import { SceneShape, VariableShape } from "store/stateShape";
 import {
   sceneSelectors,
@@ -20,6 +20,7 @@ import {
 import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import entitiesActions from "store/features/entities/entitiesActions";
+import { sceneName } from "store/features/entities/entitiesHelpers";
 
 class World extends Component {
   constructor(props) {
@@ -160,7 +161,7 @@ class World extends Component {
     if (e.ctrlKey || e.shiftKey || e.metaKey) {
       return;
     }
-    if (e.code === "Space" || e.key === "Alt") {
+    if (e.code === "Space") {
       this.setState({ dragMode: true });
       e.preventDefault();
     }
@@ -235,7 +236,7 @@ class World extends Component {
     }
   };
 
-  onWindowBlur = (e) => {
+  onWindowBlur = () => {
     this.setState({ dragMode: false });
   };
 
@@ -248,6 +249,7 @@ class World extends Component {
   startWorldDragIfAltOrMiddleClick = (e) => {
     const { dragMode } = this.state;
     if (dragMode || e.nativeEvent.which === MIDDLE_MOUSE) {
+      e.preventDefault();
       this.worldDragging = true;
       e.stopPropagation();
     }
@@ -438,10 +440,10 @@ function mapStateToProps(state) {
 
   const matchingScenes = searchTerm
     ? scenes.filter((scene, sceneIndex) => {
-        const sceneName = scenesLookup[scene].name || `Scene ${sceneIndex + 1}`;
+        const name = sceneName(scenesLookup[scene], sceneIndex);
         return (
           searchTerm === scene ||
-          sceneName.toUpperCase().indexOf(searchTerm.toUpperCase()) !== -1
+          name.toUpperCase().indexOf(searchTerm.toUpperCase()) !== -1
         );
       })
     : [];

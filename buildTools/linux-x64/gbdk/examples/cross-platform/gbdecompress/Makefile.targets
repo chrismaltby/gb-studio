@@ -16,25 +16,25 @@ clean-target:
 gb-clean:
 	${MAKE} clean-target EXT=gb
 gb:
-	${MAKE} build-target PORT=gbz80 PLAT=gb EXT=gb
+	${MAKE} build-target PORT=sm83 PLAT=gb EXT=gb
 
 
 gbc-clean:
 	${MAKE} clean-target EXT=gbc
 gbc:
-	${MAKE} build-target PORT=gbz80 PLAT=gb EXT=gbc
+	${MAKE} build-target PORT=sm83 PLAT=gb EXT=gbc
 
 
 pocket-clean:
 	${MAKE} clean-target EXT=pocket
 pocket:
-	${MAKE} build-target PORT=gbz80 PLAT=ap EXT=pocket
+	${MAKE} build-target PORT=sm83 PLAT=ap EXT=pocket
 
 
 megaduck-clean:
 	${MAKE} clean-target EXT=duck
 megaduck:
-	${MAKE} build-target PORT=gbz80 PLAT=duck EXT=duck
+	${MAKE} build-target PORT=sm83 PLAT=duck EXT=duck
 
 
 sms-clean:

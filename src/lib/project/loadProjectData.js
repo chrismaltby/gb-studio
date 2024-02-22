@@ -9,7 +9,7 @@ import loadAllAvatarData from "./loadAvatarData";
 import loadAllEmoteData from "./loadEmoteData";
 import loadAllSoundData from "./loadSoundData";
 import migrateProject from "./migrateProject";
-import { indexByFn, indexBy } from "../helpers/array";
+import { indexByFn, indexBy } from "lib/helpers/array";
 
 const toUnixFilename = (filename) => {
   return filename.replace(/\\/g, "/");

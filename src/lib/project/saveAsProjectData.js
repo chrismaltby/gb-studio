@@ -1,6 +1,6 @@
 import Path from "path";
 import { copy } from "fs-extra";
-import { writeFileAndFlushAsync } from "../helpers/fs/writeFileAndFlush";
+import { writeFileAndFlushAsync } from "lib/helpers/fs/writeFileAndFlush";
 
 const saveAsProjectData = async (projectPath, newProjectPath, project) => {
   await copy(

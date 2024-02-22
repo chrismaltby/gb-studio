@@ -1,11 +1,12 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import l10n from "lib/helpers/l10n";
+import l10n from "renderer/lib/l10n";
 import {
   sceneSelectors,
   actorSelectors,
 } from "store/features/entities/entitiesState";
+import { actorName, sceneName } from "store/features/entities/entitiesHelpers";
 
 class StatusBar extends Component {
   render() {
@@ -59,9 +60,12 @@ function mapStateToProps(state) {
   const { sceneId, actorId, x, y } = state.editor.hover;
   const scene = sceneSelectors.selectById(state, sceneId);
   const actor = actorSelectors.selectById(state, actorId);
+  const sceneIndex = sceneSelectors.selectIds(state).indexOf(sceneId);
+  const actorIndex = actorSelectors.selectIds(state).indexOf(actorId);
+
   return {
-    sceneName: scene && scene.name,
-    actor: actor && actor.name,
+    sceneName: scene && sceneName(scene, sceneIndex),
+    actor: actor && actorName(actor, actorIndex),
     x,
     y,
   };

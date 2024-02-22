@@ -21,7 +21,7 @@ void events_init(UBYTE preserve) BANKED {
     }
 }
 
-void events_update() NONBANKED {
+void events_update(void) NONBANKED {
     UBYTE * slot_ptr = input_slots;
     for (UBYTE tmp = joy, key = 1; (tmp); tmp = tmp >> 1, key = key << 1, slot_ptr++) {
         if (tmp & 1) {
@@ -47,7 +47,7 @@ void timers_init(UBYTE preserve) BANKED {
     }
 }
 
-void timers_update() NONBANKED {
+void timers_update(void) NONBANKED {
     timer_time_t * ctimer = timer_values;
     for (UBYTE i = 0; i != MAX_CONCURRENT_TIMERS; i++) {
         if (ctimer->value) {

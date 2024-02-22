@@ -49,7 +49,7 @@ inline UBYTE itoa_format(INT16 v, UBYTE * d, UBYTE dlen) {
 void vm_load_text(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS, UBYTE nargs) OLDCALL NONBANKED {
     dummy0; dummy1; // suppress warnings
 
-    UBYTE _save = _current_bank;
+    UBYTE _save = CURRENT_BANK;
     SWITCH_ROM(THIS->bank);
 
     const INT16 * args = (INT16 *)THIS->PC;
@@ -196,7 +196,7 @@ void vm_overlay_clear(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE w, UBYTE h, UBY
 #ifdef CGB
         if (_is_CGB) {
             VBK_REG = 1;
-            fill_win_rect(x, y, w, h, overlay_priority | (UI_PALETTE & 0x07u));
+            fill_win_rect(x, y, w, h, overlay_priority | (text_palette & 0x07u));
             VBK_REG = 0;
         }
 #endif
@@ -231,7 +231,7 @@ void vm_overlay_scroll(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE w, UBYTE h, UB
 #ifdef CGB
     if (_is_CGB) {
         VBK_REG = 1;
-        scroll_rect(base_addr, w, h, overlay_priority | (UI_PALETTE & 0x07u));
+        scroll_rect(base_addr, w, h, overlay_priority | (text_palette & 0x07u));
         VBK_REG = 0;
     }
 #endif
@@ -272,7 +272,6 @@ void vm_overlay_set_map(SCRIPT_CTX * THIS, INT16 idx, INT16 x_idx, INT16 y_idx, 
     UBYTE y = *((y_idx < 0) ? THIS->stack_ptr + y_idx : script_memory + y_idx);
     UBYTE w = ReadBankedUBYTE((void *)&(background->width), bank);
     UBYTE h = ReadBankedUBYTE((void *)&(background->height), bank);
-    _map_tile_offset = *(INT16 *)(VM_REF_TO_PTR(idx));
 #ifdef CGB
     if (_is_CGB) {
         ReadBankedFarPtr(&tilemap, (void *)&(background->cgb_tilemap_attr), bank);
@@ -283,6 +282,7 @@ void vm_overlay_set_map(SCRIPT_CTX * THIS, INT16 idx, INT16 x_idx, INT16 y_idx, 
         }
     }
 #endif
+    _map_tile_offset = *(INT16 *)(VM_REF_TO_PTR(idx));
     ReadBankedFarPtr(&tilemap, (void *)&(background->tilemap), bank);
     SetBankedWinTiles(x, y, w, h, tilemap.ptr, tilemap.bank);
     _map_tile_offset = 0;

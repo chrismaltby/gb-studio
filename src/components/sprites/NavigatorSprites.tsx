@@ -14,7 +14,7 @@ import {
   SpriteState,
 } from "store/features/entities/entitiesTypes";
 import { EntityListItem } from "ui/lists/EntityListItem";
-import l10n from "lib/helpers/l10n";
+import l10n from "renderer/lib/l10n";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import { Button } from "ui/buttons/Button";
 import {
@@ -30,9 +30,9 @@ import useToggleableList from "ui/hooks/use-toggleable-list";
 import {
   AnimationType,
   filterAnimationsBySpriteType,
-  getAnimationNameForType,
   getAnimationTypeByIndex,
-} from "./helpers";
+} from "shared/lib/sprites/helpers";
+import { getAnimationNameForType } from "renderer/lib/sprites/spriteL10NHelpers";
 
 interface NavigatorSpritesProps {
   height: number;

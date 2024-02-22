@@ -1,9 +1,5 @@
 import React, { FC, RefObject, useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  globalVariableCode,
-  globalVariableDefaultName,
-} from "lib/helpers/variables";
 import { RootState } from "store/configureStore";
 import {
   actorSelectors,
@@ -19,7 +15,6 @@ import { MenuItem } from "ui/menu/Menu";
 import entitiesActions from "store/features/entities/entitiesActions";
 import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
-import l10n from "lib/helpers/l10n";
 import { Sidebar, SidebarColumn } from "ui/sidebars/Sidebar";
 import { FlatList } from "ui/lists/FlatList";
 import { EntityListItem } from "ui/lists/EntityListItem";
@@ -33,6 +28,11 @@ import VariableUsesWorker, {
   VariableUseResult,
 } from "./VariableUses.worker";
 import { eventLookup } from "lib/events";
+import {
+  globalVariableCode,
+  globalVariableDefaultName,
+} from "shared/lib/variables/variableNames";
+import l10n from "renderer/lib/l10n";
 
 const worker = new VariableUsesWorker();
 

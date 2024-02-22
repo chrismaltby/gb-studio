@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { Button } from "ui/buttons/Button";
-import l10n from "lib/helpers/l10n";
+import l10n from "renderer/lib/l10n";
 import editorActions from "store/features/editor/editorActions";
 import consoleActions from "store/features/console/consoleActions";
 import buildGameActions from "store/features/buildGame/buildGameActions";

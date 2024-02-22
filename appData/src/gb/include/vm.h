@@ -1,7 +1,7 @@
 #ifndef _VM_H_INCLUDE
 #define _VM_H_INCLUDE
 
-#include <gb/gb.h>
+#include <gbdk/platform.h>
 #include <gbdk/far_ptr.h>
 
 #ifdef VM_DEBUG_OUTPUT
@@ -22,7 +22,7 @@ BANKREF_EXTERN(VM_MAIN)
 #define FN_ARG7 -8
 
 #if defined(NINTENDO)
-#define STEP_FUNC_ATTR OLDCALL PRESERVES_REGS(b, c)
+#define STEP_FUNC_ATTR
 typedef UWORD DUMMY0_t;
 typedef UWORD DUMMY1_t;
 #elif defined(SEGA)
@@ -47,7 +47,7 @@ typedef UBYTE (*SCRIPT_UPDATE_FN)(void * THIS, UBYTE start, UWORD * stack_frame)
 typedef struct SCRIPT_CTX {
     const UBYTE * PC;
     UBYTE bank;
-    // linked list of contexts for cooperative multitasking
+    // linked list of contexts for the multitasking
     struct SCRIPT_CTX * next;
     // update function
     void * update_fn;
@@ -161,7 +161,7 @@ void vm_memcpy(SCRIPT_CTX * THIS, INT16 idxA, INT16 idxB, INT16 count) OLDCALL B
 UBYTE VM_STEP(SCRIPT_CTX * CTX) NAKED NONBANKED STEP_FUNC_ATTR;
 
 // return TRUE if VM is in locked state
-inline UBYTE VM_ISLOCKED() {
+inline UBYTE VM_ISLOCKED(void) {
     return (vm_lock_state != 0);
 }
 
@@ -185,6 +185,6 @@ UBYTE script_detach_hthread(UBYTE ID) BANKED;
 #define EXCEPTION_CODE_NONE 0
 
 // process all contexts
-UBYTE script_runner_update() NONBANKED;
+UBYTE script_runner_update(void) NONBANKED;
 
 #endif

@@ -2,7 +2,7 @@
 
 #include "vm_gameboy.h"
 
-#include <gb/metasprites.h>
+#include <gbdk/metasprites.h>
 
 #include "system.h"
 #include "vm.h"
@@ -156,9 +156,6 @@ void vm_set_sprite_mode(SCRIPT_CTX * THIS, UBYTE mode) OLDCALL BANKED {
 void vm_replace_tile_xy(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE tileset_bank, const tileset_t * tileset, INT16 idx_start_tile) OLDCALL BANKED {
     THIS;
 
-    INT16 * A = VM_REF_TO_PTR(idx_start_tile);
-    UBYTE start_tile = (UBYTE)*A;
-
     UWORD ofs = (image_tile_width * y) + x;
     UBYTE target_tile = ReadBankedUBYTE(image_ptr + ofs, image_bank);
 
@@ -168,7 +165,7 @@ void vm_replace_tile_xy(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE tileset_bank,
         } else {
             ofs = 0x8800 + ((target_tile - 128) << 4);
         }
-        MemcpyVRAMBanked((void *)ofs, tileset->tiles + (start_tile << 4), 16, tileset_bank);
+        MemcpyVRAMBanked((void *)ofs, tileset->tiles + (*(UINT16 *)(VM_REF_TO_PTR(idx_start_tile)) << 4), 16, tileset_bank);
         return;
     }
 
@@ -177,7 +174,7 @@ void vm_replace_tile_xy(SCRIPT_CTX * THIS, UBYTE x, UBYTE y, UBYTE tileset_bank,
         if (ReadBankedUBYTE(image_attr_ptr + ofs, image_attr_bank) & 0x08) VBK_REG = 1;
     }
 #endif
-    SetBankedBkgData(target_tile, 1, tileset->tiles + (start_tile << 4), tileset_bank);
+    SetBankedBkgData(target_tile, 1, tileset->tiles + (*(UINT8 *)(VM_REF_TO_PTR(idx_start_tile)) << 4), tileset_bank);
 #ifdef CGB
     VBK_REG = 0;
 #endif

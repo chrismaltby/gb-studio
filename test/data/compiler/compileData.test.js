@@ -2,11 +2,21 @@ import compile, {
   precompileBackgrounds,
   precompileScenes,
 } from "../../../src/lib/compiler/compileData";
+import { compileSceneProjectiles } from "../../../src/lib/compiler/compileData2";
+
 import {
   EVENT_TEXT,
   EVENT_IF_TRUE,
   EVENT_SET_TRUE,
 } from "../../../src/lib/compiler/eventTypes";
+import { projectileStateTest } from "./_files/data/projectiles";
+
+test.only("should take into account state value when building projectiles", () => {
+  const scene = projectileStateTest.scene;
+  const sprites = projectileStateTest.sprites;
+  const out = compileSceneProjectiles(scene, 0, sprites);
+  expect(out).toEqual(projectileStateTest.expectedOutput);
+});
 
 test("should compile simple project into files object", async () => {
   const project = {

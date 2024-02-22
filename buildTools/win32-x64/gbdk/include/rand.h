@@ -16,15 +16,15 @@
     The seed should be different each time, otherwise the same pseudo-random
     sequence will be generated.
 
-    The DIV Register (@ref DIV_REG) is sometimes used as a seed,
-    particularly if read at some variable point in time (such
-    as when the player presses a button).
+    One way to do this is sampling (@ref DIV_REG) up to 2 times (high byte of
+    seed value then the low byte) at variable, non-deterministic points in time
+    (such as when the player presses buttons on the title screen or in a menu).
 
-    Only needs to be called once to initialize, buy may be called
-    again to re-initialize with the same or a different seed.
+    It only needs to be called once to be initialized.
+
     @see rand(), randw()
 */
-#if defined(__PORT_gbz80)
+#if defined(__PORT_sm83) || defined(__PORT_mos6502)
 void initrand(uint16_t seed) OLDCALL;
 #elif defined(__PORT_z80)
 void initrand(uint16_t seed) Z88DK_FASTCALL;
@@ -33,17 +33,30 @@ void initrand(uint16_t seed) Z88DK_FASTCALL;
 #define RAND_MAX 255
 #define RANDW_MAX 65535
 
+/** The random number seed is stored in __rand_seed and can be
+    saved and restored if needed.
+
+    \code{.c}
+    // Save
+    some_uint16 = __rand_seed;
+    ...
+    // Restore
+    __rand_seed = some_uint16;
+    \endcode
+*/
+extern uint16_t __rand_seed;
+
 /** Returns a random byte (8 bit) value.
 
     @ref initrand() should be used to initialize the random number generator before using rand()
  */
-uint8_t rand() OLDCALL;
+uint8_t rand(void) OLDCALL;
 
 /** Returns a random word (16 bit) value.
 
     @ref initrand() should be used to initialize the random number generator before using rand()
  */
-uint16_t randw() OLDCALL;
+uint16_t randw(void) OLDCALL;
 
 /** Random generator using the linear lagged additive method
 
@@ -54,7 +67,7 @@ uint16_t randw() OLDCALL;
 
     @see initrand() for suggestions about seed values, arand()
 */
-#if defined(__PORT_gbz80)
+#if defined(__PORT_sm83) || defined(__PORT_mos6502)
 void initarand(uint16_t seed) OLDCALL;
 #elif defined(__PORT_z80)
 void initarand(uint16_t seed) Z88DK_FASTCALL;
@@ -64,6 +77,6 @@ void initarand(uint16_t seed) Z88DK_FASTCALL;
 
     @ref initarand() should be used to initialize the random number generator before using arand()
  */
-uint8_t arand() OLDCALL;
+uint8_t arand(void) OLDCALL;
 
 #endif

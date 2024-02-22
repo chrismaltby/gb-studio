@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import styled, { css } from "styled-components";
-import { Button } from "../buttons/Button";
+import { Button } from "ui/buttons/Button";
 
 export interface ToolbarProps {
   readonly children?: ReactNode;

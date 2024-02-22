@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { DMG_PALETTE } from "../../../consts";
-import { assetFilename } from "lib/helpers/gbstudio";
+import { DMG_PALETTE } from "consts";
 import { RootState } from "store/configureStore";
 import {
   metaspriteSelectors,
@@ -12,6 +11,7 @@ import { MetaspriteTile, Palette } from "store/features/entities/entitiesTypes";
 import MetaspriteCanvasWorker, {
   MetaspriteCanvasResult,
 } from "./MetaspriteCanvas.worker";
+import { assetFilename } from "shared/lib/helpers/assets";
 
 interface MetaspriteCanvasProps {
   spriteSheetId: string;

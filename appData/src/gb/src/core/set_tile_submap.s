@@ -5,6 +5,15 @@
 .image_tile_width::
         .ds     0x01
 
+        .area   _INITIALIZED
+
+__submap_tile_offset::
+        .ds     0x01
+
+        .area   _INITIALIZER
+
+        .db     0x00
+
         .area   _HOME
 
 _set_bkg_submap::
@@ -12,7 +21,7 @@ _set_bkg_submap::
         ld      a, (hl+)        ; b = x
         ld      b, a
         ld      c, (hl)         ; c = y
-        
+
         ldhl    sp, #8
         ld      a, (hl)
         ldhl    sp, #4
@@ -30,9 +39,9 @@ _set_bkg_submap::
         ld      e, l
 
         ldhl    sp, #6
-        ld      a,(hl+)         
-        ld      h,(hl)          
-        ld      l,a             
+        ld      a,(hl+)
+        ld      h,(hl)
+        ld      l,a
         add     hl, de
         ld      b, h
         ld      c, l
@@ -85,7 +94,7 @@ _set_xy_win_submap::
         ld      h, a
 
         call    .set_xy_win_submap
-        
+
         pop     af
         ldh	(__current_bank),a
         ld      (#rROMB0), a
@@ -131,9 +140,11 @@ _set_xy_win_submap::
 
 3$:                             ; copy w tiles
         WAIT_STAT
-        ld      a, (hl+)
+        ld      a, (__submap_tile_offset)
+        add     (hl)
         ld      (bc), a
-        
+        inc     hl
+
         ld      a, c            ; inc dest and wrap around
         and     #0xe0
         ld      e, a
@@ -172,5 +183,5 @@ _set_xy_win_submap::
         ld      b, a
 
         push    bc
-        
+
         jr      3$

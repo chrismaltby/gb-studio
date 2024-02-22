@@ -45,7 +45,7 @@ DATA_1 int  addendum3_ram;
 // details: https://sourceforge.net/p/sdcc/bugs/2995/
 DATA_0 int * const CODE_1 addendum_ptr[2] = {&addendum2_ram, &addendum3_ram};
 
-void main() {
+void main(void) {
     ENABLE_RAM;
 
     addendum1_ram = 2;

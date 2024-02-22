@@ -5,6 +5,7 @@ import {
   migrateFrom300r3To310r1,
   migrateFrom310r1To310r2Event,
   migrateFrom310r3To311r1Event,
+  migrateFrom320r1To320r2Event,
 } from "../../src/lib/project/migrateProject";
 
 test("should not fail on empty project", () => {
@@ -541,5 +542,51 @@ test("should add timer contexts to timer scripts", () => {
       timer: 1,
     },
     id: "event-3",
+  });
+});
+
+test("should add magnitude to camera shake events", () => {
+  const oldEvent1 = {
+    command: "EVENT_CAMERA_SHAKE",
+    args: {
+      time: 0.5,
+      frames: 10,
+      shakeDirection: "diagonal",
+      units: "frames",
+    },
+    id: "event-1",
+  };
+  const oldEvent2 = {
+    command: "EVENT_CAMERA_SHAKE",
+    args: {
+      time: 1,
+    },
+    id: "event-2",
+  };
+  const customEvents = [];
+  expect(migrateFrom320r1To320r2Event(oldEvent1, customEvents)).toEqual({
+    command: "EVENT_CAMERA_SHAKE",
+    args: {
+      time: 0.5,
+      frames: 10,
+      shakeDirection: "diagonal",
+      magnitude: {
+        type: "number",
+        value: 5,
+      },
+      units: "frames",
+    },
+    id: "event-1",
+  });
+  expect(migrateFrom320r1To320r2Event(oldEvent2, customEvents)).toEqual({
+    command: "EVENT_CAMERA_SHAKE",
+    args: {
+      time: 1,
+      magnitude: {
+        type: "number",
+        value: 5,
+      },
+    },
+    id: "event-2",
   });
 });

@@ -18,7 +18,6 @@
 
 #define ALLOC_BKG_TILES_TOWARDS_SPR
 
-#define EMOTE_SPRITE            124
 #define EMOTE_SPRITE_SIZE       4
 
 far_ptr_t current_scene;
@@ -50,7 +49,7 @@ scene_stack_item_t * scene_stack_ptr;
 
 UBYTE scene_sprites_base_tiles[MAX_SCENE_SPRITES];
 
-void load_init() BANKED {
+void load_init(void) BANKED {
     actors_len = 0;
     player_sprite_len = 0;
     scene_stack_ptr = scene_stack;
@@ -145,7 +144,7 @@ UBYTE load_sprite(UBYTE sprite_offset, const spritesheet_t * sprite, UBYTE bank)
 }
 
 void load_animations(const spritesheet_t *sprite, UBYTE bank, UWORD animation_set, animation_t * res_animations) NONBANKED {
-    UBYTE _save = _current_bank;
+    UBYTE _save = CURRENT_BANK;
     SWITCH_ROM(bank);
     memcpy(res_animations, sprite->animations + sprite->animations_lookup[animation_set], sizeof(animation_t) * 8);
     SWITCH_ROM(_save);
@@ -187,7 +186,7 @@ inline void load_sprite_palette(const palette_t * palette, UBYTE bank) {
 }
 
 UBYTE load_scene(const scene_t * scene, UBYTE bank, UBYTE init_data) BANKED {
-    UBYTE i, tile_allocation_hiwater;
+    UBYTE i;
     scene_t scn;
 
     MemcpyBanked(&scn, scene, sizeof(scn), bank);
@@ -226,12 +225,12 @@ UBYTE load_scene(const scene_t * scene, UBYTE bank, UBYTE init_data) BANKED {
         // Load player
         PLAYER.sprite = scn.player_sprite;
         UBYTE n_loaded = load_sprite(PLAYER.base_tile = 0, scn.player_sprite.ptr, scn.player_sprite.bank);
-        tile_allocation_hiwater = (n_loaded > scn.reserve_tiles) ? n_loaded : scn.reserve_tiles;
+        allocated_sprite_tiles = (n_loaded > scn.reserve_tiles) ? n_loaded : scn.reserve_tiles;
         load_animations(scn.player_sprite.ptr, scn.player_sprite.bank, ANIM_SET_DEFAULT, PLAYER.animations);
         load_bounds(scn.player_sprite.ptr, scn.player_sprite.bank, &PLAYER.bounds);
     } else {
         // no player on logo, but still some little amount of actors may be present
-        PLAYER.base_tile = tile_allocation_hiwater = 0x68;
+        PLAYER.base_tile = allocated_sprite_tiles = 0x68;
         PLAYER.sprite = spritesheet_none_far;
         memset(PLAYER.animations, 0, sizeof(PLAYER.animations));
     }
@@ -243,8 +242,8 @@ UBYTE load_scene(const scene_t * scene, UBYTE bank, UBYTE init_data) BANKED {
         for (i = 0; i != sprites_len; i++) {
             if (i == MAX_SCENE_SPRITES) break;
             ReadBankedFarPtr(&tmp_ptr, (UBYTE *)scene_sprite_ptrs, scn.sprites.bank);
-            scene_sprites_base_tiles[i] = tile_allocation_hiwater;
-            tile_allocation_hiwater += load_sprite(tile_allocation_hiwater, tmp_ptr.ptr, tmp_ptr.bank);
+            scene_sprites_base_tiles[i] = allocated_sprite_tiles;
+            allocated_sprite_tiles += load_sprite(allocated_sprite_tiles, tmp_ptr.ptr, tmp_ptr.bank);
             scene_sprite_ptrs++;
         }
     }
@@ -274,9 +273,9 @@ UBYTE load_scene(const scene_t * scene, UBYTE bank, UBYTE init_data) BANKED {
             for (i = actors_len - 1; i != 0; i--, actor++) {
                 if (actor->reserve_tiles) {
                     // exclusive sprites allocated separately to avoid overwriting if modified
-                    actor->base_tile = tile_allocation_hiwater;
-                    UBYTE n_loaded = load_sprite(tile_allocation_hiwater, actor->sprite.ptr, actor->sprite.bank);
-                    tile_allocation_hiwater += (n_loaded > actor->reserve_tiles) ? n_loaded : actor->reserve_tiles;
+                    actor->base_tile = allocated_sprite_tiles;
+                    UBYTE n_loaded = load_sprite(allocated_sprite_tiles, actor->sprite.ptr, actor->sprite.bank);
+                    allocated_sprite_tiles += (n_loaded > actor->reserve_tiles) ? n_loaded : actor->reserve_tiles;
                 } else {
                     // resolve and set base_tile for each actor
                     UBYTE idx = IndexOfFarPtr(scn.sprites.ptr, scn.sprites.bank, sprites_len, &actor->sprite);
@@ -337,7 +336,7 @@ UBYTE load_scene(const scene_t * scene, UBYTE bank, UBYTE init_data) BANKED {
     return FALSE;
 }
 
-void load_player() BANKED {
+void load_player(void) BANKED {
     PLAYER.pos.x = start_scene_x;
     PLAYER.pos.y = start_scene_y;
     PLAYER.dir = start_scene_dir;
@@ -352,5 +351,5 @@ void load_player() BANKED {
 }
 
 void load_emote(const unsigned char *tiles, UBYTE bank) BANKED {
-    SetBankedSpriteData(EMOTE_SPRITE, EMOTE_SPRITE_SIZE, tiles + 0, bank);
+    SetBankedSpriteData(allocated_sprite_tiles, EMOTE_SPRITE_SIZE, tiles + 0, bank);
 }

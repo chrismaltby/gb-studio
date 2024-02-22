@@ -5,7 +5,6 @@ import cloneDeep from "lodash/cloneDeep";
 import {
   ProjectEntitiesData,
   EntitiesState,
-  Asset,
   SpriteSheet,
   Metasprite,
   MetaspriteTile,
@@ -45,8 +44,10 @@ import {
   EntityState,
 } from "@reduxjs/toolkit";
 import l10n from "lib/helpers/l10n";
-import { genSymbol, toValidSymbol } from "lib/helpers/symbols";
+import { genSymbol, toValidSymbol } from "shared/lib/helpers/symbols";
 import parseAssetPath from "lib/helpers/path/parseAssetPath";
+import { COLLISION_SLOPE_VALUES } from "consts";
+import { Asset } from "shared/lib/helpers/assets";
 
 export interface NormalisedEntities {
   scenes: Record<EntityId, Scene>;
@@ -261,11 +262,8 @@ export const sortByFilename = (a: Asset, b: Asset) => {
   return 0;
 };
 
-export const swap = <T extends unknown>(
-  x: number,
-  y: number,
-  [...xs]: T[]
-): T[] => (xs.length > 1 ? (([xs[x], xs[y]] = [xs[y], xs[x]]), xs) : xs);
+export const swap = <T>(x: number, y: number, [...xs]: T[]): T[] =>
+  xs.length > 1 ? (([xs[x], xs[y]] = [xs[y], xs[x]]), xs) : xs;
 
 export const isUnionValue = (input: unknown): input is UnionValue => {
   if (typeof input !== "object") {
@@ -539,16 +537,23 @@ export const isCustomEventEqual = (
 };
 
 export const actorName = (actor: Actor, actorIndex: number) => {
-  return actor.name || `${l10n("ACTOR")} ${actorIndex + 1}`;
+  return actor.name || defaultLocalisedActorName(actorIndex);
 };
 
 export const triggerName = (trigger: Trigger, triggerIndex: number) => {
-  return trigger.name || `${l10n("TRIGGER")} ${triggerIndex + 1}`;
+  return trigger.name || defaultLocalisedTriggerName(triggerIndex);
 };
 
 export const sceneName = (scene: Scene, sceneIndex: number) => {
-  return scene.name || `${l10n("SCENE")} ${sceneIndex + 1}`;
+  return scene.name || defaultLocalisedSceneName(sceneIndex);
 };
+
+export const defaultLocalisedActorName = (actorIndex: number) =>
+  `${l10n("ACTOR")} ${actorIndex + 1}`;
+export const defaultLocalisedTriggerName = (triggerIndex: number) =>
+  `${l10n("TRIGGER")} ${triggerIndex + 1}`;
+export const defaultLocalisedSceneName = (sceneIndex: number) =>
+  `${l10n("SCENE")} ${sceneIndex + 1}`;
 
 export const customEventName = (
   customEvent: CustomEvent,
@@ -734,4 +739,8 @@ export const updateEntitySymbol = <T extends { id: string; symbol?: string }>(
     id,
     changes,
   });
+};
+
+export const isSlope = (value: number) => {
+  return COLLISION_SLOPE_VALUES.includes(value);
 };

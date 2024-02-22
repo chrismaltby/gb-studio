@@ -2,10 +2,10 @@ import EventEmitter from "events";
 import Path from "path";
 import { readJSON, pathExists } from "fs-extra";
 import { EngineFieldSchema } from "store/features/engine/engineState";
-import { engineRoot } from "../../consts";
+import { engineRoot } from "consts";
 import l10n from "lib/helpers/l10n";
 import { clampToCType } from "lib/helpers/engineFields";
-import { setDefault } from "lib/helpers/setDefault";
+import { setDefault } from "shared/lib/helpers/setDefault";
 import { ScriptEventFieldSchema } from "store/features/entities/entitiesTypes";
 import glob from "glob";
 
@@ -103,8 +103,10 @@ export const initEngineFields = async (projectRoot: string) => {
     if (await pathExists(englinePluginJsonPath)) {
       try {
         const pluginEngine = await readJSON(englinePluginJsonPath);
-        fields = fields.concat(pluginEngine.fields);
-      } catch(e) {
+        if (pluginEngine.fields && pluginEngine.fields.length > 0) {
+          fields = fields.concat(pluginEngine.fields);
+        }
+      } catch (e) {
         console.warn(e);
       }
     }

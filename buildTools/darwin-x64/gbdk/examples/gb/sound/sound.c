@@ -3,6 +3,38 @@
 #include <stdint.h>
 #include <stdio.h>
 
+
+inline uint8_t translate_envelope(uint8_t value) {
+	#ifdef MEGADUCK
+        // Mega Duck has nybbles swapped for NR12, NR22, NR42 audio envelope registers
+		return ((uint8_t)(value << 4) | (uint8_t)(value >> 4));
+	#else
+		return value;
+	#endif
+}
+
+inline uint8_t translate_frequency(uint8_t value) {
+	#ifdef MEGADUCK
+        // Mega Duck has nybbles swapped for NR43 frequency & randomness audio register
+        return ((uint8_t)(value << 4) | (uint8_t)(value >> 4));
+    #else
+        return value;
+    #endif
+}
+
+inline uint8_t translate_volume(uint8_t value) {
+	#ifdef MEGADUCK
+        // Mega Duck has bit values changed for NR32 volume register
+		// To translate the volume: New Volume = ((0x00 - Volume) & 0x60)
+		// GB: Bits:6..5 : 00 = mute, 01 = 100%, 10 = 50%, 11 = 25%
+		// MD: Bits:6..5 : 00 = mute, 11 = 100%, 10 = 50%, 01 = 25%
+		return ((~(uint8_t)value) + 1u) & (uint8_t)0x60u;
+	#else
+		return value;
+	#endif
+}
+
+
 #define ARROW_CHAR '>'
 #define SPACE_CHAR ' '
 
@@ -30,7 +62,7 @@ int8_t keys = 0;
 
 void show_register_channel(uint8_t mode);
 
-void clss()  {
+void clss(void)  {
 	uint8_t i = 0;
 	for(i = 0; i < 18; ++i) {
 		gotoxy(0, i);
@@ -323,94 +355,94 @@ struct SoundReg s = {
 	  0, 0, 0, 0, 0, 1 }
 };
 
-uint8_t NR10() {
+uint8_t NR10(void) {
 	return soundReg->mode1.sweepShifts | (soundReg->mode1.sweepMode << 3) | (soundReg->mode1.sweepTime << 4);
 }
 
-uint8_t NR11() {
+uint8_t NR11(void) {
 	return soundReg->mode1.soundLength | (soundReg->mode1.patternDuty << 6);
 }
 
-uint8_t NR12() {
+uint8_t NR12(void) {
 	return soundReg->mode1.envNbSweep | (soundReg->mode1.envMode << 3) | (soundReg->mode1.envInitialValue << 4);
 }
 
-uint8_t NR13() {
+uint8_t NR13(void) {
 	return soundReg->mode1.frequencyLow;
 }
 
-uint8_t NR14() {
+uint8_t NR14(void) {
 	return soundReg->mode1.frequencyHigh | (soundReg->mode1.counter_ConsSel << 6) | (soundReg->mode1.restart << 7);
 }
 
 //--------------------------
-uint8_t NR21() {
+uint8_t NR21(void) {
 	return soundReg->mode2.soundLength | (soundReg->mode2.patternDuty << 6);
 }
 
-uint8_t NR22() {
+uint8_t NR22(void) {
 	return soundReg->mode2.envNbStep | (soundReg->mode2.envMode << 3) | (soundReg->mode2.envInitialValue << 4);
 }
 
-uint8_t NR23() {
+uint8_t NR23(void) {
 	return soundReg->mode2.frequencyLow;
 }
 
-uint8_t NR24() {
+uint8_t NR24(void) {
 	return soundReg->mode2.frequencyHigh | (soundReg->mode2.counter_ConsSel << 6) | (soundReg->mode2.restart << 7);
 }
 
 //-------------------------------
-uint8_t NR30() {
+uint8_t NR30(void) {
 	return soundReg->mode3.on_Off << 7;
 }
 
-uint8_t NR31() {
+uint8_t NR31(void) {
 	return soundReg->mode3.soundLength;
 }
 
-uint8_t NR32() {
+uint8_t NR32(void) {
 	return soundReg->mode3.selOutputLevel << 5;
 }
 
-uint8_t NR33() {
+uint8_t NR33(void) {
 	return soundReg->mode3.frequencyLow;
 }
 
-uint8_t NR34() {
+uint8_t NR34(void) {
 	return soundReg->mode3.frequencyHigh | (soundReg->mode3.counter_ConsSel << 6) | (soundReg->mode3.restart << 7);
 }
 
 //-------------------------------
-uint8_t NR41() {
+uint8_t NR41(void) {
 	return soundReg->mode4.soundLength;
 }
 
-uint8_t NR42() {
+uint8_t NR42(void) {
 	return soundReg->mode4.envNbStep | (soundReg->mode4.envMode << 3) | (soundReg->mode4.envInitialValue << 4);
 }
 
-uint8_t NR43() {
+uint8_t NR43(void) {
 	return soundReg->mode4.polyCounterDiv | (soundReg->mode4.polyCounterStep << 3) | (soundReg->mode4.polyCounterFreq << 4);
 }
 
-uint8_t NR44() {
+uint8_t NR44(void) {
 	return (soundReg->mode4.counter_ConsSel << 6) | (soundReg->mode4.restart << 7);
 }
 
 //-------------------------------
-uint8_t NR50() {
+uint8_t NR50(void) {
 	return soundReg->control.SO1_OutputLevel | (soundReg->control.Vin_SO1 << 3u) | (soundReg->control.SO2_OutputLevel << 4u) |
 	           (soundReg->control.Vin_SO2 << 7u);
 }
 
-uint8_t NR51() {
+uint8_t NR51(void) {
 	return soundReg->control.Sound1_To_SO1 | (soundReg->control.Sound2_To_SO1 << 1) | (soundReg->control.Sound3_To_SO1 << 2) |
 	          (soundReg->control.Sound4_To_SO1 << 3) | (soundReg->control.Sound1_To_SO2 << 4) | (soundReg->control.Sound2_To_SO2 << 5) |
 			  (soundReg->control.Sound3_To_SO2 << 6)| (soundReg->control.Sound4_To_SO2 << 7);
 }
 
-uint8_t NR52() {
+uint8_t NR52(void) {
 	return soundReg->control.global_On_Off << 7;
 }
 
@@ -611,15 +643,15 @@ void update_value(uint8_t mode, uint8_t line, uint16_t value)
 	break;
       case 5: // envInitialValue
 	soundReg->mode1.envInitialValue = value;
-	NR12_REG = NR12();
+	NR12_REG = translate_envelope( NR12() );
 	break;
       case 6: // envMode
 	soundReg->mode1.envMode = value;
-	NR12_REG = NR12();
+	NR12_REG = translate_envelope( NR12() );
 	break;
       case 7: // envNbSweep
 	soundReg->mode1.envNbSweep = value;
-	NR12_REG = NR12();
+	NR12_REG = translate_envelope( NR12() );
 	break;
       case 8: // frequency
       case FREQUENCY:
@@ -664,15 +696,15 @@ void update_value(uint8_t mode, uint8_t line, uint16_t value)
 	break;
       case 2: // envInitialValue
 	soundReg->mode2.envInitialValue = value;
-	NR22_REG = NR22();
+	NR22_REG = translate_envelope( NR22() );
 	break;
       case 3: // envMode
 	soundReg->mode2.envMode = value;
-	NR22_REG = NR22();
+	NR22_REG = translate_envelope( NR22() );
 	break;
       case 4: // envNbStep
 	soundReg->mode2.envNbStep = value;
-	NR22_REG = NR22();
+	NR22_REG = translate_envelope( NR22() );
 	break;
       case 5: // frequency
       case FREQUENCY:
@@ -717,7 +749,7 @@ void update_value(uint8_t mode, uint8_t line, uint16_t value)
 	break;
       case 2: // selOutputLevel
 	soundReg->mode3.selOutputLevel = value;
-	NR32_REG = NR32();
+	NR32_REG = translate_volume( NR32() );
 	break;
       case 3: // frequency
       case FREQUENCY:
@@ -758,27 +790,27 @@ void update_value(uint8_t mode, uint8_t line, uint16_t value)
 	break;
       case 1: // envInitialValue
 	soundReg->mode4.envInitialValue = value;
-	NR42_REG = NR42();
+	NR42_REG = translate_envelope( NR42() );
 	break;
       case 2: // envMode
 	soundReg->mode4.envMode = value;
-	NR42_REG = NR42();
+	NR42_REG = translate_envelope( NR42() );
 	break;
       case 3: // envNbStep
 	soundReg->mode4.envNbStep = value;
-	NR42_REG = NR42();
+	NR42_REG = translate_envelope( NR42() );
 	break;
       case 4: // polyCounterFreq
 	soundReg->mode4.polyCounterFreq = value;
-	NR43_REG = NR43();
+	NR43_REG = translate_frequency( NR43() );
 	break;
       case 5: // polyCounterStep
 	soundReg->mode4.polyCounterStep = value;
-	NR43_REG = NR43();
+	NR43_REG = translate_frequency( NR43() );
 	break;
       case 6: // polyCounterDiv
 	soundReg->mode4.polyCounterDiv = value;
-	NR43_REG = NR43();
+	NR43_REG = translate_frequency( NR43() );
 	break;
       case 7: // counter_ConsSel
 	soundReg->mode4.counter_ConsSel = value;
@@ -840,6 +872,11 @@ void play_music(uint8_t mode)
 
 
 void show_register_channel(uint8_t mode) {
+
+	#ifdef MEGADUCK
+		gotoxy(0, 15);
+		print("MDuck:Shows GB Eqivs");
+	#endif
 
     switch (mode) {
         case 1:
@@ -907,7 +944,7 @@ void show_register_channel(uint8_t mode) {
 }
 
 
-void dump_registers()
+void dump_registers(void)
 {
 	clss();
 	gotoxy(FIRST_X, TITLE_Y);
@@ -1019,13 +1056,13 @@ void wait_event(uint8_t mode)
 			keys = 0;
 			break;
 		}
-		wait_vbl_done();
+		vsync();
 		UPDATE_KEYS();
     }
   }
 }
 
-void main()
+void main(void)
 {
   //
   // Before modifying any sound register, sound must be turned on!
@@ -1033,27 +1070,32 @@ void main()
   //
   NR52_REG = 0x80;
 
+  // Init Channel 3 Wave RAM to known values
+  // (Match CGB power-on defaults of alternating 00/FF)
+  for (uint8_t c = 0u; c < 16u; c++)
+    AUD3WAVE[c] = (c & 1u) ? 0x00u : 0xFFu;
+
   soundReg = &s;
   NR10_REG = NR10();
   NR11_REG = NR11();
-  NR12_REG = NR12();
+  NR12_REG = translate_envelope( NR12() );
   NR13_REG = NR13();
   NR14_REG = NR14();
 
   NR21_REG = NR21();
-  NR22_REG = NR22();
+  NR22_REG = translate_envelope( NR22() );
   NR23_REG = NR23();
   NR24_REG = NR24();
 
   NR30_REG = NR30();
   NR31_REG = NR31();
-  NR32_REG = NR32();
+  NR32_REG = translate_volume( NR32() );
   NR33_REG = NR33();
   NR34_REG = NR34();
 
   NR41_REG = NR41();
-  NR42_REG = NR42();
-  NR43_REG = NR43();
+  NR42_REG = translate_envelope( NR42() );
+  NR43_REG = translate_frequency( NR43() );
   NR44_REG = NR44();
 
   NR50_REG = NR50();

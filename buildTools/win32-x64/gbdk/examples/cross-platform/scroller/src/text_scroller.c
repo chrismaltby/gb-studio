@@ -10,8 +10,12 @@ const uint8_t * scanline_offsets = scanline_offsets_tbl;
 #define SCROLL_POS_PIX_END ((SCROLL_POS + DEVICE_SCREEN_X_OFFSET + 1) * 8) - 1
 
 uint8_t scroller_x = 0;
-void scanline_isr() {
-#if defined(NINTENDO)
+void scanline_isr(void) {
+#if defined(NINTENDO_NES)
+    // Write directly to hardware scroll registers (only first write will have an effect)
+    PPUSCROLL = scroller_x;
+    PPUSCROLL = 0; // 2nd write (dummy)
+#elif defined(NINTENDO)
     switch (LYC_REG) {
         case 0: 
             SCX_REG = 0;
@@ -45,7 +49,9 @@ const uint8_t * scroller_next_char = scroller_text;
 uint8_t * scroller_vram_addr;
 uint8_t * base, * limit;
 
-void main() {
+extern uint8_t _lcd_scanline;
+
+void main(void) {
     printf(" Scrolling %d chars", sizeof(scroller_text) - 1);
 
     CRITICAL {
@@ -57,8 +63,9 @@ void main() {
 #if defined(SEGA)
     __WRITE_VDP_REG(VDP_R10, 0x07);
 #endif
+#if defined(NINTENDO) || defined(SEGA)
     set_interrupts(VBL_IFLAG | LCD_IFLAG);
-    
+#endif
     HIDE_LEFT_COLUMN;    
     base = (uint8_t *)((uint16_t)get_bkg_xy_addr(0, SCROLL_POS) & (DEVICE_SCREEN_MAP_ENTRY_SIZE==1?0xffe0:0xffc0));
     limit = base + (DEVICE_SCREEN_BUFFER_WIDTH * DEVICE_SCREEN_MAP_ENTRY_SIZE);
@@ -82,6 +89,11 @@ void main() {
             // put next char
             set_vram_byte(scroller_vram_addr, *scroller_next_char - 0x20);
         }
-        wait_vbl_done();        
+#ifdef NINTENDO_NES
+        // Normal indirect setting of scroll via shadow registers (written by vblank handler)
+        move_bkg(0,0);
+        _lcd_scanline = SCROLL_POS;
+#endif
+        vsync();        
     }
 }

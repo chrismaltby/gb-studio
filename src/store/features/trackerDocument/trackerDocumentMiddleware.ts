@@ -23,7 +23,9 @@ const trackerMiddleware: ThunkMiddleware<RootState> =
         // Display confirmation and stop action if
         const songsLookup = musicSelectors.selectEntities(state);
         const selectedSong = songsLookup[state.editor.selectedSongId];
-        const option = confirmUnsavedChangesTrackerDialog(selectedSong?.name);
+        const option = confirmUnsavedChangesTrackerDialog(
+          selectedSong?.name ?? ""
+        );
         switch (option) {
           case 0: // Save and continue
             store.dispatch(saveSongFile());

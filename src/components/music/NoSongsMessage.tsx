@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { useDispatch } from "react-redux";
-import l10n from "lib/helpers/l10n";
+import l10n from "renderer/lib/l10n";
 
 import settingsActions from "store/features/settings/settingsActions";
 import { SettingsState } from "store/features/settings/settingsState";

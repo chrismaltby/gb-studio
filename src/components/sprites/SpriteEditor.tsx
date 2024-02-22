@@ -12,7 +12,7 @@ import {
   FormSectionTitle,
 } from "ui/form/FormLayout";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
-import l10n from "lib/helpers/l10n";
+import l10n from "renderer/lib/l10n";
 import { Sidebar, SidebarColumn } from "ui/sidebars/Sidebar";
 import {
   MetaspriteTile,
@@ -32,7 +32,7 @@ import editorActions from "store/features/editor/editorActions";
 import spriteActions from "store/features/sprite/spriteActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import { RootState } from "store/configureStore";
-import castEventValue from "lib/helpers/castEventValue";
+import castEventValue from "renderer/lib/helpers/castEventValue";
 import { Button } from "ui/buttons/Button";
 import {
   FlipHorizontalIcon,
@@ -48,9 +48,9 @@ import {
   ClipboardTypeSpriteState,
 } from "store/features/clipboard/clipboardTypes";
 import { CheckboxField } from "ui/form/CheckboxField";
-import { AnimationTypeSelect } from "../forms/AnimationTypeSelect";
-import { ObjPaletteSelect } from "../forms/ObjPaletteSelect";
-import { PaletteIndexSelect } from "../forms/PaletteIndexSelect";
+import { AnimationTypeSelect } from "components/forms/AnimationTypeSelect";
+import { ObjPaletteSelect } from "components/forms/ObjPaletteSelect";
+import { PaletteIndexSelect } from "components/forms/PaletteIndexSelect";
 import AnimationStateSelect from "components/forms/AnimationStateSelect";
 import { SpriteSymbolsEditor } from "components/forms/symbols/SpriteSymbolsEditor";
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
@@ -484,7 +484,10 @@ export const SpriteEditor = ({
               <FormDivider />
 
               <FormRow>
-                <FormField name="objPalette" label={l10n("FIELD_OBJ_PALETTE")}>
+                <FormField
+                  name="objPalette"
+                  label={l10n("FIELD_MONOCHROME_PALETTE")}
+                >
                   <ObjPaletteSelect
                     name="objPalette"
                     value={metaspriteTile.objPalette}

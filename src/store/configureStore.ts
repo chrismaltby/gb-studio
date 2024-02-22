@@ -4,7 +4,7 @@ import electronMiddleware from "./features/electron/electronMiddleware";
 import buildGameMiddleware from "./features/buildGame/buildGameMiddleware";
 import musicMiddleware from "./features/music/musicMiddleware";
 import soundFxMiddleware from "./features/soundfx/soundfxMiddleware";
-import warningsMiddleware from "./features/warnings/warningsMiddleware";
+import assetsMiddleware from "./features/assets/assetsMiddleware";
 import undoMiddleware from "./features/undo/undoMiddleware";
 import clipboardMiddleware from "./features/clipboard/clipboardMiddleware";
 import projectMiddleware from "./features/project/projectMiddleware";
@@ -33,7 +33,7 @@ const store = configureStore({
     buildGameMiddleware,
     musicMiddleware,
     soundFxMiddleware,
-    warningsMiddleware,
+    assetsMiddleware,
     undoMiddleware,
     clipboardMiddleware,
     trackerDocumentMiddleware,

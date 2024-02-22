@@ -8,7 +8,7 @@
 
 BANKREF(VM_RTC)
 
-void vm_rtc_latch() OLDCALL BANKED {
+void vm_rtc_latch(void) OLDCALL BANKED {
     RTC_LATCH();
 }
 

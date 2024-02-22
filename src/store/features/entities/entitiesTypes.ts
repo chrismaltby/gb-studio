@@ -441,11 +441,6 @@ export interface EntitiesState {
   engineFieldValues: EntityState<EngineFieldValue>;
 }
 
-export type Asset = {
-  filename: string;
-  plugin?: string;
-};
-
 export interface ScriptEventFieldCondition {
   key: string;
   ne?: unknown;

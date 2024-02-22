@@ -1,7 +1,7 @@
 import React, { useLayoutEffect, useRef, useState, FC } from "react";
 import styled, { css, keyframes } from "styled-components";
-import { Button } from "../buttons/Button";
-import projectIcon from "../icons/gbsproj.png";
+import { Button } from "ui/buttons/Button";
+import projectIcon from "ui/icons/gbsproj.png";
 
 declare const VERSION: string;
 declare const COMMITHASH: string;
@@ -586,6 +586,11 @@ export const SplashProjectWrapper = styled.button`
     background: ${(props) => props.theme.colors.input.activeBackground};
   }
 
+  :focus {
+    background: transparent;
+    box-shadow: inset 0 0 0px 2px #c92c61;
+  }
+
   :last-child {
     margin-bottom: 0;
   }
@@ -615,6 +620,15 @@ export const SplashProjectPath = styled.span`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+`;
+
+export const SplashLoading = styled.form`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
 `;
 
 export const SplashProject: FC<SplashProjectProps> = ({ project, onClick }) => (

@@ -1,12 +1,11 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import ScriptEditor from "../script/ScriptEditor";
-import l10n from "lib/helpers/l10n";
-import castEventValue from "lib/helpers/castEventValue";
+import ScriptEditor from "components/script/ScriptEditor";
+import castEventValue from "renderer/lib/helpers/castEventValue";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { MenuItem } from "ui/menu/Menu";
 import { WorldEditor } from "./WorldEditor";
-import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
+import ScriptEditorDropdownButton from "components/script/ScriptEditorDropdownButton";
 import { customEventSelectors } from "store/features/entities/entitiesState";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
@@ -32,6 +31,7 @@ import { Input } from "ui/form/Input";
 import { SidebarHeader } from "ui/form/SidebarHeader";
 import { Label } from "ui/form/Label";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
+import l10n from "renderer/lib/l10n";
 
 const customEventName = (customEvent: CustomEvent, customEventIndex: number) =>
   customEvent.name ? customEvent.name : `Script ${customEventIndex + 1}`;
@@ -40,10 +40,6 @@ interface CustomEventEditorProps {
   id: string;
   multiColumn: boolean;
 }
-
-const scriptTabs = {
-  script: l10n("SIDEBAR_CUSTOM_EVENT_SCRIPT"),
-} as const;
 
 const CustomEventEditor = ({ id, multiColumn }: CustomEventEditorProps) => {
   const customEvents = useSelector((state: RootState) =>
@@ -63,6 +59,13 @@ const CustomEventEditor = ({ id, multiColumn }: CustomEventEditorProps) => {
   const [showSymbols, setShowSymbols] = useState(false);
 
   const dispatch = useDispatch();
+
+  const scriptTabs = useMemo(
+    () => ({
+      script: l10n("SIDEBAR_CUSTOM_EVENT_SCRIPT"),
+    }),
+    []
+  );
 
   const onEditVariableName =
     (key: string): React.ChangeEventHandler =>

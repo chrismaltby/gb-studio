@@ -4,8 +4,8 @@ import cx from "classnames";
 import { connect } from "react-redux";
 import SpriteSheetCanvas from "./SpriteSheetCanvas";
 import { ActorShape, PaletteShape } from "store/stateShape";
-import { getCachedObject } from "lib/helpers/cache";
-import { DMG_PALETTE, MIDDLE_MOUSE } from "../../consts";
+import { getCachedObject } from "shared/lib/helpers/cache";
+import { DMG_PALETTE, MIDDLE_MOUSE } from "consts";
 import {
   actorSelectors,
   paletteSelectors,

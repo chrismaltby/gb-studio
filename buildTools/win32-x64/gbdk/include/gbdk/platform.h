@@ -7,6 +7,10 @@
   #include <gb/sgb.h>
 #elif defined(__TARGET_sms) || defined(__TARGET_gg)
   #include <sms/sms.h>
+#elif defined(__TARGET_msxdos)
+  #include <msx/msx.h>
+#elif defined(__TARGET_nes)
+  #include <nes/nes.h>
 #else
   #error Unrecognized port
 #endif

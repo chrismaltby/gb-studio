@@ -29,8 +29,39 @@
 #ifndef PLATFORM_CAMERA_DEADZONE_Y
 #define PLATFORM_CAMERA_DEADZONE_Y 16
 #endif
+#ifndef COLLISION_LADDER
+#define COLLISION_LADDER 0x10
+#endif
+#ifndef COLLISION_SLOPE_45_RIGHT
+#define COLLISION_SLOPE_45_RIGHT 0x20
+#endif
+#ifndef COLLISION_SLOPE_225_RIGHT_BOT
+#define COLLISION_SLOPE_225_RIGHT_BOT 0x40
+#endif
+#ifndef COLLISION_SLOPE_225_RIGHT_TOP
+#define COLLISION_SLOPE_225_RIGHT_TOP 0x60
+#endif
+#ifndef COLLISION_SLOPE_45_LEFT
+#define COLLISION_SLOPE_45_LEFT 0x30
+#endif
+#ifndef COLLISION_SLOPE_225_LEFT_BOT
+#define COLLISION_SLOPE_225_LEFT_BOT 0x50
+#endif
+#ifndef COLLISION_SLOPE_225_LEFT_TOP
+#define COLLISION_SLOPE_225_LEFT_TOP 0x70
+#endif
+#ifndef COLLISION_SLOPE
+#define COLLISION_SLOPE 0xF0
+#endif
+
+#define IS_ON_SLOPE(t) ((t) & 0x60)
+#define IS_SLOPE_LEFT(t) ((t) & 0x10)
+#define IS_SLOPE_RIGHT(t) (((t) & 0x10) == 0)
+#define IS_LADDER(t) (((t) & 0xF0) == 0x10)
 
 UBYTE grounded;
+UBYTE on_slope;
+UBYTE slope_y;
 UBYTE on_ladder;
 WORD pl_vel_x;
 WORD pl_vel_y;
@@ -46,7 +77,7 @@ WORD plat_grav;
 WORD plat_hold_grav;
 WORD plat_max_fall_vel;
 
-void platform_init() BANKED {
+void platform_init(void) BANKED {
     UBYTE tile_x, tile_y;
 
     pl_vel_x = 0;
@@ -62,7 +93,7 @@ void platform_init() BANKED {
     grounded = FALSE;
 
     // If starting tile was a ladder start scene attached to it
-    if (tile_at(tile_x, tile_y - 1) & TILE_PROP_LADDER) {
+    if (IS_LADDER(tile_at(tile_x, tile_y - 1))) {
         // Snap to ladder
         UBYTE p_half_width = (PLAYER.bounds.right - PLAYER.bounds.left) >> 1;
         PLAYER.pos.x = (((tile_x << 3) + 4 - (PLAYER.bounds.left + p_half_width) << 4));
@@ -82,26 +113,26 @@ void platform_init() BANKED {
     game_time = 0;
 }
 
-void platform_update() BANKED {
+void platform_update(void) BANKED {
     UBYTE tile_start, tile_end;
     actor_t *hit_actor;
     UBYTE p_half_width = (PLAYER.bounds.right - PLAYER.bounds.left) >> 1;
+    UBYTE tile_x_mid = ((PLAYER.pos.x >> 4) + PLAYER.bounds.left + p_half_width) >> 3; 
+    UBYTE tile_y = ((PLAYER.pos.y >> 4) + PLAYER.bounds.top + 1) >> 3;
 
     // Input
     if (on_ladder) {
         // PLAYER.pos.x = 0;
-        UBYTE tile_x_mid = ((PLAYER.pos.x >> 4) + PLAYER.bounds.left + p_half_width) >> 3; 
         pl_vel_y = 0;
         if (INPUT_UP) {
             // Climb laddder
-            UBYTE tile_y = ((PLAYER.pos.y >> 4) + PLAYER.bounds.top + 1) >> 3;
-            if (tile_at(tile_x_mid, tile_y) & TILE_PROP_LADDER) {
+            if (IS_LADDER(tile_at(tile_x_mid, tile_y))) {
                 pl_vel_y = -plat_climb_vel;
             }
         } else if (INPUT_DOWN) {
             // Descend ladder
-            UBYTE tile_y = ((PLAYER.pos.y >> 4) + PLAYER.bounds.bottom + 1) >> 3;
-            if (tile_at(tile_x_mid, tile_y) & TILE_PROP_LADDER) {
+            tile_y = ((PLAYER.pos.y >> 4) + PLAYER.bounds.bottom + 1) >> 3;
+            if (IS_LADDER(tile_at(tile_x_mid, tile_y))) {
                 pl_vel_y = plat_climb_vel;
             }
         } else if (INPUT_LEFT) {
@@ -131,7 +162,6 @@ void platform_update() BANKED {
         }
         PLAYER.pos.y += (pl_vel_y >> 8);
     } else {
-
         // Horizontal Movement
         if (INPUT_LEFT) {
             if (INPUT_PLATFORM_RUN) {
@@ -163,21 +193,22 @@ void platform_update() BANKED {
             }
         }
 
+        UBYTE col = 0;
         // Vertical Movement
         if (INPUT_UP) {
             // Grab upwards ladder
-            UBYTE tile_x_mid = ((PLAYER.pos.x >> 4) + PLAYER.bounds.left + p_half_width) >> 3;
-            UBYTE tile_y   = (((PLAYER.pos.y >> 4) + PLAYER.bounds.top) >> 3);
-            if (tile_at(tile_x_mid, tile_y) & TILE_PROP_LADDER) {
+            tile_y   = (((PLAYER.pos.y >> 4) + PLAYER.bounds.top) >> 3);
+            col = tile_at(tile_x_mid, tile_y);
+            if (IS_LADDER(col)) {
                 PLAYER.pos.x = (((tile_x_mid << 3) + 4 - (PLAYER.bounds.left + p_half_width) << 4));
                 on_ladder = TRUE;
                 pl_vel_x = 0;
             }
         } else if (INPUT_DOWN) {
             // Grab downwards ladder
-            UBYTE tile_x_mid = ((PLAYER.pos.x >> 4) + PLAYER.bounds.left + p_half_width) >> 3;
-            UBYTE tile_y   = (((PLAYER.pos.y >> 4) + PLAYER.bounds.bottom) >> 3) + 1;
-            if (tile_at(tile_x_mid, tile_y) & TILE_PROP_LADDER) {
+            tile_y = ((PLAYER.pos.y >> 4) + PLAYER.bounds.bottom + 1) >> 3;
+            col = tile_at(tile_x_mid, tile_y);
+            if (IS_LADDER(col)) {
                 PLAYER.pos.x = (((tile_x_mid << 3) + 4 - (PLAYER.bounds.left + p_half_width) << 4));
                 on_ladder = TRUE;
                 pl_vel_x = 0;
@@ -192,25 +223,108 @@ void platform_update() BANKED {
         }
 
         // Step X
+        UBYTE prev_on_slope = on_slope;
+        on_slope = FALSE;
         tile_start = (((PLAYER.pos.y >> 4) + PLAYER.bounds.top)    >> 3);
         tile_end   = (((PLAYER.pos.y >> 4) + PLAYER.bounds.bottom) >> 3) + 1;
+        UWORD old_x = PLAYER.pos.x;
+        WORD new_x = PLAYER.pos.x + (pl_vel_x >> 8);
+        UBYTE tile_x = 0;
+        UBYTE col_mid = 0;
         if (pl_vel_x > 0) {
-            UWORD new_x = PLAYER.pos.x + (pl_vel_x >> 8);
-            UBYTE tile_x = ((new_x >> 4) + PLAYER.bounds.right) >> 3;
+            tile_x = ((new_x >> 4) + PLAYER.bounds.right) >> 3;
+            tile_y   = (((PLAYER.pos.y >> 4) + PLAYER.bounds.bottom) >> 3);
+            UBYTE tile_x_mid = ((new_x >> 4) + PLAYER.bounds.left + p_half_width + 1) >> 3; 
+            col_mid = tile_at(tile_x_mid, tile_y);
+            if (IS_ON_SLOPE(col_mid)) {
+                on_slope = col_mid;
+                slope_y = tile_y;
+            }
+
+            UBYTE slope_on_y = FALSE;
             while (tile_start != tile_end) {
-                if (tile_at(tile_x, tile_start) & COLLISION_LEFT) {
+                col = tile_at(tile_x, tile_start);
+                if (IS_ON_SLOPE(col)) {
+                    slope_on_y = TRUE;
+                }
+
+                if (col & COLLISION_LEFT) {
+                    // only ignore collisions if there is a slope on this y column somewhere
+                    if (slope_on_y || tile_start == slope_y) {
+                        // Right slope
+                        if ((IS_ON_SLOPE(on_slope) && IS_SLOPE_RIGHT(on_slope)) ||
+                            (IS_ON_SLOPE(prev_on_slope) && IS_SLOPE_RIGHT(prev_on_slope))
+                            )
+                            {
+                            if (tile_start <= slope_y) {
+                                tile_start++;
+                                continue;
+                            }
+                        }
+                    }
+                    if (slope_on_y) {
+                        // Left slope
+                        if ((IS_ON_SLOPE(on_slope) && IS_SLOPE_LEFT(on_slope)) ||
+                            (IS_ON_SLOPE(prev_on_slope) && IS_SLOPE_LEFT(prev_on_slope))
+                            )
+                            {
+                            if (tile_start >= slope_y) {
+                                tile_start++;
+                                continue;
+                            }
+                        }
+                    }
                     new_x = (((tile_x << 3) - PLAYER.bounds.right) << 4) - 1;
                     pl_vel_x = 0;
                     break;
                 }
                 tile_start++;
             }
-            PLAYER.pos.x = MIN((image_width - 16) << 4, new_x);
+            PLAYER.pos.x = MIN((image_width - PLAYER.bounds.right - 1) << 4, new_x);
         } else if (pl_vel_x < 0) {
-            WORD new_x = PLAYER.pos.x + (pl_vel_x >> 8);
-            UBYTE tile_x = ((new_x >> 4) + PLAYER.bounds.left) >> 3;
+            tile_x = ((new_x >> 4) + PLAYER.bounds.left) >> 3;
+            tile_y   = (((PLAYER.pos.y >> 4) + PLAYER.bounds.bottom) >> 3);
+            UBYTE tile_x_mid = ((new_x >> 4) + PLAYER.bounds.left + p_half_width + 1) >> 3; 
+            col_mid = tile_at(tile_x_mid, tile_y);
+            if (IS_ON_SLOPE(col_mid)) {
+                on_slope = col_mid;
+                slope_y = tile_y;
+            }
+
+            tile_start = (((PLAYER.pos.y >> 4) + PLAYER.bounds.top)    >> 3);
+            UBYTE slope_on_y = FALSE;
             while (tile_start != tile_end) {
-                if (tile_at(tile_x, tile_start) & COLLISION_RIGHT) {
+                col = tile_at(tile_x, tile_start);
+                if (IS_ON_SLOPE(col)) {
+                    slope_on_y = TRUE;
+                }
+
+                if (col & COLLISION_RIGHT) {
+                    // only ignore collisions if there is a slope on this y column somewhere
+                    if (slope_on_y || tile_start == slope_y) {
+                        // Left slope
+                        if ((IS_ON_SLOPE(on_slope) && IS_SLOPE_LEFT(on_slope)) ||
+                            (IS_ON_SLOPE(prev_on_slope) && IS_SLOPE_LEFT(prev_on_slope))                            
+                            )
+                            {
+                            if (tile_start <= slope_y) {
+                                tile_start++;
+                                continue;
+                            }
+                        }
+                    }
+                    if (slope_on_y) {
+                        // Right slope
+                        if ((IS_ON_SLOPE(on_slope) && IS_SLOPE_RIGHT(on_slope)) ||
+                            (IS_ON_SLOPE(prev_on_slope) && IS_SLOPE_RIGHT(prev_on_slope))
+                            )
+                            {
+                            if (tile_start >= slope_y) {
+                                tile_start++;
+                                continue;
+                            }
+                        }
+                    }
                     new_x = ((((tile_x + 1) << 3) - PLAYER.bounds.left) << 4) + 1;
                     pl_vel_x = 0;
                     break;
@@ -221,12 +335,79 @@ void platform_update() BANKED {
         }
 
         // Step Y
-        grounded = FALSE;    
+        UBYTE prev_grounded = grounded;
+        UWORD old_y = PLAYER.pos.y;
+        grounded = FALSE;
+        // 1 frame leniency of grounded state if we were on a slope last frame
+        if (prev_on_slope) grounded = TRUE;
         tile_start = (((PLAYER.pos.x >> 4) + PLAYER.bounds.left)  >> 3);
         tile_end   = (((PLAYER.pos.x >> 4) + PLAYER.bounds.right) >> 3) + 1;
         if (pl_vel_y > 0) {
             UWORD new_y = PLAYER.pos.y + (pl_vel_y >> 8);
-            UBYTE tile_y = ((new_y >> 4) + PLAYER.bounds.bottom) >> 3;
+            tile_y = (((PLAYER.pos.y >> 4) + PLAYER.bounds.bottom) >> 3) - 1;
+            UBYTE new_tile_y = ((new_y >> 4) + PLAYER.bounds.bottom) >> 3;
+            // If previously grounded and gravity is not enough to pull us down to the next tile, manually check it for the next slope
+            // This prevents the "animation glitch" when going down slopes
+            if (prev_grounded && new_tile_y == (tile_y + 1)) new_tile_y += 1;
+            UWORD x_mid_coord = ((PLAYER.pos.x >> 4) + PLAYER.bounds.left + p_half_width + 1);
+            while (tile_y <= new_tile_y) {
+                UBYTE col = tile_at(x_mid_coord >> 3, tile_y);
+                UWORD tile_x_coord = (x_mid_coord >> 3) << 3;
+                UWORD x_offset = x_mid_coord - tile_x_coord;
+                UWORD slope_y_coord = 0;
+                if (IS_ON_SLOPE(col)) {
+                    if ((col & COLLISION_SLOPE) == COLLISION_SLOPE_45_RIGHT) {
+                        slope_y_coord = (((tile_y << 3) + (8 - x_offset) - PLAYER.bounds.bottom) << 4) - 1;
+                    } else if ((col & COLLISION_SLOPE) == COLLISION_SLOPE_225_RIGHT_BOT) {
+                        slope_y_coord = (((tile_y << 3) + (8 - (x_offset >> 1)) - PLAYER.bounds.bottom) << 4) - 1;
+                    } else if ((col & COLLISION_SLOPE) == COLLISION_SLOPE_225_RIGHT_TOP) {
+                        slope_y_coord = (((tile_y << 3) + (4 - (x_offset >> 1)) - PLAYER.bounds.bottom) << 4) - 1;
+                    }
+
+                    else if ((col & COLLISION_SLOPE) == COLLISION_SLOPE_45_LEFT) {
+                        slope_y_coord = (((tile_y << 3) + (x_offset) - PLAYER.bounds.bottom) << 4) - 1;
+                    } else if ((col & COLLISION_SLOPE) == COLLISION_SLOPE_225_LEFT_BOT) {
+                        slope_y_coord = (((tile_y << 3) + (x_offset >> 1) - PLAYER.bounds.bottom + 4) << 4) - 1;
+                    } else if ((col & COLLISION_SLOPE) == COLLISION_SLOPE_225_LEFT_TOP) {
+                        slope_y_coord = (((tile_y << 3) + (x_offset >> 1) - PLAYER.bounds.bottom) << 4) - 1;
+                    }
+                }
+
+                if (slope_y_coord) {
+                    // If going downwards into a slope, don't snap to it unless we've actually collided
+                    if (!prev_grounded && slope_y_coord > new_y) {
+                        tile_y++;
+                        continue;
+                    }
+                    // If we are moving up a slope, check for top collision
+                    UBYTE slope_top_tile_y = (((slope_y_coord >> 4) + PLAYER.bounds.top) >> 3);
+                    while (tile_start != tile_end) {
+                        if (tile_at(tile_start, slope_top_tile_y) & COLLISION_BOTTOM) {
+                            pl_vel_y = 0;
+                            pl_vel_x = 0;
+                            PLAYER.pos.y = old_y;
+                            PLAYER.pos.x = old_x;
+                            grounded = TRUE;
+                            on_slope = col;
+                            slope_y = tile_y;
+                            goto end_y_collision;
+                        }
+                        tile_start++;
+                    }
+
+                    PLAYER.pos.y = slope_y_coord;
+                    pl_vel_y = 0;
+                    grounded = TRUE;
+                    on_slope = col;
+                    slope_y = tile_y;
+                    goto end_y_collision;
+                }
+                tile_y++;
+            }
+
+            tile_start = (((PLAYER.pos.x >> 4) + PLAYER.bounds.left)  >> 3);
+            tile_end   = (((PLAYER.pos.x >> 4) + PLAYER.bounds.right) >> 3) + 1;
+            tile_y = ((new_y >> 4) + PLAYER.bounds.bottom) >> 3;
             while (tile_start != tile_end) {
                 if (tile_at(tile_start, tile_y) & COLLISION_TOP) {
                     new_y = ((((tile_y) << 3) - PLAYER.bounds.bottom) << 4) - 1;
@@ -239,7 +420,7 @@ void platform_update() BANKED {
             PLAYER.pos.y = new_y;
         } else if (pl_vel_y < 0) {
             UWORD new_y = PLAYER.pos.y + (pl_vel_y >> 8);
-            UBYTE tile_y = (((new_y >> 4) + PLAYER.bounds.top) >> 3);
+            tile_y = (((new_y >> 4) + PLAYER.bounds.top) >> 3);
             while (tile_start != tile_end) {
                 if (tile_at(tile_start, tile_y) & COLLISION_BOTTOM) {
                     new_y = ((((UBYTE)(tile_y + 1) << 3) - PLAYER.bounds.top) << 4) + 1;
@@ -250,13 +431,11 @@ void platform_update() BANKED {
             }
             PLAYER.pos.y = new_y;
         }
+end_y_collision:
 
         // Clamp Y Velocity
         pl_vel_y = MIN(pl_vel_y, plat_max_fall_vel);
     }
-
-    UBYTE tile_x_mid = ((PLAYER.pos.x >> 4) + ((PLAYER.bounds.right - PLAYER.bounds.left) >> 2)) >> 3;
-    UBYTE tile_y_mid = ((PLAYER.pos.y >> 4) + ((PLAYER.bounds.bottom - PLAYER.bounds.top) >> 2)) >> 3;
 
     // Check for trigger collisions
     if (trigger_activate_at_intersection(&PLAYER.bounds, &PLAYER.pos, INPUT_UP_PRESSED)) {

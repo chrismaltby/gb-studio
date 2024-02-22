@@ -248,6 +248,7 @@ OP_VM_RPN          = 0x15
 .MIN               = 'm'
 .MAX               = 'M'
 .ISQRT             = 'Q'
+.ATAN2             = 'T'
 ;.EQ                = 1
 ;.LT                = 2
 ;.LTE               = 3
@@ -756,6 +757,11 @@ OP_VM_ACTOR_SET_FLAGS           = 0x3F
         VM_ACTOR_SET_FLAGS ACTOR, ^/(ENABLED << 3)/, .ACTOR_FLAG_COLLISION
 .endm
 
+OP_VM_ACTOR_BEGIN_UPDATE        = 0x8E
+.macro VM_ACTOR_BEGIN_UPDATE ACTOR
+        .db OP_VM_ACTOR_BEGIN_UPDATE, #>ACTOR, #<ACTOR
+.endm
+
 OP_VM_ACTOR_TERMINATE_UPDATE    = 0x74
 ;-- Terminates the actor update script
 ; @param ACTOR Variable that contains the actor number
@@ -1203,9 +1209,9 @@ OP_VM_MUSIC_PLAY        = 0x60
 ;-- Starts playing of music track
 ; @param BANK Bank number of the track
 ; @param ADDR Address of the track
-; @param LOOP If the track will loop on end (`.MUSIC_LOOP`) or not (`.MUSIC_NO_LOOP`)
+; @param LOOP Obsolete, has no effect
 .macro VM_MUSIC_PLAY TRACK_BANK, TRACK, LOOP
-        .db OP_VM_MUSIC_PLAY, #<LOOP, #>TRACK, #<TRACK, #<TRACK_BANK
+        .db OP_VM_MUSIC_PLAY, #>TRACK, #<TRACK, #<TRACK_BANK
 .endm
 
 OP_VM_MUSIC_STOP        = 0x61

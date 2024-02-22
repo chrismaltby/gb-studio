@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const plugins = require("./webpack.plugins");
 const CopyPlugin = require("copy-webpack-plugin");
 const Path = require("path");
@@ -32,8 +33,11 @@ module.exports = {
     alias: {
       store: srcPath("store"),
       components: srcPath("components"),
+      lang: srcPath("lang"),
       lib: srcPath("lib"),
       ui: srcPath("components/ui"),
+      shared: srcPath("shared"),
+      consts: srcPath("consts.ts"),
     },
   },
   externals: {

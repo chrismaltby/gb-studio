@@ -66,14 +66,10 @@ UBYTE camera_shake_frames(void * THIS, UBYTE start, UWORD * stack_frame) OLDCALL
     if (start) *((SCRIPT_CTX *)THIS)->stack_ptr = sys_time;
     if (((UWORD)sys_time - *((SCRIPT_CTX *)THIS)->stack_ptr) < stack_frame[0]) {
         if (stack_frame[1] & CAMERA_SHAKE_X) {
-            BYTE value = rand() & 0x0f;
-            if (value > 10) value -= 10;
-            scroll_offset_x = value - 5;
+            scroll_offset_x = ((rand() * ((stack_frame[2] << 1) + 1)) >> 8) - stack_frame[2];
         }
         if (stack_frame[1] & CAMERA_SHAKE_Y) {
-            BYTE value = rand() & 0x0f;
-            if (value > 10) value -= 10;
-            scroll_offset_y = value - 5;
+            scroll_offset_y = ((rand() * ((stack_frame[2] << 1) + 1)) >> 8) - stack_frame[2];
         }
         ((SCRIPT_CTX *)THIS)->waitable = TRUE;
         return FALSE;

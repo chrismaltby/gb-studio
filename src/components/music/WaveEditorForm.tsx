@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { Select } from "ui/form/Select";
-import l10n from "lib/helpers/l10n";
+import l10n from "renderer/lib/l10n";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import { RootState } from "store/configureStore";
 import { FormRow, FormField } from "ui/form/FormLayout";
@@ -108,7 +108,7 @@ export const WaveEditorForm = ({ waveId, onChange }: WaveEditorFormProps) => {
       }
     };
 
-    const handleMouseMove = (e: any) => {
+    const handleMouseMove = (e: MouseEvent) => {
       if (e.target !== canvasRef.current) {
         return;
       }
@@ -143,13 +143,13 @@ export const WaveEditorForm = ({ waveId, onChange }: WaveEditorFormProps) => {
       }
     };
 
-    const handleMouseDown = (e: any) => {
+    const handleMouseDown = (e: MouseEvent) => {
       if (e.target === canvasRef.current) {
         mousedown = true;
       }
     };
 
-    const handleMouseUp = (_e: any) => {
+    const handleMouseUp = (_e: MouseEvent) => {
       if (mousedown) {
         mousedown = false;
         onEditWave(newWaves);

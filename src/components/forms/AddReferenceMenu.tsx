@@ -6,7 +6,6 @@ import React, {
   useState,
 } from "react";
 import { OptGroup } from "ui/form/Select";
-import l10n from "lib/helpers/l10n";
 import styled, { css } from "styled-components";
 import { Menu, MenuGroup, MenuItem } from "ui/menu/Menu";
 import { CaretRightIcon } from "ui/icons/Icons";
@@ -42,7 +41,9 @@ import {
   sceneName,
 } from "store/features/entities/entitiesHelpers";
 import { FixedSizeList as List } from "react-window";
-import { allVariables, globalVariableDefaultName } from "lib/helpers/variables";
+import { allVariables } from "renderer/lib/variables";
+import { globalVariableDefaultName } from "shared/lib/variables/variableNames";
+import l10n from "renderer/lib/l10n";
 
 interface AddReferenceMenuProps {
   onBlur?: () => void;
@@ -69,7 +70,6 @@ interface EventOptGroup {
 
 const MENU_HEADER_HEIGHT = 68;
 const MENU_ITEM_HEIGHT = 25;
-const MENU_GROUP_HEIGHT = 25;
 
 const backgroundToOption = (background: Background): EventOption => {
   return {

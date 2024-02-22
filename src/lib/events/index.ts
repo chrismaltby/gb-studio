@@ -1,17 +1,17 @@
 import glob from "glob";
 import fs from "fs";
-import plugins, { pluginEmitter } from "../plugins/plugins";
+import plugins, { pluginEmitter } from "lib/plugins/plugins";
 import {
   engineFieldsEmitter,
   EngineFieldSyncResult,
 } from "lib/project/engineFields";
-import { eventsRoot } from "../../consts";
-import * as l10n from "../helpers/l10n";
+import { eventsRoot } from "consts";
+import * as l10n from "lib/helpers/l10n";
 import * as eventHelpers from "./helpers";
-import * as gbStudioHelpers from "../helpers/gbstudio";
-import * as eventSystemHelpers from "../helpers/eventSystem";
-import * as compileEntityEvents from "../compiler/compileEntityEvents";
-import trimLines from "../helpers/trimlines";
+import * as gbStudioHelpers from "lib/helpers/gbstudio";
+import * as eventSystemHelpers from "lib/helpers/eventSystem";
+import * as compileEntityEvents from "lib/compiler/compileEntityEvents";
+import trimLines from "shared/lib/helpers/trimlines";
 import { ScriptEventFieldSchema } from "store/features/entities/entitiesTypes";
 import { Dictionary } from "@reduxjs/toolkit";
 import { clone, cloneDictionary } from "lib/helpers/clone";
@@ -50,7 +50,8 @@ const vm = new NodeVM({
       "../helpers/gbstudio": gbStudioHelpers,
       "../helpers/eventSystem": eventSystemHelpers,
       "../compiler/compileEntityEvents": compileEntityEvents,
-      "../helpers/trimlines": trimLines,
+      "../helpers/trimlines": trimLines, // @TODO Add deprecated warning when using this import
+      "shared/lib/helpers/trimlines": trimLines,
     },
   },
 });

@@ -1,11 +1,10 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import ScriptEditor from "../script/ScriptEditor";
-import castEventValue from "lib/helpers/castEventValue";
-import l10n from "lib/helpers/l10n";
+import ScriptEditor from "components/script/ScriptEditor";
+import castEventValue from "renderer/lib/helpers/castEventValue";
 import { WorldEditor } from "./WorldEditor";
-import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
-import BackgroundWarnings from "../world/BackgroundWarnings";
+import ScriptEditorDropdownButton from "components/script/ScriptEditorDropdownButton";
+import BackgroundWarnings from "components/world/BackgroundWarnings";
 import { sceneSelectors } from "store/features/entities/entitiesState";
 import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
@@ -25,12 +24,12 @@ import { Scene, ScriptEvent } from "store/features/entities/entitiesTypes";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { NoteField } from "ui/form/NoteField";
-import { SceneTypeSelect } from "../forms/SceneTypeSelect";
-import { BackgroundSelectButton } from "../forms/BackgroundSelectButton";
-import { PaletteSelectButton } from "../forms/PaletteSelectButton";
+import { SceneTypeSelect } from "components/forms/SceneTypeSelect";
+import { BackgroundSelectButton } from "components/forms/BackgroundSelectButton";
+import { PaletteSelectButton } from "components/forms/PaletteSelectButton";
 import { LabelButton, LabelColor } from "ui/buttons/LabelButton";
 import { CoordinateInput } from "ui/form/CoordinateInput";
-import DirectionPicker from "../forms/DirectionPicker";
+import DirectionPicker from "components/forms/DirectionPicker";
 import { SettingsState } from "store/features/settings/settingsState";
 import { StickyTabs, TabBar } from "ui/tabs/Tabs";
 import { Label } from "ui/form/Label";
@@ -38,19 +37,22 @@ import { Button } from "ui/buttons/Button";
 import { LockIcon, LockOpenIcon, ParallaxIcon } from "ui/icons/Icons";
 import ParallaxSelect, {
   defaultValues as parallaxDefaultValues,
-} from "../forms/ParallaxSelect";
-import { SpriteSheetSelectButton } from "../forms/SpriteSheetSelectButton";
+} from "components/forms/ParallaxSelect";
+import { SpriteSheetSelectButton } from "components/forms/SpriteSheetSelectButton";
 import styled from "styled-components";
 import {
   ClipboardTypePaletteIds,
   ClipboardTypeScenes,
 } from "store/features/clipboard/clipboardTypes";
-import { SCREEN_WIDTH } from "../../consts";
+import { SCREEN_WIDTH } from "consts";
 import { ScriptEventAutoFadeDisabledWarning } from "components/script/ScriptEventAutoFade";
 import { SceneSymbolsEditor } from "components/forms/symbols/SceneSymbolsEditor";
 import { BackgroundSymbolsEditor } from "components/forms/symbols/BackgroundSymbolsEditor";
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
+import Alert, { AlertItem } from "components/library/Alert";
+import { sceneName } from "store/features/entities/entitiesHelpers";
+import l10n from "renderer/lib/l10n";
 
 interface SceneEditorProps {
   id: string;
@@ -91,20 +93,12 @@ const PaletteButtons = styled.div`
   }
 `;
 
-const scriptTabs = {
-  start: l10n("SIDEBAR_ON_INIT"),
-  hit: l10n("SIDEBAR_ON_PLAYER_HIT"),
-} as const;
-
-const scriptSecondaryTabs = {
-  hit1: l10n("FIELD_COLLISION_GROUP_N", { n: 1 }),
-  hit2: l10n("FIELD_COLLISION_GROUP_N", { n: 2 }),
-  hit3: l10n("FIELD_COLLISION_GROUP_N", { n: 3 }),
-} as const;
+type ScriptTab = "start" | "hit";
+type SecondaryTab = "hit1" | "hit2" | "hit3";
 
 const getScriptKey = (
-  primaryTab: keyof typeof scriptTabs,
-  secondaryTab: keyof typeof scriptSecondaryTabs
+  primaryTab: ScriptTab,
+  secondaryTab: SecondaryTab
 ): SceneScriptKey => {
   if (primaryTab === "start") {
     return "script";
@@ -120,9 +114,6 @@ const getScriptKey = (
   }
   return "script";
 };
-
-const sceneName = (scene: Scene, sceneIndex: number) =>
-  scene.name ? scene.name : `Scene ${sceneIndex + 1}`;
 
 export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
   const scene = useSelector((state: RootState) =>
@@ -161,6 +152,23 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
   const defaultPlayerSprites = useSelector(
     (state: RootState) => state.project.present.settings.defaultPlayerSprites
   );
+  const scriptTabs: Record<ScriptTab, string> = useMemo(
+    () => ({
+      start: l10n("SIDEBAR_ON_INIT"),
+      hit: l10n("SIDEBAR_ON_PLAYER_HIT"),
+    }),
+    []
+  );
+
+  const scriptSecondaryTabs: Record<SecondaryTab, string> = useMemo(
+    () => ({
+      hit1: l10n("FIELD_COLLISION_GROUP_N", { n: 1 }),
+      hit2: l10n("FIELD_COLLISION_GROUP_N", { n: 2 }),
+      hit3: l10n("FIELD_COLLISION_GROUP_N", { n: 3 }),
+    }),
+    []
+  );
+
   const tabs = Object.keys(scriptTabs);
   const secondaryTabs = Object.keys(scriptSecondaryTabs);
 
@@ -187,6 +195,22 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
   const [showSymbols, setShowSymbols] = useState(false);
 
   const dispatch = useDispatch();
+
+  const logoSceneForBackground = useSelector(
+    (state: RootState) =>
+      // If current scene is logo don't bother searching for the background being used in other logo scenes
+      scene?.type !== "LOGO" &&
+      // Search for uses of the background within logo scenes
+      // @todo Cache a lookup of logo backgroundIds to scenes (or just one scene) where they're used, store in redux
+      sceneSelectors
+        .selectAll(state)
+        .find(
+          (s) =>
+            s.id !== scene?.id &&
+            s.backgroundId === scene?.backgroundId &&
+            s.type === "LOGO"
+        )
+  );
 
   const onChangeScriptMode = (mode: keyof ScriptHandlers) => {
     setScriptMode(mode);
@@ -537,6 +561,15 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
 
             <FormRow>
               <BackgroundWarnings id={scene.backgroundId} />
+              {logoSceneForBackground && (
+                <Alert variant="warning">
+                  <AlertItem>
+                    {l10n("WARNING_BACKGROUND_LOGO_REUSED", {
+                      name: logoSceneForBackground.name,
+                    })}
+                  </AlertItem>
+                </Alert>
+              )}
             </FormRow>
 
             {showParallaxOptions && (
@@ -614,65 +647,70 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
                 <FormDivider />
               </>
             )}
-
-            <FormRow>
-              <FormField
-                name="playerSpriteSheetId"
-                label={l10n("FIELD_PLAYER_SPRITE_SHEET")}
-              >
-                <SpriteSheetSelectButton
-                  name="playerSpriteSheetId"
-                  value={scene.playerSpriteSheetId}
-                  direction={isStartingScene ? startDirection : "down"}
-                  paletteId={undefined}
-                  onChange={onChangeField("playerSpriteSheetId")}
-                  includeInfo
-                  optional
-                  optionalLabel={l10n("FIELD_SCENE_TYPE_DEFAULT")}
-                  optionalValue={defaultPlayerSprites[scene.type]}
-                />
-              </FormField>
-            </FormRow>
-
-            {isStartingScene && (
+            {scene.type !== "LOGO" && (
               <>
-                <FormDivider />
-                <FormRow>
-                  <Label htmlFor="startX">{l10n("FIELD_START_POSITION")}</Label>
-                </FormRow>
-                <FormRow>
-                  <CoordinateInput
-                    name="startX"
-                    coordinate="x"
-                    value={startX}
-                    placeholder="0"
-                    min={0}
-                    max={scene.width - 2}
-                    onChange={onChangeSettingFieldInput("startX")}
-                  />
-                  <CoordinateInput
-                    name="startY"
-                    coordinate="y"
-                    value={startY}
-                    placeholder="0"
-                    min={0}
-                    max={scene.height - 1}
-                    onChange={onChangeSettingFieldInput("startY")}
-                  />
-                </FormRow>
-
                 <FormRow>
                   <FormField
-                    name="actorDirection"
-                    label={l10n("FIELD_DIRECTION")}
+                    name="playerSpriteSheetId"
+                    label={l10n("FIELD_PLAYER_SPRITE_SHEET")}
                   >
-                    <DirectionPicker
-                      id="actorDirection"
-                      value={startDirection}
-                      onChange={onChangeSettingFieldInput("startDirection")}
+                    <SpriteSheetSelectButton
+                      name="playerSpriteSheetId"
+                      value={scene.playerSpriteSheetId}
+                      direction={isStartingScene ? startDirection : "down"}
+                      paletteId={undefined}
+                      onChange={onChangeField("playerSpriteSheetId")}
+                      includeInfo
+                      optional
+                      optionalLabel={l10n("FIELD_SCENE_TYPE_DEFAULT")}
+                      optionalValue={defaultPlayerSprites[scene.type]}
                     />
                   </FormField>
                 </FormRow>
+
+                {isStartingScene && (
+                  <>
+                    <FormDivider />
+                    <FormRow>
+                      <Label htmlFor="startX">
+                        {l10n("FIELD_START_POSITION")}
+                      </Label>
+                    </FormRow>
+                    <FormRow>
+                      <CoordinateInput
+                        name="startX"
+                        coordinate="x"
+                        value={startX}
+                        placeholder="0"
+                        min={0}
+                        max={scene.width - 2}
+                        onChange={onChangeSettingFieldInput("startX")}
+                      />
+                      <CoordinateInput
+                        name="startY"
+                        coordinate="y"
+                        value={startY}
+                        placeholder="0"
+                        min={0}
+                        max={scene.height - 1}
+                        onChange={onChangeSettingFieldInput("startY")}
+                      />
+                    </FormRow>
+
+                    <FormRow>
+                      <FormField
+                        name="actorDirection"
+                        label={l10n("FIELD_DIRECTION")}
+                      >
+                        <DirectionPicker
+                          id="actorDirection"
+                          value={startDirection}
+                          onChange={onChangeSettingFieldInput("startDirection")}
+                        />
+                      </FormField>
+                    </FormRow>
+                  </>
+                )}
               </>
             )}
           </FormContainer>

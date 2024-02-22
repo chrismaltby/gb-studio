@@ -1,6 +1,5 @@
 import React, { FC, useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { assetFilename } from "lib/helpers/gbstudio";
 import {
   backgroundSelectors,
   sceneSelectors,
@@ -16,6 +15,8 @@ import { Scene } from "store/features/entities/entitiesTypes";
 import { RootState } from "store/configureStore";
 import styled from "styled-components";
 import editorActions from "store/features/editor/editorActions";
+import { sceneName } from "store/features/entities/entitiesHelpers";
+import { assetFilename } from "shared/lib/helpers/assets";
 
 interface SceneSelectProps extends SelectCommonProps {
   name: string;
@@ -48,7 +49,7 @@ const sortByLabel = (a: SceneOption, b: SceneOption) => {
 
 const sceneToSceneOption = (scene: Scene, sceneIndex: number): SceneOption => ({
   value: scene.id,
-  label: scene.name ? scene.name : `Scene ${sceneIndex + 1}`,
+  label: sceneName(scene, sceneIndex),
   scene,
 });
 
@@ -129,20 +130,19 @@ export const SceneSelect: FC<SceneSelectProps> = ({
         options={options}
         onChange={onSelectChange}
         formatOptionLabel={(option: SceneOption) => {
+          const background = backgroundsLookup[option.scene?.backgroundId];
           return (
             <OptionLabelWithPreview
               preview={
                 <Thumbnail
                   style={{
                     backgroundImage:
-                      backgroundsLookup[option.scene?.backgroundId] &&
+                      background &&
                       `url("file://${assetFilename(
                         projectRoot,
                         "backgrounds",
-                        backgroundsLookup[option.scene?.backgroundId]
-                      )}?_v=${
-                        backgroundsLookup[option.scene?.backgroundId]?._v
-                      }")`,
+                        background
+                      )}?_v=${background?._v}")`,
                   }}
                 />
               }

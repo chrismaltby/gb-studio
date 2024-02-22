@@ -25,8 +25,8 @@ import { SceneSelect } from "components/forms/SceneSelect";
 import { SoundEffectSelect } from "components/forms/SoundEffectSelect";
 import { SpriteSheetSelect } from "components/forms/SpriteSheetSelect";
 import { VariableSelect } from "components/forms/VariableSelect";
-import castEventValue from "lib/helpers/castEventValue";
-import l10n from "lib/helpers/l10n";
+import castEventValue from "renderer/lib/helpers/castEventValue";
+import l10n, { L10NKey } from "renderer/lib/l10n";
 import React, { useCallback, useContext } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "store/configureStore";
@@ -56,6 +56,7 @@ import {
 } from "./ScriptEditorContext";
 import ScriptEventFormMathArea from "./ScriptEventFormMatharea";
 import ScriptEventFormTextArea from "./ScriptEventFormTextarea";
+import { AngleInput } from "ui/form/AngleInput";
 
 interface ScriptEventFormInputProps {
   id: string;
@@ -268,7 +269,7 @@ const ScriptEventFormInput = ({
   } else if (type === "select") {
     const options = (field.options || []).map(([value, label]) => ({
       value,
-      label: l10n(label),
+      label: l10n(label as L10NKey),
     }));
     const currentValue =
       options.find((o) =>
@@ -463,6 +464,20 @@ const ScriptEventFormInput = ({
     return (
       <OffscreenSkeletonInput>
         <DirectionPicker id={id} value={value} onChange={onChangeField} />
+      </OffscreenSkeletonInput>
+    );
+  } else if (type === "angle") {
+    return (
+      <OffscreenSkeletonInput>
+        <AngleInput
+          id={id}
+          value={String(value !== undefined && value !== null ? value : "")}
+          min={field.min}
+          max={field.max}
+          step={field.step}
+          placeholder={String(field.placeholder || defaultValue)}
+          onChange={onChangeField}
+        />
       </OffscreenSkeletonInput>
     );
   } else if (type === "collisionMask") {

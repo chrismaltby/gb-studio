@@ -1,5 +1,5 @@
 import { readFile } from "fs-extra";
-import { decBin, decHexVal } from "lib/helpers/8bit";
+import { decBin, decHexVal } from "shared/lib/helpers/8bit";
 import { ungzip } from "node-gzip";
 
 const MIN_VGM_VERSION = 0x161;
@@ -234,11 +234,7 @@ const inRange = (val: number, min: number, max: number) => {
   return val >= min && val < max;
 };
 
-const setDefault = <T extends unknown, K extends keyof T>(
-  obj: T,
-  key: K,
-  value: T[K]
-) => {
+const setDefault = <T, K extends keyof T>(obj: T, key: K, value: T[K]) => {
   if (obj[key] !== undefined) {
     return obj[key];
   }
@@ -246,7 +242,7 @@ const setDefault = <T extends unknown, K extends keyof T>(
   return value;
 };
 
-const pop = <T extends unknown, K extends keyof T>(obj: T, key: K) => {
+const pop = <T, K extends keyof T>(obj: T, key: K) => {
   if (obj[key] !== undefined) {
     const value = obj[key];
     delete obj[key];

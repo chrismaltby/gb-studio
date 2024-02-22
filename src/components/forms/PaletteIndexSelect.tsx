@@ -1,14 +1,14 @@
 import React, { FC, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { DMG_PALETTE } from "../../consts";
-import l10n from "lib/helpers/l10n";
+import { DMG_PALETTE } from "consts";
+import l10n from "renderer/lib/l10n";
 import { RootState } from "store/configureStore";
 import {
   paletteSelectors,
   sceneSelectors,
 } from "store/features/entities/entitiesState";
 import { Palette } from "store/features/entities/entitiesTypes";
-import PaletteBlock from "../library/PaletteBlock";
+import PaletteBlock from "components/library/PaletteBlock";
 import {
   OptionLabelWithPreview,
   Select,

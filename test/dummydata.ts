@@ -20,7 +20,7 @@ import { initialState as initialMusicState } from "../src/store/features/music/m
 import { initialState as initialNavigationState } from "../src/store/features/navigation/navigationState";
 import { initialState as initialDocumentState } from "../src/store/features/document/documentState";
 import { initialState as initialErrorState } from "../src/store/features/error/errorState";
-import { initialState as initialWarningsState } from "../src/store/features/warnings/warningsState";
+import { initialState as initialAssetsState } from "../src/store/features/assets/assetsState";
 import { initialState as initialEngineState } from "../src/store/features/engine/engineState";
 import { initialState as initialClipboardState } from "../src/store/features/clipboard/clipboardState";
 import { initialState as initialSpriteState } from "../src/store/features/sprite/spriteState";
@@ -247,6 +247,20 @@ export const dummyProjectData: ProjectData = {
     cartType: "mbc5",
     batterylessEnabled: false,
     favoriteEvents: [],
+    showCollisionSlopeTiles: false,
+    showCollisionExtraTiles: false,
+    customColorsWhite: "E8F8E0",
+    customColorsLight: "B0F088",
+    customColorsDark: "509878",
+    customColorsBlack: "202850",
+    customControlsUp: ["ArrowUp", "w"],
+    customControlsDown: ["ArrowDown", "s"],
+    customControlsLeft: ["ArrowLeft", "a"],
+    customControlsRight: ["ArrowRight", "d"],
+    customControlsA: ["Alt", "z", "j"],
+    customControlsB: ["Control", "k", "x"],
+    customControlsStart: ["Enter"],
+    customControlsSelect: ["Shift"],
   },
 };
 
@@ -291,8 +305,8 @@ export const dummyRootState: RootState = {
   error: {
     ...initialErrorState,
   },
-  warnings: {
-    ...initialWarningsState,
+  assets: {
+    ...initialAssetsState,
   },
   engine: {
     ...initialEngineState,

@@ -39,11 +39,11 @@ Setup:
     Suggested location: /opt/gbdk/
 
 * Recommended but not required: Add the gbdk 'bin' sub-directory to your shell path
-    Run from command line (only lasts for that session): export GBDKDIR=/opt/gbdk
+    Run from command line (only lasts for that session): export GBDKDIR=/opt/gbdk/
     Or add that to your shell defaults (permanent)
 
 * Open a command line and compile the examples by running "make" in
-  the "examples\gb" sub-directory:
+  the "examples/gb" sub-directory:
     cd /opt/gbdk/examples/gb
     make
 

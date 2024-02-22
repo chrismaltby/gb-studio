@@ -34,7 +34,7 @@ typedef struct cursor_info_
 {
   uint8_t data_idx; /* Index of data in the data array */
   uint8_t w, h; /* Size (in tiles) */
-  uint8_t hot_x, hot_y; /* Position of hot point, relatice to top-left of sprite (in pixels) */
+  uint8_t hot_x, hot_y; /* Position of hot point, relative to top-left of sprite (in pixels) */
 } cursor_info;
 
 const icon_info icons[] =
@@ -259,7 +259,7 @@ uint8_t menu_cursor_pos;
 uint8_t cursor_x;
 uint8_t cursor_y;
 
-void set_cursor()
+void set_cursor(void)
 {
     uint8_t x, y, i;
 
@@ -279,7 +279,7 @@ void set_cursor()
     }
 }
 
-void move_cursor()
+void move_cursor(void)
 {
   uint8_t x, y;
 
@@ -290,7 +290,7 @@ void move_cursor()
 		  cursor_y+16 - cursors[current_cursor].hot_y + (y<<3));
 }
 
-void move_menu_cursor()
+void move_menu_cursor(void)
 {
   move_sprite(0,
 	      ((icons[menu_cursor_pos].x+icons[menu_cursor_pos].w)<<3) + 4,
@@ -337,7 +337,7 @@ void reset_icon(uint8_t icon)
 		  NULL);
 }
 
-void splash()
+void splash(void)
 {
   uint8_t x, y;
 
@@ -349,22 +349,22 @@ void splash()
   SHOW_SPRITES;
 
   for(; cursor_x < 120; cursor_x++) {
-    wait_vbl_done();
+    vsync();
     move_cursor();
     plot(cursor_x, cursor_y, BLACK, SOLID);
   }
   for(; cursor_y < 94; cursor_y++) {
-    wait_vbl_done();
+    vsync();
     move_cursor();
     plot(cursor_x, cursor_y, BLACK, SOLID);
   }
   for(; cursor_x > 40; cursor_x--) {
-    wait_vbl_done();
+    vsync();
     move_cursor();
     plot(cursor_x, cursor_y, BLACK, SOLID);
   }
   for(; cursor_y > 50; cursor_y--) {
-    wait_vbl_done();
+    vsync();
     move_cursor();
     plot(cursor_x, cursor_y, BLACK, SOLID);
   }
@@ -381,7 +381,7 @@ void splash()
   // HIDE_SPRITES;
 }
 
-void menu()
+void menu(void)
 {
   uint8_t i, key;
   uint8_t slowdown;
@@ -402,7 +402,7 @@ void menu()
   SHOW_SPRITES;
   waitpadup();
   do {
-    wait_vbl_done();
+    vsync();
     key = joypad();
     if(key & (J_UP|J_DOWN|J_LEFT|J_RIGHT)) {
       if(key & J_UP)
@@ -415,7 +415,7 @@ void menu()
 	menu_cursor_pos = icons[menu_cursor_pos].right;
       move_menu_cursor();
       while(slowdown && key == joypad()) {
-	wait_vbl_done();
+	vsync();
 	slowdown--;
       }
       slowdown = 10;
@@ -451,7 +451,7 @@ void menu()
   current_cursor = cursor;
 }
 
-void run()
+void run(void)
 {
   uint8_t key;
   uint8_t slowdown;
@@ -465,7 +465,7 @@ void run()
   SHOW_SPRITES;
 
   while(1) {
-    wait_vbl_done();
+    vsync();
     key = joypad();
     if(key & (J_UP|J_DOWN|J_LEFT|J_RIGHT)) {
       if(key & J_UP && cursor_y > 0)
@@ -478,7 +478,7 @@ void run()
 	cursor_x++;
       move_cursor();
       while(slowdown && key == joypad()) {
-	wait_vbl_done();
+	vsync();
 	slowdown--;
       }
       slowdown = 1;
@@ -509,7 +509,7 @@ void run()
   }
 }
 
-void main()
+void main(void)
 {
   /* Initialize sprite palette */
   OBP1_REG = 0xE0U;

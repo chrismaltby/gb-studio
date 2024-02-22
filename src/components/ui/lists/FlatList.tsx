@@ -2,7 +2,7 @@ import throttle from "lodash/throttle";
 import React, { CSSProperties, useEffect, useRef, useState } from "react";
 import { FixedSizeList as List } from "react-window";
 import styled from "styled-components";
-import { ThemeInterface } from "../theme/ThemeInterface";
+import { ThemeInterface } from "ui/theme/ThemeInterface";
 import { ListItem } from "./ListItem";
 
 export interface FlatListItem {
@@ -147,6 +147,12 @@ export const FlatList = <T extends FlatListItem>({
     }
   };
 
+  const handleClickOutside = (e: MouseEvent) => {
+    if (ref.current && hasFocus && !ref.current.contains(e.target as Node)) {
+      setHasFocus(false);
+    }
+  };
+
   const setFocus = (id: string) => {
     if (ref.current) {
       const el = ref.current.querySelector('[data-id="' + id + '"]');
@@ -158,8 +164,10 @@ export const FlatList = <T extends FlatListItem>({
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeys);
+    window.addEventListener("mousedown", handleClickOutside);
     return () => {
       window.removeEventListener("keydown", handleKeys);
+      window.removeEventListener("mousedown", handleClickOutside);
     };
   });
 

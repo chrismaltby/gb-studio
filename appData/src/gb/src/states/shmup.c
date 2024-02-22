@@ -21,7 +21,7 @@ UBYTE shooter_reached_end;
 UWORD shooter_dest;
 direction_e shooter_direction;
 
-void shmup_init() BANKED {
+void shmup_init(void) BANKED {
 
     camera_offset_x = 0;
     camera_offset_y = 0;
@@ -51,7 +51,7 @@ void shmup_init() BANKED {
     shooter_reached_end = FALSE;
 }
 
-void shmup_update() BANKED {
+void shmup_update(void) BANKED {
     actor_t *hit_actor;
     UBYTE tile_start, tile_end;
     direction_e new_dir = DIR_NONE;
@@ -130,7 +130,7 @@ void shmup_update() BANKED {
                     }
                     tile_start++;
                 }
-                PLAYER.pos.x = MIN((image_width - 16) << 4, new_pos.x);
+                PLAYER.pos.x = MIN((image_width - PLAYER.bounds.right - 1) << 4, new_pos.x);
             } else {
                 UBYTE tile_x = ((new_pos.x >> 4) + PLAYER.bounds.left) >> 3;
                 while (tile_start != tile_end) {

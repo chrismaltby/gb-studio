@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { DMG_PALETTE } from "../../consts";
-import { assetFilename } from "lib/helpers/gbstudio";
+import { DMG_PALETTE } from "consts";
 import { RootState } from "store/configureStore";
 import { avatarSelectors } from "store/features/entities/entitiesState";
 import SpriteSliceCanvasWorker, {
   SpriteSliceCanvasResult,
-} from "../sprites/preview/SpriteSliceCanvas.worker";
+} from "components/sprites/preview/SpriteSliceCanvas.worker";
+import { assetFilename } from "shared/lib/helpers/assets";
 
 interface AvatarCanvasProps {
   avatarId: string;

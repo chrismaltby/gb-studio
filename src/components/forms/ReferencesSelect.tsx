@@ -20,7 +20,7 @@ import {
 } from "store/features/entities/entitiesState";
 import { Button } from "ui/buttons/Button";
 import { CheckIcon, MinusIcon, PencilIcon } from "ui/icons/Icons";
-import l10n from "lib/helpers/l10n";
+import l10n from "renderer/lib/l10n";
 import styled from "styled-components";
 import { FlexGrow } from "ui/spacing/Spacing";
 import {
@@ -28,7 +28,7 @@ import {
   tilemapAttrSymbol,
   tilemapSymbol,
   tilesetSymbol,
-} from "lib/helpers/symbols";
+} from "shared/lib/helpers/symbols";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import { TooltipWrapper } from "ui/tooltips/Tooltip";
 import { MenuOverlay } from "ui/menu/Menu";
@@ -261,7 +261,7 @@ export const ReferencesSelect = ({
             />
           ))}
           {soundRefs.length > 0 && (
-            <ReferenceSection>{l10n("FIELD_SOUNDS")}</ReferenceSection>
+            <ReferenceSection>{l10n("MENU_SFX")}</ReferenceSection>
           )}
           {soundRefs.map((ref) => (
             <AssetReference

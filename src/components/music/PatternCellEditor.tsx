@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import { FormField, FormRow, FormSectionTitle } from "ui/form/FormLayout";
 import { RootState } from "store/configureStore";
-import { PatternCell } from "lib/helpers/uge/song/PatternCell";
+import { PatternCell } from "renderer/lib/uge/song/PatternCell";
 import { Select, Option, OptionLabelWithInfo } from "ui/form/Select";
-import l10n from "lib/helpers/l10n";
+import l10n, { L10NKey } from "renderer/lib/l10n";
 import { SliderField } from "ui/form/SliderField";
 import { CheckboxField } from "ui/form/CheckboxField";
 import { Label } from "ui/form/Label";
 import { Input } from "ui/form/Input";
-import clamp from "lib/helpers/clamp";
+import clamp from "shared/lib/helpers/clamp";
 import { VibratoWaveformPreview } from "./VibratoWaveformPreview";
 import styled from "styled-components";
 import { renderNote } from "./helpers";
@@ -25,123 +25,6 @@ type EffectCodeOptionGroup = {
   label: string;
   options: EffectCodeOption[];
 };
-
-const effectCodeOptions = [
-  {
-    label: "",
-    options: [
-      {
-        value: null,
-        label: l10n("FIELD_NO_EFFECT"),
-      },
-    ],
-  },
-  {
-    label: "Pitch",
-    options: [
-      {
-        value: 0,
-        label: "Arpeggio",
-        info: "0xy",
-      },
-      {
-        value: 1,
-        label: "Portamento Up",
-        info: "1xx",
-      },
-      {
-        value: 2,
-        label: "Portamento Down",
-        info: "2xx",
-      },
-      {
-        value: 3,
-        label: "Tone Portamento",
-        info: "3xx",
-      },
-      {
-        value: 4,
-        label: "Vibrato",
-        info: "4xy",
-      },
-    ],
-  },
-  {
-    label: "Volume",
-    options: [
-      {
-        value: 5,
-        label: "Set Master Volume",
-        info: "5xx",
-      },
-      {
-        value: 12,
-        label: "Set Volume",
-        info: "Cev",
-      },
-      {
-        value: 10,
-        label: "Volume Slide",
-        info: "Axy",
-      },
-      {
-        value: 8,
-        label: "Set Panning",
-        info: "8xx",
-      },
-    ],
-  },
-  {
-    label: "Note",
-    options: [
-      {
-        value: 7,
-        label: "Note Delay",
-        info: "7xx",
-      },
-      {
-        value: 14,
-        label: "Note Cut",
-        info: "Exx",
-      },
-    ],
-  },
-  {
-    label: "Position",
-    options: [
-      {
-        value: 11,
-        label: "Position Jump",
-        info: "Bxx",
-      },
-      {
-        value: 13,
-        label: "Pattern Break",
-        info: "Dxx",
-      },
-    ],
-  },
-  {
-    label: "Other",
-    options: [
-      {
-        value: 6,
-        label: "Call Routine",
-        info: "6xx",
-      },
-      {
-        value: 9,
-        label: "Set Duty Cycle",
-        info: "9xx",
-      },
-      {
-        value: 15,
-        label: "Set Speed",
-        info: "Fxx",
-      },
-    ],
-  },
-] as EffectCodeOptionGroup[];
 
 const dutyOptions = [
   {
@@ -278,6 +161,126 @@ export const PatternCellEditor = ({
 }: PatternCellEditorProps) => {
   const dispatch = useDispatch();
 
+  const effectCodeOptions: EffectCodeOptionGroup[] = useMemo(
+    () => [
+      {
+        label: "",
+        options: [
+          {
+            value: null,
+            label: l10n("FIELD_NO_EFFECT"),
+          },
+        ],
+      },
+      {
+        label: "Pitch",
+        options: [
+          {
+            value: 0,
+            label: "Arpeggio",
+            info: "0xy",
+          },
+          {
+            value: 1,
+            label: "Portamento Up",
+            info: "1xx",
+          },
+          {
+            value: 2,
+            label: "Portamento Down",
+            info: "2xx",
+          },
+          {
+            value: 3,
+            label: "Tone Portamento",
+            info: "3xx",
+          },
+          {
+            value: 4,
+            label: "Vibrato",
+            info: "4xy",
+          },
+        ],
+      },
+      {
+        label: "Volume",
+        options: [
+          {
+            value: 5,
+            label: "Set Master Volume",
+            info: "5xx",
+          },
+          {
+            value: 12,
+            label: "Set Volume",
+            info: "Cev",
+          },
+          {
+            value: 10,
+            label: "Volume Slide",
+            info: "Axy",
+          },
+          {
+            value: 8,
+            label: "Set Panning",
+            info: "8xx",
+          },
+        ],
+      },
+      {
+        label: "Note",
+        options: [
+          {
+            value: 7,
+            label: "Note Delay",
+            info: "7xx",
+          },
+          {
+            value: 14,
+            label: "Note Cut",
+            info: "Exx",
+          },
+        ],
+      },
+      {
+        label: "Position",
+        options: [
+          {
+            value: 11,
+            label: "Position Jump",
+            info: "Bxx",
+          },
+          {
+            value: 13,
+            label: "Pattern Break",
+            info: "Dxx",
+          },
+        ],
+      },
+      {
+        label: "Other",
+        options: [
+          {
+            value: 6,
+            label: "Call Routine",
+            info: "6xx",
+          },
+          {
+            value: 9,
+            label: "Set Duty Cycle",
+            info: "9xx",
+          },
+          {
+            value: 15,
+            label: "Set Speed",
+            info: "Fxx",
+          },
+        ],
+      },
+    ],
+    []
+  );
+
   const selectedChannel = useSelector(
     (state: RootState) => state.tracker.selectedChannel
   );
@@ -297,7 +300,7 @@ export const PatternCellEditor = ({
       return false;
     });
     setSelectedEffectCode(option || effectCodeOptions[0]?.options[0]);
-  }, [pattern, selectedChannel, selectedEffectCode]);
+  }, [effectCodeOptions, pattern, selectedChannel, selectedEffectCode]);
 
   const renderEffectEditor = (
     note: number | null,
@@ -497,7 +500,7 @@ export const PatternCellEditor = ({
         ) => {
           return (
             <CheckboxField
-              label={l10n(label)}
+              label={l10n(label as L10NKey)}
               name={name}
               checked={(effectparams[param] & value) === value}
               onChange={(e) => {

@@ -1,8 +1,12 @@
 import l10n from "./l10n";
-import { divisibleBy8 } from "./8bit";
-import { assetFilename } from "./gbstudio";
+import { divisibleBy8 } from "shared/lib/helpers/8bit";
 import { Background } from "store/features/entities/entitiesTypes";
-import { readFileToTilesDataArray, toTileLookup } from "../tiles/tileData";
+import {
+  readFileToTilesDataArray,
+  toTileLookup,
+  tilesAndLookupToTilemap,
+} from "lib/tiles/tileData";
+import { assetFilename } from "shared/lib/helpers/assets";
 
 const MAX_IMAGE_WIDTH = 2040;
 const MAX_IMAGE_HEIGHT = 2040;
@@ -12,6 +16,7 @@ const MAX_TILESET_TILES = 16 * 12;
 interface BackgroundInfo {
   numTiles: number;
   warnings: string[];
+  lookup: Uint8Array;
 }
 
 export const getBackgroundInfo = async (
@@ -23,10 +28,12 @@ export const getBackgroundInfo = async (
   const warnings: string[] = [];
 
   let tilesetLength = precalculatedTilesetLength;
+  let tilesets = new Uint8Array();
   if (!tilesetLength) {
     const filename = assetFilename(projectPath, "backgrounds", background);
     const tileData = await readFileToTilesDataArray(filename);
     const tilesetLookup = toTileLookup(tileData);
+    tilesets = tilesAndLookupToTilemap(tileData, tilesetLookup);
     tilesetLength = Object.keys(tilesetLookup).length;
   }
 
@@ -88,5 +95,6 @@ export const getBackgroundInfo = async (
   return {
     warnings,
     numTiles: tilesetLength,
+    lookup: tilesets,
   };
 };

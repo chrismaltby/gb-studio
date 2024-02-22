@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { DMG_PALETTE } from "../../../consts";
-import { assetFilename } from "lib/helpers/gbstudio";
+import { DMG_PALETTE } from "consts";
 import { RootState } from "store/configureStore";
 import { spriteSheetSelectors } from "store/features/entities/entitiesState";
 import { ObjPalette, Palette } from "store/features/entities/entitiesTypes";
 import SpriteSliceCanvasWorker, {
   SpriteSliceCanvasResult,
 } from "./SpriteSliceCanvas.worker";
+import { assetFilename } from "shared/lib/helpers/assets";
 
 interface SpriteSliceCanvasProps {
   spriteSheetId: string;

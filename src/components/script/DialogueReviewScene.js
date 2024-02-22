@@ -5,10 +5,8 @@ import cx from "classnames";
 import { connect } from "react-redux";
 import { SceneShape, ActorShape, EventShape } from "store/stateShape";
 import { ArrowIcon, SearchIcon } from "ui/icons/Icons";
-import { walkEvents, patchEvents } from "lib/helpers/eventSystem";
-import { EVENT_TEXT } from "lib/compiler/eventTypes";
 import DialogueReviewLine from "./DialogueReviewLine";
-import Button from "../library/Button";
+import Button from "components/library/Button";
 import {
   sceneSelectors,
   actorSelectors,
@@ -19,10 +17,14 @@ import navigationActions from "store/features/navigation/navigationActions";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import {
+  actorName,
+  sceneName,
+  triggerName,
   walkNormalisedActorEvents,
   walkNormalisedSceneSpecificEvents,
   walkNormalisedTriggerEvents,
 } from "store/features/entities/entitiesHelpers";
+import { EVENT_TEXT } from "consts";
 
 class DialogueReviewScene extends Component {
   onChange = (id) => (value) => {
@@ -59,7 +61,7 @@ class DialogueReviewScene extends Component {
         <div className="DialogueReviewScene__SceneName">
           <h2 onClick={onToggle}>
             <ArrowIcon />
-            {scene.name || `Scene ${sceneIndex + 1}`}
+            {sceneName(scene, sceneIndex)}
           </h2>
           <Button small onClick={this.onSearch}>
             <SearchIcon />
@@ -119,8 +121,8 @@ function mapStateToProps(state, props) {
           entityType: "actor",
           entity: actor,
           entityIndex: actorIndex,
-          entityName: actor.name || `Actor ${actorIndex + 1}`,
-          sceneName: scene.name || `Scene ${sceneIndex + 1}`,
+          entityName: actorName(actor, actorIndex),
+          sceneName: sceneName(scene, sceneIndex),
           line: cmd,
         });
       }
@@ -139,8 +141,8 @@ function mapStateToProps(state, props) {
             entityType: "trigger",
             entity: trigger,
             entityIndex: triggerIndex,
-            entityName: trigger.name || `Trigger ${triggerIndex + 1}`,
-            sceneName: scene.name || `Scene ${sceneIndex + 1}`,
+            entityName: triggerName(trigger, triggerIndex),
+            sceneName: sceneName(scene, sceneIndex),
             line: cmd,
           });
         }
@@ -158,8 +160,8 @@ function mapStateToProps(state, props) {
           entityType: "scene",
           entity: scene,
           entityIndex: sceneIndex,
-          entityName: scene.name,
-          sceneName: scene.name,
+          entityName: sceneName(scene, sceneIndex),
+          sceneName: sceneName(scene, sceneIndex),
           line: cmd,
         });
       }

@@ -18,14 +18,28 @@ import {
   DRAG_ACTOR,
   TILE_COLOR_PROPS,
   TILE_COLOR_PALETTE,
-} from "../../../consts";
-import { isVariableField, isPropertyField } from "lib/helpers/eventSystem";
-import clamp from "lib/helpers/clamp";
+  COLLISION_SLOPE_45_LEFT,
+  COLLISION_SLOPE_45_RIGHT,
+  COLLISION_SLOPE_22_LEFT_BOT,
+  COLLISION_SLOPE_22_RIGHT_BOT,
+  COLLISION_SLOPE_22_LEFT_TOP,
+  COLLISION_SLOPE_22_RIGHT_TOP,
+  COLLISION_TOP,
+  COLLISION_BOTTOM,
+  COLLISION_RIGHT,
+  COLLISION_LEFT,
+} from "consts";
+import {
+  isActorField,
+  isVariableField,
+  isPropertyField,
+} from "lib/helpers/eventSystem";
+import clamp from "shared/lib/helpers/clamp";
 import { RootState } from "store/configureStore";
 import settingsActions from "../settings/settingsActions";
 import uuid from "uuid";
-import { paint, paintLine, floodFill } from "lib/helpers/paint";
-import { Brush } from "../editor/editorState";
+import { paint, paintLine, floodFill, paintMagic } from "lib/helpers/paint";
+import { Brush, SlopeIncline } from "../editor/editorState";
 import projectActions from "../project/projectActions";
 import {
   EntitiesState,
@@ -60,7 +74,6 @@ import {
   normalizeEntities,
   sortByFilename,
   swap,
-  matchAsset,
   isUnionVariableValue,
   isUnionPropertyValue,
   walkNormalisedScriptEvents,
@@ -69,6 +82,8 @@ import {
   removeAssetEntity,
   upsertAssetEntity,
   updateEntitySymbol,
+  isSlope,
+  defaultLocalisedSceneName,
 } from "./entitiesHelpers";
 import spriteActions from "../sprite/spriteActions";
 import { isVariableCustomEvent } from "lib/compiler/scriptBuilder";
@@ -627,7 +642,7 @@ const addScene: CaseReducer<
   const background = localBackgroundSelectors.selectById(state, backgroundId);
 
   const newScene: Scene = {
-    name: `Scene ${scenesTotal + 1}`,
+    name: defaultLocalisedSceneName(scenesTotal),
     backgroundId,
     width: Math.max(MIN_SCENE_WIDTH, background?.width || 0),
     height: Math.max(MIN_SCENE_HEIGHT, background?.height || 0),
@@ -1841,12 +1856,13 @@ const paintCollision: CaseReducer<
   PayloadAction<
     {
       sceneId: string;
+      tileLookup?: Uint8Array;
       x: number;
       y: number;
       value: number;
       brush: Brush;
       isTileProp: boolean;
-    } & ({ drawLine: false } | { drawLine: true; endX: number; endY: number })
+    } & ({ drawLine?: false } | { drawLine: true; endX: number; endY: number })
   >
 > = (state, action) => {
   const scene = localSceneSelectors.selectById(state, action.payload.sceneId);
@@ -1883,9 +1899,15 @@ const paintCollision: CaseReducer<
     const tileIndex = background.width * y + x;
     let newValue = value;
     if (isTileProp) {
-      // If is prop keep previous collision value
-      newValue = (collisions[tileIndex] & COLLISION_ALL) + (value & TILE_PROPS);
-    } else if (value !== 0) {
+      if (value & 0x0f) {
+        // If is prop and one way, overwrite both
+        newValue = value;
+      } else {
+        // If is prop keep previous collision value
+        newValue =
+          (collisions[tileIndex] & COLLISION_ALL) + (value & TILE_PROPS);
+      }
+    } else if (value !== 0 && !isSlope(newValue)) {
       // If is collision keep prop unless erasing
       newValue = (value & COLLISION_ALL) + (collisions[tileIndex] & TILE_PROPS);
     }
@@ -1898,7 +1920,17 @@ const paintCollision: CaseReducer<
 
   const equal = (a: number, b: number) => a === b;
 
-  if (brush === "fill") {
+  if (brush === "magic" && action.payload.tileLookup) {
+    paintMagic(
+      background.width,
+      action.payload.tileLookup,
+      action.payload.x,
+      action.payload.y,
+      action.payload.value,
+      setValue,
+      isInBounds
+    );
+  } else if (brush === "fill") {
     floodFill(
       action.payload.x,
       action.payload.y,
@@ -1938,18 +1970,160 @@ const paintCollision: CaseReducer<
   });
 };
 
+const paintSlopeCollision: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    sceneId: string;
+    startX: number;
+    startY: number;
+    endX: number;
+    endY: number;
+    offset: boolean;
+    slopeIncline: SlopeIncline;
+    slopeDirection: "left" | "right";
+  }>
+> = (state, action) => {
+  const scene = localSceneSelectors.selectById(state, action.payload.sceneId);
+  if (!scene) {
+    return;
+  }
+  const background = localBackgroundSelectors.selectById(
+    state,
+    scene.backgroundId
+  );
+  if (!background) {
+    return;
+  }
+
+  const { slopeIncline, slopeDirection, offset } = action.payload;
+
+  let startX = action.payload.startX;
+  let startY = action.payload.startY;
+  let endX = action.payload.endX;
+  let endY = action.payload.endY;
+  let skipFirstTile = false;
+
+  // If slope is offset (holding shift key) then modify the
+  // line start/end tiles to ensure the line is painted correctly
+  if (offset && slopeIncline === "steep") {
+    endX += endX < startX ? -0.5 : 0.5;
+    startY += endY > startY ? -1 : 1;
+    skipFirstTile = true;
+  } else if (offset && slopeIncline === "shallow") {
+    endY += endY < startY ? -0.5 : 0.5;
+    startX += endX > startX ? -1 : 1;
+    skipFirstTile = true;
+  }
+
+  const roundEndX = endX > startX ? Math.floor(endX) : Math.ceil(endX);
+  const roundEndY = endY > startY ? Math.floor(endY) : Math.ceil(endY);
+
+  const collisionsSize = Math.ceil(background.width * background.height);
+  const collisions = scene.collisions.slice(0, collisionsSize);
+
+  // Fill collisions array if too small for image
+  if (collisions.length < collisionsSize) {
+    for (let i = collisions.length; i < collisionsSize; i++) {
+      collisions[i] = 0;
+    }
+  }
+
+  const setValue = (x: number, y: number, value: number) => {
+    // Don't draw last tile
+    if (x === roundEndX && y === roundEndY) {
+      return;
+    }
+
+    // Don't draw first tile when offsetting shallow & steep slopes
+    if (skipFirstTile && x === startX && y === startY) {
+      return;
+    }
+
+    const tileIndex = background.width * y + x;
+    let newValue = value;
+
+    if (
+      startY === endY &&
+      // Drag left to right for top collision
+      // Drag right to left for bottom collision
+      // Shift to toggle
+      ((startX > endX && !offset) || (startX <= endX && offset))
+    ) {
+      newValue = COLLISION_BOTTOM;
+    } else if (startY === endY) {
+      newValue = COLLISION_TOP;
+    } else if (
+      startX === endX &&
+      // Drag top to bottom for left collision
+      // Drag bottom to top for right collision
+      // Shift to toggle
+      ((startY > endY && !offset) || (startY <= endY && offset))
+    ) {
+      newValue = COLLISION_RIGHT;
+    } else if (startX === endX) {
+      newValue = COLLISION_LEFT;
+    } else if (slopeIncline === "medium") {
+      // Medium incline slope uses 45deg tiles using slope direction
+      if (slopeDirection === "left") {
+        newValue = COLLISION_SLOPE_45_LEFT;
+      } else {
+        newValue = COLLISION_SLOPE_45_RIGHT;
+      }
+    } else if (slopeIncline === "shallow") {
+      // Shallow incline slope uses the 22deg tiles using slope direction
+      // alternating between the two 22deg tiles depending on position on line
+      const oddTile = (startX % 2 !== x % 2) !== endY > startY;
+
+      if (slopeDirection === "left") {
+        newValue = oddTile
+          ? COLLISION_SLOPE_22_LEFT_TOP
+          : COLLISION_SLOPE_22_LEFT_BOT;
+      } else {
+        newValue = oddTile
+          ? COLLISION_SLOPE_22_RIGHT_TOP
+          : COLLISION_SLOPE_22_RIGHT_BOT;
+      }
+    }
+
+    collisions[tileIndex] = newValue;
+  };
+
+  const isInBounds = (x: number, y: number) => {
+    return x >= 0 && x < background.width && y >= 0 && y < background.height;
+  };
+
+  paintLine(
+    startX,
+    startY,
+    roundEndX,
+    roundEndY,
+    1,
+    COLLISION_ALL,
+    setValue,
+    isInBounds
+  );
+
+  scenesAdapter.updateOne(state.scenes, {
+    id: action.payload.sceneId,
+    changes: {
+      collisions,
+    },
+  });
+};
+
 const paintColor: CaseReducer<
   EntitiesState,
   PayloadAction<
     {
       backgroundId: string;
       sceneId: string;
+      tileLookup?: Uint8Array;
       x: number;
       y: number;
       paletteIndex: number;
       brush: Brush;
       isTileProp: boolean;
-    } & ({ drawLine: false } | { drawLine: true; endX: number; endY: number })
+    } & ({ drawLine?: false } | { drawLine: true; endX: number; endY: number })
   >
 > = (state, action) => {
   const background = localBackgroundSelectors.selectById(
@@ -2000,7 +2174,17 @@ const paintColor: CaseReducer<
 
   const equal = (a: number, b: number) => a === b;
 
-  if (brush === "fill") {
+  if (brush === "magic" && action.payload.tileLookup) {
+    paintMagic(
+      background.width,
+      action.payload.tileLookup,
+      action.payload.x,
+      action.payload.y,
+      action.payload.paletteIndex,
+      setValue,
+      isInBounds
+    );
+  } else if (brush === "fill") {
     floodFill(
       action.payload.x,
       action.payload.y,
@@ -2183,35 +2367,27 @@ const refreshCustomEventArgs: CaseReducer<
       const args = scriptEvent.args;
       if (!args) return;
       if (args.__comment) return;
-      if (
-        args.actorId &&
-        args.actorId !== "player" &&
-        args.actorId !== "$self$" &&
-        typeof args.actorId === "string"
-      ) {
-        const letter = String.fromCharCode(
-          "A".charCodeAt(0) + parseInt(args.actorId)
-        );
-        actors[args.actorId] = {
-          id: args.actorId,
-          name: oldActors[args.actorId]?.name || `Actor ${letter}`,
-        };
-      }
-      if (
-        args.otherActorId &&
-        args.otherActorId !== "player" &&
-        args.otherActorId !== "$self$" &&
-        typeof args.otherActorId === "string"
-      ) {
-        const letter = String.fromCharCode(
-          "A".charCodeAt(0) + parseInt(args.otherActorId)
-        );
-        actors[args.otherActorId] = {
-          id: args.otherActorId,
-          name: oldActors[args.otherActorId]?.name || `Actor ${letter}`,
-        };
-      }
       Object.keys(args).forEach((arg) => {
+        if (isActorField(scriptEvent.command, arg, args, eventLookup)) {
+          const addActor = (actor: string) => {
+            const letter = String.fromCharCode(
+              "A".charCodeAt(0) + parseInt(actor)
+            );
+            actors[actor] = {
+              id: actor,
+              name: oldActors[actor]?.name || `Actor ${letter}`,
+            };
+          };
+          const actor = args[arg];
+          if (
+            actor &&
+            actor !== "player" &&
+            actor !== "$self$" &&
+            typeof actor === "string"
+          ) {
+            addActor(actor);
+          }
+        }
         if (isVariableField(scriptEvent.command, arg, args, eventLookup)) {
           const addVariable = (variable: string) => {
             const letter = String.fromCharCode(
@@ -2706,6 +2882,7 @@ const entitiesSlice = createSlice({
     removeScene,
     moveScene,
     paintCollision,
+    paintSlopeCollision,
     paintColor,
 
     /**************************************************************************
@@ -3132,7 +3309,7 @@ const localPaletteSelectors = palettesAdapter.getSelectors(
 const localMusicSelectors = musicAdapter.getSelectors(
   (state: EntitiesState) => state.music
 );
-const localSoundSelectors = soundsAdapter.getSelectors(
+const _localSoundSelectors = soundsAdapter.getSelectors(
   (state: EntitiesState) => state.sounds
 );
 

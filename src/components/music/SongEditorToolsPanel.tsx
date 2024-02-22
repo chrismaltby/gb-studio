@@ -23,9 +23,9 @@ import { saveSongFile } from "store/features/trackerDocument/trackerDocumentStat
 import { InstrumentSelect } from "./InstrumentSelect";
 import { Select } from "ui/form/Select";
 import { PianoRollToolType } from "store/features/tracker/trackerState";
-import { ipcRenderer } from "electron";
-import l10n from "lib/helpers/l10n";
+import l10n from "renderer/lib/l10n";
 import { InstrumentType } from "store/features/editor/editorState";
+import API from "renderer/lib/api";
 
 const octaveOffsetOptions: OctaveOffsetOptions[] = [0, 1, 2, 3].map((i) => ({
   value: i,
@@ -74,6 +74,9 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
   const playerReady = useSelector(
     (state: RootState) => state.tracker.playerReady
   );
+  const subpatternEditorFocus = useSelector(
+    (state: RootState) => state.tracker.subpatternEditorFocus
+  );
 
   const modified = useSelector(
     (state: RootState) => state.trackerDocument.present.modified
@@ -95,7 +98,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
     if (!playerReady) return;
     if (!play) {
       if (playbackFromStart) {
-        ipcRenderer.send("music-data-send", {
+        API.music.sendMusicData({
           action: "position",
           position: defaultStartPlaybackPosition,
         });
@@ -114,7 +117,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
 
   const stopPlayback = useCallback(() => {
     dispatch(trackerActions.stopTracker());
-    ipcRenderer.send("music-data-send", {
+    API.music.sendMusicData({
       action: "stop",
       position: defaultStartPlaybackPosition,
     });
@@ -196,29 +199,32 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
       if (view !== "roll") {
         return;
       }
-      if (e.code === "Digit1") {
-        setDefaultInstruments(0);
-      } else if (e.code === "Digit2") {
-        setDefaultInstruments(1);
-      } else if (e.code === "Digit3") {
-        setDefaultInstruments(2);
-      } else if (e.code === "Digit4") {
-        setDefaultInstruments(3);
-      } else if (e.code === "Digit5") {
-        setDefaultInstruments(4);
-      } else if (e.code === "Digit6") {
-        setDefaultInstruments(5);
-      } else if (e.code === "Digit7") {
-        setDefaultInstruments(6);
-      } else if (e.code === "Digit8") {
-        setDefaultInstruments(7);
-      } else if (e.code === "Digit9") {
-        setDefaultInstruments(8);
+      if (!subpatternEditorFocus) {
+        if (e.code === "Digit1") {
+          setDefaultInstruments(0);
+        } else if (e.code === "Digit2") {
+          setDefaultInstruments(1);
+        } else if (e.code === "Digit3") {
+          setDefaultInstruments(2);
+        } else if (e.code === "Digit4") {
+          setDefaultInstruments(3);
+        } else if (e.code === "Digit5") {
+          setDefaultInstruments(4);
+        } else if (e.code === "Digit6") {
+          setDefaultInstruments(5);
+        } else if (e.code === "Digit7") {
+          setDefaultInstruments(6);
+        } else if (e.code === "Digit8") {
+          setDefaultInstruments(7);
+        } else if (e.code === "Digit9") {
+          setDefaultInstruments(8);
+        }
       }
     },
     [
       tmpSelectionMode,
       view,
+      subpatternEditorFocus,
       setTool,
       toggleView,
       togglePlay,

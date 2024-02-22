@@ -1,7 +1,8 @@
 #ifndef TRIGGER_H
 #define TRIGGER_H
 
-#include <gb/gb.h>
+#include <gbdk/platform.h>
+
 #include "gbs_types.h"
 #include "math.h"
 
@@ -15,7 +16,7 @@ extern UBYTE triggers_len;
 /**
  * Resets trigger collision flags on scene start
  */
-void trigger_reset() BANKED;
+void trigger_reset(void) BANKED;
 
 /**
  * Find trigger at tile {tx,ty}

@@ -2,8 +2,8 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import { triggerSelectors } from "store/features/entities/entitiesState";
 import entitiesActions from "store/features/entities/entitiesActions";
-import { interactScriptSymbol } from "lib/helpers/symbols";
-import { addBankRef, AssetReference } from "../ReferencesSelect";
+import { interactScriptSymbol } from "shared/lib/helpers/symbols";
+import { addBankRef, AssetReference } from "components/forms/ReferencesSelect";
 
 interface TriggerSymbolsEditorProps {
   id: string;

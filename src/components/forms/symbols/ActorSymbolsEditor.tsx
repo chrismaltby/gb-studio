@@ -2,8 +2,11 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import { actorSelectors } from "store/features/entities/entitiesState";
 import entitiesActions from "store/features/entities/entitiesActions";
-import { interactScriptSymbol, updateScriptSymbol } from "lib/helpers/symbols";
-import { addBankRef, AssetReference } from "../ReferencesSelect";
+import {
+  interactScriptSymbol,
+  updateScriptSymbol,
+} from "shared/lib/helpers/symbols";
+import { addBankRef, AssetReference } from "components/forms/ReferencesSelect";
 
 interface ActorSymbolsEditorProps {
   id: string;

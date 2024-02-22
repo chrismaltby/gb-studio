@@ -7,7 +7,7 @@ import {
   readFileToIndexedImage,
   sliceIndexedImage,
   trimIndexedImageHorizontal,
-} from "../tiles/indexedImage";
+} from "lib/tiles/indexedImage";
 
 export interface FontData {
   name: string;

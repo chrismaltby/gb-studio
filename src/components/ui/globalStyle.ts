@@ -2,6 +2,13 @@ import "focus-visible";
 import { createGlobalStyle } from "styled-components";
 
 const GlobalStyle = createGlobalStyle`
+  html,
+  body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
   body {
     margin: 0;
     padding: 0;
@@ -10,7 +17,28 @@ const GlobalStyle = createGlobalStyle`
     font-size: 13px;
     user-select: none;
     caret-color: ${(props) => props.theme.colors.highlight};
+    background: ${(props) => props.theme.colors.background};
+    color: ${(props) => props.theme.colors.text};
   }
+
+  #App {
+    width: 100%;
+    height: 100%;
+  }
+  
+  .App {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .App__Content {
+    width: 100%;
+    height: calc(100% - 38px);
+    display: flex;
+    flex-direction: row;
+  }  
 
   #MenuPortal {
     z-index: 10000;
@@ -182,6 +210,57 @@ const GlobalStyle = createGlobalStyle`
   .label--instrument-14 {
     background: #9b9c82;
   }
+
+  .GlobalError {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100%;
+    padding: 30px;
+    overflow: auto;
+    box-sizing: border-box;
+    -webkit-app-region: drag;
+  }
+  
+  .GlobalError__Content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    -webkit-app-region: none;
+  }
+  
+  .GlobalError__Icon {
+    width: 192px;
+    height: 192px;
+  }
+  
+  .GlobalError__Icon svg {
+    width: 100%;
+    height: 100%;
+  }
+  
+  .GlobalError__Buttons .Button {
+    margin: 20px 10px;
+  }
+  
+  .GlobalError__StackTrace {
+    background: #fff;
+    padding: 30px;
+    border-radius: 4px;
+    max-height: 270px;
+    margin-top: 20px;
+    max-width: 860px;
+    overflow: auto;
+  }
+  
+  .GlobalError h1,
+  .GlobalError h2,
+  .GlobalError p,
+  .GlobalError__StackTrace {
+    user-select: text;
+  }  
 
   `;
 

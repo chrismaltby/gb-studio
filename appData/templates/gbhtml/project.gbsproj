@@ -1,8 +1,8 @@
 {
     "name": "___PROJECT_NAME___",
     "author": "___AUTHOR___",
-    "_version": "3.1.0",
-    "_release": "0",
+    "_version": "3.2.0",
+    "_release": "1",
     "scenes": [
         {
             "id": "94c18861-b352-4f49-a64d-52f2e3415077",
@@ -9405,6 +9405,8 @@
         "startDirection": "right",
         "showCollisions": true,
         "showConnections": true,
+        "showCollisionSlopeTiles": false,
+        "showCollisionExtraTiles": false,
         "worldScrollX": 0,
         "worldScrollY": 0,
         "zoom": 100,

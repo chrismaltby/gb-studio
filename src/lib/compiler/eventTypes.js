@@ -1,4 +1,4 @@
-import l10n from "../helpers/l10n";
+import l10n from "lib/helpers/l10n";
 
 export const EVENT_END = "EVENT_END";
 export const EVENT_STOP = "EVENT_STOP"; // Same as End except explicitly user created

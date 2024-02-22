@@ -1,7 +1,7 @@
 #ifndef PALETTE_H
 #define PALETTE_H
 
-#include <gb/gb.h>
+#include <gbdk/platform.h>
 
 #include "compat.h"
 #include "gbs_types.h"
@@ -10,7 +10,7 @@ extern UBYTE DMG_palette[3];
 extern palette_entry_t SprPalette[8];
 extern palette_entry_t BkgPalette[8];
 
-void palette_init() BANKED;
+void palette_init(void) BANKED;
 
 #ifdef CGB
 void CGBZeroPalette(UBYTE reg) OLDCALL BANKED;

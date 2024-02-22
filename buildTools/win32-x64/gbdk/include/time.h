@@ -22,7 +22,7 @@ typedef uint16_t time_t;
 
     @see sys_time, time()
 */
-clock_t clock() OLDCALL;
+clock_t clock(void) OLDCALL;
 
 /** Converts clock() time to Seconds
 

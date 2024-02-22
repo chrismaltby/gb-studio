@@ -1,5 +1,5 @@
-import ItemTypes from "lib/dnd/itemTypes";
-import l10n from "lib/helpers/l10n";
+import ItemTypes from "renderer/lib/dnd/itemTypes";
+import l10n from "renderer/lib/l10n";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { DropTargetMonitor, useDrop } from "react-dnd";
 import {

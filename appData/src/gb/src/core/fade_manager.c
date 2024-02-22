@@ -1,9 +1,6 @@
 #pragma bank 255
 
-#include <gb/gb.h>
-#ifdef CGB
-    #include <gb/cgb.h>
-#endif
+#include <gbdk/platform.h>
 
 #include "compat.h"
 #include "system.h"
@@ -149,15 +146,12 @@ void ApplyPaletteChangeColor(UBYTE index) {
 }
 #endif
 
-UBYTE DMGFadeToWhiteStep(UBYTE pal, UBYTE step) OLDCALL NAKED {
+UBYTE DMGFadeToWhiteStep(UBYTE step, UBYTE pal) NAKED {
     pal; step;
-#if defined(__SDCC) && defined(NINTENDO)
 __asm
-        ldhl    SP, #3
-        ld      A, (HL-)
-        ld      E, (HL)
+#if defined(__SDCC) && defined(NINTENDO)
         or      A
-        ret     Z
+        jr      Z, 0$
 
         ld      D, A
 1$:
@@ -183,20 +177,19 @@ __asm
 
         dec     D
         jr      NZ, 1$
+0$:
+        ld      A, E
+#endif
         ret
 __endasm;
-#endif
 }
 
-UBYTE DMGFadeToBlackStep(UBYTE pal, UBYTE step) OLDCALL NAKED {
+UBYTE DMGFadeToBlackStep(UBYTE step, UBYTE pal) NAKED {
     pal; step;
-#if defined(__SDCC) && defined(NINTENDO)
 __asm
-        ldhl    SP, #3
-        ld      A, (HL-)
-        ld      E, (HL)
+#if defined(__SDCC) && defined(NINTENDO)
         or      A
-        ret     Z
+        jr      Z, 0$
 
         ld      D, A
 1$:
@@ -223,25 +216,27 @@ __asm
 
         dec     D
         jr      NZ, 1$
+0$:
+        ld      A, E
+#endif
         ret
 __endasm;
-#endif
 }
 
 void ApplyPaletteChangeDMG(UBYTE index) {
     if (index > 4) index = 4;
     if (!fade_style) {
-        BGP_REG = DMGFadeToWhiteStep(DMG_palette[0], index);
-        OBP0_REG = DMGFadeToWhiteStep(DMG_palette[1], index);
-        OBP1_REG = DMGFadeToWhiteStep(DMG_palette[2], index);
+        BGP_REG = DMGFadeToWhiteStep(index, DMG_palette[0]);
+        OBP0_REG = DMGFadeToWhiteStep(index, DMG_palette[1]);
+        OBP1_REG = DMGFadeToWhiteStep(index, DMG_palette[2]);
     } else {
-        BGP_REG = DMGFadeToBlackStep(DMG_palette[0], index);
-        OBP0_REG = DMGFadeToBlackStep(DMG_palette[1], index);
-        OBP1_REG = DMGFadeToBlackStep(DMG_palette[2], index);
+        BGP_REG = DMGFadeToBlackStep(index, DMG_palette[0]);
+        OBP0_REG = DMGFadeToBlackStep(index, DMG_palette[1]);
+        OBP1_REG = DMGFadeToBlackStep(index, DMG_palette[2]);
     }
 }
 
-void fade_init() BANKED {
+void fade_init(void) BANKED {
     fade_frames_per_step = fade_speeds[2];
     fade_timer = FADED_OUT_FRAME;
     fade_running = FALSE;
@@ -254,7 +249,7 @@ void fade_init() BANKED {
     ApplyPaletteChangeDMG(FADED_OUT_FRAME);
 }
 
-void fade_in() BANKED {
+void fade_in(void) BANKED {
     if (fade_timer == FADED_IN_FRAME) {
         return;
     }
@@ -271,7 +266,7 @@ void fade_in() BANKED {
     ApplyPaletteChangeDMG(FADED_OUT_FRAME);
 }
 
-void fade_out() BANKED {
+void fade_out(void) BANKED {
     if (fade_timer == FADED_OUT_FRAME) {
         return;
     }
@@ -288,7 +283,7 @@ void fade_out() BANKED {
         ApplyPaletteChangeDMG(FADED_IN_FRAME);
 }
 
-void fade_update() BANKED {
+void fade_update(void) BANKED {
     if (fade_running) {
         if ((fade_frame++ & fade_frames_per_step) == 0) {
             if (fade_direction == FADE_IN) {
@@ -309,7 +304,7 @@ void fade_update() BANKED {
     }
 }
 
-void fade_applypalettechange() BANKED {
+void fade_applypalettechange(void) BANKED {
 #ifdef CGB
     if (_is_CGB) {
         ApplyPaletteChangeColor(fade_timer);
@@ -323,7 +318,7 @@ void fade_setspeed(UBYTE speed) BANKED {
     fade_frames_per_step = fade_speeds[speed];
 }
 
-void fade_in_modal() BANKED {
+void fade_in_modal(void) BANKED {
     fade_in();
     while (fade_isfading()) {
         wait_vbl_done();
@@ -331,7 +326,7 @@ void fade_in_modal() BANKED {
     }
 }
 
-void fade_out_modal() BANKED {
+void fade_out_modal(void) BANKED {
     fade_out();
     while (fade_isfading()) {
         wait_vbl_done();

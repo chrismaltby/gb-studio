@@ -3,7 +3,7 @@
 
 #include <gbdk/platform.h>
 
-#define DN(A, B, C) (unsigned char)(A),(unsigned char)((B << 4) | (C >> 8)),(unsigned char)(C & 0xFF)
+#define DN(A, B, C) (unsigned char)(A | ((B & 0x10) << 3)),(unsigned char)(((B << 4) & 0xFF) | (C >> 8)),(unsigned char)(C & 0xFF)
 
 #define C_3 0
 #define Cs3 1
@@ -80,42 +80,62 @@
 #define LAST_NOTE 72
 #define ___ 90
 
-typedef void (*hUGERoutine_t)(unsigned char param, unsigned char ch, unsigned char tick) OLDCALL;
+// tick is a tick number; the high byte of param is channel and the low byte of param is routine id
+typedef void (*hUGERoutine_t)(unsigned char tick, unsigned int param);
+
+typedef struct hUGEDutyInstr_t {
+  const unsigned char sweep;
+  const unsigned char len_duty;
+  const unsigned char envelope;
+  const unsigned char * subpattern;
+  const unsigned char highmask;
+} hUGEDutyInstr_t;
+
+typedef struct hUGEWaveInstr_t {
+  const unsigned char length;
+  const unsigned char volume;
+  const unsigned char waveform;
+  const unsigned char * subpattern;
+  const unsigned char highmask;
+} hUGEWaveInstr_t;
+
+typedef struct hUGENoiseInstr_t {
+  const unsigned char envelope;
+  const unsigned char * subpattern;
+  const unsigned char highmask;
+  const unsigned char unused1;
+  const unsigned char unused2;
+} hUGENoiseInstr_t;
 
 typedef struct hUGESong_t {
   unsigned char tempo;
   const unsigned char * order_cnt;
   const unsigned char ** order1, ** order2, ** order3, ** order4;
-  const unsigned char * duty_instruments, * wave_instruments, * noise_instruments;
+  const hUGEDutyInstr_t * duty_instruments;
+  const hUGEWaveInstr_t * wave_instruments;
+  const hUGENoiseInstr_t * noise_instruments;
   const hUGERoutine_t ** routines;
   const unsigned char * waves;
 } hUGESong_t;
 
 // initialize the driver with song data
-void hUGE_init(const hUGESong_t * song) OLDCALL;
-void hUGE_init_banked(const hUGESong_t * song) BANKED OLDCALL;
+void hUGE_init(const hUGESong_t * song);
 
 // driver routine
-void hUGE_dosound() OLDCALL;
-void hUGE_dosound_banked() BANKED OLDCALL;
+void hUGE_dosound(void);
 
 enum hUGE_channel_t {HT_CH1 = 0, HT_CH2, HT_CH3, HT_CH4};
 enum hUGE_mute_t    {HT_CH_PLAY = 0, HT_CH_MUTE};
 
-void hUGE_mute_channel(enum hUGE_channel_t ch, enum hUGE_mute_t mute) OLDCALL;
-void hUGE_mute_channel_banked(enum hUGE_channel_t ch, enum hUGE_mute_t mute) BANKED OLDCALL;
+void hUGE_mute_channel(enum hUGE_channel_t ch, enum hUGE_mute_t mute);
 
-void hUGE_set_position(unsigned char pattern) OLDCALL;
-void hUGE_set_position_banked(unsigned char pattern) BANKED OLDCALL;
+void hUGE_set_position(unsigned char pattern);
 
 extern volatile unsigned char hUGE_current_wave;
 
 extern volatile unsigned char hUGE_mute_mask;
 
-inline void hUGE_reset_wave() {
-	hUGE_current_wave = 100;
-}
-inline void hUGE_reset_wave_banked() {
+inline void hUGE_reset_wave(void) {
 	hUGE_current_wave = 100;
 }
 

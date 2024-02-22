@@ -57,4 +57,26 @@ const paintLine = <T>(
   }
 };
 
-export { paint, paintLine, floodFill };
+const paintMagic = <T>(
+  bgWidth: number,
+  tileLookup: Uint8Array,
+  x: number,
+  y: number,
+  value: T,
+  setValue: SetValueFn<T>,
+  isInBounds: InBoundsFn
+) => {
+  const tileindex = bgWidth * y + x;
+  const targetTileID = tileLookup[tileindex];
+  let x1 = x;
+  let y1 = y;
+  tileLookup.forEach((element, index) => {
+    if (element === targetTileID) {
+      x1 = index % bgWidth;
+      y1 = (index / bgWidth) >> 0;
+      paint(x1, y1, 1, value, setValue, isInBounds);
+    }
+  });
+};
+
+export { paint, paintLine, floodFill, paintMagic };

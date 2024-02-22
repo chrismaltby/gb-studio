@@ -1,16 +1,18 @@
 /* eslint-disable camelcase */
+/* eslint-disable import/no-unresolved */
+/* eslint-disable import/no-webpack-loader-syntax */
 
-import hardware_inc from "./include/hardware_inc";
-import hugeDriver_asm from "./include/hUGEDriver_asm";
-import hUGE_inc from "./include/hUGE_inc";
-import hUGE_note_table_inc from "./include/hUGE_note_table_inc";
-import player_asm from "./include/player_asm";
+import hardware_inc from "!!raw-loader!./hUGEDriver/include/hardware.inc";
+import hUGEDriver_asm from "!!raw-loader!./hUGEDriver/hUGEDriver.asm";
+import hUGE_inc from "!!raw-loader!./hUGEDriver/include/hUGE.inc";
+import hUGE_note_table_inc from "!!raw-loader!./hUGEDriver/include/hUGE_note_table.inc";
+import player_asm from "!!raw-loader!./hUGEDriver/player.asm";
 
 const files = {
   "include/hardware.inc": hardware_inc,
   "include/hUGE.inc": hUGE_inc,
   "include/hUGE_note_table.inc": hUGE_note_table_inc,
-  "hUGEDriver.asm": hugeDriver_asm,
+  "hUGEDriver.asm": hUGEDriver_asm,
   "player.asm": player_asm,
 } as Record<string, Uint8Array | string>;
 
@@ -29,7 +31,9 @@ const update = (name: string, code: ArrayBuffer | string | null) => {
   localStorage.rgbds_storage = JSON.stringify(files);
 };
 
-export default {
+const storage = {
   update,
   getFiles,
 };
+
+export default storage;

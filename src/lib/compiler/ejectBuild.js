@@ -2,10 +2,10 @@ import fs from "fs-extra";
 import rimraf from "rimraf";
 import { promisify } from "util";
 import Path from "path";
-import { engineRoot } from "../../consts";
-import copy from "../helpers/fsCopy";
-import ejectEngineChangelog from "../project/ejectEngineChangelog";
-import l10n from "../helpers/l10n";
+import { engineRoot } from "consts";
+import copy from "lib/helpers/fsCopy";
+import ejectEngineChangelog from "lib/project/ejectEngineChangelog";
+import l10n from "lib/helpers/l10n";
 import {
   buildMakeDotBuildFile,
   makefileInjectToolsPath,
@@ -90,6 +90,30 @@ const ejectBuild = async ({
     progress(
       `Using engine plugin: ${Path.relative(pluginsPath, enginePluginPath)}`
     );
+    const pluginName = Path.basename(Path.dirname(enginePluginPath));
+    try {
+      const pluginEngineMetaPath = `${enginePluginPath}/engine.json`;
+      const pluginEngineVersion = await readEngineVersion(pluginEngineMetaPath);
+      if (!pluginEngineVersion) {
+        throw new Error("Missing plugin engine version");
+      }
+      if (pluginEngineVersion !== expectedEngineVersion) {
+        warnings(
+          `${l10n("WARNING_ENGINE_PLUGIN_OUT_OF_DATE", {
+            pluginName,
+            pluginEngineVersion,
+            expectedEngineVersion,
+          })}`
+        );
+      }
+    } catch (e) {
+      warnings(
+        `${l10n("WARNING_ENGINE_PLUGIN_MISSING_MANIFEST", {
+          pluginName,
+          expectedEngineVersion,
+        })}`
+      );
+    }
     await copy(enginePluginPath, outputRoot);
   }
 

@@ -39,7 +39,7 @@ int strcmp(const char *s1, const char *s2);
     @param src			Buffer to copy from
     @param len			Number of Bytes to copy
 */
-void *memcpy(void *dest, const void *src, size_t len) OLDCALL;
+void *memcpy(void *dest, const void *src, size_t len);
 
 /** Copies n bytes from memory area src to memory area dest, areas may overlap
  */

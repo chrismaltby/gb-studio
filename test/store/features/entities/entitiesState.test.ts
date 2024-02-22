@@ -624,6 +624,7 @@ test("Should be able to flood fill collisions", () => {
     brush: "fill",
     isTileProp: false,
     drawLine: false,
+    tileLookup: new Uint8Array(),
   });
 
   const newState = reducer(state, action);
@@ -672,6 +673,7 @@ test("Should be able to paint collisions", () => {
     brush: "8px",
     isTileProp: false,
     drawLine: false,
+    tileLookup: new Uint8Array(),
   });
 
   const newState = reducer(state, action);
@@ -727,6 +729,7 @@ test("Should be able to paint collision line", () => {
     brush: "8px",
     isTileProp: false,
     drawLine: true,
+    tileLookup: new Uint8Array(),
   });
 
   const newState = reducer(state, action);

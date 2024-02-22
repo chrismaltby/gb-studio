@@ -1,9 +1,9 @@
-import { decBin } from "lib/helpers/8bit";
-import { assetFilename } from "lib/helpers/gbstudio";
+import { decBin } from "shared/lib/helpers/8bit";
 import { Sound } from "store/features/entities/entitiesTypes";
 import { compileFXHammer } from "./compileFXHammer";
 import { compileVGM } from "./compileVGM";
 import { compileWav } from "./compileWav";
+import { assetFilename } from "shared/lib/helpers/assets";
 
 export interface CompileSoundOptions {
   projectRoot: string;

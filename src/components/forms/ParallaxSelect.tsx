@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
-import l10n from "lib/helpers/l10n";
+import l10n from "renderer/lib/l10n";
 import { SceneParallaxLayer } from "store/features/entities/entitiesTypes";
 import { CoordinateInput } from "ui/form/CoordinateInput";
 import { FormField } from "ui/form/FormLayout";
@@ -13,13 +13,6 @@ interface ParallaxOption {
   value: number;
   label: string;
 }
-
-const options: ParallaxOption[] = [
-  { value: 0, label: `${l10n("FIELD_PARALLAX_NONE")}` },
-  { value: 1, label: `1 ${l10n("FIELD_LAYER")}` },
-  { value: 2, label: `2 ${l10n("FIELD_LAYERS")}` },
-  { value: 3, label: `3 ${l10n("FIELD_LAYERS")}` },
-];
 
 interface ParallaxSelectProps {
   name: string;
@@ -192,6 +185,17 @@ const ParallaxSelect = ({
   onChange,
 }: ParallaxSelectProps) => {
   const dispatch = useDispatch();
+
+  const options: ParallaxOption[] = useMemo(
+    () => [
+      { value: 0, label: `${l10n("FIELD_PARALLAX_NONE")}` },
+      { value: 1, label: `1 ${l10n("FIELD_LAYER")}` },
+      { value: 2, label: `2 ${l10n("FIELD_LAYERS")}` },
+      { value: 3, label: `3 ${l10n("FIELD_LAYERS")}` },
+    ],
+    []
+  );
+
   const [selectValue, setSelectValue] = useState<ParallaxOption>(options[0]);
 
   useEffect(() => {
@@ -202,7 +206,7 @@ const ParallaxSelect = ({
         options.find((o) => o.value === value.length) || options[0];
       setSelectValue(selectValue);
     }
-  }, [value]);
+  }, [options, value]);
 
   const setHoverLayer = useCallback(
     (layer: number | undefined) => {

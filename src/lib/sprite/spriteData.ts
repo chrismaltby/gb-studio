@@ -9,7 +9,7 @@ import {
   readFileToIndexedImage,
   sliceIndexedImage,
   toIndex,
-} from "../tiles/indexedImage";
+} from "lib/tiles/indexedImage";
 
 const TILE_SIZE = 8;
 
@@ -64,7 +64,7 @@ enum Color {
 }
 
 export const spriteDataIndexFn: ImageIndexFunction = (r, g, b, _a) => {
-  if ((g > 249 && r < 180 && b < 20) || (b >= 200 && g < 20)) {
+  if ((g > 249 && r < 180 && b < 20) || (b >= 200 && g < 20) || _a < 200) {
     return Color.Transparent;
   } else if (g >= 205) {
     return Color.Light;
@@ -1163,10 +1163,7 @@ export const roundDown8 = (v: number): number => Math.floor(v / 8) * 8;
 export const roundUp16 = (x: number): number => Math.ceil(x / 16) * 16;
 export const roundUp8 = (x: number): number => Math.ceil(x / 8) * 8;
 
-const uniqWith = <T extends unknown>(
-  arr: T[],
-  comparator: (a: T, b: T) => boolean
-) => {
+const uniqWith = <T>(arr: T[], comparator: (a: T, b: T) => boolean) => {
   const uniques = [];
   for (const a of arr) {
     if (uniques.findIndex((u) => comparator(a, u)) === -1) {

@@ -1,5 +1,5 @@
 import { ipcRenderer } from "electron";
-import player from "components/music/helpers/player.ts";
+import player from "components/music/helpers/player";
 import { playNotePreview } from "components/music/helpers/notePreview";
 
 const log = (log) => {
@@ -75,9 +75,7 @@ ipcRenderer.on("music-data", (event, d) => {
       const channels = player.setChannel(d.channel, d.muted);
       ipcRenderer.send("music-data-receive", {
         action: "muted",
-        message: {
-          channels,
-        },
+        channels,
       });
       break;
     case "preview":

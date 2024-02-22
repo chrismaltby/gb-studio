@@ -1,5 +1,5 @@
 import uuid from "uuid";
-import { animationIndexBySpriteType } from "../../components/sprites/helpers";
+import { animationIndexBySpriteType } from "shared/lib/sprites/helpers";
 import {
   Metasprite,
   MetaspriteTile,
@@ -8,7 +8,6 @@ import {
   SpriteSheet,
   SpriteState,
 } from "store/features/entities/entitiesTypes";
-import { assetFilename } from "../helpers/gbstudio";
 import DetectSpriteWorker, { DetectSpriteResult } from "./detectSprite.worker";
 import {
   Position,
@@ -17,6 +16,7 @@ import {
   SpriteCluster,
   SpriteTileLocation,
 } from "./spriteData";
+import { assetFilename } from "shared/lib/helpers/assets";
 
 interface DetectedSprite {
   spriteSheetId: string;

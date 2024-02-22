@@ -6,11 +6,11 @@
 uint16_t counter = 0;
 
 // inc() must be a relocatable function, be careful!
-void inc() {
+void inc(void) {
     counter++;
 }
 // dummy function, needed to calculate inc() size, must be after it
-void inc_end() {} 
+void inc_end(void) {} 
 
 // calculate the distance between objects 
 #define object_distance(a, b) ((void *)&(b) - (void *)&(a))
@@ -26,14 +26,14 @@ inc_t inc_hiram_var = (inc_t)hiram_buffer;
 
 // those are defined by passing parameters to the linker, they must be located at the same 
 // addresses where ram_buffer and hiram_buffer are located
-extern void inc_ram();
-extern void inc_hiram();
+extern void inc_ram(void);
+extern void inc_hiram(void);
 
-void print_counter() {
+void print_counter(void) {
     printf(" Counter is %u\n", counter);
 }
 
-void main() {
+void main(void) {
     // copy inc() function to it's new destinations: hiram_buffer and ram_buffer
     hiramcpy((uint8_t)&hiram_buffer, (void *)&inc, (uint8_t)object_distance(inc, inc_end));
     memcpy(&ram_buffer, (void *)&inc, (uint16_t)object_distance(inc, inc_end));

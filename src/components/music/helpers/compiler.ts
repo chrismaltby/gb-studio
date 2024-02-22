@@ -27,6 +27,13 @@ interface CompileError {
   message: string;
 }
 
+type EmscriptenModule = {
+  FS: {
+    mkdir: (path: string) => void;
+    writeFile: (path: string, value: string | Uint8Array) => void;
+  };
+};
+
 let busy = false;
 let repeat = false;
 let startDelayTimer: number;
@@ -39,7 +46,7 @@ let ramSymbols: Array<string | null> = [];
 let linkOptions: string[] = [];
 
 const lineNumberRegex = /([\w.]+)[\w.:~]*\(([0-9]+)\)/gi;
-const symRegex = /^\s*\$([0-9a-f]+) = ([\w\.]+)/;
+const symRegex = /^\s*\$([0-9a-f]+) = ([\w.]+)/;
 const sectionTypeBankRegex = /^\s*(\w+) bank #(\d+)/;
 const sectionRegex = /^\s*SECTION: \$([0-9a-f]+)-\$([0-9a-f]+)/;
 const slackRegex = /^\s*SLACK: \$([0-9a-f]+) bytes/;
@@ -48,7 +55,7 @@ const slackRegex = /^\s*SLACK: \$([0-9a-f]+) bytes/;
   https://gist.github.com/surma/b2705b6cca29357ebea1c9e6e15684cc
   https://github.com/webpack/webpack/issues/7352
 */
-const locateFile = (module: any) => (path: string) => {
+const locateFile = (module: unknown) => (path: string) => {
   if (path.endsWith(".wasm")) {
     return module;
   }
@@ -119,7 +126,7 @@ async function runRgbAsm(target: string): Promise<Uint8Array> {
   const module = await createRgbAsm({
     locateFile: locateFile(createRgbAsmModule),
     arguments: ["-E", target, "-o", "output.o", "-Wall"],
-    preRun: (m: any) => {
+    preRun: (m: EmscriptenModule) => {
       const FS = m.FS;
       FS.mkdir("include");
       for (const [key, value] of Object.entries(storage.getFiles())) {
@@ -152,7 +159,7 @@ async function runRgbLink(
   const module = await createRgbLink({
     locateFile: locateFile(createRgbLinkModule),
     arguments: args,
-    preRun: (m: any) => {
+    preRun: (m: EmscriptenModule) => {
       const FS = m.FS;
       objFiles.forEach((_, idx) => {
         FS.writeFile(`${idx}.o`, objFiles[idx]);
@@ -178,7 +185,7 @@ async function runRgbFix(inputRomFile: Uint8Array): Promise<Uint8Array> {
   const module = await createRgbFix({
     locateFile: locateFile(createRgbFixModule),
     arguments: ["-v", "output.gb", "-p", "0xff"],
-    preRun: (m: any) => {
+    preRun: (m: EmscriptenModule) => {
       const FS = m.FS;
       FS.writeFile("output.gb", inputRomFile);
     },
@@ -271,7 +278,7 @@ function buildDone(romFile: Uint8Array, mapFile: string) {
   }
 }
 
-export default {
+const compiler = {
   compile: (
     options: string[],
     onCompileDone: CompileDoneCallback,
@@ -292,3 +299,5 @@ export default {
   getRomSymbols: () => romSymbols,
   getRamSymbols: () => ramSymbols,
 };
+
+export default compiler;

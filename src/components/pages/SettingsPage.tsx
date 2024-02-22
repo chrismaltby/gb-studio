@@ -1,20 +1,26 @@
-import React, { FC, useCallback, useLayoutEffect, useState } from "react";
+import React, {
+  FC,
+  useCallback,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Path from "path";
-import { FormField } from "../library/Forms";
-import l10n from "lib/helpers/l10n";
-import castEventValue from "lib/helpers/castEventValue";
-import CustomControlsPicker from "../forms/CustomControlsPicker";
-import { PaletteSelect } from "../forms/PaletteSelect";
+import { FormField } from "components/library/Forms";
+import l10n, { L10NKey } from "renderer/lib/l10n";
+import castEventValue from "renderer/lib/helpers/castEventValue";
+import CustomControlsPicker from "components/forms/CustomControlsPicker";
+import { PaletteSelect } from "components/forms/PaletteSelect";
 import { Button } from "ui/buttons/Button";
 import { SettingsState } from "store/features/settings/settingsState";
 import settingsActions from "store/features/settings/settingsActions";
 import navigationActions from "store/features/navigation/navigationActions";
-import EngineFieldsEditor from "../settings/EngineFieldsEditor";
+import EngineFieldsEditor from "components/settings/EngineFieldsEditor";
 import { Checkbox } from "ui/form/Checkbox";
 import { Input } from "ui/form/Input";
 import { RootState } from "store/configureStore";
-import { useGroupedEngineFields } from "../settings/useGroupedEngineFields";
+import { useGroupedEngineFields } from "components/settings/useGroupedEngineFields";
 import { NavigationSection } from "store/features/navigation/navigationState";
 import { Textarea } from "ui/form/Textarea";
 import useWindowSize from "ui/hooks/use-window-size";
@@ -24,19 +30,19 @@ import {
   SettingsMenuItem,
   SettingsPageWrapper,
   SettingsSearchWrapper,
-} from "../settings/SettingsLayout";
+} from "components/settings/SettingsLayout";
 import { CardAnchor, CardButtons, CardHeading } from "ui/cards/Card";
 import { SearchableSettingRow } from "ui/form/SearchableSettingRow";
 import { SettingRowInput, SettingRowLabel } from "ui/form/SettingRow";
 import { SearchableCard } from "ui/cards/SearchableCard";
-import { FontSelect } from "../forms/FontSelect";
-import { options as sceneTypes } from "../forms/SceneTypeSelect";
-import { SpriteSheetSelect } from "../forms/SpriteSheetSelect";
-import { ColorAnimationText } from "../settings/ColorAnimationText";
-import { MusicDriverSelect } from "../forms/MusicDriverSelect";
+import { FontSelect } from "components/forms/FontSelect";
+import { getOptions as getSceneTypeOptions } from "components/forms/SceneTypeSelect";
+import { SpriteSheetSelect } from "components/forms/SpriteSheetSelect";
+import { ColorAnimationText } from "components/settings/ColorAnimationText";
+import { MusicDriverSelect } from "components/forms/MusicDriverSelect";
 import { FormInfo } from "ui/form/FormInfo";
 import electronActions from "store/features/electron/electronActions";
-import CartSettingsEditor from "../settings/CartSettingsEditor";
+import CartSettingsEditor from "components/settings/CartSettingsEditor";
 import { UIAssetPreview } from "components/forms/UIAssetPreviewButton";
 
 const SettingsPage: FC = () => {
@@ -60,6 +66,7 @@ const SettingsPage: FC = () => {
     },
     [dispatch]
   );
+  const sceneTypes = useMemo(getSceneTypeOptions, []);
   const windowSize = useWindowSize();
   const showMenu = (windowSize.width || 0) >= 750;
 
@@ -208,7 +215,7 @@ const SettingsPage: FC = () => {
                 key={group.name}
                 onClick={onMenuItem(`settings${group.name}`)}
               >
-                {l10n(group.name)}
+                {l10n(group.name as L10NKey)}
               </SettingsMenuItem>
             ))}
             <SettingsMenuItem onClick={onMenuItem("settingsControls")}>
@@ -442,26 +449,28 @@ const SettingsPage: FC = () => {
         >
           <CardAnchor id="settingsPlayer" />
           <CardHeading>{l10n("SETTINGS_PLAYER_DEFAULT_SPRITES")}</CardHeading>
-          {sceneTypes.map((sceneType) => (
-            <SearchableSettingRow
-              key={sceneType.value}
-              searchTerm={searchTerm}
-              searchMatches={[sceneType.label]}
-            >
-              <SettingRowLabel>{sceneType.label}</SettingRowLabel>
-              <SettingRowInput>
-                <SpriteSheetSelect
-                  name={`defaultPlayerSprite__${sceneType.value}`}
-                  value={defaultPlayerSprites[sceneType.value] || ""}
-                  optional
-                  optionalLabel={l10n("FIELD_NONE")}
-                  onChange={(value) =>
-                    onEditDefaultPlayerSprites(sceneType.value, value)
-                  }
-                />
-              </SettingRowInput>
-            </SearchableSettingRow>
-          ))}
+          {sceneTypes
+            .filter((s) => s.value !== "LOGO")
+            .map((sceneType) => (
+              <SearchableSettingRow
+                key={sceneType.value}
+                searchTerm={searchTerm}
+                searchMatches={[sceneType.label]}
+              >
+                <SettingRowLabel>{sceneType.label}</SettingRowLabel>
+                <SettingRowInput>
+                  <SpriteSheetSelect
+                    name={`defaultPlayerSprite__${sceneType.value}`}
+                    value={defaultPlayerSprites[sceneType.value] || ""}
+                    optional
+                    optionalLabel={l10n("FIELD_NONE")}
+                    onChange={(value) =>
+                      onEditDefaultPlayerSprites(sceneType.value, value)
+                    }
+                  />
+                </SettingRowInput>
+              </SearchableSettingRow>
+            ))}
         </SearchableCard>
 
         <SearchableCard

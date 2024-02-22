@@ -16,20 +16,20 @@ import {
 } from "ui/splitpane/SplitPaneDivider";
 import { RootState } from "store/configureStore";
 import editorActions from "store/features/editor/editorActions";
-import { NavigatorSongs } from "../music/NavigatorSongs";
-import { SongTracker } from "../music/SongTracker";
+import { NavigatorSongs } from "components/music/NavigatorSongs";
+import { SongTracker } from "components/music/SongTracker";
 import { musicSelectors } from "store/features/entities/entitiesState";
-import { assetFilename } from "lib/helpers/gbstudio";
-import { SongEditor } from "../music/SongEditor";
-import SongEditorToolsPanel from "../music/SongEditorToolsPanel";
-import SongEditorRightToolsPanel from "../music/SongEditorRightToolsPanel";
+import { SongEditor } from "components/music/SongEditor";
+import SongEditorToolsPanel from "components/music/SongEditorToolsPanel";
+import SongEditorRightToolsPanel from "components/music/SongEditorRightToolsPanel";
 import { loadSongFile } from "store/features/trackerDocument/trackerDocumentState";
-import { SongPianoRoll } from "../music/SongPianoRoll";
+import { SongPianoRoll } from "components/music/SongPianoRoll";
 import { Music } from "store/features/entities/entitiesTypes";
-import l10n from "lib/helpers/l10n";
-import { clampSidebarWidth } from "lib/helpers/window/sidebar";
+import l10n from "renderer/lib/l10n";
+import { clampSidebarWidth } from "renderer/lib/window/sidebar";
 import { UgePlayer } from "components/music/UgePlayer";
 import trackerActions from "store/features/tracker/trackerActions";
+import { assetFilename } from "shared/lib/helpers/assets";
 
 const Wrapper = styled.div`
   display: flex;
@@ -346,7 +346,7 @@ const MusicPageUge = () => {
               position: "relative",
             }}
           >
-            <SongEditor />
+            <SongEditor multiColumn={rightPaneWidth >= 500} />
           </div>
         </>
       ) : (

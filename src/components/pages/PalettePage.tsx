@@ -14,13 +14,13 @@ import { SplitPaneHorizontalDivider } from "ui/splitpane/SplitPaneDivider";
 import { RootState } from "store/configureStore";
 import editorActions from "store/features/editor/editorActions";
 import { paletteSelectors } from "store/features/entities/entitiesState";
-import l10n from "lib/helpers/l10n";
+import l10n from "renderer/lib/l10n";
 import { Button } from "ui/buttons/Button";
 import CustomPalettePicker from "components/forms/CustomPalettePicker";
 import { NavigatorPalettes } from "components/palettes/NavigatorPalettes";
 import PageHeader from "components/library/PageHeader";
 import entitiesActions from "store/features/entities/entitiesActions";
-import castEventValue from "lib/helpers/castEventValue";
+import castEventValue from "renderer/lib/helpers/castEventValue";
 
 const Wrapper = styled.div`
   display: flex;

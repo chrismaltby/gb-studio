@@ -6,13 +6,13 @@
 #include "camera.h"
 #include "game_time.h"
 
-void logo_init() BANKED {
+void logo_init(void) BANKED {
   camera_offset_x = 0;
   camera_offset_y = 0;
 
   game_time = 0;
 }
 
-void logo_update() BANKED {
+void logo_update(void) BANKED {
     return;
 }

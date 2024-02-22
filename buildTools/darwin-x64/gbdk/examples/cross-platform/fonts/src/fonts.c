@@ -16,6 +16,11 @@
 
 void main(void)
 {
+#ifdef SEGA
+    __WRITE_VDP_REG(VDP_R2, R2_MAP_0x3800);
+    __WRITE_VDP_REG(VDP_R5, R5_SAT_0x3F00);
+#endif
+
     font_t ibm_font, italic_font, min_font;
     int i;
 

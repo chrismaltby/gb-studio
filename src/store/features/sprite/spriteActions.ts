@@ -28,8 +28,10 @@ const compileSprite = createAction(
   })
 );
 
-export default {
+const spriteActions = {
   detectSprite,
   detectSpriteComplete,
   compileSprite,
 };
+
+export default spriteActions;

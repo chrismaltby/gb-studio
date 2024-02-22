@@ -2,7 +2,7 @@
 
 #include "vm_actor.h"
 
-#include <gb/metasprites.h>
+#include <gbdk/metasprites.h>
 
 #include "actor.h"
 #include "game_time.h"
@@ -249,6 +249,17 @@ void vm_actor_deactivate(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {
     } else {
         actor->disabled = TRUE;
         deactivate_actor(actor);
+    }
+}
+
+void vm_actor_begin_update(SCRIPT_CTX * THIS, INT16 idx) OLDCALL BANKED {
+    actor_t *actor;
+
+    act_set_pos_t * params = VM_REF_TO_PTR(idx);
+    actor = actors + (UBYTE)(params->ID);
+
+    if ((actor->script_update.bank) && (actor->hscript_update & SCRIPT_TERMINATED)) {
+        script_execute(actor->script_update.bank, actor->script_update.ptr, &(actor->hscript_update), 0);
     }
 }
 

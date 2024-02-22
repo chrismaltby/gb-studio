@@ -1,5 +1,5 @@
-import l10n from "lib/helpers/l10n";
-import React from "react";
+import l10n from "renderer/lib/l10n";
+import React, { useMemo } from "react";
 import { UnitType, unitTypes } from "store/features/entities/entitiesTypes";
 import styled from "styled-components";
 import { Button } from "ui/buttons/Button";
@@ -14,20 +14,6 @@ interface UnitsSelectButtonInputOverlayProps {
   allowedValues?: UnitType[];
   onChange?: (newValue: UnitType) => void;
 }
-
-const unitTypeNames: Record<UnitType, string> = {
-  tiles: l10n("FIELD_TILES"),
-  pixels: l10n("FIELD_PIXELS"),
-  time: l10n("FIELD_SECONDS"),
-  frames: l10n("FIELD_FRAMES"),
-};
-
-const unitTypeButtonNames: Record<UnitType, string> = {
-  tiles: l10n("FIELD_TILES").toLocaleLowerCase(),
-  pixels: l10n("FIELD_PIXELS_SHORT").toLocaleLowerCase(),
-  time: l10n("FIELD_SECONDS").toLocaleLowerCase(),
-  frames: l10n("FIELD_FRAMES").toLocaleLowerCase(),
-};
 
 const UnitsWrapper = styled.div`
   position: absolute;
@@ -77,6 +63,26 @@ export const UnitsSelectButtonInputOverlay = ({
   allowedValues,
   onChange,
 }: UnitsSelectButtonInputOverlayProps) => {
+  const unitTypeNames: Record<UnitType, string> = useMemo(
+    () => ({
+      tiles: l10n("FIELD_TILES"),
+      pixels: l10n("FIELD_PIXELS"),
+      time: l10n("FIELD_SECONDS"),
+      frames: l10n("FIELD_FRAMES"),
+    }),
+    []
+  );
+
+  const unitTypeButtonNames: Record<UnitType, string> = useMemo(
+    () => ({
+      tiles: l10n("FIELD_TILES").toLocaleLowerCase(),
+      pixels: l10n("FIELD_PIXELS_SHORT").toLocaleLowerCase(),
+      time: l10n("FIELD_SECONDS").toLocaleLowerCase(),
+      frames: l10n("FIELD_FRAMES").toLocaleLowerCase(),
+    }),
+    []
+  );
+
   const allValues = allowedValues ? allowedValues : unitTypes;
   const currentValue = value && unitTypeButtonNames[value];
   return (

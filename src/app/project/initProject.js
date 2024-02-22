@@ -17,13 +17,14 @@ import clipboardActions from "store/features/clipboard/clipboardActions";
 import engineActions from "store/features/engine/engineActions";
 import errorActions from "store/features/error/errorActions";
 import initElectronL10n from "lib/helpers/initElectronL10n";
-import { clampSidebarWidth } from "lib/helpers/window/sidebar";
-import { initKeyBindings } from "lib/keybindings/keyBindings";
-import { TRACKER_REDO, TRACKER_UNDO } from "../../consts";
+import { clampSidebarWidth } from "renderer/lib/window/sidebar";
+import { initKeyBindings } from "renderer/lib/keybindings/keyBindings";
+import { TRACKER_REDO, TRACKER_UNDO } from "consts";
 import {
   initEngineFields,
   engineFieldsEmitter,
 } from "lib/project/engineFields";
+import API from "renderer/lib/api";
 
 initElectronL10n();
 
@@ -174,6 +175,9 @@ const onZoom = (event, zoomType) => {
 const onWindowZoom = (event, zoomLevel) => {
   webFrame.setZoomLevel(zoomLevel);
 };
+API.settings.app.getUIScale().then((zoomLevel) => {
+  webFrame.setZoomLevel(zoomLevel);
+});
 
 const onRun = () => {
   store.dispatch(buildGameActions.buildGame());

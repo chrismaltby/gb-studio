@@ -1,4 +1,4 @@
-import l10n from "lib/helpers/l10n";
+import l10n from "renderer/lib/l10n";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Sound } from "store/features/entities/entitiesTypes";

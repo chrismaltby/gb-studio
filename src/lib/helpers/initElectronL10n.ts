@@ -8,6 +8,10 @@ const initElectronL10n = () => {
   if (hasInitialised) {
     return;
   }
+  forceL10nReload();
+};
+
+export const forceL10nReload = () => {
   const app = electron.app || (electron.remote && electron.remote.app);
   const settingsLocale = app && settings.get("locale");
   const systemLocale = app ? app.getLocale() : "en";

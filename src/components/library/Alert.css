@@ -9,8 +9,22 @@
   color: #000;
 }
 
+.Alert-Info {
+  background-color: #03a9f4;
+  color: #000;
+}
+
 .AlertItem {
+  padding: 5px 0px;
+}
+
+.Alert-Warning .AlertItem {
   border-bottom: 1px solid #ffa000;
+  padding: 5px 0px;
+}
+
+.Alert-Info .AlertItem {
+  border-bottom: 1px solid #0088c7;
   padding: 5px 0px;
 }
 

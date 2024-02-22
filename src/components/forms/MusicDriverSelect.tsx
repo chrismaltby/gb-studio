@@ -1,5 +1,5 @@
-import l10n from "lib/helpers/l10n";
-import React, { FC, useEffect, useState } from "react";
+import l10n from "renderer/lib/l10n";
+import React, { FC, useEffect, useMemo, useState } from "react";
 import { MusicDriverSetting } from "store/features/settings/settingsState";
 import {
   Option,
@@ -13,11 +13,6 @@ interface MusicDriverSelectProps extends SelectCommonProps {
   value?: MusicDriverSetting;
   onChange?: (newId: string) => void;
 }
-
-const musicDriverOptionsInfo: { [key: string]: string } = {
-  huge: l10n("FIELD_HUGE_DRIVER_INFO"),
-  gbt: l10n("FIELD_GBT_PLAYER_INFO"),
-};
 
 const musicDriverOptions: Option[] = [
   {
@@ -35,6 +30,13 @@ export const MusicDriverSelect: FC<MusicDriverSelectProps> = ({
   onChange,
 }) => {
   const [currentValue, setCurrentValue] = useState<Option>();
+  const musicDriverOptionsInfo: { [key: string]: string } = useMemo(
+    () => ({
+      huge: l10n("FIELD_HUGE_DRIVER_INFO"),
+      gbt: l10n("FIELD_GBT_PLAYER_INFO"),
+    }),
+    []
+  );
 
   useEffect(() => {
     const currentMusicDriver = musicDriverOptions.find(

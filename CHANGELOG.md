@@ -9,22 +9,64 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Add ability to launch projectiles at a target actor [@patrickmollohan](https://github.com/patrickmollohan) [@pau-tomas](https://github.com/pau-tomas)
+- Add angle selector input showing degrees for GBVM angle values [@pau-tomas](https://github.com/pau-tomas)
+- Add support for atan2 function in math expressions [@pau-tomas](https://github.com/pau-tomas)
+- Add magnitude field to camera shake event [@patrickmollohan](https://github.com/patrickmollohan)
+- Add checkbox to toggle if new animation should loop when using Set Actor Animation State event [@pau-tomas](https://github.com/pau-tomas)
+
+### Changed
+
+- Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
+
+### Fixed
+
+- Fix sound effects previews in editor not matching how they sound in game [@pau-tomas](https://github.com/pau-tomas)
+- Fix crash when typing "!S" into dialogue events
+- Fix bug where engine plugins that include an engine.json with no fields causes all default engine settings to be hidden [@pau-tomas](https://github.com/pau-tomas)
+- Fix localisation for default names of scenes, actors and triggers, new entities no longer hard coded to use English names
+
+## [3.2.0] - 2024-01-29
+
+### Added
+
 - Add ability to choose timer context in timer events allowing up to four timers to be used per scene [@patrickmollohan](https://github.com/patrickmollohan)
 - Add event "If Current Scene Is" to allow conditionally running scripts based on the current scene [@patrickmollohan](https://github.com/patrickmollohan)
 - Add ability to set background tile priority for Color games using Priorty tool in colorize section. Priority tiles appear above sprites
+- Add support for UGE v6 to music editor [@pau-tomas](https://github.com/pau-tomas)
+- Subpattern editor added to Instrument Editor [@pau-tomas](https://github.com/pau-tomas)
+- Add warning when trying to reuse background from a logo scene [@pau-tomas](https://github.com/pau-tomas)
+- Add descriptive README files to asset folders in new projects [@pau-tomas](https://github.com/pau-tomas)
+- Add slope brush when drawing collisions
+- Add magic brush when painting tiles and drawing collisions, updates all tiles matching the one clicked [@RichardULZ](https://github.com/RichardULZ)
+- Add support for slopes to platform scenes [@Canight](https://github.com/Canite) [@gearfo](https://gearfo.itch.io/) [@Gumpy Function](https://www.gumpyfunction.com/)
+- Add ability to make Analogue Pocket builds using CLI tool [@SalvatoreTosti](https://github.com/SalvatoreTosti)
+- Add warning when using engine plugins built on older versions of GB Studio
 
 ### Changed
 
 - Updated Simplified Chinese localisation. [@wcxu21](https://github.com/wcxu21)
 - Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
+- Update to latest [GBVM](https://github.com/chrismaltby/gbvm)
+- Rename "Obj Palette" in sprite editor to "Monochrome Palette" to make its purpose clearer, now includes palette preview [@pau-tomas](https://github.com/pau-tomas)
+- Allow actor fields that aren't named "actorId" or "otherActorId" to be in custom scripts [@patrickmollohan](https://github.com/patrickmollohan)
+- Fix issue where editing a variable's name in sidebar would sometimes cause a different variable to become selected
 
 ### Fixed
 
 - Fixed issue where piano roll would scroll vertically when switching patterns [@pau-tomas](https://github.com/pau-tomas)
 - Fix issue where editing a custom script could cause variables to switch back to pass by reference
 - Fix issue where loading a scene containing projectiles or dynamically modified sprites could cause graphical corruption [@untoxa](https://github.com/untoxa)
+- Fix issue where script event title would show wrong local variable name for scenes [@pau-tomas](https://github.com/pau-tomas)
+- Fix muting bug with FXH parser [@coffeevalenbat](https://github.com/coffeevalenbat)
+- Fix issue where Animation State value for projectiles was being ignored
+- Fix issue where falling on to ladder while holding dpad down could sometimes cause player to get stuck
+- Fix bounds check for right screen edge when player isn't 16px wide
+- Fix VM_REPLACE_TILE_XY to allow tiles larger than 255 for logo scene type
 
-### Removed
+### Performance
+
+- Performance improvements in ScriptEditorEventHelper, no longer rerenders all scenes when updating [@pau-tomas](https://github.com/pau-tomas)
 
 ## [3.1.0] - 2022-09-11
 

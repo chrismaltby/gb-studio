@@ -1,5 +1,5 @@
 import { readFile } from "fs-extra";
-import { decBin, decHexVal } from "lib/helpers/8bit";
+import { decBin, decHexVal } from "shared/lib/helpers/8bit";
 import { CompiledSound } from "./compileSound";
 
 type CompileOutputFmt = "c" | "asm";
@@ -91,7 +91,12 @@ const compileFXHammerEffect = (
     let count = 0;
 
     if (options.usePan) {
-      const currentPan = 0b01010101 | ch2pan | ch4pan;
+      let currentPan = 0b01010101 | ch2pan | ch4pan;
+
+      // Failsafes to avoid muting channels
+      if (ch2pan === 0) currentPan |= 0b00100010;
+      if (ch4pan === 0) currentPan |= 0b10001000;
+
       if (oldPan !== currentPan) {
         count += 1;
         result += `,${binPrefix}01000100,${decHex(currentPan)}`;

@@ -10,7 +10,14 @@
     "import/resolver": {
       "node": {
         "extensions": [".js", ".jsx", ".ts", ".tsx"],
-        "moduleDirectory": ["node_modules", "src", "src/components"]
+        "moduleDirectory": [
+          "node_modules",
+          "src",
+          "src/components",
+          "src/renderer",
+          "appData",
+          "./"
+        ]
       }
     }
   },
@@ -36,15 +43,141 @@
     "import/prefer-default-export": 0,
     "@typescript-eslint/explicit-module-boundary-types": 0,
     "@typescript-eslint/no-empty-function": 0,
-    "camelcase": ["error", {"allow": ["UNSAFE_componentWillReceiveProps", "icon_path", "bug_link_text"]}],
+    "camelcase": [
+      "error",
+      {
+        "allow": [
+          "UNSAFE_componentWillReceiveProps",
+          "icon_path",
+          "bug_link_text"
+        ]
+      }
+    ],
     "no-use-before-define": "off",
     "@typescript-eslint/no-use-before-define": ["error"],
-    "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }
+    ],
     "no-unused-vars": "off",
-    "react-hooks/exhaustive-deps": ["warn", {
-      "additionalHooks": "useDebouncedCallback"
-    }]
+    "react-hooks/exhaustive-deps": [
+      "warn",
+      {
+        "additionalHooks": "useDebouncedCallback"
+      }
+    ]
   },
+  "overrides": [
+    {
+      "files": ["src/renderer/**", "src/components/**"],
+      "rules": {
+        "@typescript-eslint/no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["main/*"],
+                "message": "Can't use main/* imports within renderer!",
+                "allowTypeImports": true
+              },
+              {
+                "group": ["lib/*"],
+                "message": "Can't use lib/* imports within renderer!",
+                "allowTypeImports": true
+              },
+              {
+                "group": ["../*"],
+                "message": "Usage of relative parent imports is not allowed",
+                "allowTypeImports": true
+              },
+              {
+                "group": ["renderer/components/*"],
+                "message": "Replace renderer/components/ with just components/"
+              },
+              {
+                "group": ["components/ui/*"],
+                "message": "Replace components/ui/ with just ui/"
+              }
+            ],
+            "paths": ["fs", "fs-extra", "electron-settings", "electron"]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/renderer/lib/api/setup.ts"],
+      "rules": {
+        "@typescript-eslint/no-restricted-imports": [
+          "error",
+          {
+            "paths": ["fs", "fs-extra"]
+          }
+        ]
+      }
+    },    
+    {
+      "files": ["src/main/**", "src/lib/**"],
+      "rules": {
+        "@typescript-eslint/no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["renderer/*"],
+                "message": "Can't use renderer/* imports within main process!",
+                "allowTypeImports": true
+              },
+              {
+                "group": ["../*"],
+                "message": "Usage of relative parent imports is not allowed",
+                "allowTypeImports": true
+              }
+            ],
+            "paths": ["react", "react-dom"]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/shared/**"],
+      "rules": {
+        "@typescript-eslint/no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["main/*"],
+                "message": "Can't use main/* imports within shared modules!",
+                "allowTypeImports": true
+              },
+              {
+                "group": ["lib/*"],
+                "message": "Can't use lib/* imports within shared modules!",
+                "allowTypeImports": true
+              },
+              {
+                "group": ["renderer/*"],
+                "message": "Can't use renderer/* imports within shared modules!",
+                "allowTypeImports": true
+              },
+              {
+                "group": ["../*"],
+                "message": "Usage of relative parent imports is not allowed",
+                "allowTypeImports": true
+              }
+            ],
+            "paths": [
+              "react",
+              "react-dom",
+              "fs",
+              "fs-extra",
+              "electron-settings"
+            ]
+          }
+        ]
+      }
+    }
+  ],
   "env": {
     "browser": true,
     "node": true,

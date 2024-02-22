@@ -6,7 +6,7 @@ import {
   MAX_TRIGGERS,
   SCREEN_HEIGHT,
   SCREEN_WIDTH,
-} from "../../consts";
+} from "consts";
 import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "store/configureStore";
@@ -20,12 +20,15 @@ import {
 } from "store/features/entities/entitiesState";
 import styled, { css } from "styled-components";
 import { TooltipWrapper } from "ui/tooltips/Tooltip";
-import l10n from "lib/helpers/l10n";
-import { walkNormalisedSceneEvents } from "store/features/entities/entitiesHelpers";
+import l10n from "renderer/lib/l10n";
+import {
+  actorName,
+  walkNormalisedSceneEvents,
+} from "store/features/entities/entitiesHelpers";
 import { SpriteSheet } from "store/features/entities/entitiesTypes";
-import clamp from "lib/helpers/clamp";
+import clamp from "shared/lib/helpers/clamp";
 import { useDebounce } from "ui/hooks/use-debounce";
-import maxSpriteTilesForBackgroundTilesLength from "lib/helpers/maxSpriteTilesForBackgroundTilesLength";
+import { maxSpriteTilesForBackgroundTilesLength } from "shared/lib/helpers/sprites";
 import {
   EVENT_ACTOR_SET_SPRITE,
   EVENT_PLAYER_SET_SPRITE,
@@ -39,6 +42,8 @@ interface SceneInfoButtonProps {
   warning?: boolean;
   error?: boolean;
 }
+
+const MAX_LOGO_SPRITE_TILES = 12;
 
 const SceneInfoWrapper = styled.div<SceneInfoWrapperProps>`
   display: flex;
@@ -114,7 +119,7 @@ const SceneInfo = () => {
   );
   const backgroundNumTiles = useSelector(
     (state: RootState) =>
-      state.warnings.backgrounds[scene?.backgroundId || ""]?.numTiles
+      state.assets.backgrounds[scene?.backgroundId || ""]?.numTiles
   );
   const [tileCount, setTileCount] = useState(0);
   const [actorWarnings, setActorWarnings] = useState<string[]>([]);
@@ -243,20 +248,23 @@ const SceneInfo = () => {
       });
 
       // Player sprite
-      let playerSpriteId = scene.playerSpriteSheetId || "";
-      if (!scene.playerSpriteSheetId) {
-        playerSpriteId = defaultPlayerSprites[scene.type || "TOPDOWN"];
+      if (scene.type !== "LOGO") {
+        let playerSpriteId = scene.playerSpriteSheetId || "";
+        if (!scene.playerSpriteSheetId) {
+          playerSpriteId = defaultPlayerSprites[scene.type || "TOPDOWN"];
+        }
+        const defaultPlayerSprite = spriteSheetsLookup[playerSpriteId || ""];
+        // Check if any player exclusive sprite have more tiles than default
+        if (
+          defaultPlayerSprite &&
+          actorsExclusiveLookup["player"] &&
+          actorsExclusiveLookup["player"].numTiles >
+            defaultPlayerSprite.numTiles
+        ) {
+          playerSpriteId = actorsExclusiveLookup["player"].id;
+        }
+        addSprite(playerSpriteId, true);
       }
-      const defaultPlayerSprite = spriteSheetsLookup[playerSpriteId || ""];
-      // Check if any player exclusive sprite have more tiles than default
-      if (
-        defaultPlayerSprite &&
-        actorsExclusiveLookup["player"] &&
-        actorsExclusiveLookup["player"].numTiles > defaultPlayerSprite.numTiles
-      ) {
-        playerSpriteId = actorsExclusiveLookup["player"].id;
-      }
-      addSprite(playerSpriteId, true);
 
       const tileCount = usedSpriteSheets.reduce((memo, spriteSheet) => {
         return (
@@ -320,10 +328,10 @@ const SceneInfo = () => {
             ) {
               const near = cachedCheckScreenAt(x, y);
               if (near > MAX_ONSCREEN) {
-                const actorName = actor.name || `Actor ${i + 1}`;
+                const name = actorName(actor, i);
                 console.log("TOO CLOSE");
                 newActorWarnings.push(
-                  l10n("WARNING_TOO_MANY_ONSCREEN_ACTORS", { actorName })
+                  l10n("WARNING_TOO_MANY_ONSCREEN_ACTORS", { actorName: name })
                 );
                 newActorWarnings.push(
                   l10n("WARNING_ONSCREEN_ACTORS_LIMIT", {
@@ -373,7 +381,6 @@ const SceneInfo = () => {
   let maxTriggers = MAX_TRIGGERS;
 
   if (scene.type === "LOGO") {
-    maxActors = 0;
     maxTriggers = 0;
   } else if (scene.width <= SCREEN_WIDTH && scene.height <= SCREEN_HEIGHT) {
     maxActors = MAX_ACTORS_SMALL;
@@ -384,7 +391,9 @@ const SceneInfo = () => {
   const actorError = actorCount > maxActors;
   const triggerCount = scene.triggers.length;
   const maxSpriteTiles =
-    maxSpriteTilesForBackgroundTilesLength(backgroundNumTiles);
+    scene.type !== "LOGO"
+      ? maxSpriteTilesForBackgroundTilesLength(backgroundNumTiles)
+      : MAX_LOGO_SPRITE_TILES;
 
   return (
     <SceneInfoWrapper loaded={loaded}>
@@ -407,9 +416,6 @@ const SceneInfo = () => {
                   {warning}
                 </div>
               ))}
-            {scene.type === "LOGO" && (
-              <div>{l10n("WARNING_LOGO_ENTITIES")}</div>
-            )}
           </>
         }
       >
@@ -418,36 +424,32 @@ const SceneInfo = () => {
         </SceneInfoButton>
       </TooltipWrapper>
 
-      {scene.type !== "LOGO" && (
-        <TooltipWrapper
-          tooltip={
-            <>
-              <div>{l10n("FIELD_NUM_SPRITE_TILES_LABEL")}</div>
-              <div>
-                {l10n("FIELD_SPRITE_TILES_COUNT", {
-                  tileCount: String(tileCount),
-                  maxTiles: String(maxSpriteTiles),
-                })}
-              </div>
-              {tileCount > maxSpriteTiles && (
-                <div className="Scene__TooltipTitle">
-                  {l10n("FIELD_WARNING")}
-                </div>
-              )}
-              {tileCount > maxSpriteTiles && (
-                <div>{l10n("WARNING_SPRITE_TILES_LIMIT")}</div>
-              )}
-            </>
-          }
+      <TooltipWrapper
+        tooltip={
+          <>
+            <div>{l10n("FIELD_NUM_SPRITE_TILES_LABEL")}</div>
+            <div>
+              {l10n("FIELD_SPRITE_TILES_COUNT", {
+                tileCount: String(tileCount),
+                maxTiles: String(maxSpriteTiles),
+              })}
+            </div>
+            {tileCount > maxSpriteTiles && (
+              <div className="Scene__TooltipTitle">{l10n("FIELD_WARNING")}</div>
+            )}
+            {tileCount > maxSpriteTiles && (
+              <div>{l10n("WARNING_SPRITE_TILES_LIMIT")}</div>
+            )}
+          </>
+        }
+      >
+        <SceneInfoButton
+          warning={tileCount === maxSpriteTiles}
+          error={tileCount > maxSpriteTiles}
         >
-          <SceneInfoButton
-            warning={tileCount === maxSpriteTiles}
-            error={tileCount > maxSpriteTiles}
-          >
-            S: {tileCount}/{maxSpriteTiles}
-          </SceneInfoButton>
-        </TooltipWrapper>
-      )}
+          S: {tileCount}/{maxSpriteTiles}
+        </SceneInfoButton>
+      </TooltipWrapper>
 
       <TooltipWrapper
         tooltip={

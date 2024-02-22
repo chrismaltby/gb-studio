@@ -1,16 +1,13 @@
-import { assetFilename } from "../helpers/gbstudio";
-import getFileModifiedTime from "../helpers/fs/getModifiedTime";
-import { getBackgroundInfo } from "../helpers/validation";
+import { assetFilename } from "shared/lib/helpers/assets";
+import getFileModifiedTime from "lib/helpers/fs/getModifiedTime";
+import { getBackgroundInfo } from "lib/helpers/validation";
 import {
   readFileToTilesDataArray,
   tileLookupToTileData,
   tileArrayToTileData,
   tilesAndLookupToTilemap,
   toTileLookup,
-} from "../tiles/tileData";
-
-const MAX_SIZE = 9999999999;
-const MAX_TILESET_TILES = 16 * 12;
+} from "lib/tiles/tileData";
 
 const imageBuildCache = {};
 

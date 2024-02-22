@@ -1,10 +1,10 @@
 import electron from "electron";
-import l10n from "../../helpers/l10n";
+import l10n from "lib/helpers/l10n";
 
 const dialog = electron.remote ? electron.remote.dialog : electron.dialog;
 const win = electron.remote?.getCurrentWindow();
 
-export default () => {
+const confirmEnableColorDialog = () => {
   const dialogOptions = {
     type: "info",
     buttons: [l10n("DIALOG_ENABLE_COLOR"), l10n("DIALOG_CANCEL")],
@@ -17,3 +17,5 @@ export default () => {
 
   return dialog.showMessageBoxSync(win, dialogOptions);
 };
+
+export default confirmEnableColorDialog;

@@ -2,7 +2,8 @@
 
 #include "projectiles.h"
 
-#include <gb/metasprites.h>
+#include <gbdk/metasprites.h>
+
 #include <string.h>
 
 #include "scroll.h"
@@ -16,12 +17,10 @@ projectile_def_t projectile_defs[MAX_PROJECTILE_DEFS];
 projectile_t *projectiles_active_head;
 projectile_t *projectiles_inactive_head;
 
-void projectiles_init() BANKED {
-    UBYTE i;
-    projectiles_active_head = NULL;
-    projectiles_inactive_head = NULL;
-    for ( i=0; i != MAX_PROJECTILES; i++ ) {
-        LL_PUSH_HEAD(projectiles_inactive_head, &projectiles[i]);
+void projectiles_init(void) BANKED {
+    projectiles_active_head = projectiles_inactive_head = NULL;
+    for (projectile_t * proj = projectiles; proj < (projectiles + MAX_PROJECTILES); ++proj) {
+        LL_PUSH_HEAD(projectiles_inactive_head, proj);
     }
 }
 
@@ -29,13 +28,13 @@ static UBYTE _save_bank;
 static projectile_t *projectile;
 static projectile_t *prev_projectile;
 
-void projectiles_update() NONBANKED {
+void projectiles_update(void) NONBANKED {
     projectile_t *next;
 
     projectile = projectiles_active_head;
     prev_projectile = NULL;
 
-    _save_bank = _current_bank;
+    _save_bank = CURRENT_BANK;
 
     while (projectile) {
         if (projectile->def.life_time == 0) {
@@ -113,7 +112,7 @@ void projectiles_update() NONBANKED {
     SWITCH_ROM(_save_bank);
 }
 
-void projectiles_render() NONBANKED {
+void projectiles_render(void) NONBANKED {
     projectile = projectiles_active_head;
     prev_projectile = NULL;
 

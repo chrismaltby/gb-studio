@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import styled, { css } from "styled-components";
-import l10n from "lib/helpers/l10n";
+import l10n from "renderer/lib/l10n";
 import { RootState } from "store/configureStore";
 import {
   paletteSelectors,
@@ -13,7 +13,7 @@ import {
 } from "store/features/entities/entitiesTypes";
 import { SelectMenu, selectMenuStyleProps } from "ui/form/Select";
 import { RelativePortal } from "ui/layout/RelativePortal";
-import SpriteSheetCanvas from "../world/SpriteSheetCanvas";
+import SpriteSheetCanvas from "components/world/SpriteSheetCanvas";
 import { SpriteSheetSelect } from "./SpriteSheetSelect";
 
 interface SpriteSheetSelectProps {
