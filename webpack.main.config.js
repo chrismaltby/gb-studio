@@ -8,6 +8,11 @@ const mainPlugins = [].concat(
   new CopyPlugin({
     patterns: [
       { from: "node_modules/about-window", to: "node_modules/about-window" },
+      {
+        from: "node_modules/vm2",
+        to: "node_modules/vm2",
+        info: { minimized: true },
+      },
     ],
   })
 );
@@ -41,6 +46,7 @@ module.exports = {
     },
   },
   externals: {
+    vm2: "vm2",
     "about-window": "about-window",
   },
 };
