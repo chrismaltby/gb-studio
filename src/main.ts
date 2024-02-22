@@ -704,7 +704,7 @@ ipcMain.handle(
         tmpPath: getTmp(),
         progress: (message) => {
           if (cancelBuild) {
-            throw new Error(l10n("BUILD_CANCELLED"));
+            throw new Error("BUILD_CANCELLED");
           }
           if (
             message !== "'" &&
@@ -756,6 +756,8 @@ ipcMain.handle(
     } catch (e) {
       if (typeof e === "string") {
         buildErr(e);
+      } else if (e instanceof Error && e.message === "BUILD_CANCELLED") {
+        buildLog(l10n("BUILD_CANCELLED"));
       } else if (e instanceof Error) {
         buildErr(e.toString());
       }
