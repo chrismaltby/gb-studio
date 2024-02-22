@@ -43,7 +43,7 @@ import {
   COLLISION_SLOPE_VALUES,
   BRUSH_SLOPE,
 } from "consts";
-import PaletteBlock from "components/library/PaletteBlock";
+import PaletteBlock from "components/forms/PaletteBlock";
 import Modal, { ModalFade, ModalContent } from "components/library/Modal";
 import { FormField } from "components/library/Forms";
 import editorActions from "store/features/editor/editorActions";

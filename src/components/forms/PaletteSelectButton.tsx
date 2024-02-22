@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { RootState } from "store/configureStore";
 import { paletteSelectors } from "store/features/entities/entitiesState";
-import PaletteBlock from "components/library/PaletteBlock";
+import PaletteBlock from "components/forms/PaletteBlock";
 import { SelectMenu, selectMenuStyleProps } from "ui/form/Select";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import { PaletteSelect } from "./PaletteSelect";

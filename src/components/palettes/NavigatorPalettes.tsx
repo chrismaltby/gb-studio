@@ -12,7 +12,7 @@ import { Button } from "ui/buttons/Button";
 import { PaletteIcon, PlusIcon } from "ui/icons/Icons";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { FlexGrow } from "ui/spacing/Spacing";
-import PaletteBlock from "components/library/PaletteBlock";
+import PaletteBlock from "components/forms/PaletteBlock";
 
 interface NavigatorPalettesProps {
   height: number;

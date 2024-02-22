@@ -1,4 +1,4 @@
-import PaletteBlock from "components/library/PaletteBlock";
+import PaletteBlock from "components/forms/PaletteBlock";
 import React, { FC } from "react";
 import { ObjPalette } from "store/features/entities/entitiesTypes";
 import {
