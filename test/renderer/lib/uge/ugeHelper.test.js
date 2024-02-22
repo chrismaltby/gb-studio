@@ -3,7 +3,7 @@ import {
   exportToC,
   loadUGESong,
   saveUGESong,
-} from "../../../../src/renderer/lib/uge/ugeHelper";
+} from "../../../../src/shared/lib/uge/ugeHelper";
 import { readFile } from "fs-extra";
 
 test("should convert noise macro from uge 5 files into uge 6 subpattern", async () => {
