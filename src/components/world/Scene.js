@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import cx from "classnames";
-import Actor from "./Actor";
+import WorldActor from "./ActorView";
 import Trigger from "./Trigger";
 import SceneCollisions from "./SceneCollisions";
 import {
@@ -326,7 +326,7 @@ class Scene extends Component {
             ))}
           {showEntities &&
             actors.map((actorId) => (
-              <Actor
+              <WorldActor
                 key={actorId}
                 id={actorId}
                 sceneId={id}

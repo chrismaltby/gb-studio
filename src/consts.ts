@@ -1,4 +1,5 @@
 import path from "path";
+import type { Palette } from "store/features/entities/entitiesTypes";
 
 const isDist = __dirname.indexOf(".webpack") > -1;
 const isCli = __dirname.indexOf("out/cli") > -1;
@@ -100,7 +101,7 @@ export const DMG_PALETTE = {
   id: "dmg",
   name: "DMG (GB Default)",
   colors: ["E8F8E0", "B0F088", "509878", "202850"],
-};
+} as Palette;
 
 export const TMP_VAR_1 = "T0";
 export const TMP_VAR_2 = "T1";
