@@ -510,7 +510,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({
                     <CollisionMaskPicker
                       id="actorCollisionGroup"
                       value={actor.collisionGroup}
-                      onChange={onChangeFieldInput("collisionGroup")}
+                      onChange={onChangeField("collisionGroup")}
                       includeNone
                     />
                   </FormField>

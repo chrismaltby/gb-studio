@@ -486,16 +486,30 @@ const ScriptEventFormInput = ({
       </OffscreenSkeletonInput>
     );
   } else if (type === "collisionMask") {
-    return (
-      <OffscreenSkeletonInput>
-        <CollisionMaskPicker
-          id={id}
-          value={value}
-          onChange={onChangeField}
-          includePlayer={field.includePlayer}
-        />
-      </OffscreenSkeletonInput>
-    );
+    if (isStringArray(value)) {
+      return (
+        <OffscreenSkeletonInput>
+          <CollisionMaskPicker
+            id={id}
+            value={value}
+            onChange={onChangeField}
+            includePlayer={field.includePlayer}
+            multiple
+          />
+        </OffscreenSkeletonInput>
+      );
+    } else {
+      return (
+        <OffscreenSkeletonInput>
+          <CollisionMaskPicker
+            id={id}
+            value={String(value)}
+            onChange={onChangeField}
+            includePlayer={field.includePlayer}
+          />
+        </OffscreenSkeletonInput>
+      );
+    }
   } else if (type === "input") {
     if (isStringArray(value)) {
       return (
