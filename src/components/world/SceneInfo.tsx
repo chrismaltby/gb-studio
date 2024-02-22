@@ -374,7 +374,7 @@ const SceneInfo = () => {
   ]);
 
   if (!scene) {
-    return;
+    return <></>;
   }
 
   let maxActors = MAX_ACTORS;
