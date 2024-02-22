@@ -709,6 +709,7 @@
   "FIELD_SOUNDS": "Sounds",
   "FIELD_MAGNITUDE": "Magnitude",
   "FIELD_MAGNITUDE_DESC": "The amount of camera movement during a camera shake.",
+  "FIELD_START_BY_ADDING_SCENE": "Start by clicking here to add your first scene.",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
