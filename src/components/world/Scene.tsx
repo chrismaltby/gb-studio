@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import cx from "classnames";
 import WorldActor from "./ActorView";
 import TriggerView from "./TriggerView";
 import SceneCollisions from "./SceneCollisions";
@@ -29,6 +28,8 @@ import { sceneName } from "store/features/entities/entitiesHelpers";
 import { assetFilename } from "shared/lib/helpers/assets";
 import { getDOMElementCoords } from "renderer/lib/helpers/dom";
 import { RootState } from "store/configureStore";
+import styled, { css } from "styled-components";
+import { LabelSpan } from "ui/buttons/LabelButton";
 
 const TILE_SIZE = 8;
 
@@ -48,6 +49,109 @@ interface SceneViewProps {
   index: number;
   editable?: boolean;
 }
+
+const SceneName = styled.span`
+  white-space: nowrap;
+  font-size: 11px;
+  background-color: ${(props) => props.theme.colors.document.background};
+  border-radius: 32px;
+  transition: background 0.3s ease-in-out;
+`;
+
+const SceneMetadata = styled.div`
+  white-space: nowrap;
+  overflow: hidden;
+  line-height: 20px;
+  font-size: 11px;
+  transition: padding-left 0.1s ease-in-out, padding-right 0.1s ease-in-out;
+  transition-delay: 0.3s;
+`;
+
+const SceneContent = styled.div`
+  position: relative;
+  background-color: ${(props) => props.theme.colors.sidebar.background};
+  outline: 1px solid ${(props) => props.theme.colors.sidebar.border};
+  image-rendering: pixelated;
+  overflow: hidden;
+`;
+
+interface WrapperProps {
+  selected?: boolean;
+  filtered?: boolean;
+}
+
+const Wrapper = styled.div<WrapperProps>`
+  position: absolute;
+  user-select: none;
+  text-align: center;
+  border-radius: 4px;
+  transition: background 0.3s ease-in-out;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+
+  :hover,
+  :hover ${SceneName} {
+    background-color: ${(props) => props.theme.colors.sidebar.background};
+  }
+
+  ${(props) =>
+    props.selected
+      ? css`
+          z-index: 10;
+          background-color: ${(props) => props.theme.colors.sidebar.background};
+
+          ${SceneContent} {
+            box-shadow: 0 0 0px 3px ${(props) => props.theme.colors.highlight};
+          }
+
+          ${LabelSpan} {
+            opacity: 1;
+          }
+
+          .Scene__Info,
+          .Scene:hover .Scene__Info {
+            opacity: 1;
+          }
+        `
+      : ""}
+
+  ${(props) =>
+    props.filtered
+      ? css`
+          &:after {
+            content: "";
+            background-color: var(--main-bg-color);
+            border-radius: 4px;
+            opacity: 0.8;
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            pointer-events: none;
+          }
+        `
+      : ""}
+`;
+
+interface SceneOverlayProps {
+  noPointerEvents?: boolean;
+}
+
+const SceneOverlay = styled.div<SceneOverlayProps>`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  ${(props) =>
+    props.noPointerEvents
+      ? css`
+          pointer-events: none;
+        `
+      : ""}
+`;
 
 const SceneView = ({ id, index, editable }: SceneViewProps) => {
   const dispatch = useDispatch();
@@ -107,9 +211,14 @@ const SceneView = ({ id, index, editable }: SceneViewProps) => {
     const worldViewWidth = state.editor.worldViewWidth;
     const worldViewHeight = state.editor.worldViewHeight;
     const sidebarWidth = state.editor.worldSidebarWidth;
+    const navigatorWidth = state.project.present.settings.showNavigator
+      ? state.editor.navigatorSidebarWidth
+      : 0;
+
     const viewBoundsX = worldScrollX / zoomRatio;
     const viewBoundsY = worldScrollY / zoomRatio;
-    const viewBoundsWidth = (worldViewWidth - sidebarWidth) / zoomRatio;
+    const viewBoundsWidth =
+      (worldViewWidth - sidebarWidth - navigatorWidth) / zoomRatio;
     const viewBoundsHeight = worldViewHeight / zoomRatio;
     return scene
       ? scene.x + scene.width * 8 > viewBoundsX &&
@@ -123,11 +232,17 @@ const SceneView = ({ id, index, editable }: SceneViewProps) => {
     const worldScrollX = state.editor.worldScrollX;
     const worldViewWidth = state.editor.worldViewWidth;
     const sidebarWidth = state.editor.worldSidebarWidth;
+    const navigatorWidth = state.project.present.settings.showNavigator
+      ? state.editor.navigatorSidebarWidth
+      : 0;
     const viewBoundsX = worldScrollX / zoomRatio;
-    const viewBoundsWidth = (worldViewWidth - sidebarWidth) / zoomRatio;
+
+    const viewBoundsWidth =
+      (worldViewWidth - sidebarWidth - navigatorWidth) / zoomRatio;
+
     const offsetLabels = scene ? scene.width * 8 > viewBoundsWidth / 2 : 0;
     return offsetLabels && scene
-      ? Math.min(Math.max(0, viewBoundsX - scene.x + 10), scene.width * 8 - 100)
+      ? Math.min(Math.max(0, viewBoundsX - scene.x), scene.width * 8 - 160)
       : 0;
   });
 
@@ -135,16 +250,20 @@ const SceneView = ({ id, index, editable }: SceneViewProps) => {
     const worldScrollX = state.editor.worldScrollX;
     const worldViewWidth = state.editor.worldViewWidth;
     const sidebarWidth = state.editor.worldSidebarWidth;
+    const navigatorWidth = state.project.present.settings.showNavigator
+      ? state.editor.navigatorSidebarWidth
+      : 0;
     const viewBoundsX = worldScrollX / zoomRatio;
-    const viewBoundsWidth = (worldViewWidth - sidebarWidth) / zoomRatio;
+    const viewBoundsWidth =
+      (worldViewWidth - sidebarWidth - navigatorWidth) / zoomRatio;
     const offsetLabels = scene ? scene.width * 8 > viewBoundsWidth / 2 : 0;
     return offsetLabels && scene
       ? Math.min(
           Math.max(
             0,
-            scene.x + scene.width * 8 - 10 - (viewBoundsX + viewBoundsWidth)
+            scene.x + scene.width * 8 - (viewBoundsX + viewBoundsWidth)
           ),
-          scene.width * 8 - 100
+          scene.width * 8 - 160
         )
       : 0;
   });
@@ -356,40 +475,26 @@ const SceneView = ({ id, index, editable }: SceneViewProps) => {
   }
 
   return (
-    <div
-      className={cx("Scene", {
-        "Scene--Selected": selected,
-        "Scene--Filtered": sceneFiltered,
-      })}
+    <Wrapper
+      selected={selected}
+      filtered={sceneFiltered}
       style={{
-        top: scene.y,
         left: scene.x,
+        top: scene.y,
       }}
     >
-      <div
-        className="Scene__Name"
+      <SceneMetadata
         onMouseDown={onStartDrag}
         style={{
           paddingLeft: labelOffsetLeft,
           paddingRight: labelOffsetRight,
         }}
       >
-        <div
-          className={cx("Scene__Label", {
-            "Scene__Label--Red": scene.labelColor === "red",
-            "Scene__Label--Orange": scene.labelColor === "orange",
-            "Scene__Label--Yellow": scene.labelColor === "yellow",
-            "Scene__Label--Green": scene.labelColor === "green",
-            "Scene__Label--Blue": scene.labelColor === "blue",
-            "Scene__Label--Purple": scene.labelColor === "purple",
-            "Scene__Label--Gray": scene.labelColor === "gray",
-          })}
-        >
-          {name}
-        </div>
-      </div>
-      <div
-        className="Scene__Image"
+        <SceneName>
+          <LabelSpan color={scene.labelColor}>{name}</LabelSpan>
+        </SceneName>
+      </SceneMetadata>
+      <SceneContent
         onMouseMove={onMouseMove}
         onMouseLeave={onMouseLeave}
         style={{
@@ -399,7 +504,6 @@ const SceneView = ({ id, index, editable }: SceneViewProps) => {
       >
         {background && (
           <ColorizedImage
-            className="Scene__Background"
             alt=""
             width={scene.width * TILE_SIZE}
             height={scene.height * TILE_SIZE}
@@ -414,7 +518,7 @@ const SceneView = ({ id, index, editable }: SceneViewProps) => {
         )}
 
         {showCollisions && (
-          <div className="Scene__Collisions">
+          <SceneOverlay>
             <SceneCollisions
               width={scene.width}
               height={scene.height}
@@ -427,17 +531,17 @@ const SceneView = ({ id, index, editable }: SceneViewProps) => {
                 slopePreview={slopePreview}
               />
             )}
-          </div>
+          </SceneOverlay>
         )}
 
         {background && showPriorityMap && (
-          <div className="Scene__Collisions">
+          <SceneOverlay>
             <ScenePriorityMap
               width={scene.width}
               height={scene.height}
               tileColors={tileColors}
             />
-          </div>
+          </SceneOverlay>
         )}
 
         {selected && parallaxHoverLayer !== undefined && scene.parallax && (
@@ -515,14 +619,13 @@ const SceneView = ({ id, index, editable }: SceneViewProps) => {
             />
           ))}
         {selected && (
-          <div className="Scene__EventHelper">
+          <SceneOverlay noPointerEvents>
             <SceneEventHelper scene={scene} />
-          </div>
+          </SceneOverlay>
         )}
-      </div>
+      </SceneContent>
       {selected && (
-        <div
-          className="Scene__Info"
+        <SceneMetadata
           onMouseDown={onStartDrag}
           style={{
             paddingLeft: labelOffsetLeft,
@@ -530,9 +633,9 @@ const SceneView = ({ id, index, editable }: SceneViewProps) => {
           }}
         >
           <SceneInfo />
-        </div>
+        </SceneMetadata>
       )}
-    </div>
+    </Wrapper>
   );
 };
 

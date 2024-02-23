@@ -20,6 +20,16 @@ const colors: Dictionary<string> = {
   gray: "#9e9e9e",
 };
 
+const textColors: Dictionary<string> = {
+  red: "#ffffff",
+  orange: "#ffffff",
+  yellow: "#000000",
+  green: "#ffffff",
+  blue: "#ffffff",
+  purple: "#ffffff",
+  gray: "#ffffff",
+};
+
 export const LabelButton = styled.button.attrs<LabelButtonProps>((props) => ({
   style: {
     backgroundColor: colors[props.color || ""],
@@ -53,4 +63,16 @@ export const LabelColor = styled.div.attrs<LabelColorProps>((props) => ({
   border-radius: 20px;
   background-color: transparent;
   opacity: 0.9;
+`;
+
+export const LabelSpan = styled.span.attrs<LabelColorProps>((props) => ({
+  style: {
+    backgroundColor: colors[props.color || ""],
+    color: textColors[props.color || ""],
+  },
+}))`
+  border-radius: 32px;
+  background-color: transparent;
+  padding: 2px 10px;
+  opacity: 0.8;
 `;

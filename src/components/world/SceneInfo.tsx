@@ -50,6 +50,10 @@ const SceneInfoWrapper = styled.div<SceneInfoWrapperProps>`
   justify-content: center;
   opacity: 0;
   transition: opacity linear 0.2s;
+  line-height: 12px;
+  padding: 5px 0 2px;
+  font-size: 10px;
+
   ${(props) =>
     props.loaded
       ? css`
@@ -407,9 +411,7 @@ const SceneInfo = () => {
                 maxActors: String(maxActors),
               })}
             </div>
-            {actorWarnings.length > 0 && (
-              <div className="Scene__TooltipTitle">{l10n("FIELD_WARNING")}</div>
-            )}
+            {actorWarnings.length > 0 && <div>{l10n("FIELD_WARNING")}</div>}
             {actorWarnings.length > 0 &&
               actorWarnings.map((warning) => (
                 <div key={warning} className="Scene__Info--Error">
@@ -434,9 +436,7 @@ const SceneInfo = () => {
                 maxTiles: String(maxSpriteTiles),
               })}
             </div>
-            {tileCount > maxSpriteTiles && (
-              <div className="Scene__TooltipTitle">{l10n("FIELD_WARNING")}</div>
-            )}
+            {tileCount > maxSpriteTiles && <div>{l10n("FIELD_WARNING")}</div>}
             {tileCount > maxSpriteTiles && (
               <div>{l10n("WARNING_SPRITE_TILES_LIMIT")}</div>
             )}
@@ -461,9 +461,7 @@ const SceneInfo = () => {
                 maxTriggers: String(maxTriggers),
               })}
             </div>
-            {triggerCount > maxTriggers && (
-              <div className="Scene__TooltipTitle">{l10n("FIELD_WARNING")}</div>
-            )}
+            {triggerCount > maxTriggers && <div>{l10n("FIELD_WARNING")}</div>}
             {triggerCount > maxTriggers && (
               <div>{l10n("WARNING_TRIGGERS_LIMIT")}</div>
             )}
