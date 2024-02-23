@@ -69,14 +69,12 @@ const ColorValueFormItem = styled.div`
 
 interface ColorButtonProps {
   selected?: boolean;
-  color: string;
 }
 
 const ColorButton = styled.button<ColorButtonProps>`
   position: relative;
   display: flex;
   justify-content: center;
-  background: ${(props) => props.color};
   text-align: center;
   border: 1px solid ${(props) => props.theme.colors.input.border};
   border-radius: ${(props) => props.theme.borderRadius}px;
@@ -604,9 +602,11 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
           <ColorButton
             key={index}
             selected={selectedColor === index}
-            color={`#${hexToGBCHex(palette.colors[index])}`}
             className="focus-visible"
             onClick={() => onColorSelect(index)}
+            style={{
+              background: `#${hexToGBCHex(palette.colors[index])}`,
+            }}
           >
             {index === 0 && <span>{l10n("FIELD_COLOR_LIGHTEST")}</span>}
             {index === 3 && <span>{l10n("FIELD_COLOR_DARKEST")}</span>}

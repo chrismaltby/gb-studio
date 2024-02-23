@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import SpriteSheetCanvas from "./SpriteSheetCanvas";
 
-import { DMG_PALETTE, MIDDLE_MOUSE } from "consts";
+import { DMG_PALETTE, MIDDLE_MOUSE, TILE_SIZE } from "consts";
 import {
   actorSelectors,
   paletteSelectors,
@@ -21,8 +21,6 @@ interface ActorViewProps {
 }
 
 interface WrapperProps {
-  x: number;
-  y: number;
   selected?: boolean;
 }
 
@@ -33,8 +31,6 @@ const Wrapper = styled.div<WrapperProps>`
   background-color: rgba(247, 45, 220, 0.5);
   outline: 1px solid rgba(140, 0, 177, 0.8);
   -webkit-transform: translate3d(0, 0, 0);
-  left: ${(props) => props.x * 8}px;
-  top: ${(props) => props.y * 8}px;
 
   ${(props) =>
     props.selected
@@ -123,10 +119,12 @@ const ActorView = ({ id, sceneId, palettes, editable }: ActorViewProps) => {
     <>
       {selected && actor.isPinned && <PinScreenPreview />}
       <Wrapper
-        x={actor.x}
-        y={actor.y}
         selected={selected}
         onMouseDown={onMouseDown}
+        style={{
+          left: actor.x * TILE_SIZE,
+          top: actor.y * TILE_SIZE,
+        }}
       >
         {showSprite && (
           <CanvasWrapper>

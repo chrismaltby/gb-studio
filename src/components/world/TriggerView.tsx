@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import editorActions from "store/features/editor/editorActions";
 import { triggerSelectors } from "store/features/entities/entitiesState";
-import { MIDDLE_MOUSE } from "consts";
+import { MIDDLE_MOUSE, TILE_SIZE } from "consts";
 import { RootState } from "store/configureStore";
 import styled, { css } from "styled-components";
 
@@ -13,10 +13,6 @@ interface TriggerViewProps {
 }
 
 interface WrapperProps {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
   selected?: boolean;
 }
 
@@ -27,10 +23,6 @@ const Wrapper = styled.div<WrapperProps>`
   background-color: rgba(255, 120, 0, 0.5);
   outline: 1px solid rgba(255, 120, 0, 1);
   -webkit-transform: translate3d(0, 0, 0);
-  left: ${(props) => props.x * 8}px;
-  top: ${(props) => props.y * 8}px;
-  width: ${(props) => props.width * 8}px;
-  height: ${(props) => props.height * 8}px;
 
   ${(props) =>
     props.selected
@@ -80,12 +72,14 @@ const TriggerView = ({ id, sceneId, editable }: TriggerViewProps) => {
 
   return (
     <Wrapper
-      x={trigger.x}
-      y={trigger.y}
-      width={Math.max(trigger.width, 1)}
-      height={Math.max(trigger.height, 1)}
       selected={selected}
       onMouseDown={onMouseDown}
+      style={{
+        left: trigger.x * TILE_SIZE,
+        top: trigger.y * TILE_SIZE,
+        width: Math.max(trigger.width, 1) * TILE_SIZE,
+        height: Math.max(trigger.height, 1) * TILE_SIZE,
+      }}
     />
   );
 };

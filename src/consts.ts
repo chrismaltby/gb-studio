@@ -33,6 +33,7 @@ const SCREEN_HEIGHT = 18;
 const MAX_ONSCREEN = 10;
 const MAX_NESTED_SCRIPT_DEPTH = 5;
 export const MAX_PROJECTILES = 5;
+export const TILE_SIZE = 8;
 
 const MIDDLE_MOUSE = 2;
 

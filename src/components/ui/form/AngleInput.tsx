@@ -37,8 +37,13 @@ const Label = styled.label<LabelProps>`
     width: 18px;
     height: 18px;
     fill: ${(props) => props.theme.colors.text};
-    transform: rotate(${(props) => props.angle}deg);
   }
+`;
+
+const Icon = styled.div`
+  display: inline-block;
+  width: 18px;
+  height: 18px;
 `;
 
 const DegreesWrapper = styled.div`
@@ -89,7 +94,13 @@ export const AngleInput: FC<
         <span>{degrees}º</span>
       </DegreesWrapper>
       <Label htmlFor={id} angle={degrees} title={`${degrees}º`}>
-        <AngleIcon />
+        <Icon
+          style={{
+            transform: `rotate(${degrees}deg)`,
+          }}
+        >
+          <AngleIcon />
+        </Icon>
       </Label>
     </Wrapper>
   );
