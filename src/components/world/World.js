@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import throttle from "lodash/throttle";
-import Scene from "./Scene";
+import SceneView from "./SceneView";
 import WorldHelp from "./WorldHelp";
 import Connections from "./Connections";
 import {
@@ -347,7 +347,7 @@ class World extends Component {
           {loaded && scenes.length === 0 && <WorldHelp />}
 
           {scenes.map((sceneId, index) => (
-            <Scene
+            <SceneView
               key={sceneId}
               id={sceneId}
               index={index}
