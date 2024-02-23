@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import cx from "classnames";
 import { useDispatch, useSelector } from "react-redux";
 import {
   PlusIcon,
@@ -35,12 +34,118 @@ import {
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import { RootState } from "store/configureStore";
 import { calculateSlope } from "shared/lib/helpers/slope";
+import styled, { css } from "styled-components";
+import { Tool } from "store/features/editor/editorState";
 
 interface SceneCursorProps {
   sceneId: string;
   sceneFiltered: boolean;
   enabled: boolean;
 }
+
+interface WrapperProps {
+  tool: Tool;
+  size: "8px" | "16px";
+}
+
+const Wrapper = styled.div<WrapperProps>`
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  outline: 1px solid rgb(140, 150, 156);
+  background: rgba(140, 150, 156, 0.4);
+  -webkit-transform: translate3d(0, 0, 0);
+
+  ::after {
+    content: "";
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    right: -8px;
+    bottom: -8px;
+    background: transparent;
+  }
+
+  ${(props) =>
+    props.size === "16px"
+      ? css`
+          width: 16px;
+          height: 16px;
+        `
+      : ""}
+
+  ${(props) =>
+    props.tool === "actors"
+      ? css`
+          width: 16px;
+          background-color: rgba(247, 45, 220, 0.5);
+          outline: 1px solid rgba(140, 0, 177, 0.8);
+          pointer-events: all;
+          z-index: 200;
+        `
+      : ""}
+
+  ${(props) =>
+    props.tool === "triggers"
+      ? css`
+          background-color: rgba(255, 120, 0, 0.5);
+          outline: 1px solid rgba(255, 120, 0, 1);
+          pointer-events: all;
+          z-index: 200;
+        `
+      : ""}
+
+  ${(props) =>
+    props.tool === "eraser"
+      ? css`
+          background-color: rgba(255, 0, 0, 0.8);
+          outline: 1px solid rgba(255, 0, 0, 1);
+          pointer-events: all;
+          z-index: 200;
+        `
+      : ""}
+
+  ${(props) =>
+    props.tool === "collisions"
+      ? css`
+          background-color: rgba(250, 40, 40, 0.6);
+          outline: 1px solid rgba(250, 40, 40, 0.8);
+          pointer-events: all;
+        `
+      : ""}
+
+  ${(props) =>
+    props.tool === "colors"
+      ? css`
+          background-color: transparent;
+          pointer-events: all;
+        `
+      : ""}
+`;
+
+const Bubble = styled.div`
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 8px;
+  font-weight: bold;
+  background: ${(props) => props.theme.colors.highlight};
+  border-radius: 8px;
+  line-height: 12px;
+  text-align: middle;
+  top: -12px;
+  left: -14px;
+  box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.2);
+
+  svg {
+    fill: #fff;
+    width: 8px;
+  }
+`;
 
 const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
   const dispatch = useDispatch();
@@ -953,20 +1058,17 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     return <div />;
   }
   return (
-    <div
+    <Wrapper
       ref={cursorRef}
-      className={cx("SceneCursor", {
-        "SceneCursor--AddActor": tool === TOOL_ACTORS,
-        "SceneCursor--AddTrigger": tool === TOOL_TRIGGERS,
-        "SceneCursor--Eraser": tool === TOOL_ERASER,
-        "SceneCursor--Collisions": tool === TOOL_COLLISIONS,
-        "SceneCursor--Colors": tool === TOOL_COLORS,
-        "SceneCursor--Size16px":
-          (tool === TOOL_COLORS ||
-            tool === TOOL_COLLISIONS ||
-            tool === TOOL_ERASER) &&
-          selectedBrush === BRUSH_16PX,
-      })}
+      tool={tool}
+      size={
+        (tool === TOOL_COLORS ||
+          tool === TOOL_COLLISIONS ||
+          tool === TOOL_ERASER) &&
+        selectedBrush === BRUSH_16PX
+          ? "16px"
+          : "8px"
+      }
       onMouseMove={onMouseMoveSlopeSelect}
       onMouseDown={onMouseDown}
       style={{
@@ -979,15 +1081,15 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
         tool === TOOL_ERASER ||
         tool === TOOL_COLORS ||
         tool === TOOL_COLLISIONS) && (
-        <div className="SceneCursor__AddBubble">
+        <Bubble>
           {tool === TOOL_ACTORS && <PlusIcon />}
           {tool === TOOL_TRIGGERS && (resize ? <ResizeIcon /> : <PlusIcon />)}
           {tool === TOOL_ERASER && <CloseIcon />}
           {tool === TOOL_COLLISIONS && <BrickIcon />}
           {tool === TOOL_COLORS && <PaintIcon />}
-        </div>
+        </Bubble>
       )}
-    </div>
+    </Wrapper>
   );
 };
 
