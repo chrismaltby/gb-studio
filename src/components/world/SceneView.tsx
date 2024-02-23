@@ -104,6 +104,11 @@ const Wrapper = styled.div<WrapperProps>`
             box-shadow: 0 0 0px 3px ${(props) => props.theme.colors.highlight};
           }
 
+          ${SceneName} {
+            background-color: ${(props) =>
+              props.theme.colors.sidebar.background};
+          }
+
           ${LabelSpan} {
             opacity: 1;
           }
