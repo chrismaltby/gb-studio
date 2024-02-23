@@ -7,6 +7,16 @@
   -webkit-transform: translate3d(0, 0, 0);
 }
 
+.SceneCursor::after {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  width: 24px;
+  height: 24px;
+  background: transparent
+}
+
 .SceneCursor--Size16px {
   width: 16px;
   height: 16px;

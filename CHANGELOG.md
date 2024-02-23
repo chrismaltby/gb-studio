@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix crash when typing "!S" into dialogue events
 - Fix bug where engine plugins that include an engine.json with no fields causes all default engine settings to be hidden [@pau-tomas](https://github.com/pau-tomas)
 - Fix localisation for default names of scenes, actors and triggers, new entities no longer hard coded to use English names
+- Fix issue where clicking on a scene would sometimes not cause it to become selected
 
 ## [3.2.0] - 2024-01-29
 
