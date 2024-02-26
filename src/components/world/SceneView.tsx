@@ -220,11 +220,15 @@ const SceneView = ({ id, index, editable }: SceneViewProps) => {
       ? state.editor.navigatorSidebarWidth
       : 0;
 
-    const viewBoundsX = worldScrollX / zoomRatio;
-    const viewBoundsY = worldScrollY / zoomRatio;
+    const viewMargin = 400;
+
+    const viewBoundsX = worldScrollX / zoomRatio - viewMargin;
+    const viewBoundsY = worldScrollY / zoomRatio - viewMargin;
     const viewBoundsWidth =
-      (worldViewWidth - sidebarWidth - navigatorWidth) / zoomRatio;
-    const viewBoundsHeight = worldViewHeight / zoomRatio;
+      (worldViewWidth - sidebarWidth - navigatorWidth) / zoomRatio +
+      viewMargin * 2;
+    const viewBoundsHeight = worldViewHeight / zoomRatio + viewMargin * 2;
+
     return scene
       ? scene.x + scene.width * 8 > viewBoundsX &&
           scene.x < viewBoundsX + viewBoundsWidth &&
@@ -234,6 +238,9 @@ const SceneView = ({ id, index, editable }: SceneViewProps) => {
   });
 
   const labelOffsetLeft = useSelector((state: RootState) => {
+    if (!visible) {
+      return 0;
+    }
     const worldScrollX = state.editor.worldScrollX;
     const worldViewWidth = state.editor.worldViewWidth;
     const sidebarWidth = state.editor.worldSidebarWidth;
@@ -252,6 +259,9 @@ const SceneView = ({ id, index, editable }: SceneViewProps) => {
   });
 
   const labelOffsetRight = useSelector((state: RootState) => {
+    if (!visible) {
+      return 0;
+    }
     const worldScrollX = state.editor.worldScrollX;
     const worldViewWidth = state.editor.worldViewWidth;
     const sidebarWidth = state.editor.worldSidebarWidth;

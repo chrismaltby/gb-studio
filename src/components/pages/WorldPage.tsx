@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef } from "react";
 import styled, { ThemeContext } from "styled-components";
-import World from "components/world/World";
+import WorldView from "components/world/WorldView";
 import ToolPicker from "components/world/ToolPicker";
 import BrushToolbar from "components/world/BrushToolbar";
 import EditorSidebar from "components/editors/EditorSidebar";
@@ -172,7 +172,7 @@ const WorldPage = () => {
           position: "relative",
         }}
       >
-        <World />
+        <WorldView />
         <BrushToolbar />
         <ToolPicker />
         <StatusBar />
