@@ -16,7 +16,7 @@ import {
   groupVariables,
   NamedVariable,
   namedVariablesByContext,
-} from "lib/helpers/variables";
+} from "renderer/lib/variables";
 import { CheckIcon, PencilIcon } from "ui/icons/Icons";
 import { Input } from "ui/form/Input";
 import entitiesActions from "store/features/entities/entitiesActions";

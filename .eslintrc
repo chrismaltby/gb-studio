@@ -13,7 +13,8 @@
         "moduleDirectory": [
           "node_modules",
           "src",
-          "src/renderer/components",
+          "src/components",
+          "src/renderer",
           "./"
         ]
       }
@@ -97,11 +98,22 @@
                 "message": "Replace components/ui/ with just ui/"
               }
             ],
-            "paths": ["fs", "fs-extra", "electron-settings", "electron", "path"]
+            "paths": ["fs", "fs-extra", "electron-settings", "electron"]
           }
         ]
       }
     },
+    {
+      "files": ["src/renderer/lib/api/setup.ts"],
+      "rules": {
+        "@typescript-eslint/no-restricted-imports": [
+          "error",
+          {
+            "paths": ["fs", "fs-extra"]
+          }
+        ]
+      }
+    },    
     {
       "files": ["src/main/**", "src/lib/**"],
       "rules": {

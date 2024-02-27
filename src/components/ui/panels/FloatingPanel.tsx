@@ -1,6 +1,6 @@
 import styled, { css } from "styled-components";
 import { Select } from "ui/form/Select";
-import { Button } from "../buttons/Button";
+import { Button } from "ui/buttons/Button";
 
 interface FloatingPanelProps {
   vertical?: boolean;

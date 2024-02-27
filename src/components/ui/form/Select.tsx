@@ -2,9 +2,9 @@ import styled from "styled-components";
 import WindowedSelect from "react-windowed-select";
 import CRSelect from "react-select/creatable";
 import React, { CSSProperties, FC, ReactNode } from "react";
-import { setDefault } from "lib/helpers/setDefault";
-import { SearchIcon } from "../icons/Icons";
-import l10n from "lib/helpers/l10n";
+import { setDefault } from "shared/lib/helpers/setDefault";
+import { SearchIcon } from "ui/icons/Icons";
+import L10NText from "./L10NText";
 export { components } from "react-select";
 
 export interface Option {
@@ -33,7 +33,7 @@ interface SingleValueWithPreviewProps {
 }
 
 export interface SelectCommonProps {
-  placeholder?: string;
+  placeholder?: JSX.Element;
   autoFocus?: boolean;
   menuIsOpen?: boolean;
   backspaceRemovesValue?: boolean;
@@ -259,7 +259,7 @@ export const SingleValueWithPreview: FC<SingleValueWithPreviewProps> = ({
 export const selectMenuStyleProps = {
   autoFocus: true,
   menuIsOpen: true,
-  placeholder: l10n("TOOLBAR_SEARCH"),
+  placeholder: <L10NText l10nKey="TOOLBAR_SEARCH" />,
   backspaceRemovesValue: false,
   controlShouldRenderValue: false,
   isClearable: false,

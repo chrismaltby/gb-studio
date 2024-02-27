@@ -1,9 +1,5 @@
 import React, { FC, RefObject, useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  globalVariableCode,
-  globalVariableDefaultName,
-} from "lib/helpers/variables";
 import { RootState } from "store/configureStore";
 import {
   actorSelectors,
@@ -33,6 +29,10 @@ import VariableUsesWorker, {
   VariableUseResult,
 } from "./VariableUses.worker";
 import { eventLookup } from "lib/events";
+import {
+  globalVariableCode,
+  globalVariableDefaultName,
+} from "shared/lib/variables/variableNames";
 
 const worker = new VariableUsesWorker();
 

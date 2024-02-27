@@ -13,6 +13,7 @@ const lightTheme: ThemeInterface = {
     translucent: "rgba(255,255,255,0.3)",
     hoverTranslucent: "rgba(255,255,255,0.4)",
     text: "#3b3a3b",
+    background: "#f2f2f2",
     secondaryText: "#999999",
     conditional: {
       level1: "#b3e5fc",

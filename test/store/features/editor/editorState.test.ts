@@ -1,9 +1,11 @@
 import reducer, {
   initialState,
   EditorState,
+  getZoomForSection,
 } from "../../../../src/store/features/editor/editorState";
 import actions from "../../../../src/store/features/editor/editorActions";
 import entitiesActions from "../../../../src/store/features/entities/entitiesActions";
+import { RootState } from "../../../../src/store/configureStore";
 
 test("Should allow setting tool", () => {
   const state: EditorState = {
@@ -385,4 +387,18 @@ test("Should focus on newly added custom event", () => {
   expect(newState.type).toBe("customEvent");
   expect(newState.scene).toBe("");
   expect(newState.entityId).toBe(action.payload.customEventId);
+});
+
+test("Should fetch correct zoom level for sections", () => {
+  const state: RootState = {
+    editor: {
+      zoom: 300,
+      zoomSprite: 400,
+      zoomImage: 500,
+    },
+  } as RootState;
+  expect(getZoomForSection(state, "world")).toBe(300);
+  expect(getZoomForSection(state, "sprites")).toBe(400);
+  expect(getZoomForSection(state, "backgrounds")).toBe(500);
+  expect(getZoomForSection(state, "settings")).toBe(100);
 });

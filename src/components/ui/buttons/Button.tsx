@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import PropTypes from "prop-types";
 import styled, { css } from "styled-components";
-import { ThemeInterface } from "../theme/ThemeInterface";
+import { ThemeInterface } from "ui/theme/ThemeInterface";
 
 export interface ButtonProps {
   readonly size?: "small" | "medium" | "large";

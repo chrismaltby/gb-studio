@@ -38,8 +38,6 @@ class App extends Component {
     window.addEventListener("dragover", this.onDragOver);
     window.addEventListener("dragleave", this.onDragLeave);
     window.addEventListener("drop", this.onDrop);
-    const zoomLevel = Number(settings.get("zoomLevel") || 0);
-    ipcRenderer.send("window-zoom", zoomLevel);
   }
 
   onBlur = () => {

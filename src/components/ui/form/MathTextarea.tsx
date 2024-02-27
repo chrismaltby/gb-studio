@@ -2,16 +2,16 @@ import React, { FC, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { MentionsInput, Mention, SuggestionDataItem } from "react-mentions";
 import CustomMention from "./CustomMention";
-import { NamedVariable } from "lib/helpers/variables";
+import { NamedVariable } from "renderer/lib/variables";
 import keyBy from "lodash/keyBy";
 import { Dictionary } from "@reduxjs/toolkit";
 import debounce from "lodash/debounce";
-import tokenize from "lib/rpn/tokenizer";
-import shuntingYard from "lib/rpn/shuntingYard";
-import { RelativePortal } from "../layout/RelativePortal";
+import tokenize from "shared/lib/rpn/tokenizer";
+import shuntingYard from "shared/lib/rpn/shuntingYard";
+import { RelativePortal } from "ui/layout/RelativePortal";
 import { SelectMenu, selectMenuStyleProps } from "./Select";
-import { VariableSelect } from "../../forms/VariableSelect";
-import l10n from "lib/helpers/l10n";
+import { VariableSelect } from "components/forms/VariableSelect";
+import l10n from "renderer/lib/l10n";
 
 const varRegex = /\$([VLT0-9][0-9]*)\$/g;
 

@@ -9,9 +9,9 @@ import React, {
 } from "react";
 import styled, { css } from "styled-components";
 import { RelativePortal } from "ui/layout/RelativePortal";
-import useDropdownMenu from "../hooks/use-dropdown-menu";
-import { TriangleIcon } from "../icons/Icons";
-import { Menu, MenuItem, MenuItemProps } from "../menu/Menu";
+import useDropdownMenu from "ui/hooks/use-dropdown-menu";
+import { TriangleIcon } from "ui/icons/Icons";
+import { Menu, MenuItem, MenuItemProps } from "ui/menu/Menu";
 import { Button, ButtonProps } from "./Button";
 
 export interface DropdownButtonProps {

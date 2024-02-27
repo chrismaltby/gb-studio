@@ -6,7 +6,7 @@ import {
   globalVariableDefaultName,
   localVariableName,
   tempVariableName,
-} from "../helpers/variables";
+} from "shared/lib/variables/variableNames";
 import {
   ActorDirection,
   CustomEvent,
@@ -22,9 +22,9 @@ import {
   initialState as initialSettingsState,
   SettingsState,
 } from "store/features/settings/settingsState";
-import { FunctionSymbol, OperatorSymbol } from "../rpn/types";
-import tokenize from "../rpn/tokenizer";
-import shuntingYard from "../rpn/shuntingYard";
+import { FunctionSymbol, OperatorSymbol } from "shared/lib/rpn/types";
+import tokenize from "shared/lib/rpn/tokenizer";
+import shuntingYard from "shared/lib/rpn/shuntingYard";
 import { PrecompiledFontData } from "./compileFonts";
 import { encodeString } from "../helpers/encodings";
 import { PrecompiledMusicTrack } from "./compileMusic";
@@ -3118,7 +3118,12 @@ extern void __mute_mask_${symbol};
   // --------------------------------------------------------------------------
   // Timer
 
-  timerScriptSet = (frames = 600, script: ScriptEvent[], symbol?: string, timer = 1) => {
+  timerScriptSet = (
+    frames = 600,
+    script: ScriptEvent[],
+    symbol?: string,
+    timer = 1
+  ) => {
     this._addComment(`Timer Start`);
     const scriptRef = this._compileSubScript("timer", script, symbol);
     const TIMER_CYCLES = 16;

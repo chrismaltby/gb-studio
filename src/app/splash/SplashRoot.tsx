@@ -1,23 +1,25 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { AppContainer } from "react-hot-loader";
-import Preferences from "components/app/Preferences";
-import initElectronL10n from "lib/helpers/initElectronL10n";
-import "lib/helpers/handleTheme";
-import "../../styles/App.css";
-
-initElectronL10n();
+import Splash from "components/app/Splash";
+import { initL10N } from "renderer/lib/l10n";
+import { initTheme } from "renderer/lib/theme";
+import "renderer/lib/globalErrorHandling";
 
 const render = () => {
   ReactDOM.render(
     <AppContainer>
-      <Preferences />
+      <Splash />
     </AppContainer>,
     document.getElementById("App")
   );
 };
 
-render();
+(async () => {
+  await initL10N();
+  await initTheme();
+  render();
+})();
 
 if (module.hot) {
   module.hot.accept(render);

@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { TriangleIcon } from "../icons/Icons";
+import { TriangleIcon } from "ui/icons/Icons";
 import { FlatListItem } from "./FlatList";
 
 export interface CollapsibleRowProps {

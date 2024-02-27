@@ -1,23 +1,18 @@
 import React, { FC, useEffect, useState } from "react";
-import { ipcRenderer, remote } from "electron";
 import { ThemeProvider } from "styled-components";
 import lightTheme from "./lightTheme";
 import darkTheme from "./darkTheme";
 import lightThemeWin from "./lightThemeWin";
 import darkThemeWin from "./darkThemeWin";
 import neonTheme from "./neonTheme";
-import settings from "electron-settings";
 import { ThemeInterface } from "./ThemeInterface";
-
-const { nativeTheme } = remote;
-
-const themeIds = ["dark", "light", "neon"] as const;
-type ThemeId = typeof themeIds[number];
-
-const isInArray = <T, A extends T>(
-  item: T,
-  array: ReadonlyArray<A>
-): item is A => array.includes(item as A);
+import API from "renderer/lib/api";
+import type { ThemeId } from "shared/lib/theme";
+import { defaultTheme } from "renderer/lib/theme";
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import darkThemeCSS from "!!raw-loader!../../../styles/theme-dark.css";
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import lightThemeCSS from "!!raw-loader!../../../styles/theme.css";
 
 const themes: Record<ThemeId, ThemeInterface> = {
   light: lightTheme,
@@ -31,53 +26,30 @@ const windowsThemes: Record<ThemeId, ThemeInterface> = {
   neon: neonTheme,
 };
 
-const isThemeId = (value: unknown): value is ThemeId => {
-  if (typeof value !== "string") {
-    return false;
-  }
-  if (isInArray(value, themeIds)) {
-    return true;
-  }
-  return true;
-};
-
-const toThemeId = (
-  value: unknown,
-  systemShouldUseDarkColors: boolean
-): ThemeId => {
-  if (isThemeId(value)) {
-    return value;
-  }
-  if (systemShouldUseDarkColors) {
-    return "dark";
-  }
-  return "light";
-};
+const systemThemes = API.platform === "darwin" ? themes : windowsThemes;
 
 const Provider: FC = ({ children }) => {
-  const [theme, setTheme] = useState<ThemeInterface>(lightTheme);
+  const [theme, setTheme] = useState<ThemeInterface>(
+    systemThemes[defaultTheme]
+  );
+
   useEffect(() => {
-    const updateAppTheme = () => {
-      const themeId = toThemeId(
-        settings.get?.("theme"),
-        nativeTheme?.shouldUseDarkColors
-      );
-      if (process.platform === "darwin") {
-        setTheme(themes[themeId]);
-      } else {
-        setTheme(windowsThemes[themeId]);
+    const updateAppTheme = (themeId: ThemeId) => {
+      setTheme(systemThemes[themeId]);
+      handleOldCSSThemes(themeId);
+    };
+
+    // @TODO Eventually move all this styling into ThemeProvider theme
+    const handleOldCSSThemes = (themeId: ThemeId) => {
+      const darkMode = themeId === "dark";
+      const themeStyle = document.getElementById("theme");
+      if (themeStyle) {
+        themeStyle.innerHTML = darkMode ? darkThemeCSS : lightThemeCSS;
       }
     };
 
-    nativeTheme?.on("updated", () => {
-      updateAppTheme();
-    });
-
-    ipcRenderer?.on("update-theme", () => {
-      updateAppTheme();
-    });
-
-    updateAppTheme();
+    API.theme.onChange(updateAppTheme);
+    handleOldCSSThemes(defaultTheme);
   }, []);
   return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
 };

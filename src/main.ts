@@ -1,4 +1,11 @@
-import { app, BrowserWindow, ipcMain, dialog, shell } from "electron";
+import {
+  app,
+  BrowserWindow,
+  ipcMain,
+  dialog,
+  shell,
+  nativeTheme,
+} from "electron";
 import windowStateKeeper from "electron-window-state";
 import settings from "electron-settings";
 import Path from "path";
@@ -6,12 +13,18 @@ import { stat } from "fs-extra";
 import menu from "./menu";
 import { checkForUpdate } from "lib/helpers/updateChecker";
 import switchLanguageDialog from "lib/electron/dialog/switchLanguageDialog";
-import l10n, { locales } from "lib/helpers/l10n";
-import initElectronL10n from "lib/helpers/initElectronL10n";
+import l10n, { l10nStrings, locales } from "lib/helpers/l10n";
+import initElectronL10n, {
+  forceL10nReload,
+} from "lib/helpers/initElectronL10n";
 import installExtension, {
   REACT_DEVELOPER_TOOLS,
   REDUX_DEVTOOLS,
 } from "electron-devtools-installer";
+import { toThemeId } from "shared/lib/theme";
+import { isString, isStringArray, JsonValue } from "shared/types";
+import getTmp from "lib/helpers/getTmp";
+import createProject, { CreateProjectInput } from "lib/project/createProject";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -407,7 +420,13 @@ ipcMain.on("request-recent-projects", async (_event) => {
     );
 });
 
-ipcMain.on("clear-recent-projects", async (_event) => {
+ipcMain.handle("get-recent-projects", async () => {
+  const recentProjects = settings.get("recentProjects");
+  if (!isStringArray(recentProjects)) return [];
+  return recentProjects;
+});
+
+ipcMain.handle("clear-recent-projects", async (_event) => {
   settings.set("recentProjects", []);
   app.clearRecentDocuments();
 });
@@ -420,6 +439,38 @@ ipcMain.on("open-play", async (_event, url, sgb) => {
   createPlay(url, sgb);
 });
 
+ipcMain.handle("open-external", async (_event, url) => {
+  if (!isString(url)) throw new Error("Invalid URL");
+  const allowedExternalDomains = [
+    "https://www.gbstudio.dev",
+    "https://www.itch.io",
+    "https://github.com",
+  ];
+  const match = allowedExternalDomains.some((domain) => url.startsWith(domain));
+  if (!match) throw new Error("URL not allowed");
+  shell.openExternal(url);
+});
+
+ipcMain.handle("open-directory-picker", async () => {
+  const selection = await dialog.showOpenDialogSync({
+    properties: ["openDirectory"],
+  });
+  if (selection && selection[0]) {
+    return Path.normalize(`${selection[0]}/`);
+  }
+  return undefined;
+});
+
+ipcMain.handle("open-file-picker", async () => {
+  const selection = await dialog.showOpenDialog({
+    properties: ["openFile"],
+  });
+  if (selection && selection.filePaths[0]) {
+    return Path.normalize(selection.filePaths[0]);
+  }
+  return undefined;
+});
+
 ipcMain.on("document-modified", () => {
   mainWindow?.setDocumentEdited(true);
   documentEdited = true; // For Windows
@@ -429,6 +480,18 @@ ipcMain.on("document-unmodified", () => {
   mainWindow?.setDocumentEdited(false);
   documentEdited = false; // For Windows
 });
+
+ipcMain.handle("get-documents-path", async (_event) => {
+  return app.getPath("documents");
+});
+
+ipcMain.handle("get-tmp-path", async () => {
+  return getTmp();
+});
+
+ipcMain.handle("create-project", async (_event, input: CreateProjectInput) =>
+  createProject(input)
+);
 
 ipcMain.on("project-loaded", (_event, settings) => {
   const { showCollisions, showConnections, showNavigator } = settings;
@@ -494,12 +557,14 @@ ipcMain.on("open-music", async (_event, sfx) => {
   createMusic(sfx);
 });
 
-ipcMain.on("window-zoom", (_, zoomType: number) => {
-  mainWindow && mainWindow.webContents.send("windowZoom", zoomType);
+ipcMain.handle("set-ui-scale", (_, scale: number) => {
+  settings.set("zoomLevel", scale);
+  mainWindow && mainWindow.webContents.send("windowZoom", scale);
 });
 
-ipcMain.on("keybindings-updated", (_, zoomType: number) => {
-  mainWindow && mainWindow.webContents.send("keybindings-update", zoomType);
+ipcMain.handle("set-tracker-keybindings", (_, value: number) => {
+  settings.set("trackerKeyBindings", value);
+  mainWindow && mainWindow.webContents.send("keybindings-update", value);
 });
 
 ipcMain.on("close-music", async () => {
@@ -518,6 +583,23 @@ ipcMain.on("music-data-receive", (_event, data) => {
   if (mainWindow) {
     mainWindow.webContents.send("music-data", data);
   }
+});
+
+ipcMain.handle("get-l10n-strings", () => l10nStrings);
+ipcMain.handle("get-theme", () => {
+  const themeId = toThemeId(
+    settings.get?.("theme"),
+    nativeTheme.shouldUseDarkColors
+  );
+  return themeId;
+});
+
+ipcMain.handle("settings-get", (_, key: string) => settings.get(key));
+ipcMain.handle("settings-set", (_, key: string, value: JsonValue) => {
+  settings.set(key, value);
+});
+ipcMain.handle("settings-delete", (_, key: string) => {
+  settings.delete(key);
 });
 
 menu.on("new", async () => {
@@ -614,14 +696,16 @@ menu.on("updateSetting", (setting: string, value: string | boolean) => {
     menu.ref().getMenuItemById("themeDefault").checked = value === undefined;
     menu.ref().getMenuItemById("themeLight").checked = value === "light";
     menu.ref().getMenuItemById("themeDark").checked = value === "dark";
-    splashWindow && splashWindow.webContents.send("update-theme", value);
-    mainWindow && mainWindow.webContents.send("update-theme", value);
+    const newThemeId = toThemeId(value, nativeTheme.shouldUseDarkColors);
+    splashWindow && splashWindow.webContents.send("update-theme", newThemeId);
+    mainWindow && mainWindow.webContents.send("update-theme", newThemeId);
   } else if (setting === "locale") {
     menu.ref().getMenuItemById("localeDefault").checked = value === undefined;
     for (const locale of locales) {
       menu.ref().getMenuItemById(`locale-${locale}`).checked = value === locale;
     }
     switchLanguageDialog();
+    forceL10nReload();
   } else {
     if (setting === "showConnections") {
       menu.ref().getMenuItemById("showConnectionsAll").checked =
@@ -633,6 +717,15 @@ menu.on("updateSetting", (setting: string, value: string | boolean) => {
     }
     mainWindow && mainWindow.webContents.send("updateSetting", setting, value);
   }
+});
+
+nativeTheme?.on("updated", () => {
+  const themeId = toThemeId(
+    settings.get?.("theme"),
+    nativeTheme.shouldUseDarkColors
+  );
+  splashWindow && splashWindow.webContents.send("update-theme", themeId);
+  mainWindow && mainWindow.webContents.send("update-theme", themeId);
 });
 
 const newProject = async () => {

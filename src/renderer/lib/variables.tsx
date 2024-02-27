@@ -1,7 +1,17 @@
 import { ScriptEditorContextType } from "components/script/ScriptEditorContext";
 import uniq from "lodash/uniq";
 import { CustomEvent, Variable } from "store/features/entities/entitiesTypes";
-import l10n from "./l10n";
+import l10n from "renderer/lib/l10n";
+import {
+  customEventVariableCode,
+  customEventVariableName,
+  globalVariableCode,
+  globalVariableName,
+  localVariableCode,
+  localVariableName,
+  tempVariableCode,
+  tempVariableName,
+} from "shared/lib/variables/variableNames";
 
 const arrayNStrings = (n: number) =>
   Array.from(Array(n).keys()).map((n) => String(n));
@@ -115,77 +125,6 @@ export const groupVariables = (variables: NamedVariable[]): VariableGroup[] => {
       variables: groupVariables,
     };
   });
-};
-
-/******************************************************************************
- * Custom Event Variables
- */
-
-export const customEventVariableName = (
-  variable: string,
-  customEvent: CustomEvent
-): string => {
-  const customEventVariable = customEvent.variables[`V${variable}`];
-  if (customEventVariable) {
-    return customEventVariable.name;
-  }
-  const letter = String.fromCharCode(
-    "A".charCodeAt(0) + parseInt(variable, 10)
-  );
-  return `Variable ${letter}`;
-};
-
-export const customEventVariableCode = (variable: string) => {
-  return `V${variable}`;
-};
-
-/******************************************************************************
- * Local Variables
- */
-
-export const localVariableName = (
-  variable: string,
-  entityId: string,
-  variablesLookup: VariablesLookup
-) => {
-  return (
-    variablesLookup[`${entityId}__L${variable}`]?.name || `Local ${variable}`
-  );
-};
-
-export const localVariableCode = (variable: string) => {
-  return `L${variable}`;
-};
-
-/******************************************************************************
- * Temp Variables
- */
-
-export const tempVariableName = (variable: string) => {
-  return `Temp ${variable}`;
-};
-
-export const tempVariableCode = (variable: string) => {
-  return `T${variable}`;
-};
-
-/******************************************************************************
- * Global Variables
- */
-
-export const globalVariableName = (
-  variable: string,
-  variablesLookup: VariablesLookup
-) => {
-  return variablesLookup[variable]?.name || globalVariableDefaultName(variable);
-};
-
-export const globalVariableDefaultName = (variable: string) => {
-  return `Variable ${variable}`;
-};
-
-export const globalVariableCode = (variable: string) => {
-  return variable.padStart(2, "0");
 };
 
 /*****************************************************************************/

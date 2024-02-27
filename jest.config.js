@@ -11,5 +11,8 @@ module.exports = {
     "^components/(.*)$": "<rootDir>/src/components/$1",
     "^lib/(.*)$": "<rootDir>/src/lib/$1",
     "^ui(.*)$": "<rootDir>/src/components/ui/$1",
+    "^renderer(.*)$": "<rootDir>/src/renderer/$1",
+    "^shared(.*)$": "<rootDir>/src/shared/$1",
+    "^!!raw-loader!(.*)\\.css$": "<rootDir>/test/__mocks__/styleMock.js",
   },
 };

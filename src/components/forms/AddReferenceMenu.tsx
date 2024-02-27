@@ -42,7 +42,8 @@ import {
   sceneName,
 } from "store/features/entities/entitiesHelpers";
 import { FixedSizeList as List } from "react-window";
-import { allVariables, globalVariableDefaultName } from "lib/helpers/variables";
+import { allVariables } from "renderer/lib/variables";
+import { globalVariableDefaultName } from "shared/lib/variables/variableNames";
 
 interface AddReferenceMenuProps {
   onBlur?: () => void;

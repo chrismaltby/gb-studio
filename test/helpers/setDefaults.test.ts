@@ -1,4 +1,4 @@
-const { setDefault } = require("../../src/lib/helpers/setDefault");
+import { setDefault } from "../../src/shared/lib/helpers/setDefault";
 
 test("Should able to set a default value when input is undefined", () => {
   expect(setDefault(undefined, "Test")).toEqual("Test");

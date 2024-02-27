@@ -13,6 +13,7 @@ const darkTheme: ThemeInterface = {
     translucent: "rgba(0,0,0,0.3)",
     hoverTranslucent: "rgba(0,0,0,0.4)",
     text: "#b7babb",
+    background: "#222222",
     secondaryText: "#777777",
     conditional: {
       level1: "#01579b",

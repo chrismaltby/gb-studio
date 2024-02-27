@@ -23,7 +23,7 @@ import { TooltipWrapper } from "ui/tooltips/Tooltip";
 import l10n from "lib/helpers/l10n";
 import { walkNormalisedSceneEvents } from "store/features/entities/entitiesHelpers";
 import { SpriteSheet } from "store/features/entities/entitiesTypes";
-import clamp from "lib/helpers/clamp";
+import clamp from "shared/lib/helpers/clamp";
 import { useDebounce } from "ui/hooks/use-debounce";
 import maxSpriteTilesForBackgroundTilesLength from "lib/helpers/maxSpriteTilesForBackgroundTilesLength";
 import {

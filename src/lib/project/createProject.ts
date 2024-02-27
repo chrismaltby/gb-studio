@@ -1,16 +1,20 @@
 import fs from "fs-extra";
 import path from "path";
 import os from "os";
-import stripInvalidFilenameCharacters from "../helpers/stripInvalidFilenameCharacters";
-import { projectTemplatesRoot } from "../../consts";
-import copy from "../helpers/fsCopy";
+import stripInvalidFilenameCharacters from "lib/helpers/stripInvalidFilenameCharacters";
+import { ERR_PROJECT_EXISTS, projectTemplatesRoot } from "consts";
+import copy from "lib/helpers/fsCopy";
 
-const ERR_PROJECT_EXISTS = "ERR_PROJECT_EXISTS";
+export interface CreateProjectInput {
+  name: string;
+  template: string;
+  path: string;
+}
 
-const createProject = async (options) => {
+const createProject = async (options: CreateProjectInput) => {
   const projectFolderName = stripInvalidFilenameCharacters(options.name);
   const projectPath = path.join(options.path, projectFolderName);
-  const templatePath = `${projectTemplatesRoot}/${options.target}`;
+  const templatePath = `${projectTemplatesRoot}/${options.template}`;
   const projectTmpDataPath = `${projectPath}/project.gbsproj`;
   const projectDataPath = `${projectPath}/${projectFolderName}.gbsproj`;
   const { username } = os.userInfo();

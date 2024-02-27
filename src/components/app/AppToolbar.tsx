@@ -2,8 +2,7 @@ import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash/debounce";
-import l10n from "lib/helpers/l10n";
-import { zoomForSection } from "lib/helpers/gbstudio";
+import l10n from "renderer/lib/l10n";
 import editorActions from "store/features/editor/editorActions";
 import navigationActions from "store/features/navigation/navigationActions";
 import electronActions from "store/features/electron/electronActions";
@@ -25,29 +24,13 @@ import {
   PlayIcon,
 } from "ui/icons/Icons";
 import { RootState } from "store/configureStore";
-import { NavigationSection } from "store/features/navigation/navigationState";
-import { ZoomSection } from "store/features/editor/editorState";
+import type { NavigationSection } from "store/features/navigation/navigationState";
+import {
+  getZoomForSection,
+  ZoomSection,
+} from "store/features/editor/editorState";
 import useWindowFocus from "ui/hooks/use-window-focus";
 import useWindowSize from "ui/hooks/use-window-size";
-import initElectronL10n from "lib/helpers/initElectronL10n";
-
-// Make sure localisation has loaded so that
-// l10n function can be used at top level
-initElectronL10n();
-
-const sectionNames = {
-  world: l10n("NAV_GAME_WORLD"),
-  sprites: l10n("NAV_SPRITES"),
-  backgrounds: l10n("NAV_BACKGROUNDS"),
-  music: l10n("NAV_MUSIC"),
-  sounds: l10n("NAV_SFX"),
-  palettes: l10n("NAV_PALETTES"),
-  dialogue: l10n("NAV_DIALOGUE_REVIEW"),
-  build: l10n("NAV_BUILD_AND_RUN"),
-  settings: l10n("NAV_SETTINGS"),
-};
-
-type SectionKey = keyof typeof sectionNames;
 
 const sectionAccelerators = {
   world: "CommandOrControl+1",
@@ -72,8 +55,9 @@ const AppToolbar: FC = () => {
   );
   const section = useSelector((state: RootState) => state.navigation.section);
   const zoom = useSelector((state: RootState) =>
-    zoomForSection(section, state.editor)
+    getZoomForSection(state, section)
   );
+
   const initalSearchTerm = useSelector(
     (state: RootState) => state.editor.searchTerm
   );
@@ -91,6 +75,21 @@ const AppToolbar: FC = () => {
   const showTitle =
     process.platform === "darwin" && (windowSize.width || 0) > 800;
 
+  const sectionNames = useMemo(
+    () => ({
+      world: l10n("NAV_GAME_WORLD"),
+      sprites: l10n("NAV_SPRITES"),
+      backgrounds: l10n("NAV_BACKGROUNDS"),
+      music: l10n("NAV_MUSIC"),
+      sounds: l10n("NAV_SFX"),
+      palettes: l10n("NAV_PALETTES"),
+      dialogue: l10n("NAV_DIALOGUE_REVIEW"),
+      build: l10n("NAV_BUILD_AND_RUN"),
+      settings: l10n("NAV_SETTINGS"),
+    }),
+    []
+  );
+
   const onRun = useCallback(() => {
     dispatch(buildGameActions.buildGame({ buildType: "web" }));
   }, [dispatch]);
@@ -103,7 +102,7 @@ const AppToolbar: FC = () => {
   );
 
   const setSection = useCallback(
-    (section: SectionKey) => () => {
+    (section: NavigationSection) => () => {
       dispatch(navigationActions.setSection(section));
     },
     [dispatch]

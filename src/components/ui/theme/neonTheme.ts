@@ -13,6 +13,7 @@ const neonTheme: ThemeInterface = {
     translucent: "rgba(0,0,0,0.1)",
     hoverTranslucent: "rgba(0,0,0,0.3)",
     text: "#f5dcec",
+    background: "#241734",
     secondaryText: "#777777",
     conditional: {
       level1: "#01579b",

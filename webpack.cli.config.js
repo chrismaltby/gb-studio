@@ -38,6 +38,8 @@ module.exports = {
       components: srcPath("components"),
       lib: srcPath("lib"),
       ui: srcPath("components/ui"),
+      shared: srcPath("shared"),
+      consts: srcPath("consts.ts"),
     },
   },
 };

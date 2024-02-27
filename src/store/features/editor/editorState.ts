@@ -1,4 +1,9 @@
-import { createSlice, PayloadAction, AnyAction } from "@reduxjs/toolkit";
+import {
+  createSlice,
+  PayloadAction,
+  AnyAction,
+  createSelector,
+} from "@reduxjs/toolkit";
 import {
   BRUSH_8PX,
   COLLISION_ALL,
@@ -16,6 +21,8 @@ import settingsActions from "../settings/settingsActions";
 import entitiesActions from "../entities/entitiesActions";
 import spriteActions from "../sprite/spriteActions";
 import { MIN_SIDEBAR_WIDTH } from "lib/helpers/window/sidebar";
+import type { NavigationSection } from "../navigation/navigationState";
+import type { RootState } from "store/configureStore";
 
 export type Tool =
   | "triggers"
@@ -837,5 +844,27 @@ const editorSlice = createSlice({
 });
 
 export const { actions, reducer } = editorSlice;
+
+/**************************************************************************
+ * Selectors
+ */
+
+const selectSelf = (state: RootState) => state.editor;
+
+export const getZoomForSection = createSelector(
+  [selectSelf, (_state: RootState, section: NavigationSection) => section],
+  (state, section) => {
+    if (section === "world") {
+      return state.zoom;
+    }
+    if (section === "sprites") {
+      return state.zoomSprite;
+    }
+    if (section === "backgrounds") {
+      return state.zoomImage;
+    }
+    return 100;
+  }
+);
 
 export default reducer;
