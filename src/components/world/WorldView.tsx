@@ -27,8 +27,6 @@ import { sceneName } from "store/features/entities/entitiesHelpers";
 import { RootState } from "store/configureStore";
 import { useDispatch, useSelector, useStore } from "react-redux";
 import styled from "styled-components";
-import { Dictionary } from "@reduxjs/toolkit";
-import { Scene } from "store/features/entities/entitiesTypes";
 
 const Wrapper = styled.div`
   position: absolute;
