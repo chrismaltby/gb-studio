@@ -41,6 +41,7 @@ import { buildUUID } from "consts";
 import type { EngineFieldSchema } from "store/features/engine/engineState";
 import compileData from "lib/compiler/compileData";
 import ejectBuild from "lib/compiler/ejectBuild";
+import { initPlugins } from "lib/plugins/plugins";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -695,6 +696,7 @@ ipcMain.handle(
     const outputRoot = Path.normalize(`${getTmp()}/${buildUUID}`);
     const colorEnabled = project.settings.customColorsEnabled;
     const sgbEnabled = project.settings.sgbEnabled;
+    initPlugins(projectRoot);
 
     try {
       await buildProject(project, {
@@ -813,6 +815,7 @@ ipcMain.handle(
     try {
       const projectRoot = Path.dirname(projectPath);
       const outputRoot = Path.normalize(`${getTmp()}/${buildUUID}`);
+      initPlugins(projectRoot);
 
       const progress = (message: string) => {
         if (
