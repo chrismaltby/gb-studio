@@ -519,7 +519,6 @@ const SceneView = ({ id, index, editable }: SceneViewProps) => {
       >
         {background && (
           <ColorizedImage
-            alt=""
             width={scene.width * TILE_SIZE}
             height={scene.height * TILE_SIZE}
             src={`file://${assetFilename(

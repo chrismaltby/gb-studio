@@ -22,6 +22,13 @@ interface CacheRecord {
   img: ImageBitmap;
 }
 
+export interface ColorizedImageResult {
+  id: number;
+  width: number;
+  height: number;
+  canvasImage: ImageBitmap;
+}
+
 const cache: Record<string, CacheRecord> = {};
 const TILE_COLOR_PALETTE = 0x7;
 
@@ -105,4 +112,10 @@ workerCtx.onmessage = async (evt) => {
   workerCtx.postMessage({ id, width, height, canvasImage }, [canvasImage]);
 };
 
-export {};
+// -----------------------------------------------------------------
+
+export default class W extends Worker {
+  constructor() {
+    super("");
+  }
+}

@@ -8,7 +8,7 @@ import {
   sceneSelectors,
 } from "store/features/entities/entitiesState";
 import ColorizedImage from "components/world/ColorizedImage";
-import { DMG_PALETTE } from "consts";
+import { DMG_PALETTE, TILE_SIZE } from "consts";
 import { Palette } from "store/features/entities/entitiesTypes";
 import { assetFilename } from "shared/lib/helpers/assets";
 
@@ -113,10 +113,8 @@ const BackgroundViewer = ({ backgroundId }: MetaspriteEditorProps) => {
             }}
           >
             <ColorizedImage
-              className="Scene__Background"
-              alt=""
-              width={background.width}
-              height={background.height}
+              width={background.width * TILE_SIZE}
+              height={background.height * TILE_SIZE}
               src={`file://${assetFilename(
                 projectRoot,
                 "backgrounds",
