@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix sound effects previews in editor not matching how they sound in game [@pau-tomas](https://github.com/pau-tomas)
 - Fix crash when typing "!S" into dialogue events
 - Fix bug where engine plugins that include an engine.json with no fields causes all default engine settings to be hidden [@pau-tomas](https://github.com/pau-tomas)
+- Fix issue where transferring data over linkcable would cause game to hang
 
 ## [3.2.0] - 2024-01-29
 
