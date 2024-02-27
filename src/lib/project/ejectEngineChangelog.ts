@@ -617,6 +617,15 @@ const changes: EngineChange[] = [
       "src/core/vm_gameboy.c",
     ],
   },
+  {
+    version: "3.2.0-e4",
+    description:
+      "Updates\n" +
+      [
+        "   * Fix issue where transferring data over linkcable would cause game to hang",
+      ].join("\n"),
+    modifiedFiles: ["include/sio.h", "src/core/sio.c"],
+  },
 ];
 
 const ejectEngineChangelog = (currentVersion: string) => {
