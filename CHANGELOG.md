@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix bug where engine plugins that include an engine.json with no fields causes all default engine settings to be hidden [@pau-tomas](https://github.com/pau-tomas)
 - Fix localisation for default names of scenes, actors and triggers, new entities no longer hard coded to use English names
 - Fix issue where clicking on a scene would sometimes not cause it to become selected
+- Fix issue where dragging World using middle mouse button and releasing button with cursor outside of window would cause scrolling to still be enabled
 
 ## [3.2.0] - 2024-01-29
 

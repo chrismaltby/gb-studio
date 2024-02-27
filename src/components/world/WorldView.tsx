@@ -57,7 +57,7 @@ const NewSceneCursor = styled.div`
   z-index: 2000;
 `;
 
-const World = () => {
+const WorldView = () => {
   //#region Component State
 
   const dispatch = useDispatch();
@@ -275,6 +275,13 @@ const World = () => {
   const onWorldDragMove = useCallback((e: MouseEvent) => {
     if (!scrollRef.current) {
       return;
+    }
+    if (!e.buttons) {
+      // If buttons isn't set that means the mouse button was likely
+      // released while the mouse cursor was outside the window
+      // so we should stop dragging
+      window.removeEventListener("mousemove", onWorldDragMove);
+      window.removeEventListener("mouseup", onEndWorldDrag);
     }
     scrollRef.current.scrollLeft -= e.movementX;
     scrollRef.current.scrollTop -= e.movementY;
@@ -520,8 +527,6 @@ const World = () => {
 
   //#endregion Event Listeners
 
-  console.log("RENDER WORLD");
-
   return (
     <Wrapper
       ref={scrollRef}
@@ -580,4 +585,4 @@ const World = () => {
   );
 };
 
-export default World;
+export default WorldView;
