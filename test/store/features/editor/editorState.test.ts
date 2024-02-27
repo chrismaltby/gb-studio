@@ -144,7 +144,6 @@ test("Should be able to hover on scene", () => {
     ...initialState,
     hover: {
       sceneId: "",
-      actorId: "",
       x: 0,
       y: 0,
     },

@@ -4,7 +4,7 @@ import WorldView from "components/world/WorldView";
 import ToolPicker from "components/world/ToolPicker";
 import BrushToolbar from "components/world/BrushToolbar";
 import EditorSidebar from "components/editors/EditorSidebar";
-import StatusBar from "components/world/StatusBar";
+import WorldStatusBar from "components/world/WorldStatusBar";
 import useResizable from "ui/hooks/use-resizable";
 import useWindowSize from "ui/hooks/use-window-size";
 import { SplitPaneHorizontalDivider } from "ui/splitpane/SplitPaneDivider";
@@ -175,7 +175,7 @@ const WorldPage = () => {
         <WorldView />
         <BrushToolbar />
         <ToolPicker />
-        <StatusBar />
+        <WorldStatusBar />
       </div>
       <SplitPaneHorizontalDivider onMouseDown={onResizeRight} />
       <div

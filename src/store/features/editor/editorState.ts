@@ -107,7 +107,6 @@ export interface EditorState {
   searchTerm: string;
   hover: {
     sceneId: string;
-    actorId: string;
     x: number;
     y: number;
   };
@@ -173,7 +172,6 @@ export const initialState: EditorState = {
   searchTerm: "",
   hover: {
     sceneId: "",
-    actorId: "",
     x: 0,
     y: 0,
   },
