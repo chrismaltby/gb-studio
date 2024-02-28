@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from "react";
+import React, { useCallback, useContext, useEffect, useRef } from "react";
 import styled, { ThemeContext } from "styled-components";
 import WorldView from "components/world/WorldView";
 import ToolPicker from "components/world/ToolPicker";
@@ -22,6 +22,7 @@ const Wrapper = styled.div`
 `;
 
 const WorldPage = () => {
+  const documentContainerRef = useRef<HTMLDivElement>(null);
   const dispatch = useDispatch();
   const themeContext = useContext(ThemeContext);
   const worldSidebarWidth = useSelector(
@@ -134,6 +135,15 @@ const WorldPage = () => {
     dispatch(settingsActions.setShowNavigator(false));
   };
 
+  const hasFocusForKeyboardShortcuts = useCallback(() => {
+    return (
+      (document.activeElement === document.body ||
+        (documentContainerRef.current &&
+          documentContainerRef.current.contains(document.activeElement))) ??
+      false
+    );
+  }, []);
+
   return (
     <Wrapper>
       <div
@@ -161,6 +171,7 @@ const WorldPage = () => {
         <SplitPaneHorizontalDivider onMouseDown={startLeftPaneResize} />
       )}
       <div
+        ref={documentContainerRef}
         style={{
           flexGrow: 1,
           minWidth: 0,
@@ -173,8 +184,12 @@ const WorldPage = () => {
         }}
       >
         <WorldView />
-        <BrushToolbar />
-        <ToolPicker />
+        <ToolPicker
+          hasFocusForKeyboardShortcuts={hasFocusForKeyboardShortcuts}
+        />
+        <BrushToolbar
+          hasFocusForKeyboardShortcuts={hasFocusForKeyboardShortcuts}
+        />
         <WorldStatusBar />
       </div>
       <SplitPaneHorizontalDivider onMouseDown={onResizeRight} />

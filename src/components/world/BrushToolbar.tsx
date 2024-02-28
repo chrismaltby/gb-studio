@@ -67,6 +67,10 @@ import { DropdownButton } from "ui/buttons/DropdownButton";
 import { MenuItem } from "ui/menu/Menu";
 import { Checkbox } from "ui/form/Checkbox";
 
+interface BrushToolbarProps {
+  hasFocusForKeyboardShortcuts: () => boolean;
+}
+
 const paletteIndexes = [0, 1, 2, 3, 4, 5, 6, 7];
 const validTools = [TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER];
 
@@ -120,7 +124,7 @@ const BrushToolbarCollisionTile = styled.div`
   border-radius: 4px;
 }`;
 
-const BrushToolbar = () => {
+const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
   const dispatch = useDispatch();
 
   const sceneId = useSelector((state: RootState) => state.editor.scene);
@@ -409,10 +413,10 @@ const BrushToolbar = () => {
   };
 
   const onKeyDown = (e: KeyboardEvent) => {
-    if (e.target && (e.target as Node).nodeName !== "BODY") {
+    if (e.ctrlKey || e.shiftKey || e.metaKey) {
       return;
     }
-    if (e.ctrlKey || e.shiftKey || e.metaKey) {
+    if (!hasFocusForKeyboardShortcuts()) {
       return;
     }
     if (e.code === "Digit1") {

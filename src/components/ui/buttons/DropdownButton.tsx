@@ -20,6 +20,8 @@ export interface DropdownButtonProps {
   readonly children?: ReactNode;
   readonly showArrow?: boolean;
   readonly menuDirection?: "left" | "right";
+  readonly offsetX?: number;
+  readonly offsetY?: number;
   readonly style?: CSSProperties;
   readonly onMouseDown?: (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -74,6 +76,9 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = ({
   children,
   showArrow,
   menuDirection,
+  offsetX,
+  offsetY,
+  active,
   style,
   onMouseDown,
 }) => {
@@ -108,6 +113,7 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = ({
         title={title}
         size={size}
         variant={variant}
+        active={active}
         {...buttonProps}
         onMouseDown={onMouseDown}
         style={{
@@ -131,6 +137,8 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = ({
         <MenuWrapper menuDirection={menuDirection}>
           <RelativePortal
             pin={menuDirection === "left" ? "top-left" : "top-right"}
+            offsetX={offsetX}
+            offsetY={offsetY}
           >
             <Menu role="menu">{childrenWithProps}</Menu>
           </RelativePortal>
