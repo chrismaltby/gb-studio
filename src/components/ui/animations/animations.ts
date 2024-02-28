@@ -10,6 +10,16 @@ export const rotate = keyframes`
   }
 `;
 
+export const rotateReverse = keyframes`
+  from {
+    transform: rotate(360deg);
+  }
+
+  to {
+    transform: rotate(0deg);
+  }
+`;
+
 export const fadeIn = keyframes`
   from {
     opacity: 0;

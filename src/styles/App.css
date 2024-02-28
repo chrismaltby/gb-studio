@@ -35,10 +35,6 @@ body {
   flex-direction: row;
 }
 
-.Rotating {
-  animation: Rotating 2s linear infinite;
-}
-
 div::-webkit-scrollbar-track {
   border-radius: 0px;
   background-color: transparent;
@@ -61,13 +57,4 @@ div::-webkit-scrollbar-thumb {
 
 div::-webkit-scrollbar-corner {
   background: var(--main-bg-color);
-}
-
-@keyframes Rotating {
-  from {
-    transform: rotate(360deg);
-  }
-  to {
-    transform: rotate(0deg);
-  }
 }
