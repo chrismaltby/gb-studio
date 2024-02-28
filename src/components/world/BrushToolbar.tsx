@@ -43,8 +43,6 @@ import {
   BRUSH_SLOPE,
 } from "consts";
 import PaletteBlock from "components/forms/PaletteBlock";
-import Modal, { ModalFade, ModalContent } from "components/library/Modal";
-import { FormField } from "components/library/Forms";
 import editorActions from "store/features/editor/editorActions";
 import {
   backgroundSelectors,
@@ -63,7 +61,7 @@ import styled, { css } from "styled-components";
 import FloatingPanel, { FloatingPanelDivider } from "ui/panels/FloatingPanel";
 import { Button } from "ui/buttons/Button";
 import { DropdownButton } from "ui/buttons/DropdownButton";
-import { MenuItem } from "ui/menu/Menu";
+import { MenuItem, MenuOverlay } from "ui/menu/Menu";
 import { Checkbox } from "ui/form/Checkbox";
 import {
   BrushToolbarExtraTileIcon,
@@ -80,6 +78,7 @@ import {
   BrushToolbarTileSolidIcon,
   BrushToolbarTileTopIcon,
 } from "./BrushToolbarIcons";
+import { RelativePortal } from "ui/layout/RelativePortal";
 
 interface BrushToolbarProps {
   hasFocusForKeyboardShortcuts: () => boolean;
@@ -133,6 +132,19 @@ const BrushToolbarWrapper = styled(FloatingPanel)<BrushToolbarWrapperProps>`
           flex-wrap: nowrap;
         `
       : ""}
+`;
+
+const PaletteModal = styled.div`
+  position: absolute;
+  border-radius: 4px;
+  padding: 5px;
+  box-shadow: ${(props) => props.theme.colors.menu.boxShadow};
+  background: ${(props) => props.theme.colors.menu.background};
+  z-index: 1001;
+  min-width: 200px;
+  ${Button} {
+    margin-top: 5px;
+  }
 `;
 
 const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
@@ -671,14 +683,14 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
 
       {modalColorIndex > -1 && (
         <>
-          <ModalFade onClick={closePaletteModal} />
-          <Modal
-            style={{
-              left: 200 + 36 * modalColorIndex,
-              top: 70,
-            }}
-          >
-            <FormField style={undefined}>
+          <MenuOverlay onClick={closePaletteModal} />
+          <RelativePortal>
+            <PaletteModal
+              style={{
+                left: 200 + 36 * modalColorIndex,
+                top: 30,
+              }}
+            >
               <PaletteSelect
                 value={scene?.paletteIds[modalColorIndex] || ""}
                 optional
@@ -690,8 +702,6 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
                 onChange={onChangePalette}
                 name={""}
               />
-            </FormField>
-            <ModalContent>
               <Button
                 variant="normal"
                 size="small"
@@ -706,8 +716,8 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
               >
                 {l10n("FIELD_EDIT_PALETTES")}
               </Button>
-            </ModalContent>
-          </Modal>
+            </PaletteModal>
+          </RelativePortal>
         </>
       )}
     </>
