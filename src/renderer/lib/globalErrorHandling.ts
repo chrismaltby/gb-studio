@@ -4,13 +4,13 @@ window.addEventListener("error", (error) => {
   }
   error.stopPropagation();
   error.preventDefault();
-  document.body.innerHTML = `<div class="GlobalError">
-      <div class="GlobalError__Content">
+  document.body.innerHTML = `<div style="width:100%; padding: 20px; user-select: text;">
+      <div>
         <h2>${error.message}</h2>
         <p>
           ${error.filename}L:${error.lineno}C:${error.colno}
         </p>     
-        <div class="GlobalError__StackTrace">
+        <div>
           ${
             error.error &&
             error.error.stack &&
@@ -30,11 +30,11 @@ window.addEventListener("unhandledrejection", (error) => {
   error.stopPropagation();
   error.preventDefault();
   console.log(error);
-  document.body.innerHTML = `<div class="GlobalError">
-        <div class="GlobalError__Content">
+  document.body.innerHTML = `<div style="width:100%; padding: 20px; user-select: text;">
+        <div>
           <h2>Unhandled Promise Rejection</h2>
           <p></p>
-          <div class="GlobalError__StackTrace">
+          <div>
           ${
             error.reason &&
             error.reason.stack &&

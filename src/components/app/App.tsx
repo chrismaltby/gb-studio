@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import cx from "classnames";
-import GlobalError from "components/library/GlobalError";
+import GlobalError from "components/error/GlobalError";
 import AppToolbar from "./AppToolbar";
 import BackgroundsPage from "components/pages/BackgroundsPage";
 import SpritesPage from "components/pages/SpritesPage";
@@ -91,7 +91,7 @@ const App = () => {
   }, [onBlur, onDragLeave, onDragOver, onDrop, onFocus]);
 
   if (error.visible) {
-    return <GlobalError error={error} />;
+    return <GlobalError />;
   }
 
   return (

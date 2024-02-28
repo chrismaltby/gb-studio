@@ -1,6 +1,4 @@
 @import url("./RTL.css");
-@import url("./../components/library/GlobalError.css");
-/* @import url("./../components/library/Forms.css"); */
 @import url("./../components/script/ScriptEventForm.css");
 @import url("./../components/script/ScriptEditor.css");
 
