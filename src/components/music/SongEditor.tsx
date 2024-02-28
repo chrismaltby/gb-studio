@@ -24,7 +24,7 @@ import {
   WaveInstrument,
 } from "store/features/trackerDocument/trackerDocumentTypes";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
-import { MenuItem } from "components/library/Menu";
+import { MenuItem } from "ui/menu/Menu";
 import { PatternCellEditor } from "./PatternCellEditor";
 import trackerActions from "store/features/tracker/trackerActions";
 import { StickyTabs, TabBar } from "ui/tabs/Tabs";
