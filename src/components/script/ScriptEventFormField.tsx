@@ -14,6 +14,7 @@ import {
 } from "ui/scripting/ScriptEvents";
 import { FixedSpacer, FlexBreak } from "ui/spacing/Spacing";
 import { TabBar } from "ui/tabs/Tabs";
+import styled from "styled-components";
 
 interface ScriptEventFormFieldProps {
   scriptEventId: string;
@@ -25,6 +26,55 @@ interface ScriptEventFormFieldProps {
 
 const genKey = (id: string, key: string, index?: number) =>
   `${id}_${key}_${index || 0}`;
+
+// @TODO This MultiInputButton functionality only seems to be used by eventTextDialogue
+// and likely should become part of DialogueTextarea
+const MultiInputButton = styled.button`
+  background: ${(props) => props.theme.colors.button.background};
+  color: ${(props) => props.theme.colors.button.text};
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+  margin-left: 4px;
+  opacity: 0.4;
+  padding: 0;
+  border: 0;
+  border-radius: 2px;
+
+  svg {
+    width: 8px;
+    height: 8px;
+  }
+
+  :hover {
+    opacity: 1;
+  }
+
+  &&&:active {
+    opacity: 0.8;
+  }
+`;
+
+const ButtonRow = styled.div`
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  display: flex;
+`;
+
+const InputRow = styled.div`
+  display: block;
+  position: relative;
+  margin-bottom: 3px;
+
+  :last-child {
+    margin-bottom: 0;
+  }
+
+  :hover ${MultiInputButton} {
+    opacity: 1;
+  }
+`;
 
 const ScriptEventFormField = memo(
   ({
@@ -160,7 +210,7 @@ const ScriptEventFormField = memo(
         value.map((_, valueIndex) => {
           const fieldId = genKey(scriptEventId, field.key || "", valueIndex);
           return (
-            <span key={fieldId} className="ScriptEventForm__InputRow">
+            <InputRow key={fieldId}>
               <ScriptEventFormInput
                 id={fieldId}
                 entityId={entityId}
@@ -173,23 +223,17 @@ const ScriptEventFormField = memo(
                 onChange={onChange}
                 onChangeArg={setArgValue}
               />
-              <div className="ScriptEventForm__BtnRow">
+              <ButtonRow>
                 {valueIndex !== 0 && (
-                  <button
-                    className="ScriptEventForm__Btn"
-                    onClick={() => onRemoveValue(valueIndex)}
-                  >
+                  <MultiInputButton onClick={() => onRemoveValue(valueIndex)}>
                     <MinusIcon title="-" />
-                  </button>
+                  </MultiInputButton>
                 )}
-                <button
-                  className="ScriptEventForm__Btn"
-                  onClick={() => onAddValue(valueIndex)}
-                >
+                <MultiInputButton onClick={() => onAddValue(valueIndex)}>
                   <PlusIcon title="+" />
-                </button>
-              </div>
-            </span>
+                </MultiInputButton>
+              </ButtonRow>
+            </InputRow>
           );
         })
       ) : (
