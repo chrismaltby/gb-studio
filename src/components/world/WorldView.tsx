@@ -530,7 +530,6 @@ const WorldView = () => {
   return (
     <Wrapper
       ref={scrollRef}
-      className="World"
       onMouseOver={onMouseEnter}
       onMouseLeave={onMouseLeave}
       onMouseMove={onMouseMove}

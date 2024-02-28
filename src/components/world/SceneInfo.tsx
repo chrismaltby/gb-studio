@@ -414,9 +414,7 @@ const SceneInfo = () => {
             {actorWarnings.length > 0 && <div>{l10n("FIELD_WARNING")}</div>}
             {actorWarnings.length > 0 &&
               actorWarnings.map((warning) => (
-                <div key={warning} className="Scene__Info--Error">
-                  {warning}
-                </div>
+                <div key={warning}>{warning}</div>
               ))}
           </>
         }
