@@ -1,6 +1,9 @@
 import { Dictionary } from "@reduxjs/toolkit";
-import { MAX_NESTED_SCRIPT_DEPTH, MIDDLE_MOUSE } from "consts";
-import { EVENT_SWITCH_SCENE } from "lib/compiler/eventTypes";
+import {
+  EVENT_SWITCH_SCENE,
+  MAX_NESTED_SCRIPT_DEPTH,
+  MIDDLE_MOUSE,
+} from "consts";
 import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store/configureStore";

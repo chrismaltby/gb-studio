@@ -112,6 +112,7 @@ export const TRACKER_REDO = "TRACKER_REDO";
 
 export const ERR_PROJECT_EXISTS = "ERR_PROJECT_EXISTS";
 
+// @TODO Check if any uses of these hard coded event types can be made more generic to not need to know the specific event used
 export const EVENT_TEXT = "EVENT_TEXT";
 export const EVENT_CAMERA_MOVE_TO = "EVENT_CAMERA_MOVE_TO";
 export const EVENT_ACTOR_MOVE_TO = "EVENT_ACTOR_MOVE_TO";
@@ -122,6 +123,7 @@ export const EVENT_IF_ACTOR_AT_POSITION = "EVENT_IF_ACTOR_AT_POSITION";
 export const EVENT_IF_ACTOR_DISTANCE_FROM_ACTOR =
   "EVENT_IF_ACTOR_DISTANCE_FROM_ACTOR";
 export const EVENT_CALL_CUSTOM_EVENT = "EVENT_CALL_CUSTOM_EVENT";
+export const EVENT_SWITCH_SCENE = "EVENT_SWITCH_SCENE";
 
 export {
   engineRoot,
