@@ -11,12 +11,12 @@ import WorldPage from "components/pages/WorldPage";
 import MusicPage from "components/pages/MusicPage";
 import PalettePage from "components/pages/PalettePage";
 import SettingsPage from "components/pages/SettingsPage";
-import LoadingPane from "components/library/LoadingPane";
 import { DropZone } from "ui/upload/DropZone";
 import projectActions from "store/features/project/projectActions";
 import SoundsPage from "components/pages/SoundsPage";
 import l10n from "renderer/lib/l10n";
 import { RootState } from "store/configureStore";
+import LoadingPane from "ui/loading/LoadingPane";
 
 const App = () => {
   const dispatch = useDispatch();
