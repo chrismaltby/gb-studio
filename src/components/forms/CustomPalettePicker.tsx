@@ -593,8 +593,6 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
     return <div />;
   }
 
-  const selectedHex = hexToGBCHex(palette.colors[selectedColor] || "ffffff");
-
   return (
     <Wrapper>
       <ColorsWrapper>
