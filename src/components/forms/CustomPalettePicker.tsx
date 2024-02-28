@@ -634,7 +634,6 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
             colorAtValue={(value) => {
               return `#${rgbToGBCHex(Math.round(value * 31), colorG, colorB)}`;
             }}
-            handleColor={`#${selectedHex}`}
           />
         </ColorValueFormItem>
 
@@ -657,7 +656,6 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
             colorAtValue={(value) => {
               return `#${rgbToGBCHex(colorR, Math.round(value * 31), colorB)}`;
             }}
-            handleColor={`#${selectedHex}`}
           />
         </ColorValueFormItem>
 
@@ -680,7 +678,6 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
             colorAtValue={(value) => {
               return `#${rgbToGBCHex(colorR, colorG, Math.round(value * 31))}`;
             }}
-            handleColor={`#${selectedHex}`}
           />
         </ColorValueFormItem>
 
@@ -704,7 +701,6 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
               const rgb = HSVtoRGB(value, 1, 1);
               return `rgb(${rgb.r},${rgb.g},${rgb.b})`;
             }}
-            handleColor={`hsl(${colorH}, 100%, 50%)`}
           />
         </ColorValueFormItem>
 
@@ -734,7 +730,6 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
               if (b > 31) b = 31;
               return `#${rgbToGBCHex(r, g, b)}`;
             }}
-            handleColor={`#${selectedHex}`}
           />
         </ColorValueFormItem>
 
@@ -764,7 +759,6 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
               if (b > 31) b = 31;
               return `#${rgbToGBCHex(r, g, b)}`;
             }}
-            handleColor={`#${selectedHex}`}
           />
         </ColorValueFormItem>
       </ColorValueForm>
