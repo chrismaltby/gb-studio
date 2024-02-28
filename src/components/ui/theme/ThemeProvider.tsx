@@ -9,10 +9,6 @@ import { ThemeInterface } from "./ThemeInterface";
 import API from "renderer/lib/api";
 import type { ThemeId } from "shared/lib/theme";
 import { defaultTheme } from "renderer/lib/theme";
-// eslint-disable-next-line import/no-webpack-loader-syntax
-import darkThemeCSS from "!!raw-loader!../../../styles/theme-dark.css";
-// eslint-disable-next-line import/no-webpack-loader-syntax
-import lightThemeCSS from "!!raw-loader!../../../styles/theme.css";
 
 const themes: Record<ThemeId, ThemeInterface> = {
   light: lightTheme,
@@ -36,20 +32,8 @@ const Provider: FC = ({ children }) => {
   useEffect(() => {
     const updateAppTheme = (themeId: ThemeId) => {
       setTheme(systemThemes[themeId]);
-      handleOldCSSThemes(themeId);
     };
-
-    // @TODO Eventually move all this styling into ThemeProvider theme
-    const handleOldCSSThemes = (themeId: ThemeId) => {
-      const darkMode = themeId === "dark";
-      const themeStyle = document.getElementById("theme");
-      if (themeStyle) {
-        themeStyle.innerHTML = darkMode ? darkThemeCSS : lightThemeCSS;
-      }
-    };
-
     API.theme.onChange(updateAppTheme);
-    handleOldCSSThemes(defaultTheme);
   }, []);
   return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
 };
