@@ -281,7 +281,7 @@ const WorldView = () => {
       // released while the mouse cursor was outside the window
       // so we should stop dragging
       window.removeEventListener("mousemove", onWorldDragMove);
-      window.removeEventListener("mouseup", onEndWorldDrag);
+      return;
     }
     scrollRef.current.scrollLeft -= e.movementX;
     scrollRef.current.scrollTop -= e.movementY;
