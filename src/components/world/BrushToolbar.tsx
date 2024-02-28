@@ -6,7 +6,6 @@ import React, {
   useState,
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import cx from "classnames";
 import l10n from "renderer/lib/l10n";
 import {
   PaintBucketIcon,
@@ -60,12 +59,27 @@ import { Brush } from "store/features/editor/editorState";
 import { RootState } from "store/configureStore";
 import { cloneDeep } from "lodash";
 import { NavigationSection } from "store/features/navigation/navigationState";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import FloatingPanel, { FloatingPanelDivider } from "ui/panels/FloatingPanel";
 import { Button } from "ui/buttons/Button";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { MenuItem } from "ui/menu/Menu";
 import { Checkbox } from "ui/form/Checkbox";
+import {
+  BrushToolbarExtraTileIcon,
+  BrushToolbarLadderTileIcon,
+  BrushToolbarTileBottomIcon,
+  BrushToolbarTileLeftIcon,
+  BrushToolbarTileRightIcon,
+  BrushToolbarTileSlope22LeftBottomIcon,
+  BrushToolbarTileSlope22LeftTopIcon,
+  BrushToolbarTileSlope22RightBottomIcon,
+  BrushToolbarTileSlope22RightTopIcon,
+  BrushToolbarTileSlope45LeftIcon,
+  BrushToolbarTileSlope45RightIcon,
+  BrushToolbarTileSolidIcon,
+  BrushToolbarTileTopIcon,
+} from "./BrushToolbarIcons";
 
 interface BrushToolbarProps {
   hasFocusForKeyboardShortcuts: () => boolean;
@@ -111,18 +125,15 @@ const BrushToolbarWrapper = styled(FloatingPanel)<BrushToolbarWrapperProps>`
   transition: top 0.2s ease-in-out;
   z-index: 10;
   flex-wrap: wrap;
-  margin-right: 10px;
-`;
+  margin-right: 20px;
 
-const BrushToolbarCollisionTile = styled.div`
-  position: relative;
-  background-color: var(--input-bg-color);
-  width: 24px;
-  height: 24px;
-  border: 1px solid var(--input-bg-color);
-  box-sizing: border-box;
-  border-radius: 4px;
-}`;
+  ${(props) =>
+    !props.visible
+      ? css`
+          flex-wrap: nowrap;
+        `
+      : ""}
+`;
 
 const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
   const dispatch = useDispatch();
@@ -150,107 +161,127 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
         key: "solid",
         name: l10n("FIELD_SOLID"),
         flag: COLLISION_ALL,
+        icon: <BrushToolbarTileSolidIcon />,
       },
       {
         key: "top",
         name: l10n("FIELD_COLLISION_TOP"),
         flag: COLLISION_TOP,
+        icon: <BrushToolbarTileTopIcon />,
       },
       {
         key: "bottom",
         name: l10n("FIELD_COLLISION_BOTTOM"),
         flag: COLLISION_BOTTOM,
+        icon: <BrushToolbarTileBottomIcon />,
       },
       {
         key: "left",
         name: l10n("FIELD_COLLISION_LEFT"),
         flag: COLLISION_LEFT,
+        icon: <BrushToolbarTileLeftIcon />,
       },
       {
         key: "right",
         name: l10n("FIELD_COLLISION_RIGHT"),
         flag: COLLISION_RIGHT,
+        icon: <BrushToolbarTileRightIcon />,
       },
       {
         key: "ladder",
         name: l10n("FIELD_COLLISION_LADDER"),
         flag: TILE_PROP_LADDER,
+        icon: <BrushToolbarLadderTileIcon />,
       },
       {
         key: "slope_45_right",
         name: l10n("FIELD_COLLISION_SLOPE_45_RIGHT"),
         flag: COLLISION_SLOPE_45_RIGHT,
         extra: COLLISION_BOTTOM | COLLISION_RIGHT,
+        icon: <BrushToolbarTileSlope45RightIcon />,
       },
       {
         key: "slope_45_left",
         name: l10n("FIELD_COLLISION_SLOPE_45_LEFT"),
         flag: COLLISION_SLOPE_45_LEFT,
         extra: COLLISION_BOTTOM | COLLISION_LEFT,
+        icon: <BrushToolbarTileSlope45LeftIcon />,
       },
       {
         key: "slope_22_right_bot",
         name: l10n("FIELD_COLLISION_SLOPE_22_RIGHT_BOT"),
         flag: COLLISION_SLOPE_22_RIGHT_BOT,
         extra: COLLISION_BOTTOM,
+        icon: <BrushToolbarTileSlope22RightBottomIcon />,
       },
       {
         key: "slope_22_right_top",
         name: l10n("FIELD_COLLISION_SLOPE_22_RIGHT_TOP"),
         flag: COLLISION_SLOPE_22_RIGHT_TOP,
         extra: COLLISION_BOTTOM | COLLISION_RIGHT,
+        icon: <BrushToolbarTileSlope22RightTopIcon />,
       },
       {
         key: "slope_22_left_top",
         name: l10n("FIELD_COLLISION_SLOPE_22_LEFT_TOP"),
         flag: COLLISION_SLOPE_22_LEFT_TOP,
         extra: COLLISION_BOTTOM | COLLISION_LEFT,
+        icon: <BrushToolbarTileSlope22LeftTopIcon />,
       },
       {
         key: "slope_22_left_bot",
         name: l10n("FIELD_COLLISION_SLOPE_22_LEFT_BOT"),
         flag: COLLISION_SLOPE_22_LEFT_BOT,
         extra: COLLISION_BOTTOM,
+        icon: <BrushToolbarTileSlope22LeftBottomIcon />,
       },
       {
         key: "spare_08",
         name: l10n("FIELD_COLLISION_SPARE", { tile: 8 }),
         flag: 0x80,
+        icon: <BrushToolbarExtraTileIcon value="8" />,
       },
       {
         key: "spare_09",
         name: l10n("FIELD_COLLISION_SPARE", { tile: 9 }),
         flag: 0x90,
+        icon: <BrushToolbarExtraTileIcon value="9" />,
       },
       {
         key: "spare_10",
         name: l10n("FIELD_COLLISION_SPARE", { tile: 10 }),
         flag: 0xa0,
+        icon: <BrushToolbarExtraTileIcon value="10" />,
       },
       {
         key: "spare_11",
         name: l10n("FIELD_COLLISION_SPARE", { tile: 11 }),
         flag: 0xb0,
+        icon: <BrushToolbarExtraTileIcon value="11" />,
       },
       {
         key: "spare_12",
         name: l10n("FIELD_COLLISION_SPARE", { tile: 12 }),
         flag: 0xc0,
+        icon: <BrushToolbarExtraTileIcon value="12" />,
       },
       {
         key: "spare_13",
         name: l10n("FIELD_COLLISION_SPARE", { tile: 13 }),
         flag: 0xd0,
+        icon: <BrushToolbarExtraTileIcon value="13" />,
       },
       {
         key: "spare_14",
         name: l10n("FIELD_COLLISION_SPARE", { tile: 14 }),
         flag: 0xe0,
+        icon: <BrushToolbarExtraTileIcon value="14" />,
       },
       {
         key: "spare_15",
         name: l10n("FIELD_COLLISION_SPARE", { tile: 15 }),
         flag: 0xf0,
+        icon: <BrushToolbarExtraTileIcon value="15" />,
       },
     ],
     []
@@ -459,8 +490,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
 
   return (
     <>
-      <BrushToolbarWrapper visible={visible} className={cx("BrushToolbar")}>
-        {/* // <div className={cx("BrushToolbar", { "BrushToolbar--Visible": visible })}> */}
+      <BrushToolbarWrapper visible={visible}>
         <Button
           variant="transparent"
           onClick={() => setBrush(BRUSH_8PX)}
@@ -549,9 +579,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
                 }
                 title={`${tileType.name} (${tileTypeIndex + 1})`}
               >
-                <BrushToolbarCollisionTile
-                  className={`BrushToolbar__Tile--${tileType.key}`}
-                />
+                {tileType.icon}
               </Button>
             ))}
             <FloatingPanelDivider />
@@ -563,9 +591,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
                 active={selectedTileType === tileType.flag}
                 title={`${tileType.name} (${tileTypeIndex + 5 + 1})`}
               >
-                <BrushToolbarCollisionTile
-                  className={`BrushToolbar__Tile--${tileType.key}`}
-                />
+                {tileType.icon}
               </Button>
             ))}
 
@@ -581,9 +607,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
                     active={(selectedTileType & 0xf0) === tileType.flag}
                     title={`${tileType.name}`}
                   >
-                    <BrushToolbarCollisionTile
-                      className={`BrushToolbar__Tile--${tileType.key}`}
-                    />
+                    {tileType.icon}
                   </Button>
                 ))}
               </>
@@ -600,9 +624,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
                     active={(selectedTileType & 0xf0) === tileType.flag}
                     title={`${tileType.name}`}
                   >
-                    <BrushToolbarCollisionTile
-                      className={`BrushToolbar__Tile--${tileType.key}`}
-                    />
+                    {tileType.icon}
                   </Button>
                 ))}
               </>
