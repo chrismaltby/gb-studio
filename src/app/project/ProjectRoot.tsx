@@ -9,7 +9,6 @@ import GlobalStyle from "ui/globalStyle";
 import { initL10N } from "renderer/lib/l10n";
 import { initTheme } from "renderer/lib/theme";
 import "./initProject";
-import "../../styles/App.css";
 import { initFullScreenDetector } from "renderer/lib/handleFullScreen";
 
 const render = () => {
