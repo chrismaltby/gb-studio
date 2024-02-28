@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1336240216",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 1337240228",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -709,6 +709,7 @@
   "FIELD_SOUNDS": "Dźwięki",
   "FIELD_MAGNITUDE": "Wstrząs",
   "FIELD_MAGNITUDE_DESC": "Stopień ruchu kamery podczas wstrząsu.",
+  "FIELD_START_BY_ADDING_SCENE": "Kliknij tutaj, aby dodać swoją pierwszą scenę.",
   
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
