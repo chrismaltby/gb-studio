@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import cx from "classnames";
 import GlobalError from "components/error/GlobalError";
 import AppToolbar from "./AppToolbar";
 import BackgroundsPage from "components/pages/BackgroundsPage";
@@ -14,26 +13,16 @@ import SettingsPage from "components/pages/SettingsPage";
 import { DropZone } from "ui/upload/DropZone";
 import projectActions from "store/features/project/projectActions";
 import SoundsPage from "components/pages/SoundsPage";
-import l10n from "renderer/lib/l10n";
 import { RootState } from "store/configureStore";
 import LoadingPane from "ui/loading/LoadingPane";
 
 const App = () => {
   const dispatch = useDispatch();
-  const [blur, setBlur] = useState(false);
   const [draggingOver, setDraggingOver] = useState(false);
   const dragLeaveTimer = useRef<number>();
   const section = useSelector((state: RootState) => state.navigation.section);
   const error = useSelector((state: RootState) => state.error);
   const loaded = useSelector((state: RootState) => state.document.loaded);
-
-  const onBlur = useCallback(() => {
-    setBlur(true);
-  }, []);
-
-  const onFocus = useCallback(() => {
-    setBlur(false);
-  }, []);
 
   const onDragOver = useCallback(
     (e) => {
@@ -74,32 +63,22 @@ const App = () => {
   );
 
   useEffect(() => {
-    window.addEventListener("blur", onBlur);
-    window.addEventListener("focus", onFocus);
-    window.addEventListener("resize", onFocus);
     window.addEventListener("dragover", onDragOver);
     window.addEventListener("dragleave", onDragLeave);
     window.addEventListener("drop", onDrop);
     return () => {
-      window.removeEventListener("blur", onBlur);
-      window.removeEventListener("focus", onFocus);
-      window.removeEventListener("resize", onFocus);
       window.removeEventListener("dragover", onDragOver);
       window.removeEventListener("dragleave", onDragLeave);
       window.removeEventListener("drop", onDrop);
     };
-  }, [onBlur, onDragLeave, onDragOver, onDrop, onFocus]);
+  }, [onDragLeave, onDragOver, onDrop]);
 
   if (error.visible) {
     return <GlobalError />;
   }
 
   return (
-    <div
-      className={cx("App", {
-        "App--Blur": blur,
-      })}
-    >
+    <div className="App">
       <AppToolbar />
       {!loaded ? (
         <LoadingPane />
