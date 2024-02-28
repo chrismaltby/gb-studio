@@ -12,7 +12,7 @@ import { NoiseMacroEditorForm } from "./NoiseMacroEditorForm";
 import { Button } from "ui/buttons/Button";
 import { SubPatternCell } from "shared/lib/uge/song/SubPatternCell";
 import { cloneDeep } from "lodash";
-import Alert, { AlertItem } from "components/library/Alert";
+import Alert, { AlertItem } from "ui/alerts/Alert";
 import API from "renderer/lib/api";
 
 interface InstrumentNoiseEditorProps {

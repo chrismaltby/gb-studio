@@ -50,7 +50,7 @@ import { SceneSymbolsEditor } from "components/forms/symbols/SceneSymbolsEditor"
 import { BackgroundSymbolsEditor } from "components/forms/symbols/BackgroundSymbolsEditor";
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
-import Alert, { AlertItem } from "components/library/Alert";
+import Alert, { AlertItem } from "ui/alerts/Alert";
 import { sceneName } from "store/features/entities/entitiesHelpers";
 import l10n from "renderer/lib/l10n";
 
