@@ -15,6 +15,21 @@ import projectActions from "store/features/project/projectActions";
 import SoundsPage from "components/pages/SoundsPage";
 import { RootState } from "store/configureStore";
 import LoadingPane from "ui/loading/LoadingPane";
+import styled from "styled-components";
+
+const AppWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+`;
+
+const AppContent = styled.div`
+  width: 100%;
+  height: calc(100% - 38px);
+  display: flex;
+  flex-direction: row;
+`;
 
 const App = () => {
   const dispatch = useDispatch();
@@ -78,12 +93,12 @@ const App = () => {
   }
 
   return (
-    <div className="App">
+    <AppWrapper>
       <AppToolbar />
       {!loaded ? (
         <LoadingPane />
       ) : (
-        <div className="App__Content">
+        <AppContent>
           {section === "world" && <WorldPage />}
           {section === "backgrounds" && <BackgroundsPage />}
           {section === "sprites" && <SpritesPage />}
@@ -94,9 +109,9 @@ const App = () => {
           {section === "build" && <BuildPage />}
           {section === "settings" && <SettingsPage />}
           {draggingOver && <DropZone />}
-        </div>
+        </AppContent>
       )}
-    </div>
+    </AppWrapper>
   );
 };
 

@@ -26,20 +26,6 @@ const GlobalStyle = createGlobalStyle`
     height: 100%;
   }
   
-  .App {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .App__Content {
-    width: 100%;
-    height: calc(100% - 38px);
-    display: flex;
-    flex-direction: row;
-  }  
-
   #MenuPortal {
     z-index: 10000;
     position: absolute;
