@@ -25,7 +25,7 @@ const Wrapper = styled.div`
 
 const SettingsWrapper = styled.div`
   margin-top: 20px;
-  background-color: var(--sidebar-border-color);
+  background-color: ${(props) => props.theme.colors.sidebar.background};
   border-radius: 8px;
   padding: 10px;
 `;

@@ -29,7 +29,7 @@ const Wrapper = styled.div<WrapperProps>`
   margin: 0px;
   font-size: 12px;
   font-weight: bold;
-  border-bottom: 1px solid var(--sidebar-border-color);
+  border-bottom: 1px solid ${(props) => props.theme.colors.sidebar.border};
   text-align: left;
   padding: 0;
   padding-right: 10px;
@@ -123,9 +123,9 @@ const Tab = styled.button<TabProps>`
   ${(props) =>
     props.selected && props.variant !== "secondary"
       ? css`
-          background: var(--input-bg-color);
+          background: ${(props) => props.theme.colors.input.background};
           opacity: 1;
-          outline: 1px solid var(--input-border-color) !important;
+          outline: 1px solid ${(props) => props.theme.colors.input.border} !important;
           overflow: visible;
           -webkit-mask-image: none;
         `
@@ -134,7 +134,7 @@ const Tab = styled.button<TabProps>`
   ${(props) =>
     props.selected && props.variant === "secondary"
       ? css`
-          background: var(--input-bg-color);
+          background: ${(props) => props.theme.colors.input.background};
           opacity: 1;
           overflow: visible;
           -webkit-mask-image: none;

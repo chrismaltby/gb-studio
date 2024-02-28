@@ -125,7 +125,8 @@ const Wrapper = styled.div<WrapperProps>`
       ? css`
           &:after {
             content: "";
-            background-color: var(--main-bg-color);
+            background-color: ${(props) =>
+              props.theme.colors.document.background};
             border-radius: 4px;
             opacity: 0.8;
             position: absolute;

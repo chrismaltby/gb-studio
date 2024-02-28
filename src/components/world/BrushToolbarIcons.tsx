@@ -2,10 +2,10 @@ import styled, { css } from "styled-components";
 
 export const brushToolbarCollisionTileStyles = css`
   position: relative;
-  background-color: var(--input-bg-color);
+  background-color: ${(props) => props.theme.colors.input.background};
   width: 24px;
   height: 24px;
-  border: 1px solid var(--input-bg-color);
+  border: 1px solid ${(props) => props.theme.colors.input.background};
   box-sizing: border-box;
   border-radius: 4px;
 }`;
