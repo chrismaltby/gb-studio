@@ -25,7 +25,7 @@ import {
   Trigger,
 } from "store/features/entities/entitiesTypes";
 import editorActions from "store/features/editor/editorActions";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { ShowConnectionsSetting } from "store/features/settings/settingsState";
 
 interface ConnectionsProps {
@@ -40,7 +40,7 @@ interface CalculateTransitionCoordsProps {
   scriptEvent: ScriptEvent;
   scene: Scene;
   destScene: Scene;
-  entityId?: string;
+  entityId: string;
   entityX?: number;
   entityY?: number;
   entityWidth?: number;
@@ -58,7 +58,7 @@ interface TransitionCoords {
   type: "actor" | "trigger" | "scene";
   eventId: string;
   sceneId: string;
-  entityId: string | undefined;
+  entityId: string;
   direction: ActorDirection;
 }
 
@@ -70,6 +70,40 @@ const ConnectionsSvg = styled.svg`
   pointer-events: none;
   z-index: 11;
 `;
+
+interface ConnectionMarkerProps {
+  x: number;
+  y: number;
+  direction: ActorDirection | undefined;
+  type: ConnectionMarkerType;
+  onMouseDown: (e: React.MouseEvent<SVGGElement>) => void;
+}
+
+type ConnectionMarkerType = "destination" | "player-start";
+
+interface ConnectionMarkerSVGProps {
+  type: ConnectionMarkerType;
+}
+
+type DestinationMarkerProps = {
+  x: number;
+  y: number;
+  direction: ActorDirection | undefined;
+  sceneId: string;
+  eventId: string;
+  entityId: string;
+  editable: boolean;
+  selectionType: "actor" | "trigger" | "scene";
+};
+
+interface ConnectionProps {
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  qx: number;
+  qy: number;
+}
 
 const calculateTransitionCoords = ({
   type,
@@ -163,6 +197,7 @@ const getSceneConnections = (
             scriptEvent,
             scene,
             destScene,
+            entityId: "",
           })
         );
       });
@@ -236,6 +271,152 @@ const getSceneConnections = (
   });
 
   return connections;
+};
+
+const ConnectionMarkerSVG = styled.g<ConnectionMarkerSVGProps>`
+  pointer-events: all;
+
+  ${(props) =>
+    props.type === "player-start"
+      ? css`
+          rect {
+            fill: rgb(255, 87, 34);
+          }
+
+          &:hover rect {
+            stroke: rgb(255, 87, 34);
+            stroke-width: 2px;
+          }
+        `
+      : ""}
+
+  ${(props) =>
+    props.type === "destination"
+      ? css`
+          rect {
+            fill: rgb(0, 188, 212);
+          }
+
+          &:hover rect {
+            stroke: rgb(0, 188, 212);
+            stroke-width: 2px;
+          }
+        `
+      : ""}
+`;
+
+const ConnectionMarker = ({
+  x,
+  y,
+  direction,
+  onMouseDown,
+  type,
+}: ConnectionMarkerProps) => {
+  return (
+    <ConnectionMarkerSVG type={type} onMouseDown={onMouseDown}>
+      <rect x={x - 4} y={y - 4} rx={4} ry={4} width={16} height={8} />
+      {direction === "up" && (
+        <polygon
+          points={`${x},${y + 2} ${x + 4},${y - 3} ${x + 8},${y + 2}`}
+          style={{
+            fill: "#fbe9e7",
+          }}
+        />
+      )}
+      {direction === "down" && (
+        <polygon
+          points={`${x},${y - 2} ${x + 4},${y + 3} ${x + 8},${y - 2}`}
+          style={{
+            fill: "#fbe9e7",
+          }}
+        />
+      )}
+      {direction === "left" && (
+        <polygon
+          points={`${x},${y} ${x + 6},${y - 3} ${x + 6},${y + 3}`}
+          style={{
+            fill: "#fbe9e7",
+          }}
+        />
+      )}
+      {direction === "right" && (
+        <polygon
+          points={`${x + 8},${y} ${x + 2},${y - 3} ${x + 2},${y + 3}`}
+          style={{
+            fill: "#fbe9e7",
+          }}
+        />
+      )}
+    </ConnectionMarkerSVG>
+  );
+};
+
+const DestinationMarker = ({
+  x,
+  y,
+  direction,
+  selectionType,
+  sceneId,
+  eventId,
+  entityId,
+  editable,
+}: DestinationMarkerProps) => {
+  const dispatch = useDispatch();
+
+  const onDragDestinationStop = useCallback(() => {
+    dispatch(editorActions.dragDestinationStop());
+    window.removeEventListener("mouseup", onDragDestinationStop);
+  }, [dispatch]);
+
+  const onDragDestinationStart = useCallback(
+    (e: React.MouseEvent<SVGGElement>) => {
+      if (editable && e.nativeEvent.button !== MIDDLE_MOUSE) {
+        e.stopPropagation();
+        e.preventDefault();
+        dispatch(
+          editorActions.dragDestinationStart({
+            eventId,
+            sceneId,
+            selectionType,
+            entityId,
+          })
+        );
+        window.addEventListener("mouseup", onDragDestinationStop);
+      }
+    },
+    [
+      dispatch,
+      editable,
+      entityId,
+      eventId,
+      onDragDestinationStop,
+      sceneId,
+      selectionType,
+    ]
+  );
+
+  return (
+    <ConnectionMarker
+      type="destination"
+      x={x}
+      y={y}
+      direction={direction}
+      onMouseDown={onDragDestinationStart}
+    />
+  );
+};
+
+const Connection = ({ x1, y1, x2, y2, qx, qy }: ConnectionProps) => {
+  return (
+    <g>
+      <path
+        d={`M${x1} ${y1} Q ${qx} ${qy} ${x2} ${y2}`}
+        stroke="#00bcd4"
+        fill="transparent"
+        strokeDasharray="3"
+      />
+    </g>
+  );
 };
 
 const Connections = ({
@@ -316,67 +497,6 @@ const Connections = ({
     selectedSceneId,
   ]);
 
-  const renderConnection = useCallback(
-    ({ x1, y1, x2, y2, qx, qy, eventId, sceneId }) => {
-      return (
-        <g key={`c_${sceneId}_${eventId}`}>
-          <path
-            d={`M${x1} ${y1} Q ${qx} ${qy} ${x2} ${y2}`}
-            stroke="#00bcd4"
-            fill="transparent"
-            strokeDasharray="3"
-          />
-        </g>
-      );
-    },
-    []
-  );
-
-  const renderMarker = useCallback(
-    ({ x, y, direction, onMouseDown, eventId, sceneId, className }) => (
-      <g
-        key={`m_${sceneId}_${eventId}`}
-        className={className}
-        onMouseDown={onMouseDown}
-      >
-        <rect x={x - 4} y={y - 4} rx={4} ry={4} width={16} height={8} />
-        {direction === "up" && (
-          <polygon
-            points={`${x},${y + 2} ${x + 4},${y - 3} ${x + 8},${y + 2}`}
-            style={{
-              fill: "#fbe9e7",
-            }}
-          />
-        )}
-        {direction === "down" && (
-          <polygon
-            points={`${x},${y - 2} ${x + 4},${y + 3} ${x + 8},${y - 2}`}
-            style={{
-              fill: "#fbe9e7",
-            }}
-          />
-        )}
-        {direction === "left" && (
-          <polygon
-            points={`${x},${y} ${x + 6},${y - 3} ${x + 6},${y + 3}`}
-            style={{
-              fill: "#fbe9e7",
-            }}
-          />
-        )}
-        {direction === "right" && (
-          <polygon
-            points={`${x + 8},${y} ${x + 2},${y - 3} ${x + 2},${y + 3}`}
-            style={{
-              fill: "#fbe9e7",
-            }}
-          />
-        )}
-      </g>
-    ),
-    []
-  );
-
   const onDragPlayerStop = useCallback(() => {
     dispatch(editorActions.dragPlayerStop());
     window.removeEventListener("mouseup", onDragPlayerStop);
@@ -394,31 +514,6 @@ const Connections = ({
     [dispatch, editable, onDragPlayerStop]
   );
 
-  const onDragDestinationStop = useCallback(() => {
-    dispatch(editorActions.dragDestinationStop());
-    window.removeEventListener("mouseup", onDragDestinationStop);
-  }, [dispatch]);
-
-  const onDragDestinationStart = useCallback(
-    (eventId, sceneId, selectionType, id) =>
-      (e: React.MouseEvent<SVGGElement>) => {
-        if (editable && e.nativeEvent.button !== MIDDLE_MOUSE) {
-          e.stopPropagation();
-          e.preventDefault();
-          dispatch(
-            editorActions.dragDestinationStart({
-              eventId,
-              sceneId,
-              selectionType,
-              entityId: id,
-            })
-          );
-          window.addEventListener("mouseup", onDragDestinationStop);
-        }
-      },
-    [dispatch, editable, onDragDestinationStop]
-  );
-
   const startX2 = startScene && startScene.x + (startX || 0) * 8 + 5;
   const startY2 = startScene && 20 + startScene.y + (startY || 0) * 8 + 5;
 
@@ -430,32 +525,37 @@ const Connections = ({
         strokeWidth: 2 / zoomRatio,
       }}
     >
-      {connections.map(renderConnection)}
-      {connections.map(
-        ({ x2, y2, direction, eventId, sceneId, type, entityId }) =>
-          renderMarker({
-            x: x2,
-            y: y2,
-            direction,
-            eventId,
-            sceneId,
-            className: "Connections__Destination",
-            onMouseDown: onDragDestinationStart(
-              eventId,
-              sceneId,
-              type,
-              entityId
-            ),
-          })
+      {connections.map((connection) => (
+        <React.Fragment key={`m_${connection.sceneId}_${connection.eventId}`}>
+          <Connection
+            x1={connection.x1}
+            x2={connection.x2}
+            y1={connection.y1}
+            y2={connection.y2}
+            qx={connection.qx}
+            qy={connection.qy}
+          />
+          <DestinationMarker
+            x={connection.x2}
+            y={connection.y2}
+            sceneId={connection.sceneId}
+            entityId={connection.entityId}
+            eventId={connection.eventId}
+            direction={connection.direction}
+            selectionType={connection.type}
+            editable={editable}
+          />
+        </React.Fragment>
+      ))}
+      {startScene && (
+        <ConnectionMarker
+          type="player-start"
+          x={startX2}
+          y={startY2}
+          direction={startDirection}
+          onMouseDown={onDragPlayerStart}
+        />
       )}
-      {startScene &&
-        renderMarker({
-          x: startX2,
-          y: startY2,
-          className: "Connections__PlayerStart",
-          direction: startDirection,
-          onMouseDown: onDragPlayerStart,
-        })}
     </ConnectionsSvg>
   );
 };
