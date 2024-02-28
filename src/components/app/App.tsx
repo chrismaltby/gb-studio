@@ -96,9 +96,8 @@ const App = () => {
 
   return (
     <div
-      className={cx("App", l10n("RTL"), {
+      className={cx("App", {
         "App--Blur": blur,
-        "App--RTL": l10n("RTL") === "true",
       })}
     >
       <AppToolbar />
