@@ -1,11 +1,5 @@
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import styled, { ThemeContext } from "styled-components";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash/debounce";
 import useResizable from "ui/hooks/use-resizable";
@@ -18,18 +12,65 @@ import l10n from "renderer/lib/l10n";
 import { Button } from "ui/buttons/Button";
 import CustomPalettePicker from "components/forms/CustomPalettePicker";
 import { NavigatorPalettes } from "components/palettes/NavigatorPalettes";
-import PageHeader from "components/library/PageHeader";
 import entitiesActions from "store/features/entities/entitiesActions";
 import castEventValue from "renderer/lib/helpers/castEventValue";
+import { Input } from "ui/form/Input";
 
 const Wrapper = styled.div`
   display: flex;
   width: 100%;
 `;
 
+const Header = styled.div`
+  display: flex;
+  height: 100px;
+  align-items: center;
+  margin-bottom: 30px;
+
+  h1 {
+    margin-right: 10px;
+  }
+`;
+
+const Sidebar = styled.div`
+  background: ${(props) => props.theme.colors.sidebar.background};
+  overflow: hidden;
+  position: relative;
+`;
+
+const SidebarContent = styled.div`
+  min-width: 200px;
+  position: relative;
+  width: 100%;
+  height: 100%;
+`;
+
+const Document = styled.div`
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  background: ${(props) => props.theme.colors.document.background};
+  color: ${(props) => props.theme.colors.text};
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const Container = styled.div`
+  display: flex;
+  flex-grow: 1;
+  position: relative;
+  padding: 20px 40px;
+  max-width: 1000px;
+  min-width: 500px;
+  width: 100%;
+  flex-direction: column;
+  box-sizing: border-box;
+`;
+
 const PalettePage = () => {
   const dispatch = useDispatch();
-  const themeContext = useContext(ThemeContext);
   const selectedId = useSelector((state: RootState) => state.navigation.id);
   const navigatorSidebarWidth = useSelector(
     (state: RootState) => state.editor.navigatorSidebarWidth
@@ -90,7 +131,10 @@ const PalettePage = () => {
   }, []);
 
   const onFinishEdit = () => {
-    if (!palette.name) {
+    if (!palette) {
+      return;
+    }
+    if (!palette?.name) {
       dispatch(
         entitiesActions.editPalette({
           paletteId: palette.id,
@@ -110,6 +154,9 @@ const PalettePage = () => {
   };
 
   const onEditName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!palette) {
+      return;
+    }
     dispatch(
       entitiesActions.editPalette({
         paletteId: palette.id,
@@ -122,85 +169,53 @@ const PalettePage = () => {
 
   return (
     <Wrapper>
-      <div
+      <Sidebar
         style={{
-          transition: "opacity 0.3s ease-in-out",
           width: Math.max(200, leftPaneWidth),
-          background: themeContext.colors.sidebar.background,
-          overflow: "hidden",
-          position: "relative",
         }}
       >
-        <div
-          style={{
-            minWidth: 200,
-            position: "relative",
-            width: "100%",
-            height: "100%",
-          }}
-        >
+        <SidebarContent>
           <NavigatorPalettes
             height={windowHeight - 38}
             selectedId={palette?.id || ""}
           />
-        </div>
-      </div>
+        </SidebarContent>
+      </Sidebar>
       <SplitPaneHorizontalDivider onMouseDown={startLeftPaneResize} />
-      <div
-        style={{
-          flex: "1 1 0",
-          minWidth: 0,
-          overflow: "hidden",
-          background: themeContext.colors.document.background,
-          color: themeContext.colors.text,
-          height: windowHeight - 38,
-          position: "relative",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        <PageHeader>
-          {palette ? (
-            <h1>
-              {edit ? (
-                <input
-                  maxLength={25}
-                  value={palette.name}
-                  onChange={onEditName}
-                  onKeyDown={checkForFinishEdit}
-                  onBlur={onFinishEdit}
-                  autoFocus
-                />
-              ) : (
-                palette.name
-              )}{" "}
-              {!palette.defaultColors && !edit && (
-                <Button
-                  key="edit"
-                  onClick={onStartEdit}
-                  size="small"
-                  variant="transparent"
-                >
-                  {l10n("FIELD_RENAME")}
-                </Button>
-              )}
-            </h1>
-          ) : (
-            <h1>No palette selected</h1>
-          )}
-        </PageHeader>
-        <div
-          style={{
-            display: "flex",
-            flexGrow: 1,
-            position: "relative",
-            justifyContent: "center",
-            padding: "0 40px",
-          }}
-        >
-          <CustomPalettePicker paletteId={palette.id} />
-        </div>
-      </div>
+      <Document>
+        <Container>
+          <Header>
+            {palette && (
+              <>
+                {edit ? (
+                  <Input
+                    displaySize="large"
+                    maxLength={25}
+                    value={palette.name}
+                    onChange={onEditName}
+                    onKeyDown={checkForFinishEdit}
+                    onBlur={onFinishEdit}
+                    autoFocus
+                  />
+                ) : (
+                  <h1>{palette.name}</h1>
+                )}
+                {!palette.defaultColors && !edit && (
+                  <Button
+                    key="edit"
+                    onClick={onStartEdit}
+                    size="small"
+                    variant="transparent"
+                  >
+                    {l10n("FIELD_RENAME")}
+                  </Button>
+                )}
+              </>
+            )}
+          </Header>
+          {palette && <CustomPalettePicker paletteId={palette.id} />}
+        </Container>
+      </Document>
     </Wrapper>
   );
 };
