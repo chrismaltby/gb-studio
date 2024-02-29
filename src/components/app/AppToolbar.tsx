@@ -1,4 +1,11 @@
-import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  FC,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Helmet } from "react-helmet";
 import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash/debounce";
@@ -48,6 +55,7 @@ const zoomSections = ["world", "sprites", "backgrounds", "ui"];
 
 const AppToolbar: FC = () => {
   const dispatch = useDispatch();
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const loaded = useSelector((state: RootState) => state.document.loaded);
   const modified = useSelector((state: RootState) => state.document.modified);
   const name = useSelector(
@@ -152,6 +160,31 @@ const AppToolbar: FC = () => {
     dispatch(electronActions.openFolder(projectRoot));
   }, [dispatch, projectRoot]);
 
+  // Handle focusing search when pressing "/"
+  const onKeyDown = useCallback((e: KeyboardEvent) => {
+    if (
+      e.key === "Escape" &&
+      e.target === searchInputRef.current &&
+      searchInputRef.current
+    ) {
+      searchInputRef.current.blur();
+    }
+    if (e.target && (e.target as Node).nodeName === "INPUT") {
+      return;
+    }
+    if (e.key === "/" && searchInputRef.current) {
+      searchInputRef.current.focus();
+      e.preventDefault();
+    }
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [onKeyDown]);
+
   if (!loaded) {
     return <Toolbar />;
   }
@@ -206,6 +239,7 @@ const AppToolbar: FC = () => {
       <FlexGrow />
       {showSearch && (
         <SearchInput
+          ref={searchInputRef}
           placeholder={l10n("TOOLBAR_SEARCH")}
           value={searchTerm || ""}
           onChange={onChangeSearchTerm}
