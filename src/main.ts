@@ -48,6 +48,7 @@ import { writeFileWithBackupAsync } from "lib/helpers/fs/writeFileWithBackup";
 import { guardAssetWithinProject } from "lib/helpers/assets";
 import type { Song } from "shared/lib/uge/song/Song";
 import { loadUGESong, saveUGESong } from "shared/lib/uge/ugeHelper";
+import confirmUnsavedChangesTrackerDialog from "lib/electron/dialog/confirmUnsavedChangesTrackerDialog";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -536,6 +537,14 @@ ipcMain.handle(
   }
 );
 
+ipcMain.handle(
+  "dialog:confirm-tracker-unsaved",
+  async (_event, name: string) => {
+    console.log("MAIN: confirmUnsavedChangesTrackerDialog", { name });
+    return confirmUnsavedChangesTrackerDialog(name);
+  }
+);
+
 ipcMain.handle("close-project", () => {
   mainWindow?.close();
 });
@@ -897,6 +906,8 @@ ipcMain.handle(
 );
 
 ipcMain.handle("tracker:new", async (_event, filename: string) => {
+  console.log("MAIN: tracker:new", { filename });
+
   const projectRoot = Path.dirname(projectPath);
   // Check project has permission to access this asset
   guardAssetWithinProject(filename, projectRoot);
@@ -933,6 +944,8 @@ ipcMain.handle("tracker:new", async (_event, filename: string) => {
 });
 
 ipcMain.handle("tracker:load", async (_event, filename: string) => {
+  console.log("MAIN: tracker:load", { filename });
+
   const projectRoot = Path.dirname(projectPath);
   // Check project has permission to access this asset
   guardAssetWithinProject(filename, projectRoot);
@@ -942,10 +955,15 @@ ipcMain.handle("tracker:load", async (_event, filename: string) => {
   if (song) {
     song.filename = filename;
   }
+
+  console.log("MAIN: tracker:new DONE!", { filename });
+
   return song;
 });
 
 ipcMain.handle("tracker:save", async (_event, song: Song) => {
+  console.log("MAIN: tracker:save", { filename: song.filename });
+
   const projectRoot = Path.dirname(projectPath);
   const filename = song.filename;
   // Check project has permission to access this asset
@@ -953,6 +971,8 @@ ipcMain.handle("tracker:save", async (_event, song: Song) => {
   // Convert song to UGE format and save
   const buffer = saveUGESong(song);
   await writeFileWithBackupAsync(filename, new Uint8Array(buffer), "utf8");
+
+  console.log("MAIN: tracker:save DONE!", { filename });
 });
 
 menu.on("new", async () => {

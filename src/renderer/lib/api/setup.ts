@@ -101,6 +101,8 @@ const APISetup = {
         sceneNames,
         count
       ),
+    confirmUnsavedChangesTrackerDialog: (name: string): Promise<number> =>
+      ipcRenderer.invoke("dialog:confirm-tracker-unsaved", name),
   },
   project: {
     getRecentProjects: (): Promise<string[]> =>
