@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix localisation for default names of scenes, actors and triggers, new entities no longer hard coded to use English names
 - Fix issue where clicking on a scene would sometimes not cause it to become selected
 - Fix issue where dragging World using middle mouse button and releasing button with cursor outside of window would cause scrolling to still be enabled
+- Fix issue where double clicking scene search input would cause window to become maximised on macOS
 
 ## [3.2.1] - 2024-02-27
 

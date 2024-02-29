@@ -38,6 +38,10 @@ export const Toolbar = styled.div<ToolbarProps>`
     margin-right: 5px;
   }
 
+  input {
+    -webkit-app-region: no-drag;
+  }
+
   ${Button} {
     -webkit-app-region: no-drag;
     border: 1px solid ${(props) => props.theme.colors.button.toolbar.border};
