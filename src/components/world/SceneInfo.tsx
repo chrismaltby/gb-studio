@@ -1,4 +1,6 @@
 import {
+  EVENT_ACTOR_SET_SPRITE,
+  EVENT_PLAYER_SET_SPRITE,
   MAX_ACTORS,
   MAX_ACTORS_SMALL,
   MAX_NESTED_SCRIPT_DEPTH,
@@ -29,10 +31,6 @@ import { SpriteSheet } from "store/features/entities/entitiesTypes";
 import clamp from "shared/lib/helpers/clamp";
 import { useDebounce } from "ui/hooks/use-debounce";
 import { maxSpriteTilesForBackgroundTilesLength } from "shared/lib/helpers/sprites";
-import {
-  EVENT_ACTOR_SET_SPRITE,
-  EVENT_PLAYER_SET_SPRITE,
-} from "lib/compiler/eventTypes";
 
 interface SceneInfoWrapperProps {
   loaded: boolean;
