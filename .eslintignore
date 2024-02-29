@@ -1,2 +1,3 @@
 src/lib/vendor
+src/renderer/lib/vendor
 src/lib/forge/hooks
