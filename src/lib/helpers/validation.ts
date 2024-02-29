@@ -13,7 +13,7 @@ const MAX_IMAGE_HEIGHT = 2040;
 const MAX_PIXELS = 16380 * 64;
 const MAX_TILESET_TILES = 16 * 12;
 
-interface BackgroundInfo {
+export interface BackgroundInfo {
   numTiles: number;
   warnings: string[];
   lookup: Uint8Array;

@@ -42,6 +42,8 @@ import type { EngineFieldSchema } from "store/features/engine/engineState";
 import compileData from "lib/compiler/compileData";
 import ejectBuild from "lib/compiler/ejectBuild";
 import { initPlugins } from "lib/plugins/plugins";
+import type { Background } from "store/features/entities/entitiesTypes";
+import { getBackgroundInfo } from "lib/helpers/validation";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -879,6 +881,14 @@ ipcMain.handle(
       }
       throw e;
     }
+  }
+);
+
+ipcMain.handle(
+  "project:get-background-info",
+  (_event, background: Background, is360: boolean) => {
+    const projectRoot = Path.dirname(projectPath);
+    return getBackgroundInfo(background, is360, projectRoot);
   }
 );
 

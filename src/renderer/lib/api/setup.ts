@@ -14,6 +14,8 @@ import type { ProjectExportType } from "store/features/buildGame/buildGameAction
 import type { EngineFieldSchema } from "store/features/engine/engineState";
 import type { ProjectData } from "store/features/project/projectActions";
 import type { SettingsState } from "store/features/settings/settingsState";
+import type { Background } from "store/features/entities/entitiesTypes";
+import type { BackgroundInfo } from "lib/helpers/validation";
 
 interface L10NLookup {
   [key: string]: string | boolean | undefined;
@@ -128,6 +130,11 @@ const APISetup = {
       engineFields: EngineFieldSchema[],
       exportType: ProjectExportType
     ) => ipcRenderer.invoke("project:export", data, engineFields, exportType),
+    getBackgroundInfo: (
+      background: Background,
+      is360: boolean
+    ): Promise<BackgroundInfo> =>
+      ipcRenderer.invoke("project:get-background-info", background, is360),
   },
   music: {
     openMusic: () => ipcRenderer.send("open-music"),

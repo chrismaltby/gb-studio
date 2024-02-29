@@ -1,8 +1,8 @@
 import { Middleware, Action, Dispatch } from "@reduxjs/toolkit";
-import { getBackgroundInfo } from "lib/helpers/validation";
 import actions from "./assetsActions";
 import { RootState } from "store/configureStore";
 import { backgroundSelectors } from "store/features/entities/entitiesState";
+import API from "renderer/lib/api";
 
 const assetsMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => (action: Action) => {
@@ -10,7 +10,6 @@ const assetsMiddleware: Middleware<Dispatch, RootState> =
       const state = store.getState();
       const backgroundsLookup = backgroundSelectors.selectEntities(state);
       const background = backgroundsLookup[action.payload.backgroundId];
-      const projectRoot = state.document.root;
 
       if (background) {
         const cachedWarnings =
@@ -20,8 +19,9 @@ const assetsMiddleware: Middleware<Dispatch, RootState> =
           cachedWarnings.timestamp < background._v ||
           cachedWarnings.is360 !== action.payload.is360
         ) {
-          getBackgroundInfo(background, action.payload.is360, projectRoot).then(
-            (info) => {
+          API.project
+            .getBackgroundInfo(background, action.payload.is360)
+            .then((info) => {
               store.dispatch(
                 actions.setBackgroundAssetInfo({
                   id: action.payload.backgroundId,
@@ -31,8 +31,7 @@ const assetsMiddleware: Middleware<Dispatch, RootState> =
                   lookup: info.lookup,
                 })
               );
-            }
-          );
+            });
         }
       }
     }
