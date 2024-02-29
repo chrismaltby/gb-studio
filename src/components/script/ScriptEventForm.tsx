@@ -8,10 +8,6 @@ import {
   customEventSelectors,
   scriptEventSelectors,
 } from "store/features/entities/entitiesState";
-import {
-  EVENT_ENGINE_FIELD_STORE,
-  EVENT_ENGINE_FIELD_SET,
-} from "lib/compiler/eventTypes";
 import { RootState } from "store/configureStore";
 import { Dictionary } from "@reduxjs/toolkit";
 import { EngineFieldSchema } from "store/features/engine/engineState";
@@ -20,6 +16,7 @@ import {
   ScriptEventFieldSchema,
 } from "store/features/entities/entitiesTypes";
 import ScriptEventFields from "./ScriptEventFields";
+import { EVENT_ENGINE_FIELD_SET, EVENT_ENGINE_FIELD_STORE } from "consts";
 
 interface ScriptEventFormProps {
   id: string;
