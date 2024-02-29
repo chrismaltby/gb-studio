@@ -13,7 +13,7 @@ import {
   DRAG_PLAYER,
   BRUSH_SLOPE,
 } from "consts";
-import { zoomIn, zoomOut } from "lib/helpers/zoom";
+import { zoomIn, zoomOut } from "shared/lib/helpers/zoom";
 import {
   Actor,
   Trigger,
