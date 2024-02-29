@@ -12,7 +12,7 @@
 #define LINK_MODE_SLAVE 2
 
 extern volatile UBYTE SIO_status;
-void SIO_send_byte(UBYTE data) PRESERVES_REGS(b, c, d, e, h, l);
+void SIO_send_byte(UBYTE data) OLDCALL PRESERVES_REGS(b, c, d, e, h, l);
 void SIO_receive(void) PRESERVES_REGS(b, c, d, e, h, l);
 
 extern UBYTE link_operation_mode;
