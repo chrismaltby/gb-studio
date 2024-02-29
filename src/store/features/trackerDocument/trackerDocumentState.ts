@@ -5,22 +5,18 @@ import {
   createSlice,
   PayloadAction,
 } from "@reduxjs/toolkit";
-import { pathExists, readFile } from "fs-extra";
 import cloneDeep from "lodash/cloneDeep";
-import { writeFileWithBackupAsync } from "lib/helpers/fs/writeFileWithBackup";
 import { PatternCell } from "shared/lib/uge/song/PatternCell";
 import { Song } from "shared/lib/uge/song/Song";
-import { loadUGESong, saveUGESong } from "shared/lib/uge/ugeHelper";
 import { RootState } from "store/configureStore";
 import {
   DutyInstrument,
   NoiseInstrument,
   WaveInstrument,
 } from "./trackerDocumentTypes";
-import { projectTemplatesRoot } from "consts";
-import copy from "lib/helpers/fsCopy";
 import { SubPatternCell } from "shared/lib/uge/song/SubPatternCell";
 import { InstrumentType } from "store/features/editor/editorState";
+import API from "renderer/lib/api";
 
 export interface TrackerDocumentState {
   status: "loading" | "error" | "loaded" | null;
@@ -38,45 +34,14 @@ export const initialState: TrackerDocumentState = {
 export const addNewSongFile = createAsyncThunk<string | null, string>(
   "tracker/addNewSong",
   async (path, _thunkApi): Promise<string | null> => {
-    const templatePath = `${projectTemplatesRoot}/gbhtml/assets/music/template.uge`;
-    const copy2 = async (oPath: string, path: string) => {
-      try {
-        const exists = await pathExists(path);
-        if (!exists) {
-          await copy(oPath, path, {
-            overwrite: false,
-            errorOnExist: true,
-          });
-          return path;
-        } else {
-          const [filename] = path.split(".uge");
-          const matches = filename.match(/\d+$/);
-          let newFilename = `${filename} 1`;
-          if (matches) {
-            // if filename ends with number
-            const number = parseInt(matches[0]) + 1;
-            newFilename = filename.replace(/\d+$/, `${number}`);
-          }
-          const newPath = `${newFilename}.uge`;
-          await copy2(oPath, newPath);
-          return newPath;
-        }
-      } catch (e) {
-        throw new Error(e);
-      }
-    };
-    return await copy2(templatePath, path);
+    return await API.tracker.addNewUGEFile(path);
   }
 );
 
 export const loadSongFile = createAsyncThunk<Song | null, string>(
   "tracker/loadSong",
   async (path, _thunkApi): Promise<Song | null> => {
-    const data = await readFile(path);
-    const song = loadUGESong(new Uint8Array(data).buffer);
-    if (song) {
-      song.filename = path;
-    }
+    const song = await API.tracker.loadUGEFile(path);
     return song;
   }
 );
@@ -95,15 +60,10 @@ export const saveSongFile = createAsyncThunk<void, void>(
 
     const song = state.trackerDocument.present.song;
     try {
-      const buffer = saveUGESong(song);
-      await writeFileWithBackupAsync(
-        song.filename,
-        new Uint8Array(buffer),
-        "utf8"
-      );
+      await API.tracker.saveUGEFile(song);
     } catch (e) {
       console.log(e);
-      throw new Error(e);
+      throw e;
     }
   }
 );

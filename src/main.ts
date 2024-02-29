@@ -10,7 +10,7 @@ import {
 import windowStateKeeper from "electron-window-state";
 import settings from "electron-settings";
 import Path from "path";
-import { remove, stat, statSync } from "fs-extra";
+import { pathExists, readFile, remove, stat, statSync } from "fs-extra";
 import menu from "./menu";
 import { checkForUpdate } from "lib/helpers/updateChecker";
 import switchLanguageDialog from "lib/electron/dialog/switchLanguageDialog";
@@ -37,13 +37,17 @@ import confirmEjectEngineDialog from "lib/electron/dialog/confirmEjectEngineDial
 import confirmEjectEngineReplaceDialog from "lib/electron/dialog/confirmEjectEngineReplaceDialog";
 import ejectEngineToDir from "lib/project/ejectEngineToDir";
 import type { ProjectExportType } from "store/features/buildGame/buildGameActions";
-import { buildUUID } from "consts";
+import { buildUUID, projectTemplatesRoot } from "consts";
 import type { EngineFieldSchema } from "store/features/engine/engineState";
 import compileData from "lib/compiler/compileData";
 import ejectBuild from "lib/compiler/ejectBuild";
 import { initPlugins } from "lib/plugins/plugins";
 import type { Background } from "store/features/entities/entitiesTypes";
 import { getBackgroundInfo } from "lib/helpers/validation";
+import { writeFileWithBackupAsync } from "lib/helpers/fs/writeFileWithBackup";
+import { guardAssetWithinProject } from "lib/helpers/assets";
+import type { Song } from "shared/lib/uge/song/Song";
+import { loadUGESong, saveUGESong } from "shared/lib/uge/ugeHelper";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -891,6 +895,65 @@ ipcMain.handle(
     return getBackgroundInfo(background, is360, projectRoot);
   }
 );
+
+ipcMain.handle("tracker:new", async (_event, filename: string) => {
+  const projectRoot = Path.dirname(projectPath);
+  // Check project has permission to access this asset
+  guardAssetWithinProject(filename, projectRoot);
+
+  const templatePath = `${projectTemplatesRoot}/gbhtml/assets/music/template.uge`;
+  const copy2 = async (oPath: string, path: string) => {
+    try {
+      const exists = await pathExists(path);
+      if (!exists) {
+        await copy(oPath, path, {
+          overwrite: false,
+          errorOnExist: true,
+        });
+        return path;
+      } else {
+        const [filename] = path.split(".uge");
+        const matches = filename.match(/\d+$/);
+        let newFilename = `${filename} 1`;
+        if (matches) {
+          // if filename ends with number
+          const number = parseInt(matches[0]) + 1;
+          newFilename = filename.replace(/\d+$/, `${number}`);
+        }
+        const newPath = `${newFilename}.uge`;
+        await copy2(oPath, newPath);
+        return newPath;
+      }
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
+  };
+  return await copy2(templatePath, filename);
+});
+
+ipcMain.handle("tracker:load", async (_event, filename: string) => {
+  const projectRoot = Path.dirname(projectPath);
+  // Check project has permission to access this asset
+  guardAssetWithinProject(filename, projectRoot);
+  // Convert song to UGE format and save
+  const data = await readFile(filename);
+  const song = loadUGESong(new Uint8Array(data).buffer);
+  if (song) {
+    song.filename = filename;
+  }
+  return song;
+});
+
+ipcMain.handle("tracker:save", async (_event, song: Song) => {
+  const projectRoot = Path.dirname(projectPath);
+  const filename = song.filename;
+  // Check project has permission to access this asset
+  guardAssetWithinProject(filename, projectRoot);
+  // Convert song to UGE format and save
+  const buffer = saveUGESong(song);
+  await writeFileWithBackupAsync(filename, new Uint8Array(buffer), "utf8");
+});
 
 menu.on("new", async () => {
   newProject();

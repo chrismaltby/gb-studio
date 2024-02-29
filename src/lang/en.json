@@ -1196,6 +1196,7 @@
   "ERROR_PLEASE_SELECT_A_DIFFERENT_LOCATION": "Please select a different location",
   "ERROR_PROJECT_PATH_INVALID": "Invalid directory path",
   "ERROR_MISSING_FONTS": "No fonts found in assets/fonts folder. An example font has been copied there for you to use.",
+  "ERROR_ASSET_DOESNT_BELONG_TO_CURRENT_PROJECT": "This asset does not belong to the currently opened project",
 
   "// 13": "Splash -------------------------------------------------------",
 

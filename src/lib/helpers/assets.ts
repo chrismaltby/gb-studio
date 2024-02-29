@@ -1,0 +1,24 @@
+import path from "path";
+import l10n from "lib/helpers/l10n";
+
+export const isAssetWithinProject = (
+  assetPath: string,
+  projectRoot: string
+) => {
+  const absoluteParentPath = path.resolve(projectRoot);
+  const absoluteChildPath = path.resolve(assetPath);
+
+  return (
+    absoluteChildPath.startsWith(absoluteParentPath) &&
+    absoluteParentPath !== absoluteChildPath
+  );
+};
+
+export const guardAssetWithinProject = (
+  assetPath: string,
+  projectRoot: string
+) => {
+  if (!isAssetWithinProject(assetPath, projectRoot)) {
+    throw new Error(l10n("ERROR_ASSET_DOESNT_BELONG_TO_CURRENT_PROJECT"));
+  }
+};

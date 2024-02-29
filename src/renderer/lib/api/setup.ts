@@ -16,6 +16,7 @@ import type { ProjectData } from "store/features/project/projectActions";
 import type { SettingsState } from "store/features/settings/settingsState";
 import type { Background } from "store/features/entities/entitiesTypes";
 import type { BackgroundInfo } from "lib/helpers/validation";
+import type { Song } from "shared/lib/uge/song/Song";
 
 interface L10NLookup {
   [key: string]: string | boolean | undefined;
@@ -149,6 +150,14 @@ const APISetup = {
     musicDataUnsubscribe: (
       listener: (event: IpcRendererEvent, data: MusicDataPacket) => void
     ) => ipcRenderer.removeListener("music-data", listener),
+  },
+  tracker: {
+    addNewUGEFile: (path: string): Promise<string> =>
+      ipcRenderer.invoke("tracker:new", path),
+    loadUGEFile: (path: string): Promise<Song | null> =>
+      ipcRenderer.invoke("tracker:load", path),
+    saveUGEFile: (song: Song): Promise<void> =>
+      ipcRenderer.invoke("tracker:save", song),
   },
   clipboard: {
     addPasteInPlaceListener: (listener: () => void) =>
