@@ -41,7 +41,7 @@ const Wrapper = styled.div`
   }
 
   & > *:last-child {
-    border-right: 1px solid transparent;
+    border-right: 0px;
   }
 `;
 
