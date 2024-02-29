@@ -14,11 +14,6 @@ import {
   ScriptEventParentType,
   ScriptEventsRef,
 } from "store/features/entities/entitiesTypes";
-import {
-  EVENT_CALL_CUSTOM_EVENT,
-  EVENT_COMMENT,
-  EVENT_END,
-} from "lib/compiler/eventTypes";
 import AddButton from "./AddButton";
 import {
   ScriptEventFormWrapper,
@@ -50,6 +45,7 @@ import ScriptEventTitle from "./ScriptEventTitle";
 import useOnScreen from "ui/hooks/use-on-screen";
 import { ScriptEventSymbolsEditor } from "components/forms/symbols/ScriptEventSymbolsEditor";
 import { ScriptEventSymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
+import { EVENT_CALL_CUSTOM_EVENT, EVENT_COMMENT, EVENT_END } from "consts";
 
 interface ScriptEditorEventProps {
   id: string;
