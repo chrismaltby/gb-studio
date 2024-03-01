@@ -20,6 +20,7 @@ import { CompileSoundOptions } from "lib/compiler/sounds/compileSound";
 import { compileFXHammerSingle } from "lib/compiler/sounds/compileFXHammer";
 import { assetFilename } from "shared/lib/helpers/assets";
 import { MusicDataPacket } from "shared/lib/music/types";
+import API from "renderer/lib/api";
 
 let oscillator: OscillatorNode | undefined = undefined;
 let bufferSource: AudioBufferSourceNode | undefined = undefined;
@@ -68,13 +69,14 @@ async function playSound(
 
   const listener = async (_event: unknown, d: MusicDataPacket) => {
     if (d.action === "initialized") {
-      ipcRenderer.send("music-data-send", {
+      API.music.sendMusicData({
         action: "play-sound",
       });
+      API.music.musicDataUnsubscribe(listener);
     }
   };
-  ipcRenderer.once("music-data", listener);
-  ipcRenderer.send("open-music", sfx);
+  API.music.musicDataSubscribe(listener);
+  API.music.openMusic(sfx);
 }
 
 function pause() {

@@ -140,7 +140,7 @@ const APISetup = {
       ipcRenderer.invoke("project:get-background-info", background, is360),
   },
   music: {
-    openMusic: () => ipcRenderer.send("open-music"),
+    openMusic: (sfx?: string) => ipcRenderer.send("open-music", sfx),
     closeMusic: () => ipcRenderer.send("close-music"),
     sendMusicData: (data: MusicDataPacket) =>
       ipcRenderer.send("music-data-send", data),

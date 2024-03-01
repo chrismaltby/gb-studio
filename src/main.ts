@@ -643,7 +643,7 @@ ipcMain.on(
   }
 );
 
-ipcMain.on("open-music", async (_event, sfx) => {
+ipcMain.on("open-music", async (_event, sfx?: string) => {
   createMusic(sfx);
 });
 
