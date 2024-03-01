@@ -49,6 +49,10 @@ import { guardAssetWithinProject } from "lib/helpers/assets";
 import type { Song } from "shared/lib/uge/song/Song";
 import { loadUGESong, saveUGESong } from "shared/lib/uge/ugeHelper";
 import confirmUnsavedChangesTrackerDialog from "lib/electron/dialog/confirmUnsavedChangesTrackerDialog";
+import type {
+  MusicDataPacket,
+  MusicDataReceivePacket,
+} from "shared/lib/music/types";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -85,6 +89,7 @@ let mainWindowCloseCancelled = false;
 let keepOpen = false;
 let projectPath = "";
 let cancelBuild = false;
+let musicWindowInitialized = false;
 
 const isDevMode = !!process.execPath.match(/[\\/]electron/);
 
@@ -344,6 +349,8 @@ const createPlay = async (url: string, sgb: boolean) => {
 };
 
 const createMusic = async (sfx?: string) => {
+  musicWindowInitialized = false;
+
   if (!musicWindow) {
     // Create the browser window.
     musicWindow = new BrowserWindow({
@@ -367,6 +374,7 @@ const createMusic = async (sfx?: string) => {
 
   musicWindow.on("closed", () => {
     musicWindow = null;
+    musicWindowInitialized = false;
   });
 };
 
@@ -653,16 +661,20 @@ ipcMain.handle("set-tracker-keybindings", (_, value: number) => {
 ipcMain.on("close-music", async () => {
   if (musicWindow) {
     musicWindow.destroy();
+    musicWindowInitialized = false;
   }
 });
 
-ipcMain.on("music-data-send", (_event, data) => {
-  if (musicWindow) {
+ipcMain.on("music-data-send", (_event, data: MusicDataPacket) => {
+  if (musicWindow && musicWindowInitialized) {
     musicWindow.webContents.send("music-data", data);
   }
 });
 
-ipcMain.on("music-data-receive", (_event, data) => {
+ipcMain.on("music-data-receive", (_event, data: MusicDataReceivePacket) => {
+  if (data.action === "initialized") {
+    musicWindowInitialized = true;
+  }
   if (mainWindow) {
     mainWindow.webContents.send("music-data", data);
   }
