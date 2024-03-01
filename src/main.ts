@@ -53,6 +53,9 @@ import type {
   MusicDataPacket,
   MusicDataReceivePacket,
 } from "shared/lib/music/types";
+import { compileFXHammerSingle } from "lib/compiler/sounds/compileFXHammer";
+import { compileWav } from "lib/compiler/sounds/compileWav";
+import { compileVGM } from "lib/compiler/sounds/compileVGM";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -348,7 +351,7 @@ const createPlay = async (url: string, sgb: boolean) => {
   });
 };
 
-const createMusic = async (sfx?: string) => {
+const createMusic = async (sfx?: string, initialMessage?: MusicDataPacket) => {
   musicWindowInitialized = false;
 
   if (!musicWindow) {
@@ -376,6 +379,17 @@ const createMusic = async (sfx?: string) => {
     musicWindow = null;
     musicWindowInitialized = false;
   });
+
+  // Handle sending initial message (if given) once window is initialized
+  if (initialMessage) {
+    const listener = async (_event: unknown, d: MusicDataPacket) => {
+      if (musicWindow && d.action === "initialized") {
+        musicWindow.webContents.send("music-data", initialMessage);
+        ipcMain.off("music-data-receive", listener);
+      }
+    };
+    ipcMain.on("music-data-receive", listener);
+  }
 };
 
 // This method will be called when Electron has finished
@@ -974,6 +988,43 @@ ipcMain.handle("tracker:save", async (_event, song: Song) => {
   const buffer = saveUGESong(song);
   await writeFileWithBackupAsync(filename, new Uint8Array(buffer), "utf8");
 });
+
+ipcMain.handle("sfx:play-wav", async (_event, filename: string) => {
+  const projectRoot = Path.dirname(projectPath);
+  // Check project has permission to access this asset
+  guardAssetWithinProject(filename, projectRoot);
+  const sfx = await compileWav(filename, "asm");
+  createMusic(sfx, {
+    action: "play-sound",
+  });
+});
+
+ipcMain.handle("sfx:play-vgm", async (_event, filename: string) => {
+  const projectRoot = Path.dirname(projectPath);
+  // Check project has permission to access this asset
+  guardAssetWithinProject(filename, projectRoot);
+  const { output: sfx } = await compileVGM(filename, "asm");
+  createMusic(sfx, {
+    action: "play-sound",
+  });
+});
+
+ipcMain.handle(
+  "sfx:play-fxhammer",
+  async (_event, filename: string, effectIndex: number) => {
+    const projectRoot = Path.dirname(projectPath);
+    // Check project has permission to access this asset
+    guardAssetWithinProject(filename, projectRoot);
+    const { output: sfx } = await compileFXHammerSingle(
+      filename,
+      effectIndex,
+      "asm"
+    );
+    createMusic(sfx, {
+      action: "play-sound",
+    });
+  }
+);
 
 menu.on("new", async () => {
   newProject();

@@ -153,6 +153,14 @@ const APISetup = {
       listener: (event: IpcRendererEvent, data: MusicDataPacket) => void
     ) => ipcRenderer.removeListener("music-data", listener),
   },
+  soundfx: {
+    playWav: (filename: string): Promise<void> =>
+      ipcRenderer.invoke("sfx:play-wav", filename),
+    playVGM: (filename: string): Promise<void> =>
+      ipcRenderer.invoke("sfx:play-vgm", filename),
+    playFXHammer: (filename: string, effectIndex: number): Promise<void> =>
+      ipcRenderer.invoke("sfx:play-fxhammer", filename, effectIndex),
+  },
   tracker: {
     addNewUGEFile: (path: string): Promise<string> =>
       ipcRenderer.invoke("tracker:new", path),

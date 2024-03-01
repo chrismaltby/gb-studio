@@ -4,7 +4,7 @@ import {
   playBuffer,
   stopBuffer,
   decodeAudioData,
-} from "lib/soundfx/soundfx";
+} from "renderer/lib/soundfx/soundfx";
 import { assetsRoot } from "consts";
 import { Dispatch, Middleware } from "@reduxjs/toolkit";
 import { RootState } from "store/configureStore";
@@ -12,14 +12,9 @@ import musicActions from "store/features/music/musicActions";
 import navigationActions from "store/features/navigation/navigationActions";
 import actions from "./soundfxActions";
 import { soundSelectors } from "store/features/entities/entitiesState";
-import { ipcRenderer } from "electron";
-import { compileWav } from "lib/compiler/sounds/compileWav";
 import { Sound } from "store/features/entities/entitiesTypes";
-import { compileVGM } from "lib/compiler/sounds/compileVGM";
-import { CompileSoundOptions } from "lib/compiler/sounds/compileSound";
-import { compileFXHammerSingle } from "lib/compiler/sounds/compileFXHammer";
+import type { CompileSoundOptions } from "lib/compiler/sounds/compileSound";
 import { assetFilename } from "shared/lib/helpers/assets";
-import { MusicDataPacket } from "shared/lib/music/types";
 import API from "renderer/lib/api";
 
 let oscillator: OscillatorNode | undefined = undefined;
@@ -52,31 +47,13 @@ async function playSound(
 ) {
   const filename = assetFilename(projectRoot, "sounds", sound);
 
-  let sfx = "";
   if (sound.type === "wav") {
-    sfx = await compileWav(filename, "asm");
+    API.soundfx.playWav(filename);
   } else if (sound.type === "vgm") {
-    ({ output: sfx } = await compileVGM(filename, "asm"));
+    API.soundfx.playVGM(filename);
   } else if (sound.type === "fxhammer") {
-    ({ output: sfx } = await compileFXHammerSingle(
-      filename,
-      effectIndex,
-      "asm"
-    ));
+    API.soundfx.playFXHammer(filename, effectIndex);
   }
-
-  console.log("SFX", sfx);
-
-  const listener = async (_event: unknown, d: MusicDataPacket) => {
-    if (d.action === "initialized") {
-      API.music.sendMusicData({
-        action: "play-sound",
-      });
-      API.music.musicDataUnsubscribe(listener);
-    }
-  };
-  API.music.musicDataSubscribe(listener);
-  API.music.openMusic(sfx);
 }
 
 function pause() {
