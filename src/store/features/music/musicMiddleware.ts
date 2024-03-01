@@ -50,6 +50,7 @@ async function playUGE(filename: string, _settings: MusicSettings) {
         song: data,
         position: [0, 0],
       });
+      API.music.musicDataUnsubscribe(listener);
     }
   };
   API.music.musicDataSubscribe(listener);
