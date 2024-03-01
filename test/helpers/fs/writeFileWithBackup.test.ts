@@ -1,5 +1,8 @@
 import { readFile, unlink } from "fs-extra";
-import { writeFileWithBackupAsync } from "../../../src/lib/helpers/fs/writeFileWithBackup";
+import {
+  writeFileWithBackup,
+  writeFileWithBackupAsync,
+} from "../../../src/lib/helpers/fs/writeFileWithBackup";
 
 test("Should write file correctly on first save", async () => {
   const data = "Testing Backup 123";
@@ -26,15 +29,15 @@ test("Should store backup of previous store in .bak file", async () => {
   await unlink(`${path}.bak`);
 });
 
-test("Should write file with backup using callbacks", done => {
+test("Should write file with backup using callbacks", (done) => {
   const data = "Testing Backup 789";
   const path = `${__dirname}/tmp_data_bak_3.txt`;
-  writeFileWithBackupAsync(path, data, writeError => {
+  writeFileWithBackup(path, data, "utf8", (writeError) => {
     expect(writeError).toBeFalsy();
     readFile(path, "utf8", (readError, savedData) => {
       expect(readError).toBeFalsy();
       expect(savedData).toBe(data);
-      unlink(path, unlinkError => {
+      unlink(path, (unlinkError) => {
         expect(unlinkError).toBeFalsy();
         done();
       });

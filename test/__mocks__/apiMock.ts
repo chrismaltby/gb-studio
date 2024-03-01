@@ -1,4 +1,5 @@
 import en from "../../src/lang/en.json";
+import type API from "../../src/renderer/lib/api/setup";
 
 const APIMock = {
   platform: "test",
@@ -9,6 +10,15 @@ const APIMock = {
     getTheme: () => Promise.resolve("light"),
     onChange: () => {},
   },
+  project: {
+    getBackgroundInfo: () =>
+      Promise.resolve({
+        numTiles: 1,
+        warnings: [],
+        lookup: [],
+      }),
+  },
+
   music: {
     openMusic: () => {},
     closeMusic: () => {},
@@ -16,6 +26,6 @@ const APIMock = {
     musicDataSubscribe: () => {},
     musicDataUnsubscribe: () => {},
   },
-};
+} as unknown as typeof API;
 
 export default APIMock;

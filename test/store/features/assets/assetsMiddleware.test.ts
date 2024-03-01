@@ -4,16 +4,18 @@ import actions from "../../../../src/store/features/assets/assetsActions";
 import { RootState } from "../../../../src/store/configureStore";
 import { dummyBackground } from "../../../dummydata";
 import { MiddlewareAPI, Dispatch, AnyAction } from "@reduxjs/toolkit";
-import { getBackgroundInfo } from "../../../../src/lib/helpers/validation";
+import API from "../../../__mocks__/apiMock";
 
 const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0));
 
-jest.mock("../../../../src/lib/helpers/validation");
-const mockedGetBackgroundWarnings = mocked(getBackgroundInfo, true);
+jest.mock("../../../__mocks__/apiMock");
+
+const mockedAPI = mocked(API, true);
+const mockedGetBackgroundInfo = mockedAPI.project.getBackgroundInfo;
 
 test("Should trigger call to check background assets", async () => {
-  mockedGetBackgroundWarnings.mockClear();
-  mockedGetBackgroundWarnings.mockResolvedValue({
+  mockedGetBackgroundInfo.mockClear();
+  mockedGetBackgroundInfo.mockResolvedValue({
     numTiles: 10,
     warnings: ["Warning 1"],
     lookup: new Uint8Array(),
@@ -56,7 +58,7 @@ test("Should trigger call to check background assets", async () => {
 
   await flushPromises();
 
-  expect(mockedGetBackgroundWarnings).toHaveBeenCalled();
+  expect(mockedGetBackgroundInfo).toHaveBeenCalled();
   expect(store.dispatch).toHaveBeenCalledWith(
     actions.setBackgroundAssetInfo({
       id: "bg1",
@@ -69,8 +71,8 @@ test("Should trigger call to check background assets", async () => {
 });
 
 test("Should not trigger call to check background assets if already cached assets", async () => {
-  mockedGetBackgroundWarnings.mockClear();
-  mockedGetBackgroundWarnings.mockResolvedValue({
+  mockedGetBackgroundInfo.mockClear();
+  mockedGetBackgroundInfo.mockResolvedValue({
     numTiles: 10,
     warnings: ["Warning 1"],
     lookup: new Uint8Array(),
@@ -121,13 +123,13 @@ test("Should not trigger call to check background assets if already cached asset
 
   await flushPromises();
 
-  expect(mockedGetBackgroundWarnings).not.toHaveBeenCalled();
+  expect(mockedGetBackgroundInfo).not.toHaveBeenCalled();
   expect(store.dispatch).not.toHaveBeenCalled();
 });
 
 test("Should trigger call to check background assets if cache has expired", async () => {
-  mockedGetBackgroundWarnings.mockClear();
-  mockedGetBackgroundWarnings.mockResolvedValue({
+  mockedGetBackgroundInfo.mockClear();
+  mockedGetBackgroundInfo.mockResolvedValue({
     numTiles: 10,
     warnings: ["Warning 1"],
     lookup: new Uint8Array(),
@@ -177,7 +179,7 @@ test("Should trigger call to check background assets if cache has expired", asyn
 
   await flushPromises();
 
-  expect(mockedGetBackgroundWarnings).toHaveBeenCalled();
+  expect(mockedGetBackgroundInfo).toHaveBeenCalled();
   expect(store.dispatch).toHaveBeenCalledWith(
     actions.setBackgroundAssetInfo({
       id: "bg1",

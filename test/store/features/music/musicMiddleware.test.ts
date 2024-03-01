@@ -8,9 +8,9 @@ import navigationActions from "../../../../src/store/features/navigation/navigat
 import { RootState } from "../../../../src/store/configureStore";
 import { dummyBackground, dummyMusic } from "../../../dummydata";
 import { MiddlewareAPI, Dispatch, AnyAction } from "@reduxjs/toolkit";
-import ScripTracker from "../../../../src/lib/vendor/scriptracker/scriptracker";
+import ScripTracker from "../../../../src/renderer/lib/vendor/scriptracker/scriptracker";
 
-jest.mock("../../../../src/lib/vendor/scriptracker/scriptracker");
+jest.mock("../../../../src/renderer/lib/vendor/scriptracker/scriptracker");
 const mockedScripTracker = mocked(ScripTracker, true);
 
 beforeEach(() => {
