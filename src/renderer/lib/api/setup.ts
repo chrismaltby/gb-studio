@@ -156,6 +156,8 @@ const APISetup = {
     musicDataUnsubscribe: (
       listener: (event: IpcRendererEvent, data: MusicDataPacket) => void
     ) => ipcRenderer.removeListener("music-data", listener),
+    playUGE: (filename: string): Promise<void> =>
+      ipcRenderer.invoke("music:play-uge", filename),
   },
   soundfx: {
     playWav: (filename: string): Promise<void> =>

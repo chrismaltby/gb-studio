@@ -6,11 +6,7 @@ import navigationActions from "store/features/navigation/navigationActions";
 import actions from "./musicActions";
 import { musicSelectors } from "store/features/entities/entitiesState";
 import { MusicSettings } from "store/features/entities/entitiesTypes";
-import { readFile } from "fs-extra";
-import { loadUGESong } from "shared/lib/uge/ugeHelper";
-import toArrayBuffer from "lib/helpers/toArrayBuffer";
 import { assetFilename } from "shared/lib/helpers/assets";
-import { MusicDataPacket } from "shared/lib/music/types";
 import API from "renderer/lib/api";
 
 let modPlayer: ScripTracker;
@@ -41,20 +37,7 @@ function playMOD(filename: string, settings: MusicSettings) {
 }
 
 async function playUGE(filename: string, _settings: MusicSettings) {
-  const fileData = toArrayBuffer(await readFile(filename));
-  const data = loadUGESong(fileData);
-  const listener = async (event: unknown, d: MusicDataPacket) => {
-    if (d.action === "initialized" && data) {
-      API.music.sendMusicData({
-        action: "play",
-        song: data,
-        position: [0, 0],
-      });
-      API.music.musicDataUnsubscribe(listener);
-    }
-  };
-  API.music.musicDataSubscribe(listener);
-  API.music.openMusic();
+  API.music.playUGE(filename);
 }
 
 function pause() {

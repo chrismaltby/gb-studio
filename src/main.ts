@@ -64,6 +64,7 @@ import {
   compileSprite,
 } from "lib/compiler/compileSprites";
 import { assetFilename } from "shared/lib/helpers/assets";
+import toArrayBuffer from "lib/helpers/toArrayBuffer";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -1033,6 +1034,23 @@ ipcMain.handle(
     });
   }
 );
+
+ipcMain.handle("music:play-uge", async (_event, filename: string) => {
+  const projectRoot = Path.dirname(projectPath);
+  // Check project has permission to access this asset
+  guardAssetWithinProject(filename, projectRoot);
+  const fileData = toArrayBuffer(await readFile(filename));
+  const data = loadUGESong(fileData);
+  if (!data) {
+    console.error(`No data in song "${filename}"`);
+    return;
+  }
+  createMusic(undefined, {
+    action: "play",
+    song: data,
+    position: [0, 0],
+  });
+});
 
 ipcMain.handle(
   "sprite:compile",
