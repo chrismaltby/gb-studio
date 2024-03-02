@@ -38,7 +38,12 @@ import clamp from "shared/lib/helpers/clamp";
 import { RootState } from "store/configureStore";
 import settingsActions from "store/features/settings/settingsActions";
 import uuid from "uuid";
-import { paint, paintLine, floodFill, paintMagic } from "lib/helpers/paint";
+import {
+  paint,
+  paintLine,
+  floodFill,
+  paintMagic,
+} from "shared/lib/helpers/paint";
 import { Brush, SlopeIncline } from "store/features/editor/editorState";
 import projectActions from "store/features/project/projectActions";
 import {
@@ -87,7 +92,7 @@ import {
 } from "./entitiesHelpers";
 import spriteActions from "store/features/sprite/spriteActions";
 import { isVariableCustomEvent } from "lib/compiler/scriptBuilder";
-import { sortByKey } from "lib/helpers/sortByKey";
+import { sortByKey } from "shared/lib/helpers/sortByKey";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
