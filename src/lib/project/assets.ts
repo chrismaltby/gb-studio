@@ -4,7 +4,12 @@ import { promisify } from "util";
 import { sliceIndexedImage, toIndex } from "shared/lib/tiles/indexedImage";
 import { readFileToIndexedImage } from "lib/tiles/readFileToTiles";
 
-export type AssetFolder = "backgrounds" | "fonts" | "music" | "sprites";
+export type AssetFolder =
+  | "backgrounds"
+  | "fonts"
+  | "music"
+  | "sprites"
+  | "sounds";
 
 export const sizeOfAsync = promisify(sizeOf);
 
@@ -15,6 +20,10 @@ export const potentialAssetFolders = async (
 
   if (ext === ".uge" || ext === ".mod") {
     return ["music"];
+  }
+
+  if (ext === ".wav" || ext === ".vgm" || ext === ".sav") {
+    return ["sounds"];
   }
 
   if (ext !== ".png") {

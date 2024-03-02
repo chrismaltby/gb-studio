@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add magnitude field to camera shake event [@patrickmollohan](https://github.com/patrickmollohan)
 - Add checkbox to toggle if new animation should loop when using Set Actor Animation State event [@pau-tomas](https://github.com/pau-tomas)
 - Add shortcut to search scenes when in world mode by pressing `/`
+- Add support from adding sound effects to a project by dragging files into project window (to match how this works for other asset types)
 
 ### Changed
 

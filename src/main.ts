@@ -10,7 +10,14 @@ import {
 import windowStateKeeper from "electron-window-state";
 import settings from "electron-settings";
 import Path from "path";
-import { pathExists, readFile, remove, stat, statSync } from "fs-extra";
+import {
+  copyFile,
+  pathExists,
+  readFile,
+  remove,
+  stat,
+  statSync,
+} from "fs-extra";
 import menu from "./menu";
 import { checkForUpdate } from "lib/helpers/updateChecker";
 import switchLanguageDialog from "lib/electron/dialog/switchLanguageDialog";
@@ -65,6 +72,8 @@ import {
 } from "lib/compiler/compileSprites";
 import { assetFilename } from "shared/lib/helpers/assets";
 import toArrayBuffer from "lib/helpers/toArrayBuffer";
+import { AssetFolder, potentialAssetFolders } from "lib/project/assets";
+import confirmAssetFolder from "lib/electron/dialog/confirmAssetFolder";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -936,6 +945,34 @@ ipcMain.handle(
   (_event, background: Background, is360: boolean) => {
     const projectRoot = Path.dirname(projectPath);
     return getBackgroundInfo(background, is360, projectRoot);
+  }
+);
+
+ipcMain.handle(
+  "project:add-file",
+  async (_event, filename: string): Promise<void> => {
+    const projectRoot = Path.dirname(projectPath);
+    const folders = await potentialAssetFolders(filename);
+
+    if (folders.length > 0) {
+      let copyFolder: AssetFolder | undefined = folders[0];
+
+      if (folders.length > 1) {
+        copyFolder = await confirmAssetFolder(folders);
+      }
+
+      if (copyFolder) {
+        const destPath = `${projectRoot}/assets/${copyFolder}/${Path.basename(
+          filename
+        )}`;
+
+        const isInProject = Path.relative(filename, destPath) === "";
+
+        if (!isInProject) {
+          await copyFile(filename, destPath);
+        }
+      }
+    }
   }
 );
 
