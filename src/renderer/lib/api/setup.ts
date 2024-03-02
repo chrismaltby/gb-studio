@@ -14,9 +14,13 @@ import type { ProjectExportType } from "store/features/buildGame/buildGameAction
 import type { EngineFieldSchema } from "store/features/engine/engineState";
 import type { ProjectData } from "store/features/project/projectActions";
 import type { SettingsState } from "store/features/settings/settingsState";
-import type { Background } from "store/features/entities/entitiesTypes";
+import type {
+  Background,
+  SpriteSheetData,
+} from "store/features/entities/entitiesTypes";
 import type { BackgroundInfo } from "lib/helpers/validation";
 import type { Song } from "shared/lib/uge/song/Song";
+import { PrecompiledSpriteSheetData } from "lib/compiler/compileSprites";
 
 interface L10NLookup {
   [key: string]: string | boolean | undefined;
@@ -168,6 +172,12 @@ const APISetup = {
       ipcRenderer.invoke("tracker:load", path),
     saveUGEFile: (song: Song): Promise<void> =>
       ipcRenderer.invoke("tracker:save", song),
+  },
+  sprite: {
+    compileSprite: (
+      spriteData: SpriteSheetData
+    ): Promise<PrecompiledSpriteSheetData> =>
+      ipcRenderer.invoke("sprite:compile", spriteData),
   },
   clipboard: {
     addPasteInPlaceListener: (listener: () => void) =>

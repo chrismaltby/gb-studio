@@ -11,8 +11,8 @@ import {
 } from "store/features/entities/entitiesState";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { detectClassic } from "renderer/lib/sprites/detect";
-import { compileSprite } from "lib/compiler/compileSprites";
 import { denormalizeSprite } from "store/features/entities/entitiesHelpers";
+import API from "renderer/lib/api";
 
 const spriteMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => async (action) => {
@@ -67,7 +67,6 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
     // Compile sprite to determine how many tiles it will use
     if (actions.compileSprite.match(action)) {
       const state = store.getState();
-      const projectRoot = state.document.root;
 
       const spriteSheet = spriteSheetSelectors.selectById(
         state,
@@ -91,7 +90,7 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
         spriteStates,
       });
 
-      const res = await compileSprite(spriteData, projectRoot);
+      const res = await API.sprite.compileSprite(spriteData);
       const numTiles = res.tiles.length / 2;
 
       if (numTiles !== spriteSheet.numTiles) {

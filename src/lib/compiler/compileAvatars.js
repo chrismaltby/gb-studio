@@ -1,7 +1,7 @@
 import promiseLimit from "lib/helpers/promiseLimit";
 import getFileModifiedTime from "lib/helpers/fs/getModifiedTime";
-import { readFileToTilesData } from "shared/lib/tiles/tileData";
 import { assetFilename } from "shared/lib/helpers/assets";
+import { readFileToTilesData } from "lib/tiles/readFileToTiles";
 
 const avatarBuildCache = {};
 

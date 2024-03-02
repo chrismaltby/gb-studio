@@ -42,7 +42,10 @@ import type { EngineFieldSchema } from "store/features/engine/engineState";
 import compileData from "lib/compiler/compileData";
 import ejectBuild from "lib/compiler/ejectBuild";
 import { initPlugins } from "lib/plugins/plugins";
-import type { Background } from "store/features/entities/entitiesTypes";
+import type {
+  Background,
+  SpriteSheetData,
+} from "store/features/entities/entitiesTypes";
 import { getBackgroundInfo } from "lib/helpers/validation";
 import { writeFileWithBackupAsync } from "lib/helpers/fs/writeFileWithBackup";
 import { guardAssetWithinProject } from "lib/helpers/assets";
@@ -56,6 +59,11 @@ import type {
 import { compileFXHammerSingle } from "lib/compiler/sounds/compileFXHammer";
 import { compileWav } from "lib/compiler/sounds/compileWav";
 import { compileVGM } from "lib/compiler/sounds/compileVGM";
+import {
+  PrecompiledSpriteSheetData,
+  compileSprite,
+} from "lib/compiler/compileSprites";
+import { assetFilename } from "shared/lib/helpers/assets";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -1023,6 +1031,20 @@ ipcMain.handle(
     createMusic(sfx, {
       action: "play-sound",
     });
+  }
+);
+
+ipcMain.handle(
+  "sprite:compile",
+  async (
+    _event,
+    spriteData: SpriteSheetData
+  ): Promise<PrecompiledSpriteSheetData> => {
+    const projectRoot = Path.dirname(projectPath);
+    const filename = assetFilename(projectRoot, "sprites", spriteData);
+    // Check project has permission to access this asset
+    guardAssetWithinProject(filename, projectRoot);
+    return compileSprite(spriteData, projectRoot);
   }
 );
 
