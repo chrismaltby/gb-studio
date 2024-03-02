@@ -41,7 +41,7 @@ export const writeFileAndFlush = (
 export const writeFileAndFlushAsync = (
   path: string,
   data: unknown,
-  options: WriteFileAndFlushOptions | string
+  options: WriteFileAndFlushOptions | string = "utf8"
 ) => {
   return new Promise<void>((resolve, reject) => {
     writeFileAndFlush(path, data, options, (err) => {

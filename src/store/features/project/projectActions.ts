@@ -430,7 +430,7 @@ const saveProject = createAsyncThunk<void, string | undefined>(
         denormalizeProject(state.project.present)
       );
 
-      const data = {
+      const data: ProjectData = {
         ...normalizedProject,
         settings: {
           ...normalizedProject.settings,
