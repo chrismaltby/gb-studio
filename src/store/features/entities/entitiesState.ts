@@ -520,10 +520,7 @@ const loadAvatar: CaseReducer<
     data: Avatar;
   }>
 > = (state, action) => {
-  upsertAssetEntity(state.avatars, avatarsAdapter, action.payload.data, [
-    "id",
-    "symbol",
-  ]);
+  upsertAssetEntity(state.avatars, avatarsAdapter, action.payload.data, ["id"]);
   ensureSymbolsUnique(state);
 };
 

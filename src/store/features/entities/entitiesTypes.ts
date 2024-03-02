@@ -172,7 +172,6 @@ export type FontData = Omit<Font, "mapping" | "_v" | "inode">;
 export type Avatar = {
   id: string;
   name: string;
-  symbol: string;
   filename: string;
   width: number;
   height: number;
@@ -417,6 +416,7 @@ export type ProjectEntitiesData = {
   avatars: AvatarData[];
   emotes: EmoteData[];
   variables: Variable[];
+  engineFieldValues: EngineFieldValue[];
 };
 
 export interface EntitiesState {

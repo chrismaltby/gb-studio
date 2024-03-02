@@ -9,20 +9,22 @@ import loadAllAvatarData from "./loadAvatarData";
 import loadAllEmoteData from "./loadEmoteData";
 import loadAllSoundData from "./loadSoundData";
 import migrateProject from "./migrateProject";
-import { indexByFn, indexBy } from "lib/helpers/array";
+import type { ProjectData } from "store/features/project/projectActions";
+import type { Asset } from "shared/lib/helpers/assets";
+import keyBy from "lodash/keyBy";
 
-const toUnixFilename = (filename) => {
+const toUnixFilename = (filename: string) => {
   return filename.replace(/\\/g, "/");
 };
 
-const elemKey = (elem) => {
+const toAssetFilename = (elem: Asset) => {
   return (elem.plugin ? `${elem.plugin}/` : "") + toUnixFilename(elem.filename);
 };
 
-const indexByFilename = indexByFn(elemKey);
-const indexByInode = indexBy("inode");
+const indexByFilename = <T>(arr: T[]): Record<string, T> =>
+  keyBy(arr || [], "filename");
 
-const sortByName = (a, b) => {
+const sortByName = (a: { name: string }, b: { name: string }) => {
   const aName = a.name.toUpperCase();
   const bName = b.name.toUpperCase();
   if (aName < bName) {
@@ -34,9 +36,17 @@ const sortByName = (a, b) => {
   return 0;
 };
 
-const loadProject = async (projectPath) => {
+const loadProject = async (
+  projectPath: string
+): Promise<{
+  data: ProjectData;
+  modifiedSpriteIds: string[];
+}> => {
   const projectRoot = path.dirname(projectPath);
-  const json = migrateProject(await fs.readJson(projectPath), projectRoot);
+  const json = migrateProject(
+    await fs.readJson(projectPath),
+    projectRoot
+  ) as ProjectData;
 
   const [backgrounds, sprites, music, sounds, fonts, avatars, emotes] =
     await Promise.all([
@@ -50,19 +60,16 @@ const loadProject = async (projectPath) => {
     ]);
 
   // Merge stored backgrounds data with file system data
-  const oldBackgroundByFilename = indexByFilename(json.backgrounds || []);
-  const oldBackgroundByInode = indexByInode(json.backgrounds || []);
+  const oldBackgroundByFilename = indexByFilename(json.backgrounds);
 
   const fixedBackgroundIds = backgrounds
     .map((background) => {
       const oldBackground =
-        oldBackgroundByFilename[elemKey(background)] ||
-        oldBackgroundByInode[background.inode];
+        oldBackgroundByFilename[toAssetFilename(background)];
       if (oldBackground) {
         return {
           ...background,
           id: oldBackground.id,
-          _v: oldBackground._v,
           symbol:
             oldBackground?.symbol !== undefined
               ? oldBackground.symbol
@@ -73,19 +80,20 @@ const loadProject = async (projectPath) => {
               : [],
         };
       }
-      return background;
+      return {
+        ...background,
+        tileColors: [],
+      };
     })
     .sort(sortByName);
 
   // Merge stored sprite data with file system data
-  const oldSpriteByFilename = indexByFilename(json.spriteSheets || []);
-  const oldSpriteByInode = indexByInode(json.spriteSheets || []);
-  const modifiedSpriteIds = [];
+  const oldSpriteByFilename = keyBy(json.spriteSheets || [], toAssetFilename);
+  const modifiedSpriteIds: string[] = [];
 
   const fixedSpriteIds = sprites
     .map((sprite) => {
-      const oldSprite =
-        oldSpriteByFilename[elemKey(sprite)] || oldSpriteByInode[sprite.inode];
+      const oldSprite = oldSpriteByFilename[toAssetFilename(sprite)];
       const oldData = oldSprite || {};
       const id = oldData.id || sprite.id;
 
@@ -97,7 +105,6 @@ const loadProject = async (projectPath) => {
         ...sprite,
         ...oldData,
         id,
-        _v: oldData._v || sprite._v,
         symbol: oldData?.symbol !== undefined ? oldData.symbol : sprite.symbol,
         filename: sprite.filename,
         name: oldData.name || sprite.name,
@@ -137,18 +144,15 @@ const loadProject = async (projectPath) => {
     .sort(sortByName);
 
   // Merge stored music data with file system data
-  const oldMusicByFilename = indexByFilename(json.music || []);
-  const oldMusicByInode = indexByInode(json.music || []);
+  const oldMusicByFilename = indexByFilename(json.music);
 
   const fixedMusicIds = music
     .map((track) => {
-      const oldTrack =
-        oldMusicByFilename[elemKey(track)] || oldMusicByInode[track.inode];
+      const oldTrack = oldMusicByFilename[toAssetFilename(track)];
       if (oldTrack) {
         return {
           ...track,
           id: oldTrack.id,
-          _v: oldTrack._v,
           symbol:
             oldTrack?.symbol !== undefined ? oldTrack.symbol : track.symbol,
           settings: {
@@ -161,18 +165,15 @@ const loadProject = async (projectPath) => {
     .sort(sortByName);
 
   // Merge stored sound effect data with file system data
-  const oldSoundByFilename = indexByFilename(json.sounds || []);
-  const oldSoundByInode = indexByInode(json.sounds || []);
+  const oldSoundByFilename = indexByFilename(json.sounds);
 
   const fixedSoundIds = sounds
     .map((sound) => {
-      const oldSound =
-        oldSoundByFilename[elemKey(sound)] || oldSoundByInode[sound.inode];
+      const oldSound = oldSoundByFilename[toAssetFilename(sound)];
       if (oldSound) {
         return {
           ...sound,
           id: oldSound.id,
-          _v: oldSound._v,
           symbol:
             oldSound?.symbol !== undefined ? oldSound.symbol : sound.symbol,
         };
@@ -182,13 +183,11 @@ const loadProject = async (projectPath) => {
     .sort(sortByName);
 
   // Merge stored fonts data with file system data
-  const oldFontByFilename = indexByFilename(json.fonts || []);
-  const oldFontByInode = indexByInode(json.fonts || []);
+  const oldFontByFilename = indexByFilename(json.fonts);
 
   const fixedFontIds = fonts
     .map((font) => {
-      const oldFont =
-        oldFontByFilename[elemKey(font)] || oldFontByInode[font.inode];
+      const oldFont = oldFontByFilename[toAssetFilename(font)];
       if (oldFont) {
         return {
           ...font,
@@ -201,13 +200,11 @@ const loadProject = async (projectPath) => {
     .sort(sortByName);
 
   // Merge stored avatars data with file system data
-  const oldAvatarByFilename = indexByFilename(json.avatars || []);
-  const oldAvatarByInode = indexByInode(json.avatars || []);
+  const oldAvatarByFilename = indexByFilename(json.avatars);
 
   const fixedAvatarIds = avatars
     .map((avatar) => {
-      const oldAvatar =
-        oldAvatarByFilename[elemKey(avatar)] || oldAvatarByInode[avatar.inode];
+      const oldAvatar = oldAvatarByFilename[toAssetFilename(avatar)];
       if (oldAvatar) {
         return {
           ...avatar,
@@ -219,13 +216,11 @@ const loadProject = async (projectPath) => {
     .sort(sortByName);
 
   // Merge stored emotes data with file system data
-  const oldEmoteByFilename = indexByFilename(json.emotes || []);
-  const oldEmoteByInode = indexByInode(json.emotes || []);
+  const oldEmoteByFilename = indexByFilename(json.emotes);
 
   const fixedEmoteIds = emotes
     .map((emote) => {
-      const oldEmote =
-        oldEmoteByFilename[elemKey(emote)] || oldEmoteByInode[emote.inode];
+      const oldEmote = oldEmoteByFilename[toAssetFilename(emote)];
       if (oldEmote) {
         return {
           ...emote,
@@ -238,7 +233,7 @@ const loadProject = async (projectPath) => {
     })
     .sort(sortByName);
 
-  const addMissingEntityId = (entity) => {
+  const addMissingEntityId = <T extends { id: string }>(entity: T) => {
     if (!entity.id) {
       return {
         ...entity,
@@ -300,7 +295,11 @@ const loadProject = async (projectPath) => {
       name: "Default UI",
       colors: ["F8F8B8", "90C8C8", "486878", "082048"],
     },
-  ];
+  ] as {
+    id: string;
+    name: string;
+    colors: [string, string, string, string];
+  }[];
 
   const fixedPalettes = (json.palettes || []).map(addMissingEntityId);
 

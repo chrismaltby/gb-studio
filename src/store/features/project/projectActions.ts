@@ -15,6 +15,7 @@ import {
   AvatarData,
   EmoteData,
   Sound,
+  SoundData,
 } from "store/features/entities/entitiesTypes";
 import type { RootState } from "store/configureStore";
 import loadProjectData from "lib/project/loadProjectData";
@@ -85,6 +86,14 @@ export const trimDenormalisedProject = (data: ProjectData): ProjectData => {
           _v: undefined,
         } as unknown as MusicData)
     ),
+    sounds: data.sounds.map(
+      (sound) =>
+        ({
+          ...sound,
+          inode: undefined,
+          _v: undefined,
+        } as unknown as SoundData)
+    ),
     fonts: data.fonts.map(
       (font) =>
         ({
@@ -120,10 +129,7 @@ const loadProject = createAsyncThunk<
   { data: ProjectData; path: string; modifiedSpriteIds: string[] },
   string
 >("project/loadProject", async (path) => {
-  const { data, modifiedSpriteIds } = (await loadProjectData(path)) as {
-    data: ProjectData;
-    modifiedSpriteIds: string[];
-  };
+  const { data, modifiedSpriteIds } = await loadProjectData(path);
 
   return {
     data,
