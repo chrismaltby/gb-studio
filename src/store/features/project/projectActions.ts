@@ -26,7 +26,7 @@ import { loadMusicData } from "lib/project/loadMusicData";
 import { loadFontData } from "lib/project/loadFontData";
 import { SettingsState } from "store/features/settings/settingsState";
 import { MetadataState } from "store/features/metadata/metadataState";
-import parseAssetPath from "lib/helpers/path/parseAssetPath";
+import parseAssetPath from "shared/lib/assets/parseAssetPath";
 import { denormalizeEntities } from "store/features/entities/entitiesHelpers";
 import { loadAvatarData } from "lib/project/loadAvatarData";
 import { loadEmoteData } from "lib/project/loadEmoteData";

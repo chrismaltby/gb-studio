@@ -5,7 +5,7 @@ import { createReadStream } from "fs-extra";
 import { stat } from "fs";
 import { PNG } from "pngjs";
 
-import parseAssetPath from "lib/helpers/path/parseAssetPath";
+import parseAssetPath from "shared/lib/assets/parseAssetPath";
 
 export interface AvatarAssetData {
   id: string;

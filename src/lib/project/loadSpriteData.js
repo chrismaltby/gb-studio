@@ -3,7 +3,7 @@ import { promisify } from "util";
 import uuidv4 from "uuid/v4";
 import sizeOf from "image-size";
 import { stat } from "fs-extra";
-import parseAssetPath from "lib/helpers/path/parseAssetPath";
+import parseAssetPath from "shared/lib/assets/parseAssetPath";
 import { spriteTypeFromNumFrames } from "lib/helpers/gbstudio";
 import { checksumFile } from "lib/helpers/checksum";
 import { toValidSymbol } from "shared/lib/helpers/symbols";

@@ -3,7 +3,7 @@ import { promisify } from "util";
 import uuid from "uuid/v4";
 import sizeOf from "image-size";
 import { stat } from "fs-extra";
-import parseAssetPath from "lib/helpers/path/parseAssetPath";
+import parseAssetPath from "shared/lib/assets/parseAssetPath";
 import { toValidSymbol } from "shared/lib/helpers/symbols";
 
 const TILE_SIZE = 8;

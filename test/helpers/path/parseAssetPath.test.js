@@ -1,6 +1,6 @@
 jest.mock("path");
 import PathMock from "path";
-import parseAssetPath from "../../../src/lib/helpers/path/parseAssetPath";
+import parseAssetPath from "../../../src/shared/lib/assets/parseAssetPath";
 const PathActual = jest.requireActual("path");
 
 test.only("Should parse posix asset paths", async () => {
