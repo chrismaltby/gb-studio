@@ -1,4 +1,4 @@
-import { remote } from "electron";
+import API from "renderer/lib/api";
 import {
   ClipboardActors,
   ClipboardFormat,
@@ -21,8 +21,6 @@ import {
   ClipboardTypeTriggers,
   NarrowClipboardType,
 } from "./clipboardTypes";
-
-export const clipboard = remote.clipboard;
 
 const isClipboardMetaspriteTiles = (
   input: unknown
@@ -120,15 +118,15 @@ const isClipboardScenes = (input: unknown): input is ClipboardScenes => {
 
 export const copy = (payload: ClipboardType) => {
   const buffer = Buffer.from(JSON.stringify(payload.data), "utf8");
-  clipboard.writeBuffer(payload.format, buffer);
+  API.clipboard.writeBuffer(payload.format, buffer);
 };
 
-export const paste = <T extends ClipboardFormat>(
+export const paste = async <T extends ClipboardFormat>(
   format: T
-): NarrowClipboardType<ClipboardType, T> | undefined => {
-  const buffer = clipboard.readBuffer(format);
+): Promise<NarrowClipboardType<ClipboardType, T> | undefined> => {
+  const buffer = await API.clipboard.readBuffer(format);
 
-  let data;
+  let data: unknown;
   try {
     data = JSON.parse(buffer?.toString?.());
   } catch (e) {
@@ -198,9 +196,9 @@ export const paste = <T extends ClipboardFormat>(
   return undefined;
 };
 
-export const pasteAny = (): ClipboardType | undefined => {
+export const pasteAny = async (): Promise<ClipboardType | undefined> => {
   for (const type of ClipboardTypes) {
-    const data = paste(type);
+    const data = await paste(type);
     if (data) {
       return data;
     }

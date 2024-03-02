@@ -26,6 +26,12 @@ const APIMock = {
     musicDataSubscribe: () => {},
     musicDataUnsubscribe: () => {},
   },
+  clipboard: {
+    readText: () => {},
+    readBuffer: () => {},
+    writeText: () => {},
+    writeBuffer: () => {},
+  },
 } as unknown as typeof API;
 
 export default APIMock;

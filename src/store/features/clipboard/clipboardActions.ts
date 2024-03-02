@@ -104,8 +104,8 @@ const copySelectedEntity =
   };
 
 const pasteClipboardEntity =
-  () => (dispatch: ThunkDispatch<RootState, unknown, AnyAction>) => {
-    const clipboard = pasteAny();
+  () => async (dispatch: ThunkDispatch<RootState, unknown, AnyAction>) => {
+    const clipboard = await pasteAny();
     if (!clipboard) {
       return;
     }
@@ -123,11 +123,11 @@ const pasteClipboardEntity =
 
 const pasteClipboardEntityInPlace =
   () =>
-  (
+  async (
     dispatch: ThunkDispatch<RootState, unknown, AnyAction>,
     getState: () => RootState
   ) => {
-    const clipboard = pasteAny();
+    const clipboard = await pasteAny();
     if (!clipboard) {
       return;
     }

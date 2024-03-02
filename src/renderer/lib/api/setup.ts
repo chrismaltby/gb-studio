@@ -188,9 +188,13 @@ const APISetup = {
       ipcRenderer.on("paste-in-place", listener),
     removePasteInPlaceListener: (listener: () => void) =>
       ipcRenderer.removeListener("paste-in-place", listener),
-    readText: (): Promise<string> => ipcRenderer.invoke("clipboard-read-text"),
-    writeText: (value: string) =>
+    readText: (): Promise<string> => ipcRenderer.invoke("clipboard:read-text"),
+    readBuffer: async (format: string): Promise<Buffer> =>
+      Buffer.from(await ipcRenderer.invoke("clipboard:read-buffer", format)),
+    writeText: (value: string): Promise<void> =>
       ipcRenderer.invoke("clipboard:write-text", value),
+    writeBuffer: (format: string, buffer: Buffer): Promise<void> =>
+      ipcRenderer.invoke("clipboard:write-buffer", format, buffer),
   },
 };
 

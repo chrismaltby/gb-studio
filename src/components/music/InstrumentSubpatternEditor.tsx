@@ -24,9 +24,9 @@ import scrollIntoView from "scroll-into-view-if-needed";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import { cloneDeep, mergeWith } from "lodash";
 import clipboardActions from "store/features/clipboard/clipboardActions";
-import { clipboard } from "store/features/clipboard/clipboardHelpers";
 import { RootState } from "store/configureStore";
 import { Position } from "./SongTracker";
+import API from "renderer/lib/api";
 
 const CHANNEL_FIELDS = 4;
 const ROW_SIZE = CHANNEL_FIELDS * 1;
@@ -796,7 +796,7 @@ export const InstrumentSubpatternEditor = ({
     subpattern,
   ]);
 
-  const onPaste = useCallback(() => {
+  const onPaste = useCallback(async () => {
     if (subpattern) {
       const tempActiveField =
         activeField !== undefined
@@ -807,7 +807,9 @@ export const InstrumentSubpatternEditor = ({
       if (activeField === undefined) {
         setActiveField(tempActiveField);
       }
-      const newPastedPattern = parseClipboardToSubPattern(clipboard.readText());
+      const newPastedPattern = parseClipboardToSubPattern(
+        await API.clipboard.readText()
+      );
       if (newPastedPattern) {
         const startRow = Math.floor(tempActiveField / ROW_SIZE);
         const newPattern = cloneDeep(subpattern);

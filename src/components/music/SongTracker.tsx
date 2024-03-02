@@ -25,7 +25,6 @@ import {
 import { getKeys, KeyWhen } from "renderer/lib/keybindings/keyBindings";
 import trackerActions from "store/features/tracker/trackerActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
-import { clipboard } from "store/features/clipboard/clipboardHelpers";
 import { clamp, cloneDeep, mergeWith } from "lodash";
 import API from "renderer/lib/api";
 import { MusicDataPacket } from "shared/lib/music/types";
@@ -765,7 +764,7 @@ export const SongTracker = ({
     }
   }, [deleteSelectedTrackerFields, dispatch, pattern, selectedTrackerFields]);
 
-  const onPaste = useCallback(() => {
+  const onPaste = useCallback(async () => {
     if (pattern) {
       const tempActiveField =
         activeField !== undefined
@@ -776,7 +775,9 @@ export const SongTracker = ({
       if (activeField === undefined) {
         setActiveField(tempActiveField);
       }
-      const newPastedPattern = parseClipboardToPattern(clipboard.readText());
+      const newPastedPattern = parseClipboardToPattern(
+        await API.clipboard.readText()
+      );
       if (newPastedPattern && channelId !== undefined) {
         const startRow = Math.floor(tempActiveField / ROW_SIZE);
         const newPattern = cloneDeep(pattern);

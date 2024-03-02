@@ -29,7 +29,7 @@ import actions from "./clipboardActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import editorActions from "store/features/editor/editorActions";
 import confirmReplaceCustomEvent from "lib/electron/dialog/confirmReplaceCustomEvent";
-import { clipboard, copy, pasteAny } from "./clipboardHelpers";
+import { copy, pasteAny } from "./clipboardHelpers";
 import {
   ClipboardTypeActors,
   ClipboardTypeMetasprites,
@@ -56,6 +56,7 @@ import {
 import keyBy from "lodash/keyBy";
 import { patchEventArgs } from "lib/helpers/eventHelpers";
 import { EVENT_CALL_CUSTOM_EVENT } from "consts";
+import API from "renderer/lib/api";
 
 const generateLocalVariableInsertActions = (
   originalId: string,
@@ -321,9 +322,9 @@ const generateSceneInsertActions = (
 };
 
 const clipboardMiddleware: Middleware<Dispatch, RootState> =
-  (store) => (next) => (action) => {
+  (store) => (next) => async (action) => {
     if (actions.copyText.match(action)) {
-      clipboard.writeText(action.payload);
+      API.clipboard.writeText(action.payload);
     } else if (actions.copySpriteState.match(action)) {
       const state = store.getState();
       const spriteStateLookup = spriteStateSelectors.selectEntities(state);
@@ -675,7 +676,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         },
       });
     } else if (actions.pasteScriptEvents.match(action)) {
-      const clipboard = pasteAny();
+      const clipboard = await pasteAny();
       if (!clipboard) {
         return next(action);
       }
@@ -712,7 +713,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         }
       }
     } else if (actions.pasteScriptEventValues.match(action)) {
-      const clipboard = pasteAny();
+      const clipboard = await pasteAny();
       if (!clipboard) {
         return next(action);
       }
@@ -738,7 +739,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         }
       }
     } else if (actions.pasteTriggerAt.match(action)) {
-      const clipboard = pasteAny();
+      const clipboard = await pasteAny();
       if (clipboard && clipboard.format === ClipboardTypeTriggers) {
         const state = store.getState();
         const scriptEvents = clipboard.data.scriptEvents;
@@ -772,7 +773,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         }
       }
     } else if (actions.pasteActorAt.match(action)) {
-      const clipboard = pasteAny();
+      const clipboard = await pasteAny();
       if (clipboard && clipboard.format === ClipboardTypeActors) {
         const state = store.getState();
         const scriptEvents = clipboard.data.scriptEvents;
@@ -806,7 +807,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         }
       }
     } else if (actions.pasteSceneAt.match(action)) {
-      const clipboard = pasteAny();
+      const clipboard = await pasteAny();
       if (clipboard && clipboard.format === ClipboardTypeScenes) {
         const state = store.getState();
         const scriptEvents = clipboard.data.scriptEvents;
@@ -841,14 +842,14 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         }
       }
     } else if (actions.fetchClipboard.match(action)) {
-      const clipboard = pasteAny();
+      const clipboard = await pasteAny();
       if (clipboard) {
         store.dispatch(clipboardActions.setClipboardData(clipboard));
       } else {
         store.dispatch(clipboardActions.clearClipboardData());
       }
     } else if (actions.pasteSprite.match(action)) {
-      const clipboard = pasteAny();
+      const clipboard = await pasteAny();
 
       if (!clipboard) {
         return next(action);
@@ -1026,7 +1027,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         },
       });
     } else if (actions.pastePaletteIds.match(action)) {
-      const clipboard = pasteAny();
+      const clipboard = await pasteAny();
 
       if (!clipboard) {
         return next(action);

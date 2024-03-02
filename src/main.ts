@@ -735,13 +735,24 @@ ipcMain.handle("get-is-full-screen", async () => {
   return false;
 });
 
-ipcMain.handle("clipboard-read-text", () => {
+ipcMain.handle("clipboard:read-text", () => {
   return clipboard.readText();
+});
+
+ipcMain.handle("clipboard:read-buffer", (_, format: string) => {
+  return clipboard.readBuffer(format);
 });
 
 ipcMain.handle("clipboard:write-text", (_, value: string) => {
   return clipboard.writeText(value);
 });
+
+ipcMain.handle(
+  "clipboard:write-buffer",
+  (_, format: string, buffer: Buffer) => {
+    return clipboard.writeBuffer(format, buffer);
+  }
+);
 
 ipcMain.handle(
   "project:build",

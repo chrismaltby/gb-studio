@@ -4,14 +4,14 @@ import actions from "../../../../src/store/features/clipboard/clipboardActions";
 import { RootState } from "../../../../src/store/configureStore";
 import { dummyActor } from "../../../dummydata";
 import { MiddlewareAPI, Dispatch, AnyAction } from "@reduxjs/toolkit";
-import { remote } from "electron";
 import { mocked } from "ts-jest/utils";
 import { ClipboardTypeActors } from "../../../../src/store/features/clipboard/clipboardTypes";
+import API from "../../../__mocks__/apiMock";
 
-jest.mock("electron");
+jest.mock("../../../__mocks__/apiMock");
 
-const mockedRemote = mocked(remote, true);
-const mockedClipboard = mockedRemote.clipboard;
+const mockedAPI = mocked(API, true);
+const mockedClipboard = mockedAPI.clipboard;
 
 test("Should be able to copy actor to clipboard", async () => {
   mockedClipboard.writeBuffer.mockClear();
@@ -51,7 +51,7 @@ test("Should be able to copy actor to clipboard", async () => {
     actorIds: [dummyActor.id],
   });
 
-  middleware(store)(next)(action);
+  await middleware(store)(next)(action);
 
   expect(next).toHaveBeenCalledWith(action);
   expect(mockedClipboard.writeBuffer).toHaveBeenCalledWith(
@@ -116,7 +116,7 @@ test("Should include referenced variables when copying actor", async () => {
     actorIds: [dummyActor.id],
   });
 
-  middleware(store)(next)(action);
+  await middleware(store)(next)(action);
 
   expect(next).toHaveBeenCalledWith(action);
   expect(mockedClipboard.writeBuffer).toHaveBeenCalledWith(
