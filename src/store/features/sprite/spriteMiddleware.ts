@@ -10,7 +10,7 @@ import {
   spriteSheetSelectors,
 } from "store/features/entities/entitiesState";
 import entitiesActions from "store/features/entities/entitiesActions";
-import { detectClassic } from "lib/sprite/detect";
+import { detectClassic } from "renderer/lib/sprites/detect";
 import { compileSprite } from "lib/compiler/compileSprites";
 import { denormalizeSprite } from "store/features/entities/entitiesHelpers";
 

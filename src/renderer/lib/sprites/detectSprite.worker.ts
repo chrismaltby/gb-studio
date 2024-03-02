@@ -1,4 +1,3 @@
-import { imageToIndexedImage } from "lib/tiles/indexedImage";
 import {
   indexedImageToSprites,
   spriteAlignmentOffsets,
@@ -10,7 +9,8 @@ import {
   SpriteTileLocation,
   Position,
   SpriteCluster,
-} from "./spriteData";
+} from "shared/lib/sprites/spriteData";
+import { imageToIndexedImage } from "renderer/lib/tiles/readCanvasToTiles";
 
 declare const self: Worker;
 const workerCtx: Worker = self;

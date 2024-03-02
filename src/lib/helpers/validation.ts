@@ -2,11 +2,11 @@ import l10n from "./l10n";
 import { divisibleBy8 } from "shared/lib/helpers/8bit";
 import type { Background } from "store/features/entities/entitiesTypes";
 import {
-  readFileToTilesDataArray,
   toTileLookup,
   tilesAndLookupToTilemap,
-} from "lib/tiles/tileData";
+} from "shared/lib/tiles/tileData";
 import { assetFilename } from "shared/lib/helpers/assets";
+import { readFileToTilesDataArray } from "lib/tiles/readFileToTiles";
 
 const MAX_IMAGE_WIDTH = 2040;
 const MAX_IMAGE_HEIGHT = 2040;

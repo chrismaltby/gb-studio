@@ -1,13 +1,6 @@
-import {
-  ImageIndexFunction,
-  indexedImageTo2bppTileData,
-  readFileToIndexedImage,
-  sliceIndexedImage,
-} from "./indexedImage";
+import { ImageIndexFunction } from "./indexedImage";
 
 type TileLookup = Record<string, Uint8Array>;
-
-const TILE_SIZE = 8;
 
 export const tileDataIndexFn: ImageIndexFunction = (_r, g, _b, _a) => {
   if (g < 65) {
@@ -20,67 +13,6 @@ export const tileDataIndexFn: ImageIndexFunction = (_r, g, _b, _a) => {
     return 1;
   }
   return 0;
-};
-
-/**
- * Read an image filename into a GB 2bpp data array
- * @param filename Tiles image filename
- * @returns Uint8Array of 2bpp tile data
- */
-export const readFileToTilesData = async (
-  filename: string
-): Promise<Uint8Array> => {
-  const img = await readFileToIndexedImage(filename, tileDataIndexFn);
-  const xTiles = Math.floor(img.width / TILE_SIZE);
-  const yTiles = Math.floor(img.height / TILE_SIZE);
-  const size = xTiles * yTiles * 16;
-  const output = new Uint8Array(size);
-  let index = 0;
-  for (let tyi = 0; tyi < yTiles; tyi++) {
-    for (let txi = 0; txi < xTiles; txi++) {
-      const tileData = indexedImageTo2bppTileData(
-        sliceIndexedImage(
-          img,
-          txi * TILE_SIZE,
-          tyi * TILE_SIZE,
-          TILE_SIZE,
-          TILE_SIZE
-        )
-      );
-      output.set(tileData, index);
-      index += tileData.length;
-    }
-  }
-  return output;
-};
-
-/**
- * Read an image filename into an array of GB 2bpp data array (one array per tile)
- * @param filename Tiles image filename
- * @returns Array of Uint8Array of 2bpp tile data
- */
-export const readFileToTilesDataArray = async (
-  filename: string
-): Promise<Uint8Array[]> => {
-  const img = await readFileToIndexedImage(filename, tileDataIndexFn);
-  const xTiles = Math.floor(img.width / TILE_SIZE);
-  const yTiles = Math.floor(img.height / TILE_SIZE);
-  const output = [];
-  for (let tyi = 0; tyi < yTiles; tyi++) {
-    for (let txi = 0; txi < xTiles; txi++) {
-      const tileData = indexedImageTo2bppTileData(
-        sliceIndexedImage(
-          img,
-          txi * TILE_SIZE,
-          tyi * TILE_SIZE,
-          TILE_SIZE,
-          TILE_SIZE
-        )
-      );
-      output.push(tileData);
-    }
-  }
-  return output;
 };
 
 export const toTileLookup = (tiles: Uint8Array[]): TileLookup => {

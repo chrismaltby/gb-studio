@@ -2,7 +2,7 @@ import promiseLimit from "lib/helpers/promiseLimit2";
 import {
   optimiseTiles,
   indexedImageTo2bppSpriteData,
-} from "lib/sprite/spriteData";
+} from "shared/lib/sprites/spriteData";
 import {
   animationMapBySpriteType,
   toEngineOrder,
@@ -12,7 +12,7 @@ import type {
   ObjPalette,
   SpriteAnimationType,
 } from "store/features/entities/entitiesTypes";
-import { IndexedImage } from "lib/tiles/indexedImage";
+import { IndexedImage } from "shared/lib/tiles/indexedImage";
 import { assetFilename } from "shared/lib/helpers/assets";
 
 const S_PALETTE = 0x10;

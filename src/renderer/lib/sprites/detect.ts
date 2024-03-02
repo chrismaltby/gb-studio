@@ -15,7 +15,7 @@ import {
   SliceDef,
   SpriteCluster,
   SpriteTileLocation,
-} from "./spriteData";
+} from "shared/lib/sprites/spriteData";
 import { assetFilename } from "shared/lib/helpers/assets";
 
 interface DetectedSprite {

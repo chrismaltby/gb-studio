@@ -1,6 +1,3 @@
-import { readFile } from "fs-extra";
-import { PNG } from "pngjs";
-
 /**
  * A data wrapper for an image using indexed colors with one 8-bit value per pixel
  */
@@ -46,58 +43,6 @@ export type SliceDef = {
 };
 
 /**
- * Load the given PNG image filename into an IndexedImage using the supplied index function.
- *
- * @param filename A local filename which is read using the NodeJS readFile method
- * @param indexFn Function to map an individual RGB pixel value to an 8-bit indexed value
- * @returns A new IndexedImage representing the image data provided
- */
-export const readFileToIndexedImage = async (
-  filename: string,
-  indexFn: ImageIndexFunction
-): Promise<IndexedImage> => {
-  const fileData = await readFile(filename);
-  return new Promise((resolve, reject) => {
-    new PNG().parse(fileData, (err, data) => {
-      if (err) {
-        return reject(err);
-      }
-      resolve(
-        pixelDataToIndexedImage(data.width, data.height, data.data, indexFn)
-      );
-    });
-  });
-};
-
-/**
- * Load the given ImageBitmap data into an IndexedImage using the supplied index function.
- *
- * Uses Canvas API and should be run from a browser context. Consider using readFileToIndexedImage instead if calling from Node.
- *
- * @param img ImageBitmap data, can access this using fetch API on a URL e.g. `const img = await fetch(src).then((r) => r.blob())`
- * @param indexFn Function to map an individual RGB pixel value to an 8-bit indexed value
- * @returns A new IndexedImage representing the image data provided
- */
-export const imageToIndexedImage = (
-  img: ImageBitmap,
-  indexFn: ImageIndexFunction
-): IndexedImage => {
-  const canvas = new OffscreenCanvas(img.width, img.height);
-  const ctx = canvas.getContext("2d");
-  if (!ctx) {
-    return makeIndexedImage(img.width, img.height);
-  }
-  ctx.drawImage(img, 0, 0);
-  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  return pixelDataToIndexedImage(
-    img.width,
-    img.height,
-    imageData.data,
-    indexFn
-  );
-};
-
-/**
  * Convert an array of pixel data into an IndexedImage using a given index function
  *
  * @param width Image width
@@ -106,7 +51,7 @@ export const imageToIndexedImage = (
  * @param indexFn A function to convert RGB values to a color index
  * @returns A new IndexedImage representing the pixel data provided
  */
-const pixelDataToIndexedImage = (
+export const pixelDataToIndexedImage = (
   width: number,
   height: number,
   pixels: Buffer | Uint8ClampedArray,

@@ -1,8 +1,8 @@
 import promiseLimit from "lib/helpers/promiseLimit2";
 import getFileModifiedTime from "lib/helpers/fs/getModifiedTime";
-import { readFileToSpriteTilesData } from "lib/sprite/spriteData";
 import { EmoteAssetData } from "lib/project/loadEmoteData";
 import { assetFilename } from "shared/lib/helpers/assets";
+import { readFileToSpriteTilesData } from "lib/sprites/readSpriteData";
 
 type CompileEmoteOptions = {
   warnings: (msg: string) => void;

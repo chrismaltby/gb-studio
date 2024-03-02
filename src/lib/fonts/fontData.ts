@@ -4,10 +4,10 @@ import {
   ImageIndexFunction,
   IndexedImage,
   indexedImageTo2bppTileData,
-  readFileToIndexedImage,
   sliceIndexedImage,
   trimIndexedImageHorizontal,
-} from "lib/tiles/indexedImage";
+} from "shared/lib/tiles/indexedImage";
+import { readFileToIndexedImage } from "lib/tiles/readFileToTiles";
 
 export interface FontData {
   name: string;

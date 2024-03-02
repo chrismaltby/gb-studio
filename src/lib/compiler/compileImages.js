@@ -2,12 +2,12 @@ import { assetFilename } from "shared/lib/helpers/assets";
 import getFileModifiedTime from "lib/helpers/fs/getModifiedTime";
 import { getBackgroundInfo } from "lib/helpers/validation";
 import {
-  readFileToTilesDataArray,
   tileLookupToTileData,
   tileArrayToTileData,
   tilesAndLookupToTilemap,
   toTileLookup,
-} from "lib/tiles/tileData";
+} from "shared/lib/tiles/tileData";
+import { readFileToTilesDataArray } from "lib/tiles/readFileToTiles";
 
 const imageBuildCache = {};
 

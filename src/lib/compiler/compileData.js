@@ -63,7 +63,7 @@ import {
   compileSaveSignature,
 } from "./compileData2";
 import compileSGBImage from "./sgb";
-import { readFileToTilesData } from "lib/tiles/tileData";
+import { readFileToTilesData } from "shared/lib/tiles/tileData";
 import l10n from "lib/helpers/l10n";
 import { compileScriptEngineInit } from "./compileBootstrap";
 import { compileMusicTracks, compileMusicHeader } from "./compileMusic";

@@ -1,11 +1,8 @@
 import Path from "path";
 import sizeOf from "image-size";
 import { promisify } from "util";
-import {
-  readFileToIndexedImage,
-  sliceIndexedImage,
-  toIndex,
-} from "lib/tiles/indexedImage";
+import { sliceIndexedImage, toIndex } from "shared/lib/tiles/indexedImage";
+import { readFileToIndexedImage } from "lib/tiles/readFileToTiles";
 
 export type AssetFolder = "backgrounds" | "fonts" | "music" | "sprites";
 
