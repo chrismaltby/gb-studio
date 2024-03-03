@@ -75,6 +75,8 @@ import toArrayBuffer from "lib/helpers/toArrayBuffer";
 import { AssetFolder, potentialAssetFolders } from "lib/project/assets";
 import confirmAssetFolder from "lib/electron/dialog/confirmAssetFolder";
 import loadProjectData from "lib/project/loadProjectData";
+import saveProjectData from "lib/project/saveProjectData";
+import saveAsProjectData from "lib/project/saveAsProjectData";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -761,6 +763,17 @@ ipcMain.handle("project:load", async (): Promise<{
 }> => {
   return loadProjectData(projectPath);
 });
+
+ipcMain.handle("project:save", async (_, data: ProjectData): Promise<void> => {
+  await saveProjectData(projectPath, data);
+});
+
+ipcMain.handle(
+  "project:save-as",
+  async (_, filename: string, data: ProjectData): Promise<void> => {
+    await saveAsProjectData(projectPath, filename, data);
+  }
+);
 
 ipcMain.handle(
   "project:build",

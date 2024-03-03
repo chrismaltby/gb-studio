@@ -18,8 +18,6 @@ import {
   SoundData,
 } from "store/features/entities/entitiesTypes";
 import type { RootState } from "store/configureStore";
-import saveProjectData from "lib/project/saveProjectData";
-import saveAsProjectData from "lib/project/saveAsProjectData";
 import { loadSpriteData } from "lib/project/loadSpriteData";
 import { loadBackgroundData } from "lib/project/loadBackgroundData";
 import { loadMusicData } from "lib/project/loadMusicData";
@@ -448,10 +446,10 @@ const saveProject = createAsyncThunk<void, string | undefined>(
 
       if (newPath) {
         // Save As
-        await saveAsProjectData(state.document.path, newPath, data);
+        await API.project.saveProjectAs(newPath, data);
       } else {
         // Save
-        await saveProjectData(state.document.path, data);
+        await API.project.saveProject(data);
       }
     } catch (e) {
       console.error(e);

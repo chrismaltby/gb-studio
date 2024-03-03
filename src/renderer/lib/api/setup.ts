@@ -148,6 +148,10 @@ const APISetup = {
       data: ProjectData;
       modifiedSpriteIds: string[];
     }> => ipcRenderer.invoke("project:load"),
+    saveProject: (data: ProjectData): Promise<void> =>
+      ipcRenderer.invoke("project:save", data),
+    saveProjectAs: (filename: string, data: ProjectData): Promise<void> =>
+      ipcRenderer.invoke("project:save-as", filename, data),
   },
   music: {
     openMusic: (sfx?: string) => ipcRenderer.send("open-music", sfx),
