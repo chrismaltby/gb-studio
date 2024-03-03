@@ -7,6 +7,14 @@ const srcPath = (subdir) => {
   return Path.join(__dirname, "src", subdir);
 };
 
+const { IgnorePlugin } = require('webpack');
+
+const optionalPlugins = [];
+if (process.platform !== "darwin") { // don't ignore on OSX
+  optionalPlugins.push(new IgnorePlugin({ resourceRegExp: /^fsevents$/ }));
+}
+
+
 module.exports = {
   target: "electron-main",
   mode: "development",
@@ -30,6 +38,7 @@ module.exports = {
   },
   plugins: [].concat(
     plugins,
+    ...optionalPlugins,
     new webpack.BannerPlugin({ banner: "#!/usr/bin/env node", raw: true })
   ),
   resolve: {
