@@ -1,12 +1,10 @@
 import fs from "fs-extra";
-import { remote, shell } from "electron";
+import { dialog, shell } from "electron";
 import settings from "electron-settings";
 import semverValid from "semver/functions/valid";
 import semverGt from "semver/functions/gt";
 import { LATEST_PROJECT_VERSION } from "./migrateProject";
 import l10n from "lib/helpers/l10n";
-
-const dialog = remote && remote.dialog;
 
 export const needsUpdate = (currentVersion: string) => {
   if (semverValid(currentVersion) && semverValid(LATEST_PROJECT_VERSION)) {

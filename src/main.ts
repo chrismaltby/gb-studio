@@ -77,6 +77,7 @@ import confirmAssetFolder from "lib/electron/dialog/confirmAssetFolder";
 import loadProjectData from "lib/project/loadProjectData";
 import saveProjectData from "lib/project/saveProjectData";
 import saveAsProjectData from "lib/project/saveAsProjectData";
+import migrateWarning from "lib/project/migrateWarning";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -586,6 +587,10 @@ ipcMain.handle(
     return confirmUnsavedChangesTrackerDialog(name);
   }
 );
+
+ipcMain.handle("dialog:migrate-warning", async (_event, path: string) => {
+  return migrateWarning(path);
+});
 
 ipcMain.handle("close-project", () => {
   mainWindow?.close();

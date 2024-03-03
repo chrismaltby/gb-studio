@@ -107,6 +107,8 @@ const APISetup = {
       ),
     confirmUnsavedChangesTrackerDialog: (name: string): Promise<number> =>
       ipcRenderer.invoke("dialog:confirm-tracker-unsaved", name),
+    migrateWarning: (path: string) =>
+      ipcRenderer.invoke("dialog:migrate-warning", path),
   },
   project: {
     getRecentProjects: (): Promise<string[]> =>

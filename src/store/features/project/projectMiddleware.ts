@@ -1,13 +1,12 @@
 import { Dispatch, Middleware } from "@reduxjs/toolkit";
 import { RootState } from "store/configureStore";
-import migrateWarning from "lib/project/migrateWarning";
 import actions from "./projectActions";
 import API from "renderer/lib/api";
 
 const projectMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => async (action) => {
     if (actions.openProject.match(action)) {
-      const shouldOpenProject = await migrateWarning(action.payload);
+      const shouldOpenProject = await API.dialog.migrateWarning(action.payload);
 
       if (!shouldOpenProject) {
         store.dispatch(actions.closeProject());
