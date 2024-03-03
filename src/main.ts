@@ -74,6 +74,7 @@ import { assetFilename } from "shared/lib/helpers/assets";
 import toArrayBuffer from "lib/helpers/toArrayBuffer";
 import { AssetFolder, potentialAssetFolders } from "lib/project/assets";
 import confirmAssetFolder from "lib/electron/dialog/confirmAssetFolder";
+import loadProjectData from "lib/project/loadProjectData";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -753,6 +754,13 @@ ipcMain.handle(
     return clipboard.writeBuffer(format, buffer);
   }
 );
+
+ipcMain.handle("project:load", async (): Promise<{
+  data: ProjectData;
+  modifiedSpriteIds: string[];
+}> => {
+  return loadProjectData(projectPath);
+});
 
 ipcMain.handle(
   "project:build",

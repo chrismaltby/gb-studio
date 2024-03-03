@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { defaultProjectSettings } from "consts";
 import { RootState } from "store/configureStore";
 import { ActorDirection } from "store/features/entities/entitiesTypes";
 import projectActions from "store/features/project/projectActions";
@@ -70,68 +71,7 @@ export type SettingsState = {
   customControlsSelect: string[];
 };
 
-export const initialState: SettingsState = {
-  startSceneId: "",
-  startX: 0,
-  startY: 0,
-  startMoveSpeed: 1,
-  startAnimSpeed: 3,
-  startDirection: "down",
-  showCollisions: true,
-  showConnections: "selected",
-  showCollisionSlopeTiles: false,
-  showCollisionExtraTiles: false,
-  worldScrollX: 0,
-  worldScrollY: 0,
-  zoom: 100,
-  customColorsEnabled: false,
-  sgbEnabled: false,
-  customHead: "",
-  defaultBackgroundPaletteIds: [
-    "default-bg-1",
-    "default-bg-2",
-    "default-bg-3",
-    "default-bg-4",
-    "default-bg-5",
-    "default-bg-6",
-    "default-bg-7",
-    "default-ui",
-  ],
-  defaultSpritePaletteIds: [
-    "default-sprite-1",
-    "default-sprite-2",
-    "default-sprite-3",
-    "default-sprite-4",
-    "default-sprite-5",
-    "default-sprite-6",
-    "default-sprite-7",
-    "default-sprite-8",
-  ],
-  defaultSpritePaletteId: "default-sprite",
-  defaultUIPaletteId: "default-ui",
-  playerPaletteId: "",
-  navigatorSplitSizes: [300, 100, 100],
-  showNavigator: true,
-  defaultFontId: "",
-  defaultCharacterEncoding: "",
-  defaultPlayerSprites: {},
-  musicDriver: "gbt",
-  cartType: "mbc5",
-  batterylessEnabled: false,
-  favoriteEvents: ["EVENT_TEXT", "EVENT_SWITCH_SCENE"],
-  customColorsWhite: "E8F8E0",
-  customColorsLight: "B0F088",
-  customColorsDark: "509878",
-  customColorsBlack: "202850",
-  customControlsUp: ["ArrowUp", "w"],
-  customControlsDown: ["ArrowDown", "s"],
-  customControlsLeft: ["ArrowLeft", "a"],
-  customControlsRight: ["ArrowRight", "d"],
-  customControlsA: ["Alt", "z", "j"],
-  customControlsB: ["Control", "k", "x"],
-  customControlsStart: ["Enter"],
-  customControlsSelect: ["Shift"],
-};
+export const initialState: SettingsState = defaultProjectSettings;
 
 const settingsSlice = createSlice({
   name: "settings",

@@ -18,10 +18,7 @@ import type {
 } from "store/features/entities/entitiesTypes";
 import { Dictionary } from "@reduxjs/toolkit";
 import type { EngineFieldSchema } from "store/features/engine/engineState";
-import {
-  initialState as initialSettingsState,
-  SettingsState,
-} from "store/features/settings/settingsState";
+import type { SettingsState } from "store/features/settings/settingsState";
 import { FunctionSymbol, OperatorSymbol } from "shared/lib/rpn/types";
 import tokenize from "shared/lib/rpn/tokenizer";
 import shuntingYard from "shared/lib/rpn/shuntingYard";
@@ -32,7 +29,7 @@ import {
   PrecompiledSprite,
   PrecompiledEmote,
 } from "./compileData2";
-import { DMG_PALETTE } from "consts";
+import { DMG_PALETTE, defaultProjectSettings } from "consts";
 import {
   isPropertyField,
   isVariableField,
@@ -541,7 +538,7 @@ class ScriptBuilder {
         options.compiledCustomEventScriptCache ?? {},
       compiledAssetsCache: options.compiledAssetsCache ?? {},
       compileEvents: options.compileEvents || ((_self, _e) => {}),
-      settings: options.settings || initialSettingsState,
+      settings: options.settings || defaultProjectSettings,
     };
     this.dependencies = [];
     this.nextLabel = 1;

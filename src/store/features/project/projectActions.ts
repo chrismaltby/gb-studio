@@ -18,7 +18,6 @@ import {
   SoundData,
 } from "store/features/entities/entitiesTypes";
 import type { RootState } from "store/configureStore";
-import loadProjectData from "lib/project/loadProjectData";
 import saveProjectData from "lib/project/saveProjectData";
 import saveAsProjectData from "lib/project/saveAsProjectData";
 import { loadSpriteData } from "lib/project/loadSpriteData";
@@ -32,6 +31,7 @@ import { denormalizeEntities } from "store/features/entities/entitiesHelpers";
 import { loadAvatarData } from "lib/project/loadAvatarData";
 import { loadEmoteData } from "lib/project/loadEmoteData";
 import { loadSoundData } from "lib/project/loadSoundData";
+import API from "renderer/lib/api";
 
 let saving = false;
 
@@ -129,8 +129,7 @@ const loadProject = createAsyncThunk<
   { data: ProjectData; path: string; modifiedSpriteIds: string[] },
   string
 >("project/loadProject", async (path) => {
-  const { data, modifiedSpriteIds } = await loadProjectData(path);
-
+  const { data, modifiedSpriteIds } = await API.project.loadProject();
   return {
     data,
     path,

@@ -144,6 +144,10 @@ const APISetup = {
       ipcRenderer.invoke("project:get-background-info", background, is360),
     addFile: (filename: string): Promise<void> =>
       ipcRenderer.invoke("project:add-file", filename),
+    loadProject: (): Promise<{
+      data: ProjectData;
+      modifiedSpriteIds: string[];
+    }> => ipcRenderer.invoke("project:load"),
   },
   music: {
     openMusic: (sfx?: string) => ipcRenderer.send("open-music", sfx),
