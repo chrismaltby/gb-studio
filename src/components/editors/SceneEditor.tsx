@@ -524,7 +524,6 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
             {showNotes && (
               <FormRow>
                 <NoteField
-                  autofocus
                   value={scene.notes || ""}
                   onChange={onChangeFieldInput("notes")}
                 />
