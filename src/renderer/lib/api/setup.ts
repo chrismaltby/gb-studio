@@ -105,6 +105,8 @@ const APISetup = {
         sceneNames,
         count
       ),
+    confirmReplaceCustomEvent: (name: string): Promise<number> =>
+      ipcRenderer.invoke("dialog:confirm-replace-custom-event", name),
     confirmUnsavedChangesTrackerDialog: (name: string): Promise<number> =>
       ipcRenderer.invoke("dialog:confirm-tracker-unsaved", name),
     migrateWarning: (path: string) =>

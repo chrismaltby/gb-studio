@@ -28,7 +28,6 @@ import {
 import actions from "./clipboardActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import editorActions from "store/features/editor/editorActions";
-import confirmReplaceCustomEvent from "lib/electron/dialog/confirmReplaceCustomEvent";
 import { copy, pasteAny } from "./clipboardHelpers";
 import {
   ClipboardTypeActors,
@@ -77,12 +76,12 @@ const generateLocalVariableInsertActions = (
   return actions;
 };
 
-const generateCustomEventInsertActions = (
+const generateCustomEventInsertActions = async (
   customEvent: CustomEvent,
   scriptEventsLookup: Dictionary<ScriptEvent>,
   existingCustomEvents: CustomEvent[],
   existingScriptEventsLookup: Dictionary<ScriptEvent>
-): AnyAction[] => {
+): Promise<AnyAction[]> => {
   const actions: AnyAction[] = [];
 
   const existingEvent = existingCustomEvents.find(
@@ -103,7 +102,7 @@ const generateCustomEventInsertActions = (
   if (existingEvent) {
     const existingEventIndex = existingCustomEvents.indexOf(existingEvent);
     const existingName = customEventName(existingEvent, existingEventIndex);
-    const cancel = confirmReplaceCustomEvent(existingName);
+    const cancel = await API.dialog.confirmReplaceCustomEvent(existingName);
     if (cancel) {
       return [];
     }
@@ -701,7 +700,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           store.dispatch(action);
         }
         for (const customEvent of clipboard.data.customEvents) {
-          const actions = generateCustomEventInsertActions(
+          const actions = await generateCustomEventInsertActions(
             customEvent,
             scriptEventsLookup,
             existingCustomEvents,
@@ -761,7 +760,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           }
         }
         for (const customEvent of clipboard.data.customEvents) {
-          const actions = generateCustomEventInsertActions(
+          const actions = await generateCustomEventInsertActions(
             customEvent,
             scriptEventsLookup,
             existingCustomEvents,
@@ -795,7 +794,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           }
         }
         for (const customEvent of clipboard.data.customEvents) {
-          const actions = generateCustomEventInsertActions(
+          const actions = await generateCustomEventInsertActions(
             customEvent,
             scriptEventsLookup,
             existingCustomEvents,
@@ -830,7 +829,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           }
         }
         for (const customEvent of clipboard.data.customEvents) {
-          const actions = generateCustomEventInsertActions(
+          const actions = await generateCustomEventInsertActions(
             customEvent,
             scriptEventsLookup,
             existingCustomEvents,

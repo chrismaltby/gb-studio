@@ -78,6 +78,7 @@ import loadProjectData from "lib/project/loadProjectData";
 import saveProjectData from "lib/project/saveProjectData";
 import saveAsProjectData from "lib/project/saveAsProjectData";
 import migrateWarning from "lib/project/migrateWarning";
+import confirmReplaceCustomEvent from "lib/electron/dialog/confirmReplaceCustomEvent";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -578,6 +579,13 @@ ipcMain.handle(
   "dialog:confirm-delete-custom-event",
   async (_event, name: string, sceneNames: string[], count: number) => {
     return confirmDeleteCustomEvent(name, sceneNames, count);
+  }
+);
+
+ipcMain.handle(
+  "dialog:confirm-replace-custom-event",
+  async (_event, name: string) => {
+    return confirmReplaceCustomEvent(name);
   }
 );
 
