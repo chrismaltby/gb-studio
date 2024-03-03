@@ -1,7 +1,5 @@
-import electron from "electron";
+import { dialog } from "electron";
 import l10n from "lib/helpers/l10n";
-
-const dialog = electron.remote ? electron.remote.dialog : electron.dialog;
 
 const confirmReplaceCustomEvent = (name: string) => {
   const dialogOptions = {

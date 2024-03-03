@@ -1,10 +1,7 @@
-import electron from "electron";
+import { dialog, BrowserWindow } from "electron";
 import l10n from "lib/helpers/l10n";
 
-const dialog = electron.remote ? electron.remote.dialog : electron.dialog;
-const win = electron.remote?.getCurrentWindow();
-
-const confirmEnableColorDialog = () => {
+const confirmEnableColorDialog = (win: BrowserWindow) => {
   const dialogOptions = {
     type: "info",
     buttons: [l10n("DIALOG_ENABLE_COLOR"), l10n("DIALOG_CANCEL")],

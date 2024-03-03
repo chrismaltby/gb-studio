@@ -572,7 +572,10 @@ ipcMain.handle(
 );
 
 ipcMain.handle("dialog:confirm-color", async () => {
-  return confirmEnableColorDialog();
+  if (!mainWindow) {
+    return 1;
+  }
+  return confirmEnableColorDialog(mainWindow);
 });
 
 ipcMain.handle(
