@@ -41,6 +41,7 @@ export const DialoguePreview: FC<DialoguePreviewProps> = ({
   const [fontsData, setFontsData] = useState<Record<string, FontData>>({});
   const [drawn, setDrawn] = useState<boolean>(false);
   const ref = useRef<HTMLCanvasElement>(null);
+  const isMounted = useRef(true);
 
   const frameAsset = {
     id: "frame",
@@ -74,6 +75,9 @@ export const DialoguePreview: FC<DialoguePreviewProps> = ({
       const usedFontData = await Promise.all(
         usedFonts.map((font) => loadFont(projectRoot, font))
       );
+      if (!isMounted.current) {
+        return;
+      }
       setFontsData(keyBy(usedFontData, "id"));
     }
     fetchData();
@@ -84,6 +88,9 @@ export const DialoguePreview: FC<DialoguePreviewProps> = ({
     const img = new Image();
     img.src = frameFilename;
     img.onload = () => {
+      if (!isMounted.current) {
+        return;
+      }
       setFrameImage(img);
     };
   }, [frameFilename]);
@@ -93,6 +100,9 @@ export const DialoguePreview: FC<DialoguePreviewProps> = ({
     const img = new Image();
     img.src = frameFilename;
     img.onload = () => {
+      if (!isMounted.current) {
+        return;
+      }
       setFrameImage(img);
     };
   }, [frameFilename]);
@@ -162,6 +172,15 @@ export const DialoguePreview: FC<DialoguePreviewProps> = ({
     defaultFontId,
     fonts,
   ]);
+
+  // Keep track of component's mounted state to allow detecting if component still mounted when
+  // async data calls are complete to prevent React errors caused by setting state on unmounted component
+  useEffect(() => {
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
 
   return (
     <canvas
