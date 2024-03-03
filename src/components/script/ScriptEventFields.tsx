@@ -76,7 +76,10 @@ const ScriptEventFields = ({
             if (!field.allowedContexts.includes(context)) {
               const newContext = field.allowedContexts[0];
               return (
-                <ScriptEditorContext.Provider value={newContext}>
+                <ScriptEditorContext.Provider
+                  value={newContext}
+                  key={genKey(id, field.key || "", fieldIndex)}
+                >
                   {events}
                 </ScriptEditorContext.Provider>
               );
@@ -88,6 +91,7 @@ const ScriptEventFields = ({
         if (field.type === "group" && field.fields) {
           return (
             <ScriptEventFieldGroupWrapper
+              key={genKey(id, field.key || "", fieldIndex)}
               halfWidth={field.width === "50%"}
               style={{ flexBasis: field.flexBasis, flexGrow: field.flexGrow }}
             >
