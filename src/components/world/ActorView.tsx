@@ -68,6 +68,9 @@ const ActorView = ({ id, sceneId, palettes, editable }: ActorViewProps) => {
       state.editor.scene === sceneId &&
       state.editor.entityId === id
   );
+  const isDragging = useSelector(
+    (state: RootState) => selected && state.editor.dragging
+  );
   const settings = useSelector((state: RootState) => getSettings(state));
   const palettesLookup = useSelector((state: RootState) =>
     paletteSelectors.selectEntities(state)
@@ -106,10 +109,13 @@ const ActorView = ({ id, sceneId, palettes, editable }: ActorViewProps) => {
   );
 
   useEffect(() => {
+    if (isDragging) {
+      window.addEventListener("mouseup", onMouseUp);
+    }
     return () => {
       window.removeEventListener("mouseup", onMouseUp);
     };
-  }, [onMouseUp]);
+  }, [onMouseUp, isDragging]);
 
   if (!actor) {
     return <></>;

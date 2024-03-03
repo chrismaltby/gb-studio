@@ -43,6 +43,9 @@ const TriggerView = ({ id, sceneId, editable }: TriggerViewProps) => {
       state.editor.scene === sceneId &&
       state.editor.entityId === id
   );
+  const isDragging = useSelector(
+    (state: RootState) => selected && state.editor.dragging
+  );
 
   const onMouseUp = useCallback(() => {
     dispatch(editorActions.dragTriggerStop());
@@ -61,10 +64,13 @@ const TriggerView = ({ id, sceneId, editable }: TriggerViewProps) => {
   );
 
   useEffect(() => {
+    if (isDragging) {
+      window.addEventListener("mouseup", onMouseUp);
+    }
     return () => {
       window.removeEventListener("mouseup", onMouseUp);
     };
-  }, [onMouseUp]);
+  }, [onMouseUp, isDragging]);
 
   if (!trigger) {
     return <></>;
