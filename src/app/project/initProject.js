@@ -269,7 +269,7 @@ window.addEventListener(
   }, 500)
 );
 
-// Overide Accelerator undo for windows, fixes chrome undo conflict
+// Override Accelerator undo for windows, fixes chrome undo conflict
 window.addEventListener("keydown", (e) => {
   if (e.code === "KeyZ" && e.ctrlKey) {
     if (e.shiftKey) {
