@@ -1,7 +1,6 @@
 import Path from "path";
 import { ActionCreators } from "redux-undo";
-import { ipcRenderer, webFrame } from "electron";
-import settings from "electron-settings";
+import { IpcRendererEvent, ipcRenderer, webFrame } from "electron";
 import debounce from "lodash/debounce";
 import mapValues from "lodash/mapValues";
 import store from "store/configureStore";
@@ -11,7 +10,10 @@ import entitiesActions from "store/features/entities/entitiesActions";
 import settingsActions from "store/features/settings/settingsActions";
 import navigationActions from "store/features/navigation/navigationActions";
 import projectActions from "store/features/project/projectActions";
-import buildGameActions from "store/features/buildGame/buildGameActions";
+import buildGameActions, {
+  BuildType,
+  ProjectExportType,
+} from "store/features/buildGame/buildGameActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import engineActions from "store/features/engine/engineActions";
 import errorActions from "store/features/error/errorActions";
@@ -24,6 +26,10 @@ import {
   engineFieldsEmitter,
 } from "lib/project/engineFields";
 import API from "renderer/lib/api";
+import { ZoomSection } from "store/features/editor/editorState";
+import { NavigationSection } from "store/features/navigation/navigationState";
+import { SettingsState } from "store/features/settings/settingsState";
+import { Background } from "shared/lib/entities/entitiesTypes";
 
 const actions = {
   ...editorActions,
@@ -34,9 +40,10 @@ const actions = {
   ...clipboardActions,
 };
 
-const vmActions = mapValues(actions, (_fn, key) => {
+const vmActions = mapValues(actions, (_fn: any, key: any) => {
   // Strip proxy object from VM2 output
-  return (payload) => actions[key](JSON.parse(JSON.stringify(payload)));
+  return (payload: any) =>
+    ((actions as any)[key] as any)(JSON.parse(JSON.stringify(payload)));
 });
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -55,9 +62,9 @@ if (projectPath) {
   });
 }
 
-window.ActionCreators = ActionCreators;
-window.store = store;
-window.undo = () => {
+(window as any).ActionCreators = ActionCreators;
+(window as any).store = store;
+(window as any).undo = () => {
   store.dispatch(ActionCreators.undo());
 };
 
@@ -90,7 +97,7 @@ const onSaveAndCloseProject = async () => {
   window.close();
 };
 
-const onSaveProjectAs = (event, pathName) => {
+const onSaveProjectAs = (_: IpcRendererEvent, pathName: string) => {
   store.dispatch(projectActions.saveProject(pathName));
 };
 
@@ -110,7 +117,7 @@ const onRedo = () => {
   }
 };
 
-const onSetSection = (event, section) => {
+const onSetSection = (_: IpcRendererEvent, section: NavigationSection) => {
   store.dispatch(navigationActions.setSection(section));
 };
 
@@ -118,7 +125,11 @@ const onReloadAssets = () => {
   store.dispatch(projectActions.reloadAssets());
 };
 
-const onUpdateSetting = (event, setting, value) => {
+const onUpdateSetting = <K extends keyof SettingsState>(
+  _: IpcRendererEvent,
+  setting: K,
+  value: SettingsState[K]
+) => {
   store.dispatch(
     settingsActions.editSettings({
       [setting]: value,
@@ -126,22 +137,28 @@ const onUpdateSetting = (event, setting, value) => {
   );
 };
 
-const onZoom = (event, zoomType) => {
+const onZoom = (_: IpcRendererEvent, zoomType: string) => {
   const state = store.getState();
   if (zoomType === "in") {
-    store.dispatch(editorActions.zoomIn({ section: state.navigation.section }));
+    store.dispatch(
+      editorActions.zoomIn({ section: state.navigation.section as ZoomSection })
+    );
   } else if (zoomType === "out") {
     store.dispatch(
-      editorActions.zoomOut({ section: state.navigation.section })
+      editorActions.zoomOut({
+        section: state.navigation.section as ZoomSection,
+      })
     );
   } else {
     store.dispatch(
-      editorActions.zoomReset({ section: state.navigation.section })
+      editorActions.zoomReset({
+        section: state.navigation.section as ZoomSection,
+      })
     );
   }
 };
 
-const onWindowZoom = (event, zoomLevel) => {
+const onWindowZoom = (_: IpcRendererEvent, zoomLevel: number) => {
   webFrame.setZoomLevel(zoomLevel);
 };
 API.settings.app.getUIScale().then((zoomLevel) => {
@@ -152,12 +169,11 @@ const onRun = () => {
   store.dispatch(buildGameActions.buildGame());
 };
 
-const onBuild = (event, buildType, eject) => {
+const onBuild = (_: IpcRendererEvent, buildType: BuildType, eject: boolean) => {
   store.dispatch(
     buildGameActions.buildGame({
       buildType,
       exportBuild: !eject,
-      ejectBuild: eject,
     })
   );
 };
@@ -166,21 +182,24 @@ const onEjectEngine = () => {
   store.dispatch(buildGameActions.ejectEngine());
 };
 
-const onExportProject = (_event, exportType) => {
+const onExportProject = (
+  _: IpcRendererEvent,
+  exportType: ProjectExportType
+) => {
   store.dispatch(buildGameActions.exportProject(exportType));
 };
 
-const onPluginRun = (_event, pluginId) => {
-  if (plugins.menu[pluginId] && plugins.menu[pluginId].run) {
-    plugins.menu[pluginId].run(store, vmActions);
+const onPluginRun = (_: IpcRendererEvent, pluginId: string) => {
+  if ((plugins.menu as any)[pluginId] && (plugins.menu as any)[pluginId].run) {
+    (plugins.menu as any)[pluginId].run(store, vmActions);
   }
 };
 
-const onPasteInPlace = (_event) => {
+const onPasteInPlace = () => {
   store.dispatch(clipboardActions.pasteClipboardEntityInPlace());
 };
 
-const onKeyBindingsUpdate = (_event) => {
+const onKeyBindingsUpdate = () => {
   initKeyBindings();
 };
 
@@ -202,23 +221,34 @@ ipcRenderer.on("plugin-run", onPluginRun);
 ipcRenderer.on("paste-in-place", onPasteInPlace);
 ipcRenderer.on("keybindings-update", onKeyBindingsUpdate);
 
-const worldSidebarWidth = settings.get("worldSidebarWidth");
-const filesSidebarWidth = settings.get("filesSidebarWidth");
-const navigatorSidebarWidth = settings.get("navigatorSidebarWidth");
+(async () => {
+  const worldSidebarWidth = await API.settings.getNumber(
+    "worldSidebarWidth",
+    0
+  );
+  const filesSidebarWidth = await API.settings.getNumber(
+    "filesSidebarWidth",
+    0
+  );
+  const navigatorSidebarWidth = await API.settings.getNumber(
+    "navigatorSidebarWidth",
+    0
+  );
 
-if (worldSidebarWidth) {
-  store.dispatch(
-    editorActions.resizeWorldSidebar(clampSidebarWidth(worldSidebarWidth))
-  );
-}
-if (filesSidebarWidth) {
-  store.dispatch(
-    editorActions.resizeFilesSidebar(clampSidebarWidth(filesSidebarWidth))
-  );
-}
-if (navigatorSidebarWidth) {
-  store.dispatch(editorActions.resizeNavigatorSidebar(navigatorSidebarWidth));
-}
+  if (worldSidebarWidth) {
+    store.dispatch(
+      editorActions.resizeWorldSidebar(clampSidebarWidth(worldSidebarWidth))
+    );
+  }
+  if (filesSidebarWidth) {
+    store.dispatch(
+      editorActions.resizeFilesSidebar(clampSidebarWidth(filesSidebarWidth))
+    );
+  }
+  if (navigatorSidebarWidth) {
+    store.dispatch(editorActions.resizeNavigatorSidebar(navigatorSidebarWidth));
+  }
+})();
 
 window.addEventListener(
   "resize",
@@ -252,8 +282,11 @@ window.addEventListener("keydown", (e) => {
 
 // Prevent mousewheel from accidentally changing focused number fields
 document.body.addEventListener("mousewheel", () => {
-  if (document.activeElement.type === "number") {
-    document.activeElement.blur();
+  if (
+    document.activeElement &&
+    (document.activeElement as HTMLInputElement).type === "number"
+  ) {
+    (document.activeElement as HTMLInputElement).blur();
   }
 });
 
@@ -289,7 +322,9 @@ API.events.watch.sprite.removed.on((_, filename, plugin) => {
 // Watch Backgrounds
 
 API.events.watch.background.changed.on((_, _filename, data) => {
-  store.dispatch(entitiesActions.loadBackground({ data }));
+  store.dispatch(
+    entitiesActions.loadBackground({ data: data as unknown as Background })
+  );
 });
 
 API.events.watch.background.removed.on((_, filename, plugin) => {
