@@ -5,7 +5,6 @@ import settings from "electron-settings";
 import debounce from "lodash/debounce";
 import mapValues from "lodash/mapValues";
 import store from "store/configureStore";
-import watchProject from "lib/project/watchProject";
 import plugins, { initPlugins } from "lib/plugins/plugins";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
@@ -50,34 +49,6 @@ if (projectPath) {
   initPlugins(projectRoot);
   initEngineFields(projectRoot);
   initKeyBindings();
-
-  watchProject(projectPath, {
-    onAddSprite: (f) => store.dispatch(projectActions.loadSprite(f)),
-    onAddBackground: (f) => store.dispatch(projectActions.loadBackground(f)),
-    onAddMusic: (f) => store.dispatch(projectActions.loadMusic(f)),
-    onAddSound: (f) => store.dispatch(projectActions.loadSound(f)),
-    onAddFont: (f) => store.dispatch(projectActions.loadFont(f)),
-    onAddAvatar: (f) => store.dispatch(projectActions.loadAvatar(f)),
-    onAddEmote: (f) => store.dispatch(projectActions.loadEmote(f)),
-    onChangedSprite: (f) => store.dispatch(projectActions.loadSprite(f)),
-    onChangedBackground: (f) =>
-      store.dispatch(projectActions.loadBackground(f)),
-    onChangedMusic: (f) => store.dispatch(projectActions.loadMusic(f)),
-    onChangedSound: (f) => store.dispatch(projectActions.loadSound(f)),
-    onChangedFont: (f) => store.dispatch(projectActions.loadFont(f)),
-    onChangedAvatar: (f) => store.dispatch(projectActions.loadAvatar(f)),
-    onChangedEmote: (f) => store.dispatch(projectActions.loadEmote(f)),
-    onRemoveSprite: (f) => store.dispatch(projectActions.removeSprite(f)),
-    onRemoveBackground: (f) =>
-      store.dispatch(projectActions.removeBackground(f)),
-    onRemoveMusic: (f) => store.dispatch(projectActions.removeMusic(f)),
-    onRemoveSound: (f) => store.dispatch(projectActions.removeSound(f)),
-    onRemoveFont: (f) => store.dispatch(projectActions.removeFont(f)),
-    onRemoveAvatar: (f) => store.dispatch(projectActions.removeAvatar(f)),
-    onRemoveEmote: (f) => store.dispatch(projectActions.removeEmote(f)),
-    onChangedUI: (_f) => store.dispatch(projectActions.loadUI()),
-    onChangedEngineSchema: (_f) => initEngineFields(projectRoot),
-  });
 
   engineFieldsEmitter.on("sync", (res) => {
     store.dispatch(engineActions.setEngineFields(res.fields));
@@ -303,4 +274,90 @@ API.project.onBuildLog((_event, message) => {
 
 API.project.onBuildError((_event, message) => {
   store.dispatch(consoleActions.stdErr(message));
+});
+
+// Watch Sprites
+
+API.events.watch.sprite.changed.on((_, _filename, data) => {
+  store.dispatch(entitiesActions.loadSprite({ data }));
+});
+
+API.events.watch.sprite.removed.on((_, filename, plugin) => {
+  store.dispatch(entitiesActions.removeSprite({ filename, plugin }));
+});
+
+// Watch Backgrounds
+
+API.events.watch.background.changed.on((_, _filename, data) => {
+  store.dispatch(entitiesActions.loadBackground({ data }));
+});
+
+API.events.watch.background.removed.on((_, filename, plugin) => {
+  store.dispatch(entitiesActions.removeBackground({ filename, plugin }));
+});
+
+// Watch Music
+
+API.events.watch.music.changed.on((_, _filename, data) => {
+  store.dispatch(entitiesActions.loadMusic({ data }));
+});
+
+API.events.watch.music.removed.on((_, filename, plugin) => {
+  store.dispatch(entitiesActions.removeMusic({ filename, plugin }));
+});
+
+// Watch Sounds
+
+API.events.watch.sound.changed.on((_, _filename, data) => {
+  store.dispatch(entitiesActions.loadSound({ data }));
+});
+
+API.events.watch.sound.removed.on((_, filename, plugin) => {
+  store.dispatch(entitiesActions.removeSound({ filename, plugin }));
+});
+
+// Watch Fonts
+
+API.events.watch.font.changed.on((_, _filename, data) => {
+  store.dispatch(entitiesActions.loadFont({ data }));
+});
+
+API.events.watch.font.removed.on((_, filename, plugin) => {
+  store.dispatch(entitiesActions.removeFont({ filename, plugin }));
+});
+
+// Watch Avatars
+
+API.events.watch.avatar.changed.on((_, _filename, data) => {
+  store.dispatch(entitiesActions.loadAvatar({ data }));
+});
+
+API.events.watch.avatar.removed.on((_, filename, plugin) => {
+  store.dispatch(entitiesActions.removeAvatar({ filename, plugin }));
+});
+
+// Watch Emotes
+
+API.events.watch.emote.changed.on((_, _filename, data) => {
+  store.dispatch(entitiesActions.loadEmote({ data }));
+});
+
+API.events.watch.emote.removed.on((_, filename, plugin) => {
+  store.dispatch(entitiesActions.removeEmote({ filename, plugin }));
+});
+
+// Watch UI
+
+API.events.watch.ui.changed.on(() => {
+  store.dispatch(entitiesActions.loadUI());
+});
+
+API.events.watch.ui.removed.on(() => {
+  store.dispatch(entitiesActions.loadUI());
+});
+
+// Watch Engine Fields
+
+API.events.watch.engineSchema.changed.on((_, fields) => {
+  store.dispatch(engineActions.setEngineFields(fields));
 });

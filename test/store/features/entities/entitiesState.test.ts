@@ -23,6 +23,7 @@ import {
   dummyPalette,
 } from "../../../dummydata";
 import { DMG_PALETTE } from "../../../../src/consts";
+import entitiesActions from "../../../../src/store/features/entities/entitiesActions";
 
 test("Should fix scene widths if backgrounds has been removed since save", () => {
   const state: EntitiesState = {
@@ -173,13 +174,9 @@ test("Should fix scene widths if background has changed while project is open", 
     height: 40,
   };
 
-  const action = projectActions.loadBackground.fulfilled(
-    {
-      data: loadBackground,
-    },
-    "randomid",
-    "bg1.png"
-  );
+  const action = entitiesActions.loadBackground({
+    data: loadBackground,
+  });
 
   expect(state.scenes.entities["scene1"]?.width).toBe(20);
   expect(state.scenes.entities["scene1"]?.height).toBe(18);
@@ -200,13 +197,9 @@ test("Should add new background if loaded while project is open", () => {
     height: 18,
   };
 
-  const action = projectActions.loadBackground.fulfilled(
-    {
-      data: loadBackground,
-    },
-    "randomid",
-    "bg1.png"
-  );
+  const action = entitiesActions.loadBackground({
+    data: loadBackground,
+  });
 
   expect(state.backgrounds.ids.length).toBe(0);
   const newState = reducer(state, action);
@@ -230,14 +223,10 @@ test("Should remove backgrounds that are deleted while project is open", () => {
     },
   };
 
-  const action = projectActions.removeBackground.fulfilled(
-    {
-      filename: "bg1.png",
-      plugin: undefined,
-    },
-    "randomid",
-    "bg1.png"
-  );
+  const action = entitiesActions.removeBackground({
+    filename: "bg1.png",
+    plugin: undefined,
+  });
 
   expect(state.backgrounds.ids.length).toBe(1);
   const newState = reducer(state, action);
@@ -254,13 +243,9 @@ test("Should add new sprite sheet if loaded while project is open", () => {
     id: "sprite1",
   };
 
-  const action = projectActions.loadSprite.fulfilled(
-    {
-      data: loadSpriteSheet,
-    },
-    "randomid",
-    "sprite1.png"
-  );
+  const action = entitiesActions.loadSprite({
+    data: loadSpriteSheet,
+  });
 
   expect(state.spriteSheets.ids.length).toBe(0);
   const newState = reducer(state, action);
@@ -288,13 +273,9 @@ test("Should update sprite sheet if modified while project is open", () => {
     filename: "sprite1.png",
   };
 
-  const action = projectActions.loadSprite.fulfilled(
-    {
-      data: loadSpriteSheet,
-    },
-    "randomid",
-    "sprite1.png"
-  );
+  const action = entitiesActions.loadSprite({
+    data: loadSpriteSheet,
+  });
 
   expect(state.spriteSheets.ids.length).toBe(1);
   const newState = reducer(state, action);
@@ -316,14 +297,10 @@ test("Should remove sprite sheets that are deleted while project is open", () =>
     },
   };
 
-  const action = projectActions.removeSprite.fulfilled(
-    {
-      filename: "sprite1.png",
-      plugin: undefined,
-    },
-    "randomid",
-    "sprite1.png"
-  );
+  const action = entitiesActions.removeSprite({
+    filename: "sprite1.png",
+    plugin: undefined,
+  });
 
   expect(state.spriteSheets.ids.length).toBe(1);
   const newState = reducer(state, action);
@@ -341,13 +318,9 @@ test("Should add new music track if loaded while project is open", () => {
     filename: "track1.mod",
   };
 
-  const action = projectActions.loadMusic.fulfilled(
-    {
-      data: loadMusic,
-    },
-    "randomid",
-    "track1.mod"
-  );
+  const action = entitiesActions.loadMusic({
+    data: loadMusic,
+  });
 
   expect(state.music.ids.length).toBe(0);
   const newState = reducer(state, action);
@@ -378,13 +351,9 @@ test("Should update music track if modified while project is open", () => {
     _v: 1,
   };
 
-  const action = projectActions.loadMusic.fulfilled(
-    {
-      data: loadMusic,
-    },
-    "randomid",
-    "track1.mod"
-  );
+  const action = entitiesActions.loadMusic({
+    data: loadMusic,
+  });
 
   expect(state.music.ids.length).toBe(1);
   const newState = reducer(state, action);
@@ -407,14 +376,10 @@ test("Should remove music tracks that are deleted while project is open", () => 
     },
   };
 
-  const action = projectActions.removeMusic.fulfilled(
-    {
-      filename: "track1.mod",
-      plugin: undefined,
-    },
-    "randomid",
-    "track1.mod"
-  );
+  const action = entitiesActions.removeMusic({
+    filename: "track1.mod",
+    plugin: undefined,
+  });
 
   expect(state.music.ids.length).toBe(1);
   const newState = reducer(state, action);

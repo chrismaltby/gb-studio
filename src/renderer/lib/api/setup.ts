@@ -20,7 +20,15 @@ import type {
 } from "shared/lib/entities/entitiesTypes";
 import type { BackgroundInfo } from "lib/helpers/validation";
 import type { Song } from "shared/lib/uge/song/Song";
-import { PrecompiledSpriteSheetData } from "lib/compiler/compileSprites";
+import type { PrecompiledSpriteSheetData } from "lib/compiler/compileSprites";
+import type { BackgroundAssetData } from "lib/project/loadBackgroundData";
+import { SpriteAssetData } from "lib/project/loadSpriteData";
+import { MusicAssetData } from "lib/project/loadMusicData";
+import { SoundAssetData } from "lib/project/loadSoundData";
+import { FontAssetData } from "lib/project/loadFontData";
+import { AvatarAssetData } from "lib/project/loadAvatarData";
+import { EmoteAssetData } from "lib/project/loadEmoteData";
+import { EngineFieldSchemaLookup } from "lib/project/engineFields";
 
 interface L10NLookup {
   [key: string]: string | boolean | undefined;
@@ -31,6 +39,40 @@ export type BuildOptions = {
   profile: boolean;
   engineFields: EngineFieldSchema[];
   exportBuild: boolean;
+};
+
+const createSubscribeAPI = <
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  T extends (event: IpcRendererEvent, ...args: any[]) => void
+>(
+  channel: string
+) => {
+  return {
+    on: (listener: T) => {
+      ipcRenderer.on(channel, listener);
+    },
+    off: (listener: T) => {
+      ipcRenderer.off(channel, listener);
+    },
+    once: (listener: T) => {
+      ipcRenderer.once(channel, listener);
+    },
+  };
+};
+
+const createWatchSubscribeAPI = <T>(channel: string) => {
+  return {
+    changed: createSubscribeAPI<
+      (event: IpcRendererEvent, filename: string, data: T) => void
+    >(`${channel}:changed`),
+    removed: createSubscribeAPI<
+      (
+        event: IpcRendererEvent,
+        filename: string,
+        plugin: string | undefined
+      ) => void
+    >(`${channel}:removed`),
+  };
 };
 
 const APISetup = {
@@ -207,6 +249,28 @@ const APISetup = {
       ipcRenderer.invoke("clipboard:write-text", value),
     writeBuffer: (format: string, buffer: Buffer): Promise<void> =>
       ipcRenderer.invoke("clipboard:write-buffer", format, buffer),
+  },
+  events: {
+    watch: {
+      sprite: createWatchSubscribeAPI<SpriteAssetData>("watch:sprite"),
+      background:
+        createWatchSubscribeAPI<BackgroundAssetData>("watch:background"),
+      music: createWatchSubscribeAPI<MusicAssetData>("watch:music"),
+      sound: createWatchSubscribeAPI<SoundAssetData>("watch:sound"),
+      font: createWatchSubscribeAPI<FontAssetData>("watch:font"),
+      avatar: createWatchSubscribeAPI<AvatarAssetData>("watch:avatar"),
+      emote: createWatchSubscribeAPI<EmoteAssetData>("watch:emote"),
+      ui: createWatchSubscribeAPI<never>("watch:ui"),
+      engineSchema: {
+        changed: createSubscribeAPI<
+          (
+            event: IpcRendererEvent,
+            fields: EngineFieldSchema[],
+            schemaLookup: EngineFieldSchemaLookup
+          ) => void
+        >("watch:engineFields:changed"),
+      },
+    },
   },
 };
 

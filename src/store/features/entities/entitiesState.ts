@@ -3187,25 +3187,29 @@ const entitiesSlice = createSlice({
 
     editEngineFieldValue,
     removeEngineFieldValue,
+
+    /*
+     * Load assets
+     */
+    loadBackground,
+    removeBackground,
+    loadSprite,
+    removeSprite,
+    loadMusic,
+    removeMusic,
+    loadSound,
+    removeSound,
+    loadFont,
+    removeFont,
+    loadAvatar,
+    removeAvatar,
+    loadEmote,
+    removeEmote,
   },
   extraReducers: (builder) =>
     builder
       .addCase(projectActions.loadProject.fulfilled, loadProject)
-      .addCase(projectActions.loadBackground.fulfilled, loadBackground)
-      .addCase(projectActions.removeBackground.fulfilled, removeBackground)
-      .addCase(projectActions.loadSprite.fulfilled, loadSprite)
-      .addCase(projectActions.removeSprite.fulfilled, removeSprite)
       .addCase(spriteActions.detectSpriteComplete, loadDetectedSprite)
-      .addCase(projectActions.loadMusic.fulfilled, loadMusic)
-      .addCase(projectActions.removeMusic.fulfilled, removeMusic)
-      .addCase(projectActions.loadSound.fulfilled, loadSound)
-      .addCase(projectActions.removeSound.fulfilled, removeSound)
-      .addCase(projectActions.loadFont.fulfilled, loadFont)
-      .addCase(projectActions.removeFont.fulfilled, removeFont)
-      .addCase(projectActions.loadAvatar.fulfilled, loadAvatar)
-      .addCase(projectActions.removeAvatar.fulfilled, removeAvatar)
-      .addCase(projectActions.loadEmote.fulfilled, loadEmote)
-      .addCase(projectActions.removeEmote.fulfilled, removeEmote)
       .addCase(projectActions.reloadAssets, reloadAssets),
 });
 

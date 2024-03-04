@@ -1,12 +1,6 @@
 import { createAsyncThunk, createAction } from "@reduxjs/toolkit";
 import {
-  Background,
-  SpriteSheet,
-  Music,
   EntitiesState,
-  Font,
-  Avatar,
-  Emote,
   ProjectEntitiesData,
   BackgroundData,
   SpriteSheetData,
@@ -14,21 +8,12 @@ import {
   FontData,
   AvatarData,
   EmoteData,
-  Sound,
   SoundData,
 } from "shared/lib/entities/entitiesTypes";
 import type { RootState } from "store/configureStore";
-import { loadSpriteData } from "lib/project/loadSpriteData";
-import { loadBackgroundData } from "lib/project/loadBackgroundData";
-import { loadMusicData } from "lib/project/loadMusicData";
-import { loadFontData } from "lib/project/loadFontData";
 import { SettingsState } from "store/features/settings/settingsState";
 import { MetadataState } from "store/features/metadata/metadataState";
-import parseAssetPath from "shared/lib/assets/parseAssetPath";
 import { denormalizeEntities } from "shared/lib/entities/entitiesHelpers";
-import { loadAvatarData } from "lib/project/loadAvatarData";
-import { loadEmoteData } from "lib/project/loadEmoteData";
-import { loadSoundData } from "lib/project/loadSoundData";
 import API from "renderer/lib/api";
 
 let saving = false;
@@ -136,265 +121,6 @@ const loadProject = createAsyncThunk<
 });
 
 /**************************************************************************
- * Backgrounds
- */
-
-const loadBackground = createAsyncThunk<{ data: Background }, string>(
-  "project/loadBackground",
-  async (filename, thunkApi) => {
-    const state = thunkApi.getState() as RootState;
-
-    const projectRoot = state.document && state.document.root;
-    const data = (await loadBackgroundData(projectRoot)(filename)) as
-      | Background
-      | undefined;
-
-    if (!data) {
-      throw new Error("Unable to load background");
-    }
-
-    return {
-      data,
-    };
-  }
-);
-
-const removeBackground = createAsyncThunk<
-  { filename: string; plugin?: string },
-  string
->("project/removeBackground", async (filename, thunkApi) => {
-  const state = thunkApi.getState() as RootState;
-  const projectRoot = state.document && state.document.root;
-  const { file, plugin } = parseAssetPath(filename, projectRoot, "backgrounds");
-  return {
-    filename: file,
-    plugin,
-  };
-});
-
-/**************************************************************************
- * Sprites
- */
-
-const loadSprite = createAsyncThunk<{ data: SpriteSheet }, string>(
-  "project/loadSprite",
-  async (filename, thunkApi) => {
-    const state = thunkApi.getState() as RootState;
-
-    const projectRoot = state.document && state.document.root;
-    const data = (await loadSpriteData(projectRoot)(filename)) as
-      | SpriteSheet
-      | undefined;
-
-    if (!data) {
-      throw new Error("Unable to load sprite sheet");
-    }
-
-    return {
-      data,
-    };
-  }
-);
-
-const removeSprite = createAsyncThunk<
-  { filename: string; plugin?: string },
-  string
->("project/removeSprite", async (filename, thunkApi) => {
-  const state = thunkApi.getState() as RootState;
-  const projectRoot = state.document && state.document.root;
-  const { file, plugin } = parseAssetPath(filename, projectRoot, "sprites");
-  return {
-    filename: file,
-    plugin,
-  };
-});
-
-/**************************************************************************
- * Music
- */
-
-const loadMusic = createAsyncThunk<{ data: Music }, string>(
-  "project/loadMusic",
-  async (filename, thunkApi) => {
-    const state = thunkApi.getState() as RootState;
-
-    const projectRoot = state.document && state.document.root;
-    const data = (await loadMusicData(projectRoot)(filename)) as
-      | Music
-      | undefined;
-
-    if (!data) {
-      throw new Error("Unable to load music");
-    }
-
-    return {
-      data,
-    };
-  }
-);
-
-const removeMusic = createAsyncThunk<
-  { filename: string; plugin?: string },
-  string
->("project/removeMusic", async (filename, thunkApi) => {
-  const state = thunkApi.getState() as RootState;
-  const projectRoot = state.document && state.document.root;
-  const { file, plugin } = parseAssetPath(filename, projectRoot, "music");
-  return {
-    filename: file,
-    plugin,
-  };
-});
-
-/**************************************************************************
- * Sound Effects
- */
-
-const loadSound = createAsyncThunk<{ data: Sound }, string>(
-  "project/loadSound",
-  async (filename, thunkApi) => {
-    const state = thunkApi.getState() as RootState;
-
-    const projectRoot = state.document && state.document.root;
-    const data = (await loadSoundData(projectRoot)(filename)) as
-      | Sound
-      | undefined;
-
-    if (!data) {
-      throw new Error("Unable to load sound effect");
-    }
-
-    return {
-      data,
-    };
-  }
-);
-
-const removeSound = createAsyncThunk<
-  { filename: string; plugin?: string },
-  string
->("project/removeSound", async (filename, thunkApi) => {
-  const state = thunkApi.getState() as RootState;
-  const projectRoot = state.document && state.document.root;
-  const { file, plugin } = parseAssetPath(filename, projectRoot, "sounds");
-  return {
-    filename: file,
-    plugin,
-  };
-});
-
-/**************************************************************************
- * Fonts
- */
-
-const loadFont = createAsyncThunk<{ data: Font }, string>(
-  "project/loadFont",
-  async (filename, thunkApi) => {
-    const state = thunkApi.getState() as RootState;
-
-    const projectRoot = state.document && state.document.root;
-    const data = (await loadFontData(projectRoot)(filename)) as
-      | Font
-      | undefined;
-
-    if (!data) {
-      throw new Error("Unable to load font");
-    }
-
-    return {
-      data,
-    };
-  }
-);
-
-const removeFont = createAsyncThunk<
-  { filename: string; plugin?: string },
-  string
->("project/removeFont", async (filename, thunkApi) => {
-  const state = thunkApi.getState() as RootState;
-  const projectRoot = state.document && state.document.root;
-  const { file, plugin } = parseAssetPath(filename, projectRoot, "fonts");
-  return {
-    filename: file,
-    plugin,
-  };
-});
-
-/**************************************************************************
- * Avatars
- */
-
-const loadAvatar = createAsyncThunk<{ data: Avatar }, string>(
-  "project/loadAvatar",
-  async (filename, thunkApi) => {
-    const state = thunkApi.getState() as RootState;
-
-    const projectRoot = state.document && state.document.root;
-    const data = (await loadAvatarData(projectRoot)(filename)) as
-      | Avatar
-      | undefined;
-
-    if (!data) {
-      throw new Error("Unable to load avatar");
-    }
-
-    return {
-      data,
-    };
-  }
-);
-
-const removeAvatar = createAsyncThunk<
-  { filename: string; plugin?: string },
-  string
->("project/removeAvatar", async (filename, thunkApi) => {
-  const state = thunkApi.getState() as RootState;
-  const projectRoot = state.document && state.document.root;
-  const { file, plugin } = parseAssetPath(filename, projectRoot, "avatars");
-  return {
-    filename: file,
-    plugin,
-  };
-});
-
-/**************************************************************************
- * Emotes
- */
-
-const loadEmote = createAsyncThunk<{ data: Emote }, string>(
-  "project/loadEmote",
-  async (filename, thunkApi) => {
-    const state = thunkApi.getState() as RootState;
-
-    const projectRoot = state.document && state.document.root;
-    const data = (await loadEmoteData(projectRoot)(filename)) as
-      | Emote
-      | undefined;
-
-    if (!data) {
-      throw new Error("Unable to load emote");
-    }
-
-    return {
-      data,
-    };
-  }
-);
-
-const removeEmote = createAsyncThunk<
-  { filename: string; plugin?: string },
-  string
->("project/removeEmote", async (filename, thunkApi) => {
-  const state = thunkApi.getState() as RootState;
-  const projectRoot = state.document && state.document.root;
-  const { file, plugin } = parseAssetPath(filename, projectRoot, "emotes");
-  return {
-    filename: file,
-    plugin,
-  };
-});
-
-/**************************************************************************
  * UI
  */
 
@@ -463,20 +189,6 @@ const projectActions = {
   openProject,
   closeProject,
   loadProject,
-  loadBackground,
-  removeBackground,
-  loadSprite,
-  removeSprite,
-  loadMusic,
-  removeMusic,
-  loadSound,
-  removeSound,
-  loadFont,
-  removeFont,
-  loadAvatar,
-  removeAvatar,
-  loadEmote,
-  removeEmote,
   loadUI,
   addFileToProject,
   reloadAssets,

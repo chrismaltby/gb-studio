@@ -78,6 +78,16 @@ import confirmReplaceCustomEvent from "lib/electron/dialog/confirmReplaceCustomE
 import l10n, { L10NKey, getL10NData } from "shared/lib/lang/l10n";
 import initElectronL10N, { locales } from "lib/lang/initElectronL10N";
 import { initEvents } from "lib/events";
+import watchProject from "lib/project/watchProject";
+import { loadBackgroundData } from "lib/project/loadBackgroundData";
+import { loadSpriteData } from "lib/project/loadSpriteData";
+import { loadMusicData } from "lib/project/loadMusicData";
+import { loadSoundData } from "lib/project/loadSoundData";
+import { loadFontData } from "lib/project/loadFontData";
+import { loadAvatarData } from "lib/project/loadAvatarData";
+import { loadEmoteData } from "lib/project/loadEmoteData";
+import parseAssetPath from "shared/lib/assets/parseAssetPath";
+import { initEngineFields } from "lib/project/engineFields";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -115,6 +125,7 @@ let keepOpen = false;
 let projectPath = "";
 let cancelBuild = false;
 let musicWindowInitialized = false;
+let stopWatchingFn: (() => void) | null = null;
 
 const isDevMode = !!process.execPath.match(/[\\/]electron/);
 
@@ -233,18 +244,18 @@ const createProjectWindow = async () => {
   mainWindow.setRepresentedFilename(projectPath);
 
   mainWindow.webContents.on("did-finish-load", () => {
-    mainWindow?.webContents.send("open-project", projectPath);
+    sendToMain("open-project", projectPath);
     setTimeout(() => {
       mainWindow?.show();
     }, 40);
   });
 
   mainWindow.on("enter-full-screen", () => {
-    mainWindow?.webContents.send("is-full-screen-changed", true);
+    sendToMain("is-full-screen-changed", true);
   });
 
   mainWindow.on("leave-full-screen", () => {
-    mainWindow?.webContents.send("is-full-screen-changed", false);
+    sendToMain("is-full-screen-changed", false);
   });
 
   mainWindow.on("page-title-updated", (e, title) => {
@@ -272,15 +283,21 @@ const createProjectWindow = async () => {
       if (choice === 0) {
         // Save
         e.preventDefault();
-        mainWindow.webContents.send("save-project-and-close");
+        sendToMain("save-project-and-close");
+        return;
       } else if (choice === 1) {
         // Cancel
         e.preventDefault();
         keepOpen = false;
         mainWindowCloseCancelled = true;
+        return;
       } else {
         // Don't Save
       }
+    }
+
+    if (stopWatchingFn) {
+      stopWatchingFn();
     }
   });
 
@@ -292,12 +309,114 @@ const createProjectWindow = async () => {
       musicWindow.destroy();
     }
   });
+
+  if (stopWatchingFn) {
+    stopWatchingFn();
+  }
+
+  const projectRoot = Path.dirname(projectPath);
+
+  stopWatchingFn = watchProject(projectPath, {
+    onChangedSprite: async (filename: string) => {
+      const data = await loadSpriteData(projectRoot)(filename);
+      if (!data) {
+        console.error(`Unable to load asset ${filename}`);
+      }
+      sendToMain("watch:sprite:changed", filename, data);
+    },
+    onChangedBackground: async (filename: string) => {
+      const data = await loadBackgroundData(projectRoot)(filename);
+      if (!data) {
+        console.error(`Unable to load asset ${filename}`);
+      }
+      sendToMain("watch:background:changed", filename, data);
+    },
+    onChangedUI: (filename: string) => {
+      sendToMain("watch:ui:changed", { filename });
+    },
+    onChangedMusic: async (filename: string) => {
+      const data = await loadMusicData(projectRoot)(filename);
+      if (!data) {
+        console.error(`Unable to load asset ${filename}`);
+      }
+      sendToMain("watch:music:changed", filename, data);
+    },
+    onChangedSound: async (filename: string) => {
+      const data = await loadSoundData(projectRoot)(filename);
+      if (!data) {
+        console.error(`Unable to load asset ${filename}`);
+      }
+      sendToMain("watch:sound:changed", filename, data);
+    },
+    onChangedFont: async (filename: string) => {
+      const data = await loadFontData(projectRoot)(filename);
+      if (!data) {
+        console.error(`Unable to load asset ${filename}`);
+      }
+      sendToMain("watch:font:changed", filename, data);
+    },
+    onChangedAvatar: async (filename: string) => {
+      const data = await loadAvatarData(projectRoot)(filename);
+      if (!data) {
+        console.error(`Unable to load asset ${filename}`);
+      }
+      sendToMain("watch:avatar:changed", filename, data);
+    },
+    onChangedEmote: async (filename: string) => {
+      const data = await loadEmoteData(projectRoot)(filename);
+      if (!data) {
+        console.error(`Unable to load asset ${filename}`);
+      }
+      sendToMain("watch:emote:changed", filename, data);
+    },
+    onRemoveSprite: async (filename: string) => {
+      const { file, plugin } = parseAssetPath(filename, projectRoot, "sprites");
+      sendToMain("watch:sprite:removed", file, plugin);
+    },
+    onRemoveBackground: async (filename: string) => {
+      const { file, plugin } = parseAssetPath(
+        filename,
+        projectRoot,
+        "backgrounds"
+      );
+      sendToMain("watch:background:removed", file, plugin);
+    },
+    onRemoveUI: async (filename: string) => {
+      sendToMain("watch:ui:removed", filename);
+    },
+    onRemoveMusic: async (filename: string) => {
+      const { file, plugin } = parseAssetPath(filename, projectRoot, "music");
+      sendToMain("watch:music:removed", file, plugin);
+    },
+    onRemoveSound: async (filename: string) => {
+      const { file, plugin } = parseAssetPath(filename, projectRoot, "sounds");
+      sendToMain("watch:sound:removed", file, plugin);
+    },
+    onRemoveFont: async (filename: string) => {
+      const { file, plugin } = parseAssetPath(filename, projectRoot, "fonts");
+      sendToMain("watch:font:removed", file, plugin);
+    },
+    onRemoveAvatar: async (filename: string) => {
+      const { file, plugin } = parseAssetPath(filename, projectRoot, "avatars");
+      sendToMain("watch:avatar:removed", file, plugin);
+    },
+    onRemoveEmote: async (filename: string) => {
+      const { file, plugin } = parseAssetPath(filename, projectRoot, "emotes");
+      sendToMain("watch:emote:removed", file, plugin);
+    },
+    onChangedEngineSchema: async (_filename: string) => {
+      const { fields, schemaLookup } = await initEngineFields(projectRoot);
+      sendToMain("watch:engineFields:changed", fields, schemaLookup);
+    },
+  });
 };
 
-const buildLog = (msg: string) =>
-  mainWindow?.webContents.send("build:log", msg);
-const buildErr = (msg: string) =>
-  mainWindow?.webContents.send("build:error", msg);
+const sendToMain = (channel: string, ...args: unknown[]) => {
+  mainWindow?.webContents.send(channel, ...args);
+};
+
+const buildLog = (msg: string) => sendToMain("build:log", msg);
+const buildErr = (msg: string) => sendToMain("build:error", msg);
 
 const waitUntilWindowClosed = (): Promise<void> => {
   return new Promise((resolve, reject) => {
@@ -683,8 +802,7 @@ ipcMain.on(
                 label: l10n(plugin.id as L10NKey) || plugin.name || plugin.name,
                 accelerator: plugin.accelerator,
                 click() {
-                  mainWindow &&
-                    mainWindow.webContents.send("plugin-run", plugin.id);
+                  sendToMain("plugin-run", plugin.id);
                 },
               };
             }),
@@ -700,12 +818,12 @@ ipcMain.on("open-music", async (_event, sfx?: string) => {
 
 ipcMain.handle("set-ui-scale", (_, scale: number) => {
   settings.set("zoomLevel", scale);
-  mainWindow && mainWindow.webContents.send("windowZoom", scale);
+  sendToMain("windowZoom", scale);
 });
 
 ipcMain.handle("set-tracker-keybindings", (_, value: number) => {
   settings.set("trackerKeyBindings", value);
-  mainWindow && mainWindow.webContents.send("keybindings-update", value);
+  sendToMain("keybindings-update", value);
 });
 
 ipcMain.on("close-music", async () => {
@@ -726,7 +844,7 @@ ipcMain.on("music-data-receive", (_event, data: MusicDataReceivePacket) => {
     musicWindowInitialized = true;
   }
   if (mainWindow) {
-    mainWindow.webContents.send("music-data", data);
+    sendToMain("music-data", data);
   }
 });
 
@@ -833,8 +951,7 @@ ipcMain.handle(
         );
         shell.openItem(`${projectRoot}/build/${buildType}`);
         buildLog(`-`);
-        mainWindow?.webContents.send(
-          "build:log",
+        buildLog(
           `Success! ${
             buildType === "web"
               ? `Site is ready at ${Path.normalize(
@@ -849,10 +966,7 @@ ipcMain.handle(
 
       if (buildType === "web" && !exportBuild) {
         buildLog(`-`);
-        mainWindow?.webContents.send(
-          "build:log",
-          `Success! Starting emulator...`
-        );
+        buildLog(`Success! Starting emulator...`);
         createPlay(
           `file://${outputRoot}/build/web/index.html`,
           sgbEnabled && !colorEnabled
@@ -1164,7 +1278,7 @@ menu.on("project", async () => {
 });
 
 menu.on("save", async () => {
-  mainWindow && mainWindow.webContents.send("save-project");
+  sendToMain("save-project");
 });
 
 menu.on("saveAs", async () => {
@@ -1172,47 +1286,47 @@ menu.on("saveAs", async () => {
 });
 
 menu.on("undo", async () => {
-  mainWindow && mainWindow.webContents.send("undo");
+  sendToMain("undo");
 });
 
 menu.on("redo", async () => {
-  mainWindow && mainWindow.webContents.send("redo");
+  sendToMain("redo");
 });
 
 menu.on("section", async (section) => {
-  mainWindow && mainWindow.webContents.send("section", section);
+  sendToMain("section", section);
 });
 
 menu.on("reloadAssets", () => {
-  mainWindow && mainWindow.webContents.send("reloadAssets");
+  sendToMain("reloadAssets");
 });
 
 menu.on("zoom", (zoomType) => {
-  mainWindow && mainWindow.webContents.send("zoom", zoomType);
+  sendToMain("zoom", zoomType);
 });
 
 menu.on("run", () => {
-  mainWindow && mainWindow.webContents.send("run");
+  sendToMain("run");
 });
 
 menu.on("build", (buildType) => {
-  mainWindow && mainWindow.webContents.send("build", buildType);
+  sendToMain("build", buildType);
 });
 
 menu.on("ejectEngine", () => {
-  mainWindow && mainWindow.webContents.send("ejectEngine");
+  sendToMain("ejectEngine");
 });
 
 menu.on("exportProjectSrc", () => {
-  mainWindow && mainWindow.webContents.send("exportProject", "src");
+  sendToMain("exportProject", "src");
 });
 
 menu.on("exportProjectData", () => {
-  mainWindow && mainWindow.webContents.send("exportProject", "data");
+  sendToMain("exportProject", "data");
 });
 
 menu.on("pasteInPlace", () => {
-  mainWindow && mainWindow.webContents.send("paste-in-place");
+  sendToMain("paste-in-place");
 });
 
 menu.on("checkUpdates", () => {
@@ -1246,7 +1360,7 @@ menu.on("updateTheme", (value) => {
   menu.ref().getMenuItemById("themeDark").checked = value === "dark";
   const newThemeId = toThemeId(value, nativeTheme.shouldUseDarkColors);
   splashWindow && splashWindow.webContents.send("update-theme", newThemeId);
-  mainWindow && mainWindow.webContents.send("update-theme", newThemeId);
+  sendToMain("update-theme", newThemeId);
 });
 
 menu.on("updateLocale", (value) => {
@@ -1261,8 +1375,7 @@ menu.on("updateLocale", (value) => {
 
 menu.on("updateShowCollisions", (value) => {
   settings.set("showCollisions", value as JsonValue);
-  mainWindow &&
-    mainWindow.webContents.send("updateSetting", "showCollisions", value);
+  sendToMain("updateSetting", "showCollisions", value);
 });
 
 menu.on("updateShowConnections", (value) => {
@@ -1271,14 +1384,12 @@ menu.on("updateShowConnections", (value) => {
   menu.ref().getMenuItemById("showConnectionsSelected").checked =
     value === "selected" || value === true;
   menu.ref().getMenuItemById("showConnectionsNone").checked = value === false;
-  mainWindow &&
-    mainWindow.webContents.send("updateSetting", "showConnections", value);
+  sendToMain("updateSetting", "showConnections", value);
 });
 
 menu.on("updateShowNavigator", (value) => {
   settings.set("showNavigator", value as JsonValue);
-  mainWindow &&
-    mainWindow.webContents.send("updateSetting", "showNavigator", value);
+  sendToMain("updateSetting", "showNavigator", value);
 });
 
 nativeTheme?.on("updated", () => {
@@ -1287,7 +1398,7 @@ nativeTheme?.on("updated", () => {
     nativeTheme.shouldUseDarkColors
   );
   splashWindow && splashWindow.webContents.send("update-theme", themeId);
-  mainWindow && mainWindow.webContents.send("update-theme", themeId);
+  sendToMain("update-theme", themeId);
 });
 
 const newProject = async () => {
@@ -1440,5 +1551,5 @@ const saveAsProject = async (saveAsPath: string) => {
 
   addRecentProject(projectPath);
 
-  mainWindow && mainWindow.webContents.send("save-as-project", projectPath);
+  sendToMain("save-as-project", projectPath);
 };

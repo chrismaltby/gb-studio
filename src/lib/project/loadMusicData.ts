@@ -9,7 +9,7 @@ import type { MusicSettings } from "shared/lib/entities/entitiesTypes";
 const globAsync = promisify(glob);
 const statAsync = promisify(stat);
 
-interface MusicAssetData {
+export interface MusicAssetData {
   id: string;
   name: string;
   symbol: string;

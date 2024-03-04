@@ -11,7 +11,7 @@ const globAsync = promisify(glob);
 const sizeOfAsync = promisify(sizeOf);
 const statAsync = promisify(stat);
 
-interface BackgroundAssetData {
+export interface BackgroundAssetData {
   id: string;
   name: string;
   symbol: string;

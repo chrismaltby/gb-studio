@@ -112,7 +112,7 @@ const spriteMiddleware: Middleware<Dispatch, RootState> =
       }
     }
 
-    if (projectActions.loadSprite.fulfilled.match(action)) {
+    if (entitiesActions.loadSprite.match(action)) {
       const state = store.getState();
       const spriteSheet = spriteSheetSelectors.selectById(
         state,

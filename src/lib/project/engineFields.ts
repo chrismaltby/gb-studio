@@ -13,7 +13,7 @@ interface EngineData {
   fields?: EngineFieldSchema[];
 }
 
-type EngineFieldSchemaLookup = Record<
+export type EngineFieldSchemaLookup = Record<
   string,
   {
     update: ScriptEventFieldSchema;
@@ -70,7 +70,9 @@ const getEngineFieldSchemas = (engineFields: EngineFieldSchema[]) => {
   return fields;
 };
 
-export const initEngineFields = async (projectRoot: string) => {
+export const initEngineFields = async (
+  projectRoot: string
+): Promise<EngineFieldSyncResult> => {
   const defaultEngineJsonPath = Path.join(engineRoot, "gb", "engine.json");
   const localEngineJsonPath = Path.join(
     projectRoot,
@@ -116,4 +118,9 @@ export const initEngineFields = async (projectRoot: string) => {
     fields,
     schemaLookup: getEngineFieldSchemas(fields),
   } as EngineFieldSyncResult);
+
+  return {
+    fields,
+    schemaLookup: getEngineFieldSchemas(fields),
+  };
 };

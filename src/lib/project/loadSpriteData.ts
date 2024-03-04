@@ -14,7 +14,7 @@ const globAsync = promisify(glob);
 const sizeOfAsync = promisify(sizeOf);
 const statAsync = promisify(stat);
 
-interface SpriteAssetData {
+export interface SpriteAssetData {
   id: string;
   name: string;
   symbol: string;

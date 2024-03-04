@@ -1,34 +1,28 @@
 import chokidar from "chokidar";
 import Path from "path";
 
-const watchProject = async (
-  projectPath,
-  {
-    onAddSprite = () => {},
-    onAddBackground = () => {},
-    onAddUI = () => {},
-    onAddMusic = () => {},
-    onAddSound = () => {},
-    onAddFont = () => {},
-    onAddAvatar = () => {},
-    onAddEmote = () => {},
-    onChangedSprite = () => {},
-    onChangedBackground = () => {},
-    onChangedUI = () => {},
-    onChangedMusic = () => {},
-    onChangedSound = () => {},
-    onChangedFont = () => {},
-    onChangedAvatar = () => {},
-    onChangedEmote = () => {},
-    onRemoveSprite = () => {},
-    onRemoveBackground = () => {},
-    onRemoveUI = () => {},
-    onRemoveMusic = () => {},
-    onRemoveSound = () => {},
-    onRemoveFont = () => {},
-    onRemoveAvatar = () => {},
-    onRemoveEmote = () => {},
-    onChangedEngineSchema = () => {},
+type WatchCallback = (path: string) => void;
+
+const watchProject = (
+  projectPath: string,
+  callbacks: {
+    onChangedSprite: WatchCallback;
+    onChangedBackground: WatchCallback;
+    onChangedUI: WatchCallback;
+    onChangedMusic: WatchCallback;
+    onChangedSound: WatchCallback;
+    onChangedFont: WatchCallback;
+    onChangedAvatar: WatchCallback;
+    onChangedEmote: WatchCallback;
+    onRemoveSprite: WatchCallback;
+    onRemoveBackground: WatchCallback;
+    onRemoveUI: WatchCallback;
+    onRemoveMusic: WatchCallback;
+    onRemoveSound: WatchCallback;
+    onRemoveFont: WatchCallback;
+    onRemoveAvatar: WatchCallback;
+    onRemoveEmote: WatchCallback;
+    onChangedEngineSchema: WatchCallback;
   }
 ) => {
   const projectRoot = Path.dirname(projectPath);
@@ -54,7 +48,7 @@ const watchProject = async (
     pollInterval: 100,
   };
 
-  const pluginSubfolder = (filename) => {
+  const pluginSubfolder = (filename: string) => {
     return Path.relative(pluginsRoot, filename).split(Path.sep)[1];
   };
 
@@ -64,9 +58,9 @@ const watchProject = async (
       persistent: true,
       awaitWriteFinish,
     })
-    .on("add", onAddSprite)
-    .on("change", onChangedSprite)
-    .on("unlink", onRemoveSprite);
+    .on("add", callbacks.onChangedSprite)
+    .on("change", callbacks.onChangedSprite)
+    .on("unlink", callbacks.onRemoveSprite);
 
   const backgroundWatcher = chokidar
     .watch(`${backgroundsRoot}/**/*.{png,PNG}`, {
@@ -74,9 +68,9 @@ const watchProject = async (
       persistent: true,
       awaitWriteFinish,
     })
-    .on("add", onAddBackground)
-    .on("change", onChangedBackground)
-    .on("unlink", onRemoveBackground);
+    .on("add", callbacks.onChangedBackground)
+    .on("change", callbacks.onChangedBackground)
+    .on("unlink", callbacks.onRemoveBackground);
 
   const uiWatcher = chokidar
     .watch(`${uiRoot}/**/*.{png,PNG}`, {
@@ -84,9 +78,9 @@ const watchProject = async (
       persistent: true,
       awaitWriteFinish,
     })
-    .on("add", onAddUI)
-    .on("change", onChangedUI)
-    .on("unlink", onRemoveUI);
+    .on("add", callbacks.onChangedUI)
+    .on("change", callbacks.onChangedUI)
+    .on("unlink", callbacks.onRemoveUI);
 
   const sgbWatcher = chokidar
     .watch(`${sgbRoot}/**/*.{png,PNG}`, {
@@ -94,9 +88,9 @@ const watchProject = async (
       persistent: true,
       awaitWriteFinish,
     })
-    .on("add", onAddUI)
-    .on("change", onChangedUI)
-    .on("unlink", onRemoveUI);
+    .on("add", callbacks.onChangedUI)
+    .on("change", callbacks.onChangedUI)
+    .on("unlink", callbacks.onRemoveUI);
 
   const musicWatcher = chokidar
     .watch(`${musicRoot}/**/*.{uge,UGE,mod,MOD}`, {
@@ -104,9 +98,9 @@ const watchProject = async (
       persistent: true,
       awaitWriteFinish: musicAwaitWriteFinish,
     })
-    .on("add", onAddMusic)
-    .on("change", onChangedMusic)
-    .on("unlink", onRemoveMusic);
+    .on("add", callbacks.onChangedMusic)
+    .on("change", callbacks.onChangedMusic)
+    .on("unlink", callbacks.onRemoveMusic);
 
   const soundsWatcher = chokidar
     .watch(`${soundsRoot}/**/*.{wav,WAV,vgm,VGM,vgz,VGZ,sav,SAV}`, {
@@ -114,9 +108,9 @@ const watchProject = async (
       persistent: true,
       awaitWriteFinish,
     })
-    .on("add", onAddSound)
-    .on("change", onChangedSound)
-    .on("unlink", onRemoveSound);
+    .on("add", callbacks.onChangedSound)
+    .on("change", callbacks.onChangedSound)
+    .on("unlink", callbacks.onRemoveSound);
 
   const fontsWatcher = chokidar
     .watch(`${fontsRoot}/**/*.{png,PNG}`, {
@@ -124,9 +118,9 @@ const watchProject = async (
       persistent: true,
       awaitWriteFinish,
     })
-    .on("add", onAddFont)
-    .on("change", onChangedFont)
-    .on("unlink", onRemoveFont);
+    .on("add", callbacks.onChangedFont)
+    .on("change", callbacks.onChangedFont)
+    .on("unlink", callbacks.onRemoveFont);
 
   const avatarsWatcher = chokidar
     .watch(`${avatarsRoot}/**/*.{png,PNG}`, {
@@ -134,9 +128,9 @@ const watchProject = async (
       persistent: true,
       awaitWriteFinish,
     })
-    .on("add", onAddAvatar)
-    .on("change", onChangedAvatar)
-    .on("unlink", onRemoveAvatar);
+    .on("add", callbacks.onChangedAvatar)
+    .on("change", callbacks.onChangedAvatar)
+    .on("unlink", callbacks.onRemoveAvatar);
 
   const emotesWatcher = chokidar
     .watch(`${emotesRoot}/**/*.{png,PNG}`, {
@@ -144,9 +138,9 @@ const watchProject = async (
       persistent: true,
       awaitWriteFinish,
     })
-    .on("add", onAddEmote)
-    .on("change", onChangedEmote)
-    .on("unlink", onRemoveEmote);
+    .on("add", callbacks.onChangedEmote)
+    .on("change", callbacks.onChangedEmote)
+    .on("unlink", callbacks.onRemoveEmote);
 
   const engineSchemaWatcher = chokidar
     .watch(engineSchema, {
@@ -154,9 +148,9 @@ const watchProject = async (
       persistent: true,
       awaitWriteFinish,
     })
-    .on("add", onChangedEngineSchema)
-    .on("change", onChangedEngineSchema)
-    .on("unlink", onChangedEngineSchema);
+    .on("add", callbacks.onChangedEngineSchema)
+    .on("change", callbacks.onChangedEngineSchema)
+    .on("unlink", callbacks.onChangedEngineSchema);
 
   const pluginsWatcher = chokidar
     .watch(
@@ -170,55 +164,55 @@ const watchProject = async (
     .on("add", (filename) => {
       const subfolder = pluginSubfolder(filename);
       if (subfolder === "backgrounds") {
-        onAddBackground(filename);
+        callbacks.onChangedBackground(filename);
       } else if (subfolder === "sprites") {
-        onAddSprite(filename);
+        callbacks.onChangedSprite(filename);
       } else if (subfolder === "music") {
-        onAddMusic(filename);
+        callbacks.onChangedMusic(filename);
       } else if (subfolder === "fonts") {
-        onAddFont(filename);
+        callbacks.onChangedFont(filename);
       } else if (subfolder === "avatar") {
-        onAddAvatar(filename);
+        callbacks.onChangedAvatar(filename);
       } else if (subfolder === "emotes") {
-        onAddEmote(filename);
+        callbacks.onChangedEmote(filename);
       } else if (subfolder === "sounds") {
-        onAddSound(filename);
+        callbacks.onChangedSound(filename);
       }
     })
     .on("change", (filename) => {
       const subfolder = pluginSubfolder(filename);
       if (subfolder === "backgrounds") {
-        onChangedBackground(filename);
+        callbacks.onChangedBackground(filename);
       } else if (subfolder === "sprites") {
-        onChangedSprite(filename);
+        callbacks.onChangedSprite(filename);
       } else if (subfolder === "music") {
-        onChangedMusic(filename);
+        callbacks.onChangedMusic(filename);
       } else if (subfolder === "fonts") {
-        onChangedFont(filename);
+        callbacks.onChangedFont(filename);
       } else if (subfolder === "avatars") {
-        onChangedAvatar(filename);
+        callbacks.onChangedAvatar(filename);
       } else if (subfolder === "emotes") {
-        onChangedEmote(filename);
+        callbacks.onChangedEmote(filename);
       } else if (subfolder === "sounds") {
-        onChangedSound(filename);
+        callbacks.onChangedSound(filename);
       }
     })
     .on("unlink", (filename) => {
       const subfolder = pluginSubfolder(filename);
       if (subfolder === "backgrounds") {
-        onRemoveBackground(filename);
+        callbacks.onRemoveBackground(filename);
       } else if (subfolder === "sprites") {
-        onRemoveSprite(filename);
+        callbacks.onRemoveSprite(filename);
       } else if (subfolder === "music") {
-        onRemoveMusic(filename);
+        callbacks.onRemoveMusic(filename);
       } else if (subfolder === "fonts") {
-        onRemoveFont(filename);
+        callbacks.onRemoveFont(filename);
       } else if (subfolder === "avatars") {
-        onRemoveAvatar(filename);
+        callbacks.onRemoveAvatar(filename);
       } else if (subfolder === "emotes") {
-        onRemoveEmote(filename);
+        callbacks.onRemoveEmote(filename);
       } else if (subfolder === "sounds") {
-        onRemoveSound(filename);
+        callbacks.onRemoveSound(filename);
       }
     });
 

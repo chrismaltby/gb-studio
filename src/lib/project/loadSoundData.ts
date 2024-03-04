@@ -10,7 +10,7 @@ const statAsync = promisify(stat);
 
 type SoundAssetType = "wav" | "vgm" | "fxhammer";
 
-interface SoundAssetData {
+export interface SoundAssetData {
   id: string;
   name: string;
   symbol: string;
