@@ -283,7 +283,7 @@ const createProjectWindow = async () => {
       if (choice === 0) {
         // Save
         e.preventDefault();
-        sendToMain("save-project-and-close");
+        sendToMain("menu:save-project-and-close");
         return;
       } else if (choice === 1) {
         // Cancel
@@ -726,12 +726,12 @@ ipcMain.handle("close-project", () => {
   mainWindow?.close();
 });
 
-ipcMain.on("document-modified", () => {
+ipcMain.handle("project:set-modified", () => {
   mainWindow?.setDocumentEdited(true);
   documentEdited = true; // For Windows
 });
 
-ipcMain.on("document-unmodified", () => {
+ipcMain.handle("project:set-unmodified", () => {
   mainWindow?.setDocumentEdited(false);
   documentEdited = false; // For Windows
 });
@@ -802,7 +802,7 @@ ipcMain.on(
                 label: l10n(plugin.id as L10NKey) || plugin.name || plugin.name,
                 accelerator: plugin.accelerator,
                 click() {
-                  sendToMain("plugin-run", plugin.id);
+                  sendToMain("menu:plugin-run", plugin.id);
                 },
               };
             }),
@@ -818,7 +818,7 @@ ipcMain.on("open-music", async (_event, sfx?: string) => {
 
 ipcMain.handle("set-ui-scale", (_, scale: number) => {
   settings.set("zoomLevel", scale);
-  sendToMain("windowZoom", scale);
+  sendToMain("setting:ui-scale:changed", scale);
 });
 
 ipcMain.handle("set-tracker-keybindings", (_, value: number) => {
@@ -1278,7 +1278,7 @@ menu.on("project", async () => {
 });
 
 menu.on("save", async () => {
-  sendToMain("save-project");
+  sendToMain("menu:save-project");
 });
 
 menu.on("saveAs", async () => {
@@ -1286,47 +1286,47 @@ menu.on("saveAs", async () => {
 });
 
 menu.on("undo", async () => {
-  sendToMain("undo");
+  sendToMain("menu:undo");
 });
 
 menu.on("redo", async () => {
-  sendToMain("redo");
+  sendToMain("menu:redo");
 });
 
 menu.on("section", async (section) => {
-  sendToMain("section", section);
+  sendToMain("menu:section", section);
 });
 
 menu.on("reloadAssets", () => {
-  sendToMain("reloadAssets");
+  sendToMain("menu:reload-assets");
 });
 
 menu.on("zoom", (zoomType) => {
-  sendToMain("zoom", zoomType);
+  sendToMain("menu:zoom", zoomType);
 });
 
 menu.on("run", () => {
-  sendToMain("run");
+  sendToMain("menu:run");
 });
 
 menu.on("build", (buildType) => {
-  sendToMain("build", buildType);
+  sendToMain("menu:build", buildType);
 });
 
 menu.on("ejectEngine", () => {
-  sendToMain("ejectEngine");
+  sendToMain("menu:eject-engine");
 });
 
 menu.on("exportProjectSrc", () => {
-  sendToMain("exportProject", "src");
+  sendToMain("menu:export-project", "src");
 });
 
 menu.on("exportProjectData", () => {
-  sendToMain("exportProject", "data");
+  sendToMain("menu:export-project", "data");
 });
 
 menu.on("pasteInPlace", () => {
-  sendToMain("paste-in-place");
+  sendToMain("menu:paste-in-place");
 });
 
 menu.on("checkUpdates", () => {
@@ -1375,7 +1375,7 @@ menu.on("updateLocale", (value) => {
 
 menu.on("updateShowCollisions", (value) => {
   settings.set("showCollisions", value as JsonValue);
-  sendToMain("updateSetting", "showCollisions", value);
+  sendToMain("setting:changed", "showCollisions", value);
 });
 
 menu.on("updateShowConnections", (value) => {
@@ -1384,12 +1384,12 @@ menu.on("updateShowConnections", (value) => {
   menu.ref().getMenuItemById("showConnectionsSelected").checked =
     value === "selected" || value === true;
   menu.ref().getMenuItemById("showConnectionsNone").checked = value === false;
-  sendToMain("updateSetting", "showConnections", value);
+  sendToMain("setting:changed", "showConnections", value);
 });
 
 menu.on("updateShowNavigator", (value) => {
   settings.set("showNavigator", value as JsonValue);
-  sendToMain("updateSetting", "showNavigator", value);
+  sendToMain("setting:changed", "showNavigator", value);
 });
 
 nativeTheme?.on("updated", () => {
@@ -1551,5 +1551,5 @@ const saveAsProject = async (saveAsPath: string) => {
 
   addRecentProject(projectPath);
 
-  sendToMain("save-as-project", projectPath);
+  sendToMain("menu:save-as-project", projectPath);
 };

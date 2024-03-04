@@ -1,4 +1,4 @@
-import { ipcRenderer, IpcRendererEvent } from "electron";
+import { ipcRenderer, IpcRendererEvent, webFrame } from "electron";
 import type { CreateProjectInput } from "lib/project/createProject";
 import type {
   MusicDataPacket,
@@ -10,7 +10,10 @@ import {
   ensurePromisedString,
   JsonValue,
 } from "shared/types";
-import type { ProjectExportType } from "store/features/buildGame/buildGameActions";
+import type {
+  BuildType,
+  ProjectExportType,
+} from "store/features/buildGame/buildGameActions";
 import type { EngineFieldSchema } from "store/features/engine/engineState";
 import type { ProjectData } from "store/features/project/projectActions";
 import type { SettingsState } from "store/features/settings/settingsState";
@@ -22,13 +25,15 @@ import type { BackgroundInfo } from "lib/helpers/validation";
 import type { Song } from "shared/lib/uge/song/Song";
 import type { PrecompiledSpriteSheetData } from "lib/compiler/compileSprites";
 import type { BackgroundAssetData } from "lib/project/loadBackgroundData";
-import { SpriteAssetData } from "lib/project/loadSpriteData";
-import { MusicAssetData } from "lib/project/loadMusicData";
-import { SoundAssetData } from "lib/project/loadSoundData";
-import { FontAssetData } from "lib/project/loadFontData";
-import { AvatarAssetData } from "lib/project/loadAvatarData";
-import { EmoteAssetData } from "lib/project/loadEmoteData";
-import { EngineFieldSchemaLookup } from "lib/project/engineFields";
+import type { SpriteAssetData } from "lib/project/loadSpriteData";
+import type { MusicAssetData } from "lib/project/loadMusicData";
+import type { SoundAssetData } from "lib/project/loadSoundData";
+import type { FontAssetData } from "lib/project/loadFontData";
+import type { AvatarAssetData } from "lib/project/loadAvatarData";
+import type { EmoteAssetData } from "lib/project/loadEmoteData";
+import type { EngineFieldSchemaLookup } from "lib/project/engineFields";
+import type { NavigationSection } from "store/features/navigation/navigationState";
+import type { MenuZoomType } from "menu";
 
 interface L10NLookup {
   [key: string]: string | boolean | undefined;
@@ -91,6 +96,7 @@ const APISetup = {
       listener: (event: IpcRendererEvent, isFullScreen: boolean) => void
     ) => ipcRenderer.on("is-full-screen-changed", listener),
     deleteBuildCache: () => ipcRenderer.invoke("build:delete-cache"),
+    setZoomLevel: (level: number) => webFrame.setZoomLevel(level),
   },
   l10n: {
     getL10NStrings: (): Promise<L10NLookup> =>
@@ -198,6 +204,8 @@ const APISetup = {
       ipcRenderer.invoke("project:save", data),
     saveProjectAs: (filename: string, data: ProjectData): Promise<void> =>
       ipcRenderer.invoke("project:save-as", filename, data),
+    setModified: () => ipcRenderer.invoke("project:set-modified"),
+    setUnmodified: () => ipcRenderer.invoke("project:set-unmodified"),
   },
   music: {
     openMusic: (sfx?: string) => ipcRenderer.send("open-music", sfx),
@@ -251,6 +259,66 @@ const APISetup = {
       ipcRenderer.invoke("clipboard:write-buffer", format, buffer),
   },
   events: {
+    menu: {
+      saveProject:
+        createSubscribeAPI<(event: IpcRendererEvent) => void>(
+          "menu:save-project"
+        ),
+      saveProjectAs: createSubscribeAPI<
+        (event: IpcRendererEvent, filename: string) => void
+      >("menu:save-project-as"),
+      onSaveAndCloseProject: createSubscribeAPI<
+        (event: IpcRendererEvent) => void
+      >("menu:save-project-and-close"),
+      undo: createSubscribeAPI<(event: IpcRendererEvent) => void>("menu:undo"),
+      redo: createSubscribeAPI<(event: IpcRendererEvent) => void>("menu:redo"),
+      pasteInPlace: createSubscribeAPI<(event: IpcRendererEvent) => void>(
+        "menu:paste-in-place"
+      ),
+      setSection:
+        createSubscribeAPI<
+          (event: IpcRendererEvent, section: NavigationSection) => void
+        >("menu:section"),
+      reloadAssets:
+        createSubscribeAPI<(event: IpcRendererEvent) => void>(
+          "menu:reload-assets"
+        ),
+      zoom: createSubscribeAPI<
+        (event: IpcRendererEvent, zoom: MenuZoomType) => void
+      >("menu:zoom"),
+      run: createSubscribeAPI<(event: IpcRendererEvent) => void>("menu:run"),
+      build:
+        createSubscribeAPI<
+          (event: IpcRendererEvent, buildType: BuildType) => void
+        >("menu:build"),
+      ejectEngine:
+        createSubscribeAPI<(event: IpcRendererEvent) => void>(
+          "menu:eject-engine"
+        ),
+      exportProject: createSubscribeAPI<
+        (event: IpcRendererEvent, exportType: ProjectExportType) => void
+      >("menu:export-project"),
+      pluginRun:
+        createSubscribeAPI<(event: IpcRendererEvent, pluginId: string) => void>(
+          "menu:plugin-run"
+        ),
+    },
+    settings: {
+      uiScaleChanged: createSubscribeAPI<
+        (event: IpcRendererEvent, scale: number) => void
+      >("setting:ui-scale:changed"),
+      trackerKeyBindingsChanged: createSubscribeAPI<
+        (event: IpcRendererEvent, value: number) => void
+      >("setting:tracker-keybindings:changed"),
+      settingChanged:
+        createSubscribeAPI<
+          <K extends keyof SettingsState>(
+            event: IpcRendererEvent,
+            setting: K,
+            value: SettingsState[K]
+          ) => void
+        >("setting:changed"),
+    },
     watch: {
       sprite: createWatchSubscribeAPI<SpriteAssetData>("watch:sprite"),
       background:

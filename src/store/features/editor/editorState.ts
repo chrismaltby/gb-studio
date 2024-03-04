@@ -48,12 +48,15 @@ export type EditorSelectionType =
   | "customEvent"
   | "variable";
 
-export type ZoomSection =
-  | "world"
-  | "sprites"
-  | "backgrounds"
-  | "ui"
-  | "spriteTiles";
+export const zoomSections = [
+  "world",
+  "sprites",
+  "backgrounds",
+  "ui",
+  "spriteTiles",
+] as const;
+
+export type ZoomSection = typeof zoomSections[number];
 
 export interface SpriteTileSelection {
   x: number;

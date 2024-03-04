@@ -1,6 +1,5 @@
 import Path from "path";
 import { ActionCreators } from "redux-undo";
-import { IpcRendererEvent, ipcRenderer, webFrame } from "electron";
 import debounce from "lodash/debounce";
 import mapValues from "lodash/mapValues";
 import store from "store/configureStore";
@@ -10,10 +9,7 @@ import entitiesActions from "store/features/entities/entitiesActions";
 import settingsActions from "store/features/settings/settingsActions";
 import navigationActions from "store/features/navigation/navigationActions";
 import projectActions from "store/features/project/projectActions";
-import buildGameActions, {
-  BuildType,
-  ProjectExportType,
-} from "store/features/buildGame/buildGameActions";
+import buildGameActions from "store/features/buildGame/buildGameActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import engineActions from "store/features/engine/engineActions";
 import errorActions from "store/features/error/errorActions";
@@ -26,10 +22,11 @@ import {
   engineFieldsEmitter,
 } from "lib/project/engineFields";
 import API from "renderer/lib/api";
-import { ZoomSection } from "store/features/editor/editorState";
 import { NavigationSection } from "store/features/navigation/navigationState";
-import { SettingsState } from "store/features/settings/settingsState";
 import { Background } from "shared/lib/entities/entitiesTypes";
+import { isZoomSection } from "store/features/editor/editorHelpers";
+
+type ReduxAction = (payload: string | number | boolean | object) => object;
 
 const actions = {
   ...editorActions,
@@ -38,12 +35,14 @@ const actions = {
   ...navigationActions,
   ...buildGameActions,
   ...clipboardActions,
-};
+} as Record<string, ReduxAction>;
 
-const vmActions = mapValues(actions, (_fn: any, key: any) => {
+type VMActions = Record<string, ReduxAction>;
+
+const vmActions: VMActions = mapValues(actions, (_fn, key) => {
   // Strip proxy object from VM2 output
-  return (payload: any) =>
-    ((actions as any)[key] as any)(JSON.parse(JSON.stringify(payload)));
+  return (payload: string | number | boolean | object) =>
+    actions[key](JSON.parse(JSON.stringify(payload)));
 });
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -61,12 +60,6 @@ if (projectPath) {
     store.dispatch(engineActions.setEngineFields(res.fields));
   });
 }
-
-(window as any).ActionCreators = ActionCreators;
-(window as any).store = store;
-(window as any).undo = () => {
-  store.dispatch(ActionCreators.undo());
-};
 
 window.addEventListener("error", (error) => {
   if (error.message.indexOf("dead code elimination") > -1) {
@@ -88,19 +81,6 @@ window.addEventListener("error", (error) => {
   return false;
 });
 
-const onSaveProject = () => {
-  store.dispatch(projectActions.saveProject());
-};
-
-const onSaveAndCloseProject = async () => {
-  await store.dispatch(projectActions.saveProject());
-  window.close();
-};
-
-const onSaveProjectAs = (_: IpcRendererEvent, pathName: string) => {
-  store.dispatch(projectActions.saveProject(pathName));
-};
-
 const onUndo = () => {
   if (store.getState().trackerDocument.past.length > 0) {
     store.dispatch({ type: TRACKER_UNDO });
@@ -116,110 +96,6 @@ const onRedo = () => {
     store.dispatch(ActionCreators.redo());
   }
 };
-
-const onSetSection = (_: IpcRendererEvent, section: NavigationSection) => {
-  store.dispatch(navigationActions.setSection(section));
-};
-
-const onReloadAssets = () => {
-  store.dispatch(projectActions.reloadAssets());
-};
-
-const onUpdateSetting = <K extends keyof SettingsState>(
-  _: IpcRendererEvent,
-  setting: K,
-  value: SettingsState[K]
-) => {
-  store.dispatch(
-    settingsActions.editSettings({
-      [setting]: value,
-    })
-  );
-};
-
-const onZoom = (_: IpcRendererEvent, zoomType: string) => {
-  const state = store.getState();
-  if (zoomType === "in") {
-    store.dispatch(
-      editorActions.zoomIn({ section: state.navigation.section as ZoomSection })
-    );
-  } else if (zoomType === "out") {
-    store.dispatch(
-      editorActions.zoomOut({
-        section: state.navigation.section as ZoomSection,
-      })
-    );
-  } else {
-    store.dispatch(
-      editorActions.zoomReset({
-        section: state.navigation.section as ZoomSection,
-      })
-    );
-  }
-};
-
-const onWindowZoom = (_: IpcRendererEvent, zoomLevel: number) => {
-  webFrame.setZoomLevel(zoomLevel);
-};
-API.settings.app.getUIScale().then((zoomLevel) => {
-  webFrame.setZoomLevel(zoomLevel);
-});
-
-const onRun = () => {
-  store.dispatch(buildGameActions.buildGame());
-};
-
-const onBuild = (_: IpcRendererEvent, buildType: BuildType, eject: boolean) => {
-  store.dispatch(
-    buildGameActions.buildGame({
-      buildType,
-      exportBuild: !eject,
-    })
-  );
-};
-
-const onEjectEngine = () => {
-  store.dispatch(buildGameActions.ejectEngine());
-};
-
-const onExportProject = (
-  _: IpcRendererEvent,
-  exportType: ProjectExportType
-) => {
-  store.dispatch(buildGameActions.exportProject(exportType));
-};
-
-const onPluginRun = (_: IpcRendererEvent, pluginId: string) => {
-  if ((plugins.menu as any)[pluginId] && (plugins.menu as any)[pluginId].run) {
-    (plugins.menu as any)[pluginId].run(store, vmActions);
-  }
-};
-
-const onPasteInPlace = () => {
-  store.dispatch(clipboardActions.pasteClipboardEntityInPlace());
-};
-
-const onKeyBindingsUpdate = () => {
-  initKeyBindings();
-};
-
-ipcRenderer.on("save-project", onSaveProject);
-ipcRenderer.on("save-project-and-close", onSaveAndCloseProject);
-ipcRenderer.on("save-as-project", onSaveProjectAs);
-ipcRenderer.on("undo", onUndo);
-ipcRenderer.on("redo", onRedo);
-ipcRenderer.on("section", onSetSection);
-ipcRenderer.on("reloadAssets", onReloadAssets);
-ipcRenderer.on("updateSetting", onUpdateSetting);
-ipcRenderer.on("zoom", onZoom);
-ipcRenderer.on("windowZoom", onWindowZoom);
-ipcRenderer.on("run", onRun);
-ipcRenderer.on("build", onBuild);
-ipcRenderer.on("ejectEngine", onEjectEngine);
-ipcRenderer.on("exportProject", onExportProject);
-ipcRenderer.on("plugin-run", onPluginRun);
-ipcRenderer.on("paste-in-place", onPasteInPlace);
-ipcRenderer.on("keybindings-update", onKeyBindingsUpdate);
 
 (async () => {
   const worldSidebarWidth = await API.settings.getNumber(
@@ -294,9 +170,9 @@ let modified = true;
 store.subscribe(() => {
   const state = store.getState();
   if (!modified && state.document.modified) {
-    ipcRenderer.send("document-modified", {});
+    API.project.setModified();
   } else if (modified && !state.document.modified) {
-    ipcRenderer.send("document-unmodified", {});
+    API.project.setUnmodified();
   }
   modified = state.document.modified;
 });
@@ -395,4 +271,102 @@ API.events.watch.ui.removed.on(() => {
 
 API.events.watch.engineSchema.changed.on((_, fields) => {
   store.dispatch(engineActions.setEngineFields(fields));
+});
+
+// Menu
+
+API.events.menu.saveProject.on(() => {
+  store.dispatch(projectActions.saveProject());
+});
+
+API.events.menu.saveProjectAs.on((_, filename: string) => {
+  store.dispatch(projectActions.saveProject(filename));
+});
+
+API.events.menu.onSaveAndCloseProject.on(async () => {
+  await store.dispatch(projectActions.saveProject());
+  window.close();
+});
+
+API.events.menu.undo.on(() => onUndo());
+
+API.events.menu.redo.on(() => onRedo());
+
+API.events.menu.setSection.on(async (_, section: NavigationSection) => {
+  store.dispatch(navigationActions.setSection(section));
+});
+
+API.events.menu.reloadAssets.on(() => {
+  store.dispatch(projectActions.reloadAssets());
+});
+
+API.events.menu.zoom.on((_, zoomType) => {
+  const state = store.getState();
+  const navSection = state.navigation.section;
+  if (isZoomSection(navSection)) {
+    if (zoomType === "in") {
+      store.dispatch(editorActions.zoomIn({ section: navSection }));
+    } else if (zoomType === "out") {
+      store.dispatch(editorActions.zoomOut({ section: navSection }));
+    } else {
+      store.dispatch(editorActions.zoomReset({ section: navSection }));
+    }
+  }
+});
+
+API.events.menu.run.on(() => {
+  store.dispatch(buildGameActions.buildGame());
+});
+
+API.events.menu.build.on((_, buildType) => {
+  store.dispatch(
+    buildGameActions.buildGame({
+      buildType,
+      exportBuild: true,
+    })
+  );
+});
+
+API.events.menu.ejectEngine.on(() => {
+  store.dispatch(buildGameActions.ejectEngine());
+});
+
+API.events.menu.exportProject.on((_, exportType) => {
+  store.dispatch(buildGameActions.exportProject(exportType));
+});
+
+API.events.menu.pasteInPlace.on(() => {
+  store.dispatch(clipboardActions.pasteClipboardEntityInPlace());
+});
+
+API.events.menu.pluginRun.on((_, pluginId) => {
+  const pluginsMenu = plugins.menu as unknown as Record<
+    string,
+    {
+      run?: (store: object, vmActions: VMActions) => void;
+    }
+  >;
+  pluginsMenu[pluginId]?.run?.(store, vmActions);
+});
+
+// Settings changed
+
+API.events.settings.uiScaleChanged.on((_, zoomLevel) => {
+  API.app.setZoomLevel(zoomLevel);
+});
+
+API.settings.app.getUIScale().then((zoomLevel) => {
+  API.app.setZoomLevel(zoomLevel);
+});
+
+API.events.settings.trackerKeyBindingsChanged.on(() => {
+  initKeyBindings();
+});
+
+API.events.settings.settingChanged.on((_, key, value) => {
+  store.dispatch(
+    settingsActions.editSettings({
+      [key]: value,
+    })
+  );
 });

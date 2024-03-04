@@ -44,6 +44,8 @@ type MenuListenerKey =
   | "preferences"
   | "openMusic";
 
+export type MenuZoomType = "in" | "out" | "reset";
+
 const listeners: Record<MenuListenerKey, MenuListenerFn[]> = {
   new: [],
   open: [],
