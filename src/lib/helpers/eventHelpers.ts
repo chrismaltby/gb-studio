@@ -1,5 +1,5 @@
 import { Dictionary } from "@reduxjs/toolkit";
-import { EVENT_FADE_IN } from "lib/compiler/eventTypes";
+import { EVENT_FADE_IN } from "consts";
 import { EventHandler } from "lib/events";
 import { walkNormalisedScriptEvents } from "store/features/entities/entitiesHelpers";
 import type {

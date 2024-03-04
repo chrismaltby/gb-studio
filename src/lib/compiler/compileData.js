@@ -4,18 +4,16 @@ import compileImages from "./compileImages";
 import { indexBy } from "lib/helpers/array";
 import compileEntityEvents from "./compileEntityEvents";
 import {
-  EVENT_MUSIC_PLAY,
-  EVENT_END,
-  EVENT_PLAYER_SET_SPRITE,
-  EVENT_ACTOR_SET_SPRITE,
-} from "./eventTypes";
-import {
   projectTemplatesRoot,
   MAX_ACTORS,
   MAX_TRIGGERS,
   DMG_PALETTE,
   MAX_NESTED_SCRIPT_DEPTH,
   MAX_PROJECTILES,
+  EVENT_MUSIC_PLAY,
+  EVENT_END,
+  EVENT_PLAYER_SET_SPRITE,
+  EVENT_ACTOR_SET_SPRITE,
 } from "consts";
 import compileSprites from "./compileSprites";
 import compileAvatars from "./compileAvatars";

@@ -131,6 +131,10 @@ export const EVENT_COMMENT = "EVENT_COMMENT";
 export const EVENT_END = "EVENT_END";
 export const EVENT_ENGINE_FIELD_SET = "EVENT_ENGINE_FIELD_SET";
 export const EVENT_ENGINE_FIELD_STORE = "EVENT_ENGINE_FIELD_STORE";
+export const EVENT_IF_TRUE = "EVENT_IF_TRUE";
+export const EVENT_SOUND_PLAY_EFFECT = "EVENT_SOUND_PLAY_EFFECT";
+export const EVENT_FADE_IN = "EVENT_FADE_IN";
+export const EVENT_MUSIC_PLAY = "EVENT_MUSIC_PLAY";
 
 export const defaultProjectSettings: SettingsState = {
   startSceneId: "",

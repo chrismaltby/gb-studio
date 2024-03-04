@@ -1,9 +1,5 @@
 import compileEntityEvents from "../../../src/lib/compiler/compileEntityEvents";
-import {
-  EVENT_END,
-  EVENT_TEXT,
-  EVENT_IF_TRUE,
-} from "../../../src/lib/compiler/eventTypes";
+import { EVENT_END, EVENT_TEXT, EVENT_IF_TRUE } from "../../../src/consts";
 import { initEvents } from "../../../src/lib/events";
 import initElectronL10N from "../../../src/lib/lang/initElectronL10N";
 import { getDummyCompiledFont } from "../../dummydata";

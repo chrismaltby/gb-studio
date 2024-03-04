@@ -5,7 +5,11 @@ import {
   engineFieldsEmitter,
   EngineFieldSyncResult,
 } from "lib/project/engineFields";
-import { eventsRoot } from "consts";
+import {
+  eventsRoot,
+  EVENT_ENGINE_FIELD_SET,
+  EVENT_ENGINE_FIELD_STORE,
+} from "consts";
 import * as l10n from "shared/lib/lang/l10n";
 import * as eventHelpers from "./helpers";
 import * as gbStudioHelpers from "lib/helpers/gbstudio";
@@ -15,10 +19,6 @@ import trimLines from "shared/lib/helpers/trimlines";
 import type { ScriptEventFieldSchema } from "store/features/entities/entitiesTypes";
 import { Dictionary } from "@reduxjs/toolkit";
 import { clone, cloneDictionary } from "lib/helpers/clone";
-import {
-  EVENT_ENGINE_FIELD_SET,
-  EVENT_ENGINE_FIELD_STORE,
-} from "lib/compiler/eventTypes";
 const VM2 = __non_webpack_require__("vm2");
 const NodeVM = VM2.NodeVM;
 

@@ -3,12 +3,7 @@ import compile, {
   precompileScenes,
 } from "../../../src/lib/compiler/compileData";
 import { compileSceneProjectiles } from "../../../src/lib/compiler/compileData2";
-
-import {
-  EVENT_TEXT,
-  EVENT_IF_TRUE,
-  EVENT_SET_TRUE,
-} from "../../../src/lib/compiler/eventTypes";
+import { EVENT_TEXT, EVENT_IF_TRUE, EVENT_SET_TRUE } from "../../../src/consts";
 import { projectileStateTest } from "./_files/data/projectiles";
 
 test.only("should take into account state value when building projectiles", () => {

@@ -7,7 +7,7 @@ import {
   EVENT_CALL_CUSTOM_EVENT,
   EVENT_ENGINE_FIELD_SET,
   EVENT_ENGINE_FIELD_STORE,
-} from "lib/compiler/eventTypes";
+} from "consts";
 
 export interface EventLookup {
   eventsLookup: Dictionary<EventHandler>;
