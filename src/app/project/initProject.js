@@ -349,11 +349,11 @@ API.events.watch.emote.removed.on((_, filename, plugin) => {
 // Watch UI
 
 API.events.watch.ui.changed.on(() => {
-  store.dispatch(entitiesActions.loadUI());
+  store.dispatch(projectActions.loadUI());
 });
 
 API.events.watch.ui.removed.on(() => {
-  store.dispatch(entitiesActions.loadUI());
+  store.dispatch(projectActions.loadUI());
 });
 
 // Watch Engine Fields
