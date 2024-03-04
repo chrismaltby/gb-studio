@@ -7,7 +7,7 @@ import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { roundDown8 } from "shared/lib/helpers/8bit";
 import styled from "styled-components";
-import l10n from "renderer/lib/l10n";
+import l10n from "shared/lib/lang/l10n";
 import electronActions from "store/features/electron/electronActions";
 import { assetFilename } from "shared/lib/helpers/assets";
 

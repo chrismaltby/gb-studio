@@ -1,6 +1,6 @@
 import React, { FC, useMemo } from "react";
 import { Select } from "ui/form/Select";
-import l10n from "renderer/lib/l10n";
+import l10n from "shared/lib/lang/l10n";
 
 interface SceneTypeSelectProps {
   name: string;

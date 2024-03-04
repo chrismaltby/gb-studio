@@ -31,7 +31,7 @@ import { Input } from "ui/form/Input";
 import { SidebarHeader } from "ui/form/SidebarHeader";
 import { Label } from "ui/form/Label";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
-import l10n from "renderer/lib/l10n";
+import l10n from "shared/lib/lang/l10n";
 
 const customEventName = (customEvent: CustomEvent, customEventIndex: number) =>
   customEvent.name ? customEvent.name : `Script ${customEventIndex + 1}`;

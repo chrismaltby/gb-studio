@@ -1,5 +1,5 @@
 import path from "path";
-import l10n from "lib/helpers/l10n";
+import l10n from "shared/lib/lang/l10n";
 
 export const isAssetWithinProject = (
   assetPath: string,

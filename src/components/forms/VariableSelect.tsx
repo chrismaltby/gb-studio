@@ -20,7 +20,7 @@ import {
 import { CheckIcon, PencilIcon } from "ui/icons/Icons";
 import { Input } from "ui/form/Input";
 import entitiesActions from "store/features/entities/entitiesActions";
-import l10n from "renderer/lib/l10n";
+import l10n from "shared/lib/lang/l10n";
 import editorActions from "store/features/editor/editorActions";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import { UnitsSelectButtonInputOverlay } from "./UnitsSelectButtonInputOverlay";

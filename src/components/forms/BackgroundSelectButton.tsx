@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled, { css } from "styled-components";
-import l10n from "renderer/lib/l10n";
+import l10n from "shared/lib/lang/l10n";
 import { RootState } from "store/configureStore";
 import { backgroundSelectors } from "store/features/entities/entitiesState";
 import assetsActions from "store/features/assets/assetsActions";

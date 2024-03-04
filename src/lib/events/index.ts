@@ -6,7 +6,7 @@ import {
   EngineFieldSyncResult,
 } from "lib/project/engineFields";
 import { eventsRoot } from "consts";
-import * as l10n from "lib/helpers/l10n";
+import * as l10n from "shared/lib/lang/l10n";
 import * as eventHelpers from "./helpers";
 import * as gbStudioHelpers from "lib/helpers/gbstudio";
 import * as eventSystemHelpers from "lib/helpers/eventSystem";
@@ -56,22 +56,7 @@ const vm = new NodeVM({
   },
 });
 
-const eventHandlers: Dictionary<EventHandler> = {
-  ...internalEventHandlerPaths.reduce((memo, path) => {
-    const handlerCode = fs.readFileSync(path, "utf8");
-    const handler = vm.run(handlerCode) as EventHandler;
-    if (!handler.id) {
-      throw new Error(`Event handler ${path} is missing id`);
-    }
-    handler.isConditional =
-      handler.fields && !!handler.fields.find((f) => f.type === "events");
-    return {
-      ...memo,
-      [handler.id]: handler,
-    };
-  }, {} as Dictionary<EventHandler>),
-  ...(plugins.events as unknown as Dictionary<EventHandler>),
-};
+const eventHandlers: Dictionary<EventHandler> = {};
 
 // Plain old Javascript object versions of event handlers.
 // These are safe for passing into web workers
@@ -131,6 +116,20 @@ engineFieldsEmitter.on("sync", (res: EngineFieldSyncResult) => {
     pojoEngineFieldStoreEvents[key] = clone(engineFieldStoreEvents[key]);
   });
 });
+
+export const initEvents = async () => {
+  for (const path of internalEventHandlerPaths) {
+    const handlerCode = fs.readFileSync(path, "utf8");
+    const handler = vm.run(handlerCode) as EventHandler;
+    if (!handler.id) {
+      throw new Error(`Event handler ${path} is missing id`);
+    }
+    handler.isConditional =
+      handler.fields && !!handler.fields.find((f) => f.type === "events");
+    eventHandlers[handler.id] = handler;
+    pojoEventHandlers[handler.id] = clone(handler);
+  }
+};
 
 export const eventLookup = {
   eventsLookup: pojoEventHandlers,

@@ -1,4 +1,4 @@
-import l10n from "lib/helpers/l10n";
+import l10n from "shared/lib/lang/l10n";
 
 export const EVENT_END = "EVENT_END";
 export const EVENT_STOP = "EVENT_STOP"; // Same as End except explicitly user created
@@ -155,34 +155,3 @@ export const EventsHidden = [
   EVENT_ACTOR_SET_DIRECTION_TO_VALUE,
   EVENT_ACTOR_SET_FRAME_TO_VALUE,
 ];
-
-export const EventFields = {
-  [EVENT_LOOP]: [
-    {
-      label: l10n("FIELD_LOOP_EXIT"),
-    },
-  ],
-  [EVENT_GROUP]: [],
-  [EVENT_COMMENT]: [],
-  [EVENT_SET_INPUT_SCRIPT]: [
-    {
-      key: "input",
-      label: l10n("FIELD_ON_PRESS"),
-      type: "input",
-      defaultValue: "b",
-    },
-  ],
-  [EVENT_REMOVE_INPUT_SCRIPT]: [
-    {
-      key: "input",
-      label: l10n("FIELD_REMOVE_INPUT_SCRIPT_ON"),
-      type: "input",
-      defaultValue: ["b"],
-    },
-  ],
-  [EVENT_STOP]: [
-    {
-      label: l10n("FIELD_STOP_SCRIPT"),
-    },
-  ],
-};

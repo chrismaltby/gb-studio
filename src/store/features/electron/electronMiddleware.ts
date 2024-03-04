@@ -21,7 +21,7 @@ import entitiesActions from "store/features/entities/entitiesActions";
 import actions from "./electronActions";
 import API from "renderer/lib/api";
 import { EVENT_CALL_CUSTOM_EVENT } from "consts";
-import l10n from "renderer/lib/l10n";
+import l10n from "shared/lib/lang/l10n";
 
 const electronMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => async (action) => {

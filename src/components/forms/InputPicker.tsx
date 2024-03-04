@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { TriangleIcon } from "ui/icons/Icons";
-import l10n from "renderer/lib/l10n";
+import l10n from "shared/lib/lang/l10n";
 import styled from "styled-components";
 import { ToggleButtonGroup } from "ui/form/ToggleButtonGroup";
 

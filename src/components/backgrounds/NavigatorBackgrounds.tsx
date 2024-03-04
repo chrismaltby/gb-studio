@@ -8,7 +8,7 @@ import { EntityListItem } from "ui/lists/EntityListItem";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import styled from "styled-components";
 import navigationActions from "store/features/navigation/navigationActions";
-import l10n from "renderer/lib/l10n";
+import l10n from "shared/lib/lang/l10n";
 
 interface NavigatorBackgroundsProps {
   height: number;

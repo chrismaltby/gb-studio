@@ -5,13 +5,13 @@ import Path from "path";
 import { engineRoot } from "consts";
 import copy from "lib/helpers/fsCopy";
 import ejectEngineChangelog from "lib/project/ejectEngineChangelog";
-import l10n from "lib/helpers/l10n";
 import {
   buildMakeDotBuildFile,
   makefileInjectToolsPath,
 } from "./buildMakeScript";
 import ensureBuildTools from "./ensureBuildTools";
 import glob from "glob";
+import l10n from "shared/lib/lang/l10n";
 
 const rmdir = promisify(rimraf);
 

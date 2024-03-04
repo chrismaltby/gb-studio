@@ -21,10 +21,6 @@ import {
 import menu from "./menu";
 import { checkForUpdate } from "lib/helpers/updateChecker";
 import switchLanguageDialog from "lib/electron/dialog/switchLanguageDialog";
-import l10n, { l10nStrings, locales } from "lib/helpers/l10n";
-import initElectronL10n, {
-  forceL10nReload,
-} from "lib/helpers/initElectronL10n";
 import installExtension, {
   REACT_DEVELOPER_TOOLS,
   REDUX_DEVTOOLS,
@@ -79,6 +75,9 @@ import saveProjectData from "lib/project/saveProjectData";
 import saveAsProjectData from "lib/project/saveAsProjectData";
 import migrateWarning from "lib/project/migrateWarning";
 import confirmReplaceCustomEvent from "lib/electron/dialog/confirmReplaceCustomEvent";
+import l10n, { L10NKey, getL10NData } from "shared/lib/lang/l10n";
+import initElectronL10N, { locales } from "lib/lang/initElectronL10N";
+import { initEvents } from "lib/events";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -419,7 +418,8 @@ const createMusic = async (sfx?: string, initialMessage?: MusicDataPacket) => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", async () => {
-  initElectronL10n();
+  initElectronL10N();
+  await initEvents();
 
   menu.buildMenu([]);
 
@@ -680,7 +680,7 @@ ipcMain.on(
             })
             .map((plugin) => {
               return {
-                label: l10n(plugin.id) || plugin.name || plugin.name,
+                label: l10n(plugin.id as L10NKey) || plugin.name || plugin.name,
                 accelerator: plugin.accelerator,
                 click() {
                   mainWindow &&
@@ -730,7 +730,7 @@ ipcMain.on("music-data-receive", (_event, data: MusicDataReceivePacket) => {
   }
 });
 
-ipcMain.handle("get-l10n-strings", () => l10nStrings);
+ipcMain.handle("get-l10n-strings", () => getL10NData());
 ipcMain.handle("get-theme", () => {
   const themeId = toThemeId(
     settings.get?.("theme"),
@@ -1256,7 +1256,7 @@ menu.on("updateLocale", (value) => {
     menu.ref().getMenuItemById(`locale-${locale}`).checked = value === locale;
   }
   switchLanguageDialog();
-  forceL10nReload();
+  initElectronL10N();
 });
 
 menu.on("updateShowCollisions", (value) => {

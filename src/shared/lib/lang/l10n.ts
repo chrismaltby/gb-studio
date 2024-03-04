@@ -1,7 +1,6 @@
-import API from "./api";
 import en from "lang/en.json";
 
-interface L10NLookup {
+export interface L10NLookup {
   [key: string]: string | boolean | undefined;
 }
 
@@ -11,18 +10,18 @@ export interface L10NParams {
 
 export type L10NKey = keyof typeof en;
 
-export const l10nStrings: L10NLookup = {};
+const l10nStrings: L10NLookup = {};
 let hasInit = false;
 
-const initL10N = async () => {
-  if (hasInit) {
-    return;
-  }
-  const data = await API.l10n.getL10NStrings();
+export const setL10NData = (data: L10NLookup) => {
   for (const key in data) {
     l10nStrings[key] = data[key];
   }
   hasInit = true;
+};
+
+export const getL10NData = () => {
+  return l10nStrings;
 };
 
 export const replaceParams = (string: string, params: L10NParams) => {
@@ -37,9 +36,7 @@ export const replaceParams = (string: string, params: L10NParams) => {
 
 const l10n = (key: L10NKey, params?: L10NParams): string => {
   if (!hasInit && process.env.NODE_ENV !== "test") {
-    console.warn(
-      `L10N used in renderer before initialisation for key "${key}"`
-    );
+    console.warn(`L10N used before initialisation for key "${key}"`);
   }
   const l10nString = l10nStrings[key] ?? key;
   if (typeof l10nString === "string") {
@@ -52,4 +49,3 @@ const l10n = (key: L10NKey, params?: L10NParams): string => {
 };
 
 export default l10n;
-export { initL10N };

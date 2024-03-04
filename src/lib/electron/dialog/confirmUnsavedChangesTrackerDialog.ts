@@ -1,5 +1,5 @@
 import { dialog } from "electron";
-import l10n from "lib/helpers/l10n";
+import l10n from "shared/lib/lang/l10n";
 
 const confirmUnsavedChangesTrackerDialog = (name: string) => {
   const dialogOptions = {

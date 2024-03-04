@@ -23,7 +23,7 @@ import { saveSongFile } from "store/features/trackerDocument/trackerDocumentStat
 import { InstrumentSelect } from "./InstrumentSelect";
 import { Select } from "ui/form/Select";
 import { PianoRollToolType } from "store/features/tracker/trackerState";
-import l10n from "renderer/lib/l10n";
+import l10n from "shared/lib/lang/l10n";
 import { InstrumentType } from "store/features/editor/editorState";
 import API from "renderer/lib/api";
 

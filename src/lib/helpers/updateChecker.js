@@ -3,7 +3,7 @@ import semverValid from "semver/functions/valid";
 import semverGt from "semver/functions/gt";
 import Octokit from "@octokit/rest";
 import settings from "electron-settings";
-import l10n from "./l10n";
+import l10n from "shared/lib/lang/l10n";
 
 const github = new Octokit();
 const oneHour = 60 * 60 * 1000;

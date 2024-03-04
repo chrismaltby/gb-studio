@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Path from "path";
-import l10n, { L10NKey } from "renderer/lib/l10n";
+import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import castEventValue from "renderer/lib/helpers/castEventValue";
 import CustomControlsPicker from "components/forms/CustomControlsPicker";
 import { PaletteSelect } from "components/forms/PaletteSelect";

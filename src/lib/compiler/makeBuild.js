@@ -10,8 +10,8 @@ import {
 import { cacheObjData, fetchCachedObjData } from "./objCache";
 import ensureBuildTools from "./ensureBuildTools";
 import spawn from "lib/helpers/cli/spawn";
-import l10n from "lib/helpers/l10n";
 import { gbspack } from "./gbspack";
+import l10n from "shared/lib/lang/l10n";
 
 const cpuCount = os.cpus().length;
 

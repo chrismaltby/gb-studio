@@ -52,7 +52,7 @@ import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrappe
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import Alert, { AlertItem } from "ui/alerts/Alert";
 import { sceneName } from "store/features/entities/entitiesHelpers";
-import l10n from "renderer/lib/l10n";
+import l10n from "shared/lib/lang/l10n";
 
 interface SceneEditorProps {
   id: string;

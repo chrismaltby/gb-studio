@@ -8,7 +8,8 @@ import {
   shell,
 } from "electron";
 import { assetsRoot } from "./consts";
-import l10n, { locales } from "lib/helpers/l10n";
+import l10n from "shared/lib/lang/l10n";
+import { locales } from "lib/lang/initElectronL10N";
 
 declare const COMMITHASH: string;
 

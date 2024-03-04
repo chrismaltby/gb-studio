@@ -5,7 +5,7 @@ import {
   isPropertyField,
   isVariableField,
 } from "lib/helpers/eventSystem";
-import l10n, { L10NKey } from "renderer/lib/l10n";
+import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import { NamedVariable, namedVariablesByContext } from "renderer/lib/variables";
 import { Dictionary } from "@reduxjs/toolkit";
 import { useSelector } from "react-redux";

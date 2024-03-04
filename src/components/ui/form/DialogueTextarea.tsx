@@ -18,7 +18,7 @@ import { FontSelect } from "components/forms/FontSelect";
 import { VariableSelect } from "components/forms/VariableSelect";
 import { TextSpeedSelect } from "components/forms/TextSpeedSelect";
 import { SelectMenu, selectMenuStyleProps } from "./Select";
-import l10n from "renderer/lib/l10n";
+import l10n from "shared/lib/lang/l10n";
 
 const varRegex = /\$([VLT0-9][0-9]*)\$/g;
 const charRegex = /#([VLT0-9][0-9]*)#/g;

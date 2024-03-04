@@ -25,7 +25,7 @@ import SongEditorRightToolsPanel from "components/music/SongEditorRightToolsPane
 import { loadSongFile } from "store/features/trackerDocument/trackerDocumentState";
 import { SongPianoRoll } from "components/music/SongPianoRoll";
 import { Music } from "store/features/entities/entitiesTypes";
-import l10n from "renderer/lib/l10n";
+import l10n from "shared/lib/lang/l10n";
 import { clampSidebarWidth } from "renderer/lib/window/sidebar";
 import { UgePlayer } from "components/music/UgePlayer";
 import trackerActions from "store/features/tracker/trackerActions";

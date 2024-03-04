@@ -1,5 +1,5 @@
 import React from "react";
-import l10n, { L10NKey, L10NParams } from "renderer/lib/l10n";
+import l10n, { L10NKey, L10NParams } from "shared/lib/lang/l10n";
 
 const L10NText = ({
   l10nKey,

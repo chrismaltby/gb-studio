@@ -31,7 +31,7 @@ import {
 import { ArrowIcon, CheckIcon, CommentIcon } from "ui/icons/Icons";
 import { FixedSpacer } from "ui/spacing/Spacing";
 import ScriptEventForm from "./ScriptEventForm";
-import l10n from "renderer/lib/l10n";
+import l10n from "shared/lib/lang/l10n";
 import events from "lib/events";
 import { ScriptEditorEventHelper } from "./ScriptEditorEventHelper";
 import ItemTypes from "renderer/lib/dnd/itemTypes";

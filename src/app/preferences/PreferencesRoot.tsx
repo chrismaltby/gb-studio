@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { AppContainer } from "react-hot-loader";
 import Preferences from "components/app/Preferences";
-import { initL10N } from "renderer/lib/l10n";
+import initRendererL10N from "renderer/lib/lang/initRendererL10N";
 import { initTheme } from "renderer/lib/theme";
 
 const render = () => {
@@ -15,7 +15,7 @@ const render = () => {
 };
 
 (async () => {
-  await initL10N();
+  await initRendererL10N();
   await initTheme();
   render();
 })();

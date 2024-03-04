@@ -1,4 +1,11 @@
+import { initEvents } from "../../src/lib/events";
 import { calculateAutoFadeEventIdDenormalised } from "../../src/lib/helpers/eventHelpers";
+import initElectronL10N from "../../src/lib/lang/initElectronL10N";
+
+beforeAll(async () => {
+  await initElectronL10N();
+  await initEvents();
+});
 
 test("Should generate scene init fade in before a waitUntilAfterInitFade event", () => {
   const output = calculateAutoFadeEventIdDenormalised(

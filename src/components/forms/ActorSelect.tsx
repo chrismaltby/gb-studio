@@ -17,7 +17,7 @@ import {
 import { actorName } from "store/features/entities/entitiesHelpers";
 import SpriteSheetCanvas from "components/world/SpriteSheetCanvas";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
-import l10n from "renderer/lib/l10n";
+import l10n from "shared/lib/lang/l10n";
 
 interface ActorSelectProps {
   name: string;

@@ -9,7 +9,7 @@ import React, {
 import { Helmet } from "react-helmet";
 import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash/debounce";
-import l10n from "renderer/lib/l10n";
+import l10n from "shared/lib/lang/l10n";
 import editorActions from "store/features/editor/editorActions";
 import navigationActions from "store/features/navigation/navigationActions";
 import electronActions from "store/features/electron/electronActions";

@@ -8,7 +8,7 @@ import React, {
 import cloneDeep from "lodash/cloneDeep";
 import { OptGroup } from "ui/form/Select";
 import events, { EventHandler } from "lib/events";
-import l10n, { L10NKey } from "renderer/lib/l10n";
+import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import styled, { css } from "styled-components";
 import { Menu, MenuGroup, MenuItem } from "ui/menu/Menu";
 import { CaretRightIcon, StarIcon } from "ui/icons/Icons";

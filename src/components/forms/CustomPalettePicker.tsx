@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Solver from "3x3-equation-solver";
-import l10n from "renderer/lib/l10n";
+import l10n from "shared/lib/lang/l10n";
 import ColorSlider from "./ColorSlider";
 import { paletteSelectors } from "store/features/entities/entitiesState";
 import entitiesActions from "store/features/entities/entitiesActions";

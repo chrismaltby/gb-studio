@@ -10,7 +10,7 @@ import { InstrumentVolumeEditor } from "./InstrumentVolumeEditor";
 import { Button } from "ui/buttons/Button";
 import Alert, { AlertItem } from "ui/alerts/Alert";
 import API from "renderer/lib/api";
-import l10n from "renderer/lib/l10n";
+import l10n from "shared/lib/lang/l10n";
 
 const dutyOptions = [
   {

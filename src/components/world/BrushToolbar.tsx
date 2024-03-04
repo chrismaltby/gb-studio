@@ -6,7 +6,7 @@ import React, {
   useState,
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import l10n from "renderer/lib/l10n";
+import l10n from "shared/lib/lang/l10n";
 import {
   PaintBucketIcon,
   WandIcon,

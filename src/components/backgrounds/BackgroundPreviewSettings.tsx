@@ -12,7 +12,7 @@ import { SceneSelect } from "components/forms/SceneSelect";
 import { SelectMenu, selectMenuStyleProps } from "ui/form/Select";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import { FixedSpacer } from "ui/spacing/Spacing";
-import l10n from "renderer/lib/l10n";
+import l10n from "shared/lib/lang/l10n";
 import { sceneName } from "store/features/entities/entitiesHelpers";
 
 interface BackgroundPreviewSettingsProps {

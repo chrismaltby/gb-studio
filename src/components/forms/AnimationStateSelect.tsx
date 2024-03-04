@@ -10,7 +10,7 @@ import {
   SelectCommonProps,
 } from "ui/form/Select";
 import { Input } from "ui/form/Input";
-import l10n from "renderer/lib/l10n";
+import l10n from "shared/lib/lang/l10n";
 import styled from "styled-components";
 import { CheckIcon, PencilIcon } from "ui/icons/Icons";
 

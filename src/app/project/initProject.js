@@ -17,7 +17,6 @@ import clipboardActions from "store/features/clipboard/clipboardActions";
 import engineActions from "store/features/engine/engineActions";
 import errorActions from "store/features/error/errorActions";
 import consoleActions from "store/features/console/consoleActions";
-import initElectronL10n from "lib/helpers/initElectronL10n";
 import { clampSidebarWidth } from "renderer/lib/window/sidebar";
 import { initKeyBindings } from "renderer/lib/keybindings/keyBindings";
 import { TRACKER_REDO, TRACKER_UNDO } from "consts";
@@ -26,8 +25,6 @@ import {
   engineFieldsEmitter,
 } from "lib/project/engineFields";
 import API from "renderer/lib/api";
-
-initElectronL10n();
 
 const actions = {
   ...editorActions,

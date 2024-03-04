@@ -11,7 +11,7 @@ import { FixedSpacer, FlexGrow } from "ui/spacing/Spacing";
 import { AppSelect } from "ui/form/AppSelect";
 import { OptionLabelWithInfo, Select } from "ui/form/Select";
 import API from "renderer/lib/api";
-import l10n from "renderer/lib/l10n";
+import l10n from "shared/lib/lang/l10n";
 
 interface Options {
   value: number;

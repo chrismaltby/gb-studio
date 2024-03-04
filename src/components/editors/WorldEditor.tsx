@@ -31,7 +31,7 @@ import { NoteField } from "ui/form/NoteField";
 import { TextField } from "ui/form/TextField";
 import { CheckboxField } from "ui/form/CheckboxField";
 import { Button } from "ui/buttons/Button";
-import l10n from "renderer/lib/l10n";
+import l10n from "shared/lib/lang/l10n";
 
 export const WorldEditor: FC = () => {
   const metadata = useSelector(

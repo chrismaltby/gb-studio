@@ -38,7 +38,7 @@ import gbs2Preview from "assets/templatePreview/gbs2.mp4";
 import gbhtmlPreview from "assets/templatePreview/gbhtml.mp4";
 import blankPreview from "assets/templatePreview/blank.png";
 import useWindowFocus from "ui/hooks/use-window-focus";
-import l10n from "renderer/lib/l10n";
+import l10n from "shared/lib/lang/l10n";
 import API from "renderer/lib/api";
 import { ERR_PROJECT_EXISTS } from "consts";
 

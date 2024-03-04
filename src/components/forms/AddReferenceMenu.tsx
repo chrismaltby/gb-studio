@@ -43,7 +43,7 @@ import {
 import { FixedSizeList as List } from "react-window";
 import { allVariables } from "renderer/lib/variables";
 import { globalVariableDefaultName } from "shared/lib/variables/variableNames";
-import l10n from "renderer/lib/l10n";
+import l10n from "shared/lib/lang/l10n";
 
 interface AddReferenceMenuProps {
   onBlur?: () => void;

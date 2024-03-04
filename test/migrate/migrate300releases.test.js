@@ -7,6 +7,13 @@ import {
   migrateFrom310r3To311r1Event,
   migrateFrom320r1To320r2Event,
 } from "../../src/lib/project/migrateProject";
+import { initEvents } from "../../src/lib/events";
+import initElectronL10N from "../../src/lib/lang/initElectronL10N";
+
+beforeAll(async () => {
+  await initElectronL10N();
+  await initEvents();
+});
 
 test("should not fail on empty project", () => {
   const oldProject = {

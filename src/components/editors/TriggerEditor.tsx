@@ -33,7 +33,7 @@ import { TriggerSymbolsEditor } from "components/forms/symbols/TriggerSymbolsEdi
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import { triggerName } from "store/features/entities/entitiesHelpers";
-import l10n from "renderer/lib/l10n";
+import l10n from "shared/lib/lang/l10n";
 
 interface TriggerEditorProps {
   id: string;

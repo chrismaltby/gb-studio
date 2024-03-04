@@ -22,7 +22,7 @@ import {
 } from "store/features/entities/entitiesState";
 import styled, { css } from "styled-components";
 import { TooltipWrapper } from "ui/tooltips/Tooltip";
-import l10n from "renderer/lib/l10n";
+import l10n from "shared/lib/lang/l10n";
 import {
   actorName,
   walkNormalisedSceneEvents,

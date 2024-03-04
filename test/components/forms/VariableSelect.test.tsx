@@ -3,15 +3,15 @@
  */
 
 import React from "react";
-import { initL10N } from "../../../src/renderer/lib/l10n";
 import { VariableSelect } from "../../../src/components/forms/VariableSelect";
 import { render, screen, fireEvent } from "../../react-utils";
 import { AnyAction, Store } from "@reduxjs/toolkit";
 import { RootState } from "../../../src/store/configureStore";
 import { ScriptEditorContext } from "../../../src/components/script/ScriptEditorContext";
+import initElectronL10N from "../../../src/lib/lang/initElectronL10N";
 
 beforeEach(async () => {
-  await initL10N();
+  await initElectronL10N();
 });
 
 test("Should use default variable name with not renamed", () => {

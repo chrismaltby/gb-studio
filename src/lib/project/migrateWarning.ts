@@ -4,7 +4,7 @@ import settings from "electron-settings";
 import semverValid from "semver/functions/valid";
 import semverGt from "semver/functions/gt";
 import { LATEST_PROJECT_VERSION } from "./migrateProject";
-import l10n from "lib/helpers/l10n";
+import l10n from "shared/lib/lang/l10n";
 
 export const needsUpdate = (currentVersion: string) => {
   if (semverValid(currentVersion) && semverValid(LATEST_PROJECT_VERSION)) {

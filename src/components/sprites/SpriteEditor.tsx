@@ -12,7 +12,7 @@ import {
   FormSectionTitle,
 } from "ui/form/FormLayout";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
-import l10n from "renderer/lib/l10n";
+import l10n from "shared/lib/lang/l10n";
 import { Sidebar, SidebarColumn } from "ui/sidebars/Sidebar";
 import {
   MetaspriteTile,

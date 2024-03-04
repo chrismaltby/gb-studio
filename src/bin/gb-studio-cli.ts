@@ -10,6 +10,8 @@ import { initPlugins } from "lib/plugins/plugins";
 import compileData from "lib/compiler/compileData";
 import ejectBuild from "lib/compiler/ejectBuild";
 import makeBuild from "lib/compiler/makeBuild";
+import { initEvents } from "lib/events";
+import initElectronL10N from "lib/lang/initElectronL10N";
 
 const rmdir = promisify(rimraf);
 
@@ -29,6 +31,11 @@ const main = async (
   // Load project file
   const projectRoot = Path.resolve(Path.dirname(projectFile));
   const project = await readJSON(projectFile);
+
+  initElectronL10N();
+
+  // Load events
+  await initEvents();
 
   // Load plugins
   initPlugins(projectRoot);
@@ -98,7 +105,7 @@ const main = async (
       warnings,
     });
     const romTmpPath = Path.join(tmpBuildDir, "build", "rom", "game.gb");
-    await copy(romTmpPath, destination); 
+    await copy(romTmpPath, destination);
   } else if (command === "make:pocket") {
     // Export ROM to destination
     await makeBuild({

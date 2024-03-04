@@ -43,7 +43,7 @@ import { SpriteSymbolsEditor } from "components/forms/symbols/SpriteSymbolsEdito
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import { actorName } from "store/features/entities/entitiesHelpers";
-import l10n from "renderer/lib/l10n";
+import l10n from "shared/lib/lang/l10n";
 import { KeysMatching } from "shared/types";
 
 interface ActorEditorProps {

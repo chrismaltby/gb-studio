@@ -20,7 +20,7 @@ import {
 } from "store/features/entities/entitiesState";
 import { Button } from "ui/buttons/Button";
 import { CheckIcon, MinusIcon, PencilIcon } from "ui/icons/Icons";
-import l10n from "renderer/lib/l10n";
+import l10n from "shared/lib/lang/l10n";
 import styled from "styled-components";
 import { FlexGrow } from "ui/spacing/Spacing";
 import {

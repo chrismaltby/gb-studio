@@ -43,11 +43,11 @@ import {
   EntityId,
   EntityState,
 } from "@reduxjs/toolkit";
-import l10n from "lib/helpers/l10n";
 import { genSymbol, toValidSymbol } from "shared/lib/helpers/symbols";
 import parseAssetPath from "shared/lib/assets/parseAssetPath";
 import { COLLISION_SLOPE_VALUES } from "consts";
 import { Asset } from "shared/lib/helpers/assets";
+import l10n from "shared/lib/lang/l10n";
 
 export interface NormalisedEntities {
   scenes: Record<EntityId, Scene>;

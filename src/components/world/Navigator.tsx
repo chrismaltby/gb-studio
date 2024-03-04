@@ -1,7 +1,7 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import l10n from "renderer/lib/l10n";
+import l10n from "shared/lib/lang/l10n";
 import { RootState } from "store/configureStore";
 import useSplitPane from "ui/hooks/use-split-pane";
 import useWindowSize from "ui/hooks/use-window-size";

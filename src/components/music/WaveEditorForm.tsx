@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { Select } from "ui/form/Select";
-import l10n from "renderer/lib/l10n";
+import l10n from "shared/lib/lang/l10n";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import { RootState } from "store/configureStore";
 import { FormRow, FormField } from "ui/form/FormLayout";

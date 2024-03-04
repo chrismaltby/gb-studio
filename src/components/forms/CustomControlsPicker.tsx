@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import l10n from "renderer/lib/l10n";
+import l10n from "shared/lib/lang/l10n";
 import { Button } from "ui/buttons/Button";
 import settingsActions from "store/features/settings/settingsActions";
 import { Input } from "ui/form/Input";

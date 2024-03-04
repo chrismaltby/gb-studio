@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { DMG_PALETTE } from "consts";
-import l10n from "renderer/lib/l10n";
+import l10n from "shared/lib/lang/l10n";
 import { RootState } from "store/configureStore";
 import {
   paletteSelectors,

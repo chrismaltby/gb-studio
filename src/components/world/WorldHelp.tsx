@@ -1,5 +1,5 @@
 import React from "react";
-import l10n from "renderer/lib/l10n";
+import l10n from "shared/lib/lang/l10n";
 import styled from "styled-components";
 
 const WorldHelpArrow = styled.div`

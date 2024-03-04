@@ -10,6 +10,8 @@ module.exports = {
     electron: "<rootDir>/test/__mocks__/electronMock.js",
     "^!!raw-loader!(.*)\\.css$": "<rootDir>/test/__mocks__/styleMock.js",
     "^renderer/lib/api": "<rootDir>/test/__mocks__/apiMock.ts",
+    // Event imports
+    "^../helpers/l10n$": "<rootDir>/src/shared/lib/lang/l10n.ts",
     // Path aliases
     consts: "<rootDir>/src/consts.ts",
     "^store/(.*)$": "<rootDir>/src/store/$1",

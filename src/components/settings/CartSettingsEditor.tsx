@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import l10n from "renderer/lib/l10n";
+import l10n from "shared/lib/lang/l10n";
 import settingsActions from "store/features/settings/settingsActions";
 import { Select } from "ui/form/Select";
 import { Button } from "ui/buttons/Button";

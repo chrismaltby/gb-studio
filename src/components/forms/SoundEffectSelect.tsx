@@ -11,7 +11,7 @@ import {
 import { PlayIcon } from "ui/icons/Icons";
 import { Button } from "ui/buttons/Button";
 import soundfxActions from "store/features/soundfx/soundfxActions";
-import l10n from "renderer/lib/l10n";
+import l10n from "shared/lib/lang/l10n";
 import { soundSelectors } from "store/features/entities/entitiesState";
 import uniq from "lodash/uniq";
 import { RootState } from "store/configureStore";

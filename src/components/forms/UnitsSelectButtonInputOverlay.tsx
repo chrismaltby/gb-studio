@@ -1,4 +1,4 @@
-import l10n from "renderer/lib/l10n";
+import l10n from "shared/lib/lang/l10n";
 import React, { useMemo } from "react";
 import { UnitType, unitTypes } from "store/features/entities/entitiesTypes";
 import styled from "styled-components";

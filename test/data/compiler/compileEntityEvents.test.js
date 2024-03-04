@@ -4,9 +4,16 @@ import {
   EVENT_TEXT,
   EVENT_IF_TRUE,
 } from "../../../src/lib/compiler/eventTypes";
+import { initEvents } from "../../../src/lib/events";
+import initElectronL10N from "../../../src/lib/lang/initElectronL10N";
 import { getDummyCompiledFont } from "../../dummydata";
 
 jest.mock("../../../src/consts");
+
+beforeAll(async () => {
+  await initElectronL10N();
+  await initEvents();
+});
 
 test("should compile empty events", () => {
   const input = [];

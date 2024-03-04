@@ -7,7 +7,7 @@ import musicActions from "store/features/music/musicActions";
 import { Button } from "ui/buttons/Button";
 import { PauseIcon, PlayIcon } from "ui/icons/Icons";
 import { CheckboxField } from "ui/form/CheckboxField";
-import l10n from "renderer/lib/l10n";
+import l10n from "shared/lib/lang/l10n";
 import entitiesActions from "store/features/entities/entitiesActions";
 import electronActions from "store/features/electron/electronActions";
 

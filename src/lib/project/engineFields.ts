@@ -3,7 +3,7 @@ import Path from "path";
 import { readJSON, pathExists } from "fs-extra";
 import type { EngineFieldSchema } from "store/features/engine/engineState";
 import { engineRoot } from "consts";
-import l10n from "lib/helpers/l10n";
+import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import { clampToCType } from "lib/helpers/engineFields";
 import { setDefault } from "shared/lib/helpers/setDefault";
 import type { ScriptEventFieldSchema } from "store/features/entities/entitiesTypes";
@@ -37,7 +37,7 @@ const getEngineFieldSchemas = (engineFields: EngineFieldSchema[]) => {
     const updateValueField = {
       key: "value",
       type: "union",
-      checkboxLabel: l10n(engineField.label),
+      checkboxLabel: l10n(engineField.label as L10NKey),
       types: [fieldType, "variable"],
       defaultType: fieldType,
       min: clampToCType(

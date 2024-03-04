@@ -6,10 +6,11 @@ import App from "components/app/App";
 import AppContainerDnD from "components/app/AppContainerDnD";
 import ThemeProvider from "ui/theme/ThemeProvider";
 import GlobalStyle from "ui/globalStyle";
-import { initL10N } from "renderer/lib/l10n";
 import { initTheme } from "renderer/lib/theme";
-import "./initProject";
 import { initFullScreenDetector } from "renderer/lib/handleFullScreen";
+import initRendererL10N from "renderer/lib/lang/initRendererL10N";
+import { initEvents } from "lib/events";
+import "./initProject";
 
 const render = () => {
   ReactDOM.render(
@@ -26,9 +27,10 @@ const render = () => {
 };
 
 (async () => {
-  await initL10N();
+  await initRendererL10N();
   await initTheme();
   await initFullScreenDetector();
+  await initEvents();
   render();
 })();
 
