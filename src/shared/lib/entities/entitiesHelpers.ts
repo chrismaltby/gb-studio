@@ -36,7 +36,7 @@ import {
   TriggerScriptKey,
   triggerScriptKeys,
   Sound,
-} from "./entitiesTypes";
+} from "shared/lib/entities/entitiesTypes";
 import {
   Dictionary,
   EntityAdapter,

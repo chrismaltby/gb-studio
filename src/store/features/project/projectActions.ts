@@ -16,7 +16,7 @@ import {
   EmoteData,
   Sound,
   SoundData,
-} from "store/features/entities/entitiesTypes";
+} from "shared/lib/entities/entitiesTypes";
 import type { RootState } from "store/configureStore";
 import { loadSpriteData } from "lib/project/loadSpriteData";
 import { loadBackgroundData } from "lib/project/loadBackgroundData";
@@ -25,7 +25,7 @@ import { loadFontData } from "lib/project/loadFontData";
 import { SettingsState } from "store/features/settings/settingsState";
 import { MetadataState } from "store/features/metadata/metadataState";
 import parseAssetPath from "shared/lib/assets/parseAssetPath";
-import { denormalizeEntities } from "store/features/entities/entitiesHelpers";
+import { denormalizeEntities } from "shared/lib/entities/entitiesHelpers";
 import { loadAvatarData } from "lib/project/loadAvatarData";
 import { loadEmoteData } from "lib/project/loadEmoteData";
 import { loadSoundData } from "lib/project/loadSoundData";

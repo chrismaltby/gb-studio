@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "store/configureStore";
-import { customEventName } from "store/features/entities/entitiesHelpers";
+import { customEventName } from "shared/lib/entities/entitiesHelpers";
 import { customEventSelectors } from "store/features/entities/entitiesState";
 import { Option, Select, SelectCommonProps } from "ui/form/Select";
 import { sortByLabel } from "shared/lib/helpers/sort";

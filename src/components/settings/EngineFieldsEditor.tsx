@@ -14,7 +14,7 @@ import { CardAnchor, CardButtons, CardHeading } from "ui/cards/Card";
 import { SearchableCard } from "ui/cards/SearchableCard";
 import { SearchableSettingRow } from "ui/form/SearchableSettingRow";
 import { SettingRowInput, SettingRowLabel } from "ui/form/SettingRow";
-import { EngineFieldValue } from "store/features/entities/entitiesTypes";
+import { EngineFieldValue } from "shared/lib/entities/entitiesTypes";
 import { Input } from "ui/form/Input";
 import { Checkbox } from "ui/form/Checkbox";
 import clamp from "shared/lib/helpers/clamp";

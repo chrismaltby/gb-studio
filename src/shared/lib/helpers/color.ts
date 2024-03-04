@@ -1,4 +1,4 @@
-import type { ObjPalette } from "store/features/entities/entitiesTypes";
+import type { ObjPalette } from "shared/lib/entities/entitiesTypes";
 
 /* eslint-disable no-param-reassign */
 const hexStringToDecimal = (str: string) => {

@@ -5,7 +5,7 @@ import {
   customEventSelectors,
   scriptEventSelectors,
 } from "store/features/entities/entitiesState";
-import { ScriptEventParentType } from "store/features/entities/entitiesTypes";
+import { ScriptEventParentType } from "shared/lib/entities/entitiesTypes";
 import styled from "styled-components";
 import AddButton from "./AddButton";
 import ScriptEditorEvent from "./ScriptEditorEvent";

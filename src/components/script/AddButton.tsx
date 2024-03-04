@@ -5,7 +5,7 @@ import { DropTargetMonitor, useDrop } from "react-dnd";
 import {
   ScriptEventParentType,
   ScriptEventsRef,
-} from "store/features/entities/entitiesTypes";
+} from "shared/lib/entities/entitiesTypes";
 import styled, { css } from "styled-components";
 import { Button } from "ui/buttons/Button";
 import entitiesActions from "store/features/entities/entitiesActions";

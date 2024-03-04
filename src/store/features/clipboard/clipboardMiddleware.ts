@@ -24,7 +24,7 @@ import {
   SpriteAnimation,
   Trigger,
   Variable,
-} from "store/features/entities/entitiesTypes";
+} from "shared/lib/entities/entitiesTypes";
 import actions from "./clipboardActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import editorActions from "store/features/editor/editorActions";
@@ -51,7 +51,7 @@ import {
   walkNormalisedTriggerEvents,
   walkSceneScriptsKeys,
   walkTriggerScriptsKeys,
-} from "store/features/entities/entitiesHelpers";
+} from "shared/lib/entities/entitiesHelpers";
 import keyBy from "lodash/keyBy";
 import { patchEventArgs } from "lib/helpers/eventHelpers";
 import { EVENT_CALL_CUSTOM_EVENT } from "consts";

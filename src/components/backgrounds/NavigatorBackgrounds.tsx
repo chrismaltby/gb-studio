@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store/configureStore";
 import { backgroundSelectors } from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
-import { Background } from "store/features/entities/entitiesTypes";
+import { Background } from "shared/lib/entities/entitiesTypes";
 import { EntityListItem } from "ui/lists/EntityListItem";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import styled from "styled-components";

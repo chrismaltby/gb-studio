@@ -5,7 +5,7 @@ import soundfxActions from "store/features/soundfx/soundfxActions";
 import navigationActions from "store/features/navigation/navigationActions";
 import actions from "./musicActions";
 import { musicSelectors } from "store/features/entities/entitiesState";
-import { MusicSettings } from "store/features/entities/entitiesTypes";
+import { MusicSettings } from "shared/lib/entities/entitiesTypes";
 import { assetFilename } from "shared/lib/helpers/assets";
 import API from "renderer/lib/api";
 

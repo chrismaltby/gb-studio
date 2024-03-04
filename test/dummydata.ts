@@ -8,7 +8,7 @@ import {
   Palette,
   CustomEvent,
   SceneDenormalized,
-} from "../src/store/features/entities/entitiesTypes";
+} from "../src/shared/lib/entities/entitiesTypes";
 import { ProjectData } from "../src/store/features/project/projectActions";
 import { RootState } from "../src/store/configureStore";
 import { initialState as initialEditorState } from "../src/store/features/editor/editorState";

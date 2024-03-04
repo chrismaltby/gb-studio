@@ -6,7 +6,7 @@ import {
   Background,
   SpriteSheet,
   Music,
-} from "../../../../src/store/features/entities/entitiesTypes";
+} from "../../../../src/shared/lib/entities/entitiesTypes";
 import actions from "../../../../src/store/features/entities/entitiesActions";
 import projectActions, {
   ProjectData,

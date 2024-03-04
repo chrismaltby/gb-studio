@@ -17,7 +17,7 @@ import type { SettingsState } from "store/features/settings/settingsState";
 import type {
   Background,
   SpriteSheetData,
-} from "store/features/entities/entitiesTypes";
+} from "shared/lib/entities/entitiesTypes";
 import type { BackgroundInfo } from "lib/helpers/validation";
 import type { Song } from "shared/lib/uge/song/Song";
 import { PrecompiledSpriteSheetData } from "lib/compiler/compileSprites";

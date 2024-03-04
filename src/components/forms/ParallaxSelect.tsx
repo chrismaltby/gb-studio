@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import l10n from "shared/lib/lang/l10n";
-import { SceneParallaxLayer } from "store/features/entities/entitiesTypes";
+import { SceneParallaxLayer } from "shared/lib/entities/entitiesTypes";
 import { CoordinateInput } from "ui/form/CoordinateInput";
 import { FormField } from "ui/form/FormLayout";
 import { Select } from "ui/form/Select";

@@ -14,7 +14,7 @@ import { EngineFieldSchema } from "store/features/engine/engineState";
 import {
   CustomEvent,
   ScriptEventFieldSchema,
-} from "store/features/entities/entitiesTypes";
+} from "shared/lib/entities/entitiesTypes";
 import ScriptEventFields from "./ScriptEventFields";
 import { EVENT_ENGINE_FIELD_SET, EVENT_ENGINE_FIELD_STORE } from "consts";
 

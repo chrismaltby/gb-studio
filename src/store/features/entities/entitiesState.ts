@@ -74,7 +74,7 @@ import {
   ScriptEventsRef,
   ScriptEventParentType,
   Sound,
-} from "./entitiesTypes";
+} from "shared/lib/entities/entitiesTypes";
 import {
   normalizeEntities,
   sortByFilename,
@@ -89,7 +89,7 @@ import {
   updateEntitySymbol,
   isSlope,
   defaultLocalisedSceneName,
-} from "./entitiesHelpers";
+} from "shared/lib/entities/entitiesHelpers";
 import spriteActions from "store/features/sprite/spriteActions";
 import { isVariableCustomEvent } from "lib/compiler/scriptBuilder";
 import { sortByKey } from "shared/lib/helpers/sortByKey";

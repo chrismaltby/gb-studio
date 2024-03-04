@@ -11,11 +11,11 @@ import {
   Select,
   SelectCommonProps,
 } from "ui/form/Select";
-import { Scene } from "store/features/entities/entitiesTypes";
+import { Scene } from "shared/lib/entities/entitiesTypes";
 import { RootState } from "store/configureStore";
 import styled from "styled-components";
 import editorActions from "store/features/editor/editorActions";
-import { sceneName } from "store/features/entities/entitiesHelpers";
+import { sceneName } from "shared/lib/entities/entitiesHelpers";
 import { assetFilename } from "shared/lib/helpers/assets";
 
 interface SceneSelectProps extends SelectCommonProps {

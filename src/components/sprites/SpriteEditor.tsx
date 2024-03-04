@@ -18,7 +18,7 @@ import {
   MetaspriteTile,
   SpriteSheet,
   SpriteState,
-} from "store/features/entities/entitiesTypes";
+} from "shared/lib/entities/entitiesTypes";
 import { CoordinateInput } from "ui/form/CoordinateInput";
 import { Label } from "ui/form/Label";
 import {

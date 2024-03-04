@@ -5,7 +5,7 @@ import {
   SpriteAnimation,
   SpriteSheet,
   SpriteState,
-} from "store/features/entities/entitiesTypes";
+} from "shared/lib/entities/entitiesTypes";
 
 const detectSprite = createAction<{ spriteSheetId: string }>(
   "sprite/detect/pending"

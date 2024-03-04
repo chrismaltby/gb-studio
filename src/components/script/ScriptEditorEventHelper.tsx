@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "store/configureStore";
-import { ScriptEvent } from "store/features/entities/entitiesTypes";
+import { ScriptEvent } from "shared/lib/entities/entitiesTypes";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import { DialoguePreview } from "./DialoguePreview";
 import { MenuPreview } from "./MenuPreview";

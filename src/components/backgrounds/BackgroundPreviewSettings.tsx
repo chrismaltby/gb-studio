@@ -13,7 +13,7 @@ import { SelectMenu, selectMenuStyleProps } from "ui/form/Select";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import { FixedSpacer } from "ui/spacing/Spacing";
 import l10n from "shared/lib/lang/l10n";
-import { sceneName } from "store/features/entities/entitiesHelpers";
+import { sceneName } from "shared/lib/entities/entitiesHelpers";
 
 interface BackgroundPreviewSettingsProps {
   backgroundId: string;

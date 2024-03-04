@@ -10,7 +10,7 @@ import {
   Select,
   SelectCommonProps,
 } from "ui/form/Select";
-import { Background } from "store/features/entities/entitiesTypes";
+import { Background } from "shared/lib/entities/entitiesTypes";
 import { RootState } from "store/configureStore";
 import styled from "styled-components";
 import { assetFilename } from "shared/lib/helpers/assets";

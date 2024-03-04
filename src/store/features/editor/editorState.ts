@@ -19,7 +19,7 @@ import {
   Trigger,
   SceneData,
   Variable,
-} from "store/features/entities/entitiesTypes";
+} from "shared/lib/entities/entitiesTypes";
 import navigationActions from "store/features/navigation/navigationActions";
 import projectActions from "store/features/project/projectActions";
 import settingsActions from "store/features/settings/settingsActions";

@@ -2,7 +2,7 @@ import React, { memo, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store/configureStore";
 import { scriptEventSelectors } from "store/features/entities/entitiesState";
-import { ScriptEventFieldSchema } from "store/features/entities/entitiesTypes";
+import { ScriptEventFieldSchema } from "shared/lib/entities/entitiesTypes";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { ArrowIcon, MinusIcon, PlusIcon } from "ui/icons/Icons";
 import ScriptEventFormInput from "./ScriptEventFormInput";

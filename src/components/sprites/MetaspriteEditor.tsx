@@ -16,7 +16,7 @@ import {
   spriteAnimationSelectors,
   spriteSheetSelectors,
 } from "store/features/entities/entitiesState";
-import { MetaspriteTile } from "store/features/entities/entitiesTypes";
+import { MetaspriteTile } from "shared/lib/entities/entitiesTypes";
 import MetaspriteGrid from "./MetaspriteGrid";
 import { SpriteSliceCanvas } from "./preview/SpriteSliceCanvas";
 import entitiesActions from "store/features/entities/entitiesActions";

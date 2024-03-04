@@ -1,6 +1,6 @@
 import PaletteBlock from "components/forms/PaletteBlock";
 import React, { FC } from "react";
-import { ObjPalette } from "store/features/entities/entitiesTypes";
+import { ObjPalette } from "shared/lib/entities/entitiesTypes";
 import {
   OptionLabelWithPreview,
   Select,

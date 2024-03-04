@@ -34,12 +34,12 @@ import {
   Sound,
   SpriteSheet,
   Variable,
-} from "store/features/entities/entitiesTypes";
+} from "shared/lib/entities/entitiesTypes";
 import { Reference, ReferenceType } from "./ReferencesSelect";
 import {
   customEventName,
   sceneName,
-} from "store/features/entities/entitiesHelpers";
+} from "shared/lib/entities/entitiesHelpers";
 import { FixedSizeList as List } from "react-window";
 import { allVariables } from "renderer/lib/variables";
 import { globalVariableDefaultName } from "shared/lib/variables/variableNames";

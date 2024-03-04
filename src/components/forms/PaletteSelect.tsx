@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { DMG_PALETTE } from "consts";
 import { RootState } from "store/configureStore";
 import { paletteSelectors } from "store/features/entities/entitiesState";
-import { Palette } from "store/features/entities/entitiesTypes";
+import { Palette } from "shared/lib/entities/entitiesTypes";
 import PaletteBlock from "components/forms/PaletteBlock";
 import {
   Option,

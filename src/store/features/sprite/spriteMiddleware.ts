@@ -11,7 +11,7 @@ import {
 } from "store/features/entities/entitiesState";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { detectClassic } from "renderer/lib/sprites/detect";
-import { denormalizeSprite } from "store/features/entities/entitiesHelpers";
+import { denormalizeSprite } from "shared/lib/entities/entitiesHelpers";
 import API from "renderer/lib/api";
 
 const spriteMiddleware: Middleware<Dispatch, RootState> =

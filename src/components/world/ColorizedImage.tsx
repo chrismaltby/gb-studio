@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef } from "react";
-import { Palette } from "store/features/entities/entitiesTypes";
+import { Palette } from "shared/lib/entities/entitiesTypes";
 import ColorizedImageWorker, {
   ColorizedImageResult,
 } from "./ColorizedImage.worker";

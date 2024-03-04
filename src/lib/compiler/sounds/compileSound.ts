@@ -1,5 +1,5 @@
 import { decBin } from "shared/lib/helpers/8bit";
-import type { Sound } from "store/features/entities/entitiesTypes";
+import type { Sound } from "shared/lib/entities/entitiesTypes";
 import { compileFXHammer } from "./compileFXHammer";
 import { compileVGM } from "./compileVGM";
 import { compileWav } from "./compileWav";

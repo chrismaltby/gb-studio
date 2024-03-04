@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { defaultProjectSettings } from "consts";
 import { RootState } from "store/configureStore";
-import { ActorDirection } from "store/features/entities/entitiesTypes";
+import { ActorDirection } from "shared/lib/entities/entitiesTypes";
 import projectActions from "store/features/project/projectActions";
 
 export type ShowConnectionsSetting = "all" | "selected" | true | false;

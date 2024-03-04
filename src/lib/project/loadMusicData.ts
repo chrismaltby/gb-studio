@@ -4,7 +4,7 @@ import uuidv4 from "uuid/v4";
 import { stat } from "fs";
 import parseAssetPath from "shared/lib/assets/parseAssetPath";
 import { toValidSymbol } from "shared/lib/helpers/symbols";
-import type { MusicSettings } from "store/features/entities/entitiesTypes";
+import type { MusicSettings } from "shared/lib/entities/entitiesTypes";
 
 const globAsync = promisify(glob);
 const statAsync = promisify(stat);

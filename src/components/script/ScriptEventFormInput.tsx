@@ -36,7 +36,7 @@ import {
   ScriptEventFieldSchema,
   UnionValue,
   UnitType,
-} from "store/features/entities/entitiesTypes";
+} from "shared/lib/entities/entitiesTypes";
 import styled from "styled-components";
 import { Button } from "ui/buttons/Button";
 import { DropdownButton } from "ui/buttons/DropdownButton";
@@ -50,10 +50,8 @@ import ToggleButtons from "ui/form/ToggleButtons";
 import { BlankIcon, CheckIcon, ConnectIcon } from "ui/icons/Icons";
 import { MenuItem, MenuItemIcon } from "ui/menu/Menu";
 import { OffscreenSkeletonInput } from "ui/skeleton/Skeleton";
-import {
-  defaultVariableForContext,
-  ScriptEditorContext,
-} from "./ScriptEditorContext";
+import { ScriptEditorContext } from "./ScriptEditorContext";
+import { defaultVariableForContext } from "shared/lib/scripts/context";
 import ScriptEventFormMathArea from "./ScriptEventFormMatharea";
 import ScriptEventFormTextArea from "./ScriptEventFormTextarea";
 import { AngleInput } from "ui/form/AngleInput";

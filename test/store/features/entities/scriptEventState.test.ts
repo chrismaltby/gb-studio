@@ -1,7 +1,7 @@
 import reducer, {
   initialState,
 } from "../../../../src/store/features/entities/entitiesState";
-import { EntitiesState } from "../../../../src/store/features/entities/entitiesTypes";
+import { EntitiesState } from "../../../../src/shared/lib/entities/entitiesTypes";
 import actions from "../../../../src/store/features/entities/entitiesActions";
 import { dummyScene } from "../../../dummydata";
 

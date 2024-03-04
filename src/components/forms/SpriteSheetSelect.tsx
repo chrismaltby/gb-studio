@@ -6,10 +6,7 @@ import {
   paletteSelectors,
   spriteSheetSelectors,
 } from "store/features/entities/entitiesState";
-import {
-  ActorDirection,
-  SpriteSheet,
-} from "store/features/entities/entitiesTypes";
+import { ActorDirection, SpriteSheet } from "shared/lib/entities/entitiesTypes";
 import {
   Option,
   OptGroup,

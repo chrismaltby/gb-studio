@@ -9,7 +9,7 @@ import {
   Scene,
   CustomEvent,
   Variable,
-} from "store/features/entities/entitiesTypes";
+} from "shared/lib/entities/entitiesTypes";
 
 export const ClipboardTypeScriptEvents = "gbstudio.scriptevents";
 export const ClipboardTypeMetaspriteTiles = "gbstudio.metaspritetiles";

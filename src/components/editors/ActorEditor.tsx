@@ -18,7 +18,7 @@ import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import entitiesActions from "store/features/entities/entitiesActions";
 import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
-import { Actor, ScriptEvent } from "store/features/entities/entitiesTypes";
+import { Actor, ScriptEvent } from "shared/lib/entities/entitiesTypes";
 import { Sidebar, SidebarColumn } from "ui/sidebars/Sidebar";
 import { CoordinateInput } from "ui/form/CoordinateInput";
 import { Checkbox } from "ui/form/Checkbox";
@@ -42,7 +42,7 @@ import { ActorSymbolsEditor } from "components/forms/symbols/ActorSymbolsEditor"
 import { SpriteSymbolsEditor } from "components/forms/symbols/SpriteSymbolsEditor";
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
-import { actorName } from "store/features/entities/entitiesHelpers";
+import { actorName } from "shared/lib/entities/entitiesHelpers";
 import l10n from "shared/lib/lang/l10n";
 import { KeysMatching } from "shared/types";
 

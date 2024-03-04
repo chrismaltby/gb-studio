@@ -20,7 +20,7 @@ import {
 } from "ui/form/FormLayout";
 import { EditableText } from "ui/form/EditableText";
 import { RootState } from "store/configureStore";
-import { Scene, ScriptEvent } from "store/features/entities/entitiesTypes";
+import { Scene, ScriptEvent } from "shared/lib/entities/entitiesTypes";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { NoteField } from "ui/form/NoteField";
@@ -51,7 +51,7 @@ import { BackgroundSymbolsEditor } from "components/forms/symbols/BackgroundSymb
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import Alert, { AlertItem } from "ui/alerts/Alert";
-import { sceneName } from "store/features/entities/entitiesHelpers";
+import { sceneName } from "shared/lib/entities/entitiesHelpers";
 import l10n from "shared/lib/lang/l10n";
 
 interface SceneEditorProps {

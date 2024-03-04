@@ -1,6 +1,6 @@
 import l10n from "shared/lib/lang/l10n";
 import { divisibleBy8 } from "shared/lib/helpers/8bit";
-import type { Background } from "store/features/entities/entitiesTypes";
+import type { Background } from "shared/lib/entities/entitiesTypes";
 import {
   toTileLookup,
   tilesAndLookupToTilemap,

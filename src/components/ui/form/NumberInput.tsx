@@ -1,6 +1,6 @@
 import { UnitsSelectButtonInputOverlay } from "components/forms/UnitsSelectButtonInputOverlay";
 import React, { FC } from "react";
-import { UnitType } from "store/features/entities/entitiesTypes";
+import { UnitType } from "shared/lib/entities/entitiesTypes";
 import styled from "styled-components";
 import { Input } from "./Input";
 

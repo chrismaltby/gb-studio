@@ -15,7 +15,7 @@ import type {
   Sound,
   DistanceUnitType,
   Variable,
-} from "store/features/entities/entitiesTypes";
+} from "shared/lib/entities/entitiesTypes";
 import { Dictionary } from "@reduxjs/toolkit";
 import type { EngineFieldSchema } from "store/features/engine/engineState";
 import type { SettingsState } from "store/features/settings/settingsState";
@@ -40,14 +40,14 @@ import compileEntityEvents from "./compileEntityEvents";
 import {
   isUnionPropertyValue,
   isUnionVariableValue,
-} from "store/features/entities/entitiesHelpers";
+} from "shared/lib/entities/entitiesHelpers";
 import { lexText } from "shared/lib/compiler/lexText";
 import type { Reference } from "components/forms/ReferencesSelect";
 import { clone } from "lib/helpers/clone";
 import {
   defaultVariableForContext,
   ScriptEditorContextType,
-} from "components/script/ScriptEditorContext";
+} from "shared/lib/scripts/context";
 import { encodeString } from "shared/lib/helpers/fonts";
 
 type ScriptOutput = string[];

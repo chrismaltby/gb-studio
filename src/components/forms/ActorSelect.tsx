@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Actor, ActorDirection } from "store/features/entities/entitiesTypes";
+import { Actor, ActorDirection } from "shared/lib/entities/entitiesTypes";
 import { RootState } from "store/configureStore";
 import {
   Option,
@@ -14,7 +14,7 @@ import {
   getSceneActorIds,
   sceneSelectors,
 } from "store/features/entities/entitiesState";
-import { actorName } from "store/features/entities/entitiesHelpers";
+import { actorName } from "shared/lib/entities/entitiesHelpers";
 import SpriteSheetCanvas from "components/world/SpriteSheetCanvas";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import l10n from "shared/lib/lang/l10n";

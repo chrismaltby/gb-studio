@@ -1,5 +1,5 @@
 import path from "path";
-import type { Palette } from "store/features/entities/entitiesTypes";
+import type { Palette } from "shared/lib/entities/entitiesTypes";
 import type { SettingsState } from "store/features/settings/settingsState";
 
 const isDist = __dirname.indexOf(".webpack") > -1;

@@ -12,7 +12,7 @@ import musicActions from "store/features/music/musicActions";
 import navigationActions from "store/features/navigation/navigationActions";
 import actions from "./soundfxActions";
 import { soundSelectors } from "store/features/entities/entitiesState";
-import { Sound } from "store/features/entities/entitiesTypes";
+import { Sound } from "shared/lib/entities/entitiesTypes";
 import type { CompileSoundOptions } from "lib/compiler/sounds/compileSound";
 import { assetFilename } from "shared/lib/helpers/assets";
 import API from "renderer/lib/api";

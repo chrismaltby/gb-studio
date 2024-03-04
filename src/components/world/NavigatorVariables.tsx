@@ -4,7 +4,7 @@ import { RootState } from "store/configureStore";
 import { variableSelectors } from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
 import editorActions from "store/features/editor/editorActions";
-import { Variable } from "store/features/entities/entitiesTypes";
+import { Variable } from "shared/lib/entities/entitiesTypes";
 import { allVariables } from "renderer/lib/variables";
 import { EntityListItem } from "ui/lists/EntityListItem";
 import { globalVariableDefaultName } from "shared/lib/variables/variableNames";

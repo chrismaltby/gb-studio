@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store/configureStore";
 import { soundSelectors } from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
-import { Sound } from "store/features/entities/entitiesTypes";
+import { Sound } from "shared/lib/entities/entitiesTypes";
 import { EntityListItem } from "ui/lists/EntityListItem";
 import l10n from "shared/lib/lang/l10n";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";

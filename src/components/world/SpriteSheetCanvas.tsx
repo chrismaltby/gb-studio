@@ -7,7 +7,7 @@ import {
   spriteSheetSelectors,
   spriteStateSelectors,
 } from "store/features/entities/entitiesState";
-import { ActorDirection, Palette } from "store/features/entities/entitiesTypes";
+import { ActorDirection, Palette } from "shared/lib/entities/entitiesTypes";
 import { MetaspriteCanvas } from "components/sprites/preview/MetaspriteCanvas";
 
 interface SpriteSheetCanvasProps {

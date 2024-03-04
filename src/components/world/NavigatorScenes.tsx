@@ -8,14 +8,14 @@ import {
 } from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
 import editorActions from "store/features/editor/editorActions";
-import { Actor, Scene, Trigger } from "store/features/entities/entitiesTypes";
+import { Actor, Scene, Trigger } from "shared/lib/entities/entitiesTypes";
 import { EntityListItem } from "ui/lists/EntityListItem";
 import useToggleableList from "ui/hooks/use-toggleable-list";
 import {
   actorName,
   sceneName,
   triggerName,
-} from "store/features/entities/entitiesHelpers";
+} from "shared/lib/entities/entitiesHelpers";
 
 interface NavigatorScenesProps {
   height: number;

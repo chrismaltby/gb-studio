@@ -13,7 +13,7 @@ import editorActions from "store/features/editor/editorActions";
 import {
   ScriptEventParentType,
   ScriptEventsRef,
-} from "store/features/entities/entitiesTypes";
+} from "shared/lib/entities/entitiesTypes";
 import AddButton from "./AddButton";
 import {
   ScriptEventFormWrapper,

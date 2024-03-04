@@ -23,7 +23,7 @@ import {
   ScriptEvent,
   ScriptEventFieldSchema,
   ScriptEventParentType,
-} from "store/features/entities/entitiesTypes";
+} from "shared/lib/entities/entitiesTypes";
 import entitiesActions from "store/features/entities/entitiesActions";
 import {
   emoteSelectors,
@@ -32,10 +32,8 @@ import {
   spriteSheetSelectors,
 } from "store/features/entities/entitiesState";
 import { useDebounce } from "ui/hooks/use-debounce";
-import {
-  defaultVariableForContext,
-  ScriptEditorContext,
-} from "./ScriptEditorContext";
+import { ScriptEditorContext } from "./ScriptEditorContext";
+import { defaultVariableForContext } from "shared/lib/scripts/context";
 import { EVENT_TEXT } from "consts";
 
 interface AddScriptEventMenuProps {

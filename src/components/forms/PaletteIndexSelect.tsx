@@ -7,7 +7,7 @@ import {
   paletteSelectors,
   sceneSelectors,
 } from "store/features/entities/entitiesState";
-import { Palette } from "store/features/entities/entitiesTypes";
+import { Palette } from "shared/lib/entities/entitiesTypes";
 import PaletteBlock from "components/forms/PaletteBlock";
 import {
   OptionLabelWithPreview,

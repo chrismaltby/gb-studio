@@ -7,7 +7,7 @@ import clipboardActions from "store/features/clipboard/clipboardActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { RootState } from "store/configureStore";
 import { ClipboardTypeScriptEvents } from "store/features/clipboard/clipboardTypes";
-import { ScriptEventParentType } from "store/features/entities/entitiesTypes";
+import { ScriptEventParentType } from "shared/lib/entities/entitiesTypes";
 
 interface ScriptEditorDropdownButtonProps {
   value: string[];

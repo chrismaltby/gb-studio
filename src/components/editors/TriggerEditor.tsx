@@ -22,7 +22,7 @@ import {
 } from "ui/form/FormLayout";
 import { EditableText } from "ui/form/EditableText";
 import { RootState } from "store/configureStore";
-import { Trigger, ScriptEvent } from "store/features/entities/entitiesTypes";
+import { Trigger, ScriptEvent } from "shared/lib/entities/entitiesTypes";
 import { CoordinateInput } from "ui/form/CoordinateInput";
 import { NoteField } from "ui/form/NoteField";
 import { StickyTabs, TabBar } from "ui/tabs/Tabs";
@@ -32,7 +32,7 @@ import { ClipboardTypeTriggers } from "store/features/clipboard/clipboardTypes";
 import { TriggerSymbolsEditor } from "components/forms/symbols/TriggerSymbolsEditor";
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
-import { triggerName } from "store/features/entities/entitiesHelpers";
+import { triggerName } from "shared/lib/entities/entitiesHelpers";
 import l10n from "shared/lib/lang/l10n";
 
 interface TriggerEditorProps {

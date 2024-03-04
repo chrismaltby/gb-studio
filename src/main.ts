@@ -48,7 +48,7 @@ import { initPlugins } from "lib/plugins/plugins";
 import type {
   Background,
   SpriteSheetData,
-} from "store/features/entities/entitiesTypes";
+} from "shared/lib/entities/entitiesTypes";
 import { getBackgroundInfo } from "lib/helpers/validation";
 import { writeFileWithBackupAsync } from "lib/helpers/fs/writeFileWithBackup";
 import { guardAssetWithinProject } from "lib/helpers/assets";

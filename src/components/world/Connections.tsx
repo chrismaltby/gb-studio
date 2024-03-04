@@ -11,7 +11,7 @@ import {
   walkNormalisedActorEvents,
   walkNormalisedSceneSpecificEvents,
   walkNormalisedTriggerEvents,
-} from "store/features/entities/entitiesHelpers";
+} from "shared/lib/entities/entitiesHelpers";
 import {
   actorSelectors,
   customEventSelectors,
@@ -26,7 +26,7 @@ import {
   Scene,
   ScriptEvent,
   Trigger,
-} from "store/features/entities/entitiesTypes";
+} from "shared/lib/entities/entitiesTypes";
 import editorActions from "store/features/editor/editorActions";
 import styled, { css } from "styled-components";
 import { ShowConnectionsSetting } from "store/features/settings/settingsState";

@@ -24,11 +24,11 @@ import {
   actorName,
   customEventName,
   sceneName,
-} from "store/features/entities/entitiesHelpers";
+} from "shared/lib/entities/entitiesHelpers";
 import {
   Actor,
   ScriptEventFieldSchema,
-} from "store/features/entities/entitiesTypes";
+} from "shared/lib/entities/entitiesTypes";
 import styled from "styled-components";
 import { fadeIn } from "ui/animations/animations";
 import { getAnimLabel } from "components/forms/AnimationSpeedSelect";

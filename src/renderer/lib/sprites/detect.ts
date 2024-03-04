@@ -7,7 +7,7 @@ import type {
   SpriteAnimationType,
   SpriteSheet,
   SpriteState,
-} from "store/features/entities/entitiesTypes";
+} from "shared/lib/entities/entitiesTypes";
 import DetectSpriteWorker, { DetectSpriteResult } from "./detectSprite.worker";
 import {
   Position,

@@ -11,7 +11,7 @@ import editorActions from "store/features/editor/editorActions";
 import { getSettings } from "store/features/settings/settingsState";
 import styled, { css } from "styled-components";
 import { RootState } from "store/configureStore";
-import { Palette } from "store/features/entities/entitiesTypes";
+import { Palette } from "shared/lib/entities/entitiesTypes";
 
 interface ActorViewProps {
   id: string;

@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import ScriptEventFormField from "./ScriptEventFormField";
-import { ScriptEventFieldSchema } from "store/features/entities/entitiesTypes";
+import { ScriptEventFieldSchema } from "shared/lib/entities/entitiesTypes";
 import {
   ScriptEventFields as ScriptEventFieldsWrapper,
   ScriptEventFieldGroupWrapper,

@@ -23,7 +23,7 @@ import {
 import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import entitiesActions from "store/features/entities/entitiesActions";
-import { sceneName } from "store/features/entities/entitiesHelpers";
+import { sceneName } from "shared/lib/entities/entitiesHelpers";
 import { RootState } from "store/configureStore";
 import { useDispatch, useSelector, useStore } from "react-redux";
 import styled from "styled-components";

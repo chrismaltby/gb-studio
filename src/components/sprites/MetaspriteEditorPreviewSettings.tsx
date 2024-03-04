@@ -14,7 +14,7 @@ import { SelectMenu, selectMenuStyleProps } from "ui/form/Select";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import { TooltipWrapper } from "ui/tooltips/Tooltip";
 import { FixedSpacer } from "ui/spacing/Spacing";
-import { sceneName } from "store/features/entities/entitiesHelpers";
+import { sceneName } from "shared/lib/entities/entitiesHelpers";
 
 interface MetaspriteEditorPreviewSettingsProps {
   spriteSheetId: string;

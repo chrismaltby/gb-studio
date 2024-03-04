@@ -15,7 +15,7 @@ import {
   walkNormalisedActorEvents,
   walkNormalisedSceneSpecificEvents,
   walkNormalisedTriggerEvents,
-} from "store/features/entities/entitiesHelpers";
+} from "shared/lib/entities/entitiesHelpers";
 import { EVENT_TEXT } from "consts";
 import { RootState } from "store/configureStore";
 import { DialogueLine } from "components/script/DialogueReviewLine";

@@ -1,7 +1,7 @@
 import l10n from "shared/lib/lang/l10n";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { Sound } from "store/features/entities/entitiesTypes";
+import { Sound } from "shared/lib/entities/entitiesTypes";
 import soundfxActions from "store/features/soundfx/soundfxActions";
 import styled from "styled-components";
 import { Button } from "ui/buttons/Button";

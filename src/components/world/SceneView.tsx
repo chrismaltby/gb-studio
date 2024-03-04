@@ -24,7 +24,7 @@ import entitiesActions from "store/features/entities/entitiesActions";
 import ScenePriorityMap from "./ScenePriorityMap";
 import SceneSlopePreview from "./SceneSlopePreview";
 import { SceneEventHelper } from "./SceneEventHelper";
-import { sceneName } from "store/features/entities/entitiesHelpers";
+import { sceneName } from "shared/lib/entities/entitiesHelpers";
 import { assetFilename } from "shared/lib/helpers/assets";
 import { getDOMElementCoords } from "renderer/lib/helpers/dom";
 import { RootState } from "store/configureStore";

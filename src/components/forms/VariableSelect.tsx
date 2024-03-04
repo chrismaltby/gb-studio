@@ -24,7 +24,7 @@ import l10n from "shared/lib/lang/l10n";
 import editorActions from "store/features/editor/editorActions";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import { UnitsSelectButtonInputOverlay } from "./UnitsSelectButtonInputOverlay";
-import { UnitType } from "store/features/entities/entitiesTypes";
+import { UnitType } from "shared/lib/entities/entitiesTypes";
 
 interface VariableSelectProps extends SelectCommonProps {
   id?: string;

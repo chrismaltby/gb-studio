@@ -1,4 +1,4 @@
-import { Font } from "store/features/entities/entitiesTypes";
+import { Font } from "shared/lib/entities/entitiesTypes";
 import { lexText } from "shared/lib/compiler/lexText";
 import { assetFilename } from "shared/lib/helpers/assets";
 import { encodeChar } from "shared/lib/helpers/fonts";

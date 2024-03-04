@@ -7,7 +7,7 @@ import {
   metaspriteTileSelectors,
   spriteSheetSelectors,
 } from "store/features/entities/entitiesState";
-import { MetaspriteTile, Palette } from "store/features/entities/entitiesTypes";
+import { MetaspriteTile, Palette } from "shared/lib/entities/entitiesTypes";
 import MetaspriteCanvasWorker, {
   MetaspriteCanvasResult,
 } from "./MetaspriteCanvas.worker";

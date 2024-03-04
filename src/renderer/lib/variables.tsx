@@ -1,6 +1,6 @@
-import { ScriptEditorContextType } from "components/script/ScriptEditorContext";
+import { ScriptEditorContextType } from "shared/lib/scripts/context";
 import uniq from "lodash/uniq";
-import { CustomEvent, Variable } from "store/features/entities/entitiesTypes";
+import { CustomEvent, Variable } from "shared/lib/entities/entitiesTypes";
 import l10n from "shared/lib/lang/l10n";
 import {
   customEventVariableCode,

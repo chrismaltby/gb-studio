@@ -1,5 +1,5 @@
 import ScriptBuilder from "../../../src/lib/compiler/scriptBuilder";
-import { ScriptEvent } from "../../../src/store/features/entities/entitiesTypes";
+import { ScriptEvent } from "../../../src/shared/lib/entities/entitiesTypes";
 import {
   dummyActor,
   dummyPrecompiledBackground,

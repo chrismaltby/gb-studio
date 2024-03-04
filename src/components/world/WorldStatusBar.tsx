@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { useSelector } from "react-redux";
 import l10n from "shared/lib/lang/l10n";
 import { sceneSelectors } from "store/features/entities/entitiesState";
-import { sceneName } from "store/features/entities/entitiesHelpers";
+import { sceneName } from "shared/lib/entities/entitiesHelpers";
 import { RootState } from "store/configureStore";
 import styled, { keyframes } from "styled-components";
 

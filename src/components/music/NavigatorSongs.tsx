@@ -4,7 +4,7 @@ import { RootState } from "store/configureStore";
 import { musicSelectors } from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
 import editorActions from "store/features/editor/editorActions";
-import { Music } from "store/features/entities/entitiesTypes";
+import { Music } from "shared/lib/entities/entitiesTypes";
 import { EntityListItem } from "ui/lists/EntityListItem";
 import l10n from "shared/lib/lang/l10n";
 import { InstrumentType } from "store/features/editor/editorState";

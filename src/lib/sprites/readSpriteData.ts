@@ -18,7 +18,7 @@ import {
   makeIndexedImage,
   sliceIndexedImage,
 } from "shared/lib/tiles/indexedImage";
-import type { MetaspriteTile } from "store/features/entities/entitiesTypes";
+import type { MetaspriteTile } from "shared/lib/entities/entitiesTypes";
 
 /**
  * Read an image filename into a GB 2bpp data array

@@ -1,7 +1,4 @@
-import type {
-  CustomEvent,
-  Variable,
-} from "store/features/entities/entitiesTypes";
+import type { CustomEvent, Variable } from "shared/lib/entities/entitiesTypes";
 
 const arrayNStrings = (n: number) =>
   Array.from(Array(n).keys()).map((n) => String(n));
