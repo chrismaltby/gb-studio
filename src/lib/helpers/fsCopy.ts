@@ -1,7 +1,17 @@
 /* eslint-disable no-await-in-loop */
 import fs from "fs-extra";
 
-const copyFile = async (src, dest, options = {}) => {
+interface CopyOptions {
+  overwrite?: boolean;
+  errorOnExist?: boolean;
+  mode?: number | undefined;
+}
+
+const copyFile = async (
+  src: string,
+  dest: string,
+  options: CopyOptions = {}
+) => {
   const { overwrite = true, errorOnExist = false, mode } = options;
   let throwAlreadyExists = false;
   if (!overwrite) {
@@ -19,7 +29,7 @@ const copyFile = async (src, dest, options = {}) => {
       throw new Error(`File already exists ${dest}`);
     }
   }
-  await new Promise((resolve, reject) => {
+  await new Promise<void>((resolve, reject) => {
     const inputStream = fs.createReadStream(src);
     const outputStream = fs.createWriteStream(dest, { mode });
     inputStream.once("error", (err) => {
@@ -33,7 +43,11 @@ const copyFile = async (src, dest, options = {}) => {
   });
 };
 
-const copyDir = async (src, dest, options = {}) => {
+const copyDir = async (
+  src: string,
+  dest: string,
+  options: CopyOptions = {}
+) => {
   const filePaths = await fs.readdir(src);
   await fs.ensureDir(dest);
   for (const fileName of filePaths) {
@@ -46,7 +60,7 @@ const copyDir = async (src, dest, options = {}) => {
   }
 };
 
-const copy = async (src, dest, options) => {
+const copy = async (src: string, dest: string, options: CopyOptions = {}) => {
   const fileStat = await fs.lstat(src);
   if (fileStat.isDirectory()) {
     await copyDir(src, dest, options);
