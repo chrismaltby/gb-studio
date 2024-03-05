@@ -6,7 +6,8 @@ import copy from "lib/helpers/fsCopy";
 
 const rmdir = promisify(rimraf);
 
-const ejectEngineToDir = async (ejectPath, { projectType = "gb" } = {}) => {
+const ejectEngineToDir = async (ejectPath: string) => {
+  const projectType = "gb";
   const enginePath = `${engineRoot}/${projectType}`;
   const engineSrcPath = `${enginePath}/src`;
   const engineIncludePath = `${enginePath}/include`;
