@@ -179,6 +179,11 @@ export const dummyPrecompiledSpriteSheet: PrecompiledSprite = {
   metasprites: [],
   animationOffsets: [],
   metaspritesOrder: [],
+  checksum: "",
+  numTiles: 1,
+  width: 32,
+  height: 32,
+  animSpeed: 15,
 };
 
 export const dummyMusic: Music = {
@@ -275,9 +280,6 @@ export const getDummyCompiledFont = async (): Promise<PrecompiledFontData> => {
         width: 128,
         height: 112,
         filename: "gbs-mono.png",
-        inode: "10414574138355865",
-        mapping: {},
-        _v: 1625435968911,
         plugin: undefined,
       },
     ],

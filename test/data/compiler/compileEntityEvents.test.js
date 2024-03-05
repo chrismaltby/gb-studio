@@ -13,7 +13,7 @@ beforeAll(async () => {
 
 test("should compile empty events", () => {
   const input = [];
-  const output = compileEntityEvents("testname", input);
+  const output = compileEntityEvents("testname", input, {});
   expect(output).toEqual(`.module testname
 
 .include "vm.i"
@@ -40,7 +40,7 @@ test("should collapse multiple end events", () => {
       command: EVENT_END,
     },
   ];
-  const output = compileEntityEvents("testname", input);
+  const output = compileEntityEvents("testname", input, {});
   expect(output).toEqual(`.module testname
 
 .include "vm.i"

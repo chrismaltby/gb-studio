@@ -1,5 +1,6 @@
+import { PrecompiledScene } from "lib/compiler/compileData2";
 import ScriptBuilder from "../../../src/lib/compiler/scriptBuilder";
-import { ScriptEvent } from "../../../src/shared/lib/entities/entitiesTypes";
+import { ScriptEventDenormalized } from "../../../src/shared/lib/entities/entitiesTypes";
 import {
   dummyActor,
   dummyPrecompiledBackground,
@@ -25,9 +26,10 @@ test("Should be able to set active actor to player", () => {
       actors: [{ ...dummyActor, id: "actor1" }],
       triggers: [],
       projectiles: [],
-    },
+    } as unknown as PrecompiledScene,
     entity: {
       id: "actor1",
+      name: "Actor 1",
     },
   });
   sb.actorSetActive("player");
@@ -59,7 +61,7 @@ test("Should be able to set active actor to actor by id", () => {
       ],
       triggers: [],
       projectiles: [],
-    },
+    } as unknown as PrecompiledScene,
   });
   sb.actorSetActive("actor2");
   expect(output).toEqual([
@@ -87,7 +89,7 @@ test("Should be able to move actor to new location", () => {
       actors: [],
       triggers: [],
       projectiles: [],
-    },
+    } as unknown as PrecompiledScene,
   });
   sb.actorMoveTo(5, 6, true, "horizontal");
   expect(output).toEqual([
@@ -118,7 +120,7 @@ test("Should be able to wait for N frames to pass", () => {
       actors: [],
       triggers: [],
       projectiles: [],
-    },
+    } as unknown as PrecompiledScene,
   });
   sb.wait(20);
   expect(output).toEqual([
@@ -156,7 +158,7 @@ test("Should be able to generate script string", () => {
       ],
       triggers: [],
       projectiles: [],
-    },
+    } as unknown as PrecompiledScene,
   });
   sb.actorSetActive("actor2");
   sb.actorMoveTo(5, 6, true, "horizontal");
@@ -208,7 +210,7 @@ test("Should be able to open dialogue boxes", async () => {
       actors: [],
       triggers: [],
       projectiles: [],
-    },
+    } as unknown as PrecompiledScene,
     fonts: [dummyCompiledFont],
   });
   sb.textDialogue("Hello World");
@@ -261,9 +263,9 @@ test("Should be able to conditionally execute if variable is true with event arr
       actors: [],
       triggers: [],
       projectiles: [],
-    },
+    } as unknown as PrecompiledScene,
     // variables: ["0", "1"],
-    compileEvents: (self: ScriptBuilder, events: ScriptEvent[]) => {
+    compileEvents: (self: ScriptBuilder, events: ScriptEventDenormalized[]) => {
       if (events[0].id === "event1") {
         output.push("        VM_DEBUG                0");
         output.push('        .asciz "True Path"');
@@ -345,10 +347,10 @@ test("Should be able to conditionally execute if variable is true with function 
       ],
       triggers: [],
       projectiles: [],
-    },
+    } as unknown as PrecompiledScene,
     fonts: [dummyCompiledFont],
     // variables: ["0", "1"],
-    compileEvents: (self: ScriptBuilder, events: ScriptEvent[]) => {
+    compileEvents: (self: ScriptBuilder, events: ScriptEventDenormalized[]) => {
       if (events[0].id === "event1") {
         output.push("        VM_DEBUG        0");
         output.push('        .asciz "True Path"');
@@ -434,7 +436,7 @@ test("Should be able to conditionally execute if variable is true with nested fu
       ],
       triggers: [],
       projectiles: [],
-    },
+    } as unknown as PrecompiledScene,
     fonts: [dummyCompiledFont],
     // variables: ["0", "1", "2"],
   });
@@ -553,7 +555,7 @@ test("Should be able to define labels and jump", () => {
       actors: [],
       triggers: [],
       projectiles: [],
-    },
+    } as unknown as PrecompiledScene,
   });
   sb.labelDefine("mylabel");
   sb.labelGoto("mylabel");
@@ -595,9 +597,10 @@ test("Should throw if jump to label is not stack neutral", () => {
       actors: [{ ...dummyActor, id: "actor1" }],
       triggers: [],
       projectiles: [],
-    },
+    } as unknown as PrecompiledScene,
     entity: {
       id: "actor1",
+      name: "Actor 1",
     },
   });
   sb._stackPush(5);
@@ -624,9 +627,10 @@ test("Should be able to set an actor's state with looping animation", () => {
       actors: [{ ...dummyActor, id: "actor1" }],
       triggers: [],
       projectiles: [],
-    },
+    } as unknown as PrecompiledScene,
     entity: {
       id: "actor1",
+      name: "Actor 1",
     },
     statesOrder: ["", "state1", "state2"],
     stateReferences: ["STATE_DEFAULT", "STATE_1", "STATE_2"],
@@ -662,9 +666,10 @@ test("Should be able to set an actor's state with one-shot animation", () => {
       actors: [{ ...dummyActor, id: "actor1" }],
       triggers: [],
       projectiles: [],
-    },
+    } as unknown as PrecompiledScene,
     entity: {
       id: "actor1",
+      name: "Actor 1",
     },
     statesOrder: ["", "state1", "state2"],
     stateReferences: ["STATE_DEFAULT", "STATE_1", "STATE_2"],
@@ -700,9 +705,10 @@ test("Should default actor's state to use looping animation if loop value not pr
       actors: [{ ...dummyActor, id: "actor1" }],
       triggers: [],
       projectiles: [],
-    },
+    } as unknown as PrecompiledScene,
     entity: {
       id: "actor1",
+      name: "Actor 1",
     },
     statesOrder: ["", "state1", "state2"],
     stateReferences: ["STATE_DEFAULT", "STATE_1", "STATE_2"],
