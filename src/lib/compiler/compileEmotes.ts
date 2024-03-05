@@ -1,4 +1,4 @@
-import promiseLimit from "lib/helpers/promiseLimit2";
+import promiseLimit from "lib/helpers/promiseLimit";
 import getFileModifiedTime from "lib/helpers/fs/getModifiedTime";
 import { EmoteAssetData } from "lib/project/loadEmoteData";
 import { assetFilename } from "shared/lib/helpers/assets";

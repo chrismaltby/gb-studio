@@ -1,4 +1,4 @@
-import promiseLimit from "lib/helpers/promiseLimit2";
+import promiseLimit from "lib/helpers/promiseLimit";
 import { indexedImageTo2bppSpriteData } from "shared/lib/sprites/spriteData";
 import {
   animationMapBySpriteType,
