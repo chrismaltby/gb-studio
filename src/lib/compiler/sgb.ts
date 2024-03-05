@@ -3,7 +3,7 @@ import { PNG } from "pngjs";
 import uniqBy from "lodash/uniqBy";
 import RgbQuant from "rgbquant";
 import { decHex } from "shared/lib/helpers/8bit";
-import { chunk } from "lib/helpers/array2";
+import { chunk } from "shared/lib/helpers/array";
 
 const SNES_SCREEN_WIDTH = 256;
 const SNES_SCREEN_HEIGHT = 224;

@@ -1,5 +1,5 @@
 /* eslint-disable no-nested-ternary */
-import { indexBy } from "lib/helpers/array";
+import keyBy from "lodash/keyBy";
 import {
   mapScenesEvents,
   mapEvents,
@@ -22,7 +22,7 @@ import { copySync, chmodSync } from "fs-extra";
 import uniq from "lodash/uniq";
 import { toValidSymbol } from "shared/lib/helpers/symbols";
 
-const indexById = indexBy("id");
+const indexById = (arr) => keyBy(arr, "id");
 
 export const LATEST_PROJECT_VERSION = "3.2.0";
 export const LATEST_PROJECT_MINOR_VERSION = "2";

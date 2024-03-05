@@ -1,7 +1,6 @@
 import keyBy from "lodash/keyBy";
 import { eventHasArg } from "lib/helpers/eventSystem";
 import compileImages from "./compileImages";
-import { indexBy } from "lib/helpers/array";
 import compileEntityEvents from "./compileEntityEvents";
 import {
   projectTemplatesRoot,
@@ -63,7 +62,7 @@ import {
 import compileSGBImage from "./sgb";
 import { compileScriptEngineInit } from "./compileBootstrap";
 import { compileMusicTracks, compileMusicHeader } from "./compileMusic";
-import { chunk } from "lib/helpers/array2";
+import { chunk } from "shared/lib/helpers/array";
 import { toProjectileHash } from "./scriptBuilder";
 import {
   calculateAutoFadeEventIdDenormalised,
@@ -79,7 +78,7 @@ import { compileSound } from "./sounds/compileSound";
 import { readFileToTilesData } from "lib/tiles/readFileToTiles";
 import l10n from "shared/lib/lang/l10n";
 
-const indexById = indexBy("id");
+const indexById = (arr) => keyBy(arr, "id");
 
 export const EVENT_START_DATA_COMPILE = "EVENT_START_DATA_COMPILE";
 export const EVENT_DATA_COMPILE_PROGRESS = "EVENT_DATA_COMPILE_PROGRESS";
