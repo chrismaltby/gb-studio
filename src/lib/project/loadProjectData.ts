@@ -21,8 +21,8 @@ const toAssetFilename = (elem: Asset) => {
   return (elem.plugin ? `${elem.plugin}/` : "") + toUnixFilename(elem.filename);
 };
 
-const indexByFilename = <T>(arr: T[]): Record<string, T> =>
-  keyBy(arr || [], "filename");
+const indexByFilename = <T extends Asset>(arr: T[]): Record<string, T> =>
+  keyBy(arr || [], toAssetFilename);
 
 const sortByName = (a: { name: string }, b: { name: string }) => {
   const aName = a.name.toUpperCase();
@@ -60,7 +60,7 @@ const loadProject = async (
     ]);
 
   // Merge stored backgrounds data with file system data
-  const oldBackgroundByFilename = indexByFilename(json.backgrounds);
+  const oldBackgroundByFilename = indexByFilename(json.backgrounds || []);
 
   const fixedBackgroundIds = backgrounds
     .map((background) => {
@@ -88,7 +88,7 @@ const loadProject = async (
     .sort(sortByName);
 
   // Merge stored sprite data with file system data
-  const oldSpriteByFilename = keyBy(json.spriteSheets || [], toAssetFilename);
+  const oldSpriteByFilename = indexByFilename(json.spriteSheets || []);
   const modifiedSpriteIds: string[] = [];
 
   const fixedSpriteIds = sprites
@@ -144,7 +144,7 @@ const loadProject = async (
     .sort(sortByName);
 
   // Merge stored music data with file system data
-  const oldMusicByFilename = indexByFilename(json.music);
+  const oldMusicByFilename = indexByFilename(json.music || []);
 
   const fixedMusicIds = music
     .map((track) => {
@@ -165,7 +165,7 @@ const loadProject = async (
     .sort(sortByName);
 
   // Merge stored sound effect data with file system data
-  const oldSoundByFilename = indexByFilename(json.sounds);
+  const oldSoundByFilename = indexByFilename(json.sounds || []);
 
   const fixedSoundIds = sounds
     .map((sound) => {
@@ -183,7 +183,7 @@ const loadProject = async (
     .sort(sortByName);
 
   // Merge stored fonts data with file system data
-  const oldFontByFilename = indexByFilename(json.fonts);
+  const oldFontByFilename = indexByFilename(json.fonts || []);
 
   const fixedFontIds = fonts
     .map((font) => {
@@ -200,7 +200,7 @@ const loadProject = async (
     .sort(sortByName);
 
   // Merge stored avatars data with file system data
-  const oldAvatarByFilename = indexByFilename(json.avatars);
+  const oldAvatarByFilename = indexByFilename(json.avatars || []);
 
   const fixedAvatarIds = avatars
     .map((avatar) => {
@@ -216,7 +216,7 @@ const loadProject = async (
     .sort(sortByName);
 
   // Merge stored emotes data with file system data
-  const oldEmoteByFilename = indexByFilename(json.emotes);
+  const oldEmoteByFilename = indexByFilename(json.emotes || []);
 
   const fixedEmoteIds = emotes
     .map((emote) => {
