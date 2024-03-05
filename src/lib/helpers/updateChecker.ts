@@ -5,13 +5,15 @@ import Octokit from "@octokit/rest";
 import settings from "electron-settings";
 import l10n from "shared/lib/lang/l10n";
 
+declare const VERSION: string;
+
 const github = new Octokit();
 const oneHour = 60 * 60 * 1000;
 
 const cache = {
   latest: {
-    value: null,
-    timestamp: null,
+    value: "",
+    timestamp: 0,
   },
 };
 
@@ -27,13 +29,13 @@ export const getLatestVersion = async () => {
   });
 
   if (latest) {
-    const version = latest.data.tag_name.split("v").pop();
+    const version = latest.data.tag_name.split("v").pop() ?? VERSION;
     cache.latest.value = version;
     cache.latest.timestamp = now + oneHour;
     return version;
   }
 
-  return null;
+  return VERSION;
 };
 
 export const getCurrentVersion = () => {
@@ -49,14 +51,14 @@ export const needsUpdate = async () => {
   return false;
 };
 
-export const checkForUpdate = async (force) => {
+export const checkForUpdate = async (force?: boolean) => {
   if (force) {
     // If manually checking for updates using menu, clear previous settings
     settings.set("dontCheckForUpdates", false);
     settings.set("dontNotifyUpdatesForVersion", false);
   }
   if (!settings.get("dontCheckForUpdates")) {
-    let latestVersion;
+    let latestVersion = VERSION;
 
     try {
       latestVersion = await getLatestVersion();
