@@ -15,6 +15,7 @@ import type {
   Sound,
   DistanceUnitType,
   Variable,
+  ScriptEventDenormalized,
 } from "shared/lib/entities/entitiesTypes";
 import { Dictionary } from "@reduxjs/toolkit";
 import type { EngineFieldSchema } from "store/features/engine/engineState";
@@ -50,10 +51,11 @@ import {
 } from "shared/lib/scripts/context";
 import { encodeString } from "shared/lib/helpers/fonts";
 
-type ScriptOutput = string[];
+export type ScriptOutput = string[];
 
-interface ScriptBuilderEntity {
+export interface ScriptBuilderEntity {
   id: string;
+  name: string;
 }
 
 interface ScriptBuilderScene {
@@ -71,7 +73,7 @@ interface ScriptBuilderProjectile {
   collisionMask: string[];
 }
 
-type ScriptBuilderEntityType = "scene" | "actor" | "trigger";
+export type ScriptBuilderEntityType = "scene" | "actor" | "trigger";
 
 type ScriptBuilderStackVariable = string | number;
 
@@ -92,7 +94,7 @@ interface ScriptBuilderFunctionArgLookup {
   variable: Map<string, ScriptBuilderFunctionArg>;
 }
 
-interface ScriptBuilderOptions {
+export interface ScriptBuilderOptions {
   context: ScriptEditorContextType;
   scriptSymbolName: string;
   scene: PrecompiledScene;
@@ -132,7 +134,10 @@ interface ScriptBuilderOptions {
     argsLen: number;
   }>;
   compiledAssetsCache: Dictionary<string>;
-  compileEvents: (self: ScriptBuilder, events: ScriptEvent[]) => void;
+  compileEvents: (
+    self: ScriptBuilder,
+    events: ScriptEventDenormalized[]
+  ) => void;
 }
 
 type ScriptBuilderMoveType = "horizontal" | "vertical" | "diagonal";
@@ -3179,7 +3184,7 @@ extern void __mute_mask_${symbol};
   inputScriptSet = (
     input: string,
     override: boolean,
-    script: ScriptEvent[],
+    script: ScriptEventDenormalized[],
     symbol?: string
   ) => {
     this._addComment(`Input Script Attach`);
@@ -3205,7 +3210,7 @@ extern void __mute_mask_${symbol};
 
   timerScriptSet = (
     frames = 600,
-    script: ScriptEvent[],
+    script: ScriptEventDenormalized[],
     symbol?: string,
     timer = 1
   ) => {
@@ -4100,7 +4105,7 @@ extern void __mute_mask_${symbol};
 
   musicRoutineSet = (
     routine: number,
-    script: ScriptEvent[],
+    script: ScriptEventDenormalized[],
     symbol?: string
   ) => {
     this._addComment(`Music Routine Attach`);
@@ -4376,7 +4381,7 @@ extern void __mute_mask_${symbol};
 
   dataSave = (
     slot = 0,
-    onSavePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+    onSavePath: ScriptEventDenormalized[] | ScriptBuilderPathFunction = []
   ) => {
     const hasLoadedRef = this._declareLocal("has_loaded", 1, true);
     const loadedLabel = this.getNextLabel();
@@ -4447,8 +4452,8 @@ extern void __mute_mask_${symbol};
 
   ifExpression = (
     expression: string,
-    truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
-    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+    truePath: ScriptEventDenormalized[] | ScriptBuilderPathFunction = [],
+    falsePath: ScriptEventDenormalized[] | ScriptBuilderPathFunction = []
   ) => {
     const trueLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
@@ -4465,7 +4470,7 @@ extern void __mute_mask_${symbol};
 
   whileExpression = (
     expression: string,
-    truePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+    truePath: ScriptEventDenormalized[] | ScriptBuilderPathFunction = []
   ) => {
     const loopId = this.getNextLabel();
     const endLabel = this.getNextLabel();
@@ -4481,8 +4486,8 @@ extern void __mute_mask_${symbol};
 
   ifVariableTrue = (
     variable: string,
-    truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
-    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+    truePath: ScriptEventDenormalized[] | ScriptBuilderPathFunction = [],
+    falsePath: ScriptEventDenormalized[] | ScriptBuilderPathFunction = []
   ) => {
     const trueLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
@@ -4500,8 +4505,8 @@ extern void __mute_mask_${symbol};
     variable: string,
     operator: ScriptBuilderComparisonOperator,
     value: number,
-    truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
-    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+    truePath: ScriptEventDenormalized[] | ScriptBuilderPathFunction = [],
+    falsePath: ScriptEventDenormalized[] | ScriptBuilderPathFunction = []
   ) => {
     const trueLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
@@ -4519,8 +4524,8 @@ extern void __mute_mask_${symbol};
     variableA: string,
     operator: ScriptBuilderComparisonOperator,
     variableB: string,
-    truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
-    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+    truePath: ScriptEventDenormalized[] | ScriptBuilderPathFunction = [],
+    falsePath: ScriptEventDenormalized[] | ScriptBuilderPathFunction = []
   ) => {
     const trueLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
@@ -4538,8 +4543,8 @@ extern void __mute_mask_${symbol};
     variable: string,
     operator: ScriptBuilderRPNOperation,
     flags: number,
-    truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
-    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+    truePath: ScriptEventDenormalized[] | ScriptBuilderPathFunction = [],
+    falsePath: ScriptEventDenormalized[] | ScriptBuilderPathFunction = []
   ) => {
     const trueLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
@@ -4561,7 +4566,7 @@ extern void __mute_mask_${symbol};
   ifParamValue = (
     parameter: number,
     value: number,
-    truePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+    truePath: ScriptEventDenormalized[] | ScriptBuilderPathFunction = []
   ) => {
     const paramValueRef = this._declareLocal(
       `param${parameter}_value`,
@@ -4651,8 +4656,8 @@ extern void __mute_mask_${symbol};
   ifActorAtPosition = (
     x: number,
     y: number,
-    truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
-    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
+    truePath: ScriptEventDenormalized[] | ScriptBuilderPathFunction = [],
+    falsePath: ScriptEventDenormalized[] | ScriptBuilderPathFunction = [],
     units: DistanceUnitType = "tiles"
   ) => {
     const actorRef = this._declareLocal("actor", 4);
@@ -4702,8 +4707,8 @@ extern void __mute_mask_${symbol};
 
   ifDataSaved = (
     slot = 0,
-    truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
-    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+    truePath: ScriptEventDenormalized[] | ScriptBuilderPathFunction = [],
+    falsePath: ScriptEventDenormalized[] | ScriptBuilderPathFunction = []
   ) => {
     const savePeekRef = this._declareLocal("save_peek", 1, true);
     const trueLabel = this.getNextLabel();
@@ -4722,8 +4727,8 @@ extern void __mute_mask_${symbol};
 
   ifCurrentSceneIs = (
     sceneId: string,
-    truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
-    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+    truePath: ScriptEventDenormalized[] | ScriptBuilderPathFunction = [],
+    falsePath: ScriptEventDenormalized[] | ScriptBuilderPathFunction = []
   ) => {
     const { scenes } = this.options;
     const scene = scenes.find((s) => s.id === sceneId);
@@ -4765,8 +4770,8 @@ extern void __mute_mask_${symbol};
 
   ifInput = (
     input: string,
-    truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
-    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+    truePath: ScriptEventDenormalized[] | ScriptBuilderPathFunction = [],
+    falsePath: ScriptEventDenormalized[] | ScriptBuilderPathFunction = []
   ) => {
     const inputRef = this._declareLocal("input", 1, true);
     const trueLabel = this.getNextLabel();
@@ -4791,8 +4796,8 @@ extern void __mute_mask_${symbol};
   ifActorRelativeToActor = (
     operation: "up" | "down" | "left" | "right",
     otherId: string,
-    truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
-    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+    truePath: ScriptEventDenormalized[] | ScriptBuilderPathFunction = [],
+    falsePath: ScriptEventDenormalized[] | ScriptBuilderPathFunction = []
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     const otherActorRef = this._declareLocal("other_actor", 3, true);
@@ -4843,8 +4848,8 @@ extern void __mute_mask_${symbol};
     distance: number,
     operator: ScriptBuilderComparisonOperator,
     otherId: string,
-    truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
-    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+    truePath: ScriptEventDenormalized[] | ScriptBuilderPathFunction = [],
+    falsePath: ScriptEventDenormalized[] | ScriptBuilderPathFunction = []
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     const otherActorRef = this._declareLocal("other_actor", 3, true);
@@ -4908,8 +4913,8 @@ extern void __mute_mask_${symbol};
     distanceVariable: string,
     operator: ScriptBuilderComparisonOperator,
     otherId: string,
-    truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
-    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+    truePath: ScriptEventDenormalized[] | ScriptBuilderPathFunction = [],
+    falsePath: ScriptEventDenormalized[] | ScriptBuilderPathFunction = []
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     const otherActorRef = this._declareLocal("other_actor", 3, true);
@@ -4974,8 +4979,10 @@ extern void __mute_mask_${symbol};
 
   caseVariableValue = (
     variable: string,
-    cases: { [key: string]: ScriptEvent[] | ScriptBuilderPathFunction } = {},
-    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+    cases: {
+      [key: string]: ScriptEventDenormalized[] | ScriptBuilderPathFunction;
+    } = {},
+    falsePath: ScriptEventDenormalized[] | ScriptBuilderPathFunction = []
   ) => {
     const caseKeys = Object.keys(cases);
     const numCases = caseKeys.length;
@@ -5012,7 +5019,9 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
-  _compilePath = (path: ScriptEvent[] | ScriptBuilderPathFunction = []) => {
+  _compilePath = (
+    path: ScriptEventDenormalized[] | ScriptBuilderPathFunction = []
+  ) => {
     const { compileEvents } = this.options;
     if (typeof path === "function") {
       path();
@@ -5049,7 +5058,7 @@ extern void __mute_mask_${symbol};
 
   _compileSubScript = (
     type: "input" | "timer" | "music" | "custom",
-    script: ScriptEvent[],
+    script: ScriptEventDenormalized[],
     inputSymbol?: string,
     options?: Partial<ScriptBuilderOptions>
   ) => {
@@ -5072,10 +5081,13 @@ extern void __mute_mask_${symbol};
         output: [],
         loop: false,
         lock: false,
-        init: false,
         context,
         isFunction: type === "custom",
         maxDepth: this.options.maxDepth - 1,
+        branch: false,
+        warnings: (msg: string) => {
+          console.error(msg);
+        },
       }
     );
     this.options.additionalScripts[symbol] = {
@@ -5105,7 +5117,7 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
-  compileEvents = (path: ScriptEvent[]) => {
+  compileEvents = (path: ScriptEventDenormalized[]) => {
     const { compileEvents } = this.options;
     compileEvents(this, path);
   };

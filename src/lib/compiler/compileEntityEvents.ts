@@ -1,9 +1,34 @@
-import ScriptBuilder from "./scriptBuilder";
+import type { ScriptEventDenormalized } from "shared/lib/entities/entitiesTypes";
+import ScriptBuilder, {
+  ScriptBuilderEntity,
+  ScriptBuilderEntityType,
+  ScriptBuilderOptions,
+  ScriptOutput,
+} from "./scriptBuilder";
+import { PrecompiledScene } from "./compileData2";
 
 const STRING_NOT_FOUND = "STRING_NOT_FOUND";
 const VARIABLE_NOT_FOUND = "VARIABLE_NOT_FOUND";
 
-const compileEntityEvents = (scriptSymbolName, input = [], options = {}) => {
+type CompileEntityEventsOptions = Partial<ScriptBuilderOptions> & {
+  output: ScriptOutput;
+  branch: boolean;
+  loop: boolean;
+  lock: boolean;
+  isFunction: boolean;
+  scene: PrecompiledScene;
+  sceneIndex: number;
+  entity?: ScriptBuilderEntity;
+  entityType: string;
+  entityIndex: number;
+  warnings: (msg: string) => void;
+};
+
+const compileEntityEvents = (
+  scriptSymbolName: string,
+  input: ScriptEventDenormalized[] = [],
+  options: CompileEntityEventsOptions
+) => {
   const {
     output = [],
     branch = false,
@@ -26,20 +51,23 @@ const compileEntityEvents = (scriptSymbolName, input = [], options = {}) => {
       scriptType: entityType,
     }),
     ...(entityType === "actor" && {
-      actor: entity.name || `Actor ${entityIndex + 1}`,
+      actor: entity?.name || `Actor ${entityIndex + 1}`,
     }),
     ...(entityType === "trigger" && {
-      actor: entity.name || `Trigger ${entityIndex + 1}`,
+      actor: entity?.name || `Trigger ${entityIndex + 1}`,
     }),
   };
 
-  const compileEventsWithScriptBuilder = (scriptBuilder, subInput = []) => {
+  const compileEventsWithScriptBuilder = (
+    scriptBuilder: ScriptBuilder,
+    subInput: ScriptEventDenormalized[] = []
+  ) => {
     // eslint-disable-next-line global-require
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const events = require("../events").default;
     for (let i = 0; i < subInput.length; i++) {
       const command = subInput[i].command;
-      if (subInput[i].args && subInput[i].args.__comment) {
+      if (subInput[i].args?.__comment) {
         // Skip commented events
         // eslint-disable-next-line no-continue
         continue;
@@ -64,16 +92,16 @@ const compileEntityEvents = (scriptSymbolName, input = [], options = {}) => {
           );
         }
       } else if (command === "INTERNAL_SET_CONTEXT") {
-        const args = subInput[i].args;
-        scriptBuilder.options.entity = args.entity;
-        scriptBuilder.options.entityType = args.entityType;
-        scriptBuilder.options.entityId = args.entityId;
+        const args = subInput[i].args ?? {};
+        scriptBuilder.options.entity = args.entity as ScriptBuilderEntity;
+        scriptBuilder.options.entityType =
+          args.entityType as ScriptBuilderEntityType;
       } else if (command === "INTERNAL_IF_PARAM") {
         const args = subInput[i].args;
         scriptBuilder.ifParamValue(
-          args.parameter,
-          args.value,
-          subInput[i].children.true
+          args?.parameter as number,
+          args?.value as number,
+          subInput[i]?.children?.true
         );
       } else if (command !== "EVENT_END") {
         warnings(
@@ -87,8 +115,11 @@ const compileEntityEvents = (scriptSymbolName, input = [], options = {}) => {
 
   const helpers = {
     ...options,
-    compileEvents: (scriptBuilder, childInput) => {
-      compileEventsWithScriptBuilder(scriptBuilder, childInput, true);
+    compileEvents: (
+      scriptBuilder: ScriptBuilder,
+      childInput: ScriptEventDenormalized[]
+    ) => {
+      compileEventsWithScriptBuilder(scriptBuilder, childInput);
     },
   };
 
@@ -100,7 +131,7 @@ const compileEntityEvents = (scriptSymbolName, input = [], options = {}) => {
     scriptBuilder._label(loopId);
   }
 
-  compileEventsWithScriptBuilder(scriptBuilder, input, branch);
+  compileEventsWithScriptBuilder(scriptBuilder, input);
 
   try {
     if (!branch) {
