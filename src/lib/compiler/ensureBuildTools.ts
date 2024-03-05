@@ -8,7 +8,7 @@ const rmdir = promisify(rimraf);
 
 let firstBuild = true;
 
-const ensureBuildTools = async (tmpPath) => {
+const ensureBuildTools = async (tmpPath: string) => {
   const buildToolsPath = `${buildToolsRoot}/${process.platform}-${process.arch}`;
   const expectedBuildToolsVersionPath = `${buildToolsPath}/tools_version`;
   const expectedToolsVersion = await fs.readFile(
