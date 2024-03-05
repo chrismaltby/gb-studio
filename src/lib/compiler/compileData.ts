@@ -58,12 +58,27 @@ import {
   compileSceneProjectiles,
   compileSceneProjectilesHeader,
   compileSaveSignature,
+  PrecompiledBackground,
+  PrecompiledSprite,
+  PrecompiledProjectile,
+  ProjectileData,
+  PrecompiledScene,
+  PrecompiledPalette,
+  PrecompiledSceneEventPtrs,
 } from "./compileData2";
 import compileSGBImage from "./sgb";
 import { compileScriptEngineInit } from "./compileBootstrap";
-import { compileMusicTracks, compileMusicHeader } from "./compileMusic";
+import {
+  compileMusicTracks,
+  compileMusicHeader,
+  PrecompiledMusicTrack,
+} from "./compileMusic";
 import { chunk } from "shared/lib/helpers/array";
-import { toProjectileHash } from "./scriptBuilder";
+import {
+  ScriptBuilderEntity,
+  ScriptBuilderEntityType,
+  toProjectileHash,
+} from "./scriptBuilder";
 import {
   calculateAutoFadeEventIdDenormalised,
   isEmptyScript,
@@ -77,15 +92,61 @@ import { determineUsedAssets } from "./precompile/determineUsedAssets";
 import { compileSound } from "./sounds/compileSound";
 import { readFileToTilesData } from "lib/tiles/readFileToTiles";
 import l10n from "shared/lib/lang/l10n";
+import type { ProjectData } from "store/features/project/projectActions";
+import {
+  AvatarData,
+  BackgroundData,
+  CustomEventDenormalized,
+  EmoteData,
+  FontData,
+  MusicData,
+  Palette,
+  SceneDenormalized,
+  ScriptEventDenormalized,
+  SoundData,
+  SpriteSheetData,
+  Variable,
+} from "shared/lib/entities/entitiesTypes";
+import type { Dictionary } from "@reduxjs/toolkit";
+import type { EngineFieldSchema } from "store/features/engine/engineState";
+import type { Reference } from "components/forms/ReferencesSelect";
+import type {
+  MusicDriverSetting,
+  SettingsState,
+} from "store/features/settings/settingsState";
+import { ensureNumber, ensureString, ensureTypeGenerator } from "shared/types";
 
-const indexById = (arr) => keyBy(arr, "id");
+type TilemapData = {
+  symbol: string;
+  data: number[] | Uint8Array;
+};
+
+const indexById = <T extends { id: string }>(arr: T[]) => keyBy(arr, "id");
+
+const isReference = (value: unknown): value is Reference =>
+  !!value &&
+  typeof value === "object" &&
+  typeof (value as Reference).id === "string" &&
+  typeof (value as Reference).type === "string";
+
+const isReferenceArray = (value: unknown): value is Reference[] => {
+  if (!Array.isArray(value)) {
+    return false;
+  }
+  return value.every(isReference);
+};
+
+const ensureReferenceArray = ensureTypeGenerator(isReferenceArray);
+
+const isProjectileData = (value: unknown): value is ProjectileData => {
+  return !!value && typeof value === "object";
+};
 
 export const EVENT_START_DATA_COMPILE = "EVENT_START_DATA_COMPILE";
 export const EVENT_DATA_COMPILE_PROGRESS = "EVENT_DATA_COMPILE_PROGRESS";
 export const EVENT_END_DATA_COMPILE = "EVENT_END_DATA_COMPILE";
 
 export const EVENT_MSG_PRE_VARIABLES = "Preparing variables...";
-export const EVENT_MSG_PRE_STRINGS = "Preparing strings...";
 export const EVENT_MSG_PRE_IMAGES = "Preparing images...";
 export const EVENT_MSG_PRE_UI_IMAGES = "Preparing ui...";
 export const EVENT_MSG_PRE_SPRITES = "Preparing sprites...";
@@ -100,14 +161,23 @@ export const EVENT_MSG_PRE_FONTS = "Preparing fonts...";
 export const EVENT_MSG_PRE_COMPLETE = "Preparation complete";
 export const EVENT_MSG_COMPILING_EVENTS = "Compiling events...";
 
-const padArrayEnd = (arr, len, padding) => {
+const padArrayEnd = <T>(arr: T[], len: number, padding: T) => {
   if (arr.length > len) {
     return arr.slice(0, len);
   }
   return arr.concat(Array(len - arr.length).fill(padding));
 };
 
-const ensureProjectAsset = async (relativePath, { projectRoot, warnings }) => {
+const ensureProjectAsset = async (
+  relativePath: string,
+  {
+    projectRoot,
+    warnings,
+  }: {
+    projectRoot: string;
+    warnings: (msg: string) => void;
+  }
+) => {
   const projectPath = `${projectRoot}/${relativePath}`;
   const defaultPath = `${projectTemplatesRoot}/gbhtml/${relativePath}`;
   try {
@@ -130,19 +200,23 @@ const ensureProjectAsset = async (relativePath, { projectRoot, warnings }) => {
 // #region precompile
 
 export const precompileBackgrounds = async (
-  backgrounds,
-  scenes,
-  customEventsLookup,
-  projectRoot,
-  tmpPath,
-  { warnings } = {}
+  backgrounds: BackgroundData[],
+  scenes: SceneDenormalized[],
+  customEventsLookup: Dictionary<CustomEventDenormalized>,
+  projectRoot: string,
+  tmpPath: string,
+  {
+    warnings,
+  }: {
+    warnings: (_msg: string) => void;
+  }
 ) => {
-  const usedTilemaps = [];
-  const usedTilemapAttrs = [];
-  const usedTilemapsCache = {};
-  const usedTilemapAttrsCache = {};
+  const usedTilemaps: TilemapData[] = [];
+  const usedTilemapAttrs: TilemapData[] = [];
+  const usedTilemapsCache: Record<string, TilemapData> = {};
+  const usedTilemapAttrsCache: Record<string, TilemapData> = {};
 
-  const eventImageIds = [];
+  const eventImageIds: string[] = [];
   walkDenormalizedScenesEvents(
     scenes,
     {
@@ -153,9 +227,9 @@ export const precompileBackgrounds = async (
     },
     (cmd) => {
       if (eventHasArg(cmd, "backgroundId")) {
-        eventImageIds.push(cmd.args.backgroundId);
-      } else if (eventHasArg(cmd, "references") && cmd.args.references) {
-        const referencedIds = cmd.args.references
+        eventImageIds.push(ensureString(cmd.args?.backgroundId, ""));
+      } else if (eventHasArg(cmd, "references")) {
+        const referencedIds = ensureReferenceArray(cmd.args?.references, [])
           .filter((ref) => ref.type === "background")
           .map((ref) => ref.id);
         eventImageIds.push(...referencedIds);
@@ -188,9 +262,9 @@ export const precompileBackgrounds = async (
     }
   );
 
-  const usedTilesets = [];
+  const usedTilesets: TilemapData[] = [];
 
-  const usedTilesetLookup = {};
+  const usedTilesetLookup: Record<string, number> = {};
   Object.keys(backgroundData.tilesets).forEach((tileKey) => {
     usedTilesetLookup[tileKey] = usedTilesets.length;
     usedTilesets.push({
@@ -199,58 +273,60 @@ export const precompileBackgrounds = async (
     });
   });
 
-  const usedBackgroundsWithData = usedBackgrounds.map((background) => {
-    // Determine tilemap
-    const tilemapData = backgroundData.tilemaps[background.id];
-    const tilemapKey = JSON.stringify(tilemapData);
-    let tilemap;
-    if (usedTilemapsCache[tilemapKey] === undefined) {
-      // New tilemap
-      tilemap = {
-        symbol: `${background.symbol}_tilemap`,
+  const usedBackgroundsWithData: PrecompiledBackground[] = usedBackgrounds.map(
+    (background) => {
+      // Determine tilemap
+      const tilemapData = backgroundData.tilemaps[background.id];
+      const tilemapKey = JSON.stringify(tilemapData);
+      let tilemap;
+      if (usedTilemapsCache[tilemapKey] === undefined) {
+        // New tilemap
+        tilemap = {
+          symbol: `${background.symbol}_tilemap`,
+          data: tilemapData,
+        };
+        usedTilemaps.push(tilemap);
+        usedTilemapsCache[tilemapKey] = tilemap;
+      } else {
+        // Already used tilemap
+        tilemap = usedTilemapsCache[tilemapKey];
+      }
+
+      // Determine tilemap attrs
+      const tilemapAttrData = padArrayEnd(
+        background.tileColors || [],
+        tilemapData.length,
+        0
+      );
+      const tilemapAttrKey = JSON.stringify(tilemapAttrData);
+      let tilemapAttr;
+      if (usedTilemapAttrsCache[tilemapAttrKey] === undefined) {
+        // New tilemap attr
+        tilemapAttr = {
+          symbol: `${background.symbol}_tilemap_attr`,
+          data: tilemapAttrData,
+        };
+        usedTilemapAttrs.push(tilemapAttr);
+        usedTilemapAttrsCache[tilemapAttrKey] = tilemapAttr;
+      } else {
+        // Already used tilemap attr
+        tilemapAttr = usedTilemapAttrsCache[tilemapAttrKey];
+      }
+
+      const tilesetIndex =
+        usedTilesetLookup[backgroundData.tilemapsTileset[background.id]];
+      const tileset = usedTilesets[tilesetIndex];
+      tileset.symbol = `${background.symbol}_tileset`;
+
+      return {
+        ...background,
+        tileset,
+        tilemap,
+        tilemapAttr,
         data: tilemapData,
       };
-      usedTilemaps.push(tilemap);
-      usedTilemapsCache[tilemapKey] = tilemap;
-    } else {
-      // Already used tilemap
-      tilemap = usedTilemapsCache[tilemapKey];
     }
-
-    // Determine tilemap attrs
-    const tilemapAttrData = padArrayEnd(
-      background.tileColors || [],
-      tilemapData.length,
-      0
-    );
-    const tilemapAttrKey = JSON.stringify(tilemapAttrData);
-    let tilemapAttr;
-    if (usedTilemapAttrsCache[tilemapAttrKey] === undefined) {
-      // New tilemap attr
-      tilemapAttr = {
-        symbol: `${background.symbol}_tilemap_attr`,
-        data: tilemapAttrData,
-      };
-      usedTilemapAttrs.push(tilemapAttr);
-      usedTilemapAttrsCache[tilemapAttrKey] = tilemapAttr;
-    } else {
-      // Already used tilemap attr
-      tilemapAttr = usedTilemapAttrsCache[tilemapAttrKey];
-    }
-
-    const tilesetIndex =
-      usedTilesetLookup[backgroundData.tilemapsTileset[background.id]];
-    const tileset = usedTilesets[tilesetIndex];
-    tileset.symbol = `${background.symbol}_tileset`;
-
-    return {
-      ...background,
-      tileset,
-      tilemap,
-      tilemapAttr,
-      data: tilemapData,
-    };
-  });
+  );
 
   return {
     usedBackgrounds: usedBackgroundsWithData,
@@ -261,12 +337,15 @@ export const precompileBackgrounds = async (
   };
 };
 
-export const precompilePalettes = async (scenes, settings, palettes) => {
-  const usedPalettes = [];
-  const usedPalettesCache = {};
-  const scenePaletteIndexes = {};
-  const sceneActorPaletteIndexes = {};
-  const eventPaletteIndexes = {};
+export const precompilePalettes = async (
+  scenes: SceneDenormalized[],
+  settings: SettingsState,
+  palettes: Palette[]
+) => {
+  const usedPalettes: PrecompiledPalette[] = [];
+  const usedPalettesCache: Record<string, number> = {};
+  const scenePaletteIndexes: Record<string, number> = {};
+  const sceneActorPaletteIndexes: Record<string, number> = {};
   const actorPaletteIndexes = {};
 
   const isColor = settings.customColorsEnabled || settings.sgbEnabled;
@@ -276,14 +355,14 @@ export const precompilePalettes = async (scenes, settings, palettes) => {
     settings.defaultBackgroundPaletteIds || [];
   const defaultSpritePaletteIds = settings.defaultSpritePaletteIds || [];
 
-  const getPalette = (id, fallbackId) => {
+  const getPalette = (id: string, fallbackId: string): Palette => {
     if (id === "dmg") {
       return DMG_PALETTE;
     }
     return palettesLookup[id] || palettesLookup[fallbackId] || DMG_PALETTE;
   };
 
-  const getSpritePalette = (id, fallbackId) => {
+  const getSpritePalette = (id: string, fallbackId: string): Palette => {
     const p = getPalette(id, fallbackId);
     return {
       ...p,
@@ -298,43 +377,50 @@ export const precompilePalettes = async (scenes, settings, palettes) => {
     const sceneBackgroundPaletteIds = scene.paletteIds || [];
 
     const scenePalette = {
-      dmg: [["DMG_WHITE", "DMG_LITE_GRAY", "DMG_DARK_GRAY", "DMG_BLACK"]],
-      colors:
-        isColor &&
-        [
-          getPalette(
-            sceneBackgroundPaletteIds[0],
-            defaultBackgroundPaletteIds[0]
-          ),
-          getPalette(
-            sceneBackgroundPaletteIds[1],
-            defaultBackgroundPaletteIds[1]
-          ),
-          getPalette(
-            sceneBackgroundPaletteIds[2],
-            defaultBackgroundPaletteIds[2]
-          ),
-          getPalette(
-            sceneBackgroundPaletteIds[3],
-            defaultBackgroundPaletteIds[3]
-          ),
-          getPalette(
-            sceneBackgroundPaletteIds[4],
-            defaultBackgroundPaletteIds[4]
-          ),
-          getPalette(
-            sceneBackgroundPaletteIds[5],
-            defaultBackgroundPaletteIds[5]
-          ),
-          getPalette(
-            sceneBackgroundPaletteIds[6],
-            defaultBackgroundPaletteIds[6]
-          ),
-          getPalette(
-            sceneBackgroundPaletteIds[7],
-            defaultBackgroundPaletteIds[7]
-          ),
-        ].map((p) => p.colors),
+      dmg: [
+        ["DMG_WHITE", "DMG_LITE_GRAY", "DMG_DARK_GRAY", "DMG_BLACK"] as [
+          string,
+          string,
+          string,
+          string
+        ],
+      ],
+      colors: isColor
+        ? [
+            getPalette(
+              sceneBackgroundPaletteIds[0],
+              defaultBackgroundPaletteIds[0]
+            ),
+            getPalette(
+              sceneBackgroundPaletteIds[1],
+              defaultBackgroundPaletteIds[1]
+            ),
+            getPalette(
+              sceneBackgroundPaletteIds[2],
+              defaultBackgroundPaletteIds[2]
+            ),
+            getPalette(
+              sceneBackgroundPaletteIds[3],
+              defaultBackgroundPaletteIds[3]
+            ),
+            getPalette(
+              sceneBackgroundPaletteIds[4],
+              defaultBackgroundPaletteIds[4]
+            ),
+            getPalette(
+              sceneBackgroundPaletteIds[5],
+              defaultBackgroundPaletteIds[5]
+            ),
+            getPalette(
+              sceneBackgroundPaletteIds[6],
+              defaultBackgroundPaletteIds[6]
+            ),
+            getPalette(
+              sceneBackgroundPaletteIds[7],
+              defaultBackgroundPaletteIds[7]
+            ),
+          ].map((p) => p.colors)
+        : undefined,
     };
 
     const scenePaletteKey = JSON.stringify(scenePalette);
@@ -358,45 +444,55 @@ export const precompilePalettes = async (scenes, settings, palettes) => {
 
     const actorsPalette = {
       dmg: [
-        ["DMG_WHITE", "DMG_WHITE", "DMG_LITE_GRAY", "DMG_BLACK"],
-        ["DMG_WHITE", "DMG_WHITE", "DMG_DARK_GRAY", "DMG_BLACK"],
+        ["DMG_WHITE", "DMG_WHITE", "DMG_LITE_GRAY", "DMG_BLACK"] as [
+          string,
+          string,
+          string,
+          string
+        ],
+        ["DMG_WHITE", "DMG_WHITE", "DMG_DARK_GRAY", "DMG_BLACK"] as [
+          string,
+          string,
+          string,
+          string
+        ],
       ],
-      colors:
-        isColor &&
-        [
-          getSpritePalette(
-            sceneSpritePaletteIds[0],
-            defaultSpritePaletteIds[0]
-          ),
-          getSpritePalette(
-            sceneSpritePaletteIds[1],
-            defaultSpritePaletteIds[1]
-          ),
-          getSpritePalette(
-            sceneSpritePaletteIds[2],
-            defaultSpritePaletteIds[2]
-          ),
-          getSpritePalette(
-            sceneSpritePaletteIds[3],
-            defaultSpritePaletteIds[3]
-          ),
-          getSpritePalette(
-            sceneSpritePaletteIds[4],
-            defaultSpritePaletteIds[4]
-          ),
-          getSpritePalette(
-            sceneSpritePaletteIds[5],
-            defaultSpritePaletteIds[5]
-          ),
-          getSpritePalette(
-            sceneSpritePaletteIds[6],
-            defaultSpritePaletteIds[6]
-          ),
-          getSpritePalette(
-            sceneSpritePaletteIds[7],
-            defaultSpritePaletteIds[7]
-          ),
-        ].map((p) => p.colors),
+      colors: isColor
+        ? [
+            getSpritePalette(
+              sceneSpritePaletteIds[0],
+              defaultSpritePaletteIds[0]
+            ),
+            getSpritePalette(
+              sceneSpritePaletteIds[1],
+              defaultSpritePaletteIds[1]
+            ),
+            getSpritePalette(
+              sceneSpritePaletteIds[2],
+              defaultSpritePaletteIds[2]
+            ),
+            getSpritePalette(
+              sceneSpritePaletteIds[3],
+              defaultSpritePaletteIds[3]
+            ),
+            getSpritePalette(
+              sceneSpritePaletteIds[4],
+              defaultSpritePaletteIds[4]
+            ),
+            getSpritePalette(
+              sceneSpritePaletteIds[5],
+              defaultSpritePaletteIds[5]
+            ),
+            getSpritePalette(
+              sceneSpritePaletteIds[6],
+              defaultSpritePaletteIds[6]
+            ),
+            getSpritePalette(
+              sceneSpritePaletteIds[7],
+              defaultSpritePaletteIds[7]
+            ),
+          ].map((p) => p.colors)
+        : undefined,
     };
 
     const actorsPaletteKey = JSON.stringify(actorsPalette);
@@ -417,14 +513,17 @@ export const precompilePalettes = async (scenes, settings, palettes) => {
     scenePaletteIndexes,
     sceneActorPaletteIndexes,
     actorPaletteIndexes,
-    eventPaletteIndexes,
   };
 };
 
 export const precompileUIImages = async (
-  projectRoot,
-  tmpPath,
-  { warnings }
+  projectRoot: string,
+  tmpPath: string,
+  {
+    warnings,
+  }: {
+    warnings: (_msg: string) => void;
+  }
 ) => {
   const framePath = await ensureProjectAsset("assets/ui/frame.png", {
     projectRoot,
@@ -442,19 +541,18 @@ export const precompileUIImages = async (
 };
 
 export const precompileSprites = async (
-  spriteSheets,
-  scenes,
-  customEventsLookup,
-  defaultPlayerSprites,
-  projectRoot,
-  usedTilesets,
-  { warnings } = {}
+  spriteSheets: SpriteSheetData[],
+  scenes: SceneDenormalized[],
+  customEventsLookup: Dictionary<CustomEventDenormalized>,
+  defaultPlayerSprites: Record<string, string>,
+  projectRoot: string,
+  usedTilesets: TilemapData[]
 ) => {
-  const usedSprites = [];
-  const usedSpriteLookup = {};
+  const usedSprites: SpriteSheetData[] = [];
+  const usedSpriteLookup: Record<string, SpriteSheetData> = {};
   const spriteLookup = indexById(spriteSheets);
 
-  const addSprite = (spriteSheetId) => {
+  const addSprite = (spriteSheetId: string) => {
     if (!usedSpriteLookup[spriteSheetId] && spriteLookup[spriteSheetId]) {
       const spriteSheet = spriteLookup[spriteSheetId];
       usedSprites.push(spriteSheet);
@@ -473,11 +571,11 @@ export const precompileSprites = async (
     (cmd) => {
       if (cmd.args) {
         if (cmd.args.spriteSheetId) {
-          addSprite(cmd.args.spriteSheetId);
+          addSprite(ensureString(cmd.args.spriteSheetId, ""));
         }
       }
-      if (eventHasArg(cmd, "references") && cmd.args.references) {
-        const referencedIds = cmd.args.references
+      if (eventHasArg(cmd, "references")) {
+        const referencedIds = ensureReferenceArray(cmd.args?.references, [])
           .filter((ref) => ref.type === "sprite")
           .map((ref) => ref.id);
         for (const id of referencedIds) {
@@ -489,7 +587,7 @@ export const precompileSprites = async (
 
   for (let i = 0; i < scenes.length; i++) {
     const scene = scenes[i];
-    addSprite(scene.playerSpriteSheetId);
+    addSprite(ensureString(scene.playerSpriteSheetId, ""));
     addSprite(defaultPlayerSprites[scene.type]);
     for (let a = 0; a < scene.actors.length; a++) {
       const actor = scene.actors[a];
@@ -499,19 +597,16 @@ export const precompileSprites = async (
 
   const { spritesData, statesOrder, stateReferences } = await compileSprites(
     usedSprites,
-    projectRoot,
-    {
-      warnings,
-    }
+    projectRoot
   );
 
   // Build tilemap cache
-  const usedTilesetCache = {};
+  const usedTilesetCache: Record<string, number> = {};
   usedTilesets.forEach((tileset, tilesetIndex) => {
     usedTilesetCache[JSON.stringify(tileset)] = tilesetIndex;
   });
 
-  const usedSpritesWithData = spritesData.map((sprite) => {
+  const usedSpritesWithData: PrecompiledSprite[] = spritesData.map((sprite) => {
     // Determine tileset
     const spriteTileset = sprite.data;
     const tilesetKey = JSON.stringify(spriteTileset);
@@ -547,14 +642,18 @@ export const precompileSprites = async (
 };
 
 export const precompileAvatars = async (
-  avatars,
-  scenes,
-  customEventsLookup,
-  projectRoot,
-  { warnings } = {}
+  avatars: AvatarData[],
+  scenes: SceneDenormalized[],
+  customEventsLookup: Dictionary<CustomEventDenormalized>,
+  projectRoot: string,
+  {
+    warnings,
+  }: {
+    warnings: (msg: string) => void;
+  }
 ) => {
-  const usedAvatars = [];
-  const usedAvatarLookup = {};
+  const usedAvatars: AvatarData[] = [];
+  const usedAvatarLookup: Record<string, AvatarData> = {};
   const avatarLookup = indexById(avatars);
 
   walkDenormalizedScenesEvents(
@@ -567,14 +666,11 @@ export const precompileAvatars = async (
     },
     (event) => {
       if (event.args) {
-        if (
-          event.args.avatarId &&
-          !usedAvatarLookup[event.args.avatarId] &&
-          avatarLookup[event.args.avatarId]
-        ) {
-          const avatar = avatarLookup[event.args.avatarId];
+        const avatarId = ensureString(event.args.avatarId, "");
+        if (avatarId && !usedAvatarLookup[avatarId] && avatarLookup[avatarId]) {
+          const avatar = avatarLookup[avatarId];
           usedAvatars.push(avatar);
-          usedAvatarLookup[event.args.avatarId] = avatar;
+          usedAvatarLookup[avatarId] = avatar;
         }
       }
     }
@@ -591,17 +687,21 @@ export const precompileAvatars = async (
 };
 
 export const precompileEmotes = async (
-  emotes,
-  scenes,
-  customEventsLookup,
-  projectRoot,
-  { warnings } = {}
+  emotes: EmoteData[],
+  scenes: SceneDenormalized[],
+  customEventsLookup: Dictionary<CustomEventDenormalized>,
+  projectRoot: string,
+  {
+    warnings,
+  }: {
+    warnings: (msg: string) => void;
+  }
 ) => {
-  const usedEmotes = [];
-  const usedEmoteLookup = {};
+  const usedEmotes: EmoteData[] = [];
+  const usedEmoteLookup: Record<string, EmoteData> = {};
   const emoteLookup = indexById(emotes);
 
-  const addEmote = (id) => {
+  const addEmote = (id: string) => {
     const emote = emoteLookup[id];
     if (!usedEmoteLookup[id] && emote) {
       usedEmotes.push(emote);
@@ -619,10 +719,10 @@ export const precompileEmotes = async (
     },
     (cmd) => {
       if (cmd.args && cmd.args.emoteId) {
-        addEmote(cmd.args.emoteId);
+        addEmote(ensureString(cmd.args.emoteId, ""));
       }
-      if (eventHasArg(cmd, "references") && cmd.args.references) {
-        const referencedIds = cmd.args.references
+      if (eventHasArg(cmd, "references")) {
+        const referencedIds = ensureReferenceArray(cmd.args?.references, [])
           .filter((ref) => ref.type === "emote")
           .map((ref) => ref.id);
         for (const id of referencedIds) {
@@ -643,12 +743,12 @@ export const precompileEmotes = async (
 };
 
 export const precompileMusic = (
-  scenes,
-  customEventsLookup,
-  music,
-  musicDriver
+  scenes: SceneDenormalized[],
+  customEventsLookup: Dictionary<CustomEventDenormalized>,
+  music: MusicData[],
+  musicDriver: MusicDriverSetting
 ) => {
-  const usedMusicIds = [];
+  const usedMusicIds: string[] = [];
   const driverMusic =
     musicDriver === "huge"
       ? music.filter((track) => track.type === "uge")
@@ -667,13 +767,13 @@ export const precompileMusic = (
         cmd.args &&
         (cmd.args.musicId !== undefined || cmd.command === EVENT_MUSIC_PLAY)
       ) {
-        const musicId = cmd.args.musicId || music[0].id;
+        const musicId = ensureString(cmd.args.musicId, music[0].id);
         // If never seen this track before add it to the list
         if (usedMusicIds.indexOf(musicId) === -1) {
           usedMusicIds.push(musicId);
         }
-      } else if (eventHasArg(cmd, "references") && cmd.args.references) {
-        const referencedIds = cmd.args.references
+      } else if (eventHasArg(cmd, "references")) {
+        const referencedIds = ensureReferenceArray(cmd.args?.references, [])
           .filter((ref) => ref.type === "music")
           .map((ref) => ref.id);
         usedMusicIds.push(...referencedIds);
@@ -681,7 +781,7 @@ export const precompileMusic = (
     }
   );
 
-  const usedMusic = music
+  const usedMusic: PrecompiledMusicTrack[] = music
     .filter((track) => {
       return usedMusicIds.indexOf(track.id) > -1;
     })
@@ -709,11 +809,16 @@ export const precompileMusic = (
 };
 
 export const precompileFonts = async (
-  fonts,
-  scenes,
-  customEventsLookup,
-  defaultFontId,
-  projectRoot
+  fonts: FontData[],
+  scenes: SceneDenormalized[],
+  customEventsLookup: Dictionary<CustomEventDenormalized>,
+  defaultFontId: string,
+  projectRoot: string,
+  {
+    warnings,
+  }: {
+    warnings: (msg: string) => void;
+  }
 ) => {
   const defaultFont =
     fonts.find((font) => font.id === defaultFontId) || fonts[0];
@@ -721,23 +826,25 @@ export const precompileFonts = async (
   if (!defaultFont) {
     await ensureProjectAsset("assets/fonts/gbs-mono.png", {
       projectRoot,
+      warnings,
     });
     await ensureProjectAsset("assets/fonts/gbs-mono.json", {
       projectRoot,
+      warnings,
     });
     throw new Error(l10n("ERROR_MISSING_FONTS"));
   }
 
   const usedFontIds = [defaultFont.id];
 
-  const addFont = (id) => {
+  const addFont = (id: string) => {
     // If never seen this font before add it to the list
     if (usedFontIds.indexOf(id) === -1) {
       usedFontIds.push(id);
     }
   };
 
-  const addFontsFromString = (s) => {
+  const addFontsFromString = (s: string) => {
     (s.match(/(!F:[0-9a-f-]+!)/g) || [])
       .map((id) => id.substring(3).replace(/!$/, ""))
       .forEach(addFont);
@@ -753,7 +860,7 @@ export const precompileFonts = async (
     },
     (cmd) => {
       if (cmd.args && cmd.args.fontId !== undefined) {
-        addFont(cmd.args.fontId || fonts[0].id);
+        addFont(ensureString(cmd.args.fontId, fonts[0].id));
       }
       if (cmd.args && cmd.args.text !== undefined) {
         // Add fonts referenced in text
@@ -761,12 +868,13 @@ export const precompileFonts = async (
       }
       if (cmd.command && cmd.command === "EVENT_MENU" && cmd.args) {
         // Add fonts referenced in menu items
-        for (let i = 1; i <= cmd.args.items; i++) {
+        const itemsLen = ensureNumber(cmd.args.items, 0);
+        for (let i = 1; i <= itemsLen; i++) {
           addFontsFromString(String(cmd.args[`option${i}`]));
         }
       }
-      if (eventHasArg(cmd, "references") && cmd.args.references) {
-        const referencedIds = cmd.args.references
+      if (eventHasArg(cmd, "references")) {
+        const referencedIds = ensureReferenceArray(cmd.args?.references, [])
           .filter((ref) => ref.type === "font")
           .map((ref) => ref.id);
         usedFontIds.push(...referencedIds);
@@ -774,7 +882,7 @@ export const precompileFonts = async (
     }
   );
 
-  const usedFonts = [defaultFont].concat(
+  const usedFonts: FontData[] = [defaultFont].concat(
     fonts.filter((font) => {
       return font.id !== defaultFont.id && usedFontIds.indexOf(font.id) > -1;
     })
@@ -786,16 +894,18 @@ export const precompileFonts = async (
 };
 
 export const precompileScenes = (
-  scenes,
-  customEvents,
-  defaultPlayerSprites,
-  usedBackgrounds,
-  usedSprites,
-  { warnings } = {}
+  scenes: SceneDenormalized[],
+  customEventsLookup: Dictionary<CustomEventDenormalized>,
+  defaultPlayerSprites: Record<string, string>,
+  usedBackgrounds: PrecompiledBackground[],
+  usedSprites: PrecompiledSprite[],
+  {
+    warnings,
+  }: {
+    warnings: (msg: string) => void;
+  }
 ) => {
-  const customEventsLookup = keyBy(customEvents, "id");
-
-  const scenesData = scenes.map((scene, sceneIndex) => {
+  const scenesData: PrecompiledScene[] = scenes.map((scene, sceneIndex) => {
     const background = usedBackgrounds.find(
       (background) => background.id === scene.backgroundId
     );
@@ -833,7 +943,7 @@ export const precompileScenes = (
       return usedSprites.find((s) => s.id === actor.spriteSheetId);
     });
 
-    const eventSpriteIds = [];
+    const eventSpriteIds: string[] = [];
     const playerSpriteSheetId = scene.playerSpriteSheetId
       ? scene.playerSpriteSheetId
       : defaultPlayerSprites[scene.type];
@@ -847,9 +957,9 @@ export const precompileScenes = (
       playerSprite = usedSprites[0];
     }
 
-    const projectiles = [];
-    const actorsExclusiveLookup = {};
-    const addProjectile = (data) => {
+    const projectiles: PrecompiledProjectile[] = [];
+    const actorsExclusiveLookup: Record<string, number> = {};
+    const addProjectile = (data: ProjectileData) => {
       const projectile = {
         ...data,
         hash: toProjectileHash({
@@ -886,14 +996,15 @@ export const precompileScenes = (
           event.command !== EVENT_ACTOR_SET_SPRITE &&
           !event.args.__comment
         ) {
-          eventSpriteIds.push(event.args.spriteSheetId);
+          eventSpriteIds.push(ensureString(event.args.spriteSheetId, ""));
         }
 
         if (
           event.args &&
           event.args.spriteSheetId &&
           event.command === "EVENT_LAUNCH_PROJECTILE" &&
-          !event.args.__comment
+          !event.args.__comment &&
+          isProjectileData(event.args)
         ) {
           addProjectile(event.args);
         }
@@ -903,7 +1014,7 @@ export const precompileScenes = (
           event.args.spriteSheetId &&
           event.command === EVENT_ACTOR_SET_SPRITE
         ) {
-          let actorId = event.args.actorId;
+          let actorId = ensureString(event.args.actorId, "");
           if (actorId === "$self$") {
             if (actor) {
               actorId = actor.id;
@@ -911,7 +1022,8 @@ export const precompileScenes = (
               actorId = "player";
             }
           }
-          const sprite = usedSpritesLookup[event.args.spriteSheetId];
+          const sprite =
+            usedSpritesLookup[ensureString(event.args.spriteSheetId, "")];
           actorsExclusiveLookup[actorId] = Math.max(
             actorsExclusiveLookup[actorId] || 0,
             ((sprite ? sprite.numTiles : 0) || 0) * 2
@@ -924,7 +1036,8 @@ export const precompileScenes = (
           event.command === EVENT_PLAYER_SET_SPRITE
         ) {
           const actorId = "player";
-          const sprite = usedSpritesLookup[event.args.spriteSheetId];
+          const sprite =
+            usedSpritesLookup[ensureString(event.args.spriteSheetId, "")];
           actorsExclusiveLookup[actorId] = Math.max(
             actorsExclusiveLookup[actorId] || 0,
             ((sprite ? sprite.numTiles : 0) || 0) * 2
@@ -940,7 +1053,10 @@ export const precompileScenes = (
       .filter((a) => !actorsExclusiveLookup[a.id])
       .map((a) => a.spriteSheetId);
 
-    const sceneSpriteIds = [].concat(actorSpriteIds, eventSpriteIds);
+    const sceneSpriteIds = ([] as string[]).concat(
+      actorSpriteIds,
+      eventSpriteIds
+    );
 
     if (projectiles.length > MAX_PROJECTILES) {
       warnings(
@@ -964,7 +1080,7 @@ export const precompileScenes = (
           memo.push(sprite);
         }
         return memo;
-      }, []),
+      }, [] as PrecompiledSprite[]),
       triggers: scene.triggers.slice(0, MAX_TRIGGERS).filter((trigger) => {
         // Filter out unused triggers which cause slow down
         // When walking over
@@ -989,10 +1105,16 @@ export const precompileScenes = (
 };
 
 const precompile = async (
-  projectData,
-  projectRoot,
-  tmpPath,
-  { progress, warnings }
+  projectData: ProjectData,
+  projectRoot: string,
+  tmpPath: string,
+  {
+    progress,
+    warnings,
+  }: {
+    progress: (msg: string) => void;
+    warnings: (msg: string) => void;
+  }
 ) => {
   const customEventsLookup = keyBy(projectData.customEvents, "id");
   const variablesLookup = keyBy(projectData.variables, "id");
@@ -1006,15 +1128,15 @@ const precompile = async (
   });
 
   progress(EVENT_MSG_PRE_VARIABLES);
-  const usedVariables = Object.values(usedAssets.usedVariablesLookup);
+  const usedVariables = Object.values(
+    usedAssets.usedVariablesLookup
+  ) as Variable[];
 
   progress(EVENT_MSG_PRE_IMAGES);
   const {
     usedBackgrounds,
     backgroundLookup,
-    backgroundData,
     usedTilesets,
-    usedTilesetLookup,
     usedTilemaps,
     usedTilemapAttrs,
   } = await precompileBackgrounds(
@@ -1042,10 +1164,7 @@ const precompile = async (
     customEventsLookup,
     projectData.settings.defaultPlayerSprites,
     projectRoot,
-    usedTilesets,
-    {
-      warnings,
-    }
+    usedTilesets
   );
 
   progress(EVENT_MSG_PRE_AVATARS);
@@ -1093,7 +1212,7 @@ const precompile = async (
   progress(EVENT_MSG_PRE_SCENES);
   const sceneData = precompileScenes(
     projectData.scenes,
-    projectData.customEvents,
+    customEventsLookup,
     projectData.settings.defaultPlayerSprites,
     usedBackgrounds,
     usedSprites,
@@ -1107,17 +1226,13 @@ const precompile = async (
     scenePaletteIndexes,
     sceneActorPaletteIndexes,
     actorPaletteIndexes,
-    eventPaletteIndexes,
   } = await precompilePalettes(
     projectData.scenes,
     projectData.settings,
-    projectData.palettes,
-    {
-      warnings,
-    }
+    projectData.palettes
   );
 
-  const usedSounds = Object.values(usedAssets.usedSoundsLookup);
+  const usedSounds = Object.values(usedAssets.usedSoundsLookup) as SoundData[];
 
   progress(EVENT_MSG_PRE_COMPLETE);
 
@@ -1126,10 +1241,8 @@ const precompile = async (
     usedBackgrounds,
     backgroundLookup,
     usedTilesets,
-    usedTilesetLookup,
     usedTilemaps,
     usedTilemapAttrs,
-    backgroundData,
     usedSprites,
     statesOrder,
     stateReferences,
@@ -1145,26 +1258,28 @@ const precompile = async (
     scenePaletteIndexes,
     sceneActorPaletteIndexes,
     actorPaletteIndexes,
-    eventPaletteIndexes,
   };
 };
 
 // #endregion
 
-/**
- * @returns {Promise<{files: Record<string, string>}>}
- */
 const compile = async (
-  projectData,
+  projectData: ProjectData,
   {
     projectRoot = "/tmp",
     engineFields = [],
     tmpPath = "/tmp",
-    progress = (_msg) => {},
-    warnings = (_msg) => {},
-  } = {}
-) => {
-  const output = {};
+    progress = (_msg: string) => {},
+    warnings = (_msg: string) => {},
+  }: {
+    projectRoot: string;
+    engineFields: EngineFieldSchema[];
+    tmpPath: string;
+    progress: (_msg: string) => void;
+    warnings: (_msg: string) => void;
+  }
+): Promise<{ files: Record<string, string> }> => {
+  const output: Record<string, string> = {};
   const symbols = {};
 
   if (projectData.scenes.length === 0) {
@@ -1180,7 +1295,6 @@ const compile = async (
 
   const customColorsEnabled = projectData.settings.customColorsEnabled;
   const isSGB = projectData.settings.sgbEnabled;
-  const isColor = customColorsEnabled || isSGB;
 
   const precompiledEngineFields = precompileEngineFields(engineFields);
   const customEventsLookup = keyBy(projectData.customEvents, "id");
@@ -1214,7 +1328,7 @@ const compile = async (
       }
       return memo;
     },
-    {}
+    {} as Record<string, string>
   );
 
   // Determine which scene types need to support persisting player sprite
@@ -1223,9 +1337,9 @@ const compile = async (
       memo.push(scene.type);
     }
     return memo;
-  }, []);
+  }, [] as string[]);
 
-  const persistSceneSpriteSymbols = {};
+  const persistSceneSpriteSymbols: Record<string, string> = {};
   persistSceneTypes.forEach((sceneType) => {
     const bankVar = `PLAYER_SPRITE_${sceneType}_BANK`;
     const dataVar = `PLAYER_SPRITE_${sceneType}_DATA`;
@@ -1241,120 +1355,135 @@ const compile = async (
   });
 
   // Add event data
-  const additionalScripts = {};
-  const additionalOutput = {};
-  const compiledCustomEventScriptCache = {};
-  const compiledAssetsCache = {};
+  const additionalScripts: Dictionary<{
+    symbol: string;
+    compiledScript: string;
+  }> = {};
+  const additionalOutput: Dictionary<{
+    filename: string;
+    data: string;
+  }> = {};
+  const compiledCustomEventScriptCache: Dictionary<{
+    scriptRef: string;
+    argsLen: number;
+  }> = {};
+  const compiledAssetsCache: Dictionary<string> = {};
 
-  const eventPtrs = precompiled.sceneData.map((scene, sceneIndex) => {
-    const compileScript = (
-      script,
-      entityType,
-      entity,
-      entityIndex,
-      loop,
-      lock,
-      scriptType
-    ) => {
-      let scriptTypeCode = "interact";
-      let scriptName = "script";
+  const eventPtrs: PrecompiledSceneEventPtrs[] = precompiled.sceneData.map(
+    (scene, sceneIndex) => {
+      const compileScript = (
+        script: ScriptEventDenormalized[],
+        entityType: ScriptBuilderEntityType,
+        entity: ScriptBuilderEntity & { symbol: string },
+        entityIndex: number,
+        loop: boolean,
+        lock: boolean,
+        scriptType: string
+      ) => {
+        let scriptTypeCode = "interact";
+        let scriptName = "script";
 
-      if (entityType === "actor") {
-        const scriptLookup = {
-          script: "interact",
-          updateScript: "update",
-          hit1Script: "hit1",
-          hit2Script: "hit2",
-          hit3Script: "hit3",
-        };
-        scriptTypeCode = scriptLookup[scriptType] || scriptTypeCode;
-      } else if (entityType === "trigger") {
-        scriptTypeCode = "interact";
-      } else if (entityType === "scene") {
-        const scriptLookup = {
-          script: "init",
-          playerHit1Script: "p_hit1",
-          playerHit2Script: "p_hit2",
-          playerHit3Script: "p_hit3",
-        };
-        scriptTypeCode = scriptLookup[scriptType] || scriptTypeCode;
-      }
-      scriptName = `${entity.symbol}_${scriptTypeCode}`;
+        if (entityType === "actor") {
+          const scriptLookup = {
+            script: "interact",
+            updateScript: "update",
+            hit1Script: "hit1",
+            hit2Script: "hit2",
+            hit3Script: "hit3",
+          };
+          scriptTypeCode =
+            scriptLookup[scriptType as keyof typeof scriptLookup] ||
+            scriptTypeCode;
+        } else if (entityType === "trigger") {
+          scriptTypeCode = "interact";
+        } else if (entityType === "scene") {
+          const scriptLookup = {
+            script: "init",
+            playerHit1Script: "p_hit1",
+            playerHit2Script: "p_hit2",
+            playerHit3Script: "p_hit3",
+          };
+          scriptTypeCode =
+            scriptLookup[scriptType as keyof typeof scriptLookup] ||
+            scriptTypeCode;
+        }
+        scriptName = `${entity.symbol}_${scriptTypeCode}`;
 
-      if (
-        isEmptyScript(script) &&
-        // Generate scene init for empty script if autoFade is not disabled
-        (scriptTypeCode !== "init" || scene.autoFadeSpeed === null)
-      ) {
-        return null;
-      }
+        if (
+          isEmptyScript(script) &&
+          // Generate scene init for empty script if autoFade is not disabled
+          (scriptTypeCode !== "init" || scene.autoFadeSpeed === null)
+        ) {
+          return null;
+        }
 
-      const compiledScript = compileEntityEvents(scriptName, script, {
-        scene,
-        sceneIndex,
-        scenes: precompiled.sceneData,
-        music: precompiled.usedMusic,
-        sounds: precompiled.usedSounds,
-        fonts: precompiled.usedFonts,
-        defaultFontId: projectData.settings.defaultFontId,
-        sprites: precompiled.usedSprites,
-        statesOrder: precompiled.statesOrder,
-        stateReferences: precompiled.stateReferences,
-        avatars: precompiled.usedAvatars,
-        emotes: precompiled.usedEmotes,
-        backgrounds: precompiled.usedBackgrounds,
-        strings: precompiled.strings,
-        customEvents: projectData.customEvents,
-        palettes: projectData.palettes,
-        settings: projectData.settings,
-        variablesLookup,
-        variableAliasLookup,
-        eventPaletteIndexes: precompiled.eventPaletteIndexes,
-        characterEncoding: projectData.settings.defaultCharacterEncoding,
-        labels: {},
-        entityType,
-        entityIndex,
-        entity,
-        warnings,
-        loop,
-        lock,
-        engineFields: precompiledEngineFields,
-        output: [],
-        additionalScripts,
-        additionalOutput,
-        symbols,
-        compiledCustomEventScriptCache,
-        compiledAssetsCache,
-      });
+        const compiledScript = compileEntityEvents(scriptName, script, {
+          scene,
+          sceneIndex,
+          scenes: precompiled.sceneData,
+          music: precompiled.usedMusic,
+          sounds: precompiled.usedSounds,
+          fonts: precompiled.usedFonts,
+          defaultFontId: projectData.settings.defaultFontId,
+          sprites: precompiled.usedSprites,
+          statesOrder: precompiled.statesOrder,
+          stateReferences: precompiled.stateReferences,
+          avatars: precompiled.usedAvatars,
+          emotes: precompiled.usedEmotes,
+          backgrounds: precompiled.usedBackgrounds,
+          customEvents: projectData.customEvents,
+          palettes: projectData.palettes,
+          settings: projectData.settings,
+          variablesLookup,
+          variableAliasLookup,
+          entityType,
+          entityIndex,
+          entity,
+          warnings,
+          loop,
+          lock,
+          engineFields: precompiledEngineFields,
+          output: [],
+          additionalScripts,
+          additionalOutput,
+          symbols,
+          compiledCustomEventScriptCache,
+          compiledAssetsCache,
+          branch: false,
+          isFunction: false,
+        });
 
-      output[`${scriptName}.s`] = compiledScript;
-      output[`${scriptName}.h`] = compileScriptHeader(scriptName);
-      return scriptName;
-    };
+        output[`${scriptName}.s`] = compiledScript;
+        output[`${scriptName}.h`] = compileScriptHeader(scriptName);
+        return scriptName;
+      };
 
-    const bankSceneEvents = (scene, sceneIndex) => {
-      // Merge start scripts for actors with scene start script
-      const initScript = []
-        .concat(
-          scene.actors.map((actor) => {
-            const actorStartScript = actor.startScript || [];
-            if (actorStartScript.length === 0) {
-              return [];
-            }
-            return [].concat(
-              {
-                command: "INTERNAL_SET_CONTEXT",
-                args: {
-                  entity: actor,
-                  entityType: "actor",
-                  entityId: actor.id,
-                },
-              },
-              actorStartScript.filter((event) => event.command !== EVENT_END)
-            );
-          }),
+      const bankSceneEvents = (scene: PrecompiledScene, sceneIndex: number) => {
+        // Merge start scripts for actors with scene start script
+        const initScript = ([] as ScriptEventDenormalized[]).concat(
+          scene.actors
+            .map((actor) => {
+              const actorStartScript = actor.startScript || [];
+              if (actorStartScript.length === 0) {
+                return [];
+              }
+              return ([] as ScriptEventDenormalized[]).concat(
+                {
+                  id: "",
+                  command: "INTERNAL_SET_CONTEXT",
+                  args: {
+                    entity: actor,
+                    entityType: "actor",
+                    entityId: actor.id,
+                  },
+                } as ScriptEventDenormalized,
+                actorStartScript.filter((event) => event.command !== EVENT_END)
+              );
+            })
+            .flat(),
           scene.script.length > 0
             ? {
+                id: "",
                 command: "INTERNAL_SET_CONTEXT",
                 args: {
                   entity: scene,
@@ -1366,6 +1495,7 @@ const compile = async (
           persistSceneTypes.includes(scene.type) && !scene.playerSpriteSheetId
             ? {
                 // Load sprite from var
+                id: "",
                 command: "EVENT_GBVM_SCRIPT",
                 args: {
                   script: `VM_PUSH_CONST 0
@@ -1375,171 +1505,179 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
                 },
               }
             : [],
-          [scene.script] || []
-        )
-        .flat();
-
-      // Inject automatic Scene Fade In if required
-      if (scene.autoFadeSpeed !== null) {
-        const autoFadeId = calculateAutoFadeEventIdDenormalised(
-          initScript,
-          customEventsLookup
+          scene.script || []
         );
-        const autoFadeIndex = initScript.findIndex(
-          (item) => item.id === autoFadeId
-        );
-        const fadeEvent = {
-          command: "EVENT_FADE_IN",
-          args: {
-            speed: scene.autoFadeSpeed,
-          },
-        };
-        if (autoFadeIndex > -1) {
-          initScript.splice(autoFadeIndex, 0, fadeEvent);
-        } else if (autoFadeId !== "MANUAL") {
-          initScript.push(fadeEvent);
-        }
-      }
 
-      // Compile scene start script
-      return compileScript(
-        initScript,
-        "scene",
-        scene,
-        sceneIndex,
-        false,
-        true,
-        "script"
-      );
-    };
-
-    const bankEntityEvents =
-      (entityType, entityScriptField = "script") =>
-      (entity, entityIndex) => {
-        if (
-          !entity[entityScriptField] ||
-          entity[entityScriptField].length === 0
-        ) {
-          return null;
+        // Inject automatic Scene Fade In if required
+        if (scene.autoFadeSpeed !== null) {
+          const autoFadeId = calculateAutoFadeEventIdDenormalised(
+            initScript,
+            customEventsLookup
+          );
+          const autoFadeIndex = initScript.findIndex(
+            (item) => item.id === autoFadeId
+          );
+          const fadeEvent = {
+            id: "",
+            command: "EVENT_FADE_IN",
+            args: {
+              speed: scene.autoFadeSpeed,
+            },
+          };
+          if (autoFadeIndex > -1) {
+            initScript.splice(autoFadeIndex, 0, fadeEvent);
+          } else if (autoFadeId !== "MANUAL") {
+            initScript.push(fadeEvent);
+          }
         }
-        const lockScript =
-          entityScriptField === "script" && !entity.collisionGroup;
+
+        // Compile scene start script
         return compileScript(
-          entity[entityScriptField],
-          entityType,
-          entity,
-          entityIndex,
-          entityScriptField === "updateScript",
-          lockScript,
-          entityScriptField
+          initScript,
+          "scene",
+          scene,
+          sceneIndex,
+          false,
+          true,
+          "script"
         );
       };
 
-    const combineScripts = (scripts, canCollapse) => {
-      const filteredScripts = scripts.filter(
-        (s) => s.script && s.script.length > 0
+      const combineScripts = (
+        scripts: {
+          parameter: number;
+          value: number;
+          script: ScriptEventDenormalized[];
+        }[],
+        canCollapse: boolean
+      ): ScriptEventDenormalized[] => {
+        const filteredScripts = scripts.filter(
+          (s) => s.script && s.script.length > 0
+        );
+        if (!canCollapse || filteredScripts.length > 1) {
+          return filteredScripts.map((s) => {
+            return {
+              id: "",
+              command: "INTERNAL_IF_PARAM",
+              args: {
+                parameter: s.parameter,
+                value: s.value,
+              },
+              children: {
+                true: s.script,
+              },
+            };
+          });
+        } else if (filteredScripts[0]) {
+          return filteredScripts[0].script;
+        }
+        return [];
+      };
+
+      const combinedPlayerHitScript = combineScripts(
+        [
+          { parameter: 0, value: 2, script: scene.playerHit1Script },
+          { parameter: 0, value: 4, script: scene.playerHit2Script },
+          { parameter: 0, value: 8, script: scene.playerHit3Script },
+        ],
+        false
       );
-      if (!canCollapse || filteredScripts.length > 1) {
-        return filteredScripts.map((s) => {
-          return {
-            command: "INTERNAL_IF_PARAM",
-            args: {
-              parameter: s.parameter,
-              value: s.value,
-            },
-            children: {
-              true: s.script,
-            },
-          };
-        });
-      } else if (filteredScripts[0]) {
-        return filteredScripts[0].script;
-      }
-      return [];
-    };
 
-    const combinedPlayerHitScript = combineScripts(
-      [
-        { parameter: 0, value: 2, script: scene.playerHit1Script },
-        { parameter: 0, value: 4, script: scene.playerHit2Script },
-        { parameter: 0, value: 8, script: scene.playerHit3Script },
-      ],
-      false
-    );
-
-    return {
-      start: bankSceneEvents(scene, sceneIndex),
-      playerHit1: compileScript(
-        combinedPlayerHitScript,
-        "scene",
-        scene,
-        sceneIndex,
-        false,
-        false,
-        "playerHit1Script"
-      ),
-      actorsMovement: scene.actors.map(
-        bankEntityEvents("actor", "updateScript")
-      ),
-      actors: scene.actors.map((entity, entityIndex) => {
-        if (!entity.collisionGroup) {
+      return {
+        start: bankSceneEvents(scene, sceneIndex),
+        playerHit1: compileScript(
+          combinedPlayerHitScript,
+          "scene",
+          scene,
+          sceneIndex,
+          false,
+          false,
+          "playerHit1Script"
+        ),
+        actorsMovement: scene.actors.map((entity, entityIndex) => {
+          if (!entity["updateScript"] || entity["updateScript"].length === 0) {
+            return null;
+          }
           return compileScript(
-            entity.script,
+            entity["updateScript"],
             "actor",
+            entity,
+            entityIndex,
+            true,
+            false,
+            "updateScript"
+          );
+        }),
+        actors: scene.actors.map((entity, entityIndex) => {
+          if (!entity.collisionGroup) {
+            return compileScript(
+              entity.script,
+              "actor",
+              entity,
+              entityIndex,
+              false,
+              true,
+              "script"
+            );
+          }
+          const combinedActorScript = combineScripts(
+            [
+              { parameter: 0, value: 0, script: entity.script },
+              { parameter: 0, value: 2, script: entity.hit1Script },
+              { parameter: 0, value: 4, script: entity.hit2Script },
+              { parameter: 0, value: 8, script: entity.hit3Script },
+            ],
+            false
+          );
+          return compileScript(
+            combinedActorScript,
+            "actor",
+            entity,
+            entityIndex,
+            false,
+            false,
+            "script"
+          );
+        }),
+        triggers: scene.triggers.map((entity, entityIndex) => {
+          const combinedTriggerScript = combineScripts(
+            [
+              { parameter: 0, value: 1, script: entity.script },
+              { parameter: 0, value: 2, script: entity.leaveScript },
+            ],
+            true
+          );
+
+          return compileScript(
+            combinedTriggerScript,
+            "trigger",
             entity,
             entityIndex,
             false,
             true,
             "script"
           );
-        }
-        const combinedActorScript = combineScripts(
-          [
-            { parameter: 0, value: 0, script: entity.script },
-            { parameter: 0, value: 2, script: entity.hit1Script },
-            { parameter: 0, value: 4, script: entity.hit2Script },
-            { parameter: 0, value: 8, script: entity.hit3Script },
-          ],
-          false
-        );
-        return compileScript(
-          combinedActorScript,
-          "actor",
-          entity,
-          entityIndex,
-          false,
-          false,
-          "script"
-        );
-      }),
-      triggers: scene.triggers.map((entity, entityIndex) => {
-        const combinedTriggerScript = combineScripts(
-          [
-            { parameter: 0, value: 1, script: entity.script },
-            { parameter: 0, value: 2, script: entity.leaveScript },
-          ],
-          true
-        );
+        }),
+      };
+    }
+  );
 
-        return compileScript(
-          combinedTriggerScript,
-          "trigger",
-          entity,
-          entityIndex,
-          false,
-          true,
-          "script"
-        );
-      }),
-    };
-  });
-
-  Object.values(additionalScripts).forEach((additional) => {
+  (
+    Object.values(additionalScripts) as {
+      symbol: string;
+      compiledScript: string;
+    }[]
+  ).forEach((additional) => {
     output[`${additional.symbol}.s`] = additional.compiledScript;
     output[`${additional.symbol}.h`] = compileScriptHeader(additional.symbol);
   });
 
-  Object.values(additionalOutput).forEach((additional) => {
+  (
+    Object.values(additionalOutput) as {
+      filename: string;
+      data: string;
+    }[]
+  ).forEach((additional) => {
     output[additional.filename] = additional.data;
   });
 
@@ -1586,10 +1724,7 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
       statesOrder: precompiled.statesOrder,
       stateReferences: precompiled.stateReferences,
     });
-    output[`${sprite.symbol}.h`] = compileSpriteSheetHeader(
-      sprite,
-      spriteIndex
-    );
+    output[`${sprite.symbol}.h`] = compileSpriteSheetHeader(sprite);
   });
 
   // Add font data
@@ -1611,9 +1746,9 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
   });
 
   // Add emote data
-  precompiled.usedEmotes.forEach((emote, emoteIndex) => {
-    output[`${emote.symbol}.c`] = compileEmote(emote, emoteIndex);
-    output[`${emote.symbol}.h`] = compileEmoteHeader(emote, emoteIndex);
+  precompiled.usedEmotes.forEach((emote) => {
+    output[`${emote.symbol}.c`] = compileEmote(emote);
+    output[`${emote.symbol}.h`] = compileEmoteHeader(emote);
   });
 
   // Add scene data
@@ -1631,7 +1766,6 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
     output[`${scene.symbol}.c`] = compileScene(scene, sceneIndex, {
       bgPalette,
       actorsPalette,
-      color: isColor,
       eventPtrs,
     });
     output[`${scene.symbol}.h`] = compileSceneHeader(scene, sceneIndex);
@@ -1736,7 +1870,7 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
     startDirection,
     startScene,
     startMoveSpeed,
-    startAnimSpeed,
+    startAnimSpeed: ensureNumber(startAnimSpeed, 15),
     fonts: precompiled.usedFonts,
     avatarFonts,
     engineFields,

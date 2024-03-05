@@ -9,7 +9,7 @@ import {
 } from "shared/lib/tiles/indexedImage";
 import { readFileToIndexedImage } from "lib/tiles/readFileToTiles";
 
-export interface FontData {
+export interface CompiledFontData {
   name: string;
   table: number[];
   widths: number[];
@@ -39,7 +39,7 @@ const FIRST_CHAR = 32;
 
 export const readFileToFontData = async (
   filename: string
-): Promise<FontData> => {
+): Promise<CompiledFontData> => {
   const name = Path.basename(filename);
   const image = await readFileToIndexedImage(filename, fontDataIndexFn);
   const tileWidth = Math.floor(image.width / TILE_SIZE);

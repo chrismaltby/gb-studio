@@ -432,7 +432,7 @@ SIZEREF(SGB_border_pal)
 
 const compileSGBImage = async (filename: string) => {
   const fileData = await readFile(filename);
-  return new Promise((resolve, reject) => {
+  return new Promise<string>((resolve, reject) => {
     new PNG().parse(fileData, (err, data) => {
       if (err) {
         return reject(err);

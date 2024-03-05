@@ -6,7 +6,7 @@ import { eventHasArg } from "lib/helpers/eventSystem";
 import type {
   CustomEventDenormalized,
   SceneDenormalized,
-  Sound,
+  SoundData,
   Variable,
 } from "shared/lib/entities/entitiesTypes";
 import { EVENT_SOUND_PLAY_EFFECT } from "consts";
@@ -19,11 +19,11 @@ export const determineUsedAssets = ({
 }: {
   scenes: SceneDenormalized[];
   variablesLookup: Dictionary<Variable>;
-  soundsLookup: Dictionary<Sound>;
+  soundsLookup: Dictionary<SoundData>;
   customEventsLookup: Dictionary<CustomEventDenormalized>;
 }) => {
   const usedVariablesLookup: Dictionary<Variable> = {};
-  const usedSoundsLookup: Dictionary<Sound> = {};
+  const usedSoundsLookup: Dictionary<SoundData> = {};
 
   const addAssetById =
     <T>(assetLookup: Dictionary<T>, usedLookup: Dictionary<T>) =>

@@ -9,13 +9,13 @@ import {
 } from "shared/lib/variables/variableNames";
 import type {
   ActorDirection,
-  CustomEvent,
   Palette,
   ScriptEvent,
-  Sound,
   DistanceUnitType,
   Variable,
   ScriptEventDenormalized,
+  CustomEventDenormalized,
+  SoundData,
 } from "shared/lib/entities/entitiesTypes";
 import { Dictionary } from "@reduxjs/toolkit";
 import type { EngineFieldSchema } from "store/features/engine/engineState";
@@ -29,6 +29,7 @@ import {
   PrecompiledScene,
   PrecompiledSprite,
   PrecompiledEmote,
+  PrecompiledBackground,
 } from "./compileData2";
 import { DMG_PALETTE, defaultProjectSettings } from "consts";
 import {
@@ -105,16 +106,17 @@ export interface ScriptBuilderOptions {
   variableAliasLookup: Dictionary<string>;
   scenes: PrecompiledScene[];
   sprites: PrecompiledSprite[];
+  backgrounds: PrecompiledBackground[];
   statesOrder: string[];
   stateReferences: string[];
   fonts: PrecompiledFontData[];
   defaultFontId: string;
   music: PrecompiledMusicTrack[];
-  sounds: Sound[];
+  sounds: SoundData[];
   avatars: ScriptBuilderEntity[];
   emotes: PrecompiledEmote[];
   palettes: Palette[];
-  customEvents: CustomEvent[];
+  customEvents: CustomEventDenormalized[];
   entity?: ScriptBuilderEntity;
   engineFields: Dictionary<EngineFieldSchema>;
   settings: SettingsState;
@@ -524,6 +526,7 @@ class ScriptBuilder {
       engineFields: options.engineFields || {},
       scenes: options.scenes || [],
       sprites: options.sprites || [],
+      backgrounds: options.backgrounds || [],
       statesOrder: options.statesOrder || [],
       stateReferences: options.stateReferences || [],
       fonts: options.fonts || [],

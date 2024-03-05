@@ -3,11 +3,12 @@ import { Dictionary } from "@reduxjs/toolkit";
 import flatten from "lodash/flatten";
 import { SCREEN_WIDTH } from "consts";
 import type {
-  Actor,
+  ActorDenormalized,
+  SceneDenormalized,
   SceneParallaxLayer,
-  Trigger,
+  TriggerDenormalized,
 } from "shared/lib/entities/entitiesTypes";
-import { FontData } from "lib/fonts/fontData";
+import { CompiledFontData } from "lib/fonts/fontData";
 import { decHex32Val, hexDec, wrap8Bit } from "shared/lib/helpers/8bit";
 import { PrecompiledSpriteSheetData } from "./compileSprites";
 import { dirEnum } from "./helpers";
@@ -18,13 +19,13 @@ export interface PrecompiledBackground {
   name: string;
   width: number;
   height: number;
-  data: Uint8Array;
+  data: number[] | Uint8Array;
   tileset: PrecompiledTileData;
   tilemap: PrecompiledTileData;
   tilemapAttr: PrecompiledTileData;
 }
 
-export interface PrecompiledProjectile {
+export interface ProjectileData {
   spriteSheetId: string;
   spriteStateId: string;
   speed: number;
@@ -33,8 +34,11 @@ export interface PrecompiledProjectile {
   initialOffset: number;
   collisionGroup: string;
   collisionMask: string[];
-  hash: string;
 }
+
+export type PrecompiledProjectile = ProjectileData & {
+  hash: string;
+};
 
 interface AvatarData {
   data: Uint8Array;
@@ -49,14 +53,14 @@ export interface PrecompiledEmote {
 
 export interface PrecompiledTileData {
   symbol: string;
-  data: Uint8Array;
+  data: number[] | Uint8Array;
 }
 
 interface Entity {
   name: string;
 }
 
-export interface PrecompiledScene {
+export type PrecompiledScene = SceneDenormalized & {
   id: string;
   name: string;
   symbol: string;
@@ -65,27 +69,26 @@ export interface PrecompiledScene {
   type: string;
   background: PrecompiledBackground;
   playerSprite?: PrecompiledSprite;
-  parallax: Array<{ height: number; speed: number }>;
+  parallax?: Array<{ height: number; speed: number }>;
   actorsExclusiveLookup: Dictionary<number>;
-  actors: Actor[];
-  triggers: Trigger[];
+  actors: ActorDenormalized[];
+  triggers: TriggerDenormalized[];
   projectiles: PrecompiledProjectile[];
   sprites: PrecompiledSprite[];
-}
+  playerSpritePersist: boolean;
+};
 
-interface PrecompiledSceneEventPtrs {
+export interface PrecompiledSceneEventPtrs {
   start: string | null;
   playerHit1: string | null;
   actors: Array<string | null>;
   actorsMovement: Array<string | null>;
-  actorsHit1: Array<string | null>;
   triggers: Array<string | null>;
-  triggersLeave: Array<string | null>;
 }
 
-interface PrecompiledPalette {
+export interface PrecompiledPalette {
   dmg: [string, string, string, string][];
-  colors: [string, string, string, string][];
+  colors?: [string, string, string, string][];
 }
 
 export type PrecompiledSprite = {
@@ -95,7 +98,7 @@ export type PrecompiledSprite = {
 
 export type PrecompiledFontData = {
   symbol: string;
-} & FontData;
+} & CompiledFontData;
 
 export const BACKGROUND_TYPE = "const struct background_t";
 export const SPRITESHEET_TYPE = "const struct spritesheet_t";
@@ -188,13 +191,14 @@ export const toASMCollisionMask = (mask: string[]) => {
   return flags.length > 0 ? flags.join(" | ") : 0;
 };
 
-export const maybeScriptFarPtr = (scriptSymbol: string | null) =>
+export const maybeScriptFarPtr = (scriptSymbol: string | null | undefined) =>
   scriptSymbol ? toFarPtr(scriptSymbol) : undefined;
 
-export const maybeScriptDependency = (scriptSymbol: string | null) =>
-  scriptSymbol ? scriptSymbol : [];
+export const maybeScriptDependency = (
+  scriptSymbol: string | null | undefined
+) => (scriptSymbol ? scriptSymbol : []);
 
-export const toASMTriggerScriptFlags = (trigger: Trigger) => {
+export const toASMTriggerScriptFlags = (trigger: TriggerDenormalized) => {
   const flags = [];
 
   if (trigger.script.length > 0) flags.push("TRIGGER_HAS_ENTER_SCRIPT");

@@ -9,14 +9,14 @@ import {
   TileLookup,
 } from "shared/lib/tiles/tileData";
 import { readFileToTilesDataArray } from "lib/tiles/readFileToTiles";
-import { BackgroundAssetData } from "lib/project/loadBackgroundData";
+import { BackgroundData } from "shared/lib/entities/entitiesTypes";
 
 type CompileImageOptions = {
   warnings: (msg: string) => void;
 };
 
 interface CompiledImagesResult {
-  tilesets: Uint8Array[];
+  tilesets: Record<string, Uint8Array>;
   tilemaps: Record<string, number[] | Uint8Array>;
   tilemapsTileset: Record<string, number>;
 }
@@ -34,7 +34,7 @@ let lastOutput: CompiledImagesResult | null = null;
 let lastOutputIds = "";
 
 const compileImages = async (
-  imgs: BackgroundAssetData[],
+  imgs: BackgroundData[],
   generate360Ids: string[],
   projectPath: string,
   tmpPath: string,
@@ -44,7 +44,7 @@ const compileImages = async (
   const tilesetIndexes: number[] = [];
   const imgTiles: Uint8Array[][] = [];
   const output: CompiledImagesResult = {
-    tilesets: [],
+    tilesets: {},
     tilemaps: {},
     tilemapsTileset: {},
   };

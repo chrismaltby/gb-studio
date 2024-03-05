@@ -12,7 +12,7 @@ export interface PrecompiledMusicTrack {
   dataName: string;
   filename: string;
   settings: {
-    disableSpeedConversion: boolean;
+    disableSpeedConversion?: boolean;
   };
 }
 

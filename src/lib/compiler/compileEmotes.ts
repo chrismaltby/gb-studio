@@ -1,14 +1,14 @@
 import promiseLimit from "lib/helpers/promiseLimit";
 import getFileModifiedTime from "lib/helpers/fs/getModifiedTime";
-import { EmoteAssetData } from "lib/project/loadEmoteData";
 import { assetFilename } from "shared/lib/helpers/assets";
 import { readFileToSpriteTilesData } from "lib/sprites/readSpriteData";
+import { EmoteData } from "shared/lib/entities/entitiesTypes";
 
 type CompileEmoteOptions = {
   warnings: (msg: string) => void;
 };
 
-export type PrecompiledEmoteData = EmoteAssetData & {
+export type PrecompiledEmoteData = EmoteData & {
   data: Uint8Array;
   size: number;
   frames: number;
@@ -23,7 +23,7 @@ const emoteBuildCache: Record<
 > = {};
 
 const compileEmotes = async (
-  emotes: EmoteAssetData[],
+  emotes: EmoteData[],
   projectRoot: string,
   { warnings }: CompileEmoteOptions
 ): Promise<PrecompiledEmoteData[]> => {

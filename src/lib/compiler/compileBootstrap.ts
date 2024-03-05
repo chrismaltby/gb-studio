@@ -9,6 +9,7 @@ import {
   PrecompiledScene,
 } from "./compileData2";
 import { dirEnum } from "./helpers";
+import { PrecompiledAvatarData } from "./compileAvatars";
 
 interface InitialState {
   startX: number;
@@ -18,7 +19,7 @@ interface InitialState {
   startMoveSpeed: number;
   startAnimSpeed: number;
   fonts: PrecompiledFontData[];
-  avatarFonts: undefined[];
+  avatarFonts: PrecompiledAvatarData[][];
   engineFields: EngineFieldSchema[];
   engineFieldValues: EngineFieldValue[];
   persistSceneSpriteSymbols: Record<string, string>;

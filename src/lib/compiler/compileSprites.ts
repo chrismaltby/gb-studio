@@ -5,9 +5,8 @@ import {
   toEngineOrder,
 } from "shared/lib/sprites/helpers";
 import type {
-  MetaspriteTile,
   ObjPalette,
-  SpriteAnimationType,
+  SpriteSheetData,
 } from "shared/lib/entities/entitiesTypes";
 import { IndexedImage } from "shared/lib/tiles/indexedImage";
 import { assetFilename } from "shared/lib/helpers/assets";
@@ -18,37 +17,6 @@ const S_FLIPX = 0x20;
 const S_FLIPY = 0x40;
 const S_PRIORITY = 0x80;
 const S_GBC_PALETTE_MASK = 0x7;
-
-interface SpriteSheetFrameData {
-  id: string;
-  tiles: MetaspriteTile[];
-}
-
-interface SpriteSheetAnimationData {
-  id: string;
-  frames: SpriteSheetFrameData[];
-}
-
-interface SpriteSheetStateData {
-  id: string;
-  name: string;
-  animationType: SpriteAnimationType;
-  flipLeft: boolean;
-  animations: SpriteSheetAnimationData[];
-}
-
-export interface SpriteSheetData {
-  id: string;
-  name: string;
-  filename: string;
-  canvasWidth: number;
-  canvasHeight: number;
-  states: SpriteSheetStateData[];
-  boundsX: number;
-  boundsY: number;
-  boundsWidth: number;
-  boundsHeight: number;
-}
 
 interface AnimationOffset {
   start: number;
