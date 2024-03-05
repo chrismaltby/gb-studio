@@ -2,6 +2,8 @@ import { readFile } from "fs-extra";
 import { PNG } from "pngjs";
 import uniqBy from "lodash/uniqBy";
 import RgbQuant from "rgbquant";
+import { decHex } from "shared/lib/helpers/8bit";
+import { chunk } from "lib/helpers/array2";
 
 const SNES_SCREEN_WIDTH = 256;
 const SNES_SCREEN_HEIGHT = 224;
@@ -13,29 +15,16 @@ const SGB_PALETTE_SIZE = 16;
 const USE_SGB_PAL = 0x10;
 const FLIP_X = 0x40;
 const FLIP_Y = 0x80;
-const BLANK_TILE = Array.from(Array(TILE_SIZE * TILE_SIZE)).fill(0);
-const TRANSPARENT_TILE = Array.from(Array(TILE_SIZE * TILE_SIZE)).fill(-1);
+const BLANK_TILE: number[] = Array.from(Array(TILE_SIZE * TILE_SIZE)).fill(0);
+const TRANSPARENT_TILE: number[] = Array.from(
+  Array(TILE_SIZE * TILE_SIZE)
+).fill(-1);
 
-const toIndex = (x, y) => (x + y * SNES_SCREEN_WIDTH) * 4;
-const toTileIndex = (x, y) => x + y * TILE_SIZE;
+const toIndex = (x: number, y: number): number =>
+  (x + y * SNES_SCREEN_WIDTH) * 4;
+const toTileIndex = (x: number, y: number): number => x + y * TILE_SIZE;
 
-const decHex = (value) => {
-  return `0x${parseInt(value, 10).toString(16).padStart(2, 0).toUpperCase()}`;
-};
-
-function chunk(arr, len) {
-  const chunks = [];
-  let i = 0;
-  const n = arr.length;
-
-  while (i < n) {
-    chunks.push(arr.slice(i, (i += len)));
-  }
-
-  return chunks;
-}
-
-const rgbTo15BitColor = (r, g, b) => {
+const rgbTo15BitColor = (r: number, g: number, b: number) => {
   const c = (r << 16) + (g << 8) + b;
   const r2 = (c & 0xf80000) >> 19;
   const g2 = (c & 0x00f800) >> 6;
@@ -43,14 +32,14 @@ const rgbTo15BitColor = (r, g, b) => {
   return b2 | g2 | r2;
 };
 
-const color15BitToRGB = (color) => {
+const color15BitToRGB = (color: number): [number, number, number] => {
   const r = (color % 32) * 8;
   const g = ((color / 32) % 32) * 8;
   const b = ((color / 1024) % 32) * 8;
   return [r, g, b];
 };
 
-function rgb2lab(rgb) {
+function rgb2lab(rgb: [number, number, number]): [number, number, number] {
   let r = rgb[0] / 255;
   let g = rgb[1] / 255;
   let b = rgb[2] / 255;
@@ -69,7 +58,10 @@ function rgb2lab(rgb) {
   return [116 * y - 16, 500 * (x - y), 200 * (y - z)];
 }
 
-function deltaE(rgbA, rgbB) {
+function deltaE(
+  rgbA: [number, number, number],
+  rgbB: [number, number, number]
+) {
   const labA = rgb2lab(rgbA);
   const labB = rgb2lab(rgbB);
   const deltaL = labA[0] - labB[0];
@@ -90,18 +82,18 @@ function deltaE(rgbA, rgbB) {
   return i < 0 ? 0 : Math.sqrt(i);
 }
 
-const distance15Bit = (colorA, colorB) => {
+const distance15Bit = (colorA: number, colorB: number) => {
   return deltaE(
     rgb2lab(color15BitToRGB(colorA)),
     rgb2lab(color15BitToRGB(colorB))
   );
 };
 
-const bin2 = (value) => {
-  return value.toString(2).padStart(4, 0);
+const bin2 = (value: number) => {
+  return value.toString(2).padStart(4, "0");
 };
 
-const flipTileX = (inData) => {
+const flipTileX = (inData: number[]) => {
   const data = [];
   for (let y = 0; y < TILE_SIZE; y++) {
     for (let x = 0; x < TILE_SIZE; x++) {
@@ -112,7 +104,7 @@ const flipTileX = (inData) => {
   return data;
 };
 
-const flipTileY = (inData) => {
+const flipTileY = (inData: number[]) => {
   const data = [];
   for (let y = 0; y < TILE_SIZE; y++) {
     for (let x = 0; x < TILE_SIZE; x++) {
@@ -123,7 +115,7 @@ const flipTileY = (inData) => {
   return data;
 };
 
-const isTileEqual = (dataA, dataB) => {
+const isTileEqual = (dataA: number[], dataB: number[]) => {
   for (let i = 0; i < dataA.length; i++) {
     if (dataA[i] !== dataB[i]) {
       return false;
@@ -132,7 +124,7 @@ const isTileEqual = (dataA, dataB) => {
   return true;
 };
 
-const closestPalette = (colors, palettes) => {
+const closestPalette = (colors: number[], palettes: number[][]) => {
   const matches = palettes.map((palette) => {
     let numMatches = 0;
     for (let i = 0; i < colors.length; i++) {
@@ -147,7 +139,7 @@ const closestPalette = (colors, palettes) => {
   return closestIndex;
 };
 
-const toPaletteColorIndex = (color, palette) => {
+const toPaletteColorIndex = (color: number, palette: number[]) => {
   if (color === -1) {
     return 0;
   }
@@ -166,7 +158,7 @@ const toPaletteColorIndex = (color, palette) => {
   return closestIndex;
 };
 
-const toTileData = (tile, palettes) => {
+const toTileData = (tile: number[], palettes: number[][]) => {
   const paletteIndex = closestPalette(tile, palettes);
   const palette = palettes[paletteIndex];
   const data = tile.map((color) => toPaletteColorIndex(color, palette));
@@ -176,7 +168,7 @@ const toTileData = (tile, palettes) => {
   };
 };
 
-const pixelsToSGBData = (pixels, width, height) => {
+const pixelsToSGBData = (pixels: Uint8Array, width: number, height: number) => {
   if (width !== SNES_SCREEN_WIDTH) {
     throw new Error(`SGB Image width must be ${SNES_SCREEN_WIDTH}px`);
   }
@@ -186,7 +178,7 @@ const pixelsToSGBData = (pixels, width, height) => {
   const tilePalettes = [];
   const tiles = [];
 
-  const parseTile = (tx, ty) => {
+  const parseTile = (tx: number, ty: number) => {
     const colors = [];
     const tile = [];
     for (let y = 0; y < TILE_SIZE; y++) {
@@ -227,7 +219,7 @@ const pixelsToSGBData = (pixels, width, height) => {
     }
   }
 
-  const toPalettes = (tilePalettes) => {
+  const toPalettes = (tilePalettes: number[][]) => {
     const palettes = [[-1], [-1], [-1], [-1]];
     let writePalette = 0;
 
@@ -283,7 +275,7 @@ const pixelsToSGBData = (pixels, width, height) => {
   const uniquePalettes = uniqBy(tilePalettes, (palette) => palette.join(","));
   const palettes = toPalettes(uniquePalettes);
 
-  const uniqueTiles = [BLANK_TILE];
+  const uniqueTiles: number[][] = [BLANK_TILE];
   const tileIndexes = [];
   const tileAttrs = [];
 
@@ -351,13 +343,13 @@ const pixelsToSGBData = (pixels, width, height) => {
     }
   }
 
-  const map = [];
+  const map: number[] = [];
   for (let i = 0; i < tileIndexes.length; i++) {
     map.push(tileIndexes[i]);
     map.push(tileAttrs[i]);
   }
 
-  const palettesData = [];
+  const palettesData: number[] = [];
   for (let i = 0; i < N_SGB_PALETTES; i++) {
     if (palettes[i].length > 0) {
       for (let c = 0; c < SGB_PALETTE_SIZE; c++) {
@@ -375,7 +367,7 @@ const pixelsToSGBData = (pixels, width, height) => {
   };
 };
 
-const tileTo4BPP = (tileData) => {
+const tileTo4BPP = (tileData: number[]) => {
   const tile = [];
   for (let y = 0; y < 8; y++) {
     let row1 = "";
@@ -406,7 +398,7 @@ const tileTo4BPP = (tileData) => {
   return tile;
 };
 
-const toSGBCData = (tiles, map, palettes) => {
+const toSGBCData = (tiles: number[][], map: number[], palettes: number[]) => {
   return `#pragma bank 255
 
 #include "gbs_types.h"
@@ -438,7 +430,7 @@ SIZEREF(SGB_border_pal)
 `;
 };
 
-const compileSGBImage = async (filename) => {
+const compileSGBImage = async (filename: string) => {
   const fileData = await readFile(filename);
   return new Promise((resolve, reject) => {
     new PNG().parse(fileData, (err, data) => {
