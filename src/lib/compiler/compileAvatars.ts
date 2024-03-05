@@ -2,14 +2,35 @@ import promiseLimit from "lib/helpers/promiseLimit";
 import getFileModifiedTime from "lib/helpers/fs/getModifiedTime";
 import { assetFilename } from "shared/lib/helpers/assets";
 import { readFileToTilesData } from "lib/tiles/readFileToTiles";
+import { AvatarAssetData } from "lib/project/loadAvatarData";
 
-const avatarBuildCache = {};
+type CompileAvatarOptions = {
+  warnings: (msg: string) => void;
+};
 
-const compileAvatars = async (avatars, projectRoot, { warnings }) => {
+export type PrecompiledAvatarData = AvatarAssetData & {
+  data: Uint8Array;
+  size: number;
+  frames: number;
+};
+
+const avatarBuildCache: Record<
+  string,
+  {
+    timestamp: number;
+    data: Uint8Array;
+  }
+> = {};
+
+const compileAvatars = async (
+  avatars: AvatarAssetData[],
+  projectRoot: string,
+  { warnings }: CompileAvatarOptions
+) => {
   const avatarData = await promiseLimit(
     10,
     avatars.map((avatar) => {
-      return async () => {
+      return async (): Promise<PrecompiledAvatarData> => {
         const filename = assetFilename(projectRoot, "avatars", avatar);
         const modifiedTime = await getFileModifiedTime(filename);
         let data;
