@@ -169,7 +169,7 @@ const AppToolbar: FC = () => {
     ) {
       searchInputRef.current.blur();
     }
-    if (e.target && (e.target as Node).nodeName === "INPUT") {
+    if (e.target && (e.target as Node).nodeName !== "BODY") {
       return;
     }
     if (e.key === "/" && searchInputRef.current) {
