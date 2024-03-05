@@ -1,6 +1,5 @@
 import fs from "fs-extra";
 import os from "os";
-
 import {
   buildLinkFile,
   buildLinkFlags,
@@ -9,21 +8,32 @@ import {
 } from "./buildMakeScript";
 import { cacheObjData, fetchCachedObjData } from "./objCache";
 import ensureBuildTools from "./ensureBuildTools";
-import spawn from "lib/helpers/cli/spawn";
+import spawn, { ChildProcess } from "lib/helpers/cli/spawn";
 import { gbspack } from "./gbspack";
 import l10n from "shared/lib/lang/l10n";
+import type { ProjectData } from "store/features/project/projectActions";
+
+type MakeOptions = {
+  buildRoot: string;
+  tmpPath: string;
+  data: ProjectData;
+  buildType: "rom" | "web" | "pocket";
+  profile: boolean;
+  progress: (msg: string) => void;
+  warnings: (msg: string) => void;
+};
 
 const cpuCount = os.cpus().length;
 
 const makeBuild = async ({
   buildRoot = "/tmp",
   tmpPath = "/tmp",
-  data = {},
+  data,
   profile = false,
   buildType = "rom",
   progress = (_msg) => {},
   warnings = (_msg) => {},
-} = {}) => {
+}: MakeOptions) => {
   const env = Object.create(process.env);
   const { settings } = data;
 
@@ -67,11 +77,8 @@ const makeBuild = async ({
 
   // Compile Source Files
   const makeCommands = await getBuildCommands(buildRoot, {
-    CART_TYPE: env.CART_TYPE,
-    CART_SIZE: env.CART_SIZE,
     customColorsEnabled: settings.customColorsEnabled,
     sgb: settings.sgbEnabled,
-    gbcFastCPUEnabled: settings.gbcFastCPUEnabled,
     musicDriver: settings.musicDriver,
     batteryless: settings.batterylessEnabled,
     profile,
@@ -86,17 +93,17 @@ const makeBuild = async ({
   };
 
   // Build source files in parallel
-  const childSet = new Set();
+  const childSet = new Set<ChildProcess>();
   const concurrency = cpuCount;
   await Promise.all(
     Array(concurrency)
       .fill(makeCommands.entries())
       .map(async (cursor) => {
-        for (let [_, makeCommand] of cursor) {
+        for (const [_, makeCommand] of cursor) {
           try {
             progress(makeCommand.label);
           } catch (e) {
-            for (let child of childSet) {
+            for (const child of childSet) {
               child.kill();
             }
             throw e;
@@ -137,7 +144,7 @@ const makeBuild = async ({
   // Link ROM ---
 
   progress(`${l10n("COMPILER_LINKING")}...`);
-  const linkFile = await buildLinkFile(buildRoot, parseInt(cartSize, 10));
+  const linkFile = await buildLinkFile(buildRoot, cartSize);
   const linkFilePath = `${buildRoot}/obj/linkfile.lk`;
   await fs.writeFile(linkFilePath, linkFile);
 

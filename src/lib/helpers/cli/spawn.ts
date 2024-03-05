@@ -1,5 +1,7 @@
 import childProcess from "child_process";
 
+export type ChildProcess = childProcess.ChildProcess;
+
 interface SpawnLogFns {
   onLog?: (msg: string) => void;
   onError?: (msg: string) => void;

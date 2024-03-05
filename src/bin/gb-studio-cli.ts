@@ -103,6 +103,7 @@ const main = async (
       tmpPath,
       data: project,
       profile: false,
+      buildType: "rom",
       progress,
       warnings,
     });
@@ -128,6 +129,7 @@ const main = async (
       tmpPath,
       data: project,
       profile: false,
+      buildType: "web",
       progress,
       warnings,
     });
