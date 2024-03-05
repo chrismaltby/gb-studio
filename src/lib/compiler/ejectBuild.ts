@@ -12,14 +12,30 @@ import {
 import ensureBuildTools from "./ensureBuildTools";
 import glob from "glob";
 import l10n from "shared/lib/lang/l10n";
+import type { EngineFieldSchema } from "store/features/engine/engineState";
+import type { ProjectData } from "store/features/project/projectActions";
 
 const rmdir = promisify(rimraf);
 
-const readEngineVersion = async (path) => {
-  return (await fs.readJSON(path, "utf8")).version;
+type EjectOptions = {
+  projectType: "gb";
+  engineFields: EngineFieldSchema[];
+  projectData: ProjectData;
+  outputRoot: string;
+  projectRoot: string;
+  tmpPath: string;
+  compiledData: {
+    files: Record<string, string>;
+  };
+  progress: (msg: string) => void;
+  warnings: (msg: string) => void;
 };
 
-const readEngineVersionLegacy = async (path) => {
+const readEngineVersion = async (path: string) => {
+  return (await fs.readJSON(path, { encoding: "utf8" })).version;
+};
+
+const readEngineVersionLegacy = async (path: string) => {
   return (await fs.readFile(path, "utf8")).replace(/#.*/g, "").trim();
 };
 
@@ -33,7 +49,7 @@ const ejectBuild = async ({
   compiledData,
   progress = (_msg) => {},
   warnings = (_msg) => {},
-} = {}) => {
+}: EjectOptions) => {
   const corePath = `${engineRoot}/${projectType}`;
   const localCorePath = `${projectRoot}/assets/engine`;
   const pluginsPath = `${projectRoot}/plugins`;
@@ -117,28 +133,34 @@ const ejectBuild = async ({
     await copy(enginePluginPath, outputRoot);
   }
 
-  // Modify engineField defines
+  // Modify engineField defines for any engine fields that define a "file" field
   await Promise.all(
     engineFields
       .filter(
         (engineField) => engineField.cType === "define" && engineField.file
       )
-      .reduce((memo, engineField) => {
-        // Group by file first
-        const group = memo.find((g) => g.file === engineField.file);
+      .reduce(
+        (memo, engineField) => {
+          // Group by file first
+          const group = memo.find((g) => g.file === engineField.file);
 
-        if (!group) {
-          memo.push({
-            file: engineField.file,
-            fields: [engineField],
-          });
-        } else {
-          group.fields.push(engineField);
-        }
+          if (!group) {
+            memo.push({
+              file: engineField.file ?? "",
+              fields: [engineField],
+            });
+          } else {
+            group.fields.push(engineField);
+          }
 
-        return memo;
-      }, [])
-      .map(async (engineFile) => {
+          return memo;
+        },
+        [] as {
+          file: string;
+          fields: EngineFieldSchema[];
+        }[]
+      )
+      .map(async (engineFile): Promise<void> => {
         const filename = `${outputRoot}/${engineFile.file}`;
         let source = await fs.readFile(filename, "utf8");
 

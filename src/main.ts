@@ -1062,6 +1062,7 @@ ipcMain.handle(
 
       // Export compiled data to a folder
       await ejectBuild({
+        projectType: "gb",
         projectRoot,
         tmpPath,
         projectData: project,

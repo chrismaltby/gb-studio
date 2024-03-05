@@ -14,6 +14,7 @@ export type EngineFieldSchema = {
   min?: number;
   max?: number;
   options?: [number, string][];
+  file?: string;
 };
 
 export interface EngineState {

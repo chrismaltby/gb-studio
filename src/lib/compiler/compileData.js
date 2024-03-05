@@ -1151,6 +1151,9 @@ const precompile = async (
 
 // #endregion
 
+/**
+ * @returns {Promise<{files: Record<string, string>}>}
+ */
 const compile = async (
   projectData,
   {
