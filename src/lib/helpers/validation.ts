@@ -7,6 +7,7 @@ import {
 } from "shared/lib/tiles/tileData";
 import { assetFilename } from "shared/lib/helpers/assets";
 import { readFileToTilesDataArray } from "lib/tiles/readFileToTiles";
+import { BackgroundAssetData } from "lib/project/loadBackgroundData";
 
 const MAX_IMAGE_WIDTH = 2040;
 const MAX_IMAGE_HEIGHT = 2040;
@@ -20,7 +21,7 @@ export interface BackgroundInfo {
 }
 
 export const getBackgroundInfo = async (
-  background: Background,
+  background: Background | BackgroundAssetData,
   is360: boolean,
   projectPath: string,
   precalculatedTilesetLength?: number

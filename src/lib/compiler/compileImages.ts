@@ -6,26 +6,45 @@ import {
   tileArrayToTileData,
   tilesAndLookupToTilemap,
   toTileLookup,
+  TileLookup,
 } from "shared/lib/tiles/tileData";
 import { readFileToTilesDataArray } from "lib/tiles/readFileToTiles";
+import { BackgroundAssetData } from "lib/project/loadBackgroundData";
 
-const imageBuildCache = {};
+type CompileImageOptions = {
+  warnings: (msg: string) => void;
+};
 
-let lastOutput = null;
+interface CompiledImagesResult {
+  tilesets: Uint8Array[];
+  tilemaps: Record<string, number[] | Uint8Array>;
+  tilemapsTileset: Record<string, number>;
+}
+
+const imageBuildCache: Record<
+  string,
+  {
+    timestamp: number;
+    data: TileLookup;
+    tileData: Uint8Array[];
+  }
+> = {};
+
+let lastOutput: CompiledImagesResult | null = null;
 let lastOutputIds = "";
 
 const compileImages = async (
-  imgs,
-  generate360Ids,
-  projectPath,
-  tmpPath,
-  { warnings }
-) => {
-  const tilesetLookups = [];
-  const tilesetIndexes = [];
-  const imgTiles = [];
-  const output = {
-    tilesets: {},
+  imgs: BackgroundAssetData[],
+  generate360Ids: string[],
+  projectPath: string,
+  tmpPath: string,
+  { warnings }: CompileImageOptions
+): Promise<CompiledImagesResult> => {
+  const tilesetLookups: (TileLookup | null)[] = [];
+  const tilesetIndexes: number[] = [];
+  const imgTiles: Uint8Array[][] = [];
+  const output: CompiledImagesResult = {
+    tilesets: [],
     tilemaps: {},
     tilemapsTileset: {},
   };
@@ -89,7 +108,7 @@ const compileImages = async (
   // no need to recalculate image tiles and tile lookups,
   // just reuse last compile
   const ids = imgs.map((img) => img.id).join();
-  if (uncachedCount === 0 && ids === lastOutputIds) {
+  if (uncachedCount === 0 && ids === lastOutputIds && lastOutput) {
     return lastOutput;
   }
 
@@ -131,7 +150,7 @@ const compileImages = async (
       // Generate 360 tiles
       output.tilesets[i] = tileArrayToTileData(imgTiles[i]);
     } else if (tilesetLookups[i]) {
-      output.tilesets[i] = tileLookupToTileData(tilesetLookups[i]);
+      output.tilesets[i] = tileLookupToTileData(tilesetLookups[i] ?? {});
     }
   }
 
@@ -143,7 +162,7 @@ const compileImages = async (
     } else {
       const tilemap = tilesAndLookupToTilemap(
         imgTiles[i],
-        tilesetLookups[tilesetIndexes[i]]
+        tilesetLookups[tilesetIndexes[i]] ?? {}
       );
       output.tilemaps[imgs[i].id] = tilemap;
       output.tilemapsTileset[imgs[i].id] = tilesetIndexes[i];

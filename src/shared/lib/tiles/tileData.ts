@@ -1,6 +1,6 @@
 import { ImageIndexFunction } from "./indexedImage";
 
-type TileLookup = Record<string, Uint8Array>;
+export type TileLookup = Record<string, Uint8Array>;
 
 export const tileDataIndexFn: ImageIndexFunction = (_r, g, _b, _a) => {
   if (g < 65) {
