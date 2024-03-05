@@ -279,7 +279,7 @@ export const toStructData = <T extends Record<string, unknown>>(
         return `${" ".repeat(indent)}// ${object[key]}`;
       }
       if (Array.isArray(object[key])) {
-        return `${" ".repeat(indent)}.${key} = {
+        return `${" ".repeat(indent)}.${String(key)} = {
 ${chunk(object[key] as unknown as Record<string, unknown>[], perLine)
   .map(
     (r) =>
@@ -305,7 +305,7 @@ ${chunk(object[key] as unknown as Record<string, unknown>[], perLine)
 ${" ".repeat(indent)}}`;
       }
       if (object[key] instanceof Object) {
-        return `${" ".repeat(indent)}.${key} = {
+        return `${" ".repeat(indent)}.${String(key)} = {
 ${toStructData(
   object[key] as Record<string, unknown>,
   indent + INDENT_SPACES,
@@ -313,7 +313,7 @@ ${toStructData(
 )}
 ${" ".repeat(indent)}}`;
       }
-      return `${" ".repeat(indent)}.${key} = ${object[key]}`;
+      return `${" ".repeat(indent)}.${String(key)} = ${object[key]}`;
     })
     .filter((line) => line.length > 0)
     .join(",\n");
