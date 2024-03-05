@@ -1,23 +1,26 @@
 import childProcess from "child_process";
 
+interface SpawnLogFns {
+  onLog?: (msg: string) => void;
+  onError?: (msg: string) => void;
+}
+
 const spawn = (
-  command,
-  args,
-  options,
-  { onLog = () => {}, onError = () => {} }
+  command: string,
+  args: string[],
+  options: childProcess.SpawnOptions,
+  { onLog = () => {}, onError = () => {} }: SpawnLogFns
 ) => {
   let complete = false;
   let code = 0;
 
-  const child = childProcess.spawn(command, args, options, {
-    encoding: "utf8",
-  });
+  const child = childProcess.spawn(command, args, options);
 
   child.on("error", (err) => {
     onError(err.toString());
   });
 
-  child.stdout.on("data", (childData) => {
+  child.stdout?.on("data", (childData: string) => {
     const lines = childData.toString().split("\n");
     lines.forEach((line, lineIndex) => {
       if (line.length === 0 && lineIndex === lines.length - 1) {
@@ -27,7 +30,7 @@ const spawn = (
     });
   });
 
-  child.stderr.on("data", (childData) => {
+  child.stderr?.on("data", (childData: string) => {
     const lines = childData.toString().split("\n");
     lines.forEach((line, lineIndex) => {
       if (line.length === 0 && lineIndex === lines.length - 1) {
@@ -44,7 +47,7 @@ const spawn = (
 
   return {
     child,
-    completed: new Promise((resolve, reject) => {
+    completed: new Promise<void>((resolve, reject) => {
       const interval = setInterval(() => {
         if (complete) {
           clearInterval(interval);
