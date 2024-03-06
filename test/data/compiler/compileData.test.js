@@ -6,7 +6,7 @@ import { compileSceneProjectiles } from "../../../src/lib/compiler/compileData2"
 import { EVENT_TEXT, EVENT_IF_TRUE, EVENT_SET_TRUE } from "../../../src/consts";
 import { projectileStateTest } from "./_files/data/projectiles";
 
-test.only("should take into account state value when building projectiles", () => {
+test("should take into account state value when building projectiles", () => {
   const scene = projectileStateTest.scene;
   const sprites = projectileStateTest.sprites;
   const out = compileSceneProjectiles(scene, 0, sprites);
@@ -418,7 +418,8 @@ test("should precompile image data", async () => {
     scenes,
     {},
     `${__dirname}/_files`,
-    `${__dirname}/_tmp`
+    `${__dirname}/_tmp`,
+    { warnings: () => {} }
   );
   expect(usedBackgrounds).toHaveLength(1);
   expect(backgroundLookup["2b"]).toBe(backgrounds[0]);
@@ -477,7 +478,8 @@ test("should precompile scenes", async () => {
     {},
     defaultPlayerSprites,
     usedBackgrounds,
-    spriteData
+    spriteData,
+    { warnings: () => {} }
   );
 
   expect(sceneData).toHaveLength(scenes.length);

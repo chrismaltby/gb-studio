@@ -1,9 +1,10 @@
-jest.mock("path");
 import PathMock from "path";
 import parseAssetPath from "../../../src/shared/lib/assets/parseAssetPath";
+
+jest.mock("path");
 const PathActual = jest.requireActual("path");
 
-test.only("Should parse posix asset paths", async () => {
+test("Should parse posix asset paths", async () => {
   PathMock.relative = PathActual.posix.relative;
   PathMock.sep = PathActual.posix.sep;
 
@@ -22,7 +23,7 @@ test.only("Should parse posix asset paths", async () => {
   expect(file).toBe("testing.png");
 });
 
-test.only("Should parse win32 asset paths", async () => {
+test("Should parse win32 asset paths", async () => {
   PathMock.relative = PathActual.win32.relative;
   PathMock.sep = PathActual.win32.sep;
 
@@ -42,7 +43,7 @@ test.only("Should parse win32 asset paths", async () => {
   expect(file).toBe("testing.png");
 });
 
-test.only("Should parse posix plugin paths", async () => {
+test("Should parse posix plugin paths", async () => {
   PathMock.relative = PathActual.posix.relative;
   PathMock.sep = PathActual.posix.sep;
 
@@ -62,7 +63,7 @@ test.only("Should parse posix plugin paths", async () => {
   expect(file).toBe("testing.png");
 });
 
-test.only("Should parse win32 plugin paths", async () => {
+test("Should parse win32 plugin paths", async () => {
   PathMock.relative = PathActual.win32.relative;
   PathMock.sep = PathActual.win32.sep;
 
