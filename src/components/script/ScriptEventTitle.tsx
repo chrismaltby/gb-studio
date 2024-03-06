@@ -1,5 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
-import events, { eventLookup } from "lib/events";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import {
   isActorField,
   isPropertyField,
@@ -33,6 +32,7 @@ import styled from "styled-components";
 import { fadeIn } from "ui/animations/animations";
 import { getAnimLabel } from "components/forms/AnimationSpeedSelect";
 import { ScriptEditorContext } from "./ScriptEditorContext";
+import { selectScriptEventDefsLookup } from "store/features/scriptEventDefs/scriptEventDefsState";
 
 interface ScriptEventTitleProps {
   command: string;
@@ -83,11 +83,27 @@ const fieldsIndexByKey = (
 
 const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
   const context = useContext(ScriptEditorContext);
+  const scriptEventDefsLookup = useSelector((state: RootState) =>
+    selectScriptEventDefsLookup(state)
+  );
+  console.warn(
+    "@TODO Move engineField events to redux store" as any /*So this turns up in linter */
+  );
+  const eventLookup = useMemo(
+    () => ({
+      eventsLookup: scriptEventDefsLookup,
+      engineFieldUpdateEventsLookup: {},
+      engineFieldStoreEventsLookup: {},
+    }),
+    [scriptEventDefsLookup]
+  );
   const localisedCommand = l10n(command as L10NKey);
   const eventName =
     localisedCommand !== command
       ? localisedCommand
-      : (events[command] && events[command]?.name) || command;
+      : (scriptEventDefsLookup[command] &&
+          scriptEventDefsLookup[command]?.name) ||
+        command;
   const labelName = args?.__label ? args.__label : undefined;
 
   const [autoName, setAutoName] = useState("");
@@ -149,8 +165,10 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
   }, [entityId, variablesLookup, context, customEvent]);
 
   useEffect(() => {
-    if (events[command]?.autoLabel) {
-      const fieldLookup = fieldsIndexByKey(events[command]?.fields || []);
+    if (scriptEventDefsLookup[command]?.autoLabel) {
+      const fieldLookup = fieldsIndexByKey(
+        scriptEventDefsLookup[command]?.fields || []
+      );
 
       const extractValue = (arg: unknown): unknown => {
         if (
@@ -341,7 +359,9 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
         return String(value);
       };
       try {
-        setAutoName(events[command]?.autoLabel?.(mapArg, args) || "");
+        setAutoName(
+          scriptEventDefsLookup[command]?.autoLabel?.(mapArg, args) || ""
+        );
       } catch (e) {
         console.error(`Auto name failed for ${command} with args`, args);
         console.error(e);
@@ -364,6 +384,8 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
     customEventsLookup,
     customEvents,
     context,
+    scriptEventDefsLookup,
+    eventLookup,
   ]);
 
   return <Wrapper>{String(labelName || autoName || eventName)}</Wrapper>;

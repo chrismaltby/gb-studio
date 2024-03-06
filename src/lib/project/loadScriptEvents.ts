@@ -27,6 +27,11 @@ export interface ScriptEventDef {
   editableSymbol?: boolean;
   allowChildrenBeforeInitFade?: boolean;
   waitUntilAfterInitFade?: boolean;
+  autoLabel?: (
+    // @TODO: Need to change this so that autoLabel is called using an API
+    lookup: (key: string) => string,
+    args: Record<string, unknown>
+  ) => string;
 }
 
 export type ScriptEventHandler = ScriptEventDef & {

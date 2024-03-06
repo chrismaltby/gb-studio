@@ -1,5 +1,8 @@
 import { Dictionary } from "@reduxjs/toolkit";
-import { EventLookup, isVariableField } from "lib/helpers/eventSystem";
+import {
+  ScriptEventsDefLookups,
+  isVariableField,
+} from "lib/helpers/eventSystem";
 import {
   actorName,
   isUnionValue,
@@ -54,7 +57,7 @@ const workerCtx: Worker = self as unknown as Worker;
 const onVariableEventContainingId =
   (
     id: string,
-    eventLookup: EventLookup,
+    eventLookup: ScriptEventsDefLookups,
     callback: (event: ScriptEvent) => void
   ) =>
   (event: ScriptEvent) => {
@@ -83,7 +86,7 @@ workerCtx.onmessage = async (evt) => {
     evt.data.scriptEventsLookup;
   const actorsLookup: Dictionary<Actor> = evt.data.actorsLookup;
   const triggersLookup: Dictionary<Trigger> = evt.data.triggersLookup;
-  const eventsLookup: EventLookup = evt.data.eventLookup;
+  const eventsLookup: ScriptEventsDefLookups = evt.data.eventLookup;
 
   const uses: VariableUse[] = [];
   const useLookup: Dictionary<boolean> = {};

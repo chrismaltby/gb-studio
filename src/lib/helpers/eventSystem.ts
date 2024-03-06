@@ -8,11 +8,12 @@ import {
   EVENT_ENGINE_FIELD_SET,
   EVENT_ENGINE_FIELD_STORE,
 } from "consts";
+import { ScriptEventDef } from "lib/project/loadScriptEvents";
 
-export interface EventLookup {
-  eventsLookup: Dictionary<EventHandler>;
-  engineFieldUpdateEventsLookup: Dictionary<EventHandler>;
-  engineFieldStoreEventsLookup: Dictionary<EventHandler>;
+export interface ScriptEventsDefLookups {
+  eventsLookup: Dictionary<ScriptEventDef>;
+  engineFieldUpdateEventsLookup: Dictionary<ScriptEventDef>;
+  engineFieldStoreEventsLookup: Dictionary<ScriptEventDef>;
 }
 
 const mapEvents = (events: any[] = [], callback: (e: any) => any) => {
@@ -401,7 +402,12 @@ const eventHasArg = (event: any, argName: any) => {
   );
 };
 
-const getField = (cmd: any, fieldName: any, args: any, lookup: EventLookup) => {
+const getField = (
+  cmd: any,
+  fieldName: any,
+  args: any,
+  lookup: ScriptEventsDefLookups
+) => {
   const {
     eventsLookup: events,
     engineFieldUpdateEventsLookup,
@@ -467,7 +473,7 @@ const isVariableField = (
   cmd: any,
   fieldName: any,
   args: any,
-  lookup: EventLookup
+  lookup: ScriptEventsDefLookups
 ) => {
   if (fieldName.startsWith("$variable[")) {
     return true;
@@ -487,7 +493,7 @@ const isActorField = (
   cmd: any,
   fieldName: any,
   args: any,
-  lookup: EventLookup
+  lookup: ScriptEventsDefLookups
 ) => {
   const field = getField(cmd, fieldName, args, lookup);
   return field && field.type === "actor" && isFieldVisible(field, args);
@@ -497,7 +503,7 @@ const isPropertyField = (
   cmd: any,
   fieldName: any,
   args: any,
-  lookup: EventLookup
+  lookup: ScriptEventsDefLookups
 ) => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const events = require("../events").default;

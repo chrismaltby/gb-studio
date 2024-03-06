@@ -1,4 +1,11 @@
-import React, { FC, RefObject, useCallback, useEffect, useState } from "react";
+import React, {
+  FC,
+  RefObject,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store/configureStore";
 import {
@@ -27,12 +34,12 @@ import VariableUsesWorker, {
   VariableUse,
   VariableUseResult,
 } from "./VariableUses.worker";
-import { eventLookup } from "lib/events";
 import {
   globalVariableCode,
   globalVariableDefaultName,
 } from "shared/lib/variables/variableNames";
 import l10n from "shared/lib/lang/l10n";
+import { selectScriptEventDefsLookup } from "store/features/scriptEventDefs/scriptEventDefsState";
 
 const worker = new VariableUsesWorker();
 
@@ -77,6 +84,22 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
   );
   const [showSymbols, setShowSymbols] = useState(false);
 
+  const scriptEventDefsLookup = useSelector((state: RootState) =>
+    selectScriptEventDefsLookup(state)
+  );
+
+  console.warn(
+    "@TODO Move engineField events to redux store" as any /*So this turns up in linter */
+  );
+  const eventLookup = useMemo(
+    () => ({
+      eventsLookup: scriptEventDefsLookup,
+      engineFieldUpdateEventsLookup: {},
+      engineFieldStoreEventsLookup: {},
+    }),
+    [scriptEventDefsLookup]
+  );
+
   const dispatch = useDispatch();
 
   const onWorkerComplete = useCallback(
@@ -107,7 +130,14 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
       scriptEventsLookup,
       eventLookup,
     });
-  }, [scenes, actorsLookup, triggersLookup, id, scriptEventsLookup]);
+  }, [
+    scenes,
+    actorsLookup,
+    triggersLookup,
+    id,
+    scriptEventsLookup,
+    eventLookup,
+  ]);
 
   const onRename = (e: React.ChangeEvent<HTMLInputElement>) => {
     const editValue = e.currentTarget.value;

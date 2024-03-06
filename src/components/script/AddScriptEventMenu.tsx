@@ -7,7 +7,6 @@ import React, {
 } from "react";
 import cloneDeep from "lodash/cloneDeep";
 import { OptGroup } from "ui/form/Select";
-import events, { EventHandler } from "lib/events";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import styled, { css } from "styled-components";
 import { Menu, MenuGroup, MenuItem } from "ui/menu/Menu";
@@ -35,6 +34,8 @@ import { useDebounce } from "ui/hooks/use-debounce";
 import { ScriptEditorContext } from "./ScriptEditorContext";
 import { defaultVariableForContext } from "shared/lib/scripts/context";
 import { EVENT_TEXT } from "consts";
+import { selectScriptEventDefsLookup } from "store/features/scriptEventDefs/scriptEventDefsState";
+import type { ScriptEventDef } from "lib/project/loadScriptEvents";
 
 interface AddScriptEventMenuProps {
   parentType: ScriptEventParentType;
@@ -56,7 +57,7 @@ interface EventOption {
   groupLabel?: string;
   isFavorite: boolean;
   defaultArgs?: Record<string, unknown>;
-  event: EventHandler;
+  event: ScriptEventDef;
 }
 
 interface EventOptGroup {
@@ -81,7 +82,7 @@ const MENU_GROUP_HEIGHT = 25;
 const MENU_GROUP_SPACER = 10;
 
 const instanciateScriptEvent = (
-  handler: EventHandler,
+  handler: ScriptEventDef,
   {
     defaultSceneId,
     defaultVariableId,
@@ -176,7 +177,7 @@ const instanciateScriptEvent = (
 
 const eventToOption =
   (favorites: string[]) =>
-  (event: EventHandler): EventOption => {
+  (event: ScriptEventDef): EventOption => {
     const localisedKey = l10n(event.id as L10NKey); //.replace(/[^:*]*:[ ]*/g, "");
     const name =
       localisedKey !== event.id ? localisedKey : event.name || event.id;
@@ -463,6 +464,9 @@ const AddScriptEventMenu = ({
     (state: RootState) => emoteSelectors.selectIds(state)[0]
   );
   const context = useContext(ScriptEditorContext);
+  const scriptEventDefsLookup = useSelector((state: RootState) =>
+    selectScriptEventDefsLookup(state)
+  );
 
   useEffect(() => {
     if (selectedCategoryIndex === -1) {
@@ -472,7 +476,7 @@ const AddScriptEventMenu = ({
 
   useEffect(() => {
     const eventList = (
-      Object.values(events).filter(identity) as EventHandler[]
+      Object.values(scriptEventDefsLookup).filter(identity) as ScriptEventDef[]
     ).filter(notDeprecated);
     fuseRef.current = new Fuse(eventList.map(eventToOption(favoriteEvents)), {
       includeScore: true,
@@ -506,15 +510,15 @@ const AddScriptEventMenu = ({
         }
       }
       return memo;
-    }, {} as Dictionary<EventHandler[]>);
+    }, {} as Dictionary<ScriptEventDef[]>);
 
     const groupKeys = Object.keys(groupedEvents).sort(sortAlphabetically);
 
     const allOptions = ([] as (EventOptGroup | EventOption)[]).concat(
       (
         (firstLoad.current ? favoritesCache : favoriteEvents)
-          .map((id: string) => events[id])
-          .filter(identity) as EventHandler[]
+          .map((id: string) => scriptEventDefsLookup[id])
+          .filter(identity) as ScriptEventDef[]
       )
         .map(eventToOption(favoriteEvents))
         .sort(sortAlphabeticallyByLabel)
@@ -550,7 +554,7 @@ const AddScriptEventMenu = ({
       setOptions(allOptions);
       firstLoad.current = true;
     }
-  }, [favoriteEvents, favoritesCache]);
+  }, [favoriteEvents, favoritesCache, scriptEventDefsLookup]);
 
   const updateOptions = useCallback(() => {
     if (searchTerm && fuseRef.current) {
@@ -573,7 +577,7 @@ const AddScriptEventMenu = ({
               {
                 value: "",
                 label: `${l10n(EVENT_TEXT)} "${searchTerm}"`,
-                event: events[EVENT_TEXT] as EventHandler,
+                event: scriptEventDefsLookup[EVENT_TEXT] as ScriptEventDef,
                 defaultArgs: {
                   text: [searchTerm],
                 },
@@ -586,7 +590,7 @@ const AddScriptEventMenu = ({
     } else {
       setOptions(allOptions);
     }
-  }, [allOptions, searchTerm]);
+  }, [allOptions, scriptEventDefsLookup, searchTerm]);
 
   const debouncedUpdateOptions = useDebounce(updateOptions, 200);
 
@@ -620,7 +624,7 @@ const AddScriptEventMenu = ({
   );
 
   const onAdd = useCallback(
-    (newEvent: EventHandler, defaultArgs?: Record<string, unknown>) => {
+    (newEvent: ScriptEventDef, defaultArgs?: Record<string, unknown>) => {
       dispatch(
         entitiesActions.addScriptEvents({
           entityId: parentId,

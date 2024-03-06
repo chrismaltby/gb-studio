@@ -32,7 +32,6 @@ import { ArrowIcon, CheckIcon, CommentIcon } from "ui/icons/Icons";
 import { FixedSpacer } from "ui/spacing/Spacing";
 import ScriptEventForm from "./ScriptEventForm";
 import l10n from "shared/lib/lang/l10n";
-import events from "lib/events";
 import { ScriptEditorEventHelper } from "./ScriptEditorEventHelper";
 import ItemTypes from "renderer/lib/dnd/itemTypes";
 import { DropdownButton } from "ui/buttons/DropdownButton";
@@ -46,6 +45,7 @@ import useOnScreen from "ui/hooks/use-on-screen";
 import { ScriptEventSymbolsEditor } from "components/forms/symbols/ScriptEventSymbolsEditor";
 import { ScriptEventSymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
 import { EVENT_CALL_CUSTOM_EVENT, EVENT_COMMENT, EVENT_END } from "consts";
+import { selectScriptEventDefsLookup } from "store/features/scriptEventDefs/scriptEventDefsState";
 
 interface ScriptEditorEventProps {
   id: string;
@@ -83,6 +83,9 @@ const ScriptEditorEvent = React.memo(
     );
     const scriptEvent = useSelector((state: RootState) =>
       scriptEventSelectors.selectById(state, id)
+    );
+    const scriptEventDefsLookup = useSelector((state: RootState) =>
+      selectScriptEventDefsLookup(state)
     );
 
     const onFetchClipboard = useCallback(() => {
@@ -323,8 +326,10 @@ const ScriptEditorEvent = React.memo(
     }
 
     const isOpen = scriptEvent.args && !scriptEvent.args.__collapse;
-    const isConditional = events[command]?.isConditional ?? false;
-    const editableSymbol = events[command]?.editableSymbol ?? false;
+    const isConditional =
+      scriptEventDefsLookup[command]?.isConditional ?? false;
+    const editableSymbol =
+      scriptEventDefsLookup[command]?.editableSymbol ?? false;
 
     return (
       <ScriptEventWrapper

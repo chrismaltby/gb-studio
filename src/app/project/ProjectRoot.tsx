@@ -9,7 +9,6 @@ import GlobalStyle from "ui/globalStyle";
 import { initTheme } from "renderer/lib/theme";
 import { initFullScreenDetector } from "renderer/lib/handleFullScreen";
 import initRendererL10N from "renderer/lib/lang/initRendererL10N";
-import { initEvents } from "lib/events";
 import "./initProject";
 
 const render = () => {
@@ -30,7 +29,6 @@ const render = () => {
   await initRendererL10N();
   await initTheme();
   await initFullScreenDetector();
-  await initEvents();
   render();
 })();
 
