@@ -1,4 +1,4 @@
-import { PrecompiledScene } from "lib/compiler/compileData2";
+import { PrecompiledScene } from "../../../src/lib/compiler/compileData2";
 import ScriptBuilder from "../../../src/lib/compiler/scriptBuilder";
 import { ScriptEventDenormalized } from "../../../src/shared/lib/entities/entitiesTypes";
 import {
