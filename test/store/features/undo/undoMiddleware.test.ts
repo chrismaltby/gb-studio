@@ -17,6 +17,7 @@ test("Should trigger undo clear history after successful project load", async ()
     {
       data: { ...dummyProjectData },
       path: "project.gbsproj",
+      scriptEventDefs: {},
       modifiedSpriteIds: [],
     },
     "randomid",

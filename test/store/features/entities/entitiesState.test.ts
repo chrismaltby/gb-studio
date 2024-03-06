@@ -47,6 +47,7 @@ test("Should fix scene widths if backgrounds has been removed since save", () =>
     {
       data: loadData,
       path: "project.gbsproj",
+      scriptEventDefs: {},
       modifiedSpriteIds: [],
     },
     "randomid",
@@ -87,6 +88,7 @@ test("Should fix scene widths if backgrounds have changed dimensions since save"
     {
       data: loadData,
       path: "project.gbsproj",
+      scriptEventDefs: {},
       modifiedSpriteIds: [],
     },
     "randomid",
@@ -127,6 +129,7 @@ test("Should keep scene widths if backgrounds have NOT changed dimensions since 
     {
       data: loadData,
       path: "project.gbsproj",
+      scriptEventDefs: {},
       modifiedSpriteIds: [],
     },
     "randomid",

@@ -55,6 +55,7 @@ test("Should fetch settings from loaded project", () => {
     {
       data: loadData,
       path: "project.gbsproj",
+      scriptEventDefs: {},
       modifiedSpriteIds: [],
     },
     "randomid",
