@@ -1,9 +1,4 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
-import {
-  isActorField,
-  isPropertyField,
-  isVariableField,
-} from "lib/helpers/eventSystem";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import { NamedVariable, namedVariablesByContext } from "renderer/lib/variables";
 import { Dictionary } from "@reduxjs/toolkit";
@@ -24,25 +19,18 @@ import {
   customEventName,
   sceneName,
 } from "shared/lib/entities/entitiesHelpers";
-import {
-  Actor,
-  ScriptEventFieldSchema,
-} from "shared/lib/entities/entitiesTypes";
+import { Actor } from "shared/lib/entities/entitiesTypes";
 import styled from "styled-components";
 import { fadeIn } from "ui/animations/animations";
-import { getAnimLabel } from "components/forms/AnimationSpeedSelect";
 import { ScriptEditorContext } from "./ScriptEditorContext";
 import { selectScriptEventDefsLookup } from "store/features/scriptEventDefs/scriptEventDefsState";
+import API from "renderer/lib/api";
+import { replaceAutoLabelLocalValues } from "shared/lib/scripts/autoLabel";
 
 interface ScriptEventTitleProps {
   command: string;
   args?: Record<string, unknown>;
 }
-
-type UnionType = {
-  type: string;
-  value: unknown;
-};
 
 const Wrapper = styled.div`
   white-space: nowrap;
@@ -59,27 +47,6 @@ const customEventActorsLookup = keyBy(
   })),
   "id"
 );
-
-const fieldsIndexByKey = (
-  fields: ScriptEventFieldSchema[]
-): Dictionary<ScriptEventFieldSchema> => {
-  const lookup: Dictionary<ScriptEventFieldSchema> = {};
-  const addField = (field: ScriptEventFieldSchema) => {
-    if (field.key) {
-      lookup[field.key] = field;
-    }
-    if (field.type === "group" && field.fields) {
-      for (const subField of field.fields) {
-        addField(subField);
-      }
-    }
-  };
-
-  for (const field of fields) {
-    addField(field);
-  }
-  return lookup;
-};
 
 const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
   const context = useContext(ScriptEditorContext);
@@ -165,208 +132,92 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
   }, [entityId, variablesLookup, context, customEvent]);
 
   useEffect(() => {
-    if (scriptEventDefsLookup[command]?.autoLabel) {
-      const fieldLookup = fieldsIndexByKey(
-        scriptEventDefsLookup[command]?.fields || []
-      );
-
-      const extractValue = (arg: unknown): unknown => {
-        if (
-          arg &&
-          typeof arg === "object" &&
-          "value" in (arg as { value: unknown })
-        ) {
-          return (arg as { value: unknown }).value;
-        }
-        return arg;
-      };
-      const extractFieldType = (key: string, arg: unknown): unknown => {
-        const fieldType = fieldLookup[key]?.type || "";
-        if (fieldType === "union" && arg && (arg as UnionType).type) {
-          return (arg as UnionType).type;
-        } else if (fieldType === "union") {
-          return fieldLookup[key]?.defaultType;
-        }
-        return fieldType;
-      };
-      const actorNameForId = (value: unknown) => {
-        if (context === "script" && customEvent) {
-          return (
-            customEvent.actors[value as string]?.name ||
-            customEventActorsLookup[value as string]?.name ||
-            l10n("FIELD_PLAYER")
-          ).replace(/ /g, "");
-        }
-        if (value === "$self$" && editorType === "actor") {
-          return l10n("FIELD_SELF");
-        } else if (value === "$self$" || value === "player") {
-          return l10n("FIELD_PLAYER");
-        } else if (actorsLookup[value as string] && sceneActorIds) {
-          const actor = actorsLookup[value as string] as Actor;
-          return actorName(actor, sceneActorIds?.indexOf(actor.id)).replace(
-            / /g,
-            ""
-          );
-        } else {
-          return l10n("FIELD_PLAYER");
-        }
-      };
-      const propertyNameForId = (value: string) => {
-        if (value === "xpos") {
-          return l10n("FIELD_X_POSITION").replace(/ /g, "");
-        }
-        if (value === "ypos") {
-          return l10n("FIELD_Y_POSITION").replace(/ /g, "");
-        }
-        if (value === "pxpos") {
-          return l10n("FIELD_PX_POSITION").replace(/ /g, "");
-        }
-        if (value === "pypos") {
-          return l10n("FIELD_PY_POSITION").replace(/ /g, "");
-        }
-        if (value === "direction") {
-          return l10n("FIELD_DIRECTION").replace(/ /g, "");
-        }
-        if (value === "frame") {
-          return l10n("FIELD_ANIMATION_FRAME").replace(/ /g, "");
-        }
-        return value;
-      };
-      const variableNameForId = (value: unknown) => {
-        const id = String(value).replace(/^0*(.+)/, "$1");
-        return `$${
-          namedVariablesLookup[id]?.name.replace(/ /g, "") ?? String(value)
-        }`;
-      };
-      const sceneNameForId = (value: unknown) => {
-        const scene = scenesLookup[value as string];
-        if (scene) {
-          return sceneName(scene, scenes.indexOf(scene)).replace(/ /g, "");
-        }
-        return String(value);
-      };
-      const directionForValue = (value: unknown) => {
-        if (value === "left") {
-          return l10n("FIELD_DIRECTION_LEFT");
-        }
-        if (value === "right") {
-          return l10n("FIELD_DIRECTION_RIGHT");
-        }
-        if (value === "down") {
-          return l10n("FIELD_DIRECTION_DOWN");
-        }
-        return l10n("FIELD_DIRECTION_UP");
-      };
-      const inputForValue = (value: unknown) => {
-        const l10nInput = (value: unknown) => {
-          if (value === "a") {
-            return "A";
+    async function fetchAutoLabel() {
+      if (scriptEventDefsLookup[command]?.hasAutoLabel) {
+        const actorNameForId = (value: unknown) => {
+          if (context === "script" && customEvent) {
+            return (
+              customEvent.actors[value as string]?.name ||
+              customEventActorsLookup[value as string]?.name ||
+              l10n("FIELD_PLAYER")
+            ).replace(/ /g, "");
           }
-          if (value === "b") {
-            return "B";
+          if (value === "$self$" && editorType === "actor") {
+            return l10n("FIELD_SELF");
+          } else if (value === "$self$" || value === "player") {
+            return l10n("FIELD_PLAYER");
+          } else if (actorsLookup[value as string] && sceneActorIds) {
+            const actor = actorsLookup[value as string] as Actor;
+            return actorName(actor, sceneActorIds?.indexOf(actor.id)).replace(
+              / /g,
+              ""
+            );
+          } else {
+            return l10n("FIELD_PLAYER");
           }
-          if (value === "start") {
-            return "Start";
-          }
-          if (value === "select") {
-            return "Select";
-          }
-          if (value === "left") {
-            return l10n("FIELD_DIRECTION_LEFT");
-          }
-          if (value === "right") {
-            return l10n("FIELD_DIRECTION_RIGHT");
-          }
-          if (value === "down") {
-            return l10n("FIELD_DIRECTION_DOWN");
-          }
-          return l10n("FIELD_DIRECTION_UP");
         };
-        if (Array.isArray(value)) {
-          return value.map(l10nInput).join("/");
-        }
-        return l10nInput(value);
-      };
-      const animSpeedForValue = (value: unknown) => {
-        return getAnimLabel(value as number) || String(value);
-      };
-      const spriteForValue = (value: unknown) => {
-        return (
-          spriteSheetsLookup[value as string]?.name ||
-          spriteSheets[0]?.name ||
-          String(value)
-        );
-      };
-      const emoteForValue = (value: unknown) => {
-        return (
-          emotesLookup[value as string]?.name ||
-          emotes[0]?.name ||
-          String(value)
-        );
-      };
-      const customEventNameForId = (value: unknown) => {
-        const customEvent = customEventsLookup[value as string];
-        if (customEvent) {
-          return customEventName(
-            customEvent,
-            customEvents.indexOf(customEvent)
-          ).replace(/ /g, "");
-        }
-        return String(value);
-      };
 
-      const mapArg = (key: string) => {
-        const arg = args[key];
-        const argValue = extractValue(arg);
-        const fieldType = extractFieldType(key, arg);
-        const fieldDefault =
-          arg && (arg as { type: string })?.type
-            ? (fieldLookup[key]?.defaultValue as Record<string, unknown>)?.[
-                (arg as { type: string })?.type
-              ]
-            : fieldLookup[key]?.defaultValue;
-        const fieldPlaceholder = fieldLookup[key]?.placeholder;
-        const value = argValue ?? fieldDefault ?? fieldPlaceholder ?? argValue;
+        const variableNameForId = (value: unknown) => {
+          const id = String(value).replace(/^0*(.+)/, "$1");
+          return `$${
+            namedVariablesLookup[id]?.name.replace(/ /g, "") ?? String(value)
+          }`;
+        };
+        const sceneNameForId = (value: unknown) => {
+          const scene = scenesLookup[value as string];
+          if (scene) {
+            return sceneName(scene, scenes.indexOf(scene)).replace(/ /g, "");
+          }
+          return String(value);
+        };
+        const spriteNameForId = (value: unknown) => {
+          return (
+            spriteSheetsLookup[value as string]?.name ||
+            spriteSheets[0]?.name ||
+            String(value)
+          );
+        };
+        const emoteNameForId = (value: unknown) => {
+          return (
+            emotesLookup[value as string]?.name ||
+            emotes[0]?.name ||
+            String(value)
+          );
+        };
+        const customEventNameForId = (value: unknown) => {
+          const customEvent = customEventsLookup[value as string];
+          if (customEvent) {
+            return customEventName(
+              customEvent,
+              customEvents.indexOf(customEvent)
+            ).replace(/ /g, "");
+          }
+          return String(value);
+        };
 
-        if (isActorField(command, key, args, eventLookup)) {
-          return actorNameForId(value);
-        } else if (isVariableField(command, key, args, eventLookup)) {
-          return variableNameForId(value);
-        } else if (isPropertyField(command, key, args, eventLookup)) {
-          const propertyParts = String(value).split(":");
-          return `${actorNameForId(propertyParts[0])}.${propertyNameForId(
-            propertyParts[1]
-          )}`;
-        } else if (fieldType === "matharea") {
-          return String(value).replace(/\$([VLT]*[0-9]+)\$/g, (_, match) => {
-            return variableNameForId(match);
-          });
-        } else if (fieldType === "scene") {
-          return sceneNameForId(value);
-        } else if (fieldType === "direction") {
-          return directionForValue(value);
-        } else if (fieldType === "animSpeed") {
-          return animSpeedForValue(value);
-        } else if (fieldType === "sprite") {
-          return spriteForValue(value);
-        } else if (fieldType === "emote") {
-          return emoteForValue(value);
-        } else if (fieldType === "customEvent") {
-          return customEventNameForId(value);
-        } else if (fieldType === "input") {
-          return inputForValue(value);
+        try {
+          if (scriptEventDefsLookup[command]?.hasAutoLabel) {
+            setAutoName(
+              replaceAutoLabelLocalValues(
+                await API.script.getScriptAutoLabel(command, args),
+                {
+                  actorNameForId,
+                  variableNameForId,
+                  sceneNameForId,
+                  spriteNameForId,
+                  emoteNameForId,
+                  customEventNameForId,
+                }
+              )
+            );
+          }
+        } catch (e) {
+          console.error(`Auto name failed for ${command} with args`, args);
+          console.error(e);
         }
-        return String(value);
-      };
-      try {
-        setAutoName(
-          scriptEventDefsLookup[command]?.autoLabel?.(mapArg, args) || ""
-        );
-      } catch (e) {
-        console.error(`Auto name failed for ${command} with args`, args);
-        console.error(e);
       }
     }
+    fetchAutoLabel();
   }, [
     command,
     args,

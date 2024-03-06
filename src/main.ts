@@ -77,7 +77,7 @@ import migrateWarning from "lib/project/migrateWarning";
 import confirmReplaceCustomEvent from "lib/electron/dialog/confirmReplaceCustomEvent";
 import l10n, { L10NKey, getL10NData } from "shared/lib/lang/l10n";
 import initElectronL10N, { locales } from "lib/lang/initElectronL10N";
-import { initEvents } from "lib/events";
+import { eventLookup, initEvents } from "lib/events";
 import watchProject from "lib/project/watchProject";
 import { loadBackgroundData } from "lib/project/loadBackgroundData";
 import { loadSpriteData } from "lib/project/loadSpriteData";
@@ -88,6 +88,7 @@ import { loadAvatarData } from "lib/project/loadAvatarData";
 import { loadEmoteData } from "lib/project/loadEmoteData";
 import parseAssetPath from "shared/lib/assets/parseAssetPath";
 import { initEngineFields } from "lib/project/engineFields";
+import { getAutoLabel } from "shared/lib/scripts/autoLabel";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -1267,6 +1268,13 @@ ipcMain.handle(
     // Check project has permission to access this asset
     guardAssetWithinProject(filename, projectRoot);
     return compileSprite(spriteData, projectRoot);
+  }
+);
+
+ipcMain.handle(
+  "script:get-auto-label",
+  async (_, command: string, args: Record<string, unknown>) => {
+    return getAutoLabel(command, args, eventLookup);
   }
 );
 

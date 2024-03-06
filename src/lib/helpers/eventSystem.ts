@@ -1,6 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Dictionary } from "@reduxjs/toolkit";
-import { EventHandler } from "lib/events";
 import mapValues from "lodash/mapValues";
 import uuid from "uuid/v4";
 import {
@@ -8,7 +6,8 @@ import {
   EVENT_ENGINE_FIELD_SET,
   EVENT_ENGINE_FIELD_STORE,
 } from "consts";
-import { ScriptEventDef } from "lib/project/loadScriptEvents";
+import type { Dictionary } from "@reduxjs/toolkit";
+import type { ScriptEventDef } from "lib/project/loadScriptEvents";
 
 export interface ScriptEventsDefLookups {
   eventsLookup: Dictionary<ScriptEventDef>;
@@ -306,7 +305,7 @@ const regenerateEventIds = (event: any) => {
 
 const replaceEventActorIds = (replacementIds: any, event: any) => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const events = require("../events").default;
+  const events = require("lib/events").default;
   const eventSchema = events[event.command];
 
   if (!eventSchema) {
@@ -506,7 +505,7 @@ const isPropertyField = (
   lookup: ScriptEventsDefLookups
 ) => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const events = require("../events").default;
+  const events = require("lib/events").default;
   const event = events[cmd];
   if (!event) return false;
   const field = getField(cmd, fieldName, args, lookup);

@@ -30,7 +30,7 @@ export const patchEventArgs = (
   replacements: Record<string, unknown>
 ) => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const events = require("../events").default;
+  const events = require("lib/events").default;
   const eventSchema: EventHandler = events[command];
 
   if (!eventSchema) {
@@ -228,7 +228,7 @@ export const calculateAutoFadeEventIdNormalised = (
   customEventsLookup: Dictionary<CustomEvent>
 ) => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const events = require("../events").default;
+  const events = require("lib/events").default;
   let fadeEventId = "";
   const checkEvent = (eventId: string) => (scriptEvent: ScriptEvent) => {
     if (!fadeEventId && events[scriptEvent.command]?.waitUntilAfterInitFade) {
@@ -280,7 +280,7 @@ export const calculateAutoFadeEventIdDenormalised = (
   customEventsLookup: Dictionary<CustomEventDenormalized>
 ) => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const events = require("../events").default;
+  const events = require("lib/events").default;
   let fadeEventId = "";
   const checkEvent =
     (eventId: string) => (scriptEvent: ScriptEventDenormalized) => {

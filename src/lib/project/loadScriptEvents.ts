@@ -27,11 +27,7 @@ export interface ScriptEventDef {
   editableSymbol?: boolean;
   allowChildrenBeforeInitFade?: boolean;
   waitUntilAfterInitFade?: boolean;
-  autoLabel?: (
-    // @TODO: Need to change this so that autoLabel is called using an API
-    lookup: (key: string) => string,
-    args: Record<string, unknown>
-  ) => string;
+  hasAutoLabel: boolean;
 }
 
 export type ScriptEventHandler = ScriptEventDef & {
@@ -47,9 +43,6 @@ export interface ScriptEventDefLookup {
   engineFieldUpdateByField: Dictionary<ScriptEventDef>;
   engineFieldStoreByField: Dictionary<ScriptEventDef>;
 }
-
-console.log("HERE LOADS SCRIPT EVENTS!!!");
-console.log({ trimLines });
 
 const vm = new NodeVM({
   timeout: 1000,
@@ -77,6 +70,7 @@ const loadScriptEventHandler = async (
   }
   handler.isConditional =
     handler.fields && !!handler.fields.find((f) => f.type === "events");
+  handler.hasAutoLabel = !!handler.autoLabel;
 
   return handler;
 };

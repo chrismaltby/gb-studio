@@ -22,12 +22,19 @@ import { clone, cloneDictionary } from "lib/helpers/clone";
 const VM2 = __non_webpack_require__("vm2");
 const NodeVM = VM2.NodeVM;
 
+export interface EventHandlersLookups {
+  eventsLookup: Dictionary<EventHandler>;
+  engineFieldUpdateEventsLookup: Dictionary<EventHandler>;
+  engineFieldStoreEventsLookup: Dictionary<EventHandler>;
+}
+
 export interface EventHandler {
   id: string;
   autoLabel?: (
     lookup: (key: string) => string,
     args: Record<string, unknown>
   ) => string;
+  hasAutoLabel: boolean;
   fields: ScriptEventFieldSchema[];
   name?: string;
   description?: string;
@@ -132,9 +139,9 @@ export const initEvents = async () => {
 };
 
 export const eventLookup = {
-  eventsLookup: pojoEventHandlers,
-  engineFieldUpdateEventsLookup: pojoEngineFieldUpdateEvents,
-  engineFieldStoreEventsLookup: pojoEngineFieldStoreEvents,
+  eventsLookup: eventHandlers,
+  engineFieldUpdateEventsLookup: engineFieldUpdateEvents,
+  engineFieldStoreEventsLookup: engineFieldStoreEvents,
 } as const;
 
 export default eventHandlers;

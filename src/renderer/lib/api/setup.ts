@@ -210,6 +210,13 @@ const APISetup = {
     setModified: () => ipcRenderer.invoke("project:set-modified"),
     setUnmodified: () => ipcRenderer.invoke("project:set-unmodified"),
   },
+  script: {
+    getScriptAutoLabel: (
+      cmd: string,
+      args: Record<string, unknown>
+    ): Promise<string> =>
+      ipcRenderer.invoke("script:get-auto-label", cmd, args),
+  },
   music: {
     openMusic: (sfx?: string) => ipcRenderer.send("open-music", sfx),
     closeMusic: () => ipcRenderer.send("close-music"),
