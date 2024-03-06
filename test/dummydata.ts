@@ -24,6 +24,7 @@ import { initialState as initialAssetsState } from "../src/store/features/assets
 import { initialState as initialEngineState } from "../src/store/features/engine/engineState";
 import { initialState as initialClipboardState } from "../src/store/features/clipboard/clipboardState";
 import { initialState as initialSpriteState } from "../src/store/features/sprite/spriteState";
+import { initialState as initialScriptEventDefsState } from "../src/store/features/scriptEventDefs/scriptEventDefsState";
 import { initialState as initialTrackerState } from "../src/store/features/tracker/trackerState";
 import { initialState as initialTrackerDocumentState } from "../src/store/features/trackerDocument/trackerDocumentState";
 import compileFonts, {
@@ -319,6 +320,9 @@ export const dummyRootState: RootState = {
   },
   sprite: {
     ...initialSpriteState,
+  },
+  scriptEventDefs: {
+    ...initialScriptEventDefsState,
   },
   tracker: {
     ...initialTrackerState,

@@ -34,6 +34,8 @@ import type { EmoteAssetData } from "lib/project/loadEmoteData";
 import type { EngineFieldSchemaLookup } from "lib/project/engineFields";
 import type { NavigationSection } from "store/features/navigation/navigationState";
 import type { MenuZoomType } from "menu";
+import type { ScriptEventDef } from "lib/project/loadScriptEvents";
+import type { Dictionary } from "@reduxjs/toolkit";
 
 interface L10NLookup {
   [key: string]: string | boolean | undefined;
@@ -198,6 +200,7 @@ const APISetup = {
       ipcRenderer.invoke("project:add-file", filename),
     loadProject: (): Promise<{
       data: ProjectData;
+      scriptEventDefs: Dictionary<ScriptEventDef>;
       modifiedSpriteIds: string[];
     }> => ipcRenderer.invoke("project:load"),
     saveProject: (data: ProjectData): Promise<void> =>

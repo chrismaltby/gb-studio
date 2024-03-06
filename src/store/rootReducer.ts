@@ -13,6 +13,7 @@ import error from "./features/error/errorState";
 import navigation from "./features/navigation/navigationState";
 import clipboard from "./features/clipboard/clipboardState";
 import sprite from "./features/sprite/spriteState";
+import scriptEventDefs from "./features/scriptEventDefs/scriptEventDefsState";
 import tracker from "./features/tracker/trackerState";
 import trackerDocument from "./features/trackerDocument/trackerDocumentState";
 import { TRACKER_REDO, TRACKER_UNDO } from "consts";
@@ -29,6 +30,7 @@ const rootReducer = combineReducers({
   engine,
   clipboard,
   sprite,
+  scriptEventDefs,
   tracker,
   trackerDocument: undoable(trackerDocument, {
     limit: 20,

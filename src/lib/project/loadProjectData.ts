@@ -8,10 +8,13 @@ import loadAllFontData from "./loadFontData";
 import loadAllAvatarData from "./loadAvatarData";
 import loadAllEmoteData from "./loadEmoteData";
 import loadAllSoundData from "./loadSoundData";
+import loadAllScriptEvents, { ScriptEventDef } from "./loadScriptEvents";
 import migrateProject from "./migrateProject";
 import type { ProjectData } from "store/features/project/projectActions";
 import type { Asset } from "shared/lib/helpers/assets";
 import keyBy from "lodash/keyBy";
+import { cloneDictionary } from "lib/helpers/clone";
+import { Dictionary } from "@reduxjs/toolkit";
 
 const toUnixFilename = (filename: string) => {
   return filename.replace(/\\/g, "/");
@@ -40,6 +43,7 @@ const loadProject = async (
   projectPath: string
 ): Promise<{
   data: ProjectData;
+  scriptEventDefs: Dictionary<ScriptEventDef>;
   modifiedSpriteIds: string[];
 }> => {
   const projectRoot = path.dirname(projectPath);
@@ -322,6 +326,8 @@ const loadProject = async (
 
   const fixedEngineFieldValues = json.engineFieldValues || [];
 
+  const scriptEvents = cloneDictionary(await loadAllScriptEvents(projectRoot));
+
   return {
     data: {
       ...json,
@@ -338,6 +344,7 @@ const loadProject = async (
       engineFieldValues: fixedEngineFieldValues,
     },
     modifiedSpriteIds,
+    scriptEventDefs: cloneDictionary(scriptEvents),
   };
 };
 

@@ -1,4 +1,4 @@
-import { createAsyncThunk, createAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createAction, Dictionary } from "@reduxjs/toolkit";
 import {
   EntitiesState,
   ProjectEntitiesData,
@@ -10,6 +10,7 @@ import {
   EmoteData,
   SoundData,
 } from "shared/lib/entities/entitiesTypes";
+import type { ScriptEventDef } from "lib/project/loadScriptEvents";
 import type { RootState } from "store/configureStore";
 import { SettingsState } from "store/features/settings/settingsState";
 import { MetadataState } from "store/features/metadata/metadataState";
@@ -109,13 +110,20 @@ const openProject = createAction<string>("project/openProject");
 const closeProject = createAction<void>("project/closeProject");
 
 const loadProject = createAsyncThunk<
-  { data: ProjectData; path: string; modifiedSpriteIds: string[] },
+  {
+    data: ProjectData;
+    path: string;
+    scriptEventDefs: Dictionary<ScriptEventDef>;
+    modifiedSpriteIds: string[];
+  },
   string
 >("project/loadProject", async (path) => {
-  const { data, modifiedSpriteIds } = await API.project.loadProject();
+  const { data, scriptEventDefs, modifiedSpriteIds } =
+    await API.project.loadProject();
   return {
     data,
     path,
+    scriptEventDefs,
     modifiedSpriteIds,
   };
 });
