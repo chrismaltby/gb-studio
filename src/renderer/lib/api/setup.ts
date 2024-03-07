@@ -216,6 +216,25 @@ const APISetup = {
       args: Record<string, unknown>
     ): Promise<string> =>
       ipcRenderer.invoke("script:get-auto-label", cmd, args),
+    scriptEventPostUpdateFn: (
+      cmd: string,
+      fieldKey: string,
+      args: Record<string, unknown>,
+      prevArgs: Record<string, unknown>
+    ): Promise<Record<string, unknown>> =>
+      ipcRenderer.invoke(
+        "script:post-update-fn",
+        cmd,
+        fieldKey,
+        args,
+        prevArgs
+      ),
+    scriptEventUpdateFn: (
+      cmd: string,
+      fieldKey: string,
+      value: unknown
+    ): Promise<unknown> =>
+      ipcRenderer.invoke("script:update-fn", cmd, fieldKey, value),
   },
   music: {
     openMusic: (sfx?: string) => ipcRenderer.send("open-music", sfx),

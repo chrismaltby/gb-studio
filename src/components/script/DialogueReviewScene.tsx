@@ -14,15 +14,17 @@ import {
   actorName,
   sceneName,
   triggerName,
-  walkNormalisedActorEvents,
-  walkNormalisedSceneSpecificEvents,
-  walkNormalisedTriggerEvents,
 } from "shared/lib/entities/entitiesHelpers";
 import { EVENT_TEXT } from "consts";
 import { Button } from "ui/buttons/Button";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store/configureStore";
 import styled, { css } from "styled-components";
+import {
+  walkNormalizedActorScripts,
+  walkNormalizedSceneSpecificScripts,
+  walkNormalizedTriggerScripts,
+} from "shared/lib/scripts/walk";
 
 interface DialogueReviewSceneProps {
   id: string;
@@ -109,7 +111,7 @@ const DialogueReviewScene = ({
     scene.actors.forEach((actorId, actorIndex) => {
       const actor = actorsLookup[actorId];
       actor &&
-        walkNormalisedActorEvents(
+        walkNormalizedActorScripts(
           actor,
           scriptEventsLookup,
           undefined,
@@ -127,7 +129,7 @@ const DialogueReviewScene = ({
     scene.triggers.forEach((triggerId, triggerIndex) => {
       const trigger = triggersLookup[triggerId];
       trigger &&
-        walkNormalisedTriggerEvents(
+        walkNormalizedTriggerScripts(
           trigger,
           scriptEventsLookup,
           undefined,
@@ -142,7 +144,7 @@ const DialogueReviewScene = ({
           }
         );
     });
-    walkNormalisedSceneSpecificEvents(
+    walkNormalizedSceneSpecificScripts(
       scene,
       scriptEventsLookup,
       undefined,

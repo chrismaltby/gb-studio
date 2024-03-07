@@ -1,5 +1,5 @@
-import { initEvents } from "../../src/lib/events";
-import { calculateAutoFadeEventIdDenormalised } from "../../src/lib/helpers/eventHelpers";
+import events, { initEvents } from "../../src/lib/events";
+import { calculateAutoFadeEventId } from "../../src/shared/lib/scripts/eventHelpers";
 import initElectronL10N from "../../src/lib/lang/initElectronL10N";
 
 beforeAll(async () => {
@@ -8,7 +8,7 @@ beforeAll(async () => {
 });
 
 test("Should generate scene init fade in before a waitUntilAfterInitFade event", () => {
-  const output = calculateAutoFadeEventIdDenormalised(
+  const output = calculateAutoFadeEventId(
     [
       {
         id: "event1",
@@ -19,13 +19,14 @@ test("Should generate scene init fade in before a waitUntilAfterInitFade event",
         },
       },
     ],
-    {}
+    {},
+    events
   );
   expect(output).toEqual("event1");
 });
 
 test("Should not generate scene init fade in until reached waitUntilAfterInitFade event", () => {
-  const output = calculateAutoFadeEventIdDenormalised(
+  const output = calculateAutoFadeEventId(
     [
       {
         id: "event1",
@@ -43,14 +44,15 @@ test("Should not generate scene init fade in until reached waitUntilAfterInitFad
         },
       },
     ],
-    {}
+    {},
+    events
   );
 
   expect(output).toEqual("event2");
 });
 
 test("Should generate scene init fade in at end of script when required", () => {
-  const output = calculateAutoFadeEventIdDenormalised(
+  const output = calculateAutoFadeEventId(
     [
       {
         id: "event1",
@@ -60,14 +62,15 @@ test("Should generate scene init fade in at end of script when required", () => 
         },
       },
     ],
-    {}
+    {},
+    events
   );
 
   expect(output).toEqual("");
 });
 
 test("Should not generate scene init fade in if manual fade is provided", () => {
-  const output = calculateAutoFadeEventIdDenormalised(
+  const output = calculateAutoFadeEventId(
     [
       {
         id: "event1",
@@ -77,14 +80,15 @@ test("Should not generate scene init fade in if manual fade is provided", () => 
         },
       },
     ],
-    {}
+    {},
+    events
   );
 
   expect(output).toEqual("MANUAL");
 });
 
 test("Should generate scene init fade in before a conditional that contains waitUntilAfterInitFade events", () => {
-  const output = calculateAutoFadeEventIdDenormalised(
+  const output = calculateAutoFadeEventId(
     [
       {
         id: "event1",
@@ -116,7 +120,8 @@ test("Should generate scene init fade in before a conditional that contains wait
         },
       },
     ],
-    {}
+    {},
+    events
   );
 
   expect(output).toEqual("event1");

@@ -33,7 +33,8 @@ import {
   isActorField,
   isVariableField,
   isPropertyField,
-} from "lib/helpers/eventSystem";
+  ScriptEventDefsLookup,
+} from "shared/lib/scripts/scriptDefHelpers";
 import clamp from "shared/lib/helpers/clamp";
 import { RootState } from "store/configureStore";
 import settingsActions from "store/features/settings/settingsActions";
@@ -81,7 +82,6 @@ import {
   swap,
   isUnionVariableValue,
   isUnionPropertyValue,
-  walkNormalisedScriptEvents,
   genEntitySymbol,
   ensureSymbolsUnique,
   removeAssetEntity,
@@ -89,10 +89,11 @@ import {
   updateEntitySymbol,
   isSlope,
   defaultLocalisedSceneName,
+  isVariableCustomEvent,
 } from "shared/lib/entities/entitiesHelpers";
 import spriteActions from "store/features/sprite/spriteActions";
-import { isVariableCustomEvent } from "lib/compiler/scriptBuilder";
 import { sortByKey } from "shared/lib/helpers/sortByKey";
+import { walkNormalizedScript } from "shared/lib/scripts/walk";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
@@ -2346,22 +2347,22 @@ const removeCustomEvent: CaseReducer<
 
 const refreshCustomEventArgs: CaseReducer<
   EntitiesState,
-  PayloadAction<{ customEventId: string }>
+  PayloadAction<{
+    customEventId: string;
+    scriptEventDefsLookup: ScriptEventDefsLookup;
+  }>
 > = (state, action) => {
   const customEvent = state.customEvents.entities[action.payload.customEventId];
   if (!customEvent) {
     return;
   }
-
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const eventLookup = require("lib/events").eventLookup;
-
+  const scriptEventDefsLookup = action.payload.scriptEventDefsLookup;
   const variables = {} as Dictionary<CustomEventVariable>;
   const actors = {} as Dictionary<CustomEventActor>;
   const oldVariables = customEvent.variables;
   const oldActors = customEvent.actors;
 
-  walkNormalisedScriptEvents(
+  walkNormalizedScript(
     customEvent.script,
     state.scriptEvents.entities,
     undefined,
@@ -2370,7 +2371,9 @@ const refreshCustomEventArgs: CaseReducer<
       if (!args) return;
       if (args.__comment) return;
       Object.keys(args).forEach((arg) => {
-        if (isActorField(scriptEvent.command, arg, args, eventLookup)) {
+        if (
+          isActorField(scriptEvent.command, arg, args, scriptEventDefsLookup)
+        ) {
           const addActor = (actor: string) => {
             const letter = String.fromCharCode(
               "A".charCodeAt(0) + parseInt(actor)
@@ -2390,7 +2393,9 @@ const refreshCustomEventArgs: CaseReducer<
             addActor(actor);
           }
         }
-        if (isVariableField(scriptEvent.command, arg, args, eventLookup)) {
+        if (
+          isVariableField(scriptEvent.command, arg, args, scriptEventDefsLookup)
+        ) {
           const addVariable = (variable: string) => {
             const letter = String.fromCharCode(
               "A".charCodeAt(0) + parseInt(variable[1])
@@ -2415,7 +2420,9 @@ const refreshCustomEventArgs: CaseReducer<
             addVariable(variable);
           }
         }
-        if (isPropertyField(scriptEvent.command, arg, args, eventLookup)) {
+        if (
+          isPropertyField(scriptEvent.command, arg, args, scriptEventDefsLookup)
+        ) {
           const addPropertyActor = (property: string) => {
             const actor = property && property.replace(/:.*/, "");
             if (actor !== "player" && actor !== "$self$") {
@@ -3108,10 +3115,14 @@ const entitiesSlice = createSlice({
     removeCustomEvent,
     refreshCustomEventArgs: {
       reducer: refreshCustomEventArgs,
-      prepare: (payload: { customEventId: string }) => {
+      prepare: (payload: {
+        customEventId: string;
+        scriptEventDefsLookup: ScriptEventDefsLookup;
+      }) => {
         return {
           payload: {
             customEventId: payload.customEventId,
+            scriptEventDefsLookup: payload.scriptEventDefsLookup,
           },
           meta: {
             throttle: 1000,

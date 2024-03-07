@@ -4,7 +4,7 @@ import { readJSON, pathExists } from "fs-extra";
 import type { EngineFieldSchema } from "store/features/engine/engineState";
 import { engineRoot } from "consts";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
-import { clampToCType } from "lib/helpers/engineFields";
+import { clampToCType } from "shared/lib/engineFields/engineFieldToCType";
 import { setDefault } from "shared/lib/helpers/setDefault";
 import type { ScriptEventFieldSchema } from "shared/lib/entities/entitiesTypes";
 import glob from "glob";

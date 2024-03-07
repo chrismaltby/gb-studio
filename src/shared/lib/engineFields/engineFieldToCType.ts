@@ -1,18 +1,4 @@
-import { Dictionary } from "@reduxjs/toolkit";
-import type {
-  EngineFieldCType,
-  EngineFieldSchema,
-} from "store/features/engine/engineState";
-
-export const precompileEngineFields = (
-  engineFields: EngineFieldSchema[]
-): Dictionary<EngineFieldSchema> => {
-  const fields: Dictionary<EngineFieldSchema> = {};
-  for (const engineField of engineFields) {
-    fields[engineField.key] = engineField;
-  }
-  return fields;
-};
+import type { EngineFieldCType } from "store/features/engine/engineState";
 
 export const is16BitCType = (cType: EngineFieldCType): boolean => {
   return cType === "WORD" || cType === "UWORD";

@@ -1,16 +1,9 @@
 import { Dictionary } from "@reduxjs/toolkit";
 import {
-  ScriptEventsDefLookups,
-  isVariableField,
-} from "lib/helpers/eventSystem";
-import {
   actorName,
   isUnionValue,
   sceneName,
   triggerName,
-  walkNormalisedActorEvents,
-  walkNormalisedSceneSpecificEvents,
-  walkNormalisedTriggerEvents,
 } from "shared/lib/entities/entitiesHelpers";
 import {
   Actor,
@@ -18,6 +11,11 @@ import {
   ScriptEvent,
   Trigger,
 } from "shared/lib/entities/entitiesTypes";
+import {
+  ScriptEventDefsLookup,
+  isVariableField,
+} from "shared/lib/scripts/scriptDefHelpers";
+import { walkNormalizedScenesScripts } from "shared/lib/scripts/walk";
 
 export type VariableUse = {
   id: string;
@@ -54,30 +52,6 @@ export interface VariableUseResult {
 // eslint-disable-next-line no-restricted-globals
 const workerCtx: Worker = self as unknown as Worker;
 
-const onVariableEventContainingId =
-  (
-    id: string,
-    eventLookup: ScriptEventsDefLookups,
-    callback: (event: ScriptEvent) => void
-  ) =>
-  (event: ScriptEvent) => {
-    if (event.args) {
-      for (const arg in event.args) {
-        if (isVariableField(event.command, arg, event.args, eventLookup)) {
-          const argValue = event.args[arg];
-          if (
-            argValue === id ||
-            (isUnionValue(argValue) &&
-              argValue.type === "variable" &&
-              argValue.value === id)
-          ) {
-            callback(event);
-          }
-        }
-      }
-    }
-  };
-
 workerCtx.onmessage = async (evt) => {
   const id = evt.data.id;
   const variableId: string = evt.data.variableId;
@@ -86,123 +60,95 @@ workerCtx.onmessage = async (evt) => {
     evt.data.scriptEventsLookup;
   const actorsLookup: Dictionary<Actor> = evt.data.actorsLookup;
   const triggersLookup: Dictionary<Trigger> = evt.data.triggersLookup;
-  const eventsLookup: ScriptEventsDefLookups = evt.data.eventLookup;
+  const scriptEventDefsLookup: ScriptEventDefsLookup =
+    evt.data.scriptEventDefsLookup;
 
   const uses: VariableUse[] = [];
   const useLookup: Dictionary<boolean> = {};
 
-  for (let sceneIndex = 0; sceneIndex < scenes.length; sceneIndex++) {
-    const scene = scenes[sceneIndex];
-    walkNormalisedSceneSpecificEvents(
-      scene,
-      scriptEventsLookup,
-      undefined,
-      onVariableEventContainingId(
-        variableId,
-        eventsLookup,
-        (event: ScriptEvent) => {
-          if (!useLookup[scene.id]) {
-            uses.push({
-              id: scene.id,
-              name: sceneName(scene, sceneIndex),
-              event,
-              type: "scene",
-              scene,
-              sceneIndex,
-              sceneId: scene.id,
-            });
-            useLookup[scene.id] = true;
-          }
+  walkNormalizedScenesScripts(
+    scenes,
+    scriptEventsLookup,
+    actorsLookup,
+    triggersLookup,
+    undefined,
+    (scriptEvent, scene, actor, trigger) => {
+      if (!scriptEvent.args) {
+        return;
+      }
+      for (const arg in scriptEvent.args) {
+        if (
+          !isVariableField(
+            scriptEvent.command,
+            arg,
+            scriptEvent.args,
+            scriptEventDefsLookup
+          )
+        ) {
+          continue;
         }
-      )
-    );
-    for (let actorIndex = 0; actorIndex < scenes.length; actorIndex++) {
-      const actorId = scene.actors[actorIndex];
-      const actor = actorsLookup[actorId];
-      if (actor) {
-        walkNormalisedActorEvents(
-          actor,
-          scriptEventsLookup,
-          undefined,
-          onVariableEventContainingId(
-            variableId,
-            eventsLookup,
-            (event: ScriptEvent) => {
-              if (!useLookup[scene.id]) {
-                uses.push({
-                  id: scene.id,
-                  name: sceneName(scene, sceneIndex),
-                  event,
-                  type: "scene",
-                  scene,
-                  sceneIndex,
-                  sceneId: scene.id,
-                });
-                useLookup[scene.id] = true;
-              }
-              if (!useLookup[actor.id]) {
-                uses.push({
-                  id: actor.id,
-                  name: actorName(actor, actorIndex),
-                  event,
-                  type: "actor",
-                  actor,
-                  actorIndex,
-                  scene,
-                  sceneIndex,
-                  sceneId: scene.id,
-                });
-                useLookup[actor.id] = true;
-              }
-            }
-          )
-        );
+
+        const argValue = scriptEvent.args[arg];
+        const isVariableId =
+          argValue === variableId ||
+          (isUnionValue(argValue) &&
+            argValue.type === "variable" &&
+            argValue.value === variableId);
+
+        if (!isVariableId) {
+          continue;
+        }
+
+        if (!useLookup[scene.id]) {
+          const sceneIndex = scenes.indexOf(scene);
+          uses.push({
+            id: scene.id,
+            name: sceneName(scene, sceneIndex),
+            event: scriptEvent,
+            type: "scene",
+            scene,
+            sceneIndex,
+            sceneId: scene.id,
+          });
+          useLookup[scene.id] = true;
+        }
+
+        if (actor && !useLookup[actor.id]) {
+          const sceneIndex = scenes.indexOf(scene);
+          const actorIndex = scene.actors.indexOf(actor.id);
+          uses.push({
+            id: actor.id,
+            name: actorName(actor, actorIndex),
+            event: scriptEvent,
+            type: "actor",
+            actor,
+            actorIndex,
+            scene,
+            sceneIndex,
+            sceneId: scene.id,
+          });
+          useLookup[actor.id] = true;
+        }
+
+        if (trigger && !useLookup[trigger.id]) {
+          const sceneIndex = scenes.indexOf(scene);
+          const triggerIndex = scene.triggers.indexOf(trigger.id);
+          uses.push({
+            id: trigger.id,
+            name: triggerName(trigger, triggerIndex),
+            event: scriptEvent,
+            type: "trigger",
+            trigger,
+            triggerIndex,
+            scene,
+            sceneIndex,
+            sceneId: scene.id,
+          });
+          useLookup[trigger.id] = true;
+        }
       }
     }
-    for (let triggerIndex = 0; triggerIndex < scenes.length; triggerIndex++) {
-      const triggerId = scene.triggers[triggerIndex];
-      const trigger = triggersLookup[triggerId];
-      if (trigger) {
-        walkNormalisedTriggerEvents(
-          trigger,
-          scriptEventsLookup,
-          undefined,
-          onVariableEventContainingId(
-            variableId,
-            eventsLookup,
-            (event: ScriptEvent) => {
-              if (!useLookup[scene.id]) {
-                uses.push({
-                  id: scene.id,
-                  name: sceneName(scene, sceneIndex),
-                  event,
-                  type: "scene",
-                  scene,
-                  sceneIndex,
-                  sceneId: scene.id,
-                });
-                useLookup[scene.id] = true;
-              }
-              if (!useLookup[trigger.id]) {
-                uses.push({
-                  id: trigger.id,
-                  name: triggerName(trigger, triggerIndex),
-                  event,
-                  type: "trigger",
-                  trigger,
-                  triggerIndex,
-                  scene,
-                  sceneIndex,
-                  sceneId: scene.id,
-                });
-                useLookup[trigger.id] = true;
-              }
-            }
-          )
-        );
-      }
-    }
-  }
+  );
 
   workerCtx.postMessage({ id, uses } as VariableUseResult);
 };

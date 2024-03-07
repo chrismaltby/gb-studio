@@ -43,19 +43,25 @@ import clipboardActions from "./clipboardActions";
 import {
   customEventName,
   isCustomEventEqual,
-  walkActorScriptsKeys,
-  walkNormalisedActorEvents,
-  walkNormalisedCustomEventEvents,
-  walkNormalisedSceneSpecificEvents,
-  walkNormalisedScriptEvents,
-  walkNormalisedTriggerEvents,
-  walkSceneScriptsKeys,
-  walkTriggerScriptsKeys,
 } from "shared/lib/entities/entitiesHelpers";
 import keyBy from "lodash/keyBy";
-import { patchEventArgs } from "lib/helpers/eventHelpers";
+import {
+  ScriptEventDefsLookup,
+  patchEventArgs,
+} from "shared/lib/scripts/eventHelpers";
 import { EVENT_CALL_CUSTOM_EVENT } from "consts";
 import API from "renderer/lib/api";
+import { selectScriptEventDefsLookup } from "store/features/scriptEventDefs/scriptEventDefsState";
+import {
+  walkActorScriptsKeys,
+  walkNormalizedActorScripts,
+  walkNormalizedCustomEventScripts,
+  walkNormalizedSceneSpecificScripts,
+  walkNormalizedScript,
+  walkNormalizedTriggerScripts,
+  walkSceneScriptsKeys,
+  walkTriggerScriptsKeys,
+} from "shared/lib/scripts/walk";
 
 const generateLocalVariableInsertActions = (
   originalId: string,
@@ -222,6 +228,7 @@ const generateSceneInsertActions = (
   actors: Actor[],
   triggers: Trigger[],
   scriptEventsLookup: Dictionary<ScriptEvent>,
+  scriptEventDefsLookup: ScriptEventDefsLookup,
   variables: Variable[],
   x: number,
   y: number
@@ -309,7 +316,8 @@ const generateSceneInsertActions = (
               eventData.command,
               "actor",
               eventData.args || {},
-              actorMapping
+              actorMapping,
+              scriptEventDefsLookup
             ),
           };
         }),
@@ -438,14 +446,14 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         }
       };
 
-      walkNormalisedScriptEvents(
+      walkNormalizedScript(
         action.payload.scriptEventIds,
         scriptEventsLookup,
         undefined,
         addEvent
       );
       for (const customEvent of customEvents) {
-        walkNormalisedCustomEventEvents(
+        walkNormalizedCustomEventScripts(
           customEvent,
           scriptEventsLookup,
           undefined,
@@ -495,7 +503,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         const trigger = triggersLookup[triggerId];
         if (trigger) {
           triggers.push(trigger);
-          walkNormalisedTriggerEvents(
+          walkNormalizedTriggerScripts(
             trigger,
             scriptEventsLookup,
             undefined,
@@ -504,7 +512,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         }
       });
       for (const customEvent of customEvents) {
-        walkNormalisedCustomEventEvents(
+        walkNormalizedCustomEventScripts(
           customEvent,
           scriptEventsLookup,
           undefined,
@@ -554,7 +562,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         const actor = actorsLookup[actorId];
         if (actor) {
           actors.push(actor);
-          walkNormalisedActorEvents(
+          walkNormalizedActorScripts(
             actor,
             scriptEventsLookup,
             undefined,
@@ -563,7 +571,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         }
       });
       for (const customEvent of customEvents) {
-        walkNormalisedCustomEventEvents(
+        walkNormalizedCustomEventScripts(
           customEvent,
           scriptEventsLookup,
           undefined,
@@ -621,7 +629,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             const actor = actorsLookup[actorId];
             if (actor) {
               actors.push(actor);
-              walkNormalisedActorEvents(
+              walkNormalizedActorScripts(
                 actor,
                 scriptEventsLookup,
                 undefined,
@@ -633,7 +641,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             const trigger = triggersLookup[triggerId];
             if (trigger) {
               triggers.push(trigger);
-              walkNormalisedTriggerEvents(
+              walkNormalizedTriggerScripts(
                 trigger,
                 scriptEventsLookup,
                 undefined,
@@ -641,7 +649,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
               );
             }
           });
-          walkNormalisedSceneSpecificEvents(
+          walkNormalizedSceneSpecificScripts(
             scene,
             scriptEventsLookup,
             undefined,
@@ -650,7 +658,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         }
       });
       for (const customEvent of customEvents) {
-        walkNormalisedCustomEventEvents(
+        walkNormalizedCustomEventScripts(
           customEvent,
           scriptEventsLookup,
           undefined,
@@ -811,6 +819,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         const state = store.getState();
         const scriptEvents = clipboard.data.scriptEvents;
         const scriptEventsLookup = keyBy(scriptEvents, "id");
+        const scriptEventDefsLookup = selectScriptEventDefsLookup(state);
         const existingCustomEvents = customEventSelectors.selectAll(state);
         const existingScriptEventsLookup =
           scriptEventSelectors.selectEntities(state);
@@ -820,6 +829,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             clipboard.data.actors,
             clipboard.data.triggers,
             scriptEventsLookup,
+            scriptEventDefsLookup,
             clipboard.data.variables,
             action.payload.x,
             action.payload.y

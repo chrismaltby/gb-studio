@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import { NamedVariable, namedVariablesByContext } from "renderer/lib/variables";
 import { Dictionary } from "@reduxjs/toolkit";
@@ -52,17 +52,6 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
   const context = useContext(ScriptEditorContext);
   const scriptEventDefsLookup = useSelector((state: RootState) =>
     selectScriptEventDefsLookup(state)
-  );
-  console.warn(
-    "@TODO Move engineField events to redux store" as any /*So this turns up in linter */
-  );
-  const eventLookup = useMemo(
-    () => ({
-      eventsLookup: scriptEventDefsLookup,
-      engineFieldUpdateEventsLookup: {},
-      engineFieldStoreEventsLookup: {},
-    }),
-    [scriptEventDefsLookup]
   );
   const localisedCommand = l10n(command as L10NKey);
   const eventName =
@@ -236,7 +225,6 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
     customEvents,
     context,
     scriptEventDefsLookup,
-    eventLookup,
   ]);
 
   return <Wrapper>{String(labelName || autoName || eventName)}</Wrapper>;

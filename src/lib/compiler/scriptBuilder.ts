@@ -1,7 +1,7 @@
 import { inputDec, textSpeedDec } from "./helpers";
 import { decBin, decHex, decOct, hexDec } from "shared/lib/helpers/8bit";
 import trimlines from "shared/lib/helpers/trimlines";
-import { is16BitCType } from "lib/helpers/engineFields";
+import { is16BitCType } from "shared/lib/engineFields/engineFieldToCType";
 import {
   globalVariableDefaultName,
   localVariableName,
@@ -10,7 +10,6 @@ import {
 import type {
   ActorDirection,
   Palette,
-  ScriptEvent,
   DistanceUnitType,
   Variable,
   ScriptEventDenormalized,
@@ -36,12 +35,15 @@ import {
   isPropertyField,
   isVariableField,
   isActorField,
-  mapEvents,
-} from "lib/helpers/eventSystem";
+} from "shared/lib/scripts/scriptDefHelpers";
 import compileEntityEvents from "./compileEntityEvents";
 import {
   isUnionPropertyValue,
   isUnionVariableValue,
+  isVariableCustomEvent,
+  isVariableLocal,
+  isVariableTemp,
+  toVariableNumber,
 } from "shared/lib/entities/entitiesHelpers";
 import { lexText } from "shared/lib/compiler/lexText";
 import type { Reference } from "components/forms/ReferencesSelect";
@@ -51,6 +53,8 @@ import {
   ScriptEditorContextType,
 } from "shared/lib/scripts/context";
 import { encodeString } from "shared/lib/helpers/fonts";
+import { mapScript } from "shared/lib/scripts/walk";
+import events from "lib/events";
 
 export type ScriptOutput = string[];
 
@@ -271,26 +275,6 @@ export const getVariableId = (
     return variable;
   }
   return String(parseInt(variable || "0"));
-};
-
-export const toVariableNumber = (variable: string) => {
-  return variable.replace(/[^0-9]/g, "");
-};
-
-export const isVariableLocal = (variable: string) => {
-  return ["L0", "L1", "L2", "L3", "L4", "L5"].indexOf(variable) > -1;
-};
-
-export const isVariableTemp = (variable: string) => {
-  return ["T0", "T1"].indexOf(variable) > -1;
-};
-
-export const isVariableCustomEvent = (variable: string) => {
-  return (
-    ["V0", "V1", "V2", "V3", "V4", "V5", "V6", "V7", "V8", "V9"].indexOf(
-      variable
-    ) > -1
-  );
 };
 
 const toValidLabel = (label: string): string => {
@@ -3374,8 +3358,6 @@ extern void __mute_mask_${symbol};
   };
 
   compileCustomEventScript = (customEventId: string) => {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const eventLookup = require("lib/events").eventLookup;
     const { customEvents, compiledCustomEventScriptCache } = this.options;
     const customEvent = customEvents.find((ce) => ce.id === customEventId);
 
@@ -3451,69 +3433,66 @@ extern void __mute_mask_${symbol};
       }
     }
 
-    const script = mapEvents(
-      customEvent.script,
-      (event: ScriptEvent): ScriptEvent => {
-        if (!event.args || event.args.__comment) return event;
-        // Clone event
-        const e = {
-          ...event,
-          args: { ...event.args },
-        };
-        Object.keys(e.args).forEach((arg) => {
-          const argValue = e.args[arg];
-          // Update variable fields
-          if (isVariableField(e.command, arg, e.args, eventLookup)) {
-            if (
-              isUnionVariableValue(argValue) &&
-              argValue.value &&
-              isVariableCustomEvent(argValue.value)
-            ) {
-              e.args[arg] = {
-                ...argValue,
-                value: getArg("variable", argValue.value),
-              };
-            } else if (
-              typeof argValue === "string" &&
-              isVariableCustomEvent(argValue)
-            ) {
-              e.args[arg] = getArg("variable", argValue);
-            }
-          }
-          // Update property fields
-          if (isPropertyField(e.command, arg, e.args, eventLookup)) {
-            const replacePropertyValueActor = (p: string) => {
-              const actorValue = p.replace(/:.*/, "");
-              if (actorValue === "player") {
-                return p;
-              }
-              const newActorValue = getArg("actor", actorValue);
-              return {
-                value: newActorValue,
-                property: p.replace(/.*:/, ""),
-              };
-            };
-            if (isUnionPropertyValue(argValue) && argValue.value) {
-              e.args[arg] = {
-                ...argValue,
-                value: replacePropertyValueActor(argValue.value),
-              };
-            } else if (typeof argValue === "string") {
-              e.args[arg] = replacePropertyValueActor(argValue);
-            }
-          }
-          // Update actor fields
+    const script = mapScript(customEvent.script, (scriptEvent) => {
+      if (!scriptEvent.args || scriptEvent.args.__comment) return scriptEvent;
+      // Clone event
+      const e = {
+        ...scriptEvent,
+        args: { ...scriptEvent.args },
+      };
+      Object.keys(e.args).forEach((arg) => {
+        const argValue = e.args[arg];
+        // Update variable fields
+        if (isVariableField(e.command, arg, e.args, events)) {
           if (
-            isActorField(e.command, arg, e.args, eventLookup) &&
-            typeof argValue === "string"
+            isUnionVariableValue(argValue) &&
+            argValue.value &&
+            isVariableCustomEvent(argValue.value)
           ) {
-            e.args[arg] = getArg("actor", argValue); // input[`$variable[${argValue}]$`];
+            e.args[arg] = {
+              ...argValue,
+              value: getArg("variable", argValue.value),
+            };
+          } else if (
+            typeof argValue === "string" &&
+            isVariableCustomEvent(argValue)
+          ) {
+            e.args[arg] = getArg("variable", argValue);
           }
-        });
+        }
+        // Update property fields
+        if (isPropertyField(e.command, arg, e.args, events)) {
+          const replacePropertyValueActor = (p: string) => {
+            const actorValue = p.replace(/:.*/, "");
+            if (actorValue === "player") {
+              return p;
+            }
+            const newActorValue = getArg("actor", actorValue);
+            return {
+              value: newActorValue,
+              property: p.replace(/.*:/, ""),
+            };
+          };
+          if (isUnionPropertyValue(argValue) && argValue.value) {
+            e.args[arg] = {
+              ...argValue,
+              value: replacePropertyValueActor(argValue.value),
+            };
+          } else if (typeof argValue === "string") {
+            e.args[arg] = replacePropertyValueActor(argValue);
+          }
+        }
+        // Update actor fields
+        if (
+          isActorField(e.command, arg, e.args, events) &&
+          typeof argValue === "string"
+        ) {
+          e.args[arg] = getArg("actor", argValue); // input[`$variable[${argValue}]$`];
+        }
+      });
 
-        return e;
-      }
-    );
+      return e;
+    });
 
     // Generate symbol and cache it before compiling script to allow recursive function calls to work
     const symbol = this._getAvailableSymbol(

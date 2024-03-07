@@ -12,15 +12,17 @@ import {
   actorName,
   sceneName,
   triggerName,
-  walkNormalisedActorEvents,
-  walkNormalisedSceneSpecificEvents,
-  walkNormalisedTriggerEvents,
 } from "shared/lib/entities/entitiesHelpers";
 import { EVENT_TEXT } from "consts";
 import { RootState } from "store/configureStore";
 import { DialogueLine } from "components/script/DialogueReviewLine";
 import styled from "styled-components";
 import { PageHeader } from "ui/layout/PageHeader";
+import {
+  walkNormalizedActorScripts,
+  walkNormalizedSceneSpecificScripts,
+  walkNormalizedTriggerScripts,
+} from "shared/lib/scripts/walk";
 
 const Wrapper = styled.div`
   background: ${(props) => props.theme.colors.document.background};
@@ -80,7 +82,7 @@ const DialoguePage = () => {
         scene.actors.forEach((actorId, actorIndex) => {
           const actor = actorsLookup[actorId];
           actor &&
-            walkNormalisedActorEvents(
+            walkNormalizedActorScripts(
               actor,
               scriptEventsLookup,
               undefined,
@@ -98,7 +100,7 @@ const DialoguePage = () => {
         scene.triggers.forEach((triggerId, triggerIndex) => {
           const trigger = triggersLookup[triggerId];
           trigger &&
-            walkNormalisedTriggerEvents(
+            walkNormalizedTriggerScripts(
               trigger,
               scriptEventsLookup,
               undefined,
@@ -113,7 +115,7 @@ const DialoguePage = () => {
               }
             );
         });
-        walkNormalisedSceneSpecificEvents(
+        walkNormalizedSceneSpecificScripts(
           scene,
           scriptEventsLookup,
           undefined,

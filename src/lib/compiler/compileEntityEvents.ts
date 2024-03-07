@@ -6,6 +6,7 @@ import ScriptBuilder, {
   ScriptOutput,
 } from "./scriptBuilder";
 import { PrecompiledScene } from "./compileData2";
+import events from "lib/events";
 
 const STRING_NOT_FOUND = "STRING_NOT_FOUND";
 const VARIABLE_NOT_FOUND = "VARIABLE_NOT_FOUND";
@@ -64,7 +65,6 @@ const compileEntityEvents = (
   ) => {
     // eslint-disable-next-line global-require
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const events = require("../events").default;
     for (let i = 0; i < subInput.length; i++) {
       const command = subInput[i].command;
       if (subInput[i].args?.__comment) {
@@ -74,7 +74,7 @@ const compileEntityEvents = (
       }
       if (events[command]) {
         try {
-          events[command].compile(
+          events[command]?.compile(
             { ...subInput[i].args, ...subInput[i].children },
             {
               ...options,

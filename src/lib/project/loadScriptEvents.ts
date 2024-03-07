@@ -10,6 +10,11 @@ import type { ScriptEventFieldSchema } from "shared/lib/entities/entitiesTypes";
 import { Dictionary } from "@reduxjs/toolkit";
 import { readFile } from "fs-extra";
 import trimLines from "shared/lib/helpers/trimlines";
+import events from "lib/events";
+
+// @TODO Don't import events here
+// Only needed to update global eventsLookup
+// Instead should update places that use this like `compileData()` to take in ScriptEventHandlers as an arg
 
 const globAsync = promisify(glob);
 
@@ -28,7 +33,15 @@ export interface ScriptEventDef {
   allowChildrenBeforeInitFade?: boolean;
   waitUntilAfterInitFade?: boolean;
   hasAutoLabel: boolean;
+  fieldsLookup: Record<string, ScriptEventFieldSchema>;
 }
+
+export type ScriptEventHandlerFieldSchema = ScriptEventFieldSchema & {
+  postUpdateFn?: (
+    newArgs: Record<string, unknown>,
+    prevArgs: Record<string, unknown>
+  ) => void | Record<string, unknown>;
+};
 
 export type ScriptEventHandler = ScriptEventDef & {
   autoLabel?: (
@@ -36,6 +49,8 @@ export type ScriptEventHandler = ScriptEventDef & {
     args: Record<string, unknown>
   ) => string;
   compile: (input: unknown, helpers: unknown) => void;
+  fields: ScriptEventHandlerFieldSchema[];
+  fieldsLookup: Record<string, ScriptEventHandlerFieldSchema>;
 };
 
 export interface ScriptEventDefLookup {
@@ -71,6 +86,27 @@ const loadScriptEventHandler = async (
   handler.isConditional =
     handler.fields && !!handler.fields.find((f) => f.type === "events");
   handler.hasAutoLabel = !!handler.autoLabel;
+  handler.fieldsLookup = {};
+
+  // Add flags for existence of field callsbacks
+  // Needed so renderer knows if API call to main process is needed
+  for (const field of handler.fields) {
+    field.hasPostUpdateFn = !!field.postUpdateFn;
+  }
+
+  // Build flat lookup table of field keys to field
+  // To prevent needing to recursively loop through
+  // nested fields at editor runtime
+  const buildFieldsLookup = (fields: ScriptEventFieldSchema[]): void => {
+    for (const field of fields) {
+      if (field.type === "group" && field.fields) {
+        buildFieldsLookup(field.fields);
+      } else if (field.key) {
+        handler.fieldsLookup[field.key] = field;
+      }
+    }
+  };
+  buildFieldsLookup(handler.fields);
 
   return handler;
 };
@@ -82,24 +118,16 @@ const loadAllScriptEvents = async (projectRoot: string) => {
     `${projectRoot}/plugins/**/events/event*.js`
   );
 
-  // console.log({ corePaths, pluginPaths });
-
   const eventHandlers: Dictionary<ScriptEventDef> = {};
   for (const path of corePaths) {
-    // // console.log("PATH", path);
-    // const handlerCode = await readFile(path, "utf8");
-    // const handler = vm.run(handlerCode) as ScriptEventDef;
-    // if (!handler.id) {
-    //   throw new Error(`Event handler ${path} is missing id`);
-    // }
-    // handler.isConditional =
-    //   handler.fields && !!handler.fields.find((f) => f.type === "events");
     const handler = await loadScriptEventHandler(path);
     eventHandlers[handler.id] = handler;
+    events[handler.id] = handler;
   }
   for (const path of pluginPaths) {
     const handler = await loadScriptEventHandler(path);
     eventHandlers[handler.id] = handler;
+    events[handler.id] = handler;
   }
 
   return eventHandlers;

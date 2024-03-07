@@ -45,11 +45,13 @@ export type ScriptEventParentType =
   | "scriptEvent"
   | "customEvent";
 
+export type ScriptEventArgs = Record<string, unknown>;
+
 export type ScriptEvent = {
   id: string;
   command: string;
   symbol?: string;
-  args?: Record<string, unknown>;
+  args?: ScriptEventArgs;
   children?: Dictionary<string[]>;
 };
 
@@ -450,6 +452,7 @@ export interface ScriptEventFieldCondition {
   gte?: unknown;
   lte?: unknown;
   in?: unknown[];
+  set?: boolean;
   soundType?: unknown;
 }
 
@@ -503,16 +506,7 @@ export interface ScriptEventFieldSchema {
   unitsAllowed?: UnitType[];
   hideLabel?: boolean;
   description?: string;
-  filter?: (value: unknown) => boolean;
-  updateFn?: (
-    newValue: unknown,
-    field: ScriptEventFieldSchema,
-    args: Record<string, unknown>
-  ) => unknown;
-  postUpdate?: (
-    newArgs: Record<string, unknown>,
-    prevArgs: Record<string, unknown>
-  ) => void | Record<string, unknown>;
+  hasPostUpdateFn?: boolean;
 }
 
 export type EntityKey = keyof EntitiesState;

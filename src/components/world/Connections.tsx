@@ -8,11 +8,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store/configureStore";
 import {
-  walkNormalisedActorEvents,
-  walkNormalisedSceneSpecificEvents,
-  walkNormalisedTriggerEvents,
-} from "shared/lib/entities/entitiesHelpers";
-import {
   actorSelectors,
   customEventSelectors,
   sceneSelectors,
@@ -30,6 +25,11 @@ import {
 import editorActions from "store/features/editor/editorActions";
 import styled, { css } from "styled-components";
 import { ShowConnectionsSetting } from "store/features/settings/settingsState";
+import {
+  walkNormalizedActorScripts,
+  walkNormalizedSceneSpecificScripts,
+  walkNormalizedTriggerScripts,
+} from "shared/lib/scripts/walk";
 
 interface ConnectionsProps {
   width: number;
@@ -183,7 +183,7 @@ const getSceneConnections = (
   };
 
   const connections: TransitionCoords[] = [];
-  walkNormalisedSceneSpecificEvents(
+  walkNormalizedSceneSpecificScripts(
     scene,
     eventsLookup,
     {
@@ -210,7 +210,7 @@ const getSceneConnections = (
   scene.actors.forEach((entityId) => {
     const entity = actorsLookup[entityId];
     if (entity) {
-      walkNormalisedActorEvents(
+      walkNormalizedActorScripts(
         entity,
         eventsLookup,
         {
@@ -243,7 +243,7 @@ const getSceneConnections = (
   scene.triggers.forEach((entityId) => {
     const entity = triggersLookup[entityId];
     if (entity) {
-      walkNormalisedTriggerEvents(
+      walkNormalizedTriggerScripts(
         entity,
         eventsLookup,
         {

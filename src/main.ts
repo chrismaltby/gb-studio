@@ -77,7 +77,7 @@ import migrateWarning from "lib/project/migrateWarning";
 import confirmReplaceCustomEvent from "lib/electron/dialog/confirmReplaceCustomEvent";
 import l10n, { L10NKey, getL10NData } from "shared/lib/lang/l10n";
 import initElectronL10N, { locales } from "lib/lang/initElectronL10N";
-import { eventLookup, initEvents } from "lib/events";
+import events, { initEvents } from "lib/events";
 import watchProject from "lib/project/watchProject";
 import { loadBackgroundData } from "lib/project/loadBackgroundData";
 import { loadSpriteData } from "lib/project/loadSpriteData";
@@ -1274,7 +1274,28 @@ ipcMain.handle(
 ipcMain.handle(
   "script:get-auto-label",
   async (_, command: string, args: Record<string, unknown>) => {
-    return getAutoLabel(command, args, eventLookup);
+    return getAutoLabel(command, args, events);
+  }
+);
+
+ipcMain.handle(
+  "script:post-update-fn",
+  async (
+    _,
+    command: string,
+    fieldKey: string,
+    args: Record<string, unknown>,
+    prevArgs: Record<string, unknown>
+  ) => {
+    const event = events[command];
+    if (!event) {
+      return args;
+    }
+    const field = event.fieldsLookup[fieldKey];
+    if (!field || !field.postUpdateFn) {
+      return args;
+    }
+    return field.postUpdateFn(args, prevArgs);
   }
 );
 

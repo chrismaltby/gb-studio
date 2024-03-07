@@ -1,20 +1,16 @@
-import type { Dictionary } from "@reduxjs/toolkit";
 import {
   isActorField,
   isPropertyField,
   isVariableField,
-} from "lib/helpers/eventSystem";
-import type { ScriptEventFieldSchema } from "shared/lib/entities/entitiesTypes";
-import type { EventHandlersLookups } from "lib/events";
+} from "shared/lib/scripts/scriptDefHelpers";
+import type { ScriptEventHandlersLookup } from "lib/events";
 import l10n from "shared/lib/lang/l10n";
 
 export const getAutoLabel = (
   command: string,
   args: Record<string, unknown>,
-  scriptEventsDefLookups: EventHandlersLookups
+  scriptEventDefsLookup: ScriptEventHandlersLookup
 ) => {
-  const eventHandlers = scriptEventsDefLookups.eventsLookup;
-
   const mapArg = (key: string) => {
     const arg = args[key];
 
@@ -23,28 +19,12 @@ export const getAutoLabel = (
       value: unknown;
     };
 
-    const fieldsIndexByKey = (
-      fields: ScriptEventFieldSchema[]
-    ): Dictionary<ScriptEventFieldSchema> => {
-      const lookup: Dictionary<ScriptEventFieldSchema> = {};
-      const addField = (field: ScriptEventFieldSchema) => {
-        if (field.key) {
-          lookup[field.key] = field;
-        }
-        if (field.type === "group" && field.fields) {
-          for (const subField of field.fields) {
-            addField(subField);
-          }
-        }
-      };
+    const field = scriptEventDefsLookup[command];
+    if (!field) {
+      return "";
+    }
 
-      for (const field of fields) {
-        addField(field);
-      }
-      return lookup;
-    };
-
-    const fieldLookup = fieldsIndexByKey(eventHandlers[command]?.fields || []);
+    const fieldLookup = field.fieldsLookup;
 
     const extractValue = (arg: unknown): unknown => {
       if (
@@ -161,11 +141,11 @@ export const getAutoLabel = (
       return l10nInput(value);
     };
 
-    if (isActorField(command, key, args, scriptEventsDefLookups)) {
+    if (isActorField(command, key, args, scriptEventDefsLookup)) {
       return `||actor:${value}||`;
-    } else if (isVariableField(command, key, args, scriptEventsDefLookups)) {
+    } else if (isVariableField(command, key, args, scriptEventDefsLookup)) {
       return `||variable:${value}||`;
-    } else if (isPropertyField(command, key, args, scriptEventsDefLookups)) {
+    } else if (isPropertyField(command, key, args, scriptEventDefsLookup)) {
       const propertyParts = String(value).split(":");
       return `||actor:${propertyParts[0]}||.${propertyNameForId(
         propertyParts[1]
@@ -192,7 +172,7 @@ export const getAutoLabel = (
     return String(value);
   };
 
-  return eventHandlers[command]?.autoLabel?.(mapArg, args) ?? "";
+  return scriptEventDefsLookup[command]?.autoLabel?.(mapArg, args) ?? "";
 };
 
 export const replaceAutoLabelLocalValues = (

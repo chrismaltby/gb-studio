@@ -1,4 +1,5 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, Dictionary, PayloadAction } from "@reduxjs/toolkit";
+import keyBy from "lodash/keyBy";
 
 export type EngineFieldType = "number" | "slider" | "checkbox" | "select";
 
@@ -19,10 +20,12 @@ export type EngineFieldSchema = {
 
 export interface EngineState {
   fields: EngineFieldSchema[];
+  lookup: Dictionary<EngineFieldSchema>;
 }
 
 export const initialState: EngineState = {
   fields: [],
+  lookup: {},
 };
 
 const engineSlice = createSlice({
@@ -31,6 +34,7 @@ const engineSlice = createSlice({
   reducers: {
     setEngineFields: (state, action: PayloadAction<EngineFieldSchema[]>) => {
       state.fields = action.payload;
+      state.lookup = keyBy(action.payload, "key");
     },
   },
 });

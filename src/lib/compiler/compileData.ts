@@ -18,7 +18,6 @@ import compileSprites from "./compileSprites";
 import compileAvatars from "./compileAvatars";
 import compileEmotes from "./compileEmotes";
 import compileFonts from "./compileFonts";
-import { precompileEngineFields } from "lib/helpers/engineFields";
 import {
   compileBackground,
   compileBackgroundHeader,
@@ -80,11 +79,9 @@ import {
   toProjectileHash,
 } from "./scriptBuilder";
 import {
-  calculateAutoFadeEventIdDenormalised,
+  calculateAutoFadeEventId,
   isEmptyScript,
-  walkDenormalizedSceneEvents,
-  walkDenormalizedScenesEvents,
-} from "lib/helpers/eventHelpers";
+} from "shared/lib/scripts/eventHelpers";
 import copy from "lib/helpers/fsCopy";
 import { ensureDir } from "fs-extra";
 import Path from "path";
@@ -115,6 +112,8 @@ import type {
   SettingsState,
 } from "store/features/settings/settingsState";
 import { ensureNumber, ensureString, ensureTypeGenerator } from "shared/types";
+import events from "lib/events";
+import { walkSceneScripts, walkScenesScripts } from "shared/lib/scripts/walk";
 
 type TilemapData = {
   symbol: string;
@@ -217,7 +216,7 @@ export const precompileBackgrounds = async (
   const usedTilemapAttrsCache: Record<string, TilemapData> = {};
 
   const eventImageIds: string[] = [];
-  walkDenormalizedScenesEvents(
+  walkScenesScripts(
     scenes,
     {
       customEvents: {
@@ -560,7 +559,7 @@ export const precompileSprites = async (
     }
   };
 
-  walkDenormalizedScenesEvents(
+  walkScenesScripts(
     scenes,
     {
       customEvents: {
@@ -656,7 +655,7 @@ export const precompileAvatars = async (
   const usedAvatarLookup: Record<string, AvatarData> = {};
   const avatarLookup = indexById(avatars);
 
-  walkDenormalizedScenesEvents(
+  walkScenesScripts(
     scenes,
     {
       customEvents: {
@@ -709,7 +708,7 @@ export const precompileEmotes = async (
     }
   };
 
-  walkDenormalizedScenesEvents(
+  walkScenesScripts(
     scenes,
     {
       customEvents: {
@@ -754,7 +753,7 @@ export const precompileMusic = (
       ? music.filter((track) => track.type === "uge")
       : music.filter((track) => track.type !== "uge");
 
-  walkDenormalizedScenesEvents(
+  walkScenesScripts(
     scenes,
     {
       customEvents: {
@@ -850,7 +849,7 @@ export const precompileFonts = async (
       .forEach(addFont);
   };
 
-  walkDenormalizedScenesEvents(
+  walkScenesScripts(
     scenes,
     {
       customEvents: {
@@ -980,7 +979,7 @@ export const precompileScenes = (
 
     let playerSpritePersist = false;
 
-    walkDenormalizedSceneEvents(
+    walkSceneScripts(
       scene,
       {
         customEvents: {
@@ -988,7 +987,7 @@ export const precompileScenes = (
           maxDepth: MAX_NESTED_SCRIPT_DEPTH,
         },
       },
-      (event, _scene, actor, _trigger) => {
+      (event, actor, _trigger) => {
         if (
           event.args &&
           event.args.spriteSheetId &&
@@ -1296,7 +1295,7 @@ const compile = async (
   const customColorsEnabled = projectData.settings.customColorsEnabled;
   const isSGB = projectData.settings.sgbEnabled;
 
-  const precompiledEngineFields = precompileEngineFields(engineFields);
+  const precompiledEngineFields = keyBy(engineFields, "key");
   const customEventsLookup = keyBy(projectData.customEvents, "id");
 
   // Add UI data
@@ -1510,9 +1509,10 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
 
         // Inject automatic Scene Fade In if required
         if (scene.autoFadeSpeed !== null) {
-          const autoFadeId = calculateAutoFadeEventIdDenormalised(
+          const autoFadeId = calculateAutoFadeEventId(
             initScript,
-            customEventsLookup
+            customEventsLookup,
+            events
           );
           const autoFadeIndex = initScript.findIndex(
             (item) => item.id === autoFadeId

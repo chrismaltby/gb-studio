@@ -15,6 +15,7 @@ import {
 import { FixedSpacer, FlexBreak } from "ui/spacing/Spacing";
 import { TabBar } from "ui/tabs/Tabs";
 import styled from "styled-components";
+import API from "renderer/lib/api";
 
 interface ScriptEventFormFieldProps {
   scriptEventId: string;
@@ -103,11 +104,26 @@ const ScriptEventFormField = memo(
             value,
           })
         );
-        if (scriptEvent && field.postUpdate) {
-          field.postUpdate(
-            { ...scriptEvent.args, [key]: value },
-            scriptEvent.args || {}
-          );
+        if (scriptEvent && field.key && field.hasPostUpdateFn) {
+          API.script
+            .scriptEventPostUpdateFn(
+              scriptEvent.command,
+              field.key,
+              { ...scriptEvent.args, [key]: value },
+              scriptEvent.args || {}
+            )
+            .then((updatedArgs) => {
+              if (updatedArgs) {
+                dispatch(
+                  entitiesActions.editScriptEvent({
+                    scriptEventId,
+                    changes: {
+                      args: updatedArgs,
+                    },
+                  })
+                );
+              }
+            });
         }
       },
       [dispatch, field, scriptEvent, scriptEventId]

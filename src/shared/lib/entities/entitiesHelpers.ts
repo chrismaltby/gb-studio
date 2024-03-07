@@ -1,5 +1,4 @@
 import { normalize, denormalize, schema, NormalizedSchema } from "normalizr";
-import isEqual from "lodash/isEqual";
 import pick from "lodash/pick";
 import cloneDeep from "lodash/cloneDeep";
 import {
@@ -29,12 +28,6 @@ import {
   SpriteState,
   SpriteSheetData,
   ScriptEvent,
-  ActorScriptKey,
-  actorScriptKeys,
-  sceneScriptKeys,
-  SceneScriptKey,
-  TriggerScriptKey,
-  triggerScriptKeys,
   Sound,
 } from "shared/lib/entities/entitiesTypes";
 import {
@@ -48,6 +41,8 @@ import parseAssetPath from "shared/lib/assets/parseAssetPath";
 import { COLLISION_SLOPE_VALUES } from "consts";
 import { Asset } from "shared/lib/helpers/assets";
 import l10n from "shared/lib/lang/l10n";
+import isEqual from "lodash/isEqual";
+import { isNormalisedScriptEqual } from "shared/lib/scripts/scriptHelpers";
 
 export interface NormalisedEntities {
   scenes: Record<EntityId, Scene>;
@@ -90,17 +85,6 @@ export type NormalisedData = NormalizedSchema<
   NormalisedEntities,
   NormalisedResult
 >;
-
-type WalkNormalizedOptions =
-  | undefined
-  | {
-      filter?: (ScriptEvent: ScriptEvent) => boolean;
-      customEvents?: {
-        lookup: Dictionary<CustomEvent>;
-        maxDepth: number;
-        args?: Record<string, unknown>;
-      };
-    };
 
 const inodeToAssetCache: Dictionary<Asset> = {};
 
@@ -323,190 +307,24 @@ export const isUnionDirectionValue = (
   return true;
 };
 
-export const replaceCustomEventArgs = (
-  scriptEvent: ScriptEvent,
-  customEventArgs: Record<string, unknown> | undefined
-) => {
-  if (!customEventArgs) {
-    return scriptEvent;
-  }
-  return {
-    ...scriptEvent,
-    args: {
-      ...scriptEvent.args,
-      actorId:
-        customEventArgs[`$actor[${scriptEvent.args?.actorId || 0}]$`] ??
-        "$self$",
-      // @todo Replace other custom event fields
-    },
-  };
+export const toVariableNumber = (variable: string) => {
+  return variable.replace(/[^0-9]/g, "");
 };
 
-export const walkNormalisedScriptEvents = (
-  ids: string[] = [],
-  lookup: Dictionary<ScriptEvent>,
-  options: WalkNormalizedOptions,
-  callback: (scriptEvent: ScriptEvent) => void
-) => {
-  for (let i = 0; i < ids.length; i++) {
-    const scriptEvent = lookup[ids[i]];
-    if (scriptEvent) {
-      // If filter is provided skip events that fail filter
-      if (options?.filter && !options.filter(scriptEvent)) {
-        continue;
-      }
-
-      callback(
-        replaceCustomEventArgs(scriptEvent, options?.customEvents?.args)
-      );
-      if (
-        scriptEvent.children &&
-        scriptEvent.command !== "EVENT_CALL_CUSTOM_EVENT"
-      ) {
-        Object.keys(scriptEvent.children).forEach((key) => {
-          const script = scriptEvent.children?.[key];
-          if (script) {
-            walkNormalisedScriptEvents(script, lookup, options, callback);
-          }
-        });
-      }
-      if (
-        options?.customEvents &&
-        options.customEvents.maxDepth >= 0 &&
-        scriptEvent.command === "EVENT_CALL_CUSTOM_EVENT"
-      ) {
-        const customEvent =
-          options.customEvents.lookup[
-            String(scriptEvent.args?.customEventId || "")
-          ];
-        if (customEvent) {
-          walkNormalisedScriptEvents(
-            customEvent.script,
-            lookup,
-            {
-              ...options,
-              customEvents: {
-                ...options.customEvents,
-                maxDepth: options.customEvents.maxDepth - 1,
-                args: scriptEvent.args || {},
-              },
-            },
-            callback
-          );
-        }
-      }
-    }
-  }
+export const isVariableLocal = (variable: string) => {
+  return ["L0", "L1", "L2", "L3", "L4", "L5"].indexOf(variable) > -1;
 };
 
-export const walkNormalisedSceneSpecificEvents = (
-  scene: Scene,
-  lookup: Dictionary<ScriptEvent>,
-  options: WalkNormalizedOptions,
-  callback: (scriptEvent: ScriptEvent) => void
-) => {
-  walkNormalisedScriptEvents(scene.script, lookup, options, callback);
-  walkNormalisedScriptEvents(scene.playerHit1Script, lookup, options, callback);
-  walkNormalisedScriptEvents(scene.playerHit2Script, lookup, options, callback);
-  walkNormalisedScriptEvents(scene.playerHit3Script, lookup, options, callback);
+export const isVariableTemp = (variable: string) => {
+  return ["T0", "T1"].indexOf(variable) > -1;
 };
 
-export const walkNormalisedActorEvents = (
-  actor: Actor,
-  lookup: Dictionary<ScriptEvent>,
-  options: WalkNormalizedOptions,
-  callback: (scriptEvent: ScriptEvent) => void
-) => {
-  walkActorScriptsKeys((key) => {
-    walkNormalisedScriptEvents(actor[key], lookup, options, callback);
-  });
-};
-
-export const walkNormalisedTriggerEvents = (
-  trigger: Trigger,
-  lookup: Dictionary<ScriptEvent>,
-  options: WalkNormalizedOptions,
-  callback: (scriptEvent: ScriptEvent) => void
-) => {
-  walkNormalisedScriptEvents(trigger.script, lookup, options, callback);
-  walkNormalisedScriptEvents(trigger.leaveScript, lookup, options, callback);
-};
-
-export const walkNormalisedSceneEvents = (
-  scene: Scene,
-  lookup: Dictionary<ScriptEvent>,
-  actorsLookup: Dictionary<Actor>,
-  triggersLookup: Dictionary<Trigger>,
-  options: WalkNormalizedOptions,
-  callback: (scriptEvent: ScriptEvent, actor?: Actor, trigger?: Trigger) => void
-) => {
-  walkNormalisedSceneSpecificEvents(scene, lookup, options, (e) =>
-    callback(e, undefined, undefined)
+export const isVariableCustomEvent = (variable: string) => {
+  return (
+    ["V0", "V1", "V2", "V3", "V4", "V5", "V6", "V7", "V8", "V9"].indexOf(
+      variable
+    ) > -1
   );
-  scene.actors.forEach((actorId) => {
-    const actor = actorsLookup[actorId];
-    if (actor) {
-      walkNormalisedActorEvents(actor, lookup, options, (e) =>
-        callback(e, actor, undefined)
-      );
-    }
-  });
-  scene.triggers.forEach((triggerId) => {
-    const trigger = triggersLookup[triggerId];
-    if (trigger) {
-      walkNormalisedTriggerEvents(trigger, lookup, options, (e) =>
-        callback(e, undefined, trigger)
-      );
-    }
-  });
-};
-
-export const walkNormalisedCustomEventEvents = (
-  customEvent: CustomEvent,
-  lookup: Dictionary<ScriptEvent>,
-  options: WalkNormalizedOptions,
-  callback: (scriptEvent: ScriptEvent) => void
-) => {
-  walkNormalisedScriptEvents(customEvent.script, lookup, options, callback);
-};
-
-export const walkActorScriptsKeys = (
-  callback: (scriptKey: ActorScriptKey) => void
-) => {
-  actorScriptKeys.forEach((key) => callback(key));
-};
-
-export const walkTriggerScriptsKeys = (
-  callback: (scriptKey: TriggerScriptKey) => void
-) => {
-  triggerScriptKeys.forEach((key) => callback(key));
-};
-
-export const walkSceneScriptsKeys = (
-  callback: (scriptKey: SceneScriptKey) => void
-) => {
-  sceneScriptKeys.forEach((key) => callback(key));
-};
-
-export const isNormalisedScriptEqual = (
-  idsA: string[] = [],
-  lookupA: Dictionary<ScriptEvent>,
-  idsB: string[] = [],
-  lookupB: Dictionary<ScriptEvent>
-) => {
-  const scriptAEvents: { args?: Record<string, unknown>; command: string }[] =
-    [];
-  const scriptBEvents: { args?: Record<string, unknown>; command: string }[] =
-    [];
-  walkNormalisedScriptEvents(idsA, lookupA, undefined, (scriptEvent) => {
-    const { args, command } = scriptEvent;
-    scriptAEvents.push({ args, command });
-  });
-  walkNormalisedScriptEvents(idsB, lookupB, undefined, (scriptEvent) => {
-    const { args, command } = scriptEvent;
-    scriptBEvents.push({ args, command });
-  });
-  return isEqual(scriptAEvents, scriptBEvents);
 };
 
 export const isCustomEventEqual = (

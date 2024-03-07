@@ -1,9 +1,4 @@
 import uniq from "lodash/uniq";
-import {
-  walkEvents,
-  walkSceneSpecificEvents,
-  walkActorEvents,
-} from "lib/helpers/eventSystem";
 import editorActions from "store/features/editor/editorActions";
 import { getSettings } from "store/features/settings/settingsState";
 import settingsActions from "store/features/settings/settingsActions";
@@ -22,6 +17,7 @@ import actions from "./electronActions";
 import API from "renderer/lib/api";
 import { EVENT_CALL_CUSTOM_EVENT } from "consts";
 import l10n from "shared/lib/lang/l10n";
+import { walkNormalizedScenesScripts } from "shared/lib/scripts/walk";
 
 const electronMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => async (action) => {
@@ -95,15 +91,6 @@ const electronMiddleware: Middleware<Dispatch, RootState> =
       const usedSceneIds = [] as string[];
       const usedEventIds = [] as string[];
 
-      const isThisEvent = (eventId: string) => {
-        const event = scriptEventsLookup[eventId];
-        return (
-          event &&
-          event.command === EVENT_CALL_CUSTOM_EVENT &&
-          event.args?.customEventId === action.payload.customEventId
-        );
-      };
-
       const sceneName = (sceneId: string) => {
         const scene = scenesLookup[sceneId];
         const sceneIndex = scene ? scenes.indexOf(scene) : 0;
@@ -111,32 +98,22 @@ const electronMiddleware: Middleware<Dispatch, RootState> =
       };
 
       // Check for uses of this custom event in project
-      scenes.forEach((scene) => {
-        walkSceneSpecificEvents(scene, (eventId: string) => {
-          if (isThisEvent(eventId)) {
+      walkNormalizedScenesScripts(
+        scenes,
+        scriptEventsLookup,
+        actorsLookup,
+        triggersLookup,
+        undefined,
+        (scriptEvent, scene) => {
+          if (
+            scriptEvent.command === EVENT_CALL_CUSTOM_EVENT &&
+            scriptEvent.args?.customEventId === action.payload.customEventId
+          ) {
             usedSceneIds.push(scene.id);
-            usedEventIds.push(eventId);
+            usedEventIds.push(scriptEvent.id);
           }
-        });
-        scene.actors.forEach((actorId) => {
-          walkActorEvents(actorsLookup[actorId], (eventId: string) => {
-            if (isThisEvent(eventId)) {
-              usedSceneIds.push(scene.id);
-              usedEventIds.push(eventId);
-            }
-          });
-        });
-        scene.triggers.forEach((triggerId) => {
-          const trigger = triggersLookup[triggerId];
-          trigger &&
-            walkEvents(trigger.script, (eventId: string) => {
-              if (isThisEvent(eventId)) {
-                usedSceneIds.push(scene.id);
-                usedEventIds.push(eventId);
-              }
-            });
-        });
-      });
+        }
+      );
 
       const usedTotal = usedSceneIds.length;
 

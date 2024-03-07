@@ -56,6 +56,8 @@ import ScriptEventFormMathArea from "./ScriptEventFormMatharea";
 import ScriptEventFormTextArea from "./ScriptEventFormTextarea";
 import { AngleInput } from "ui/form/AngleInput";
 import { isStringArray } from "shared/types";
+import { clampToCType } from "shared/lib/engineFields/engineFieldToCType";
+import { setDefault } from "shared/lib/helpers/setDefault";
 
 interface ScriptEventFormInputProps {
   id: string;
@@ -111,11 +113,13 @@ const ScriptEventFormInput = ({
     (state: RootState) =>
       state.project.present.settings.defaultSpritePaletteIds || []
   );
+  const engineFieldsLookup = useSelector(
+    (state: RootState) => state.engine.lookup
+  );
   const context = useContext(ScriptEditorContext);
 
   const onChangeField = useCallback(
     (e: unknown) => {
-      const { updateFn } = field;
       let newValue = castEventValue(e);
       if (type === "direction" && newValue === value) {
         // Toggle direction
@@ -124,12 +128,9 @@ const ScriptEventFormInput = ({
       if (type === "select") {
         newValue = newValue.value;
       }
-      if (updateFn) {
-        newValue = updateFn(newValue, field, args);
-      }
       onChange(newValue, index);
     },
-    [args, field, index, onChange, type, value]
+    [index, onChange, type, value]
   );
 
   const onChangeUnits = useCallback(
@@ -421,7 +422,6 @@ const ScriptEventFormInput = ({
         <SpriteSheetSelect
           name={id}
           value={String(value || "")}
-          filter={field.filter}
           optional={field.optional}
           onChange={onChangeField}
         />
@@ -703,6 +703,40 @@ const ScriptEventFormInput = ({
         />
       </OffscreenSkeletonInput>
     );
+  } else if (type === "engineFieldValue") {
+    const engineField = engineFieldsLookup[args.engineFieldKey as string];
+    if (engineField) {
+      const fieldType = engineField.type || "number";
+      const updateValueField = {
+        key: "value",
+        type: fieldType,
+        checkboxLabel: l10n(engineField.label as L10NKey),
+        min: clampToCType(
+          setDefault(engineField.min, -Infinity),
+          engineField.cType
+        ),
+        max: clampToCType(
+          setDefault(engineField.max, Infinity),
+          engineField.cType
+        ),
+        options: engineField.options || [],
+        defaultValue: engineField.defaultValue ?? 0,
+      };
+      return (
+        <ScriptEventFormInput
+          id={id}
+          entityId={entityId}
+          type={fieldType}
+          field={updateValueField}
+          value={value}
+          args={args}
+          index={index}
+          defaultValue={updateValueField.defaultValue}
+          onChange={onChange}
+          onChangeArg={onChangeArg}
+        />
+      );
+    }
   } else if (type === "union") {
     const currentType = ((value && (value as { type: string }).type) ||
       field.defaultType) as string;

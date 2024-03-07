@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "store/configureStore";
 import { soundSelectors } from "store/features/entities/entitiesState";
 import { ScriptEditorContext } from "./ScriptEditorContext";
+import { isFieldVisible } from "shared/lib/scripts/scriptDefHelpers";
 
 interface ScriptEventFieldsProps {
   id: string;
@@ -44,6 +45,9 @@ const ScriptEventFields = ({
           return null;
         }
         // Determine if field conditions are met and hide if not
+        if (value && !isFieldVisible(field, value)) {
+          return null;
+        }
         if (field.conditions) {
           const showField = field.conditions.reduce((memo, condition) => {
             const keyValue = value?.[condition.key];
@@ -51,16 +55,7 @@ const ScriptEventFields = ({
               const sound = soundsLookup[keyValue as string];
               return memo && sound?.type === condition.soundType;
             }
-            return (
-              memo &&
-              (!condition.eq || keyValue === condition.eq) &&
-              (!condition.ne || keyValue !== condition.ne) &&
-              (!condition.gt || Number(keyValue) > Number(condition.gt)) &&
-              (!condition.gte || Number(keyValue) >= Number(condition.gte)) &&
-              (!condition.lt || Number(keyValue) > Number(condition.lt)) &&
-              (!condition.lte || Number(keyValue) >= Number(condition.lte)) &&
-              (!condition.in || condition.in.indexOf(keyValue) >= 0)
-            );
+            return memo;
           }, true);
           if (!showField) {
             return null;

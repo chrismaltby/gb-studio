@@ -19,7 +19,7 @@ const fields = [
     label: l10n("FIELD_ENGINE_FIELD"),
     description: l10n("FIELD_ENGINE_FIELD_SET_DESC"),
     key: "engineFieldKey",
-    postUpdate: (newArgs, prevArgs) => {
+    postUpdateFn: (newArgs, prevArgs) => {
       // Reset value if engine field changed
       if (newArgs.engineFieldKey !== prevArgs.engineFieldKey) {
         return {
@@ -28,6 +28,22 @@ const fields = [
         };
       }
     },
+  },
+  {
+    key: "value",
+    type: "union",
+    types: ["engineFieldValue", "variable"],
+    defaultType: "engineFieldValue",
+    defaultValue: {
+      engineFieldValue: "ENGINE_FIELD_DEFAULT_VALUE",
+      variable: "LAST_VARIABLE",
+    },
+    conditions: [
+      {
+        key: "engineFieldKey",
+        set: true,
+      },
+    ],
   },
 ];
 

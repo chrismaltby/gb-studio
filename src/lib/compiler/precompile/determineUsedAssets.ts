@@ -1,7 +1,6 @@
 import { Dictionary } from "@reduxjs/toolkit";
 import type { Reference } from "components/forms/ReferencesSelect";
 import { MAX_NESTED_SCRIPT_DEPTH } from "consts";
-import { walkDenormalizedScenesEvents } from "lib/helpers/eventHelpers";
 import { eventHasArg } from "lib/helpers/eventSystem";
 import type {
   CustomEventDenormalized,
@@ -10,6 +9,7 @@ import type {
   Variable,
 } from "shared/lib/entities/entitiesTypes";
 import { EVENT_SOUND_PLAY_EFFECT } from "consts";
+import { walkScenesScripts } from "shared/lib/scripts/walk";
 
 export const determineUsedAssets = ({
   scenes,
@@ -63,7 +63,7 @@ export const determineUsedAssets = ({
     }
   };
 
-  walkDenormalizedScenesEvents(
+  walkScenesScripts(
     scenes,
     {
       customEvents: {
