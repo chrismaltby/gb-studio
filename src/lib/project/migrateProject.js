@@ -64,7 +64,7 @@ const generateMigrateMeta = (event) => (newEvent) => {
  * to match other static sprites. This function migrates all static actors
  * to the new format
  */
-const migrateFrom1To110Actors = (data) => {
+export const migrateFrom1To110Actors = (data) => {
   const actorDefaultFrame = (actor) => {
     const actorSprite = data.spriteSheets.find(
       (sprite) => sprite.id === actor.spriteSheetId
@@ -115,7 +115,7 @@ const migrateFrom1To110Actors = (data) => {
  * In version 1 scenes would store collisions for tiles outside of their boundaries
  * this function removes the excess data allowing collsions to work again on old scenes
  */
-const migrateFrom1To110Collisions = (data) => {
+export const migrateFrom1To110Collisions = (data) => {
   const backgroundLookup = indexById(data.backgrounds);
 
   return {
@@ -123,7 +123,7 @@ const migrateFrom1To110Collisions = (data) => {
     scenes: data.scenes.map((scene) => {
       const background = backgroundLookup[scene.backgroundId];
       const collisionsSize = background
-        ? Math.ceil((background.width * background.height) / 8)
+        ? Math.ceil((background.width * background.height) / 64)
         : 0;
       const collisions = scene.collisions || [];
       if (!background || collisions.length !== collisionsSize) {
@@ -143,7 +143,7 @@ const migrateFrom1To110Collisions = (data) => {
  * dimensions of that instead. This function reads the current background images set in a
  * scene and stores the correct widths and heights
  */
-const migrateFrom1To110Scenes = (data) => {
+export const migrateFrom1To110Scenes = (data) => {
   const backgroundLookup = indexById(data.backgrounds);
 
   return {
