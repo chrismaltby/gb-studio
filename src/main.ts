@@ -87,7 +87,7 @@ import { loadFontData } from "lib/project/loadFontData";
 import { loadAvatarData } from "lib/project/loadAvatarData";
 import { loadEmoteData } from "lib/project/loadEmoteData";
 import parseAssetPath from "shared/lib/assets/parseAssetPath";
-import { initEngineFields } from "lib/project/engineFields";
+import { loadEngineFields } from "lib/project/engineFields";
 import { getAutoLabel } from "shared/lib/scripts/autoLabel";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
@@ -406,8 +406,8 @@ const createProjectWindow = async () => {
       sendToProjectWindow("watch:emote:removed", file, plugin);
     },
     onChangedEngineSchema: async (_filename: string) => {
-      const { fields, schemaLookup } = await initEngineFields(projectRoot);
-      sendToProjectWindow("watch:engineFields:changed", fields, schemaLookup);
+      const fields = await loadEngineFields(projectRoot);
+      sendToProjectWindow("watch:engineFields:changed", fields);
     },
   });
 };

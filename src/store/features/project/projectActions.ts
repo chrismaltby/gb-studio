@@ -16,6 +16,7 @@ import { SettingsState } from "store/features/settings/settingsState";
 import { MetadataState } from "store/features/metadata/metadataState";
 import { denormalizeEntities } from "shared/lib/entities/entitiesHelpers";
 import API from "renderer/lib/api";
+import { EngineFieldSchema } from "store/features/engine/engineState";
 
 let saving = false;
 
@@ -114,16 +115,18 @@ const loadProject = createAsyncThunk<
     data: ProjectData;
     path: string;
     scriptEventDefs: Dictionary<ScriptEventDef>;
+    engineFields: EngineFieldSchema[];
     modifiedSpriteIds: string[];
   },
   string
 >("project/loadProject", async (path) => {
-  const { data, scriptEventDefs, modifiedSpriteIds } =
+  const { data, scriptEventDefs, engineFields, modifiedSpriteIds } =
     await API.project.loadProject();
   return {
     data,
     path,
     scriptEventDefs,
+    engineFields,
     modifiedSpriteIds,
   };
 });

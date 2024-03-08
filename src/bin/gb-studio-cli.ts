@@ -4,22 +4,18 @@ import os from "os";
 import rimraf from "rimraf";
 import { promisify } from "util";
 import { program } from "commander";
-import { emulatorRoot, engineRoot } from "../consts";
-import { EngineFieldSchema } from "store/features/engine/engineState";
+import { emulatorRoot } from "../consts";
 import { initPlugins } from "lib/plugins/plugins";
 import compileData from "lib/compiler/compileData";
 import ejectBuild from "lib/compiler/ejectBuild";
 import makeBuild from "lib/compiler/makeBuild";
 import { initEvents } from "lib/events";
 import initElectronL10N from "lib/lang/initElectronL10N";
+import { loadEngineFields } from "lib/project/engineFields";
 
 const rmdir = promisify(rimraf);
 
 declare const VERSION: string;
-
-interface EngineData {
-  fields?: EngineFieldSchema[];
-}
 
 type Command = "export" | "make:rom" | "make:pocket" | "make:web";
 
@@ -41,7 +37,7 @@ const main = async (
   initPlugins(projectRoot);
 
   // Load engine fields
-  const engineFields = await getEngineFields(projectRoot);
+  const engineFields = await loadEngineFields(projectRoot);
 
   // Use OS default tmp
   const tmpPath = os.tmpdir();
@@ -161,32 +157,6 @@ const main = async (
       .replace(/___CUSTOM_CONTROLS___/g, customControls);
     await writeFile(`${destination}/index.html`, html);
   }
-};
-
-const getEngineFields = async (projectRoot: string) => {
-  const defaultEngineJsonPath = Path.join(engineRoot, "gb", "engine.json");
-  const localEngineJsonPath = Path.join(
-    projectRoot,
-    "assets",
-    "engine",
-    "engine.json"
-  );
-  let defaultEngine: EngineData = {};
-  let localEngine: EngineData = {};
-  try {
-    localEngine = await readJSON(localEngineJsonPath);
-  } catch (e) {
-    defaultEngine = await readJSON(defaultEngineJsonPath);
-  }
-  let fields: EngineFieldSchema[] = [];
-
-  if (localEngine && localEngine.fields) {
-    fields = localEngine.fields;
-  } else if (defaultEngine && defaultEngine.fields) {
-    fields = defaultEngine.fields;
-  }
-
-  return fields;
 };
 
 program.version(VERSION);

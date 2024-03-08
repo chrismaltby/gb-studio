@@ -17,10 +17,6 @@ import consoleActions from "store/features/console/consoleActions";
 import { clampSidebarWidth } from "renderer/lib/window/sidebar";
 import { initKeyBindings } from "renderer/lib/keybindings/keyBindings";
 import { TRACKER_REDO, TRACKER_UNDO } from "consts";
-import {
-  initEngineFields,
-  engineFieldsEmitter,
-} from "lib/project/engineFields";
 import API from "renderer/lib/api";
 import { NavigationSection } from "store/features/navigation/navigationState";
 import { Background } from "shared/lib/entities/entitiesTypes";
@@ -53,12 +49,7 @@ if (projectPath) {
   store.dispatch(projectActions.openProject(projectPath));
 
   initPlugins(projectRoot);
-  initEngineFields(projectRoot);
   initKeyBindings();
-
-  engineFieldsEmitter.on("sync", (res) => {
-    store.dispatch(engineActions.setEngineFields(res.fields));
-  });
 }
 
 window.addEventListener("error", (error) => {

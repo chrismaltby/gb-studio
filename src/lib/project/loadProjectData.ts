@@ -11,10 +11,12 @@ import loadAllSoundData from "./loadSoundData";
 import loadAllScriptEvents, { ScriptEventDef } from "./loadScriptEvents";
 import migrateProject from "./migrateProject";
 import type { ProjectData } from "store/features/project/projectActions";
+import type { EngineFieldSchema } from "store/features/engine/engineState";
 import type { Asset } from "shared/lib/helpers/assets";
 import keyBy from "lodash/keyBy";
 import { cloneDictionary } from "lib/helpers/clone";
 import { Dictionary } from "@reduxjs/toolkit";
+import { loadEngineFields } from "lib/project/engineFields";
 
 const toUnixFilename = (filename: string) => {
   return filename.replace(/\\/g, "/");
@@ -44,6 +46,7 @@ const loadProject = async (
 ): Promise<{
   data: ProjectData;
   scriptEventDefs: Dictionary<ScriptEventDef>;
+  engineFields: EngineFieldSchema[];
   modifiedSpriteIds: string[];
 }> => {
   const projectRoot = path.dirname(projectPath);
@@ -326,7 +329,8 @@ const loadProject = async (
 
   const fixedEngineFieldValues = json.engineFieldValues || [];
 
-  const scriptEvents = cloneDictionary(await loadAllScriptEvents(projectRoot));
+  const scriptEventDefs = await loadAllScriptEvents(projectRoot);
+  const engineFields = await loadEngineFields(projectRoot);
 
   return {
     data: {
@@ -344,7 +348,8 @@ const loadProject = async (
       engineFieldValues: fixedEngineFieldValues,
     },
     modifiedSpriteIds,
-    scriptEventDefs: cloneDictionary(scriptEvents),
+    scriptEventDefs: cloneDictionary(scriptEventDefs),
+    engineFields,
   };
 };
 

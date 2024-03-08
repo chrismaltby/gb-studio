@@ -31,7 +31,6 @@ import type { SoundAssetData } from "lib/project/loadSoundData";
 import type { FontAssetData } from "lib/project/loadFontData";
 import type { AvatarAssetData } from "lib/project/loadAvatarData";
 import type { EmoteAssetData } from "lib/project/loadEmoteData";
-import type { EngineFieldSchemaLookup } from "lib/project/engineFields";
 import type { NavigationSection } from "store/features/navigation/navigationState";
 import type { MenuZoomType } from "menu";
 import type { ScriptEventDef } from "lib/project/loadScriptEvents";
@@ -201,6 +200,7 @@ const APISetup = {
     loadProject: (): Promise<{
       data: ProjectData;
       scriptEventDefs: Dictionary<ScriptEventDef>;
+      engineFields: EngineFieldSchema[];
       modifiedSpriteIds: string[];
     }> => ipcRenderer.invoke("project:load"),
     saveProject: (data: ProjectData): Promise<void> =>
@@ -360,11 +360,7 @@ const APISetup = {
       ui: createWatchSubscribeAPI<never>("watch:ui"),
       engineSchema: {
         changed: createSubscribeAPI<
-          (
-            event: IpcRendererEvent,
-            fields: EngineFieldSchema[],
-            schemaLookup: EngineFieldSchemaLookup
-          ) => void
+          (event: IpcRendererEvent, fields: EngineFieldSchema[]) => void
         >("watch:engineFields:changed"),
       },
     },

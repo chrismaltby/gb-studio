@@ -1,15 +1,7 @@
 import glob from "glob";
 import fs from "fs";
 import plugins, { pluginEmitter } from "lib/plugins/plugins";
-import {
-  engineFieldsEmitter,
-  EngineFieldSyncResult,
-} from "lib/project/engineFields";
-import {
-  eventsRoot,
-  EVENT_ENGINE_FIELD_SET,
-  EVENT_ENGINE_FIELD_STORE,
-} from "consts";
+import { eventsRoot } from "consts";
 import * as l10n from "shared/lib/lang/l10n";
 import * as eventHelpers from "./helpers";
 import * as gbStudioHelpers from "lib/helpers/gbstudio";
@@ -52,12 +44,6 @@ const eventHandlers: Dictionary<ScriptEventHandler> = {};
 // Where VM2 proxied objects cannot be used
 // Only primitive types can be accessed, function types will be undefined
 export const pojoEventHandlers = cloneDictionary(eventHandlers);
-export const pojoEngineFieldUpdateEvents = cloneDictionary(eventHandlers);
-export const pojoEngineFieldStoreEvents: Dictionary<ScriptEventHandler> = {};
-
-// Stores event handlers for Engine Field events
-export const engineFieldUpdateEvents: Dictionary<ScriptEventHandler> = {};
-export const engineFieldStoreEvents: Dictionary<ScriptEventHandler> = {};
 
 pluginEmitter.on("update-event", (plugin: ScriptEventHandler) => {
   eventHandlers[plugin.id] = plugin;
@@ -72,38 +58,6 @@ pluginEmitter.on("add-event", (plugin: ScriptEventHandler) => {
 pluginEmitter.on("remove-event", (plugin: ScriptEventHandler) => {
   delete eventHandlers[plugin.id];
   delete pojoEventHandlers[plugin.id];
-});
-
-engineFieldsEmitter.on("sync", (res: EngineFieldSyncResult) => {
-  const fieldUpdateHandler = eventHandlers[EVENT_ENGINE_FIELD_SET];
-  const fieldStoreHandler = eventHandlers[EVENT_ENGINE_FIELD_STORE];
-
-  if (!fieldUpdateHandler || !fieldStoreHandler) {
-    return;
-  }
-
-  Object.keys(res.schemaLookup).forEach((key) => {
-    const { update: updateValueField, store: storeValueField } =
-      res.schemaLookup[key];
-    engineFieldUpdateEvents[key] = {
-      ...fieldUpdateHandler,
-      fields: ([] as ScriptEventFieldSchema[]).concat(
-        fieldUpdateHandler.fields || [],
-        updateValueField
-      ),
-    };
-
-    engineFieldStoreEvents[key] = {
-      ...fieldStoreHandler,
-      fields: ([] as ScriptEventFieldSchema[]).concat(
-        fieldStoreHandler.fields || [],
-        storeValueField
-      ),
-    };
-
-    pojoEngineFieldUpdateEvents[key] = clone(engineFieldUpdateEvents[key]);
-    pojoEngineFieldStoreEvents[key] = clone(engineFieldStoreEvents[key]);
-  });
 });
 
 export const initEvents = async () => {
@@ -138,8 +92,6 @@ export const initEvents = async () => {
 
 export const eventLookup = {
   eventsLookup: eventHandlers,
-  engineFieldUpdateEventsLookup: engineFieldUpdateEvents,
-  engineFieldStoreEventsLookup: engineFieldStoreEvents,
 } as const;
 
 export default eventHandlers;
