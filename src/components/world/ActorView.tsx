@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { memo, useCallback, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import SpriteSheetCanvas from "./SpriteSheetCanvas";
 
@@ -57,96 +57,100 @@ const CanvasWrapper = styled.div`
   pointer-events: none;
 `;
 
-const ActorView = ({ id, sceneId, palettes, editable }: ActorViewProps) => {
-  const dispatch = useDispatch();
-  const actor = useSelector((state: RootState) =>
-    actorSelectors.selectById(state, id)
-  );
-  const selected = useSelector(
-    (state: RootState) =>
-      state.editor.type === "actor" &&
-      state.editor.scene === sceneId &&
-      state.editor.entityId === id
-  );
-  const isDragging = useSelector(
-    (state: RootState) => selected && state.editor.dragging
-  );
-  const settings = useSelector((state: RootState) => getSettings(state));
-  const palettesLookup = useSelector((state: RootState) =>
-    paletteSelectors.selectEntities(state)
-  );
-  const showSprite = useSelector((state: RootState) => state.editor.zoom > 80);
-  const gbcEnabled = settings.customColorsEnabled;
-  const palette: Palette = useMemo(
-    () =>
-      gbcEnabled
-        ? (palettesLookup[actor?.paletteId ?? ""] ||
-            palettesLookup[settings.defaultSpritePaletteId]) ??
-          DMG_PALETTE
-        : DMG_PALETTE,
-    [
-      actor?.paletteId,
-      gbcEnabled,
-      palettesLookup,
-      settings.defaultSpritePaletteId,
-    ]
-  );
+const ActorView = memo(
+  ({ id, sceneId, palettes, editable }: ActorViewProps) => {
+    const dispatch = useDispatch();
+    const actor = useSelector((state: RootState) =>
+      actorSelectors.selectById(state, id)
+    );
+    const selected = useSelector(
+      (state: RootState) =>
+        state.editor.type === "actor" &&
+        state.editor.scene === sceneId &&
+        state.editor.entityId === id
+    );
+    const isDragging = useSelector(
+      (state: RootState) => selected && state.editor.dragging
+    );
+    const settings = useSelector((state: RootState) => getSettings(state));
+    const palettesLookup = useSelector((state: RootState) =>
+      paletteSelectors.selectEntities(state)
+    );
+    const showSprite = useSelector(
+      (state: RootState) => state.editor.zoom > 80
+    );
+    const gbcEnabled = settings.customColorsEnabled;
+    const palette: Palette = useMemo(
+      () =>
+        gbcEnabled
+          ? (palettesLookup[actor?.paletteId ?? ""] ||
+              palettesLookup[settings.defaultSpritePaletteId]) ??
+            DMG_PALETTE
+          : DMG_PALETTE,
+      [
+        actor?.paletteId,
+        gbcEnabled,
+        palettesLookup,
+        settings.defaultSpritePaletteId,
+      ]
+    );
 
-  const onMouseUp = useCallback(() => {
-    dispatch(editorActions.dragActorStop());
-    window.removeEventListener("mouseup", onMouseUp);
-  }, [dispatch]);
+    const onMouseUp = useCallback(() => {
+      dispatch(editorActions.dragActorStop());
+      window.removeEventListener("mouseup", onMouseUp);
+    }, [dispatch]);
 
-  const onMouseDown = useCallback(
-    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-      if (editable && e.nativeEvent.which !== MIDDLE_MOUSE) {
-        dispatch(editorActions.dragActorStart({ sceneId, actorId: id }));
-        dispatch(editorActions.setTool({ tool: "select" }));
+    const onMouseDown = useCallback(
+      (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        if (editable && e.nativeEvent.which !== MIDDLE_MOUSE) {
+          dispatch(editorActions.dragActorStart({ sceneId, actorId: id }));
+          dispatch(editorActions.setTool({ tool: "select" }));
+          window.addEventListener("mouseup", onMouseUp);
+        }
+      },
+      [dispatch, editable, id, onMouseUp, sceneId]
+    );
+
+    useEffect(() => {
+      if (isDragging) {
         window.addEventListener("mouseup", onMouseUp);
       }
-    },
-    [dispatch, editable, id, onMouseUp, sceneId]
-  );
+      return () => {
+        window.removeEventListener("mouseup", onMouseUp);
+      };
+    }, [onMouseUp, isDragging]);
 
-  useEffect(() => {
-    if (isDragging) {
-      window.addEventListener("mouseup", onMouseUp);
+    if (!actor) {
+      return <></>;
     }
-    return () => {
-      window.removeEventListener("mouseup", onMouseUp);
-    };
-  }, [onMouseUp, isDragging]);
 
-  if (!actor) {
-    return <></>;
+    return (
+      <>
+        {selected && actor.isPinned && <PinScreenPreview />}
+        <Wrapper
+          selected={selected}
+          onMouseDown={onMouseDown}
+          style={{
+            left: actor.x * TILE_SIZE,
+            top: actor.y * TILE_SIZE,
+          }}
+        >
+          {showSprite && (
+            <CanvasWrapper>
+              <SpriteSheetCanvas
+                spriteSheetId={actor.spriteSheetId}
+                direction={actor.direction}
+                frame={0}
+                palette={palette}
+                palettes={palettes}
+                offsetPosition
+              />
+            </CanvasWrapper>
+          )}
+        </Wrapper>
+      </>
+    );
   }
-
-  return (
-    <>
-      {selected && actor.isPinned && <PinScreenPreview />}
-      <Wrapper
-        selected={selected}
-        onMouseDown={onMouseDown}
-        style={{
-          left: actor.x * TILE_SIZE,
-          top: actor.y * TILE_SIZE,
-        }}
-      >
-        {showSprite && (
-          <CanvasWrapper>
-            <SpriteSheetCanvas
-              spriteSheetId={actor.spriteSheetId}
-              direction={actor.direction}
-              frame={0}
-              palette={palette}
-              palettes={palettes}
-              offsetPosition
-            />
-          </CanvasWrapper>
-        )}
-      </Wrapper>
-    </>
-  );
-};
+);
 
 export default ActorView;

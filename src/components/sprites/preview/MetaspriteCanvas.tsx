@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { DMG_PALETTE } from "consts";
 import { RootState } from "store/configureStore";
@@ -22,116 +22,118 @@ interface MetaspriteCanvasProps {
 
 const worker = new MetaspriteCanvasWorker();
 
-export const MetaspriteCanvas = ({
-  spriteSheetId,
-  metaspriteId,
-  flipX = false,
-  palettes,
-}: MetaspriteCanvasProps) => {
-  const [workerId] = useState(Math.random());
-  const [tiles, setTiles] = useState<MetaspriteTile[]>([]);
-  const [paletteColors, setPaletteColors] =
-    useState<[string, string, string, string][] | null>(null);
-  const canvasRef = React.useRef<HTMLCanvasElement>(null);
-  const spriteSheet = useSelector((state: RootState) =>
-    spriteSheetSelectors.selectById(state, spriteSheetId)
-  );
-  const metasprite = useSelector((state: RootState) =>
-    metaspriteSelectors.selectById(state, metaspriteId)
-  );
-  const tilesLookup = useSelector((state: RootState) =>
-    metaspriteTileSelectors.selectEntities(state)
-  );
-  const projectRoot = useSelector((state: RootState) => state.document.root);
-  const width = spriteSheet?.canvasWidth || 0;
-  const height = spriteSheet?.canvasHeight || 0;
+export const MetaspriteCanvas = memo(
+  ({
+    spriteSheetId,
+    metaspriteId,
+    flipX = false,
+    palettes,
+  }: MetaspriteCanvasProps) => {
+    const [workerId] = useState(Math.random());
+    const [tiles, setTiles] = useState<MetaspriteTile[]>([]);
+    const [paletteColors, setPaletteColors] =
+      useState<[string, string, string, string][] | null>(null);
+    const canvasRef = React.useRef<HTMLCanvasElement>(null);
+    const spriteSheet = useSelector((state: RootState) =>
+      spriteSheetSelectors.selectById(state, spriteSheetId)
+    );
+    const metasprite = useSelector((state: RootState) =>
+      metaspriteSelectors.selectById(state, metaspriteId)
+    );
+    const tilesLookup = useSelector((state: RootState) =>
+      metaspriteTileSelectors.selectEntities(state)
+    );
+    const projectRoot = useSelector((state: RootState) => state.document.root);
+    const width = spriteSheet?.canvasWidth || 0;
+    const height = spriteSheet?.canvasHeight || 0;
 
-  // Cache metasprite tiles
-  useEffect(() => {
-    const tiles =
-      (metasprite?.tiles
-        ?.map((tileId) => tilesLookup[tileId])
-        .filter((i) => i) as MetaspriteTile[]) || [];
-    setTiles(tiles);
-  }, [metasprite, tilesLookup]);
+    // Cache metasprite tiles
+    useEffect(() => {
+      const tiles =
+        (metasprite?.tiles
+          ?.map((tileId) => tilesLookup[tileId])
+          .filter((i) => i) as MetaspriteTile[]) || [];
+      setTiles(tiles);
+    }, [metasprite, tilesLookup]);
 
-  // Cache scene palettes
-  useEffect(() => {
-    setPaletteColors(palettes ? palettes.map((p) => p.colors) : null);
-  }, [palettes]);
+    // Cache scene palettes
+    useEffect(() => {
+      setPaletteColors(palettes ? palettes.map((p) => p.colors) : null);
+    }, [palettes]);
 
-  const onWorkerComplete = useCallback(
-    (e: MessageEvent<MetaspriteCanvasResult>) => {
-      if (e.data.id === workerId) {
-        const offscreenCanvas = document.createElement("canvas");
-        const offscreenCtx = offscreenCanvas.getContext("bitmaprenderer");
-        if (!canvasRef.current || !spriteSheet || !offscreenCtx) {
-          return;
+    const onWorkerComplete = useCallback(
+      (e: MessageEvent<MetaspriteCanvasResult>) => {
+        if (e.data.id === workerId) {
+          const offscreenCanvas = document.createElement("canvas");
+          const offscreenCtx = offscreenCanvas.getContext("bitmaprenderer");
+          if (!canvasRef.current || !spriteSheet || !offscreenCtx) {
+            return;
+          }
+          const ctx = canvasRef.current.getContext("2d");
+          if (!ctx) {
+            return;
+          }
+          offscreenCtx.transferFromImageBitmap(e.data.canvasImage);
+          ctx.clearRect(0, 0, width, height);
+          ctx.drawImage(offscreenCanvas, 0, 0);
         }
-        const ctx = canvasRef.current.getContext("2d");
-        if (!ctx) {
-          return;
-        }
-        offscreenCtx.transferFromImageBitmap(e.data.canvasImage);
-        ctx.clearRect(0, 0, width, height);
-        ctx.drawImage(offscreenCanvas, 0, 0);
+      },
+      [height, spriteSheet, width, workerId]
+    );
+
+    useEffect(() => {
+      worker.addEventListener("message", onWorkerComplete);
+      return () => {
+        worker.removeEventListener("message", onWorkerComplete);
+      };
+    }, [width, height, onWorkerComplete]);
+
+    useEffect(() => {
+      if (tiles.length === 0) {
+        return;
       }
-    },
-    [height, spriteSheet, width, workerId]
-  );
+      if (!canvasRef.current || !spriteSheet) {
+        return;
+      }
+      const ctx = canvasRef.current.getContext("2d");
+      if (!ctx) {
+        return;
+      }
+      const filename = `file://${assetFilename(
+        projectRoot,
+        "sprites",
+        spriteSheet
+      )}?_v=${spriteSheet._v}`;
 
-  useEffect(() => {
-    worker.addEventListener("message", onWorkerComplete);
-    return () => {
-      worker.removeEventListener("message", onWorkerComplete);
-    };
-  }, [width, height, onWorkerComplete]);
-
-  useEffect(() => {
-    if (tiles.length === 0) {
-      return;
-    }
-    if (!canvasRef.current || !spriteSheet) {
-      return;
-    }
-    const ctx = canvasRef.current.getContext("2d");
-    if (!ctx) {
-      return;
-    }
-    const filename = `file://${assetFilename(
-      projectRoot,
-      "sprites",
-      spriteSheet
-    )}?_v=${spriteSheet._v}`;
-
-    worker.postMessage({
-      id: workerId,
-      src: filename,
+      worker.postMessage({
+        id: workerId,
+        src: filename,
+        width,
+        height,
+        tiles,
+        flipX,
+        palette: DMG_PALETTE.colors,
+        palettes: paletteColors,
+      });
+    }, [
+      canvasRef,
+      spriteSheet,
+      paletteColors,
+      tiles,
       width,
       height,
-      tiles,
       flipX,
-      palette: DMG_PALETTE.colors,
-      palettes: paletteColors,
-    });
-  }, [
-    canvasRef,
-    spriteSheet,
-    paletteColors,
-    tiles,
-    width,
-    height,
-    flipX,
-    projectRoot,
-    workerId,
-  ]);
+      projectRoot,
+      workerId,
+    ]);
 
-  return (
-    <canvas
-      ref={canvasRef}
-      width={width}
-      height={height}
-      style={{ imageRendering: "pixelated" }}
-    />
-  );
-};
+    return (
+      <canvas
+        ref={canvasRef}
+        width={width}
+        height={height}
+        style={{ imageRendering: "pixelated" }}
+      />
+    );
+  }
+);

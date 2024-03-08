@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { memo, useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import editorActions from "store/features/editor/editorActions";
 import { triggerSelectors } from "store/features/entities/entitiesState";
@@ -32,7 +32,7 @@ const Wrapper = styled.div<WrapperProps>`
       : ""}
 `;
 
-const TriggerView = ({ id, sceneId, editable }: TriggerViewProps) => {
+const TriggerView = memo(({ id, sceneId, editable }: TriggerViewProps) => {
   const dispatch = useDispatch();
   const trigger = useSelector((state: RootState) =>
     triggerSelectors.selectById(state, id)
@@ -88,6 +88,6 @@ const TriggerView = ({ id, sceneId, editable }: TriggerViewProps) => {
       }}
     />
   );
-};
+});
 
 export default TriggerView;

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import React, { memo, useCallback, useEffect, useMemo, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import WorldActor from "./ActorView";
 import TriggerView from "./TriggerView";
@@ -159,7 +159,7 @@ const SceneOverlay = styled.div<SceneOverlayProps>`
       : ""}
 `;
 
-const SceneView = ({ id, index, editable }: SceneViewProps) => {
+const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
   const dispatch = useDispatch();
   const scene = useSelector((state: RootState) =>
     sceneSelectors.selectById(state, id)
@@ -652,6 +652,6 @@ const SceneView = ({ id, index, editable }: SceneViewProps) => {
       )}
     </Wrapper>
   );
-};
+});
 
 export default SceneView;
