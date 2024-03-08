@@ -31,7 +31,7 @@ import {
   globalVariableCode,
   globalVariableDefaultName,
 } from "shared/lib/variables/variableNames";
-import l10n from "shared/lib/lang/l10n";
+import l10n, { getL10NData } from "shared/lib/lang/l10n";
 import { selectScriptEventDefsLookup } from "store/features/scriptEventDefs/scriptEventDefsState";
 
 const worker = new VariableUsesWorker();
@@ -110,6 +110,7 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
       triggersLookup,
       scriptEventsLookup,
       scriptEventDefsLookup,
+      l10NData: getL10NData(),
     });
   }, [
     scenes,

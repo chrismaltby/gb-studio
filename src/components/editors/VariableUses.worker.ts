@@ -11,6 +11,7 @@ import {
   ScriptEvent,
   Trigger,
 } from "shared/lib/entities/entitiesTypes";
+import { L10NLookup, setL10NData } from "shared/lib/lang/l10n";
 import {
   ScriptEventDefsLookup,
   isVariableField,
@@ -62,6 +63,9 @@ workerCtx.onmessage = async (evt) => {
   const triggersLookup: Dictionary<Trigger> = evt.data.triggersLookup;
   const scriptEventDefsLookup: ScriptEventDefsLookup =
     evt.data.scriptEventDefsLookup;
+  const l10NData: L10NLookup = evt.data.l10NData;
+
+  setL10NData(l10NData);
 
   const uses: VariableUse[] = [];
   const useLookup: Dictionary<boolean> = {};
