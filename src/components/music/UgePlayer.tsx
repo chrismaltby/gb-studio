@@ -28,7 +28,7 @@ export const UgePlayer = ({ data, onChannelStatusUpdate }: UgePlayerProps) => {
       switch (d.action) {
         case "initialized":
           if (data) {
-            API.music.sendMusicData({
+            API.music.sendToMusicWindow({
               action: "load-song",
               song: data,
             });
@@ -45,22 +45,22 @@ export const UgePlayer = ({ data, onChannelStatusUpdate }: UgePlayerProps) => {
       }
     };
 
-    API.music.musicDataSubscribe(listener);
+    API.events.music.data.on(listener);
 
     return () => {
-      API.music.musicDataUnsubscribe(listener);
+      API.events.music.data.off(listener);
     };
   }, [onChannelStatusUpdate, play, data, dispatch]);
 
   useEffect(() => {
     if (play && data) {
       console.log("PLAY");
-      API.music.sendMusicData({
+      API.music.sendToMusicWindow({
         action: "play",
         song: data,
       });
     } else {
-      API.music.sendMusicData({
+      API.music.sendToMusicWindow({
         action: "stop",
       });
     }

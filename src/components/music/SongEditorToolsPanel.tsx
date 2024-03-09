@@ -98,7 +98,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
     if (!playerReady) return;
     if (!play) {
       if (playbackFromStart) {
-        API.music.sendMusicData({
+        API.music.sendToMusicWindow({
           action: "position",
           position: defaultStartPlaybackPosition,
         });
@@ -117,7 +117,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
 
   const stopPlayback = useCallback(() => {
     dispatch(trackerActions.stopTracker());
-    API.music.sendMusicData({
+    API.music.sendToMusicWindow({
       action: "stop",
       position: defaultStartPlaybackPosition,
     });

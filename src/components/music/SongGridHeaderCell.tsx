@@ -47,7 +47,7 @@ export const SongGridHeaderCell = ({
     if (channel === undefined) {
       return;
     }
-    API.music.sendMusicData({
+    API.music.sendToMusicWindow({
       action: "set-mute",
       channel: channel,
       muted: !muted,

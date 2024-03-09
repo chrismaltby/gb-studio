@@ -249,7 +249,7 @@ const playNotePreview = (
 ) => {
   const instrumentType = getInstrumentTypeByChannel(channel) || "duty";
   const instrumentList = getInstrumentListByType(song, instrumentType);
-  API.music.sendMusicData({
+  API.music.sendToMusicWindow({
     action: "preview",
     note: note,
     type: instrumentType,
@@ -289,10 +289,10 @@ export const SongPianoRoll = ({
         setPlaybackState(d.update);
       }
     };
-    API.music.musicDataSubscribe(listener);
+    API.events.music.data.on(listener);
 
     return () => {
-      API.music.musicDataUnsubscribe(listener);
+      API.events.music.data.off(listener);
     };
   }, [setPlaybackState]);
 
@@ -303,7 +303,7 @@ export const SongPianoRoll = ({
       dispatch(
         trackerActions.setDefaultStartPlaybackPosition([sequenceId, col])
       );
-      API.music.sendMusicData({
+      API.music.sendToMusicWindow({
         action: "position",
         position: [sequenceId, col],
       });

@@ -151,10 +151,10 @@ export const SongTracker = ({
         setPlaybackState(d.update);
       }
     };
-    API.music.musicDataSubscribe(listener);
+    API.events.music.data.on(listener);
 
     return () => {
-      API.music.musicDataUnsubscribe(listener);
+      API.events.music.data.off(listener);
     };
   }, [setPlaybackState]);
 
@@ -347,7 +347,7 @@ export const SongTracker = ({
             parseInt(rowId),
           ])
         );
-        API.music.sendMusicData({
+        API.music.sendToMusicWindow({
           action: "position",
           position: [sequenceId, parseInt(rowId)],
         });
@@ -430,7 +430,7 @@ export const SongTracker = ({
         if (song && value !== null) {
           const instrumentType = getInstrumentTypeByChannel(channel) || "duty";
           const instrumentList = getInstrumentListByType(song, instrumentType);
-          API.music.sendMusicData({
+          API.music.sendToMusicWindow({
             action: "preview",
             note: value + octaveOffset * 12,
             type: instrumentType,

@@ -12,7 +12,7 @@ const onPlayerInit = (file: Uint8Array) => {
   } else {
     log(file);
     log(`COMPILE DONE`);
-    API.music.receiveMusicData({
+    API.music.sendToProjectWindow({
       action: "initialized",
     });
   }
@@ -24,56 +24,56 @@ player.initPlayer(onPlayerInit, sfx);
 
 player.setOnIntervalCallback((playbackUpdate) => {
   log(playbackUpdate);
-  API.music.receiveMusicData({
+  API.music.sendToProjectWindow({
     action: "update",
     update: playbackUpdate,
   });
 });
 
-API.music.musicDataSubscribe((_event, d) => {
+API.events.music.data.on((_event, d) => {
   log(d);
   switch (d.action) {
     case "load-song":
       player.loadSong(d.song);
-      API.music.receiveMusicData({
+      API.music.sendToProjectWindow({
         action: "log",
         message: "load song",
       });
-      API.music.receiveMusicData({
+      API.music.sendToProjectWindow({
         action: "loaded",
       });
       break;
     case "play":
       player.play(d.song, d.position);
-      API.music.receiveMusicData({
+      API.music.sendToProjectWindow({
         action: "log",
         message: "playing",
       });
       break;
     case "play-sound":
       player.playSound();
-      API.music.receiveMusicData({
+      API.music.sendToProjectWindow({
         action: "log",
         message: "playing SFX",
       });
       break;
     case "stop":
       player.stop(d.position);
-      API.music.receiveMusicData({
+      API.music.sendToProjectWindow({
         action: "log",
         message: "stop",
       });
       break;
     case "position":
       player.setStartPosition(d.position);
-      API.music.receiveMusicData({
+      API.music.sendToProjectWindow({
         action: "log",
         message: "position",
       });
       break;
     case "set-mute":
       const channels = player.setChannel(d.channel, d.muted);
-      API.music.receiveMusicData({
+      API.music.sendToProjectWindow({
         action: "muted",
         channels,
       });
@@ -85,7 +85,7 @@ API.music.musicDataSubscribe((_event, d) => {
         waves = song.waves;
       }
       playNotePreview(d.note, d.type, d.instrument, d.square2, waves);
-      API.music.receiveMusicData({
+      API.music.sendToProjectWindow({
         action: "log",
         message: "preview",
       });

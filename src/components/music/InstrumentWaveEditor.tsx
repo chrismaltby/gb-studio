@@ -76,7 +76,7 @@ export const InstrumentWaveEditor = ({
     };
 
   const onTestInstrument = () => {
-    API.music.sendMusicData({
+    API.music.sendToMusicWindow({
       action: "preview",
       note: 24, // C_5
       type: "wave",

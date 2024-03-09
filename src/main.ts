@@ -534,11 +534,11 @@ const createMusic = async (sfx?: string, initialMessage?: MusicDataPacket) => {
   if (initialMessage) {
     const listener = async (_event: unknown, d: MusicDataPacket) => {
       if (musicWindow && d.action === "initialized") {
-        sendToMusicWindow("music-data", initialMessage);
-        ipcMain.off("music-data-receive", listener);
+        sendToMusicWindow("music:data", initialMessage);
+        ipcMain.off("music:data-receive", listener);
       }
     };
-    ipcMain.on("music-data-receive", listener);
+    ipcMain.on("music:data-receive", listener);
   }
 };
 
@@ -817,10 +817,6 @@ ipcMain.on(
   }
 );
 
-ipcMain.on("open-music", async (_event, sfx?: string) => {
-  createMusic(sfx);
-});
-
 ipcMain.handle("set-ui-scale", (_, scale: number) => {
   settings.set("zoomLevel", scale);
   sendToProjectWindow("setting:ui-scale:changed", scale);
@@ -831,25 +827,29 @@ ipcMain.handle("set-tracker-keybindings", (_, value: number) => {
   sendToProjectWindow("keybindings-update", value);
 });
 
-ipcMain.on("close-music", async () => {
+ipcMain.handle("music:open", async (_event, sfx?: string) => {
+  createMusic(sfx);
+});
+
+ipcMain.handle("music:close", async () => {
   if (musicWindow) {
     musicWindow.destroy();
     musicWindowInitialized = false;
   }
 });
 
-ipcMain.on("music-data-send", (_event, data: MusicDataPacket) => {
+ipcMain.on("music:data-send", (_event, data: MusicDataPacket) => {
   if (musicWindow && musicWindowInitialized) {
-    sendToMusicWindow("music-data", data);
+    sendToMusicWindow("music:data", data);
   }
 });
 
-ipcMain.on("music-data-receive", (_event, data: MusicDataReceivePacket) => {
+ipcMain.on("music:data-receive", (_event, data: MusicDataReceivePacket) => {
   if (data.action === "initialized") {
     musicWindowInitialized = true;
   }
   if (projectWindow) {
-    sendToProjectWindow("music-data", data);
+    sendToProjectWindow("music:data", data);
   }
 });
 

@@ -93,7 +93,6 @@ const APISetup = {
     openFile: (path: string) => ipcRenderer.invoke("open-file", path),
     getIsFullScreen: (): Promise<boolean> =>
       ipcRenderer.invoke("app:get-is-full-screen"),
-
     deleteBuildCache: () => ipcRenderer.invoke("build:delete-cache"),
     setZoomLevel: (level: number) => webFrame.setZoomLevel(level),
   },
@@ -235,18 +234,12 @@ const APISetup = {
       ipcRenderer.invoke("script:update-fn", cmd, fieldKey, value),
   },
   music: {
-    openMusic: (sfx?: string) => ipcRenderer.send("open-music", sfx),
-    closeMusic: () => ipcRenderer.send("close-music"),
-    sendMusicData: (data: MusicDataPacket) =>
-      ipcRenderer.send("music-data-send", data),
-    receiveMusicData: (data: MusicDataReceivePacket) =>
-      ipcRenderer.send("music-data-receive", data),
-    musicDataSubscribe: (
-      listener: (event: IpcRendererEvent, data: MusicDataPacket) => void
-    ) => ipcRenderer.on("music-data", listener),
-    musicDataUnsubscribe: (
-      listener: (event: IpcRendererEvent, data: MusicDataPacket) => void
-    ) => ipcRenderer.removeListener("music-data", listener),
+    openMusic: (sfx?: string) => ipcRenderer.invoke("music:open", sfx),
+    closeMusic: () => ipcRenderer.invoke("music:close"),
+    sendToMusicWindow: (data: MusicDataPacket) =>
+      ipcRenderer.send("music:data-send", data),
+    sendToProjectWindow: (data: MusicDataReceivePacket) =>
+      ipcRenderer.send("music:data-receive", data),
     playUGE: (filename: string): Promise<void> =>
       ipcRenderer.invoke("music:play-uge", filename),
   },
@@ -334,6 +327,11 @@ const APISetup = {
       isFullScreenChanged: createSubscribeAPI<
         (event: IpcRendererEvent, isFullScreen: boolean) => void
       >("app:is-full-screen:changed"),
+    },
+    music: {
+      data: createSubscribeAPI<
+        (event: IpcRendererEvent, data: MusicDataPacket) => void
+      >("music:data"),
     },
     settings: {
       uiScaleChanged: createSubscribeAPI<

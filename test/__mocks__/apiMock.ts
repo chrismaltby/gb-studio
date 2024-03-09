@@ -22,9 +22,8 @@ const APIMock = {
   music: {
     openMusic: () => {},
     closeMusic: () => {},
-    sendMusicData: () => {},
-    musicDataSubscribe: () => {},
-    musicDataUnsubscribe: () => {},
+    sendToMusicWindow: () => {},
+    sendToProjectWindow: () => {},
   },
   clipboard: {
     readText: () => {},

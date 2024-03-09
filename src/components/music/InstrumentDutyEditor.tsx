@@ -114,7 +114,7 @@ export const InstrumentDutyEditor = ({
     };
 
   const onTestInstrument = () => {
-    API.music.sendMusicData({
+    API.music.sendToMusicWindow({
       action: "preview",
       note: 24, // C_5
       type: "duty",

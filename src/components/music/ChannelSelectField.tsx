@@ -77,7 +77,7 @@ export const ChannelSelectField = ({
   );
 
   const setMute = useCallback(() => {
-    API.music.sendMusicData({
+    API.music.sendToMusicWindow({
       action: "set-mute",
       channel: index,
       muted: !muted,
