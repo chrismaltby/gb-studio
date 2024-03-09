@@ -92,10 +92,8 @@ const APISetup = {
     openModFile: (path: string) => ipcRenderer.invoke("open-mod", path),
     openFile: (path: string) => ipcRenderer.invoke("open-file", path),
     getIsFullScreen: (): Promise<boolean> =>
-      ipcRenderer.invoke("get-is-full-screen"),
-    onIsFullScreenChange: (
-      listener: (event: IpcRendererEvent, isFullScreen: boolean) => void
-    ) => ipcRenderer.on("is-full-screen-changed", listener),
+      ipcRenderer.invoke("app:get-is-full-screen"),
+
     deleteBuildCache: () => ipcRenderer.invoke("build:delete-cache"),
     setZoomLevel: (level: number) => webFrame.setZoomLevel(level),
   },
@@ -331,6 +329,11 @@ const APISetup = {
         createSubscribeAPI<(event: IpcRendererEvent, pluginId: string) => void>(
           "menu:plugin-run"
         ),
+    },
+    app: {
+      isFullScreenChanged: createSubscribeAPI<
+        (event: IpcRendererEvent, isFullScreen: boolean) => void
+      >("app:is-full-screen:changed"),
     },
     settings: {
       uiScaleChanged: createSubscribeAPI<

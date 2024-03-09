@@ -252,11 +252,11 @@ const createProjectWindow = async () => {
   });
 
   projectWindow.on("enter-full-screen", () => {
-    sendToProjectWindow("is-full-screen-changed", true);
+    sendToProjectWindow("app:is-full-screen:changed", true);
   });
 
   projectWindow.on("leave-full-screen", () => {
-    sendToProjectWindow("is-full-screen-changed", false);
+    sendToProjectWindow("app:is-full-screen:changed", false);
   });
 
   projectWindow.on("page-title-updated", (e, title) => {
@@ -870,7 +870,7 @@ ipcMain.handle("settings-delete", (_, key: string) => {
   settings.delete(key);
 });
 
-ipcMain.handle("get-is-full-screen", async () => {
+ipcMain.handle("app:get-is-full-screen", async () => {
   if (projectWindow) {
     return projectWindow.isFullScreen();
   }
