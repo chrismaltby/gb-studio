@@ -27,6 +27,7 @@ test("Should change the path and root to new path and root and set loaded to tru
       data: dummyProjectData,
       path: "new_test_root/project_copy.gbsproj",
       scriptEventDefs: {},
+      engineFields: [],
       modifiedSpriteIds: [],
     },
     "randomid",
