@@ -597,17 +597,13 @@ app.on("activate", () => {
   }
 });
 
-ipcMain.on("open-project", async (_event, arg) => {
+ipcMain.handle("project:open", async (_event, arg) => {
   const { projectPath } = arg;
   openProject(projectPath);
 });
 
-ipcMain.on("open-project-picker", async (_event, _arg) => {
+ipcMain.handle("project:open-project-picker", async (_event, _arg) => {
   openProjectPicker();
-});
-
-ipcMain.on("request-recent-projects", async (_event) => {
-  sendToSplashWindow("recent-projects", settings.get("recentProjects"));
 });
 
 ipcMain.handle("get-recent-projects", async () => {
@@ -758,7 +754,7 @@ ipcMain.handle("build:delete-cache", async (_event) => {
   await remove(cacheRoot);
 });
 
-ipcMain.on("project-loaded", (_event, settings) => {
+ipcMain.handle("project:update-project-window-menu", (_event, settings) => {
   const { showCollisions, showConnections, showNavigator } = settings;
   menu.ref().getMenuItemById("showCollisions").checked = showCollisions;
   menu.ref().getMenuItemById("showConnectionsAll").checked =
@@ -767,10 +763,6 @@ ipcMain.on("project-loaded", (_event, settings) => {
     showConnections === "selected" || showConnections === true;
   menu.ref().getMenuItemById("showConnectionsNone").checked =
     showConnections === false;
-  menu.ref().getMenuItemById("showNavigator").checked = showNavigator;
-});
-
-ipcMain.on("set-show-navigator", (_event, showNavigator) => {
   menu.ref().getMenuItemById("showNavigator").checked = showNavigator;
 });
 

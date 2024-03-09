@@ -60,9 +60,14 @@ const electronMiddleware: Middleware<Dispatch, RootState> =
         return;
       }
     } else if (projectActions.loadProject.fulfilled.match(action)) {
-      API.project.initProjectSettings(action.payload.data.settings);
+      API.project.updateProjectWindowMenu(action.payload.data.settings);
     } else if (settingsActions.setShowNavigator.match(action)) {
-      API.project.setShowNavigator(action.payload);
+      const state = store.getState();
+      const projectSettings = getSettings(state);
+      API.project.updateProjectWindowMenu({
+        ...projectSettings,
+        showNavigator: action.payload,
+      });
     } else if (projectActions.loadProject.rejected.match(action)) {
       API.project.close();
     } else if (projectActions.closeProject.match(action)) {

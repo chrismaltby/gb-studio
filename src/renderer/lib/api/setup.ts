@@ -162,15 +162,13 @@ const APISetup = {
     getRecentProjects: (): Promise<string[]> =>
       ipcRenderer.invoke("get-recent-projects"),
     clearRecentProjects: () => ipcRenderer.invoke("clear-recent-projects"),
-    openProjectPicker: () => ipcRenderer.send("open-project-picker"),
+    openProjectPicker: () => ipcRenderer.invoke("project:open-project-picker"),
     openProject: (projectPath: string) =>
-      ipcRenderer.send("open-project", { projectPath }),
+      ipcRenderer.invoke("project:open", { projectPath }),
     createProject: (input: CreateProjectInput) =>
       ipcRenderer.invoke("create-project", input),
-    initProjectSettings: (settings: SettingsState) =>
-      ipcRenderer.send("project-loaded", settings),
-    setShowNavigator: (value: boolean) =>
-      ipcRenderer.send("set-show-navigator", value),
+    updateProjectWindowMenu: (settings: SettingsState) =>
+      ipcRenderer.invoke("project:update-project-window-menu", settings),
     close: () => ipcRenderer.invoke("close-project"),
     build: (data: ProjectData, options: BuildOptions) =>
       ipcRenderer.invoke("project:build", data, options),
