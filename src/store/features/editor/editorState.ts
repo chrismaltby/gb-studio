@@ -14,12 +14,7 @@ import {
   BRUSH_SLOPE,
 } from "consts";
 import { zoomIn, zoomOut } from "shared/lib/helpers/zoom";
-import {
-  Actor,
-  Trigger,
-  SceneData,
-  Variable,
-} from "shared/lib/entities/entitiesTypes";
+import { Variable } from "shared/lib/entities/entitiesTypes";
 import navigationActions from "store/features/navigation/navigationActions";
 import projectActions from "store/features/project/projectActions";
 import settingsActions from "store/features/settings/settingsActions";
@@ -86,9 +81,6 @@ export interface SlopePreview {
 export interface EditorState {
   tool: Tool;
   pasteMode: boolean;
-  actorDefaults?: Partial<Actor>;
-  triggerDefaults?: Partial<Trigger>;
-  sceneDefaults?: Partial<SceneData>;
   clipboardVariables: Variable[];
   type: EditorSelectionType;
   worldFocus: boolean;
@@ -226,9 +218,6 @@ const editorSlice = createSlice({
   reducers: {
     setTool: (state, action: PayloadAction<{ tool: Tool }>) => {
       state.tool = action.payload.tool;
-      state.actorDefaults = undefined;
-      state.triggerDefaults = undefined;
-      state.sceneDefaults = undefined;
       state.pasteMode = false;
       // Reset to 8px brush is current brush not supported
       if (
@@ -549,21 +538,6 @@ const editorSlice = createSlice({
 
     setProfiling: (state, action: PayloadAction<boolean>) => {
       state.profile = action.payload;
-    },
-
-    setActorDefaults: (state, action: PayloadAction<Partial<Actor>>) => {
-      state.actorDefaults = action.payload;
-      state.tool = "actors";
-    },
-
-    setTriggerDefaults: (state, action: PayloadAction<Partial<Trigger>>) => {
-      state.triggerDefaults = action.payload;
-      state.tool = "triggers";
-    },
-
-    setSceneDefaults: (state, action: PayloadAction<Partial<SceneData>>) => {
-      state.sceneDefaults = action.payload;
-      state.tool = "scene";
     },
 
     setClipboardVariables: (state, action: PayloadAction<Variable[]>) => {

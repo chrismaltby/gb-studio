@@ -159,8 +159,6 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     tool,
     selectedBrush,
     pasteMode,
-    actorDefaults,
-    triggerDefaults,
     entityId,
     selectedTileType,
     selectedPalette,
@@ -613,12 +611,11 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
           sceneId,
           x,
           y,
-          defaults: actorDefaults,
         })
       );
     }
     dispatch(editorActions.setTool({ tool: "select" }));
-  }, [actorDefaults, dispatch, pasteMode, sceneId, x, y]);
+  }, [dispatch, pasteMode, sceneId, x, y]);
 
   const onMouseDownTrigger = useCallback(() => {
     if (pasteMode) {
@@ -637,7 +634,6 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
           y,
           width: 1,
           height: 1,
-          defaults: triggerDefaults,
         })
       );
     }
@@ -645,7 +641,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     data.current.startX = x;
     data.current.startY = y;
     setResize(true);
-  }, [dispatch, pasteMode, sceneId, triggerDefaults, x, y]);
+  }, [dispatch, pasteMode, sceneId, x, y]);
 
   const onMouseDownCollisions = useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {

@@ -384,11 +384,6 @@ export type Scene = {
   playerHit3Script: string[];
 };
 
-export type SceneData = Omit<Scene, "actors" | "triggers"> & {
-  actors: Actor[];
-  triggers: Trigger[];
-};
-
 export type SceneDenormalized = Omit<
   Scene,
   | "actors"
