@@ -1,6 +1,6 @@
 import { Dictionary } from "@reduxjs/toolkit";
 import { EVENT_FADE_IN } from "consts";
-import type { ScriptEventDef } from "lib/project/loadScriptEvents";
+import type { ScriptEventDef } from "lib/project/loadScriptEventHandlers";
 import type {
   CustomEventDenormalized,
   ScriptEvent,
@@ -9,16 +9,16 @@ import type {
 } from "shared/lib/entities/entitiesTypes";
 import { walkNormalizedScript, walkScript } from "shared/lib/scripts/walk";
 
-export type ScriptEventDefsLookup = Dictionary<ScriptEventDef>;
+export type ScriptEventDefs = Dictionary<ScriptEventDef>;
 
 export const patchEventArgs = (
   command: string,
   type: string,
   args: Record<string, unknown>,
   replacements: Record<string, unknown>,
-  scriptEventDefsLookup: ScriptEventDefsLookup
+  scriptEventDefs: ScriptEventDefs
 ) => {
-  const events = scriptEventDefsLookup;
+  const events = scriptEventDefs;
   const eventSchema = events[command];
 
   if (!eventSchema) {
@@ -58,9 +58,9 @@ export const calculateAutoFadeEventIdNormalised = (
   script: string[],
   scriptEventsLookup: Dictionary<ScriptEvent>,
   customEventsLookup: Dictionary<CustomEvent>,
-  scriptEventDefsLookup: ScriptEventDefsLookup
+  scriptEventDefs: ScriptEventDefs
 ) => {
-  const events = scriptEventDefsLookup;
+  const events = scriptEventDefs;
   let fadeEventId = "";
   const checkEvent = (eventId: string) => (scriptEvent: ScriptEvent) => {
     if (!fadeEventId && events[scriptEvent.command]?.waitUntilAfterInitFade) {
@@ -110,9 +110,9 @@ export const calculateAutoFadeEventIdNormalised = (
 export const calculateAutoFadeEventId = (
   script: ScriptEventDenormalized[],
   customEventsLookup: Dictionary<CustomEventDenormalized>,
-  scriptEventDefsLookup: ScriptEventDefsLookup
+  scriptEventDefs: ScriptEventDefs
 ) => {
-  const events = scriptEventDefsLookup;
+  const events = scriptEventDefs;
   let fadeEventId = "";
   const checkEvent =
     (eventId: string) => (scriptEvent: ScriptEventDenormalized) => {

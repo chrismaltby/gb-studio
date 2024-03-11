@@ -5,7 +5,7 @@ import compile, {
 import { compileSceneProjectiles } from "../../../src/lib/compiler/compileData2";
 import { EVENT_TEXT, EVENT_IF_TRUE, EVENT_SET_TRUE } from "../../../src/consts";
 import { projectileStateTest } from "./_files/data/projectiles";
-import { getTestScriptHandlersLookup } from "../../getTestScriptHandlersLookup";
+import { getTestScriptHandlers } from "../../getTestScriptHandlers";
 
 test("should take into account state value when building projectiles", () => {
   const scene = projectileStateTest.scene;
@@ -15,7 +15,7 @@ test("should take into account state value when building projectiles", () => {
 });
 
 test("should compile simple project into files object", async () => {
-  const scriptEventHandlersLookup = await getTestScriptHandlersLookup();
+  const scriptEventHandlers = await getTestScriptHandlers();
   const project = {
     startSceneId: "1",
     startX: 5,
@@ -378,7 +378,7 @@ test("should compile simple project into files object", async () => {
   };
   const compiled = await compile(project, {
     projectRoot: `${__dirname}/_files`,
-    scriptEventHandlersLookup,
+    scriptEventHandlers,
     // eventEmitter: {
     //   emit: (a, b) => console.log(a, ":", b)
     // }

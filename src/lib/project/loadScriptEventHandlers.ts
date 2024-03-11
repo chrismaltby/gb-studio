@@ -48,7 +48,7 @@ export type ScriptEventHandler = ScriptEventDef & {
   fieldsLookup: Record<string, ScriptEventHandlerFieldSchema>;
 };
 
-export type ScriptEventHandlersLookup = Dictionary<ScriptEventHandler>;
+export type ScriptEventHandlers = Dictionary<ScriptEventHandler>;
 
 const vm = new NodeVM({
   timeout: 1000,
@@ -102,14 +102,14 @@ const loadScriptEventHandler = async (
   return handler;
 };
 
-const loadAllScriptEvents = async (projectRoot: string) => {
+const loadAllScriptEventHandlers = async (projectRoot: string) => {
   const corePaths = await globAsync(`${eventsRoot}/event*.js`);
 
   const pluginPaths = await globAsync(
     `${projectRoot}/plugins/**/events/event*.js`
   );
 
-  const eventHandlers: ScriptEventHandlersLookup = {};
+  const eventHandlers: ScriptEventHandlers = {};
   for (const path of corePaths) {
     const handler = await loadScriptEventHandler(path);
     eventHandlers[handler.id] = handler;
@@ -122,4 +122,4 @@ const loadAllScriptEvents = async (projectRoot: string) => {
   return eventHandlers;
 };
 
-export default loadAllScriptEvents;
+export default loadAllScriptEventHandlers;

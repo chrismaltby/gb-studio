@@ -1,13 +1,13 @@
 import { calculateAutoFadeEventId } from "../../src/shared/lib/scripts/eventHelpers";
 import initElectronL10N from "../../src/lib/lang/initElectronL10N";
-import { getTestScriptHandlersLookup } from "../getTestScriptHandlersLookup";
+import { getTestScriptHandlers } from "../getTestScriptHandlers";
 
 beforeAll(async () => {
   await initElectronL10N();
 });
 
 test("Should generate scene init fade in before a waitUntilAfterInitFade event", async () => {
-  const scriptEventHandlersLookup = await getTestScriptHandlersLookup();
+  const scriptEventHandlers = await getTestScriptHandlers();
   const output = calculateAutoFadeEventId(
     [
       {
@@ -20,13 +20,13 @@ test("Should generate scene init fade in before a waitUntilAfterInitFade event",
       },
     ],
     {},
-    scriptEventHandlersLookup
+    scriptEventHandlers
   );
   expect(output).toEqual("event1");
 });
 
 test("Should not generate scene init fade in until reached waitUntilAfterInitFade event", async () => {
-  const scriptEventHandlersLookup = await getTestScriptHandlersLookup();
+  const scriptEventHandlers = await getTestScriptHandlers();
   const output = calculateAutoFadeEventId(
     [
       {
@@ -46,14 +46,14 @@ test("Should not generate scene init fade in until reached waitUntilAfterInitFad
       },
     ],
     {},
-    scriptEventHandlersLookup
+    scriptEventHandlers
   );
 
   expect(output).toEqual("event2");
 });
 
 test("Should generate scene init fade in at end of script when required", async () => {
-  const scriptEventHandlersLookup = await getTestScriptHandlersLookup();
+  const scriptEventHandlers = await getTestScriptHandlers();
   const output = calculateAutoFadeEventId(
     [
       {
@@ -65,14 +65,14 @@ test("Should generate scene init fade in at end of script when required", async 
       },
     ],
     {},
-    scriptEventHandlersLookup
+    scriptEventHandlers
   );
 
   expect(output).toEqual("");
 });
 
 test("Should not generate scene init fade in if manual fade is provided", async () => {
-  const scriptEventHandlersLookup = await getTestScriptHandlersLookup();
+  const scriptEventHandlers = await getTestScriptHandlers();
   const output = calculateAutoFadeEventId(
     [
       {
@@ -84,14 +84,14 @@ test("Should not generate scene init fade in if manual fade is provided", async 
       },
     ],
     {},
-    scriptEventHandlersLookup
+    scriptEventHandlers
   );
 
   expect(output).toEqual("MANUAL");
 });
 
 test("Should generate scene init fade in before a conditional that contains waitUntilAfterInitFade events", async () => {
-  const scriptEventHandlersLookup = await getTestScriptHandlersLookup();
+  const scriptEventHandlers = await getTestScriptHandlers();
   const output = calculateAutoFadeEventId(
     [
       {
@@ -125,7 +125,7 @@ test("Should generate scene init fade in before a conditional that contains wait
       },
     ],
     {},
-    scriptEventHandlersLookup
+    scriptEventHandlers
   );
 
   expect(output).toEqual("event1");

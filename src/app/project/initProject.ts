@@ -242,13 +242,9 @@ API.events.watch.engineSchema.changed.on((_, fields) => {
 
 // Script Event Defs
 
-API.events.watch.scriptEventDefsLookup.changed.on(
-  (_, scriptEventDefsLookup) => {
-    store.dispatch(
-      scriptEventDefsActions.setScriptEventDefsLookup(scriptEventDefsLookup)
-    );
-  }
-);
+API.events.watch.scriptEventDefs.changed.on((_, scriptEventDefs) => {
+  store.dispatch(scriptEventDefsActions.setScriptEventDefs(scriptEventDefs));
+});
 
 // Menu
 

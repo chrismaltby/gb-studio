@@ -10,7 +10,7 @@ import {
   EmoteData,
   SoundData,
 } from "shared/lib/entities/entitiesTypes";
-import type { ScriptEventDef } from "lib/project/loadScriptEvents";
+import type { ScriptEventDef } from "lib/project/loadScriptEventHandlers";
 import type { RootState } from "store/configureStore";
 import { SettingsState } from "store/features/settings/settingsState";
 import { MetadataState } from "store/features/metadata/metadataState";

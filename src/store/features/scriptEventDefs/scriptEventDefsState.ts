@@ -1,10 +1,10 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { ScriptEventDefsLookup } from "shared/lib/scripts/scriptDefHelpers";
+import { ScriptEventDefs } from "shared/lib/scripts/scriptDefHelpers";
 import { RootState } from "store/configureStore";
 import projectActions from "store/features/project/projectActions";
 
 export interface ScriptEventsState {
-  lookup: ScriptEventDefsLookup;
+  lookup: ScriptEventDefs;
   loaded: boolean;
 }
 
@@ -17,10 +17,7 @@ const scriptEventDefsSlice = createSlice({
   name: "scriptEventDefs",
   initialState,
   reducers: {
-    setScriptEventDefsLookup: (
-      state,
-      action: PayloadAction<ScriptEventDefsLookup>
-    ) => {
+    setScriptEventDefs: (state, action: PayloadAction<ScriptEventDefs>) => {
       state.lookup = action.payload;
       state.loaded = true;
     },
@@ -36,7 +33,7 @@ const scriptEventDefsSlice = createSlice({
       }),
 });
 
-export const selectScriptEventDefsLookup = (state: RootState) =>
+export const selectScriptEventDefs = (state: RootState) =>
   state.scriptEventDefs.lookup;
 
 export const { actions, reducer } = scriptEventDefsSlice;

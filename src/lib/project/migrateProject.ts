@@ -21,7 +21,7 @@ import {
   walkScript,
 } from "shared/lib/scripts/walk";
 import {
-  ScriptEventDefsLookup,
+  ScriptEventDefs,
   isVariableField,
 } from "shared/lib/scripts/scriptDefHelpers";
 import type { ProjectData } from "store/features/project/projectActions";
@@ -1703,7 +1703,7 @@ export const migrateFrom300r2To300r3 = (data: ProjectData): ProjectData => {
  */
 export const migrateFrom300r3To310r1ScriptEvent = (
   event: ScriptEventDenormalized,
-  scriptEventDefs: ScriptEventDefsLookup
+  scriptEventDefs: ScriptEventDefs
 ): ScriptEventDenormalized => {
   const migrateMeta = generateMigrateMeta(event);
   if (event.args) {
@@ -1790,7 +1790,7 @@ export const migrateFrom300r3To310r1Event = (
  */
 export const migrateFrom300r3To310r1 = (
   data: ProjectData,
-  scriptEventDefs: ScriptEventDefsLookup
+  scriptEventDefs: ScriptEventDefs
 ): ProjectData => {
   return {
     ...data,
@@ -1966,7 +1966,7 @@ const migrateFrom320r1To320r2Events = (data: ProjectData): ProjectData => {
 const migrateProject = (
   project: ProjectData,
   projectRoot: string,
-  scriptEventDefs: ScriptEventDefsLookup
+  scriptEventDefs: ScriptEventDefs
 ): ProjectData => {
   let data = { ...project };
   let version = project._version || "1.0.0";

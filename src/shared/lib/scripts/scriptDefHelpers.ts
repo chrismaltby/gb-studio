@@ -1,5 +1,5 @@
 import type { Dictionary } from "@reduxjs/toolkit";
-import type { ScriptEventDef } from "lib/project/loadScriptEvents";
+import type { ScriptEventDef } from "lib/project/loadScriptEventHandlers";
 import type {
   ScriptEventArgs,
   ScriptEventFieldSchema,
@@ -9,7 +9,7 @@ import {
   isUnionVariableValue,
 } from "shared/lib/entities/entitiesHelpers";
 
-export type ScriptEventDefsLookup = Dictionary<ScriptEventDef>;
+export type ScriptEventDefs = Dictionary<ScriptEventDef>;
 
 export const isFieldVisible = (
   field: ScriptEventFieldSchema,
@@ -40,9 +40,9 @@ export const isFieldVisible = (
 export const getField = (
   cmd: string,
   fieldName: string,
-  scriptEventDefsLookup: ScriptEventDefsLookup
+  scriptEventDefs: ScriptEventDefs
 ): ScriptEventFieldSchema | undefined => {
-  const event = scriptEventDefsLookup[cmd];
+  const event = scriptEventDefs[cmd];
   if (!event) return undefined;
   return event.fieldsLookup[fieldName];
 };
@@ -51,13 +51,13 @@ export const isVariableField = (
   command: string,
   fieldName: string,
   args: ScriptEventArgs,
-  scriptEventDefsLookup: ScriptEventDefsLookup
+  scriptEventDefs: ScriptEventDefs
 ) => {
   // Custom event calls
   if (fieldName.startsWith("$variable[")) {
     return true;
   }
-  const field = getField(command, fieldName, scriptEventDefsLookup);
+  const field = getField(command, fieldName, scriptEventDefs);
   const argValue = args[fieldName];
   return (
     !!field &&
@@ -70,9 +70,9 @@ export const isActorField = (
   cmd: string,
   fieldName: string,
   args: ScriptEventArgs,
-  scriptEventDefsLookup: ScriptEventDefsLookup
+  scriptEventDefs: ScriptEventDefs
 ) => {
-  const field = getField(cmd, fieldName, scriptEventDefsLookup);
+  const field = getField(cmd, fieldName, scriptEventDefs);
   return !!field && field.type === "actor" && isFieldVisible(field, args);
 };
 
@@ -80,11 +80,11 @@ export const isPropertyField = (
   cmd: string,
   fieldName: string,
   args: ScriptEventArgs,
-  scriptEventDefsLookup: ScriptEventDefsLookup
+  scriptEventDefs: ScriptEventDefs
 ) => {
-  const event = scriptEventDefsLookup[cmd];
+  const event = scriptEventDefs[cmd];
   if (!event) return false;
-  const field = getField(cmd, fieldName, scriptEventDefsLookup);
+  const field = getField(cmd, fieldName, scriptEventDefs);
   const fieldValue = args[fieldName];
   return (
     !!field &&

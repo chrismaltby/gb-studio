@@ -11,7 +11,7 @@ import AddButton from "./AddButton";
 import ScriptEditorEvent from "./ScriptEditorEvent";
 import { ScriptEventAutoFade } from "./ScriptEventAutoFade";
 import { calculateAutoFadeEventIdNormalised } from "shared/lib/scripts/eventHelpers";
-import { selectScriptEventDefsLookup } from "store/features/scriptEventDefs/scriptEventDefsState";
+import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
 
 interface ScriptEditorProps {
   value: string[];
@@ -41,8 +41,8 @@ const ScriptEditor = React.memo(
     const customEventsLookup = useSelector((state: RootState) =>
       customEventSelectors.selectEntities(state)
     );
-    const scriptEventDefsLookup = useSelector((state: RootState) =>
-      selectScriptEventDefsLookup(state)
+    const scriptEventDefs = useSelector((state: RootState) =>
+      selectScriptEventDefs(state)
     );
     const autoFadeEventId = useMemo(() => {
       return showAutoFadeIndicator
@@ -50,12 +50,12 @@ const ScriptEditor = React.memo(
             value,
             scriptEventsLookup,
             customEventsLookup,
-            scriptEventDefsLookup
+            scriptEventDefs
           )
         : "";
     }, [
       customEventsLookup,
-      scriptEventDefsLookup,
+      scriptEventDefs,
       scriptEventsLookup,
       showAutoFadeIndicator,
       value,

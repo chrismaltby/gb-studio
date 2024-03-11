@@ -13,7 +13,7 @@ import {
 } from "shared/lib/entities/entitiesTypes";
 import { L10NLookup, setL10NData } from "shared/lib/lang/l10n";
 import {
-  ScriptEventDefsLookup,
+  ScriptEventDefs,
   isVariableField,
 } from "shared/lib/scripts/scriptDefHelpers";
 import { walkNormalizedScenesScripts } from "shared/lib/scripts/walk";
@@ -61,8 +61,7 @@ workerCtx.onmessage = async (evt) => {
     evt.data.scriptEventsLookup;
   const actorsLookup: Dictionary<Actor> = evt.data.actorsLookup;
   const triggersLookup: Dictionary<Trigger> = evt.data.triggersLookup;
-  const scriptEventDefsLookup: ScriptEventDefsLookup =
-    evt.data.scriptEventDefsLookup;
+  const scriptEventDefs: ScriptEventDefs = evt.data.scriptEventDefs;
   const l10NData: L10NLookup = evt.data.l10NData;
 
   setL10NData(l10NData);
@@ -86,7 +85,7 @@ workerCtx.onmessage = async (evt) => {
             scriptEvent.command,
             arg,
             scriptEvent.args,
-            scriptEventDefsLookup
+            scriptEventDefs
           )
         ) {
           continue;

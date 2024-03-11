@@ -8,7 +8,7 @@ import {
   migrateFrom320r1To320r2Event,
 } from "../../src/lib/project/migrateProject";
 import initElectronL10N from "../../src/lib/lang/initElectronL10N";
-import { getTestScriptHandlersLookup } from "../getTestScriptHandlersLookup";
+import { getTestScriptHandlers } from "../getTestScriptHandlers";
 
 beforeAll(async () => {
   await initElectronL10N();
@@ -244,9 +244,9 @@ test("should migrate custom script events to prefix values with V", async () => 
     },
     id: "event-1",
   };
-  const scriptEventHandlersLookup = await getTestScriptHandlersLookup();
+  const scriptEventHandlers = await getTestScriptHandlers();
   expect(
-    migrateFrom300r3To310r1ScriptEvent(oldEvent, scriptEventHandlersLookup)
+    migrateFrom300r3To310r1ScriptEvent(oldEvent, scriptEventHandlers)
   ).toEqual({
     command: "EVENT_INC_VALUE",
     args: {
@@ -268,9 +268,9 @@ test("should migrate custom script events to prefix values with V when using uni
     },
     id: "event-1",
   };
-  const scriptEventHandlersLookup = await getTestScriptHandlersLookup();
+  const scriptEventHandlers = await getTestScriptHandlers();
   expect(
-    migrateFrom300r3To310r1ScriptEvent(oldEvent, scriptEventHandlersLookup)
+    migrateFrom300r3To310r1ScriptEvent(oldEvent, scriptEventHandlers)
   ).toEqual({
     command: "EVENT_ACTOR_SET_DIRECTION",
     args: {
@@ -381,7 +381,7 @@ test("should keep existing engine field store events variable value if set", () 
 });
 
 test("should migrate custom event definitions", async () => {
-  const scriptEventHandlersLookup = await getTestScriptHandlersLookup();
+  const scriptEventHandlers = await getTestScriptHandlers();
   const oldProject = {
     scenes: [],
     customEvents: [
@@ -423,9 +423,7 @@ test("should migrate custom event definitions", async () => {
       },
     ],
   };
-  expect(
-    migrateFrom300r3To310r1(oldProject, scriptEventHandlersLookup)
-  ).toEqual({
+  expect(migrateFrom300r3To310r1(oldProject, scriptEventHandlers)).toEqual({
     scenes: [],
     customEvents: [
       {

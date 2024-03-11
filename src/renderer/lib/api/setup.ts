@@ -32,7 +32,7 @@ import type { FontAssetData } from "lib/project/loadFontData";
 import type { AvatarAssetData } from "lib/project/loadAvatarData";
 import type { EmoteAssetData } from "lib/project/loadEmoteData";
 import type { NavigationSection } from "store/features/navigation/navigationState";
-import { ScriptEventDefsLookup } from "shared/lib/scripts/scriptDefHelpers";
+import { ScriptEventDefs } from "shared/lib/scripts/scriptDefHelpers";
 import type { MenuZoomType } from "menu";
 
 interface L10NLookup {
@@ -193,7 +193,7 @@ const APISetup = {
       ipcRenderer.invoke("project:add-file", filename),
     loadProject: (): Promise<{
       data: ProjectData;
-      scriptEventDefs: ScriptEventDefsLookup;
+      scriptEventDefs: ScriptEventDefs;
       engineFields: EngineFieldSchema[];
       modifiedSpriteIds: string[];
     }> => ipcRenderer.invoke("project:load"),
@@ -361,13 +361,10 @@ const APISetup = {
           (event: IpcRendererEvent, fields: EngineFieldSchema[]) => void
         >("watch:engineFields:changed"),
       },
-      scriptEventDefsLookup: {
+      scriptEventDefs: {
         changed: createSubscribeAPI<
-          (
-            event: IpcRendererEvent,
-            scriptEventDefsLookup: ScriptEventDefsLookup
-          ) => void
-        >("watch:scriptEventDefsLookup:changed"),
+          (event: IpcRendererEvent, scriptEventDefs: ScriptEventDefs) => void
+        >("watch:scriptEventDefs:changed"),
       },
     },
   },

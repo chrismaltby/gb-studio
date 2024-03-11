@@ -8,7 +8,9 @@ import loadAllFontData from "./loadFontData";
 import loadAllAvatarData from "./loadAvatarData";
 import loadAllEmoteData from "./loadEmoteData";
 import loadAllSoundData from "./loadSoundData";
-import loadAllScriptEvents, { ScriptEventDef } from "./loadScriptEvents";
+import loadAllScriptEventHandlers, {
+  ScriptEventDef,
+} from "./loadScriptEventHandlers";
 import migrateProject from "./migrateProject";
 import type { ProjectData } from "store/features/project/projectActions";
 import type { EngineFieldSchema } from "store/features/engine/engineState";
@@ -51,7 +53,7 @@ const loadProject = async (
 }> => {
   const projectRoot = path.dirname(projectPath);
 
-  const scriptEventDefs = await loadAllScriptEvents(projectRoot);
+  const scriptEventDefs = await loadAllScriptEventHandlers(projectRoot);
   const engineFields = await loadEngineFields(projectRoot);
 
   const json = migrateProject(

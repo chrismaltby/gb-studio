@@ -33,7 +33,7 @@ import {
   isActorField,
   isVariableField,
   isPropertyField,
-  ScriptEventDefsLookup,
+  ScriptEventDefs,
 } from "shared/lib/scripts/scriptDefHelpers";
 import clamp from "shared/lib/helpers/clamp";
 import { RootState } from "store/configureStore";
@@ -2349,14 +2349,14 @@ const refreshCustomEventArgs: CaseReducer<
   EntitiesState,
   PayloadAction<{
     customEventId: string;
-    scriptEventDefsLookup: ScriptEventDefsLookup;
+    scriptEventDefs: ScriptEventDefs;
   }>
 > = (state, action) => {
   const customEvent = state.customEvents.entities[action.payload.customEventId];
   if (!customEvent) {
     return;
   }
-  const scriptEventDefsLookup = action.payload.scriptEventDefsLookup;
+  const scriptEventDefs = action.payload.scriptEventDefs;
   const variables = {} as Dictionary<CustomEventVariable>;
   const actors = {} as Dictionary<CustomEventActor>;
   const oldVariables = customEvent.variables;
@@ -2371,9 +2371,7 @@ const refreshCustomEventArgs: CaseReducer<
       if (!args) return;
       if (args.__comment) return;
       Object.keys(args).forEach((arg) => {
-        if (
-          isActorField(scriptEvent.command, arg, args, scriptEventDefsLookup)
-        ) {
+        if (isActorField(scriptEvent.command, arg, args, scriptEventDefs)) {
           const addActor = (actor: string) => {
             const letter = String.fromCharCode(
               "A".charCodeAt(0) + parseInt(actor)
@@ -2393,9 +2391,7 @@ const refreshCustomEventArgs: CaseReducer<
             addActor(actor);
           }
         }
-        if (
-          isVariableField(scriptEvent.command, arg, args, scriptEventDefsLookup)
-        ) {
+        if (isVariableField(scriptEvent.command, arg, args, scriptEventDefs)) {
           const addVariable = (variable: string) => {
             const letter = String.fromCharCode(
               "A".charCodeAt(0) + parseInt(variable[1])
@@ -2420,9 +2416,7 @@ const refreshCustomEventArgs: CaseReducer<
             addVariable(variable);
           }
         }
-        if (
-          isPropertyField(scriptEvent.command, arg, args, scriptEventDefsLookup)
-        ) {
+        if (isPropertyField(scriptEvent.command, arg, args, scriptEventDefs)) {
           const addPropertyActor = (property: string) => {
             const actor = property && property.replace(/:.*/, "");
             if (actor !== "player" && actor !== "$self$") {
@@ -3117,12 +3111,12 @@ const entitiesSlice = createSlice({
       reducer: refreshCustomEventArgs,
       prepare: (payload: {
         customEventId: string;
-        scriptEventDefsLookup: ScriptEventDefsLookup;
+        scriptEventDefs: ScriptEventDefs;
       }) => {
         return {
           payload: {
             customEventId: payload.customEventId,
-            scriptEventDefsLookup: payload.scriptEventDefsLookup,
+            scriptEventDefs: payload.scriptEventDefs,
           },
           meta: {
             throttle: 1000,

@@ -4,12 +4,12 @@ import {
   isVariableField,
 } from "shared/lib/scripts/scriptDefHelpers";
 import l10n from "shared/lib/lang/l10n";
-import type { ScriptEventHandlersLookup } from "lib/project/loadScriptEvents";
+import type { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
 
 export const getAutoLabel = (
   command: string,
   args: Record<string, unknown>,
-  scriptEventDefsLookup: ScriptEventHandlersLookup
+  scriptEventDefs: ScriptEventHandlers
 ) => {
   const mapArg = (key: string) => {
     const arg = args[key];
@@ -19,7 +19,7 @@ export const getAutoLabel = (
       value: unknown;
     };
 
-    const field = scriptEventDefsLookup[command];
+    const field = scriptEventDefs[command];
     if (!field) {
       return "";
     }
@@ -141,11 +141,11 @@ export const getAutoLabel = (
       return l10nInput(value);
     };
 
-    if (isActorField(command, key, args, scriptEventDefsLookup)) {
+    if (isActorField(command, key, args, scriptEventDefs)) {
       return `||actor:${value}||`;
-    } else if (isVariableField(command, key, args, scriptEventDefsLookup)) {
+    } else if (isVariableField(command, key, args, scriptEventDefs)) {
       return `||variable:${value}||`;
-    } else if (isPropertyField(command, key, args, scriptEventDefsLookup)) {
+    } else if (isPropertyField(command, key, args, scriptEventDefs)) {
       const propertyParts = String(value).split(":");
       return `||actor:${propertyParts[0]}||.${propertyNameForId(
         propertyParts[1]
@@ -172,7 +172,7 @@ export const getAutoLabel = (
     return String(value);
   };
 
-  return scriptEventDefsLookup[command]?.autoLabel?.(mapArg, args) ?? "";
+  return scriptEventDefs[command]?.autoLabel?.(mapArg, args) ?? "";
 };
 
 export const replaceAutoLabelLocalValues = (

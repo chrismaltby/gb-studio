@@ -23,7 +23,7 @@ import { Actor } from "shared/lib/entities/entitiesTypes";
 import styled from "styled-components";
 import { fadeIn } from "ui/animations/animations";
 import { ScriptEditorContext } from "./ScriptEditorContext";
-import { selectScriptEventDefsLookup } from "store/features/scriptEventDefs/scriptEventDefsState";
+import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
 import API from "renderer/lib/api";
 import { replaceAutoLabelLocalValues } from "shared/lib/scripts/autoLabel";
 
@@ -50,16 +50,14 @@ const customEventActorsLookup = keyBy(
 
 const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
   const context = useContext(ScriptEditorContext);
-  const scriptEventDefsLookup = useSelector((state: RootState) =>
-    selectScriptEventDefsLookup(state)
+  const scriptEventDefs = useSelector((state: RootState) =>
+    selectScriptEventDefs(state)
   );
   const localisedCommand = l10n(command as L10NKey);
   const eventName =
     localisedCommand !== command
       ? localisedCommand
-      : (scriptEventDefsLookup[command] &&
-          scriptEventDefsLookup[command]?.name) ||
-        command;
+      : (scriptEventDefs[command] && scriptEventDefs[command]?.name) || command;
   const labelName = args?.__label ? args.__label : undefined;
 
   const [autoName, setAutoName] = useState("");
@@ -122,7 +120,7 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
 
   useEffect(() => {
     async function fetchAutoLabel() {
-      if (scriptEventDefsLookup[command]?.hasAutoLabel) {
+      if (scriptEventDefs[command]?.hasAutoLabel) {
         const actorNameForId = (value: unknown) => {
           if (context === "script" && customEvent) {
             return (
@@ -185,7 +183,7 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
         };
 
         try {
-          if (scriptEventDefsLookup[command]?.hasAutoLabel) {
+          if (scriptEventDefs[command]?.hasAutoLabel) {
             setAutoName(
               replaceAutoLabelLocalValues(
                 await API.script.getScriptAutoLabel(command, args),
@@ -224,7 +222,7 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
     customEventsLookup,
     customEvents,
     context,
-    scriptEventDefsLookup,
+    scriptEventDefs,
   ]);
 
   return <Wrapper>{String(labelName || autoName || eventName)}</Wrapper>;

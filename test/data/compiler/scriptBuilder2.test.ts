@@ -7,13 +7,13 @@ import {
   dummyPrecompiledSpriteSheet,
   getDummyCompiledFont,
 } from "../../dummydata";
-import { getTestScriptHandlersLookup } from "../../getTestScriptHandlersLookup";
+import { getTestScriptHandlers } from "../../getTestScriptHandlers";
 
 test("Should be able to set active actor to player", async () => {
   const output: string[] = [];
-  const scriptEventHandlersLookup = await getTestScriptHandlersLookup();
+  const scriptEventHandlers = await getTestScriptHandlers();
   const sb = new ScriptBuilder(output, {
-    scriptEventHandlersLookup,
+    scriptEventHandlers,
     scene: {
       id: "scene1",
       name: "Scene 1",
@@ -45,9 +45,9 @@ test("Should be able to set active actor to player", async () => {
 
 test("Should be able to set active actor to actor by id", async () => {
   const output: string[] = [];
-  const scriptEventHandlersLookup = await getTestScriptHandlersLookup();
+  const scriptEventHandlers = await getTestScriptHandlers();
   const sb = new ScriptBuilder(output, {
-    scriptEventHandlersLookup,
+    scriptEventHandlers,
     scene: {
       id: "scene1",
       name: "Scene 1",
@@ -78,9 +78,9 @@ test("Should be able to set active actor to actor by id", async () => {
 
 test("Should be able to move actor to new location", async () => {
   const output: string[] = [];
-  const scriptEventHandlersLookup = await getTestScriptHandlersLookup();
+  const scriptEventHandlers = await getTestScriptHandlers();
   const sb = new ScriptBuilder(output, {
-    scriptEventHandlersLookup,
+    scriptEventHandlers,
     scene: {
       id: "scene1",
       name: "Scene 1",
@@ -111,9 +111,9 @@ test("Should be able to move actor to new location", async () => {
 
 test("Should be able to wait for N frames to pass", async () => {
   const output: string[] = [];
-  const scriptEventHandlersLookup = await getTestScriptHandlersLookup();
+  const scriptEventHandlers = await getTestScriptHandlers();
   const sb = new ScriptBuilder(output, {
-    scriptEventHandlersLookup,
+    scriptEventHandlers,
     scene: {
       id: "scene1",
       name: "Scene 1",
@@ -142,9 +142,9 @@ test("Should be able to wait for N frames to pass", async () => {
 
 test("Should be able to generate script string", async () => {
   const output: string[] = [];
-  const scriptEventHandlersLookup = await getTestScriptHandlersLookup();
+  const scriptEventHandlers = await getTestScriptHandlers();
   const sb = new ScriptBuilder(output, {
-    scriptEventHandlersLookup,
+    scriptEventHandlers,
     scene: {
       id: "scene1",
       name: "Scene 1",
@@ -205,9 +205,9 @@ _MY_SCRIPT::
 test("Should be able to open dialogue boxes", async () => {
   const dummyCompiledFont = await getDummyCompiledFont();
   const output: string[] = [];
-  const scriptEventHandlersLookup = await getTestScriptHandlersLookup();
+  const scriptEventHandlers = await getTestScriptHandlers();
   const sb = new ScriptBuilder(output, {
-    scriptEventHandlersLookup,
+    scriptEventHandlers,
     scene: {
       id: "scene1",
       name: "Scene 1",
@@ -260,9 +260,9 @@ _MY_SCRIPT::
 
 test("Should be able to conditionally execute if variable is true with event array paths", async () => {
   const output: string[] = [];
-  const scriptEventHandlersLookup = await getTestScriptHandlersLookup();
+  const scriptEventHandlers = await getTestScriptHandlers();
   const sb = new ScriptBuilder(output, {
-    scriptEventHandlersLookup,
+    scriptEventHandlers,
     scene: {
       id: "scene1",
       name: "Scene 1",
@@ -337,9 +337,9 @@ _MY_SCRIPT::
 test("Should be able to conditionally execute if variable is true with function paths", async () => {
   const dummyCompiledFont = await getDummyCompiledFont();
   const output: string[] = [];
-  const scriptEventHandlersLookup = await getTestScriptHandlersLookup();
+  const scriptEventHandlers = await getTestScriptHandlers();
   const sb = new ScriptBuilder(output, {
-    scriptEventHandlersLookup,
+    scriptEventHandlers,
     scene: {
       id: "scene1",
       name: "Scene 1",
@@ -432,9 +432,9 @@ _MY_SCRIPT::
 test("Should be able to conditionally execute if variable is true with nested function paths", async () => {
   const dummyCompiledFont = await getDummyCompiledFont();
   const output: string[] = [];
-  const scriptEventHandlersLookup = await getTestScriptHandlersLookup();
+  const scriptEventHandlers = await getTestScriptHandlers();
   const sb = new ScriptBuilder(output, {
-    scriptEventHandlersLookup,
+    scriptEventHandlers,
     scene: {
       id: "scene1",
       name: "Scene 1",
@@ -558,9 +558,9 @@ _MY_SCRIPT::
 
 test("Should be able to define labels and jump", async () => {
   const output: string[] = [];
-  const scriptEventHandlersLookup = await getTestScriptHandlersLookup();
+  const scriptEventHandlers = await getTestScriptHandlers();
   const sb = new ScriptBuilder(output, {
-    scriptEventHandlersLookup,
+    scriptEventHandlers,
     scene: {
       id: "scene1",
       name: "Scene 1",
@@ -602,9 +602,9 @@ _MY_SCRIPT::
 
 test("Should throw if jump to label is not stack neutral", async () => {
   const output: string[] = [];
-  const scriptEventHandlersLookup = await getTestScriptHandlersLookup();
+  const scriptEventHandlers = await getTestScriptHandlers();
   const sb = new ScriptBuilder(output, {
-    scriptEventHandlersLookup,
+    scriptEventHandlers,
     scene: {
       id: "scene1",
       name: "Scene 1",
@@ -634,9 +634,9 @@ test("Should throw if jump to label is not stack neutral", async () => {
 
 test("Should be able to set an actor's state with looping animation", async () => {
   const output: string[] = [];
-  const scriptEventHandlersLookup = await getTestScriptHandlersLookup();
+  const scriptEventHandlers = await getTestScriptHandlers();
   const sb = new ScriptBuilder(output, {
-    scriptEventHandlersLookup,
+    scriptEventHandlers,
     scene: {
       id: "scene1",
       name: "Scene 1",
@@ -675,9 +675,9 @@ test("Should be able to set an actor's state with looping animation", async () =
 
 test("Should be able to set an actor's state with one-shot animation", async () => {
   const output: string[] = [];
-  const scriptEventHandlersLookup = await getTestScriptHandlersLookup();
+  const scriptEventHandlers = await getTestScriptHandlers();
   const sb = new ScriptBuilder(output, {
-    scriptEventHandlersLookup,
+    scriptEventHandlers,
     scene: {
       id: "scene1",
       name: "Scene 1",
@@ -716,9 +716,9 @@ test("Should be able to set an actor's state with one-shot animation", async () 
 
 test("Should default actor's state to use looping animation if loop value not provided", async () => {
   const output: string[] = [];
-  const scriptEventHandlersLookup = await getTestScriptHandlersLookup();
+  const scriptEventHandlers = await getTestScriptHandlers();
   const sb = new ScriptBuilder(output, {
-    scriptEventHandlersLookup,
+    scriptEventHandlers,
     scene: {
       id: "scene1",
       name: "Scene 1",

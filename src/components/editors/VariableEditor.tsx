@@ -32,7 +32,7 @@ import {
   globalVariableDefaultName,
 } from "shared/lib/variables/variableNames";
 import l10n, { getL10NData } from "shared/lib/lang/l10n";
-import { selectScriptEventDefsLookup } from "store/features/scriptEventDefs/scriptEventDefsState";
+import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
 
 const worker = new VariableUsesWorker();
 
@@ -77,8 +77,8 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
   );
   const [showSymbols, setShowSymbols] = useState(false);
 
-  const scriptEventDefsLookup = useSelector((state: RootState) =>
-    selectScriptEventDefsLookup(state)
+  const scriptEventDefs = useSelector((state: RootState) =>
+    selectScriptEventDefs(state)
   );
 
   const dispatch = useDispatch();
@@ -109,7 +109,7 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
       actorsLookup,
       triggersLookup,
       scriptEventsLookup,
-      scriptEventDefsLookup,
+      scriptEventDefs,
       l10NData: getL10NData(),
     });
   }, [
@@ -118,7 +118,7 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
     triggersLookup,
     id,
     scriptEventsLookup,
-    scriptEventDefsLookup,
+    scriptEventDefs,
   ]);
 
   const onRename = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -113,7 +113,7 @@ import type {
 } from "store/features/settings/settingsState";
 import { ensureNumber, ensureString, ensureTypeGenerator } from "shared/types";
 import { walkSceneScripts, walkScenesScripts } from "shared/lib/scripts/walk";
-import { ScriptEventHandlersLookup } from "lib/project/loadScriptEvents";
+import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
 
 type TilemapData = {
   symbol: string;
@@ -1266,14 +1266,14 @@ const compile = async (
   projectData: ProjectData,
   {
     projectRoot = "/tmp",
-    scriptEventHandlersLookup,
+    scriptEventHandlers,
     engineFields = [],
     tmpPath = "/tmp",
     progress = (_msg: string) => {},
     warnings = (_msg: string) => {},
   }: {
     projectRoot: string;
-    scriptEventHandlersLookup: ScriptEventHandlersLookup;
+    scriptEventHandlers: ScriptEventHandlers;
     engineFields: EngineFieldSchema[];
     tmpPath: string;
     progress: (_msg: string) => void;
@@ -1419,7 +1419,7 @@ const compile = async (
         }
 
         const compiledScript = compileEntityEvents(scriptName, script, {
-          scriptEventHandlersLookup,
+          scriptEventHandlers,
           scene,
           sceneIndex,
           scenes: precompiled.sceneData,
@@ -1515,7 +1515,7 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
           const autoFadeId = calculateAutoFadeEventId(
             initScript,
             customEventsLookup,
-            scriptEventHandlersLookup
+            scriptEventHandlers
           );
           const autoFadeIndex = initScript.findIndex(
             (item) => item.id === autoFadeId

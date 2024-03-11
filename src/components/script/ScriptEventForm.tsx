@@ -11,8 +11,8 @@ import {
   ScriptEventFieldSchema,
 } from "shared/lib/entities/entitiesTypes";
 import ScriptEventFields from "./ScriptEventFields";
-import type { ScriptEventDef } from "lib/project/loadScriptEvents";
-import { selectScriptEventDefsLookup } from "store/features/scriptEventDefs/scriptEventDefsState";
+import type { ScriptEventDef } from "lib/project/loadScriptEventHandlers";
+import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
 
 interface ScriptEventFormProps {
   id: string;
@@ -26,12 +26,10 @@ const getScriptEventFields = (
   command: string,
   value: { customEventId?: string; engineFieldKey?: string },
   customEvents: Dictionary<CustomEvent>,
-  scriptEventDefsLookup: Dictionary<ScriptEventDef>
+  scriptEventDefs: Dictionary<ScriptEventDef>
 ) => {
   const eventCommands =
-    (scriptEventDefsLookup[command] &&
-      scriptEventDefsLookup[command]?.fields) ||
-    [];
+    (scriptEventDefs[command] && scriptEventDefs[command]?.fields) || [];
   if (value.customEventId && customEvents[value.customEventId]) {
     const customEvent = customEvents[value.customEventId];
     const description = customEvent?.description
@@ -92,8 +90,8 @@ const ScriptEventForm = ({
   altBg,
   renderEvents,
 }: ScriptEventFormProps) => {
-  const scriptEventDefsLookup = useSelector((state: RootState) =>
-    selectScriptEventDefsLookup(state)
+  const scriptEventDefs = useSelector((state: RootState) =>
+    selectScriptEventDefs(state)
   );
   const scriptEvent = useSelector((state: RootState) =>
     scriptEventSelectors.selectById(state, id)
@@ -110,11 +108,11 @@ const ScriptEventForm = ({
         command,
         value || {},
         customEvents,
-        scriptEventDefsLookup
+        scriptEventDefs
       );
     }
     return [];
-  }, [command, value, customEvents, scriptEventDefsLookup]);
+  }, [command, value, customEvents, scriptEventDefs]);
 
   if (!scriptEvent) {
     return null;

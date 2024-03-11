@@ -45,7 +45,7 @@ import useOnScreen from "ui/hooks/use-on-screen";
 import { ScriptEventSymbolsEditor } from "components/forms/symbols/ScriptEventSymbolsEditor";
 import { ScriptEventSymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
 import { EVENT_CALL_CUSTOM_EVENT, EVENT_COMMENT, EVENT_END } from "consts";
-import { selectScriptEventDefsLookup } from "store/features/scriptEventDefs/scriptEventDefsState";
+import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
 
 interface ScriptEditorEventProps {
   id: string;
@@ -84,8 +84,8 @@ const ScriptEditorEvent = React.memo(
     const scriptEvent = useSelector((state: RootState) =>
       scriptEventSelectors.selectById(state, id)
     );
-    const scriptEventDefsLookup = useSelector((state: RootState) =>
-      selectScriptEventDefsLookup(state)
+    const scriptEventDefs = useSelector((state: RootState) =>
+      selectScriptEventDefs(state)
     );
 
     const onFetchClipboard = useCallback(() => {
@@ -326,10 +326,8 @@ const ScriptEditorEvent = React.memo(
     }
 
     const isOpen = scriptEvent.args && !scriptEvent.args.__collapse;
-    const isConditional =
-      scriptEventDefsLookup[command]?.isConditional ?? false;
-    const editableSymbol =
-      scriptEventDefsLookup[command]?.editableSymbol ?? false;
+    const isConditional = scriptEventDefs[command]?.isConditional ?? false;
+    const editableSymbol = scriptEventDefs[command]?.editableSymbol ?? false;
 
     return (
       <ScriptEventWrapper

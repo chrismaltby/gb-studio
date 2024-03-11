@@ -88,9 +88,9 @@ import { loadEmoteData } from "lib/project/loadEmoteData";
 import parseAssetPath from "shared/lib/assets/parseAssetPath";
 import { loadEngineFields } from "lib/project/engineFields";
 import { getAutoLabel } from "shared/lib/scripts/autoLabel";
-import loadAllScriptEvents, {
-  ScriptEventHandlersLookup,
-} from "lib/project/loadScriptEvents";
+import loadAllScriptEventHandlers, {
+  ScriptEventHandlers,
+} from "lib/project/loadScriptEventHandlers";
 import { cloneDictionary } from "lib/helpers/clone";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
@@ -130,7 +130,7 @@ let projectPath = "";
 let cancelBuild = false;
 let musicWindowInitialized = false;
 let stopWatchingFn: (() => void) | null = null;
-let scriptEventHandlersLookup: ScriptEventHandlersLookup = {};
+let scriptEventHandlers: ScriptEventHandlers = {};
 
 const isDevMode = !!process.execPath.match(/[\\/]electron/);
 
@@ -416,10 +416,10 @@ const createProjectWindow = async () => {
     onChangedEventPlugin: async (_filename: string) => {
       // Reload all script event handlers and push new defs to project window
       const projectRoot = Path.dirname(projectPath);
-      scriptEventHandlersLookup = await loadAllScriptEvents(projectRoot);
+      scriptEventHandlers = await loadAllScriptEventHandlers(projectRoot);
       sendToProjectWindow(
-        "watch:scriptEventDefsLookup:changed",
-        cloneDictionary(scriptEventHandlersLookup)
+        "watch:scriptEventDefs:changed",
+        cloneDictionary(scriptEventHandlers)
       );
     },
   });
@@ -936,7 +936,7 @@ ipcMain.handle(
         ...options,
         projectRoot,
         outputRoot,
-        scriptEventHandlersLookup,
+        scriptEventHandlers,
         tmpPath: getTmp(),
         progress: (message) => {
           if (cancelBuild) {
@@ -1064,7 +1064,7 @@ ipcMain.handle(
       const compiledData = await compileData(project, {
         projectRoot,
         engineFields,
-        scriptEventHandlersLookup,
+        scriptEventHandlers,
         tmpPath,
         progress,
         warnings,
@@ -1279,7 +1279,7 @@ ipcMain.handle(
 ipcMain.handle(
   "script:get-auto-label",
   async (_, command: string, args: Record<string, unknown>) => {
-    return getAutoLabel(command, args, scriptEventHandlersLookup);
+    return getAutoLabel(command, args, scriptEventHandlers);
   }
 );
 
@@ -1292,7 +1292,7 @@ ipcMain.handle(
     args: Record<string, unknown>,
     prevArgs: Record<string, unknown>
   ) => {
-    const event = scriptEventHandlersLookup[command];
+    const event = scriptEventHandlers[command];
     if (!event) {
       return args;
     }
@@ -1515,7 +1515,7 @@ const openProject = async (newProjectPath: string) => {
   addRecentProject(projectPath);
 
   const projectRoot = Path.dirname(projectPath);
-  scriptEventHandlersLookup = await loadAllScriptEvents(projectRoot);
+  scriptEventHandlers = await loadAllScriptEventHandlers(projectRoot);
 
   keepOpen = true;
 

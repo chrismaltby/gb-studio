@@ -46,12 +46,12 @@ import {
 } from "shared/lib/entities/entitiesHelpers";
 import keyBy from "lodash/keyBy";
 import {
-  ScriptEventDefsLookup,
+  ScriptEventDefs,
   patchEventArgs,
 } from "shared/lib/scripts/eventHelpers";
 import { EVENT_CALL_CUSTOM_EVENT } from "consts";
 import API from "renderer/lib/api";
-import { selectScriptEventDefsLookup } from "store/features/scriptEventDefs/scriptEventDefsState";
+import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
 import {
   walkActorScriptsKeys,
   walkNormalizedActorScripts,
@@ -228,7 +228,7 @@ const generateSceneInsertActions = (
   actors: Actor[],
   triggers: Trigger[],
   scriptEventsLookup: Dictionary<ScriptEvent>,
-  scriptEventDefsLookup: ScriptEventDefsLookup,
+  scriptEventDefs: ScriptEventDefs,
   variables: Variable[],
   x: number,
   y: number
@@ -317,7 +317,7 @@ const generateSceneInsertActions = (
               "actor",
               eventData.args || {},
               actorMapping,
-              scriptEventDefsLookup
+              scriptEventDefs
             ),
           };
         }),
@@ -819,7 +819,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         const state = store.getState();
         const scriptEvents = clipboard.data.scriptEvents;
         const scriptEventsLookup = keyBy(scriptEvents, "id");
-        const scriptEventDefsLookup = selectScriptEventDefsLookup(state);
+        const scriptEventDefs = selectScriptEventDefs(state);
         const existingCustomEvents = customEventSelectors.selectAll(state);
         const existingScriptEventsLookup =
           scriptEventSelectors.selectEntities(state);
@@ -829,7 +829,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             clipboard.data.actors,
             clipboard.data.triggers,
             scriptEventsLookup,
-            scriptEventDefsLookup,
+            scriptEventDefs,
             clipboard.data.variables,
             action.payload.x,
             action.payload.y

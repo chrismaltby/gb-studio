@@ -54,7 +54,7 @@ import {
 } from "shared/lib/scripts/context";
 import { encodeString } from "shared/lib/helpers/fonts";
 import { mapScript } from "shared/lib/scripts/walk";
-import { ScriptEventHandlersLookup } from "lib/project/loadScriptEvents";
+import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
 
 export type ScriptOutput = string[];
 
@@ -100,7 +100,7 @@ interface ScriptBuilderFunctionArgLookup {
 }
 
 export interface ScriptBuilderOptions {
-  scriptEventHandlersLookup: ScriptEventHandlersLookup;
+  scriptEventHandlers: ScriptEventHandlers;
   context: ScriptEditorContextType;
   scriptSymbolName: string;
   scene: PrecompiledScene;
@@ -496,7 +496,7 @@ class ScriptBuilder {
   constructor(
     output: ScriptOutput,
     options: Partial<ScriptBuilderOptions> &
-      Pick<ScriptBuilderOptions, "scene" | "scriptEventHandlersLookup">
+      Pick<ScriptBuilderOptions, "scene" | "scriptEventHandlers">
   ) {
     this.byteSize = 0;
     this.output = output;
@@ -3450,7 +3450,7 @@ extern void __mute_mask_${symbol};
             e.command,
             arg,
             e.args,
-            this.options.scriptEventHandlersLookup
+            this.options.scriptEventHandlers
           )
         ) {
           if (
@@ -3475,7 +3475,7 @@ extern void __mute_mask_${symbol};
             e.command,
             arg,
             e.args,
-            this.options.scriptEventHandlersLookup
+            this.options.scriptEventHandlers
           )
         ) {
           const replacePropertyValueActor = (p: string) => {
@@ -3504,7 +3504,7 @@ extern void __mute_mask_${symbol};
             e.command,
             arg,
             e.args,
-            this.options.scriptEventHandlersLookup
+            this.options.scriptEventHandlers
           ) &&
           typeof argValue === "string"
         ) {
@@ -5081,7 +5081,7 @@ extern void __mute_mask_${symbol};
       {
         ...this.options,
         ...options,
-        scriptEventHandlersLookup: this.options.scriptEventHandlersLookup,
+        scriptEventHandlers: this.options.scriptEventHandlers,
         output: [],
         loop: false,
         lock: false,
