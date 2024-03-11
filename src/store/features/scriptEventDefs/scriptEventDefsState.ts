@@ -1,36 +1,44 @@
-import { createSlice, Dictionary } from "@reduxjs/toolkit";
-import type { ScriptEventDef } from "lib/project/loadScriptEvents";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { ScriptEventDefsLookup } from "shared/lib/scripts/scriptDefHelpers";
 import { RootState } from "store/configureStore";
 import projectActions from "store/features/project/projectActions";
 
 export interface ScriptEventsState {
-  eventsLookup: Dictionary<ScriptEventDef>;
+  lookup: ScriptEventDefsLookup;
   loaded: boolean;
 }
 
 export const initialState: ScriptEventsState = {
-  eventsLookup: {},
+  lookup: {},
   loaded: false,
 };
 
 const scriptEventDefsSlice = createSlice({
   name: "scriptEventDefs",
   initialState,
-  reducers: {},
+  reducers: {
+    setScriptEventDefsLookup: (
+      state,
+      action: PayloadAction<ScriptEventDefsLookup>
+    ) => {
+      state.lookup = action.payload;
+      state.loaded = true;
+    },
+  },
   extraReducers: (builder) =>
     builder
       .addCase(projectActions.loadProject.pending, (state, _action) => {
         state.loaded = false;
       })
       .addCase(projectActions.loadProject.fulfilled, (state, action) => {
-        state.eventsLookup = action.payload.scriptEventDefs;
+        state.lookup = action.payload.scriptEventDefs;
         state.loaded = true;
       }),
 });
 
-const { reducer } = scriptEventDefsSlice;
-
 export const selectScriptEventDefsLookup = (state: RootState) =>
-  state.scriptEventDefs.eventsLookup;
+  state.scriptEventDefs.lookup;
+
+export const { actions, reducer } = scriptEventDefsSlice;
 
 export default reducer;

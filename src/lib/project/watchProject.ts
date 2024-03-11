@@ -23,6 +23,7 @@ const watchProject = (
     onRemoveAvatar: WatchCallback;
     onRemoveEmote: WatchCallback;
     onChangedEngineSchema: WatchCallback;
+    onChangedEventPlugin: WatchCallback;
   }
 ) => {
   const projectRoot = Path.dirname(projectPath);
@@ -152,7 +153,16 @@ const watchProject = (
     .on("change", callbacks.onChangedEngineSchema)
     .on("unlink", callbacks.onChangedEngineSchema);
 
-  const pluginsWatcher = chokidar
+  const pluginEventsWatcher = chokidar
+    .watch(`${pluginsRoot}/**/events/event*.js`, {
+      ignoreInitial: true,
+      persistent: true,
+    })
+    .on("add", callbacks.onChangedEventPlugin)
+    .on("change", callbacks.onChangedEventPlugin)
+    .on("unlink", callbacks.onChangedEventPlugin);
+
+  const pluginAssetsWatcher = chokidar
     .watch(
       `${pluginsRoot}/**/*.{png,PNG,uge,UGE,mod,MOD,wav,WAV,vgm,VGM,vgz,VGZ,sav,SAV}`,
       {
@@ -227,7 +237,8 @@ const watchProject = (
     avatarsWatcher.close();
     emotesWatcher.close();
     engineSchemaWatcher.close();
-    pluginsWatcher.close();
+    pluginEventsWatcher.close();
+    pluginAssetsWatcher.close();
   };
 
   return stopWatching;

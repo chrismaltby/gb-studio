@@ -88,7 +88,10 @@ import { loadEmoteData } from "lib/project/loadEmoteData";
 import parseAssetPath from "shared/lib/assets/parseAssetPath";
 import { loadEngineFields } from "lib/project/engineFields";
 import { getAutoLabel } from "shared/lib/scripts/autoLabel";
-import loadAllScriptEvents from "lib/project/loadScriptEvents";
+import loadAllScriptEvents, {
+  ScriptEventHandlersLookup,
+} from "lib/project/loadScriptEvents";
+import { cloneDictionary } from "lib/helpers/clone";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -127,6 +130,7 @@ let projectPath = "";
 let cancelBuild = false;
 let musicWindowInitialized = false;
 let stopWatchingFn: (() => void) | null = null;
+let scriptEventHandlersLookup: ScriptEventHandlersLookup = {};
 
 const isDevMode = !!process.execPath.match(/[\\/]electron/);
 
@@ -408,6 +412,15 @@ const createProjectWindow = async () => {
     onChangedEngineSchema: async (_filename: string) => {
       const fields = await loadEngineFields(projectRoot);
       sendToProjectWindow("watch:engineFields:changed", fields);
+    },
+    onChangedEventPlugin: async (_filename: string) => {
+      // Reload all script event handlers and push new defs to project window
+      const projectRoot = Path.dirname(projectPath);
+      scriptEventHandlersLookup = await loadAllScriptEvents(projectRoot);
+      sendToProjectWindow(
+        "watch:scriptEventDefsLookup:changed",
+        cloneDictionary(scriptEventHandlersLookup)
+      );
     },
   });
 };
@@ -914,7 +927,6 @@ ipcMain.handle(
     const buildStartTime = Date.now();
     const projectRoot = Path.dirname(projectPath);
     const outputRoot = Path.normalize(`${getTmp()}/${buildUUID}`);
-    const scriptEventHandlersLookup = await loadAllScriptEvents(projectRoot); // @TODO DONT NEED TO LOAD THIS EVERY TIME - SET ONCE ON PROJECT LOAD - UPDATE FROM WATCHING PLUGINS - RESET WHEN LOADING NEW PROJECT
     const colorEnabled = project.settings.customColorsEnabled;
     const sgbEnabled = project.settings.sgbEnabled;
     initPlugins(projectRoot);
@@ -1033,8 +1045,6 @@ ipcMain.handle(
     try {
       const projectRoot = Path.dirname(projectPath);
       const outputRoot = Path.normalize(`${getTmp()}/${buildUUID}`);
-      initPlugins(projectRoot);
-      const scriptEventHandlersLookup = await loadAllScriptEvents(projectRoot); // @TODO DONT NEED TO LOAD THIS EVERY TIME - SET ONCE ON PROJECT LOAD - UPDATE FROM WATCHING PLUGINS - RESET WHEN LOADING NEW PROJECT
 
       const progress = (message: string) => {
         if (
@@ -1269,8 +1279,6 @@ ipcMain.handle(
 ipcMain.handle(
   "script:get-auto-label",
   async (_, command: string, args: Record<string, unknown>) => {
-    const projectRoot = Path.dirname(projectPath);
-    const scriptEventHandlersLookup = await loadAllScriptEvents(projectRoot); // @TODO DONT NEED TO LOAD THIS EVERY TIME - SET ONCE ON PROJECT LOAD - UPDATE FROM WATCHING PLUGINS - RESET WHEN LOADING NEW PROJECT
     return getAutoLabel(command, args, scriptEventHandlersLookup);
   }
 );
@@ -1284,8 +1292,6 @@ ipcMain.handle(
     args: Record<string, unknown>,
     prevArgs: Record<string, unknown>
   ) => {
-    const projectRoot = Path.dirname(projectPath);
-    const scriptEventHandlersLookup = await loadAllScriptEvents(projectRoot); // @TODO DONT NEED TO LOAD THIS EVERY TIME - SET ONCE ON PROJECT LOAD - UPDATE FROM WATCHING PLUGINS - RESET WHEN LOADING NEW PROJECT
     const event = scriptEventHandlersLookup[command];
     if (!event) {
       return args;
@@ -1507,6 +1513,9 @@ const openProject = async (newProjectPath: string) => {
 
   projectPath = newProjectPath;
   addRecentProject(projectPath);
+
+  const projectRoot = Path.dirname(projectPath);
+  scriptEventHandlersLookup = await loadAllScriptEvents(projectRoot);
 
   keepOpen = true;
 

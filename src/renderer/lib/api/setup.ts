@@ -32,9 +32,8 @@ import type { FontAssetData } from "lib/project/loadFontData";
 import type { AvatarAssetData } from "lib/project/loadAvatarData";
 import type { EmoteAssetData } from "lib/project/loadEmoteData";
 import type { NavigationSection } from "store/features/navigation/navigationState";
+import { ScriptEventDefsLookup } from "shared/lib/scripts/scriptDefHelpers";
 import type { MenuZoomType } from "menu";
-import type { ScriptEventDef } from "lib/project/loadScriptEvents";
-import type { Dictionary } from "@reduxjs/toolkit";
 
 interface L10NLookup {
   [key: string]: string | boolean | undefined;
@@ -194,7 +193,7 @@ const APISetup = {
       ipcRenderer.invoke("project:add-file", filename),
     loadProject: (): Promise<{
       data: ProjectData;
-      scriptEventDefs: Dictionary<ScriptEventDef>;
+      scriptEventDefs: ScriptEventDefsLookup;
       engineFields: EngineFieldSchema[];
       modifiedSpriteIds: string[];
     }> => ipcRenderer.invoke("project:load"),
@@ -361,6 +360,14 @@ const APISetup = {
         changed: createSubscribeAPI<
           (event: IpcRendererEvent, fields: EngineFieldSchema[]) => void
         >("watch:engineFields:changed"),
+      },
+      scriptEventDefsLookup: {
+        changed: createSubscribeAPI<
+          (
+            event: IpcRendererEvent,
+            scriptEventDefsLookup: ScriptEventDefsLookup
+          ) => void
+        >("watch:scriptEventDefsLookup:changed"),
       },
     },
   },

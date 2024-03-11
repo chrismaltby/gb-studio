@@ -11,10 +11,6 @@ import { Dictionary } from "@reduxjs/toolkit";
 import { readFile } from "fs-extra";
 import trimLines from "shared/lib/helpers/trimlines";
 
-// @TODO Don't import events here
-// Only needed to update global eventsLookup
-// Instead should update places that use this like `compileData()` to take in ScriptEventHandlers as an arg
-
 const globAsync = promisify(glob);
 
 const VM2 = __non_webpack_require__("vm2");
@@ -113,7 +109,7 @@ const loadAllScriptEvents = async (projectRoot: string) => {
     `${projectRoot}/plugins/**/events/event*.js`
   );
 
-  const eventHandlers: Dictionary<ScriptEventHandler> = {};
+  const eventHandlers: ScriptEventHandlersLookup = {};
   for (const path of corePaths) {
     const handler = await loadScriptEventHandler(path);
     eventHandlers[handler.id] = handler;

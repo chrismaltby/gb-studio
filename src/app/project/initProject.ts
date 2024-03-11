@@ -9,6 +9,7 @@ import projectActions from "store/features/project/projectActions";
 import buildGameActions from "store/features/buildGame/buildGameActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import engineActions from "store/features/engine/engineActions";
+import scriptEventDefsActions from "store/features/scriptEventDefs/scriptEventDefsActions";
 import errorActions from "store/features/error/errorActions";
 import consoleActions from "store/features/console/consoleActions";
 import { clampSidebarWidth } from "renderer/lib/window/sidebar";
@@ -238,6 +239,16 @@ API.events.watch.ui.removed.on(() => {
 API.events.watch.engineSchema.changed.on((_, fields) => {
   store.dispatch(engineActions.setEngineFields(fields));
 });
+
+// Script Event Defs
+
+API.events.watch.scriptEventDefsLookup.changed.on(
+  (_, scriptEventDefsLookup) => {
+    store.dispatch(
+      scriptEventDefsActions.setScriptEventDefsLookup(scriptEventDefsLookup)
+    );
+  }
+);
 
 // Menu
 
