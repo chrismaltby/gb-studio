@@ -7,7 +7,7 @@ import {
   paletteSelectors,
   spriteSheetSelectors,
 } from "store/features/entities/entitiesState";
-import { ActorDirection, SpriteSheet } from "shared/lib/entities/entitiesTypes";
+import { ActorDirection } from "shared/lib/entities/entitiesTypes";
 import { SelectMenu, selectMenuStyleProps } from "ui/form/Select";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import SpriteSheetCanvas from "components/world/SpriteSheetCanvas";
