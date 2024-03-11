@@ -47,16 +47,16 @@ export type ScriptEventParentType =
 
 export type ScriptEventArgs = Record<string, unknown>;
 
-export type ScriptEventNormalized = {
+export type ScriptEvent = {
   id: string;
   command: string;
   symbol?: string;
   args?: ScriptEventArgs;
-  children?: Dictionary<string[]>;
+  children?: Dictionary<ScriptEvent[]>;
 };
 
-export type ScriptEvent = Omit<ScriptEventNormalized, "children"> & {
-  children?: Dictionary<ScriptEvent[]>;
+export type ScriptEventNormalized = Omit<ScriptEvent, "children"> & {
+  children?: Dictionary<string[]>;
 };
 
 export type ScriptEventsRef = {
@@ -76,7 +76,7 @@ export const actorScriptKeys = [
 ] as const;
 export type ActorScriptKey = typeof actorScriptKeys[number];
 
-export type ActorNormalized = {
+export type Actor = {
   id: string;
   name: string;
   symbol: string;
@@ -93,23 +93,6 @@ export type ActorNormalized = {
   isPinned: boolean;
   persistent: boolean;
   collisionGroup: string;
-  script: string[];
-  startScript: string[];
-  updateScript: string[];
-  hit1Script: string[];
-  hit2Script: string[];
-  hit3Script: string[];
-};
-
-export type Actor = Omit<
-  ActorNormalized,
-  | "script"
-  | "startScript"
-  | "updateScript"
-  | "hit1Script"
-  | "hit2Script"
-  | "hit3Script"
-> & {
   script: ScriptEvent[];
   startScript: ScriptEvent[];
   updateScript: ScriptEvent[];
@@ -118,10 +101,27 @@ export type Actor = Omit<
   hit3Script: ScriptEvent[];
 };
 
+export type ActorNormalized = Omit<
+  Actor,
+  | "script"
+  | "startScript"
+  | "updateScript"
+  | "hit1Script"
+  | "hit2Script"
+  | "hit3Script"
+> & {
+  script: string[];
+  startScript: string[];
+  updateScript: string[];
+  hit1Script: string[];
+  hit2Script: string[];
+  hit3Script: string[];
+};
+
 export const triggerScriptKeys = ["script", "leaveScript"] as const;
 export type TriggerScriptKey = typeof triggerScriptKeys[number];
 
-export type TriggerNormalized = {
+export type Trigger = {
   id: string;
   name: string;
   symbol: string;
@@ -130,13 +130,13 @@ export type TriggerNormalized = {
   y: number;
   width: number;
   height: number;
-  script: string[];
-  leaveScript: string[];
-};
-
-export type Trigger = Omit<TriggerNormalized, "script" | "leaveScript"> & {
   script: ScriptEvent[];
   leaveScript: ScriptEvent[];
+};
+
+export type TriggerNormalized = Omit<Trigger, "script" | "leaveScript"> & {
+  script: string[];
+  leaveScript: string[];
 };
 
 export type Background = {
@@ -255,18 +255,18 @@ export type CustomEventActor = {
   name: string;
 };
 
-export type CustomEventNormalized = {
+export type CustomEvent = {
   id: string;
   name: string;
   symbol: string;
   description: string;
   variables: Dictionary<CustomEventVariable>;
   actors: Dictionary<CustomEventActor>;
-  script: string[];
+  script: ScriptEvent[];
 };
 
-export type CustomEvent = Omit<CustomEventNormalized, "script"> & {
-  script: ScriptEvent[];
+export type CustomEventNormalized = Omit<CustomEvent, "script"> & {
+  script: string[];
 };
 
 export type EngineFieldValue = {
@@ -357,7 +357,7 @@ export const sceneScriptKeys = [
 ] as const;
 export type SceneScriptKey = typeof sceneScriptKeys[number];
 
-export type SceneNormalized = {
+export type Scene = {
   id: string;
   type: string;
   name: string;
@@ -374,18 +374,18 @@ export type SceneNormalized = {
   collisions: number[];
   autoFadeSpeed: number | null;
   autoFadeEventCollapse?: boolean;
-  actors: string[];
-  triggers: string[];
   parallax?: SceneParallaxLayer[];
   playerSpriteSheetId?: string;
-  script: string[];
-  playerHit1Script: string[];
-  playerHit2Script: string[];
-  playerHit3Script: string[];
+  actors: Actor[];
+  triggers: Trigger[];
+  script: ScriptEvent[];
+  playerHit1Script: ScriptEvent[];
+  playerHit2Script: ScriptEvent[];
+  playerHit3Script: ScriptEvent[];
 };
 
-export type Scene = Omit<
-  SceneNormalized,
+export type SceneNormalized = Omit<
+  Scene,
   | "actors"
   | "triggers"
   | "script"
@@ -393,12 +393,12 @@ export type Scene = Omit<
   | "playerHit2Script"
   | "playerHit3Script"
 > & {
-  actors: Actor[];
-  triggers: Trigger[];
-  script: ScriptEvent[];
-  playerHit1Script: ScriptEvent[];
-  playerHit2Script: ScriptEvent[];
-  playerHit3Script: ScriptEvent[];
+  actors: string[];
+  triggers: string[];
+  script: string[];
+  playerHit1Script: string[];
+  playerHit2Script: string[];
+  playerHit3Script: string[];
 };
 
 export type ProjectEntitiesData = {
