@@ -10,7 +10,6 @@ import type { ScriptEventFieldSchema } from "shared/lib/entities/entitiesTypes";
 import { Dictionary } from "@reduxjs/toolkit";
 import { readFile } from "fs-extra";
 import trimLines from "shared/lib/helpers/trimlines";
-import events from "lib/events";
 
 // @TODO Don't import events here
 // Only needed to update global eventsLookup
@@ -53,11 +52,7 @@ export type ScriptEventHandler = ScriptEventDef & {
   fieldsLookup: Record<string, ScriptEventHandlerFieldSchema>;
 };
 
-export interface ScriptEventDefLookup {
-  byCommand: Dictionary<ScriptEventDef>;
-  engineFieldUpdateByField: Dictionary<ScriptEventDef>;
-  engineFieldStoreByField: Dictionary<ScriptEventDef>;
-}
+export type ScriptEventHandlersLookup = Dictionary<ScriptEventHandler>;
 
 const vm = new NodeVM({
   timeout: 1000,
@@ -118,16 +113,14 @@ const loadAllScriptEvents = async (projectRoot: string) => {
     `${projectRoot}/plugins/**/events/event*.js`
   );
 
-  const eventHandlers: Dictionary<ScriptEventDef> = {};
+  const eventHandlers: Dictionary<ScriptEventHandler> = {};
   for (const path of corePaths) {
     const handler = await loadScriptEventHandler(path);
     eventHandlers[handler.id] = handler;
-    events[handler.id] = handler;
   }
   for (const path of pluginPaths) {
     const handler = await loadScriptEventHandler(path);
     eventHandlers[handler.id] = handler;
-    events[handler.id] = handler;
   }
 
   return eventHandlers;

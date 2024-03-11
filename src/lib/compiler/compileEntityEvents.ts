@@ -6,12 +6,13 @@ import ScriptBuilder, {
   ScriptOutput,
 } from "./scriptBuilder";
 import { PrecompiledScene } from "./compileData2";
-import events from "lib/events";
+import { ScriptEventHandlersLookup } from "lib/project/loadScriptEvents";
 
 const STRING_NOT_FOUND = "STRING_NOT_FOUND";
 const VARIABLE_NOT_FOUND = "VARIABLE_NOT_FOUND";
 
 type CompileEntityEventsOptions = Partial<ScriptBuilderOptions> & {
+  scriptEventHandlersLookup: ScriptEventHandlersLookup;
   output: ScriptOutput;
   branch: boolean;
   loop: boolean;
@@ -63,8 +64,8 @@ const compileEntityEvents = (
     scriptBuilder: ScriptBuilder,
     subInput: ScriptEventDenormalized[] = []
   ) => {
-    // eslint-disable-next-line global-require
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const scriptEventHandlersLookup = options.scriptEventHandlersLookup;
+
     for (let i = 0; i < subInput.length; i++) {
       const command = subInput[i].command;
       if (subInput[i].args?.__comment) {
@@ -72,9 +73,9 @@ const compileEntityEvents = (
         // eslint-disable-next-line no-continue
         continue;
       }
-      if (events[command]) {
+      if (scriptEventHandlersLookup[command]) {
         try {
-          events[command]?.compile(
+          scriptEventHandlersLookup[command]?.compile(
             { ...subInput[i].args, ...subInput[i].children },
             {
               ...options,

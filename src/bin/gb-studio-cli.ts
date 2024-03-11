@@ -9,9 +9,9 @@ import { initPlugins } from "lib/plugins/plugins";
 import compileData from "lib/compiler/compileData";
 import ejectBuild from "lib/compiler/ejectBuild";
 import makeBuild from "lib/compiler/makeBuild";
-import { initEvents } from "lib/events";
 import initElectronL10N from "lib/lang/initElectronL10N";
 import { loadEngineFields } from "lib/project/engineFields";
+import loadAllScriptEvents from "lib/project/loadScriptEvents";
 
 const rmdir = promisify(rimraf);
 
@@ -31,7 +31,7 @@ const main = async (
   initElectronL10N();
 
   // Load events
-  await initEvents();
+  const scriptEventHandlersLookup = await loadAllScriptEvents(projectRoot);
 
   // Load plugins
   initPlugins(projectRoot);
@@ -59,6 +59,7 @@ const main = async (
   const compiledData = await compileData(project, {
     projectRoot,
     engineFields,
+    scriptEventHandlersLookup,
     tmpPath,
     progress,
     warnings,

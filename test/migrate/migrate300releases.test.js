@@ -7,13 +7,11 @@ import {
   migrateFrom310r3To311r1Event,
   migrateFrom320r1To320r2Event,
 } from "../../src/lib/project/migrateProject";
-import { initEvents } from "../../src/lib/events";
 import initElectronL10N from "../../src/lib/lang/initElectronL10N";
-import loadAllScriptEvents from "lib/project/loadScriptEvents";
+import { getTestScriptHandlersLookup } from "../getTestScriptHandlersLookup";
 
 beforeAll(async () => {
   await initElectronL10N();
-  await initEvents();
 });
 
 test("should not fail on empty project", () => {
@@ -246,18 +244,16 @@ test("should migrate custom script events to prefix values with V", async () => 
     },
     id: "event-1",
   };
-  const scriptEventDefs = await loadAllScriptEvents(
-    "../data/projects/BlankProject/BlankProject.gbsproj"
-  );
-  expect(migrateFrom300r3To310r1ScriptEvent(oldEvent, scriptEventDefs)).toEqual(
-    {
-      command: "EVENT_INC_VALUE",
-      args: {
-        variable: "V0",
-      },
-      id: "event-1",
-    }
-  );
+  const scriptEventHandlersLookup = await getTestScriptHandlersLookup();
+  expect(
+    migrateFrom300r3To310r1ScriptEvent(oldEvent, scriptEventHandlersLookup)
+  ).toEqual({
+    command: "EVENT_INC_VALUE",
+    args: {
+      variable: "V0",
+    },
+    id: "event-1",
+  });
 });
 
 test("should migrate custom script events to prefix values with V when using union types", async () => {
@@ -272,22 +268,20 @@ test("should migrate custom script events to prefix values with V when using uni
     },
     id: "event-1",
   };
-  const scriptEventDefs = await loadAllScriptEvents(
-    "../data/projects/BlankProject/BlankProject.gbsproj"
-  );
-  expect(migrateFrom300r3To310r1ScriptEvent(oldEvent, scriptEventDefs)).toEqual(
-    {
-      command: "EVENT_ACTOR_SET_DIRECTION",
-      args: {
-        actorId: "player",
-        direction: {
-          type: "variable",
-          value: "V3",
-        },
+  const scriptEventHandlersLookup = await getTestScriptHandlersLookup();
+  expect(
+    migrateFrom300r3To310r1ScriptEvent(oldEvent, scriptEventHandlersLookup)
+  ).toEqual({
+    command: "EVENT_ACTOR_SET_DIRECTION",
+    args: {
+      actorId: "player",
+      direction: {
+        type: "variable",
+        value: "V3",
       },
-      id: "event-1",
-    }
-  );
+    },
+    id: "event-1",
+  });
 });
 
 test("should migrate custom script calls to include missing values, convert to union type and prefix variable with V", () => {
@@ -387,9 +381,7 @@ test("should keep existing engine field store events variable value if set", () 
 });
 
 test("should migrate custom event definitions", async () => {
-  const scriptEventDefs = await loadAllScriptEvents(
-    "../data/projects/BlankProject/BlankProject.gbsproj"
-  );
+  const scriptEventHandlersLookup = await getTestScriptHandlersLookup();
   const oldProject = {
     scenes: [],
     customEvents: [
@@ -431,7 +423,9 @@ test("should migrate custom event definitions", async () => {
       },
     ],
   };
-  expect(migrateFrom300r3To310r1(oldProject, scriptEventDefs)).toEqual({
+  expect(
+    migrateFrom300r3To310r1(oldProject, scriptEventHandlersLookup)
+  ).toEqual({
     scenes: [],
     customEvents: [
       {

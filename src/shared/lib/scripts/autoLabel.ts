@@ -3,8 +3,8 @@ import {
   isPropertyField,
   isVariableField,
 } from "shared/lib/scripts/scriptDefHelpers";
-import type { ScriptEventHandlersLookup } from "lib/events";
 import l10n from "shared/lib/lang/l10n";
+import type { ScriptEventHandlersLookup } from "lib/project/loadScriptEvents";
 
 export const getAutoLabel = (
   command: string,

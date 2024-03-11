@@ -1,9 +1,6 @@
-import Path from "path";
 import { ActionCreators } from "redux-undo";
 import debounce from "lodash/debounce";
-import mapValues from "lodash/mapValues";
 import store from "store/configureStore";
-import plugins, { initPlugins } from "lib/plugins/plugins";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import settingsActions from "store/features/settings/settingsActions";
@@ -22,33 +19,11 @@ import { NavigationSection } from "store/features/navigation/navigationState";
 import { Background } from "shared/lib/entities/entitiesTypes";
 import { isZoomSection } from "store/features/editor/editorHelpers";
 
-type ReduxAction = (payload: string | number | boolean | object) => object;
-
-const actions = {
-  ...editorActions,
-  ...entitiesActions,
-  ...settingsActions,
-  ...navigationActions,
-  ...buildGameActions,
-  ...clipboardActions,
-} as Record<string, ReduxAction>;
-
-type VMActions = Record<string, ReduxAction>;
-
-const vmActions: VMActions = mapValues(actions, (_fn, key) => {
-  // Strip proxy object from VM2 output
-  return (payload: string | number | boolean | object) =>
-    actions[key](JSON.parse(JSON.stringify(payload)));
-});
-
 const urlParams = new URLSearchParams(window.location.search);
 const projectPath = urlParams.get("path");
 
 if (projectPath) {
-  const projectRoot = Path.dirname(projectPath);
   store.dispatch(projectActions.openProject(projectPath));
-
-  initPlugins(projectRoot);
   initKeyBindings();
 }
 
@@ -328,16 +303,6 @@ API.events.menu.exportProject.on((_, exportType) => {
 
 API.events.menu.pasteInPlace.on(() => {
   store.dispatch(clipboardActions.pasteClipboardEntityInPlace());
-});
-
-API.events.menu.pluginRun.on((_, pluginId) => {
-  const pluginsMenu = plugins.menu as unknown as Record<
-    string,
-    {
-      run?: (store: object, vmActions: VMActions) => void;
-    }
-  >;
-  pluginsMenu[pluginId]?.run?.(store, vmActions);
 });
 
 // Settings changed

@@ -54,7 +54,7 @@ import {
 } from "shared/lib/scripts/context";
 import { encodeString } from "shared/lib/helpers/fonts";
 import { mapScript } from "shared/lib/scripts/walk";
-import events from "lib/events";
+import { ScriptEventHandlersLookup } from "lib/project/loadScriptEvents";
 
 export type ScriptOutput = string[];
 
@@ -100,6 +100,7 @@ interface ScriptBuilderFunctionArgLookup {
 }
 
 export interface ScriptBuilderOptions {
+  scriptEventHandlersLookup: ScriptEventHandlersLookup;
   context: ScriptEditorContextType;
   scriptSymbolName: string;
   scene: PrecompiledScene;
@@ -494,7 +495,8 @@ class ScriptBuilder {
 
   constructor(
     output: ScriptOutput,
-    options: Partial<ScriptBuilderOptions> & Pick<ScriptBuilderOptions, "scene">
+    options: Partial<ScriptBuilderOptions> &
+      Pick<ScriptBuilderOptions, "scene" | "scriptEventHandlersLookup">
   ) {
     this.byteSize = 0;
     this.output = output;
@@ -3443,7 +3445,14 @@ extern void __mute_mask_${symbol};
       Object.keys(e.args).forEach((arg) => {
         const argValue = e.args[arg];
         // Update variable fields
-        if (isVariableField(e.command, arg, e.args, events)) {
+        if (
+          isVariableField(
+            e.command,
+            arg,
+            e.args,
+            this.options.scriptEventHandlersLookup
+          )
+        ) {
           if (
             isUnionVariableValue(argValue) &&
             argValue.value &&
@@ -3461,7 +3470,14 @@ extern void __mute_mask_${symbol};
           }
         }
         // Update property fields
-        if (isPropertyField(e.command, arg, e.args, events)) {
+        if (
+          isPropertyField(
+            e.command,
+            arg,
+            e.args,
+            this.options.scriptEventHandlersLookup
+          )
+        ) {
           const replacePropertyValueActor = (p: string) => {
             const actorValue = p.replace(/:.*/, "");
             if (actorValue === "player") {
@@ -3484,7 +3500,12 @@ extern void __mute_mask_${symbol};
         }
         // Update actor fields
         if (
-          isActorField(e.command, arg, e.args, events) &&
+          isActorField(
+            e.command,
+            arg,
+            e.args,
+            this.options.scriptEventHandlersLookup
+          ) &&
           typeof argValue === "string"
         ) {
           e.args[arg] = getArg("actor", argValue); // input[`$variable[${argValue}]$`];
@@ -5060,6 +5081,7 @@ extern void __mute_mask_${symbol};
       {
         ...this.options,
         ...options,
+        scriptEventHandlersLookup: this.options.scriptEventHandlersLookup,
         output: [],
         loop: false,
         lock: false,

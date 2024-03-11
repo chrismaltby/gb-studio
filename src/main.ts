@@ -77,7 +77,6 @@ import migrateWarning from "lib/project/migrateWarning";
 import confirmReplaceCustomEvent from "lib/electron/dialog/confirmReplaceCustomEvent";
 import l10n, { L10NKey, getL10NData } from "shared/lib/lang/l10n";
 import initElectronL10N, { locales } from "lib/lang/initElectronL10N";
-import events, { initEvents } from "lib/events";
 import watchProject from "lib/project/watchProject";
 import { loadBackgroundData } from "lib/project/loadBackgroundData";
 import { loadSpriteData } from "lib/project/loadSpriteData";
@@ -89,6 +88,7 @@ import { loadEmoteData } from "lib/project/loadEmoteData";
 import parseAssetPath from "shared/lib/assets/parseAssetPath";
 import { loadEngineFields } from "lib/project/engineFields";
 import { getAutoLabel } from "shared/lib/scripts/autoLabel";
+import loadAllScriptEvents from "lib/project/loadScriptEvents";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -547,7 +547,6 @@ const createMusic = async (sfx?: string, initialMessage?: MusicDataPacket) => {
 // Some APIs can only be used after this event occurs.
 app.on("ready", async () => {
   initElectronL10N();
-  await initEvents();
 
   menu.buildMenu([]);
 
@@ -915,6 +914,7 @@ ipcMain.handle(
     const buildStartTime = Date.now();
     const projectRoot = Path.dirname(projectPath);
     const outputRoot = Path.normalize(`${getTmp()}/${buildUUID}`);
+    const scriptEventHandlersLookup = await loadAllScriptEvents(projectRoot); // @TODO DONT NEED TO LOAD THIS EVERY TIME - SET ONCE ON PROJECT LOAD - UPDATE FROM WATCHING PLUGINS - RESET WHEN LOADING NEW PROJECT
     const colorEnabled = project.settings.customColorsEnabled;
     const sgbEnabled = project.settings.sgbEnabled;
     initPlugins(projectRoot);
@@ -924,6 +924,7 @@ ipcMain.handle(
         ...options,
         projectRoot,
         outputRoot,
+        scriptEventHandlersLookup,
         tmpPath: getTmp(),
         progress: (message) => {
           if (cancelBuild) {
@@ -1033,6 +1034,7 @@ ipcMain.handle(
       const projectRoot = Path.dirname(projectPath);
       const outputRoot = Path.normalize(`${getTmp()}/${buildUUID}`);
       initPlugins(projectRoot);
+      const scriptEventHandlersLookup = await loadAllScriptEvents(projectRoot); // @TODO DONT NEED TO LOAD THIS EVERY TIME - SET ONCE ON PROJECT LOAD - UPDATE FROM WATCHING PLUGINS - RESET WHEN LOADING NEW PROJECT
 
       const progress = (message: string) => {
         if (
@@ -1052,6 +1054,7 @@ ipcMain.handle(
       const compiledData = await compileData(project, {
         projectRoot,
         engineFields,
+        scriptEventHandlersLookup,
         tmpPath,
         progress,
         warnings,
@@ -1266,7 +1269,9 @@ ipcMain.handle(
 ipcMain.handle(
   "script:get-auto-label",
   async (_, command: string, args: Record<string, unknown>) => {
-    return getAutoLabel(command, args, events);
+    const projectRoot = Path.dirname(projectPath);
+    const scriptEventHandlersLookup = await loadAllScriptEvents(projectRoot); // @TODO DONT NEED TO LOAD THIS EVERY TIME - SET ONCE ON PROJECT LOAD - UPDATE FROM WATCHING PLUGINS - RESET WHEN LOADING NEW PROJECT
+    return getAutoLabel(command, args, scriptEventHandlersLookup);
   }
 );
 
@@ -1279,7 +1284,9 @@ ipcMain.handle(
     args: Record<string, unknown>,
     prevArgs: Record<string, unknown>
   ) => {
-    const event = events[command];
+    const projectRoot = Path.dirname(projectPath);
+    const scriptEventHandlersLookup = await loadAllScriptEvents(projectRoot); // @TODO DONT NEED TO LOAD THIS EVERY TIME - SET ONCE ON PROJECT LOAD - UPDATE FROM WATCHING PLUGINS - RESET WHEN LOADING NEW PROJECT
+    const event = scriptEventHandlersLookup[command];
     if (!event) {
       return args;
     }

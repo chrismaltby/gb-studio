@@ -6,6 +6,7 @@ import { binjgbRoot } from "consts";
 import copy from "lib/helpers/fsCopy";
 import type { ProjectData } from "store/features/project/projectActions";
 import type { EngineFieldSchema } from "store/features/engine/engineState";
+import { ScriptEventHandlersLookup } from "lib/project/loadScriptEvents";
 
 type BuildOptions = {
   buildType: "rom" | "web" | "pocket";
@@ -13,6 +14,7 @@ type BuildOptions = {
   tmpPath: string;
   profile: boolean;
   engineFields: EngineFieldSchema[];
+  scriptEventHandlersLookup: ScriptEventHandlersLookup;
   outputRoot: string;
   progress: (msg: string) => void;
   warnings: (msg: string) => void;
@@ -26,6 +28,7 @@ const buildProject = async (
     tmpPath = "/tmp",
     profile = false,
     engineFields = [],
+    scriptEventHandlersLookup,
     outputRoot = "/tmp/testing",
     progress = (_msg: string) => {},
     warnings = (_msg: string) => {},
@@ -34,6 +37,7 @@ const buildProject = async (
   const compiledData = await compile(data, {
     projectRoot,
     engineFields,
+    scriptEventHandlersLookup,
     tmpPath,
     progress,
     warnings,
