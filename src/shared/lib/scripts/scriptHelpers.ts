@@ -2,29 +2,24 @@
 
 import { Dictionary } from "@reduxjs/toolkit";
 import {
+  ScriptEventNormalized,
   ScriptEvent,
-  ScriptEventDenormalized,
 } from "shared/lib/entities/entitiesTypes";
 import { walkNormalizedScript } from "shared/lib/scripts/walk";
 import isEqual from "lodash/isEqual";
 
-// Patching
-// Editing
-// Testing is empty
-// Equality
-
-export const isEmptyScript = (script: ScriptEventDenormalized[]) => {
+export const isEmptyScript = (script: ScriptEvent[]) => {
   if (script.length === 0) {
     return true;
   }
   return script.every((scriptEvent) => scriptEvent?.args?.__comment);
 };
 
-export const isNormalisedScriptEqual = (
+export const isNormalizedScriptEqual = (
   idsA: string[] = [],
-  lookupA: Dictionary<ScriptEvent>,
+  lookupA: Dictionary<ScriptEventNormalized>,
   idsB: string[] = [],
-  lookupB: Dictionary<ScriptEvent>
+  lookupB: Dictionary<ScriptEventNormalized>
 ) => {
   const scriptAEvents: { args?: Record<string, unknown>; command: string }[] =
     [];

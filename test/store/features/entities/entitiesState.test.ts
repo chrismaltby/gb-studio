@@ -13,13 +13,13 @@ import projectActions, {
 } from "../../../../src/store/features/project/projectActions";
 import {
   dummyProjectData,
+  dummySceneNormalized,
   dummyScene,
-  dummySceneDenormalized,
   dummyBackground,
   dummySpriteSheet,
   dummyMusic,
-  dummyActor,
-  dummyTrigger,
+  dummyActorNormalized,
+  dummyTriggerNormalized,
   dummyPalette,
 } from "../../../dummydata";
 import { DMG_PALETTE } from "../../../../src/consts";
@@ -34,7 +34,7 @@ test("Should fix scene widths if backgrounds has been removed since save", () =>
     ...dummyProjectData,
     scenes: [
       {
-        ...dummySceneDenormalized,
+        ...dummyScene,
         id: "scene1",
         backgroundId: "missingbg",
         width: 20,
@@ -68,7 +68,7 @@ test("Should fix scene widths if backgrounds have changed dimensions since save"
     ...dummyProjectData,
     scenes: [
       {
-        ...dummySceneDenormalized,
+        ...dummyScene,
         id: "scene1",
         backgroundId: "bg1",
         width: 20,
@@ -110,7 +110,7 @@ test("Should keep scene widths if backgrounds have NOT changed dimensions since 
     ...dummyProjectData,
     scenes: [
       {
-        ...dummySceneDenormalized,
+        ...dummyScene,
         id: "scene1",
         backgroundId: "bg1",
         width: 20,
@@ -149,7 +149,7 @@ test("Should fix scene widths if background has changed while project is open", 
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           backgroundId: "bg1",
           width: 20,
@@ -415,7 +415,7 @@ test("Should be able to move a scene", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           actors: [],
           triggers: [],
@@ -442,7 +442,7 @@ test("Should update scene dimensions to match new background", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           backgroundId: "bg1",
           width: 20,
@@ -491,7 +491,7 @@ test("Should discard collisions if switched to use different background of diffe
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           backgroundId: "bg1",
           actors: [],
@@ -538,7 +538,7 @@ test("Should be able to remove a scene", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           actors: [],
           triggers: [],
@@ -563,7 +563,7 @@ test("Should be able to flood fill collisions", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           backgroundId: "bg1",
           width: 10,
@@ -612,7 +612,7 @@ test("Should be able to paint collisions", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           backgroundId: "bg1",
           width: 10,
@@ -666,7 +666,7 @@ test("Should be able to paint collision line", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           backgroundId: "bg1",
           width: 10,
@@ -764,7 +764,7 @@ test("Should be able to add an actor to a scene", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           width: 10,
           height: 5,
@@ -806,7 +806,7 @@ test("Should be able to add an actor to a scene with default values and variable
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           width: 10,
           height: 5,
@@ -864,7 +864,7 @@ test("Should be able to move an actor with a scene", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           width: 10,
           height: 5,
@@ -877,7 +877,7 @@ test("Should be able to move an actor with a scene", () => {
     actors: {
       entities: {
         actor1: {
-          ...dummyActor,
+          ...dummyActorNormalized,
           id: "actor1",
           x: 5,
           y: 2,
@@ -907,7 +907,7 @@ test("Should be able to move an actor between scenes", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           width: 10,
           height: 5,
@@ -915,7 +915,7 @@ test("Should be able to move an actor between scenes", () => {
           triggers: [],
         },
         scene2: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene2",
           width: 10,
           height: 5,
@@ -928,7 +928,7 @@ test("Should be able to move an actor between scenes", () => {
     actors: {
       entities: {
         actor1: {
-          ...dummyActor,
+          ...dummyActorNormalized,
           id: "actor1",
           x: 5,
           y: 2,
@@ -959,7 +959,7 @@ test("Should be able to add a trigger to a scene", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           width: 10,
           height: 5,
@@ -998,7 +998,7 @@ test("Should be able to add a trigger to a scene with defaults", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           width: 10,
           height: 5,
@@ -1036,7 +1036,7 @@ test("Should be able to move a trigger with a scene", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           width: 10,
           height: 5,
@@ -1049,7 +1049,7 @@ test("Should be able to move a trigger with a scene", () => {
     triggers: {
       entities: {
         trigger1: {
-          ...dummyTrigger,
+          ...dummyTriggerNormalized,
           id: "trigger1",
           x: 5,
           y: 2,
@@ -1079,7 +1079,7 @@ test("Should be able to move a trigger between scenes", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           width: 10,
           height: 5,
@@ -1087,7 +1087,7 @@ test("Should be able to move a trigger between scenes", () => {
           triggers: ["trigger1"],
         },
         scene2: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene2",
           width: 10,
           height: 5,
@@ -1100,7 +1100,7 @@ test("Should be able to move a trigger between scenes", () => {
     triggers: {
       entities: {
         trigger1: {
-          ...dummyTrigger,
+          ...dummyTriggerNormalized,
           id: "trigger1",
           x: 5,
           y: 2,
@@ -1131,7 +1131,7 @@ test("Should be able to remove an actor by id", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           actors: ["actor1"],
           triggers: [],
@@ -1142,7 +1142,7 @@ test("Should be able to remove an actor by id", () => {
     actors: {
       entities: {
         actor1: {
-          ...dummyActor,
+          ...dummyActorNormalized,
           id: "actor1",
         },
       },
@@ -1167,7 +1167,7 @@ test("Should be able to remove an actor at location", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           actors: ["actor1"],
           triggers: [],
@@ -1178,7 +1178,7 @@ test("Should be able to remove an actor at location", () => {
     actors: {
       entities: {
         actor1: {
-          ...dummyActor,
+          ...dummyActorNormalized,
           id: "actor1",
           x: 5,
           y: 6,
@@ -1206,7 +1206,7 @@ test("Should not remove actor outside of delete location", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           actors: ["actor1"],
           triggers: [],
@@ -1217,7 +1217,7 @@ test("Should not remove actor outside of delete location", () => {
     actors: {
       entities: {
         actor1: {
-          ...dummyActor,
+          ...dummyActorNormalized,
           id: "actor1",
           x: 10,
           y: 6,
@@ -1245,7 +1245,7 @@ test("Should be able to remove a trigger by id", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           actors: [],
           triggers: ["trigger1"],
@@ -1256,7 +1256,7 @@ test("Should be able to remove a trigger by id", () => {
     triggers: {
       entities: {
         trigger1: {
-          ...dummyTrigger,
+          ...dummyTriggerNormalized,
           id: "trigger1",
         },
       },
@@ -1281,7 +1281,7 @@ test("Should be able to remove a trigger at location", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           actors: [],
           triggers: ["trigger1"],
@@ -1292,7 +1292,7 @@ test("Should be able to remove a trigger at location", () => {
     triggers: {
       entities: {
         trigger1: {
-          ...dummyTrigger,
+          ...dummyTriggerNormalized,
           id: "trigger1",
           x: 2,
           y: 3,
@@ -1322,7 +1322,7 @@ test("Should not remove trigger outside of delete location", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           actors: [],
           triggers: ["trigger1"],
@@ -1333,7 +1333,7 @@ test("Should not remove trigger outside of delete location", () => {
     triggers: {
       entities: {
         trigger1: {
-          ...dummyTrigger,
+          ...dummyTriggerNormalized,
           id: "trigger1",
           x: 2,
           y: 3,

@@ -20,7 +20,10 @@ import {
 } from "ui/form/FormLayout";
 import { EditableText } from "ui/form/EditableText";
 import { RootState } from "store/configureStore";
-import { Scene, ScriptEvent } from "shared/lib/entities/entitiesTypes";
+import {
+  SceneNormalized,
+  ScriptEventNormalized,
+} from "shared/lib/entities/entitiesTypes";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { NoteField } from "ui/form/NoteField";
@@ -60,8 +63,8 @@ interface SceneEditorProps {
 }
 
 interface ScriptHandler {
-  value: ScriptEvent[];
-  onChange: (newValue: ScriptEvent[]) => void;
+  value: ScriptEventNormalized[];
+  onChange: (newValue: ScriptEventNormalized[]) => void;
 }
 
 interface ScriptHandlers {
@@ -223,8 +226,8 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
   };
 
   const onChangeField =
-    <T extends keyof Scene>(key: T) =>
-    (editValue: Scene[T]) => {
+    <T extends keyof SceneNormalized>(key: T) =>
+    (editValue: SceneNormalized[T]) => {
       dispatch(
         entitiesActions.editScene({
           sceneId: id,
@@ -236,7 +239,7 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
     };
 
   const onChangeFieldInput =
-    (key: keyof Scene) =>
+    (key: keyof SceneNormalized) =>
     (
       e:
         | React.ChangeEvent<HTMLInputElement>

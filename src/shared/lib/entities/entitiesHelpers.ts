@@ -8,16 +8,16 @@ import {
   Metasprite,
   MetaspriteTile,
   SpriteAnimation,
-  Scene,
-  Actor,
-  Trigger,
+  SceneNormalized,
+  ActorNormalized,
+  TriggerNormalized,
   Background,
   Palette,
   Music,
   Font,
   Avatar,
   Emote,
-  CustomEvent,
+  CustomEventNormalized,
   Variable,
   EngineFieldValue,
   UnionValue,
@@ -27,7 +27,7 @@ import {
   UnionVariableValue,
   SpriteState,
   SpriteSheetData,
-  ScriptEvent,
+  ScriptEventNormalized,
   Sound,
 } from "shared/lib/entities/entitiesTypes";
 import {
@@ -42,13 +42,13 @@ import { COLLISION_SLOPE_VALUES } from "consts";
 import { Asset } from "shared/lib/helpers/assets";
 import l10n from "shared/lib/lang/l10n";
 import isEqual from "lodash/isEqual";
-import { isNormalisedScriptEqual } from "shared/lib/scripts/scriptHelpers";
+import { isNormalizedScriptEqual } from "shared/lib/scripts/scriptHelpers";
 
-export interface NormalisedEntities {
-  scenes: Record<EntityId, Scene>;
-  actors: Record<EntityId, Actor>;
-  triggers: Record<EntityId, Trigger>;
-  scriptEvents: Record<EntityId, ScriptEvent>;
+export interface NormalizedEntities {
+  scenes: Record<EntityId, SceneNormalized>;
+  actors: Record<EntityId, ActorNormalized>;
+  triggers: Record<EntityId, TriggerNormalized>;
+  scriptEvents: Record<EntityId, ScriptEventNormalized>;
   backgrounds: Record<EntityId, Background>;
   spriteSheets: Record<EntityId, SpriteSheet>;
   metasprites: Record<EntityId, Metasprite>;
@@ -61,12 +61,12 @@ export interface NormalisedEntities {
   fonts: Record<EntityId, Font>;
   avatars: Record<EntityId, Avatar>;
   emotes: Record<EntityId, Emote>;
-  customEvents: Record<EntityId, CustomEvent>;
+  customEvents: Record<EntityId, CustomEventNormalized>;
   variables: Record<EntityId, Variable>;
   engineFieldValues: Record<EntityId, EngineFieldValue>;
 }
 
-export interface NormalisedResult {
+export interface NormalizedResult {
   scenes: EntityId[];
   backgrounds: EntityId[];
   spriteSheets: EntityId[];
@@ -81,9 +81,9 @@ export interface NormalisedResult {
   engineFieldValues: EntityId[];
 }
 
-export type NormalisedData = NormalizedSchema<
-  NormalisedEntities,
-  NormalisedResult
+export type NormalizedData = NormalizedSchema<
+  NormalizedEntities,
+  NormalizedResult
 >;
 
 const inodeToAssetCache: Dictionary<Asset> = {};
@@ -157,8 +157,8 @@ const projectSchema = {
 
 export const normalizeEntities = (
   projectData: ProjectEntitiesData
-): NormalisedData => {
-  return normalize<NormalisedEntities, NormalisedResult>(
+): NormalizedData => {
+  return normalize<NormalizedEntities, NormalizedResult>(
     projectData,
     projectSchema
   );
@@ -167,7 +167,7 @@ export const normalizeEntities = (
 export const denormalizeEntities = (
   state: EntitiesState
 ): ProjectEntitiesData => {
-  const input: NormalisedResult = {
+  const input: NormalizedResult = {
     scenes: state.scenes.ids,
     backgrounds: state.backgrounds.ids,
     spriteSheets: state.spriteSheets.ids,
@@ -181,11 +181,14 @@ export const denormalizeEntities = (
     variables: state.variables.ids,
     engineFieldValues: state.engineFieldValues.ids,
   };
-  const entities: NormalisedEntities = {
-    actors: state.actors.entities as Record<EntityId, Actor>,
-    triggers: state.triggers.entities as Record<EntityId, Trigger>,
-    scenes: state.scenes.entities as Record<EntityId, Scene>,
-    scriptEvents: state.scriptEvents.entities as Record<EntityId, ScriptEvent>,
+  const entities: NormalizedEntities = {
+    actors: state.actors.entities as Record<EntityId, ActorNormalized>,
+    triggers: state.triggers.entities as Record<EntityId, TriggerNormalized>,
+    scenes: state.scenes.entities as Record<EntityId, SceneNormalized>,
+    scriptEvents: state.scriptEvents.entities as Record<
+      EntityId,
+      ScriptEventNormalized
+    >,
     backgrounds: state.backgrounds.entities as Record<EntityId, Background>,
     spriteSheets: state.spriteSheets.entities as Record<EntityId, SpriteSheet>,
     metasprites: state.metasprites.entities as Record<EntityId, Metasprite>,
@@ -199,7 +202,10 @@ export const denormalizeEntities = (
     >,
     spriteStates: state.spriteStates.entities as Record<EntityId, SpriteState>,
     palettes: state.palettes.entities as Record<EntityId, Palette>,
-    customEvents: state.customEvents.entities as Record<EntityId, CustomEvent>,
+    customEvents: state.customEvents.entities as Record<
+      EntityId,
+      CustomEventNormalized
+    >,
     music: state.music.entities as Record<EntityId, Music>,
     sounds: state.sounds.entities as Record<EntityId, Sound>,
     fonts: state.fonts.entities as Record<EntityId, Font>,
@@ -328,10 +334,10 @@ export const isVariableCustomEvent = (variable: string) => {
 };
 
 export const isCustomEventEqual = (
-  customEventA: CustomEvent,
-  lookupA: Dictionary<ScriptEvent>,
-  customEventB: CustomEvent,
-  lookupB: Dictionary<ScriptEvent>
+  customEventA: CustomEventNormalized,
+  lookupA: Dictionary<ScriptEventNormalized>,
+  customEventB: CustomEventNormalized,
+  lookupB: Dictionary<ScriptEventNormalized>
 ) => {
   const compareA = {
     ...customEventA,
@@ -346,7 +352,7 @@ export const isCustomEventEqual = (
   if (!isEqual(compareA, compareB)) {
     return false;
   }
-  return isNormalisedScriptEqual(
+  return isNormalizedScriptEqual(
     customEventA.script,
     lookupA,
     customEventB.script,
@@ -354,15 +360,18 @@ export const isCustomEventEqual = (
   );
 };
 
-export const actorName = (actor: Actor, actorIndex: number) => {
+export const actorName = (actor: ActorNormalized, actorIndex: number) => {
   return actor.name || defaultLocalisedActorName(actorIndex);
 };
 
-export const triggerName = (trigger: Trigger, triggerIndex: number) => {
+export const triggerName = (
+  trigger: TriggerNormalized,
+  triggerIndex: number
+) => {
   return trigger.name || defaultLocalisedTriggerName(triggerIndex);
 };
 
-export const sceneName = (scene: Scene, sceneIndex: number) => {
+export const sceneName = (scene: SceneNormalized, sceneIndex: number) => {
   return scene.name || defaultLocalisedSceneName(sceneIndex);
 };
 
@@ -374,7 +383,7 @@ export const defaultLocalisedSceneName = (sceneIndex: number) =>
   `${l10n("SCENE")} ${sceneIndex + 1}`;
 
 export const customEventName = (
-  customEvent: CustomEvent,
+  customEvent: CustomEventNormalized,
   customEventIndex: number
 ) => {
   return customEvent.name || `${l10n("CUSTOM_EVENT")} ${customEventIndex + 1}`;

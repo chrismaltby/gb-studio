@@ -15,14 +15,14 @@ import {
   sceneSelectors,
 } from "store/features/entities/entitiesState";
 import {
-  Actor,
-  CustomEvent,
+  ActorNormalized,
+  CustomEventNormalized,
   Metasprite,
   MetaspriteTile,
-  Scene,
-  ScriptEvent,
+  SceneNormalized,
+  ScriptEventNormalized,
   SpriteAnimation,
-  Trigger,
+  TriggerNormalized,
   Variable,
 } from "shared/lib/entities/entitiesTypes";
 import actions from "./clipboardActions";
@@ -83,10 +83,10 @@ const generateLocalVariableInsertActions = (
 };
 
 const generateCustomEventInsertActions = async (
-  customEvent: CustomEvent,
-  scriptEventsLookup: Dictionary<ScriptEvent>,
-  existingCustomEvents: CustomEvent[],
-  existingScriptEventsLookup: Dictionary<ScriptEvent>
+  customEvent: CustomEventNormalized,
+  scriptEventsLookup: Dictionary<ScriptEventNormalized>,
+  existingCustomEvents: CustomEventNormalized[],
+  existingScriptEventsLookup: Dictionary<ScriptEventNormalized>
 ): Promise<AnyAction[]> => {
   const actions: AnyAction[] = [];
 
@@ -146,8 +146,8 @@ const generateCustomEventInsertActions = async (
 };
 
 const generateActorInsertActions = (
-  actor: Actor,
-  scriptEventsLookup: Dictionary<ScriptEvent>,
+  actor: ActorNormalized,
+  scriptEventsLookup: Dictionary<ScriptEventNormalized>,
   variables: Variable[],
   sceneId: string,
   x: number,
@@ -184,8 +184,8 @@ const generateActorInsertActions = (
 };
 
 const generateTriggerInsertActions = (
-  trigger: Trigger,
-  scriptEventsLookup: Dictionary<ScriptEvent>,
+  trigger: TriggerNormalized,
+  scriptEventsLookup: Dictionary<ScriptEventNormalized>,
   variables: Variable[],
   sceneId: string,
   x: number,
@@ -224,10 +224,10 @@ const generateTriggerInsertActions = (
 };
 
 const generateSceneInsertActions = (
-  scene: Scene,
-  actors: Actor[],
-  triggers: Trigger[],
-  scriptEventsLookup: Dictionary<ScriptEvent>,
+  scene: SceneNormalized,
+  actors: ActorNormalized[],
+  triggers: TriggerNormalized[],
+  scriptEventsLookup: Dictionary<ScriptEventNormalized>,
   scriptEventDefs: ScriptEventDefs,
   variables: Variable[],
   x: number,
@@ -309,7 +309,7 @@ const generateSceneInsertActions = (
       ...action,
       payload: {
         ...action.payload,
-        data: action.payload.data.map((eventData: ScriptEvent) => {
+        data: action.payload.data.map((eventData: ScriptEventNormalized) => {
           return {
             ...eventData,
             args: patchEventArgs(
@@ -428,10 +428,10 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
       const state = store.getState();
       const scriptEventsLookup = scriptEventSelectors.selectEntities(state);
       const customEventsLookup = customEventSelectors.selectEntities(state);
-      const scriptEvents: ScriptEvent[] = [];
-      const customEvents: CustomEvent[] = [];
+      const scriptEvents: ScriptEventNormalized[] = [];
+      const customEvents: CustomEventNormalized[] = [];
       const customEventsSeen: Record<string, boolean> = {};
-      const addEvent = (scriptEvent: ScriptEvent) => {
+      const addEvent = (scriptEvent: ScriptEventNormalized) => {
         scriptEvents.push(scriptEvent);
         if (
           scriptEvent.command === EVENT_CALL_CUSTOM_EVENT &&
@@ -473,9 +473,9 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
       const triggersLookup = triggerSelectors.selectEntities(state);
       const scriptEventsLookup = scriptEventSelectors.selectEntities(state);
       const customEventsLookup = customEventSelectors.selectEntities(state);
-      const triggers: Trigger[] = [];
-      const scriptEvents: ScriptEvent[] = [];
-      const customEvents: CustomEvent[] = [];
+      const triggers: TriggerNormalized[] = [];
+      const scriptEvents: ScriptEventNormalized[] = [];
+      const customEvents: CustomEventNormalized[] = [];
       const customEventsSeen: Record<string, boolean> = {};
       const allVariables = variableSelectors.selectAll(state);
       const variables = allVariables.filter((variable) => {
@@ -484,7 +484,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         );
       });
 
-      const addEvent = (scriptEvent: ScriptEvent) => {
+      const addEvent = (scriptEvent: ScriptEventNormalized) => {
         scriptEvents.push(scriptEvent);
         if (
           scriptEvent.command === EVENT_CALL_CUSTOM_EVENT &&
@@ -534,16 +534,16 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
       const actorsLookup = actorSelectors.selectEntities(state);
       const scriptEventsLookup = scriptEventSelectors.selectEntities(state);
       const customEventsLookup = customEventSelectors.selectEntities(state);
-      const actors: Actor[] = [];
-      const scriptEvents: ScriptEvent[] = [];
-      const customEvents: CustomEvent[] = [];
+      const actors: ActorNormalized[] = [];
+      const scriptEvents: ScriptEventNormalized[] = [];
+      const customEvents: CustomEventNormalized[] = [];
       const customEventsSeen: Record<string, boolean> = {};
       const allVariables = variableSelectors.selectAll(state);
       const variables = allVariables.filter((variable) => {
         return action.payload.actorIds.find((id) => variable.id.startsWith(id));
       });
 
-      const addEvent = (scriptEvent: ScriptEvent) => {
+      const addEvent = (scriptEvent: ScriptEventNormalized) => {
         scriptEvents.push(scriptEvent);
         if (
           scriptEvent.command === EVENT_CALL_CUSTOM_EVENT &&
@@ -595,14 +595,14 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
       const triggersLookup = triggerSelectors.selectEntities(state);
       const scriptEventsLookup = scriptEventSelectors.selectEntities(state);
       const customEventsLookup = customEventSelectors.selectEntities(state);
-      const scenes: Scene[] = [];
-      const actors: Actor[] = [];
-      const triggers: Trigger[] = [];
-      const customEvents: CustomEvent[] = [];
+      const scenes: SceneNormalized[] = [];
+      const actors: ActorNormalized[] = [];
+      const triggers: TriggerNormalized[] = [];
+      const customEvents: CustomEventNormalized[] = [];
       const customEventsSeen: Record<string, boolean> = {};
-      const scriptEvents: ScriptEvent[] = [];
+      const scriptEvents: ScriptEventNormalized[] = [];
 
-      const addEvent = (scriptEvent: ScriptEvent) => {
+      const addEvent = (scriptEvent: ScriptEventNormalized) => {
         scriptEvents.push(scriptEvent);
         if (
           scriptEvent.command === EVENT_CALL_CUSTOM_EVENT &&

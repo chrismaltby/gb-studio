@@ -49,16 +49,16 @@ import { Brush, SlopeIncline } from "store/features/editor/editorState";
 import projectActions from "store/features/project/projectActions";
 import {
   EntitiesState,
-  Actor,
-  Trigger,
-  Scene,
+  ActorNormalized,
+  TriggerNormalized,
+  SceneNormalized,
   Background,
   SpriteSheet,
   Palette,
   Music,
   Variable,
-  CustomEvent,
-  ScriptEvent,
+  CustomEventNormalized,
+  ScriptEventNormalized,
   CustomEventVariable,
   CustomEventActor,
   ProjectEntitiesData,
@@ -100,10 +100,10 @@ const MIN_SCENE_Y = 30;
 const MIN_SCENE_WIDTH = 20;
 const MIN_SCENE_HEIGHT = 18;
 
-const scriptEventsAdapter = createEntityAdapter<ScriptEvent>();
-const actorsAdapter = createEntityAdapter<Actor>();
-const triggersAdapter = createEntityAdapter<Trigger>();
-const scenesAdapter = createEntityAdapter<Scene>();
+const scriptEventsAdapter = createEntityAdapter<ScriptEventNormalized>();
+const actorsAdapter = createEntityAdapter<ActorNormalized>();
+const triggersAdapter = createEntityAdapter<TriggerNormalized>();
+const scenesAdapter = createEntityAdapter<SceneNormalized>();
 const backgroundsAdapter = createEntityAdapter<Background>({
   sortComparer: sortByFilename,
 });
@@ -115,7 +115,7 @@ const metaspriteTilesAdapter = createEntityAdapter<MetaspriteTile>();
 const spriteAnimationsAdapter = createEntityAdapter<SpriteAnimation>();
 const spriteStatesAdapter = createEntityAdapter<SpriteState>();
 const palettesAdapter = createEntityAdapter<Palette>();
-const customEventsAdapter = createEntityAdapter<CustomEvent>();
+const customEventsAdapter = createEntityAdapter<CustomEventNormalized>();
 const musicAdapter = createEntityAdapter<Music>({
   sortComparer: sortByFilename,
 });
@@ -636,7 +636,7 @@ const addScene: CaseReducer<
     sceneId: string;
     x: number;
     y: number;
-    defaults?: Partial<Scene>;
+    defaults?: Partial<SceneNormalized>;
     variables?: Variable[];
   }>
 > = (state, action) => {
@@ -644,7 +644,7 @@ const addScene: CaseReducer<
   const backgroundId = String(localBackgroundSelectors.selectIds(state)[0]);
   const background = localBackgroundSelectors.selectById(state, backgroundId);
 
-  const newScene: Scene = {
+  const newScene: SceneNormalized = {
     name: defaultLocalisedSceneName(scenesTotal),
     backgroundId,
     width: Math.max(MIN_SCENE_WIDTH, background?.width || 0),
@@ -685,7 +685,7 @@ const moveScene: CaseReducer<
 
 const editScene: CaseReducer<
   EntitiesState,
-  PayloadAction<{ sceneId: string; changes: Partial<Scene> }>
+  PayloadAction<{ sceneId: string; changes: Partial<SceneNormalized> }>
 > = (state, action) => {
   const scene = state.scenes.entities[action.payload.sceneId];
   const patch = { ...action.payload.changes };
@@ -803,7 +803,7 @@ const addActor: CaseReducer<
     sceneId: string;
     x: number;
     y: number;
-    defaults?: Partial<Actor>;
+    defaults?: Partial<ActorNormalized>;
     variables?: Variable[];
   }>
 > = (state, action) => {
@@ -831,7 +831,7 @@ const addActor: CaseReducer<
     variablesAdapter.upsertMany(state.variables, newVariables);
   }
 
-  const newActor: Actor = {
+  const newActor: ActorNormalized = {
     name: "",
     frame: 0,
     animate: false,
@@ -863,7 +863,7 @@ const addActor: CaseReducer<
 
 const editActor: CaseReducer<
   EntitiesState,
-  PayloadAction<{ actorId: string; changes: Partial<Actor> }>
+  PayloadAction<{ actorId: string; changes: Partial<ActorNormalized> }>
 > = (state, action) => {
   const actor = localActorSelectors.selectById(state, action.payload.actorId);
   const patch = { ...action.payload.changes };
@@ -1024,7 +1024,7 @@ const addTrigger: CaseReducer<
     y: number;
     width: number;
     height: number;
-    defaults?: Partial<Trigger>;
+    defaults?: Partial<TriggerNormalized>;
     // variables?: Variable[];
   }>
 > = (state, action) => {
@@ -1035,7 +1035,7 @@ const addTrigger: CaseReducer<
   const width = Math.min(action.payload.width, scene.width);
   const height = Math.min(action.payload.height, scene.height);
 
-  const newTrigger: Trigger = {
+  const newTrigger: TriggerNormalized = {
     name: "",
     ...(action.payload.defaults || {}),
     id: action.payload.triggerId,
@@ -1055,7 +1055,7 @@ const addTrigger: CaseReducer<
 
 const editTrigger: CaseReducer<
   EntitiesState,
-  PayloadAction<{ triggerId: string; changes: Partial<Trigger> }>
+  PayloadAction<{ triggerId: string; changes: Partial<TriggerNormalized> }>
 > = (state, action) => {
   const patch = { ...action.payload.changes };
 
@@ -2292,10 +2292,13 @@ const removePalette: CaseReducer<
 
 const addCustomEvent: CaseReducer<
   EntitiesState,
-  PayloadAction<{ customEventId: string; defaults?: Partial<CustomEvent> }>
+  PayloadAction<{
+    customEventId: string;
+    defaults?: Partial<CustomEventNormalized>;
+  }>
 > = (state, action) => {
   const customEventsTotal = localCustomEventSelectors.selectTotal(state);
-  const newCustomEvent: CustomEvent = {
+  const newCustomEvent: CustomEventNormalized = {
     id: action.payload.customEventId,
     name: "",
     description: "",
@@ -2312,7 +2315,7 @@ const editCustomEvent: CaseReducer<
   EntitiesState,
   PayloadAction<{
     customEventId: string;
-    changes: Partial<CustomEvent>;
+    changes: Partial<CustomEventNormalized>;
   }>
 > = (state, action) => {
   const patch = { ...action.payload.changes };
@@ -2556,7 +2559,7 @@ const addScriptEvents: CaseReducer<
     key: string;
     insertId?: string;
     before?: boolean;
-    data: Omit<ScriptEvent, "id">[];
+    data: Omit<ScriptEventNormalized, "id">[];
   }>
 > = (state, action) => {
   const script = selectScriptIds(
@@ -2572,7 +2575,7 @@ const addScriptEvents: CaseReducer<
 
   const newScriptEvents = action.payload.data.map(
     (scriptEventData, scriptEventIndex) => {
-      const newScriptEvent: ScriptEvent = {
+      const newScriptEvent: ScriptEventNormalized = {
         ...scriptEventData,
         id: action.payload.scriptEventIds[scriptEventIndex],
         symbol: undefined,
@@ -2639,7 +2642,7 @@ const editScriptEvent: CaseReducer<
   EntitiesState,
   PayloadAction<{
     scriptEventId: string;
-    changes: Partial<ScriptEvent>;
+    changes: Partial<ScriptEventNormalized>;
   }>
 > = (state, action) => {
   scriptEventsAdapter.updateOne(state.scriptEvents, {
@@ -2868,7 +2871,7 @@ const entitiesSlice = createSlice({
       prepare: (payload: {
         x: number;
         y: number;
-        defaults?: Partial<Scene>;
+        defaults?: Partial<SceneNormalized>;
         variables?: Variable[];
       }) => {
         return {
@@ -2898,7 +2901,7 @@ const entitiesSlice = createSlice({
         sceneId: string;
         x: number;
         y: number;
-        defaults?: Partial<Actor>;
+        defaults?: Partial<ActorNormalized>;
         variables?: Variable[];
       }) => {
         return {
@@ -2928,7 +2931,7 @@ const entitiesSlice = createSlice({
         y: number;
         width: number;
         height: number;
-        defaults?: Partial<Trigger>;
+        defaults?: Partial<TriggerNormalized>;
         variables?: Variable[];
       }) => {
         return {
@@ -3093,7 +3096,7 @@ const entitiesSlice = createSlice({
       reducer: addCustomEvent,
       prepare: (payload?: {
         customEventId?: string;
-        defaults?: Partial<CustomEvent>;
+        defaults?: Partial<CustomEventNormalized>;
       }) => {
         return {
           payload: {
@@ -3138,7 +3141,7 @@ const entitiesSlice = createSlice({
         key: string;
         insertId?: string;
         before?: boolean;
-        data: Omit<ScriptEvent, "id">[];
+        data: Omit<ScriptEventNormalized, "id">[];
       }) => {
         return {
           payload: {
@@ -3232,7 +3235,7 @@ export const actions = {
 
 export const generateScriptEventInsertActions = (
   scriptEventIds: string[],
-  scriptEventsLookup: Dictionary<ScriptEvent>,
+  scriptEventsLookup: Dictionary<ScriptEventNormalized>,
   entityId: string,
   type: ScriptEventParentType,
   key: string,
@@ -3251,7 +3254,7 @@ export const generateScriptEventInsertActions = (
     insertId?: string,
     before?: boolean
   ) => {
-    const insertEvents: ScriptEvent[] = [];
+    const insertEvents: ScriptEventNormalized[] = [];
     for (let i = 0; i < scriptEventIds.length; i++) {
       const scriptEvent = scriptEventsLookup[scriptEventIds[i]];
       if (!scriptEvent) {

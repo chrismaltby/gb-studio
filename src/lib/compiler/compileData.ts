@@ -93,13 +93,13 @@ import type { ProjectData } from "store/features/project/projectActions";
 import {
   AvatarData,
   BackgroundData,
-  CustomEventDenormalized,
+  CustomEvent,
   EmoteData,
   FontData,
   MusicData,
   Palette,
-  SceneDenormalized,
-  ScriptEventDenormalized,
+  Scene,
+  ScriptEvent,
   SoundData,
   SpriteSheetData,
   Variable,
@@ -200,8 +200,8 @@ const ensureProjectAsset = async (
 
 export const precompileBackgrounds = async (
   backgrounds: BackgroundData[],
-  scenes: SceneDenormalized[],
-  customEventsLookup: Dictionary<CustomEventDenormalized>,
+  scenes: Scene[],
+  customEventsLookup: Dictionary<CustomEvent>,
   projectRoot: string,
   tmpPath: string,
   {
@@ -337,7 +337,7 @@ export const precompileBackgrounds = async (
 };
 
 export const precompilePalettes = async (
-  scenes: SceneDenormalized[],
+  scenes: Scene[],
   settings: SettingsState,
   palettes: Palette[]
 ) => {
@@ -541,8 +541,8 @@ export const precompileUIImages = async (
 
 export const precompileSprites = async (
   spriteSheets: SpriteSheetData[],
-  scenes: SceneDenormalized[],
-  customEventsLookup: Dictionary<CustomEventDenormalized>,
+  scenes: Scene[],
+  customEventsLookup: Dictionary<CustomEvent>,
   defaultPlayerSprites: Record<string, string>,
   projectRoot: string,
   usedTilesets: TilemapData[]
@@ -642,8 +642,8 @@ export const precompileSprites = async (
 
 export const precompileAvatars = async (
   avatars: AvatarData[],
-  scenes: SceneDenormalized[],
-  customEventsLookup: Dictionary<CustomEventDenormalized>,
+  scenes: Scene[],
+  customEventsLookup: Dictionary<CustomEvent>,
   projectRoot: string,
   {
     warnings,
@@ -687,8 +687,8 @@ export const precompileAvatars = async (
 
 export const precompileEmotes = async (
   emotes: EmoteData[],
-  scenes: SceneDenormalized[],
-  customEventsLookup: Dictionary<CustomEventDenormalized>,
+  scenes: Scene[],
+  customEventsLookup: Dictionary<CustomEvent>,
   projectRoot: string,
   {
     warnings,
@@ -742,8 +742,8 @@ export const precompileEmotes = async (
 };
 
 export const precompileMusic = (
-  scenes: SceneDenormalized[],
-  customEventsLookup: Dictionary<CustomEventDenormalized>,
+  scenes: Scene[],
+  customEventsLookup: Dictionary<CustomEvent>,
   music: MusicData[],
   musicDriver: MusicDriverSetting
 ) => {
@@ -809,8 +809,8 @@ export const precompileMusic = (
 
 export const precompileFonts = async (
   fonts: FontData[],
-  scenes: SceneDenormalized[],
-  customEventsLookup: Dictionary<CustomEventDenormalized>,
+  scenes: Scene[],
+  customEventsLookup: Dictionary<CustomEvent>,
   defaultFontId: string,
   projectRoot: string,
   {
@@ -893,8 +893,8 @@ export const precompileFonts = async (
 };
 
 export const precompileScenes = (
-  scenes: SceneDenormalized[],
-  customEventsLookup: Dictionary<CustomEventDenormalized>,
+  scenes: Scene[],
+  customEventsLookup: Dictionary<CustomEvent>,
   defaultPlayerSprites: Record<string, string>,
   usedBackgrounds: PrecompiledBackground[],
   usedSprites: PrecompiledSprite[],
@@ -1373,7 +1373,7 @@ const compile = async (
   const eventPtrs: PrecompiledSceneEventPtrs[] = precompiled.sceneData.map(
     (scene, sceneIndex) => {
       const compileScript = (
-        script: ScriptEventDenormalized[],
+        script: ScriptEvent[],
         entityType: ScriptBuilderEntityType,
         entity: ScriptBuilderEntity & { symbol: string },
         entityIndex: number,
@@ -1462,14 +1462,14 @@ const compile = async (
 
       const bankSceneEvents = (scene: PrecompiledScene, sceneIndex: number) => {
         // Merge start scripts for actors with scene start script
-        const initScript = ([] as ScriptEventDenormalized[]).concat(
+        const initScript = ([] as ScriptEvent[]).concat(
           scene.actors
             .map((actor) => {
               const actorStartScript = actor.startScript || [];
               if (actorStartScript.length === 0) {
                 return [];
               }
-              return ([] as ScriptEventDenormalized[]).concat(
+              return ([] as ScriptEvent[]).concat(
                 {
                   id: "",
                   command: "INTERNAL_SET_CONTEXT",
@@ -1478,7 +1478,7 @@ const compile = async (
                     entityType: "actor",
                     entityId: actor.id,
                   },
-                } as ScriptEventDenormalized,
+                } as ScriptEvent,
                 actorStartScript.filter((event) => event.command !== EVENT_END)
               );
             })
@@ -1550,10 +1550,10 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
         scripts: {
           parameter: number;
           value: number;
-          script: ScriptEventDenormalized[];
+          script: ScriptEvent[];
         }[],
         canCollapse: boolean
-      ): ScriptEventDenormalized[] => {
+      ): ScriptEvent[] => {
         const filteredScripts = scripts.filter(
           (s) => s.script && s.script.length > 0
         );

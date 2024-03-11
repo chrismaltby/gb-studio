@@ -8,7 +8,11 @@ import {
 } from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
 import editorActions from "store/features/editor/editorActions";
-import { Actor, Scene, Trigger } from "shared/lib/entities/entitiesTypes";
+import {
+  ActorNormalized,
+  SceneNormalized,
+  TriggerNormalized,
+} from "shared/lib/entities/entitiesTypes";
 import { EntityListItem } from "ui/lists/EntityListItem";
 import useToggleableList from "ui/hooks/use-toggleable-list";
 import {
@@ -30,7 +34,7 @@ interface SceneNavigatorItem {
 }
 
 const sceneToNavigatorItem = (
-  scene: Scene,
+  scene: SceneNormalized,
   sceneIndex: number
 ): SceneNavigatorItem => ({
   id: scene.id,
@@ -41,8 +45,8 @@ const sceneToNavigatorItem = (
 });
 
 const actorToNavigatorItem = (
-  actor: Actor,
-  scene: Scene
+  actor: ActorNormalized,
+  scene: SceneNormalized
 ): SceneNavigatorItem => ({
   id: actor.id,
   sceneId: scene.id,
@@ -51,8 +55,8 @@ const actorToNavigatorItem = (
 });
 
 const triggerToNavigatorItem = (
-  trigger: Trigger,
-  scene: Scene
+  trigger: TriggerNormalized,
+  scene: SceneNormalized
 ): SceneNavigatorItem => ({
   id: trigger.id,
   sceneId: scene.id,
@@ -116,14 +120,14 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
               ...(
                 scene.scene.actors
                   .map((actorId) => actorsLookup[actorId])
-                  .filter((i) => i) as Actor[]
+                  .filter((i) => i) as ActorNormalized[]
               )
                 .map((actor) => actorToNavigatorItem(actor, scene.scene))
                 .sort(sortByName),
               ...(
                 scene.scene.triggers
                   .map((triggerId) => triggersLookup[triggerId])
-                  .filter((i) => i) as Trigger[]
+                  .filter((i) => i) as TriggerNormalized[]
               )
                 .map((trigger) => triggerToNavigatorItem(trigger, scene.scene))
                 .sort(sortByName),

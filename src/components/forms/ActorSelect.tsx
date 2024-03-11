@@ -1,6 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Actor, ActorDirection } from "shared/lib/entities/entitiesTypes";
+import {
+  ActorNormalized,
+  ActorDirection,
+} from "shared/lib/entities/entitiesTypes";
 import { RootState } from "store/configureStore";
 import {
   Option,
@@ -112,7 +115,7 @@ export const ActorSelect = ({
           spriteSheetId: playerSpriteSheetId,
         },
         ...sceneActorIds.map((actorId, actorIndex) => {
-          const actor = actorsLookup[actorId] as Actor;
+          const actor = actorsLookup[actorId] as ActorNormalized;
           return {
             label: actorName(actor, actorIndex),
             value: actor.id,

@@ -22,7 +22,10 @@ import {
 } from "ui/form/FormLayout";
 import { EditableText } from "ui/form/EditableText";
 import { RootState } from "store/configureStore";
-import { Trigger, ScriptEvent } from "shared/lib/entities/entitiesTypes";
+import {
+  TriggerNormalized,
+  ScriptEventNormalized,
+} from "shared/lib/entities/entitiesTypes";
 import { CoordinateInput } from "ui/form/CoordinateInput";
 import { NoteField } from "ui/form/NoteField";
 import { StickyTabs, TabBar } from "ui/tabs/Tabs";
@@ -42,8 +45,8 @@ interface TriggerEditorProps {
 }
 
 interface ScriptHandler {
-  value: ScriptEvent[];
-  onChange: (newValue: ScriptEvent[]) => void;
+  value: ScriptEventNormalized[];
+  onChange: (newValue: ScriptEventNormalized[]) => void;
 }
 
 interface ScriptHandlers {
@@ -126,7 +129,7 @@ export const TriggerEditor = ({
   const dispatch = useDispatch();
 
   const onChangeFieldInput =
-    (key: keyof Trigger) =>
+    (key: keyof TriggerNormalized) =>
     (
       e:
         | React.ChangeEvent<HTMLInputElement>

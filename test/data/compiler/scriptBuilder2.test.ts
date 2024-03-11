@@ -1,8 +1,8 @@
 import { PrecompiledScene } from "../../../src/lib/compiler/compileData2";
 import ScriptBuilder from "../../../src/lib/compiler/scriptBuilder";
-import { ScriptEventDenormalized } from "../../../src/shared/lib/entities/entitiesTypes";
+import { ScriptEvent } from "../../../src/shared/lib/entities/entitiesTypes";
 import {
-  dummyActor,
+  dummyActorNormalized,
   dummyPrecompiledBackground,
   dummyPrecompiledSpriteSheet,
   getDummyCompiledFont,
@@ -26,7 +26,7 @@ test("Should be able to set active actor to player", async () => {
       parallax: [],
       actorsExclusiveLookup: {},
       type: "TOPDOWN",
-      actors: [{ ...dummyActor, id: "actor1" }],
+      actors: [{ ...dummyActorNormalized, id: "actor1" }],
       triggers: [],
       projectiles: [],
     } as unknown as PrecompiledScene,
@@ -61,8 +61,8 @@ test("Should be able to set active actor to actor by id", async () => {
       actorsExclusiveLookup: {},
       type: "TOPDOWN",
       actors: [
-        { ...dummyActor, id: "actor1" },
-        { ...dummyActor, id: "actor2" },
+        { ...dummyActorNormalized, id: "actor1" },
+        { ...dummyActorNormalized, id: "actor2" },
       ],
       triggers: [],
       projectiles: [],
@@ -159,11 +159,11 @@ test("Should be able to generate script string", async () => {
       type: "TOPDOWN",
       actors: [
         {
-          ...dummyActor,
+          ...dummyActorNormalized,
           id: "actor1",
         },
         {
-          ...dummyActor,
+          ...dummyActorNormalized,
           id: "actor2",
         },
       ],
@@ -280,7 +280,7 @@ test("Should be able to conditionally execute if variable is true with event arr
       projectiles: [],
     } as unknown as PrecompiledScene,
     // variables: ["0", "1"],
-    compileEvents: (self: ScriptBuilder, events: ScriptEventDenormalized[]) => {
+    compileEvents: (self: ScriptBuilder, events: ScriptEvent[]) => {
       if (events[0].id === "event1") {
         output.push("        VM_DEBUG                0");
         output.push('        .asciz "True Path"');
@@ -354,11 +354,11 @@ test("Should be able to conditionally execute if variable is true with function 
       type: "TOPDOWN",
       actors: [
         {
-          ...dummyActor,
+          ...dummyActorNormalized,
           id: "actor1",
         },
         {
-          ...dummyActor,
+          ...dummyActorNormalized,
           id: "actor2",
         },
       ],
@@ -367,7 +367,7 @@ test("Should be able to conditionally execute if variable is true with function 
     } as unknown as PrecompiledScene,
     fonts: [dummyCompiledFont],
     // variables: ["0", "1"],
-    compileEvents: (self: ScriptBuilder, events: ScriptEventDenormalized[]) => {
+    compileEvents: (self: ScriptBuilder, events: ScriptEvent[]) => {
       if (events[0].id === "event1") {
         output.push("        VM_DEBUG        0");
         output.push('        .asciz "True Path"');
@@ -448,10 +448,10 @@ test("Should be able to conditionally execute if variable is true with nested fu
       actorsExclusiveLookup: {},
       type: "TOPDOWN",
       actors: [
-        { ...dummyActor, id: "actor1" },
-        { ...dummyActor, id: "actor2" },
-        { ...dummyActor, id: "actor3" },
-        { ...dummyActor, id: "actor4" },
+        { ...dummyActorNormalized, id: "actor1" },
+        { ...dummyActorNormalized, id: "actor2" },
+        { ...dummyActorNormalized, id: "actor3" },
+        { ...dummyActorNormalized, id: "actor4" },
       ],
       triggers: [],
       projectiles: [],
@@ -617,7 +617,7 @@ test("Should throw if jump to label is not stack neutral", async () => {
       parallax: [],
       actorsExclusiveLookup: {},
       type: "TOPDOWN",
-      actors: [{ ...dummyActor, id: "actor1" }],
+      actors: [{ ...dummyActorNormalized, id: "actor1" }],
       triggers: [],
       projectiles: [],
     } as unknown as PrecompiledScene,
@@ -649,7 +649,7 @@ test("Should be able to set an actor's state with looping animation", async () =
       parallax: [],
       actorsExclusiveLookup: {},
       type: "TOPDOWN",
-      actors: [{ ...dummyActor, id: "actor1" }],
+      actors: [{ ...dummyActorNormalized, id: "actor1" }],
       triggers: [],
       projectiles: [],
     } as unknown as PrecompiledScene,
@@ -690,7 +690,7 @@ test("Should be able to set an actor's state with one-shot animation", async () 
       parallax: [],
       actorsExclusiveLookup: {},
       type: "TOPDOWN",
-      actors: [{ ...dummyActor, id: "actor1" }],
+      actors: [{ ...dummyActorNormalized, id: "actor1" }],
       triggers: [],
       projectiles: [],
     } as unknown as PrecompiledScene,
@@ -731,7 +731,7 @@ test("Should default actor's state to use looping animation if loop value not pr
       parallax: [],
       actorsExclusiveLookup: {},
       type: "TOPDOWN",
-      actors: [{ ...dummyActor, id: "actor1" }],
+      actors: [{ ...dummyActorNormalized, id: "actor1" }],
       triggers: [],
       projectiles: [],
     } as unknown as PrecompiledScene,

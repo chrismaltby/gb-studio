@@ -3,7 +3,7 @@ import reducer, {
 } from "../../../../src/store/features/entities/entitiesState";
 import { EntitiesState } from "../../../../src/shared/lib/entities/entitiesTypes";
 import actions from "../../../../src/store/features/entities/entitiesActions";
-import { dummyScene } from "../../../dummydata";
+import { dummySceneNormalized } from "../../../dummydata";
 
 test("should be able to add a script event to an empty scene init script", () => {
   const state: EntitiesState = {
@@ -11,7 +11,7 @@ test("should be able to add a script event to an empty scene init script", () =>
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           actors: [],
           triggers: [],
@@ -54,7 +54,7 @@ test("should not update state if destination script isn't found", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           actors: [],
           triggers: [],
@@ -93,7 +93,7 @@ test("should be able to add a script event to a scene init script before an exis
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           actors: [],
           triggers: [],
@@ -144,7 +144,7 @@ test("should be able to add a script event to a scene init script after an exist
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           actors: [],
           triggers: [],
@@ -195,7 +195,7 @@ test("should be able to add multiple script events to a scene init script", () =
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           actors: [],
           triggers: [],
@@ -262,7 +262,7 @@ test("should be able to add multiple script events to a scene init script after 
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           actors: [],
           triggers: [],
@@ -328,7 +328,7 @@ test("should be able to add a script event as child of conditional event true pa
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           actors: [],
           triggers: [],
@@ -383,7 +383,7 @@ test("should be able to add a script event as child of conditional event false p
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           actors: [],
           triggers: [],
@@ -441,7 +441,7 @@ test("should remove child ids provided in scriptEvent creation data", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           actors: [],
           triggers: [],
@@ -491,7 +491,7 @@ test("should be able to move an event to a new location in a script", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           actors: [],
           triggers: [],
@@ -541,7 +541,7 @@ test("should be able to move an event to the end of a script", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           actors: [],
           triggers: [],
@@ -596,7 +596,7 @@ test("should be able to reset a script", () => {
     scenes: {
       entities: {
         scene1: {
-          ...dummyScene,
+          ...dummySceneNormalized,
           id: "scene1",
           actors: [],
           triggers: [],

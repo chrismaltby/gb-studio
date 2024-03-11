@@ -19,7 +19,7 @@ import { useDispatch, useSelector } from "react-redux";
 import settingsActions from "store/features/settings/settingsActions";
 import { RootState } from "store/configureStore";
 import {
-  ScriptEvent,
+  ScriptEventNormalized,
   ScriptEventFieldSchema,
   ScriptEventParentType,
 } from "shared/lib/entities/entitiesTypes";
@@ -92,7 +92,7 @@ const instanciateScriptEvent = (
     defaultEmoteId,
     defaultArgs,
   }: InstanciateOptions
-): Omit<ScriptEvent, "id"> => {
+): Omit<ScriptEventNormalized, "id"> => {
   const flattenFields = (
     fields: ScriptEventFieldSchema[],
     memo: ScriptEventFieldSchema[] = []

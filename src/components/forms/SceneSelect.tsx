@@ -11,7 +11,7 @@ import {
   Select,
   SelectCommonProps,
 } from "ui/form/Select";
-import { Scene } from "shared/lib/entities/entitiesTypes";
+import { SceneNormalized } from "shared/lib/entities/entitiesTypes";
 import { RootState } from "store/configureStore";
 import styled from "styled-components";
 import editorActions from "store/features/editor/editorActions";
@@ -35,7 +35,7 @@ const Thumbnail = styled.div`
 `;
 
 interface SceneOption extends Option {
-  scene: Scene;
+  scene: SceneNormalized;
 }
 
 const collator = new Intl.Collator(undefined, {
@@ -47,7 +47,10 @@ const sortByLabel = (a: SceneOption, b: SceneOption) => {
   return collator.compare(a.label, b.label);
 };
 
-const sceneToSceneOption = (scene: Scene, sceneIndex: number): SceneOption => ({
+const sceneToSceneOption = (
+  scene: SceneNormalized,
+  sceneIndex: number
+): SceneOption => ({
   value: scene.id,
   label: sceneName(scene, sceneIndex),
   scene,
@@ -74,7 +77,7 @@ export const SceneSelect: FC<SceneSelectProps> = ({
   );
   const projectRoot = useSelector((state: RootState) => state.document.root);
   const [options, setOptions] = useState<SceneOption[]>([]);
-  const [currentScene, setCurrentScene] = useState<Scene>();
+  const [currentScene, setCurrentScene] = useState<SceneNormalized>();
   const [currentValue, setCurrentValue] = useState<Option>();
   const dispatch = useDispatch();
 

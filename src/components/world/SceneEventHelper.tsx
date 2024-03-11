@@ -4,7 +4,7 @@ import {
   actorSelectors,
   scriptEventSelectors,
 } from "store/features/entities/entitiesState";
-import { Scene } from "shared/lib/entities/entitiesTypes";
+import { SceneNormalized } from "shared/lib/entities/entitiesTypes";
 import { RootState } from "store/configureStore";
 import styled from "styled-components";
 import { ensureMaybeNumber, ensureMaybeString } from "shared/types";
@@ -21,7 +21,7 @@ import {
 const TILE_SIZE = 8;
 
 interface SceneEventHelperProps {
-  scene: Scene;
+  scene: SceneNormalized;
 }
 
 const EventHelperWrapper = styled.div`

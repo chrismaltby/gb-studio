@@ -7,7 +7,7 @@ import {
 import { RootState } from "store/configureStore";
 import { Dictionary } from "@reduxjs/toolkit";
 import {
-  CustomEvent,
+  CustomEventNormalized,
   ScriptEventFieldSchema,
 } from "shared/lib/entities/entitiesTypes";
 import ScriptEventFields from "./ScriptEventFields";
@@ -25,7 +25,7 @@ interface ScriptEventFormProps {
 const getScriptEventFields = (
   command: string,
   value: { customEventId?: string; engineFieldKey?: string },
-  customEvents: Dictionary<CustomEvent>,
+  customEvents: Dictionary<CustomEventNormalized>,
   scriptEventDefs: Dictionary<ScriptEventDef>
 ) => {
   const eventCommands =

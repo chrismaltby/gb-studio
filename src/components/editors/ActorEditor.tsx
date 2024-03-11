@@ -18,7 +18,10 @@ import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import entitiesActions from "store/features/entities/entitiesActions";
 import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
-import { Actor, ScriptEvent } from "shared/lib/entities/entitiesTypes";
+import {
+  ActorNormalized,
+  ScriptEventNormalized,
+} from "shared/lib/entities/entitiesTypes";
 import { Sidebar, SidebarColumn } from "ui/sidebars/Sidebar";
 import { CoordinateInput } from "ui/form/CoordinateInput";
 import { Checkbox } from "ui/form/Checkbox";
@@ -53,8 +56,8 @@ interface ActorEditorProps {
 }
 
 interface ScriptHandler {
-  value: ScriptEvent[];
-  onChange: (newValue: ScriptEvent[]) => void;
+  value: ScriptEventNormalized[];
+  onChange: (newValue: ScriptEventNormalized[]) => void;
 }
 
 interface ScriptHandlers {
@@ -213,8 +216,8 @@ export const ActorEditor: FC<ActorEditorProps> = ({
   };
 
   const onChangeField =
-    <T extends keyof Actor>(key: T) =>
-    (editValue: Actor[T]) => {
+    <T extends keyof ActorNormalized>(key: T) =>
+    (editValue: ActorNormalized[T]) => {
       dispatch(
         entitiesActions.editActor({
           actorId: id,
@@ -226,7 +229,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({
     };
 
   const onChangeFieldInput =
-    (key: keyof Actor) =>
+    (key: keyof ActorNormalized) =>
     (
       e:
         | React.ChangeEvent<HTMLInputElement>
@@ -243,7 +246,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({
       );
     };
 
-  const onToggleField = (key: KeysMatching<Actor, boolean>) => () => {
+  const onToggleField = (key: KeysMatching<ActorNormalized, boolean>) => () => {
     const currentValue = !!actor?.[key];
     dispatch(
       entitiesActions.editActor({

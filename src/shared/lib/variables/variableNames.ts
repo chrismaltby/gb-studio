@@ -1,4 +1,7 @@
-import type { CustomEvent, Variable } from "shared/lib/entities/entitiesTypes";
+import type {
+  CustomEventNormalized,
+  Variable,
+} from "shared/lib/entities/entitiesTypes";
 
 const arrayNStrings = (n: number) =>
   Array.from(Array(n).keys()).map((n) => String(n));
@@ -16,7 +19,7 @@ type VariablesLookup = { [name: string]: Variable | undefined };
 
 export const customEventVariableName = (
   variable: string,
-  customEvent: CustomEvent
+  customEvent: CustomEventNormalized
 ): string => {
   const customEventVariable = customEvent.variables[`V${variable}`];
   if (customEventVariable) {

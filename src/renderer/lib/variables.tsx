@@ -1,6 +1,9 @@
 import { ScriptEditorContextType } from "shared/lib/scripts/context";
 import uniq from "lodash/uniq";
-import { CustomEvent, Variable } from "shared/lib/entities/entitiesTypes";
+import {
+  CustomEventNormalized,
+  Variable,
+} from "shared/lib/entities/entitiesTypes";
 import l10n from "shared/lib/lang/l10n";
 import {
   customEventVariableCode,
@@ -43,7 +46,7 @@ export const namedVariablesByContext = (
   context: ScriptEditorContextType,
   entityId: string,
   variablesLookup: VariablesLookup,
-  customEvent: CustomEvent | undefined
+  customEvent: CustomEventNormalized | undefined
 ): NamedVariable[] => {
   if (context === "script") {
     if (customEvent) {
@@ -58,7 +61,7 @@ export const namedVariablesByContext = (
 };
 
 export const namedCustomEventVariables = (
-  customEvent: CustomEvent,
+  customEvent: CustomEventNormalized,
   variablesLookup: VariablesLookup
 ): NamedVariable[] => {
   return ([] as NamedVariable[]).concat(

@@ -6,10 +6,10 @@ import {
   triggerName,
 } from "shared/lib/entities/entitiesHelpers";
 import {
-  Actor,
-  Scene,
-  ScriptEvent,
-  Trigger,
+  ActorNormalized,
+  SceneNormalized,
+  ScriptEventNormalized,
+  TriggerNormalized,
 } from "shared/lib/entities/entitiesTypes";
 import { L10NLookup, setL10NData } from "shared/lib/lang/l10n";
 import {
@@ -22,25 +22,25 @@ export type VariableUse = {
   id: string;
   name: string;
   sceneId: string;
-  scene: Scene;
+  scene: SceneNormalized;
   sceneIndex: number;
-  event: ScriptEvent;
+  event: ScriptEventNormalized;
 } & (
   | {
       type: "scene";
     }
   | {
       type: "actor";
-      actor: Actor;
+      actor: ActorNormalized;
       actorIndex: number;
-      scene: Scene;
+      scene: SceneNormalized;
       sceneIndex: number;
     }
   | {
       type: "trigger";
-      trigger: Trigger;
+      trigger: TriggerNormalized;
       triggerIndex: number;
-      scene: Scene;
+      scene: SceneNormalized;
       sceneIndex: number;
     }
 );
@@ -56,11 +56,11 @@ const workerCtx: Worker = self as unknown as Worker;
 workerCtx.onmessage = async (evt) => {
   const id = evt.data.id;
   const variableId: string = evt.data.variableId;
-  const scenes: Scene[] = evt.data.scenes;
-  const scriptEventsLookup: Dictionary<ScriptEvent> =
+  const scenes: SceneNormalized[] = evt.data.scenes;
+  const scriptEventsLookup: Dictionary<ScriptEventNormalized> =
     evt.data.scriptEventsLookup;
-  const actorsLookup: Dictionary<Actor> = evt.data.actorsLookup;
-  const triggersLookup: Dictionary<Trigger> = evt.data.triggersLookup;
+  const actorsLookup: Dictionary<ActorNormalized> = evt.data.actorsLookup;
+  const triggersLookup: Dictionary<TriggerNormalized> = evt.data.triggersLookup;
   const scriptEventDefs: ScriptEventDefs = evt.data.scriptEventDefs;
   const l10NData: L10NLookup = evt.data.l10NData;
 

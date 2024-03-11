@@ -47,7 +47,7 @@ export type ScriptEventParentType =
 
 export type ScriptEventArgs = Record<string, unknown>;
 
-export type ScriptEvent = {
+export type ScriptEventNormalized = {
   id: string;
   command: string;
   symbol?: string;
@@ -55,8 +55,8 @@ export type ScriptEvent = {
   children?: Dictionary<string[]>;
 };
 
-export type ScriptEventDenormalized = Omit<ScriptEvent, "children"> & {
-  children?: Dictionary<ScriptEventDenormalized[]>;
+export type ScriptEvent = Omit<ScriptEventNormalized, "children"> & {
+  children?: Dictionary<ScriptEvent[]>;
 };
 
 export type ScriptEventsRef = {
@@ -76,7 +76,7 @@ export const actorScriptKeys = [
 ] as const;
 export type ActorScriptKey = typeof actorScriptKeys[number];
 
-export type Actor = {
+export type ActorNormalized = {
   id: string;
   name: string;
   symbol: string;
@@ -101,8 +101,8 @@ export type Actor = {
   hit3Script: string[];
 };
 
-export type ActorDenormalized = Omit<
-  Actor,
+export type Actor = Omit<
+  ActorNormalized,
   | "script"
   | "startScript"
   | "updateScript"
@@ -110,18 +110,18 @@ export type ActorDenormalized = Omit<
   | "hit2Script"
   | "hit3Script"
 > & {
-  script: ScriptEventDenormalized[];
-  startScript: ScriptEventDenormalized[];
-  updateScript: ScriptEventDenormalized[];
-  hit1Script: ScriptEventDenormalized[];
-  hit2Script: ScriptEventDenormalized[];
-  hit3Script: ScriptEventDenormalized[];
+  script: ScriptEvent[];
+  startScript: ScriptEvent[];
+  updateScript: ScriptEvent[];
+  hit1Script: ScriptEvent[];
+  hit2Script: ScriptEvent[];
+  hit3Script: ScriptEvent[];
 };
 
 export const triggerScriptKeys = ["script", "leaveScript"] as const;
 export type TriggerScriptKey = typeof triggerScriptKeys[number];
 
-export type Trigger = {
+export type TriggerNormalized = {
   id: string;
   name: string;
   symbol: string;
@@ -134,9 +134,9 @@ export type Trigger = {
   leaveScript: string[];
 };
 
-export type TriggerDenormalized = Omit<Trigger, "script" | "leaveScript"> & {
-  script: ScriptEventDenormalized[];
-  leaveScript: ScriptEventDenormalized[];
+export type Trigger = Omit<TriggerNormalized, "script" | "leaveScript"> & {
+  script: ScriptEvent[];
+  leaveScript: ScriptEvent[];
 };
 
 export type Background = {
@@ -255,7 +255,7 @@ export type CustomEventActor = {
   name: string;
 };
 
-export type CustomEvent = {
+export type CustomEventNormalized = {
   id: string;
   name: string;
   symbol: string;
@@ -265,8 +265,8 @@ export type CustomEvent = {
   script: string[];
 };
 
-export type CustomEventDenormalized = Omit<CustomEvent, "script"> & {
-  script: ScriptEventDenormalized[];
+export type CustomEvent = Omit<CustomEventNormalized, "script"> & {
+  script: ScriptEvent[];
 };
 
 export type EngineFieldValue = {
@@ -357,7 +357,7 @@ export const sceneScriptKeys = [
 ] as const;
 export type SceneScriptKey = typeof sceneScriptKeys[number];
 
-export type Scene = {
+export type SceneNormalized = {
   id: string;
   type: string;
   name: string;
@@ -384,8 +384,8 @@ export type Scene = {
   playerHit3Script: string[];
 };
 
-export type SceneDenormalized = Omit<
-  Scene,
+export type Scene = Omit<
+  SceneNormalized,
   | "actors"
   | "triggers"
   | "script"
@@ -393,20 +393,20 @@ export type SceneDenormalized = Omit<
   | "playerHit2Script"
   | "playerHit3Script"
 > & {
-  actors: ActorDenormalized[];
-  triggers: TriggerDenormalized[];
-  script: ScriptEventDenormalized[];
-  playerHit1Script: ScriptEventDenormalized[];
-  playerHit2Script: ScriptEventDenormalized[];
-  playerHit3Script: ScriptEventDenormalized[];
+  actors: Actor[];
+  triggers: Trigger[];
+  script: ScriptEvent[];
+  playerHit1Script: ScriptEvent[];
+  playerHit2Script: ScriptEvent[];
+  playerHit3Script: ScriptEvent[];
 };
 
 export type ProjectEntitiesData = {
-  scenes: SceneDenormalized[];
+  scenes: Scene[];
   backgrounds: BackgroundData[];
   spriteSheets: SpriteSheetData[];
   palettes: Palette[];
-  customEvents: CustomEventDenormalized[];
+  customEvents: CustomEvent[];
   music: MusicData[];
   sounds: SoundData[];
   fonts: FontData[];
@@ -417,10 +417,10 @@ export type ProjectEntitiesData = {
 };
 
 export interface EntitiesState {
-  actors: EntityState<Actor>;
-  triggers: EntityState<Trigger>;
-  scenes: EntityState<Scene>;
-  scriptEvents: EntityState<ScriptEvent>;
+  actors: EntityState<ActorNormalized>;
+  triggers: EntityState<TriggerNormalized>;
+  scenes: EntityState<SceneNormalized>;
+  scriptEvents: EntityState<ScriptEventNormalized>;
   backgrounds: EntityState<Background>;
   spriteSheets: EntityState<SpriteSheet>;
   metasprites: EntityState<Metasprite>;
@@ -428,7 +428,7 @@ export interface EntitiesState {
   spriteAnimations: EntityState<SpriteAnimation>;
   spriteStates: EntityState<SpriteState>;
   palettes: EntityState<Palette>;
-  customEvents: EntityState<CustomEvent>;
+  customEvents: EntityState<CustomEventNormalized>;
   music: EntityState<Music>;
   sounds: EntityState<Sound>;
   fonts: EntityState<Font>;

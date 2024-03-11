@@ -1,8 +1,8 @@
-import { ScriptEventDenormalized } from "shared/lib/entities/entitiesTypes";
+import { ScriptEvent } from "shared/lib/entities/entitiesTypes";
 import { walkScript } from "../../src/shared/lib/scripts/walk";
 
 test("shouldn't walk empty events", () => {
-  const events: ScriptEventDenormalized[] = [];
+  const events: ScriptEvent[] = [];
   const myMock = jest.fn();
   walkScript(events, undefined, myMock);
   expect(myMock.mock.calls.length).toBe(0);
@@ -22,7 +22,7 @@ test("should walk each node once", () => {
     {
       id: "1",
     },
-  ] as unknown as ScriptEventDenormalized[];
+  ] as unknown as ScriptEvent[];
   const myMock = jest.fn();
   walkScript(events, undefined, myMock);
   expect(myMock.mock.calls.length).toBe(2);
@@ -36,7 +36,7 @@ test("should walk each node once", () => {
     {
       id: "1",
     },
-  ] as unknown as ScriptEventDenormalized[];
+  ] as unknown as ScriptEvent[];
   const myMock = jest.fn();
   walkScript(events, undefined, myMock);
   expect(myMock.mock.calls.length).toBe(2);
@@ -50,9 +50,9 @@ test("should walk each node in order", () => {
     {
       id: "1",
     },
-  ] as unknown as ScriptEventDenormalized[];
+  ] as unknown as ScriptEvent[];
   const output: string[] = [];
-  const myFn = (node: ScriptEventDenormalized) => output.push(node.id);
+  const myFn = (node: ScriptEvent) => output.push(node.id);
   walkScript(events, undefined, myFn);
   expect(output).toEqual(["0", "1"]);
 });
@@ -80,9 +80,9 @@ test("should walk node, then true path, then false path", () => {
     {
       id: "4",
     },
-  ] as unknown as ScriptEventDenormalized[];
+  ] as unknown as ScriptEvent[];
   const output: string[] = [];
-  const myFn = (node: ScriptEventDenormalized) => output.push(node.id);
+  const myFn = (node: ScriptEvent) => output.push(node.id);
   walkScript(events, undefined, myFn);
   expect(output).toEqual(["0", "1", "2", "3", "4"]);
 });

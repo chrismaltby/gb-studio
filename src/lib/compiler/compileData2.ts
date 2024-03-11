@@ -3,10 +3,10 @@ import { Dictionary } from "@reduxjs/toolkit";
 import flatten from "lodash/flatten";
 import { SCREEN_WIDTH } from "consts";
 import type {
-  ActorDenormalized,
-  SceneDenormalized,
+  Actor,
+  Scene,
   SceneParallaxLayer,
-  TriggerDenormalized,
+  Trigger,
 } from "shared/lib/entities/entitiesTypes";
 import { CompiledFontData } from "lib/fonts/fontData";
 import { decHex32Val, hexDec, wrap8Bit } from "shared/lib/helpers/8bit";
@@ -60,7 +60,7 @@ interface Entity {
   name: string;
 }
 
-export type PrecompiledScene = SceneDenormalized & {
+export type PrecompiledScene = Scene & {
   id: string;
   name: string;
   symbol: string;
@@ -71,8 +71,8 @@ export type PrecompiledScene = SceneDenormalized & {
   playerSprite?: PrecompiledSprite;
   parallax?: Array<{ height: number; speed: number }>;
   actorsExclusiveLookup: Dictionary<number>;
-  actors: ActorDenormalized[];
-  triggers: TriggerDenormalized[];
+  actors: Actor[];
+  triggers: Trigger[];
   projectiles: PrecompiledProjectile[];
   sprites: PrecompiledSprite[];
   playerSpritePersist: boolean;
@@ -198,7 +198,7 @@ export const maybeScriptDependency = (
   scriptSymbol: string | null | undefined
 ) => (scriptSymbol ? scriptSymbol : []);
 
-export const toASMTriggerScriptFlags = (trigger: TriggerDenormalized) => {
+export const toASMTriggerScriptFlags = (trigger: Trigger) => {
   const flags = [];
 
   if (trigger.script.length > 0) flags.push("TRIGGER_HAS_ENTER_SCRIPT");

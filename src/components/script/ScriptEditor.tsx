@@ -10,7 +10,7 @@ import styled from "styled-components";
 import AddButton from "./AddButton";
 import ScriptEditorEvent from "./ScriptEditorEvent";
 import { ScriptEventAutoFade } from "./ScriptEventAutoFade";
-import { calculateAutoFadeEventIdNormalised } from "shared/lib/scripts/eventHelpers";
+import { calculateAutoFadeEventIdNormalized } from "shared/lib/scripts/eventHelpers";
 import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
 
 interface ScriptEditorProps {
@@ -46,7 +46,7 @@ const ScriptEditor = React.memo(
     );
     const autoFadeEventId = useMemo(() => {
       return showAutoFadeIndicator
-        ? calculateAutoFadeEventIdNormalised(
+        ? calculateAutoFadeEventIdNormalized(
             value,
             scriptEventsLookup,
             customEventsLookup,

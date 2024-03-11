@@ -15,12 +15,12 @@ import {
   triggerSelectors,
 } from "store/features/entities/entitiesState";
 import {
-  Actor,
+  ActorNormalized,
   ActorDirection,
-  CustomEvent,
-  Scene,
-  ScriptEvent,
-  Trigger,
+  CustomEventNormalized,
+  SceneNormalized,
+  ScriptEventNormalized,
+  TriggerNormalized,
 } from "shared/lib/entities/entitiesTypes";
 import editorActions from "store/features/editor/editorActions";
 import styled, { css } from "styled-components";
@@ -40,9 +40,9 @@ interface ConnectionsProps {
 
 interface CalculateTransitionCoordsProps {
   type: "actor" | "trigger" | "scene";
-  scriptEvent: ScriptEvent;
-  scene: Scene;
-  destScene: Scene;
+  scriptEvent: ScriptEventNormalized;
+  scene: SceneNormalized;
+  destScene: SceneNormalized;
   entityId: string;
   entityX?: number;
   entityY?: number;
@@ -156,16 +156,16 @@ const calculateTransitionCoords = ({
 const getSceneConnections = (
   showConnections: ShowConnectionsSetting,
   selectedSceneId: string,
-  scene: Scene,
-  eventsLookup: Dictionary<ScriptEvent>,
-  scenesLookup: Dictionary<Scene>,
-  actorsLookup: Dictionary<Actor>,
-  triggersLookup: Dictionary<Trigger>,
-  customEventsLookup: Dictionary<CustomEvent>
+  scene: SceneNormalized,
+  eventsLookup: Dictionary<ScriptEventNormalized>,
+  scenesLookup: Dictionary<SceneNormalized>,
+  actorsLookup: Dictionary<ActorNormalized>,
+  triggersLookup: Dictionary<TriggerNormalized>,
+  customEventsLookup: Dictionary<CustomEventNormalized>
 ) => {
   const ifMatches = (
-    scriptEvent: ScriptEvent,
-    callback: (destScene: Scene) => void
+    scriptEvent: ScriptEventNormalized,
+    callback: (destScene: SceneNormalized) => void
   ) => {
     if (scriptEvent.command === EVENT_SWITCH_SCENE) {
       const destId = String(scriptEvent.args?.sceneId || "");

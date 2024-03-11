@@ -2,10 +2,10 @@ import { Dictionary } from "@reduxjs/toolkit";
 import { EVENT_FADE_IN } from "consts";
 import type { ScriptEventDef } from "lib/project/loadScriptEventHandlers";
 import type {
-  CustomEventDenormalized,
-  ScriptEvent,
   CustomEvent,
-  ScriptEventDenormalized,
+  ScriptEventNormalized,
+  CustomEventNormalized,
+  ScriptEvent,
 } from "shared/lib/entities/entitiesTypes";
 import { walkNormalizedScript, walkScript } from "shared/lib/scripts/walk";
 
@@ -54,23 +54,24 @@ export const patchEventArgs = (
   };
 };
 
-export const calculateAutoFadeEventIdNormalised = (
+export const calculateAutoFadeEventIdNormalized = (
   script: string[],
-  scriptEventsLookup: Dictionary<ScriptEvent>,
-  customEventsLookup: Dictionary<CustomEvent>,
+  scriptEventsLookup: Dictionary<ScriptEventNormalized>,
+  customEventsLookup: Dictionary<CustomEventNormalized>,
   scriptEventDefs: ScriptEventDefs
 ) => {
   const events = scriptEventDefs;
   let fadeEventId = "";
-  const checkEvent = (eventId: string) => (scriptEvent: ScriptEvent) => {
-    if (!fadeEventId && events[scriptEvent.command]?.waitUntilAfterInitFade) {
-      if (scriptEvent.command === EVENT_FADE_IN) {
-        fadeEventId = "MANUAL";
-      } else {
-        fadeEventId = eventId;
+  const checkEvent =
+    (eventId: string) => (scriptEvent: ScriptEventNormalized) => {
+      if (!fadeEventId && events[scriptEvent.command]?.waitUntilAfterInitFade) {
+        if (scriptEvent.command === EVENT_FADE_IN) {
+          fadeEventId = "MANUAL";
+        } else {
+          fadeEventId = eventId;
+        }
       }
-    }
-  };
+    };
   for (const eventValue of script) {
     const scriptEvent = scriptEventsLookup[eventValue];
     if (scriptEvent?.args?.__comment) {
@@ -108,22 +109,21 @@ export const calculateAutoFadeEventIdNormalised = (
 };
 
 export const calculateAutoFadeEventId = (
-  script: ScriptEventDenormalized[],
-  customEventsLookup: Dictionary<CustomEventDenormalized>,
+  script: ScriptEvent[],
+  customEventsLookup: Dictionary<CustomEvent>,
   scriptEventDefs: ScriptEventDefs
 ) => {
   const events = scriptEventDefs;
   let fadeEventId = "";
-  const checkEvent =
-    (eventId: string) => (scriptEvent: ScriptEventDenormalized) => {
-      if (!fadeEventId && events[scriptEvent.command]?.waitUntilAfterInitFade) {
-        if (scriptEvent.command === EVENT_FADE_IN) {
-          fadeEventId = "MANUAL";
-        } else {
-          fadeEventId = eventId;
-        }
+  const checkEvent = (eventId: string) => (scriptEvent: ScriptEvent) => {
+    if (!fadeEventId && events[scriptEvent.command]?.waitUntilAfterInitFade) {
+      if (scriptEvent.command === EVENT_FADE_IN) {
+        fadeEventId = "MANUAL";
+      } else {
+        fadeEventId = eventId;
       }
-    };
+    }
+  };
   for (const scriptEvent of script) {
     if (scriptEvent?.args?.__comment) {
       continue;
@@ -158,7 +158,7 @@ export const calculateAutoFadeEventId = (
   return fadeEventId;
 };
 
-export const isEmptyScript = (script: ScriptEventDenormalized[]) => {
+export const isEmptyScript = (script: ScriptEvent[]) => {
   if (script.length === 0) {
     return true;
   }

@@ -19,7 +19,7 @@ import {
   customEventName,
   sceneName,
 } from "shared/lib/entities/entitiesHelpers";
-import { Actor } from "shared/lib/entities/entitiesTypes";
+import { ActorNormalized } from "shared/lib/entities/entitiesTypes";
 import styled from "styled-components";
 import { fadeIn } from "ui/animations/animations";
 import { ScriptEditorContext } from "./ScriptEditorContext";
@@ -134,7 +134,7 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
           } else if (value === "$self$" || value === "player") {
             return l10n("FIELD_PLAYER");
           } else if (actorsLookup[value as string] && sceneActorIds) {
-            const actor = actorsLookup[value as string] as Actor;
+            const actor = actorsLookup[value as string] as ActorNormalized;
             return actorName(actor, sceneActorIds?.indexOf(actor.id)).replace(
               / /g,
               ""

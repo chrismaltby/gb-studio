@@ -1,13 +1,13 @@
 import {
-  SceneData,
+  SceneNormalized,
   Background,
   SpriteSheet,
   Music,
-  Actor,
-  Trigger,
+  ActorNormalized,
+  TriggerNormalized,
   Palette,
-  CustomEvent,
-  SceneDenormalized,
+  CustomEventNormalized,
+  Scene,
 } from "../src/shared/lib/entities/entitiesTypes";
 import { ProjectData } from "../src/store/features/project/projectActions";
 import { RootState } from "../src/store/configureStore";
@@ -36,7 +36,7 @@ import {
   PrecompiledSprite,
 } from "../src/lib/compiler/compileData2";
 
-export const dummyScene: SceneData = {
+export const dummySceneNormalized: SceneNormalized = {
   id: "",
   name: "Scene",
   symbol: "scene_0",
@@ -58,10 +58,9 @@ export const dummyScene: SceneData = {
   playerHit3Script: [],
 };
 
-export const dummySceneDenormalized: SceneDenormalized =
-  dummyScene as unknown as SceneDenormalized;
+export const dummyScene: Scene = dummySceneNormalized as unknown as Scene;
 
-export const dummyActor: Actor = {
+export const dummyActorNormalized: ActorNormalized = {
   id: "dummyActor1",
   name: "",
   symbol: "actor_0",
@@ -85,7 +84,7 @@ export const dummyActor: Actor = {
   hit3Script: [],
 };
 
-export const dummyTrigger: Trigger = {
+export const dummyTriggerNormalized: TriggerNormalized = {
   id: "",
   name: "",
   symbol: "trigger_0",
@@ -197,7 +196,7 @@ export const dummyMusic: Music = {
   settings: {},
 };
 
-export const dummyCustomEvent: CustomEvent = {
+export const dummyCustomEventNormalized: CustomEventNormalized = {
   id: "",
   name: "",
   symbol: "script_0",

@@ -1,4 +1,4 @@
-import type { ScriptEventDenormalized } from "shared/lib/entities/entitiesTypes";
+import type { ScriptEvent } from "shared/lib/entities/entitiesTypes";
 import ScriptBuilder, {
   ScriptBuilderEntity,
   ScriptBuilderEntityType,
@@ -28,7 +28,7 @@ type CompileEntityEventsOptions = Partial<ScriptBuilderOptions> & {
 
 const compileEntityEvents = (
   scriptSymbolName: string,
-  input: ScriptEventDenormalized[] = [],
+  input: ScriptEvent[] = [],
   options: CompileEntityEventsOptions
 ) => {
   const {
@@ -62,7 +62,7 @@ const compileEntityEvents = (
 
   const compileEventsWithScriptBuilder = (
     scriptBuilder: ScriptBuilder,
-    subInput: ScriptEventDenormalized[] = []
+    subInput: ScriptEvent[] = []
   ) => {
     const scriptEventHandlers = options.scriptEventHandlers;
 
@@ -118,7 +118,7 @@ const compileEntityEvents = (
     ...options,
     compileEvents: (
       scriptBuilder: ScriptBuilder,
-      childInput: ScriptEventDenormalized[]
+      childInput: ScriptEvent[]
     ) => {
       compileEventsWithScriptBuilder(scriptBuilder, childInput);
     },

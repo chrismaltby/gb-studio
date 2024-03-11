@@ -44,7 +44,7 @@ export const denormalizeProject = (project: {
   );
 };
 
-export const trimDenormalisedProject = (data: ProjectData): ProjectData => {
+export const trimProjectData = (data: ProjectData): ProjectData => {
   return {
     ...data,
     backgrounds: data.backgrounds.map(
@@ -166,7 +166,7 @@ const saveProject = createAsyncThunk<void, string | undefined>(
     saving = true;
 
     try {
-      const normalizedProject = trimDenormalisedProject(
+      const normalizedProject = trimProjectData(
         denormalizeProject(state.project.present)
       );
 

@@ -2,26 +2,26 @@ import mapValues from "lodash/mapValues";
 import type { Dictionary } from "@reduxjs/toolkit";
 import {
   actorScriptKeys,
+  ActorNormalized,
   Actor,
-  ActorDenormalized,
   ActorScriptKey,
-  CustomEvent,
+  CustomEventNormalized,
+  SceneNormalized,
   Scene,
-  SceneDenormalized,
   SceneScriptKey,
+  ScriptEventNormalized,
   ScriptEvent,
-  ScriptEventDenormalized,
+  TriggerNormalized,
   Trigger,
-  TriggerDenormalized,
   TriggerScriptKey,
   triggerScriptKeys,
   sceneScriptKeys,
-  CustomEventDenormalized,
+  CustomEvent,
 } from "shared/lib/entities/entitiesTypes";
 
-//#region Denormalised Script Events
+//#region Script Events
 
-//#region Map Denormalised Script Events
+//#region Map Script Events
 
 /**
  * Updates all script events within an array using a map function
@@ -31,10 +31,10 @@ import {
  * @returns An array of `ScriptEventDenormalized` objects that are the result of applying the `callback` function to each element of the `events` array.
  */
 export const mapScript = (
-  script: ScriptEventDenormalized[] = [],
-  callback: (e: ScriptEventDenormalized) => ScriptEventDenormalized
-): ScriptEventDenormalized[] => {
-  return script.map((scriptEvent): ScriptEventDenormalized => {
+  script: ScriptEvent[] = [],
+  callback: (e: ScriptEvent) => ScriptEvent
+): ScriptEvent[] => {
+  return script.map((scriptEvent): ScriptEvent => {
     if (scriptEvent && scriptEvent.children) {
       const newEvent = callback(scriptEvent);
       return {
@@ -60,8 +60,8 @@ export const mapScript = (
  * @returns A new denormalized scene with updated scripts.
  */
 export const mapSceneScript = (
-  scene: SceneDenormalized,
-  callback: (e: ScriptEventDenormalized) => ScriptEventDenormalized
+  scene: Scene,
+  callback: (e: ScriptEvent) => ScriptEvent
 ) => {
   const newScene = {
     ...scene,
@@ -134,17 +134,17 @@ export const mapSceneScript = (
  * @returns A new denormalized scene with updated scripts.
  */
 export const mapScenesScript = (
-  scenes: SceneDenormalized[],
-  callback: (e: ScriptEventDenormalized) => ScriptEventDenormalized
+  scenes: Scene[],
+  callback: (e: ScriptEvent) => ScriptEvent
 ) => {
   return scenes.map((scene) => {
     return mapSceneScript(scene, callback);
   });
 };
 
-//#endregion Map Denormalised Script Events
+//#endregion Map Script Events
 
-//#region Filter Denormalised Script Events
+//#region Filter Script Events
 
 /**
  * Filters a nested structure of `ScriptEventDenormalized` objects.
@@ -154,8 +154,8 @@ export const mapScenesScript = (
  * @returns An array of `ScriptEventDenormalized` objects that have been filtered.
  */
 export const filterEvents = (
-  data: ScriptEventDenormalized[] = [],
-  callback: (e: ScriptEventDenormalized) => boolean
+  data: ScriptEvent[] = [],
+  callback: (e: ScriptEvent) => boolean
 ) => {
   return data.reduce((memo, o) => {
     if (callback(o)) {
@@ -169,19 +169,19 @@ export const filterEvents = (
       });
     }
     return memo;
-  }, [] as ScriptEventDenormalized[]);
+  }, [] as ScriptEvent[]);
 };
 
-//#endregion Filter Denormalised Script Events
+//#endregion Filter Script Events
 
-//#region Walk Denormalised Script Events
+//#region Walk Script Events
 
 type WalkOptions =
   | undefined
   | {
-      filter?: (ScriptEvent: ScriptEventDenormalized) => boolean;
+      filter?: (ScriptEvent: ScriptEvent) => boolean;
       customEvents?: {
-        lookup: Dictionary<CustomEventDenormalized>;
+        lookup: Dictionary<CustomEvent>;
         maxDepth: number;
         args?: Record<string, unknown>;
       };
@@ -194,9 +194,9 @@ type WalkOptions =
  * @param callback - A callback function that is applied to each script event and all children
  */
 export const walkScript = (
-  script: ScriptEventDenormalized[] = [],
+  script: ScriptEvent[] = [],
   options: WalkOptions,
-  callback: (e: ScriptEventDenormalized) => void
+  callback: (e: ScriptEvent) => void
 ) => {
   if (!script) {
     return;
@@ -258,9 +258,9 @@ export const walkScript = (
  * @param callback - A callback function that is applied to each script event and all children
  */
 export const walkSceneSpecificScripts = (
-  scene: SceneDenormalized,
+  scene: Scene,
   options: WalkOptions,
-  callback: (e: ScriptEventDenormalized) => void
+  callback: (e: ScriptEvent) => void
 ) => {
   walkSceneScriptsKeys((key) => {
     walkScript(scene[key], options, callback);
@@ -274,9 +274,9 @@ export const walkSceneSpecificScripts = (
  * @param callback - A callback function that is applied to each script event and all children
  */
 export const walkActorScripts = (
-  actor: ActorDenormalized,
+  actor: Actor,
   options: WalkOptions,
-  callback: (e: ScriptEventDenormalized) => void
+  callback: (e: ScriptEvent) => void
 ) => {
   walkActorScriptsKeys((key) => {
     walkScript(actor[key], options, callback);
@@ -290,9 +290,9 @@ export const walkActorScripts = (
  * @param callback - A callback function that is applied to each script event and all children
  */
 export const walkTriggerScripts = (
-  trigger: TriggerDenormalized,
+  trigger: Trigger,
   options: WalkOptions,
-  callback: (e: ScriptEventDenormalized) => void
+  callback: (e: ScriptEvent) => void
 ) => {
   walkTriggerScriptsKeys((key) => {
     walkScript(trigger[key], options, callback);
@@ -307,13 +307,9 @@ export const walkTriggerScripts = (
  * @param callback - A callback function that is applied to each script event and all children
  */
 export const walkSceneScripts = (
-  scene: SceneDenormalized,
+  scene: Scene,
   options: WalkOptions,
-  callback: (
-    event: ScriptEventDenormalized,
-    actor?: ActorDenormalized,
-    trigger?: TriggerDenormalized
-  ) => void
+  callback: (event: ScriptEvent, actor?: Actor, trigger?: Trigger) => void
 ) => {
   walkSceneSpecificScripts(scene, options, (e) =>
     callback(e, undefined, undefined)
@@ -336,13 +332,13 @@ export const walkSceneScripts = (
  * @param callback - A callback function that is applied to each script event and all children
  */
 export const walkScenesScripts = (
-  scenes: SceneDenormalized[],
+  scenes: Scene[],
   options: WalkOptions,
   callback: (
-    event: ScriptEventDenormalized,
-    scene: SceneDenormalized,
-    actor?: ActorDenormalized,
-    trigger?: TriggerDenormalized
+    event: ScriptEvent,
+    scene: Scene,
+    actor?: Actor,
+    trigger?: Trigger
   ) => void
 ) => {
   scenes.forEach((scene) => {
@@ -352,18 +348,18 @@ export const walkScenesScripts = (
   });
 };
 
-//#endregion Walk Denormalised Script Events
+//#endregion Walk Script Events
 
-//#endregion Denormalised Script Events
+//#endregion Script Events
 
-//#region Normalised Script Events
+//#region Normalized Script Events
 
 type WalkNormalizedOptions =
   | undefined
   | {
-      filter?: (ScriptEvent: ScriptEvent) => boolean;
+      filter?: (ScriptEvent: ScriptEventNormalized) => boolean;
       customEvents?: {
-        lookup: Dictionary<CustomEvent>;
+        lookup: Dictionary<CustomEventNormalized>;
         maxDepth: number;
         args?: Record<string, unknown>;
       };
@@ -393,18 +389,18 @@ export const replaceCustomEventArgs = <
 };
 
 /**
- * Iterates over an array of normalised `ScriptEvent` objects and calls a callback function with each element.
+ * Iterates over an array of normalized `ScriptEvent` objects and calls a callback function with each element.
  *
  * @param script - An array of string ids for each script event to be iterated over.
- * @param lookup - A dictionary mapping script event ids to the normalised `ScriptEvent`s
+ * @param lookup - A dictionary mapping script event ids to the normalized `ScriptEvent`s
  * @param options - Allows providing an optional filter function and a lookup of custom events to follow EVENT_CALL_CUSTOM_EVENT calls
  * @param callback - A callback function that is applied to each script event and all children
  */
 export const walkNormalizedScript = (
   ids: string[] = [],
-  lookup: Dictionary<ScriptEvent>,
+  lookup: Dictionary<ScriptEventNormalized>,
   options: WalkNormalizedOptions,
-  callback: (scriptEvent: ScriptEvent) => void
+  callback: (scriptEvent: ScriptEventNormalized) => void
 ) => {
   for (let i = 0; i < ids.length; i++) {
     const scriptEvent = lookup[ids[i]];
@@ -461,15 +457,15 @@ export const walkNormalizedScript = (
  * Does not walk any included actors or triggers, see `walkNormalizedSceneScripts` if this is needed.
  *
  * @param scene - A normalized scene to walk
- * @param lookup - A dictionary mapping script event ids to the normalised `ScriptEvent`s
+ * @param lookup - A dictionary mapping script event ids to the normalized `ScriptEvent`s
  * @param options - Allows providing an optional filter function and a lookup of custom events to follow EVENT_CALL_CUSTOM_EVENT calls
  * @param callback - A callback function that is applied to each script event and all children
  */
 export const walkNormalizedSceneSpecificScripts = (
-  scene: Scene,
-  lookup: Dictionary<ScriptEvent>,
+  scene: SceneNormalized,
+  lookup: Dictionary<ScriptEventNormalized>,
   options: WalkNormalizedOptions,
-  callback: (scriptEvent: ScriptEvent) => void
+  callback: (scriptEvent: ScriptEventNormalized) => void
 ) => {
   walkSceneScriptsKeys((key) => {
     walkNormalizedScript(scene[key], lookup, options, callback);
@@ -477,10 +473,10 @@ export const walkNormalizedSceneSpecificScripts = (
 };
 
 export const walkNormalizedActorScripts = (
-  actor: Actor,
-  lookup: Dictionary<ScriptEvent>,
+  actor: ActorNormalized,
+  lookup: Dictionary<ScriptEventNormalized>,
   options: WalkNormalizedOptions,
-  callback: (scriptEvent: ScriptEvent) => void
+  callback: (scriptEvent: ScriptEventNormalized) => void
 ) => {
   walkActorScriptsKeys((key) => {
     walkNormalizedScript(actor[key], lookup, options, callback);
@@ -488,10 +484,10 @@ export const walkNormalizedActorScripts = (
 };
 
 export const walkNormalizedTriggerScripts = (
-  trigger: Trigger,
-  lookup: Dictionary<ScriptEvent>,
+  trigger: TriggerNormalized,
+  lookup: Dictionary<ScriptEventNormalized>,
   options: WalkNormalizedOptions,
-  callback: (scriptEvent: ScriptEvent) => void
+  callback: (scriptEvent: ScriptEventNormalized) => void
 ) => {
   walkTriggerScriptsKeys((key) => {
     walkNormalizedScript(trigger[key], lookup, options, callback);
@@ -499,12 +495,16 @@ export const walkNormalizedTriggerScripts = (
 };
 
 export const walkNormalizedSceneScripts = (
-  scene: Scene,
-  lookup: Dictionary<ScriptEvent>,
-  actorsLookup: Dictionary<Actor>,
-  triggersLookup: Dictionary<Trigger>,
+  scene: SceneNormalized,
+  lookup: Dictionary<ScriptEventNormalized>,
+  actorsLookup: Dictionary<ActorNormalized>,
+  triggersLookup: Dictionary<TriggerNormalized>,
   options: WalkNormalizedOptions,
-  callback: (scriptEvent: ScriptEvent, actor?: Actor, trigger?: Trigger) => void
+  callback: (
+    scriptEvent: ScriptEventNormalized,
+    actor?: ActorNormalized,
+    trigger?: TriggerNormalized
+  ) => void
 ) => {
   walkNormalizedSceneSpecificScripts(scene, lookup, options, (e) =>
     callback(e, undefined, undefined)
@@ -528,16 +528,16 @@ export const walkNormalizedSceneScripts = (
 };
 
 export const walkNormalizedScenesScripts = (
-  scenes: Scene[],
-  lookup: Dictionary<ScriptEvent>,
-  actorsLookup: Dictionary<Actor>,
-  triggersLookup: Dictionary<Trigger>,
+  scenes: SceneNormalized[],
+  lookup: Dictionary<ScriptEventNormalized>,
+  actorsLookup: Dictionary<ActorNormalized>,
+  triggersLookup: Dictionary<TriggerNormalized>,
   options: WalkNormalizedOptions,
   callback: (
-    scriptEvent: ScriptEvent,
-    scene: Scene,
-    actor?: Actor,
-    trigger?: Trigger
+    scriptEvent: ScriptEventNormalized,
+    scene: SceneNormalized,
+    actor?: ActorNormalized,
+    trigger?: TriggerNormalized
   ) => void
 ) => {
   scenes.forEach((scene) => {
@@ -553,10 +553,10 @@ export const walkNormalizedScenesScripts = (
 };
 
 export const walkNormalizedCustomEventScripts = (
-  customEvent: CustomEvent,
-  lookup: Dictionary<ScriptEvent>,
+  customEvent: CustomEventNormalized,
+  lookup: Dictionary<ScriptEventNormalized>,
   options: WalkNormalizedOptions,
-  callback: (scriptEvent: ScriptEvent) => void
+  callback: (scriptEvent: ScriptEventNormalized) => void
 ) => {
   walkNormalizedScript(customEvent.script, lookup, options, callback);
 };
@@ -579,4 +579,4 @@ export const walkSceneScriptsKeys = (
   sceneScriptKeys.forEach((key) => callback(key));
 };
 
-//#endregion Normalised Script Events
+//#endregion Normalized Script Events

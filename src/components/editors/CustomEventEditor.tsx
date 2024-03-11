@@ -18,7 +18,7 @@ import {
 } from "ui/form/FormLayout";
 import { EditableText } from "ui/form/EditableText";
 import { RootState } from "store/configureStore";
-import { CustomEvent } from "shared/lib/entities/entitiesTypes";
+import { CustomEventNormalized } from "shared/lib/entities/entitiesTypes";
 import { StickyTabs, TabBar } from "ui/tabs/Tabs";
 import { Button } from "ui/buttons/Button";
 import { LockIcon, LockOpenIcon } from "ui/icons/Icons";
@@ -33,8 +33,10 @@ import { Label } from "ui/form/Label";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import l10n from "shared/lib/lang/l10n";
 
-const customEventName = (customEvent: CustomEvent, customEventIndex: number) =>
-  customEvent.name ? customEvent.name : `Script ${customEventIndex + 1}`;
+const customEventName = (
+  customEvent: CustomEventNormalized,
+  customEventIndex: number
+) => (customEvent.name ? customEvent.name : `Script ${customEventIndex + 1}`);
 
 interface CustomEventEditorProps {
   id: string;

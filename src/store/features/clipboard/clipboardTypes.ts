@@ -3,11 +3,11 @@ import {
   Metasprite,
   SpriteState,
   SpriteAnimation,
-  ScriptEvent,
-  Trigger,
-  Actor,
-  Scene,
-  CustomEvent,
+  ScriptEventNormalized,
+  TriggerNormalized,
+  ActorNormalized,
+  SceneNormalized,
+  CustomEventNormalized,
   Variable,
 } from "shared/lib/entities/entitiesTypes";
 
@@ -43,32 +43,32 @@ export type ClipboardPaletteIds = {
 };
 
 export type ClipboardScriptEvents = {
-  scriptEvents: ScriptEvent[];
+  scriptEvents: ScriptEventNormalized[];
   script: string[];
-  customEvents: CustomEvent[];
+  customEvents: CustomEventNormalized[];
 };
 
 export type ClipboardTriggers = {
-  triggers: Trigger[];
-  scriptEvents: ScriptEvent[];
+  triggers: TriggerNormalized[];
+  scriptEvents: ScriptEventNormalized[];
   variables: Variable[];
-  customEvents: CustomEvent[];
+  customEvents: CustomEventNormalized[];
 };
 
 export type ClipboardActors = {
-  actors: Actor[];
-  scriptEvents: ScriptEvent[];
+  actors: ActorNormalized[];
+  scriptEvents: ScriptEventNormalized[];
   variables: Variable[];
-  customEvents: CustomEvent[];
+  customEvents: CustomEventNormalized[];
 };
 
 export type ClipboardScenes = {
-  scenes: Scene[];
-  actors: Actor[];
-  triggers: Trigger[];
-  scriptEvents: ScriptEvent[];
+  scenes: SceneNormalized[];
+  actors: ActorNormalized[];
+  triggers: TriggerNormalized[];
+  scriptEvents: ScriptEventNormalized[];
   variables: Variable[];
-  customEvents: CustomEvent[];
+  customEvents: CustomEventNormalized[];
 };
 
 export type ClipboardType =

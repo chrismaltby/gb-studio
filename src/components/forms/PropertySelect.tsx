@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Actor, UnitType } from "shared/lib/entities/entitiesTypes";
+import { ActorNormalized, UnitType } from "shared/lib/entities/entitiesTypes";
 import { RootState } from "store/configureStore";
 import {
   OptGroup,
@@ -161,7 +161,7 @@ export const PropertySelect = ({
             spriteSheetId: playerSpriteSheetId,
           },
           ...sceneActorIds.map((actorId, actorIndex) => {
-            const actor = actorsLookup[actorId] as Actor;
+            const actor = actorsLookup[actorId] as ActorNormalized;
             return {
               label: actorName(actor, actorIndex),
               value: actor.id,

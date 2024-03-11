@@ -26,11 +26,11 @@ import {
 } from "store/features/entities/entitiesState";
 import {
   Background,
-  CustomEvent,
+  CustomEventNormalized,
   Emote,
   Font,
   Music,
-  Scene,
+  SceneNormalized,
   Sound,
   SpriteSheet,
   Variable,
@@ -95,7 +95,7 @@ const fontToOption = (font: Font): EventOption => {
   };
 };
 
-const sceneToOption = (scene: Scene, index: number): EventOption => {
+const sceneToOption = (scene: SceneNormalized, index: number): EventOption => {
   return {
     label: sceneName(scene, index),
     value: scene.id,
@@ -141,7 +141,7 @@ const emoteToOption = (emote: Emote): EventOption => {
 };
 
 const customEventToOption = (
-  customEvent: CustomEvent,
+  customEvent: CustomEventNormalized,
   index: number
 ): EventOption => {
   return {

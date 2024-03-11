@@ -4,7 +4,7 @@ import { RootState } from "store/configureStore";
 import { customEventSelectors } from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
 import editorActions from "store/features/editor/editorActions";
-import { CustomEvent } from "shared/lib/entities/entitiesTypes";
+import { CustomEventNormalized } from "shared/lib/entities/entitiesTypes";
 import styled from "styled-components";
 import { CodeIcon } from "ui/icons/Icons";
 import l10n from "shared/lib/lang/l10n";
@@ -19,7 +19,7 @@ interface NavigatorItem {
 }
 
 const customEventToNavigatorItem = (
-  customEvent: CustomEvent,
+  customEvent: CustomEventNormalized,
   customEventIndex: number
 ): NavigatorItem => ({
   id: customEvent.id,

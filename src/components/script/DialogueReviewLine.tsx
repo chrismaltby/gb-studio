@@ -1,11 +1,11 @@
 import React from "react";
 import { textNumLines } from "shared/lib/helpers/trimlines";
 import l10n from "shared/lib/lang/l10n";
-import { ScriptEvent } from "shared/lib/entities/entitiesTypes";
+import { ScriptEventNormalized } from "shared/lib/entities/entitiesTypes";
 import { Textarea } from "ui/form/Textarea";
 
 export interface DialogueLine {
-  line: ScriptEvent;
+  line: ScriptEventNormalized;
   sceneName: string;
   entityName: string;
 }

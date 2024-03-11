@@ -1,13 +1,13 @@
 import React, { FC } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "store/configureStore";
-import { ScriptEvent } from "shared/lib/entities/entitiesTypes";
+import { ScriptEventNormalized } from "shared/lib/entities/entitiesTypes";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import { DialoguePreview } from "./DialoguePreview";
 import { MenuPreview } from "./MenuPreview";
 
 interface ScriptEditorEventHelperProps {
-  event: ScriptEvent;
+  event: ScriptEventNormalized;
 }
 
 const toString = (input: unknown): string => {

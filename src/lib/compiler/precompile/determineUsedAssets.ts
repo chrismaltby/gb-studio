@@ -3,8 +3,8 @@ import type { Reference } from "components/forms/ReferencesSelect";
 import { MAX_NESTED_SCRIPT_DEPTH } from "consts";
 import { eventHasArg } from "lib/helpers/eventSystem";
 import type {
-  CustomEventDenormalized,
-  SceneDenormalized,
+  CustomEvent,
+  Scene,
   SoundData,
   Variable,
 } from "shared/lib/entities/entitiesTypes";
@@ -17,10 +17,10 @@ export const determineUsedAssets = ({
   soundsLookup,
   customEventsLookup,
 }: {
-  scenes: SceneDenormalized[];
+  scenes: Scene[];
   variablesLookup: Dictionary<Variable>;
   soundsLookup: Dictionary<SoundData>;
-  customEventsLookup: Dictionary<CustomEventDenormalized>;
+  customEventsLookup: Dictionary<CustomEvent>;
 }) => {
   const usedVariablesLookup: Dictionary<Variable> = {};
   const usedSoundsLookup: Dictionary<SoundData> = {};
