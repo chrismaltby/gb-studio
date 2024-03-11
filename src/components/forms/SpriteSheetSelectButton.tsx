@@ -135,16 +135,6 @@ const NoValue = styled.div`
   width: 24px;
 `;
 
-const typeLabel = (spriteSheet?: SpriteSheet): string => {
-  if (!spriteSheet) {
-    return "";
-  }
-  // if (spriteSheet.type === "actor_animated" || spriteSheet.type === "actor") {
-  //   return l10n("ACTOR");
-  // }
-  return l10n("FIELD_SPRITE");
-};
-
 export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
   name,
   value,
@@ -260,8 +250,8 @@ export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
             <SpriteInfo>
               <SpriteInfoTitle>{spriteSheet?.name}</SpriteInfoTitle>
               <SpriteInfoRow>
-                <SpriteInfoField>{l10n("FIELD_TYPE")}:</SpriteInfoField>
-                {typeLabel(spriteSheet)}
+                <SpriteInfoField>{l10n("FIELD_SIZE")}:</SpriteInfoField>
+                {spriteSheet?.canvasWidth}x{spriteSheet?.canvasHeight}
               </SpriteInfoRow>
               <SpriteInfoRow>
                 <SpriteInfoField>{l10n("FIELD_TILES")}:</SpriteInfoField>

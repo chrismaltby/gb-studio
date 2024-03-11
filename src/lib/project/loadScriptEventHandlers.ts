@@ -3,7 +3,6 @@ import { promisify } from "util";
 import { eventsRoot } from "consts";
 import * as l10n from "shared/lib/lang/l10n";
 import * as eventHelpers from "lib/events/helpers";
-import * as gbStudioHelpers from "lib/helpers/gbstudio";
 import * as eventSystemHelpers from "lib/helpers/eventSystem";
 import * as compileEntityEvents from "lib/compiler/compileEntityEvents";
 import type { ScriptEventFieldSchema } from "shared/lib/entities/entitiesTypes";
@@ -57,7 +56,6 @@ const vm = new NodeVM({
     mock: {
       "./helpers": eventHelpers,
       "../helpers/l10n": l10n,
-      "../helpers/gbstudio": gbStudioHelpers,
       "../helpers/eventSystem": eventSystemHelpers,
       "../compiler/compileEntityEvents": compileEntityEvents,
       "../helpers/trimlines": trimLines,

@@ -4,7 +4,6 @@ import uuidv4 from "uuid/v4";
 import sizeOf from "image-size";
 import { stat } from "fs";
 import parseAssetPath from "shared/lib/assets/parseAssetPath";
-import { spriteTypeFromNumFrames } from "lib/helpers/gbstudio";
 import { checksumFile } from "lib/helpers/checksum";
 import { toValidSymbol } from "shared/lib/helpers/symbols";
 
@@ -35,7 +34,6 @@ export interface SpriteAssetData {
   animSpeed: number | null;
   states: string[];
   numFrames: number;
-  type: string;
 }
 
 const loadSpriteData =
@@ -58,7 +56,6 @@ const loadSpriteData =
         name,
         symbol: toValidSymbol(`sprite_${name}`),
         numFrames,
-        type: spriteTypeFromNumFrames(numFrames), // @TODO can this be removed now?
         filename: file,
         inode,
         checksum,
