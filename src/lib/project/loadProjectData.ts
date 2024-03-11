@@ -50,9 +50,14 @@ const loadProject = async (
   modifiedSpriteIds: string[];
 }> => {
   const projectRoot = path.dirname(projectPath);
+
+  const scriptEventDefs = await loadAllScriptEvents(projectRoot);
+  const engineFields = await loadEngineFields(projectRoot);
+
   const json = migrateProject(
     await fs.readJson(projectPath),
-    projectRoot
+    projectRoot,
+    scriptEventDefs
   ) as ProjectData;
 
   const [backgrounds, sprites, music, sounds, fonts, avatars, emotes] =
@@ -328,9 +333,6 @@ const loadProject = async (
   }
 
   const fixedEngineFieldValues = json.engineFieldValues || [];
-
-  const scriptEventDefs = await loadAllScriptEvents(projectRoot);
-  const engineFields = await loadEngineFields(projectRoot);
 
   return {
     data: {
