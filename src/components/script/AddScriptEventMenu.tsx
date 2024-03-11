@@ -134,7 +134,7 @@ const instanciateScriptEvent = (
         } else if (defaultValue === "LAST_ACTOR") {
           replaceValue = defaultActorId;
         } else if (field.type === "events") {
-          replaceValue = undefined;
+          return memo;
         } else if (defaultValue !== undefined) {
           replaceValue = defaultValue;
         }

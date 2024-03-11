@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where clicking on a scene would sometimes not cause it to become selected
 - Fix issue where dragging World using middle mouse button and releasing button with cursor outside of window would cause scrolling to still be enabled
 - Fix issue where double clicking scene search input would cause window to become maximised on macOS
+- Fix issue where pasting a "Call Script" event could sometimes incorrectly say script has been modified if project hadn't been saved and reloaded first
 
 ## [3.2.1] - 2024-02-27
 
