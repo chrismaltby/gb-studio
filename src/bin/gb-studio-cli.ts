@@ -5,7 +5,6 @@ import rimraf from "rimraf";
 import { promisify } from "util";
 import { program } from "commander";
 import { emulatorRoot } from "../consts";
-import { initPlugins } from "lib/plugins/plugins";
 import compileData from "lib/compiler/compileData";
 import ejectBuild from "lib/compiler/ejectBuild";
 import makeBuild from "lib/compiler/makeBuild";
@@ -30,11 +29,8 @@ const main = async (
 
   initElectronL10N();
 
-  // Load events
+  // Load script event handlers + plugins
   const scriptEventHandlers = await loadAllScriptEventHandlers(projectRoot);
-
-  // Load plugins
-  initPlugins(projectRoot);
 
   // Load engine fields
   const engineFields = await loadEngineFields(projectRoot);
