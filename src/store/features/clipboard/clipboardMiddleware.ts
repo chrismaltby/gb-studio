@@ -62,6 +62,7 @@ import {
   walkSceneScriptsKeys,
   walkTriggerScriptsKeys,
 } from "shared/lib/scripts/walk";
+import { batch } from "react-redux";
 
 const generateLocalVariableInsertActions = (
   originalId: string,
@@ -714,9 +715,11 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             existingCustomEvents,
             existingScriptEventsLookup
           );
-          for (const action of actions) {
-            store.dispatch(action);
-          }
+          batch(() => {
+            for (const action of actions) {
+              store.dispatch(action);
+            }
+          });
         }
       }
     } else if (actions.pasteScriptEventValues.match(action)) {
@@ -763,9 +766,11 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             action.payload.x,
             action.payload.y
           );
-          for (const action of actions) {
-            store.dispatch(action);
-          }
+          batch(() => {
+            for (const action of actions) {
+              store.dispatch(action);
+            }
+          });
         }
         for (const customEvent of clipboard.data.customEvents) {
           const actions = await generateCustomEventInsertActions(
@@ -774,9 +779,11 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             existingCustomEvents,
             existingScriptEventsLookup
           );
-          for (const action of actions) {
-            store.dispatch(action);
-          }
+          batch(() => {
+            for (const action of actions) {
+              store.dispatch(action);
+            }
+          });
         }
       }
     } else if (actions.pasteActorAt.match(action)) {
@@ -797,9 +804,11 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             action.payload.x,
             action.payload.y
           );
-          for (const action of actions) {
-            store.dispatch(action);
-          }
+          batch(() => {
+            for (const action of actions) {
+              store.dispatch(action);
+            }
+          });
         }
         for (const customEvent of clipboard.data.customEvents) {
           const actions = await generateCustomEventInsertActions(
@@ -808,9 +817,11 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             existingCustomEvents,
             existingScriptEventsLookup
           );
-          for (const action of actions) {
-            store.dispatch(action);
-          }
+          batch(() => {
+            for (const action of actions) {
+              store.dispatch(action);
+            }
+          });
         }
       }
     } else if (actions.pasteSceneAt.match(action)) {
@@ -834,10 +845,13 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             action.payload.x,
             action.payload.y
           );
-          for (const action of actions) {
-            store.dispatch(action);
-          }
+          batch(() => {
+            for (const action of actions) {
+              store.dispatch(action);
+            }
+          });
         }
+
         for (const customEvent of clipboard.data.customEvents) {
           const actions = await generateCustomEventInsertActions(
             customEvent,
@@ -845,9 +859,11 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
             existingCustomEvents,
             existingScriptEventsLookup
           );
-          for (const action of actions) {
-            store.dispatch(action);
-          }
+          batch(() => {
+            for (const action of actions) {
+              store.dispatch(action);
+            }
+          });
         }
       }
     } else if (actions.fetchClipboard.match(action)) {
