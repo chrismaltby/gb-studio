@@ -1,16 +1,16 @@
 import React, { useContext, useEffect, useRef } from "react";
 import styled, { ThemeContext } from "styled-components";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import debounce from "lodash/debounce";
 import useResizable from "ui/hooks/use-resizable";
 import useWindowSize from "ui/hooks/use-window-size";
 import { SplitPaneHorizontalDivider } from "ui/splitpane/SplitPaneDivider";
-import { RootState } from "store/configureStore";
 import editorActions from "store/features/editor/editorActions";
 import { backgroundSelectors } from "store/features/entities/entitiesState";
 import { NavigatorBackgrounds } from "components/backgrounds/NavigatorBackgrounds";
 import BackgroundViewer from "components/backgrounds/BackgroundViewer";
 import BackgroundPreviewSettings from "components/backgrounds/BackgroundPreviewSettings";
+import { useAppSelector } from "store/hooks";
 
 const Wrapper = styled.div`
   display: flex;
@@ -20,9 +20,9 @@ const Wrapper = styled.div`
 const ImagesPage = () => {
   const dispatch = useDispatch();
   const themeContext = useContext(ThemeContext);
-  const selectedId = useSelector((state: RootState) => state.navigation.id);
-  const navigatorSidebarWidth = useSelector(
-    (state: RootState) => state.editor.navigatorSidebarWidth
+  const selectedId = useAppSelector((state) => state.navigation.id);
+  const navigatorSidebarWidth = useAppSelector(
+    (state) => state.editor.navigatorSidebarWidth
   );
   const windowSize = useWindowSize();
   const prevWindowWidthRef = useRef<number>(0);
@@ -30,12 +30,12 @@ const ImagesPage = () => {
   const windowHeight = windowSize.height || 0;
   const minCenterPaneWidth = 0;
 
-  const allBackgrounds = useSelector((state: RootState) =>
+  const allBackgrounds = useAppSelector((state) =>
     backgroundSelectors.selectAll(state)
   );
 
   const background =
-    useSelector((state: RootState) =>
+    useAppSelector((state) =>
       backgroundSelectors.selectById(state, selectedId)
     ) || allBackgrounds[0];
 

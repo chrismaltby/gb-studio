@@ -1,8 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import styled, { css } from "styled-components";
 import { Song } from "shared/lib/uge/song/Song";
-import { RootState } from "store/configureStore";
 import { SplitPaneVerticalDivider } from "ui/splitpane/SplitPaneDivider";
 import { SequenceEditor } from "./SequenceEditor";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
@@ -25,6 +24,7 @@ import { WandIcon } from "ui/icons/Icons";
 import { RollChannelHover } from "./RollChannelHover";
 import API from "renderer/lib/api";
 import { MusicDataPacket } from "shared/lib/music/types";
+import { useAppSelector } from "store/hooks";
 
 const CELL_SIZE = 16;
 const MAX_NOTE = 71;
@@ -265,13 +265,13 @@ export const SongPianoRoll = ({
 }: SongPianoRollProps) => {
   const dispatch = useDispatch();
 
-  const playing = useSelector((state: RootState) => state.tracker.playing);
-  const hoverNote = useSelector((state: RootState) => state.tracker.hoverNote);
-  const startPlaybackPosition = useSelector(
-    (state: RootState) => state.tracker.startPlaybackPosition
+  const playing = useAppSelector((state) => state.tracker.playing);
+  const hoverNote = useAppSelector((state) => state.tracker.hoverNote);
+  const startPlaybackPosition = useAppSelector(
+    (state) => state.tracker.startPlaybackPosition
   );
-  const subpatternEditorFocus = useSelector(
-    (state: RootState) => state.tracker.subpatternEditorFocus
+  const subpatternEditorFocus = useAppSelector(
+    (state) => state.tracker.subpatternEditorFocus
   );
 
   const patternId = song?.sequence[sequenceId] || 0;
@@ -328,14 +328,14 @@ export const SongPianoRoll = ({
     setPatternsPanelOpen(!patternsPanelOpen);
   }, [patternsPanelOpen, setPatternsPanelOpen]);
 
-  const selectedChannel = useSelector(
-    (state: RootState) => state.tracker.selectedChannel
+  const selectedChannel = useAppSelector(
+    (state) => state.tracker.selectedChannel
   );
-  const visibleChannels = useSelector(
-    (state: RootState) => state.tracker.visibleChannels
+  const visibleChannels = useAppSelector(
+    (state) => state.tracker.visibleChannels
   );
 
-  const tool = useSelector((state: RootState) => state.tracker.tool);
+  const tool = useAppSelector((state) => state.tracker.tool);
   const gridRef = useRef<HTMLDivElement>(null);
 
   const [draggingSelection, setDraggingSelection] = useState(false);
@@ -345,8 +345,8 @@ export const SongPianoRoll = ({
     useState<SelectionRect | undefined>();
   const [addToSelection, setAddToSelection] = useState(false);
 
-  const selectedPatternCells = useSelector(
-    (state: RootState) => state.tracker.selectedPatternCells
+  const selectedPatternCells = useAppSelector(
+    (state) => state.tracker.selectedPatternCells
   );
 
   useEffect(() => {
@@ -370,12 +370,10 @@ export const SongPianoRoll = ({
 
   const [pastedPattern, setPastedPattern] = useState<PatternCell[][]>();
 
-  const hoverColumn = useSelector(
-    (state: RootState) => state.tracker.hoverColumn
-  );
+  const hoverColumn = useAppSelector((state) => state.tracker.hoverColumn);
 
-  const defaultInstruments = useSelector(
-    (state: RootState) => state.tracker.defaultInstruments
+  const defaultInstruments = useAppSelector(
+    (state) => state.tracker.defaultInstruments
   );
   const currentInstrument = defaultInstruments[selectedChannel];
 

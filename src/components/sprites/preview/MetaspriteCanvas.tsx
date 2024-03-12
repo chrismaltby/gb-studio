@@ -1,7 +1,6 @@
 import React, { memo, useCallback, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "store/hooks";
 import { DMG_PALETTE } from "consts";
-import { RootState } from "store/configureStore";
 import {
   metaspriteSelectors,
   metaspriteTileSelectors,
@@ -34,16 +33,16 @@ export const MetaspriteCanvas = memo(
     const [paletteColors, setPaletteColors] =
       useState<[string, string, string, string][] | null>(null);
     const canvasRef = React.useRef<HTMLCanvasElement>(null);
-    const spriteSheet = useSelector((state: RootState) =>
+    const spriteSheet = useAppSelector((state) =>
       spriteSheetSelectors.selectById(state, spriteSheetId)
     );
-    const metasprite = useSelector((state: RootState) =>
+    const metasprite = useAppSelector((state) =>
       metaspriteSelectors.selectById(state, metaspriteId)
     );
-    const tilesLookup = useSelector((state: RootState) =>
+    const tilesLookup = useAppSelector((state) =>
       metaspriteTileSelectors.selectEntities(state)
     );
-    const projectRoot = useSelector((state: RootState) => state.document.root);
+    const projectRoot = useAppSelector((state) => state.document.root);
     const width = spriteSheet?.canvasWidth || 0;
     const height = spriteSheet?.canvasHeight || 0;
 

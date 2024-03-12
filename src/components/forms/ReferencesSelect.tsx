@@ -5,8 +5,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import { useDispatch } from "react-redux";
 import {
   backgroundSelectors,
   customEventSelectors,
@@ -36,6 +35,8 @@ import { RelativePortal } from "ui/layout/RelativePortal";
 import AddReferenceMenu from "./AddReferenceMenu";
 import { Input } from "ui/form/Input";
 import entitiesActions from "store/features/entities/entitiesActions";
+import { useAppSelector } from "store/hooks";
+import { RootState } from "store/configureStore";
 
 export type ReferenceType =
   | "background"
@@ -511,7 +512,7 @@ export const AssetReference = <
 }) => {
   const dispatch = useDispatch();
 
-  const asset = useSelector(selector);
+  const asset = useAppSelector(selector);
 
   const [renameVisible, setRenameVisible] = useState(false);
   const [customSymbol, setCustomSymbol] = useState("");
@@ -629,7 +630,7 @@ export const AssetReference = <
 export const VariableReference = ({ id, onRemove }: ReferenceProps) => {
   const dispatch = useDispatch();
 
-  const variable = useSelector((state: RootState) =>
+  const variable = useAppSelector((state) =>
     variableSelectors.selectById(state, id)
   );
   const symbol = variable?.symbol?.toUpperCase() ?? `VAR_${id}`;

@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { EditableText } from "ui/form/EditableText";
 import {
@@ -10,7 +10,6 @@ import {
 } from "ui/form/FormLayout";
 import { Sidebar, SidebarColumn } from "ui/sidebars/Sidebar";
 import { Label } from "ui/form/Label";
-import { RootState } from "store/configureStore";
 import { Input } from "ui/form/Input";
 import { InstrumentDutyEditor } from "./InstrumentDutyEditor";
 import { InstrumentWaveEditor } from "./InstrumentWaveEditor";
@@ -31,6 +30,7 @@ import { StickyTabs, TabBar } from "ui/tabs/Tabs";
 import { InstrumentSubpatternEditor } from "./InstrumentSubpatternEditor";
 import styled from "styled-components";
 import { NumberInput } from "ui/form/NumberInput";
+import { useAppSelector } from "store/hooks";
 
 type Instrument = DutyInstrument | NoiseInstrument | WaveInstrument;
 
@@ -89,18 +89,14 @@ const instrumentName = (instrument: Instrument, type: string) => {
 
 export const SongEditor: FC<SongEditorProps> = ({ multiColumn }) => {
   const dispatch = useDispatch();
-  const selectedInstrument = useSelector(
-    (state: RootState) => state.editor.selectedInstrument
+  const selectedInstrument = useAppSelector(
+    (state) => state.editor.selectedInstrument
   );
   useEffect(() => {
     dispatch(trackerActions.setSelectedEffectCell(null));
   }, [dispatch, selectedInstrument]);
-  const sequenceId = useSelector(
-    (state: RootState) => state.editor.selectedSequence
-  );
-  const song = useSelector(
-    (state: RootState) => state.trackerDocument.present.song
-  );
+  const sequenceId = useAppSelector((state) => state.editor.selectedSequence);
+  const song = useAppSelector((state) => state.trackerDocument.present.song);
   console.log("SONG", song);
 
   const selectSidebar = () => {};
@@ -181,8 +177,8 @@ export const SongEditor: FC<SongEditorProps> = ({ multiColumn }) => {
     );
   }, [dispatch, sequenceId]);
 
-  const selectedEffectCell = useSelector(
-    (state: RootState) => state.tracker.selectedEffectCell
+  const selectedEffectCell = useAppSelector(
+    (state) => state.tracker.selectedEffectCell
   );
 
   const patternId = song?.sequence[sequenceId] || 0;

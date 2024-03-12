@@ -1,9 +1,8 @@
 import React, { useMemo } from "react";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "store/hooks";
 import l10n from "shared/lib/lang/l10n";
 import { sceneSelectors } from "store/features/entities/entitiesState";
 import { sceneName } from "shared/lib/entities/entitiesHelpers";
-import { RootState } from "store/configureStore";
 import styled, { keyframes } from "styled-components";
 
 const fadeIn = keyframes`
@@ -37,14 +36,14 @@ const Monospace = styled.span`
 `;
 
 const WorldStatusBar = () => {
-  const sceneId = useSelector((state: RootState) => state.editor.hover.sceneId);
-  const x = useSelector((state: RootState) => state.editor.hover.x);
-  const y = useSelector((state: RootState) => state.editor.hover.y);
+  const sceneId = useAppSelector((state) => state.editor.hover.sceneId);
+  const x = useAppSelector((state) => state.editor.hover.x);
+  const y = useAppSelector((state) => state.editor.hover.y);
 
-  const scene = useSelector((state: RootState) =>
+  const scene = useAppSelector((state) =>
     sceneSelectors.selectById(state, sceneId)
   );
-  const sceneIndex = useSelector((state: RootState) =>
+  const sceneIndex = useAppSelector((state) =>
     sceneSelectors.selectIds(state).indexOf(sceneId)
   );
   const hoverSceneName = useMemo(() => {

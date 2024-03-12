@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import { useDispatch } from "react-redux";
 import { backgroundSelectors } from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
 import { Background } from "shared/lib/entities/entitiesTypes";
@@ -9,6 +8,7 @@ import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import styled from "styled-components";
 import navigationActions from "store/features/navigation/navigationActions";
 import l10n from "shared/lib/lang/l10n";
+import { useAppSelector } from "store/hooks";
 
 interface NavigatorBackgroundsProps {
   height: number;
@@ -45,7 +45,7 @@ export const NavigatorBackgrounds = ({
   selectedId,
 }: NavigatorBackgroundsProps) => {
   const [items, setItems] = useState<BackgroundNavigatorItem[]>([]);
-  const allBackgrounds = useSelector((state: RootState) =>
+  const allBackgrounds = useAppSelector((state) =>
     backgroundSelectors.selectAll(state)
   );
   const dispatch = useDispatch();

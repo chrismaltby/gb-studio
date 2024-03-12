@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import { useDispatch } from "react-redux";
 import { paletteSelectors } from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
 import { Palette } from "shared/lib/entities/entitiesTypes";
@@ -13,6 +12,7 @@ import { PaletteIcon, PlusIcon } from "ui/icons/Icons";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { FlexGrow } from "ui/spacing/Spacing";
 import PaletteBlock from "components/forms/PaletteBlock";
+import { useAppSelector } from "store/hooks";
 
 interface NavigatorPalettesProps {
   height: number;
@@ -80,7 +80,7 @@ export const NavigatorPalettes = ({
   selectedId,
 }: NavigatorPalettesProps) => {
   const [items, setItems] = useState<PaletteNavigatorItem[]>([]);
-  const allPalettes = useSelector((state: RootState) =>
+  const allPalettes = useAppSelector((state) =>
     paletteSelectors.selectAll(state)
   );
 

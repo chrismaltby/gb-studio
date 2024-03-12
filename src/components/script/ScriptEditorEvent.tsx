@@ -5,9 +5,8 @@ import {
   useDrag,
   useDrop,
 } from "react-dnd";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import entitiesActions from "store/features/entities/entitiesActions";
-import { RootState } from "store/configureStore";
 import { scriptEventSelectors } from "store/features/entities/entitiesState";
 import editorActions from "store/features/editor/editorActions";
 import {
@@ -46,6 +45,7 @@ import { ScriptEventSymbolsEditor } from "components/forms/symbols/ScriptEventSy
 import { ScriptEventSymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
 import { EVENT_CALL_CUSTOM_EVENT, EVENT_COMMENT, EVENT_END } from "consts";
 import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
+import { useAppSelector } from "store/hooks";
 
 interface ScriptEditorEventProps {
   id: string;
@@ -78,13 +78,13 @@ const ScriptEditorEvent = React.memo(
     const [insertBefore, setInsertBefore] = useState(false);
     const [showSymbols, setShowSymbols] = useState(false);
 
-    const clipboardFormat = useSelector(
-      (state: RootState) => state.clipboard.data?.format
+    const clipboardFormat = useAppSelector(
+      (state) => state.clipboard.data?.format
     );
-    const scriptEvent = useSelector((state: RootState) =>
+    const scriptEvent = useAppSelector((state) =>
       scriptEventSelectors.selectById(state, id)
     );
-    const scriptEventDefs = useSelector((state: RootState) =>
+    const scriptEventDefs = useAppSelector((state) =>
       selectScriptEventDefs(state)
     );
 

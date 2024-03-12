@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "store/hooks";
 import styled from "styled-components";
-import { RootState } from "store/configureStore";
 import {
   backgroundSelectors,
   paletteSelectors,
@@ -58,23 +57,22 @@ const emptyPalettes: Palette[] = [
 ] as Palette[];
 
 const BackgroundViewer = ({ backgroundId }: MetaspriteEditorProps) => {
-  const projectRoot = useSelector((state: RootState) => state.document.root);
-  const background = useSelector((state: RootState) =>
+  const projectRoot = useAppSelector((state) => state.document.root);
+  const background = useAppSelector((state) =>
     backgroundSelectors.selectById(state, backgroundId)
   );
-  const zoom = useSelector((state: RootState) => state.editor.zoomImage) / 100;
-  const previewAsSceneId = useSelector(
-    (state: RootState) => state.editor.previewAsSceneId
+  const zoom = useAppSelector((state) => state.editor.zoomImage) / 100;
+  const previewAsSceneId = useAppSelector(
+    (state) => state.editor.previewAsSceneId
   );
-  const scene = useSelector((state: RootState) =>
+  const scene = useAppSelector((state) =>
     sceneSelectors.selectById(state, previewAsSceneId)
   );
-  const palettesLookup = useSelector((state: RootState) =>
+  const palettesLookup = useAppSelector((state) =>
     paletteSelectors.selectEntities(state)
   );
-  const defaultPaletteIds = useSelector(
-    (state: RootState) =>
-      state.project.present.settings.defaultBackgroundPaletteIds
+  const defaultPaletteIds = useAppSelector(
+    (state) => state.project.present.settings.defaultBackgroundPaletteIds
   );
 
   const [palettes, setPalettes] = useState<Palette[]>(emptyPalettes);

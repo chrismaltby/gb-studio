@@ -1,7 +1,6 @@
 import React from "react";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "store/hooks";
 import styled from "styled-components";
-import { RootState } from "store/configureStore";
 import { ChannelSelectField } from "./ChannelSelectField";
 
 interface SongEditorRightToolsPanelProps {
@@ -24,7 +23,7 @@ const ChannelSelectGroup = styled.div`
 const SongEditorRightToolsPanel = ({
   channelStatus,
 }: SongEditorRightToolsPanelProps) => {
-  const view = useSelector((state: RootState) => state.tracker.view);
+  const view = useAppSelector((state) => state.tracker.view);
 
   return (
     <Wrapper>

@@ -1,6 +1,5 @@
 import React from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import { useAppSelector } from "store/hooks";
 import styled, { css } from "styled-components";
 import { SelectionRect } from "./SongPianoRoll";
 
@@ -37,7 +36,7 @@ export const RollChannelSelectionAreaFwd = React.forwardRef<
   HTMLDivElement,
   RollChannelSelectionAreaProps
 >(({ cellSize, selectionRect }: RollChannelSelectionAreaProps, ref) => {
-  const tool = useSelector((state: RootState) => state.tracker.tool);
+  const tool = useAppSelector((state) => state.tracker.tool);
 
   return (
     <Wrapper

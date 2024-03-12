@@ -1,21 +1,20 @@
 import React from "react";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "store/hooks";
 import { TriggerEditor } from "./TriggerEditor";
 import { ActorEditor } from "./ActorEditor";
 import { SceneEditor } from "./SceneEditor";
 import { WorldEditor } from "./WorldEditor";
 import CustomEventEditor from "./CustomEventEditor";
 import { VariableEditor } from "./VariableEditor";
-import { RootState } from "store/configureStore";
 
 interface EditorSidebarProps {
   multiColumn: boolean;
 }
 
 const EditorSidebar = ({ multiColumn }: EditorSidebarProps) => {
-  const type = useSelector((state: RootState) => state.editor.type);
-  const entityId = useSelector((state: RootState) => state.editor.entityId);
-  const sceneId = useSelector((state: RootState) => state.editor.scene);
+  const type = useAppSelector((state) => state.editor.type);
+  const entityId = useAppSelector((state) => state.editor.entityId);
+  const sceneId = useAppSelector((state) => state.editor.scene);
 
   if (type === "trigger") {
     return (

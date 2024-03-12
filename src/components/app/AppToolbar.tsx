@@ -7,7 +7,7 @@ import React, {
   useState,
 } from "react";
 import { Helmet } from "react-helmet";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import debounce from "lodash/debounce";
 import l10n from "shared/lib/lang/l10n";
 import editorActions from "store/features/editor/editorActions";
@@ -30,7 +30,6 @@ import {
   LoadingIcon,
   PlayIcon,
 } from "ui/icons/Icons";
-import { RootState } from "store/configureStore";
 import type { NavigationSection } from "store/features/navigation/navigationState";
 import {
   getZoomForSection,
@@ -38,6 +37,7 @@ import {
 } from "store/features/editor/editorState";
 import useWindowFocus from "ui/hooks/use-window-focus";
 import useWindowSize from "ui/hooks/use-window-size";
+import { useAppSelector } from "store/hooks";
 
 const sectionAccelerators = {
   world: "CommandOrControl+1",
@@ -56,21 +56,14 @@ const zoomSections = ["world", "sprites", "backgrounds", "ui"];
 const AppToolbar: FC = () => {
   const dispatch = useDispatch();
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const loaded = useSelector((state: RootState) => state.document.loaded);
-  const modified = useSelector((state: RootState) => state.document.modified);
-  const name = useSelector(
-    (state: RootState) => state.project.present.metadata.name
-  );
-  const section = useSelector((state: RootState) => state.navigation.section);
-  const zoom = useSelector((state: RootState) =>
-    getZoomForSection(state, section)
-  );
-
-  const initalSearchTerm = useSelector(
-    (state: RootState) => state.editor.searchTerm
-  );
-  const projectRoot = useSelector((state: RootState) => state.document.root);
-  const buildStatus = useSelector((state: RootState) => state.console.status);
+  const loaded = useAppSelector((state) => state.document.loaded);
+  const modified = useAppSelector((state) => state.document.modified);
+  const name = useAppSelector((state) => state.project.present.metadata.name);
+  const section = useAppSelector((state) => state.navigation.section);
+  const zoom = useAppSelector((state) => getZoomForSection(state, section));
+  const initalSearchTerm = useAppSelector((state) => state.editor.searchTerm);
+  const projectRoot = useAppSelector((state) => state.document.root);
+  const buildStatus = useAppSelector((state) => state.console.status);
   const running = buildStatus === "running";
   const cancelling = buildStatus === "cancelled";
 

@@ -1,11 +1,10 @@
 import React, { FC } from "react";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "store/hooks";
 import {
   actorSelectors,
   scriptEventSelectors,
 } from "store/features/entities/entitiesState";
 import { SceneNormalized } from "shared/lib/entities/entitiesTypes";
-import { RootState } from "store/configureStore";
 import styled from "styled-components";
 import { ensureMaybeNumber, ensureMaybeString } from "shared/types";
 import {
@@ -63,21 +62,21 @@ const argValue = (arg: unknown): unknown => {
 };
 
 export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
-  const actorsLookup = useSelector((state: RootState) =>
+  const actorsLookup = useAppSelector((state) =>
     actorSelectors.selectEntities(state)
   );
 
-  const editorType = useSelector((state: RootState) => state.editor.type);
-  const entityId = useSelector((state: RootState) => state.editor.entityId);
+  const editorType = useAppSelector((state) => state.editor.type);
+  const entityId = useAppSelector((state) => state.editor.entityId);
 
   const editorActorId = editorType === "actor" ? entityId : undefined;
 
-  const scriptEventsLookup = useSelector((state: RootState) =>
+  const scriptEventsLookup = useAppSelector((state) =>
     scriptEventSelectors.selectEntities(state)
   );
 
-  const eventId = useSelector((state: RootState) => state.editor.eventId);
-  const sceneId = useSelector((state: RootState) => state.editor.scene);
+  const eventId = useAppSelector((state) => state.editor.eventId);
+  const sceneId = useAppSelector((state) => state.editor.scene);
 
   const sceneEventVisible = eventId && sceneId === scene.id;
   const event = sceneEventVisible && scriptEventsLookup[eventId];

@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import WorldActor from "./ActorView";
 import TriggerView from "./TriggerView";
 import SceneCollisions from "./SceneCollisions";
@@ -27,9 +27,9 @@ import { SceneEventHelper } from "./SceneEventHelper";
 import { sceneName } from "shared/lib/entities/entitiesHelpers";
 import { assetFilename } from "shared/lib/helpers/assets";
 import { getDOMElementCoords } from "renderer/lib/helpers/dom";
-import { RootState } from "store/configureStore";
 import styled, { css } from "styled-components";
 import { LabelSpan } from "ui/buttons/LabelButton";
+import { useAppSelector } from "store/hooks";
 
 const TILE_SIZE = 8;
 
@@ -161,18 +161,16 @@ const SceneOverlay = styled.div<SceneOverlayProps>`
 
 const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
   const dispatch = useDispatch();
-  const scene = useSelector((state: RootState) =>
-    sceneSelectors.selectById(state, id)
-  );
-  const projectRoot = useSelector((state: RootState) => state.document.root);
+  const scene = useAppSelector((state) => sceneSelectors.selectById(state, id));
+  const projectRoot = useAppSelector((state) => state.document.root);
 
-  const background = useSelector((state: RootState) =>
+  const background = useAppSelector((state) =>
     backgroundSelectors.selectById(state, scene?.backgroundId ?? "")
   );
 
-  const selected = useSelector((state: RootState) => state.editor.scene === id);
+  const selected = useAppSelector((state) => state.editor.scene === id);
 
-  const searchTerm = useSelector((state: RootState) => state.editor.searchTerm);
+  const searchTerm = useAppSelector((state) => state.editor.searchTerm);
   const name = useMemo(
     () => (scene ? sceneName(scene, index) : ""),
     [index, scene]
@@ -184,34 +182,34 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
       id !== searchTerm) ||
     false;
 
-  const gbcEnabled = useSelector(
-    (state: RootState) => state.project.present.settings.customColorsEnabled
+  const gbcEnabled = useAppSelector(
+    (state) => state.project.present.settings.customColorsEnabled
   );
 
-  const tool = useSelector((state: RootState) => state.editor.tool);
-  const showLayers = useSelector((state: RootState) => state.editor.showLayers);
+  const tool = useAppSelector((state) => state.editor.tool);
+  const showLayers = useAppSelector((state) => state.editor.showLayers);
 
   const showEntities =
     (tool !== TOOL_COLORS &&
       tool !== TOOL_COLLISIONS &&
       tool !== TOOL_ERASER) ||
     showLayers;
-  const showCollisions = useSelector(
-    (state: RootState) =>
+  const showCollisions = useAppSelector(
+    (state) =>
       (tool !== TOOL_COLORS || showLayers) &&
       (state.project.present.settings.showCollisions ||
         tool === TOOL_COLLISIONS)
   );
-  const showPriorityMap = useSelector(
-    (state: RootState) =>
+  const showPriorityMap = useAppSelector(
+    (state) =>
       tool === TOOL_COLORS &&
       state.editor.selectedPalette === TILE_COLOR_PROP_PRIORITY
   );
 
-  const zoom = useSelector((state: RootState) => state.editor.zoom);
+  const zoom = useAppSelector((state) => state.editor.zoom);
   const zoomRatio = zoom / 100;
 
-  const visible = useSelector((state: RootState) => {
+  const visible = useAppSelector((state) => {
     const worldScrollX = state.editor.worldScrollX;
     const worldScrollY = state.editor.worldScrollY;
     const worldViewWidth = state.editor.worldViewWidth;
@@ -238,7 +236,7 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
       : false;
   });
 
-  const labelOffsetLeft = useSelector((state: RootState) => {
+  const labelOffsetLeft = useAppSelector((state) => {
     if (!visible) {
       return 0;
     }
@@ -259,7 +257,7 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
       : 0;
   });
 
-  const labelOffsetRight = useSelector((state: RootState) => {
+  const labelOffsetRight = useAppSelector((state) => {
     if (!visible) {
       return 0;
     }
@@ -289,12 +287,11 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
     [background?.tileColors]
   );
 
-  const palettesLookup = useSelector((state: RootState) =>
+  const palettesLookup = useAppSelector((state) =>
     paletteSelectors.selectEntities(state)
   );
-  const defaultBackgroundPaletteIds = useSelector(
-    (state: RootState) =>
-      state.project.present.settings.defaultBackgroundPaletteIds ?? []
+  const defaultBackgroundPaletteIds = useAppSelector(
+    (state) => state.project.present.settings.defaultBackgroundPaletteIds ?? []
   );
 
   const getPalette = useCallback(
@@ -329,9 +326,8 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
     [gbcEnabled, getPalette]
   );
 
-  const defaultSpritePaletteIds = useSelector(
-    (state: RootState) =>
-      state.project.present.settings.defaultSpritePaletteIds ?? []
+  const defaultSpritePaletteIds = useAppSelector(
+    (state) => state.project.present.settings.defaultSpritePaletteIds ?? []
   );
 
   const getSpritePalette = useCallback(
@@ -366,17 +362,13 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
     [gbcEnabled, getSpritePalette]
   );
 
-  const slopePreview = useSelector(
-    (state: RootState) => state.editor.slopePreview
+  const slopePreview = useAppSelector((state) => state.editor.slopePreview);
+
+  const parallaxHoverLayer = useAppSelector(
+    (state) => state.editor.parallaxHoverLayer
   );
 
-  const parallaxHoverLayer = useSelector(
-    (state: RootState) => state.editor.parallaxHoverLayer
-  );
-
-  const hovered = useSelector(
-    (state: RootState) => state.editor.hover.sceneId === id
-  );
+  const hovered = useAppSelector((state) => state.editor.hover.sceneId === id);
 
   const dragState = useRef({
     lastTX: -1,

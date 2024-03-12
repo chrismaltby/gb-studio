@@ -1,11 +1,11 @@
 import React, { useCallback, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import l10n from "shared/lib/lang/l10n";
 import { SadIcon } from "ui/icons/Icons";
 import electronActions from "store/features/electron/electronActions";
 import { Button } from "ui/buttons/Button";
-import { RootState } from "store/configureStore";
 import styled from "styled-components";
+import { useAppSelector } from "store/hooks";
 
 const Wrapper = styled.div`
   display: flex;
@@ -62,7 +62,7 @@ const StackTrace = styled.div`
 
 const GlobalError = () => {
   const dispatch = useDispatch();
-  const error = useSelector((state: RootState) => state.error);
+  const error = useAppSelector((state) => state.error);
   const [viewTrace, setViewTrace] = useState(false);
 
   const toggleTrace = useCallback(() => {

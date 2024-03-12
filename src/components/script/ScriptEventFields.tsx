@@ -5,8 +5,7 @@ import {
   ScriptEventFields as ScriptEventFieldsWrapper,
   ScriptEventFieldGroupWrapper,
 } from "ui/scripting/ScriptEvents";
-import { useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import { useAppSelector } from "store/hooks";
 import { soundSelectors } from "store/features/entities/entitiesState";
 import { ScriptEditorContext } from "./ScriptEditorContext";
 import { isFieldVisible } from "shared/lib/scripts/scriptDefHelpers";
@@ -35,7 +34,7 @@ const ScriptEventFields = ({
 }: ScriptEventFieldsProps) => {
   const context = useContext(ScriptEditorContext);
 
-  const soundsLookup = useSelector((state: RootState) =>
+  const soundsLookup = useAppSelector((state) =>
     soundSelectors.selectEntities(state)
   );
   return (

@@ -1,5 +1,5 @@
 import React, { FC, useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
   backgroundSelectors,
   sceneSelectors,
@@ -12,11 +12,11 @@ import {
   SelectCommonProps,
 } from "ui/form/Select";
 import { SceneNormalized } from "shared/lib/entities/entitiesTypes";
-import { RootState } from "store/configureStore";
 import styled from "styled-components";
 import editorActions from "store/features/editor/editorActions";
 import { sceneName } from "shared/lib/entities/entitiesHelpers";
 import { assetFilename } from "shared/lib/helpers/assets";
+import { useAppSelector } from "store/hooks";
 
 interface SceneSelectProps extends SelectCommonProps {
   name: string;
@@ -63,19 +63,17 @@ export const SceneSelect: FC<SceneSelectProps> = ({
   optionalLabel,
   ...selectProps
 }) => {
-  const scenes = useSelector((state: RootState) =>
-    sceneSelectors.selectAll(state)
-  );
-  const backgroundsLookup = useSelector((state: RootState) =>
+  const scenes = useAppSelector((state) => sceneSelectors.selectAll(state));
+  const backgroundsLookup = useAppSelector((state) =>
     backgroundSelectors.selectEntities(state)
   );
-  const scene = useSelector((state: RootState) =>
+  const scene = useAppSelector((state) =>
     sceneSelectors.selectById(state, value || "")
   );
-  const background = useSelector((state: RootState) =>
+  const background = useAppSelector((state) =>
     backgroundSelectors.selectById(state, scene?.backgroundId || "")
   );
-  const projectRoot = useSelector((state: RootState) => state.document.root);
+  const projectRoot = useAppSelector((state) => state.document.root);
   const [options, setOptions] = useState<SceneOption[]>([]);
   const [currentScene, setCurrentScene] = useState<SceneNormalized>();
   const [currentValue, setCurrentValue] = useState<Option>();

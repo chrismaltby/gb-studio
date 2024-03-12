@@ -1,7 +1,6 @@
 import React, { FC, useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import styled from "styled-components";
-import { RootState } from "store/configureStore";
 import { paletteSelectors } from "store/features/entities/entitiesState";
 import PaletteBlock from "components/forms/PaletteBlock";
 import { SelectMenu, selectMenuStyleProps } from "ui/form/Select";
@@ -9,6 +8,7 @@ import { RelativePortal } from "ui/layout/RelativePortal";
 import { PaletteSelect } from "./PaletteSelect";
 import navigationActions from "store/features/navigation/navigationActions";
 import { DMG_PALETTE } from "consts";
+import { useAppSelector } from "store/hooks";
 
 type PaletteSelectProps = {
   name: string;
@@ -79,7 +79,7 @@ export const PaletteSelectButton: FC<PaletteSelectProps> = ({
   const buttonRef = useRef<HTMLButtonElement>(null);
   const timerRef = useRef<number | null>(null);
   const palette =
-    useSelector((state: RootState) =>
+    useAppSelector((state) =>
       paletteSelectors.selectById(
         state,
         value || optionalDefaultPaletteId || ""

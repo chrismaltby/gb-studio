@@ -1,7 +1,6 @@
 import React from "react";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "store/hooks";
 import styled from "styled-components";
-import { RootState } from "store/configureStore";
 import {
   spriteAnimationSelectors,
   spriteSheetSelectors,
@@ -32,11 +31,11 @@ const SpriteSheetCanvas = ({
   palettes,
   offsetPosition,
 }: SpriteSheetCanvasProps) => {
-  const sprite = useSelector((state: RootState) =>
+  const sprite = useAppSelector((state) =>
     spriteSheetSelectors.selectById(state, spriteSheetId)
   );
 
-  const state = useSelector((state: RootState) =>
+  const state = useAppSelector((state) =>
     spriteStateSelectors.selectById(state, sprite?.states?.[0] || "")
   );
 
@@ -61,7 +60,7 @@ const SpriteSheetCanvas = ({
 
   const animationId = animations[animationIndex] || "";
 
-  const animation = useSelector((state: RootState) =>
+  const animation = useAppSelector((state) =>
     spriteAnimationSelectors.selectById(state, animationId)
   );
   const frames = animation?.frames || [];

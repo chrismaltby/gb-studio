@@ -1,7 +1,6 @@
 import React, { FC, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "store/hooks";
 import uniq from "lodash/uniq";
-import { RootState } from "store/configureStore";
 import {
   paletteSelectors,
   spriteSheetSelectors,
@@ -56,10 +55,10 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
   optionalLabel,
   ...selectProps
 }) => {
-  const spriteSheets = useSelector((state: RootState) =>
+  const spriteSheets = useAppSelector((state) =>
     spriteSheetSelectors.selectAll(state)
   );
-  const palette = useSelector((state: RootState) =>
+  const palette = useAppSelector((state) =>
     paletteSelectors.selectById(state, paletteId || "")
   );
   const [options, setOptions] = useState<OptGroup[]>([]);

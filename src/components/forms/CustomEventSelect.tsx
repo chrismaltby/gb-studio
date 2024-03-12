@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import { useAppSelector } from "store/hooks";
 import { customEventName } from "shared/lib/entities/entitiesHelpers";
 import { customEventSelectors } from "store/features/entities/entitiesState";
 import { Option, Select, SelectCommonProps } from "ui/form/Select";
@@ -17,7 +16,7 @@ export const CustomEventSelect = ({
   onChange,
   ...selectProps
 }: CustomEventSelectProps) => {
-  const customEvents = useSelector((state: RootState) =>
+  const customEvents = useAppSelector((state) =>
     customEventSelectors.selectAll(state)
   );
   const [options, setOptions] = useState<Option[]>([]);

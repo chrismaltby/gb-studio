@@ -1,8 +1,7 @@
 import React, { FC, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "store/hooks";
 import { DMG_PALETTE } from "consts";
 import l10n from "shared/lib/lang/l10n";
-import { RootState } from "store/configureStore";
 import {
   paletteSelectors,
   sceneSelectors,
@@ -35,17 +34,17 @@ export const PaletteIndexSelect: FC<PaletteIndexSelectProps> = ({
   const [options, setOptions] = useState<PaletteIndexOption[]>([]);
   const [currentValue, setCurrentValue] = useState<PaletteIndexOption>();
 
-  const previewAsSceneId = useSelector(
-    (state: RootState) => state.editor.previewAsSceneId
+  const previewAsSceneId = useAppSelector(
+    (state) => state.editor.previewAsSceneId
   );
-  const scene = useSelector((state: RootState) =>
+  const scene = useAppSelector((state) =>
     sceneSelectors.selectById(state, previewAsSceneId)
   );
-  const palettesLookup = useSelector((state: RootState) =>
+  const palettesLookup = useAppSelector((state) =>
     paletteSelectors.selectEntities(state)
   );
-  const defaultSpritePaletteIds = useSelector(
-    (state: RootState) => state.project.present.settings.defaultSpritePaletteIds
+  const defaultSpritePaletteIds = useAppSelector(
+    (state) => state.project.present.settings.defaultSpritePaletteIds
   );
 
   useEffect(() => {

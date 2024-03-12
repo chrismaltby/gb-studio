@@ -6,12 +6,11 @@ import {
   SelectCommonProps,
 } from "ui/form/Select";
 import styled from "styled-components";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
   customEventSelectors,
   variableSelectors,
 } from "store/features/entities/entitiesState";
-import { RootState } from "store/configureStore";
 import {
   groupVariables,
   NamedVariable,
@@ -25,6 +24,7 @@ import editorActions from "store/features/editor/editorActions";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import { UnitsSelectButtonInputOverlay } from "./UnitsSelectButtonInputOverlay";
 import { UnitType } from "shared/lib/entities/entitiesTypes";
+import { useAppSelector } from "store/hooks";
 
 interface VariableSelectProps extends SelectCommonProps {
   id?: string;
@@ -151,11 +151,11 @@ export const VariableSelect: FC<VariableSelectProps> = ({
   const [options, setOptions] = useState<OptGroup[]>([]);
   const [currentVariable, setCurrentVariable] = useState<NamedVariable>();
   const [currentValue, setCurrentValue] = useState<Option>();
-  const editorType = useSelector((state: RootState) => state.editor.type);
-  const variablesLookup = useSelector((state: RootState) =>
+  const editorType = useAppSelector((state) => state.editor.type);
+  const variablesLookup = useAppSelector((state) =>
     variableSelectors.selectEntities(state)
   );
-  const customEvent = useSelector((state: RootState) =>
+  const customEvent = useAppSelector((state) =>
     customEventSelectors.selectById(state, entityId)
   );
   const dispatch = useDispatch();

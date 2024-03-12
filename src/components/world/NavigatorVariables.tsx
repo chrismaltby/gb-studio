@@ -1,6 +1,5 @@
 import React, { FC, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import { useDispatch } from "react-redux";
 import { variableSelectors } from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
 import editorActions from "store/features/editor/editorActions";
@@ -8,6 +7,7 @@ import { Variable } from "shared/lib/entities/entitiesTypes";
 import { allVariables } from "renderer/lib/variables";
 import { EntityListItem } from "ui/lists/EntityListItem";
 import { globalVariableDefaultName } from "shared/lib/variables/variableNames";
+import { useAppSelector } from "store/hooks";
 
 interface NavigatorVariablesProps {
   height: number;
@@ -39,11 +39,11 @@ const sortByName = (a: NavigatorItem, b: NavigatorItem) => {
 
 export const NavigatorVariables: FC<NavigatorVariablesProps> = ({ height }) => {
   const [items, setItems] = useState<NavigatorItem[]>([]);
-  const variablesLookup = useSelector((state: RootState) =>
+  const variablesLookup = useAppSelector((state) =>
     variableSelectors.selectEntities(state)
   );
-  const entityId = useSelector((state: RootState) => state.editor.entityId);
-  const editorType = useSelector((state: RootState) => state.editor.type);
+  const entityId = useAppSelector((state) => state.editor.entityId);
+  const editorType = useAppSelector((state) => state.editor.type);
   const selectedId = editorType === "variable" ? entityId : "";
   const dispatch = useDispatch();
 

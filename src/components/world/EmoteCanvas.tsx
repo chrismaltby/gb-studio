@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "store/hooks";
 import { DMG_PALETTE } from "consts";
-import { RootState } from "store/configureStore";
 import { emoteSelectors } from "store/features/entities/entitiesState";
 import SpriteSliceCanvasWorker, {
   SpriteSliceCanvasResult,
@@ -19,10 +18,10 @@ export const EmoteCanvas = ({ emoteId }: EmoteCanvasProps) => {
   const height = 16;
   const [workerId] = useState(Math.random());
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
-  const emote = useSelector((state: RootState) =>
+  const emote = useAppSelector((state) =>
     emoteSelectors.selectById(state, emoteId)
   );
-  const projectRoot = useSelector((state: RootState) => state.document.root);
+  const projectRoot = useAppSelector((state) => state.document.root);
 
   const onWorkerComplete = useCallback(
     (e: MessageEvent<SpriteSliceCanvasResult>) => {

@@ -31,8 +31,7 @@ import {
 } from "renderer/lib/helpers/castEventValue";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import React, { useCallback, useContext } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import { useAppSelector } from "store/hooks";
 import {
   ActorDirection,
   MovementType,
@@ -108,17 +107,13 @@ const ScriptEventFormInput = ({
   onChangeArg,
   allowRename = true,
 }: ScriptEventFormInputProps) => {
-  const defaultBackgroundPaletteIds = useSelector(
-    (state: RootState) =>
-      state.project.present.settings.defaultBackgroundPaletteIds || []
+  const defaultBackgroundPaletteIds = useAppSelector(
+    (state) => state.project.present.settings.defaultBackgroundPaletteIds || []
   );
-  const defaultSpritePaletteIds = useSelector(
-    (state: RootState) =>
-      state.project.present.settings.defaultSpritePaletteIds || []
+  const defaultSpritePaletteIds = useAppSelector(
+    (state) => state.project.present.settings.defaultSpritePaletteIds || []
   );
-  const engineFieldsLookup = useSelector(
-    (state: RootState) => state.engine.lookup
-  );
+  const engineFieldsLookup = useAppSelector((state) => state.engine.lookup);
   const context = useContext(ScriptEditorContext);
 
   const onChangeField = useCallback(

@@ -1,8 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import { FormField, FormRow, FormSectionTitle } from "ui/form/FormLayout";
-import { RootState } from "store/configureStore";
 import { PatternCell } from "shared/lib/uge/song/PatternCell";
 import { Select, Option, OptionLabelWithInfo } from "ui/form/Select";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
@@ -14,6 +13,7 @@ import clamp from "shared/lib/helpers/clamp";
 import { VibratoWaveformPreview } from "./VibratoWaveformPreview";
 import styled from "styled-components";
 import { renderNote } from "./helpers";
+import { useAppSelector } from "store/hooks";
 
 type EffectCodeOption = {
   value: number | null;
@@ -281,8 +281,8 @@ export const PatternCellEditor = ({
     []
   );
 
-  const selectedChannel = useSelector(
-    (state: RootState) => state.tracker.selectedChannel
+  const selectedChannel = useAppSelector(
+    (state) => state.tracker.selectedChannel
   );
 
   const [selectedEffectCode, setSelectedEffectCode] =

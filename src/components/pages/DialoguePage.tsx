@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "store/hooks";
 import l10n from "shared/lib/lang/l10n";
 import DialogueReviewScene from "components/script/DialogueReviewScene";
 import {
@@ -14,7 +14,6 @@ import {
   triggerName,
 } from "shared/lib/entities/entitiesHelpers";
 import { EVENT_TEXT } from "consts";
-import { RootState } from "store/configureStore";
 import { DialogueLine } from "components/script/DialogueReviewLine";
 import styled from "styled-components";
 import { PageHeader } from "ui/layout/PageHeader";
@@ -41,16 +40,14 @@ const Content = styled.div`
 `;
 
 const DialoguePage = () => {
-  const scenes = useSelector((state: RootState) =>
-    sceneSelectors.selectAll(state)
-  );
-  const actorsLookup = useSelector((state: RootState) =>
+  const scenes = useAppSelector((state) => sceneSelectors.selectAll(state));
+  const actorsLookup = useAppSelector((state) =>
     actorSelectors.selectEntities(state)
   );
-  const triggersLookup = useSelector((state: RootState) =>
+  const triggersLookup = useAppSelector((state) =>
     triggerSelectors.selectEntities(state)
   );
-  const scriptEventsLookup = useSelector((state: RootState) =>
+  const scriptEventsLookup = useAppSelector((state) =>
     scriptEventSelectors.selectEntities(state)
   );
 

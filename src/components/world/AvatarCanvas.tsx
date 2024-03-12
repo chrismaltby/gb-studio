@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "store/hooks";
 import { DMG_PALETTE } from "consts";
-import { RootState } from "store/configureStore";
 import { avatarSelectors } from "store/features/entities/entitiesState";
 import SpriteSliceCanvasWorker, {
   SpriteSliceCanvasResult,
@@ -19,10 +18,10 @@ export const AvatarCanvas = ({ avatarId }: AvatarCanvasProps) => {
   const height = 16;
   const [workerId] = useState(Math.random());
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
-  const avatar = useSelector((state: RootState) =>
+  const avatar = useAppSelector((state) =>
     avatarSelectors.selectById(state, avatarId)
   );
-  const projectRoot = useSelector((state: RootState) => state.document.root);
+  const projectRoot = useAppSelector((state) => state.document.root);
 
   const onWorkerComplete = useCallback(
     (e: MessageEvent<SpriteSliceCanvasResult>) => {

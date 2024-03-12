@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import editorActions from "store/features/editor/editorActions";
-import { RootState } from "store/configureStore";
 import styled, { css } from "styled-components";
 import { Select } from "ui/form/Select";
 import { PlusIcon } from "ui/icons/Icons";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import trackerActions from "store/features/tracker/trackerActions";
+import { useAppSelector } from "store/hooks";
 
 interface SequenceOption {
   value: number;
@@ -72,9 +72,7 @@ export const SequenceEditorFwd = ({
   const [hasFocus, setHasFocus] = useState(false);
   const [selectHasFocus, setSelectHasFocus] = useState(false);
 
-  const sequenceId = useSelector(
-    (state: RootState) => state.editor.selectedSequence
-  );
+  const sequenceId = useAppSelector((state) => state.editor.selectedSequence);
   const setSequenceId = useCallback(
     (sequenceId: number) => {
       dispatch(trackerActions.setSelectedPatternCells([]));
@@ -93,7 +91,7 @@ export const SequenceEditorFwd = ({
     }
   }, [dispatch, sequence, sequenceId, setSequenceId]);
 
-  const play = useSelector((state: RootState) => state.tracker.playing);
+  const play = useAppSelector((state) => state.tracker.playing);
 
   if (play && playingSequence !== -1) {
     setSequenceId(playingSequence);

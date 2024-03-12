@@ -3,8 +3,7 @@ import { DropdownButton } from "ui/buttons/DropdownButton";
 import { MenuItem } from "ui/menu/Menu";
 import l10n from "shared/lib/lang/l10n";
 import React, { useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import { useDispatch } from "react-redux";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { sceneSelectors } from "store/features/entities/entitiesState";
 import { ArrowIcon } from "ui/icons/Icons";
@@ -21,12 +20,13 @@ import {
 import { OffscreenSkeletonInput } from "ui/skeleton/Skeleton";
 import { FixedSpacer } from "ui/spacing/Spacing";
 import { Button } from "ui/buttons/Button";
+import { useAppSelector } from "store/hooks";
 
 export const ScriptEventAutoFade = () => {
   const dispatch = useDispatch();
-  const type = useSelector((state: RootState) => state.editor.type);
-  const sceneId = useSelector((state: RootState) => state.editor.scene);
-  const scene = useSelector((state: RootState) =>
+  const type = useAppSelector((state) => state.editor.type);
+  const sceneId = useAppSelector((state) => state.editor.scene);
+  const scene = useAppSelector((state) =>
     sceneSelectors.selectById(state, sceneId)
   );
   const value =
@@ -125,9 +125,9 @@ export const ScriptEventAutoFade = () => {
 
 export const ScriptEventAutoFadeDisabledWarning = () => {
   const dispatch = useDispatch();
-  const type = useSelector((state: RootState) => state.editor.type);
-  const sceneId = useSelector((state: RootState) => state.editor.scene);
-  const scene = useSelector((state: RootState) =>
+  const type = useAppSelector((state) => state.editor.type);
+  const sceneId = useAppSelector((state) => state.editor.scene);
+  const scene = useAppSelector((state) =>
     sceneSelectors.selectById(state, sceneId)
   );
 

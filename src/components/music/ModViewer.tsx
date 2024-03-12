@@ -1,7 +1,6 @@
 import React, { useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import styled from "styled-components";
-import { RootState } from "store/configureStore";
 import { musicSelectors } from "store/features/entities/entitiesState";
 import musicActions from "store/features/music/musicActions";
 import { Button } from "ui/buttons/Button";
@@ -10,6 +9,7 @@ import { CheckboxField } from "ui/form/CheckboxField";
 import l10n from "shared/lib/lang/l10n";
 import entitiesActions from "store/features/entities/entitiesActions";
 import electronActions from "store/features/electron/electronActions";
+import { useAppSelector } from "store/hooks";
 
 interface ModViewerProps {
   trackId: string;
@@ -69,11 +69,11 @@ const TrackSettings = styled.div`
 
 const ModViewer = ({ trackId }: ModViewerProps) => {
   const dispatch = useDispatch();
-  const projectRoot = useSelector((state: RootState) => state.document.root);
-  const track = useSelector((state: RootState) =>
+  const projectRoot = useAppSelector((state) => state.document.root);
+  const track = useAppSelector((state) =>
     musicSelectors.selectById(state, trackId)
   );
-  const playing = useSelector((state: RootState) => state.music.playing);
+  const playing = useAppSelector((state) => state.music.playing);
 
   const onPlay = useCallback(() => {
     dispatch(musicActions.playMusic({ musicId: trackId }));

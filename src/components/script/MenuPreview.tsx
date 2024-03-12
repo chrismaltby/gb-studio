@@ -1,8 +1,7 @@
 import keyBy from "lodash/keyBy";
 import uniq from "lodash/uniq";
 import React, { FC, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import { useAppSelector } from "store/hooks";
 import { fontSelectors } from "store/features/entities/entitiesState";
 import { loadFont, drawFrame, drawText, FontData } from "./TextPreviewHelper";
 import { assetFilename } from "shared/lib/helpers/assets";
@@ -13,17 +12,14 @@ interface MenuPreviewProps {
 }
 
 export const MenuPreview: FC<MenuPreviewProps> = ({ items, layout }) => {
-  const projectRoot = useSelector((state: RootState) => state.document.root);
-  const uiVersion = useSelector((state: RootState) => state.editor.uiVersion);
-  const fonts = useSelector((state: RootState) =>
-    fontSelectors.selectAll(state)
-  );
-  const fontsLookup = useSelector((state: RootState) =>
+  const projectRoot = useAppSelector((state) => state.document.root);
+  const uiVersion = useAppSelector((state) => state.editor.uiVersion);
+  const fonts = useAppSelector((state) => fontSelectors.selectAll(state));
+  const fontsLookup = useAppSelector((state) =>
     fontSelectors.selectEntities(state)
   );
-  const defaultFontId = useSelector(
-    (state: RootState) =>
-      state.project.present.settings.defaultFontId || fonts[0]?.id
+  const defaultFontId = useAppSelector(
+    (state) => state.project.present.settings.defaultFontId || fonts[0]?.id
   );
 
   const [frameImage, setFrameImage] = useState<HTMLImageElement>();

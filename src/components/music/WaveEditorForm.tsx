@@ -1,10 +1,9 @@
 import React, { useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "store/hooks";
 import { Select } from "ui/form/Select";
 import l10n from "shared/lib/lang/l10n";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
-import { RootState } from "store/configureStore";
 import { FormRow, FormField } from "ui/form/FormLayout";
 
 interface WaveEditorFormProps {
@@ -15,9 +14,7 @@ interface WaveEditorFormProps {
 export const WaveEditorForm = ({ waveId, onChange }: WaveEditorFormProps) => {
   const dispatch = useDispatch();
 
-  const song = useSelector(
-    (state: RootState) => state.trackerDocument.present.song
-  );
+  const song = useAppSelector((state) => state.trackerDocument.present.song);
 
   const waveOptions = song?.waves.map((wave: Uint8Array, i: number) => ({
     value: i,

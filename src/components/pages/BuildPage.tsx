@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import { Button } from "ui/buttons/Button";
 import l10n from "shared/lib/lang/l10n";
@@ -7,7 +7,7 @@ import editorActions from "store/features/editor/editorActions";
 import consoleActions from "store/features/console/consoleActions";
 import buildGameActions from "store/features/buildGame/buildGameActions";
 import { FixedSpacer, FlexGrow } from "ui/spacing/Spacing";
-import { RootState } from "store/configureStore";
+import { useAppSelector } from "store/hooks";
 
 const PIN_TO_BOTTOM_RANGE = 100;
 
@@ -49,10 +49,10 @@ const BuildPage = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const dispatch = useDispatch();
 
-  const output = useSelector((state: RootState) => state.console.output);
-  const warnings = useSelector((state: RootState) => state.console.warnings);
-  const status = useSelector((state: RootState) => state.console.status);
-  const profile = useSelector((state: RootState) => state.editor.profile);
+  const output = useAppSelector((state) => state.console.output);
+  const warnings = useAppSelector((state) => state.console.warnings);
+  const status = useAppSelector((state) => state.console.status);
+  const profile = useAppSelector((state) => state.editor.profile);
 
   // Only show the latest 500 lines during build
   // show full output on complete

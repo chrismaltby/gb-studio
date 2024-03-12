@@ -1,8 +1,7 @@
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import l10n from "shared/lib/lang/l10n";
-import { RootState } from "store/configureStore";
 import useSplitPane from "ui/hooks/use-split-pane";
 import useWindowSize from "ui/hooks/use-window-size";
 import { SplitPaneVerticalDivider } from "ui/splitpane/SplitPaneDivider";
@@ -14,6 +13,7 @@ import { NavigatorCustomEvents } from "./NavigatorCustomEvents";
 import { Button } from "ui/buttons/Button";
 import { PlusIcon } from "ui/icons/Icons";
 import { NavigatorVariables } from "./NavigatorVariables";
+import { useAppSelector } from "store/hooks";
 
 const COLLAPSED_SIZE = 30;
 const REOPEN_SIZE = 205;
@@ -27,8 +27,8 @@ const Pane = styled.div`
 `;
 
 export const Navigator = () => {
-  const splitSizes = useSelector(
-    (state: RootState) => state.editor.navigatorSplitSizes
+  const splitSizes = useAppSelector(
+    (state) => state.editor.navigatorSplitSizes
   );
   const dispatch = useDispatch();
   const windowSize = useWindowSize();

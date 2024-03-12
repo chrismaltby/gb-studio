@@ -1,9 +1,8 @@
 import keyBy from "lodash/keyBy";
 import uniq from "lodash/uniq";
 import React, { FC, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "store/hooks";
 import { textNumLines } from "shared/lib/helpers/trimlines";
-import { RootState } from "store/configureStore";
 import {
   avatarSelectors,
   fontSelectors,
@@ -20,20 +19,17 @@ export const DialoguePreview: FC<DialoguePreviewProps> = ({
   text,
   avatarId,
 }) => {
-  const projectRoot = useSelector((state: RootState) => state.document.root);
-  const uiVersion = useSelector((state: RootState) => state.editor.uiVersion);
-  const avatarAsset = useSelector((state: RootState) =>
+  const projectRoot = useAppSelector((state) => state.document.root);
+  const uiVersion = useAppSelector((state) => state.editor.uiVersion);
+  const avatarAsset = useAppSelector((state) =>
     avatarId ? avatarSelectors.selectById(state, avatarId) : undefined
   );
-  const fonts = useSelector((state: RootState) =>
-    fontSelectors.selectAll(state)
-  );
-  const fontsLookup = useSelector((state: RootState) =>
+  const fonts = useAppSelector((state) => fontSelectors.selectAll(state));
+  const fontsLookup = useAppSelector((state) =>
     fontSelectors.selectEntities(state)
   );
-  const defaultFontId = useSelector(
-    (state: RootState) =>
-      state.project.present.settings.defaultFontId || fonts[0]?.id
+  const defaultFontId = useAppSelector(
+    (state) => state.project.present.settings.defaultFontId || fonts[0]?.id
   );
 
   const [frameImage, setFrameImage] = useState<HTMLImageElement>();

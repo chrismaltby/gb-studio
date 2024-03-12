@@ -7,7 +7,7 @@ import React, {
   useState,
 } from "react";
 import styled, { ThemeContext } from "styled-components";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import debounce from "lodash/debounce";
 import useResizable from "ui/hooks/use-resizable";
 import useWindowSize from "ui/hooks/use-window-size";
@@ -15,7 +15,6 @@ import {
   SplitPaneHorizontalDivider,
   SplitPaneVerticalDivider,
 } from "ui/splitpane/SplitPaneDivider";
-import { RootState } from "store/configureStore";
 import editorActions from "store/features/editor/editorActions";
 import { SpriteEditor } from "components/sprites/SpriteEditor";
 import { NavigatorSprites } from "components/sprites/NavigatorSprites";
@@ -39,6 +38,7 @@ import { Button } from "ui/buttons/Button";
 import { TargetIcon } from "ui/icons/Icons";
 import { FixedSpacer } from "ui/spacing/Spacing";
 import { getAnimationNameById } from "renderer/lib/sprites/spriteL10NHelpers";
+import { useAppSelector } from "store/hooks";
 
 const Wrapper = styled.div`
   display: flex;
@@ -58,47 +58,45 @@ const PrecisionIcon = styled(TargetIcon)`
 const SpritesPage = () => {
   const dispatch = useDispatch();
   const themeContext = useContext(ThemeContext);
-  const worldSidebarWidth = useSelector(
-    (state: RootState) => state.editor.worldSidebarWidth
+  const worldSidebarWidth = useAppSelector(
+    (state) => state.editor.worldSidebarWidth
   );
-  const navigatorSidebarWidth = useSelector(
-    (state: RootState) => state.editor.navigatorSidebarWidth
+  const navigatorSidebarWidth = useAppSelector(
+    (state) => state.editor.navigatorSidebarWidth
   );
-  const tilesZoom = useSelector(
-    (state: RootState) => state.editor.zoomSpriteTiles
-  );
+  const tilesZoom = useAppSelector((state) => state.editor.zoomSpriteTiles);
   const windowSize = useWindowSize();
   const prevWindowWidthRef = useRef<number>(0);
   const windowWidth = windowSize.width || 0;
   const windowHeight = windowSize.height || 0;
   const minCenterPaneWidth = 0;
 
-  const allSprites = useSelector((state: RootState) =>
+  const allSprites = useAppSelector((state) =>
     spriteSheetSelectors.selectAll(state)
   );
-  const spritesLookup = useSelector((state: RootState) =>
+  const spritesLookup = useAppSelector((state) =>
     spriteSheetSelectors.selectEntities(state)
   );
-  const spriteStatesLookup = useSelector((state: RootState) =>
+  const spriteStatesLookup = useAppSelector((state) =>
     spriteStateSelectors.selectEntities(state)
   );
-  const spriteAnimationsLookup = useSelector((state: RootState) =>
+  const spriteAnimationsLookup = useAppSelector((state) =>
     spriteAnimationSelectors.selectEntities(state)
   );
-  const navigationId = useSelector(
-    (state: RootState) => state.editor.selectedSpriteSheetId
+  const navigationId = useAppSelector(
+    (state) => state.editor.selectedSpriteSheetId
   );
-  const navigationStateId = useSelector(
-    (state: RootState) => state.editor.selectedSpriteStateId
+  const navigationStateId = useAppSelector(
+    (state) => state.editor.selectedSpriteStateId
   );
-  const animationId = useSelector(
-    (state: RootState) => state.editor.selectedAnimationId
+  const animationId = useAppSelector(
+    (state) => state.editor.selectedAnimationId
   );
-  const metaspriteId = useSelector(
-    (state: RootState) => state.editor.selectedMetaspriteId
+  const metaspriteId = useAppSelector(
+    (state) => state.editor.selectedMetaspriteId
   );
-  const precisionTileMode = useSelector(
-    (state: RootState) => state.editor.precisionTileMode
+  const precisionTileMode = useAppSelector(
+    (state) => state.editor.precisionTileMode
   );
   const [tmpPrecisionMode, setTmpPrecisionMode] = useState(false);
 

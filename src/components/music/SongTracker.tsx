@@ -5,11 +5,10 @@ import React, {
   useCallback,
   useMemo,
 } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import { PatternCell } from "shared/lib/uge/song/PatternCell";
 import { Song } from "shared/lib/uge/song/Song";
-import { RootState } from "store/configureStore";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import { SplitPaneHorizontalDivider } from "ui/splitpane/SplitPaneDivider";
 import { SequenceEditor } from "./SequenceEditor";
@@ -28,6 +27,7 @@ import clipboardActions from "store/features/clipboard/clipboardActions";
 import { clamp, cloneDeep, mergeWith } from "lodash";
 import API from "renderer/lib/api";
 import { MusicDataPacket } from "shared/lib/music/types";
+import { useAppSelector } from "store/hooks";
 
 function getSelectedTrackerFields(
   selectionRect: SelectionRect | undefined,
@@ -107,19 +107,17 @@ export const SongTracker = ({
 }: SongTrackerProps) => {
   const dispatch = useDispatch();
 
-  const playing = useSelector((state: RootState) => state.tracker.playing);
-  const editStep = useSelector((state: RootState) => state.tracker.editStep);
-  const defaultInstruments = useSelector(
-    (state: RootState) => state.tracker.defaultInstruments
+  const playing = useAppSelector((state) => state.tracker.playing);
+  const editStep = useAppSelector((state) => state.tracker.editStep);
+  const defaultInstruments = useAppSelector(
+    (state) => state.tracker.defaultInstruments
   );
-  const octaveOffset = useSelector(
-    (state: RootState) => state.tracker.octaveOffset
+  const octaveOffset = useAppSelector((state) => state.tracker.octaveOffset);
+  const startPlaybackPosition = useAppSelector(
+    (state) => state.tracker.startPlaybackPosition
   );
-  const startPlaybackPosition = useSelector(
-    (state: RootState) => state.tracker.startPlaybackPosition
-  );
-  const subpatternEditorFocus = useSelector(
-    (state: RootState) => state.tracker.subpatternEditorFocus
+  const subpatternEditorFocus = useAppSelector(
+    (state) => state.tracker.subpatternEditorFocus
   );
 
   const patternId = song?.sequence[sequenceId] || 0;
@@ -159,9 +157,7 @@ export const SongTracker = ({
   }, [setPlaybackState]);
 
   const [activeField, setActiveField] = useState<number | undefined>();
-  const channelId = useSelector(
-    (state: RootState) => state.tracker.selectedChannel
-  );
+  const channelId = useAppSelector((state) => state.tracker.selectedChannel);
 
   if (activeField !== undefined) {
     const newChannelId = Math.floor((activeField % ROW_SIZE) / CHANNEL_FIELDS);

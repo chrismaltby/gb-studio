@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import { useAppSelector } from "store/hooks";
 
 interface UIAssetPreviewProps {
   path: string;
@@ -46,8 +45,8 @@ const UIAssetError = styled.div`
 
 export const UIAssetPreview = ({ path, onClick }: UIAssetPreviewProps) => {
   const [error, setError] = useState(false);
-  const projectRoot = useSelector((state: RootState) => state.document.root);
-  const uiVersion = useSelector((state: RootState) => state.editor.uiVersion);
+  const projectRoot = useAppSelector((state) => state.document.root);
+  const uiVersion = useAppSelector((state) => state.editor.uiVersion);
 
   if (error) {
     return <UIAssetError>Image will be created after next build.</UIAssetError>;

@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import { useDispatch } from "react-redux";
 import { musicSelectors } from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
 import { Music } from "shared/lib/entities/entitiesTypes";
@@ -10,6 +9,7 @@ import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import styled from "styled-components";
 import { NoSongsMessage } from "./NoSongsMessage";
 import navigationActions from "store/features/navigation/navigationActions";
+import { useAppSelector } from "store/hooks";
 
 interface NavigatorSongsProps {
   height: number;
@@ -60,9 +60,7 @@ export const NavigatorModSongs = ({
   const dispatch = useDispatch();
 
   const [items, setItems] = useState<NavigatorItem[]>([]);
-  const allSongs = useSelector((state: RootState) =>
-    musicSelectors.selectAll(state)
-  );
+  const allSongs = useAppSelector((state) => musicSelectors.selectAll(state));
 
   useEffect(() => {
     setItems(

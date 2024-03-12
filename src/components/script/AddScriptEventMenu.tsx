@@ -15,9 +15,8 @@ import { FlexGrow } from "ui/spacing/Spacing";
 import { Button } from "ui/buttons/Button";
 import Fuse from "fuse.js";
 import { Dictionary } from "@reduxjs/toolkit";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import settingsActions from "store/features/settings/settingsActions";
-import { RootState } from "store/configureStore";
 import {
   ScriptEventNormalized,
   ScriptEventFieldSchema,
@@ -36,6 +35,7 @@ import { defaultVariableForContext } from "shared/lib/scripts/context";
 import { EVENT_TEXT } from "consts";
 import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
 import type { ScriptEventDef } from "lib/project/loadScriptEventHandlers";
+import { useAppSelector } from "store/hooks";
 
 interface AddScriptEventMenuProps {
   parentType: ScriptEventParentType;
@@ -438,8 +438,8 @@ const AddScriptEventMenu = ({
   const [allOptions, setAllOptions] = useState<(EventOptGroup | EventOption)[]>(
     []
   );
-  const favoriteEvents = useSelector(
-    (state: RootState) => state.project.present.settings.favoriteEvents
+  const favoriteEvents = useAppSelector(
+    (state) => state.project.present.settings.favoriteEvents
   );
   const [favoritesCache, setFavoritesCache] = useState<string[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -450,21 +450,21 @@ const AddScriptEventMenu = ({
   const childOptionsRef = useRef<HTMLDivElement>(null);
   const fuseRef = useRef<Fuse<EventOption> | null>(null);
 
-  const lastSceneId = useSelector((state: RootState) => {
+  const lastSceneId = useAppSelector((state) => {
     const ids = sceneSelectors.selectIds(state);
     return ids[ids.length - 1];
   });
-  const lastMusicId = useSelector(
-    (state: RootState) => musicSelectors.selectIds(state)[0]
+  const lastMusicId = useAppSelector(
+    (state) => musicSelectors.selectIds(state)[0]
   );
-  const lastSpriteId = useSelector(
-    (state: RootState) => spriteSheetSelectors.selectIds(state)[0]
+  const lastSpriteId = useAppSelector(
+    (state) => spriteSheetSelectors.selectIds(state)[0]
   );
-  const lastEmoteId = useSelector(
-    (state: RootState) => emoteSelectors.selectIds(state)[0]
+  const lastEmoteId = useAppSelector(
+    (state) => emoteSelectors.selectIds(state)[0]
   );
   const context = useContext(ScriptEditorContext);
-  const scriptEventDefs = useSelector((state: RootState) =>
+  const scriptEventDefs = useAppSelector((state) =>
     selectScriptEventDefs(state)
   );
 

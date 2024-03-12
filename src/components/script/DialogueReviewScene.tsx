@@ -17,14 +17,14 @@ import {
 } from "shared/lib/entities/entitiesHelpers";
 import { EVENT_TEXT } from "consts";
 import { Button } from "ui/buttons/Button";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import { useDispatch } from "react-redux";
 import styled, { css } from "styled-components";
 import {
   walkNormalizedActorScripts,
   walkNormalizedSceneSpecificScripts,
   walkNormalizedTriggerScripts,
 } from "shared/lib/scripts/walk";
+import { useAppSelector } from "store/hooks";
 
 interface DialogueReviewSceneProps {
   id: string;
@@ -87,19 +87,17 @@ const DialogueReviewScene = ({
   onToggle,
 }: DialogueReviewSceneProps) => {
   const dispatch = useDispatch();
-  const scene = useSelector((state: RootState) =>
-    sceneSelectors.selectById(state, id)
-  );
-  const sceneIndex = useSelector((state: RootState) =>
+  const scene = useAppSelector((state) => sceneSelectors.selectById(state, id));
+  const sceneIndex = useAppSelector((state) =>
     sceneSelectors.selectIds(state).indexOf(id)
   );
-  const actorsLookup = useSelector((state: RootState) =>
+  const actorsLookup = useAppSelector((state) =>
     actorSelectors.selectEntities(state)
   );
-  const triggersLookup = useSelector((state: RootState) =>
+  const triggersLookup = useAppSelector((state) =>
     triggerSelectors.selectEntities(state)
   );
-  const scriptEventsLookup = useSelector((state: RootState) =>
+  const scriptEventsLookup = useAppSelector((state) =>
     scriptEventSelectors.selectEntities(state)
   );
 

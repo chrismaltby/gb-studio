@@ -1,11 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import debounce from "lodash/debounce";
 import useResizable from "ui/hooks/use-resizable";
 import useWindowSize from "ui/hooks/use-window-size";
 import { SplitPaneHorizontalDivider } from "ui/splitpane/SplitPaneDivider";
-import { RootState } from "store/configureStore";
 import editorActions from "store/features/editor/editorActions";
 import { paletteSelectors } from "store/features/entities/entitiesState";
 import l10n from "shared/lib/lang/l10n";
@@ -14,6 +13,7 @@ import CustomPalettePicker from "components/forms/CustomPalettePicker";
 import { NavigatorPalettes } from "components/palettes/NavigatorPalettes";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { Input } from "ui/form/Input";
+import { useAppSelector } from "store/hooks";
 
 const Wrapper = styled.div`
   display: flex;
@@ -70,9 +70,9 @@ const Container = styled.div`
 
 const PalettePage = () => {
   const dispatch = useDispatch();
-  const selectedId = useSelector((state: RootState) => state.navigation.id);
-  const navigatorSidebarWidth = useSelector(
-    (state: RootState) => state.editor.navigatorSidebarWidth
+  const selectedId = useAppSelector((state) => state.navigation.id);
+  const navigatorSidebarWidth = useAppSelector(
+    (state) => state.editor.navigatorSidebarWidth
   );
   const windowSize = useWindowSize();
   const prevWindowWidthRef = useRef<number>(0);
@@ -81,14 +81,13 @@ const PalettePage = () => {
   const minCenterPaneWidth = 0;
   const [edit, setEdit] = useState(false);
 
-  const allPalettes = useSelector((state: RootState) =>
+  const allPalettes = useAppSelector((state) =>
     paletteSelectors.selectAll(state)
   );
 
   const palette =
-    useSelector((state: RootState) =>
-      paletteSelectors.selectById(state, selectedId)
-    ) || allPalettes[0];
+    useAppSelector((state) => paletteSelectors.selectById(state, selectedId)) ||
+    allPalettes[0];
 
   const [leftPaneWidth, setLeftPaneSize, startLeftPaneResize] = useResizable({
     initialSize: navigatorSidebarWidth,

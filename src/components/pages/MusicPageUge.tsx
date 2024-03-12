@@ -6,7 +6,7 @@ import React, {
   useState,
 } from "react";
 import styled, { ThemeContext } from "styled-components";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import debounce from "lodash/debounce";
 import useResizable from "ui/hooks/use-resizable";
 import useWindowSize from "ui/hooks/use-window-size";
@@ -14,7 +14,6 @@ import {
   SplitPaneHorizontalDivider,
   SplitPaneVerticalDivider,
 } from "ui/splitpane/SplitPaneDivider";
-import { RootState } from "store/configureStore";
 import editorActions from "store/features/editor/editorActions";
 import { NavigatorSongs } from "components/music/NavigatorSongs";
 import { SongTracker } from "components/music/SongTracker";
@@ -30,6 +29,7 @@ import { clampSidebarWidth } from "renderer/lib/window/sidebar";
 import { UgePlayer } from "components/music/UgePlayer";
 import trackerActions from "store/features/tracker/trackerActions";
 import { assetFilename } from "shared/lib/helpers/assets";
+import { useAppSelector } from "store/hooks";
 
 const Wrapper = styled.div`
   display: flex;
@@ -70,11 +70,11 @@ const ErrorDescription = styled.div`
 const MusicPageUge = () => {
   const dispatch = useDispatch();
   const themeContext = useContext(ThemeContext);
-  const worldSidebarWidth = useSelector(
-    (state: RootState) => state.editor.worldSidebarWidth
+  const worldSidebarWidth = useAppSelector(
+    (state) => state.editor.worldSidebarWidth
   );
-  const navigatorSidebarWidth = useSelector(
-    (state: RootState) => state.editor.navigatorSidebarWidth
+  const navigatorSidebarWidth = useAppSelector(
+    (state) => state.editor.navigatorSidebarWidth
   );
   const windowSize = useWindowSize();
   const prevWindowWidthRef = useRef<number>(0);
@@ -82,15 +82,11 @@ const MusicPageUge = () => {
   const windowHeight = windowSize.height || 0;
   const minCenterPaneWidth = 0;
 
-  const allSongs = useSelector((state: RootState) =>
-    musicSelectors.selectAll(state)
-  );
-  const songsLookup = useSelector((state: RootState) =>
+  const allSongs = useAppSelector((state) => musicSelectors.selectAll(state));
+  const songsLookup = useAppSelector((state) =>
     musicSelectors.selectEntities(state)
   );
-  const selectedSongId = useSelector(
-    (state: RootState) => state.editor.selectedSongId
-  );
+  const selectedSongId = useAppSelector((state) => state.editor.selectedSongId);
 
   const [selectedSong, setSelectedSong] = useState<Music | undefined>();
   useEffect(() => {
@@ -100,24 +96,18 @@ const MusicPageUge = () => {
     );
   }, [selectedSongId, allSongs, songsLookup]);
 
-  const sequenceId = useSelector(
-    (state: RootState) => state.editor.selectedSequence
-  );
+  const sequenceId = useAppSelector((state) => state.editor.selectedSequence);
 
-  const projectRoot = useSelector((state: RootState) => state.document.root);
+  const projectRoot = useAppSelector((state) => state.document.root);
 
-  const song = useSelector(
-    (state: RootState) => state.trackerDocument.present.song
+  const song = useAppSelector((state) => state.trackerDocument.present.song);
+  const modified = useAppSelector(
+    (state) => state.trackerDocument.present.modified
   );
-  const modified = useSelector(
-    (state: RootState) => state.trackerDocument.present.modified
+  const status = useAppSelector(
+    (state) => state.trackerDocument.present.status
   );
-  const status = useSelector(
-    (state: RootState) => state.trackerDocument.present.status
-  );
-  const error = useSelector(
-    (state: RootState) => state.trackerDocument.present.error
-  );
+  const error = useAppSelector((state) => state.trackerDocument.present.error);
 
   const [selectedSongPath, setSelectedSongPath] = useState("");
   const [selectedSongType, setSelectedSongType] = useState("");
@@ -249,7 +239,7 @@ const MusicPageUge = () => {
     false,
   ]);
 
-  const view = useSelector((state: RootState) => state.tracker.view);
+  const view = useAppSelector((state) => state.tracker.view);
 
   const renderGridView = useCallback(() => {
     if (!song) {

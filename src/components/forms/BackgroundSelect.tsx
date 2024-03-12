@@ -1,6 +1,6 @@
 import React, { FC, useState, useEffect } from "react";
 import uniq from "lodash/uniq";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "store/hooks";
 import { backgroundSelectors } from "store/features/entities/entitiesState";
 import {
   OptGroup,
@@ -11,7 +11,6 @@ import {
   SelectCommonProps,
 } from "ui/form/Select";
 import { Background } from "shared/lib/entities/entitiesTypes";
-import { RootState } from "store/configureStore";
 import styled from "styled-components";
 import { assetFilename } from "shared/lib/helpers/assets";
 
@@ -34,16 +33,16 @@ export const BackgroundSelect: FC<BackgroundSelectProps> = ({
   onChange,
   ...selectProps
 }) => {
-  const backgrounds = useSelector((state: RootState) =>
+  const backgrounds = useAppSelector((state) =>
     backgroundSelectors.selectAll(state)
   );
-  const backgroundsLookup = useSelector((state: RootState) =>
+  const backgroundsLookup = useAppSelector((state) =>
     backgroundSelectors.selectEntities(state)
   );
-  const background = useSelector((state: RootState) =>
+  const background = useAppSelector((state) =>
     backgroundSelectors.selectById(state, value || "")
   );
-  const projectRoot = useSelector((state: RootState) => state.document.root);
+  const projectRoot = useAppSelector((state) => state.document.root);
   const [options, setOptions] = useState<OptGroup[]>([]);
   const [currentBackground, setCurrentBackground] = useState<Background>();
   const [currentValue, setCurrentValue] = useState<Option>();

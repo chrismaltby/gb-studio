@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import GlobalError from "components/error/GlobalError";
 import AppToolbar from "./AppToolbar";
 import BackgroundsPage from "components/pages/BackgroundsPage";
@@ -13,9 +13,9 @@ import SettingsPage from "components/pages/SettingsPage";
 import { DropZone } from "ui/upload/DropZone";
 import projectActions from "store/features/project/projectActions";
 import SoundsPage from "components/pages/SoundsPage";
-import { RootState } from "store/configureStore";
 import LoadingPane from "ui/loading/LoadingPane";
 import styled from "styled-components";
+import { useAppSelector } from "store/hooks";
 
 const AppWrapper = styled.div`
   width: 100%;
@@ -35,9 +35,9 @@ const App = () => {
   const dispatch = useDispatch();
   const [draggingOver, setDraggingOver] = useState(false);
   const dragLeaveTimer = useRef<number>();
-  const section = useSelector((state: RootState) => state.navigation.section);
-  const error = useSelector((state: RootState) => state.error);
-  const loaded = useSelector((state: RootState) => state.document.loaded);
+  const section = useAppSelector((state) => state.navigation.section);
+  const error = useAppSelector((state) => state.error);
+  const loaded = useAppSelector((state) => state.document.loaded);
 
   const onDragOver = useCallback(
     (e) => {

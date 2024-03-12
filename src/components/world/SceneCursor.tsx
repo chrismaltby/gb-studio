@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
   PlusIcon,
   ResizeIcon,
@@ -32,10 +32,10 @@ import {
   BRUSH_SLOPE,
 } from "consts";
 import clipboardActions from "store/features/clipboard/clipboardActions";
-import { RootState } from "store/configureStore";
 import { calculateSlope } from "shared/lib/helpers/slope";
 import styled, { css } from "styled-components";
 import { Tool } from "store/features/editor/editorState";
+import { useAppSelector } from "store/hooks";
 
 interface SceneCursorProps {
   sceneId: string;
@@ -154,7 +154,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     x,
     y,
     sceneId: hoverSceneId,
-  } = useSelector((state: RootState) => state.editor.hover);
+  } = useAppSelector((state) => state.editor.hover);
   const {
     tool,
     selectedBrush,
@@ -163,10 +163,10 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     selectedTileType,
     selectedPalette,
     showLayers,
-  } = useSelector((state: RootState) => state.editor);
+  } = useAppSelector((state) => state.editor);
 
-  const showCollisions = useSelector(
-    (state: RootState) => state.project.present.settings.showCollisions
+  const showCollisions = useAppSelector(
+    (state) => state.project.present.settings.showCollisions
   );
 
   const [resize, setResize] = useState<boolean>(false);
@@ -197,13 +197,13 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     slopeDirectionHorizontal: "left",
     slopeDirectionVertical: "left",
   });
-  const scene = useSelector((state: RootState) =>
+  const scene = useAppSelector((state) =>
     sceneSelectors.selectById(state, hoverSceneId)
   );
 
   const backgroundId = scene?.backgroundId ?? "";
 
-  const background = useSelector((state: RootState) =>
+  const background = useAppSelector((state) =>
     backgroundSelectors.selectById(state, backgroundId)
   );
 
@@ -217,7 +217,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
       ? scene.collisions[x + y * scene.width] || 0
       : 0;
 
-  const tileLookup = useSelector((state: RootState) =>
+  const tileLookup = useAppSelector((state) =>
     selectedBrush === BRUSH_MAGIC
       ? state.assets.backgrounds[background?.id ?? ""]?.lookup
       : undefined

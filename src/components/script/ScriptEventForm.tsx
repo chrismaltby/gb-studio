@@ -1,10 +1,9 @@
 import React, { useMemo } from "react";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "store/hooks";
 import {
   customEventSelectors,
   scriptEventSelectors,
 } from "store/features/entities/entitiesState";
-import { RootState } from "store/configureStore";
 import { Dictionary } from "@reduxjs/toolkit";
 import {
   CustomEventNormalized,
@@ -90,13 +89,13 @@ const ScriptEventForm = ({
   altBg,
   renderEvents,
 }: ScriptEventFormProps) => {
-  const scriptEventDefs = useSelector((state: RootState) =>
+  const scriptEventDefs = useAppSelector((state) =>
     selectScriptEventDefs(state)
   );
-  const scriptEvent = useSelector((state: RootState) =>
+  const scriptEvent = useAppSelector((state) =>
     scriptEventSelectors.selectById(state, id)
   );
-  const customEvents = useSelector((state: RootState) =>
+  const customEvents = useAppSelector((state) =>
     customEventSelectors.selectEntities(state)
   );
   const command = scriptEvent?.command;

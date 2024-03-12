@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "store/hooks";
 import uniq from "lodash/uniq";
-import { RootState } from "store/configureStore";
 import { spriteStateSelectors } from "store/features/entities/entitiesState";
 import {
   Option,
@@ -123,7 +122,7 @@ const AnimationStateSelect = ({
   const [currentValue, setCurrentValue] = useState<Option>();
 
   const [options, setOptions] = useState<Option[]>([]);
-  const spriteStates = useSelector((state: RootState) =>
+  const spriteStates = useAppSelector((state) =>
     spriteStateSelectors.selectAll(state)
   );
 

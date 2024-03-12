@@ -5,8 +5,7 @@ import {
   MIDDLE_MOUSE,
 } from "consts";
 import React, { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import { useDispatch } from "react-redux";
 import {
   actorSelectors,
   customEventSelectors,
@@ -30,6 +29,7 @@ import {
   walkNormalizedSceneSpecificScripts,
   walkNormalizedTriggerScripts,
 } from "shared/lib/scripts/walk";
+import { useAppSelector } from "store/hooks";
 
 interface ConnectionsProps {
   width: number;
@@ -432,42 +432,40 @@ const Connections = ({
   const [connections, setConnections] = useState<
     ReturnType<typeof calculateTransitionCoords>[]
   >([]);
-  const showConnections = useSelector(
-    (state: RootState) => state.project.present.settings.showConnections
+  const showConnections = useAppSelector(
+    (state) => state.project.present.settings.showConnections
   );
-  const selectedSceneId = useSelector((state: RootState) => state.editor.scene);
-  const startSceneId = useSelector(
-    (state: RootState) => state.project.present.settings.startSceneId
+  const selectedSceneId = useAppSelector((state) => state.editor.scene);
+  const startSceneId = useAppSelector(
+    (state) => state.project.present.settings.startSceneId
   );
-  const startX = useSelector(
-    (state: RootState) => state.project.present.settings.startX
+  const startX = useAppSelector(
+    (state) => state.project.present.settings.startX
   );
-  const startY = useSelector(
-    (state: RootState) => state.project.present.settings.startY
+  const startY = useAppSelector(
+    (state) => state.project.present.settings.startY
   );
-  const startDirection = useSelector(
-    (state: RootState) => state.project.present.settings.startDirection
+  const startDirection = useAppSelector(
+    (state) => state.project.present.settings.startDirection
   );
-  const scene = useSelector((state: RootState) =>
+  const scene = useAppSelector((state) =>
     sceneSelectors.selectById(state, selectedSceneId)
   );
-  const scenes = useSelector((state: RootState) =>
-    sceneSelectors.selectAll(state)
-  );
-  const scenesLookup = useSelector((state: RootState) =>
+  const scenes = useAppSelector((state) => sceneSelectors.selectAll(state));
+  const scenesLookup = useAppSelector((state) =>
     sceneSelectors.selectEntities(state)
   );
   const startScene = scenesLookup[startSceneId] || scenes[0];
-  const actorsLookup = useSelector((state: RootState) =>
+  const actorsLookup = useAppSelector((state) =>
     actorSelectors.selectEntities(state)
   );
-  const triggersLookup = useSelector((state: RootState) =>
+  const triggersLookup = useAppSelector((state) =>
     triggerSelectors.selectEntities(state)
   );
-  const eventsLookup = useSelector((state: RootState) =>
+  const eventsLookup = useAppSelector((state) =>
     scriptEventSelectors.selectEntities(state)
   );
-  const customEventsLookup = useSelector((state: RootState) =>
+  const customEventsLookup = useAppSelector((state) =>
     customEventSelectors.selectEntities(state)
   );
 

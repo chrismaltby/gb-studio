@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "store/hooks";
 import { DMG_PALETTE } from "consts";
-import { RootState } from "store/configureStore";
 import { spriteSheetSelectors } from "store/features/entities/entitiesState";
 import { ObjPalette, Palette } from "shared/lib/entities/entitiesTypes";
 import SpriteSliceCanvasWorker, {
@@ -36,10 +35,10 @@ export const SpriteSliceCanvas = ({
 }: SpriteSliceCanvasProps) => {
   const [workerId] = useState(Math.random());
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
-  const spriteSheet = useSelector((state: RootState) =>
+  const spriteSheet = useAppSelector((state) =>
     spriteSheetSelectors.selectById(state, spriteSheetId)
   );
-  const projectRoot = useSelector((state: RootState) => state.document.root);
+  const projectRoot = useAppSelector((state) => state.document.root);
 
   const onWorkerComplete = useCallback(
     (e: MessageEvent<SpriteSliceCanvasResult>) => {

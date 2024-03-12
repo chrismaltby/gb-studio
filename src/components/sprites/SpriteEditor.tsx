@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { EditableText } from "ui/form/EditableText";
 import {
@@ -33,7 +33,6 @@ import entitiesActions from "store/features/entities/entitiesActions";
 import editorActions from "store/features/editor/editorActions";
 import spriteActions from "store/features/sprite/spriteActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
-import { RootState } from "store/configureStore";
 import {
   castEventToBool,
   castEventToInt,
@@ -59,6 +58,7 @@ import { PaletteIndexSelect } from "components/forms/PaletteIndexSelect";
 import AnimationStateSelect from "components/forms/AnimationStateSelect";
 import { SpriteSymbolsEditor } from "components/forms/symbols/SpriteSymbolsEditor";
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
+import { useAppSelector } from "store/hooks";
 
 interface SpriteEditorProps {
   id: string;
@@ -73,29 +73,29 @@ export const SpriteEditor = ({
   animationId,
   spriteStateId,
 }: SpriteEditorProps) => {
-  const colorsEnabled = useSelector(
-    (state: RootState) => state.project.present.settings.customColorsEnabled
+  const colorsEnabled = useAppSelector(
+    (state) => state.project.present.settings.customColorsEnabled
   );
-  const sprite = useSelector((state: RootState) =>
+  const sprite = useAppSelector((state) =>
     spriteSheetSelectors.selectById(state, id)
   );
-  const spriteState = useSelector((state: RootState) =>
+  const spriteState = useAppSelector((state) =>
     spriteStateSelectors.selectById(state, spriteStateId)
   );
-  const animation = useSelector((state: RootState) =>
+  const animation = useAppSelector((state) =>
     spriteAnimationSelectors.selectById(state, animationId)
   );
-  const selectedTileIds = useSelector(
-    (state: RootState) => state.editor.selectedMetaspriteTileIds
+  const selectedTileIds = useAppSelector(
+    (state) => state.editor.selectedMetaspriteTileIds
   );
-  const metaspriteTile = useSelector((state: RootState) =>
+  const metaspriteTile = useAppSelector((state) =>
     metaspriteTileSelectors.selectById(state, selectedTileIds[0])
   );
-  const clipboardFormat = useSelector(
-    (state: RootState) => state.clipboard.data?.format
+  const clipboardFormat = useAppSelector(
+    (state) => state.clipboard.data?.format
   );
-  const replaceSpriteTileMode = useSelector(
-    (state: RootState) => state.editor.replaceSpriteTileMode
+  const replaceSpriteTileMode = useAppSelector(
+    (state) => state.editor.replaceSpriteTileMode
   );
 
   const selectedTileId = selectedTileIds[0];

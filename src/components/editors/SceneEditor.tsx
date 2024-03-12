@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import ScriptEditor from "components/script/ScriptEditor";
 import { castEventToInt } from "renderer/lib/helpers/castEventValue";
 import { WorldEditor } from "./WorldEditor";
@@ -19,7 +19,6 @@ import {
   FormRow,
 } from "ui/form/FormLayout";
 import { EditableText } from "ui/form/EditableText";
-import { RootState } from "store/configureStore";
 import {
   ActorDirection,
   SceneNormalized,
@@ -58,6 +57,7 @@ import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import Alert, { AlertItem } from "ui/alerts/Alert";
 import { sceneName } from "shared/lib/entities/entitiesHelpers";
 import l10n from "shared/lib/lang/l10n";
+import { useAppSelector } from "store/hooks";
 
 interface SceneEditorProps {
   id: string;
@@ -121,41 +121,37 @@ const getScriptKey = (
 };
 
 export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
-  const scene = useSelector((state: RootState) =>
-    sceneSelectors.selectById(state, id)
-  );
-  const sceneIndex = useSelector((state: RootState) =>
+  const scene = useAppSelector((state) => sceneSelectors.selectById(state, id));
+  const sceneIndex = useAppSelector((state) =>
     sceneSelectors.selectIds(state).indexOf(id)
   );
-  const clipboardFormat = useSelector(
-    (state: RootState) => state.clipboard.data?.format
+  const clipboardFormat = useAppSelector(
+    (state) => state.clipboard.data?.format
   );
   const [notesOpen, setNotesOpen] = useState<boolean>(!!scene?.notes);
-  const colorsEnabled = useSelector(
-    (state: RootState) => state.project.present.settings.customColorsEnabled
+  const colorsEnabled = useAppSelector(
+    (state) => state.project.present.settings.customColorsEnabled
   );
-  const startSceneId = useSelector(
-    (state: RootState) => state.project.present.settings.startSceneId
+  const startSceneId = useAppSelector(
+    (state) => state.project.present.settings.startSceneId
   );
-  const startX = useSelector(
-    (state: RootState) => state.project.present.settings.startX
+  const startX = useAppSelector(
+    (state) => state.project.present.settings.startX
   );
-  const startY = useSelector(
-    (state: RootState) => state.project.present.settings.startY
+  const startY = useAppSelector(
+    (state) => state.project.present.settings.startY
   );
-  const startDirection = useSelector(
-    (state: RootState) => state.project.present.settings.startDirection
+  const startDirection = useAppSelector(
+    (state) => state.project.present.settings.startDirection
   );
-  const defaultBackgroundPaletteIds = useSelector(
-    (state: RootState) =>
-      state.project.present.settings.defaultBackgroundPaletteIds || []
+  const defaultBackgroundPaletteIds = useAppSelector(
+    (state) => state.project.present.settings.defaultBackgroundPaletteIds || []
   );
-  const defaultSpritePaletteIds = useSelector(
-    (state: RootState) =>
-      state.project.present.settings.defaultSpritePaletteIds || []
+  const defaultSpritePaletteIds = useAppSelector(
+    (state) => state.project.present.settings.defaultSpritePaletteIds || []
   );
-  const defaultPlayerSprites = useSelector(
-    (state: RootState) => state.project.present.settings.defaultPlayerSprites
+  const defaultPlayerSprites = useAppSelector(
+    (state) => state.project.present.settings.defaultPlayerSprites
   );
   const scriptTabs: Record<ScriptTab, string> = useMemo(
     () => ({
@@ -177,11 +173,11 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
   const tabs = Object.keys(scriptTabs);
   const secondaryTabs = Object.keys(scriptSecondaryTabs);
 
-  const lastScriptTab = useSelector(
-    (state: RootState) => state.editor.lastScriptTabScene
+  const lastScriptTab = useAppSelector(
+    (state) => state.editor.lastScriptTabScene
   );
-  const lastScriptTabSecondary = useSelector(
-    (state: RootState) => state.editor.lastScriptTabSecondary
+  const lastScriptTabSecondary = useAppSelector(
+    (state) => state.editor.lastScriptTabSecondary
   );
   const initialTab = tabs.includes(lastScriptTab) ? lastScriptTab : tabs[0];
   const initialSecondaryTab = secondaryTabs.includes(lastScriptTabSecondary)
@@ -194,15 +190,15 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
   const [scriptModeSecondary, setScriptModeSecondary] = useState<
     keyof ScriptHandlers["hit"]
   >(initialSecondaryTab as keyof ScriptHandlers["hit"]);
-  const lockScriptEditor = useSelector(
-    (state: RootState) => state.editor.lockScriptEditor
+  const lockScriptEditor = useAppSelector(
+    (state) => state.editor.lockScriptEditor
   );
   const [showSymbols, setShowSymbols] = useState(false);
 
   const dispatch = useDispatch();
 
-  const logoSceneForBackground = useSelector(
-    (state: RootState) =>
+  const logoSceneForBackground = useAppSelector(
+    (state) =>
       // If current scene is logo don't bother searching for the background being used in other logo scenes
       scene?.type !== "LOGO" &&
       // Search for uses of the background within logo scenes

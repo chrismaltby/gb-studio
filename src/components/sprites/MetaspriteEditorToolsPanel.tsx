@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import styled from "styled-components";
-import { RootState } from "store/configureStore";
 import { spriteAnimationSelectors } from "store/features/entities/entitiesState";
 import {
   PlayIcon,
@@ -15,6 +14,7 @@ import FloatingPanel, { FloatingPanelDivider } from "ui/panels/FloatingPanel";
 import editorActions from "store/features/editor/editorActions";
 import { Button } from "ui/buttons/Button";
 import l10n from "shared/lib/lang/l10n";
+import { useAppSelector } from "store/hooks";
 
 interface MetaspriteEditorToolsPanelProps {
   selectedAnimationId: string;
@@ -35,17 +35,11 @@ const MetaspriteEditorToolsPanel = ({
   const dispatch = useDispatch();
   const intervalRef = useRef<number>();
 
-  const play = useSelector(
-    (state: RootState) => state.editor.playSpriteAnimation
-  );
-  const showOnionSkin = useSelector(
-    (state: RootState) => state.editor.showOnionSkin
-  );
-  const showSpriteGrid = useSelector(
-    (state: RootState) => state.editor.showSpriteGrid
-  );
+  const play = useAppSelector((state) => state.editor.playSpriteAnimation);
+  const showOnionSkin = useAppSelector((state) => state.editor.showOnionSkin);
+  const showSpriteGrid = useAppSelector((state) => state.editor.showSpriteGrid);
 
-  const spriteAnimation = useSelector((state: RootState) =>
+  const spriteAnimation = useAppSelector((state) =>
     spriteAnimationSelectors.selectById(state, selectedAnimationId)
   );
 

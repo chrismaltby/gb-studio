@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
   SelectIcon,
   BrickIcon,
@@ -11,11 +11,11 @@ import { MenuItem } from "ui/menu/Menu";
 import l10n from "shared/lib/lang/l10n";
 import { Tool } from "store/features/editor/editorState";
 import editorActions from "store/features/editor/editorActions";
-import { RootState } from "store/configureStore";
 import styled from "styled-components";
 import { Button } from "ui/buttons/Button";
 import FloatingPanel from "ui/panels/FloatingPanel";
 import { DropdownButton } from "ui/buttons/DropdownButton";
+import { useAppSelector } from "store/hooks";
 
 interface ToolPickerProps {
   hasFocusForKeyboardShortcuts: () => boolean;
@@ -29,7 +29,7 @@ const Wrapper = styled(FloatingPanel)`
 
 const ToolPicker = ({ hasFocusForKeyboardShortcuts }: ToolPickerProps) => {
   const dispatch = useDispatch();
-  const selected = useSelector((state: RootState) => state.editor.tool);
+  const selected = useAppSelector((state) => state.editor.tool);
 
   const isAddSelected = useMemo(() => {
     return ["actors", "triggers", "scene"].indexOf(selected) > -1;

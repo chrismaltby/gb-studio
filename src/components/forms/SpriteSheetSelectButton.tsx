@@ -1,8 +1,7 @@
 import React, { FC, useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "store/hooks";
 import styled, { css } from "styled-components";
 import l10n from "shared/lib/lang/l10n";
-import { RootState } from "store/configureStore";
 import {
   paletteSelectors,
   spriteSheetSelectors,
@@ -149,10 +148,10 @@ export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const timerRef = useRef<number | null>(null);
-  const spriteSheet = useSelector((state: RootState) =>
+  const spriteSheet = useAppSelector((state) =>
     spriteSheetSelectors.selectById(state, value || optionalValue || "")
   );
-  const palette = useSelector((state: RootState) =>
+  const palette = useAppSelector((state) =>
     paletteSelectors.selectById(state, paletteId || "")
   );
   const [isOpen, setIsOpen] = useState<boolean>(false);

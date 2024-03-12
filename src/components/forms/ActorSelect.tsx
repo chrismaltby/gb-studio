@@ -1,10 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "store/hooks";
 import {
   ActorNormalized,
   ActorDirection,
 } from "shared/lib/entities/entitiesTypes";
-import { RootState } from "store/configureStore";
 import {
   Option,
   OptionLabelWithPreview,
@@ -48,30 +47,27 @@ export const ActorSelect = ({
   frame,
 }: ActorSelectProps) => {
   const context = useContext(ScriptEditorContext);
-  const editorType = useSelector((state: RootState) => state.editor.type);
+  const editorType = useAppSelector((state) => state.editor.type);
   const [options, setOptions] = useState<ActorOption[]>([]);
   const [currentValue, setCurrentValue] = useState<ActorOption>();
-  const sceneId = useSelector((state: RootState) => state.editor.scene);
-  const sceneType = useSelector(
-    (state: RootState) => sceneSelectors.selectById(state, sceneId)?.type
+  const sceneId = useAppSelector((state) => state.editor.scene);
+  const sceneType = useAppSelector(
+    (state) => sceneSelectors.selectById(state, sceneId)?.type
   );
-  const scenePlayerSpriteSheetId = useSelector(
-    (state: RootState) =>
-      sceneSelectors.selectById(state, sceneId)?.playerSpriteSheetId
+  const scenePlayerSpriteSheetId = useAppSelector(
+    (state) => sceneSelectors.selectById(state, sceneId)?.playerSpriteSheetId
   );
-  const defaultPlayerSprites = useSelector(
-    (state: RootState) => state.project.present.settings.defaultPlayerSprites
+  const defaultPlayerSprites = useAppSelector(
+    (state) => state.project.present.settings.defaultPlayerSprites
   );
-  const contextEntityId = useSelector(
-    (state: RootState) => state.editor.entityId
-  );
-  const sceneActorIds = useSelector((state: RootState) =>
+  const contextEntityId = useAppSelector((state) => state.editor.entityId);
+  const sceneActorIds = useAppSelector((state) =>
     getSceneActorIds(state, { id: sceneId })
   );
-  const actorsLookup = useSelector((state: RootState) =>
+  const actorsLookup = useAppSelector((state) =>
     actorSelectors.selectEntities(state)
   );
-  const customEvent = useSelector((state: RootState) =>
+  const customEvent = useAppSelector((state) =>
     customEventSelectors.selectById(state, contextEntityId)
   );
   const selfIndex = sceneActorIds?.indexOf(contextEntityId);

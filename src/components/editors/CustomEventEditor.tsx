@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import ScriptEditor from "components/script/ScriptEditor";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { MenuItem } from "ui/menu/Menu";
@@ -16,7 +16,6 @@ import {
   FormRow,
 } from "ui/form/FormLayout";
 import { EditableText } from "ui/form/EditableText";
-import { RootState } from "store/configureStore";
 import { CustomEventNormalized } from "shared/lib/entities/entitiesTypes";
 import { StickyTabs, TabBar } from "ui/tabs/Tabs";
 import { Button } from "ui/buttons/Button";
@@ -31,6 +30,7 @@ import { SidebarHeader } from "ui/form/SidebarHeader";
 import { Label } from "ui/form/Label";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import l10n from "shared/lib/lang/l10n";
+import { useAppSelector } from "store/hooks";
 
 const customEventName = (
   customEvent: CustomEventNormalized,
@@ -43,18 +43,18 @@ interface CustomEventEditorProps {
 }
 
 const CustomEventEditor = ({ id, multiColumn }: CustomEventEditorProps) => {
-  const customEvents = useSelector((state: RootState) =>
+  const customEvents = useAppSelector((state) =>
     customEventSelectors.selectAll(state)
   );
-  const customEvent = useSelector((state: RootState) =>
+  const customEvent = useAppSelector((state) =>
     customEventSelectors.selectById(state, id)
   );
   const index = React.useMemo(
     () => customEvents.findIndex((p) => p.id === id),
     [customEvents, id]
   );
-  const lockScriptEditor = useSelector(
-    (state: RootState) => state.editor.lockScriptEditor
+  const lockScriptEditor = useAppSelector(
+    (state) => state.editor.lockScriptEditor
   );
 
   const [showSymbols, setShowSymbols] = useState(false);

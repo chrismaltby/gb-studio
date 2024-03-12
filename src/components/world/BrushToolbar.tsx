@@ -5,7 +5,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import l10n from "shared/lib/lang/l10n";
 import {
   PaintBucketIcon,
@@ -54,7 +54,6 @@ import navigationActions from "store/features/navigation/navigationActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { PaletteSelect } from "components/forms/PaletteSelect";
 import { Brush } from "store/features/editor/editorState";
-import { RootState } from "store/configureStore";
 import { cloneDeep } from "lodash";
 import { NavigationSection } from "store/features/navigation/navigationState";
 import styled, { css } from "styled-components";
@@ -79,6 +78,7 @@ import {
   BrushToolbarTileTopIcon,
 } from "./BrushToolbarIcons";
 import { RelativePortal } from "ui/layout/RelativePortal";
+import { useAppSelector } from "store/hooks";
 
 interface BrushToolbarProps {
   hasFocusForKeyboardShortcuts: () => boolean;
@@ -95,13 +95,13 @@ const collisionDirectionFlags = [
 ];
 
 function useHiglightPalette() {
-  const hoverScene = useSelector((state: RootState) =>
+  const hoverScene = useAppSelector((state) =>
     sceneSelectors.selectById(state, state.editor.hover.sceneId)
   );
-  const background = useSelector((state: RootState) =>
+  const background = useAppSelector((state) =>
     backgroundSelectors.selectById(state, hoverScene?.backgroundId ?? "")
   );
-  const { x, y } = useSelector((state: RootState) => state.editor.hover);
+  const { x, y } = useAppSelector((state) => state.editor.hover);
 
   let highlightPalette = -1;
   if (background) {
@@ -150,21 +150,21 @@ const PaletteModal = styled.div`
 const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
   const dispatch = useDispatch();
 
-  const sceneId = useSelector((state: RootState) => state.editor.scene);
+  const sceneId = useAppSelector((state) => state.editor.scene);
   const { selectedPalette, selectedTileType, selectedBrush, showLayers } =
-    useSelector((state: RootState) => state.editor);
-  const scene = useSelector((state: RootState) =>
+    useAppSelector((state) => state.editor);
+  const scene = useAppSelector((state) =>
     sceneSelectors.selectById(state, sceneId)
   );
-  const selectedTool = useSelector((state: RootState) => state.editor.tool);
+  const selectedTool = useAppSelector((state) => state.editor.tool);
   const visible = validTools.includes(selectedTool);
   const showPalettes = selectedTool === TOOL_COLORS;
   const showTileTypes = selectedTool === TOOL_COLLISIONS;
-  const showCollisionSlopeTiles = useSelector(
-    (state: RootState) => state.project.present.settings.showCollisionSlopeTiles
+  const showCollisionSlopeTiles = useAppSelector(
+    (state) => state.project.present.settings.showCollisionSlopeTiles
   );
-  const showCollisionExtraTiles = useSelector(
-    (state: RootState) => state.project.present.settings.showCollisionExtraTiles
+  const showCollisionExtraTiles = useAppSelector(
+    (state) => state.project.present.settings.showCollisionExtraTiles
   );
 
   const tileTypes = useMemo(
@@ -359,12 +359,11 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
       }
     };
 
-  const palettesLookup = useSelector((state: RootState) =>
+  const palettesLookup = useAppSelector((state) =>
     paletteSelectors.selectEntities(state)
   );
-  const defaultBackgroundPaletteIds = useSelector(
-    (state: RootState) =>
-      state.project.present.settings.defaultBackgroundPaletteIds
+  const defaultBackgroundPaletteIds = useAppSelector(
+    (state) => state.project.present.settings.defaultBackgroundPaletteIds
   );
   const palettes = useMemo(
     () =>

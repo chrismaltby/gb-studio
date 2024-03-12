@@ -1,13 +1,12 @@
 import React, { useState, useEffect, FC, useContext } from "react";
 import PropTypes from "prop-types";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "store/hooks";
 import { DialogueTextarea } from "ui/form/DialogueTextarea";
 import {
   customEventSelectors,
   fontSelectors,
   variableSelectors,
 } from "store/features/entities/entitiesState";
-import { RootState } from "store/configureStore";
 import { NamedVariable, namedVariablesByContext } from "renderer/lib/variables";
 import { ScriptEditorContext } from "./ScriptEditorContext";
 
@@ -30,13 +29,11 @@ const ScriptEventFormTextArea: FC<ScriptEventFormTextAreaProps> = ({
 }) => {
   const context = useContext(ScriptEditorContext);
   const [variables, setVariables] = useState<NamedVariable[]>([]);
-  const fonts = useSelector((state: RootState) =>
-    fontSelectors.selectAll(state)
-  );
-  const variablesLookup = useSelector((state: RootState) =>
+  const fonts = useAppSelector((state) => fontSelectors.selectAll(state));
+  const variablesLookup = useAppSelector((state) =>
     variableSelectors.selectEntities(state)
   );
-  const customEvent = useSelector((state: RootState) =>
+  const customEvent = useAppSelector((state) =>
     customEventSelectors.selectById(state, entityId)
   );
 

@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-for */
 import React, { FC, useCallback, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { SceneSelect } from "components/forms/SceneSelect";
 import DirectionPicker from "components/forms/DirectionPicker";
 import {
@@ -22,7 +22,6 @@ import {
   FormHeader,
   FormRow,
 } from "ui/form/FormLayout";
-import { RootState } from "store/configureStore";
 import { EditableText } from "ui/form/EditableText";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { MenuItem } from "ui/menu/Menu";
@@ -36,15 +35,12 @@ import { CheckboxField } from "ui/form/CheckboxField";
 import { Button } from "ui/buttons/Button";
 import l10n from "shared/lib/lang/l10n";
 import { ActorDirection } from "shared/lib/entities/entitiesTypes";
+import { useAppSelector } from "store/hooks";
 
 export const WorldEditor: FC = () => {
-  const metadata = useSelector(
-    (state: RootState) => state.project.present.metadata
-  );
-  const settings = useSelector(
-    (state: RootState) => state.project.present.settings
-  );
-  const scene = useSelector((state: RootState) =>
+  const metadata = useAppSelector((state) => state.project.present.metadata);
+  const settings = useAppSelector((state) => state.project.present.settings);
+  const scene = useAppSelector((state) =>
     sceneSelectors.selectById(state, settings.startSceneId)
   );
   const [notesOpen, setNotesOpen] = useState<boolean>(!!metadata.notes);

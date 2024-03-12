@@ -1,14 +1,14 @@
 import React, { FC, useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import styled, { css } from "styled-components";
 import l10n from "shared/lib/lang/l10n";
-import { RootState } from "store/configureStore";
 import { backgroundSelectors } from "store/features/entities/entitiesState";
 import assetsActions from "store/features/assets/assetsActions";
 import { SelectMenu, selectMenuStyleProps } from "ui/form/Select";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import { BackgroundSelect } from "./BackgroundSelect";
 import { assetFilename } from "shared/lib/helpers/assets";
+import { useAppSelector } from "store/hooks";
 
 interface BackgroundSelectProps {
   name: string;
@@ -147,14 +147,14 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const timerRef = useRef<number | null>(null);
-  const background = useSelector((state: RootState) =>
+  const background = useAppSelector((state) =>
     backgroundSelectors.selectById(state, value || "")
   );
-  const projectRoot = useSelector((state: RootState) => state.document.root);
+  const projectRoot = useAppSelector((state) => state.document.root);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [buttonFocus, setButtonFocus] = useState<boolean>(false);
-  const numTiles = useSelector(
-    (state: RootState) => state.assets.backgrounds[value || ""]?.numTiles
+  const numTiles = useAppSelector(
+    (state) => state.assets.backgrounds[value || ""]?.numTiles
   );
   const dispatch = useDispatch();
 

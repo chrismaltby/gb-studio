@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import Solver from "3x3-equation-solver";
 import l10n from "shared/lib/lang/l10n";
 import ColorSlider from "./ColorSlider";
@@ -8,12 +8,12 @@ import entitiesActions from "store/features/entities/entitiesActions";
 import { Button } from "ui/buttons/Button";
 import { hexDec } from "shared/lib/helpers/8bit";
 import clamp from "shared/lib/helpers/clamp";
-import { RootState } from "store/configureStore";
 import styled, { css } from "styled-components";
 import { TextField } from "ui/form/TextField";
 import { NumberField } from "ui/form/NumberField";
 import { FixedSpacer } from "ui/spacing/Spacing";
 import API from "renderer/lib/api";
+import { useAppSelector } from "store/hooks";
 
 const DEFAULT_WHITE = "E8F8E0";
 const DEFAULT_LIGHT = "B0F088";
@@ -254,7 +254,7 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
 
   const prevPaletteIdRef = useRef<string>();
 
-  const palette = useSelector((state: RootState) =>
+  const palette = useAppSelector((state) =>
     paletteSelectors.selectById(state, paletteId)
   );
 

@@ -5,7 +5,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import Path from "path";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import { castEventToBool } from "renderer/lib/helpers/castEventValue";
@@ -21,7 +21,6 @@ import navigationActions from "store/features/navigation/navigationActions";
 import EngineFieldsEditor from "components/settings/EngineFieldsEditor";
 import { Checkbox } from "ui/form/Checkbox";
 import { Input } from "ui/form/Input";
-import { RootState } from "store/configureStore";
 import { useGroupedEngineFields } from "components/settings/useGroupedEngineFields";
 import { NavigationSection } from "store/features/navigation/navigationState";
 import { Textarea } from "ui/form/Textarea";
@@ -48,13 +47,12 @@ import CartSettingsEditor from "components/settings/CartSettingsEditor";
 import { UIAssetPreview } from "components/forms/UIAssetPreviewButton";
 import { FormField } from "ui/form/FormLayout";
 import { FixedSpacer } from "ui/spacing/Spacing";
+import { useAppSelector } from "store/hooks";
 
 const SettingsPage: FC = () => {
   const dispatch = useDispatch();
-  const projectRoot = useSelector((state: RootState) => state.document.root);
-  const settings = useSelector(
-    (state: RootState) => state.project.present.settings
-  );
+  const projectRoot = useAppSelector((state) => state.document.root);
+  const settings = useAppSelector((state) => state.project.present.settings);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [scrollToId, setScrollToId] = useState<string>("");
   const groupedFields = useGroupedEngineFields();

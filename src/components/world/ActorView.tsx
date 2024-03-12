@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import SpriteSheetCanvas from "./SpriteSheetCanvas";
 
 import { DMG_PALETTE, MIDDLE_MOUSE, TILE_SIZE } from "consts";
@@ -10,8 +10,8 @@ import {
 import editorActions from "store/features/editor/editorActions";
 import { getSettings } from "store/features/settings/settingsState";
 import styled, { css } from "styled-components";
-import { RootState } from "store/configureStore";
 import { Palette } from "shared/lib/entities/entitiesTypes";
+import { useAppSelector } from "store/hooks";
 
 interface ActorViewProps {
   id: string;
@@ -60,25 +60,23 @@ const CanvasWrapper = styled.div`
 const ActorView = memo(
   ({ id, sceneId, palettes, editable }: ActorViewProps) => {
     const dispatch = useDispatch();
-    const actor = useSelector((state: RootState) =>
+    const actor = useAppSelector((state) =>
       actorSelectors.selectById(state, id)
     );
-    const selected = useSelector(
-      (state: RootState) =>
+    const selected = useAppSelector(
+      (state) =>
         state.editor.type === "actor" &&
         state.editor.scene === sceneId &&
         state.editor.entityId === id
     );
-    const isDragging = useSelector(
-      (state: RootState) => selected && state.editor.dragging
+    const isDragging = useAppSelector(
+      (state) => selected && state.editor.dragging
     );
-    const settings = useSelector((state: RootState) => getSettings(state));
-    const palettesLookup = useSelector((state: RootState) =>
+    const settings = useAppSelector((state) => getSettings(state));
+    const palettesLookup = useAppSelector((state) =>
       paletteSelectors.selectEntities(state)
     );
-    const showSprite = useSelector(
-      (state: RootState) => state.editor.zoom > 80
-    );
+    const showSprite = useAppSelector((state) => state.editor.zoom > 80);
     const gbcEnabled = settings.customColorsEnabled;
     const palette: Palette = useMemo(
       () =>

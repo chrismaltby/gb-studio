@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import { useAppSelector } from "store/hooks";
 import {
   customEventSelectors,
   scriptEventSelectors,
@@ -35,13 +34,13 @@ const ScriptEditor = React.memo(
   }: ScriptEditorProps) => {
     const [renderTo, setRenderTo] = useState(0);
     const timerRef = useRef<number>(0);
-    const scriptEventsLookup = useSelector((state: RootState) =>
+    const scriptEventsLookup = useAppSelector((state) =>
       scriptEventSelectors.selectEntities(state)
     );
-    const customEventsLookup = useSelector((state: RootState) =>
+    const customEventsLookup = useAppSelector((state) =>
       customEventSelectors.selectEntities(state)
     );
-    const scriptEventDefs = useSelector((state: RootState) =>
+    const scriptEventDefs = useAppSelector((state) =>
       selectScriptEventDefs(state)
     );
     const autoFadeEventId = useMemo(() => {

@@ -1,6 +1,5 @@
 import React, { FC, RefObject, useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import { useDispatch } from "react-redux";
 import {
   actorSelectors,
   sceneSelectors,
@@ -33,6 +32,7 @@ import {
 } from "shared/lib/variables/variableNames";
 import l10n, { getL10NData } from "shared/lib/lang/l10n";
 import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
+import { useAppSelector } from "store/hooks";
 
 const worker = new VariableUsesWorker();
 
@@ -59,25 +59,23 @@ const UseMessage = styled.div`
 export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
   const [fetching, setFetching] = useState(true);
   const { ref, height } = useDimensions();
-  const variable = useSelector((state: RootState) =>
+  const variable = useAppSelector((state) =>
     variableSelectors.selectById(state, id)
   );
   const [variableUses, setVariableUses] = useState<VariableUse[]>([]);
-  const scenes = useSelector((state: RootState) =>
-    sceneSelectors.selectAll(state)
-  );
-  const actorsLookup = useSelector((state: RootState) =>
+  const scenes = useAppSelector((state) => sceneSelectors.selectAll(state));
+  const actorsLookup = useAppSelector((state) =>
     actorSelectors.selectEntities(state)
   );
-  const triggersLookup = useSelector((state: RootState) =>
+  const triggersLookup = useAppSelector((state) =>
     triggerSelectors.selectEntities(state)
   );
-  const scriptEventsLookup = useSelector((state: RootState) =>
+  const scriptEventsLookup = useAppSelector((state) =>
     scriptEventSelectors.selectEntities(state)
   );
   const [showSymbols, setShowSymbols] = useState(false);
 
-  const scriptEventDefs = useSelector((state: RootState) =>
+  const scriptEventDefs = useAppSelector((state) =>
     selectScriptEventDefs(state)
   );
 

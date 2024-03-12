@@ -9,12 +9,12 @@ import useResizable from "ui/hooks/use-resizable";
 import useWindowSize from "ui/hooks/use-window-size";
 import { SplitPaneHorizontalDivider } from "ui/splitpane/SplitPaneDivider";
 import { Navigator } from "components/world/Navigator";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import { useDispatch } from "react-redux";
 import editorActions from "store/features/editor/editorActions";
 import settingsActions from "store/features/settings/settingsActions";
 
 import debounce from "lodash/debounce";
+import { useAppSelector } from "store/hooks";
 
 const Wrapper = styled.div`
   display: flex;
@@ -25,19 +25,19 @@ const WorldPage = () => {
   const documentContainerRef = useRef<HTMLDivElement>(null);
   const dispatch = useDispatch();
   const themeContext = useContext(ThemeContext);
-  const worldSidebarWidth = useSelector(
-    (state: RootState) => state.editor.worldSidebarWidth
+  const worldSidebarWidth = useAppSelector(
+    (state) => state.editor.worldSidebarWidth
   );
-  const navigatorSidebarWidth = useSelector(
-    (state: RootState) => state.editor.navigatorSidebarWidth
+  const navigatorSidebarWidth = useAppSelector(
+    (state) => state.editor.navigatorSidebarWidth
   );
   const windowSize = useWindowSize();
   const prevWindowWidthRef = useRef<number>(0);
   const windowWidth = windowSize.width || 0;
   const windowHeight = windowSize.height || 0;
   const minCenterPaneWidth = 0;
-  const showNavigator = useSelector(
-    (state: RootState) => state.project.present.settings.showNavigator
+  const showNavigator = useAppSelector(
+    (state) => state.project.present.settings.showNavigator
   );
   const [leftPaneWidth, setLeftPaneSize, startLeftPaneResize] = useResizable({
     initialSize: navigatorSidebarWidth,

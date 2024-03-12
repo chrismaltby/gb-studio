@@ -1,10 +1,10 @@
 import React, { memo, useCallback, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import editorActions from "store/features/editor/editorActions";
 import { triggerSelectors } from "store/features/entities/entitiesState";
 import { MIDDLE_MOUSE, TILE_SIZE } from "consts";
-import { RootState } from "store/configureStore";
 import styled, { css } from "styled-components";
+import { useAppSelector } from "store/hooks";
 
 interface TriggerViewProps {
   id: string;
@@ -34,17 +34,17 @@ const Wrapper = styled.div<WrapperProps>`
 
 const TriggerView = memo(({ id, sceneId, editable }: TriggerViewProps) => {
   const dispatch = useDispatch();
-  const trigger = useSelector((state: RootState) =>
+  const trigger = useAppSelector((state) =>
     triggerSelectors.selectById(state, id)
   );
-  const selected = useSelector(
-    (state: RootState) =>
+  const selected = useAppSelector(
+    (state) =>
       state.editor.type === "trigger" &&
       state.editor.scene === sceneId &&
       state.editor.entityId === id
   );
-  const isDragging = useSelector(
-    (state: RootState) => selected && state.editor.dragging
+  const isDragging = useAppSelector(
+    (state) => selected && state.editor.dragging
   );
 
   const onMouseUp = useCallback(() => {

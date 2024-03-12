@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
   Option,
   Select,
@@ -14,7 +14,7 @@ import soundfxActions from "store/features/soundfx/soundfxActions";
 import l10n from "shared/lib/lang/l10n";
 import { soundSelectors } from "store/features/entities/entitiesState";
 import uniq from "lodash/uniq";
-import { RootState } from "store/configureStore";
+import { useAppSelector } from "store/hooks";
 
 interface SoundEffectSelectProps extends SelectCommonProps {
   name: string;
@@ -91,9 +91,7 @@ export const SoundEffectSelect = ({
   const [currentValue, setCurrentValue] = useState<Option>();
   const [options, setOptions] = useState<OptGroup[]>([]);
 
-  const sounds = useSelector((state: RootState) =>
-    soundSelectors.selectAll(state)
-  );
+  const sounds = useAppSelector((state) => soundSelectors.selectAll(state));
 
   useEffect(() => {
     const plugins = uniq(sounds.map((s) => s.plugin || "")).sort();

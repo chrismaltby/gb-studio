@@ -1,6 +1,5 @@
 import React, { ReactNode, useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import { useDispatch } from "react-redux";
 import {
   spriteAnimationSelectors,
   spriteSheetSelectors,
@@ -30,6 +29,7 @@ import {
   getAnimationTypeByIndex,
 } from "shared/lib/sprites/helpers";
 import { getAnimationNameForType } from "renderer/lib/sprites/spriteL10NHelpers";
+import { useAppSelector } from "store/hooks";
 
 interface NavigatorSpritesProps {
   height: number;
@@ -116,21 +116,20 @@ export const NavigatorSprites = ({
     AnimationNavigatorItem[]
   >([]);
   const [items, setItems] = useState<SpriteNavigatorItem[]>([]);
-  const allSprites = useSelector((state: RootState) =>
+  const allSprites = useAppSelector((state) =>
     spriteSheetSelectors.selectAll(state)
   );
-  const spritesLookup = useSelector((state: RootState) =>
+  const spritesLookup = useAppSelector((state) =>
     spriteSheetSelectors.selectEntities(state)
   );
-  const spriteStatesLookup = useSelector((state: RootState) =>
+  const spriteStatesLookup = useAppSelector((state) =>
     spriteStateSelectors.selectEntities(state)
   );
-  const spriteAnimationsLookup = useSelector((state: RootState) =>
+  const spriteAnimationsLookup = useAppSelector((state) =>
     spriteAnimationSelectors.selectEntities(state)
   );
   const selectedAnimationId =
-    useSelector((state: RootState) => state.editor.selectedAnimationId) ||
-    "group";
+    useAppSelector((state) => state.editor.selectedAnimationId) || "group";
 
   const selectedSprite = spritesLookup[selectedId];
   const selectedState = spriteStatesLookup[selectedStateId];

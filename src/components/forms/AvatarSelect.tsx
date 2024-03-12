@@ -1,6 +1,5 @@
 import React, { FC, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import { useAppSelector } from "store/hooks";
 import { avatarSelectors } from "store/features/entities/entitiesState";
 import { Avatar } from "shared/lib/entities/entitiesTypes";
 import {
@@ -33,9 +32,7 @@ export const AvatarSelect: FC<AvatarSelectProps> = ({
   optionalDefaultAvatarId,
   ...selectProps
 }) => {
-  const avatars = useSelector((state: RootState) =>
-    avatarSelectors.selectAll(state)
-  );
+  const avatars = useAppSelector((state) => avatarSelectors.selectAll(state));
   const [options, setOptions] = useState<AvatarOption[]>([]);
   const [currentAvatar, setCurrentAvatar] = useState<Avatar>();
   const [currentValue, setCurrentValue] = useState<AvatarOption>();

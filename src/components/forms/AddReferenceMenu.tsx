@@ -10,8 +10,7 @@ import styled, { css } from "styled-components";
 import { Menu, MenuGroup, MenuItem } from "ui/menu/Menu";
 import { CaretRightIcon } from "ui/icons/Icons";
 import { FlexGrow } from "ui/spacing/Spacing";
-import { useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import { useAppSelector } from "store/hooks";
 import { useDebounce } from "ui/hooks/use-debounce";
 import {
   backgroundSelectors,
@@ -328,35 +327,25 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
   const childOptionsRef = useRef<HTMLDivElement>(null);
   const childOptionsListRef = useRef<List>(null);
 
-  const backgrounds = useSelector((state: RootState) =>
+  const backgrounds = useAppSelector((state) =>
     backgroundSelectors.selectAll(state)
   );
-  const sprites = useSelector((state: RootState) =>
+  const sprites = useAppSelector((state) =>
     spriteSheetSelectors.selectAll(state)
   );
-  const customEvents = useSelector((state: RootState) =>
+  const customEvents = useAppSelector((state) =>
     customEventSelectors.selectAll(state)
   );
-  const variablesLookup = useSelector((state: RootState) =>
+  const variablesLookup = useAppSelector((state) =>
     variableSelectors.selectEntities(state)
   );
-  const emotes = useSelector((state: RootState) =>
-    emoteSelectors.selectAll(state)
-  );
-  const fonts = useSelector((state: RootState) =>
-    fontSelectors.selectAll(state)
-  );
-  const scenes = useSelector((state: RootState) =>
-    sceneSelectors.selectAll(state)
-  );
-  const tracks = useSelector((state: RootState) =>
-    musicSelectors.selectAll(state)
-  );
-  const sounds = useSelector((state: RootState) =>
-    soundSelectors.selectAll(state)
-  );
-  const musicDriver = useSelector(
-    (state: RootState) => state.project.present.settings.musicDriver
+  const emotes = useAppSelector((state) => emoteSelectors.selectAll(state));
+  const fonts = useAppSelector((state) => fontSelectors.selectAll(state));
+  const scenes = useAppSelector((state) => sceneSelectors.selectAll(state));
+  const tracks = useAppSelector((state) => musicSelectors.selectAll(state));
+  const sounds = useAppSelector((state) => soundSelectors.selectAll(state));
+  const musicDriver = useAppSelector(
+    (state) => state.project.present.settings.musicDriver
   );
 
   useEffect(() => {

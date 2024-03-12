@@ -2,8 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import { NamedVariable, namedVariablesByContext } from "renderer/lib/variables";
 import { Dictionary } from "@reduxjs/toolkit";
-import { useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import { useAppSelector } from "store/hooks";
 import {
   customEventSelectors,
   variableSelectors,
@@ -50,7 +49,7 @@ const customEventActorsLookup = keyBy(
 
 const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
   const context = useContext(ScriptEditorContext);
-  const scriptEventDefs = useSelector((state: RootState) =>
+  const scriptEventDefs = useAppSelector((state) =>
     selectScriptEventDefs(state)
   );
   const localisedCommand = l10n(command as L10NKey);
@@ -64,46 +63,41 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
   const [namedVariablesLookup, setNamedVariablesLookup] = useState<
     Dictionary<NamedVariable>
   >({});
-  const editorType = useSelector((state: RootState) => state.editor.type);
+  const editorType = useAppSelector((state) => state.editor.type);
 
-  const sceneId = useSelector((state: RootState) => state.editor.scene);
-  const entityId =
-    useSelector((state: RootState) => state.editor.entityId) || sceneId;
+  const sceneId = useAppSelector((state) => state.editor.scene);
+  const entityId = useAppSelector((state) => state.editor.entityId) || sceneId;
 
-  const variablesLookup = useSelector((state: RootState) =>
+  const variablesLookup = useAppSelector((state) =>
     variableSelectors.selectEntities(state)
   );
-  const customEvent = useSelector((state: RootState) =>
+  const customEvent = useAppSelector((state) =>
     customEventSelectors.selectById(state, entityId)
   );
-  const sceneActorIds = useSelector((state: RootState) =>
+  const sceneActorIds = useAppSelector((state) =>
     getSceneActorIds(state, { id: sceneId })
   );
-  const actorsLookup = useSelector((state: RootState) =>
+  const actorsLookup = useAppSelector((state) =>
     actorSelectors.selectEntities(state)
   );
-  const scenesLookup = useSelector((state: RootState) =>
+  const scenesLookup = useAppSelector((state) =>
     sceneSelectors.selectEntities(state)
   );
-  const scenes = useSelector((state: RootState) =>
-    sceneSelectors.selectAll(state)
-  );
-  const spriteSheetsLookup = useSelector((state: RootState) =>
+  const scenes = useAppSelector((state) => sceneSelectors.selectAll(state));
+  const spriteSheetsLookup = useAppSelector((state) =>
     spriteSheetSelectors.selectEntities(state)
   );
-  const spriteSheets = useSelector((state: RootState) =>
+  const spriteSheets = useAppSelector((state) =>
     spriteSheetSelectors.selectAll(state)
   );
-  const emotesLookup = useSelector((state: RootState) =>
+  const emotesLookup = useAppSelector((state) =>
     emoteSelectors.selectEntities(state)
   );
-  const emotes = useSelector((state: RootState) =>
-    emoteSelectors.selectAll(state)
-  );
-  const customEventsLookup = useSelector((state: RootState) =>
+  const emotes = useAppSelector((state) => emoteSelectors.selectAll(state));
+  const customEventsLookup = useAppSelector((state) =>
     customEventSelectors.selectEntities(state)
   );
-  const customEvents = useSelector((state: RootState) =>
+  const customEvents = useAppSelector((state) =>
     customEventSelectors.selectAll(state)
   );
 

@@ -1,6 +1,5 @@
 import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import { useDispatch } from "react-redux";
 import {
   actorSelectors,
   sceneSelectors,
@@ -52,6 +51,7 @@ import {
   castEventToBool,
   castEventToInt,
 } from "renderer/lib/helpers/castEventValue";
+import { useAppSelector } from "store/hooks";
 
 interface ActorEditorProps {
   id: string;
@@ -123,25 +123,23 @@ export const ActorEditor: FC<ActorEditorProps> = ({
   sceneId,
   multiColumn,
 }) => {
-  const actor = useSelector((state: RootState) =>
-    actorSelectors.selectById(state, id)
-  );
+  const actor = useAppSelector((state) => actorSelectors.selectById(state, id));
   const [notesOpen, setNotesOpen] = useState<boolean>(!!actor?.notes);
-  const clipboardFormat = useSelector(
-    (state: RootState) => state.clipboard.data?.format
+  const clipboardFormat = useAppSelector(
+    (state) => state.clipboard.data?.format
   );
-  const scene = useSelector((state: RootState) =>
+  const scene = useAppSelector((state) =>
     sceneSelectors.selectById(state, sceneId)
   );
-  const defaultSpritePaletteId = useSelector(
-    (state: RootState) =>
+  const defaultSpritePaletteId = useAppSelector(
+    (state) =>
       state.project.present.settings.defaultSpritePaletteId || DMG_PALETTE.id
   );
-  const colorsEnabled = useSelector(
-    (state: RootState) => state.project.present.settings.customColorsEnabled
+  const colorsEnabled = useAppSelector(
+    (state) => state.project.present.settings.customColorsEnabled
   );
-  const lockScriptEditor = useSelector(
-    (state: RootState) => state.editor.lockScriptEditor
+  const lockScriptEditor = useAppSelector(
+    (state) => state.editor.lockScriptEditor
   );
 
   const actorIndex = scene?.actors.indexOf(id) || 0;
@@ -176,11 +174,9 @@ export const ActorEditor: FC<ActorEditorProps> = ({
 
   const tabs = Object.keys(actor?.collisionGroup ? collisionTabs : defaultTabs);
   const secondaryTabs = Object.keys(hitTabs);
-  const lastScriptTab = useSelector(
-    (state: RootState) => state.editor.lastScriptTab
-  );
-  const lastScriptTabSecondary = useSelector(
-    (state: RootState) => state.editor.lastScriptTabSecondary
+  const lastScriptTab = useAppSelector((state) => state.editor.lastScriptTab);
+  const lastScriptTabSecondary = useAppSelector(
+    (state) => state.editor.lastScriptTabSecondary
   );
   const initialTab = tabs.includes(lastScriptTab) ? lastScriptTab : tabs[0];
   const initialSecondaryTab = secondaryTabs.includes(lastScriptTabSecondary)

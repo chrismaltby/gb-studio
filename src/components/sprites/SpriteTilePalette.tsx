@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import { useDispatch } from "react-redux";
 import { SpriteTileSelection } from "store/features/editor/editorState";
 import { spriteSheetSelectors } from "store/features/entities/entitiesState";
 import editorActions from "store/features/editor/editorActions";
@@ -10,6 +9,7 @@ import styled from "styled-components";
 import l10n from "shared/lib/lang/l10n";
 import electronActions from "store/features/electron/electronActions";
 import { assetFilename } from "shared/lib/helpers/assets";
+import { useAppSelector } from "store/hooks";
 
 const PillWrapper = styled.div`
   position: absolute;
@@ -49,10 +49,9 @@ interface Coordinates {
 
 const SpriteTilePalette = ({ id, precisionMode }: SpriteTilePaletteProps) => {
   const dispatch = useDispatch();
-  const zoom =
-    useSelector((state: RootState) => state.editor.zoomSpriteTiles) / 100;
-  const selectedTiles = useSelector(
-    (state: RootState) => state.editor.spriteTileSelection
+  const zoom = useAppSelector((state) => state.editor.zoomSpriteTiles) / 100;
+  const selectedTiles = useAppSelector(
+    (state) => state.editor.spriteTileSelection
   );
 
   const setSelectedTiles = useCallback(
@@ -65,16 +64,16 @@ const SpriteTilePalette = ({ id, precisionMode }: SpriteTilePaletteProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  const spriteSheet = useSelector((state: RootState) =>
+  const spriteSheet = useAppSelector((state) =>
     spriteSheetSelectors.selectById(state, id)
   );
-  const selectedTileIds = useSelector(
-    (state: RootState) => state.editor.selectedMetaspriteTileIds
+  const selectedTileIds = useAppSelector(
+    (state) => state.editor.selectedMetaspriteTileIds
   );
-  const replaceSpriteTileMode = useSelector(
-    (state: RootState) => state.editor.replaceSpriteTileMode
+  const replaceSpriteTileMode = useAppSelector(
+    (state) => state.editor.replaceSpriteTileMode
   );
-  const projectRoot = useSelector((state: RootState) => state.document.root);
+  const projectRoot = useAppSelector((state) => state.document.root);
   const width = spriteSheet?.width || 0;
   const height = spriteSheet?.height || 0;
 

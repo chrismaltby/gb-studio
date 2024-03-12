@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import { useDispatch } from "react-redux";
 import { musicSelectors } from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
 import editorActions from "store/features/editor/editorActions";
@@ -24,6 +23,7 @@ import { addNewSongFile } from "store/features/trackerDocument/trackerDocumentSt
 import trackerActions from "store/features/tracker/trackerActions";
 import { assetFilename } from "shared/lib/helpers/assets";
 import API from "renderer/lib/api";
+import { useAppSelector } from "store/hooks";
 
 const COLLAPSED_SIZE = 30;
 
@@ -127,15 +127,11 @@ export const NavigatorSongs = ({
   const dispatch = useDispatch();
 
   const [items, setItems] = useState<NavigatorItem[]>([]);
-  const allSongs = useSelector((state: RootState) =>
-    musicSelectors.selectAll(state)
-  );
-  const songsLookup = useSelector((state: RootState) =>
+  const allSongs = useAppSelector((state) => musicSelectors.selectAll(state));
+  const songsLookup = useAppSelector((state) =>
     musicSelectors.selectEntities(state)
   );
-  const navigationId = useSelector(
-    (state: RootState) => state.editor.selectedSongId
-  );
+  const navigationId = useAppSelector((state) => state.editor.selectedSongId);
   const selectedSongId = defaultFirst
     ? songsLookup[navigationId]?.id || allSongs.filter(ugeFilter)[0]?.id
     : navigationId;
@@ -272,11 +268,11 @@ export const NavigatorSongs = ({
     [syncInstruments]
   );
 
-  const selectedInstrument = useSelector(
-    (state: RootState) => state.editor.selectedInstrument
+  const selectedInstrument = useAppSelector(
+    (state) => state.editor.selectedInstrument
   );
-  const selectedChannel = useSelector(
-    (state: RootState) => state.tracker.selectedChannel
+  const selectedChannel = useAppSelector(
+    (state) => state.tracker.selectedChannel
   );
   const setSelectedInstrument = useCallback(
     (id: string, item: InstrumentNavigatorItem) => {
@@ -328,7 +324,7 @@ export const NavigatorSongs = ({
 
   const showInstrumentList = selectedSong && selectedSong.type === "uge";
 
-  const projectRoot = useSelector((state: RootState) => state.document.root);
+  const projectRoot = useAppSelector((state) => state.document.root);
 
   const addSong = useCallback(
     (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {

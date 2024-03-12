@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import l10n from "shared/lib/lang/l10n";
 import { Button } from "ui/buttons/Button";
 import settingsActions from "store/features/settings/settingsActions";
@@ -11,6 +11,7 @@ import {
   SettingsState,
   getSettings,
 } from "store/features/settings/settingsState";
+import { useAppSelector } from "store/hooks";
 
 interface CustomControlsPickerProps {
   searchTerm: string;
@@ -58,7 +59,7 @@ interface DirectionOption {
 
 const CustomControlsPicker = ({ searchTerm }: CustomControlsPickerProps) => {
   const dispatch = useDispatch();
-  const settings = useSelector(getSettings);
+  const settings = useAppSelector(getSettings);
 
   const directions: DirectionOption[] = useMemo(
     () => [

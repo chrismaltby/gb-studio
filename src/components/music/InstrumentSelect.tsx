@@ -1,6 +1,5 @@
 import React, { FC, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import { useAppSelector } from "store/hooks";
 import { InstrumentType } from "store/features/editor/editorState";
 import styled from "styled-components";
 import {
@@ -52,9 +51,7 @@ export const InstrumentSelect: FC<InstrumentSelectProps> = ({
   const [currentInstrument, setCurrentInstrument] = useState<Option>();
   const [currentValue, setCurrentValue] = useState<Option>();
 
-  const song = useSelector(
-    (state: RootState) => state.trackerDocument.present.song
-  );
+  const song = useAppSelector((state) => state.trackerDocument.present.song);
 
   useEffect(() => {
     let instruments = defaultInstrumentOptions;

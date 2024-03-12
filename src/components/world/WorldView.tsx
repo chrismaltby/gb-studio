@@ -24,9 +24,9 @@ import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { sceneName } from "shared/lib/entities/entitiesHelpers";
-import { RootState } from "store/configureStore";
-import { useDispatch, useSelector, useStore } from "react-redux";
+import { useDispatch, useStore } from "react-redux";
 import styled from "styled-components";
+import { useAppSelector } from "store/hooks";
 
 const Wrapper = styled.div`
   position: absolute;
@@ -82,16 +82,16 @@ const WorldView = () => {
   });
   const isMouseOver = useRef(false);
 
-  const loaded = useSelector((state: RootState) => state.document.loaded);
-  const scenes = useSelector(
-    (state: RootState) => sceneSelectors.selectIds(state) as string[]
+  const loaded = useAppSelector((state) => state.document.loaded);
+  const scenes = useAppSelector(
+    (state) => sceneSelectors.selectIds(state) as string[]
   );
-  const scenesLookup = useSelector((state: RootState) =>
+  const scenesLookup = useAppSelector((state) =>
     sceneSelectors.selectEntities(state)
   );
 
-  const showConnections = useSelector(
-    (state: RootState) =>
+  const showConnections = useAppSelector(
+    (state) =>
       state.project.present.settings.showConnections &&
       (state.editor.showLayers ||
         (state.editor.tool !== TOOL_COLORS &&
@@ -99,33 +99,29 @@ const WorldView = () => {
           state.editor.tool !== TOOL_ERASER))
   );
 
-  const clipboardVariables = useSelector(
-    (state: RootState) => state.editor.clipboardVariables
+  const clipboardVariables = useAppSelector(
+    (state) => state.editor.clipboardVariables
   );
-  const focusSceneId = useSelector(
-    (state: RootState) => state.editor.focusSceneId
-  );
-  const sidebarWidth = useSelector(
-    (state: RootState) => state.editor.worldSidebarWidth
+  const focusSceneId = useAppSelector((state) => state.editor.focusSceneId);
+  const sidebarWidth = useAppSelector(
+    (state) => state.editor.worldSidebarWidth
   );
 
   const viewportWidth = window.innerWidth - sidebarWidth - 17;
   const viewportHeight = window.innerHeight - 40 - 17;
 
-  const scrollWidth = useSelector((state: RootState) =>
+  const scrollWidth = useAppSelector((state) =>
     Math.max(viewportWidth, getMaxSceneRight(state) + 20)
   );
-  const scrollHeight = useSelector((state: RootState) =>
+  const scrollHeight = useAppSelector((state) =>
     Math.max(viewportHeight, getMaxSceneBottom(state) + 60)
   );
 
-  const focus = useSelector((state: RootState) => state.editor.worldFocus);
+  const focus = useAppSelector((state) => state.editor.worldFocus);
 
-  const zoomRatio = useSelector(
-    (state: RootState) => (state.editor.zoom || 100) / 100
-  );
+  const zoomRatio = useAppSelector((state) => (state.editor.zoom || 100) / 100);
 
-  const searchTerm = useSelector((state: RootState) => state.editor.searchTerm);
+  const searchTerm = useAppSelector((state) => state.editor.searchTerm);
 
   const matchingScenes = searchTerm
     ? scenes.filter((scene, sceneIndex) => {
@@ -143,8 +139,8 @@ const WorldView = () => {
     scenesLookup[focusSceneId] ||
     null;
 
-  const tool = useSelector((state: RootState) => state.editor.tool);
-  const pasteMode = useSelector((state: RootState) => state.editor.pasteMode);
+  const tool = useAppSelector((state) => state.editor.tool);
+  const pasteMode = useAppSelector((state) => state.editor.pasteMode);
 
   const prevLoaded = useRef(false);
   const prevOnlyMatchingScene = useRef(onlyMatchingScene);
@@ -442,7 +438,7 @@ const WorldView = () => {
 
     const scroll = scrollRef.current;
     if (scroll && loaded && !prevLoaded.current) {
-      const state: RootState = store.getState();
+      const state = store.getState();
       scrollState.current.scrollX = state.editor.worldScrollX;
       scrollState.current.scrollY = state.editor.worldScrollY;
       scroll.scrollTo(scrollState.current.scrollX, scrollState.current.scrollY);

@@ -1,6 +1,5 @@
 import React from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import { useAppSelector } from "store/hooks";
 import Alert, { AlertItem } from "ui/alerts/Alert";
 
 interface BackgroundWarningsProps {
@@ -8,8 +7,8 @@ interface BackgroundWarningsProps {
 }
 
 const BackgroundWarnings = ({ id }: BackgroundWarningsProps) => {
-  const backgroundWarningsLookup = useSelector(
-    (state: RootState) => state.assets.backgrounds
+  const backgroundWarningsLookup = useAppSelector(
+    (state) => state.assets.backgrounds
   );
   const savedWarnings = backgroundWarningsLookup[id];
   const warnings = savedWarnings ? savedWarnings.warnings : [];

@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Song } from "shared/lib/uge/song/Song";
-import { RootState } from "store/configureStore";
 import trackerActions from "store/features/tracker/trackerActions";
 import API from "renderer/lib/api";
 import { MusicDataPacket } from "shared/lib/music/types";
+import { useAppSelector } from "store/hooks";
 
 interface UgePlayerProps {
   data: Song | null;
@@ -21,7 +21,7 @@ export const UgePlayer = ({ data, onChannelStatusUpdate }: UgePlayerProps) => {
     };
   }, []);
 
-  const play = useSelector((state: RootState) => state.tracker.playing);
+  const play = useAppSelector((state) => state.tracker.playing);
 
   useEffect(() => {
     const listener = (_event: unknown, d: MusicDataPacket) => {

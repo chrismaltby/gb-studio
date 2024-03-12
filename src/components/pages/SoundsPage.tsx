@@ -1,15 +1,15 @@
 import React, { useContext, useEffect, useRef } from "react";
 import styled, { ThemeContext } from "styled-components";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import debounce from "lodash/debounce";
 import useResizable from "ui/hooks/use-resizable";
 import useWindowSize from "ui/hooks/use-window-size";
 import { SplitPaneHorizontalDivider } from "ui/splitpane/SplitPaneDivider";
-import { RootState } from "store/configureStore";
 import editorActions from "store/features/editor/editorActions";
 import { soundSelectors } from "store/features/entities/entitiesState";
 import { NavigatorSounds } from "components/sounds/NavigatorSounds";
 import { SoundViewer } from "components/sounds/SoundViewer";
+import { useAppSelector } from "store/hooks";
 
 const Wrapper = styled.div`
   display: flex;
@@ -19,9 +19,9 @@ const Wrapper = styled.div`
 const SoundsPage = () => {
   const dispatch = useDispatch();
   const themeContext = useContext(ThemeContext);
-  const selectedId = useSelector((state: RootState) => state.navigation.id);
-  const navigatorSidebarWidth = useSelector(
-    (state: RootState) => state.editor.navigatorSidebarWidth
+  const selectedId = useAppSelector((state) => state.navigation.id);
+  const navigatorSidebarWidth = useAppSelector(
+    (state) => state.editor.navigatorSidebarWidth
   );
   const windowSize = useWindowSize();
   const prevWindowWidthRef = useRef<number>(0);
@@ -29,14 +29,11 @@ const SoundsPage = () => {
   const windowHeight = windowSize.height || 0;
   const minCenterPaneWidth = 0;
 
-  const allSounds = useSelector((state: RootState) =>
-    soundSelectors.selectAll(state)
-  );
+  const allSounds = useAppSelector((state) => soundSelectors.selectAll(state));
 
   const sound =
-    useSelector((state: RootState) =>
-      soundSelectors.selectById(state, selectedId)
-    ) || allSounds[0];
+    useAppSelector((state) => soundSelectors.selectById(state, selectedId)) ||
+    allSounds[0];
 
   const [leftPaneWidth, setLeftPaneSize, startLeftPaneResize] = useResizable({
     initialSize: navigatorSidebarWidth,

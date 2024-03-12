@@ -1,7 +1,6 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import styled, { ThemeContext } from "styled-components";
-import { RootState } from "store/configureStore";
 import {
   PlayIcon,
   PauseIcon,
@@ -26,6 +25,7 @@ import { PianoRollToolType } from "store/features/tracker/trackerState";
 import l10n from "shared/lib/lang/l10n";
 import { InstrumentType } from "store/features/editor/editorState";
 import API from "renderer/lib/api";
+import { useAppSelector } from "store/hooks";
 
 const octaveOffsetOptions: OctaveOffsetOptions[] = [0, 1, 2, 3].map((i) => ({
   value: i,
@@ -70,26 +70,24 @@ const getPlayButtonLabel = (play: boolean, playbackFromStart: boolean) => {
 const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
   const dispatch = useDispatch();
 
-  const play = useSelector((state: RootState) => state.tracker.playing);
-  const playerReady = useSelector(
-    (state: RootState) => state.tracker.playerReady
-  );
-  const subpatternEditorFocus = useSelector(
-    (state: RootState) => state.tracker.subpatternEditorFocus
+  const play = useAppSelector((state) => state.tracker.playing);
+  const playerReady = useAppSelector((state) => state.tracker.playerReady);
+  const subpatternEditorFocus = useAppSelector(
+    (state) => state.tracker.subpatternEditorFocus
   );
 
-  const modified = useSelector(
-    (state: RootState) => state.trackerDocument.present.modified
+  const modified = useAppSelector(
+    (state) => state.trackerDocument.present.modified
   );
 
-  const view = useSelector((state: RootState) => state.tracker.view);
+  const view = useAppSelector((state) => state.tracker.view);
 
-  const tool = useSelector((state: RootState) => state.tracker.tool);
+  const tool = useAppSelector((state) => state.tracker.tool);
   const [previousTool, setPreviousTool] = useState<PianoRollToolType>();
   const [tmpSelectionMode, setTmpSelectionMode] = useState(false);
 
-  const defaultStartPlaybackPosition = useSelector(
-    (state: RootState) => state.tracker.defaultStartPlaybackPosition
+  const defaultStartPlaybackPosition = useAppSelector(
+    (state) => state.tracker.defaultStartPlaybackPosition
   );
 
   const [playbackFromStart, setPlaybackFromStart] = useState(false);
@@ -145,8 +143,8 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
     }
   }, [dispatch, modified, selectedSong]);
 
-  const defaultInstruments = useSelector(
-    (state: RootState) => state.tracker.defaultInstruments
+  const defaultInstruments = useAppSelector(
+    (state) => state.tracker.defaultInstruments
   );
 
   const setDefaultInstruments = useCallback(
@@ -163,9 +161,7 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
     [dispatch]
   );
 
-  const octaveOffset = useSelector(
-    (state: RootState) => state.tracker.octaveOffset
-  );
+  const octaveOffset = useAppSelector((state) => state.tracker.octaveOffset);
 
   const setOctaveOffset = useCallback(
     (offset: number) => {
@@ -254,11 +250,9 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
     };
   });
 
-  const song = useSelector(
-    (state: RootState) => state.trackerDocument.present.song
-  );
-  const selectedChannel = useSelector(
-    (state: RootState) => state.tracker.selectedChannel
+  const song = useAppSelector((state) => state.trackerDocument.present.song);
+  const selectedChannel = useAppSelector(
+    (state) => state.tracker.selectedChannel
   );
   const [instrumentType, setInstrumentType] =
     useState<InstrumentType | undefined>();

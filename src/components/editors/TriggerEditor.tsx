@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import ScriptEditor from "components/script/ScriptEditor";
 import { castEventToInt } from "renderer/lib/helpers/castEventValue";
 import { DropdownButton } from "ui/buttons/DropdownButton";
@@ -21,7 +21,6 @@ import {
   FormRow,
 } from "ui/form/FormLayout";
 import { EditableText } from "ui/form/EditableText";
-import { RootState } from "store/configureStore";
 import {
   TriggerNormalized,
   ScriptEventNormalized,
@@ -37,6 +36,7 @@ import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrappe
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import { triggerName } from "shared/lib/entities/entitiesHelpers";
 import l10n from "shared/lib/lang/l10n";
+import { useAppSelector } from "store/hooks";
 
 interface TriggerEditorProps {
   id: string;
@@ -74,19 +74,19 @@ export const TriggerEditor = ({
   sceneId,
   multiColumn,
 }: TriggerEditorProps) => {
-  const trigger = useSelector((state: RootState) =>
+  const trigger = useAppSelector((state) =>
     triggerSelectors.selectById(state, id)
   );
-  const scene = useSelector((state: RootState) =>
+  const scene = useAppSelector((state) =>
     sceneSelectors.selectById(state, sceneId)
   );
-  const clipboardFormat = useSelector(
-    (state: RootState) => state.clipboard.data?.format
+  const clipboardFormat = useAppSelector(
+    (state) => state.clipboard.data?.format
   );
   const [notesOpen, setNotesOpen] = useState<boolean>(!!trigger?.notes);
 
-  const lastScriptTab = useSelector(
-    (state: RootState) => state.editor.lastScriptTabTrigger
+  const lastScriptTab = useAppSelector(
+    (state) => state.editor.lastScriptTabTrigger
   );
 
   const scriptTabs: Record<DefaultTab, string> = useMemo(
@@ -120,8 +120,8 @@ export const TriggerEditor = ({
   const scriptKey = getScriptKey(scriptMode);
 
   const triggerIndex = scene?.triggers.indexOf(id) || 0;
-  const lockScriptEditor = useSelector(
-    (state: RootState) => state.editor.lockScriptEditor
+  const lockScriptEditor = useAppSelector(
+    (state) => state.editor.lockScriptEditor
   );
 
   const [showSymbols, setShowSymbols] = useState(false);

@@ -1,6 +1,5 @@
 import React, { FC, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import { useDispatch } from "react-redux";
 import {
   actorSelectors,
   sceneSelectors,
@@ -20,6 +19,7 @@ import {
   sceneName,
   triggerName,
 } from "shared/lib/entities/entitiesHelpers";
+import { useAppSelector } from "store/hooks";
 
 interface NavigatorScenesProps {
   height: number;
@@ -75,18 +75,16 @@ const sortByName = (a: SceneNavigatorItem, b: SceneNavigatorItem) => {
 
 export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
   const [items, setItems] = useState<SceneNavigatorItem[]>([]);
-  const scenes = useSelector((state: RootState) =>
-    sceneSelectors.selectAll(state)
-  );
-  const actorsLookup = useSelector((state: RootState) =>
+  const scenes = useAppSelector((state) => sceneSelectors.selectAll(state));
+  const actorsLookup = useAppSelector((state) =>
     actorSelectors.selectEntities(state)
   );
-  const triggersLookup = useSelector((state: RootState) =>
+  const triggersLookup = useAppSelector((state) =>
     triggerSelectors.selectEntities(state)
   );
-  const sceneId = useSelector((state: RootState) => state.editor.scene);
-  const entityId = useSelector((state: RootState) => state.editor.entityId);
-  const editorType = useSelector((state: RootState) => state.editor.type);
+  const sceneId = useAppSelector((state) => state.editor.scene);
+  const entityId = useAppSelector((state) => state.editor.entityId);
+  const editorType = useAppSelector((state) => state.editor.type);
 
   const {
     values: openSceneIds,

@@ -1,8 +1,7 @@
 import React, { FC, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "store/hooks";
 import styled from "styled-components";
 import { DMG_PALETTE } from "consts";
-import { RootState } from "store/configureStore";
 import { paletteSelectors } from "store/features/entities/entitiesState";
 import { Palette } from "shared/lib/entities/entitiesTypes";
 import PaletteBlock from "components/forms/PaletteBlock";
@@ -50,9 +49,7 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
   keepLabel,
   ...selectProps
 }) => {
-  const palettes = useSelector((state: RootState) =>
-    paletteSelectors.selectAll(state)
-  );
+  const palettes = useAppSelector((state) => paletteSelectors.selectAll(state));
   const [options, setOptions] = useState<PaletteOption[]>([]);
   const [currentPalette, setCurrentPalette] = useState<Palette>();
   const [currentValue, setCurrentValue] = useState<PaletteOption>();

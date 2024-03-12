@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import uniq from "lodash/uniq";
-import { RootState } from "store/configureStore";
 import { musicSelectors } from "store/features/entities/entitiesState";
 import {
   Option,
@@ -14,6 +13,7 @@ import {
 import { PauseIcon, PlayIcon } from "ui/icons/Icons";
 import { Button } from "ui/buttons/Button";
 import musicActions from "store/features/music/musicActions";
+import { useAppSelector } from "store/hooks";
 
 interface MusicSelectProps extends SelectCommonProps {
   name: string;
@@ -27,7 +27,7 @@ interface PlayPauseTrackProps extends SelectCommonProps {
 
 export const PlayPauseTrack = ({ musicId }: PlayPauseTrackProps) => {
   const dispatch = useDispatch();
-  const musicPlaying = useSelector((state: RootState) => state.music.playing);
+  const musicPlaying = useAppSelector((state) => state.music.playing);
 
   const onMouseDown = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
@@ -64,11 +64,9 @@ export const MusicSelect = ({
   onChange,
   ...selectProps
 }: MusicSelectProps) => {
-  const tracks = useSelector((state: RootState) =>
-    musicSelectors.selectAll(state)
-  );
-  const musicDriver = useSelector(
-    (state: RootState) => state.project.present.settings.musicDriver
+  const tracks = useAppSelector((state) => musicSelectors.selectAll(state));
+  const musicDriver = useAppSelector(
+    (state) => state.project.present.settings.musicDriver
   );
 
   const [options, setOptions] = useState<OptGroup[]>([]);

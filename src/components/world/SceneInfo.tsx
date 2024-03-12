@@ -10,8 +10,7 @@ import {
   SCREEN_WIDTH,
 } from "consts";
 import React, { useCallback, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "store/configureStore";
+import { useAppSelector } from "store/hooks";
 import {
   actorSelectors,
   customEventSelectors,
@@ -95,31 +94,30 @@ const SceneInfoButton = styled.div<SceneInfoButtonProps>`
 `;
 
 const SceneInfo = () => {
-  const selectedSceneId = useSelector((state: RootState) => state.editor.scene);
-  const scene = useSelector((state: RootState) =>
+  const selectedSceneId = useAppSelector((state) => state.editor.scene);
+  const scene = useAppSelector((state) =>
     sceneSelectors.selectById(state, selectedSceneId)
   );
-  const actorsLookup = useSelector((state: RootState) =>
+  const actorsLookup = useAppSelector((state) =>
     actorSelectors.selectEntities(state)
   );
-  const triggersLookup = useSelector((state: RootState) =>
+  const triggersLookup = useAppSelector((state) =>
     triggerSelectors.selectEntities(state)
   );
-  const spriteSheetsLookup = useSelector((state: RootState) =>
+  const spriteSheetsLookup = useAppSelector((state) =>
     spriteSheetSelectors.selectEntities(state)
   );
-  const scriptEventsLookup = useSelector((state: RootState) =>
+  const scriptEventsLookup = useAppSelector((state) =>
     scriptEventSelectors.selectEntities(state)
   );
-  const customEventsLookup = useSelector((state: RootState) =>
+  const customEventsLookup = useAppSelector((state) =>
     customEventSelectors.selectEntities(state)
   );
-  const defaultPlayerSprites = useSelector(
-    (state: RootState) => state.project.present.settings.defaultPlayerSprites
+  const defaultPlayerSprites = useAppSelector(
+    (state) => state.project.present.settings.defaultPlayerSprites
   );
-  const backgroundNumTiles = useSelector(
-    (state: RootState) =>
-      state.assets.backgrounds[scene?.backgroundId || ""]?.numTiles
+  const backgroundNumTiles = useAppSelector(
+    (state) => state.assets.backgrounds[scene?.backgroundId || ""]?.numTiles
   );
   const [tileCount, setTileCount] = useState(0);
   const [actorWarnings, setActorWarnings] = useState<string[]>([]);
