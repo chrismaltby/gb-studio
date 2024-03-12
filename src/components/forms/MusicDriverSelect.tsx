@@ -1,5 +1,5 @@
 import l10n from "shared/lib/lang/l10n";
-import React, { FC, useEffect, useMemo, useState } from "react";
+import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { MusicDriverSetting } from "store/features/settings/settingsState";
 import {
   Option,
@@ -11,10 +11,15 @@ import {
 interface MusicDriverSelectProps extends SelectCommonProps {
   name: string;
   value?: MusicDriverSetting;
-  onChange?: (newId: string) => void;
+  onChange?: (newId: MusicDriverSetting) => void;
 }
 
-const musicDriverOptions: Option[] = [
+export interface MusicDriverOption {
+  value: MusicDriverSetting;
+  label: string;
+}
+
+const musicDriverOptions: MusicDriverOption[] = [
   {
     label: "UGE",
     value: "huge",
@@ -47,9 +52,12 @@ export const MusicDriverSelect: FC<MusicDriverSelectProps> = ({
     }
   }, [value]);
 
-  const onSelectChange = (newValue: Option) => {
-    onChange?.(newValue.value);
-  };
+  const onSelectChange = useCallback(
+    (newValue: MusicDriverOption) => {
+      onChange?.(newValue.value);
+    },
+    [onChange]
+  );
 
   return (
     <Select

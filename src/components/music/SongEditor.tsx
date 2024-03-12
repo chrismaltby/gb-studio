@@ -16,7 +16,7 @@ import { InstrumentDutyEditor } from "./InstrumentDutyEditor";
 import { InstrumentWaveEditor } from "./InstrumentWaveEditor";
 import { InstrumentNoiseEditor } from "./InstrumentNoiseEditor";
 import { Song } from "shared/lib/uge/song/Song";
-import castEventValue from "renderer/lib/helpers/castEventValue";
+import { castEventToInt } from "renderer/lib/helpers/castEventValue";
 import l10n from "shared/lib/lang/l10n";
 import {
   DutyInstrument,
@@ -30,6 +30,7 @@ import trackerActions from "store/features/tracker/trackerActions";
 import { StickyTabs, TabBar } from "ui/tabs/Tabs";
 import { InstrumentSubpatternEditor } from "./InstrumentSubpatternEditor";
 import styled from "styled-components";
+import { NumberInput } from "ui/form/NumberInput";
 
 type Instrument = DutyInstrument | NoiseInstrument | WaveInstrument;
 
@@ -104,31 +105,40 @@ export const SongEditor: FC<SongEditorProps> = ({ multiColumn }) => {
 
   const selectSidebar = () => {};
 
-  const onChangeFieldInput =
-    <T extends keyof Song>(key: T) =>
-    (
-      e:
-        | React.ChangeEvent<HTMLInputElement>
-        | React.ChangeEvent<HTMLTextAreaElement>
-    ) => {
-      const editValue = castEventValue(e);
+  const onChangeSongProp = useCallback(
+    <K extends keyof Song>(key: K, value: Song[K]) => {
       dispatch(
         trackerDocumentActions.editSong({
           changes: {
-            [key]: editValue,
+            [key]: value,
           },
         })
       );
-    };
+    },
+    [dispatch]
+  );
+
+  const onChangeName = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeSongProp("name", e.currentTarget.value),
+    [onChangeSongProp]
+  );
+
+  const onChangeArtist = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeSongProp("artist", e.currentTarget.value),
+    [onChangeSongProp]
+  );
+
+  const onChangeTicksPerRow = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeSongProp("ticks_per_row", castEventToInt(e, 0)),
+    [onChangeSongProp]
+  );
 
   const onChangeInstrumentName =
-    (type: string) =>
-    (
-      e:
-        | React.ChangeEvent<HTMLInputElement>
-        | React.ChangeEvent<HTMLTextAreaElement>
-    ) => {
-      const editValue = castEventValue(e);
+    (type: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      const editValue = e.currentTarget.value;
 
       let action;
       if (type === "duty") action = trackerDocumentActions.editDutyInstrument;
@@ -206,7 +216,7 @@ export const SongEditor: FC<SongEditorProps> = ({ multiColumn }) => {
               name="name"
               placeholder="Song"
               value={song?.name || ""}
-              onChange={onChangeFieldInput("name")}
+              onChange={onChangeName}
             />
 
             <DropdownButton
@@ -227,20 +237,21 @@ export const SongEditor: FC<SongEditorProps> = ({ multiColumn }) => {
             <Input
               name="artist"
               value={song?.artist}
-              onChange={onChangeFieldInput("artist")}
+              onChange={onChangeArtist}
             />
           </FormRow>
           <FormRow>
             <Label htmlFor="ticks_per_row">{l10n("FIELD_TEMPO")}</Label>
           </FormRow>
           <FormRow>
-            <Input
+            <NumberInput
               name="ticks_per_row"
               type="number"
               value={song?.ticks_per_row}
               min={0}
               max={20}
-              onChange={onChangeFieldInput("ticks_per_row")}
+              placeholder="0"
+              onChange={onChangeTicksPerRow}
               title={l10n("FIELD_TEMPO_TOOLTIP")}
             />
           </FormRow>

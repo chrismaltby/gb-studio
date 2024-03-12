@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ScriptEditor from "components/script/ScriptEditor";
-import castEventValue from "renderer/lib/helpers/castEventValue";
+import { castEventToInt } from "renderer/lib/helpers/castEventValue";
 import { WorldEditor } from "./WorldEditor";
 import ScriptEditorDropdownButton from "components/script/ScriptEditorDropdownButton";
 import BackgroundWarnings from "components/world/BackgroundWarnings";
@@ -21,7 +21,9 @@ import {
 import { EditableText } from "ui/form/EditableText";
 import { RootState } from "store/configureStore";
 import {
+  ActorDirection,
   SceneNormalized,
+  SceneParallaxLayer,
   ScriptEventNormalized,
 } from "shared/lib/entities/entitiesTypes";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
@@ -225,61 +227,80 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
     dispatch(editorActions.setScriptTabSecondary(mode));
   };
 
-  const onChangeField =
-    <T extends keyof SceneNormalized>(key: T) =>
-    (editValue: SceneNormalized[T]) => {
+  const onChangeSceneProp = useCallback(
+    <K extends keyof SceneNormalized>(key: K, value: SceneNormalized[K]) => {
       dispatch(
         entitiesActions.editScene({
           sceneId: id,
           changes: {
-            [key]: editValue,
+            [key]: value,
           },
         })
       );
-    };
+    },
+    [dispatch, id]
+  );
 
-  const onChangeFieldInput =
-    (key: keyof SceneNormalized) =>
-    (
-      e:
-        | React.ChangeEvent<HTMLInputElement>
-        | React.ChangeEvent<HTMLTextAreaElement>
-    ) => {
-      const editValue = castEventValue(e);
-      dispatch(
-        entitiesActions.editScene({
-          sceneId: id,
-          changes: {
-            [key]: editValue,
-          },
-        })
-      );
-    };
-
-  const onChangeSettingField =
-    <T extends keyof SettingsState>(key: T) =>
-    (editValue: SettingsState[T]) => {
+  const onChangeSettingProp = useCallback(
+    <K extends keyof SettingsState>(key: K, value: SettingsState[K]) => {
       dispatch(
         settingsActions.editSettings({
-          [key]: editValue,
+          [key]: value,
         })
       );
-    };
+    },
+    [dispatch]
+  );
 
-  const onChangeSettingFieldInput =
-    (key: keyof SettingsState) =>
-    (
-      e:
-        | React.ChangeEvent<HTMLInputElement>
-        | React.ChangeEvent<HTMLTextAreaElement>
-    ) => {
-      const editValue = castEventValue(e);
-      dispatch(
-        settingsActions.editSettings({
-          [key]: editValue,
-        })
-      );
-    };
+  const onChangeName = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeSceneProp("name", e.currentTarget.value),
+    [onChangeSceneProp]
+  );
+
+  const onChangeNotes = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeSceneProp("notes", e.currentTarget.value),
+    [onChangeSceneProp]
+  );
+
+  const onChangeType = useCallback(
+    (e: string) => onChangeSceneProp("type", e),
+    [onChangeSceneProp]
+  );
+
+  const onChangeBackgroundId = useCallback(
+    (e: string) => onChangeSceneProp("backgroundId", e),
+    [onChangeSceneProp]
+  );
+
+  const onChangeParallax = useCallback(
+    (value: SceneParallaxLayer[] | undefined) =>
+      onChangeSceneProp("parallax", value),
+    [onChangeSceneProp]
+  );
+
+  const onChangePlayerSpriteSheetId = useCallback(
+    (e: string) => onChangeSceneProp("playerSpriteSheetId", e),
+    [onChangeSceneProp]
+  );
+
+  const onChangeStartX = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeSettingProp("startX", castEventToInt(e, 0)),
+    [onChangeSettingProp]
+  );
+
+  const onChangeStartY = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeSettingProp("startY", castEventToInt(e, 0)),
+    [onChangeSettingProp]
+  );
+
+  const onChangeStartDirection = useCallback(
+    (e: ActorDirection) => onChangeSettingProp("startDirection", e),
+    [onChangeSettingProp]
+  );
 
   const selectSidebar = () => {
     dispatch(editorActions.selectSidebar());
@@ -379,7 +400,7 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
   const onEditPaletteId = (index: number) => (paletteId: string) => {
     const paletteIds = scene.paletteIds ? [...scene.paletteIds] : [];
     paletteIds[index] = paletteId;
-    onChangeField("paletteIds")(paletteIds);
+    onChangeSceneProp("paletteIds", paletteIds);
   };
 
   const onEditSpritePaletteId = (index: number) => (paletteId: string) => {
@@ -387,7 +408,7 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
       ? [...scene.spritePaletteIds]
       : [];
     spritePaletteIds[index] = paletteId;
-    onChangeField("spritePaletteIds")(spritePaletteIds);
+    onChangeSceneProp("spritePaletteIds", spritePaletteIds);
   };
 
   const isStartingScene = startSceneId === id;
@@ -430,7 +451,7 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
                 name="name"
                 placeholder={sceneName(scene, sceneIndex)}
                 value={scene.name || ""}
-                onChange={onChangeFieldInput("name")}
+                onChange={onChangeName}
               />
               {scene.labelColor && <LabelColor color={scene.labelColor} />}
               <DropdownButton
@@ -443,7 +464,7 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
                   <div style={{ display: "flex" }}>
                     <div style={{ marginRight: 5 }}>
                       <LabelButton
-                        onClick={() => onChangeField("labelColor")("")}
+                        onClick={() => onChangeSceneProp("labelColor", "")}
                       />
                     </div>
                     {[
@@ -461,7 +482,7 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
                       >
                         <LabelButton
                           color={color}
-                          onClick={() => onChangeField("labelColor")(color)}
+                          onClick={() => onChangeSceneProp("labelColor", color)}
                         />
                       </div>
                     ))}
@@ -526,10 +547,7 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
 
             {showNotes && (
               <FormRow>
-                <NoteField
-                  value={scene.notes || ""}
-                  onChange={onChangeFieldInput("notes")}
-                />
+                <NoteField value={scene.notes || ""} onChange={onChangeNotes} />
               </FormRow>
             )}
 
@@ -538,7 +556,7 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
                 <SceneTypeSelect
                   name="type"
                   value={scene.type}
-                  onChange={onChangeField("type")}
+                  onChange={onChangeType}
                 />
               </FormField>
             </FormRow>
@@ -549,7 +567,7 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
                   <BackgroundSelectButton
                     name="backgroundId"
                     value={scene.backgroundId}
-                    onChange={onChangeField("backgroundId")}
+                    onChange={onChangeBackgroundId}
                     is360={scene.type === "LOGO"}
                     includeInfo
                   />
@@ -591,7 +609,7 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
                     name="parallax"
                     value={scene.parallax}
                     sceneHeight={scene.height}
-                    onChange={onChangeField("parallax")}
+                    onChange={onChangeParallax}
                   />
                 </FormField>
               </FormRow>
@@ -671,7 +689,7 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
                       value={scene.playerSpriteSheetId}
                       direction={isStartingScene ? startDirection : "down"}
                       paletteId={undefined}
-                      onChange={onChangeField("playerSpriteSheetId")}
+                      onChange={onChangePlayerSpriteSheetId}
                       includeInfo
                       optional
                       optionalLabel={l10n("FIELD_SCENE_TYPE_DEFAULT")}
@@ -696,7 +714,7 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
                         placeholder="0"
                         min={0}
                         max={scene.width - 2}
-                        onChange={onChangeSettingFieldInput("startX")}
+                        onChange={onChangeStartX}
                       />
                       <CoordinateInput
                         name="startY"
@@ -705,7 +723,7 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
                         placeholder="0"
                         min={0}
                         max={scene.height - 1}
-                        onChange={onChangeSettingFieldInput("startY")}
+                        onChange={onChangeStartY}
                       />
                     </FormRow>
 
@@ -717,7 +735,7 @@ export const SceneEditor = ({ id, multiColumn }: SceneEditorProps) => {
                         <DirectionPicker
                           id="actorDirection"
                           value={startDirection}
-                          onChange={onChangeSettingField("startDirection")}
+                          onChange={onChangeStartDirection}
                         />
                       </FormField>
                     </FormRow>

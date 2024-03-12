@@ -1,6 +1,6 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import castEventValue from "renderer/lib/helpers/castEventValue";
+import { castEventToBool } from "renderer/lib/helpers/castEventValue";
 import l10n from "shared/lib/lang/l10n";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import { NoiseInstrument } from "store/features/trackerDocument/trackerDocumentTypes";
@@ -97,7 +97,7 @@ export const InstrumentNoiseEditor = ({
           label={l10n("FIELD_BIT_COUNT")}
           checked={instrument.bit_count === 7}
           onChange={(e) => {
-            const v = castEventValue(e);
+            const v = castEventToBool(e);
             const value = v ? 7 : 15;
             onChangeField("bit_count")(value);
           }}

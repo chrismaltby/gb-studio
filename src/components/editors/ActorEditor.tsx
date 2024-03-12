@@ -19,6 +19,7 @@ import entitiesActions from "store/features/entities/entitiesActions";
 import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import {
+  ActorDirection,
   ActorNormalized,
   ScriptEventNormalized,
 } from "shared/lib/entities/entitiesTypes";
@@ -26,7 +27,6 @@ import { Sidebar, SidebarColumn } from "ui/sidebars/Sidebar";
 import { CoordinateInput } from "ui/form/CoordinateInput";
 import { Checkbox } from "ui/form/Checkbox";
 import { LockIcon, LockOpenIcon, PinIcon } from "ui/icons/Icons";
-import castEventValue from "renderer/lib/helpers/castEventValue";
 import { CheckboxField } from "ui/form/CheckboxField";
 import DirectionPicker from "components/forms/DirectionPicker";
 import { DMG_PALETTE } from "consts";
@@ -48,6 +48,10 @@ import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import { actorName } from "shared/lib/entities/entitiesHelpers";
 import l10n from "shared/lib/lang/l10n";
 import { KeysMatching } from "shared/types";
+import {
+  castEventToBool,
+  castEventToInt,
+} from "renderer/lib/helpers/castEventValue";
 
 interface ActorEditorProps {
   id: string;
@@ -215,36 +219,79 @@ export const ActorEditor: FC<ActorEditorProps> = ({
     dispatch(editorActions.setScriptTabSecondary(mode));
   };
 
-  const onChangeField =
-    <T extends keyof ActorNormalized>(key: T) =>
-    (editValue: ActorNormalized[T]) => {
+  const onChangeActorProp = useCallback(
+    <K extends keyof ActorNormalized>(key: K, value: ActorNormalized[K]) => {
       dispatch(
         entitiesActions.editActor({
           actorId: id,
           changes: {
-            [key]: editValue,
+            [key]: value,
           },
         })
       );
-    };
+    },
+    [dispatch, id]
+  );
 
-  const onChangeFieldInput =
-    (key: keyof ActorNormalized) =>
-    (
-      e:
-        | React.ChangeEvent<HTMLInputElement>
-        | React.ChangeEvent<HTMLTextAreaElement>
-    ) => {
-      const editValue = castEventValue(e);
-      dispatch(
-        entitiesActions.editActor({
-          actorId: id,
-          changes: {
-            [key]: editValue,
-          },
-        })
-      );
-    };
+  const onChangeName = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeActorProp("name", e.currentTarget.value),
+    [onChangeActorProp]
+  );
+
+  const onChangeNotes = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeActorProp("notes", e.currentTarget.value),
+    [onChangeActorProp]
+  );
+
+  const onChangeX = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeActorProp("x", castEventToInt(e, 0)),
+    [onChangeActorProp]
+  );
+
+  const onChangeY = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeActorProp("y", castEventToInt(e, 0)),
+    [onChangeActorProp]
+  );
+
+  const onChangeSpriteSheetId = useCallback(
+    (e: string) => onChangeActorProp("spriteSheetId", e),
+    [onChangeActorProp]
+  );
+
+  const onChangeDirection = useCallback(
+    (e: ActorDirection) => onChangeActorProp("direction", e),
+    [onChangeActorProp]
+  );
+
+  const onChangeMoveSpeed = useCallback(
+    (e: number) => onChangeActorProp("moveSpeed", e),
+    [onChangeActorProp]
+  );
+
+  const onChangeAnimSpeed = useCallback(
+    (e: number | null) => onChangeActorProp("animSpeed", e),
+    [onChangeActorProp]
+  );
+
+  const onChangeCollisionGroup = useCallback(
+    (e: string) => onChangeActorProp("collisionGroup", e),
+    [onChangeActorProp]
+  );
+
+  const onChangeAnimate = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeActorProp("animate", castEventToBool(e)),
+    [onChangeActorProp]
+  );
+  const onChangePersistent = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeActorProp("persistent", castEventToBool(e)),
+    [onChangeActorProp]
+  );
 
   const onToggleField = (key: KeysMatching<ActorNormalized, boolean>) => () => {
     const currentValue = !!actor?.[key];
@@ -338,7 +385,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({
                 name="name"
                 placeholder={actorName(actor, actorIndex)}
                 value={actor.name || ""}
-                onChange={onChangeFieldInput("name")}
+                onChange={onChangeName}
               />
               <DropdownButton
                 size="small"
@@ -381,10 +428,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({
 
             {showNotes && (
               <FormRow>
-                <NoteField
-                  value={actor.notes || ""}
-                  onChange={onChangeFieldInput("notes")}
-                />
+                <NoteField value={actor.notes || ""} onChange={onChangeNotes} />
               </FormRow>
             )}
 
@@ -396,7 +440,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({
                 placeholder="0"
                 min={0}
                 max={scene.width - 2}
-                onChange={onChangeFieldInput("x")}
+                onChange={onChangeX}
               />
               <CoordinateInput
                 name="y"
@@ -405,7 +449,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({
                 placeholder="0"
                 min={0}
                 max={scene.height - 1}
-                onChange={onChangeFieldInput("y")}
+                onChange={onChangeY}
               />
               <DropdownButton
                 menuDirection="right"
@@ -436,7 +480,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({
                       ? actor.paletteId || defaultSpritePaletteId
                       : undefined
                   }
-                  onChange={onChangeField("spriteSheetId")}
+                  onChange={onChangeSpriteSheetId}
                   includeInfo
                 />
               </FormField>
@@ -450,21 +494,10 @@ export const ActorEditor: FC<ActorEditorProps> = ({
                   <DirectionPicker
                     id="actorDirection"
                     value={actor.direction}
-                    onChange={onChangeField("direction")}
+                    onChange={onChangeDirection}
                   />
                 </FormField>
               )}
-              {/* {showFrameInput && (
-                <NumberField
-                  name="frame"
-                  label={l10n("FIELD_INITIAL_FRAME")}
-                  placeholder="0"
-                  min={0}
-                  max={(spriteSheet?.numFrames || 1) - 1}
-                  value={actor.frame}
-                  onChange={onChangeFieldInput("frame")}
-                />
-              )} */}
             </FormRow>
             {showAnimatedCheckbox && (
               <FormRow>
@@ -472,7 +505,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({
                   name="animated"
                   label={l10n("FIELD_ANIMATE_WHEN_STATIONARY")}
                   checked={actor.animate}
-                  onChange={onChangeFieldInput("animate")}
+                  onChange={onChangeAnimate}
                 />
               </FormRow>
             )}
@@ -485,7 +518,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({
                 <MovementSpeedSelect
                   name="actorMoveSpeed"
                   value={actor.moveSpeed}
-                  onChange={onChangeField("moveSpeed")}
+                  onChange={onChangeMoveSpeed}
                 />
               </FormField>
               {showAnimSpeed && (
@@ -496,7 +529,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({
                   <AnimationSpeedSelect
                     name="actorAnimSpeed"
                     value={actor.animSpeed}
-                    onChange={onChangeField("animSpeed")}
+                    onChange={onChangeAnimSpeed}
                   />
                 </FormField>
               )}
@@ -512,7 +545,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({
                     <CollisionMaskPicker
                       id="actorCollisionGroup"
                       value={actor.collisionGroup}
-                      onChange={onChangeField("collisionGroup")}
+                      onChange={onChangeCollisionGroup}
                       includeNone
                     />
                   </FormField>
@@ -567,7 +600,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({
                 name="persistent"
                 label={l10n("FIELD_KEEP_RUNNING_WHILE_OFFSCREEN")}
                 checked={actor.persistent}
-                onChange={onChangeFieldInput("persistent")}
+                onChange={onChangePersistent}
               />
             </TabSettings>
           )}

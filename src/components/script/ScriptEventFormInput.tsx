@@ -25,7 +25,10 @@ import { SceneSelect } from "components/forms/SceneSelect";
 import { SoundEffectSelect } from "components/forms/SoundEffectSelect";
 import { SpriteSheetSelect } from "components/forms/SpriteSheetSelect";
 import { VariableSelect } from "components/forms/VariableSelect";
-import castEventValue from "renderer/lib/helpers/castEventValue";
+import {
+  castEventToBool,
+  castEventToFloat,
+} from "renderer/lib/helpers/castEventValue";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import React, { useCallback, useContext } from "react";
 import { useSelector } from "react-redux";
@@ -120,17 +123,37 @@ const ScriptEventFormInput = ({
 
   const onChangeField = useCallback(
     (e: unknown) => {
-      let newValue = castEventValue(e);
-      if (type === "direction" && newValue === value) {
-        // Toggle direction
-        newValue = "";
-      }
-      if (type === "select") {
-        newValue = newValue.value;
-      }
-      onChange(newValue, index);
+      onChange(e, index);
     },
-    [index, onChange, type, value]
+    [index, onChange]
+  );
+
+  const onChangeTextInputField = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      onChange(e.currentTarget.value, index);
+    },
+    [index, onChange]
+  );
+
+  const onChangeNumberInputField = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      onChange(castEventToFloat(e, Number(defaultValue) ?? 0), index);
+    },
+    [defaultValue, index, onChange]
+  );
+
+  const onChangeCheckboxField = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      onChange(castEventToBool(e), index);
+    },
+    [index, onChange]
+  );
+
+  const onChangeSelectField = useCallback(
+    (e: { value: unknown }) => {
+      onChange(e.value, index);
+    },
+    [index, onChange]
   );
 
   const onChangeUnits = useCallback(
@@ -216,7 +239,7 @@ const ScriptEventFormInput = ({
         value={String(value || "")}
         placeholder={String(field.placeholder || defaultValue)}
         maxLength={field.maxLength}
-        onChange={onChangeField}
+        onChange={onChangeTextInputField}
       />
     );
   } else if (type === "code") {
@@ -235,7 +258,7 @@ const ScriptEventFormInput = ({
         max={field.max}
         step={field.step}
         placeholder={String(field.placeholder || defaultValue)}
-        onChange={onChangeField}
+        onChange={onChangeNumberInputField}
         units={(args[field.unitsField || ""] || field.unitsDefault) as UnitType}
         unitsAllowed={field.unitsAllowed}
         onChangeUnits={onChangeUnits}
@@ -263,7 +286,7 @@ const ScriptEventFormInput = ({
         checked={
           typeof value === "boolean" ? value : Boolean(defaultValue || false)
         }
-        onChange={onChangeField}
+        onChange={onChangeCheckboxField}
       />
     );
   } else if (type === "select") {
@@ -281,7 +304,7 @@ const ScriptEventFormInput = ({
         name={id}
         value={currentValue}
         options={options}
-        onChange={onChangeField}
+        onChange={onChangeSelectField}
       />
     );
   } else if (type === "selectbutton") {
@@ -479,7 +502,7 @@ const ScriptEventFormInput = ({
           max={field.max}
           step={field.step}
           placeholder={String(field.placeholder || defaultValue)}
-          onChange={onChangeField}
+          onChange={onChangeNumberInputField}
         />
       </OffscreenSkeletonInput>
     );

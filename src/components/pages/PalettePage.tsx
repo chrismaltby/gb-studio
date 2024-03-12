@@ -13,7 +13,6 @@ import { Button } from "ui/buttons/Button";
 import CustomPalettePicker from "components/forms/CustomPalettePicker";
 import { NavigatorPalettes } from "components/palettes/NavigatorPalettes";
 import entitiesActions from "store/features/entities/entitiesActions";
-import castEventValue from "renderer/lib/helpers/castEventValue";
 import { Input } from "ui/form/Input";
 
 const Wrapper = styled.div`
@@ -161,7 +160,7 @@ const PalettePage = () => {
       entitiesActions.editPalette({
         paletteId: palette.id,
         changes: {
-          name: castEventValue(e),
+          name: e.currentTarget.value,
         },
       })
     );

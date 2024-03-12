@@ -8,11 +8,14 @@ import React, {
 import { useDispatch, useSelector } from "react-redux";
 import Path from "path";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
-import castEventValue from "renderer/lib/helpers/castEventValue";
+import { castEventToBool } from "renderer/lib/helpers/castEventValue";
 import CustomControlsPicker from "components/forms/CustomControlsPicker";
 import { PaletteSelect } from "components/forms/PaletteSelect";
 import { Button } from "ui/buttons/Button";
-import { SettingsState } from "store/features/settings/settingsState";
+import {
+  MusicDriverSetting,
+  SettingsState,
+} from "store/features/settings/settingsState";
 import settingsActions from "store/features/settings/settingsActions";
 import navigationActions from "store/features/navigation/navigationActions";
 import EngineFieldsEditor from "components/settings/EngineFieldsEditor";
@@ -105,20 +108,51 @@ const SettingsPage: FC = () => {
     }
   };
 
-  const onEditSetting =
-    (id: string) =>
-    (e: string | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      editSettings({
-        [id]: castEventValue(e),
-      });
-    };
+  const onChangeSettingProp = useCallback(
+    <K extends keyof SettingsState>(key: K, value: SettingsState[K]) => {
+      dispatch(
+        settingsActions.editSettings({
+          [key]: value,
+        })
+      );
+    },
+    [dispatch]
+  );
+
+  const onChangeColorsEnabled = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeSettingProp("customColorsEnabled", castEventToBool(e)),
+    [onChangeSettingProp]
+  );
+
+  const onChangeSGBEnabled = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeSettingProp("sgbEnabled", castEventToBool(e)),
+    [onChangeSettingProp]
+  );
+
+  const onChangeDefaultFontId = useCallback(
+    (e: string) => onChangeSettingProp("defaultFontId", e),
+    [onChangeSettingProp]
+  );
+
+  const onChangeMusicDriver = useCallback(
+    (e: MusicDriverSetting) => onChangeSettingProp("musicDriver", e),
+    [onChangeSettingProp]
+  );
+
+  const onChangeCustomHead = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) =>
+      onChangeSettingProp("customHead", e.currentTarget.value),
+    [onChangeSettingProp]
+  );
 
   const onEditPaletteId = useCallback(
     (index: number, e: string) => {
       const paletteIds = defaultBackgroundPaletteIds
         ? [...defaultBackgroundPaletteIds]
         : [];
-      paletteIds[index] = castEventValue(e);
+      paletteIds[index] = e;
       editSettings({
         defaultBackgroundPaletteIds: [
           paletteIds[0],
@@ -140,7 +174,7 @@ const SettingsPage: FC = () => {
       const paletteIds = defaultSpritePaletteIds
         ? [...defaultSpritePaletteIds]
         : [];
-      paletteIds[index] = castEventValue(e);
+      paletteIds[index] = e;
       editSettings({
         defaultSpritePaletteIds: [
           paletteIds[0],
@@ -254,7 +288,7 @@ const SettingsPage: FC = () => {
                 id="customColorsEnabled"
                 name="customColorsEnabled"
                 checked={customColorsEnabled}
-                onChange={onEditSetting("customColorsEnabled")}
+                onChange={onChangeColorsEnabled}
               />
             </SettingRowInput>
           </SearchableSettingRow>
@@ -361,7 +395,7 @@ const SettingsPage: FC = () => {
                 id="sgbEnabled"
                 name="sgbEnabled"
                 checked={sgbEnabled}
-                onChange={onEditSetting("sgbEnabled")}
+                onChange={onChangeSGBEnabled}
               />
             </SettingRowInput>
           </SearchableSettingRow>
@@ -476,7 +510,7 @@ const SettingsPage: FC = () => {
               <FontSelect
                 name="defaultFont"
                 value={defaultFontId || ""}
-                onChange={onEditSetting("defaultFontId")}
+                onChange={onChangeDefaultFontId}
               />
             </SettingRowInput>
           </SearchableSettingRow>
@@ -529,7 +563,7 @@ const SettingsPage: FC = () => {
                 <MusicDriverSelect
                   name="musicDriver"
                   value={musicDriver || ""}
-                  onChange={onEditSetting("musicDriver")}
+                  onChange={onChangeMusicDriver}
                 />
                 {musicDriver !== "gbt" ? (
                   <FormInfo>{l10n("FIELD_HUGE_DRIVER_NOTE")}</FormInfo>
@@ -596,7 +630,7 @@ const SettingsPage: FC = () => {
                 placeholder={
                   'e.g. <style type"text/css">\nbody {\n  background-color: darkgreen;\n}\n</style>'
                 }
-                onChange={onEditSetting("customHead")}
+                onChange={onChangeCustomHead}
                 rows={15}
                 style={{ fontFamily: "monospace" }}
               />

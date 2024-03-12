@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ScriptEditor from "components/script/ScriptEditor";
-import castEventValue from "renderer/lib/helpers/castEventValue";
+import { castEventToInt } from "renderer/lib/helpers/castEventValue";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import { WorldEditor } from "./WorldEditor";
@@ -104,7 +104,7 @@ export const TriggerEditor = ({
     []
   );
 
-  const tabs = Object.keys(scriptTabs);
+  const tabs = useMemo(() => Object.keys(scriptTabs), [scriptTabs]);
 
   const initialTab = tabs.includes(lastScriptTab) ? lastScriptTab : tabs[0];
 
@@ -128,23 +128,58 @@ export const TriggerEditor = ({
 
   const dispatch = useDispatch();
 
-  const onChangeFieldInput =
-    (key: keyof TriggerNormalized) =>
-    (
-      e:
-        | React.ChangeEvent<HTMLInputElement>
-        | React.ChangeEvent<HTMLTextAreaElement>
+  const onChangeTriggerProp = useCallback(
+    <K extends keyof TriggerNormalized>(
+      key: K,
+      value: TriggerNormalized[K]
     ) => {
-      const editValue = castEventValue(e);
       dispatch(
         entitiesActions.editTrigger({
           triggerId: id,
           changes: {
-            [key]: editValue,
+            [key]: value,
           },
         })
       );
-    };
+    },
+    [dispatch, id]
+  );
+
+  const onChangeName = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeTriggerProp("name", e.currentTarget.value),
+    [onChangeTriggerProp]
+  );
+
+  const onChangeNotes = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeTriggerProp("notes", e.currentTarget.value),
+    [onChangeTriggerProp]
+  );
+
+  const onChangeX = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeTriggerProp("x", castEventToInt(e, 0)),
+    [onChangeTriggerProp]
+  );
+
+  const onChangeY = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeTriggerProp("y", castEventToInt(e, 0)),
+    [onChangeTriggerProp]
+  );
+
+  const onChangeWidth = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeTriggerProp("width", castEventToInt(e, 1)),
+    [onChangeTriggerProp]
+  );
+
+  const onChangeHeight = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeTriggerProp("height", castEventToInt(e, 1)),
+    [onChangeTriggerProp]
+  );
 
   const selectSidebar = () => {
     dispatch(editorActions.selectSidebar());
@@ -180,39 +215,46 @@ export const TriggerEditor = ({
     setNotesOpen(true);
   };
 
-  const onToggleLockScriptEditor = () => {
+  const onToggleLockScriptEditor = useCallback(() => {
     dispatch(editorActions.setLockScriptEditor(!lockScriptEditor));
-  };
+  }, [dispatch, lockScriptEditor]);
+
+  const showNotes = trigger?.notes || notesOpen;
+
+  const lockButton = useMemo(
+    () => (
+      <Button
+        size="small"
+        variant={lockScriptEditor ? "primary" : "transparent"}
+        onClick={onToggleLockScriptEditor}
+        title={
+          lockScriptEditor
+            ? l10n("FIELD_UNLOCK_SCRIPT_EDITOR")
+            : l10n("FIELD_LOCK_SCRIPT_EDITOR")
+        }
+      >
+        {lockScriptEditor ? <LockIcon /> : <LockOpenIcon />}
+      </Button>
+    ),
+    [lockScriptEditor, onToggleLockScriptEditor]
+  );
+
+  const scriptButton = useMemo(
+    () =>
+      trigger && (
+        <ScriptEditorDropdownButton
+          value={trigger[scriptKey]}
+          type="trigger"
+          entityId={trigger.id}
+          scriptKey={scriptKey}
+        />
+      ),
+    [scriptKey, trigger]
+  );
 
   if (!scene || !trigger) {
     return <WorldEditor />;
   }
-
-  const showNotes = trigger.notes || notesOpen;
-
-  const lockButton = (
-    <Button
-      size="small"
-      variant={lockScriptEditor ? "primary" : "transparent"}
-      onClick={onToggleLockScriptEditor}
-      title={
-        lockScriptEditor
-          ? l10n("FIELD_UNLOCK_SCRIPT_EDITOR")
-          : l10n("FIELD_LOCK_SCRIPT_EDITOR")
-      }
-    >
-      {lockScriptEditor ? <LockIcon /> : <LockOpenIcon />}
-    </Button>
-  );
-
-  const scriptButton = (
-    <ScriptEditorDropdownButton
-      value={trigger[scriptKey]}
-      type="trigger"
-      entityId={trigger.id}
-      scriptKey={scriptKey}
-    />
-  );
 
   return (
     <Sidebar onClick={selectSidebar} multiColumn={multiColumn}>
@@ -224,7 +266,7 @@ export const TriggerEditor = ({
                 name="name"
                 placeholder={triggerName(trigger, triggerIndex)}
                 value={trigger.name || ""}
-                onChange={onChangeFieldInput("name")}
+                onChange={onChangeName}
               />
               <DropdownButton
                 size="small"
@@ -269,10 +311,7 @@ export const TriggerEditor = ({
 
           {showNotes && (
             <FormRow>
-              <NoteField
-                value={trigger.notes || ""}
-                onChange={onChangeFieldInput("notes")}
-              />
+              <NoteField value={trigger.notes || ""} onChange={onChangeNotes} />
             </FormRow>
           )}
 
@@ -284,7 +323,7 @@ export const TriggerEditor = ({
               placeholder="0"
               min={0}
               max={scene.width - trigger.width}
-              onChange={onChangeFieldInput("x")}
+              onChange={onChangeX}
             />
             <CoordinateInput
               name="y"
@@ -293,7 +332,7 @@ export const TriggerEditor = ({
               placeholder="0"
               min={0}
               max={scene.height - trigger.height}
-              onChange={onChangeFieldInput("y")}
+              onChange={onChangeY}
             />
           </FormRow>
 
@@ -305,7 +344,7 @@ export const TriggerEditor = ({
               placeholder="1"
               min={1}
               max={scene.width - trigger.x}
-              onChange={onChangeFieldInput("width")}
+              onChange={onChangeWidth}
             />
             <CoordinateInput
               name="height"
@@ -314,7 +353,7 @@ export const TriggerEditor = ({
               placeholder="1"
               min={1}
               max={scene.height - trigger.y}
-              onChange={onChangeFieldInput("height")}
+              onChange={onChangeHeight}
             />
           </FormRow>
         </SidebarColumn>

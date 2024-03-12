@@ -1,9 +1,12 @@
 /* eslint-disable jsx-a11y/label-has-for */
-import React, { FC, useState } from "react";
+import React, { FC, useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { SceneSelect } from "components/forms/SceneSelect";
 import DirectionPicker from "components/forms/DirectionPicker";
-import castEventValue from "renderer/lib/helpers/castEventValue";
+import {
+  castEventToBool,
+  castEventToInt,
+} from "renderer/lib/helpers/castEventValue";
 import { MovementSpeedSelect } from "components/forms/MovementSpeedSelect";
 import { AnimationSpeedSelect } from "components/forms/AnimationSpeedSelect";
 import settingsActions from "store/features/settings/settingsActions";
@@ -32,6 +35,7 @@ import { TextField } from "ui/form/TextField";
 import { CheckboxField } from "ui/form/CheckboxField";
 import { Button } from "ui/buttons/Button";
 import l10n from "shared/lib/lang/l10n";
+import { ActorDirection } from "shared/lib/entities/entitiesTypes";
 
 export const WorldEditor: FC = () => {
   const metadata = useSelector(
@@ -47,59 +51,95 @@ export const WorldEditor: FC = () => {
 
   const dispatch = useDispatch();
 
-  const selectSidebar = () => {
+  const selectSidebar = useCallback(() => {
     dispatch(editorActions.selectSidebar());
-  };
+  }, [dispatch]);
 
-  const onAddNotes = () => {
+  const onAddNotes = useCallback(() => {
     setNotesOpen(true);
-  };
+  }, []);
 
-  const onChangeMetadataInput =
-    (key: keyof MetadataState) =>
-    (
-      e:
-        | React.ChangeEvent<HTMLInputElement>
-        | React.ChangeEvent<HTMLTextAreaElement>
-    ) => {
-      const editValue = castEventValue(e);
+  const onChangeMetadataProp = useCallback(
+    <T extends keyof MetadataState>(key: T, value: MetadataState[T]) => {
       dispatch(
         metadataActions.editMetadata({
-          [key]: editValue,
+          [key]: value,
         })
       );
-    };
+    },
+    [dispatch]
+  );
 
-  const onChangeSettingsInput =
-    (key: keyof SettingsState) =>
-    (
-      e:
-        | React.ChangeEvent<HTMLInputElement>
-        | React.ChangeEvent<HTMLTextAreaElement>
-        | string
-        | number
-    ) => {
-      const editValue = castEventValue(e);
+  const onChangeSettingProp = useCallback(
+    <K extends keyof SettingsState>(key: K, value: SettingsState[K]) => {
       dispatch(
         settingsActions.editSettings({
-          [key]: editValue,
+          [key]: value,
         })
       );
-    };
+    },
+    [dispatch]
+  );
 
-  const onChangeSettingsField =
-    <T extends keyof SettingsState>(key: T) =>
-    (editValue: SettingsState[T]) => {
-      dispatch(
-        settingsActions.editSettings({
-          [key]: editValue,
-        })
-      );
-    };
+  const onChangeName = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeMetadataProp("name", e.currentTarget.value),
+    [onChangeMetadataProp]
+  );
 
-  const onOpenSettings = () => {
+  const onChangeNotes = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeMetadataProp("notes", e.currentTarget.value),
+    [onChangeMetadataProp]
+  );
+
+  const onChangeAuthor = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeMetadataProp("author", e.currentTarget.value),
+    [onChangeMetadataProp]
+  );
+
+  const onChangeStartSceneId = useCallback(
+    (sceneId: string) => onChangeSettingProp("startSceneId", sceneId),
+    [onChangeSettingProp]
+  );
+
+  const onChangeStartX = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeSettingProp("startX", castEventToInt(e, 0)),
+    [onChangeSettingProp]
+  );
+
+  const onChangeStartY = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeSettingProp("startY", castEventToInt(e, 0)),
+    [onChangeSettingProp]
+  );
+
+  const onChangeStartDirection = useCallback(
+    (e: ActorDirection) => onChangeSettingProp("startDirection", e),
+    [onChangeSettingProp]
+  );
+
+  const onChangeStartMoveSpeed = useCallback(
+    (e: number) => onChangeSettingProp("startMoveSpeed", e),
+    [onChangeSettingProp]
+  );
+
+  const onChangeStartAnimSpeed = useCallback(
+    (e: number | null) => onChangeSettingProp("startAnimSpeed", e),
+    [onChangeSettingProp]
+  );
+
+  const onChangeColorsEnabled = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeSettingProp("customColorsEnabled", castEventToBool(e)),
+    [onChangeSettingProp]
+  );
+
+  const onOpenSettings = useCallback(() => {
     dispatch(navigationActions.setSection("settings"));
-  };
+  }, [dispatch]);
 
   const showNotes = metadata.notes || notesOpen;
 
@@ -112,7 +152,7 @@ export const WorldEditor: FC = () => {
               name="name"
               placeholder={l10n("FIELD_PROJECT_NAME")}
               value={metadata.name || ""}
-              onChange={onChangeMetadataInput("name")}
+              onChange={onChangeName}
             />
             {!showNotes && (
               <DropdownButton
@@ -131,7 +171,7 @@ export const WorldEditor: FC = () => {
             <FormRow>
               <NoteField
                 value={metadata.notes || ""}
-                onChange={onChangeMetadataInput("notes")}
+                onChange={onChangeNotes}
               />
             </FormRow>
           )}
@@ -141,7 +181,7 @@ export const WorldEditor: FC = () => {
               name="author"
               label={l10n("FIELD_AUTHOR")}
               value={metadata.author || ""}
-              onChange={onChangeMetadataInput("author")}
+              onChange={onChangeAuthor}
             />
           </FormRow>
 
@@ -152,7 +192,7 @@ export const WorldEditor: FC = () => {
               name="customColorsEnabled"
               label={l10n("FIELD_EXPORT_IN_COLOR")}
               checked={settings.customColorsEnabled}
-              onChange={onChangeSettingsInput("customColorsEnabled")}
+              onChange={onChangeColorsEnabled}
             />
             <Button onClick={onOpenSettings}>
               {l10n("FIELD_MORE_SETTINGS")}
@@ -166,7 +206,7 @@ export const WorldEditor: FC = () => {
               <SceneSelect
                 name="startScene"
                 value={settings.startSceneId || ""}
-                onChange={onChangeSettingsInput("startSceneId")}
+                onChange={onChangeStartSceneId}
               />
             </FormField>
           </FormRow>
@@ -183,7 +223,7 @@ export const WorldEditor: FC = () => {
               placeholder="0"
               min={0}
               max={scene ? scene.width - 2 : 0}
-              onChange={onChangeSettingsInput("startX")}
+              onChange={onChangeStartX}
             />
             <CoordinateInput
               name="startY"
@@ -192,7 +232,7 @@ export const WorldEditor: FC = () => {
               placeholder="0"
               min={0}
               max={scene ? scene.height - 1 : 0}
-              onChange={onChangeSettingsInput("startY")}
+              onChange={onChangeStartY}
             />
           </FormRow>
 
@@ -201,7 +241,7 @@ export const WorldEditor: FC = () => {
               <DirectionPicker
                 id="startDirection"
                 value={settings.startDirection}
-                onChange={onChangeSettingsInput("startDirection")}
+                onChange={onChangeStartDirection}
               />
             </FormField>
           </FormRow>
@@ -214,7 +254,7 @@ export const WorldEditor: FC = () => {
               <MovementSpeedSelect
                 name="startMoveSpeed"
                 value={settings.startMoveSpeed}
-                onChange={onChangeSettingsField("startMoveSpeed")}
+                onChange={onChangeStartMoveSpeed}
               />
             </FormField>
 
@@ -225,7 +265,7 @@ export const WorldEditor: FC = () => {
               <AnimationSpeedSelect
                 name="startAnimSpeed"
                 value={settings.startAnimSpeed}
-                onChange={onChangeSettingsField("startAnimSpeed")}
+                onChange={onChangeStartAnimSpeed}
               />
             </FormField>
           </FormRow>

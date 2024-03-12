@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ScriptEditor from "components/script/ScriptEditor";
-import castEventValue from "renderer/lib/helpers/castEventValue";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { MenuItem } from "ui/menu/Menu";
 import { WorldEditor } from "./WorldEditor";
@@ -69,9 +68,61 @@ const CustomEventEditor = ({ id, multiColumn }: CustomEventEditorProps) => {
     []
   );
 
-  const onEditVariableName =
-    (key: string): React.ChangeEventHandler =>
-    (e) => {
+  const onChangeCustomEventProp = useCallback(
+    <K extends keyof CustomEventNormalized>(
+      key: K,
+      value: CustomEventNormalized[K]
+    ) => {
+      dispatch(
+        entitiesActions.editCustomEvent({
+          customEventId: id,
+          changes: {
+            [key]: value,
+          },
+        })
+      );
+    },
+    [dispatch, id]
+  );
+
+  const onChangeName = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeCustomEventProp("name", e.currentTarget.value),
+    [onChangeCustomEventProp]
+  );
+
+  const onChangeDescription = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChangeCustomEventProp("description", e.currentTarget.value),
+    [onChangeCustomEventProp]
+  );
+
+  const onEditVariableName = useCallback(
+    (key: string): React.ChangeEventHandler<HTMLInputElement> =>
+      (e) => {
+        if (!customEvent) {
+          return;
+        }
+        const variable = customEvent.variables[key];
+        if (!variable) {
+          return;
+        }
+
+        onChangeCustomEventProp(
+          "variables",
+          Object.assign({}, customEvent.variables, {
+            [key]: {
+              ...variable,
+              name: e.currentTarget.value,
+            },
+          })
+        );
+      },
+    [customEvent, onChangeCustomEventProp]
+  );
+
+  const onEditVariablePassByReference = useCallback(
+    (key: string, passByReference: boolean) => {
       if (!customEvent) {
         return;
       }
@@ -80,89 +131,42 @@ const CustomEventEditor = ({ id, multiColumn }: CustomEventEditorProps) => {
         return;
       }
 
-      dispatch(
-        entitiesActions.editCustomEvent({
-          customEventId: customEvent.id,
-          changes: {
-            variables: Object.assign({}, customEvent.variables, {
-              [key]: {
-                ...variable,
-                name: castEventValue(e),
-              },
-            }),
+      onChangeCustomEventProp(
+        "variables",
+        Object.assign({}, customEvent.variables, {
+          [key]: {
+            ...variable,
+            passByReference,
           },
         })
       );
-    };
+    },
+    [customEvent, onChangeCustomEventProp]
+  );
 
-  const onEditVariablePassByReference = (
-    key: string,
-    passByReference: boolean
-  ) => {
-    if (!customEvent) {
-      return;
-    }
-    const variable = customEvent.variables[key];
-    if (!variable) {
-      return;
-    }
+  const onEditActorName = useCallback(
+    (key: string): React.ChangeEventHandler<HTMLInputElement> =>
+      (e) => {
+        if (!customEvent) {
+          return;
+        }
+        const actor = customEvent.actors[key];
+        if (!actor) {
+          return;
+        }
 
-    dispatch(
-      entitiesActions.editCustomEvent({
-        customEventId: customEvent.id,
-        changes: {
-          variables: Object.assign({}, customEvent.variables, {
+        onChangeCustomEventProp(
+          "actors",
+          Object.assign({}, customEvent.actors, {
             [key]: {
-              ...variable,
-              passByReference,
+              ...actor,
+              name: e.currentTarget.value,
             },
-          }),
-        },
-      })
-    );
-  };
-
-  const onEditActorName =
-    (key: string): React.ChangeEventHandler =>
-    (e) => {
-      if (!customEvent) {
-        return;
-      }
-      const actor = customEvent.actors[key];
-      if (!actor) {
-        return;
-      }
-
-      dispatch(
-        entitiesActions.editCustomEvent({
-          customEventId: customEvent.id,
-          changes: {
-            actors: Object.assign({}, customEvent.actors, {
-              [key]: {
-                ...actor,
-                name: castEventValue(e),
-              },
-            }),
-          },
-        })
-      );
-    };
-
-  const onEdit =
-    (key: string): React.ChangeEventHandler =>
-    (e) => {
-      if (!customEvent) {
-        return;
-      }
-      dispatch(
-        entitiesActions.editCustomEvent({
-          customEventId: customEvent.id,
-          changes: {
-            [key]: castEventValue(e),
-          },
-        })
-      );
-    };
+          })
+        );
+      },
+    [customEvent, onChangeCustomEventProp]
+  );
 
   const onRemove = React.useCallback(() => {
     if (!customEvent) {
@@ -220,7 +224,7 @@ const CustomEventEditor = ({ id, multiColumn }: CustomEventEditorProps) => {
                 name="name"
                 placeholder={customEventName(customEvent, index)}
                 value={customEvent.name || ""}
-                onChange={onEdit("name")}
+                onChange={onChangeName}
               />
               <DropdownButton
                 size="small"
@@ -250,7 +254,7 @@ const CustomEventEditor = ({ id, multiColumn }: CustomEventEditorProps) => {
             <FormRow>
               <NoteField
                 value={customEvent.description || ""}
-                onChange={onEdit("description")}
+                onChange={onChangeDescription}
               />
             </FormRow>
           </FormContainer>

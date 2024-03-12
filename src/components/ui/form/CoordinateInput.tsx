@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { Input } from "./Input";
 
@@ -40,6 +40,9 @@ const Label = styled.label`
   border-right: 1px solid ${(props) => props.theme.colors.input.border};
 `;
 
+const valueToString = (value: unknown) =>
+  value !== undefined && value !== null ? String(value) : "";
+
 export const CoordinateInput: FC<CoordinateInputProps> = ({
   name,
   coordinate = "x",
@@ -50,20 +53,46 @@ export const CoordinateInput: FC<CoordinateInputProps> = ({
   placeholder,
   disabled,
   onChange,
-}) => (
-  <Wrapper>
-    <StyledInput
-      id={name}
-      name={name}
-      type="number"
-      value={value !== undefined ? value : ""}
-      min={min}
-      max={max}
-      step={step}
-      placeholder={placeholder}
-      disabled={disabled}
-      onChange={onChange}
-    />
-    <Label htmlFor={name}>{coordinate}</Label>
-  </Wrapper>
-);
+}) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [stringValue, setStringValue] = useState(valueToString(value));
+
+  const onChangeInternal = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newStringValue = e.currentTarget.value;
+      setStringValue(newStringValue);
+      onChange?.(e);
+    },
+    [onChange]
+  );
+
+  const onBlurInternal = useCallback(() => {
+    setStringValue(valueToString(value));
+  }, [value]);
+
+  useEffect(() => {
+    if (document.activeElement !== inputRef.current) {
+      setStringValue(valueToString(value));
+    }
+  }, [value]);
+
+  return (
+    <Wrapper>
+      <StyledInput
+        ref={inputRef}
+        id={name}
+        name={name}
+        type="number"
+        value={stringValue}
+        min={min}
+        max={max}
+        step={step}
+        placeholder={placeholder}
+        disabled={disabled}
+        onChange={onChangeInternal}
+        onBlur={onBlurInternal}
+      />
+      <Label htmlFor={name}>{coordinate}</Label>
+    </Wrapper>
+  );
+};
