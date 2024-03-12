@@ -1,12 +1,11 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
 import editorActions from "store/features/editor/editorActions";
 import styled, { css } from "styled-components";
 import { Select } from "ui/form/Select";
 import { PlusIcon } from "ui/icons/Icons";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import trackerActions from "store/features/tracker/trackerActions";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface SequenceOption {
   value: number;
@@ -67,7 +66,7 @@ export const SequenceEditorFwd = ({
   height,
   direction,
 }: SequenceEditorProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const [hasFocus, setHasFocus] = useState(false);
   const [selectHasFocus, setSelectHasFocus] = useState(false);

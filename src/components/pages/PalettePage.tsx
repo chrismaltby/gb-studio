@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import { useDispatch } from "react-redux";
 import debounce from "lodash/debounce";
 import useResizable from "ui/hooks/use-resizable";
 import useWindowSize from "ui/hooks/use-window-size";
@@ -13,7 +12,7 @@ import CustomPalettePicker from "components/forms/CustomPalettePicker";
 import { NavigatorPalettes } from "components/palettes/NavigatorPalettes";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { Input } from "ui/form/Input";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 const Wrapper = styled.div`
   display: flex;
@@ -69,7 +68,7 @@ const Container = styled.div`
 `;
 
 const PalettePage = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const selectedId = useAppSelector((state) => state.navigation.id);
   const navigatorSidebarWidth = useAppSelector(
     (state) => state.editor.navigatorSidebarWidth

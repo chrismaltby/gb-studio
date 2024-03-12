@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
 import { SpriteTileSelection } from "store/features/editor/editorState";
 import { spriteSheetSelectors } from "store/features/entities/entitiesState";
 import editorActions from "store/features/editor/editorActions";
@@ -9,7 +8,7 @@ import styled from "styled-components";
 import l10n from "shared/lib/lang/l10n";
 import electronActions from "store/features/electron/electronActions";
 import { assetFilename } from "shared/lib/helpers/assets";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 const PillWrapper = styled.div`
   position: absolute;
@@ -48,7 +47,7 @@ interface Coordinates {
 }
 
 const SpriteTilePalette = ({ id, precisionMode }: SpriteTilePaletteProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const zoom = useAppSelector((state) => state.editor.zoomSpriteTiles) / 100;
   const selectedTiles = useAppSelector(
     (state) => state.editor.spriteTileSelection

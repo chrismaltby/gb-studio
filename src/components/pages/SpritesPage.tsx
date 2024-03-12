@@ -7,7 +7,6 @@ import React, {
   useState,
 } from "react";
 import styled, { ThemeContext } from "styled-components";
-import { useDispatch } from "react-redux";
 import debounce from "lodash/debounce";
 import useResizable from "ui/hooks/use-resizable";
 import useWindowSize from "ui/hooks/use-window-size";
@@ -38,7 +37,7 @@ import { Button } from "ui/buttons/Button";
 import { TargetIcon } from "ui/icons/Icons";
 import { FixedSpacer } from "ui/spacing/Spacing";
 import { getAnimationNameById } from "renderer/lib/sprites/spriteL10NHelpers";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 const Wrapper = styled.div`
   display: flex;
@@ -56,7 +55,7 @@ const PrecisionIcon = styled(TargetIcon)`
 `;
 
 const SpritesPage = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const themeContext = useContext(ThemeContext);
   const worldSidebarWidth = useAppSelector(
     (state) => state.editor.worldSidebarWidth

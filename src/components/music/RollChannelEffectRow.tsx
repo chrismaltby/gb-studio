@@ -3,8 +3,7 @@ import styled, { css } from "styled-components";
 import { PatternCell } from "shared/lib/uge/song/PatternCell";
 import trackerActions from "store/features/tracker/trackerActions";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
-import { useDispatch } from "react-redux";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface RollChannelProps {
   patternId: number;
@@ -78,7 +77,7 @@ export const RollChannelEffectRowFwd = ({
   renderPattern,
   cellSize,
 }: RollChannelProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const tool = useAppSelector((state) => state.tracker.tool);
 
   const selectedEffectCell = useAppSelector(

@@ -5,7 +5,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useDispatch } from "react-redux";
 import styled, { css } from "styled-components";
 import {
   metaspriteSelectors,
@@ -23,7 +22,7 @@ import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { MetaspriteCanvas } from "./preview/MetaspriteCanvas";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface MetaspriteEditorProps {
   spriteSheetId: string;
@@ -162,7 +161,7 @@ const MetaspriteEditor = ({
   spriteStateId,
   hidden,
 }: MetaspriteEditorProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const gridRef = useRef<HTMLDivElement>(null);
   const gridSize = 8;
   const zoom = useAppSelector((state) => state.editor.zoomSprite) / 100;

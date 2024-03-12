@@ -1,5 +1,4 @@
 import React from "react";
-import { useDispatch } from "react-redux";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import { DutyInstrument } from "store/features/trackerDocument/trackerDocumentTypes";
 import { FormDivider, FormField, FormRow } from "ui/form/FormLayout";
@@ -11,6 +10,7 @@ import { Button } from "ui/buttons/Button";
 import Alert, { AlertItem } from "ui/alerts/Alert";
 import API from "renderer/lib/api";
 import l10n from "shared/lib/lang/l10n";
+import { useAppDispatch } from "store/hooks";
 
 const dutyOptions = [
   {
@@ -74,7 +74,7 @@ interface InstrumentDutyEditorProps {
 export const InstrumentDutyEditor = ({
   instrument,
 }: InstrumentDutyEditorProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   if (!instrument) return <></>;
 

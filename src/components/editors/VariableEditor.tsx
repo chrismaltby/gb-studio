@@ -1,5 +1,4 @@
 import React, { FC, RefObject, useCallback, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
 import {
   actorSelectors,
   sceneSelectors,
@@ -32,7 +31,7 @@ import {
 } from "shared/lib/variables/variableNames";
 import l10n, { getL10NData } from "shared/lib/lang/l10n";
 import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 const worker = new VariableUsesWorker();
 
@@ -79,7 +78,7 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
     selectScriptEventDefs(state)
   );
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const onWorkerComplete = useCallback(
     (e: MessageEvent<VariableUseResult>) => {

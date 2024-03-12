@@ -3,7 +3,6 @@ import { DropdownButton } from "ui/buttons/DropdownButton";
 import { MenuItem } from "ui/menu/Menu";
 import l10n from "shared/lib/lang/l10n";
 import React, { useCallback } from "react";
-import { useDispatch } from "react-redux";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { sceneSelectors } from "store/features/entities/entitiesState";
 import { ArrowIcon } from "ui/icons/Icons";
@@ -20,10 +19,10 @@ import {
 import { OffscreenSkeletonInput } from "ui/skeleton/Skeleton";
 import { FixedSpacer } from "ui/spacing/Spacing";
 import { Button } from "ui/buttons/Button";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 export const ScriptEventAutoFade = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const type = useAppSelector((state) => state.editor.type);
   const sceneId = useAppSelector((state) => state.editor.scene);
   const scene = useAppSelector((state) =>
@@ -124,7 +123,7 @@ export const ScriptEventAutoFade = () => {
 };
 
 export const ScriptEventAutoFadeDisabledWarning = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const type = useAppSelector((state) => state.editor.type);
   const sceneId = useAppSelector((state) => state.editor.scene);
   const scene = useAppSelector((state) =>

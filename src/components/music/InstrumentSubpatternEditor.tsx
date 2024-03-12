@@ -17,7 +17,6 @@ import {
   parseSubPatternFieldsToClipboard,
 } from "./musicClipboardHelpers";
 import { KeyWhen, getKeys } from "renderer/lib/keybindings/keyBindings";
-import { useDispatch } from "react-redux";
 import trackerActions from "store/features/tracker/trackerActions";
 import { SelectionRect } from "./SongPianoRoll";
 import scrollIntoView from "scroll-into-view-if-needed";
@@ -26,7 +25,7 @@ import { cloneDeep, mergeWith } from "lodash";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import { Position } from "./SongTracker";
 import API from "renderer/lib/api";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 const CHANNEL_FIELDS = 4;
 const ROW_SIZE = CHANNEL_FIELDS * 1;
@@ -204,7 +203,7 @@ export const InstrumentSubpatternEditor = ({
   instrumentType,
   subpattern,
 }: InstrumentSubpatternEditorProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const [selectionOrigin, setSelectionOrigin] =
     useState<Position | undefined>();

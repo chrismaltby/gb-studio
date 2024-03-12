@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
 import Solver from "3x3-equation-solver";
 import l10n from "shared/lib/lang/l10n";
 import ColorSlider from "./ColorSlider";
@@ -13,7 +12,7 @@ import { TextField } from "ui/form/TextField";
 import { NumberField } from "ui/form/NumberField";
 import { FixedSpacer } from "ui/spacing/Spacing";
 import API from "renderer/lib/api";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 const DEFAULT_WHITE = "E8F8E0";
 const DEFAULT_LIGHT = "B0F088";
@@ -250,7 +249,7 @@ const RGBtoHSV = (r: number, g: number, b: number) => {
 };
 
 const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const prevPaletteIdRef = useRef<string>();
 

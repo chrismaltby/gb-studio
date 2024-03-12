@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
 import { soundSelectors } from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
 import { Sound } from "shared/lib/entities/entitiesTypes";
@@ -8,7 +7,7 @@ import l10n from "shared/lib/lang/l10n";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import styled from "styled-components";
 import navigationActions from "store/features/navigation/navigationActions";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface NavigatorSoundsProps {
   height: number;
@@ -44,7 +43,7 @@ export const NavigatorSounds = ({
 }: NavigatorSoundsProps) => {
   const [items, setItems] = useState<SoundNavigatorItem[]>([]);
   const allSounds = useAppSelector((state) => soundSelectors.selectAll(state));
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     setItems(

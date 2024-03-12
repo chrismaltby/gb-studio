@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useDispatch } from "react-redux";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import { FormField, FormRow, FormSectionTitle } from "ui/form/FormLayout";
 import { PatternCell } from "shared/lib/uge/song/PatternCell";
@@ -13,7 +12,7 @@ import clamp from "shared/lib/helpers/clamp";
 import { VibratoWaveformPreview } from "./VibratoWaveformPreview";
 import styled from "styled-components";
 import { renderNote } from "./helpers";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 type EffectCodeOption = {
   value: number | null;
@@ -159,7 +158,7 @@ export const PatternCellEditor = ({
   patternId,
   pattern,
 }: PatternCellEditorProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const effectCodeOptions: EffectCodeOptionGroup[] = useMemo(
     () => [

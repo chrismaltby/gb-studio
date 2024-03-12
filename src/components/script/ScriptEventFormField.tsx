@@ -1,5 +1,4 @@
 import React, { memo, useCallback } from "react";
-import { useDispatch } from "react-redux";
 import { scriptEventSelectors } from "store/features/entities/entitiesState";
 import { ScriptEventFieldSchema } from "shared/lib/entities/entitiesTypes";
 import entitiesActions from "store/features/entities/entitiesActions";
@@ -15,7 +14,7 @@ import { FixedSpacer, FlexBreak } from "ui/spacing/Spacing";
 import { TabBar } from "ui/tabs/Tabs";
 import styled from "styled-components";
 import API from "renderer/lib/api";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface ScriptEventFormFieldProps {
   scriptEventId: string;
@@ -85,7 +84,7 @@ const ScriptEventFormField = memo(
     nestLevel,
     altBg,
   }: ScriptEventFormFieldProps) => {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const scriptEvent = useAppSelector((state) =>
       scriptEventSelectors.selectById(state, scriptEventId)
     );

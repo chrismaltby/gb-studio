@@ -1,5 +1,4 @@
 import React, { FC, useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
 import styled, { css } from "styled-components";
 import l10n from "shared/lib/lang/l10n";
 import { backgroundSelectors } from "store/features/entities/entitiesState";
@@ -8,7 +7,7 @@ import { SelectMenu, selectMenuStyleProps } from "ui/form/Select";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import { BackgroundSelect } from "./BackgroundSelect";
 import { assetFilename } from "shared/lib/helpers/assets";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface BackgroundSelectProps {
   name: string;
@@ -156,7 +155,7 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
   const numTiles = useAppSelector(
     (state) => state.assets.backgrounds[value || ""]?.numTiles
   );
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (value) {

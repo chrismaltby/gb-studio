@@ -1,5 +1,4 @@
 import React, { useCallback } from "react";
-import { useDispatch } from "react-redux";
 import trackerActions from "store/features/tracker/trackerActions";
 import { Button } from "ui/buttons/Button";
 import {
@@ -10,7 +9,7 @@ import {
 } from "ui/icons/Icons";
 import styled from "styled-components";
 import API from "renderer/lib/api";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface ChannelSelectFieldProps {
   name: string;
@@ -47,7 +46,7 @@ export const ChannelSelectField = ({
   index,
   muted,
 }: ChannelSelectFieldProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const selectedChannel = useAppSelector(
     (state) => state.tracker.selectedChannel

@@ -9,7 +9,6 @@ import {
 import styled, { css } from "styled-components";
 import { Button } from "ui/buttons/Button";
 import entitiesActions from "store/features/entities/entitiesActions";
-import { useDispatch } from "react-redux";
 import {
   ScriptEventPlaceholder,
   ScriptEventWrapper,
@@ -19,6 +18,7 @@ import AddScriptEventMenu from "./AddScriptEventMenu";
 import { MenuOverlay } from "ui/menu/Menu";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import { CloneIcon, PlusIcon } from "ui/icons/Icons";
+import { useAppDispatch } from "store/hooks";
 
 interface AddButtonProps {
   parentType: ScriptEventParentType;
@@ -70,7 +70,7 @@ const AddButton = ({
   nestLevel,
   conditional,
 }: AddButtonProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const [isOpen, setOpen] = useState(false);
   const [pinDirection, setPinDirection] =
     useState<"bottom-right" | "top-right">("bottom-right");

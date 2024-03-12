@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import {
   metaspriteSelectors,
@@ -14,7 +13,7 @@ import { RelativePortal } from "ui/layout/RelativePortal";
 import { TooltipWrapper } from "ui/tooltips/Tooltip";
 import { FixedSpacer } from "ui/spacing/Spacing";
 import { sceneName } from "shared/lib/entities/entitiesHelpers";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface MetaspriteEditorPreviewSettingsProps {
   spriteSheetId: string;
@@ -70,7 +69,7 @@ const MetaspriteEditorPreviewSettings = ({
   spriteSheetId,
   metaspriteId,
 }: MetaspriteEditorPreviewSettingsProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const buttonRef = useRef<HTMLButtonElement>(null);
   const timerRef = useRef<number | null>(null);

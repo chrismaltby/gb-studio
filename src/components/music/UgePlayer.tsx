@@ -1,10 +1,9 @@
 import React, { useEffect } from "react";
-import { useDispatch } from "react-redux";
 import { Song } from "shared/lib/uge/song/Song";
 import trackerActions from "store/features/tracker/trackerActions";
 import API from "renderer/lib/api";
 import { MusicDataPacket } from "shared/lib/music/types";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface UgePlayerProps {
   data: Song | null;
@@ -12,7 +11,7 @@ interface UgePlayerProps {
 }
 
 export const UgePlayer = ({ data, onChannelStatusUpdate }: UgePlayerProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     API.music.openMusic();

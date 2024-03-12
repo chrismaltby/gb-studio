@@ -5,7 +5,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useDispatch } from "react-redux";
 import l10n from "shared/lib/lang/l10n";
 import {
   PaintBucketIcon,
@@ -78,7 +77,7 @@ import {
   BrushToolbarTileTopIcon,
 } from "./BrushToolbarIcons";
 import { RelativePortal } from "ui/layout/RelativePortal";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface BrushToolbarProps {
   hasFocusForKeyboardShortcuts: () => boolean;
@@ -148,7 +147,7 @@ const PaletteModal = styled.div`
 `;
 
 const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const sceneId = useAppSelector((state) => state.editor.scene);
   const { selectedPalette, selectedTileType, selectedBrush, showLayers } =

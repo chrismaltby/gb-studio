@@ -1,5 +1,4 @@
 import React, { memo, useCallback, useEffect, useMemo } from "react";
-import { useDispatch } from "react-redux";
 import SpriteSheetCanvas from "./SpriteSheetCanvas";
 
 import { DMG_PALETTE, MIDDLE_MOUSE, TILE_SIZE } from "consts";
@@ -11,7 +10,7 @@ import editorActions from "store/features/editor/editorActions";
 import { getSettings } from "store/features/settings/settingsState";
 import styled, { css } from "styled-components";
 import { Palette } from "shared/lib/entities/entitiesTypes";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface ActorViewProps {
   id: string;
@@ -59,7 +58,7 @@ const CanvasWrapper = styled.div`
 
 const ActorView = memo(
   ({ id, sceneId, palettes, editable }: ActorViewProps) => {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const actor = useAppSelector((state) =>
       actorSelectors.selectById(state, id)
     );

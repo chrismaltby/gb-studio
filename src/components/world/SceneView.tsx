@@ -1,5 +1,4 @@
 import React, { memo, useCallback, useEffect, useMemo, useRef } from "react";
-import { useDispatch } from "react-redux";
 import WorldActor from "./ActorView";
 import TriggerView from "./TriggerView";
 import SceneCollisions from "./SceneCollisions";
@@ -29,7 +28,7 @@ import { assetFilename } from "shared/lib/helpers/assets";
 import { getDOMElementCoords } from "renderer/lib/helpers/dom";
 import styled, { css } from "styled-components";
 import { LabelSpan } from "ui/buttons/LabelButton";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 const TILE_SIZE = 8;
 
@@ -160,7 +159,7 @@ const SceneOverlay = styled.div<SceneOverlayProps>`
 `;
 
 const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const scene = useAppSelector((state) => sceneSelectors.selectById(state, id));
   const projectRoot = useAppSelector((state) => state.document.root);
 

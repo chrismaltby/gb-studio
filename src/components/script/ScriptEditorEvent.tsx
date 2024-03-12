@@ -5,7 +5,6 @@ import {
   useDrag,
   useDrop,
 } from "react-dnd";
-import { useDispatch } from "react-redux";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { scriptEventSelectors } from "store/features/entities/entitiesState";
 import editorActions from "store/features/editor/editorActions";
@@ -45,7 +44,7 @@ import { ScriptEventSymbolsEditor } from "components/forms/symbols/ScriptEventSy
 import { ScriptEventSymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
 import { EVENT_CALL_CUSTOM_EVENT, EVENT_COMMENT, EVENT_END } from "consts";
 import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface ScriptEditorEventProps {
   id: string;
@@ -67,7 +66,7 @@ const ScriptEditorEvent = React.memo(
     entityId,
     nestLevel = 0,
   }: ScriptEditorEventProps) => {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const dragRef = useRef<HTMLDivElement>(null);
     const dropRef = useRef<HTMLDivElement>(null);
     const headerRef = useRef<HTMLDivElement>(null);

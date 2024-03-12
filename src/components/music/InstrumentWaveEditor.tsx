@@ -1,5 +1,4 @@
 import React from "react";
-import { useDispatch } from "react-redux";
 import l10n from "shared/lib/lang/l10n";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import { WaveInstrument } from "store/features/trackerDocument/trackerDocumentTypes";
@@ -10,6 +9,7 @@ import { WaveEditorForm } from "./WaveEditorForm";
 import { Button } from "ui/buttons/Button";
 import Alert, { AlertItem } from "ui/alerts/Alert";
 import API from "renderer/lib/api";
+import { useAppDispatch } from "store/hooks";
 
 const volumeOptions = [
   {
@@ -40,7 +40,7 @@ export const InstrumentWaveEditor = ({
   instrument,
   waveForms,
 }: InstrumentWaveEditorProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   if (!instrument) return <></>;
 

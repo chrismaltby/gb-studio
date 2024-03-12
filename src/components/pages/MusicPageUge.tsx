@@ -6,7 +6,6 @@ import React, {
   useState,
 } from "react";
 import styled, { ThemeContext } from "styled-components";
-import { useDispatch } from "react-redux";
 import debounce from "lodash/debounce";
 import useResizable from "ui/hooks/use-resizable";
 import useWindowSize from "ui/hooks/use-window-size";
@@ -29,7 +28,7 @@ import { clampSidebarWidth } from "renderer/lib/window/sidebar";
 import { UgePlayer } from "components/music/UgePlayer";
 import trackerActions from "store/features/tracker/trackerActions";
 import { assetFilename } from "shared/lib/helpers/assets";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 const Wrapper = styled.div`
   display: flex;
@@ -68,7 +67,7 @@ const ErrorDescription = styled.div`
 `;
 
 const MusicPageUge = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const themeContext = useContext(ThemeContext);
   const worldSidebarWidth = useAppSelector(
     (state) => state.editor.worldSidebarWidth

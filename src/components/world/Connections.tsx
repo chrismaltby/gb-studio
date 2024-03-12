@@ -5,7 +5,6 @@ import {
   MIDDLE_MOUSE,
 } from "consts";
 import React, { useCallback, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
 import {
   actorSelectors,
   customEventSelectors,
@@ -29,7 +28,7 @@ import {
   walkNormalizedSceneSpecificScripts,
   walkNormalizedTriggerScripts,
 } from "shared/lib/scripts/walk";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface ConnectionsProps {
   width: number;
@@ -364,7 +363,7 @@ const DestinationMarker = ({
   entityId,
   editable,
 }: DestinationMarkerProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const onDragDestinationStop = useCallback(() => {
     dispatch(editorActions.dragDestinationStop());
@@ -428,7 +427,7 @@ const Connections = ({
   zoomRatio,
   editable,
 }: ConnectionsProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const [connections, setConnections] = useState<
     ReturnType<typeof calculateTransitionCoords>[]
   >([]);

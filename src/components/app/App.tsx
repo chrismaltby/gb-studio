@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
 import GlobalError from "components/error/GlobalError";
 import AppToolbar from "./AppToolbar";
 import BackgroundsPage from "components/pages/BackgroundsPage";
@@ -15,7 +14,7 @@ import projectActions from "store/features/project/projectActions";
 import SoundsPage from "components/pages/SoundsPage";
 import LoadingPane from "ui/loading/LoadingPane";
 import styled from "styled-components";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 const AppWrapper = styled.div`
   width: 100%;
@@ -32,7 +31,7 @@ const AppContent = styled.div`
 `;
 
 const App = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const [draggingOver, setDraggingOver] = useState(false);
   const dragLeaveTimer = useRef<number>();
   const section = useAppSelector((state) => state.navigation.section);

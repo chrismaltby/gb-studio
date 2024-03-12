@@ -1,5 +1,4 @@
 import React, { FC, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
 import {
   actorSelectors,
   sceneSelectors,
@@ -19,7 +18,7 @@ import {
   sceneName,
   triggerName,
 } from "shared/lib/entities/entitiesHelpers";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface NavigatorScenesProps {
   height: number;
@@ -99,7 +98,7 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
       ? sceneId
       : entityId;
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     const sceneItems = scenes

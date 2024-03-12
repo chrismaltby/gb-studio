@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { useDispatch } from "react-redux";
 import ScriptEditor from "components/script/ScriptEditor";
 import { castEventToInt } from "renderer/lib/helpers/castEventValue";
 import { DropdownButton } from "ui/buttons/DropdownButton";
@@ -36,7 +35,7 @@ import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrappe
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import { triggerName } from "shared/lib/entities/entitiesHelpers";
 import l10n from "shared/lib/lang/l10n";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface TriggerEditorProps {
   id: string;
@@ -126,7 +125,7 @@ export const TriggerEditor = ({
 
   const [showSymbols, setShowSymbols] = useState(false);
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const onChangeTriggerProp = useCallback(
     <K extends keyof TriggerNormalized>(

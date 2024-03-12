@@ -1,5 +1,4 @@
 import React, { useCallback, useState } from "react";
-import { useDispatch } from "react-redux";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { EditableText } from "ui/form/EditableText";
 import {
@@ -58,7 +57,7 @@ import { PaletteIndexSelect } from "components/forms/PaletteIndexSelect";
 import AnimationStateSelect from "components/forms/AnimationStateSelect";
 import { SpriteSymbolsEditor } from "components/forms/symbols/SpriteSymbolsEditor";
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface SpriteEditorProps {
   id: string;
@@ -102,7 +101,7 @@ export const SpriteEditor = ({
 
   const [showSymbols, setShowSymbols] = useState(false);
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const selectSidebar = () => {};
 

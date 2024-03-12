@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useRef } from "react";
-import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import { Button } from "ui/buttons/Button";
 import l10n from "shared/lib/lang/l10n";
@@ -7,7 +6,7 @@ import editorActions from "store/features/editor/editorActions";
 import consoleActions from "store/features/console/consoleActions";
 import buildGameActions from "store/features/buildGame/buildGameActions";
 import { FixedSpacer, FlexGrow } from "ui/spacing/Spacing";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 const PIN_TO_BOTTOM_RANGE = 100;
 
@@ -47,7 +46,7 @@ const ButtonToolbar = styled.div`
 
 const BuildPage = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const output = useAppSelector((state) => state.console.output);
   const warnings = useAppSelector((state) => state.console.warnings);

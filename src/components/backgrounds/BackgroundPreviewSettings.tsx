@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import {
   backgroundSelectors,
@@ -13,7 +12,7 @@ import { RelativePortal } from "ui/layout/RelativePortal";
 import { FixedSpacer } from "ui/spacing/Spacing";
 import l10n from "shared/lib/lang/l10n";
 import { sceneName } from "shared/lib/entities/entitiesHelpers";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface BackgroundPreviewSettingsProps {
   backgroundId: string;
@@ -56,7 +55,7 @@ const ButtonCover = styled.div`
 const BackgroundPreviewSettings = ({
   backgroundId,
 }: BackgroundPreviewSettingsProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const buttonRef = useRef<HTMLButtonElement>(null);
   const timerRef = useRef<number | null>(null);

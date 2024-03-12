@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
 import {
   PlusIcon,
   ResizeIcon,
@@ -35,7 +34,7 @@ import clipboardActions from "store/features/clipboard/clipboardActions";
 import { calculateSlope } from "shared/lib/helpers/slope";
 import styled, { css } from "styled-components";
 import { Tool } from "store/features/editor/editorState";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface SceneCursorProps {
   sceneId: string;
@@ -148,7 +147,7 @@ const Bubble = styled.div`
 `;
 
 const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const cursorRef = useRef<HTMLDivElement>(null);
   const {
     x,

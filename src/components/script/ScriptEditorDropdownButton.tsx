@@ -2,12 +2,11 @@ import React, { useCallback } from "react";
 import l10n from "shared/lib/lang/l10n";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
-import { useDispatch } from "react-redux";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { ClipboardTypeScriptEvents } from "store/features/clipboard/clipboardTypes";
 import { ScriptEventParentType } from "shared/lib/entities/entitiesTypes";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface ScriptEditorDropdownButtonProps {
   value: string[];
@@ -22,7 +21,7 @@ const ScriptEditorDropdownButton = ({
   entityId,
   scriptKey,
 }: ScriptEditorDropdownButtonProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const clipboardFormat = useAppSelector(
     (state) => state.clipboard.data?.format

@@ -5,7 +5,6 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { useDispatch } from "react-redux";
 import Path from "path";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import { castEventToBool } from "renderer/lib/helpers/castEventValue";
@@ -47,10 +46,10 @@ import CartSettingsEditor from "components/settings/CartSettingsEditor";
 import { UIAssetPreview } from "components/forms/UIAssetPreviewButton";
 import { FormField } from "ui/form/FormLayout";
 import { FixedSpacer } from "ui/spacing/Spacing";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 const SettingsPage: FC = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const projectRoot = useAppSelector((state) => state.document.root);
   const settings = useAppSelector((state) => state.project.present.settings);
   const [searchTerm, setSearchTerm] = useState<string>("");

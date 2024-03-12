@@ -1,5 +1,4 @@
 import React, { FC } from "react";
-import { useDispatch } from "react-redux";
 import {
   EngineFieldCType,
   EngineFieldSchema,
@@ -19,7 +18,7 @@ import { Input } from "ui/form/Input";
 import { Checkbox } from "ui/form/Checkbox";
 import clamp from "shared/lib/helpers/clamp";
 import { Select } from "ui/form/Select";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 const { editEngineFieldValue, removeEngineFieldValue } = entitiesActions;
 
@@ -156,7 +155,7 @@ export const EngineFieldInput: FC<EngineFieldInputProps> = ({
 };
 
 const EngineFieldsEditor: FC<EngineFieldsEditorProps> = ({ searchTerm }) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const values = useAppSelector(engineFieldValueSelectors.selectEntities);
   const groupedFields = useGroupedEngineFields();
 

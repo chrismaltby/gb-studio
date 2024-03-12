@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { useDispatch } from "react-redux";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 import { Select } from "ui/form/Select";
 import l10n from "shared/lib/lang/l10n";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
@@ -12,7 +11,7 @@ interface WaveEditorFormProps {
 }
 
 export const WaveEditorForm = ({ waveId, onChange }: WaveEditorFormProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const song = useAppSelector((state) => state.trackerDocument.present.song);
 

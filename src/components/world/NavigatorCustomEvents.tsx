@@ -1,5 +1,4 @@
 import React, { FC, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
 import { customEventSelectors } from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
 import editorActions from "store/features/editor/editorActions";
@@ -7,7 +6,7 @@ import { CustomEventNormalized } from "shared/lib/entities/entitiesTypes";
 import styled from "styled-components";
 import { CodeIcon } from "ui/icons/Icons";
 import l10n from "shared/lib/lang/l10n";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface NavigatorCustomEventsProps {
   height: number;
@@ -59,7 +58,7 @@ export const NavigatorCustomEvents: FC<NavigatorCustomEventsProps> = ({
   const entityId = useAppSelector((state) => state.editor.entityId);
   const editorType = useAppSelector((state) => state.editor.type);
   const selectedId = editorType === "customEvent" ? entityId : "";
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     setItems(customEvents.map(customEventToNavigatorItem).sort(sortByName));

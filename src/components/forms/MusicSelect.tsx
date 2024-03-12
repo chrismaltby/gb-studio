@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
 import uniq from "lodash/uniq";
 import { musicSelectors } from "store/features/entities/entitiesState";
 import {
@@ -13,7 +12,7 @@ import {
 import { PauseIcon, PlayIcon } from "ui/icons/Icons";
 import { Button } from "ui/buttons/Button";
 import musicActions from "store/features/music/musicActions";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface MusicSelectProps extends SelectCommonProps {
   name: string;
@@ -26,7 +25,7 @@ interface PlayPauseTrackProps extends SelectCommonProps {
 }
 
 export const PlayPauseTrack = ({ musicId }: PlayPauseTrackProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const musicPlaying = useAppSelector((state) => state.music.playing);
 
   const onMouseDown = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {

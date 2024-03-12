@@ -1,5 +1,4 @@
 import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
-import { useDispatch } from "react-redux";
 import {
   actorSelectors,
   sceneSelectors,
@@ -51,7 +50,7 @@ import {
   castEventToBool,
   castEventToInt,
 } from "renderer/lib/helpers/castEventValue";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface ActorEditorProps {
   id: string;
@@ -203,7 +202,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({
 
   const [showSymbols, setShowSymbols] = useState(false);
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const onChangeScriptMode = (mode: keyof ScriptHandlers) => {
     setScriptMode(mode);

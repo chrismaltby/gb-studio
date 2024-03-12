@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo } from "react";
-import { useDispatch } from "react-redux";
 import {
   SelectIcon,
   BrickIcon,
@@ -15,7 +14,7 @@ import styled from "styled-components";
 import { Button } from "ui/buttons/Button";
 import FloatingPanel from "ui/panels/FloatingPanel";
 import { DropdownButton } from "ui/buttons/DropdownButton";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface ToolPickerProps {
   hasFocusForKeyboardShortcuts: () => boolean;
@@ -28,7 +27,7 @@ const Wrapper = styled(FloatingPanel)`
 `;
 
 const ToolPicker = ({ hasFocusForKeyboardShortcuts }: ToolPickerProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const selected = useAppSelector((state) => state.editor.tool);
 
   const isAddSelected = useMemo(() => {

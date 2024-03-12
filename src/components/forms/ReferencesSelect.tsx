@@ -5,7 +5,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useDispatch } from "react-redux";
 import {
   backgroundSelectors,
   customEventSelectors,
@@ -35,7 +34,7 @@ import { RelativePortal } from "ui/layout/RelativePortal";
 import AddReferenceMenu from "./AddReferenceMenu";
 import { Input } from "ui/form/Input";
 import entitiesActions from "store/features/entities/entitiesActions";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 import { RootState } from "store/configureStore";
 
 export type ReferenceType =
@@ -125,7 +124,7 @@ export const ReferencesSelect = ({
   value,
   onChange,
 }: ReferencesSelectProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const [isOpen, setOpen] = useState(false);
   const [pinDirection, setPinDirection] =
@@ -510,7 +509,7 @@ export const AssetReference = <
   transform?: (symbol: string) => string;
   copyTransform?: (symbol: string) => string;
 }) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const asset = useAppSelector(selector);
 
@@ -628,7 +627,7 @@ export const AssetReference = <
 };
 
 export const VariableReference = ({ id, onRemove }: ReferenceProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const variable = useAppSelector((state) =>
     variableSelectors.selectById(state, id)

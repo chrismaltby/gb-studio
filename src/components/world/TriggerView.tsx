@@ -1,10 +1,9 @@
 import React, { memo, useCallback, useEffect } from "react";
-import { useDispatch } from "react-redux";
 import editorActions from "store/features/editor/editorActions";
 import { triggerSelectors } from "store/features/entities/entitiesState";
 import { MIDDLE_MOUSE, TILE_SIZE } from "consts";
 import styled, { css } from "styled-components";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface TriggerViewProps {
   id: string;
@@ -33,7 +32,7 @@ const Wrapper = styled.div<WrapperProps>`
 `;
 
 const TriggerView = memo(({ id, sceneId, editable }: TriggerViewProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const trigger = useAppSelector((state) =>
     triggerSelectors.selectById(state, id)
   );

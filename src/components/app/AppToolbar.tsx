@@ -7,7 +7,6 @@ import React, {
   useState,
 } from "react";
 import { Helmet } from "react-helmet";
-import { useDispatch } from "react-redux";
 import debounce from "lodash/debounce";
 import l10n from "shared/lib/lang/l10n";
 import editorActions from "store/features/editor/editorActions";
@@ -37,7 +36,7 @@ import {
 } from "store/features/editor/editorState";
 import useWindowFocus from "ui/hooks/use-window-focus";
 import useWindowSize from "ui/hooks/use-window-size";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 const sectionAccelerators = {
   world: "CommandOrControl+1",
@@ -54,7 +53,7 @@ const sectionAccelerators = {
 const zoomSections = ["world", "sprites", "backgrounds", "ui"];
 
 const AppToolbar: FC = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const searchInputRef = useRef<HTMLInputElement>(null);
   const loaded = useAppSelector((state) => state.document.loaded);
   const modified = useAppSelector((state) => state.document.modified);

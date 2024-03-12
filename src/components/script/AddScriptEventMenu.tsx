@@ -15,7 +15,6 @@ import { FlexGrow } from "ui/spacing/Spacing";
 import { Button } from "ui/buttons/Button";
 import Fuse from "fuse.js";
 import { Dictionary } from "@reduxjs/toolkit";
-import { useDispatch } from "react-redux";
 import settingsActions from "store/features/settings/settingsActions";
 import {
   ScriptEventNormalized,
@@ -35,7 +34,7 @@ import { defaultVariableForContext } from "shared/lib/scripts/context";
 import { EVENT_TEXT } from "consts";
 import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
 import type { ScriptEventDef } from "lib/project/loadScriptEventHandlers";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface AddScriptEventMenuProps {
   parentType: ScriptEventParentType;
@@ -431,7 +430,7 @@ const AddScriptEventMenu = ({
   before,
   onBlur,
 }: AddScriptEventMenuProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const firstLoad = useRef(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [options, setOptions] = useState<(EventOptGroup | EventOption)[]>([]);

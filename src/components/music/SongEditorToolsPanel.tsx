@@ -1,5 +1,4 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
 import styled, { ThemeContext } from "styled-components";
 import {
   PlayIcon,
@@ -25,7 +24,7 @@ import { PianoRollToolType } from "store/features/tracker/trackerState";
 import l10n from "shared/lib/lang/l10n";
 import { InstrumentType } from "store/features/editor/editorState";
 import API from "renderer/lib/api";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 const octaveOffsetOptions: OctaveOffsetOptions[] = [0, 1, 2, 3].map((i) => ({
   value: i,
@@ -68,7 +67,7 @@ const getPlayButtonLabel = (play: boolean, playbackFromStart: boolean) => {
 };
 
 const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const play = useAppSelector((state) => state.tracker.playing);
   const playerReady = useAppSelector((state) => state.tracker.playerReady);

@@ -1,5 +1,4 @@
 import React, { ReactNode, useCallback, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
 import {
   spriteAnimationSelectors,
   spriteSheetSelectors,
@@ -29,7 +28,7 @@ import {
   getAnimationTypeByIndex,
 } from "shared/lib/sprites/helpers";
 import { getAnimationNameForType } from "renderer/lib/sprites/spriteL10NHelpers";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface NavigatorSpritesProps {
   height: number;
@@ -141,7 +140,7 @@ export const NavigatorSprites = ({
     set: closeState,
   } = useToggleableList<string>([]);
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     setItems(

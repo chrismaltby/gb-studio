@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
-import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import { spriteAnimationSelectors } from "store/features/entities/entitiesState";
 import {
@@ -14,7 +13,7 @@ import FloatingPanel, { FloatingPanelDivider } from "ui/panels/FloatingPanel";
 import editorActions from "store/features/editor/editorActions";
 import { Button } from "ui/buttons/Button";
 import l10n from "shared/lib/lang/l10n";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface MetaspriteEditorToolsPanelProps {
   selectedAnimationId: string;
@@ -32,7 +31,7 @@ const MetaspriteEditorToolsPanel = ({
   selectedAnimationId,
   metaspriteId,
 }: MetaspriteEditorToolsPanelProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const intervalRef = useRef<number>();
 
   const play = useAppSelector((state) => state.editor.playSpriteAnimation);

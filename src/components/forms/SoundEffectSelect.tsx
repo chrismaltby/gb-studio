@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
 import {
   Option,
   Select,
@@ -14,7 +13,7 @@ import soundfxActions from "store/features/soundfx/soundfxActions";
 import l10n from "shared/lib/lang/l10n";
 import { soundSelectors } from "store/features/entities/entitiesState";
 import uniq from "lodash/uniq";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface SoundEffectSelectProps extends SelectCommonProps {
   name: string;
@@ -43,7 +42,7 @@ export const PlaySoundEffect = ({
   duration = 0.5,
   effectIndex = 0,
 }: PlaySoundEffectProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const onMouseDown = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();

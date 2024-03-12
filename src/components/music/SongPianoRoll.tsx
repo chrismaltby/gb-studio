@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { useDispatch } from "react-redux";
 import styled, { css } from "styled-components";
 import { Song } from "shared/lib/uge/song/Song";
 import { SplitPaneVerticalDivider } from "ui/splitpane/SplitPaneDivider";
@@ -24,7 +23,7 @@ import { WandIcon } from "ui/icons/Icons";
 import { RollChannelHover } from "./RollChannelHover";
 import API from "renderer/lib/api";
 import { MusicDataPacket } from "shared/lib/music/types";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 const CELL_SIZE = 16;
 const MAX_NOTE = 71;
@@ -263,7 +262,7 @@ export const SongPianoRoll = ({
   sequenceId,
   height,
 }: SongPianoRollProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const playing = useAppSelector((state) => state.tracker.playing);
   const hoverNote = useAppSelector((state) => state.tracker.hoverNote);

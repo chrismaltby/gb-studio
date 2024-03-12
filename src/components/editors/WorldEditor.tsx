@@ -1,6 +1,5 @@
 /* eslint-disable jsx-a11y/label-has-for */
 import React, { FC, useCallback, useState } from "react";
-import { useDispatch } from "react-redux";
 import { SceneSelect } from "components/forms/SceneSelect";
 import DirectionPicker from "components/forms/DirectionPicker";
 import {
@@ -35,7 +34,7 @@ import { CheckboxField } from "ui/form/CheckboxField";
 import { Button } from "ui/buttons/Button";
 import l10n from "shared/lib/lang/l10n";
 import { ActorDirection } from "shared/lib/entities/entitiesTypes";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 export const WorldEditor: FC = () => {
   const metadata = useAppSelector((state) => state.project.present.metadata);
@@ -45,7 +44,7 @@ export const WorldEditor: FC = () => {
   );
   const [notesOpen, setNotesOpen] = useState<boolean>(!!metadata.notes);
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const selectSidebar = useCallback(() => {
     dispatch(editorActions.selectSidebar());

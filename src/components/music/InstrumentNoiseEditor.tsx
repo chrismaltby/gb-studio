@@ -1,5 +1,4 @@
 import React from "react";
-import { useDispatch } from "react-redux";
 import { castEventToBool } from "renderer/lib/helpers/castEventValue";
 import l10n from "shared/lib/lang/l10n";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
@@ -14,6 +13,7 @@ import { SubPatternCell } from "shared/lib/uge/song/SubPatternCell";
 import { cloneDeep } from "lodash";
 import Alert, { AlertItem } from "ui/alerts/Alert";
 import API from "renderer/lib/api";
+import { useAppDispatch } from "store/hooks";
 
 interface InstrumentNoiseEditorProps {
   id: string;
@@ -23,7 +23,7 @@ interface InstrumentNoiseEditorProps {
 export const InstrumentNoiseEditor = ({
   instrument,
 }: InstrumentNoiseEditorProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   if (!instrument) return <></>;
 

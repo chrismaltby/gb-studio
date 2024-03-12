@@ -6,7 +6,6 @@ import {
   SelectCommonProps,
 } from "ui/form/Select";
 import styled from "styled-components";
-import { useDispatch } from "react-redux";
 import {
   customEventSelectors,
   variableSelectors,
@@ -24,7 +23,7 @@ import editorActions from "store/features/editor/editorActions";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import { UnitsSelectButtonInputOverlay } from "./UnitsSelectButtonInputOverlay";
 import { UnitType } from "shared/lib/entities/entitiesTypes";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface VariableSelectProps extends SelectCommonProps {
   id?: string;
@@ -158,7 +157,7 @@ export const VariableSelect: FC<VariableSelectProps> = ({
   const customEvent = useAppSelector((state) =>
     customEventSelectors.selectById(state, entityId)
   );
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const valueIsLocal = value && value.startsWith("L");
   const valueIsTemp = value && value.startsWith("T");

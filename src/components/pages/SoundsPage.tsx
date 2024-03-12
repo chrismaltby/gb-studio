@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useRef } from "react";
 import styled, { ThemeContext } from "styled-components";
-import { useDispatch } from "react-redux";
 import debounce from "lodash/debounce";
 import useResizable from "ui/hooks/use-resizable";
 import useWindowSize from "ui/hooks/use-window-size";
@@ -9,7 +8,7 @@ import editorActions from "store/features/editor/editorActions";
 import { soundSelectors } from "store/features/entities/entitiesState";
 import { NavigatorSounds } from "components/sounds/NavigatorSounds";
 import { SoundViewer } from "components/sounds/SoundViewer";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 const Wrapper = styled.div`
   display: flex;
@@ -17,7 +16,7 @@ const Wrapper = styled.div`
 `;
 
 const SoundsPage = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const themeContext = useContext(ThemeContext);
   const selectedId = useAppSelector((state) => state.navigation.id);
   const navigatorSidebarWidth = useAppSelector(

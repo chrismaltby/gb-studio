@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useRef } from "react";
 import styled, { ThemeContext } from "styled-components";
-import { useDispatch } from "react-redux";
 import debounce from "lodash/debounce";
 import useResizable from "ui/hooks/use-resizable";
 import useWindowSize from "ui/hooks/use-window-size";
@@ -10,7 +9,7 @@ import { backgroundSelectors } from "store/features/entities/entitiesState";
 import { NavigatorBackgrounds } from "components/backgrounds/NavigatorBackgrounds";
 import BackgroundViewer from "components/backgrounds/BackgroundViewer";
 import BackgroundPreviewSettings from "components/backgrounds/BackgroundPreviewSettings";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 const Wrapper = styled.div`
   display: flex;
@@ -18,7 +17,7 @@ const Wrapper = styled.div`
 `;
 
 const ImagesPage = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const themeContext = useContext(ThemeContext);
   const selectedId = useAppSelector((state) => state.navigation.id);
   const navigatorSidebarWidth = useAppSelector(

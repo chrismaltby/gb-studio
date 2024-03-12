@@ -9,12 +9,11 @@ import useResizable from "ui/hooks/use-resizable";
 import useWindowSize from "ui/hooks/use-window-size";
 import { SplitPaneHorizontalDivider } from "ui/splitpane/SplitPaneDivider";
 import { Navigator } from "components/world/Navigator";
-import { useDispatch } from "react-redux";
 import editorActions from "store/features/editor/editorActions";
 import settingsActions from "store/features/settings/settingsActions";
 
 import debounce from "lodash/debounce";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 const Wrapper = styled.div`
   display: flex;
@@ -23,7 +22,7 @@ const Wrapper = styled.div`
 
 const WorldPage = () => {
   const documentContainerRef = useRef<HTMLDivElement>(null);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const themeContext = useContext(ThemeContext);
   const worldSidebarWidth = useAppSelector(
     (state) => state.editor.worldSidebarWidth

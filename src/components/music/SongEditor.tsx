@@ -1,5 +1,4 @@
 import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
-import { useDispatch } from "react-redux";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { EditableText } from "ui/form/EditableText";
 import {
@@ -30,7 +29,7 @@ import { StickyTabs, TabBar } from "ui/tabs/Tabs";
 import { InstrumentSubpatternEditor } from "./InstrumentSubpatternEditor";
 import styled from "styled-components";
 import { NumberInput } from "ui/form/NumberInput";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 type Instrument = DutyInstrument | NoiseInstrument | WaveInstrument;
 
@@ -88,7 +87,7 @@ const instrumentName = (instrument: Instrument, type: string) => {
 };
 
 export const SongEditor: FC<SongEditorProps> = ({ multiColumn }) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const selectedInstrument = useAppSelector(
     (state) => state.editor.selectedInstrument
   );

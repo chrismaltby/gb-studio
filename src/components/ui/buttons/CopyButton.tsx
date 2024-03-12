@@ -1,15 +1,15 @@
 import React, { useCallback, useState } from "react";
-import { useDispatch } from "react-redux";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import { CheckIcon, CopyIcon } from "ui/icons/Icons";
 import { Button } from "./Button";
+import { useAppDispatch } from "store/hooks";
 
 interface CopyButtonProps {
   value: string;
 }
 
 export const CopyButton = ({ value }: CopyButtonProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const [copied, setCopied] = useState(false);
 
   const onCopy = useCallback(() => {

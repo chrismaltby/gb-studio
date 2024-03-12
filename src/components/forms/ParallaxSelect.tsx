@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import l10n from "shared/lib/lang/l10n";
 import { SceneParallaxLayer } from "shared/lib/entities/entitiesTypes";
@@ -8,6 +7,7 @@ import { FormField } from "ui/form/FormLayout";
 import { Select } from "ui/form/Select";
 import { ParallaxSpeedSelect } from "./ParallaxSpeedSelect";
 import editorActions from "store/features/editor/editorActions";
+import { useAppDispatch } from "store/hooks";
 
 interface ParallaxOption {
   value: number;
@@ -184,7 +184,7 @@ const ParallaxSelect = ({
   sceneHeight,
   onChange,
 }: ParallaxSelectProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const options: ParallaxOption[] = useMemo(
     () => [

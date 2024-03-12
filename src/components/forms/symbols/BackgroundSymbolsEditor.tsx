@@ -1,5 +1,4 @@
 import React from "react";
-import { useDispatch } from "react-redux";
 import { backgroundSelectors } from "store/features/entities/entitiesState";
 import entitiesActions from "store/features/entities/entitiesActions";
 import {
@@ -8,6 +7,7 @@ import {
   tilemapAttrSymbol,
 } from "shared/lib/helpers/symbols";
 import { addBankRef, AssetReference } from "components/forms/ReferencesSelect";
+import { useAppDispatch } from "store/hooks";
 
 interface BackgroundSymbolsEditorProps {
   id: string;
@@ -16,7 +16,7 @@ interface BackgroundSymbolsEditorProps {
 export const BackgroundSymbolsEditor = ({
   id,
 }: BackgroundSymbolsEditorProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   return (
     <AssetReference
       id={id}

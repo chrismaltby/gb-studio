@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useRef } from "react";
-import { useDispatch } from "react-redux";
 import { musicSelectors } from "store/features/entities/entitiesState";
 import styled, { ThemeContext } from "styled-components";
 import useWindowSize from "ui/hooks/use-window-size";
@@ -12,7 +11,7 @@ import {
   NavigatorModSongs,
 } from "components/music/NavigatorModSongs";
 import ModViewer from "components/music/ModViewer";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 const Wrapper = styled.div`
   display: flex;
@@ -20,7 +19,7 @@ const Wrapper = styled.div`
 `;
 
 const MusicPageMod = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const themeContext = useContext(ThemeContext);
   const selectedId = useAppSelector((state) => state.navigation.id);
   const navigatorSidebarWidth = useAppSelector(

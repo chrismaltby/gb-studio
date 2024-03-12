@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { useDispatch } from "react-redux";
 import ScriptEditor from "components/script/ScriptEditor";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { MenuItem } from "ui/menu/Menu";
@@ -30,7 +29,7 @@ import { SidebarHeader } from "ui/form/SidebarHeader";
 import { Label } from "ui/form/Label";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import l10n from "shared/lib/lang/l10n";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 const customEventName = (
   customEvent: CustomEventNormalized,
@@ -59,7 +58,7 @@ const CustomEventEditor = ({ id, multiColumn }: CustomEventEditorProps) => {
 
   const [showSymbols, setShowSymbols] = useState(false);
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const scriptTabs = useMemo(
     () => ({

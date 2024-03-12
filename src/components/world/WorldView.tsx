@@ -24,9 +24,9 @@ import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { sceneName } from "shared/lib/entities/entitiesHelpers";
-import { useDispatch, useStore } from "react-redux";
+import { useStore } from "react-redux";
 import styled from "styled-components";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 const Wrapper = styled.div`
   position: absolute;
@@ -60,7 +60,7 @@ const NewSceneCursor = styled.div`
 const WorldView = () => {
   //#region Component State
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const store = useStore();
 
   const scrollRef = useRef<HTMLDivElement>(null);

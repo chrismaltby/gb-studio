@@ -5,7 +5,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import throttle from "lodash/throttle";
 import { spriteAnimationSelectors } from "store/features/entities/entitiesState";
@@ -15,7 +14,7 @@ import { CloneIcon, PlusIcon } from "ui/icons/Icons";
 import SpriteAnimationTimelineFrame from "./SpriteAnimationTimelineFrame";
 import { FixedSpacer } from "ui/spacing/Spacing";
 import l10n from "shared/lib/lang/l10n";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface SpriteAnimationTimelineProps {
   spriteSheetId: string;
@@ -63,7 +62,7 @@ const SpriteAnimationTimeline = ({
   animationId,
   metaspriteId,
 }: SpriteAnimationTimelineProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const [hasFocus, setHasFocus] = useState(false);
   const [cloneFrame, setCloneFrame] = useState(false);

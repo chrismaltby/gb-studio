@@ -17,14 +17,13 @@ import {
 } from "shared/lib/entities/entitiesHelpers";
 import { EVENT_TEXT } from "consts";
 import { Button } from "ui/buttons/Button";
-import { useDispatch } from "react-redux";
 import styled, { css } from "styled-components";
 import {
   walkNormalizedActorScripts,
   walkNormalizedSceneSpecificScripts,
   walkNormalizedTriggerScripts,
 } from "shared/lib/scripts/walk";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface DialogueReviewSceneProps {
   id: string;
@@ -86,7 +85,7 @@ const DialogueReviewScene = ({
   open,
   onToggle,
 }: DialogueReviewSceneProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const scene = useAppSelector((state) => sceneSelectors.selectById(state, id));
   const sceneIndex = useAppSelector((state) =>
     sceneSelectors.selectIds(state).indexOf(id)

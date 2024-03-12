@@ -1,16 +1,16 @@
 import React from "react";
-import { useDispatch } from "react-redux";
 import { triggerSelectors } from "store/features/entities/entitiesState";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { interactScriptSymbol } from "shared/lib/helpers/symbols";
 import { addBankRef, AssetReference } from "components/forms/ReferencesSelect";
+import { useAppDispatch } from "store/hooks";
 
 interface TriggerSymbolsEditorProps {
   id: string;
 }
 
 export const TriggerSymbolsEditor = ({ id }: TriggerSymbolsEditorProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   return (
     <AssetReference
       id={id}

@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
 import { musicSelectors } from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
 import editorActions from "store/features/editor/editorActions";
@@ -23,7 +22,7 @@ import { addNewSongFile } from "store/features/trackerDocument/trackerDocumentSt
 import trackerActions from "store/features/tracker/trackerActions";
 import { assetFilename } from "shared/lib/helpers/assets";
 import API from "renderer/lib/api";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 const COLLAPSED_SIZE = 30;
 
@@ -124,7 +123,7 @@ export const NavigatorSongs = ({
   noiseInstruments,
   modified,
 }: NavigatorSongsProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const [items, setItems] = useState<NavigatorItem[]>([]);
   const allSongs = useAppSelector((state) => musicSelectors.selectAll(state));

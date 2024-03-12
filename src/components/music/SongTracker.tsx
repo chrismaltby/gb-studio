@@ -5,7 +5,6 @@ import React, {
   useCallback,
   useMemo,
 } from "react";
-import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import { PatternCell } from "shared/lib/uge/song/PatternCell";
 import { Song } from "shared/lib/uge/song/Song";
@@ -27,7 +26,7 @@ import clipboardActions from "store/features/clipboard/clipboardActions";
 import { clamp, cloneDeep, mergeWith } from "lodash";
 import API from "renderer/lib/api";
 import { MusicDataPacket } from "shared/lib/music/types";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 function getSelectedTrackerFields(
   selectionRect: SelectionRect | undefined,
@@ -105,7 +104,7 @@ export const SongTracker = ({
   height,
   channelStatus,
 }: SongTrackerProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const playing = useAppSelector((state) => state.tracker.playing);
   const editStep = useAppSelector((state) => state.tracker.editStep);

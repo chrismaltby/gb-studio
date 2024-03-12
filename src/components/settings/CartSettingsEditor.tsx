@@ -6,10 +6,9 @@ import { Button } from "ui/buttons/Button";
 import { SearchableSettingRow } from "ui/form/SearchableSettingRow";
 import { CardButtons } from "ui/cards/Card";
 import { SettingRowInput, SettingRowLabel } from "ui/form/SettingRow";
-import { useDispatch } from "react-redux";
 import { CartType } from "store/features/settings/settingsState";
 import { Checkbox } from "ui/form/Checkbox";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 export interface CartSettingsEditorProps {
   searchTerm?: string;
@@ -32,7 +31,7 @@ const cartOptions: CartTypeOption[] = [
 ];
 
 const CartSettingsEditor = ({ searchTerm }: CartSettingsEditorProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const cartType =
     useAppSelector((state) => state.project.present.settings.cartType) ||

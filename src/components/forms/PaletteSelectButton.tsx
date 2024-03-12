@@ -1,5 +1,4 @@
 import React, { FC, useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import { paletteSelectors } from "store/features/entities/entitiesState";
 import PaletteBlock from "components/forms/PaletteBlock";
@@ -8,7 +7,7 @@ import { RelativePortal } from "ui/layout/RelativePortal";
 import { PaletteSelect } from "./PaletteSelect";
 import navigationActions from "store/features/navigation/navigationActions";
 import { DMG_PALETTE } from "consts";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 type PaletteSelectProps = {
   name: string;
@@ -87,7 +86,7 @@ export const PaletteSelectButton: FC<PaletteSelectProps> = ({
     ) || DMG_PALETTE;
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [buttonFocus, setButtonFocus] = useState<boolean>(false);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (buttonFocus) {

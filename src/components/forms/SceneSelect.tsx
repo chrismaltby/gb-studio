@@ -1,5 +1,4 @@
 import React, { FC, useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
 import {
   backgroundSelectors,
   sceneSelectors,
@@ -16,7 +15,7 @@ import styled from "styled-components";
 import editorActions from "store/features/editor/editorActions";
 import { sceneName } from "shared/lib/entities/entitiesHelpers";
 import { assetFilename } from "shared/lib/helpers/assets";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface SceneSelectProps extends SelectCommonProps {
   name: string;
@@ -77,7 +76,7 @@ export const SceneSelect: FC<SceneSelectProps> = ({
   const [options, setOptions] = useState<SceneOption[]>([]);
   const [currentScene, setCurrentScene] = useState<SceneNormalized>();
   const [currentValue, setCurrentValue] = useState<Option>();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     setOptions(scenes.map(sceneToSceneOption).sort(sortByLabel));
