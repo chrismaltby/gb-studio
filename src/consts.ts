@@ -52,11 +52,6 @@ export const BRUSH_FILL = "fill";
 export const BRUSH_MAGIC = "magic";
 export const BRUSH_SLOPE = "slope";
 
-export const SPRITE_TYPE_STATIC = "static";
-export const SPRITE_TYPE_ACTOR = "actor";
-export const SPRITE_TYPE_ACTOR_ANIMATED = "actor_animated";
-export const SPRITE_TYPE_ANIMATED = "animated";
-
 export const COLLISION_TOP = 0x1;
 export const COLLISION_BOTTOM = 0x2;
 export const COLLISION_LEFT = 0x4;
