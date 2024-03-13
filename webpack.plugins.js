@@ -21,16 +21,19 @@ const plugins = [
     VERSION: JSON.stringify(pkg.version),
     DOCS_URL: JSON.stringify(docsUrl),
   }),
-  new ForkTsCheckerWebpackPlugin({
-    async: false,
-    typescript: {
-      memoryLimit: 4096,
-    },
-  }),
 ];
 
 if (process.env.ANALYZE_BUNDLE) {
   plugins.push(new BundleAnalyzerPlugin());
+}
+
+if (!process.env.NO_TYPE_CHECKING) {
+  plugins.push(new ForkTsCheckerWebpackPlugin({
+    async: false,
+    typescript: {
+      memoryLimit: 4096,
+    },
+  }))
 }
 
 module.exports = plugins;
