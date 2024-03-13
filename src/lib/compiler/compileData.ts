@@ -1517,9 +1517,9 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
             customEventsLookup,
             scriptEventHandlers
           );
-          const autoFadeIndex = initScript.findIndex(
+          const autoFadeIndex = autoFadeId ? initScript.findIndex(
             (item) => item.id === autoFadeId
-          );
+          ) : -1;
           const fadeEvent = {
             id: "",
             command: "EVENT_FADE_IN",
