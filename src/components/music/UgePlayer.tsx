@@ -44,10 +44,10 @@ export const UgePlayer = ({ data, onChannelStatusUpdate }: UgePlayerProps) => {
       }
     };
 
-    API.events.music.data.on(listener);
+    const unsubscribeMusicData = API.events.music.data.subscribe(listener);
 
     return () => {
-      API.events.music.data.off(listener);
+      unsubscribeMusicData();
     };
   }, [onChannelStatusUpdate, play, data, dispatch]);
 

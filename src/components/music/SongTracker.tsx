@@ -148,10 +148,10 @@ export const SongTracker = ({
         setPlaybackState(d.update);
       }
     };
-    API.events.music.data.on(listener);
+    const unsubscribeMusicData = API.events.music.data.subscribe(listener);
 
     return () => {
-      API.events.music.data.off(listener);
+      unsubscribeMusicData();
     };
   }, [setPlaybackState]);
 

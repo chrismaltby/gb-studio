@@ -1,7 +1,7 @@
 import API from "renderer/lib/api";
 
 export const initFullScreenDetector = async () => {
-  API.events.app.isFullScreenChanged.on((_, isFullScreen) =>
+  API.events.app.isFullScreenChanged.subscribe((_, isFullScreen) =>
     handleFullScreen(isFullScreen)
   );
   handleFullScreen(await API.app.getIsFullScreen());

@@ -37,6 +37,7 @@ import {
 import useWindowFocus from "ui/hooks/use-window-focus";
 import useWindowSize from "ui/hooks/use-window-size";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import API from "renderer/lib/api";
 
 const sectionAccelerators = {
   world: "CommandOrControl+1",
@@ -72,8 +73,7 @@ const AppToolbar: FC = () => {
   const windowFocus = useWindowFocus();
   const windowSize = useWindowSize();
   const smallZoom = (windowSize.width || 0) < 900;
-  const showTitle =
-    process.platform === "darwin" && (windowSize.width || 0) > 800;
+  const showTitle = API.platform === "darwin" && (windowSize.width || 0) > 800;
 
   const sectionNames = useMemo(
     () => ({

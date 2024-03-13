@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import API from "renderer/lib/api";
 import styled, { css } from "styled-components";
 import { ThemeInterface } from "ui/theme/ThemeInterface";
 
@@ -104,7 +105,7 @@ export interface MenuAcceleratorProps {
 }
 
 export const acceleratorForPlatform = (accelerator: string) => {
-  if (process.platform === "darwin") {
+  if (API.platform === "darwin") {
     return accelerator
       .replace(/CommandOrControl\+/g, "⌘")
       .replace(/Shift\+/g, "⇧")

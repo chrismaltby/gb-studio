@@ -53,11 +53,11 @@ const createSubscribeAPI = <
   channel: string
 ) => {
   return {
-    on: (listener: T) => {
+    subscribe: (listener: T) => {
       ipcRenderer.on(channel, listener);
-    },
-    off: (listener: T) => {
-      ipcRenderer.off(channel, listener);
+      return () => {
+        ipcRenderer.off(channel, listener);
+      };
     },
     once: (listener: T) => {
       ipcRenderer.once(channel, listener);

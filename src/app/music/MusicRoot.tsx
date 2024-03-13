@@ -30,7 +30,7 @@ player.setOnIntervalCallback((playbackUpdate) => {
   });
 });
 
-API.events.music.data.on((_event, d) => {
+API.events.music.data.subscribe((_event, d) => {
   log(d);
   switch (d.action) {
     case "load-song":

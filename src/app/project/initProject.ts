@@ -154,126 +154,126 @@ API.project.onBuildError((_event, message) => {
 
 // Watch Sprites
 
-API.events.watch.sprite.changed.on((_, _filename, data) => {
+API.events.watch.sprite.changed.subscribe((_, _filename, data) => {
   store.dispatch(entitiesActions.loadSprite({ data }));
 });
 
-API.events.watch.sprite.removed.on((_, filename, plugin) => {
+API.events.watch.sprite.removed.subscribe((_, filename, plugin) => {
   store.dispatch(entitiesActions.removeSprite({ filename, plugin }));
 });
 
 // Watch Backgrounds
 
-API.events.watch.background.changed.on((_, _filename, data) => {
+API.events.watch.background.changed.subscribe((_, _filename, data) => {
   store.dispatch(
     entitiesActions.loadBackground({ data: data as unknown as Background })
   );
 });
 
-API.events.watch.background.removed.on((_, filename, plugin) => {
+API.events.watch.background.removed.subscribe((_, filename, plugin) => {
   store.dispatch(entitiesActions.removeBackground({ filename, plugin }));
 });
 
 // Watch Music
 
-API.events.watch.music.changed.on((_, _filename, data) => {
+API.events.watch.music.changed.subscribe((_, _filename, data) => {
   store.dispatch(entitiesActions.loadMusic({ data }));
 });
 
-API.events.watch.music.removed.on((_, filename, plugin) => {
+API.events.watch.music.removed.subscribe((_, filename, plugin) => {
   store.dispatch(entitiesActions.removeMusic({ filename, plugin }));
 });
 
 // Watch Sounds
 
-API.events.watch.sound.changed.on((_, _filename, data) => {
+API.events.watch.sound.changed.subscribe((_, _filename, data) => {
   store.dispatch(entitiesActions.loadSound({ data }));
 });
 
-API.events.watch.sound.removed.on((_, filename, plugin) => {
+API.events.watch.sound.removed.subscribe((_, filename, plugin) => {
   store.dispatch(entitiesActions.removeSound({ filename, plugin }));
 });
 
 // Watch Fonts
 
-API.events.watch.font.changed.on((_, _filename, data) => {
+API.events.watch.font.changed.subscribe((_, _filename, data) => {
   store.dispatch(entitiesActions.loadFont({ data }));
 });
 
-API.events.watch.font.removed.on((_, filename, plugin) => {
+API.events.watch.font.removed.subscribe((_, filename, plugin) => {
   store.dispatch(entitiesActions.removeFont({ filename, plugin }));
 });
 
 // Watch Avatars
 
-API.events.watch.avatar.changed.on((_, _filename, data) => {
+API.events.watch.avatar.changed.subscribe((_, _filename, data) => {
   store.dispatch(entitiesActions.loadAvatar({ data }));
 });
 
-API.events.watch.avatar.removed.on((_, filename, plugin) => {
+API.events.watch.avatar.removed.subscribe((_, filename, plugin) => {
   store.dispatch(entitiesActions.removeAvatar({ filename, plugin }));
 });
 
 // Watch Emotes
 
-API.events.watch.emote.changed.on((_, _filename, data) => {
+API.events.watch.emote.changed.subscribe((_, _filename, data) => {
   store.dispatch(entitiesActions.loadEmote({ data }));
 });
 
-API.events.watch.emote.removed.on((_, filename, plugin) => {
+API.events.watch.emote.removed.subscribe((_, filename, plugin) => {
   store.dispatch(entitiesActions.removeEmote({ filename, plugin }));
 });
 
 // Watch UI
 
-API.events.watch.ui.changed.on(() => {
+API.events.watch.ui.changed.subscribe(() => {
   store.dispatch(projectActions.loadUI());
 });
 
-API.events.watch.ui.removed.on(() => {
+API.events.watch.ui.removed.subscribe(() => {
   store.dispatch(projectActions.loadUI());
 });
 
 // Watch Engine Fields
 
-API.events.watch.engineSchema.changed.on((_, fields) => {
+API.events.watch.engineSchema.changed.subscribe((_, fields) => {
   store.dispatch(engineActions.setEngineFields(fields));
 });
 
 // Script Event Defs
 
-API.events.watch.scriptEventDefs.changed.on((_, scriptEventDefs) => {
+API.events.watch.scriptEventDefs.changed.subscribe((_, scriptEventDefs) => {
   store.dispatch(scriptEventDefsActions.setScriptEventDefs(scriptEventDefs));
 });
 
 // Menu
 
-API.events.menu.saveProject.on(() => {
+API.events.menu.saveProject.subscribe(() => {
   store.dispatch(projectActions.saveProject());
 });
 
-API.events.menu.saveProjectAs.on((_, filename: string) => {
+API.events.menu.saveProjectAs.subscribe((_, filename: string) => {
   store.dispatch(projectActions.saveProject(filename));
 });
 
-API.events.menu.onSaveAndCloseProject.on(async () => {
+API.events.menu.onSaveAndCloseProject.subscribe(async () => {
   await store.dispatch(projectActions.saveProject());
   window.close();
 });
 
-API.events.menu.undo.on(() => onUndo());
+API.events.menu.undo.subscribe(() => onUndo());
 
-API.events.menu.redo.on(() => onRedo());
+API.events.menu.redo.subscribe(() => onRedo());
 
-API.events.menu.setSection.on(async (_, section: NavigationSection) => {
+API.events.menu.setSection.subscribe(async (_, section: NavigationSection) => {
   store.dispatch(navigationActions.setSection(section));
 });
 
-API.events.menu.reloadAssets.on(() => {
+API.events.menu.reloadAssets.subscribe(() => {
   store.dispatch(projectActions.reloadAssets());
 });
 
-API.events.menu.zoom.on((_, zoomType) => {
+API.events.menu.zoom.subscribe((_, zoomType) => {
   const state = store.getState();
   const navSection = state.navigation.section;
   if (isZoomSection(navSection)) {
@@ -287,11 +287,11 @@ API.events.menu.zoom.on((_, zoomType) => {
   }
 });
 
-API.events.menu.run.on(() => {
+API.events.menu.run.subscribe(() => {
   store.dispatch(buildGameActions.buildGame());
 });
 
-API.events.menu.build.on((_, buildType) => {
+API.events.menu.build.subscribe((_, buildType) => {
   store.dispatch(
     buildGameActions.buildGame({
       buildType,
@@ -300,21 +300,21 @@ API.events.menu.build.on((_, buildType) => {
   );
 });
 
-API.events.menu.ejectEngine.on(() => {
+API.events.menu.ejectEngine.subscribe(() => {
   store.dispatch(buildGameActions.ejectEngine());
 });
 
-API.events.menu.exportProject.on((_, exportType) => {
+API.events.menu.exportProject.subscribe((_, exportType) => {
   store.dispatch(buildGameActions.exportProject(exportType));
 });
 
-API.events.menu.pasteInPlace.on(() => {
+API.events.menu.pasteInPlace.subscribe(() => {
   store.dispatch(clipboardActions.pasteClipboardEntityInPlace());
 });
 
 // Settings changed
 
-API.events.settings.uiScaleChanged.on((_, zoomLevel) => {
+API.events.settings.uiScaleChanged.subscribe((_, zoomLevel) => {
   API.app.setZoomLevel(zoomLevel);
 });
 
@@ -322,11 +322,11 @@ API.settings.app.getUIScale().then((zoomLevel) => {
   API.app.setZoomLevel(zoomLevel);
 });
 
-API.events.settings.trackerKeyBindingsChanged.on(() => {
+API.events.settings.trackerKeyBindingsChanged.subscribe(() => {
   initKeyBindings();
 });
 
-API.events.settings.settingChanged.on((_, key, value) => {
+API.events.settings.settingChanged.subscribe((_, key, value) => {
   store.dispatch(
     settingsActions.editSettings({
       [key]: value,
