@@ -105,7 +105,7 @@
       }
     },
     {
-      "files": ["src/renderer/lib/api/setup.ts"],
+      "files": ["src/renderer/lib/api/setup.ts", "src/app/**/preload.ts"],
       "rules": {
         "@typescript-eslint/no-restricted-imports": [
           "error",

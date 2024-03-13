@@ -55,6 +55,7 @@ module.exports = {
         mainConfig: "./webpack.main.config.js",
         renderer: {
           config: "./webpack.renderer.config.js",
+          nodeIntegration: false,
           entryPoints: [
             {
               html: "./src/app/project/project.html",
@@ -68,7 +69,6 @@ module.exports = {
                 "vendor-scriptracker",
                 "vendor-hotloader",
                 "vendor-lodash",
-                "vendor-chokidar",
               ],
             },
             {

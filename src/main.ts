@@ -156,7 +156,8 @@ const createSplash = async (forceTab?: SplashTab) => {
     show: false,
     autoHideMenuBar: true,
     webPreferences: {
-      nodeIntegration: true,
+      contextIsolation: true,
+      nodeIntegration: false,
       devTools: isDevMode,
       preload: SPLASH_WINDOW_PRELOAD_WEBPACK_ENTRY,
     },
@@ -192,7 +193,8 @@ const createPreferences = async () => {
     show: false,
     autoHideMenuBar: true,
     webPreferences: {
-      nodeIntegration: true,
+      contextIsolation: true,
+      nodeIntegration: false,
       devTools: isDevMode,
       preload: PREFERENCES_WINDOW_PRELOAD_WEBPACK_ENTRY,
     },
@@ -230,8 +232,9 @@ const createProjectWindow = async () => {
     fullscreenable: true,
     show: false,
     webPreferences: {
-      nodeIntegration: true,
-      nodeIntegrationInWorker: true,
+      contextIsolation: true,
+      nodeIntegration: false,
+      nodeIntegrationInWorker: false,
       webSecurity: process.env.NODE_ENV !== "development",
       devTools: isDevMode,
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
@@ -496,6 +499,7 @@ const createPlay = async (url: string, sgb: boolean) => {
       autoHideMenuBar: true,
       useContentSize: true,
       webPreferences: {
+        contextIsolation: true,
         nodeIntegration: false,
         webSecurity: process.env.NODE_ENV !== "development",
       },
@@ -523,8 +527,9 @@ const createMusic = async (sfx?: string, initialMessage?: MusicDataPacket) => {
       width: 330,
       height: 330,
       webPreferences: {
-        nodeIntegration: true,
-        nodeIntegrationInWorker: true,
+        contextIsolation: true,
+        nodeIntegration: false,
+        nodeIntegrationInWorker: false,
         webSecurity: process.env.NODE_ENV !== "development",
         devTools: isDevMode,
         preload: MUSIC_WINDOW_PRELOAD_WEBPACK_ENTRY,

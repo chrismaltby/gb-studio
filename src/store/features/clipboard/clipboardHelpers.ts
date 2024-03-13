@@ -22,6 +22,8 @@ import {
   NarrowClipboardType,
 } from "./clipboardTypes";
 
+const decoder = new TextDecoder('utf-8');
+
 const isClipboardMetaspriteTiles = (
   input: unknown
 ): input is ClipboardMetaspriteTiles => {
@@ -128,7 +130,7 @@ export const paste = async <T extends ClipboardFormat>(
 
   let data: unknown;
   try {
-    data = JSON.parse(buffer?.toString?.());
+    data = JSON.parse(decoder.decode(buffer));
   } catch (e) {
     return undefined;
   }
