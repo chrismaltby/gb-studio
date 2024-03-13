@@ -125,6 +125,8 @@ const loadSong = (song: Song) => {
 const play = (song: Song, position?: PlaybackPosition) => {
   console.log("PLAY");
   updateRom(song);
+  emulator.step("frame");
+  stop();
 
   if (position) {
     console.log("POS", position);

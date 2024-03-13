@@ -45,6 +45,7 @@ API.events.music.data.subscribe((_event, d) => {
       });
       break;
     case "play":
+      player.reset();
       player.play(d.song, d.position);
       API.music.sendToProjectWindow({
         action: "log",
