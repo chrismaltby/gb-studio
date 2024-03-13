@@ -34,6 +34,7 @@ API.events.music.data.subscribe((_event, d) => {
   log(d);
   switch (d.action) {
     case "load-song":
+      player.reset();
       player.loadSong(d.song);
       API.music.sendToProjectWindow({
         action: "log",

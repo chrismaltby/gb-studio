@@ -454,6 +454,8 @@ function patchRom(targetRomFile: Uint8Array, song: Song, startAddr: number) {
 
 const getCurrentSong = () => currentSong;
 
+const reset = () => emulator.init(romFile);
+
 const player = {
   initPlayer,
   loadSong,
@@ -466,6 +468,7 @@ const player = {
   setOnIntervalCallback: (cb: (position: PlaybackPosition) => void) => {
     onIntervalCallback = cb;
   },
+  reset
 };
 
 export default player;
