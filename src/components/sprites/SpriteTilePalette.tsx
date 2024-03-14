@@ -7,8 +7,8 @@ import { roundDown8 } from "shared/lib/helpers/8bit";
 import styled from "styled-components";
 import l10n from "shared/lib/lang/l10n";
 import electronActions from "store/features/electron/electronActions";
-import { assetFilename } from "shared/lib/helpers/assets";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { assetURL } from "shared/lib/helpers/assets";
 
 const PillWrapper = styled.div`
   position: absolute;
@@ -232,11 +232,7 @@ const SpriteTilePalette = ({ id, precisionMode }: SpriteTilePaletteProps) => {
     return null;
   }
 
-  const filename = `file://${assetFilename(
-    projectRoot,
-    "sprites",
-    spriteSheet
-  )}?_v=${spriteSheet._v}`;
+  const spriteURL = assetURL("sprites", spriteSheet);
 
   return (
     <div
@@ -288,7 +284,7 @@ const SpriteTilePalette = ({ id, precisionMode }: SpriteTilePaletteProps) => {
                 minWidth: width * zoom,
               }}
               alt={spriteSheet.name}
-              src={filename}
+              src={spriteURL}
             />
             <div
               style={{

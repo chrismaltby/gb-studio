@@ -2,7 +2,7 @@ import { dialog } from "electron";
 import l10n from "shared/lib/lang/l10n";
 
 const confirmEjectEngineReplaceDialog = () => {
-  const dialogOptions = {
+  return dialog.showMessageBoxSync({
     type: "info",
     buttons: [l10n("DIALOG_EJECT_REPLACE"), l10n("DIALOG_CANCEL")],
     defaultId: 0,
@@ -10,9 +10,7 @@ const confirmEjectEngineReplaceDialog = () => {
     title: l10n("DIALOG_EJECT_ENGINE_REPLACE"),
     message: l10n("DIALOG_EJECT_ENGINE_REPLACE"),
     detail: l10n("DIALOG_EJECT_ENGINE_REPLACE_DESCRIPTION"),
-  };
-
-  return dialog.showMessageBoxSync(dialogOptions);
+  });
 };
 
 export default confirmEjectEngineReplaceDialog;

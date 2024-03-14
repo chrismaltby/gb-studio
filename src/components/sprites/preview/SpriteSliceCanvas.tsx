@@ -6,7 +6,7 @@ import { ObjPalette, Palette } from "shared/lib/entities/entitiesTypes";
 import SpriteSliceCanvasWorker, {
   SpriteSliceCanvasResult,
 } from "./SpriteSliceCanvas.worker";
-import { assetFilename } from "shared/lib/helpers/assets";
+import { assetURL } from "shared/lib/helpers/assets";
 
 interface SpriteSliceCanvasProps {
   spriteSheetId: string;
@@ -75,15 +75,11 @@ export const SpriteSliceCanvas = ({
     if (!ctx) {
       return;
     }
-    const filename = `file://${assetFilename(
-      projectRoot,
-      "sprites",
-      spriteSheet
-    )}?_v=${spriteSheet._v}`;
+    const spriteURL = assetURL("sprites", spriteSheet);
 
     worker.postMessage({
       id: workerId,
-      src: filename,
+      src: spriteURL,
       offsetX,
       offsetY,
       width,

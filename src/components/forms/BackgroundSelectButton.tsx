@@ -6,7 +6,7 @@ import assetsActions from "store/features/assets/assetsActions";
 import { SelectMenu, selectMenuStyleProps } from "ui/form/Select";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import { BackgroundSelect } from "./BackgroundSelect";
-import { assetFilename } from "shared/lib/helpers/assets";
+import { assetURLStyleProp } from "shared/lib/helpers/assets";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface BackgroundSelectProps {
@@ -149,7 +149,6 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
   const background = useAppSelector((state) =>
     backgroundSelectors.selectById(state, value || "")
   );
-  const projectRoot = useAppSelector((state) => state.document.root);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [buttonFocus, setButtonFocus] = useState<boolean>(false);
   const numTiles = useAppSelector(
@@ -248,12 +247,7 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
             <Thumbnail
               style={{
                 backgroundImage:
-                  background &&
-                  `url("file://${assetFilename(
-                    projectRoot,
-                    "backgrounds",
-                    background
-                  )}?_v=${background._v}")`,
+                  background && assetURLStyleProp("backgrounds", background),
               }}
             />
           ) : (

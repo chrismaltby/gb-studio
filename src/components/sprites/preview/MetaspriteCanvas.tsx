@@ -10,7 +10,7 @@ import { MetaspriteTile, Palette } from "shared/lib/entities/entitiesTypes";
 import MetaspriteCanvasWorker, {
   MetaspriteCanvasResult,
 } from "./MetaspriteCanvas.worker";
-import { assetFilename } from "shared/lib/helpers/assets";
+import { assetURL } from "shared/lib/helpers/assets";
 
 interface MetaspriteCanvasProps {
   spriteSheetId: string;
@@ -98,15 +98,11 @@ export const MetaspriteCanvas = memo(
       if (!ctx) {
         return;
       }
-      const filename = `file://${assetFilename(
-        projectRoot,
-        "sprites",
-        spriteSheet
-      )}?_v=${spriteSheet._v}`;
+      const spriteURL = assetURL("sprites", spriteSheet);
 
       worker.postMessage({
         id: workerId,
-        src: filename,
+        src: spriteURL,
         width,
         height,
         tiles,

@@ -1,9 +1,9 @@
 import { AnyAction, Dictionary, Dispatch, Middleware } from "@reduxjs/toolkit";
 import { RootState } from "store/configureStore";
 import throttle from "lodash/throttle";
-import { Cancelable } from "lodash";
+import { DebouncedFunc } from "lodash";
 
-const throttled: Dictionary<Dispatch<AnyAction> & Cancelable> = {};
+const throttled: Dictionary<DebouncedFunc<Dispatch<AnyAction>>> = {};
 
 const throttleMiddleware: Middleware<Dispatch, RootState> =
   (_store) => (next) => async (action) => {

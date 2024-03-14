@@ -112,9 +112,7 @@ const MusicPageUge = () => {
   const [selectedSongType, setSelectedSongType] = useState("");
   useEffect(() => {
     if (selectedSong) {
-      setSelectedSongPath(
-        `${assetFilename(projectRoot, "music", selectedSong)}`
-      );
+      setSelectedSongPath(assetFilename(projectRoot, "music", selectedSong));
       setSelectedSongType(selectedSong.type || "");
     }
   }, [projectRoot, selectedSong]);

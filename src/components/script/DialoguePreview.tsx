@@ -8,7 +8,7 @@ import {
   fontSelectors,
 } from "store/features/entities/entitiesState";
 import { loadFont, drawFrame, drawText, FontData } from "./TextPreviewHelper";
-import { assetFilename } from "shared/lib/helpers/assets";
+import { assetURL } from "shared/lib/helpers/assets";
 
 interface DialoguePreviewProps {
   text: string;
@@ -46,17 +46,8 @@ export const DialoguePreview: FC<DialoguePreviewProps> = ({
     _v: uiVersion,
   };
 
-  const frameFilename = `file:///${assetFilename(
-    projectRoot,
-    "ui",
-    frameAsset
-  )}?_v=${uiVersion}`;
-
-  const avatarFilename = avatarAsset
-    ? `file:///${assetFilename(projectRoot, "avatars", avatarAsset)}?_v=${
-        avatarAsset._v || 0
-      }`
-    : "";
+  const frameAssetURL = assetURL("ui", frameAsset);
+  const avatarAssetURL = avatarAsset ? assetURL("avatars", avatarAsset) : "";
 
   useEffect(() => {
     async function fetchData() {
@@ -68,9 +59,7 @@ export const DialoguePreview: FC<DialoguePreviewProps> = ({
         )
       );
       const usedFonts = usedFontIds.map((id) => fontsLookup[id] || fonts[0]);
-      const usedFontData = await Promise.all(
-        usedFonts.map((font) => loadFont(projectRoot, font))
-      );
+      const usedFontData = await Promise.all(usedFonts.map(loadFont));
       if (!isMounted.current) {
         return;
       }
@@ -82,32 +71,32 @@ export const DialoguePreview: FC<DialoguePreviewProps> = ({
   // Load frame image
   useEffect(() => {
     const img = new Image();
-    img.src = frameFilename;
+    img.src = frameAssetURL;
     img.onload = () => {
       if (!isMounted.current) {
         return;
       }
       setFrameImage(img);
     };
-  }, [frameFilename]);
+  }, [frameAssetURL]);
 
   // Load frame image
   useEffect(() => {
     const img = new Image();
-    img.src = frameFilename;
+    img.src = frameAssetURL;
     img.onload = () => {
       if (!isMounted.current) {
         return;
       }
       setFrameImage(img);
     };
-  }, [frameFilename]);
+  }, [frameAssetURL]);
 
   // Load Avatar image
   useEffect(() => {
-    if (avatarFilename) {
+    if (avatarAssetURL) {
       const img = new Image();
-      img.src = avatarFilename;
+      img.src = avatarAssetURL;
       img.onload = () => {
         // Make green background color transparent
         const tmpCanvas = document.createElement("canvas");
@@ -133,7 +122,7 @@ export const DialoguePreview: FC<DialoguePreviewProps> = ({
     } else {
       setAvatarImage(undefined);
     }
-  }, [avatarFilename]);
+  }, [avatarAssetURL]);
 
   useLayoutEffect(() => {
     if (ref.current && frameImage && (!avatarId || avatarImage)) {

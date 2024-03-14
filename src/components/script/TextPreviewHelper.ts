@@ -1,7 +1,7 @@
 import { Font } from "shared/lib/entities/entitiesTypes";
 import { lexText } from "shared/lib/compiler/lexText";
-import { assetFilename } from "shared/lib/helpers/assets";
 import { encodeChar } from "shared/lib/helpers/fonts";
+import { assetURL } from "shared/lib/helpers/assets";
 
 export interface FontData {
   id: string;
@@ -58,15 +58,8 @@ const loadImage = async (src: string): Promise<HTMLImageElement> => {
   });
 };
 
-export const loadFont = async (
-  projectRoot: string,
-  font: Font
-): Promise<FontData> => {
-  const fontFilename = `file:///${assetFilename(
-    projectRoot,
-    "fonts",
-    font
-  )}?_v=${font._v || 0}`;
+export const loadFont = async (font: Font): Promise<FontData> => {
+  const fontFilename = assetURL("fonts", font);
   const img = await loadImage(fontFilename);
   const widths: number[] = [];
   let isMono = true;

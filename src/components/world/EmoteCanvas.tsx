@@ -5,7 +5,7 @@ import { emoteSelectors } from "store/features/entities/entitiesState";
 import SpriteSliceCanvasWorker, {
   SpriteSliceCanvasResult,
 } from "components/sprites/preview/SpriteSliceCanvas.worker";
-import { assetFilename } from "shared/lib/helpers/assets";
+import { assetURL } from "shared/lib/helpers/assets";
 
 interface EmoteCanvasProps {
   emoteId: string;
@@ -58,15 +58,11 @@ export const EmoteCanvas = ({ emoteId }: EmoteCanvasProps) => {
     if (!ctx) {
       return;
     }
-    const filename = `file://${assetFilename(
-      projectRoot,
-      "emotes",
-      emote
-    )}?_v=${emote._v}`;
+    const emoteURL = assetURL("emotes", emote);
 
     worker.postMessage({
       id: workerId,
-      src: filename,
+      src: emoteURL,
       offsetX: 0,
       offsetY: 0,
       width: 16,

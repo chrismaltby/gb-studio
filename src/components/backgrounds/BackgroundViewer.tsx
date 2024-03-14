@@ -9,7 +9,7 @@ import {
 import ColorizedImage from "components/world/ColorizedImage";
 import { DMG_PALETTE, TILE_SIZE } from "consts";
 import { Palette } from "shared/lib/entities/entitiesTypes";
-import { assetFilename } from "shared/lib/helpers/assets";
+import { assetURL } from "shared/lib/helpers/assets";
 
 interface MetaspriteEditorProps {
   backgroundId: string;
@@ -57,7 +57,6 @@ const emptyPalettes: Palette[] = [
 ] as Palette[];
 
 const BackgroundViewer = ({ backgroundId }: MetaspriteEditorProps) => {
-  const projectRoot = useAppSelector((state) => state.document.root);
   const background = useAppSelector((state) =>
     backgroundSelectors.selectById(state, backgroundId)
   );
@@ -113,11 +112,7 @@ const BackgroundViewer = ({ backgroundId }: MetaspriteEditorProps) => {
             <ColorizedImage
               width={background.width * TILE_SIZE}
               height={background.height * TILE_SIZE}
-              src={`file://${assetFilename(
-                projectRoot,
-                "backgrounds",
-                background
-              )}?_v=${background._v}`}
+              src={assetURL("backgrounds", background)}
               tiles={background.tileColors}
               palettes={palettes}
             />

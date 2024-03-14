@@ -6,6 +6,8 @@ import {
   shell,
   nativeTheme,
   clipboard,
+  protocol,
+  net,
 } from "electron";
 import windowStateKeeper from "electron-window-state";
 import settings from "electron-settings";
@@ -18,7 +20,7 @@ import {
   stat,
   statSync,
 } from "fs-extra";
-import menu from "./menu";
+import menu, { setMenuItemChecked } from "./menu";
 import { checkForUpdate } from "lib/helpers/updateChecker";
 import switchLanguageDialog from "lib/electron/dialog/switchLanguageDialog";
 import installExtension, {
@@ -108,8 +110,6 @@ type SplashTab = "info" | "new" | "recent";
 if (require("electron-squirrel-startup")) {
   app.quit();
 }
-
-app.allowRendererProcessReuse = false;
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -559,6 +559,18 @@ const createMusic = async (sfx?: string, initialMessage?: MusicDataPacket) => {
   }
 };
 
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: "gbs",
+    privileges: {
+      standard: true,
+      secure: true,
+      supportFetchAPI: true,
+      bypassCSP: true,
+    },
+  },
+]);
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -587,6 +599,22 @@ app.on("ready", async () => {
   } else if (splashWindow === null && projectWindow === null) {
     createSplash();
   }
+
+  protocol.handle("gbs", (req) => {
+    const { host, pathname } = new URL(req.url);
+    if (host === "project") {
+      // Load an asset from the current project
+      const projectRoot = Path.dirname(projectPath);
+      const filename = Path.join(projectRoot, pathname);
+      // Check project has permission to access this asset
+      guardAssetWithinProject(filename, projectRoot);
+      return net.fetch("file://" + filename);
+    }
+    return new Response("Error", {
+      headers: { "content-type": "text/html" },
+      status: 500,
+    });
+  });
 });
 
 app.on("open-file", async (_e, projectPath) => {
@@ -645,7 +673,7 @@ ipcMain.on("open-play", async (_event, url, sgb) => {
 ipcMain.handle("open-folder", async (_event, path) => {
   if (!isString(path)) throw new Error("Invalid Path");
   // @TODO Confirm that folder is within project
-  shell.openItem(path);
+  shell.openPath(path);
 });
 
 ipcMain.handle("open-image", async (_event, path) => {
@@ -665,7 +693,7 @@ ipcMain.handle("open-mod", async (_event, path) => {
 ipcMain.handle("open-file", async (_event, path) => {
   if (!isString(path)) throw new Error("Invalid Path");
   // @TODO Confirm that folder is within project
-  shell.openItem(path);
+  shell.openPath(path);
 });
 
 ipcMain.handle("open-external", async (_event, url) => {
@@ -772,14 +800,14 @@ ipcMain.handle("build:delete-cache", async (_event) => {
 
 ipcMain.handle("project:update-project-window-menu", (_event, settings) => {
   const { showCollisions, showConnections, showNavigator } = settings;
-  menu.ref().getMenuItemById("showCollisions").checked = showCollisions;
-  menu.ref().getMenuItemById("showConnectionsAll").checked =
-    showConnections === "all";
-  menu.ref().getMenuItemById("showConnectionsSelected").checked =
-    showConnections === "selected" || showConnections === true;
-  menu.ref().getMenuItemById("showConnectionsNone").checked =
-    showConnections === false;
-  menu.ref().getMenuItemById("showNavigator").checked = showNavigator;
+  setMenuItemChecked("showCollisions", showCollisions);
+  setMenuItemChecked("showConnectionsAll", showConnections === "all");
+  setMenuItemChecked(
+    "showConnectionsSelected",
+    showConnections === "selected" || showConnections === true
+  );
+  setMenuItemChecked("showConnectionsNone", showConnections === false);
+  setMenuItemChecked("showNavigator", showNavigator);
 });
 
 ipcMain.on(
@@ -962,7 +990,7 @@ ipcMain.handle(
           `${outputRoot}/build/${buildType}`,
           `${projectRoot}/build/${buildType}`
         );
-        shell.openItem(`${projectRoot}/build/${buildType}`);
+        shell.openPath(`${projectRoot}/build/${buildType}`);
         buildLog(`-`);
         buildLog(
           `Success! ${
@@ -1031,7 +1059,7 @@ ipcMain.handle("project:engine-eject", () => {
   }
 
   ejectEngineToDir(outputDir).then(() => {
-    shell.openItem(outputDir);
+    shell.openPath(outputDir);
   });
 });
 
@@ -1104,7 +1132,7 @@ ipcMain.handle(
       const buildTime = Date.now() - buildStartTime;
       buildLog(`Build Time: ${buildTime}ms`);
 
-      shell.openItem(exportRoot);
+      shell.openPath(exportRoot);
     } catch (e) {
       if (typeof e === "string") {
         buildErr(e);
@@ -1397,9 +1425,9 @@ menu.on("preferences", () => {
 
 menu.on("updateTheme", (value) => {
   settings.set("theme", value as JsonValue);
-  menu.ref().getMenuItemById("themeDefault").checked = value === undefined;
-  menu.ref().getMenuItemById("themeLight").checked = value === "light";
-  menu.ref().getMenuItemById("themeDark").checked = value === "dark";
+  setMenuItemChecked("themeDefault", value === undefined);
+  setMenuItemChecked("themeLight", value === "light");
+  setMenuItemChecked("themeDark", value === "dark");
   const newThemeId = toThemeId(value, nativeTheme.shouldUseDarkColors);
   sendToSplashWindow("update-theme", newThemeId);
   sendToProjectWindow("update-theme", newThemeId);
@@ -1407,9 +1435,9 @@ menu.on("updateTheme", (value) => {
 
 menu.on("updateLocale", (value) => {
   settings.set("locale", value as JsonValue);
-  menu.ref().getMenuItemById("localeDefault").checked = value === undefined;
+  setMenuItemChecked("localeDefault", value === undefined);
   for (const locale of locales) {
-    menu.ref().getMenuItemById(`locale-${locale}`).checked = value === locale;
+    setMenuItemChecked(`locale-${locale}`, value === locale);
   }
   switchLanguageDialog();
   initElectronL10N();
@@ -1422,10 +1450,12 @@ menu.on("updateShowCollisions", (value) => {
 
 menu.on("updateShowConnections", (value) => {
   settings.set("showConnections", value as JsonValue);
-  menu.ref().getMenuItemById("showConnectionsAll").checked = value === "all";
-  menu.ref().getMenuItemById("showConnectionsSelected").checked =
-    value === "selected" || value === true;
-  menu.ref().getMenuItemById("showConnectionsNone").checked = value === false;
+  setMenuItemChecked("showConnectionsAll", value === "all");
+  setMenuItemChecked(
+    "showConnectionsSelected",
+    value === "selected" || value === true
+  );
+  setMenuItemChecked("showConnectionsNone", value === false);
   sendToProjectWindow("setting:changed", "showConnections", value);
 });
 

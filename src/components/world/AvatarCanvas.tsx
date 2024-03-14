@@ -5,7 +5,7 @@ import { avatarSelectors } from "store/features/entities/entitiesState";
 import SpriteSliceCanvasWorker, {
   SpriteSliceCanvasResult,
 } from "components/sprites/preview/SpriteSliceCanvas.worker";
-import { assetFilename } from "shared/lib/helpers/assets";
+import { assetURL } from "shared/lib/helpers/assets";
 
 interface AvatarCanvasProps {
   avatarId: string;
@@ -58,15 +58,11 @@ export const AvatarCanvas = ({ avatarId }: AvatarCanvasProps) => {
     if (!ctx) {
       return;
     }
-    const filename = `file://${assetFilename(
-      projectRoot,
-      "avatars",
-      avatar
-    )}?_v=${avatar._v}`;
+    const avatarURL = assetURL("avatars", avatar);
 
     worker.postMessage({
       id: workerId,
-      src: filename,
+      src: avatarURL,
       offsetX: 0,
       offsetY: 0,
       width: 16,

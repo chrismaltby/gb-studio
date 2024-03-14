@@ -12,7 +12,7 @@ import {
 } from "ui/form/Select";
 import { Background } from "shared/lib/entities/entitiesTypes";
 import styled from "styled-components";
-import { assetFilename } from "shared/lib/helpers/assets";
+import { assetURLStyleProp } from "shared/lib/helpers/assets";
 
 interface BackgroundSelectProps extends SelectCommonProps {
   name: string;
@@ -42,7 +42,6 @@ export const BackgroundSelect: FC<BackgroundSelectProps> = ({
   const background = useAppSelector((state) =>
     backgroundSelectors.selectById(state, value || "")
   );
-  const projectRoot = useAppSelector((state) => state.document.root);
   const [options, setOptions] = useState<OptGroup[]>([]);
   const [currentBackground, setCurrentBackground] = useState<Background>();
   const [currentValue, setCurrentValue] = useState<Option>();
@@ -97,12 +96,7 @@ export const BackgroundSelect: FC<BackgroundSelectProps> = ({
               <Thumbnail
                 style={{
                   backgroundImage:
-                    background &&
-                    `url("file://${assetFilename(
-                      projectRoot,
-                      "backgrounds",
-                      background
-                    )}?_v=${background?._v}")`,
+                    background && assetURLStyleProp("backgrounds", background),
                 }}
               />
             }
@@ -118,12 +112,7 @@ export const BackgroundSelect: FC<BackgroundSelectProps> = ({
               <Thumbnail
                 style={{
                   backgroundImage:
-                    background &&
-                    `url("file://${assetFilename(
-                      projectRoot,
-                      "backgrounds",
-                      background
-                    )}?_v=${background._v}")`,
+                    background && assetURLStyleProp("backgrounds", background),
                 }}
               />
             }

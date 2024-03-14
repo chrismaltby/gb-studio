@@ -364,8 +364,8 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
     for (let m = 0; m < 64; m++) {
       const row: PatternCell[] = [];
       for (let track = 0; track < 4; track++) {
-        const [note, instrument, effectcode, effectparam] =
-          patterns[orders[track][n]][m];
+        const cellData: number[] = patterns[orders[track][n]][m];
+        const [note, instrument, effectcode, effectparam] = cellData;
         const cell = new PatternCell();
         if (note !== 90) cell.note = note;
         if (instrument !== 0) {

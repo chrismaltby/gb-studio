@@ -28,7 +28,7 @@ const migrateWarning = async (projectPath: string) => {
   }
 
   if (fromFuture(currentVersion)) {
-    const dialogOptions = {
+    const { response: updateButtonIndex } = await dialog.showMessageBox({
       type: "info",
       buttons: [
         l10n("DIALOG_DOWNLOAD"),
@@ -43,10 +43,7 @@ const migrateWarning = async (projectPath: string) => {
         currentVersion,
         version: LATEST_PROJECT_VERSION,
       }),
-    };
-    const { response: updateButtonIndex } = await dialog.showMessageBox(
-      dialogOptions
-    );
+    });
     if (updateButtonIndex === 0) {
       await shell.openExternal("https://www.gbstudio.dev/download/");
       return false;
@@ -61,27 +58,25 @@ const migrateWarning = async (projectPath: string) => {
     return true;
   }
 
-  const dialogOptions = {
-    type: "info",
-    buttons: [
-      l10n("DIALOG_MIGRATE", {
+  const { response: buttonIndex, checkboxChecked } =
+    await dialog.showMessageBox({
+      type: "info",
+      buttons: [
+        l10n("DIALOG_MIGRATE", {
+          version: LATEST_PROJECT_VERSION,
+        }),
+        l10n("DIALOG_MIGRATION_GUIDE"),
+        l10n("DIALOG_CANCEL"),
+      ],
+      defaultId: 0,
+      cancelId: 2,
+      title: l10n("DIALOG_PROJECT_NEED_MIGRATION"),
+      message: l10n("DIALOG_PROJECT_NEED_MIGRATION"),
+      detail: l10n("DIALOG_MIGRATION_DESCRIPTION", {
+        currentVersion,
         version: LATEST_PROJECT_VERSION,
       }),
-      l10n("DIALOG_MIGRATION_GUIDE"),
-      l10n("DIALOG_CANCEL"),
-    ],
-    defaultId: 0,
-    cancelId: 2,
-    title: l10n("DIALOG_PROJECT_NEED_MIGRATION"),
-    message: l10n("DIALOG_PROJECT_NEED_MIGRATION"),
-    detail: l10n("DIALOG_MIGRATION_DESCRIPTION", {
-      currentVersion,
-      version: LATEST_PROJECT_VERSION,
-    }),
-  };
-
-  const { response: buttonIndex, checkboxChecked } =
-    await dialog.showMessageBox(dialogOptions);
+    });
 
   if (checkboxChecked) {
     // Ignore all updates until manually check for updates

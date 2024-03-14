@@ -70,14 +70,13 @@ export const checkForUpdate = async (force?: boolean) => {
       // (no internet connection / github down)
       // Show an error message
       if (force) {
-        const dialogOptions = {
+        await dialog.showMessageBox({
           type: "info",
           buttons: [l10n("DIALOG_OK")],
           defaultId: 0,
           title: l10n("DIALOG_UNABLE_TO_CHECK_LATEST_VERSION"),
           message: l10n("DIALOG_UNABLE_TO_CHECK_LATEST_VERSION"),
-        };
-        await dialog.showMessageBox(dialogOptions);
+        });
         return;
       }
     }
@@ -88,26 +87,24 @@ export const checkForUpdate = async (force?: boolean) => {
         return;
       }
 
-      const dialogOptions = {
-        type: "info",
-        buttons: [
-          l10n("DIALOG_DOWNLOAD"),
-          l10n("DIALOG_REMIND_LATER"),
-          l10n("DIALOG_SKIP_VERSION"),
-        ],
-        defaultId: 0,
-        cancelId: 1,
-        title: l10n("DIALOG_UPDATE_AVAILABLE"),
-        message: l10n("DIALOG_UPDATE_AVAILABLE"),
-        detail: l10n("DIALOG_UPDATE_DESCRIPTION", {
-          version: latestVersion,
-        }),
-        checkboxLabel: l10n("DIALOG_UPDATE_DONT_ASK_AGAIN"),
-        checkboxChecked: false,
-      };
-
       const { response: buttonIndex, checkboxChecked } =
-        await dialog.showMessageBox(dialogOptions);
+        await dialog.showMessageBox({
+          type: "info",
+          buttons: [
+            l10n("DIALOG_DOWNLOAD"),
+            l10n("DIALOG_REMIND_LATER"),
+            l10n("DIALOG_SKIP_VERSION"),
+          ],
+          defaultId: 0,
+          cancelId: 1,
+          title: l10n("DIALOG_UPDATE_AVAILABLE"),
+          message: l10n("DIALOG_UPDATE_AVAILABLE"),
+          detail: l10n("DIALOG_UPDATE_DESCRIPTION", {
+            version: latestVersion,
+          }),
+          checkboxLabel: l10n("DIALOG_UPDATE_DONT_ASK_AGAIN"),
+          checkboxChecked: false,
+        });
 
       if (checkboxChecked) {
         // Ignore all updates until manually check for updates
@@ -122,7 +119,7 @@ export const checkForUpdate = async (force?: boolean) => {
     } else if (force) {
       // If specifically asked to check for updates need to show message
       // that you're all up to date
-      const dialogOptions = {
+      await dialog.showMessageBox({
         type: "info",
         buttons: [l10n("DIALOG_OK")],
         defaultId: 0,
@@ -131,9 +128,7 @@ export const checkForUpdate = async (force?: boolean) => {
         detail: l10n("DIALOG_NEWEST_VERSION_AVAILABLE", {
           version: latestVersion,
         }),
-      };
-
-      await dialog.showMessageBox(dialogOptions);
+      });
     }
   }
 };

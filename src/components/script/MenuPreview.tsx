@@ -4,7 +4,7 @@ import React, { FC, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useAppSelector } from "store/hooks";
 import { fontSelectors } from "store/features/entities/entitiesState";
 import { loadFont, drawFrame, drawText, FontData } from "./TextPreviewHelper";
-import { assetFilename } from "shared/lib/helpers/assets";
+import { assetURL } from "shared/lib/helpers/assets";
 
 interface MenuPreviewProps {
   items: string[];
@@ -35,11 +35,7 @@ export const MenuPreview: FC<MenuPreviewProps> = ({ items, layout }) => {
     _v: uiVersion,
   };
 
-  const frameFilename = `file:///${assetFilename(
-    projectRoot,
-    "ui",
-    frameAsset
-  )}?_v=${uiVersion}`;
+  const frameAssetURL = assetURL("ui", frameAsset);
 
   const cursorAsset = {
     id: "cursor",
@@ -48,11 +44,7 @@ export const MenuPreview: FC<MenuPreviewProps> = ({ items, layout }) => {
     _v: uiVersion,
   };
 
-  const cursorFilename = `file:///${assetFilename(
-    projectRoot,
-    "ui",
-    cursorAsset
-  )}?_v=${uiVersion}`;
+  const cursorAssetURL = assetURL("ui", cursorAsset);
 
   useEffect(() => {
     async function fetchData() {
@@ -66,9 +58,7 @@ export const MenuPreview: FC<MenuPreviewProps> = ({ items, layout }) => {
         )
       );
       const usedFonts = usedFontIds.map((id) => fontsLookup[id] || fonts[0]);
-      const usedFontData = await Promise.all(
-        usedFonts.map((font) => loadFont(projectRoot, font))
-      );
+      const usedFontData = await Promise.all(usedFonts.map(loadFont));
       setFontsData(keyBy(usedFontData, "id"));
     }
     fetchData();
@@ -77,20 +67,20 @@ export const MenuPreview: FC<MenuPreviewProps> = ({ items, layout }) => {
   // Load frame image
   useEffect(() => {
     const img = new Image();
-    img.src = frameFilename;
+    img.src = frameAssetURL;
     img.onload = () => {
       setFrameImage(img);
     };
-  }, [frameFilename]);
+  }, [frameAssetURL]);
 
   // Load cursor image
   useEffect(() => {
     const img = new Image();
-    img.src = cursorFilename;
+    img.src = cursorAssetURL;
     img.onload = () => {
       setCursorImage(img);
     };
-  }, [cursorFilename]);
+  }, [cursorAssetURL]);
 
   useLayoutEffect(() => {
     if (ref.current && frameImage && cursorImage) {

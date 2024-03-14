@@ -20,9 +20,9 @@ import { SplitPaneVerticalDivider } from "ui/splitpane/SplitPaneDivider";
 import { NoSongsMessage } from "./NoSongsMessage";
 import { addNewSongFile } from "store/features/trackerDocument/trackerDocumentState";
 import trackerActions from "store/features/tracker/trackerActions";
-import { assetFilename } from "shared/lib/helpers/assets";
 import API from "renderer/lib/api";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { assetFilename } from "shared/lib/helpers/assets";
 
 const COLLAPSED_SIZE = 30;
 
@@ -329,9 +329,9 @@ export const NavigatorSongs = ({
     (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
       e.stopPropagation();
 
-      const path = `${assetFilename(projectRoot, "music", {
+      const path = assetFilename(projectRoot, "music", {
         filename: "song_template.uge",
-      })}`;
+      });
       dispatch(addNewSongFile(path));
     },
     [dispatch, projectRoot]

@@ -24,11 +24,11 @@ import ScenePriorityMap from "./ScenePriorityMap";
 import SceneSlopePreview from "./SceneSlopePreview";
 import { SceneEventHelper } from "./SceneEventHelper";
 import { sceneName } from "shared/lib/entities/entitiesHelpers";
-import { assetFilename } from "shared/lib/helpers/assets";
 import { getDOMElementCoords } from "renderer/lib/helpers/dom";
 import styled, { css } from "styled-components";
 import { LabelSpan } from "ui/buttons/LabelButton";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { assetURL } from "shared/lib/helpers/assets";
 
 const TILE_SIZE = 8;
 
@@ -161,7 +161,6 @@ const SceneOverlay = styled.div<SceneOverlayProps>`
 const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
   const dispatch = useAppDispatch();
   const scene = useAppSelector((state) => sceneSelectors.selectById(state, id));
-  const projectRoot = useAppSelector((state) => state.document.root);
 
   const background = useAppSelector((state) =>
     backgroundSelectors.selectById(state, scene?.backgroundId ?? "")
@@ -513,11 +512,7 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
           <ColorizedImage
             width={scene.width * TILE_SIZE}
             height={scene.height * TILE_SIZE}
-            src={`file://${assetFilename(
-              projectRoot,
-              "backgrounds",
-              background
-            )}?_v=${background._v}`}
+            src={assetURL("backgrounds", background)}
             tiles={tileColors}
             palettes={palettes}
           />

@@ -6,7 +6,7 @@ const confirmDeleteCustomEvent = (
   sceneNames: string[],
   count: number
 ) => {
-  const dialogOptions = {
+  return dialog.showMessageBoxSync({
     type: "info",
     buttons: [l10n("DIALOG_DELETE"), l10n("DIALOG_CANCEL")],
     defaultId: 0,
@@ -19,9 +19,7 @@ const confirmDeleteCustomEvent = (
         : "DIALOG_DELETE_CUSTOM_EVENT_USED",
       { count, sceneNames: sceneNames.join(", ") }
     ),
-  };
-
-  return dialog.showMessageBoxSync(dialogOptions);
+  });
 };
 
 export default confirmDeleteCustomEvent;

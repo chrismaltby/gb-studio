@@ -24,7 +24,7 @@ export const encodings: EncodingDef[] = glob.sync(encodingsPath).map((path) => {
   } catch (e) {
     return {
       id: Path.basename(path, ".json"),
-      name: e.toString(),
+      name: String(e),
       mapping: {},
     };
   }

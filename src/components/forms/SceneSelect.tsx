@@ -14,7 +14,7 @@ import { SceneNormalized } from "shared/lib/entities/entitiesTypes";
 import styled from "styled-components";
 import editorActions from "store/features/editor/editorActions";
 import { sceneName } from "shared/lib/entities/entitiesHelpers";
-import { assetFilename } from "shared/lib/helpers/assets";
+import { assetURLStyleProp } from "shared/lib/helpers/assets";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface SceneSelectProps extends SelectCommonProps {
@@ -72,7 +72,6 @@ export const SceneSelect: FC<SceneSelectProps> = ({
   const background = useAppSelector((state) =>
     backgroundSelectors.selectById(state, scene?.backgroundId || "")
   );
-  const projectRoot = useAppSelector((state) => state.document.root);
   const [options, setOptions] = useState<SceneOption[]>([]);
   const [currentScene, setCurrentScene] = useState<SceneNormalized>();
   const [currentValue, setCurrentValue] = useState<Option>();
@@ -138,11 +137,7 @@ export const SceneSelect: FC<SceneSelectProps> = ({
                   style={{
                     backgroundImage:
                       background &&
-                      `url("file://${assetFilename(
-                        projectRoot,
-                        "backgrounds",
-                        background
-                      )}?_v=${background?._v}")`,
+                      assetURLStyleProp("backgrounds", background),
                   }}
                 />
               }
@@ -159,11 +154,7 @@ export const SceneSelect: FC<SceneSelectProps> = ({
                   style={{
                     backgroundImage:
                       background &&
-                      `url("file://${assetFilename(
-                        projectRoot,
-                        "backgrounds",
-                        background
-                      )}?_v=${background._v}")`,
+                      assetURLStyleProp("backgrounds", background),
                   }}
                 />
               }

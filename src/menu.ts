@@ -612,4 +612,15 @@ const appMenu = {
   },
 };
 
+export const setMenuItemChecked = (id: string, checkedValue: boolean) => {
+  if (!menu) {
+    return;
+  }
+  const menuItem = menu.getMenuItemById(id);
+  if (!menuItem) {
+    return;
+  }
+  menuItem.checked = checkedValue;
+};
+
 export default appMenu;
