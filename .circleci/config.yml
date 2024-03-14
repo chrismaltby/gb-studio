@@ -47,6 +47,21 @@ jobs:
           at: ~/
       - checkout
       - run: sudo yarn make:mac
+      - run: sudo mv ~/repo/out/make/zip/darwin/arm64/*.zip ~/repo/out/make/gb-studio-${CIRCLE_BRANCH}-darwin_arm64.zip
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - repo/out/make
+
+  "make:mac-intel":
+    docker:
+      - image: circleci/node:lts-buster
+    working_directory: ~/repo
+    steps:
+      - attach_workspace:
+          at: ~/
+      - checkout
+      - run: sudo yarn make:mac-intel
       - run: sudo mv ~/repo/out/make/zip/darwin/x64/*.zip ~/repo/out/make/gb-studio-${CIRCLE_BRANCH}-darwin_x86_64.zip
       - persist_to_workspace:
           root: ~/
@@ -158,6 +173,15 @@ workflows:
                 - brushtoolbar-ts
                 - uge_v6_fixes
                 - hotfix-321
+      - "make:mac-intel":
+          requires:
+            - checkout
+          filters:
+            branches:
+              only:
+                - develop
+                - master
+                - main
       - "make:win32":
           requires:
             - checkout
@@ -206,6 +230,7 @@ workflows:
       - "upload_artifacts":
           requires:
             - "make:mac"
+            - "make:mac-intel"
             - "make:win32"
             - "make:win64"
             - "make:linux"
