@@ -9,7 +9,7 @@ const buildOutput = require("path").resolve(
   "..",
   "..",
   "out",
-  "GB Studio-darwin-x64",
+  "GB Studio-darwin-arm64",
   "GB Studio.app"
 );
 
@@ -34,8 +34,10 @@ module.exports = () => {
     appPath: buildOutput,
     appleId: process.env.APPLE_ID,
     appleIdPassword: process.env.APPLE_ID_PASSWORD,
+    teamId: process.env.APPLE_TEAM_ID
   }).catch((e) => {
     console.error(e);
+    process.exit();
     throw e;
   });
 };

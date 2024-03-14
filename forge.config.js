@@ -41,11 +41,13 @@ module.exports = {
     asar: true,
     appBundleId: "dev.gbstudio.gbstudio",
     osxSign: {
-      "hardened-runtime": true,
-      "gatekeeper-assess": false,
-      entitlements: "./entitlements.plist",
-      "entitlements-inherit": "./entitlements.plist",
-    },
+      optionsForFile: (filePath) => {
+        return {
+          "hardened-runtime": true,
+          entitlements: './entitlements.plist'
+        };
+      }
+    },  
   },
   hooks: {
     postPackage: require("./src/lib/forge/hooks/notarize"),

@@ -1,0 +1,55 @@
+
+# Platform specific flags for compiling (only populate if they're both present)
+ifneq ($(strip $(PORT)),)
+ifneq ($(strip $(PLAT)),)
+CFLAGS += -m$(PORT):$(PLAT)
+endif
+endif
+
+# Called by the individual targets below to build a ROM
+build-target: $(BINS)
+
+clean-target:
+	rm -rf $(OBJDIR)
+	rm -rf $(BINDIR)
+
+gb-clean:
+	${MAKE} clean-target EXT=gb
+gb:
+	${MAKE} build-target PORT=sm83 PLAT=gb EXT=gb TYP=DMG
+
+
+gbc-clean:
+	${MAKE} clean-target EXT=gbc
+gbc:
+	${MAKE} build-target PORT=sm83 PLAT=gb EXT=gbc TYP=CGB
+
+
+pocket-clean:
+	${MAKE} clean-target EXT=pocket
+pocket:
+	${MAKE} build-target PORT=sm83 PLAT=ap EXT=pocket TYP=DMG
+
+
+megaduck-clean:
+	${MAKE} clean-target EXT=duck
+megaduck:
+	${MAKE} build-target PORT=sm83 PLAT=duck EXT=duck TYP=DMG
+
+
+sms-clean:
+	${MAKE} clean-target EXT=sms
+sms:
+	${MAKE} build-target PORT=z80 PLAT=sms EXT=sms TYP=SEGA
+
+
+gg-clean:
+	${MAKE} clean-target EXT=gg
+gg:
+	${MAKE} build-target PORT=z80 PLAT=gg EXT=gg TYP=SEGA
+
+
+nes-clean:
+	${MAKE} clean-target EXT=nes
+nes:
+	${MAKE} build-target PORT=mos6502 PLAT=nes EXT=nes TYP=NES
