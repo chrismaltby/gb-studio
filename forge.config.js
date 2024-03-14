@@ -41,12 +41,8 @@ module.exports = {
     asar: true,
     appBundleId: "dev.gbstudio.gbstudio",
     osxSign: {
-      optionsForFile: (filePath) => {
-        return {
-          "hardened-runtime": true,
-          entitlements: './entitlements.plist'
-        };
-      }
+      "hardened-runtime": true,
+      entitlements: './entitlements.plist'
     },  
   },
   hooks: {
