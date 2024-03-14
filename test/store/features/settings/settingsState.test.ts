@@ -57,6 +57,7 @@ test("Should fetch settings from loaded project", () => {
       path: "project.gbsproj",
       scriptEventDefs: {},
       engineFields: [],
+      sceneTypes: [],
       modifiedSpriteIds: [],
     },
     "randomid",
