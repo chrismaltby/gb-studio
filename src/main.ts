@@ -7,7 +7,6 @@ import {
   nativeTheme,
   clipboard,
   protocol,
-  net,
 } from "electron";
 import windowStateKeeper from "electron-window-state";
 import settings from "electron-settings";
