@@ -24,13 +24,20 @@ Download a release for your operating system from the [GB Studio Downloads](http
 
 Or to run from source, clone this repo then:
 
-- Install latest stable [NodeJS](https://nodejs.org/)
+- Install [NodeJS](https://nodejs.org/)
 - Install [Yarn](https://yarnpkg.com/)
 
 ```bash
 > cd gb-studio
 > yarn
 > npm start
+```
+
+GB Studio currently uses Node 20.11.1 LTS. If you have [NVM](https://github.com/nvm-sh/nvm) installed you can use the included `.nvmrc` to switch to the supported Node version. 
+
+```bash
+> cd gb-studio
+> nvm use
 ```
 
 ## GB Studio CLI 
