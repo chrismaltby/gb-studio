@@ -600,7 +600,7 @@ app.on("ready", async () => {
     createSplash();
   }
 
-  protocol.handle("gbs", (req) => {
+  protocol.registerFileProtocol("gbs", (req, callback) => {
     const { host, pathname } = new URL(req.url);
     if (host === "project") {
       // Load an asset from the current project
@@ -608,12 +608,8 @@ app.on("ready", async () => {
       const filename = Path.join(projectRoot, pathname);
       // Check project has permission to access this asset
       guardAssetWithinProject(filename, projectRoot);
-      return net.fetch("file://" + filename);
+      return callback({ path: filename });
     }
-    return new Response("Error", {
-      headers: { "content-type": "text/html" },
-      status: 500,
-    });
   });
 });
 

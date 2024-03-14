@@ -143,7 +143,7 @@
     "@typescript-eslint/parser": "5.62.0",
     "babel-eslint": "^10.1.0",
     "css-loader": "^6.0.0",
-    "electron": "29.1.2",
+    "electron": "22.3.27",
     "eslint": "^8.56.0",
     "eslint-config-airbnb": "^18.1.0",
     "eslint-config-prettier": "^6.11.0",
