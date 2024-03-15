@@ -45,7 +45,6 @@ const UIAssetError = styled.div`
 
 export const UIAssetPreview = ({ path, onClick }: UIAssetPreviewProps) => {
   const [error, setError] = useState(false);
-  const projectRoot = useAppSelector((state) => state.document.root);
   const uiVersion = useAppSelector((state) => state.editor.uiVersion);
 
   if (error) {
@@ -56,7 +55,7 @@ export const UIAssetPreview = ({ path, onClick }: UIAssetPreviewProps) => {
     <UIAssetPreviewButton onError={() => setError(true)} onClick={onClick}>
       <img
         onError={() => console.log("IMG ERROR")}
-        src={`file://${projectRoot}/assets/${path}?_v=${uiVersion}`}
+        src={`gbs://project/assets/${path}?_v=${uiVersion}`}
         alt=""
       />
     </UIAssetPreviewButton>

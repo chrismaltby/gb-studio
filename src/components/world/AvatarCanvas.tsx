@@ -21,7 +21,6 @@ export const AvatarCanvas = ({ avatarId }: AvatarCanvasProps) => {
   const avatar = useAppSelector((state) =>
     avatarSelectors.selectById(state, avatarId)
   );
-  const projectRoot = useAppSelector((state) => state.document.root);
 
   const onWorkerComplete = useCallback(
     (e: MessageEvent<SpriteSliceCanvasResult>) => {
@@ -72,7 +71,7 @@ export const AvatarCanvas = ({ avatarId }: AvatarCanvasProps) => {
       objPalette: "OBP0",
       palette: DMG_PALETTE.colors,
     });
-  }, [canvasRef, avatar, projectRoot, workerId]);
+  }, [canvasRef, avatar, workerId]);
 
   return (
     <canvas

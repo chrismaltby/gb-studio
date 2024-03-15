@@ -21,7 +21,6 @@ export const EmoteCanvas = ({ emoteId }: EmoteCanvasProps) => {
   const emote = useAppSelector((state) =>
     emoteSelectors.selectById(state, emoteId)
   );
-  const projectRoot = useAppSelector((state) => state.document.root);
 
   const onWorkerComplete = useCallback(
     (e: MessageEvent<SpriteSliceCanvasResult>) => {
@@ -72,7 +71,7 @@ export const EmoteCanvas = ({ emoteId }: EmoteCanvasProps) => {
       objPalette: "OBP0",
       palette: DMG_PALETTE.colors,
     });
-  }, [canvasRef, emote, projectRoot, workerId]);
+  }, [canvasRef, emote, workerId]);
 
   return (
     <canvas

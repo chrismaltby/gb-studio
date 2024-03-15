@@ -38,7 +38,6 @@ export const SpriteSliceCanvas = ({
   const spriteSheet = useAppSelector((state) =>
     spriteSheetSelectors.selectById(state, spriteSheetId)
   );
-  const projectRoot = useAppSelector((state) => state.document.root);
 
   const onWorkerComplete = useCallback(
     (e: MessageEvent<SpriteSliceCanvasResult>) => {
@@ -100,7 +99,6 @@ export const SpriteSliceCanvas = ({
     flipY,
     objPalette,
     palette,
-    projectRoot,
     workerId,
   ]);
 

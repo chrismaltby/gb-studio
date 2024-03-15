@@ -42,7 +42,6 @@ export const MetaspriteCanvas = memo(
     const tilesLookup = useAppSelector((state) =>
       metaspriteTileSelectors.selectEntities(state)
     );
-    const projectRoot = useAppSelector((state) => state.document.root);
     const width = spriteSheet?.canvasWidth || 0;
     const height = spriteSheet?.canvasHeight || 0;
 
@@ -118,7 +117,6 @@ export const MetaspriteCanvas = memo(
       width,
       height,
       flipX,
-      projectRoot,
       workerId,
     ]);
 

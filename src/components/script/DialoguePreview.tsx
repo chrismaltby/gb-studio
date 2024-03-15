@@ -19,7 +19,6 @@ export const DialoguePreview: FC<DialoguePreviewProps> = ({
   text,
   avatarId,
 }) => {
-  const projectRoot = useAppSelector((state) => state.document.root);
   const uiVersion = useAppSelector((state) => state.editor.uiVersion);
   const avatarAsset = useAppSelector((state) =>
     avatarId ? avatarSelectors.selectById(state, avatarId) : undefined
@@ -66,7 +65,7 @@ export const DialoguePreview: FC<DialoguePreviewProps> = ({
       setFontsData(keyBy(usedFontData, "id"));
     }
     fetchData();
-  }, [text, defaultFontId, fonts, fontsLookup, projectRoot]);
+  }, [text, defaultFontId, fonts, fontsLookup]);
 
   // Load frame image
   useEffect(() => {

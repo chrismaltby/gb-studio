@@ -12,7 +12,6 @@ interface MenuPreviewProps {
 }
 
 export const MenuPreview: FC<MenuPreviewProps> = ({ items, layout }) => {
-  const projectRoot = useAppSelector((state) => state.document.root);
   const uiVersion = useAppSelector((state) => state.editor.uiVersion);
   const fonts = useAppSelector((state) => fontSelectors.selectAll(state));
   const fontsLookup = useAppSelector((state) =>
@@ -62,7 +61,7 @@ export const MenuPreview: FC<MenuPreviewProps> = ({ items, layout }) => {
       setFontsData(keyBy(usedFontData, "id"));
     }
     fetchData();
-  }, [defaultFontId, fonts, fontsLookup, items, projectRoot]);
+  }, [defaultFontId, fonts, fontsLookup, items]);
 
   // Load frame image
   useEffect(() => {
