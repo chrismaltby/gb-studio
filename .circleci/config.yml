@@ -3,7 +3,7 @@ version: 2
 jobs:
   checkout:
     docker:
-      - image: circleci/node:lts-buster
+      - image: cimg/node:21.6.2
     working_directory: ~/repo
     steps:
       - restore_cache:
@@ -31,7 +31,7 @@ jobs:
             - repo
   test:
     docker:
-      - image: circleci/node:lts-buster
+      - image: cimg/node:21.6.2
     working_directory: ~/repo
     steps:
       - attach_workspace:
@@ -40,7 +40,7 @@ jobs:
 
   "make:mac":
     docker:
-      - image: circleci/node:lts-buster
+      - image: cimg/node:21.6.2
     working_directory: ~/repo
     steps:
       - attach_workspace:
@@ -55,7 +55,7 @@ jobs:
 
   "make:mac-intel":
     docker:
-      - image: circleci/node:lts-buster
+      - image: cimg/node:21.6.2
     working_directory: ~/repo
     steps:
       - attach_workspace:
@@ -70,7 +70,7 @@ jobs:
 
   "make:win32":
     docker:
-      - image: circleci/node:lts-buster
+      - image: cimg/node:21.6.2
     working_directory: ~/repo
     steps:
       - run: sudo dpkg --add-architecture i386
@@ -95,7 +95,7 @@ jobs:
 
   "make:win64":
     docker:
-      - image: circleci/node:lts-buster
+      - image: cimg/node:21.6.2
     working_directory: ~/repo
     steps:
       - run: sudo dpkg --add-architecture i386
@@ -120,7 +120,7 @@ jobs:
 
   "make:linux":
     docker:
-      - image: circleci/node:lts-buster
+      - image: cimg/node:21.6.2
     working_directory: ~/repo
     steps:
       - run: sudo apt-get -y update
@@ -141,7 +141,7 @@ jobs:
 
   upload_artifacts:
     docker:
-      - image: circleci/node:lts-buster
+      - image: cimg/node:21.6.2
     working_working_directory: /
     steps:
       - attach_workspace:
@@ -173,6 +173,7 @@ workflows:
                 - brushtoolbar-ts
                 - uge_v6_fixes
                 - hotfix-321
+                - appimage-fix
       - "make:mac-intel":
           requires:
             - checkout
@@ -196,7 +197,8 @@ workflows:
                 - uge_v6
                 - brushtoolbar-ts
                 - uge_v6_fixes
-                - hotfix-321                
+                - hotfix-321
+                - appimage-fix                
       - "make:win64":
           requires:
             - checkout
@@ -211,7 +213,8 @@ workflows:
                 - uge_v6
                 - brushtoolbar-ts
                 - uge_v6_fixes
-                - hotfix-321                
+                - hotfix-321
+                - appimage-fix                
       - "make:linux":
           requires:
             - checkout
@@ -226,7 +229,8 @@ workflows:
                 - uge_v6
                 - brushtoolbar-ts
                 - uge_v6_fixes
-                - hotfix-321                
+                - hotfix-321
+                - appimage-fix                
       - "upload_artifacts":
           requires:
             - "make:mac"
@@ -245,4 +249,5 @@ workflows:
                 - uge_v6
                 - brushtoolbar-ts
                 - uge_v6_fixes
-                - hotfix-321                
+                - hotfix-321
+                - appimage-fix                

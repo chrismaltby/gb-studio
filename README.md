@@ -33,7 +33,7 @@ Or to run from source, clone this repo then:
 > npm start
 ```
 
-GB Studio currently uses Node 20.11.1 LTS. If you have [NVM](https://github.com/nvm-sh/nvm) installed you can use the included `.nvmrc` to switch to the supported Node version. 
+GB Studio currently uses Node 21.7.1. If you have [NVM](https://github.com/nvm-sh/nvm) installed you can use the included `.nvmrc` to switch to the supported Node version. 
 
 ```bash
 > cd gb-studio
