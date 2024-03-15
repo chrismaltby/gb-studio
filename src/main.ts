@@ -1326,7 +1326,9 @@ ipcMain.handle(
     if (!field || !field.postUpdateFn) {
       return args;
     }
-    return field.postUpdateFn(args, prevArgs);
+    return {
+      ...field.postUpdateFn(args, prevArgs),
+    };
   }
 );
 
