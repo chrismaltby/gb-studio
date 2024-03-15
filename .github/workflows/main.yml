@@ -1,0 +1,146 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+      - feat/*
+      - beta-*
+
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "21.6.2"
+          cache: "yarn"
+
+      - name: Install Dependencies
+        run: |
+          yarn --ignore-engines
+
+      - name: Test
+        run: |
+          yarn test
+
+  deploy:
+    needs: test
+    runs-on: ${{ matrix.os }}
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/beta-')
+
+    strategy:
+      matrix:
+        include:
+          - name: mac
+            label: macOS ARM
+            os: macos-14
+          - name: mac-intel
+            label: macOS Intel
+            os: macos-14
+          - name: win32
+            label: Windows 32-bit
+            os: ubuntu-latest
+          - name: win64
+            label: Windows 64-bit
+            os: ubuntu-latest
+          - name: linux
+            label: Linux
+            os: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "21.6.2"
+          cache: "yarn"
+
+      - name: Setup codesign certificate
+        if: (matrix.name == 'mac') || (matrix.name == 'mac-intel')
+        env:
+          MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
+          MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
+        run: |
+          echo $MACOS_CERTIFICATE | base64 -i - --decode > certificate.p12
+          security create-keychain -p "$KEYCHAIN_PWD" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "$KEYCHAIN_PWD" build.keychain
+          security import certificate.p12 -k build.keychain -P "$MACOS_CERTIFICATE_PWD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PWD" build.keychain
+
+      - name: Install Dependencies
+        run: |
+          yarn --ignore-engines
+
+      # ==== Builds ====
+
+      - name: Build Mac ARM
+        if: matrix.name == 'mac'
+        env:
+          APPLE_ID: ${{ secrets.MAC_NOTARIZE_ID }}
+          APPLE_ID_PASSWORD: ${{ secrets.MAC_NOTARIZE_PWD }}
+          APPLE_TEAM_ID: ${{ secrets.MAC_NOTARIZE_TEAM }}
+        run: |
+          export APPLE_ID=${APPLE_ID}
+          export APPLE_ID_PASSWORD=${APPLE_ID_PASSWORD}
+          export APPLE_TEAM_ID=${APPLE_TEAM_ID}        
+          yarn make:mac
+          mkdir -p ./out/keep
+          mv ./out/make/zip/darwin/arm64/*.zip ./out/keep/gb-studio-${GITHUB_REF##*/}-darwin_arm64.zip
+
+      - name: Build Mac Intel
+        if: matrix.name == 'mac-intel'
+        env:
+          APPLE_ID: ${{ secrets.MAC_NOTARIZE_ID }}
+          APPLE_ID_PASSWORD: ${{ secrets.MAC_NOTARIZE_PWD }}
+          APPLE_TEAM_ID: ${{ secrets.MAC_NOTARIZE_TEAM }}
+        run: |
+          export APPLE_ID=${APPLE_ID}
+          export APPLE_ID_PASSWORD=${APPLE_ID_PASSWORD}
+          export APPLE_TEAM_ID=${APPLE_TEAM_ID}        
+          yarn make:mac-intel
+          mkdir -p ./out/keep
+          mv ./out/make/zip/darwin/x64/*.zip ./out/keep/gb-studio-${GITHUB_REF##*/}-darwin_x64.zip
+
+      - name: Build Linux
+        if: matrix.name == 'linux'
+        run: |
+          yarn make:linux
+          mkdir -p ./out/keep
+          mv ./out/make/deb/x64/*.deb ./out/keep/gb-studio-${GITHUB_REF##*/}-linux_x86_64.deb
+          mv ./out/make/rpm/x64/*.rpm ./out/keep/gb-studio-${GITHUB_REF##*/}-linux_x86_64.rpm
+          mv ./out/make/AppImage/x64/*.AppImage ./out/keep/gb-studio-${GITHUB_REF##*/}-linux_x86_64.AppImage
+
+      - name: Build Win32
+        if: matrix.name == 'win32'
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt-get -y update
+          sudo apt-get -y install wine wine64 mono-devel
+          yarn make:win32
+          mkdir -p ./out/keep
+          mv ./out/make/zip/win32/ia32/*.zip ./out/keep/gb-studio-${CIRCLE_BRANCH}-windows_x86.zip
+          mv ./out/make/squirrel.windows/ia32 ./out/keep/gb-studio-${CIRCLE_BRANCH}-windows_x86-squirrel
+
+      - name: Build Win64
+        if: matrix.name == 'win64'
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt-get -y update
+          sudo apt-get -y install wine wine64 mono-devel
+          yarn make:win
+          mkdir -p ./out/keep
+          mv ./out/make/zip/win32/x64/*.zip ./out/keep/gb-studio-${CIRCLE_BRANCH}-windows_x86_64.zip
+          mv ./out/make/squirrel.windows/x64 ./out/keep/gb-studio-${CIRCLE_BRANCH}-windows_x86_64-squirrel
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.label }} build
+          path: |
+            ./out/keep/**
