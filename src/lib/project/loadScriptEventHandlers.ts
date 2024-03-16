@@ -52,6 +52,19 @@ export type ScriptEventHandlers = Dictionary<ScriptEventHandler>;
 const vm = new NodeVM({
   timeout: 1000,
   sandbox: {},
+  compiler: (code: string) => {
+    // Convert es6 style modules to commonjs
+    let moduleCode = code;
+    moduleCode = code.replace(/(^|\n)(\S\s)*export /g, "");
+    if (moduleCode.indexOf("module.exports") === -1) {
+      const moduleExports =
+        code
+          .match(/export [a-z]* [a-zA-Z_$][0-9a-zA-Z_$]*]*/g)
+          ?.map((c) => c.replace(/.* /, "")) ?? [];
+      moduleCode += `\nmodule.exports = { ${moduleExports.join(", ")} };`;
+    }
+    return moduleCode;
+  },
   require: {
     mock: {
       "./helpers": eventHelpers,
