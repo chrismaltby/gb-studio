@@ -1,4 +1,4 @@
-import player from "components/music/helpers/player";
+import player, { PlaybackPosition } from "components/music/helpers/player";
 import { playNotePreview } from "components/music/helpers/notePreview";
 import API from "renderer/lib/api";
 
@@ -24,11 +24,14 @@ player.initPlayer(onPlayerInit, sfx);
 
 player.setOnIntervalCallback((playbackUpdate) => {
   log(playbackUpdate);
+  position = playbackUpdate;
   API.music.sendToProjectWindow({
     action: "update",
     update: playbackUpdate,
   });
 });
+
+let position: PlaybackPosition = [0, 0];
 
 API.events.music.data.subscribe((_event, d) => {
   log(d);
@@ -45,8 +48,11 @@ API.events.music.data.subscribe((_event, d) => {
       });
       break;
     case "play":
+      if (d.position) {
+        position = d.position;
+      }
       player.reset();
-      player.play(d.song, d.position);
+      player.play(d.song, position);
       API.music.sendToProjectWindow({
         action: "log",
         message: "playing",
@@ -60,6 +66,9 @@ API.events.music.data.subscribe((_event, d) => {
       });
       break;
     case "stop":
+      if (d.position) {
+        position = d.position;
+      }
       player.stop(d.position);
       API.music.sendToProjectWindow({
         action: "log",
@@ -67,6 +76,9 @@ API.events.music.data.subscribe((_event, d) => {
       });
       break;
     case "position":
+      if (d.position) {
+        position = d.position;
+      }
       player.setStartPosition(d.position);
       API.music.sendToProjectWindow({
         action: "log",
