@@ -11,6 +11,7 @@ import makeBuild from "lib/compiler/makeBuild";
 import initElectronL10N from "lib/lang/initElectronL10N";
 import { loadEngineFields } from "lib/project/engineFields";
 import loadAllScriptEventHandlers from "lib/project/loadScriptEventHandlers";
+import { validateEjectedBuild } from "lib/compiler/validate/validateEjectedBuild";
 
 const rmdir = promisify(rimraf);
 
@@ -70,6 +71,12 @@ const main = async (
     outputRoot: tmpBuildDir,
     tmpPath,
     compiledData,
+    progress,
+    warnings,
+  });
+
+  await validateEjectedBuild({
+    buildRoot: tmpBuildDir,
     progress,
     warnings,
   });

@@ -7,6 +7,7 @@ import copy from "lib/helpers/fsCopy";
 import type { ProjectData } from "store/features/project/projectActions";
 import type { EngineFieldSchema } from "store/features/engine/engineState";
 import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
+import { validateEjectedBuild } from "lib/compiler/validate/validateEjectedBuild";
 
 type BuildOptions = {
   buildType: "rom" | "web" | "pocket";
@@ -50,6 +51,11 @@ const buildProject = async (
     engineFields,
     outputRoot,
     compiledData,
+    progress,
+    warnings,
+  });
+  await validateEjectedBuild({
+    buildRoot: outputRoot,
     progress,
     warnings,
   });
