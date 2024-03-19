@@ -10,7 +10,7 @@ import React, {
 import styled, { css } from "styled-components";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import useDropdownMenu from "ui/hooks/use-dropdown-menu";
-import { TriangleIcon } from "ui/icons/Icons";
+import { CaretDownIcon } from "ui/icons/Icons";
 import { Menu, MenuItem, MenuItemProps } from "ui/menu/Menu";
 import { Button, ButtonProps } from "./Button";
 
@@ -63,7 +63,6 @@ export const ArrowWrapper = styled.div`
     padding-left: 5px;
   }
   &&&& > svg {
-    transform: rotate(180deg);
     height: 8px;
   }
 `;
@@ -129,7 +128,7 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = ({
         {label}
         {showArrow && (
           <ArrowWrapper>
-            <TriangleIcon />
+            <CaretDownIcon />
           </ArrowWrapper>
         )}
       </Button>

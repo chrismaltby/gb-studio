@@ -190,7 +190,7 @@ const ScriptEventFormInput = ({
               ]
             : undefined;
         if (defaultUnionValue === "LAST_VARIABLE") {
-          replaceValue = defaultVariableForContext(context);
+          replaceValue = defaultVariableForContext(context.type);
         } else if (defaultUnionValue !== undefined) {
           replaceValue = defaultUnionValue;
         }
@@ -459,7 +459,7 @@ const ScriptEventFormInput = ({
   } else if (type === "variable") {
     let fallbackValue = defaultValue;
     if (fallbackValue === "LAST_VARIABLE") {
-      fallbackValue = defaultVariableForContext(context);
+      fallbackValue = defaultVariableForContext(context.type);
     }
     return (
       <OffscreenSkeletonInput>

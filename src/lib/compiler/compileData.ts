@@ -64,6 +64,7 @@ import {
   PrecompiledScene,
   PrecompiledPalette,
   PrecompiledSceneEventPtrs,
+  sceneName,
 } from "./compileData2";
 import compileSGBImage from "./sgb";
 import { compileScriptEngineInit } from "./compileBootstrap";
@@ -114,10 +115,27 @@ import type {
 import { ensureNumber, ensureString, ensureTypeGenerator } from "shared/types";
 import { walkSceneScripts, walkScenesScripts } from "shared/lib/scripts/walk";
 import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
+import { EntityType } from "shared/lib/scripts/context";
 
 type TilemapData = {
   symbol: string;
   data: number[] | Uint8Array;
+};
+
+export type SceneMapData = {
+  id: string;
+  name: string;
+  symbol: string;
+};
+
+export type VariableMapData = {
+  id: string;
+  name: string;
+  symbol: string;
+  isLocal: boolean;
+  entityType: EntityType;
+  entityId: string;
+  sceneId: string;
 };
 
 const indexById = <T extends { id: string }>(arr: T[]) => keyBy(arr, "id");
@@ -1269,6 +1287,7 @@ const compile = async (
     scriptEventHandlers,
     engineFields = [],
     tmpPath = "/tmp",
+    debugEnabled = false,
     progress = (_msg: string) => {},
     warnings = (_msg: string) => {},
   }: {
@@ -1276,12 +1295,18 @@ const compile = async (
     scriptEventHandlers: ScriptEventHandlers;
     engineFields: EngineFieldSchema[];
     tmpPath: string;
+    debugEnabled?: boolean;
     progress: (_msg: string) => void;
     warnings: (_msg: string) => void;
   }
-): Promise<{ files: Record<string, string> }> => {
+): Promise<{
+  files: Record<string, string>;
+  sceneMap: Record<string, SceneMapData>;
+  variableMap: Record<string, VariableMapData>;
+}> => {
   const output: Record<string, string> = {};
-  const symbols = {};
+  const symbols: Dictionary<string> = {};
+  const sceneMap: Record<string, SceneMapData> = {};
 
   if (projectData.scenes.length === 0) {
     throw new Error(
@@ -1325,11 +1350,19 @@ const compile = async (
       // Include variables referenced from GBVM
       if (variable.symbol) {
         const symbol = variable.symbol.toUpperCase();
-        memo[variable.id] = symbol;
+        memo[variable.id] = {
+          symbol,
+          id: variable.id,
+          name: variable.name,
+          isLocal: false,
+          entityType: "scene",
+          entityId: "",
+          sceneId: "",
+        };
       }
       return memo;
     },
-    {} as Record<string, string>
+    {} as Record<string, VariableMapData>
   );
 
   // Determine which scene types need to support persisting player sprite
@@ -1344,8 +1377,24 @@ const compile = async (
   persistSceneTypes.forEach((sceneType) => {
     const bankVar = `PLAYER_SPRITE_${sceneType}_BANK`;
     const dataVar = `PLAYER_SPRITE_${sceneType}_DATA`;
-    variableAliasLookup[bankVar] = bankVar;
-    variableAliasLookup[dataVar] = dataVar;
+    variableAliasLookup[bankVar] = {
+      symbol: bankVar,
+      id: "",
+      name: "Player Sprite Bank",
+      isLocal: false,
+      entityType: "scene",
+      entityId: "",
+      sceneId: "",
+    };
+    variableAliasLookup[dataVar] = {
+      symbol: dataVar,
+      id: "",
+      name: "Player Sprite Data",
+      isLocal: false,
+      entityType: "scene",
+      entityId: "",
+      sceneId: "",
+    };
     const sprite =
       precompiled.usedSprites.find(
         (sprite) =>
@@ -1358,6 +1407,10 @@ const compile = async (
   // Add event data
   const additionalScripts: Dictionary<{
     symbol: string;
+    sceneId: string;
+    entityId: string;
+    entityType: ScriptBuilderEntityType;
+    scriptKey: string;
     compiledScript: string;
   }> = {};
   const additionalOutput: Dictionary<{
@@ -1379,7 +1432,7 @@ const compile = async (
         entityIndex: number,
         loop: boolean,
         lock: boolean,
-        scriptType: string
+        scriptKey: string
       ) => {
         let scriptTypeCode = "interact";
         let scriptName = "script";
@@ -1393,7 +1446,7 @@ const compile = async (
             hit3Script: "hit3",
           };
           scriptTypeCode =
-            scriptLookup[scriptType as keyof typeof scriptLookup] ||
+            scriptLookup[scriptKey as keyof typeof scriptLookup] ||
             scriptTypeCode;
         } else if (entityType === "trigger") {
           scriptTypeCode = "interact";
@@ -1405,7 +1458,7 @@ const compile = async (
             playerHit3Script: "p_hit3",
           };
           scriptTypeCode =
-            scriptLookup[scriptType as keyof typeof scriptLookup] ||
+            scriptLookup[scriptKey as keyof typeof scriptLookup] ||
             scriptTypeCode;
         }
         scriptName = `${entity.symbol}_${scriptTypeCode}`;
@@ -1440,6 +1493,7 @@ const compile = async (
           variableAliasLookup,
           entityType,
           entityIndex,
+          entityScriptKey: scriptKey,
           entity,
           warnings,
           loop,
@@ -1453,10 +1507,12 @@ const compile = async (
           compiledAssetsCache,
           branch: false,
           isFunction: false,
+          debugEnabled,
         });
 
         output[`${scriptName}.s`] = compiledScript;
         output[`${scriptName}.h`] = compileScriptHeader(scriptName);
+
         return scriptName;
       };
 
@@ -1477,6 +1533,7 @@ const compile = async (
                     entity: actor,
                     entityType: "actor",
                     entityId: actor.id,
+                    scriptKey: "startScript",
                   },
                 } as ScriptEvent,
                 actorStartScript.filter((event) => event.command !== EVENT_END)
@@ -1491,6 +1548,7 @@ const compile = async (
                   entity: scene,
                   entityType: "scene",
                   entityId: scene.id,
+                  scriptKey: "script",
                 },
               }
             : [],
@@ -1517,11 +1575,11 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
             customEventsLookup,
             scriptEventHandlers
           );
-          const autoFadeIndex = autoFadeId ? initScript.findIndex(
-            (item) => item.id === autoFadeId
-          ) : -1;
+          const autoFadeIndex = autoFadeId
+            ? initScript.findIndex((item) => item.id === autoFadeId)
+            : -1;
           const fadeEvent = {
-            id: "",
+            id: "autofade",
             command: "EVENT_FADE_IN",
             args: {
               speed: scene.autoFadeSpeed,
@@ -1665,12 +1723,11 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
     }
   );
 
-  (
-    Object.values(additionalScripts) as {
-      symbol: string;
-      compiledScript: string;
-    }[]
-  ).forEach((additional) => {
+  Object.values(additionalScripts).forEach((additional) => {
+    if (!additional) {
+      return;
+    }
+
     output[`${additional.symbol}.s`] = additional.compiledScript;
     output[`${additional.symbol}.h`] = compileScriptHeader(additional.symbol);
   });
@@ -1765,6 +1822,12 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
       });
     const bgPalette = precompiled.scenePaletteIndexes[scene.id] || 0;
     const actorsPalette = precompiled.sceneActorPaletteIndexes[scene.id] || 0;
+
+    sceneMap[scene.symbol] = {
+      id: scene.id,
+      name: sceneName(scene, sceneIndex),
+      symbol: scene.symbol,
+    };
 
     output[`${scene.symbol}.c`] = compileScene(scene, sceneIndex, {
       bgPalette,
@@ -1867,6 +1930,9 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
     variableAliasLookup,
     precompiled.stateReferences
   );
+
+  const variableMap = keyBy(Object.values(variableAliasLookup), "symbol");
+
   output[`script_engine_init.s`] = compileScriptEngineInit({
     startX,
     startY,
@@ -1923,6 +1989,8 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
 
   return {
     files: output,
+    sceneMap,
+    variableMap,
   };
 };
 

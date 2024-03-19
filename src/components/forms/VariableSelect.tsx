@@ -150,7 +150,6 @@ export const VariableSelect: FC<VariableSelectProps> = ({
   const [options, setOptions] = useState<OptGroup[]>([]);
   const [currentVariable, setCurrentVariable] = useState<NamedVariable>();
   const [currentValue, setCurrentValue] = useState<Option>();
-  const editorType = useAppSelector((state) => state.editor.type);
   const variablesLookup = useAppSelector((state) =>
     variableSelectors.selectEntities(state)
   );
@@ -161,12 +160,12 @@ export const VariableSelect: FC<VariableSelectProps> = ({
 
   const valueIsLocal = value && value.startsWith("L");
   const valueIsTemp = value && value.startsWith("T");
-  const canRename = allowRename && !valueIsTemp && editorType !== "customEvent";
+  const canRename =
+    allowRename && !valueIsTemp && context.entityType !== "customEvent";
 
   useEffect(() => {
     const variables = namedVariablesByContext(
       context,
-      entityId,
       variablesLookup,
       customEvent
     );
@@ -250,7 +249,7 @@ export const VariableSelect: FC<VariableSelectProps> = ({
     if (e.altKey) {
       if (
         value &&
-        editorType !== "customEvent" &&
+        context.entityType !== "customEvent" &&
         Number.isInteger(Number(value))
       ) {
         dispatch(editorActions.selectVariable({ variableId: value }));

@@ -55,6 +55,7 @@ import {
 import { encodeString } from "shared/lib/helpers/fonts";
 import { mapScript } from "shared/lib/scripts/walk";
 import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
+import { VariableMapData } from "lib/compiler/compileData";
 
 export type ScriptOutput = string[];
 
@@ -78,7 +79,11 @@ interface ScriptBuilderProjectile {
   collisionMask: string[];
 }
 
-export type ScriptBuilderEntityType = "scene" | "actor" | "trigger";
+export type ScriptBuilderEntityType =
+  | "scene"
+  | "actor"
+  | "trigger"
+  | "customEvent";
 
 type ScriptBuilderStackVariable = string | number;
 
@@ -107,8 +112,9 @@ export interface ScriptBuilderOptions {
   sceneIndex: number;
   entityIndex: number;
   entityType: ScriptBuilderEntityType;
+  entityScriptKey: string;
   variablesLookup: VariablesLookup;
-  variableAliasLookup: Dictionary<string>;
+  variableAliasLookup: Dictionary<VariableMapData>;
   scenes: PrecompiledScene[];
   sprites: PrecompiledSprite[];
   backgrounds: PrecompiledBackground[];
@@ -140,6 +146,7 @@ export interface ScriptBuilderOptions {
     scriptRef: string;
     argsLen: number;
   }>;
+  debugEnabled: boolean;
   compiledAssetsCache: Dictionary<string>;
   compileEvents: (self: ScriptBuilder, events: ScriptEvent[]) => void;
 }
@@ -504,6 +511,7 @@ class ScriptBuilder {
       sceneIndex: options.sceneIndex || 0,
       entityIndex: options.entityIndex || 0,
       entityType: options.entityType || "scene",
+      entityScriptKey: options.entityScriptKey || "script",
       variablesLookup: options.variablesLookup || {},
       variableAliasLookup: options.variableAliasLookup || {},
       engineFields: options.engineFields || {},
@@ -525,6 +533,7 @@ class ScriptBuilder {
       symbols: options.symbols || {},
       argLookup: options.argLookup || { actor: new Map(), variable: new Map() },
       maxDepth: options.maxDepth ?? 5,
+      debugEnabled: options.debugEnabled ?? false,
       compiledCustomEventScriptCache:
         options.compiledCustomEventScriptCache ?? {},
       compiledAssetsCache: options.compiledAssetsCache ?? {},
@@ -3520,7 +3529,12 @@ extern void __mute_mask_${symbol};
     const result = { scriptRef: symbol, argsLen };
     compiledCustomEventScriptCache[customEventId] = result;
 
-    this._compileSubScript("custom", script, symbol, { argLookup });
+    this._compileSubScript("custom", script, symbol, {
+      argLookup,
+      entity: customEvent,
+      entityType: "customEvent",
+      entityScriptKey: "script",
+    });
 
     return result;
   };
@@ -3670,6 +3684,7 @@ extern void __mute_mask_${symbol};
       entityType,
       variablesLookup,
       variableAliasLookup,
+      scene,
     } = this.options;
 
     const id = getVariableId(variable, entity);
@@ -3677,18 +3692,27 @@ extern void __mute_mask_${symbol};
     const namedVariable = variablesLookup[id || "0"];
     if (namedVariable && namedVariable.symbol && !isVariableLocal(variable)) {
       const symbol = namedVariable.symbol.toUpperCase();
-      variableAliasLookup[id] = symbol;
+      variableAliasLookup[id] = {
+        symbol,
+        name: namedVariable.name,
+        id: namedVariable.id,
+        isLocal: false,
+        entityType: "scene",
+        entityId: "",
+        sceneId: "",
+      };
       return symbol;
     }
 
     // If already got an alias use that
     const existingAlias = variableAliasLookup[id || "0"];
     if (existingAlias) {
-      return existingAlias;
+      return existingAlias.symbol;
     }
 
     let name = "";
-    if (entity && isVariableLocal(variable)) {
+    const isLocal = isVariableLocal(variable);
+    if (entity && isLocal) {
       const num = toVariableNumber(variable);
       const localName = localVariableName(num, entity.id, variablesLookup);
       if (entityType === "scene") {
@@ -3703,7 +3727,7 @@ extern void __mute_mask_${symbol};
       name = tempVariableName(num);
     } else {
       const num = toVariableNumber(variable || "0");
-      name = globalVariableDefaultName(num);
+      name = namedVariable?.name ?? globalVariableDefaultName(num);
     }
 
     const alias = "VAR_" + toASMVar(name);
@@ -3711,14 +3735,22 @@ extern void __mute_mask_${symbol};
     let counter = 1;
 
     // Make sure new alias is unique
-    const aliases = Object.values(variableAliasLookup) as string[];
+    const aliases = Object.values(variableAliasLookup).map((v) => v?.symbol);
     while (aliases.includes(newAlias)) {
       newAlias = `${alias}_${counter}`;
       counter++;
     }
 
     // New Alias is now unique
-    variableAliasLookup[id] = newAlias;
+    variableAliasLookup[id] = {
+      symbol: newAlias,
+      id,
+      name,
+      isLocal,
+      entityType,
+      entityId: entity?.id ?? "",
+      sceneId: scene?.id ?? "",
+    };
 
     return newAlias;
   };
@@ -5084,6 +5116,7 @@ extern void __mute_mask_${symbol};
         isFunction: type === "custom",
         maxDepth: this.options.maxDepth - 1,
         branch: false,
+        debugEnabled: this.options.debugEnabled,
         warnings: (msg: string) => {
           console.error(msg);
         },
@@ -5133,6 +5166,47 @@ extern void __mute_mask_${symbol};
 
   makeSymbol = (name: string) => {
     return this._getAvailableSymbol(name);
+  };
+
+  // --------------------------------------------------------------------------
+  // Debuger
+
+  addDebugSymbol = (scriptSymbolName: string, scriptEventId: string) => {
+    if (this.options.debugEnabled) {
+      const debugSymbol = (
+        scriptEventId === "autofade"
+          ? [
+              scriptSymbolName,
+              scriptEventId,
+              this.options.scene?.id ?? "",
+              "scene",
+              this.options.scene?.id ?? "",
+              "script",
+            ]
+          : [
+              scriptSymbolName,
+              scriptEventId,
+              this.options.scene?.id ?? "",
+              this.options.entityType,
+              this.options.entity?.id ?? "",
+              this.options.entityScriptKey ?? "script",
+            ]
+      )
+        .map((i) => i.replace(/-/g, "_"))
+        .join("$");
+      this.output.push(`GBVM$${debugSymbol} = .`);
+      this.output.push(`.globl GBVM$${debugSymbol}`);
+    }
+  };
+
+  addDebugEndSymbol = (scriptSymbolName: string, scriptEventId: string) => {
+    if (this.options.debugEnabled) {
+      const debugSymbol = [scriptSymbolName, scriptEventId]
+        .map((i) => i.replace(/-/g, "_"))
+        .join("$");
+      this.output.push(`GBVM_END$${debugSymbol} = .`);
+      this.output.push(`.globl GBVM_END$${debugSymbol}`);
+    }
   };
 
   // --------------------------------------------------------------------------

@@ -1,22 +1,19 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useAppSelector } from "store/hooks";
 import {
   customEventSelectors,
   scriptEventSelectors,
 } from "store/features/entities/entitiesState";
-import { ScriptEventParentType } from "shared/lib/entities/entitiesTypes";
 import styled from "styled-components";
 import AddButton from "./AddButton";
 import ScriptEditorEvent from "./ScriptEditorEvent";
 import { ScriptEventAutoFade } from "./ScriptEventAutoFade";
 import { calculateAutoFadeEventIdNormalized } from "shared/lib/scripts/eventHelpers";
 import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
+import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 
 interface ScriptEditorProps {
   value: string[];
-  type: ScriptEventParentType;
-  entityId: string;
-  scriptKey: string;
   showAutoFadeIndicator?: boolean;
 }
 
@@ -25,13 +22,8 @@ const ScriptEditorWrapper = styled.div`
 `;
 
 const ScriptEditor = React.memo(
-  ({
-    value,
-    type,
-    entityId,
-    scriptKey,
-    showAutoFadeIndicator,
-  }: ScriptEditorProps) => {
+  ({ value, showAutoFadeIndicator }: ScriptEditorProps) => {
+    const context = useContext(ScriptEditorContext);
     const [renderTo, setRenderTo] = useState(0);
     const timerRef = useRef<number>(0);
     const scriptEventsLookup = useAppSelector((state) =>
@@ -63,7 +55,7 @@ const ScriptEditor = React.memo(
     // Reset renderTo on script tab change
     useEffect(() => {
       setRenderTo(0);
-    }, [scriptKey]);
+    }, [context.entityId, context.scriptKey]);
 
     // Load long scripts asynchronously
     useEffect(() => {
@@ -77,7 +69,7 @@ const ScriptEditor = React.memo(
           }
         };
       }
-    }, [renderTo, value.length]);
+    }, [renderTo, value.length, context.entityId, context.scriptKey]);
 
     return (
       <ScriptEditorWrapper>
@@ -92,10 +84,10 @@ const ScriptEditor = React.memo(
                   key={`${id}_${index}`}
                   id={id}
                   index={index}
-                  parentType={type}
-                  parentId={entityId}
-                  parentKey={scriptKey}
-                  entityId={entityId}
+                  parentType={context.entityType}
+                  parentId={context.entityId}
+                  parentKey={context.scriptKey}
+                  entityId={context.entityId}
                 />
               </React.Fragment>
             )
@@ -104,9 +96,9 @@ const ScriptEditor = React.memo(
           <ScriptEventAutoFade />
         )}
         <AddButton
-          parentType={type}
-          parentId={entityId}
-          parentKey={scriptKey}
+          parentType={context.entityType}
+          parentId={context.entityId}
+          parentKey={context.scriptKey}
         />
       </ScriptEditorWrapper>
     );

@@ -17,6 +17,7 @@ type BuildOptions = {
   engineFields: EngineFieldSchema[];
   scriptEventHandlers: ScriptEventHandlers;
   outputRoot: string;
+  debugEnabled?: boolean;
   progress: (msg: string) => void;
   warnings: (msg: string) => void;
 };
@@ -31,6 +32,7 @@ const buildProject = async (
     engineFields = [],
     scriptEventHandlers,
     outputRoot = "/tmp/testing",
+    debugEnabled = false,
     progress = (_msg: string) => {},
     warnings = (_msg: string) => {},
   }: BuildOptions
@@ -40,6 +42,7 @@ const buildProject = async (
     engineFields,
     scriptEventHandlers,
     tmpPath,
+    debugEnabled,
     progress,
     warnings,
   });
@@ -108,6 +111,7 @@ const buildProject = async (
       `${outputRoot}/build/pocket/game.pocket`
     );
   }
+  return compiledData;
 };
 
 export default buildProject;

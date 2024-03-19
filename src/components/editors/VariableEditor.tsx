@@ -137,6 +137,8 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
   };
 
   const setSelectedId = (id: string, item: VariableUse) => {
+    dispatch(editorActions.editSearchTerm(""));
+    dispatch(editorActions.editSearchTerm(item.sceneId));
     if (item.type === "actor") {
       dispatch(
         editorActions.selectActor({ actorId: id, sceneId: item.sceneId })

@@ -1110,10 +1110,12 @@ export const compileScriptHeader = (scriptName: string) =>
   toArrayDataHeader(DATA_TYPE, scriptName, `// Script ${scriptName}`);
 
 export const compileGameGlobalsInclude = (
-  variableAliasLookup: Dictionary<string>,
+  variableAliasLookup: Dictionary<{ symbol: string }>,
   stateReferences: string[]
 ) => {
-  const variables = Object.values(variableAliasLookup) as string[];
+  const variables = Object.values(variableAliasLookup).map(
+    (v) => v?.symbol
+  ) as string[];
   return (
     variables
       .map((string, stringIndex) => {

@@ -16,6 +16,7 @@ import sprite from "./features/sprite/spriteState";
 import scriptEventDefs from "./features/scriptEventDefs/scriptEventDefsState";
 import tracker from "./features/tracker/trackerState";
 import trackerDocument from "./features/trackerDocument/trackerDocumentState";
+import debug from "./features/debugger/debuggerState";
 import { TRACKER_REDO, TRACKER_UNDO } from "consts";
 
 let lastEntityUndoStateTime = 0;
@@ -31,6 +32,7 @@ const rootReducer = combineReducers({
   clipboard,
   sprite,
   scriptEventDefs,
+  debug,
   tracker,
   trackerDocument: undoable(trackerDocument, {
     limit: 20,
