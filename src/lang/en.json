@@ -1047,6 +1047,7 @@
   "FIELD_VALUE_SET_DESC": "The value to set the selected variable to.",
   "FIELD_ROUTINE": "Routine",
   "FIELD_ROUTINE_DESC": "The music routine, either 0, 1, 2 or 3.",
+  "FIELD_DEBUGGER": "Debugger",
 
   "// 10": "Menu -----------------------------------------------------",
 

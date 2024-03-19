@@ -7,13 +7,17 @@ import EditorSidebar from "components/editors/EditorSidebar";
 import WorldStatusBar from "components/world/WorldStatusBar";
 import useResizable from "ui/hooks/use-resizable";
 import useWindowSize from "ui/hooks/use-window-size";
-import { SplitPaneHorizontalDivider } from "ui/splitpane/SplitPaneDivider";
+import {
+  SplitPaneHorizontalDivider,
+  SplitPaneVerticalDivider,
+} from "ui/splitpane/SplitPaneDivider";
 import { Navigator } from "components/world/Navigator";
 import editorActions from "store/features/editor/editorActions";
 import settingsActions from "store/features/settings/settingsActions";
-
 import debounce from "lodash/debounce";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
+import l10n from "shared/lib/lang/l10n";
 
 const Wrapper = styled.div`
   display: flex;
@@ -73,6 +77,21 @@ const WorldPage = () => {
       }
     },
   });
+  const [debuggerPaneHeight, setDebuggerPaneSize, onResizeDebugger] =
+    useResizable({
+      initialSize: 30,
+      direction: "top",
+      minSize: 30,
+      maxSize: windowHeight - 100,
+    });
+
+  const toggleDebuggerPane = useCallback(() => {
+    if (debuggerPaneHeight === 30) {
+      setDebuggerPaneSize(windowHeight * 0.5);
+    } else {
+      setDebuggerPaneSize(30);
+    }
+  }, [debuggerPaneHeight, setDebuggerPaneSize, windowHeight]);
 
   useEffect(() => {
     prevWindowWidthRef.current = windowWidth;
@@ -170,7 +189,6 @@ const WorldPage = () => {
         <SplitPaneHorizontalDivider onMouseDown={startLeftPaneResize} />
       )}
       <div
-        ref={documentContainerRef}
         style={{
           flexGrow: 1,
           minWidth: 0,
@@ -180,16 +198,39 @@ const WorldPage = () => {
           color: themeContext.colors.text,
           height: windowHeight - 38,
           position: "relative",
+          display: "flex",
+          flexDirection: "column",
         }}
       >
-        <WorldView />
-        <ToolPicker
-          hasFocusForKeyboardShortcuts={hasFocusForKeyboardShortcuts}
-        />
-        <BrushToolbar
-          hasFocusForKeyboardShortcuts={hasFocusForKeyboardShortcuts}
-        />
-        <WorldStatusBar />
+        <div
+          ref={documentContainerRef}
+          style={{
+            overflow: "hidden",
+            background: themeContext.colors.document.background,
+            color: themeContext.colors.text,
+            flexGrow: 1,
+            position: "relative",
+          }}
+        >
+          <WorldView />
+          <ToolPicker
+            hasFocusForKeyboardShortcuts={hasFocusForKeyboardShortcuts}
+          />
+          <BrushToolbar
+            hasFocusForKeyboardShortcuts={hasFocusForKeyboardShortcuts}
+          />
+          <WorldStatusBar />
+        </div>
+        <SplitPaneVerticalDivider onMouseDown={onResizeDebugger} />
+        <div style={{ position: "relative", height: debuggerPaneHeight }}>
+          <SplitPaneHeader
+            onToggle={toggleDebuggerPane}
+            collapsed={debuggerPaneHeight <= 30}
+          >
+            {l10n("FIELD_DEBUGGER")}
+          </SplitPaneHeader>
+          {debuggerPaneHeight > 30 && <div />}
+        </div>
       </div>
       <SplitPaneHorizontalDivider onMouseDown={onResizeRight} />
       <div
