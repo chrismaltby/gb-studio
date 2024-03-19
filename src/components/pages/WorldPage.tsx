@@ -18,6 +18,8 @@ import debounce from "lodash/debounce";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import l10n from "shared/lib/lang/l10n";
+import DebuggerPane from "components/debugger/DebuggerPane";
+import API from "renderer/lib/api";
 
 const Wrapper = styled.div`
   display: flex;
@@ -77,6 +79,8 @@ const WorldPage = () => {
       }
     },
   });
+  const centerWidth =
+    windowWidth - (showNavigator ? leftPaneWidth : 0) - rightPaneWidth;
   const [debuggerPaneHeight, setDebuggerPaneSize, onResizeDebugger] =
     useResizable({
       initialSize: 30,
@@ -91,6 +95,23 @@ const WorldPage = () => {
     } else {
       setDebuggerPaneSize(30);
     }
+  }, [debuggerPaneHeight, setDebuggerPaneSize, windowHeight]);
+
+  useEffect(() => {
+    const unsubscribe = API.events.debugger.data.subscribe((_, packet) => {
+      switch (packet.action) {
+        case "initialized": {
+          if (debuggerPaneHeight <= 30) {
+            setDebuggerPaneSize(windowHeight * 0.5);
+          }
+          unsubscribe();
+          break;
+        }
+      }
+    });
+    return () => {
+      unsubscribe();
+    };
   }, [debuggerPaneHeight, setDebuggerPaneSize, windowHeight]);
 
   useEffect(() => {
@@ -222,14 +243,20 @@ const WorldPage = () => {
           <WorldStatusBar />
         </div>
         <SplitPaneVerticalDivider onMouseDown={onResizeDebugger} />
-        <div style={{ position: "relative", height: debuggerPaneHeight }}>
+        <div
+          style={{
+            position: "relative",
+            height: debuggerPaneHeight,
+            maxWidth: centerWidth,
+          }}
+        >
           <SplitPaneHeader
             onToggle={toggleDebuggerPane}
             collapsed={debuggerPaneHeight <= 30}
           >
             {l10n("FIELD_DEBUGGER")}
           </SplitPaneHeader>
-          {debuggerPaneHeight > 30 && <div />}
+          {debuggerPaneHeight > 30 && <DebuggerPane />}
         </div>
       </div>
       <SplitPaneHorizontalDivider onMouseDown={onResizeRight} />

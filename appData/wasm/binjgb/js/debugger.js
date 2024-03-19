@@ -121,104 +121,90 @@ let ready = setInterval(() => {
     debug = new Debug(emulator);
     clearInterval(ready);
 
-    window.postMessage({
-      action: "to:main",
-      payload: {
-        action: "debugger-ready",
-        update: "DEBUG",
-      },
+    API.debugger.sendToProjectWindow({
+      action: "initialized",
     });
 
-    window.addEventListener(
-      "message",
-      (event) => {
-        if (event.data.action !== "to:debugger") {
-          return;
-        }
+    API.events.debugger.data.subscribe((_, packet) => {
+      console.log("GOT MESSAGE IN DEBUGGER", packet);
+      const { action, data } = packet;
 
-        const action = event.data.payload.action;
-        const data = event.data.payload.data;
-        // console.log(action, data);
+      switch (action) {
+        case "listener-ready":
+          const executingCtxAddr = data.executingCtxAddr;
+          const firstCtxAddr = data.firstCtxAddr;
 
-        switch (action) {
-          case "listener-ready":
-            const executingCtxAddr = data.executingCtxAddr;
-            const firstCtxAddr = data.firstCtxAddr;
+          // const currentCtx = debug.readMemInt16(
+          //   parseInt(data.executingCtxAddr)
+          // );
 
-            // const currentCtx = debug.readMemInt16(
-            //   parseInt(data.executingCtxAddr)
-            // );
+          // const currentAddress = debug.readMemInt16(currentCtx);
+          // const currentBank = debug.readMem(currentCtx + 2);
 
-            // const currentAddress = debug.readMemInt16(currentCtx);
-            // const currentBank = debug.readMem(currentCtx + 2);
+          // console.log(currentBank, currentAddress);
 
-            // console.log(currentBank, currentAddress);
+          // console.log(
+          //   "firstCtxAddr",
+          //   debug.readMemInt16(parseInt(data.firstCtxAddr))
+          // );
 
-            // console.log(
-            //   "firstCtxAddr",
-            //   debug.readMemInt16(parseInt(data.firstCtxAddr))
-            // );
+          setInterval(() => {
+            console.warn({ data });
 
-            setInterval(() => {
-              const globals = debug.readVariables(
-                parseInt(data.address),
-                parseInt(data.length)
-              );
+            const globals = debug.readVariables(
+              parseInt(data.variablesStartAddr),
+              parseInt(data.variablesLength)
+            );
 
-              const currentCtx = debug.readMemInt16(parseInt(executingCtxAddr));
+            const currentCtx = debug.readMemInt16(parseInt(executingCtxAddr));
 
-              let firstCtx = debug.readMemInt16(parseInt(data.firstCtxAddr));
+            let firstCtx = debug.readMemInt16(parseInt(data.firstCtxAddr));
 
-              let scriptContexts = [];
-              while (firstCtx !== 0) {
-                // console.log("ADDR", debug.readMemInt16(firstCtx));
-                // console.log("BANK", debug.readMem(firstCtx + 2));
+            let scriptContexts = [];
+            while (firstCtx !== 0) {
+              // console.log("ADDR", debug.readMemInt16(firstCtx));
+              // console.log("BANK", debug.readMem(firstCtx + 2));
 
-                scriptContexts.push({
-                  address: debug.readMemInt16(firstCtx),
-                  bank: debug.readMem(firstCtx + 2),
-                  current: currentCtx === firstCtx,
-                });
-
-                firstCtx = debug.readMemInt16(firstCtx + 3);
-                // console.log("NEXT", firstCtx);
-              }
-
-              window.postMessage({
-                action: "to:main",
-                payload: {
-                  action: "update-globals",
-                  data: globals,
-                  vram: debug.renderVRam(),
-                  paused: debug.emulator.isPaused,
-                  currentAddress: debug.readMemInt16(currentCtx),
-                  currentBank: debug.readMem(currentCtx + 2),
-                  scriptContexts: scriptContexts,
-                },
+              scriptContexts.push({
+                address: debug.readMemInt16(firstCtx),
+                bank: debug.readMem(firstCtx + 2),
+                current: currentCtx === firstCtx,
               });
-            }, 1000 / 60);
-            break;
-          case "add-breakpoint":
-            debug.setBreakPoint(parseInt(data.address));
-            break;
-          case "pause":
-            debug.emulator.pause();
-            break;
-          case "resume":
-            debug.emulator.resume();
-            break;
-          case "step-single":
-            debug.step("single");
-            break;
-          case "step-frame":
-            debug.step("frame");
-            break;
 
-          default:
-          // console.warn(event);
-        }
-      },
-      false
-    );
+              firstCtx = debug.readMemInt16(firstCtx + 3);
+              // console.log("NEXT", firstCtx);
+            }
+
+            API.debugger.sendToProjectWindow({
+              action: "update-globals",
+              data: globals,
+              vram: debug.renderVRam(),
+              paused: debug.emulator.isPaused,
+              currentAddress: debug.readMemInt16(currentCtx),
+              currentBank: debug.readMem(currentCtx + 2),
+              scriptContexts: scriptContexts,
+            });
+          }, 1000 / 60);
+          break;
+        case "add-breakpoint":
+          debug.setBreakPoint(parseInt(data.address));
+          break;
+        case "pause":
+          debug.emulator.pause();
+          break;
+        case "resume":
+          debug.emulator.resume();
+          break;
+        case "step-single":
+          debug.step("single");
+          break;
+        case "step-frame":
+          debug.step("frame");
+          break;
+
+        default:
+        // console.warn(event);
+      }
+    });
   }
 }, 2000);

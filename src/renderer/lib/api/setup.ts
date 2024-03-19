@@ -32,8 +32,10 @@ import type { FontAssetData } from "lib/project/loadFontData";
 import type { AvatarAssetData } from "lib/project/loadAvatarData";
 import type { EmoteAssetData } from "lib/project/loadEmoteData";
 import type { NavigationSection } from "store/features/navigation/navigationState";
-import { ScriptEventDefs } from "shared/lib/scripts/scriptDefHelpers";
+import type { ScriptEventDefs } from "shared/lib/scripts/scriptDefHelpers";
 import type { MenuZoomType } from "menu";
+import type { DebuggerDataPacket } from "shared/lib/debugger/types";
+import type { ScriptMapData, VariableMapData } from "lib/compiler/compileData";
 
 interface L10NLookup {
   [key: string]: string | boolean | undefined;
@@ -276,6 +278,15 @@ const APISetup = {
     writeBuffer: (format: string, buffer: Buffer): Promise<void> =>
       ipcRenderer.invoke("clipboard:write-buffer", format, buffer),
   },
+  debugger: {
+    pause: () => ipcRenderer.invoke("debugger:pause"),
+    resume: () => ipcRenderer.invoke("debugger:resume"),
+    step: () => ipcRenderer.invoke("debugger:step"),
+    addBreakpoint: (address: number) =>
+      ipcRenderer.invoke("debugger:breakpoint:add", address),
+    sendToProjectWindow: (data: DebuggerDataPacket) =>
+      ipcRenderer.send("debugger:data-receive", data),
+  },
   events: {
     menu: {
       saveProject:
@@ -332,6 +343,22 @@ const APISetup = {
       data: createSubscribeAPI<
         (event: IpcRendererEvent, data: MusicDataPacket) => void
       >("music:data"),
+    },
+    debugger: {
+      data: createSubscribeAPI<
+        (event: IpcRendererEvent, data: DebuggerDataPacket) => void
+      >("debugger:data"),
+      symbols:
+        createSubscribeAPI<
+          (
+            event: IpcRendererEvent,
+            map: Record<string, number>,
+            globals: Record<string, number>,
+            memoryDict: Map<number, Map<number, string>>,
+            variableMap: Record<string, VariableMapData>,
+            scriptMap: Record<string, ScriptMapData>
+          ) => void
+        >("debugger:symbols"),
     },
     settings: {
       uiScaleChanged: createSubscribeAPI<

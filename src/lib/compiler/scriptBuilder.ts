@@ -55,6 +55,7 @@ import {
 import { encodeString } from "shared/lib/helpers/fonts";
 import { mapScript } from "shared/lib/scripts/walk";
 import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
+import { VariableMapData } from "lib/compiler/compileData";
 
 export type ScriptOutput = string[];
 
@@ -108,7 +109,7 @@ export interface ScriptBuilderOptions {
   entityIndex: number;
   entityType: ScriptBuilderEntityType;
   variablesLookup: VariablesLookup;
-  variableAliasLookup: Dictionary<string>;
+  variableAliasLookup: Dictionary<VariableMapData>;
   scenes: PrecompiledScene[];
   sprites: PrecompiledSprite[];
   backgrounds: PrecompiledBackground[];
@@ -3677,14 +3678,18 @@ extern void __mute_mask_${symbol};
     const namedVariable = variablesLookup[id || "0"];
     if (namedVariable && namedVariable.symbol && !isVariableLocal(variable)) {
       const symbol = namedVariable.symbol.toUpperCase();
-      variableAliasLookup[id] = symbol;
+      variableAliasLookup[id] = {
+        symbol,
+        name: namedVariable.name,
+        id: namedVariable.id,
+      };
       return symbol;
     }
 
     // If already got an alias use that
     const existingAlias = variableAliasLookup[id || "0"];
     if (existingAlias) {
-      return existingAlias;
+      return existingAlias.symbol;
     }
 
     let name = "";
@@ -3703,7 +3708,7 @@ extern void __mute_mask_${symbol};
       name = tempVariableName(num);
     } else {
       const num = toVariableNumber(variable || "0");
-      name = globalVariableDefaultName(num);
+      name = namedVariable?.name ?? globalVariableDefaultName(num);
     }
 
     const alias = "VAR_" + toASMVar(name);
@@ -3711,14 +3716,18 @@ extern void __mute_mask_${symbol};
     let counter = 1;
 
     // Make sure new alias is unique
-    const aliases = Object.values(variableAliasLookup) as string[];
+    const aliases = Object.values(variableAliasLookup).map((v) => v?.symbol);
     while (aliases.includes(newAlias)) {
       newAlias = `${alias}_${counter}`;
       counter++;
     }
 
     // New Alias is now unique
-    variableAliasLookup[id] = newAlias;
+    variableAliasLookup[id] = {
+      symbol: newAlias,
+      id,
+      name,
+    };
 
     return newAlias;
   };

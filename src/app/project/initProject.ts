@@ -12,6 +12,7 @@ import engineActions from "store/features/engine/engineActions";
 import scriptEventDefsActions from "store/features/scriptEventDefs/scriptEventDefsActions";
 import errorActions from "store/features/error/errorActions";
 import consoleActions from "store/features/console/consoleActions";
+import debuggerActions from "store/features/debugger/debuggerActions";
 import { clampSidebarWidth } from "renderer/lib/window/sidebar";
 import { initKeyBindings } from "renderer/lib/keybindings/keyBindings";
 import { TRACKER_REDO, TRACKER_UNDO } from "consts";
@@ -339,3 +340,37 @@ API.events.settings.settingChanged.subscribe((_, key, value) => {
     })
   );
 });
+
+// Debugger
+
+API.events.debugger.data.subscribe((_, packet) => {
+  switch (packet.action) {
+    case "initialized": {
+      break;
+    }
+    case "update-globals": {
+      store.dispatch(
+        debuggerActions.setRAMData({
+          vramPreview: packet.vram,
+          variablesData: packet.data,
+          scriptContexts: packet.scriptContexts,
+        })
+      );
+      break;
+    }
+  }
+});
+
+API.events.debugger.symbols.subscribe(
+  (_, map, globals, memoryDict, variableMap, scriptMap) => {
+    store.dispatch(
+      debuggerActions.setSymbols({
+        memoryMap: map,
+        globalVariables: globals,
+        memoryDict,
+        variableDataBySymbol: variableMap,
+        scriptMap,
+      })
+    );
+  }
+);

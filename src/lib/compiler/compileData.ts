@@ -120,6 +120,19 @@ type TilemapData = {
   data: number[] | Uint8Array;
 };
 
+export type ScriptMapData = {
+  script: string[];
+  entityId: string;
+  entityType: ScriptBuilderEntityType;
+  scriptType: string;
+};
+
+export type VariableMapData = {
+  id: string;
+  name: string;
+  symbol: string;
+};
+
 const indexById = <T extends { id: string }>(arr: T[]) => keyBy(arr, "id");
 
 const isReference = (value: unknown): value is Reference =>
@@ -1279,9 +1292,14 @@ const compile = async (
     progress: (_msg: string) => void;
     warnings: (_msg: string) => void;
   }
-): Promise<{ files: Record<string, string> }> => {
+): Promise<{
+  files: Record<string, string>;
+  scriptMap: Record<string, ScriptMapData>;
+  variableMap: Record<string, VariableMapData>;
+}> => {
   const output: Record<string, string> = {};
-  const symbols = {};
+  const symbols: Dictionary<string> = {};
+  const scriptMap: Record<string, ScriptMapData> = {};
 
   if (projectData.scenes.length === 0) {
     throw new Error(
@@ -1325,11 +1343,15 @@ const compile = async (
       // Include variables referenced from GBVM
       if (variable.symbol) {
         const symbol = variable.symbol.toUpperCase();
-        memo[variable.id] = symbol;
+        memo[variable.id] = {
+          symbol,
+          id: variable.id,
+          name: variable.name,
+        };
       }
       return memo;
     },
-    {} as Record<string, string>
+    {} as Record<string, VariableMapData>
   );
 
   // Determine which scene types need to support persisting player sprite
@@ -1344,8 +1366,16 @@ const compile = async (
   persistSceneTypes.forEach((sceneType) => {
     const bankVar = `PLAYER_SPRITE_${sceneType}_BANK`;
     const dataVar = `PLAYER_SPRITE_${sceneType}_DATA`;
-    variableAliasLookup[bankVar] = bankVar;
-    variableAliasLookup[dataVar] = dataVar;
+    variableAliasLookup[bankVar] = {
+      symbol: bankVar,
+      id: "",
+      name: "Player Sprite Bank",
+    };
+    variableAliasLookup[dataVar] = {
+      symbol: dataVar,
+      id: "",
+      name: "Player Sprite Data",
+    };
     const sprite =
       precompiled.usedSprites.find(
         (sprite) =>
@@ -1457,6 +1487,14 @@ const compile = async (
 
         output[`${scriptName}.s`] = compiledScript;
         output[`${scriptName}.h`] = compileScriptHeader(scriptName);
+
+        scriptMap[scriptName] = {
+          script: script.map((s) => s.id),
+          entityId: entity.id,
+          entityType,
+          scriptType,
+        };
+
         return scriptName;
       };
 
@@ -1517,9 +1555,9 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
             customEventsLookup,
             scriptEventHandlers
           );
-          const autoFadeIndex = autoFadeId ? initScript.findIndex(
-            (item) => item.id === autoFadeId
-          ) : -1;
+          const autoFadeIndex = autoFadeId
+            ? initScript.findIndex((item) => item.id === autoFadeId)
+            : -1;
           const fadeEvent = {
             id: "",
             command: "EVENT_FADE_IN",
@@ -1867,6 +1905,9 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
     variableAliasLookup,
     precompiled.stateReferences
   );
+
+  const variableMap = keyBy(Object.values(variableAliasLookup), "symbol");
+
   output[`script_engine_init.s`] = compileScriptEngineInit({
     startX,
     startY,
@@ -1923,6 +1964,8 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
 
   return {
     files: output,
+    scriptMap,
+    variableMap,
   };
 };
 

@@ -92,6 +92,11 @@ import loadAllScriptEventHandlers, {
   ScriptEventHandlers,
 } from "lib/project/loadScriptEventHandlers";
 import { cloneDictionary } from "lib/helpers/clone";
+import { readDebuggerSymbols } from "lib/debugger/readDebuggerSymbols";
+import {
+  DebuggerDataPacket,
+  DebuggerInitData,
+} from "shared/lib/debugger/types";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -128,6 +133,7 @@ let keepOpen = false;
 let projectPath = "";
 let cancelBuild = false;
 let musicWindowInitialized = false;
+let debuggerInitData: DebuggerInitData | null = null;
 let stopWatchingFn: (() => void) | null = null;
 let scriptEventHandlers: ScriptEventHandlers = {};
 
@@ -439,6 +445,10 @@ const sendToMusicWindow = (channel: string, ...args: unknown[]) => {
   musicWindow?.webContents.send(channel, ...args);
 };
 
+const sendToGameWindow = (channel: string, ...args: unknown[]) => {
+  playWindow?.webContents.send(channel, ...args);
+};
+
 const buildLog = (msg: string) => sendToProjectWindow("build:log", msg);
 const buildErr = (msg: string) => sendToProjectWindow("build:error", msg);
 
@@ -484,7 +494,11 @@ const openHelp = async (helpPage: string) => {
   }
 };
 
-const createPlay = async (url: string, sgb: boolean, debug: boolean) => {
+const createPlay = async (
+  url: string,
+  sgb: boolean,
+  debugEnabled?: boolean
+) => {
   if (playWindow && sgb !== playWindowSgb) {
     playWindow.close();
     playWindow = null;
@@ -513,7 +527,7 @@ const createPlay = async (url: string, sgb: boolean, debug: boolean) => {
   playWindow.setMenu(null);
   playWindow.loadURL(
     `${url}?audio=true&sgb=${sgb ? "true" : "false"}&debug=${
-      debug ? "true" : "false"
+      !!debugEnabled && !!debuggerInitData ? "true" : "false"
     }`
   );
 
@@ -886,6 +900,18 @@ ipcMain.on("music:data-receive", (_event, data: MusicDataReceivePacket) => {
   }
 });
 
+ipcMain.on("debugger:data-receive", (_event, data: DebuggerDataPacket) => {
+  if (data.action === "initialized" && debuggerInitData) {
+    sendToGameWindow("debugger:data", {
+      action: "listener-ready",
+      data: debuggerInitData,
+    });
+  }
+  if (projectWindow) {
+    sendToProjectWindow("debugger:data", data);
+  }
+});
+
 ipcMain.handle("get-l10n-strings", () => getL10NData());
 ipcMain.handle("get-theme", () => {
   const themeId = toThemeId(
@@ -960,7 +986,7 @@ ipcMain.handle(
     const sgbEnabled = project.settings.sgbEnabled;
 
     try {
-      await buildProject(project, {
+      const compiledData = await buildProject(project, {
         ...options,
         projectRoot,
         outputRoot,
@@ -1005,10 +1031,27 @@ ipcMain.handle(
       if (buildType === "web" && !exportBuild) {
         buildLog(`-`);
         buildLog(`Success! Starting emulator...`);
+        if (options.debugEnabled) {
+          const { map, globals, dict } = await readDebuggerSymbols(outputRoot);
+          debuggerInitData = {
+            variablesStartAddr: map["_script_memory"],
+            variablesLength: globals["MAX_GLOBAL_VARS"],
+            executingCtxAddr: map["_executing_ctx"],
+            firstCtxAddr: map["_first_ctx"],
+          };
+          sendToProjectWindow(
+            "debugger:symbols",
+            map,
+            globals,
+            dict,
+            compiledData.variableMap,
+            compiledData.scriptMap
+          );
+        }
         createPlay(
           `file://${outputRoot}/build/web/index.html`,
           sgbEnabled && !colorEnabled,
-          !!options.debugEnabled
+          options.debugEnabled
         );
       }
 
