@@ -985,7 +985,7 @@ ipcMain.handle(
           `${outputRoot}/build/${buildType}`,
           `${projectRoot}/build/${buildType}`
         );
-        shell.openPath(`${projectRoot}/build/${buildType}`);
+        shell.openPath(Path.join(projectRoot, "build", buildType));
         buildLog(`-`);
         buildLog(
           `Success! ${
@@ -1109,7 +1109,7 @@ ipcMain.handle(
         warnings,
       });
 
-      const exportRoot = `${projectRoot}/build/src`;
+      const exportRoot = Path.join(projectRoot, "build", "src");
 
       if (exportType === "data") {
         const dataSrcTmpPath = Path.join(outputRoot, "src", "data");
