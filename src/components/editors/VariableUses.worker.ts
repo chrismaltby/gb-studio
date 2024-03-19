@@ -1,12 +1,14 @@
 import { Dictionary } from "@reduxjs/toolkit";
 import {
   actorName,
+  customEventName,
   isUnionValue,
   sceneName,
   triggerName,
 } from "shared/lib/entities/entitiesHelpers";
 import {
   ActorNormalized,
+  CustomEventNormalized,
   SceneNormalized,
   ScriptEventNormalized,
   TriggerNormalized,
@@ -16,23 +18,27 @@ import {
   ScriptEventDefs,
   isVariableField,
 } from "shared/lib/scripts/scriptDefHelpers";
-import { walkNormalizedScenesScripts } from "shared/lib/scripts/walk";
+import {
+  walkNormalizedCustomEventScripts,
+  walkNormalizedScenesScripts,
+} from "shared/lib/scripts/walk";
 
 export type VariableUse = {
   id: string;
   name: string;
-  sceneId: string;
-  scene: SceneNormalized;
-  sceneIndex: number;
   event: ScriptEventNormalized;
 } & (
   | {
       type: "scene";
+      sceneId: string;
+      scene: SceneNormalized;
+      sceneIndex: number;
     }
   | {
       type: "actor";
       actor: ActorNormalized;
       actorIndex: number;
+      sceneId: string;
       scene: SceneNormalized;
       sceneIndex: number;
     }
@@ -40,8 +46,14 @@ export type VariableUse = {
       type: "trigger";
       trigger: TriggerNormalized;
       triggerIndex: number;
+      sceneId: string;
       scene: SceneNormalized;
       sceneIndex: number;
+    }
+  | {
+      type: "custom";
+      customEvent: CustomEventNormalized;
+      customEventIndex: number;
     }
 );
 
@@ -62,7 +74,11 @@ workerCtx.onmessage = async (evt) => {
   const actorsLookup: Dictionary<ActorNormalized> = evt.data.actorsLookup;
   const triggersLookup: Dictionary<TriggerNormalized> = evt.data.triggersLookup;
   const scriptEventDefs: ScriptEventDefs = evt.data.scriptEventDefs;
+  const customEventsLookup: Dictionary<CustomEventNormalized> =
+    evt.data.customEventsLookup;
   const l10NData: L10NLookup = evt.data.l10NData;
+
+  console.log(customEventsLookup);
 
   setL10NData(l10NData);
 
@@ -152,6 +168,51 @@ workerCtx.onmessage = async (evt) => {
       }
     }
   );
+
+  Object.values(customEventsLookup).forEach((customEvent, customEventIndex) => {
+    if (!customEvent) return;
+    walkNormalizedCustomEventScripts(
+      customEvent,
+      scriptEventsLookup,
+      undefined,
+      (scriptEvent: ScriptEventNormalized) => {
+        for (const arg in scriptEvent.args) {
+          if (
+            !isVariableField(
+              scriptEvent.command,
+              arg,
+              scriptEvent.args,
+              scriptEventDefs
+            )
+          ) {
+            continue;
+          }
+
+          const argValue = scriptEvent.args[arg];
+          const isVariableId =
+            argValue === variableId ||
+            (isUnionValue(argValue) &&
+              argValue.type === "variable" &&
+              argValue.value === variableId);
+
+          if (!isVariableId) {
+            continue;
+          }
+
+          if (!useLookup[customEvent.id])
+            uses.push({
+              id: customEvent.id,
+              name: customEventName(customEvent, customEventIndex),
+              event: scriptEvent,
+              type: "custom",
+              customEvent,
+              customEventIndex: customEventIndex,
+            });
+          useLookup[customEvent.id] = true;
+        }
+      }
+    );
+  });
 
   workerCtx.postMessage({ id, uses } as VariableUseResult);
 };
