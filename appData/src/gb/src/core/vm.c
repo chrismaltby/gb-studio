@@ -263,13 +263,41 @@ void vm_rpn(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS) OLDCALL NONBANK
     UBYTE _save = CURRENT_BANK;         // we must preserve current bank,
     SWITCH_ROM(THIS->bank);             // then switch to bytecode bank
 
-    ARGS = THIS->stack_ptr;
+    ARGS = THIS->stack_ptr;             // fix position of the stack to simplify parameter addressing
     while (TRUE) {
-        INT8 op = *(THIS->PC++);
+        static INT8 op;
+        op = *(THIS->PC++);
         if (op < 0) {
             switch (op) {
-                case -5:
+                // write memory
+                case -8:
+                    op = *(THIS->PC++);
+                    switch ((UINT8)op) {
+                        case 'i' : **((INT8 **)(THIS->PC))  = *(--(THIS->stack_ptr)); break;
+                        case 'u' : **((UINT8 **)(THIS->PC)) = *(--(THIS->stack_ptr)); break;
+                        case 'I' : **((INT16 **)(THIS->PC)) = *(--(THIS->stack_ptr)); break;
+                    }
+                    THIS->PC += 2;
+                    continue;
+                // read memory
+                case -7:
+                    op = *(THIS->PC++);
+                    switch ((UINT8)op) {
+                        case 'i' : *(THIS->stack_ptr) = **((INT8 **)(THIS->PC));  break;
+                        case 'u' : *(THIS->stack_ptr) = **((UINT8 **)(THIS->PC)); break;
+                        case 'I' : *(THIS->stack_ptr) = **((INT16 **)(THIS->PC)); break;
+                    }
+                    THIS->PC += 2;
+                    break;
+                // set by indirect reference
+                case -6:
+                    idx = *((INT16 *)(THIS->PC));
+                    idx = *((idx < 0) ? ARGS + idx : script_memory + idx);
+                    *((idx < 0) ? ARGS + idx : script_memory + idx) = *(--(THIS->stack_ptr));
+                    THIS->PC += 2;
+                    continue;
                 // set by reference
+                case -5:
                     idx = *((INT16 *)(THIS->PC));
                     *((idx < 0) ? ARGS + idx : script_memory + idx) = *(--(THIS->stack_ptr));
                     THIS->PC += 2;
@@ -304,7 +332,7 @@ void vm_rpn(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS) OLDCALL NONBANK
             THIS->stack_ptr++;
         } else {
             A = THIS->stack_ptr - 2; B = A + 1;
-            switch (op) {
+            switch ((UINT8)op) {
                 // arithmetics
                 case '+': *A = *A  +  *B; break;
                 case '-': *A = *A  -  *B; break;
@@ -360,24 +388,6 @@ void vm_idle(SCRIPT_CTX * THIS) OLDCALL BANKED {
     THIS->waitable = TRUE;
 }
 
-// gets unsigned int8 by address
-void vm_get_uint8(SCRIPT_CTX * THIS, INT16 idxA, UINT8 * addr) OLDCALL BANKED {
-    INT16 * A;
-    if (idxA < 0) A = THIS->stack_ptr + idxA; else A = script_memory + idxA;
-    *A = *addr;
-}
-// gets int8 by address
-void vm_get_int8(SCRIPT_CTX * THIS, INT16 idxA, INT8 * addr) OLDCALL BANKED {
-    INT16 * A;
-    if (idxA < 0) A = THIS->stack_ptr + idxA; else A = script_memory + idxA;
-    *A = *addr;
-}
-// gets int16 by address
-void vm_get_int16(SCRIPT_CTX * THIS, INT16 idxA, INT16 * addr) OLDCALL BANKED {
-    INT16 * A;
-    if (idxA < 0) A = THIS->stack_ptr + idxA; else A = script_memory + idxA;
-    *A = *addr;
-}
 // gets int8 or int16 by far address
 void vm_get_far(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS, INT16 idxA, UBYTE size, UBYTE bank, UBYTE * addr) OLDCALL NONBANKED {
     dummy0; dummy1;
@@ -387,34 +397,6 @@ void vm_get_far(DUMMY0_t dummy0, DUMMY1_t dummy1, SCRIPT_CTX * THIS, INT16 idxA,
     SWITCH_ROM(bank);             // then switch to bytecode bank
     *A = (size == 0) ? *((UBYTE *)addr) : *((UINT16 *)addr);
     SWITCH_ROM(_save);
-}
-// sets unsigned int8 in RAM by address
-void vm_set_uint8(SCRIPT_CTX * THIS, UINT8 * addr, INT16 idxA) OLDCALL BANKED {
-    INT16 * A;
-    if (idxA < 0) A = THIS->stack_ptr + idxA; else A = script_memory + idxA;
-    *addr = *A;
-}
-// sets int8 in RAM by address
-void vm_set_int8(SCRIPT_CTX * THIS, INT8 * addr, INT16 idxA) OLDCALL BANKED {
-    INT16 * A;
-    if (idxA < 0) A = THIS->stack_ptr + idxA; else A = script_memory + idxA;
-    *addr = *A;
-}
-// sets int16 in RAM by address
-void vm_set_int16(SCRIPT_CTX * THIS, INT16 * addr, INT16 idxA) OLDCALL BANKED {
-    INT16 * A;
-    if (idxA < 0) A = THIS->stack_ptr + idxA; else A = script_memory + idxA;
-    *addr = *A;
-}
-// sets unsigned int8 in RAM by address
-void vm_set_const_int8(SCRIPT_CTX * THIS, UINT8 * addr, UINT8 v) OLDCALL BANKED {
-    THIS;
-    *addr = v;
-}
-// sets int16 in RAM by address
-void vm_set_const_int16(SCRIPT_CTX * THIS, INT16 * addr, INT16 v) OLDCALL BANKED {
-    THIS;
-    *addr = v;
 }
 
 // initializes random number generator

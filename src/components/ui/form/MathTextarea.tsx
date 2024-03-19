@@ -40,6 +40,14 @@ const functionSearch = (search: string) => {
 
 const operatorSymbols = [
   {
+    id: "<<",
+    display: "<<",
+  },
+  {
+    id: ">>",
+    display: ">>",
+  },
+  {
     id: "==",
     display: "==",
   },

@@ -45,14 +45,14 @@ const SCRIPT_CMD script_cmds[] = {
     {vm_idle,                           BANK(VM_MAIN),          0}, // 0x18
     {vm_get_tlocal,                     BANK(VM_MAIN),          4}, // 0x19
     {vm_if_const,                       BANK(VM_MAIN),          8}, // 0x1A
-    {vm_get_uint8,                      BANK(VM_MAIN),          4}, // 0x1B
-    {vm_get_int8,                       BANK(VM_MAIN),          4}, // 0x1C
-    {vm_get_int16,                      BANK(VM_MAIN),          4}, // 0x1D
-    {vm_set_uint8,                      BANK(VM_MAIN),          4}, // 0x1E
-    {vm_set_int8,                       BANK(VM_MAIN),          4}, // 0x1F
-    {vm_set_int16,                      BANK(VM_MAIN),          4}, // 0x20
-    {vm_set_const_int8,                 BANK(VM_MAIN),          3}, // 0x21
-    {vm_set_const_int16,                BANK(VM_MAIN),          4}, // 0x22
+    {0, 0, 0},
+    {0, 0, 0},
+    {0, 0, 0},
+    {0, 0, 0},
+    {0, 0, 0},
+    {0, 0, 0},
+    {0, 0, 0},
+    {0, 0, 0},
     {vm_init_rng,                       BANK(VM_MAIN),          2}, // 0x23
     {vm_rand,                           BANK(VM_MAIN),          8}, // 0x24
     {vm_lock,                           BANK(VM_MAIN),          0}, // 0x25
