@@ -287,8 +287,14 @@ API.events.menu.zoom.subscribe((_, zoomType) => {
   }
 });
 
-API.events.menu.run.subscribe(() => {
-  store.dispatch(buildGameActions.buildGame());
+API.events.menu.run.subscribe((_, debugEnabled) => {
+  store.dispatch(
+    buildGameActions.buildGame({
+      buildType: "web",
+      exportBuild: false,
+      debugEnabled,
+    })
+  );
 });
 
 API.events.menu.build.subscribe((_, buildType) => {

@@ -101,6 +101,7 @@ declare const PREFERENCES_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const PREFERENCES_WINDOW_WEBPACK_ENTRY: string;
 declare const MUSIC_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MUSIC_WINDOW_WEBPACK_ENTRY: string;
+declare const GAME_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 
 type SplashTab = "info" | "new" | "recent";
 
@@ -483,7 +484,7 @@ const openHelp = async (helpPage: string) => {
   }
 };
 
-const createPlay = async (url: string, sgb: boolean) => {
+const createPlay = async (url: string, sgb: boolean, debug: boolean) => {
   if (playWindow && sgb !== playWindowSgb) {
     playWindow.close();
     playWindow = null;
@@ -501,6 +502,7 @@ const createPlay = async (url: string, sgb: boolean) => {
         contextIsolation: true,
         nodeIntegration: false,
         webSecurity: process.env.NODE_ENV !== "development",
+        preload: GAME_WINDOW_PRELOAD_WEBPACK_ENTRY,
       },
     });
     playWindowSgb = sgb;
@@ -509,7 +511,11 @@ const createPlay = async (url: string, sgb: boolean) => {
   }
 
   playWindow.setMenu(null);
-  playWindow.loadURL(`${url}?audio=true&sgb=${sgb ? "true" : "false"}`);
+  playWindow.loadURL(
+    `${url}?audio=true&sgb=${sgb ? "true" : "false"}&debug=${
+      debug ? "true" : "false"
+    }`
+  );
 
   playWindow.on("closed", () => {
     playWindow = null;
@@ -659,10 +665,6 @@ ipcMain.handle("clear-recent-projects", async (_event) => {
 ipcMain.handle("open-help", async (_event, helpPage) => {
   if (!isString(helpPage)) throw new Error("Invalid URL");
   openHelp(helpPage);
-});
-
-ipcMain.on("open-play", async (_event, url, sgb) => {
-  createPlay(url, sgb);
 });
 
 ipcMain.handle("open-folder", async (_event, path) => {
@@ -1005,7 +1007,8 @@ ipcMain.handle(
         buildLog(`Success! Starting emulator...`);
         createPlay(
           `file://${outputRoot}/build/web/index.html`,
-          sgbEnabled && !colorEnabled
+          sgbEnabled && !colorEnabled,
+          !!options.debugEnabled
         );
       }
 
@@ -1372,8 +1375,8 @@ menu.on("zoom", (zoomType) => {
   sendToProjectWindow("menu:zoom", zoomType);
 });
 
-menu.on("run", () => {
-  sendToProjectWindow("menu:run");
+menu.on("run", (debugEnabled) => {
+  sendToProjectWindow("menu:run", debugEnabled);
 });
 
 menu.on("build", (buildType) => {

@@ -44,6 +44,7 @@ export type BuildOptions = {
   profile: boolean;
   engineFields: EngineFieldSchema[];
   exportBuild: boolean;
+  debugEnabled?: boolean;
 };
 
 const createSubscribeAPI = <
@@ -303,7 +304,9 @@ const APISetup = {
       zoom: createSubscribeAPI<
         (event: IpcRendererEvent, zoom: MenuZoomType) => void
       >("menu:zoom"),
-      run: createSubscribeAPI<(event: IpcRendererEvent) => void>("menu:run"),
+      run: createSubscribeAPI<
+        (event: IpcRendererEvent, debugEnabled: boolean) => void
+      >("menu:run"),
       build:
         createSubscribeAPI<
           (event: IpcRendererEvent, buildType: BuildType) => void

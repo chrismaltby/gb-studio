@@ -12,7 +12,7 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
       const state = store.getState();
       const dispatch = store.dispatch.bind(store);
 
-      const { buildType, exportBuild } = action.payload;
+      const { buildType, exportBuild, debugEnabled } = action.payload;
 
       if (state.console.status === "cancelled") {
         // Wait until cancel is complete before allowing another build
@@ -36,6 +36,7 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
           engineFields,
           profile: state.editor.profile,
           exportBuild,
+          debugEnabled,
         });
       } catch (e) {
         dispatch(navigationActions.setSection("build"));

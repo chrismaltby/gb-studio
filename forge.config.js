@@ -114,6 +114,12 @@ module.exports = async () => {
                   "vendor-lodash",
                 ],
               },
+              {
+                name: "game_window",
+                preload: {
+                  js: "./src/app/game/preload.ts",
+                },
+              },
             ],
           },
         },
