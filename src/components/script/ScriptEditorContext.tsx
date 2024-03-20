@@ -1,5 +1,10 @@
 import React from "react";
-import { ScriptEditorContextType } from "shared/lib/scripts/context";
+import { ScriptEditorCtx } from "shared/lib/scripts/context";
 
-export const ScriptEditorContext =
-  React.createContext<ScriptEditorContextType>("entity");
+export const ScriptEditorContext = React.createContext<ScriptEditorCtx>({
+  type: "entity",
+  entityType: "scene",
+  sceneId: "",
+  entityId: "",
+  scriptKey: "",
+});

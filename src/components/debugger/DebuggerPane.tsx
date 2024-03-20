@@ -1,8 +1,6 @@
 import ScriptEditor from "components/script/ScriptEditor";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { ScriptEventParentType } from "shared/lib/entities/entitiesTypes";
+import React, { useCallback, useMemo, useState } from "react";
 import l10n from "shared/lib/lang/l10n";
-import { ScriptMapItem } from "store/features/debugger/debuggerState";
 import { getSettings } from "store/features/settings/settingsState";
 import settingsActions from "store/features/settings/settingsActions";
 import { useAppDispatch, useAppSelector } from "store/hooks";
@@ -13,6 +11,8 @@ import { SearchInput } from "ui/form/SearchInput";
 import { CaretDownIcon } from "ui/icons/Icons";
 import { FlexGrow } from "ui/spacing/Spacing";
 import { CodeEditor } from "ui/form/CodeEditor";
+import { ScriptEditorCtx } from "shared/lib/scripts/context";
+import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 
 const Wrapper = styled.div`
   display: flex;
@@ -128,7 +128,6 @@ const DebuggerPane = () => {
   const dispatch = useAppDispatch();
   const initialized = useAppSelector((state) => state.debug.initialized);
   const vramPreview = useAppSelector((state) => state.debug.vramPreview);
-  const memoryDict = useAppSelector((state) => state.debug.memoryDict);
   const variableDataBySymbol = useAppSelector(
     (state) => state.debug.variableDataBySymbol
   );
@@ -136,7 +135,6 @@ const DebuggerPane = () => {
     (state) => state.debug.variableSymbols
   );
   const variablesData = useAppSelector((state) => state.debug.variablesData);
-  const scriptContexts = useAppSelector((state) => state.debug.scriptContexts);
   const scriptMap = useAppSelector((state) => state.debug.scriptMap);
   const gbvmScripts = useAppSelector((state) => state.debug.gbvmScripts);
   const viewScriptType = useAppSelector(
@@ -145,9 +143,6 @@ const DebuggerPane = () => {
   const currentScriptSymbol = useAppSelector(
     (state) => state.debug.currentScriptSymbol
   );
-  //   const [currentScriptEvents, setCurrentScriptEvents] =
-  // useState<ScriptMapItem>();
-  //   const [currentScript, setCurrentScript] = useState("");
 
   const [varSearchTerm, setVarSearchTerm] = useState("");
 
@@ -176,6 +171,20 @@ const DebuggerPane = () => {
 
   const currentScriptEvents = scriptMap[currentScriptSymbol] ?? undefined;
   const currentGBVMScript = gbvmScripts[`${currentScriptSymbol}.s`] ?? "";
+
+  const scriptCtx: ScriptEditorCtx | undefined = useMemo(
+    () =>
+      currentScriptEvents
+        ? {
+            type: "entity",
+            entityType: currentScriptEvents.entityType,
+            entityId: currentScriptEvents.entityId,
+            sceneId: currentScriptEvents.sceneId,
+            scriptKey: currentScriptEvents.scriptType,
+          }
+        : undefined,
+    [currentScriptEvents]
+  );
 
   if (!initialized) {
     return (
@@ -277,13 +286,10 @@ const DebuggerPane = () => {
             GBVM
           </Button>
         </Heading>
-        {viewScriptType === "editor" && currentScriptEvents ? (
-          <ScriptEditor
-            value={currentScriptEvents.script}
-            type={currentScriptEvents.entityType as ScriptEventParentType}
-            entityId={currentScriptEvents.entityId}
-            scriptKey={currentScriptEvents.scriptType}
-          />
+        {viewScriptType === "editor" && currentScriptEvents && scriptCtx ? (
+          <ScriptEditorContext.Provider value={scriptCtx}>
+            <ScriptEditor value={currentScriptEvents.script} />
+          </ScriptEditorContext.Provider>
         ) : undefined}
         {viewScriptType === "gbvm" && currentGBVMScript ? (
           <CodeEditorWrapper>

@@ -63,10 +63,7 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
   const [namedVariablesLookup, setNamedVariablesLookup] = useState<
     Dictionary<NamedVariable>
   >({});
-  const editorType = useAppSelector((state) => state.editor.type);
-
-  const sceneId = useAppSelector((state) => state.editor.scene);
-  const entityId = useAppSelector((state) => state.editor.entityId) || sceneId;
+  const { entityType, sceneId, entityId } = context;
 
   const variablesLookup = useAppSelector((state) =>
     variableSelectors.selectEntities(state)
@@ -104,7 +101,6 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
   useEffect(() => {
     const variables = namedVariablesByContext(
       context,
-      entityId,
       variablesLookup,
       customEvent
     );
@@ -116,14 +112,14 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
     async function fetchAutoLabel() {
       if (scriptEventDefs[command]?.hasAutoLabel) {
         const actorNameForId = (value: unknown) => {
-          if (context === "script" && customEvent) {
+          if (context.type === "script" && customEvent) {
             return (
               customEvent.actors[value as string]?.name ||
               customEventActorsLookup[value as string]?.name ||
               l10n("FIELD_PLAYER")
             ).replace(/ /g, "");
           }
-          if (value === "$self$" && editorType === "actor") {
+          if (value === "$self$" && entityType === "actor") {
             return l10n("FIELD_SELF");
           } else if (value === "$self$" || value === "player") {
             return l10n("FIELD_PLAYER");
@@ -203,7 +199,7 @@ const ScriptEventTitle = ({ command, args = {} }: ScriptEventTitleProps) => {
     command,
     args,
     namedVariablesLookup,
-    editorType,
+    entityType,
     actorsLookup,
     sceneActorIds,
     scenesLookup,

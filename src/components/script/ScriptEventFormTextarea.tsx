@@ -39,7 +39,7 @@ const ScriptEventFormTextArea: FC<ScriptEventFormTextAreaProps> = ({
 
   useEffect(() => {
     setVariables(
-      namedVariablesByContext(context, entityId, variablesLookup, customEvent)
+      namedVariablesByContext(context, variablesLookup, customEvent)
     );
   }, [entityId, variablesLookup, context, customEvent]);
 

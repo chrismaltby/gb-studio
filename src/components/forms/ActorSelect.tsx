@@ -47,36 +47,34 @@ export const ActorSelect = ({
   frame,
 }: ActorSelectProps) => {
   const context = useContext(ScriptEditorContext);
-  const editorType = useAppSelector((state) => state.editor.type);
   const [options, setOptions] = useState<ActorOption[]>([]);
   const [currentValue, setCurrentValue] = useState<ActorOption>();
-  const sceneId = useAppSelector((state) => state.editor.scene);
   const sceneType = useAppSelector(
-    (state) => sceneSelectors.selectById(state, sceneId)?.type
+    (state) => sceneSelectors.selectById(state, context.sceneId)?.type
   );
   const scenePlayerSpriteSheetId = useAppSelector(
-    (state) => sceneSelectors.selectById(state, sceneId)?.playerSpriteSheetId
+    (state) =>
+      sceneSelectors.selectById(state, context.sceneId)?.playerSpriteSheetId
   );
   const defaultPlayerSprites = useAppSelector(
     (state) => state.project.present.settings.defaultPlayerSprites
   );
-  const contextEntityId = useAppSelector((state) => state.editor.entityId);
   const sceneActorIds = useAppSelector((state) =>
-    getSceneActorIds(state, { id: sceneId })
+    getSceneActorIds(state, { id: context.sceneId })
   );
   const actorsLookup = useAppSelector((state) =>
     actorSelectors.selectEntities(state)
   );
   const customEvent = useAppSelector((state) =>
-    customEventSelectors.selectById(state, contextEntityId)
+    customEventSelectors.selectById(state, context.entityId)
   );
-  const selfIndex = sceneActorIds?.indexOf(contextEntityId);
-  const selfActor = actorsLookup[contextEntityId];
+  const selfIndex = sceneActorIds?.indexOf(context.entityId);
+  const selfActor = actorsLookup[context.entityId];
   const playerSpriteSheetId =
     scenePlayerSpriteSheetId || (sceneType && defaultPlayerSprites[sceneType]);
 
   useEffect(() => {
-    if (context === "script" && customEvent) {
+    if (context.type === "script" && customEvent) {
       setOptions([
         {
           label: "Player",
@@ -90,9 +88,11 @@ export const ActorSelect = ({
           };
         }),
       ]);
-    } else if (context === "entity" && sceneActorIds) {
+    } else if (context.type === "entity" && sceneActorIds) {
       setOptions([
-        ...(editorType === "actor" && selfActor && selfIndex !== undefined
+        ...(context.entityType === "actor" &&
+        selfActor &&
+        selfIndex !== undefined
           ? [
               {
                 label: `${l10n("FIELD_SELF")} (${actorName(
@@ -132,9 +132,7 @@ export const ActorSelect = ({
   }, [
     actorsLookup,
     context,
-    contextEntityId,
     customEvent,
-    editorType,
     playerSpriteSheetId,
     sceneActorIds,
     selfActor,

@@ -67,11 +67,15 @@ const ScriptEventFields = ({
             typeof field.label === "string" ? field.label : ""
           );
           if (field.allowedContexts) {
-            if (!field.allowedContexts.includes(context)) {
-              const newContext = field.allowedContexts[0];
+            if (!field.allowedContexts.includes(context.type)) {
+              const newContextType = field.allowedContexts[0];
+              const ctx = {
+                ...context,
+                type: newContextType,
+              };
               return (
                 <ScriptEditorContext.Provider
-                  value={newContext}
+                  value={ctx}
                   key={genKey(id, field.key || "", fieldIndex)}
                 >
                   {events}

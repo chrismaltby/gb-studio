@@ -1,13 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { ScriptMapData, VariableMapData } from "lib/compiler/compileData";
-import { DebuggerScriptContext } from "shared/lib/debugger/types";
-
-export interface ScriptMapItem {
-  script: string[];
-  entityId: string;
-  entityType: string;
-  scriptType: string;
-}
+import type { DebuggerScriptContext } from "shared/lib/debugger/types";
 
 export interface DebuggerState {
   initialized: boolean;
@@ -17,7 +10,7 @@ export interface DebuggerState {
   variableDataBySymbol: Record<string, VariableMapData>;
   memoryDict: Map<number, Map<number, string>>;
   gbvmScripts: Record<string, string>;
-  scriptMap: Record<string, ScriptMapItem>;
+  scriptMap: Record<string, ScriptMapData>;
   vramPreview: string;
   variablesData: number[];
   scriptContexts: DebuggerScriptContext[];

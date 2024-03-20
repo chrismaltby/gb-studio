@@ -1,4 +1,4 @@
-import { ScriptEditorContextType } from "shared/lib/scripts/context";
+import { ScriptEditorCtx } from "shared/lib/scripts/context";
 import uniq from "lodash/uniq";
 import {
   CustomEventNormalized,
@@ -43,18 +43,17 @@ export interface VariableGroup {
  */
 
 export const namedVariablesByContext = (
-  context: ScriptEditorContextType,
-  entityId: string,
+  context: ScriptEditorCtx,
   variablesLookup: VariablesLookup,
   customEvent: CustomEventNormalized | undefined
 ): NamedVariable[] => {
-  if (context === "script") {
+  if (context.type === "script") {
     if (customEvent) {
       return namedCustomEventVariables(customEvent, variablesLookup);
     }
     return [];
-  } else if (context === "entity") {
-    return namedEntityVariables(entityId, variablesLookup);
+  } else if (context.type === "entity") {
+    return namedEntityVariables(context.entityId, variablesLookup);
   } else {
     return namedGlobalVariables(variablesLookup);
   }

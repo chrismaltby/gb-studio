@@ -30,6 +30,7 @@ import { Label } from "ui/form/Label";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { ScriptEditorCtx } from "shared/lib/scripts/context";
 
 const customEventName = (
   customEvent: CustomEventNormalized,
@@ -181,6 +182,17 @@ const CustomEventEditor = ({ id, multiColumn }: CustomEventEditorProps) => {
   }, [dispatch, lockScriptEditor]);
 
   const selectSidebar = () => dispatch(editorActions.selectSidebar());
+
+  const scriptCtx: ScriptEditorCtx = useMemo(
+    () => ({
+      type: "script",
+      entityType: "customEvent",
+      entityId: id,
+      sceneId: "",
+      scriptKey: "script",
+    }),
+    [id]
+  );
 
   if (!customEvent) {
     return <WorldEditor />;
@@ -376,13 +388,8 @@ const CustomEventEditor = ({ id, multiColumn }: CustomEventEditorProps) => {
             }
           />
         </StickyTabs>
-        <ScriptEditorContext.Provider value="script">
-          <ScriptEditor
-            value={customEvent.script}
-            type="customEvent"
-            entityId={customEvent.id}
-            scriptKey={"script"}
-          />
+        <ScriptEditorContext.Provider value={scriptCtx}>
+          <ScriptEditor value={customEvent.script} />
         </ScriptEditorContext.Provider>
       </SidebarColumn>
     </Sidebar>

@@ -114,6 +114,7 @@ import type {
 import { ensureNumber, ensureString, ensureTypeGenerator } from "shared/types";
 import { walkSceneScripts, walkScenesScripts } from "shared/lib/scripts/walk";
 import { ScriptEventHandlers } from "lib/project/loadScriptEventHandlers";
+import { EntityType } from "shared/lib/scripts/context";
 
 type TilemapData = {
   symbol: string;
@@ -123,7 +124,8 @@ type TilemapData = {
 export type ScriptMapData = {
   script: string[];
   entityId: string;
-  entityType: ScriptBuilderEntityType;
+  sceneId: string;
+  entityType: EntityType;
   scriptType: string;
 };
 
@@ -1491,6 +1493,7 @@ const compile = async (
         scriptMap[scriptName] = {
           script: script.map((s) => s.id),
           entityId: entity.id,
+          sceneId: scene?.id ?? "",
           entityType,
           scriptType,
         };
