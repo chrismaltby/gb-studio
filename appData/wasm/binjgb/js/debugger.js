@@ -156,7 +156,7 @@ let ready = setInterval(() => {
             const currentAddress = address;
             let closestAddress = -1;
             if (bankScripts) {
-              const addresses = Array.from(bankScripts.keys());
+              const addresses = Array.from(bankScripts.keys()).sort();
               for (let i = 0; i < addresses.length; i++) {
                 if (addresses[i] > currentAddress) {
                   break;
