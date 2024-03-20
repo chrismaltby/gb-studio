@@ -1034,23 +1034,21 @@ ipcMain.handle(
         buildLog(`-`);
         buildLog(`Success! Starting emulator...`);
         if (options.debugEnabled) {
-          const { memoryMap, globalVariables, memoryDict } =
-            await readDebuggerSymbols(outputRoot);
+          const { memoryMap, globalVariables } = await readDebuggerSymbols(
+            outputRoot
+          );
           debuggerInitData = {
-            variablesStartAddr: memoryMap["_script_memory"],
-            variablesLength: globalVariables["MAX_GLOBAL_VARS"],
-            executingCtxAddr: memoryMap["_executing_ctx"],
-            firstCtxAddr: memoryMap["_first_ctx"],
+            memoryMap,
+            globalVariables,
           };
           const gbvmScripts = pickBy(compiledData.files, (_, key) =>
             key.endsWith(".s")
           );
           sendToProjectWindow("debugger:symbols", {
-            memoryMap,
             globalVariables,
-            memoryDict,
             variableMap: compiledData.variableMap,
             scriptMap: compiledData.scriptMap,
+            sceneMap: compiledData.sceneMap,
             gbvmScripts,
           });
         }

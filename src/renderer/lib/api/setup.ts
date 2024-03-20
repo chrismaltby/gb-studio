@@ -35,7 +35,11 @@ import type { NavigationSection } from "store/features/navigation/navigationStat
 import type { ScriptEventDefs } from "shared/lib/scripts/scriptDefHelpers";
 import type { MenuZoomType } from "menu";
 import type { DebuggerDataPacket } from "shared/lib/debugger/types";
-import type { ScriptMapData, VariableMapData } from "lib/compiler/compileData";
+import type {
+  SceneMapData,
+  ScriptMapData,
+  VariableMapData,
+} from "lib/compiler/compileData";
 
 interface L10NLookup {
   [key: string]: string | boolean | undefined;
@@ -353,11 +357,10 @@ const APISetup = {
           (
             event: IpcRendererEvent,
             data: {
-              memoryMap: Record<string, number>;
               globalVariables: Record<string, number>;
-              memoryDict: Map<number, Map<number, string>>;
               variableMap: Record<string, VariableMapData>;
               scriptMap: Record<string, ScriptMapData>;
+              sceneMap: Record<string, SceneMapData>;
               gbvmScripts: Record<string, string>;
             }
           ) => void

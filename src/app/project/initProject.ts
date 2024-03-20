@@ -354,6 +354,8 @@ API.events.debugger.data.subscribe((_, packet) => {
           vramPreview: packet.vram,
           variablesData: packet.data,
           scriptContexts: packet.scriptContexts,
+          currentScriptSymbol: packet.currentScriptSymbol,
+          currentSceneSymbol: packet.currentSceneSymbol,
         })
       );
       break;
@@ -362,24 +364,13 @@ API.events.debugger.data.subscribe((_, packet) => {
 });
 
 API.events.debugger.symbols.subscribe(
-  (
-    _,
-    {
-      memoryMap,
-      globalVariables,
-      memoryDict,
-      variableMap,
-      scriptMap,
-      gbvmScripts,
-    }
-  ) => {
+  (_, { globalVariables, variableMap, scriptMap, sceneMap, gbvmScripts }) => {
     store.dispatch(
       debuggerActions.setSymbols({
-        memoryMap,
         globalVariables,
-        memoryDict,
         variableDataBySymbol: variableMap,
         scriptMap,
+        sceneMap,
         gbvmScripts,
       })
     );

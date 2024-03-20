@@ -64,6 +64,7 @@ import {
   PrecompiledScene,
   PrecompiledPalette,
   PrecompiledSceneEventPtrs,
+  sceneName,
 } from "./compileData2";
 import compileSGBImage from "./sgb";
 import { compileScriptEngineInit } from "./compileBootstrap";
@@ -126,6 +127,12 @@ export type ScriptMapData = {
   sceneId: string;
   entityType: EntityType;
   scriptType: string;
+};
+
+export type SceneMapData = {
+  id: string;
+  name: string;
+  symbol: string;
 };
 
 export type VariableMapData = {
@@ -1296,11 +1303,13 @@ const compile = async (
 ): Promise<{
   files: Record<string, string>;
   scriptMap: Record<string, ScriptMapData>;
+  sceneMap: Record<string, SceneMapData>;
   variableMap: Record<string, VariableMapData>;
 }> => {
   const output: Record<string, string> = {};
   const symbols: Dictionary<string> = {};
   const scriptMap: Record<string, ScriptMapData> = {};
+  const sceneMap: Record<string, SceneMapData> = {};
 
   if (projectData.scenes.length === 0) {
     throw new Error(
@@ -1805,6 +1814,12 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
     const bgPalette = precompiled.scenePaletteIndexes[scene.id] || 0;
     const actorsPalette = precompiled.sceneActorPaletteIndexes[scene.id] || 0;
 
+    sceneMap[scene.symbol] = {
+      id: scene.id,
+      name: sceneName(scene, sceneIndex),
+      symbol: scene.symbol,
+    };
+
     output[`${scene.symbol}.c`] = compileScene(scene, sceneIndex, {
       bgPalette,
       actorsPalette,
@@ -1966,6 +1981,7 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
   return {
     files: output,
     scriptMap,
+    sceneMap,
     variableMap,
   };
 };

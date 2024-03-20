@@ -13,14 +13,12 @@ export type DebuggerDataPacket =
       data: number[];
       vram: string;
       paused: boolean;
-      currentAddr: number;
-      currentBank: number;
       scriptContexts: DebuggerScriptContext[];
+      currentSceneSymbol: string;
+      currentScriptSymbol: string;
     };
 
 export type DebuggerInitData = {
-  variablesStartAddr: number;
-  variablesLength: number;
-  executingCtxAddr: number;
-  firstCtxAddr: number;
+  memoryMap: Record<string, number>;
+  globalVariables: Record<string, number>;
 };

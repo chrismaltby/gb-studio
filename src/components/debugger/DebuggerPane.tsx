@@ -23,12 +23,14 @@ import {
   SceneScriptKey,
   TriggerScriptKey,
 } from "shared/lib/entities/entitiesTypes";
+import { actorName, triggerName } from "shared/lib/entities/entitiesHelpers";
 
 const Wrapper = styled.div`
   display: flex;
   flex-direction: row;
   width: 100%;
   height: 100%;
+  font-size: 10px;
   background-color: ${(props) => props.theme.colors.sidebar.background};
 
   img {
@@ -39,7 +41,7 @@ const Wrapper = styled.div`
 const Heading = styled.div`
   display: flex;
   text-transform: uppercase;
-  font-size: 10px;
+  font-size: 11px;
   align-items: center;
   padding: 10px;
 
@@ -78,7 +80,7 @@ const Column = styled.div`
 `;
 
 const ColumnContent = styled.div`
-  padding: 5px;
+  padding: 0 10px;
 
   ${SearchInput} {
     width: 100%;
@@ -126,6 +128,18 @@ const CodeEditorWrapper = styled.div`
   }
 `;
 
+const DataRow = styled.div`
+  padding-bottom: 5px;
+  &:last-of-type {
+    padding-bottom: 10px;
+  }
+`;
+
+const DataLabel = styled.span`
+  font-weight: bold;
+  padding-right: 5px;
+`;
+
 const NotInitializedWrapper = styled.div`
   display: flex;
   width: 100%;
@@ -146,12 +160,16 @@ const DebuggerPane = () => {
   );
   const variablesData = useAppSelector((state) => state.debug.variablesData);
   const scriptMap = useAppSelector((state) => state.debug.scriptMap);
+  const sceneMap = useAppSelector((state) => state.debug.sceneMap);
   const gbvmScripts = useAppSelector((state) => state.debug.gbvmScripts);
   const viewScriptType = useAppSelector(
     (state) => getSettings(state).debuggerScriptType
   );
   const currentScriptSymbol = useAppSelector(
     (state) => state.debug.currentScriptSymbol
+  );
+  const currentSceneSymbol = useAppSelector(
+    (state) => state.debug.currentSceneSymbol
   );
 
   const [varSearchTerm, setVarSearchTerm] = useState("");
@@ -181,6 +199,7 @@ const DebuggerPane = () => {
 
   const currentScriptEvents = scriptMap[currentScriptSymbol] ?? undefined;
   const currentGBVMScript = gbvmScripts[`${currentScriptSymbol}.s`] ?? "";
+  const currentSceneData = sceneMap[currentSceneSymbol] ?? undefined;
 
   const scriptCtx: ScriptEditorCtx | undefined = useMemo(
     () =>
@@ -203,8 +222,14 @@ const DebuggerPane = () => {
     triggerSelectors.selectById(state, currentScriptEvents?.entityId)
   );
   const scene = useAppSelector((state) =>
-    sceneSelectors.selectById(state, currentScriptEvents?.entityId)
+    sceneSelectors.selectById(
+      state,
+      currentSceneData?.id || currentScriptEvents?.entityId
+    )
   );
+
+  const actorIndex = scene?.actors.indexOf(actor?.id ?? "") ?? -1;
+  const triggerIndex = scene?.triggers.indexOf(trigger?.id ?? "") ?? -1;
 
   const currentScript = useMemo(() => {
     if (!currentScriptEvents) {
@@ -238,8 +263,34 @@ const DebuggerPane = () => {
           <img src={vramPreview} alt=""></img>
         </ColumnContent>
         <Heading>
-          <CaretDownIcon /> Current Scene
+          <CaretDownIcon /> Current State
         </Heading>
+        <ColumnContent>
+          {currentSceneData && (
+            <DataRow>
+              <DataLabel>Scene:</DataLabel>
+              {currentSceneData.name}
+            </DataRow>
+          )}
+          {actor && actorIndex > -1 && (
+            <DataRow>
+              <DataLabel>Actor:</DataLabel>
+              {actorName(actor, actorIndex)}
+            </DataRow>
+          )}
+          {trigger && triggerIndex > -1 && (
+            <DataRow>
+              <DataLabel>Trigger:</DataLabel>
+              {triggerName(trigger, triggerIndex)}
+            </DataRow>
+          )}
+          {currentScriptEvents && (
+            <DataRow>
+              <DataLabel>Script:</DataLabel>
+              {currentScriptEvents.scriptType}
+            </DataRow>
+          )}
+        </ColumnContent>
         <ColumnContent></ColumnContent>
         <Heading>
           <CaretDownIcon /> Breakpoints

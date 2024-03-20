@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 let debug;
 
 const EVENT_BREAKPOINT = 8;
@@ -131,36 +132,71 @@ let ready = setInterval(() => {
 
       switch (action) {
         case "listener-ready":
-          const executingCtxAddr = data.executingCtxAddr;
-          const firstCtxAddr = data.firstCtxAddr;
+          console.log({ data });
 
-          // const currentCtx = debug.readMemInt16(
-          //   parseInt(data.executingCtxAddr)
-          // );
+          const { memoryMap, globalVariables } = data;
 
-          // const currentAddress = debug.readMemInt16(currentCtx);
-          // const currentBank = debug.readMem(currentCtx + 2);
+          const memoryDict = new Map();
+          Object.keys(memoryMap).forEach((k) => {
+            const match = k.match(/___bank_(.*)/);
+            if (match) {
+              const label = `_${match[1]}`;
+              const bank = memoryMap[k];
+              if (memoryMap[label]) {
+                const n = memoryDict.get(bank) ?? new Map();
+                const ptr = memoryMap[label] & 0x0ffff;
+                n.set(ptr, label);
+                memoryDict.set(bank, n);
+              }
+            }
+          });
 
-          // console.log(currentBank, currentAddress);
+          const getClosestAddress = (bank, address) => {
+            const bankScripts = memoryDict.get(bank);
+            const currentAddress = address;
+            let closestAddress = -1;
+            if (bankScripts) {
+              const addresses = Array.from(bankScripts.keys());
+              for (let i = 0; i < addresses.length; i++) {
+                if (addresses[i] > currentAddress) {
+                  break;
+                } else {
+                  closestAddress = addresses[i];
+                }
+              }
+            }
+            return closestAddress;
+          };
 
-          // console.log(
-          //   "firstCtxAddr",
-          //   debug.readMemInt16(parseInt(data.firstCtxAddr))
-          // );
+          const getSymbol = (bank, address) => {
+            const symbol = memoryDict.get(bank)?.get(address) ?? "";
+            return symbol.slice(1);
+          };
+
+          const variablesStartAddr = memoryMap["_script_memory"];
+          const variablesLength = globalVariables["MAX_GLOBAL_VARS"];
+          const executingCtxAddr = memoryMap["_executing_ctx"];
+          const firstCtxAddr = memoryMap["_first_ctx"];
+          const currentSceneAddr = memoryMap["_current_scene"];
+
+          let currentScriptCtxBank = 0;
+          let currentScriptCtxAddr = 0;
 
           setInterval(() => {
             console.warn({ data });
 
             const globals = debug.readVariables(
-              parseInt(data.variablesStartAddr),
-              parseInt(data.variablesLength)
+              parseInt(variablesStartAddr),
+              parseInt(variablesLength)
             );
 
             const currentCtx = debug.readMemInt16(parseInt(executingCtxAddr));
 
-            let firstCtx = debug.readMemInt16(parseInt(data.firstCtxAddr));
+            let firstCtx = debug.readMemInt16(parseInt(firstCtxAddr));
 
             let scriptContexts = [];
+            console.warn("firstCtx", firstCtx);
+
             while (firstCtx !== 0) {
               // console.log("ADDR", debug.readMemInt16(firstCtx));
               // console.log("BANK", debug.readMem(firstCtx + 2));
@@ -171,7 +207,17 @@ let ready = setInterval(() => {
                 current: currentCtx === firstCtx,
               });
 
+              if (currentCtx === firstCtx) {
+                currentScriptCtxBank = debug.readMem(firstCtx + 2);
+                currentScriptCtxAddr = getClosestAddress(
+                  currentScriptCtxBank,
+                  debug.readMemInt16(firstCtx)
+                );
+              }
+
               firstCtx = debug.readMemInt16(firstCtx + 3);
+              console.log("- firstCtx", firstCtx);
+
               // console.log("NEXT", firstCtx);
             }
 
@@ -180,9 +226,17 @@ let ready = setInterval(() => {
               data: globals,
               vram: debug.renderVRam(),
               paused: debug.emulator.isPaused,
-              currentAddress: debug.readMemInt16(currentCtx),
-              currentBank: debug.readMem(currentCtx + 2),
               scriptContexts: scriptContexts,
+              currentSceneSymbol: getSymbol(
+                debug.readMem(currentSceneAddr),
+                debug.readMemInt16(currentSceneAddr + 1)
+              ),
+              currentScriptSymbol: getSymbol(
+                currentScriptCtxBank,
+                currentScriptCtxAddr
+              ),
+              // currentSceneAddress: debug.readMem(currentSceneAddr),
+              // currentSceneBank: debug.readMemInt16(currentSceneAddr + 1),
             });
           }, 1000 / 60);
           break;
