@@ -33,7 +33,6 @@ const Wrapper = styled.div`
   flex-direction: row;
   width: 100%;
   height: 100%;
-  font-size: 10px;
   background-color: ${(props) => props.theme.colors.sidebar.background};
 
   img {
@@ -76,6 +75,7 @@ const Column = styled.div`
   box-sizing: border-box;
   overflow: auto;
   border-right: 1px solid ${(props) => props.theme.colors.sidebar.border};
+  font-size: 11px;
 
   &:last-of-type {
     border-right: 0;
@@ -168,6 +168,7 @@ const ValueButton = styled.button`
   text-overflow: ellipsis;
   max-width: 100%;
   overflow: hidden;
+  line-height: 11px;
 
   :hover {
     color: ${(props) => props.theme.colors.highlight};

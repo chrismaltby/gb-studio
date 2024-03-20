@@ -10,7 +10,7 @@ import React, {
 import styled, { css } from "styled-components";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import useDropdownMenu from "ui/hooks/use-dropdown-menu";
-import { CaretDownIcon, TriangleIcon } from "ui/icons/Icons";
+import { CaretDownIcon } from "ui/icons/Icons";
 import { Menu, MenuItem, MenuItemProps } from "ui/menu/Menu";
 import { Button, ButtonProps } from "./Button";
 
