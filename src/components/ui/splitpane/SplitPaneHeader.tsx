@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 import styled, { css } from "styled-components";
 import { Button } from "ui/buttons/Button";
-import { CaretDownIcon, CaretRightIcon } from "ui/icons/Icons";
+import { CaretDownIcon, CaretRightIcon, TriangleIcon } from "ui/icons/Icons";
 
 interface SplitPaneHeaderProps {
   children: ReactNode;
@@ -50,15 +50,29 @@ export const Wrapper = styled.div<WrapperProps>`
   }
 `;
 
-const CollapseIcon = styled.div`
+interface CollapseIconProps {
+  collapsed: boolean;
+}
+
+const CollapseIcon = styled.div<CollapseIconProps>`
   width: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
   svg {
     width: 8px;
+    transform: rotate(180deg);
     fill: ${(props) => props.theme.colors.input.text};
   }
+
+  ${(props) =>
+    props.collapsed
+      ? css`
+          svg {
+            transform: rotate(90deg);
+          }
+        `
+      : ""}
 `;
 
 export const SplitPaneHeader: React.FC<SplitPaneHeaderProps> = ({
@@ -70,8 +84,8 @@ export const SplitPaneHeader: React.FC<SplitPaneHeaderProps> = ({
   return (
     <Wrapper onClick={onToggle} collapsible={!!onToggle}>
       {onToggle && (
-        <CollapseIcon>
-          {collapsed ? <CaretRightIcon /> : <CaretDownIcon />}
+        <CollapseIcon collapsed={collapsed}>
+          <TriangleIcon />
         </CollapseIcon>
       )}
       <span>{children}</span>
