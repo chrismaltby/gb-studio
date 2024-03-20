@@ -78,8 +78,6 @@ workerCtx.onmessage = async (evt) => {
     evt.data.customEventsLookup;
   const l10NData: L10NLookup = evt.data.l10NData;
 
-  console.log(customEventsLookup);
-
   setL10NData(l10NData);
 
   const uses: VariableUse[] = [];
