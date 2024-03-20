@@ -26,6 +26,7 @@ import {
 } from "shared/lib/entities/entitiesTypes";
 import { actorName, triggerName } from "shared/lib/entities/entitiesHelpers";
 import type { VariableMapData } from "lib/compiler/compileData";
+import useResizeObserver from "ui/hooks/use-resize-observer";
 
 const Wrapper = styled.div`
   display: flex;
@@ -43,6 +44,7 @@ const Wrapper = styled.div`
 const Heading = styled.div`
   display: flex;
   text-transform: uppercase;
+  font-weight: bold;
   font-size: 11px;
   align-items: center;
   padding: 10px;
@@ -71,7 +73,6 @@ const Column = styled.div`
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  max-width: 33.3333%;
   box-sizing: border-box;
   overflow: auto;
   border-right: 1px solid ${(props) => props.theme.colors.sidebar.border};
@@ -95,17 +96,27 @@ const VariableRow = styled.div`
   border-bottom: 1px solid ${(props) => props.theme.colors.input.border};
   display: flex;
   align-items: center;
+
+  &:last-of-type {
+    border-bottom: 0;
+  }
 `;
 
 const VariableName = styled.div`
   display: flex;
   flex-direction: column;
+  width: calc(100% - 100px);
 `;
 
 const Symbol = styled.span`
   opacity: 0.5;
   font-size: 8px;
   padding-top: 5px;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  overflow: hidden;
 `;
 
 const Eq = styled.span`
@@ -115,7 +126,7 @@ const Eq = styled.span`
 `;
 
 const InputWrapper = styled.div`
-  width: 150px;
+  width: 70px;
 `;
 
 const CodeEditorWrapper = styled.div`
@@ -152,6 +163,12 @@ const ValueButton = styled.button`
   margin: 0;
   height: 11px;
   text-align: left;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  overflow: hidden;
+
   :hover {
     color: ${(props) => props.theme.colors.highlight};
   }
@@ -167,6 +184,8 @@ const NotInitializedWrapper = styled.div`
 
 const DebuggerPane = () => {
   const dispatch = useAppDispatch();
+  const [wrapperEl, wrapperSize] = useResizeObserver<HTMLDivElement>();
+
   const initialized = useAppSelector((state) => state.debug.initialized);
   const vramPreview = useAppSelector((state) => state.debug.vramPreview);
   const variableDataBySymbol = useAppSelector(
@@ -313,156 +332,192 @@ const DebuggerPane = () => {
     [dispatch, onSelectActor, onSelectScene, onSelectTrigger]
   );
 
-  if (!initialized) {
-    return (
-      <NotInitializedWrapper>
-        Debugger not connected. Build your game first.
-      </NotInitializedWrapper>
-    );
-  }
+  const numColumns = !wrapperSize.width
+    ? 0
+    : wrapperSize.width > 960
+    ? 3
+    : wrapperSize.width > 560
+    ? 2
+    : 1;
+
+  const variablesPane = (
+    <>
+      <Heading>
+        {numColumns <= 2 && <CaretDownIcon />}
+        {l10n("FIELD_VARIABLES")}
+        <FlexGrow />
+        <Button
+          size="small"
+          variant={viewScriptType === "editor" ? "underlined" : "transparent"}
+          onClick={onSetScriptTypeEditor}
+        >
+          All
+        </Button>
+        /
+        <Button
+          size="small"
+          variant={viewScriptType === "gbvm" ? "underlined" : "transparent"}
+          onClick={onSetScriptTypeGBVM}
+        >
+          Watched
+        </Button>
+      </Heading>
+      <ColumnContent>
+        <SearchInput
+          value={varSearchTerm}
+          placeholder={l10n("TOOLBAR_SEARCH")}
+          onChange={onSearchVariables}
+        />
+      </ColumnContent>
+
+      {variableSymbols
+
+        .filter((symbol) => {
+          const key =
+            `${symbol} ${variableDataBySymbol[symbol]?.name}`.toUpperCase();
+          return key.includes(varSearchTerm.toUpperCase());
+        })
+        .map((symbol) => {
+          return (
+            <VariableRow key={symbol}>
+              <VariableName>
+                <ValueButton
+                  onClick={() => onSelectVariable(variableDataBySymbol[symbol])}
+                >
+                  {variableDataBySymbol[symbol]?.name ?? symbol}
+                </ValueButton>
+                <Symbol>{symbol}</Symbol>
+              </VariableName>
+              <Eq>=</Eq>
+              <InputWrapper>
+                <NumberInput
+                  min={0}
+                  max={65535}
+                  value={variablesData[variableSymbols.indexOf(symbol)]}
+                />
+              </InputWrapper>
+            </VariableRow>
+          );
+        })}
+    </>
+  );
+
+  const scriptPane = (
+    <>
+      <Heading>
+        {numColumns === 1 && <CaretDownIcon />}
+        {l10n("FIELD_CURRENT_SCRIPT")}
+        <FlexGrow />
+        <Button
+          size="small"
+          variant={viewScriptType === "editor" ? "underlined" : "transparent"}
+          onClick={onSetScriptTypeEditor}
+        >
+          Editor
+        </Button>
+        /
+        <Button
+          size="small"
+          variant={viewScriptType === "gbvm" ? "underlined" : "transparent"}
+          onClick={onSetScriptTypeGBVM}
+        >
+          GBVM
+        </Button>
+      </Heading>
+      {viewScriptType === "editor" && currentScriptEvents && scriptCtx ? (
+        <ScriptEditorContext.Provider value={scriptCtx}>
+          <ScriptEditor value={currentScript} />
+        </ScriptEditorContext.Provider>
+      ) : undefined}
+      {viewScriptType === "gbvm" && currentGBVMScript ? (
+        <CodeEditorWrapper>
+          <CodeEditor value={currentGBVMScript} onChange={() => {}} />
+        </CodeEditorWrapper>
+      ) : undefined}
+    </>
+  );
 
   return (
-    <Wrapper>
-      <Column>
-        <Heading>
-          <CaretDownIcon /> VRAM
-        </Heading>
-        <ColumnContent>
-          <img src={vramPreview} alt=""></img>
-        </ColumnContent>
-        <Heading>
-          <CaretDownIcon /> Current State
-        </Heading>
-        {currentSceneData && (
-          <ColumnContent>
+    <Wrapper ref={wrapperEl}>
+      {!initialized && (
+        <NotInitializedWrapper>
+          Debugger not connected. Build your game first.
+        </NotInitializedWrapper>
+      )}
+      {initialized && numColumns > 0 && (
+        <>
+          <Column style={numColumns > 1 ? { maxWidth: 275 } : undefined}>
+            <Heading>
+              <CaretDownIcon /> VRAM
+            </Heading>
+            <ColumnContent>
+              <img src={vramPreview} alt=""></img>
+            </ColumnContent>
+            <Heading>
+              <CaretDownIcon /> Current State
+            </Heading>
             {currentSceneData && (
-              <DataRow>
-                <DataLabel>Scene:</DataLabel>
-                <ValueButton onClick={() => onSelectScene(currentSceneData.id)}>
-                  {currentSceneData.name}
-                </ValueButton>
-              </DataRow>
+              <ColumnContent>
+                {currentSceneData && (
+                  <DataRow>
+                    <DataLabel>Scene:</DataLabel>
+                    <ValueButton
+                      onClick={() => onSelectScene(currentSceneData.id)}
+                    >
+                      {currentSceneData.name}
+                    </ValueButton>
+                  </DataRow>
+                )}
+                {actor && actorIndex > -1 && (
+                  <DataRow>
+                    <DataLabel>Actor:</DataLabel>
+                    <ValueButton
+                      onClick={() =>
+                        onSelectActor(actor.id, currentSceneData.id)
+                      }
+                    >
+                      {actorName(actor, actorIndex)}
+                    </ValueButton>
+                  </DataRow>
+                )}
+                {trigger && triggerIndex > -1 && (
+                  <DataRow>
+                    <DataLabel>Trigger:</DataLabel>
+                    <ValueButton
+                      onClick={() =>
+                        onSelectTrigger(trigger.id, currentSceneData.id)
+                      }
+                    >
+                      {triggerName(trigger, triggerIndex)}
+                    </ValueButton>
+                  </DataRow>
+                )}
+              </ColumnContent>
             )}
-            {actor && actorIndex > -1 && (
-              <DataRow>
-                <DataLabel>Actor:</DataLabel>
-                <ValueButton
-                  onClick={() => onSelectActor(actor.id, currentSceneData.id)}
-                >
-                  {actorName(actor, actorIndex)}
-                </ValueButton>
-              </DataRow>
-            )}
-            {trigger && triggerIndex > -1 && (
-              <DataRow>
-                <DataLabel>Trigger:</DataLabel>
-                <ValueButton
-                  onClick={() =>
-                    onSelectTrigger(trigger.id, currentSceneData.id)
-                  }
-                >
-                  {triggerName(trigger, triggerIndex)}
-                </ValueButton>
-              </DataRow>
-            )}
-          </ColumnContent>
-        )}
-        <Heading>
-          <CaretDownIcon /> Breakpoints
-        </Heading>
-        <ColumnContent></ColumnContent>
-      </Column>
-      <Column>
-        <Heading>
-          {l10n("FIELD_VARIABLES")}
-          <FlexGrow />
-          <Button
-            size="small"
-            variant={viewScriptType === "editor" ? "underlined" : "transparent"}
-            onClick={onSetScriptTypeEditor}
-          >
-            All
-          </Button>
-          /
-          <Button
-            size="small"
-            variant={viewScriptType === "gbvm" ? "underlined" : "transparent"}
-            onClick={onSetScriptTypeGBVM}
-          >
-            Watched
-          </Button>
-        </Heading>
-        <ColumnContent>
-          <SearchInput
-            value={varSearchTerm}
-            placeholder={l10n("TOOLBAR_SEARCH")}
-            onChange={onSearchVariables}
-          />
-        </ColumnContent>
-
-        {variableSymbols
-
-          .filter((symbol) => {
-            const key =
-              `${symbol} ${variableDataBySymbol[symbol]?.name}`.toUpperCase();
-            return key.includes(varSearchTerm.toUpperCase());
-          })
-          .map((symbol) => {
-            return (
-              <VariableRow key={symbol}>
-                <VariableName>
-                  <ValueButton
-                    onClick={() =>
-                      onSelectVariable(variableDataBySymbol[symbol])
-                    }
-                  >
-                    {variableDataBySymbol[symbol]?.name ?? symbol}
-                  </ValueButton>
-                  <Symbol>{symbol}</Symbol>
-                </VariableName>
-                <Eq>=</Eq>
-                <InputWrapper>
-                  <NumberInput
-                    min={0}
-                    max={65535}
-                    value={variablesData[variableSymbols.indexOf(symbol)]}
-                  />
-                </InputWrapper>
-              </VariableRow>
-            );
-          })}
-      </Column>
-      <Column>
-        <Heading>
-          {l10n("FIELD_CURRENT_SCRIPT")}
-          <FlexGrow />
-          <Button
-            size="small"
-            variant={viewScriptType === "editor" ? "underlined" : "transparent"}
-            onClick={onSetScriptTypeEditor}
-          >
-            Editor
-          </Button>
-          /
-          <Button
-            size="small"
-            variant={viewScriptType === "gbvm" ? "underlined" : "transparent"}
-            onClick={onSetScriptTypeGBVM}
-          >
-            GBVM
-          </Button>
-        </Heading>
-        {viewScriptType === "editor" && currentScriptEvents && scriptCtx ? (
-          <ScriptEditorContext.Provider value={scriptCtx}>
-            <ScriptEditor value={currentScript} />
-          </ScriptEditorContext.Provider>
-        ) : undefined}
-        {viewScriptType === "gbvm" && currentGBVMScript ? (
-          <CodeEditorWrapper>
-            <CodeEditor value={currentGBVMScript} onChange={() => {}} />
-          </CodeEditorWrapper>
-        ) : undefined}
-      </Column>
+            <Heading>
+              <CaretDownIcon /> Breakpoints
+            </Heading>
+            <ColumnContent></ColumnContent>
+            {numColumns < 3 && variablesPane}
+            {numColumns < 2 && scriptPane}
+          </Column>
+          {numColumns > 2 && (
+            <Column style={{ maxWidth: 350 }}>{variablesPane}</Column>
+          )}
+          {numColumns > 1 && (
+            <Column
+              style={{
+                maxWidth:
+                  numColumns === 3
+                    ? `calc(100% - 350px - 275px)`
+                    : `calc(100% - 275px)`,
+              }}
+            >
+              {scriptPane}
+            </Column>
+          )}
+        </>
+      )}
     </Wrapper>
   );
 };

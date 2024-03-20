@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 import styled, { css } from "styled-components";
 import { Button } from "ui/buttons/Button";
-import { CaretDownIcon, CaretRightIcon, TriangleIcon } from "ui/icons/Icons";
+import { TriangleIcon } from "ui/icons/Icons";
 
 interface SplitPaneHeaderProps {
   children: ReactNode;
