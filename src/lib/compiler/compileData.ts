@@ -139,6 +139,10 @@ export type VariableMapData = {
   id: string;
   name: string;
   symbol: string;
+  isLocal: boolean;
+  entityType: EntityType;
+  entityId: string;
+  sceneId: string;
 };
 
 const indexById = <T extends { id: string }>(arr: T[]) => keyBy(arr, "id");
@@ -1357,6 +1361,10 @@ const compile = async (
           symbol,
           id: variable.id,
           name: variable.name,
+          isLocal: false,
+          entityType: "scene",
+          entityId: "",
+          sceneId: "",
         };
       }
       return memo;
@@ -1380,11 +1388,19 @@ const compile = async (
       symbol: bankVar,
       id: "",
       name: "Player Sprite Bank",
+      isLocal: false,
+      entityType: "scene",
+      entityId: "",
+      sceneId: "",
     };
     variableAliasLookup[dataVar] = {
       symbol: dataVar,
       id: "",
       name: "Player Sprite Data",
+      isLocal: false,
+      entityType: "scene",
+      entityId: "",
+      sceneId: "",
     };
     const sprite =
       precompiled.usedSprites.find(

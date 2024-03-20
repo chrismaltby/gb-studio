@@ -3,6 +3,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import l10n from "shared/lib/lang/l10n";
 import { getSettings } from "store/features/settings/settingsState";
 import settingsActions from "store/features/settings/settingsActions";
+import editorActions from "store/features/editor/editorActions";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import styled from "styled-components";
 import { Button } from "ui/buttons/Button";
@@ -24,6 +25,7 @@ import {
   TriggerScriptKey,
 } from "shared/lib/entities/entitiesTypes";
 import { actorName, triggerName } from "shared/lib/entities/entitiesHelpers";
+import type { VariableMapData } from "lib/compiler/compileData";
 
 const Wrapper = styled.div`
   display: flex;
@@ -140,6 +142,21 @@ const DataLabel = styled.span`
   padding-right: 5px;
 `;
 
+const ValueButton = styled.button`
+  background: transparent;
+  color: ${(props) => props.theme.colors.text};
+  display: inline;
+  padding: 0;
+  font-size: 11px;
+  border: 0;
+  margin: 0;
+  height: 11px;
+  text-align: left;
+  :hover {
+    color: ${(props) => props.theme.colors.highlight};
+  }
+`;
+
 const NotInitializedWrapper = styled.div`
   display: flex;
   width: 100%;
@@ -245,6 +262,57 @@ const DebuggerPane = () => {
     return [];
   }, [actor, currentScriptEvents, scene, trigger]);
 
+  const onSelectScene = useCallback(
+    (sceneId: string) => {
+      dispatch(editorActions.selectScene({ sceneId }));
+      dispatch(editorActions.editSearchTerm(""));
+      dispatch(editorActions.editSearchTerm(sceneId));
+    },
+    [dispatch]
+  );
+
+  const onSelectActor = useCallback(
+    (actorId: string, sceneId: string) => {
+      dispatch(editorActions.selectActor({ sceneId, actorId }));
+      dispatch(editorActions.editSearchTerm(""));
+      dispatch(editorActions.editSearchTerm(sceneId));
+    },
+    [dispatch]
+  );
+
+  const onSelectTrigger = useCallback(
+    (triggerId: string, sceneId: string) => {
+      dispatch(
+        editorActions.selectTrigger({
+          sceneId,
+          triggerId,
+        })
+      );
+      dispatch(editorActions.editSearchTerm(""));
+      dispatch(editorActions.editSearchTerm(sceneId));
+    },
+    [dispatch]
+  );
+
+  const onSelectVariable = useCallback(
+    (variableData: VariableMapData) => {
+      if (!variableData.isLocal) {
+        dispatch(
+          editorActions.selectVariable({
+            variableId: variableData.id,
+          })
+        );
+      } else if (variableData.entityType === "scene") {
+        onSelectScene(variableData.sceneId);
+      } else if (variableData.entityType === "actor") {
+        onSelectActor(variableData.entityId, variableData.sceneId);
+      } else if (variableData.entityType === "trigger") {
+        onSelectTrigger(variableData.entityId, variableData.sceneId);
+      }
+    },
+    [dispatch, onSelectActor, onSelectScene, onSelectTrigger]
+  );
+
   if (!initialized) {
     return (
       <NotInitializedWrapper>
@@ -265,33 +333,40 @@ const DebuggerPane = () => {
         <Heading>
           <CaretDownIcon /> Current State
         </Heading>
-        <ColumnContent>
-          {currentSceneData && (
-            <DataRow>
-              <DataLabel>Scene:</DataLabel>
-              {currentSceneData.name}
-            </DataRow>
-          )}
-          {actor && actorIndex > -1 && (
-            <DataRow>
-              <DataLabel>Actor:</DataLabel>
-              {actorName(actor, actorIndex)}
-            </DataRow>
-          )}
-          {trigger && triggerIndex > -1 && (
-            <DataRow>
-              <DataLabel>Trigger:</DataLabel>
-              {triggerName(trigger, triggerIndex)}
-            </DataRow>
-          )}
-          {currentScriptEvents && (
-            <DataRow>
-              <DataLabel>Script:</DataLabel>
-              {currentScriptEvents.scriptType}
-            </DataRow>
-          )}
-        </ColumnContent>
-        <ColumnContent></ColumnContent>
+        {currentSceneData && (
+          <ColumnContent>
+            {currentSceneData && (
+              <DataRow>
+                <DataLabel>Scene:</DataLabel>
+                <ValueButton onClick={() => onSelectScene(currentSceneData.id)}>
+                  {currentSceneData.name}
+                </ValueButton>
+              </DataRow>
+            )}
+            {actor && actorIndex > -1 && (
+              <DataRow>
+                <DataLabel>Actor:</DataLabel>
+                <ValueButton
+                  onClick={() => onSelectActor(actor.id, currentSceneData.id)}
+                >
+                  {actorName(actor, actorIndex)}
+                </ValueButton>
+              </DataRow>
+            )}
+            {trigger && triggerIndex > -1 && (
+              <DataRow>
+                <DataLabel>Trigger:</DataLabel>
+                <ValueButton
+                  onClick={() =>
+                    onSelectTrigger(trigger.id, currentSceneData.id)
+                  }
+                >
+                  {triggerName(trigger, triggerIndex)}
+                </ValueButton>
+              </DataRow>
+            )}
+          </ColumnContent>
+        )}
         <Heading>
           <CaretDownIcon /> Breakpoints
         </Heading>
@@ -336,7 +411,13 @@ const DebuggerPane = () => {
             return (
               <VariableRow key={symbol}>
                 <VariableName>
-                  {variableDataBySymbol[symbol]?.name ?? symbol}
+                  <ValueButton
+                    onClick={() =>
+                      onSelectVariable(variableDataBySymbol[symbol])
+                    }
+                  >
+                    {variableDataBySymbol[symbol]?.name ?? symbol}
+                  </ValueButton>
                   <Symbol>{symbol}</Symbol>
                 </VariableName>
                 <Eq>=</Eq>

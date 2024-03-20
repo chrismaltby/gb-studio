@@ -3671,6 +3671,7 @@ extern void __mute_mask_${symbol};
       entityType,
       variablesLookup,
       variableAliasLookup,
+      scene,
     } = this.options;
 
     const id = getVariableId(variable, entity);
@@ -3682,6 +3683,10 @@ extern void __mute_mask_${symbol};
         symbol,
         name: namedVariable.name,
         id: namedVariable.id,
+        isLocal: false,
+        entityType: "scene",
+        entityId: "",
+        sceneId: "",
       };
       return symbol;
     }
@@ -3693,7 +3698,8 @@ extern void __mute_mask_${symbol};
     }
 
     let name = "";
-    if (entity && isVariableLocal(variable)) {
+    const isLocal = isVariableLocal(variable);
+    if (entity && isLocal) {
       const num = toVariableNumber(variable);
       const localName = localVariableName(num, entity.id, variablesLookup);
       if (entityType === "scene") {
@@ -3727,6 +3733,10 @@ extern void __mute_mask_${symbol};
       symbol: newAlias,
       id,
       name,
+      isLocal,
+      entityType,
+      entityId: entity?.id ?? "",
+      sceneId: scene?.id ?? "",
     };
 
     return newAlias;
