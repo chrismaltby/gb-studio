@@ -13,6 +13,16 @@ import { FlexGrow } from "ui/spacing/Spacing";
 import { CodeEditor } from "ui/form/CodeEditor";
 import { ScriptEditorCtx } from "shared/lib/scripts/context";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
+import {
+  actorSelectors,
+  sceneSelectors,
+  triggerSelectors,
+} from "store/features/entities/entitiesState";
+import {
+  ActorScriptKey,
+  SceneScriptKey,
+  TriggerScriptKey,
+} from "shared/lib/entities/entitiesTypes";
 
 const Wrapper = styled.div`
   display: flex;
@@ -186,6 +196,30 @@ const DebuggerPane = () => {
     [currentScriptEvents]
   );
 
+  const actor = useAppSelector((state) =>
+    actorSelectors.selectById(state, currentScriptEvents?.entityId)
+  );
+  const trigger = useAppSelector((state) =>
+    triggerSelectors.selectById(state, currentScriptEvents?.entityId)
+  );
+  const scene = useAppSelector((state) =>
+    sceneSelectors.selectById(state, currentScriptEvents?.entityId)
+  );
+
+  const currentScript = useMemo(() => {
+    if (!currentScriptEvents) {
+      return [];
+    }
+    if (currentScriptEvents.entityType === "actor" && actor) {
+      return actor[currentScriptEvents.scriptType as ActorScriptKey];
+    } else if (currentScriptEvents.entityType === "trigger" && trigger) {
+      return trigger[currentScriptEvents.scriptType as TriggerScriptKey];
+    } else if (currentScriptEvents.entityType === "scene" && scene) {
+      return scene[currentScriptEvents.scriptType as SceneScriptKey];
+    }
+    return [];
+  }, [actor, currentScriptEvents, scene, trigger]);
+
   if (!initialized) {
     return (
       <NotInitializedWrapper>
@@ -288,7 +322,7 @@ const DebuggerPane = () => {
         </Heading>
         {viewScriptType === "editor" && currentScriptEvents && scriptCtx ? (
           <ScriptEditorContext.Provider value={scriptCtx}>
-            <ScriptEditor value={currentScriptEvents.script} />
+            <ScriptEditor value={currentScript} />
           </ScriptEditorContext.Provider>
         ) : undefined}
         {viewScriptType === "gbvm" && currentGBVMScript ? (

@@ -122,7 +122,6 @@ type TilemapData = {
 };
 
 export type ScriptMapData = {
-  script: string[];
   entityId: string;
   sceneId: string;
   entityType: EntityType;
@@ -1491,7 +1490,6 @@ const compile = async (
         output[`${scriptName}.h`] = compileScriptHeader(scriptName);
 
         scriptMap[scriptName] = {
-          script: script.map((s) => s.id),
           entityId: entity.id,
           sceneId: scene?.id ?? "",
           entityType,

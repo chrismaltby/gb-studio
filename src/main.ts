@@ -520,6 +520,7 @@ const createPlay = async (
         preload: GAME_WINDOW_PRELOAD_WEBPACK_ENTRY,
       },
     });
+    playWindow.setAlwaysOnTop(true);
     playWindowSgb = sgb;
   } else {
     playWindow.show();
