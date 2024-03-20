@@ -5,7 +5,7 @@ import { ThemeInterface } from "ui/theme/ThemeInterface";
 
 export interface ButtonProps {
   readonly size?: "small" | "medium" | "large";
-  readonly variant?: "normal" | "primary" | "transparent";
+  readonly variant?: "normal" | "primary" | "transparent" | "underlined";
   readonly selected?: boolean;
   readonly active?: boolean;
   readonly children?: ReactNode;
@@ -44,6 +44,7 @@ export const Button = styled.button<ButtonProps>`
   ${(props) => (props.variant === "normal" ? normalStyles : "")}
   ${(props) => (props.variant === "primary" ? primaryStyles : "")}
   ${(props) => (props.variant === "transparent" ? transparentStyles : "")}
+  ${(props) => (props.variant === "underlined" ? underlinedStyles : "")}
 `;
 
 const smallStyles = css`
@@ -100,6 +101,47 @@ const transparentStyles = css<ButtonProps>`
   background: transparent;
   border-color: transparent;
   color: ${(props) => props.theme.colors.button.text};
+
+  ${(props) =>
+    !props.disabled
+      ? css`
+          :hover {
+            background: rgba(128, 128, 128, 0.1);
+          }
+          :active {
+            background: rgba(128, 128, 128, 0.2);
+          }
+        `
+      : ""}
+
+  ${(props) =>
+    props.active
+      ? css`
+          background: rgba(128, 128, 128, 0.3);
+          :hover {
+            background: rgba(128, 128, 128, 0.3);
+          }
+          :active {
+            background: rgba(128, 128, 128, 0.2);
+          }
+        `
+      : ""}
+`;
+
+const underlinedStyles = css<ButtonProps>`
+  background: transparent;
+  border-color: transparent;
+  color: ${(props) => props.theme.colors.button.text};
+  position: relative;
+  overflow: visible;
+
+  :after {
+    content: "";
+    border-bottom: 2px solid ${(props) => props.theme.colors.highlight};
+    width: 100%;
+    position: absolute;
+    bottom: -2px;
+  }
 
   ${(props) =>
     !props.disabled

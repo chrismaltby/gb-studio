@@ -20,6 +20,9 @@ import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import l10n from "shared/lib/lang/l10n";
 import DebuggerPane from "components/debugger/DebuggerPane";
 import API from "renderer/lib/api";
+import { Button } from "ui/buttons/Button";
+import { NextIcon, PauseIcon, PlayIcon } from "ui/icons/Icons";
+import { FixedSpacer } from "ui/spacing/Spacing";
 
 const Wrapper = styled.div`
   display: flex;
@@ -44,6 +47,7 @@ const WorldPage = () => {
   const showNavigator = useAppSelector(
     (state) => state.project.present.settings.showNavigator
   );
+  const isPaused = true;
   const [leftPaneWidth, setLeftPaneSize, startLeftPaneResize] = useResizable({
     initialSize: navigatorSidebarWidth,
     direction: "right",
@@ -253,10 +257,32 @@ const WorldPage = () => {
           <SplitPaneHeader
             onToggle={toggleDebuggerPane}
             collapsed={debuggerPaneHeight <= 30}
+            buttons={
+              debuggerPaneHeight > 30 && (
+                <>
+                  <Button size="small" variant="transparent" onClick={() => {}}>
+                    {isPaused ? <PlayIcon /> : <PauseIcon />}
+                  </Button>
+                  <FixedSpacer width={5} />
+                  <Button
+                    size="small"
+                    variant="transparent"
+                    onClick={() => {}}
+                    title={l10n("FIELD_STEP")}
+                  >
+                    <NextIcon />
+                  </Button>
+                </>
+              )
+            }
           >
             {l10n("FIELD_DEBUGGER")}
           </SplitPaneHeader>
-          {debuggerPaneHeight > 30 && <DebuggerPane />}
+          {debuggerPaneHeight > 30 && (
+            <div style={{ height: debuggerPaneHeight - 30 }}>
+              <DebuggerPane />
+            </div>
+          )}
         </div>
       </div>
       <SplitPaneHorizontalDivider onMouseDown={onResizeRight} />

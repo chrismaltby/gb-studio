@@ -97,6 +97,7 @@ import {
   DebuggerDataPacket,
   DebuggerInitData,
 } from "shared/lib/debugger/types";
+import pickBy from "lodash/pickBy";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -1032,21 +1033,25 @@ ipcMain.handle(
         buildLog(`-`);
         buildLog(`Success! Starting emulator...`);
         if (options.debugEnabled) {
-          const { map, globals, dict } = await readDebuggerSymbols(outputRoot);
+          const { memoryMap, globalVariables, memoryDict } =
+            await readDebuggerSymbols(outputRoot);
           debuggerInitData = {
-            variablesStartAddr: map["_script_memory"],
-            variablesLength: globals["MAX_GLOBAL_VARS"],
-            executingCtxAddr: map["_executing_ctx"],
-            firstCtxAddr: map["_first_ctx"],
+            variablesStartAddr: memoryMap["_script_memory"],
+            variablesLength: globalVariables["MAX_GLOBAL_VARS"],
+            executingCtxAddr: memoryMap["_executing_ctx"],
+            firstCtxAddr: memoryMap["_first_ctx"],
           };
-          sendToProjectWindow(
-            "debugger:symbols",
-            map,
-            globals,
-            dict,
-            compiledData.variableMap,
-            compiledData.scriptMap
+          const gbvmScripts = pickBy(compiledData.files, (_, key) =>
+            key.endsWith(".s")
           );
+          sendToProjectWindow("debugger:symbols", {
+            memoryMap,
+            globalVariables,
+            memoryDict,
+            variableMap: compiledData.variableMap,
+            scriptMap: compiledData.scriptMap,
+            gbvmScripts,
+          });
         }
         createPlay(
           `file://${outputRoot}/build/web/index.html`,

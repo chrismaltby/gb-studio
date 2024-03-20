@@ -352,11 +352,14 @@ const APISetup = {
         createSubscribeAPI<
           (
             event: IpcRendererEvent,
-            map: Record<string, number>,
-            globals: Record<string, number>,
-            memoryDict: Map<number, Map<number, string>>,
-            variableMap: Record<string, VariableMapData>,
-            scriptMap: Record<string, ScriptMapData>
+            data: {
+              memoryMap: Record<string, number>;
+              globalVariables: Record<string, number>;
+              memoryDict: Map<number, Map<number, string>>;
+              variableMap: Record<string, VariableMapData>;
+              scriptMap: Record<string, ScriptMapData>;
+              gbvmScripts: Record<string, string>;
+            }
           ) => void
         >("debugger:symbols"),
     },

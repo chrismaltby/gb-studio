@@ -1,11 +1,18 @@
 import ScriptEditor from "components/script/ScriptEditor";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { ScriptEventParentType } from "shared/lib/entities/entitiesTypes";
 import l10n from "shared/lib/lang/l10n";
 import { ScriptMapItem } from "store/features/debugger/debuggerState";
-import { useAppSelector } from "store/hooks";
+import { getSettings } from "store/features/settings/settingsState";
+import settingsActions from "store/features/settings/settingsActions";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 import styled from "styled-components";
+import { Button } from "ui/buttons/Button";
+import { NumberInput } from "ui/form/NumberInput";
 import { SearchInput } from "ui/form/SearchInput";
+import { CaretDownIcon } from "ui/icons/Icons";
+import { FlexGrow } from "ui/spacing/Spacing";
+import { CodeEditor } from "ui/form/CodeEditor";
 
 const Wrapper = styled.div`
   display: flex;
@@ -19,18 +26,107 @@ const Wrapper = styled.div`
   }
 `;
 
-const Heading = styled.div``;
+const Heading = styled.div`
+  display: flex;
+  text-transform: uppercase;
+  font-size: 10px;
+  align-items: center;
+  padding: 10px;
+
+  border-top: 1px solid ${(props) => props.theme.colors.sidebar.border};
+
+  &:first-of-type {
+    border-top: 0;
+  }
+
+  svg {
+    margin-right: 5px;
+    width: 8px;
+    height: 8px;
+    fill: ${(props) => props.theme.colors.input.text};
+  }
+
+  button {
+    padding: 0 3px;
+    margin: 0 5px;
+    height: auto;
+  }
+`;
 
 const Column = styled.div`
+  display: flex;
+  flex-direction: column;
   flex-grow: 1;
-  max-width: 33%;
-  padding: 10px;
+  max-width: 33.3333%;
   box-sizing: border-box;
-  overflow: scroll;
+  overflow: auto;
   border-right: 1px solid ${(props) => props.theme.colors.sidebar.border};
+
+  &:last-of-type {
+    border-right: 0;
+  }
+`;
+
+const ColumnContent = styled.div`
+  padding: 5px;
+
+  ${SearchInput} {
+    width: 100%;
+  }
+`;
+
+const VariableRow = styled.div`
+  padding: 5px 10px;
+  font-size: 11px;
+  border-bottom: 1px solid ${(props) => props.theme.colors.input.border};
+  display: flex;
+  align-items: center;
+`;
+
+const VariableName = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const Symbol = styled.span`
+  opacity: 0.5;
+  font-size: 8px;
+  padding-top: 5px;
+`;
+
+const Eq = styled.span`
+  flex-grow: 1;
+  text-align right;
+  margin-right: 5px;
+`;
+
+const InputWrapper = styled.div`
+  width: 150px;
+`;
+
+const CodeEditorWrapper = styled.div`
+  flex-grow: 1;
+
+  & > div {
+    min-height: 100%;
+    border-radius: 0;
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 0;
+  }
+`;
+
+const NotInitializedWrapper = styled.div`
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
 `;
 
 const DebuggerPane = () => {
+  const dispatch = useAppDispatch();
+  const initialized = useAppSelector((state) => state.debug.initialized);
   const vramPreview = useAppSelector((state) => state.debug.vramPreview);
   const memoryDict = useAppSelector((state) => state.debug.memoryDict);
   const variableDataBySymbol = useAppSelector(
@@ -42,8 +138,16 @@ const DebuggerPane = () => {
   const variablesData = useAppSelector((state) => state.debug.variablesData);
   const scriptContexts = useAppSelector((state) => state.debug.scriptContexts);
   const scriptMap = useAppSelector((state) => state.debug.scriptMap);
-  const [currentScriptEvents, setCurrentScriptEvents] =
-    useState<ScriptMapItem>();
+  const gbvmScripts = useAppSelector((state) => state.debug.gbvmScripts);
+  const viewScriptType = useAppSelector(
+    (state) => getSettings(state).debuggerScriptType
+  );
+  const currentScriptSymbol = useAppSelector(
+    (state) => state.debug.currentScriptSymbol
+  );
+  //   const [currentScriptEvents, setCurrentScriptEvents] =
+  // useState<ScriptMapItem>();
+  //   const [currentScript, setCurrentScript] = useState("");
 
   const [varSearchTerm, setVarSearchTerm] = useState("");
 
@@ -54,56 +158,79 @@ const DebuggerPane = () => {
     []
   );
 
-  useEffect(() => {
-    const getClosestAddress = (bank: number, address: number) => {
-      const bankScripts = memoryDict.get(bank);
-      const currentAddress = address;
-      let closestAddress = -1;
-      if (bankScripts) {
-        const addresses = Array.from(bankScripts.keys());
-        for (let i = 0; i < addresses.length; i++) {
-          if (addresses[i] > currentAddress) {
-            break;
-          } else {
-            closestAddress = addresses[i];
-          }
-        }
-      }
-      return closestAddress;
-    };
+  const onSetScriptTypeEditor = useCallback(() => {
+    dispatch(
+      settingsActions.editSettings({
+        debuggerScriptType: "editor",
+      })
+    );
+  }, [dispatch]);
 
-    let string = "";
-    scriptContexts.forEach((c) => {
-      console.log({ memoryDict });
-      string += `${c.current ? ">>>" : "   "} [${String(c.bank).padStart(
-        3,
-        "0"
-      )}] ${
-        memoryDict.get(c.bank)?.get(getClosestAddress(c.bank, c.address)) ??
-        "NONE"
-      }:${String(c.address).padStart(6, "0")}\n`;
+  const onSetScriptTypeGBVM = useCallback(() => {
+    dispatch(
+      settingsActions.editSettings({
+        debuggerScriptType: "gbvm",
+      })
+    );
+  }, [dispatch]);
 
-      if (c.current) {
-        const script =
-          memoryDict.get(c.bank)?.get(getClosestAddress(c.bank, c.address)) ??
-          "";
-        console.log(script, scriptMap[script.slice(1)]);
-        if (script) {
-          setCurrentScriptEvents(scriptMap[script.slice(1)]);
-        }
-      }
-    });
-  }, [memoryDict, scriptContexts, scriptMap]);
+  const currentScriptEvents = scriptMap[currentScriptSymbol] ?? undefined;
+  const currentGBVMScript = gbvmScripts[`${currentScriptSymbol}.s`] ?? "";
+
+  if (!initialized) {
+    return (
+      <NotInitializedWrapper>
+        Debugger not connected. Build your game first.
+      </NotInitializedWrapper>
+    );
+  }
 
   return (
     <Wrapper>
       <Column>
-        <Heading>VRAM</Heading>
-        <img src={vramPreview} alt=""></img>
+        <Heading>
+          <CaretDownIcon /> VRAM
+        </Heading>
+        <ColumnContent>
+          <img src={vramPreview} alt=""></img>
+        </ColumnContent>
+        <Heading>
+          <CaretDownIcon /> Current Scene
+        </Heading>
+        <ColumnContent></ColumnContent>
+        <Heading>
+          <CaretDownIcon /> Breakpoints
+        </Heading>
+        <ColumnContent></ColumnContent>
       </Column>
       <Column>
-        <Heading>{l10n("FIELD_VARIABLES")}</Heading>
-        <SearchInput value={varSearchTerm} onChange={onSearchVariables} />
+        <Heading>
+          {l10n("FIELD_VARIABLES")}
+          <FlexGrow />
+          <Button
+            size="small"
+            variant={viewScriptType === "editor" ? "underlined" : "transparent"}
+            onClick={onSetScriptTypeEditor}
+          >
+            All
+          </Button>
+          /
+          <Button
+            size="small"
+            variant={viewScriptType === "gbvm" ? "underlined" : "transparent"}
+            onClick={onSetScriptTypeGBVM}
+          >
+            Watched
+          </Button>
+        </Heading>
+        <ColumnContent>
+          <SearchInput
+            value={varSearchTerm}
+            placeholder={l10n("TOOLBAR_SEARCH")}
+            onChange={onSearchVariables}
+          />
+        </ColumnContent>
+
         {variableSymbols
 
           .filter((symbol) => {
@@ -111,27 +238,58 @@ const DebuggerPane = () => {
               `${symbol} ${variableDataBySymbol[symbol]?.name}`.toUpperCase();
             return key.includes(varSearchTerm.toUpperCase());
           })
-          .map((symbol, i) => {
+          .map((symbol) => {
             return (
-              <div key={symbol}>
-                {variableDataBySymbol[symbol]?.name ?? symbol}-{symbol}=
-                {variablesData[variableSymbols.indexOf(symbol)]}
-              </div>
+              <VariableRow key={symbol}>
+                <VariableName>
+                  {variableDataBySymbol[symbol]?.name ?? symbol}
+                  <Symbol>{symbol}</Symbol>
+                </VariableName>
+                <Eq>=</Eq>
+                <InputWrapper>
+                  <NumberInput
+                    min={0}
+                    max={65535}
+                    value={variablesData[variableSymbols.indexOf(symbol)]}
+                  />
+                </InputWrapper>
+              </VariableRow>
             );
           })}
       </Column>
       <Column>
-        <Heading>{l10n("FIELD_CURRENT_SCRIPT")}</Heading>
-        {currentScriptEvents ? (
+        <Heading>
+          {l10n("FIELD_CURRENT_SCRIPT")}
+          <FlexGrow />
+          <Button
+            size="small"
+            variant={viewScriptType === "editor" ? "underlined" : "transparent"}
+            onClick={onSetScriptTypeEditor}
+          >
+            Editor
+          </Button>
+          /
+          <Button
+            size="small"
+            variant={viewScriptType === "gbvm" ? "underlined" : "transparent"}
+            onClick={onSetScriptTypeGBVM}
+          >
+            GBVM
+          </Button>
+        </Heading>
+        {viewScriptType === "editor" && currentScriptEvents ? (
           <ScriptEditor
             value={currentScriptEvents.script}
             type={currentScriptEvents.entityType as ScriptEventParentType}
             entityId={currentScriptEvents.entityId}
             scriptKey={currentScriptEvents.scriptType}
           />
-        ) : (
-          ""
-        )}
+        ) : undefined}
+        {viewScriptType === "gbvm" && currentGBVMScript ? (
+          <CodeEditorWrapper>
+            <CodeEditor value={currentGBVMScript} onChange={() => {}} />
+          </CodeEditorWrapper>
+        ) : undefined}
       </Column>
     </Wrapper>
   );

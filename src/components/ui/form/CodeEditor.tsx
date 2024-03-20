@@ -8,7 +8,7 @@ import gbvmGrammar from "./prism/gbvm.grammar";
 
 interface CodeEditorProps {
   value: string;
-  onChange: (newValue: string) => void;
+  onChange?: (newValue: string) => void;
 }
 
 const Wrapper = styled.div`
@@ -110,6 +110,8 @@ const hightlightWithLineNumbers = (input: string, language: Grammar) =>
     .map((line, i) => `<span class='editorLineNumber'>${i + 1}</span>${line}`)
     .join("\n");
 
+const noop = () => {};
+
 export const CodeEditor = ({ value, onChange }: CodeEditorProps) => {
   console.log({ a: languages.js, b: gbvmGrammar });
   return (
@@ -117,12 +119,12 @@ export const CodeEditor = ({ value, onChange }: CodeEditorProps) => {
       <Editor
         className="editor"
         value={value}
-        onValueChange={onChange}
+        onValueChange={onChange ?? noop}
         highlight={(code) => hightlightWithLineNumbers(code, gbvmGrammar)}
         padding={0}
         style={{
           fontFamily: '"Fira code", "Fira Mono", monospace',
-          fontSize: 12,
+          fontSize: 11,
         }}
       />
     </Wrapper>

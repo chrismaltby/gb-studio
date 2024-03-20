@@ -69,6 +69,7 @@ export type SettingsState = {
   customControlsB: string[];
   customControlsStart: string[];
   customControlsSelect: string[];
+  debuggerScriptType: "editor" | "gbvm";
 };
 
 export const initialState: SettingsState = defaultProjectSettings;

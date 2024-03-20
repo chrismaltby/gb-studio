@@ -1049,6 +1049,7 @@
   "FIELD_ROUTINE_DESC": "The music routine, either 0, 1, 2 or 3.",
   "FIELD_DEBUGGER": "Debugger",
   "FIELD_CURRENT_SCRIPT": "Current Script",
+  "FIELD_STEP": "Step",
 
   "// 10": "Menu -----------------------------------------------------",
 
