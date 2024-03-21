@@ -33,7 +33,7 @@ const Heading = styled.div`
   font-size: 11px;
   align-items: center;
   padding: 10px;
-
+  background-color: ${(props) => props.theme.colors.sidebar.background};
   border-top: 1px solid ${(props) => props.theme.colors.sidebar.border};
 
   &:first-of-type {
@@ -44,6 +44,7 @@ const Heading = styled.div`
     margin-right: 5px;
     width: 8px;
     height: 8px;
+    min-width: 8px;
     fill: ${(props) => props.theme.colors.input.text};
   }
 
@@ -54,15 +55,20 @@ const Heading = styled.div`
   }
 `;
 
+const Content = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  border-top: 1px solid ${(props) => props.theme.colors.sidebar.border};
+`;
+
 const CodeEditorWrapper = styled.div`
   flex-grow: 1;
 
   & > div {
     min-height: 100%;
     border-radius: 0;
-    border-left: 0;
-    border-right: 0;
-    border-bottom: 0;
+    border: 0;
   }
 `;
 
@@ -164,16 +170,18 @@ const DebuggerScriptPane = ({ collapsible }: DebuggerScriptPaneProps) => {
           GBVM
         </Button>
       </Heading>
-      {viewScriptType === "editor" && currentScriptEvents && scriptCtx ? (
-        <ScriptEditorContext.Provider value={scriptCtx}>
-          <ScriptEditor value={currentScript} />
-        </ScriptEditorContext.Provider>
-      ) : undefined}
-      {viewScriptType === "gbvm" && currentGBVMScript ? (
-        <CodeEditorWrapper>
-          <CodeEditor value={currentGBVMScript} onChange={() => {}} />
-        </CodeEditorWrapper>
-      ) : undefined}
+      <Content>
+        {viewScriptType === "editor" && currentScriptEvents && scriptCtx ? (
+          <ScriptEditorContext.Provider value={scriptCtx}>
+            <ScriptEditor value={currentScript} />
+          </ScriptEditorContext.Provider>
+        ) : undefined}
+        {viewScriptType === "gbvm" && currentGBVMScript ? (
+          <CodeEditorWrapper>
+            <CodeEditor value={currentGBVMScript} onChange={() => {}} />
+          </CodeEditorWrapper>
+        ) : undefined}
+      </Content>
     </>
   );
 };

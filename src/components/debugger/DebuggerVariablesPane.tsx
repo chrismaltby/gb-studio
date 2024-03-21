@@ -25,6 +25,7 @@ const Heading = styled.div`
   padding: 10px;
 
   border-top: 1px solid ${(props) => props.theme.colors.sidebar.border};
+  background-color: ${(props) => props.theme.colors.sidebar.background};
 
   &:first-of-type {
     border-top: 0;
@@ -34,6 +35,7 @@ const Heading = styled.div`
     margin-right: 5px;
     width: 8px;
     height: 8px;
+    min-width: 8px;
     fill: ${(props) => props.theme.colors.input.text};
   }
 
@@ -55,24 +57,13 @@ const Heading = styled.div`
   }
 `;
 
-const ColumnContent = styled.div`
-  padding: 0 10px;
-
-  ${SearchInput} {
-    width: 100%;
-  }
-`;
-
 const VariableRow = styled.div`
   padding: 5px 10px;
   font-size: 11px;
-  border-top: 1px solid ${(props) => props.theme.colors.input.border};
+  border-bottom: 1px solid ${(props) => props.theme.colors.sidebar.border};
+  background: ${(props) => props.theme.colors.scripting.form.background};
   display: flex;
   align-items: center;
-
-  &:last-of-type {
-    border-bottom: 0;
-  }
 `;
 
 const VariableName = styled.div`
@@ -123,6 +114,12 @@ const ValueButton = styled.button`
   :hover {
     color: ${(props) => props.theme.colors.highlight};
   }
+`;
+
+const Content = styled.div`
+  flex-grow: 1;
+  border-top: 1px solid ${(props) => props.theme.colors.sidebar.border};
+  background: ${(props) => props.theme.colors.scripting.form.background};
 `;
 
 interface MenuItemFavoriteProps {
@@ -334,41 +331,41 @@ const DebuggerVariablesPane = ({ collapsible }: DebuggerVariablesPaneProps) => {
           Watched
         </Button>
       </Heading>
-      <ColumnContent></ColumnContent>
-
-      {filteredVariables.map((variableData) => {
-        return (
-          <VariableRow key={variableData.symbol}>
-            <VariableName>
-              <ValueButton onClick={() => onSelectVariable(variableData)}>
-                {variableData.name ?? variableData.symbol}
-              </ValueButton>
-              <Symbol>{variableData.symbol}</Symbol>
-            </VariableName>
-            <FlexGrow />
-            <Eq>=</Eq>
-            <InputWrapper>
-              <NumberInput min={0} max={65535} value={variableData.value} />
-            </InputWrapper>
-            <VariableRowFavorite
-              visible={false}
-              isFavorite={variableData.isFavorite}
-            >
-              <Button
-                size="small"
-                variant="transparent"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  onToggleWatchedVariable(variableData.id);
-                }}
+      <Content>
+        {filteredVariables.map((variableData) => {
+          return (
+            <VariableRow key={variableData.symbol}>
+              <VariableName>
+                <ValueButton onClick={() => onSelectVariable(variableData)}>
+                  {variableData.name ?? variableData.symbol}
+                </ValueButton>
+                <Symbol>{variableData.symbol}</Symbol>
+              </VariableName>
+              <FlexGrow />
+              <Eq>=</Eq>
+              <InputWrapper>
+                <NumberInput min={0} max={65535} value={variableData.value} />
+              </InputWrapper>
+              <VariableRowFavorite
+                visible={false}
+                isFavorite={variableData.isFavorite}
               >
-                <StarIcon />
-              </Button>
-            </VariableRowFavorite>
-          </VariableRow>
-        );
-      })}
+                <Button
+                  size="small"
+                  variant="transparent"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onToggleWatchedVariable(variableData.id);
+                  }}
+                >
+                  <StarIcon />
+                </Button>
+              </VariableRowFavorite>
+            </VariableRow>
+          );
+        })}
+      </Content>
     </>
   );
 };

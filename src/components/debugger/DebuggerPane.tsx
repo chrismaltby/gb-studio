@@ -1,22 +1,15 @@
-import React, { useCallback, useState } from "react";
-import l10n from "shared/lib/lang/l10n";
-import { getSettings } from "store/features/settings/settingsState";
-import settingsActions from "store/features/settings/settingsActions";
+import React, { useCallback } from "react";
 import editorActions from "store/features/editor/editorActions";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import styled from "styled-components";
-import { Button } from "ui/buttons/Button";
-import { NumberInput } from "ui/form/NumberInput";
 import { SearchInput } from "ui/form/SearchInput";
 import { CaretDownIcon } from "ui/icons/Icons";
-import { FlexGrow } from "ui/spacing/Spacing";
 import {
   actorSelectors,
   sceneSelectors,
   triggerSelectors,
 } from "store/features/entities/entitiesState";
 import { actorName, triggerName } from "shared/lib/entities/entitiesHelpers";
-import type { VariableMapData } from "lib/compiler/compileData";
 import useResizeObserver from "ui/hooks/use-resize-observer";
 import DebuggerScriptPane from "components/debugger/DebuggerScriptPane";
 import DebuggerVariablesPane from "components/debugger/DebuggerVariablesPane";
@@ -29,7 +22,7 @@ const Wrapper = styled.div`
   flex-direction: row;
   width: 100%;
   height: 100%;
-  background-color: ${(props) => props.theme.colors.sidebar.background};
+  background: ${(props) => props.theme.colors.scripting.form.background};
 
   img {
     image-rendering: pixelated;
@@ -43,7 +36,7 @@ const Heading = styled.div`
   font-size: 11px;
   align-items: center;
   padding: 10px;
-
+  background-color: ${(props) => props.theme.colors.sidebar.background};
   border-top: 1px solid ${(props) => props.theme.colors.sidebar.border};
 
   &:first-of-type {
@@ -54,6 +47,7 @@ const Heading = styled.div`
     margin-right: 5px;
     width: 8px;
     height: 8px;
+    min-width: 8px;
     fill: ${(props) => props.theme.colors.input.text};
   }
 
@@ -79,50 +73,13 @@ const Column = styled.div`
 `;
 
 const ColumnContent = styled.div`
-  padding: 0 10px;
+  border-top: 1px solid ${(props) => props.theme.colors.sidebar.border};
+  background: ${(props) => props.theme.colors.scripting.form.background};
+  padding: 10px;
 
   ${SearchInput} {
     width: 100%;
   }
-`;
-
-const VariableRow = styled.div`
-  padding: 5px 10px;
-  font-size: 11px;
-  border-bottom: 1px solid ${(props) => props.theme.colors.input.border};
-  display: flex;
-  align-items: center;
-
-  &:last-of-type {
-    border-bottom: 0;
-  }
-`;
-
-const VariableName = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: calc(100% - 100px);
-`;
-
-const Symbol = styled.span`
-  opacity: 0.5;
-  font-size: 8px;
-  padding-top: 5px;
-
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  max-width: 100%;
-  overflow: hidden;
-`;
-
-const Eq = styled.span`
-  flex-grow: 1;
-  text-align right;
-  margin-right: 5px;
-`;
-
-const InputWrapper = styled.div`
-  width: 70px;
 `;
 
 const DataRow = styled.div`
@@ -173,49 +130,14 @@ const DebuggerPane = () => {
 
   const initialized = useAppSelector((state) => state.debug.initialized);
   const vramPreview = useAppSelector((state) => state.debug.vramPreview);
-  const variableDataBySymbol = useAppSelector(
-    (state) => state.debug.variableDataBySymbol
-  );
-  const variableSymbols = useAppSelector(
-    (state) => state.debug.variableSymbols
-  );
-  const variablesData = useAppSelector((state) => state.debug.variablesData);
   const scriptMap = useAppSelector((state) => state.debug.scriptMap);
   const sceneMap = useAppSelector((state) => state.debug.sceneMap);
-  const viewScriptType = useAppSelector(
-    (state) => getSettings(state).debuggerScriptType
-  );
   const currentScriptSymbol = useAppSelector(
     (state) => state.debug.currentScriptSymbol
   );
   const currentSceneSymbol = useAppSelector(
     (state) => state.debug.currentSceneSymbol
   );
-
-  const [varSearchTerm, setVarSearchTerm] = useState("");
-
-  const onSearchVariables = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setVarSearchTerm(e.currentTarget.value);
-    },
-    []
-  );
-
-  const onSetScriptTypeEditor = useCallback(() => {
-    dispatch(
-      settingsActions.editSettings({
-        debuggerScriptType: "editor",
-      })
-    );
-  }, [dispatch]);
-
-  const onSetScriptTypeGBVM = useCallback(() => {
-    dispatch(
-      settingsActions.editSettings({
-        debuggerScriptType: "gbvm",
-      })
-    );
-  }, [dispatch]);
 
   const currentScriptEvents = scriptMap[currentScriptSymbol] ?? undefined;
   const currentSceneData = sceneMap[currentSceneSymbol] ?? undefined;
@@ -266,25 +188,6 @@ const DebuggerPane = () => {
       dispatch(editorActions.editSearchTerm(sceneId));
     },
     [dispatch]
-  );
-
-  const onSelectVariable = useCallback(
-    (variableData: VariableMapData) => {
-      if (!variableData.isLocal) {
-        dispatch(
-          editorActions.selectVariable({
-            variableId: variableData.id,
-          })
-        );
-      } else if (variableData.entityType === "scene") {
-        onSelectScene(variableData.sceneId);
-      } else if (variableData.entityType === "actor") {
-        onSelectActor(variableData.entityId, variableData.sceneId);
-      } else if (variableData.entityType === "trigger") {
-        onSelectTrigger(variableData.entityId, variableData.sceneId);
-      }
-    },
-    [dispatch, onSelectActor, onSelectScene, onSelectTrigger]
   );
 
   const numColumns = !wrapperSize.width
