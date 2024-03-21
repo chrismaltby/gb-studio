@@ -70,6 +70,8 @@ export type SettingsState = {
   customControlsStart: string[];
   customControlsSelect: string[];
   debuggerScriptType: "editor" | "gbvm";
+  debuggerVariablesFilter: "all" | "watched";
+  watchedVariables: string[];
 };
 
 export const initialState: SettingsState = defaultProjectSettings;
@@ -116,6 +118,16 @@ const settingsSlice = createSlice({
         );
       } else {
         state.favoriteEvents.push(action.payload);
+      }
+    },
+
+    toggleWatchedVariable: (state, action: PayloadAction<string>) => {
+      if (state.watchedVariables.includes(action.payload)) {
+        state.watchedVariables = state.watchedVariables.filter(
+          (item) => item !== action.payload
+        );
+      } else {
+        state.watchedVariables.push(action.payload);
       }
     },
   },

@@ -193,6 +193,8 @@ export const defaultProjectSettings: SettingsState = {
   customControlsStart: ["Enter"],
   customControlsSelect: ["Shift"],
   debuggerScriptType: "editor",
+  debuggerVariablesFilter: "all",
+  watchedVariables: [],
 };
 
 export {

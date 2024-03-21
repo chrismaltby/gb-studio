@@ -1,5 +1,4 @@
-import ScriptEditor from "components/script/ScriptEditor";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useState } from "react";
 import l10n from "shared/lib/lang/l10n";
 import { getSettings } from "store/features/settings/settingsState";
 import settingsActions from "store/features/settings/settingsActions";
@@ -11,22 +10,19 @@ import { NumberInput } from "ui/form/NumberInput";
 import { SearchInput } from "ui/form/SearchInput";
 import { CaretDownIcon } from "ui/icons/Icons";
 import { FlexGrow } from "ui/spacing/Spacing";
-import { CodeEditor } from "ui/form/CodeEditor";
-import { ScriptEditorCtx } from "shared/lib/scripts/context";
-import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import {
   actorSelectors,
   sceneSelectors,
   triggerSelectors,
 } from "store/features/entities/entitiesState";
-import {
-  ActorScriptKey,
-  SceneScriptKey,
-  TriggerScriptKey,
-} from "shared/lib/entities/entitiesTypes";
 import { actorName, triggerName } from "shared/lib/entities/entitiesHelpers";
 import type { VariableMapData } from "lib/compiler/compileData";
 import useResizeObserver from "ui/hooks/use-resize-observer";
+import DebuggerScriptPane from "components/debugger/DebuggerScriptPane";
+import DebuggerVariablesPane from "components/debugger/DebuggerVariablesPane";
+
+const COL1_WIDTH = 290;
+const COL2_WIDTH = 350;
 
 const Wrapper = styled.div`
   display: flex;
@@ -73,7 +69,7 @@ const Column = styled.div`
   flex-direction: column;
   flex-grow: 1;
   box-sizing: border-box;
-  overflow: auto;
+  overflow-y: auto;
   border-right: 1px solid ${(props) => props.theme.colors.sidebar.border};
   font-size: 11px;
 
@@ -127,18 +123,6 @@ const Eq = styled.span`
 
 const InputWrapper = styled.div`
   width: 70px;
-`;
-
-const CodeEditorWrapper = styled.div`
-  flex-grow: 1;
-
-  & > div {
-    min-height: 100%;
-    border-radius: 0;
-    border-left: 0;
-    border-right: 0;
-    border-bottom: 0;
-  }
 `;
 
 const DataRow = styled.div`
@@ -198,7 +182,6 @@ const DebuggerPane = () => {
   const variablesData = useAppSelector((state) => state.debug.variablesData);
   const scriptMap = useAppSelector((state) => state.debug.scriptMap);
   const sceneMap = useAppSelector((state) => state.debug.sceneMap);
-  const gbvmScripts = useAppSelector((state) => state.debug.gbvmScripts);
   const viewScriptType = useAppSelector(
     (state) => getSettings(state).debuggerScriptType
   );
@@ -235,22 +218,7 @@ const DebuggerPane = () => {
   }, [dispatch]);
 
   const currentScriptEvents = scriptMap[currentScriptSymbol] ?? undefined;
-  const currentGBVMScript = gbvmScripts[`${currentScriptSymbol}.s`] ?? "";
   const currentSceneData = sceneMap[currentSceneSymbol] ?? undefined;
-
-  const scriptCtx: ScriptEditorCtx | undefined = useMemo(
-    () =>
-      currentScriptEvents
-        ? {
-            type: "entity",
-            entityType: currentScriptEvents.entityType,
-            entityId: currentScriptEvents.entityId,
-            sceneId: currentScriptEvents.sceneId,
-            scriptKey: currentScriptEvents.scriptType,
-          }
-        : undefined,
-    [currentScriptEvents]
-  );
 
   const actor = useAppSelector((state) =>
     actorSelectors.selectById(state, currentScriptEvents?.entityId)
@@ -267,20 +235,6 @@ const DebuggerPane = () => {
 
   const actorIndex = scene?.actors.indexOf(actor?.id ?? "") ?? -1;
   const triggerIndex = scene?.triggers.indexOf(trigger?.id ?? "") ?? -1;
-
-  const currentScript = useMemo(() => {
-    if (!currentScriptEvents) {
-      return [];
-    }
-    if (currentScriptEvents.entityType === "actor" && actor) {
-      return actor[currentScriptEvents.scriptType as ActorScriptKey];
-    } else if (currentScriptEvents.entityType === "trigger" && trigger) {
-      return trigger[currentScriptEvents.scriptType as TriggerScriptKey];
-    } else if (currentScriptEvents.entityType === "scene" && scene) {
-      return scene[currentScriptEvents.scriptType as SceneScriptKey];
-    }
-    return [];
-  }, [actor, currentScriptEvents, scene, trigger]);
 
   const onSelectScene = useCallback(
     (sceneId: string) => {
@@ -341,103 +295,6 @@ const DebuggerPane = () => {
     ? 2
     : 1;
 
-  const variablesPane = (
-    <>
-      <Heading>
-        {numColumns <= 2 && <CaretDownIcon />}
-        {l10n("FIELD_VARIABLES")}
-        <FlexGrow />
-        <Button
-          size="small"
-          variant={viewScriptType === "editor" ? "underlined" : "transparent"}
-          onClick={onSetScriptTypeEditor}
-        >
-          All
-        </Button>
-        /
-        <Button
-          size="small"
-          variant={viewScriptType === "gbvm" ? "underlined" : "transparent"}
-          onClick={onSetScriptTypeGBVM}
-        >
-          Watched
-        </Button>
-      </Heading>
-      <ColumnContent>
-        <SearchInput
-          value={varSearchTerm}
-          placeholder={l10n("TOOLBAR_SEARCH")}
-          onChange={onSearchVariables}
-        />
-      </ColumnContent>
-
-      {variableSymbols
-
-        .filter((symbol) => {
-          const key =
-            `${symbol} ${variableDataBySymbol[symbol]?.name}`.toUpperCase();
-          return key.includes(varSearchTerm.toUpperCase());
-        })
-        .map((symbol) => {
-          return (
-            <VariableRow key={symbol}>
-              <VariableName>
-                <ValueButton
-                  onClick={() => onSelectVariable(variableDataBySymbol[symbol])}
-                >
-                  {variableDataBySymbol[symbol]?.name ?? symbol}
-                </ValueButton>
-                <Symbol>{symbol}</Symbol>
-              </VariableName>
-              <Eq>=</Eq>
-              <InputWrapper>
-                <NumberInput
-                  min={0}
-                  max={65535}
-                  value={variablesData[variableSymbols.indexOf(symbol)]}
-                />
-              </InputWrapper>
-            </VariableRow>
-          );
-        })}
-    </>
-  );
-
-  const scriptPane = (
-    <>
-      <Heading>
-        {numColumns === 1 && <CaretDownIcon />}
-        {l10n("FIELD_CURRENT_SCRIPT")}
-        <FlexGrow />
-        <Button
-          size="small"
-          variant={viewScriptType === "editor" ? "underlined" : "transparent"}
-          onClick={onSetScriptTypeEditor}
-        >
-          Editor
-        </Button>
-        /
-        <Button
-          size="small"
-          variant={viewScriptType === "gbvm" ? "underlined" : "transparent"}
-          onClick={onSetScriptTypeGBVM}
-        >
-          GBVM
-        </Button>
-      </Heading>
-      {viewScriptType === "editor" && currentScriptEvents && scriptCtx ? (
-        <ScriptEditorContext.Provider value={scriptCtx}>
-          <ScriptEditor value={currentScript} />
-        </ScriptEditorContext.Provider>
-      ) : undefined}
-      {viewScriptType === "gbvm" && currentGBVMScript ? (
-        <CodeEditorWrapper>
-          <CodeEditor value={currentGBVMScript} onChange={() => {}} />
-        </CodeEditorWrapper>
-      ) : undefined}
-    </>
-  );
-
   return (
     <Wrapper ref={wrapperEl}>
       {!initialized && (
@@ -447,7 +304,7 @@ const DebuggerPane = () => {
       )}
       {initialized && numColumns > 0 && (
         <>
-          <Column style={numColumns > 1 ? { maxWidth: 275 } : undefined}>
+          <Column style={numColumns > 1 ? { maxWidth: COL1_WIDTH } : undefined}>
             <Heading>
               <CaretDownIcon /> VRAM
             </Heading>
@@ -458,7 +315,7 @@ const DebuggerPane = () => {
               <CaretDownIcon /> Current State
             </Heading>
             {currentSceneData && (
-              <ColumnContent>
+              <ColumnContent style={{ minHeight: 60 }}>
                 {currentSceneData && (
                   <DataRow>
                     <DataLabel>Scene:</DataLabel>
@@ -493,28 +350,36 @@ const DebuggerPane = () => {
                     </ValueButton>
                   </DataRow>
                 )}
+                {currentScriptSymbol && (
+                  <DataRow>
+                    <DataLabel>Script:</DataLabel>
+                    {currentScriptSymbol}
+                  </DataRow>
+                )}
               </ColumnContent>
             )}
             <Heading>
               <CaretDownIcon /> Breakpoints
             </Heading>
             <ColumnContent></ColumnContent>
-            {numColumns < 3 && variablesPane}
-            {numColumns < 2 && scriptPane}
+            {numColumns < 3 && <DebuggerVariablesPane collapsible={true} />}
+            {numColumns < 2 && <DebuggerScriptPane collapsible={true} />}
           </Column>
           {numColumns > 2 && (
-            <Column style={{ maxWidth: 350 }}>{variablesPane}</Column>
+            <Column style={{ maxWidth: COL2_WIDTH }}>
+              <DebuggerVariablesPane />
+            </Column>
           )}
           {numColumns > 1 && (
             <Column
               style={{
                 maxWidth:
                   numColumns === 3
-                    ? `calc(100% - 350px - 275px)`
-                    : `calc(100% - 275px)`,
+                    ? `calc(100% - ${COL1_WIDTH}px - ${COL2_WIDTH}px)`
+                    : `calc(100% - ${COL1_WIDTH}px)`,
               }}
             >
-              {scriptPane}
+              <DebuggerScriptPane />
             </Column>
           )}
         </>
