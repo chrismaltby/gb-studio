@@ -415,6 +415,12 @@ export const ArrowIcon = () => (
   </svg>
 );
 
+export const StepIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <path d="M16 8v-4l8 8-8 8v-4h-5v-8h5zm-7 0h-2v8h2v-8zm-4.014 0h-1.986v8h1.986v-8zm-3.986 0h-1v8h1v-8z" />
+  </svg>
+);
+
 export const ArrowMoveIcon = ({ style }: { style?: CSSProperties }) => (
   <svg width="24" height="24" viewBox="0 0 24 24" style={style}>
     <path d="M16 8V4L24 12L16 20V16H12V8H16ZM10 8H6V16H10V8ZM4 8H0.0139771V16H4V8Z" />
