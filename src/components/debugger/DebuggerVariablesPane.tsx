@@ -37,6 +37,17 @@ const Heading = styled.div`
     fill: ${(props) => props.theme.colors.input.text};
   }
 
+  input {
+    width: 100%;
+    max-width: 100px;
+    height: 22px;
+    font-size: 11px;
+    margin: -10px 0px;
+    margin-left: 5px;
+    padding: 5px;
+    border: 1px solid ${(props) => props.theme.colors.input.border};
+  }
+
   button {
     padding: 0 3px;
     margin: 0 5px;
@@ -55,7 +66,7 @@ const ColumnContent = styled.div`
 const VariableRow = styled.div`
   padding: 5px 10px;
   font-size: 11px;
-  border-bottom: 1px solid ${(props) => props.theme.colors.input.border};
+  border-top: 1px solid ${(props) => props.theme.colors.input.border};
   display: flex;
   align-items: center;
 
@@ -301,8 +312,12 @@ const DebuggerVariablesPane = ({ collapsible }: DebuggerVariablesPaneProps) => {
     <>
       <Heading>
         {collapsible && <CaretDownIcon />}
-        {l10n("FIELD_VARIABLES")}
-        <FlexGrow />
+        <FlexGrow>{l10n("FIELD_VARIABLES")}</FlexGrow>
+        <SearchInput
+          value={varSearchTerm}
+          placeholder={l10n("TOOLBAR_SEARCH")}
+          onChange={onSearchVariables}
+        />
         <Button
           size="small"
           variant={variablesFilter === "all" ? "underlined" : "transparent"}
@@ -319,13 +334,7 @@ const DebuggerVariablesPane = ({ collapsible }: DebuggerVariablesPaneProps) => {
           Watched
         </Button>
       </Heading>
-      <ColumnContent>
-        <SearchInput
-          value={varSearchTerm}
-          placeholder={l10n("TOOLBAR_SEARCH")}
-          onChange={onSearchVariables}
-        />
-      </ColumnContent>
+      <ColumnContent></ColumnContent>
 
       {filteredVariables.map((variableData) => {
         return (
