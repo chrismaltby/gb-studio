@@ -10,15 +10,14 @@ const Content = styled.div`
   padding: 10px;
 `;
 
-const DebuggerVRAMPane = () => {
+const DebuggerBreakpointsPane = () => {
   const dispatch = useAppDispatch();
-  const vramPreview = useAppSelector((state) => state.debug.vramPreview);
   const isCollapsed = useAppSelector((state) =>
-    getSettings(state).debuggerCollapsedPanes.includes("vram")
+    getSettings(state).debuggerCollapsedPanes.includes("breakpoints")
   );
 
   const onToggleCollapsed = useCallback(() => {
-    dispatch(settingsActions.toggleDebuggerPaneCollapsed("vram"));
+    dispatch(settingsActions.toggleDebuggerPaneCollapsed("breakpoints"));
   }, [dispatch]);
 
   return (
@@ -28,15 +27,11 @@ const DebuggerVRAMPane = () => {
         collapsed={isCollapsed}
         variant="secondary"
       >
-        VRAM
+        Breakpoints
       </SplitPaneHeader>
-      {!isCollapsed && (
-        <Content>
-          <img src={vramPreview} alt=""></img>
-        </Content>
-      )}
+      {!isCollapsed && <Content></Content>}
     </>
   );
 };
 
-export default DebuggerVRAMPane;
+export default DebuggerBreakpointsPane;
