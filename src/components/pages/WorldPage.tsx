@@ -23,6 +23,7 @@ import API from "renderer/lib/api";
 import { Button } from "ui/buttons/Button";
 import { NextIcon, PauseIcon, PlayIcon } from "ui/icons/Icons";
 import { FixedSpacer } from "ui/spacing/Spacing";
+import DebuggerControls from "components/debugger/DebuggerControls";
 
 const Wrapper = styled.div`
   display: flex;
@@ -47,7 +48,6 @@ const WorldPage = () => {
   const showNavigator = useAppSelector(
     (state) => state.project.present.settings.showNavigator
   );
-  const isPaused = true;
   const [leftPaneWidth, setLeftPaneSize, startLeftPaneResize] = useResizable({
     initialSize: navigatorSidebarWidth,
     direction: "right",
@@ -257,24 +257,7 @@ const WorldPage = () => {
           <SplitPaneHeader
             onToggle={toggleDebuggerPane}
             collapsed={debuggerPaneHeight <= 30}
-            buttons={
-              debuggerPaneHeight > 30 && (
-                <>
-                  <Button size="small" variant="transparent" onClick={() => {}}>
-                    {isPaused ? <PlayIcon /> : <PauseIcon />}
-                  </Button>
-                  <FixedSpacer width={5} />
-                  <Button
-                    size="small"
-                    variant="transparent"
-                    onClick={() => {}}
-                    title={l10n("FIELD_STEP")}
-                  >
-                    <NextIcon />
-                  </Button>
-                </>
-              )
-            }
+            buttons={debuggerPaneHeight > 30 && <DebuggerControls />}
           >
             {l10n("FIELD_DEBUGGER")}
           </SplitPaneHeader>
