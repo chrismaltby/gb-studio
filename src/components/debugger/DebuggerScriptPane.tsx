@@ -6,8 +6,6 @@ import settingsActions from "store/features/settings/settingsActions";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import styled from "styled-components";
 import { Button } from "ui/buttons/Button";
-import { CaretDownIcon } from "ui/icons/Icons";
-import { FlexGrow } from "ui/spacing/Spacing";
 import { CodeEditor } from "ui/form/CodeEditor";
 import { ScriptEditorCtx } from "shared/lib/scripts/context";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
@@ -21,45 +19,16 @@ import {
   SceneScriptKey,
   TriggerScriptKey,
 } from "shared/lib/entities/entitiesTypes";
+import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 
 interface DebuggerScriptPaneProps {
   collapsible?: boolean;
 }
 
-const Heading = styled.div`
-  display: flex;
-  text-transform: uppercase;
-  font-weight: bold;
-  font-size: 11px;
-  align-items: center;
-  padding: 10px;
-  background-color: ${(props) => props.theme.colors.sidebar.background};
-  border-top: 1px solid ${(props) => props.theme.colors.sidebar.border};
-
-  &:first-of-type {
-    border-top: 0;
-  }
-
-  svg {
-    margin-right: 5px;
-    width: 8px;
-    height: 8px;
-    min-width: 8px;
-    fill: ${(props) => props.theme.colors.input.text};
-  }
-
-  button {
-    padding: 0 3px;
-    margin: 0 5px;
-    height: auto;
-  }
-`;
-
 const Content = styled.div`
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  border-top: 1px solid ${(props) => props.theme.colors.sidebar.border};
 `;
 
 const CodeEditorWrapper = styled.div`
@@ -86,22 +55,37 @@ const DebuggerScriptPane = ({ collapsible }: DebuggerScriptPaneProps) => {
   const currentSceneSymbol = useAppSelector(
     (state) => state.debug.currentSceneSymbol
   );
+  const isCollapsed = useAppSelector(
+    (state) =>
+      !!collapsible &&
+      getSettings(state).debuggerCollapsedPanes.includes("script")
+  );
 
-  const onSetScriptTypeEditor = useCallback(() => {
-    dispatch(
-      settingsActions.editSettings({
-        debuggerScriptType: "editor",
-      })
-    );
-  }, [dispatch]);
+  const onSetScriptTypeEditor = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dispatch(
+        settingsActions.editSettings({
+          debuggerScriptType: "editor",
+        })
+      );
+    },
+    [dispatch]
+  );
 
-  const onSetScriptTypeGBVM = useCallback(() => {
-    dispatch(
-      settingsActions.editSettings({
-        debuggerScriptType: "gbvm",
-      })
-    );
-  }, [dispatch]);
+  const onSetScriptTypeGBVM = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dispatch(
+        settingsActions.editSettings({
+          debuggerScriptType: "gbvm",
+        })
+      );
+    },
+    [dispatch]
+  );
 
   const currentScriptEvents = scriptMap[currentScriptSymbol] ?? undefined;
   const currentGBVMScript = gbvmScripts[`${currentScriptSymbol}.s`] ?? "";
@@ -148,40 +132,54 @@ const DebuggerScriptPane = ({ collapsible }: DebuggerScriptPaneProps) => {
     return [];
   }, [actor, currentScriptEvents, scene, trigger]);
 
+  const onToggleCollapsed = useCallback(() => {
+    dispatch(settingsActions.toggleDebuggerPaneCollapsed("script"));
+  }, [dispatch]);
+
   return (
     <>
-      <Heading>
-        {collapsible && <CaretDownIcon />}
+      <SplitPaneHeader
+        onToggle={collapsible ? onToggleCollapsed : undefined}
+        collapsed={isCollapsed}
+        variant="secondary"
+        buttons={
+          <>
+            <Button
+              size="small"
+              variant={
+                viewScriptType === "editor" ? "underlined" : "transparent"
+              }
+              onClick={onSetScriptTypeEditor}
+            >
+              Editor
+            </Button>
+            /
+            <Button
+              size="small"
+              variant={viewScriptType === "gbvm" ? "underlined" : "transparent"}
+              onClick={onSetScriptTypeGBVM}
+            >
+              GBVM
+            </Button>
+          </>
+        }
+      >
         {l10n("FIELD_CURRENT_SCRIPT")}
-        <FlexGrow />
-        <Button
-          size="small"
-          variant={viewScriptType === "editor" ? "underlined" : "transparent"}
-          onClick={onSetScriptTypeEditor}
-        >
-          Editor
-        </Button>
-        /
-        <Button
-          size="small"
-          variant={viewScriptType === "gbvm" ? "underlined" : "transparent"}
-          onClick={onSetScriptTypeGBVM}
-        >
-          GBVM
-        </Button>
-      </Heading>
-      <Content>
-        {viewScriptType === "editor" && currentScriptEvents && scriptCtx ? (
-          <ScriptEditorContext.Provider value={scriptCtx}>
-            <ScriptEditor value={currentScript} />
-          </ScriptEditorContext.Provider>
-        ) : undefined}
-        {viewScriptType === "gbvm" && currentGBVMScript ? (
-          <CodeEditorWrapper>
-            <CodeEditor value={currentGBVMScript} onChange={() => {}} />
-          </CodeEditorWrapper>
-        ) : undefined}
-      </Content>
+      </SplitPaneHeader>
+      {!isCollapsed && (
+        <Content>
+          {viewScriptType === "editor" && currentScriptEvents && scriptCtx ? (
+            <ScriptEditorContext.Provider value={scriptCtx}>
+              <ScriptEditor value={currentScript} />
+            </ScriptEditorContext.Provider>
+          ) : undefined}
+          {viewScriptType === "gbvm" && currentGBVMScript ? (
+            <CodeEditorWrapper>
+              <CodeEditor value={currentGBVMScript} onChange={() => {}} />
+            </CodeEditorWrapper>
+          ) : undefined}
+        </Content>
+      )}
     </>
   );
 };

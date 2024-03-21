@@ -194,6 +194,7 @@ export const defaultProjectSettings: SettingsState = {
   customControlsSelect: ["Shift"],
   debuggerScriptType: "editor",
   debuggerVariablesFilter: "all",
+  debuggerCollapsedPanes: [],
   watchedVariables: [],
 };
 

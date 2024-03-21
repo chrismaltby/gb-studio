@@ -71,6 +71,7 @@ export type SettingsState = {
   customControlsSelect: string[];
   debuggerScriptType: "editor" | "gbvm";
   debuggerVariablesFilter: "all" | "watched";
+  debuggerCollapsedPanes: string[];
   watchedVariables: string[];
 };
 
@@ -128,6 +129,16 @@ const settingsSlice = createSlice({
         );
       } else {
         state.watchedVariables.push(action.payload);
+      }
+    },
+
+    toggleDebuggerPaneCollapsed: (state, action: PayloadAction<string>) => {
+      if (state.debuggerCollapsedPanes.includes(action.payload)) {
+        state.debuggerCollapsedPanes = state.debuggerCollapsedPanes.filter(
+          (item) => item !== action.payload
+        );
+      } else {
+        state.debuggerCollapsedPanes.push(action.payload);
       }
     },
   },

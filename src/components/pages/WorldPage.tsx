@@ -18,7 +18,7 @@ import debounce from "lodash/debounce";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import l10n from "shared/lib/lang/l10n";
-import DebuggerPane from "components/debugger/DebuggerPane";
+import DebuggerPanes from "components/debugger/DebuggerPanes";
 import API from "renderer/lib/api";
 import { Button } from "ui/buttons/Button";
 import { NextIcon, PauseIcon, PlayIcon } from "ui/icons/Icons";
@@ -280,7 +280,7 @@ const WorldPage = () => {
           </SplitPaneHeader>
           {debuggerPaneHeight > 30 && (
             <div style={{ height: debuggerPaneHeight - 30 }}>
-              <DebuggerPane />
+              <DebuggerPanes />
             </div>
           )}
         </div>

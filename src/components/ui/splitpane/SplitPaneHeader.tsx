@@ -4,6 +4,7 @@ import { Button } from "ui/buttons/Button";
 import { TriangleIcon } from "ui/icons/Icons";
 
 interface SplitPaneHeaderProps {
+  variant?: "normal" | "secondary";
   children: ReactNode;
   buttons?: ReactNode;
   collapsed: boolean;
@@ -11,6 +12,7 @@ interface SplitPaneHeaderProps {
 }
 
 interface WrapperProps {
+  variant?: "normal" | "secondary";
   collapsible: boolean;
 }
 
@@ -24,9 +26,19 @@ export const Wrapper = styled.div<WrapperProps>`
   padding-right: 5px;
   padding-left: 5px;
   height: 30px;
+  flex-shrink: 0;
   background-color: ${(props) => props.theme.colors.input.background};
   color: ${(props) => props.theme.colors.input.text};
   border-bottom: 1px solid ${(props) => props.theme.colors.input.border};
+
+  ${(props) =>
+    props.variant === "secondary"
+      ? css`
+          background-color: ${(props) => props.theme.colors.sidebar.background};
+          border-bottom: 1px solid
+            ${(props) => props.theme.colors.sidebar.border};
+        `
+      : ""};
 
   ${(props) =>
     props.collapsible
@@ -80,9 +92,10 @@ export const SplitPaneHeader: React.FC<SplitPaneHeaderProps> = ({
   buttons,
   onToggle,
   collapsed,
+  variant,
 }) => {
   return (
-    <Wrapper onClick={onToggle} collapsible={!!onToggle}>
+    <Wrapper onClick={onToggle} collapsible={!!onToggle} variant={variant}>
       {onToggle && (
         <CollapseIcon collapsed={collapsed}>
           <TriangleIcon />

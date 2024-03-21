@@ -7,54 +7,25 @@ import styled, { css } from "styled-components";
 import { Button } from "ui/buttons/Button";
 import { NumberInput } from "ui/form/NumberInput";
 import { SearchInput } from "ui/form/SearchInput";
-import { CaretDownIcon, StarIcon } from "ui/icons/Icons";
+import { StarIcon } from "ui/icons/Icons";
 import { FlexGrow } from "ui/spacing/Spacing";
 import type { VariableMapData } from "lib/compiler/compileData";
 import { getSettings } from "store/features/settings/settingsState";
+import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 
 interface DebuggerVariablesPaneProps {
   collapsible?: boolean;
 }
 
-const Heading = styled.div`
-  display: flex;
-  text-transform: uppercase;
-  font-weight: bold;
+const HeaderSearchInput = styled(SearchInput)`
+  width: 100%;
+  max-width: 100px;
+  height: 22px;
   font-size: 11px;
-  align-items: center;
-  padding: 10px;
-
-  border-top: 1px solid ${(props) => props.theme.colors.sidebar.border};
-  background-color: ${(props) => props.theme.colors.sidebar.background};
-
-  &:first-of-type {
-    border-top: 0;
-  }
-
-  svg {
-    margin-right: 5px;
-    width: 8px;
-    height: 8px;
-    min-width: 8px;
-    fill: ${(props) => props.theme.colors.input.text};
-  }
-
-  input {
-    width: 100%;
-    max-width: 100px;
-    height: 22px;
-    font-size: 11px;
-    margin: -10px 0px;
-    margin-left: 5px;
-    padding: 5px;
-    border: 1px solid ${(props) => props.theme.colors.input.border};
-  }
-
-  button {
-    padding: 0 3px;
-    margin: 0 5px;
-    height: auto;
-  }
+  margin: -10px 0px;
+  margin-left: 5px;
+  padding: 5px;
+  border: 1px solid ${(props) => props.theme.colors.input.border};
 `;
 
 const VariableRow = styled.div`
@@ -118,7 +89,6 @@ const ValueButton = styled.button`
 
 const Content = styled.div`
   flex-grow: 1;
-  border-top: 1px solid ${(props) => props.theme.colors.sidebar.border};
   background: ${(props) => props.theme.colors.scripting.form.background};
 `;
 
@@ -187,6 +157,11 @@ const DebuggerVariablesPane = ({ collapsible }: DebuggerVariablesPaneProps) => {
   const watchedVariableIds = useAppSelector(
     (state) => getSettings(state).watchedVariables
   );
+  const isCollapsed = useAppSelector(
+    (state) =>
+      !!collapsible &&
+      getSettings(state).debuggerCollapsedPanes.includes("variables")
+  );
   const [varSearchTerm, setVarSearchTerm] = useState("");
 
   const onSearchVariables = useCallback(
@@ -196,21 +171,39 @@ const DebuggerVariablesPane = ({ collapsible }: DebuggerVariablesPaneProps) => {
     []
   );
 
-  const onSetVariablesFilterAll = useCallback(() => {
-    dispatch(
-      settingsActions.editSettings({
-        debuggerVariablesFilter: "all",
-      })
-    );
-  }, [dispatch]);
+  const onSetVariablesFilterAll = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dispatch(
+        settingsActions.editSettings({
+          debuggerVariablesFilter: "all",
+        })
+      );
+    },
+    [dispatch]
+  );
 
-  const onSetVariablesFilterWatched = useCallback(() => {
-    dispatch(
-      settingsActions.editSettings({
-        debuggerVariablesFilter: "watched",
-      })
-    );
-  }, [dispatch]);
+  const onSetVariablesFilterWatched = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dispatch(
+        settingsActions.editSettings({
+          debuggerVariablesFilter: "watched",
+        })
+      );
+    },
+    [dispatch]
+  );
+
+  const stopPropagation = useCallback(
+    (e: React.MouseEvent<HTMLInputElement>) => {
+      e.preventDefault();
+      e.stopPropagation();
+    },
+    []
+  );
 
   const onSelectScene = useCallback(
     (sceneId: string) => {
@@ -270,6 +263,10 @@ const DebuggerVariablesPane = ({ collapsible }: DebuggerVariablesPaneProps) => {
     [dispatch]
   );
 
+  const onToggleCollapsed = useCallback(() => {
+    dispatch(settingsActions.toggleDebuggerPaneCollapsed("variables"));
+  }, [dispatch]);
+
   const filteredVariables = useMemo(() => {
     return variableSymbols
       .filter((symbol) => {
@@ -307,65 +304,77 @@ const DebuggerVariablesPane = ({ collapsible }: DebuggerVariablesPaneProps) => {
 
   return (
     <>
-      <Heading>
-        {collapsible && <CaretDownIcon />}
-        <FlexGrow>{l10n("FIELD_VARIABLES")}</FlexGrow>
-        <SearchInput
-          value={varSearchTerm}
-          placeholder={l10n("TOOLBAR_SEARCH")}
-          onChange={onSearchVariables}
-        />
-        <Button
-          size="small"
-          variant={variablesFilter === "all" ? "underlined" : "transparent"}
-          onClick={onSetVariablesFilterAll}
-        >
-          All
-        </Button>
-        /
-        <Button
-          size="small"
-          variant={variablesFilter === "watched" ? "underlined" : "transparent"}
-          onClick={onSetVariablesFilterWatched}
-        >
-          Watched
-        </Button>
-      </Heading>
-      <Content>
-        {filteredVariables.map((variableData) => {
-          return (
-            <VariableRow key={variableData.symbol}>
-              <VariableName>
-                <ValueButton onClick={() => onSelectVariable(variableData)}>
-                  {variableData.name ?? variableData.symbol}
-                </ValueButton>
-                <Symbol>{variableData.symbol}</Symbol>
-              </VariableName>
-              <FlexGrow />
-              <Eq>=</Eq>
-              <InputWrapper>
-                <NumberInput min={0} max={65535} value={variableData.value} />
-              </InputWrapper>
-              <VariableRowFavorite
-                visible={false}
-                isFavorite={variableData.isFavorite}
-              >
-                <Button
-                  size="small"
-                  variant="transparent"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    onToggleWatchedVariable(variableData.id);
-                  }}
+      <SplitPaneHeader
+        onToggle={collapsible ? onToggleCollapsed : undefined}
+        collapsed={isCollapsed}
+        variant="secondary"
+        buttons={
+          <>
+            <HeaderSearchInput
+              value={varSearchTerm}
+              placeholder={l10n("TOOLBAR_SEARCH")}
+              onChange={onSearchVariables}
+              onClick={stopPropagation}
+            />
+            <Button
+              size="small"
+              variant={variablesFilter === "all" ? "underlined" : "transparent"}
+              onClick={onSetVariablesFilterAll}
+            >
+              All
+            </Button>
+            /
+            <Button
+              size="small"
+              variant={
+                variablesFilter === "watched" ? "underlined" : "transparent"
+              }
+              onClick={onSetVariablesFilterWatched}
+            >
+              Watched
+            </Button>
+          </>
+        }
+      >
+        {l10n("FIELD_VARIABLES")}
+      </SplitPaneHeader>
+      {!isCollapsed && (
+        <Content>
+          {filteredVariables.map((variableData) => {
+            return (
+              <VariableRow key={variableData.symbol}>
+                <VariableName>
+                  <ValueButton onClick={() => onSelectVariable(variableData)}>
+                    {variableData.name ?? variableData.symbol}
+                  </ValueButton>
+                  <Symbol>{variableData.symbol}</Symbol>
+                </VariableName>
+                <FlexGrow />
+                <Eq>=</Eq>
+                <InputWrapper>
+                  <NumberInput min={0} max={65535} value={variableData.value} />
+                </InputWrapper>
+                <VariableRowFavorite
+                  visible={false}
+                  isFavorite={variableData.isFavorite}
                 >
-                  <StarIcon />
-                </Button>
-              </VariableRowFavorite>
-            </VariableRow>
-          );
-        })}
-      </Content>
+                  <Button
+                    size="small"
+                    variant="transparent"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      onToggleWatchedVariable(variableData.id);
+                    }}
+                  >
+                    <StarIcon />
+                  </Button>
+                </VariableRowFavorite>
+              </VariableRow>
+            );
+          })}
+        </Content>
+      )}
     </>
   );
 };

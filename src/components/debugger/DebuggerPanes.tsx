@@ -13,6 +13,7 @@ import { actorName, triggerName } from "shared/lib/entities/entitiesHelpers";
 import useResizeObserver from "ui/hooks/use-resize-observer";
 import DebuggerScriptPane from "components/debugger/DebuggerScriptPane";
 import DebuggerVariablesPane from "components/debugger/DebuggerVariablesPane";
+import DebuggerVRAMPane from "components/debugger/DebuggerVRAMPane";
 
 const COL1_WIDTH = 290;
 const COL2_WIDTH = 350;
@@ -124,12 +125,11 @@ const NotInitializedWrapper = styled.div`
   justify-content: center;
 `;
 
-const DebuggerPane = () => {
+const DebuggerPanes = () => {
   const dispatch = useAppDispatch();
   const [wrapperEl, wrapperSize] = useResizeObserver<HTMLDivElement>();
 
   const initialized = useAppSelector((state) => state.debug.initialized);
-  const vramPreview = useAppSelector((state) => state.debug.vramPreview);
   const scriptMap = useAppSelector((state) => state.debug.scriptMap);
   const sceneMap = useAppSelector((state) => state.debug.sceneMap);
   const currentScriptSymbol = useAppSelector(
@@ -208,12 +208,7 @@ const DebuggerPane = () => {
       {initialized && numColumns > 0 && (
         <>
           <Column style={numColumns > 1 ? { maxWidth: COL1_WIDTH } : undefined}>
-            <Heading>
-              <CaretDownIcon /> VRAM
-            </Heading>
-            <ColumnContent>
-              <img src={vramPreview} alt=""></img>
-            </ColumnContent>
+            <DebuggerVRAMPane />
             <Heading>
               <CaretDownIcon /> Current State
             </Heading>
@@ -291,4 +286,4 @@ const DebuggerPane = () => {
   );
 };
 
-export default DebuggerPane;
+export default DebuggerPanes;
