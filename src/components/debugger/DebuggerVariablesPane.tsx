@@ -22,8 +22,7 @@ const HeaderSearchInput = styled(SearchInput)`
   max-width: 100px;
   height: 22px;
   font-size: 11px;
-  margin: -10px 0px;
-  margin-left: 5px;
+  margin: -10px 5px;
   padding: 5px;
   border: 1px solid ${(props) => props.theme.colors.input.border};
 `;
@@ -171,39 +170,21 @@ const DebuggerVariablesPane = ({ collapsible }: DebuggerVariablesPaneProps) => {
     []
   );
 
-  const onSetVariablesFilterAll = useCallback(
-    (e: React.MouseEvent<HTMLButtonElement>) => {
-      e.preventDefault();
-      e.stopPropagation();
-      dispatch(
-        settingsActions.editSettings({
-          debuggerVariablesFilter: "all",
-        })
-      );
-    },
-    [dispatch]
-  );
+  const onSetVariablesFilterAll = useCallback(() => {
+    dispatch(
+      settingsActions.editSettings({
+        debuggerVariablesFilter: "all",
+      })
+    );
+  }, [dispatch]);
 
-  const onSetVariablesFilterWatched = useCallback(
-    (e: React.MouseEvent<HTMLButtonElement>) => {
-      e.preventDefault();
-      e.stopPropagation();
-      dispatch(
-        settingsActions.editSettings({
-          debuggerVariablesFilter: "watched",
-        })
-      );
-    },
-    [dispatch]
-  );
-
-  const stopPropagation = useCallback(
-    (e: React.MouseEvent<HTMLInputElement>) => {
-      e.preventDefault();
-      e.stopPropagation();
-    },
-    []
-  );
+  const onSetVariablesFilterWatched = useCallback(() => {
+    dispatch(
+      settingsActions.editSettings({
+        debuggerVariablesFilter: "watched",
+      })
+    );
+  }, [dispatch]);
 
   const onSelectScene = useCallback(
     (sceneId: string) => {
@@ -315,7 +296,6 @@ const DebuggerVariablesPane = ({ collapsible }: DebuggerVariablesPaneProps) => {
                 value={varSearchTerm}
                 placeholder={l10n("TOOLBAR_SEARCH")}
                 onChange={onSearchVariables}
-                onClick={stopPropagation}
               />
               <Button
                 size="small"
@@ -365,9 +345,7 @@ const DebuggerVariablesPane = ({ collapsible }: DebuggerVariablesPaneProps) => {
                   <Button
                     size="small"
                     variant="transparent"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
+                    onClick={() => {
                       onToggleWatchedVariable(variableData.id);
                     }}
                   >

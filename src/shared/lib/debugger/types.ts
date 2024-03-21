@@ -12,7 +12,7 @@ export type DebuggerDataPacket =
       action: "update-globals";
       data: number[];
       vram: string;
-      paused: boolean;
+      isPaused: boolean;
       scriptContexts: DebuggerScriptContext[];
       currentSceneSymbol: string;
       currentScriptSymbol: string;

@@ -20,9 +20,6 @@ import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import l10n from "shared/lib/lang/l10n";
 import DebuggerPanes from "components/debugger/DebuggerPanes";
 import API from "renderer/lib/api";
-import { Button } from "ui/buttons/Button";
-import { NextIcon, PauseIcon, PlayIcon } from "ui/icons/Icons";
-import { FixedSpacer } from "ui/spacing/Spacing";
 import DebuggerControls from "components/debugger/DebuggerControls";
 
 const Wrapper = styled.div`

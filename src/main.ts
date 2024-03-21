@@ -914,6 +914,30 @@ ipcMain.on("debugger:data-receive", (_event, data: DebuggerDataPacket) => {
   }
 });
 
+ipcMain.handle("debugger:resume", (_event) => {
+  sendToGameWindow("debugger:data", {
+    action: "resume",
+  });
+});
+
+ipcMain.handle("debugger:pause", (_event) => {
+  sendToGameWindow("debugger:data", {
+    action: "pause",
+  });
+});
+
+ipcMain.handle("debugger:step", (_event) => {
+  sendToGameWindow("debugger:data", {
+    action: "step",
+  });
+});
+
+ipcMain.handle("debugger:step-frame", (_event) => {
+  sendToGameWindow("debugger:data", {
+    action: "step-frame",
+  });
+});
+
 ipcMain.handle("get-l10n-strings", () => getL10NData());
 ipcMain.handle("get-theme", () => {
   const themeId = toThemeId(

@@ -225,7 +225,7 @@ let ready = setInterval(() => {
               action: "update-globals",
               data: globals,
               vram: debug.renderVRam(),
-              paused: debug.emulator.isPaused,
+              isPaused: debug.emulator.isPaused,
               scriptContexts: scriptContexts,
               currentSceneSymbol: getSymbol(
                 debug.readMem(currentSceneAddr),
@@ -249,7 +249,7 @@ let ready = setInterval(() => {
         case "resume":
           debug.emulator.resume();
           break;
-        case "step-single":
+        case "step":
           debug.step("single");
           break;
         case "step-frame":

@@ -19,6 +19,7 @@ export interface DebuggerState {
   scriptContexts: DebuggerScriptContext[];
   currentScriptSymbol: string;
   currentSceneSymbol: string;
+  isPaused: boolean;
 }
 
 export const initialState: DebuggerState = {
@@ -34,6 +35,7 @@ export const initialState: DebuggerState = {
   scriptContexts: [],
   currentScriptSymbol: "",
   currentSceneSymbol: "",
+  isPaused: true,
 };
 
 const debuggerSlice = createSlice({
@@ -66,8 +68,10 @@ const debuggerSlice = createSlice({
         scriptContexts: DebuggerScriptContext[];
         currentSceneSymbol: string;
         currentScriptSymbol: string;
+        isPaused: boolean;
       }>
     ) => {
+      state.isPaused = action.payload.isPaused;
       state.vramPreview = action.payload.vramPreview;
       state.variablesData = action.payload.variablesData;
       state.scriptContexts = action.payload.scriptContexts;

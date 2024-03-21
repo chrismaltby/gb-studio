@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, useCallback } from "react";
 import styled, { css } from "styled-components";
 import { Button } from "ui/buttons/Button";
 import { TriangleIcon } from "ui/icons/Icons";
@@ -62,6 +62,11 @@ export const Wrapper = styled.div<WrapperProps>`
   }
 `;
 
+const Buttons = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
 interface CollapseIconProps {
   collapsed: boolean;
 }
@@ -94,6 +99,10 @@ export const SplitPaneHeader: React.FC<SplitPaneHeaderProps> = ({
   collapsed,
   variant,
 }) => {
+  const stopPropagation = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+  }, []);
+
   return (
     <Wrapper onClick={onToggle} collapsible={!!onToggle} variant={variant}>
       {onToggle && (
@@ -102,7 +111,7 @@ export const SplitPaneHeader: React.FC<SplitPaneHeaderProps> = ({
         </CollapseIcon>
       )}
       <span>{children}</span>
-      {buttons}
+      {buttons && <Buttons onClick={stopPropagation}>{buttons}</Buttons>}
     </Wrapper>
   );
 };

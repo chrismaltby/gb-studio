@@ -61,31 +61,21 @@ const DebuggerScriptPane = ({ collapsible }: DebuggerScriptPaneProps) => {
       getSettings(state).debuggerCollapsedPanes.includes("script")
   );
 
-  const onSetScriptTypeEditor = useCallback(
-    (e: React.MouseEvent<HTMLButtonElement>) => {
-      e.preventDefault();
-      e.stopPropagation();
-      dispatch(
-        settingsActions.editSettings({
-          debuggerScriptType: "editor",
-        })
-      );
-    },
-    [dispatch]
-  );
+  const onSetScriptTypeEditor = useCallback(() => {
+    dispatch(
+      settingsActions.editSettings({
+        debuggerScriptType: "editor",
+      })
+    );
+  }, [dispatch]);
 
-  const onSetScriptTypeGBVM = useCallback(
-    (e: React.MouseEvent<HTMLButtonElement>) => {
-      e.preventDefault();
-      e.stopPropagation();
-      dispatch(
-        settingsActions.editSettings({
-          debuggerScriptType: "gbvm",
-        })
-      );
-    },
-    [dispatch]
-  );
+  const onSetScriptTypeGBVM = useCallback(() => {
+    dispatch(
+      settingsActions.editSettings({
+        debuggerScriptType: "gbvm",
+      })
+    );
+  }, [dispatch]);
 
   const currentScriptEvents = scriptMap[currentScriptSymbol] ?? undefined;
   const currentGBVMScript = gbvmScripts[`${currentScriptSymbol}.s`] ?? "";

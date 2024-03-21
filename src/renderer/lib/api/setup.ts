@@ -286,6 +286,7 @@ const APISetup = {
     pause: () => ipcRenderer.invoke("debugger:pause"),
     resume: () => ipcRenderer.invoke("debugger:resume"),
     step: () => ipcRenderer.invoke("debugger:step"),
+    stepFrame: () => ipcRenderer.invoke("debugger:step-frame"),
     addBreakpoint: (address: number) =>
       ipcRenderer.invoke("debugger:breakpoint:add", address),
     sendToProjectWindow: (data: DebuggerDataPacket) =>

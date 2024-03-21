@@ -356,6 +356,7 @@ API.events.debugger.data.subscribe((_, packet) => {
           scriptContexts: packet.scriptContexts,
           currentScriptSymbol: packet.currentScriptSymbol,
           currentSceneSymbol: packet.currentSceneSymbol,
+          isPaused: packet.isPaused,
         })
       );
       break;
