@@ -143,25 +143,29 @@ const DebuggerScriptPane = ({ collapsible }: DebuggerScriptPaneProps) => {
         collapsed={isCollapsed}
         variant="secondary"
         buttons={
-          <>
-            <Button
-              size="small"
-              variant={
-                viewScriptType === "editor" ? "underlined" : "transparent"
-              }
-              onClick={onSetScriptTypeEditor}
-            >
-              Editor
-            </Button>
-            /
-            <Button
-              size="small"
-              variant={viewScriptType === "gbvm" ? "underlined" : "transparent"}
-              onClick={onSetScriptTypeGBVM}
-            >
-              GBVM
-            </Button>
-          </>
+          !isCollapsed && (
+            <>
+              <Button
+                size="small"
+                variant={
+                  viewScriptType === "editor" ? "underlined" : "transparent"
+                }
+                onClick={onSetScriptTypeEditor}
+              >
+                Editor
+              </Button>
+              /
+              <Button
+                size="small"
+                variant={
+                  viewScriptType === "gbvm" ? "underlined" : "transparent"
+                }
+                onClick={onSetScriptTypeGBVM}
+              >
+                GBVM
+              </Button>
+            </>
+          )
         }
       >
         {l10n("FIELD_CURRENT_SCRIPT")}

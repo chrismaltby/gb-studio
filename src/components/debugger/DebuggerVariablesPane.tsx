@@ -309,31 +309,35 @@ const DebuggerVariablesPane = ({ collapsible }: DebuggerVariablesPaneProps) => {
         collapsed={isCollapsed}
         variant="secondary"
         buttons={
-          <>
-            <HeaderSearchInput
-              value={varSearchTerm}
-              placeholder={l10n("TOOLBAR_SEARCH")}
-              onChange={onSearchVariables}
-              onClick={stopPropagation}
-            />
-            <Button
-              size="small"
-              variant={variablesFilter === "all" ? "underlined" : "transparent"}
-              onClick={onSetVariablesFilterAll}
-            >
-              All
-            </Button>
-            /
-            <Button
-              size="small"
-              variant={
-                variablesFilter === "watched" ? "underlined" : "transparent"
-              }
-              onClick={onSetVariablesFilterWatched}
-            >
-              Watched
-            </Button>
-          </>
+          !isCollapsed && (
+            <>
+              <HeaderSearchInput
+                value={varSearchTerm}
+                placeholder={l10n("TOOLBAR_SEARCH")}
+                onChange={onSearchVariables}
+                onClick={stopPropagation}
+              />
+              <Button
+                size="small"
+                variant={
+                  variablesFilter === "all" ? "underlined" : "transparent"
+                }
+                onClick={onSetVariablesFilterAll}
+              >
+                All
+              </Button>
+              /
+              <Button
+                size="small"
+                variant={
+                  variablesFilter === "watched" ? "underlined" : "transparent"
+                }
+                onClick={onSetVariablesFilterWatched}
+              >
+                Watched
+              </Button>
+            </>
+          )
         }
       >
         {l10n("FIELD_VARIABLES")}
