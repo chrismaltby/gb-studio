@@ -1,6 +1,6 @@
 import React from "react";
 import Editor from "react-simple-code-editor";
-import { highlight, languages, Grammar } from "prismjs";
+import { highlight, Grammar } from "prismjs";
 import "prismjs/components/prism-clike";
 import "prismjs/components/prism-javascript";
 import styled from "styled-components";
@@ -9,6 +9,7 @@ import gbvmGrammar from "./prism/gbvm.grammar";
 interface CodeEditorProps {
   value: string;
   onChange?: (newValue: string) => void;
+  currentLineNum?: number;
 }
 
 const Wrapper = styled.div`
@@ -102,25 +103,49 @@ const Wrapper = styled.div`
     width: 25px;
     font-weight: 100;
   }
+
+  .editor .currentLine {
+    background: ${(props) => props.theme.colors.input.border};
+    width: 100%;
+    display: inline-block;
+  }
 `;
 
-const hightlightWithLineNumbers = (input: string, language: Grammar) =>
+const hightlightWithLineNumbers = (
+  input: string,
+  currentLineNum: number,
+  language: Grammar
+) =>
   highlight(input, language, "gbvm")
     .split("\n")
-    .map((line, i) => `<span class='editorLineNumber'>${i + 1}</span>${line}`)
+    .map(
+      (line, i) =>
+        `<span class='line-${i + 1}${
+          i + 1 === currentLineNum ? " currentLine " : ""
+        }'><span class='editorLineNumber'>${i + 1}</span>${line}</span>`
+    )
     .join("\n");
 
 const noop = () => {};
 
-export const CodeEditor = ({ value, onChange }: CodeEditorProps) => {
-  console.log({ a: languages.js, b: gbvmGrammar });
+export const CodeEditor = ({
+  value,
+  currentLineNum,
+  onChange,
+}: CodeEditorProps) => {
   return (
     <Wrapper>
       <Editor
         className="editor"
         value={value}
         onValueChange={onChange ?? noop}
-        highlight={(code) => hightlightWithLineNumbers(code, gbvmGrammar)}
+        highlight={(code) => {
+          return hightlightWithLineNumbers(
+            code,
+            currentLineNum ?? -1,
+            gbvmGrammar
+          );
+        }}
         padding={0}
         style={{
           fontFamily: '"Fira code", "Fira Mono", monospace',

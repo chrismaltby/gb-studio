@@ -18,20 +18,12 @@ const DebuggerControls = () => {
   }, [isPaused]);
 
   const onStep = useCallback(() => {
-    if (isPaused) {
-      API.debugger.step();
-    } else {
-      API.debugger.pause();
-    }
-  }, [isPaused]);
+    API.debugger.step();
+  }, []);
 
   const onStepFrame = useCallback(() => {
-    if (isPaused) {
-      API.debugger.stepFrame();
-    } else {
-      API.debugger.pause();
-    }
-  }, [isPaused]);
+    API.debugger.stepFrame();
+  }, []);
 
   return (
     <>
@@ -39,10 +31,12 @@ const DebuggerControls = () => {
         {isPaused ? <PlayIcon /> : <PauseIcon />}
       </Button>
       <FixedSpacer width={5} />
+
       <Button
         size="small"
         variant="transparent"
-        onClick={onStep}
+        disabled={!isPaused}
+        onClick={isPaused ? onStep : undefined}
         title={l10n("FIELD_STEP")}
       >
         <StepIcon />
@@ -50,7 +44,8 @@ const DebuggerControls = () => {
       <Button
         size="small"
         variant="transparent"
-        onClick={onStepFrame}
+        disabled={!isPaused}
+        onClick={isPaused ? onStepFrame : undefined}
         title={l10n("FIELD_STEP_FRAME")}
       >
         <NextIcon />

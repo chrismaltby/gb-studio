@@ -12,6 +12,7 @@ export interface DebuggerState {
   variableIndexBySymbol: Record<string, number>;
   variableDataBySymbol: Record<string, VariableMapData>;
   gbvmScripts: Record<string, string>;
+  vmOpSizes: Record<string, number>;
   scriptMap: Record<string, ScriptMapData>;
   sceneMap: Record<string, SceneMapData>;
   vramPreview: string;
@@ -19,6 +20,7 @@ export interface DebuggerState {
   scriptContexts: DebuggerScriptContext[];
   currentScriptSymbol: string;
   currentSceneSymbol: string;
+  currentScriptOffset: number;
   isPaused: boolean;
 }
 
@@ -28,6 +30,7 @@ export const initialState: DebuggerState = {
   variableIndexBySymbol: {},
   variableDataBySymbol: {},
   gbvmScripts: {},
+  vmOpSizes: {},
   scriptMap: {},
   sceneMap: {},
   vramPreview: "",
@@ -35,6 +38,7 @@ export const initialState: DebuggerState = {
   scriptContexts: [],
   currentScriptSymbol: "",
   currentSceneSymbol: "",
+  currentScriptOffset: 0,
   isPaused: true,
 };
 
@@ -50,6 +54,7 @@ const debuggerSlice = createSlice({
         scriptMap: Record<string, ScriptMapData>;
         sceneMap: Record<string, SceneMapData>;
         gbvmScripts: Record<string, string>;
+        vmOpSizes: Record<string, number>;
       }>
     ) => {
       state.variableIndexBySymbol = action.payload.globalVariables;
@@ -57,6 +62,7 @@ const debuggerSlice = createSlice({
       state.scriptMap = action.payload.scriptMap;
       state.sceneMap = action.payload.sceneMap;
       state.gbvmScripts = action.payload.gbvmScripts;
+      state.vmOpSizes = action.payload.vmOpSizes;
       state.variableSymbols = Object.keys(state.variableDataBySymbol);
       state.initialized = true;
     },
@@ -68,6 +74,7 @@ const debuggerSlice = createSlice({
         scriptContexts: DebuggerScriptContext[];
         currentSceneSymbol: string;
         currentScriptSymbol: string;
+        currentScriptOffset: number;
         isPaused: boolean;
       }>
     ) => {
@@ -76,9 +83,11 @@ const debuggerSlice = createSlice({
       state.variablesData = action.payload.variablesData;
       state.scriptContexts = action.payload.scriptContexts;
       state.currentSceneSymbol = action.payload.currentSceneSymbol;
+      state.currentScriptOffset = action.payload.currentScriptOffset;
       if (
         action.payload.currentScriptSymbol &&
-        state.scriptMap[action.payload.currentScriptSymbol]
+        (state.scriptMap[action.payload.currentScriptSymbol] ||
+          state.gbvmScripts[`${action.payload.currentScriptSymbol}.s`])
       ) {
         // Keep last seen symbols if empty
         state.currentScriptSymbol = action.payload.currentScriptSymbol;

@@ -938,6 +938,13 @@ ipcMain.handle("debugger:step-frame", (_event) => {
   });
 });
 
+ipcMain.handle("debugger:pause-on-script", (_event, enabled: boolean) => {
+  sendToGameWindow("debugger:data", {
+    action: "pause-on-script",
+    data: enabled,
+  });
+});
+
 ipcMain.handle("get-l10n-strings", () => getL10NData());
 ipcMain.handle("get-theme", () => {
   const themeId = toThemeId(
@@ -1058,12 +1065,12 @@ ipcMain.handle(
         buildLog(`-`);
         buildLog(`Success! Starting emulator...`);
         if (options.debugEnabled) {
-          const { memoryMap, globalVariables } = await readDebuggerSymbols(
-            outputRoot
-          );
+          const { memoryMap, globalVariables, vmOpSizes } =
+            await readDebuggerSymbols(outputRoot);
           debuggerInitData = {
             memoryMap,
             globalVariables,
+            pauseOnScriptChanged: project.settings.debuggerPauseOnScriptChange,
           };
           const gbvmScripts = pickBy(compiledData.files, (_, key) =>
             key.endsWith(".s")
@@ -1074,6 +1081,7 @@ ipcMain.handle(
             scriptMap: compiledData.scriptMap,
             sceneMap: compiledData.sceneMap,
             gbvmScripts,
+            vmOpSizes,
           });
         }
         createPlay(

@@ -720,6 +720,7 @@
   "FIELD_CURRENT_SCRIPT": "Current Script",
   "FIELD_STEP": "Step",
   "FIELD_STEP_FRAME": "Step Frame",
+  "FIELD_PAUSE_ON_SCRIPT_CHANGE": "Pause On Script Change",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

@@ -113,7 +113,7 @@ class VM {
     let oldPaused = this.paused_;
     this.paused_ = newPaused;
     if (!emulator) return;
-    if (newPaused == oldPaused) return;
+    if (newPaused === oldPaused) return;
     if (newPaused) {
       emulator.pause();
       this.ticks = emulator.ticks;

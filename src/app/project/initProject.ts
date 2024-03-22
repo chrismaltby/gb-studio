@@ -356,6 +356,8 @@ API.events.debugger.data.subscribe((_, packet) => {
           scriptContexts: packet.scriptContexts,
           currentScriptSymbol: packet.currentScriptSymbol,
           currentSceneSymbol: packet.currentSceneSymbol,
+          currentScriptOffset:
+            packet.currentScriptPCAddr - packet.currentScriptAddr,
           isPaused: packet.isPaused,
         })
       );
@@ -365,7 +367,17 @@ API.events.debugger.data.subscribe((_, packet) => {
 });
 
 API.events.debugger.symbols.subscribe(
-  (_, { globalVariables, variableMap, scriptMap, sceneMap, gbvmScripts }) => {
+  (
+    _,
+    {
+      globalVariables,
+      variableMap,
+      scriptMap,
+      sceneMap,
+      gbvmScripts,
+      vmOpSizes,
+    }
+  ) => {
     store.dispatch(
       debuggerActions.setSymbols({
         globalVariables,
@@ -373,6 +385,7 @@ API.events.debugger.symbols.subscribe(
         scriptMap,
         sceneMap,
         gbvmScripts,
+        vmOpSizes,
       })
     );
   }

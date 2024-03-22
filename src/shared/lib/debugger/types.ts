@@ -16,9 +16,12 @@ export type DebuggerDataPacket =
       scriptContexts: DebuggerScriptContext[];
       currentSceneSymbol: string;
       currentScriptSymbol: string;
+      currentScriptAddr: number;
+      currentScriptPCAddr: number;
     };
 
 export type DebuggerInitData = {
   memoryMap: Record<string, number>;
   globalVariables: Record<string, number>;
+  pauseOnScriptChanged: boolean;
 };

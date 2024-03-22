@@ -285,10 +285,12 @@ const APISetup = {
   debugger: {
     pause: () => ipcRenderer.invoke("debugger:pause"),
     resume: () => ipcRenderer.invoke("debugger:resume"),
+    setPauseOnScriptChanged: (enabled: boolean) =>
+      ipcRenderer.invoke("debugger:pause-on-script", enabled),
     step: () => ipcRenderer.invoke("debugger:step"),
     stepFrame: () => ipcRenderer.invoke("debugger:step-frame"),
-    addBreakpoint: (address: number) =>
-      ipcRenderer.invoke("debugger:breakpoint:add", address),
+    setBreakpoints: (breakpoints: string[]) =>
+      ipcRenderer.invoke("debugger:set-breakpoints", breakpoints),
     sendToProjectWindow: (data: DebuggerDataPacket) =>
       ipcRenderer.send("debugger:data-receive", data),
   },
@@ -363,6 +365,7 @@ const APISetup = {
               scriptMap: Record<string, ScriptMapData>;
               sceneMap: Record<string, SceneMapData>;
               gbvmScripts: Record<string, string>;
+              vmOpSizes: Record<string, number>;
             }
           ) => void
         >("debugger:symbols"),
