@@ -141,6 +141,7 @@ export interface ScriptBuilderOptions {
     scriptRef: string;
     argsLen: number;
   }>;
+  debugEnabled: boolean;
   compiledAssetsCache: Dictionary<string>;
   compileEvents: (self: ScriptBuilder, events: ScriptEvent[]) => void;
 }
@@ -526,6 +527,7 @@ class ScriptBuilder {
       symbols: options.symbols || {},
       argLookup: options.argLookup || { actor: new Map(), variable: new Map() },
       maxDepth: options.maxDepth ?? 5,
+      debugEnabled: options.debugEnabled ?? false,
       compiledCustomEventScriptCache:
         options.compiledCustomEventScriptCache ?? {},
       compiledAssetsCache: options.compiledAssetsCache ?? {},
@@ -5103,6 +5105,7 @@ extern void __mute_mask_${symbol};
         isFunction: type === "custom",
         maxDepth: this.options.maxDepth - 1,
         branch: false,
+        debugEnabled: this.options.debugEnabled,
         warnings: (msg: string) => {
           console.error(msg);
         },
@@ -5152,6 +5155,14 @@ extern void __mute_mask_${symbol};
 
   makeSymbol = (name: string) => {
     return this._getAvailableSymbol(name);
+  };
+
+  // --------------------------------------------------------------------------
+  // Debuger
+
+  addDebugSymbol = (symbol: string) => {
+    this.output.push(`GBVM$${symbol} = .`);
+    this.output.push(`.globl GBVM$${symbol}`);
   };
 
   // --------------------------------------------------------------------------

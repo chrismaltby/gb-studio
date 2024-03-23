@@ -23,6 +23,7 @@ type CompileEntityEventsOptions = Partial<ScriptBuilderOptions> & {
   entity?: ScriptBuilderEntity;
   entityType: string;
   entityIndex: number;
+  debugEnabled: boolean;
   warnings: (msg: string) => void;
 };
 
@@ -43,6 +44,7 @@ const compileEntityEvents = (
     loop,
     lock,
     isFunction,
+    debugEnabled,
   } = options;
 
   const location = {
@@ -74,6 +76,11 @@ const compileEntityEvents = (
         continue;
       }
       if (scriptEventHandlers[command]) {
+        if (debugEnabled) {
+          scriptBuilder.addDebugSymbol(
+            `${scriptSymbolName}.s$${subInput[i].id.replace(/-/g, "_")}`
+          );
+        }
         try {
           scriptEventHandlers[command]?.compile(
             { ...subInput[i].args, ...subInput[i].children },

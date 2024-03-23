@@ -1294,6 +1294,7 @@ const compile = async (
     scriptEventHandlers,
     engineFields = [],
     tmpPath = "/tmp",
+    debugEnabled = false,
     progress = (_msg: string) => {},
     warnings = (_msg: string) => {},
   }: {
@@ -1301,6 +1302,7 @@ const compile = async (
     scriptEventHandlers: ScriptEventHandlers;
     engineFields: EngineFieldSchema[];
     tmpPath: string;
+    debugEnabled?: boolean;
     progress: (_msg: string) => void;
     warnings: (_msg: string) => void;
   }
@@ -1509,6 +1511,7 @@ const compile = async (
           compiledAssetsCache,
           branch: false,
           isFunction: false,
+          debugEnabled,
         });
 
         output[`${scriptName}.s`] = compiledScript;
