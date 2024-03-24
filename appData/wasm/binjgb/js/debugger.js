@@ -1,11 +1,34 @@
-/* eslint-disable no-undef */
+/* global EVENT_NEW_FRAME, EVENT_AUDIO_BUFFER_FULL, EVENT_UNTIL_TICKS, vm, emulator, API */
+
 let debug;
 
 const vmBreakpoints = [
   // "12::19261", "12::19335"
 ];
 
+// Consts
+
 const EVENT_BREAKPOINT = 8;
+const EXECUTING_CTX_SYMBOL = "_executing_ctx";
+const FIRST_CTX_SYMBOL = "_first_ctx";
+const SCRIPT_MEMORY_SYMBOL = "_script_memory";
+const CURRENT_SCENE_SYMBOL = "_current_scene";
+const MAX_GLOBAL_VARS = "MAX_GLOBAL_VARS";
+
+// Helpers
+
+const parseDebuggerSymbol = (input) => {
+  const match = input.match(/GBVM\$([^$]+)\$([^$]+)/);
+  if (!match) {
+    return undefined;
+  }
+  return {
+    scriptSymbol: match[1],
+    scriptEventId: match[2].replace(/_/g, "-"),
+  };
+};
+
+// Debugger
 
 class Debug {
   constructor(emulator) {
@@ -24,6 +47,9 @@ class Debug {
     this.breakpoints = {};
     this.pauseOnScriptChanged = false;
     this.pauseOnVMStep = false;
+    this.currentScriptSymbol = "";
+    this.scriptContexts = [];
+    this.pausedUI = null;
 
     this.debugRunUntil = (ticks) => {
       while (true) {
@@ -31,53 +57,89 @@ class Debug {
         if (event & EVENT_NEW_FRAME) {
           this.emulator.rewind.pushBuffer();
           this.emulator.video.uploadTexture();
-          // console.log("BREAKPOINT");
-          // emulator.pause();
-          // break;
         }
         if (event & EVENT_BREAKPOINT) {
           // Breakpoint hit
-          // const firstCtxAddr = memoryMap["_first_ctx"];
-          // let firstCtx = debug.readMemInt16(parseInt(firstCtxAddr));
+          const firstCtxAddr = this.memoryMap[FIRST_CTX_SYMBOL];
+          const executingCtxAddr = this.memoryMap[EXECUTING_CTX_SYMBOL];
 
-          const currentCtx = this.readMemInt16(
-            this.memoryMap["_executing_ctx"]
-          );
-          const currentScriptBank = this.readMem(currentCtx + 2);
-          const currentScriptPCAddr = this.readMemInt16(currentCtx);
-          const currentSymbol = this.getSymbol(
-            currentScriptBank,
-            currentScriptPCAddr
-          );
+          const currentCtx = this.readMemInt16(executingCtxAddr);
+          let firstCtx = debug.readMemInt16(firstCtxAddr);
+          let scriptContexts = [];
+          let currentCtxData = undefined;
 
-          if (this.pauseOnVMStep) {
-            console.log("@", `${currentScriptBank}::${currentScriptPCAddr}`);
-            emulator.pause();
-            this.pauseOnVMStep = false;
-            break;
+          while (firstCtx !== 0) {
+            const ctxAddr = debug.readMemInt16(firstCtx);
+            const ctxBank = debug.readMem(firstCtx + 2);
+            const closestAddr = debug.getClosestAddress(ctxBank, ctxAddr);
+            const closestSymbol = debug.getSymbol(ctxBank, closestAddr);
+            const closestGBVMSymbol = parseDebuggerSymbol(closestSymbol);
+
+            const prevCtx = this.scriptContexts[scriptContexts.length];
+
+            const ctxData = {
+              address: ctxAddr,
+              bank: ctxBank,
+              current: currentCtx === firstCtx,
+              closestAddr,
+              closestSymbol,
+              closestGBVMSymbol,
+              prevClosestSymbol: prevCtx?.closestSymbol,
+              prevClosestGBVMSymbol: prevCtx?.closestGBVMSymbol,
+            };
+
+            scriptContexts.push(ctxData);
+            if (ctxData.current) {
+              currentCtxData = ctxData;
+            }
+
+            firstCtx = debug.readMemInt16(firstCtx + 3);
           }
-          if (
-            vmBreakpoints.includes(
-              `${currentScriptBank}::${currentScriptPCAddr}`
-            )
-          ) {
-            this.pauseOnVMStep = true;
-            emulator.pause();
-            break;
-          } else if (
-            this.pauseOnScriptChanged &&
-            currentSymbol &&
-            currentSymbol !== "bootstrap_script" &&
-            currentSymbol !== "script_engine_init"
-          ) {
-            console.log("PAUSED ON NEW SYMOLB", currentSymbol);
-            this.pauseOnVMStep = true;
-            emulator.pause();
-            break;
+          this.scriptContexts = scriptContexts;
+
+          if (currentCtxData) {
+            // If pausing on VM Step and current script block changed
+            if (
+              this.pauseOnVMStep &&
+              currentCtxData.closestGBVMSymbol &&
+              currentCtxData.closestGBVMSymbol.scriptEventId !== "end" &&
+              currentCtxData.closestSymbol !== currentCtxData.prevClosestSymbol
+            ) {
+              emulator.pause();
+              this.pauseOnVMStep = false;
+              break;
+            }
+            // If manual breakpoint is hit
+            if (
+              vmBreakpoints.includes(
+                `${currentCtxData.bank}::${currentCtxData.addr}`
+              )
+            ) {
+              console.log(
+                "PAUSED ON BREAKPOINT",
+                `${currentCtxData.bank}::${currentCtxData.addr}`
+              );
+              this.pauseOnVMStep = true;
+              emulator.pause();
+              break;
+            }
+
+            if (
+              this.pauseOnScriptChanged &&
+              // Found matching GBVM event
+              currentCtxData.closestGBVMSymbol &&
+              // GBVM event has changed since last pause
+              (!currentCtxData.prevClosestGBVMSymbol ||
+                currentCtxData.closestGBVMSymbol.scriptSymbol !==
+                  currentCtxData.prevClosestGBVMSymbol.scriptSymbol)
+            ) {
+              this.pauseOnVMStep = true;
+              emulator.pause();
+              break;
+            }
           }
+
           console.log("BREAKPOINT");
-          // emulator.pause();
-          // break;
         }
         if (event & EVENT_AUDIO_BUFFER_FULL && !this.emulator.isRewinding) {
           this.emulator.audio.pushBuffer();
@@ -95,16 +157,32 @@ class Debug {
     this.emulator.runUntil = this.debugRunUntil;
   }
 
-  initialize(memoryMap, globalVariables) {
+  initialize(memoryMap, globalVariables, pauseOnScriptChanged) {
     this.memoryMap = memoryMap;
     this.globalVariables = globalVariables;
+    this.pauseOnScriptChanged = pauseOnScriptChanged;
 
     const memoryDict = new Map();
     Object.keys(memoryMap).forEach((k) => {
+      // Banked resources
       const match = k.match(/___bank_(.*)/);
       if (match) {
         const label = `_${match[1]}`;
         const bank = memoryMap[k];
+        if (memoryMap[label]) {
+          const n = memoryDict.get(bank) ?? new Map();
+          const ptr = memoryMap[label] & 0x0ffff;
+          n.set(ptr, label);
+          memoryDict.set(bank, n);
+        }
+      }
+      // Script debug symbols
+      // const matchGBVM = k.match(/GBVM\$([^$]*)\$([^$]*)/);
+      const matchGBVM = parseDebuggerSymbol(k);
+      if (matchGBVM) {
+        const bankLabel = `___bank_${matchGBVM.scriptSymbol}`;
+        const label = k;
+        const bank = memoryMap[bankLabel];
         if (memoryMap[label]) {
           const n = memoryDict.get(bank) ?? new Map();
           const ptr = memoryMap[label] & 0x0ffff;
@@ -118,6 +196,56 @@ class Debug {
 
     // Break on VM_STEP
     this.module._emulator_set_breakpoint(this.e, memoryMap["_VM_STEP"]);
+
+    // Add paused UI
+
+    this.initializeUI();
+    this.initializeKeyboardShortcuts();
+  }
+
+  initializeUI() {
+    const pausedUI = document.createElement("div");
+    const pausedUIContainer = document.createElement("div");
+    const pausedUILabel = document.createElement("span");
+    const pausedUIResumeBtn = document.createElement("button");
+    const pausedUIStepBtn = document.createElement("button");
+    const pausedUIStepFrameBtn = document.createElement("button");
+
+    document.body.appendChild(pausedUI);
+    pausedUI.appendChild(pausedUIContainer);
+    pausedUIContainer.appendChild(pausedUILabel);
+    pausedUIContainer.appendChild(pausedUIResumeBtn);
+    pausedUIContainer.appendChild(pausedUIStepBtn);
+    pausedUIContainer.appendChild(pausedUIStepFrameBtn);
+
+    pausedUI.id = "debug";
+    pausedUILabel.innerHTML = "Paused in debugger";
+
+    pausedUIResumeBtn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24"><path d="M2 3H6V21H2V3Z" /><path d="M22 12L7 21L7 3L22 12Z" /></svg>`;
+    pausedUIResumeBtn.title = "Resume execution - F8";
+    pausedUIResumeBtn.addEventListener("click", this.resume.bind(this));
+
+    pausedUIStepBtn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24"><path d="M16 8v-4l8 8-8 8v-4h-5v-8h5zm-7 0h-2v8h2v-8zm-4.014 0h-1.986v8h1.986v-8zm-3.986 0h-1v8h1v-8z" /></svg>`;
+    pausedUIStepBtn.title = "Step - F9";
+    pausedUIStepBtn.addEventListener("click", this.step.bind(this));
+
+    pausedUIStepFrameBtn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24"><path d="M19 12l-18 12v-24l18 12zm4-11h-4v22h4v-22z" /></svg>`;
+    pausedUIStepFrameBtn.title = "Step Frame - F10";
+    pausedUIStepFrameBtn.addEventListener("click", this.stepFrame.bind(this));
+
+    this.pausedUI = pausedUI;
+  }
+
+  initializeKeyboardShortcuts() {
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "F8") {
+        this.togglePlayPause();
+      } else if (e.key === "F9") {
+        this.step();
+      } else if (e.key === "F10") {
+        this.stepFrame();
+      }
+    });
   }
 
   getClosestAddress(bank, address) {
@@ -139,7 +267,7 @@ class Debug {
 
   getSymbol(bank, address) {
     const symbol = this.memoryDict.get(bank)?.get(address) ?? "";
-    return symbol.slice(1);
+    return symbol.replace(/^_/, "");
   }
 
   readMem(addr) {
@@ -153,13 +281,16 @@ class Debug {
     );
   }
 
-  readVariables(addr, size) {
-    // const ptr = this.module._emulator_get_wram_ptr(this.e) - 0xc000;
-    // const evenAddr = Math.floor(addr / 2) * 2;
-    // return new Int16Array(this.module.HEAP16.buffer, ptr + evenAddr, size);
-    // const ptr = this.module._emulator_get_wram_ptr(this.e) - 0xc000;
-    // return new Int8Array(this.module.HEAP8.buffer, ptr + addr, size * 2);
+  writeMem(addr, value) {
+    this.module._emulator_write_mem(this.e, addr, value & 0xff);
+  }
 
+  writeMemInt16(addr, value) {
+    this.module._emulator_write_mem(this.e, addr, value & 0xff);
+    this.module._emulator_write_mem(this.e, addr + 1, value >> 8);
+  }
+
+  readVariables(addr, size) {
     const ptr = this.module._emulator_get_wram_ptr(this.e) - 0xc000;
     return new Int16Array(
       this.module.HEAP8.buffer.slice(ptr + addr, ptr + addr + size * 2)
@@ -179,12 +310,9 @@ class Debug {
   }
 
   updateBreakpoints() {
-    console.log(`--- CLEARED ALL BREAKPOINTS ---`);
-
     this.module._emulator_clear_breakpoints(this.e);
     Object.keys(this.breakpoints).forEach((addr) => {
       if (this.breakpoints[addr]) {
-        console.log(`ADDED BREAKPOINT TO ${addr}`);
         this.module._emulator_set_breakpoint(this.e, addr);
       }
     });
@@ -200,17 +328,6 @@ class Debug {
     this.updateBreakpoints();
   }
 
-  step(type = "single") {
-    let ticks = this.module._emulator_get_ticks_f64(this.e);
-    if (type === "single") {
-      ticks += 1;
-    } else if (type === "frame") {
-      ticks += 70224;
-    }
-    this.emulator.runUntil(ticks);
-    this.emulator.video.renderTexture();
-  }
-
   pause() {
     this.pauseOnVMStep = true;
     this.emulator.pause();
@@ -221,10 +338,51 @@ class Debug {
     this.emulator.resume();
   }
 
+  togglePlayPause() {
+    if (this.isPaused()) {
+      this.resume();
+    } else {
+      this.pause();
+    }
+  }
+
+  step() {
+    this.resume();
+    this.pauseOnVMStep = true;
+  }
+
+  stepFrame() {
+    const ticks = this.module._emulator_get_ticks_f64(this.e) + 70224;
+    this.emulator.runUntil(ticks);
+    this.emulator.video.renderTexture();
+  }
+
   isPaused() {
     return this.emulator.isPaused;
   }
+
+  getGlobals() {
+    const variablesStartAddr = this.memoryMap[SCRIPT_MEMORY_SYMBOL];
+    const variablesLength = this.globalVariables[MAX_GLOBAL_VARS];
+    return this.readVariables(variablesStartAddr, variablesLength);
+  }
+
+  setGlobal(symbol, value) {
+    const offset = (this.globalVariables[symbol] ?? 0) * 2;
+    const variablesStartAddr = this.memoryMap[SCRIPT_MEMORY_SYMBOL];
+    this.writeMemInt16(variablesStartAddr + offset, value);
+  }
+
+  getCurrentSceneSymbol() {
+    const currentSceneAddr = this.memoryMap[CURRENT_SCENE_SYMBOL];
+    return this.getSymbol(
+      this.readMem(currentSceneAddr),
+      this.readMemInt16(currentSceneAddr + 1)
+    );
+  }
 }
+
+// Debugger Initialisation
 
 let ready = setInterval(() => {
   const debugEnabled = window.location.href.includes("debug=true");
@@ -244,129 +402,31 @@ let ready = setInterval(() => {
     });
 
     API.events.debugger.data.subscribe((_, packet) => {
-      // console.log("GOT MESSAGE IN DEBUGGER", packet);
       const { action, data } = packet;
 
       switch (action) {
         case "listener-ready":
-          // console.log({ data });
-
-          memoryMap = data.memoryMap;
-          globalVariables = data.globalVariables;
-          debug.pauseOnScriptChanged = data.pauseOnScriptChanged;
-          // const { memoryMap, globalVariables } = data;
-
-          debug.initialize(data.memoryMap, data.globalVariables);
-
-          // Break emulator on each call to VM_STEP
-          // debug.setBreakPoint(memoryMap["_VM_STEP"]);
-
-          // Object.keys(memoryMap).forEach((k) => {
-          //   const match = k.match(/___bank_(.*)/);
-          //   if (match) {
-          //     const label = `_${match[1]}`;
-          //     const bank = memoryMap[k];
-          //     if (memoryMap[label]) {
-          //       const n = memoryDict.get(bank) ?? new Map();
-          //       const ptr = memoryMap[label] & 0x0ffff;
-          //       n.set(ptr, label);
-          //       memoryDict.set(bank, n);
-          //     }
-          //   }
-          // });
-
-          const variablesStartAddr = memoryMap["_script_memory"];
-          const variablesLength = globalVariables["MAX_GLOBAL_VARS"];
-          const executingCtxAddr = memoryMap["_executing_ctx"];
-          const firstCtxAddr = memoryMap["_first_ctx"];
-          const currentSceneAddr = memoryMap["_current_scene"];
-
-          let currentScriptBank = 0;
-          let currentScriptAddr = 0;
-          let currentScriptPCAddr = 0;
-
-          // setInterval(() => {
-          //   let firstCtx = debug.readMemInt16(parseInt(firstCtxAddr));
-          //   currentScriptPCAddr = debug.readMemInt16(firstCtx);
-          //   if (
-          //     debug.emulator.isPaused &&
-          //     !hitBreakpoint &&
-          //     !vmBreakpoints.includes(currentScriptPCAddr)
-          //   ) {
-          //     debug.emulator.resume();
-          //   }
-          // }, 1);
+          debug.initialize(
+            data.memoryMap,
+            data.globalVariables,
+            data.pauseOnScriptChanged
+          );
 
           setInterval(() => {
-            // console.warn({ data });
-
-            const globals = debug.readVariables(
-              parseInt(variablesStartAddr),
-              parseInt(variablesLength)
-            );
-
-            const currentCtx = debug.readMemInt16(parseInt(executingCtxAddr));
-
-            let firstCtx = debug.readMemInt16(parseInt(firstCtxAddr));
-
-            let scriptContexts = [];
-            // console.warn("firstCtx", firstCtx);
-
-            while (firstCtx !== 0) {
-              // console.log("ADDR", debug.readMemInt16(firstCtx));
-              // console.log("BANK", debug.readMem(firstCtx + 2));
-
-              scriptContexts.push({
-                address: debug.readMemInt16(firstCtx),
-                bank: debug.readMem(firstCtx + 2),
-                current: currentCtx === firstCtx,
-              });
-
-              if (currentCtx === firstCtx) {
-                currentScriptBank = debug.readMem(firstCtx + 2);
-                currentScriptPCAddr = debug.readMemInt16(firstCtx);
-                currentScriptAddr = debug.getClosestAddress(
-                  currentScriptBank,
-                  currentScriptPCAddr
-                );
-              }
-
-              firstCtx = debug.readMemInt16(firstCtx + 3);
-              // console.log("- firstCtx", firstCtx);
-
-              // console.log("NEXT", firstCtx);
+            if (debug.pausedUI) {
+              debug.pausedUI.style.visibility = debug.isPaused()
+                ? "visible"
+                : "hidden";
             }
-
-            // console.log("currentScriptPCAddr", currentScriptPCAddr);
-
-            // if (
-            //   debug.emulator.isPaused &&
-            //   !hitBreakpoint &&
-            //   !vmBreakpoints.includes(currentScriptPCAddr)
-            // ) {
-            //   debug.emulator.resume();
-            // }
 
             API.debugger.sendToProjectWindow({
               action: "update-globals",
-              data: globals,
+              data: debug.getGlobals(),
               vram: debug.renderVRam(),
               isPaused: debug.isPaused(),
-              scriptContexts: scriptContexts,
-              currentSceneSymbol: debug.getSymbol(
-                debug.readMem(currentSceneAddr),
-                debug.readMemInt16(currentSceneAddr + 1)
-              ),
-              currentScriptSymbol: debug.getSymbol(
-                currentScriptBank,
-                currentScriptAddr
-              ),
-              currentScriptAddr,
-              currentScriptPCAddr,
-              // currentSceneAddress: debug.readMem(currentSceneAddr),
-              // currentSceneBank: debug.readMemInt16(currentSceneAddr + 1),
+              scriptContexts: debug.scriptContexts,
+              currentSceneSymbol: debug.getCurrentSceneSymbol(),
             });
-            // }, 1000 / 60);
           }, 100);
           break;
         case "add-breakpoint":
@@ -379,20 +439,20 @@ let ready = setInterval(() => {
           debug.resume();
           break;
         case "step":
-          // Step 1 VM instruction
-          debug.resume();
-          debug.pauseOnVMStep = true;
+          debug.step();
           break;
         case "step-frame":
-          // Step until next frame or VM instruction
-          debug.step("frame");
+          debug.stepFrame();
           break;
         case "pause-on-script":
           debug.pauseOnScriptChanged = data;
+          break;
+        case "set-global":
+          debug.setGlobal(data.symbol, data.value);
           break;
         default:
         // console.warn(event);
       }
     });
   }
-}, 50);
+}, 200);

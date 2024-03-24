@@ -945,6 +945,16 @@ ipcMain.handle("debugger:pause-on-script", (_event, enabled: boolean) => {
   });
 });
 
+ipcMain.handle(
+  "debugger:set-global",
+  (_event, symbol: string, value: number) => {
+    sendToGameWindow("debugger:data", {
+      action: "set-global",
+      data: { symbol, value },
+    });
+  }
+);
+
 ipcMain.handle("get-l10n-strings", () => getL10NData());
 ipcMain.handle("get-theme", () => {
   const themeId = toThemeId(

@@ -109,6 +109,12 @@ const Wrapper = styled.div`
     width: 100%;
     display: inline-block;
   }
+
+  .editor .currentLine .editorLineNumber {
+    background: ${(props) => props.theme.colors.highlight};
+    color: ${(props) => props.theme.colors.highlightText};
+    opacity: 1;
+  }
 `;
 
 const hightlightWithLineNumbers = (

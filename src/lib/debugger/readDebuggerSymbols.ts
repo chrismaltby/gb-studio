@@ -19,7 +19,7 @@ export const readDebuggerSymbols = async (outputRoot: string) => {
     gameGlobals
       .split("\n")
       .map((r) => r.split(" = "))
-      .map((_, i, keys) => [keys[i][0], parseInt(keys[i][1], 16)])
+      .map((_, i, keys) => [keys[i][0], parseInt(keys[i][1], 10)])
   );
 
   const extractOpLengths = (input: string) => {

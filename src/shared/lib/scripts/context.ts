@@ -6,6 +6,7 @@ export type ScriptEditorCtx = {
   entityId: string;
   entityType: EntityType;
   scriptKey: string;
+  executingId?: string;
 };
 
 export type ScriptEditorContextType = "entity" | "script" | "global";

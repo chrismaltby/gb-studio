@@ -78,6 +78,7 @@ interface ScriptEventHeaderProps {
   conditional: boolean;
   nestLevel: number;
   comment?: boolean;
+  isExecuting?: boolean;
   child?: boolean;
   altBg?: boolean;
 }
@@ -166,6 +167,16 @@ export const ScriptEventHeader = styled.div<ScriptEventHeaderProps>`
         `
       : ""}
 
+      ${(props) =>
+    props.isExecuting
+      ? css`
+          &&& {
+            background: ${(props) => props.theme.colors.highlight};
+            color: ${(props) => props.theme.colors.highlightText};
+          }
+        `
+      : ""}
+    
   ${(props) =>
     props.child
       ? css`

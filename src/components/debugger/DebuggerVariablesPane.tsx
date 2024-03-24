@@ -12,6 +12,8 @@ import { FlexGrow } from "ui/spacing/Spacing";
 import type { VariableMapData } from "lib/compiler/compileData";
 import { getSettings } from "store/features/settings/settingsState";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
+import { castEventToInt } from "renderer/lib/helpers/castEventValue";
+import API from "renderer/lib/api";
 
 interface DebuggerVariablesPaneProps {
   collapsible?: boolean;
@@ -336,7 +338,15 @@ const DebuggerVariablesPane = ({ collapsible }: DebuggerVariablesPaneProps) => {
                 <FlexGrow />
                 <Eq>=</Eq>
                 <InputWrapper>
-                  <NumberInput min={0} max={65535} value={variableData.value} />
+                  <NumberInput
+                    min={0}
+                    max={65535}
+                    value={variableData.value}
+                    onChange={(e) => {
+                      const newValue = castEventToInt(e, 0);
+                      API.debugger.setGlobal(variableData.symbol, newValue);
+                    }}
+                  />
                 </InputWrapper>
                 <VariableRowFavorite
                   visible={false}

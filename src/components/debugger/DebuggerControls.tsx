@@ -3,7 +3,7 @@ import API from "renderer/lib/api";
 import l10n from "shared/lib/lang/l10n";
 import { useAppSelector } from "store/hooks";
 import { Button } from "ui/buttons/Button";
-import { PlayIcon, PauseIcon, NextIcon, StepIcon } from "ui/icons/Icons";
+import { PlayStartIcon, PauseIcon, NextIcon, StepIcon } from "ui/icons/Icons";
 import { FixedSpacer } from "ui/spacing/Spacing";
 
 const DebuggerControls = () => {
@@ -28,7 +28,7 @@ const DebuggerControls = () => {
   return (
     <>
       <Button size="small" variant="transparent" onClick={onPlayPause}>
-        {isPaused ? <PlayIcon /> : <PauseIcon />}
+        {isPaused ? <PlayStartIcon /> : <PauseIcon />}
       </Button>
       <FixedSpacer width={5} />
 

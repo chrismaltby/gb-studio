@@ -1588,7 +1588,7 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
             ? initScript.findIndex((item) => item.id === autoFadeId)
             : -1;
           const fadeEvent = {
-            id: "",
+            id: "autofade",
             command: "EVENT_FADE_IN",
             args: {
               speed: scene.autoFadeSpeed,

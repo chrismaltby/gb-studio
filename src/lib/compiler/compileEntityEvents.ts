@@ -78,7 +78,7 @@ const compileEntityEvents = (
       if (scriptEventHandlers[command]) {
         if (debugEnabled) {
           scriptBuilder.addDebugSymbol(
-            `${scriptSymbolName}.s$${subInput[i].id.replace(/-/g, "_")}`
+            `${scriptSymbolName}$${subInput[i].id.replace(/-/g, "_")}`
           );
         }
         try {
@@ -140,6 +140,10 @@ const compileEntityEvents = (
   }
 
   compileEventsWithScriptBuilder(scriptBuilder, input);
+
+  if (debugEnabled) {
+    scriptBuilder.addDebugSymbol(`${scriptSymbolName}$end`);
+  }
 
   try {
     if (!branch) {

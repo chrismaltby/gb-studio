@@ -1,4 +1,10 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   DragSourceMonitor,
   DropTargetMonitor,
@@ -45,6 +51,7 @@ import { ScriptEventSymbolEditorWrapper } from "components/forms/symbols/SymbolE
 import { EVENT_CALL_CUSTOM_EVENT, EVENT_COMMENT, EVENT_END } from "consts";
 import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 
 interface ScriptEditorEventProps {
   id: string;
@@ -67,6 +74,7 @@ const ScriptEditorEvent = React.memo(
     nestLevel = 0,
   }: ScriptEditorEventProps) => {
     const dispatch = useAppDispatch();
+    const context = useContext(ScriptEditorContext);
     const dragRef = useRef<HTMLDivElement>(null);
     const dropRef = useRef<HTMLDivElement>(null);
     const headerRef = useRef<HTMLDivElement>(null);
@@ -316,6 +324,14 @@ const ScriptEditorEvent = React.memo(
       setAddOpen(false);
     }, []);
 
+    const isExecuting = scriptEvent?.id === context.executingId;
+
+    useEffect(() => {
+      if (isExecuting && headerRef.current) {
+        headerRef.current.scrollIntoView();
+      }
+    }, [isExecuting]);
+
     if (!scriptEvent) {
       return null;
     }
@@ -365,6 +381,7 @@ const ScriptEditorEvent = React.memo(
               comment={Boolean(commented || isComment)}
               nestLevel={nestLevel}
               altBg={index % 2 === 0}
+              isExecuting={isExecuting}
             >
               {isVisible && (
                 <>

@@ -2,6 +2,11 @@ export type DebuggerScriptContext = {
   address: number;
   bank: number;
   current: boolean;
+  closestSymbol: string;
+  closestGBVMSymbol?: {
+    scriptSymbol: string;
+    scriptEventId: string;
+  };
 };
 
 export type DebuggerDataPacket =
