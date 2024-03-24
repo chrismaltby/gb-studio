@@ -7,6 +7,7 @@ import DebuggerVariablesPane from "components/debugger/DebuggerVariablesPane";
 import DebuggerVRAMPane from "components/debugger/DebuggerVRAMPane";
 import DebuggerState from "components/debugger/DebuggerState";
 import DebuggerBreakpointsPane from "components/debugger/DebuggerBreakpointsPane";
+import DebuggerPausedPane from "components/debugger/DebuggerPausedPane";
 
 const COL1_WIDTH = 290;
 const COL2_WIDTH = 350;
@@ -68,6 +69,7 @@ const DebuggerPanes = () => {
       {initialized && numColumns > 0 && (
         <>
           <Column style={numColumns > 1 ? { maxWidth: COL1_WIDTH } : undefined}>
+            <DebuggerPausedPane />
             <DebuggerVRAMPane />
             <DebuggerState />
             <DebuggerBreakpointsPane />
