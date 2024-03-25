@@ -133,10 +133,6 @@ export interface ScriptBuilderOptions {
   settings: SettingsState;
   additionalScripts: Dictionary<{
     symbol: string;
-    sceneId: string;
-    entityId: string;
-    entityType: ScriptBuilderEntityType;
-    scriptKey: string;
     compiledScript: string;
   }>;
   additionalOutput: Dictionary<{
@@ -5128,11 +5124,6 @@ extern void __mute_mask_${symbol};
     );
     this.options.additionalScripts[symbol] = {
       symbol,
-      entityId: options?.entity?.id ?? this.options.entity?.id ?? "",
-      sceneId: options?.scene?.id ?? this.options.scene?.id ?? "",
-      entityType: options?.entityType ?? this.options.entityType,
-      scriptKey:
-        options?.entityScriptKey ?? this.options.entityScriptKey ?? "script",
       compiledScript: compiledSubScript,
     };
     return symbol;

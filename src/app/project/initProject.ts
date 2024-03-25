@@ -364,25 +364,12 @@ API.events.debugger.data.subscribe((_, packet) => {
 });
 
 API.events.debugger.symbols.subscribe(
-  (
-    _,
-    {
-      globalVariables,
-      variableMap,
-      scriptMap,
-      sceneMap,
-      gbvmScripts,
-      vmOpSizes,
-    }
-  ) => {
+  (_, { variableMap, sceneMap, gbvmScripts }) => {
     store.dispatch(
       debuggerActions.setSymbols({
-        globalVariables,
         variableDataBySymbol: variableMap,
-        scriptMap,
         sceneMap,
         gbvmScripts,
-        vmOpSizes,
       })
     );
   }

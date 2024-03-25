@@ -122,13 +122,6 @@ type TilemapData = {
   data: number[] | Uint8Array;
 };
 
-export type ScriptMapData = {
-  entityId: string;
-  sceneId: string;
-  entityType: EntityType;
-  scriptKey: string;
-};
-
 export type SceneMapData = {
   id: string;
   name: string;
@@ -1308,13 +1301,11 @@ const compile = async (
   }
 ): Promise<{
   files: Record<string, string>;
-  scriptMap: Record<string, ScriptMapData>;
   sceneMap: Record<string, SceneMapData>;
   variableMap: Record<string, VariableMapData>;
 }> => {
   const output: Record<string, string> = {};
   const symbols: Dictionary<string> = {};
-  const scriptMap: Record<string, ScriptMapData> = {};
   const sceneMap: Record<string, SceneMapData> = {};
 
   if (projectData.scenes.length === 0) {
@@ -1521,13 +1512,6 @@ const compile = async (
 
         output[`${scriptName}.s`] = compiledScript;
         output[`${scriptName}.h`] = compileScriptHeader(scriptName);
-
-        scriptMap[scriptName] = {
-          entityId: entity.id,
-          sceneId: scene?.id ?? "",
-          entityType,
-          scriptKey,
-        };
 
         return scriptName;
       };
@@ -1743,12 +1727,6 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
     if (!additional) {
       return;
     }
-    scriptMap[additional.symbol] = {
-      entityId: additional.entityId,
-      sceneId: additional.sceneId,
-      entityType: additional.entityType,
-      scriptKey: additional.scriptKey,
-    };
 
     output[`${additional.symbol}.s`] = additional.compiledScript;
     output[`${additional.symbol}.h`] = compileScriptHeader(additional.symbol);
@@ -2011,7 +1989,6 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
 
   return {
     files: output,
-    scriptMap,
     sceneMap,
     variableMap,
   };

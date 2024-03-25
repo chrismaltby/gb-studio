@@ -1075,8 +1075,9 @@ ipcMain.handle(
         buildLog(`-`);
         buildLog(`Success! Starting emulator...`);
         if (options.debugEnabled) {
-          const { memoryMap, globalVariables, vmOpSizes } =
-            await readDebuggerSymbols(outputRoot);
+          const { memoryMap, globalVariables } = await readDebuggerSymbols(
+            outputRoot
+          );
           debuggerInitData = {
             memoryMap,
             globalVariables,
@@ -1086,12 +1087,9 @@ ipcMain.handle(
             key.endsWith(".s")
           );
           sendToProjectWindow("debugger:symbols", {
-            globalVariables,
             variableMap: compiledData.variableMap,
-            scriptMap: compiledData.scriptMap,
             sceneMap: compiledData.sceneMap,
             gbvmScripts,
-            vmOpSizes,
           });
         }
         createPlay(
