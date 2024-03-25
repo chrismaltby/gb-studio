@@ -430,13 +430,19 @@ let ready = setInterval(() => {
                 : "hidden";
             }
 
+            const scriptContexts =
+              debug.getNumScriptCtxs() > 0 ? debug.scriptContexts : [];
+
+            if (scriptContexts.length === 0) {
+              debug.pauseOnVMStep = false;
+            }
+
             API.debugger.sendToProjectWindow({
               action: "update-globals",
               data: debug.getGlobals(),
               vram: debug.renderVRam(),
               isPaused: debug.isPaused(),
-              scriptContexts:
-                debug.getNumScriptCtxs() > 0 ? debug.scriptContexts : [],
+              scriptContexts,
               currentSceneSymbol: debug.getCurrentSceneSymbol(),
             });
           }, 100);
