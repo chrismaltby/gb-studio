@@ -126,7 +126,7 @@ export type ScriptMapData = {
   entityId: string;
   sceneId: string;
   entityType: EntityType;
-  scriptType: string;
+  scriptKey: string;
 };
 
 export type SceneMapData = {
@@ -1419,7 +1419,7 @@ const compile = async (
     sceneId: string;
     entityId: string;
     entityType: ScriptBuilderEntityType;
-    scriptType: string;
+    scriptKey: string;
     compiledScript: string;
   }> = {};
   const additionalOutput: Dictionary<{
@@ -1441,7 +1441,7 @@ const compile = async (
         entityIndex: number,
         loop: boolean,
         lock: boolean,
-        scriptType: string
+        scriptKey: string
       ) => {
         let scriptTypeCode = "interact";
         let scriptName = "script";
@@ -1455,7 +1455,7 @@ const compile = async (
             hit3Script: "hit3",
           };
           scriptTypeCode =
-            scriptLookup[scriptType as keyof typeof scriptLookup] ||
+            scriptLookup[scriptKey as keyof typeof scriptLookup] ||
             scriptTypeCode;
         } else if (entityType === "trigger") {
           scriptTypeCode = "interact";
@@ -1467,7 +1467,7 @@ const compile = async (
             playerHit3Script: "p_hit3",
           };
           scriptTypeCode =
-            scriptLookup[scriptType as keyof typeof scriptLookup] ||
+            scriptLookup[scriptKey as keyof typeof scriptLookup] ||
             scriptTypeCode;
         }
         scriptName = `${entity.symbol}_${scriptTypeCode}`;
@@ -1502,7 +1502,7 @@ const compile = async (
           variableAliasLookup,
           entityType,
           entityIndex,
-          entityScriptType: scriptType,
+          entityScriptKey: scriptKey,
           entity,
           warnings,
           loop,
@@ -1526,7 +1526,7 @@ const compile = async (
           entityId: entity.id,
           sceneId: scene?.id ?? "",
           entityType,
-          scriptType,
+          scriptKey,
         };
 
         return scriptName;
@@ -1549,6 +1549,7 @@ const compile = async (
                     entity: actor,
                     entityType: "actor",
                     entityId: actor.id,
+                    scriptKey: "startScript",
                   },
                 } as ScriptEvent,
                 actorStartScript.filter((event) => event.command !== EVENT_END)
@@ -1563,6 +1564,7 @@ const compile = async (
                   entity: scene,
                   entityType: "scene",
                   entityId: scene.id,
+                  scriptKey: "script",
                 },
               }
             : [],
@@ -1745,7 +1747,7 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
       entityId: additional.entityId,
       sceneId: additional.sceneId,
       entityType: additional.entityType,
-      scriptType: additional.scriptType,
+      scriptKey: additional.scriptKey,
     };
 
     output[`${additional.symbol}.s`] = additional.compiledScript;

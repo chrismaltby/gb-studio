@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import API from "renderer/lib/api";
 import l10n from "shared/lib/lang/l10n";
 import { useAppSelector } from "store/hooks";
@@ -24,6 +24,26 @@ const DebuggerControls = () => {
   const onStepFrame = useCallback(() => {
     API.debugger.stepFrame();
   }, []);
+
+  const onKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === "F8") {
+        onPlayPause();
+      } else if (e.key === "F9") {
+        onStep();
+      } else if (e.key === "F10") {
+        onStepFrame();
+      }
+    },
+    [onPlayPause, onStep, onStepFrame]
+  );
+
+  useEffect(() => {
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [onKeyDown]);
 
   return (
     <>

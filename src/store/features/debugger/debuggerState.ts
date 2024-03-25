@@ -4,6 +4,7 @@ import type {
   ScriptMapData,
   VariableMapData,
 } from "lib/compiler/compileData";
+import isEqual from "lodash/isEqual";
 import type { DebuggerScriptContext } from "shared/lib/debugger/types";
 
 export interface DebuggerState {
@@ -18,9 +19,7 @@ export interface DebuggerState {
   vramPreview: string;
   variablesData: number[];
   scriptContexts: DebuggerScriptContext[];
-  currentScriptSymbol: string;
   currentSceneSymbol: string;
-  currentScriptOffset: number;
   isPaused: boolean;
 }
 
@@ -36,9 +35,7 @@ export const initialState: DebuggerState = {
   vramPreview: "",
   variablesData: [],
   scriptContexts: [],
-  currentScriptSymbol: "",
   currentSceneSymbol: "",
-  currentScriptOffset: 0,
   isPaused: true,
 };
 
@@ -73,25 +70,18 @@ const debuggerSlice = createSlice({
         variablesData: number[];
         scriptContexts: DebuggerScriptContext[];
         currentSceneSymbol: string;
-        currentScriptSymbol: string;
-        currentScriptOffset: number;
         isPaused: boolean;
       }>
     ) => {
       state.isPaused = action.payload.isPaused;
       state.vramPreview = action.payload.vramPreview;
-      state.variablesData = action.payload.variablesData;
-      state.scriptContexts = action.payload.scriptContexts;
-      state.currentSceneSymbol = action.payload.currentSceneSymbol;
-      state.currentScriptOffset = action.payload.currentScriptOffset;
-      if (
-        action.payload.currentScriptSymbol &&
-        (state.scriptMap[action.payload.currentScriptSymbol] ||
-          state.gbvmScripts[`${action.payload.currentScriptSymbol}.s`])
-      ) {
-        // Keep last seen symbols if empty
-        state.currentScriptSymbol = action.payload.currentScriptSymbol;
+      if (!isEqual(state.variablesData, action.payload.variablesData)) {
+        state.variablesData = action.payload.variablesData;
       }
+      if (!isEqual(state.scriptContexts, action.payload.scriptContexts)) {
+        state.scriptContexts = action.payload.scriptContexts;
+      }
+      state.currentSceneSymbol = action.payload.currentSceneSymbol;
     },
   },
 });

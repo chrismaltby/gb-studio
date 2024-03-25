@@ -44,7 +44,6 @@ const compileEntityEvents = (
     loop,
     lock,
     isFunction,
-    debugEnabled,
   } = options;
 
   const location = {
@@ -76,11 +75,8 @@ const compileEntityEvents = (
         continue;
       }
       if (scriptEventHandlers[command]) {
-        if (debugEnabled) {
-          scriptBuilder.addDebugSymbol(
-            `${scriptSymbolName}$${subInput[i].id.replace(/-/g, "_")}`
-          );
-        }
+        scriptBuilder.addDebugSymbol(scriptSymbolName, subInput[i].id);
+
         try {
           scriptEventHandlers[command]?.compile(
             { ...subInput[i].args, ...subInput[i].children },
@@ -104,6 +100,7 @@ const compileEntityEvents = (
         scriptBuilder.options.entity = args.entity as ScriptBuilderEntity;
         scriptBuilder.options.entityType =
           args.entityType as ScriptBuilderEntityType;
+        scriptBuilder.options.entityScriptKey = String(args.scriptKey);
       } else if (command === "INTERNAL_IF_PARAM") {
         const args = subInput[i].args;
         scriptBuilder.ifParamValue(

@@ -112,7 +112,7 @@ export interface ScriptBuilderOptions {
   sceneIndex: number;
   entityIndex: number;
   entityType: ScriptBuilderEntityType;
-  entityScriptType: string;
+  entityScriptKey: string;
   variablesLookup: VariablesLookup;
   variableAliasLookup: Dictionary<VariableMapData>;
   scenes: PrecompiledScene[];
@@ -136,7 +136,7 @@ export interface ScriptBuilderOptions {
     sceneId: string;
     entityId: string;
     entityType: ScriptBuilderEntityType;
-    scriptType: string;
+    scriptKey: string;
     compiledScript: string;
   }>;
   additionalOutput: Dictionary<{
@@ -515,7 +515,7 @@ class ScriptBuilder {
       sceneIndex: options.sceneIndex || 0,
       entityIndex: options.entityIndex || 0,
       entityType: options.entityType || "scene",
-      entityScriptType: options.entityScriptType || "script",
+      entityScriptKey: options.entityScriptKey || "script",
       variablesLookup: options.variablesLookup || {},
       variableAliasLookup: options.variableAliasLookup || {},
       engineFields: options.engineFields || {},
@@ -3537,6 +3537,7 @@ extern void __mute_mask_${symbol};
       argLookup,
       entity: customEvent,
       entityType: "customEvent",
+      entityScriptKey: "script",
     });
 
     return result;
@@ -5130,8 +5131,8 @@ extern void __mute_mask_${symbol};
       entityId: options?.entity?.id ?? this.options.entity?.id ?? "",
       sceneId: options?.scene?.id ?? this.options.scene?.id ?? "",
       entityType: options?.entityType ?? this.options.entityType,
-      scriptType:
-        options?.entityScriptType ?? this.options.entityScriptType ?? "script",
+      scriptKey:
+        options?.entityScriptKey ?? this.options.entityScriptKey ?? "script",
       compiledScript: compiledSubScript,
     };
     return symbol;
@@ -5179,9 +5180,38 @@ extern void __mute_mask_${symbol};
   // --------------------------------------------------------------------------
   // Debuger
 
-  addDebugSymbol = (symbol: string) => {
-    this.output.push(`GBVM$${symbol} = .`);
-    this.output.push(`.globl GBVM$${symbol}`);
+  addDebugSymbol = (scriptSymbolName: string, scriptEventId: string) => {
+    if (this.options.debugEnabled) {
+      const debugSymbol = (
+        scriptEventId === "autofade"
+          ? [
+              scriptSymbolName,
+              scriptEventId,
+              this.options.scene?.id ?? "",
+              "scene",
+              this.options.scene?.id ?? "",
+              "script",
+            ]
+          : [
+              scriptSymbolName,
+              scriptEventId,
+              this.options.scene?.id ?? "",
+              this.options.entityType,
+              this.options.entity?.id ?? "",
+              this.options.entityScriptKey ?? "script",
+            ]
+      )
+        .map((i) => i.replace(/-/g, "_"))
+        .join("$");
+
+      // const fullSymbol = `${this.options.scriptSymbolName}$${symbol}$${(
+      //   this.options.scene?.id ?? ""
+      // ).replace(/-/g, "_")}$${this.options.entityType}$${(
+      //   this.options.entity?.id ?? ""
+      // ).replace(/-/g, "_")}$${this.options.entityScriptType ?? "script"}`;
+      this.output.push(`GBVM$${debugSymbol} = .`);
+      this.output.push(`.globl GBVM$${debugSymbol}`);
+    }
   };
 
   // --------------------------------------------------------------------------

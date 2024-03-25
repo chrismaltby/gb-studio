@@ -18,13 +18,19 @@ const MAX_GLOBAL_VARS = "MAX_GLOBAL_VARS";
 // Helpers
 
 const parseDebuggerSymbol = (input) => {
-  const match = input.match(/GBVM\$([^$]+)\$([^$]+)/);
+  const match = input.match(
+    /GBVM\$([^$]+)\$([^$]+)\$([^$]+)\$([^$]+)\$([^$]+)\$([^$]+)/
+  );
   if (!match) {
     return undefined;
   }
   return {
     scriptSymbol: match[1],
     scriptEventId: match[2].replace(/_/g, "-"),
+    sceneId: match[3].replace(/_/g, "-"),
+    entityType: match[4],
+    entityId: match[5].replace(/_/g, "-"),
+    scriptKey: match[6],
   };
 };
 
@@ -347,18 +353,22 @@ class Debug {
   }
 
   step() {
-    this.resume();
-    this.pauseOnVMStep = true;
+    if (this.isPaused()) {
+      this.resume();
+      this.pauseOnVMStep = true;
+    }
   }
 
   stepFrame() {
-    const ticks = this.module._emulator_get_ticks_f64(this.e) + 70224;
-    this.emulator.runUntil(ticks);
-    this.emulator.video.renderTexture();
+    if (this.isPaused()) {
+      const ticks = this.module._emulator_get_ticks_f64(this.e) + 70224;
+      this.emulator.runUntil(ticks);
+      this.emulator.video.renderTexture();
+    }
   }
 
   isPaused() {
-    return this.emulator.isPaused;
+    return this.emulator.isPaused || this.pauseOnVMStep;
   }
 
   getGlobals() {

@@ -173,6 +173,10 @@ export const ScriptEventHeader = styled.div<ScriptEventHeaderProps>`
           &&& {
             background: ${(props) => props.theme.colors.highlight};
             color: ${(props) => props.theme.colors.highlightText};
+
+            svg {
+              fill: ${(props) => props.theme.colors.highlightText};
+            }
           }
         `
       : ""}

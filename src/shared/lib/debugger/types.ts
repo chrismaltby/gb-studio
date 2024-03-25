@@ -1,3 +1,5 @@
+import type { EntityType } from "shared/lib/scripts/context";
+
 export type DebuggerScriptContext = {
   address: number;
   bank: number;
@@ -6,6 +8,10 @@ export type DebuggerScriptContext = {
   closestGBVMSymbol?: {
     scriptSymbol: string;
     scriptEventId: string;
+    sceneId: string;
+    entityType: EntityType;
+    entityId: string;
+    scriptKey: string;
   };
 };
 
