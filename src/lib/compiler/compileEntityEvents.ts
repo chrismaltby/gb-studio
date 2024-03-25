@@ -95,6 +95,9 @@ const compileEntityEvents = (
             )}`
           );
         }
+        if (scriptEventHandlers[command]?.isConditional) {
+          scriptBuilder.addDebugEndSymbol(scriptSymbolName, subInput[i].id);
+        }
       } else if (command === "INTERNAL_SET_CONTEXT") {
         const args = subInput[i].args ?? {};
         scriptBuilder.options.entity = args.entity as ScriptBuilderEntity;

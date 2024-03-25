@@ -5203,14 +5203,18 @@ extern void __mute_mask_${symbol};
       )
         .map((i) => i.replace(/-/g, "_"))
         .join("$");
-
-      // const fullSymbol = `${this.options.scriptSymbolName}$${symbol}$${(
-      //   this.options.scene?.id ?? ""
-      // ).replace(/-/g, "_")}$${this.options.entityType}$${(
-      //   this.options.entity?.id ?? ""
-      // ).replace(/-/g, "_")}$${this.options.entityScriptType ?? "script"}`;
       this.output.push(`GBVM$${debugSymbol} = .`);
       this.output.push(`.globl GBVM$${debugSymbol}`);
+    }
+  };
+
+  addDebugEndSymbol = (scriptSymbolName: string, scriptEventId: string) => {
+    if (this.options.debugEnabled) {
+      const debugSymbol = [scriptSymbolName, scriptEventId]
+        .map((i) => i.replace(/-/g, "_"))
+        .join("$");
+      this.output.push(`GBVM_END$${debugSymbol} = .`);
+      this.output.push(`.globl GBVM_END$${debugSymbol}`);
     }
   };
 

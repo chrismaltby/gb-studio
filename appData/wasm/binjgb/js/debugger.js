@@ -34,6 +34,16 @@ const parseDebuggerSymbol = (input) => {
   };
 };
 
+const parseDebuggerEndSymbol = (input) => {
+  const match = input.match(/GBVM_END\$([^$]+)\$([^$]+)/);
+  if (!match) {
+    return undefined;
+  }
+  return {
+    scriptSymbol: match[1],
+  };
+};
+
 // Debugger
 
 class Debug {
@@ -194,6 +204,21 @@ class Debug {
           const ptr = memoryMap[label] & 0x0ffff;
           n.set(ptr, label);
           memoryDict.set(bank, n);
+        }
+      }
+
+      const matchEnd = parseDebuggerEndSymbol(k);
+      if (matchEnd) {
+        const bankLabel = `___bank_${matchEnd.scriptSymbol}`;
+        const label = k;
+        const bank = memoryMap[bankLabel];
+        if (memoryMap[label]) {
+          const n = memoryDict.get(bank) ?? new Map();
+          const ptr = memoryMap[label] & 0x0ffff;
+          if (!n.get(ptr)) {
+            n.set(ptr, label);
+            memoryDict.set(bank, n);
+          }
         }
       }
     });

@@ -354,10 +354,7 @@ API.events.debugger.data.subscribe((_, packet) => {
           vramPreview: packet.vram,
           variablesData: packet.data,
           scriptContexts: packet.scriptContexts,
-          currentScriptSymbol: packet.currentScriptSymbol,
           currentSceneSymbol: packet.currentSceneSymbol,
-          currentScriptOffset:
-            packet.currentScriptPCAddr - packet.currentScriptAddr,
           isPaused: packet.isPaused,
         })
       );
