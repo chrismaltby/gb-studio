@@ -45,6 +45,10 @@ const WorldPage = () => {
   const showNavigator = useAppSelector(
     (state) => state.project.present.settings.showNavigator
   );
+  const debuggerEnabled = useAppSelector(
+    (state) => state.project.present.settings.debuggerEnabled
+  );
+
   const [leftPaneWidth, setLeftPaneSize, startLeftPaneResize] = useResizable({
     initialSize: navigatorSidebarWidth,
     direction: "right",
@@ -84,7 +88,7 @@ const WorldPage = () => {
     windowWidth - (showNavigator ? leftPaneWidth : 0) - rightPaneWidth;
   const [debuggerPaneHeight, setDebuggerPaneSize, onResizeDebugger] =
     useResizable({
-      initialSize: 30,
+      initialSize: debuggerEnabled ? 400 : 30,
       direction: "top",
       minSize: 30,
       maxSize: windowHeight - 100,
@@ -97,6 +101,22 @@ const WorldPage = () => {
       setDebuggerPaneSize(30);
     }
   }, [debuggerPaneHeight, setDebuggerPaneSize, windowHeight]);
+
+  useEffect(() => {
+    if (debuggerPaneHeight === 30 && debuggerEnabled) {
+      dispatch(
+        settingsActions.editSettings({
+          debuggerEnabled: false,
+        })
+      );
+    } else if (debuggerPaneHeight > 30 && !debuggerEnabled) {
+      dispatch(
+        settingsActions.editSettings({
+          debuggerEnabled: true,
+        })
+      );
+    }
+  }, [debuggerEnabled, debuggerPaneHeight, dispatch]);
 
   useEffect(() => {
     const unsubscribe = API.events.debugger.data.subscribe((_, packet) => {

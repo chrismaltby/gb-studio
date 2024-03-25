@@ -69,6 +69,7 @@ export type SettingsState = {
   customControlsB: string[];
   customControlsStart: string[];
   customControlsSelect: string[];
+  debuggerEnabled: boolean;
   debuggerScriptType: "editor" | "gbvm";
   debuggerVariablesFilter: "all" | "watched";
   debuggerCollapsedPanes: string[];

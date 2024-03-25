@@ -192,6 +192,7 @@ export const defaultProjectSettings: SettingsState = {
   customControlsB: ["Control", "k", "x"],
   customControlsStart: ["Enter"],
   customControlsSelect: ["Shift"],
+  debuggerEnabled: false,
   debuggerScriptType: "editor",
   debuggerVariablesFilter: "all",
   debuggerCollapsedPanes: [],

@@ -1027,6 +1027,8 @@ ipcMain.handle(
     const outputRoot = Path.normalize(`${getTmp()}/${buildUUID}`);
     const colorEnabled = project.settings.customColorsEnabled;
     const sgbEnabled = project.settings.sgbEnabled;
+    const debuggerEnabled =
+      options.debugEnabled || project.settings.debuggerEnabled;
 
     try {
       const compiledData = await buildProject(project, {
@@ -1035,6 +1037,7 @@ ipcMain.handle(
         outputRoot,
         scriptEventHandlers,
         tmpPath: getTmp(),
+        debugEnabled: debuggerEnabled,
         progress: (message) => {
           if (cancelBuild) {
             throw new Error("BUILD_CANCELLED");
@@ -1074,7 +1077,7 @@ ipcMain.handle(
       if (buildType === "web" && !exportBuild) {
         buildLog(`-`);
         buildLog(`Success! Starting emulator...`);
-        if (options.debugEnabled) {
+        if (debuggerEnabled) {
           const { memoryMap, globalVariables } = await readDebuggerSymbols(
             outputRoot
           );
@@ -1095,7 +1098,7 @@ ipcMain.handle(
         createPlay(
           `file://${outputRoot}/build/web/index.html`,
           sgbEnabled && !colorEnabled,
-          options.debugEnabled
+          debuggerEnabled
         );
       }
 

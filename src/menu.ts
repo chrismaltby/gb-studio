@@ -192,14 +192,14 @@ const buildMenu = async (plugins: MenuItemConstructorOptions[] = []) => {
           label: l10n("MENU_RUN"),
           accelerator: "CommandOrControl+B",
           click: () => {
-            notifyListeners("run", true);
+            notifyListeners("run", false);
           },
         },
         {
-          label: l10n("MENU_RUN_WITHOUT_DEBUGGING"),
+          label: l10n("MENU_RUN_WITH_DEBUGGING"),
           accelerator: "CommandOrControl+Alt+B",
           click: () => {
-            notifyListeners("run", false);
+            notifyListeners("run", true);
           },
         },
         {

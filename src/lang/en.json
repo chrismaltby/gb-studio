@@ -1066,7 +1066,7 @@
   "MENU_REDO": "Redo",
   "MENU_GAME": "Game",
   "MENU_RUN": "Run",
-  "MENU_RUN_WITHOUT_DEBUGGING": "Run Without Debugging",
+  "MENU_RUN_WITH_DEBUGGING": "Run With Debugging",
   "MENU_EXPORT_AS": "Export As",
   "MENU_EXPORT_ROM": "Export ROM",
   "MENU_EXPORT_WEB": "Export Web",
