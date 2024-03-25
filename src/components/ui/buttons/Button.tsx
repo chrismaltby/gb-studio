@@ -68,11 +68,18 @@ const largeStyles = css`
   font-weight: bold;
 `;
 
-const normalStyles = css`
+const normalStyles = css<ButtonProps>`
   background: ${(props) => props.theme.colors.button.background};
   border: 1px solid ${(props) => props.theme.colors.button.border};
   border-top: 1px solid ${(props) => props.theme.colors.button.borderTop};
   color: ${(props) => props.theme.colors.button.text};
+
+  ${(props) =>
+    props.disabled
+      ? css`
+          opacity: 0.5;
+        `
+      : ""}
 
   :active {
     background: ${(props) => props.theme.colors.button.activeBackground};

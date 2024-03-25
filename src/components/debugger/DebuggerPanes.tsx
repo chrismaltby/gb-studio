@@ -1,5 +1,5 @@
-import React from "react";
-import { useAppSelector } from "store/hooks";
+import React, { useCallback } from "react";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 import styled from "styled-components";
 import useResizeObserver from "ui/hooks/use-resize-observer";
 import DebuggerScriptPane from "components/debugger/DebuggerScriptPane";
@@ -8,6 +8,8 @@ import DebuggerVRAMPane from "components/debugger/DebuggerVRAMPane";
 import DebuggerState from "components/debugger/DebuggerState";
 import DebuggerBreakpointsPane from "components/debugger/DebuggerBreakpointsPane";
 import DebuggerPausedPane from "components/debugger/DebuggerPausedPane";
+import buildGameActions from "store/features/buildGame/buildGameActions";
+import { Button } from "ui/buttons/Button";
 
 const COL1_WIDTH = 290;
 const COL2_WIDTH = 350;
@@ -39,17 +41,36 @@ const Column = styled.div`
 `;
 
 const NotInitializedWrapper = styled.div`
+  font-size: 11px;
   display: flex;
-  width: 100%;
-  height: 100%;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 100px;
+  button {
+    margin-top: 10px;
+  }
 `;
 
 const DebuggerPanes = () => {
+  const dispatch = useAppDispatch();
   const [wrapperEl, wrapperSize] = useResizeObserver<HTMLDivElement>();
 
   const initialized = useAppSelector((state) => state.debug.initialized);
+  const buildStatus = useAppSelector((state) => state.console.status);
+  const running = buildStatus === "running";
+
+  const onRun = useCallback(() => {
+    dispatch(
+      buildGameActions.buildGame({
+        buildType: "web",
+        exportBuild: false,
+        debugEnabled: true,
+      })
+    );
+  }, [dispatch]);
 
   const numColumns = !wrapperSize.width
     ? 0
@@ -63,7 +84,10 @@ const DebuggerPanes = () => {
     <Wrapper ref={wrapperEl}>
       {!initialized && (
         <NotInitializedWrapper>
-          Debugger not connected. Build your game first.
+          Debugger not connected.
+          <Button onClick={onRun} disabled={running}>
+            {running ? "Building..." : "Start Debugger"}
+          </Button>
         </NotInitializedWrapper>
       )}
       {initialized && numColumns > 0 && (
