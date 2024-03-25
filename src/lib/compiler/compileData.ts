@@ -1416,6 +1416,10 @@ const compile = async (
   // Add event data
   const additionalScripts: Dictionary<{
     symbol: string;
+    sceneId: string;
+    entityId: string;
+    entityType: ScriptBuilderEntityType;
+    scriptType: string;
     compiledScript: string;
   }> = {};
   const additionalOutput: Dictionary<{
@@ -1498,6 +1502,7 @@ const compile = async (
           variableAliasLookup,
           entityType,
           entityIndex,
+          entityScriptType: scriptType,
           entity,
           warnings,
           loop,
@@ -1732,12 +1737,17 @@ VM_ACTOR_SET_SPRITESHEET_BY_REF .ARG2, .ARG1`,
     }
   );
 
-  (
-    Object.values(additionalScripts) as {
-      symbol: string;
-      compiledScript: string;
-    }[]
-  ).forEach((additional) => {
+  Object.values(additionalScripts).forEach((additional) => {
+    if (!additional) {
+      return;
+    }
+    scriptMap[additional.symbol] = {
+      entityId: additional.entityId,
+      sceneId: additional.sceneId,
+      entityType: additional.entityType,
+      scriptType: additional.scriptType,
+    };
+
     output[`${additional.symbol}.s`] = additional.compiledScript;
     output[`${additional.symbol}.h`] = compileScriptHeader(additional.symbol);
   });

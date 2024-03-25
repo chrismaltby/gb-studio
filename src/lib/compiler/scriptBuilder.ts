@@ -79,7 +79,11 @@ interface ScriptBuilderProjectile {
   collisionMask: string[];
 }
 
-export type ScriptBuilderEntityType = "scene" | "actor" | "trigger";
+export type ScriptBuilderEntityType =
+  | "scene"
+  | "actor"
+  | "trigger"
+  | "customEvent";
 
 type ScriptBuilderStackVariable = string | number;
 
@@ -108,6 +112,7 @@ export interface ScriptBuilderOptions {
   sceneIndex: number;
   entityIndex: number;
   entityType: ScriptBuilderEntityType;
+  entityScriptType: string;
   variablesLookup: VariablesLookup;
   variableAliasLookup: Dictionary<VariableMapData>;
   scenes: PrecompiledScene[];
@@ -128,6 +133,10 @@ export interface ScriptBuilderOptions {
   settings: SettingsState;
   additionalScripts: Dictionary<{
     symbol: string;
+    sceneId: string;
+    entityId: string;
+    entityType: ScriptBuilderEntityType;
+    scriptType: string;
     compiledScript: string;
   }>;
   additionalOutput: Dictionary<{
@@ -506,6 +515,7 @@ class ScriptBuilder {
       sceneIndex: options.sceneIndex || 0,
       entityIndex: options.entityIndex || 0,
       entityType: options.entityType || "scene",
+      entityScriptType: options.entityScriptType || "script",
       variablesLookup: options.variablesLookup || {},
       variableAliasLookup: options.variableAliasLookup || {},
       engineFields: options.engineFields || {},
@@ -3523,7 +3533,11 @@ extern void __mute_mask_${symbol};
     const result = { scriptRef: symbol, argsLen };
     compiledCustomEventScriptCache[customEventId] = result;
 
-    this._compileSubScript("custom", script, symbol, { argLookup });
+    this._compileSubScript("custom", script, symbol, {
+      argLookup,
+      entity: customEvent,
+      entityType: "customEvent",
+    });
 
     return result;
   };
@@ -5113,6 +5127,11 @@ extern void __mute_mask_${symbol};
     );
     this.options.additionalScripts[symbol] = {
       symbol,
+      entityId: options?.entity?.id ?? this.options.entity?.id ?? "",
+      sceneId: options?.scene?.id ?? this.options.scene?.id ?? "",
+      entityType: options?.entityType ?? this.options.entityType,
+      scriptType:
+        options?.entityScriptType ?? this.options.entityScriptType ?? "script",
       compiledScript: compiledSubScript,
     };
     return symbol;

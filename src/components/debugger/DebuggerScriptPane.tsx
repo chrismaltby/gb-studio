@@ -11,6 +11,7 @@ import { ScriptEditorCtx } from "shared/lib/scripts/context";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import {
   actorSelectors,
+  customEventSelectors,
   sceneSelectors,
   triggerSelectors,
 } from "store/features/entities/entitiesState";
@@ -155,6 +156,9 @@ const DebuggerScriptPane = ({ collapsible }: DebuggerScriptPaneProps) => {
   const trigger = useAppSelector((state) =>
     triggerSelectors.selectById(state, currentScriptEvents?.entityId)
   );
+  const customEvent = useAppSelector((state) =>
+    customEventSelectors.selectById(state, currentScriptEvents?.entityId)
+  );
   const scene = useAppSelector((state) =>
     sceneSelectors.selectById(
       state,
@@ -172,9 +176,14 @@ const DebuggerScriptPane = ({ collapsible }: DebuggerScriptPaneProps) => {
       return trigger[currentScriptEvents.scriptType as TriggerScriptKey];
     } else if (currentScriptEvents.entityType === "scene" && scene) {
       return scene[currentScriptEvents.scriptType as SceneScriptKey];
+    } else if (
+      currentScriptEvents.entityType === "customEvent" &&
+      customEvent
+    ) {
+      return customEvent.script;
     }
     return [];
-  }, [actor, currentScriptEvents, scene, trigger]);
+  }, [actor, currentScriptEvents, scene, trigger, customEvent]);
 
   return (
     <>
@@ -212,7 +221,6 @@ const DebuggerScriptPane = ({ collapsible }: DebuggerScriptPaneProps) => {
       </SplitPaneHeader>
       {!isCollapsed && (
         <Content>
-          {/* <pre>{JSON.stringify(scriptContexts, null, 2)}</pre> */}
           <TabBar
             value={String(thread)}
             values={tabs}
