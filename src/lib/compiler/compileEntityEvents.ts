@@ -141,10 +141,6 @@ const compileEntityEvents = (
 
   compileEventsWithScriptBuilder(scriptBuilder, input);
 
-  if (debugEnabled) {
-    scriptBuilder.addDebugSymbol(`${scriptSymbolName}$end`);
-  }
-
   try {
     if (!branch) {
       scriptBuilder._packLocals();

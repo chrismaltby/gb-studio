@@ -380,6 +380,17 @@ class Debug {
       this.readMemInt16(currentSceneAddr + 1)
     );
   }
+
+  getNumScriptCtxs() {
+    const firstCtxAddr = this.memoryMap[FIRST_CTX_SYMBOL];
+    let firstCtx = debug.readMemInt16(firstCtxAddr);
+    let numCtxs = 0;
+    while (firstCtx !== 0) {
+      numCtxs++;
+      firstCtx = debug.readMemInt16(firstCtx + 3);
+    }
+    return numCtxs;
+  }
 }
 
 // Debugger Initialisation
@@ -424,7 +435,8 @@ let ready = setInterval(() => {
               data: debug.getGlobals(),
               vram: debug.renderVRam(),
               isPaused: debug.isPaused(),
-              scriptContexts: debug.scriptContexts,
+              scriptContexts:
+                debug.getNumScriptCtxs() > 0 ? debug.scriptContexts : [],
               currentSceneSymbol: debug.getCurrentSceneSymbol(),
             });
           }, 100);
