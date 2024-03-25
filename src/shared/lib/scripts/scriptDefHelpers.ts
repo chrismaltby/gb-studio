@@ -29,7 +29,9 @@ export const isFieldVisible = (
       (!condition.gte || Number(keyValue) >= Number(condition.gte)) &&
       (!condition.lt || Number(keyValue) > Number(condition.lt)) &&
       (!condition.lte || Number(keyValue) >= Number(condition.lte)) &&
-      (!condition.in || condition.in.indexOf(keyValue) >= 0) &&
+      (!condition.in ||
+        condition.in.indexOf(keyValue) >= 0 ||
+        (keyValue === undefined && condition.in.indexOf(null) >= 0)) &&
       (condition.set === undefined ||
         (condition.set && keyValue !== undefined) ||
         (!condition.set && keyValue === undefined))
